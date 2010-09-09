@@ -36,24 +36,17 @@ datatype facetype = Final | Nonfinal
 datatype face = Face "(vertex list)"  facetype
 
 consts final :: "'a \<Rightarrow> bool"
+
+primrec
+  final_face_simp: "final (Face vs f) = (case f of Final \<Rightarrow> True | Nonfinal \<Rightarrow> False)"
+
 consts type :: "'a \<Rightarrow> facetype"
 
-overloading
-  final_face \<equiv> "final :: face \<Rightarrow> bool"
-  type_face \<equiv> "type :: face \<Rightarrow> facetype"
-  vertices_face \<equiv> "vertices :: face \<Rightarrow> vertex list"
-begin
-
-primrec final_face where
-  "final (Face vs f) = (case f of Final \<Rightarrow> True | Nonfinal \<Rightarrow> False)"
-
-primrec type_face where
+primrec
   "type (Face vs f) = f"
 
-primrec vertices_face where
-  "vertices (Face vs f) = vs"
-
-end
+primrec (vertices_face)
+  vertices_face_simp: "vertices (Face vs f) = vs"
 
 defs (overloaded) cong_face_def:
  "f\<^isub>1 \<cong> (f\<^isub>2::face) \<equiv> vertices f\<^isub>1 \<cong> vertices f\<^isub>2" 
@@ -90,15 +83,9 @@ by (simp add: nextVertices_def nat_number)
 
 
 (*<*)consts op :: "'a \<Rightarrow> 'a" ("_\<^bsup>op\<^esup>" [1000] 999)  (*>*) (* *)
+
 defs (*<*) op_vertices_def:(*>*) "(vs::vertex list)\<^bsup>op\<^esup> \<equiv> rev vs"
-overloading
-  op_graph \<equiv> "Graph.op :: face \<Rightarrow> face"
-begin
- 
-primrec op_graph where "(Face vs f)\<^bsup>op\<^esup> = Face (rev vs) f"  (*<*)
-
-end
-
+primrec "(Face vs f)\<^bsup>op\<^esup> = Face (rev vs) f"  (*<*)
 lemma [simp]: "vertices ((f::face)\<^bsup>op\<^esup>) = (vertices f)\<^bsup>op\<^esup>"
   by (induct f) (simp add: op_vertices_def)
 lemma [simp]: "xs \<noteq> [] \<Longrightarrow> hd (rev xs)= last xs"
@@ -110,6 +97,8 @@ lemma [code_unfold, code_inline del]: "f\<^bsup>op\<^esup>\<bullet>v = (if
 
 definition prevVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_\<^bsup>-1\<^esup> \<bullet>") (*>*)where (* *)
   "f\<^bsup>-1\<^esup> \<bullet> v \<equiv> (let vs = vertices f in nextElem (rev vs) (last vs) v)"
+
+
 
 abbreviation
   triangle :: "face \<Rightarrow> bool" where
@@ -130,13 +119,8 @@ abbreviation
 primrec countVertices :: "graph \<Rightarrow> nat" where
   "countVertices (Graph fs n f h) = n"
 
-overloading
-  vertices_graph \<equiv> "vertices :: graph \<Rightarrow> vertex list"
-begin
-
-primrec vertices_graph where "vertices (Graph fs n f h) = [0 ..< n]"
-
-end
+primrec
+  vertices_graph_simp: "vertices (Graph fs n f h) = [0 ..< n]"
 
 lemma vertices_graph: "vertices g = [0 ..< countVertices g]"
 by (induct g) simp
@@ -148,6 +132,7 @@ by (simp add:vertices_graph)
 lemma len_vertices_graph [code_unfold, code_inline del]:
   "|vertices g| = countVertices g"
 by (simp add:vertices_graph)
+
 
 primrec faceListAt :: "graph \<Rightarrow> face list list" where
   "faceListAt (Graph fs n f h) = f"
@@ -289,34 +274,34 @@ definition directedLength :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<R
 subsection {* Code generator setup *}
 
 definition final_face :: "face \<Rightarrow> bool" where
-  final_face_code_def: "final_face = final"
-declare final_face_code_def [symmetric, code_unfold]
+  [code del]: "final_face = final"
+declare final_face_def [symmetric, code_unfold]
 
 lemma final_face_code [code]:
   "final_face (Face vs Final) \<longleftrightarrow> True"
   "final_face (Face vs Nonfinal) \<longleftrightarrow> False"
-  by (simp_all add: final_face_code_def)
+  by (simp_all add: final_face_def)
 
 definition final_graph :: "graph \<Rightarrow> bool" where
-  final_graph_code_def: "final_graph = final"
-declare final_graph_code_def [symmetric, code_unfold]
+  [code del]: "final_graph = final"
+declare final_graph_def [symmetric, code_unfold]
 
 lemma final_graph_code [code]: "final_graph g = List.null (nonFinals g)"
-  unfolding final_graph_code_def finalGraph_def null_def ..
+  unfolding final_graph_def finalGraph_def null_def ..
 
 definition vertices_face :: "face \<Rightarrow> vertex list" where
-  vertices_face_code_def: "vertices_face = vertices"
-declare vertices_face_code_def [symmetric, code_unfold]
+  [code del]: "vertices_face = vertices"
+declare vertices_face_def [symmetric, code_unfold]
 
 lemma vertices_face_code [code]: "vertices_face (Face vs f) = vs"
-  unfolding vertices_face_code_def by simp
+  unfolding vertices_face_def by simp
 
 definition vertices_graph :: "graph \<Rightarrow> vertex list" where
-  vertices_graph_code_def: "vertices_graph = vertices"
-declare vertices_graph_code_def [symmetric, code_unfold]
+  [code del]: "vertices_graph = vertices"
+declare vertices_graph_def [symmetric, code_unfold]
 
 lemma vertices_graph_code [code]:
   "vertices_graph (Graph fs n f h) = [0 ..< n]"
-  unfolding vertices_graph_code_def by simp
+  unfolding vertices_graph_def by simp
 
 end

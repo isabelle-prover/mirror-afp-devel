@@ -1,4 +1,5 @@
-(*  Author:     Gertrud Bauer, Tobias Nipkow
+(*  ID:         $Id: FaceDivision.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
+    Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header{* Subdividing a Face *}
@@ -55,9 +56,9 @@ definition splitFace
 
 
 
-primrec subdivFace' :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> nat \<Rightarrow> vertex option list \<Rightarrow> graph" where
-  "subdivFace' g f u n [] = makeFaceFinal f g"
-| "subdivFace' g f u n (vo#vos) =
+consts subdivFace' :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> nat \<Rightarrow> vertex option list \<Rightarrow> graph"
+primrec "subdivFace' g f u n [] = makeFaceFinal f g"
+ "subdivFace' g f u n (vo#vos) =
      (case vo of None \<Rightarrow> subdivFace' g f u (Suc n) vos
          | (Some v) \<Rightarrow>
             if f\<bullet>u = v \<and> n = 0

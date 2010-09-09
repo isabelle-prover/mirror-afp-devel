@@ -188,7 +188,8 @@ subsubsection {*  Minimum and maximum *}
  sum_list = foldl1 (op +)
 Put in separate ExecList.thy
 *)
-primrec minimal:: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> 'a" where
+consts minimal:: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> 'a"
+primrec
  "minimal m (x#xs) =
   (if xs=[] then x else
    let mxs = minimal m xs in
@@ -214,11 +215,13 @@ apply(induct xs)
 apply (auto split:split_if_asm)
 done
 
-primrec min_list :: "nat list \<Rightarrow> nat" where
-  "min_list (x#xs) = (if xs=[] then x else min x (min_list xs))"
+consts min_list :: "nat list \<Rightarrow> nat"
+primrec
+ "min_list (x#xs) = (if xs=[] then x else min x (min_list xs))"
 
-primrec max_list :: "nat list \<Rightarrow> nat" where
-  "max_list (x#xs) = (if xs=[] then x else max x (max_list xs))"
+consts max_list :: "nat list \<Rightarrow> nat"
+primrec
+ "max_list (x#xs) = (if xs=[] then x else max x (max_list xs))"
 
 
 lemma min_list_conv_Min[simp]:
@@ -234,14 +237,16 @@ subsubsection {* replace *}
 
 (* FIXME replace "remove1" by "replace1" in List.thy? *)
 
-primrec replace :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow>  'a list" where
-  "replace x ys [] = []"
-| "replace x ys (z#zs) = 
+consts replace :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow>  'a list"
+primrec
+ "replace x ys [] = []"
+ "replace x ys (z#zs) = 
      (if z = x then ys @ zs else z # (replace x ys zs))"
 
-primrec mapAt :: "nat list \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a list \<Rightarrow> 'a list)" where
-  "mapAt [] f as = as"
-| "mapAt (n#ns) f as = 
+consts mapAt :: "nat list \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a list \<Rightarrow> 'a list)"
+primrec
+ "mapAt [] f as = as"
+ "mapAt (n#ns) f as = 
      (if n < |as| then mapAt ns f (as[n:= f (as!n)])
      else mapAt ns f as)"
 
@@ -771,9 +776,11 @@ qed
 
 subsection {* @{text splitAt} *}
 
-primrec splitAtRec :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list" where
+consts splitAtRec ::
+  "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list"
+primrec
   "splitAtRec c bs [] = (bs,[])"
-| "splitAtRec c bs (a#as) = (if a = c then (bs, as)
+  "splitAtRec c bs (a#as) = (if a = c then (bs, as)
                               else splitAtRec c (bs@[a]) as)"
 
 definition splitAt :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list" where
@@ -1363,9 +1370,10 @@ lemma isTable_Cons: "isTable E vs ((a,b)#ps) \<Longrightarrow> isTable E vs ps"
 definition removeKey :: "'a \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'b) list" where
 "removeKey a ps \<equiv> [p \<leftarrow> ps. a \<noteq> fst p]"
 
-primrec removeKeyList :: "'a list \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'b) list" where
+consts removeKeyList :: "'a list \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'b) list"
+primrec
   "removeKeyList [] ps = ps"
-| "removeKeyList (w#ws) ps = removeKey w (removeKeyList ws ps)"
+  "removeKeyList (w#ws) ps = removeKey w (removeKeyList ws ps)"
 
 lemma removeKey_subset[simp]: "set (removeKey a ps) \<subseteq> set ps"
   by (simp add: removeKey_def) blast
