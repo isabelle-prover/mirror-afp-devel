@@ -1,5 +1,4 @@
 (*  Title:      Jinja/Compiler/Correctness1.thy
-    ID:         $Id: Correctness1.thy,v 1.8 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -12,27 +11,25 @@ begin
 
 section{*Correctness of program compilation *}
 
-consts
-  unmod :: "expr\<^isub>1 \<Rightarrow> nat \<Rightarrow> bool"
-  unmods :: "expr\<^isub>1 list \<Rightarrow> nat \<Rightarrow> bool"
-primrec
-"unmod (new C) i = True"
-"unmod (Cast C e) i = unmod e i"
-"unmod (Val v) i = True"
-"unmod (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) i = (unmod e\<^isub>1 i \<and> unmod e\<^isub>2 i)"
-"unmod (Var i) j = True"
-"unmod (i:=e) j = (i \<noteq> j \<and> unmod e j)"
-"unmod (e\<bullet>F{D}) i = unmod e i"
-"unmod (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) i = (unmod e\<^isub>1 i \<and> unmod e\<^isub>2 i)"
-"unmod (e\<bullet>M(es)) i = (unmod e i \<and> unmods es i)"
-"unmod {j:T; e} i = unmod e i"
-"unmod (e\<^isub>1;;e\<^isub>2) i = (unmod e\<^isub>1 i \<and>  unmod e\<^isub>2 i)"
-"unmod (if (e) e\<^isub>1 else e\<^isub>2) i = (unmod e i \<and> unmod e\<^isub>1 i \<and> unmod e\<^isub>2 i)"
-"unmod (while (e) c) i = (unmod e i \<and> unmod c i)"
-"unmod (throw e) i = unmod e i"
-"unmod (try e\<^isub>1 catch(C i) e\<^isub>2) j = (unmod e\<^isub>1 j \<and> (if i=j then False else unmod e\<^isub>2 j))"
+primrec unmod :: "expr\<^isub>1 \<Rightarrow> nat \<Rightarrow> bool"
+  and unmods :: "expr\<^isub>1 list \<Rightarrow> nat \<Rightarrow> bool" where
+"unmod (new C) i = True" |
+"unmod (Cast C e) i = unmod e i" |
+"unmod (Val v) i = True" |
+"unmod (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) i = (unmod e\<^isub>1 i \<and> unmod e\<^isub>2 i)" |
+"unmod (Var i) j = True" |
+"unmod (i:=e) j = (i \<noteq> j \<and> unmod e j)" |
+"unmod (e\<bullet>F{D}) i = unmod e i" |
+"unmod (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) i = (unmod e\<^isub>1 i \<and> unmod e\<^isub>2 i)" |
+"unmod (e\<bullet>M(es)) i = (unmod e i \<and> unmods es i)" |
+"unmod {j:T; e} i = unmod e i" |
+"unmod (e\<^isub>1;;e\<^isub>2) i = (unmod e\<^isub>1 i \<and>  unmod e\<^isub>2 i)" |
+"unmod (if (e) e\<^isub>1 else e\<^isub>2) i = (unmod e i \<and> unmod e\<^isub>1 i \<and> unmod e\<^isub>2 i)" |
+"unmod (while (e) c) i = (unmod e i \<and> unmod c i)" |
+"unmod (throw e) i = unmod e i" |
+"unmod (try e\<^isub>1 catch(C i) e\<^isub>2) j = (unmod e\<^isub>1 j \<and> (if i=j then False else unmod e\<^isub>2 j))" |
 
-"unmods ([]) i = True"
+"unmods ([]) i = True" |
 "unmods (e#es) i = (unmod e i \<and> unmods es i)"
 
 lemma hidden_unmod: "\<And>Vs. hidden Vs i \<Longrightarrow> unmod (compE\<^isub>1 Vs e) i" and

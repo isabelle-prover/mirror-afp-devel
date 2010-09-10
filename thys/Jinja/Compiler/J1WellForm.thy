@@ -184,27 +184,25 @@ subsection{* Well-formedness*}
 
 --"Indices in blocks increase by 1"
 
-consts
-  \<B> :: "expr\<^isub>1 \<Rightarrow> nat \<Rightarrow> bool"
-  \<B>s :: "expr\<^isub>1 list \<Rightarrow> nat \<Rightarrow> bool"
-primrec
-"\<B> (new C) i = True"
-"\<B> (Cast C e) i = \<B> e i"
-"\<B> (Val v) i = True"
-"\<B> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)"
-"\<B> (Var j) i = True"
-"\<B> (e\<bullet>F{D}) i = \<B> e i"
-"\<B> (j:=e) i = \<B> e i"
-"\<B> (e\<^isub>1\<bullet>F{D} := e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)"
-"\<B> (e\<bullet>M(es)) i = (\<B> e i \<and> \<B>s es i)"
-"\<B> ({j:T ; e}) i = (i = j \<and> \<B> e (i+1))"
-"\<B> (e\<^isub>1;;e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)"
-"\<B> (if (e) e\<^isub>1 else e\<^isub>2) i = (\<B> e i \<and> \<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)"
-"\<B> (throw e) i = \<B> e i"
-"\<B> (while (e) c) i = (\<B> e i \<and> \<B> c i)"
-"\<B> (try e\<^isub>1 catch(C j) e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> i=j \<and> \<B> e\<^isub>2 (i+1))"
+primrec \<B> :: "expr\<^isub>1 \<Rightarrow> nat \<Rightarrow> bool"
+  and \<B>s :: "expr\<^isub>1 list \<Rightarrow> nat \<Rightarrow> bool" where
+"\<B> (new C) i = True" |
+"\<B> (Cast C e) i = \<B> e i" |
+"\<B> (Val v) i = True" |
+"\<B> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)" |
+"\<B> (Var j) i = True" |
+"\<B> (e\<bullet>F{D}) i = \<B> e i" |
+"\<B> (j:=e) i = \<B> e i" |
+"\<B> (e\<^isub>1\<bullet>F{D} := e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)" |
+"\<B> (e\<bullet>M(es)) i = (\<B> e i \<and> \<B>s es i)" |
+"\<B> ({j:T ; e}) i = (i = j \<and> \<B> e (i+1))" |
+"\<B> (e\<^isub>1;;e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)" |
+"\<B> (if (e) e\<^isub>1 else e\<^isub>2) i = (\<B> e i \<and> \<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)" |
+"\<B> (throw e) i = \<B> e i" |
+"\<B> (while (e) c) i = (\<B> e i \<and> \<B> c i)" |
+"\<B> (try e\<^isub>1 catch(C j) e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> i=j \<and> \<B> e\<^isub>2 (i+1))" |
 
-"\<B>s [] i = True"
+"\<B>s [] i = True" |
 "\<B>s (e#es) i = (\<B> e i \<and> \<B>s es i)"
 
 
