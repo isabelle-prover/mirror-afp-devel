@@ -390,7 +390,7 @@ lemma \<tau>Move2_iff:
      | (stk, loc, C, M, pc) # frs' \<Rightarrow> 
        (let (_,_,_,_,_,ins,xt) = method P C M
         in (pc < length ins \<and> (xcp = None \<longrightarrow> \<tau>instr P h stk (ins ! pc)))))"
-by(cases \<sigma>)(clarsimp split: list.splits simp add: ext_iff split_beta)
+by(cases \<sigma>)(clarsimp split: list.splits simp add: fun_eq_iff split_beta)
 
 lemma \<tau>instr_compP [simp]: "\<tau>instr (compP f P) h stk i \<longleftrightarrow> \<tau>instr P h stk i"
 by(cases i) auto
@@ -398,7 +398,7 @@ by(cases i) auto
 lemma [simp]: fixes e :: "expr1" and es :: "expr1 list"
   shows \<tau>move2_compP: "\<tau>move2 (compP f P) h stk e = \<tau>move2 P h stk e"
   and \<tau>moves2_compP: "\<tau>moves2 (compP f P) h stk es = \<tau>moves2 P h stk es"
-by(auto simp add: \<tau>move2_iff \<tau>moves2_iff ext_iff)
+by(auto simp add: \<tau>move2_iff \<tau>moves2_iff fun_eq_iff)
 
 lemma \<tau>Move2_compP2:
   "P \<turnstile> C sees M:Ts\<rightarrow>T=body in D \<Longrightarrow> 

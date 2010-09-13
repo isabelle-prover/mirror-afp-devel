@@ -199,11 +199,11 @@ proof-
       then have "A \<in> set_of \<Gamma>'" using assms by auto
       thus "A :# \<Gamma>'" by simp
       qed
-  then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_ext_iff)
+  then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_eq_iff)
   then have "\<exists> \<Gamma>''. \<Gamma>' = \<Gamma>'' \<oplus> A" apply (rule_tac x="\<Gamma>' \<ominus> A" in exI) by auto
   then obtain \<Gamma>'' where eq1:"\<Gamma>' = \<Gamma>'' \<oplus> A" by blast
   from `\<Gamma> \<oplus> A = \<Gamma>' \<oplus> B` eq1 have "\<Gamma> \<oplus> A = \<Gamma>'' \<oplus> A \<oplus> B" by auto
-  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by (auto simp add:multiset_ext_iff)
+  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by (auto simp add:multiset_eq_iff)
   thus ?thesis using eq1 by blast
 qed
 
@@ -693,7 +693,7 @@ proof (induct n arbitrary:\<Gamma> rule:nat_less_induct)
              with ext and `r = (ps,c)`
                   have "Compound T Ts :# \<Gamma>" by (auto simp add:extendRule_def extend_def)
              then have "\<exists> \<Gamma>1. \<Gamma> = \<Gamma>1 \<oplus> Compound T Ts"
-                  by (rule_tac x="\<Gamma> \<ominus> Compound T Ts" in exI) (auto simp add:multiset_ext_iff)
+                  by (rule_tac x="\<Gamma> \<ominus> Compound T Ts" in exI) (auto simp add:multiset_eq_iff)
              then obtain \<Gamma>1 where "\<Gamma> = \<Gamma>1 \<oplus> Compound T Ts" by auto
              moreover from `c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* Em)` and `r = (ps,c)` and ext
                   have "succ S = Compound F Fs"

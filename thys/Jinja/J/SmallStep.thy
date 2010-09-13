@@ -315,11 +315,11 @@ next
   have IH: "\<And>l\<^isub>0. P \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
     and l'V: "l' V = None" and unass: "\<not> assigned V e" by fact+
   have "l\<^isub>0(V := None) ++ l(V := None) = (l\<^isub>0 ++ l)(V := None)"
-    by(simp add:ext_iff map_add_def)
+    by(simp add:fun_eq_iff map_add_def)
   hence IH': "P \<turnstile> \<langle>e,(h, (l\<^isub>0++l)(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0(V := None) ++ l')\<rangle>"
     using IH[of "l\<^isub>0(V := None)"] by simp
   have "(l\<^isub>0(V := None) ++ l')(V := (l\<^isub>0 ++ l) V) = l\<^isub>0 ++ l'(V := l V)"
-    by(simp add:ext_iff map_add_def)
+    by(simp add:fun_eq_iff map_add_def)
   with red_reds.BlockRedNone[OF IH' _ unass] l'V show ?case
     by(simp add: map_add_def)
 next
@@ -327,11 +327,11 @@ next
   have IH: "\<And>l\<^isub>0. P \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
     and l'V: "l' V = Some v" and unass: "\<not> assigned V e" by fact+
   have "l\<^isub>0(V := None) ++ l(V := None) = (l\<^isub>0 ++ l)(V := None)"
-    by(simp add:ext_iff map_add_def)
+    by(simp add:fun_eq_iff map_add_def)
   hence IH': "P \<turnstile> \<langle>e,(h, (l\<^isub>0++l)(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0(V := None) ++ l')\<rangle>"
     using IH[of "l\<^isub>0(V := None)"] by simp
   have "(l\<^isub>0(V := None) ++ l')(V := (l\<^isub>0 ++ l) V) = l\<^isub>0 ++ l'(V := l V)"
-    by(simp add:ext_iff map_add_def)
+    by(simp add:fun_eq_iff map_add_def)
   with red_reds.BlockRedSome[OF IH' _ unass] l'V show ?case
     by(simp add:map_add_def)
 next

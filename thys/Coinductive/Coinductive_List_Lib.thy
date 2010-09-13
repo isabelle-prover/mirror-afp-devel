@@ -4029,7 +4029,7 @@ proof -
   also have "fst \<circ> (\<lambda>(x, y). (x, y + k)) = fst" 
     by(simp add: o_def split_def)
   also have "(\<lambda>(x, y). y \<in> A) \<circ> (\<lambda>(x, y). (x, y + k)) = (\<lambda>(x, y). y \<in> {n. n + k \<in> A})"
-    by(simp add: ext_iff)
+    by(simp add: fun_eq_iff)
   also note lsublist_def[symmetric]
   finally show ?thesis using len by simp
 qed

@@ -334,7 +334,7 @@ subsubsection {* Count *}
 	lemma count_ne_remove: "\<lbrakk> x ~= t\<rbrakk> \<Longrightarrow> count S x = count (S-{#t#}) x"
 	  by (auto)
   lemma mset_empty_count[simp]: "(\<forall>p. count M p = 0) = (M={#})"
-    by (auto simp add: multiset_ext_iff)
+    by (auto simp add: multiset_eq_iff)
 
 subsubsection {* Union, difference and intersection *}
 
@@ -373,7 +373,7 @@ subsubsection {* Union, difference and intersection *}
     hence "count (S+T) t = count (S-{#t#}+T) t + 1" by auto
     hence "count (S+T-{#t#}) t = count (S-{#t#}+T) t" by (simp)
     moreover have "ALL x. x~=t \<longrightarrow> count (S+T-{#t#}) x = count (S-{#t#}+T) x" by auto
-    ultimately show ?thesis by (auto simp add: union_ac iff add: multiset_ext_iff)
+    ultimately show ?thesis by (auto simp add: union_ac iff add: multiset_eq_iff)
   qed
 
   lemma mset_diff_union_cancel[simp]: "t :# S \<Longrightarrow> (S - {#t#}) + {#t#} = S"
@@ -402,17 +402,17 @@ subsubsection {* Union, difference and intersection *}
     assume A: "~(a :# B)"
     hence "count ({#a#}-B) a = count ({#a#}) a" by auto
     moreover have "ALL e . e~=a \<longrightarrow> count ({#a#}-B) e = count ({#a#}) e" by auto
-    ultimately show ?thesis by (auto simp add: multiset_ext_iff)
+    ultimately show ?thesis by (auto simp add: multiset_eq_iff)
   qed
 
 	lemma union_diff_assoc_se: "t :# B \<Longrightarrow> (A+B)-{#t#} = A + (B-{#t#})"
-	  by (auto iff add: multiset_ext_iff)
+	  by (auto iff add: multiset_eq_iff)
   (*lemma union_diff_assoc_se2: "t :# A \<Longrightarrow> (A+B)-{#t#} = (A-{#t#}) + B"
-    by (auto iff add: multiset_ext_iff)
+    by (auto iff add: multiset_eq_iff)
   lemmas union_diff_assoc_se = union_diff_assoc_se1 union_diff_assoc_se2*)
 
 	lemma union_diff_assoc: "C-B={#} \<Longrightarrow> (A+B)-C = A + (B-C)"
-	  by (simp add: multiset_ext_iff)
+	  by (simp add: multiset_eq_iff)
 
   lemma mset_union_1_elem1[simp]: "({#a#} = M+{#b#}) = (a=b & M={#})" proof
     assume A: "{#a#} = M+{#b#}"

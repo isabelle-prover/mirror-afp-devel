@@ -42,7 +42,7 @@ begin
 
 lemma [simp]:
   "(label0 = (\<lambda> x . if atom x then some else none)) = (atom0 = atom)";
-  apply (simp add: ext_iff label0_def);
+  apply (simp add: fun_eq_iff label0_def);
   by auto;
 
 definition
@@ -264,7 +264,7 @@ theorem [simp]:
   apply (simp add: mem_def simp_eq_emptyset inf_fun_eq inf_bool_eq); 
   apply clarify;
   apply (simp add: simp_set_function);
-  apply (simp_all add: ext_iff link0_def label0_def simp_set_function);
+  apply (simp_all add: fun_eq_iff link0_def label0_def simp_set_function);
   done;
 
 theorem [simp]:
@@ -320,7 +320,7 @@ lemma exists_or:
 
 lemma [simp]:
   "(- grd (step (dgr_demonic ClassicMark_rel))) init = {}";
-  apply (unfold ext_iff);
+  apply (unfold fun_eq_iff);
   apply (unfold fun_Compl_def);
   apply simp;
   apply (unfold dgr_demonic_def);
@@ -336,7 +336,7 @@ lemma [simp]:
 
 lemma [simp]:
   "(- grd (step (dgr_demonic ClassicMark_rel))) loop = {}";
-  apply (unfold ext_iff);
+  apply (unfold fun_eq_iff);
   apply (unfold fun_Compl_def);
   apply simp;
   apply (unfold dgr_demonic_def);

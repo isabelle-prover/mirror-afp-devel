@@ -382,7 +382,7 @@ lemma measure_additive: assumes ms: "measure_space M"
   shows "measure M (a \<union> b) = measure M a + measure M b"
 (*<*)proof -
   have "(a \<union> b) = (\<Union>i. trivial_series2 a b i)"
-  proof (rule set_ext)
+  proof (rule set_eqI)
     fix x
     {
       assume "x \<in> a \<union> b"

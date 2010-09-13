@@ -212,7 +212,7 @@ done
 
 lemma unfold_rtrancl2:
  "R^* = Id Un (R O R^*)"
-apply (rule set_ext)
+apply (rule set_eqI)
 apply (simp)
 apply (rule iffI)
  apply (erule rtrancl_induct)

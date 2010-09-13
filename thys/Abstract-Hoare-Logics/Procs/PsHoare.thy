@@ -195,7 +195,7 @@ apply (rule MGT_lemma);
 apply(rule allI)
 apply(unfold MGT_def)
 apply(rule hoare.ConjE[OF MGT_CALL])
-apply(simp add:MGT_def ext_iff)
+apply(simp add:MGT_def fun_eq_iff)
 done
 
 end

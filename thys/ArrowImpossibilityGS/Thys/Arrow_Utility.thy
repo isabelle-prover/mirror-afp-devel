@@ -241,7 +241,7 @@ next
   next
     case False
     have "D = {i. b \<cdot>< ?P i}"
-      by (rule set_ext) (simp add:`i \<notin> D`, insert insert, blast)
+      by (rule set_eqI) (simp add:`i \<notin> D`, insert insert, blast)
     moreover have "Extreme ?P b"
       using `?E P` by (simp add:extreme_def)
     moreover have "b \<cdot>< F ?P"

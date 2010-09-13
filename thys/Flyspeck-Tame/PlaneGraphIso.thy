@@ -661,7 +661,7 @@ apply(rule iffI)
 apply clarsimp
 apply(rename_tac a b aa ba)
 apply(rule iffI)
- apply (clarsimp simp:ext_iff)
+ apply (clarsimp simp:fun_eq_iff)
  apply(erule_tac x = aa in allE)
  apply (simp add:map_add_def)
 apply (clarsimp simp:dom_map_of_conv_image_fst)
@@ -699,7 +699,7 @@ done
 lemma merge_correct:
   "\<forall>I I'. oneone I \<longrightarrow> oneone I' \<longrightarrow> test I' I
   \<longrightarrow> map_of(merge I' I) = map_of I ++ map_of I'"
-apply(simp add:test_def merge_def help1 ext_iff map_add_def restrict_map_def split:option.split)
+apply(simp add:test_def merge_def help1 fun_eq_iff map_add_def restrict_map_def split:option.split)
 apply fastsimp
 done
 

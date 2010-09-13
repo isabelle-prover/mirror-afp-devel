@@ -757,7 +757,7 @@ proof -
   have "dom l\<^isub>3 \<subseteq> {this} \<union> set pns"
     using Reds_dom_lcl[OF wwf body] wt l\<^isub>2' set_take_subset by force
   hence eql\<^isub>2: "override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns) = l\<^isub>2"
-    by(fastsimp simp add:map_add_def override_on_def ext_iff)
+    by(fastsimp simp add:map_add_def override_on_def fun_eq_iff)
   have "P \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<rightarrow>* \<langle>(addr a)\<bullet>M(es),s\<^isub>1\<rangle>" by(rule CallRedsObj)(rule assms(2))
   also have "P \<turnstile> \<langle>(addr a)\<bullet>M(es),s\<^isub>1\<rangle> \<rightarrow>*
                  \<langle>(addr a)\<bullet>M(map Val vs),(h\<^isub>2,l\<^isub>2)\<rangle>"
@@ -1191,7 +1191,7 @@ qed simp_all
 
 lemma eval_closed_lcl_unchanged:
   "\<lbrakk> P \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<langle>e',(h',l')\<rangle>; fv e = {} \<rbrakk> \<Longrightarrow> l' = l"
-(*<*)by(fastsimp dest:eval_notfree_unchanged simp add:ext_iff [where 'b="val option"])(*>*)
+(*<*)by(fastsimp dest:eval_notfree_unchanged simp add:fun_eq_iff [where 'b="val option"])(*>*)
 
 
 lemma list_eval_Throw: 

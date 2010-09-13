@@ -3006,7 +3006,7 @@ lemma subsetbdd_set_of_bv:
   and "nfa_is_node N q"
   shows "set_of_bv (bdd_lookup (subsetbdd (fst N) q (nfa_emptybdd (length q))) ws) = (\<Union>i\<in>set_of_bv q. set_of_bv (bdd_lookup (fst N ! i) ws))"
   (is "set_of_bv ?q = _")
-proof (simp only: set_ext_iff, rule allI)
+proof (simp only: set_eq_iff, rule allI)
   fix x :: nat
   from assms have "bdd_all (nfa_is_node N) (subsetbdd (fst N) q (nfa_emptybdd (length q)))"
     by (simp add: wf_nfa_def bdd_all_is_node_subsetbdd)
@@ -3044,7 +3044,7 @@ proof -
     by (simp add: subsetbdd_set_of_bv)
   also from assms have "\<dots> = (\<Union>i\<in>set_of_bv q.  set_of_bv (bdd_lookup (quantify_bdd v (fst N ! i)) w))" by (auto simp: quantify_nfa_def split_beta nfa_is_node_def set_of_bv_def)
   also have "\<dots> = (\<Union>i\<in>set_of_bv q. \<Union>b. set_of_bv (bdd_lookup (fst N ! i) (insertl v b w)))"
-  proof (simp only: set_ext_iff, rule allI)
+  proof (simp only: set_eq_iff, rule allI)
     fix x
     have "x \<in> (\<Union>i\<in>set_of_bv q. set_of_bv (bdd_lookup (quantify_bdd v (fst N ! i)) w)) = (\<exists>i\<in>set_of_bv q. x \<in> set_of_bv (bdd_lookup (quantify_bdd v (fst N ! i)) w))" by simp
     also have "\<dots> = ({i. i \<in> set_of_bv q \<and> x \<in> set_of_bv (bdd_lookup (quantify_bdd v (fst N ! i)) w)} \<noteq> {})" by auto
@@ -3125,7 +3125,7 @@ next
     by (simp add: steps_append)
   also have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_steps N q (insertll v (butlast bs @ [last bs]) (xs @ [x]))))" by (auto simp: insertll_append)
   also have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_steps N q (insertll v bs (xs @ [x]))))"
-  proof (rule set_ext)
+  proof (rule set_eqI)
     fix xa
     have "(xa \<in> (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_steps N q (insertll v (butlast bs @ [last bs]) (xs @ [x]))))) =
       (\<exists>bs \<in> {x. length x = Suc (length xs)}. bs \<noteq> [] \<and> xa \<in> set_of_bv (nfa_steps N q (insertll v (butlast bs @ [last bs]) (xs @ [x]))))" by auto

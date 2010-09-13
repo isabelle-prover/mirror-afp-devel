@@ -41,7 +41,7 @@ lemma injIncLevel: "inj incLevel"
   done
   
 lemma treeEquation: "tree subs gamma = insert (0,gamma) (UN delta:subs gamma . incLevel ` tree subs delta)"
-  apply(rule set_ext)
+  apply(rule set_eqI)
   apply(simp add: split_paired_all)
   apply(case_tac a)
    apply(force simp add: tree0Eq incLevel_def)

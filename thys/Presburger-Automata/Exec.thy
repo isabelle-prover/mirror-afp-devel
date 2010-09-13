@@ -9,7 +9,7 @@ begin
 declare gen_dfs.simps [code]
 
 lemma [code_unfold]: "op \<longrightarrow> = (\<lambda>P. op \<or> (\<not> P))"
-  by (simp add: ext_iff)
+  by (simp add: fun_eq_iff)
 
 lemma "\<forall>x. (\<exists>xa. int xa - int x = 5) \<or> (\<forall>xa xb. \<not> 6 \<le> int xb \<longrightarrow> int xb + (6 * int xa - int x) = 0 \<longrightarrow> int xa = 1)"
 proof -

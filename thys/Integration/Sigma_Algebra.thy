@@ -170,7 +170,7 @@ proof -
 
     txt {*Intermediate facts that do not solve any subgoals yet are established this way.*}
 
-  proof (rule set_ext)
+  proof (rule set_eqI)
 
     txt {*The  $\isacommand {proof}$ command may also take one explicit method
       as an argument like the single rule application in this instance.*}

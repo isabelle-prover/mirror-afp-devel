@@ -108,11 +108,11 @@ by(simp add: finfun_mem_def le_finfun_def le_bool_def)
 lemma finfun_subset_refl [simp]: "A \<subseteq>\<^isub>f A"
   by fast
 
-lemma finfun_set_ext: "(!!x. (x \<in>\<^isub>f A) = (x \<in>\<^isub>f B)) \<Longrightarrow> A = B"
-by(simp add: expand_finfun_eq finfun_mem_def ext_iff)
+lemma finfun_set_eqI: "(!!x. (x \<in>\<^isub>f A) = (x \<in>\<^isub>f B)) \<Longrightarrow> A = B"
+by(simp add: expand_finfun_eq finfun_mem_def fun_eq_iff)
 
 lemma finfun_subset_antisym [intro!]: "A \<subseteq>\<^isub>f B ==> B \<subseteq>\<^isub>f A ==> A = B"
-  by (iprover intro: finfun_set_ext finfun_subsetD)
+  by (iprover intro: finfun_set_eqI finfun_subsetD)
 
 lemma finfun_Compl_iff [simp]: "(c \<in>\<^isub>f -A) = (\<not> c \<in>\<^isub>f A)"
 by (simp add: finfun_mem_def finfun_Compl_def bool_Compl_def)

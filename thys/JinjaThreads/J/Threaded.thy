@@ -372,8 +372,8 @@ proof -
     thus ?case by(auto intro: expr_locks_sync_ok)
   next
     case RedCallExternal thus ?case
-      by(auto simp add: ext_iff contains_insync_conv contains_insyncs_conv finfun_upd_apply ta_upd_simps elim!: red_external.cases)
-  qed(fastsimp simp add: ext_iff contains_insync_conv contains_insyncs_conv finfun_upd_apply ta_upd_simps)+
+      by(auto simp add: fun_eq_iff contains_insync_conv contains_insyncs_conv finfun_upd_apply ta_upd_simps elim!: red_external.cases)
+  qed(fastsimp simp add: fun_eq_iff contains_insync_conv contains_insyncs_conv finfun_upd_apply ta_upd_simps)+
   hence "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk>
         \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0 + (int \<circ> expr_locks e) ad) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_locks e'"
     and "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk>
@@ -573,7 +573,7 @@ proof -
 	    by(auto dest: lock_okD1)
 	  moreover note lock_actions_ok_has_locks_upd_locks_eq_has_locks[OF lao tt''[symmetric]]
 	  ultimately have "has_locks ((redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)\<^sub>f l) t'' = 0"
-	    by(auto simp add: ext_iff)
+	    by(auto simp add: fun_eq_iff)
 	  with elel ls' ln'' show ?thesis by(auto)
 	next
 	  case (Some a)
@@ -585,7 +585,7 @@ proof -
 	  with ts't'' have e'': "E = e''" and x'': "X = x''"
 	    and ln'': "ln'' = LN" by(simp_all)
 	  with lock_actions_ok_has_locks_upd_locks_eq_has_locks[OF lao tt''[symmetric]] IH ls'
-	  show ?thesis by(clarsimp simp add: redT_updLs_def ext_iff)
+	  show ?thesis by(clarsimp simp add: redT_updLs_def fun_eq_iff)
 	qed
       qed
     qed

@@ -1370,7 +1370,7 @@ proof (rule allI, rule allI, rule allI)
   fix n x y show "nat_to_pr n (c_pair x y) = nat_to_pr (s1_1 n x) y"
   proof -
     have "(\<lambda> y. (nat_to_pr n) (c_pair x y)) = nat_to_pr (s1_1 n x)" by (rule s1_1_th)
-    then show ?thesis by (simp add: ext_iff)
+    then show ?thesis by (simp add: fun_eq_iff)
   qed
 qed
 

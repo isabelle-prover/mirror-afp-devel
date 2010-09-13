@@ -236,7 +236,7 @@ lemma bsok_simps [simp]:
   and bsoks_simps [simp]:
   "bsoks [] n = True"
   "bsoks (e # es) n = (bsok e n \<and> bsoks es n)"
-by(auto simp add: bsok_def bsoks_def ext_iff)
+by(auto simp add: bsok_def bsoks_def fun_eq_iff)
 
 lemma call1_callE:
   assumes "call1 (obj\<bullet>M(pns)) = \<lfloor>(a, M', vs)\<rfloor>"

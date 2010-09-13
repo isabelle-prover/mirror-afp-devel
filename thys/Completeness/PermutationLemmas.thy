@@ -174,7 +174,7 @@ lemma count_count[symmetric]: "count x A = Multiset.count (multiset_of_list A) x
 
 lemma perm_multiset: "A <~~> B = (multiset_of_list A = multiset_of_list B)"
   apply(simp add: perm_count_conv)
-  apply(simp add: multiset_ext_iff)
+  apply(simp add: multiset_eq_iff)
   apply(simp add: count_count)
   done
 

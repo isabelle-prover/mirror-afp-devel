@@ -100,7 +100,7 @@ lemma LCons_preserve [quot_preserve]:
   assumes "Quotient R Abs Rep"
   shows "(Rep ---> (lmap Rep) ---> (lmap Abs)) LCons = LCons"
 using Quotient_abs_rep[OF assms]
-by(simp add: ext_iff lmap_compose[symmetric] o_def del: lmap_compose)
+by(simp add: fun_eq_iff lmap_compose[symmetric] o_def del: lmap_compose)
 
 lemma LCons_respect [quot_respect]:
   "(R ===> llist_all2 R ===> llist_all2 R) LCons LCons"
@@ -120,7 +120,7 @@ lemma lmap_preserve [quot_preserve]:
   shows "((abs1 ---> rep2) ---> (lmap rep1) ---> (lmap abs2)) lmap = lmap"
   and   "((abs1 ---> id) ---> lmap rep1 ---> id) lmap = lmap"
 using Quotient_abs_rep[OF a] Quotient_abs_rep[OF b]
-by(simp_all add: ext_iff lmap_compose[symmetric] o_def del: lmap_compose)
+by(simp_all add: fun_eq_iff lmap_compose[symmetric] o_def del: lmap_compose)
 
 lemma lmap_respect [quot_respect]:
   shows "((R1 ===> R2) ===> (llist_all2 R1) ===> llist_all2 R2) lmap lmap"
@@ -150,7 +150,7 @@ lemma llist_all2_preserve [quot_preserve]:
   assumes "Quotient R Abs Rep"
   shows "((Abs ---> Abs ---> id) ---> lmap Rep ---> lmap Rep ---> id) llist_all2 = llist_all2"
 using Quotient_abs_rep[OF assms]
-by(simp add: ext_iff llist_all2_lmap1 llist_all2_lmap2)
+by(simp add: fun_eq_iff llist_all2_lmap1 llist_all2_lmap2)
 
 lemma llist_all2_eq [id_simps]: "llist_all2 (op =) = (op =)"
 proof(intro ext iffI)

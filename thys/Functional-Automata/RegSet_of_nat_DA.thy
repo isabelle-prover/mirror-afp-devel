@@ -210,7 +210,7 @@ done
 lemma regset_below:
  "[| bounded d k; i < k; j < k |] ==>
   regset d i j k = {xs. deltas d xs i = j}"
-apply (rule set_ext)
+apply (rule set_eqI)
 apply (simp add: regset_spec)
 apply (blast dest: trace_below in_set_butlastD)
 done

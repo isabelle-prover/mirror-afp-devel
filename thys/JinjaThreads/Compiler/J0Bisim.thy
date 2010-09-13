@@ -334,7 +334,7 @@ next
   from IH[OF ic red'] obtain ee' vo' 
     where icl: "inline_call ee' exp = exp'" "x'' = fun_upd x V voo"
     and red'': "P,t \<turnstile> \<langle>ee,(h, empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', empty)\<rangle>" by blast
-  from `x'' = fun_upd x V voo` have "x'' V = voo" by(simp add: ext_iff)
+  from `x'' = fun_upd x V voo` have "x'' V = voo" by(simp add: fun_eq_iff)
   with icl red'' `E' = {V:ty=x'' V; exp'}` `x' = fun_upd x'' V (x V)` red'
   show ?case by(auto simp del: fun_upd_apply)
 next

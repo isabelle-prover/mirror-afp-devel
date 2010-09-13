@@ -348,7 +348,7 @@ and "P\<^isub>1 \<turnstile>\<^sub>1 \<langle>es,(h\<^isub>0,ls\<^isub>0)\<rangl
   (is "_ \<Longrightarrow> (\<And>C M pc ws xa es' vs frs I.
                   PROP ?Ps es h\<^isub>0 ls\<^isub>0 fs h\<^isub>1 ls\<^isub>1 C M pc ws xa es' vs frs I)")
 proof (induct rule:eval\<^isub>1_evals\<^isub>1_inducts)
-  case New\<^isub>1 thus ?case by (clarsimp simp add:blank_def ext_iff)
+  case New\<^isub>1 thus ?case by (clarsimp simp add:blank_def fun_eq_iff)
 next
   case NewFail\<^isub>1 thus ?case by(auto simp: handle_def pcs_def)
 next

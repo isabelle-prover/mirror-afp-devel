@@ -59,7 +59,7 @@ unfolding check_types_def by(auto simp add: list_all_iff mem_def)
 
 lemma wf_jvm_prog_code [code]:
   "wf_jvm_prog = wf_jvm_prog\<^isub>k"
-  by (simp add: ext_iff jvm_kildall_correct)
+  by (simp add: fun_eq_iff jvm_kildall_correct)
 
 ML {* @{code wf_jvm_prog} *}
 

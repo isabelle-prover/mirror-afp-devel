@@ -1746,7 +1746,7 @@ lemma freq_mergeSibling:
           else if c = sibling t a then 0
           else freq t c)"
 by (induct t a rule: mergeSibling_induct_consistent)
-   (auto simp: ext_iff)
+   (auto simp: fun_eq_iff)
 
 lemma weight_mergeSibling [simp]:
 "weight (mergeSibling t a) = weight t"
