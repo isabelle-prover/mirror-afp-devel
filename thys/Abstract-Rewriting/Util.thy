@@ -135,7 +135,7 @@ lemma flat_map_aux_conv: "flat_map_aux f xs ys = rev ys @ concat(map f xs)"
 
 definition flat_map where "flat_map f xs \<equiv> flat_map_aux f xs []"
 
-text {* {const flat_map_aux} is no longer needed. *}
+text {* @{const flat_map_aux} is no longer needed. *}
 hide_const flat_map_aux 
 
 lemma flat_map_concat_map_conv[simp]: "flat_map f xs = concat(map f xs)"
