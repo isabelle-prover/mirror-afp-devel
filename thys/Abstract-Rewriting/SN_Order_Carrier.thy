@@ -2,6 +2,7 @@
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
                  Rene Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  Christian Sternagel and Rene Thiemann
+    License:     LGPL
 *)
 
 (*

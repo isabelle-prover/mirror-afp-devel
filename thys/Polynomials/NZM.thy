@@ -1,12 +1,12 @@
 (*  Title:       Executable multivariate polynomials
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
                  Rene Thiemann       <rene.thiemann@uibk.ac.at>
-    Maintainer:  Christian Sternagel and René Thiemann
-    License:	 LGPL
+    Maintainer:  Christian Sternagel and Rene Thiemann
+    License:     LGPL
 *)
 
 (*
-Copyright 2009 Christian Sternagel, René Thiemann
+Copyright 2009 Christian Sternagel, René Thiemann, Sarah Winkler, Harald Zankl
 
 This file is part of IsaFoR/CeTA.
 
@@ -63,7 +63,6 @@ next
   show ?thesis using False a b
     by (simp add: b False poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_ge.simps check_poly_weak_mono_discrete_def, auto)
 qed
-
 
 
 end
