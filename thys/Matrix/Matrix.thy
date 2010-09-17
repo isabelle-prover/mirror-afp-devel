@@ -25,7 +25,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Matrices *}
 
 theory Matrix
-imports "../Abstract-Rewriting/Abstract_Rewriting" "../Polynomials/SN_Orders"
+imports "../Abstract-Rewriting/Abstract_Rewriting" "../Abstract-Rewriting/SN_Orders"
 begin
 
 text {*
