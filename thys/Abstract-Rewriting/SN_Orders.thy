@@ -2,7 +2,6 @@
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
                  René Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  Christian Sternagel and René Thiemann
-    License:	 LGPL
 *)
 
 (*
@@ -26,7 +25,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* SN\_Orders *}
 
 theory SN_Orders
-imports "../Abstract-Rewriting/Abstract_Rewriting"
+imports Abstract_Rewriting
 begin
 
 text {*

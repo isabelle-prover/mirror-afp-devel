@@ -2,7 +2,6 @@
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
                  Rene Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  Christian Sternagel and Rene Thiemann
-    License:	 LGPL
 *)
 
 (*
@@ -54,8 +53,8 @@ end
 definition nat_mono :: "nat \<Rightarrow> bool" where "nat_mono x \<equiv> x \<noteq> 0"
 
 interpretation nat_SN: SN_strict_mono_ordered_semiring_1 1 "op > :: nat \<Rightarrow> nat \<Rightarrow> bool" nat_mono
-proof (unfold_locales, auto simp: nat_mono_def)
-  show "SN {(x,y). (y :: nat) < x}" (is "SN ?gt")
+proof (unfold_locales)
+  have "SN {(x,y). (y :: nat) < x}" (is "SN ?gt")
   proof (rule ccontr, unfold SN_defs, clarify)
     fix x f
     assume steps: "\<forall> i. (f i, f (Suc i)) \<in> ?gt"
@@ -71,7 +70,8 @@ proof (unfold_locales, auto simp: nat_mono_def)
     hence "f (Suc (f 0)) + Suc (f 0) \<le> f 0" by blast
     thus False by auto
   qed
-qed
+  thus "SN {(x,y). (ge y (0 :: nat)) \<and> y < x}" by auto
+qed (auto simp: nat_mono_def)
 
 instantiation nat :: poly_carrier 
 begin 
@@ -79,7 +79,7 @@ instance ..
 end
 
 interpretation nat_poly: poly_order_carrier 1 "op > :: nat \<Rightarrow> nat \<Rightarrow> bool" True discrete
-proof (unfold_locales, (auto simp: field_simps power_strict_mono)[3])
+proof (unfold_locales)
   fix x y :: nat
   assume ge: "ge x y"
   obtain k where k: "x - y = k" by auto
@@ -90,7 +90,7 @@ proof (unfold_locales, (auto simp: field_simps power_strict_mono)[3])
       by (induct k, auto)
     finally show "x = (op + 1 ^^ k) y" .
   qed
-qed
+qed (auto simp: field_simps power_strict_mono)
       
 
 
@@ -117,8 +117,8 @@ instance ..
 end
 
 interpretation int_SN: SN_strict_mono_ordered_semiring_1 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" int_mono
-proof (unfold_locales, auto simp: mult_strict_left_mono int_mono_def)
-  show "SN {(x,y). 0 \<le> y \<and> (y :: int) < x}" (is "SN ?gt")
+proof (unfold_locales)
+  show "SN {(x,y). (ge y 0) \<and> (y :: int) < x}" (is "SN ?gt")
   proof (rule ccontr, unfold SN_defs, clarify)
     fix x f
     assume steps: "\<forall> i. (f i, f (Suc i)) \<in> ?gt"
@@ -126,10 +126,10 @@ proof (unfold_locales, auto simp: mult_strict_left_mono int_mono_def)
     proof 
       fix i
       show "f i + int i \<le> f 0"
-      proof (induct i, simp)
+      proof (induct i)
 	case (Suc i)
 	with spec[OF steps, of i] show ?case by auto
-      qed
+      qed simp
     qed
     have contra: "\<forall> i. int (Suc i) \<le> f 0" 
     proof
@@ -147,10 +147,10 @@ proof (unfold_locales, auto simp: mult_strict_left_mono int_mono_def)
       with spec[OF contra, of n] show False by auto
     qed
   qed
-qed
+qed (auto simp: mult_strict_left_mono int_mono_def)
 
 interpretation int_poly: poly_order_carrier 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" True discrete
-proof (unfold_locales, (auto simp: field_simps power_strict_mono)[3])
+proof (unfold_locales)
   fix x y :: int
   assume ge: "ge x y"
   then obtain k where k: "x - y = k" and kp: "0 \<le> k" by auto
@@ -162,7 +162,7 @@ proof (unfold_locales, (auto simp: field_simps power_strict_mono)[3])
       by (induct nk, auto)
     finally show "x = (op + 1 ^^ nk) y" .
   qed
-qed
+qed (auto simp: field_simps power_strict_mono)
 
 
 
@@ -260,9 +260,13 @@ lemma rat_interpretation: assumes dpos: "\<delta> > 0" and default: "\<delta> \<
 proof -
   from dpos default have defz: "0 \<le> def" by auto
   show ?thesis
-  proof (unfold_locales, (auto simp: rat_gt_def dpos default defz)[5], simp, rule rat_gt_SN[OF dpos], simp add: rat_mono_def)
+  proof (unfold_locales)
+    show "SN {(x,y). (ge y 0) \<and> rat_gt \<delta> x y}"
+      by simp (rule rat_gt_SN[OF dpos])
+  next
     fix x y z :: rat
-    assume x: "1 \<le> x" and yz: "rat_gt \<delta> y z"
+    assume "rat_mono x" and yz: "rat_gt \<delta> y z"
+    hence x: "1 \<le> x" unfolding rat_mono_def by simp
     have "\<exists> d > 0. rat_gt \<delta> = (\<lambda> x y. d \<le> x - y)" 
       by (rule exI[of _ \<delta>], auto simp: dpos rat_gt_def)
     from this obtain d where d: "0 < d" and rat: "rat_gt \<delta> = (\<lambda> x y. d \<le> x - y)" by auto
@@ -282,7 +286,7 @@ proof -
       finally 
       show "d \<le> x * y - x * z" by auto
     qed
-  qed
+  qed (auto simp: rat_gt_def dpos default defz)
 qed
 
 lemma rat_poly: assumes dpos: "\<delta> > 0" and default: "\<delta> \<le> def"
@@ -310,9 +314,7 @@ proof -
     thus "\<exists> k. x = (op + 1 ^^ k) y" by simp
   qed
   show ?thesis
-  proof(unfold_locales, 
-      rule times_gt_mono, simp, simp, 
-      rule gt_imp_ge, simp)
+  proof(unfold_locales)
     fix x y :: rat and n :: nat
     assume one: "1 \<le> \<delta>" and gt: "rat_gt \<delta> x y" and y: "ge y 0" and n: "1 \<le> n"
     then obtain p where n: "n = Suc p" and x: "ge x 1" and y2: "0 \<le> y" and xy: "ge x y" by (cases n, auto simp: rat_gt_def)
@@ -329,7 +331,8 @@ proof -
     fix x y :: rat
     assume False
     thus "\<exists> k. x = (op + 1 ^^ k) y" by simp
-  qed
+  qed (rule times_gt_mono, simp, simp, 
+      rule gt_imp_ge, simp)
 qed
 
 
