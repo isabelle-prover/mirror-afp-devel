@@ -24,7 +24,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 header {* Matrices *}
 
-theory Matrix imports "../Abstract-Rewriting/AbstractRewriting"
+theory Matrix imports "../Abstract-Rewriting/Abstract_Rewriting"
 begin
 
 text {*
