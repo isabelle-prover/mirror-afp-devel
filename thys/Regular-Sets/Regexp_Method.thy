@@ -26,14 +26,13 @@ by (rule Relation_Interpretation.soundness)
 lemmas regexp_reify = rel_of_regexp.simps rel_eq.simps
 lemmas regexp_unfold = trancl_unfold_left subset_Un_eq
 
-code_reflect Regexp
-  datatypes rexp = Zero | One | Atom | Plus | Times | Star
-  and nat = "0::nat" | Suc
-  functions check_eqv
-
-declare check_eqv_def[code del] (* code is already generated *)
-
 method_setup regexp = {*
+let
+  val regexp_conv = Code_Runtime.static_holds_conv @{theory}
+  [@{const_name Zero}, @{const_name One}, @{const_name Atom}, @{const_name Plus},
+   @{const_name Times}, @{const_name Star}, 
+   @{const_name check_eqv}, @{const_name Trueprop}]
+in
   Scan.succeed (fn ctxt =>
     SIMPLE_METHOD' (
       (K (TRY (Local_Defs.unfold_tac ctxt @{thms regexp_unfold}))
@@ -41,8 +40,10 @@ method_setup regexp = {*
         @{thms regexp_reify} NONE
       THEN' rtac @{thm rel_eqI}
       THEN' CONVERSION (Conv.params_conv (~1) 
-        (K (Conv.concl_conv (~1) eval_oracle)) ctxt)
-      THEN' rtac TrueI))) *}
+        (K (Conv.concl_conv (~1) regexp_conv)) ctxt)
+      THEN' rtac TrueI)))
+end
+*}
 "Decides relation equalities via regular expressions"
 
 text {* Example: *}
