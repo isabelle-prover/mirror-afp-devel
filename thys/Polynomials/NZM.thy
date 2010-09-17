@@ -1,12 +1,12 @@
 (*  Title:       Executable multivariate polynomials
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
                  Rene Thiemann       <rene.thiemann@uibk.ac.at>
-    Maintainer:  Christian Sternagel and Rene Thiemann
+    Maintainer:  Christian Sternagel and René Thiemann
     License:	 LGPL
 *)
 
 (*
-Copyright 2009 Christian Sternagel, René Thiemann, Sarah Winkler, Harald Zankl
+Copyright 2009 Christian Sternagel, René Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -26,7 +26,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Monotonicity criteria of Neurauter, Zankl, and Middeldorp *}
 
 theory NZM
-imports SN_Order_Carrier Polynomial
+imports "../Abstract-Rewriting/SN_Order_Carrier" Polynomial
 begin
 
 text {* 

@@ -1,12 +1,12 @@
 (*  Title:       Executable multivariate polynomials
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
-                 Ren√\<copyright> Thiemann       <rene.thiemann@uibk.ac.at>
-    Maintainer:  Christian Sternagel and Ren√\<copyright> Thiemann
+                 Rene Thiemann       <rene.thiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel and Ren√© Thiemann
     License:	 LGPL
 *)
 
 (*
-Copyright 2010 Christian Sternagel, Ren√\<copyright> Thiemann
+Copyright 2010 Christian Sternagel, Ren√© Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -22,10 +22,11 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
+
 header {* Polynomials *}
 
 theory Polynomial
-imports SN_Orders
+imports "../Abstract-Rewriting/SN_Orders"
 begin
 
 subsection {*
