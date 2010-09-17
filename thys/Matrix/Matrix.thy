@@ -1,12 +1,11 @@
 (*  Title:       Executable Matrix Operations on Matrices of Arbitrary Dimensions
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
                  Rene Thiemann       <rene.thiemann@uibk.ac.at>
-    Maintainer:  Christian Sternagel and Ren√\<copyright> Thiemann
+    Maintainer:  Christian Sternagel and Ren√É\<copyright> Thiemann
 *)
 
-
 (*
-Copyright 2010 Christian Sternagel, Ren√\<copyright> Thiemann
+Copyright 2010 Christian Sternagel, Ren√© Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -25,7 +24,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 header {* Matrices *}
 
-theory Matrix imports Util "../Abstract-Rewriting/AbstractRewriting"
+theory Matrix imports "../Abstract-Rewriting/AbstractRewriting"
 begin
 
 text {*
