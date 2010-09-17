@@ -26,7 +26,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* SN\_Orders *}
 
 theory SN_Orders
-imports "../Abstract-Rewriting/AbstractRewriting"
+imports "../Abstract-Rewriting/Abstract_Rewriting"
 begin
 
 text {*

@@ -23,7 +23,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
 header {* Abstract Rewrite Systems *}
-theory AbstractRewriting
+theory Abstract_Rewriting
 imports Main Util
 begin
 

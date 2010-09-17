@@ -24,7 +24,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 header {* Matrix Carrier *}
 
-theory MatrixCarrier imports Matrix Rat
+theory Matrix_Carrier imports Matrix Rat
 begin
 
 text {*

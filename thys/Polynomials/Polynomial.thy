@@ -25,8 +25,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Polynomials *}
 
 theory Polynomial
-imports SN_Orders Util
-
+imports SN_Orders
 begin
 
 subsection {*

@@ -1,2 +1,2 @@
-use_thys ["AbstractRewriting"]; 
+use_thys ["Abstract_Rewriting"]; 
 
