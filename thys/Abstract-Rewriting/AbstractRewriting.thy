@@ -24,7 +24,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 header {* Abstract Rewrite Systems *}
 theory AbstractRewriting
-imports Main
+imports Main Util
 begin
 
 text {*
@@ -689,8 +689,6 @@ proof -
  with `x = z` show ?thesis by simp
 qed
 
-(* Continue here *)
-
 lemma CR_iff_meet_subset_join: "CR r = (r\<^sup>\<up> \<subseteq> r\<^sup>\<down>)"
 proof
  assume "CR r" show "r\<^sup>\<up> \<subseteq> r\<^sup>\<down>"
@@ -942,29 +940,23 @@ proof -
       join_def[symmetric] by (rule `s\<^sup>\<up> \<subseteq> s\<^sup>\<down>`)
 qed
 
-(* Only used locally *)
-primrec
-  T :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a iseq"
-where
-  "T f x 0 = x" |
-  "T f x (Suc n) = f (T f x n)" 
-
 lemma SN_imp_minimal:
-  assumes "SN r"
-  shows "\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z,y) \<in> r \<longrightarrow> y \<notin> Q)"
+  assumes "SN A"
+  shows "\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z, y) \<in> A \<longrightarrow> y \<notin> Q)"
 proof (rule ccontr)
-  assume "\<not>(\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z,y) \<in> r \<longrightarrow> y \<notin> Q))"
-  then obtain Q x where "x \<in> Q" and "\<forall>z\<in>Q. \<exists>y. (z,y) \<in> r \<and> y \<in> Q" by auto
-  hence "\<forall>z. \<exists>y. z \<in> Q \<longrightarrow> (z,y) \<in> r \<and> y \<in> Q" by auto
-  hence "\<exists>f. \<forall>x. x \<in> Q \<longrightarrow> (x,f x) \<in> r \<and> f x \<in> Q" by (rule choice)
-  then obtain f where a:"\<forall>x. x \<in> Q \<longrightarrow> (x,f x) \<in> r \<and> f x \<in> Q" (is "\<forall>x. ?P x") by best
-  let ?S = "\<lambda>i. T f x i"
+  assume "\<not> (\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z, y) \<in> A \<longrightarrow> y \<notin> Q))"
+  then obtain Q x where "x \<in> Q" and "\<forall>z\<in>Q. \<exists>y. (z, y) \<in> A \<and> y \<in> Q" by auto
+  hence "\<forall>z. \<exists>y. z \<in> Q \<longrightarrow> (z, y) \<in> A \<and> y \<in> Q" by auto
+  hence "\<exists>f. \<forall>x. x \<in> Q \<longrightarrow> (x, f x) \<in> A \<and> f x \<in> Q" by (rule choice)
+  then obtain f where a:"\<forall>x. x \<in> Q \<longrightarrow> (x,f x) \<in> A \<and> f x \<in> Q" (is "\<forall>x. ?P x") by best
+  let ?S = "\<lambda>i. (f ^^ i) x"
   have "?S 0 = x" by simp
-  have "\<forall>i. (?S i,?S(Suc i)) \<in> r \<and> ?S(Suc i) \<in> Q"
+  have "\<forall>i. (?S i, ?S (Suc i)) \<in> A \<and> ?S (Suc i) \<in> Q"
   proof
-    fix i show "(?S i,?S(Suc i)) \<in> r \<and> ?S(Suc i) \<in> Q" by (induct i) (auto simp:`x \<in> Q` a)
+    fix i show "(?S i, ?S (Suc i)) \<in> A \<and> ?S (Suc i) \<in> Q"
+      by (induct i) (auto simp: `x \<in> Q` a)
   qed
-  with `?S 0 = x` have "\<exists>S. S 0 = x \<and> (\<forall>i. (S i,S(Suc i)) \<in> r)" by fast
+  with `?S 0 = x` have "\<exists>S. S 0 = x \<and> (\<forall>i. (S i, S (Suc i)) \<in> A)" by fast
   with assms show False by auto
 qed
 
@@ -977,7 +969,7 @@ proof (rule ccontr)
   hence "\<forall>z. \<exists>y. z \<in> Q \<longrightarrow> (z,y) \<in> r \<and> y \<in> Q" by auto
   hence "\<exists>f. \<forall>x. x \<in> Q \<longrightarrow> (x,f x) \<in> r \<and> f x \<in> Q" by (rule choice)
   then obtain f where a: "\<forall>x. x \<in> Q \<longrightarrow> (x,f x) \<in> r \<and> f x \<in> Q" (is "\<forall>x. ?P x") by best
-  let ?S = "\<lambda>i. T f x i"
+  let ?S = "\<lambda>i. (f ^^ i) x"
   have "?S 0 = x" by simp
   have "\<forall>i. (?S i,?S(Suc i)) \<in> r \<and> ?S(Suc i) \<in> Q"
   proof
@@ -986,8 +978,6 @@ proof (rule ccontr)
   with `?S 0 = x` have "\<exists>S. S 0 = x \<and> (\<forall>i. (S i,S(Suc i)) \<in> r)" by fast
   with assms show False by auto
 qed
-
-hide_const T
 
 lemma minimal_imp_wf:
   assumes "\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z,y) \<in> r \<longrightarrow> y \<notin> Q)"
@@ -1169,23 +1159,23 @@ proof (intro allI impI)
   qed
 qed
  
-lemma SN_pow_imp_SN: assumes "SN (R^^Suc n)" shows "SN R"
+lemma SN_pow_imp_SN: assumes "SN (A^^Suc n)" shows "SN A"
 proof (rule ccontr)
-  assume "\<not> SN R"
-  then obtain S::"'a iseq" where "\<forall>i. (S i,S(Suc i)) \<in> R" unfolding SN_defs by auto
+  assume "\<not> SN A"
+  then obtain S where "\<forall>i. (S i, S(Suc i)) \<in> A" unfolding SN_defs by auto
   from iseq_imp_condensed_iseq[OF this]
-    have step: "\<And>i. (S i,S(i+(Suc n))) \<in> R^^Suc n" by force
-  let ?T = "\<lambda>i. S(i*(Suc n))"
-  have "\<forall>i. (?T i,?T(Suc i)) \<in> R^^Suc n"
+    have step: "\<And>i. (S i, S (i + (Suc n))) \<in> A^^Suc n" by force
+  let ?T = "\<lambda>i. S (i * (Suc n))"
+  have "\<forall>i. (?T i, ?T (Suc i)) \<in> A^^Suc n"
   proof
-    fix i show "(?T i,?T(Suc i)) \<in> R^^Suc n" unfolding mult_Suc
-      using step[where i="i*Suc n"] unfolding add_commute by simp
+    fix i show "(?T i, ?T (Suc i)) \<in> A^^Suc n" unfolding mult_Suc
+      using step[of "i * Suc n"] unfolding add_commute .
   qed
-  hence "\<not> SN(R^^Suc n)" unfolding SN_defs by best
+  hence "\<not> SN (A^^Suc n)" unfolding SN_defs by best
   with assms show False by simp
 qed
 
-(* TODO: move to Main.thy? *)
+(* TODO: move to Isabelle Library? *)
 lemma pow_Suc_subset_trancl: "R^^(Suc n) \<subseteq> R^+"
 using trancl_power[of _ R] by blast
 
@@ -1196,34 +1186,35 @@ lemma SN_imp_SN_pow: assumes "SN R" shows "SN(R^^Suc n)"
 lemma SN_pow: "SN R \<longleftrightarrow> SN(R ^^ Suc n)"
   by (rule iffI,rule SN_imp_SN_pow,assumption,rule SN_pow_imp_SN,assumption)
 
-lemma SN_elt_imp_SN_elt_trancl: assumes "SN_elt R t" shows "SN_elt (R^+) t"
+lemma SN_elt_imp_SN_elt_trancl: assumes "SN_elt A t" shows "SN_elt (A^+) t"
 using assms proof (rule contrapos_pp)
-  let ?R = "SN_rel R R"
-  assume "\<not> SN_elt (R^+) t"
-  then obtain S :: "'a iseq" where "S 0 = t" and S: "\<forall>i. (S i,S(Suc i)) \<in> R^+"
+  let ?A = "SN_rel A A"
+  assume "\<not> SN_elt (A^+) t"
+  then obtain S where "S 0 = t" and S: "\<forall>i. (S i, S(Suc i)) \<in> A^+"
     unfolding SN_elt_def by auto
-  have "SN ?R" by (rule SN_SN_rel_idemp)
-  hence "SN(?R^+)" by (rule SN_imp_SN_trancl)
-  have "\<forall>i. (t,S i) \<in> R^*"
+  have "SN ?A" by (rule SN_SN_rel_idemp)
+  hence "SN (?A^+)" by (rule SN_imp_SN_trancl)
+  have "\<forall>i. (t, S i) \<in> A^*"
   proof
-    fix i show "(t,S i) \<in> R^*"
+    fix i show "(t, S i) \<in> A^*"
     proof (induct i)
       case 0 show ?case unfolding `S 0 = t` by simp
     next
       case (Suc i)
-      from S have "(S i,S(Suc i)) \<in> R^+" by simp
+      from S have "(S i, S(Suc i)) \<in> A^+" by simp
       with Suc show ?case by auto
     qed
   qed
-  with assms have "\<forall>i. SN_elt R (S i)" using steps_preserve_SN_elt[of t _ R]
-    by auto
-  with S have "\<forall>i. (S i,S(Suc i)) \<in> ?R^+" unfolding SN_rel_trancl_simp unfolding SN_rel_def
-    by auto
-  hence "\<not> SN_elt (?R^+) t" unfolding `S 0 = t`[symmetric] unfolding SN_defs by auto
-  with `SN(?R^+)` have "False" unfolding SN_defs by simp
-  thus "\<not> SN_elt R t" by simp
+  with assms have "\<forall>i. SN_elt A (S i)"
+    using steps_preserve_SN_elt[of t _ A] by auto
+  with S have "\<forall>i. (S i, S (Suc i)) \<in> ?A^+"
+    unfolding SN_rel_trancl_simp unfolding SN_rel_def by auto
+  hence "\<not> SN_elt (?A^+) t" unfolding `S 0 = t`[symmetric] unfolding SN_defs by auto
+  with `SN (?A^+)` have "False" unfolding SN_defs by simp
+  thus "\<not> SN_elt A t" by simp
 qed
 
+text {* Restrict an ARS to elements of a given set. *}
 definition
   "restrict" :: "'a ars \<Rightarrow> 'a set \<Rightarrow> 'a ars"
 where
@@ -1533,6 +1524,9 @@ proof -
   thus ?thesis by auto
 qed
 
+
+subsection {* Strong Normalization *}
+
 lemma non_strict_into_strict:
   assumes compat: "NS O S \<subseteq> S"
   and steps: "(s,t) \<in> (NS^*) O S"
@@ -1639,12 +1633,6 @@ proof -
   with `?P ?i` show ?thesis by best
 qed
 
-fun
-  idx :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat"
-where
-  "idx f 0 = 0" |
-  "idx f (Suc i) = Suc (f (idx f i))"
-
 lemma non_strict_ending:
   assumes seq: "\<forall>i. (t i,t(Suc i)) \<in> R \<union> S"
     and comp: "R O S \<subseteq> S"
@@ -1654,7 +1642,7 @@ proof (rule ccontr)
   assume "\<not> ?thesis"
   with seq have "\<forall>j.\<exists>i. i\<ge>j \<and> (t i,t(Suc i)) \<in> S" by blast
   from choice[OF this] obtain f where S_steps: "\<forall>i. i\<le>f i \<and> (t(f i),t(Suc(f i))) \<in> S" ..
-  let ?t = "\<lambda>i. t(idx f i)"
+  let ?t = "\<lambda>i. t (((Suc \<circ> f)^^i) 0)"
   have S_seq: "\<forall>i. (t i,t(Suc(f i))) \<in> S^+"
   proof
     fix i
@@ -1667,8 +1655,6 @@ proof (rule ccontr)
   moreover have "SN_elt (S^+) (?t 0)" using SN_elt_imp_SN_elt_trancl[OF SN] by simp
   ultimately show False unfolding SN_defs by best
 qed
-
-hide_const idx
 
 lemma SN_elt_subset:
   assumes "SN_elt R' x" and "rR' \<subseteq> R'" shows "SN_elt rR' x" unfolding SN_elt_def
@@ -1685,7 +1671,6 @@ proof-
   qed
 qed
 
-
 lemma rtrancl_imp_rel_pow': "(x,y) \<in> R^* \<Longrightarrow> \<exists>n. (x,y) \<in> ((R::'a ars) ^^ n)"
 proof (induct rule: rtrancl_induct)
   case base thus ?case using rel_pow_0_I by best
@@ -1697,7 +1682,7 @@ next
 qed
 
 lemma compat_tr_compat: assumes "NS O S \<subseteq> S" shows "NS^* O S \<subseteq> S"
-  using non_strict_into_strict[where S = S and NS = NS] assms by blast
+using non_strict_into_strict[where S = S and NS = NS] assms by blast
 
 lemma right_comp_S[simp]:
   assumes "(x, y) \<in> S O (S O S^* O NS^* \<union> NS^*)"
@@ -1859,20 +1844,28 @@ qed
 
 lemma SN_empty[simp]: "SN {}" by auto
 
-subsection {* relative rewriting *}
+
+subsection {* Relative Rewriting *}
 
 types 'a rel_ars = "'a ars \<times> 'a ars"
 
-fun rel_step :: "'a rel_ars \<Rightarrow> 'a ars"
-where "rel_step (R,S) = S^* O R O S^*"
+fun
+  rel_step :: "'a rel_ars \<Rightarrow> 'a ars"
+where
+  "rel_step (R, S) = S^* O R O S^*"
 
-definition rel_SN :: "'a rel_ars \<Rightarrow> bool"
-where "rel_SN RS \<equiv> SN (rel_step RS)"
+definition
+  rel_SN :: "'a rel_ars \<Rightarrow> bool"
+where
+  "rel_SN RS \<equiv> SN (rel_step RS)"
 
-fun rel_SN_alt :: "'a rel_ars \<Rightarrow> bool"
-where "rel_SN_alt (R,S) = (\<forall> (f :: nat \<Rightarrow> 'a). (\<forall> i. (f i, f (Suc i)) \<in> R \<union> S) \<longrightarrow> (\<exists> i. \<forall> j \<ge> i. (f j, f (Suc j)) \<notin> R))"
+fun
+  rel_SN_alt :: "'a rel_ars \<Rightarrow> bool"
+where
+  "rel_SN_alt (R, S) = (\<forall>(f::nat \<Rightarrow> 'a).
+    (\<forall>i. (f i, f (Suc i)) \<in> R \<union> S) \<longrightarrow> (\<exists>i. \<forall>j \<ge> i. (f j, f (Suc j)) \<notin> R))"
 
-lemma rel_SN_to_rel_SN_alt : "rel_SN (R,S) \<Longrightarrow> rel_SN_alt (R,S)"
+lemma rel_SN_to_rel_SN_alt: "rel_SN (R, S) \<Longrightarrow> rel_SN_alt (R, S)"
 proof (unfold rel_SN_def)
   assume SN: "SN (rel_step (R,S))"
   show ?thesis
