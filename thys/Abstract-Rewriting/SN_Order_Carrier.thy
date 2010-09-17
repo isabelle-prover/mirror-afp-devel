@@ -1,11 +1,12 @@
-(*  Title:       Executable Matrix Operations on Matrices of Arbitrary Dimensions
+(*  Title:       Executable multivariate polynomials
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
                  Rene Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  Christian Sternagel and Rene Thiemann
+    License:     LGPL
 *)
 
 (*
-Copyright 2010 Christian Sternagel, Rene Thiemann
+Copyright 2010 Christian Sternagel and René Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -22,15 +23,18 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Matrix Carrier *}
+header {* Carriers of Strongly Normalizing Orders *}
 
-theory MatrixCarrier imports Matrix Rat
+theory SN_Order_Carrier
+imports SN_Orders Rat
 begin
 
 text {*
   This theory shows that standard semirings can be used 
-  in combination with matrices, e.g. the naturals, integers,
-  rationals, but also the arctic integers and rationals where
+  in combination with polynomials, e.g. the naturals, integers,
+  rationals.
+  
+  It also contains the arctic integers and rationals where
   0 is -infty, 1 is zero, + is max and * is plus.
 *}
 
@@ -50,9 +54,9 @@ end
 
 definition nat_mono :: "nat \<Rightarrow> bool" where "nat_mono x \<equiv> x \<noteq> 0"
 
-interpretation nat_SN : SN_strict_mono_ordered_semiring_1 1 "op > :: nat \<Rightarrow> nat \<Rightarrow> bool" nat_mono
-proof (unfold_locales, auto simp: nat_mono_def)
-  show "SN {(x,y). (y :: nat) < x}" (is "SN ?gt")
+interpretation nat_SN: SN_strict_mono_ordered_semiring_1 1 "op > :: nat \<Rightarrow> nat \<Rightarrow> bool" nat_mono
+proof (unfold_locales)
+  have "SN {(x,y). (y :: nat) < x}" (is "SN ?gt")
   proof (rule ccontr, unfold SN_defs, clarify)
     fix x f
     assume steps: "\<forall> i. (f i, f (Suc i)) \<in> ?gt"
@@ -68,7 +72,29 @@ proof (unfold_locales, auto simp: nat_mono_def)
     hence "f (Suc (f 0)) + Suc (f 0) \<le> f 0" by blast
     thus False by auto
   qed
-qed
+  thus "SN {(x,y). (ge y (0 :: nat)) \<and> y < x}" by auto
+qed (auto simp: nat_mono_def)
+
+instantiation nat :: poly_carrier 
+begin 
+instance ..
+end
+
+interpretation nat_poly: poly_order_carrier 1 "op > :: nat \<Rightarrow> nat \<Rightarrow> bool" True discrete
+proof (unfold_locales)
+  fix x y :: nat
+  assume ge: "ge x y"
+  obtain k where k: "x - y = k" by auto
+  show "\<exists> k. x = (op + 1 ^^ k) y" 
+  proof (rule exI[of _ k])
+    from ge k have "x = k + y" by simp
+    also have "\<dots> = (op + 1 ^^ k) y" 
+      by (induct k, auto)
+    finally show "x = (op + 1 ^^ k) y" .
+  qed
+qed (auto simp: field_simps power_strict_mono)
+      
+
 
 subsection {* The standard semiring over the integers *}
 
@@ -87,9 +113,14 @@ fun max0_int :: "int \<Rightarrow> int" where "max0_int x = max 0 x"
 instance by (intro_classes, auto)
 end
 
-interpretation int_SN : SN_strict_mono_ordered_semiring_1 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" int_mono
-proof (unfold_locales, auto simp: mult_strict_left_mono int_mono_def)
-  show "SN {(x,y). 0 \<le> y \<and> (y :: int) < x}" (is "SN ?gt")
+instantiation int :: poly_carrier
+begin
+instance ..
+end
+
+interpretation int_SN: SN_strict_mono_ordered_semiring_1 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" int_mono
+proof (unfold_locales)
+  show "SN {(x,y). (ge y 0) \<and> (y :: int) < x}" (is "SN ?gt")
   proof (rule ccontr, unfold SN_defs, clarify)
     fix x f
     assume steps: "\<forall> i. (f i, f (Suc i)) \<in> ?gt"
@@ -97,10 +128,10 @@ proof (unfold_locales, auto simp: mult_strict_left_mono int_mono_def)
     proof 
       fix i
       show "f i + int i \<le> f 0"
-      proof (induct i, simp)
+      proof (induct i)
 	case (Suc i)
 	with spec[OF steps, of i] show ?case by auto
-      qed
+      qed simp
     qed
     have contra: "\<forall> i. int (Suc i) \<le> f 0" 
     proof
@@ -118,7 +149,22 @@ proof (unfold_locales, auto simp: mult_strict_left_mono int_mono_def)
       with spec[OF contra, of n] show False by auto
     qed
   qed
-qed
+qed (auto simp: mult_strict_left_mono int_mono_def)
+
+interpretation int_poly: poly_order_carrier 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" True discrete
+proof (unfold_locales)
+  fix x y :: int
+  assume ge: "ge x y"
+  then obtain k where k: "x - y = k" and kp: "0 \<le> k" by auto
+  then obtain nk where nk: "nk = nat k" and k: "x - y = int nk" by auto
+  show "\<exists> k. x = (op + 1 ^^ k) y"
+  proof (rule exI[of _ nk])
+    from k have "x = int nk + y" by simp
+    also have "\<dots> = (op + 1 ^^ nk) y"
+      by (induct nk, auto)
+    finally show "x = (op + 1 ^^ nk) y" .
+  qed
+qed (auto simp: field_simps power_strict_mono)
 
 
 
@@ -206,14 +252,23 @@ fun max0_rat :: "rat \<Rightarrow> rat" where "max0_rat x = max 0 x"
 instance by (intro_classes, auto)
 end
 
+instantiation rat :: poly_carrier
+begin
+instance ..
+end
+
 lemma rat_interpretation: assumes dpos: "\<delta> > 0" and default: "\<delta> \<le> def"
   shows "SN_strict_mono_ordered_semiring_1 def (rat_gt \<delta>) rat_mono"
 proof -
   from dpos default have defz: "0 \<le> def" by auto
   show ?thesis
-  proof (unfold_locales, (auto simp: rat_gt_def dpos default defz)[5], simp, rule rat_gt_SN[OF dpos], simp add: rat_mono_def)
+  proof (unfold_locales)
+    show "SN {(x,y). (ge y 0) \<and> rat_gt \<delta> x y}"
+      by simp (rule rat_gt_SN[OF dpos])
+  next
     fix x y z :: rat
-    assume x: "1 \<le> x" and yz: "rat_gt \<delta> y z"
+    assume "rat_mono x" and yz: "rat_gt \<delta> y z"
+    hence x: "1 \<le> x" unfolding rat_mono_def by simp
     have "\<exists> d > 0. rat_gt \<delta> = (\<lambda> x y. d \<le> x - y)" 
       by (rule exI[of _ \<delta>], auto simp: dpos rat_gt_def)
     from this obtain d where d: "0 < d" and rat: "rat_gt \<delta> = (\<lambda> x y. d \<le> x - y)" by auto
@@ -233,7 +288,53 @@ proof -
       finally 
       show "d \<le> x * y - x * z" by auto
     qed
+  qed (auto simp: rat_gt_def dpos default defz)
+qed
+
+lemma rat_poly: assumes dpos: "\<delta> > 0" and default: "\<delta> \<le> def"
+  shows "poly_order_carrier def (rat_gt \<delta>) (1 \<le> \<delta>) False"
+proof -
+  from rat_interpretation[OF dpos default] 
+  interpret SN_strict_mono_ordered_semiring_1 "def" "rat_gt \<delta>" rat_mono .
+  interpret poly_order_carrier "def" "rat_gt \<delta>" False False
+  proof(unfold_locales)
+    fix y z x :: rat
+    assume gt: "rat_gt \<delta> y z" and ge: "ge x 1"
+    from ge have ge: "ge x 0" and m: "rat_mono x" unfolding rat_mono_def by auto
+    show "rat_gt \<delta> (y * x) (z * x)"
+      using mono[OF m gt ge] by (auto simp: field_simps)
+  next
+    fix x y :: rat
+    assume gt: "rat_gt \<delta> x y"
+    thus "ge x y" using dpos unfolding rat_gt_def by auto
+  next
+    fix x y :: rat and n :: nat
+    assume False thus "rat_gt \<delta> (x ^ n) (y ^ n)" ..
+  next
+    fix x y :: rat
+    assume False
+    thus "\<exists> k. x = (op + 1 ^^ k) y" by simp
   qed
+  show ?thesis
+  proof(unfold_locales)
+    fix x y :: rat and n :: nat
+    assume one: "1 \<le> \<delta>" and gt: "rat_gt \<delta> x y" and y: "ge y 0" and n: "1 \<le> n"
+    then obtain p where n: "n = Suc p" and x: "ge x 1" and y2: "0 \<le> y" and xy: "ge x y" by (cases n, auto simp: rat_gt_def)
+    show "rat_gt \<delta> (x ^ n) (y ^ n)" 
+    proof (simp only: n, induct p, simp add: gt)
+      case (Suc p)
+      from times_gt_mono[OF this x]
+      have one: "rat_gt \<delta> (x ^ Suc (Suc p)) (x * y ^ Suc p)" by (auto simp: field_simps)
+      also have "ge \<dots>  (y * y ^ Suc p)" 
+        by (rule times_left_mono[OF _ xy], auto simp: zero_le_power[OF y2, of "Suc p", simplified])
+      finally show ?case by auto
+    qed
+  next
+    fix x y :: rat
+    assume False
+    thus "\<exists> k. x = (op + 1 ^^ k) y" by simp
+  qed (rule times_gt_mono, simp, simp, 
+      rule gt_imp_ge, simp)
 qed
 
 
@@ -387,7 +488,7 @@ fun pos_arctic :: "arctic \<Rightarrow> bool"
 where "pos_arctic MinInfty = False"
     | "pos_arctic (Num_arc n) = (0 <= n)"
 
-interpretation arctic_SN : SN_both_mono_ordered_semiring_1 1 gt_arctic pos_arctic
+interpretation arctic_SN: SN_both_mono_ordered_semiring_1 1 gt_arctic pos_arctic
 proof 
   fix x y z :: arctic
   assume "x \<ge> y" and "gt_arctic y z"
@@ -652,7 +753,7 @@ where "weak_gt_arctic_rat _ MinInfty_rat = True"
    |  "weak_gt_arctic_rat MinInfty_rat (Num_arc_rat _) = False"
    |  "weak_gt_arctic_rat (Num_arc_rat x) (Num_arc_rat y) = (x > y)"
 
-interpretation weak_arctic_rat_SN : weak_SN_both_mono_ordered_semiring_1 weak_gt_arctic_rat 1 pos_arctic_rat
+interpretation weak_arctic_rat_SN: weak_SN_both_mono_ordered_semiring_1 weak_gt_arctic_rat 1 pos_arctic_rat
 proof
   fix xys
   assume orient: "\<forall> x y. (x,y) \<in> set xys \<longrightarrow> weak_gt_arctic_rat x y"
