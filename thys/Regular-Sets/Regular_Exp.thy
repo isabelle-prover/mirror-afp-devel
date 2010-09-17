@@ -1,5 +1,4 @@
-(*  ID:         $Id: RegExp.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
