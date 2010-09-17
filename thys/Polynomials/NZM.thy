@@ -2,7 +2,7 @@
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
                  Rene Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  Christian Sternagel and Rene Thiemann
-    License:	 LGPL
+    License:     LGPL
 *)
 
 (*
@@ -26,7 +26,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Monotonicity criteria of Neurauter, Zankl, and Middeldorp *}
 
 theory NZM
-imports SN_Order_Carrier Polynomial
+imports "../Abstract-Rewriting/SN_Order_Carrier" Polynomial
 begin
 
 text {* 
@@ -63,7 +63,6 @@ next
   show ?thesis using False a b
     by (simp add: b False poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_ge.simps check_poly_weak_mono_discrete_def, auto)
 qed
-
 
 
 end

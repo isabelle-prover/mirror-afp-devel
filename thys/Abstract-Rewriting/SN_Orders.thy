@@ -2,11 +2,11 @@
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
                  René Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  Christian Sternagel and René Thiemann
-    License:	 LGPL
+    License:     LGPL
 *)
 
 (*
-Copyright 2010 Christian Sternagel, René Thiemann
+Copyright 2010 Christian Sternagel and René Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -23,10 +23,10 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* SN\_Orders *}
+header {* Strongly Normalizing Orders *}
 
 theory SN_Orders
-imports "../Abstract-Rewriting/AbstractRewriting"
+imports Abstract_Rewriting
 begin
 
 text {*

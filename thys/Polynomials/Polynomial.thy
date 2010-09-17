@@ -1,12 +1,12 @@
 (*  Title:       Executable multivariate polynomials
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
-                 Ren√\<copyright> Thiemann       <rene.thiemann@uibk.ac.at>
-    Maintainer:  Christian Sternagel and Ren√\<copyright> Thiemann
-    License:	 LGPL
+                 Ren√© Thiemann       <rene.thiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel and Ren√© Thiemann
+    License:     LGPL
 *)
 
 (*
-Copyright 2010 Christian Sternagel, Ren√\<copyright> Thiemann
+Copyright 2010 Christian Sternagel, Ren√© Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -22,11 +22,11 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
+
 header {* Polynomials *}
 
 theory Polynomial
-imports SN_Orders Util
-
+imports "../Abstract-Rewriting/SN_Orders"
 begin
 
 subsection {*
@@ -88,7 +88,7 @@ where "[] =m n = (n = [])"
                          | Some (n1,(_,q),n2) \<Rightarrow> p = q \<and> m =m (n1 @ n2))"
 
 lemma eq_monom_refl: "m =m m"
-proof (induct m, simp)
+proof (induct m)
   case (Cons xp m)
   show ?case 
   proof (cases xp)
@@ -96,7 +96,7 @@ proof (induct m, simp)
     show ?thesis
       by (simp add: Pair Cons)
   qed
-qed
+qed simp
 
 definition sum_var_list :: "'v monom \<Rightarrow> 'v \<Rightarrow> nat"
 where "sum_var_list m x \<equiv> listsum (map (\<lambda> (y,c). if x = y then c else 0) m)"
@@ -115,12 +115,12 @@ using assms
 proof (induct m arbitrary: n)
   case Nil
   show ?case 
-  proof (cases n, simp)
+  proof (cases n)
     case (Cons yp nn)
     obtain y p where yp: "yp = (y,p)" by (cases yp, auto)
     with Cons Nil(2)[unfolded monom_inv_def] have p: "0 < p" by auto
     show ?thesis by (simp add: Cons, rule exI[of _ y], simp add: sum_var_list_def yp p)
-  qed
+  qed simp
 next
   case (Cons xp m)
   obtain x p where xp: "xp = (x,p)" by (cases xp, auto)
@@ -176,7 +176,7 @@ lemma eq_monom_trans: assumes m1: "monom_inv m1" and m2: "monom_inv m2" and m3: 
 text {*
 show that equality of monomials implies equal evaluations *}    
 lemma eq_monom: "m =m n \<Longrightarrow> eval_monom \<alpha> m = eval_monom \<alpha> n"
-proof (induct m arbitrary: n, simp)
+proof (induct m arbitrary: n)
   case (Cons xp m) note mCons = this
   show ?case
   proof (cases xp)
@@ -193,7 +193,7 @@ proof (induct m arbitrary: n, simp)
       show ?thesis by (simp add: Pair mCons(1)[OF rec] n field_simps)
     qed
   qed
-qed
+qed simp
 
 text {*
   equality of monomials is also a complete for several carriers, e.g. the naturals, integers, where $x^p = x^q$ implies $p = q$.
@@ -202,20 +202,20 @@ text {*
 lemma eq_monom_inv: 
   fixes m :: "'v monom"
   assumes exp_inject: "\<And> p q :: nat. \<exists> base :: 'a :: poly_carrier. base^p = base^q \<Longrightarrow> p = q" and m: "monom_inv m" and n: "monom_inv n" shows "(m =m n) = (\<forall> \<alpha> :: ('v,'a :: poly_carrier)assign. eval_monom \<alpha> m = eval_monom \<alpha> n)"
-proof(intro iffI allI, rule eq_monom, simp)
+proof(intro iffI allI, rule eq_monom)
   assume "\<forall> \<alpha> :: ('v,'a :: poly_carrier)assign. eval_monom \<alpha> m = eval_monom \<alpha> n"
   with m n show "m =m n"
   proof (induct m arbitrary: n)
     case Nil
     show ?case 
-    proof (cases n, simp)
+    proof (cases n)
       case (Cons yq nn)
       with Nil obtain y q where yq: "yq = (y,q)" and "1 \<le> q" by (cases yq, auto simp: monom_inv_def)
       then obtain qq where q: "q = Suc (qq)" by (cases q, auto)
       from Nil(3) have "1 = eval_monom (\<lambda> x. 0 :: 'a) n" (is "?one = _") by simp
       also have "\<dots> = 0" by (simp add: Cons yq q)
       finally show ?thesis by simp
-    qed
+    qed simp
   next
     case (Cons xp m) note mCons = this
     show ?case
@@ -226,11 +226,11 @@ proof(intro iffI allI, rule eq_monom, simp)
         fix v :: 'a and m :: "'v monom"
         assume "x \<notin> fst ` (set m)"
         hence "eval_monom (?ass v) m = 1"
-        proof (induct m, simp)
+        proof (induct m)
           case (Cons yp m)
           thus ?case 
             by (cases yp, cases "fst yp = x", auto)
-        qed
+        qed simp
       } note ass = this
       from Cons(2)[unfolded Pair] obtain pp where p: "p = Suc pp" and xm: "x \<notin> fst ` (set m)" unfolding monom_inv_def by (cases p, auto)
       from ass[OF xm] have "\<And> v. eval_monom (?ass v) (xp # m) = v * v^pp" by (simp add: Pair p)
@@ -277,7 +277,7 @@ proof(intro iffI allI, rule eq_monom, simp)
       qed
     qed    
   qed
-qed    
+qed simp  
 
 declare eq_monom.simps[simp del]
 
@@ -291,7 +291,7 @@ where "monom_mult [] n = n"
                          | Some (n1,(_,q),n2) \<Rightarrow> (x,p+q) # monom_mult m (n1 @ n2))"
 
 lemma monom_mult_vars: "monom_vars (monom_mult m1 m2) = monom_vars m1 \<union> monom_vars m2"
-proof (induct m1 arbitrary: m2, simp)
+proof (induct m1 arbitrary: m2)
   case (Cons xp m) note mCons = this
   show ?case
   proof (cases xp)
@@ -309,11 +309,13 @@ proof (induct m1 arbitrary: m2, simp)
       show ?thesis by (simp only: rec, simp add: mCons Pair m2)
     qed
   qed
-qed
+qed simp
 
 
 lemma monom_mult_inv: "monom_inv m1 \<Longrightarrow> monom_inv m2 \<Longrightarrow> monom_inv (monom_mult m1 m2)"
-proof (induct m1 arbitrary: m2, simp add: monom_inv_def)
+proof (induct m1 arbitrary: m2)
+  case Nil thus ?case by (simp add: monom_inv_def)
+next
   case (Cons xp m1)
   obtain x p where xp: "xp = (x,p)" by (cases xp) auto
   from xp Cons(2) have m1: "monom_inv m1" and x: "x \<notin> monom_vars m1" and p: "1 \<le> p" by (auto simp: monom_inv_def)
@@ -340,11 +342,11 @@ proof (induct m1 arbitrary: m2, simp add: monom_inv_def)
 qed
 
 lemma monom_mult_inj: assumes m: "monom_inv m" and m1: "monom_inv m1" and m2: "monom_inv m2"
-  shows "monom_mult m m1 =m monom_mult m m2 \<Longrightarrow> m1 =m m2"
-proof (simp add: eq_monom_sum_var_list[OF m1 m2] eq_monom_sum_var_list[OF monom_mult_inv[OF m m1] monom_mult_inv[OF m m2]], intro allI)
-  fix x
+  and eq: "monom_mult m m1 =m monom_mult m m2"
+  shows "m1 =m m2"
+proof -
   {
-    fix n 
+    fix x n 
     have "sum_var_list (monom_mult m n) x = sum_var_list m x + sum_var_list n x"
     proof (induct m arbitrary: n, simp add: sum_var_list_def)
       case (Cons yp m)
@@ -369,15 +371,13 @@ proof (simp add: eq_monom_sum_var_list[OF m1 m2] eq_monom_sum_var_list[OF monom_
       qed
     qed
   } note main = this
-  assume "\<forall> x. sum_var_list (monom_mult m m1) x = sum_var_list (monom_mult m m2) x"
-  from spec[OF this, of x, simplified main]
-  show "sum_var_list m1 x = sum_var_list m2 x"
-    by auto
+  from eq main show ?thesis
+    by  (auto simp: eq_monom_sum_var_list[OF m1 m2] eq_monom_sum_var_list[OF monom_mult_inv[OF m m1] monom_mult_inv[OF m m2]])
 qed
 
 
 lemma monom_mult[simp]: "eval_monom \<alpha> (monom_mult m n) = eval_monom \<alpha> m * eval_monom \<alpha> n"
-proof (induct m arbitrary: n, simp)
+proof (induct m arbitrary: n)
   case (Cons xp m) note mCons = this
   show ?case
   proof (cases xp)
@@ -395,7 +395,7 @@ proof (induct m arbitrary: n, simp)
       show ?thesis by (simp only: rec, simp add: Pair mCons[of "n1 @ n2"] n field_simps power_add)
     qed
   qed
-qed
+qed simp
 
 declare monom_mult.simps[simp del]
 
@@ -440,7 +440,7 @@ abbreviation poly_monoms :: "('v,'a)poly \<Rightarrow> 'v monom set"
   where "poly_monoms p \<equiv> fst ` set p"
 
 lemma poly_add_monoms: "poly_monoms (poly_add p1 p2) \<subseteq> poly_monoms p1 \<union> poly_monoms p2"
-proof (induct p1 arbitrary: p2, simp)
+proof (induct p1 arbitrary: p2)
   case (Cons mc p)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   hence m: "m \<in> poly_monoms (mc # p1)" by auto
@@ -455,11 +455,11 @@ proof (induct p1 arbitrary: p2, simp)
     show ?thesis
       by (simp add: mc Some res, rule subset_trans[OF Cons[of "q1 @ q2"]], auto simp: q)
   qed
-qed 
+qed simp
   
 
 lemma poly_add_inv: "poly_inv p \<Longrightarrow> poly_inv q \<Longrightarrow> poly_inv (poly_add p q)"
-proof (induct p arbitrary: q, simp)
+proof (induct p arbitrary: q)
   case (Cons mc p)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   with Cons(2) have p: "poly_inv p" and m: "monom_inv m" and c: "c \<noteq> 0" and mp: "\<forall> (mm,dd) \<in> set p. (\<not> mm =m m)" unfolding poly_inv_def by auto
@@ -522,12 +522,12 @@ proof (induct p arbitrary: q, simp)
     show ?thesis 
       by (simp add: mc Some res main1, simp add: poly_inv_def m, auto simp: main1[unfolded poly_inv_def] main2)
   qed
-qed
+qed simp
     
 
 
 lemma poly_add[simp]: "eval_poly \<alpha> (poly_add p q) = eval_poly \<alpha> p + eval_poly \<alpha> q"
-proof (induct p arbitrary: q, simp)
+proof (induct p arbitrary: q)
   case (Cons mc p)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   show ?case
@@ -548,7 +548,7 @@ proof (induct p arbitrary: q, simp)
     show ?thesis 
       by (simp add: Cons[of "q1 @ q2"] mc Some res, simp only: q, simp add: eq_monom[OF m'] field_simps, auto simp: field_simps id)
   qed
-qed
+qed simp
 
 declare poly_add.simps[simp del]
 
@@ -557,7 +557,9 @@ where "monom_mult_poly _ [] = []"
     | "monom_mult_poly (m,c) ((m',d) # p) = (if c * d = 0 then monom_mult_poly (m,c) p else (monom_mult m m', c * d) # monom_mult_poly (m,c) p)"
 
 lemma monom_mult_poly_inv: assumes m: "monom_inv m" shows "poly_inv p \<Longrightarrow> poly_inv (monom_mult_poly (m,c) p)"
-proof (induct p, simp add: poly_inv_def)
+proof (induct p)
+  case Nil thus ?case by (simp add: poly_inv_def)
+next
   case (Cons md p)
   obtain m' d where md: "md = (m',d)" by (cases md, auto)
   with Cons(2) have m': "monom_inv m'" and p: "poly_inv p" unfolding poly_inv_def by auto
@@ -587,7 +589,7 @@ lemma monom_mult_poly[simp]: "eval_poly \<alpha> (monom_mult_poly mc p) = eval_m
 proof (cases mc)
   case (Pair m c)
   show ?thesis
-  proof (simp add: Pair, induct p, simp)
+  proof (simp add: Pair, induct p)
     case (Cons nd q)
     obtain n d where nd: "nd = (n,d)" by (cases nd, auto)
     show ?case
@@ -604,7 +606,7 @@ proof (cases mc)
       show ?thesis 
         by (simp add: nd Cons True, simp add: field_simps l) 
     qed
-  qed
+  qed simp
 qed
 
 declare monom_mult_poly.simps[simp del]
@@ -616,7 +618,9 @@ where "poly_mult [] q = []"
 lemma poly_mult_inv: assumes p: "poly_inv p" and q: "poly_inv q"
   shows "poly_inv (poly_mult p q)"
 using p
-proof (induct p, simp add: poly_inv_def)
+proof (induct p)
+  case Nil thus ?case by (simp add: poly_inv_def)
+next
   case (Cons mc p)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   with Cons(2) have m: "monom_inv m" and p: "poly_inv p" unfolding poly_inv_def by auto
@@ -625,11 +629,11 @@ proof (induct p, simp add: poly_inv_def)
 qed
 
 lemma poly_mult[simp]: "eval_poly \<alpha> (poly_mult p q) = eval_poly \<alpha> p * eval_poly \<alpha> q"
-proof (induct p, simp)
+proof (induct p)
   case (Cons mc p)
   thus ?case
     by (simp add: field_simps)
-qed
+qed simp
 
 declare poly_mult.simps[simp del]
 
@@ -721,7 +725,9 @@ where "monom_subst \<sigma> [] = one_poly"
 
 lemma monom_subst_inv: assumes sub: "\<And> x. poly_inv (\<sigma> x)" 
   shows "poly_inv (monom_subst \<sigma> m)"
-proof (induct m, simp add: one_poly_inv)
+proof (induct m)
+  case Nil thus ?case by (simp add: one_poly_inv)
+next
   case (Cons xp m)
   obtain x p where xp: "xp = (x,p)" by (cases xp, auto)
   show ?case by (simp add: xp, rule poly_mult_inv[OF poly_power_inv[OF sub] Cons])
@@ -739,7 +745,9 @@ where "poly_subst \<sigma> [] = zero_poly"
 lemma poly_subst_inv: assumes sub: "\<And> x. poly_inv (\<sigma> x)" and p: "poly_inv p"
   shows "poly_inv (poly_subst \<sigma> p)"
 using p
-proof (induct p, simp add: zero_poly_inv)
+proof (induct p)
+  case Nil thus ?case by (simp add: zero_poly_inv)
+next
   case (Cons mc p)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   with Cons(2) have c: "c \<noteq> 0" and p: "poly_inv p" unfolding poly_inv_def by auto
@@ -754,16 +762,18 @@ lemma poly_subst: "eval_poly \<alpha> (poly_subst \<sigma> p) = eval_poly (\<lam
 lemma eval_poly_subst: 
       assumes eq: "\<And> w. eval_poly \<alpha> (f w) = eval_poly (\<lambda> w. eval_poly \<alpha> (g w)) (q w)"
       shows "eval_poly (\<lambda> w. eval_poly \<alpha> (f w)) p = eval_poly (\<lambda> w. eval_poly \<alpha> (g w)) (poly_subst q p)" 
-proof (induct p, simp add: poly_subst.simps zero_poly_def)
+proof (induct p)
+  case Nil thus ?case by (simp add: poly_subst.simps zero_poly_def)
+next
   case (Cons mc p)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   have id: "eval_monom (\<lambda>w. eval_poly \<alpha> (f w)) m =  eval_monom (\<lambda>v. eval_poly (\<lambda>w. eval_poly \<alpha> (g w)) (q v)) m"
-  proof (induct m, simp)
+  proof (induct m)
     case (Cons wp m)
     obtain w p where wp: "wp = (w,p)" by (cases wp, auto)
     show ?case
       by (simp add: wp Cons eq)
-  qed
+  qed simp
   show ?case
     by (simp add: mc Cons poly_subst.simps id, simp add: field_simps)
 qed
@@ -774,20 +784,22 @@ where "poly_vars_list p = remdups (concat (map (map fst o fst) p))"
 
 (* check whether a variable occurs in p *)
 definition poly_var :: "('v,'a)poly \<Rightarrow> 'v \<Rightarrow> bool"
-where "poly_var p v = (v : set(concat (map (map fst o fst) p)))"
+where "poly_var p v = (v \<in> set (concat (map (map fst o fst) p)))"
 
 lemma poly_vars_list: assumes eq: "\<And> w. w \<in> set (poly_vars_list p) \<Longrightarrow> f w = g w"
   shows "poly_subst f p = poly_subst g p" 
 using eq
-proof (induct p, simp)
+proof (induct p)
   case (Cons mc p)
-  hence rec: "poly_subst f p = poly_subst g p" by(auto simp: poly_vars_list_def)
+  hence rec: "poly_subst f p = poly_subst g p" unfolding poly_vars_list_def by auto
   show ?case
   proof (cases mc)
     case (Pair m c)
-    with Cons(2) have "\<And> w. w \<in> set (map fst m) \<Longrightarrow> f w = g w" by(auto simp: poly_vars_list_def)
+    with Cons(2) have "\<And> w. w \<in> set (map fst m) \<Longrightarrow> f w = g w" unfolding poly_vars_list_def by auto
     hence "monom_subst f m = monom_subst g m"
-    proof (induct m, simp add: monom_subst.simps)
+    proof (induct m)
+      case Nil thus ?case by (simp add: monom_subst.simps)
+    next
       case (Cons wn m)
       hence rec: "monom_subst f m = monom_subst g m" and eq: "f (fst wn) = g (fst wn)" by auto
       show ?case
@@ -798,7 +810,7 @@ proof (induct p, simp)
     qed
     with rec Pair show ?thesis by auto
   qed
-qed
+qed simp
 
 lemma poly_var: assumes pv: "\<not> poly_var p v" and diff: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w"
   shows "poly_subst f p = poly_subst g p"
@@ -833,14 +845,18 @@ using assms unfolding poly_ge_def using ge_trans by blast
 lemma pos_assign_monom: fixes \<alpha> :: "('v,'a :: poly_carrier)assign"
   assumes pos: "pos_assign \<alpha>"
   shows "ge (eval_monom \<alpha> m) 0"
-proof (induct m, simp add: one_ge_zero)
+proof (induct m)
+  case Nil thus ?case by (simp add: one_ge_zero)
+next
   case (Cons xp m)
   show ?case
   proof (cases xp)
     case (Pair x p)
     from pos[unfolded pos_assign_def] have ge: "ge (\<alpha> x) 0" by simp
     have ge: "ge (\<alpha> x ^ p) 0"
-    proof (induct p, simp add: one_ge_zero)
+    proof (induct p)
+      case 0 thus ?case by (simp add: one_ge_zero)
+    next
       case (Suc p)
       from ge_trans[OF times_left_mono[OF ge Suc] times_right_mono[OF ge_refl ge]]
       show ?case by (simp add: field_simps)
@@ -917,12 +933,12 @@ proof (intro allI impI)
     fix vs :: "'v list"
     assume "set vs \<subseteq> set (poly_vars_list p)"
     hence "poly_subst (?fg vs) p \<ge>p poly_subst g p"
-    proof (induct vs, simp)
+    proof (induct vs)
       case (Cons v vs)
       hence subset: "set vs \<subseteq> set (poly_vars_list p)"  and v: "v \<in> set (poly_vars_list p)" by auto
       show ?case
         by (rule poly_ge_trans[OF _ Cons(1)[OF subset]], rule assms[OF v, unfolded poly_weak_mono_def, THEN spec, THEN spec, THEN mp], simp add: ge gz poly_ge_trans[OF ge gz])
-    qed
+    qed simp
   }
   hence one: "poly_subst (?fg (poly_vars_list p)) p \<ge>p poly_subst g p" by simp
   have two: "poly_subst (?fg (poly_vars_list p)) p = poly_subst f p" 
@@ -979,7 +995,9 @@ proof -
   let ?g = "\<lambda> v. eval_poly \<alpha> (g v)"
   have fg: "\<And> v. ?f v \<ge> ?g v" and g: "\<And> v. ?g v \<ge> 0"  using fg g pos unfolding poly_ge_def zero_poly_def by auto
   have "(eval_monom ?f m \<ge> eval_monom ?g m) \<and> (eval_monom ?g m \<ge> 0)" 
-  proof (induct m, simp add: ge_refl one_ge_zero)
+  proof (induct m)
+    case Nil thus ?case by (simp add: ge_refl one_ge_zero)
+  next
     case (Cons vn m)
     show ?case 
     proof (cases vn)
@@ -1023,13 +1041,13 @@ lemma poly_mult_gt_mono:
   fixes q :: "('v,'a)poly"
   assumes gt: "p1 >p p2" and mono: "q \<ge>p one_poly"
   shows "poly_mult p1 q >p poly_mult p2 q"
-proof (unfold poly_gt_def, intro impI allI, simp)
+proof (unfold poly_gt_def, intro impI allI)
   fix \<alpha> :: "('v,'a)assign"
   assume p: "pos_assign \<alpha>"
   with gt have gt: "gt (eval_poly \<alpha> p1) (eval_poly \<alpha> p2)" unfolding poly_gt_def by simp
   from mono p have one: "eval_poly \<alpha> q \<ge> 1" unfolding poly_ge_def one_poly_def by auto
-  show "gt (eval_poly \<alpha> p1 * eval_poly \<alpha> q) (eval_poly \<alpha> p2 * eval_poly \<alpha> q)"
-    using times_gt_mono[OF gt one] .
+  show "gt (eval_poly \<alpha> (poly_mult p1 q)) (eval_poly \<alpha> (poly_mult p2 q))"
+    using times_gt_mono[OF gt one] by simp
 qed
 end
 
@@ -1072,7 +1090,9 @@ proof (induct p arbitrary: q)
   case Nil
   hence "\<forall> (n,d) \<in> set q. ge 0 d" using list_all_iff[of _ q] by auto
   hence "[] \<ge>p q" 
-  proof (induct q, simp add: poly_ge_refl)
+  proof (induct q)
+    case Nil thus ?case by (simp add: poly_ge_refl)
+  next
     case (Cons nd q)
     hence rec: "[] \<ge>p q" by simp
     show ?case
@@ -1080,13 +1100,13 @@ proof (induct p arbitrary: q)
       case (Pair n d)
       with Cons have ge: "ge 0 d" by auto
       show ?thesis 
-      proof (simp add: Pair, unfold poly_ge_def, intro allI impI, simp)
+      proof (simp only: Pair, unfold poly_ge_def, intro allI impI)
         fix \<alpha> :: "('v,'a)assign"
         assume pos: "pos_assign \<alpha>"
         have ge: "ge 0 (eval_monom \<alpha> n * d)"
           using times_right_mono[OF pos_assign_monom[OF pos, of n] ge] by simp
         from rec[unfolded poly_ge_def] pos have ge2: "ge 0 (eval_poly \<alpha> q)" by auto
-        show "ge 0 (eval_monom \<alpha> n * d + eval_poly \<alpha> q)" using ge_trans[OF plus_left_mono[OF ge] plus_right_mono[OF ge2]]
+        show "eval_poly \<alpha> [] \<ge> eval_poly \<alpha> ((n,d) # q)" using ge_trans[OF plus_left_mono[OF ge] plus_right_mono[OF ge2]]
           by simp
       qed
     qed
@@ -1101,13 +1121,13 @@ next
     with Cons(2) have rec: "check_poly_ge p q" and c: "ge c 0" using mc by auto
     from Cons(1)[OF rec] have rec: "p \<ge>p q" .
     show ?thesis 
-    proof (simp add: mc, unfold poly_ge_def, intro allI impI, simp)
+    proof (simp only: mc, unfold poly_ge_def, intro allI impI)
       fix \<alpha> :: "('v,'a)assign"
       assume pos: "pos_assign \<alpha>"
       have ge: "ge (eval_monom \<alpha> m * c) 0"
         using times_right_mono[OF pos_assign_monom[OF pos, of m] c] by simp
       from rec have pq: "eval_poly \<alpha> p \<ge> eval_poly \<alpha> q" unfolding poly_ge_def using pos by auto
-      show "eval_monom \<alpha> m * c + eval_poly \<alpha> p \<ge> eval_poly \<alpha> q"
+      show "eval_poly \<alpha> ((m,c) # p) \<ge> eval_poly \<alpha> q"
         using ge_trans[OF plus_left_mono[OF ge] plus_right_mono[OF pq]] by simp
     qed
   next
@@ -1118,7 +1138,7 @@ next
     from Cons(2) Some mc res have rec: "check_poly_ge p (q1 @ q2)" and c: "ge c d" by auto
     from Cons(1)[OF rec] have p: "p \<ge>p q1 @ q2" .
     show ?thesis
-    proof (simp add: mc, unfold poly_ge_def, intro allI impI)
+    proof (simp only: mc, unfold poly_ge_def, intro allI impI)
       fix \<alpha> :: "('v,'a)assign"
       assume pos: "pos_assign \<alpha>"
       have ge: "ge (eval_monom \<alpha> m * c) (eval_monom \<alpha> m' * d)"
@@ -1155,7 +1175,9 @@ proof (intro allI impI)
       have fg: "\<And> v. f v \<ge>p g v" and g: "\<And> v. g v \<ge>p  zero_poly"  using fg  by auto
       from assms have "\<And> m c. (m,c) \<in> set p \<Longrightarrow> ge c 0" unfolding check_poly_weak_mono_all_def by (auto simp: list_all_iff)
       thus "eval_poly ?f p \<ge> eval_poly ?g p"
-      proof (induct p, simp add: ge_refl)
+      proof (induct p)
+        case Nil thus ?case by (simp add: ge_refl)
+      next
         case (Cons mc p)
         show ?case 
         proof (cases mc)
@@ -1208,7 +1230,7 @@ proof (intro allI impI)
   from assms check_poly_ge have ge: "poly_ge (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p) p" (is "poly_ge ?p1 p") unfolding check_poly_weak_mono_discrete_def by blast
   show "poly_ge (poly_subst f p) (poly_subst g p)"
     unfolding poly_ge_def
-  proof (intro allI impI, simp add: poly_subst)
+  proof (intro allI impI, simp only: poly_subst)
     fix \<alpha> :: "('w,'a)assign"
     let ?fass = "\<lambda> w. eval_poly \<alpha> (f w)"
     let ?gass = "\<lambda> w. eval_poly \<alpha> (g w)"
@@ -1261,14 +1283,12 @@ proof (intro allI impI)
               by (simp only: g', cases "v=w", auto)
           } note g'eval = this
           let ?g'ass = "\<lambda> w. eval_poly \<alpha> (g' w)"
-          from less(3) have g'pos: "pos_assign ?g'ass" unfolding pos_assign_def 
-          proof (simp add: g'eval)
-            have "(1 :: 'a) + eval_poly \<alpha> (g v) \<ge> 1 + 0" 
-              by (rule plus_right_mono, simp add: less(3)[unfolded pos_assign_def])
-            also have "\<dots> = 1" by simp
-            also have "\<dots> \<ge> 0" by (rule one_ge_zero)
-            finally show "(1::'a) + eval_poly \<alpha> (g v) \<ge> 0" .
-          qed
+          have "(1 :: 'a) + eval_poly \<alpha> (g v) \<ge> 1 + 0" 
+            by (rule plus_right_mono, simp add: less(3)[unfolded pos_assign_def])
+          also have "\<dots> = 1" by simp
+          also have "\<dots> \<ge> 0" by (rule one_ge_zero)
+          finally have g'pos: "pos_assign ?g'ass" using less(3) unfolding pos_assign_def 
+            by (simp add: g'eval)
           {
             fix w
             assume "v \<noteq> w"
@@ -1381,7 +1401,7 @@ proof (intro allI impI, clarify)
     show "gt (?e f p) (?e g p)"
       using check1[unfolded check_poly_strict_mono_def, simplified list_ex_iff]
         check2[unfolded check_poly_weak_mono_all_def, simplified list_all_iff, THEN bspec]
-    proof (induct p, simp)
+    proof (induct p)
       case (Cons mc p)
       obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
       show ?case 
@@ -1389,15 +1409,17 @@ proof (intro allI impI, clarify)
         case True
         hence c: "c \<ge> 1" and m: "check_monom_strict_mono power_mono m v" by blast+
         have "gt (eval_poly \<alpha> (monom_subst f m)) (eval_poly \<alpha> (monom_subst g m))" (is "gt ?emf ?emg")
-          by (simp add: monom_subst.simps one_poly_def, rule check_monom_strict_mono[OF m], 
+          by (simp only: monom_subst, rule check_monom_strict_mono[OF m], 
               rule fgv[unfolded poly_gt_def, THEN spec, THEN mp[OF _ pos]], 
               rule fgw[unfolded poly_ge_def zero_poly_def, THEN spec, of v, simplified, THEN spec, THEN mp[OF _ pos]])
         from times_gt_mono[OF this c] have gt: "gt (c * ?emf) (c * ?emg)" by (auto simp: field_simps)
         from Cons(3) have "check_poly_weak_mono_all p" unfolding check_poly_weak_mono_all_def list_all_iff by auto
         from check_poly_weak_mono_all[OF this, unfolded poly_weak_mono_all_def, THEN spec, THEN spec, THEN mp[OF _ fgw2]]
         have ge: "poly_subst f p \<ge>p poly_subst g p" by auto
-        show ?thesis by (simp add: mc poly_subst.simps del: monom_subst, rule compat2[OF plus_gt_left_mono[OF gt]],
+        have "gt (c * eval_poly \<alpha> (monom_subst f m) + eval_poly \<alpha> (poly_subst f p)) (c * eval_poly \<alpha> (monom_subst g m) + eval_poly \<alpha> (poly_subst g p))"
+          by (rule compat2[OF plus_gt_left_mono[OF gt]],
           simp only: add_commute[of "c * ?emg" _], rule plus_left_mono, rule ge[unfolded poly_ge_def, THEN spec, THEN mp[OF _ pos]])
+        thus ?thesis by (simp add: mc poly_subst.simps del: monom_subst)
       next
         case False
         with Cons(2) mc have "\<exists> mc \<in> set p. (\<lambda> (m,c). (c \<ge> 1) \<and> check_monom_strict_mono power_mono m v) mc" by auto
@@ -1406,10 +1428,11 @@ proof (intro allI impI, clarify)
         have "ge (eval_poly \<alpha> (monom_subst f m)) (eval_poly \<alpha> (monom_subst g m))" (is "ge ?emf ?emg")
           using monom_subst_mono[OF pos, of f g] fgw2 by blast
         from times_left_mono[OF c this] have ge: "c * ?emf \<ge> c * ?emg" by (auto simp: field_simps)
-        show ?thesis by (simp add: mc poly_subst.simps del: monom_subst, simp only: field_simps, rule
-           compat2[OF plus_gt_left_mono[OF rec] plus_left_mono[OF ge, simplified add_commute[of "c * ?emf"] add_commute[of "c * ?emg"]]])
+        have "gt (eval_poly \<alpha> (poly_subst f p) + c * eval_poly \<alpha> (monom_subst f m)) (eval_poly \<alpha> (poly_subst g p) + c * eval_poly \<alpha> (monom_subst g m))"
+          by (rule compat2[OF plus_gt_left_mono[OF rec] plus_left_mono[OF ge, simplified add_commute[of "c * ?emf"] add_commute[of "c * ?emg"]]])
+        thus ?thesis by (simp add: mc poly_subst.simps del: monom_subst, simp only: field_simps)
       qed
-    qed
+    qed simp
   qed
 qed     
       
@@ -1444,7 +1467,7 @@ proof (intro allI impI)
   from assms check_poly_gt have gt: "poly_gt (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p) p" (is "poly_gt ?p1 p") unfolding check_poly_strict_mono_discrete_def by blast
   show "poly_gt (poly_subst f p) (poly_subst g p)"
     unfolding poly_gt_def
-  proof (intro allI impI, simp add: poly_subst)
+  proof (intro allI impI, simp only: poly_subst)
     fix \<alpha> :: "('w,'a)assign"
     let ?fass = "\<lambda> w. eval_poly \<alpha> (f w)"
     let ?gass = "\<lambda> w. eval_poly \<alpha> (g w)"
@@ -1491,14 +1514,12 @@ proof (intro allI impI)
             by (simp only: g', cases "v=w", auto)
         } note g'eval = this
         let ?g'ass = "\<lambda> w. eval_poly \<alpha> (g' w)"
-        from less(3) have g'pos: "pos_assign ?g'ass" unfolding pos_assign_def 
-        proof (simp add: g'eval)
-          have "(1 :: 'a) + eval_poly \<alpha> (g v) \<ge> 1 + 0" 
-            by (rule plus_right_mono, simp add: less(3)[unfolded pos_assign_def])
-          also have "\<dots> = 1" by simp
-          also have "\<dots> \<ge> 0" by (rule one_ge_zero)
-          finally show "(1::'a) + eval_poly \<alpha> (g v) \<ge> 0" .
-        qed
+        have "(1 :: 'a) + eval_poly \<alpha> (g v) \<ge> 1 + 0" 
+          by (rule plus_right_mono, simp add: less(3)[unfolded pos_assign_def])
+        also have "\<dots> = 1" by simp
+        also have "\<dots> \<ge> 0" by (rule one_ge_zero)
+        finally have g'pos: "pos_assign ?g'ass" using less(3) unfolding pos_assign_def
+          by (simp add: g'eval)
         {
           fix w
           assume "v \<noteq> w"
@@ -1542,7 +1563,5 @@ next
 qed
       
 end
-
-
 
 end
