@@ -6,7 +6,7 @@
 *)
 
 (*
-Copyright 2010 Christian Sternagel, René Thiemann
+Copyright 2010 Christian Sternagel and René Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -24,6 +24,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
 header {* Abstract Rewrite Systems *}
+
 theory Abstract_Rewriting
 imports Main Util
 begin

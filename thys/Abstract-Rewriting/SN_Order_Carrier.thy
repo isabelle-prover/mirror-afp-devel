@@ -6,7 +6,7 @@
 *)
 
 (*
-Copyright 2010 Christian Sternagel, René Thiemann
+Copyright 2010 Christian Sternagel and René Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -23,9 +23,10 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* SN\_Order\_Carrier *}
+header {* Carriers of Strongly Normalizing Orders *}
 
-theory SN_Order_Carrier imports SN_Orders Rat
+theory SN_Order_Carrier
+imports SN_Orders Rat
 begin
 
 text {*

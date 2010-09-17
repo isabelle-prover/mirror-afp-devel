@@ -1,5 +1,12 @@
+(*  Title:       Abstract Rewriting
+    Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
+                 Rene Thiemann       <rene.tiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel and Rene Thiemann
+    License:     LGPL
+*)
+
 (*
-Copyright 2009 Christian Sternagel, René Thiemann, Sarah Winkler, Harald Zankl
+Copyright 2009 Christian Sternagel and René Thiemann
 
 This file is part of IsaFoR/CeTA.
 

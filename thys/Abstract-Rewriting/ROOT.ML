@@ -1,3 +1,4 @@
+no_document use_thys ["Util"];
 use_thys [
   "Abstract_Rewriting",
   "SN_Orders",
