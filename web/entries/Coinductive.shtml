@@ -39,14 +39,7 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains
-<ul>
-  <li>coinductive natural numbers</li>
-  <li>coinductive lists, i.e. lazy lists or streams, and a library of operations on coinductive lists</li>
-  <li>coinductive terminated lists, i.e. lazy lists with the stop symbol containing data</li>
-  <li>a version of K&ouml;nig's lemma as an application for coinductive lists</li>
-</ul>
-<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
+This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, and a library of operations on coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
         </td></tr>
 
 

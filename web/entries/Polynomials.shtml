@@ -33,7 +33,7 @@
         <td class="data" width="80%">Executable Multivariate Polynomials</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Christian Sternagel and René Thiemann</td></tr>
+        <td class="data"><a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a> and  <a href="http://cl-informatik.uibk.ac.at/~thiemann">Ren&eacute; Thiemann</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-08-10</td></tr>
@@ -41,19 +41,25 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-We define multivariate polynomials over arbitrary (ordered)
-semirings in combination with (executable) operations like addition,
-multiplication,
-and substitution. We also define (weak) monotonicity of polynomials
-and comparison of polynomials where we provide standard estimations
-like absolute positiveness or the more recent
-approach of Neurauter, Zankl, and Middeldorp. Moreover, it is proven
-that strongly normalizing (monotone) orders
-can be lifted to strongly normalizing (monotone) orders over polynomials.
-Our formalization was performed as part of the <a
+
+We define multivariate polynomials over arbitrary (ordered) semirings in
+combination with (executable) operations like addition, multiplication,
+and substitution. We also define (weak) monotonicity of polynomials and
+comparison of polynomials where we provide standard estimations like
+absolute positiveness or the more recent approach of Neurauter, Zankl,
+and Middeldorp. Moreover, it is proven that strongly normalizing
+(monotone) orders can be lifted to strongly normalizing (monotone) orders
+over polynomials. Our formalization was performed as part of the <a
 href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA-system</a>
 which contains several termination techniques. The provided theories have
 been essential to  formalize polynomial interpretations.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2010-09-17]: Moved theories on arbitrary (ordered)
+semirings to Abstract Rewriting.
         </td></tr>
 
 
