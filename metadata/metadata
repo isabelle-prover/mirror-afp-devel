@@ -491,7 +491,7 @@ extra-note = Note: This article is of historical interest only. Lebesgue-style i
 
 [Polynomials]
 title = Executable Multivariate Polynomials
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff> and Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 date = 2010-08-10
 topic = Mathematics/Analysis
 abstract = We define multivariate polynomials over arbitrary (ordered)
