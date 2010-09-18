@@ -250,7 +250,7 @@ definition (in group) lift_gi
   where "lift_gi f gi = (if fst gi then inv (f (snd gi)) else f (snd gi))"
 
 lemma (in group) lift_gi_closed:
-  assumes cl: "f ` gens \<subseteq> carrier G"
+  assumes cl: "f \<in> gens \<rightarrow> carrier G"
       and "snd gi \<in> gens"
   shows "lift_gi f gi \<in> carrier G"
 using assms by (auto simp add:lift_gi_def)
@@ -259,34 +259,32 @@ definition (in group) lift
   where "lift f w = m_concat (map (lift_gi f) w)"
 
 lemma (in group) lift_closed[simp]:
-  assumes cl: "f ` gens \<subseteq> carrier G"
+  assumes cl: "f \<in> gens \<rightarrow> carrier G"
       and "occuring_generators x \<subseteq> gens"
   shows "lift f x \<in> carrier G"
 proof-
   have "set (map (lift_gi f) x) \<subseteq> carrier G"
-    using cl and `occuring_generators x \<subseteq> gens`
-    by (auto simp add:lift_gi_closed occuring_generators_def)
+    using `occuring_generators x \<subseteq> gens`
+    by (auto simp add:lift_gi_closed[OF cl] occuring_generators_def)
   thus "lift f x \<in> carrier G"
     by (auto simp add:lift_def)
 qed
 
 lemma (in group) lift_append[simp]:
-  assumes cl: "f ` gens \<subseteq> carrier G"
+  assumes cl: "f \<in> gens \<rightarrow> carrier G"
       and "occuring_generators x \<subseteq> gens"
       and "occuring_generators y \<subseteq> gens"
   shows "lift f (x @ y) = lift f x \<otimes> lift f y"
 proof-
   from `occuring_generators x \<subseteq> gens`
   have "set (map snd x) \<subseteq> gens" unfolding occuring_generators_def by simp
-  with `image f gens \<subseteq> carrier G`
-  have "set (map (lift_gi f) x) \<subseteq> carrier G"
-    by (induct x)(auto simp add:lift_gi_closed)
+  hence "set (map (lift_gi f) x) \<subseteq> carrier G"
+    by (induct x)(auto simp add:lift_gi_closed[OF cl])
   moreover
   from `occuring_generators y \<subseteq> gens`
   have "set (map snd y) \<subseteq> gens" unfolding occuring_generators_def by simp
-  with `image f gens \<subseteq> carrier G`
-  have "set (map (lift_gi f) y) \<subseteq> carrier G"
-    by (induct y)(auto simp add:lift_gi_closed)
+  hence "set (map (lift_gi f) y) \<subseteq> carrier G"
+    by (induct y)(auto simp add:lift_gi_closed[OF cl])
   ultimately
   show "lift f (x @ y) = lift f x \<otimes> lift f y"
     by (auto simp add:lift_def m_assoc simp del:set_map foldr_append)
@@ -295,7 +293,7 @@ qed
 lemma (in group) lift_cancels_to:
   assumes "cancels_to x y"
       and "occuring_generators x \<subseteq> gens"
-      and cl: "f ` gens \<subseteq> carrier G"
+      and cl: "f \<in> gens \<rightarrow> carrier G"
   shows "lift f x = lift f y"
 using assms
 unfolding cancels_to_def
@@ -334,7 +332,7 @@ proof(induct rule:rtranclp_induct)
     also
     from `occuring_generators [y1] \<subseteq> gens`
     and `occuring_generators [y2] \<subseteq> gens`
-    and cl
+    and cl[THEN funcset_image]
     and `canceling y1 y2`
     have "(lift f [y1] \<otimes> lift f [y2]) = \<one>"
     by (auto simp add:lift_def occuring_generators_def lift_gi_def canceling_def)
@@ -354,7 +352,7 @@ proof(induct rule:rtranclp_induct)
 qed auto
 
 lemma (in group) lift_is_hom:
-  assumes cl: "f ` gens \<subseteq> carrier G"
+  assumes cl: "f \<in> gens \<rightarrow> carrier G"
   shows "lift f \<in> hom \<F>\<^bsub>gens\<^esub> G"
 proof-
   {
@@ -363,7 +361,7 @@ proof-
     hence "set (map snd x) \<subseteq> gens"
       unfolding free_group_def and occuring_generators_def by simp
     hence "lift f x \<in> carrier G"
-     using cl by (induct x, auto simp add:lift_def lift_gi_closed)
+     by (induct x, auto simp add:lift_def lift_gi_closed[OF cl])
   } 
   moreover
   { fix x
@@ -460,7 +458,7 @@ qed
 
 lemma (in group) lift_is_unique:
   assumes "group G"
-  and cl: "f ` gens \<subseteq> carrier G"
+  and cl: "f \<in> gens \<rightarrow> carrier G"
   and "h \<in> hom \<F>\<^bsub>gens\<^esub> G"
   and "\<forall> g \<in> gens. h (insert g) = f g"
   shows "\<forall>x \<in> carrier \<F>\<^bsub>gens\<^esub>. h x = lift f x"
@@ -475,9 +473,9 @@ next
 next
   show "h \<in> hom \<F>\<^bsub>gens\<^esub> G" by fact
 next
-  show "lift f \<in> hom \<F>\<^bsub>gens\<^esub> G" using cl by (rule lift_is_hom)
+  show "lift f \<in> hom \<F>\<^bsub>gens\<^esub> G" by (rule lift_is_hom[OF cl])
 next
-  from `\<forall>g\<in> gens. h (insert g) = f g` and cl
+  from `\<forall>g\<in> gens. h (insert g) = f g` and cl[THEN funcset_image]
   show "\<forall>g\<in> insert ` gens. h g = lift f g"
     by(auto simp add:insert_def lift_def lift_gi_def)
 qed
