@@ -377,78 +377,6 @@ lemma extensional_restrict[simp]:
   "f \<in> extensional A \<Longrightarrow> restrict f A = f"
  by (rule extensionalityI[OF restrict_extensional]) auto
 
-lemma hom_F_C2_Powerset:
-  "\<exists> f. bij_betw f (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
-proof-
-  interpret F: group "\<F>\<^bsub>X\<^esub>" by (rule free_group_is_group)
-  interpret C2: group C2 by (rule C2_is_group)
-  let ?f = "\<lambda>S . restrict (C2.lift S) (carrier \<F>\<^bsub>X\<^esub>)"
-  have "bij_betw ?f (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
-  unfolding bij_betw_def
-  proof
-    show "inj_on ?f (Pow X)"
-    proof(induct rule: inj_onI)
-    case (1 x y)
-      note asm = `?f x = ?f y`
-      show "x=y"
-      proof (rule set_ext)
-        fix a
-        show "(a \<in> x) = (a \<in> y)"
-        proof (cases "a \<in> X")
-          assume "a\<in>X"
-          hence "insert a \<in> (carrier \<F>\<^bsub>X\<^esub>)"
-           by (rule insert_closed)
-          moreover
-          from asm have "?f x (insert a) = ?f y (insert a)" by auto
-          ultimately
-          show "(a \<in> x) = (a \<in> y)"
-            by (simp add:insert_def C2.lift_def C2.lift_gi_def mem_def)
-        next
-          assume "a \<notin> X"
-          with `x \<in> Pow X` and `y \<in> Pow X`          
-          show "(a \<in> x) = (a \<in> y)"
-            by (auto dest!:contra_subsetD)
-        qed
-      qed
-   qed
-  next
-    show "?f ` Pow X = homr \<F>\<^bsub>X\<^esub> C2"
-    proof
-      show "?f ` Pow X \<subseteq> homr \<F>\<^bsub>X\<^esub> C2"
-      proof(rule image_subsetI)
-        fix S assume "S \<in> Pow X"
-        interpret h: group_hom "\<F>\<^bsub>X\<^esub>" C2 "C2.lift S"
-          by unfold_locales (auto intro: C2.lift_is_hom)
-        show "?f S \<in> homr \<F>\<^bsub>X\<^esub> C2"
-          by (rule h.restrict_hom)
-       qed
-    next
-      show "homr \<F>\<^bsub>X\<^esub> C2 \<subseteq> ?f` Pow X"
-      proof
-        fix h
-        assume "h \<in> homr \<F>\<^bsub>X\<^esub> C2"
-        hence hom: "h \<in> hom \<F>\<^bsub>X\<^esub> C2"
-          and extn: "h \<in> extensional (carrier \<F>\<^bsub>X\<^esub>)"
-          unfolding homr_def by auto
-        def f' \<equiv> "\<lambda>g. if g \<in> X then h (FreeGroups.insert g) else False"
-        have agree: "\<forall>g\<in>X. h (FreeGroups.insert g) = f' g"
-          unfolding f'_def by auto
-        have cl: "f' \<in> X \<rightarrow> carrier C2" by simp
-
-        thm C2.lift_is_unique[of f' X h, OF C2_is_group cl hom agree]
-        have "restrict h (carrier \<F>\<^bsub>X\<^esub>) = ?f f'"
-          using C2.lift_is_unique[of f' X h, OF C2_is_group cl hom agree, rule_format]
-          by (rule restrict_ext)
-        hence "h = ?f f'"
-          by (simp add:extensional_restrict[OF extn])
-        moreover have "f' \<subseteq> X" unfolding f'_def by (auto simp add:mem_def)
-        ultimately
-        show "h \<in> ?f ` Pow X" by simp
-     qed
-    qed
-  qed
-  thus ?thesis by auto
-qed
 
 text {*
 A lemma to prove bijectivity by proving the inverse.
@@ -479,6 +407,47 @@ next
   ultimately show "f ` A = B" by auto
 qed
 
+lemma hom_F_C2_Powerset:
+  "\<exists> f. bij_betw f (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
+proof
+  interpret F: group "\<F>\<^bsub>X\<^esub>" by (rule free_group_is_group)
+  interpret C2: group C2 by (rule C2_is_group)
+  let ?f = "\<lambda>S . restrict (C2.lift S) (carrier \<F>\<^bsub>X\<^esub>)"
+  let ?f' = "\<lambda>h . X \<inter> (h \<circ> insert)"
+  show "bij_betw ?f (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
+  proof(induct rule: bij_betw_by_inv[of ?f _ _ ?f'])
+  case 1 show ?case
+    proof
+      fix S assume "S \<in> Pow X"
+      interpret h: group_hom "\<F>\<^bsub>X\<^esub>" C2 "C2.lift S"
+        by unfold_locales (auto intro: C2.lift_is_hom)
+      show "?f S \<in> homr \<F>\<^bsub>X\<^esub> C2"
+        by (rule h.restrict_hom)
+     qed
+  next
+  case 2 show ?case by auto next
+  case (3 S) show ?case
+    proof (induct rule:set_ext)
+      case (1 x) show ?case
+      proof(cases "x \<in> X")
+      case True thus ?thesis using insert_closed[of x X]
+         by (auto simp add:insert_def C2.lift_def C2.lift_gi_def mem_def )
+      next case False thus ?thesis using 3 by auto
+    qed
+  qed
+  next
+  case (4 h)
+    hence hom: "h \<in> hom \<F>\<^bsub>X\<^esub> C2"
+      and extn: "h \<in> extensional (carrier \<F>\<^bsub>X\<^esub>)"
+      unfolding homr_def by auto
+    have "\<forall>x \<in> carrier \<F>\<^bsub>X\<^esub> . h x = group.lift C2 (X \<inter> (h \<circ> FreeGroups.insert)) x"
+     by (rule C2.lift_is_unique[OF C2_is_group _ hom, of "X \<inter> (h \<circ> FreeGroups.insert)"],
+             auto simp add:mem_def)
+    thus ?case
+    by -(rule extensionalityI[OF restrict_extensional extn], auto)
+  qed
+qed
+
 lemma group_iso_betw_hom:
   assumes "group G1" and "group G2"
       and iso: "i \<in> G1 \<cong> G2"
@@ -489,7 +458,8 @@ proof-
   have "inv_into (carrier G1) i \<in> G2 \<cong> G1" by (rule group.iso_sym[OF `group G1` iso])
   hence iso': "?i' \<in> G2 \<cong> G1"
     by (auto simp add:iso_def hom_def G2.m_closed)
-show ?thesis  proof(rule, induct rule: bij_betw_by_inv[of "(\<lambda>h. compose (carrier G1) h i)" _ _ "(\<lambda>h. compose (carrier G2) h ?i')"])
+  show ?thesis
+  proof(rule, induct rule: bij_betw_by_inv[of "(\<lambda>h. compose (carrier G1) h i)" _ _ "(\<lambda>h. compose (carrier G2) h ?i')"])
   case 1
     show ?case
     proof
