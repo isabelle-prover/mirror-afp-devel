@@ -5,6 +5,7 @@ imports
    "UnitGroup"
    "~~/src/HOL/Algebra/IntRing"
    "FreeGroups"
+   C2
 begin
 
 subsection {* The Free Group over the empty set *}
@@ -85,7 +86,7 @@ proof-
   interpret int: group int_group by (rule int.a_group)
 
   def f \<equiv> "\<lambda>(x::unit).(1::int)"
-  have "f ` {()} \<subseteq> carrier int_group"
+  have "f \<in> {()} \<rightarrow> carrier int_group"
     by auto
   hence "int.lift f \<in> hom \<F>\<^bsub>{()}\<^esub> int_group"
     by (rule int.lift_is_hom)
@@ -195,14 +196,10 @@ qed
 
 subsection {* Free Groups over isomorphic sets of generators *}
 
-text {* Free Groups are isomorphic if their set of generators are isomorphic. The
-converse holds as well, but is not shown here. That result could be achieved by
-showing that it holds for free abelian groups @{text "\<int>\<^bsup>gens\<^esup>"},
-which are the abelianization of Free Groups. *}
+text {* Free Groups are isomorphic if their set of generators are isomorphic. *}
 
 definition lift_generator_function :: "('a \<Rightarrow> 'b) \<Rightarrow> (bool \<times> 'a) list \<Rightarrow> (bool \<times> 'b) list"
 where "lift_generator_function f = map (prod_fun id f)"
-
 
 theorem isomorphic_free_groups:
   assumes "bij_betw f gens1 gens2"
@@ -350,5 +347,237 @@ next
           map (prod_fun id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (prod_fun id f) y"
    by auto
 qed (auto intro: free_group_is_group)
+
+subsection {* Bases of isomorphic free groups *}
+
+text {* 
+Isomorphic free groups have bases of same cardinality. Here, this is proven
+only for finite bases. For infinite bases, a lemma such as @{text cardinal_UN_le}
+(which is part of the ZF logic) could be used to show that the free group has the
+same cardinality as the set of generators.
+  *}
+
+text {*
+The proof for the finite case uses the set of of homomorphisms from the free
+group to the group with two elements, as suggested by Christian Sievers. The
+definition of @{term hom} is not suitable for proofs about the cardinality of that
+set, as its definition does not require extensionality. This is amended by the
+following definition:
+*}
+
+definition homr
+  where "homr G H = {h. h \<in> hom G H \<and> h \<in> extensional (carrier G)}"
+
+lemma (in group_hom) restrict_hom[intro!]:
+  shows "restrict h (carrier G) \<in> homr G H"
+  unfolding homr_def and hom_def
+  by (auto)
+
+lemma extensional_restrict[simp]:
+  "f \<in> extensional A \<Longrightarrow> restrict f A = f"
+ by (rule extensionalityI[OF restrict_extensional]) auto
+
+lemma hom_F_C2_Powerset:
+  "\<exists> f. bij_betw f (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
+proof-
+  interpret F: group "\<F>\<^bsub>X\<^esub>" by (rule free_group_is_group)
+  interpret C2: group C2 by (rule C2_is_group)
+  let ?f = "\<lambda>S . restrict (C2.lift S) (carrier \<F>\<^bsub>X\<^esub>)"
+  have "bij_betw ?f (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
+  unfolding bij_betw_def
+  proof
+    show "inj_on ?f (Pow X)"
+    proof(induct rule: inj_onI)
+    case (1 x y)
+      note asm = `?f x = ?f y`
+      show "x=y"
+      proof (rule set_ext)
+        fix a
+        show "(a \<in> x) = (a \<in> y)"
+        proof (cases "a \<in> X")
+          assume "a\<in>X"
+          hence "insert a \<in> (carrier \<F>\<^bsub>X\<^esub>)"
+           by (rule insert_closed)
+          moreover
+          from asm have "?f x (insert a) = ?f y (insert a)" by auto
+          ultimately
+          show "(a \<in> x) = (a \<in> y)"
+            by (simp add:insert_def C2.lift_def C2.lift_gi_def mem_def)
+        next
+          assume "a \<notin> X"
+          with `x \<in> Pow X` and `y \<in> Pow X`          
+          show "(a \<in> x) = (a \<in> y)"
+            by (auto dest!:contra_subsetD)
+        qed
+      qed
+   qed
+  next
+    show "?f ` Pow X = homr \<F>\<^bsub>X\<^esub> C2"
+    proof
+      show "?f ` Pow X \<subseteq> homr \<F>\<^bsub>X\<^esub> C2"
+      proof(rule image_subsetI)
+        fix S assume "S \<in> Pow X"
+        interpret h: group_hom "\<F>\<^bsub>X\<^esub>" C2 "C2.lift S"
+          by unfold_locales (auto intro: C2.lift_is_hom)
+        show "?f S \<in> homr \<F>\<^bsub>X\<^esub> C2"
+          by (rule h.restrict_hom)
+       qed
+    next
+      show "homr \<F>\<^bsub>X\<^esub> C2 \<subseteq> ?f` Pow X"
+      proof
+        fix h
+        assume "h \<in> homr \<F>\<^bsub>X\<^esub> C2"
+        hence hom: "h \<in> hom \<F>\<^bsub>X\<^esub> C2"
+          and extn: "h \<in> extensional (carrier \<F>\<^bsub>X\<^esub>)"
+          unfolding homr_def by auto
+        def f' \<equiv> "\<lambda>g. if g \<in> X then h (FreeGroups.insert g) else False"
+        have agree: "\<forall>g\<in>X. h (FreeGroups.insert g) = f' g"
+          unfolding f'_def by auto
+        have cl: "f' \<in> X \<rightarrow> carrier C2" by simp
+
+        thm C2.lift_is_unique[of f' X h, OF C2_is_group cl hom agree]
+        have "restrict h (carrier \<F>\<^bsub>X\<^esub>) = ?f f'"
+          using C2.lift_is_unique[of f' X h, OF C2_is_group cl hom agree, rule_format]
+          by (rule restrict_ext)
+        hence "h = ?f f'"
+          by (simp add:extensional_restrict[OF extn])
+        moreover have "f' \<subseteq> X" unfolding f'_def by (auto simp add:mem_def)
+        ultimately
+        show "h \<in> ?f ` Pow X" by simp
+     qed
+    qed
+  qed
+  thus ?thesis by auto
+qed
+
+text {*
+A lemma to prove bijectivity by proving the inverse.
+*}
+
+lemma bij_betw_by_inv:
+  assumes "f \<in> A \<rightarrow> B"
+      and "g \<in> B \<rightarrow> A"
+      and g_f: "\<And>x. x\<in>A \<Longrightarrow> g (f x) = x"
+      and f_g: "\<And>y. y\<in>B \<Longrightarrow> f (g y) = y"
+  shows "bij_betw f A B"
+unfolding bij_betw_def
+proof
+  show "inj_on f A"
+  proof(induct rule: inj_onI)
+  case (1 x1 x2)
+    then have "g (f x1) = g (f x2)" by simp
+    then show "x1 = x2" using g_f[OF 1(1)] and g_f[OF 1(2)] by simp
+  qed
+next
+  have "f ` A \<subseteq> B" using `f \<in> A \<rightarrow> B` by auto
+  moreover have "B \<subseteq> f ` A"
+  proof
+    fix y assume "y\<in>B"
+    thus "y \<in> f`A" using f_g[OF `y\<in>B`] and `g \<in> B \<rightarrow> A`
+      by (auto intro: rev_image_eqI[of "g y"])
+  qed
+  ultimately show "f ` A = B" by auto
+qed
+
+lemma group_iso_betw_hom:
+  assumes "group G1" and "group G2"
+      and iso: "i \<in> G1 \<cong> G2"
+  shows   "\<exists> f . bij_betw f (homr G2 H) (homr G1 H)"
+proof-
+  interpret G2: group G2 by (rule `group G2`)
+  let ?i' = "restrict (inv_into (carrier G1) i) (carrier G2)"
+  have "inv_into (carrier G1) i \<in> G2 \<cong> G1" by (rule group.iso_sym[OF `group G1` iso])
+  hence iso': "?i' \<in> G2 \<cong> G1"
+    by (auto simp add:iso_def hom_def G2.m_closed)
+show ?thesis  proof(rule, induct rule: bij_betw_by_inv[of "(\<lambda>h. compose (carrier G1) h i)" _ _ "(\<lambda>h. compose (carrier G2) h ?i')"])
+  case 1
+    show ?case
+    proof
+      fix h assume "h \<in> homr G2 H"
+      hence "compose (carrier G1) h i \<in> hom G1 H"
+        using iso
+        by (auto intro: group.hom_compose[OF `group G1`, of _ G2] simp add:iso_def homr_def)
+      thus "compose (carrier G1) h i \<in> homr G1 H"
+        unfolding homr_def by simp
+     qed
+  next
+  case 2
+    show ?case
+    proof
+      fix h assume "h \<in> homr G1 H"
+      hence "compose (carrier G2) h ?i' \<in> hom G2 H"
+        using iso'
+        by (auto intro: group.hom_compose[OF `group G2`, of _ G1] simp add:iso_def homr_def)
+      thus "compose (carrier G2) h ?i' \<in> homr G2 H"
+        unfolding homr_def by simp
+     qed
+  next
+  case (3 x)
+    hence "compose (carrier G2) (compose (carrier G1) x i) ?i'
+          = compose (carrier G2) x (compose (carrier G2) i ?i')"
+      using iso iso'
+      by (auto intro: compose_assoc[THEN sym]   simp add:iso_def hom_def homr_def)
+    also have "\<dots> = compose (carrier G2) x (\<lambda>y\<in>carrier G2. y)"
+      using iso
+      by (subst compose_id_inv_into, auto simp add:iso_def hom_def bij_betw_def)
+    also have "\<dots> = x"
+      using 3
+      by (auto intro:compose_Id simp add:homr_def)
+    finally
+    show ?case .
+  next
+  case (4 y)
+    hence "compose (carrier G1) (compose (carrier G2) y ?i') i
+          = compose (carrier G1) y (compose (carrier G1) ?i' i)"
+      using iso iso'
+      by (auto intro: compose_assoc[THEN sym] simp add:iso_def hom_def homr_def)
+    also have "\<dots> = compose (carrier G1) y (\<lambda>x\<in>carrier G1. x)"
+      using iso
+      by (subst compose_inv_into_id, auto simp add:iso_def hom_def bij_betw_def)
+    also have "\<dots> = y"
+      using 4
+      by (auto intro:compose_Id simp add:homr_def)
+    finally
+    show ?case .
+  qed
+qed
+
+theorem isomorphic_free_groups_bases_finite:
+  assumes iso: "i \<in> \<F>\<^bsub>X\<^esub> \<cong> \<F>\<^bsub>Y\<^esub>"
+      and finite: "finite X"
+  shows "\<exists>f. bij_betw f X Y"
+proof-
+  obtain f
+    where "bij_betw f (homr \<F>\<^bsub>Y\<^esub> C2) (homr \<F>\<^bsub>X\<^esub> C2)"
+    using group_iso_betw_hom[OF free_group_is_group free_group_is_group iso]
+    by auto
+  moreover
+  obtain g'
+    where "bij_betw g' (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
+    using hom_F_C2_Powerset by auto
+  then obtain g
+    where "bij_betw g (homr (\<F>\<^bsub>X\<^esub>) C2) (Pow X)"
+    by (auto intro: bij_betw_inv_into)
+  moreover
+  obtain h
+    where "bij_betw h (Pow Y) (homr (\<F>\<^bsub>Y\<^esub>) C2)"
+    using hom_F_C2_Powerset by auto
+  ultimately
+  have "bij_betw (g \<circ> f \<circ> h) (Pow Y) (Pow X)"
+    by (auto intro: bij_betw_trans)
+  hence eq_card: "card (Pow Y) = card (Pow X)"
+    by (rule bij_betw_same_card)
+  with finite
+  have "finite (Pow Y)"
+   by -(rule card_ge_0_finite, auto simp add:card_Pow)
+  hence finite': "finite Y" by simp
+
+  with eq_card finite
+  have "card X = card Y"
+   by (auto simp add:card_Pow)
+  with finite finite'
+  show ?thesis
+   by (rule finite_same_card_bij)
+qed
 
 end
