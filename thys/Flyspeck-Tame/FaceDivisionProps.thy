@@ -1,6 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.18 2009-08-27 17:49:29 nipkow Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
-*)
+(*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
 header{*Properties of Face Division*}
 

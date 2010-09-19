@@ -1,6 +1,4 @@
-(*  ID:         $Id: LowerBound.thy,v 1.3 2007-07-20 18:45:57 makarius Exp $
-    Author:     Gertrud Bauer
-*)
+(*  Author:  Gertrud Bauer  *)
 
 header {* Correctness of Lower Bound for Final Graphs *}
 

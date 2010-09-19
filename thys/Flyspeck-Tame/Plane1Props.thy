@@ -1,6 +1,4 @@
-(* ID:         $Id: Plane1Props.thy,v 1.2 2007-08-19 19:17:42 nipkow Exp $
-   Author:     Gertrud Bauer, Tobias Nipkow
-*)
+(*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
 theory Plane1Props
 imports Plane1 PlaneProps Tame

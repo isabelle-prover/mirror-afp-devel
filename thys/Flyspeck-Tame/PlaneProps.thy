@@ -1,6 +1,4 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.13 2009-08-27 17:49:29 nipkow Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
-*)
+(*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
 header "Further Plane Graph Properties"
 

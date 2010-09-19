@@ -1,6 +1,4 @@
-(*  ID:         $Id: GeneratorProps.thy,v 1.10 2008-06-12 06:57:17 lsf37 Exp $
-    Author:     Tobias Nipkow
-*)
+(*  Author:  Tobias Nipkow  *)
 
 header "Properties of Tame Graph Enumeration (1)"
 
