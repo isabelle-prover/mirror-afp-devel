@@ -78,7 +78,7 @@ by Wasserrab et al.
 <!-- entry directory name: -->
 <!--#set var="name" value="InformationFlowSlicing" -->
 <!--#set var="base1" value="HOL/Jinja/Slicing" --> 
-<!--#set var="base2" value="HOL/HRB-Slicing" --> 
+<!--#set var="base2" value="HOL/Jinja/HRB-Slicing" --> 
 
 <!--#set var="binfo1" value="../browser_info/current/${base1}/${name}" -->
 <!--#set var="doc1" value="${binfo1}/document.pdf" -->

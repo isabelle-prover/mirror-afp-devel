@@ -325,6 +325,7 @@ abstract = In this work we formally verify the soundness and precision of a stat
 title = Towards Certified Slicing 
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2008-09-16
+base = HOL/Jinja
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = Slicing is a widely-used technique with applications in e.g. compiler technology and software security. Thus verification of algorithms in these areas is often based on the correctness of slicing, which should ideally be proven independent of concrete programming languages and with the help of well-known verifying techniques such as proof assistants. As a first step in this direction, this contribution presents a framework for dynamic and static intraprocedural slicing based on control flow and program dependence graphs. Abstracting from concrete syntax we base the framework on a graph representation of the program fulfilling certain structural and well-formedness properties.<br><br>The formalization consists of the basic framework (in subdirectory Basic/), the correctness proof for dynamic slicing (in subdirectory Dynamic/), the correctness proof for static intraprocedural slicing (in subdirectory StaticIntra/) and instantiations of the framework with a simple While language (in subdirectory While/) and the sophisticated object-oriented bytecode language of Jinja (in subdirectory JinjaVM/). For more information on the framework, see the TPHOLS 2008 paper by Wasserrab and Lochbihler and the PLAS 2009 paper by Wasserrab et al. 
 
@@ -332,6 +333,7 @@ abstract = Slicing is a widely-used technique with applications in e.g. compiler
 title = Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2009-11-13
+base = HOL/Jinja
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = After verifying <a href="Slicing.shtml">dynamic and static interprocedural slicing</a>, we present a modular framework for static interprocedural slicing. To this end, we formalized the standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together with summary edges as presented by Reps et al. (see FSE 1994). The framework is again modular in the programming language by using an abstract CFG, defined via structural and well-formedness properties. Using a weak simulation between the original and sliced graph, we were able to prove the correctness of static interprocedural slicing. We also instantiate our framework with a simple While language with procedures. This shows that the chosen abstractions are indeed valid. 
 
