@@ -61,7 +61,7 @@ After verifying <a href="Slicing.shtml">dynamic and static interprocedural slici
 <p></p>
 
 <!--#set var="name" value="HRB-Slicing" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/Jinja/Slicing/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
