@@ -1,5 +1,4 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: SetCat.thy,v 1.6 2007-06-13 19:37:50 makarius Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 

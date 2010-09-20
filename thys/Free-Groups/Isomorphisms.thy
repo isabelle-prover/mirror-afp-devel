@@ -212,7 +212,7 @@ proof(rule group_isoI)
 next
   from `bij_betw f gens1 gens2` have "inj_on f gens1" by (auto simp:bij_betw_def)
   show "map (prod_fun id f) ` carrier \<F>\<^bsub>gens1\<^esub> = carrier \<F>\<^bsub>gens2\<^esub>"
-  proof(rule set_ext,rule iffI)
+  proof(rule Set.set_eqI,rule iffI)
     from `bij_betw f gens1 gens2` have "f ` gens1 = gens2" by (auto simp:bij_betw_def)
     fix x :: "(bool \<times> 'b) list"
     assume "x \<in> image (map (prod_fun id f)) (carrier \<F>\<^bsub>gens1\<^esub>)"

@@ -1,5 +1,4 @@
 (*  Title:      Jinja/Common/Value.thy
-    ID:         $Id: Value.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -17,24 +16,17 @@ datatype val
   | Intg int    -- "integer value" 
   | Addr addr   -- "addresses of objects in the heap"
 
-consts
-  the_Intg :: "val \<Rightarrow> int"
-  the_Addr :: "val \<Rightarrow> addr"
-
-primrec
+primrec the_Intg :: "val \<Rightarrow> int" where
   "the_Intg (Intg i) = i"
 
-primrec
+primrec the_Addr :: "val \<Rightarrow> addr" where
   "the_Addr (Addr a) = a"
 
-consts
-  default_val :: "ty \<Rightarrow> val"   -- "default value for all types"
-
-primrec
+primrec default_val :: "ty \<Rightarrow> val"   -- "default value for all types" where
   "default_val Void      = Unit"
-  "default_val Boolean   = Bool False"
-  "default_val Integer   = Intg 0"
-  "default_val NT        = Null"
-  "default_val (Class C) = Null"
+| "default_val Boolean   = Bool False"
+| "default_val Integer   = Intg 0"
+| "default_val NT        = Null"
+| "default_val (Class C) = Null"
 
 end

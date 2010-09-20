@@ -223,8 +223,6 @@ by blast
 
 text{* The main theorem: *}
 
-declare [[max_clauses = 200]]
-
 theorem Ls_can_tile: "i \<le> a \<Longrightarrow> a < 2^n + i \<Longrightarrow> j \<le> b \<Longrightarrow> b < 2^n + j
   \<Longrightarrow> square2 n i j - {(a,b)} : tiling Ls"
 proof(induct n arbitrary: a b i j)

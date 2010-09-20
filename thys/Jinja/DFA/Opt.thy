@@ -10,21 +10,24 @@ header {* \isaheader{More about Options} *}
 
 theory Opt imports Err begin
 
-constdefs
-  le :: "'a ord \<Rightarrow> 'a option ord"
+definition le :: "'a ord \<Rightarrow> 'a option ord"
+where
   "le r o\<^isub>1 o\<^isub>2 \<equiv>
   case o\<^isub>2 of None \<Rightarrow> o\<^isub>1=None | Some y \<Rightarrow> (case o\<^isub>1 of None \<Rightarrow> True | Some x \<Rightarrow> x \<sqsubseteq>\<^sub>r y)"
 
-  opt :: "'a set \<Rightarrow> 'a option set"
+definition opt :: "'a set \<Rightarrow> 'a option set"
+where
   "opt A \<equiv> insert None {Some y |y. y \<in> A}"
 
-  sup :: "'a ebinop \<Rightarrow> 'a option ebinop"
+definition sup :: "'a ebinop \<Rightarrow> 'a option ebinop"
+where
   "sup f o\<^isub>1 o\<^isub>2 \<equiv>  
   case o\<^isub>1 of None \<Rightarrow> OK o\<^isub>2 
            | Some x \<Rightarrow> (case o\<^isub>2 of None \<Rightarrow> OK o\<^isub>1
                                  | Some y \<Rightarrow> (case f x y of Err \<Rightarrow> Err | OK z \<Rightarrow> OK (Some z)))"
 
-  esl :: "'a esl \<Rightarrow> 'a option esl"
+definition esl :: "'a esl \<Rightarrow> 'a option esl"
+where
   "esl \<equiv> \<lambda>(A,r,f). (opt A, le r, sup f)"
 
 

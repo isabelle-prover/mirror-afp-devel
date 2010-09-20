@@ -1,5 +1,4 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Functors.thy,v 1.10 2008-12-30 15:30:12 ballarin Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 
 Functors: Define functors and prove a trivial example.
@@ -50,9 +49,14 @@ locale functor = two_cats +
   and F_preserves_cod: "preserves_cod F"
   and F_preserves_id: "preserves_id F"
   and F_preserves_comp: "preserves_comp F"
-  notes F_axioms =  F_preserves_arrows F_preserves_objects F_preserves_dom 
+begin
+
+lemmas F_axioms = F_preserves_arrows F_preserves_objects F_preserves_dom 
   F_preserves_cod F_preserves_id F_preserves_comp
-  notes func_pred_defs = preserves_dom_def preserves_cod_def preserves_id_def preserves_comp_def
+
+lemmas func_pred_defs = preserves_dom_def preserves_cod_def preserves_id_def preserves_comp_def
+
+end
 
 text {* This gives us nicer notation for asserting that things are functors. *}
 

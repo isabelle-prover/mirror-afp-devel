@@ -99,6 +99,6 @@ by eval
 lemma "qe_dlo(AllQ(AllQ(ExQ (Imp (Atom(Less 1 2)) (And (Atom(Less 1 0)) (Atom(Less 0 2))))))) = TrueF"
 by eval
 
-normal_form "qe_dlo(AllQ (Imp (Atom(Less 0 1)) (Atom(Less 0 2))))"
+value [nbe] "qe_dlo(AllQ (Imp (Atom(Less 0 1)) (Atom(Less 0 2))))"
 
 end

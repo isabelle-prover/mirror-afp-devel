@@ -158,7 +158,7 @@ where [intro]: "!!tl. \<lbrakk> trsys s tl s'; \<tau>move s tl s' \<rbrakk> \<Lo
 declare silent_move.cases [elim]
 
 lemma silent_move_iff: "silent_move = (\<lambda>s s'. (\<exists>tl. trsys s tl s' \<and> \<tau>move s tl s'))"
-by(auto simp add: expand_fun_eq)
+by(auto simp add: fun_eq_iff)
 
 abbreviation silent_moves :: "'s \<Rightarrow> 's \<Rightarrow> bool" ("_ -\<tau>\<rightarrow>* _" [50, 50] 60)
 where "silent_moves == silent_move^**"
@@ -1517,7 +1517,7 @@ by(atomize_elim)(rule bisim[unfolded bisim_compose_def])
 
 lemma bisim_compose_assoc [simp]:
   "(bisim12 \<circ>\<^isub>B bisim23) \<circ>\<^isub>B bisim34 = bisim12 \<circ>\<^isub>B bisim23 \<circ>\<^isub>B bisim34"
-by(auto simp add: expand_fun_eq intro: bisim_composeI)
+by(auto simp add: fun_eq_iff intro: bisim_composeI)
 
 lemma bisim_compose_conv_rel_comp:
   "split (bisim_compose bisim12 bisim23) = rel_comp (split bisim12) (split bisim23)"

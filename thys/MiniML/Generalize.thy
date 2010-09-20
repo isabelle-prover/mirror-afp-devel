@@ -1,5 +1,4 @@
 (* Title:     HOL/MiniML/Generalize.thy
-   ID:        $Id: Generalize.thy,v 1.11 2009-08-31 14:50:55 nipkow Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -14,25 +13,18 @@ begin
 
 types ctxt = "type_scheme list"
     
-consts
-  gen :: "[ctxt, typ] => type_scheme"
-primrec
+primrec gen :: "[ctxt, typ] => type_scheme" where
   "gen A (TVar n) = (if (n:(free_tv A)) then (FVar n) else (BVar n))"
-  "gen A (t1 -> t2) = (gen A t1) =-> (gen A t2)"
+| "gen A (t1 -> t2) = (gen A t1) =-> (gen A t2)"
 
 -- "executable version of @{text gen}: implementation with @{text free_tv_ML}"
 
-consts
-  gen_ML_aux :: "[nat list, typ] => type_scheme"
-primrec
+primrec gen_ML_aux :: "[nat list, typ] => type_scheme" where
   "gen_ML_aux A (TVar n) = (if (n: set A) then (FVar n) else (BVar n))"
-  "gen_ML_aux A (t1 -> t2) = (gen_ML_aux A t1) =-> (gen_ML_aux A t2)"
+| "gen_ML_aux A (t1 -> t2) = (gen_ML_aux A t1) =-> (gen_ML_aux A t2)"
 
-consts
-  gen_ML :: "[ctxt, typ] => type_scheme"
-defs
-  gen_ML_def: "gen_ML A t == gen_ML_aux (free_tv_ML A) t"
-
+definition gen_ML :: "[ctxt, typ] => type_scheme" where
+  gen_ML_def: "gen_ML A t = gen_ML_aux (free_tv_ML A) t"
 
 declare equalityE [elim!]
 

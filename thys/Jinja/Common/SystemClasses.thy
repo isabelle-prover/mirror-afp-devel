@@ -15,20 +15,24 @@ text {*
   and the system exceptions.
 *}
 
-constdefs
-  ObjectC :: "'m cdecl"
+definition ObjectC :: "'m cdecl"
+where
   "ObjectC \<equiv> (Object, (undefined,[],[]))"
 
-  NullPointerC :: "'m cdecl"
+definition NullPointerC :: "'m cdecl"
+where
   "NullPointerC \<equiv> (NullPointer, (Object,[],[]))"
 
-  ClassCastC :: "'m cdecl"
+definition ClassCastC :: "'m cdecl"
+where
   "ClassCastC \<equiv> (ClassCast, (Object,[],[]))"
 
-  OutOfMemoryC :: "'m cdecl"
+definition OutOfMemoryC :: "'m cdecl"
+where
   "OutOfMemoryC \<equiv> (OutOfMemory, (Object,[],[]))"
 
-  SystemClasses :: "'m cdecl list"
+definition SystemClasses :: "'m cdecl list"
+where
   "SystemClasses \<equiv> [ObjectC, NullPointerC, ClassCastC, OutOfMemoryC]"
 
 end

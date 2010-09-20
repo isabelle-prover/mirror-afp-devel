@@ -1,6 +1,5 @@
 (*  Title:      Typed_Sigma.thy
 
-    ID:         $Id: TypedSigma.thy,v 1.1 2009/11/12 11:55:09 flokam Exp $
     Author:     Florian Kammuller and Henry Sudhof
                 2006
 
@@ -16,11 +15,13 @@ theory TypedSigma imports "../preliminary/Environments" Sigma begin
 subsubsection {* Types and typing rules *}
 text{* The inductive definition of the typing relation.*}
 
-constdefs
-  return :: "(type \<times> type) \<Rightarrow> type " 
-  "return a == fst a"
-  param :: "(type \<times> type) \<Rightarrow> type " 
-  "param a == snd a"
+definition
+  return :: "(type \<times> type) \<Rightarrow> type" where
+  "return a = fst a"
+
+definition
+  param :: "(type \<times> type) \<Rightarrow> type" where
+  "param a = snd a"
 
 primrec
   do :: "type \<Rightarrow> (Label set)"  

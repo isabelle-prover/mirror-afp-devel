@@ -1,5 +1,4 @@
-(*  Title:      Inductive definition of Hoare logic for total correctness
-    ID:         $Id: PsHoareTotal.thy,v 1.6 2008-06-12 06:57:15 lsf37 Exp $
+(*  Title:       Inductive definition of Hoare logic for total correctness
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -8,19 +7,22 @@ theory PsHoareTotal imports PsHoare PsTermi begin
 
 subsection{* Hoare logic for total correctness *}
 
-constdefs
- tvalid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50)
-    "\<Turnstile>\<^sub>t {P}c{Q}  \<equiv>  \<Turnstile> {P}c{Q} \<and> (\<forall>z s. P z s \<longrightarrow> c\<down>s)"
+definition
+ tvalid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50) where
+    "\<Turnstile>\<^sub>t {P}c{Q} \<longleftrightarrow> \<Turnstile> {P}c{Q} \<and> (\<forall>z s. P z s \<longrightarrow> c\<down>s)"
 
- valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile>\<^sub>t _" 50)
- "|\<Turnstile>\<^sub>t D \<equiv> \<forall>(P,c,Q) \<in> D. \<Turnstile>\<^sub>t {P}c{Q}"
+definition
+ valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile>\<^sub>t _" 50) where
+ "|\<Turnstile>\<^sub>t D \<longleftrightarrow> (\<forall>(P,c,Q) \<in> D. \<Turnstile>\<^sub>t {P}c{Q})"
 
+definition
  ctvalid :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool"
-            ("(_ /\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_))}" 50)
- "C \<Turnstile>\<^sub>t {P}c{Q}  \<equiv>  |\<Turnstile>\<^sub>t C \<longrightarrow>  \<Turnstile>\<^sub>t {P}c{Q}"
+            ("(_ /\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_))}" 50) where
+ "C \<Turnstile>\<^sub>t {P}c{Q} \<longleftrightarrow> |\<Turnstile>\<^sub>t C \<longrightarrow>  \<Turnstile>\<^sub>t {P}c{Q}"
 
- cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>\<^sub>t/ _" 50)
-  "C |\<Turnstile>\<^sub>t D    \<equiv>  |\<Turnstile>\<^sub>t C \<longrightarrow> |\<Turnstile>\<^sub>t D"
+definition
+ cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>\<^sub>t/ _" 50) where
+  "C |\<Turnstile>\<^sub>t D \<longleftrightarrow> |\<Turnstile>\<^sub>t C \<longrightarrow> |\<Turnstile>\<^sub>t D"
 
 inductive
   thoare :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("(_ |\<turnstile>\<^sub>t/ _)" 50)
@@ -59,11 +61,11 @@ where
 monos split_beta
 
 lemma strengthen_pre:
- "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C \<turnstile>\<^sub>t {P}c{Q}  \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P'}c{Q}";
+ "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C \<turnstile>\<^sub>t {P}c{Q}  \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P'}c{Q}"
 by(rule thoare.Conseq, assumption, blast)
 
 lemma weaken_post:
- "\<lbrakk> C \<turnstile>\<^sub>t {P}c{Q}; \<forall>z s. Q z s \<longrightarrow> Q' z s \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P}c{Q'}";
+ "\<lbrakk> C \<turnstile>\<^sub>t {P}c{Q}; \<forall>z s. Q z s \<longrightarrow> Q' z s \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P}c{Q'}"
 by(erule thoare.Conseq, blast)
 
 
@@ -92,7 +94,7 @@ lemma unfold_while:
 by(auto elim: exec.cases intro:exec.intros split:split_if_asm)
 
 theorem "C |\<turnstile>\<^sub>t D  \<Longrightarrow>  C |\<Turnstile>\<^sub>t D"
-apply(erule thoare.induct);
+apply(erule thoare.induct)
        apply(simp only:tvalid_defs)
        apply fast
       apply(simp add:tvalid_defs)
@@ -154,9 +156,8 @@ apply(unfold tvalid_defs)
 apply fast
 done
 
-constdefs MGT\<^isub>t    :: "com \<Rightarrow> state assn \<times> com \<times> state assn"
-         "MGT\<^isub>t c \<equiv> (\<lambda>z s. z = s \<and> c\<down>s, c, \<lambda>z t. z -c\<rightarrow> t)"
-declare MGT\<^isub>t_def[simp]
+definition MGT\<^isub>t :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
+  [simp]: "MGT\<^isub>t c = (\<lambda>z s. z = s \<and> c\<down>s, c, \<lambda>z t. z -c\<rightarrow> t)"
 
 lemma MGT_implies_complete:
  "{} |\<turnstile>\<^sub>t {MGT\<^isub>t c} \<Longrightarrow> {} \<Turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> {} \<turnstile>\<^sub>t {P}c{Q::state assn}"
@@ -295,10 +296,9 @@ done
 theorem exec1s_impl_exec: "([c],s) \<rightarrow>\<^sup>* ([],t) \<Longrightarrow> s -c\<rightarrow> t"
 by(blast dest: exec1s_impl_execs)
 
-consts termis :: "com list \<Rightarrow> state \<Rightarrow> bool" (infixl "\<Down>" 60)
-primrec
-"[]\<Down>s = True"
-"c#cs \<Down> s = (c\<down>s \<and> (\<forall>t. s -c\<rightarrow> t \<longrightarrow> cs\<Down>t))"
+primrec termis :: "com list \<Rightarrow> state \<Rightarrow> bool" (infixl "\<Down>" 60) where
+  "[]\<Down>s = True"
+| "c#cs \<Down> s = (c\<down>s \<and> (\<forall>t. s -c\<rightarrow> t \<longrightarrow> cs\<Down>t))"
 
 lemma exec1_pres_termis: "(cs,s) \<rightarrow> (cs',s') \<Longrightarrow> cs\<Down>s \<longrightarrow> cs'\<Down>s'"
 apply(erule exec1.induct)
@@ -320,10 +320,9 @@ apply(insert execs_pres_termis[of "[c]" _ "c'#cs'",simplified])
 apply blast
 done
 
-constdefs
- termi_call_steps :: "((pname \<times> state) \<times> (pname \<times> state))set"
-"termi_call_steps \<equiv>
- {((q,t),(p,s)). body p\<down>s \<and> (\<exists>cs. ([body p], s) \<rightarrow>\<^sup>* (CALL q# cs, t))}"
+definition  termi_call_steps :: "((pname \<times> state) \<times> (pname \<times> state))set" where
+  "termi_call_steps =
+    {((q,t),(p,s)). body p\<down>s \<and> (\<exists>cs. ([body p], s) \<rightarrow>\<^sup>* (CALL q# cs, t))}"
 
 lemma lem:
   "!y. (a,y):r\<^sup>+ \<longrightarrow> P a \<longrightarrow> P y \<Longrightarrow> ((b,a) : {(y,x). P x \<and> (x,y):r}\<^sup>+) = ((b,a) : {(y,x). P x \<and> (x,y):r\<^sup>+})"
@@ -356,8 +355,8 @@ lemma renumber:
 by(blast dest:renumber_aux)
 
 
-constdefs inf :: "com list \<Rightarrow> state \<Rightarrow> bool"
-"inf cs s == \<exists>f. f 0 = (cs,s) \<and> (\<forall>i. f i \<rightarrow> f(Suc i))"
+definition inf :: "com list \<Rightarrow> state \<Rightarrow> bool" where
+  "inf cs s \<longleftrightarrow> (\<exists>f. f 0 = (cs,s) \<and> (\<forall>i. f i \<rightarrow> f(Suc i)))"
 
 lemma [iff]: "\<not> inf [] s"
 apply(unfold inf_def)
@@ -661,11 +660,10 @@ apply(fold inf_def)
 apply(simp add: termi_impl_not_inf)
 done
 
-consts cseq :: "(nat \<Rightarrow> pname \<times> state) \<Rightarrow> nat \<Rightarrow> com list"
-primrec
-"cseq S 0 = []"
-"cseq S (Suc i) = (SOME cs. ([body(fst(S i))], snd(S i)) \<rightarrow>\<^sup>*
-                            (CALL(fst(S(i+1)))# cs, snd(S(i+1)))) @ cseq S i"
+primrec cseq :: "(nat \<Rightarrow> pname \<times> state) \<Rightarrow> nat \<Rightarrow> com list" where
+  "cseq S 0 = []"
+|  "cseq S (Suc i) = (SOME cs. ([body(fst(S i))], snd(S i)) \<rightarrow>\<^sup>*
+                              (CALL(fst(S(i+1)))# cs, snd(S(i+1)))) @ cseq S i"
 
 lemma wf_termi_call_steps: "wf termi_call_steps"
 apply(unfold termi_call_steps_def)

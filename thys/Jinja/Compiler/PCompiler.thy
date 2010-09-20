@@ -10,14 +10,16 @@ theory PCompiler
 imports "../Common/WellForm"
 begin
 
-constdefs
-  compM :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a mdecl \<Rightarrow> 'b mdecl"
+definition compM :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a mdecl \<Rightarrow> 'b mdecl"
+where
   "compM f  \<equiv>  \<lambda>(M, Ts, T, m). (M, Ts, T, f m)"
 
-  compC :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a cdecl \<Rightarrow> 'b cdecl"
+definition compC :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a cdecl \<Rightarrow> 'b cdecl"
+where
   "compC f  \<equiv>  \<lambda>(C,D,Fdecls,Mdecls). (C,D,Fdecls, map (compM f) Mdecls)"
 
-  compP :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a prog \<Rightarrow> 'b prog"
+definition compP :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a prog \<Rightarrow> 'b prog"
+where
   "compP f  \<equiv>  map (compC f)"
 
 text{* Compilation preserves the program structure.  Therfore lookup

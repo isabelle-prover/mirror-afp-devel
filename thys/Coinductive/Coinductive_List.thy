@@ -151,16 +151,16 @@ definition "LCons x xs = Abs_llist (CONS (Datatype.Leaf x) (Rep_llist xs))"
 
 code_datatype LNil LCons
 
-lemma LCons_not_LNil [iff]: "LCons x xs \<noteq> LNil"
+lemma LCons_not_LNil [iff, induct_simp]: "LCons x xs \<noteq> LNil"
   apply (simp add: LNil_def LCons_def)
   apply (subst Abs_llist_inject)
     apply (auto intro: NIL_type CONS_type Rep_llist)
   done
 
-lemma LNil_not_LCons [iff]: "LNil \<noteq> LCons x xs"
+lemma LNil_not_LCons [iff, induct_simp]: "LNil \<noteq> LCons x xs"
   by (rule LCons_not_LNil [symmetric])
 
-lemma LCons_inject [iff]: "(LCons x xs = LCons y ys) = (x = y \<and> xs = ys)"
+lemma LCons_inject [iff, induct_simp]: "(LCons x xs = LCons y ys) = (x = y \<and> xs = ys)"
   apply (simp add: LCons_def)
   apply (subst Abs_llist_inject)
     apply (auto simp add: Rep_llist_inject intro: CONS_type Rep_llist)
@@ -219,6 +219,11 @@ lemma llist_case_cert:
 
 setup {*
   Code.add_case @{thm llist_case_cert}
+*}
+
+setup {*
+  Nitpick.register_codatatype @{typ "'a llist"} @{const_name llist_case}
+    (map dest_Const [@{term LNil}, @{term LCons}])
 *}
 
 definition
@@ -845,10 +850,5 @@ proof -
     then show ?case ..
   qed
 qed
-
-setup {*
-  Nitpick.register_codatatype @{typ "'a llist"} @{const_name llist_case}
-    (map dest_Const [@{term LNil}, @{term LCons}])
-*}
 
 end

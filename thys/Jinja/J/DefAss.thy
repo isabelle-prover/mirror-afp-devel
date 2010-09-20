@@ -1,5 +1,4 @@
 (*  Title:      Jinja/DefAss.thy
-    ID:         $Id: DefAss.thy,v 1.3 2005-09-26 16:05:08 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -12,22 +11,26 @@ subsection "Hypersets"
 
 types 'a hyperset = "'a set option"
 
-constdefs
-  hyperUn :: "'a hyperset \<Rightarrow> 'a hyperset \<Rightarrow> 'a hyperset"   (infixl "\<squnion>" 65)
+definition hyperUn :: "'a hyperset \<Rightarrow> 'a hyperset \<Rightarrow> 'a hyperset"   (infixl "\<squnion>" 65)
+where
   "A \<squnion> B  \<equiv>  case A of None \<Rightarrow> None
                  | \<lfloor>A\<rfloor> \<Rightarrow> (case B of None \<Rightarrow> None | \<lfloor>B\<rfloor> \<Rightarrow> \<lfloor>A \<union> B\<rfloor>)"
 
-  hyperInt :: "'a hyperset \<Rightarrow> 'a hyperset \<Rightarrow> 'a hyperset"   (infixl "\<sqinter>" 70)
+definition hyperInt :: "'a hyperset \<Rightarrow> 'a hyperset \<Rightarrow> 'a hyperset"   (infixl "\<sqinter>" 70)
+where
   "A \<sqinter> B  \<equiv>  case A of None \<Rightarrow> B
                  | \<lfloor>A\<rfloor> \<Rightarrow> (case B of None \<Rightarrow> \<lfloor>A\<rfloor> | \<lfloor>B\<rfloor> \<Rightarrow> \<lfloor>A \<inter> B\<rfloor>)"
 
-  hyperDiff1 :: "'a hyperset \<Rightarrow> 'a \<Rightarrow> 'a hyperset"   (infixl "\<ominus>" 65)
+definition hyperDiff1 :: "'a hyperset \<Rightarrow> 'a \<Rightarrow> 'a hyperset"   (infixl "\<ominus>" 65)
+where
   "A \<ominus> a  \<equiv>  case A of None \<Rightarrow> None | \<lfloor>A\<rfloor> \<Rightarrow> \<lfloor>A - {a}\<rfloor>"
 
- hyper_isin :: "'a \<Rightarrow> 'a hyperset \<Rightarrow> bool"   (infix "\<in>\<in>" 50)
-"a \<in>\<in> A  \<equiv>  case A of None \<Rightarrow> True | \<lfloor>A\<rfloor> \<Rightarrow> a \<in> A"
+definition hyper_isin :: "'a \<Rightarrow> 'a hyperset \<Rightarrow> bool"   (infix "\<in>\<in>" 50)
+where
+  "a \<in>\<in> A  \<equiv>  case A of None \<Rightarrow> True | \<lfloor>A\<rfloor> \<Rightarrow> a \<in> A"
 
-  hyper_subset :: "'a hyperset \<Rightarrow> 'a hyperset \<Rightarrow> bool"   (infix "\<sqsubseteq>" 50)
+definition hyper_subset :: "'a hyperset \<Rightarrow> 'a hyperset \<Rightarrow> bool"   (infix "\<sqsubseteq>" 50)
+where
   "A \<sqsubseteq> B  \<equiv>  case B of None \<Rightarrow> True
                  | \<lfloor>B\<rfloor> \<Rightarrow> (case A of None \<Rightarrow> False | \<lfloor>A\<rfloor> \<Rightarrow> A \<subseteq> B)"
 
@@ -55,52 +58,52 @@ lemma hyper_insert_comm: "A \<squnion> \<lfloor>{a}\<rfloor> = \<lfloor>{a}\<rfl
 
 subsection "Definite assignment"
 
-consts
- \<A>  :: "'a exp \<Rightarrow> 'a hyperset"
- \<A>s :: "'a exp list \<Rightarrow> 'a hyperset"
- \<D>  :: "'a exp \<Rightarrow> 'a hyperset \<Rightarrow> bool"
- \<D>s :: "'a exp list \<Rightarrow> 'a hyperset \<Rightarrow> bool"
+primrec
+  \<A>  :: "'a exp \<Rightarrow> 'a hyperset"
+  and \<A>s :: "'a exp list \<Rightarrow> 'a hyperset"
+where
+  "\<A> (new C) = \<lfloor>{}\<rfloor>"
+| "\<A> (Cast C e) = \<A> e"
+| "\<A> (Val v) = \<lfloor>{}\<rfloor>"
+| "\<A> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
+| "\<A> (Var V) = \<lfloor>{}\<rfloor>"
+| "\<A> (LAss V e) = \<lfloor>{V}\<rfloor> \<squnion> \<A> e"
+| "\<A> (e\<bullet>F{D}) = \<A> e"
+| "\<A> (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
+| "\<A> (e\<bullet>M(es)) = \<A> e \<squnion> \<A>s es"
+| "\<A> ({V:T; e}) = \<A> e \<ominus> V"
+| "\<A> (e\<^isub>1;;e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
+| "\<A> (if (e) e\<^isub>1 else e\<^isub>2) =  \<A> e \<squnion> (\<A> e\<^isub>1 \<sqinter> \<A> e\<^isub>2)"
+| "\<A> (while (b) e) = \<A> b"
+| "\<A> (throw e) = None"
+| "\<A> (try e\<^isub>1 catch(C V) e\<^isub>2) = \<A> e\<^isub>1 \<sqinter> (\<A> e\<^isub>2 \<ominus> V)"
+
+| "\<A>s ([]) = \<lfloor>{}\<rfloor>"
+| "\<A>s (e#es) = \<A> e \<squnion> \<A>s es"
 
 primrec
-"\<A> (new C) = \<lfloor>{}\<rfloor>"
-"\<A> (Cast C e) = \<A> e"
-"\<A> (Val v) = \<lfloor>{}\<rfloor>"
-"\<A> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
-"\<A> (Var V) = \<lfloor>{}\<rfloor>"
-"\<A> (LAss V e) = \<lfloor>{V}\<rfloor> \<squnion> \<A> e"
-"\<A> (e\<bullet>F{D}) = \<A> e"
-"\<A> (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
-"\<A> (e\<bullet>M(es)) = \<A> e \<squnion> \<A>s es"
-"\<A> ({V:T; e}) = \<A> e \<ominus> V"
-"\<A> (e\<^isub>1;;e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
-"\<A> (if (e) e\<^isub>1 else e\<^isub>2) =  \<A> e \<squnion> (\<A> e\<^isub>1 \<sqinter> \<A> e\<^isub>2)"
-"\<A> (while (b) e) = \<A> b"
-"\<A> (throw e) = None"
-"\<A> (try e\<^isub>1 catch(C V) e\<^isub>2) = \<A> e\<^isub>1 \<sqinter> (\<A> e\<^isub>2 \<ominus> V)"
-
-"\<A>s ([]) = \<lfloor>{}\<rfloor>"
-"\<A>s (e#es) = \<A> e \<squnion> \<A>s es"
-
-primrec
-"\<D> (new C) A = True"
-"\<D> (Cast C e) A = \<D> e A"
-"\<D> (Val v) A = True"
-"\<D> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
-"\<D> (Var V) A = (V \<in>\<in> A)"
-"\<D> (LAss V e) A = \<D> e A"
-"\<D> (e\<bullet>F{D}) A = \<D> e A"
-"\<D> (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
-"\<D> (e\<bullet>M(es)) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
-"\<D> ({V:T; e}) A = \<D> e (A \<ominus> V)"
-"\<D> (e\<^isub>1;;e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
-"\<D> (if (e) e\<^isub>1 else e\<^isub>2) A =
+  \<D>  :: "'a exp \<Rightarrow> 'a hyperset \<Rightarrow> bool"
+  and \<D>s :: "'a exp list \<Rightarrow> 'a hyperset \<Rightarrow> bool"
+where
+  "\<D> (new C) A = True"
+| "\<D> (Cast C e) A = \<D> e A"
+| "\<D> (Val v) A = True"
+| "\<D> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
+| "\<D> (Var V) A = (V \<in>\<in> A)"
+| "\<D> (LAss V e) A = \<D> e A"
+| "\<D> (e\<bullet>F{D}) A = \<D> e A"
+| "\<D> (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
+| "\<D> (e\<bullet>M(es)) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
+| "\<D> ({V:T; e}) A = \<D> e (A \<ominus> V)"
+| "\<D> (e\<^isub>1;;e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
+| "\<D> (if (e) e\<^isub>1 else e\<^isub>2) A =
   (\<D> e A \<and> \<D> e\<^isub>1 (A \<squnion> \<A> e) \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e))"
-"\<D> (while (e) c) A = (\<D> e A \<and> \<D> c (A \<squnion> \<A> e))"
-"\<D> (throw e) A = \<D> e A"
-"\<D> (try e\<^isub>1 catch(C V) e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<lfloor>{V}\<rfloor>))"
+| "\<D> (while (e) c) A = (\<D> e A \<and> \<D> c (A \<squnion> \<A> e))"
+| "\<D> (throw e) A = \<D> e A"
+| "\<D> (try e\<^isub>1 catch(C V) e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<lfloor>{V}\<rfloor>))"
 
-"\<D>s ([]) A = True"
-"\<D>s (e#es) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
+| "\<D>s ([]) A = True"
+| "\<D>s (e#es) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
 
 lemma As_map_Val[simp]: "\<A>s (map Val vs) = \<lfloor>{}\<rfloor>"
 (*<*)by (induct vs) simp_all(*>*)

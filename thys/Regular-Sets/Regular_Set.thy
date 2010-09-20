@@ -318,7 +318,7 @@ subsection{* @{const bisimilar} *}
 
 lemma equal_if_bisimilar:
 assumes "bisimilar K L" shows "K = L"
-proof (rule set_ext)
+proof (rule set_eqI)
   fix w
   from `bisimilar K L` show "w \<in> K \<longleftrightarrow> w \<in> L"
   proof (induct w arbitrary: K L)

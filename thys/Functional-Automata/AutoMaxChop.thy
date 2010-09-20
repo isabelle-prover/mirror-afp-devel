@@ -1,5 +1,4 @@
-(*  ID:         $Id: AutoMaxChop.thy,v 1.6 2007-07-22 20:44:18 makarius Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
@@ -9,10 +8,8 @@ theory AutoMaxChop
 imports DA MaxChop
 begin
 
-consts
- auto_split :: "('a,'s)da => 's  => 'a list * 'a list => 'a list => 'a splitter"
-primrec
-"auto_split A q res ps []     = (if fin A q then (ps,[]) else res)"
+primrec auto_split :: "('a,'s)da => 's  => 'a list * 'a list => 'a list => 'a splitter" where
+"auto_split A q res ps []     = (if fin A q then (ps,[]) else res)" |
 "auto_split A q res ps (x#xs) =
    auto_split A (next A x q) (if fin A q then (ps,x#xs) else res) (ps@[x]) xs"
 

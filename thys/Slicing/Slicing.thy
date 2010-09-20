@@ -6,9 +6,8 @@ imports
   "Dynamic/DynSlice"
   "StaticIntra/CDepInstantiations"
   "StaticIntra/ControlDependenceRelations"
-  "While/SemanticsWellFormed"
   "While/DynamicControlDependences"
-  "While/StaticControlDependences"
+  "While/NonInterferenceWhile"
   "JinjaVM/JVMControlDependences" 
   "JinjaVM/SemanticsWF"
 begin

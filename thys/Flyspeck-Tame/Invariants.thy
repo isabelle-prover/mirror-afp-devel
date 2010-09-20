@@ -646,7 +646,7 @@ apply(subgoal_tac "vertices f \<cong> vertices f'")
  apply(rule cong_if_is_nextElem_eq)
     apply assumption+
   apply(simp add:vertices_conv_Union_edges)
- apply(simp add:expand_set_eq)
+ apply(simp add:set_eq_iff)
 apply(subgoal_tac "\<V> f = \<V> f'")
  prefer 2 apply(simp add:vertices_conv_Union_edges)
 apply(frule minVertex_eq_if_vertices_eq)

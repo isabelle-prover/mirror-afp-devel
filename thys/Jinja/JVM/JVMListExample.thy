@@ -9,26 +9,32 @@ theory JVMListExample
 imports "../Common/SystemClasses" JVMExec Efficient_Nat
 begin
 
-constdefs
-  list_name :: string
+definition list_name :: string
+where
   "list_name == ''list''"
 
-  test_name :: string
+definition test_name :: string
+where
   "test_name == ''test''"
 
-  val_name :: string
+definition val_name :: string
+where
   "val_name == ''val''"
 
-  next_name :: string
+definition next_name :: string
+where
   "next_name == ''next''"
 
-  append_name :: string
+definition append_name :: string
+where
   "append_name == ''append''"
 
-  makelist_name :: string
+definition makelist_name :: string
+where
   "makelist_name == ''makelist''"
 
-  append_ins :: bytecode
+definition append_ins :: bytecode
+where
   "append_ins == 
        [Load 0,
         Getfield next_name list_name,
@@ -47,14 +53,16 @@ constdefs
         Invoke append_name 1,
         Return]"
 
-  list_class :: "jvm_method class"
+definition list_class :: "jvm_method class"
+where
   "list_class ==
     (Object,
      [(val_name, Integer), (next_name, Class list_name)],
      [(append_name, [Class list_name], Void,
         (3, 0, append_ins, [(1, 2, NullPointer, 7, 0)]))])"
 
-  make_list_ins :: bytecode
+definition make_list_ins :: bytecode
+where
   "make_list_ins ==
        [New list_name,
         Store 0,
@@ -80,12 +88,14 @@ constdefs
         Invoke append_name 1,
         Return]"
 
-  test_class :: "jvm_method class"
+definition test_class :: "jvm_method class"
+where
   "test_class ==
     (Object, [],
      [(makelist_name, [], Void, (3, 2, make_list_ins, []))])"
 
-  E :: jvm_prog
+definition E :: jvm_prog
+where
   "E == SystemClasses @ [(list_name, list_class), (test_name, test_class)]"
 
 

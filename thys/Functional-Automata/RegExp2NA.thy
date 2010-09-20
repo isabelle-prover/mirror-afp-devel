@@ -55,13 +55,12 @@ definition
  star :: "'a bitsNA => 'a bitsNA" where
 "star A = or epsilon (plus A)"
 
-consts rexp2na :: "'a rexp => 'a bitsNA"
-primrec
-"rexp2na Zero       = ([], %a s. {}, %s. False)"
-"rexp2na One        = epsilon"
-"rexp2na(Atom a)    = atom a"
-"rexp2na(Plus r s)  = or (rexp2na r) (rexp2na s)"
-"rexp2na(Times r s) = conc (rexp2na r) (rexp2na s)"
+primrec rexp2na :: "'a rexp => 'a bitsNA" where
+"rexp2na Zero       = ([], %a s. {}, %s. False)" |
+"rexp2na One        = epsilon" |
+"rexp2na(Atom a)    = atom a" |
+"rexp2na(Plus r s)  = or (rexp2na r) (rexp2na s)" |
+"rexp2na(Times r s) = conc (rexp2na r) (rexp2na s)" |
 "rexp2na(Star r)    = star (rexp2na r)"
 
 declare split_paired_all[simp]

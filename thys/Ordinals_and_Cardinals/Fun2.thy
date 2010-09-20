@@ -15,10 +15,6 @@ finite sets. *}
 subsection {* Purely functional properties  *}
 
 
-(*3*)lemma bij_bij_betw: "bij f = bij_betw f UNIV UNIV"
-unfolding bij_betw_def bij_def surj_def by auto
-
-
 (*2*)lemma bij_betw_empty1: 
 assumes "bij_betw f {} A"
 shows "A = {}"

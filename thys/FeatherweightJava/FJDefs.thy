@@ -126,21 +126,18 @@ $(\mathit{ds}/\mathit{xs})e$ and $[\mathit{ds}/\mathit{xs}]es$
 respecitvely. 
 *}
 
-consts 
-  substs ::      "(varName \<rightharpoonup> exp) \<Rightarrow> exp \<Rightarrow> exp"
-  subst_list1 :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp list \<Rightarrow> exp list"
-  subst_list2 :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp list \<Rightarrow> exp list"
-
-primrec 
+primrec substs :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp \<Rightarrow> exp"
+  and subst_list1 :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp list \<Rightarrow> exp list"
+  and subst_list2 :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp list \<Rightarrow> exp list" where
   "substs \<sigma> (Var x) =             (case (\<sigma>(x)) of None \<Rightarrow> (Var x) | Some p \<Rightarrow> p)"
-  "substs \<sigma> (FieldProj e f) =     FieldProj (substs \<sigma> e) f"
-  "substs \<sigma> (MethodInvk e m es) = MethodInvk (substs \<sigma> e) m (subst_list1 \<sigma> es)"
-  "substs \<sigma> (New C es) =          New C (subst_list2 \<sigma> es)"
-  "substs \<sigma> (Cast C e) =          Cast C (substs \<sigma> e)"
-  "subst_list1 \<sigma> [] = []"
-  "subst_list1 \<sigma> (h # t) = (substs \<sigma> h) # (subst_list1 \<sigma> t)"
-  "subst_list2 \<sigma> [] = []"
-  "subst_list2 \<sigma> (h # t) = (substs \<sigma> h) # (subst_list2 \<sigma> t)"
+| "substs \<sigma> (FieldProj e f) =     FieldProj (substs \<sigma> e) f"
+| "substs \<sigma> (MethodInvk e m es) = MethodInvk (substs \<sigma> e) m (subst_list1 \<sigma> es)"
+| "substs \<sigma> (New C es) =          New C (subst_list2 \<sigma> es)"
+| "substs \<sigma> (Cast C e) =          Cast C (substs \<sigma> e)"
+| "subst_list1 \<sigma> [] = []"
+| "subst_list1 \<sigma> (h # t) = (substs \<sigma> h) # (subst_list1 \<sigma> t)"
+| "subst_list2 \<sigma> [] = []"
+| "subst_list2 \<sigma> (h # t) = (substs \<sigma> h) # (subst_list2 \<sigma> t)"
 
 abbreviation
   substs_syn :: "[exp list] \<Rightarrow> [varName list] \<Rightarrow> [exp] \<Rightarrow> exp"

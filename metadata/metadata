@@ -19,6 +19,24 @@ date = 2004-03-30
 topic = Computer Science/Automata and Formal Languages
 abstract = This theory defines deterministic and nondeterministic automata in a functional representation: the transition function/relation and the finality predicate are just functions. Hence the state space may be infinite. It is shown how to convert regular expressions into such automata. A scanner (generator) is implemented with the help of functional automata: the scanner chops the input up into longest recognized substrings. Finally we also show how to convert a certain subclass of functional automata (essentially the finite deterministic ones) into regular sets.
 
+[Statecharts]
+title = Formalizing Statecharts using Hierarchical Automata
+author = Steffen Helke <mailto:helke@cs.tu-berlin.de>, Florian Kamm&uuml;ller <mailto:flokam@cs.tu-berlin.de>
+topic = Computer Science/Automata and Formal Languages
+date = 2010-08-08
+abstract = We formalize in Isabelle/HOL the abtract syntax and a synchronous
+ step semantics for the specification language Statecharts. The formalization
+ is based on Hierarchical Automata which allow a structural decomposition of
+ Statecharts into Sequential Automata. To support the composition of
+ Statecharts, we introduce calculating operators to construct a Hierarchical
+ Automaton in a stepwise manner. Furthermore, we present a complete semantics
+ of Statecharts including a theory of data spaces, which enables the modelling
+ of racing effects. We also adapt CTL for 
+ Statecharts to build a bridge for future combinations with model
+ checking. However the main motivation of this work is to provide a sound and
+ complete basis for reasoning on Statecharts. As a central meta theorem we
+ prove that the well-formedness of a Statechart is preserved by the semantics.
+
 [Tree-Automata]
 title = Tree Automata
 author = Peter Lammich <mailto:peter.lammich@uni-muenster.de>
@@ -142,8 +160,23 @@ abstract = This theory provides functions for finding the index of an element in
 title = Executable Matrix Operations on Matrices of Arbitrary Dimensions
 topic = Computer Science/Data Structures
 date = 2010-06-17
-author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
-abstract = We provide the operations of matrix addition, multiplication, transposition, and matrix comparisons as executable functions over ordered semirings. Moreover, it is proven that strongly normalizing (monotone) orders can be lifted to strongly normalizing (monotone) orders over matrices. We further show that the standard semirings over the naturals, integers, and rationals, as well as the arctic semirings satisfy the axioms that are required by our matrix theory. Our formalization is part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">CeTA</a> system which contains several termination techniques. The provided theories have been essential to formalize matrix-interpretations and arctic interpretations.
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+abstract =
+  We provide the operations of matrix addition, multiplication,
+  transposition, and matrix comparisons as executable functions over
+  ordered semirings. Moreover, it is proven that strongly normalizing
+  (monotone) orders can be lifted to strongly normalizing (monotone) orders
+  over matrices. We further show that the standard semirings over the
+  naturals, integers, and rationals, as well as the arctic semirings
+  satisfy the axioms that are required by our matrix theory. Our
+  formalization is part of the <a
+  href="http://cl-informatik.uibk.ac.at/software/ceta">CeTA</a> system
+  which contains several termination techniques. The provided theories have
+  been essential to formalize matrix-interpretations and arctic
+  interpretations.
+extra-history =
+  Change history: [2010-09-17]: Moved theory on arbitrary (ordered)
+  semirings to Abstract Rewriting.
 
 [Huffman]
 title = The Textbook Proof of Huffman's Algorithm 
@@ -207,8 +240,16 @@ abstract = We present a Theory of Objects based on the original functional sigma
 title = POPLmark Challenge Via de Bruijn Indices 
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
 date = 2007-08-02
-topic = Computer Science/Programming Languages/Language Definitions
+topic = Computer Science/Programming Languages/Lambda Calculi
 abstract = We present a solution to the POPLmark challenge designed by Aydemir et al., which has as a goal the formalization of the meta-theory of System F<sub>&lt;:</sub>. The formalization is carried out in the theorem prover Isabelle/HOL using an encoding based on de Bruijn indices. We start with a relatively simple formalization covering only the basic features of System F<sub>&lt;:</sub>, and explain how it can be extended to also cover records and more advanced binding constructs. 
+
+[Lam-ml-Normalization]
+title = Strong Normalization of Moggis's Computational Metalanguage
+author = Christian Doczkal <mailto:doczkal@ps.uni-saarland.de>
+date = 2010-08-29
+base = HOL/HOL-Nominal
+topic = Computer Science/Programming Languages/Lambda Calculi
+abstract = Handling variable binding is one of the main difficulties in formal proofs. In this context, Moggi's computational metalanguage serves as an interesting case study. It features monadic types and a commuting conversion rule that rearranges the binding structure. Lindley and Stark have given an elegant proof of strong normalization for this calculus. The key construction in their proof is a notion of relational TT-lifting, using stacks of elimination contexts to obtain a Girard-Tait style logical relation. I give a formalization of their proof in Isabelle/HOL-Nominal with a particular emphasis on the treatment of bound variables.
 
 [MiniML]
 title = Mini ML
@@ -284,6 +325,7 @@ abstract = In this work we formally verify the soundness and precision of a stat
 title = Towards Certified Slicing 
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2008-09-16
+base = HOL/Jinja
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = Slicing is a widely-used technique with applications in e.g. compiler technology and software security. Thus verification of algorithms in these areas is often based on the correctness of slicing, which should ideally be proven independent of concrete programming languages and with the help of well-known verifying techniques such as proof assistants. As a first step in this direction, this contribution presents a framework for dynamic and static intraprocedural slicing based on control flow and program dependence graphs. Abstracting from concrete syntax we base the framework on a graph representation of the program fulfilling certain structural and well-formedness properties.<br><br>The formalization consists of the basic framework (in subdirectory Basic/), the correctness proof for dynamic slicing (in subdirectory Dynamic/), the correctness proof for static intraprocedural slicing (in subdirectory StaticIntra/) and instantiations of the framework with a simple While language (in subdirectory While/) and the sophisticated object-oriented bytecode language of Jinja (in subdirectory JinjaVM/). For more information on the framework, see the TPHOLS 2008 paper by Wasserrab and Lochbihler and the PLAS 2009 paper by Wasserrab et al. 
 
@@ -291,6 +333,7 @@ abstract = Slicing is a widely-used technique with applications in e.g. compiler
 title = Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2009-11-13
+base = HOL/Jinja
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = After verifying <a href="Slicing.shtml">dynamic and static interprocedural slicing</a>, we present a modular framework for static interprocedural slicing. To this end, we formalized the standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together with summary edges as presented by Reps et al. (see FSE 1994). The framework is again modular in the programming language by using an abstract CFG, defined via structural and well-formedness properties. Using a weak simulation between the original and sliced graph, we were able to prove the correctness of static interprocedural slicing. We also instantiate our framework with a simple While language with procedures. This shows that the chosen abstractions are indeed valid. 
 
@@ -400,8 +443,22 @@ abstract = This theory defines a type constructor representing the free Boolean 
 title = Abstract Rewriting
 topic = Logic/Rewriting
 date = 2010-06-14
-author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
-abstract = We present an Isabelle formalization of abstract rewriting (see, e.g., the book by Baader and Nipkow). First, we define standard relations like <i>joinability</i>, <i>meetability</i>, <i>conversion</i>, etc. Then, we formalize important properties of abstract rewrite systems, e.g., confluence and strong normalization. Our main concern is on strong normalization, since this formalization is the basis of <a href="http://cl-informatik.uibk.ac.at/software/ceta">CeTA</a> (which is mainly about strong normalization of term rewrite systems). Hence lemmas involving strong normalization constitute by far the biggest part of this theory. One of those is Newman's lemma.
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+abstract =
+  We present an Isabelle formalization of abstract rewriting (see, e.g.,
+  the book by Baader and Nipkow). First, we define standard relations like
+  <i>joinability</i>, <i>meetability</i>, <i>conversion</i>, etc. Then, we
+  formalize important properties of abstract rewrite systems, e.g.,
+  confluence and strong normalization. Our main concern is on strong
+  normalization, since this formalization is the basis of <a
+  href="http://cl-informatik.uibk.ac.at/software/ceta">CeTA</a> (which is
+  mainly about strong normalization of term rewrite systems). Hence lemmas
+  involving strong normalization constitute by far the biggest part of this
+  theory. One of those is Newman's lemma.
+extra-history =
+  Change history: [2010-09-17]: Added theories defining several (ordered)
+  semirings related to strong normalization and giving some standard
+  instances.
 
 [Free-Groups]
 title = Free Groups
@@ -462,6 +519,27 @@ date = 2004-11-19
 topic = Mathematics/Analysis
 abstract = Lebesgue-style integration plays a major role in advanced probability. We formalize concepts of elementary measure theory, real-valued random variables as Borel-measurable functions, and a stepwise inductive definition of the integral itself. All proofs are carried out in human readable style using the Isar language.
 extra-note = Note: This article is of historical interest only. Lebesgue-style integration and probability theory are now available as part of the Isabelle/HOL distribution (directory Probability). 
+
+[Polynomials]
+title = Executable Multivariate Polynomials
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+date = 2010-08-10
+topic = Mathematics/Analysis
+abstract =
+  We define multivariate polynomials over arbitrary (ordered) semirings in
+  combination with (executable) operations like addition, multiplication,
+  and substitution. We also define (weak) monotonicity of polynomials and
+  comparison of polynomials where we provide standard estimations like
+  absolute positiveness or the more recent approach of Neurauter, Zankl,
+  and Middeldorp. Moreover, it is proven that strongly normalizing
+  (monotone) orders can be lifted to strongly normalizing (monotone) orders
+  over polynomials. Our formalization was performed as part of the <a
+  href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA-system</a>
+  which contains several termination techniques. The provided theories have
+  been essential to  formalize polynomial interpretations.
+extra-history =
+  Change history: [2010-09-17]: Moved theories on arbitrary (ordered)
+  semirings to Abstract Rewriting.
 
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples

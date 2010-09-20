@@ -1,5 +1,4 @@
 (*  Title:      HOL/MicroJava/BV/Err.thy
-    ID:         $Id: Err.thy,v 1.14 2009-01-01 22:24:32 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -17,44 +16,48 @@ datatype 'a err = Err | OK 'a
 types 'a ebinop = "'a \<Rightarrow> 'a \<Rightarrow> 'a err"
 types 'a esl = "'a set \<times> 'a ord \<times> 'a ebinop"
 
-consts
-  ok_val :: "'a err \<Rightarrow> 'a"
-primrec
+primrec ok_val :: "'a err \<Rightarrow> 'a"
+where
   "ok_val (OK x) = x"
 
-constdefs
-  lift :: "('a \<Rightarrow> 'b err) \<Rightarrow> ('a err \<Rightarrow> 'b err)"
+definition lift :: "('a \<Rightarrow> 'b err) \<Rightarrow> ('a err \<Rightarrow> 'b err)"
+where
   "lift f e \<equiv> case e of Err \<Rightarrow> Err | OK x \<Rightarrow> f x"
 
-  lift2 :: "('a \<Rightarrow> 'b \<Rightarrow> 'c err) \<Rightarrow> 'a err \<Rightarrow> 'b err \<Rightarrow> 'c err"
+definition lift2 :: "('a \<Rightarrow> 'b \<Rightarrow> 'c err) \<Rightarrow> 'a err \<Rightarrow> 'b err \<Rightarrow> 'c err"
+where
   "lift2 f e\<^isub>1 e\<^isub>2 \<equiv>
   case e\<^isub>1 of Err  \<Rightarrow> Err | OK x \<Rightarrow> (case e\<^isub>2 of Err \<Rightarrow> Err | OK y \<Rightarrow> f x y)"
 
-  le :: "'a ord \<Rightarrow> 'a err ord"
+definition le :: "'a ord \<Rightarrow> 'a err ord"
+where
   "le r e\<^isub>1 e\<^isub>2 \<equiv>
   case e\<^isub>2 of Err \<Rightarrow> True | OK y \<Rightarrow> (case e\<^isub>1 of Err \<Rightarrow> False | OK x \<Rightarrow> x \<sqsubseteq>\<^sub>r y)"
 
-  sup :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a err \<Rightarrow> 'b err \<Rightarrow> 'c err)"
+definition sup :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a err \<Rightarrow> 'b err \<Rightarrow> 'c err)"
+where
   "sup f \<equiv> lift2 (\<lambda>x y. OK (x \<squnion>\<^sub>f y))"
 
-  err :: "'a set \<Rightarrow> 'a err set"
+definition err :: "'a set \<Rightarrow> 'a err set"
+where
   "err A \<equiv> insert Err {OK x|x. x\<in>A}"
 
-  esl :: "'a sl \<Rightarrow> 'a esl"
+definition esl :: "'a sl \<Rightarrow> 'a esl"
+where
   "esl \<equiv> \<lambda>(A,r,f). (A, r, \<lambda>x y. OK(f x y))"
 
-  sl :: "'a esl \<Rightarrow> 'a err sl"
+definition sl :: "'a esl \<Rightarrow> 'a err sl"
+where
   "sl \<equiv> \<lambda>(A,r,f). (err A, le r, lift2 f)"
 
 abbreviation
   err_semilat :: "'a esl \<Rightarrow> bool" where
   "err_semilat L == semilat(sl L)"
 
-consts
-  strict  :: "('a \<Rightarrow> 'b err) \<Rightarrow> ('a err \<Rightarrow> 'b err)"
-primrec
+primrec strict  :: "('a \<Rightarrow> 'b err) \<Rightarrow> ('a err \<Rightarrow> 'b err)"
+where
   "strict f Err    = Err"
-  "strict f (OK x) = f x"
+| "strict f (OK x) = f x"
 
 lemma err_def':
   "err A \<equiv> insert Err {x. \<exists>y\<in>A. x = OK y}"

@@ -62,7 +62,7 @@ proof -
 qed
 
 definition inat_cocase :: "'a \<Rightarrow> (inat \<Rightarrow> 'a) \<Rightarrow> inat \<Rightarrow> 'a"
-where
+where [nitpick_simp]:
   "inat_cocase z s n = 
    (case n of Fin n' \<Rightarrow> (case n' of 0 \<Rightarrow> z | Suc n'' \<Rightarrow> s (Fin n'')) | Infty \<Rightarrow> s Infty)"
 
@@ -123,7 +123,7 @@ next
   thus ?case by(simp only: funpow_Suc_tail_rec)
 qed
 
-lemma inat_corec [code]:
+lemma inat_corec [code, nitpick_simp]:
   "inat_corec a f = (case f a of None \<Rightarrow> 0 | Some a \<Rightarrow> iSuc (inat_corec a f))"
 proof(cases "\<exists>n. ((map_comp f) ^^ n) f a = None")
   case True
@@ -343,5 +343,22 @@ by(simp add: iSuc_def split: inat.split)
 lemma iSuc_minus_1 [simp]: "iSuc n - 1 = n"
 by(simp add: one_inat_def iSuc_Fin[symmetric] zero_inat_def[symmetric])
 
+subsection {* Misc. *}
+
+lemma Fin_add_mono [simp]:
+  "Fin x + y < Fin x + z \<longleftrightarrow> y < z"
+by(cases y)(case_tac [!] z, simp_all)
+
+lemma Fin_add1_eq [simp]: "Fin x + y = Fin x + z \<longleftrightarrow> y = z"
+by (metis Fin_add_mono add_commute neq_iff)
+
+lemma Fin_add2_eq [simp]: "y + Fin x = z + Fin x \<longleftrightarrow> y = z"
+by (metis Fin_add1_eq add_commute)
+
+primrec the_Fin :: "inat \<Rightarrow> nat"
+where "the_Fin (Fin n) = n"
+
+lemma Fin_less_Fin_plusI: "x < y \<Longrightarrow> Fin x < Fin y + z"
+by(cases z) simp_all
 
 end

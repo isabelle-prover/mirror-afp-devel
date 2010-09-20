@@ -86,7 +86,7 @@ proof-
       case (Suc n)
       let ?up = "(?M n)(inv h n := P' (inv h n))"
       have 1: "?M(Suc n) = ?up" using surjh Suc(2)
-	by(simp (no_asm_simp) add:expand_fun_eq f_inv_into_f)
+	by(simp (no_asm_simp) add:fun_eq_iff f_inv_into_f)
 	  (metis injh inv_f_f less_antisym)
       show ?case
       proof(rule ccontr)
@@ -126,7 +126,7 @@ proof -
 	let ?up = "(?M n)(inv h n := Top S (P(inv h n)))"
 	assume "f(?M n) \<noteq> f(?M(Suc n))"
 	also have eq: "?M(Suc n) = ?up" using surjh Suc
-	  by(simp (no_asm_simp) add:expand_fun_eq f_inv_into_f)
+	  by(simp (no_asm_simp) add:fun_eq_iff f_inv_into_f)
 	    (metis injh inv_f_eq less_antisym)
 	finally have n: "f(?M n) \<noteq> f(?up)" .
 	with nonmanip[OF MProf Top_in_Lin n[symmetric]] Suc eq `P:Prof`
@@ -193,7 +193,7 @@ proof(clarsimp simp:swf_def unanimity_def)
   have top: "!!i c. b\<noteq>c \<Longrightarrow> (c,b) : Top {a,b} (P i)"
     using abP by(auto simp:Top_def)
   have "Top {b} o ?abP = ?abP" using `P:Prof`
-    by (simp add:expand_fun_eq top Top_top Prof_def Pi_def Top_in_Lin)
+    by (simp add:fun_eq_iff top Top_top Prof_def Pi_def Top_in_Lin)
   moreover have "f(Top {b} o ?abP) = b"
     by (metis una_Top[OF `?abP : Prof`] empty_not_insert singletonE)
   ultimately have "f ?abP = b" by simp

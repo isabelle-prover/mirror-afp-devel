@@ -92,13 +92,7 @@ value "rbt_restrict_list (list_to_rs [1::nat,2,3,4,5]) [1::nat,9,2,3,4,5,6,5,4,3
 
 definition "test n = (list_to_rs [(1::int)..n])"
 
-export_code test in SML module_name test
-ML {*
-  open test;
-  
-  test 90000
-
-*}
+ML {* @{code test} 9000 *}
 
 subsubsection "Theories"
 text {*

@@ -218,10 +218,12 @@ inductive_cases evals_cases [cases set]:
 
 subsection"Final expressions"
 
-constdefs
-  final :: "'a exp \<Rightarrow> bool"
+definition final :: "'a exp \<Rightarrow> bool"
+where
   "final e  \<equiv>  (\<exists>v. e = Val v) \<or> (\<exists>a. e = Throw a)"
-  finals:: "'a exp list \<Rightarrow> bool"
+
+definition finals:: "'a exp list \<Rightarrow> bool"
+where
   "finals es  \<equiv>  (\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
 
 lemma [simp]: "final(Val v)"

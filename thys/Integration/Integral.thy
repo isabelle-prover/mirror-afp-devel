@@ -1160,20 +1160,18 @@ text{* There is much more to prove about nonnegative integration. Next
   The $n$th element of the new sequence is the upper closure of the
   $n$th elements of the first $n$ sequences. *}
 
-constdefs (*The upper closure?*)
-  upclose:: "('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real)"
-  "upclose f g \<equiv> (\<lambda>t. max (f t) (g t))" 
-
-consts
-  mon_upclose_help :: "nat \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow> real)" ("muh")
+definition (*The upper closure?*)
+  upclose:: "('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real)" where
+  "upclose f g = (\<lambda>t. max (f t) (g t))" 
 
 primrec
+  mon_upclose_help :: "nat \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow> real)" ("muh") where
   "muh 0 u m = u m 0"
-  "muh (Suc n) u m = upclose (u m (Suc n)) (muh n u m)" 
+| "muh (Suc n) u m = upclose (u m (Suc n)) (muh n u m)" 
 
-constdefs
-  mon_upclose (*See Bauer p. 68*) :: "(nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow> real)" ("mu")
-  "mu u m \<equiv> muh m u m"
+definition
+  mon_upclose (*See Bauer p. 68*) :: "(nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow> real)" ("mu") where
+  "mu u m = muh m u m"
 
 lemma sf_norm_help:
   assumes fin: "finite K" and jK: "j \<in> K" and tj: "t \<in> C j" and iK: "\<forall>i\<in>K-{j}. t \<notin> C i"
@@ -1897,15 +1895,16 @@ qed
 text{* Speaking all the time about integrability, it is time to define
   it at last. *}
 
-constdefs
-  integrable:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> bool"
+definition
+  integrable:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> bool" where
   (*We could also demand that f be in rv M, but measurability is already ensured 
   by construction of the integral/nn_integrable functions*)
-  "integrable f M \<equiv> measure_space M \<and> 
+  "integrable f M \<longleftrightarrow> measure_space M \<and> 
   (\<exists>x. x \<in> nnfis (pp f) M) \<and> (\<exists>y. y \<in> nnfis (np f) M)"
 
-  integral:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real" ("\<integral> _ \<partial>_"(*<*)[60,61] 110(*>*))
-  "integrable f M \<Longrightarrow> \<integral> f \<partial>M \<equiv> (THE i. i \<in> nnfis (pp f) M) -
+definition
+  integral:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real" ("\<integral> _ \<partial>_"(*<*)[60,61] 110(*>*)) where
+  "integrable f M \<Longrightarrow> \<integral> f \<partial>M = (THE i. i \<in> nnfis (pp f) M) -
   (THE j. j \<in> nnfis (np f) M)" 
 
 text{* So the final step is done, the integral defined. The theorems

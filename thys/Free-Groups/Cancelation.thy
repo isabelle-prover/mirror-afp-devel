@@ -2,7 +2,7 @@ header {* Cancelation of words of generators and their inverses *}
 
 theory Cancelation
 imports
-   "~~/src/HOL/Lambda/Commutation"
+   "~~/src/HOL/Proofs/Lambda/Commutation"
 begin
 
 text {*
@@ -351,7 +351,7 @@ And finally, we show that there exists a unique normal form for each word.
 
 (*
 lemma inv_rtrcl: "R^**^--1 = R^--1^**" (* Did I overlook this in the standard libs? *)
-by (auto simp add:expand_fun_eq intro: dest:rtranclp_converseD intro:rtranclp_converseI)
+by (auto simp add:fun_eq_iff intro: dest:rtranclp_converseD intro:rtranclp_converseI)
 *)
 lemma norm_form_uniq:
   assumes "cancels_to a b"

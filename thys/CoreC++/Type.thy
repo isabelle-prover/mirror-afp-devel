@@ -31,20 +31,17 @@ datatype base  -- "superclass"
   = Repeats cname  -- "repeated (nonvirtual) inheritance"
   | Shares cname   -- "shared (virtual) inheritance"
 
-consts 
-  getbase :: "base \<Rightarrow> cname"
-  isRepBase :: "base \<Rightarrow> bool"
-  isShBase :: "base \<Rightarrow> bool"
-
-primrec
+primrec getbase :: "base \<Rightarrow> cname" where
   "getbase (Repeats C) = C"
-  "getbase (Shares C)  = C"
-primrec
+| "getbase (Shares C)  = C"
+
+primrec isRepBase :: "base \<Rightarrow> bool" where
   "isRepBase (Repeats C) = True"
-  "isRepBase (Shares C) = False"
-primrec
+| "isRepBase (Shares C) = False"
+
+primrec isShBase :: "base \<Rightarrow> bool" where
   "isShBase(Repeats C) = False"
-  "isShBase(Shares C) = True"
+| "isShBase(Shares C) = True"
 
 definition is_refT :: "ty \<Rightarrow> bool" where
   "is_refT T  \<equiv>  T = NT \<or> (\<exists>C. T = Class C)"

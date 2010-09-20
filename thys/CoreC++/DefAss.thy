@@ -57,51 +57,45 @@ by(simp add:hyperset_defs)
 
 section {*Definite assignment*}
 
-consts
- \<A>  :: "expr \<Rightarrow> hyperset"
- \<A>s :: "expr list \<Rightarrow> hyperset"
- \<D>  :: "expr \<Rightarrow> hyperset \<Rightarrow> bool"
- \<D>s :: "expr list \<Rightarrow> hyperset \<Rightarrow> bool"
+primrec \<A> :: "expr \<Rightarrow> hyperset" and \<A>s :: "expr list \<Rightarrow> hyperset" where
+"\<A> (new C) = \<lfloor>{}\<rfloor>" |
+"\<A> (Cast C e) = \<A> e" |
+"\<A> (\<lparr>C\<rparr>e) = \<A> e" |
+"\<A> (Val v) = \<lfloor>{}\<rfloor>" |
+"\<A> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2" |
+"\<A> (Var V) = \<lfloor>{}\<rfloor>" |
+"\<A> (LAss V e) = \<lfloor>{V}\<rfloor> \<squnion> \<A> e" |
+"\<A> (e\<bullet>F{Cs}) = \<A> e" |
+"\<A> (e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2" |
+"\<A> (Call e Copt M es) = \<A> e \<squnion> \<A>s es" |
+"\<A> ({V:T; e}) = \<A> e \<ominus> V" |
+"\<A> (e\<^isub>1;;e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2" |
+"\<A> (if (e) e\<^isub>1 else e\<^isub>2) =  \<A> e \<squnion> (\<A> e\<^isub>1 \<sqinter> \<A> e\<^isub>2)" |
+"\<A> (while (b) e) = \<A> b" |
+"\<A> (throw e) = None" |
 
-primrec
-"\<A> (new C) = \<lfloor>{}\<rfloor>"
-"\<A> (Cast C e) = \<A> e"
-"\<A> (\<lparr>C\<rparr>e) = \<A> e"
-"\<A> (Val v) = \<lfloor>{}\<rfloor>"
-"\<A> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
-"\<A> (Var V) = \<lfloor>{}\<rfloor>"
-"\<A> (LAss V e) = \<lfloor>{V}\<rfloor> \<squnion> \<A> e"
-"\<A> (e\<bullet>F{Cs}) = \<A> e"
-"\<A> (e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
-"\<A> (Call e Copt M es) = \<A> e \<squnion> \<A>s es"
-"\<A> ({V:T; e}) = \<A> e \<ominus> V"
-"\<A> (e\<^isub>1;;e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
-"\<A> (if (e) e\<^isub>1 else e\<^isub>2) =  \<A> e \<squnion> (\<A> e\<^isub>1 \<sqinter> \<A> e\<^isub>2)"
-"\<A> (while (b) e) = \<A> b"
-"\<A> (throw e) = None"
-
-"\<A>s ([]) = \<lfloor>{}\<rfloor>"
+"\<A>s ([]) = \<lfloor>{}\<rfloor>" |
 "\<A>s (e#es) = \<A> e \<squnion> \<A>s es"
 
-primrec
-"\<D> (new C) A = True"
-"\<D> (Cast C e) A = \<D> e A"
-"\<D> (\<lparr>C\<rparr>e) A = \<D> e A"
-"\<D> (Val v) A = True"
-"\<D> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
-"\<D> (Var V) A = (V \<in>\<in> A)"
-"\<D> (LAss V e) A = \<D> e A"
-"\<D> (e\<bullet>F{Cs}) A = \<D> e A"
-"\<D> (e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
-"\<D> (Call e Copt M es) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
-"\<D> ({V:T; e}) A = \<D> e (A \<ominus> V)"
-"\<D> (e\<^isub>1;;e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
+primrec \<D> :: "expr \<Rightarrow> hyperset \<Rightarrow> bool" and \<D>s :: "expr list \<Rightarrow> hyperset \<Rightarrow> bool" where
+"\<D> (new C) A = True" |
+"\<D> (Cast C e) A = \<D> e A" |
+"\<D> (\<lparr>C\<rparr>e) A = \<D> e A" |
+"\<D> (Val v) A = True" |
+"\<D> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))" |
+"\<D> (Var V) A = (V \<in>\<in> A)" |
+"\<D> (LAss V e) A = \<D> e A" |
+"\<D> (e\<bullet>F{Cs}) A = \<D> e A" |
+"\<D> (e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))" |
+"\<D> (Call e Copt M es) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))" |
+"\<D> ({V:T; e}) A = \<D> e (A \<ominus> V)" |
+"\<D> (e\<^isub>1;;e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))" |
 "\<D> (if (e) e\<^isub>1 else e\<^isub>2) A =
-  (\<D> e A \<and> \<D> e\<^isub>1 (A \<squnion> \<A> e) \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e))"
-"\<D> (while (e) c) A = (\<D> e A \<and> \<D> c (A \<squnion> \<A> e))"
-"\<D> (throw e) A = \<D> e A"
+  (\<D> e A \<and> \<D> e\<^isub>1 (A \<squnion> \<A> e) \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e))" |
+"\<D> (while (e) c) A = (\<D> e A \<and> \<D> c (A \<squnion> \<A> e))" |
+"\<D> (throw e) A = \<D> e A" |
 
-"\<D>s ([]) A = True"
+"\<D>s ([]) A = True" |
 "\<D>s (e#es) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
 
 lemma As_map_Val[simp]: "\<A>s (map Val vs) = \<lfloor>{}\<rfloor>"

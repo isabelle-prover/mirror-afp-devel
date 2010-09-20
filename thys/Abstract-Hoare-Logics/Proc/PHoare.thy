@@ -1,5 +1,4 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: PHoare.thy,v 1.3 2007-07-11 10:05:49 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -33,23 +32,22 @@ validity (w.r.t.\ partial correctness) is still what it used to be,
 except that we have to take auxiliary variables into account as well:
 *}
 
-constdefs
- valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50)
-     "\<Turnstile> {P}c{Q}  \<equiv>  \<forall>s t. s -c\<rightarrow> t \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t)"
+definition
+ valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50) where
+     "\<Turnstile> {P}c{Q} \<longleftrightarrow> (\<forall>s t. s -c\<rightarrow> t \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t))"
 
 text{*\noindent Auxiliary variables are always denoted by @{term z}.
 
 Validity of a context and validity of a Hoare triple in a context are defined
 as follows:*}
 
-constdefs
- valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile> _" 50)
-     "|\<Turnstile> C           \<equiv>  \<forall>(P,c,Q) \<in> C. \<Turnstile> {P}c{Q}"
+definition
+ valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile> _" 50) where
+  [simp]: "|\<Turnstile> C \<equiv> (\<forall>(P,c,Q) \<in> C. \<Turnstile> {P}c{Q})"
 
- cvalid :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<Turnstile>/ {(1_)}/ (_)/ {(1_)}" 50)
-  "C \<Turnstile> {P}c{Q}  \<equiv>  |\<Turnstile> C \<longrightarrow> \<Turnstile> {P}c{Q}"
-
-declare valids_def[simp]
+definition
+ cvalid :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<Turnstile>/ {(1_)}/ (_)/ {(1_)}" 50) where
+  "C \<Turnstile> {P}c{Q} \<longleftrightarrow> |\<Turnstile> C \<longrightarrow> \<Turnstile> {P}c{Q}"
 
 text{*\noindent Note that @{prop"{} \<Turnstile> {P}c{Q}"} is equivalent to
 @{prop"\<Turnstile> {P}c{Q}"}.
@@ -58,15 +56,17 @@ Unfortunately, this is not the end of it. As we have two
 semantics, @{text"-c\<rightarrow>"} and @{text"-c-n\<rightarrow>"}, we also need a second notion
 of validity parameterized with the recursion depth @{term n}:*}
 
-constdefs
- nvalid :: "nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>_ {(1_)}/ (_)/ {(1_)}" 50)
-  "\<Turnstile>n {P}c{Q}     \<equiv>  \<forall>s t. s -c-n\<rightarrow> t \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t)"
+definition
+ nvalid :: "nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>_ {(1_)}/ (_)/ {(1_)}" 50) where
+  "\<Turnstile>n {P}c{Q} \<equiv> (\<forall>s t. s -c-n\<rightarrow> t \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t))"
 
- nvalids :: "nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("|\<Turnstile>'__/ _" 50)
-  "|\<Turnstile>_n C             \<equiv>  \<forall>(P,c,Q) \<in> C. \<Turnstile>n {P}c{Q}"
+definition
+ nvalids :: "nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("|\<Turnstile>'__/ _" 50) where
+  "|\<Turnstile>_n C \<equiv> (\<forall>(P,c,Q) \<in> C. \<Turnstile>n {P}c{Q})"
 
- cnvalid :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<Turnstile>_/ {(1_)}/ (_)/ {(1_)}" 50)
-  "C \<Turnstile>n {P}c{Q}  \<equiv>  |\<Turnstile>_n C \<longrightarrow> \<Turnstile>n {P}c{Q}"
+definition
+ cnvalid :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<Turnstile>_/ {(1_)}/ (_)/ {(1_)}" 50) where
+  "C \<Turnstile>n {P}c{Q} \<longleftrightarrow> |\<Turnstile>_n C \<longrightarrow> \<Turnstile>n {P}c{Q}"
 
 text{*Finally we come to the proof system for deriving triples in a context:*}
 
@@ -121,9 +121,9 @@ is proved by induction on @{term c}. The reason for the generalization
 is that soundness of the @{term CALL} rule is proved by induction on the
 maximal call depth, i.e.\ @{term n}.*}
 apply(subgoal_tac "\<forall>n. C \<Turnstile>n {P}c{Q}")
-apply(unfold valid_defs exec_iff_execn[THEN eq_reflection])
+apply(unfold valid_defs exec_iff_execn)
  apply fast
-apply(erule hoare.induct);
+apply(erule hoare.induct)
         apply simp
        apply fast
       apply simp
@@ -148,9 +148,9 @@ text{*
 The completeness proof employs the notion of a \emph{most general triple} (or
 \emph{most general formula}): *}
 
-constdefs
-  MGT :: "com \<Rightarrow> state assn \<times> com \<times> state assn"
-  "MGT c  \<equiv>  (\<lambda>z s. z = s, c, \<lambda>z t. z -c\<rightarrow> t)"
+definition
+  MGT :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
+  "MGT c = (\<lambda>z s. z = s, c, \<lambda>z t. z -c\<rightarrow> t)"
 
 declare MGT_def[simp]
 

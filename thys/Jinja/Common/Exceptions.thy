@@ -8,30 +8,36 @@ header {* \isaheader{Exceptions} *}
 
 theory Exceptions imports Objects begin
 
-constdefs
-  NullPointer :: cname
+definition NullPointer :: cname
+where
   "NullPointer \<equiv> ''NullPointer''"
 
-  ClassCast :: cname
+definition ClassCast :: cname
+where
   "ClassCast \<equiv> ''ClassCast''"
 
-  OutOfMemory :: cname
+definition OutOfMemory :: cname
+where
   "OutOfMemory \<equiv> ''OutOfMemory''"
 
-  sys_xcpts :: "cname set"
+definition sys_xcpts :: "cname set"
+where
   "sys_xcpts  \<equiv>  {NullPointer, ClassCast, OutOfMemory}"
 
-  addr_of_sys_xcpt :: "cname \<Rightarrow> addr"
+definition addr_of_sys_xcpt :: "cname \<Rightarrow> addr"
+where
   "addr_of_sys_xcpt s \<equiv> if s = NullPointer then 0 else
                         if s = ClassCast then 1 else
                         if s = OutOfMemory then 2 else undefined"
 
-  start_heap :: "'c prog \<Rightarrow> heap"
+definition start_heap :: "'c prog \<Rightarrow> heap"
+where
   "start_heap G \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer)
                         (addr_of_sys_xcpt ClassCast \<mapsto> blank G ClassCast)
                         (addr_of_sys_xcpt OutOfMemory \<mapsto> blank G OutOfMemory)"
 
-  preallocated :: "heap \<Rightarrow> bool"
+definition preallocated :: "heap \<Rightarrow> bool"
+where
   "preallocated h \<equiv> \<forall>C \<in> sys_xcpts. \<exists>fs. h(addr_of_sys_xcpt C) = Some (C,fs)"
 
 

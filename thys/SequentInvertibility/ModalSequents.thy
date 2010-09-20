@@ -45,7 +45,7 @@ proof-
 from assms and nonEmpty_contain obtain a where "a :# \<Gamma>" by auto
 then have "count \<Gamma> a \<ge> 1" by auto
 then have "count (\<Gamma> + C) a \<noteq> count C a" by auto
-then show "\<Gamma> + C \<noteq> C" by (auto simp add:multiset_ext_iff)
+then show "\<Gamma> + C \<noteq> C" by (auto simp add:multiset_eq_iff)
 qed 
 
 lemma nonEmpty_image:
@@ -57,7 +57,7 @@ lemma single_plus_obtain:
 assumes "A :# \<Gamma>"
 shows "\<exists> \<Delta>. \<Gamma> = \<Delta> \<oplus> A"
 proof-
-from assms have "\<Gamma> = \<Gamma> \<ominus> A \<oplus> A" by (auto simp add:multiset_ext_iff)
+from assms have "\<Gamma> = \<Gamma> \<ominus> A \<oplus> A" by (auto simp add:multiset_eq_iff)
 then show ?thesis by (rule_tac x="\<Gamma>\<ominus>A" in exI) simp
 qed
 
@@ -157,22 +157,25 @@ consts
   extendRule2 :: "('a,'b) sequent \<Rightarrow> ('a,'b) sequent \<Rightarrow> ('a,'b) rule \<Rightarrow> ('a,'b) rule"
   extendConc :: "('a,'b) sequent \<Rightarrow> ('a,'b) rule \<Rightarrow> ('a,'b) rule"
 
-  (* functions to get at components of sequents *)
-  antec :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset"
-  succ :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset"
-  mset :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset"
-  seq_size :: "('a,'b) sequent \<Rightarrow> nat"
-
   (* Unique conclusion Property *)
   uniqueConclusion :: "('a,'b) rule set \<Rightarrow> bool"
 
   (* Transform a multiset using a modal operator.  "Boxing" a context, effectively *)
   modaliseMultiset :: "'b \<Rightarrow> ('a,'b) form multiset \<Rightarrow> ('a,'b) form multiset" (infixl "\<cdot>" 200)
 
-primrec antec_def : "antec (Sequent ant suc) = ant"
-primrec succ_def : "succ (Sequent ant suc) = suc"
-primrec mset_def : "mset (Sequent ant suc) = ant + suc"
-primrec seq_size_def : "seq_size (Sequent ant suc) = size ant + size suc"
+  (* functions to get at components of sequents *)
+
+primrec antec :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset" where
+  "antec (Sequent ant suc) = ant"
+
+primrec succ :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset" where
+  "succ (Sequent ant suc) = suc"
+
+primrec mset :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset" where
+  "mset (Sequent ant suc) = ant + suc"
+
+primrec seq_size :: "('a,'b) sequent \<Rightarrow> nat" where
+  "seq_size (Sequent ant suc) = size ant + size suc"
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
 defs extend_def : "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
@@ -365,7 +368,7 @@ shows "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
     case (I R Rs)
-    then show "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
+    then show "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)" using mset.simps [where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
 
@@ -376,7 +379,7 @@ shows "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
     case (I R Rs)
-    then show "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
+    then show "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)" using mset.simps[where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
 
@@ -391,10 +394,10 @@ proof-
        proof (cases)
           case (I R Rs)
           obtain G H where "C = (G \<Rightarrow>* H)" by (cases C) (auto)
-          then have "G + H = \<LM>Compound R Rs\<RM>" using mset_def and `mset C = \<LM>Compound R Rs\<RM>` by auto
+          then have "G + H = \<LM>Compound R Rs\<RM>" using mset.simps and `mset C = \<LM>Compound R Rs\<RM>` by auto
           then have "size (G+H) = 1" by auto 
           then have "size G + size H = 1" by auto
-          then have "seq_size C = 1" using seq_size_def[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
+          then have "seq_size C = 1" using seq_size.simps[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
           moreover have "snd r = C" using `r = (Ps,C)` by simp
           ultimately show "seq_size (snd r) = 1" by simp
        qed
@@ -410,7 +413,7 @@ then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" usi
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
 then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
      using `mset C = \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
+     and mset.simps [where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
      by auto
 qed
 
@@ -425,7 +428,7 @@ from prems obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> modRules2" using prems by simp
 then have "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> C = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)" 
      using `mset C = \<LM>Modal F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Modal F Fs"]
+     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Modal F Fs"]
      by auto
 thus ?thesis using `Ps \<noteq> []` by auto
 qed
@@ -488,7 +491,7 @@ using assms nonEmpty_image[where \<Gamma>=\<Gamma>] modaliseMultiset_def[where \
 
 lemma mset_extend:
 shows "mset (extend S c) = mset S + mset c"
-using mset_def extend_def apply (cases S) apply (cases c) apply auto
+using mset.simps extend_def apply (cases S) apply (cases c) apply auto
 apply (drule_tac x="multiset1 \<Rightarrow>* multiset2" in meta_spec) 
 apply (drule_tac x="multiset1a \<Rightarrow>* multiset2a" in meta_spec) by (auto simp add:union_ac)
 
@@ -542,8 +545,8 @@ lemma disjoint_Aux:
 assumes "mset c = \<LM>A\<RM>"
 shows "A :# mset (extend S c)"
 proof-
-from assms have "c = (\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<or> c = (\<LM>A\<RM> \<Rightarrow>* \<Empt>)" by (cases c) (auto simp add:mset_def union_is_single)
-then show ?thesis by (auto simp add:extend_def mset_def)
+from assms have "c = (\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<or> c = (\<LM>A\<RM> \<Rightarrow>* \<Empt>)" by (cases c) (auto simp add:mset.simps union_is_single)
+then show ?thesis by (auto simp add:extend_def mset.simps)
 qed
 
 lemma disjoint_Aux2:
@@ -644,7 +647,7 @@ assumes "mset c = \<LM>Modal T Ts\<RM>"
 shows "False"
 proof-
 from assms and single_is_union have "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<or> c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)" apply (cases c)
-     apply (auto simp add:mset_def)
+     apply (auto simp add:mset.simps)
      by (drule_tac x="Modal T Ts" in meta_spec,drule_tac x="multiset1" in meta_spec,
          drule_tac x="multiset2" in meta_spec,simp)+
 moreover
@@ -668,7 +671,7 @@ assumes "mset c = \<LM>Modal T Ts\<RM>"
 shows "False"
 proof-
 from assms and single_is_union have "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<or> c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)" apply (cases c)
-     apply (auto simp add:mset_def)
+     apply (auto simp add:mset.simps)
      by (drule_tac x="Modal T Ts" in meta_spec,drule_tac x="multiset1" in meta_spec,
          drule_tac x="multiset2" in meta_spec,simp)+
 moreover
@@ -1140,7 +1143,7 @@ proof-
      ultimately show "Modal M Ms :# \<Psi>" by blast
      qed
  then have "\<exists> \<Psi>1. \<Psi> = \<Psi>1 \<oplus> Modal M Ms" 
-      by (rule_tac x="\<Psi> \<ominus> Modal M Ms" in exI) (auto simp add:multiset_ext_iff)
+      by (rule_tac x="\<Psi> \<ominus> Modal M Ms" in exI) (auto simp add:multiset_eq_iff)
  then obtain \<Psi>1 where "S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` by auto
  have "Ps = map (extend S) ps" using ext and extendRule_def[where forms=S and R=r] and `r = (ps,c)` by auto
  then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
@@ -1150,7 +1153,7 @@ proof-
  then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms)" using characteriseSeq
       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
       apply (rule_tac x="antec x" in exI,rule_tac x="succ x \<ominus> Modal M Ms" in exI) 
-      by (drule_tac x=x in meta_spec) (auto simp add:multiset_ext_iff)
+      by (drule_tac x=x in meta_spec) (auto simp add:multiset_eq_iff)
  with all have "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' n. n\<le>n' \<and> 
                              (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms,n) \<in> derivable (ext R R2 M1 M2) \<and> 
                               p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus>Modal M Ms)"
@@ -1170,7 +1173,7 @@ proof-
  from `r \<in> upRules \<or> r \<in> modRules2` and `r \<in> R` have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r \<in> (ext R R2 M1 M2)" by auto
  moreover have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
           using `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)` and ext and `r = (ps,c)` and eq
-          by (auto simp add:extendRule_def extend_def union_ac multiset_ext_iff)
+          by (auto simp add:extendRule_def extend_def union_ac multiset_eq_iff)
  ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)" by simp
  have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
  have c2:"\<forall> p \<in> set ps. extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
@@ -1200,7 +1203,7 @@ proof-
                        using extend_def[where forms="\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms" and seq="D \<Rightarrow>* B"] by auto
                   from ant have "\<Phi>' + \<Gamma>' = (\<Phi> + \<Gamma>') + D" by (auto simp add:union_ac)
                   moreover
-                  from suc have "\<Psi>' = \<Psi>1 + B" by (auto simp add:union_ac multiset_ext_iff)
+                  from suc have "\<Psi>' = \<Psi>1 + B" by (auto simp add:union_ac multiset_eq_iff)
                   then have "\<Psi>' + \<Delta>' = (\<Psi>1 + \<Delta>') + B" by (auto simp add:union_ac)
                   ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (D \<Rightarrow>* B)" 
                        using extend_def[where forms="\<Phi>+\<Gamma>'\<Rightarrow>*\<Psi>1+\<Delta>'" and seq="D\<Rightarrow>*B"] by auto
@@ -1386,7 +1389,7 @@ proof-
      ultimately show "Modal M Ms :# \<Phi>" by blast
      qed
  then have "\<exists> \<Phi>1. \<Phi> = \<Phi>1 \<oplus> Modal M Ms" 
-      by (rule_tac x="\<Phi> \<ominus> Modal M Ms" in exI) (auto simp add:multiset_ext_iff)
+      by (rule_tac x="\<Phi> \<ominus> Modal M Ms" in exI) (auto simp add:multiset_eq_iff)
  then obtain \<Phi>1 where "S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` by auto
  have "Ps = map (extend S) ps" using ext and extendRule_def[where forms=S and R=r] and `r = (ps,c)` by auto
  then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
@@ -1396,7 +1399,7 @@ proof-
  then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>'\<oplus> Modal M Ms \<Rightarrow>* \<Psi>')" using characteriseSeq
       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
       apply (rule_tac x="antec x \<ominus> Modal M Ms" in exI,rule_tac x="succ x" in exI) 
-      by (drule_tac x=x in meta_spec) (auto simp add:multiset_ext_iff)
+      by (drule_tac x=x in meta_spec) (auto simp add:multiset_eq_iff)
  with all have "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' n. n\<le>n' \<and> (\<Phi>'\<oplus> Modal M Ms \<Rightarrow>* \<Psi>',n) \<in> derivable (ext R R2 M1 M2) \<and> 
                               p = (\<Phi>'\<oplus>Modal M Ms \<Rightarrow>* \<Psi>')"
                   by (auto simp add:Ball_def)
@@ -1414,7 +1417,7 @@ proof-
  from `r \<in> upRules \<or> r \<in> modRules2` and `r \<in> R` have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r \<in> (ext R R2 M1 M2)" by auto
  moreover have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
           using `S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)` and ext and `r = (ps,c)` and eq
-          by (auto simp add:extendRule_def extend_def union_ac multiset_ext_iff)
+          by (auto simp add:extendRule_def extend_def union_ac multiset_eq_iff)
  ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)" by simp
  have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
  have c2:"\<forall> p \<in> set ps. extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
@@ -1444,7 +1447,7 @@ proof-
                        using extend_def[where forms="\<Phi>1\<oplus> Modal M Ms \<Rightarrow>* \<Psi>" and seq="D \<Rightarrow>* B"] by auto
                   from suc have "\<Psi>' + \<Delta>' = (\<Psi> + \<Delta>') + B" by (auto simp add:union_ac)
                   moreover
-                  from ant have "\<Phi>' = \<Phi>1 + D" by (auto simp add:union_ac multiset_ext_iff)
+                  from ant have "\<Phi>' = \<Phi>1 + D" by (auto simp add:union_ac multiset_eq_iff)
                   then have "\<Phi>' + \<Gamma>' = (\<Phi>1 + \<Gamma>') + D" by (auto simp add:union_ac)
                   ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (D \<Rightarrow>* B)" 
                        using extend_def[where forms="\<Phi>1+\<Gamma>'\<Rightarrow>*\<Psi>+\<Delta>'" and seq="D\<Rightarrow>*B"] by auto

@@ -367,7 +367,7 @@ lemma conf_xcp_conf_xcp':
 by(cases xcp) auto
 
 lemma conf_xcp'_compP [simp]: "conf_xcp' (compP f P) = conf_xcp' P"
-by(simp add: expand_fun_eq conf_xcp'_def option_case_def[symmetric])
+by(simp add: fun_eq_iff conf_xcp'_def option_case_def[symmetric])
 
 end
 
@@ -1948,7 +1948,7 @@ next
   hence V: "V < length xs" by simp
   have \<tau>: "\<not> \<tau>move2 (compP2 P) h [v] (sync\<^bsub>V\<^esub> (e1) e2) (Suc (Suc (length (compE2 e1)))) None" by(simp add: \<tau>move2_iff)
   from exec have "(\<exists>a. v = Addr a \<and> stk' = [] \<and> loc' = xs[V := v] \<and> ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a \<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncLock a\<rbrace> \<and> xcp' = None \<and> pc' = Suc (Suc (Suc (length (compE2 e1))))) \<or> (v = Null \<and> stk' = [v] \<and> loc' = xs[V := v] \<and> ta = \<epsilon> \<and> xcp' = \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> \<and> pc' = Suc (Suc (length (compE2 e1))))" (is "?c1 \<or> ?c2")
-    by(fastsimp elim!: exec_meth.cases simp add: is_Ref_def expand_finfun_eq expand_fun_eq finfun_upd_apply exec_move_def)
+    by(fastsimp elim!: exec_meth.cases simp add: is_Ref_def expand_finfun_eq fun_eq_iff finfun_upd_apply exec_move_def)
   thus ?case
   proof
     assume ?c1

@@ -1,5 +1,4 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJSound.thy,v 1.12 2008-06-25 18:30:17 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,

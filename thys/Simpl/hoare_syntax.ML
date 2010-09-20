@@ -38,10 +38,10 @@ sig
   val bexp_tr': string -> term list -> term
   val bind_tr': term list -> term
   val call_ass_tr: bool -> bool -> Proof.context -> term list -> term
-  val call_tr': term list -> term
+  val call_tr': Proof.context -> term list -> term
   val call_tr: bool -> bool -> Proof.context -> term list -> term
-  val dyn_call_tr': term list -> term
-  val fcall_tr': term list -> term
+  val dyn_call_tr': Proof.context -> term list -> term
+  val fcall_tr': Proof.context -> term list -> term
   val fcall_tr: Proof.context -> term list -> term
   val guarded_Assign_tr: Proof.context -> term list -> term
   val guarded_Cond_tr: Proof.context -> term list -> term
@@ -49,8 +49,8 @@ sig
   val guarded_New_tr: Proof.context -> term list -> term
   val guarded_WhileFix_tr: Proof.context -> term list -> term
   val guarded_While_tr: Proof.context -> term list -> term
-  val guards_tr': term list -> term
-  val hide_guards: bool Unsynchronized.ref
+  val guards_tr': Proof.context -> term list -> term
+  val hide_guards: bool Config.T
   val init_tr': term list -> term
   val init_tr: Proof.context -> term list -> term
   val loc_tr': term list -> term
@@ -70,16 +70,16 @@ sig
   val setup: theory -> theory
   val switch_tr': term list -> term
   val update_comp: Proof.context -> string list -> bool -> bool -> xstring -> term -> term -> term
-  val use_call_tr': bool Unsynchronized.ref
-  val whileAnnoGFix_tr': term list -> term
-  val whileAnnoG_tr': term list -> term
+  val use_call_tr': bool Config.T
+  val whileAnnoGFix_tr': Proof.context -> term list -> term
+  val whileAnnoG_tr': Proof.context -> term list -> term
 end;
 
 structure Hoare_Syntax: HOARE_SYNTAX =
 struct
 
-val use_call_tr' = Unsynchronized.ref true;
-val hide_guards = Unsynchronized.ref false
+val (use_call_tr', setup_use_call_tr') = Attrib.config_bool "hoare_use_call_tr'" (K true);
+val (hide_guards, setup_hide_guards) = Attrib.config_bool "hoare_hide_guards" (K false);
 
 val globalsN = "globals";
 val localsN = "locals";
@@ -88,6 +88,8 @@ val locals_updateN = suffix Record.updateN localsN;
 val upd_globalsN = "upd_globals";   (* FIXME authentic syntax !? *)
 val allocN = "alloc_'";
 val freeN = "free_'";
+
+val Null = Syntax.free "Simpl_Heap.Null";   (* FIXME ?? *)
 
 
 (** utils **)
@@ -162,11 +164,6 @@ fun is_global ctxt name =
   end;
 
 exception UNDEFINED of string
-
-val component_name_as_string = Unsynchronized.ref false;
-fun mk_component_name s = if !component_name_as_string
-                          then mk_string (String.explode s)
-                          else Syntax.free ((*varname*) s);
 
 (* FIXME: if is_state_var etc. is reimplemented, rethink about when adding the deco to
    the records *)
@@ -576,8 +573,6 @@ fun new_tr ctxt (ts as [var,size,init]) =
         val free = lookup_comp ctxt [] freeN (Bound 0);
         val freetest = Syntax.const @{const_syntax Orderings.less_eq} $ size $ free;
 
-        val null = Syntax.free "Ref.Null";   (* FIXME ?? *)
-
         val alloc_upd =
           update_comp ctxt [] false false allocN
             (Syntax.const @{const_syntax Cons} $ new $ alloc);
@@ -592,7 +587,7 @@ fun new_tr ctxt (ts as [var,size,init]) =
         val cond =
           Syntax.const @{const_syntax If} $ freetest $
             update_tr ctxt [] offset offset new var g' $
-            update_tr ctxt [] offset offset null var (Bound 0);
+            update_tr ctxt [] offset offset Null var (Bound 0);
 
       in Syntax.const @{const_syntax Basic} $ Abs ("s", dummyT, cond)
       end
@@ -627,8 +622,6 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
         val free = lookup_comp ctxt [] freeN (Bound 0);
         val freetest = Syntax.const @{const_syntax Orderings.less_eq} $ size $ free;
 
-        val null = Syntax.free "Ref.Null";   (* FIXME ?? *)
-
         val alloc_upd =
           update_comp ctxt [] false false allocN
             (Syntax.const @{const_syntax Cons} $ new $ alloc);
@@ -643,7 +636,7 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
         val cond =
           Syntax.const @{const_syntax if_rel} $ Abs ("s", dummyT, freetest) $
             Abs ("s", dummyT, update_tr ctxt [] offset offset new var g') $
-            Abs ("s", dummyT, update_tr ctxt [] offset offset null var (Bound 0)) $
+            Abs ("s", dummyT, update_tr ctxt [] offset offset Null var (Bound 0)) $
             Abs ("s", dummyT, update_tr ctxt [] offset offset new var g');
 
       in Syntax.const @{const_syntax Spec} $ cond
@@ -683,7 +676,7 @@ infixr 9 &;
 fun (NONE & NONE) = NONE
   | ((SOME x) & NONE) = SOME x
   | (NONE & (SOME x)) = SOME x
-  | ((SOME x) & (SOME y)) = SOME (Syntax.const @{const_syntax "op &"} $ x $ y);
+  | ((SOME x) & (SOME y)) = SOME (Syntax.const @{const_syntax HOL.conj} $ x $ y);
 
 fun mk_imp (l,SOME r) = SOME (HOLogic.mk_imp (l, r))
   | mk_imp (l,NONE) = NONE;
@@ -698,11 +691,11 @@ fun in_range t = Syntax.free "in_range" $ t;   (* FIXME ?? *)
 
 fun not_zero t =
   Syntax.const @{const_syntax Not} $
-    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.const @{const_syntax Groups.zero});
+    (Syntax.const @{const_syntax HOL.eq} $ t $ Syntax.const @{const_syntax Groups.zero});
 
 fun not_Null t =
   Syntax.const @{const_syntax Not} $
-    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.free "Ref.Null");   (* FIXME ?? *)
+    (Syntax.const @{const_syntax HOL.eq} $ t $ Syntax.free "Simpl_Heap.Null");   (* FIXME ?? *)
 
 fun in_length i l =
   Syntax.const @{const_syntax Orderings.less} $ i $
@@ -742,9 +735,9 @@ fun guard ctxt Ts (add as (Const (@{const_name Groups.plus},_) $ l $ r)) =
       in guard ctxt Ts l & guard ctxt Ts r & SOME g end
   | guard ctxt Ts (mul as (Const (@{const_name Groups.times},_) $ l $r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (in_range mul)
-  | guard ctxt Ts (Const (@{const_name "op &"},_) $ l $ r) =
+  | guard ctxt Ts (Const (@{const_name HOL.conj},_) $ l $ r) =
       guard ctxt Ts l & mk_imp (l,guard ctxt Ts r)
-  | guard ctxt Ts (Const (@{const_name "op |"},_) $ l $ r) =
+  | guard ctxt Ts (Const (@{const_name HOL.disj},_) $ l $ r) =
       guard ctxt Ts l & mk_imp (HOLogic.Not $ l,guard ctxt Ts r)
   | guard ctxt Ts (dv as (Const (@{const_name Divides.div_class.div},_) $ l $ r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r) & SOME (in_range dv) (* FIXME: Make more concrete guard...*)
@@ -783,7 +776,9 @@ in
 end;
 (* FIXME: make guard function a parameter of all parse-translations that need it.*)
 
-val setup = Context.theory_map (Hoare.install_generate_guard mk_guard);
+val setup =
+  setup_use_call_tr' #> setup_hide_guards #>
+  Context.theory_map (Hoare.install_generate_guard mk_guard);
 
 
 fun mk_singleton_guard f g =
@@ -799,7 +794,7 @@ fun guarded_Assign_tr ctxt (ts as [v, e]) =
         (* By the artificial "=" between left and right-hand side we get a bigger term and thus
            more information for type-inference *)
       in
-        case guard (Syntax.const @{const_syntax "op ="} $
+        case guard (Syntax.const @{const_syntax HOL.eq} $
             antiquoteCur_tr ctxt v $ antiquoteCur_tr ctxt e) of
           NONE => ass
         | SOME g =>
@@ -1317,7 +1312,7 @@ fun actuals_tr' acts =
         foldr1 (fn (l, r) => (Syntax.const @{syntax_const "_pars"} $ l $ r)) xs);
 
 
-fun gen_call_tr' Call CallAss init p return c =
+fun gen_call_tr' ctxt Call CallAss init p return c =
   let
     fun get_init_updates (Abs (s, _, upds)) = dest_updates upds
       | get_init_updates upds = dest_updates upds;
@@ -1349,14 +1344,14 @@ fun gen_call_tr' Call CallAss init p return c =
 
       val res_updates = rev (get_res_updates c);
       val res_actuals = map ret_par_tr' res_updates;
-  in if ! use_call_tr' then
+  in if Config.get ctxt use_call_tr' then
         (case res_actuals of
           [l] => CallAss $ l $ p $ actuals_tr' init_actuals
          | _ => Call $ p $ actuals_tr' (init_actuals @ res_actuals))
      else raise Match
   end;
 
-fun gen_fcall_tr' init p return result c =
+fun gen_fcall_tr' ctxt init p return result c =
   let
     fun get_init_updates (Abs (s, _, upds)) = dest_updates upds
       | get_init_updates _ = raise Match;
@@ -1371,7 +1366,7 @@ fun gen_fcall_tr' init p return result c =
         Abs abs => Syntax.atomic_abs_tr' abs
       | _ => raise Match);
   in
-    if ! use_call_tr' then
+    if Config.get ctxt use_call_tr' then
       Syntax.const @{syntax_const "_FCall"} $ p $ actuals_tr' init_actuals $ v $ c'
     else raise Match
   end;
@@ -1405,21 +1400,21 @@ fun pname_tr' ((f as Const (@{syntax_const "_free"}, _)) $ Free (p, T)) =
           | NONE => antiquote_mult_tr' (K true) antiquoteCur antiquoteOld p)
         end;
 
-fun call_tr' [init, p, return, result] =
-      gen_call_tr'
+fun call_tr' ctxt [init, p, return, result] =
+      gen_call_tr' ctxt
         (Const (@{syntax_const "_Call"}, dummyT))
         (Const (@{syntax_const "_CallAss"}, dummyT)) init (pname_tr' p) return result
-  | call_tr' _ = raise Match;
+  | call_tr' _ _ = raise Match;
 
 
-fun dyn_call_tr' [init, p, return, result] =
+fun dyn_call_tr' ctxt [init, p, return, result] =
       let val p' = quote_tr' antiquoteCur p
       in
-        gen_call_tr'
+        gen_call_tr' ctxt
           (Const (@{syntax_const "_DynCall"}, dummyT))
           (Const (@{syntax_const "_DynCallAss"}, dummyT)) init p' return result
       end
-  | dyn_call_tr' _ = raise Match;
+  | dyn_call_tr' _ _ = raise Match;
 
 fun proc_tr' ctxt [p] =
       let
@@ -1447,9 +1442,9 @@ fun proc_tr' ctxt [p] =
       end
   | proc_tr' _ _ = raise Match;
 
-fun fcall_tr' [init, p, return, result, c] =
-      gen_fcall_tr' init (pname_tr' p) return result c
-  | fcall_tr' _ = raise Match;
+fun fcall_tr' ctxt [init, p, return, result, c] =
+      gen_fcall_tr' ctxt init (pname_tr' p) return result c
+  | fcall_tr' _ _ = raise Match;
 
 
 (* misc. print translations *)
@@ -1461,12 +1456,12 @@ fun assert_tr' ((t as Abs (_, _, p)) :: ts) =
               Long_Name.base_name l = Long_Name.base_name StateFun.lookupN
           | selector t = false;
 
-        fun fix_state (Const (@{const_syntax "op ="},_) $ (Const (@{syntax_const "_free"}, _) $ _)) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ (Const (@{syntax_const "_bound"}, _) $ _)) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ (Const (@{syntax_const "_var"}, _) $ _)) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ Free _) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ Bound _) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ Var _) = true
+        fun fix_state (Const (@{const_syntax HOL.eq},_) $ (Const (@{syntax_const "_free"}, _) $ _)) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ (Const (@{syntax_const "_bound"}, _) $ _)) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ (Const (@{syntax_const "_var"}, _) $ _)) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ Free _) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ Bound _) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ Var _) = true
           | fix_state _ = false;
       in
         if antiquote_applied_only_to (fn t => selector t orelse fix_state t) p
@@ -1600,15 +1595,15 @@ local
         Syntax.const @{syntax_const "_grds"} $ guard_tr' t $ guards_lst_tr' ts
     | guards_lst_tr' [] = raise Match;
 
-  fun cond_guards_lst_tr' ts =
-    if ! hide_guards then Syntax.const @{syntax_const "_hidden_grds"}
+  fun cond_guards_lst_tr' ctxt ts =
+    if Config.get ctxt hide_guards then Syntax.const @{syntax_const "_hidden_grds"}
     else guards_lst_tr' ts;
 in
-  fun guards_tr' [gs, c] =
-        Syntax.const @{syntax_const "_guards"} $ cond_guards_lst_tr' (dest_list gs) $ c
-    | guards_tr' _ = raise Match;
+  fun guards_tr' ctxt [gs, c] =
+        Syntax.const @{syntax_const "_guards"} $ cond_guards_lst_tr' ctxt (dest_list gs) $ c
+    | guards_tr' _ _ = raise Match;
 
-  fun whileAnnoG_tr' [gs, cond as (Const (@{const_syntax Collect}, _) $ b), I, V, c] =
+  fun whileAnnoG_tr' ctxt [gs, cond as (Const (@{const_syntax Collect}, _) $ b), I, V, c] =
         let
           val b' =
             (case assert_tr' [b] of
@@ -1617,12 +1612,12 @@ in
 
         in
           Syntax.const @{syntax_const "_While_guard_inv_var"} $
-            cond_guards_lst_tr' (dest_list gs) $ b' $ I $ V $
+            cond_guards_lst_tr' ctxt (dest_list gs) $ b' $ I $ V $
             (Syntax.const @{syntax_const "_DoPre"} $ c)
         end
-    | whileAnnoG_tr' ts = raise Match;
+    | whileAnnoG_tr' _ _ = raise Match;
 
-  fun whileAnnoGFix_tr' [gs, cond as (Const (@{const_syntax Collect}, _) $ b), I, V, c] =
+  fun whileAnnoGFix_tr' ctxt [gs, cond as (Const (@{const_syntax Collect}, _) $ b), I, V, c] =
     let
       val b' =
         (case assert_tr' [b] of
@@ -1638,7 +1633,7 @@ in
             val (_ , c') = atomic_abs_tr' (x, T, strip_abs_body c);
           in
             Syntax.const @{syntax_const "_WhileFix_guard_inv_var"} $
-              cond_guards_lst_tr' (dest_list gs) $ b' $ x' $ I' $ V' $
+              cond_guards_lst_tr' ctxt (dest_list gs) $ b' $ x' $ I' $ V' $
               (Syntax.const @{syntax_const "_DoPre"} $ c')
           end)
     end;

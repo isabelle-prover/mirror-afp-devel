@@ -25,65 +25,56 @@ datatype event =
 text{* Instead of a state, we have a trace, i.e.\ list of events, and
 extract the state from the trace: *}
 
-(*<*)consts(*>*)
-   initk :: "room \<Rightarrow> key"
-   owns :: "event list \<Rightarrow> room \<Rightarrow> guest option"
-   currk :: "event list \<Rightarrow> room \<Rightarrow> key"
-   issued :: "event list \<Rightarrow> key set"
-   cards :: "event list \<Rightarrow> guest \<Rightarrow> card set"
-   roomk :: "event list \<Rightarrow> room \<Rightarrow> key"
-   isin :: "event list \<Rightarrow> room \<Rightarrow> guest set"
-   hotel :: "event list \<Rightarrow> bool"
-
-(*<*)
-primrec
-"owns [] r = None"
+consts
+  initk :: "room \<Rightarrow> key"
+   
+primrec owns :: "event list \<Rightarrow> room \<Rightarrow> guest option" where
+"owns [] r = None" |
 "owns (e#s) r = (case e of
  Check_in g r' c \<Rightarrow> if r' = r then Some g else owns s r |
  Enter g r' c \<Rightarrow> owns s r |
  Exit g r' \<Rightarrow> owns s r)"
 
-primrec
-"currk [] r = initk r"
+primrec currk :: "event list \<Rightarrow> room \<Rightarrow> key" where
+"currk [] r = initk r" |
 "currk (e#s) r = (let k = currk s r in
     case e of Check_in g r' c \<Rightarrow> if r' = r then snd c else k
             | Enter g r' c \<Rightarrow> k
             | Exit g r \<Rightarrow> k)"
 
-primrec
-"issued [] = range initk"
+primrec issued :: "event list \<Rightarrow> key set" where
+"issued [] = range initk" |
 "issued (e#s) = issued s \<union>
   (case e of Check_in g r c \<Rightarrow> {snd c} | Enter g r c \<Rightarrow> {} | Exit g r \<Rightarrow> {})"
 
-primrec
-"cards [] g = {}"
+primrec cards :: "event list \<Rightarrow> guest \<Rightarrow> card set" where
+"cards [] g = {}" |
 "cards (e#s) g = (let C = cards s g in
                     case e of Check_in g' r c \<Rightarrow> if g' = g then insert c C
                                                 else C
                             | Enter g r c \<Rightarrow> C
                             | Exit g r \<Rightarrow> C)"
 
-primrec
-"roomk [] r = initk r"
+primrec roomk :: "event list \<Rightarrow> room \<Rightarrow> key" where
+"roomk [] r = initk r" |
 "roomk (e#s) r = (let k = roomk s r in
     case e of Check_in g r' c \<Rightarrow> k
             | Enter g r' (x,y) \<Rightarrow> if r' = r (*& x = k*) then y else k
             | Exit g r \<Rightarrow> k)"
 
-primrec
-"isin [] r = {}"
+primrec isin :: "event list \<Rightarrow> room \<Rightarrow> guest set" where
+"isin [] r = {}" |
 "isin (e#s) r = (let G = isin s r in
                  case e of Check_in g r c \<Rightarrow> G
                  | Enter g r' c \<Rightarrow> if r' = r then {g} \<union> G else G
                  | Exit g r' \<Rightarrow> if r'=r then G - {g} else G)"
 
-primrec
-"hotel []  = True"
+primrec hotel :: "event list \<Rightarrow> bool" where
+"hotel []  = True" |
 "hotel (e # s) = (hotel s & (case e of
   Check_in g r (k,k') \<Rightarrow> k = currk s r \<and> k' \<notin> issued s |
   Enter g r (k,k') \<Rightarrow> (k,k') : cards s g & (roomk s r : {k, k'}) |
   Exit g r \<Rightarrow> g : isin s r))"
-(*>*)
 
 text{* Except for @{const initk}, which is completely unspecified,
 all these functions are defined by primitive recursion over traces:

@@ -1,5 +1,4 @@
-(*  ID:         $Id: QE.thy,v 1.9 2009-03-04 14:00:59 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
+(*  Author:     Tobias Nipkow, 2007
 *)
 
 header{* Quantifier elimination *}

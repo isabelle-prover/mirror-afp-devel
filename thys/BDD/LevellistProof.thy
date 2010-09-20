@@ -1,5 +1,4 @@
 (*  Title:       BDD
-    ID:          $Id: LevellistProof.thy,v 1.10 2009-06-08 19:16:06 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -84,16 +83,16 @@ apply  simp
 apply force
 done
 
-constdefs first:: "ref list \<Rightarrow> ref"
-"first ps \<equiv> case ps of [] \<Rightarrow> Null | (p#rs) \<Rightarrow> p"
+definition first:: "ref list \<Rightarrow> ref" where
+"first ps = (case ps of [] \<Rightarrow> Null | (p#rs) \<Rightarrow> p)"
 
 lemma first_simps [simp]: 
  "first [] = Null"
  "first (r#rs) = r"
 by (simp_all add: first_def)
 
-constdefs Levellist:: "ref list \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref list list) \<Rightarrow> bool"
-"Levellist hds next ll \<equiv> (map first ll = hds) \<and>
+definition Levellist:: "ref list \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref list list) \<Rightarrow> bool" where
+"Levellist hds next ll \<longleftrightarrow> (map first ll = hds) \<and>
                          (\<forall>i < length hds. List (hds ! i) next (ll!i))"
 
 lemma Levellist_unique:

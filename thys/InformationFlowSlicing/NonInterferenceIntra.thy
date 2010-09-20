@@ -40,9 +40,6 @@ locale NonInterferenceIntraGraph =
   and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
   and backward_slice :: "'node \<Rightarrow> 'node set" 
-  and sem :: "'com \<Rightarrow> 'state \<Rightarrow> 'com \<Rightarrow> 'state \<Rightarrow> bool" 
-    ("((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
-  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" ("_ \<triangleq> _" [51, 0] 80)
   and Exit :: "'node" ("'('_Exit'_')") +
   fixes H :: "'var set"
   fixes L :: "'var set"
@@ -469,7 +466,7 @@ reulting states are again low equivalent: *}
 
 locale NonInterferenceIntra = 
   NonInterferenceIntraGraph sourcenode targetnode kind valid_edge Entry 
-    Def Use state_val backward_slice sem identifies Exit H L High Low +
+    Def Use state_val backward_slice Exit H L High Low +
   BackwardSlice_wf sourcenode targetnode kind valid_edge Entry Def Use state_val 
     backward_slice sem identifies
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
@@ -496,7 +493,7 @@ text{* The following theorem needs the explicit edge from @{text "(_High_)"}
   two nodes identify this inital statement: the initial node and the node
   within the loop (because of loop unrolling).*}
 
-theorem nonInterferenceSecurity:
+theorem nonInterference:
   assumes "s\<^isub>1 \<approx>\<^isub>L s\<^isub>2" and "(_High_) \<notin> backward_slice (_Low_)"
   and "valid_edge a" and "sourcenode a = (_High_)" and "targetnode a = n" 
   and "kind a = (\<lambda>s. True)\<^isub>\<surd>" and "n \<triangleq> c" and "final c'"

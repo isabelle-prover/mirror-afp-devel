@@ -1,6 +1,4 @@
-(*  ID:         $Id: RTranCl.thy,v 1.6 2008-06-12 06:57:17 lsf37 Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
-*)
+(*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
 header {* Transitive Closure of Successor List Function *}
 

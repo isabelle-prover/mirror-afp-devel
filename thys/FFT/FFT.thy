@@ -465,19 +465,17 @@ section {* Discrete, Fast Fourier Transformation *}
 text {* @{text "FFT k a"} is the transform of vector @{text a}
   of length @{text "2 ^ k"}, @{text IFFT} its inverse. *}
 
-consts
-  FFT :: "nat => (nat => complex) => (nat => complex)"
-  IFFT :: "nat => (nat => complex) => (nat => complex)"
-primrec
+primrec FFT :: "nat => (nat => complex) => (nat => complex)" where
   "FFT 0 a = a"
-  "FFT (Suc k) a =
+| "FFT (Suc k) a =
      (let (x, y) = (FFT k (%i. a (2*i)), FFT k (%i. a (2*i+1)))
       in (%i. if i < 2^k
             then x i + (root (2 ^ (Suc k))) ^ i * y i
             else x (i- 2^k) - (root (2 ^ (Suc k))) ^ (i- 2^k) * y (i- 2^k)))"
-primrec
+
+primrec IFFT :: "nat => (nat => complex) => (nat => complex)" where
   "IFFT 0 a = a"
-  "IFFT (Suc k) a =
+| "IFFT (Suc k) a =
      (let (x, y) = (IFFT k (%i. a (2*i)), IFFT k (%i. a (2*i+1)))
       in (%i. if i < 2^k
             then x i + (1 / root (2 ^ (Suc k))) ^ i * y i

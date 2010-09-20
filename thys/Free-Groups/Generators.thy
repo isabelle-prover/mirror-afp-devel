@@ -123,7 +123,7 @@ qed
 lemma (in group_hom) hom_span:
   assumes "gens \<subseteq> carrier G"
   shows "h ` (\<langle>gens\<rangle>\<^bsub>G\<^esub>) = \<langle>h ` gens\<rangle>\<^bsub>H\<^esub>"
-proof(rule set_ext, rule iffI)
+proof(rule Set.set_eqI, rule iffI)
   from `gens \<subseteq> carrier G`
   have "\<langle>gens\<rangle>\<^bsub>G\<^esub> \<subseteq> carrier G" by (rule G.gen_span_closed)
 

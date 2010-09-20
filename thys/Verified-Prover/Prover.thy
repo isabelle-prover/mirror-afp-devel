@@ -214,7 +214,7 @@ lemma inj_inc[simp]: "inj inc"
   apply(simp add: inc_def) apply(simp add: inj_on_def) done
 
 lemma deriv: "deriv y = insert (0,y) (inc ` (Union (deriv ` {w. ~is_axiom (s_of_ns y) & w : set (subs y)})))"
-  apply(rule set_ext)
+  apply(rule set_eqI)
   apply(simp add: split_paired_all)
   apply(case_tac a)
    apply(force simp: deriv0 inc_def)

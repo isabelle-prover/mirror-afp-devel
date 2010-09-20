@@ -348,14 +348,14 @@ lemma ifte_inject:
 proof
   have 1: "\<And>A. i \<in> A \<Longrightarrow> A \<in> Rep_formula x \<longleftrightarrow> A \<in> Rep_formula x'"
     using assms(1)
-    by (simp add: Rep_formula_simps ifte_def expand_set_eq, fast)
+    by (simp add: Rep_formula_simps ifte_def set_eq_iff, fast)
   have 2: "\<And>A. i \<notin> A \<Longrightarrow> A \<in> Rep_formula y \<longleftrightarrow> A \<in> Rep_formula y'"
     using assms(1)
-    by (simp add: Rep_formula_simps ifte_def expand_set_eq, fast)
+    by (simp add: Rep_formula_simps ifte_def set_eq_iff, fast)
 
   show "x = x'"
   unfolding Rep_formula_simps
-  proof (rule set_ext)
+  proof (rule set_eqI)
     fix A
     have "A \<in> Rep_formula x \<longleftrightarrow> insert i A \<in> Rep_formula x"
       using `x \<in> formulas S` by (rule formulasD, force simp add: `i \<notin> S`)
@@ -367,7 +367,7 @@ proof
   qed
   show  "y = y'"
   unfolding Rep_formula_simps
-  proof (rule set_ext)
+  proof (rule set_eqI)
     fix A
     have "A \<in> Rep_formula y \<longleftrightarrow> A - {i} \<in> Rep_formula y"
       using `y \<in> formulas S` by (rule formulasD, force simp add: `i \<notin> S`)

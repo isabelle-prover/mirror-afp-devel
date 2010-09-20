@@ -233,7 +233,7 @@ next
       by(rule label_less_num_inner_nodes[simplified])
     have "labels (c\<^isub>1;;c\<^isub>2) (0 + #:c\<^isub>1) c\<^isub>2"
       by(rule Labels_Seq2,rule Labels_Base)
-    from `labels c\<^isub>1 l c` eq have "labels (c\<^isub>1;; c\<^isub>2) l (Skip;;c\<^isub>2)"
+    from `labels c\<^isub>1 l c` have "labels (c\<^isub>1;; c\<^isub>2) l (Skip;;c\<^isub>2)"
       by(fastsimp intro:Labels.Labels_Seq1)
     with `labels (c\<^isub>1;;c\<^isub>2) (0 + #:c\<^isub>1) c\<^isub>2` `l < #:c\<^isub>1` 
     have "c\<^isub>1;; c\<^isub>2 \<turnstile> \<langle>Skip;;c\<^isub>2,s,l\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:c\<^isub>1\<rangle>"
@@ -303,7 +303,7 @@ next
     assume [simp]:"c = Skip \<and> cx = while (b) c' \<and> s = s'"
     have "labels (while (b) c') 0 (while (b) c')"
       by(fastsimp intro:Labels_Base)
-    from `labels c' l c` eq have "labels (while (b) c') (l + 2) (Skip;;while (b) c')"
+    from `labels c' l c` have "labels (while (b) c') (l + 2) (Skip;;while (b) c')"
       by(fastsimp intro:Labels.Labels_WhileBody simp del:add_2_eq_Suc')
     hence "while (b) c' \<turnstile> \<langle>Skip;;while (b) c',s,l + 2\<rangle> \<leadsto> \<langle>while (b) c',s,0\<rangle>"
       by(rule StepSeqWhile)

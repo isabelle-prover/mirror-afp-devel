@@ -331,7 +331,7 @@ proof(induct rule: red1_reds1.inducts)
   from sees_wf_mdecl[OF wf this] obtain T where "P,[Class D] \<turnstile>1 body :: T"
     by(auto simp add: wf_mdecl_def)
   hence "\<not> contains_insync body" by(rule WT1_not_contains_insync)
-  hence "expr_locks body = (\<lambda>ad. 0)" by(auto simp add: contains_insync_conv expand_fun_eq)
+  hence "expr_locks body = (\<lambda>ad. 0)" by(auto simp add: contains_insync_conv fun_eq_iff)
   with sees ext show ?case by(auto)
 qed auto
 
@@ -350,8 +350,8 @@ proof -
        \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = (\<lambda>ad. (int o expr_lockss es') ad - (int o expr_lockss es) ad)"
   proof(induct rule: red1_reds1.inducts)
     case Red1CallExternal thus ?case
-      by(auto simp add: expand_fun_eq contains_insync_conv contains_insyncs_conv finfun_upd_apply elim!: red_external.cases)
-  qed(fastsimp simp add: expand_fun_eq contains_insync_conv contains_insyncs_conv finfun_upd_apply intro: ext)+
+      by(auto simp add: fun_eq_iff contains_insync_conv contains_insyncs_conv finfun_upd_apply elim!: red_external.cases)
+  qed(fastsimp simp add: fun_eq_iff contains_insync_conv contains_insyncs_conv finfun_upd_apply intro: ext)+
   hence "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e; el_loc_ok e (lcl s); \<not> IUF e ta e' \<rbrakk>
         \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0 + (int \<circ> expr_locks e) ad) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_locks e'"
     and "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es; els_loc_ok es (lcl s); \<not> IUFs es ta es' \<rbrakk>
@@ -419,7 +419,7 @@ proof(cases rule: Red1'_mthr.redT.cases)
 	  with red1_update_expr_locks[OF wf red] IUF
 	  have "upd_expr_locks (int \<circ> expr_locks e) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_locks e'" by(simp add: IUFL_def)
 	  hence "upd_expr_lock_actions (int (expr_locks e l)) (\<lbrace>TA\<rbrace>\<^bsub>l\<^esub>\<^sub>f l) = int (expr_locks e' l)"
-	    by(simp add: upd_expr_locks_def expand_fun_eq)
+	    by(simp add: upd_expr_locks_def fun_eq_iff)
 	  ultimately show ?thesis using lao Some thrst x True
             by(auto simp add: lock_expr_locks_ok_def upd_expr_locks_def)
 	next
@@ -450,7 +450,7 @@ proof(cases rule: Red1'_mthr.redT.cases)
     obtain T' where "P,Class D # Ts \<turnstile>1 body :: T'"
       by(auto simp add: wf_mdecl_def dest!: sees_wf_mdecl)
     hence "expr_locks (blocks1 0 (Class D#Ts) body) = (\<lambda>l. 0)"
-      by(auto simp add: expr_locks_blocks1 contains_insync_conv expand_fun_eq dest!: WT1_not_contains_insync)
+      by(auto simp add: expr_locks_blocks1 contains_insync_conv fun_eq_iff dest!: WT1_not_contains_insync)
     thus ?thesis using red1Call thrst loks
       unfolding lock_oks1_def x' x
       by auto force+

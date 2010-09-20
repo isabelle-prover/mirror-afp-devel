@@ -1671,8 +1671,8 @@ done
 (*>*)
 
 
-constdefs
-  compTP :: "J1_prog \<Rightarrow> ty\<^isub>P"
+definition
+  compTP :: "J1_prog \<Rightarrow> ty\<^isub>P" where
   "compTP P C M  \<equiv>
   let (D,Ts,T,e) = method P C M;
        E = Class C # Ts;

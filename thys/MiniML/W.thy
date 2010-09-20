@@ -12,24 +12,22 @@ begin
 types result_W = "(subst * typ * nat)option"
 
 -- "type inference algorithm W"
-consts W :: "[expr, ctxt, nat] => result_W"
-
-primrec
+primrec W :: "[expr, ctxt, nat] => result_W" where
   "W (Var i) A n =  
      (if i < length A then Some( id_subst,   
 	                         bound_typ_inst (%b. TVar(b+n)) (A!i),   
 	                         n + (min_new_bound_tv (A!i)) )  
 	              else None)"
   
-  "W (Abs e) A n = ( (S,t,m) := W e ((FVar n)#A) (Suc n);
+| "W (Abs e) A n = ( (S,t,m) := W e ((FVar n)#A) (Suc n);
                      Some( S, (S n) -> t, m) )"
   
-  "W (App e1 e2) A n = ( (S1,t1,m1) := W e1 A n;
+| "W (App e1 e2) A n = ( (S1,t1,m1) := W e1 A n;
                          (S2,t2,m2) := W e2 ($S1 A) m1;
                          U := mgu ($S2 t1) (t2 -> (TVar m2));
                          Some( $U o $S2 o S1, U m2, Suc m2) )"
   
-  "W (LET e1 e2) A n = ( (S1,t1,m1) := W e1 A n;
+| "W (LET e1 e2) A n = ( (S1,t1,m1) := W e1 A n;
                          (S2,t2,m2) := W e2 ((gen ($S1 A) t1)#($S1 A)) m1;
                          Some( $S2 o S1, t2, m2) )"
 
@@ -533,8 +531,8 @@ apply (frule_tac [2] n = "m" in new_tv_W) prefer 2 apply assumption
 apply (erule_tac [2] conjE)
 apply (drule_tac [2] free_tv_app_subst_scheme_list [THEN subsetD])
  apply (tactic {* 
-   (fast_tac (global_claset_of @{theory Fun} addDs [sym RS thm "W_var_geD", thm "new_scheme_list_le", thm "codD",
-   thm "new_tv_not_free_tv"]) 2) *})
+   (fast_tac (global_claset_of @{theory Fun} addDs [sym RS @{thm W_var_geD}, @{thm new_scheme_list_le}, @{thm codD},
+   @{thm new_tv_not_free_tv}]) 2) *})
 apply (case_tac "na: free_tv t - free_tv Sa")
 (* case na ~: free_tv t - free_tv Sa *)
  prefer 2 apply simp apply blast

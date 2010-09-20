@@ -1,6 +1,4 @@
-(*  ID:         $Id: EnumeratorProps.thy,v 1.7 2009-04-24 19:28:46 fhaftmann Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
-*)
+(*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
 header{* Properties of Patch Enumeration*}
 

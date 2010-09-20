@@ -1,5 +1,4 @@
-(*  ID:         $Id: MaxPrefix.thy,v 1.7 2007-07-22 20:44:19 makarius Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
@@ -21,10 +20,8 @@ definition
 "is_maxsplitter P f =
  (!xs ps qs. f xs = (ps,qs) = (xs=ps@qs & is_maxpref P ps xs))"
 
-consts
- maxsplit :: "('a list => bool) => 'a list * 'a list => 'a list => 'a splitter"
-primrec
-"maxsplit P res ps []     = (if P ps then (ps,[]) else res)"
+primrec maxsplit :: "('a list => bool) => 'a list * 'a list => 'a list => 'a splitter" where
+"maxsplit P res ps []     = (if P ps then (ps,[]) else res)" |
 "maxsplit P res ps (q#qs) = maxsplit P (if P ps then (ps,q#qs) else res)
                                      (ps@[q]) qs"
 

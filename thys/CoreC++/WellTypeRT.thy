@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellTypeRT.thy,v 1.10 2007-07-11 10:07:50 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -14,15 +13,12 @@ theory WellTypeRT imports WellType begin
 
 section {* Run time types *}
 
-consts
-  typeof_h :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty option" ("_ \<turnstile> typeof\<^bsub>_\<^esub>")
-
-primrec
+primrec typeof_h :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty option" ("_ \<turnstile> typeof\<^bsub>_\<^esub>") where
   "P \<turnstile> typeof\<^bsub>h\<^esub> Unit     = Some Void"
-  "P \<turnstile> typeof\<^bsub>h\<^esub> Null     = Some NT"
-  "P \<turnstile> typeof\<^bsub>h\<^esub> (Bool b) = Some Boolean"
-  "P \<turnstile> typeof\<^bsub>h\<^esub> (Intg i) = Some Integer"
-  "P \<turnstile> typeof\<^bsub>h\<^esub> (Ref r)  = (case h (the_addr (Ref r)) of None \<Rightarrow> None 
+| "P \<turnstile> typeof\<^bsub>h\<^esub> Null     = Some NT"
+| "P \<turnstile> typeof\<^bsub>h\<^esub> (Bool b) = Some Boolean"
+| "P \<turnstile> typeof\<^bsub>h\<^esub> (Intg i) = Some Integer"
+| "P \<turnstile> typeof\<^bsub>h\<^esub> (Ref r)  = (case h (the_addr (Ref r)) of None \<Rightarrow> None 
                             | Some(C,S) \<Rightarrow> (if Subobjs P C (the_path(Ref r)) then
                                    Some(Class(last(the_path(Ref r))))
                                             else None))"

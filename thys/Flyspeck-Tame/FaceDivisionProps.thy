@@ -1,6 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.18 2009-08-27 17:49:29 nipkow Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
-*)
+(*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
 header{*Properties of Face Division*}
 
@@ -2648,7 +2646,7 @@ lemma edges_conv_Edges_if_cong:
  "\<lbrakk> vertices (f::face) \<cong> vs; distinct vs; vs \<noteq> [] \<rbrakk> \<Longrightarrow>
  \<E> f = Edges vs \<union> {(last vs,hd vs)}"
 apply(frule congs_distinct)
-apply(clarsimp simp: expand_set_eq is_nextElem_congs_eq)
+apply(clarsimp simp: set_eq_iff is_nextElem_congs_eq)
 using is_nextElem_edges_eq[of "Face vs Final",symmetric]
 apply(simp del:is_nextElem_edges_eq)
 apply(simp add:edges_conv_Edges)

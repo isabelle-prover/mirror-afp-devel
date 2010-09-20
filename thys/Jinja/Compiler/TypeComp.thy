@@ -308,8 +308,8 @@ declare is_type_simps[simp] subsetI[intro!]
 (*>*)
 
 
-constdefs
-  shift :: "nat \<Rightarrow> ex_table \<Rightarrow> ex_table"
+definition shift :: "nat \<Rightarrow> ex_table \<Rightarrow> ex_table"
+where
   "shift n xt \<equiv> map (\<lambda>(from,to,C,handler,depth). (from+n,to+n,C,handler+n,depth)) xt"
 
 

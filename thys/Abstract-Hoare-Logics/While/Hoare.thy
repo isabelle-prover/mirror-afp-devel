@@ -1,5 +1,4 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: Hoare.thy,v 1.4 2007-07-11 10:05:50 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -19,9 +18,9 @@ postconditions. Such a triple is \emph{valid} (denoted by @{text"\<Turnstile>"})
 iff every (terminating) execution starting in a state satisfying @{text P}
 ends up in a state satisfying @{text Q}: *}
 
-constdefs
- hoare_valid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50)
- "\<Turnstile> {P}c{Q}  \<equiv>  \<forall>s t. s -c\<rightarrow> t \<longrightarrow> P s \<longrightarrow> Q t"
+definition
+ hoare_valid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50) where
+ "\<Turnstile> {P}c{Q} \<longleftrightarrow> (\<forall>s t. s -c\<rightarrow> t \<longrightarrow> P s \<longrightarrow> Q t)"
 
 text{*\noindent
 This notion of validity is called \emph{partial correctness} because
@@ -77,9 +76,9 @@ text{*
 Completeness is not quite as straightforward, but still easy. The
 proof is best explained in terms of the \emph{weakest precondition}:*}
 
-constdefs
- wp :: "com \<Rightarrow> assn \<Rightarrow> assn"
- "wp c Q  \<equiv>  \<lambda>s. \<forall>t. s -c\<rightarrow> t \<longrightarrow> Q t"
+definition
+ wp :: "com \<Rightarrow> assn \<Rightarrow> assn" where
+ "wp c Q = (\<lambda>s. \<forall>t. s -c\<rightarrow> t \<longrightarrow> Q t)"
 
 text{*\noindent Dijkstra calls this the weakest \emph{liberal}
 precondition to emphasize that it corresponds to partial
@@ -154,10 +153,10 @@ apply(rule strengthen_pre)
 prefer 2
 apply blast
 apply(clarify)
-apply(drule expand_fun_eq[THEN iffD1, OF wp_while, THEN spec, THEN iffD1])
+apply(drule fun_eq_iff[THEN iffD1, OF wp_while, THEN spec, THEN iffD1])
 apply simp
 apply(clarify)
-apply(drule expand_fun_eq[THEN iffD1, OF wp_while, THEN spec, THEN iffD1])
+apply(drule fun_eq_iff[THEN iffD1, OF wp_while, THEN spec, THEN iffD1])
 apply(simp split:split_if_asm)
 
 apply(fast intro!: hoare.Local)

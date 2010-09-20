@@ -569,10 +569,13 @@ print_translation {*
      (@{const_syntax Collect}, Hoare_Syntax.assert_tr'),
      (@{const_syntax Cond}, Hoare_Syntax.bexp_tr' "_Cond"),
      (@{const_syntax switch}, Hoare_Syntax.switch_tr'),
-     (@{const_syntax guards}, Hoare_Syntax.guards_tr'),
-     (@{const_syntax whileAnnoG}, Hoare_Syntax.whileAnnoG_tr'),
-     (@{const_syntax whileAnnoGFix}, Hoare_Syntax.whileAnnoGFix_tr'),
      (@{const_syntax Basic}, Hoare_Syntax.basic_tr')]
+*}
+
+print_translation (advanced) {*
+    [(@{const_syntax guards}, Hoare_Syntax.guards_tr'),
+     (@{const_syntax whileAnnoG}, Hoare_Syntax.whileAnnoG_tr'),
+     (@{const_syntax whileAnnoGFix}, Hoare_Syntax.whileAnnoGFix_tr')]
 *}
 
 
@@ -631,14 +634,14 @@ in [(@{const_syntax measure}, measure_tr'), (@{const_syntax mlex_prod}, mlex_tr'
 
 
 print_translation {*
-    [(@{const_syntax call}, Hoare_Syntax.call_tr'),
-     (@{const_syntax dynCall}, Hoare_Syntax.dyn_call_tr'),
-     (@{const_syntax fcall}, Hoare_Syntax.fcall_tr'),
-     (@{const_syntax bind}, Hoare_Syntax.bind_tr')]
+  [(@{const_syntax bind}, Hoare_Syntax.bind_tr')]
 *}
 
 print_translation (advanced) {*
-    [(@{const_syntax Call}, Hoare_Syntax.proc_tr')]
+ [(@{const_syntax call}, Hoare_Syntax.call_tr'),
+  (@{const_syntax dynCall}, Hoare_Syntax.dyn_call_tr'),
+  (@{const_syntax fcall}, Hoare_Syntax.fcall_tr'),
+  (@{const_syntax Call}, Hoare_Syntax.proc_tr')]
 *}
 
 end

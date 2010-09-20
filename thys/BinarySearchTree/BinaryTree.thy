@@ -1,5 +1,4 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree.thy,v 1.10 2009-06-19 19:08:24 fhaftmann Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL

@@ -78,12 +78,6 @@ consts
   extend :: "'a sequent \<Rightarrow> 'a sequent \<Rightarrow> 'a sequent"
   extendRule :: "'a sequent \<Rightarrow> 'a rule \<Rightarrow> 'a rule"
 
-  (* functions to get at components of sequents *)
-  antec :: "'a sequent \<Rightarrow> 'a form multiset"
-  succ :: "'a sequent \<Rightarrow> 'a form multiset"
-  mset :: "'a sequent \<Rightarrow> 'a form multiset"
-  seq_size :: "'a sequent \<Rightarrow> nat"
-
   (* Unique conclusion Property *)
   uniqueConclusion :: "'a rule set \<Rightarrow> bool"
 
@@ -91,19 +85,15 @@ consts
   invertible :: "'a rule \<Rightarrow> 'a rule set \<Rightarrow> bool"
   invertible_set :: "'a rule set \<Rightarrow> bool"
 
-primrec antec_def : "antec (Sequent ant suc) = ant"
-primrec succ_def : "succ (Sequent ant suc) = suc"
-primrec mset_def : "mset (Sequent ant suc) = ant + suc"
-primrec seq_size_def : "seq_size (Sequent ant suc) = size ant + size suc"
+  (* functions to get at components of sequents *)
+primrec antec :: "'a sequent \<Rightarrow> 'a form multiset" where "antec (Sequent ant suc) = ant"
+primrec succ :: "'a sequent \<Rightarrow> 'a form multiset" where "succ (Sequent ant suc) = suc"
+primrec mset :: "'a sequent \<Rightarrow> 'a form multiset" where "mset (Sequent ant suc) = ant + suc"
+primrec seq_size :: "'a sequent \<Rightarrow> nat" where "seq_size (Sequent ant suc) = size ant + size suc"
 
-
-
-
-
-consts max_list :: "nat list \<Rightarrow> nat"
-primrec
+primrec max_list :: "nat list \<Rightarrow> nat" where
   "max_list [] = 0"
-  "max_list (n # ns) = max n (max_list ns)"
+| "max_list (n # ns) = max n (max_list ns)"
 
 (* The depth of a formula.  Will be useful in later files. *)
 fun depth :: "'a form \<Rightarrow> nat"
@@ -373,11 +363,11 @@ proof-
       then have "A \<in> set_of \<Gamma>'" using assms by auto
       thus "A :# \<Gamma>'" by simp
       qed
-  then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_ext_iff)
+  then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_eq_iff)
   then have "\<exists> \<Gamma>''. \<Gamma>' = \<Gamma>'' \<oplus> A" apply (rule_tac x="\<Gamma>' \<ominus> A" in exI) by auto
   then obtain \<Gamma>'' where eq1:"\<Gamma>' = \<Gamma>'' \<oplus> A" by blast
   from `\<Gamma> \<oplus> A = \<Gamma>' \<oplus> B` eq1 have "\<Gamma> \<oplus> A = \<Gamma>'' \<oplus> A \<oplus> B" by auto
-  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by (auto simp add:multiset_ext_iff)
+  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by (auto simp add:multiset_eq_iff)
   thus ?thesis using eq1 by blast
 qed
 
@@ -463,7 +453,7 @@ shows "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
     case (I R Rs)
-    then show "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
+    then show "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)" using mset.simps[where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
 
@@ -474,7 +464,7 @@ shows "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
     case (I R Rs)
-    then show "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
+    then show "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)" using mset.simps[where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
 
@@ -489,10 +479,10 @@ proof-
        proof (cases)
           case (I R Rs)
           obtain G H where "C = (G \<Rightarrow>* H)" by (cases C) (auto)
-          then have "G + H = \<LM>Compound R Rs\<RM>" using mset_def and `mset C \<equiv> \<LM>Compound R Rs\<RM>` by auto
+          then have "G + H = \<LM>Compound R Rs\<RM>" using mset.simps and `mset C \<equiv> \<LM>Compound R Rs\<RM>` by auto
           then have "size (G+H) = 1" by auto 
           then have "size G + size H = 1" by auto
-          then have "seq_size C = 1" using seq_size_def[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
+          then have "seq_size C = 1" using seq_size.simps[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
           moreover have "snd r = C" using `r = (Ps,C)` by simp
           ultimately show "seq_size (snd r) = 1" by simp
        qed
@@ -508,7 +498,7 @@ then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" usi
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
 then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
      using `mset C \<equiv> \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
+     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
      by auto
 qed
 
@@ -810,7 +800,7 @@ at the lower height of the premisses: *}
                     }
                  ultimately show "Compound F Fs :# \<Psi>" by blast
                  qed (*>*)
-  then have "\<exists> \<Psi>1. \<Psi> = \<Psi>1 \<oplus> Compound F Fs" by (*<*)(rule_tac x="\<Psi> \<ominus> Compound F Fs" in exI)(*>*) (auto(*<*) simp add:multiset_ext_iff(*>*))
+  then have "\<exists> \<Psi>1. \<Psi> = \<Psi>1 \<oplus> Compound F Fs" by (*<*)(rule_tac x="\<Psi> \<ominus> Compound F Fs" in exI)(*>*) (auto(*<*) simp add:multiset_eq_iff(*>*))
   then obtain \<Psi>1 where "S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)"(*<*) using `S = (\<Phi> \<Rightarrow>* \<Psi>)`(*>*) by auto
  (*<*)           have "Ps = map (extend S) ps" 
                  using `extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)` 
@@ -822,7 +812,7 @@ at the lower height of the premisses: *}
   (*<*)          then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs)" using characteriseSeq
                       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
                       apply (rule_tac x="antec x" in exI,rule_tac x="succ x \<ominus> Compound F Fs" in exI) 
-                      by (drule_tac x=x in meta_spec) (auto simp add:multiset_ext_iff)
+                      by (drule_tac x=x in meta_spec) (auto simp add:multiset_eq_iff)
             moreover have "\<forall> p \<in> set Ps. \<exists> n\<le>n'. (p,n) \<in> derivable R*" by fact
             ultimately have "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' n. n\<le>n' \<and> (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs,n) \<in> derivable R*
                                                      \<and> p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs)"
@@ -843,7 +833,7 @@ txt{* \noindent  To this set of new premisses, we apply a new instance of $r$, w
             moreover have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
                  using `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)` and `extendRule S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)` 
                  and `r = (ps,c)` and eq
-                 by (auto simp add:extendRule_def extend_def union_ac multiset_ext_iff)
+                 by (auto simp add:extendRule_def extend_def union_ac multiset_eq_iff)
   ultimately(*>*) have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*" by simp
   (*<*)          have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
             have c2:"\<forall> p \<in> set ps. extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p \<in> set Ps'" using eq
@@ -878,7 +868,7 @@ txt{* \noindent  To this set of new premisses, we apply a new instance of $r$, w
                       using extend_def[where forms="\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs" and seq="A \<Rightarrow>* B"] by auto
                  from ant have "\<Phi>' + \<Gamma>' = (\<Phi> + \<Gamma>') + A" by (auto simp add:union_ac)
                  moreover
-                 from suc have "\<Psi>' = \<Psi>1 + B" by (auto simp add:union_ac multiset_ext_iff)
+                 from suc have "\<Psi>' = \<Psi>1 + B" by (auto simp add:union_ac multiset_eq_iff)
                  then have "\<Psi>' + \<Delta>' = (\<Psi>1 + \<Delta>') + B" by (auto simp add:union_ac)
                  ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (A \<Rightarrow>* B)" 
                       using extend_def[where forms="\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>'" and seq="A \<Rightarrow>* B"] by auto
@@ -1123,7 +1113,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                  ultimately show "Compound F Fs :# \<Phi>" by blast
                  qed
             then have "\<exists> \<Phi>1. \<Phi> = \<Phi>1 \<oplus> Compound F Fs" 
-                 by (rule_tac x="\<Phi> \<ominus> Compound F Fs" in exI) (auto simp add:multiset_ext_iff)
+                 by (rule_tac x="\<Phi> \<ominus> Compound F Fs" in exI) (auto simp add:multiset_eq_iff)
             then obtain \<Phi>1 where "S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` by auto
             have "Ps = map (extend S) ps" 
                  using `extendRule S r = (Ps,\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)` 
@@ -1135,7 +1125,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
             then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>')" using characteriseSeq
                       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
                       apply (rule_tac x="antec x \<ominus> Compound F Fs" in exI,rule_tac x="succ x" in exI) 
-                      by (drule_tac x=x in meta_spec) (auto simp add:multiset_ext_iff)
+                      by (drule_tac x=x in meta_spec) (auto simp add:multiset_eq_iff)
             moreover have "\<forall> p \<in> set Ps. \<exists> n\<le>n'. (p,n) \<in> derivable R*" by fact
             ultimately have "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' n. n\<le>n' \<and> (\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>',n) \<in> derivable R*
                                                      \<and> p = (\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>')"
@@ -1155,7 +1145,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
             moreover have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
                  using `S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)` and `extendRule S r = (Ps, \<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)` 
                  and `r = (ps,c)` and eq
-                 by (auto simp add:extendRule_def extend_def union_ac multiset_ext_iff)
+                 by (auto simp add:extendRule_def extend_def union_ac multiset_eq_iff)
             ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*" by simp
             have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
             have c2:"\<forall> p \<in> set ps. extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p \<in> set Ps'" using eq
@@ -1187,7 +1177,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                       using t by auto
                  then have ant: "\<Phi>' \<oplus> Compound F Fs = \<Phi>1 \<oplus> Compound F Fs + A" and suc: "\<Psi>' = \<Psi> + B"
                       using extend_def[where forms="\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>" and seq="A\<Rightarrow>*B"] by auto
-                 from ant have "\<Phi>' = \<Phi>1 + A" by (auto simp add:union_ac multiset_ext_iff)
+                 from ant have "\<Phi>' = \<Phi>1 + A" by (auto simp add:union_ac multiset_eq_iff)
                  then have "\<Phi>' + \<Gamma>' = (\<Phi>1 + \<Gamma>') + A" by (auto simp add:union_ac)
                  moreover
                  from suc have "\<Psi>' + \<Delta>' = (\<Psi> + \<Delta>') + B" by (auto simp add:union_ac)

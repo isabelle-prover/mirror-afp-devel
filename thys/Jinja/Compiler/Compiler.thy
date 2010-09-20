@@ -10,8 +10,8 @@ theory Compiler
 imports Correctness1 Correctness2
 begin
 
-constdefs
-  J2JVM :: "J_prog \<Rightarrow> jvm_prog"
+definition J2JVM :: "J_prog \<Rightarrow> jvm_prog"
+where 
   "J2JVM  \<equiv>  compP\<^isub>2 \<circ> compP\<^isub>1"
 
 theorem comp_correct:

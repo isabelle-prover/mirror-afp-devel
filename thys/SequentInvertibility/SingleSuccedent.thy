@@ -48,12 +48,6 @@ consts
   extend :: "'a sequent \<Rightarrow> 'a sequent \<Rightarrow> 'a sequent"
   extendRule :: "'a sequent \<Rightarrow> 'a rule \<Rightarrow> 'a rule"
 
-  (* functions to get at components of sequents *)
-  antec :: "'a sequent \<Rightarrow> 'a form multiset"
-  succ :: "'a sequent \<Rightarrow> 'a form"
-  mset :: "'a sequent \<Rightarrow> 'a form multiset"
-  seq_size :: "'a sequent \<Rightarrow> nat"
-
   (* Unique conclusion Property *)
   uniqueConclusion :: "'a rule set \<Rightarrow> bool"
 
@@ -61,10 +55,11 @@ consts
   invertible :: "'a rule \<Rightarrow> 'a rule set \<Rightarrow> bool"
   invertible_set :: "'a rule set \<Rightarrow> bool"
 
-primrec antec_def : "antec (Sequent ant suc) = ant"
-primrec succ_def : "succ (Sequent ant suc) = suc"
-primrec mset_def : "mset (Sequent ant suc) = ant \<oplus> suc"
-primrec seq_size_def : "seq_size (Sequent ant suc) = size ant + size suc"
+  (* functions to get at components of sequents *)
+primrec antec :: "'a sequent \<Rightarrow> 'a form multiset" where "antec (Sequent ant suc) = ant"
+primrec succ :: "'a sequent \<Rightarrow> 'a form" where "succ (Sequent ant suc) = suc"
+primrec mset :: "'a sequent \<Rightarrow> 'a form multiset" where "mset (Sequent ant suc) = ant \<oplus> suc"
+primrec seq_size :: "'a sequent \<Rightarrow> nat" where "seq_size (Sequent ant suc) = size ant + size suc"
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
 
@@ -204,11 +199,11 @@ proof-
       then have "A \<in> set_of \<Gamma>'" using assms by auto
       thus "A :# \<Gamma>'" by simp
       qed
-  then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_ext_iff)
+  then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_eq_iff)
   then have "\<exists> \<Gamma>''. \<Gamma>' = \<Gamma>'' \<oplus> A" apply (rule_tac x="\<Gamma>' \<ominus> A" in exI) by auto
   then obtain \<Gamma>'' where eq1:"\<Gamma>' = \<Gamma>'' \<oplus> A" by blast
   from `\<Gamma> \<oplus> A = \<Gamma>' \<oplus> B` eq1 have "\<Gamma> \<oplus> A = \<Gamma>'' \<oplus> A \<oplus> B" by auto
-  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by (auto simp add:multiset_ext_iff)
+  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by (auto simp add:multiset_eq_iff)
   thus ?thesis using eq1 by blast
 qed
 
@@ -698,7 +693,7 @@ proof (induct n arbitrary:\<Gamma> rule:nat_less_induct)
              with ext and `r = (ps,c)`
                   have "Compound T Ts :# \<Gamma>" by (auto simp add:extendRule_def extend_def)
              then have "\<exists> \<Gamma>1. \<Gamma> = \<Gamma>1 \<oplus> Compound T Ts"
-                  by (rule_tac x="\<Gamma> \<ominus> Compound T Ts" in exI) (auto simp add:multiset_ext_iff)
+                  by (rule_tac x="\<Gamma> \<ominus> Compound T Ts" in exI) (auto simp add:multiset_eq_iff)
              then obtain \<Gamma>1 where "\<Gamma> = \<Gamma>1 \<oplus> Compound T Ts" by auto
              moreover from `c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* Em)` and `r = (ps,c)` and ext
                   have "succ S = Compound F Fs"

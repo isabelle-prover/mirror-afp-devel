@@ -2255,8 +2255,8 @@ declare fast_bv_to_nat_Cons1 [simp]
 setup {*
 (*comments containing lcp are the removal of fast_bv_of_nat*)
 let
-  fun is_const_bool (Const("True",_)) = true
-    | is_const_bool (Const("False",_)) = true
+  fun is_const_bool (Const(@{const_name "True"},_)) = true
+    | is_const_bool (Const(@{const_name "False"},_)) = true
     | is_const_bool _ = false
   fun is_const_bit (Const("Word.bit.Zero",_)) = true
     | is_const_bit (Const("Word.bit.One",_)) = true
@@ -2284,8 +2284,8 @@ let
           SOME (Drule.cterm_instantiate [(cterm_of sg (Var(("bs",0),Type("List.list",[Type("Word.bit",[])]))),cterm_of sg t)] fast2_th)
         else NONE
     | g _ _ _ = NONE
-  (*lcp** val simproc1 = Simplifier.simproc thy "nat_to_bv" ["Word.nat_to_bv (number_of w)"] f *)
-  val simproc2 = Simplifier.simproc @{theory} "bv_to_nat" ["Word.bv_to_nat (x # xs)"] g
+  (*lcp** val simproc1 = Simplifier.simproc_global thy "nat_to_bv" ["Word.nat_to_bv (number_of w)"] f *)
+  val simproc2 = Simplifier.simproc_global @{theory} "bv_to_nat" ["Word.bv_to_nat (x # xs)"] g
 in
   Simplifier.map_simpset (fn ss => ss addsimprocs [(*lcp*simproc1,*)simproc2])
 end*}

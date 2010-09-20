@@ -33,10 +33,10 @@ qed
 end
 
 lemma le_llist_conv_lprefix [iff]: "op \<le> = lprefix"
-by(simp add: less_eq_llist_def expand_fun_eq)
+by(simp add: less_eq_llist_def fun_eq_iff)
 
 lemma less_llist_conv_lstrict_prefix [iff]: "op < = lstrict_prefix"
-by(simp add: less_llist_def expand_fun_eq)
+by(simp add: less_llist_def fun_eq_iff)
 
 instantiation llist :: (type) bot begin
 
@@ -66,7 +66,7 @@ definition [code del]:
                       (case ys of LNil \<Rightarrow> None
                          | LCons y ys' \<Rightarrow> if (x = y) then Some (x, xs', ys') else None))"
 
-lemma llist_inf_simps [simp, code]:
+lemma llist_inf_simps [simp, code, nitpick_simp]:
   "inf LNil xs = LNil"
   "inf xs LNil = LNil"
   "inf (LCons x xs) (LCons y ys) = (if x = y then LCons x (inf xs ys) else LNil)"

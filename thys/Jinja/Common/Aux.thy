@@ -33,8 +33,8 @@ declare
 
 section {*@{text distinct_fst}*}
  
-constdefs
-  distinct_fst  :: "('a \<times> 'b) list \<Rightarrow> bool"
+definition distinct_fst  :: "('a \<times> 'b) list \<Rightarrow> bool"
+where
   "distinct_fst  \<equiv>  distinct \<circ> map fst"
 
 lemma distinct_fst_Nil [simp]:
@@ -70,8 +70,8 @@ lemma map_of_SomeI:
 
 section {* Using @{term list_all2} for relations *}
 
-constdefs
-  fun_of :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
+definition fun_of :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
+where
   "fun_of S \<equiv> \<lambda>x y. (x,y) \<in> S"
 
 text {* Convenience lemmas *}

@@ -8,12 +8,13 @@ header {* \isaheader{Example Expressions} *}
 
 theory Examples imports Expr begin
 
-constdefs
-  classObject::"J_mb cdecl"
+definition classObject::"J_mb cdecl"
+where
   "classObject == (''Object'','''',[],[])"
 
 
-  classI :: "J_mb cdecl"
+definition classI :: "J_mb cdecl"
+where
   "classI ==
   (''I'', Object,
   [],
@@ -24,7 +25,8 @@ constdefs
   ])"
 
 
-  classL :: "J_mb cdecl"
+definition classL :: "J_mb cdecl"
+where
   "classL ==
   (''L'', Object,
   [(''F'',Integer), (''N'',Class ''L'')],
@@ -35,7 +37,8 @@ constdefs
   ])"
 
 
-  testExpr_BuildList :: "expr"
+definition testExpr_BuildList :: "expr"
+where
   "testExpr_BuildList ==
   {''l1'':Class ''L'' := new ''L'';
    Var ''l1''\<bullet>''F''{''L''} := Val(Intg 1);;
@@ -49,34 +52,47 @@ constdefs
    Var ''l1''\<bullet>''app''([Var ''l3'']);;
    Var ''l1''\<bullet>''app''([Var ''l4''])}}}}"
 
-  testExpr1 ::"expr"
+definition testExpr1 ::"expr"
+where
   "testExpr1 == Val(Intg 5)"
-  testExpr2 ::"expr"
+definition testExpr2 ::"expr"
+where
   "testExpr2 == BinOp (Val(Intg 5)) Add (Val(Intg 6))"
-  testExpr3 ::"expr"
+definition testExpr3 ::"expr"
+where
   "testExpr3 == BinOp (Var ''V'') Add (Val(Intg 6))"
-  testExpr4 ::"expr"
+definition testExpr4 ::"expr"
+where
   "testExpr4 == ''V'' := Val(Intg 6)"
-  testExpr5 ::"expr"
+definition testExpr5 ::"expr"
+where
   "testExpr5 == new ''Object'';; {''V'':(Class ''C'') := new ''C''; Var ''V''\<bullet>''F''{''C''} := Val(Intg 42)}"
-  testExpr6 ::"expr"
+definition testExpr6 ::"expr"
+where
   "testExpr6 == {''V'':(Class ''I'') := new ''I''; Var ''V''\<bullet>''mult''([Val(Intg 40),Val(Intg 4)])}"
 
-constdefs
-  mb_isNull:: "expr"
+definition mb_isNull:: "expr"
+where
   "mb_isNull == Var this \<bullet> ''test''{''A''} \<guillemotleft>Eq\<guillemotright> null "
 
-  mb_add:: "expr"
+definition mb_add:: "expr"
+where
   "mb_add == (Var this \<bullet> ''int''{''A''} :=( Var this \<bullet> ''int''{''A''} \<guillemotleft>Add\<guillemotright> Var ''i''));; (Var this \<bullet> ''int''{''A''})"
 
-    mb_mult_cond:: "expr"  
-    "mb_mult_cond == (Var ''j'' \<guillemotleft>Eq\<guillemotright> Val (Intg 0)) \<guillemotleft>Eq\<guillemotright> Val (Bool False)"
-    mb_mult_block:: "expr"
-    "mb_mult_block == ''temp'':=(Var ''temp'' \<guillemotleft>Add\<guillemotright> Var ''i'');;''j'':=(Var ''j'' \<guillemotleft>Add\<guillemotright> Val (Intg -1))"
-  mb_mult:: "expr"
+definition mb_mult_cond:: "expr"  
+where
+  "mb_mult_cond == (Var ''j'' \<guillemotleft>Eq\<guillemotright> Val (Intg 0)) \<guillemotleft>Eq\<guillemotright> Val (Bool False)"
+
+definition mb_mult_block:: "expr"
+where
+  "mb_mult_block == ''temp'':=(Var ''temp'' \<guillemotleft>Add\<guillemotright> Var ''i'');;''j'':=(Var ''j'' \<guillemotleft>Add\<guillemotright> Val (Intg -1))"
+
+definition mb_mult:: "expr"
+where
   "mb_mult == {''temp'':Integer:=Val (Intg 0); While (mb_mult_cond) mb_mult_block;; ( Var this \<bullet> ''int''{''A''} := Var ''temp'';; Var ''temp'' )}"
 
-  classA:: "J_mb cdecl"
+definition classA:: "J_mb cdecl"
+where
   "classA ==
   (''A'', Object,
   [(''int'',Integer),
@@ -86,7 +102,8 @@ constdefs
    (''mult'',[Integer,Integer],Integer,[''i'',''j''], mb_mult) ])"
   
 
-  testExpr_ClassA:: "expr"
+definition testExpr_ClassA:: "expr"
+where
   "testExpr_ClassA ==
   {''A1'':Class ''A'':= new ''A''; 
   {''A2'':Class ''A'':= new ''A''; 

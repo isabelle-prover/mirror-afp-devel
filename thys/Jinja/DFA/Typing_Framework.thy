@@ -14,17 +14,20 @@ text {*
 types
   's step_type = "nat \<Rightarrow> 's \<Rightarrow> (nat \<times> 's) list"
 
-constdefs
-  stable :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> nat \<Rightarrow> bool"
+definition stable :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> nat \<Rightarrow> bool"
+where
   "stable r step \<tau>s p \<equiv> \<forall>(q,\<tau>) \<in> set (step p (\<tau>s!p)). \<tau> \<sqsubseteq>\<^sub>r \<tau>s!q"
 
-  stables :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> bool"
+definition stables :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> bool"
+where
   "stables r step \<tau>s \<equiv> \<forall>p < size \<tau>s. stable r step \<tau>s p"
 
-  wt_step :: "'s ord \<Rightarrow> 's \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> bool"
+definition wt_step :: "'s ord \<Rightarrow> 's \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> bool"
+where
   "wt_step r T step \<tau>s \<equiv> \<forall>p<size \<tau>s. \<tau>s!p \<noteq> T \<and> stable r step \<tau>s p"
 
-  is_bcv :: "'s ord \<Rightarrow> 's \<Rightarrow> 's step_type \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> ('s list \<Rightarrow> 's list) \<Rightarrow> bool"
+definition is_bcv :: "'s ord \<Rightarrow> 's \<Rightarrow> 's step_type \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> ('s list \<Rightarrow> 's list) \<Rightarrow> bool"
+where
   "is_bcv r T step n A bcv \<equiv> \<forall>\<tau>s\<^isub>0 \<in> list n A.
   (\<forall>p<n. (bcv \<tau>s\<^isub>0)!p \<noteq> T) = (\<exists>\<tau>s \<in> list n A. \<tau>s\<^isub>0 [\<sqsubseteq>\<^sub>r] \<tau>s \<and> wt_step r T step \<tau>s)"
 

@@ -1,6 +1,4 @@
-(*  ID:         $Id: GraphProps.thy,v 1.5 2009-06-23 15:18:09 fhaftmann Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
-*)
+(*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
 header{* Properties of Graph Utilities *}
 

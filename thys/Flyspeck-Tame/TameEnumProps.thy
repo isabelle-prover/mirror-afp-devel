@@ -1,6 +1,4 @@
-(*  ID:         $Id: TameEnumProps.thy,v 1.3 2007-07-20 18:45:57 makarius Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
-*)
+(*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
 header "Properties of Tame Graph Enumeration (2)"
 

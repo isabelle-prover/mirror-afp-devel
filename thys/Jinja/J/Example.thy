@@ -1,5 +1,4 @@
 (*  Title:      Jinja/J/Example.thy
-    ID:         $Id: Example.thy,v 1.6 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -411,7 +410,7 @@ apply (simp add: SystemClasses_def)
 done
 (*>*)
 
-ML {* fun t thm = resolve_tac (thms "ty_expr_ty_exprs_wt_stmt.intros") 1 thm *}
+ML {* fun t thm = resolve_tac @{thms ty_expr_ty_exprs_wt_stmt.intros} 1 thm *}
 lemma wt_test: "(tprg, empty(e\<mapsto>Class Base))\<turnstile>  
   Expr(e:=New Ext);; Expr(Var e\<bullet>foo([Lit Null]))\<surd>"
 (*<*)
@@ -439,7 +438,7 @@ apply (simp add:null fun_of_def)
 done
 (*>*)
 
-ML {* fun e t = resolve_tac (thms "eval_evals_exec.intros") 1 t *}
+ML {* fun e t = resolve_tac @{thms eval_evals_exec.intros} 1 t *}
 
 declare split_if [split del]
 declare init_vars_def [simp] cast_ok_def [simp]

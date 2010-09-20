@@ -36,6 +36,7 @@
 <a href="entries/Regular-Sets.shtml">Regular-Sets</a> &nbsp;
 <a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
 <a href="entries/Functional-Automata.shtml">Functional-Automata</a> &nbsp;
+<a href="entries/Statecharts.shtml">Statecharts</a> &nbsp;
 <a href="entries/Tree-Automata.shtml">Tree-Automata</a> &nbsp;
 </div>
 
@@ -85,8 +86,10 @@
 <a href="entries/Jinja.shtml">Jinja</a> &nbsp;
 <a href="entries/JinjaThreads.shtml">JinjaThreads</a> &nbsp;
 <a href="entries/Locally-Nameless-Sigma.shtml">Locally-Nameless-Sigma</a> &nbsp;
-<a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
+
+<strong>Lambda Calculi:</strong>&nbsp;<a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
+<a href="entries/Lam-ml-Normalization.shtml">Lam-ml-Normalization</a> &nbsp;
 
 <strong>Type Systems:</strong>&nbsp;<a href="entries/MiniML.shtml">MiniML</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
@@ -157,6 +160,7 @@
 <div class="list">
 <a href="entries/Cauchy.shtml">Cauchy</a> &nbsp;
 <a href="entries/Integration.shtml">Integration</a> &nbsp;
+<a href="entries/Polynomials.shtml">Polynomials</a> &nbsp;
 </div>
 
 <h3>Number Theory</h3>

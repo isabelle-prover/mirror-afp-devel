@@ -1,5 +1,4 @@
-(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.9 2007-07-22 20:44:19 makarius Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 
 To generate a regular expression, the alphabet must be finite.
@@ -24,17 +23,15 @@ abbreviation
   deltas :: "'a nat_next => 'a list => nat => nat" where
   "deltas == foldl2"
 
-consts trace :: "'a nat_next => nat => 'a list => nat list"
-primrec
-"trace d i [] = []"
+primrec trace :: "'a nat_next => nat => 'a list => nat list"  where
+"trace d i [] = []" |
 "trace d i (x#xs) = d x i # trace d (d x i) xs"
 
 (* conversion a la Warshall *)
 
-consts regset :: "'a nat_next => nat => nat => nat => 'a list set"
-primrec
+primrec regset :: "'a nat_next => nat => nat => nat => 'a list set" where
 "regset d i j 0 = (if i=j then insert [] {[a] | a. d a i = j}
-                          else {[a] | a. d a i = j})"
+                          else {[a] | a. d a i = j})" |
 "regset d i j (Suc k) =
   regset d i j k Un
   (regset d i k k) @@ (star(regset d k k k)) @@ (regset d k j k)"
@@ -213,7 +210,7 @@ done
 lemma regset_below:
  "[| bounded d k; i < k; j < k |] ==>
   regset d i j k = {xs. deltas d xs i = j}"
-apply (rule set_ext)
+apply (rule set_eqI)
 apply (simp add: regset_spec)
 apply (blast dest: trace_below in_set_butlastD)
 done

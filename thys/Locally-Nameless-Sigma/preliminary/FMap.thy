@@ -1,5 +1,4 @@
 (*  Title:      FMap.thy
-    ID:         $Id: FMap.thy,v 1.1 2009/11/12 11:55:49 flokam Exp $
     Author:     Ludovic Henrio and Florian Kammuller
                 2006
 
@@ -60,17 +59,19 @@ qed
 
 (* define the witness as a constant function so it may be used in the proof of
 the induction scheme below *)
-constdefs  
-  set_fmap :: "'a -~> 'b \<Rightarrow> ('a * 'b)set"
-  "set_fmap F == {(x, y). x \<in> dom F \<and> F x = Some y}"
+definition  
+  set_fmap :: "'a -~> 'b \<Rightarrow> ('a * 'b)set" where
+  "set_fmap F = {(x, y). x \<in> dom F \<and> F x = Some y}"
 
-  pred_set_fmap :: "(('a -~> 'b) \<Rightarrow> bool) \<Rightarrow> (('a * 'b)set) \<Rightarrow> bool"
-  "pred_set_fmap P == \<lambda>S. P (\<lambda>x. if x \<in> fst ` S 
+definition
+  pred_set_fmap :: "(('a -~> 'b) \<Rightarrow> bool) \<Rightarrow> (('a * 'b)set) \<Rightarrow> bool" where
+  "pred_set_fmap P = (\<lambda>S. P (\<lambda>x. if x \<in> fst ` S 
                                   then (THE y. (\<exists>z. y = Some z \<and> (x, z) \<in> S)) 
-                                  else None)" 
+                                  else None))" 
 
-  fmap_minus_direct :: "[('a -~> 'b), ('a * 'b)] \<Rightarrow> ('a -~> 'b)" (infixl "--" 50)
-  "F -- x == (\<lambda>z. if (fst x = z \<and> ((F (fst x)) = Some (snd x))) 
+definition
+  fmap_minus_direct :: "[('a -~> 'b), ('a * 'b)] \<Rightarrow> ('a -~> 'b)" (infixl "--" 50) where
+  "F -- x = (\<lambda>z. if (fst x = z \<and> ((F (fst x)) = Some (snd x))) 
                    then None 
                    else (F z))"
 

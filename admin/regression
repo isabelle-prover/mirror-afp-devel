@@ -22,7 +22,7 @@ LOG=~/afp-log/afp-test
 MASTERLOG=~/afp-log/afp-test.log
 REPORT=~/afp-log/report
 
-SHORT=at-poly
+SHORT=mac-poly64-M4
 SETTINGS=~/settings/$SHORT
 
 function fail()

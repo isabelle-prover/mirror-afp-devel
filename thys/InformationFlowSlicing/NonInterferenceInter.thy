@@ -1380,7 +1380,7 @@ text{* The following theorem needs the explicit edge from @{text "(_High_)"}
   two nodes identify this inital statement: the initial node and the node
   within the loop (because of loop unrolling).*}
 
-theorem nonInterferenceSecurity:
+theorem nonInterference:
   assumes "[cf\<^isub>1] \<approx>\<^isub>L [cf\<^isub>2]" and "(_High_) \<notin> \<lfloor>HRB_slice (CFG_node (_Low_))\<rfloor>\<^bsub>CFG\<^esub>"
   and "valid_edge a" and "sourcenode a = (_High_)" and "targetnode a = n" 
   and "kind a = (\<lambda>s. True)\<^isub>\<surd>" and "n \<triangleq> c" and "final c'"

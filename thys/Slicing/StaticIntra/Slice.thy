@@ -284,7 +284,7 @@ proof -
     case True
     with `slice_kind n' a = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (Q)\<^isub>\<surd>` have "Q = (\<lambda>s. True)"
       by(simp add:slice_kind_def Let_def)
-    with det have "Q' = (\<lambda>s. False)" by(simp add:expand_fun_eq)
+    with det have "Q' = (\<lambda>s. False)" by(simp add:fun_eq_iff)
     with True `kind a' = (Q')\<^isub>\<surd>` `sourcenode a = sourcenode a'` show ?thesis
       by(simp add:slice_kind_def Let_def)
   next
@@ -297,7 +297,7 @@ proof -
 	`kind a = (Q)\<^isub>\<surd>`
       have target:"targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                                  valid_edge a' \<and> targetnode a' = n')"
-	by(auto simp:slice_kind_def Let_def expand_fun_eq split:split_if_asm)
+	by(auto simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
       have "targetnode a' \<noteq> (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                             valid_edge a' \<and> targetnode a' = n')"
       proof(rule ccontr)
@@ -312,7 +312,7 @@ proof -
       qed
       with `sourcenode a \<notin> backward_slice n'` True `kind a' = (Q')\<^isub>\<surd>`
 	`sourcenode a = sourcenode a'` show ?thesis 
-	by(auto simp:slice_kind_def Let_def expand_fun_eq split:split_if_asm)
+	by(auto simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
     next
       case False
       hence "obs (sourcenode a) (backward_slice n') \<noteq> {}" .
@@ -327,7 +327,7 @@ proof -
 	and target:"targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and>
 	                                         distance (targetnode a') m x \<and>
                                                  valid_edge a' \<and> targetnode a' = n')"
-	by(auto simp:slice_kind_def Let_def expand_fun_eq split:split_if_asm)
+	by(auto simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
       show ?thesis
       proof(cases "distance (targetnode a') m x")
 	case False

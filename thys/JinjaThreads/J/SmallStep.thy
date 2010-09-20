@@ -379,9 +379,9 @@ proof (induct arbitrary: l0 and l0 rule:red_reds.inducts)
   case (BlockRed e h x V vo ta e' h' x' T)
   note IH = `\<And>l0. extTA,P,t \<turnstile> \<langle>e,(hp (h, x(V := vo)), l0 ++ lcl (h, x(V := vo)))\<rangle> -ta\<rightarrow> \<langle>e',(hp (h', x'), l0 ++ lcl (h', x'))\<rangle>`[simplified]
   have lrew: "\<And>x x'. x(V := vo) ++ x'(V := vo) = (x ++ x')(V := vo)" 
-    by(simp add:expand_fun_eq map_add_def)
+    by(simp add:fun_eq_iff map_add_def)
   have lrew1: "\<And>X X' X'' vo. (X(V := vo) ++ X')(V := (X ++ X'') V) = X ++ X'(V := X'' V)"
-    by(simp add: expand_fun_eq map_add_def)
+    by(simp add: fun_eq_iff map_add_def)
   have lrew2: "\<And>X X'. (X(V := None) ++ X') V = X' V"
     by(simp add: map_add_def) 
   show ?case

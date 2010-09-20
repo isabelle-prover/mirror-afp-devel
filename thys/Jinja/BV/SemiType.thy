@@ -10,21 +10,20 @@ theory SemiType
 imports "../Common/WellForm" "../DFA/Semilattices"
 begin
 
-constdefs
-  super :: "'a prog \<Rightarrow> cname \<Rightarrow> cname"
-  "super P C \<equiv> fst (the (class P C))"
+definition super :: "'a prog \<Rightarrow> cname \<Rightarrow> cname"
+where "super P C \<equiv> fst (the (class P C))"
 
 lemma superI:
   "(C,D) \<in> subcls1 P \<Longrightarrow> super P C = D"
   by (unfold super_def) (auto dest: subcls1D)
 
-consts
-  the_Class :: "ty \<Rightarrow> cname"
-primrec
+
+primrec the_Class :: "ty \<Rightarrow> cname"
+where
   "the_Class (Class C) = C"
 
-constdefs 
-  sup :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty err"
+definition sup :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty err"
+where
   "sup P T\<^isub>1 T\<^isub>2 \<equiv>
   if is_refT T\<^isub>1 \<and> is_refT T\<^isub>2 then 
   OK (if T\<^isub>1 = NT then T\<^isub>2 else
@@ -39,8 +38,8 @@ abbreviation
   subtype :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool"
   where "subtype P \<equiv> widen P"
 
-constdefs
-  esl :: "'c prog \<Rightarrow> ty esl"
+definition esl :: "'c prog \<Rightarrow> ty esl"
+where
   "esl P \<equiv> (types P, subtype P, sup P)"
 
 

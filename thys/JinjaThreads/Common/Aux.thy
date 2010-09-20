@@ -253,10 +253,10 @@ lemma nth_Cons_subtract: "0 < n \<Longrightarrow> (x # xs) ! n = xs ! (n - 1)"
 by(auto simp add: nth_Cons split: nat.split)
 
 lemma prod_rec_split [simp]: "prod_rec = split"
-by(simp add: expand_fun_eq)
+by(simp add: fun_eq_iff)
 
 lemma rtranclp_False [simp]: "(\<lambda>a b. False)\<^sup>*\<^sup>* = op ="
-by(auto simp add: expand_fun_eq elim: rtranclp_induct)
+by(auto simp add: fun_eq_iff elim: rtranclp_induct)
 
 lemmas rtranclp_induct3 =
   rtranclp_induct[where a="(ax, ay, az)" and b="(bx, by, bz)", split_rule, consumes 1, case_names refl step]
@@ -513,7 +513,7 @@ by(cases "n \<le> length xs")(rule nth_take_lemma, simp_all)
 lemma nat_fun_sum_eq_conv:
   fixes f :: "'a \<Rightarrow> nat"
   shows "(\<lambda>a. f a + g a) = (\<lambda>a. 0) \<longleftrightarrow> f = (\<lambda>a .0) \<and> g = (\<lambda>a. 0)"
-by(auto simp add: expand_fun_eq)
+by(auto simp add: fun_eq_iff)
 
 lemma list_all2_op_eq [simp]:
   "list_all2 op = xs ys \<longleftrightarrow> xs = ys"

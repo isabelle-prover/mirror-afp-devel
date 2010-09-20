@@ -124,7 +124,7 @@ lemma alpha_continous:
 
 lemma alpha_continous1: 
   "\<alpha> (SUP X) y = SUP ((\<lambda> x . \<alpha> x y) o X)"
-  by (simp add: expand_fun_eq alpha_def SUP_fun_eq, simp)
+  by (simp add: fun_eq_iff alpha_def SUP_fun_eq, simp)
 
 text {*
 Next theorem shows the equivalence between the validity of Hoare

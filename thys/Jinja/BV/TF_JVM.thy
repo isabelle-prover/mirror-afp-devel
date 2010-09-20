@@ -10,8 +10,8 @@ theory TF_JVM
 imports "../DFA/Typing_Framework_err" EffectMono BVSpec
 begin
 
-constdefs
-  exec :: "jvm_prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> instr list \<Rightarrow> ty\<^isub>i' err step_type"
+definition exec :: "jvm_prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> instr list \<Rightarrow> ty\<^isub>i' err step_type"
+where 
   "exec G maxs rT et bs \<equiv>
   err_step (size bs) (\<lambda>pc. app (bs!pc) G maxs rT pc (size bs) et) 
                      (\<lambda>pc. eff (bs!pc) G pc et)"

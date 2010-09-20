@@ -1,5 +1,4 @@
 (*  Title:      RSAPSS/Productdivides.thy
-    ID:         $Id: Productdivides.thy,v 1.3 2008-07-10 21:20:00 makarius Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)

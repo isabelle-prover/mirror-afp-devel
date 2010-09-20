@@ -1,5 +1,4 @@
-(*  ID:         $Id: RegExp.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
@@ -21,9 +20,9 @@ primrec lang :: "'a rexp => 'a list set" where
 "lang Zero = {}" |
 "lang One = {[]}" |
 "lang (Atom a) = {[a]}" |
-"lang (Plus el er) = (lang el) Un (lang er)" |
-"lang (Times el er) = conc (lang el) (lang er)" |
-"lang (Star e) = star(lang e)"
+"lang (Plus r s) = (lang r) Un (lang s)" |
+"lang (Times r s) = conc (lang r) (lang s)" |
+"lang (Star r) = star(lang r)"
 
 primrec atoms :: "'a rexp \<Rightarrow> 'a set"
 where

@@ -748,7 +748,7 @@ prefer 2
  apply (thin_tac "submodule R M3 (g ` carrier M2)")
  apply (thin_tac "ring R") apply (thin_tac "R module M1")
  apply (thin_tac " R module M2") apply (thin_tac "R module M3")
-apply blast ML "reset show_types"
+apply blast ML
 apply (rule allI)
  apply (rule impI)
  apply simp     ????????????
@@ -879,7 +879,7 @@ lemma l_exact4_HOM_lexact4:"\<lbrakk>ring R; R module M1; R module M2; R module 
 lemma exact_coker:"\<lbrakk>ring R; R module M1; R module M2; R module M3; z \<in> mHom R (Zm R e) M1; f \<in> mHom R M1 M2; g \<in> mHom R M2 M3; z1 \<in> mHom R M3 (Zm R ee);  R module N1; R module N2; R module N3; h \<in> mHom R N1 N2; i \<in> mHom R N2 N3; exact5 (Zm R e) M1 M2 M3 (Zm R ee) z f g z1: exact5 (Zm R u) N1 N2 N3 (Zm R uu) z h i z1: f1 \<in> mHom R M1 N1; f2 \<in> mHom R M2 N2; f3 \<in> mHom R M3 N3; compos m1 f2 f = compos M1 h f1; compos M2 f3 g = compos M2 i f2\<rbrakk> \<Longrightarrow> exact8 (Zm R e) (mdl M1 (ker\<^sub>M1\<^sub>,\<^sub>N1 f1)) (mdl M2 (ker\<^sub>M2\<^sub>,\<^sub>N2 f2)) (mdl M3 (ker\<^sub>M3\<^sub>,\<^sub>N3 f3)) (N1 /\<^sub>m (f1 ` (carrier M1))) (N2 /\<^sub>m (f2 ` (carrier M2))) (N3 /\<^sub>m (f3 ` (carrier M3))) z f g zz hh ii zz1 "
 
 
-constdefs *)
+*)
 
 section "9. Tensor product"
 

@@ -2394,19 +2394,38 @@ export_code
   with the code-generator. The most frequent problem in this context is, that
   the code generator generates code that violates the ML value-restriction.
 *)
-export_code 
-  hta_mem hta_mem' hta_prod hta_prod' hta_prodWR hta_union 
-  hta_empty hta_add_qi hta_add_rule
-  hta_reduce hta_bwd_reduce hta_is_empty_witness
-  hta_ensure_idx_f hta_ensure_idx_s hta_ensure_idx_sf
 
-  htai_mem htai_prod htai_prodWR htai_union 
-  htai_empty htai_add_qi htai_add_rule
-  htai_bwd_reduce htai_is_empty_witness
-  htai_ensure_idx_f htai_ensure_idx_s htai_ensure_idx_sf
-
-  ls_size hs_size rs_size
-  in SML
-  module_name Ta
+ML {*
+  @{code hta_mem};
+  @{code hta_mem'};
+  @{code hta_prod};
+  @{code hta_prod'};
+  @{code hta_prodWR};
+  @{code hta_union};
+  @{code hta_empty};
+  @{code hta_add_qi};
+  @{code hta_add_rule};
+  @{code hta_reduce};
+  @{code hta_bwd_reduce};
+  @{code hta_is_empty_witness};
+  @{code hta_ensure_idx_f};
+  @{code hta_ensure_idx_s};
+  @{code hta_ensure_idx_sf};
+  @{code htai_mem};
+  @{code htai_prod};
+  @{code htai_prodWR};
+  @{code htai_union};
+  @{code htai_empty};
+  @{code htai_add_qi};
+  @{code htai_add_rule};
+  @{code htai_bwd_reduce};
+  @{code htai_is_empty_witness};
+  @{code htai_ensure_idx_f};
+  @{code htai_ensure_idx_s};
+  @{code htai_ensure_idx_sf};
+  @{code ls_size};
+  @{code hs_size};
+  @{code rs_size}
+*}
 
 end

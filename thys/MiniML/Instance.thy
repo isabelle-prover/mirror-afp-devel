@@ -1,5 +1,4 @@
 (* Title:     HOL/MiniML/Instance.thy
-   ID:        $Id: Instance.thy,v 1.11 2008-06-12 06:57:24 lsf37 Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -10,24 +9,17 @@ theory Instance
 imports Type
 begin
 
-consts
-  bound_typ_inst :: "[subst, type_scheme] => typ"
-
-primrec
+primrec bound_typ_inst :: "[subst, type_scheme] => typ" where
   "bound_typ_inst S (FVar n) = (TVar n)"
-  "bound_typ_inst S (BVar n) = (S n)"
-  "bound_typ_inst S (sch1 =-> sch2) = ((bound_typ_inst S sch1) -> (bound_typ_inst S sch2))"
+| "bound_typ_inst S (BVar n) = (S n)"
+| "bound_typ_inst S (sch1 =-> sch2) = ((bound_typ_inst S sch1) -> (bound_typ_inst S sch2))"
 
-consts
-  bound_scheme_inst :: "[nat => type_scheme, type_scheme] => type_scheme"
-
-primrec
+primrec bound_scheme_inst :: "[nat => type_scheme, type_scheme] => type_scheme" where
   "bound_scheme_inst S (FVar n) = (FVar n)"
-  "bound_scheme_inst S (BVar n) = (S n)"
-  "bound_scheme_inst S (sch1 =-> sch2) = ((bound_scheme_inst S sch1) =-> (bound_scheme_inst S sch2))"
+| "bound_scheme_inst S (BVar n) = (S n)"
+| "bound_scheme_inst S (sch1 =-> sch2) = ((bound_scheme_inst S sch1) =-> (bound_scheme_inst S sch2))"
   
-definition
-  is_bound_typ_instance :: "[typ, type_scheme] => bool"  (infixr "<|" 70) where
+definition is_bound_typ_instance :: "[typ, type_scheme] => bool"  (infixr "<|" 70) where
   is_bound_typ_instance: "t <| sch = (? S. t = (bound_typ_inst S sch))"
 
 instantiation type_scheme :: ord
@@ -43,11 +35,9 @@ instance ..
 
 end
 
-consts
-  subst_to_scheme :: "[nat => type_scheme, typ] => type_scheme"
-primrec
+primrec subst_to_scheme :: "[nat => type_scheme, typ] => type_scheme" where
   "subst_to_scheme B (TVar n) = (B n)"
-  "subst_to_scheme B (t1 -> t2) = ((subst_to_scheme B t1) =-> (subst_to_scheme B t2))"
+| "subst_to_scheme B (t1 -> t2) = ((subst_to_scheme B t1) =-> (subst_to_scheme B t2))"
   
 instantiation list :: (ord) ord
 begin

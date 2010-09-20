@@ -1,5 +1,4 @@
-(*  ID:         $Id: NA.thy,v 1.7 2009-07-27 20:02:15 alexkrauss Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
@@ -11,9 +10,8 @@ begin
 
 types ('a,'s)na = "'s * ('a => 's => 's set) * ('s => bool)"
 
-consts delta :: "('a,'s)na => 'a list => 's => 's set"
-primrec
-"delta A []    p = {p}"
+primrec delta :: "('a,'s)na => 'a list => 's => 's set" where
+"delta A []    p = {p}" |
 "delta A (a#w) p = Union(delta A w ` next A a p)"
 
 definition
@@ -24,9 +22,8 @@ definition
  step :: "('a,'s)na => 'a => ('s * 's)set" where
 "step A a = {(p,q) . q : next A a p}"
 
-consts steps :: "('a,'s)na => 'a list => ('s * 's)set"
-primrec
-"steps A [] = Id"
+primrec steps :: "('a,'s)na => 'a list => ('s * 's)set" where
+"steps A [] = Id" |
 "steps A (a#w) = step A a  O  steps A w"
 
 lemma steps_append[simp]:

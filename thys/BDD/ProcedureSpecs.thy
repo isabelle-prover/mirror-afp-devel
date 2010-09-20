@@ -1,5 +1,4 @@
 (*  Title:       BDD
-    ID:          $Id: ProcedureSpecs.thy,v 1.2 2008-03-07 15:23:43 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -28,7 +27,9 @@ USA
 *)
 
 header {* Definitions of Procedures *}
-theory ProcedureSpecs imports General "../Vcg" begin
+theory ProcedureSpecs
+imports General "../Simpl/Vcg"
+begin
 
 record "globals" =
   var_' :: "ref \<Rightarrow> nat"

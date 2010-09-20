@@ -1,5 +1,4 @@
 (*  Title:       Binary Search Trees, Tactic-Style
-    ID:          $Id: BinaryTree_TacticStyle.thy,v 1.7 2009-06-19 19:08:25 fhaftmann Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL

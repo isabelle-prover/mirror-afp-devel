@@ -233,7 +233,7 @@ apply(subgoal_tac "\<exists> F' \<in> Fs\<^isub>2. {map \<phi> F}//{\<cong>} = {
  apply clarify
  apply(rule_tac x = F' in bexI)
   apply(rule eq_equiv_class[OF _ equiv_EqF])
-   apply(simp add:singleton_quotient);
+   apply(simp add:singleton_quotient)
   apply blast
  apply assumption
 apply(simp add:quotient_def)
@@ -340,12 +340,9 @@ apply (clarsimp simp: map_upd_submap simp del:o_apply fun_upd_apply)
 apply simp
 done
 
-consts
-  pr_iso_test0 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
-
-primrec
-"pr_iso_test0 m [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
-"pr_iso_test0 m (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
+primrec pr_iso_test0 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+  "pr_iso_test0 m [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
+| "pr_iso_test0 m (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
    (\<exists>F\<^isub>2 \<in> set Fs\<^isub>2. length F\<^isub>1 = length F\<^isub>2 \<and>
       (\<exists>n. let m' = map_of(zip F\<^isub>1 (rotate n F\<^isub>2)) in
           if m \<subseteq>\<^sub>m m ++ m' \<and> inj_on (m++m') (dom(m++m'))
@@ -496,12 +493,9 @@ text{* Now we bound the number of rotations needed. We have to exclude
 the empty face @{term"[]"} to be able to restrict the search to
 @{prop"n < length xs"} (which would otherwise be vacuous). *}
 
-consts
-  pr_iso_test1 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
-
-primrec
-"pr_iso_test1 m [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
-"pr_iso_test1 m (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
+primrec pr_iso_test1 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+  "pr_iso_test1 m [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
+| "pr_iso_test1 m (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
    (\<exists>F\<^isub>2 \<in> set Fs\<^isub>2. length F\<^isub>1 = length F\<^isub>2 \<and>
       (\<exists>n < length F\<^isub>2. let m' = map_of(zip F\<^isub>1 (rotate n F\<^isub>2)) in
           if  m \<subseteq>\<^sub>m m ++ m' \<and> inj_on (m++m') (dom(m++m'))
@@ -546,13 +540,10 @@ types
   ('a,'b)tester = "('a * 'b)list \<Rightarrow> ('a * 'b)list \<Rightarrow> bool"
   ('a,'b)merger = "('a * 'b)list \<Rightarrow> ('a * 'b)list \<Rightarrow> ('a * 'b)list"
 
-consts
-  pr_iso_test2 :: "('a,'b)tester \<Rightarrow> ('a,'b)merger \<Rightarrow>
-                ('a * 'b)list \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
-
-primrec
-"pr_iso_test2 tst mrg I [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
-"pr_iso_test2 tst mrg I (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
+primrec pr_iso_test2 :: "('a,'b)tester \<Rightarrow> ('a,'b)merger \<Rightarrow>
+                ('a * 'b)list \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+  "pr_iso_test2 tst mrg I [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
+| "pr_iso_test2 tst mrg I (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
    (\<exists>F\<^isub>2 \<in> set Fs\<^isub>2. length F\<^isub>1 = length F\<^isub>2 \<and>
       (\<exists>n < length F\<^isub>2. let I' = zip F\<^isub>1 (rotate n F\<^isub>2) in
           if  tst I' I
@@ -661,7 +652,7 @@ apply(rule iffI)
 apply clarsimp
 apply(rename_tac a b aa ba)
 apply(rule iffI)
- apply (clarsimp simp:expand_fun_eq)
+ apply (clarsimp simp: fun_eq_iff)
  apply(erule_tac x = aa in allE)
  apply (simp add:map_add_def)
 apply (clarsimp simp:dom_map_of_conv_image_fst)
@@ -699,7 +690,7 @@ done
 lemma merge_correct:
   "\<forall>I I'. oneone I \<longrightarrow> oneone I' \<longrightarrow> test I' I
   \<longrightarrow> map_of(merge I' I) = map_of I ++ map_of I'"
-apply(simp add:test_def merge_def help1 expand_fun_eq map_add_def restrict_map_def split:option.split)
+apply(simp add:test_def merge_def help1 fun_eq_iff map_add_def restrict_map_def split:option.split)
 apply fastsimp
 done
 
@@ -725,13 +716,11 @@ definition test2 :: "('a,'b)tester" where
 lemma test2_conv_test: "test2 I I' = test I I'"
 by (simp add:test_def test2_def list_all_iff split_def)
 
-consts
-  merge2 :: "('a,'b)merger"
-primrec
-"merge2 [] I = I"
-"merge2 (xy#xys) I = (let (x,y) = xy in
-  if list_all (%(x',y'). x \<noteq> x') I then xy # merge2 xys I
-  else merge2 xys I)"
+primrec merge2 :: "('a,'b)merger" where
+  "merge2 [] I = I"
+| "merge2 (xy#xys) I = (let (x,y) = xy in
+    if list_all (%(x',y'). x \<noteq> x') I then xy # merge2 xys I
+    else merge2 xys I)"
 
 lemma merge2_conv_merge: "merge2 I' I = merge I' I"
 apply(induct I')
@@ -740,12 +729,9 @@ apply(force simp add:Let_def list_all_iff merge_def)
 done
 
 
-consts
-  pr_iso_test3 :: "('a * 'b)list \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
-
-primrec
-"pr_iso_test3 I [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
-"pr_iso_test3 I (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
+primrec pr_iso_test3 :: "('a * 'b)list \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+  "pr_iso_test3 I [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
+| "pr_iso_test3 I (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
    list_ex (%F\<^isub>2. length F\<^isub>1 = length F\<^isub>2 \<and>
       list_ex (%n. let I' = zip F\<^isub>1 (rotate n F\<^isub>2) in
           if  test2 I' I
