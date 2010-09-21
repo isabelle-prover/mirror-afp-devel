@@ -6,7 +6,7 @@ section {* The group C2 *}
 
 text {*
 The two-element group is defined over the set of boolean values. This allows to 
-use the quality of boolean values as the operation.
+use the equality of boolean values as the group operation.
 *}
 
 definition "C2"

@@ -18,7 +18,7 @@ proof(rule group.unit_group_unique)
   show "group \<F>\<^bsub>{}\<^esub>" by (rule free_group_is_group)
 next
   have "carrier \<F>\<^bsub>{}::'a set\<^esub> = {[]}"
-    by(auto simp add:free_group_def occuring_generators_def)
+    by (auto simp add:free_group_def)
   thus "card (carrier \<F>\<^bsub>{}::'a set\<^esub>) = 1"
     by simp
 qed
@@ -219,36 +219,27 @@ next
     then obtain y :: "(bool \<times> 'a) list" where "x = map (prod_fun id f) y"
                     and "y \<in> carrier \<F>\<^bsub>gens1\<^esub>" by auto
     from `y \<in> carrier \<F>\<^bsub>gens1\<^esub>`
-    have "canceled y" and "occuring_generators y \<subseteq> gens1" by (auto simp add:free_group_def)
-    hence "set (map snd y) \<subseteq> gens1" unfolding occuring_generators_def by simp
+    have "canceled y" and "y \<in> lists(UNIV\<times>gens1)" by (auto simp add:free_group_def)
+
+    from `y \<in> lists (UNIV\<times>gens1)`
+      and `x = map (prod_fun id f) y`
+      and `image f gens1 = gens2`
+    have "x \<in> lists (UNIV\<times>gens2)"
+      by (auto iff:lists_eq_set)
+    moreover
 
     from `x = map (prod_fun id f) y`
-    have "occuring_generators x = occuring_generators (map (prod_fun id f) y)"
-      by simp
-    also have "... = set (map snd (map (prod_fun id f) y))"
-      unfolding occuring_generators_def ..
-    also have "\<dots> = set (map (snd \<circ> prod_fun id f) y)" by simp
-    also have "\<dots> = set (map (f \<circ> snd) y)" by auto
-    also have "\<dots> = set (map f (map snd y))" by auto
-    also have "\<dots> = f ` set (map snd y)" by (simp only: set_map)
-    also from `set (map snd y) \<subseteq> gens1`
-         have "\<dots> \<subseteq> f ` gens1" by auto
-    also from `image f gens1 = gens2`
-         have  "\<dots> \<subseteq> gens2" by simp
-    finally
-    have "occuring_generators x \<subseteq> gens2" .
-    moreover
-    from `inj_on f gens1` and `occuring_generators y \<subseteq> gens1`
-    have "inj_on f (occuring_generators y)" by -(rule subset_inj_on)
-    with `canceled y` have "canceled (map (prod_fun id f) y)"
-      by -(rule rename_gens_canceled)
-    with `x = map (prod_fun id f) y` have "canceled x" by simp
+     and `y \<in> lists (UNIV\<times>gens1)`
+     and `canceled y`
+     and `inj_on f gens1`
+    have "canceled x"
+      by (auto intro!:rename_gens_canceled subset_inj_on[OF `inj_on f gens1`] iff:lists_eq_set)
     ultimately
     show "x \<in> carrier \<F>\<^bsub>gens2\<^esub>" by (simp add:free_group_def)
   next
     fix x
     assume "x \<in> carrier \<F>\<^bsub>gens2\<^esub>"
-    hence "canceled x" and "occuring_generators x \<subseteq> gens2"
+    hence "canceled x" and "x \<in> lists (UNIV\<times>gens2)"
       unfolding free_group_def by auto
     def y \<equiv> "map (prod_fun id (the_inv_into gens1 f)) x"
     have "map (prod_fun id f) y =
@@ -262,9 +253,8 @@ next
     proof(rule map_ext, rule impI)
       fix xa :: "bool \<times> 'b"
       assume "xa \<in> set x"
-      from `occuring_generators x \<subseteq> gens2`
-      have "set (map snd x) \<subseteq> gens2"
-        unfolding occuring_generators_def .
+      from `x \<in> lists (UNIV\<times>gens2)`
+      have "set (map snd x) \<subseteq> gens2"  by auto
       hence "snd ` set x \<subseteq> gens2" by (simp add: set_map)
       with `xa \<in> set x` have "snd xa \<in> gens2" by auto
       with `bij_betw f gens1 gens2` have "snd xa \<in> f`gens1"
@@ -287,25 +277,18 @@ next
       from `bij_betw f gens1 gens2`
       have "bij_betw (the_inv_into gens1 f) gens2 gens1" by (rule bij_betw_the_inv_into)
       hence "inj_on (the_inv_into gens1 f) gens2" by (rule bij_betw_imp_inj_on)
-      with `occuring_generators x \<subseteq> gens2`
-      have "inj_on (the_inv_into gens1 f) (occuring_generators x)" by -(rule subset_inj_on)
-      with `canceled x`
-      have "canceled y" unfolding y_def by-(rule rename_gens_canceled)
+
+      with `canceled x`      
+       and `x \<in> lists (UNIV\<times>gens2)`
+      have "canceled y"
+        by (auto intro!:rename_gens_canceled[OF subset_inj_on] simp add:y_def)
       moreover
       {
-        have "occuring_generators y
-              = set (map snd (map (prod_fun id (the_inv_into gens1 f)) x))"
-          by (simp add:y_def occuring_generators_def)
-        also have "\<dots> = set (map ((the_inv_into gens1 f) \<circ> snd) x)" by simp
-        also have "\<dots> = set (map (the_inv_into gens1 f) (map snd x))" by simp
-        also have "\<dots> = (the_inv_into gens1 f) ` set (map snd x)"
-               by (auto simp del:map_map)
-        also from `occuring_generators x \<subseteq> gens2`
-             have "\<dots> \<subseteq> (the_inv_into gens1 f) ` gens2"
-               by (auto simp add: occuring_generators_def)
-        also from `bij_betw (the_inv_into gens1 f) gens2 gens1`
-             have "\<dots> \<subseteq> gens1" by (simp add:bij_betw_def)
-        finally have "occuring_generators y \<subseteq> gens1".
+        from `bij_betw (the_inv_into gens1 f) gens2 gens1`
+         and `x\<in>lists(UNIV\<times>gens2)`
+        have "y \<in> lists(UNIV\<times>gens1)"
+          unfolding y_def and bij_betw_def
+          by (auto iff:lists_eq_set dest!:subsetD)
       }
       ultimately
       have "y \<in> carrier \<F>\<^bsub>gens1\<^esub>" by (simp add:free_group_def)
@@ -322,18 +305,21 @@ next
   assume "y \<in> carrier \<F>\<^bsub>gens1\<^esub>"
 
   from `x \<in> carrier \<F>\<^bsub>gens1\<^esub>` and `y \<in> carrier \<F>\<^bsub>gens1\<^esub>`
-  have "occuring_generators x \<subseteq> gens1" and "occuring_generators y \<subseteq> gens1"
+  have "x \<in> lists(UNIV\<times>gens1)" and "y \<in> lists(UNIV\<times>gens1)"
     by (auto simp add:occuring_gens_in_element)
-  hence "occuring_generators (x@y) \<subseteq> gens1"
+(*  hence "occuring_generators (x@y) \<subseteq> gens1"
     by(auto simp add:occuring_generators_def)
   with `inj_on f gens1` have "inj_on f (occuring_generators (x@y))"
-    by (rule subset_inj_on)
+    by (rule subset_inj_on) *)
 
   have "map (prod_fun id f) (x \<otimes>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub> y)
        = map (prod_fun id f) (normalize (x@y))" by (simp add:free_group_def)
-  also from `inj_on f (occuring_generators (x@y))`
+  also (* from `inj_on f (occuring_generators (x@y))` *)
+       from `x \<in> lists(UNIV\<times>gens1)` and `y \<in> lists(UNIV\<times>gens1)`
+        and `inj_on f gens1`
        have "\<dots> = normalize (map (prod_fun id f) (x@y))"
-       by(auto simp add:rename_gens_normalize[THEN sym])
+         by -(rule rename_gens_normalize[THEN sym],
+              auto intro!: subset_inj_on[OF `inj_on f gens1`] iff:lists_eq_set)
   also have "\<dots> = normalize (map (prod_fun id f) x @ map (prod_fun id f) y)"
        by (auto)
   also have "\<dots> = map (prod_fun id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (prod_fun id f) y"
@@ -373,40 +359,6 @@ lemma (in group_hom) restrict_hom[intro!]:
   unfolding homr_def and hom_def
   by (auto)
 
-lemma extensional_restrict[simp]:
-  "f \<in> extensional A \<Longrightarrow> restrict f A = f"
- by (rule extensionalityI[OF restrict_extensional]) auto
-
-
-text {*
-A lemma to prove bijectivity by proving the inverse.
-*}
-
-lemma bij_betw_by_inv:
-  assumes "f \<in> A \<rightarrow> B"
-      and "g \<in> B \<rightarrow> A"
-      and g_f: "\<And>x. x\<in>A \<Longrightarrow> g (f x) = x"
-      and f_g: "\<And>y. y\<in>B \<Longrightarrow> f (g y) = y"
-  shows "bij_betw f A B"
-unfolding bij_betw_def
-proof
-  show "inj_on f A"
-  proof(induct rule: inj_onI)
-  case (1 x1 x2)
-    then have "g (f x1) = g (f x2)" by simp
-    then show "x1 = x2" using g_f[OF 1(1)] and g_f[OF 1(2)] by simp
-  qed
-next
-  have "f ` A \<subseteq> B" using `f \<in> A \<rightarrow> B` by auto
-  moreover have "B \<subseteq> f ` A"
-  proof
-    fix y assume "y\<in>B"
-    thus "y \<in> f`A" using f_g[OF `y\<in>B`] and `g \<in> B \<rightarrow> A`
-      by (auto intro: rev_image_eqI[of "g y"])
-  qed
-  ultimately show "f ` A = B" by auto
-qed
-
 lemma hom_F_C2_Powerset:
   "\<exists> f. bij_betw f (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
 proof
@@ -415,7 +367,7 @@ proof
   let ?f = "\<lambda>S . restrict (C2.lift S) (carrier \<F>\<^bsub>X\<^esub>)"
   let ?f' = "\<lambda>h . X \<inter> (h \<circ> insert)"
   show "bij_betw ?f (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
-  proof(induct rule: bij_betw_by_inv[of ?f _ _ ?f'])
+  proof(induct rule: bij_betwI[of ?f _ _ ?f'])
   case 1 show ?case
     proof
       fix S assume "S \<in> Pow X"
@@ -459,7 +411,7 @@ proof-
   hence iso': "?i' \<in> G2 \<cong> G1"
     by (auto simp add:iso_def hom_def G2.m_closed)
   show ?thesis
-  proof(rule, induct rule: bij_betw_by_inv[of "(\<lambda>h. compose (carrier G1) h i)" _ _ "(\<lambda>h. compose (carrier G2) h ?i')"])
+  proof(rule, induct rule: bij_betwI[of "(\<lambda>h. compose (carrier G1) h i)" _ _ "(\<lambda>h. compose (carrier G2) h ?i')"])
   case 1
     show ?case
     proof

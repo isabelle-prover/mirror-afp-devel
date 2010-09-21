@@ -574,49 +574,49 @@ canceling a word of generators of a specific set (and their inverses) results
 in a word in generators from that set.
 *}
 
-definition occuring_generators :: "'a word_g_i \<Rightarrow> 'a set"
- where "occuring_generators l = set (map snd l)"
-
 lemma cancels_to_1_preserves_generators:
   assumes "cancels_to_1 l l'"
-  shows "occuring_generators l' \<subseteq> occuring_generators l"
+      and "l \<in> lists (UNIV \<times> gens)"
+  shows "l' \<in> lists (UNIV \<times> gens)"
 proof-
-  have "occuring_generators l' = set (map snd l')" by (rule occuring_generators_def)
-  also
   from assms obtain i where "l' = cancel_at i l" 
     unfolding cancels_to_1_def and cancels_to_1_at_def by auto
   hence "l' = take i l @ drop (2 + i) l" unfolding cancel_at_def .
-  hence "set (map snd l') = set (map snd (take i l @ drop (2 + i) l))" by simp
-  also 
-  have "\<dots> = snd ` set (take i l @ drop (2 + i) l)" by auto
-  also
-  have "\<dots> \<subseteq>  snd ` (set (take i l) \<union> set (drop (2 + i) l))" by auto
-  also
-  have "\<dots> \<subseteq>  snd ` set l" by (auto dest: in_set_takeD in_set_dropD)
-  also
-  have "\<dots> =  occuring_generators l" unfolding occuring_generators_def by simp
-  finally show ?thesis .
+  hence "set l' = set (take i l @ drop (2 + i) l)" by simp
+  moreover
+  have "\<dots> = set (take i l @ drop (2 + i) l)" by auto
+  moreover
+  have "\<dots> \<subseteq> set (take i l) \<union> set (drop (2 + i) l)" by auto
+  moreover
+  have "\<dots> \<subseteq> set l" by (auto dest: in_set_takeD in_set_dropD)
+  ultimately
+  have "set l' \<subseteq> set l" by simp
+  thus ?thesis using assms(2) by auto
 qed
 
 lemma cancels_to_preserves_generators:
   assumes "cancels_to l l'"
-  shows "occuring_generators l' \<subseteq> occuring_generators l"
+      and "l \<in> lists (UNIV \<times> gens)"
+  shows "l' \<in> lists (UNIV \<times> gens)"
 using assms unfolding cancels_to_def by (induct, auto dest:cancels_to_1_preserves_generators)
 
 lemma normalize_preserves_generators:
-  shows "occuring_generators (normalize l) \<subseteq> occuring_generators l"
+  assumes "l \<in> lists (UNIV \<times> gens)"
+    shows "normalize l \<in> lists (UNIV \<times> gens)"
 proof-
   have "cancels_to l (normalize l)" by simp
-  thus ?thesis by(rule cancels_to_preserves_generators)
+  thus ?thesis using assms by(rule cancels_to_preserves_generators)
 qed
 
-lemma occuring_generators_concat:
-  "occuring_generators (l@l') \<subseteq> occuring_generators l \<union> occuring_generators l'"
-unfolding occuring_generators_def by auto
+text {*
+Two simplification lemmas about lists.
+*}
 
-lemma occuring_generators_empty[simp]:
-"occuring_generators [] = {}"
-unfolding occuring_generators_def by auto
+lemma empty_in_lists[simp]:
+  "[] \<in> lists A" by auto
+
+lemma lists_empty[simp]: "lists {} = {[]}"
+  by auto
 
 subsection {* Normalization and renaming generators *}
 
@@ -678,7 +678,7 @@ qed(auto)
 
    
 lemma rename_gens_canceled:
-  assumes "inj_on g (occuring_generators l)"
+  assumes "inj_on g (snd`set l)"
       and "canceled l"
   shows "canceled (map (prod_fun f g) l)"
 unfolding canceled_def
@@ -701,8 +701,7 @@ proof
   have "snd (l ! i) \<in> snd ` set l" and "snd (l ! Suc i) \<in> snd ` set l" by auto
   with `g (snd (l ! i)) = g (snd (l ! Suc i))`
   have "snd (l ! i) = snd (l ! Suc i)" 
-    using `inj_on g (occuring_generators l)`
-    unfolding occuring_generators_def
+    using `inj_on g (image snd (set l))`
     by (auto dest: inj_onD)
   ultimately
   have "canceling (l ! i) (l ! Suc i)" unfolding canceling_def by simp
@@ -718,12 +717,28 @@ qed
 
 lemma rename_gens_normalize:
   assumes "inj f"
-  and "inj_on g (occuring_generators l)"
+  and "inj_on g (snd ` set l)"
   shows "normalize (map (prod_fun f g) l) = map (prod_fun f g) (normalize l)"
 proof(rule normalize_discover)
-  from `inj_on g (occuring_generators l)`
-  have "inj_on g (occuring_generators (normalize l))"
-   by (rule subset_inj_on)(rule normalize_preserves_generators)
+  from `inj_on g (image snd (set l))`
+  have "inj_on g (image snd (set (normalize l)))"
+  proof (rule subset_inj_on)
+    
+    have UNIV_snd: "\<And>A. A \<subseteq> UNIV \<times> snd ` A"
+      proof fix A and x::"'c\<times>'d" assume "x\<in>A"
+        hence "(fst x,snd x)\<in> (UNIV \<times> snd ` A)"
+          by -(rule, auto)
+        thus "x\<in> (UNIV \<times> snd ` A)" by simp
+      qed
+
+    have "l \<in> lists (set l)" by auto
+    hence "l \<in> lists (UNIV \<times> snd ` set l)"
+      by (rule subsetD[OF lists_mono[OF UNIV_snd], of l "set l"])
+    hence "normalize l \<in> lists (UNIV \<times> snd ` set l)"
+      by (rule normalize_preserves_generators[of _ "snd ` set l"])
+    thus "snd ` set (normalize l) \<subseteq> snd ` set l"
+      by (auto simp add: lists_eq_set)
+   qed
   thus "canceled (map (prod_fun f g) (normalize l))" by(rule rename_gens_canceled,simp)
 next
   from `inj f`
