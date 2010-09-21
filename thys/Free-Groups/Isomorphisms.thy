@@ -6,6 +6,7 @@ imports
    "~~/src/HOL/Algebra/IntRing"
    "FreeGroups"
    C2
+   "../Ordinals_and_Cardinals/Cardinal_Order_Relation"
 begin
 
 subsection {* The Free Group over the empty set *}
@@ -409,7 +410,7 @@ proof-
   let ?i' = "restrict (inv_into (carrier G1) i) (carrier G2)"
   have "inv_into (carrier G1) i \<in> G2 \<cong> G1" by (rule group.iso_sym[OF `group G1` iso])
   hence iso': "?i' \<in> G2 \<cong> G1"
-    by (auto simp add:iso_def hom_def G2.m_closed)
+    by (auto simp add:Group.iso_def hom_def G2.m_closed)
   show ?thesis
   proof(rule, induct rule: bij_betwI[of "(\<lambda>h. compose (carrier G1) h i)" _ _ "(\<lambda>h. compose (carrier G2) h ?i')"])
   case 1
@@ -418,7 +419,7 @@ proof-
       fix h assume "h \<in> homr G2 H"
       hence "compose (carrier G1) h i \<in> hom G1 H"
         using iso
-        by (auto intro: group.hom_compose[OF `group G1`, of _ G2] simp add:iso_def homr_def)
+        by (auto intro: group.hom_compose[OF `group G1`, of _ G2] simp add:Group.iso_def homr_def)
       thus "compose (carrier G1) h i \<in> homr G1 H"
         unfolding homr_def by simp
      qed
@@ -429,7 +430,7 @@ proof-
       fix h assume "h \<in> homr G1 H"
       hence "compose (carrier G2) h ?i' \<in> hom G2 H"
         using iso'
-        by (auto intro: group.hom_compose[OF `group G2`, of _ G1] simp add:iso_def homr_def)
+        by (auto intro: group.hom_compose[OF `group G2`, of _ G1] simp add:Group.iso_def homr_def)
       thus "compose (carrier G2) h ?i' \<in> homr G2 H"
         unfolding homr_def by simp
      qed
@@ -438,10 +439,10 @@ proof-
     hence "compose (carrier G2) (compose (carrier G1) x i) ?i'
           = compose (carrier G2) x (compose (carrier G2) i ?i')"
       using iso iso'
-      by (auto intro: compose_assoc[THEN sym]   simp add:iso_def hom_def homr_def)
+      by (auto intro: compose_assoc[THEN sym]   simp add:Group.iso_def hom_def homr_def)
     also have "\<dots> = compose (carrier G2) x (\<lambda>y\<in>carrier G2. y)"
       using iso
-      by (subst compose_id_inv_into, auto simp add:iso_def hom_def bij_betw_def)
+      by (subst compose_id_inv_into, auto simp add:Group.iso_def hom_def bij_betw_def)
     also have "\<dots> = x"
       using 3
       by (auto intro:compose_Id simp add:homr_def)
@@ -452,16 +453,44 @@ proof-
     hence "compose (carrier G1) (compose (carrier G2) y ?i') i
           = compose (carrier G1) y (compose (carrier G1) ?i' i)"
       using iso iso'
-      by (auto intro: compose_assoc[THEN sym] simp add:iso_def hom_def homr_def)
+      by (auto intro: compose_assoc[THEN sym] simp add:Group.iso_def hom_def homr_def)
     also have "\<dots> = compose (carrier G1) y (\<lambda>x\<in>carrier G1. x)"
       using iso
-      by (subst compose_inv_into_id, auto simp add:iso_def hom_def bij_betw_def)
+      by (subst compose_inv_into_id, auto simp add:Group.iso_def hom_def bij_betw_def)
     also have "\<dots> = y"
       using 4
       by (auto intro:compose_Id simp add:homr_def)
     finally
     show ?case .
   qed
+qed
+
+theorem free_group_card_infinite:
+  assumes "infinite X"
+  shows "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
+proof-
+  have "inj_on insert X"
+   and "insert ` X \<subseteq> carrier \<F>\<^bsub>X\<^esub>"
+    by (auto intro:insert_closed inj_onI simp add:insert_def)
+  hence "|X| \<le>o |carrier \<F>\<^bsub>X\<^esub>|"
+    by (subst card_of_ordLeq[THEN sym], auto)
+  moreover
+  have "|carrier \<F>\<^bsub>X\<^esub>| \<le>o |lists ((UNIV::bool set)\<times>X)|"
+    by (auto intro!:card_of_mono1 simp add:free_group_def)
+  moreover (* Remove this if Ordinals_and_Cardinals uses List.lists as well *)
+  have "|lists ((UNIV::bool set)\<times>X)| = |List ((UNIV::bool set)\<times>X)|"
+    by (simp add: List_def lists_eq_set)
+  moreover
+  have "|List ((UNIV::bool set)\<times>X)| =o |(UNIV::bool set)\<times>X|"
+    using `infinite X`
+    by (auto intro:card_of_List_infinite dest!:finite_cartesian_productD2)
+  moreover
+  have  "|(UNIV::bool set)\<times>X| =o |X|"
+    using `infinite X`
+    by (auto intro: card_of_Times_infinite[OF _ _ ordLess_imp_ordLeq[OF finite_ordLess_infinite2], THEN conjunct2])
+  ultimately
+  show "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
+    by (subst ordIso_iff_ordLeq, auto intro: ord_trans)
 qed
 
 theorem isomorphic_free_groups_bases_finite:
