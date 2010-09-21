@@ -11,7 +11,7 @@ subsection {* Provide hand-adapted code evaluation *}
 text {*
   This precompiles all archive entries to ML and thus avoids recompiling
   them every time.  Compiling them separately avoids to generate all archive
-  entries as one chunk when building the evaluation conv, which might be too
+  entries as one chunk when building the evaluation conversion, which might be too
   enormous for the ML runtime environment.
 *}
 
