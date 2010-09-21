@@ -427,7 +427,7 @@ proof
   next
   case 2 show ?case by auto next
   case (3 S) show ?case
-    proof (induct rule:set_ext)
+    proof (induct rule: Set.set_eqI)
       case (1 x) show ?case
       proof(cases "x \<in> X")
       case True thus ?thesis using insert_closed[of x X]
