@@ -338,13 +338,9 @@ qed (auto intro: free_group_is_group)
 subsection {* Bases of isomorphic free groups *}
 
 text {* 
-Isomorphic free groups have bases of same cardinality. Here, this is proven
-only for finite bases. For infinite bases, a lemma such as @{text cardinal_UN_le}
-(which is part of the ZF logic) could be used to show that the free group has the
-same cardinality as the set of generators.
-  *}
+Isomorphic free groups have bases of same cardinality. The proof is very different
+for infinite bases and for finite bases.
 
-text {*
 The proof for the finite case uses the set of of homomorphisms from the free
 group to the group with two elements, as suggested by Christian Sievers. The
 definition of @{term hom} is not suitable for proofs about the cardinality of that
@@ -465,35 +461,7 @@ proof-
   qed
 qed
 
-theorem free_group_card_infinite:
-  assumes "infinite X"
-  shows "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
-proof-
-  have "inj_on insert X"
-   and "insert ` X \<subseteq> carrier \<F>\<^bsub>X\<^esub>"
-    by (auto intro:insert_closed inj_onI simp add:insert_def)
-  hence "|X| \<le>o |carrier \<F>\<^bsub>X\<^esub>|"
-    by (subst card_of_ordLeq[THEN sym], auto)
-  moreover
-  have "|carrier \<F>\<^bsub>X\<^esub>| \<le>o |lists ((UNIV::bool set)\<times>X)|"
-    by (auto intro!:card_of_mono1 simp add:free_group_def)
-  moreover (* Remove this if Ordinals_and_Cardinals uses List.lists as well *)
-  have "|lists ((UNIV::bool set)\<times>X)| = |List ((UNIV::bool set)\<times>X)|"
-    by (simp add: List_def lists_eq_set)
-  moreover
-  have "|List ((UNIV::bool set)\<times>X)| =o |(UNIV::bool set)\<times>X|"
-    using `infinite X`
-    by (auto intro:card_of_List_infinite dest!:finite_cartesian_productD2)
-  moreover
-  have  "|(UNIV::bool set)\<times>X| =o |X|"
-    using `infinite X`
-    by (auto intro: card_of_Times_infinite[OF _ _ ordLess_imp_ordLeq[OF finite_ordLess_infinite2], THEN conjunct2])
-  ultimately
-  show "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
-    by (subst ordIso_iff_ordLeq, auto intro: ord_trans)
-qed
-
-theorem isomorphic_free_groups_bases_finite:
+lemma isomorphic_free_groups_bases_finite:
   assumes iso: "i \<in> \<F>\<^bsub>X\<^esub> \<cong> \<F>\<^bsub>Y\<^esub>"
       and finite: "finite X"
   shows "\<exists>f. bij_betw f X Y"
@@ -529,6 +497,69 @@ proof-
   with finite finite'
   show ?thesis
    by (rule finite_same_card_bij)
+qed
+
+text {*
+The proof for the infinite case is trivial once the fact that the free group
+over an infinite set has the same cardinality is established.
+*}
+
+lemma free_group_card_infinite:
+  assumes "infinite X"
+  shows "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
+proof-
+  have "inj_on insert X"
+   and "insert ` X \<subseteq> carrier \<F>\<^bsub>X\<^esub>"
+    by (auto intro:insert_closed inj_onI simp add:insert_def)
+  hence "|X| \<le>o |carrier \<F>\<^bsub>X\<^esub>|"
+    by (subst card_of_ordLeq[THEN sym], auto)
+  moreover
+  have "|carrier \<F>\<^bsub>X\<^esub>| \<le>o |lists ((UNIV::bool set)\<times>X)|"
+    by (auto intro!:card_of_mono1 simp add:free_group_def)
+  moreover (* Remove this if Ordinals_and_Cardinals uses List.lists as well *)
+  have "|lists ((UNIV::bool set)\<times>X)| = |List ((UNIV::bool set)\<times>X)|"
+    by (simp add: List_def lists_eq_set)
+  moreover
+  have "|List ((UNIV::bool set)\<times>X)| =o |(UNIV::bool set)\<times>X|"
+    using `infinite X`
+    by (auto intro:card_of_List_infinite dest!:finite_cartesian_productD2)
+  moreover
+  have  "|(UNIV::bool set)\<times>X| =o |X|"
+    using `infinite X`
+    by (auto intro: card_of_Times_infinite[OF _ _ ordLess_imp_ordLeq[OF finite_ordLess_infinite2], THEN conjunct2])
+  ultimately
+  show "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
+    by (subst ordIso_iff_ordLeq, auto intro: ord_trans)
+qed
+
+theorem isomorphic_free_groups_bases:
+  assumes iso: "i \<in> \<F>\<^bsub>X\<^esub> \<cong> \<F>\<^bsub>Y\<^esub>"
+  shows "\<exists>f. bij_betw f X Y"
+proof(cases "finite X")
+case True
+  thus ?thesis using iso by -(rule isomorphic_free_groups_bases_finite)
+next
+case False show ?thesis
+  proof(cases "finite Y")
+  case True
+  from iso obtain i' where "i' \<in> \<F>\<^bsub>Y\<^esub> \<cong> \<F>\<^bsub>X\<^esub>"
+       by (auto intro: group.iso_sym[OF free_group_is_group])
+  with `finite Y`
+  have "\<exists>f. bij_betw f Y X" by -(rule isomorphic_free_groups_bases_finite)
+  thus "\<exists>f. bij_betw f X Y" by (auto intro: bij_betw_the_inv_into) next
+case False
+  from `infinite X` have "|X| =o |carrier \<F>\<^bsub>X\<^esub>|" 
+    by (rule free_group_card_infinite)
+  moreover
+  from `infinite Y` have "|Y| =o |carrier \<F>\<^bsub>Y\<^esub>|" 
+    by (rule free_group_card_infinite)
+  moreover
+  from iso have "|carrier \<F>\<^bsub>X\<^esub>| =o |carrier \<F>\<^bsub>Y\<^esub>|"
+    by (auto simp add:Group.iso_def iff:card_of_ordIso[THEN sym])
+  ultimately
+  have "|X| =o |Y|" by (auto intro: ordIso_equivalence)
+  thus ?thesis by (subst card_of_ordIso)
+qed
 qed
 
 end
