@@ -336,7 +336,7 @@ First, a theorem regarding
 @{text "(_Entry_) -as\<rightarrow>* (_Exit_)"} paths in the control flow graph (CFG),
 which agree to a complete program execution: *}
 
-lemma nonInterferenceSecurity_path_to_Low:
+lemma nonInterference_path_to_Low:
   assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice (_Low_)" 
   and "(_Entry_) -as\<rightarrow>* (_Low_)" and "preds (kinds as) s"
   and "(_Entry_) -as'\<rightarrow>* (_Low_)" and "preds (kinds as') s'"
@@ -370,7 +370,7 @@ proof -
 qed
 
 
-theorem nonInterferenceSecurity_path:
+theorem nonInterference_path:
   assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice (_Low_)" 
   and "(_Entry_) -as\<rightarrow>* (_Exit_)" and "preds (kinds as) s"
   and "(_Entry_) -as'\<rightarrow>* (_Exit_)" and "preds (kinds as') s'"
@@ -448,7 +448,7 @@ proof -
     `(_Entry_) -x#xs'\<rightarrow>* (_Low_)` `preds (kinds (x#xs')) s`
     `(_Entry_) -y#ys'\<rightarrow>* (_Low_)` `preds (kinds (y#ys')) s'`
   have "transfers (kinds (x#xs')) s \<approx>\<^isub>L transfers (kinds (y#ys')) s'"
-    by(rule nonInterferenceSecurity_path_to_Low)
+    by(rule nonInterference_path_to_Low)
   with `as = x#xs` `xs = xs'@[x']` `kind x' = (\<lambda>s. True)\<^isub>\<surd>`
     `as' = y#ys` `ys = ys'@[y']` `kind y' = (\<lambda>s. True)\<^isub>\<surd>`
   show ?thesis by(simp add:kinds_def transfers_split)
@@ -542,7 +542,7 @@ proof -
     `(_Entry_) -ax#((a#as\<^isub>2)@[a\<^isub>2])\<rightarrow>* (_Low_)` `preds (kinds (ax#((a#as\<^isub>2)@[a\<^isub>2]))) s\<^isub>2`
   have "transfers (kinds (ax#((a#as\<^isub>1)@[a\<^isub>1]))) s\<^isub>1 \<approx>\<^isub>L 
         transfers (kinds (ax#((a#as\<^isub>2)@[a\<^isub>2]))) s\<^isub>2"
-    by(rule nonInterferenceSecurity_path_to_Low)
+    by(rule nonInterference_path_to_Low)
   with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (\<lambda>s. True)\<^isub>\<surd>` `kind a\<^isub>1 = \<Up>id` `kind a\<^isub>2 = \<Up>id`
     `transfers (kinds as\<^isub>1) s\<^isub>1 = s\<^isub>1'` `transfers (kinds as\<^isub>2) s\<^isub>2 = s\<^isub>2'`
   show ?thesis by(simp add:kinds_def transfers_split)
