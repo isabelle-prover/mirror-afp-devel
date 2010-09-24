@@ -3438,28 +3438,28 @@ begin
 
 
 theorem fundamental_property_of_path_slicing_semantically:
-  assumes identifies:"m \<triangleq> c" and reds:"\<langle>c,[cf]\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>"
-  obtains m' as cfs' S where "m -as\<rightarrow>\<^isub>\<surd>* m'" and "m' \<triangleq> c'"
+  assumes "m \<triangleq> c" and "\<langle>c,[cf]\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>"
+  obtains m' as cfs' where "m -as\<rightarrow>\<^isub>\<surd>* m'" and "m' \<triangleq> c'"
   and "preds (slice_kinds {CFG_node m'} as) [(cf,undefined)]"
   and "\<forall>V \<in> Use m'. 
   state_val (transfers (slice_kinds {CFG_node m'} as) [(cf,undefined)]) V = 
   state_val cfs' V" and "map fst cfs' = s'"
 proof(atomize_elim) 
-  from identifies reds obtain m' as cfs' where path:"m -as\<rightarrow>\<^isub>\<surd>* m'"
-    and transfers:"transfers (kinds as) [(cf,undefined)] = cfs'"
-    and preds:"preds (kinds as) [(cf,undefined)]"
-    and identifies':"m' \<triangleq> c'" and "map fst cfs' = s'"
+  from `m \<triangleq> c` `\<langle>c,[cf]\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>` obtain m' as cfs' where "m -as\<rightarrow>\<^isub>\<surd>* m'"
+    and "transfers (kinds as) [(cf,undefined)] = cfs'"
+    and "preds (kinds as) [(cf,undefined)]" and "m' \<triangleq> c'" and "map fst cfs' = s'"
     by(fastsimp dest:fundamental_property)
-  from path preds obtain as'
-    where preds':"preds (slice_kinds {CFG_node m'} as') [(cf,undefined)]"
+  from `m -as\<rightarrow>\<^isub>\<surd>* m'` `preds (kinds as) [(cf,undefined)]` obtain as'
+    where "preds (slice_kinds {CFG_node m'} as') [(cf,undefined)]"
     and vals:"\<forall>V \<in> Use m'. state_val (transfers (slice_kinds {CFG_node m'} as') 
     [(cf,undefined)]) V = state_val (transfers (kinds as) [(cf,undefined)]) V"
-    and path':"m -as'\<rightarrow>\<^isub>\<surd>* m'"
+    and "m -as'\<rightarrow>\<^isub>\<surd>* m'"
     by -(erule fundamental_property_of_static_slicing,auto)
-  from transfers vals have "\<forall>V \<in> Use m'. 
+  from `transfers (kinds as) [(cf,undefined)] = cfs'` vals have "\<forall>V \<in> Use m'. 
     state_val (transfers (slice_kinds {CFG_node m'} as') [(cf,undefined)]) V = 
     state_val cfs' V" by simp
-  with preds' path' identifies' `map fst cfs' = s'`
+  with `preds (slice_kinds {CFG_node m'} as') [(cf,undefined)]` `m -as'\<rightarrow>\<^isub>\<surd>* m'` 
+    `m' \<triangleq> c'` `map fst cfs' = s'`
   show "\<exists>as m' cfs'. m -as\<rightarrow>\<^isub>\<surd>* m' \<and> m' \<triangleq> c' \<and>
     preds (slice_kinds {CFG_node m'} as) [(cf, undefined)] \<and>
     (\<forall>V\<in>Use m'. state_val (transfers (slice_kinds {CFG_node m'} as)

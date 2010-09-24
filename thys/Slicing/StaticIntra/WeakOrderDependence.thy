@@ -20,20 +20,20 @@ where wod_def:"n \<longrightarrow>\<^bsub>wod\<^esub> n\<^isub>1,n\<^isub>2 \<eq
 
 
 
-inductive_set (in CFG_wf) wod_backward_slice :: "'node \<Rightarrow> 'node set" 
-for n :: "'node"
-  where refl:"valid_node n \<Longrightarrow> n \<in> wod_backward_slice n"
+inductive_set (in CFG_wf) wod_backward_slice :: "'node set \<Rightarrow> 'node set" 
+for S :: "'node set"
+  where refl:"\<lbrakk>valid_node n; n \<in> S\<rbrakk> \<Longrightarrow> n \<in> wod_backward_slice S"
   
   | cd_closed:
-  "\<lbrakk>n' \<longrightarrow>\<^bsub>wod\<^esub> n\<^isub>1,n\<^isub>2; n\<^isub>1 \<in> wod_backward_slice n; n\<^isub>2 \<in> wod_backward_slice n\<rbrakk>
-  \<Longrightarrow> n' \<in> wod_backward_slice n"
+  "\<lbrakk>n' \<longrightarrow>\<^bsub>wod\<^esub> n\<^isub>1,n\<^isub>2; n\<^isub>1 \<in> wod_backward_slice S; n\<^isub>2 \<in> wod_backward_slice S\<rbrakk>
+  \<Longrightarrow> n' \<in> wod_backward_slice S"
 
-  | dd_closed:"\<lbrakk>n' influences V in n''; n'' \<in> wod_backward_slice n\<rbrakk>
-  \<Longrightarrow> n' \<in> wod_backward_slice n"
+  | dd_closed:"\<lbrakk>n' influences V in n''; n'' \<in> wod_backward_slice S\<rbrakk>
+  \<Longrightarrow> n' \<in> wod_backward_slice S"
 
 
 lemma (in CFG_wf) 
-  wod_backward_slice_valid_node:"n \<in> wod_backward_slice n\<^isub>c \<Longrightarrow> valid_node n"
+  wod_backward_slice_valid_node:"n \<in> wod_backward_slice S \<Longrightarrow> valid_node n"
 by(induct rule:wod_backward_slice.induct,
    auto dest:path_valid_node simp:wod_def data_dependence_def)
 

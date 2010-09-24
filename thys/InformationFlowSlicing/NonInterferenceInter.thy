@@ -283,14 +283,14 @@ control flow graph (CFG), which agree to a complete program execution: *}
 
 
 lemma slpa_rv_Low_Use_Low:
-  "\<lbrakk>same_level_path_aux cs as; upd_cs cs as = []; same_level_path_aux cs as';
+  assumes "CFG_node (_Low_) \<in> S"
+  shows "\<lbrakk>same_level_path_aux cs as; upd_cs cs as = []; same_level_path_aux cs as';
     \<forall>c \<in> set cs. valid_edge c; m -as\<rightarrow>* (_Low_); m -as'\<rightarrow>* (_Low_);
    \<forall>i < length cs. \<forall>V \<in> rv S (CFG_node (sourcenode (cs!i))). 
     fst (s!Suc i) V = fst (s'!Suc i) V; \<forall>i < Suc (length cs). snd (s!i) = snd (s'!i);
    \<forall>V \<in> rv S (CFG_node m). state_val s V = state_val s' V;
    preds (slice_kinds S as) s; preds (slice_kinds S as') s';
-   length s = Suc (length cs); length s' = Suc (length cs);
-   CFG_node (_Low_) \<in> S\<rbrakk>
+   length s = Suc (length cs); length s' = Suc (length cs)\<rbrakk>
    \<Longrightarrow> \<forall>V \<in> Use (_Low_). state_val (transfers(slice_kinds S as) s) V =
                       state_val (transfers(slice_kinds S as') s') V"
 proof(induct arbitrary:m as' s s' rule:slpa_induct)
@@ -338,8 +338,7 @@ next
     \<forall>i<Suc (length cs). snd (s ! i) = snd (s' ! i);
     \<forall>V\<in>rv S (CFG_node m). state_val s V = state_val s' V;
     preds (slice_kinds S as) s; preds (slice_kinds S as') s';
-    length s = Suc (length cs); length s' = Suc (length cs);
-    CFG_node (_Low_) \<in> S\<rbrakk>
+    length s = Suc (length cs); length s' = Suc (length cs)\<rbrakk>
     \<Longrightarrow> \<forall>V\<in>Use (_Low_). state_val (transfers(slice_kinds S as) s) V =
     state_val (transfers(slice_kinds S as') s') V`
   note rvs = `\<forall>i<length cs. \<forall>V\<in>rv S (CFG_node (sourcenode (cs ! i))).
@@ -493,8 +492,8 @@ next
         moreover
         from IH[OF `upd_cs cs as = []` `same_level_path_aux cs asx` 
 	  `\<forall>c\<in>set cs. valid_edge c` `targetnode a -as\<rightarrow>* (_Low_)` 
-	  `targetnode a -asx\<rightarrow>* (_Low_)` rvs' snds rv calculation 
-          `CFG_node (_Low_) \<in> S`] `as' = ax # asx` `a = ax`
+	  `targetnode a -asx\<rightarrow>* (_Low_)` rvs' snds rv calculation]
+          `as' = ax # asx` `a = ax`
         show ?thesis by(simp add:slice_kinds_def)
       next
         case False
@@ -522,8 +521,7 @@ next
     \<forall>i<Suc (length (a # cs)). snd (s ! i) = snd (s' ! i);
     \<forall>V\<in>rv S (CFG_node m). state_val s V = state_val s' V;
     preds (slice_kinds S as) s; preds (slice_kinds S as') s';
-    length s = Suc (length (a # cs)); length s' = Suc (length (a # cs));
-    CFG_node (_Low_) \<in> S\<rbrakk>
+    length s = Suc (length (a # cs)); length s' = Suc (length (a # cs))\<rbrakk>
     \<Longrightarrow> \<forall>V\<in>Use (_Low_). state_val (transfers(slice_kinds S as) s) V =
     state_val (transfers(slice_kinds S as') s') V`
   note rvs = `\<forall>i<length cs. \<forall>V\<in>rv S (CFG_node (sourcenode (cs ! i))).
@@ -761,8 +759,7 @@ next
       moreover
       from IH[OF `upd_cs (a # cs) as = []` `same_level_path_aux (a # cs) asx`
         `\<forall>c\<in>set (a # cs). valid_edge c` `targetnode a -as\<rightarrow>* (_Low_)`
-        `targetnode a -asx\<rightarrow>* (_Low_)` rvs' snds rv calculation 
-        `CFG_node (_Low_) \<in> S`] `as' = ax#asx`
+        `targetnode a -asx\<rightarrow>* (_Low_)` rvs' snds rv calculation] `as' = ax#asx`
       show ?thesis by(simp add:slice_kinds_def)
     qed
   qed
@@ -775,8 +772,7 @@ next
     \<forall>i<Suc (length cs'). snd (s ! i) = snd (s' ! i);
     \<forall>V\<in>rv S (CFG_node m). state_val s V = state_val s' V;
     preds (slice_kinds S as) s; preds (slice_kinds S as') s';
-    length s = Suc (length cs'); length s' = Suc (length cs');
-    CFG_node (_Low_) \<in> S\<rbrakk>
+    length s = Suc (length cs'); length s' = Suc (length cs')\<rbrakk>
     \<Longrightarrow> \<forall>V\<in>Use (_Low_). state_val (transfers(slice_kinds S as) s) V =
                        state_val (transfers(slice_kinds S as') s') V`
   note rvs = ` \<forall>i<length cs. \<forall>V\<in>rv S (CFG_node (sourcenode (cs ! i))).
@@ -1021,8 +1017,7 @@ next
         moreover
         from IH[OF `upd_cs cs' as = []` `same_level_path_aux cs' asx` 
 	  `\<forall>c\<in>set cs'. valid_edge c` `targetnode a -as\<rightarrow>* (_Low_)` 
-	  `targetnode a -asx\<rightarrow>* (_Low_)` rvs' snds rv' calculation 
-          `CFG_node (_Low_) \<in> S`] `as' = ax#asx`
+	  `targetnode a -asx\<rightarrow>* (_Low_)` rvs' snds rv' calculation] `as' = ax#asx`
         show ?thesis by(simp add:slice_kinds_def)
       next
         case False
@@ -1069,8 +1064,7 @@ next
         moreover
         from IH[OF `upd_cs cs' as = []` `same_level_path_aux cs' asx` 
 	  `\<forall>c\<in>set cs'. valid_edge c` `targetnode a -as\<rightarrow>* (_Low_)` 
-	  `targetnode a -asx\<rightarrow>* (_Low_)` rvs' snds rv' calculation 
-          `CFG_node (_Low_) \<in> S`] `as' = ax#asx`
+	  `targetnode a -asx\<rightarrow>* (_Low_)` rvs' snds rv' calculation] `as' = ax#asx`
         show ?thesis by(simp add:slice_kinds_def)
       qed
     qed

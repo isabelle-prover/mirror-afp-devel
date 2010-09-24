@@ -193,9 +193,7 @@ proof(rule ccontr)
   hence "\<exists>nx nx'. nx \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<and> 
     nx' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<and> nx \<noteq> nx'" by auto
   then obtain nx nx' where "nx \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" 
-    and "nx' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-    and "nx \<noteq> nx'" by auto
-  hence "S \<noteq> {CFG_node (_Exit_)}" by(fastsimp elim:obs_intraE dest!:Exit_HRB_Slice)
+    and "nx' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "nx \<noteq> nx'" by auto
   from `nx \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` obtain as where "n -as\<rightarrow>\<^isub>\<iota>* nx" 
     and all:"\<forall>n' \<in> set(sourcenodes as). n' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" 
     and "nx \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" 
