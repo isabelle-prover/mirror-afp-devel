@@ -1,2 +1,2 @@
 
-use_thy "Featherweight_Java;
+use_thy "Featherweight_Java";
