@@ -1,3 +1,2 @@
 
-use_thys ["FJSound", "Execute"];
-
+use_thy "Featherweight_Java;
