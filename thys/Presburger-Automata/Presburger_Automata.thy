@@ -8,43 +8,34 @@ begin
 
 section {* General automata *}
 
-fun steps :: "('a \<Rightarrow> 'b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> 'a"
-where
-  "steps tr q [] = q"
-| "steps tr q (a # as) = steps tr (tr q a) as"
-
-lemma steps_append:
-  "steps tr q (a @ b) = steps tr (steps tr q a) b"
-  by (induct tr q a rule: steps.induct) simp+
-
 definition
-  "reach tr p as q \<equiv> (q = steps tr p as)"
+  "reach tr p as q \<equiv> (q = foldl tr p as)"
 
 lemma reach_nil: "reach tr p [] p" by (simp add: reach_def)
 
 lemma reach_snoc: "reach tr p bs q \<Longrightarrow> reach tr p (bs @ [b]) (tr q b)"
-  by (simp add: reach_def steps_append)
+  by (simp add: reach_def)
 
 lemma reach_nil_iff: "reach tr p [] q = (p = q)" by (auto simp add: reach_def)
 
 lemma reach_snoc_iff: "reach tr p (bs @ [b]) k = (\<exists>q. reach tr p bs q \<and> k = tr q b)"
-  by (auto simp add: reach_def steps_append)
+  by (auto simp add: reach_def)
 
 lemma reach_induct [consumes 1, case_names Nil snoc, induct set: reach]:
   assumes "reach tr p w q"
   and "P [] p"
   and  "\<And>k x y. \<lbrakk>reach tr p x k; P x k\<rbrakk> \<Longrightarrow> P (x @ [y]) (tr k y)"
   shows "P w q"
-using assms by (induct w arbitrary: q rule: rev_induct) (simp add: reach_def steps_append)+
+using assms by (induct w arbitrary: q rule: rev_induct) (simp add: reach_def)+
 
 lemma reach_trans: "\<lbrakk>reach tr p a r; reach tr r b q\<rbrakk> \<Longrightarrow> reach tr p (a @ b) q" 
-  by (simp add: reach_def steps_append)
+  by (simp add: reach_def)
 
 lemma reach_inj: "\<lbrakk>reach tr p a q; reach tr p a q'\<rbrakk> \<Longrightarrow> q = q'"
   by (simp add: reach_def)
 
 definition
-  "accepts tr P s as \<equiv> P (steps tr s as)"
+  "accepts tr P s as \<equiv> P (foldl tr s as)"
 
 locale Automaton =
   fixes trans :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
@@ -56,8 +47,8 @@ begin
 lemma steps_is_node:
   assumes "is_node q"
   and "list_all is_alpha w"
-  shows "is_node (steps trans q w)"
-using assms by (induct tr \<equiv> trans q w rule: steps.induct) (simp add: trans_is_node)+
+  shows "is_node (foldl trans q w)"
+  using assms by (induct w arbitrary: q) (simp add: trans_is_node)+
 
 lemma reach_is_node: "\<lbrakk>reach trans p w q; is_node p; list_all is_alpha w\<rbrakk> \<Longrightarrow> is_node q"
   by (simp add: steps_is_node reach_def)
@@ -312,7 +303,7 @@ lemmas dfa_trans_is_node = aut_dfa.trans_is_node [OF aut_dfa.intro]
 lemmas dfa_steps_is_node = aut_dfa.steps_is_node [OF aut_dfa.intro]
 lemmas dfa_reach_is_node = aut_dfa.reach_is_node [OF aut_dfa.intro]
 
-abbreviation "dfa_steps A \<equiv> steps (dfa_trans A)"
+abbreviation "dfa_steps A \<equiv> foldl (dfa_trans A)"
 abbreviation "dfa_accepts A \<equiv> accepts (dfa_trans A) (dfa_accepting A) 0"
 abbreviation "dfa_reach A \<equiv> reach (dfa_trans A)"
 
@@ -1744,7 +1735,7 @@ lemmas nfa_trans_is_node = aut_nfa.trans_is_node [OF aut_nfa.intro]
 lemmas nfa_steps_is_node = aut_nfa.steps_is_node [OF aut_nfa.intro]
 lemmas nfa_reach_is_node = aut_nfa.reach_is_node [OF aut_nfa.intro]
 
-abbreviation "nfa_steps A \<equiv> steps (nfa_trans A)"
+abbreviation "nfa_steps A \<equiv> foldl (nfa_trans A)"
 abbreviation "nfa_accepts A \<equiv> accepts (nfa_trans A) (nfa_accepting A) (nfa_startnode A)"
 abbreviation "nfa_reach A \<equiv> reach (nfa_trans A)"
 
@@ -3110,7 +3101,7 @@ next
   } note N2 = this
 
   have "set_of_bv (nfa_steps (quantify_nfa v N) q (xs @ [x])) = set_of_bv (nfa_steps (quantify_nfa v N) ?q [x])"
-    by (simp add: steps_append)
+    by simp
   also have "\<dots> = set_of_bv (nfa_trans (quantify_nfa v N) ?q x)" by simp
   also from snoc N have "\<dots> = (\<Union>b. set_of_bv (nfa_trans N ?q (insertl v b x)))" by (simp add: nfa_trans_quantify_nfa)
   also have "\<dots> = (\<Union>b. set_of_bv (bdd_lookup (subsetbdd (fst N) ?q (nfa_emptybdd (length ?q))) (insertl v b x)))" by (simp add: nfa_trans_def)
@@ -3122,7 +3113,7 @@ next
   also from N2 B have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_trans N (nfa_steps N q (insertll v (butlast bs) xs)) (insertl v (last bs) x)))" (is "?L = ?R")
     by (simp add: subsetbdd_set_of_bv[folded nfa_trans_def] cong: strong_UN_cong)
   also have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_steps N q (insertll v (butlast bs) xs @ [insertl v (last bs) x])))"
-    by (simp add: steps_append)
+    by simp
   also have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_steps N q (insertll v (butlast bs @ [last bs]) (xs @ [x]))))" by (auto simp: insertll_append)
   also have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_steps N q (insertll v bs (xs @ [x]))))"
   proof (rule set_eqI)
@@ -3351,7 +3342,7 @@ proof -
   
   have "dfa_accepts (rquot A n) bss = dfa_accepting (rquot A n) (dfa_steps (rquot A n) 0 bss)" by (simp add: accepts_def)
   also from assms q have "\<dots> = (\<exists>m. dfa_accepting A (dfa_steps A (dfa_steps A 0 bss) (zeros m n)))" by (simp add: rquot_accepting rquot_steps)
-  also have "\<dots> = (\<exists>m. dfa_accepting A (dfa_steps A 0 (bss @ zeros m n)))" by (simp add: steps_append)
+  also have "\<dots> = (\<exists>m. dfa_accepting A (dfa_steps A 0 (bss @ zeros m n)))" by simp
   also have "\<dots> = (\<exists>m. dfa_accepts A (bss @ zeros m n))" by (simp add: accepts_def)
   finally show ?thesis .
 qed
