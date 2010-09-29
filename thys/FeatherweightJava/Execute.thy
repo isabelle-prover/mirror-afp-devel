@@ -36,7 +36,7 @@ lemma rc_new_arg': "CT \<turnstile> ei \<rightarrow> ei' \<Longrightarrow> appen
    ==> CT \<turnstile> New C e \<rightarrow> New C e'"
 unfolding append_def by simp (rule reduction.intros(7))
 
-lemmas [code_pred_intro] = reduction.intros(1-5)[unfolded Predicate.eq_is_eq[symmetric]]
+lemmas [code_pred_intro] = reduction.intros(1-5)
   rc_invk_arg' rc_new_arg' reduction.intros(8)
 
 code_pred (modes: i => i => i => bool, i => i => o => bool as reduce) reduction
@@ -46,39 +46,33 @@ proof -
     unfolding append_def by (cases xa) fastsimp+
 next
   case reduction
-  from this show thesis
+  from reduction.prems show thesis
   proof (cases rule: reduction.cases)
     case r_field
-    with reduction(2) show thesis
-      unfolding Predicate.eq_is_eq by fastsimp
+    with reduction(1) show thesis by fastsimp
   next
     case r_invk
-    with reduction(3) show thesis
-      unfolding Predicate.eq_is_eq by fastsimp
+    with reduction(2) show thesis by fastsimp
   next
     case r_cast
-    with reduction(4) show thesis
-      by fastsimp
+    with reduction(3) show thesis by fastsimp
   next
     case rc_field
-    with reduction(5) show thesis
-      by fastsimp
+    with reduction(4) show thesis by fastsimp
   next
     case rc_invk_recv
-    with reduction(6) show thesis
-      by fastsimp
+    with reduction(5) show thesis by fastsimp
   next
     case rc_invk_arg
-    with reduction(7) show thesis
+    with reduction(6) show thesis
       unfolding append_def by fastsimp
   next
     case rc_new_arg
-    with reduction(8) show thesis
+    with reduction(7) show thesis
       unfolding append_def by fastsimp
   next
     case rc_cast
-    with reduction(9) show thesis
-      by fastsimp
+    with reduction(8) show thesis by fastsimp
   qed
 qed
 
@@ -107,21 +101,19 @@ lemma [code_pred_intro]:
   "mtype(CT,m,D) = Ds \<rightarrow> D0 \<Longrightarrow> C \<noteq> D0 \<Longrightarrow> method_typing_aux CT m D Cs C"
 unfolding method_typing_aux_def by auto
 
-declare method_typing.intros[unfolded method_typing_aux,
-  unfolded Predicate.eq_is_eq[symmetric], code_pred_intro]
+declare method_typing.intros[unfolded method_typing_aux, code_pred_intro]
 
-declare class_typing.intros[unfolded append_def[symmetric],
-  unfolded Predicate.eq_is_eq[symmetric], code_pred_intro]
+declare class_typing.intros[unfolded append_def[symmetric], code_pred_intro]
 
 code_pred (modes: i => i => bool) class_typing
 proof -
   case class_typing
-  from class_typing.cases[OF this(1), of thesis] this(2) show thesis
-    unfolding Predicate.eq_is_eq append_def by fastsimp
+  from class_typing.cases[OF class_typing.prems, of thesis] this(1) show thesis
+    unfolding append_def by fastsimp
 next
   case method_typing
-  from method_typing.cases[OF this(1), of thesis] this(2) show thesis
-    unfolding Predicate.eq_is_eq append_def method_typing_aux_def by fastsimp
+  from method_typing.cases[OF method_typing.prems, of thesis] this(1) show thesis
+    unfolding append_def method_typing_aux_def by fastsimp
 next
   case method_typing_aux
   from this show thesis

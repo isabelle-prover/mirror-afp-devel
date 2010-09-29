@@ -86,28 +86,28 @@ from \secref{sec:evaluation-ctxt}.
 
 text {* The same game with the predicate compiler and the generic code generator *}
 
-lemma [code_pred_intro]: "valuep (Rcd [])"
+lemma [code_pred_intro Rcd_Nil]: "valuep (Rcd [])"
 by (auto intro: valuep.intros)
 
-lemma [code_pred_intro]: "valuep t \<Longrightarrow> valuep (Rcd fs) \<Longrightarrow> valuep (Rcd ((l, t) # fs))" 
+lemma [code_pred_intro Rcd_Cons]: "valuep t \<Longrightarrow> valuep (Rcd fs) \<Longrightarrow> valuep (Rcd ((l, t) # fs))" 
 by (auto intro!: valuep.intros elim!: valuep.cases)
 
-lemmas [code_pred_intro] = valuep.intros(1-2)
+lemmas valuep.intros(1)[code_pred_intro Abs'] valuep.intros(2)[code_pred_intro TAbs']
 
 code_pred valuep
 proof -
   case valuep
-  from this(1) show thesis
+  from valuep.prems show thesis
   proof (cases rule: valuep.cases)
     case (Rcd fs)
-    from this valuep(2-3) show thesis
+    from this Rcd_Nil Rcd_Cons show thesis
       by (cases fs) (auto intro: valuep.intros)
   next
     case Abs
-    from this valuep(4) show thesis by auto
+    from this Abs' show thesis by auto
   next
     case TAbs
-    from this valuep(5) show thesis by auto
+    from this TAbs' show thesis by auto
   qed
 qed
 

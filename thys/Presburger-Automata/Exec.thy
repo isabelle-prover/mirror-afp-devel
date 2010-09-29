@@ -19,7 +19,7 @@ proof -
     by simp
   also have "\<dots> = dfa_accepts (dfa_of_pf 0 ?P) []"
     by (simp add: dfa_of_pf_correctness del: dfa_of_pf.simps)
-  also have "\<dots>" by evaluation
+  also have "\<dots>" by eval
   finally show ?thesis .
 qed
 
@@ -33,36 +33,34 @@ proof -
     by simp
   also have "\<dots> = dfa_accepts (dfa_of_pf 0 ?P) []"
     by (simp add: dfa_of_pf_correctness del: dfa_of_pf.simps)
-  also have "\<dots>" by evaluation
+  also have "\<dots>" by eval
   finally show ?thesis .
 qed
 
-code_module PresburgerA
-contains
-test = "dfa_of_pf 0"
-test' = "min_dfa"
-stamp = "Forall (Imp (Le [-1] -8) (Exist (Exist (Eq [5, 3, -1] 0))))"
-stamp_false = "Forall (Imp (Le [-1] -7) (Exist (Exist (Eq [5, 3, -1] 0))))"
-example = "Forall (Exist (Or (Eq [1, -1] 5)
+definition "mk_dfa = dfa_of_pf 0"
+
+definition "stamp = Forall (Imp (Le [-1] -8) (Exist (Exist (Eq [5, 3, -1] 0))))"
+definition "stamp_false = Forall (Imp (Le [-1] -7) (Exist (Exist (Eq [5, 3, -1] 0))))"
+definition "example = Forall (Exist (Or (Eq [1, -1] 5)
   (Forall (Forall (Imp (Neg (Le [-1, 0] -6)) (Imp (Eq [1, 6, 0, -1] 0) (Eq [0, 1] 1)))))))"
-example2 = "Forall (Forall (Forall (Imp (Neg (Le [-1] -2))
+definition "example2 = Forall (Forall (Forall (Imp (Neg (Le [-1] -2))
   (Imp (Eq [1, 2, -1] 1) (Forall (Forall (Imp (Neg (Le [-1] -2))
     (Imp (Eq [1, 2, 0, 0, -1] 0) (Imp (Exist (Eq [2, 0, 0, 0, 0, -1] 0)) (Eq [0, 1, 0, -1] 0))))))))))"
-example2_false = "Forall (Forall (Forall (Imp (Neg (Le [-1] -2))
+definition "example2_false = Forall (Forall (Forall (Imp (Neg (Le [-1] -2))
   (Imp (Eq [1, 2, -1] 1) (Forall (Forall (Imp (Neg (Le [-1] -2))
     (Imp (Eq [1, 2, 0, 0, -1] 0) (Imp (Exist (Eq [3, 0, 0, 0, 0, -1] 0)) (Eq [0, 1, 0, -1] 0))))))))))"
-harrison1 = "Exist (Forall (Imp (Le [-1, 1] 0) (Exist (Exist
+definition "harrison1 = Exist (Forall (Imp (Le [-1, 1] 0) (Exist (Exist
   (And (Le [0, -1] 0) (And (Le [-1] 0) (Eq [8, 3, -1] 0)))))))"
-harrison2 = "Exist (Forall (Imp (Le [-1, 1] 0) (Exist (Exist
+definition "harrison2 = Exist (Forall (Imp (Le [-1, 1] 0) (Exist (Exist
   (And (Le [0, -1] 0) (And (Le [-1] 0) (Eq [8, 7, -1] 0)))))))"
 
-ML {* PresburgerA.test PresburgerA.stamp *}
-ML {* PresburgerA.test' (PresburgerA.test PresburgerA.stamp) *}
-ML {* PresburgerA.test PresburgerA.stamp_false *}
-ML {* PresburgerA.test PresburgerA.example *}
-ML {* PresburgerA.test PresburgerA.example2 *}
-ML {* PresburgerA.test PresburgerA.example2_false *}
-ML {* PresburgerA.test PresburgerA.harrison1 *}
-ML {* PresburgerA.test PresburgerA.harrison2 *}
+value "mk_dfa stamp"
+value "min_dfa (mk_dfa stamp)"
+value "mk_dfa stamp_false"
+value "mk_dfa example"
+value "mk_dfa example2"
+value "mk_dfa example2_false"
+value "mk_dfa harrison1"
+value "mk_dfa harrison2"
 
 end

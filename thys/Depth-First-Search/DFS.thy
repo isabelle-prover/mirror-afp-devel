@@ -89,7 +89,7 @@ where
 by pat_completeness auto
 
 lemma dfs2_invariant: "dfs2_dom (g, xs, ys) \<Longrightarrow> set ys \<subseteq> set (dfs2 g xs ys)"
-by (induct g xs ys rule: dfs2.pinduct) force+
+by (induct g xs ys rule: dfs2.pinduct) (force simp add: dfs2.psimps)+
 
 termination dfs2
 apply (relation "inv_image (finite_psubset <*lex*> less_than)  

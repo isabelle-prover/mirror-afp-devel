@@ -778,8 +778,8 @@ declare subcls1_intros [code_pred_intro]
 code_pred subcls1
 proof -
   case subcls1
-  thus thesis
-    by(rule subcls1_cases)(assumption|rule refl)+
+  from subcls1.prems show thesis
+    by(rule subcls1_cases)(assumption|erule that[OF _ refl refl])+
 qed
 
 text {*

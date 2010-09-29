@@ -391,8 +391,8 @@ declare Nat.diff_is_0_eq' [simp del]
 (********************************* replaceFacesAt ****************************)
 subsection{* @{const replacefacesAt} *}
 
-consts replacefacesAt2 :: "nat list \<Rightarrow> face \<Rightarrow> face list \<Rightarrow> face list list \<Rightarrow> face list list"
-primrec "replacefacesAt2 [] f fs F = F"
+primrec replacefacesAt2 :: "nat list \<Rightarrow> face \<Rightarrow> face list \<Rightarrow> face list list \<Rightarrow> face list list" where
+ "replacefacesAt2 [] f fs F = F" |
  "replacefacesAt2 (n#ns) f fs F =
      (if n < |F|
       then replacefacesAt2 ns f fs (F [n:=replace f fs (F!n)])
