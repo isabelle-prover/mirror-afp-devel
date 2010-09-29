@@ -26,7 +26,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Util *}
 
 theory Util
-imports Main 
+imports Main
 begin
 
 text {* Some auxiliary lemmas that do not fit elsewhere. *}
@@ -38,6 +38,23 @@ fun
   debug :: "string \<Rightarrow> string \<Rightarrow> 'a \<Rightarrow> 'a"
 where
   "debug i t x = x"
+
+lemma all_Suc: "(\<forall> i < Suc n. P i) = (P 0 \<and> (\<forall> i < n. P (Suc i)))" (is "?l = ?r")
+proof 
+  assume ?l thus ?r by auto
+next
+  assume ?r
+  show ?l
+  proof (intro allI impI)
+    fix i
+    assume "i < Suc n"
+    with `?r` show "P i"
+      by (cases i, auto)
+  qed
+qed
+
+lemma ex_Suc: "(\<exists> i < Suc n. P i) = (P 0 \<or> (\<exists> i < n. P (Suc i)))" (is "?l = ?r")
+  using all_Suc[of n "\<lambda> i. \<not> P i"] by blast
 
 subsection {* Properties of @{const take} and @{const drop} *}
 
@@ -101,6 +118,63 @@ next
  qed
 qed
 
+lemma nth_take_prefix:
+ "length ys \<le> length xs \<Longrightarrow> \<forall>i < length ys. xs!i = ys!i \<Longrightarrow> take (length ys) xs = ys"
+proof (induct ys arbitrary: xs)
+ case Nil thus ?case by auto
+next
+ case (Cons y ys) note IH = this
+ show ?case
+ proof (cases xs)
+  case Nil thus ?thesis using Cons by simp
+ next
+  case (Cons z zs)
+  hence "xs!0 = z" by simp
+  with IH have "z = y" by auto
+  from IH have "\<forall>i < length ys. xs!(Suc i) = ys!i" by auto
+  hence A:"\<forall>i < length ys. zs!i = ys!i" using Cons by auto
+  have B:"length ys \<le> length zs" using IH Cons by auto
+  have C:"take (length ys) zs = ys" using IH A B by simp
+  have "take (length (y#ys)) (z#zs) = z#(take (length ys) zs)" by simp
+  also have "\<dots> = z#ys" using C by simp
+  finally show ?thesis unfolding `z = y` `xs = z#zs` .
+ qed
+qed
+
+lemma nth_drop_0: "0 < length ss \<Longrightarrow> (ss!0)#drop (Suc 0) ss = ss" by (induct ss) auto
+
+lemma append_Cons_nth_left:
+  assumes "i < length xs"
+  shows "(xs @ u # ys) ! i = xs ! i"
+using assms nth_append[of xs _ i] by simp
+
+lemma append_Cons_nth_middle:
+  assumes "i = length xs"
+  shows "(xs @ y # zs) ! i = y"
+using assms by auto
+
+lemma append_Cons_nth_right:
+  assumes "i > length xs"
+  shows "(xs @ u # ys) ! i = (xs @ z # ys) ! i"
+proof -
+  from assms have "i - length xs > 0" by auto
+  then obtain j where j: "i - length xs = Suc j" by (cases "i - length xs", auto)
+  thus ?thesis by (simp add: nth_append)
+qed
+
+lemma append_Cons_nth_not_middle:
+  assumes "i \<noteq> length xs"
+  shows "(xs @ u # ys) ! i = (xs @ z # ys) ! i"
+proof (cases "i < length xs")
+  case True
+  thus ?thesis by (simp add: append_Cons_nth_left)
+next
+  case False 
+  with assms have "i > length xs" by arith
+  thus ?thesis by (rule append_Cons_nth_right)
+qed
+
+lemmas append_Cons_nth = append_Cons_nth_middle append_Cons_nth_not_middle
 
 subsection {* Induction Rules *}
 
@@ -487,8 +561,35 @@ next
   qed
 qed
 
+lemma pigeonhole_infinite_rel:
+assumes "~finite A" and "finite B" and "ALL a:A. EX b:B. R a b"
+shows "EX b:B. ~finite{a:A. R a b}"
+(* to come from Isabelle Finite_Set *)
+oops
+
+
+lemma infinite_imp_elem: "\<not> finite A \<Longrightarrow> \<exists> x. x \<in> A"
+  by (cases "A = {}", auto)
+
 lemma inf_pigeon_hole_principle: assumes "\<forall> k :: nat. \<exists> i < n :: nat. f k i"
   shows "\<exists> i < n. \<forall> k. \<exists> k' \<ge> k. f k' i"
+(* alternative proof via pigeonhole_infinite_rel
+proof -
+  have nfin: "~ finite (UNIV :: nat set)" by auto
+  have fin: "finite ({i. i < n})" by auto
+  from pigeonhole_infinite_rel[OF nfin fin] assms
+  obtain i where i: "i < n" and nfin: "\<not> finite {a. f a i}" by auto
+  show ?thesis 
+  proof (intro exI conjI, rule i, intro allI)
+    fix k
+    have "finite {a. f a i \<and> a < k}" by auto
+    with nfin have "\<not> finite ({a. f a i} - {a. f a i \<and> a < k})" by auto
+    from infinite_imp_elem[OF this]
+    obtain a where "f a i" and "a \<ge> k" by auto
+    thus "\<exists> k' \<ge> k. f k' i" by force
+  qed
+qed
+*)
 using assms 
 proof (induct n arbitrary: f, simp)
   case (Suc n)
@@ -514,14 +615,15 @@ proof (induct n arbitrary: f, simp)
     from Suc(1)[OF n] obtain i where i: "i < n" and f: "\<forall> l. \<exists> k' \<ge> l. ?f k' i" by auto
     hence i: "i < Suc n" by auto
     show ?thesis
-    proof (rule exI[of _ i], simp add: i, intro allI)
+    proof (rule exI[of _ i], intro conjI allI)
       fix l
       from spec[OF f, of l] obtain k' where k': "(k' :: nat) \<ge> l" and f: "f (k + k') i" by auto
       from k' have "k + k' \<ge> l" by simp
       with f show "\<exists> k' \<ge> l. f k' i" by auto
-    qed
+    qed (simp add: i)
   qed
 qed
+
 
 locale infinite_hits =
   fixes p :: "nat \<Rightarrow> bool"
