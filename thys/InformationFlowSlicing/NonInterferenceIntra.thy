@@ -39,7 +39,7 @@ locale NonInterferenceIntraGraph =
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
   and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
-  and backward_slice :: "'node \<Rightarrow> 'node set" 
+  and backward_slice :: "'node set \<Rightarrow> 'node set" 
   and Exit :: "'node" ("'('_Exit'_')") +
   fixes H :: "'var set"
   fixes L :: "'var set"
@@ -160,11 +160,11 @@ text {* The following lemmas connect low equivalent states with
 relevant variables as necessary in the correctness proof for slicing. *}
 
 lemma relevant_vars_Entry:
-  assumes "V \<in> rv n\<^isub>c (_Entry_)" and "(_High_) \<notin> backward_slice n\<^isub>c"
+  assumes "V \<in> rv S (_Entry_)" and "(_High_) \<notin> backward_slice S"
   shows "V \<in> L"
 proof -
-  from `V \<in> rv n\<^isub>c (_Entry_)` obtain as n' where "(_Entry_) -as\<rightarrow>* n'"
-    and "n' \<in> backward_slice n\<^isub>c" and "V \<in> Use n'"
+  from `V \<in> rv S (_Entry_)` obtain as n' where "(_Entry_) -as\<rightarrow>* n'"
+    and "n' \<in> backward_slice S" and "V \<in> Use n'"
     and "\<forall>nx \<in> set(sourcenodes as). V \<notin> Def nx" by(erule rvE)
   from `(_Entry_) -as\<rightarrow>* n'` have "valid_node n'" by(rule path_valid_node)
   thus ?thesis
@@ -186,7 +186,7 @@ proof -
     proof(cases "as' = []")
       case True
       with `(_High_) -as'\<rightarrow>* n'` have "n' = (_High_)" by fastsimp
-      with `n' \<in> backward_slice n\<^isub>c` `(_High_) \<notin> backward_slice n\<^isub>c`
+      with `n' \<in> backward_slice S` `(_High_) \<notin> backward_slice S`
       have False by simp
       thus ?thesis by simp
     next
@@ -208,22 +208,23 @@ qed
 
 
 lemma lowEquivalence_relevant_nodes_Entry:
-  assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice n\<^isub>c"
-  shows "\<forall>V \<in> rv n\<^isub>c (_Entry_). state_val s V = state_val s' V"
+  assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice S"
+  shows "\<forall>V \<in> rv S (_Entry_). state_val s V = state_val s' V"
 proof
-  fix V assume "V \<in> rv n\<^isub>c (_Entry_)"
-  with `(_High_) \<notin> backward_slice n\<^isub>c` have "V \<in> L" by -(rule relevant_vars_Entry)
+  fix V assume "V \<in> rv S (_Entry_)"
+  with `(_High_) \<notin> backward_slice S` have "V \<in> L" by -(rule relevant_vars_Entry)
   with `s \<approx>\<^isub>L s'` show "state_val s V = state_val s' V" by(simp add:lowEquivalence_def)
 qed
 
 
 
 lemma rv_Low_Use_Low:
-  "\<lbrakk>n -as\<rightarrow>* (_Low_); n -as'\<rightarrow>* (_Low_);
-    \<forall>V \<in> rv (_Low_) n. state_val s V = state_val s' V;
-    preds (slice_kinds (_Low_) as) s; preds (slice_kinds (_Low_) as') s'\<rbrakk>
-  \<Longrightarrow> \<forall>V \<in> Use (_Low_). state_val (transfers (slice_kinds (_Low_) as) s) V =
-                       state_val (transfers (slice_kinds (_Low_) as') s') V"
+  assumes "(_Low_) \<in> S"
+  shows "\<lbrakk>n -as\<rightarrow>* (_Low_); n -as'\<rightarrow>* (_Low_);
+    \<forall>V \<in> rv S n. state_val s V = state_val s' V;
+    preds (slice_kinds S as) s; preds (slice_kinds S as') s'\<rbrakk>
+  \<Longrightarrow> \<forall>V \<in> Use (_Low_). state_val (transfers (slice_kinds S as) s) V =
+                       state_val (transfers (slice_kinds S as') s') V"
 proof(induct n as n\<equiv>"(_Low_)" arbitrary:as' s s' rule:path.induct)
   case empty_path
   { fix V assume "V \<in> Use (_Low_)"
@@ -231,11 +232,11 @@ proof(induct n as n\<equiv>"(_Low_)" arbitrary:as' s s' rule:path.induct)
     from `valid_node (_Low_)` have "(_Low_) -[]\<rightarrow>* (_Low_)"
       by(fastsimp intro:path.empty_path)
     moreover
-    from `valid_node (_Low_)` have "(_Low_) \<in> backward_slice (_Low_)"
+    from `valid_node (_Low_)` `(_Low_) \<in> S` have "(_Low_) \<in> backward_slice S"
       by(fastsimp intro:refl)
-    ultimately have "V \<in> rv (_Low_) (_Low_)"
+    ultimately have "V \<in> rv S (_Low_)"
       by(fastsimp intro:rvI simp:sourcenodes_def) }
-  hence "\<forall>V \<in> Use (_Low_). V \<in> rv (_Low_) (_Low_)" by simp
+  hence "\<forall>V \<in> Use (_Low_). V \<in> rv S (_Low_)" by simp
   show ?case
   proof(cases "L = {}")
     case True with UseLow show ?thesis by simp
@@ -251,17 +252,17 @@ proof(induct n as n\<equiv>"(_Low_)" arbitrary:as' s s' rule:path.induct)
       with False have False by -(drule Low_neq_Exit,simp)
       thus ?case by simp
     qed simp
-    with `\<forall>V \<in> Use (_Low_). V \<in> rv (_Low_) (_Low_)` 
-      `\<forall>V\<in>rv (_Low_) (_Low_). state_val s V = state_val s' V`
+    with `\<forall>V \<in> Use (_Low_). V \<in> rv S (_Low_)` 
+      `\<forall>V\<in>rv S (_Low_). state_val s V = state_val s' V`
     show ?thesis by(auto simp:slice_kinds_def)
   qed
 next
   case (Cons_path n'' as a n)
-  note IH = `\<And>as' s s'. \<lbrakk>n'' -as'\<rightarrow>* (_Low_); 
-    \<forall>V\<in>rv (_Low_) n''. state_val s V = state_val s' V;
-   preds (slice_kinds (_Low_) as) s; preds (slice_kinds (_Low_) as') s'\<rbrakk>
-  \<Longrightarrow> \<forall>V\<in>Use (_Low_). state_val (transfers (slice_kinds (_Low_) as) s) V =
-                     state_val (transfers (slice_kinds (_Low_) as') s') V`
+  note IH = `\<And>as' s s'. \<lbrakk>n'' -as'\<rightarrow>* (_Low_);
+    \<forall>V\<in>rv S n''. state_val s V = state_val s' V;
+   preds (slice_kinds S as) s; preds (slice_kinds S as') s'\<rbrakk>
+  \<Longrightarrow> \<forall>V\<in>Use (_Low_). state_val (transfers (slice_kinds S as) s) V =
+                     state_val (transfers (slice_kinds S as') s') V`
   show ?case
   proof(cases "L = {}")
     case True with UseLow show ?thesis by simp
@@ -294,27 +295,27 @@ next
         with `targetnode ax -asx\<rightarrow>* (_Low_)` have "n'' -asx\<rightarrow>* (_Low_)" by simp
         from `valid_edge ax` `valid_edge a` `n = sourcenode ax` `sourcenode a = n`
 	  True `targetnode a = n''` have "ax = a"	by(fastsimp intro:edge_det)
-        from `preds (slice_kinds (_Low_) (a#as)) s` 
-        have preds1:"preds (slice_kinds (_Low_) as) (transfer (slice_kind (_Low_) a) s)"
+        from `preds (slice_kinds S (a#as)) s` 
+        have preds1:"preds (slice_kinds S as) (transfer (slice_kind S a) s)"
 	  by(simp add:slice_kinds_def)
-        from `preds (slice_kinds (_Low_) as') s'` Cons `ax = a`
-        have preds2:"preds (slice_kinds (_Low_) asx) 
-	  (transfer (slice_kind (_Low_) a) s')"
+        from `preds (slice_kinds S as') s'` Cons `ax = a`
+        have preds2:"preds (slice_kinds S asx) 
+	  (transfer (slice_kind S a) s')"
 	  by(simp add:slice_kinds_def)
         from `valid_edge a` `sourcenode a = n` `targetnode a = n''`
-	  `preds (slice_kinds (_Low_) (a#as)) s` `preds (slice_kinds (_Low_) as') s'`
-	  `ax = a` Cons `\<forall>V\<in>rv (_Low_) n. state_val s V = state_val s' V`
-        have "\<forall>V\<in>rv (_Low_) n''. state_val (transfer (slice_kind (_Low_) a) s) V =
-	                         state_val (transfer (slice_kind (_Low_) a) s') V"
+	  `preds (slice_kinds S (a#as)) s` `preds (slice_kinds S as') s'`
+	  `ax = a` Cons `\<forall>V\<in>rv S n. state_val s V = state_val s' V`
+        have "\<forall>V\<in>rv S n''. state_val (transfer (slice_kind S a) s) V =
+	                         state_val (transfer (slice_kind S a) s') V"
 	  by -(rule rv_edge_slice_kinds,auto)
         from IH[OF `n'' -asx\<rightarrow>* (_Low_)` this preds1 preds2] 
 	  Cons `ax = a` show ?thesis by(simp add:slice_kinds_def)
       next
         case False
         with `valid_edge a` `valid_edge ax` `sourcenode a = n` `n = sourcenode ax`
-	  `targetnode a = n''` `preds (slice_kinds (_Low_) (a#as)) s`
-	  `preds (slice_kinds (_Low_) as') s'` Cons
-	  `\<forall>V\<in>rv (_Low_) n. state_val s V = state_val s' V`
+	  `targetnode a = n''` `preds (slice_kinds S (a#as)) s`
+	  `preds (slice_kinds S as') s'` Cons
+	  `\<forall>V\<in>rv S n. state_val s V = state_val s' V`
         have False by -(rule rv_branching_edges_slice_kinds_False,auto)
         thus ?thesis by simp
       qed
@@ -328,50 +329,50 @@ section {* The Correctness Proofs *}
 text {*
 In the following, we present two correctness proofs that slicing guarantees
 IFC noninterference. In both theorems, 
-@{text "(_High_) \<notin> backward_slice (_Low_)"} makes sure that no high variable
-(which are all defined in @{text "(_High_)"}) can influence a low variable
-(which are all used in @{text "(_Low_)"}).
+@{text "(_High_) \<notin> backward_slice S"}, where @{text "(_Low_) \<in> S"},
+makes sure that no high variable (which are all defined in @{text "(_High_)"}) 
+can influence a low variable (which are all used in @{text "(_Low_)"}).
 
 First, a theorem regarding 
 @{text "(_Entry_) -as\<rightarrow>* (_Exit_)"} paths in the control flow graph (CFG),
 which agree to a complete program execution: *}
 
-lemma nonInterferenceSecurity_path_to_Low:
-  assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice (_Low_)" 
+lemma nonInterference_path_to_Low:
+  assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice S" and "(_Low_) \<in> S"
   and "(_Entry_) -as\<rightarrow>* (_Low_)" and "preds (kinds as) s"
   and "(_Entry_) -as'\<rightarrow>* (_Low_)" and "preds (kinds as') s'"
   shows "transfers (kinds as) s \<approx>\<^isub>L transfers (kinds as') s'"
 proof -
-  from `(_Entry_) -as\<rightarrow>* (_Low_)` `preds (kinds as) s` 
-  obtain asx where "preds (slice_kinds (_Low_) asx) s"
-    and "\<forall>V \<in> Use (_Low_). state_val(transfers (slice_kinds (_Low_) asx) s) V = 
+  from `(_Entry_) -as\<rightarrow>* (_Low_)` `preds (kinds as) s` `(_Low_) \<in> S`
+  obtain asx where "preds (slice_kinds S asx) s"
+    and "\<forall>V \<in> Use (_Low_). state_val(transfers (slice_kinds S asx) s) V = 
                            state_val(transfers (kinds as) s) V"
-    and "slice_edges (_Low_) as = slice_edges (_Low_) asx"
+    and "slice_edges S as = slice_edges S asx"
     and "(_Entry_) -asx\<rightarrow>* (_Low_)" by(erule fundamental_property_of_static_slicing)
-  from `(_Entry_) -as'\<rightarrow>* (_Low_)` `preds (kinds as') s'` 
-  obtain asx' where "preds (slice_kinds (_Low_) asx') s'"
-    and "\<forall>V \<in> Use (_Low_). state_val (transfers (slice_kinds (_Low_) asx') s') V = 
+  from `(_Entry_) -as'\<rightarrow>* (_Low_)` `preds (kinds as') s'` `(_Low_) \<in> S`
+  obtain asx' where "preds (slice_kinds S asx') s'"
+    and "\<forall>V \<in> Use (_Low_). state_val (transfers (slice_kinds S asx') s') V = 
                            state_val (transfers (kinds as') s') V"
-    and "slice_edges (_Low_) as' = slice_edges (_Low_) asx'"
+    and "slice_edges S as' = slice_edges S asx'"
     and "(_Entry_) -asx'\<rightarrow>* (_Low_)" by(erule fundamental_property_of_static_slicing)
-  from `s \<approx>\<^isub>L s'` `(_High_) \<notin> backward_slice (_Low_)`
-  have "\<forall>V \<in> rv (_Low_) (_Entry_). state_val s V = state_val s' V" 
+  from `s \<approx>\<^isub>L s'` `(_High_) \<notin> backward_slice S`
+  have "\<forall>V \<in> rv S (_Entry_). state_val s V = state_val s' V" 
     by(rule lowEquivalence_relevant_nodes_Entry)
-  with `(_Entry_) -asx\<rightarrow>* (_Low_)` `(_Entry_) -asx'\<rightarrow>* (_Low_)`
-    `preds (slice_kinds (_Low_) asx) s` `preds (slice_kinds (_Low_) asx') s'`
-  have "\<forall>V \<in> Use (_Low_). state_val (transfers (slice_kinds (_Low_) asx) s) V =
-                          state_val (transfers (slice_kinds (_Low_) asx') s') V"
+  with `(_Entry_) -asx\<rightarrow>* (_Low_)` `(_Entry_) -asx'\<rightarrow>* (_Low_)` `(_Low_) \<in> S`
+    `preds (slice_kinds S asx) s` `preds (slice_kinds S asx') s'`
+  have "\<forall>V \<in> Use (_Low_). state_val (transfers (slice_kinds S asx) s) V =
+                          state_val (transfers (slice_kinds S asx') s') V"
     by -(rule rv_Low_Use_Low,auto)
-  with `\<forall>V \<in> Use (_Low_). state_val(transfers (slice_kinds (_Low_) asx) s) V = 
+  with `\<forall>V \<in> Use (_Low_). state_val(transfers (slice_kinds S asx) s) V = 
                           state_val(transfers (kinds as) s) V`
-    `\<forall>V \<in> Use (_Low_). state_val (transfers (slice_kinds (_Low_) asx') s') V = 
+    `\<forall>V \<in> Use (_Low_). state_val (transfers (slice_kinds S asx') s') V = 
                        state_val (transfers (kinds as') s') V`
   show ?thesis by(auto simp:lowEquivalence_def UseLow)
 qed
 
 
-theorem nonInterferenceSecurity_path:
-  assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice (_Low_)" 
+theorem nonInterference_path:
+  assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice S" and "(_Low_) \<in> S"
   and "(_Entry_) -as\<rightarrow>* (_Exit_)" and "preds (kinds as) s"
   and "(_Entry_) -as'\<rightarrow>* (_Exit_)" and "preds (kinds as') s'"
   shows "transfers (kinds as) s \<approx>\<^isub>L transfers (kinds as') s'"
@@ -444,11 +445,11 @@ proof -
   from `as' = y#ys` `ys = ys'@[y']` have "as' = (y#ys')@[y']" by simp
   with `preds (kinds as') s'` have "preds (kinds (y#ys')) s'"
     by(simp add:kinds_def preds_split)
-  from `s \<approx>\<^isub>L s'` `(_High_) \<notin> backward_slice (_Low_)`
+  from `s \<approx>\<^isub>L s'` `(_High_) \<notin> backward_slice S` `(_Low_) \<in> S`
     `(_Entry_) -x#xs'\<rightarrow>* (_Low_)` `preds (kinds (x#xs')) s`
     `(_Entry_) -y#ys'\<rightarrow>* (_Low_)` `preds (kinds (y#ys')) s'`
   have "transfers (kinds (x#xs')) s \<approx>\<^isub>L transfers (kinds (y#ys')) s'"
-    by(rule nonInterferenceSecurity_path_to_Low)
+    by(rule nonInterference_path_to_Low)
   with `as = x#xs` `xs = xs'@[x']` `kind x' = (\<lambda>s. True)\<^isub>\<surd>`
     `as' = y#ys` `ys = ys'@[y']` `kind y' = (\<lambda>s. True)\<^isub>\<surd>`
   show ?thesis by(simp add:kinds_def transfers_split)
@@ -473,7 +474,7 @@ locale NonInterferenceIntra =
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
   and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
-  and backward_slice :: "'node \<Rightarrow> 'node set"
+  and backward_slice :: "'node set \<Rightarrow> 'node set"
   and sem :: "'com \<Rightarrow> 'state \<Rightarrow> 'com \<Rightarrow> 'state \<Rightarrow> bool" 
     ("((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
   and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" ("_ \<triangleq> _" [51, 0] 80)
@@ -494,7 +495,7 @@ text{* The following theorem needs the explicit edge from @{text "(_High_)"}
   within the loop (because of loop unrolling).*}
 
 theorem nonInterference:
-  assumes "s\<^isub>1 \<approx>\<^isub>L s\<^isub>2" and "(_High_) \<notin> backward_slice (_Low_)"
+  assumes "s\<^isub>1 \<approx>\<^isub>L s\<^isub>2" and "(_High_) \<notin> backward_slice S" and "(_Low_) \<in> S"
   and "valid_edge a" and "sourcenode a = (_High_)" and "targetnode a = n" 
   and "kind a = (\<lambda>s. True)\<^isub>\<surd>" and "n \<triangleq> c" and "final c'"
   and "\<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>c',s\<^isub>1'\<rangle>" and "\<langle>c,s\<^isub>2\<rangle> \<Rightarrow> \<langle>c',s\<^isub>2'\<rangle>"
@@ -537,12 +538,12 @@ proof -
   from `kind ax = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (\<lambda>s. True)\<^isub>\<surd>` `preds (kinds as\<^isub>2) s\<^isub>2`
     `kind a\<^isub>2 = \<Up>id` have "preds (kinds (ax#((a#as\<^isub>2)@[a\<^isub>2]))) s\<^isub>2"
     by (simp add:kinds_def preds_split)
-  from `s\<^isub>1 \<approx>\<^isub>L s\<^isub>2` `(_High_) \<notin> backward_slice (_Low_)`
+  from `s\<^isub>1 \<approx>\<^isub>L s\<^isub>2` `(_High_) \<notin> backward_slice S` `(_Low_) \<in> S`
     `(_Entry_) -ax#((a#as\<^isub>1)@[a\<^isub>1])\<rightarrow>* (_Low_)` `preds (kinds (ax#((a#as\<^isub>1)@[a\<^isub>1]))) s\<^isub>1`
     `(_Entry_) -ax#((a#as\<^isub>2)@[a\<^isub>2])\<rightarrow>* (_Low_)` `preds (kinds (ax#((a#as\<^isub>2)@[a\<^isub>2]))) s\<^isub>2`
   have "transfers (kinds (ax#((a#as\<^isub>1)@[a\<^isub>1]))) s\<^isub>1 \<approx>\<^isub>L 
         transfers (kinds (ax#((a#as\<^isub>2)@[a\<^isub>2]))) s\<^isub>2"
-    by(rule nonInterferenceSecurity_path_to_Low)
+    by(rule nonInterference_path_to_Low)
   with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (\<lambda>s. True)\<^isub>\<surd>` `kind a\<^isub>1 = \<Up>id` `kind a\<^isub>2 = \<Up>id`
     `transfers (kinds as\<^isub>1) s\<^isub>1 = s\<^isub>1'` `transfers (kinds as\<^isub>2) s\<^isub>2 = s\<^isub>2'`
   show ?thesis by(simp add:kinds_def transfers_split)

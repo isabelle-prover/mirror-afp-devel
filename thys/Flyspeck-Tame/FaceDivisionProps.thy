@@ -2646,7 +2646,7 @@ lemma edges_conv_Edges_if_cong:
  "\<lbrakk> vertices (f::face) \<cong> vs; distinct vs; vs \<noteq> [] \<rbrakk> \<Longrightarrow>
  \<E> f = Edges vs \<union> {(last vs,hd vs)}"
 apply(frule congs_distinct)
-apply(clarsimp simp: set_ext_iff is_nextElem_congs_eq)
+apply(clarsimp simp: set_eq_iff is_nextElem_congs_eq)
 using is_nextElem_edges_eq[of "Face vs Final",symmetric]
 apply(simp del:is_nextElem_edges_eq)
 apply(simp add:edges_conv_Edges)
@@ -4083,19 +4083,19 @@ declare removeNones_def [simp del]
 subsection{* @{text natToVertexList} *}
 
 (* Hilfskonstrukt natToVertexList *)
-consts natToVertexListRec ::
+primrec natToVertexListRec ::
   "nat \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> nat list \<Rightarrow> vertex option list"
-primrec
-  "natToVertexListRec old v f [] = []"
+where
+  "natToVertexListRec old v f [] = []" |
   "natToVertexListRec old v f (i#is) =
     (if i = old then None#natToVertexListRec i v f is
      else Some (f\<^bsup>i\<^esup> \<bullet> v)
           # natToVertexListRec i v f is)"
 
-consts natToVertexList ::
+primrec natToVertexList ::
   "vertex \<Rightarrow> face \<Rightarrow> nat list \<Rightarrow> vertex option list"
-primrec
-  "natToVertexList v f [] = []"
+where
+  "natToVertexList v f [] = []" |
   "natToVertexList v f (i#is) =
     (if i = 0 then (Some v)#(natToVertexListRec i v f is) else [])"
 

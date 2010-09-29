@@ -173,9 +173,8 @@ to be proved about them because the generation of tame graphs uses
 these same executable functions as the definition of tameness. Hence
 there is nothing to prove. *}
 
-consts is_path :: "graph \<Rightarrow> vertex list \<Rightarrow> bool"
-primrec
-"is_path g [] = True"
+primrec is_path :: "graph \<Rightarrow> vertex list \<Rightarrow> bool" where
+"is_path g [] = True" |
 "is_path g (u#vs) = (case vs of [] \<Rightarrow> True
                       | v#ws \<Rightarrow> v \<in> set(neighbors g u) \<and> is_path g vs)"
 

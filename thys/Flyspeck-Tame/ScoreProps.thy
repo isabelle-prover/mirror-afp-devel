@@ -388,10 +388,10 @@ next
 qed
 
 (* alternative definition *)
-consts ExcessTable_cont ::
+primrec ExcessTable_cont ::
   "(vertex \<Rightarrow> nat) \<Rightarrow> vertex list \<Rightarrow> (vertex \<times> nat) list"
-primrec
-  "ExcessTable_cont ExcessAtPG [] = []"
+where
+  "ExcessTable_cont ExcessAtPG [] = []" |
   "ExcessTable_cont ExcessAtPG (v#vs) =
    (let vi = ExcessAtPG v in
      if 0 < vi

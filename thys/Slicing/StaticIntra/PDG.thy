@@ -139,15 +139,18 @@ qed
 
 subsection {* Definition of the static backward slice *}
 
-definition PDG_BS :: "'node \<Rightarrow> 'node set"
-  where "PDG_BS n \<equiv> (if valid_node n then {n'. n' \<longrightarrow>\<^isub>d* n} else {})"
+text {* Node: instead of a single node, we calculate the backward slice of a set
+  of nodes. *}
+
+definition PDG_BS :: "'node set \<Rightarrow> 'node set"
+  where "PDG_BS S \<equiv> {n'. \<exists>n. n' \<longrightarrow>\<^isub>d* n \<and> n \<in> S \<and> valid_node n}"
 
 
-lemma PDG_BS_valid_node:"n \<in> PDG_BS n\<^isub>c \<Longrightarrow> valid_node n"
+lemma PDG_BS_valid_node:"n \<in> PDG_BS S \<Longrightarrow> valid_node n"
   by(auto elim:PDG_path_CFG_path dest:path_valid_node simp:PDG_BS_def 
           split:split_if_asm)
 
-lemma Exit_PDG_BS:"n \<in> PDG_BS (_Exit_) \<Longrightarrow> n = (_Exit_)"
+lemma Exit_PDG_BS:"n \<in> PDG_BS {(_Exit_)} \<Longrightarrow> n = (_Exit_)"
   by(fastsimp dest:PDG_path_Exit simp:PDG_BS_def)
 
 
@@ -198,12 +201,12 @@ lemmas PDG_path_not_inner = PDG.PDG_path_not_inner[OF PDG_scd]
 lemmas PDG_path_Exit = PDG.PDG_path_Exit[OF PDG_scd]
 
 
-definition PDG_BS_s :: "'node \<Rightarrow> 'node set" ("PDG'_BS")
-  where "PDG_BS n \<equiv> 
-  PDG.PDG_BS sourcenode targetnode valid_edge Def Use standard_control_dependence n"
+definition PDG_BS_s :: "'node set \<Rightarrow> 'node set" ("PDG'_BS")
+  where "PDG_BS S \<equiv> 
+  PDG.PDG_BS sourcenode targetnode valid_edge Def Use standard_control_dependence S"
 
 lemma [simp]: "PDG.PDG_BS sourcenode targetnode valid_edge Def Use 
-  standard_control_dependence n = PDG_BS n"
+  standard_control_dependence S = PDG_BS S"
   by(simp add:PDG_BS_s_def)
 
 lemmas PDG_BS_def = PDG.PDG_BS_def[OF PDG_scd,simplified]
@@ -254,12 +257,12 @@ lemmas PDG_path_not_inner = PDG.PDG_path_not_inner[OF PDG_wcd]
 lemmas PDG_path_Exit = PDG.PDG_path_Exit[OF PDG_wcd]
 
 
-definition PDG_BS_w :: "'node \<Rightarrow> 'node set" ("PDG'_BS")
-  where "PDG_BS n \<equiv> 
-  PDG.PDG_BS sourcenode targetnode valid_edge Def Use weak_control_dependence n"
+definition PDG_BS_w :: "'node set \<Rightarrow> 'node set" ("PDG'_BS")
+  where "PDG_BS S \<equiv> 
+  PDG.PDG_BS sourcenode targetnode valid_edge Def Use weak_control_dependence S"
 
 lemma [simp]: "PDG.PDG_BS sourcenode targetnode valid_edge Def Use 
-  weak_control_dependence n = PDG_BS n"
+  weak_control_dependence S = PDG_BS S"
   by(simp add:PDG_BS_w_def)
 
 lemmas PDG_BS_def = PDG.PDG_BS_def[OF PDG_wcd,simplified]
