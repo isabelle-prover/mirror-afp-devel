@@ -1091,7 +1091,7 @@ lemma SN_elt_conv_accp: "SN_elt {(y,z). g z y} = accp g"
 
 lemma SN_elt_conv_acc: "SN_elt {(y,z). (z,y) \<in> r} = acc r"
   unfolding SN_elt_conv_accp using accp_acc_eq 
-  by (intro set_ext, force simp: mem_def)
+  by (intro set_eqI, force simp: mem_def)
 
 lemma acc_imp_SN_elt: assumes "x \<in> acc r" shows "SN_elt {(y,z). (z,y) \<in> r} x"
   using assms
