@@ -29,6 +29,15 @@ theory Abstract_Rewriting
 imports Main Util
 begin
 
+(* TODO: remove on next Isabelle release *)
+lemma set_ext:
+  assumes "\<And>x. (x \<in> A) = (x \<in> B)" shows "A = B"
+  apply (rule assms[THEN ext, THEN arg_cong, THEN box_equals])
+    apply (rule Collect_mem_eq)
+  apply (rule Collect_mem_eq)
+done
+lemmas set_eqI = set_ext
+
 text {*
 An abstract rewrite system (ARS) is a binary endorelation, i.e.,
 a binary relation where domain and codomain coincide.
