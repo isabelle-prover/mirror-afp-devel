@@ -1023,8 +1023,6 @@ qed
 
 lemma SN_iff_wf: "SN A = wf (A\<inverse>)" by (auto simp: SN_imp_wf wf_imp_SN)
 
-subsection {* Newman's Lemma *}
-
 lemma SN_induct:
 assumes sn: "SN A" and step: "\<And>a. (\<And>b. (a,b) \<in> A \<Longrightarrow> P b) \<Longrightarrow> P a"
 shows "P a"
@@ -1035,6 +1033,79 @@ qed
 
 (* The same as well-founded induction, but in the 'correct' direction. *)
 lemmas SN_induct_rule = SN_induct[consumes 1, case_names IH, induct pred: SN]
+
+(* and now SN_elt induction *)
+lemma SN_elt_induct[consumes 1, case_names IH]:
+  assumes SN: "SN_elt R s" and imp: "\<And>t. (\<And>u. (t, u) \<in> R \<Longrightarrow> P u) \<Longrightarrow> P t"
+  shows "P s"
+proof -
+  let ?R = "SN_rel R R"
+  let ?P = "\<lambda> t. SN_elt R t \<longrightarrow> P t"
+  have "SN_elt R s \<longrightarrow> P s"
+  proof (rule SN_induct[OF SN_SN_rel_idemp[of R], of ?P])
+    fix a
+    assume ind: "\<And> b. (a,b) \<in> ?R \<Longrightarrow> SN_elt R b \<longrightarrow> P b"
+    show "SN_elt R a \<longrightarrow> P a"
+    proof
+      assume SN: "SN_elt R a"
+      show "P a"
+      proof (rule imp)
+        fix b
+        assume "(a,b) \<in> R"
+        with SN step_preserves_SN_elt[OF this SN]
+        show "P b" using ind[of b] unfolding SN_rel_def by auto
+      qed
+    qed
+  qed
+  with SN show ?thesis by simp
+qed
+
+(* link SN_elt to acc / accp *)
+lemma accp_imp_SN_elt: assumes "accp g x" shows "SN_elt {(y,z). g z y} x"
+using assms
+proof (induct rule: accp.induct)
+  case (accI x)
+  show ?case
+  proof
+    fix f
+    assume x: "f 0 = x" and steps: "\<forall> i. (f i, f (Suc i)) \<in> {a. (\<lambda>(y,z). g z y) a}"
+    hence "g (f 1) x" by auto
+    from accI(2)[OF this] steps x show False unfolding SN_elt_def by auto
+  qed
+qed
+
+lemma SN_elt_imp_accp: assumes "SN_elt {(y,z). g z y} x" shows "accp g x"
+using assms
+proof (induct rule: SN_elt_induct) 
+  case (IH x)
+  show ?case
+  proof
+    fix y
+    assume "g y x"
+    with IH show "accp g y" by simp
+  qed
+qed
+
+lemma SN_elt_conv_accp: "SN_elt {(y,z). g z y} = accp g"
+  by (intro ext iffI, rule SN_elt_imp_accp, simp, rule accp_imp_SN_elt, simp)
+
+lemma SN_elt_conv_acc: "SN_elt {(y,z). (z,y) \<in> r} = acc r"
+  unfolding SN_elt_conv_accp using accp_acc_eq 
+  by (intro set_ext, force simp: mem_def)
+
+lemma acc_imp_SN_elt: assumes "x \<in> acc r" shows "SN_elt {(y,z). (z,y) \<in> r} x"
+  using assms
+  unfolding SN_elt_conv_acc
+  by (simp add: mem_def)
+
+lemma SN_elt_imp_acc: assumes "SN_elt {(y,z). (z,y) \<in> r} x" shows "x \<in> acc r"
+  using assms
+  unfolding SN_elt_conv_acc
+  by (simp add: mem_def)
+
+
+subsection {* Newman's Lemma *}
+
 
 lemma rtrancl_len_E[elim]: assumes "(x,y) \<in> r^*" obtains n where "(x,y) \<in> r^^n"
 using rtrancl_imp_UN_rel_pow[OF assms] by best
