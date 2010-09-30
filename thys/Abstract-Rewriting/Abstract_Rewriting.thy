@@ -1187,6 +1187,17 @@ proof
   ultimately show False by simp
 qed
 
+lemma SN_elt_iff_all_reducts_SN_elt:
+  "SN_elt R a = (\<forall> b. (a,b) \<in> R \<longrightarrow> SN_elt R b)" (is "?l = ?r")
+proof
+  assume ?l
+  from step_preserves_SN_elt[OF _ this] show ?r by simp
+next
+  assume ?r
+  thus ?l using all_reducts_SN_elt_imp_SN_elt by blast
+qed
+
+
 lemma SN_imp_SN_trancl: "SN R \<Longrightarrow> SN (R^+)"
 unfolding SN_iff_wf by (rule wf_converse_trancl)
 
