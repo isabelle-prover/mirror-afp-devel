@@ -8,4 +8,4 @@ NOTIFY="filip@matf.bg.ac.yu"
 
 # Participate in frequent (nightly) build (only for small submissions)
 # values: "yes" "no"
-FREQUENT="no"
+FREQUENT="yes"
