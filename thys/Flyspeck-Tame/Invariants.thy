@@ -176,18 +176,18 @@ lemma minGraphProps12:
       apply (drule minGraphProps2) apply simp  apply simp
     apply (case_tac "ys")
       apply (drule minGraphProps2) apply simp  apply simp
-    apply (simp del: distinct_append distinct.simps) apply (rule conjI)
-    apply (rule ccontr) apply (simp del: distinct_append distinct.simps)
+    apply (simp del: distinct_append distinct_simps) apply (rule conjI)
+    apply (rule ccontr) apply (simp del: distinct_append distinct_simps)
     apply (drule is_sublist_distinct_prefix) apply simp apply (simp add: is_prefix_def)
     apply simp
   apply (rule conjI)
   apply (simp add: is_sublist_def) apply (elim exE) apply (intro allI) apply (rule ccontr)
-  apply (simp del: distinct_append distinct.simps)
+  apply (simp del: distinct_append distinct_simps)
   apply (subgoal_tac "asa = as @ [a]") apply simp
   apply (rule dist_at1) apply assumption apply force apply (rule sym) apply simp
   apply (subgoal_tac "is_sublist [a, b] (vertices f)")
     apply (rule impI) apply (rule ccontr)
-    apply (simp add: is_sublist_def del: distinct_append distinct.simps)
+    apply (simp add: is_sublist_def del: distinct_append distinct_simps)
     apply (subgoal_tac "last (vertices f) = b \<and> hd (vertices f) = a")
     apply (thin_tac "a = hd (vertices f)") apply (thin_tac "b = last (vertices f)") apply (elim conjE)
     apply (elim exE)

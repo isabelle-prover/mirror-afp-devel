@@ -93,7 +93,7 @@ theorem (in graph) step1 [simp]:
   apply (simp add: DataRefinement_def hoare_demonic Loop_def 
     Loop'_def R2_def Q3_def Q3'_def angelic_def subset_eq);
   apply (simp add: simp_eq_emptyset);
-by (metis Collect_def List.set.simps(2) hd_in_set mem_def member_set distinct.simps(2))
+by (metis Collect_def List.set.simps(2) hd_in_set mem_def member_set distinct_simps(2))
 
 theorem (in graph) step2 [simp]:
   "DataRefinement Loop Q4 R2 R2 (demonic Q4')";
