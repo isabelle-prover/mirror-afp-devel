@@ -4,13 +4,13 @@ header {* Archive *}
 
 theory Arch
 imports Main Efficient_Nat
-(*uses
+uses
   ("Archives/Tri.ML")
   ("Archives/Quad.ML")
   ("Archives/Pent.ML")
   ("Archives/Hex.ML")
   ("Archives/Hept.ML")
-  ("Archives/Oct.ML")*)
+  ("Archives/Oct.ML")
 begin
 
 setup {*
