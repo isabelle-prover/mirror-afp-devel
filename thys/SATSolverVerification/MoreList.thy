@@ -1,5 +1,4 @@
 (*    Title:              SATSolverVerification/MoreList.thy
-      ID:                 $Id: MoreList.thy,v 1.5 2008-11-13 16:09:44 filipmaric Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -51,7 +50,7 @@ lemma removeAll_multiset:
   assumes "distinct a" "x \<in> set a"
   shows "multiset_of a = {#x#} + multiset_of (removeAll x a)"
 using assms
-proof (induct a)
+proof (induct a rule: list.induct)
   case (Cons y a')
   thus ?case
   proof (cases "x = y")
