@@ -2,9 +2,15 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Implementing Sets by Maps"
+(*
+  Changes since submission on 2009-11-26:
+
+  2009-12-10: OrderedMap, transfer of iterators to OrderedSet
+
+*)
+header {* \isaheader{Implementing Sets by Maps} *}
 theory SetByMap
-imports SetSpec MapSpec "common/Misc"
+imports OrderedSet OrderedMap "common/Misc"
 begin
 text_raw {*\label{thy:SetByMap}*}
 
@@ -27,8 +33,26 @@ definition s_sel
   where "s_sel sel s f == sel s (\<lambda>u v. f u)"
 definition "s_isEmpty isEmpty == isEmpty"
 
-definition "s_iterate iterate f s \<sigma>0 == iterate (\<lambda>k v \<sigma>. f k \<sigma>) s \<sigma>0"
-definition "s_iteratei iteratei c f s \<sigma>0 == iteratei c (\<lambda>k v \<sigma>. f k \<sigma>) s \<sigma>0"
+definition s_iterate :: "('s,'k,unit,'\<sigma>) map_iterator \<Rightarrow> ('s,'k,'\<sigma>) iterator"
+  where  "s_iterate iterate f s \<sigma>0 == iterate (\<lambda>k v \<sigma>. f k \<sigma>) s \<sigma>0"
+definition s_iteratei :: "('s,'k,unit,'\<sigma>) map_iteratori \<Rightarrow> ('s,'k,'\<sigma>) iteratori"
+  where "s_iteratei iteratei c f s \<sigma>0 == iteratei c (\<lambda>k v \<sigma>. f k \<sigma>) s \<sigma>0"
+
+definition s_iterateo 
+  :: "('s,'k::linorder,unit,'\<sigma>) map_iterator \<Rightarrow> ('s,'k,'\<sigma>) iterator"
+  where "s_iterateo iterate f s \<sigma>0 == iterate (\<lambda>k v \<sigma>. f k \<sigma>) s \<sigma>0"
+definition s_iterateoi
+  :: "('s,'k::linorder,unit,'\<sigma>) map_iteratori \<Rightarrow> ('s,'k,'\<sigma>) iteratori"
+  where "s_iterateoi iteratei c f s \<sigma>0 == iteratei c (\<lambda>k v \<sigma>. f k \<sigma>) s \<sigma>0"
+
+definition s_reverse_iterateo 
+  :: "('s,'k::linorder,unit,'\<sigma>) map_iterator \<Rightarrow> ('s,'k,'\<sigma>) iterator"
+  where "s_reverse_iterateo iterate f s \<sigma>0 == iterate (\<lambda>k v \<sigma>. f k \<sigma>) s \<sigma>0"
+definition s_reverse_iterateoi 
+  :: "('s,'k::linorder,unit,'\<sigma>) map_iteratori \<Rightarrow> ('s,'k,'\<sigma>) iteratori"
+  where "s_reverse_iterateoi iteratei c f s \<sigma>0 == 
+          iteratei c (\<lambda>k v \<sigma>. f k \<sigma>) s \<sigma>0"
+
 definition s_ball 
   :: "('s \<Rightarrow> ('u \<Rightarrow> unit \<Rightarrow> bool) \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> ('u \<Rightarrow> bool) \<Rightarrow> bool" 
   where "s_ball ball s P == ball s (\<lambda>u v. P u)"
@@ -46,6 +70,10 @@ lemmas s_defs =
   s_isEmpty_def
   s_iterate_def
   s_iteratei_def
+  s_iterateo_def
+  s_iterateoi_def
+  s_reverse_iterateo_def
+  s_reverse_iterateoi_def
   s_ball_def
   s_union_def
   s_union_dj_def
@@ -160,6 +188,67 @@ proof -
     apply auto
     done
 qed                                                                     
+
+
+lemma s_iterateo_correct:
+  fixes iterate         
+  assumes "map_iterateo \<alpha> invar iterate"
+  shows "set_iterateo (s_\<alpha> \<alpha>) invar (s_iterateo iterate)"
+proof -                                                              
+  interpret map_iterateo \<alpha> invar iterate by fact               
+  show ?thesis
+    apply (unfold_locales)
+    apply (unfold s_\<alpha>_def s_iterateo_def)
+    apply simp
+    apply (rule iterateo_rule)
+    apply auto
+    done
+qed                                                                  
+
+lemma s_iterateoi_correct:
+  fixes iteratei         
+  assumes "map_iterateoi \<alpha> invar iteratei"
+  shows "set_iterateoi (s_\<alpha> \<alpha>) invar (s_iterateoi iteratei)"
+proof -                                                                 
+  interpret map_iterateoi \<alpha> invar iteratei by fact                
+  show ?thesis                                                          
+    apply (unfold_locales)
+    apply (unfold s_\<alpha>_def s_iterateoi_def)
+    apply simp
+    apply (rule iterateoi_rule)
+    apply auto
+    done
+qed                                                                     
+
+lemma s_reverse_iterateo_correct:
+  fixes iterate
+  assumes "map_reverse_iterateo \<alpha> invar iterate"
+  shows "set_reverse_iterateo (s_\<alpha> \<alpha>) invar (s_reverse_iterateo iterate)"
+proof -                                                              
+  interpret map_reverse_iterateo \<alpha> invar iterate by fact               
+  show ?thesis
+    apply (unfold_locales)
+    apply (unfold s_\<alpha>_def s_reverse_iterateo_def)
+    apply simp
+    apply (rule reverse_iterateo_rule)
+    apply auto
+    done
+qed                                                                  
+
+lemma s_reverse_iterateoi_correct:
+  fixes iteratei         
+  assumes "map_reverse_iterateoi \<alpha> invar iteratei"
+  shows "set_reverse_iterateoi (s_\<alpha> \<alpha>) invar (s_reverse_iterateoi iteratei)"
+proof -                                                                 
+  interpret map_reverse_iterateoi \<alpha> invar iteratei by fact                
+  show ?thesis                                                          
+    apply (unfold_locales)
+    apply (unfold s_\<alpha>_def s_reverse_iterateoi_def)
+    apply simp
+    apply (rule reverse_iterateoi_rule)
+    apply auto
+    done
+qed
 
 lemma s_ball_correct:
   fixes ball         

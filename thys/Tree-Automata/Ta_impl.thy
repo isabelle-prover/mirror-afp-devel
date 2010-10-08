@@ -9,12 +9,7 @@ imports
 
   "Efficient_Nat" 
   "../Collections/common/Misc" 
-  "../Collections/SetStdImpl" 
-  "../Collections/MapStdImpl" 
-  "../Collections/SetIndex" 
-  "../Collections/Algos" 
-  "../Collections/StdInst" 
-  "../Collections/Fifo" 
+  "../Collections/Collections" 
 
   Ta AbsAlgo
 begin
@@ -44,22 +39,24 @@ fun hashcode_of_ta_rule
 
 definition [simp]: "hashcode = hashcode_of_ta_rule"
 
-instance ..
+definition [simp]: "bounded_hashcode n r == hashcode_of_ta_rule r mod n"
+definition "def_hashmap_size::(('a,'b) ta_rule itself \<Rightarrow> nat) == (\<lambda>_. 32)"
+
+instance 
+  by (intro_classes)(auto simp add: def_hashmap_size_ta_rule_def)
 end
 
 
   -- "Make wrapped states hashable"
 instantiation ustate_wrapper :: (hashable,hashable) hashable
 begin
-  fun hashcode_of_usw 
-    :: "('q1::hashable,'q2::hashable) ustate_wrapper \<Rightarrow> hashcode" 
-    where
-    "hashcode_of_usw (USW1 Q) = hashcode Q" |
-    "hashcode_of_usw (USW2 Q) = hashcode Q"
+  definition "hashcode x == (case x of USW1 a \<Rightarrow> 2 * hashcode a | USW2 b \<Rightarrow> 2 * hashcode b + 1)"
+  definition "bounded_hashcode n x == (case x of USW1 a \<Rightarrow> bounded_hashcode n a | USW2 b \<Rightarrow> (n - 1 - bounded_hashcode n b))"
+  definition "def_hashmap_size = (\<lambda>_ :: (('a,'b) ustate_wrapper) itself. def_hashmap_size TYPE('a) + def_hashmap_size TYPE('b))"
 
-  definition [simp]: "hashcode = hashcode_of_usw"
+  instance using def_hashmap_size[where ?'a="'a"] def_hashmap_size[where ?'a="'b"]
+    by(intro_classes)(simp_all add: bounded_hashcode_ustate_wrapper_def bounded_hashcode_bounds def_hashmap_size_ustate_wrapper_def split: ustate_wrapper.split)
 
-  instance ..
 end
 
 
@@ -1072,11 +1069,11 @@ proof (simp_all add: hta_\<alpha>_def hta_\<delta>_states_def)
                          simplified])
     apply (auto simp add: ls.image_filter_correct)
     done
-next
+(*next
   case goal2 thus ?case
     apply (rule llh.Union_image_correct)
     apply (auto simp add: ls.image_filter_correct)
-    done
+    done*)
 qed
 
 lemma (in hashedTa) hta_states_correct:
@@ -1348,7 +1345,7 @@ proof -
         \<and> (\<forall>q. ls_\<alpha> (rqrm_lookup res q) 
            = {r\<in>ls_\<alpha> \<delta> - it. q\<in>set (rhsq r)} 
              \<union> {r. r=x \<and> q\<in>set itl})" 
-      in foldl_rule_P)
+      in Misc.foldl_rule_P)
         -- "Initial"
       apply simp
         -- "Step"
@@ -1692,7 +1689,7 @@ definition brec_inner_step
         Q' = ( if cond then 
                  hm_update (lhs r) (brec_construct_witness Q r) Q 
                else Q);
-        W' = (if cond then fifo_put (lhs r) W else W);
+        W' = (if cond then fifo_enqueue (lhs r) W else W);
         qwit' = (if c \<le> 1 \<and> hs_memb (lhs r) Qi then Some (lhs r) else qwit)
     in
       (Q',W',rcm',qwit')"
@@ -1702,7 +1699,7 @@ definition brec_step
       \<Rightarrow> ('q::hashable,'l::hashable) brec_state 
       \<Rightarrow> ('q,'l) brec_state" 
 where "brec_step rqrm Qi == \<lambda>(Q,W,rcm,qwit).
-    let (q,W')=fifo_get W in 
+    let (q,W')=fifo_dequeue W in 
       ls_iterate (brec_inner_step Qi) (rqrm_lookup rqrm q) (Q,W',rcm,qwit)
   "
 
@@ -1824,7 +1821,7 @@ lemma brec_inner_step_brw_desc:
   apply (auto 
     simp add: brec_invar_inner_def brec_invar_add_def brec_\<alpha>_def 
               brec_inner_step_def 
-              Let_def hs_correct hm_correct fifo_correct_basic 
+              Let_def hs_correct hm_correct fifo_correct
               brec_construct_witness_correct)
   done
 
@@ -1836,23 +1833,31 @@ lemma brec_step_invar:
           \<Longrightarrow> (brec_step rqrm Qi \<Sigma>)\<in>brec_invar_add (hs_\<alpha> Qi)"
   apply (frule brec_brw_invar_cons)
   apply (cases \<Sigma>)
-  apply (simp add: brec_step_def fifo_get_split_correct)
+  apply (simp add: brec_step_def fifo_correct)
+  apply (case_tac "fifo_\<alpha> b")
+  apply (simp 
+    add: brec_invar_def distinct_tl brec_cond_def fifo_correct
+         )
+  apply (rule_tac s=b in fifo.popE)
+  apply simp
+  apply simp
+  apply simp
+
   apply (rule_tac 
     I="\<lambda>it (Q,W,rcm,qwit). (Q,W,rcm,qwit)\<in>brec_invar_add (hs_\<alpha> Qi) 
                            \<and> set (fifo_\<alpha> W) \<subseteq> dom (hm_\<alpha> Q)" 
     in ls.iterate_rule_P)
-  apply (simp add: RQRM(1)[unfolded rqrm_invar_def])
-  apply (case_tac "fifo_\<alpha> b")
+  apply simp
   apply (simp 
-    add: brec_invar_def distinct_tl brec_cond_def fifo_correct_basic 
-         fifo_get_split_correct)
+    add: brec_invar_def distinct_tl brec_cond_def fifo_correct
+         )
   apply (simp 
     add: brec_invar_def brec_invar_add_def distinct_tl brec_cond_def 
-         fifo_correct_basic fifo_get_split_correct)
+         fifo_correct)
   apply (case_tac \<sigma>)
   apply (auto 
     simp add: brec_invar_add_def brec_inner_step_def Let_def hs_correct 
-              hm_correct fifo_correct_basic split: option.split_asm) [1]
+              hm_correct fifo_correct split: option.split_asm) [1]
   apply (case_tac \<sigma>)
   apply simp
   done
@@ -1869,37 +1874,41 @@ proof -
 
   obtain Q W rcm qwit where [simp]: "\<Sigma>=(Q,W,rcm,qwit)" by (cases \<Sigma>) blast
   from A COND show ?thesis
-    apply (simp add: brec_step_def fifo_get_split_correct)
+    apply (simp add: brec_step_def fifo_correct)
+    apply (case_tac "fifo_\<alpha> W")
+    apply (simp 
+      add: brec_invar_def distinct_tl brec_cond_def fifo_correct
+    )
+    apply (rule_tac s=W in fifo.popE)
+    apply simp
+    apply simp
+    apply simp
+
     apply (rule brw_inner_step_proof[
       OF ls_iterate_impl, 
       where cinvar="\<lambda>it \<Sigma>. \<Sigma>\<in>brec_invar_inner (hs_\<alpha> Qi)" and 
-            q="fifo_hd W"])
+            q="hd (fifo_\<alpha> W)"])
     apply assumption
     apply (frule brec_brw_invar_cons)
-    apply (case_tac "fifo_\<alpha> W")
     apply (simp_all 
-      add: brec_cond_def brec_invar_add_def fifo_correct_basic 
-           fifo_get_split_correct brec_invar_inner_def) [2]
+      add: brec_cond_def brec_invar_add_def fifo_correct
+            brec_invar_inner_def) [1]
     prefer 6
     apply (simp add: brec_\<alpha>_def)
     apply blast
     apply (case_tac \<Sigma>)
     apply (auto 
       simp add: brec_invar_add_def brec_inner_step_def Let_def hm_correct 
-                hs_correct fifo_correct_basic brec_invar_inner_def 
+                hs_correct fifo_correct brec_invar_inner_def 
       split: option.split_asm) [1]
     apply (blast intro: brec_inner_step_brw_desc)
     apply (simp add: RQRM[unfolded rqrm_invar_def])
     apply (simp 
-      add: rqrm_propD[OF RQRM(2)] fifo_correct_basic fifo_get_split_correct)
-    apply (case_tac "fifo_\<alpha> W")
+      add: rqrm_propD[OF RQRM(2)] fifo_correct)
     apply (simp_all 
-      add: brec_\<alpha>_def brec_cond_def brec_invar_def fifo_correct_basic 
-           fifo_get_split_correct) [2]
-    apply (case_tac "fifo_\<alpha> W")
+      add: brec_\<alpha>_def brec_cond_def brec_invar_def fifo_correct) [1]
     apply (simp_all 
-      add: brec_\<alpha>_def brec_cond_def brec_invar_add_def fifo_correct_basic 
-           fifo_get_split_correct) [2]
+      add: brec_\<alpha>_def brec_cond_def brec_invar_add_def fifo_correct) [1]
     done
 qed
     
@@ -1913,12 +1922,12 @@ lemma brec_invar_initial:
     split: option.split)
   apply (auto simp add: brc_iq_correct hh.disjoint_witness_None br_iq_def) [1]
 
-  apply (drule brc_iq_correct(1))
-  apply (drule (2) hh.disjoint_witness_correct)
+  thm brc_iq_correct(1)
+
+  apply (drule hh.disjoint_witness_correct[simplified])
   apply simp
 
-  apply (frule brc_iq_correct(1))
-  apply (drule (2) hh.disjoint_witness_correct)
+  apply (drule hh.disjoint_witness_correct[simplified])
   apply (simp add: brc_iq_correct br_iq_def)
   done
 
@@ -1927,7 +1936,7 @@ lemma brec_cond_abs:
   apply (cases \<Sigma>)
   apply (auto 
     simp add: brec_cond_def brw_cond_def brec_\<alpha>_def brec_invar_def 
-              brec_invar_add_def fifo_correct_basic 
+              brec_invar_add_def fifo_correct
     split: option.split_asm)
   done
 
@@ -1936,7 +1945,7 @@ lemma brec_initial_abs:
      \<Longrightarrow> brec_\<alpha> (brec_initial Qi \<delta>) \<in> brw_initial (ls_\<alpha> \<delta>)"
   by (auto simp add: brec_initial_def Let_def brec_\<alpha>_def 
                      brc_iq_correct brc_rcm_init_correct brec_iqm_correct 
-                     br_iq_def fifo_correct_basic hs_to_fifo_correct 
+                     br_iq_def fifo_correct hs_to_fifo_correct 
               intro: brw_initial.intros[unfolded br_iq_def])
 
 lemma brec_pref_brw:

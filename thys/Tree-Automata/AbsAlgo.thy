@@ -6,7 +6,7 @@ header "Abstract Tree Automata Algorithms"
 theory AbsAlgo
 imports 
   Ta 
-  "../Collections/Exploration"
+  "../Collections/examples/Exploration"
   "../Collections/DatRef"
   "../Collections/SetSpec"
 begin

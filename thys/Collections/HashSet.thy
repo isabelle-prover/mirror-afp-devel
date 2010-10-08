@@ -2,24 +2,24 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Hash Set"
+header {* \isaheader{Hash Set} *}
 theory HashSet
 imports SetSpec HashMap SetByMap SetGA
 begin
 text_raw {*\label{thy:HashSet}*}
 
 text {*
-  This implementation is based on the corresponding map implementation.
+  This implementation is based on the corresponding map implementation in HashMap.
   Abbreviations: hs,h
 *}
 
 
 subsection "Definitions"
 types
-  'a hs = "('a,unit) hm"
+  'a hs = "('a::hashable,unit) hm"
 
 definition hs_\<alpha> :: "'a::hashable hs \<Rightarrow> 'a set" where "hs_\<alpha> == s_\<alpha> hm_\<alpha>"
-definition hs_invar :: "'a::hashable hs \<Rightarrow> bool" where "hs_invar == hm_invar"
+abbreviation (input) hs_invar :: "'a::hashable hs \<Rightarrow> bool" where "hs_invar == \<lambda>_. True"
 definition hs_empty :: "'a::hashable hs" where "hs_empty == s_empty hm_empty"
 definition hs_memb :: "'a::hashable \<Rightarrow> 'a hs \<Rightarrow> bool" 
   where "hs_memb == s_memb hm_lookup"
@@ -75,7 +75,6 @@ lemmas hs_defs =
   hs_ins_def
   hs_ins_dj_def
   hs_inter_def
-  hs_invar_def
   hs_isEmpty_def
   hs_iterate_def
   hs_iteratei_def
@@ -107,10 +106,6 @@ lemmas hs_image_impl = iflt_image_correct[OF hs_image_filter_impl, folded hs_ima
 lemmas hs_inj_image_impl = iflt_inj_image_correct[OF hs_inj_image_filter_impl, folded hs_inj_image_def]
 lemmas hs_to_list_impl = it_set_to_list_correct[OF hs_iterate_impl, folded hs_to_list_def]
 lemmas list_to_hs_impl = gen_list_to_set_correct[OF hs_empty_impl hs_ins_impl, folded list_to_hs_def]
-
-
-find_consts name: "RBTSetImpl.*"
-
 
 interpretation hs: set_iteratei hs_\<alpha> hs_invar hs_iteratei using hs_iteratei_impl .                               
 interpretation hs: set_iterate hs_\<alpha> hs_invar hs_iterate using hs_iterate_impl .
@@ -153,10 +148,9 @@ lemmas hs_correct =
   hs.size_correct
   hs.empty_correct
 
-
 subsection "Code Generation"
 export_code
-  hs_iteratei                                                                                                                                                              
+  hs_iteratei
   hs_iterate
   hs_inj_image_filter
   hs_image_filter

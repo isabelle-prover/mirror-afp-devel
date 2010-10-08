@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Specification of Maps"
+header {* \chapter{Specifications} \label{ch:specs} \isaheader{Specification of Maps} *}
 theory MapSpec
 imports Main
 begin
@@ -241,6 +241,42 @@ proof -
     done
 qed
 
+
+subsubsection "Selection of Entry (without mapping)"
+locale map_sel' = map +
+  constrains \<alpha> :: "'s \<Rightarrow> 'u \<rightharpoonup> 'v"
+  fixes sel' :: "'s \<Rightarrow> ('u \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> ('u\<times>'v) option"
+  assumes sel'E: 
+  "\<lbrakk> invar m; \<alpha> m u = Some v; P u v; 
+     !!u v. \<lbrakk> sel' m P = Some (u,v); \<alpha> m u = Some v; P u v\<rbrakk> \<Longrightarrow> Q 
+   \<rbrakk> \<Longrightarrow> Q"
+  assumes sel'I: 
+    "\<lbrakk> invar m; \<forall>u v. \<alpha> m u = Some v \<longrightarrow> \<not> P u v \<rbrakk> \<Longrightarrow> sel' m P = None"
+
+begin
+  lemma sel'_someE: 
+    "\<lbrakk> invar m; sel' m P = Some (u,v); 
+       !!u v. \<lbrakk> \<alpha> m u = Some v; P u v \<rbrakk> \<Longrightarrow> thesis
+     \<rbrakk> \<Longrightarrow> thesis"
+    apply (cases "\<exists>u v. \<alpha> m u = Some v \<and> P u v")
+    apply safe
+    apply (erule_tac u=ua and v=va in sel'E)
+    apply assumption
+    apply assumption
+    apply simp
+    apply (auto)
+    apply (drule (1) sel'I)
+    apply simp
+    done
+
+  lemma sel'_noneD: "\<lbrakk>invar m; sel' m P = None; \<alpha> m u = Some v\<rbrakk> \<Longrightarrow> \<not> P u v"
+    apply (rule ccontr)
+    apply simp
+    apply (erule (2) sel'E[where P=P])
+    apply auto
+    done
+end
+
 subsubsection "Map to List Conversion"
 locale map_to_list = map +
   constrains \<alpha> :: "'s \<Rightarrow> 'u \<rightharpoonup> 'v"
@@ -257,6 +293,76 @@ locale list_to_map = map +
   assumes to_map_correct:
     "\<alpha> (to_map l) = map_of l"
     "invar (to_map l)"
+
+
+subsection "Record Based Interface"
+
+  record ('k,'v,'s) map_ops =
+    map_op_\<alpha> :: "'s \<Rightarrow> 'k \<rightharpoonup> 'v"
+    map_op_invar :: "'s \<Rightarrow> bool"
+    map_op_empty :: "'s"
+    map_op_lookup :: "'k \<Rightarrow> 's \<Rightarrow> 'v option"
+    map_op_update :: "'k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's"
+    map_op_update_dj :: "'k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's"
+    map_op_delete :: "'k \<Rightarrow> 's \<Rightarrow> 's"
+    map_op_add :: "'s \<Rightarrow> 's \<Rightarrow> 's"
+    map_op_add_dj :: "'s \<Rightarrow> 's \<Rightarrow> 's"
+    map_op_isEmpty :: "'s \<Rightarrow> bool"
+    map_op_ball :: "'s \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> bool"
+    map_op_sel :: "'s \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> ('k\<times>'v) option" -- "Version without mapping"
+    map_op_to_list :: "'s \<Rightarrow> ('k\<times>'v) list"
+    map_op_to_map :: "('k\<times>'v) list \<Rightarrow> 's"
+
+  locale StdMapDefs =
+    fixes ops :: "('k,'v,'s,'more) map_ops_scheme"
+  begin
+    abbreviation \<alpha> where "\<alpha> == map_op_\<alpha> ops" 
+    abbreviation invar where "invar == map_op_invar ops" 
+    abbreviation empty where "empty == map_op_empty ops" 
+    abbreviation lookup where "lookup == map_op_lookup ops" 
+    abbreviation update where "update == map_op_update ops" 
+    abbreviation update_dj where "update_dj == map_op_update_dj ops" 
+    abbreviation delete where "delete == map_op_delete ops" 
+    abbreviation add where "add == map_op_add ops" 
+    abbreviation add_dj where "add_dj == map_op_add_dj ops" 
+    abbreviation isEmpty where "isEmpty == map_op_isEmpty ops" 
+    abbreviation ball where "ball == map_op_ball ops" 
+    abbreviation sel where "sel == map_op_sel ops" 
+    abbreviation to_list where "to_list == map_op_to_list ops" 
+    abbreviation to_map where "to_map == map_op_to_map ops"
+  end
+
+
+  locale StdMap = StdMapDefs ops +
+    map \<alpha> invar +
+    map_empty \<alpha> invar empty  +
+    map_lookup \<alpha> invar lookup  +
+    map_update \<alpha> invar update  +
+    map_update_dj \<alpha> invar update_dj  +
+    map_delete \<alpha> invar delete  +
+    map_add \<alpha> invar add  +
+    map_add_dj \<alpha> invar add_dj  +
+    map_isEmpty \<alpha> invar isEmpty  +
+    map_ball \<alpha> invar ball  +
+    map_sel' \<alpha> invar sel  +
+    map_to_list \<alpha> invar to_list  +
+    list_to_map \<alpha> invar to_map 
+    for ops
+  begin
+    lemmas correct =
+      empty_correct
+      lookup_correct
+      update_correct
+      update_dj_correct
+      delete_correct
+      add_correct
+      add_dj_correct
+      isEmpty_correct
+      ball_correct
+      to_list_correct
+      to_map_correct
+
+  end
 
 
 end

@@ -2,9 +2,16 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Generic Algorithms for Sets"
+(*
+  Changes since submission on 2009-11-26:
+
+  2009-12-10: OrderedSet, algorithms for iterators, min, max, to_sorted_list
+
+*)
+
+header {* \isaheader{Generic Algorithms for Sets} *}
 theory SetGA
-imports SetSpec Fifo
+imports OrderedSet
 begin
 text_raw {*\label{thy:SetGA}*}
 
@@ -22,8 +29,8 @@ lemma (in set_union) union_dj_by_union:
   by (unfold_locales)
      (simp_all add: union_correct)
 
-
-subsection {*Iteratei (by iterate)*}
+subsection {* Iterators *}
+subsubsection {*Iteratei (by iterate)*}
   -- "Interruptible iterator by iterator (Inefficient)"
 definition it_iteratei 
   :: "('m,'a,bool \<times> '\<sigma>) iterator \<Rightarrow> ('m,'a,'\<sigma>) iteratori" 
@@ -65,7 +72,7 @@ proof -
     done
 qed
 
-subsection {*iterate (by iteratei)*}
+subsubsection {*iterate (by iteratei)*}
 definition iti_iterate 
   :: "('s,'a,'\<sigma>) iteratori \<Rightarrow> ('s,'a,'\<sigma>) iterator"
   where "iti_iterate iti == iti (\<lambda>x. True)"
@@ -78,10 +85,91 @@ lemma (in set_iteratei) iti_iterate_correct:
   apply auto
   done
 
+
+subsubsection {* Iteratei (by iterateoi) *}
+lemma iti_by_itoi: 
+  assumes "set_iterateoi \<alpha> invar it"
+  shows "set_iteratei \<alpha> invar it"
+proof -
+  interpret set_iterateoi \<alpha> invar it by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (rule_tac I=I in iterateoi_rule_P)
+    apply blast+
+    done
+qed
+
+subsubsection {* Iterate (by iterateo) *}
+lemma it_by_ito: 
+  assumes "set_iterateo \<alpha> invar it"
+  shows "set_iterate \<alpha> invar it"
+proof -
+  interpret set_iterateo \<alpha> invar it by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (rule_tac I=I in iterateo_rule_P)
+    apply blast+
+    done
+qed
+
+subsubsection {* Iteratei (by reverse\_iterateoi) *}
+lemma iti_by_ritoi: 
+  assumes "set_reverse_iterateoi \<alpha> invar it"
+  shows "set_iteratei \<alpha> invar it"
+proof -
+  interpret set_reverse_iterateoi \<alpha> invar it by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (rule_tac I=I in reverse_iterateoi_rule_P)
+    apply blast+
+    done
+qed
+
+subsubsection {* Iterate (by reverse\_iterateo) *}
+lemma it_by_rito: 
+  assumes "set_reverse_iterateo \<alpha> invar it"
+  shows "set_iterate \<alpha> invar it"
+proof -
+  interpret set_reverse_iterateo \<alpha> invar it by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (rule_tac I=I in reverse_iterateo_rule_P)
+    apply blast+
+    done
+qed
+
+subsubsection {* iterateo by iterateoi *}
+definition itoi_iterateo
+  :: "('m,'u,'\<sigma>) iteratori \<Rightarrow> ('m,'u,'\<sigma>) iterator"
+  where
+  "itoi_iterateo it == it (\<lambda>x. True)"
+
+lemma (in set_iterateoi) itoi_iterateo_correct:
+  shows "set_iterateo \<alpha> invar (itoi_iterateo iterateoi)"
+  apply (unfold_locales)
+  apply (unfold itoi_iterateo_def)
+  apply (rule_tac I=I in iterateoi_rule_P)
+  apply auto
+  done
+
+subsubsection {* reverse\_iterateo by reverse\_iterateoi *}
+definition itoi_reverse_iterateo
+  :: "('m,'u,'\<sigma>) iteratori \<Rightarrow> ('m,'u,'\<sigma>) iterator"
+  where
+  "itoi_reverse_iterateo it == it (\<lambda>x. True)"
+
+lemma (in set_reverse_iterateoi) itoi_reverse_iterateo_correct:
+  shows "set_reverse_iterateo \<alpha> invar (itoi_reverse_iterateo reverse_iterateoi)"
+  apply (unfold_locales)
+  apply (unfold itoi_reverse_iterateo_def)
+  apply (rule_tac I=I in reverse_iterateoi_rule_P)
+  apply auto
+  done
+
 subsection {*Emptiness check (by iteratei)*}
 
 definition iti_isEmpty
-  :: "('s,'a,_) iteratori \<Rightarrow> 's \<Rightarrow> bool"
+  :: "('s,'a,bool) iteratori \<Rightarrow> 's \<Rightarrow> bool"
 where "iti_isEmpty iti s == iti id (\<lambda>x res. False) s True"
 
 lemma iti_isEmpty_correct:
@@ -136,6 +224,30 @@ proof -
     apply auto
     apply (subgoal_tac "\<alpha> s - (it - {x}) = insert x (\<alpha> s - it)")
     apply auto
+    done
+qed
+
+subsection {*Copy (by iterate)*}
+definition it_copy
+  :: "('s1,'x,_) iterator \<Rightarrow> 's2 \<Rightarrow> ('x \<Rightarrow> 's2 \<Rightarrow> 's2) \<Rightarrow> 's1 \<Rightarrow> 's2"
+where "it_copy iterate1 empty2 insert2 s1 == iterate1 insert2 s1 empty2"
+
+lemma it_copy_correct:
+  fixes \<alpha>1 :: "'s1 \<Rightarrow> 'x set"
+  fixes \<alpha>2 :: "'s2 \<Rightarrow> 'x set"
+  assumes "set_iterate \<alpha>1 invar1 iterate1"
+  assumes "set_empty \<alpha>2 invar2 empty2"
+  assumes "set_ins \<alpha>2 invar2 ins2"
+  shows "set_copy \<alpha>1 invar1 \<alpha>2 invar2 (it_copy iterate1 empty2 ins2)"
+proof -
+  interpret s1: set_iterate \<alpha>1 invar1 iterate1 by fact
+  interpret s2: set_empty \<alpha>2 invar2 empty2 by fact
+  interpret s2: set_ins \<alpha>2 invar2 ins2 by fact
+
+  show ?thesis
+    apply unfold_locales
+    apply (unfold it_copy_def)
+    apply (rule_tac I="\<lambda>it \<sigma>. invar2 \<sigma> \<and> \<alpha>2 \<sigma> = \<alpha>1 s1 - it" in s1.iterate_rule_P, auto simp add: s2.ins_correct s2.empty_correct)+
     done
 qed
 
@@ -501,6 +613,35 @@ proof -
   qed
 qed
 
+subsection {* Map-free selection by selection *}
+definition sel_sel'
+  :: "('s \<Rightarrow> ('x \<Rightarrow> _ option) \<Rightarrow> _ option) \<Rightarrow> 's \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> 'x option"
+where "sel_sel' sel s P = sel s (\<lambda>x. if P x then Some x else None)"
+
+lemma sel_sel'_correct: 
+  assumes "set_sel \<alpha> invar sel"
+  shows "set_sel' \<alpha> invar (sel_sel' sel)"
+proof -
+  interpret set_sel \<alpha> invar sel by fact
+
+  show ?thesis
+  proof
+    case goal1 show ?case
+      apply (rule selE[OF goal1(1,2), where f="(\<lambda>x. if P x then Some x else None)"])
+      apply (simp add: goal1)
+      apply (simp split: split_if_asm)
+      apply (fold sel_sel'_def)
+      apply (blast intro: goal1(4))
+      done
+  next
+    case goal2 thus ?case
+      apply (auto simp add: sel_sel'_def)
+      apply (drule selI[where f="(\<lambda>x. if P x then Some x else None)"])
+      apply auto
+      done
+  qed
+qed
+      
 subsection {*Set to List (by iterate)*}
 definition it_set_to_list
   :: "('s,'x,_) iterator \<Rightarrow> 's \<Rightarrow> 'x list"
@@ -708,26 +849,122 @@ lemma cart_correct:
 
 lemmas inj_image_filter_cp_correct[where f=Pair and P="\<lambda>x y. True", folded cart_def, simplified]
 
-subsubsection "Converting Set to Fifo"
-definition it_set_to_fifo :: "('s,'a,'a fifo) iterator \<Rightarrow> 's \<Rightarrow> 'a fifo" 
-  where "it_set_to_fifo iterate S == iterate (\<lambda>x F. fifo_put x F) S fifo_empty"
 
-lemma it_set_to_fifo_correct: 
-  assumes A: "set_iterate \<alpha> invar iterate" 
-  assumes [simp]: "invar S"
-  shows 
-    "set (fifo_\<alpha> (it_set_to_fifo iterate S)) = \<alpha> S" (is ?T1)
-    "distinct (fifo_\<alpha> (it_set_to_fifo iterate S))" (is ?T2)
+
+subsection {* Min (by iterateoi) *}
+definition itoi_min :: "('s,'k::linorder,_) iteratori \<Rightarrow> 's \<Rightarrow> ('k \<Rightarrow> bool) \<Rightarrow> ('k) option"
+  where "itoi_min it m P ==
+    it (\<lambda>x. x=None) (\<lambda>k res. if P k then Some (k) else None) m None
+  "
+
+lemma itoi_min_correct:
+  assumes "set_iterateoi \<alpha> invar it"
+  shows "set_min \<alpha> invar (itoi_min it)"
 proof -
-  interpret set_iterate \<alpha> invar iterate by fact
-  have "?T1 \<and> ?T2"
-    apply (unfold it_set_to_fifo_def)
+  interpret set_iterateoi \<alpha> invar it by fact
+  
+  show ?thesis 
+    apply (unfold_locales)
+    apply (unfold itoi_min_def)
     apply (rule_tac 
-      I="\<lambda>it F. set (fifo_\<alpha> F) = \<alpha> S - it \<and> distinct (fifo_\<alpha> F)" 
-      in iterate_rule_P)
-    apply (auto simp add: fifo_correct_basic)
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> { x\<in>\<alpha> s - it. P x } = {} | 
+        Some x \<Rightarrow> x\<in>\<alpha> s \<and> P x 
+                      \<and> (\<forall>x'\<in>\<alpha> s. P x' \<longrightarrow> x \<le> x')"
+      in iterateoi_rule_P)
+    apply (auto split: option.split_asm) [5]
+
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> { x\<in>\<alpha> s - it. P x } = {} | 
+        Some x \<Rightarrow> x\<in>\<alpha> s \<and> P x 
+                      \<and> (\<forall>x'\<in>\<alpha> s. P x' \<longrightarrow> x \<le> x')"
+      in iterateoi_rule_P)
+    apply (auto split: option.split_asm) [5]
+
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> { x\<in>\<alpha> s - it. P x } = {} | 
+        Some x \<Rightarrow> x\<in>\<alpha> s \<and> P x 
+                      \<and> (\<forall>x'\<in>\<alpha> s. P x' \<longrightarrow> x \<le> x')"
+      in iterateoi_rule_P)
+    apply (auto split: option.split_asm) [5]
     done
-  thus ?T1 ?T2 by auto
+qed
+
+
+subsection {* Max (by reverse\_iterateoi) *}
+definition ritoi_max :: "('s,'k::linorder,_) iteratori \<Rightarrow> 's \<Rightarrow> ('k \<Rightarrow> bool) \<Rightarrow> ('k) option"
+  where "ritoi_max it m P ==
+    it (\<lambda>x. x=None) (\<lambda>k res. if P k then Some (k) else None) m None
+  "
+
+lemma ritoi_max_correct:
+  assumes "set_reverse_iterateoi \<alpha> invar it"
+  shows "set_max \<alpha> invar (ritoi_max it)"
+proof -
+  interpret set_reverse_iterateoi \<alpha> invar it by fact
+  
+  show ?thesis 
+    apply (unfold_locales)
+    apply (unfold ritoi_max_def)
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> { x\<in> \<alpha> s - it. P x} = {} | 
+        Some x \<Rightarrow> x\<in>\<alpha> s \<and> P x 
+                      \<and> (\<forall>x'\<in>\<alpha> s. P x' \<longrightarrow> x \<ge> x')"
+      in reverse_iterateoi_rule_P)
+    apply (auto split: option.split_asm) [5]
+
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> { x\<in> \<alpha> s - it. P x} = {} | 
+        Some x \<Rightarrow> x\<in>\<alpha> s \<and> P x 
+                      \<and> (\<forall>x'\<in>\<alpha> s. P x' \<longrightarrow> x \<ge> x')"
+      in reverse_iterateoi_rule_P)
+    apply (auto split: option.split_asm) [5]
+
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> { x\<in> \<alpha> s - it. P x} = {} | 
+        Some x \<Rightarrow> x\<in>\<alpha> s \<and> P x 
+                      \<and> (\<forall>x'\<in>\<alpha> s. P x' \<longrightarrow> x \<ge> x')"
+      in reverse_iterateoi_rule_P)
+    apply (auto split: option.split_asm) [5]
+    done
+qed
+
+subsection {*Conversion to sorted list (by reverse\_iterateo)*}
+
+definition rito_set_to_sorted_list
+  :: "('m,'u,('u) list) iterator \<Rightarrow> 'm \<Rightarrow> ('u) list"
+  where "rito_set_to_sorted_list iterate m == iterate (\<lambda>u res. u#res) m []"
+
+lemma rito_set_to_sorted_list_correct:
+  assumes "set_reverse_iterateo \<alpha> invar iterate"
+  shows "set_to_sorted_list \<alpha> invar (rito_set_to_sorted_list iterate)"
+proof -
+  interpret set_reverse_iterateo \<alpha> invar iterate by fact
+  show ?thesis
+    apply unfold_locales
+    apply (unfold rito_set_to_sorted_list_def)
+    apply (rule_tac I="\<lambda>it res. set res = \<alpha> s - it" in reverse_iterateo_rule_P)
+    apply auto [4]
+    apply (rule_tac 
+      I="\<lambda>it res. set res \<inter> it = {} \<and> distinct res" 
+      in reverse_iterateo_rule_P)
+    apply auto
+    apply (rule_tac 
+      I="\<lambda>it res. set res = \<alpha> m - it \<and> sorted res" 
+      in reverse_iterateo_rule_P)
+    apply (auto simp add: sorted_Cons)
+    done
 qed
 
 end

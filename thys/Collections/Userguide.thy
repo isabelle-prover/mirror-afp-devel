@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Isabelle Collections Framework Userguide"
+header {* \chapter{Isabelle Collections Framework Userguide} *}
 theory Userguide
 imports 
   Collections
@@ -10,26 +10,29 @@ imports
 begin
 text_raw {*\label{thy:Userguide}*}
 
-subsection "Introduction"
+section "Introduction"
 text {*
   The Isabelle Collections Framework defines interfaces of various collection types and provides some standard implementations and generic algorithms.
 
-  The relation between the data-structures of the collection framework and standard Isabelle datatypes (e.g. for sets and maps) is established by abstraction functions.
+  The relation between the data structures of the collection framework and standard Isabelle types (e.g. for sets and maps) is established by abstraction functions.
 
-  Currently, the Isabelle Collections Framework provides set and map implementations based on associative lists and red-black trees. Moreover, an implementation of a FIFO-queue based on
-  lists is provided.
+  Currently, the Isabelle Collections Framework provides set and map implementations based on (associative) lists, red-black trees, hashing and tries. 
+  Moreover, an implementation of a FIFO-queue based on lists is provided.
+
+  Finger trees and priority queues are implemented in a separate AFP entry.
 *}
 
-subsubsection "Getting Started"
+subsection "Getting Started"
 text {*
   To get started with the Isabelle Collections Framework (assuming that you are already familiar with Isabelle/HOL and Isar),
   you should first read the introduction (this section), that provides many basic examples. 
   Section~\ref{sec:userguide.structure} explains the concepts of the Isabelle Collections Framework in more detail.
   Section~\ref{sec:userguide.ext} provides information on extending the framework along with detailed examples, and 
   Section~\ref{sec:userguide.design} contains a discussion on the design of this framework.
+  There is also a paper \cite{LammichLochbihler2010ITP} on the design of the Isabelle Collections Framework available.
 *}
 
-subsubsection "Introductory Example"
+subsection "Introductory Example"
 text {*
   We introduce the Isabelle Collections Framework by a simple example.
 
@@ -60,11 +63,13 @@ text {*
 
   states correctness of the @{const rs_memb}-function. 
   The function @{const rs_\<alpha>} maps a red-black-tree to the set that it represents.
-  Moreover, we have to explicitely keep track of the invariants of the used data-structure,
+  Moreover, we have to explicitely keep track of the invariants of the used data structure,
   in this case red-black trees. 
-  The predicate @{const rs_invar} denotes the invariant for red-black trees that represent sets.
+  The premise @{thm (prem 1) rs.memb_correct} represents the invariant assumption for the collection data structure.
+  Red-black-trees are invariant-free, so this defaults to @{term "True"}.
+  For uniformity reasons, these (unnecessary) invariant assumptions are present in all correctness lemmata.
 
-  Note that many correctness lemmas for standard RBT-set-operations are summarized by the lemma @{thm [source] rs_correct}:
+  Many of the correctness lemmas for standard RBT-set-operations are summarized by the lemma @{thm [source] rs_correct}:
     @{thm [display] rs_correct[no_vars]}
 *}
 
@@ -87,34 +92,36 @@ text {*
 
 *}
 
-
 value "rbt_restrict_list (list_to_rs [1::nat,2,3,4,5]) [1::nat,9,2,3,4,5,6,5,4,3,6,7,8,9]"
 
 definition "test n = (list_to_rs [(1::int)..n])"
 
 ML {* @{code test} 9000 *}
 
-subsubsection "Theories"
+subsection "Theories"
 text {*
   To make available the whole collections framework to your formalization, import the theory @{theory Collections}.
 
   Other theories in the Isabelle Colelction Framework include:
   \begin{description}
     \item[@{theory SetSpec}] Specification of sets and set functions
+    \item[@{theory OrderedSet}] Specification of ordered sets and set functions
     \item[@{theory SetGA}] Generic algorithms for sets
-    \item[@{theory SetStdImpl}] Standard set implementations (list, rb-tree, hash)
+    \item[@{theory SetStdImpl}] Standard set implementations (list, rb-tree, hashing, tries)
     \item[@{theory MapSpec}] Specification of maps
+    \item[@{theory OrderedMap}] Specification of ordered maps
     \item[@{theory MapGA}] Generic algorithms for maps
-    \item[@{theory MapStdImpl}] Standard map implementations (list,rb-tree, hash)
+    \item[@{theory MapStdImpl}] Standard map implementations (list,rb-tree, hashing, tries)
     \item[@{theory Algos}] Various generic algorithms
     \item[@{theory SetIndex}] Generic algorithm for building indices of sets
+    \item[@{theory ListSpec}] Specification of lists
     \item[@{theory Fifo}] Amortized fifo queue
     \item[@{theory DatRef}] Data refinement for the while combinator
   \end{description}
 
 *}
 
-subsubsection "Iterators"
+subsection "Iterators"
 text {* An important concept when using collections are iterators. An iterator is a kind of generalized fold-functional.
   Like the fold-functional, it applies a function to all elements of a set and modifies a state. There are
   no guarantees about the iteration order. But, unlike the fold functional, you can prove useful properties of iterations
@@ -130,11 +137,7 @@ text {* An important concept when using collections are iterators. An iterator i
     @{term [display] "\<And>x it \<sigma>. \<lbrakk>x \<in> it; it \<subseteq> rs_\<alpha> S; I it \<sigma>\<rbrakk> \<Longrightarrow> I (it - {x}) (f x \<sigma>)"}
   And the proposition to be shown for the final state must be a consequence of the invarant for no 
   elements remaining: @{term "\<And>\<sigma>. I {} \<sigma> \<Longrightarrow> P \<sigma>"}. 
-*}
 
-thm rs.iteratei_rule_P[no_vars]
-
-text {*
   A generalization of iterators are {\em interruptible iterators} where iteration is only continues while some condition on the state holds.
   Reasoning over interruptible iterators is also done by invariants: 
     @{thm [source] rs.iteratei_rule_P}: @{thm [display] rs.iteratei_rule_P[no_vars]}
@@ -156,6 +159,7 @@ definition "hs_to_list' s == hs_iterate (op #) s []"
 text {*
   The correctness proof works by establishing the invariant that the list contains
   all elements that have already been iterated over.
+  Again @{term "hs_invar s"} denotes the invariant for hashsets which defaults to @{term "True"}.
 *}
 lemma hs_to_list'_correct: 
   assumes INV: "hs_invar s"
@@ -167,7 +171,6 @@ lemma hs_to_list'_correct:
   txt {* The resulting proof obligations are easily discharged using auto: *}
   apply auto
   done
-
 
 text {*
   As an example for an interruptible iterator, 
@@ -192,7 +195,7 @@ lemma hs_bex_correct:
   done
 
 
-subsection "Structure of the Framework"
+section "Structure of the Framework"
 text_raw {*\label{sec:userguide.structure}*}
 text {*
   The concepts of the framework are roughly based on the object-oriented concepts of interfaces, implementations and generic algorithms.
@@ -234,24 +237,30 @@ text {*
 
 *}
 
-  subsubsection "Naming Conventions"
+  subsection "Naming Conventions"
   text {*
-    There are the following general naming conventions used inside the Isabelle Collections Framework:
-    Each implementation has a two-letter and a one-letter abbreviation, that are used as prefixes for the related constants, lemmas and instantiations.
+    The Isabelle Collections Framework follows these general naming conventions.
+    Each implementation has a two-letter (or three-letter) and a one-letter (or two-letter) abbreviation, that are used as prefixes for the related constants, lemmas and instantiations.
 
-    The two-letter abbreviations should be unique over all interfaces and instantiations, the one-letter abbreviations should be unique
+    The two-letter and three-letter abbreviations should be unique over all interfaces and instantiations, the one-letter abbreviations should be unique
     over all implementations of the same interface.
     Names that reference the implementation of only one interface are prefixed with that implementation's two-letter abbreviation (e.g. @{const hs_ins} for insertion into a HashSet (hs,h)),
-    names that reference more than one implementation are prefixed with the one-letter abbreviations (e.g. @{const lhh_union} for set union between a ListSet(ls,l) and a HashSet(hs,h), yielding a HashSet)
+    names that reference more than one implementation are prefixed with the one-letter (or two-letter) abbreviations (e.g. @{const lhh_union} for set union between a ListSet(ls,l) and a HashSet(hs,h), yielding a HashSet)
     
     Currently, there are the following abbreviations:
     \begin{description}
       \item[lm,l] List Map
+      \item[lmi,li] List Map with explicit invariant
       \item[rm,r] RB-Tree Map
       \item[hm,h] Hash Map
+      \item[ahm,a] Array-based hash map
+      \item[tm,t] Trie Map
       \item[ls,l] List Set
+      \item[lsi,li] List Set with explicit invariant
       \item[rs,r] RB-Tree Set
       \item[hs,h] Hash Set
+      \item[ahs,a] Array-based hash map
+      \item[ts,t] Trie Set
     \end{description}
 
     Each function @{text name} of an interface @{text interface} is declared in a locale @{text interface_name}. This locale provides a fact @{text name_correct}. For example, there is the locale @{const set_ins} providing
@@ -260,13 +269,14 @@ text {*
     with the prefix {\em hs}, yielding the lemma @{thm [source] hs.ins_correct}. Moreover, an implementation with two-letter abbreviation {\em aa} provides a lemma @{text aa_correct} 
     that summarizes the correctness facts for the basic 
     operations. It should only contain those facts that are safe to be used with the simplifier. E.g., the correctness facts for basic operations on hash sets are available via the lemma @{thm [source] hs_correct}.
+
   *}
 
-subsection "Extending the Framework"
+section "Extending the Framework"
 text_raw {*\label{sec:userguide.ext}*}
   text {* This section illustrates, by example, how to add new interfaces, functions, generic algorithms and implementations to the framework: *}
 
-  subsubsection "Interfaces"
+  subsection "Interfaces"
   text {*
     An interface provides a new concept, that is usually mapped to a related Isabelle/HOL-concept. 
     An interface is defined by providing a locale that fixes an abstraction mapping and
@@ -281,10 +291,12 @@ text_raw {*\label{sec:userguide.ext}*}
 
   text {*
     The invariant makes it possible for an implementation to restrict to certain subsets of the type's universal set.
-    Theoretically, this could also be done by a typedef, however, this is not supported by the code generator (as of Isabelle2009).
+    Usually, it is convenient to hide this invariant in a typedef and to set up the code generator approriately.
+    However, in some cases such invariants may enable more efficient implementations (e.g. disoint insert for distinct lists), so all specifications should be with respect to a implementation-provided invariant.
+    Most implementations will just set this invariant to @{text "\<lambda>_. True"}.
     *}
 
-  subsubsection "Functions"
+  subsection "Functions"
   text {*
     A function describes some operation on instances of an interface. It is specified by providing a locale that includes
     the locale of the interface, fixes a parameter for the operation and makes a correctness assumption.
@@ -339,7 +351,7 @@ text_raw {*\label{sec:userguide.ext}*}
       "\<alpha> (list_to_set l) = set l"
       "invar (list_to_set l)"
 
-  subsubsection "Generic Algorithm"
+  subsection "Generic Algorithm"
   text {*
     A generic algorithm describes how to implement a function using implementations of other functions. 
     Thereby, it is parametric in the actual implementations of the functions.
@@ -349,7 +361,7 @@ text_raw {*\label{sec:userguide.ext}*}
     then the implemented function's arguments.
 
     Consider, for example, the generic algorithm to convert a list to a set\footnote{To keep the presentation simple, 
-    we use a non-tail-recursive version here}. This function requires implementations of the {\em empty} and {\em ins} functions\footnote{Due to name-clashes with @{const [long_names] Map.empty} and @{const [long_names] RBT_Impl.ins} we have to
+    we use a non-tail-recursive version here}. This function requires implementations of the {\em empty} and {\em ins} functions\footnote{Due to name-clashes with @{const [long_names] Map.empty} we have to
       use slightly different parameter names here}:
     *}
 
@@ -391,62 +403,61 @@ text_raw {*\label{sec:userguide.ext}*}
     *}
 
 
-  subsubsection {* Implementation *}
+  subsection {* Implementation *}
   text {*
     An implementation of an interface defines an actual data structure, an invariant, and
     implementations of the functions.
-    An implementation has a two-letter abbreviation that should be unique and a one-letter abbreviation that
-    should be unique amongst all implementations of the same interface.
+    An implementation has a two-letter (or three-letter) abbreviation that should be unique and a one-letter (or two-letter) abbreviation that should be unique amongst all implementations of the same interface.
 
-    Consider, for example, a set implementation by distinct lists. It has the abbreviations (ls,l). To avoid name clashes with the
+    Consider, for example, a set implementation by distinct lists. It has the abbreviations (lsi,li).
+    To avoid name clashes with the
     existing list-set implementation in the framework, we use ticks (') here and there to disambiguate the names.
     *}
 
   -- "The type of the data structure should be available as the two-letter abbreviation: "
-  types 'a ls' = "'a list"
+  types 'a lsi' = "'a list"
   -- "The abstraction function:"
-  definition "ls'_\<alpha> == set"
+  definition "lsi'_\<alpha> == set"
   -- "The invariant: In our case we constrain the lists to be distinct:"
-  definition "ls'_invar == distinct"
+  definition "lsi'_invar == distinct"
   -- "The locale of the interface is interpreted with the two-letter abbreviation as prefix:"
-  interpretation ls': set' ls'_\<alpha> ls'_invar .
+  interpretation lsi': set' lsi'_\<alpha> lsi'_invar .
 
   text {*
     Next, we implement some functions. The implementation of a function @{text name} is prefixed by the two-letter prefix:
     *}
 
-  definition "ls'_empty == []"
+  definition "lsi'_empty == []"
   text {* Each function implementation has a corresponding lemma that shows the instantiation of the locale. It is named
     by the function's name suffixed with @{text "_impl"}: 
     *}
-  lemma ls'_empty_impl: "set'_empty ls'_\<alpha> ls'_invar ls'_empty"
-    by (unfold_locales)
-       (auto simp add: ls'_empty_def ls'_invar_def ls'_\<alpha>_def)
+  lemma lsi'_empty_impl: "set'_empty lsi'_\<alpha> lsi'_invar lsi'_empty"
+    by (unfold_locales) (auto simp add: lsi'_empty_def lsi'_invar_def lsi'_\<alpha>_def)
 
   text {* The corresponding function's locale is interpreted with the function implementation and the interface's two-letter abbreviation as prefix: *}
-  interpretation ls': set'_empty ls'_\<alpha> ls'_invar ls'_empty
-    using ls'_empty_impl .
+  interpretation lsi': set'_empty lsi'_\<alpha> lsi'_invar lsi'_empty
+    using lsi'_empty_impl .
   text {* This generates the lemma 
-    @{thm [source] ls'.empty_correct}: @{thm [display] ls'.empty_correct[no_vars]}
+    @{thm [source] lsi'.empty_correct}: @{thm [display] lsi'.empty_correct[no_vars]}
     *}
 
-  definition "ls'_ins x l == if x\<in>set l then l else x#l"
+  definition "lsi'_ins x l == if x\<in>set l then l else x#l"
 
   text {* Correctness may optionally be established using separate lemmas. These should be suffixed with {\em \_aux}
     to indicate that they should not be used by other proofs:*}
-  lemma ls'_ins_correct_aux: 
-    "ls'_invar l \<Longrightarrow> ls'_\<alpha> (ls'_ins x l) = insert x (ls'_\<alpha> l)"
-    "ls'_invar l \<Longrightarrow> ls'_invar (ls'_ins x l)"
-    by (auto simp add: ls'_ins_def ls'_invar_def ls'_\<alpha>_def)
+  lemma lsi'_ins_correct_aux: 
+    "lsi'_invar l \<Longrightarrow> lsi'_\<alpha> (lsi'_ins x l) = insert x (lsi'_\<alpha> l)"
+    "lsi'_invar l \<Longrightarrow> lsi'_invar (lsi'_ins x l)"
+    by (auto simp add: lsi'_ins_def lsi'_invar_def lsi'_\<alpha>_def)
 
-  lemma ls'_ins_impl: "set'_ins ls'_\<alpha> ls'_invar ls'_ins"
+  lemma lsi'_ins_impl: "set'_ins lsi'_\<alpha> lsi'_invar lsi'_ins"
     by unfold_locales
-       (simp_all add: ls'_ins_correct_aux)
+       (simp_all add: lsi'_ins_correct_aux)
 
-  interpretation ls': set'_ins ls'_\<alpha> ls'_invar ls'_ins
-    using ls'_ins_impl .
+  interpretation lsi': set'_ins lsi'_\<alpha> lsi'_invar lsi'_ins
+    using lsi'_ins_impl .
 
-  subsubsection {* Instantiations (Generic Algorithm)*}
+  subsection {* Instantiations (Generic Algorithm)*}
   text {*
     The instantiation of a generic algorithm substitutes actual implementations for the required functions.
     A generic algorithm is instantiated by providing a definition that fixes the function parameters accordingly.
@@ -455,10 +466,10 @@ text_raw {*\label{sec:userguide.ext}*}
 
     For example, consider conversion from lists to list-sets by instantiating the @{const list_to_set'}-algorithm:
     *}
-  definition "ls'_list_to_set == list_to_set' ls'_empty ls'_ins"
-  lemmas ls'_list_to_set_impl = list_to_set'_correct[OF ls'_empty_impl ls'_ins_impl, folded ls'_list_to_set_def]
-  interpretation ls': set'_list_to_set ls'_\<alpha> ls'_invar ls'_list_to_set 
-    using ls'_list_to_set_impl .
+  definition "lsi'_list_to_set == list_to_set' lsi'_empty lsi'_ins"
+  lemmas lsi'_list_to_set_impl = list_to_set'_correct[OF lsi'_empty_impl lsi'_ins_impl, folded lsi'_list_to_set_def]
+  interpretation lsi': set'_list_to_set lsi'_\<alpha> lsi'_invar lsi'_list_to_set 
+    using lsi'_list_to_set_impl .
 
   text {*
     Note that the actual framework slightly deviates from the naming convention here, the corresponding instantiation of
@@ -472,7 +483,7 @@ text_raw {*\label{sec:userguide.ext}*}
     *}
 
 
-subsection "Design Issues"
+section "Design Issues"
 text_raw {*\label{sec:userguide.design}*}
   text {*
     In this section, we motivate some of the design decisions of the Isabelle Collections Framework and report our experience with alternatives.
@@ -492,7 +503,7 @@ text_raw {*\label{sec:userguide.design}*}
     \end{enumerate}
     *}
 
-  subsubsection {* Data Refinement *}
+  subsection {* Data Refinement *}
   text {*
     In order to allow simple reasoning over collections, we use a data refinement approach. Each collection
     interface has an abstraction function that maps it on a related Isabelle/HOL concept (abstract level).
@@ -503,46 +514,44 @@ text_raw {*\label{sec:userguide.design}*}
     proven on the abstract level usually transfer easily to the concrete level.
 
     Moreover, the user has precise control how the refinement is done, i.e. what data structures are used. An alternative would be to do refinement
-    completely automatic, as e.g. done in the code generator setup of the Theory~{\em Executable-Set}. This has teh advantage that it induces less writing overhead.
-    The disadvantage is that the user looses a great amount of control over the refinement. For example, in {\em Executable-Set}, all sets have to be represented by lists,
+    completely automatic, as e.g. done in the code generator setup of the Theory~{\em Executable-Set}. This has the advantage that it induces less writing overhead.
+    The disadvantage is that the user loses a great amount of control over the refinement. For example, in {\em Executable-Set}, all sets have to be represented by lists,
     and there is no possibility to represent one set differently from another. 
+
     *}
 
-  subsubsection {* Grouping Functions *}
+  subsection {* Grouping Functions *}
   text {*
     We have experimented with grouping functions of an interface together via a record.
     This has the advantage that parameterization of generic algorithms becomes simpler,
     as multiple function parameters are replaced by a single record parameter.
-    However, on the other hand, a choice of sensible groups of functions is not obvious,
-    and the use of the functions is a bit more writing overhead.
-    As the generic algorithms in this framework only depend on a few function parameters,
-    we have not grouped operations together. However, this may well make sense for more complex
-    generic algorithms, that depend on many functions. A borderline example are the generic indexing algorithms
-    defined in Theory~@{theory SetIndex}. The algorithms depend on quite a few functions. While we need to explicitely
-    specify them as parameters, we try to simplify reasoning about them by defining an appropriate locale.
+    For maps and sets, theories @{theory RecordSetImpl} and @{theory RecordMapImpl} provide these instantiations 
+    for all implementations (except for tries).
+    The records do not include operations that depend on extra type variables because these operations would become monomorphic due to Isabelle's type system restrictions.
+
     *}
 
-  subsubsection {* Locales for Generic Algorithms *}
+  subsection {* Locales for Generic Algorithms *}
   text {*
     Another tempting possibility to define a generic algorithm is to define a locale that includes
     the locales of all required functions, and do the definition of the generic algorithm inside that locale.
     This has the advantage that the function parameters are made implicit, thus improving readability.
     On the other hand, the code generator has problems with generating code
     from definitions inside a locale. Currently, one has to manually set up the code generator for such definitions. 
-    Moreover, when fixing function parameters in the declaration of the locale, their types will be infered independently of
+    Moreover, when fixing function parameters in the declaration of the locale, their types will be inferred independently of
     the definitions later done in the locale context. In order to get the correct types, one has to add explicit type constraints.
     These tend to become rather lengthy, especially for iterator states.
     The approach taken in this framework -- passing the required functions as explicit parameters to a generic algorithm --
     usually needs less type constraints, as type inference usually does most of the job, in particular it infers the correct types of iterator states.
     *}
 
-  subsubsection {* Explicit Invariants vs Typedef *}
+  subsection {* Explicit Invariants vs Typedef *}
   text {*
-    The interfaces of this framework use explicit invariants. A more elegant alterative would be to use
-    typedefs to make the invariants implicit, e.g. one could define the type of all well-formed RB-trees.
-    However, this approach is not supported by the code generator (as of Isabelle2009), hence we had to chose
-    the explicit invariant approach.
+    The interfaces of this framework use explicit invariants.
+    This provides a more general specification which allows some operations to be sometimes implemented more efficiently, cf. @{term "lsi_ins_dj"} in @{theory ListSetImpl_Invar}.
+    
+    Most implementations, however, hide the invariant in a typedef and setup the code generator appropriately.
+    In that case, the invariant is just @{term "\<lambda>_. True"}, which still shows up in some premises and conclusions due to uniformity reasons.
     *}
-
 
 end

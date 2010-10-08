@@ -2,9 +2,9 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* Fifo Queue by Pair of Lists *}
+header {* \isaheader{Fifo Queue by Pair of Lists} *}
 theory Fifo
-imports Main
+imports ListGA
 begin
 text_raw {*\label{thy:Fifo}*}
 
@@ -17,6 +17,8 @@ text {*
   If list reversal is implemented efficiently (what is the case in Isabelle/HOL, 
   cf @{thm [source] List.rev_foldl_cons})
   the amortized time per buffer operation is constant.
+
+  Moreover, this fifo implementation also supports efficient push and pop operations.
 *}
 
 subsection {* Definitions *}
@@ -27,66 +29,80 @@ definition fifo_empty :: "'a fifo" where "fifo_empty == ([],[])"
   -- "True, iff the fifo is empty"
 definition fifo_isEmpty :: "'a fifo \<Rightarrow> bool" where "fifo_isEmpty F == F=([],[])"
   -- "Add an element to the fifo"
-definition fifo_put :: "'a \<Rightarrow> 'a fifo \<Rightarrow> 'a fifo" 
-  where "fifo_put a F == (a#fst F, snd F)"
+definition fifo_enqueue :: "'a \<Rightarrow> 'a fifo \<Rightarrow> 'a fifo" 
+  where "fifo_enqueue a F == (a#fst F, snd F)"
   -- "Get an element from the fifo"
-definition fifo_get :: "'a fifo \<Rightarrow> ('a \<times> 'a fifo)" where 
-  "fifo_get F ==
+definition fifo_dequeue :: "'a fifo \<Rightarrow> ('a \<times> 'a fifo)" where 
+  "fifo_dequeue F ==
     case snd F of
       (a#l) \<Rightarrow> (a, (fst F, l)) |
       [] \<Rightarrow> let rp=rev (fst F) in
         (hd rp, ([], tl rp))
 "
 
+  -- "Stack view on fifo: Pop"
+abbreviation "fifo_pop == fifo_dequeue"
+  -- "Stack view on fifo: Push"
+definition fifo_push :: "'a \<Rightarrow> 'a fifo \<Rightarrow> 'a fifo"
+  where "fifo_push x F == case F of (e,d) \<Rightarrow> (e,x#d)"
+
   -- "Abstraction of the fifo to a list. The next element to be got is at 
       the head of the list, and new elements are appended at the end of the list"
 definition fifo_\<alpha> :: "'a fifo \<Rightarrow> 'a list" where "fifo_\<alpha> F == snd F @ rev (fst F)"
 
+  -- "This fifo implementation has no invariants, any pair of lists is a valid fifo"
+definition [simp, intro!]: "fifo_invar x = True"
+
 subsection "Correctness"
-lemma fifo_empty_correct: "fifo_\<alpha> fifo_empty = []" 
+
+lemma fifo_empty_impl: "list_empty fifo_\<alpha> fifo_invar fifo_empty"
+  apply (unfold_locales)
   by (auto simp add: fifo_\<alpha>_def fifo_empty_def)
 
-lemma fifo_isEmpty_correct: "fifo_isEmpty F \<longleftrightarrow> fifo_\<alpha> F = []"
-  by (cases F) (auto simp add: fifo_isEmpty_def fifo_\<alpha>_def)
+lemma fifo_isEmpty_impl: "list_isEmpty fifo_\<alpha> fifo_invar fifo_isEmpty"
+  apply (unfold_locales)
+  by (case_tac s) (auto simp add: fifo_isEmpty_def fifo_\<alpha>_def)
 
-lemma fifo_put_correct: "fifo_\<alpha> (fifo_put a F) = fifo_\<alpha> F @ [a]"
-  by (auto simp add: fifo_put_def fifo_\<alpha>_def)
+lemma fifo_enqueue_impl: "list_enqueue fifo_\<alpha> fifo_invar fifo_enqueue"
+  apply (unfold_locales)
+  by (auto simp add: fifo_enqueue_def fifo_\<alpha>_def)
 
-lemma fifo_get_correct: 
-  "fifo_\<alpha> F \<noteq> [] \<Longrightarrow> fst (fifo_get F) = hd (fifo_\<alpha> F)"
-  "fifo_\<alpha> F \<noteq> [] \<Longrightarrow> fifo_\<alpha> (snd (fifo_get F)) = tl (fifo_\<alpha> F)"
-  apply (cases F)
+lemma fifo_dequeue_impl: "list_dequeue fifo_\<alpha> fifo_invar fifo_dequeue"
+  apply (unfold_locales)
+  apply (case_tac s)
+  apply (case_tac b)
+  apply (auto simp add: fifo_dequeue_def fifo_\<alpha>_def Let_def) [2]
+  apply (case_tac s)
   apply (case_tac "b")
-  apply (auto simp add: fifo_get_def fifo_\<alpha>_def Let_def) [2]
-  apply (cases F)
-  apply (case_tac "b")
-  apply (auto simp add: fifo_get_def fifo_\<alpha>_def Let_def)
+  apply (auto simp add: fifo_dequeue_def fifo_\<alpha>_def Let_def)
   done
+  
+interpretation fifo: list_empty fifo_\<alpha> fifo_invar fifo_empty using fifo_empty_impl .
+interpretation fifo: list_isEmpty fifo_\<alpha> fifo_invar fifo_isEmpty using fifo_isEmpty_impl .
+interpretation fifo: list_enqueue fifo_\<alpha> fifo_invar fifo_enqueue using fifo_enqueue_impl .
+interpretation fifo: list_dequeue fifo_\<alpha> fifo_invar fifo_dequeue using fifo_dequeue_impl .
 
-lemmas fifo_correct_basic = 
-  fifo_empty_correct fifo_isEmpty_correct fifo_put_correct fifo_get_correct
+lemma fifo_pop_impl: "list_pop fifo_\<alpha> fifo_invar fifo_pop"
+  by unfold_locales
 
-text {* Do not use the next definitions for generating (efficient) code. 
-        They are for simpler reasoning about @{const fifo_get}. *}
-  -- "The next element to be got from the fifo"
-definition "fifo_hd F == hd (fifo_\<alpha> F)"
-  -- "The fifo where the first element is removed"
-definition "fifo_tl F = snd (fifo_get F)"
+lemma fifo_push_impl: "list_push fifo_\<alpha> fifo_invar fifo_push"
+  apply unfold_locales
+  by (auto simp add: fifo_push_def fifo_\<alpha>_def)
 
-lemma fifo_get_split: "fifo_get F = (fifo_hd F, fifo_tl F)"
-  apply (unfold fifo_hd_def fifo_tl_def fifo_get_def fifo_\<alpha>_def)
-  apply (auto split: list.split simp add: Let_def)
-  done
+interpretation fifo: list_pop fifo_\<alpha> fifo_invar fifo_pop using fifo_pop_impl .
+interpretation fifo: list_push fifo_\<alpha> fifo_invar fifo_push using fifo_push_impl .
 
-lemma fifo_tl_correct: "fifo_\<alpha> F \<noteq> [] \<Longrightarrow> fifo_\<alpha> (fifo_tl F) = tl (fifo_\<alpha> F)"
-  by (simp add: fifo_tl_def fifo_get_correct)
-
-lemmas fifo_hd_correct = fifo_hd_def
-lemmas fifo_get_split_correct = fifo_get_split fifo_hd_correct fifo_tl_correct
+lemmas fifo_correct = 
+  fifo.empty_correct(1) 
+  fifo.isEmpty_correct[simplified] 
+  fifo.enqueue_correct(1)[simplified]
+  fifo.dequeue_correct(1,2)[simplified]
+  fifo.push_correct(1)[simplified]
+  fifo.pop_correct(1,2)[simplified]
 
 subsection "Code Generation"
 export_code
-  fifo_empty fifo_isEmpty fifo_put fifo_get 
+  fifo_empty fifo_isEmpty fifo_enqueue fifo_dequeue fifo_push fifo_pop
   in SML 
   module_name Fifo
   file - (*"Fifo.ML"*)

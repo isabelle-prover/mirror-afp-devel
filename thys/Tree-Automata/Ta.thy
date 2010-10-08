@@ -1680,7 +1680,7 @@ begin
     -- "Obtain injective mapping from the finite set of states to the 
         natural numbers"
     from finite_imp_inj_to_nat_seg[OF finite_states] obtain f :: "'Q \<Rightarrow> nat" 
-      where INJMAP: "inj_on f (ta_rstates TA)" .
+      where INJMAP: "inj_on f (ta_rstates TA)" by blast
     -- "Remap automaton. The language remains the same."
     from remap_lang[OF INJMAP] have LE: "ta_lang (ta_remap f TA) = ta_lang TA" .
     moreover have "ranked_tree_automaton (ta_remap f TA) A" ..
@@ -1736,7 +1736,7 @@ proof -
       natural numbers"
   from finite_imp_inj_to_nat_seg[OF tac.finite_states] 
   obtain f :: "nat set option \<Rightarrow> nat" where
-    INJMAP: "inj_on f (ta_rstates TAC)" .
+    INJMAP: "inj_on f (ta_rstates TAC)" by blast
   -- "Remap automaton. The language remains the same."
   from tac.remap_lang[OF INJMAP] have LE: "ta_lang (ta_remap f TAC) = L" 
     by simp

@@ -2,10 +2,9 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "DFS Implementation by Hashset"
-theory Exploration_Example
-imports Exploration 
-        "SetStdImpl"
+header {* \isaheader{DFS Implementation by Hashset} *}
+theory Exploration_DFS
+imports "../Collections" Exploration 
 begin
 text_raw {*\label{thy:Exploration_Example}*}
 
@@ -52,15 +51,15 @@ definition hs_dfs_initial :: "'q::hashable hs \<Rightarrow> 'q hs_dfs_state"
 definition hs_dfs_\<alpha> :: "'q::hashable hs_dfs_state \<Rightarrow> 'q dfs_state"
   where "hs_dfs_\<alpha> S == let (Q,W)=S in (hs_\<alpha> Q,W)"
 
--- {* Additional invariant on concrete level: The hashset invariant must hold *}
+(*-- {* Additional invariant on concrete level: The hashset invariant must hold *}
 definition hs_dfs_invar_add :: "'q::hashable hs_dfs_state set" 
-  where "hs_dfs_invar_add == { (Q,W). hs_invar Q }"
+  where "hs_dfs_invar_add == { (Q,W). hs_invar Q }"*)
 
 -- {* Combined concrete and abstract level invariant *}
 definition hs_dfs_invar 
   :: "'q::hashable hs \<Rightarrow> ('q \<Rightarrow> 'q ls) \<Rightarrow> 'q hs_dfs_state set"
   where "hs_dfs_invar \<Sigma>i post ==
-    hs_dfs_invar_add \<inter> { s. (hs_dfs_\<alpha> s) \<in> dfs_invar (hs_\<alpha> \<Sigma>i) (hs_R post) }"
+    (*hs_dfs_invar_add \<inter>*) { s. (hs_dfs_\<alpha> s) \<in> dfs_invar (hs_\<alpha> \<Sigma>i) (hs_R post) }"
 
 -- "The deterministic while-algorithm"
 definition "hs_dfs_dwa \<Sigma>i post == \<lparr>
@@ -83,12 +82,12 @@ subsection "Refinement"
 text {* We first show that a concrete step implements its abstract specification, and preserves the
   additional concrete invariant *}
 lemma hs_dfs_step_correct:
-  assumes [simp]: "hs_invar Q"
-                  "!!s. ls_invar (post s)"
+  (*assumes [simp]: "hs_invar Q"
+                  "!!s. ls_invar (post s)"*)
   assumes ne: "hs_dfs_cond (Q,W)"
   shows "(hs_dfs_\<alpha> (Q,W),hs_dfs_\<alpha> (hs_dfs_step post (Q,W)))
          \<in>dfs_step (hs_R post)" (is ?T1)
-        "(hs_dfs_step post (Q,W)) \<in> hs_dfs_invar_add" (is ?T2)
+        (*"(hs_dfs_step post (Q,W)) \<in> hs_dfs_invar_add" (is ?T2)*)
 proof -
 
   from ne obtain \<sigma> Wtl where 
@@ -118,16 +117,16 @@ proof -
     apply (cases "hs_dfs_step post (Q, W)")
     apply (auto simp add: hs_R_def hs_dfs_\<alpha>_def intro!: dfs_step.intros)
     done
-  from G show ?T2
+  (*from G show ?T2
     apply (cases "hs_dfs_step post (Q, W)")
     apply (auto simp add: hs_dfs_invar_add_def)
-    done
+    done*)
 qed
 
 -- "Prove refinement"
 theorem hs_dfs_pref_dfs: 
-  assumes [simp]: "hs_invar \<Sigma>i"
-  assumes [simp]: "!!q. ls_invar (post q)"
+  (*assumes [simp]: "hs_invar \<Sigma>i"
+  assumes [simp]: "!!q. ls_invar (post q)"*)
   shows "wa_precise_refine 
     (det_wa_wa (hs_dfs_dwa \<Sigma>i post)) 
     (dfs_algo (hs_\<alpha> \<Sigma>i) (hs_R post)) 
@@ -136,7 +135,7 @@ theorem hs_dfs_pref_dfs:
   apply (auto simp add: det_wa_wa_def hs_dfs_dwa_def hs_dfs_\<alpha>_def 
                         hs_dfs_cond_def dfs_algo_def dfs_cond_def) [1]
   apply (auto simp add: det_wa_wa_def hs_dfs_dwa_def dfs_algo_def 
-                        hs_dfs_invar_def hs_dfs_invar_add_def 
+                        hs_dfs_invar_def (*hs_dfs_invar_add_def *)
               intro!: hs_dfs_step_correct(1)) [1]
   apply (auto simp add: det_wa_wa_def hs_dfs_dwa_def hs_dfs_\<alpha>_def 
                         hs_dfs_cond_def dfs_algo_def dfs_cond_def
@@ -148,8 +147,8 @@ theorem hs_dfs_pref_dfs:
 
     -- "Show that concrete algorithm is a while-algo"
 theorem hs_dfs_while_algo: 
-  assumes INV [simp]: "hs_invar \<Sigma>i"
-                      "!!q. ls_invar (post q)"
+  (*assumes INV [simp]: "hs_invar \<Sigma>i"
+                      "!!q. ls_invar (post q)"*)
   assumes finite[simp]: "finite ((hs_R post)\<^sup>* `` hs_\<alpha> \<Sigma>i)"
   shows "while_algo (det_wa_wa (hs_dfs_dwa \<Sigma>i post))"
 proof -
@@ -157,18 +156,21 @@ proof -
     "(det_wa_wa (hs_dfs_dwa \<Sigma>i post))" 
     "(dfs_algo (hs_\<alpha> \<Sigma>i) (hs_R post))" 
     "hs_dfs_\<alpha>" 
-    using hs_dfs_pref_dfs[OF INV] .
+    using hs_dfs_pref_dfs .
   show ?thesis
-    apply (rule ref.wa_intro)
+    apply (rule ref.wa_intro[where addi=UNIV])
     apply (simp add: dfs_while_algo)
     apply (simp add: det_wa_wa_def hs_dfs_dwa_def hs_dfs_invar_def dfs_algo_def)
 
     apply (auto simp add: det_wa_wa_def hs_dfs_dwa_def) [1]
+    apply simp
+    (*
     apply (rule hs_dfs_step_correct(2))
     apply (auto simp add: hs_dfs_invar_add_def) [3]
     
     apply (simp add: det_wa_wa_def hs_dfs_dwa_def hs_dfs_initial_def 
                      hs_dfs_invar_add_def)
+    *)
     done
 qed
     
@@ -177,41 +179,46 @@ theorems hs_dfs_det_while_algo = det_while_algo_intro[OF hs_dfs_while_algo]
 
   -- "Transferred correctness theorem"
 theorems hs_dfs_invar_final = 
-  wa_precise_refine.transfer_correctness[
-    OF hs_dfs_pref_dfs, 
-    OF _ _ dfs_invar_final]
+  wa_precise_refine.transfer_correctness[OF
+     hs_dfs_pref_dfs dfs_invar_final]
 
   -- "The executable implementation is correct"
 theorem hs_dfs_correct:
-  assumes INV [simp]: "hs_invar \<Sigma>i"
-                      "!!q. ls_invar (post q)"
+  (*assumes INV [simp]: "hs_invar \<Sigma>i"
+                      "!!q. ls_invar (post q)"*)
   assumes finite[simp]: "finite ((hs_R post)\<^sup>* `` hs_\<alpha> \<Sigma>i)"
   shows "hs_\<alpha> (hs_dfs \<Sigma>i post) = (hs_R post)\<^sup>*``hs_\<alpha> \<Sigma>i" (is ?T1)
-        "hs_invar (hs_dfs \<Sigma>i post)" (is ?T2)
+        (*"hs_invar (hs_dfs \<Sigma>i post)" (is ?T2)*)
 proof -
-  from hs_dfs_det_while_algo[OF INV finite] interpret 
+  from hs_dfs_det_while_algo[OF finite] interpret 
     dwa: det_while_algo "(hs_dfs_dwa \<Sigma>i post)" .
 
   have 
     LC: "(while hs_dfs_cond (hs_dfs_step post) (hs_dfs_initial \<Sigma>i)) = dwa.loop"
     by (unfold dwa.loop_def) (simp add: hs_dfs_dwa_def)
 
-  have "?T1 \<and> ?T2"
+  have "?T1 (*\<and> ?T2*)"
     apply (unfold hs_dfs_def)
     apply (simp only: LC)
     apply (rule dwa.while_proof)
     apply (case_tac s)
-    apply (rule conjI)
+    using hs_dfs_invar_final[of \<Sigma>i "post"] (*[of id, simplified]*)
+    apply (auto simp add: det_wa_wa_def hs_dfs_dwa_def 
+                          dfs_\<alpha>_def hs_dfs_\<alpha>_def) [1]
+
+    (*apply (rule conjI)
     using hs_dfs_invar_final[OF INV, of id, simplified]
     apply (auto simp add: det_wa_wa_def hs_dfs_dwa_def 
                           dfs_\<alpha>_def hs_dfs_\<alpha>_def) [1]
     apply (simp add: hs_dfs_invar_def hs_dfs_invar_add_def hs_dfs_dwa_def)
+      *)
     done
-  thus ?T1 ?T2 by auto
+  thus ?T1 (*?T2*) by auto
 qed
 
 subsection "Code Generation"
-
-export_code hs_dfs checking SML OCaml? Haskell?
+export_code hs_dfs in SML module_name DFS file -
+export_code hs_dfs in OCaml module_name DFS file -
+export_code hs_dfs in Haskell module_name DFS file -
 
 end

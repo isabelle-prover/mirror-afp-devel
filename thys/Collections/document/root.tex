@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[11pt,a4paper]{book}
 \usepackage{isabelle,isabellesym}
 
 % further packages required for unusual symbols (see also
@@ -50,10 +50,22 @@
 
 \renewcommand{\isamarkupcmt}[1]{\hangindent5ex{\isastylecmt --- #1}}
 
+\newcommand{\isaheader}[1]{\section{#1}}
+\renewcommand{\isamarkupheader}[1]{#1}
+
+\makeatletter
+\newenvironment{abstract}{%
+  \small
+  \begin{center}%
+    {\bfseries \abstractname\vspace{-.5em}\vspace{\z@}}%
+  \end{center}%
+  \quotation}{\endquotation}
+\makeatother
+
 \begin{document}
 
 \title{Isabelle Collections Framework}
-\author{By Peter Lammich}
+\author{By Peter Lammich and Andreas Lochbihler}
 \maketitle
 
 \begin{abstract}

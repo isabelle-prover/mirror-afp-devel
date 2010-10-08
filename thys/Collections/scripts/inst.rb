@@ -86,7 +86,7 @@ class Arg
 
   def parse string
     # (x:set,y:map,z)name
-    if not (/^\(([A-Za-z,:]+)\)([A-Za-z_]+)$/ =~ string) then 
+    if not (/^\(([A-Za-z,':]+)\)([A-Za-z_']+)$/ =~ string) then 
       raise "Syntax error in pattern: "+string.to_s
     end
   
@@ -147,7 +147,7 @@ class Pattern
     @vdom={}
     @args=[]
 
-    if not (/^([A-Za-z_]+)@([A-Za-z_]+|!):? *(.*)\\<Rightarrow>(.*)$/ =~ string) then raise("Syntax error in: "+string) end
+    if not (/^([A-Za-z_'.]+)@([A-Za-z_']+|!):? *(.*)\\<Rightarrow>(.*)$/ =~ string) then raise("Syntax error in: "+string) end
 
     @name,@fname,s_args,s_target=[$1,$2,$3,$4]
     @direct_correctness = (@fname == "!")

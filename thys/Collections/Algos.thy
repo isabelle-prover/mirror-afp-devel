@@ -2,9 +2,9 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "More Generic Algorithms"
+header {* \isaheader{More Generic Algorithms} *}
 theory Algos
-imports Main "common/Misc" SetSpec MapSpec
+imports Main "common/Misc" SetSpec MapSpec ListSpec
 begin
 text_raw {*\label{thy:Algos}*}
      
@@ -92,5 +92,63 @@ lemma map_to_nat_correct:
       done
     thus ?T1 ?T2 ?T3 ?T4 by auto
   qed
+
+
+
+  subsection "Set to List(-interface)"
+  subsubsection "Converting Set to List by Enqueue"
+  definition it_set_to_List_enq :: "('s,'a,'f) iterator \<Rightarrow> 'f \<Rightarrow> ('a\<Rightarrow>'f\<Rightarrow>'f) \<Rightarrow> 's \<Rightarrow> 'f" 
+    where "it_set_to_List_enq iterate emp enq S == iterate (\<lambda>x F. enq x F) S emp"
+
+  lemma it_set_to_List_enq_correct: 
+    assumes "set_iterate \<alpha> invar iterate" 
+    assumes "list_empty \<alpha>l invarl emp"
+    assumes "list_enqueue \<alpha>l invarl enq"
+    assumes [simp]: "invar S"
+    shows 
+      "set (\<alpha>l (it_set_to_List_enq iterate emp enq S)) = \<alpha> S" (is ?T1)
+      "invarl (it_set_to_List_enq iterate emp enq S)" (is ?T2)
+      "distinct (\<alpha>l (it_set_to_List_enq iterate emp enq S))" (is ?T3)
+  proof -
+    interpret set_iterate \<alpha> invar iterate by fact
+    interpret list_empty \<alpha>l invarl emp by fact
+    interpret list_enqueue \<alpha>l invarl enq by fact
+    have "?T1 \<and> ?T2 \<and> ?T3"
+      apply (unfold it_set_to_List_enq_def)
+      apply (rule_tac 
+        I="\<lambda>it F. set (\<alpha>l F) = \<alpha> S - it \<and> invarl F \<and> distinct (\<alpha>l F)" 
+        in iterate_rule_P)
+      apply (auto simp add: enqueue_correct empty_correct)
+      done
+    thus ?T1 ?T2 ?T3 by auto
+  qed
+
+  subsubsection "Converting Set to List by Push"
+  definition it_set_to_List_push :: "('s,'a,'f) iterator \<Rightarrow> 'f \<Rightarrow> ('a\<Rightarrow>'f\<Rightarrow>'f) \<Rightarrow> 's \<Rightarrow> 'f" 
+    where "it_set_to_List_push iterate emp push S == iterate (\<lambda>x F. push x F) S emp"
+
+  lemma it_set_to_List_push_correct: 
+    assumes "set_iterate \<alpha> invar iterate" 
+    assumes "list_empty \<alpha>l invarl emp"
+    assumes "list_push \<alpha>l invarl push"
+    assumes [simp]: "invar S"
+    shows 
+      "set (\<alpha>l (it_set_to_List_push iterate emp push S)) = \<alpha> S" (is ?T1)
+      "invarl (it_set_to_List_push iterate emp push S)" (is ?T2)
+      "distinct (\<alpha>l (it_set_to_List_push iterate emp push S))" (is ?T3)
+  proof -
+    interpret set_iterate \<alpha> invar iterate by fact
+    interpret list_empty \<alpha>l invarl emp by fact
+    interpret list_push \<alpha>l invarl push by fact
+    have "?T1 \<and> ?T2 \<and> ?T3"
+      apply (unfold it_set_to_List_push_def)
+      apply (rule_tac 
+        I="\<lambda>it F. set (\<alpha>l F) = \<alpha> S - it \<and> invarl F \<and> distinct (\<alpha>l F)" 
+        in iterate_rule_P)
+      apply (auto simp add: push_correct empty_correct)
+      done
+    thus ?T1 ?T2 ?T3 by auto
+  qed
+
 
 end

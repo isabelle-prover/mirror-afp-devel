@@ -2,51 +2,46 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Set Implementation by List"
+header {* \isaheader{Set Implementation by List} *}
 theory ListSetImpl
-imports SetSpec SetGA "common/Misc"
+imports SetSpec SetGA "common/Dlist_add"
 begin
 text_raw {*\label{thy:ListSetImpl}*}
 
 text {*
-  In this theory, sets are implemented by lists. Abbreviations: ls,l
+  In this theory, sets are implemented by distinct lists. Abbreviations: ls,l
 *}
 
-
 types
-  'a ls = "'a list"
+  'a ls = "'a dlist"
 
 subsection "Definitions"
 
-definition ls_\<alpha> :: "'a ls \<Rightarrow> 'a set" where "ls_\<alpha> == set"
-definition ls_invar :: "'a ls \<Rightarrow> bool" where "ls_invar == distinct"
-definition ls_empty :: "'a ls" where "ls_empty == []"
-definition ls_memb :: "'a \<Rightarrow> 'a ls \<Rightarrow> bool" where "ls_memb == (\<lambda> x xs. List.member xs x)"
-definition ls_ins :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_ins == List.insert"
-definition ls_ins_dj :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_ins_dj == Cons"
-
-(* Tail recursive version *)
-fun ls_delete_aux where
-  "ls_delete_aux x res [] = res" |
-  "ls_delete_aux x res (a#l) = (if x=a then revg res l else ls_delete_aux x (a#res) l)"
-
-definition ls_delete :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_delete x l == ls_delete_aux x [] l"
-
-fun ls_iteratei :: "('a ls,'a,'\<sigma>) iteratori" where
-  "ls_iteratei c f [] \<sigma> = \<sigma>" |
-  "ls_iteratei c f (x#l) \<sigma> = (if c \<sigma> then ls_iteratei c f l (f x \<sigma>) else \<sigma>)"
-
+definition ls_\<alpha> :: "'a ls \<Rightarrow> 'a set" where "ls_\<alpha> == Dlist.member"
+abbreviation (input) ls_invar :: "'a ls \<Rightarrow> bool" where "ls_invar == \<lambda>_. True"
+definition ls_empty :: "'a ls" where "ls_empty == Dlist.empty"
+definition ls_memb :: "'a \<Rightarrow> 'a ls \<Rightarrow> bool" where "ls_memb x l == Dlist.member l x"
+definition ls_ins :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_ins == Dlist.insert"
+text {* 
+  Since we use the abstract type @{typ "'a dlist"} for distinct lists,
+  to preserve the invariant of distinct lists, we cannot just use Cons for disjoint insert,
+  but must resort to ordinary insert.  The same applies to @{text ls_union_dj} below.
+  @{text "list_to_lm_dj"} below.
+*}
+definition ls_ins_dj :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_ins_dj == Dlist.insert"
+definition ls_delete :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_delete == remove'"
+definition ls_iteratei :: "('a ls,'a,'\<sigma>) iteratori" where "ls_iteratei == iteratei"
 definition ls_iterate :: "('a ls,'a,'\<sigma>) iterator" 
   where "ls_iterate == iti_iterate ls_iteratei"
 
-definition ls_isEmpty :: "'a ls \<Rightarrow> bool" where "ls_isEmpty s == s=[]"
+definition ls_isEmpty :: "'a ls \<Rightarrow> bool" where "ls_isEmpty == Dlist.null"
 
 definition ls_union :: "'a ls \<Rightarrow> 'a ls \<Rightarrow> 'a ls" 
   where "ls_union == it_union ls_iterate ls_ins"
 definition ls_inter :: "'a ls \<Rightarrow> 'a ls \<Rightarrow> 'a ls" 
   where "ls_inter == it_inter ls_iterate ls_memb ls_empty ls_ins_dj"
 definition ls_union_dj :: "'a ls \<Rightarrow> 'a ls \<Rightarrow> 'a ls" 
-  where "ls_union_dj s1 s2 == revg s1 s2" -- "Union of disjoint sets"
+  where "ls_union_dj == ls_union"
 
 definition ls_image_filter 
   where "ls_image_filter == it_image_filter ls_iterate ls_empty ls_ins"
@@ -58,24 +53,24 @@ definition "ls_image == iflt_image ls_image_filter"
 definition "ls_inj_image == iflt_inj_image ls_inj_image_filter"
 
 definition ls_ball :: "'a ls \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" 
-  where "ls_ball l P == list_all P l"
+  where "ls_ball == iti_ball ls_iteratei"
 definition ls_sel :: "'a ls \<Rightarrow> ('a \<Rightarrow> 'r option) \<Rightarrow> 'r option" 
   where "ls_sel == iti_sel ls_iteratei"
 
-definition ls_to_list :: "'a ls \<Rightarrow> 'a list" where "ls_to_list == id"
-definition list_to_ls :: "'a list \<Rightarrow> 'a ls" where "list_to_ls == remdups"
+definition ls_to_list :: "'a ls \<Rightarrow> 'a list" where "ls_to_list == list_of_dlist"
+definition list_to_ls :: "'a list \<Rightarrow> 'a ls" where "list_to_ls == Dlist"
 
 definition "ls_size == it_size ls_iterate"
 
 subsection "Correctness"
 lemmas ls_defs = 
   ls_\<alpha>_def
-  ls_invar_def
   ls_empty_def
   ls_memb_def
   ls_ins_def
   ls_ins_dj_def
   ls_delete_def
+  ls_iteratei_def
   ls_iterate_def
   ls_isEmpty_def
   ls_union_def
@@ -91,126 +86,41 @@ lemmas ls_defs =
   list_to_ls_def
   ls_size_def
 
+
 lemma ls_empty_impl: "set_empty ls_\<alpha> ls_invar ls_empty"
-  apply (unfold_locales)
-  apply (auto simp add: ls_defs)
-  done
+by(unfold_locales)(auto simp add: ls_defs member_empty)
 
 lemma ls_memb_impl: "set_memb ls_\<alpha> ls_invar ls_memb"
-  apply (unfold_locales)                                     
-  apply (auto simp add: ls_defs member_def)
-  done                                                       
+by(unfold_locales)(auto simp add: ls_defs mem_def)
 
 lemma ls_ins_impl: "set_ins ls_\<alpha> ls_invar ls_ins"
-  apply (unfold_locales)                                  
-  apply (auto simp add: ls_defs member_def)
-  done                                                    
+by(unfold_locales)(auto simp add: ls_defs mem_def)
 
 lemma ls_ins_dj_impl: "set_ins_dj ls_\<alpha> ls_invar ls_ins_dj"
-  apply (unfold_locales)                                           
-  apply (auto simp add: ls_defs)                                   
-  done                                                             
-
-lemma ls_delete_aux_impl:
-  "distinct (res@l) 
-      \<Longrightarrow> distinct (ls_delete_aux x res l) 
-          \<and> (set (ls_delete_aux x res l) = set res \<union> (set l - {x}))"
-      by (induct l arbitrary: res) (auto)
+by(unfold_locales)(auto simp add: ls_defs)
 
 lemma ls_delete_impl: "set_delete ls_\<alpha> ls_invar ls_delete"
-  by (unfold_locales)
-     (simp_all add: ls_defs ls_delete_aux_impl)
+by(unfold_locales)(auto simp add: ls_defs remove'_correct split: split_if_asm)
 
 lemma ls_\<alpha>_finite[simp, intro!]: "finite (ls_\<alpha> l)"
-  by (auto simp add: ls_defs)                                   
+by (auto simp add: ls_defs)
 
 lemma ls_is_finite_set: "finite_set ls_\<alpha> ls_invar"
-  apply (unfold_locales)                                           
-  apply (auto simp add: ls_defs)                                   
-  done                                                             
+by(unfold_locales)(auto simp add: ls_defs)
 
 lemma ls_iteratei_impl: "set_iteratei ls_\<alpha> ls_invar ls_iteratei"
-  apply (unfold_locales)
-  apply (simp add: ls_defs)
-proof -
-  case (goal1 S I \<sigma> c f)
-  {
-    fix it
-    assume 
-      "it\<supseteq>ls_\<alpha> S"
-      "I it \<sigma>"
-      "\<forall>\<sigma> x it'. c \<sigma> \<and> x\<in>it' \<and> it' \<subseteq> it \<and> I it' \<sigma> \<longrightarrow> I (it' - {x}) (f x \<sigma>)"
-    moreover note `ls_invar S` 
-    ultimately have "I (it-ls_\<alpha> S) (ls_iteratei c f S \<sigma>) 
-      \<or> (\<exists>it'\<subseteq>it. it'\<noteq>{} \<and> \<not>c (ls_iteratei c f S \<sigma>) \<and> I it' (ls_iteratei c f S \<sigma>))"
-    proof (induct S arbitrary: it \<sigma>)
-      case Nil thus ?case
-        by (auto simp add: ls_defs)
-    next
-      case (Cons x S)
-      show ?case proof (cases "c \<sigma>")
-        case False with Cons.prems show ?thesis
-          by auto
-      next
-        case True
-        from Cons.prems(3)[rule_format, of \<sigma> x it] True Cons.prems(1-2) 
-        have I': "I (it - {x}) (f x \<sigma>)" by (auto simp add: ls_defs)
-
-        from Cons.prems(1) Cons.prems(4) have PP: "ls_\<alpha> S \<subseteq> it - {x}" "ls_invar S"
-          by (auto simp add: ls_defs)
-
-        from Cons.prems(3) have 
-          IPRES': "\<forall>\<sigma> xa it'. 
-                     c \<sigma> 
-                     \<and> xa \<in> it' 
-                     \<and> it' \<subseteq> it - {x} 
-                     \<and> I it' \<sigma> 
-                    \<longrightarrow> I (it' - {xa}) (f xa \<sigma>)"
-          by auto
-
-        from Cons.hyps[OF PP(1) I' IPRES' PP(2)] 
-        have "I (it - {x} - ls_\<alpha> S) (ls_iteratei c f S (f x \<sigma>)) 
-          \<or> (\<exists>it'. it' \<subseteq> it - {x} \<and> it' \<noteq> {} \<and> \<not> c (ls_iteratei c f S (f x \<sigma>)) \<and> I it' (ls_iteratei c f S (f x \<sigma>)))"
-          (is "?C1 \<or> ?C2") .
-        moreover {
-          assume ?C1 hence ?thesis 
-            by (auto simp add: ls_defs True set_diff_diff_left)
-        } moreover {
-          assume ?C2 
-          then obtain it' where INT:
-            "it'\<subseteq>it-{x}" 
-            "it'\<noteq>{}" 
-            "\<not>c (ls_iteratei c f S (f x \<sigma>))" 
-            "I it' (ls_iteratei c f S (f x \<sigma>))"
-            by blast
-
-          hence ?thesis
-            apply (rule_tac disjI2)
-            apply (rule_tac x=it' in exI)
-            apply (auto simp add: True)
-            done
-        } ultimately show ?thesis by blast
-      qed
-    qed
-  } note R=this
-  from R[OF subset_refl] goal1 show ?case by auto
-qed
+by(unfold_locales)(unfold ls_defs, simp, rule iteratei_correct)
 
 lemmas ls_iterate_impl = set_iteratei.iti_iterate_correct[OF ls_iteratei_impl, folded ls_iterate_def]
 
 lemma ls_isEmpty_impl: "set_isEmpty ls_\<alpha> ls_invar ls_isEmpty"
-  apply (unfold_locales)                                              
-  apply (auto simp add: ls_defs)                                      
-  done                                                                
+by (unfold_locales) (auto simp add: ls_defs null_def member_def List.null_def member_set)
 
 lemmas ls_union_impl = it_union_correct[OF ls_iterate_impl ls_ins_impl, folded ls_union_def] 
 
 lemmas ls_inter_impl = it_inter_correct[OF ls_iterate_impl ls_memb_impl ls_empty_impl ls_ins_dj_impl, folded ls_inter_def]
 
-lemma ls_union_dj_impl: "set_union_dj ls_\<alpha> ls_invar ls_\<alpha> ls_invar ls_\<alpha> ls_invar ls_union_dj"
-  apply (unfold_locales)                                                 
-  apply (auto simp add: ls_defs)                                         
-  done                                                                   
+lemmas ls_union_dj_impl = set_union.union_dj_by_union[OF ls_union_impl, folded ls_union_dj_def]
 
 lemmas ls_image_filter_impl = it_image_filter_correct[OF ls_iterate_impl ls_empty_impl ls_ins_impl, folded ls_image_filter_def]
 lemmas ls_inj_image_filter_impl = it_inj_image_filter_correct[OF ls_iterate_impl ls_empty_impl ls_ins_dj_impl, folded ls_inj_image_filter_def]
@@ -218,22 +128,15 @@ lemmas ls_inj_image_filter_impl = it_inj_image_filter_correct[OF ls_iterate_impl
 lemmas ls_image_impl = iflt_image_correct[OF ls_image_filter_impl, folded ls_image_def]
 lemmas ls_inj_image_impl = iflt_inj_image_correct[OF ls_inj_image_filter_impl, folded ls_inj_image_def]
 
-lemma ls_ball_impl: "set_ball ls_\<alpha> ls_invar ls_ball"
-  apply (unfold_locales)                                     
-  apply (auto simp add: ls_defs list_all_iff)                             
-  done                                                       
+lemmas ls_ball_impl = iti_ball_correct[OF ls_iteratei_impl, folded ls_ball_def]
 
 lemmas ls_sel_impl = iti_sel_correct[OF ls_iteratei_impl, folded ls_sel_def]
 
 lemma ls_to_list_impl: "set_to_list ls_\<alpha> ls_invar ls_to_list"
-  apply (unfold_locales)
-  apply (auto simp add: ls_defs)
-  done
+by(unfold_locales)(auto simp add: ls_defs Dlist.member_def member_set)
 
 lemma list_to_ls_impl: "list_to_set ls_\<alpha> ls_invar list_to_ls"
-  apply (unfold_locales)
-  apply (auto simp add: ls_defs)
-  done
+by(unfold_locales)(auto simp add: ls_defs Dlist.member_def member_set)
 
 lemmas ls_size_impl = it_size_correct[OF ls_iterate_impl, folded ls_size_def]
 
@@ -262,7 +165,6 @@ interpretation ls: set_size ls_\<alpha> ls_invar ls_size using ls_size_impl .
 
 declare ls.finite[simp del, rule del]
 
-
 lemmas ls_correct =
   ls.empty_correct                                                                                                 
   ls.memb_correct                                                                                                  
@@ -283,14 +185,19 @@ lemmas ls_correct =
   ls.size_correct
 
 
+
+
 subsection "Code Generation"
+
+lemma list_of_dlist_list_to_ls [code abstract]:
+  "list_of_dlist (list_to_ls xs) = remdups xs"
+by(simp add: list_to_ls_def)
 
 export_code
   ls_empty
   ls_memb
   ls_ins
   ls_ins_dj
-  ls_delete_aux
   ls_delete
   ls_iteratei
   ls_iterate

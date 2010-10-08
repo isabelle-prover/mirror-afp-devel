@@ -4,11 +4,11 @@
 *)
 header "Standard Set Implementations"
 theory SetStdImpl
-imports ListSetImpl RBTSetImpl HashSet
+imports ListSetImpl ListSetImpl_Invar RBTSetImpl HashSet TrieSetImpl ArrayHashSet
 begin
 text_raw {*\label{thy:SetStdImpl}*}
 text {*
-  This theory summarizes standard set implementations, namely list-sets RB-tree-sets and hashsets.
+  This theory summarizes standard set implementations, namely list-sets RB-tree-sets, trie-sets and hashsets.
 *}
 
 end

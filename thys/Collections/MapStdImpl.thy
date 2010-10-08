@@ -4,10 +4,10 @@
 *)
 header "Standard Implementations of Maps"
 theory MapStdImpl
-imports ListMapImpl RBTMapImpl HashMap
+imports ListMapImpl ListMapImpl_Invar RBTMapImpl HashMap TrieMapImpl ArrayHashMap
 begin
 text_raw {*\label{thy:MapStdImpl}*}
 text {*
-  This theory summarizes various standard implementation of maps, namely list-maps, RB-tree-maps and hashmaps.
+  This theory summarizes various standard implementation of maps, namely list-maps, RB-tree-maps, trie-maps and hashmaps.
 *}
 end

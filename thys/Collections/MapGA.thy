@@ -2,9 +2,16 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Generic Algorithms for Maps"
+(*
+  Changes since submission on 2009-11-26:
+
+  2009-12-10: OrderedMap, algorithms for iterators, min, max, to_sorted_list
+
+*)
+
+header {* \chapter{Generic algorithms} \label{ch:GA} \isaheader{Generic Algorithms for Maps} *}
 theory MapGA
-imports MapSpec "common/Misc"
+imports MapSpec OrderedMap "common/Misc"
 begin
 text_raw {*\label{thy:MapGA}*}
 
@@ -91,7 +98,7 @@ qed
 
 subsection {*Emptiness check (by iteratei)*}
 definition iti_isEmpty 
-  :: "('m,'k,'v,_) map_iteratori \<Rightarrow> 'm \<Rightarrow> bool"
+  :: "('m,'k,'v,bool) map_iteratori \<Rightarrow> 'm \<Rightarrow> bool"
   where "iti_isEmpty iti m == iti id (\<lambda>k v res. False) m True"
 
 lemma iti_isEmpty_correct:
@@ -107,7 +114,8 @@ proof -
     done
 qed
 
-subsection {*iterate (by iteratei)*}
+subsection {* Iterators *}
+subsubsection {*iterate (by iteratei)*}
 definition iti_iterate
   :: "('m,'k,'v,'\<sigma>) map_iteratori \<Rightarrow> ('m,'k,'v,'\<sigma>) map_iterator"
   where "iti_iterate iti == iti (\<lambda>x. True)"
@@ -121,7 +129,7 @@ lemma (in map_iteratei) iti_iterate_correct:
   done
 
 
-subsection {*iteratei (by iterate)*}
+subsubsection {*iteratei (by iterate)*}
   -- "Interruptible iterator by iterator (Inefficient)"
 definition it_iteratei 
   :: "('m,'u,'v,bool \<times> '\<sigma>) map_iterator \<Rightarrow> ('m,'u,'v,'\<sigma>) map_iteratori" 
@@ -163,6 +171,86 @@ proof -
     done
 qed
 
+subsubsection {* Iteratei (by iterateoi) *}
+lemma iti_by_itoi: 
+  assumes "map_iterateoi \<alpha> invar it"
+  shows "map_iteratei \<alpha> invar it"
+proof -
+  interpret map_iterateoi \<alpha> invar it by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (rule_tac I=I in iterateoi_rule_P)
+    apply blast+
+    done
+qed
+
+subsubsection {* Iterate (by iterateo) *}
+lemma it_by_ito: 
+  assumes "map_iterateo \<alpha> invar it"
+  shows "map_iterate \<alpha> invar it"
+proof -
+  interpret map_iterateo \<alpha> invar it by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (rule_tac I=I in iterateo_rule_P)
+    apply blast+
+    done
+qed
+
+subsubsection {* Iteratei (by reverse\_iterateoi) *}
+lemma iti_by_ritoi: 
+  assumes "map_reverse_iterateoi \<alpha> invar it"
+  shows "map_iteratei \<alpha> invar it"
+proof -
+  interpret map_reverse_iterateoi \<alpha> invar it by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (rule_tac I=I in reverse_iterateoi_rule_P)
+    apply blast+
+    done
+qed
+
+subsubsection {* Iterate (by reverse\_iterateo) *}
+lemma it_by_rito: 
+  assumes "map_reverse_iterateo \<alpha> invar it"
+  shows "map_iterate \<alpha> invar it"
+proof -
+  interpret map_reverse_iterateo \<alpha> invar it by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (rule_tac I=I in reverse_iterateo_rule_P)
+    apply blast+
+    done
+qed
+
+subsubsection {* iterateo by iterateoi *}
+definition itoi_iterateo
+  :: "('m,'u,'v,'\<sigma>) map_iteratori \<Rightarrow> ('m,'u,'v,'\<sigma>) map_iterator"
+  where
+  "itoi_iterateo it == it (\<lambda>x. True)"
+
+lemma (in map_iterateoi) itoi_iterateo_correct:
+  shows "map_iterateo \<alpha> invar (itoi_iterateo iterateoi)"
+  apply (unfold_locales)
+  apply (unfold itoi_iterateo_def)
+  apply (rule_tac I=I in iterateoi_rule_P)
+  apply auto
+  done
+
+subsubsection {* reverse\_iterateo by reverse\_iterateoi *}
+definition itoi_reverse_iterateo
+  :: "('m,'u,'v,'\<sigma>) map_iteratori \<Rightarrow> ('m,'u,'v,'\<sigma>) map_iterator"
+  where
+  "itoi_reverse_iterateo it == it (\<lambda>x. True)"
+
+lemma (in map_reverse_iterateoi) itoi_reverse_iterateo_correct:
+  shows "map_reverse_iterateo \<alpha> invar (itoi_reverse_iterateo reverse_iterateoi)"
+  apply (unfold_locales)
+  apply (unfold itoi_reverse_iterateo_def)
+  apply (rule_tac I=I in reverse_iterateoi_rule_P)
+  apply auto
+  done
+
 subsection {*Selection (by iteratei)*}
 definition iti_sel ::
   "('s,'k,'v,_) map_iteratori \<Rightarrow> 's \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> 'r option) \<rightharpoonup> 'r"
@@ -200,6 +288,35 @@ proof -
     thus ?case 
       apply (elim exE)
       apply (rule_tac goal1(4))
+      apply auto
+      done
+  qed
+qed
+
+subsection {* Map-free selection by selection *}
+definition sel_sel'
+  :: "('s \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> _ option) \<Rightarrow> _ option) \<Rightarrow> 's \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> ('k\<times>'v) option"
+where "sel_sel' sel s P = sel s (\<lambda>k v. if P k v then Some (k,v) else None)"
+
+lemma sel_sel'_correct: 
+  assumes "map_sel \<alpha> invar sel"
+  shows "map_sel' \<alpha> invar (sel_sel' sel)"
+proof -
+  interpret map_sel \<alpha> invar sel by fact
+
+  show ?thesis
+  proof
+    case goal1 show ?case
+      apply (rule selE[OF goal1(1,2), where f="(\<lambda>k v. if P k v then Some (k,v) else None)"])
+      apply (simp add: goal1)
+      apply (simp split: split_if_asm)
+      apply (fold sel_sel'_def)
+      apply (blast intro: goal1(4))
+      done
+  next
+    case goal2 thus ?case
+      apply (auto simp add: sel_sel'_def)
+      apply (drule selI[where f="(\<lambda>k v. if P k v then Some (k,v) else None)"])
       apply auto
       done
   qed
@@ -301,6 +418,144 @@ proof -
 
   show ?T1 ?T2
     by (simp_all add: update_correct empty_correct map_sng_def)
+qed
+
+subsection {* Min (by iterateoi) *}
+definition itoi_min :: "('s,'k::linorder,'v,_) map_iteratori \<Rightarrow> 's \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> ('k\<times>'v) option"
+  where "itoi_min it m P ==
+    it (\<lambda>x. x=None) (\<lambda>k v res. if P k v then Some (k,v) else None) m None
+  "
+
+(* TODO: Move to def of rel_of *)
+lemma rel_of_empty[simp]: "rel_of Map.empty P = {}" 
+  by (auto simp add: rel_of_def)
+
+
+lemma itoi_min_correct:
+  assumes "map_iterateoi \<alpha> invar it"
+  shows "map_min \<alpha> invar (itoi_min it)"
+proof -
+  interpret map_iterateoi \<alpha> invar it by fact
+  
+  show ?thesis 
+    apply (unfold_locales)
+    apply (unfold itoi_min_def)
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> rel_of (\<alpha> s |`(-it)) P = {} | 
+        Some (k,v) \<Rightarrow> (k,v)\<in>rel_of (\<alpha> s) P 
+                      \<and> (\<forall>(k',v')\<in>rel_of (\<alpha> s) P. k \<le> k')"
+      in iterateoi_rule_P)
+    apply (auto 
+      simp add: rel_of_def restrict_map_def 
+      split: option.split_asm) [5]
+
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> rel_of (\<alpha> s |`(-it)) P = {} | 
+        Some (k,v) \<Rightarrow> (k,v)\<in>rel_of (\<alpha> s) P 
+                      \<and> (\<forall>(k',v')\<in>rel_of (\<alpha> s) P. k \<le> k')"
+      in iterateoi_rule_P)
+    apply (auto 
+      simp add: rel_of_def restrict_map_def 
+      split: option.split_asm) [5]
+
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> rel_of (\<alpha> s |`(-it)) P = {} | 
+        Some (k,v) \<Rightarrow> (k,v)\<in>rel_of (\<alpha> s) P 
+                      \<and> (\<forall>(k',v')\<in>rel_of (\<alpha> s) P. k \<le> k')"
+      in iterateoi_rule_P)
+    apply (auto 
+      simp add: rel_of_def restrict_map_def 
+      split: option.split_asm) [5]
+    done
+qed
+
+
+subsection {* Max (by reverse\_iterateoi) *}
+definition ritoi_max :: "('s,'k::linorder,'v,_) map_iteratori \<Rightarrow> 's \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> ('k\<times>'v) option"
+  where "ritoi_max it m P ==
+    it (\<lambda>x. x=None) (\<lambda>k v res. if P k v then Some (k,v) else None) m None
+  "
+
+lemma ritoi_max_correct:
+  assumes "map_reverse_iterateoi \<alpha> invar it"
+  shows "map_max \<alpha> invar (ritoi_max it)"
+proof -
+  interpret map_reverse_iterateoi \<alpha> invar it by fact
+  
+  show ?thesis 
+    apply (unfold_locales)
+    apply (unfold ritoi_max_def)
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> rel_of (\<alpha> s |`(-it)) P = {} | 
+        Some (k,v) \<Rightarrow> (k,v)\<in>rel_of (\<alpha> s) P 
+                      \<and> (\<forall>(k',v')\<in>rel_of (\<alpha> s) P. k \<ge> k')"
+      in reverse_iterateoi_rule_P)
+    apply (auto 
+      simp add: rel_of_def restrict_map_def 
+      split: option.split_asm) [5]
+
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> rel_of (\<alpha> s |`(-it)) P = {} | 
+        Some (k,v) \<Rightarrow> (k,v)\<in>rel_of (\<alpha> s) P 
+                      \<and> (\<forall>(k',v')\<in>rel_of (\<alpha> s) P. k \<ge> k')"
+      in reverse_iterateoi_rule_P)
+    apply (auto 
+      simp add: rel_of_def restrict_map_def 
+      split: option.split_asm) [5]
+
+    apply (rule_tac 
+      I="\<lambda>it res. 
+      case res of 
+        None \<Rightarrow> rel_of (\<alpha> s |`(-it)) P = {} | 
+        Some (k,v) \<Rightarrow> (k,v)\<in>rel_of (\<alpha> s) P 
+                      \<and> (\<forall>(k',v')\<in>rel_of (\<alpha> s) P. k \<ge> k')"
+      in reverse_iterateoi_rule_P)
+    apply (auto 
+      simp add: rel_of_def restrict_map_def 
+      split: option.split_asm) [5]
+
+    done
+qed
+
+
+subsection {* Conversion to sorted list (by reverse\_iterateo) *}
+
+definition rito_map_to_sorted_list
+  :: "('m,'u,'v,('u\<times>'v) list) map_iterator \<Rightarrow> 'm \<Rightarrow> ('u\<times>'v) list"
+  where "rito_map_to_sorted_list iterate m == iterate (\<lambda>u v res. (u,v)#res) m []"
+
+lemma rito_map_to_sorted_list_correct:
+  assumes "map_reverse_iterateo \<alpha> invar iterate"
+  shows "map_to_sorted_list \<alpha> invar (rito_map_to_sorted_list iterate)"
+proof -
+  interpret map_reverse_iterateo \<alpha> invar iterate by fact
+  show ?thesis
+    apply unfold_locales
+    apply (unfold rito_map_to_sorted_list_def)
+    apply (rule_tac I="\<lambda>it res. map_of res = \<alpha> m |` (-it)" in reverse_iterateo_rule_P)
+    apply (auto 
+      simp add: restrict_map_def 
+                not_None_eq[simplified eq_commute[of _ None]] 
+      intro!: ext) [4]
+    apply (rule_tac 
+      I="\<lambda>it res. set (map fst res) \<inter> it = {} \<and> distinct (map fst res)" 
+      in reverse_iterateo_rule_P)
+    apply auto
+    apply (rule_tac 
+      I="\<lambda>it res. set (map fst res) = dom (\<alpha> m) - it \<and> sorted (map fst res)" 
+      in reverse_iterateo_rule_P)
+    apply (auto simp add: sorted_Cons)
+    done
 qed
 
 end

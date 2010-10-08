@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Indices of Sets"
+header {* \isaheader{Indices of Sets} *}
 theory SetIndex
 imports "common/Misc" MapSpec SetSpec
 begin

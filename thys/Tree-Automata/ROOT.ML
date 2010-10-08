@@ -3,7 +3,7 @@ no_document use_thys
    "Efficient_Nat",
    "While_Combinator", "../Collections/Collections",
    "../Collections/DatRef",
-   "../Collections/Exploration"];
+   "../Collections/examples/Exploration"];
 
 (* Tree Automata *)
 use_thys ["Tree", "Ta", "AbsAlgo", "Ta_impl"];

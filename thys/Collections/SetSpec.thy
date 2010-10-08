@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Specification of Sets"
+header {* \isaheader{Specification of Sets} *}
 theory SetSpec
 imports Main
 begin
@@ -183,6 +183,16 @@ end
 
 
 subsection "More Set Operations"
+
+subsubsection "Copy"
+locale set_copy = set \<alpha>1 invar1 + set \<alpha>2 invar2
+  for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
+  and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
+  +
+  fixes copy :: "'s1 \<Rightarrow> 's2"
+  assumes copy_correct: 
+    "invar1 s1 \<Longrightarrow> \<alpha>2 (copy s1) = \<alpha>1 s1"
+    "invar1 s1 \<Longrightarrow> invar2 (copy s1)"
 
 subsubsection "Union"
 
@@ -377,6 +387,40 @@ begin
     done
 end
 
+-- "Selection of element (without mapping)"
+locale set_sel' = set +
+  constrains \<alpha> :: "'s \<Rightarrow> 'x set"
+  fixes sel' :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> 'x option"
+  assumes sel'E: 
+    "\<lbrakk> invar s; x\<in>\<alpha> s; P x; 
+       !!x. \<lbrakk>sel' s P = Some x; x\<in>\<alpha> s; P x \<rbrakk> \<Longrightarrow> Q 
+     \<rbrakk> \<Longrightarrow> Q"
+  assumes sel'I: "\<lbrakk>invar s; \<forall>x\<in>\<alpha> s. \<not> P x \<rbrakk> \<Longrightarrow> sel' s P = None"
+begin
+
+  lemma sel'_someD:
+    "\<lbrakk> invar s; sel' s P = Some x \<rbrakk> \<Longrightarrow> x\<in>\<alpha> s \<and> P x"
+    apply (cases "\<exists>x\<in>\<alpha> s. P x")
+    apply (safe)
+    apply (erule_tac P=P and x=xa in sel'E)
+    apply auto
+    apply (erule_tac P=P and x=xa in sel'E)
+    apply auto
+    apply (drule (1) sel'I)
+    apply simp
+    apply (drule (1) sel'I)
+    apply simp
+    done
+
+  lemma sel'_noneD: 
+    "\<lbrakk> invar s; sel' s P = None; x\<in>\<alpha> s \<rbrakk> \<Longrightarrow> \<not>P x"
+    apply (cases "\<exists>x\<in>\<alpha> s. P x")
+    apply (safe)
+    apply (erule_tac P=P and x=xa in sel'E)
+    apply auto
+    done
+end
+
 subsubsection "Conversion of Set to List"
 
 locale set_to_list = set +
@@ -396,10 +440,104 @@ locale list_to_set = set +
     "invar (to_set l)"
 
 
+subsection "Record Based Interface"
+  record ('x,'s) set_ops = 
+    set_op_\<alpha> :: "'s \<Rightarrow> 'x set"
+    set_op_invar :: "'s \<Rightarrow> bool"
+    set_op_empty :: "'s"
+    set_op_memb :: "'x \<Rightarrow> 's \<Rightarrow> bool"
+    set_op_ins :: "'x \<Rightarrow> 's \<Rightarrow> 's"
+    set_op_ins_dj :: "'x \<Rightarrow> 's \<Rightarrow> 's"
+    set_op_delete :: "'x \<Rightarrow> 's \<Rightarrow> 's"
+    set_op_isEmpty :: "'s \<Rightarrow> bool"
+    set_op_ball :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> bool"
+    set_op_size :: "'s \<Rightarrow> nat"
+    set_op_union :: "'s \<Rightarrow> 's \<Rightarrow> 's"
+    set_op_union_dj :: "'s \<Rightarrow> 's \<Rightarrow> 's"
+    set_op_inter :: "'s \<Rightarrow> 's \<Rightarrow> 's"
+    set_op_subset :: "'s \<Rightarrow> 's \<Rightarrow> bool"
+    set_op_equal :: "'s \<Rightarrow> 's \<Rightarrow> bool"
+    set_op_disjoint :: "'s \<Rightarrow> 's \<Rightarrow> bool"
+    set_op_disjoint_witness :: "'s \<Rightarrow> 's \<Rightarrow> 'x option"
+    set_op_sel :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> 'x option" -- "Version without mapping"
+    set_op_to_list :: "'s \<Rightarrow> 'x list"
+    set_op_from_list :: "'x list \<Rightarrow> 's"
+
+
+  locale StdSetDefs =
+    fixes ops :: "('x,'s,'more) set_ops_scheme"
+  begin
+    abbreviation \<alpha> where "\<alpha> == set_op_\<alpha> ops"
+    abbreviation invar where "invar == set_op_invar ops"
+    abbreviation empty where "empty == set_op_empty ops"
+    abbreviation memb where "memb == set_op_memb ops"
+    abbreviation ins where "ins == set_op_ins ops"
+    abbreviation ins_dj where "ins_dj == set_op_ins_dj ops"
+    abbreviation delete where "delete == set_op_delete ops"
+    abbreviation isEmpty where "isEmpty == set_op_isEmpty ops"
+    abbreviation ball where "ball == set_op_ball ops"
+    abbreviation size where "size == set_op_size ops"
+    abbreviation union where "union == set_op_union ops"
+    abbreviation union_dj where "union_dj == set_op_union_dj ops"
+    abbreviation inter where "inter == set_op_inter ops"
+    abbreviation subset where "subset == set_op_subset ops"
+    abbreviation equal where "equal == set_op_equal ops"
+    abbreviation disjoint where "disjoint == set_op_disjoint ops"
+    abbreviation disjoint_witness where "disjoint_witness == set_op_disjoint_witness ops"
+    abbreviation sel where "sel == set_op_sel ops"
+    abbreviation to_list where "to_list == set_op_to_list ops"
+    abbreviation from_list where "from_list == set_op_from_list ops"
+  end
+
+
+  locale StdSet = StdSetDefs ops +
+    set \<alpha> invar +
+    set_empty \<alpha> invar empty + 
+    set_memb \<alpha> invar memb + 
+    set_ins \<alpha> invar ins + 
+    set_ins_dj \<alpha> invar ins_dj + 
+    set_delete \<alpha> invar delete + 
+    set_isEmpty \<alpha> invar isEmpty + 
+    set_ball \<alpha> invar ball + 
+    set_size \<alpha> invar size + 
+    set_union \<alpha> invar \<alpha> invar \<alpha> invar union + 
+    set_union_dj \<alpha> invar \<alpha> invar \<alpha> invar union_dj + 
+    set_inter \<alpha> invar \<alpha> invar \<alpha> invar inter + 
+    set_subset \<alpha> invar \<alpha> invar subset + 
+    set_equal \<alpha> invar \<alpha> invar equal + 
+    set_disjoint \<alpha> invar \<alpha> invar disjoint + 
+    set_disjoint_witness \<alpha> invar \<alpha> invar disjoint_witness + 
+    set_sel' \<alpha> invar sel + 
+    set_to_list \<alpha> invar to_list + 
+    list_to_set \<alpha> invar from_list
+    for ops
+  begin
+
+    lemmas correct = 
+      empty_correct
+      memb_correct
+      ins_correct
+      ins_dj_correct
+      delete_correct
+      isEmpty_correct
+      ball_correct
+      size_correct
+      union_correct
+      union_dj_correct
+      inter_correct
+      subset_correct
+      equal_correct
+      disjoint_correct
+      disjoint_witness_correct
+      to_list_correct
+      to_set_correct
+
+  end
+
+
+
+
 no_notation insert ("set'_ins")
 (*notation member (infixl "mem" 55)*)
-
-
-
 
 end

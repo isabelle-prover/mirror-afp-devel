@@ -2,9 +2,9 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "State Space Exploration"
+header {* \isaheader{State Space Exploration} *}
 theory Exploration
-imports Main "common/Misc" DatRef
+imports Main "../common/Misc" "../DatRef"
 begin
 text_raw {*\label{thy:Exploration}*}
   
