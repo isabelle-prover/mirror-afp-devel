@@ -46,15 +46,15 @@ print_translation {*
     fun tr'
        [Const (@{type_syntax finfun}, _) $ l $
           (Const (@{type_syntax list}, _) $ Const (@{type_syntax lock_action}, _)),
-        Const (@{type_syntax prod}, _) $
+        Const (@{type_syntax "prod"}, _) $
           (Const (@{type_syntax list}, _) $ (Const (@{type_syntax new_thread_action}, _) $ t1 $ x $ m)) $
-          (Const (@{type_syntax prod}, _) $
+          (Const (@{type_syntax "prod"}, _) $
             (Const (@{type_syntax list}, _) $ (Const (@{type_syntax conditional_action}, _) $ t2)) $
-            (Const (@{type_syntax prod}, _) $
+            (Const (@{type_syntax "prod"}, _) $
               (Const (@{type_syntax list}, _) $ (Const (@{type_syntax wait_set_action}, _) $ t3 $ w)) $ o1))] =
       if t1 = t2 andalso t2 = t3 then Syntax.const @{type_syntax thread_action} $ l $ t1 $ x $ m $ w $ o1
       else raise Match;
-  in [(@{type_syntax prod}, tr')]
+  in [(@{type_syntax "prod"}, tr')]
   end
 *}
 typ "('l,'t,'x,'m,'w,'o) thread_action"
@@ -205,19 +205,19 @@ print_translation {*
     fun tr'
        [Const (@{type_syntax finfun}, _) $ l1 $
         (Const (@{type_syntax option}, _) $
-          (Const (@{type_syntax prod}, _) $ t1 $ Const (@{type_syntax nat}, _))),
-        Const (@{type_syntax prod}, _) $
-          (Const (@{type_syntax prod}, _) $
+          (Const (@{type_syntax "prod"}, _) $ t1 $ Const (@{type_syntax nat}, _))),
+        Const (@{type_syntax "prod"}, _) $
+          (Const (@{type_syntax "prod"}, _) $
             (Const (@{type_syntax fun}, _) $ t2 $
               (Const (@{type_syntax option}, _) $
-                (Const (@{type_syntax prod}, _) $ x $
+                (Const (@{type_syntax "prod"}, _) $ x $
                   (Const (@{type_syntax finfun}, _) $ l2 $ Const (@{type_syntax nat}, _))))) $ m) $
                (Const (@{type_syntax fun}, _) $ t3 $ 
                   (Const (@{type_syntax option}, _) $ (Const (@{type_syntax wait_set_status}, _) $ w)))] =
       if t1 = t2 andalso t1 = t3 andalso l1 = l2
       then Syntax.const @{type_syntax state} $ l1 $ t1 $ x $ m $ w
       else raise Match;
-  in [(@{type_syntax prod}, tr')]
+  in [(@{type_syntax "prod"}, tr')]
   end
 *}
 typ "('l,'t,'x,'m,'w) state"
@@ -303,6 +303,16 @@ apply(cases ta)
 apply(simp_all add: convert_new_thread_action_def)
 done
 
+lemma inj_convert_new_thread_action [simp]: 
+  "inj (convert_new_thread_action f) = inj f"
+apply(rule iffI)
+ apply(rule injI)
+ apply(drule_tac x="NewThread undefined x undefined" in injD)
+ apply auto[2]
+apply(rule injI)
+apply(case_tac x)
+apply(auto dest: injD)
+done
 
 definition convert_extTA :: "('x \<Rightarrow> 'x') \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('l,'t,'x','m,'w,'o) thread_action"
 where "convert_extTA f ta = (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, map (convert_new_thread_action f) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>, snd (snd ta))"
@@ -333,59 +343,40 @@ by(simp add: convert_extTA_def)
 lemma obs_a_convert_extTA [simp]: "obs_a (convert_extTA f ta) = obs_a ta"
 by(cases ta) simp
 
-datatype ('l,'o) observable =
-    ReacquireLocks "'l released_locks"
-  | Observable 'o
+text {* Actions for thread start/finish *}
 
-abbreviation observable_of :: "'o list \<Rightarrow> ('l, 'o) observable list"
-where "observable_of obs \<equiv> map Observable obs"
+datatype 'o action =
+    NormalAction 'o
+  | InitialThreadAction
+  | ThreadFinishAction
 
-definition observable_ta_of :: "('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 
-                             ('l,'t,'x,'m,'w, ('l,'o) observable list) thread_action"
-where "observable_ta_of ta = (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>, observable_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
+definition convert_obs_initial :: "('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> ('l,'t,'x,'m,'w,'o action list) thread_action"
+where 
+  "convert_obs_initial ta = (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>, map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 
-lemma locks_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-by(simp add: observable_ta_of_def)
+lemma inj_NormalAction [simp]: "inj NormalAction"
+by(rule injI) auto
 
-lemma thr_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>t\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
-by(simp add: observable_ta_of_def)
+lemma convert_obs_initial_inject [simp]:
+  "convert_obs_initial ta = convert_obs_initial ta' \<longleftrightarrow> ta = ta'"
+by(cases ta)(cases ta', auto simp add: convert_obs_initial_def)
 
-lemma cond_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
-by(simp add: observable_ta_of_def)
+lemma convert_obs_initial_empty_TA [simp]:
+  "convert_obs_initial \<epsilon> = \<epsilon>"
+by(simp add: convert_obs_initial_def)
 
-lemma wset_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
-by(simp add: observable_ta_of_def)
+lemma convert_obs_initial_eq_empty_TA [simp]:
+  "convert_obs_initial ta = \<epsilon> \<longleftrightarrow> ta = \<epsilon>"
+  "\<epsilon> = convert_obs_initial ta \<longleftrightarrow> ta = \<epsilon>"
+by(case_tac [!] ta)(auto simp add: convert_obs_initial_def)
 
-lemma obs_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>o\<^esub> = observable_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
-by(simp add: observable_ta_of_def)
-
-lemma observable_of_inject [simp]:
-  "observable_of obs = observable_of obs' \<longleftrightarrow> obs = obs'"
-apply(induct obs arbitrary: obs')
- apply fastsimp
-apply(case_tac obs')
-apply fastsimp+
-done
-
-lemma observable_ta_of_empty [simp]: "observable_ta_of \<epsilon> = \<epsilon>"
-by(simp add: observable_ta_of_def)
-
-lemma observable_ta_of_eq_empty [simp]: 
-  "observable_ta_of ta = \<epsilon> \<longleftrightarrow> ta = \<epsilon>"
-by(cases ta)(simp add: observable_ta_of_def)
-
-lemma empty_eq_observable_ta_of [simp]: 
-  "\<epsilon> = observable_ta_of ta \<longleftrightarrow> ta = \<epsilon>"
-by(cases ta)(auto simp add: observable_ta_of_def)
-
-lemma observable_ta_of_inject [simp]:
-  "observable_ta_of ta = observable_ta_of ta' \<longleftrightarrow> ta = ta'"
-by(cases ta, cases ta')(auto simp add: observable_ta_of_def)
+lemma convert_obs_initial_simps [simp]:
+  "\<lbrace>convert_obs_initial ta\<rbrace>\<^bsub>o\<^esub> = map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+  "\<lbrace>convert_obs_initial ta\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
+  "\<lbrace>convert_obs_initial ta\<rbrace>\<^bsub>t\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
+  "\<lbrace>convert_obs_initial ta\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
+  "\<lbrace>convert_obs_initial ta\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
+by(simp_all add: convert_obs_initial_def)
 
 types
   ('l,'t,'x,'m,'w,'o) semantics =
@@ -397,19 +388,19 @@ print_translation {*
     fun tr'
        [t4,
         Const (@{type_syntax fun}, _) $
-          (Const (@{type_syntax prod}, _) $ x1 $ m1) $
+          (Const (@{type_syntax "prod"}, _) $ x1 $ m1) $
           (Const (@{type_syntax fun}, _) $
-            (Const (@{type_syntax prod}, _) $
+            (Const (@{type_syntax "prod"}, _) $
               (Const (@{type_syntax finfun}, _) $ l $
                 (Const (@{type_syntax list}, _) $ Const (@{type_syntax lock_action}, _))) $
-              (Const (@{type_syntax prod}, _) $
+              (Const (@{type_syntax "prod"}, _) $
                 (Const (@{type_syntax list}, _) $ (Const (@{type_syntax new_thread_action}, _) $ t1 $ x2 $ m2)) $
-                (Const (@{type_syntax prod}, _) $
+                (Const (@{type_syntax "prod"}, _) $
                   (Const (@{type_syntax list}, _) $ (Const (@{type_syntax conditional_action}, _) $ t2)) $
-                  (Const (@{type_syntax prod}, _) $
+                  (Const (@{type_syntax "prod"}, _) $
                     (Const (@{type_syntax list}, _) $ (Const (@{type_syntax wait_set_action}, _) $ t3 $ w)) $ 
                       (Const (@{type_syntax list}, _) $ o1))))) $
-            (Const (@{type_syntax fun}, _) $ (Const (@{type_syntax prod}, _) $ x3 $ m3) $
+            (Const (@{type_syntax fun}, _) $ (Const (@{type_syntax "prod"}, _) $ x3 $ m3) $
               Const (@{type_syntax bool}, _)))] =
       if x1 = x2 andalso x1 = x3 andalso m1 = m2 andalso m1 = m3 andalso t1 = t2 andalso t2 = t3 andalso t3 = t4
       then Syntax.const @{type_syntax semantics} $ l $ t1 $ x1 $ m1 $ w $ o1
@@ -418,17 +409,5 @@ print_translation {*
   end
 *}
 typ "('l,'t,'x,'m,'w,'o) semantics"
-
-types ('a, 'b) trsys = "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
-types ('a, 'b) bisim = "'a \<Rightarrow> 'b \<Rightarrow> bool"
-
-locale trsys = 
-  fixes trsys :: "('s, 'tl) trsys" ("_/ -_\<rightarrow>/ _" [50, 0, 50] 60)
-begin
-
-abbreviation Trsys :: "('s, 'tl list) trsys" ("_/ -_\<rightarrow>*/ _" [50,0,50] 60)
-where "\<And>tl. s -tl\<rightarrow>* s' \<equiv> rtrancl3p trsys s tl s'"
-
-end
 
 end

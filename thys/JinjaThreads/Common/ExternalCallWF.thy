@@ -6,11 +6,6 @@ header{* \isaheader{ Properties of external calls in well-formed programs } *}
 
 theory ExternalCallWF imports WellForm "../Framework/FWSemantics" begin
 
-lemma list_all2_refl_conv: -- "Move to Aux"
-  "list_all2 P xs xs \<longleftrightarrow> (\<forall>x\<in>set xs. P x x)"
-unfolding list_all2_conv_all_nth Ball_def in_set_conv_nth
-by auto
-
 lemma WT_external_is_type:
   assumes "wf_prog wf_md P" "P \<turnstile> T\<bullet>M(TS) :: U" "is_type P T"
   shows "is_type P U" "set TS \<subseteq> is_type P"
@@ -46,35 +41,6 @@ subsection {* Progress theorems for external calls *}
 
 context heap_progress begin
 
-lemma red_external_Suspend_Notified_Interrupted:
-  assumes wf: "wf_prog wf_md P"
-  and red: "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
-  and suspend: "Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "h' \<unlhd> h''"
-  shows "\<exists>ta' va'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h''\<rangle> -ta'\<rightarrow>ext \<langle>va', h''\<rangle> \<and> Notified \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> \<and> collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = {}" (is ?thesis1)
-  and "\<exists>ta' va' h'''. P,t \<turnstile> \<langle>a\<bullet>M(vs), h''\<rangle> -ta'\<rightarrow>ext \<langle>va', h'''\<rangle> \<and> Interrupted \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> \<and> collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = {}" (is ?thesis2)
-proof -
-  from red suspend RedWaitNotified show ?thesis1
-    by cases(fastsimp simp del: split_paired_Ex simp add: collect_locks_def)+
-next
-  from assms obtain C where [simp]: "h' = h" "M = wait" "vs = []"
-    and "typeof_addr h t = \<lfloor>Class C\<rfloor>" "P \<turnstile> C \<preceq>\<^sup>* Thread"
-    by(auto elim: red_external.cases simp add: ta_upd_simps)
-  with `h' \<unlhd> h''` have "typeof_addr h'' t = \<lfloor>Class C\<rfloor>"
-    by(auto intro: typeof_addr_hext_mono)
-  from wf `P \<turnstile> C \<preceq>\<^sup>* Thread` have "P \<turnstile> C has interrupted_flag:Boolean in Thread"
-    by(rule wf_sub_Thread_has_interrupted_flag)
-  with `typeof_addr h'' t = \<lfloor>Class C\<rfloor>`
-  have "P,h'' \<turnstile> t@interrupted_flag_loc : Boolean" ..
-  from heap_write_total[OF this, of "Bool False"]
-  obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" ..
-  with `typeof_addr h'' t = \<lfloor>Class C\<rfloor>` `P \<turnstile> C \<preceq>\<^sup>* Thread`
-  have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>
-                                \<lbrace>\<^bsub>o\<^esub>  WriteMem t interrupted_flag_loc (Bool False)\<rbrace>\<rightarrow>ext
-              \<langle>RetEXC InterruptedException, h'''\<rangle>"
-    by(rule RedWaitInterrupted)
-  thus ?thesis2 by(fastsimp simp del: split_paired_Ex simp add: collect_locks_def)
-qed
-
 lemma heap_copy_loc_progress:
   assumes hconf: "hconf h"
   and alconfa: "P,h \<turnstile> a@al : T"
@@ -83,7 +49,7 @@ lemma heap_copy_loc_progress:
 proof -
   from heap_read_total[OF hconf alconfa]
   obtain v where "heap_read h a al v" "P,h \<turnstile> v :\<le> T" by blast
-  moreover from heap_write_total[OF alconfa', of v] obtain h' where "heap_write h a' al v h'" ..
+  moreover from heap_write_total[OF alconfa' `P,h \<turnstile> v :\<le> T`] obtain h' where "heap_write h a' al v h'" ..
   moreover hence "hconf h'" using hconf alconfa' `P,h \<turnstile> v :\<le> T` by(rule hconf_heap_write_mono)
   ultimately show ?thesis by(blast intro: heap_copy_loc.intros)
 qed
@@ -99,16 +65,16 @@ proof(induct als arbitrary: h Ts)
 next
   case (Cons al als)
   from `list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) (al # als) Ts`
-  obtain T Ts' where [simp]: "Ts = T # Ts'"
-    and "P,h \<turnstile> a@al : T" "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts'"
+  obtain T' Ts' where [simp]: "Ts = T' # Ts'"
+    and "P,h \<turnstile> a@al : T'" "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts'"
     by(auto simp add: list_all2_Cons1)
   from `list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) (al # als) Ts`
-  have "P,h \<turnstile> a'@al : T" and "list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) als Ts'" by simp_all
-  from `hconf h` `P,h \<turnstile> a@al : T` `P,h \<turnstile> a'@al : T`
+  have "P,h \<turnstile> a'@al : T'" and "list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) als Ts'" by simp_all
+  from `hconf h` `P,h \<turnstile> a@al : T'` `P,h \<turnstile> a'@al : T'`
   obtain v h' where "heap_copy_loc a a' al h [ReadMem a al v, WriteMem a' al v] h'"
-    and "hconf h'" by(auto dest: heap_copy_loc_progress)
-  moreover {
-    hence "h \<unlhd> h'" by-(rule hext_heap_copy_loc)
+    and "hconf h'" by(fastsimp dest: heap_copy_loc_progress)
+  moreover hence "h \<unlhd> h'" by-(rule hext_heap_copy_loc)
+  {
     note `hconf h'`
     moreover from `list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts'`
     have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) als Ts'"
@@ -121,7 +87,8 @@ next
   then obtain vs h''
     where "heap_copies a a' als h' (concat (map (\<lambda>(al, v). [ReadMem a al v, WriteMem a' al v]) (zip als vs))) h''"
     and "hconf h''" by blast
-  ultimately have "heap_copies a a' (al # als) h ([ReadMem a al v, WriteMem a' al v] @ (concat (map (\<lambda>(al, v). [ReadMem a al v, WriteMem a' al v]) (zip als vs)))) h''"
+  ultimately
+  have "heap_copies a a' (al # als) h ([ReadMem a al v, WriteMem a' al v] @ (concat (map (\<lambda>(al, v). [ReadMem a al v, WriteMem a' al v]) (zip als vs)))) h''"
     by- (rule heap_copies.Cons)
   also have "[ReadMem a al v, WriteMem a' al v] @ (concat (map (\<lambda>(al, v). [ReadMem a al v, WriteMem a' al v]) (zip als vs))) =
             (concat (map (\<lambda>(al, v). [ReadMem a al v, WriteMem a' al v]) (zip (al # als) (v # vs))))" by simp
@@ -155,14 +122,14 @@ proof -
       from `is_type P T` have "is_class P C" by simp
       from wf_Fields_Ex[OF wf this]
       obtain FDTs where FDTs: "P \<turnstile> C has_fields FDTs" ..
-      let ?als = "map (\<lambda>((F, D), T). CField D F) FDTs"
-      let ?Ts = "map snd FDTs"
+      let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
+      let ?Ts = "map (fst o snd) FDTs"
       from wf FDTs have "distinct (map fst FDTs)" by(rule has_fields_distinct)
       with typea FDTs have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
         unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
         by(fastsimp intro!: addr_loc_type.intros map_of_SomeI simp add: has_field_def distinct_fst_def)
       hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
-        by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`])
+        by(rule list_all2_mono)(simp add: addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`] split_def)
       moreover from new Some
       have "typeof_addr h' a' = \<lfloor>Class C\<rfloor>" by(auto dest: new_obj_SomeD)
       with FDTs `distinct (map fst FDTs)`
@@ -225,14 +192,15 @@ proof -
   from `T'\<bullet>M(Ts') :: U` subT' ext T Ts subTs show ?thesis
   proof cases
     assume [simp]: "T' = Class Thread" "M = interrupt" "Ts' = []" "U = Void"
-    from wf have "P \<turnstile> Thread has interrupted_flag:Boolean in Thread" by(rule wf_Thread_has_interrupted_flag)
+    from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
+      by(rule wf_Thread_has_interrupted_flag)
     moreover from subT' typeof_addr_eq_Some_conv[OF T]
     obtain C where [simp]: "T = Class C" and "P \<turnstile> C \<preceq>\<^sup>* Thread" by(auto simp add: widen_Class)
-    ultimately have "P \<turnstile> C has interrupted_flag:Boolean in Thread" by(blast intro: has_field_mono)
+    ultimately have "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread" by(blast intro: has_field_mono)
     with T have "P,h \<turnstile> a@interrupted_flag_loc : Boolean"
       by(auto intro: addr_loc_type.intros)
     then obtain h' where "heap_write h a interrupted_flag_loc (Bool True) h'"
-      by(blast dest: heap_write_total)
+      by(auto dest: heap_write_total[where v="Bool True"])
     with subT' ext T Ts subTs `P \<turnstile> C \<preceq>\<^sup>* Thread` show ?thesis by(auto intro: red_external.intros)
   next
     assume [simp]: "T' = Class Object" "M = clone" "Ts' = []" "U = Class Object"
@@ -263,9 +231,9 @@ proof cases
   case (RedWait C)
   from `h \<unlhd> h''` `typeof_addr h t = \<lfloor>Class C\<rfloor>`
   have type: "typeof_addr h'' t = \<lfloor>Class C\<rfloor>" by(rule typeof_addr_hext_mono)
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean in Thread"
+  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean in Thread"
+  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
   with type have "P,h'' \<turnstile> t@interrupted_flag_loc : Boolean"
     by(rule addr_loc_type.intros)
@@ -280,7 +248,7 @@ proof cases
     let ?ta = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), 
                                     WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
     from heap_write_total[OF `P,h'' \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
-    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" ..
+    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" by auto
     from read RedWaitInterrupt[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread` _ this, of a] True
     have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -?ta\<rightarrow>ext \<langle>RetEXC InterruptedException, h'''\<rangle>" by simp
     with RedWait show ?thesis
@@ -295,9 +263,9 @@ next
   case (RedWaitInterrupt C)
   from `h \<unlhd> h''` `typeof_addr h t = \<lfloor>Class C\<rfloor>`
   have type: "typeof_addr h'' t = \<lfloor>Class C\<rfloor>" by(rule typeof_addr_hext_mono)
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean in Thread"
+  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean in Thread"
+  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
   with type have "P,h'' \<turnstile> t@interrupted_flag_loc : Boolean"
     by(rule addr_loc_type.intros)
@@ -312,14 +280,14 @@ next
     let ?ta = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), 
                                     WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
     from heap_write_total[OF `P,h'' \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
-    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" ..
+    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" by auto
     from read red_external.RedWaitInterrupt[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread` _ this, of a] True
     have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -?ta\<rightarrow>ext \<langle>RetEXC InterruptedException, h'''\<rangle>" by simp
     with RedWaitInterrupt show ?thesis
       by(auto simp add: collect_locks_def ta_upd_simps finfun_upd_apply intro!: exI split: split_if_asm)
   next
     case False
-    let ?ta = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>"
+    let ?ta = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>"
     from read red_external.RedWait[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread`, of a] False
     have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> - ?ta\<rightarrow>ext \<langle>RetStaySame, h''\<rangle>" by simp
     thus ?thesis using RedWaitInterrupt 
@@ -347,9 +315,9 @@ proof cases
   from tconf `typeof_addr h t = \<lfloor>Class C\<rfloor>` 
   have type: "typeof_addr h'' t = \<lfloor>Class C\<rfloor>"
     by(fastsimp dest: tconfD typeof_addr_hext_mono[OF hext])
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean in Thread"
+  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean in Thread"
+  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
   with type have "P,h'' \<turnstile> t@interrupted_flag_loc : Boolean"
     by(rule addr_loc_type.intros)
@@ -364,7 +332,7 @@ proof cases
     let ?ta = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), 
                                     WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
     from heap_write_total[OF `P,h'' \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
-    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" ..
+    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" by auto
     from read RedWaitInterrupt[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread` _ this, of a] True
     have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -?ta\<rightarrow>ext \<langle>RetEXC InterruptedException, h'''\<rangle>" by simp
     with RedWait show ?thesis
@@ -380,9 +348,9 @@ next
   from tconf `typeof_addr h t = \<lfloor>Class C\<rfloor>` 
   have type: "typeof_addr h'' t = \<lfloor>Class C\<rfloor>"
     by(fastsimp dest: tconfD typeof_addr_hext_mono[OF hext])
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean in Thread"
+  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean in Thread"
+  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
   with type have "P,h'' \<turnstile> t@interrupted_flag_loc : Boolean"
     by(rule addr_loc_type.intros)
@@ -397,14 +365,14 @@ next
     let ?ta = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), 
                                     WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
     from heap_write_total[OF `P,h'' \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
-    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" ..
+    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" by auto
     from read red_external.RedWaitInterrupt[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread` _ this, of a] True
     have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -?ta\<rightarrow>ext \<langle>RetEXC InterruptedException, h'''\<rangle>" by simp
     with RedWaitInterrupt show ?thesis
       by(auto simp add: collect_locks_def finfun_upd_apply ta_upd_simps intro!: exI split: split_if_asm)
   next
     case False
-    let ?ta = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>"
+    let ?ta = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>"
     from read red_external.RedWait[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread`, of a] False
     have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> - ?ta\<rightarrow>ext \<langle>RetStaySame, h''\<rangle>" by simp
     thus ?thesis using RedWaitInterrupt 
@@ -415,14 +383,14 @@ next
   from `typeof_addr h a = \<lfloor>Class C\<rfloor>` wt `h'' \<unlhd> h`
   have type: "typeof_addr h'' a = \<lfloor>Class C\<rfloor>"
     by(auto elim!: external_WT'.cases dest: typeof_addr_hext_mono)
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean in Thread"
+  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean in Thread"
+  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
     using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
   with type have "P,h'' \<turnstile> a@interrupted_flag_loc : Boolean"
     by(rule addr_loc_type.intros)
   from heap_write_total[OF this, of "Bool True"] obtain h''' 
-    where "heap_write h'' a interrupted_flag_loc (Bool True) h'''" ..
+    where "heap_write h'' a interrupted_flag_loc (Bool True) h'''" by auto
   with type RedInterrupt show ?thesis
     by(fastsimp intro: red_external.RedInterrupt)
 next
@@ -517,8 +485,8 @@ next
 next
   case (ObjClone C h'' a' FDTs obs)
   note FDTs = `P \<turnstile> C has_fields FDTs`
-  let ?als = "map (\<lambda>((F, D), T). CField D F) FDTs"
-  let ?Ts = "map snd FDTs"
+  let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
+  let ?Ts = "map (fst \<circ> snd) FDTs"
   note `heap_copies a a' ?als h'' obs h'` 
   moreover from `typeof_addr h a = \<lfloor>Class C\<rfloor>` `hconf h` have "is_class P C"
     by(auto dest: typeof_addr_is_type)
@@ -643,7 +611,7 @@ lemma red_external_wf_red:
 proof(atomize_elim)
   from tconf obtain C where ht: "typeof_addr h t = \<lfloor>Class C\<rfloor>" 
     and sub: "P \<turnstile> C \<preceq>\<^sup>* Thread" by(fastsimp dest: tconfD)
-  from wf sub have "P \<turnstile> C has interrupted_flag:Boolean in Thread" 
+  from wf sub have "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread" 
     by(rule wf_sub_Thread_has_interrupted_flag)
   with ht have "P,h \<turnstile> t@interrupted_flag_loc : Boolean"
     by(rule addr_loc_type.intros)
@@ -656,7 +624,7 @@ proof(atomize_elim)
   from heap_write_total[OF `P,h \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
     heap_write_total[OF `P,h \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool True"]
   obtain hT hF where writeT: "heap_write h t interrupted_flag_loc (Bool True) hT" 
-    and writeF: "heap_write h t interrupted_flag_loc (Bool False) hF" by blast
+    and writeF: "heap_write h t interrupted_flag_loc (Bool False) hF" by auto
 
   show "\<exists>ta' va' h'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta'\<rightarrow>ext \<langle>va', h'\<rangle> \<and> final_thread.actions_ok' s t ta' \<and> final_thread.actions_subset ta' ta"
   proof(cases "final_thread.actions_ok' s t ta")
@@ -678,7 +646,7 @@ proof(atomize_elim)
       show ?thesis
       proof(cases w')
         case WSInterrupted[simp]
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>\<lbrace>\<^bsub>o\<^esub> WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool b), WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
         have "final_thread.actions_ok' s t ?ta'" by(simp add: wset_actions_ok_def)
         moreover have "final_thread.actions_subset ?ta' ta"
 	  by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
@@ -734,7 +702,7 @@ proof(atomize_elim)
         ultimately show ?thesis by blast
       next
         case RedWait
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>`
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>`
         let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
         from ta False None have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
 	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
@@ -753,7 +721,7 @@ proof(atomize_elim)
                          \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
                             WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
                    else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
-                         \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>"
+                         \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>"
         from ta False None have "has_lock ((locks s)\<^sub>f a) t"
           by(auto simp add: finfun_upd_apply split: split_if_asm)
         hence "final_thread.actions_ok' s t ?ta'" using None
@@ -772,7 +740,7 @@ proof(atomize_elim)
                                \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
                                   WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
                          else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
-                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>)
+                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>)
                    else \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
         have "final_thread.actions_ok' s t ?ta'"
           using None by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
@@ -783,15 +751,16 @@ proof(atomize_elim)
         have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by fastsimp
         ultimately show ?thesis by blast
       next
-        case RedWaitInterrupted
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Interrupted\<rbrace>\<lbrace>\<^bsub>o\<^esub> WriteMem t interrupted_flag_loc (Bool False)\<rbrace>`
+        case (RedWaitInterrupted C b')
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Interrupted\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool b'),
+                                         WriteMem t interrupted_flag_loc (Bool False)\<rbrace>`
         let ?ta' = "if has_lock ((locks s)\<^sub>f a) t
                    then (if b 
                          then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
                                \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
                                   WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
                          else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
-                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>)
+                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>)
                    else \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
         have "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)

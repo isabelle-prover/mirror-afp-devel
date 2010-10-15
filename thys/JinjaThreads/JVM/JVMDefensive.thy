@@ -75,14 +75,14 @@ where
 
 | check_instr_Getfield:
   "check_instr (Getfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
-  (0 < length stk \<and> (\<exists>C' T. P \<turnstile> C sees F:T in C') \<and> 
+  (0 < length stk \<and> (\<exists>C' T fm. P \<turnstile> C sees F:T (fm) in C') \<and> 
   (let (C', T) = field P C F; ref = hd stk in 
     C' = C \<and> is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
       (\<exists>D. typeof_addr h (the_Addr ref) = \<lfloor>Class D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C))))"
 
 | check_instr_Putfield:
   "check_instr (Putfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
-  (1 < length stk \<and> (\<exists>C' T. P \<turnstile> C sees F:T in C') \<and>
+  (1 < length stk \<and> (\<exists>C' T fm. P \<turnstile> C sees F:T (fm) in C') \<and>
   (let (C', T) = field P C F; v = hd stk; ref = hd (tl stk) in 
     C' = C \<and> is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
       (\<exists>D. typeof_addr h (the_Addr ref) = \<lfloor>Class D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C))))"
@@ -122,6 +122,10 @@ where
 | check_instr_Dup:
   "check_instr Dup P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
   (0 < length stk)"
+
+| check_instr_Swap:
+  "check_instr Swap P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (1 < length stk)"
 
 | check_instr_BinOpInstr:
   "check_instr (BinOpInstr bop) P h stk loc C0 M0 pc frs =

@@ -146,17 +146,12 @@ proof(rule wset_thread_okI)
 qed
 
 lemma redT_updW_preserve_wset_thread_ok: 
-  "\<lbrakk> wset_thread_ok ws ts; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok (redT_updW ws t wa) ts"
-apply(cases wa)
-apply(simp_all add: wset_thread_ok_upd_ws wset_thread_ok_NotifyAllI)
-apply clarify
-apply(rule wset_thread_okI)
-apply(drule (1) wset_thread_okD)
-apply(auto dest: someI[where P="\<lambda>t. ws t = Some (InWS w)", standard])
-done
+  "\<lbrakk> wset_thread_ok ws ts; redT_updW t ws wa ws'; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok ws' ts"
+by(fastsimp simp add: redT_updW.simps intro: wset_thread_okI wset_thread_ok_NotifyAllI wset_thread_ok_upd_ws dest: wset_thread_okD)
 
 lemma redT_updWs_preserve_wset_thread_ok:
-  "\<lbrakk> wset_thread_ok ws ts; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok (redT_updWs ws t was) ts"
-by(induct was arbitrary: ws)(auto intro: redT_updW_preserve_wset_thread_ok)
+  "\<lbrakk> wset_thread_ok ws ts; redT_updWs t ws was ws'; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok ws' ts"
+unfolding redT_updWs_def apply(rotate_tac 1)
+by(induct rule: rtrancl3p_converse_induct)(auto intro: redT_updW_preserve_wset_thread_ok)
 
 end

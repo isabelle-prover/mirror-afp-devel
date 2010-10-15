@@ -31,7 +31,7 @@ where
   (\<forall>U Ts' T'. U\<bullet>M(Ts') :: T' \<longrightarrow> (P \<turnstile> Class C \<le> U \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T') \<and> \<not> P \<turnstile> U \<le> Class C)"
 
 definition wf_fdecl :: "'m prog \<Rightarrow> fdecl \<Rightarrow> bool"
-where "wf_fdecl P \<equiv> \<lambda>(F,T). is_type P T"
+where "wf_fdecl P \<equiv> \<lambda>(F,T,fm). is_type P T"
 
 definition wf_mdecl :: "'m wf_mdecl_test \<Rightarrow> 'm wf_mdecl_test"
 where "wf_mdecl wf_md P C \<equiv> \<lambda>(M,Ts,T,mb). (\<forall>T\<in>set Ts. is_type P T) \<and> is_type P T \<and> wf_md P C (M,Ts,T,mb)"
@@ -39,7 +39,7 @@ where "wf_mdecl wf_md P C \<equiv> \<lambda>(M,Ts,T,mb). (\<forall>T\<in>set Ts.
 definition wf_cdecl :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> 'm cdecl \<Rightarrow> bool"
 where
   "wf_cdecl wf_md P  \<equiv>  \<lambda>(C,(D,fs,ms)).
-  (\<forall>f\<in>set fs. wf_fdecl P f) \<and>  distinct_fst fs \<and>
+  (\<forall>f\<in>set fs. wf_fdecl P f) \<and> distinct_fst fs \<and>
   (\<forall>m\<in>set ms. wf_mdecl wf_md P C m) \<and>  distinct_fst ms \<and>
   (C \<noteq> Object \<longrightarrow>
    is_class P D \<and> \<not> P \<turnstile> D \<preceq>\<^sup>* C \<and>
@@ -48,7 +48,7 @@ where
                        P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T'))) \<and>
   (C = Object \<longrightarrow> (fs = []) \<and> (ms = [])) \<and> (* require object to implement no fields/methods because of array subtype of Object *)
 
-  (C = Thread \<longrightarrow> (\<exists>m. (run, [], Void, m) \<in> set ms) \<and> (interrupted_flag, Boolean) \<in> set fs)"
+  (C = Thread \<longrightarrow> (\<exists>m. (run, [], Void, m) \<in> set ms) \<and> (interrupted_flag, Boolean, \<lparr>volatile=True\<rparr>) \<in> set fs)"
 
 definition wf_syscls :: "'m prog \<Rightarrow> bool"
 where "wf_syscls P \<equiv> {Object, Throwable, Thread, String} \<union> sys_xcpts \<subseteq> set(map fst P) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
@@ -114,6 +114,15 @@ lemma xcpt_subcls_Throwable:
   "\<lbrakk> C \<in> sys_xcpts; wf_prog wf_md P \<rbrakk> \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* Throwable"
 by (simp add: wf_prog_def wf_syscls_def is_class_def class_def)
 
+lemma is_class_Throwable:
+  "wf_prog wf_md P \<Longrightarrow> is_class P Throwable"
+by(auto simp add: wf_prog_def wf_syscls_def is_class_def class_def map_of_SomeI)
+
+lemma is_class_sub_Throwable:
+  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk> \<Longrightarrow> is_class P C"
+by(erule subcls_is_class1)(erule is_class_Throwable)
+
+
 context heap_base begin
 lemma wf_preallocatedE:
   assumes "wf_prog wf_md P"
@@ -139,8 +148,9 @@ end
 
 lemma (in heap_conf) hconf_start_heap:
   "wf_prog wf_md P \<Longrightarrow> hconf start_heap"
-unfolding start_heap_ok_def start_heap_def
-by(auto intro!: hconf_new_obj_mono' simp add: split_def intro: is_class_xcpt)
+unfolding start_heap_def start_heap_data_def initialization_list_def sys_xcpts_list_def
+apply(auto split: prod.split elim!: hconf_new_obj_mono intro: is_class_xcpt simp add: create_initial_object_simps)
+done
 
 lemma subcls1_wfD:
   "\<lbrakk> P \<turnstile> C \<prec>\<^sup>1 D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> D \<noteq> C \<and> \<not> (subcls1 P)\<^sup>+\<^sup>+ D C"
@@ -331,7 +341,7 @@ done
 
 lemma is_type_pTs:
 assumes "wf_prog wf_md P" and "(C,S,fs,ms) \<in> set P" and "(M,Ts,T,m) \<in> set ms"
-shows "set Ts \<subseteq> is_type P"
+shows "set Ts \<subseteq> types P"
 (*<*)
 proof
   from prems have "wf_mdecl wf_md P C (M,Ts,T,m)" 
@@ -339,7 +349,7 @@ proof
   hence "\<forall>t \<in> set Ts. is_type P t" by (unfold wf_mdecl_def) auto
   moreover fix t assume "t \<in> set Ts"
   ultimately have "is_type P t" by blast
-  thus "t \<in> is_type P" by(simp add: mem_def)
+  thus "t \<in> types P" by(simp)
 qed
 (*>*)
 
@@ -405,6 +415,11 @@ lemma is_refType_widen_Object:
   assumes wfP: "wf_prog wfmc P"
   shows "\<lbrakk> is_type P A; is_refT A \<rbrakk> \<Longrightarrow> P \<turnstile> A \<le> Class Object"
 by(induct A)(auto elim: refTE intro: subcls_C_Object[OF _ wfP] widen_array_object)
+
+lemma is_lub_unique:
+  assumes wf: "wf_prog wf_md P"
+  shows "\<lbrakk> P \<turnstile> lub(U, V) = T; P \<turnstile> lub(U, V) = T' \<rbrakk> \<Longrightarrow> T = T'"
+by(auto elim!: is_lub.cases intro: widen_antisym[OF wf])
 
 subsection{* Well-formedness and method lookup *}
 
@@ -584,31 +599,25 @@ qed
 lemma wf_prog_lift:
   assumes wf: "wf_prog (\<lambda>P C bd. A P C bd) P"
   and rule:
-  "\<And>wf_md C M Ts C T m bd.
-   wf_prog wf_md P \<Longrightarrow>
-   P \<turnstile> C sees M:Ts\<rightarrow>T = m in C \<Longrightarrow>   
-   set Ts \<subseteq>  is_type P \<Longrightarrow>
-   bd = (M,Ts,T,m) \<Longrightarrow>
-   A P C bd \<Longrightarrow>
-   B P C bd"
+  "\<And>wf_md C M Ts C T m.
+   \<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T = m in C; is_class P C; set Ts \<subseteq> types P; A P C (M,Ts,T,m) \<rbrakk>
+   \<Longrightarrow> B P C (M,Ts,T,m)"
   shows "wf_prog (\<lambda>P C bd. B P C bd) P"
-(*<*)
-proof -
-  from wf show ?thesis
-    apply (unfold wf_prog_def wf_cdecl_def)
-    apply clarsimp
-    apply (drule bspec, assumption)
-    apply (unfold wf_mdecl_def)
-    apply clarsimp
-    apply (drule bspec, assumption)
-    apply clarsimp
-    apply (frule mdecl_visible [OF wf], assumption+)
-    apply (frule is_type_pTs [OF wf], assumption+)
-    apply(rule rule[OF wf], assumption+)
-    apply auto
-    done
-qed
-
+using wf
+apply (unfold wf_prog_def wf_cdecl_def)
+apply clarsimp
+apply (drule (1) bspec)
+apply(subgoal_tac "is_class P a")
+ apply (unfold wf_mdecl_def)
+ apply clarsimp
+ apply (drule (1) bspec)
+ apply clarsimp
+ apply (frule mdecl_visible [OF wf], assumption+)
+ apply (frule is_type_pTs [OF wf], assumption+)
+ apply(rule rule[OF wf], assumption+)
+apply(drule weak_map_of_SomeI)
+apply(simp add: is_class_def class_def)
+done
 
 subsection{* Well-formedness and field lookup *}
 
@@ -624,7 +633,7 @@ done
 
 
 lemma has_fields_types:
-  "\<lbrakk> P \<turnstile> C has_fields FDTs; (FD,T) \<in> set FDTs; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_type P T"
+  "\<lbrakk> P \<turnstile> C has_fields FDTs; (FD, T, fm) \<in> set FDTs; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_type P T"
 (*<*)
 apply(induct rule:Fields.induct)
  apply(fastsimp dest!: class_wf simp: wf_cdecl_def wf_fdecl_def)
@@ -634,7 +643,7 @@ done
 
 
 lemma sees_field_is_type:
-  "\<lbrakk> P \<turnstile> C sees F:T in D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_type P T"
+  "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_type P T"
 (*<*)
 by(fastsimp simp: sees_field_def
             elim: has_fields_types map_of_SomeD[OF map_of_remap_SomeD])
@@ -653,12 +662,12 @@ proof -
 qed
 
 lemma wf_Object_not_has_field [dest]:
-  "\<lbrakk> P \<turnstile> Object has F:T in D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> False"
+  "\<lbrakk> P \<turnstile> Object has F:T (fm) in D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> False"
 by(auto dest: wf_Object_field_empty has_fields_fun simp add: has_field_def)
 
 lemma wf_Thread_has_interrupted_flag:
   assumes wf: "wf_prog wf_md P"
-  shows "P \<turnstile> Thread has interrupted_flag:Boolean in Thread"
+  shows "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
 proof -
   from wf have "is_class P Thread" by(rule is_class_Thread)
   from wf_Fields_Ex[OF wf this] obtain FDTs where "P \<turnstile> Thread has_fields FDTs" ..
@@ -666,22 +675,22 @@ proof -
     where "class P Thread = \<lfloor>(D, fs, ms)\<rfloor>" by(auto simp add: is_class_def)
   moreover hence "wf_cdecl wf_md P (Thread, D, fs, ms)"
     using wf by(rule class_wf)
-  hence "(interrupted_flag, Boolean) \<in> set fs" "distinct_fst fs"
+  hence "(interrupted_flag, Boolean, \<lparr>volatile=True\<rparr>) \<in> set fs" "distinct_fst fs"
     by(simp_all add: wf_cdecl_def)
-  ultimately have "map_of FDTs (interrupted_flag, Thread) = \<lfloor>Boolean\<rfloor>"
+  ultimately have "map_of FDTs (interrupted_flag, Thread) = \<lfloor>(Boolean, \<lparr>volatile=True\<rparr>)\<rfloor>"
     by cases(fastsimp intro: map_add_find_right map_of_mapk_SomeI injI map_of_SomeI)+
   with `P \<turnstile> Thread has_fields FDTs` show ?thesis
     unfolding has_field_def by blast
 qed
 
 lemma wf_sub_Thread_has_interrupted_flag [intro]:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> P \<turnstile> C has interrupted_flag:Boolean in Thread"
+  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
 by(blast intro: has_field_mono wf_Thread_has_interrupted_flag)
 
 lemma wf_has_field_mono2:
   assumes wf: "wf_prog wf_md P"
-  and has: "P \<turnstile> C has F:T in E"
-  shows "\<lbrakk> P \<turnstile> C \<preceq>\<^sup>* D; P \<turnstile> D \<preceq>\<^sup>* E \<rbrakk> \<Longrightarrow> P \<turnstile> D has F:T in E"
+  and has: "P \<turnstile> C has F:T (fm) in E"
+  shows "\<lbrakk> P \<turnstile> C \<preceq>\<^sup>* D; P \<turnstile> D \<preceq>\<^sup>* E \<rbrakk> \<Longrightarrow> P \<turnstile> D has F:T (fm) in E"
 proof(induct rule: rtranclp_induct)
   case base show ?case using has .
 next
@@ -692,8 +701,8 @@ next
   from DsubD' `P \<turnstile> D' \<preceq>\<^sup>* E` have DsubE: "P \<turnstile> D \<preceq>\<^sup>* E" and DsubE2: "(subcls1 P)^++ D E"
     by(rule converse_rtranclp_into_rtranclp rtranclp_into_tranclp2)+
   from wf DsubE2 have DnE: "D \<noteq> E" by(rule subcls_irrefl)
-  from DsubE have hasD: "P \<turnstile> D has F:T in E" by(rule `P \<turnstile> D \<preceq>\<^sup>* E \<Longrightarrow> P \<turnstile> D has F:T in E`)
-  then obtain FDTs where hasf: "P \<turnstile> D has_fields FDTs" and FE: "map_of FDTs (F, E) = \<lfloor>T\<rfloor>"
+  from DsubE have hasD: "P \<turnstile> D has F:T (fm) in E" by(rule `P \<turnstile> D \<preceq>\<^sup>* E \<Longrightarrow> P \<turnstile> D has F:T (fm) in E`)
+  then obtain FDTs where hasf: "P \<turnstile> D has_fields FDTs" and FE: "map_of FDTs (F, E) = \<lfloor>(T, fm)\<rfloor>"
     unfolding has_field_def by blast
   from hasf show ?case
   proof cases
@@ -702,13 +711,13 @@ next
     case (has_fields_rec DD' fs ms FDTs')
     with classD have [simp]: "DD' = D'" "rest = (fs, ms)"
       and hasf': "P \<turnstile> D' has_fields FDTs'"
-      and FDTs: "FDTs = map (\<lambda>(F, T). ((F, D), T)) fs @ FDTs'" by auto
+      and FDTs: "FDTs = map (\<lambda>(F, Tm). ((F, D), Tm)) fs @ FDTs'" by auto
     from FDTs FE DnE hasf' show ?thesis by(auto dest: map_of_SomeD simp add: has_field_def)
   qed
 qed
 
 lemma wf_has_field_idemp:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C has F:T in D \<rbrakk> \<Longrightarrow> P \<turnstile> D has F:T in D"
+  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C has F:T (fm) in D \<rbrakk> \<Longrightarrow> P \<turnstile> D has F:T (fm) in D"
 apply(frule has_field_decl_above)
 apply(erule (2) wf_has_field_mono2)
 apply(rule rtranclp.rtrancl_refl)
@@ -723,12 +732,12 @@ done
 
 lemma has_field_idemp_sees_field:
   assumes wf: "wf_prog wf_md P"
-  and has: "P \<turnstile> D has F:T in D"
-  shows "P \<turnstile> D sees F:T in D"
+  and has: "P \<turnstile> D has F:T (fm) in D"
+  shows "P \<turnstile> D sees F:T (fm) in D"
 proof -
   from has obtain FDTs where hasf: "P \<turnstile> D has_fields FDTs"
-    and FD: "map_of FDTs (F, D) = \<lfloor>T\<rfloor>" unfolding has_field_def by blast
-  from hasf have "map_of (map (\<lambda>((F, D), T). (F, D, T)) FDTs) F = \<lfloor>(D, T)\<rfloor>"
+    and FD: "map_of FDTs (F, D) = \<lfloor>(T, fm)\<rfloor>" unfolding has_field_def by blast
+  from hasf have "map_of (map (\<lambda>((F, D), T). (F, D, T)) FDTs) F = \<lfloor>(D, T, fm)\<rfloor>"
   proof cases
     case (has_fields_Object D' fs ms)
     from `class P Object = \<lfloor>(D', fs, ms)\<rfloor>` wf
@@ -737,7 +746,7 @@ proof -
     with FD has_fields_Object show ?thesis by(auto intro: map_of_remap_conv simp del: map_map)
   next
     case (has_fields_rec D' fs ms FDTs')
-    hence [simp]: "FDTs = map (\<lambda>(F, T). ((F, D), T)) fs @ FDTs'"
+    hence [simp]: "FDTs = map (\<lambda>(F, Tm). ((F, D), Tm)) fs @ FDTs'"
       and classD: "class P D = \<lfloor>(D', fs, ms)\<rfloor>" and DnObj: "D \<noteq> Object"
       and hasf': "P \<turnstile> D' has_fields FDTs'" by auto
     from `class P D = \<lfloor>(D', fs, ms)\<rfloor>` wf
@@ -746,7 +755,7 @@ proof -
     moreover have "map_of FDTs' (F, D) = None"
     proof(rule ccontr)
       assume "map_of FDTs' (F, D) \<noteq> None"
-      then obtain T' where "map_of FDTs' (F, D) = \<lfloor>T'\<rfloor>" by(auto)
+      then obtain T' fm' where "map_of FDTs' (F, D) = \<lfloor>(T', fm')\<rfloor>" by(auto)
       with hasf' have "P \<turnstile> D' \<preceq>\<^sup>* D" by(auto dest!: map_of_SomeD intro: has_fields_decl_above)
       with classD DnObj have "(subcls1 P)^++ D D"
 	by(auto intro: subcls1.intros rtranclp_into_tranclp2)
@@ -788,12 +797,6 @@ next
   ultimately show ?case using `FDTs' = map (\<lambda>(F, T). ((F, C), T)) fs @ FDTs` `distinct (map fst FDTs)` by simp
 qed
 
-
-(*
-lemma oconf_blank:
-  "\<lbrakk> wf_prog wf_md P; is_class P C \<rbrakk> \<Longrightarrow> P,h \<turnstile> blank P C \<surd>"
-by(drule (1) wf_Fields_Ex)(auto simp add: blank_def intro: oconf_init_fields)
-*)
 
 subsection {* Code generation *}
 
@@ -863,7 +866,7 @@ lemma wf_cdecl_code [code]:
    is_class P D \<and> \<not> subcls' P D C \<and>
    (\<forall>(M,Ts,T,m)\<in>set ms. wf_extCall P C M Ts T \<and> contravariant_overriding P D M Ts T)) \<and>
   (C = Object \<longrightarrow> (fs = []) \<and> (ms = [])) \<and> 
-  (C = Thread \<longrightarrow> ((run, [], Void) \<in> set (map (\<lambda>(M, Ts, T, b). (M, Ts, T)) ms)) \<and> (interrupted_flag, Boolean) \<in> set fs))"
+  (C = Thread \<longrightarrow> ((run, [], Void) \<in> set (map (\<lambda>(M, Ts, T, b). (M, Ts, T)) ms)) \<and> (interrupted_flag, Boolean, \<lparr>volatile=True\<rparr>) \<in> set fs))"
 by(auto simp add: wf_cdecl_def contravariant_overriding_def subcls'_def intro!: ext intro: rev_image_eqI)
 
 declare set_append [symmetric, code_unfold]

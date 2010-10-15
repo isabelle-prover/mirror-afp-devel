@@ -67,14 +67,14 @@ inductive WTrt :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> ex
   "WTrt P h E a NT \<Longrightarrow> WTrt P h E (a\<bullet>length) T"
 
 | WTrtFAcc:
-    "\<lbrakk> WTrt P h E e (Class C); P \<turnstile> C has F:T in D \<rbrakk> \<Longrightarrow>
+    "\<lbrakk> WTrt P h E e (Class C); P \<turnstile> C has F:T (fm) in D \<rbrakk> \<Longrightarrow>
     WTrt P h E (e\<bullet>F{D}) T"
 
 | WTrtFAccNT:
     "WTrt P h E e NT \<Longrightarrow> WTrt P h E (e\<bullet>F{D}) T"
 
 | WTrtFAss:
-    "\<lbrakk> WTrt P h E e1 (Class C);  P \<turnstile> C has F:T in D; WTrt P h E e2 T2;  P \<turnstile> T2 \<le> T \<rbrakk>
+    "\<lbrakk> WTrt P h E e1 (Class C);  P \<turnstile> C has F:T (fm) in D; WTrt P h E e2 T2;  P \<turnstile> T2 \<le> T \<rbrakk>
     \<Longrightarrow> WTrt P h E (e1\<bullet>F{D}:=e2) Void"
 
 | WTrtFAssNT:
@@ -111,8 +111,7 @@ inductive WTrt :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> ex
     \<Longrightarrow> WTrt P h E (e1;;e2) T2"
 
 | WTrtCond:
-    "\<lbrakk> WTrt P h E e Boolean; WTrt P h E e1 T1; WTrt P h E e2 T2; 
-       P \<turnstile> T1 \<le> T2 \<or> P \<turnstile> T2 \<le> T1; P \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2; P \<turnstile> T2 \<le> T1 \<longrightarrow> T = T1 \<rbrakk>
+    "\<lbrakk> WTrt P h E e Boolean; WTrt P h E e1 T1; WTrt P h E e2 T2; P \<turnstile> lub(T1, T2) = T \<rbrakk>
     \<Longrightarrow> WTrt P h E (if (e) e1 else e2) T"
 
 | WTrtWhile:
@@ -152,40 +151,23 @@ lemmas [intro] =
 
 subsection{*Easy consequences*}
 
-lemma [iff]: "(P,E,h \<turnstile> [] [:] Ts) = (Ts = [])"
-by (auto elim: WTrts.cases)
-
-lemma [iff]: "(P,E,h \<turnstile> e#es [:] T#Ts) = (P,E,h \<turnstile> e : T \<and> P,E,h \<turnstile> es [:] Ts)"
-by (auto elim: WTrts.cases)
+inductive_simps WTrts_iffs [iff]:
+  "P,E,h \<turnstile> [] [:] Ts"
+  "P,E,h \<turnstile> e#es [:] T#Ts"
+  "P,E,h \<turnstile> (e#es) [:] Ts"
 
 lemma WTrts_conv_list_all2: "P,E,h \<turnstile> es [:] Ts = list_all2 (WTrt P h E) es Ts"
 by(induct es arbitrary: Ts)(auto simp add: list_all2_Cons1 elim: WTrts.cases)
-
-lemma [iff]: "(P,E,h \<turnstile> (e#es) [:] Ts) =
-  (\<exists>U Us. Ts = U#Us \<and> P,E,h \<turnstile> e : U \<and> P,E,h \<turnstile> es [:] Us)"
-by(auto simp add: WTrts_conv_list_all2 list_all2_Cons1)
 
 lemma [simp]: "(P,E,h \<turnstile> es\<^isub>1 @ es\<^isub>2 [:] Ts) =
   (\<exists>Ts\<^isub>1 Ts\<^isub>2. Ts = Ts\<^isub>1 @ Ts\<^isub>2 \<and> P,E,h \<turnstile> es\<^isub>1 [:] Ts\<^isub>1 & P,E,h \<turnstile> es\<^isub>2[:]Ts\<^isub>2)"
 by(auto simp add: WTrts_conv_list_all2 list_all2_append1 dest: list_all2_lengthD[symmetric])
 
-lemma [iff]: "P,E,h \<turnstile> Val v : T = (typeof\<^bsub>h\<^esub> v = Some T)"
-proof
-  assume "P,E,h \<turnstile> Val v : T"
-  thus "typeof\<^bsub>h\<^esub> v = Some T" by - (erule WTrt.cases, auto)
-next
-  assume "typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>"
-  thus "P,E,h \<turnstile> Val v : T" by - (rule WTrtVal)
-qed
-
-lemma [iff]: "P,E,h \<turnstile> Var v : T = (E v = Some T)"
-by (auto elim: WTrt.cases)
-
-lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:T\<^isub>2)"
-by (auto elim: WTrt.cases)
-
-lemma [iff]: "P,E,h \<turnstile> {V:T=vo; e} : T'  =  (P,E(V\<mapsto>T),h \<turnstile> e : T' \<and> (case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof\<^bsub>h\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T))"
-by (auto elim: WTrt.cases)
+inductive_simps WTrt_iffs [iff]:
+  "P,E,h \<turnstile> Val v : T"
+  "P,E,h \<turnstile> Var v : T"
+  "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2"
+  "P,E,h \<turnstile> {V:T=vo; e} : T'"
 
 inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> newA T\<lfloor>i\<rceil> : U"
@@ -211,12 +193,7 @@ subsection{*Some interesting lemmas*}
 
 lemma WTrts_Val[simp]:
  "P,E,h \<turnstile> map Val vs [:] Ts \<longleftrightarrow> map (typeof\<^bsub>h\<^esub>) vs = map Some Ts"
-apply(induct vs arbitrary: Ts)
- apply simp
-apply(case_tac Ts)
- apply simp
-apply simp
-done
+by(induct vs arbitrary: Ts) auto
 
 lemma WTrt_env_mono: "P,E,h \<turnstile> e : T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> e : T)"
   and WTrts_env_mono: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> es [:] Ts)"
@@ -270,7 +247,7 @@ apply(assumption)
 apply(erule WTrtAAss)
 apply(assumption)+
 apply(erule WTrtALength)
-apply(fastsimp simp: WTrtFAcc has_visible_field)
+apply(fastsimp intro: WTrtFAcc has_visible_field)
 apply(fastsimp simp: WTrtFAss dest: has_visible_field)
 apply(fastsimp simp: WTrtCall)
 apply(fastsimp intro: WTrtCallExternal)

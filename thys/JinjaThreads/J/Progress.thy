@@ -64,11 +64,11 @@ inductive WTrt' :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> e
 
 | "WTrt' P h E a NT \<Longrightarrow> WTrt' P h E (a\<bullet>length) T"
 
-| "\<lbrakk> WTrt' P h E e (Class C); P \<turnstile> C has F:T in D \<rbrakk> \<Longrightarrow> WTrt' P h E (e\<bullet>F{D}) T"
+| "\<lbrakk> WTrt' P h E e (Class C); P \<turnstile> C has F:T (fm) in D \<rbrakk> \<Longrightarrow> WTrt' P h E (e\<bullet>F{D}) T"
 
 | "WTrt' P h E e NT \<Longrightarrow> WTrt' P h E (e\<bullet>F{D}) T"
 
-| "\<lbrakk> WTrt' P h E e1 (Class C); P \<turnstile> C has F:T in D; WTrt' P h E e2 T2; P \<turnstile> T2 \<le> T \<rbrakk> \<Longrightarrow> WTrt' P h E (e1\<bullet>F{D}:=e2) Void"
+| "\<lbrakk> WTrt' P h E e1 (Class C); P \<turnstile> C has F:T (fm) in D; WTrt' P h E e2 T2; P \<turnstile> T2 \<le> T \<rbrakk> \<Longrightarrow> WTrt' P h E (e1\<bullet>F{D}:=e2) Void"
 
 | "\<lbrakk> WTrt' P h E e1 NT; WTrt' P h E e2 T2 \<rbrakk> \<Longrightarrow> WTrt' P h E (e1\<bullet>F{D}:=e2) Void"
 
@@ -89,8 +89,7 @@ inductive WTrt' :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> e
 
 | "\<lbrakk> WTrt' P h E e1 T1; WTrt' P h E e2 T2 \<rbrakk> \<Longrightarrow> WTrt' P h E (e1;;e2) T2"
 
-| "\<lbrakk> WTrt' P h E e Boolean; WTrt' P h E e1 T1; WTrt' P h E e2 T2; 
-       P \<turnstile> T1 \<le> T2 \<or> P \<turnstile> T2 \<le> T1; P \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2; P \<turnstile> T2 \<le> T1 \<Longrightarrow> T = T1 \<rbrakk>
+| "\<lbrakk> WTrt' P h E e Boolean; WTrt' P h E e1 T1; WTrt' P h E e2 T2; P \<turnstile> lub(T1, T2) = T \<rbrakk>
     \<Longrightarrow> WTrt' P h E (if (e) e1 else e2) T"
 
 | "\<lbrakk> WTrt' P h E e Boolean; WTrt' P h E c T \<rbrakk> \<Longrightarrow> WTrt' P h E (while(e) c) Void"
@@ -558,13 +557,22 @@ next
                 case False
                 hence "nat (sint idx) < array_length h ad"
                   by(metis int_le_0_conv linorder_not_less nat_int.Rep_inverse' sint_0 transfer_int_nat_numerals(1) word_sless_alt zless_nat_conj)
-                with ty have "P,h \<turnstile> ad@ACell (nat (sint idx)) : U"
+                with ty have adal: "P,h \<turnstile> ad@ACell (nat (sint idx)) : U"
                   by(auto intro!: addr_loc_type.intros)
-                from heap_write_total[OF this, of w]
-                obtain h' where h': "heap_write h ad (ACell (nat (sint idx))) w h'" ..
-                with ty False vidx ivalv evalw Array wte
                 show ?thesis
-                  by(cases "P \<turnstile> T' \<le> U")(fastsimp intro: RedAAss RedAAssStore)+
+                proof(cases "P \<turnstile> T' \<le> U")
+                  case True
+                  with wte evalw have "P,h \<turnstile> w :\<le> U"
+                    by(auto simp add: conf_def)
+                  from heap_write_total[OF adal this]
+                  obtain h' where h': "heap_write h ad (ACell (nat (sint idx))) w h'" ..
+                  with ty False vidx ivalv evalw Array wte True
+                  show ?thesis by(fastsimp intro: RedAAss)
+                next
+                  case False
+                  with ty vidx ivalv evalw Array wte `\<not> (idx <s 0 \<or> sint idx \<ge> int (array_length h ad))`
+                  show ?thesis by(fastsimp intro: RedAAssStore)
+                qed
               qed
 	    next
 	      fix ex
@@ -679,9 +687,9 @@ next
     thus ?thesis by(blast intro: ALengthRed)
   qed
 next
-  case (WTrtFAcc E e C F T D l)
+  case (WTrtFAcc E e C F T fm D l)
   have wte: "P,E,h \<turnstile> e : Class C"
-   and field: "P \<turnstile> C has F:T in D" by fact+
+   and field: "P \<turnstile> C has F:T (fm) in D" by fact+
   show ?case
   proof cases
     assume "final e"
@@ -713,9 +721,9 @@ next
     from prems show ?thesis by simp (fast intro:FAccRed)
   qed
 next
-  case (WTrtFAss E e1 C F T D e2 T2 l)
+  case (WTrtFAss E e1 C F T fm D e2 T2 l)
   have wte1: "P,E,h \<turnstile> e1 : Class C"
-    and field: "P \<turnstile> C has F:T in D" by fact+
+    and field: "P \<turnstile> C has F:T (fm) in D" by fact+
   show ?case
   proof cases
     assume "final e1"
@@ -728,9 +736,11 @@ next
 	thus ?thesis
 	proof (rule finalE)
 	  fix v assume e2: "e2 = Val v"
-          from wte1 field e1 have "P,h \<turnstile> a@CField D F : T"
+          from wte1 field e1 have adal: "P,h \<turnstile> a@CField D F : T"
             by(auto intro: addr_loc_type.intros)
-          from heap_write_total[OF this, of v] obtain h' 
+          from e2 `P \<turnstile> T2 \<le> T` `P,E,h \<turnstile> e2 : T2`
+          have "P,h \<turnstile> v :\<le> T" by(auto simp add: conf_def)
+          from heap_write_total[OF adal this] obtain h' 
             where "heap_write h a (CField D F) v h'" ..
           with wte1 field e1 e2 show ?thesis
 	    by(fastsimp intro: RedFAss)

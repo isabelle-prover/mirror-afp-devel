@@ -1,14 +1,14 @@
-(*  Title:      JinjaThreads/BV/SemiType.thy
+(*  Title:      JinjaThreads/Common/SemiType.thy
     Author:     Tobias Nipkow, Gerwin Klein, Andreas Lochbihler
 *)
 
 header {* 
-  \chapter{Bytecode verifier}
   \isaheader{The Jinja Type System as a Semilattice} 
 *}
 
-theory SemiType
-imports "../Common/WellForm" "../../Jinja/DFA/Semilattices"
+theory SemiType imports
+  "WellForm" 
+  "../../Jinja/DFA/Semilattices"
 begin
 
 inductive_set
@@ -19,7 +19,7 @@ where
   "P \<turnstile> C <\<^sup>1 D \<equiv> (C, D) \<in> widen1 P"
 
 | widen1_Array_Object:
-  "(* is_class P Object \<Longrightarrow> *) P \<turnstile> Array (Class Object) <\<^sup>1 Class Object"
+  "P \<turnstile> Array (Class Object) <\<^sup>1 Class Object"
 
 | widen1_Array_Integer:
   "P \<turnstile> Array Integer <\<^sup>1 Class Object"
@@ -319,8 +319,9 @@ definition sup :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty er
             else exec_lub (widen1 P) (super P) T U)
    else if (T = U) then OK T else Err"
 
-definition esl :: "'c prog \<Rightarrow> ty esl" where
-  "esl P \<equiv> (is_type P, widen P, sup P)"
+definition esl :: "'m prog \<Rightarrow> ty esl"
+where
+  "esl P = (types P, widen P, sup P)"
 
 
 
@@ -512,21 +513,21 @@ apply(rule iffI)
 apply(erule widen1_rtrancl_into_widen)
 by(rule trancl_into_rtrancl)
 
-lemma closed_err_types:
-  assumes wfP: "wf_prog wf_mb P"
-  shows "closed (err (is_type P)) (lift2 (sup P))"
+lemma sup_is_type:
+  assumes wf: "wf_prog wf_md P"
+  and itA: "is_type P A"
+  and itB: "is_type P B"
+  and sup: "sup P A B = OK T"
+  shows "is_type P T"
 proof -
-  { fix A B
-    assume itA: "is_type P A"
-      and itB: "is_type P B"
-      and ANT: "A \<noteq> NT"
+  { assume ANT: "A \<noteq> NT"
       and BNT: "B \<noteq> NT"
       and AnB: "A \<noteq> B"
       and RTA: "is_refT A"
       and RTB: "is_refT B"
-    hence AObject: "P \<turnstile> A \<le> Class Object"
+    with itA itB have AObject: "P \<turnstile> A \<le> Class Object"
       and BObject: "P \<turnstile> B \<le> Class Object"
-      by(auto intro: is_refType_widen_Object[OF wfP])
+      by(auto intro: is_refType_widen_Object[OF wf])
     have "is_type P (exec_lub (widen1 P) (super P) A B)"
     proof(cases "A = Class Object \<or> B = Class Object")
       case True
@@ -536,12 +537,12 @@ proof -
 	moreover
 	from BObject BNT
 	have "(B, Class Object) \<in> (widen1 P)\<^sup>*"
-	  by(cases "B = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wfP])
+	  by(cases "B = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wf])
 	hence "is_ub ((widen1 P)\<^sup>*) (Class Object) B (Class Object)"
 	  by(auto intro: is_ubI)
 	hence "is_lub ((widen1 P)\<^sup>*) (Class Object) B (Class Object)"
 	  by(auto simp add: is_lub_def dest: is_ubD)
-	with acyclic_widen1[OF wfP]
+	with acyclic_widen1[OF wf]
 	have "exec_lub (widen1 P) (super P) (Class Object) B = Class Object"
 	  by(auto intro: exec_lub_conv superI)
 	ultimately show "exec_lub (widen1 P) (super P) A B = Class Object" by simp
@@ -550,29 +551,29 @@ proof -
 	moreover
 	from AObject ANT
 	have "(A, Class Object) \<in> (widen1 P)\<^sup>*"
-	  by(cases "A = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wfP])
+	  by(cases "A = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wf])
 	hence "is_ub ((widen1 P)\<^sup>*) (Class Object) A (Class Object)"
 	  by(auto intro: is_ubI)
 	hence "is_lub ((widen1 P)\<^sup>*) (Class Object) A (Class Object)"
 	  by(auto simp add: is_lub_def dest: is_ubD)
-	with acyclic_widen1[OF wfP]
+	with acyclic_widen1[OF wf]
 	have "exec_lub (widen1 P) (super P) A (Class Object) = Class Object"
 	  by(auto intro: exec_lub_conv superI)
 	ultimately show "exec_lub (widen1 P) (super P) A B = Class Object" by simp
       qed
-      with wfP show ?thesis by(simp)
+      with wf show ?thesis by(simp)
     next
       case False
       hence AnObject: "A \<noteq> Class Object"
 	and BnObject: "B \<noteq> Class Object" by auto
-      from widen_into_widen1_trancl[OF wfP AObject AnObject ANT]
+      from widen_into_widen1_trancl[OF wf AObject AnObject ANT]
       have "(A, Class Object) \<in> (widen1 P)\<^sup>*"
 	by(rule trancl_into_rtrancl)
-      moreover from widen_into_widen1_trancl[OF wfP BObject BnObject BNT]
+      moreover from widen_into_widen1_trancl[OF wf BObject BnObject BNT]
       have "(B, Class Object) \<in> (widen1 P)\<^sup>*"
 	by(rule trancl_into_rtrancl)
       ultimately have "is_lub ((widen1 P)\<^sup>*) A B (exec_lub (widen1 P) (super P) A B)"
-	apply(rule is_lub_exec_lub[OF single_valued_widen1[OF wfP] acyclic_widen1[OF wfP]])
+	apply(rule is_lub_exec_lub[OF single_valued_widen1[OF wf] acyclic_widen1[OF wf]])
 	by(auto intro: superI)
       hence Aew1: "(A, exec_lub (widen1 P) (super P) A B) \<in> (widen1 P)\<^sup>*"
 	by(auto simp add: is_lub_def dest!: is_ubD)
@@ -583,12 +584,26 @@ proof -
       next
 	fix A'
 	assume "P \<turnstile> A' <\<^sup>1 exec_lub (widen1 P) (super P) A B"
-	thus ?thesis by(rule widen1_is_type[OF wfP])
+	thus ?thesis by(rule widen1_is_type[OF wf])
       qed
     qed }
+  with is_class_Object[OF wf] sup itA itB show ?thesis unfolding sup_def
+    by(cases "A = B")(auto split: split_if_asm simp add: mem_def exec_lub_refl)
+qed
+
+lemma closed_err_types: -- "Replace in SemiType"
+  assumes wfP: "wf_prog wf_mb P"
+  shows "closed (err (types P)) (lift2 (sup P))"
+proof -
+  { fix A B
+    assume it: "is_type P A" "is_type P B"
+      and "A \<noteq> NT" "B \<noteq> NT" "A \<noteq> B"
+      and "is_refT A" "is_refT B"
+    hence "is_type P (exec_lub (widen1 P) (super P) A B)"
+      using sup_is_type[OF wfP it] by(simp add: sup_def) }
   with is_class_Object[OF wfP] show ?thesis
     unfolding closed_def plussub_def lift2_def sup_def
-    by(auto split: err.split ty.splits)(auto simp add: mem_def exec_lub_refl)
+    by(auto split: err.split ty.splits)(auto simp add: exec_lub_refl)
 qed
 
 lemma widen_into_widen1_rtrancl:
@@ -638,7 +653,6 @@ lemma sup_widen_smallest:
   assumes wfP: "wf_prog wf_mb P"
   and itT: "is_type P T"
   and itU: "is_type P U"
-  and itV: "is_type P V"
   and TwV: "P \<turnstile> T \<le> V"
   and UwV: "P \<turnstile> U \<le> V"
   and sup: "sup P T U = OK W"
@@ -671,7 +685,7 @@ proof -
     hence "P \<turnstile> exec_lub (widen1 P) (super P) T U \<le> V"
       by(rule widen1_rtrancl_into_widen[OF wfP])
     with W have "P \<turnstile> W \<le> V" by simp }
-  with sup itT itU itV TwV UwV show ?thesis
+  with sup itT itU TwV UwV show ?thesis
     by(simp add: sup_def split: split_if_asm)
 qed
 
@@ -696,20 +710,54 @@ proof -
   assume wf_prog: "wf_prog wf_mb P"  
   hence "order (widen P)"..
   moreover from wf_prog
-  have "closed (err (is_type P)) (lift2 (sup P))"
+  have "closed (err (types P)) (lift2 (sup P))"
     by (rule closed_err_types)
   moreover
   from wf_prog have
-    "(\<forall>x\<in>err (is_type P). \<forall>y\<in>err (is_type P). x \<sqsubseteq>\<^bsub>Err.le (widen P)\<^esub> x \<squnion>\<^bsub>lift2 (sup P)\<^esub> y) \<and> 
-     (\<forall>x\<in>err (is_type P). \<forall>y\<in>err (is_type P). y \<sqsubseteq>\<^bsub>Err.le (widen P)\<^esub> x \<squnion>\<^bsub>lift2 (sup P)\<^esub> y)"
-    by(auto simp add: lesub_def plussub_def Err.le_def lift2_def sup_widen_greater mem_def split: err.split)
+    "(\<forall>x\<in>err (types P). \<forall>y\<in>err (types P). x \<sqsubseteq>\<^bsub>Err.le (widen P)\<^esub> x \<squnion>\<^bsub>lift2 (sup P)\<^esub> y) \<and> 
+     (\<forall>x\<in>err (types P). \<forall>y\<in>err (types P). y \<sqsubseteq>\<^bsub>Err.le (widen P)\<^esub> x \<squnion>\<^bsub>lift2 (sup P)\<^esub> y)"
+    by(auto simp add: lesub_def plussub_def Err.le_def lift2_def sup_widen_greater split: err.split)
   moreover from wf_prog have
-    "\<forall>x\<in>err (is_type P). \<forall>y\<in>err (is_type P). \<forall>z\<in>err (is_type P). 
+    "\<forall>x\<in>err (types P). \<forall>y\<in>err (types P). \<forall>z\<in>err (types P). 
     x \<sqsubseteq>\<^bsub>Err.le (widen P)\<^esub> z \<and> y \<sqsubseteq>\<^bsub>Err.le (widen P)\<^esub> z \<longrightarrow> x \<squnion>\<^bsub>lift2 (sup P)\<^esub> y \<sqsubseteq>\<^bsub>Err.le (widen P)\<^esub> z"
     by (unfold lift2_def plussub_def lesub_def Err.le_def)
-       (auto intro: sup_widen_smallest dest:sup_exists simp add: mem_def split: err.split)
+       (auto intro: sup_widen_smallest dest:sup_exists simp add: split: err.split)
   ultimately show ?thesis by (simp add: esl_def semilat_def sl_def Err.sl_def)
 qed
+
+subsection {* Relation between @{term "sup P T U = OK V"} and @{term "P \<turnstile> lub(T, U) = V"} *}
+
+lemma sup_is_lubI:
+  assumes wf: "wf_prog wf_md P"
+  and it: "is_type P T" "is_type P U"
+  and sup: "sup P T U = OK V"
+  shows "P \<turnstile> lub(T, U) = V"
+proof 
+  from sup_widen_greater[OF wf it sup]
+  show "P \<turnstile> T \<le> V" "P \<turnstile> U \<le> V" by blast+
+next
+  fix T'
+  assume "P \<turnstile> T \<le> T'" "P \<turnstile> U \<le> T'"
+  with wf it show "P \<turnstile> V \<le> T'" using sup by(rule sup_widen_smallest)
+qed
+
+lemma is_lub_subD:
+  assumes wf: "wf_prog wf_md P"
+  and it: "is_type P T" "is_type P U"
+  and lub: "P \<turnstile> lub(T, U) = V"
+  shows "sup P T U = OK V"
+proof -
+  from lub have "P \<turnstile> T \<le> V" "P \<turnstile> U \<le> V" by(blast dest: is_lub_upper)+
+  from sup_exists[OF this] obtain W where "sup P T U = OK W" by blast
+  moreover
+  with wf it have "P \<turnstile> lub(T, U) = W" by(rule sup_is_lubI)
+  with lub have "V = W" by(auto dest: is_lub_unique[OF wf])
+  ultimately show ?thesis by simp
+qed
+
+lemma is_lub_is_type:
+  "\<lbrakk> wf_prog wf_md P; is_type P T; is_type P U; P \<turnstile> lub(T, U) = V \<rbrakk> \<Longrightarrow> is_type P V"
+by(frule (3) is_lub_subD)(erule (3) sup_is_type)
 
 subsection {* Code generator setup *}
 
@@ -723,5 +771,7 @@ by(auto elim: widen1p_i_i_oE intro: widen1p_i_i_oI simp add: widen1_def fun_eq_i
 lemma rtrancl_widen1_code [code_inline]:
   "(widen1 P)^* = (\<lambda>(a, b). Predicate.holds (rtrancl_tab_FioB_i_i_i (widen1p_i_i_o P) [] a b))"
 by(auto simp add: fun_eq_iff Predicate.holds_eq widen1_def Collect_def rtrancl_def mem_def rtranclp_eq_rtrancl_tab_nil eval_widen1p_i_i_o_conv intro!: rtrancl_tab_FioB_i_i_iI elim!: rtrancl_tab_FioB_i_i_iE)
+
+declare exec_lub_def [code_inline]
 
 end

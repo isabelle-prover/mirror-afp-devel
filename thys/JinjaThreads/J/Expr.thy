@@ -219,13 +219,14 @@ declare is_val.cases [elim!]
 lemma is_val_iff: "is_val e \<longleftrightarrow> (\<exists>v. e = Val v)"
 by(auto)
 
+code_pred is_val .
+
 fun is_vals :: "('a,'b) exp list \<Rightarrow> bool" where
   "is_vals [] = True"
 | "is_vals (e#es) = (is_val e \<and> is_vals es)"
 
 lemma is_vals_append [simp]: "is_vals (es @ es') \<longleftrightarrow> is_vals es \<and> is_vals es'"
-apply(induct es, auto)
-done
+by(induct es) auto
 
 lemma is_vals_conv: "is_vals es = (\<exists>vs. es = map Val vs)"
 apply(induct es, auto)
@@ -244,6 +245,36 @@ declare is_addr.cases[elim!]
 
 lemma [simp]: "(is_addr e) \<longleftrightarrow> (\<exists>a. e = addr a)"
 by auto
+
+primrec the_Val :: "('a, 'b) exp \<Rightarrow> val"
+where
+  "the_Val (Val v) = v"
+
+inductive is_Throws :: "('a, 'b) exp list \<Rightarrow> bool"
+where
+  "is_Throws (Throw a # es)"
+| "is_Throws es \<Longrightarrow> is_Throws (Val v # es)"
+
+code_pred is_Throws .
+
+lemma is_Throws_conv: "is_Throws es \<longleftrightarrow> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
+apply(rule iffI)
+ apply(erule is_Throws.induct)
+  apply(rule exI[where x="[]"])
+  apply simp
+ apply(clarsimp)
+ apply(rule_tac x="v # vs" in exI)
+ apply simp
+apply(induct es arbitrary: vs)
+ apply simp
+apply(clarsimp simp add: Cons_eq_append_conv)
+apply(erule disjE)
+ apply(simp add: is_Throws.intros)
+apply(clarsimp)
+apply(rule is_Throws.intros)
+apply(erule meta_mp)
+apply blast
+done
 
 subsection {* @{text "blocks"} *}
 

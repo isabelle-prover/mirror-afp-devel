@@ -123,9 +123,9 @@ where
   \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayIndexOutOfBounds, s\<rangle>"
 
 | Red1AAcc:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length (hp s) a);
-     heap_read (hp s) a (ACell (nat (sint i))) v \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (ACell (nat (sint i))) v \<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a);
+     heap_read h a (ACell (nat (sint i))) v \<rbrakk>
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (ACell (nat (sint i))) v \<rbrace>\<rightarrow> \<langle>Val v, (h, xs)\<rangle>"
 
 | AAss1Red1:
   "P,t \<turnstile>1 \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> P,t \<turnstile>1 \<langle>a\<lfloor>i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>a'\<lfloor>i\<rceil> := e, s'\<rangle>"
@@ -166,8 +166,8 @@ where
   "P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P,t \<turnstile>1 \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>F{D}, s'\<rangle>"
 
 | Red1FAcc:
-  "heap_read (hp s) a (CField D F) v
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<bullet>F{D}, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (CField D F) v\<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
+  "heap_read h a (CField D F) v
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<bullet>F{D}, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (CField D F) v\<rbrace>\<rightarrow> \<langle>Val v, (h, xs)\<rangle>"
 
 | Red1FAccNull:
   "P,t \<turnstile>1 \<langle>null\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
@@ -1522,7 +1522,7 @@ done
 
 lemma Red1_final_thread_wf: "final_thread_wf final_expr1 (mred1 P)"
 proof -
-  interpret multithreaded final_expr1 "mred1 P"
+  interpret multithreaded final_expr1 "mred1 P" convert_RA
     by(rule Red1_mthr)
   thus ?thesis
     by(unfold_locales)(auto elim!: Red1.cases simp add: final_iff)
@@ -1530,7 +1530,7 @@ qed
 
 lemma Red1'_final_thread_wf: "final_thread_wf final_expr1 (mred1' P)"
 proof -
-  interpret multithreaded final_expr1 "mred1' P"
+  interpret multithreaded final_expr1 "mred1' P" convert_RA
     by(rule Red1'_mthr)
   show ?thesis
     by(unfold_locales)(auto elim!: Red1.cases simp add: final_iff)
@@ -1538,7 +1538,7 @@ qed
 
 lemma Red1_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1 P) (\<tau>MOVE1 P) wfs"
 proof -
-  interpret final_thread_wf final_expr1 "mred1 P"
+  interpret final_thread_wf final_expr1 "mred1 P" convert_RA
     by(rule Red1_final_thread_wf)
   show ?thesis
   proof
@@ -1554,7 +1554,7 @@ qed
 
 lemma Red1'_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1' P) (\<tau>MOVE1 P) wfs"
 proof -
-  interpret final_thread_wf final_expr1 "mred1' P"
+  interpret final_thread_wf final_expr1 "mred1' P" convert_RA
     by(rule Red1'_final_thread_wf)
   show ?thesis
   proof
@@ -1573,7 +1573,8 @@ end
 sublocale J1_heap_base < Red1_mthr!: 
   \<tau>multithreaded_wf 
     final_expr1
-    "mred1 P" 
+    "mred1 P"
+    convert_RA
     "\<tau>MOVE1 P"
     wfs
   for P wfs
@@ -1583,6 +1584,7 @@ sublocale J1_heap_base < Red1'_mthr!:
   \<tau>multithreaded_wf
     final_expr1
     "mred1' P"
+    convert_RA
     "\<tau>MOVE1 P"
     wfs
   for P wfs

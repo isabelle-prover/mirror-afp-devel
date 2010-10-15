@@ -50,7 +50,7 @@ by(induct vs) simp_all
 
 lemma hidden_unmod: "hidden Vs i \<Longrightarrow> unmod (compE1 Vs e) i"
   and hidden_unmods: "hidden Vs i \<Longrightarrow> unmods (compEs1 Vs es) i"
-apply(induct e and es arbitrary: Vs and Vs)
+apply(induct Vs e and Vs es rule: compE1_compEs1_induct)
 apply (simp_all add:hidden_inacc)
 apply(auto simp add:hidden_def)
 done
@@ -66,9 +66,9 @@ declare max_dest [dest!]
 
 lemma fv_unmod_compE1: "\<lbrakk> i < length Vs; Vs ! i \<notin> fv e \<rbrakk> \<Longrightarrow> unmod (compE1 Vs e) i"
   and fvs_unmods_compEs1: "\<lbrakk> i < length Vs; Vs ! i \<notin> fvs es \<rbrakk> \<Longrightarrow> unmods (compEs1 Vs es) i"
-proof(induct e and es arbitrary: Vs and Vs)
-  case (Block V ty vo exp)
-  note IH = `\<And>Vs. \<lbrakk>i < length Vs; Vs ! i \<notin> fv exp \<rbrakk> \<Longrightarrow> unmod (compE1 Vs exp) i`
+proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
+  case (Block Vs V ty vo exp)
+  note IH = `\<lbrakk>i < length (Vs @ [V]); (Vs @ [V]) ! i \<notin> fv exp \<rbrakk> \<Longrightarrow> unmod (compE1 (Vs @ [V]) exp) i`
   note len = `i < length Vs`
   hence i: "i < length (Vs @ [V])" by simp
   show ?case
@@ -83,9 +83,9 @@ proof(induct e and es arbitrary: Vs and Vs)
     from IH[OF i this] len show ?thesis by(auto)
   qed
 next
-  case (TryCatch e1 C V e2)
-  note IH1 = `\<And>Vs. \<lbrakk>i < length Vs; Vs ! i \<notin> fv e1 \<rbrakk> \<Longrightarrow> unmod (compE1 Vs e1) i`
-  note IH2 = `\<And>Vs. \<lbrakk>i < length Vs; Vs ! i \<notin> fv e2 \<rbrakk> \<Longrightarrow> unmod (compE1 Vs e2) i`
+  case (TryCatch Vs e1 C V e2)
+  note IH1 = `\<lbrakk>i < length Vs; Vs ! i \<notin> fv e1 \<rbrakk> \<Longrightarrow> unmod (compE1 Vs e1) i`
+  note IH2 = `\<lbrakk>i < length (Vs @ [V]); (Vs @ [V]) ! i \<notin> fv e2 \<rbrakk> \<Longrightarrow> unmod (compE1 (Vs @ [V]) e2) i`
   note len = `i < length Vs`
   hence i: "i < length (Vs @ [V])" by simp
   have "unmod (compE1 (Vs @ [V]) e2) i"
@@ -319,48 +319,33 @@ lemma bisims_map_Val_Throw:
   "bisims Vs (map Val vs @ Throw a # es) es' xs \<longleftrightarrow> es' = map Val vs @ Throw a # compEs1 Vs es \<and> \<not> contains_insyncs es"
 apply(induct vs arbitrary: es')
  apply(simp)
- apply(rule iffI)
-  apply(erule bisims_cases)
-   apply(clarsimp simp add: compEs1_conv_map)
-  apply(simp)
- apply(simp)
- apply(rule bisimsCons1)
-   apply(fastsimp)
-  apply(fastsimp)
- apply simp
-apply(clarsimp)
-apply(rule iffI)
- apply(erule bisims_cases)
-  apply(simp)
- apply(simp)
-apply(simp)
-apply(rule bisimsCons2)
-apply(simp)
+ apply(fastsimp simp add: compEs1_conv_map)
+apply(fastsimp elim!: bisims_cases intro: bisimsCons2)
 done
 
 lemma compE1_bisim [intro]: "\<lbrakk> fv e \<subseteq> set Vs; \<not> contains_insync e \<rbrakk> \<Longrightarrow> bisim Vs e (compE1 Vs e) xs"
   and compEs1_bisims [intro]: "\<lbrakk> fvs es \<subseteq> set Vs; \<not> contains_insyncs es \<rbrakk> \<Longrightarrow> bisims Vs es (compEs1 Vs es) xs"
-proof(induct e and es arbitrary: Vs xs and Vs xs)
-  case (BinOp exp1 bop exp2 Vs x)
+proof(induct Vs e and Vs es arbitrary: xs and xs rule: compE1_compEs1_induct)
+  case (BinOp Vs exp1 bop exp2 x)
   thus ?case by(cases "is_val exp1")(auto)
 next
-  case (AAcc exp1 exp2 Vs x)
+  case (AAcc Vs exp1 exp2 x)
   thus ?case by(cases "is_val exp1")(auto)
 next
-  case (AAss exp1 exp2 exp3 Vs x)
+  case (AAss Vs exp1 exp2 exp3 x)
   thus ?case by(cases "is_val exp1", cases "is_val exp2", fastsimp+)
 next
-  case (FAss exp1 F D exp2 Vs x)
+  case (FAss Vs exp1 F D exp2 x)
   thus ?case by(cases "is_val exp1", auto)
 next
-  case (Call obj M params Vs x)
+  case (Call Vs obj M params x)
   thus ?case by(cases "is_val obj")(auto)
 next
-  case (Block V T vo exp Vs xs)
+  case (Block Vs V T vo exp xs)
   from `fv {V:T=vo; exp} \<subseteq> set Vs` have "fv exp \<subseteq> set (Vs@[V])" by(auto)
   with Block show ?case by(cases vo)(auto)
 next
-  case (Cons_exp exp list Vs x)
+  case (Cons Vs exp list x)
   thus ?case by(cases "is_val exp")(auto intro!: bisimsCons2)
 qed(auto)
 
@@ -424,23 +409,8 @@ lemma bisims_map_Val_Throw2:
    (\<exists>es''. es' = map Val vs @ Throw a # es'' \<and> es = compEs1 Vs es'' \<and> \<not> contains_insyncs es'')"
 apply(induct vs arbitrary: es')
  apply(simp)
- apply(rule iffI)
-  apply(erule bisims_cases)
-   apply(clarsimp simp add: compEs1_conv_map)
-  apply(simp)
- apply(clarsimp)
- apply(rule bisimsCons1)
-   apply(fastsimp)
-  apply(fastsimp)
- apply(assumption)
-apply(clarsimp)
-apply(rule iffI)
- apply(erule bisims_cases)
-  apply(fastsimp)
- apply(simp)
-apply(clarsimp)
-apply(rule bisimsCons2)
-apply(simp)
+ apply(fastsimp simp add: compEs1_conv_map)
+apply(fastsimp elim!: bisims_cases)
 done
 
 lemma hidden_bisim_unmod: "\<lbrakk> bisim Vs e e' xs; hidden Vs i \<rbrakk> \<Longrightarrow> unmod e' i"
@@ -462,7 +432,6 @@ next
     by(induct es arbitrary: exs')(auto intro!: bisim_listCons bisim_listNil elim!: bisim01.cases simp add: list_all2_Cons1)
 qed
 
-
 lemma bisim_list_extTA2J0_extTA2J1:
   assumes wf: "wf_J_prog P"
   and sees: "P \<turnstile> C sees M:[]\<rightarrow>T = meth in D"
@@ -477,7 +446,7 @@ proof -
     show "bisim_list [] []" ..
     from sees_wf_mdecl[OF wf_prog_wwf_prog[OF wf] sees] have "fv body \<subseteq> set [this]" "pns = []"
       by(auto simp add: wf_mdecl_def)
-    thus "fv {this:Class D=\<lfloor>Addr a\<rfloor>; body} = {}" by simp
+    thus "fv ({this:Class D=\<lfloor>Addr a\<rfloor>; body}) = {}" by simp
     from sees_wf_mdecl[OF wf sees] obtain T' where "P,[this \<mapsto> Class D] \<turnstile> body :: T'" "this \<notin> set pns"
       and "\<D> body \<lfloor>dom [this \<mapsto> Addr a]\<rfloor>" by(auto simp add: wf_mdecl_def)
     hence "\<not> contains_insync body" by(auto simp add: contains_insync_conv dest: WT_expr_locks)
@@ -486,8 +455,8 @@ proof -
       unfolding append.simps `pns = []` by(rule compE1_bisim)
     hence "bisim [] {this:Class D=\<lfloor>Addr a\<rfloor>; body} {length ([] :: String.literal list):Class D=None; compE1 (this # pns) body} ?xs"
       by(rule bisimBlockSomeNone)(simp)
-    thus "bisim [] {this:Class D=\<lfloor>Addr a\<rfloor>; body} ?e' ?xs" by simp
-    from `\<D> body \<lfloor>dom [this \<mapsto> Addr a]\<rfloor>` show "\<D> {this:Class D=\<lfloor>Addr a\<rfloor>; body} \<lfloor>{}\<rfloor>" by simp
+    thus "bisim [] ({this:Class D=\<lfloor>Addr a\<rfloor>; body}) ?e' ?xs" by simp
+    from `\<D> body \<lfloor>dom [this \<mapsto> Addr a]\<rfloor>` show "\<D> ({this:Class D=\<lfloor>Addr a\<rfloor>; body}) \<lfloor>{}\<rfloor>" by simp
     show "max_vars ?e' \<le> length ?xs" by simp
   qed
   ultimately show ?thesis by(simp)
@@ -547,20 +516,20 @@ by(induct e and es)(auto)
 lemma assumes "final E" "bisim VS E E' xs"
   shows inline_call_compE1: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_call E' (compE1 Vs e) = compE1 Vs (inline_call E e)"
   and inline_calls_compEs1: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_calls E' (compEs1 Vs es) = compEs1 Vs (inline_calls E es)"
-proof(induct e and es arbitrary: Vs and Vs)
-  case (Call obj M params Vs)
-  note IHobj = `\<And>Vs. call obj = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_call E' (compE1 Vs obj) = compE1 Vs (inline_call E obj)`
-  note IHparams = `\<And>Vs. calls params = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_calls E' (compEs1 Vs params) = compEs1 Vs (inline_calls E params)`
+proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
+  case (Call Vs obj M params)
+  note IHobj = `call obj = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_call E' (compE1 Vs obj) = compE1 Vs (inline_call E obj)`
+  note IHparams = `calls params = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_calls E' (compEs1 Vs params) = compEs1 Vs (inline_calls E params)`
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by (cases aMvs, auto)
   with `call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>` have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>" by simp
   thus ?case
   proof(induct rule: call_callE)
     case CallObj
-    with IHobj[of Vs] have "inline_call E' (compE1 Vs obj) = compE1 Vs (inline_call E obj)" by auto
+    with IHobj have "inline_call E' (compE1 Vs obj) = compE1 Vs (inline_call E obj)" by auto
     with CallObj show ?case by auto
   next
     case (CallParams v)
-    with IHparams[of Vs] have "inline_calls E' (compEs1 Vs params) = compEs1 Vs (inline_calls E params)" by auto
+    with IHparams have "inline_calls E' (compEs1 Vs params) = compEs1 Vs (inline_calls E params)" by auto
     with CallParams show ?case by(auto simp add: is_vals_conv)
   next
     case Call
@@ -608,7 +577,7 @@ next
     case (CallParams v)
     hence "inline_calls E' (compEs1 Vs es) = compEs1 Vs (inline_calls E es)"
       by -(rule inline_calls_compEs1[OF final bisim])
-    moreover from `fv (e\<bullet>M(es)) \<subseteq> set Vs` final fvs_inline_calls[OF `calls es = \<lfloor>(a, M', vs)\<rfloor>`, of E]
+    moreover from `fv (e\<bullet>M(es)) \<subseteq> set Vs` final fvs_inline_calls[of E es]
     have "fvs (inline_calls E es) \<subseteq> set Vs" by(auto elim!: final.cases)
     moreover note CallParams `bisim Vs e e' xs` `fv (e\<bullet>M(es)) \<subseteq> set Vs` `\<not> contains_insyncs es` final
     ultimately show ?case by(auto simp add: is_vals_conv final_iff)
@@ -639,6 +608,12 @@ qed(fastsimp)+
 
 declare hyperUn_ac [simp del]
 
+lemma sqInt_lem3: "\<lbrakk> A \<sqsubseteq> A'; B \<sqsubseteq> B' \<rbrakk> \<Longrightarrow> A \<sqinter> B \<sqsubseteq> A' \<sqinter> B'"
+by(auto simp add: hyperset_defs)
+
+lemma sqUn_lem3: "\<lbrakk> A \<sqsubseteq> A'; B \<sqsubseteq> B' \<rbrakk> \<Longrightarrow> A \<squnion> B \<sqsubseteq> A' \<squnion> B'"
+by(auto simp add: hyperset_defs)
+
 lemma A_inline_call: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<A> e \<sqsubseteq> \<A> (inline_call e' e)"
   and As_inline_calls: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow>  \<A>s es \<sqsubseteq> \<A>s (inline_calls e' es)"
 proof(induct e and es)
@@ -659,15 +634,14 @@ proof(induct e and es)
     thus ?case by(auto simp add: hyperset_defs)
   qed
 next
-  case (Block V ty vo exp)
-  thus ?case by(fastsimp intro: diff_lem)
+  case Block thus ?case by(fastsimp intro: diff_lem)
 next
   case throw thus ?case by(simp add: hyperset_defs)
 next
   case TryCatch thus ?case by(auto intro: sqInt_lem)
 qed(fastsimp intro: sqUn_lem sqUn_lem2)+
 
-lemma assumes "\<D> e' \<lfloor>{}\<rfloor>"
+lemma assumes "final e'"
   shows defass_inline_call: "\<lbrakk> call e = \<lfloor>aMvs\<rfloor>; \<D> e A \<rbrakk> \<Longrightarrow> \<D> (inline_call e' e) A"
   and defasss_inline_calls: "\<lbrakk> calls es = \<lfloor>aMvs\<rfloor>; \<D>s es A \<rbrakk> \<Longrightarrow> \<D>s (inline_calls e' es) A"
 proof(induct e and es arbitrary: A and A)
@@ -675,22 +649,22 @@ proof(induct e and es arbitrary: A and A)
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by(cases aMvs, auto)
   with `call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>` have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
   thus ?case
-  proof(induct rule: call_callE)
+  proof(cases rule: call_callE)
     case CallObj
     with `\<D> (obj\<bullet>M(params)) A` `\<lbrakk>call obj = \<lfloor>aMvs\<rfloor>; \<D> obj A\<rbrakk> \<Longrightarrow> \<D> (inline_call e' obj) A`
     have "\<D> (inline_call e' obj) A" by simp
     moreover from A_inline_call[OF CallObj, of e']
-    have "A \<squnion> \<A> obj \<sqsubseteq> A \<squnion> \<A> (inline_call e' obj)" by(rule sqUn_lem2)
+    have "A \<squnion> (\<A> obj) \<sqsubseteq> A \<squnion> (\<A> (inline_call e' obj))" by(rule sqUn_lem2)
     with `\<D> (obj\<bullet>M(params)) A` have "\<D>s params (A \<squnion> \<A> (inline_call e' obj))" by(auto elim: Ds_mono')
-    ultimately show ?case using CallObj by auto
+    ultimately show ?thesis using CallObj by auto
   next
     case (CallParams v)
     with `\<D> (obj\<bullet>M(params)) A` `\<lbrakk>calls params = \<lfloor>aMvs\<rfloor>; \<D>s params A\<rbrakk> \<Longrightarrow> \<D>s (inline_calls e' params) A`
     have "\<D>s (inline_calls e' params) A" by(simp)
-    with CallParams show ?case by(auto)
+    with CallParams show ?thesis by(auto)
   next
     case Call
-    with `\<D> e' \<lfloor>{}\<rfloor>` show ?case by(auto elim!: D_mono' simp add: hyperset_defs)
+    with `final e'` show ?thesis by(auto elim!: D_mono' simp add: hyperset_defs)
   qed
 next
   case (Cons_exp exp exps A)

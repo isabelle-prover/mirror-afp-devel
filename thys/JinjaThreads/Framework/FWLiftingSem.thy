@@ -11,11 +11,11 @@ context multithreaded_base begin
 lemma redT_preserves_ts_inv_ok:
   "\<lbrakk> s -t\<triangleright>ta\<rightarrow> s'; ts_inv_ok (thr s) I \<rbrakk>
   \<Longrightarrow> ts_inv_ok (thr s') (upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)"
-by(erule redT.cases)(auto intro: ts_inv_ok_upd_invs ts_inv_ok_upd_ts redT_updTs_Some)
+by(erule redT.cases)(fastsimp intro: ts_inv_ok_upd_invs ts_inv_ok_upd_ts redT_updTs_Some)+
 
 lemma RedT_preserves_ts_inv_ok:
   "\<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; ts_inv_ok (thr s) I \<rbrakk>
-  \<Longrightarrow> ts_inv_ok (thr s') (upd_invs I Q (\<down>map (thr_a \<circ> snd) ttas\<down>))"
+  \<Longrightarrow> ts_inv_ok (thr s') (upd_invs I Q (concat (map (thr_a \<circ> snd) ttas)))"
 by(induct rule: RedT_induct)(auto intro: redT_preserves_ts_inv_ok)
 
 lemma redT_upd_inv_ext:
@@ -26,22 +26,24 @@ by(erule redT.cases, auto intro: ts_inv_ok_inv_ext_upd_invs)
 lemma RedT_upd_inv_ext:
   fixes I :: "'t \<rightharpoonup> 'i"
   shows "\<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; ts_inv_ok (thr s) I \<rbrakk>
-         \<Longrightarrow> I \<subseteq>\<^sub>m upd_invs I P (\<down>map (thr_a \<circ> snd) ttas\<down>)"
+         \<Longrightarrow> I \<subseteq>\<^sub>m upd_invs I P (concat (map (thr_a \<circ> snd) ttas))"
 proof(induct rule: RedT_induct)
   case refl thus ?case by simp
 next
   case (step S TTAS S' T TA S'')
-  hence "ts_inv_ok (thr S') (upd_invs I P (\<down>map (thr_a \<circ> snd) TTAS\<down>))"
+  hence "ts_inv_ok (thr S') (upd_invs I P (concat (map (thr_a \<circ> snd) TTAS)))"
     by -(rule RedT_preserves_ts_inv_ok)
-  hence "upd_invs I P (\<down>map (thr_a \<circ> snd) TTAS\<down>) \<subseteq>\<^sub>m upd_invs (upd_invs I P (\<down>map (thr_a \<circ> snd) TTAS\<down>)) P \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>" 
+  hence "upd_invs I P (concat (map (thr_a \<circ> snd) TTAS)) \<subseteq>\<^sub>m upd_invs (upd_invs I P (concat (map (thr_a \<circ> snd) TTAS))) P \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>" 
     using step by -(rule redT_upd_inv_ext)
   with step show ?case by(auto elim!: map_le_trans simp add: comp_def)
 qed
 
 end
 
-locale lifting_wf = multithreaded _ r
-  for r :: "('l,'t,'x,'m,'w,'o) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) +
+locale lifting_wf = multithreaded final r convert_RA
+  for final :: "'x \<Rightarrow> bool"
+  and r :: "('l,'t,'x,'m,'w,'o) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80)
+  and convert_RA :: "'l released_locks \<Rightarrow> 'o list" +
   fixes P :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
   assumes preserves_red: "\<lbrakk> t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>; P t x m \<rbrakk> \<Longrightarrow> P t x' m'"
   assumes preserves_NewThread: "\<lbrakk> t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>; P t x m; NewThread t'' x'' m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> P t'' x'' m'"
@@ -92,8 +94,8 @@ theorem redT_preserves:
   shows "ts_ok P (thr s') (shr s')"
 using redT
 proof(cases rule: redT_elims)
-  case (normal x x' ta' m')
-  with esokQ have "ts_ok P (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>))) m'"
+  case (normal x x' m')
+  with esokQ have "ts_ok P (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'"
     by(auto intro: redT_updTs_preserves)
   thus ?thesis using normal by simp
 next
@@ -115,9 +117,10 @@ proof -
   show ?thesis by(unfold_locales)
 qed
 
-locale lifting_inv = lifting_wf final r Q
+locale lifting_inv = lifting_wf final r convert_RA Q
   for final :: "'x \<Rightarrow> bool" 
   and r :: "('l,'t,'x,'m,'w,'o) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and Q :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool" +
   fixes P :: "'i \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
   assumes invariant_red: "\<lbrakk> t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>; P i t x m; Q t x m \<rbrakk> \<Longrightarrow> P i t x' m'"
@@ -184,10 +187,10 @@ proof(cases rule: redT_elims)
   case acquire thus ?thesis using esinvP 
     by(auto intro!: ts_invI split: split_if_asm dest: ts_invD)
 next
-  case (normal x x' ta' m')
+  case (normal x x' m')
   with esokQ esinvP
-  have "ts_ok Q (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>))) m'"
-    and "ts_inv P (upd_invs I P \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>) (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>))) m'"
+  have "ts_ok Q (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'"
+    and "ts_inv P (upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'"
     by(auto intro: redT_updTs_preserves redT_updTs_invariant)
   thus ?thesis using normal by simp
 qed
@@ -196,19 +199,19 @@ theorem RedT_invariant:
   assumes RedT: "s -\<triangleright>ttas\<rightarrow>* s'"
   and esinvQ: "ts_inv P I (thr s) (shr s)"
   and esokR: "ts_ok Q (thr s) (shr s)"
-  shows "ts_inv P (upd_invs I P (\<down>map (thr_a \<circ> snd) ttas\<down>)) (thr s') (shr s')"
+  shows "ts_inv P (upd_invs I P (concat (map (thr_a \<circ> snd) ttas))) (thr s') (shr s')"
 using RedT esinvQ esokR
 proof(induct rule: RedT_induct)
   case refl thus ?case by(simp (no_asm))
 next
   case (step S TTAS S' T TA S'')
   note IH = `\<lbrakk>ts_inv P I (thr S) (shr S); ts_ok Q (thr S) (shr S)\<rbrakk> 
-             \<Longrightarrow> ts_inv P (upd_invs I P (\<down>map (thr_a \<circ> snd) TTAS\<down>)) (thr S') (shr S')`
+             \<Longrightarrow> ts_inv P (upd_invs I P (concat (map (thr_a \<circ> snd) TTAS))) (thr S') (shr S')`
   with `ts_inv P I (thr S) (shr S)` `ts_ok Q (thr S) (shr S)`
-  have "ts_inv P (upd_invs I P (\<down>map (thr_a \<circ> snd) TTAS\<down>)) (thr S') (shr S')" by blast
+  have "ts_inv P (upd_invs I P (concat (map (thr_a \<circ> snd) TTAS))) (thr S') (shr S')" by blast
   moreover from `S -\<triangleright>TTAS\<rightarrow>* S'` `ts_ok Q (thr S) (shr S)`
   have "ts_ok Q (thr S') (shr S')" by(rule RedT_preserves)
-  ultimately have "ts_inv P (upd_invs (upd_invs I P (\<down>map (thr_a \<circ> snd) TTAS\<down>)) P \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>) (thr S'') (shr S'')"
+  ultimately have "ts_inv P (upd_invs (upd_invs I P (concat (map (thr_a \<circ> snd) TTAS))) P \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>) (thr S'') (shr S'')"
     using `S' -T\<triangleright>TA\<rightarrow> S''` by -(rule redT_invariant)
   thus ?case by(simp add: comp_def)
 qed

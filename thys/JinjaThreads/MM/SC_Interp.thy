@@ -6,7 +6,7 @@
 
 theory SC_Interp imports
   SC
-  "../Compiler/Correctness"
+  "../Compiler/Correctness" 
   "../J/Deadlocked"
   "../BV/JVMDeadlocked"
 begin
@@ -28,7 +28,7 @@ lemma compP2_compP1_convs:
   "is_class (compP2 (compP1 P)) = is_class P"
   "sc.addr_loc_type (compP2 (compP1 P)) = sc.addr_loc_type P"
   "sc.conf (compP2 (compP1 P)) = sc.conf P"
-by(simp_all add: compP2_def heap_base.compP_conf heap_base.compP_addr_loc_type)
+by(simp_all add: compP2_def heap_base.compP_conf heap_base.compP_addr_loc_type fun_eq_iff split: addr_loc.splits)
 
 lemma sc_J_JVM_conf_read:
   "J_JVM_conf_read empty (sc_new_obj P) sc_new_arr sc_typeof_addr sc_array_length sc_heap_read sc_heap_write (sc_hconf P) P"

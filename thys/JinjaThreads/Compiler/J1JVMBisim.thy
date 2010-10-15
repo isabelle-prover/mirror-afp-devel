@@ -1069,7 +1069,8 @@ end
 (* FIXME: Take lemmas out of locale to speed up opening the context *)
 
 lemmas bisim1_bisims1_inducts = 
-  J1_JVM_heap_base.bisim1'_bisims1'.inducts[unfolded J1_JVM_heap_base.bisim1'_eq_bisim1 J1_JVM_heap_base.bisims1'_eq_bisims1, 
+  J1_JVM_heap_base.bisim1'_bisims1'.inducts
+  [unfolded J1_JVM_heap_base.bisim1'_eq_bisim1 J1_JVM_heap_base.bisims1'_eq_bisims1, 
   consumes 1,
   case_names bisim1Val2 bisim1New bisim1NewThrow
   bisim1NewArray bisim1NewArrayThrow bisim1NewArrayNegative bisim1NewArrayFail bisim1Cast bisim1CastThrow bisim1CastFail
@@ -5046,7 +5047,7 @@ where "no_calls2 es pc \<longleftrightarrow> (pc \<le> length (compEs2 es)) \<an
 
 locale J1_JVM_conf_read =
   J1_JVM_heap_conf_base empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf P +
-  JVM_conf_read         empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf "compP2 P" 
+  JVM_conf_read         empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf "compP2 P"
   for empty_heap :: "'heap"
   and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
   and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
@@ -5074,6 +5075,5 @@ sublocale J1_JVM_conf_read < J1_JVM_heap_conf
 by(unfold_locales)
 
 sublocale J1_JVM_conf_read < J1_heap by(unfold_locales)
-
 
 end

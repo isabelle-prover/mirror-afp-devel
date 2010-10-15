@@ -4,8 +4,10 @@
 
 header {* \isaheader{Unobservable steps for the JVM} *}
 
-theory JVMTau
-imports TypeComp "../JVM/JVMDefensive"
+theory JVMTau imports
+  TypeComp
+  "../JVM/JVMDefensive"
+  "../Framework/LTS"
 begin
 
 declare nth_append [simp del]
@@ -37,6 +39,7 @@ where
 | "\<tau>instr P h stk Return = True"
 | "\<tau>instr P h stk Pop = True"
 | "\<tau>instr P h stk Dup = True"
+| "\<tau>instr P h stk Swap = True"
 | "\<tau>instr P h stk (BinOpInstr bop) = True"
 | "\<tau>instr P h stk (Goto i) = True"
 | "\<tau>instr P h stk (IfFalse i) = True" 

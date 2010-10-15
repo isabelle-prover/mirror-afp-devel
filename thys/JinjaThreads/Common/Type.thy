@@ -134,10 +134,12 @@ fun ground_type :: "ty \<Rightarrow> ty" where
 abbreviation is_NT_Array :: "ty \<Rightarrow> bool" where
   "is_NT_Array T \<equiv> ground_type T = NT"
 
-primrec the_Class :: "ty \<Rightarrow> cname" where
+primrec the_Class :: "ty \<Rightarrow> cname"
+where
   "the_Class (Class C) = C"
 
-primrec the_Array :: "ty \<Rightarrow> ty" where
+primrec the_Array :: "ty \<Rightarrow> ty"
+where
   "the_Array (T\<lfloor>\<rceil>) = T"
 
 end

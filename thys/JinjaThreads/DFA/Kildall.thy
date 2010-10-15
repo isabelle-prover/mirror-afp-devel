@@ -9,6 +9,7 @@ header {* \isaheader{Kildall's Algorithm}\label{sec:Kildall} *}
 
 theory Kildall imports
   "../../Jinja/DFA/SemilatAlg" 
+  "../Common/Aux"
 begin
 
 locale Kildall_base =
@@ -52,13 +53,6 @@ where
   "merges f []      \<tau>s = \<tau>s"
 | "merges f (p'#ps) \<tau>s = (let (p,\<tau>) = p' in merges f ps (\<tau>s[p := \<tau> \<squnion>\<^bsub>f\<^esub> \<tau>s!p]))"
 
-lemma foldr_filter_conv: -- "Move to Aux"
-  "foldr f (filter P xs) = foldr (\<lambda>x s. if P x then f x s else s) xs"
-by(induct xs)(auto intro: ext)
-
-lemma foldr_insert_conv_set: -- "Move to Aux"
-  "foldr insert xs A = A \<union> set xs"
-by(induct xs arbitrary: A) auto
 
 locale Kildall =
   Kildall_base +

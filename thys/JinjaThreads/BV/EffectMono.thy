@@ -160,6 +160,10 @@ proof -
     case Dup
     with app less show ?thesis
       by(auto dest: list_all2_lengthD)
+  next
+    case Swap
+    with app less show ?thesis
+      by(auto dest: list_all2_lengthD)
   qed (auto elim!: refTE not_refTE)
 qed
 (*>*)
@@ -396,4 +400,3 @@ qed
 (*>*)
 
 end
-

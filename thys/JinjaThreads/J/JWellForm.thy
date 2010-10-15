@@ -7,7 +7,7 @@ header {* \isaheader{Well-formedness Constraints} *}
 theory JWellForm
 imports
   WWellForm
-  WellType
+  WellType_Exec
   DefAss
 begin
 
@@ -72,16 +72,51 @@ done
 
 subsection {* Code generation *}
 
-lemma wf_J_mdecl_code [code]:
-  "wf_J_mdecl P C (M,Ts,T,(pns,body)) \<longleftrightarrow>
+definition wf_J_mdecl' :: "J_prog \<Rightarrow> cname \<Rightarrow> J_mb mdecl \<Rightarrow> bool"
+where
+  "wf_J_mdecl' P C  \<equiv>  \<lambda>(M,Ts,T,(pns,body)).
   length Ts = length pns \<and>
   distinct pns \<and>
   this \<notin> set pns \<and>
-  (case WT_code' P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body of None \<Rightarrow> False | Some T' \<Rightarrow> P \<turnstile> T' \<le> T) \<and>
-  \<D>_code body \<lfloor>Fset.Set (this # pns)\<rfloor>"
-using \<D>_code_conv_\<D>[where e=body and A="\<lfloor>{this} \<union> set pns\<rfloor>"]
-by(auto intro!: ext simp add: Set_def WT_eq_WT_code')
+  (\<exists>T'. WT_code P [this\<mapsto>Class C,pns[\<mapsto>]Ts] body = OK T' \<and> P \<turnstile> T' \<le> T) \<and>
+  \<D> body \<lfloor>{this} \<union> set pns\<rfloor>"
 
-definition wf_J_prog' where "wf_J_prog' = wf_J_prog"
+definition wf_J_prog' :: "J_prog \<Rightarrow> bool"
+where "wf_J_prog' = wf_prog wf_J_mdecl'"
+
+lemma wf_J_prog_wf_J_prog':
+  "wf_J_prog P \<Longrightarrow> wf_J_prog' P"
+unfolding wf_J_prog'_def
+apply(erule wf_prog_lift)
+apply(clarsimp simp add: wf_J_mdecl'_def)
+apply(drule (1) WT_into_WT_code_OK)
+apply(auto simp add: ran_def map_upds_def dest!: map_of_SomeD set_zip_rightD)
+done
+
+lemma wf_J_prog'_wf_J_prog:
+  "wf_J_prog' P \<Longrightarrow> wf_J_prog P"
+unfolding wf_J_prog'_def
+apply(erule wf_prog_lift)
+apply(clarsimp simp add: wf_J_mdecl'_def)
+apply(drule (1) WT_code_OK_into_WT)
+apply(auto simp add: ran_def map_upds_def dest!: map_of_SomeD set_zip_rightD)
+done
+
+lemma wf_J_prog_eq_wf_J_prog' [code_inline]:
+  "wf_J_prog = wf_J_prog'"
+by(blast intro: ext wf_J_prog'_wf_J_prog wf_J_prog_wf_J_prog' del: equalityI)
+
+lemma wf_J_mdecl'_code [code]:
+  "wf_J_mdecl' P C (M,Ts,T,(pns,body)) \<longleftrightarrow>
+   length Ts = length pns \<and>
+   distinct pns \<and>
+   this \<notin> set pns \<and>
+  (case WT_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body of Err \<Rightarrow> False | OK T' \<Rightarrow> P \<turnstile> T' \<le> T) \<and>
+   \<D>_code body \<lfloor>Fset.Set (this # pns)\<rfloor>"
+ using \<D>_code_conv_\<D>[where e=body and A="\<lfloor>{this} \<union> set pns\<rfloor>"]
+by(auto intro!: ext simp add: Set_def wf_J_mdecl'_def split: err.split_asm)
+ 
+(* Formal code generation test *)
+ML {* @{code wf_J_prog'}  *}
 
 end

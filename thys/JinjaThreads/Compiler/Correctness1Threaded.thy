@@ -251,7 +251,7 @@ proof(intro ext)
     assume "?lhs" thus ?rhs
     proof cases
       case (redT_normal t x ta x' m')
-      note [simp] = `tta = (t, observable_ta_of ta)`
+      note [simp] = `tta = (t, ta)`
       note thrS = `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
       note aoe = `Red1_mthr.actions_ok s t ta` 
       obtain ex exs where x [simp]: "x = (ex, exs)" by(cases x)
@@ -285,15 +285,15 @@ proof(intro ext)
 	ultimately show False by simp
       qed
       ultimately have "mred1' P t (x, shr s) ta (x', m')" by simp
-      moreover note thrS aoe `s' = redT_upd s t ta x' m'`
-      ultimately have "Red1'_mthr.redT P s (t, observable_ta_of ta) s'"
+      moreover note thrS aoe `redT_upd s t ta x' m' s'`
+      ultimately have "Red1'_mthr.redT P s (t, ta) s'"
 	by(rule Red1'_mthr.redT.redT_normal)
-      thus ?thesis unfolding `tta = (t, observable_ta_of ta)` .
+      thus ?thesis unfolding `tta = (t, ta)` .
     next
       case (redT_acquire t x ln n)
       from `thr s t = \<lfloor>(x, ln)\<rfloor>` `\<not> waiting (wset s t)` `may_acquire_all (locks s) t ln`
 	`0 < ln\<^sub>f n` `s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s)`
-      show ?thesis unfolding `tta = (t, \<lambda>\<^isup>f [], [], [], [], [ReacquireLocks ln])`
+      show ?thesis unfolding `tta = (t, \<lambda>\<^isup>f [], [], [], [], convert_RA ln)`
 	by(rule Red1'_mthr.redT_acquire)
     qed
   next
@@ -302,14 +302,14 @@ proof(intro ext)
       case (redT_normal t x ta x' m')
       from `mred1' P t (x, shr s) ta (x', m')` have "mred1 P t (x, shr s) ta (x', m')"
 	by(auto simp add: split_beta)
-      moreover note `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `Red1_mthr.actions_ok s t ta` `s' = redT_upd s t ta x' m'`
-      ultimately show ?thesis unfolding `tta = (t, observable_ta_of ta)`
+      moreover note `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `Red1_mthr.actions_ok s t ta` `redT_upd s t ta x' m' s'`
+      ultimately show ?thesis unfolding `tta = (t, ta)`
 	by(rule Red1_mthr.redT.redT_normal)
     next
       case (redT_acquire t x ln n)
       from `thr s t = \<lfloor>(x, ln)\<rfloor>` `\<not> waiting (wset s t)` `may_acquire_all (locks s) t ln`
 	`0 < ln\<^sub>f n` `s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s)`
-      show ?thesis unfolding `tta = (t, \<lambda>\<^isup>f [], [], [], [], [ReacquireLocks ln])`
+      show ?thesis unfolding `tta = (t, \<lambda>\<^isup>f [], [], [], [], convert_RA ln)`
 	by(rule Red1_mthr.redT_acquire)
     qed
   qed
@@ -373,7 +373,7 @@ lemma Red1'_preserves_lock_oks:
 using Red
 proof(cases rule: Red1'_mthr.redT.cases)
   case (redT_normal t x ta x' m')
-  note [simp] = `ta1 = (t, observable_ta_of ta)`
+  note [simp] = `ta1 = (t, ta)`
   obtain ex exs where x: "x = (ex, exs)" by (cases x)
   obtain ex' exs' where x': "x' = (ex', exs')" by (cases x')
   note thrst = `thr s1 t = \<lfloor>(x, no_wait_locks)\<rfloor>`
@@ -381,9 +381,9 @@ proof(cases rule: Red1'_mthr.redT.cases)
   from `mred1' P t (x, shr s1) ta (x', m')`
   have red: "P,t \<turnstile>1 \<langle>ex/exs,shr s1\<rangle> -ta\<rightarrow> \<langle>ex'/exs',m'\<rangle>"
     and IUF: "\<not> IUFL ex exs ta ex' exs'" unfolding x x' by simp_all
-  note `s1' = redT_upd s1 t ta x' m'`
-  moreover from red
-  have "lock_oks1 (locks (redT_upd s1 t ta x' m')) (thr (redT_upd s1 t ta x' m'))"
+  note s1' = `redT_upd s1 t ta x' m' s1'`
+  moreover from red 
+  have "lock_oks1 (locks s1') (thr s1')"
   proof cases
     case (red1Red e x TA e' x')
     note [simp] = `ex = (e, x)` `ta = extTA2J1 P TA` `ex' = (e', x')` `exs' = exs`
@@ -443,7 +443,7 @@ proof(cases rule: Red1'_mthr.redT.cases)
 	  qed
 	qed }
       hence "\<forall>l. has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)\<^sub>f l) t' + LN\<^sub>f l = expr_lockss (map fst (eX # eXS)) l" .. }
-    ultimately show ?thesis unfolding lock_oks1_def x' by(clarsimp simp del: fun_upd_apply)
+    ultimately show ?thesis using s1' unfolding lock_oks1_def x' by(clarsimp simp del: fun_upd_apply)
   next
     case (red1Call e a M vs C Ts T body D x)
     from wf `P \<turnstile> C sees M: Ts\<rightarrow>T = body in D`
@@ -451,28 +451,25 @@ proof(cases rule: Red1'_mthr.redT.cases)
       by(auto simp add: wf_mdecl_def dest!: sees_wf_mdecl)
     hence "expr_locks (blocks1 0 (Class D#Ts) body) = (\<lambda>l. 0)"
       by(auto simp add: expr_locks_blocks1 contains_insync_conv fun_eq_iff dest!: WT1_not_contains_insync)
-    thus ?thesis using red1Call thrst loks
+    thus ?thesis using red1Call thrst loks s1'
       unfolding lock_oks1_def x' x
       by auto force+
   next
     case (red1Return e' x' e x)
-    thus ?thesis using thrst loks
+    thus ?thesis using thrst loks s1'
       unfolding lock_oks1_def x' x
-      apply auto
-       apply(erule_tac x=ta in allE)
+      apply(auto simp add: redT_updWs_def elim!: rtrancl3p_cases)
+       apply(erule_tac x=t in allE)
        apply(erule conjE)
        apply(erule disjE)
-        apply clarsimp
-       apply clarsimp
-      apply(erule_tac x=t in allE)
-      apply(erule conjE)
-      apply(erule disjE)
-       apply(force simp add: expr_locks_inline_call_final add_ac)
-      apply(fastsimp simp add: expr_locks_inline_call_final)
+        apply(force simp add: expr_locks_inline_call_final add_ac)
+       apply(fastsimp simp add: expr_locks_inline_call_final)
+      apply(erule_tac x=ta in allE)
+      apply fastsimp
       done
   qed
-  moreover from sync `mred1' P t (x, shr s1) ta (x', m')` thrst aoe
-  have "ts_ok (\<lambda>t exexs h. el_loc_ok1 exexs) (thr (redT_upd s1 t ta x' m')) (shr (redT_upd s1 t ta x' m'))"
+  moreover from sync `mred1' P t (x, shr s1) ta (x', m')` thrst aoe s1'
+  have "ts_ok (\<lambda>t exexs h. el_loc_ok1 exexs) (thr s1') (shr s1')"
     by(auto intro: lifting_wf.redT_updTs_preserves[OF Red1'_el_loc_ok[OF wf]])
   ultimately show ?thesis by simp
 next

@@ -45,8 +45,13 @@ sublocale J1_JVM_heap_conf_base < Red1_exec!:
   for t
 .
 
-sublocale J1_JVM_heap_conf_base < Red1_execd!:
-  delay_bisimulation_base "mred1 P t" "mexecd (compP2 P) t" "wbisim1 t" "ta_bisim wbisim1" "\<tau>MOVE1 P" "\<tau>MOVE2 (compP2 P)" 
+sublocale J1_JVM_heap_conf_base < Red1_execd!: delay_bisimulation_base
+  "mred1 P t"
+  "mexecd (compP2 P) t"
+  "wbisim1 t"
+  "ta_bisim wbisim1" 
+  "\<tau>MOVE1 P"
+  "\<tau>MOVE2 (compP2 P)" 
   for t
 .
 
@@ -215,7 +220,7 @@ next
     {((xcpfrs, h), (xcpfrs', h)). sim21_size (compP2 P) xcpfrs xcpfrs'}" by auto
   also have "\<dots> = {(x, y). (\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs') x y}" by(auto)
   finally show "wfP (\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs')"
-    unfolding wfP_def.
+    unfolding wfP_def .
 qed
 
 end
@@ -229,6 +234,7 @@ sublocale J1_JVM_heap_conf_base < Red1_execd!:
     "mred1 P"
     JVM_final
     "mexecd (compP2 P)"
+    convert_RA
     wbisim1
     "bisim_wait1JVM (compP2 P)" 
 .
@@ -237,6 +243,7 @@ sublocale JVM_heap_base < execd_mthr!:
   \<tau>multithreaded
     JVM_final
     "mexecd P"
+    convert_RA
     "\<tau>MOVE2 P"
   for P
 by(unfold_locales)
@@ -247,6 +254,7 @@ sublocale J1_JVM_heap_conf_base < Red1_execd!:
     "mred1 P"
     JVM_final
     "mexecd (compP2 P)"
+    convert_RA
     "wbisim1"
     "bisim_wait1JVM (compP2 P)" 
     "\<tau>MOVE1 P"
@@ -290,10 +298,10 @@ sublocale J1_JVM_heap_conf_base < mexecd_mthr!:
   \<tau>multithreaded_wf 
     JVM_final
     "mexecd (compP2 P)"
+    convert_RA
     "\<tau>MOVE2 (compP2 P)" 
     "\<lambda>t s2. \<exists>s1. wbisim1 t s1 s2" 
 by(rule mexecd_\<tau>mthr_wf)
-
 
 context JVM_heap_base begin
 
@@ -518,6 +526,7 @@ sublocale J1_JVM_heap_conf_base < Red1_mexecd!:
     "mred1 P"
     JVM_final
     "mexecd (compP2 P)"
+    convert_RA
     "wbisim1"
     "bisim_wait1JVM (compP2 P)"
 .

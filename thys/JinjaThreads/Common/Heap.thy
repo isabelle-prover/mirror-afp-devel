@@ -8,8 +8,8 @@ header {*
   \isaheader{An abstract heap model}
 *}
 
-theory Heap imports
-  "../Common/Value"
+theory Heap imports 
+  Value
 begin
 
 primrec typeof :: "val \<rightharpoonup> ty"
@@ -23,6 +23,14 @@ where
 datatype addr_loc =
     CField cname vname
   | ACell nat
+
+lemma addr_loc_rec [simp]: "addr_loc_rec = addr_loc_case"
+by(auto simp add: fun_eq_iff split: addr_loc.splits)
+
+primrec is_volatile :: "'m prog \<Rightarrow> addr_loc \<Rightarrow> bool"
+where 
+  "is_volatile P (ACell n) = False"
+| "is_volatile P (CField D F) = volatile (snd (snd (field P D F)))"
 
 locale heap_base =
   fixes empty_heap :: "'heap"
@@ -53,7 +61,7 @@ inductive addr_loc_type :: "'m prog \<Rightarrow> 'heap \<Rightarrow> addr \<Rig
 for P :: "'m prog" and h :: 'heap and a :: addr
 where
   addr_loc_type_field:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C has F:T in D \<rbrakk> 
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C has F:T (fm) in D \<rbrakk> 
   \<Longrightarrow> P,h \<turnstile> a@CField D F : T"
 
 | addr_loc_type_cell:
@@ -62,6 +70,17 @@ where
 
 definition typeof_addr_loc :: "'m prog \<Rightarrow> 'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> ty"
 where "typeof_addr_loc P h a al = (THE T. P,h \<turnstile> a@al : T)"
+
+definition heap_ops_typeof_minimal :: "bool"
+where
+  "heap_ops_typeof_minimal \<longleftrightarrow> 
+  (\<forall>h C h' ao. new_obj h C = (h', ao) 
+   \<longrightarrow> dom (typeof_addr h') = (case ao of None \<Rightarrow> dom (typeof_addr h) 
+                               | Some a \<Rightarrow> insert a (dom (typeof_addr h)))) \<and>
+  (\<forall>h T n h' ao. new_arr h T n = (h', ao)
+   \<longrightarrow> dom (typeof_addr h') = (case ao of None \<Rightarrow> dom (typeof_addr h)
+                               | Some a \<Rightarrow> insert a (dom (typeof_addr h)))) \<and>
+  (\<forall>h ad al v h'. heap_write h ad al v h' \<longrightarrow> dom (typeof_addr h') = dom (typeof_addr h))"
 
 end
 
@@ -91,9 +110,6 @@ lemma typeof_lit_is_type:
   "typeof v = Some T \<Longrightarrow> is_type P T"
 by(cases v) auto
 
-lemma map_leI: -- "Move to Aux"
-  "(\<And>k v. f k = Some v \<Longrightarrow> g k = Some v) \<Longrightarrow> f \<subseteq>\<^sub>m g"
-unfolding map_le_def by auto
 
 context heap_base begin
 
@@ -103,8 +119,11 @@ lemma hextI:
   \<Longrightarrow> h \<unlhd> h'"
 unfolding hext_def by(auto)
 
-lemma hext_objD: "\<lbrakk> h \<unlhd> h'; typeof_addr h a = \<lfloor>Class C\<rfloor> \<rbrakk> \<Longrightarrow> typeof_addr h' a = \<lfloor>Class C\<rfloor>"
-unfolding hext_def by auto
+lemma hext_objD:
+  assumes "h \<unlhd> h'"
+  and "typeof_addr h a = \<lfloor>Class C\<rfloor>"
+  shows "typeof_addr h' a = \<lfloor>Class C\<rfloor>"
+using assms unfolding hext_def by auto
 
 lemma hext_arrD:
   assumes "h \<unlhd> h'" "typeof_addr h a = \<lfloor>Array T\<rfloor>"
@@ -132,6 +151,20 @@ by(auto elim!: addr_loc_type.cases dest: has_field_fun)
 lemma typeof_addr_locI [simp]:
   "P,h \<turnstile> a@al : T \<Longrightarrow> typeof_addr_loc P h a al = T"
 by(auto simp add: typeof_addr_loc_def dest: addr_loc_type_fun)
+
+lemma heap_ops_typeof_minimalD:
+  shows heap_ops_typeof_minimal_new_obj_NoneD:
+  "\<lbrakk> heap_ops_typeof_minimal; new_obj h C = (h', None) \<rbrakk> \<Longrightarrow> dom (typeof_addr h') = dom (typeof_addr h)"
+  and heap_ops_typeof_minimal_new_obj_SomeD:
+  "\<lbrakk> heap_ops_typeof_minimal; new_obj h C = (h', Some a) \<rbrakk> \<Longrightarrow> dom (typeof_addr h') = insert a (dom (typeof_addr h))"
+  and heap_ops_typeof_minimal_new_arr_NoneD:
+  "\<lbrakk> heap_ops_typeof_minimal; new_arr h T n = (h', None) \<rbrakk> \<Longrightarrow> dom (typeof_addr h') = dom (typeof_addr h)"
+  and heap_ops_typeof_minimal_new_arr_SomeD:
+  "\<lbrakk> heap_ops_typeof_minimal; new_arr h T n = (h', Some a) \<rbrakk> \<Longrightarrow> dom (typeof_addr h') = insert a (dom (typeof_addr h))"
+  and heap_ops_typeof_minimal_writeD:
+  "\<lbrakk> heap_ops_typeof_minimal; heap_write h ad al v h' \<rbrakk> \<Longrightarrow> dom (typeof_addr h') = dom (typeof_addr h)"
+by(simp_all add: heap_ops_typeof_minimal_def)
+
 
 end
 
@@ -213,6 +246,55 @@ done
 
 lemma empty_heap_hext [iff]: "empty_heap \<unlhd> h"
 by(rule hextI)(simp_all add: empty_heap_empty)
+
+lemma hext_typeof_addr_map_le:
+  "h \<unlhd> h' \<Longrightarrow> typeof_addr h \<subseteq>\<^sub>m typeof_addr h'"
+by(auto simp add: map_le_def dest: typeof_addr_hext_mono)
+
+lemma heap_ops_typeof_minimalD':
+  assumes heap_ops_typeof_minimal
+  shows heap_ops_typeof_minimal_new_obj_NoneD':
+  "new_obj h C = (h', None) \<Longrightarrow> typeof_addr h' = typeof_addr h"
+  and heap_ops_typeof_minimal_new_obj_SomeD':
+  "new_obj h C = (h', Some a) \<Longrightarrow> typeof_addr h' = (typeof_addr h)(a \<mapsto> Class C)"
+  and heap_ops_typeof_minimal_new_arr_NoneD':
+  "new_arr h T n = (h', None) \<Longrightarrow> typeof_addr h' = typeof_addr h"
+  and heap_ops_typeof_minimal_new_arr_SomeD':
+  "new_arr h T n = (h', Some a) \<Longrightarrow> typeof_addr h' = (typeof_addr h)(a \<mapsto> Array T)"
+  and heap_ops_typeof_minimal_writeD':
+  "heap_write h ad al v h' \<Longrightarrow> typeof_addr h' = typeof_addr h"
+apply -
+apply(frule heap_ops_typeof_minimalD[OF assms])
+apply(drule hext_heap_ops)
+apply(drule hext_typeof_addr_map_le)
+apply(erule (1) map_le_dom_eq_conv_eq[OF _ sym, THEN sym])
+
+apply(frule heap_ops_typeof_minimalD[OF assms])
+apply(frule new_obj_SomeD)
+apply(drule hext_heap_ops)
+apply(drule hext_typeof_addr_map_le)
+apply(rule ext)
+apply(case_tac "typeof_addr h x")
+apply(auto intro: ccontr dest: map_le_SomeD)[2]
+
+apply(frule heap_ops_typeof_minimalD[OF assms])
+apply(drule hext_heap_ops)
+apply(drule hext_typeof_addr_map_le)
+apply(erule (1) map_le_dom_eq_conv_eq[OF _ sym, THEN sym])
+
+apply(frule heap_ops_typeof_minimalD[OF assms])
+apply(frule new_arr_SomeD)
+apply(drule hext_heap_ops)
+apply(drule hext_typeof_addr_map_le)
+apply(rule ext)
+apply(case_tac "typeof_addr h x")
+apply(auto intro: ccontr dest: map_le_SomeD)[2]
+
+apply(frule heap_ops_typeof_minimalD[OF assms])
+apply(drule hext_heap_ops)
+apply(drule hext_typeof_addr_map_le)
+apply(erule (1) map_le_dom_eq_conv_eq[OF _ sym, THEN sym])
+done
 
 end
 

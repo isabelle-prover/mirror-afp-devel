@@ -7,7 +7,10 @@ header {* \isaheader{Type rules for the intermediate language} *}
 theory J1WellType imports
   J1State
   "../Common/ExternalCallWF"
+  "../Common/SemiType"
 begin
+
+declare Listn.lesub_list_impl_same_size[simp del] listE_length [simp del]
 
 subsection "Well-Typedness"
 
@@ -63,11 +66,11 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
   "P,E \<turnstile>1 a :: T\<lfloor>\<rceil> \<Longrightarrow> P,E \<turnstile>1 a\<bullet>length :: Integer"
 
 | WTFAcc1:
-  "\<lbrakk> P,E \<turnstile>1 e :: Class C;  P \<turnstile> C sees F:T in D \<rbrakk>
+  "\<lbrakk> P,E \<turnstile>1 e :: Class C;  P \<turnstile> C sees F:T (fm) in D \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e\<bullet>F{D} :: T"
 
 | WTFAss1:
-  "\<lbrakk> P,E \<turnstile>1 e1 :: Class C;  P \<turnstile> C sees F:T in D;  P,E \<turnstile>1 e2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
+  "\<lbrakk> P,E \<turnstile>1 e1 :: Class C;  P \<turnstile> C sees F:T (fm) in D;  P,E \<turnstile>1 e2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e1\<bullet>F{D} := e2 :: Void"
 
 | WT1Call:
@@ -92,8 +95,7 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
   \<Longrightarrow>  P,E \<turnstile>1 e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
 
 | WT1Cond:
-  "\<lbrakk> P,E \<turnstile>1 e :: Boolean;  P,E \<turnstile>1 e\<^isub>1::T\<^isub>1;  P,E \<turnstile>1 e\<^isub>2::T\<^isub>2;
-     P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1;  P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<longrightarrow> T = T\<^isub>2;  P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<longrightarrow> T = T\<^isub>1 \<rbrakk>
+  "\<lbrakk> P,E \<turnstile>1 e :: Boolean;  P,E \<turnstile>1 e\<^isub>1::T\<^isub>1;  P,E \<turnstile>1 e\<^isub>2::T\<^isub>2; P \<turnstile> lub(T\<^isub>1,T\<^isub>2) = T \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 if (e) e\<^isub>1 else e\<^isub>2 :: T"
 
 | WT1While:
@@ -198,7 +200,7 @@ apply(fastsimp dest: external_WT_is_external_call list_all2_lengthD WTs1_same_si
 apply blast
 apply blast
 apply blast
-apply blast
+apply(blast dest: is_lub_unique[OF wf])
 apply blast
 apply blast
 apply blast
@@ -207,15 +209,15 @@ apply blast
 done
 
 lemma assumes wf: "wf_prog p P"
-  shows WT1_is_type: "P,E \<turnstile>1 e :: T \<Longrightarrow> set E \<subseteq> is_type P \<Longrightarrow> is_type P T"
-  and WTs1_is_type: "P,E \<turnstile>1 es [::] Ts \<Longrightarrow> set E \<subseteq> is_type P \<Longrightarrow> set Ts \<subseteq> is_type P"
+  shows WT1_is_type: "P,E \<turnstile>1 e :: T \<Longrightarrow> set E \<subseteq> types P \<Longrightarrow> is_type P T"
+  and WTs1_is_type: "P,E \<turnstile>1 es [::] Ts \<Longrightarrow> set E \<subseteq> types P \<Longrightarrow> set Ts \<subseteq> types P"
 apply(induct rule:WT1_WTs1.inducts)
 apply simp
 apply simp
 apply simp
 apply simp
 apply (simp add:typeof_lit_is_type)
-apply (fastsimp intro:nth_mem simp add: mem_def)
+apply (fastsimp intro:nth_mem)
 apply(simp add: WT_binop_is_type)
 apply(simp)
 apply(simp)
@@ -225,26 +227,26 @@ apply (simp add:sees_field_is_type[OF _ wf])
 apply simp
 apply(fastsimp dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
 apply(fastsimp dest: WT_external_is_type[OF wf])
-apply(simp add: mem_def)
-apply(simp add: is_class_Object[OF wf] mem_def)
+apply(simp)
+apply(simp add: is_class_Object[OF wf])
 apply simp
-apply blast
-apply simp
-apply simp
+apply(blast dest: is_lub_is_type[OF wf])
 apply simp
 apply simp
-apply(simp add: mem_def)
+apply simp
+apply simp
+apply(simp)
 done
 
 lemma blocks1_WT:
-  "\<lbrakk> P,Env @ Ts \<turnstile>1 body :: T; set Ts \<subseteq> is_type P \<rbrakk> \<Longrightarrow> P,Env \<turnstile>1 blocks1 (length Env) Ts body :: T"
+  "\<lbrakk> P,Env @ Ts \<turnstile>1 body :: T; set Ts \<subseteq> types P \<rbrakk> \<Longrightarrow> P,Env \<turnstile>1 blocks1 (length Env) Ts body :: T"
 proof(induct n\<equiv>"length Env" Ts body arbitrary: Env rule: blocks1.induct)
   case 1 thus ?case by simp
 next
   case (2 T' Ts e)
-  note IH = `\<And>Env'. \<lbrakk>Suc (length Env) = length Env'; P,Env' @ Ts \<turnstile>1 e :: T; set Ts \<subseteq> is_type P \<rbrakk>
+  note IH = `\<And>Env'. \<lbrakk>Suc (length Env) = length Env'; P,Env' @ Ts \<turnstile>1 e :: T; set Ts \<subseteq> types P \<rbrakk>
               \<Longrightarrow> P,Env' \<turnstile>1 blocks1 (length Env') Ts e :: T`
-  from `set (T' # Ts) \<subseteq> is_type P` have "set Ts \<subseteq> is_type P" "is_type P T'" by(auto simp add: mem_def)
+  from `set (T' # Ts) \<subseteq> types P` have "set Ts \<subseteq> types P" "is_type P T'" by(auto)
   moreover from `P,Env @ T' # Ts \<turnstile>1 e :: T` have "P,(Env @ [T']) @ Ts \<turnstile>1 e :: T" by simp
   note IH[OF _ this]
   ultimately show ?case by auto

@@ -210,11 +210,9 @@ proof
   -- "soundness"
   assume wt: "wf_jvm_prog\<^isub>k P"
   hence "wf_jvm_prog\<^bsub>?\<Phi>\<^esub> P"
-    apply (unfold wf_jvm_prog_phi_def wf_jvm_prog\<^isub>k_def)    
+    apply (unfold wf_jvm_prog_phi_def wf_jvm_prog\<^isub>k_def)
     apply (erule wf_prog_lift)
-    apply (auto dest!: start_context.wt_kil_correct [OF start_context.intro] 
-                intro: someI)
-    apply (erule sees_method_is_class)
+    apply (auto intro: someI_ex[OF start_context.wt_kil_correct [OF start_context.intro]])
     done
   thus "wf_jvm_prog P" by (unfold wf_jvm_prog_def) fast
 next
@@ -225,7 +223,6 @@ next
     apply (clarify)
     apply (erule wf_prog_lift)
     apply (auto intro!: start_context.wt_kil_complete start_context.intro)
-    apply (erule sees_method_is_class)
     done
 qed
 (*>*)

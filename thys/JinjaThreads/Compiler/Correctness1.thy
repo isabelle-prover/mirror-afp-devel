@@ -11,10 +11,6 @@ theory Correctness1 imports
   "../J/DefAssPreservation"
 begin
 
-lemma if_split: -- "Move to Aux"
-  "\<lbrakk> P \<Longrightarrow> A; \<not> P \<Longrightarrow> B \<rbrakk> \<Longrightarrow> if P then A else B"
-by(auto)
-
 context J_heap_base begin
 
 lemma \<tau>red0r_preserves_defass:
@@ -74,6 +70,7 @@ locale J0_J1_heap_base =
   and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
   and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
   and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
+  and is_volatile :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> bool"
   and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
 begin
@@ -189,14 +186,17 @@ apply(clarsimp simp add: sim_move01_def sim_moves01_def \<tau>reds1'r_map_Val \<
  apply(rule conjI, fastsimp)
  apply(split split_if)
  apply(rule conjI)
-  apply(fastsimp simp add: sim_move01_def sim_moves01_def \<tau>red1'r_Val \<tau>red1't_Val intro: Call_\<tau>red1'r_param Call1Params)
- apply(rule conjI impI)+
-  apply fastsimp
+  apply(clarsimp simp add: finals_def)
+ apply(clarify)
  apply(split split_if)
  apply(rule conjI)
-  apply(rule impI)
+  apply(simp del: call_calls.simps call1_calls1.simps)
+  apply(rule conjI)
+   apply clarify
+   apply(simp split: split_if_asm)
+   apply(fastsimp simp add: sim_move01_def sim_moves01_def \<tau>red1'r_Val \<tau>red1't_Val intro: Call_\<tau>red1'r_param Call1Params)
   apply(fastsimp simp add: sim_move01_def sim_moves01_def \<tau>red1'r_Val \<tau>red1't_Val intro: Call_\<tau>red1'r_param Call1Params)
- apply(fastsimp simp add: sim_move01_def sim_moves01_def \<tau>red1'r_Val \<tau>red1't_Val \<tau>reds1't_map_Val \<tau>reds1'r_map_Val is_vals_conv intro: Call_\<tau>red1'r_param Call1Params split: split_if_asm)
+ apply(fastsimp split: split_if_asm simp add: is_vals_conv \<tau>reds1'r_map_Val)
 apply(rule conjI, fastsimp)
 apply(fastsimp simp add: sim_move01_def sim_moves01_def \<tau>red1'r_Val \<tau>red1't_Val \<tau>reds1't_map_Val \<tau>reds1'r_map_Val is_vals_conv intro: Call_\<tau>red1'r_param Call1Params split: split_if_asm)
 done
@@ -225,7 +225,8 @@ lemma sim_move01_reds:
   \<Longrightarrow> sim_move01 P t \<epsilon> (addr a\<lfloor>Val (Intg i)\<rceil>) ((addr a)\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW ArrayIndexOutOfBounds) h xs"
   "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a);
      heap_read h a (ACell (nat (sint i))) v;
-     ta0 = \<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (ACell (nat (sint i))) v \<rbrace>; ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (ACell (nat (sint i))) v \<rbrace> \<rbrakk>
+     ta0 = \<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (ACell (nat (sint i))) v \<rbrace>; 
+     ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (ACell (nat (sint i))) v \<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move01 P t ta0 (addr a\<lfloor>Val (Intg i)\<rceil>) ((addr a)\<lfloor>Val (Intg i)\<rceil>) h xs ta (Val v) h xs"
   "sim_move01 P t \<epsilon> (null\<lfloor>Val v\<rceil> := Val v') (null\<lfloor>Val v\<rceil> := Val v') h xs \<epsilon> (THROW NullPointer) h xs"
   "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; i <s 0 \<or> sint i \<ge> int (array_length h a) \<rbrakk>
@@ -893,50 +894,35 @@ lemma sim_move10_CallParams:
   \<Longrightarrow> sim_move10 P t ta1 (Val v\<bullet>M(es1)) (Val v\<bullet>M(es1')) (Val v\<bullet>M(es)) h xs ta (Val v\<bullet>M(es')) h' xs'"
 unfolding sim_move10_def sim_moves10_def
 apply(simp split: split_if_asm split del: split_if add: is_vals_conv)
-apply(safe intro!: if_split del: disjCI)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(clarsimp split: split_if_asm simp add: is_vals_conv)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(clarsimp split: split_if_asm)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm)
-apply(rule exI conjI)+
-apply(erule Call_\<tau>red0r_param)
+  apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
+ apply(rule conjI)
+  apply fastsimp
+ apply(rule if_split)
+  apply fastsimp
+ apply(clarsimp split del: split_if)
+ apply(rule if_split)
+  apply(clarsimp split: split_if_asm simp add: is_vals_conv)
+   apply(erule disjE)
+    apply clarsimp
+    apply(rule exI conjI)+
+     apply(erule Call_\<tau>red0r_param)
+    apply(fastsimp intro: CallParams)
+   apply(fastsimp simp add: \<tau>reds0r_map_Val)
+  apply(rule exI conjI)+
+   apply(erule Call_\<tau>red0r_param)
+  apply(fastsimp intro!: CallParams)
+ apply(clarsimp split del: split_if split: split_if_asm simp add: is_vals_conv \<tau>reds0r_map_Val)
+ apply fastsimp
 apply(rule conjI)
-apply(erule CallParams)
-apply fastsimp
-apply(force simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
-apply(fastsimp simp add: \<tau>red0t_Val \<tau>red0r_Val \<tau>reds0t_map_Val \<tau>reds0r_map_Val is_vals_conv intro: Call_\<tau>red0r_param Call_\<tau>red0t_param CallParams split: split_if_asm split del: split_if intro!: if_split)
+ apply fastsimp
+apply(rule if_split)
+ apply fastsimp
+apply(rule conjI)
+ apply fastsimp
+apply(rule if_split)
+ apply(clarsimp split: split_if_asm)
+apply(clarsimp split: split_if_asm split del: split_if simp add: is_vals_conv)
+apply(fastsimp intro: CallParams)
 done
 
 lemma sim_move10_Block:
@@ -992,7 +978,8 @@ lemma sim_move10_reds:
   \<Longrightarrow> sim_move10 P t ta1 (AAss (addr a) (Val (Intg i)) (Val v)) e1' (AAss (addr a) (Val (Intg i)) (Val v)) h xs ta unit h' xs"
   "typeof_addr h a = \<lfloor>Array T\<rfloor> \<Longrightarrow> sim_move10 P t \<epsilon> (addr a\<bullet>length) e1' (addr a\<bullet>length) h xs \<epsilon> (Val (Intg (word_of_int (int (array_length h a))))) h xs"
   "sim_move10 P t \<epsilon> (null\<bullet>length) e1' (null\<bullet>length) h xs \<epsilon> (THROW NullPointer) h xs"
-  "\<lbrakk> heap_read h a (CField D F) v; ta1 = \<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (CField D F) v\<rbrace>; ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (CField D F) v\<rbrace> \<rbrakk>
+  "\<lbrakk> heap_read h a (CField D F) v; ta1 = \<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (CField D F) v\<rbrace>;
+     ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (CField D F) v\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (addr a\<bullet>F{D}) e1' (addr a\<bullet>F{D}) h xs ta (Val v) h xs"
   "sim_move10 P t \<epsilon> (null\<bullet>F{D}) e1' (null\<bullet>F{D}) h xs \<epsilon> (THROW NullPointer) h xs"
   "\<lbrakk> heap_write h a (CField D F) v h'; ta1 = \<epsilon>\<lbrace>\<^bsub>o\<^esub> WriteMem a (CField D F) v \<rbrace>; ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub> WriteMem a (CField D F) v \<rbrace> \<rbrakk>
@@ -1780,10 +1767,9 @@ next
     from bisim' fin bisim
     have "bisim [] (inline_call e1 e) (inline_call E' E) xs"
       using call by(rule bisim_inline_call)(simp add: fv)
-    moreover from fv_inline_call[OF call, of e1] fv fin 
+    moreover from fv_inline_call[of e1 e] fv fin 
     have "fv (inline_call e1 e) = {}" by auto
-    moreover from fin have "\<D> e1 \<lfloor>{}\<rfloor>" by auto
-    hence "\<D> (inline_call e1 e) \<lfloor>{}\<rfloor>"
+    moreover from fin have "\<D> (inline_call e1 e) \<lfloor>{}\<rfloor>"
       using call D by(rule defass_inline_call)
     moreover have "max_vars ?e2' \<le> max_vars E + max_vars E'" by(rule inline_call_max_vars1)
     with `final E'` length have "max_vars ?e2' \<le> length xs" by(auto elim!: final.cases)
@@ -1988,9 +1974,8 @@ next
     by(rule bisim_inline_call)(simp add: fv)
   with bsl have "bisim_list1 (inline_call e e', es') (ex2', exs2')" unfolding ex2'
   proof(rule bisim_list1I)
-    from fin' fv_inline_call[OF call, of e] fv show "fv (inline_call e e') = {}" by auto
-    from fin' have "\<D> e \<lfloor>{}\<rfloor>" by auto
-    thus "\<D> (inline_call e e') \<lfloor>{}\<rfloor>" using call D by(rule defass_inline_call)
+    from fin' fv_inline_call[of e e'] fv show "fv (inline_call e e') = {}" by auto
+    from fin' show "\<D> (inline_call e e') \<lfloor>{}\<rfloor>" using call D by(rule defass_inline_call)
     
     from call1_imp_call[OF call1]
     have "max_vars (inline_call E' E) \<le> max_vars E + max_vars E'"
@@ -2004,10 +1989,16 @@ qed
 
 end
 
-sublocale J0_J1_heap_base < red0_Red1'!: 
-  FWdelay_bisimulation_base final_expr0 "mred0 P" final_expr1 "mred1' (compP1 P)"
-                            "\<lambda>t. bisim_red0_Red1" bisim_wait01
-                            "\<tau>MOVE0 P" "\<tau>MOVE1 (compP1 P)"
+sublocale J0_J1_heap_base < red0_Red1'!: FWdelay_bisimulation_base
+  final_expr0
+  "mred0 P"
+  final_expr1
+  "mred1' (compP1 P)"
+  convert_RA
+  "\<lambda>t. bisim_red0_Red1" 
+  bisim_wait01
+  "\<tau>MOVE0 P"
+  "\<tau>MOVE1 (compP1 P)"
   for P
 .
 

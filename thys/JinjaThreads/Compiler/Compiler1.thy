@@ -24,7 +24,7 @@ qed
 
 text{* Replacing variable names by indices. *}
 
-primrec compE1  :: "vname list \<Rightarrow> expr      \<Rightarrow> expr1"
+function compE1  :: "vname list \<Rightarrow> expr      \<Rightarrow> expr1"
   and compEs1 :: "vname list \<Rightarrow> expr list \<Rightarrow> expr1 list"
 where
   "compE1 Vs (new C) = new C"
@@ -52,6 +52,15 @@ where
 
 | "compEs1 Vs []     = []"
 | "compEs1 Vs (e#es) = compE1 Vs e # compEs1 Vs es"
+by pat_completeness auto
+termination
+apply(relation "sum_case (\<lambda>p. size (snd p)) (\<lambda>p. list_size size (snd p)) <*mlex*> {}")
+apply(rule wf_mlex[OF wf_empty])
+apply(rule mlex_less, simp)+
+done
+
+lemmas compE1_compEs1_induct =
+  compE1_compEs1.induct[case_names New NewArray Cast InstanceOf Val Var BinOp LAss AAcc AAss ALen FAcc FAss Call Block Synchronized InSynchronized Seq Cond While throw TryCatch Nil Cons]
 
 lemma compEs1_conv_map [simp]: "compEs1 Vs es = map (compE1 Vs) es"
 by(induct es) simp_all
@@ -84,29 +93,29 @@ by(simp add: compEs1_conv_map)
 
 lemma expr_locks_compE1 [simp]: "expr_locks (compE1 Vs e) = expr_locks e"
   and expr_lockss_compEs1 [simp]: "expr_lockss (compEs1 Vs es) = expr_lockss es"
-by(induct e and es arbitrary: Vs and Vs)(auto intro: ext)
+by(induct Vs e and Vs es rule: compE1_compEs1.induct)(auto intro: ext)
 
 lemma contains_insync_compE1 [simp]: "contains_insync (compE1 Vs e) = contains_insync e"
   and contains_insyncs_compEs1 [simp]: "contains_insyncs (compEs1 Vs es) = contains_insyncs es"
-by(induct e and es arbitrary: Vs and Vs)simp_all
+by(induct Vs e and Vs es rule: compE1_compEs1.induct)simp_all
 
 lemma max_vars_compE1: "max_vars (compE1 Vs e) = max_vars e"
   and max_varss_compEs1: "max_varss (compEs1 Vs es) = max_varss es"
-apply(induct e and es arbitrary: Vs and Vs)
+apply(induct Vs e and Vs es rule: compE1_compEs1.induct)
 apply(auto)
 done
 
 lemma \<B>: "size Vs = n \<Longrightarrow> \<B> (compE1 Vs e) n"
 and \<B>s: "size Vs = n \<Longrightarrow> \<B>s (compEs1 Vs es) n"
-apply(induct e and es arbitrary: Vs n and Vs n)
+apply(induct Vs e and Vs es arbitrary: n and n rule: compE1_compEs1.induct)
 apply auto
 done
 
 lemma fv_compE1: "fv e \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs e) = (index Vs) ` (fv e)"
   and fvs_compEs1: "fvs es \<subseteq> set Vs \<Longrightarrow> fvs (compEs1 Vs es) = (index Vs) ` (fvs es)"
-proof(induct e and es arbitrary: Vs and Vs)
-  case (Block V ty vo exp)
-  have IH: "\<And>Vs. fv exp \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp) = index Vs ` fv exp" by fact
+proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
+  case (Block Vs V ty vo exp)
+  have IH: "fv exp \<subseteq> set (Vs @ [V]) \<Longrightarrow> fv (compE1 (Vs @ [V]) exp) = index (Vs @ [V]) ` fv exp" by fact
   from `fv {V:ty=vo; exp} \<subseteq> set Vs` have fv': "fv exp \<subseteq> set (Vs @ [V])" by auto
   from IH[OF this] have IH': "fv (compE1 (Vs @ [V]) exp) = index (Vs @ [V]) ` fv exp" .
   have "fv (compE1 (Vs @ [V]) exp) - {length Vs} = index Vs ` (fv exp - {V})"
@@ -146,9 +155,10 @@ proof(induct e and es arbitrary: Vs and Vs)
   qed
   thus ?case by simp
 next
-  case (Synchronized V exp1 exp2)
-  have IH1: "\<And>Vs. fv exp1 \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp1) = index Vs ` fv exp1" 
-    and IH2: "\<And>Vs. fv exp2 \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp2) = index Vs ` fv exp2" by fact+
+  case (Synchronized Vs V exp1 exp2)
+  have IH1: "fv exp1 \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp1) = index Vs ` fv exp1" 
+    and IH2: "fv exp2 \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> fv (compE1 (Vs @ [fresh_var Vs]) exp2) = index (Vs @ [fresh_var Vs]) ` fv exp2"
+    by fact+
   from `fv (sync\<^bsub>V\<^esub> (exp1) exp2) \<subseteq> set Vs` have fv1: "fv exp1 \<subseteq> set Vs"
     and fv2: "fv exp2 \<subseteq> set Vs" by auto
   from fv2 have fv2': "fv exp2 \<subseteq> set (Vs @ [fresh_var Vs])" by auto
@@ -181,8 +191,9 @@ next
   qed
   with IH1[OF fv1] IH2[OF fv2'] show ?case by(auto)
 next
-  case (InSynchronized V a exp)
-  have IH: "\<And>Vs. fv exp \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp) = index Vs ` fv exp" by fact
+  case (InSynchronized Vs V a exp)
+  have IH: "fv exp \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> fv (compE1 (Vs @ [fresh_var Vs]) exp) = index (Vs @ [fresh_var Vs]) ` fv exp"
+    by fact
   from `fv (insync\<^bsub>V\<^esub> (a) exp) \<subseteq> set Vs` have fv: "fv exp \<subseteq> set Vs" by simp
   hence fv': "fv exp \<subseteq> set (Vs @ [fresh_var Vs])" by auto
   have "index (Vs @ [fresh_var Vs]) ` fv exp = index Vs ` fv exp"
@@ -215,9 +226,10 @@ next
   qed
   with IH[OF fv'] show ?case by simp
 next
-  case (TryCatch exp1 C V exp2)
-  have IH1: "\<And>Vs. fv exp1 \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp1) = index Vs ` fv exp1" 
-    and IH2: "\<And>Vs. fv exp2 \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp2) = index Vs ` fv exp2" by fact+
+  case (TryCatch Vs exp1 C V exp2)
+  have IH1: "fv exp1 \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp1) = index Vs ` fv exp1" 
+    and IH2: "fv exp2 \<subseteq> set (Vs @ [V]) \<Longrightarrow> fv (compE1 (Vs @ [V]) exp2) = index (Vs @ [V]) ` fv exp2"
+    by fact+
   from `fv (try exp1 catch(C V) exp2) \<subseteq> set Vs` have fv1: "fv exp1 \<subseteq> set Vs"
     and fv2: "fv exp2 \<subseteq> set (Vs @ [V])" by auto
   have "index (Vs @ [V]) ` fv exp2 - {length Vs} = index Vs ` (fv exp2 - {V})" 
@@ -260,14 +272,14 @@ qed(auto)
 
 lemma syncvars_compE1: "fv e \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs e)"
   and syncvarss_compEs1: "fvs es \<subseteq> set Vs \<Longrightarrow> syncvarss (compEs1 Vs es)"
-proof(induct e and es arbitrary: Vs and Vs)
-  case (Block V ty vo exp)
+proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
+  case (Block Vs V ty vo exp)
   from `fv {V:ty=vo; exp} \<subseteq> set Vs` have "fv exp \<subseteq> set (Vs @ [V])" by auto
-  from `\<And>Vs. fv exp \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp)`[OF this] show ?case by(simp)
+  from `fv exp \<subseteq> set (Vs @ [V]) \<Longrightarrow> syncvars (compE1 (Vs @ [V]) exp)`[OF this] show ?case by(simp)
 next
-  case (Synchronized V exp1 exp2)
-  note IH1 = `\<And>Vs. fv exp1 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp1)`
-  note IH2 = `\<And>Vs. fv exp2 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp2)`
+  case (Synchronized Vs V exp1 exp2)
+  note IH1 = `fv exp1 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp1)`
+  note IH2 = `fv exp2 \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> syncvars (compE1 (Vs @ [fresh_var Vs]) exp2)`
   from `fv (sync\<^bsub>V\<^esub> (exp1) exp2) \<subseteq> set Vs` have fv1: "fv exp1 \<subseteq> set Vs"
     and fv2: "fv exp2 \<subseteq> set Vs" and fv2': "fv exp2 \<subseteq> set (Vs @ [fresh_var Vs])" by auto
   have "length Vs \<notin> index (Vs @ [fresh_var Vs]) ` fv exp2"
@@ -284,8 +296,8 @@ next
   qed
   with IH1[OF fv1] IH2[OF fv2'] fv2' show ?case by(simp add: fv_compE1)
 next
-  case (InSynchronized V a exp)
-  note IH = `\<And>Vs. fv exp \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp)`
+  case (InSynchronized Vs V a exp)
+  note IH = `fv exp \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> syncvars (compE1 (Vs @ [fresh_var Vs]) exp)`
   from `fv (insync\<^bsub>V\<^esub> (a) exp) \<subseteq> set Vs` have fv: "fv exp \<subseteq> set Vs"
     and fv': "fv exp \<subseteq> set (Vs @ [fresh_var Vs])" by auto
   have "length Vs \<notin> index (Vs @ [fresh_var Vs]) ` fv exp"
@@ -302,9 +314,9 @@ next
   qed
   with IH[OF fv'] fv' show ?case by(simp add: fv_compE1)
 next
-  case (TryCatch exp1 C V exp2)
-  note IH1 = `\<And>Vs. fv exp1 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp1)`
-  note IH2 = `\<And>Vs. fv exp2 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp2)`
+  case (TryCatch Vs exp1 C V exp2)
+  note IH1 = `fv exp1 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp1)`
+  note IH2 = `fv exp2 \<subseteq> set (Vs @ [V]) \<Longrightarrow> syncvars (compE1 (Vs @ [V]) exp2)`
   from `fv (try exp1 catch(C V) exp2) \<subseteq> set Vs` have fv1: "fv exp1 \<subseteq> set Vs"
     and fv2: "fv exp2 \<subseteq> set (Vs @ [V])" by auto
   from IH1[OF fv1] IH2[OF fv2] show ?case by auto
@@ -325,7 +337,7 @@ by(erule finalE, simp_all)
 
 lemma [simp]: "max_vars (compE1 Vs e) = max_vars e"
   and "max_varss (compEs1 Vs es) = max_varss es"
-by (induct e and es arbitrary: Vs and Vs)(simp_all)
+by (induct Vs e and Vs es rule: compE1_compEs1_induct)(simp_all)
 
 text{* Compiling programs: *}
 

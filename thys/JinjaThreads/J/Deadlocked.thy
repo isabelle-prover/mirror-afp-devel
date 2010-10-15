@@ -136,22 +136,22 @@ next
   with Ha `i <s 0 \<or> int (array_length (hp s) a) \<le> sint i` show ?case
     by(fastsimp intro: red_reds.RedAAccBounds)
 next 
-  case (RedAAcc s a T i v E T')
+  case (RedAAcc h a T i v l E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'` 
   have wt: "P,E,H \<turnstile> addr a : T'\<lfloor>\<rceil>"
     by(auto dest: typeof_addr_eq_Some_conv)
   hence Ha: "typeof_addr H a = \<lfloor>Array T'\<rfloor>" by(auto)
-  with `hext H (hp s)` `typeof_addr (hp s) a = \<lfloor>Array T\<rfloor>`
-  have si': "array_length H a = array_length (hp s) a" and [simp]: "T' = T"
+  with `H \<unlhd> hp (h, l)` `typeof_addr h a = \<lfloor>Array T\<rfloor>`
+  have si': "array_length H a = array_length h a" and [simp]: "T' = T"
     by(auto dest: hext_arrD)
-  with `0 <=s i` `sint i < int (array_length (hp s) a)`
-  have "nat (sint i) < array_length (hp s) a"
+  with `0 <=s i` `sint i < int (array_length h a)`
+  have "nat (sint i) < array_length h a"
     by(metis nat_less_iff si' sint_0 word_sle_def)
   with Ha si' have "P,H \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
   from heap_read_total[OF hconf this]
   obtain v where "heap_read H a (ACell (nat (sint i))) v" by blast
-  with si' Ha `0 <=s i` `sint i < int (array_length (hp s) a)` show ?case
+  with si' Ha `0 <=s i` `sint i < int (array_length h a)` show ?case
     by(fastsimp intro: red_reds.RedAAcc simp add: ta_upd_simps)
 next
   case AAssRed1 thus ?case by(fastsimp intro: red_reds.intros)
@@ -196,15 +196,18 @@ next
   with `H \<unlhd> hp (h, l)` `typeof_addr h a = \<lfloor>Array T\<rfloor>`
   have si': "array_length H a = array_length h a" and T'': "T'' = T"
     by(auto dest: hext_arrD)
+  from `typeof\<^bsub>h\<^esub> w = \<lfloor>U\<rfloor>` wtw `H \<unlhd> hp (h, l)` have "typeof\<^bsub>H\<^esub> w = \<lfloor>U\<rfloor>" 
+    by(auto dest: type_of_hext_type_of)
+  moreover
+  with `P \<turnstile> U \<le> T` have conf: "P,H \<turnstile> w :\<le> T"
+    by(auto simp add: conf_def)
   from `0 <=s i` `sint i < int (array_length h a)`
   have "nat (sint i) < array_length h a"
     by (metis nat_less_iff si' sint_0 word_sle_def)
   with si' T'' Ha have "P,H \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
-  from heap_write_total[OF this, of w]
+  from heap_write_total[OF this conf]
   obtain H' where "heap_write H a (ACell (nat (sint i))) w H'" ..
-  moreover from `typeof\<^bsub>h\<^esub> w = \<lfloor>U\<rfloor>` wtw `H \<unlhd> hp (h, l)` have "typeof\<^bsub>H\<^esub> w = \<lfloor>U\<rfloor>" 
-    by(auto dest: type_of_hext_type_of)
   ultimately show ?case using `0 <=s i` `sint i < int (array_length h a)` Ha T'' `P \<turnstile> U \<le> T` si'
     by(fastsimp simp del: split_paired_Ex intro: red_reds.RedAAss)
 next
@@ -222,13 +225,13 @@ next
 next
   case FAccRed thus ?case by(fastsimp intro: red_reds.intros)
 next
-  case (RedFAcc s a D F v E T)
-  from `P,E,H \<turnstile> addr a\<bullet>F{D} : T` obtain C'
+  case (RedFAcc h a D F v l E T)
+  from `P,E,H \<turnstile> addr a\<bullet>F{D} : T` obtain C' fm
     where wt: "P,E,H \<turnstile> addr a : Class C'"
-      and has: "P \<turnstile> C' has F:T in D"
+      and has: "P \<turnstile> C' has F:T (fm) in D"
     by(auto dest: typeof_addr_eq_Some_conv)
   hence Ha: "typeof_addr H a = \<lfloor>Class C'\<rfloor>" by(auto)
-  with `P \<turnstile> C' has F:T in D` have "P,H \<turnstile> a@CField D F : T"
+  with `P \<turnstile> C' has F:T (fm) in D` have "P,H \<turnstile> a@CField D F : T"
     by(auto intro: addr_loc_type.intros)
   from heap_read_total[OF hconf this]
   obtain v where "heap_read H a (CField D F) v" by blast
@@ -243,15 +246,16 @@ next
   case RedFAssNull thus ?case by(fastsimp intro: red_reds.intros)
 next
   case (RedFAss h a D F v h' l E T)
-  from `P,E,H \<turnstile> addr a\<bullet>F{D} := Val v : T` obtain C' T' T2
+  from `P,E,H \<turnstile> addr a\<bullet>F{D} := Val v : T` obtain C' T' T2 fm
     where wt: "P,E,H \<turnstile> addr a : Class C'"
-      and has: "P \<turnstile> C' has F:T' in D"
+      and has: "P \<turnstile> C' has F:T' (fm) in D"
       and wtv: "P,E,H \<turnstile> Val v : T2"
       and T2T: "P \<turnstile> T2 \<le> T'"
     by(auto dest: typeof_addr_eq_Some_conv)
   moreover from wt have Ha: "typeof_addr H a = \<lfloor>Class C'\<rfloor>" by(auto)
-  with has have "P,H \<turnstile> a@CField D F : T'" by(auto intro: addr_loc_type.intros)
-  from heap_write_total[OF this, of v]
+  with has have adal: "P,H \<turnstile> a@CField D F : T'" by(auto intro: addr_loc_type.intros)
+  from wtv T2T have "P,H \<turnstile> v :\<le> T'" by(auto simp add: conf_def)
+  from heap_write_total[OF adal this]
   obtain h' where "heap_write H a (CField D F) v h'" ..
   thus ?case by(fastsimp intro: red_reds.RedFAss)
 next
@@ -270,7 +274,7 @@ next
       and nexc: "\<not> is_external_call P (Class C') M"
     from wta have Ha: "typeof_addr H a = \<lfloor>Class C'\<rfloor>" by(auto)
     moreover from wtes have "length vs = length Ts''"
-      by(auto intro: map_eq_imp_length_eq')
+      by(auto intro: map_eq_imp_length_eq)
     moreover from widens have "length Ts'' = length Ts'"
       by(auto dest: widens_lengthD)
     moreover from sees wf have "wf_mdecl wf_J_mdecl P D' (M, Ts', T', pns', body')"
@@ -477,14 +481,14 @@ lemma preserve_deadlocked:
   and lto: "lock_thread_ok (locks S) (thr S)"
   and wto: "wset_thread_ok (wset S) (thr S)"
   and tc: "thread_conf P (thr S) (shr S)"
-  shows "preserve_deadlocked final_expr (mred P) S"
+  shows "preserve_deadlocked final_expr (mred P) convert_RA S"
 proof -
   { fix tta s t' ta' s' t x ln
     assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
       and red: "P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
       and tst: "thr s t = \<lfloor>(x, ln)\<rfloor>"
     obtain e l where x [simp]: "x = (e, l)" by(cases x, auto)
-    let ?Es' = "upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (\<down>map (thr_a \<circ> snd) tta\<down>)"
+    let ?Es' = "upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (concat (map (thr_a \<circ> snd) tta))"
     from st Red tc have st': "sconf_type_ts_ok ?Es' (thr s) (shr s)"
       by(auto dest: lifting_inv.RedT_invariant[OF lifting_inv_sconf_subject_ok, OF wf])
     with tst obtain E T where Est: "?Es' t = \<lfloor>(E, T)\<rfloor>" 
@@ -527,7 +531,7 @@ theorem preserve_deadlock_start:
   and start_heap: "start_heap_ok"
   and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=(pns, body) in D"
   and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
-  shows "preserve_deadlocked final_expr (mred P) (J_start_state P C M vs)"
+  shows "preserve_deadlocked final_expr (mred P) convert_RA (J_start_state P C M vs)"
 using wf
 apply(rule preserve_deadlocked)
     apply(rule sconf_type_ts_ok_J_start_state[OF wf start_heap sees conf])

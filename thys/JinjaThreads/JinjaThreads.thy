@@ -1,9 +1,9 @@
 theory JinjaThreads
 imports
   "Common/Aux"
-  "Framework/FWLiftingSem"
   "Framework/FWProgress"
   "Framework/FWBisimDeadlock"
+  "Framework/FWInitFinLift"
   "Common/ExternalCallWF"
   "Common/ConformThreaded"
   "Common/BinOp"
@@ -21,6 +21,7 @@ imports
   "Compiler/Preprocessor"
   "MM/SC"
   "MM/SC_Interp"
+  "MM/JMM"
 begin
 
 

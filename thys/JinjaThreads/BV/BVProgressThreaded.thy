@@ -22,7 +22,11 @@ proof(unfold_locales)
   ultimately show False using `mexec P t (x, m) ta (x', m')` x by(auto)
 qed
 
-sublocale JVM_heap_base < exec_mthr!: final_thread_wf JVM_final "mexec P" for P
+sublocale JVM_heap_base < exec_mthr!: final_thread_wf
+  JVM_final
+  "mexec P"
+  convert_RA
+  for P
 by(rule mexec_final_wf)
 
 lemma (in JVM_heap_base) mexecd_final_wf: "final_thread_wf JVM_final (mexecd P)"
@@ -36,7 +40,11 @@ proof(unfold_locales)
   ultimately show False using `mexecd P t (x, m) ta (x', m')` x by(auto)
 qed
 
-sublocale JVM_heap_base < execd_mthr!: final_thread_wf JVM_final "mexecd P" for P
+sublocale JVM_heap_base < execd_mthr!: final_thread_wf 
+  JVM_final
+  "mexecd P"
+  convert_RA
+  for P
 by(rule mexecd_final_wf)
 
 lemma (in JVM_heap_conf_base') mexec_eq_mexecd:
@@ -391,7 +399,7 @@ apply(simp)
 done
 
 end
-
+(*
 context JVM_progress begin
 
 lemma execd_Suspend_ex_Interrupted_Notified:
@@ -457,7 +465,7 @@ proof -
 qed
 
 end
-
+*)
 context JVM_typesafe begin
 
 lemma execd_wf_progress:
@@ -465,9 +473,9 @@ lemma execd_wf_progress:
   and "lock_thread_ok (locks S) (thr S)"
   and "correct_state_ts \<Phi> (thr S) (shr S)"
   and "wset S = empty"
-  shows "progress JVM_final (mexecd P) S"
+  shows "progress JVM_final (mexecd P) convert_RA S"
 proof -
-  interpret execd_mthr!: multithreaded_start JVM_final "mexecd P" S
+  interpret execd_mthr!: multithreaded_start JVM_final "mexecd P" convert_RA S
     using `lock_thread_ok (locks S) (thr S)` `wset S = empty`
     by(unfold_locales)(auto intro: wset_thread_okI)
   from wf obtain wf_md where wfprog: "wf_prog wf_md P" by(auto dest: wt_jvm_progD)
@@ -720,16 +728,15 @@ proof(rule iffI)
   assume "P \<turnstile> s -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s'"
   thus "P \<turnstile> s -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'"
   proof(cases rule: exec_mthr.redT_elims[consumes 1, case_names normal acquire])
-    case (normal x x' ta' m')
+    case (normal x x' m')
     obtain xcp frs where x [simp]: "x = (xcp, frs)" by(cases x, auto)
     from `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` cs
     have "\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>" by(auto dest: ts_okD)
-    from mexec_eq_mexecd[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>`] `mexec P t (x, shr s) ta' (x', m')`
-    have "mexecd P t (x, shr s) ta' (x', m')" by simp
-    moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF this `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`] `thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>` `ta = observable_ta_of ta'`
-    have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
-    ultimately show ?thesis
-      using normal unfolding `ta = observable_ta_of ta'`
+    from mexec_eq_mexecd[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>`] `mexec P t (x, shr s) ta (x', m')`
+    have "mexecd P t (x, shr s) ta (x', m')" by simp
+    moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF this `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`] `thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>`
+    have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
+    ultimately show ?thesis using normal 
       by(cases s')(erule execd_mthr.redT_normal, auto)
   next
     case acquire thus ?thesis
@@ -741,16 +748,15 @@ next
   assume "P \<turnstile> s -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'"
   thus "P \<turnstile> s -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s'"
   proof(cases rule: execd_mthr.redT_elims[consumes 1, case_names normal acquire])
-    case (normal x x' ta' m')
+    case (normal x x' m')
     obtain xcp frs where x [simp]: "x = (xcp, frs)" by(cases x, auto)
     from `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` cs
     have "\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>" by(auto dest: ts_okD)
-    from mexec_eq_mexecd[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>`] `mexecd P t (x, shr s) ta' (x', m')`
-    have "mexec P t (x, shr s) ta' (x', m')" by simp
-    moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF `mexecd P t (x, shr s) ta' (x', m')` `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`] `thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>` `ta = observable_ta_of ta'`
-    have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
-    ultimately show ?thesis
-      using normal unfolding `ta = observable_ta_of ta'`
+    from mexec_eq_mexecd[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>`] `mexecd P t (x, shr s) ta (x', m')`
+    have "mexec P t (x, shr s) ta (x', m')" by simp
+    moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF `mexecd P t (x, shr s) ta (x', m')` `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`] `thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>`
+    have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
+    ultimately show ?thesis using normal
       by(cases s')(erule exec_mthr.redT_normal, auto)
   next
     case acquire thus ?thesis
@@ -819,9 +825,9 @@ lemma exec_wf_progress:
   and "lock_thread_ok (locks S) (thr S)"
   and csS: "correct_state_ts \<Phi> (thr S) (shr S)"
   and "wset S = empty"
-  shows "progress JVM_final (mexec P) S"
+  shows "progress JVM_final (mexec P) convert_RA S"
 proof -
-  interpret progress!: progress JVM_final "mexecd P" S
+  interpret progress!: progress JVM_final "mexecd P" convert_RA S
     using assms by(rule execd_wf_progress)
   show ?thesis
   proof(unfold_locales)
@@ -888,7 +894,8 @@ theorem mexecd_TypeSafety:
   shows "frs \<noteq> [] \<or> ln \<noteq> no_wait_locks \<Longrightarrow> multithreaded_base.deadlocked JVM_final (mexecd P) s' t"
   and "\<Phi> \<turnstile> t: (xcp, shr s', frs) \<surd>"
 proof -
-  interpret progress JVM_final "mexecd P" s by(rule execd_wf_progress) fact+
+  interpret progress JVM_final "mexecd P" convert_RA s
+    by(rule execd_wf_progress) fact+
 
   from `wf_jvm_prog\<^sub>\<Phi> P` `correct_state_ts \<Phi> (thr s) (shr s)` `P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s'`
   have "correct_state_ts \<Phi> (thr s') (shr s')"
@@ -927,7 +934,8 @@ theorem mexec_TypeSafety:
   shows "frs \<noteq> [] \<or> ln \<noteq> no_wait_locks \<Longrightarrow> multithreaded_base.deadlocked JVM_final (mexec P) s' t"
   and "\<Phi> \<turnstile> t: (xcp, shr s', frs) \<surd>"
 proof -
-  interpret progress JVM_final "mexec P" s by(rule exec_wf_progress) fact+
+  interpret progress JVM_final "mexec P" convert_RA s
+    by(rule exec_wf_progress) fact+
 
   from `wf_jvm_prog\<^sub>\<Phi> P` `correct_state_ts \<Phi> (thr s) (shr s)` `P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s'`
   have "correct_state_ts \<Phi> (thr s') (shr s')"

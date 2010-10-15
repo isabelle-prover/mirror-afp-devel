@@ -31,7 +31,7 @@ qed
 
 section {* Preservation lemmata *}
 
-text {* Definite assignment *}
+subsection {* Definite assignment *}
 
 abbreviation
   def_ass_ts_ok :: "(addr,thread_id,expr \<times> locals) thread_info \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -240,7 +240,7 @@ qed
 
 end
 
-text {* @{term "wf_red"} *}
+subsection {* @{term "wf_red"} *}
 
 context J_progress begin
 
@@ -323,9 +323,9 @@ lemma wf_progress:
   and "lock_ok (locks S) (thr S)"
   and "wset S = empty"
   and "def_ass_ts_ok (thr S) (shr S)"
-  shows "progress final_expr (mred P) S"
+  shows "progress final_expr (mred P) convert_RA S"
 proof -
-  interpret red_mthr!: multithreaded_start final_expr "mred P" S
+  interpret red_mthr!: multithreaded_start final_expr "mred P" convert_RA S
     using `lock_ok (locks S) (thr S)` `wset S = empty`
     by(unfold_locales)(auto intro: lock_ok_lock_thread_ok wset_thread_okI)
   show ?thesis
@@ -348,7 +348,7 @@ proof -
     have lockok: "lock_ok ls ts" by(cases S)(auto dest: RedT_preserves_lock_ok[OF wf])
 
     from `sconf_type_ts_ok Es (thr S) (shr S)` Red s `thread_conf P (thr S) (shr S)`
-    have "sconf_type_ts_ok (upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (\<down>map (thr_a \<circ> snd) tta\<down>)) ts m"
+    have "sconf_type_ts_ok (upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (concat (map (thr_a \<circ> snd) tta))) ts m"
       by(auto dest: lifting_inv.RedT_invariant[OF lifting_inv_sconf_subject_ok, OF wf])
     with tst ex obtain E T where "sconf_type_ok (E, T) e m x"
       by -((drule ts_invD, assumption),(clarify,blast))
@@ -416,7 +416,7 @@ proof -
       and nfine: "\<not> final e" by auto
     from wf have wwf: "wwf_J_prog P" by(rule wf_prog_wwf_prog)
     from `sconf_type_ts_ok Es (thr S) (shr S)` Red s `thread_conf P (thr S) (shr S)`
-    have "sconf_type_ts_ok (upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (\<down>map (thr_a \<circ> snd) tta\<down>)) ts m"
+    have "sconf_type_ts_ok (upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (concat (map (thr_a \<circ> snd) tta))) ts m"
       by(auto dest: lifting_inv.RedT_invariant[OF lifting_inv_sconf_subject_ok, OF wf])
     with tst ex obtain E T where "sconf_type_ok (E, T) e m x"
       by -((drule ts_invD, assumption),(clarify,blast))
@@ -479,7 +479,7 @@ section {* Type safety proof *}
 theorem TypeSafetyT:
   fixes C and M and ttas and Es
   defines "Es  == J_sconf_type_ET_start P C M"
-  and     "Es' == upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (\<down>map (thr_a \<circ> snd) ttas\<down>)"
+  and     "Es' == upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (concat (map (thr_a \<circ> snd) ttas))"
   assumes wf: "wf_J_prog P"
   and start_heap: "start_heap_ok"
   and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D"

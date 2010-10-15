@@ -123,6 +123,7 @@ end
 locale final_thread_wf = multithreaded +
   constrains final :: "'x \<Rightarrow> bool"
   and r :: "('l,'t,'x,'m,'w,'o) semantics"
+  and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   assumes final_no_red [dest]: "\<lbrakk> final x; t \<turnstile> (x, m) -ta\<rightarrow> (x', m') \<rbrakk> \<Longrightarrow> False" begin
 
 lemma final_no_redT: 
@@ -146,6 +147,7 @@ text {* This locale simply fixes a start state *}
 locale multithreaded_start = multithreaded +
   constrains final :: "'x \<Rightarrow> bool"
   and r :: "('l,'t,'x,'m,'w,'o) semantics"
+  and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   fixes start_state :: "('l,'t,'x,'m,'w) state"
   assumes lock_thread_ok_start_state: "lock_thread_ok (locks start_state) (thr start_state)"
   and wset_thread_ok_start_state: "wset_thread_ok (wset start_state) (thr start_state)"
@@ -164,8 +166,8 @@ lemma in_wait_SuspendD:
   and start: "wset start_state t = None"
   shows
   "\<exists>s0 s1 tta0 tta1 x0 ta w' ln'.
-    start_state -\<triangleright>tta0\<rightarrow>* s0 \<and> s0 -t\<triangleright>observable_ta_of ta\<rightarrow> s1 \<and> s1 -\<triangleright>tta1\<rightarrow>* s \<and> 
-    tta = tta0 @ (t, observable_ta_of ta) # tta1 \<and>
+    start_state -\<triangleright>tta0\<rightarrow>* s0 \<and> s0 -t\<triangleright>ta\<rightarrow> s1 \<and> s1 -\<triangleright>tta1\<rightarrow>* s \<and> 
+    tta = tta0 @ (t, ta) # tta1 \<and>
     thr s0 t = \<lfloor>(x0, no_wait_locks)\<rfloor> \<and> t \<turnstile> \<langle>x0, shr s0\<rangle> -ta\<rightarrow> \<langle>x, shr s1\<rangle> \<and> Suspend w' \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<and>
     actions_ok s0 t ta \<and> thr s1 t = \<lfloor>(x, ln')\<rfloor>"
 using major
@@ -177,18 +179,18 @@ next
   proof(cases "wset s' t")
     case None
     with `thr s'' t = \<lfloor>(x, ln)\<rfloor>` `s' -t'\<triangleright>ta\<rightarrow> s''` `wset s'' t = \<lfloor>w\<rfloor>`
-    obtain x0 ta' m where m: "m = shr s''"
+    obtain x0 m where m: "m = shr s''"
       and tt': "t = t'"
-      and r: "t \<turnstile> \<langle>x0, shr s'\<rangle> -ta'\<rightarrow> \<langle>x, m\<rangle>"
+      and r: "t \<turnstile> \<langle>x0, shr s'\<rangle> -ta\<rightarrow> \<langle>x, m\<rangle>"
       and tst: "thr s' t = \<lfloor>(x0, no_wait_locks)\<rfloor>"
       and aok: "actions_ok s' t ta"
-      and ta [simp]: "ta = observable_ta_of ta'"
-      and s': "s'' = redT_upd s' t ta x m"
+      and s': "redT_upd s' t ta x m s''"
       using redT_updWs_None_implies_None[where t=t and t'=t' and ws = "wset s'"]
-      by(auto elim!: redT.cases split: split_if_asm)
-    from s' `wset s'' t = \<lfloor>w\<rfloor>`
-    have "redT_updWs (wset s') t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> t = \<lfloor>w\<rfloor>" by simp
-    from redT_updWs_None_SomeD[OF this, OF None]
+      by(fastsimp elim!: redT.cases split: split_if_asm)
+    from s' `wset s'' t = \<lfloor>w\<rfloor>` obtain ws'
+      where "wset s'' = ws'"
+      and red_Ws: "redT_updWs t (wset s') \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> ws'" "ws' t = \<lfloor>w\<rfloor>" by auto
+    from redT_updWs_None_SomeD[OF red_Ws(1), OF red_Ws(2) `wset s' t = None`]
     obtain w' where "Suspend w' \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" by auto
     thus ?thesis using `start_state -\<triangleright>ttas\<rightarrow>* s'` `s' -t'\<triangleright>ta\<rightarrow> s''` tst r aok
         `thr s'' t = \<lfloor>(x, ln)\<rfloor>` tt' m
@@ -201,7 +203,7 @@ next
       with `redT s' (t', ta) s''` `thr s'' t = \<lfloor>(x, ln)\<rfloor>` `wset s'' t = \<lfloor>w\<rfloor>` 
       obtain w' where "redT_updTs (thr s') \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> t = \<lfloor>(x, ln)\<rfloor>"
         and "wset s' t = \<lfloor>w'\<rfloor>" "thread_oks (thr s') \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
-        by(fastsimp elim!: redT.cases dest: redT_updWs_Some_otherD[OF False] split: wait_set_status.split_asm)
+        by(fastsimp elim!: redT.cases dest: redT_updWs_Some_otherD[OF _ _ False] split: wait_set_status.split_asm)
       from `start_state -\<triangleright>ttas\<rightarrow>* s'` have "wset_thread_ok (wset s') (thr s')"
         by(rule preserves_wset_thread_ok)
       with `redT_updTs (thr s') \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> t = \<lfloor>(x, ln)\<rfloor>` `thread_oks (thr s') \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>` `wset s' t = \<lfloor>w'\<rfloor>`
@@ -214,25 +216,25 @@ next
       from `s' -t'\<triangleright>ta\<rightarrow> s''`
       show ?thesis
       proof(cases)
-        case (redT_normal x0 ta' X m)
+        case (redT_normal x0 X m)
         with `thr s'' t = \<lfloor>(x, ln)\<rfloor>` `wset s'' t = \<lfloor>w\<rfloor>` True
         have m: "m = shr s''" and [simp]: "X = x"
-          and r: "t \<turnstile> \<langle>x0, shr s'\<rangle> -ta'\<rightarrow> \<langle>x, m\<rangle>"
+          and r: "t \<turnstile> \<langle>x0, shr s'\<rangle> -ta\<rightarrow> \<langle>x, m\<rangle>"
           and tst: "thr s' t = \<lfloor>(x0, no_wait_locks)\<rfloor>"
           and aok: "actions_ok s' t ta"
-          and ta [simp]: "ta = observable_ta_of ta'"
-          and s': "s'' = redT_upd s' t ta x m"
+          and s': "redT_upd s' t ta x m s''"
           by(auto)
-        from s' `wset s'' t = \<lfloor>w\<rfloor>` have "redT_updWs (wset s') t \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> t = \<lfloor>w\<rfloor>" by auto
-        have "\<exists>w. Suspend w \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>"
+        from s' `wset s'' t = \<lfloor>w\<rfloor>` obtain ws' where "wset s'' = ws'"
+          and red_Ws: "redT_updWs t (wset s') \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> ws'" "ws' t = \<lfloor>w\<rfloor>" by auto
+        have "\<exists>w. Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
         proof(rule ccontr)
           assume "\<not> ?thesis"
-          hence Suspend: "\<And>w. Suspend w \<notin> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>" by simp
-          from redT_updWs_not_Suspend_Some[OF `redT_updWs (wset s') t \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> t = \<lfloor>w\<rfloor>`, OF Some this]
-          show False using aok s' `redT_updWs (wset s') t \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> t = \<lfloor>w\<rfloor>` Some
-            by(auto simp add: wset_actions_ok_def split: split_if_asm dest: redT_updWs_Woken_Up_same_no_Notified_Interrupted[OF _ _ Suspend])
+          hence Suspend: "\<And>w. Suspend w \<notin> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" by simp
+          from redT_updWs_not_Suspend_Some[OF `redT_updWs t (wset s') \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> ws'`, OF `ws' t = \<lfloor>w\<rfloor>` Some this]
+          show False using aok s' red_Ws Some
+            by(auto simp add: wset_actions_ok_def split: split_if_asm dest: redT_updWs_Woken_Up_same_no_Notified_Interrupted[OF _ _ _ Suspend])
         qed
-        then obtain w where Suspend: "Suspend w \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>" ..
+        then obtain w where Suspend: "Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" ..
         thus ?thesis using `start_state -\<triangleright>ttas\<rightarrow>* s'` `s' -t'\<triangleright>ta\<rightarrow> s''` tst r aok
           `thr s'' t = \<lfloor>(x, ln)\<rfloor>` True m
           by(fastsimp intro: RedT_refl simp del: split_paired_Ex)

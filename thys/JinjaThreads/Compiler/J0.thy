@@ -872,6 +872,7 @@ sublocale J_heap_base < red_mthr!:
   \<tau>multithreaded_wf 
     final_expr
     "mred P"
+    convert_RA
     "\<tau>MOVE P"
     wfs
   for P wfs
@@ -881,6 +882,7 @@ sublocale J_heap_base < red0_mthr!:
   \<tau>multithreaded_wf 
     final_expr0
     "mred0 P"
+    convert_RA
     "\<tau>MOVE0 P"
     wfs
   for P wfs

@@ -72,10 +72,7 @@ proof(cases)
       thus ?thesis using fv `length vs = length pns` by auto
     next
       case (red0Return E)
-      with icl have "is_call E" by simp
-      then obtain aMvs where "call E = \<lfloor>aMvs\<rfloor>" by(auto simp add: is_call_def)
-      with fv_inline_call[OF this, of e] red0Return
-      show ?thesis using fv by auto
+      with fv_inline_call[of e E] show ?thesis using fv by auto
     qed
   next
     from red icl show "list_all is_call es'"
@@ -405,8 +402,7 @@ next
   hence "P,t \<turnstile> \<langle>fold_es (inline_call e E) es,(h, empty)\<rangle> -ta\<rightarrow>  \<langle>fold_es (inline_call e' E) es,(h', empty)\<rangle>"
   proof(rule IH)
     from fvs have "fv E = {}" "fv e = {}" by auto
-    with fv_inline_call[OF call, of e]
-    have "fv (inline_call e E) = {}" by auto
+    with fv_inline_call[of e E] have "fv (inline_call e E) = {}" by auto
     thus "fvs (inline_call e E # es) = {}" using fvs by auto
   next
     from icl show "list_all is_call es" by simp
@@ -442,7 +438,7 @@ next
   from red have "P,t \<turnstile> \<langle>fold_es (inline_call e E) es,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
   hence "\<exists>E'. e' = fold_es E' es \<and> P,t \<turnstile> \<langle>inline_call e E,(h, empty)\<rangle> -ta\<rightarrow> \<langle>E',(h', empty)\<rangle>"
   proof(rule IH)
-    from fvs fv_inline_call[OF call, of e]
+    from fvs fv_inline_call[of e E]
     show "fvs (inline_call e E # es) = {}" by simp
   next
     from icl show "list_all is_call es" by simp
@@ -922,6 +918,7 @@ sublocale J_heap_base < red_red0!:
     "mred P"
     final_expr0 
     "mred0 P"
+    convert_RA
     "\<lambda>t. bisim_red_red0" 
     "\<lambda>exs (e0, es0). is_call e0"
     "\<tau>MOVE P" "\<tau>MOVE0 P" 
@@ -931,17 +928,14 @@ by(unfold_locales)
 context J_heap_base begin
 
 lemma bisim_J_J0_start:
-  assumes wf: "wf_J_prog P"
+  assumes wf: "wwf_J_prog P"
   and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=(pns,body) in C"
   and vs: "length vs = length pns" and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   shows "red_red0.mbisim (J_start_state P C M vs) (J0_start_state P C M vs)"
 proof -
-  from sees_wf_mdecl[OF wf_prog_wwf_prog[OF wf] sees] 
+  from sees_wf_mdecl[OF wf sees] 
   have wwfCM: "wwf_J_mdecl P C (M, Ts, T, pns, body)"
     and len: "length pns = length Ts" by(auto simp add: wf_mdecl_def)
-  from sees_wf_mdecl[OF wf sees]
-  have wfCM: "wf_J_mdecl P C (M, Ts, T, pns, body)"
-    by(auto simp add: wf_mdecl_def)
   from wwfCM have fvbody: "fv body \<subseteq> {this} \<union> set pns"
     and pns: "length pns = length Ts" by simp_all
   with vs len have fv: "fv (blocks pns Ts vs body) \<subseteq> {this}" by auto

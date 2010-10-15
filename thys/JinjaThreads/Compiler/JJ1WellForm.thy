@@ -20,7 +20,7 @@ well-typedness *}
 lemma assumes wf: "wf_prog wfmd P"
   shows compE1_pres_wt: "\<lbrakk> P,[Vs[\<mapsto>]Ts] \<turnstile> e :: U; size Ts = size Vs \<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 Vs e :: U"
   and compEs1_pres_wt: "\<lbrakk> P,[Vs[\<mapsto>]Ts] \<turnstile> es [::] Us; size Ts = size Vs \<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compEs1 Vs es [::] Us"
-proof(induct e and es arbitrary: Vs Ts U and Vs Ts Us)
+proof(induct Vs e and Vs es arbitrary: Ts U and Ts Us rule: compE1_compEs1_induct)
   case Var thus ?case by(fastsimp simp:map_upds_apply_eq_Some split:split_if_asm)
 next
   case LAss thus ?case by(fastsimp simp:map_upds_apply_eq_Some split:split_if_asm)
@@ -30,36 +30,35 @@ next
 next
   case Block thus ?case by(fastsimp simp:nth_append)
 next
-  case (Synchronized V exp1 exp2 Vs Ts U)
-  note IH1 = `\<And>Vs Ts U. \<lbrakk>P,[Vs [\<mapsto>] Ts] \<turnstile> exp1 :: U;
+  case (Synchronized Vs V exp1 exp2 Ts U)
+  note IH1 = `\<And>Ts U. \<lbrakk>P,[Vs [\<mapsto>] Ts] \<turnstile> exp1 :: U;
     length Ts = length Vs\<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 Vs exp1 :: U`
-  note IH2 = `\<And>Vs Ts U. \<lbrakk>P,[Vs [\<mapsto>] Ts] \<turnstile> exp2 :: U; length Ts = length Vs\<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 Vs exp2 :: U`
+  note IH2 = `\<And>Ts U. \<lbrakk>P,[(Vs @ [fresh_var Vs]) [\<mapsto>] Ts] \<turnstile> exp2 :: U; length Ts = length (Vs @ [fresh_var Vs])\<rbrakk>
+      \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 (Vs @ [fresh_var Vs]) exp2 :: U`
   note length = `length Ts = length Vs`
   from `P,[Vs [\<mapsto>] Ts] \<turnstile> sync\<^bsub>V\<^esub> (exp1) exp2 :: U`
   obtain U1 where wt1: "P,[Vs [\<mapsto>] Ts] \<turnstile> exp1 :: U1"
     and wt2: "P,[Vs [\<mapsto>] Ts] \<turnstile> exp2 :: U"
     and U1: "is_refT U1" "U1 \<noteq> NT"
     by(auto)
-  from IH1[of Vs Ts U1] wt1 length
+  from IH1[of Ts U1] wt1 length
   have wt1': "compP f P,Ts \<turnstile>1 compE1 Vs exp1 :: U1" by simp
   from length fresh_var_fresh[of Vs] have "[Vs [\<mapsto>] Ts] \<subseteq>\<^sub>m [Vs @ [fresh_var Vs] [\<mapsto>] Ts @ [Class Object]]"
     by(auto simp add: map_le_def fun_upd_def)
   with wt2 have "P,[Vs@[fresh_var Vs] [\<mapsto>] Ts @ [Class Object]] \<turnstile> exp2 :: U"
     by(rule wt_env_mono)
-  with length IH2[of "Vs@[fresh_var Vs]" "Ts @ [Class Object]" U]
+  with length IH2[of "Ts @ [Class Object]" U]
   have "compP f P,Ts @ [Class Object] \<turnstile>1 compE1 (Vs @ [fresh_var Vs]) exp2 :: U" by simp
   with wt1' U1 show ?case by(auto)
 next 
-  case (TryCatch exp1 C V exp2)
-  note IH1 = `\<And>Vs Ts U. \<lbrakk>P,[Vs [\<mapsto>] Ts] \<turnstile> exp1 :: U; length Ts = length Vs\<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 Vs exp1 :: U`
-  note IH2 = `\<And>Vs Ts U. \<lbrakk>P,[Vs [\<mapsto>] Ts] \<turnstile> exp2 :: U; length Ts = length Vs\<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 Vs exp2 :: U`
+  case (TryCatch Vs exp1 C V exp2)
+  note IH1 = `\<And>Ts U. \<lbrakk>P,[Vs [\<mapsto>] Ts] \<turnstile> exp1 :: U; length Ts = length Vs\<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 Vs exp1 :: U`
+  note IH2 = `\<And>Ts U. \<lbrakk>P,[(Vs @ [V]) [\<mapsto>] Ts] \<turnstile> exp2 :: U; length Ts = length (Vs @ [V])\<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 (Vs @ [V]) exp2 :: U`
   note length = `length Ts = length Vs`
   with `P,[Vs [\<mapsto>] Ts] \<turnstile> try exp1 catch(C V) exp2 :: U`
   have wt1: "P,[Vs [\<mapsto>] Ts] \<turnstile> exp1 :: U" and wt2: "P,[(Vs@[V]) [\<mapsto>] (Ts@[Class C])] \<turnstile> exp2 :: U"
     and C: "P \<turnstile> C \<preceq>\<^sup>* Throwable" by(auto simp add: nth_append)
-  from wf have "is_class P Throwable"
-    by(auto simp add: wf_prog_def wf_syscls_def is_class_def class_def map_of_SomeI)
-  with C have "is_class P C" by(rule subcls_is_class1)
+  from wf C have "is_class P C" by(rule is_class_sub_Throwable)
   with IH1[OF wt1 length] IH2[OF wt2] length show ?case by(auto)
 qed(fastsimp)+
 
@@ -71,14 +70,14 @@ text{* The main complication is preservation of definite assignment
 
 lemma A_compE1_None[simp]: "\<A> e = None \<Longrightarrow> \<A> (compE1 Vs e) = None"
   and As_compEs1_None: "\<A>s es = None \<Longrightarrow> \<A>s (compEs1 Vs es) = None"
-apply(induct e and es arbitrary: Vs and Vs)
+apply(induct Vs e and Vs es rule: compE1_compEs1_induct)
 apply(auto simp:hyperset_defs)
 done
 
 lemma A_compE1: "\<lbrakk> \<A> e = \<lfloor>A\<rfloor>; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A> (compE1 Vs e) = \<lfloor>index Vs ` A\<rfloor>"
   and As_compEs1: "\<lbrakk> \<A>s es = \<lfloor>A\<rfloor>; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A>s (compEs1 Vs es) = \<lfloor>index Vs ` A\<rfloor>"
-proof(induct e and es arbitrary: A Vs and A Vs)
-  case (Block V' T vo e)
+proof(induct Vs e and Vs es arbitrary: A and A rule: compE1_compEs1_induct)
+  case (Block Vs V' T vo e)
   hence "fv e \<subseteq> set (Vs@[V'])" by fastsimp
   moreover obtain B where "\<A> e = \<lfloor>B\<rfloor>"
     using Block.prems by(simp add: hyperset_defs)
@@ -86,9 +85,9 @@ proof(induct e and es arbitrary: A Vs and A Vs)
   ultimately show ?case using Block
     by(auto simp add: hyperset_defs image_index)
 next
-  case (Synchronized V exp1 exp2 A Vs)
-  have IH1: "\<And>A Vs. \<lbrakk>\<A> exp1 = \<lfloor>A\<rfloor>; fv exp1 \<subseteq> set Vs\<rbrakk> \<Longrightarrow> \<A> (compE1 Vs exp1) = \<lfloor>index Vs ` A\<rfloor>" by fact
-  have IH2: "\<And>A Vs. \<lbrakk>\<A> exp2 = \<lfloor>A\<rfloor>; fv exp2 \<subseteq> set Vs\<rbrakk> \<Longrightarrow> \<A> (compE1 Vs exp2) = \<lfloor>index Vs ` A\<rfloor>" by fact
+  case (Synchronized Vs V exp1 exp2 A)
+  have IH1: "\<And>A. \<lbrakk>\<A> exp1 = \<lfloor>A\<rfloor>; fv exp1 \<subseteq> set Vs\<rbrakk> \<Longrightarrow> \<A> (compE1 Vs exp1) = \<lfloor>index Vs ` A\<rfloor>" by fact
+  have IH2: "\<And>A. \<lbrakk>\<A> exp2 = \<lfloor>A\<rfloor>; fv exp2 \<subseteq> set (Vs @ [fresh_var Vs])\<rbrakk> \<Longrightarrow> \<A> (compE1 (Vs @ [fresh_var Vs]) exp2) = \<lfloor>index (Vs @ [fresh_var Vs]) ` A\<rfloor>" by fact
   from `fv (sync\<^bsub>V\<^esub> (exp1) exp2) \<subseteq> set Vs` 
   have fv1: "fv exp1 \<subseteq> set Vs"
     and fv2: "fv exp2 \<subseteq> set Vs" by auto
@@ -97,23 +96,20 @@ next
   from A2 fv2 have "A2 \<subseteq> set Vs" by(auto dest: A_fv del: subsetI)
   with fresh_var_fresh[of Vs] have "(fresh_var Vs) \<notin> A2" by(auto)
   from fv2 have "fv exp2 \<subseteq> set (Vs @ [fresh_var Vs])" by auto
-  with IH2[OF A2, of "Vs @ [fresh_var Vs]"]
-  have "\<A> (compE1 (Vs @ [fresh_var Vs]) exp2) = \<lfloor>index (Vs @ [fresh_var Vs]) ` A2\<rfloor>"
-    by(auto)
+  with IH2[OF A2] have "\<A> (compE1 (Vs @ [fresh_var Vs]) exp2) = \<lfloor>index (Vs @ [fresh_var Vs]) ` A2\<rfloor>" by(auto)
   with IH1[OF A1 fv1] A[symmetric] `A2 \<subseteq> set Vs` `(fresh_var Vs) \<notin> A2` A1 A2 show ?case
     by(auto simp add: image_index)
 next
-  case (InSynchronized V a exp A Vs)
-  have IH: "\<And>A Vs. \<lbrakk>\<A> exp = \<lfloor>A\<rfloor>; fv exp \<subseteq> set Vs\<rbrakk> \<Longrightarrow> \<A> (compE1 Vs exp) = \<lfloor>index Vs ` A\<rfloor>" by fact
+  case (InSynchronized Vs V a exp A)
+  have IH: "\<And>A. \<lbrakk>\<A> exp = \<lfloor>A\<rfloor>; fv exp \<subseteq> set (Vs @ [fresh_var Vs])\<rbrakk> \<Longrightarrow> \<A> (compE1 (Vs @ [fresh_var Vs]) exp) = \<lfloor>index (Vs @ [fresh_var Vs]) ` A\<rfloor>" by fact
   from `\<A> (insync\<^bsub>V\<^esub> (a) exp) = \<lfloor>A\<rfloor>` have A: "\<A> exp = \<lfloor>A\<rfloor>" by simp
   from `fv (insync\<^bsub>V\<^esub> (a) exp) \<subseteq> set Vs` have fv: "fv exp \<subseteq> set Vs" by simp
   from A fv have "A \<subseteq> set Vs" by(auto dest: A_fv del: subsetI)
   with fresh_var_fresh[of Vs] have "(fresh_var Vs) \<notin> A" by(auto)
-  from fv IH[OF A, of "Vs @ [fresh_var Vs]"]
-  have " \<A> (compE1 (Vs @ [fresh_var Vs]) exp) = \<lfloor>index (Vs @ [fresh_var Vs]) ` A\<rfloor>" by simp
+  from fv IH[OF A] have " \<A> (compE1 (Vs @ [fresh_var Vs]) exp) = \<lfloor>index (Vs @ [fresh_var Vs]) ` A\<rfloor>" by simp
   with `A \<subseteq> set Vs` `(fresh_var Vs) \<notin> A` show ?case by(simp add: image_index)
 next
-  case (TryCatch e1 C V' e2)
+  case (TryCatch Vs e1 C V' e2)
   hence fve2: "fv e2 \<subseteq> set (Vs@[V'])" by auto
   show ?case
   proof (cases "\<A> e1")
@@ -140,7 +136,7 @@ next
     qed
   qed
 next
-  case (Cond e e1 e2)
+  case (Cond Vs e e1 e2)
   { assume "\<A> e = None \<or> \<A> e1 = None \<or> \<A> e2 = None"
     hence ?case using Cond by(auto simp add:hyperset_defs image_Un)
   }

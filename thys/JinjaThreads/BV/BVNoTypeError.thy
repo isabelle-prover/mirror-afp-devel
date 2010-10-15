@@ -158,8 +158,8 @@ proof -
 	  by(auto)
       next
 	case (Getfield F C) 
-	with app stk reg \<Phi> obtain v vT stk' where
-          field: "P \<turnstile> C sees F:vT in C" and
+	with app stk reg \<Phi> obtain v vT stk' fm where
+          field: "P \<turnstile> C sees F:vT (fm) in C" and
           stk:   "stk = v # stk'" and
           conf:  "P,h \<turnstile> v :\<le> Class C"
           by(fastsimp simp add: list_all2_Cons2)
@@ -175,8 +175,8 @@ proof -
 	ultimately show ?thesis using Getfield field stk by auto
       next
 	case (Putfield F C)
-	with app stk reg \<Phi> obtain v ref vT stk' where
-          field: "P \<turnstile> C sees F:vT in C" and
+	with app stk reg \<Phi> obtain v ref vT stk' fm where
+          field: "P \<turnstile> C sees F:vT (fm) in C" and
           stk:   "stk = v # ref # stk'" and
           confv: "P,h \<turnstile> v :\<le> vT" and
           confr: "P,h \<turnstile> ref :\<le> Class C"

@@ -134,8 +134,8 @@ done
 
 declare option.split [split] split_if [split] split_if_asm [split del]
 
-lemma fv_inline_call: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> fv (inline_call e' e) \<subseteq> fv e \<union> fv e'"
-  and fvs_inline_calls: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> fvs (inline_calls e' es) \<subseteq> fvs es \<union> fv e'"
+lemma fv_inline_call: "fv (inline_call e' e) \<subseteq> fv e \<union> fv e'"
+  and fvs_inline_calls: "fvs (inline_calls e' es) \<subseteq> fvs es \<union> fv e'"
 by(induct e and es)(fastsimp split: split_if_asm)+
 
 lemma contains_insync_inline_call_conv:
@@ -159,7 +159,10 @@ lemma fold_es_conv_foldl:
 by(induct es arbitrary: e) simp_all
 
 lemma fv_fold_es: "list_all is_call es \<Longrightarrow> fv (fold_es e es) \<subseteq> fvs (e # es)"
-by(induct es arbitrary: e) (auto simp add: is_call_def dest: fv_inline_call)
+apply(induct es arbitrary: e)
+apply(insert fv_inline_call)
+apply(fastsimp dest: subsetD)+
+done
 
 lemma final_inline_callD: "\<lbrakk> final (inline_call E e); is_call e \<rbrakk> \<Longrightarrow> final E"
 by(induct e)(auto simp add: is_call_def split: split_if_asm)

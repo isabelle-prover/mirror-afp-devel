@@ -13,6 +13,7 @@ imports
   Main
   "../../FinFun/FinFun"
   "Transitive_Closure_Table"
+  "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   Code_Char
 begin
 
@@ -143,35 +144,44 @@ lemma rel_list_all2I:
 (*<*)declare fun_of_def [simp del](*>*)
 
 
-fun flatten :: "'a list list \<Rightarrow> 'a list" ("\<down>_\<down>" [50] 80)
-where
-  "flatten [] = []"
-| "flatten (xs # xss) = xs @ flatten xss"
+lemma list_all2_induct[consumes 1, case_names Nil Cons]:
+  assumes major: "list_all2 P xs ys"
+  and Nil: "Q [] []"
+  and Cons: "\<And>x xs y ys. \<lbrakk> P x y; list_all2 P xs ys; Q xs ys \<rbrakk> \<Longrightarrow> Q (x # xs) (y # ys)"
+  shows "Q xs ys"
+using major
+by(induct xs arbitrary: ys)(auto simp add: list_all2_Cons1 Nil intro!: Cons)
 
-lemma set_flatten_Union_set [simp]:
-  "set (flatten xs) = Union (set (map set xs))"
-by(induct xs, auto)
+lemma list_all2_split:
+  assumes major: "list_all2 P xs ys"
+  and split: "\<And>x y. P x y \<Longrightarrow> \<exists>z. Q x z \<and> R z y"
+  shows "\<exists>zs. list_all2 Q xs zs \<and> list_all2 R zs ys"
+using major
+by(induct rule: list_all2_induct)(auto dest: split)
 
-lemma flatten_append [simp]: "flatten (xs @ ys) = flatten xs @ flatten ys"
-by(induct xs, auto)
+lemma list_all2_refl_conv:
+  "list_all2 P xs xs \<longleftrightarrow> (\<forall>x\<in>set xs. P x x)"
+unfolding list_all2_conv_all_nth Ball_def in_set_conv_nth
+by auto
+
+lemma list_all2_op_eq [simp]:
+  "list_all2 op = xs ys \<longleftrightarrow> xs = ys"
+by(induct xs arbitrary: ys)(auto simp add: list_all2_Cons1)
+
+lemmas filter_replicate_conv = filter_replicate
+
+lemma length_greater_Suc_0_conv: "Suc 0 < length xs \<longleftrightarrow> (\<exists>x x' xs'. xs = x # x' # xs')"
+by(cases xs, auto simp add: neq_Nil_conv)
+
+lemmas zip_same_conv = zip_same_conv_map
+
+lemma nth_Cons_subtract: "0 < n \<Longrightarrow> (x # xs) ! n = xs ! (n - 1)"
+by(auto simp add: nth_Cons split: nat.split)
 
 
 lemma f_nth_set:
   "\<lbrakk> f (xs ! n) = v; n < length xs \<rbrakk> \<Longrightarrow> v \<in> f ` set xs"
-apply(induct xs arbitrary: n)
- apply(simp)
-apply(case_tac "n")
-apply(auto)
-done
-
-
-lemma map_eq_imp_length_eq': 
-  "map f xs = map g ys \<Longrightarrow> length xs = length ys"
-apply(induct xs arbitrary: ys)
- apply(simp)
-apply(auto simp add: Cons_eq_map_conv)
-done
-
+unfolding set_conv_nth by auto
 
 lemma replicate_eq_append_conv: 
   "(replicate n x = xs @ ys) = (\<exists>m\<le>n. xs = replicate m x \<and> ys = replicate (n-m) x)"
@@ -205,6 +215,10 @@ next
   qed
 qed
 
+lemma replicate_Suc_snoc:
+  "replicate (Suc n) x = replicate n x @ [x]"
+by (metis replicate_Suc replicate_append_same rotate_simps)
+
 lemma map_eq_append_conv:
   "map f xs = ys @ zs \<longleftrightarrow> (\<exists>ys' zs'. map f ys' = ys \<and> map f zs' = zs \<and> xs = ys' @ zs')"
 apply(rule iffI)
@@ -222,38 +236,243 @@ apply(induct xs arbitrary: ys)
 apply(auto simp add: list_all2_Cons1 Cons_eq_map_conv)
 done
 
-lemma map_upd_map_add: "X(V \<mapsto> v) = (X ++ [V \<mapsto> v])"
-by(simp)
-
-lemma Collect_eq_singleton_conv:
-  "{a. P a} = {a} \<longleftrightarrow> P a \<and> (\<forall>a'. P a' \<longrightarrow> a = a')"
-by(auto)
-
-lemmas filter_replicate_conv = filter_replicate
-
-lemma if_else_if_else_eq_if_else [simp]:
-  "(if b then x else if b then y else z) = (if b then x else z)"
-by(simp)
-
-lemma disjE3: "\<lbrakk> P \<or> Q \<or> R; P \<Longrightarrow> S; Q \<Longrightarrow> S; R \<Longrightarrow> S \<rbrakk> \<Longrightarrow> S"
-by auto
-
-lemma length_greater_Suc_0_conv: "Suc 0 < length xs \<longleftrightarrow> (\<exists>x x' xs'. xs = x # x' # xs')"
-by(cases xs, auto simp add: neq_Nil_conv)
-
-lemmas zip_same_conv = zip_same_conv_map
-
 lemma map_eq_all_nth_conv:
   "map f xs = ys \<longleftrightarrow> length xs = length ys \<and> (\<forall>n < length xs. f (xs ! n) = ys ! n)"
 apply(induct xs arbitrary: ys)
 apply(fastsimp simp add: nth_Cons Suc_length_conv split: nat.splits)+
 done
 
-lemma nth_Cons_subtract: "0 < n \<Longrightarrow> (x # xs) ! n = xs ! (n - 1)"
-by(auto simp add: nth_Cons split: nat.split)
+
+lemma take_eq_take_le_eq:
+  "\<lbrakk> take n xs = take n ys; m \<le> n \<rbrakk> \<Longrightarrow> take m xs = take m ys"
+by(metis min_max.le_iff_inf take_take)
+
+lemma take_list_update_beyond:
+  "n \<le> m \<Longrightarrow> take n (xs[m := x]) = take n xs"
+by(cases "n \<le> length xs")(rule nth_take_lemma, simp_all)
+
+lemma subset_code [code_unfold]:
+  "set xs \<subseteq> set ys \<longleftrightarrow> (\<forall>x \<in> set xs. x \<in> set ys)"
+by(rule Set.subset_eq)
+
+lemma eval_bot [simp]:
+  "Predicate.eval bot = (\<lambda>_. False)"
+by(rule ext)(auto elim: botE)
+
+lemma not_is_emptyE:
+  assumes "\<not> Predicate.is_empty P"
+  obtains x where "Predicate.eval P x"
+using assms
+by(fastsimp simp add: Predicate.is_empty_def bot_pred_def intro!: pred_iffI)
+
+lemma is_emptyD:
+  assumes "Predicate.is_empty P"
+  shows "Predicate.eval P x \<Longrightarrow> False"
+using assms
+by(simp add: Predicate.is_empty_def bot_pred_def empty_def[unfolded Collect_def])
+
+
+lemma conj_asm_conv_imp:
+  "(A \<and> B \<Longrightarrow> PROP C) \<equiv> (A \<Longrightarrow> B \<Longrightarrow> PROP C)" 
+apply(rule equal_intr_rule)
+ apply(erule meta_mp)
+ apply(erule (1) conjI)
+apply(erule meta_impE)
+ apply(erule conjunct1)
+apply(erule meta_mp)
+apply(erule conjunct2)
+done
+
+lemma meta_all_eq_conv: "(\<And>a. a = b \<Longrightarrow> PROP P a) \<equiv> PROP P b"
+apply(rule equal_intr_rule)
+ apply(erule meta_allE)
+ apply(erule meta_mp)
+ apply(rule refl)
+apply(hypsubst)
+apply assumption
+done
+
+lemma meta_all_eq_conv2: "(\<And>a. b = a \<Longrightarrow> PROP P a) \<equiv> PROP P b"
+apply(rule equal_intr_rule)
+ apply(erule meta_allE)
+ apply(erule meta_mp)
+ apply(rule refl)
+apply(hypsubst)
+apply assumption
+done
+
+(* rearrange parameters and premises to allow application of one-point-rules *)
+(* adapted from Tools/induct.ML and Isabelle Developer Workshop 2010 *)
+
+simproc_setup rearrange_eqs ("all t") = {* 
+let
+  fun swap_params_conv ctxt i j cv =
+    let
+      fun conv1 0 ctxt = Conv.forall_conv (cv o snd) ctxt
+        | conv1 k ctxt =
+            Conv.rewr_conv @{thm swap_params} then_conv
+            Conv.forall_conv (conv1 (k - 1) o snd) ctxt
+      fun conv2 0 ctxt = conv1 j ctxt
+        | conv2 k ctxt = Conv.forall_conv (conv2 (k - 1) o snd) ctxt
+    in conv2 i ctxt end;
+
+  fun swap_prems_conv 0 = Conv.all_conv
+    | swap_prems_conv i =
+        Conv.implies_concl_conv (swap_prems_conv (i - 1)) then_conv
+        Conv.rewr_conv Drule.swap_prems_eq;
+
+  fun drop_judgment ctxt = Object_Logic.drop_judgment (ProofContext.theory_of ctxt);
+
+  fun find_eq ctxt t =
+    let
+      val l = length (Logic.strip_params t);
+      val Hs = Logic.strip_assums_hyp t;
+      fun find (i, (_ $ (Const ("HOL.eq", _) $ Bound j $ _))) = SOME (i, j)
+        | find (i, (_ $ (Const ("HOL.eq", _) $ _ $ Bound j))) = SOME (i, j)
+        | find _ = NONE
+    in
+      (case get_first find (map_index I Hs) of
+        NONE => NONE
+      | SOME (0, 0) => NONE
+      | SOME (i, j) => SOME (i, l - j - 1, j))
+    end;
+
+  fun mk_swap_rrule ctxt ct =
+    (case find_eq ctxt (term_of ct) of
+      NONE => NONE
+    | SOME (i, k, j) => SOME (swap_params_conv ctxt k j (K (swap_prems_conv i)) ct))
+in
+  fn _ =>
+    fn ss =>
+      fn ct =>
+        mk_swap_rrule (Simplifier.the_context ss) ct
+end
+*}
+declare [[simproc del: rearrange_eqs]]
+lemmas meta_onepoint = meta_all_eq_conv meta_all_eq_conv2
+
+lemma meta_all2_eq_conv: "(\<And>a b. a = c \<Longrightarrow> PROP P a b) \<equiv> (\<And>b. PROP P c b)"
+apply(rule equal_intr_rule)
+ apply(erule meta_allE)+
+ apply(erule meta_mp)
+ apply(rule refl)
+apply(erule meta_allE)
+apply simp
+done
+
+lemma meta_all3_eq_conv: "(\<And>a b c. a = d \<Longrightarrow> PROP P a b c) \<equiv> (\<And>b c. PROP P d b c)"
+apply(rule equal_intr_rule)
+ apply(erule meta_allE)+
+ apply(erule meta_mp)
+ apply(rule refl)
+apply(erule meta_allE)+
+apply simp
+done
+
+lemma meta_all4_eq_conv: "(\<And>a b c d. a = e \<Longrightarrow> PROP P a b c d) \<equiv> (\<And>b c d. PROP P e b c d)"
+apply(rule equal_intr_rule)
+ apply(erule meta_allE)+
+ apply(erule meta_mp)
+ apply(rule refl)
+apply(erule meta_allE)+
+apply simp
+done
+
+lemma meta_all5_eq_conv: "(\<And>a b c d e. a = f \<Longrightarrow> PROP P a b c d e) \<equiv> (\<And>b c d e. PROP P f b c d e)"
+apply(rule equal_intr_rule)
+ apply(erule meta_allE)+
+ apply(erule meta_mp)
+ apply(rule refl)
+apply(erule meta_allE)+
+apply simp
+done
+
+lemma inj_on_image_mem_iff:
+  "\<lbrakk> inj_on f A; B \<subseteq> A; a \<in> A \<rbrakk> \<Longrightarrow> f a \<in> f ` B \<longleftrightarrow> a \<in> B"
+by(metis inv_into_f_eq inv_into_image_cancel mem_def rev_image_eqI)
+
+lemma setsum_hom:
+  assumes hom_add [simp]: "\<And>a b. f (a + b) = f a + f b"
+  and hom_0 [simp]: "f 0 = 0"
+  shows "setsum (f \<circ> h) A = f (setsum h A)"
+proof(cases "finite A")
+  case False thus ?thesis by simp
+next
+  case True thus ?thesis
+    by(induct) simp_all
+qed
+
+lemma setsum_upto_add_nat:
+  "a \<le> b \<Longrightarrow> setsum f {..<(a :: nat)} + setsum f {a..<b} = setsum f {..<b}"
+by (metis atLeast0LessThan le0 setsum_add_nat_ivl)
+
+lemma nat_fun_sum_eq_conv:
+  fixes f :: "'a \<Rightarrow> nat"
+  shows "(\<lambda>a. f a + g a) = (\<lambda>a. 0) \<longleftrightarrow> f = (\<lambda>a .0) \<and> g = (\<lambda>a. 0)"
+by(auto simp add: fun_eq_iff)
+
+
+lemma in_ran_conv: "v \<in> ran m \<longleftrightarrow> (\<exists>k. m k = Some v)"
+by(simp add: ran_def)
+
+lemma map_le_dom_eq_conv_eq:
+  "\<lbrakk> m \<subseteq>\<^sub>m m'; dom m = dom m' \<rbrakk> \<Longrightarrow> m = m'"
+by (metisFT map_le_antisym map_le_def)
+
+lemma map_leI:
+  "(\<And>k v. f k = Some v \<Longrightarrow> g k = Some v) \<Longrightarrow> f \<subseteq>\<^sub>m g"
+unfolding map_le_def by auto
+
+lemma map_le_SomeD: "\<lbrakk> m \<subseteq>\<^sub>m m'; m x = \<lfloor>y\<rfloor> \<rbrakk> \<Longrightarrow> m' x = \<lfloor>y\<rfloor>"
+by(auto simp add: map_le_def dest: bspec)
+
+lemma map_le_same_upd:
+  "f x = None \<Longrightarrow> f \<subseteq>\<^sub>m f(x \<mapsto> y)"
+by(auto simp add: map_le_def)
+
+lemma map_upd_map_add: "X(V \<mapsto> v) = (X ++ [V \<mapsto> v])"
+by(simp)
+
+
+
+
+lemma foldr_filter_conv:
+  "foldr f (filter P xs) = foldr (\<lambda>x s. if P x then f x s else s) xs"
+by(induct xs)(auto intro: ext)
+
+lemma foldr_insert_conv_set:
+  "foldr insert xs A = A \<union> set xs"
+by(induct xs arbitrary: A) auto
+
+lemma snd_o_Pair_conv_id: "snd o Pair a = id"
+by(simp add: o_def id_def)
+
+lemma if_split:
+  "\<lbrakk> P \<Longrightarrow> A; \<not> P \<Longrightarrow> B \<rbrakk> \<Longrightarrow> if P then A else B"
+by(auto)
+
+lemma ex_set_conv: "(\<exists>x. x \<in> set xs) \<longleftrightarrow> xs \<noteq> []"
+apply(auto)
+apply(auto simp add: neq_Nil_conv)
+done
+
+
+
+lemma Collect_eq_singleton_conv:
+  "{a. P a} = {a} \<longleftrightarrow> P a \<and> (\<forall>a'. P a' \<longrightarrow> a = a')"
+by(auto)
+
+
+lemma if_else_if_else_eq_if_else [simp]:
+  "(if b then x else if b then y else z) = (if b then x else z)"
+by(simp)
+
 
 lemma prod_rec_split [simp]: "prod_rec = split"
 by(simp add: fun_eq_iff)
+
+lemma inj_Pair_snd [simp]: "inj (Pair x)" -- "Move to Aux"
+by(rule injI) auto
 
 lemma rtranclp_False [simp]: "(\<lambda>a b. False)\<^sup>*\<^sup>* = op ="
 by(auto simp add: fun_eq_iff elim: rtranclp_induct)
@@ -269,13 +488,6 @@ lemmas rtranclp_induct4 =
 
 lemmas tranclp_induct4 =
   tranclp_induct[where a="(ax, ay, az, aw)" and b="(bx, by, bz, bw)", split_rule, consumes 1, case_names refl step]
-
-lemma converse_tranclpE:
-  assumes "tranclp r x z"
-  obtains (base) "r x z"
-        | (step) y where "r x y" "tranclp r y z"
-using tranclpD[OF assms]
-by(blast elim: converse_rtranclpE dest: rtranclp_into_tranclp2)
 
 lemmas converse_tranclp_induct2 =
   converse_tranclp_induct [of _ "(ax,ay)" "(bx,by)", split_rule,
@@ -467,22 +679,6 @@ lemma r_into_rtrancl3p:
 by(rule rtrancl3p_step_converse) auto
 
 
-
-lemma list_all2_induct[consumes 1, case_names Nil Cons]:
-  assumes major: "list_all2 P xs ys"
-  and Nil: "Q [] []"
-  and Cons: "\<And>x xs y ys. \<lbrakk> P x y; list_all2 P xs ys; Q xs ys \<rbrakk> \<Longrightarrow> Q (x # xs) (y # ys)"
-  shows "Q xs ys"
-using major
-by(induct xs arbitrary: ys)(auto simp add: list_all2_Cons1 Nil intro!: Cons)
-
-lemma list_all2_split:
-  assumes major: "list_all2 P xs ys"
-  and split: "\<And>x y. P x y \<Longrightarrow> \<exists>z. Q x z \<and> R z y"
-  shows "\<exists>zs. list_all2 Q xs zs \<and> list_all2 R zs ys"
-using major
-by(induct rule: list_all2_induct)(auto dest: split)
-
 subsection {* Concatenation for @{typ String.literal} *}
 
 definition concat :: "String.literal list \<Rightarrow> String.literal"
@@ -495,36 +691,5 @@ code_const concat
 
 hide_const (open) concat
 
-lemma map_le_SomeD: "\<lbrakk> m \<subseteq>\<^sub>m m'; m x = \<lfloor>y\<rfloor> \<rbrakk> \<Longrightarrow> m' x = \<lfloor>y\<rfloor>"
-by(auto simp add: map_le_def dest: bspec)
-
-lemma map_le_same_upd:
-  "f x = None \<Longrightarrow> f \<subseteq>\<^sub>m f(x \<mapsto> y)"
-by(auto simp add: map_le_def)
-
-lemma take_eq_take_le_eq:
-  "\<lbrakk> take n xs = take n ys; m \<le> n \<rbrakk> \<Longrightarrow> take m xs = take m ys"
-by(metis min_max.le_iff_inf take_take)
-
-lemma take_list_update_beyond:
-  "n \<le> m \<Longrightarrow> take n (xs[m := x]) = take n xs"
-by(cases "n \<le> length xs")(rule nth_take_lemma, simp_all)
-
-lemma nat_fun_sum_eq_conv:
-  fixes f :: "'a \<Rightarrow> nat"
-  shows "(\<lambda>a. f a + g a) = (\<lambda>a. 0) \<longleftrightarrow> f = (\<lambda>a .0) \<and> g = (\<lambda>a. 0)"
-by(auto simp add: fun_eq_iff)
-
-lemma list_all2_op_eq [simp]:
-  "list_all2 op = xs ys \<longleftrightarrow> xs = ys"
-by(induct xs arbitrary: ys)(auto simp add: list_all2_Cons1)
-
-lemma subset_code [code_unfold]:
-  "set xs \<subseteq> set ys \<longleftrightarrow> (\<forall>x \<in> set xs. x \<in> set ys)"
-by(rule subset_eq)
-
-lemma eval_bot [simp]:
-  "Predicate.eval bot = (\<lambda>_. False)"
-by(rule ext)(auto elim: botE)
 
 end

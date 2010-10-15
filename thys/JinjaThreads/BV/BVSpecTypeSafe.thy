@@ -630,10 +630,10 @@ proof -
     preh: "preallocated h"
     by (fastsimp dest: sees_method_fun)
        
-  from i \<Phi> wt obtain oT ST'' vT ST' LT' vT' where 
+  from i \<Phi> wt obtain oT ST'' vT ST' LT' vT' fm where 
     oT: "P \<turnstile> oT \<le> Class D" and
     ST: "ST = oT # ST''" and
-    F:  "P \<turnstile> D sees F:vT in D" and
+    F:  "P \<turnstile> D sees F:vT (fm) in D" and
     pc': "pc+1 < size ins"  and
     \<Phi>': "\<Phi> C M ! (pc+1) = Some (vT'#ST', LT')" and
     ST': "P \<turnstile> ST'' [\<le>] ST'" and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'" and  
@@ -664,7 +664,7 @@ proof -
     {
       fix v
       assume read: "heap_read h a (CField D F) v"
-      from D' F have has_field: "P \<turnstile> D' has F:vT in D"      
+      from D' F have has_field: "P \<turnstile> D' has F:vT (fm) in D"
         by (blast intro: has_field_mono has_visible_field)
       with h have "P,h \<turnstile> a@CField D F : vT" ..
       with read have v: "P,h \<turnstile> v :\<le> vT" using "h\<surd>"
@@ -702,9 +702,9 @@ proof -
     preh: "preallocated h"
     by (fastsimp dest: sees_method_fun)
   
-  from i \<Phi> wt obtain vT vT' oT ST'' ST' LT' where 
+  from i \<Phi> wt obtain vT vT' oT ST'' ST' LT' fm where 
     ST: "ST = vT # oT # ST''" and
-    field: "P \<turnstile> D sees F:vT' in D" and
+    field: "P \<turnstile> D sees F:vT' (fm) in D" and
     oT: "P \<turnstile> oT \<le> Class D" and vT: "P \<turnstile> vT \<le> vT'" and
     pc': "pc+1 < size ins" and 
     \<Phi>': "\<Phi> C M!(pc+1) = Some (ST',LT')" and
@@ -736,7 +736,7 @@ proof -
     
     from v vT have vT': "P,h \<turnstile> v :\<le> vT'" ..
     
-    from field D' have has_field: "P \<turnstile> D' has F:vT' in D"
+    from field D' have has_field: "P \<turnstile> D' has F:vT' (fm) in D"
       by (blast intro: has_field_mono has_visible_field)
     with h have al: "P,h \<turnstile> a@CField D F : vT'" ..
     let ?f' = "(stk',loc,C,M,pc+1)"
@@ -889,6 +889,19 @@ lemma Dup_correct:
 "\<lbrakk> wf_prog wt P; 
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
   ins ! pc = Dup;
+  P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
+  \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
+  (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
+apply clarsimp
+apply (drule (1) sees_method_fun)
+apply fastsimp
+done
+
+lemma Swap_correct:
+"\<lbrakk> wf_prog wt P; 
+  P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
+  ins ! pc = Swap;
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
   \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
   (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
@@ -1469,6 +1482,7 @@ apply (rule Invoke_correct, assumption+, fastsimp)
 apply (rule Return_correct, assumption+, fastsimp simp add: split_beta)
 apply (rule Pop_correct, assumption+, fastsimp)
 apply (rule Dup_correct, assumption+, fastsimp)
+apply (rule Swap_correct, assumption+, fastsimp)
 apply (rule BinOp_correct, assumption+, fastsimp)
 apply (rule Goto_correct, assumption+, fastsimp)
 apply (rule IfFalse_correct, assumption+, fastsimp)
@@ -1503,10 +1517,6 @@ apply(clarsimp simp only: exec.simps set.simps)
 apply(erule (2) exception_step_conform)
 done
 
-lemma ex_set_conv: "(\<exists>x. x \<in> set xs) \<longleftrightarrow> xs \<noteq> []" -- "Move to Aux"
-apply(auto)
-apply(auto simp add: neq_Nil_conv)
-done
 
 theorem (in JVM_progress) progress:
   assumes wt: "wf_jvm_prog\<^sub>\<Phi> P"
@@ -1623,8 +1633,17 @@ proof -
           hence si': "0 <=s idxI" "sint idxI < int (array_length h a)" by simp_all
           hence "nat (sint idxI) < array_length h a"
             by(metis nat_less_iff  sint_0 word_sle_def)
-          with ha have "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
-          from heap_write_total[OF this] ha stk' idxI a show ?thesis by auto
+          with ha have adal: "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
+          
+          show ?thesis
+          proof(cases "P \<turnstile> the (typeof\<^bsub>h\<^esub> e) \<le> Xel")
+            case False
+            with ha stk' idxI a show ?thesis by auto
+          next
+            case True
+            hence "P,h \<turnstile> e :\<le> Xel" using e by(auto simp add: conf_def)
+            from heap_write_total[OF adal this] ha stk' idxI a show ?thesis by auto
+          qed
         next
           case False with ha stk' idxI a show ?thesis by auto
         qed
@@ -1632,8 +1651,8 @@ proof -
     next
       case (Getfield F D)[simp]
 
-      from \<Phi>_pc wt obtain oT ST'' vT where oT: "P \<turnstile> oT \<le> Class D" 
-        and "ST = oT # ST''" and F: "P \<turnstile> D sees F:vT in D" 
+      from \<Phi>_pc wt obtain oT ST'' vT fm where oT: "P \<turnstile> oT \<le> Class D" 
+        and "ST = oT # ST''" and F: "P \<turnstile> D sees F:vT (fm) in D" 
         by fastsimp
 
       with ST obtain ref stk' where stk': "stk = ref#stk'" 
@@ -1651,7 +1670,7 @@ proof -
           a: "ref = Addr a" and h: "typeof_addr h a = Some (Class D')" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
           by (blast dest: non_npD)
     
-        from D' F have has_field: "P \<turnstile> D' has F:vT in D"      
+        from D' F have has_field: "P \<turnstile> D' has F:vT (fm) in D"
           by (blast intro: has_field_mono has_visible_field)
         with h have "P,h \<turnstile> a@CField D F : vT" ..
         from heap_read_total[OF hconf this]
@@ -1660,11 +1679,13 @@ proof -
     next
       case (Putfield F D)[simp]
 
-      from \<Phi>_pc wt obtain vT vT' oT ST'' where "ST = vT # oT # ST''" 
-        and field: "P \<turnstile> D sees F:vT' in D"
-        and oT: "P \<turnstile> oT \<le> Class D" by fastsimp
+      from \<Phi>_pc wt obtain vT vT' oT ST'' fm where "ST = vT # oT # ST''" 
+        and field: "P \<turnstile> D sees F:vT' (fm) in D"
+        and oT: "P \<turnstile> oT \<le> Class D"
+        and vT': "P \<turnstile> vT \<le> vT'" by fastsimp
       with ST obtain v ref stk' where stk': "stk = v#ref#stk'" 
-        and ref:  "P,h \<turnstile> ref :\<le> oT" by auto
+        and ref:  "P,h \<turnstile> ref :\<le> oT" 
+        and v: "P,h \<turnstile> v :\<le> vT" by auto
 
       from field wf have DObject: "D \<noteq> Object"
         by(auto dest: wf_Object_field_empty has_fields_fun simp add: sees_field_def)
@@ -1679,10 +1700,11 @@ proof -
           a: "ref = Addr a" and h: "typeof_addr h a = Some (Class D')" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
           by (blast dest: non_npD)
 
-        from field D' have has_field: "P \<turnstile> D' has F:vT' in D"
+        from field D' have has_field: "P \<turnstile> D' has F:vT' (fm) in D"
           by (blast intro: has_field_mono has_visible_field)
         with h have al: "P,h \<turnstile> a@CField D F : vT'" ..
-        from heap_write_total[OF this] a stk' h show ?thesis by auto
+        from v vT' have "P,h \<turnstile> v :\<le> vT'" by auto
+        from heap_write_total[OF al this] v a stk' h show ?thesis by auto
       qed
     next
       case (Invoke M' n)[simp]

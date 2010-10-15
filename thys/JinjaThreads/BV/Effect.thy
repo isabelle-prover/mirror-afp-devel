@@ -40,6 +40,7 @@ where
 | "succs (Instanceof T) \<tau> pc  = [pc+1]"
 | "succs Pop \<tau> pc            = [pc+1]"
 | "succs Dup \<tau> pc            = [pc+1]"
+| "succs Swap \<tau> pc           = [pc+1]"
 | "succs (BinOpInstr b) \<tau> pc = [pc+1]"
 | succs_IfFalse:
   "succs (IfFalse b) \<tau> pc    = [pc+1, nat (int pc + b)]"
@@ -68,7 +69,7 @@ where
   "eff\<^isub>i (Push v, P, (ST, LT))             = (the (typeof v) # ST, LT)"
 
 | eff\<^isub>i_Getfield:
-  "eff\<^isub>i (Getfield F C, P, (T#ST, LT))    = (snd (field P C F) # ST, LT)"
+  "eff\<^isub>i (Getfield F C, P, (T#ST, LT))    = (fst (snd (field P C F)) # ST, LT)"
 
 | eff\<^isub>i_Putfield:
   "eff\<^isub>i (Putfield F C, P, (T\<^isub>1#T\<^isub>2#ST, LT)) = (ST,LT)"
@@ -99,6 +100,9 @@ where
 
 | eff\<^isub>i_Dup:
   "eff\<^isub>i (Dup, P, (T#ST,LT))               = (T#T#ST,LT)"
+
+| eff\<^isub>i_Swap:
+  "eff\<^isub>i (Swap, P, (T1#T2#ST,LT))               = (T2#T1#ST,LT)"
 
 | eff\<^isub>i_BinOpInstr:
   "eff\<^isub>i (BinOpInstr bop, P, (T2#T1#ST,LT)) = ((THE T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)#ST, LT)"
@@ -206,10 +210,10 @@ where
     (length ST < mxs \<and> typeof v \<noteq> None)"
 | app\<^isub>i_Getfield:
   "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
-    (\<exists>T\<^isub>f. P \<turnstile> C sees F:T\<^isub>f in C \<and> P \<turnstile> T \<le> Class C)"
+    (\<exists>T\<^isub>f fm. P \<turnstile> C sees F:T\<^isub>f (fm) in C \<and> P \<turnstile> T \<le> Class C)"
 | app\<^isub>i_Putfield:
   "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) = 
-    (\<exists>T\<^isub>f. P \<turnstile> C sees F:T\<^isub>f in C \<and> P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f)" 
+    (\<exists>T\<^isub>f fm. P \<turnstile> C sees F:T\<^isub>f (fm) in C \<and> P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f)" 
 | app\<^isub>i_New:
   "app\<^isub>i (New C, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
     (is_class P C \<and> length ST < mxs)"
@@ -237,6 +241,8 @@ where
 | app\<^isub>i_Dup:
   "app\<^isub>i (Dup, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
     (Suc (length ST) < mxs)"
+| app\<^isub>i_Swap:
+  "app\<^isub>i (Swap, P, pc, mxs, T\<^isub>r, (T1#T2#ST,LT)) = True"
 | app\<^isub>i_BinOpInstr:
   "app\<^isub>i (BinOpInstr bop, P, pc, mxs, T\<^isub>r, (T2#T1#ST,LT)) = (\<exists>T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)"
 | app\<^isub>i_IfFalse:
@@ -382,14 +388,14 @@ lemma appPush[simp]:
 
 lemma appGetField[simp]:
 "app\<^isub>i (Getfield F C,P,pc,mxs,T\<^isub>r,s) = 
- (\<exists> oT vT ST LT. s = (oT#ST, LT) \<and> 
-  P \<turnstile> C sees F:vT in C \<and> P \<turnstile> oT \<le> (Class C))"
+ (\<exists> oT vT ST LT fm. s = (oT#ST, LT) \<and> 
+  P \<turnstile> C sees F:vT (fm) in C \<and> P \<turnstile> oT \<le> (Class C))"
   by (rule length_cases2 [of _ s]) auto
 
 lemma appPutField[simp]:
 "app\<^isub>i (Putfield F C,P,pc,mxs,T\<^isub>r,s) = 
- (\<exists> vT vT' oT ST LT. s = (vT#oT#ST, LT) \<and>
-  P \<turnstile> C sees F:vT' in C \<and> P \<turnstile> oT \<le> (Class C) \<and> P \<turnstile> vT \<le> vT')"
+ (\<exists> vT vT' oT ST LT fm. s = (vT#oT#ST, LT) \<and>
+  P \<turnstile> C sees F:vT' (fm) in C \<and> P \<turnstile> oT \<le> (Class C) \<and> P \<turnstile> vT \<le> vT')"
   by (rule length_cases4 [of _ s], auto)
 
 lemma appNew[simp]:
@@ -462,6 +468,9 @@ lemma appDup[simp]:
  (\<exists>T ST LT. s = (T#ST,LT) \<and> Suc (length ST) < mxs)"
 by (cases s, cases "fst s", simp_all)
 
+lemma app\<^isub>iSwap[simp]: 
+"app\<^isub>i (Swap,P,pc,mxs,T\<^isub>r,s) = (\<exists>T1 T2 ST LT. s = (T1#T2#ST,LT))"
+by(rule length_cases4) auto
 
 lemma appBinOp[simp]:
 "app\<^isub>i (BinOpInstr bop,P,pc,mxs,T\<^isub>r,s) = (\<exists>T1 T2 ST LT T. s = (T2 # T1 # ST, LT) \<and> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)"
@@ -554,18 +563,18 @@ done
 
 lemmas eff\<^isub>i_code[code] =
   eff\<^isub>i_Load eff\<^isub>i_Store eff\<^isub>i_Push eff\<^isub>i_Getfield eff\<^isub>i_Putfield eff\<^isub>i_New eff\<^isub>i_NewArray eff\<^isub>i_ALoad
-  eff\<^isub>i_AStore eff\<^isub>i_ALength eff\<^isub>i_Checkcast eff\<^isub>i_Instanceof eff\<^isub>i_Pop eff\<^isub>i_Dup eff\<^isub>i_BinOpInstr_code
+  eff\<^isub>i_AStore eff\<^isub>i_ALength eff\<^isub>i_Checkcast eff\<^isub>i_Instanceof eff\<^isub>i_Pop eff\<^isub>i_Dup eff\<^isub>i_Swap eff\<^isub>i_BinOpInstr_code
   eff\<^isub>i_IfFalse eff\<^isub>i_Invoke_code eff\<^isub>i_Goto eff\<^isub>i_MEnter eff\<^isub>i_MExit
 
 lemma app\<^isub>i_Getfield_code:
   "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) \<longleftrightarrow>
-  Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T. Predicate.single ())) \<and> P \<turnstile> T \<le> Class C"
+  Predicate.holds (Predicate.bind (sees_field_i_i_i_o_o_i P C F C) (\<lambda>T. Predicate.single ())) \<and> P \<turnstile> T \<le> Class C"
 by(clarsimp simp add: Predicate.bind_def Predicate.single_def holds_eq eval_sees_field_i_i_i_o_i_conv)
  
 lemma app\<^isub>i_Putfield_code:
   "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) \<longleftrightarrow>
    P \<turnstile> T\<^isub>2 \<le> (Class C) \<and>
-   Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T. if P \<turnstile> T\<^isub>1 \<le> T then Predicate.single () else bot))"
+   Predicate.holds (Predicate.bind (sees_field_i_i_i_o_o_i P C F C) (\<lambda>(T, fm). if P \<turnstile> T\<^isub>1 \<le> T then Predicate.single () else bot))"
 by(auto simp add: Predicate.bind_def Predicate.single_def holds_eq eval_sees_field_i_i_i_o_i_conv)
 
 lemma app\<^isub>i_ALoad_code:
@@ -612,7 +621,7 @@ lemmas app\<^isub>i_code [code] =
   app\<^isub>i_New app\<^isub>i_NewArray
   app\<^isub>i_ALoad_code app\<^isub>i_AStore_code app\<^isub>i_ALength_code
   app\<^isub>i_Checkcast app\<^isub>i_Instanceof
-  app\<^isub>i_Pop app\<^isub>i_Dup app\<^isub>i_BinOpInstr_code app\<^isub>i_IfFalse app\<^isub>i_Goto
+  app\<^isub>i_Pop app\<^isub>i_Dup app\<^isub>i_Swap app\<^isub>i_BinOpInstr_code app\<^isub>i_IfFalse app\<^isub>i_Goto
   app\<^isub>i_Return app\<^isub>i_Throw_code app\<^isub>i_Invoke_code app\<^isub>i_MEnter app\<^isub>i_MExit
   app\<^isub>i_default
 

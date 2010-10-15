@@ -56,7 +56,7 @@ locale heap_progress =
   for hconf :: "'heap \<Rightarrow> bool"
   and P :: "'m prog" +
   assumes heap_read_total: "\<lbrakk> hconf h; P,h \<turnstile> a@al : T \<rbrakk> \<Longrightarrow> \<exists>v. heap_read h a al v \<and> P,h \<turnstile> v :\<le> T"
-  and heap_write_total: "P,h \<turnstile> a@al : T \<Longrightarrow> \<exists>h'. heap_write h a al v h'"
+  and heap_write_total: "\<lbrakk> P,h \<turnstile> a@al : T; P,h \<turnstile> v :\<le> T \<rbrakk> \<Longrightarrow> \<exists>h'. heap_write h a al v h'"
 
 locale heap_conf_read =
   heap_conf _ _ _ _ _ _ _ hconf P 
@@ -227,14 +227,21 @@ by(blast intro: hext_heap_ops)+
 
 lemma tconf_start_heap_start_tid:
   "start_heap_ok \<Longrightarrow> P,start_heap \<turnstile> start_tid \<surd>t"
-unfolding start_tid_def start_heap_def start_heap_ok_def
-apply clarsimp
-apply(drule new_obj_SomeD)
+unfolding start_tid_def start_heap_def start_heap_ok_def start_heap_data_def initialization_list_def addr_of_sys_xcpt_def start_addrs_def sys_xcpts_list_def 
+apply(clarsimp split: prod.split_asm simp add: create_initial_object_simps)
+apply(drule new_obj_SomeD[where C=Thread])
 apply(rule tconfI)
  apply(erule typeof_addr_hext_mono[OF hext_new_obj])+
  apply(blast)
 apply blast
 done
+
+lemma start_heap_write_typeable:
+  assumes "WriteMem ad al v \<in> set start_heap_obs"
+  shows "\<exists>T. P,start_heap \<turnstile> ad@al : T \<and> P,start_heap \<turnstile> v :\<le> T"
+using assms
+unfolding start_heap_obs_def start_heap_def
+by clarsimp
 
 end
 

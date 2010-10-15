@@ -8,37 +8,6 @@ theory FWBisimDeadlock imports FWBisimulation FWDeadlock begin
 
 context FWdelay_bisimulation_diverge begin
 
-lemma no_\<tau>move1_\<tau>s_to_no_\<tau>move2:
-  assumes "t \<turnstile> (x1, m1) \<approx> (x2, m2)"
-  and no_\<tau>moves: "\<And>x1' m1'. \<not> r1.silent_move t (x1, m1) (x1', m1')"
-  shows "\<exists>x2' m2'. r2.silent_moves t (x2, m2) (x2', m2') \<and> 
-                  (\<forall>x2'' m2''. \<not> r2.silent_move t (x2', m2') (x2'', m2'')) \<and> t \<turnstile> (x1, m1) \<approx> (x2', m2')"
-proof -
-  def x2m2 == "(x2, m2)"
-  have "\<not> r1.\<tau>diverge t (x1, m1)"
-  proof
-    assume "r1.\<tau>diverge t (x1, m1)"
-    then obtain x1' m1' where "r1.silent_move t (x1, m1) (x1', m1')" by cases auto
-    with no_\<tau>moves[of x1' m1'] show False by contradiction
-  qed
-  with `t \<turnstile> (x1, m1) \<approx> (x2, m2)` have "\<not> r2.\<tau>diverge t (x2, m2)" by(simp add: \<tau>diverge_bisim_inv)
-  from r2.not_\<tau>diverge_to_no_\<tau>move[OF this] obtain x2' m2'
-    where "r2.silent_moves t (x2, m2) (x2', m2')" 
-    and "\<forall>x2'' m2''. \<not> r2.silent_move t (x2', m2') (x2'', m2'')" by auto
-  moreover from simulation_silents2[OF `t \<turnstile> (x1, m1) \<approx> (x2, m2)` `r2.silent_moves t (x2, m2) (x2', m2')`]
-  obtain x1' m1' where "r1.silent_moves t (x1, m1) (x1', m1')" "t \<turnstile> (x1', m1') \<approx> (x2', m2')" by auto
-  from `r1.silent_moves t (x1, m1) (x1', m1')` no_\<tau>moves
-  have "x1' = x1" "m1' = m1" by(auto elim: converse_rtranclpE)
-  ultimately show ?thesis using `t \<turnstile> (x1', m1') \<approx> (x2', m2')` by blast
-qed
-
-lemma no_\<tau>move2_\<tau>s_to_no_\<tau>move1:
-  "\<lbrakk> t \<turnstile> (x1, m1) \<approx> (x2, m2); \<And>x2' m2'. \<not> r2.silent_move t (x2, m2) (x2', m2') \<rbrakk>
-  \<Longrightarrow> \<exists>x1' m1'. r1.silent_moves t (x1, m1) (x1', m1') \<and> 
-               (\<forall>x1'' m1''. \<not> r1.silent_move t (x1', m1') (x1'', m1'')) \<and> t \<turnstile> (x1', m1') \<approx> (x2, m2)"
-using FWdelay_bisimulation_diverge.no_\<tau>move1_\<tau>s_to_no_\<tau>move2[OF FWdelay_bisimulation_diverge_flip]
-unfolding flip_simps .
-
 lemma no_\<tau>Move1_\<tau>s_to_no_\<tau>Move2:
   fixes no_\<tau>moves1 no_\<tau>moves2
   defines "no_\<tau>moves1 \<equiv> \<lambda>s1 t. wset s1 t = None \<and> (\<exists>x. thr s1 t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> (\<forall>x' m'. \<not> r1.silent_move t (x, shr s1) (x', m')))"
@@ -64,7 +33,7 @@ proof -
     have "no_\<tau>moves1 s1 t" by auto
     then obtain x1 where ts1t: "thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>"
       and ws1t: "wset s1 t = None"
-      and \<tau>1: "\<And>x1' m1'. \<not> r1.silent_move t (x1, shr s1) (x1', m1')"
+      and \<tau>1: "\<And>x1m1'. \<not> r1.silent_move t (x1, shr s1) x1m1'"
       by(auto simp add: no_\<tau>moves1_def)
 
     from ts1t mbisim obtain x2 where ts2t: "ts2 t = \<lfloor>(x2, no_wait_locks)\<rfloor>"
@@ -106,14 +75,14 @@ proof -
     from no_\<tau>move1_\<tau>s_to_no_\<tau>move2[OF `t \<turnstile> (x1, shr s1) \<approx> (x2, m2)` \<tau>1]
     obtain x2' m2' where "r2.silent_moves t (x2, m2) (x2', m2')" 
       and "\<And>x2'' m2''. \<not> r2.silent_move t (x2', m2') (x2'', m2'')" 
-      and "t \<turnstile> (x1, shr s1) \<approx> (x2', m2')" by blast
+      and "t \<turnstile> (x1, shr s1) \<approx> (x2', m2')" by auto
     let ?s2'' = "(ls2, (ts2'(t \<mapsto> (x2', no_wait_locks)), m2'), ws2)"
     from red2_rtrancl_\<tau>_heapD[OF `r2.silent_moves t (x2, m2) (x2', m2')` `t \<turnstile> (x1, shr s1) \<approx> (x2, m2)`]
     have "m2' = m2" by simp
     with `r2.silent_moves t (x2, m2) (x2', m2')` have "r2.silent_moves t (x2, shr ?s2') (x2', m2)" by simp
-    hence "r2.mthr.silent_moves ?s2' (redT_upd ?s2' t \<epsilon> x2' m2)"
+    hence "r2.mthr.silent_moves ?s2' (redT_upd_\<epsilon> ?s2' t x2' m2)"
       by(rule red2_rtrancl_\<tau>_into_RedT_\<tau>)(auto simp add: `ws2 t = None` intro: `t \<turnstile> (x1, shr s1) \<approx> (x2, m2)`)
-    also have "redT_upd ?s2' t \<epsilon> x2' m2 = ?s2''" using `m2' = m2`
+    also have "redT_upd_\<epsilon> ?s2' t x2' m2 = ?s2''" using `m2' = m2`
       by(auto simp add: fun_eq_iff redT_updLns_def finfun_Diag_const2 o_def)
     finally have "r2.mthr.silent_moves (ls2, (ts2, m2), ws2) ?s2''" 
       using `r2.mthr.silent_moves (ls2, (ts2, m2), ws2) ?s2'` by-(rule rtranclp_trans)
@@ -200,8 +169,9 @@ proof -
 	case (step x1'' m1'')
 	from `r1.silent_move t (x1, shr s1) (x1'', m1'')`
 	have "t \<turnstile> (x1, shr s1) -1-\<epsilon>\<rightarrow> (x1'', m1'')" by(auto dest: r1.silent_tl)
-	hence "r1.redT s1 (t, observable_ta_of \<epsilon>) (redT_upd s1 t (\<epsilon> :: ('l,'t,'x1,'m1,'w,'o list) thread_action) x1'' m1'')"
-	  using `thr s1 t = \<lfloor>(x1, ln)\<rfloor>` True by -(erule r1.redT_normal, auto)
+	hence "r1.redT s1 (t, \<epsilon>) (redT_upd_\<epsilon> s1 t x1'' m1'')"
+	  using `thr s1 t = \<lfloor>(x1, ln)\<rfloor>` True
+          by -(erule r1.redT_normal, auto simp add: redT_updLns_def finfun_Diag_const2 o_def redT_updWs_def)
 	hence False using dead by(auto intro: r1.deadlock_no_red r1.red_no_deadlock)
 	thus ?thesis ..
       qed simp
@@ -331,8 +301,9 @@ proof -
 		case (step x1'' m1'')
 		from `r1.silent_move t' (x1, shr s1) (x1'', m1'')`
 		have "t' \<turnstile> (x1, shr s1) -1-\<epsilon>\<rightarrow> (x1'', m1'')" by(auto dest: r1.silent_tl)
-		hence "r1.redT s1 (t', observable_ta_of \<epsilon>) (redT_upd s1 t' (\<epsilon> :: ('l,'t,'x1,'m1,'w,'o list) thread_action) x1'' m1'')"
-		  using `thr s1 t' = \<lfloor>(x1, ln)\<rfloor>` True by -(erule r1.redT_normal, auto)
+		hence "r1.redT s1 (t', \<epsilon>) (redT_upd_\<epsilon> s1 t' x1'' m1'')"
+		  using `thr s1 t' = \<lfloor>(x1, ln)\<rfloor>` True
+                  by -(erule r1.redT_normal, auto simp add: redT_updLns_def redT_updWs_def finfun_Diag_const2 o_def)
 		hence False using `r1.deadlocked s1 t'` by(rule r1.red_no_deadlock)
 		thus ?thesis ..
 	      qed simp

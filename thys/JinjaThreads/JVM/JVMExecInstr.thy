@@ -153,6 +153,9 @@ exec_instr_Load:
 | "exec_instr Dup P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
       {(\<epsilon>, (None, h, (hd stk # stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs) )}"
 
+| "exec_instr Swap P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+      {(\<epsilon>, (None, h, (hd (tl stk) # hd stk # tl (tl stk), loc, C\<^isub>0, M\<^isub>0, pc+1)#frs) )}"
+
 | "exec_instr (BinOpInstr bop) P t h stk loc C0 M0 pc frs =
   {(\<epsilon>, (None, h, (the (binop bop (hd (tl stk)) (hd stk)) # tl (tl stk), loc, C0, M0, pc + 1) # frs))}"
 

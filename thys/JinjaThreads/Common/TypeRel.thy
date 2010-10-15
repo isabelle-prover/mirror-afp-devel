@@ -7,7 +7,7 @@
 
 header {* \isaheader{Relations between Jinja Types} *}
 
-theory TypeRel imports Decl "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs" begin
+theory TypeRel imports Decl begin
 
 subsection{* The subclass relations *}
 
@@ -339,6 +339,24 @@ lemma refT_widen: "\<lbrakk> is_refT T; P \<turnstile> T \<le> U \<rbrakk> \<Lon
 apply(erule refTE)
 by(cases U, auto)+
 
+inductive is_lub :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> lub'((_,/ _)') = _" [51,51,51,51] 50)
+for P :: "'m prog" and U :: ty and V :: ty and T ::  ty
+where 
+  "\<lbrakk> P \<turnstile> U \<le> T; P \<turnstile> V \<le> T;
+     \<And>T'. \<lbrakk> P \<turnstile> U \<le> T'; P \<turnstile> V \<le> T' \<rbrakk> \<Longrightarrow> P \<turnstile> T \<le> T' \<rbrakk>
+  \<Longrightarrow> P \<turnstile> lub(U, V) = T"
+
+lemma is_lub_upper:
+  "P \<turnstile> lub(U, V) = T \<Longrightarrow> P \<turnstile> U \<le> T \<and> P \<turnstile> V \<le> T"
+by(auto elim: is_lub.cases)
+
+lemma is_lub_least:
+  "\<lbrakk> P \<turnstile> lub(U, V) = T; P \<turnstile> U \<le> T'; P \<turnstile> V \<le> T' \<rbrakk> \<Longrightarrow> P \<turnstile> T \<le> T'"
+by(auto elim: is_lub.cases)
+
+lemma is_lub_Void [iff]:
+  "P \<turnstile> lub(Void, Void) = T \<longleftrightarrow> T = Void"
+by(auto intro: is_lub.intros elim: is_lub.cases)
 
 subsection{* Method lookup *}
 
@@ -504,17 +522,16 @@ lemma sees_method_is_class:
 subsection{* Field lookup *}
 
 inductive
-  Fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> ty) list \<Rightarrow> bool" ("_ \<turnstile> _ has'_fields _" [51,51,51] 50)
+  Fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> (ty \<times> fmod)) list \<Rightarrow> bool" ("_ \<turnstile> _ has'_fields _" [51,51,51] 50)
 for P :: "'m prog"
 where 
 has_fields_rec:
 "\<lbrakk> class P C = Some(D,fs,ms); C \<noteq> Object; P \<turnstile> D has_fields FDTs;
-   FDTs' = map (\<lambda>(F,T). ((F,C),T)) fs @ FDTs \<rbrakk>
+   FDTs' = map (\<lambda>(F,Tm). ((F,C),Tm)) fs @ FDTs \<rbrakk>
  \<Longrightarrow> P \<turnstile> C has_fields FDTs'"
 | has_fields_Object:
 "\<lbrakk> class P Object = Some(D,fs,ms); FDTs = map (\<lambda>(F,T). ((F,Object),T)) fs \<rbrakk>
  \<Longrightarrow> P \<turnstile> Object has_fields FDTs"
-
 
 lemma has_fields_fun:
 assumes 1: "P \<turnstile> C has_fields FDTs"
@@ -528,11 +545,11 @@ next
   have "class": "class P C = Some (D, fs, ms)"
    and notObj: "C \<noteq> Object" and DFields: "P \<turnstile> D has_fields Dres"
    and IH: "\<And>Dres'. P \<turnstile> D has_fields Dres' \<Longrightarrow> Dres' = Dres"
-   and Cres: "Cres = map (\<lambda>(F,T). ((F,C),T)) fs @ Dres"
+   and Cres: "Cres = map (\<lambda>(F,Tm). ((F,C),Tm)) fs @ Dres"
    and CFields': "P \<turnstile> C has_fields Cres'" by fact+
   from CFields' notObj "class" obtain Dres'
     where DFields': "P \<turnstile> D has_fields Dres'"
-     and Cres': "Cres' = map (\<lambda>(F,T). ((F,C),T)) fs @ Dres'"
+     and Cres': "Cres' = map (\<lambda>(F,Tm). ((F,C),Tm)) fs @ Dres'"
     by(auto elim: Fields.cases)
   from Cres Cres' IH[OF DFields'] show "Cres' = Cres" by simp
 
@@ -541,8 +558,8 @@ qed
 
 lemma all_fields_in_has_fields:
 assumes sub: "P \<turnstile> C has_fields FDTs"
-shows "\<lbrakk> P \<turnstile> C \<preceq>\<^sup>* D; class P D = Some(D',fs,ms); (F,T) \<in> set fs \<rbrakk>
-       \<Longrightarrow> ((F,D),T) \<in> set FDTs"
+shows "\<lbrakk> P \<turnstile> C \<preceq>\<^sup>* D; class P D = Some(D',fs,ms); (F,Tm) \<in> set fs \<rbrakk>
+       \<Longrightarrow> ((F,D),Tm) \<in> set FDTs"
 (*<*)
 using sub apply(induct)
  apply(simp add:image_def)
@@ -557,7 +574,7 @@ done
 
 lemma has_fields_decl_above:
 assumes fields: "P \<turnstile> C has_fields FDTs"
-shows "((F,D),T) \<in> set FDTs \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
+shows "((F,D),Tm) \<in> set FDTs \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
 (*<*)
 using fields apply(induct)
  prefer 2 apply(fastsimp dest: tranclD)
@@ -572,7 +589,7 @@ done
 
 lemma subcls_notin_has_fields:
 assumes fields: "P \<turnstile> C has_fields FDTs"
-shows "((F,D),T) \<in> set FDTs \<Longrightarrow> \<not>  (subcls1 P)\<^sup>+\<^sup>+ D C"
+shows "((F,D),Tm) \<in> set FDTs \<Longrightarrow> \<not>  (subcls1 P)\<^sup>+\<^sup>+ D C"
 (*<*)
 using fields apply(induct)
  prefer 2 apply(fastsimp dest: tranclpD)
@@ -606,7 +623,7 @@ apply clarsimp
 apply(rename_tac fs ms)
 apply(drule (2) has_fields_rec)
  apply(rule refl)
-apply(rule_tac x = "map (\<lambda>(F,T). ((F,D'),T)) fs @ pre" in exI)
+apply(rule_tac x = "map (\<lambda>(F,Tm). ((F,D'),Tm)) fs @ pre" in exI)
 apply simp
 apply(simp add:Int_Un_distrib2)
 apply(rule equals0I)
@@ -621,14 +638,14 @@ lemma has_fields_is_class:
 
 (* FIXME why is Field not displayed correctly? TypeRel qualifier seems to confuse printer*)
 definition
-  has_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
-                   ("_ \<turnstile> _ has _:_ in _" [51,51,51,51,51] 50)
+  has_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> fmod \<Rightarrow> cname \<Rightarrow> bool"
+                   ("_ \<turnstile> _ has _:_ '(_') in _" [51,51,51,51,51,51] 50)
 where
-  "P \<turnstile> C has F:T in D  \<equiv>
-  \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and> map_of FDTs (F,D) = Some T"
+  "P \<turnstile> C has F:T (fm) in D  \<equiv>
+  \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and> map_of FDTs (F,D) = Some (T, fm)"
 
 lemma has_field_mono:
-  "\<lbrakk> P \<turnstile> C has F:T in D; P \<turnstile> C' \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> P \<turnstile> C' has F:T in D"
+  "\<lbrakk> P \<turnstile> C has F:T (fm) in D; P \<turnstile> C' \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> P \<turnstile> C' has F:T (fm) in D"
 (*<*)
 apply(clarsimp simp:has_field_def)
 apply(drule (1) has_fields_mono_lem)
@@ -637,25 +654,25 @@ done
 (*>*)
 
 lemma has_field_is_class:
-  "\<lbrakk> P \<turnstile> C has M:T in D \<rbrakk> \<Longrightarrow> is_class P C"
+  "\<lbrakk> P \<turnstile> C has M:T (fm) in D \<rbrakk> \<Longrightarrow> is_class P C"
 (*<*)by (auto simp add: is_class_def has_field_def elim: Fields.induct)(*>*)
 
 lemma has_field_decl_above:
-  "P \<turnstile> C has F:T in D \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
+  "P \<turnstile> C has F:T (fm) in D \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
 unfolding has_field_def
 by(auto dest: map_of_SomeD has_fields_decl_above)
 
 lemma has_field_fun:
-  "\<lbrakk>P \<turnstile> C has F:T in D; P \<turnstile> C has F:T' in D\<rbrakk> \<Longrightarrow> T' = T"
+  "\<lbrakk>P \<turnstile> C has F:T (fm) in D; P \<turnstile> C has F:T' (fm') in D\<rbrakk> \<Longrightarrow> T' = T \<and> fm = fm'"
 by(auto simp:has_field_def dest:has_fields_fun)
 
 definition
-  sees_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
-                  ("_ \<turnstile> _ sees _:_ in _" [51,51,51,51,51] 50)
+  sees_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> fmod \<Rightarrow> cname \<Rightarrow> bool"
+                  ("_ \<turnstile> _ sees _:_ '(_') in _" [51,51,51,51,51,51] 50)
 where
-  "P \<turnstile> C sees F:T in D  \<equiv>
+  "P \<turnstile> C sees F:T (fm) in D  \<equiv>
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and>
-            map_of (map (\<lambda>((F,D),T). (F,(D,T))) FDTs) F = Some(D,T)"
+            map_of (map (\<lambda>((F,D),Tm). (F,(D,Tm))) FDTs) F = Some(D,T,fm)"
 
 lemma map_of_remap_SomeD:
   "map_of (map (\<lambda>((k,k'),x). (k,(k',x))) t) k = Some (k',x) \<Longrightarrow> map_of t (k, k') = Some x"
@@ -663,17 +680,17 @@ lemma map_of_remap_SomeD:
 
 
 lemma has_visible_field:
-  "P \<turnstile> C sees F:T in D \<Longrightarrow> P \<turnstile> C has F:T in D"
+  "P \<turnstile> C sees F:T (fm) in D \<Longrightarrow> P \<turnstile> C has F:T (fm) in D"
 (*<*)by(auto simp add:has_field_def sees_field_def map_of_remap_SomeD)(*>*)
 
 
 lemma sees_field_fun:
-  "\<lbrakk>P \<turnstile> C sees F:T in D; P \<turnstile> C sees F:T' in D'\<rbrakk> \<Longrightarrow> T' = T \<and> D' = D"
+  "\<lbrakk>P \<turnstile> C sees F:T (fm) in D; P \<turnstile> C sees F:T' (fm') in D'\<rbrakk> \<Longrightarrow> T' = T \<and> D' = D \<and> fm = fm'"
 (*<*)by(fastsimp simp:sees_field_def dest:has_fields_fun)(*>*)
 
 
 lemma sees_field_decl_above:
-  "P \<turnstile> C sees F:T in D \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
+  "P \<turnstile> C sees F:T (fm) in D \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
 (*<*)
 apply(auto simp:sees_field_def)
 apply(blast  intro: has_fields_decl_above map_of_SomeD map_of_remap_SomeD)
@@ -682,7 +699,7 @@ done
 
 (* FIXME ugly *)  
 lemma sees_field_idemp:
-  "P \<turnstile> C sees F:T in D \<Longrightarrow> P \<turnstile> D sees F:T in D"
+  "P \<turnstile> C sees F:T (fm) in D \<Longrightarrow> P \<turnstile> D sees F:T (fm) in D"
 (*<*)
   apply (unfold sees_field_def)
   apply clarsimp
@@ -707,16 +724,16 @@ subsection "Functional lookup"
 definition method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> cname \<times> ty list \<times> ty \<times> 'm"
 where "method P C M  \<equiv>  THE (D,Ts,T,m). P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
 
-definition field  :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> cname \<times> ty"
-where "field P C F  \<equiv>  THE (D,T). P \<turnstile> C sees F:T in D"
+definition field  :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> cname \<times> ty \<times> fmod"
+where "field P C F  \<equiv>  THE (D,T,fm). P \<turnstile> C sees F:T (fm) in D"
                                                         
-definition fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> ty) list" 
+definition fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> (ty \<times> fmod)) list" 
 where "fields P C  \<equiv>  THE FDTs. P \<turnstile> C has_fields FDTs"                
 
 lemma [simp]: "P \<turnstile> C has_fields FDTs \<Longrightarrow> fields P C = FDTs"
 (*<*)by (unfold fields_def) (auto dest: has_fields_fun)(*>*)
 
-lemma field_def2 [simp]: "P \<turnstile> C sees F:T in D \<Longrightarrow> field P C F = (D,T)"
+lemma field_def2 [simp]: "P \<turnstile> C sees F:T (fm) in D \<Longrightarrow> field P C F = (D,T,fm)"
 (*<*)by (unfold field_def) (auto dest: sees_field_fun)(*>*)
 
 lemma method_def2 [simp]: "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<Longrightarrow> method P C M = (D,Ts,T,m)"
@@ -777,7 +794,7 @@ qed
 declare subcls1_intros [code_pred_intro]
 code_pred subcls1
 proof -
-  case subcls1
+  case subcls1 
   from subcls1.prems show thesis
     by(rule subcls1_cases)(assumption|erule that[OF _ refl refl])+
 qed
@@ -794,6 +811,30 @@ code_pred [inductify] subcls' .
 lemma subcls_conv_subcls' [code_inline]:
   "(subcls1 P)^** = subcls' P"
 by(simp add: subcls'_def)
+
+text {* @{term "subcls'_i_i_i"} uses @{term subcls1_i_o_o}, but @{term subcls1_i_i_o} is much more efficient *}
+lemma subcls'_i_i_i_code [code]:
+  "subcls'_i_i_i P = rtranclp_FioB_i_i (subcls1_i_i_o P)"
+apply(rule ext)+
+apply(rule pred_iffI)
+ apply(erule subcls'_i_i_iE)
+ apply clarsimp
+ apply(rule rtranclp_FioB_i_iI)
+  apply(unfold subcls'_def)[2]
+  apply assumption
+ apply(rule ext iffI)+
+  apply(erule subcls1_i_i_oE)
+  apply assumption
+ apply(erule subcls1_i_i_oI)
+apply(erule rtranclp_FioB_i_iE)
+apply clarsimp
+apply(rule subcls'_i_i_iI)
+apply(unfold subcls'_def)
+apply(erule rtranclp_induct)
+ apply blast
+apply(erule subcls1_i_i_oE)
+apply(erule (1) rtranclp.rtrancl_into_rtrancl)
+done
 
 text {* 
   Change rule @{thm widen_array_object} such that predicate compiler
@@ -812,6 +853,122 @@ by(erule widen.cases) auto  *)
 lemmas [code_pred_def] =
   widen_refl widen_subcls widen_null widen_null_array widen_array_object_code widen_array_array
 code_pred [inductify] widen . 
+
+text {*
+  @{term widen_i_i_i} uses @{term "subcls1_i_o_o"}, which is inefficient. Better use @{term subcls1_i_o_i}.
+*}
+
+lemma widen_i_i_i_code [code]:
+  "widen_i_i_i P T U =
+   sup (if T = U then Predicate.single () else bot)
+   (sup (case T of Class C \<Rightarrow> (case U of Class D \<Rightarrow> rtranclp_FioB_i_i (subcls1_i_i_o P) C D | _ \<Rightarrow> bot) | _ \<Rightarrow> bot)
+   (sup (case T of NT \<Rightarrow> (case U of Class C \<Rightarrow> Predicate.single () | Array A \<Rightarrow> Predicate.single () | _ \<Rightarrow> bot) | _ \<Rightarrow> bot)
+   (sup (case T of Array A \<Rightarrow> (case U of Class C \<Rightarrow> if C = Object then (is_type_i_i P A) else bot | _ \<Rightarrow> bot) | _ \<Rightarrow> bot)
+        (case T of Array A \<Rightarrow> (case U of Array B \<Rightarrow> Predicate.bind (widen_i_i_i P A B) (unit_case (Predicate.bind (Predicate.if_pred (ground_type A \<noteq> NT)) (unit_case (Predicate.single ())))) | _ \<Rightarrow> bot) | _ \<Rightarrow> bot))))"
+apply(subst widen.equation)
+apply(rule pred_iffI)
+ apply(erule supE bindE singleE)+
+  apply(rule supI1)
+  apply clarsimp
+ apply(erule supE bindE singleE)+
+  apply(simp split del: split_if split: ty.split_asm unit.splits)
+  apply(erule bindE)
+  apply(rule supI2)
+  apply simp
+  apply(erule rtranclp_FooB_i_iE)
+  apply(erule rtranclp_FioB_i_iI)
+  apply(rule ext)+
+  apply(rule iffI)
+   apply(erule subcls1_i_i_oE)
+   apply(erule subcls1_i_o_oI)
+  apply(erule subcls1_i_o_oE)
+  apply(erule subcls1_i_i_oI)
+ apply(erule supE bindE singleE)+
+  apply(rule supI2)
+  apply(rule supI2)
+  apply(rule supI1)
+  apply(simp split: ty.split_asm)
+ apply(erule supE bindE singleE)+
+  apply(rule supI2)
+  apply(rule supI2)
+  apply(rule supI1)
+  apply(simp split: ty.split_asm)
+ apply(erule supE bindE singleE)+
+  apply(rule supI2)
+  apply(rule supI2)
+  apply(rule supI2)
+  apply(rule supI1)
+  apply(simp split: ty.split_asm unit.split_asm)
+  apply(erule bindE)
+  apply(split unit.split_asm)
+  apply(simp split: split_if_asm)
+ apply(erule bindE singleE)+
+ apply(rule supI2)
+ apply(rule supI2)
+ apply(rule supI2)
+ apply(rule supI2)
+ apply(simp split: ty.split_asm)
+apply(erule supE)
+ apply(simp split: split_if_asm)
+ apply(rule supI1)
+ apply(rule bindI)
+  apply(rule singleI)
+ apply simp
+apply(erule supE)
+ apply(simp split: ty.split_asm)
+ apply(rule supI2)
+ apply(rule supI1)
+ apply(rule bindI)
+  apply(rule singleI)
+ apply(simp)
+ apply(erule rtranclp_FioB_i_iE)
+ apply(rule bindI)
+  apply(erule rtranclp_FooB_i_iI)
+  apply(rule ext)+
+  apply(rule iffI)
+   apply(erule subcls1_i_o_oE)
+   apply(erule subcls1_i_i_oI)
+  apply(erule subcls1_i_i_oE)
+  apply(erule subcls1_i_o_oI)
+ apply(simp split: unit.split)
+ apply(rule singleI)
+apply(erule supE)
+ apply(simp split: ty.split_asm)
+  apply(rule supI2)
+  apply(rule supI2)
+  apply(rule supI1)
+  apply(rule bindI)
+   apply(rule singleI)
+  apply simp
+ apply(rule supI2)
+ apply(rule supI2)
+ apply(rule supI2)
+ apply(rule supI1)
+ apply(rule bindI)
+  apply(rule singleI)
+ apply simp
+apply(erule supE)
+ apply(simp split: ty.split_asm)
+ apply(rule supI2)
+ apply(rule supI2)
+ apply(rule supI2)
+ apply(rule supI2)
+ apply(rule supI1)
+ apply(rule bindI)
+  apply(rule singleI)
+ apply(simp split: split_if_asm)
+ apply(erule bindI)
+ apply(simp split: unit.split)
+ apply(rule singleI)
+apply(rule supI2)
+apply(rule supI2)
+apply(rule supI2)
+apply(rule supI2)
+apply(rule supI2)
+apply(rule bindI)
+ apply(rule singleI)
+apply(simp split: ty.split_asm)
+done
 
 code_pred Methods .
 
@@ -841,17 +998,17 @@ apply(rule ext)
 apply clarsimp
 done
 
-lemma eval_sees_field_i_i_i_o_o_conv:
-  "Predicate.eval (sees_field_i_i_i_o_o P C F) = (\<lambda>(T, D). P \<turnstile> C sees F:T in D)"
-by(auto intro!: ext intro: sees_field_i_i_i_o_oI elim: sees_field_i_i_i_o_oE)
+lemma eval_sees_field_i_i_i_o_o_o_conv:
+  "Predicate.eval (sees_field_i_i_i_o_o_o P C F) = (\<lambda>(T, fm, D). P \<turnstile> C sees F:T (fm) in D)"
+by(auto intro!: ext intro: sees_field_i_i_i_o_o_oI elim: sees_field_i_i_i_o_o_oE)
 
 lemma eval_sees_field_i_i_i_o_i_conv:
-  "Predicate.eval (sees_field_i_i_i_o_i P C F D) = (\<lambda>T. P \<turnstile> C sees F:T in D)"
-by(auto intro!: ext intro: sees_field_i_i_i_o_iI elim: sees_field_i_i_i_o_iE)
+  "Predicate.eval (sees_field_i_i_i_o_o_i P C F D) = (\<lambda>(T, fm). P \<turnstile> C sees F:T (fm) in D)"
+by(auto intro!: ext intro: sees_field_i_i_i_o_o_iI elim: sees_field_i_i_i_o_o_iE)
 
 lemma field_code [code]:
-  "field P C F = Predicate.the (Predicate.bind (sees_field_i_i_i_o_o P C F) (\<lambda>(T, D). Predicate.single (D, T)))"
-apply(simp add: field_def Predicate.the_def Predicate.bind_def Predicate.single_def eval_sees_field_i_i_i_o_o_conv)
+  "field P C F = Predicate.the (Predicate.bind (sees_field_i_i_i_o_o_o P C F) (\<lambda>(T, fm, D). Predicate.single (D, T, fm)))"
+apply(simp add: field_def Predicate.the_def Predicate.bind_def Predicate.single_def eval_sees_field_i_i_i_o_o_o_conv)
 apply(rule arg_cong[where f=The])
 apply(rule ext)
 apply clarsimp

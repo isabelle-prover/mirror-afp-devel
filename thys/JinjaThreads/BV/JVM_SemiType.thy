@@ -4,9 +4,12 @@
     Based on the theory Jinja/BV/JVM_SemiType
 *)
 
-header {* \isaheader{The JVM Type System as Semilattice} *}
+header {* 
+  \chapter{Bytecode verifier}
+  \isaheader{The JVM Type System as Semilattice} 
+*}
 
-theory JVM_SemiType imports SemiType begin
+theory JVM_SemiType imports "../Common/SemiType" begin
 
 types ty\<^isub>l = "ty err list"
 types ty\<^isub>s = "ty list"
@@ -67,8 +70,8 @@ notation (xsymbols)
 section "Unfolding"
 
 lemma JVM_states_unfold: 
-  "states P mxs mxl \<equiv> err(opt((Union {list n (is_type P) |n. n <= mxs}) <*>
-                                 list mxl (err(is_type P))))"
+  "states P mxs mxl \<equiv> err(opt((Union {list n (types P) |n. n <= mxs}) <*>
+                                 list mxl (err(types P))))"
 (*<*)
   apply (unfold states_def sl_def Opt.esl_def Err.sl_def
          stk_esl_def loc_sl_def Product.esl_def

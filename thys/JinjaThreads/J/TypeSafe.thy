@@ -267,15 +267,15 @@ next
   case RedAAccBounds thus ?case unfolding sconf_def
     by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
 next
-  case (RedAAcc s a T i v T' E)
-  from `E \<turnstile> s \<surd>` have "hconf (hp s)" by(clarsimp simp add: sconf_def)
-  from `0 <=s i` `sint i < int (array_length (hp s) a)`
-  have "nat (sint i) < array_length (hp s) a"
+  case (RedAAcc h a T i v l T' E)
+  from `E \<turnstile> (h, l) \<surd>` have "hconf h" by(clarsimp simp add: sconf_def)
+  from `0 <=s i` `sint i < int (array_length h a)`
+  have "nat (sint i) < array_length h a"
     by(metis nat_less_iff sint_0 word_sle_def)
-  with `typeof_addr (hp s) a = \<lfloor>T\<lfloor>\<rceil>\<rfloor>` have "P,hp s \<turnstile> a@ACell (nat (sint i)) : T"
+  with `typeof_addr h a = \<lfloor>T\<lfloor>\<rceil>\<rfloor>` have "P,h \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
-  from heap_read_conf[OF `heap_read (hp s) a (ACell (nat (sint i))) v` this] `hconf (hp s)`
-  have "P,hp s \<turnstile> v :\<le> T" by simp
+  from heap_read_conf[OF `heap_read h a (ACell (nat (sint i))) v` this] `hconf h`
+  have "P,h \<turnstile> v :\<le> T" by simp
   thus ?case using RedAAcc by(auto simp add: conf_def)
 next
   case (AAssRed1 a s ta a' s' i e T E)
@@ -434,10 +434,9 @@ next
   have IH: "\<And>E T. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>F{D} : T" by fact+
-  -- "The goal: ?case = @{prop ?case}"
   -- "Now distinguish the two cases how wt can have arisen."
-  { fix C assume wte: "P,E,hp s \<turnstile> e : Class C"
-             and has: "P \<turnstile> C has F:T in D"
+  { fix C fm assume wte: "P,E,hp s \<turnstile> e : Class C"
+             and has: "P \<turnstile> C has F:T (fm) in D"
     from IH[OF conf wte]
     obtain U where wte': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> Class C"
       by auto
@@ -491,7 +490,6 @@ next
    and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>F{D}:=e\<^isub>2 : T" by fact+
   from wt have void: "T = Void" by blast
   -- "We distinguish if @{term e} has type @{term NT} or a Class type"
-  -- "Remember ?case = @{term ?case}"
   { assume "P,E,hp s \<turnstile> e : NT"
     hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf] by fastsimp
     moreover obtain T\<^isub>2 where "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2" using wt by auto
@@ -500,8 +498,8 @@ next
     ultimately have ?case using void by(blast intro!:WTrtFAssNT)
   }
   moreover
-  { fix C TF T\<^isub>2 assume wt\<^isub>1: "P,E,hp s \<turnstile> e : Class C" and wt\<^isub>2: "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2"
-    and has: "P \<turnstile> C has F:TF in D" and sub: "P \<turnstile> T\<^isub>2 \<le> TF"
+  { fix C TF T\<^isub>2 fm assume wt\<^isub>1: "P,E,hp s \<turnstile> e : Class C" and wt\<^isub>2: "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2"
+    and has: "P \<turnstile> C has F:TF (fm) in D" and sub: "P \<turnstile> T\<^isub>2 \<le> TF"
     obtain U where wt\<^isub>1': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> Class C"
       using IH[OF conf wt\<^isub>1] by blast
     have wt\<^isub>2': "P,E,hp s' \<turnstile> e\<^isub>2 : T\<^isub>2"
@@ -512,7 +510,7 @@ next
     moreover
     { fix C' assume UClass: "U = Class C'" and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C"
       have "P,E,hp s' \<turnstile> e' : Class C'" using wt\<^isub>1' UClass by auto
-      moreover have "P \<turnstile> C' has F:TF in D"
+      moreover have "P \<turnstile> C' has F:TF (fm) in D"
 	by(rule has_field_mono[OF has "subclass"])
       ultimately have ?case using wt\<^isub>2' sub void by(blast intro:WTrtFAss) }
     moreover
@@ -532,9 +530,9 @@ next
   from wt have [simp]: "T = Void" by auto
   from wt show ?case
   proof (rule WTrt_elim_cases)
-    fix C TF T\<^isub>2
+    fix C TF T\<^isub>2 fm
     assume wt\<^isub>1: "P,E,hp s \<turnstile> Val v : Class C"
-      and has: "P \<turnstile> C has F:TF in D"
+      and has: "P \<turnstile> C has F:TF (fm) in D"
       and wt\<^isub>2: "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2" and TsubTF: "P \<turnstile> T\<^isub>2 \<le> TF"
     have wt\<^isub>1': "P,E,hp s' \<turnstile> Val v : Class C"
       by(rule WTrt_hext_mono[OF wt\<^isub>1 red_hext_incr[OF red]])
@@ -563,7 +561,6 @@ next
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>M(es) : T" by fact+
   -- "We distinguish if @{term e} has type @{term NT} or a Class type"
-  -- "Remember ?case = @{term ?case}"
   from wt show ?case
   proof(rule WTrt_elim_cases)
     fix C Ts pns body D Us
@@ -700,7 +697,7 @@ next
   obtain Ts' where wtes: "P,E,hp s \<turnstile> map Val vs [:] Ts'"
     and subs: "P \<turnstile> Ts' [\<le>] Ts" and T'isT: "T' = T"
     using wt method hp wf nexc
-    by(fastsimp elim!: WTrt_elim_cases dest: sees_method_fun external_WT_is_external_call map_eq_imp_length_eq' intro: widens_refl)
+    by(fastsimp elim!: WTrt_elim_cases dest: sees_method_fun external_WT_is_external_call map_eq_imp_length_eq intro: widens_refl)
   from wtes subs have length_vs: "length vs = length Ts"
     by(auto simp add: WTrts_conv_list_all2 dest!: list_all2_lengthD)
   from sees_wf_mdecl[OF wf method] obtain T''
@@ -807,15 +804,13 @@ next
     assume wtb: "P,E,hp s \<turnstile> b : Boolean"
       and wte1: "P,E,hp s \<turnstile> e1 : T1"
       and wte2: "P,E,hp s \<turnstile> e2 : T2"
-      and comp: "P \<turnstile> T1 \<le> T2 \<or> P \<turnstile> T2 \<le> T1"
-      and tt2: "P \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2"
-      and tt1: "P \<turnstile> T2 \<le> T1 \<longrightarrow> T = T1"
+      and lub: "P \<turnstile> lub(T1, T2) = T"
     from IH[OF conf wtb] have "P,E,hp s' \<turnstile> b' : Boolean" by(auto)
     moreover have "P,E,hp s' \<turnstile> e1 : T1"
       by(rule WTrt_hext_mono[OF wte1 red_hext_incr[OF red]])
     moreover have "P,E,hp s' \<turnstile> e2 : T2"
       by(rule WTrt_hext_mono[OF wte2 red_hext_incr[OF red]])
-    ultimately show ?thesis using comp tt2 tt1 by(fastsimp)
+    ultimately show ?thesis using lub by auto
   qed
 next
   case (ThrowRed e s ta e' s' T E)
@@ -859,9 +854,9 @@ next
 next
   case RedSeq thus ?case by auto
 next
-  case RedCondT thus ?case by auto
+  case RedCondT thus ?case by(auto dest: is_lub_upper)
 next
-  case RedCondF thus ?case by auto
+  case RedCondF thus ?case by(auto dest: is_lub_upper)
 next
   case RedWhile thus ?case by(fastsimp) 
 next

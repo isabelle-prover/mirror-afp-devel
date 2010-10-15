@@ -23,6 +23,7 @@ datatype
         | Return                    -- "return from method"
         | Pop                       -- "pop top element from opstack"
         | Dup                       -- "duplicate top stack element"
+        | Swap                      -- "swap top stack elements"
         | BinOpInstr bop            -- "binary operator instruction"
         | Goto int                  -- "goto relative address"
         | IfFalse int               -- "branch if top of stack false"

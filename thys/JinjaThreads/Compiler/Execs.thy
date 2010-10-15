@@ -80,6 +80,10 @@ check_instr'_Load:
   "check_instr' Dup P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
   (0 < length stk)"
 
+| check_instr'_Swap:
+  "check_instr' Swap P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  (1 < length stk)"
+
 | check_instr'_BinOpInstr:
   "check_instr' (BinOpInstr bop) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
   (1 < length stk)"
@@ -2036,6 +2040,5 @@ apply(erule \<tau>instr_stk_append_check)
 done
 
 end
-
 
 end

@@ -8,8 +8,13 @@ header {* \isaheader{Class Declarations and Programs} *}
 
 theory Decl imports Type begin
 
+types volatile = bool
+
+record fmod =
+  volatile :: volatile
+
 types 
-  fdecl    = "vname \<times> ty"        -- "field declaration"
+  fdecl    = "vname \<times> ty \<times> fmod"        -- "field declaration"
 
   'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg. types, return type, body"
 
@@ -20,7 +25,7 @@ types
   'm prog  = "'m cdecl list"     -- "program"
 
 translations
-  (type) "fdecl"   <= (type) "String.literal \<times> ty"
+  (type) "fdecl"   <= (type) "String.literal \<times> ty \<times> fmod"
   (type) "'c mdecl" <= (type) "String.literal \<times> ty list \<times> ty \<times> 'c"
   (type) "'c class" <= (type) "String.literal \<times> fdecl list \<times> ('c mdecl) list"
   (type) "'c cdecl" <= (type) "String.literal \<times> ('c class)"
@@ -54,6 +59,9 @@ where
 
 lemma NT_Array_is_type: "is_NT_Array A \<Longrightarrow> is_type P A"
 by(induct A, auto)
+
+abbreviation "types" :: "'m prog \<Rightarrow> ty set"
+where "types P \<equiv> {T. is_type P T}"
 
 subsection {* Code generation *}
 

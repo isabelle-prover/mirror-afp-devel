@@ -69,6 +69,7 @@ sublocale JVM_heap_base < exec_mthr!:
   multithreaded
     JVM_final
     "mexec P"
+    convert_RA
   for P
 by(rule exec_mthr)
 
@@ -77,14 +78,14 @@ context JVM_heap_base begin
 abbreviation
   mexecT :: "jvm_prog
              \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state
-             \<Rightarrow> thread_id \<times> (jvm_thread_state,'heap) JT_thread_action
+             \<Rightarrow> thread_id \<times> 'heap jvm_thread_action
              \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state \<Rightarrow> bool"
 where
   "mexecT P \<equiv> exec_mthr.redT P"
 
 abbreviation
   mexecT_syntax1 :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state
-                  \<Rightarrow> thread_id \<Rightarrow> (jvm_thread_state,'heap) JT_thread_action
+                  \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_thread_action
                   \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -_\<triangleright>_\<rightarrow>\<^bsub>jvm\<^esub> _" [50,0,0,0,50] 80)
 where
@@ -93,7 +94,7 @@ where
 
 abbreviation
   mExecT_syntax1 :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state
-                  \<Rightarrow> (thread_id \<times> (jvm_thread_state,'heap) JT_thread_action) list
+                  \<Rightarrow> (thread_id \<times> 'heap jvm_thread_action) list
                   \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -\<triangleright>_\<rightarrow>\<^bsub>jvm\<^esub>* _" [50,0,0,50] 80)
 where
@@ -127,6 +128,7 @@ sublocale JVM_heap_base < execd_mthr!:
   multithreaded
     JVM_final
     "mexecd P"
+    convert_RA
   for P
 by(rule execd_mthr)
 
@@ -134,7 +136,7 @@ context JVM_heap_base begin
 
 abbreviation
   mexecdT :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state
-                       \<Rightarrow> thread_id \<times> (jvm_thread_state,'heap) JT_thread_action
+                       \<Rightarrow> thread_id \<times> 'heap jvm_thread_action
                        \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state \<Rightarrow> bool"
 where
   "mexecdT P \<equiv> execd_mthr.redT P"
@@ -142,7 +144,7 @@ where
 
 abbreviation
   mexecdT_syntax1 :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state
-                  \<Rightarrow> thread_id \<Rightarrow> (jvm_thread_state,'heap) JT_thread_action
+                  \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_thread_action
                   \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -_\<triangleright>_\<rightarrow>\<^bsub>jvmd\<^esub> _" [50,0,0,0,50] 80)
 where
@@ -151,7 +153,7 @@ where
 
 abbreviation
   mExecdT_syntax1 :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state
-                  \<Rightarrow> (thread_id \<times> (jvm_thread_state,'heap) JT_thread_action) list
+                  \<Rightarrow> (thread_id \<times> 'heap jvm_thread_action) list
                   \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -\<triangleright>_\<rightarrow>\<^bsub>jvmd\<^esub>* _" [50,0,0,50] 80)
 where
@@ -212,11 +214,9 @@ done
 lemma lifting_wf_thread_conf: "lifting_wf (mexecd P) (\<lambda>t x m. P,m \<turnstile> t \<surd>t)"
 by(unfold_locales)(auto intro: exec_preserve_tconf dest: exec_New_Thread_exists_thread_object intro: tconfI)
 
-
-
 end
 
-sublocale JVM_heap < execd_tconf!: lifting_wf JVM_final "mexecd P" "\<lambda>t x m. P,m \<turnstile> t \<surd>t" for P
+sublocale JVM_heap < execd_tconf!: lifting_wf JVM_final "mexecd P" convert_RA "\<lambda>t x m. P,m \<turnstile> t \<surd>t" for P
 by(rule lifting_wf_thread_conf)
 
 context JVM_heap begin

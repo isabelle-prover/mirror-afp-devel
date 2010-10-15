@@ -19,6 +19,7 @@
 {\newpage\markright{Theory~\isabellecontext}\section{#1}}
 \renewcommand{\isamarkupheader}[1]{#1}
 \renewcommand{\isamarkupsection}[1]{\subsection{#1}}
+\renewcommand{\isamarkupsubsection}[1]{\subsubsection{#1}}
 
 \newcommand{\secref}[1]{Section~\ref{#1}}
 \newcommand{\secrefs}[1]{Sections~\ref{#1}}
@@ -45,7 +46,7 @@ the Isabelle theories in the following sections.
 
 \begin{figure}[h!t]
 \begin{center}
-  \includegraphics[width=\textwidth]{session_graph}
+  \includegraphics[height=\textheight]{session_graph}
 \end{center}
 \caption{Theory Dependency Graph\label{theory-deps}}
 \end{figure}

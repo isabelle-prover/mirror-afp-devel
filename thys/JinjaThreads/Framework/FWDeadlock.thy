@@ -231,14 +231,13 @@ proof -
   with P s have "\<langle>ls, (ts, m), ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws'\<rangle>" by simp
   thus False
   proof(cases rule: redT_elims)
-    case (normal x x' ta' M')
-    with ta have Pe: "t \<turnstile> \<langle>x, m\<rangle> -ta'\<rightarrow> \<langle>x', M'\<rangle>"
+    case (normal x x' M')
+    with ta have Pe: "t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', M'\<rangle>"
       and est: "ts t = \<lfloor>(x, no_wait_locks)\<rfloor>"
       and lot: "lock_ok_las ls t las"
       and cct: "thread_oks ts tas"
       and cdt: "cond_action_oks (ls, (ts, m), ws) t cas"
       and wao: "wset_actions_ok ws t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
-      and [simp]: "ta = observable_ta_of ta'"
       by(auto)
     show False
     proof(cases "all_final_except s (deadlocked s) \<and> (\<exists>w. ws t = \<lfloor>InWS w\<rfloor>)")
@@ -250,7 +249,7 @@ proof -
 	and cledead: "\<forall>LT. t \<turnstile> \<langle>x, m\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. (deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt \<in> LT. must_wait s t lt t'))"
 	by - (erule deadlocked.cases, (fastsimp simp add: waiting_def)+)+
       let ?LT = "collect_locks las <+> {t. Join t \<in> set cas}"
-      from Pe ta have "t \<turnstile> \<langle>x, m\<rangle> ?LT \<wrong>" by(auto intro: can_syncI simp add: observable_ta_of_def)
+      from Pe ta have "t \<turnstile> \<langle>x, m\<rangle> ?LT \<wrong>" by(auto intro: can_syncI)
       then obtain t' lt where "deadlocked s t' \<or> final_thread s t'"
 	and lt: "lt \<in> ?LT" and mw: "must_wait s t lt t'"
 	by(blast dest: cledead[rule_format])
@@ -645,9 +644,11 @@ by(rule deadlocked'_no_red)
 end
 
 locale preserve_deadlocked = 
-  final_thread_wf _ r + 
-  multithreaded_start _ r start_state
-  for r :: "('l,'t,'x,'m,'w,'o) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  final_thread_wf final r convert_RA + 
+  multithreaded_start final r convert_RA start_state
+  for final :: "'x \<Rightarrow> bool"
+  and r :: "('l,'t,'x,'m,'w,'o) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and start_state :: "('l,'t,'x,'m,'w) state" +
   assumes can_lock_preserved: 
     "\<lbrakk> start_state -\<triangleright>tta\<rightarrow>* s; s -t'\<triangleright>ta'\<rightarrow> s';
@@ -674,8 +675,8 @@ proof -
   with s Red have "\<langle>ls, (ts, m), ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws'\<rangle>" by simp
   thus "deadlocked s' t'"
   proof(cases rule: redT_elims)
-    case (normal x x' ta' M)
-    with ta s s' Red have red: "t \<turnstile> \<langle>x, m\<rangle> -ta'\<rightarrow> \<langle>x', M\<rangle>"
+    case (normal x x' M)
+    with ta s s' Red have red: "t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', M\<rangle>"
       and est: "ts t = \<lfloor>(x, no_wait_locks)\<rfloor>"
       and lot: "lock_ok_las ls t las"
       and cct: "thread_oks ts tas"
@@ -684,8 +685,7 @@ proof -
       and ls': "ls' = redT_updLs ls t las"
       and ts': "ts' = redT_updTs ts tas(t \<mapsto> (x', redT_updLns ls t no_wait_locks las))"
       and M: "M = m'"
-      and ws': "ws' = redT_updWs ws t was"
-      and [simp]: "ta = observable_ta_of ta'"
+      and ws': "redT_updWs t ws was ws'"
       by auto
     from red have "\<not> final x" by(auto dest: final_no_red)
     with tndead est s est wst have nafe: "\<not> all_final_except s (deadlocked s)"
@@ -740,7 +740,7 @@ proof -
 	    case thread
 	    note nftt' = `not_final_thread s t'`
 	    from tt' t'dead Red cct ts' ta have ts't': "ts' t' = ts t'"
-	      by(auto elim!: deadlocked_thread_exists final_threadE intro: redT_updTs_Some simp add: observable_ta_of_def)
+	      by(auto elim!: deadlocked_thread_exists final_threadE intro: redT_updTs_Some)
 	    from nftt' have "thr s t' \<noteq> None" by(auto)
 	    with nftt' t'dead have "deadlocked s t'"
 	      by(simp add: not_final_thread_final_thread_conv[symmetric])
@@ -775,7 +775,7 @@ proof -
 	    with red have "x \<noteq> x'" by(auto dest: final_no_red)
 	    with est tst' have "t \<noteq> t'" by auto
 	    with Red cct ts' tst' ta have "thr s' t' = \<lfloor>(x', ln')\<rfloor>"
-	      by(auto intro: redT_updTs_Some simp add: observable_ta_of_def)
+	      by(auto intro: redT_updTs_Some)
 	    moreover from Red ws' `t \<noteq> t'` `wset s t' = None`
 	    have "ws' t' = None" by(auto simp: redT_updWs_None_implies_None)
 	    ultimately have "final_thread s' t'" using tst' `final x'`
@@ -815,7 +815,7 @@ proof -
 	{ fix x
 	  assume "thr s T = \<lfloor>(x, no_wait_locks)\<rfloor>"
 	  with `T \<noteq> t` Red ts' cct est ta have "thr s' T = \<lfloor>(x, no_wait_locks)\<rfloor>"
-	    by(auto intro: redT_updTs_Some simp add: observable_ta_of_def) }
+	    by(auto intro: redT_updTs_Some) }
 	moreover
 	hence "final_thread s T \<Longrightarrow> final_thread s' T"
 	  by(auto simp add: final_thread_def intro: wset)
@@ -829,7 +829,7 @@ proof -
     qed
   next
     case (acquire x ln n)
-    hence [simp]: "ta = (\<lambda>\<^isup>f [], [], [], [], [ReacquireLocks ln])" "ws' = ws" "m' = m"
+    hence [simp]: "ta = (\<lambda>\<^isup>f [], [], [], [], convert_RA ln)" "ws' = ws" "m' = m"
       and ts': "ts' = ts(t \<mapsto> (x, no_wait_locks))"
       and ls': "ls' = acquire_all ls t ln"
       and tst: "ts t = \<lfloor>(x, ln)\<rfloor>" 

@@ -6,7 +6,6 @@ header {* \isaheader{Semantics of method calls that cannot be defined inside Jin
 
 theory ExternalCall imports
   "../Framework/FWLocking"
-  Observable_Events
   Conform
 begin
 
@@ -162,6 +161,8 @@ where
 -- {*
   Cloning an interrupted thread yields an interrupted thread (cf. Sun JVM 1.6.0\_07).
   Since the interrupt flag is stored inside the thread object, heap\_clone correctly copies the interrupt status.
+
+  Array cells are never volatile themselves.
   *}
 
 inductive heap_clone :: "'m prog \<Rightarrow> 'heap \<Rightarrow> addr \<Rightarrow> 'heap \<Rightarrow> (obs_event list \<times> addr) option \<Rightarrow> bool"
@@ -175,12 +176,12 @@ where
   \<Longrightarrow> heap_clone P h a h' None"
 | ObjClone:
   "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; new_obj h C = (h', \<lfloor>a'\<rfloor>);
-     P \<turnstile> C has_fields FDTs; heap_copies a a' (map (\<lambda>((F, D), T). CField D F) FDTs) h' obs h'' \<rbrakk>
-  \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewObj a C # obs, a')\<rfloor>"
+     P \<turnstile> C has_fields FDTs; heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h' obs h'' \<rbrakk>
+  \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewObj a' C # obs, a')\<rfloor>"
 | ArrClone:
   "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; n = array_length h a; new_arr h T n = (h', \<lfloor>a'\<rfloor>);
      heap_copies a a' (map ACell [0..<n]) h' obs  h'' \<rbrakk>
-  \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewArr a T n # obs, a')\<rfloor>"
+  \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewArr a' T n # obs, a')\<rfloor>"
 
 
 inductive red_external :: "'m prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> addr \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> 'heap external_thread_action \<Rightarrow> extCallRet \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -205,9 +206,8 @@ where
     -- {* 
     Interruption should produce inter-thread actions (JLS 17.4.4) for the synchronizes-with order.
     They should synchronize with the inter-thread actions that determine whether a thread has been interrupted.
-    At present, interruption generates only ordinary heap write actions.
-    One option to model this would be to make the interrupted flag in Thread volatile.
-    Probably better would be to include interrupted as a native method directly.
+    Hence, interruption generates volatile heap write actions, which synchronize with all (volatile) read
+    actions on the interrupt flag.
     *}
   
 | RedInterrupt:
@@ -234,7 +234,7 @@ where
   "\<lbrakk> typeof_addr h t = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread;
      heap_read h t interrupted_flag_loc (Bool False) \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Suspend a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a \<rbrace>
-                             \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a \<rbrace>\<rightarrow>ext 
+                             \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a \<rbrace>\<rightarrow>ext 
             \<langle>RetStaySame, h\<rangle>"
 
 | RedWaitFail:
@@ -244,21 +244,25 @@ where
   "P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notified \<rbrace>\<rightarrow>ext \<langle>RetVal Unit, h\<rangle>"
 
     -- {*
-    This rule does not explicitly check that the interrupted flag is set on the heap.
-    This avoids having to prove that the reduction is only needed when the interrupt flag has been set.
-    Since this rule may only be chosen by the multithreaded semantics in response to 
-    an interrupt thread action, the flag is always set anyway.
+    This rule does NOT check that the interrupted flag is set. Still, it reads from the interrupted flag
+    to induce a synchronizes-with edge from
+    the last write to the interrupted flag.
+    Under the assumption that only a thread itself is able to clear its interrupted flag, we know that
+    the flag must always be set when this rule can be chosen by the multithreaded semantics.
+    The class Thread in Java is implemented such that this assumption is satsified, which we do not model explicitly.
     *}
 | RedWaitInterrupted:
-  "\<lbrakk> typeof_addr h t = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread; 
+  "\<lbrakk> typeof_addr h t = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread;
+     heap_read h t interrupted_flag_loc (Bool b);
      heap_write h t interrupted_flag_loc (Bool False) h' \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>
-                            \<lbrace>\<^bsub>o\<^esub>  WriteMem t interrupted_flag_loc (Bool False)\<rbrace>\<rightarrow>ext
+                            \<lbrace>\<^bsub>o\<^esub>  ReadMem t interrupted_flag_loc (Bool b),
+                                WriteMem t interrupted_flag_loc (Bool False)\<rbrace>\<rightarrow>ext
            \<langle>RetEXC InterruptedException, h'\<rangle>"
 
     -- {*
-    notify and notifyAll does not perform synchronization inter-thread actions
-    because it only tests whether the thread holds a lock, but does not change the lock state.
+    notify and notifyAll do not perform synchronization inter-thread actions
+    because they only tests whether the thread holds a lock, but does not change the lock state.
     *}
 
 | RedNotify:
@@ -295,21 +299,23 @@ where
   "red_external_aggr P t a M vs h =
    (if M = wait then
        (if heap_read h t interrupted_flag_loc (Bool True) 
-        then {(\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), WriteMem t interrupted_flag_loc (Bool False) \<rbrace>,
+        then {(\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), 
+                                      WriteMem t interrupted_flag_loc (Bool False) \<rbrace>,
                RetEXC InterruptedException, h')|h'. heap_write h t interrupted_flag_loc (Bool False) h'}
         else {})
        \<union>
        (if heap_read h t interrupted_flag_loc (Bool False)
         then {(\<epsilon>\<lbrace>\<^bsub>w\<^esub> Suspend a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a \<rbrace>
-                \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a \<rbrace>, RetStaySame, h)}
+                \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a \<rbrace>, RetStaySame, h)}
         else {})
        \<union>
        {(\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>, RetEXC IllegalMonitorState, h),
         (\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notified \<rbrace>, RetVal Unit, h)}
        \<union>
-       {(\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>\<lbrace>\<^bsub>o\<^esub> WriteMem t interrupted_flag_loc (Bool False)\<rbrace>,
+       {(\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool b), 
+                            WriteMem t interrupted_flag_loc (Bool False)\<rbrace>,
          RetEXC InterruptedException, h')
-        |h'. heap_write h t (CField Thread interrupted_flag) (Bool False) h'}
+        |b h'. heap_read h t interrupted_flag_loc (Bool b) \<and> heap_write h t (CField Thread interrupted_flag) (Bool False) h'}
     else if M = notify then {(\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notify a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>, RetVal Unit, h),
                              (\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>, RetEXC IllegalMonitorState, h)}
     else if M = notifyAll then {(\<epsilon>\<lbrace>\<^bsub>w\<^esub> NotifyAll a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>, RetVal Unit, h),
@@ -540,5 +546,51 @@ code_pred external_WT .
 lemma eval_external_WT_i_i_i_o_o_conv:
   "Predicate.eval (external_WT_i_i_i_o_o P T M) (Ts, U) \<longleftrightarrow> P \<turnstile> T\<bullet>M(Ts) :: U"
 by(auto elim: external_WT_i_i_i_o_oE intro: external_WT_i_i_i_o_oI)
+
+declare heap_base.heap_copy_loc.intros[code_pred_intro]
+
+code_pred
+  (modes: (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool) 
+  heap_base.heap_copy_loc
+proof -
+  case heap_copy_loc
+  from heap_copy_loc.prems show thesis
+    by(rule heap_base.heap_copy_loc.cases)(rule that[OF refl refl refl refl refl refl])
+qed
+
+declare heap_base.heap_copies.intros [code_pred_intro]
+
+code_pred
+  (modes: (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) => (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
+  heap_base.heap_copies
+proof -
+  case heap_copies
+  from heap_copies.prems show thesis
+    by(rule heap_base.heap_copies.cases)(erule (3) that[OF refl refl refl refl]|assumption)+
+qed
+
+declare heap_base.heap_clone.intros [code_pred_intro]
+
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
+  heap_base.heap_clone
+proof -
+  case heap_clone
+  from heap_clone.prems show thesis
+    by(rule heap_base.heap_clone.cases)(erule (3) that[OF refl refl refl refl refl refl refl refl refl]|assumption)+
+qed
+
+declare heap_base.red_external.intros[code_pred_intro]
+
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
+  heap_base.red_external
+proof -
+  case red_external
+  from red_external.prems show ?thesis
+    apply(rule heap_base.red_external.cases)
+    apply(erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl]|assumption)+
+    done
+qed
 
 end

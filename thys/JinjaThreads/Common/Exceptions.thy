@@ -38,15 +38,14 @@ where [code_inline]: "CloneNotSupported = STR ''java/lang/CloneNotSupportedExcep
 definition InterruptedException :: cname
 where [code_inline]: "InterruptedException = STR ''java/lang/InterruptedException''"
 
-definition sys_xcpts :: "cname set"
-where "sys_xcpts = {NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds,
-                    ArrayStore, NegativeArraySize, IllegalMonitorState, IllegalThreadState,
-                    CloneNotSupported, InterruptedException}"
+definition sys_xcpts_list :: "cname list"
+where
+  "sys_xcpts_list = 
+  [NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds, ArrayStore, NegativeArraySize,
+   IllegalMonitorState, IllegalThreadState, CloneNotSupported, InterruptedException]"
 
-lemma sys_xcpts_code [code_inline]:
-  "sys_xcpts = set [NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds, ArrayStore,
-                    NegativeArraySize, IllegalMonitorState, IllegalThreadState, CloneNotSupported, InterruptedException]"
-by(simp add: sys_xcpts_def)
+definition sys_xcpts :: "cname set"
+where [code_inline]: "sys_xcpts = set sys_xcpts_list"
 
 section "System exceptions"
 
@@ -61,13 +60,13 @@ lemma [simp]:
    IllegalThreadState \<in> sys_xcpts \<and>
    CloneNotSupported \<in> sys_xcpts \<and>
    InterruptedException \<in> sys_xcpts"
-by(simp add: sys_xcpts_def)
+by(simp add: sys_xcpts_def sys_xcpts_list_def)
 
 lemma sys_xcpts_cases [consumes 1, cases set]:
   "\<lbrakk> C \<in> sys_xcpts; P NullPointer; P OutOfMemory; P ClassCast; 
      P ArrayIndexOutOfBounds; P ArrayStore; P NegativeArraySize;
      P IllegalMonitorState; P IllegalThreadState; P CloneNotSupported; P InterruptedException \<rbrakk> \<Longrightarrow> P C"
-by (auto simp add: sys_xcpts_def)
+by (auto simp add: sys_xcpts_def sys_xcpts_list_def)
 
 lemma OutOfMemory_not_Object[simp]: "OutOfMemory \<noteq> Object"
 by(simp add: OutOfMemory_def Object_def)
@@ -121,5 +120,20 @@ lemma sys_xcpts_neqs_aux:
 by(simp_all add: NullPointer_def ClassCast_def OutOfMemory_def ArrayIndexOutOfBounds_def ArrayStore_def NegativeArraySize_def IllegalMonitorState_def IllegalThreadState_def CloneNotSupported_def InterruptedException_def)
 
 lemmas sys_xcpts_neqs = sys_xcpts_neqs_aux sys_xcpts_neqs_aux[symmetric]
+
+lemma Thread_neq_sys_xcpts_aux:
+  "Thread \<noteq> NullPointer"
+  "Thread \<noteq> ClassCast"
+  "Thread \<noteq> OutOfMemory"
+  "Thread \<noteq> ArrayIndexOutOfBounds"
+  "Thread \<noteq> ArrayStore"
+  "Thread \<noteq> NegativeArraySize"
+  "Thread \<noteq> IllegalMonitorState"
+  "Thread \<noteq> IllegalThreadState"
+  "Thread \<noteq> CloneNotSupported"
+  "Thread \<noteq> InterruptedException"
+by(simp_all add: Thread_def NullPointer_def ClassCast_def OutOfMemory_def ArrayIndexOutOfBounds_def ArrayStore_def NegativeArraySize_def IllegalMonitorState_def IllegalThreadState_def CloneNotSupported_def InterruptedException_def)
+
+lemmas Thread_neq_sys_xcpts = Thread_neq_sys_xcpts_aux Thread_neq_sys_xcpts_aux[symmetric]
 
 end

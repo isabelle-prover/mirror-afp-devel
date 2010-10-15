@@ -8,7 +8,7 @@ theory SmallStep imports
   Expr
   State
   "../Common/StartConfig"
-  "JHeap"
+  JHeap
 begin
 
 types
@@ -23,7 +23,7 @@ definition extNTA2J :: "J_prog \<Rightarrow> (cname \<times> mname \<times> addr
 where "extNTA2J P = (\<lambda>(C, M, a). let (D,Ts,T,pns,body) = method P C M
                                  in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, empty))"
 
-abbreviation (in heap_base) J_start_state :: "J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> 'heap J_state"
+abbreviation (in J_heap_base) J_start_state :: "J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> 'heap J_state"
 where
   "J_start_state \<equiv> 
    start_state (\<lambda>C M Ts T (pns, body) vs. (blocks (this # pns) (Class C # Ts) (Null # vs) body, empty))"
@@ -137,9 +137,9 @@ where
   \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayIndexOutOfBounds, s\<rangle>"
 
 | RedAAcc:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length (hp s) a); 
-     heap_read (hp s) a (ACell (nat (sint i))) v \<rbrakk>
-  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (ACell (nat (sint i))) v \<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a); 
+     heap_read h a (ACell (nat (sint i))) v \<rbrakk>
+  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (ACell (nat (sint i))) v \<rbrace>\<rightarrow> \<langle>Val v, (h, l)\<rangle>"
 
 | AAssRed1:
   "extTA,P,t \<turnstile> \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> extTA,P,t \<turnstile> \<langle>a\<lfloor>i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>a'\<lfloor>i\<rceil> := e, s'\<rangle>"
@@ -181,8 +181,8 @@ where
   "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P,t \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>F{D}, s'\<rangle>"
 
 | RedFAcc:
-  "heap_read (hp s) a (CField D F) v
-  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<bullet>F{D}, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (CField D F) v\<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
+  "heap_read h a (CField D F) v
+  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<bullet>F{D}, (h, l)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (CField D F) v\<rbrace>\<rightarrow> \<langle>Val v, (h, l)\<rangle>"
 
 | RedFAccNull:
   "extTA,P,t \<turnstile> \<langle>null\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
@@ -500,5 +500,108 @@ lemma reds_preserves_tconf: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<ra
 by(drule reds_hext_incr)(rule tconf_hext_mono)
 
 end
+
+subsection {* Code generation *}
+
+context J_heap_base begin
+
+lemma RedCall_code:
+  "\<lbrakk> is_vals es; typeof_addr (hp s) a = \<lfloor>Class C\<rfloor>; \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D; 
+    size es = size pns; size Ts = size pns \<rbrakk>
+  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>blocks (this # pns) (Class D # Ts) (Addr a # map the_Val es) body, s\<rangle>"
+
+  and RedCallExternal_code:
+  "\<lbrakk> is_vals es; typeof_addr (hp s) a = \<lfloor>T\<rfloor>; is_external_call P T M; P,t \<turnstile> \<langle>a\<bullet>M(map the_Val es), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<rbrakk>
+  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<bullet>M(es), s\<rangle> -extTA ta\<rightarrow> \<langle>extRet2J ((addr a)\<bullet>M(es)) va, (h', lcl s)\<rangle>"
+
+  and RedCallNull_code:
+  "is_vals es \<Longrightarrow> extTA,P,t \<turnstile> \<langle>null\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+  
+  and CallThrowParams_code:
+  "is_Throws es \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(Val v)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>hd (dropWhile is_val es), s\<rangle>"
+
+apply(auto simp add: is_vals_conv is_Throws_conv o_def intro: RedCall RedCallExternal RedCallNull simp del: blocks.simps)
+apply(subst dropWhile_append2)
+apply(auto intro: CallThrowParams)
+done
+
+end
+
+lemmas red_reds_intros_code [code_pred_intro] =
+  J_heap_base.RedNew J_heap_base.RedNewFail J_heap_base.NewArrayRed J_heap_base.RedNewArray J_heap_base.RedNewArrayNegative
+  J_heap_base.RedNewArrayFail J_heap_base.CastRed J_heap_base.RedCast J_heap_base.RedCastFail J_heap_base.InstanceOfRed
+  J_heap_base.RedInstanceOf J_heap_base.BinOpRed1 J_heap_base.BinOpRed2 J_heap_base.RedBinOp J_heap_base.RedVar
+  J_heap_base.LAssRed J_heap_base.RedLAss J_heap_base.AAccRed1 J_heap_base.AAccRed2 J_heap_base.RedAAccNull
+  J_heap_base.RedAAccBounds J_heap_base.RedAAcc J_heap_base.AAssRed1 J_heap_base.AAssRed2 J_heap_base.AAssRed3
+  J_heap_base.RedAAssNull J_heap_base.RedAAssBounds J_heap_base.RedAAssStore J_heap_base.RedAAss J_heap_base.ALengthRed
+  J_heap_base.RedALength J_heap_base.RedALengthNull J_heap_base.FAccRed J_heap_base.RedFAcc J_heap_base.RedFAccNull
+  J_heap_base.FAssRed1 J_heap_base.FAssRed2 J_heap_base.RedFAss J_heap_base.RedFAssNull J_heap_base.CallObj
+  J_heap_base.CallParams 
+  J_heap_base.RedCall_code J_heap_base.RedCallExternal_code J_heap_base.RedCallNull_code
+  J_heap_base.BlockRed J_heap_base.RedBlock J_heap_base.SynchronizedRed1 J_heap_base.SynchronizedNull
+  J_heap_base.LockSynchronized J_heap_base.SynchronizedRed2 J_heap_base.UnlockSynchronized
+  J_heap_base.SeqRed J_heap_base.RedSeq J_heap_base.CondRed J_heap_base.RedCondT J_heap_base.RedCondF J_heap_base.RedWhile
+  J_heap_base.ThrowRed J_heap_base.RedThrowNull J_heap_base.TryRed J_heap_base.RedTry J_heap_base.RedTryCatch
+  J_heap_base.RedTryFail J_heap_base.ListRed1 J_heap_base.ListRed2
+  J_heap_base.NewArrayThrow J_heap_base.CastThrow J_heap_base.InstanceOfThrow J_heap_base.BinOpThrow1 J_heap_base.BinOpThrow2
+  J_heap_base.LAssThrow J_heap_base.AAccThrow1 J_heap_base.AAccThrow2 J_heap_base.AAssThrow1 J_heap_base.AAssThrow2
+  J_heap_base.AAssThrow3 J_heap_base.ALengthThrow J_heap_base.FAccThrow J_heap_base.FAssThrow1 J_heap_base.FAssThrow2
+  J_heap_base.CallThrowObj 
+  J_heap_base.CallThrowParams_code
+  J_heap_base.BlockThrow J_heap_base.SynchronizedThrow1 J_heap_base.SynchronizedThrow2 J_heap_base.SeqThrow
+  J_heap_base.CondThrow J_heap_base.ThrowThrow
+
+code_pred
+  (modes:
+    J_heap_base.red: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool 
+   and
+    J_heap_base.reds: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
+  [detect_switches, skip_proof] -- "proofs are possible, but take veeerry long"
+  J_heap_base.red
+proof -
+  case red
+  from red.prems show thesis
+  proof(cases rule: J_heap_base.red.cases[consumes 1, case_names
+    RedNew RedNewFail NewArrayRed RedNewArray RedNewArrayNegative RedNewArrayFail CastRed RedCast RedCastFail InstanceOfRed
+    RedInstanceOf BinOpRed1 BinOpRed2 RedBinOp RedVar LAssRed RedLAss AAccRed1 AAccRed2 RedAAccNull RedAAccBounds RedAAcc
+    AAssRed1 AAssRed2 AAssRed3 RedAAssNull RedAAssBounds RedAAssStore RedAAss ALengthRed RedALength RedALengthNull FAccRed
+    RedFAcc RedFAccNull FAssRed1 FAssRed2 RedFAss RedFAssNull CallObj CallParams RedCall RedCallExternal RedCallNull
+    BlockRed RedBlock SynchronizedRed1 SynchronizedNull LockSynchronized SynchronizedRed2 UnlockSynchronized SeqRed
+    RedSeq CondRed RedCondT RedCondF RedWhile ThrowRed RedThrowNull TryRed RedTry RedTryCatch RedTryFail
+    NewArrayThrow CastThrow InstanceOfThrow BinOpThrow1 BinOpThrow2 LAssThrow AAccThrow1 AAccThrow2 AAssThrow1 AAssThrow2
+    AAssThrow3 ALengthThrow FAccThrow FAssThrow1 FAssThrow2 CallThrowObj CallThrowParams BlockThrow SynchronizedThrow1 
+    SynchronizedThrow2 SeqThrow CondThrow ThrowThrow])
+
+    case (RedCall s a C M Ts T pns body D vs)
+    with that(42)[OF refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s pns D Ts body C T]
+    show ?thesis by(simp add: o_def)
+  next
+    case (RedCallExternal s a T M vs ta va h' ta' e' s')
+    with that(43)[OF refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s ta va h' T]
+    show ?thesis by(simp add: o_def)
+  next
+    case (RedCallNull M vs s)
+    with that(44)[OF refl refl refl refl refl refl refl refl refl refl, of M "map Val vs" s]
+    show ?thesis by(simp add: o_def)
+  next
+    case (CallThrowParams es vs a es' v M s)
+    with that(80)[OF refl refl refl refl refl refl refl refl refl refl, of v M "map Val vs @ Throw a # es'" s]
+    show ?thesis apply(auto simp add: is_Throws_conv)
+      apply(erule meta_impE)
+      apply(subst dropWhile_append2)
+      apply auto
+      done
+  next
+    case RedThrowNull thus ?thesis
+      by-(erule (4) that(59)[OF refl refl refl refl refl refl refl refl refl refl])
+  next
+    case ThrowThrow thus ?thesis
+      by-(erule (4) that(86)[OF refl refl refl refl refl refl refl refl refl refl])
+  qed(assumption|erule (4) that[OF refl refl refl refl refl refl refl refl refl refl])+
+next
+  case reds
+  from reds.prems show thesis
+    by(rule J_heap_base.reds.cases)(assumption|erule (4) that[OF refl refl refl refl refl refl refl refl refl refl])+
+qed
 
 end

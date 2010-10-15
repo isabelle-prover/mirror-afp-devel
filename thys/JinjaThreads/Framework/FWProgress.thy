@@ -10,10 +10,11 @@ lemma (in final_thread) lock_thread_ok_must_wait_thread_exists:
   "\<lbrakk> lock_thread_ok (locks s) (thr s); must_wait s t lt t' \<rbrakk> \<Longrightarrow> thr s t' \<noteq> None"
 by(auto dest: lock_thread_okD elim!: must_wait_elims)
 
-locale progress = multithreaded_start final r start_state +
-  final_thread_wf final r
+locale progress = multithreaded_start final r convert_RA start_state +
+  final_thread_wf final r convert_RA
   for final :: "'x \<Rightarrow> bool"
   and r :: "('l,'t,'x,'m,'w,'o) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80)
+  and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and start_state :: "('l,'t,'x,'m,'w) state" +
   assumes wf_red:
   "\<lbrakk> start_state -\<triangleright>tta\<rightarrow>* s; thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>;
@@ -140,9 +141,11 @@ proof -
     have "cond_action_oks (ls, (ts, m), ws) t \<lbrace>ta''\<rbrace>\<^bsub>c\<^esub>"
       by(fastsimp intro: may_join_cond_action_oks)
     ultimately have "actions_ok s t ta''" using cct wao by auto
-    hence "s -t\<triangleright>observable_ta_of ta''\<rightarrow> redT_upd s t ta'' x'' m''"
-      using red' tst `ws t = None`
-      by(auto intro: redT_normal)
+    moreover obtain ws'' where "redT_updWs t (wset s) \<lbrace>ta''\<rbrace>\<^bsub>w\<^esub> ws''"
+      using redT_updWs_total[of t "wset s" "\<lbrace>ta''\<rbrace>\<^bsub>w\<^esub>"] ..
+    then obtain s' where "redT_upd s t ta'' x'' m'' s'" by fastsimp
+    ultimately have "s -t\<triangleright>ta''\<rightarrow> s'"
+      using red' tst `ws t = None` by(auto intro: redT_normal)
     thus ?thesis by blast
   next
     case acquire
@@ -175,7 +178,10 @@ proof -
     moreover from subset aok' no_join have "cond_action_oks s t \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>"
       by(auto intro: may_join_cond_action_oks)
     ultimately have "actions_ok s t ta'" using aok' by auto
-    with tst red' wakeup have "s -t\<triangleright>observable_ta_of ta'\<rightarrow> redT_upd s t ta' x'' m''"
+    moreover obtain ws'' where "redT_updWs t (wset s) \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> ws''"
+      using redT_updWs_total[of t "wset s" "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>"] ..
+    then obtain s' where "redT_upd s t ta' x'' m'' s'" by fastsimp
+    ultimately have "s -t\<triangleright>ta'\<rightarrow> s'" using tst red' wakeup
       by(auto intro: redT_normal)
     thus ?thesis by blast
   qed

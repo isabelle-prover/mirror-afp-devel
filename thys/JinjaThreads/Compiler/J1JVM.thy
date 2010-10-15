@@ -1216,7 +1216,8 @@ next
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil>) h (stk @ [Addr A], loc, length (compE2 a) + pc, xcp) ([Intg I] @ [Addr A], loc, length (compE2 a) + length (compE2 i), None)"
       by-(rule AAcc_\<tau>ExecrI2)
     moreover from hA I read
-    have "exec_move_a P t (a\<lfloor>i\<rceil>) h ([Intg I, Addr A], loc, length (compE2 a) + length (compE2 i), None) \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem A (ACell (nat (sint I))) v\<rbrace>
+    have "exec_move_a P t (a\<lfloor>i\<rceil>) h ([Intg I, Addr A], loc, length (compE2 a) + length (compE2 i), None)
+                              \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem A (ACell (nat (sint I))) v\<rbrace>
                               h ([v], loc, Suc (length (compE2 a) + length (compE2 i)), None)"
       unfolding exec_move_def by-(rule exec_instr, auto simp add: is_Ref_def)
     moreover have "\<tau>move2 (compP2 P) h [Intg I, Addr A] (a\<lfloor>i\<rceil>) (length (compE2 a) + length (compE2 i)) None \<Longrightarrow> False"
@@ -1455,7 +1456,8 @@ next
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h ([] @ [Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + 0, None) ([v] @ [Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None)"
       by(rule AAss_\<tau>ExecrI3)
     also (rtranclp_trans) from hA I v h'
-    have "exec_move_a P t (a\<lfloor>i\<rceil> := e) h ([v, Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None) \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) v\<rbrace>
+    have "exec_move_a P t (a\<lfloor>i\<rceil> := e) h ([v, Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None)
+                                 \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) v\<rbrace>
                                  h' ([], loc, Suc (length (compE2 a) + length (compE2 i) + length (compE2 e)), None)"
       unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
     moreover have "\<tau>move2 (compP2 P) h [v, Intg I, Addr A] (a\<lfloor>i\<rceil> := e) (length (compE2 a) + length (compE2 i) + length (compE2 e)) None \<Longrightarrow> False"
@@ -1738,7 +1740,8 @@ next
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h ([] @ [Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + 0, None) ([v] @ [Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None)"
       by(rule AAss_\<tau>ExecrI3)
     also (rtranclp_trans) from hA I v h'
-    have "exec_move_a P t (a\<lfloor>i\<rceil> := e) h ([v, Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None) \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) v\<rbrace>
+    have "exec_move_a P t (a\<lfloor>i\<rceil> := e) h ([v, Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None)
+                                 \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) v\<rbrace>
                                  h' ([], loc, Suc (length (compE2 a) + length (compE2 i) + length (compE2 e)), None)"
       unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
     moreover have "\<tau>move2 (compP2 P) h [v, Intg I, Addr A] (a\<lfloor>i\<rceil> := e) (length (compE2 a) + length (compE2 i) + length (compE2 e)) None \<Longrightarrow> False"
@@ -1900,8 +1903,8 @@ next
     ultimately show ?thesis using \<tau> by auto blast+
   next
     case (Red1AAss A U I V U')
-    hence [simp]: "v = Addr A" "e' = unit" "v' = Intg I" "ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) V\<rbrace>"
-      "xs' = xs" "ee = Val V"
+    hence [simp]: "v = Addr A" "e' = unit" "v' = Intg I" "xs' = xs" "ee = Val V"
+      "ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) V\<rbrace>"
       and hA: "typeof_addr h A = \<lfloor>Array U\<rfloor>" and I: "0 <=s I" "sint I < int (array_length h A)" 
       and v: "typeof\<^bsub>h\<^esub> V = \<lfloor>U'\<rfloor>" "P \<turnstile> U' \<le> U"
       and h': "heap_write h A (ACell (nat (sint I))) V h'" by auto
@@ -1912,7 +1915,8 @@ next
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h (stk @ [Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + pc, xcp) ([V] @ [Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None)"
       by-(rule AAss_\<tau>ExecrI3)
     moreover from hA I v h'
-    have "exec_move_a P t (a\<lfloor>i\<rceil> := e) h ([V, Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None) \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) V\<rbrace>
+    have "exec_move_a P t (a\<lfloor>i\<rceil> := e) h ([V, Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None) 
+                                 \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) V\<rbrace>
                                  h' ([], loc, Suc (length (compE2 a) + length (compE2 i) + length (compE2 e)), None)"
      unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
     moreover have "\<tau>move2 (compP2 P) h [V, Intg I, Addr A] (a\<lfloor>i\<rceil> := e) (length (compE2 a) + length (compE2 i) + length (compE2 e)) None \<Longrightarrow> False"
@@ -2144,7 +2148,8 @@ next
     hence "\<tau>Exec_mover_a P t (E\<bullet>F{D}) h (stk, loc, pc, xcp) ([Addr a], loc, length (compE2 E), None)"
       by(rule FAcc_\<tau>ExecrI)
     moreover from read 
-    have "exec_move_a P t (E\<bullet>F{D}) h ([Addr a], loc, length (compE2 E), None) \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem a (CField D F) v\<rbrace> h' ([v], loc, Suc (length (compE2 E)), None)"
+    have "exec_move_a P t (E\<bullet>F{D}) h ([Addr a], loc, length (compE2 E), None) 
+                     \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem a (CField D F) v\<rbrace> h' ([v], loc, Suc (length (compE2 E)), None)"
       unfolding exec_move_def by(auto intro!: exec_instr)
     moreover have "\<tau>move2 (compP2 P) h [Addr a] (E\<bullet>F{D}) (length (compE2 E)) None \<Longrightarrow> False" by(simp add: \<tau>move2_iff)
     moreover have "\<not> \<tau>move1 P h (addr a\<bullet>F{D})" by(auto simp add: \<tau>move1_\<tau>moves1.simps)

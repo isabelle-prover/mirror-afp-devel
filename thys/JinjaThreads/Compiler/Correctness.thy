@@ -11,7 +11,7 @@ imports
   "../Framework/FWBisimDeadlock"
   Correctness2Threaded 
   Correctness1Threaded
-  Correctness1
+  Correctness1 
   JJ1WellForm
 begin
 
@@ -32,8 +32,8 @@ begin
 definition bisimJ2JVM :: "((addr,addr,expr\<times>locals,'heap,addr) state, (addr,addr,addr option \<times> frame list,'heap,addr) state) bisim"
 where "bisimJ2JVM = red_red0.mbisim \<circ>\<^isub>B red0_Red1'.mbisim \<circ>\<^isub>B mbisim_Red1'_Red1 \<circ>\<^isub>B Red1_execd.mbisim"
 
-definition tlsimJ2JVM :: "(thread_id \<times> (expr\<times>locals,'heap) JT_thread_action,
-                        thread_id \<times> (addr option \<times> frame list,'heap) JT_thread_action) bisim"
+definition tlsimJ2JVM :: "(thread_id \<times> 'heap J_thread_action,
+                        thread_id \<times> 'heap jvm_thread_action) bisim"
 where "tlsimJ2JVM = red_red0.mta_bisim \<circ>\<^isub>B red0_Red1'.mta_bisim \<circ>\<^isub>B op = \<circ>\<^isub>B Red1_execd.mta_bisim"
 
 end
@@ -41,7 +41,7 @@ end
 definition J2JVM :: "J_prog \<Rightarrow> jvm_prog"
 where "J2JVM \<equiv> compP2 \<circ> compP1"
 
-lemma compP2_has_method [simp]: "compP2 P \<turnstile> C has M \<longleftrightarrow> P \<turnstile> C has M" -- "Move to PCompiler"
+lemma compP2_has_method [simp]: "compP2 P \<turnstile> C has M \<longleftrightarrow> P \<turnstile> C has M"
 by(auto simp add: compP2_def compP_has_method)
 
 
@@ -69,19 +69,66 @@ theorem bisimJ2JVM_weak_bisim:
   shows "delay_bisimulation_diverge_final (mredT P) (execd_mthr.redT (J2JVM P)) bisimJ2JVM tlsimJ2JVM 
                                     (red_red0.m\<tau>move1 P) Red1_execd.m\<tau>move2 red_mthr.mfinal exec_mthr.mfinal"
 proof -
-  interpret b0: FWdelay_bisimulation_measure final_expr "mred P" final_expr0 "mred0 P" "\<lambda>t. bisim_red_red0" "\<lambda>exs (e0, es0). is_call e0" "\<tau>MOVE P" "\<tau>MOVE0 P" "\<lambda>e e'. False" "\<lambda>((e, es), h) ((e, es'), h). length es < length es'"
+  interpret b0: FWdelay_bisimulation_measure
+    final_expr
+    "mred P"
+    final_expr0
+    "mred0 P"
+    convert_RA
+    "\<lambda>t. bisim_red_red0" 
+    "\<lambda>exs (e0, es0). is_call e0"
+    "\<tau>MOVE P"
+    "\<tau>MOVE0 P"
+    "\<lambda>e e'. False" 
+    "\<lambda>((e, es), h) ((e, es'), h). length es < length es'"
     by(rule red_red0_FWbisim[OF wf_prog_wwf_prog[OF wf]])
-  interpret b01: FWdelay_bisimulation_measure final_expr0 "mred0 P" final_expr1 "mred1' (compP1 P)" "\<lambda>t. bisim_red0_Red1" "bisim_wait01" "\<tau>MOVE0 P" "\<tau>MOVE1 (compP1 P)" "\<lambda>es es'. False" "\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e'< countInitBlock e"
+
+  interpret b01: FWdelay_bisimulation_measure 
+    final_expr0
+    "mred0 P"
+    final_expr1
+    "mred1' (compP1 P)"
+    convert_RA
+    "\<lambda>t. bisim_red0_Red1" 
+    "bisim_wait01" 
+    "\<tau>MOVE0 P"
+    "\<tau>MOVE1 (compP1 P)"
+    "\<lambda>es es'. False" 
+    "\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e'< countInitBlock e"
     by(rule red0_Red1'_FWweak_bisim[OF wf])
-  interpret b11: bisimulation_into_delay "Red1'_mthr.redT (compP1 P)" "Red1_mthr.redT (compP1 P)" "mbisim_Red1'_Red1" "op =" "Red1'_mthr.m\<tau>move (compP1 P)" "Red1_mthr.m\<tau>move (compP1 P)"
+
+  interpret b11: bisimulation_into_delay
+    "Red1'_mthr.redT (compP1 P)"
+    "Red1_mthr.redT (compP1 P)"
+    "mbisim_Red1'_Red1" 
+    "op ="
+    "Red1'_mthr.m\<tau>move (compP1 P)"
+    "Red1_mthr.m\<tau>move (compP1 P)"
     using compP1_pres_wf[OF wf] by(rule Red1'_Red1_bisim_into_weak)
-  interpret b11': bisimulation_final "Red1'_mthr.redT (compP1 P)" "Red1_mthr.redT (compP1 P)" "mbisim_Red1'_Red1" "op =" Red1_mthr.mfinal Red1_mthr.mfinal
+
+  interpret b11': bisimulation_final
+    "Red1'_mthr.redT (compP1 P)"
+    "Red1_mthr.redT (compP1 P)"
+    "mbisim_Red1'_Red1" 
+    "op =" 
+    Red1_mthr.mfinal
+    Red1_mthr.mfinal
     by(unfold_locales)(auto simp add: mbisim_Red1'_Red1_def)
-  interpret b12: FWdelay_bisimulation_measure final_expr1 "mred1 (compP1 P)" JVM_final "mexecd (compP2 (compP1 P))"
-                                   "wbisim1" "bisim_wait1JVM (compP2 (compP1 P))" "\<tau>MOVE1 (compP1 P)" "\<tau>MOVE2 (compP2 (compP1 P))"
-                                   "\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e'"
-                                   "\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 (compP1 P)) xcpfrs xcpfrs'"
+
+  interpret b12: FWdelay_bisimulation_measure 
+    final_expr1
+    "mred1 (compP1 P)"
+    JVM_final
+    "mexecd (compP2 (compP1 P))"
+    convert_RA
+    "wbisim1"
+    "bisim_wait1JVM (compP2 (compP1 P))"
+    "\<tau>MOVE1 (compP1 P)"
+    "\<tau>MOVE2 (compP2 (compP1 P))"
+    "\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e'"
+    "\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 (compP1 P)) xcpfrs xcpfrs'"
     using compP1_pres_wf[OF wf] by(intro Red1_exec1_FWwbisim)
+
   show ?thesis unfolding bisimJ2JVM_def tlsimJ2JVM_def J2JVM_def o_def
     apply(rule delay_bisimulation_diverge_final_compose)
      apply(rule b0.mthr.delay_bisimulation_diverge_final_axioms)
@@ -104,7 +151,7 @@ lemma bisimJ2JVM_start:
 using assms sees_method_compP[OF sees, of "\<lambda>C M Ts T (pns, body). compE1 (this # pns) body"]
 unfolding bisimJ2JVM_def J2JVM_def o_def
 apply(intro bisim_composeI)
-   apply(erule (3) bisim_J_J0_start)
+   apply(erule (3) bisim_J_J0_start[OF wf_prog_wwf_prog])
   apply(erule (3) bisim_J0_J1_start)
  apply(erule bisim_J1_J1_start[OF compP1_pres_wf])
   apply simp
@@ -234,7 +281,15 @@ theorem J2JVM_correct:
   \<Longrightarrow> \<exists>s' ttas. red_mthr.mthr.\<tau>rtrancl3p P s ttas s' \<and> red_mthr.deadlock P s' \<and> bisimJ2JVM s' cs' \<and>
                bisimulation_base.Tlsim tlsimJ2JVM ttas ttas'" (is "\<lbrakk> _; _ \<rbrakk> \<Longrightarrow> ?thesis6")
 proof -
-  interpret delay_bisimulation_diverge_final "mredT P" "execd_mthr.redT (J2JVM P)" "bisimJ2JVM" "tlsimJ2JVM" "red_red0.m\<tau>move1 P" "Red1_execd.m\<tau>move2" red_mthr.mfinal exec_mthr.mfinal
+  interpret delay_bisimulation_diverge_final
+    "mredT P"
+    "execd_mthr.redT (J2JVM P)"
+    "bisimJ2JVM" 
+    "tlsimJ2JVM"
+    "red_red0.m\<tau>move1 P"
+    "Red1_execd.m\<tau>move2"
+    red_mthr.mfinal
+    exec_mthr.mfinal
     using wf by(rule bisimJ2JVM_weak_bisim)
 
   from wf start sees' vs conf have bisim: "bisimJ2JVM s cs" unfolding s comps by(rule bisimJ2JVM_start)
@@ -272,16 +327,55 @@ proof -
   }
 
 next
-  interpret b0: FWdelay_bisimulation_measure final_expr "mred P" final_expr0 "mred0 P" "\<lambda>t. bisim_red_red0" "\<lambda>exs (e0, es0). is_call e0" "\<tau>MOVE P" "\<tau>MOVE0 P" "\<lambda>e e'. False" "\<lambda>((e, es), h) ((e, es'), h). length es < length es'"
+  interpret b0: FWdelay_bisimulation_measure 
+    final_expr
+    "mred P"
+    final_expr0
+    "mred0 P"
+    convert_RA
+    "\<lambda>t. bisim_red_red0" 
+    "\<lambda>exs (e0, es0). is_call e0"
+    "\<tau>MOVE P"
+    "\<tau>MOVE0 P"
+    "\<lambda>e e'. False" 
+    "\<lambda>((e, es), h) ((e, es'), h). length es < length es'"
     by(rule red_red0_FWbisim[OF wf_prog_wwf_prog[OF wf]])
-  interpret b01: FWdelay_bisimulation_measure final_expr0 "mred0 P" final_expr1 "mred1' (compP1 P)" "\<lambda>t. bisim_red0_Red1" "bisim_wait01" "\<tau>MOVE0 P" "\<tau>MOVE1 (compP1 P)" "\<lambda>es es'. False" "\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e'< countInitBlock e"
+
+  interpret b01: FWdelay_bisimulation_measure 
+    final_expr0
+    "mred0 P"
+    final_expr1
+    "mred1' (compP1 P)"
+    convert_RA
+    "\<lambda>t. bisim_red0_Red1" 
+    "bisim_wait01" 
+    "\<tau>MOVE0 P"
+    "\<tau>MOVE1 (compP1 P)"
+    "\<lambda>es es'. False"
+    "\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e'< countInitBlock e"
     by(rule red0_Red1'_FWweak_bisim[OF wf])
-  interpret b11: bisimulation_into_delay "Red1'_mthr.redT (compP1 P)" "Red1_mthr.redT (compP1 P)" "mbisim_Red1'_Red1" "op =" "Red1'_mthr.m\<tau>move (compP1 P)" "Red1_mthr.m\<tau>move (compP1 P)"
+
+  interpret b11: bisimulation_into_delay 
+    "Red1'_mthr.redT (compP1 P)"
+    "Red1_mthr.redT (compP1 P)"
+    "mbisim_Red1'_Red1" 
+    "op =" 
+    "Red1'_mthr.m\<tau>move (compP1 P)"
+    "Red1_mthr.m\<tau>move (compP1 P)"
     using compP1_pres_wf[OF wf] by(rule Red1'_Red1_bisim_into_weak)
-  interpret b12: FWdelay_bisimulation_measure final_expr1 "mred1 (compP1 P)" JVM_final "mexecd (compP2 (compP1 P))"
-                                   "wbisim1" "bisim_wait1JVM (compP2 (compP1 P))" "\<tau>MOVE1 (compP1 P)" "\<tau>MOVE2 (compP2 (compP1 P))"
-                                   "\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e'"
-                                   "\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 (compP1 P)) xcpfrs xcpfrs'"
+
+  interpret b12: FWdelay_bisimulation_measure
+    final_expr1
+    "mred1 (compP1 P)"
+    JVM_final
+    "mexecd (compP2 (compP1 P))"
+    convert_RA
+    "wbisim1"
+    "bisim_wait1JVM (compP2 (compP1 P))"
+    "\<tau>MOVE1 (compP1 P)"
+    "\<tau>MOVE2 (compP2 (compP1 P))"
+    "\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e'"
+    "\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 (compP1 P)) xcpfrs xcpfrs'"
     using compP1_pres_wf[OF wf] by(intro Red1_exec1_FWwbisim)
 
   from wf start sees' vs conf have bisim: "bisimJ2JVM s cs" unfolding s comps by(rule bisimJ2JVM_start)

@@ -56,8 +56,8 @@ text{* Compilation of exception table. Is given start address of code
 to compute absolute addresses necessary in exception table. *}
 
 
-primrec compxE2  :: "expr1      \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
-  and compxEs2 :: "expr1 list \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
+fun compxE2  :: "expr1      \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
+and compxEs2 :: "expr1 list \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
 where
   "compxE2 (new C) pc d = []"
 | "compxE2 (newA T\<lfloor>e\<rceil>) pc d = compxE2 e pc d"
@@ -98,6 +98,14 @@ where
 
 | "compxEs2 [] pc d    = []"
 | "compxEs2 (e#es) pc d = compxE2 e pc d @ compxEs2 es (pc+size(compE2 e)) (d+1)"
+
+lemmas compxE2_compxEs2_induct =
+  compxE2_compxEs2.induct[
+    unfolded meta_all5_eq_conv meta_all4_eq_conv meta_all3_eq_conv meta_all2_eq_conv meta_all_eq_conv,
+    case_names
+      new NewArray Cast InstanceOf Val BinOp Var LAss AAcc AAss ALen FAcc FAss Call Block
+      Synchronized InSynchronized Seq Cond While throw TryCatch
+      Nil Cons]
 
 lemma compE2_neq_Nil [simp]: "compE2 e \<noteq> []"
 by(induct e) auto

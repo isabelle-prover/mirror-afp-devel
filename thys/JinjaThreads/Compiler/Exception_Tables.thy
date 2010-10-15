@@ -14,9 +14,9 @@ definition pcs :: "ex_table \<Rightarrow> nat set"
 where "pcs xt  \<equiv>  \<Union>(f,t,C,h,d) \<in> set xt. {f ..< t}"
 
 lemma pcs_subset:
-shows "\<And>pc d. pcs(compxE2 e pc d) \<subseteq> {pc..<pc+size(compE2 e)}"
-  "\<And>pc d. pcs(compxEs2 es pc d) \<subseteq> {pc..<pc+size(compEs2 es)}" 
-apply(induct e and es)
+shows "pcs(compxE2 e pc d) \<subseteq> {pc..<pc+size(compE2 e)}"
+  "pcs(compxEs2 es pc d) \<subseteq> {pc..<pc+size(compEs2 es)}" 
+apply(induct e pc d and es pc d rule: compxE2_compxEs2_induct)
 apply (simp_all add:pcs_def)
 apply (fastsimp)+
 done
@@ -260,7 +260,7 @@ by(simp add: compxEs2_stack_xlift_convs)
 
 lemma match_ex_table_compxE2_not_same: "match_ex_table P C pc (compxE2 e n d) = \<lfloor>(pc', d')\<rfloor> \<Longrightarrow> pc \<noteq> pc'"
   and match_ex_table_compxEs2_not_same:"match_ex_table P C pc (compxEs2 es n d) = \<lfloor>(pc', d')\<rfloor> \<Longrightarrow> pc \<noteq> pc'"
-apply(induct e and es arbitrary: n d and n d)
+apply(induct e n d and es n d rule: compxE2_compxEs2_induct)
 apply(auto simp add: match_ex_table_append match_ex_entry simp del: compxE2_size_convs compxEs2_size_convs compxE2_stack_xlift_convs compxEs2_stack_xlift_convs split: split_if_asm)
 done
 
