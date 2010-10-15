@@ -22,6 +22,16 @@ by(unfold transp_def) blast
 lemma transpI: "(\<And>a b c. \<lbrakk> R a b; R b c \<rbrakk> \<Longrightarrow> R a c) \<Longrightarrow> transp R"
 unfolding transp_def by blast
 
+lemma id_respect [quot_respect]:
+  "(R ===> R) id id"
+by(simp add: fun_eq_iff)
+
+lemma id_preserve [quot_preserve]:
+  assumes "Quotient R Abs Rep"
+  shows "(Rep ---> Abs) id = id"
+using Quotient_abs_rep[OF assms]
+by(simp add: fun_eq_iff)
+
 
 
 declare [[map llist = (lmap, llist_all2)]]

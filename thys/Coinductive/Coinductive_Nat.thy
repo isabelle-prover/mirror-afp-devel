@@ -361,4 +361,12 @@ where "the_Fin (Fin n) = n"
 lemma Fin_less_Fin_plusI: "x < y \<Longrightarrow> Fin x < Fin y + z"
 by(cases z) simp_all
 
+lemma Fin_less_Fin_plusI2:
+  "Fin y < z \<Longrightarrow> Fin (x + y) < Fin x + z"
+by (metis Fin_add_mono nat_add_commute plus_inat_simps(1))
+
+lemma min_Fin1_conv_Fin: "\<And>a b. min (Fin a) b = Fin (case b of Fin b' \<Rightarrow> min a b' | \<infinity> \<Rightarrow> a)"
+  and min_Fin2_conv_Fin: "\<And>a b. min a (Fin b) = Fin (case a of Fin a' \<Rightarrow> min a' b | \<infinity> \<Rightarrow> b)"
+by(simp_all split: inat.split)
+
 end
