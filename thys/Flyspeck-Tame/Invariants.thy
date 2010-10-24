@@ -1977,7 +1977,7 @@ proof -
   proof cases
     assume 2: "|faces g| = 2"
     with fg obtain f' where Fg: "\<F> g = {f,f'}"
-      by(fastsimp simp: nat_number length_Suc_conv)
+      by(fastsimp simp: eval_nat_numeral length_Suc_conv)
     moreover hence "f \<noteq> f'" using 2 distinct_card[OF distF] by auto
     ultimately have Fg': "\<F> g' = {f\<^isub>1,f\<^isub>2,f'}"
       using set_faces_splitFace[OF mgp fg pre fdg] by blast
@@ -2607,7 +2607,7 @@ subsection{* Invariants of @{const Seed} *}
 lemma Seed_holds_facesAt_distinct: "facesAt_distinct (Seed p)"
 apply(simp add: Seed_def graph_def
                 facesAt_distinct_def normFaces_def facesAt_def normFace_def)
-apply(simp add: nat_number minVertex_zero1 minVertex_zero2 verticesFrom_Def
+apply(simp add: eval_nat_numeral minVertex_zero1 minVertex_zero2 verticesFrom_Def
    fst_splitAt_upt snd_splitAt_upt fst_splitAt_rev snd_splitAt_rev del:upt_Suc)
 apply(simp add:upt_conv_Cons del:upt_Suc)
 apply simp
@@ -2628,7 +2628,7 @@ by (fastsimp simp add: Seed_def graph_def edges_disj_def edges_graph_def)
 lemma Seed_holds_faces_distinct: "faces_distinct (Seed p)"
 apply(simp add: Seed_def graph_def
                 faces_distinct_def normFaces_def facesAt_def normFace_def)
-apply(simp add: nat_number minVertex_zero1 minVertex_zero2 verticesFrom_Def
+apply(simp add: eval_nat_numeral minVertex_zero1 minVertex_zero2 verticesFrom_Def
    fst_splitAt_upt snd_splitAt_upt fst_splitAt_rev snd_splitAt_rev del:upt_Suc)
 apply(simp add:upt_conv_Cons del:upt_Suc)
 apply simp

@@ -1046,7 +1046,7 @@ next
   finally have "\<turnstile> Dup # Store i # MEnter # compE2 e2 @ [Load i, MExit, Goto 4, Load i, MExit, ThrowExc],
                compxE2 e2 3 (size ST) @ [(3, 3 + size (compE2 e2), None, 6 + size (compE2 e2), size ST)]
             [::] ?\<tau>1 # ?\<tau>1' # ?\<tau>1'' # ?\<tau>1''' # ?\<tau>s2 @ [?\<tau>2, ?\<tau>2', ?\<tau>2'', ?\<tau>3, ?\<tau>3', ?\<tau>3'', ?\<tau>']"
-    by(simp add: nat_number shift_def)
+    by(simp add: eval_nat_numeral shift_def)
   also from `PROP ?P e1 E U A ST` wt1 B1 `\<D> (sync\<^bsub>i\<^esub> (e1) e2) A` lenE lenST `set E \<subseteq> types P`
   have "\<turnstile> compE2 e1, compxE2 e1 0 (size ST) [::] ?\<tau>#?\<tau>s1@[?\<tau>1]"
     by(auto simp add: after_def)

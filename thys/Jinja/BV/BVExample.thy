@@ -375,7 +375,7 @@ lemma wt_makelist [simp]:
 (*<*)
   apply (simp add: wt_method_def)
   apply (unfold make_list_ins_def phi_makelist_def)
-  apply (simp add: wt_start_def nat_number)
+  apply (simp add: wt_start_def eval_nat_numeral)
   apply (simp add: wt_instr_def)
   apply clarify
   apply (drule sym)

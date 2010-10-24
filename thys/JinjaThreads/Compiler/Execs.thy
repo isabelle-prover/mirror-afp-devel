@@ -789,7 +789,7 @@ proof -
     by(simp add: exec_move_def)
   hence "exec_meth ci (compP2 P) ((?e @ compE2 e) @ ?e') ((compxE2 o' 0 0 @ shift (length ?e) (compxE2 e 0 0)) @ [(length ?e, length ?e + length (compE2 e), None, length ?e + length (compE2 e) + 3, 0)]) t h (stk, loc, (length ?e + pc), xcp) ta h' (stk', loc', (length ?e + pc'), xcp')"
     by(rule exec_meth_append_xt[OF append_exec_meth_xt]) auto
-  thus ?thesis by(simp add: nat_number shift_compxE2 exec_move_def)
+  thus ?thesis by(simp add: eval_nat_numeral shift_compxE2 exec_move_def)
 qed
 
 lemma exec_move_SeqI1:
@@ -971,7 +971,7 @@ proof -
     by(simp add: exec_move_def)
   hence "exec_meth ci (compP2 P) ((?e @ compE2 e) @ []) ((compxE2 e' 0 0 @ shift (length ?e) (compxE2 e 0 0)) @ [(0, length (compE2 e'), \<lfloor>C\<rfloor>, Suc (length (compE2 e')), 0)]) t h (stk, loc, (length ?e + pc), xcp) ta h' (stk', loc', (length ?e + pc'), xcp')"
     by(rule exec_meth_append_xt[OF append_exec_meth_xt]) auto
-  thus ?thesis by(simp add: nat_number shift_compxE2 exec_move_def)
+  thus ?thesis by(simp add: eval_nat_numeral shift_compxE2 exec_move_def)
 qed
 
 lemma exec_move_Try2:

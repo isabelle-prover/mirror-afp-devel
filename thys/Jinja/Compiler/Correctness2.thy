@@ -773,8 +773,8 @@ next
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^isub>1,(vs,ls\<^isub>1,C,M,?pc')#frs)"
     using WhileF\<^isub>1 by (auto simp:add_assoc)
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^isub>1,(Unit#vs,ls\<^isub>1,C,M,?pc'+1)#frs)"
-    using WhileF\<^isub>1.prems by (auto simp:nat_number)
-  finally show ?case by (simp add:add_assoc nat_number)
+    using WhileF\<^isub>1.prems by (auto simp:eval_nat_numeral)
+  finally show ?case by (simp add:add_assoc eval_nat_numeral)
 next
   case (WhileT\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 c v\<^isub>1 h\<^isub>2 ls\<^isub>2 e\<^isub>3 h\<^isub>3 ls\<^isub>3)
   let ?pc = "pc + length(compE\<^isub>2 e)"
@@ -796,8 +796,8 @@ next
       assume val: ?val
       note 1
       also have "P \<turnstile> ?\<sigma>\<^isub>2 -jvm\<rightarrow> (None,h\<^isub>3,(v#vs,ls\<^isub>3,C,M,?pc'+3)#frs)"
-	using val WhileT\<^isub>1 by (auto simp add:add_assoc nat_number)
-      finally show ?trans by(simp add:add_assoc nat_number)
+	using val WhileT\<^isub>1 by (auto simp add:add_assoc eval_nat_numeral)
+      finally show ?trans by(simp add:add_assoc eval_nat_numeral)
     qed
   next
     show ?Err (is "?throw \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)")
@@ -809,7 +809,7 @@ next
 	pc\<^isub>2: "pc \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc'+3 \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>3 xa (compxE\<^isub>2 (while (e) c) pc (size vs))" and
 	2: "P \<turnstile> ?\<sigma>\<^isub>2 -jvm\<rightarrow> handle P C M xa h\<^isub>3 vs ls\<^isub>3 pc\<^isub>2 frs"
-	using WhileT\<^isub>1.prems by (auto simp:add_assoc nat_number)
+	using WhileT\<^isub>1.prems by (auto simp:add_assoc eval_nat_numeral)
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 2] by auto
       thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed

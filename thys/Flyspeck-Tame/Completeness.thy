@@ -19,7 +19,7 @@ using combine_evals[OF pre_iso_test3 same3]
       combine_evals[OF pre_iso_test7 same7]
       combine_evals[OF pre_iso_test8 same8]
 apply(clarsimp simp:TameEnum_def Archive_def image_def iso_subseteq_def
-               iso_in_def nat_number le_Suc_eq)
+               iso_in_def eval_nat_numeral le_Suc_eq)
 apply fast
 done
 

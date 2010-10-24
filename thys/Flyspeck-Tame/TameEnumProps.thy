@@ -12,7 +12,7 @@ text{* Completeness of filter for final graphs. *}
 (*
 lemma tame\<^isub>2_is_tame\<^isub>2: "tame\<^isub>2 g \<Longrightarrow> is_tame\<^isub>2 g"
 apply(auto simp: is_tame\<^isub>2_def tame\<^isub>2_def ok3_def)
-apply(fastsimp simp:nat_number length_Suc_conv
+apply(fastsimp simp:eval_nat_numeral length_Suc_conv
   intro!:norm_eq_if_face_cong[OF congs_sym, THEN sym])
 done
 *)
@@ -21,7 +21,7 @@ lemma "help": "(EX x. (EX y:A. x = f y) & P x) = (EX y:A. P(f y))"
 by blast
 
 lemma tame\<^isub>3_is_tame\<^isub>3: "tame\<^isub>3 g \<Longrightarrow> is_tame\<^isub>3 g"
-apply(clarsimp simp: tame\<^isub>3_def is_tame\<^isub>3_def nat_number length_Suc_conv)
+apply(clarsimp simp: tame\<^isub>3_def is_tame\<^isub>3_def eval_nat_numeral length_Suc_conv)
 apply((erule allE)+, erule impE, blast)
 apply(simp add: ok4_def ok42_def tame_quad_def norm_subset_def
   pr_iso_subseteq_def pr_iso_in_def image_def

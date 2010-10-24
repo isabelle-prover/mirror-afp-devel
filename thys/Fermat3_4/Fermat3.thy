@@ -12,7 +12,7 @@ begin
 text {* Proof of Fermat's last theorem for the case $n=3$: $$\forall x,y,z:~x^3 + y^3 = z^3 \Longrightarrow xyz=0.$$ *}
 
 lemma factor_sum_cubes: "(x::int)^3 + y^3 = (x+y)*(x^2 - x*y + y^2)"
-  by (simp add: nat_number field_simps)
+  by (simp add: eval_nat_numeral field_simps)
 
 lemma two_not_abs_cube: "\<bar>x^3\<bar> = (2::int) \<Longrightarrow> False"
 proof -
@@ -80,7 +80,7 @@ next
 	by (simp only: factor_sum_cubes)
       also from pq have "\<dots> = 4*p*(v^2 - v*w + w^2)" by auto
       also have "\<dots> = p*((v+w)^2 + 3*(v-w)^2)" 
-	by (simp add: nat_number field_simps)
+	by (simp add: eval_nat_numeral field_simps)
       also with pq have "\<dots> = p*((2*p)^2 + 3*(2*q)^2)" by simp
       also have "\<dots> = 2*(2*p)*(p^2+3*q^2)" by (simp add: power_mult_distrib)
       finally show ?thesis by simp
@@ -176,7 +176,7 @@ next
       then obtain a b where "p = a^3 - 9*a*b^2 \<and> q = 3*a^2*b - 3*b^3"
 	by (unfold is_cube_form_def, auto)
       hence ab: "p = a*(a+3*b)*(a- 3*b) \<and> q = b*(a+b)*(a-b)*3"
-	by (simp add: nat_number field_simps)
+	by (simp add: eval_nat_numeral field_simps)
       with c have abc: "(2*a)*(a+3*b)*(a- 3*b) = c^3" by auto
       have ab_relprime: "zgcd a b=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
@@ -439,7 +439,7 @@ next
       then obtain a b where "q = a^3 - 9*a*b^2 \<and> r = 3*a^2*b - 3*b^3" 
 	by (unfold is_cube_form_def, auto)
       hence ab: "q = a*(a+3*b)*(a- 3*b) \<and> r = b*(a+b)*(a-b)*3"
-	by (simp add: nat_number field_simps)
+	by (simp add: eval_nat_numeral field_simps)
       with c have abc: "(2*b)*(a+b)*(a-b) = c^3" by auto
       have ab_relprime: "zgcd a b=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)

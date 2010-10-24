@@ -83,7 +83,7 @@ definition nextVertices :: "face \<Rightarrow> nat \<Rightarrow> vertex \<Righta
   "f\<^bsup>n\<^esup> \<bullet> v \<equiv> (f \<bullet> ^^ n) v"
 
 lemma nextV2: "f\<^bsup>2\<^esup>\<bullet>v = f\<bullet> (f\<bullet> v)"
-by (simp add: nextVertices_def nat_number)
+by (simp add: nextVertices_def eval_nat_numeral)
 
 (*<*) defs edges_face_def: (*>*)
   "edges (f::face) \<equiv> {(a, f \<bullet> a)|a. a \<in> \<V> f}"

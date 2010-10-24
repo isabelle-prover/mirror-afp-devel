@@ -71,14 +71,14 @@ apply(frule (1) minGraphProps3)
 apply(drule length3D)
 apply auto
 apply(simp add: containsDuplicateEdge_eq containsDuplicateEdge'_def
-                nat_number nextVertices_def nextVertex_def
+                eval_nat_numeral nextVertices_def nextVertex_def
         duplicateEdge_is_duplicateEdge_eq is_duplicateEdge_def is_nextElem_def)
 apply(simp add:is_sublist_rec[where 'a = nat])
 apply(simp add: containsDuplicateEdge_eq containsDuplicateEdge'_def
-                nat_number nextVertices_def nextVertex_def
+                eval_nat_numeral nextVertices_def nextVertex_def
         duplicateEdge_is_duplicateEdge_eq is_duplicateEdge_def is_nextElem_def)
 apply(simp add: containsDuplicateEdge_eq containsDuplicateEdge'_def
-                nat_number nextVertices_def nextVertex_def
+                eval_nat_numeral nextVertices_def nextVertex_def
         duplicateEdge_is_duplicateEdge_eq is_duplicateEdge_def is_nextElem_def)
 apply(simp add:is_sublist_rec[where 'a = nat])
 done
@@ -87,13 +87,13 @@ lemma indexToVs3:
  "\<lbrakk> triangle f; distinct(vertices f); v \<in> \<V> f \<rbrakk>
  \<Longrightarrow> indexToVertexList f v [0..<3] = [Some v, Some(f \<bullet> v), Some(f \<bullet> (f \<bullet> v))]"
 apply(auto dest!: length3D)
-apply(auto simp:indexToVertexList_def nat_number
+apply(auto simp:indexToVertexList_def eval_nat_numeral
                 nextVertices_def nextVertex_def)
 done
 
 lemma upt3_in_enumerator: "[0..<3] \<in> set (enumerator 3 3)"
 apply(simp only:enumerator_def incrIndexList_def enumBase_def)
-apply(simp add:nat_number)
+apply(simp add:eval_nat_numeral)
 done
 
 lemma mkFaceFin3_in_succs1:
@@ -312,7 +312,7 @@ proof -
       assume B: ?B
       obtain b c where fabs: "vertices ?f = [a,b,c] \<or> vertices ?f = [c,a,b] \<or>
                         vertices ?f = [b,c,a]"
-	using v True by(fastsimp simp: nat_number length_Suc_conv)
+	using v True by(fastsimp simp: eval_nat_numeral length_Suc_conv)
       hence Ef: "\<E> ?f = {(a,b), (b,c), (c,a)}"
 	by(fastsimp simp: edges_conv_Edges[OF distf] Edges_Cons)
       hence "{(a,b), (b,c), (c,a)} \<subseteq> \<E> g'"

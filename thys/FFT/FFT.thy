@@ -33,15 +33,15 @@ text {* The following two lemmas are useful for experimenting with the
 lemma Ivl4:
   "{0..<4::nat} = {0, 1, 2, 3}"
 proof -
-  have "{0..<4::nat} = {0..<Suc (Suc (Suc (Suc 0)))}" by (simp add: nat_number)
+  have "{0..<4::nat} = {0..<Suc (Suc (Suc (Suc 0)))}" by (simp add: eval_nat_numeral)
   also have "... = {0, 1, 2, 3}"
-    by (simp add: atLeastLessThanSuc nat_number insert_commute)
+    by (simp add: atLeastLessThanSuc eval_nat_numeral insert_commute)
   finally show ?thesis .
 qed
 
 lemma Sum4:
   "(\<Sum>i=0..<4::nat. x i) = x 0 + x 1 + x 2 + x 3"
-  by (simp add: Ivl4 nat_number)
+  by (simp add: Ivl4 eval_nat_numeral)
 
 
 text {* A number of specialised lemmas for the summation operator,
