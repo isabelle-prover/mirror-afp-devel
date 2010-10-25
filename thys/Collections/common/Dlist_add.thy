@@ -43,28 +43,29 @@ proof -
     with `distinct xs`
     have "I (it - set xs) (iteratei_aux c f xs \<sigma>0) 
           \<or> (\<exists>it' \<subseteq> it. it' \<noteq> {} \<and> \<not> c (iteratei_aux c f xs \<sigma>0) \<and> I it' (iteratei_aux c f xs \<sigma>0))"
-    proof(induct xs arbitrary: it \<sigma>0)
+    proof (induct xs arbitrary: it \<sigma>0)
       case Nil thus ?case by simp
     next
-      case (insert x xs it \<sigma>)
+      case (Cons x xs it \<sigma>)
       show ?case
       proof(cases "c \<sigma>")
         case False
-        with insert.prems show ?thesis by simp blast
+        with Cons.prems show ?thesis by simp blast
       next
-        case True[simp]
-        from `distinct (xs)` `x\<notin>set xs` `set (x # xs) \<subseteq> it`
+        case True [simp]
+        from Cons have "distinct xs" "x \<notin> set xs" by simp_all
+        with `set (x # xs) \<subseteq> it`
         have "distinct xs" "set xs \<subseteq> it - {x}" by auto
-        moreover from insert.prems have "c \<sigma>" "x \<in> it" "it \<subseteq> it" "I it \<sigma>" by simp_all
-        hence "I (it - {x}) (f x \<sigma>)" by(rule insert)
+        moreover from Cons.prems have "c \<sigma>" "x \<in> it" "it \<subseteq> it" "I it \<sigma>" by simp_all
+        hence "I (it - {x}) (f x \<sigma>)" by (rule Cons)
         ultimately have "I (it - {x} - set xs) (iteratei_aux c f xs (f x \<sigma>)) 
                       \<or> (\<exists>it' \<subseteq> it - {x}. it' \<noteq> {} \<and> \<not> c (iteratei_aux c f xs (f x \<sigma>)) \<and>
                                I it' (iteratei_aux c f xs (f x \<sigma>)))"
           (is "?C1 \<or> ?C2")
-        proof(rule_tac insert.hyps(3)[of "it-{x}" "f x \<sigma>"])
+        proof (rule Cons.hyps [of "it-{x}" "f x \<sigma>"])
           fix \<sigma> x' it'
           assume "c \<sigma>" "x' \<in> it'" "it' \<subseteq> it - {x}" "I it' \<sigma>"
-          with insert.prems show "I (it' - {x'}) (f x' \<sigma>)" by auto
+          with Cons.prems show "I (it' - {x'}) (f x' \<sigma>)" by auto
         qed
         thus ?thesis
         proof

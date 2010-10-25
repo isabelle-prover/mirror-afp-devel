@@ -1431,7 +1431,7 @@ next
   with p' is_nextElem show ?thesis apply (drule_tac is_nextElem_or1) apply assumption+ by auto
 qed
 
-declare  distinct_append distinct_simps [simp del]
+declare  distinct_append distinct.simps [simp del]
 
 lemma(*<*) between_xor1: (*>*)
  "pre_between vs ram1 ram2 \<Longrightarrow> is_nextElem vs x y  \<Longrightarrow> before vs ram1 ram2 \<Longrightarrow>
@@ -1457,22 +1457,22 @@ lemma(*<*) between_xor1: (*>*)
   apply (simp add: pre_between_def between_vs) apply (rule sym) apply (rule between_vs) apply simp apply simp
 
   apply (case_tac "x = ram1") apply simp
-  apply (case_tac "x = ram2") apply (rule ccontr)  apply (simp add: distinct_append distinct_simps)
+  apply (case_tac "x = ram2") apply (rule ccontr)  apply (simp add: distinct_append distinct.simps)
   apply (case_tac "x \<in> set (between vs ram1 ram2)")
     apply (thin_tac "distinct (ram1 # between vs ram1 ram2 @ [ram2])") apply (thin_tac "distinct (ram2 # between vs ram2 ram1 @ [ram1])")
     apply (rule ccontr) apply (case_tac "x \<in> set (snd (splitAt ram2 vs))")
     apply (subgoal_tac "x \<in>  set (between vs ram1 ram2) \<inter> set (snd (splitAt ram2 vs))")
-    apply (simp add: distinct_append distinct_simps) apply simp
-    apply (subgoal_tac "x \<in> set (fst (splitAt ram1 vs))") apply (simp add: distinct_append distinct_simps)
+    apply (simp add: distinct_append distinct.simps) apply simp
+    apply (subgoal_tac "x \<in> set (fst (splitAt ram1 vs))") apply (simp add: distinct_append distinct.simps)
 
     apply (subgoal_tac "x \<in> set (fst (splitAt ram1 vs)) \<inter> (set (fst (splitAt ram2 (snd (splitAt ram1 vs)))) \<union> set (snd (splitAt ram2 vs)))")
-    apply (simp) apply (rule IntI) apply simp apply simp apply (rule ccontr) apply (simp add: distinct_append distinct_simps)
+    apply (simp) apply (rule IntI) apply simp apply simp apply (rule ccontr) apply (simp add: distinct_append distinct.simps)
     apply (subgoal_tac "x \<in> set (snd (splitAt ram2 vs) @ fst (splitAt ram1 vs) @ [ram1])") apply simp apply (rule is_sublist_in) apply assumption
   apply (subgoal_tac "x \<in> set (between vs ram2 ram1)")
   apply (subgoal_tac "x \<in>  set ((ram1 # between vs ram1 ram2) @ [ram2])") apply simp
   apply (rule is_sublist_in) apply simp by simp
 
-declare  distinct_append distinct_simps [simp]
+declare  distinct_append distinct.simps [simp]
 
 lemma(*<*) between_xor: (*>*)
  "pre_between vs ram1 ram2 \<Longrightarrow> is_nextElem vs x y  \<Longrightarrow>
@@ -4897,7 +4897,7 @@ shows "pre_subdivFace' g' f21 v' u 0 vol"
 proof (cases "vol = []")
   case True then show ?thesis using pre_add fdg pre_fdg
     apply(unfold pre_subdivFace'_def pre_splitFace_def)
-    apply (simp add: splitFace_def split_face_def split_def del:distinct_simps)
+    apply (simp add: splitFace_def split_face_def split_def del:distinct.simps)
     apply (rule conjI)
      apply(clarsimp)
      apply(rule before_between)
