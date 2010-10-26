@@ -12,14 +12,21 @@ begin
 definition
   "succsr succs \<equiv> {(x, y). y \<in> set (succs x)}"
 
-function (tailrec)
+partial_function (tailrec)
   gen_dfs
 where
-  base: "gen_dfs succs ins memb S [] = S"
-| step: "gen_dfs succs ins memb S (x # xs) =
+  "gen_dfs succs ins memb S wl = (case wl of
+     [] \<Rightarrow> S
+   | (x # xs) \<Rightarrow>
+       if memb x S then gen_dfs succs ins memb S xs
+       else gen_dfs succs ins memb (ins x S) (succs x @ xs))"
+
+lemma gen_dfs_simps[simp]:
+  "gen_dfs succs ins memb S [] = S"
+  "gen_dfs succs ins memb S (x # xs) =
     (if memb x S then gen_dfs succs ins memb S xs
      else gen_dfs succs ins memb (ins x S) (succs x @ xs))"
-  by pat_completeness auto
+  by (simp_all add: gen_dfs.simps)
 
 locale DFS =
   fixes succs :: "'a \<Rightarrow> 'a list"
@@ -231,6 +238,6 @@ qed
 
 end
 
-declare gen_dfs.simps [simp del]
+declare gen_dfs_simps [simp del]
 
 end

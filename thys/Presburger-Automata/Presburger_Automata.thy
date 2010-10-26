@@ -1912,7 +1912,7 @@ lemma prod_dfs_mono:
     
 lemma prod_dfs_start:
   "\<lbrakk>dfa_is_node A i; dfa_is_node B j\<rbrakk> \<Longrightarrow> fst (prod_dfs A B (i, j)) ! i ! j = Some 0"
-  apply (simp add: prod_dfs_def empt prod_is_node_def gen_dfs.simps)
+  apply (simp add: prod_dfs_def empt prod_is_node_def gen_dfs_simps)
   apply (rule prod_dfs_mono)
   apply (rule ins_invariant)
   apply (simp add: prod_is_node_def dfa_is_node_def)
@@ -2622,7 +2622,7 @@ proof -
     with H step `q0\<noteq>x` have V: "\<And>v. bdd_lookup (bddinsert (fst S) x v) q0 = bdd_lookup (fst S) q0" by (simp add: bdd_lookup_bddinsert nfa_is_node_def)
     with step show "bdd_lookup (fst (subset_ins x S)) q0 = Some 0" by (auto simp: subset_ins_def split_beta)
   qed
-  thus ?thesis unfolding subset_dfs_def by (auto simp: nfa_is_node_def step subset_memb_def subset_empt_def)
+  thus ?thesis unfolding subset_dfs_def by (auto simp: nfa_is_node_def gen_dfs_simps subset_memb_def subset_empt_def)
 qed
 
 lemma subset_dfs_is_node:
@@ -3918,7 +3918,7 @@ lemma dioph_dfs_mono:
 
 lemma dioph_dfs_start:
   "fst (dioph_dfs n ks l) ! int_encode l = Some 0"
-  apply (simp add: dioph_dfs_def gen_dfs.simps dioph_dfs.empt dioph_is_node_def)
+  apply (simp add: dioph_dfs_def gen_dfs_simps dioph_dfs.empt dioph_is_node_def)
   apply (rule dioph_dfs_mono [of _ l])
   apply (rule dioph_dfs.ins_invariant)
   apply (simp add: dioph_is_node_def)
@@ -4153,7 +4153,7 @@ lemma dioph_ineq_dfs_mono:
 
 lemma dioph_ineq_dfs_start:
   "fst (dioph_ineq_dfs n ks l) ! int_encode l = Some 0"
-  apply (simp add: dioph_ineq_dfs_def gen_dfs.simps dioph_ineq_dfs.empt dioph_is_node_def)
+  apply (simp add: dioph_ineq_dfs_def gen_dfs_simps dioph_ineq_dfs.empt dioph_is_node_def)
   apply (rule dioph_ineq_dfs_mono [of _ l])
   apply (rule dioph_ineq_dfs.ins_invariant)
   apply (simp add: dioph_is_node_def)

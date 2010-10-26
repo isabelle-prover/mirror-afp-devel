@@ -6,7 +6,7 @@ theory Exec
 imports Presburger_Automata Efficient_Nat
 begin
 
-declare gen_dfs.simps [code]
+declare gen_dfs_simps [code]
 
 lemma [code_unfold]: "op \<longrightarrow> = (\<lambda>P. op \<or> (\<not> P))"
   by (simp add: fun_eq_iff)
