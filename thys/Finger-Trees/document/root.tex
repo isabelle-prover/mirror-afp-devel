@@ -68,8 +68,24 @@
 % sane default for proof documents
 \parindent 0pt\parskip 0.5ex
 
+
 % generated text of all theories
 \input{session}
+
+\section{Related work}
+Finger trees were originally introduced by Hintze and Paterson\cite{HiPa06},
+who give an implementation in Haskell. Our implementation closely follows
+this original implementation.
+
+There is also a machine-checked formalization of 2-3 finger trees in Coq \cite{So07}.
+Like ours, it closely follows the original paper of Hintze and Paterson.
+The main difference is that the Coq-formalization encodes the invariants directly into
+the datatype for finger trees, while we first define the bigger algebraic datatype {\em FingerTreeStruc} 
+along with the predicate {\em ft-invar} that checks the invariant. 
+This bigger type and the {\em ft-invar}-predicate is then wrapped into the 
+datatype {\em FingerTree}, that, however, exposes no algebraic structure any more. 
+Our approach greatly simplifies matters in the context of Isabelle/HOL, as it can be 
+realized with Isabelle's datatype-package.
 
 % optional bibliography
 \bibliographystyle{abbrv}
