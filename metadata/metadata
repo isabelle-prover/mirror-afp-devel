@@ -128,6 +128,19 @@ date = 2004-04-05
 topic = Computer Science/Data Structures
 abstract = The correctness is shown of binary search tree operations (lookup, insert and remove) implementing a set. Two versions are given, for both structured and linear (tactic-style) proofs. An implementation of integer-indexed maps is also verified.
 
+[Binomial-Queues]
+title = Functional Binomial Queues
+author = René Neumann <mailto:neumannr@in.tum.de>
+date = 2010-10-28
+topic = Computer Science/Data Structures
+abstract =
+  Priority queues are an important data structure and
+  efficient implementations of them are crucial.  We implement a functional
+  variant of binomial queues in Isabelle/HOL and show its functional
+  correctness. A verification against an abstract reference specification of
+  priority queues has also been attempted, but could not be achieved to the
+  full extent.
+
 [FinFun]
 title = Code Generation for Functions as Data 
 author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
