@@ -67,7 +67,8 @@ lemma set_dfs_rev:
 lemma set_dfs_Cons:
   "set (dfs f (x # xs)) = set (dfs f xs) \<union> set (dfs f [x])"
 proof -
-  have "set (dfs f (x # xs)) = set (dfs f (rev xs @ [x]))" using set_dfs_rev[of f "rev xs @ [x]"] by simp
+  have "set (dfs f (x # xs)) = set (dfs f (rev xs @ [x]))"
+    using set_dfs_rev[of f "rev xs @ [x]"] by simp
   thus ?thesis by (simp add: dfs_append set_dfs_rev)
 qed
 
@@ -124,8 +125,11 @@ abbreviation vals where "vals \<equiv> dfs val"
 abbreviation prios where "prios \<equiv> dfs priority"
 abbreviation elements where "elements \<equiv> dfs alist"
 
-primrec bt_augment :: "('a::linorder, 'b) bintree \<Rightarrow> ('b, 'a) PQ.pq \<Rightarrow> ('b, 'a) PQ.pq"
-  and bts_augment :: "('a::linorder, 'b) bintree list \<Rightarrow> ('b, 'a) PQ.pq \<Rightarrow> ('b, 'a) PQ.pq" where
+primrec
+  bt_augment :: "('a::linorder, 'b) bintree \<Rightarrow> ('b, 'a) PQ.pq \<Rightarrow> ('b, 'a) PQ.pq"
+and
+  bts_augment :: "('a::linorder, 'b) bintree list \<Rightarrow> ('b, 'a) PQ.pq \<Rightarrow> ('b, 'a) PQ.pq"
+where
   "bt_augment (Node a v ts) q = PQ.push v a (bts_augment ts q)"
 | "bts_augment [] q = q"
 | "bts_augment (t # ts) q = bts_augment ts (bt_augment t q)"
@@ -164,8 +168,10 @@ lemma bt_augment_v_in:
   using bt_augment_v_subset[of q] by auto
 
 lemma bt_augment_v_union:
-  "set |bt_augment t (bt_augment r q)| = set |bt_augment t q| \<union> set |bt_augment r q|"
-  "set |bts_augment ts (bt_augment r q)| = set |bts_augment ts q| \<union> set |bt_augment r q|"
+  "set |bt_augment t (bt_augment r q)| =
+    set |bt_augment t q| \<union> set |bt_augment r q|"
+  "set |bts_augment ts (bt_augment r q)| =
+    set |bts_augment ts q| \<union> set |bt_augment r q|"
 proof (induct t and ts arbitrary: q r and q r)
   case Nil_bintree
     from bt_augment_v_subset[of q] show ?case by auto
@@ -176,12 +182,13 @@ lemma bt_val_augment:
   and   "set (bts_dfs val ts) \<union> set |q| = set |bts_augment ts q|"
 proof (induct t and ts)
   case (Cons_bintree r rs)
-  have  
-    "set |bts_augment rs (bt_augment r q)| = set |bts_augment rs q| \<union> set |bt_augment r q|" 
+  have "set |bts_augment rs (bt_augment r q)| =
+    set |bts_augment rs q| \<union> set |bt_augment r q|" 
     by (simp only: bt_augment_v_union)
   
-  with bt_augment_v_subset[of q] have 
-    "set |bts_augment rs (bt_augment r q)| = set |bts_augment rs q| \<union> set |bt_augment r q| \<union> set |q|" 
+  with bt_augment_v_subset[of q]
+    have "set |bts_augment rs (bt_augment r q)| =
+      set |bts_augment rs q| \<union> set |bt_augment r q| \<union> set |q|" 
     by auto
   with Cons_bintree show ?case by auto
 qed auto
@@ -201,8 +208,10 @@ lemma bt_augment_v_push_commute:
   by (simp_all add: bt_augment_v_push del: bts_augment)
 
 lemma bts_augment_v_union:
-  "set |bt_augment t (bts_augment rs q)| = set |bt_augment t q| \<union> set |bts_augment rs q|"
-  "set |bts_augment ts (bts_augment rs q)| = set |bts_augment ts q| \<union> set |bts_augment rs q|"
+  "set |bt_augment t (bts_augment rs q)| =
+    set |bt_augment t q| \<union> set |bts_augment rs q|"
+  "set |bts_augment ts (bts_augment rs q)| =
+    set |bts_augment ts q| \<union> set |bts_augment rs q|"
 proof (induct t and ts arbitrary: q rs and q rs)
   case Nil_bintree
   from bt_augment_v_subset[of q] show ?case by auto
@@ -212,21 +221,27 @@ next
   let ?L = "set |bts_augment xs (bt_augment x (bts_augment rs q))|"
   
   from bt_augment_v_union
-    have *: "\<And> q. set |bts_augment xs (bt_augment x q)| = set |bts_augment xs q| \<union> set |bt_augment x q|" by simp
+    have *: "\<And> q. set |bts_augment xs (bt_augment x q)| =
+      set |bts_augment xs q| \<union> set |bt_augment x q|" by simp
   
-  with Cons_bintree have "?L = set |bts_augment xs q| \<union> set |bts_augment rs q| \<union> set |bt_augment x q|" by auto
+  with Cons_bintree
+    have "?L =
+      set |bts_augment xs q| \<union> set |bts_augment rs q| \<union> set |bt_augment x q|"
+      by auto
   with * show ?case by auto
 qed simp
 
 lemma bt_augment_v_commute:
   "set |bt_augment t (bt_augment r q)| = set |bt_augment r (bt_augment t q)|"
   "set |bt_augment t (bts_augment rs q)| = set |bts_augment rs (bt_augment t q)|"
-  "set |bts_augment ts (bts_augment rs q)| = set |bts_augment rs (bts_augment ts q)|"
+  "set |bts_augment ts (bts_augment rs q)| =
+    set |bts_augment rs (bts_augment ts q)|"
   unfolding bts_augment_v_union bt_augment_v_union by auto
   
 lemma bt_augment_v_merge:
   "set |bt_augment (merge t r) q| = set |bt_augment t (bt_augment r q)|"
-  unfolding merge_def by (simp add: bt_augment_simp [symmetric] bt_augment_v_push bt_augment_v_commute)
+  by (simp add: bt_augment_simp [symmetric] bt_augment_v_push
+    bt_augment_v_commute merge_def)
 
 lemma vals_merge [simp]:
   "set (bt_dfs val (merge t r)) = set (bt_dfs val t) \<union> set (bt_dfs val r)"
@@ -276,9 +291,11 @@ lemma insert_v_push:
 lemma vals_meld:
   "set (dfs val (meld xs ys)) = set (dfs val xs) \<union> set (dfs val ys)"
 proof (induct xs ys rule: meld.induct)
-  case (3 xs y ys) then show ?case using set_dfs_Cons[of val y "meld xs ys"] using set_dfs_Cons[of val y ys] by auto
+  case (3 xs y ys) then show ?case
+  using set_dfs_Cons[of val y "meld xs ys"] using set_dfs_Cons[of val y ys] by auto
 next
-  case (4 x xs ys) then show ?case using set_dfs_Cons[of val x "meld xs ys"] using set_dfs_Cons[of val x xs] by auto
+  case (4 x xs ys) then show ?case
+  using set_dfs_Cons[of val x "meld xs ys"] using set_dfs_Cons[of val x xs] by auto
 next
   case (5 x xs y ys) then show ?case by (auto simp add: vals_add_Cons)
 qed simp_all
@@ -293,7 +310,8 @@ proof (induct xs ys rule: meld.induct)
     case None with "3" show ?thesis by simp
   next
     case (Some t)
-    from "3" have A: "set (vals xs) \<inter> set (vals ys) = {}" using set_dfs_Cons[of val y ys] by auto
+    from "3" have A: "set (vals xs) \<inter> set (vals ys) = {}"
+      using set_dfs_Cons[of val y ys] by auto
  
     moreover
     from Some "3" have "set (bt_dfs val t) \<inter> set (vals xs) = {}" by auto
@@ -301,7 +319,8 @@ proof (induct xs ys rule: meld.induct)
     moreover
     from Some "3" have "set (bt_dfs val t) \<inter> set (vals ys) = {}" by simp
 
-    ultimately have "set (bt_dfs val t) \<inter> set (vals (meld xs ys)) = {}" by (auto simp add: vals_meld)
+    ultimately have "set (bt_dfs val t) \<inter> set (vals (meld xs ys)) = {}"
+      by (auto simp add: vals_meld)
     with "3" Some show ?thesis by auto
   qed
 next
@@ -310,7 +329,8 @@ next
     case None with "4" show ?thesis by simp
   next
     case (Some t)
-    from "4" have "set (vals xs) \<inter> set (vals ys) = {}" using set_dfs_Cons[of val x xs] by auto
+    from "4" have "set (vals xs) \<inter> set (vals ys) = {}"
+      using set_dfs_Cons[of val x xs] by auto
  
     moreover
     from Some "4" have "set (bt_dfs val t) \<inter> set (vals xs) = {}" by simp
@@ -318,7 +338,8 @@ next
     moreover
     from Some "4" have "set (bt_dfs val t) \<inter> set (vals ys) = {}" by auto
 
-    ultimately have "set (bt_dfs val t) \<inter> set (vals (meld xs ys)) = {}" by (auto simp add: vals_meld)
+    ultimately have "set (bt_dfs val t) \<inter> set (vals (meld xs ys)) = {}"
+      by (auto simp add: vals_meld)
     with "4" Some show ?thesis by auto
   qed
 next
@@ -328,10 +349,12 @@ next
 
   moreover
   from "5" have "set (bt_dfs val x) \<inter> set (bt_dfs val y) = {}" by auto
-  with "5" have "distinct (bt_dfs val (merge x y))" by (simp add: vals_merge_distinct)
+  with "5" have "distinct (bt_dfs val (merge x y))"
+    by (simp add: vals_merge_distinct)
 
   moreover
-  from "5" have "set (vals (meld xs ys)) \<inter> set (bt_dfs val (merge x y)) = {}" by (auto simp add: vals_meld)
+  from "5" have "set (vals (meld xs ys)) \<inter> set (bt_dfs val (merge x y)) = {}"
+    by (auto simp add: vals_meld)
 
   ultimately show ?case by (simp add: vals_add_distinct)
 qed simp_all
@@ -398,17 +421,20 @@ lemma bt_alist_augment:
   
   "distinct (bts_dfs val ts) \<Longrightarrow> 
    set (bts_dfs val ts) \<inter> set |q| = {} \<Longrightarrow> 
-   set (bts_dfs alist ts) \<union> set (PQ.alist_of q) = set (PQ.alist_of (bts_augment ts q))"
+   set (bts_dfs alist ts) \<union> set (PQ.alist_of q) =
+     set (PQ.alist_of (bts_augment ts q))"
 proof (induct t and ts)
   case Nil_bintree then show ?case by simp
 next
   case (Node a v rs)
-  hence "v \<notin> set |bts_augment rs q|" unfolding bt_val_augment[symmetric] by simp
+  hence "v \<notin> set |bts_augment rs q|"
+    unfolding bt_val_augment[symmetric] by simp
   with Node show ?case by (simp add: set_insort)
 next
   case (Cons_bintree r rs) then
   have "set (PQ.alist_of (bts_augment (r # rs) q)) =
-    set (PQ.alist_of (bts_augment rs q)) \<union> set (PQ.alist_of (bt_augment r q))" using bt_augment_alist_union by simp
+    set (PQ.alist_of (bts_augment rs q)) \<union> set (PQ.alist_of (bt_augment r q))"
+    using bt_augment_alist_union by simp
   with Cons_bintree bt_augment_alist_subset show ?case by auto
 qed
 
@@ -417,9 +443,8 @@ lemma alist_pqueue:
   by (induct xs) (simp_all add: vals_pqueue bt_alist_augment)
 
 lemma alist_pqueue_priority:
-  "distinct (vals xs) \<Longrightarrow>
-  (v,a) \<in> set (dfs alist xs) \<Longrightarrow>
-  PQ.priority (pqueue xs) v = Some a"
+  "distinct (vals xs) \<Longrightarrow> (v, a) \<in> set (dfs alist xs)
+    \<Longrightarrow> PQ.priority (pqueue xs) v = Some a"
   by (simp add: alist_pqueue PQ.priority_def)
 
 lemma prios_pqueue:
@@ -446,14 +471,19 @@ next
     case (Some t)
     note prem = Some.prems Some
     
-    from prem have "distinct (bt_dfs val (merge t y))" by (auto simp add: bt_dfs_simp merge_def)
+    from prem have "distinct (bt_dfs val (merge t y))"
+      by (auto simp add: bt_dfs_simp merge_def)
     with prem have "distinct (vals (Some (merge t y) # ys))" by auto
     with prem Some.hyps
-      have "set (dfs alist (add (Some (merge t y)) ys)) = set (dfs alist (Some (merge t y) # ys))" by simp
+      have "set (dfs alist (add (Some (merge t y)) ys)) =
+        set (dfs alist (Some (merge t y) # ys))" by simp
 
     moreover
     from prem have "set (bt_dfs val t) \<inter> set (bt_dfs val y) = {}" by auto
-    with prem have "set (bt_dfs alist (merge t y)) = set (bt_dfs alist t) \<union> set (bt_dfs alist y)" by simp
+    with prem
+      have "set (bt_dfs alist (merge t y)) =
+        set (bt_dfs alist t) \<union> set (bt_dfs alist y)"
+      by simp
 
     moreover note prem and Un_assoc
       
@@ -479,7 +509,9 @@ lemma insert_p_push:
   and "v \<notin> set (vals xs)"
   shows "set (prios (insert a v xs)) = set \<parallel>PQ.push v a (pqueue xs)\<parallel>"
 proof -
-  from assms have "set (dfs alist (insert a v xs)) = set (PQ.alist_of (PQ.push v a (pqueue xs)))"
+  from assms
+    have "set (dfs alist (insert a v xs)) =
+      set (PQ.alist_of (PQ.push v a (pqueue xs)))"
     by (rule insert_push)
   thus ?thesis by (simp add: alist_split_set priorities_set)
 qed
@@ -493,7 +525,8 @@ next
   show "xs = []"
   proof (rule ccontr)
     assume "xs \<noteq> []"
-    with N have "set (vals xs) \<noteq> {}" by (induct xs) (simp_all add: bt_dfs_simp dfs_append)
+    with N have "set (vals xs) \<noteq> {}"
+      by (induct xs) (simp_all add: bt_dfs_simp dfs_append)
     hence "set |pqueue xs| \<noteq> {}" by (simp add: vals_pqueue)
 
     moreover
@@ -515,25 +548,39 @@ next
   
   obtain t' where "t' = Node (priority t) (val t) rs" by auto
   hence ot: "rs = children t'" "priority t' = priority t" by simp_all
-  with is_heap_list_Cons have "priority t = Min (set (bt_dfs priority t'))" by simp
-  with ot have "priority t = Min (Set.insert (priority t) (set (bts_dfs priority rs)))" by (simp add: bt_dfs_simp)
+  with is_heap_list_Cons have "priority t = Min (set (bt_dfs priority t'))"
+    by simp
+  with ot
+    have "priority t = Min (Set.insert (priority t) (set (bts_dfs priority rs)))"
+    by (simp add: bt_dfs_simp)
 
   moreover
   from cons have "priority r = Min (set (bt_dfs priority r))" by simp
 
   moreover
   from cons have "children t = r # rs" by simp
-  then have "bts_dfs priority (children t) = (bt_dfs priority r) @ (bts_dfs priority rs)" by simp
-  hence "bt_dfs priority t = priority t # (bt_dfs priority r @ bts_dfs priority rs)" by (simp add: bt_dfs_simp)
-  hence A: "?M = Min (Set.insert (priority t) (set (bt_dfs priority r) \<union> set (bts_dfs priority rs)))" by simp
+  then have "bts_dfs priority (children t) =
+    (bt_dfs priority r) @ (bts_dfs priority rs)" by simp
+  hence "bt_dfs priority t =
+    priority t # (bt_dfs priority r @ bts_dfs priority rs)"
+    by (simp add: bt_dfs_simp)
+  hence A: "?M = Min
+    (Set.insert (priority t) (set (bt_dfs priority r) \<union> set (bts_dfs priority rs)))"
+    by simp
   
-  have "Set.insert (priority t) (set (bt_dfs priority r) \<union> set (bts_dfs priority rs)) =
-    Set.insert (priority t) (set (bts_dfs priority rs)) \<union> set (bt_dfs priority r)" by auto
-  with A have "?M = Min (Set.insert (priority t) (set (bts_dfs priority rs)) \<union> set (bt_dfs priority r))" by simp
+  have "Set.insert (priority t) (set (bt_dfs priority r)
+    \<union> set (bts_dfs priority rs)) =
+    Set.insert (priority t) (set (bts_dfs priority rs)) \<union> set (bt_dfs priority r)"
+    by auto
+  with A have "?M = Min
+    (Set.insert (priority t) (set (bts_dfs priority rs)) \<union> set (bt_dfs priority r))"
+    by simp
   
-  with Min_Un[of "Set.insert (priority t) (set (bts_dfs priority rs))" "set (bt_dfs priority r)"] 
-  have "?M = ord_class.min (Min (Set.insert (priority t) (set (bts_dfs priority rs))))
-    (Min (set (bt_dfs priority r)))" 
+  with Min_Un
+    [of "Set.insert (priority t) (set (bts_dfs priority rs))" "set (bt_dfs priority r)"] 
+  have "?M =
+    ord_class.min (Min (Set.insert (priority t) (set (bts_dfs priority rs))))
+      (Min (set (bt_dfs priority r)))" 
     by (auto simp add: bt_dfs_simp)
 
   ultimately 
@@ -550,7 +597,8 @@ lemma is_binqueue_min_Min_prios:
 using assms proof (induct xs arbitrary: l)
   case (Some l xs x) then show ?case
   proof (cases "xs \<noteq> []")
-    case False with Some show ?thesis using bt_dfs_Min_priority[of x] by (simp add: min_single)
+    case False with Some show ?thesis
+      using bt_dfs_Min_priority[of x] by (simp add: min_single)
   next
     case True note T = this Some
     
@@ -571,13 +619,17 @@ lemma min_p_min:
   and "distinct (prios xs)"
   shows "min xs = PQ.priority (pqueue xs) (PQ.min (pqueue xs))"
 proof -
-  from `xs \<noteq> []` `normalized xs` have "\<not> PQ.is_empty (pqueue xs)" by (simp add: empty_empty)
+  from `xs \<noteq> []` `normalized xs` have "\<not> PQ.is_empty (pqueue xs)"
+    by (simp add: empty_empty)
 
   moreover
-  from assms have "min xs = Some (Min (set (prios xs)))" by (simp add: is_binqueue_min_Min_prios)
-  with `distinct (vals xs)` have "min xs = Some (Min (set \<parallel>pqueue xs\<parallel> ))" by (simp add: prios_pqueue)
+  from assms have "min xs = Some (Min (set (prios xs)))"
+    by (simp add: is_binqueue_min_Min_prios)
+  with `distinct (vals xs)` have "min xs = Some (Min (set \<parallel>pqueue xs\<parallel> ))"
+    by (simp add: prios_pqueue)
 
-  ultimately show ?thesis by (simp add: priority_Min_priorities[where q = "pqueue xs"] )
+  ultimately show ?thesis
+   by (simp add: priority_Min_priorities [where q = "pqueue xs"] )
 qed
 
 lemma find_min_p_min:
@@ -586,10 +638,12 @@ lemma find_min_p_min:
   and "normalized xs"
   and "distinct (vals xs)"
   and "distinct (prios xs)"
-  shows "priority (the (find_min xs)) = the (PQ.priority (pqueue xs) (PQ.min (pqueue xs)))"
+  shows "priority (the (find_min xs)) =
+    the (PQ.priority (pqueue xs) (PQ.min (pqueue xs)))"
 proof -
   from assms have "min xs \<noteq> None" by (simp add: normalized_min_not_None)
-  from assms have "min xs = PQ.priority (pqueue xs) (PQ.min (pqueue xs))" by (simp add: min_p_min)
+  from assms have "min xs = PQ.priority (pqueue xs) (PQ.min (pqueue xs))"
+    by (simp add: min_p_min)
   with `min xs \<noteq> None` show ?thesis by (auto simp add: min_eq_find_min_Some)
 qed
 
@@ -603,9 +657,11 @@ lemma find_min_v_min:
 proof -
   from assms have "min xs \<noteq> None" by (simp add: normalized_min_not_None)
   then obtain a where oa: "Some a = min xs" by auto
-  then obtain t where ot: "find_min xs = Some t" "priority t = a" using min_eq_find_min_Some[of xs a] by auto
+  then obtain t where ot: "find_min xs = Some t" "priority t = a"
+    using min_eq_find_min_Some [of xs a] by auto
     
-  hence *: "(val t, a) \<in> set (dfs alist xs)" by (auto simp add: find_min_exist in_set_in_alist)
+  hence *: "(val t, a) \<in> set (dfs alist xs)"
+    by (auto simp add: find_min_exist in_set_in_alist)
 
   have "PQ.min (pqueue xs) = val t"
   proof (rule ccontr)    
@@ -613,7 +669,8 @@ proof -
     then obtain t' where ot':"PQ.min (pqueue xs) = t'" by simp
     with A have NE: "val t \<noteq> t'" by simp
     
-    from ot' oa assms have "(t', a) \<in> set (dfs alist xs)" by (simp add: alist_pqueue PQ.priority_def min_p_min)
+    from ot' oa assms have "(t', a) \<in> set (dfs alist xs)"
+      by (simp add: alist_pqueue PQ.priority_def min_p_min)
 
     with * NE have "\<not> distinct (prios xs)" 
       unfolding alist_split(2) 
@@ -632,7 +689,8 @@ proof (induct xs rule: rev_induct)
 qed simp
 
 lemma dfs_match_not_in:
-  "(\<forall> t. Some t \<in> set xs \<longrightarrow> priority t \<noteq> a) \<Longrightarrow> set (dfs f (map (match a) xs)) = set (dfs f xs)"
+  "(\<forall> t. Some t \<in> set xs \<longrightarrow> priority t \<noteq> a) \<Longrightarrow>
+    set (dfs f (map (match a) xs)) = set (dfs f xs)"
 by (induct xs) simp_all
 
 lemma dfs_match_subset:
@@ -661,23 +719,29 @@ proof (induct xs arbitrary: t)
     case True 
     from Some have "priority r \<notin> set (prios xs)" by (auto simp add: bt_dfs_simp)
     with Some True have "a \<notin> set (prios xs)" by simp
-    hence "\<forall> s. Some s \<in> set xs \<longrightarrow> priority s \<noteq> a" by (induct xs) (auto simp add: bt_dfs_simp)
-    hence "set (dfs f (map (match a) xs)) = set (dfs f xs)" by (simp add: dfs_match_not_in)
+    hence "\<forall> s. Some s \<in> set xs \<longrightarrow> priority s \<noteq> a"
+      by (induct xs) (auto simp add: bt_dfs_simp)
+    hence "set (dfs f (map (match a) xs)) = set (dfs f xs)"
+      by (simp add: dfs_match_not_in)
     with True Some show ?thesis by auto
   next
     case False
     with Some.prems have "Some t \<in> set xs" by simp
     with `priority t = a` have "a \<in> set (prios xs)"
     proof (induct xs)
-      case (Some x xs) then show ?case by (cases "t = x") (simp_all add: bt_dfs_simp)
+      case (Some x xs) then show ?case
+        by (cases "t = x") (simp_all add: bt_dfs_simp)
     qed simp_all
     with False Some have "priority r \<noteq> a" by (auto simp add: bt_dfs_simp)
 
     moreover 
-    from Some False have "set (dfs f (map (match a) xs)) = set (dfs f xs) - set (bt_dfs f t)" by simp
+    from Some False
+      have "set (dfs f (map (match a) xs)) = set (dfs f xs) - set (bt_dfs f t)"
+      by simp
 
     moreover
-    from Some.prems False have "set (bt_dfs f t) \<inter> set (bt_dfs f r) = {}" by (induct xs) auto
+    from Some.prems False have "set (bt_dfs f t) \<inter> set (bt_dfs f r) = {}"
+      by (induct xs) auto
     hence "set (bt_dfs f r) - set (bt_dfs f t) = set (bt_dfs f r)" by auto
     
     ultimately show ?thesis by auto
@@ -690,10 +754,12 @@ lemma alist_meld:
    set (dfs alist (meld xs ys)) = set (dfs alist xs) \<union> set (dfs alist ys)"
 proof (induct xs ys rule: meld.induct)
   case (3 xs y ys)
-  have "set (dfs alist (y # meld xs ys)) = set (dfs alist xs) \<union> set (dfs alist (y # ys))"
+  have "set (dfs alist (y # meld xs ys)) =
+    set (dfs alist xs) \<union> set (dfs alist (y # ys))"
   proof -
     note assms = "3"
-    from assms have "set (vals xs) \<inter> set (vals ys) = {}" using set_dfs_Cons[of val y ys] by auto
+    from assms have "set (vals xs) \<inter> set (vals ys) = {}"
+      using set_dfs_Cons[of val y ys] by auto
 
     moreover
     from assms have "distinct (vals ys)" by (cases y) simp_all
@@ -702,9 +768,11 @@ proof (induct xs ys rule: meld.induct)
     from assms have "distinct (vals xs)" by simp
 
     moreover note assms
-    ultimately have "set (dfs alist (meld xs ys)) = set (dfs alist xs) \<union> set (dfs alist ys)" by simp
+    ultimately have "set (dfs alist (meld xs ys)) =
+      set (dfs alist xs) \<union> set (dfs alist ys)" by simp
     
-    hence "set (dfs alist (y # meld xs ys)) = set (dfs alist [y]) \<union> set (dfs alist xs) \<union> set (dfs alist ys)"
+    hence "set (dfs alist (y # meld xs ys)) =
+      set (dfs alist [y]) \<union> set (dfs alist xs) \<union> set (dfs alist ys)"
       using set_dfs_Cons[of alist y "meld xs ys"] by auto
 
     then show ?thesis using set_dfs_Cons[of alist y ys] by auto
@@ -712,10 +780,12 @@ proof (induct xs ys rule: meld.induct)
   thus ?case by simp
 next
   case (4 x xs ys)
-  have "set (dfs alist (x # meld xs ys)) = set (dfs alist (x # xs)) \<union> set (dfs alist ys)"
+  have "set (dfs alist (x # meld xs ys)) =
+    set (dfs alist (x # xs)) \<union> set (dfs alist ys)"
   proof - (* this is the same as for 3 minus some renaming *)
     note assms = "4"
-    from assms have "set (vals xs) \<inter> set (vals ys) = {}" using set_dfs_Cons[of val x xs] by auto
+    from assms have "set (vals xs) \<inter> set (vals ys) = {}"
+      using set_dfs_Cons[of val x xs] by auto
 
     moreover
     from assms have "distinct (vals xs)" by (cases x) simp_all
@@ -724,9 +794,11 @@ next
     from assms have "distinct (vals ys)" by simp
 
     moreover note assms
-    ultimately have "set (dfs alist (meld xs ys)) = set (dfs alist xs) \<union> set (dfs alist ys)" by simp
+    ultimately have "set (dfs alist (meld xs ys)) =
+      set (dfs alist xs) \<union> set (dfs alist ys)" by simp
     
-    hence "set (dfs alist (x # meld xs ys)) = set (dfs alist [x]) \<union> set (dfs alist xs) \<union> set (dfs alist ys)"
+    hence "set (dfs alist (x # meld xs ys)) =
+      set (dfs alist [x]) \<union> set (dfs alist xs) \<union> set (dfs alist ys)"
       using set_dfs_Cons[of alist x "meld xs ys"] by auto
 
     then show ?thesis using set_dfs_Cons[of alist x xs] by auto
@@ -735,22 +807,27 @@ next
 next
   case (5 x xs y ys)
   have "set (dfs alist (add (Some (merge x y)) (meld xs ys))) =
-    set (bt_dfs alist x) \<union> set (dfs alist xs) \<union> set (bt_dfs alist y) \<union> set (dfs alist ys)"
+    set (bt_dfs alist x) \<union> set (dfs alist xs)
+    \<union> set (bt_dfs alist y) \<union> set (dfs alist ys)"
   proof -
     note assms = "5"
     
     from assms have "distinct (bt_dfs val x)" "distinct (bt_dfs val y)" by simp_all
-    moreover from assms have xyint: "set (bt_dfs val x) \<inter> set (bt_dfs val y) = {}" by (auto simp add: set_dfs_Cons)
-    ultimately have *: "set (dfs alist [Some (merge x y)]) = set (bt_dfs alist x) \<union> set (bt_dfs alist y)" by auto
+    moreover from assms have xyint:
+      "set (bt_dfs val x) \<inter> set (bt_dfs val y) = {}" by (auto simp add: set_dfs_Cons)
+    ultimately have *: "set (dfs alist [Some (merge x y)]) =
+      set (bt_dfs alist x) \<union> set (bt_dfs alist y)" by auto
 
     moreover
-    from assms have **: "set (dfs alist (meld xs ys)) = set (dfs alist xs) \<union> set (dfs alist ys)"
+    from assms
+      have **: "set (dfs alist (meld xs ys)) = set (dfs alist xs) \<union> set (dfs alist ys)"
       by (auto simp add: set_dfs_Cons)
 
     moreover
     from assms have "distinct (vals (Some (merge x y) # meld xs ys))"
     proof -
-      from assms xyint have "distinct (bt_dfs val (merge x y))" by (simp add: vals_merge_distinct)
+      from assms xyint have "distinct (bt_dfs val (merge x y))"
+        by (simp add: vals_merge_distinct)
 
       moreover
       from assms have 
@@ -761,7 +838,9 @@ next
       hence "distinct (vals (meld xs ys))" by (rule vals_meld_distinct)
 
       moreover
-      from assms have "set (bt_dfs val (merge x y)) \<inter> set (vals (meld xs ys)) = {}" by (auto simp add: vals_meld)
+      from assms
+        have "set (bt_dfs val (merge x y)) \<inter> set (vals (meld xs ys)) = {}"
+        by (auto simp add: vals_meld)
 
       ultimately show ?thesis by simp
     qed
@@ -777,35 +856,46 @@ lemma alist_delete_min:
   and "find_min xs = Some (Node a v ts)"
   shows "set (dfs alist (delete_min xs)) = set (dfs alist xs) - {(v, a)}"
 proof -
-  from `distinct (vals xs)` have d: "distinct (dfs alist xs)" using dfs_comp_distinct[of fst alist "xs"]
+  from `distinct (vals xs)` have d: "distinct (dfs alist xs)"
+    using dfs_comp_distinct[of fst alist "xs"]
     by (simp only: alist_split)
 
-  from assms have IN: "Some (Node a v ts) \<in> set xs" by (simp add: find_min_exist)
-  hence sub: "set (bts_dfs alist ts) \<subseteq> set (dfs alist xs)" by (induct xs) (auto simp add: bt_dfs_simp)
+  from assms have IN: "Some (Node a v ts) \<in> set xs"
+    by (simp add: find_min_exist)
+  hence sub: "set (bts_dfs alist ts) \<subseteq> set (dfs alist xs)"
+    by (induct xs) (auto simp add: bt_dfs_simp)
 
-  from d IN have "(v,a) \<notin> set (bts_dfs alist ts)" using dfs_distinct_member[of alist xs "Node a v ts"] by simp
+  from d IN have "(v,a) \<notin> set (bts_dfs alist ts)"
+    using dfs_distinct_member[of alist xs "Node a v ts"] by simp
   with sub have "set (bts_dfs alist ts) \<subseteq> set (dfs alist xs) - {(v,a)}" by blast
-  hence nu: "set (bts_dfs alist ts) \<union> (set (dfs alist xs) - {(v,a)}) = set (dfs alist xs) - {(v,a)}" by auto
+  hence nu: "set (bts_dfs alist ts) \<union> (set (dfs alist xs) - {(v,a)}) =
+    set (dfs alist xs) - {(v,a)}" by auto
 
-  from assms have "distinct (vals (map (match a) xs))" by (simp add: dfs_match_distinct)
+  from assms have "distinct (vals (map (match a) xs))"
+    by (simp add: dfs_match_distinct)
  
   moreover  
-  from IN assms have "distinct (bts_dfs val ts)" using dfs_distinct_member[of val xs "Node a v ts"]
+  from IN assms have "distinct (bts_dfs val ts)"
+    using dfs_distinct_member[of val xs "Node a v ts"]
     by (simp add: bt_dfs_distinct_children)
-  hence "distinct (vals (map Some (rev ts)))" by (simp add: bts_dfs_rev_distinct dfs_map_Some_idem)
+  hence "distinct (vals (map Some (rev ts)))"
+    by (simp add: bts_dfs_rev_distinct dfs_map_Some_idem)
 
   moreover
-  from assms IN have "set (dfs val (map (match a) xs)) = set (dfs val xs) - set (bt_dfs val (Node a v ts))"
+  from assms IN have "set (dfs val (map (match a) xs)) =
+    set (dfs val xs) - set (bt_dfs val (Node a v ts))"
     by (simp add: dfs_match)
   hence "set (vals (map (match a) xs)) \<inter> set (vals (map Some (rev ts))) = {}"
     by (auto simp add: dfs_map_Some_idem set_bts_dfs_rev)
 
-  ultimately have "set (dfs alist (meld (map Some (rev ts)) (map (match a) xs))) =
-    set (dfs alist (map Some (rev ts))) \<union> set (dfs alist (map (match a) xs))" using alist_meld by auto
+  ultimately
+  have "set (dfs alist (meld (map Some (rev ts)) (map (match a) xs))) =
+    set (dfs alist (map Some (rev ts))) \<union> set (dfs alist (map (match a) xs))"
+    using alist_meld by auto
 
   with assms d IN nu show ?thesis
-    by (simp add: delete_min_def alist_normalize_idem set_bts_dfs_rev dfs_map_Some_idem dfs_match
-     Diff_insert2 [of "set (dfs alist xs)" "(v,a)" "set (bts_dfs alist ts)"])
+    by (simp add: delete_min_def alist_normalize_idem set_bts_dfs_rev dfs_map_Some_idem
+     dfs_match Diff_insert2 [of "set (dfs alist xs)" "(v,a)" "set (bts_dfs alist ts)"])
 qed
 
 lemma alist_remove_min:
@@ -814,24 +904,29 @@ lemma alist_remove_min:
   and "distinct (prios xs)"
   and "normalized xs"
   and "xs \<noteq> []"
-  shows "set (dfs alist (delete_min xs)) = set (PQ.alist_of (PQ.remove_min (pqueue xs)))"
+  shows "set (dfs alist (delete_min xs)) =
+  set (PQ.alist_of (PQ.remove_min (pqueue xs)))"
 proof -
-  from assms obtain t where ot: "find_min xs = Some t" using normalized_find_min_exists by auto
+  from assms obtain t where ot: "find_min xs = Some t"
+    using normalized_find_min_exists by auto
   with assms show ?thesis
   proof (cases t)
     case (Node a v ys)
     from assms have "\<not> PQ.is_empty (pqueue xs)" by (simp add: empty_empty)
     hence "set (PQ.alist_of (PQ.remove_min (pqueue xs))) =
-      set (PQ.alist_of (pqueue xs)) - {(PQ.min (pqueue xs), the (PQ.priority (pqueue xs) (PQ.min (pqueue xs))))}"
+      set (PQ.alist_of (pqueue xs)) - {(PQ.min (pqueue xs),
+        the (PQ.priority (pqueue xs) (PQ.min (pqueue xs))))}"
       by (simp add: set_alist_of_remove_min[of "pqueue xs"] del: alist_of_remove_min)
     
     moreover
-    from assms ot Node have "set (dfs alist (delete_min xs)) = set (dfs alist xs) - {(v, a)}"
+    from assms ot Node
+    have "set (dfs alist (delete_min xs)) = set (dfs alist xs) - {(v, a)}"
       using alist_delete_min[of xs] by simp
 
     moreover
     from Node ot have "priority (the (find_min xs)) = a" by simp
-    with assms have "a = the (PQ.priority (pqueue xs) (PQ.min (pqueue xs)))" by (simp add: find_min_p_min)
+    with assms have "a = the (PQ.priority (pqueue xs) (PQ.min (pqueue xs)))"
+      by (simp add: find_min_p_min)
 
     moreover
     from Node ot have "val (the (find_min xs)) = v" by simp

@@ -31,7 +31,7 @@ using assms proof (induct xs)
 qed simp
 
 text {*
-  Terminology:
+  \noindent Terminology:
 
   \begin{itemize}
 
@@ -55,7 +55,7 @@ text {*
 
 subsection {* Binomial queue properties *}
 
-subsubsection {* Binomial tree property *} text {* ~ *}
+subsubsection {* Binomial tree property *}
 
 inductive is_bintree_list :: "nat \<Rightarrow> ('a, 'b) bintree list \<Rightarrow> bool" where
   is_bintree_list_Nil [simp]: "is_bintree_list 0 []"
@@ -89,7 +89,7 @@ lemma is_bintree_children_length_desc:
   using assms by (induct ts) simp_all
 
 
-subsubsection {* Heap property *} text {* ~ *}
+subsubsection {* Heap property *}
 
 inductive is_heap_list :: "'a::linorder \<Rightarrow> ('a, 'b) bintree list \<Rightarrow> bool" where
   is_heap_list_Nil: "is_heap_list h []"
@@ -123,7 +123,7 @@ lemma is_heap_Min_children_larger:
   by (simp add: is_heap_children_larger)
 
 
-subsubsection {* Combination of both: binqueue property *} text {* ~ *}
+subsubsection {* Combination of both: binqueue property *}
 
 inductive is_binqueue :: "nat \<Rightarrow> ('a::linorder, 'b) binqueue \<Rightarrow> bool" where
   Empty: "is_binqueue l []"
@@ -165,14 +165,15 @@ lemma is_binqueue_select:
   by (induct xs arbitrary: l) (auto intro: is_binqueue.intros elim: is_binqueue.cases)
 
 
-subsubsection {* Normalized representation *} text {* ~ *}
+subsubsection {* Normalized representation *}
 
 inductive normalized :: "('a, 'b) binqueue \<Rightarrow> bool" where
   normalized_Nil: "normalized []"
 | normalized_single: "normalized [Some t]"
 | normalized_append: "xs \<noteq> [] \<Longrightarrow> normalized xs \<Longrightarrow> normalized (ys @ xs)"
 
-lemma normalized_last_not_None: -- "\\ sometimes the inductive definition might work better"
+lemma normalized_last_not_None:
+  -- "\\ sometimes the inductive definition might work better"
   "normalized xs \<longleftrightarrow> xs = [] \<or> last xs \<noteq> None"
 proof
   assume "normalized xs"
@@ -234,7 +235,7 @@ lemma is_binqueue_normalize:
 
 subsection {* Operations *}
 
-subsubsection {* Adding data *} text {* ~ *}
+subsubsection {* Adding data *}
 
 definition merge :: "('a::linorder, 'b) bintree \<Rightarrow> ('a, 'b) bintree \<Rightarrow> ('a, 'b) bintree" where
   "merge t1 t2 = (if priority t1 < priority t2
@@ -545,7 +546,8 @@ next
     assume "min xs \<noteq> None"
     
     then obtain a where "min xs = Some a" by auto
-    hence "find_min xs \<noteq> None" by (simp add: find_min_def min_exists find_works_not_None)
+    hence "find_min xs \<noteq> None"
+      by (simp add: find_min_def min_exists find_works_not_None)
     with * show False by simp
   qed
 qed
@@ -592,13 +594,16 @@ lemma normalized_find_min_exists:
   "normalized xs \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> \<exists>t. find_min xs = Some t"
 by (drule normalized_min_not_None) (simp_all add: min_eq_find_min_None)
 
-primrec match :: "'a::linorder \<Rightarrow> ('a, 'b) bintree option \<Rightarrow> ('a, 'b) bintree option" where
+primrec
+  match :: "'a::linorder \<Rightarrow> ('a, 'b) bintree option \<Rightarrow> ('a, 'b) bintree option"
+where
   "match a None = None"
 | "match a (Some t) = (if priority t = a then None else Some t)"
 
 definition delete_min :: "('a::linorder, 'b) binqueue \<Rightarrow> ('a, 'b) binqueue" where
   "delete_min xs = (case find_min xs
-    of Some (Node a v ts) \<Rightarrow> normalize (meld (map Some (rev ts)) (map (match a) xs)) 
+    of Some (Node a v ts) \<Rightarrow>
+         normalize (meld (map Some (rev ts)) (map (match a) xs)) 
      | None \<Rightarrow> [])"
 
 lemma delete_min_empty [simp]:
@@ -606,8 +611,9 @@ lemma delete_min_empty [simp]:
   by (simp add: delete_min_def)
 
 lemma delete_min_nonempty [simp]:
-  "normalized xs \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> find_min xs = Some t \<Longrightarrow>
-    delete_min xs = normalize (meld (map Some (rev (children t))) (map (match (priority t)) xs))"
+  "normalized xs \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> find_min xs = Some t
+    \<Longrightarrow> delete_min xs = normalize
+      (meld (map Some (rev (children t))) (map (match (priority t)) xs))"
   unfolding delete_min_def by (cases t) simp
 
 lemma is_binqueue_delete_min:
@@ -615,26 +621,33 @@ lemma is_binqueue_delete_min:
   shows "is_binqueue 0 (delete_min xs)"
 proof (cases "find_min xs")
   case (Some t)
-  from assms have "is_binqueue 0 (map (match (priority t)) xs)" by (induct xs) simp_all
+  from assms have "is_binqueue 0 (map (match (priority t)) xs)"
+    by (induct xs) simp_all
 
   moreover
   from Some have "Some t \<in> set xs" by (rule find_min_exist)
-  with assms have "\<exists>l. is_bintree l t" and "is_heap t" using is_binqueue_select[of 0 xs t] by auto
-  with assms have "is_binqueue 0 (map Some (rev (children t)))" by (auto simp add: is_binqueue_children)
+  with assms have "\<exists>l. is_bintree l t" and "is_heap t"
+    using is_binqueue_select[of 0 xs t] by auto
+  with assms have "is_binqueue 0 (map Some (rev (children t)))"
+    by (auto simp add: is_binqueue_children)
   
   ultimately show ?thesis using Some
-    by (auto simp add: is_binqueue_meld delete_min_def is_binqueue_normalize split: bintree.split)
+    by (auto simp add: is_binqueue_meld delete_min_def is_binqueue_normalize
+      split: bintree.split)
 qed (simp add: delete_min_def)
 
 lemma normalized_delete_min:
   "normalized (delete_min xs)"
-  by (cases "find_min xs") (auto simp add: delete_min_def normalized_normalize split: bintree.split)
+  by (cases "find_min xs")
+    (auto simp add: delete_min_def normalized_normalize split: bintree.split)
 
 
-subsubsection {* Dedicated grand unified operation for generated program *} text {* ~ *}
+subsubsection {* Dedicated grand unified operation for generated program *}
 
-definition meld' :: "('a, 'b) bintree option \<Rightarrow> ('a::linorder, 'b) binqueue \<Rightarrow> ('a, 'b) binqueue
-  \<Rightarrow> ('a, 'b) binqueue" where
+definition
+  meld' :: "('a, 'b) bintree option \<Rightarrow> ('a::linorder, 'b) binqueue
+    \<Rightarrow> ('a, 'b) binqueue \<Rightarrow> ('a, 'b) binqueue"
+where
   "meld' z xs ys = add z (meld xs ys)"
 
 lemma [code]:
@@ -643,9 +656,12 @@ lemma [code]:
   by (simp_all add: meld'_def)
 
 lemma [code]:
-  "meld' z (Some t # xs) (Some r # ys) = z # (meld' (Some (merge t r)) xs ys)"
-  "meld' (Some t) (Some r # xs) (None # ys) = None # (meld' (Some (merge t r)) xs ys)"
-  "meld' (Some t) (None # xs) (Some r # ys) = None # (meld' (Some (merge t r)) xs ys)"
+  "meld' z (Some t # xs) (Some r # ys) =
+    z # (meld' (Some (merge t r)) xs ys)"
+  "meld' (Some t) (Some r # xs) (None # ys) =
+    None # (meld' (Some (merge t r)) xs ys)"
+  "meld' (Some t) (None # xs) (Some r # ys) =
+    None # (meld' (Some (merge t r)) xs ys)"
   "meld' None (x # xs) (None # ys) = x # (meld' None xs ys)"
   "meld' None (None # xs) (y # ys) = y # (meld' None xs ys)"
   "meld' z (None # xs) (None # ys) = z # (meld' None xs ys)"
@@ -656,12 +672,14 @@ lemma [code]:
   by (simp add: meld'_def | cases z)+
 
 
-subsubsection {* Interface operations *} text {* ~ *}
+subsubsection {* Interface operations *}
 
 abbreviation (input) empty :: "('a,'b) binqueue" where
   "empty \<equiv> []"
 
-definition insert :: "'a::linorder \<Rightarrow> 'b \<Rightarrow> ('a, 'b) binqueue \<Rightarrow> ('a, 'b) binqueue" where
+definition
+  insert :: "'a::linorder \<Rightarrow> 'b \<Rightarrow> ('a, 'b) binqueue \<Rightarrow> ('a, 'b) binqueue"
+where
   "insert a v xs = add (Some (Node a v [])) xs"
 
 lemma insert_simps [simp]:
@@ -678,7 +696,9 @@ lemma normalized_insert:
   "normalized xs \<Longrightarrow> normalized (insert a v xs)"
   by (simp add: normalized_add insert_def)
 
-definition pop :: "('a::linorder, 'b) binqueue \<Rightarrow> (('b \<times> 'a) option \<times> ('a, 'b) binqueue)" where
+definition
+  pop :: "('a::linorder, 'b) binqueue \<Rightarrow> (('b \<times> 'a) option \<times> ('a, 'b) binqueue)"
+where
   "pop xs = (case find_min xs of 
       None \<Rightarrow> (None, xs) 
     | Some t  \<Rightarrow> (Some (val t, priority t), delete_min xs))"
@@ -689,14 +709,15 @@ lemma pop_empty [simp]:
 
 lemma pop_nonempty [simp]:
   "normalized xs \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> find_min xs = Some t
-    \<Longrightarrow> pop xs = (Some (val t, priority t),
-      normalize (meld (map Some (rev (children t))) (map (match (priority t)) xs)))"
+    \<Longrightarrow> pop xs = (Some (val t, priority t), normalize
+      (meld (map Some (rev (children t))) (map (match (priority t)) xs)))"
   by (simp add: pop_def)
 
 lemma pop_code [code]:
   "pop xs = (case find_min xs of 
       None \<Rightarrow> (None, xs) 
-    | Some t  \<Rightarrow> (Some (val t, priority t), normalize (meld (map Some (rev (children t))) (map (match (priority t)) xs))))"
+    | Some t  \<Rightarrow> (Some (val t, priority t), normalize
+       (meld (map Some (rev (children t))) (map (match (priority t)) xs))))"
   by (cases "find_min xs") (simp_all add: pop_def delete_min_def split: bintree.split)
 
 end
