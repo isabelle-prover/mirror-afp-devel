@@ -13,9 +13,9 @@ val max_secs = 60
 
 (*
 val _ = File.write path ""
-fun write_out s = (priority s; File.append path (s ^ "\n"))
+fun write_out s = (Output.urgent_message s; File.append path (s ^ "\n"))
 *)
-val write_out = priority
+val write_out = Output.urgent_message
 
 fun test name =
   let
