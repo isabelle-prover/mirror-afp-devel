@@ -130,16 +130,44 @@ abstract = The correctness is shown of binary search tree operations (lookup, in
 
 [Binomial-Queues]
 title = Functional Binomial Queues
-author = René Neumann <mailto:neumannr@in.tum.de>
+author = Ren&eacute; Neumann <mailto:neumannr@in.tum.de>
+date = 2010-10-28
+topic = Computer Science/Data Structures
+abstract = Priority queues are an important data structure and efficient implementations of them are crucial. We implement a functional variant of binomial queues in Isabelle/HOL and show its functional correctness. A verification against an abstract reference specification of priority queues has also been attempted, but could not be achieved to the full extent.
+
+[Binomial-Heaps]
+title = Binomial Heaps and Skew Binomial Heaps
+author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <mailto:peter.lammich@uni-muenster.de>
+date = 2010-10-28
+topic = Computer Science/Data Structures
+abstract = 
+ We implement and prove correct binomial heaps and skew binomial heaps.
+ Both are data-structures for priority queues.
+ While binomial heaps have logarithmic <em>findMin</em>, <em>deleteMin</em>,
+ <em>insert</em>, and <em>meld</em> operations,
+ skew binomial heaps have constant time <em>findMin</em>, <em>insert</em>,
+ and <em>meld</em> operations, and only the <em>deleteMin</em>-operation is
+ logarithmic. This is achieved by using <em>skew links</em> to avoid
+ cascading linking on <em>insert</em>-operations, and <em>data-structural
+ bootstrapping</em> to get constant-time <em>findMin</em> and <em>meld</em>
+ operations.  Our implementation follows the paper by Brodal and Okasaki.
+
+[Finger-Trees]
+title = Finger Trees
+author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan K&ouml;rner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <mailto:peter.lammich@uni-muenster.de>
 date = 2010-10-28
 topic = Computer Science/Data Structures
 abstract =
-  Priority queues are an important data structure and
-  efficient implementations of them are crucial.  We implement a functional
-  variant of binomial queues in Isabelle/HOL and show its functional
-  correctness. A verification against an abstract reference specification of
-  priority queues has also been attempted, but could not be achieved to the
-  full extent.
+ We implement and prove correct 2-3 finger trees.
+ Finger trees are a general purpose data structure, that can be used to
+ efficiently implement other data structures, such as priority queues.
+ Intuitively, a finger tree is an annotated sequence, where the annotations are
+ elements of a monoid. Apart from operations to access the ends of the sequence,
+ the main operation is to split the sequence at the point where a
+ <em>monotone predicate</em> over the sum of the left part of the sequence
+ becomes true for the first time.
+ The implementation follows the paper of Hintze and Paterson.
+ The code generator can be used to get efficient, verified code.
 
 [FinFun]
 title = Code Generation for Functions as Data 
