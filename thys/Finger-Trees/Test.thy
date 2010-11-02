@@ -60,9 +60,6 @@ definition
   fti_count :: "('e,nat) FingerTree \<Rightarrow> _"
   where "fti_count == FingerTree.count"
 
-
-
-
 export_code 
   fti_toList
   fti_toTree
@@ -84,37 +81,33 @@ export_code
   fti_count
   in Haskell file -
   in OCaml file -
-  in SML module_name test
+  in SML file -
 
 ML {*
-  open test;
-  val t1 = fti_toTree [("a",1),("b",2),("c",3)];
-  val t2 = fti_toTree [("d",1),("e",2),("f",3)];
-  val t3 = fti_app t1 t2;
-  val t3 = fti_app t3 (fti_empty ());
+  val t1 = @{code fti_toTree} [("a",1),("b",2),("c",3)];
+  val t2 = @{code fti_toTree} [("d",1),("e",2),("f",3)];
+  val t3 = @{code fti_app} t1 t2;
+  val t3 = @{code fti_app} t3 (@{code fti_empty} ());
 
-  val t4 = fti_lcons ("g",7) t3;
-  val t4 = fti_rcons t3 ("g",7);
-  fti_toList t4;
-  fti_annot t4;
-  fti_viewL t4;
-  fti_viewR t4;
-  fti_head t4;
-  fti_tail t4;
-  fti_headR t4;
-  fti_tailR t4;
-  fti_count t4;
-  fti_isEmpty t4;
-  fti_isEmpty (fti_empty ());
+  val t4 = @{code fti_lcons} ("g",7) t3;
+  val t4 = @{code fti_rcons} t3 ("g",7);
+  @{code fti_toList} t4;
+  @{code fti_annot} t4;
+  @{code fti_viewL} t4;
+  @{code fti_viewR} t4;
+  @{code fti_head} t4;
+  @{code fti_tail} t4;
+  @{code fti_headR} t4;
+  @{code fti_tailR} t4;
+  @{code fti_count} t4;
+  @{code fti_isEmpty} t4;
+  @{code fti_isEmpty} (@{code fti_empty} ());
 
-  val (tl,(e,tr)) = fti_splitTree (fn a => a>=10) 0 t4;
-  fti_toList tl; e; fti_toList tr;
+  val (tl,(e,tr)) = @{code fti_splitTree} (fn a => a>=10) 0 t4;
+  @{code fti_toList} tl; e; @{code fti_toList} tr;
 
-  fti_foldl (fn s => fn (_,a) => s+a) 0 t4;
-  fti_foldr (fn (_,a) => fn s => s+a) t4 0;
-
-
-
+  @{code fti_foldl} (fn s => fn (_,a) => s+a) 0 t4;
+  @{code fti_foldr} (fn (_,a) => fn s => s+a) t4 0;
 *}
 
 end

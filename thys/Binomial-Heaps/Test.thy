@@ -39,7 +39,6 @@ definition
   bh_meld :: "('a,nat) BinomialHeap \<Rightarrow> _"
   where "bh_meld \<equiv> BinomialHeap.meld"
 
-
 export_code 
   sh_empty
   sh_findMin
@@ -52,36 +51,32 @@ export_code
   bh_deleteMin
   bh_insert
   bh_meld
-in Haskell file -
-in OCaml file -
-in SML module_name test
+  in Haskell file -
+  in OCaml file -
+  in SML file -
 
 ML {*
-  open test;
-
   (* ** Binomial Heaps ** *)
 
-  val q1 = bh_insert "a" 1 (bh_insert "b" 2 (bh_empty ()));
-  val q2 = bh_insert "c" 3 (bh_insert "d" 4 (bh_empty ()));
+  val q1 = @{code bh_insert} "a" 1 (@{code bh_insert} "b" 2 (@{code bh_empty} ()));
+  val q2 = @{code bh_insert} "c" 3 (@{code bh_insert} "d" 4 (@{code bh_empty} ()));
 
-  val q = bh_meld q1 q2;
-  bh_findMin q;
+  val q = @{code bh_meld} q1 q2;
+  @{code bh_findMin} q;
 
-  val q = bh_deleteMin q;
-  bh_findMin q;
+  val q = @{code bh_deleteMin} q;
+  @{code bh_findMin} q;
 
 
   (* ** Skew Binomial Heaps ** *)
-  val q1 = sh_insert "a" 1 (sh_insert "b" 2 (sh_empty ()));
-  val q2 = sh_insert "c" 3 (sh_insert "d" 4 (sh_empty ()));
+  val q1 = @{code sh_insert} "a" 1 (@{code sh_insert} "b" 2 (@{code sh_empty} ()));
+  val q2 = @{code sh_insert} "c" 3 (@{code sh_insert} "d" 4 (@{code sh_empty} ()));
 
-  val q = sh_meld q1 q2;
-  sh_findMin q;
+  val q = @{code sh_meld} q1 q2;
+  @{code sh_findMin} q;
 
-  val q = sh_deleteMin q;
-  sh_findMin q;
-
+  val q = @{code sh_deleteMin} q;
+  @{code sh_findMin} q;
 *}
-
 
 end
