@@ -50,7 +50,7 @@ lemma removeAll_multiset:
   assumes "distinct a" "x \<in> set a"
   shows "multiset_of a = {#x#} + multiset_of (removeAll x a)"
 using assms
-proof (induct a rule: list.induct)
+proof (induct a)
   case (Cons y a')
   thus ?case
   proof (cases "x = y")
