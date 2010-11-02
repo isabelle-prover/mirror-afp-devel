@@ -7,7 +7,6 @@ theory TameProps
 imports Tame RTranCl
 begin
 
-
 lemma length_disj_filter_le: "\<forall>x \<in> set xs. \<not>(P x \<and> Q x) \<Longrightarrow>
  length(filter P xs) + length(filter Q xs) \<le> length xs"
 by(induct xs) auto
@@ -25,9 +24,9 @@ proof -
 qed
 
 lemma faceCountMax_bound:
- "\<lbrakk> tame g; v \<in> \<V> g \<rbrakk> \<Longrightarrow> tri g v + quad g v \<le> 6"
+ "\<lbrakk> tame g; v \<in> \<V> g \<rbrakk> \<Longrightarrow> tri g v + quad g v \<le> 7"
 using tri_quad_le_degree[of g v]
-by(auto simp:tame_def tame\<^isub>4\<^isub>5_def split:split_if_asm)
+by(auto simp:tame_def tame11b_def split:split_if_asm)
 
 
 lemma filter_tame_succs:
@@ -81,57 +80,6 @@ next
     hence False using Ph' RTranCl_inv[OF invPU] untame succs
       by (unfold untame_def) fast
     thus ?case ..
-  qed
-qed
-
-
-lemma comp_map_tame_pres:
-assumes invP: "invariant P succs"
-and invPU: "invariant (%g. P g \<and> U g) succs" and untame: "untame U"
-and f_fin: "!!g. final g \<Longrightarrow> f g = g"
-and invPUf: "invariant (%g. P g \<and> U g) (%g. [f g])"
-and succs_f: "!!g\<^isub>0 g g'. P g\<^isub>0 \<Longrightarrow> g \<in> set(succs g\<^isub>0) \<Longrightarrow> g' \<in> set(succs g) \<Longrightarrow>
-              U g' \<or> f g = g \<or> f g' = f g"
-and gg': "g [succs]\<rightarrow>* g'"
-shows "P g \<Longrightarrow> final g' \<Longrightarrow> tame g' \<Longrightarrow> g [map f o succs]\<rightarrow>* g'"
-using gg'
-proof (induct rule:RTranCl.induct)
-  case refl show ?case by(rule RTranCl.refl)
-next
-  case (succs h h' h'')
-  hence Ph': "P h'" using invP by(unfold invariant_def) blast
-  hence IH: "h' [map f \<circ> succs]\<rightarrow>* h''" using succs by blast
-  thus ?case
-  proof (rule RTranCl_elim)
-    assume "h'' = h'"
-    moreover hence "f h' = h'" using f_fin[OF succs(5)] by simp
-    ultimately show ?case using succs(1)
-      by(force intro!: RTranCl.succs[OF _ RTranCl.refl])
-  next
-    fix h\<^isub>2
-    assume 1: "h' [map f \<circ> succs]\<rightarrow> h\<^isub>2" and
-           2: "h\<^isub>2 [map f \<circ> succs]\<rightarrow>* h''"
-    from 1 obtain h\<^isub>1 where h\<^isub>1: "h\<^isub>1 \<in> set(succs h')" and [simp]: "h\<^isub>2 = f h\<^isub>1"
-      by force
-    { assume Uh\<^isub>1: "U h\<^isub>1"
-      have invPU2: "invariant (%g. P g \<and> U g) (map f o succs)"
-	using invPU invPUf by(auto simp:invariant_def)
-      have Ph\<^isub>1: "P h\<^isub>1" using succs(1) succs(4) h\<^isub>1 invP
-	by(unfold invariant_def) blast
-      have PUh\<^isub>2: "P h\<^isub>2 \<and> U h\<^isub>2" using invariantE[OF invPUf] Ph\<^isub>1 Uh\<^isub>1 by auto
-      from RTranCl_inv[OF invPU2 2, OF PUh\<^isub>2]
-      have False using succs(5-6) untame by(auto simp:untame_def)
-      hence ?thesis ..
-    } moreover
-    { assume "f h' = h'"
-      hence "h' \<in> set((map f o succs) h)" using succs(1) by force
-      hence ?thesis using IH by(rule RTranCl.succs)
-    } moreover
-    { assume ff: "f h\<^isub>1 = f h'"
-      hence "h\<^isub>2 \<in> set((map f o succs) h)" using succs(1) by auto
-      hence ?thesis using 2 by(rule RTranCl.succs)
-    }
-    ultimately show ?thesis using succs_f[OF succs(4) succs(1) h\<^isub>1] by blast
   qed
 qed
 

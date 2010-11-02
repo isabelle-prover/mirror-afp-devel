@@ -71,56 +71,12 @@ lemma ListSum_eq [trans]:
 by(auto intro!:listsum_cong)
 
 
-lemma ListSum_set_eq: 
- "\<And>C. distinct B \<Longrightarrow> distinct C \<Longrightarrow> set B = set C \<Longrightarrow>
-  \<Sum>\<^bsub>a \<in> B\<^esub> f a = \<Sum>\<^bsub>a \<in> C\<^esub> (f a::nat)"
-  by (simp add: ListSum_conv_setsum)
-
 lemma ListSum_disj_union: 
   "distinct A \<Longrightarrow> distinct B \<Longrightarrow> distinct C \<Longrightarrow> 
   set C = set A \<union> set B  \<Longrightarrow> 
   set A \<inter> set B = {} \<Longrightarrow>
   \<Sum>\<^bsub>a \<in> C\<^esub> (f a) = (\<Sum>\<^bsub>a \<in> A\<^esub> f a) + (\<Sum>\<^bsub>a \<in> B\<^esub> (f a::nat))"
-  by (simp add: ListSum_conv_setsum setsum_Un_disjoint)
-
-
-definition separating :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> bool" where
-  "separating V F \<equiv> 
-   (\<forall>v1 \<in> V. \<forall>v2 \<in> V. v1 \<noteq> v2 \<longrightarrow>  F v1 \<inter> F v2 = {})"
-
-
-lemma separating_insert1: 
-  "separating (insert a V) F \<Longrightarrow> separating V F"
-  by (simp add: separating_def)
-
-lemma separating_insert2:
-  "separating (insert a V) F \<Longrightarrow> a \<notin> V \<Longrightarrow>  v \<in> V \<Longrightarrow> 
-  F a \<inter> F v = {}"
-  by (auto simp add: separating_def)
-
-lemma setsum_disj_Union: 
- "finite V \<Longrightarrow> 
-  (\<And>f. finite (F f)) \<Longrightarrow> 
-  separating V F \<Longrightarrow> 
-  (\<Sum>v\<in>V. \<Sum>f\<in>(F v). (w f::nat)) = (\<Sum>f\<in>(\<Union>v\<in>V. F v). w f)"
-proof (induct  rule: finite_induct)
-  case empty then show ?case by simp
-next
-  case (insert a V) 
-  then have s: "separating (insert a V) F" by simp
-  then have "separating V F" by (rule_tac separating_insert1)
-  with insert
-  have IH: "(\<Sum>v\<in>V. \<Sum>f\<in>(F v). w f) = (\<Sum>f\<in>(\<Union>v\<in>V. F v). w f)" 
-    by simp
-
-  moreover have fin: "finite V" "a \<notin> V" "\<And>f. finite (F f)" by fact+
-
-  moreover from s have "\<And>v. a \<notin> V \<Longrightarrow> v \<in> V \<Longrightarrow> F a \<inter> F v = {}"
-   by (simp add: separating_insert2)
-  with fin have "(F a) \<inter> (\<Union>v\<in>V. F v) = {}" by auto 
-
-  ultimately show ?case by (simp add: setsum_Un_disjoint)
-qed
+by (simp add: ListSum_conv_setsum setsum_Un_disjoint)
 
 
 lemma listsum_const[simp]: 
@@ -144,29 +100,5 @@ qed
 lemma ListSum1_bound:
  "a \<in> set F \<Longrightarrow> (d a::nat)  \<le> \<Sum>\<^bsub>f \<in> F\<^esub> d f"
 by (induct F) auto
-
-lemma ListSum2_bound:
-  "a \<in> set F \<Longrightarrow> b \<in> set F \<Longrightarrow> a \<noteq> b \<Longrightarrow> d a + d b \<le> \<Sum>\<^bsub>f \<in> F\<^esub> (d f::nat)"
-proof (induct F)
-  case Nil then show ?case by simp
-next
-  case (Cons f F)
-  then have "a = f \<or> a \<in> set F"  "b = f \<or> b \<in> set F" by simp_all
-  then show ?case
-  proof (elim disjE)
-    assume "a = f"  "b = f" with Cons have False by simp
-    then show ?thesis by simp
-  next
-    assume "a = f"  "b \<in> set F"
-    with Cons show ?thesis by (simp add: ListSum1_bound)
-  next
-    assume "a \<in> set F" "b = f"
-    with Cons show ?thesis by (simp add: ListSum1_bound)
-  next
-    assume "a \<in> set F" "b \<in> set F"
-    with Cons have "d a + d b \<le> \<Sum>\<^bsub>f \<in> F\<^esub> d f" by simp
-    then show ?thesis by simp
-  qed
-qed
 
 end

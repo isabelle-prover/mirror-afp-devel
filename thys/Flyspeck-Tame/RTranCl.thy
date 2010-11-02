@@ -24,8 +24,6 @@ where
 | refl: "g [succs]\<rightarrow>* g"
 | succs: "g [succs]\<rightarrow> g' \<Longrightarrow> g' [succs]\<rightarrow>* g'' \<Longrightarrow> g [succs]\<rightarrow>* g''"
 
-lemmas RTranCl1 = RTranCl.succs[OF _ RTranCl.refl]
-
 inductive_cases RTranCl_elim: "(h,h') : RTranCl succs"
 
 lemma RTranCl_induct(*<*) [induct set: RTranCl, consumes 1, case_names refl succs] (*>*):
@@ -59,29 +57,9 @@ lemma inv_subset:
  "invariant P f \<Longrightarrow> (!!g. P g \<Longrightarrow> set(f' g) \<subseteq> set(f g)) \<Longrightarrow> invariant P f'"
 by(auto simp:invariant_def)
 
-lemma inv_RTranCl_subset:
-assumes inv: "invariant P succs" and f: "(!!g. P g \<Longrightarrow> (g,f g) \<in> RTranCl succs)"
-shows "invariant P (%g. [f g])"
-proof(clarsimp simp:invariant_def)
-  fix g assume "P g"
-  from f[OF `P g`] show "P(f g)"
-    by induct (auto intro!: `P g` elim!: invariantE[OF inv])
-qed
-
-lemma inv_comp_map:
- "invariant P succs \<Longrightarrow> (!!g. P g \<Longrightarrow> P(f g)) \<Longrightarrow> invariant P (map f o succs)"
-by(auto simp:invariant_def)
-
 lemma RTranCl_inv:
   "invariant P succs \<Longrightarrow> (g,g') \<in> RTranCl succs \<Longrightarrow> P g \<Longrightarrow> P g'"
 by (erule RTranCl_induct)(auto simp:invariant_def)
-
-lemma RTranCl_subset: "(!!g. set(f g) \<subseteq> set(h g)) \<Longrightarrow>
-  (s,g) : RTranCl f \<Longrightarrow> (s,g) : RTranCl h"
-apply(erule RTranCl.induct)
-apply(rule RTranCl.intros)
-apply(blast intro: RTranCl.intros)
-done
 
 lemma RTranCl_subset2:
 assumes a: "(s,g) : RTranCl f"
@@ -92,47 +70,5 @@ proof (induct rule: RTranCl.induct)
 next
   case succs thus ?case by(blast intro: RTranCl.intros)
 qed
-
-lemma RTranCl_rev_succs: 
- "(g, g') \<in> RTranCl succs \<Longrightarrow> g'' \<in> set (succs g') \<Longrightarrow> (g, g'') \<in> RTranCl succs"
-proof (induct rule: RTranCl.induct)
-  fix g assume "g'' \<in> set (succs g)" 
-  moreover have "(g'', g'') \<in> RTranCl succs" by (rule RTranCl.refl)
-  ultimately show "(g, g'') \<in> RTranCl succs" by (rule RTranCl.succs)
-next
-  fix g h' h'' assume "h' \<in> set (succs g)" 
-  moreover assume "(h', h'') \<in> RTranCl succs" and g'': "g'' \<in> set (succs h'')"
-   and IH: "g'' \<in> set (succs h'') \<Longrightarrow> (h', g'') \<in> RTranCl succs"
-  from g'' have "(h', g'') \<in> RTranCl succs" by (rule IH)
-  ultimately show "(g, g'') \<in> RTranCl succs" by (rule RTranCl.succs)
-qed
-
-lemma RTranCl_compose:
-assumes "(g,g') \<in> RTranCl succs"
-shows "(g',g'') \<in> RTranCl succs \<Longrightarrow> (g,g'') \<in> RTranCl succs"
-using assms
-proof (induct rule: RTranCl_induct)
-  case refl show ?case by fact
-next
-  case succs thus ?case by (blast intro:RTranCl.succs)
-qed
-
-
-lemma RTranCl_map_comp_subset:
-assumes inv: "invariant P succs"
-and f: "(!!g. P g \<Longrightarrow> (g,f g) \<in> RTranCl succs)"
-and a: "(s,g) \<in> RTranCl (map f o succs)"
-shows "P s \<Longrightarrow> (s,g) \<in> RTranCl succs"
-using a
-proof(induct rule: RTranCl_induct)
-  case refl thus ?case by(fast intro: RTranCl.refl)
-next
-  case (succs g g')
-  then obtain g'' where "g'' \<in> set(succs g)"  "g' = f g''" by auto
-  moreover then have "P g''"
-    using RTranCl_inv[OF inv, OF succs(2)] succs(3) inv by(simp add:invariant_def)
-  ultimately show ?case by(blast intro:RTranCl_compose RTranCl.succs f succs(2-3))
-qed
-
 
 end

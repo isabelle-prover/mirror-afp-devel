@@ -22,9 +22,10 @@ definition  d4_const :: nat where
 
 definition excessAtType :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
 "excessAtType t q e \<equiv>
-    if e = 0 then if 6 < t + q then squanderTarget
+    if e = 0 then if 7 < t + q then squanderTarget
                   else \<b> t q - t * d3_const - q * d4_const
-    else if t + q + e \<noteq> 5 then 0 else \<a> t"
+    else if t + q + e \<noteq> 6 then 0
+         else if t=5 then \<a> else squanderTarget"
 
 declare d3_const_def[simp] d4_const_def[simp]
 
@@ -79,17 +80,14 @@ definition squanderLowerBound :: "graph \<Rightarrow> nat" where
 
 text{* \paragraph{Tame graph enumeration} *}
 
-
-definition makeTrianglesFinal :: "graph \<Rightarrow> graph" where
-"makeTrianglesFinal g \<equiv>
- foldl (%g f. makeFaceFinal f g) g [f \<leftarrow> faces g. \<not> final f \<and> triangle f]"
-
-
-definition is_tame\<^isub>7 :: "graph \<Rightarrow> bool" where
-"is_tame\<^isub>7 g \<equiv> squanderLowerBound g < squanderTarget"
+definition is_tame13a :: "graph \<Rightarrow> bool" where
+"is_tame13a g \<equiv> squanderLowerBound g < squanderTarget"
 
 definition notame :: "graph \<Rightarrow> bool" where
-"notame g \<equiv> \<not> (tame\<^isub>4\<^isub>5 g \<and> is_tame\<^isub>7 g)"
+"notame g \<equiv> \<not> (tame10ub g \<and> tame11b g)"
+
+definition notame7 :: "graph \<Rightarrow> bool" where
+"notame7 g \<equiv> \<not> (tame10ub g \<and> tame11b g \<and> is_tame13a g)"
 
 definition generatePolygonTame :: "nat \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> graph \<Rightarrow> graph list" where
 "generatePolygonTame n v f g \<equiv>
@@ -111,9 +109,6 @@ definition next_tame0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("ne
      if fs = [] then []
      else let f = minimalFace fs; v = minimalVertex g f
           in \<Squnion>\<^bsub>i \<in> polysizes p g\<^esub> generatePolygonTame i v f g"
-
-definition next_tame1 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_tame1\<^bsub>_\<^esub>") where
-"next_tame1\<^bsub>p\<^esub> \<equiv> map makeTrianglesFinal o next_tame0\<^bsub>p\<^esub>"
 
 text{*\noindent Extensionally, @{const next_tame0} is just
 @{term"filter P o next_plane p"} for some suitable @{text P}. But

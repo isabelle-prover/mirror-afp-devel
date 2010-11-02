@@ -28,6 +28,9 @@ lemma trans6: "(a::nat) = b1 + (b2 + b3) + b4 \<Longrightarrow> b3 = 0 \<Longrig
             a = b1 + b2 + b4" by (simp add: add_ac)
 (*>*)
 
+(* FIXME in Tame: admissibility should be expressed via setsum!
+   \<rightarrow> convert a lot of listsum to setsum
+*)
 
 theorem total_weight_lowerbound:
  "inv g \<Longrightarrow> final g \<Longrightarrow> tame g \<Longrightarrow> admissible w g \<Longrightarrow>
@@ -55,7 +58,7 @@ proof -
   txt {* We expand the definition of @{text "ExcessNotAt"}. *}
   also from ExcessNotAt_eq[OF pl[THEN inv_mgp] final] obtain V
     where eq: "ExcessNotAt g None = \<Sum>\<^bsub>v \<in> V\<^esub> ExcessAt g v"
-    and pS:  "preSeparated g (set V)"
+    and pS:  "separated g (set V)"
     and V_subset: "set V \<subseteq> set(vertices g)"
     and V_distinct: "distinct V" (*<*)
     by (blast) note eq
@@ -67,14 +70,17 @@ proof -
   also def V1 \<equiv> "[v \<leftarrow> V. except g v = 0]"
   def V2 \<equiv> "[v \<leftarrow> V. except g v \<noteq> 0]"  (*<*)
   have s: "set V1 \<subseteq> set V" by (auto simp add: V1_def)
-  with pS obtain pSV1: "preSeparated g (set V1)"
-    by (auto dest: preSeparated_subset)
+  with pS obtain pSV1: "separated g (set V1)"
+    by (auto dest: separated_subset)
   from V_distinct obtain V1_distinct: "distinct V1"
     by (unfold V1_def) (auto dest: distinct_filter)
   obtain noExV1: "noExceptionals g (set V1)"
     by (auto simp add: V1_def noExceptionals_def
       exceptionalVertex_def)
 (*>*) (* *)
+
+  have V_subset_simp: "!!v. v: set V \<Longrightarrow> v : \<V> g"
+    using V_subset by fast
 
   have "(\<Sum>\<^bsub>v \<in> V\<^esub> ExcessAt g v)
     = (\<Sum>\<^bsub>v \<in> V1\<^esub> ExcessAt g v) + (\<Sum>\<^bsub>v \<in> V2\<^esub> ExcessAt g v)" (*<*)
@@ -85,16 +91,19 @@ proof -
   $V3$ contains all exceptional vertices of degree $5$.
   *}
 
-  also def V4 \<equiv> "[v \<leftarrow> V2. degree g v \<noteq> 5]"
-  def V3 \<equiv> "[v \<leftarrow> V2. degree g v = 5]"
+  also def V4 \<equiv> "[v \<leftarrow> V2. vertextype g v \<noteq> (5,0,1)]"
+  def V3 \<equiv> "[v \<leftarrow> V2. vertextype g v = (5,0,1)]"
 
 (*<*)
-  with pS V2_def have "preSeparated g (set V3)"
-   by (rule_tac preSeparated_subset) auto
+  with pS V2_def have V3: "separated g (set V3)"
+    by (rule_tac separated_subset) auto
+  have "distinct V3" by(simp add:V3_def V2_def `distinct V`)
+(*
   with V3_def V2_def obtain V3: "separated g (set V3)"
-    by (simp add: separated_def preSeparated_def separated\<^isub>1_def
+    by (simp add: vertextype_def separated_def preSeparated_def separated\<^isub>1_def
       separated\<^isub>4_def)
-  from V_subset obtain V3_subset: "set V3 \<subseteq> set (vertices g)"
+*)
+  from V_subset obtain V3_subset: "set V3 \<subseteq> \<V> g"
     by (auto simp add: V3_def V2_def)
 (*>*)
 
@@ -137,12 +146,12 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
        from v1 have "v1 \<in> set V" by (simp add: V1_def)
        with f pS c have "set (vertices f) \<inter> set V = {v1}"
-         by (simp add: preSeparated_def separated\<^isub>3_def)
+         by (simp add: separated_def separated\<^isub>3_def)
 
        moreover from v3 have "v3 \<in> set V"
          by (simp add: V3_def V2_def)
        with v3 pS c have "set (vertices f) \<inter> set V = {v3}"
-         by (simp add: preSeparated_def separated\<^isub>3_def)
+         by (simp add: separated_def separated\<^isub>3_def)
        ultimately show False by auto
     qed
   qed simp
@@ -186,17 +195,18 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
   also (trans1)
     from pl final V_subset have
-    "(\<Sum>\<^bsub>v \<in> V3\<^esub> ExcessAt g v) = \<Sum>\<^bsub>v \<in> V3\<^esub> \<a> (tri g v)" (*<*)
+    "(\<Sum>\<^bsub>v \<in> V3\<^esub> ExcessAt g v) = \<Sum>\<^bsub>v \<in> V3\<^esub> \<a>" (*<*)
      apply (rule_tac ListSum_eq)
-     apply (simp add: V3_def V2_def excessAtType_def ExcessAt_def degree_eq)
-     apply (subgoal_tac "finalVertex g v")
-     apply force by(blast intro: finalVertexI) (*>*) (* *)
+     apply (simp add: V3_def V2_def excessAtType_def ExcessAt_def degree_eq vertextype_def)
+     by(blast intro: finalVertexI)
+(*     apply force by(blast intro: finalVertexI)*) (*>*) (* *)
 
   txt {* ($E_3$) For all exceptional vertices of degree $\neq 5$
   @{text "ExcessAt"} returns 0. *}
 
-  also from pl final have "(\<Sum>\<^bsub>v \<in> V4\<^esub> ExcessAt g v) = \<Sum>\<^bsub>v \<in> V4\<^esub> 0" (*<*) apply (rule_tac ListSum_eq)
-   by (auto simp add: V2_def V4_def excessAtType_def ExcessAt_def degree_eq) (*>*) (* *)
+  also from pl final tame have "(\<Sum>\<^bsub>v \<in> V4\<^esub> ExcessAt g v) = \<Sum>\<^bsub>v \<in> V4\<^esub> 0" (*<*)
+    by (rule_tac ListSum_eq)
+       (auto simp: V2_def V4_def excessAtType_def ExcessAt_def degree_eq V_subset_simp tame_def tame12o_def) (*>*) (* *)
 
   also have "\<dots> = 0" (*<*) by simp   (*>*) (* *)
 
@@ -214,7 +224,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
   also(trans2) from pSV1 V1_distinct V_subset have "\<dots> = \<Sum>\<^bsub>f \<in> F1\<^esub> w f"
     apply (unfold F1_def)
-    apply (rule preSeparated_disj_Union2)
+    apply (rule ScoreProps.separated_disj_Union2)
     apply (rule pl)
     apply (rule final)
     apply (rule noExV1)
@@ -226,9 +236,40 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
   txt {* ($A_2$) We use property @{text "admissible\<^isub>4"}. *}
 
-  also from admissible V3 V3_subset have
-    "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a> (tri g v)) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) \<le> \<Sum>\<^bsub>f \<in> F3 \<^esub>w f" (*<*)
-    by (simp add: admissible_def admissible\<^isub>3_def F3) (*>*) (* *)
+  also have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) \<le> \<Sum>\<^bsub>f \<in> F3 \<^esub>w f" (*<*)
+  proof-
+    def T == "[f\<leftarrow>F3. triangle f]"
+    def E == "[f\<leftarrow>F3. ~ triangle f]"
+    have "(\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) =
+      (\<Sum>\<^bsub>f\<in>T\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| )"
+      by(simp only: T_def E_def ListSum_compl2)
+    also have "(\<Sum>\<^bsub>f\<in>T\<^esub> \<d> |vertices f| ) =
+          (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) Int triangle]\<^esub> \<d> |vertices f| )"
+      by(rule listsum_cong[OF _ HOL.refl])
+        (simp add:T_def F3 mem_def Int_def Collect_def)
+    also have "\<dots> = (\<Sum>\<^bsub>v \<in> V3\<^esub> \<Sum>\<^bsub>f \<in> filter triangle (facesAt g v)\<^esub> \<d> |vertices f| )"
+      by(rule ListSum_V_F_eq_ListSum_F[symmetric, OF `inv g` V3 `distinct V3` `set V3 \<subseteq> \<V> g`])
+        (simp add:Ball_def mem_def)
+    also have "\<dots> = 0" by (simp add: squanderFace_def)
+    finally have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) =
+      (\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| )" by simp
+    also have "(\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f\<in>E\<^esub> w f )"
+      using `admissible w g`
+      by(rule_tac ListSum_le)
+        (simp add: admissible_def admissible\<^isub>1_def E_def F3_def F2_def)
+    also have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) \<le> (\<Sum>\<^bsub>v\<in>V3\<^esub> \<Sum>\<^bsub>f\<in>filter triangle (facesAt g v)\<^esub> w(f))"
+      using `admissible w g`
+      by(rule_tac ListSum_le)
+        (simp add: admissible_def admissible\<^isub>3_def V3_def V2_def V_subset_simp)
+    also have "\<dots> = \<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) Int triangle]\<^esub> w f"
+      by(rule ListSum_V_F_eq_ListSum_F[OF `inv g` V3 `distinct V3` `set V3 \<subseteq> \<V> g`])
+        (simp add:Ball_def mem_def)
+    also have "\<dots> = \<Sum>\<^bsub>f\<in>T\<^esub> w f"
+      by(simp add: T_def F3 mem_def Int_def Collect_def)
+    also have "ListSum T w + ListSum E w = ListSum F3 w"
+      by(simp add: T_def E_def ListSum_compl2)
+    finally show ?thesis by simp
+  qed
 
   txt_raw {* \newpage *}
   txt {* ($A_3$) We use property @{text "admissible\<^isub>1"}. *}
