@@ -59,9 +59,6 @@ lemma filter_emptyE[dest]: "(filter P xs = []) \<Longrightarrow>  x \<in> set xs
 lemma filter_comm: "[x \<leftarrow> xs. P x \<and> Q x] = [x \<leftarrow> xs. Q x \<and> P x]"
   by (simp add: conj_aci)
 
-lemma filter1: " [x\<leftarrow>xs . P x] = [] \<Longrightarrow> [x\<leftarrow>xs. Q x \<and> P x] = []"
-  by (induct xs)  (simp_all split: split_if_asm)
-
 lemma filter_prop: "x \<in> set [u\<leftarrow>ys . P u] \<Longrightarrow> P x"
 proof (induct ys arbitrary: x)
   case Nil then show ?case by simp 
@@ -69,13 +66,6 @@ next
   case Cons then show ?case by (auto split: split_if_asm)
 qed
    
-lemma filter_Cons_prop: "[u\<leftarrow>ys . P u] = x # xs \<Longrightarrow> P x"
-proof -
-  assume "[u\<leftarrow>ys . P u] = x # xs"
-  then have "x \<in> set [u\<leftarrow>ys . P u]" by simp
-  then show "P x" by (rule filter_prop)
-qed
-
 lemma filter_compl1: 
  "([x\<leftarrow>xs. P x] = []) = ([x\<leftarrow>xs. \<not> P x] = xs)" (is "?lhs = ?rhs")
 proof
@@ -100,9 +90,6 @@ qed
 lemma [simp]: "Not \<circ> (Not \<circ> P) = P"
   by (rule ext) simp
 
-lemma filter_compl2: "\<And>P. (filter (Not \<circ> P) xs = []) = (filter P xs = xs)"
-  by (simp add: filter_compl1) 
-
 lemma filter_eqI: 
   "(\<And>v. v \<in> set vs \<Longrightarrow> P v = Q v) \<Longrightarrow> [v\<leftarrow>vs . P v] = [v\<leftarrow>vs . Q v]"
   by (induct vs) simp_all
@@ -125,35 +112,6 @@ next
   moreover have "y \<in> set (x#xs)" by fact
   ultimately show ?case by (auto dest: Cons(1))
 qed
-
-lemma length_filter_True_eq: 
-  "(length [y\<leftarrow>xs. P y] = length xs) = (\<forall>y. y \<in> set xs \<longrightarrow> P y)"
-  by (intro iffI allI impI, erule filter_True_eq1) simp_all
-
-(*
-subsubsection {* @{const map} *}
-
-syntax (xsymbols)
-  "_map" :: "[ 'b, pttrn, 'a list] => 'a list"("(1[_. _ \<in> _])")
-syntax 
-  "_map" :: "[ 'b, pttrn, 'a list] => 'a list"("(1[_./ _ : _])")
-
-translations
-  "[f. x \<in> xs]"== "CONST map (\<lambda>x. f) xs" 
-  "[f. x : xs]"== "CONST map (\<lambda>x. f) xs";
-
-
-subsubsection {* @{const map_filter} *}
-
-syntax (xsymbols)
-  "_map_filter" :: "['b, pttrn, 'a list, bool] => 'a list"("(1[_. _ \<in> _, _])")
-syntax 
-  "_map_filter" :: "['b, pttrn, 'a list, bool] => 'a list"("(1[_./ _ : _, _])")
-
-translations
-  "[f. x \<in> xs, P]"== "CONST map_filter (\<lambda>x. f) P xs" 
-  "[f. x : xs, P]"== "CONST map_filter (\<lambda>x. f) P xs"
-*)
 
 lemma [simp]: "[f x. x <- xs, P x] = [f x. x <- [x \<leftarrow> xs. P x]]"
   by (induct xs) auto
@@ -180,14 +138,6 @@ lemma(*<*)[simp]: (*>*) "set (xs \<times> ys) = (set xs) \<times> (set ys)"
 
 subsubsection {*  Minimum and maximum *}
 
-(* FIXME combine minimal with min_list *)
-(* more general:
- foldl1 f (x#xs) = if xs=[] then x else f x (foldl1 f xs)
- min_list = foldl1 min
- max_list = foldl1 max
- sum_list = foldl1 (op +)
-Put in separate ExecList.thy
-*)
 primrec minimal:: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> 'a" where
  "minimal m (x#xs) =
   (if xs=[] then x else
@@ -197,22 +147,6 @@ primrec minimal:: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> 'a
 
 lemma minimal_in_set[simp]: "xs \<noteq> [] \<Longrightarrow> minimal f xs : set xs"
 by(induct xs) auto
-
-lemma minimal_Cons1:
- "\<forall>y \<in> set xs. f x \<le> f y \<Longrightarrow> minimal f (x#xs) = x"
-by (induct xs) auto
-
-lemma minimal_append2:
-  "\<forall>x \<in> set xs. f x > f y \<Longrightarrow> minimal f (xs @ y # ys) = minimal f (y # ys)"
-by (induct xs) simp_all
-
-lemma minimal_neq_lowerbound:
- "xs \<noteq> [] \<Longrightarrow> ALL x: set xs. f x \<ge> n \<Longrightarrow> f(minimal f xs) \<noteq> n
- \<Longrightarrow> ALL x: set xs. f x \<noteq> n"
-apply(induct xs)
- apply simp
-apply (auto split:split_if_asm)
-done
 
 primrec min_list :: "nat list \<Rightarrow> nat" where
   "min_list (x#xs) = (if xs=[] then x else min x (min_list xs))"
@@ -231,8 +165,6 @@ by (induct xs) auto
 
 
 subsubsection {* replace *}
-
-(* FIXME replace "remove1" by "replace1" in List.thy? *)
 
 primrec replace :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow>  'a list" where
   "replace x ys [] = []"
@@ -271,10 +203,6 @@ lemma replace_append[simp]:
   "replace x ys (as @ bs) =
    (if x \<in> set as then replace x ys as @ bs else as @ replace x ys bs)"
 by(induct as) auto
-
-lemma filter_replace:
- "\<not> P y \<Longrightarrow> filter P (replace x [y] xs) = remove1 x (filter P xs)"
-by(induct xs) simp_all
 
 lemma distinct_set_replace: "distinct xs \<Longrightarrow>
  set (replace x ys xs) =
@@ -315,10 +243,6 @@ by (induct fs) (auto split: split_if_asm)
 lemma replace6: "distinct oldfs \<Longrightarrow> x \<in> set (replace oldF newfs oldfs) = 
   ((x \<noteq> oldF \<or> oldF \<in> set newfs) \<and> ((oldF \<in> set oldfs \<and> x \<in> set newfs) \<or> x \<in> set oldfs))"
 by (induct oldfs) auto
-
-lemma replace_delete_oldF:
-  "oldF \<notin> set fs \<Longrightarrow> distinct ls \<Longrightarrow> oldF \<notin> set (replace oldF fs ls)"
-by (induct ls)  auto
 
 
 lemma distinct_replace: 
@@ -386,22 +310,6 @@ done
 
 
 subsubsection {* @{const"distinct"} *}
-
-lemma dist_filter_single:
-"distinct ls \<Longrightarrow> v \<in> set ls \<Longrightarrow> [a\<leftarrow>ls . a = v] = [v]"
-proof (induct ls)
-  case Nil then show ?case by auto
-next
-  case (Cons l ls) then show ?case
-  proof (cases "l = v")
-    case True with Cons
-    have "v \<notin> set ls" by auto
-    then have "[a\<leftarrow>ls . a = v] = []" by (induct ls) auto
-    with Cons True show ?thesis by auto
-  next
-    case False with Cons show ?thesis by auto
-  qed
-qed
 
 lemma dist_at1: "\<And> c vs. distinct vs \<Longrightarrow> vs = a @ r # b \<Longrightarrow> vs = c @ r # d \<Longrightarrow> a = c"
 proof (induct a)
@@ -586,38 +494,6 @@ next
   with r' show ?thesis apply (rule_tac rotate_inv1) by auto
 qed
 
-lemma rotate_inv': "ls = rotate ((length ls) - (n mod length ls)) ms \<Longrightarrow>
- rotate n ls = ms"
-proof (cases "ls  = []")
-  assume r: "ls = rotate ((length ls) - (n mod length ls)) ms"
-  case True with r show ?thesis by auto
-next
-  assume r: "ls = rotate ((length ls) - (n mod length ls)) ms"
-  case False
-  def len \<equiv> "length ls"
-  with r have r': "ls = rotate (len - (n mod len)) ms" by simp
-  with len_def have lms: "length ms = len" by auto
-  def y \<equiv> "n mod len"
-  from len_def False have ll: "len > 0" by auto
-  with y_def have small_y: "y < len" by auto
-  then have len_gz: "len > 0" by auto
-  from r' len_def have mem0: "rotate n ls = rotate n (rotate (len - (n mod len)) ms)" by auto
-  have "rotate n (rotate (len - (n mod len)) ms) = rotate (n + (len - (n mod len))) ms"
-    by (rule rotate_rotate)
-  with mem0 have mem1: "rotate n ls = rotate (n + (len - (n mod len))) ms" by auto
-  have "n mod len - n mod len = 0" by arith
-  then have "len + n mod len - n mod len = len" by arith
-  from y_def have ymod: "n mod len = y" by auto
-  with len_gz obtain r where n: "n = y + r*len" apply (drule_tac mod_eqD) by auto
-  then have "n + len = (r*len)+len  + y" by arith
-  then have "n + len = ((r+1)*len) + y" by auto
-  with len_gz small_y have "n + (len - y) = ((r+1)*len)" by auto
-  then have zero: "(n + (len - y)) mod len = 0" by auto
-  have "rotate (n + (len - y)) ms = rotate ((n + (len - y)) mod length ms) ms" by (rule_tac rotate_conv_mod)
-  with lms zero have "rotate (n + (len - y)) ms = ms" by auto
-  with mem1 y_def show ?thesis by auto
-qed
-
 lemma rotate_id[simp]: "rotate ((length ls) - (n mod length ls)) (rotate n ls) = ls"
 apply (rule sym) apply (rule rotate_inv2) by simp
 
@@ -664,107 +540,6 @@ next
     = rotate m (rotate1 ls) ! (n mod length (rotate1 ls))" by auto
   then show ?case by auto
 qed
-
-lemma help1: "\<exists> n.  filter f (rotate1 ls) = rotate n (filter f ls)"
-proof (cases ls)
-  case Nil then show ?thesis by auto
-next
-  case (Cons m ms)
-  then show ?thesis
-  proof (cases "f m")
-    case True with Cons
-    have "filter f (rotate1 (ls)) = rotate 1 (filter f (ls))" by auto
-    then show ?thesis apply (rule_tac exI) .
-  next
-    case False with Cons
-    have "filter f (rotate1 (ls)) = rotate 0 (filter f (ls))" by auto
-    then show ?thesis apply (rule_tac exI) .
-  qed
-qed
-
-lemma help3: "\<not> f l \<Longrightarrow> n < length ls \<Longrightarrow> filter f (rotate n ls) = filter f (rotate n (rotate1 (l # ls)))"
-proof -
-  assume fl: "\<not> f l" and n: "n < length ls"
-  then have n2: "n - length ls = 0"  by auto
-  from fl n show ?thesis apply simp
-    apply (subst rotate_drop_take)+ by auto
-qed
-
-lemma help4: "\<not> f l \<Longrightarrow> n < length ls \<Longrightarrow> filter f (rotate n ls) = filter f (rotate (Suc n) (l # ls))"
-proof -
-  assume fl: "\<not> f l" and n: "n < length ls"
-  then have r1: "filter f (rotate n ls) = filter f (rotate n (rotate1 (l # ls)))" by (rule help3)
-  def ms \<equiv> "l # ls"
-  have "rotate n (rotate1 (ms)) = rotate (Suc n) (ms)" by simp
-  with ms_def have "rotate n (rotate1 (l # ls)) = rotate (Suc n) (l # ls)" by simp
-  with r1 show ?thesis by auto
-qed
-
-lemma help2: "\<exists> n.  rotate1 (filter f ls) = filter f (rotate n ls)"
-proof (induct ls)
-  case Nil then show ?case by auto
-next
-  case (Cons m ms)
-  then show ?case
-  proof (cases "f m")
-    case True with Cons
-    have "filter f (m # ms) = m # filter f  ms" by auto
-    from True Cons have
-      "rotate1 (filter f (m # ms)) = filter f (rotate 1 (m # ms))" by auto
-    then show ?thesis apply (rule_tac exI) .
-  next
-    case False with Cons
-    have f1: "filter f (m # ms) = filter f  ms" by auto
-    then have mem: "rotate1 (filter f (m # ms)) = rotate1 (filter f ms)" by auto
-    from False have f2: "\<And> ks. filter f (ks @ [m]) = filter f ks" by auto
-    from  Cons obtain n where n: "rotate1 (filter f ms) = filter f (rotate n ms)" by auto
-    with mem have mem1: "rotate1 (filter f (m # ms)) = filter f (rotate n ms)" by auto
-    def n' \<equiv> "n mod length ms"
-    then have "filter f (rotate n ms) = filter f (rotate n' ms)" by auto
-    with mem1 have mem2: "rotate1 (filter f (m # ms)) = filter f (rotate n' ms)" by auto
-    from n'_def have "ms \<noteq> [] \<Longrightarrow> n' < length ms" by auto
-    with False have "filter f (rotate n' ms) = filter f (rotate (Suc n') (m # ms))"
-      apply (case_tac "ms = []") apply force apply (rule_tac help4) by auto
-    with mem2 have "rotate1 (filter f (m # ms)) = filter f ((rotate (Suc n') (m # ms)))" by auto
-    then show ?thesis apply (rule_tac exI) .
-  qed
-qed
-
-lemma rotate_help5: "\<exists> n. filter f (rotate m ls) = rotate n (filter f ls)"
-proof (induct m)
-  case 0 then have "filter f (rotate 0 ls) = rotate 0 (filter f ls)" by auto
-  then show ?case by (rule exI)
-next
-  case (Suc m)
-  def ks \<equiv> "rotate m ls"
-  then have mem0: "filter f (rotate (Suc m) ls) = filter f (rotate1 ks)" by auto
-  from ks_def Suc obtain n where n: "filter f ks = rotate n (filter f ls)" by auto
-  have "\<exists> n'. filter f (rotate1 ks) = rotate n' (filter f ks)" by (rule help1)
-  then obtain n' where "filter f (rotate1 ks) = rotate n' (filter f ks)" by auto
-  with n have  "filter f (rotate1 ks) = rotate n' (rotate n (filter f ls))" by auto
-  with mem0 have mem1: "filter f (rotate (Suc m) ls) = rotate n' (rotate n (filter f ls))" by auto
-  have "rotate n' (rotate n (filter f ls)) = rotate (n'+n) (filter f ls)" by (rule rotate_rotate)
-  with mem1 have "filter f (rotate (Suc m) ls) =  rotate (n'+n) (filter f ls)" by auto
-  then show ?case apply (rule_tac exI) .
-qed
-
-lemma rotate_help6: "\<exists> n. rotate m (filter f ls) = filter f (rotate n ls)"
-proof (induct m)
-  case 0 then have "rotate 0 (filter f ls) = filter f (rotate 0 ls)" by auto
-  then show ?case by (rule exI)
-next
-  case (Suc m)
-  have mem0: "rotate (Suc m) (filter f ls) = rotate1 (rotate m (filter f ls))" by auto
-  from Suc obtain n where n: "rotate m (filter f ls) = filter f (rotate n ls)" by auto
-  with mem0 have mem1: "rotate (Suc m) (filter f ls) = rotate1 (filter f (rotate n ls))" by auto
-  def ks \<equiv> "rotate n ls"
-  from help2 obtain n' where "rotate1 (filter f ks) = filter f (rotate n' ks)" by auto
-  with mem1 ks_def have mem2: "rotate (Suc m) (filter f ls) = filter f (rotate n' ks)" by auto
-  from ks_def have "rotate n' ks = rotate (n'+n) ls" apply simp by (rule rotate_rotate)
-  with mem2 have "rotate (Suc m) (filter f ls) = filter f(rotate (n'+n) ls)" by simp
-  then show ?case apply (rule_tac exI) .
-qed
-
 
 
 (************************* SplitAt *******************************************)
@@ -846,32 +621,10 @@ lemma splitAtRec_union:
 "\<And> a b s. (a,b) = splitAtRec ram s vs \<Longrightarrow> (set a \<union> set b) - {ram} = (set vs \<union> set s) - {ram}"
   apply (induct vs) by (auto split: split_if_asm)
 
-lemma splitAt_union:
-"(a,b) = splitAt ram vs \<Longrightarrow> (set a \<union> set b) - {ram} = set vs - {ram}"
-by (simp add: splitAt_def splitAtRec_union)
-
 lemma splitAt_subset_ab:
   "(a,b) = splitAt ram vs \<Longrightarrow> set a \<subseteq> set vs \<and> set b \<subseteq> set vs"
   apply (cases "ram \<in> set vs")
   by (auto dest: splitAt_split simp: splitAt_no_ram)
-
-lemma splitAt_subset_fst:
-"set (fst (splitAt ram vs)) \<subseteq> set vs"
-proof -
-  def a: a \<equiv> "fst (splitAt ram vs)"
-  def b: b \<equiv> "snd (splitAt ram vs)"
-  with a have "(a,b) = splitAt ram vs" by auto
-  with a show ?thesis by (auto dest: splitAt_subset_ab)
-qed
-
-lemma splitAt_subset_snd:
-"set (snd (splitAt ram vs)) \<subseteq> set vs"
-proof -
-  def a: a \<equiv> "fst (splitAt ram vs)"
-  def b: b \<equiv> "snd (splitAt ram vs)"
-  with a have "(a,b) = splitAt ram vs" by auto
-  with b show ?thesis by (auto dest: splitAt_subset_ab)
-qed
 
 lemma splitAt_in_fst[dest]: "v \<in> set (fst (splitAt ram vs)) \<Longrightarrow> v \<in> set vs"
 proof (cases "ram \<in> set vs")
@@ -907,14 +660,6 @@ subsubsection {* Distinctness *}
 
 lemma splitAt_distinct_ab_aux:
  "distinct vs \<Longrightarrow> (a,b) = splitAt ram vs \<Longrightarrow> distinct a \<and> distinct b"
-apply (cases "ram \<in> set vs") by (auto dest: splitAt_split simp: splitAt_no_ram)
-
-lemma splitAt_distinct_a_aux:
- "distinct vs \<Longrightarrow> (a,b) = splitAt ram vs \<Longrightarrow> distinct a"
-apply (cases "ram \<in> set vs") by (auto dest: splitAt_split simp: splitAt_no_ram)
-
-lemma splitAt_distinct_b_aux:
- "distinct vs \<Longrightarrow> (a,b) = splitAt ram vs \<Longrightarrow> distinct b"
 apply (cases "ram \<in> set vs") by (auto dest: splitAt_split simp: splitAt_no_ram)
 
 lemma splitAt_distinct_fst_aux[intro]:
@@ -965,10 +710,6 @@ lemma splitAt_2:
 apply (cases "ram \<in> set vs")
  by (auto dest: splitAt_split simp: splitAt_no_ram)
 
-lemma splitAt_or:
-  "v \<in> set vs \<Longrightarrow> v \<in> set (fst (splitAt ram vs)) \<or> v \<in> set (snd (splitAt ram vs)) \<or> v = ram"
-  by (rule splitAt_2)  auto
-
 lemma splitAt_distinct_fst: "distinct vs \<Longrightarrow> distinct (fst (splitAt ram1 vs))"
 by (simp add: splitAt_def splitAtRec_distinct_fst)
 
@@ -987,13 +728,6 @@ by (simp add: splitAt_def splitAtRec_distinct)
 lemma splitAt_subset: "(a,b) = splitAt ram vs \<Longrightarrow> (set a \<subseteq> set vs) \<and> (set b \<subseteq> set vs)"
 apply (cases "ram \<in> set vs") by (auto dest: splitAt_split simp: splitAt_no_ram)
 
-lemma splitAt_subset1: "(a,b) = splitAt ram vs \<Longrightarrow> (set a \<subseteq> set vs)"
-by (auto dest: splitAt_subset)
-
-lemma splitAt_subset2: "(a,b) = splitAt ram vs \<Longrightarrow> (set b \<subseteq> set vs)"
-by (auto dest: splitAt_subset)
-
-
 
 subsubsection {* @{const splitAt} composition *}
 
@@ -1007,10 +741,6 @@ proof -
   apply (drule_tac splitAt_ram) by auto
   then show ?thesis by auto
 qed
-
-lemma splitAt_ram2: "ram2 \<notin>  set (snd (splitAt ram1 vs)) \<Longrightarrow>
-  ram1 \<in> set vs \<Longrightarrow> ram2 \<in> set vs \<Longrightarrow> ram1 \<noteq> ram2 \<Longrightarrow>
-  ram2 \<in> set (fst (splitAt ram1 vs))" by (auto dest: splitAt_elements)
 
 lemma splitAt_ram3: "ram2 \<notin>  set (fst (splitAt ram1 vs)) \<Longrightarrow>
   ram1 \<in> set vs \<Longrightarrow> ram2 \<in> set vs \<Longrightarrow> ram1 \<noteq> ram2 \<Longrightarrow>
@@ -1183,26 +913,6 @@ proof -
   then have "vs = fst (splitAt ram vs) @ ram # snd (splitAt ram vs)" by (auto dest: splitAt_ram)
   with  vs ramab show ?thesis apply simp apply (rule_tac sym)  apply (rule_tac local_help1) apply simp
     apply (rule sym) apply assumption by auto
-qed
-
-
-lemma splitAt_simp2: "ram \<notin> set b \<Longrightarrow> fst (splitAt ram (ram # b)) = [] "
-  apply (subgoal_tac " fst (splitAt ram ([] @ ram # b)) = []") apply force
-apply (rule splitAt_simp1) by auto
-
-lemma splitAt_simp3: "ram \<notin> set a \<Longrightarrow> fst (splitAt ram (a @ [ram])) = a "
-  apply (subgoal_tac " fst (splitAt ram (a @ ram # [])) = a") apply force
-apply (rule splitAt_simp1) by auto
-
-
-lemma splitAt_simp4: "ram \<notin> set a \<Longrightarrow> ram \<notin> set b \<Longrightarrow> snd (splitAt ram (a @ ram # b)) = b "
-proof -
-  assume ramab: "ram \<notin> set a"  "ram \<notin> set b"
-  def vs \<equiv> "a @ ram # b"
-  then have vs: "vs = a @ ram # b" by auto
-  then have "ram \<in> set vs" by auto
-  then have "vs = fst (splitAt ram vs) @ ram # snd (splitAt ram vs)" by (auto dest: splitAt_ram)
-  with  vs ramab show ?thesis by (simp  add: splitAt_simp1)
 qed
 
 
@@ -1397,38 +1107,6 @@ qed
 
 lemma notin_removeKey1: "(a, b) \<notin> set (removeKey a ps)"
   by (induct ps) (auto simp add: removeKey_def)
-
-lemma notin_removeKey: "r \<notin> fst ` set (removeKey r ps)"
-  by (induct ps) (auto simp add: removeKey_def)
-
-lemma notin_removeKeyList1: 
-  "\<And>a. a \<in> set rs \<Longrightarrow> (a, b) \<notin> set (removeKeyList rs ps)"
-proof (induct rs)
-  case Nil then show ?case by simp
-next 
-  case (Cons r rs) then show ?case 
-  proof cases
-    assume "a = r" then show ?thesis
-      by (auto simp add: split_beta Let_def notin_removeKey1 removeKey_subset)
-  next
-    assume a: "a \<noteq> r" 
-    with Cons have"(a, b) \<notin> set (removeKeyList rs ps)" by simp 
-    moreover have "set (removeKey r (removeKeyList rs ps)) 
-        \<subseteq> set (removeKeyList rs ps)" 
-       by (rule removeKey_subset) (* fixme : finally *)
-    ultimately have "(a, b) \<notin> set (removeKey r (removeKeyList rs ps))"
-      by blast 
-    then show ?thesis by simp
-  qed
-qed
-
-lemma notin_removeKeyList: "\<And>r. r \<in> set rs \<Longrightarrow> r \<notin> fst ` set (removeKeyList rs ps)"
-proof (induct rs)
-  case Nil then show ?case by simp
-next 
-  case (Cons r' rs) then show ?case 
-    by (auto simp add: notin_removeKey1 split_paired_all removeKey_def)
-qed
 
 lemma removeKeyList_eq:
   "removeKeyList as ps = [p \<leftarrow> ps. \<forall>a \<in> set as. a \<noteq> fst p]"

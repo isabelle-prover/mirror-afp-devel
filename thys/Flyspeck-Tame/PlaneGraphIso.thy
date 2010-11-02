@@ -7,6 +7,11 @@ theory PlaneGraphIso
 imports Main
 begin
 
+(* FIXME globalize *)
+lemma image_image_id_if[simp]: "(!!x. f(f x) = x) \<Longrightarrow> f ` f ` M = M"
+by (auto simp: image_iff)
+
+
 declare not_None_eq [iff] not_Some_eq [iff]
 
 
@@ -98,6 +103,10 @@ lemma congs_pres_nodes: "F\<^isub>1 \<cong> F\<^isub>2 \<Longrightarrow> set F\<
 by(clarsimp simp:congs_def)
 
 lemma congs_map:
+  "F\<^isub>1 \<cong> F\<^isub>2 \<Longrightarrow> map f F\<^isub>1 \<cong> map f F\<^isub>2"
+by (auto simp: congs_def rotate_map)
+
+lemma congs_map_eq_iff:
  "inj_on f (set xs \<union> set ys) \<Longrightarrow> (map f xs \<cong> map f ys) = (xs \<cong> ys)"
 apply(simp add:congs_def)
 apply(rule iffI)
@@ -205,7 +214,7 @@ proof -
   have inj1': "inj_on (%xs. {xs} // {\<cong>}) (map \<phi> ` set Fs\<^isub>1)"
     apply(rule inj_on_imageI)
     apply(simp add:inj_on_def quotient_def eq_equiv_class_iff[OF equiv_EqF])
-    apply(simp add: congs_map injphi)
+    apply(simp add: congs_map_eq_iff injphi)
     using inj1
     apply(simp add:inj_on_def quotient_def eq_equiv_class_iff[OF equiv_EqF])
     done
@@ -240,6 +249,54 @@ apply(simp add:quotient_def)
 apply(rotate_tac 1)
 apply blast
 done
+
+
+lemma Collect_congs_eq_iff[simp]:
+  "Collect (op \<cong> x) = Collect (op \<cong> y) \<longleftrightarrow> (x \<cong> (y::'a list))"
+using eq_equiv_class_iff2[OF equiv_EqF]
+apply(simp add: quotient_def Iso_def)
+apply blast
+done
+
+lemma is_Hom_trans: assumes f: "is_Hom f A B" and g: "is_Hom g B C"
+shows "is_Hom (g o f) A C"
+proof-
+  from f have f1: "ALL a:A. EX b:B. map f a \<cong> b"
+    apply(simp add: is_Hom_def quotient_def Iso_def)
+    apply(erule equalityE)
+    apply blast
+    done
+  from f have f2: "ALL b:B. EX a:A. map f a \<cong> b"
+    apply(simp add: is_Hom_def quotient_def Iso_def)
+    apply(erule equalityE)
+    apply blast
+    done
+  from g have g1: "ALL b:B. EX c:C. map g b \<cong> c"
+    apply(simp add: is_Hom_def quotient_def Iso_def)
+    apply(erule equalityE)
+    apply blast
+    done
+  from g have g2: "ALL c:C. EX b:B. map g b \<cong> c"
+    apply(simp add: is_Hom_def quotient_def Iso_def)
+    apply(erule equalityE)
+    apply blast
+    done
+  show ?thesis
+    apply(auto simp add: is_Hom_def quotient_def Iso_def Image_def
+      map_comp_map[symmetric] image_compose simp del: map_map map_comp_map)
+    apply (metis congs_map[of _ _ g] congs_trans f1 g1)
+    by (metis congs_map[of _ _ g] congs_sym congs_trans f2 g2)
+qed
+
+lemma is_Hom_rev:
+  "is_Hom \<phi> A B \<Longrightarrow> is_Hom \<phi> (rev ` A) (rev ` B)"
+apply(auto simp add: is_Hom_def quotient_def Image_def Iso_def rev_map[symmetric])
+ apply(erule equalityE)
+ apply blast
+apply(erule equalityE)
+apply blast
+done
+
 
 text{* A kind of recursion rule, a first step towards executability: *}
 
@@ -276,14 +333,14 @@ apply(rule conjI)
  apply(subgoal_tac "{F\<^isub>2}//{\<cong>} = {map \<phi> F\<^isub>1}//{\<cong>}")
   prefer 2 apply(simp add:singleton_quotient)
  apply(subgoal_tac "\<forall>F\<in>Fs\<^isub>1'. \<not> (map \<phi> F) \<cong> (map \<phi> F\<^isub>1)")
-  apply(fastsimp simp:Iso_def quotient_def Image_Collect_split
+  apply(fastsimp simp:Iso_def quotient_def Image_Collect_split simp del: Collect_congs_eq_iff
                  dest!: eq_equiv_class[OF _ equiv_EqF])
  apply clarify
  apply(subgoal_tac "inj_on \<phi> (set F \<union> set F\<^isub>1)")
   prefer 2
   apply(erule subset_inj_on)
   apply(blast)
- apply(clarsimp simp add:congs_map)
+ apply(clarsimp simp add:congs_map_eq_iff)
  apply(subgoal_tac "{\<cong>} `` {F\<^isub>1} = {\<cong>} `` {F}")
   apply(simp add:singleton_quotient)
  apply(rule equiv_class_eq[OF equiv_EqF])
@@ -754,18 +811,15 @@ by(simp add: pr_iso_test3_conv_2 pr_iso_test2_corr)
 
 text{* A final optimization. *}
 
-definition pr_iso_test :: "(nat * 'a fgraph) \<Rightarrow> (nat * 'b fgraph) \<Rightarrow> bool" where
-"pr_iso_test \<equiv> \<lambda>(n\<^isub>1,Fs\<^isub>1) (n\<^isub>2,Fs\<^isub>2). n\<^isub>1 = n\<^isub>2 \<and> length Fs\<^isub>1 = length Fs\<^isub>2
-                                \<and> pr_iso_test3 [] Fs\<^isub>1 Fs\<^isub>2"
+definition pr_iso_test :: "'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+"pr_iso_test Fs\<^isub>1 Fs\<^isub>2 = pr_iso_test3 [] Fs\<^isub>1 Fs\<^isub>2"
 
 corollary pr_iso_test_correct:
  "\<lbrakk> \<forall>F\<in>set Fs\<^isub>1. distinct F; \<forall>F\<in>set Fs\<^isub>2. distinct F; [] \<notin> set Fs\<^isub>2;
    distinct Fs\<^isub>1; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^isub>1);
-   distinct Fs\<^isub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^isub>2);
-   n\<^isub>1 = card(\<Union>F\<in>set Fs\<^isub>1. set F); n\<^isub>2 = card(\<Union>F\<in>set Fs\<^isub>2. set F) \<rbrakk> \<Longrightarrow>
-  pr_iso_test (n\<^isub>1,Fs\<^isub>1) (n\<^isub>2,Fs\<^isub>2) = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^isub>1 Fs\<^isub>2)"
+   distinct Fs\<^isub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^isub>2) \<rbrakk> \<Longrightarrow>
+  pr_iso_test Fs\<^isub>1 Fs\<^isub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^isub>1 Fs\<^isub>2)"
 apply(simp add:pr_iso_test_def pr_iso_test3_corr)
-apply(blast intro:pr_iso_same_no_faces pr_iso_same_no_nodes)
 done
 
 subsubsection{* `Improper' Isomorphisms *}
@@ -780,34 +834,56 @@ defs (overloaded) iso_fgraph_def:
 "g\<^isub>1 \<simeq> g\<^isub>2  \<equiv>  \<exists>\<phi>. is_iso \<phi> g\<^isub>1 g\<^isub>2"
 
 
-definition iso_test :: "(nat * 'a fgraph) \<Rightarrow> (nat * 'b fgraph) \<Rightarrow> bool" where
-"iso_test \<equiv> %g\<^isub>1 g\<^isub>2. pr_iso_test g\<^isub>1 g\<^isub>2 \<or> pr_iso_test g\<^isub>1 (fst g\<^isub>2,map rev (snd g\<^isub>2))"
+lemma iso_fgraph_trans: assumes "f \<simeq> (g::'a fgraph)" and "g \<simeq> h" shows "f \<simeq> h"
+proof-
+  { fix \<phi> \<phi>' assume "is_Hom \<phi> (set f) (set g)" "inj_on \<phi> (\<Union>F\<in>set f. set F)"
+    "is_Hom \<phi>' (set g) (set h)" "inj_on \<phi>' (\<Union>F\<in>set g. set F)"
+    hence "is_Hom (\<phi>' \<circ> \<phi>) (set f) (set h) \<and>
+          inj_on (\<phi>' \<circ> \<phi>) (\<Union>F\<in>set f. set F)"
+      by(simp add: is_Hom_trans comp_inj_on Hom_pres_nodes)
+  } moreover
+  { fix \<phi> \<phi>' assume "is_Hom \<phi> (set f) (set g)" "inj_on \<phi> (\<Union>F\<in>set f. set F)"
+    "is_Hom \<phi>' (set g) (rev ` set h)" "inj_on \<phi>' (\<Union>F\<in>set g. set F)"
+    hence "is_Hom (\<phi>' \<circ> \<phi>) (set f) (rev ` set h) \<and>
+          inj_on (\<phi>' \<circ> \<phi>) (\<Union>F\<in>set f. set F)"
+      by(simp add: is_Hom_trans comp_inj_on Hom_pres_nodes)
+  } moreover
+  { fix \<phi> \<phi>' assume "is_Hom \<phi> (set f) (rev ` set g)" "inj_on \<phi> (\<Union>F\<in>set f. set F)"
+    "is_Hom \<phi>' (set g) (set h)" "inj_on \<phi>' (\<Union>F\<in>set g. set F)"
+    with this(3)[THEN is_Hom_rev]
+    have "is_Hom (\<phi>' \<circ> \<phi>) (set f) (rev ` set h) \<and>
+          inj_on (\<phi>' \<circ> \<phi>) (\<Union>F\<in>set f. set F)"
+      by(simp add: is_Hom_trans comp_inj_on Hom_pres_nodes)
+  } moreover
+  { fix \<phi> \<phi>' assume "is_Hom \<phi> (set f) (rev ` set g)" "inj_on \<phi> (\<Union>F\<in>set f. set F)"
+    "is_Hom \<phi>' (set g) (rev ` set h)" "inj_on \<phi>' (\<Union>F\<in>set g. set F)"
+    with this(3)[THEN is_Hom_rev]
+    have "is_Hom (\<phi>' \<circ> \<phi>) (set f) (set h) \<and>
+          inj_on (\<phi>' \<circ> \<phi>) (\<Union>F\<in>set f. set F)"
+      by(simp add: is_Hom_trans comp_inj_on Hom_pres_nodes)
+  } ultimately show ?thesis using assms
+    by(simp add: iso_fgraph_def is_iso_def is_Iso_def is_pr_Iso_def) blast
+qed
 
 
-lemma inj_on_image_iff: "\<lbrakk> ALL x:A. ALL y:A. (g(f x) = g(f y)) = (g x = g y);
-  inj_on f A \<rbrakk> \<Longrightarrow> inj_on g (f ` A) = inj_on g A"
-apply(unfold inj_on_def)
-apply blast
-done
+
+definition iso_test :: "'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+"iso_test g\<^isub>1 g\<^isub>2 \<longleftrightarrow> pr_iso_test g\<^isub>1 g\<^isub>2 \<or> pr_iso_test g\<^isub>1 (map rev g\<^isub>2)"
 
 theorem iso_correct:
  "\<lbrakk> \<forall>F\<in>set Fs\<^isub>1. distinct F; \<forall>F\<in>set Fs\<^isub>2. distinct F; [] \<notin> set Fs\<^isub>2;
    distinct Fs\<^isub>1; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^isub>1);
-   distinct Fs\<^isub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^isub>2);
-   n\<^isub>1 = card(\<Union>F\<in>set Fs\<^isub>1. set F); n\<^isub>2 = card(\<Union>F\<in>set Fs\<^isub>2. set F) \<rbrakk> \<Longrightarrow>
-  iso_test (n\<^isub>1,Fs\<^isub>1) (n\<^isub>2,Fs\<^isub>2) = (Fs\<^isub>1 \<simeq> Fs\<^isub>2)"
+   distinct Fs\<^isub>2; inj_on (%xs.{xs}//{\<cong>}) (set Fs\<^isub>2) \<rbrakk> \<Longrightarrow>
+  iso_test Fs\<^isub>1 Fs\<^isub>2 = (Fs\<^isub>1 \<simeq> Fs\<^isub>2)"
 apply(simp add:iso_test_def pr_iso_test_correct iso_fgraph_def)
 apply(subst pr_iso_test_correct)
-          apply simp
-         apply simp
-        apply simp
-       apply (simp add:image_def)
+       apply simp
       apply simp
-     apply simp
-    apply (simp add:distinct_map)
-   apply (simp add:inj_on_image_iff)
-  apply simp
- apply simp
+     apply (simp add:image_def)
+    apply simp
+   apply simp
+  apply (simp add:distinct_map)
+ apply (simp add:inj_on_image_iff)
 apply(simp add:is_iso_def is_Iso_def is_pr_iso_def)
 apply blast
 done
@@ -826,6 +902,28 @@ definition iso_in :: "'a \<Rightarrow> 'a set \<Rightarrow> bool"  (infix "\<in>
 
 definition iso_subseteq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<subseteq>\<^isub>\<simeq>" 60) where
  "M \<subseteq>\<^isub>\<simeq> N \<equiv> \<forall>x \<in> M. x \<in>\<^isub>\<simeq> N"
+
+
+lemma iso_fgraph_refl[iff]: "(g::'a fgraph) \<simeq> g"
+apply(simp add: iso_fgraph_def)
+apply(rule_tac x = "id" in exI)
+apply(simp add: is_iso_def is_Iso_def is_pr_Iso_def is_Hom_def id_def)
+done
+
+lemma iso_fgraph_subseteq_refl[simp]: "M \<subseteq>\<^isub>\<simeq> (M::'a fgraph set)"
+by(auto simp add: iso_subseteq_def iso_in_def)
+
+lemma iso_fgraph_subseteq_trans: "A \<subseteq>\<^isub>\<simeq> (B::'a fgraph set) \<Longrightarrow> B \<subseteq>\<^isub>\<simeq> C \<Longrightarrow> A \<subseteq>\<^isub>\<simeq> C"
+by (simp add: iso_subseteq_def iso_in_def) (metis iso_fgraph_trans)
+
+lemma empty_iso_subseteq[simp]: "{} \<subseteq>\<^isub>\<simeq> A"
+by (simp add: iso_subseteq_def)
+
+lemma iso_subseteqI2: "(!!x. x \<in> M \<Longrightarrow> EX y : N. x \<simeq> y) \<Longrightarrow> M \<subseteq>\<^isub>\<simeq> N"
+by (auto simp add: iso_subseteq_def iso_in_def)
+
+lemma iso_subseteqD2: "M \<subseteq>\<^isub>\<simeq> N \<Longrightarrow> x \<in> M \<Longrightarrow> EX y : N. x \<simeq> y"
+by (auto simp add: iso_subseteq_def iso_in_def)
 
 
 end

@@ -176,9 +176,6 @@ done
 
 subsection {* @{text"\<E>"} *}
 
-lemma finite_edges: "finite(\<E>(f::face))"
-  by (simp add:edges_face_def)
-
 lemma edges_face_eq:
  "((a,b) \<in> \<E> (f::face)) = ((f \<bullet> a = b) \<and> a \<in> \<V> f)"
 by (auto simp add: edges_face_def)
@@ -293,9 +290,10 @@ proof -
     by (auto) (auto simp add: nextVertex_def prevVertex_def)
 qed
 
+(*
 lemma C0[dest]: "f \<in> set (facesAt g v) \<Longrightarrow> v \<in> \<V> g"
   by (simp add: facesAt_def split: split_if_asm)
-
+*)
 
 lemma len_faces_sum: "|faces g| = |finals g| + |nonFinals g|"
 by(simp add:finals_def nonFinals_def sum_length_filter_compl)
@@ -394,15 +392,6 @@ apply simp
 done
 
 
-lemma unroll_between_next:
- "\<lbrakk> distinct(vertices f); u \<in> \<V> f; v \<in> \<V> f; f \<bullet> v \<noteq> u \<rbrakk> \<Longrightarrow>
-  between (vertices f) v u = f \<bullet> v # between (vertices f) (f \<bullet> v) u"
-using split_between[OF _ _ _ next_between]
-apply (simp add: between_next_empty split:split_if_asm)
-apply(blast dest:distinct_no_loop2 intro:sym)
-done
-
-
 lemma unroll_between_next2:
  "\<lbrakk> distinct(vertices f); u \<in> \<V> f; v \<in> \<V> f; u \<noteq> v \<rbrakk> \<Longrightarrow>
   between (vertices f) u (f \<bullet> v) = between (vertices f) u v @ [v]"
@@ -444,13 +433,5 @@ apply(clarsimp simp: hd_append split:list.split)
 apply(clarsimp simp:append_eq_Cons_conv)
 apply(fastsimp simp: hd_append neq_Nil_conv split:list.split)
 done
-
-lemma nextVertex_eq_if_between_eq:
- "\<lbrakk> between (vertices f) x y = between (vertices f') x y;
-    distinct(vertices f); distinct(vertices f'); x \<noteq> y;
-    x \<in> \<V> f; y \<in> \<V> f; x \<in> \<V> f'; y \<in> \<V> f';
-    v \<in> set(x # between (vertices f) x y) \<rbrakk> \<Longrightarrow>
-  f \<bullet> v = f' \<bullet> v"
-by(simp add:nextVertex_eq_lemma[where z = 0])
 
 end

@@ -77,129 +77,129 @@ lemma facesAt_distinctI:
  by (simp add: facesAt_distinct_def)
 
 (* minGraphProps' *)
-lemma minGraphProps2: "minGraphProps g \<Longrightarrow>
-  f \<in> \<F> g \<Longrightarrow> 2 < |vertices f|"
-  by (unfold minGraphProps_def minGraphProps'_def) auto
+lemma minGraphProps2:
+  "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> 2 < |vertices f|"
+by (unfold minGraphProps_def minGraphProps'_def) auto
 
 lemma mgp_vertices3:
- "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> |vertices f| \<ge> 3"
+  "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> |vertices f| \<ge> 3"
 by(auto dest:minGraphProps2)
 
 lemma mgp_vertices_nonempty:
- "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> vertices f \<noteq> []"
+  "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> vertices f \<noteq> []"
 by(auto dest:minGraphProps2)
 
-lemma minGraphProps3: "minGraphProps g \<Longrightarrow>
-  f \<in> \<F> g \<Longrightarrow>  distinct (vertices f)"
-  by (unfold minGraphProps_def minGraphProps'_def) auto
+lemma minGraphProps3:
+  "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow>  distinct (vertices f)"
+by (unfold minGraphProps_def minGraphProps'_def) auto
 
 (* faceListAt_len *)
-lemma minGraphProps4: "minGraphProps g \<Longrightarrow>
-  (length (faceListAt g) = countVertices g)"
-  by (unfold minGraphProps_def faceListAt_len_def) simp
+lemma minGraphProps4:
+  "minGraphProps g \<Longrightarrow> (length (faceListAt g) = countVertices g)"
+by (unfold minGraphProps_def faceListAt_len_def) simp
 
 (* facesAt_eq*)
 lemma minGraphProps5:
- "\<lbrakk>minGraphProps g; f \<in> set (facesAt g v)\<rbrakk> \<Longrightarrow> f \<in> \<F> g"
+  "\<lbrakk>minGraphProps g; v : \<V> g; f \<in> set (facesAt g v)\<rbrakk> \<Longrightarrow> f \<in> \<F> g"
 by(auto simp: facesAt_def facesAt_eq_def minGraphProps_def minGraphProps'_def
               faceListAt_len_def split:split_if_asm)
 
 lemma minGraphProps6:
-"minGraphProps g \<Longrightarrow> f \<in> set (facesAt g v) \<Longrightarrow> v \<in> \<V> f"
+  "minGraphProps g \<Longrightarrow> v : \<V> g \<Longrightarrow> f \<in> set (facesAt g v) \<Longrightarrow> v \<in> \<V> f"
 by(auto simp: facesAt_def facesAt_eq_def minGraphProps_def minGraphProps'_def
               faceListAt_len_def split:split_if_asm)
 
 (* faces_subset *)
-lemma minGraphProps9: "minGraphProps g \<Longrightarrow>
-  f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> v \<in> \<V> g"
-  by (unfold minGraphProps_def faces_subset_def) auto
+lemma minGraphProps9:
+  "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> v \<in> \<V> g"
+by (unfold minGraphProps_def faces_subset_def) auto
 
-lemma minGraphProps7: "minGraphProps g \<Longrightarrow>
-  f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow>  f \<in> set (facesAt g v)"
+lemma minGraphProps7:
+  "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow>  f \<in> set (facesAt g v)"
 apply(frule (2) minGraphProps9)
 by (unfold minGraphProps_def facesAt_eq_def) simp
 
 lemma minGraphProps_facesAt_eq: "minGraphProps g \<Longrightarrow>
   v \<in> \<V> g \<Longrightarrow> set (facesAt g v) = {f \<in> \<F> g. v \<in> \<V> f}"
-  by (simp add: minGraphProps_def facesAt_eq_def)
+by (simp add: minGraphProps_def facesAt_eq_def)
 
 (* facesAt_distinct *)
-lemma mgp_dist_facesAt[simp]: "minGraphProps g \<Longrightarrow> distinct (facesAt g v)"
+lemma mgp_dist_facesAt[simp]:
+  "minGraphProps g \<Longrightarrow> v : \<V> g \<Longrightarrow> distinct (facesAt g v)"
 by(auto simp: facesAt_def minGraphProps_def minGraphProps'_def facesAt_distinct_def dest:normFaces_distinct)
 
-lemma minGraphProps8: "minGraphProps g \<Longrightarrow> distinct (normFaces (facesAt g v))"
+lemma minGraphProps8:
+  "minGraphProps g \<Longrightarrow> v : \<V> g \<Longrightarrow> distinct (normFaces (facesAt g v))"
 by(auto simp: facesAt_def minGraphProps_def minGraphProps'_def facesAt_distinct_def normFaces_def)
 
-lemma minGraphProps8a: "minGraphProps g \<Longrightarrow>
-  v \<in> \<V> g \<Longrightarrow> distinct (normFaces (faceListAt g ! v))"
-  apply (frule minGraphProps8[where v=v]) by (simp add: facesAt_def)
+lemma minGraphProps8a:
+  "minGraphProps g \<Longrightarrow> v \<in> \<V> g \<Longrightarrow> distinct (normFaces (faceListAt g ! v))"
+apply (frule (1) minGraphProps8[where v=v]) by (simp add: facesAt_def)
 
 lemma minGraphProps8a': "minGraphProps g \<Longrightarrow>
   v < countVertices g \<Longrightarrow> distinct (normFaces (faceListAt g ! v))"
-  by (simp add: minGraphProps8a vertices_graph)
+by (simp add: minGraphProps8a vertices_graph)
 
-lemma minGraphProps9': "minGraphProps g \<Longrightarrow>
-  f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> v < countVertices g"
-  by (simp add: minGraphProps9 in_vertices_graph[symmetric])
+lemma minGraphProps9':
+  "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> v < countVertices g"
+by (simp add: minGraphProps9 in_vertices_graph[symmetric])
 
 lemma minGraphProps10:
- "minGraphProps g \<Longrightarrow> (a, b) \<in> edges g \<Longrightarrow> (b, a) \<in> edges g"
+  "minGraphProps g \<Longrightarrow> (a, b) \<in> edges g \<Longrightarrow> (b, a) \<in> edges g"
 apply (unfold minGraphProps_def edges_sym_def)
 apply (elim conjE allE impE)
 by simp+
 
 (* faces_distinct *)
-lemma minGraphProps11: "minGraphProps g \<Longrightarrow>
-  distinct (normFaces (faces g))"
-  by (unfold minGraphProps_def faces_distinct_def) simp
+lemma minGraphProps11:
+  "minGraphProps g \<Longrightarrow> distinct (normFaces (faces g))"
+by (unfold minGraphProps_def faces_distinct_def) simp
 
-lemma minGraphProps11': "minGraphProps g \<Longrightarrow>
-  distinct (faces g)"
-  by(simp add: minGraphProps11 normFaces_distinct)
-
-lemma face_eq_if_normFace_eq:
- "\<lbrakk> minGraphProps g; f \<in> \<F> g; f' \<in> \<F> g; normFace f = normFace f' \<rbrakk>
-  \<Longrightarrow> f = f'"
-apply(drule minGraphProps11)
-apply(simp add:normFaces_def distinct_map)
-apply(blast dest:inj_onD)
-done
-
+lemma minGraphProps11':
+  "minGraphProps g \<Longrightarrow> distinct (faces g)"
+by(simp add: minGraphProps11 normFaces_distinct)
 
 lemma minGraphProps12:
- "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> (a,b) \<in> \<E> f \<Longrightarrow> (b,a) \<notin> \<E> f"
-  apply (subgoal_tac "distinct (vertices f)") apply (simp add: is_nextElem_def)
-  apply (case_tac "vertices f = []") apply (drule minGraphProps2) apply simp  apply simp apply simp
-  apply (case_tac "a = last (vertices f) \<and> b = hd (vertices f)")
-    apply (case_tac "vertices f") apply simp
-    apply (case_tac "list" rule: rev_exhaust)
-      apply (drule minGraphProps2) apply simp  apply simp
-    apply (case_tac "ys")
-      apply (drule minGraphProps2) apply simp  apply simp
-    apply (simp del: distinct_append distinct.simps) apply (rule conjI)
-    apply (rule ccontr) apply (simp del: distinct_append distinct.simps)
-    apply (drule is_sublist_distinct_prefix) apply simp apply (simp add: is_prefix_def)
-    apply simp
+  "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> (a,b) \<in> \<E> f \<Longrightarrow> (b,a) \<notin> \<E> f"
+apply (subgoal_tac "distinct (vertices f)") apply (simp add: is_nextElem_def)
+ apply (case_tac "vertices f = []")
+  apply (drule minGraphProps2)
+   apply simp
+  apply simp
+ apply simp
+ apply (case_tac "a = last (vertices f) \<and> b = hd (vertices f)")
+  apply (case_tac "vertices f") apply simp
+  apply (case_tac "list" rule: rev_exhaust)
+   apply (drule minGraphProps2) apply simp
+   apply simp
+  apply (case_tac "ys")
+   apply (drule minGraphProps2) apply simp apply simp
+  apply (simp del: distinct_append distinct.simps)
   apply (rule conjI)
+   apply (rule ccontr) apply (simp del: distinct_append distinct.simps)
+   apply (drule is_sublist_distinct_prefix) apply simp
+   apply (simp add: is_prefix_def)
+  apply simp
+ apply (rule conjI)
   apply (simp add: is_sublist_def) apply (elim exE) apply (intro allI) apply (rule ccontr)
   apply (simp del: distinct_append distinct.simps)
   apply (subgoal_tac "asa = as @ [a]") apply simp
   apply (rule dist_at1) apply assumption apply force apply (rule sym) apply simp
-  apply (subgoal_tac "is_sublist [a, b] (vertices f)")
-    apply (rule impI) apply (rule ccontr)
-    apply (simp add: is_sublist_def del: distinct_append distinct.simps)
-    apply (subgoal_tac "last (vertices f) = b \<and> hd (vertices f) = a")
-    apply (thin_tac "a = hd (vertices f)") apply (thin_tac "b = last (vertices f)") apply (elim conjE)
-    apply (elim exE)
-    apply (case_tac "as")
+ apply (subgoal_tac "is_sublist [a, b] (vertices f)")
+  apply (rule impI) apply (rule ccontr)
+  apply (simp add: is_sublist_def del: distinct_append distinct.simps)
+  apply (subgoal_tac "last (vertices f) = b \<and> hd (vertices f) = a")
+   apply (thin_tac "a = hd (vertices f)") apply (thin_tac "b = last (vertices f)") apply (elim conjE)
+   apply (elim exE)
+   apply (case_tac "as")
     apply (case_tac "bs" rule: rev_exhaust) apply (drule minGraphProps2) apply simp apply simp
     apply simp+
- apply (rule minGraphProps3) by simp+
+apply (rule minGraphProps3) by simp+
 
 lemma minGraphProps7': "minGraphProps g \<Longrightarrow>
   f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow>  f \<in> set (faceListAt g ! v)"
-  apply (frule minGraphProps7) apply assumption+
-    by (simp add: facesAt_def split: split_if_asm)
+apply (frule minGraphProps7) apply assumption+
+by (simp add: facesAt_def split: split_if_asm)
 
 (* edges_disj *)
 lemma mgp_edges_disj:
@@ -209,7 +209,7 @@ by (simp add:minGraphProps_def edges_disj_def) blast
 
 (* one_final *)
 lemma one_final_but_antimono:
- "one_final_but g E \<Longrightarrow> E \<subseteq> E' \<Longrightarrow> one_final_but g E'"
+  "one_final_but g E \<Longrightarrow> E \<subseteq> E' \<Longrightarrow> one_final_but g E'"
 apply(unfold one_final_but_def)
 apply blast
 done
@@ -219,21 +219,17 @@ apply(unfold one_final_def one_final_but_def)
 apply blast
 done
 
-
 lemma inv_two_faces: "inv g \<Longrightarrow> |faces g| \<ge> 2"
 by(simp add:inv_def)
-
 
 lemma inv_mgp[simp]: "inv g \<Longrightarrow> minGraphProps g"
 by(simp add:inv_def)
 
-
 lemma makeFaceFinal_id[simp]: "final f \<Longrightarrow> makeFaceFinal f g = g"
-apply(induct g)
+apply(cases g)
 apply (simp add:makeFaceFinal_def makeFaceFinalFaceList_def
                 setFinal_eq_iff[THEN iffD2])
 done
-
 
 lemma inv_one_finalD':
  "\<lbrakk> inv g; f \<in> \<F> g; \<not> final f; (a,b) \<in> \<E> f \<rbrakk> \<Longrightarrow>
@@ -242,29 +238,24 @@ apply(unfold inv_def one_final_def one_final_but_def)
 apply blast
 done
 
-
 lemmas minGraphProps =
   minGraphProps2 minGraphProps3 minGraphProps4
   minGraphProps5 minGraphProps6 minGraphProps7 minGraphProps8
   minGraphProps9
 
-lemmas minGraphProps_simps = minGraphProps4
-
-
 lemma mgp_no_loop[simp]:
- "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> f \<bullet> v \<noteq> v"
+  "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> f \<bullet> v \<noteq> v"
 apply(frule (1) mgp_vertices3)
 apply(frule (1) minGraphProps3)
 apply(simp add: distinct_no_loop1)
 done
 
 lemma mgp_facesAt_no_loop:
- "minGraphProps g \<Longrightarrow> f \<in> set (facesAt g v) \<Longrightarrow> f \<bullet> v \<noteq> v"
+  "minGraphProps g \<Longrightarrow> v : \<V> g \<Longrightarrow> f \<in> set (facesAt g v) \<Longrightarrow> f \<bullet> v \<noteq> v"
 by(blast dest:mgp_no_loop minGraphProps5 minGraphProps6)
 
-
 lemma edge_pres_faceAt:
- "\<lbrakk> minGraphProps g; f \<in> set(facesAt g u); (u,v) \<in> \<E> f \<rbrakk> \<Longrightarrow>
+ "\<lbrakk> minGraphProps g; u : \<V> g; f \<in> set(facesAt g u); (u,v) \<in> \<E> f \<rbrakk> \<Longrightarrow>
   f \<in> set(facesAt g v)"
 apply(auto simp:edges_face_eq)
 apply(rule minGraphProps7, assumption)
@@ -272,16 +263,15 @@ apply(rule minGraphProps7, assumption)
 apply(simp)
 done
 
-
 lemma in_facesAt_nextVertex:
- "minGraphProps g \<Longrightarrow> f \<in> set(facesAt g v) \<Longrightarrow> f \<in> set(facesAt g (f \<bullet> v))"
+ "minGraphProps g \<Longrightarrow> v : \<V> g \<Longrightarrow> f \<in> set(facesAt g v) \<Longrightarrow> f \<in> set(facesAt g (f \<bullet> v))"
 apply(subgoal_tac "(v,f \<bullet> v) \<in> \<E> f")
-apply(blast intro:edge_pres_faceAt)
+ apply(blast intro:edge_pres_faceAt)
 by(blast intro: nextVertex_in_edges minGraphProps)
 
 
 lemma mgp_edge_face_ex:
-assumes [intro]: "minGraphProps g"
+assumes [intro]: "minGraphProps g" "v : \<V> g"
 and fv: "f \<in> set(facesAt g v)" and uv: "(u,v) \<in> \<E> f"
 shows "\<exists>f' \<in> set(facesAt g v). (v,u) \<in> \<E> f'"
 proof -
@@ -295,17 +285,21 @@ proof -
   with vu show ?thesis by blast
 qed
 
+lemma nextVertex_in_graph:
+  "minGraphProps g \<Longrightarrow> v : \<V> g \<Longrightarrow> f \<in> set(facesAt g v) \<Longrightarrow> f \<bullet> v : \<V> g"
+by(blast intro: minGraphProps9 minGraphProps5 minGraphProps6 nextVertex_in_face)
 
 lemma mgp_nextVertex_face_ex2:
-assumes mgp[intro]: "minGraphProps g" and f: "f \<in> set(facesAt g v)"
+assumes mgp[intro]: "minGraphProps g" "v : \<V> g" and f: "f \<in> set(facesAt g v)"
 shows "\<exists>f' \<in> set(facesAt g (f \<bullet> v)). f' \<bullet> (f \<bullet> v) = v"
 proof -
   from f have "(v,f \<bullet> v) \<in> \<E> f"
     by(blast intro: nextVertex_in_edges minGraphProps)
   with in_facesAt_nextVertex[OF mgp f]
+    mgp_edge_face_ex[OF mgp(1) nextVertex_in_graph[OF mgp f]]
   obtain f' :: face where "f' \<in> set(facesAt g (f \<bullet> v))"
     and "(f \<bullet> v,v) \<in> \<E> f'"
-    by(blast dest: mgp_edge_face_ex[OF mgp])
+    by(blast)
   thus ?thesis by (auto simp: edges_face_eq)
 qed
 
@@ -337,14 +331,16 @@ done
 
 subsection {* @{const containsDuplicateEdge} *}
 
-definition containsUnacceptableEdgeSnd' :: "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> bool" where
- "containsUnacceptableEdgeSnd' N is \<equiv>
-  (\<exists>k < |is| - 2. let i0 = is!k; i1 = is!(k+1); i2 = is!(k+2) in
-  N i1 i2 \<and> (i0 < i1) \<and> (i1 < i2))"
+definition
+ containsUnacceptableEdgeSnd' :: "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> bool" where
+"containsUnacceptableEdgeSnd' N is \<equiv>
+ (\<exists>k < |is| - 2. let i0 = is!k; i1 = is!(k+1); i2 = is!(k+2) in
+ N i1 i2 \<and> (i0 < i1) \<and> (i1 < i2))"
 
-lemma containsUnacceptableEdgeSnd_eq: "\<And> v. containsUnacceptableEdgeSnd N v is = containsUnacceptableEdgeSnd' N (v#is)"
-proof (induct "is")
-case Nil then show ?case by (simp add: containsUnacceptableEdgeSnd'_def)
+lemma containsUnacceptableEdgeSnd_eq:
+  "containsUnacceptableEdgeSnd N v is = containsUnacceptableEdgeSnd' N (v#is)"
+proof (induct "is" arbitrary: v)
+  case Nil then show ?case by (simp add: containsUnacceptableEdgeSnd'_def)
 next
   case (Cons i "is") then show ?case
     proof (rule_tac iffI)
@@ -352,37 +348,40 @@ next
       then show "containsUnacceptableEdgeSnd' N (v # i # is)"
 	apply (cases "is") apply simp apply simp
         apply (simp split: split_if_asm del: containsUnacceptableEdgeSnd.simps)
-	apply (simp add: containsUnacceptableEdgeSnd'_def) apply force
+         apply (simp add: containsUnacceptableEdgeSnd'_def) apply force
 	apply (subgoal_tac "a # list = is") apply (thin_tac "is = a # list") apply (simp add: Cons)
-	apply (simp add: containsUnacceptableEdgeSnd'_def) apply (elim exE)
-	apply (rule exI) apply (subgoal_tac "Suc k < |is|") apply (rule conjI) apply assumption by auto
+	 apply (simp add: containsUnacceptableEdgeSnd'_def) apply (elim exE)
+	 apply (rule exI) apply (subgoal_tac "Suc k < |is|") apply (rule conjI) apply assumption by auto
     next
       assume vors: "containsUnacceptableEdgeSnd' N (v # i # is)"
       then show "containsUnacceptableEdgeSnd N v (i # is)"
 	apply simp apply (cases "is") apply (simp add: containsUnacceptableEdgeSnd'_def)
 	apply (simp del:  containsUnacceptableEdgeSnd.simps)
 	apply (subgoal_tac "a # list = is") apply (thin_tac "is = a # list")
-        apply (simp add: Cons)
-	apply (subgoal_tac "is = a # list") apply (thin_tac "a # list = is")
-        apply (simp add: containsUnacceptableEdgeSnd'_def)
-	apply (elim exE) apply (case_tac "k") apply simp apply simp apply (intro impI exI)
-        apply (rule conjI) apply (elim conjE) apply assumption by auto
+         apply (simp add: Cons)
+	 apply (subgoal_tac "is = a # list") apply (thin_tac "a # list = is")
+          apply (simp add: containsUnacceptableEdgeSnd'_def)
+	  apply (elim exE) apply (case_tac "k") apply simp apply simp apply (intro impI exI)
+          apply (rule conjI) apply (elim conjE) apply assumption by auto
     qed
 qed
 
-lemma containsDuplicateEdge_eq1: "containsDuplicateEdge g f v is = containsDuplicateEdge' g f v is"
-  apply (simp add: containsDuplicateEdge_def)
-  apply (cases "is") apply (simp add: containsDuplicateEdge'_def)
-  apply simp
-  apply (case_tac "list") apply (simp add: containsDuplicateEdge'_def)
-  apply (simp add: containsUnacceptableEdgeSnd_eq del: containsUnacceptableEdgeSnd.simps)
-  apply (rule conjI) apply (simp add: containsDuplicateEdge'_def) apply (rule impI)
-  apply (case_tac "a < aa")
-  by (simp_all add: containsDuplicateEdge'_def containsUnacceptableEdgeSnd'_def)
+lemma containsDuplicateEdge_eq1:
+  "containsDuplicateEdge g f v is = containsDuplicateEdge' g f v is"
+apply (simp add: containsDuplicateEdge_def)
+apply (cases "is") apply (simp add: containsDuplicateEdge'_def)
+apply simp
+apply (case_tac "list") apply (simp add: containsDuplicateEdge'_def)
+apply (simp add: containsUnacceptableEdgeSnd_eq del: containsUnacceptableEdgeSnd.simps)
+apply (rule conjI) apply (simp add: containsDuplicateEdge'_def)
+apply (rule impI)
+apply (case_tac "a < aa")
+ by (simp_all add: containsDuplicateEdge'_def containsUnacceptableEdgeSnd'_def)
 
-lemma containsDuplicateEdge_eq: "containsDuplicateEdge = containsDuplicateEdge'"
-  apply (rule ext)+
-  by (simp add: containsDuplicateEdge_eq1)
+lemma containsDuplicateEdge_eq:
+  "containsDuplicateEdge = containsDuplicateEdge'"
+apply (rule ext)+
+by (simp add: containsDuplicateEdge_eq1)
 
 
 declare Nat.diff_is_0_eq' [simp del]
@@ -391,36 +390,34 @@ declare Nat.diff_is_0_eq' [simp del]
 (********************************* replaceFacesAt ****************************)
 subsection{* @{const replacefacesAt} *}
 
-primrec replacefacesAt2 :: "nat list \<Rightarrow> face \<Rightarrow> face list \<Rightarrow> face list list \<Rightarrow> face list list" where
- "replacefacesAt2 [] f fs F = F" |
- "replacefacesAt2 (n#ns) f fs F =
-     (if n < |F|
-      then replacefacesAt2 ns f fs (F [n:=replace f fs (F!n)])
-      else replacefacesAt2 ns f fs F)"
-
+primrec replacefacesAt2 ::
+  "nat list \<Rightarrow> face \<Rightarrow> face list \<Rightarrow> face list list \<Rightarrow> face list list" where
+"replacefacesAt2 [] f fs F = F" |
+"replacefacesAt2 (n#ns) f fs F =
+ (if n < |F|
+  then replacefacesAt2 ns f fs (F [n:=replace f fs (F!n)])
+  else replacefacesAt2 ns f fs F)"
 
 
 lemma replacefacesAt_eq[THEN eq_reflection]:
- "\<And>F. replacefacesAt ns oldf newfs F =  replacefacesAt2 ns oldf newfs F"
-apply (induct ns)
-by (auto simp add: replacefacesAt_def)
+  "replacefacesAt ns oldf newfs F =  replacefacesAt2 ns oldf newfs F"
+by (induct ns arbitrary: F) (auto simp add: replacefacesAt_def)
 
 
 lemma replacefacesAt2_notin:
-  "\<And>Fss. i \<notin> set is \<Longrightarrow> (replacefacesAt2 is olfF newFs Fss)!i = Fss!i"
-proof (induct "is")
+  "i \<notin> set is \<Longrightarrow> (replacefacesAt2 is olfF newFs Fss)!i = Fss!i"
+proof (induct "is" arbitrary: Fss)
   case Nil then show ?case by (simp)
 next
-  case (Cons j js)
-  then show ?case
-  apply (case_tac "j < |Fss|") by (auto)
+  case (Cons j js) then show ?case
+    by (cases "j < |Fss|") (auto)
 qed
 
 
 lemma replacefacesAt2_in:
-  "\<And>Fss i. i \<in> set is \<Longrightarrow> distinct is \<Longrightarrow> i < |Fss| \<Longrightarrow>
+  "i \<in> set is \<Longrightarrow> distinct is \<Longrightarrow> i < |Fss| \<Longrightarrow>
   (replacefacesAt2 is olfF newFs Fss)!i = replace olfF newFs (Fss !i)"
-proof (induct "is")
+proof (induct "is" arbitrary: Fss)
   case Nil then show ?case by simp
 next
   case (Cons j js)
@@ -436,7 +433,7 @@ qed
 
 
 lemma distinct_replacefacesAt21:
-  "\<And>i. i < |Fss| \<Longrightarrow> i \<in> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
+  "i < |Fss| \<Longrightarrow> i \<in> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
   set (Fss ! i) \<inter> set newFs \<subseteq> {olfF} \<Longrightarrow>
   distinct ((replacefacesAt2 is olfF newFs Fss)! i)"
 proof (induct "is")
@@ -455,7 +452,7 @@ next
 qed
 
 lemma distinct_replacefacesAt22:
-  "\<And>i. i < |Fss| \<Longrightarrow> i \<notin> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
+  "i < |Fss| \<Longrightarrow> i \<notin> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
   set (Fss ! i) \<inter> set newFs \<subseteq> {olfF} \<Longrightarrow>
   distinct ((replacefacesAt2 is olfF newFs Fss)! i)"
 proof (induct "is")
@@ -471,135 +468,88 @@ lemma distinct_replacefacesAt2_2:
   "i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
   set (Fss ! i) \<inter> set newFs \<subseteq> {olfF} \<Longrightarrow>
   distinct ((replacefacesAt2 is olfF newFs Fss)! i)"
-  by (cases "i \<in> set is")
-    (auto intro: distinct_replacefacesAt21 distinct_replacefacesAt22)
+by (cases "i \<in> set is")
+   (auto intro: distinct_replacefacesAt21 distinct_replacefacesAt22)
 
-lemma replacefacesAt2_nth1: "!!F. k \<notin> set ns \<Longrightarrow>
-  (replacefacesAt2 ns oldf newfs F) ! k  =  F ! k"
-  apply (induct ns) by auto
+lemma replacefacesAt2_nth1:
+  "k \<notin> set ns \<Longrightarrow> (replacefacesAt2 ns oldf newfs F) ! k  =  F ! k"
+by (induct ns arbitrary: F) auto
 
-lemma  replacefacesAt2_nth1': "!!F. k \<in> set ns \<Longrightarrow> k < |F| \<Longrightarrow> distinct ns \<Longrightarrow>
+lemma  replacefacesAt2_nth1': "k \<in> set ns \<Longrightarrow> k < |F| \<Longrightarrow> distinct ns \<Longrightarrow>
   (replacefacesAt2 ns oldf newfs F) ! k  =  (replace oldf newfs (F!k))"
- apply (induct ns) apply auto  apply (simp add: replacefacesAt2_nth1)+
-apply (case_tac "a = k") by auto
+apply (induct ns arbitrary: F)
+ apply auto
+ apply (simp add: replacefacesAt2_nth1)+
+by (case_tac "a = k") auto
 
 
 lemma replacefacesAt2_nth2: "k < |F| \<Longrightarrow>
   (replacefacesAt2 [k] oldf newfs F) ! k = replace oldf newfs (F!k)"
- by (auto)
+by (auto)
 
-lemma replacefacesAt2_length[simp]: "\<And> vs. |replacefacesAt2 nvs f' f'' vs| = |vs|"
-by (induct nvs) simp_all
+lemma replacefacesAt2_length[simp]:
+  "|replacefacesAt2 nvs f' f'' vs| = |vs|"
+by (induct nvs arbitrary: vs) simp_all
 
-lemma replacefacesAt2_replacefacesAt2_nth1:
-  "!!F. k < | F | \<Longrightarrow> k \<notin> set ns \<Longrightarrow> distinct ms \<Longrightarrow>
- replacefacesAt2 ms oldf' newfs' (replacefacesAt2 ns oldf newfs F)  ! k  =
- replacefacesAt2 ms oldf' newfs' F ! k"
-proof (induct ms)
-case Nil then show ?case by (simp add: replacefacesAt2_nth1)
-next
-case (Cons m ms) then show ?case
-  apply (case_tac "m = k") apply (simp) apply safe
-apply (simp add: replacefacesAt2_nth1)
-apply (simp) apply (rule impI) apply safe
-apply (case_tac "k \<in> set ms")  apply (simp add: replacefacesAt2_nth1')
-by (simp add: replacefacesAt2_nth1)
-qed
-
-lemma replacefacesAt2_nth: "!!F. k \<in>  set ns \<Longrightarrow> k < |F| \<Longrightarrow> oldf \<notin> set newfs  \<Longrightarrow>
+lemma replacefacesAt2_nth: "k \<in>  set ns \<Longrightarrow> k < |F| \<Longrightarrow> oldf \<notin> set newfs  \<Longrightarrow>
   distinct (F!k) \<Longrightarrow> distinct newfs \<Longrightarrow> oldf \<in> set (F!k) \<longrightarrow> set newfs \<inter> set (F!k) \<subseteq> {oldf} \<Longrightarrow>
   (replacefacesAt2 ns oldf newfs F) ! k  =  (replace  oldf newfs (F!k))"
-proof (induct ns)
-case Nil then show ?case by simp
+proof (induct ns arbitrary: F)
+  case Nil then show ?case by simp
 next
-case (Cons n ns) then show ?case apply (simp only: replacefacesAt2.simps)
-  apply simp apply (case_tac "n = k")
-  apply (simp)
-  apply (subgoal_tac "replacefacesAt2 ns oldf newfs (F[k := replace  oldf newfs (F ! k)])  ! k =
+  case (Cons n ns) then show ?case
+    apply (simp only: replacefacesAt2.simps)
+    apply simp apply (case_tac "n = k")
+     apply (simp)
+     apply (subgoal_tac "replacefacesAt2 ns oldf newfs (F[k := replace  oldf newfs (F ! k)])  ! k =
     replace oldf newfs ((F[k := replace oldf newfs (F ! k)]) ! k)")
-  apply simp apply (case_tac "k \<in> set ns")  apply (rule Cons)
-  apply simp+  apply (rule replace_distinct) apply simp  apply simp  apply simp
-  apply simp  apply (simp add:distinct_set_replace)
-  apply (simp add:  replacefacesAt2_nth1) by simp
+      apply simp
+     apply (case_tac "k \<in> set ns")  apply (rule Cons) apply simp+
+        apply (rule replace_distinct) apply simp  apply simp
+        apply simp
+       apply simp
+      apply (simp add:distinct_set_replace)
+     apply (simp add:  replacefacesAt2_nth1)
+    by simp
 qed
 
 
 lemma replacefacesAt_notin:
-  "\<And>Fss. i \<notin> set is \<Longrightarrow> (replacefacesAt is olfF newFs Fss)!i = Fss!i"
+  "i \<notin> set is \<Longrightarrow> (replacefacesAt is olfF newFs Fss)!i = Fss!i"
 by (simp add: replacefacesAt_eq replacefacesAt2_notin)
 
 lemma replacefacesAt_in:
-  "\<And>Fss i. i \<in> set is \<Longrightarrow> distinct is \<Longrightarrow> i < |Fss| \<Longrightarrow>
+  "i \<in> set is \<Longrightarrow> distinct is \<Longrightarrow> i < |Fss| \<Longrightarrow>
   (replacefacesAt is olfF newFs Fss)!i = replace olfF newFs (Fss !i)"
 by (simp add: replacefacesAt_eq replacefacesAt2_in)
 
-lemma distinct_replacefacesAt1:
-  "\<And>i. i < |Fss| \<Longrightarrow> i \<in> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
-  set (Fss ! i) \<inter> set newFs \<subseteq> {olfF} \<Longrightarrow>
-  distinct ((replacefacesAt is olfF newFs Fss)! i)"
-by (simp add: replacefacesAt_eq distinct_replacefacesAt21)
-
-lemma distinct_replacefacesAt2:
-  "\<And>i. i < |Fss| \<Longrightarrow> i \<notin> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
-  set (Fss ! i) \<inter> set newFs \<subseteq> {olfF} \<Longrightarrow>
-  distinct ((replacefacesAt is olfF newFs Fss)! i)"
-by (simp add: replacefacesAt_eq distinct_replacefacesAt22)
-
-lemma distinct_replacefacesAt:
-  "\<And>i. i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
-  set (Fss ! i) \<inter> set newFs \<subseteq> {olfF} \<Longrightarrow>
-  distinct ((replacefacesAt is olfF newFs Fss)! i)"
-by (simp add: replacefacesAt_eq distinct_replacefacesAt2_2)
-
 lemma replacefacesAt_length[simp]: "|replacefacesAt nvs f' [f''] vs| = |vs|"
 by (simp add: replacefacesAt_eq)
-
-lemma replacefacesAt_nth1: "k \<notin> set ns \<Longrightarrow>
-  (replacefacesAt ns oldf newfs F) ! k  =  F ! k"
-by (simp add: replacefacesAt_eq replacefacesAt2_nth1)
-
-lemma  replacefacesAt_nth1': "k \<in> set ns \<Longrightarrow> k < |F| \<Longrightarrow> distinct ns \<Longrightarrow>
-  (replacefacesAt ns oldf newfs F) ! k  =  (replace oldf newfs (F!k))"
-by (simp add: replacefacesAt_eq replacefacesAt2_nth1')
 
 lemma replacefacesAt_nth2: "k < |F| \<Longrightarrow>
   (replacefacesAt [k] oldf newfs F) ! k = replace oldf newfs (F!k)"
 by (simp add: replacefacesAt_eq replacefacesAt2_nth2)
 
-lemma replacefacesAt_replacefacesAt_nth1:
-  "k < | F | \<Longrightarrow> k \<notin> set ns \<Longrightarrow> distinct ms \<Longrightarrow>
- replacefacesAt ms oldf' newfs' (replacefacesAt ns oldf newfs F)  ! k  =
- replacefacesAt ms oldf' newfs' F ! k"
-by (simp add: replacefacesAt_eq replacefacesAt2_replacefacesAt2_nth1)
-
-lemma replacefacesAt_nth: "!!F. k \<in>  set ns \<Longrightarrow> k < |F| \<Longrightarrow> oldf \<notin> set newfs  \<Longrightarrow>
+lemma replacefacesAt_nth: "k \<in>  set ns \<Longrightarrow> k < |F| \<Longrightarrow> oldf \<notin> set newfs  \<Longrightarrow>
   distinct (F!k) \<Longrightarrow> distinct newfs \<Longrightarrow> oldf \<in> set (F!k) \<longrightarrow> set newfs \<inter> set (F!k) \<subseteq> {oldf} \<Longrightarrow>
   (replacefacesAt ns oldf newfs F) ! k  =  (replace  oldf newfs (F!k))"
 by (simp add: replacefacesAt_eq replacefacesAt2_nth)
 
-lemma replacefacesAt2_5: "\<And> F. x \<in> set (replacefacesAt2 ns oldf newfs F ! k) \<Longrightarrow> x \<in> set (F!k) \<or> x \<in> set newfs"
-proof (induct ns)
+lemma replacefacesAt2_5: "x \<in> set (replacefacesAt2 ns oldf newfs F ! k) \<Longrightarrow> x \<in> set (F!k) \<or> x \<in> set newfs"
+proof (induct ns arbitrary: F)
   case Nil then show ?case by simp
 next
   case (Cons n ns)
-  then show ?case apply(simp add: split: split_if_asm ) apply (frule Cons)
+  then show ?case
+    apply(simp add: split: split_if_asm ) apply (frule Cons)
     apply (thin_tac "\<And>F. x \<in> set (replacefacesAt2 ns oldf newfs F ! k) \<Longrightarrow> x \<in> set (F ! k) \<or> x \<in> set newfs")
     apply (case_tac "x \<in> set newfs")  apply simp apply simp
     apply (case_tac "k = n") apply simp apply (frule replace5) apply simp by simp
 qed
 
-lemma replacefacesAt5: "\<And> F. x \<in> set (replacefacesAt ns oldf newfs F ! k) \<Longrightarrow> x \<in> set (F!k) \<or> x \<in> set newfs"
- by (simp add: replacefacesAt_eq replacefacesAt2_5)
-
-lemma replacefacesAt_delete_oldF: "oldF \<notin> set newfs \<Longrightarrow> distinct (F!k) \<Longrightarrow> k \<in> set ns \<Longrightarrow> distinct newfs \<Longrightarrow>
-  oldF \<in> set (F ! k) \<longrightarrow> set newfs \<inter> set (F ! k) \<subseteq> {oldF} \<Longrightarrow> k < |F| \<Longrightarrow>
-  oldF \<notin> set (replacefacesAt ns oldF newfs F ! k)"
-  apply (frule replacefacesAt_nth) apply (simp_all)
-  by (simp_all add:distinct_set_replace)
-
 
 lemma replacefacesAt_Nil[simp]: "replacefacesAt [] f fs F = F"
- by (simp add: replacefacesAt_eq)
+by (simp add: replacefacesAt_eq)
 
 lemma replacefacesAt_Cons[simp]:
  "replacefacesAt (n # ns) f fs F =
@@ -624,8 +574,8 @@ by (simp add: minVertex_def)
 
 lemma minVertex_eq_if_vertices_eq:
  "\<V> f = \<V> f' \<Longrightarrow> minVertex f = minVertex f'"
-apply(induct f)
-apply(induct f')
+apply(cases f)
+apply(cases f')
 apply(rename_tac vs ft vs' ft')
 apply(case_tac "vs = []")
  apply(simp add:vertices_face_def minVertex_def)
@@ -638,49 +588,28 @@ done
 
 (************** normFace ***************************)
 
-lemma normFace_eq_if_edges_eq:
-  "\<lbrakk> distinct(vertices f); distinct(vertices f'); \<E> f = \<E> f' \<rbrakk>
-  \<Longrightarrow> normFace f = normFace f'"
-apply(subgoal_tac "vertices f \<cong> vertices f'")
- prefer 2
- apply(rule cong_if_is_nextElem_eq)
-    apply assumption+
-  apply(simp add:vertices_conv_Union_edges)
- apply(simp add:set_eq_iff)
-apply(subgoal_tac "\<V> f = \<V> f'")
- prefer 2 apply(simp add:vertices_conv_Union_edges)
-apply(frule minVertex_eq_if_vertices_eq)
-apply(simp add:edges_conv_Edges normFace_def)
-apply(cases "vertices f = []")
- apply (simp add:minVertex_def verticesFrom_def split:split_if_asm)
-apply(cases "vertices f' = []")
- apply (simp add:minVertex_def verticesFrom_def split:split_if_asm)
-apply(simp)
-apply(subgoal_tac "minVertex f' \<in> \<V> f'")
- prefer 2 apply(erule minVertex_in)
-apply(subgoal_tac "minVertex f \<in> \<V> f")
- prefer 2 apply(erule minVertex_in)
-apply(erule (2) verticesFrom_eq_if_vertices_cong)
- apply simp
+
+lemma normFace_replace_in:
+ "normFace a \<in> set (normFaces (replace oldF newFs fs)) \<Longrightarrow>
+  normFace a \<in> set (normFaces newFs) \<or> normFace a \<in> set (normFaces fs)"
+apply (induct fs) apply simp
+apply (auto simp add: normFaces_def split:split_if_asm)
 done
 
-
-lemma normFace_replace_in: "normFace a \<in> set (normFaces (replace oldF newFs fs)) \<Longrightarrow>
-  normFace a \<in> set (normFaces newFs) \<or> normFace a \<in> set (normFaces fs)"
-  apply (induct fs) apply simp apply (simp add: normFaces_def split:split_if_asm) by auto
-
 lemma distinct_replace_norm:
-"distinct (normFaces fs) \<Longrightarrow>  distinct (normFaces newFs) \<Longrightarrow>
-  set (normFaces fs) \<inter> set (normFaces newFs) \<subseteq> {} \<Longrightarrow> distinct (normFaces (replace oldF newFs fs))"
- apply (induct fs) apply simp apply simp
- apply (case_tac "a = oldF") apply (simp add: normFaces_def) apply blast
- apply simp apply (simp add: normFaces_def) apply (rule ccontr)
- apply (subgoal_tac "normFace a \<in> set(normFaces (replace oldF newFs fs))")
- apply (frule normFace_replace_in) by (simp add: normFaces_def)+
+  "distinct (normFaces fs) \<Longrightarrow>  distinct (normFaces newFs) \<Longrightarrow>
+   set (normFaces fs) \<inter> set (normFaces newFs) \<subseteq> {} \<Longrightarrow> distinct (normFaces (replace oldF newFs fs))"
+apply (induct fs) apply simp
+apply simp
+apply (case_tac "a = oldF") apply (simp add: normFaces_def) apply blast
+apply (simp add: normFaces_def) apply (rule ccontr)
+apply (subgoal_tac "normFace a \<in> set(normFaces (replace oldF newFs fs))")
+apply (frule normFace_replace_in)
+ by (simp add: normFaces_def)+
 
 
 lemma distinct_replacefacesAt1_norm:
-  "\<And>i. i < |Fss| \<Longrightarrow> i \<in> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (normFaces (Fss!i)) \<Longrightarrow> distinct (normFaces newFs) \<Longrightarrow>
+  "i < |Fss| \<Longrightarrow> i \<in> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (normFaces (Fss!i)) \<Longrightarrow> distinct (normFaces newFs) \<Longrightarrow>
   set (normFaces (Fss ! i)) \<inter> set (normFaces newFs) \<subseteq> {} \<Longrightarrow>
   distinct (normFaces ((replacefacesAt is oldF newFs Fss)! i))"
 proof (induct "is")
@@ -699,7 +628,7 @@ next
 qed
 
 lemma distinct_replacefacesAt2_norm:
-  "\<And>i. i < |Fss| \<Longrightarrow> i \<notin> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (normFaces (Fss!i)) \<Longrightarrow> distinct (normFaces newFs) \<Longrightarrow>
+  "i < |Fss| \<Longrightarrow> i \<notin> set is \<Longrightarrow> distinct is \<Longrightarrow> distinct (normFaces (Fss!i)) \<Longrightarrow> distinct (normFaces newFs) \<Longrightarrow>
   set (normFaces (Fss ! i)) \<inter> set (normFaces newFs) \<subseteq> {} \<Longrightarrow>
   distinct (normFaces ((replacefacesAt is oldF newFs Fss)! i))"
 proof (induct "is")
@@ -715,29 +644,33 @@ lemma distinct_replacefacesAt_norm:
   "i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (normFaces (Fss!i)) \<Longrightarrow> distinct (normFaces newFs) \<Longrightarrow>
   set (normFaces (Fss ! i)) \<inter> set (normFaces newFs) \<subseteq> {} \<Longrightarrow>
   distinct (normFaces ((replacefacesAt is olfF newFs Fss)! i))"
-  by (cases "i \<in> set is")
-    (auto intro: distinct_replacefacesAt1_norm distinct_replacefacesAt2_norm)
+by (cases "i \<in> set is")
+   (auto intro: distinct_replacefacesAt1_norm distinct_replacefacesAt2_norm)
 
 
-
-lemma normFace_in_cong: "vertices f \<noteq> [] \<Longrightarrow> minGraphProps g \<Longrightarrow> normFace f \<in> set (normFaces (faces g)) \<Longrightarrow>
-  \<exists> f' \<in> set (faces g). f \<cong> f'"
+lemma normFace_in_cong:
+ "vertices f \<noteq> [] \<Longrightarrow> minGraphProps g \<Longrightarrow> normFace f \<in> set (normFaces (faces g))
+  \<Longrightarrow> \<exists> f' \<in> set (faces g). f \<cong> f'"
 apply (simp add: normFace_def normFaces_def)
 apply (erule imageE)
 apply(rename_tac f')
 apply (rule bexI)
-defer apply assumption  apply (simp add: cong_face_def) apply (rule congs_trans) apply (rule verticesFrom_congs)
-apply (rule minVertex_in) apply simp apply (rule congs_sym) apply (simp add: normFace_def)
+ defer apply assumption
+apply (simp add: cong_face_def)
+ apply (rule congs_trans) apply (rule verticesFrom_congs)
+ apply (rule minVertex_in) apply simp
+apply (rule congs_sym) apply (simp add: normFace_def)
 apply (rule verticesFrom_congs) apply (rule minVertex_in)
 apply (subgoal_tac "2 < | vertices f'|") apply force
 by (simp add: minGraphProps2)
 
-lemma normFace_neq: "a \<in> \<V> f \<Longrightarrow> a \<notin> \<V> f' \<Longrightarrow> vertices f' \<noteq> [] \<Longrightarrow> normFace f \<noteq> normFace f'"
+lemma normFace_neq:
+  "a \<in> \<V> f \<Longrightarrow> a \<notin> \<V> f' \<Longrightarrow> vertices f' \<noteq> [] \<Longrightarrow> normFace f \<noteq> normFace f'"
 apply (simp add: normFace_def)
 apply (subgoal_tac "a \<in> set (verticesFrom f (minVertex f))")
-apply (subgoal_tac "a \<notin> set (verticesFrom f' (minVertex f'))") apply force
-apply (subgoal_tac "(vertices f') \<cong> (verticesFrom f' (minVertex f'))") apply (simp add: congs_pres_nodes)
-apply (rule verticesFrom_congs) apply (rule minVertex_in) apply simp
+ apply (subgoal_tac "a \<notin> set (verticesFrom f' (minVertex f'))") apply force
+ apply (subgoal_tac "(vertices f') \<cong> (verticesFrom f' (minVertex f'))") apply (simp add: congs_pres_nodes)
+ apply (rule verticesFrom_congs) apply (rule minVertex_in) apply simp
 apply (subgoal_tac "(vertices f) \<cong> (verticesFrom f (minVertex f))") apply (simp add: congs_pres_nodes)
 apply (rule verticesFrom_congs) apply (rule minVertex_in) by auto
 
@@ -753,32 +686,30 @@ proof -
   from split have dist_f21: "distinct (vertices f21)" by (rule split_face_distinct2)
 
   from split dist_f12 dist_f21 minlen show ?thesis
- apply (simp add: split_face_def)
- apply (case_tac "between (vertices oldF) ram2 ram1")
- apply (case_tac "between (vertices oldF) ram1 ram2")
- apply simp apply (subgoal_tac "|vertices oldF| = 2")
-
- apply simp apply (frule verticesFrom_ram1)
- apply (subgoal_tac "distinct (vertices oldF)") apply (drule verticesFrom_length)
- apply (subgoal_tac "ram1 \<in> \<V> oldF") apply assumption apply (simp add: pre_split_face_def) apply simp
- apply (simp add: pre_split_face_def)
-
- apply (rule normFace_neq)
- apply (subgoal_tac "a \<in> \<V> (Face (rev vs @ ram1 # between (vertices oldF) ram1 ram2 @ [ram2]) Nonfinal)")
- apply assumption apply simp apply force  apply simp
-
- apply (rule not_sym)
- apply (rule normFace_neq)
- apply (subgoal_tac "a \<in> \<V> (Face (ram2 # between (vertices oldF) ram2 ram1 @ ram1 # vs) Nonfinal)")
- apply assumption apply simp
- apply (frule verticesFrom_ram1)
- apply (subgoal_tac "distinct (verticesFrom oldF ram1)") apply clarsimp
- apply (rule verticesFrom_distinct) by (simp add: pre_split_face_def)+
+    apply (simp add: split_face_def)
+    apply (case_tac "between (vertices oldF) ram2 ram1")
+     apply (case_tac "between (vertices oldF) ram1 ram2")
+      apply simp apply (subgoal_tac "|vertices oldF| = 2")
+       apply simp apply (frule verticesFrom_ram1)
+      apply (subgoal_tac "distinct (vertices oldF)") apply (drule verticesFrom_length)
+        apply (subgoal_tac "ram1 \<in> \<V> oldF") apply assumption apply (simp add: pre_split_face_def) apply simp
+       apply (simp add: pre_split_face_def)
+      apply (rule normFace_neq)
+        apply (subgoal_tac "a \<in> \<V> (Face (rev vs @ ram1 # between (vertices oldF) ram1 ram2 @ [ram2]) Nonfinal)")
+         apply assumption apply simp apply force  apply simp
+    apply (rule not_sym)
+    apply (rule normFace_neq)
+      apply (subgoal_tac "a \<in> \<V> (Face (ram2 # between (vertices oldF) ram2 ram1 @ ram1 # vs) Nonfinal)")
+       apply assumption apply simp
+     apply (frule verticesFrom_ram1)
+     apply (subgoal_tac "distinct (verticesFrom oldF ram1)") apply clarsimp
+     apply (rule verticesFrom_distinct)
+      by (simp add: pre_split_face_def)+
 qed
 
 
 lemma normFace_in: "f \<in> set fs \<Longrightarrow> normFace f \<in> set (normFaces fs)"
-  by (simp add: normFaces_def)
+by (simp add: normFaces_def)
 
 
 
@@ -809,172 +740,146 @@ apply (subgoal_tac "pre_splitFace g' v a f' vs")
 
 
 lemma splitFace_holds_faceListAt_len:
- "pre_splitFace g' v a f' vs \<Longrightarrow>
- minGraphProps g' \<Longrightarrow>
- faceListAt_len (snd (snd (splitFace g' v a f' vs)))"
+  "pre_splitFace g' v a f' vs \<Longrightarrow> minGraphProps g' \<Longrightarrow>
+   faceListAt_len (snd (snd (splitFace g' v a f' vs)))"
 by (simp add: minGraphProps_def faceListAt_len_def splitFace_def split_def)
 
 
 lemma splitFace_new_f12:
- "pre_splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  minGraphProps g \<Longrightarrow>
- (f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  f12 \<notin> \<F> g"
-proof -
-  assume props: "minGraphProps g"
-  assume pre: "pre_splitFace g ram1 ram2 oldF newVs"
-  assume spl: "(f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs"
-  show ?thesis
-  proof (cases newVs)
-    case Nil with pre have "(ram2, ram1) \<notin> edges g"
-      by (unfold pre_splitFace_def) auto
-    moreover from Nil pre
-    have "(ram2, ram1) \<in> edges f12"
-     apply (rule_tac splitFace_empty_ram2_ram1_in_f12)
+assumes pre: "pre_splitFace g ram1 ram2 oldF newVs"
+    and props: "minGraphProps g"
+    and spl: "(f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs"
+shows "f12 \<notin> \<F> g"
+proof (cases newVs)
+  case Nil with pre have "(ram2, ram1) \<notin> edges g"
+    by (unfold pre_splitFace_def) auto
+  moreover from Nil pre
+  have "(ram2, ram1) \<in> edges f12"
+    apply (rule_tac splitFace_empty_ram2_ram1_in_f12)
      apply (auto simp: Nil[symmetric])
-     apply (rule spl)
-     done
-    ultimately show ?thesis by (auto simp add: edges_graph_def)
-  next
-    case (Cons v vs)
-    with pre have "v \<notin> \<V> g"
-      apply (unfold pre_splitFace_def) by auto
-    moreover from Cons spl have "v \<in> \<V> f12"
-      by (simp add: splitFace_f12_new_vertices)
-    moreover note props
-    ultimately show ?thesis by (auto dest: minGraphProps)
-  qed
+    apply (rule spl)
+    done
+  ultimately show ?thesis by (auto simp add: edges_graph_def)
+next
+  case (Cons v vs)
+  with pre have "v \<notin> \<V> g"
+    by (auto simp: pre_splitFace_def)
+  moreover from Cons spl have "v \<in> \<V> f12"
+    by (simp add: splitFace_f12_new_vertices)
+  moreover note props
+  ultimately show ?thesis by (auto dest: minGraphProps)
 qed
 
 lemma splitFace_new_f12_norm:
- "pre_splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  minGraphProps g \<Longrightarrow>
- (f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  normFace f12 \<notin> set (normFaces (faces g))"
-proof -
-  assume props: "minGraphProps g"
-  assume pre: "pre_splitFace g ram1 ram2 oldF newVs"
-  assume spl: "(f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs"
-  show ?thesis
-  proof (cases newVs)
-    case Nil with pre have "(ram2, ram1) \<notin> edges g"
-      by (unfold pre_splitFace_def) auto
-    moreover
-    from pre spl [symmetric] have dist_f12: "distinct (vertices f12)"
-      apply (drule_tac splitFace_distinct2) by simp                  
-    moreover
-    from Nil pre
-    have "(ram2, ram1) \<in> edges f12"
-      apply (rule_tac splitFace_empty_ram2_ram1_in_f12)
-      apply (auto simp: Nil[symmetric])
-      apply (rule spl)
-      done
-    moreover
-    with dist_f12 have "vertices f12 \<noteq> []"
-      apply (simp add: is_nextElem_def) apply (case_tac "vertices f12") apply (simp add: is_sublist_def)
-      by simp
-    ultimately show ?thesis apply (auto simp add: edges_graph_def) apply (frule normFace_in_cong)
+assumes pre: "pre_splitFace g ram1 ram2 oldF newVs"
+and props: "minGraphProps g"
+and spl: "(f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs"
+shows "normFace f12 \<notin> set (normFaces (faces g))"
+proof (cases newVs)
+  case Nil with pre have "(ram2, ram1) \<notin> edges g"
+    by (auto simp: pre_splitFace_def)
+  moreover
+  from pre spl [symmetric] have dist_f12: "distinct (vertices f12)"
+    apply (drule_tac splitFace_distinct2) by simp                  
+  moreover
+  from Nil pre
+  have "(ram2, ram1) \<in> edges f12"
+    apply (rule_tac splitFace_empty_ram2_ram1_in_f12)
+     apply (auto simp: Nil[symmetric])
+    apply (rule spl)
+    done
+  moreover
+  with dist_f12 have "vertices f12 \<noteq> []"
+    apply (simp add: is_nextElem_def) apply (case_tac "vertices f12") apply (simp add: is_sublist_def)
+    by simp
+  ultimately show ?thesis
+    apply (auto simp add: edges_graph_def) apply (frule normFace_in_cong)
       apply (rule props)
-      apply assumption
-      apply (elim bexE)
-      apply (subgoal_tac "(ram2, ram1) \<in> edges f'") apply simp
-      apply (subgoal_tac "(vertices f12) \<cong> (vertices f')")  apply (frule congs_distinct)
-      apply (simp add: cong_face_def is_nextElem_congs_eq)+
-      done
-  next
-    case (Cons v vs)
-    with pre have "v \<notin> \<V> g"
-      apply (unfold pre_splitFace_def) by auto
-    moreover from Cons spl have "v \<in> \<V> f12"
-      by (simp add: splitFace_f12_new_vertices)
-    moreover note props
-    ultimately show ?thesis apply auto
-      apply (subgoal_tac "(vertices f12) \<noteq> []")
-      apply (frule normFace_in_cong) apply assumption+ apply (erule bexE)
-      apply (subgoal_tac "v \<in> \<V> f'") apply (simp add: minGraphProps9)
-      apply (simp add: congs_pres_nodes cong_face_def) by auto
-  qed
+     apply assumption
+    apply (elim bexE)
+    apply (subgoal_tac "(ram2, ram1) \<in> edges f'") apply simp
+    apply (subgoal_tac "(vertices f12) \<cong> (vertices f')")  apply (frule congs_distinct)
+     apply (simp add: cong_face_def is_nextElem_congs_eq)+
+    done
+next
+  case (Cons v vs)
+  with pre have "v \<notin> \<V> g" by (auto simp: pre_splitFace_def)
+  moreover from Cons spl have "v \<in> \<V> f12"
+    by (simp add: splitFace_f12_new_vertices)
+  moreover note props
+  ultimately show ?thesis
+    apply auto
+    apply (subgoal_tac "(vertices f12) \<noteq> []")
+     apply (frule normFace_in_cong) apply assumption+ apply (erule bexE)
+     apply (subgoal_tac "v \<in> \<V> f'") apply (simp add: minGraphProps9)
+     apply (simp add: congs_pres_nodes cong_face_def) by auto
 qed
 
 lemma splitFace_new_f21:
- "pre_splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  minGraphProps g \<Longrightarrow>
- (f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  f21 \<notin> \<F> g"
-proof -
-  assume props: "minGraphProps g"
-  assume pre: "pre_splitFace g ram1 ram2 oldF newVs"
-  assume spl: "(f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs"
-  show ?thesis
-  proof (cases newVs)
-    case Nil with pre have "(ram1, ram2) \<notin> edges g"
-      by (unfold pre_splitFace_def) auto
-    moreover from Nil pre
-    have "(ram1, ram2) \<in> edges f21"
-     apply (rule_tac splitFace_empty_ram1_ram2_in_f21)
+assumes pre: "pre_splitFace g ram1 ram2 oldF newVs"
+and props: "minGraphProps g"
+and spl: "(f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs"
+shows "f21 \<notin> \<F> g"
+proof (cases newVs)
+  case Nil with pre have "(ram1, ram2) \<notin> edges g"
+    by (auto simp: pre_splitFace_def)
+  moreover from Nil pre
+  have "(ram1, ram2) \<in> edges f21"
+    apply (rule_tac splitFace_empty_ram1_ram2_in_f21)
      apply (auto simp: Nil[symmetric])
-     apply (rule spl)
-     done
-    ultimately show ?thesis by (auto simp add: edges_graph_def)
-  next
-    case (Cons v vs)
-    with pre have "v \<notin> \<V> g"
-      apply (unfold pre_splitFace_def) by auto
-    moreover from Cons spl have "v \<in> \<V> f21"
-      by (simp add: splitFace_f21_new_vertices)
-    moreover note props
-    ultimately show ?thesis by (auto dest: minGraphProps)
-  qed
+    apply (rule spl)
+    done
+  ultimately show ?thesis by (auto simp add: edges_graph_def)
+next
+  case (Cons v vs)
+  with pre have "v \<notin> \<V> g" by (auto simp: pre_splitFace_def)
+  moreover from Cons spl have "v \<in> \<V> f21"
+    by (simp add: splitFace_f21_new_vertices)
+  moreover note props
+  ultimately show ?thesis by (auto dest: minGraphProps)
 qed
 
 lemma splitFace_new_f21_norm:
- "pre_splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  minGraphProps g \<Longrightarrow>
- (f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  normFace f21 \<notin> set (normFaces (faces g))"
-proof -
-  assume props: "minGraphProps g"
-  assume pre: "pre_splitFace g ram1 ram2 oldF newVs"
-  assume spl: "(f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs"
-  show ?thesis
-  proof (cases newVs)
-    case Nil with pre have "(ram1, ram2) \<notin> edges g"
-      by (unfold pre_splitFace_def) auto
-    moreover
-    from pre spl [symmetric] have dist_f21: "distinct (vertices f21)"
-      apply (drule_tac splitFace_distinct1) by simp
-    moreover
-    from Nil pre
-    have "(ram1, ram2) \<in> edges f21"
-      apply (rule_tac splitFace_empty_ram1_ram2_in_f21)
-      apply (auto simp: Nil[symmetric])
-      apply (rule spl)
-      done
-    moreover
-    with dist_f21 have "vertices f21 \<noteq> []"
-      apply (simp add: is_nextElem_def) apply (case_tac "vertices f21") apply (simp add: is_sublist_def)
-      by simp
-    ultimately show ?thesis apply (auto simp add: edges_graph_def) apply (frule normFace_in_cong)
+assumes pre: "pre_splitFace g ram1 ram2 oldF newVs"
+and props: "minGraphProps g"
+and spl: "(f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs"
+shows "normFace f21 \<notin> set (normFaces (faces g))"
+proof (cases newVs)
+  case Nil with pre have "(ram1, ram2) \<notin> edges g"
+    by (auto simp: pre_splitFace_def)
+  moreover
+  from pre spl [symmetric] have dist_f21: "distinct (vertices f21)"
+    apply (drule_tac splitFace_distinct1) by simp
+  moreover
+  from Nil pre
+  have "(ram1, ram2) \<in> edges f21"
+    apply (rule_tac splitFace_empty_ram1_ram2_in_f21)
+     apply (auto simp: Nil[symmetric])
+    apply (rule spl)
+    done
+  moreover
+  with dist_f21 have "vertices f21 \<noteq> []"
+    apply (simp add: is_nextElem_def) apply (case_tac "vertices f21") apply (simp add: is_sublist_def)
+    by simp
+  ultimately show ?thesis apply (auto simp add: edges_graph_def) apply (frule normFace_in_cong)
       apply (rule props)
-      apply assumption
-      apply (elim bexE)
-      apply (subgoal_tac "(ram1, ram2) \<in> edges f'") apply simp
-      apply (subgoal_tac "(vertices f21) \<cong> (vertices f')")  apply (frule congs_distinct)
-      apply (simp add: cong_face_def is_nextElem_congs_eq)+
-      done
-  next
-    case (Cons v vs)
-    with pre have "v \<notin> \<V> g"
-      apply (unfold pre_splitFace_def) by auto
-    moreover from Cons spl have "v \<in> \<V> f21"
-      by (simp add: splitFace_f21_new_vertices)
-    moreover note props
-    ultimately show ?thesis apply auto
-      apply (subgoal_tac "(vertices f21) \<noteq> []")
-      apply (frule normFace_in_cong) apply assumption+ apply (erule bexE)
-      apply (subgoal_tac "v \<in> \<V> f'") apply (simp add: minGraphProps9)
-      apply (simp add: congs_pres_nodes cong_face_def) by auto
-  qed
+     apply assumption
+    apply (elim bexE)
+    apply (subgoal_tac "(ram1, ram2) \<in> edges f'") apply simp
+    apply (subgoal_tac "(vertices f21) \<cong> (vertices f')")  apply (frule congs_distinct)
+     apply (simp add: cong_face_def is_nextElem_congs_eq)+
+    done
+next
+  case (Cons v vs)
+  with pre have "v \<notin> \<V> g" by (auto simp: pre_splitFace_def)
+  moreover from Cons spl have "v \<in> \<V> f21"
+    by (simp add: splitFace_f21_new_vertices)
+  moreover note props
+  ultimately show ?thesis apply auto
+    apply (subgoal_tac "(vertices f21) \<noteq> []")
+     apply (frule normFace_in_cong) apply assumption+ apply (erule bexE)
+     apply (subgoal_tac "v \<in> \<V> f'") apply (simp add: minGraphProps9)
+     apply (simp add: congs_pres_nodes cong_face_def) by auto
 qed
 
 lemma splitFace_f21_oldF_neq:
@@ -982,34 +887,14 @@ lemma splitFace_f21_oldF_neq:
   minGraphProps g \<Longrightarrow>
  (f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
   oldF \<noteq> f21"
-  apply (frule splitFace_new_f21)
-  by (auto)
-
-lemma splitFace_f21_oldF_neq_norm:
- "pre_splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  minGraphProps g \<Longrightarrow>
- (f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  normFace oldF \<noteq> normFace f21"
-  apply (frule splitFace_new_f21_norm) apply simp  apply simp
-  apply (subgoal_tac "normFace oldF \<in> set (normFaces (faces g))") apply force
-  apply (rule normFace_in) by (simp)
+by (frule splitFace_new_f21) (auto)
 
 lemma splitFace_f12_oldF_neq:
  "pre_splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
   minGraphProps g \<Longrightarrow>
  (f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
   oldF \<noteq> f12"
-  apply (frule splitFace_new_f12)
-  by(auto)
-
-lemma splitFace_f12_oldF_neq_norm:
- "pre_splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  minGraphProps g \<Longrightarrow>
- (f12, f21, newGraph) = splitFace g ram1 ram2 oldF newVs \<Longrightarrow>
-  normFace oldF \<noteq> normFace f12"
-  apply (frule splitFace_new_f12_norm) apply simp apply simp
-  apply (subgoal_tac "normFace oldF \<in> set (normFaces (faces g))") apply force
-  apply (rule normFace_in) by (simp)
+by (frule splitFace_new_f12) (auto)
 
 
 lemma splitFace_f12_f21_neq_norm:
@@ -1019,7 +904,7 @@ lemma splitFace_f12_f21_neq_norm:
 apply (subgoal_tac "minGraphProps' newGraph")
  apply (subgoal_tac "f12 \<in> \<F> newGraph \<and> f21 \<in> \<F> newGraph")
   apply (subgoal_tac "pre_split_face oldF ram1 ram2 vs")
-  apply (frule split_face_f12_f21_neq_norm) apply (rule minGraphProps2) apply simp apply(erule pre_splitFace_oldF)
+   apply (frule split_face_f12_f21_neq_norm) apply (rule minGraphProps2) apply simp apply(erule pre_splitFace_oldF)
       apply (subgoal_tac "2 < | vertices f12 |") apply assumption apply (force simp: minGraphProps'_def)
      apply (subgoal_tac "2 < | vertices f21 |") apply assumption apply (force simp: minGraphProps'_def)
     apply (simp add: splitFace_def split_def)
@@ -1046,12 +931,10 @@ done
 declare minGraphProps8 minGraphProps8a minGraphProps8a' [intro]
 
 lemma splitFace_holds_facesAt_distinct:
- "pre_splitFace g v w f [countVertices g..<countVertices g + n] \<Longrightarrow>
-  minGraphProps g \<Longrightarrow>
-  facesAt_distinct (snd (snd (splitFace g v w f [countVertices g..<countVertices g + n])))"
-proof -
-  assume pre: "pre_splitFace g v w f [countVertices g..<countVertices g + n]"
+assumes pre: "pre_splitFace g v w f [countVertices g..<countVertices g + n]"
     and mgp: "minGraphProps g"
+shows "facesAt_distinct (snd (snd (splitFace g v w f [countVertices g..<countVertices g + n])))"
+proof -
   def ws \<equiv>  "[countVertices g..<countVertices g + n]"
   def f21 \<equiv> "snd (split_face f v w ws)"
   with pre ws_def have dist_f21: "distinct (vertices f21)" by (auto intro: split_face_distinct2)
@@ -1118,7 +1001,7 @@ proof -
 	     apply (simp add: normFaces_def)
 
 	    apply (subgoal_tac "w \<notin> set (between (vertices f) v w)")
-	     apply (simp add: replacefacesAt_nth1)
+	     apply (simp add: replacefacesAt_notin)
 	     apply (subgoal_tac "set (faceListAt g ! w) = {f \<in> \<F> g. w \<in> \<V> f}")
 	      apply (subgoal_tac "set (normFaces (faces g)) \<inter> {normFace f21} = {}")
 	       apply (simp add: f21_def ws_def normFaces_def) apply blast
@@ -1137,9 +1020,9 @@ proof -
            apply (rule fdg)
 
 	  apply (subgoal_tac "w \<notin> set (between (vertices f) w v)")
-	   apply (simp add: replacefacesAt_nth1)
+	   apply (simp add: replacefacesAt_notin)
 	   apply (subgoal_tac "w \<notin> set (between (vertices f) v w)")
-	    apply (simp add: replacefacesAt_nth1)
+	    apply (simp add: replacefacesAt_notin)
 	    apply (subgoal_tac "set (faceListAt g ! w) = {f \<in> \<F> g. w \<in> \<V> f}")
 	     apply (subgoal_tac "set (normFaces (faces g)) \<inter> {normFace f12,normFace f21} = {}")
 	      apply (simp add: f12_def f21_def ws_def normFaces_def) apply blast
@@ -1188,7 +1071,7 @@ proof -
 		   apply (simp add: normFaces_def)
 
 		  apply (subgoal_tac "v \<notin> set (between (vertices f) v w)")
-		   apply (simp add: replacefacesAt_nth1)
+		   apply (simp add: replacefacesAt_notin)
 		   apply (subgoal_tac "set (faceListAt g ! v) = {f \<in> \<F> g. v \<in> \<V> f}")
 		    apply (subgoal_tac "set (normFaces (faces g)) \<inter> {normFace f21} = {}")
 		     apply (simp add: f21_def ws_def normFaces_def) apply blast
@@ -1205,9 +1088,9 @@ proof -
 		  apply (simp add: f12_def f21_def ws_def g'_def)  apply (rule fdg)
 
 		apply (subgoal_tac "v \<notin> set (between (vertices f) w v)")
-		 apply (simp add: replacefacesAt_nth1)
+		 apply (simp add: replacefacesAt_notin)
 		 apply (subgoal_tac "v \<notin> set (between (vertices f) v w)")
-		  apply (simp add: replacefacesAt_nth1)
+		  apply (simp add: replacefacesAt_notin)
 		  apply (subgoal_tac "set (faceListAt g ! v) = {f \<in> \<F> g. v \<in> \<V> f}")
 		   apply (subgoal_tac "set (normFaces (faces g)) \<inter> {normFace f21,normFace f12} = {}")
 		    apply (simp add: f12_def f21_def ws_def normFaces_def) apply blast
@@ -1253,7 +1136,7 @@ proof -
 		     apply (simp add: normFaces_def)
 
 		    apply (case_tac "x \<notin> set (between (vertices f) v w)")
-		     apply (simp add: replacefacesAt_nth1)
+		     apply (simp add: replacefacesAt_notin)
 		     apply (subgoal_tac "set (faceListAt g ! x) = {f \<in> \<F> g. x \<in> \<V> f}")
 		      apply (subgoal_tac "set (normFaces (faces g)) \<inter> {normFace f21} = {}")
 		       apply (simp add: f21_def ws_def normFaces_def) apply blast
@@ -1310,9 +1193,9 @@ proof -
 		      apply (simp add: normFaces_def)
 		     apply (rule ccontr) apply simp
 		     apply (subgoal_tac "normFace f21 \<notin> set (normFaces (facesAt g x))")
-		      apply (simp add: facesAt_def)
+		      apply (simp add: facesAt_def)(*
 		      apply (subgoal_tac "x \<in> \<V> g") apply (simp add: normFaces_def)
-		      apply (simp add: minGraphProps4 vertices_graph)
+		      apply (simp add: minGraphProps4 vertices_graph)*)
 		     apply (subgoal_tac "normFace f21 \<notin> set (normFaces (faces g))") apply (frule minGraphProps_facesAt_eq)
 		       apply (subgoal_tac "x \<in> \<V> g") apply assumption apply (simp add: minGraphProps4 vertices_graph)
 		      apply (simp add: normFaces_def) apply (rule ccontr)  apply simp
@@ -1336,14 +1219,11 @@ qed
 
 
 lemma splitFace_holds_facesAt_eq:
-  "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n] \<Longrightarrow>
-   minGraphProps g'  \<Longrightarrow>
-  g'' = (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n]))) \<Longrightarrow>
-  facesAt_eq g''"
+assumes pre_F: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n]"
+and mgp: "minGraphProps g'"
+and g'': "g'' = (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
+shows "facesAt_eq g''"
 proof -
-  assume pre_F: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n]"
-  and mgp: "minGraphProps g'"
-  and g'': "g'' = (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
   have "[0..<countVertices g''] = [0..<countVertices g' + n]"
     apply (simp add: g'') by (simp add: splitFace_def split_def)
   hence vg'': "vertices g'' = [0..<countVertices g' + n]" by (simp add:vertices_graph)
@@ -1384,7 +1264,8 @@ proof -
     by (simp add: minGraphProps_def faceListAt_len_def)
 
   from ws_def [symmetric] f21_def [symmetric] f12_def [symmetric]
-    vs1_def [symmetric] vs2_def [symmetric] pre_F mgp vert_f' show ?thesis
+    vs1_def [symmetric] vs2_def [symmetric] pre_F mgp vert_f'
+show ?thesis
 apply (simp add: g'')
 apply (unfold splitFace_def facesAt_eq_def facesAt_def)
 apply (rule ballI)
@@ -1393,111 +1274,112 @@ apply (simp only: snd_conv)
 apply (rule equalityI)
  apply (rule subsetI)
  apply (simp only: faceListAt.simps vertices_graph.simps split:split_if_asm)
-  apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
-   apply (simp only: nth_append split: split_if_asm)
-    apply (case_tac "va < | faceListAt g' |")
-     apply (subgoal_tac "va \<in> \<V> g'")
-      apply (subgoal_tac "distinct vs1 \<and> distinct vs2 \<and>
+ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
+  apply (simp only: nth_append split: split_if_asm)
+   apply (case_tac "va < | faceListAt g' |")
+    apply (subgoal_tac "va \<in> \<V> g'")
+     apply (subgoal_tac "distinct vs1 \<and> distinct vs2 \<and>
        v \<notin> set vs1 \<and> v \<notin> set vs2 \<and> a \<notin> set vs1 \<and> a \<notin> set vs2 \<and> a \<noteq> v \<and> v \<noteq> a \<and> set vs1 \<inter> set vs2 = {}" )
-       apply (case_tac "a = va")
-        apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1)
+      apply (case_tac "a = va")
+       apply (simp add:replacefacesAt_nth2 replacefacesAt_notin)
+       apply (subgoal_tac "distinct (faceListAt g' ! va)")
+        apply (subgoal_tac "distinct (faces g')")
+         apply (simp add: replace6)
+         apply (case_tac "x = f12") apply (simp add: vert_f12) apply simp
+         apply (case_tac "x = f'") apply (simp add: vert_f21) apply(simp)
+         apply (case_tac "x = f21") apply (simp add: vert_f21) apply (simp)
+         apply (rule conjI)
+          apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
+         apply (rule minGraphProps6) apply assumption apply assumption apply (simp add: facesAt_def)
+        apply (rule minGraphProps11') apply simp
+       apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
+       apply (rule normFaces_distinct) apply (rule minGraphProps8) apply simp apply simp apply simp
+      apply (case_tac "v = va")
+       apply (simp add:replacefacesAt_nth2 replacefacesAt_notin)
+       apply (subgoal_tac "distinct (faceListAt g' ! va)")
+        apply (subgoal_tac "distinct (faces g')")
+         apply (simp add: replace6)
+         apply (case_tac "x = f12") apply (simp add: vert_f12) apply simp
+         apply (case_tac "x = f'") apply (simp add: vert_f21) apply simp
+         apply (case_tac "x = f21") apply (simp add: vert_f21) apply simp
+         apply (rule conjI)
+          apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
+         apply (rule minGraphProps6) apply assumption apply assumption apply(fastsimp simp: facesAt_def)
+        apply (rule minGraphProps11') apply simp
+       apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
+       apply (rule normFaces_distinct) apply (rule minGraphProps8) apply simp apply simp apply simp
+      apply (case_tac "va \<in> set vs1")
+       apply (subgoal_tac "va \<notin> set vs2")
+        apply (simp add:replacefacesAt_nth2 replacefacesAt_notin replacefacesAt_in)
         apply (subgoal_tac "distinct (faceListAt g' ! va)")
          apply (subgoal_tac "distinct (faces g')")
           apply (simp add: replace6)
           apply (case_tac "x = f12") apply (simp add: vert_f12) apply simp
-          apply (case_tac "x = f'") apply (simp add: vert_f21) apply(simp)
-          apply (case_tac "x = f21") apply (simp add: vert_f21) apply (simp)
-          apply (rule conjI)
-           apply (rule minGraphProps5) apply simp apply (fastsimp simp: facesAt_def)
-          apply (rule minGraphProps6) apply simp apply (simp add: facesAt_def)
-         apply (rule minGraphProps11') apply simp
-        apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
-        apply (rule normFaces_distinct) apply (rule minGraphProps8) apply simp apply simp
-       apply (case_tac "v = va")
-        apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1)
-        apply (subgoal_tac "distinct (faceListAt g' ! va)")
-         apply (subgoal_tac "distinct (faces g')")
-          apply (simp add: replace6)
-          apply (case_tac "x = f12") apply (simp add: vert_f12) apply simp
-          apply (case_tac "x = f'") apply (simp add: vert_f21) apply simp
-          apply (case_tac "x = f21") apply (simp add: vert_f21) apply simp
-          apply (rule conjI)
-           apply (rule minGraphProps5) apply simp apply (fastsimp simp: facesAt_def)
-          apply (rule minGraphProps6) apply simp apply (fastsimp simp: facesAt_def)
-         apply (rule minGraphProps11') apply simp
-        apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
-        apply (rule normFaces_distinct) apply (rule minGraphProps8) apply simp apply simp
-       apply (case_tac "va \<in> set vs1")
-        apply (subgoal_tac "va \<notin> set vs2")
-         apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1 replacefacesAt_nth1')
-         apply (subgoal_tac "distinct (faceListAt g' ! va)")
-          apply (subgoal_tac "distinct (faces g')")
-           apply (simp add: replace6)
-           apply (case_tac "x = f12") apply (simp add: vert_f12) apply simp
-           apply (case_tac "x = f'") apply (simp add: vert_f21) apply simp
-           apply (rule conjI)
-            apply (rule disjI2)
-            apply (rule minGraphProps5) apply simp apply (fastsimp simp: facesAt_def)
-           apply (rule minGraphProps6) apply simp apply (fastsimp simp: facesAt_def)
-          apply (rule minGraphProps11') apply simp
-         apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
-         apply (rule normFaces_distinct) apply (rule minGraphProps8) apply simp
-        apply blast
-       apply (case_tac "va \<in> set vs2")
-        apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1 replacefacesAt_nth1')
-        apply (subgoal_tac "distinct (faceListAt g' ! va)")
-         apply (subgoal_tac "distinct (faces g')")
-          apply (simp add: replace6)
-          apply (case_tac "x = f21") apply (simp add: vert_f21) apply simp
           apply (case_tac "x = f'") apply (simp add: vert_f21) apply simp
           apply (rule conjI)
            apply (rule disjI2)
-           apply (rule minGraphProps5) apply simp apply (fastsimp simp: facesAt_def)
-          apply (rule minGraphProps6) apply simp apply (fastsimp simp: facesAt_def)
+           apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
+          apply (rule minGraphProps6) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
          apply (rule minGraphProps11') apply simp
         apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
-        apply (rule normFaces_distinct) apply (rule minGraphProps8) apply simp
-    (* case else *)
-       apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1 replacefacesAt_nth1')
+        apply (rule normFaces_distinct) apply (rule minGraphProps8) apply assumption apply assumption
+       apply blast
+      apply (case_tac "va \<in> set vs2")
+       apply (simp add:replacefacesAt_nth2 replacefacesAt_notin replacefacesAt_in)
        apply (subgoal_tac "distinct (faceListAt g' ! va)")
         apply (subgoal_tac "distinct (faces g')")
-        apply (simp add: replace6)
-        apply (case_tac "x = f'")
-         apply (subgoal_tac "va \<in> \<V> f'") apply simp apply (rule minGraphProps6) apply simp
-          apply (simp add: fla) apply (simp add: facesAt_def) apply simp
+         apply (simp add: replace6)
+         apply (case_tac "x = f21") apply (simp add: vert_f21) apply simp
+         apply (case_tac "x = f'") apply (simp add: vert_f21) apply simp
          apply (rule conjI)
-          apply (rule disjI2) apply (rule disjI2)
-          apply (rule minGraphProps5) apply simp apply (fastsimp simp: facesAt_def)
-         apply (rule minGraphProps6) apply simp apply(fastsimp simp: facesAt_def)
+          apply (rule disjI2)
+          apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
+         apply (rule minGraphProps6) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
         apply (rule minGraphProps11') apply simp
        apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
-       apply (rule normFaces_distinct) apply (rule minGraphProps8) apply simp apply simp
-      apply (subgoal_tac "distinct (vertices f12) \<and> distinct (vertices f21)")
-       apply (simp add: vert_f12 vert_f21)
-       apply (rule vs1_vs2_empty)
-      apply (subgoal_tac "pre_split_face f' v a ws")
-       apply (simp add: f12_def f21_def split_face_distinct1' split_face_distinct2')
-      apply simp
-     apply (simp add: vertices_graph fla)
+       apply (rule normFaces_distinct) apply (rule minGraphProps8) apply assumption apply assumption
+    (* case else *)
+      apply (simp add:replacefacesAt_nth2 replacefacesAt_notin replacefacesAt_in)
+      apply (subgoal_tac "distinct (faceListAt g' ! va)")
+       apply (subgoal_tac "distinct (faces g')")
+        apply (simp add: replace6)
+        apply (case_tac "x = f'")
+         apply (subgoal_tac "va \<in> \<V> f'") apply simp
+         apply (rule minGraphProps6) apply simp apply (simp add: fla)
+         apply (simp add: facesAt_def)
+        apply simp
+        apply (rule conjI)
+         apply (rule disjI2) apply (rule disjI2)
+         apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
+        apply (rule minGraphProps6) apply assumption apply assumption apply(fastsimp simp: facesAt_def)
+       apply (rule minGraphProps11') apply assumption
+      apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
+      apply (rule normFaces_distinct) apply (rule minGraphProps8) apply assumption apply assumption apply simp
+     apply (subgoal_tac "distinct (vertices f12) \<and> distinct (vertices f21)")
+      apply (simp add: vert_f12 vert_f21)
+      apply (rule vs1_vs2_empty)
+     apply (subgoal_tac "pre_split_face f' v a ws")
+      apply (simp add: f12_def f21_def split_face_distinct1' split_face_distinct2')
+     apply simp
+    apply (simp add: vertices_graph fla)
     (* va in ws *)
-    apply simp
-   apply (subgoal_tac "distinct (faces g')")
-    apply (simp add: replace6)
-    apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
-    apply (subgoal_tac "(va - |faceListAt g'| ) < | ws |") apply simp apply (rule conjI) apply blast
-     apply (subgoal_tac "va \<in> set ws")
-      apply (case_tac "x = f12") apply (simp add: vert_f12) apply (simp add: vert_f21)
-     apply (simp add: ws_def fla)
+   apply simp
+  apply (subgoal_tac "distinct (faces g')")
+   apply (simp add: replace6)
+   apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
+   apply (subgoal_tac "(va - |faceListAt g'| ) < | ws |") apply simp apply (rule conjI) apply blast
+    apply (subgoal_tac "va \<in> set ws")
+     apply (case_tac "x = f12") apply (simp add: vert_f12) apply (simp add: vert_f21)
     apply (simp add: ws_def fla)
-   apply (rule minGraphProps11') apply simp
-  apply (subgoal_tac "v \<in> \<V> g' \<and> a \<in> \<V> g'")
-   apply (simp only: fla in_vertices_graph)
-  apply (subgoal_tac "f' \<in> \<F> g'")
-   apply (subgoal_tac "v \<in> \<V> f' \<and> a \<in> \<V> f'") apply (simp only: minGraphProps9) apply force
-   apply (subgoal_tac "pre_split_face f' v a ws") apply (simp only: pre_split_face_def) apply force
-   apply (rule pre_splitFace_pre_split_face) apply assumption
-  apply (simp only: pre_splitFace_def)
- apply simp
+   apply (simp add: ws_def fla)
+  apply (rule minGraphProps11') apply assumption
+ apply (subgoal_tac "v \<in> \<V> g' \<and> a \<in> \<V> g'")
+  apply (simp only: fla in_vertices_graph)
+ apply (subgoal_tac "f' \<in> \<F> g'")
+  apply (subgoal_tac "v \<in> \<V> f' \<and> a \<in> \<V> f'") apply (simp only: minGraphProps9) apply force
+  apply (subgoal_tac "pre_split_face f' v a ws") apply (simp only: pre_split_face_def) apply force
+  apply (rule pre_splitFace_pre_split_face) apply assumption
+ apply (simp only: pre_splitFace_def)
 
 (* Rückrichtung *)
 apply (rule subsetI)
@@ -1508,16 +1390,18 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
        v \<notin> set vs1 \<and> v \<notin> set vs2 \<and> a \<notin> set vs1 \<and> a \<notin> set vs2 \<and> a \<noteq> v \<and> v \<noteq> a \<and> set vs1 \<inter> set vs2 = {}" )
     apply (simp del: replacefacesAt_simps add: nth_append)
     apply (case_tac "a = va")
-     apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1)
+     apply (simp add:replacefacesAt_nth2 replacefacesAt_notin)
      apply (subgoal_tac "distinct (faceListAt g' ! va)")
       apply (subgoal_tac "distinct (faces g')")
        apply (simp add: replace6)
        apply (case_tac "x = f12") apply simp apply (rule disjI1) apply (rule minGraphProps7') apply simp  apply simp apply simp
        apply (case_tac "x = f21") apply simp apply (rule disjI1) apply (rule minGraphProps7') apply simp  apply simp apply simp
        apply simp apply (rule minGraphProps7') apply simp apply simp apply  simp
-      apply (rule minGraphProps11') apply simp apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply simp
+      apply (rule minGraphProps11') apply simp
+     apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply assumption
+    apply simp
     apply (case_tac "v = va")
-     apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1)
+     apply (simp add:replacefacesAt_nth2 replacefacesAt_notin)
      apply (subgoal_tac "distinct (faceListAt g' ! va)")
       apply (subgoal_tac "distinct (faces g')")
        apply (simp add: replace6)
@@ -1526,21 +1410,24 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
        apply simp apply (rule minGraphProps7') apply simp apply simp apply  simp
       apply (rule minGraphProps11') apply simp apply (rule normFaces_distinct)      apply (rule minGraphProps8a) apply simp apply simp     apply (case_tac "va \<in> set vs1")
      apply (subgoal_tac "va \<notin> set vs2")
-      apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1 replacefacesAt_nth1')
+      apply (simp add:replacefacesAt_nth2 replacefacesAt_notin replacefacesAt_in)
       apply (subgoal_tac "distinct (faceListAt g' ! va)")
        apply (subgoal_tac "distinct (faces g')")
         apply (simp add: replace6)
         apply (case_tac "x = f12") apply simp apply (rule disjI1) apply (rule minGraphProps7') apply simp  apply simp apply simp
         apply (case_tac "x = f'")
          apply (subgoal_tac "f' \<noteq> f21") apply simp apply (rule splitFace_f21_oldF_neq)
-           apply (rule pre_F') apply simp  apply (rule fdg)
+           apply (rule pre_F')
+          apply simp
+         apply (rule fdg)
         apply (case_tac "x = f21") apply (simp add: vert_f21 fla) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
          apply (simp add: ws_def)
         apply simp apply (rule minGraphProps7') apply simp  apply simp apply simp
-       apply (rule minGraphProps11') apply simp apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply simp
+       apply (rule minGraphProps11') apply simp
+      apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply simp
      apply blast
     apply (case_tac "va \<in> set vs2")
-     apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1 replacefacesAt_nth1')
+     apply (simp add:replacefacesAt_nth2 replacefacesAt_notin replacefacesAt_in)
      apply (subgoal_tac "distinct (faceListAt g' ! va)")
       apply (subgoal_tac "distinct (faces g')")
        apply (simp add: replace6)
@@ -1549,18 +1436,20 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
         apply (subgoal_tac "f' \<noteq> f12") apply simp apply (rule splitFace_f12_oldF_neq)
           apply (rule pre_F') apply simp  apply (rule fdg)
        apply (case_tac "x = f12") apply (simp add: vert_f12 fla) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
-       apply (simp add: ws_def)
+        apply (simp add: ws_def)
        apply simp apply (rule minGraphProps7') apply simp  apply simp apply simp
       apply (rule minGraphProps11') apply simp apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply simp
-    apply (simp add:replacefacesAt_nth2 replacefacesAt_nth1 replacefacesAt_nth1')
-     apply (subgoal_tac "distinct (faces g')")
-      apply (simp add: replace6)
-      apply (rule minGraphProps7') apply simp
-       apply (case_tac "x = f21") apply (simp add: vert_f21) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
-        apply (simp add: ws_def vertices_graph)
-       apply (case_tac "x = f12") apply (simp add: vert_f12) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
-        apply (simp add: ws_def vertices_graph)
-       apply simp apply simp apply (rule minGraphProps11') apply simp
+    apply (simp add:replacefacesAt_nth2 replacefacesAt_notin replacefacesAt_in)
+    apply (subgoal_tac "distinct (faces g')")
+     apply (simp add: replace6)
+     apply (rule minGraphProps7') apply simp
+      apply (case_tac "x = f21") apply (simp add: vert_f21) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
+       apply (simp add: ws_def vertices_graph)
+      apply (case_tac "x = f12") apply (simp add: vert_f12) apply (thin_tac "[countVertices g'..<countVertices g' + n] \<equiv> ws")
+       apply (simp add: ws_def vertices_graph)
+      apply simp
+     apply simp
+    apply (rule minGraphProps11') apply simp
    apply (subgoal_tac "distinct (vertices f12) \<and> distinct (vertices f21)")
     apply (simp add: vert_f12 vert_f21)
     apply (rule vs1_vs2_empty)
@@ -1580,7 +1469,7 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
   apply (simp add: ws_def fla)
  apply (rule minGraphProps11') apply simp
 apply (subgoal_tac "v \<in> \<V> g' \<and> a \<in> \<V> g'")
-apply (simp only: fla in_vertices_graph)
+ apply (simp only: fla in_vertices_graph)
 apply (subgoal_tac "f' \<in> \<F> g'")
  apply (subgoal_tac "v \<in> \<V> f' \<and> a \<in> \<V> f'") apply (simp only: minGraphProps9) apply force
  apply (subgoal_tac "pre_split_face f' v a ws") apply (simp only: pre_split_face_def) apply force
@@ -1589,12 +1478,10 @@ by (simp only: pre_splitFace_def)
 qed
 
 lemma splitFace_holds_faces_subset:
-  "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n] \<Longrightarrow>
-  minGraphProps g' \<Longrightarrow>
- faces_subset (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
+assumes pre_F: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n]"
+and mgp: "minGraphProps g'"
+shows "faces_subset (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
 proof -
-  assume pre_F: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n]"
-  and mgp: "minGraphProps g'"
   def g'' \<equiv>  "(snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
   def ws \<equiv>  "[countVertices g'..<countVertices g' + n]"
   def f21 \<equiv>  "snd (split_face f' v a ws)"
@@ -1634,12 +1521,10 @@ qed
 
 
 lemma splitFace_holds_edges_sym:
-  "pre_splitFace g' v a f' ws \<Longrightarrow>
-  minGraphProps g' \<Longrightarrow>
- edges_sym (snd (snd (splitFace g' v a f' ws)))"
+assumes pre_F: "pre_splitFace g' v a f' ws"
+and mgp: "minGraphProps g'"
+shows "edges_sym (snd (snd (splitFace g' v a f' ws)))"
 proof -
-  assume pre_F: "pre_splitFace g' v a f' ws"
-  and mgp: "minGraphProps g'"
   def g'' \<equiv>  "(snd (snd (splitFace g' v a f' ws)))"
   def f21 \<equiv>  "snd (split_face f' v a ws)"
   def f12 \<equiv> "fst (split_face f' v a ws)"
@@ -1656,54 +1541,60 @@ proof -
   from f12_def f21_def have split: "(f12, f21) = split_face f' v a ws" by simp
 
   from pre_F mgp  g''_def [symmetric] split show ?thesis
-  apply (simp add: edges_sym_def edges_graph_def f21_def [symmetric] f12_def [symmetric]
+    apply (simp add: edges_sym_def edges_graph_def f21_def [symmetric] f12_def [symmetric]
     vs1_def [symmetric] vs2_def [symmetric])
-  apply (intro allI impI) apply (elim bexE) apply (simp add: faces)
-  apply (case_tac "x = f12 \<or> x = f21")
-    apply (subgoal_tac "(aa,b) \<in> edges f'  \<or> ((b,aa) \<in> (edges f12 \<union> edges f21) \<and> (aa,b) \<in> (edges f12 \<union> edges f21))") apply simp
-    apply (case_tac "(aa, b) \<in> edges f'")
-      apply (subgoal_tac "(b,aa) \<in> edges g'")
+    apply (intro allI impI) apply (elim bexE) apply (simp add: faces)
+    apply (case_tac "x = f12 \<or> x = f21")
+     apply (subgoal_tac "(aa,b) \<in> edges f'  \<or> ((b,aa) \<in> (edges f12 \<union> edges f21) \<and> (aa,b) \<in> (edges f12 \<union> edges f21))") apply simp
+      apply (case_tac "(aa, b) \<in> edges f'")
+       apply (subgoal_tac "(b,aa) \<in> edges g'")
         apply (simp add: edges_graph_def) apply (elim bexE) apply (rule disjI2) apply (rule bexI)
-	apply simp apply (subgoal_tac "xa \<noteq> f'") apply (rule replace4) apply simp apply force
-	apply (drule minGraphProps12) apply simp apply simp apply (rule ccontr) apply simp
-      apply (rule minGraphProps10) apply simp apply (simp add: edges_graph_def)
-      apply (rule bexI)  apply (thin_tac "(aa, b) \<in> edges x") apply simp apply simp
-    apply simp
-    apply (case_tac "(b, aa) \<in> edges f12") apply simp apply simp
-    apply (case_tac "(b, aa) \<in> edges f21") apply (rule bexI)
-      apply simp apply (rule replace3) apply simp apply simp apply simp
-
-    apply (subgoal_tac "
+	 apply simp
+        apply (subgoal_tac "xa \<noteq> f'") apply (rule replace4) apply simp apply force
+	apply (drule minGraphProps12) apply simp apply simp
+        apply (rule ccontr) apply simp
+       apply (rule minGraphProps10) apply simp apply (simp add: edges_graph_def)
+       apply (rule bexI)  apply (thin_tac "(aa, b) \<in> edges x") apply simp
+       apply simp
+      apply simp
+      apply (case_tac "(b, aa) \<in> edges f12") apply simp apply simp
+      apply (case_tac "(b, aa) \<in> edges f21") apply (rule bexI)
+        apply simp
+       apply (rule replace3) apply simp
+       apply simp
+      apply simp
+     apply (subgoal_tac "
      ((aa,b) \<in> edges f'  \<or> ((b,aa) \<in> (edges f12 \<union> edges f21) \<and> (aa,b) \<in> (edges f12 \<union> edges f21))) = ((aa,b) \<in> edges f12 \<or> (aa,b) \<in> edges f21)") apply force
-      apply (rule sym) apply simp
-    apply (rule split_face_edges_f12_f21_sym) apply (erule pre_splitFace_oldF)
+     apply (rule sym) apply simp
+     apply (rule split_face_edges_f12_f21_sym) apply (erule pre_splitFace_oldF)
       apply (subgoal_tac "pre_split_face f' v a ws") apply assumption  apply simp
-      apply (rule split)
+     apply (rule split)
     apply simp
     apply (subgoal_tac "distinct (faces g')") apply (simp add: replace6)
-    apply (case_tac "x = f'") apply simp apply simp
-    apply (subgoal_tac "(b,aa) \<in> edges g'")
+     apply (case_tac "x = f'") apply simp apply simp
+     apply (subgoal_tac "(b,aa) \<in> edges g'")
       apply (simp add: edges_graph_def) apply (elim bexE)
       apply (case_tac "xa = f'")
-        apply simp apply (frule split_face_edges_or) apply simp apply simp
-	apply (case_tac "(b, aa) \<in> edges f12") apply simp apply simp
-	apply (rule bexI) apply (thin_tac "(b, aa) \<in> edges f'")
-	apply simp apply (rule replace3) apply simp apply simp
+       apply simp apply (frule split_face_edges_or) apply simp apply simp
+       apply (case_tac "(b, aa) \<in> edges f12") apply simp apply simp
+       apply (rule bexI) apply (thin_tac "(b, aa) \<in> edges f'")
+	apply simp
+       apply (rule replace3) apply simp apply simp
       apply (rule disjI2) apply (rule bexI) apply simp
-      apply (rule replace4) apply simp apply force
-      apply (rule minGraphProps10) apply simp apply (simp add: edges_graph_def)
-      apply (rule bexI)  apply simp apply simp
+      apply (rule replace4) apply simp
+      apply force
+     apply (rule minGraphProps10) apply simp
+     apply (simp add: edges_graph_def)
+     apply (rule bexI)  apply simp apply simp
     apply (rule minGraphProps11') by simp
 qed
 
 
 lemma splitFace_holds_faces_distinct:
-  "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n] \<Longrightarrow>
-  minGraphProps g' \<Longrightarrow>
- faces_distinct (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
+assumes pre_F: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n]"
+and mgp: "minGraphProps g'"
+shows "faces_distinct (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
 proof -
-  assume pre_F: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n]"
-  and mgp: "minGraphProps g'"
   def g'' \<equiv>  "(snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
   def ws \<equiv>  "[countVertices g'..<countVertices g' + n]"
   def f21 \<equiv>  "snd (split_face f' v a ws)"
@@ -1719,30 +1610,32 @@ proof -
     apply (simp add: g''_def) by (simp add: splitFace_def split_def)
   from f12_def f21_def have split: "(f12, f21) = split_face f' v a ws" by simp
 
-  from ws_def [symmetric]
-    pre_F mgp  g''_def [symmetric] split show ?thesis
+  from ws_def [symmetric] pre_F mgp  g''_def [symmetric] split show ?thesis
     apply (simp add: faces_distinct_def faces)
     apply (subgoal_tac "distinct (normFaces (replace f' [f21] (faces g')))")
-    apply (simp add: normFaces_def)
-    apply safe
-    apply (subgoal_tac "distinct (faces g')") apply (simp add: replace6)
-    apply (case_tac "x = f'") apply simp
-    apply (subgoal_tac "f' \<noteq> f21") apply simp apply (rule splitFace_f21_oldF_neq)
-    apply (rule pre_F') apply simp apply (rule fdg) apply simp
-    apply (case_tac "x = f21") apply simp
-      apply (subgoal_tac "normFace f12 \<noteq> normFace f21") apply simp
-      apply (rule splitFace_f12_f21_neq_norm) apply force apply simp
-      apply (simp add: fdg) apply (rule fdg)
-    apply simp
-    apply (subgoal_tac "normFace f12 \<notin> set (normFaces (faces g'))")
-      apply (simp add: normFaces_def)
-      apply (rule splitFace_new_f12_norm) apply (rule pre_F')  apply simp apply (rule fdg)
-    apply (rule minGraphProps11') apply simp
-
+     apply (simp add: normFaces_def)
+     apply safe
+     apply (subgoal_tac "distinct (faces g')") apply (simp add: replace6)
+      apply (case_tac "x = f'") apply simp
+       apply (subgoal_tac "f' \<noteq> f21") apply simp
+       apply (rule splitFace_f21_oldF_neq)
+         apply (rule pre_F') apply simp
+       apply (rule fdg)
+      apply simp
+      apply (case_tac "x = f21") apply simp
+       apply (subgoal_tac "normFace f12 \<noteq> normFace f21") apply simp
+       apply (rule splitFace_f12_f21_neq_norm) apply force apply simp
+       apply (simp add: fdg) apply (rule fdg)
+      apply simp
+      apply (subgoal_tac "normFace f12 \<notin> set (normFaces (faces g'))")
+       apply (simp add: normFaces_def)
+      apply (rule splitFace_new_f12_norm) apply (rule pre_F')  apply simp
+      apply (rule fdg)
+     apply (rule minGraphProps11') apply simp
     apply (rule distinct_replace_norm) apply (rule minGraphProps11) apply simp
-    apply (simp add: normFaces_def)
+     apply (simp add: normFaces_def)
     apply (subgoal_tac "normFace f21 \<notin> set (normFaces (faces g'))")
-    apply (simp add: normFaces_def)
+     apply (simp add: normFaces_def)
     apply (rule splitFace_new_f21_norm) apply (rule pre_F')  apply simp
     by (rule fdg)
 qed
@@ -2023,51 +1916,54 @@ subsection{* Invariants of @{const makeFaceFinal} *}
 
 
 lemma MakeFaceFinal_minGraphProps':
- "f \<in> \<F> g \<Longrightarrow> minGraphProps g \<Longrightarrow> minGraphProps' (makeFaceFinal f g)"
-  apply (simp add: minGraphProps_def minGraphProps'_def makeFaceFinal_def)
-  apply (subgoal_tac "2 < |vertices f| \<and> distinct (vertices f)")
-  apply (rule ballI) apply (elim conjE ballE) apply (rule conjI) apply simp  apply simp
-  apply (simp add: makeFaceFinalFaceList_def) apply (drule replace5)  apply (simp add: setFinal_def)
-  by force
+  "f \<in> \<F> g \<Longrightarrow> minGraphProps g \<Longrightarrow> minGraphProps' (makeFaceFinal f g)"
+apply (simp add: minGraphProps_def minGraphProps'_def makeFaceFinal_def)
+apply (subgoal_tac "2 < |vertices f| \<and> distinct (vertices f)")
+ apply (rule ballI) apply (elim conjE ballE) apply (rule conjI) apply simp apply simp
+  apply (simp add: makeFaceFinalFaceList_def) apply (drule replace5) apply (simp add: setFinal_def)
+by force
 
 lemma MakeFaceFinal_facesAt_eq:
- "f \<in> \<F> g \<Longrightarrow> minGraphProps g \<Longrightarrow> facesAt_eq (makeFaceFinal f g)"
-  apply (simp add: facesAt_eq_def) apply (rule ballI)
-  apply (subgoal_tac "v \<in> \<V> g")
-  apply (rule equalityI) apply (rule subsetI)
+  "f \<in> \<F> g \<Longrightarrow> minGraphProps g \<Longrightarrow> facesAt_eq (makeFaceFinal f g)"
+apply (simp add: facesAt_eq_def) apply (rule ballI)
+apply (subgoal_tac "v \<in> \<V> g")
+ apply (rule equalityI)
+  apply (rule subsetI)
   apply (simp add: makeFaceFinal_def facesAt_def)
   apply (subgoal_tac "v < | faceListAt g | ")
-  apply (simp add: makeFaceFinalFaceList_def)
-  apply (subgoal_tac "distinct ((faceListAt g ! v))")
-  apply (subgoal_tac "distinct (faces g)")
-  apply (simp add: replace6)
-  apply (case_tac "x = f") apply simp apply (erule minGraphProps6)
-    apply (simp add: facesAt_def) apply force apply simp
-  apply (case_tac " f \<in> set (faceListAt g ! v) \<and> x = setFinal f") apply simp
-    apply (subgoal_tac "v \<in> \<V> f") apply (simp add: setFinal_def)
-    apply (erule minGraphProps6) apply (simp add: facesAt_def) apply simp
-    apply (rule conjI) apply (rule disjI2)
-    apply (erule minGraphProps5) apply (fastsimp simp: facesAt_def)
-    apply (erule minGraphProps6) apply (fastsimp simp: facesAt_def)
-  apply (rule minGraphProps11') apply simp
-  apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply simp
+   apply (simp add: makeFaceFinalFaceList_def)
+   apply (subgoal_tac "distinct ((faceListAt g ! v))")
+    apply (subgoal_tac "distinct (faces g)")
+     apply (simp add: replace6)
+     apply (case_tac "x = f")
+      apply simp apply (erule (1) minGraphProps6) apply (simp add: facesAt_def) apply blast
+     apply simp
+     apply (case_tac " f \<in> set (faceListAt g ! v) \<and> x = setFinal f") apply simp
+      apply (subgoal_tac "v \<in> \<V> f") apply (simp add: setFinal_def)
+      apply (erule (1) minGraphProps6) apply (simp add: facesAt_def)
+     apply simp
+     apply (rule conjI) apply (rule disjI2)
+      apply (erule (1) minGraphProps5) apply (fastsimp simp: facesAt_def)
+     apply (erule (1) minGraphProps6) apply (fastsimp simp: facesAt_def)
+    apply (rule minGraphProps11') apply simp
+   apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply simp
   apply (simp add: vertices_graph minGraphProps4)
     (* backward *)
 
-  apply (rule subsetI) apply (simp add: makeFaceFinal_def facesAt_def)
-  apply (subgoal_tac "v < | faceListAt g | ") apply simp
+ apply (rule subsetI) apply (simp add: makeFaceFinal_def facesAt_def)
+ apply (subgoal_tac "v < | faceListAt g | ") apply simp
   apply (subgoal_tac "distinct (faceListAt g ! v)")
-  apply (subgoal_tac "distinct (faces g)")
-  apply (simp add: makeFaceFinalFaceList_def replace6)
-  apply (case_tac "x = setFinal f") apply simp
-    apply (rule disjI1) apply (rule minGraphProps7') apply simp apply simp
+   apply (subgoal_tac "distinct (faces g)")
+    apply (simp add: makeFaceFinalFaceList_def replace6)
+    apply (case_tac "x = setFinal f") apply simp
+     apply (rule disjI1) apply (rule minGraphProps7') apply simp apply simp
     apply (simp add: setFinal_def) apply simp
-  apply (rule minGraphProps7') apply simp apply simp apply simp
-  apply (rule minGraphProps11') apply simp
+   apply (rule minGraphProps7') apply simp apply simp apply simp
+   apply (rule minGraphProps11') apply simp
   apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply simp
-  apply (simp add: vertices_graph minGraphProps4)
+ apply (simp add: vertices_graph minGraphProps4)
    (* Vorbed v in set (vertices g) *)
-  apply (simp add: makeFaceFinal_def) by (simp add: in_vertices_graph minGraphProps4)
+apply (simp add: makeFaceFinal_def) by (simp add: in_vertices_graph minGraphProps4)
 
 lemma MakeFaceFinal_faceListAt_len:
  "f \<in> \<F> g \<Longrightarrow> minGraphProps g \<Longrightarrow> faceListAt_len (makeFaceFinal f g)"
@@ -2523,20 +2419,17 @@ qed
 
 
 lemma neighbors_edges:
- "minGraphProps g \<Longrightarrow> b \<in> set (neighbors g a) = ((a, b) \<in> edges g)"
-apply(cases "a \<in> \<V> g")
- apply (rule iffI)
-  apply (simp add: neighbors_def)  apply clarify apply (frule minGraphProps5)
-   apply (simp add: vertices_graph)
-  apply (simp add: edges_graph_def) apply (intro bexI)
-   prefer 2 apply assumption
-  apply(simp add:edges_face_eq)
-  apply (erule (1) minGraphProps6)
- apply (simp add: neighbors_def) apply (simp add: edges_graph_def)  apply (elim bexE)
- apply (subgoal_tac "x \<in> set (facesAt g a)") apply (simp add: edges_face_def)
- apply (rule minGraphProps7) apply simp+ apply (simp add: edges_face_def)
-apply(auto simp: neighbors_def image_def edges_graph_def)
-apply(blast dest:in_edges_in_vertices  minGraphProps6 minGraphProps9)
+ "minGraphProps g \<Longrightarrow> a : \<V> g \<Longrightarrow> b \<in> set (neighbors g a) = ((a, b) \<in> edges g)"
+apply (rule iffI)
+ apply (simp add: neighbors_def) apply clarify apply (frule (1) minGraphProps5)
+  apply (simp add: vertices_graph)
+ apply (simp add: edges_graph_def) apply (intro bexI)
+  prefer 2 apply assumption
+ apply(simp add:edges_face_eq)
+ apply (erule (2) minGraphProps6)
+apply (simp add: neighbors_def) apply (simp add: edges_graph_def) apply (elim bexE)
+apply (subgoal_tac "x \<in> set (facesAt g a)") apply (simp add: edges_face_def)
+apply (rule minGraphProps7) apply simp+ apply (simp add: edges_face_def)
 done
 
 
@@ -2553,6 +2446,8 @@ lemma duplicateEdge_is_duplicateEdge_eq:
  duplicateEdge g f a b = is_duplicateEdge g f a b"
 apply (subgoal_tac "distinct (vertices f)")
  prefer 2 apply (simp add: minGraphProps3)
+apply(subgoal_tac "a : \<V> g")
+ prefer 2 apply (simp add: minGraphProps9)
 apply (simp add: duplicateEdge_def is_duplicateEdge_def neighbors_edges)
 apply (rule iffI)
  apply (simp add: minGraphProps10)
@@ -2574,7 +2469,6 @@ apply (elim impE)
  apply simp
 apply (simp add: minGraphProps10)
 done
-
 
 lemma incrIndexList_less_eq:
  "incrIndexList ls m nmax \<Longrightarrow> Suc n < |ls| \<Longrightarrow> ls!n \<le> ls!Suc n"

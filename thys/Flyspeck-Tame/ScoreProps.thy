@@ -69,10 +69,10 @@ by (auto simp add: deleteAround_eq deleteAround'_def removeKeyList_eq)
 
 
 lemma deleteAround_prevVertex:
-  "minGraphProps g \<Longrightarrow> f \<in> set (facesAt g a) \<Longrightarrow>
+  "minGraphProps g \<Longrightarrow> a : \<V> g \<Longrightarrow> f \<in> set (facesAt g a) \<Longrightarrow>
   (f\<^bsup>-1\<^esup> \<bullet> a, b) \<notin> set (deleteAround g a ps)"
 proof -
-  assume a: "minGraphProps g" "f \<in> set (facesAt g a)"
+  assume a: "minGraphProps g" "a : \<V> g" "f \<in> set (facesAt g a)"
   have "(f\<^bsup>-1\<^esup> \<bullet> a, a) \<in> \<E> f" using a
     by(blast intro:prevVertex_in_edges minGraphProps)
   then obtain f' :: face where f': "f' \<in> set(facesAt g a)"
@@ -87,12 +87,13 @@ qed
 
 
 lemma deleteAround_separated:
-assumes mgp: "minGraphProps g" and fin: "final g" and 4: "|vertices f| \<le> 4"
+assumes mgp: "minGraphProps g" and fin: "final g" and ag: "a : \<V> g" and 4: "|vertices f| \<le> 4"
 and f: "f \<in> set(facesAt g a)"
 shows "\<V> f \<inter> set [fst p. p \<leftarrow> deleteAround g a ps] \<subseteq> {a}" (is "?A")
 proof -
-  have a: "a \<in> \<V> f" using mgp f by(blast intro:minGraphProps)
-  have "2 < |vertices f|" using mgp f by(blast intro:minGraphProps)
+  note MGP = mgp ag f
+  have af: "a \<in> \<V> f" using MGP by(blast intro:minGraphProps)
+  have "2 < |vertices f|" using MGP by(blast intro:minGraphProps)
   with 4 have "|vertices f| = 3 \<or> |vertices f| = 4" by arith
   then show "?A"
   proof
@@ -102,17 +103,17 @@ proof -
       assume "\<not> ?A"
       then obtain b where b1: "b \<noteq> a" "b \<in> \<V> f"
 	"b \<in> set (map fst (deleteAround g a ps))" by auto
-      from mgp f have d: "distinct (vertices f)"
+      from MGP have d: "distinct (vertices f)"
 	by(blast intro:minGraphProps)
-      with a 3 have "\<V> f = {a, f \<bullet> a, f \<bullet> (f \<bullet> a)}"
+      with af 3 have "\<V> f = {a, f \<bullet> a, f \<bullet> (f \<bullet> a)}"
 	  by (rule_tac vertices_triangle)
-      also from d a 3 have
+      also from d af 3 have
         "f \<bullet> (f \<bullet> a) = f\<^bsup>-1\<^esup> \<bullet> a"
         by (simp add: triangle_nextVertex_prevVertex)
       finally have
 	"b \<in> {f \<bullet> a, f\<^bsup>-1\<^esup> \<bullet> a}"
         using b1 by simp
-      with mgp f have "b \<notin> set (map fst (deleteAround g a ps))"
+      with MGP have "b \<notin> set (map fst (deleteAround g a ps))"
       using deleteAround_nextVertex deleteAround_prevVertex by auto
       then show False by contradiction (rule b1)
     qed
@@ -123,14 +124,14 @@ proof -
       assume "\<not> ?A"
       then obtain b where b1: "b \<noteq> a" "b \<in> \<V> f"
 	"b \<in> set (map fst (deleteAround g a ps))" by auto
-      from mgp f have d: "distinct (vertices f)" by(blast intro:minGraphProps)
-      with a 4 have "\<V> f = {a, f \<bullet> a, f \<bullet> (f \<bullet> a), f \<bullet> (f \<bullet> (f \<bullet> a))}"
+      from MGP have d: "distinct (vertices f)" by(blast intro:minGraphProps)
+      with af 4 have "\<V> f = {a, f \<bullet> a, f \<bullet> (f \<bullet> a), f \<bullet> (f \<bullet> (f \<bullet> a))}"
         by (rule_tac vertices_quad)
-      also from d a 4 have "f \<bullet> (f \<bullet> (f \<bullet> a)) = f\<^bsup>-1\<^esup> \<bullet> a"
+      also from d af 4 have "f \<bullet> (f \<bullet> (f \<bullet> a)) = f\<^bsup>-1\<^esup> \<bullet> a"
         by (simp add: quad_nextVertex_prevVertex)
       finally have "b \<in> {f \<bullet> a, f \<bullet> (f \<bullet> a), f\<^bsup>-1\<^esup> \<bullet> a}"
       using b1 by simp
-      with f mgp 4 have "b \<notin> set (map fst (deleteAround g a ps))"
+      with MGP 4 have "b \<notin> set (map fst (deleteAround g a ps))"
       using deleteAround_nextVertex deleteAround_prevVertex
            deleteAround_nextVertex_nextVertex by auto
       then show False by contradiction (rule b1)
@@ -143,45 +144,47 @@ nextVertex f (nextVertex f a),
 prevVertex f a wird mit nachbarflaeche geloescht.
 *)
 
+lemma [iff]: "separated g {}"
+by (simp add: separated_def separated\<^isub>2_def separated\<^isub>3_def)
 
-lemma [iff]: "preSeparated g {}"
-by (simp add: preSeparated_def separated\<^isub>2_def separated\<^isub>3_def)
-
-lemma preSeparated_insert:
+lemma separated_insert:
 assumes mgp: "minGraphProps g" and a: "a \<in> \<V> g"
-  and ps: "preSeparated g V"
+  and Vg: "V <= \<V> g"
+  and ps: "separated g V"
   and s2: "(\<And>f. f \<in> set (facesAt g a) \<Longrightarrow> f \<bullet> a \<notin> V)"
   and s3: "(\<And>f. f \<in> set (facesAt g a) \<Longrightarrow>
       |vertices f| \<le> 4 \<Longrightarrow> \<V> f \<inter> V \<subseteq> {a})"
-  shows "preSeparated g (insert a V)"
-proof (simp add: preSeparated_def separated\<^isub>2_def separated\<^isub>3_def,
+  shows "separated g (insert a V)"
+proof (simp add: separated_def separated\<^isub>2_def separated\<^isub>3_def,
  intro conjI ballI impI)
   fix f assume f: "f \<in> set (facesAt g a)"
-  then show "f \<bullet> a \<noteq> a" by (rule mgp_facesAt_no_loop[OF mgp])
+  then show "f \<bullet> a \<noteq> a" by (rule mgp_facesAt_no_loop[OF mgp a])
   from f show "f \<bullet> a \<notin> V" by (rule s2)
 next
   fix f v assume v: "f \<in> set (facesAt g v)" and vV: "v \<in> V"
+  have "v : \<V> g" using vV Vg by blast
   show "f \<bullet> v \<noteq> a"
   proof
     assume f: "f \<bullet> v = a"
     then obtain f' where f': "f' \<in> set(facesAt g a)" and v: "f' \<bullet> a = v"
-      using mgp_nextVertex_face_ex2[OF mgp v] by blast
+      using mgp_nextVertex_face_ex2[OF mgp `v : \<V> g` v] by blast
     have "f' \<bullet> a \<in> V" using v vV by simp
     with f' s2 show False by blast
   qed
   from ps v vV show "f \<bullet> v \<notin> V"
-    by (simp add: preSeparated_def separated\<^isub>2_def)
+    by (simp add: separated_def separated\<^isub>2_def)
 next
   fix f assume f:  "f \<in> set (facesAt g a)" "|vertices f| \<le> 4"
   then have "\<V> f \<inter> V \<subseteq> {a}" by (rule s3)
-  moreover from mgp f have "a \<in> \<V> f" by(blast intro:minGraphProps)
+  moreover from mgp a f have "a \<in> \<V> f" by(blast intro:minGraphProps)
   ultimately show "\<V> f \<inter> insert a V = {a}" by auto
 next
   fix v f
   assume a: "v \<in> V" "f \<in> set (facesAt g v)"
     "|vertices f| \<le> 4"
   with ps have v: "\<V> f \<inter> V = {v}"
-    by (simp add: preSeparated_def separated\<^isub>3_def)
+    by (simp add: separated_def separated\<^isub>3_def)
+  have "v : \<V> g" using a Vg by blast
   show  "\<V> f \<inter> insert a V = {v}"
   proof cases
     assume "a = v"
@@ -191,7 +194,7 @@ next
     have  "a \<notin> \<V> f"
     proof
       assume a2: "a \<in> \<V> f"
-      with mgp a have "f \<in> \<F> g" by(blast intro:minGraphProps)
+      with mgp a `v : \<V> g` have "f \<in> \<F> g" by(blast intro:minGraphProps)
       with mgp a2 have "f \<in> set (facesAt g a)" by(blast intro:minGraphProps)
       with a have "\<V> f \<inter> V \<subseteq> {a}" by (simp add: s3)
       with v have "a = v" by auto
@@ -200,6 +203,7 @@ next
     with a  v show "\<V> f \<inter> insert a V = {v}" by blast
   qed
 qed
+
 
 function ExcessNotAtRecList :: "(vertex, nat) table \<Rightarrow> graph \<Rightarrow> vertex list" where
   "ExcessNotAtRecList [] = (%g. [])"
@@ -273,14 +277,13 @@ next
   qed
 qed simp
 
-
-lemma preSeparated_ExcessNotAtRecList:
+lemma separated_ExcessNotAtRecList:
  "minGraphProps g \<Longrightarrow> final g \<Longrightarrow> isTable E (vertices g) ps \<Longrightarrow>
-  preSeparated g (set (ExcessNotAtRecList ps g))"
+  separated g (set (ExcessNotAtRecList ps g))"
 proof -
   assume fin: "final g" and mgp: "minGraphProps g"
   show
-   "isTable E (vertices g) ps \<Longrightarrow> preSeparated g (set (ExcessNotAtRecList ps g))"
+   "isTable E (vertices g) ps \<Longrightarrow> separated g (set (ExcessNotAtRecList ps g))"
    (is "?T ps \<Longrightarrow> ?P ps")
   proof (induct rule: ExcessNotAtRec.induct)
     case 1 show ?case by simp
@@ -288,6 +291,7 @@ proof -
     case (2 a b ps)
     from 2 have prem: "?T ((a,b)#ps)" by blast
     then have E: "b = E a" by (simp add: isTable_eq)
+    have "a :\<V> g" using prem by(auto simp: isTable_def)
     from 2 have hyp1: "?T (deleteAround g a ps) \<Longrightarrow>
       ?P (deleteAround g a ps)" by blast
     from 2 have hyp2:  "?T ps \<Longrightarrow> ?P ps" by blast
@@ -299,12 +303,22 @@ proof -
     proof cases
       assume c: "ExcessNotAtRec ps g
         \<le> b + ExcessNotAtRec (deleteAround g a ps) g"
-      from mgp have "preSeparated g
+      have "separated g
        (insert a (set (ExcessNotAtRecList (deleteAround g a ps) g)))"
-      proof (rule preSeparated_insert)
+      proof (rule separated_insert[OF mgp])
         from prem show "a \<in> set (vertices g)" by (auto simp add: isTable_def)
+
+        show "set (ExcessNotAtRecList (deleteAround g a ps) g) \<subseteq> \<V> g"
+        proof-
+          have "set (ExcessNotAtRecList (deleteAround g a ps) g) <=
+                set (map fst (deleteAround g a ps))"
+            by(rule ExcessNotAtRecList_subset)
+          also have "\<dots> <= set (map fst ps)"
+            using deleteAround_subset by fastsimp
+          finally show ?thesis using prem by(auto simp: isTable_def)
+        qed
 	from H1
-        show pS: "preSeparated g
+        show pS: "separated g
             (set (ExcessNotAtRecList (deleteAround g a ps) g))"
 	  by simp
 
@@ -324,7 +338,7 @@ proof -
         assume "|vertices f| \<le> 4"
         from this f have "set (vertices f)
           \<inter> set [fst p. p \<leftarrow> deleteAround g a ps] \<subseteq> {a}"
-          by (rule deleteAround_separated[OF mgp fin])
+          by (rule deleteAround_separated[OF mgp fin `a : \<V> g`])
         moreover
         have "set (ExcessNotAtRecList (deleteAround g a ps) g)
           \<subseteq> set [fst p. p \<leftarrow> deleteAround g a ps]"
@@ -342,7 +356,6 @@ proof -
     qed
   qed
 qed
-
 
 lemma isTable_ExcessTable:
   "isTable (\<lambda>v. ExcessAt g v) vs (ExcessTable g vs)"
@@ -448,7 +461,7 @@ lemma ExcessNotAt_eq:
   "minGraphProps g \<Longrightarrow> final g \<Longrightarrow>
   \<exists>V. ExcessNotAt g None
       = \<Sum>\<^bsub>v \<in> V\<^esub> ExcessAt g v
-   \<and> preSeparated g (set V) \<and> set V \<subseteq> set (vertices g)
+   \<and> separated g (set V) \<and> set V \<subseteq> set (vertices g)
    \<and> distinct V"
 proof (intro exI conjI)
   assume mgp: "minGraphProps g" and fin: "final g"
@@ -460,8 +473,8 @@ proof (intro exI conjI)
   with this show "ExcessNotAt g None = \<Sum>\<^bsub>v \<in> ?V\<^esub> ?E v"
     by (simp add: ListSum_ExcessNotAtRecList ExcessNotAt_def)
 
-  show "preSeparated g (set ?V)"
-    by(rule preSeparated_ExcessNotAtRecList[OF mgp fin t])
+  show "separated g (set ?V)"
+    by(rule separated_ExcessNotAtRecList[OF mgp fin t])
 
   have "set (ExcessNotAtRecList ?ps g) \<subseteq> set (map fst ?ps)"
     by (rule ExcessNotAtRecList_subset)
@@ -473,34 +486,37 @@ proof (intro exI conjI)
 qed
 
 lemma excess_eq:
-  assumes 6: "t + q \<le> 6"
+  assumes 7: "t + q \<le> 7"
   shows "excessAtType t q 0 + t * \<d> 3 + q * \<d> 4 = \<b> t q"
 proof -
   note simps = excessAtType_def squanderVertex_def squanderFace_def
     nat_minus_add_max squanderTarget_def
-  from 6 have "q=0 \<or> q=1 \<or> q=2 \<or> q=3 \<or> q=4 \<or> q=5 \<or> q=6" by arith
+  from 7 have "q=0 \<or> q=1 \<or> q=2 \<or> q=3 \<or> q=4 \<or> q=5 \<or> q=6 \<or> q=7" by arith
   then show ?thesis
   proof (elim disjE)
     assume q: "q = 0" (* 16 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with 7 show ?thesis by (simp add: simps)
   next
     assume q: "q = 1" (* 29 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with 7 show ?thesis by (simp add: simps)
   next
     assume q: "q = 2" (* 16 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with 7 show ?thesis by (simp add: simps)
   next
     assume q: "q = 3" (* 16 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with 7 show ?thesis by (simp add: simps)
   next
     assume q: "q = 4" (* 6 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with 7 show ?thesis by (simp add: simps)
   next
     assume q: "q = 5" (* 1 subgoal *)
-    with 6 show ?thesis by (simp add: simps)
+    with 7 show ?thesis by (simp add: simps)
   next
     assume q: "q = 6" (* 1 subgoal *)
-    with 6 show ?thesis by (simp add: simps)
+    with 7 show ?thesis by (simp add: simps)
+  next
+    assume q: "q = 7" (* 1 subgoal *)
+    with 7 show ?thesis by (simp add: simps)
   qed
 qed
 
@@ -513,31 +529,65 @@ apply(simp add: ExcessAt_def excess_eq faceCountMax_bound)
 apply(auto simp:finalVertex_def plane_final_facesAt)
 done
 
+text {* separating *}
 
-text {* preSeparating *}
+definition separating :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> bool" where
+  "separating V F \<equiv> 
+   (\<forall>v1 \<in> V. \<forall>v2 \<in> V. v1 \<noteq> v2 \<longrightarrow>  F v1 \<inter> F v2 = {})"
 
-lemma preSeparated_separating:
-assumes pl: "inv g" and fin: "final g" and ne: "noExceptionals g (set V)"
-and pS: "preSeparated g (set V)"
-shows "separating (set V) (\<lambda>v. set (facesAt g v))"
+
+lemma separating_insert1: 
+  "separating (insert a V) F \<Longrightarrow> separating V F"
+  by (simp add: separating_def)
+
+lemma separating_insert2:
+  "separating (insert a V) F \<Longrightarrow> a \<notin> V \<Longrightarrow>  v \<in> V \<Longrightarrow> 
+  F a \<inter> F v = {}"
+  by (auto simp add: separating_def)
+
+lemma setsum_disj_Union: 
+ "finite V \<Longrightarrow> 
+  (\<And>f. finite (F f)) \<Longrightarrow> 
+  separating V F \<Longrightarrow> 
+  (\<Sum>v\<in>V. \<Sum>f\<in>(F v). (w f::nat)) = (\<Sum>f\<in>(\<Union>v\<in>V. F v). w f)"
+proof (induct  rule: finite_induct)
+  case empty then show ?case by simp
+next
+  case (insert a V) 
+  then have s: "separating (insert a V) F" by simp
+  then have "separating V F" by (rule_tac separating_insert1)
+  with insert
+  have IH: "(\<Sum>v\<in>V. \<Sum>f\<in>(F v). w f) = (\<Sum>f\<in>(\<Union>v\<in>V. F v). w f)" 
+    by simp
+
+  moreover have fin: "finite V" "a \<notin> V" "\<And>f. finite (F f)" by fact+
+
+  moreover from s have "\<And>v. a \<notin> V \<Longrightarrow> v \<in> V \<Longrightarrow> F a \<inter> F v = {}"
+   by (simp add: separating_insert2)
+  with fin have "(F a) \<inter> (\<Union>v\<in>V. F v) = {}" by auto 
+
+  ultimately show ?case by (simp add: setsum_Un_disjoint)
+qed
+
+lemma separated_separating:
+assumes Vg: "set V <= \<V> g"
+and pS: "separated g (set V)"
+and noex: "ALL f:P. |vertices f| <= 4"
+shows "separating (set V) (\<lambda>v. set (facesAt g v) Int P)"
 proof -
   from pS have i: "\<forall>v\<in>set V. \<forall>f\<in>set (facesAt g v).
     |vertices f| \<le> 4 \<longrightarrow> set (vertices f) \<inter> set V = {v}"
-    by (simp add: preSeparated_def separated\<^isub>3_def)
-
-  show "separating (set V) (\<lambda>v. set (facesAt g v))"
+    by (simp add: separated_def separated\<^isub>3_def)
+  show "separating (set V) (\<lambda>v. set (facesAt g v) Int P)"
   proof (simp add: separating_def, intro ballI impI)
     fix v1 v2 assume v: "v1 \<in> set V" "v2 \<in> set V" "v1 \<noteq> v2"
-    show "set (facesAt g v1) \<inter> set (facesAt g v2) = {}" (is "?P")
+    hence "v1 : \<V> g" using Vg by blast
+    show "(set (facesAt g v1) \<inter> P) \<inter> (set (facesAt g v2) \<inter> P) = {}" (is "?P")
     proof (rule ccontr)
       assume "\<not> ?P"
       then obtain f where f1: "f \<in> set (facesAt g v1)"
-        and f2: "f \<in> set (facesAt g v2)" by auto
-      from v ne have "\<not> exceptionalVertex g v1"
-        "\<not> exceptionalVertex g v2"
-        by (simp_all add: noExceptionals_def)
-      with f1 pl fin have l: "|vertices f| \<le> 4"
-        by (simp add: not_exceptional)
+        and f2: "f \<in> set (facesAt g v2)" and "f : P" by auto
+      with noex have l: "|vertices f| \<le> 4" by blast
       from v f1 l i have "set (vertices f) \<inter> set V = {v1}" by simp
       also from v f2 l i
       have "set (vertices f) \<inter> set V = {v2}" by simp
@@ -547,35 +597,53 @@ proof -
   qed
 qed
 
-lemma preSeparated_disj_Union2:
+lemma ListSum_V_F_eq_ListSum_F:
+assumes pl: "inv g"
+and pS: "separated g (set V)" and dist: "distinct V"
+and V_subset: "set V \<subseteq> set (vertices g)"
+and noex: "ALL f:P. |vertices f| <= 4"
+shows "(\<Sum>\<^bsub>v \<in> V\<^esub> \<Sum>\<^bsub>f \<in> filter P (facesAt g v)\<^esub> (w::face \<Rightarrow> nat) f)
+       = \<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v) Int P]\<^esub> w f"
+proof -
+  have s: "separating (set V) (\<lambda>v. set (facesAt g v) Int P)"
+    by (rule separated_separating[OF V_subset pS noex])
+  moreover note dist
+  moreover from pl V_subset
+  have "\<And>v. v \<in> set V \<Longrightarrow> distinct (facesAt g v)"
+    by(blast intro:mgp_dist_facesAt[OF inv_mgp])
+  hence v: "\<And>v. v \<in> set V \<Longrightarrow> distinct (filter P (facesAt g v))"
+    by simp
+  moreover
+  have "distinct [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v) Int P]"
+    by (intro distinct_filter minGraphProps11'[OF inv_mgp[OF pl]])
+  moreover from pl have "{x. x \<in> \<F> g \<and> (\<exists>v \<in> set V. x \<in> set (facesAt g v) \<and> x:P)} =
+      (\<Union>v\<in>set V. set (facesAt g v) Int P)" using V_subset
+    by (blast intro:minGraphProps inv_mgp)
+  moreover from v have "(\<Sum>v\<in>set V. ListSum (filter P (facesAt g v)) w) = (\<Sum>v\<in>set V. setsum w (set(facesAt g v) Int P))"
+    by (auto simp add: ListSum_conv_setsum Collect_def Int_def mem_def)
+  ultimately show ?thesis
+    by (simp add: ListSum_conv_setsum setsum_disj_Union)
+qed
+
+lemma separated_disj_Union2:
 assumes pl: "inv g" and fin: "final g" and ne: "noExceptionals g (set V)"
-and pS: "preSeparated g (set V)" and dist: "distinct V"
+and pS: "separated g (set V)" and dist: "distinct V"
 and V_subset: "set V \<subseteq> set (vertices g)"
 shows "(\<Sum>\<^bsub>v \<in> V\<^esub> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> (w::face \<Rightarrow> nat) f)
        = \<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub> w f"
 proof -
-  have s: "separating (set V) (\<lambda>v. set (facesAt g v))"
-    by (rule preSeparated_separating[OF pl fin ne pS])
-  moreover note dist
-  moreover from pl V_subset
-  have v: "\<And>v. v \<in> set V \<Longrightarrow> distinct (facesAt g v)"
-    by(blast intro:mgp_dist_facesAt[OF inv_mgp])
-  moreover
-  have "distinct [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v)]"
-    by (intro distinct_filter minGraphProps11'[OF inv_mgp[OF pl]])
-  moreover from pl have "{x. x \<in> set (faces g) \<and> (\<exists>v \<in> set V. x \<in> set (facesAt g v))} =
-      (\<Union>v\<in>set V. set (facesAt g v))"
-    by (blast intro:minGraphProps inv_mgp)
-  moreover from v have "(\<Sum>v\<in>set V. ListSum (facesAt g v) w) = (\<Sum>v\<in>set V. setsum w (set (facesAt g v)))"
-    by (auto simp add: ListSum_conv_setsum)
-
-  ultimately show ?thesis
-    apply (simp add: ListSum_conv_setsum)
-    apply (rule setsum_disj_Union) by simp+
+  let ?P = "{f. |vertices f| <= 4}"
+  have "ALL v : set V. ALL f : set (facesAt g v). |vertices f| <= 4"
+    using V_subset ne
+    by (auto simp: noExceptionals_def
+      intro: minGraphProps5[OF inv_mgp[OF pl]] not_exceptional[OF pl fin])
+  thus ?thesis
+    using ListSum_V_F_eq_ListSum_F[where P = ?P, OF pl pS dist V_subset]
+    by (simp add: Collect_def mem_def Int_def cong: conj_cong)
 qed
 
 lemma squanderFace_distr2: "inv g \<Longrightarrow> final g \<Longrightarrow> noExceptionals g (set V) \<Longrightarrow>
-  preSeparated g (set V) \<Longrightarrow> distinct V \<Longrightarrow> set V \<subseteq> set (vertices g) \<Longrightarrow>
+  separated g (set V) \<Longrightarrow> distinct V \<Longrightarrow> set V \<subseteq> set (vertices g) \<Longrightarrow>
      \<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g. \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub>
          \<d> |vertices f|
    = \<Sum>\<^bsub>v \<in> V\<^esub> ((tri g v) *  \<d> 3
@@ -584,11 +652,11 @@ proof -
   assume pl: "inv g"
   assume fin: "final g"
   assume ne: "noExceptionals g (set V)"
-  assume "preSeparated g (set V)"  "distinct V" and V_subset: "set V \<subseteq> set (vertices g)"
+  assume "separated g (set V)"  "distinct V" and V_subset: "set V \<subseteq> set (vertices g)"
   with pl ne fin have
     "\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g. \<exists>v\<in>set V. f\<in>set (facesAt g v)]\<^esub> \<d> |vertices f|
    = \<Sum>\<^bsub>v \<in> V\<^esub> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> \<d> |vertices f|"
-    by (simp add: preSeparated_disj_Union2)
+    by (simp add: separated_disj_Union2)
   also have "\<And>v. v \<in> set V \<Longrightarrow>
     \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> \<d> |vertices f|
   = (tri g v) * \<d> 3 + (quad g v) * \<d> 4"
@@ -601,8 +669,8 @@ proof -
       |vertices f| = 3 \<or> |vertices f| = 4"
     proof -
       fix f assume f: "f \<in> set (facesAt g v)"
-      then have ff: "f \<in> set (faces g)" by (rule minGraphProps5[OF inv_mgp[OF pl]])
-      with ne f v1 pl fin have "|vertices f| \<le> 4"
+      then have ff: "f \<in> set (faces g)" by (rule minGraphProps5[OF inv_mgp[OF pl] v])
+      with ne f v1 pl fin v have "|vertices f| \<le> 4"
         by (auto simp add: noExceptionals_def not_exceptional)
       moreover from pl ff have "3 \<le> |vertices f|" by(rule planeN4)
       ultimately show "?thesis f" by arith
@@ -637,9 +705,9 @@ qed
 
 
 
-lemma preSeparated_subset: (* preSeparated *)
-   "V1 \<subseteq> V2 \<Longrightarrow> preSeparated g V2 \<Longrightarrow> preSeparated g V1"
-proof (simp add:  preSeparated_def separated\<^isub>3_def separated\<^isub>2_def,
+lemma separated_subset: (* separated *)
+   "V1 \<subseteq> V2 \<Longrightarrow> separated g V2 \<Longrightarrow> separated g V1"
+proof (simp add:  separated_def separated\<^isub>3_def separated\<^isub>2_def,
   elim conjE, intro allI impI ballI conjI)
   fix v f
   assume a: "v \<in> V1" "V1 \<subseteq> V2" "f \<in> set (facesAt g v)"

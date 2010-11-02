@@ -63,18 +63,6 @@ abbreviation
 
 text {* examples:  @{term "\<lbrakk>0. i < 5\<rbrakk>"}, @{term "\<lbrakk>i. i < 5, j < 3\<rbrakk>"}  *}
 
-lemma sub_tabulate: "0 \<le> i ==> i < u ==>
- (tabulate u f)\<lbrakk>i\<rbrakk> = f i" 
-  by (simp add: tabulate_def tabulate'_def sub_def sub1_def Let_def) 
-
-lemma sub_tabulate3: "0 \<le> i ==> 0 \<le> j ==> 0 \<le> k ==> 
- i < l ==> j < m ==> k < n ==>
- (tabulate3 l m n f)\<lbrakk>i, j, k\<rbrakk> = f i j k"
-  by (simp add: tabulate3_def tabulate_def tabulate'_def 
-  sub_def sub1_def Let_def  Vector.inject 
-  split: Vector.split)
-
-
 subsection {* Code generator setup *}
 
 declare vector.cases [code del]

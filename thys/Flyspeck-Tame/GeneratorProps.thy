@@ -3,7 +3,7 @@
 header "Properties of Tame Graph Enumeration (1)"
 
 theory GeneratorProps
-imports Plane3Props LowerBound
+imports Plane1Props Generator TameProps LowerBound
 begin
 
 lemma genPolyTame_spec:
@@ -83,11 +83,6 @@ proof -
 qed
 
 
-lemma ExcessTable_empty:
- "\<forall>x \<in> \<V> g. \<not> finalVertex g x \<Longrightarrow> ExcessTable g (vertices g) = []"
-by(simp add:ExcessTable_def filter_empty_conv ExcessAt_def)
-
-
 definition close :: "graph \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool" where
 "close g u v \<equiv>
  \<exists>f \<in> set(facesAt g u). if |vertices f| = 4 then v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u)
@@ -98,14 +93,14 @@ lemma delAround_def: "deleteAround g u ps = [p \<leftarrow> ps. \<not> close g u
 by (induct ps) (auto simp: deleteAroundCons close_def)
 
 
-lemma close_sym: assumes mgp: "minGraphProps g" and cl: "close g u v"
+lemma close_sym: assumes mgp: "minGraphProps g" and ug: "u : \<V> g" and cl: "close g u v"
 shows "close g v u"
 proof -
   obtain f where f: "f \<in> set(facesAt g u)" and
     "if": "if |vertices f| = 4 then v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u) else v = f \<bullet> u"
     using cl by (unfold close_def) blast
-  note uf = minGraphProps6[OF mgp f]
-  note distf = minGraphProps3[OF mgp minGraphProps5[OF mgp f]]
+  note uf = minGraphProps6[OF mgp ug f]
+  note distf = minGraphProps3[OF mgp minGraphProps5[OF mgp ug f]]
   show ?thesis
   proof cases
     assume 4: "|vertices f| = 4"
@@ -114,30 +109,30 @@ proof -
     proof
       assume "v = f \<bullet> u"
       then obtain f' where "f' \<in> set(facesAt g v)" "f' \<bullet> v = u"
-	using mgp_nextVertex_face_ex2[OF mgp f] by blast
+	using mgp_nextVertex_face_ex2[OF mgp ug f] by blast
       thus ?thesis by(auto simp:close_def)
     next
       assume v: "v = f \<bullet> (f \<bullet> u)"
       hence "f \<bullet> (f \<bullet> v) = u" using quad_next4_id[OF 4 distf uf] by simp
       moreover have "f \<in> set(facesAt g v)" using v uf
-	by(simp add: minGraphProps7[OF mgp minGraphProps5[OF mgp f]])
+	by(simp add: minGraphProps7[OF mgp minGraphProps5[OF mgp ug f]])
       ultimately show ?thesis using 4 by(auto simp:close_def)
     qed
   next
     assume "|vertices f| \<noteq> 4"
     hence "v = f \<bullet> u" using "if" by simp
     then obtain f' where "f' \<in> set(facesAt g v)" "f' \<bullet> v = u"
-      using mgp_nextVertex_face_ex2[OF mgp f] by blast
+      using mgp_nextVertex_face_ex2[OF mgp ug f] by blast
     thus ?thesis by(auto simp:close_def)
   qed
 qed
 
 
-lemma preSep_conv:
-assumes mgp: "minGraphProps g"
-shows "preSeparated g V = (\<forall>u\<in>V.\<forall>v\<in>V. u \<noteq> v \<longrightarrow> \<not> close g u v)" (is "?P = ?Q")
+lemma sep_conv:
+assumes mgp: "minGraphProps g" and "V <= \<V> g"
+shows "separated g V = (\<forall>u\<in>V.\<forall>v\<in>V. u \<noteq> v \<longrightarrow> \<not> close g u v)" (is "?P = ?Q")
 proof
-  assume preSep: ?P
+  assume sep: ?P
   show ?Q
   proof(clarify)
     fix u v assume uv: "u \<in> V" "v \<in> V" "u \<noteq> v" and cl: "close g u v"
@@ -145,7 +140,8 @@ proof
       "if": "if |vertices f| = 4 then (v = f \<bullet> u) \<or> (v = f \<bullet> (f \<bullet> u))
                                else (v = f \<bullet> u)"
       by (unfold close_def) blast
-    note uf = minGraphProps6[OF mgp f]
+    have "u : \<V> g" using `u : V` `V <= \<V> g` by blast
+    note uf = minGraphProps6[OF mgp `u : \<V> g` f]
     show False
     proof cases
       assume 4: "|vertices f| = 4"
@@ -153,14 +149,14 @@ proof
       thus False
       proof
 	assume "v = f \<bullet> u"
-	thus False using preSep f uv
-	  by(simp add:preSeparated_def separated\<^isub>2_def separated\<^isub>3_def)
+	thus False using sep f uv
+	  by(simp add:separated_def separated\<^isub>2_def separated\<^isub>3_def)
       next
 	assume "v = f \<bullet> (f \<bullet> u)"
 	moreover hence "v \<in> \<V> f" using `u \<in> \<V> f` by simp
 	moreover have "|vertices f| \<le> 4" using 4 by arith
-	ultimately show False using preSep f uv `u \<in> \<V> f`
-	  apply(unfold preSeparated_def separated\<^isub>2_def separated\<^isub>3_def)
+	ultimately show False using sep f uv `u \<in> \<V> f`
+	  apply(unfold separated_def separated\<^isub>2_def separated\<^isub>3_def)
 (* why does blast get stuck? *)
 	  apply(subgoal_tac "f \<bullet> (f \<bullet> u) \<in> \<V> f \<inter> V")
 	  prefer 2 apply blast
@@ -169,26 +165,28 @@ proof
     next
       assume 4: "|vertices f| \<noteq> 4"
       hence "v = f \<bullet> u" using "if" by simp
-      thus False using preSep f uv
-	by(simp add:preSeparated_def separated\<^isub>2_def separated\<^isub>3_def)
+      thus False using sep f uv
+	by(simp add:separated_def separated\<^isub>2_def separated\<^isub>3_def)
     qed
   qed
 next
   assume not_cl: ?Q
   show ?P
-  proof(simp add:preSeparated_def, rule conjI)
+  proof(simp add:separated_def, rule conjI)
     show "separated\<^isub>2 g V"
     proof (clarsimp simp:separated\<^isub>2_def)
-      fix v f assume "v \<in> V" and f: "f \<in> set (facesAt g v)" and "f \<bullet> v \<in> V"
-      thus False using not_cl mgp_facesAt_no_loop[OF mgp f]
+      fix v f assume a: "v \<in> V" "f \<in> set (facesAt g v)" "f \<bullet> v \<in> V"
+      have "v : \<V> g" using a(1) `V <= \<V> g` by blast
+      show False using a not_cl mgp_facesAt_no_loop[OF mgp `v : \<V> g` a(2)]
 	by(fastsimp simp: close_def split:split_if_asm)
     qed
     show "separated\<^isub>3 g V"
     proof (clarsimp simp:separated\<^isub>3_def)
       fix v f
       assume "v \<in> V" and f: "f \<in> set (facesAt g v)" and len: "|vertices f| \<le> 4"
-      note distf = minGraphProps3[OF mgp minGraphProps5[OF mgp f]]
-      note vf = minGraphProps6[OF mgp f]
+      have vg: "v : \<V> g" using `v : V` `V <= \<V> g` by blast
+      note distf = minGraphProps3[OF mgp minGraphProps5[OF mgp vg f]]
+      note vf = minGraphProps6[OF mgp vg f]
       { fix u assume "u \<in> \<V> f" and "u \<in> V"
 	have "u = v"
 	proof cases
@@ -208,7 +206,7 @@ next
 	    hence "(u,v) \<in> \<E> f" using nextVertex_in_edges[OF `u \<in> \<V> f`]
 	      by(simp add:fu)
 	    then obtain f' where "f' \<in> set(facesAt g v)" "(v,u) \<in>  \<E> f'"
-	      using mgp_edge_face_ex[OF mgp f] by blast
+	      using mgp_edge_face_ex[OF mgp vg f] by blast
 	    hence "u = v" using not_cl `u \<in> V` `v \<in> V` 3
 	      by(force simp:close_def edges_face_eq split:split_if_asm)
 	  }
@@ -216,7 +214,7 @@ next
 	next
 	  assume 3: "|vertices f| \<noteq> 3"
 	  hence 4: "|vertices f| = 4"
-	    using len mgp_vertices3[OF mgp minGraphProps5[OF mgp f]] by arith
+	    using len mgp_vertices3[OF mgp minGraphProps5[OF mgp vg f]] by arith
 	  hence "\<V> f = {v, f \<bullet> v, f \<bullet> (f \<bullet> v), f \<bullet> (f \<bullet> (f \<bullet> v))}"
 	    using vertices_quad[OF _ vf distf] by simp
 	  moreover
@@ -238,7 +236,7 @@ next
 	    hence "(u,v) \<in> \<E> f" using nextVertex_in_edges[OF `u \<in> \<V> f`]
 	      by(simp add:fu)
 	    then obtain f' where "f' \<in> set(facesAt g v)" "(v,u) \<in>  \<E> f'"
-	      using mgp_edge_face_ex[OF mgp f] by blast
+	      using mgp_edge_face_ex[OF mgp vg f] by blast
 	    hence "u = v" using not_cl `u \<in> V` `v \<in> V` 4
 	      by(force simp:close_def edges_face_eq split:split_if_asm)
 	  }
@@ -257,17 +255,18 @@ apply(rule finite_subset[where B = "f ` Pow B"])
 apply simp
 done
 
-lemma preSep_ne: "\<exists>P \<subseteq> M. preSeparated g (fst ` P)"
-by(unfold preSeparated_def separated\<^isub>2_def separated\<^isub>3_def) blast
+lemma sep_ne: "\<exists>P \<subseteq> M. separated g (fst ` P)"
+by(unfold separated_def separated\<^isub>2_def separated\<^isub>3_def) blast
 
 lemma ExcessNotAtRec_conv_Max:
 assumes mgp: "minGraphProps g"
-shows "distinct(map fst ps) \<Longrightarrow> ExcessNotAtRec ps g =
-  Max{ \<Sum>p\<in>P. snd p |P. P \<subseteq> set ps \<and> preSeparated g (fst ` P)}"
-  (is "_ \<Longrightarrow> _ = Max(?M ps)" is "_ \<Longrightarrow> _ = Max{_ |P. ?S ps P}")
+shows "set(map fst ps) <= \<V> g \<Longrightarrow> distinct(map fst ps) \<Longrightarrow>
+  ExcessNotAtRec ps g =
+  Max{ \<Sum>p\<in>P. snd p |P. P \<subseteq> set ps \<and> separated g (fst ` P)}"
+  (is "_ \<Longrightarrow> _ \<Longrightarrow> _ = Max(?M ps)" is "_ \<Longrightarrow> _ \<Longrightarrow> _ = Max{_ |P. ?S ps P}")
 proof(induct ps rule: length_induct)
   case (1 ps0)
-  note IH = 1(1) and dist = 1(2)
+  note IH = 1(1) and subset = 1(2) and dist = 1(3)
   show ?case
   proof (cases ps0)
     case Nil thus ?thesis by(simp add:Max_def)
@@ -280,11 +279,22 @@ proof(induct ps rule: length_induct)
       apply(drule distinct_filter[where P = "Not o close g (fst p)"])
       apply(simp add: filter_map o_def)
       done
-    have "ExcessNotAtRec ps0 g = max (Max(?M ps)) (snd p + Max(?M ?ps))"
-      using Cons IH le dist dist' by (cases p) simp
+    have "fst p : \<V> g" and "fst ` set ps <= \<V> g"
+      using subset Cons by auto
+    have sub1: "!!P Q. P <= {x : set ps. Q x} \<Longrightarrow> fst ` P <= \<V> g"
+      using subset Cons by auto
+    have sub2: "!!P Q. P <= insert p {x : set ps. Q x} \<Longrightarrow> fst ` P <= \<V> g"
+      using subset Cons by auto
+    have sub3: "!!P. P <= insert p (set ps) \<Longrightarrow> fst ` P <= \<V> g"
+      using subset Cons by auto
+    have "!!a. set (map fst (deleteAround g a ps)) \<subseteq> \<V> g"
+      using deleteAround_subset[of g _ ps] subset Cons
+      by auto
+    hence "ExcessNotAtRec ps0 g = max (Max(?M ps)) (snd p + Max(?M ?ps))"
+      using Cons IH subset le dist dist' by (cases p) simp
     also have "snd p + Max (?M ?ps) =
       Max {snd p + (\<Sum>p\<in>P. snd p) | P. ?S ?ps P}"
-      by (auto simp add:add_Max_commute fin_aux preSep_ne intro!: arg_cong [where f=Max])
+      by (auto simp add:add_Max_commute fin_aux sep_ne intro!: arg_cong [where f=Max])
     also have "{snd p + (\<Sum>p\<in>P. snd p) |P. ?S ?ps P} =
       {setsum snd (insert p P) |P. ?S ?ps P}"
       using dist Cons
@@ -295,34 +305,35 @@ proof(induct ps rule: length_induct)
       apply(fastsimp intro!: setsum_insert[THEN trans] elim: finite_subset)
       done
     also have "\<dots> = {setsum snd P |P.
-            P \<subseteq> insert p (set ?ps) \<and> p \<in> P \<and> preSeparated g (fst ` P)}"
-      apply(auto simp add:preSep_conv[OF mgp] delAround_def)
+            P \<subseteq> insert p (set ?ps) \<and> p \<in> P \<and> separated g (fst ` P)}"
+      apply(auto simp add:sep_conv[OF mgp] sub1 sub2 delAround_def cong: conj_cong)
       apply(rule_tac x = "insert p P" in exI)
       apply simp
       apply(rule conjI) apply blast
+      using `image fst (set ps) <= \<V> g` `fst p : \<V> g`
       apply (blast intro:close_sym[OF mgp])
       apply(rule_tac x = "P-{p}" in exI)
       apply (simp add:insert_absorb)
       apply blast
       done
     also have "\<dots> = {setsum snd P |P.
-            P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> preSeparated g (fst ` P)}"
+            P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> separated g (fst ` P)}"
       using Cons dist
-      apply(auto simp add:preSep_conv[OF mgp] delAround_def)
+      apply(auto simp add:sep_conv[OF mgp] sub2 sub3 delAround_def cong: conj_cong)
       apply(rule_tac x = "P" in exI)
       apply simp
       apply auto
       done
     also have "max (Max(?M ps)) (Max \<dots>) = Max(?M ps \<union> {setsum snd P |P.
-            P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> preSeparated g (fst ` P)})"
+            P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> separated g (fst ` P)})"
       (is "_ = Max ?U")
     proof -
       have "{setsum snd P |P.
-            P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> preSeparated g (fst ` P)} \<noteq> {}"
+            P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> separated g (fst ` P)} \<noteq> {}"
 	apply simp
 	apply(rule_tac x="{p}" in exI)
-	by(simp add:preSep_conv[OF mgp])
-      thus ?thesis by(simp add: Max_Un fin_aux preSep_ne)
+        using `fst p : \<V> g` by(simp add:sep_conv[OF mgp])
+      thus ?thesis by(simp add: Max_Un fin_aux sep_ne)
     qed
     also have "?U = ?M ps0" using Cons by simp blast
     finally show ?thesis .
@@ -359,19 +370,28 @@ lemma ExcessTab_vertex:
  "p \<in> set(ExcessTable g (vertices g)) \<Longrightarrow> fst p \<in> \<V> g"
 by(clarsimp simp:ExcessTable_def image_def ExcessAt_def split:split_if_asm)
 
+lemma fst_set_ExcessTable_subset:
+ "fst ` set (ExcessTable g (vertices g)) \<subseteq> \<V> g"
+by(clarsimp simp:ExcessTable_def image_def ExcessAt_def split:split_if_asm)
+
 lemma next_plane0_incr_ExcessNotAt:
  "\<lbrakk>g' \<in> set (next_plane0\<^bsub>p\<^esub> g); inv g \<rbrakk> \<Longrightarrow>
   ExcessNotAt g None \<le> ExcessNotAt g' None"
 apply(frule (1) invariantE[OF inv_inv_next_plane0])
 apply(frule (1) mono_ExcessTab)
-apply(simp add: ExcessNotAt_def ExcessNotAtRec_conv_Max[OF _ dist_ExcessTab])
+apply(simp add: ExcessNotAt_def ExcessNotAtRec_conv_Max[OF _ _ dist_ExcessTab]
+  fst_set_ExcessTable_subset)
 apply(rule Max_mono)
-  prefer 2 apply (simp add: preSep_ne)
+  prefer 2 apply (simp add: sep_ne)
  prefer 2 apply (simp add: fin_aux)
 apply auto
 apply(rule_tac x=P in exI)
 apply auto
-apply(simp add:preSep_conv)
+apply(subgoal_tac "fst ` P <= \<V> g'")
+ prefer 2 apply (blast dest: ExcessTab_vertex)
+apply(subgoal_tac "fst ` P <= \<V> g")
+ prefer 2 apply (blast dest: ExcessTab_vertex)
+apply(simp add:sep_conv)
 apply (blast intro:close_antimono ExcessTab_final ExcessTab_vertex)
 done
 (* close -> in neibhood ?? *)
@@ -388,28 +408,26 @@ apply arith
 done
 
 lemma inv_notame:
- "\<lbrakk>g' \<in> set (next_plane0\<^bsub>p\<^esub> g); inv g; notame g\<rbrakk>
-  \<Longrightarrow> notame g'"
-apply(simp add:notame_def tame\<^isub>4\<^isub>5_def is_tame\<^isub>7_def del:disj_not1)
+ "\<lbrakk>g' \<in> set (next_plane0\<^bsub>p\<^esub> g); inv g; notame7 g\<rbrakk>
+  \<Longrightarrow> notame7 g'"
+apply(simp add:notame_def notame7_def tame11b_def is_tame13a_def tame10ub_def del:disj_not1)
+apply(frule inv_mgp)
+apply(frule (1) next_plane0_vertices_subset)
 apply(erule disjE)
- apply(rule disjI1)
- apply(clarify)
- apply(frule inv_mgp)
+ apply(simp add:vertices_graph)
+apply(rule disjI2)
+apply(erule disjE)
+ apply clarify
  apply(frule (2) next_plane0_incr_degree)
  apply(frule (2) next_plane0_incr_except)
- apply(frule (1) next_plane0_vertices_subset)
- apply(case_tac "except g' v = 0")
-  apply(rule bexI) prefer 2 apply fast
-  apply simp
- apply(rule bexI) prefer 2 apply fast
- apply (simp split:split_if_asm)
+ apply (force split:split_if_asm)
 apply(frule (1) next_plane0_incr_squander_lb)
 apply(arith)
 done
 
 
 lemma inv_inv_notame:
- "invariant(\<lambda>g. inv g \<and> notame g) next_plane\<^bsub>p\<^esub>"
+ "invariant(\<lambda>g. inv g \<and> notame7 g) next_plane\<^bsub>p\<^esub>"
 apply(simp add:invariant_def)
 apply(blast intro: inv_notame mgp_next_plane0_if_next_plane[OF inv_mgp]
        invariantE[OF inv_inv_next_plane])
@@ -417,32 +435,36 @@ done
 
 
 lemma untame_notame:
- "untame (\<lambda>g. inv g \<and> notame g)"
-proof(clarsimp simp add: notame_def untame_def tame\<^isub>4\<^isub>5_def is_tame\<^isub>7_def
+ "untame (\<lambda>g. inv g \<and> notame7 g)"
+proof(clarsimp simp add: notame_def notame7_def untame_def tame11b_def is_tame13a_def tame10ub_def
                          linorder_not_le linorder_not_less)
   fix g assume "final g" "inv g" "tame g"
-    and cases: "(\<exists>v\<in>\<V> g. (except g v = 0 \<longrightarrow> 6 < degree g v) \<and>
-                            (0 < except g v \<longrightarrow> 5 < degree g v))
+    and cases: "15 < countVertices g \<or>
+                (\<exists>v\<in>\<V> g. (except g v = 0 \<longrightarrow> 7 < degree g v) \<and>
+                            (0 < except g v \<longrightarrow> 6 < degree g v))
                 \<or> squanderTarget \<le> squanderLowerBound g"
-                (is "?A \<or> ?B" is "(\<exists>v\<in>\<V> g. ?C v) \<or> _")
+                (is "?A \<or> ?B \<or> ?C" is "_ \<or> (\<exists>v\<in>\<V> g. ?B' v) \<or> _")
   from cases show False
-  proof
-    assume ?A
-    then obtain v where v: "v \<in>\<V> g" "?C v" by auto
+  proof(elim disjE)
+    assume ?B
+    then obtain v where v: "v \<in>\<V> g" "?B' v" by auto
     show False
     proof cases
       assume "except g v = 0"
-      thus False using `tame g` v by(auto simp: tame_def tame\<^isub>4\<^isub>5_def)
+      thus False using `tame g` v by(auto simp: tame_def tame11b_def)
     next
       assume "except g v \<noteq> 0"
       thus False using `tame g` v
-	by(auto simp: except_def filter_empty_conv tame_def tame\<^isub>4\<^isub>5_def
+	by(auto simp: except_def filter_empty_conv tame_def tame11b_def
 	  minGraphProps_facesAt_eq[OF inv_mgp[OF `inv g`]] split:split_if_asm)
     qed
   next
-    assume ?B
+    assume ?A
+    thus False using `tame g`  by(simp add:tame_def tame10_def)
+  next
+    assume ?C
     thus False using total_weight_lowerbound[OF `inv g` `final g` `tame g`]
-      `tame g`  by(force simp add:tame_def tame\<^isub>7_def)
+      `tame g`  by(force simp add:tame_def tame13a_def)
   qed
 qed
 
@@ -450,26 +472,25 @@ qed
 lemma polysizes_tame:
  "\<lbrakk> g' \<in> set (generatePolygon n v f g); inv g; f \<in> set(nonFinals g);
    v \<in> \<V> f; 3 \<le> n; n < 4+p; n \<notin> set(polysizes p g) \<rbrakk>
- \<Longrightarrow> notame g'"
+ \<Longrightarrow> notame7 g'"
 apply(frule (4) in_next_plane0I)
 apply(frule (4) genPoly_incr_facesquander_lb)
 apply(frule (1) next_plane0_incr_ExcessNotAt)
-apply(simp add: notame_def is_tame\<^isub>7_def faceSquanderLowerBound_def
+apply(simp add: notame_def notame7_def is_tame13a_def faceSquanderLowerBound_def
            polysizes_def squanderLowerBound_def)
 done
 
 lemma genPolyTame_notame:
  "\<lbrakk> g' \<in> set (generatePolygon n v f g); g' \<notin> set (generatePolygonTame n v f g);
     inv g; 3 \<le> n \<rbrakk>
-  \<Longrightarrow> notame g'"
+  \<Longrightarrow> notame7 g'"
 by(fastsimp simp:generatePolygon_def generatePolygonTame_def enum_enumerator
-                 notame_def)
-
+                 notame_def notame7_def)
 
 declare upt_Suc[simp del] (* FIXME global? *)
 lemma excess_notame:
  "\<lbrakk> inv g; g' \<in> set (next_plane\<^bsub>p\<^esub> g); g' \<notin> set (next_tame0 p g) \<rbrakk>
-       \<Longrightarrow> notame g'"
+       \<Longrightarrow> notame7 g'"
 apply(frule (1) mgp_next_plane0_if_next_plane[OF inv_mgp])
 apply(auto simp add:next_tame0_def next_plane_def split:split_if_asm)
 apply(rename_tac n)
@@ -487,6 +508,7 @@ apply(simp add:nonFinals_def)
 done
 declare upt_Suc[simp]
 
+
 lemma next_tame0_comp: "\<lbrakk> Seed\<^bsub>p\<^esub> [next_plane p]\<rightarrow>* g; final g; tame g \<rbrakk>
  \<Longrightarrow> Seed\<^bsub>p\<^esub> [next_tame0 p]\<rightarrow>* g"
 apply(rule filterout_untame_succs[OF inv_inv_next_plane inv_inv_notame
@@ -498,28 +520,12 @@ apply(rule filterout_untame_succs[OF inv_inv_next_plane inv_inv_notame
 apply assumption
 done
 
-lemma next_tame1_comp:
- "\<lbrakk> tame g; final g; Seed\<^bsub>p\<^esub> [next_tame0 p]\<rightarrow>* g \<rbrakk>
- \<Longrightarrow> Seed\<^bsub>p\<^esub> [next_tame1\<^bsub>p\<^esub>]\<rightarrow>* g"
-apply (unfold next_tame1_def)
-apply(rule make3Fin_complete)
-    apply(blast intro: inv_subset[OF inv_inv_next_plane next_tame0_subset_plane])
-   apply(rule next_tame0_subset_plane)
-  apply assumption+
-done
-
 lemma inv_inv_next_tame0: "invariant inv (next_tame0 p)"
 by(rule inv_subset[OF inv_inv_next_plane next_tame0_subset_plane])
 
-
-lemma inv_inv_next_tame1: "invariant inv next_tame1\<^bsub>p\<^esub>"
-apply(simp add:next_tame1_def)
-apply(rule inv_comp_map[OF inv_inv_next_tame0])
-by(blast intro:RTranCl_inv[OF inv_inv_next_plane] mk3Fin_in_RTranCl)
-
 lemma inv_inv_next_tame: "invariant inv next_tame\<^bsub>p\<^esub>"
 apply(simp add:next_tame_def)
-apply(rule inv_subset[OF inv_inv_next_tame1])
+apply(rule inv_subset[OF inv_inv_next_tame0])
 apply auto
 done
 

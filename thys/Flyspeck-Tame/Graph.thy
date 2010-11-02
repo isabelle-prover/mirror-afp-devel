@@ -153,21 +153,13 @@ primrec faceListAt :: "graph \<Rightarrow> face list list" where
   "faceListAt (Graph fs n f h) = f"
 
 definition facesAt :: "graph \<Rightarrow> vertex \<Rightarrow> face list" where
- "facesAt g v \<equiv> if v \<in> set(vertices g) then faceListAt g ! v else []"
+ "facesAt g v \<equiv> (*if v \<in> set(vertices g) then*) faceListAt g ! v (*else []*)"
 
 primrec heights :: "graph \<Rightarrow> nat list" where
   "heights (Graph fs n f h) = h"
 
 definition height :: "graph \<Rightarrow> vertex \<Rightarrow> nat" where
   "height g v \<equiv> heights g ! v"
-
-lemma graph_split:
-  "g = Graph (faces g)
-             (countVertices g)
-             (faceListAt g)
-             (heights g)"
-  by (induct g) simp
-
 
 definition graph :: "nat \<Rightarrow> graph" where
   "graph n \<equiv>
@@ -259,25 +251,6 @@ definition nextFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> f
 (*<*) nextFace_def_aux: "p \<bullet> \<equiv> \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
    (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem fs (hd fs) f))"  (*>*)
-(*<*) lemma nextFace_def: (*>*)
-
-  "(g,v) \<bullet> f \<equiv> (let fs = (facesAt g v) in
-   (case fs of [] \<Rightarrow> f
-           | g#gs \<Rightarrow> nextElem fs (hd fs) f))"
-(*<*) by (simp add: nextFace_def_aux) (*>*)
-
-(* Unused: *)
-definition prevFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*)("_\<^bsup>-1\<^esup> \<bullet>") (*>*)where
-(*<*) prevFace_def_aux: "p\<^bsup>-1\<^esup> \<bullet> \<equiv>
-     \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
-    (case fs of [] \<Rightarrow> f
-           | g#gs \<Rightarrow> nextElem (rev fs) (last fs) f))"  (*>*)
-(*<*) lemma prevFace_def: (*>*)
-
-  "(g,v)\<^bsup>-1\<^esup> \<bullet> f \<equiv> (let fs = (facesAt g v) in
-   (case fs of [] \<Rightarrow> f
-           | g#gs \<Rightarrow> nextElem (rev fs) (last fs) f))"
-(*<*) by (simp add: prevFace_def_aux) (*>*)
 
 
 (* precondition a b in f *)
