@@ -1,5 +1,4 @@
 (*  Title:      POPLmark/POPLmark.thy
-    ID:         $Id: POPLmark.thy,v 1.7 2009-03-04 14:00:59 nipkow Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 

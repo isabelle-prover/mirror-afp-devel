@@ -1,5 +1,4 @@
-(*  ID:         $Id: Basis.thy,v 1.8 2008-11-24 09:16:05 makarius Exp $
-    Author:     Stefan Berghofer, TU Muenchen, 2005
+(*  Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
 theory Basis

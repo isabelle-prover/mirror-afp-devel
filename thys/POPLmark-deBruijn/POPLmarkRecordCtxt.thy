@@ -1,5 +1,4 @@
 (*  Title:      POPLmark/POPLmarkRecordCtxt.thy
-    ID:         $Id: POPLmarkRecordCtxt.thy,v 1.6 2008-06-12 06:57:25 lsf37 Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 

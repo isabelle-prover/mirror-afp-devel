@@ -1,5 +1,4 @@
-(*  ID:         $Id: Execute.thy,v 1.6 2009-07-14 09:00:10 fhaftmann Exp $
-    Author:     Stefan Berghofer, TU Muenchen, 2005; Lukas Bulwahn, TU Muenchen, 2009
+(*  Author:     Stefan Berghofer, TU Muenchen, 2005; Lukas Bulwahn, TU Muenchen, 2009
 *)
 
 theory Execute
