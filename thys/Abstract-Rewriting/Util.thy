@@ -26,7 +26,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Util *}
 
 theory Util
-imports Main
+imports Main Finite_Set
 begin
 
 text {* Some auxiliary lemmas that do not fit elsewhere. *}
@@ -374,6 +374,18 @@ qed simp
 
 declare list_union.simps[simp del]
 
+(* why was list_inter thrown out of List.thy? *)
+fun list_inter :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  "list_inter [] bs = []"
+  | "list_inter (a#as) bs =
+     (if a \<in> set bs then a # list_inter as bs else list_inter as bs)"
+
+lemma list_inter[simp]:
+  "set (list_inter xs ys) = set xs \<inter> set ys"
+  by (induct rule: list_inter.induct, auto)
+
+declare list_inter.simps[simp del]
+
 primrec
   list_diff :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where
@@ -511,6 +523,33 @@ whether the sets are pairwise disjoint. *}
 definition is_partition :: "('a set)list \<Rightarrow> bool"
 where "is_partition cs = (\<forall>j<length cs. \<forall>i<j. cs!i \<inter> cs!j = {})"
 
+(* and an equivalent but more symmetric version *)
+definition is_partition_alt :: "('a set)list \<Rightarrow> bool"
+where "is_partition_alt cs = (\<forall> i j. i < length cs \<and> j < length cs \<and> i \<noteq> j \<longrightarrow> cs!i \<inter> cs!j = {})"
+
+lemma is_partition_alt: "is_partition = is_partition_alt"
+proof (intro ext)
+  fix cs
+  {
+    assume "is_partition_alt cs"
+    hence "is_partition cs" unfolding is_partition_def is_partition_alt_def by auto
+  }
+  moreover
+  {
+    assume part: "is_partition cs"
+    have "is_partition_alt cs" unfolding is_partition_alt_def
+    proof (intro allI impI)
+      fix i j
+      assume "i < length cs \<and> j < length cs \<and> i \<noteq> j"
+      with part show "cs ! i \<inter> cs ! j = {}"
+        unfolding is_partition_def
+        by (cases "i < j", simp, cases "j < i", force, simp)
+    qed
+  }
+  ultimately
+  show "is_partition cs = is_partition_alt cs" by auto
+qed
+      
 lemma is_partition_Nil: "is_partition [] = True" unfolding is_partition_def by auto
 lemma is_partition_Cons:
  "is_partition(x#xs) = (is_partition xs \<and> x \<inter> \<Union>set xs = {})" (is "?l = ?r")
@@ -561,19 +600,11 @@ next
   qed
 qed
 
-lemma pigeonhole_infinite_rel:
-assumes "~finite A" and "finite B" and "ALL a:A. EX b:B. R a b"
-shows "EX b:B. ~finite{a:A. R a b}"
-(* to come from Isabelle Finite_Set *)
-oops
-
-
 lemma infinite_imp_elem: "\<not> finite A \<Longrightarrow> \<exists> x. x \<in> A"
   by (cases "A = {}", auto)
 
 lemma inf_pigeon_hole_principle: assumes "\<forall> k :: nat. \<exists> i < n :: nat. f k i"
   shows "\<exists> i < n. \<forall> k. \<exists> k' \<ge> k. f k' i"
-(* alternative proof via pigeonhole_infinite_rel
 proof -
   have nfin: "~ finite (UNIV :: nat set)" by auto
   have fin: "finite ({i. i < n})" by auto
@@ -587,40 +618,6 @@ proof -
     from infinite_imp_elem[OF this]
     obtain a where "f a i" and "a \<ge> k" by auto
     thus "\<exists> k' \<ge> k. f k' i" by force
-  qed
-qed
-*)
-using assms 
-proof (induct n arbitrary: f, simp)
-  case (Suc n)
-  show ?case
-  proof (cases "\<forall> k. \<exists> k' \<ge> k. f k' n")
-    case True
-    thus ?thesis by auto
-  next
-    case False
-    then obtain k where k: "\<forall> k' \<ge> k. \<not> f k' n" by auto
-    let ?f = "\<lambda> k' i. f (k + k') i"
-    have n: "\<forall> k'. \<exists> i < n. ?f k' i"
-    proof
-      fix k'
-      have k': "k + k' \<ge> k" by simp
-      from mp[OF spec[OF k] k'] have notN: "\<not> ?f k' n" by auto
-      from spec[OF Suc(2), of "k + k'"] obtain i where i: "i < Suc n" and f:  "?f k' i"
-        by auto
-      with notN have "i \<noteq> n" by auto 
-      with i have "i < n" by auto
-      with f show "\<exists> i < n. ?f k' i" by auto
-    qed
-    from Suc(1)[OF n] obtain i where i: "i < n" and f: "\<forall> l. \<exists> k' \<ge> l. ?f k' i" by auto
-    hence i: "i < Suc n" by auto
-    show ?thesis
-    proof (rule exI[of _ i], intro conjI allI)
-      fix l
-      from spec[OF f, of l] obtain k' where k': "(k' :: nat) \<ge> l" and f: "f (k + k') i" by auto
-      from k' have "k + k' \<ge> l" by simp
-      with f show "\<exists> k' \<ge> l. f k' i" by auto
-    qed (simp add: i)
   qed
 qed
 
