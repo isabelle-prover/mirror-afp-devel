@@ -1309,7 +1309,7 @@ lemma eq_finfun_All_ext: "(f = g) \<longleftrightarrow> finfun_All ((\<lambda>(x
 by(simp add: expand_finfun_eq fun_eq_iff finfun_All_All o_def)
 
 instantiation finfun :: ("{card_UNIV,equal}",equal) equal begin
-definition eq_finfun_def: "HOL.equal f g \<longleftrightarrow> finfun_All ((\<lambda>(x, y). x = y) \<circ>\<^isub>f (f, g)\<^sup>f)"
+definition eq_finfun_def [code]: "HOL.equal f g \<longleftrightarrow> finfun_All ((\<lambda>(x, y). x = y) \<circ>\<^isub>f (f, g)\<^sup>f)"
 instance by(intro_classes)(simp add: eq_finfun_All_ext eq_finfun_def)
 end
 
@@ -1334,7 +1334,7 @@ definition finfun_dom :: "('a \<Rightarrow>\<^isub>f 'b) \<Rightarrow> ('a \<Rig
 where [code del]: "finfun_dom f = Abs_finfun (\<lambda>a. f\<^sub>f a \<noteq> finfun_default f)"
 
 lemma finfun_dom_const:
-  "finfun_dom ((\<lambda>\<^isup>f c) :: 'a \<Rightarrow>\<^isub>f 'b) = (if finite (UNIV :: 'a set) \<and> c \<noteq> undefined then (\<lambda>\<^isup>f True) else (\<lambda>\<^isup>f False))"
+  "finfun_dom ((\<lambda>\<^isup>f c) :: 'a \<Rightarrow>\<^isub>f 'b) = (\<lambda>\<^isup>f finite (UNIV :: 'a set) \<and> c \<noteq> undefined)"
 unfolding finfun_dom_def finfun_default_const
 by(auto)(simp_all add: finfun_const_def)
 
@@ -1367,14 +1367,138 @@ by(simp)
 
 lemma finite_finfun_dom: "finite (finfun_dom f)\<^sub>f"
 proof(induct f rule: finfun_weak_induct)
-  case const
+  case (const b)
   thus ?case
-    by(simp add: finfun_dom_const UNIV_def[unfolded Collect_def, symmetric] Set.empty_def[unfolded Collect_def, symmetric])
+    by(cases "finite (UNIV :: 'a set) \<and> b \<noteq> undefined")(auto simp add: finfun_dom_const UNIV_def[unfolded Collect_def, symmetric] Set.empty_def[unfolded Collect_def, symmetric])
 next
   case (update f a b)
   have "(finfun_dom f(\<^sup>f a := b))\<^sub>f = (if b = finfun_default f then (finfun_dom f)\<^sub>f - {a} else insert a (finfun_dom f)\<^sub>f)"
     by(auto simp add: mem_def finfun_upd_apply split: split_if_asm)
   thus ?case using update by simp
 qed
+
+
+subsection {* The domain of a FinFun as a sorted list *}
+
+definition finfun_to_list :: "('a :: linorder) \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a list"
+where
+  "finfun_to_list f = (THE xs. set xs = (finfun_dom f)\<^sub>f \<and> sorted xs \<and> distinct xs)"
+
+lemma set_finfun_to_list [simp]: "set (finfun_to_list f) = (finfun_dom f)\<^sub>f" (is ?thesis1)
+  and sorted_finfun_to_list: "sorted (finfun_to_list f)" (is ?thesis2)
+  and distinct_finfun_to_list: "distinct (finfun_to_list f)" (is ?thesis3)
+proof -
+  have "?thesis1 \<and> ?thesis2 \<and> ?thesis3"
+    unfolding finfun_to_list_def
+    by(rule theI')(rule finite_sorted_distinct_unique finite_finfun_dom)+
+  thus ?thesis1 ?thesis2 ?thesis3 by simp_all
+qed
+
+lemma finfun_const_False_conv_empty: "(\<lambda>\<^isup>f False)\<^sub>f = {}"
+by(auto simp add: mem_def)
+
+lemma finfun_const_True_conv_UNIV: "(\<lambda>\<^isup>f True)\<^sub>f = UNIV"
+by(auto simp add: mem_def)
+
+lemma finfun_to_list_const:
+  "finfun_to_list ((\<lambda>\<^isup>f c) :: ('a :: {linorder} \<Rightarrow>\<^isub>f 'b)) = 
+  (if infinite (UNIV :: 'a set) \<or> c = undefined then [] else THE xs. set xs = UNIV \<and> sorted xs \<and> distinct xs)"
+by(auto simp add: finfun_to_list_def finfun_const_False_conv_empty finfun_const_True_conv_UNIV finfun_dom_const)
+
+lemma finfun_to_list_const_code [code]:
+  "finfun_to_list ((\<lambda>\<^isup>f c) :: ('a :: {linorder, card_UNIV} \<Rightarrow>\<^isub>f 'b)) =
+   (if card_UNIV (TYPE('a)) = 0 then [] else FinFun.code_abort (\<lambda>_. finfun_to_list ((\<lambda>\<^isup>f c) :: ('a \<Rightarrow>\<^isub>f 'b))))"
+unfolding card_UNIV_eq_0_infinite_UNIV
+by(auto simp add: finfun_to_list_const)
+
+lemma remove1_insort_insert_same:
+  "x \<notin> set xs \<Longrightarrow> remove1 x (insort_insert x xs) = xs"
+by (metis insort_insert_insort remove1_insort)
+
+lemma finfun_dom_conv:
+  "(finfun_dom f)\<^sub>f x \<longleftrightarrow> f\<^sub>f x \<noteq> finfun_default f"
+by(induct f rule: finfun_weak_induct)(auto simp add: finfun_dom_const finfun_default_const finfun_default_update_const finfun_upd_apply)
+
+lemma finfun_to_list_update:
+  "finfun_to_list (f(\<^sup>f a := b)) = 
+  (if b = finfun_default f then List.remove1 a (finfun_to_list f) else List.insort_insert a (finfun_to_list f))"
+proof(subst finfun_to_list_def, rule the_equality)
+  fix xs
+  assume "set xs = (finfun_dom f(\<^sup>f a := b))\<^sub>f \<and> sorted xs \<and> distinct xs"
+  hence eq: "set xs = (finfun_dom f(\<^sup>f a := b))\<^sub>f"
+    and [simp]: "sorted xs" "distinct xs" by simp_all
+  show "xs = (if b = finfun_default f then remove1 a (finfun_to_list f) else insort_insert a (finfun_to_list f))"
+  proof(cases "b = finfun_default f")
+    case True [simp]
+    show ?thesis
+    proof(cases "(finfun_dom f)\<^sub>f a")
+      case True
+      have "finfun_to_list f = insort_insert a xs"
+        unfolding finfun_to_list_def
+      proof(rule the_equality)
+        have "set (insort_insert a xs) = insert a (set xs)" by(simp add: set_insort_insert)
+        also note eq also
+        have "insert a (finfun_dom f(\<^sup>f a := b))\<^sub>f = (finfun_dom f)\<^sub>f" using True
+          by(auto simp add: mem_def finfun_upd_apply split: split_if_asm)
+        finally show 1: "set (insort_insert a xs) = (finfun_dom f)\<^sub>f \<and> sorted (insort_insert a xs) \<and> distinct (insort_insert a xs)"
+          by(simp add: sorted_insort_insert distinct_insort_insert)
+
+        fix xs'
+        assume "set xs' = (finfun_dom f)\<^sub>f \<and> sorted xs' \<and> distinct xs'"
+        thus "xs' = insort_insert a xs" using 1 by(auto dest: sorted_distinct_set_unique)
+      qed
+      with eq True show ?thesis by(simp add: remove1_insort_insert_same mem_def)
+    next
+      case False
+      hence "f\<^sub>f a = b" by(auto simp add: finfun_dom_conv)
+      hence f: "f(\<^sup>f a := b) = f" by(simp add: expand_finfun_eq fun_eq_iff finfun_upd_apply)
+      from eq have "finfun_to_list f = xs" unfolding f finfun_to_list_def
+        by(auto elim: sorted_distinct_set_unique intro!: the_equality)
+      with eq False show ?thesis unfolding f by(simp add: remove1_idem mem_def)
+    qed
+  next
+    case False
+    show ?thesis
+    proof(cases "(finfun_dom f)\<^sub>f a")
+      case True
+      have "finfun_to_list f = xs"
+        unfolding finfun_to_list_def
+      proof(rule the_equality)
+        have "finfun_dom f = finfun_dom f(\<^sup>f a := b)" using False True
+          by(simp add: expand_finfun_eq fun_eq_iff finfun_upd_apply)
+        with eq show 1: "set xs = (finfun_dom f)\<^sub>f \<and> sorted xs \<and> distinct xs"
+          by(simp del: finfun_dom_update)
+        
+        fix xs'
+        assume "set xs' = (finfun_dom f)\<^sub>f \<and> sorted xs' \<and> distinct xs'"
+        thus "xs' = xs" using 1 by(auto elim: sorted_distinct_set_unique)
+      qed
+      thus ?thesis using False True eq by(simp add: insort_insert_triv mem_def)
+    next
+      case False
+      have "finfun_to_list f = remove1 a xs"
+        unfolding finfun_to_list_def
+      proof(rule the_equality)
+        have "set (remove1 a xs) = set xs - {a}" by simp
+        also note eq also
+        have "(finfun_dom f(\<^sup>f a := b))\<^sub>f - {a} = (finfun_dom f)\<^sub>f" using False
+          by(auto simp add: mem_def finfun_upd_apply split: split_if_asm)
+        finally show 1: "set (remove1 a xs) = (finfun_dom f)\<^sub>f \<and> sorted (remove1 a xs) \<and> distinct (remove1 a xs)"
+          by(simp add: sorted_remove1)
+        
+        fix xs'
+        assume "set xs' = (finfun_dom f)\<^sub>f \<and> sorted xs' \<and> distinct xs'"
+        thus "xs' = remove1 a xs" using 1 by(blast intro: sorted_distinct_set_unique)
+      qed
+      thus ?thesis using False eq `b \<noteq> finfun_default f` 
+        by simp (metis Collect_def Collect_mem_eq False UNIV_def `sorted xs` finfun_upd_apply_same insort_insert_insort insort_remove1 set_finfun_to_list top1I)
+    qed
+  qed
+qed(auto simp add: distinct_finfun_to_list sorted_finfun_to_list sorted_remove1 set_insort_insert sorted_insort_insert distinct_insort_insert mem_def finfun_upd_apply split: split_if_asm)
+
+lemma finfun_to_list_update_code [code]:
+  "finfun_to_list (finfun_update_code f a b) = 
+  (if b = finfun_default f then List.remove1 a (finfun_to_list f) else List.insort_insert a (finfun_to_list f))"
+by(simp add: finfun_to_list_update)
 
 end
