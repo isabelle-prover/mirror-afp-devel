@@ -310,33 +310,8 @@ assumes INJ: "inj_on f A" and SUB: "f ` A \<le> B" and
         FIN: "finite B"
 shows "finite A"
 proof-
-  have "finite B \<Longrightarrow> (\<forall>(A::'a set) f. inj_on f A \<and> f ` A \<le> B \<longrightarrow> finite A)"
-  proof(erule finite_induct, auto)
-    fix x B and A::"'a set" and  f  
-    assume 1: "finite B" and 2: "x \<notin> B" and 
-           3: "inj_on f A" and 4: "f ` A \<subseteq> insert x B" and
-           IH: "\<forall>(A::'a set). (\<exists>g. inj_on g A \<and> g ` A \<subseteq> B) \<longrightarrow> finite A"
-    show "finite A"  
-    proof(cases "f ` A \<le> B")
-      assume Case1: "f ` A \<le> B"
-      thus ?thesis using 3 IH by blast
-    next
-      assume Case2: "\<not> f ` A \<le> B"
-      then obtain a where 5: "a \<in> A \<and> f a = x" using 4 by blast
-      let ?A' = "A - {a}"
-      have "inj_on f ?A'" using 3 subset_inj_on[of f A ?A'] by blast
-      moreover 
-      have "f ` ?A' \<le> B"
-      proof(auto)
-        fix a' assume *: "a' \<in> A" and "f a' \<notin> B"
-        hence "f a' = x" using 4 by auto
-        thus "a' = a" using * 5 3 unfolding inj_on_def by auto
-      qed
-      ultimately have "finite ?A'" using IH by blast
-      thus ?thesis using finite_insert by auto
-    qed       
-  qed
-  thus ?thesis using assms by blast
+  from SUB FIN have "finite (f ` A)" by (rule finite_subset)
+  from this INJ show "finite A" by (rule finite_imageD)
 qed
 
 
