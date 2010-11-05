@@ -4,6 +4,8 @@ theory LazyList
 imports HOLCF
 begin
 
+default_sort pcpo
+
 text {* Discrete cpo instance for @{typ int}. *}
 
 instantiation int :: discrete_cpo
@@ -17,7 +19,7 @@ qed (rule below_int_def)
 
 end
 
-domain 'a LList = LNil | LCons (lazy 'a) (lazy "'a LList")
+domain (unsafe) 'a LList = LNil | LCons (lazy 'a) (lazy "'a LList")
  
 fixrec
   mapL :: "('a \<rightarrow> 'b) \<rightarrow> 'a LList \<rightarrow> 'b LList"
@@ -33,7 +35,7 @@ fixrec
 where
   "filterL\<cdot>p\<cdot>LNil = LNil"
 | "filterL\<cdot>p\<cdot>(LCons\<cdot>x\<cdot>xs) =
-    (If p\<cdot>x then LCons\<cdot>x\<cdot>(filterL\<cdot>p\<cdot>xs) else filterL\<cdot>p\<cdot>xs fi)"
+    (If p\<cdot>x then LCons\<cdot>x\<cdot>(filterL\<cdot>p\<cdot>xs) else filterL\<cdot>p\<cdot>xs)"
 
 lemma filterL_strict [simp]: "filterL\<cdot>p\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp

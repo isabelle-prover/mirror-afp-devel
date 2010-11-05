@@ -244,7 +244,7 @@ proof -
     (*>*)
   ultimately
   show ?thesis
-    apply (simp add: expand_cfun_less)
+    apply (simp add: cfun_below_iff)
     apply (rule exI[where x="JY"])
     apply simp
     done

@@ -19,7 +19,7 @@ recipe as \S\ref{sec:continuations}.
 It is currently not easy to reason about higher-order languages in
 HOLCF. *}
 
-domain Expr
+domain (unsafe) Expr
   = Const (lazy Nat)
   | Add (lazy Expr) (lazy Expr)
   | Disj (lazy Expr) (lazy Expr) | Fail

@@ -8,12 +8,60 @@ subsection {* Type definitions for streams *}
 
 text {* Note that everything is strict in the state type. *}
 
-domain ('a,'s) Step = Done | Skip 's | Yield (lazy 'a) 's
+domain (unsafe) ('a,'s) Step = Done | Skip 's | Yield (lazy 'a) 's
 
-domain ('a,'s) Stream = Stream (lazy "'s \<rightarrow> ('a,'s) Step") 's
+types ('a, 's) Stepper = "'s \<rightarrow> ('a, 's) Step"
+
+domain (unsafe) ('a,'s) Stream = Stream (lazy "('a, 's) Stepper") 's
 
 
 subsection {* Converting from streams to lists *}
+
+fixrec
+  unfold :: "('a, 's) Stepper -> ('s -> 'a LList)"
+where
+  "unfold\<cdot>h\<cdot>\<bottom> = \<bottom>"
+| "s \<noteq> \<bottom> \<Longrightarrow>
+    unfold\<cdot>h\<cdot>s =
+      (case h\<cdot>s of
+        Done \<Rightarrow> LNil
+      | Skip\<cdot>s' \<Rightarrow> unfold\<cdot>h\<cdot>s'
+      | Yield\<cdot>x\<cdot>s' \<Rightarrow> LCons\<cdot>x\<cdot>(unfold\<cdot>h\<cdot>s'))"
+
+fixrec
+  unfoldF :: "('a, 's) Stepper \<rightarrow> ('s \<rightarrow> 'a LList) \<rightarrow> ('s \<rightarrow> 'a LList)"
+where
+  "unfoldF\<cdot>h\<cdot>u\<cdot>\<bottom> = \<bottom>"
+| "s \<noteq> \<bottom> \<Longrightarrow>
+    unfoldF\<cdot>h\<cdot>u\<cdot>s =
+      (case h\<cdot>s of
+        Done \<Rightarrow> LNil
+      | Skip\<cdot>s' \<Rightarrow> u\<cdot>s'
+      | Yield\<cdot>x\<cdot>s' \<Rightarrow> LCons\<cdot>x\<cdot>(u\<cdot>s'))"
+
+lemma unfold_eq_fix: "unfold\<cdot>h = fix\<cdot>(unfoldF\<cdot>h)"
+proof (rule below_antisym)
+  show "unfold\<cdot>h \<sqsubseteq> fix\<cdot>(unfoldF\<cdot>h)"
+    apply (rule unfold.induct, simp, simp)
+    apply (subst fix_eq)
+    apply (rule below_cfun_ext, rename_tac s)
+    apply (case_tac "s = \<bottom>", simp, simp)
+    apply (intro monofun_cfun monofun_LAM below_refl, simp_all)
+    done
+  show "fix\<cdot>(unfoldF\<cdot>h) \<sqsubseteq> unfold\<cdot>h"
+    apply (rule fix_ind, simp, simp)
+    apply (subst unfold.unfold)
+    apply (rule below_cfun_ext, rename_tac s)
+    apply (case_tac "s = \<bottom>", simp, simp)
+    apply (intro monofun_cfun monofun_LAM below_refl, simp_all)
+    done
+qed
+
+lemma unfold_ind:
+    fixes P :: "('s \<rightarrow> 'a LList) \<Rightarrow> bool"
+    assumes "adm P" and "P \<bottom>" and "\<And>u. P u \<Longrightarrow> P (unfoldF\<cdot>h\<cdot>u)"
+    shows "P (unfold\<cdot>h)"
+unfolding unfold_eq_fix by (rule fix_ind [of P, OF assms])
 
 fixrec
   unfold2 :: "('s \<rightarrow> 'a LList) \<rightarrow> ('a, 's) Step \<rightarrow> 'a LList"
@@ -25,34 +73,15 @@ where
 lemma unfold2_strict [simp]: "unfold2\<cdot>u\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp
 
-definition
-  unfold1 :: "('s \<rightarrow> ('a, 's) Step) \<rightarrow> ('s \<rightarrow> 'a LList) \<rightarrow> ('s \<rightarrow> 'a LList)"
-where
-  "unfold1 = (\<Lambda> h u. strictify\<cdot>(\<Lambda> s. unfold2\<cdot>u\<cdot>(h\<cdot>s)))"
+lemma unfold: "s \<noteq> \<bottom> \<Longrightarrow> unfold\<cdot>h\<cdot>s = unfold2\<cdot>(unfold\<cdot>h)\<cdot>(h\<cdot>s)"
+by (case_tac "h\<cdot>s", simp_all)
 
-lemma unfold1_simps [simp]:
-  "unfold1\<cdot>h\<cdot>u\<cdot>\<bottom> = \<bottom>"
-  "s \<noteq> \<bottom> \<Longrightarrow> unfold1\<cdot>h\<cdot>u\<cdot>s = unfold2\<cdot>u\<cdot>(h\<cdot>s)"
-unfolding unfold1_def by simp_all
+lemma unfoldF: "s \<noteq> \<bottom> \<Longrightarrow> unfoldF\<cdot>h\<cdot>u\<cdot>s = unfold2\<cdot>u\<cdot>(h\<cdot>s)"
+by (case_tac "h\<cdot>s", simp_all)
 
-definition
-  unfold :: "('s \<rightarrow> ('a, 's) Step) \<rightarrow> 's \<rightarrow> 'a LList"
-where
-  "unfold = (\<Lambda> h. fix\<cdot>(unfold1\<cdot>h))"
-
-lemma unfold_beta: "unfold\<cdot>h = fix\<cdot>(unfold1\<cdot>h)"
-unfolding unfold_def by simp
-
-lemma unfold: "unfold\<cdot>h\<cdot>s = unfold1\<cdot>h\<cdot>(unfold\<cdot>h)\<cdot>s"
-unfolding unfold_beta by (subst fix_eq, simp)
-
-lemma unfold_ind:
-  fixes P :: "('s \<rightarrow> 'a LList) \<Rightarrow> bool"
-  assumes adm: "adm P"
-  assumes base: "P \<bottom>"
-  assumes step: "\<And>u. P u \<Longrightarrow> P (unfold1\<cdot>h\<cdot>u)"
-  shows "P (unfold\<cdot>h)"
-unfolding unfold_beta by (rule fix_ind [of P, OF adm base step])
+declare unfold.simps(2) [simp del]
+declare unfoldF.simps(2) [simp del]
+declare unfoldF [simp]
 
 fixrec
   unstream :: "('a, 's) Stream \<rightarrow> 'a LList"

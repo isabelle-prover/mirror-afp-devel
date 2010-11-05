@@ -8,6 +8,8 @@
 theory WorkerWrapper
 imports HOLCF
 begin
+
+default_sort pcpo
 (*>*)
 
 section{* Gill/Hutton's worker/wrapper transformation. *}
@@ -25,7 +27,7 @@ proof -
   hence "(g oo f)\<cdot>(g\<cdot>(fix\<cdot>(f oo g))) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
     by simp -- {* re-associate @{term "op oo"} *}
   thus "fix\<cdot>(g oo f) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
-    using fix_least_less by blast -- {* induction *}
+    using fix_least_below by blast -- {* induction *}
 qed
 
 lemma rolling_rule_rtl: "g\<cdot>(fix\<cdot>(f oo g)) \<sqsubseteq> fix\<cdot>(g oo f)"
@@ -38,7 +40,7 @@ proof -
 qed
 
 lemma rolling_rule: "fix\<cdot>(g oo f) = g\<cdot>(fix\<cdot>(f oo g))"
-  by (rule antisym_less[OF rolling_rule_ltr rolling_rule_rtl])
+  by (rule below_antisym[OF rolling_rule_ltr rolling_rule_rtl])
 
 text{* Secondly we review the basic worker/wrapper lemmas that justify
 the transformation. There is a battery of them of varying strengths of

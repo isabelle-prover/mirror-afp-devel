@@ -177,7 +177,7 @@ models recursive functions with unboxed codomains.
 
 *}
 
-domain 'a Box = Box (unbox :: "'a\<^sub>\<bottom>")
+domain (unsafe) 'a Box = Box (unbox :: "'a\<^sub>\<bottom>")
 
 definition
   box :: "('a::cpo) \<rightarrow> 'a Box" where

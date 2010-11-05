@@ -61,7 +61,7 @@ lemma SetMem_SetInsert: "SetMem\<cdot>v\<cdot>(SetInsert\<cdot>x\<cdot>s) = (Set
 
 text {* AndyG's new type. *}
 
-domain R = R (lazy resultR :: "Nat llist") (lazy exceptR :: "NatSet")
+domain (unsafe) R = R (lazy resultR :: "Nat llist") (lazy exceptR :: "NatSet")
 
 definition
   nextR :: "R \<rightarrow> (Nat * R) Maybe" where

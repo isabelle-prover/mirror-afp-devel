@@ -8,6 +8,8 @@
 theory Maybe
 imports HOLCF
 begin
+
+default_sort pcpo
 (*>*)
 
 section{* The @{text "'a Maybe"} Monad *}
@@ -15,7 +17,7 @@ section{* The @{text "'a Maybe"} Monad *}
 text{* This section defines the monadic machinery for the @{text "'a
 Maybe"} type. @{term "return"} is @{term "Just"}. *}
 
-domain 'a Maybe = Nothing | Just (lazy "'a")
+domain (unsafe) 'a Maybe = Nothing | Just (lazy "'a")
 
 definition
   mfail :: "'a Maybe" where

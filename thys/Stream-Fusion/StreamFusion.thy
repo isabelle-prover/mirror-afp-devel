@@ -8,15 +8,15 @@ subsection {* Type constructors for state types *}
 
 domain Switch = S1 | S2
 
-domain 'a Maybe = Nothing | Just 'a
+domain (unsafe) 'a Maybe = Nothing | Just 'a
 
 hide_const (open) Left Right
 
-domain ('a, 'b) Either = Left 'a | Right 'b
+domain (unsafe) ('a, 'b) Either = Left 'a | Right 'b
 
-domain ('a, 'b) Both  (infixl ":!:" 25) = Both 'a 'b (infixl ":!:" 75)
+domain (unsafe) ('a, 'b) Both  (infixl ":!:" 25) = Both 'a 'b (infixl ":!:" 75)
 
-domain 'a L = L (lazy 'a)
+domain (unsafe) 'a L = L (lazy 'a)
 
 
 subsection {* Map function *}
@@ -24,7 +24,8 @@ subsection {* Map function *}
 fixrec
   mapStep :: "('a \<rightarrow> 'b) \<rightarrow> ('s \<rightarrow> ('a, 's) Step) \<rightarrow> 's \<rightarrow> ('b, 's) Step"
 where
-  "mapStep\<cdot>f\<cdot>h\<cdot>s = (case h\<cdot>s of
+  "mapStep\<cdot>f\<cdot>h\<cdot>\<bottom> = \<bottom>"
+| "s \<noteq> \<bottom> \<Longrightarrow> mapStep\<cdot>f\<cdot>h\<cdot>s = (case h\<cdot>s of
     Done \<Rightarrow> Done
   | Skip\<cdot>s' \<Rightarrow> Skip\<cdot>s'
   | Yield\<cdot>x\<cdot>s' \<Rightarrow> Yield\<cdot>(f\<cdot>x)\<cdot>s')"
@@ -38,7 +39,7 @@ lemma unfold_mapStep:
   fixes f :: "'a \<rightarrow> 'b" and h :: "'s \<rightarrow> ('a, 's) Step"
   assumes "s \<noteq> \<bottom>"
   shows "unfold\<cdot>(mapStep\<cdot>f\<cdot>h)\<cdot>s = mapL\<cdot>f\<cdot>(unfold\<cdot>h\<cdot>s)"
-proof (rule antisym_less)
+proof (rule below_antisym)
   show "unfold\<cdot>(mapStep\<cdot>f\<cdot>h)\<cdot>s \<sqsubseteq> mapL\<cdot>f\<cdot>(unfold\<cdot>h\<cdot>s)"
   using `s \<noteq> \<bottom>`
   apply (induct arbitrary: s rule: unfold_ind [where h="mapStep\<cdot>f\<cdot>h"])
@@ -79,10 +80,11 @@ subsection {* Filter function *}
 fixrec
   filterStep :: "('a \<rightarrow> tr) \<rightarrow> ('s \<rightarrow> ('a, 's) Step) \<rightarrow> 's \<rightarrow> ('a, 's) Step"
 where
-  "filterStep\<cdot>p\<cdot>h\<cdot>s = (case h\<cdot>s of
+  "filterStep\<cdot>p\<cdot>h\<cdot>\<bottom> = \<bottom>"
+| "s \<noteq> \<bottom> \<Longrightarrow> filterStep\<cdot>p\<cdot>h\<cdot>s = (case h\<cdot>s of
     Done \<Rightarrow> Done
   | Skip\<cdot>s' \<Rightarrow> Skip\<cdot>s'
-  | Yield\<cdot>x\<cdot>s' \<Rightarrow> (If p\<cdot>x then Yield\<cdot>x\<cdot>s' else Skip\<cdot>s' fi))"
+  | Yield\<cdot>x\<cdot>s' \<Rightarrow> (If p\<cdot>x then Yield\<cdot>x\<cdot>s' else Skip\<cdot>s'))"
 
 fixrec
   filterS :: "('a \<rightarrow> tr) \<rightarrow> ('a, 's) Stream \<rightarrow> ('a, 's) Stream"
@@ -93,7 +95,7 @@ lemma unfold_filterStep:
   fixes p :: "'a \<rightarrow> tr" and h :: "'s \<rightarrow> ('a, 's) Step"
   assumes "s \<noteq> \<bottom>"
   shows "unfold\<cdot>(filterStep\<cdot>p\<cdot>h)\<cdot>s = filterL\<cdot>p\<cdot>(unfold\<cdot>h\<cdot>s)"
-proof (rule antisym_less)
+proof (rule below_antisym)
   show "unfold\<cdot>(filterStep\<cdot>p\<cdot>h)\<cdot>s \<sqsubseteq> filterL\<cdot>p\<cdot>(unfold\<cdot>h\<cdot>s)"
   using `s \<noteq> \<bottom>`
   apply (induct arbitrary: s rule: unfold_ind [where h="filterStep\<cdot>p\<cdot>h"])
@@ -143,7 +145,7 @@ where
 
 lemma unfold_foldrS:
   assumes "s \<noteq> \<bottom>" shows "foldrS\<cdot>f\<cdot>z\<cdot>(Stream\<cdot>h\<cdot>s) = foldrL\<cdot>f\<cdot>z\<cdot>(unfold\<cdot>h\<cdot>s)"
-proof (rule antisym_less)
+proof (rule below_antisym)
   show "foldrS\<cdot>f\<cdot>z\<cdot>(Stream\<cdot>h\<cdot>s) \<sqsubseteq> foldrL\<cdot>f\<cdot>z\<cdot>(unfold\<cdot>h\<cdot>s)"
   using `s \<noteq> \<bottom>`
   apply (induct arbitrary: s rule: foldrS.induct)
@@ -207,7 +209,7 @@ declare enumFromToS.simps [simp del]
 
 lemma unfold_enumFromToStep:
   "unfold\<cdot>(enumFromToStep\<cdot>(up\<cdot>y))\<cdot>(up\<cdot>n) = enumFromToL\<cdot>n\<cdot>(up\<cdot>y)"
-proof (rule antisym_less)
+proof (rule below_antisym)
   show "unfold\<cdot>(enumFromToStep\<cdot>(up\<cdot>y))\<cdot>(up\<cdot>n) \<sqsubseteq> enumFromToL\<cdot>n\<cdot>(up\<cdot>y)"
     apply (induct arbitrary: n rule: unfold_ind [where h="enumFromToStep\<cdot>(up\<cdot>y)"])
     apply (simp, simp)
@@ -311,12 +313,12 @@ proof -
   have Q_base: "?Q \<bottom>"
     by simp
 
-  have P_step: "\<And>ua ub. ?P ua ub \<Longrightarrow> ?Q ub \<Longrightarrow> ?P (unfold1\<cdot>ha\<cdot>ua) ub"
+  have P_step: "\<And>ua ub. ?P ua ub \<Longrightarrow> ?Q ub \<Longrightarrow> ?P (unfoldF\<cdot>ha\<cdot>ua) ub"
     apply (intro allI impI)
     apply (case_tac "ha\<cdot>sa", simp, simp, simp, simp)
     done
 
-  have Q_step: "\<And>ua ub. ?Q ub \<Longrightarrow> ?Q (unfold1\<cdot>hb\<cdot>ub)"
+  have Q_step: "\<And>ua ub. ?Q ub \<Longrightarrow> ?Q (unfoldF\<cdot>hb\<cdot>ub)"
     apply (intro allI impI)
     apply (case_tac "hb\<cdot>sb", simp, simp, simp, simp)
     done
@@ -499,14 +501,14 @@ proof -
   have Q_base: "\<And>ua. ?Q ua \<bottom>"
     by simp
 
-  have P_step: "\<And>ua ub. ?P ua ub \<Longrightarrow> ?Q ua ub \<Longrightarrow> ?P (unfold1\<cdot>ha\<cdot>ua) ub"
+  have P_step: "\<And>ua ub. ?P ua ub \<Longrightarrow> ?Q ua ub \<Longrightarrow> ?P (unfoldF\<cdot>ha\<cdot>ua) ub"
     by (clarsimp, case_tac "ha\<cdot>sa", simp_all)
 
-  have Q_step: "\<And>ua ub. ?P ua ub \<Longrightarrow> ?Q ua ub \<Longrightarrow> ?Q ua (unfold1\<cdot>hb\<cdot>ub)"
+  have Q_step: "\<And>ua ub. ?P ua ub \<Longrightarrow> ?Q ua ub \<Longrightarrow> ?Q ua (unfoldF\<cdot>hb\<cdot>ub)"
     by (clarsimp, case_tac "hb\<cdot>sb", simp_all)
 
   have 2: "?P (unfold\<cdot>ha) (unfold\<cdot>hb) \<and> ?Q (unfold\<cdot>ha) (unfold\<cdot>hb)"
-    apply (rule zipWithS_fix_ind [OF unfold_beta [of ha] unfold_beta [of hb]])
+    apply (rule zipWithS_fix_ind [OF unfold_eq_fix [of ha] unfold_eq_fix [of hb]])
     apply (simp, simp) (* admissibility *)
     apply (rule P_base)
     apply (erule (1) P_step)
@@ -627,7 +629,7 @@ proof -
   have P_base: "?P \<bottom>"
     by simp
 
-  have P_step: "\<And>ua. ?P ua \<Longrightarrow> \<forall>hb. ?Q hb ua (unfold\<cdot>hb) \<Longrightarrow> ?P (unfold1\<cdot>ha\<cdot>ua)"
+  have P_step: "\<And>ua. ?P ua \<Longrightarrow> \<forall>hb. ?Q hb ua (unfold\<cdot>hb) \<Longrightarrow> ?P (unfoldF\<cdot>ha\<cdot>ua)"
     apply (intro allI impI)
     apply (case_tac "ha\<cdot>sa", simp, simp, simp)
     apply (rename_tac a sa')
@@ -637,7 +639,7 @@ proof -
   have Q_base: "\<And>ua hb. ?Q hb ua \<bottom>"
     by simp
 
-  have Q_step: "\<And>hb ua ub. ?P ua \<Longrightarrow> ?Q hb ua ub \<Longrightarrow> ?Q hb ua (unfold1\<cdot>hb\<cdot>ub)"
+  have Q_step: "\<And>hb ua ub. ?P ua \<Longrightarrow> ?Q hb ua ub \<Longrightarrow> ?Q hb ua (unfoldF\<cdot>hb\<cdot>ub)"
     apply (intro allI impI)
     apply (case_tac "hb\<cdot>sb", simp, simp, simp, simp)
     done
