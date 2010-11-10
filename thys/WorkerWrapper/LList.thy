@@ -12,7 +12,7 @@ begin
 
 section{* The fully-lazy list type. *}
 
-domain (unsafe) 'a llist =
+domain 'a llist =
     lnil ("lnil")
   | lcons (lazy "'a") (lazy "'a llist") (infixr ":@" 65)
 

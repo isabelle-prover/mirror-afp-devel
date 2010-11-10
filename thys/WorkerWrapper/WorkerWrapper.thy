@@ -8,8 +8,6 @@
 theory WorkerWrapper
 imports HOLCF
 begin
-
-default_sort pcpo
 (*>*)
 
 section{* Gill/Hutton's worker/wrapper transformation. *}

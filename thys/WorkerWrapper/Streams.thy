@@ -19,7 +19,7 @@ subsection{* Streams. *}
 
 text{* The type of infinite streams. *}
 
-domain (unsafe) 'a Stream = stcons (lazy sthead :: "'a") (lazy sttail :: "'a Stream") (infixr "&&" 65)
+domain 'a Stream = stcons (lazy sthead :: "'a") (lazy sttail :: "'a Stream") (infixr "&&" 65)
 
 (*<*)
 lemma Stream_bisimI[intro]:

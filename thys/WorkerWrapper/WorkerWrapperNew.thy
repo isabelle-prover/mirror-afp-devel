@@ -9,7 +9,7 @@ theory WorkerWrapperNew
 imports HOLCF LFPFusion WorkerWrapper
 begin
 
-default_sort pcpo
+default_sort bifinite
 (*>*)
 
 section{* A totally-correct fusion rule *}

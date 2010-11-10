@@ -27,7 +27,7 @@ definition
 lemma cont2val_val2cont_id: "cont2val oo val2cont = ID"
   by (rule ext_cfun, simp add: val2cont_def cont2val_def)
 
-domain (unsafe) Expr =
+domain Expr =
     Val (lazy val::"Nat")
   | Add (lazy addl::"Expr") (lazy addr::"Expr")
   | Throw

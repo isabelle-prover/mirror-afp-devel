@@ -26,7 +26,7 @@ Note: we default to just CPOs (not pointed CPOs) in this theory. We
 adopt bothg the Isabelle syntax for overloaded arithmetic and the
 notation for unboxed operators of \citet{SPJ-JL:1991}. *}
 
-default_sort cpo
+default_sort predomain
 
 types UNat = "nat discr"
 
@@ -177,10 +177,10 @@ models recursive functions with unboxed codomains.
 
 *}
 
-domain (unsafe) 'a Box = Box (unbox :: "'a\<^sub>\<bottom>")
+domain 'a Box = Box (unbox :: "'a\<^sub>\<bottom>")
 
 definition
-  box :: "('a::cpo) \<rightarrow> 'a Box" where
+  box :: "('a::predomain) \<rightarrow> 'a Box" where
   "box \<equiv> Box oo up"
 
 lemma boxI: "Box\<cdot>(up\<cdot>x) = box\<cdot>x" unfolding box_def by simp
@@ -221,14 +221,14 @@ text {* @{term "bliftM"} and @{term "bliftM2"} encapsulate the boxing
 and unboxing. *}
 
 definition
-  bliftM :: "('a::cpo \<rightarrow> 'b::cpo) \<Rightarrow> 'a Box \<rightarrow> 'b Box" where
+  bliftM :: "('a::predomain \<rightarrow> 'b::predomain) \<Rightarrow> 'a Box \<rightarrow> 'b Box" where
   "bliftM f \<equiv> \<Lambda> x. unbox\<cdot>x >>= (\<Lambda> x'. box\<cdot>(f\<cdot>x'))"
 
 lemma bliftM_strict1[simp]: "bliftM f\<cdot>\<bottom> = \<bottom>" by (simp add: bliftM_def)
 lemma bliftM_op[simp]: "bliftM f\<cdot>(box\<cdot>x) = box\<cdot>(f\<cdot>x)" by (simp add: bliftM_def)
 
 definition
-  bliftM2 :: "('a::cpo \<rightarrow> 'b::cpo \<rightarrow> 'c::cpo) \<Rightarrow> 'a Box \<rightarrow> 'b Box \<rightarrow> 'c Box" where
+  bliftM2 :: "('a::predomain \<rightarrow> 'b::predomain \<rightarrow> 'c::predomain) \<Rightarrow> 'a Box \<rightarrow> 'b Box \<rightarrow> 'c Box" where
   "bliftM2 f \<equiv> \<Lambda> x y. unbox\<cdot>x >>= (\<Lambda> x'. unbox\<cdot>y >>= (\<Lambda> y'. box\<cdot>(f\<cdot>x'\<cdot>y')))"
 
 lemma bliftM2_strict1[simp]: "bliftM2 f\<cdot>\<bottom> = \<bottom>" by (rule ext_cfun)+ (simp add: bliftM2_def)
@@ -239,53 +239,53 @@ text{* Define the arithmetic operations. We need extra continuity lemmas as
 we're using the full function space, so we can re-use the conventional
 operators. The goal is to work at this level. *}
 
-instantiation Box :: ("{cpo,plus}") plus
+instantiation Box :: ("{predomain,plus}") plus
 begin
 definition plus_Box_def: "x + y \<equiv> bliftM2 (\<Lambda> a b. a + b)\<cdot>x\<cdot>y"
 instance ..
 end
 
 lemma plus_Box_cont[simp, cont2cont]:
-  "\<lbrakk>cont g; cont h\<rbrakk> \<Longrightarrow> cont (\<lambda>x. (g x :: 'a :: {cpo, plus} Box) + h x)"
+  "\<lbrakk>cont g; cont h\<rbrakk> \<Longrightarrow> cont (\<lambda>x. (g x :: 'a :: {predomain, plus} Box) + h x)"
   unfolding plus_Box_def by simp
 
-lemma plus_Box_strict1[simp]: "\<bottom> + (y :: 'a::{cpo, plus} Box) = \<bottom>"
+lemma plus_Box_strict1[simp]: "\<bottom> + (y :: 'a::{predomain, plus} Box) = \<bottom>"
   unfolding plus_Box_def by simp
-lemma plus_Box_strict2[simp]: "(x :: 'a::{cpo, plus} Box) + \<bottom> = \<bottom>"
+lemma plus_Box_strict2[simp]: "(x :: 'a::{predomain, plus} Box) + \<bottom> = \<bottom>"
   unfolding plus_Box_def by simp
 
-instantiation Box :: ("{cpo,minus}") minus
+instantiation Box :: ("{predomain,minus}") minus
 begin
 definition minus_Box_def: "x - y \<equiv> bliftM2 (\<Lambda> a b. a - b)\<cdot>x\<cdot>y"
 instance ..
 end
 
 lemma minus_Box_cont[simp, cont2cont]:
-  "\<lbrakk>cont g; cont h\<rbrakk> \<Longrightarrow> cont (\<lambda>x. (g x :: 'a :: {cpo, minus} Box) - h x)"
+  "\<lbrakk>cont g; cont h\<rbrakk> \<Longrightarrow> cont (\<lambda>x. (g x :: 'a :: {predomain, minus} Box) - h x)"
   unfolding minus_Box_def by simp
 
-lemma minus_Box_strict1[simp]: "\<bottom> - (y :: 'a::{cpo, minus} Box) = \<bottom>"
+lemma minus_Box_strict1[simp]: "\<bottom> - (y :: 'a::{predomain, minus} Box) = \<bottom>"
   unfolding minus_Box_def by simp
-lemma minus_Box_strict2[simp]: "(x :: 'a::{cpo, minus} Box) - \<bottom> = \<bottom>"
+lemma minus_Box_strict2[simp]: "(x :: 'a::{predomain, minus} Box) - \<bottom> = \<bottom>"
   unfolding minus_Box_def by simp
 
-instantiation Box :: ("{cpo,times}") times
+instantiation Box :: ("{predomain,times}") times
 begin
 definition times_Box_def: "x * y \<equiv> bliftM2 (\<Lambda> a b. a * b)\<cdot>x\<cdot>y"
 instance ..
 end
 
 lemma times_Box_cont[simp, cont2cont]:
-  "\<lbrakk>cont g; cont h\<rbrakk> \<Longrightarrow> cont (\<lambda>x. (g x :: 'a :: {cpo, times} Box) * h x)"
+  "\<lbrakk>cont g; cont h\<rbrakk> \<Longrightarrow> cont (\<lambda>x. (g x :: 'a :: {predomain, times} Box) * h x)"
   unfolding times_Box_def by simp
 
-lemma times_Box_strict1[simp]: "\<bottom> * (y :: 'a::{cpo, times} Box) = \<bottom>"
+lemma times_Box_strict1[simp]: "\<bottom> * (y :: 'a::{predomain, times} Box) = \<bottom>"
   unfolding times_Box_def by simp
-lemma times_Box_strict2[simp]: "(x :: 'a::{cpo, times} Box) * \<bottom> = \<bottom>"
+lemma times_Box_strict2[simp]: "(x :: 'a::{predomain, times} Box) * \<bottom> = \<bottom>"
   unfolding times_Box_def by simp
 
 definition
-  bpred :: "('a::type discr \<Rightarrow> 'a discr \<Rightarrow> bool) \<Rightarrow> 'a discr Box \<rightarrow> 'a discr Box \<rightarrow> tr" where
+  bpred :: "('a::countable discr \<Rightarrow> 'a discr \<Rightarrow> bool) \<Rightarrow> 'a discr Box \<rightarrow> 'a discr Box \<rightarrow> tr" where
   "bpred p \<equiv> \<Lambda> x y. unbox\<cdot>x >>= (\<Lambda> x'. unbox\<cdot>y >>= (\<Lambda> y'. if p x' y' then TT else FF))"
 
 lemma bpred_strict1[simp]: "bpred p\<cdot>\<bottom> = \<bottom>" unfolding bpred_def by (rule ext_cfun, simp)
@@ -295,15 +295,15 @@ lemma bpred_eval[simp]: "bpred p\<cdot>(box\<cdot>x)\<cdot>(box\<cdot>y) = (if p
   unfolding bpred_def by simp
 
 abbreviation
-  beq_syn :: "'a::type discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "=\<^sub>B" 50) where
+  beq_syn :: "'a::countable discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "=\<^sub>B" 50) where
   "x =\<^sub>B y \<equiv> bpred (op =)\<cdot>x\<cdot>y"
 
 abbreviation
-  ble_syn :: "'a::ord discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "\<le>\<^sub>B" 50) where
+  ble_syn :: "'a::{countable,ord} discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "\<le>\<^sub>B" 50) where
   "x \<le>\<^sub>B y \<equiv> bpred (op \<le>)\<cdot>x\<cdot>y"
 
 abbreviation
-  blt_syn :: "'a::ord discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "<\<^sub>B" 50) where
+  blt_syn :: "'a::{countable,ord} discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "<\<^sub>B" 50) where
   "x <\<^sub>B y \<equiv> bpred (op <)\<cdot>x\<cdot>y"
 
 subsection{* The flat domain of natural numbers *}
@@ -313,13 +313,13 @@ playing with boxed naturals more convenient. *}
 
 types Nat = "UNat Box"
 
-instantiation Box :: ("{cpo, zero}") zero
+instantiation Box :: ("{predomain, zero}") zero
 begin
 definition zero_Nat_def: "0 \<equiv> box\<cdot>0"
 instance ..
 end
 
-instantiation Box :: ("{cpo, one}") one
+instantiation Box :: ("{predomain, one}") one
 begin
 definition one_Nat_def: "1 \<equiv> box\<cdot>1"
 instance ..
@@ -332,7 +332,7 @@ lemma minus_Nat_eval[simp]: "(box\<cdot>x :: Nat) - box\<cdot>y = box\<cdot>(x -
 lemma times_Nat_eval[simp]: "(box\<cdot>x :: Nat) * box\<cdot>y = box\<cdot>(x * y)" unfolding times_Box_def by simp
 
 definition
-  Nat_case :: "'a::pcpo \<rightarrow> (Nat \<rightarrow> 'a) \<rightarrow> Nat \<rightarrow> 'a" where
+  Nat_case :: "'a::bifinite \<rightarrow> (Nat \<rightarrow> 'a) \<rightarrow> Nat \<rightarrow> 'a" where
   "Nat_case \<equiv> \<Lambda> z s n. unbox\<cdot>n >>= (\<Lambda> n'. nat_case z (\<lambda>n''. s\<cdot>(box\<cdot>(Discr n''))) (undiscr n'))"
 
 lemma cont_nat_case[simp]:
@@ -462,7 +462,7 @@ qed
 
 text{* Restore the HOLCF default sort. *}
 
-default_sort pcpo
+default_sort bifinite
 
 (*<*)
 end
