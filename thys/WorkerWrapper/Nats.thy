@@ -332,7 +332,7 @@ lemma minus_Nat_eval[simp]: "(box\<cdot>x :: Nat) - box\<cdot>y = box\<cdot>(x -
 lemma times_Nat_eval[simp]: "(box\<cdot>x :: Nat) * box\<cdot>y = box\<cdot>(x * y)" unfolding times_Box_def by simp
 
 definition
-  Nat_case :: "'a::bifinite \<rightarrow> (Nat \<rightarrow> 'a) \<rightarrow> Nat \<rightarrow> 'a" where
+  Nat_case :: "'a::domain \<rightarrow> (Nat \<rightarrow> 'a) \<rightarrow> Nat \<rightarrow> 'a" where
   "Nat_case \<equiv> \<Lambda> z s n. unbox\<cdot>n >>= (\<Lambda> n'. nat_case z (\<lambda>n''. s\<cdot>(box\<cdot>(Discr n''))) (undiscr n'))"
 
 lemma cont_nat_case[simp]:
@@ -462,7 +462,7 @@ qed
 
 text{* Restore the HOLCF default sort. *}
 
-default_sort bifinite
+default_sort "domain"
 
 (*<*)
 end
