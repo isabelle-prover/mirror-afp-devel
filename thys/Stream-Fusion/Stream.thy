@@ -8,11 +8,11 @@ subsection {* Type definitions for streams *}
 
 text {* Note that everything is strict in the state type. *}
 
-domain (unsafe) ('a,'s) Step = Done | Skip 's | Yield (lazy 'a) 's
+domain ('a,'s) Step = Done | Skip 's | Yield (lazy 'a) 's
 
 types ('a, 's) Stepper = "'s \<rightarrow> ('a, 's) Step"
 
-domain (unsafe) ('a,'s) Stream = Stream (lazy "('a, 's) Stepper") 's
+domain ('a,'s) Stream = Stream (lazy "('a, 's) Stepper") 's
 
 
 subsection {* Converting from streams to lists *}

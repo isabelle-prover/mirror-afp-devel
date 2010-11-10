@@ -8,15 +8,15 @@ subsection {* Type constructors for state types *}
 
 domain Switch = S1 | S2
 
-domain (unsafe) 'a Maybe = Nothing | Just 'a
+domain 'a Maybe = Nothing | Just 'a
 
 hide_const (open) Left Right
 
-domain (unsafe) ('a, 'b) Either = Left 'a | Right 'b
+domain ('a, 'b) Either = Left 'a | Right 'b
 
-domain (unsafe) ('a, 'b) Both  (infixl ":!:" 25) = Both 'a 'b (infixl ":!:" 75)
+domain ('a, 'b) Both  (infixl ":!:" 25) = Both 'a 'b (infixl ":!:" 75)
 
-domain (unsafe) 'a L = L (lazy 'a)
+domain 'a L = L (lazy 'a)
 
 
 subsection {* Map function *}
