@@ -31,6 +31,7 @@ definition hs_delete :: "'a::hashable \<Rightarrow> 'a hs \<Rightarrow> 'a hs"
   where "hs_delete == s_delete hm_delete"
 definition hs_sel :: "'a::hashable hs \<Rightarrow> ('a \<Rightarrow> 'r option) \<Rightarrow> 'r option" 
   where "hs_sel == s_sel hm_sel"
+definition "hs_sel' == sel_sel' hs_sel"
 definition hs_isEmpty :: "'a::hashable hs \<Rightarrow> bool"
   where "hs_isEmpty == s_isEmpty hm_isEmpty"
 
@@ -80,6 +81,7 @@ lemmas hs_defs =
   hs_iteratei_def
   hs_memb_def
   hs_sel_def
+  hs_sel'_def
   hs_size_def
   hs_to_list_def
   hs_union_def
@@ -98,6 +100,7 @@ lemmas hs_union_impl = s_union_correct[OF hm_add_impl, folded hs_defs]
 lemmas hs_union_dj_impl = s_union_dj_correct[OF hm_add_dj_impl, folded hs_defs]
 lemmas hs_ball_impl = s_ball_correct[OF hm_ball_impl, folded hs_defs]
 lemmas hs_sel_impl = s_sel_correct[OF hm_sel_impl, folded hs_defs]
+lemmas hs_sel'_impl = sel_sel'_correct[OF hs_sel_impl, folded hs_sel'_def]
 lemmas hs_inter_impl = it_inter_correct[OF hs_iterate_impl hs_memb_impl hs_empty_impl hs_ins_dj_impl, folded hs_inter_def]
 lemmas hs_size_impl = it_size_correct[OF hs_iterate_impl, folded hs_size_def]
 lemmas hs_image_filter_impl = it_image_filter_correct[OF hs_iterate_impl hs_empty_impl hs_ins_impl, folded hs_image_filter_def]
@@ -117,6 +120,7 @@ interpretation hs: set_union hs_\<alpha> hs_invar hs_\<alpha> hs_invar hs_\<alph
 interpretation hs: set_inter hs_\<alpha> hs_invar hs_\<alpha> hs_invar hs_\<alpha> hs_invar hs_inter using hs_inter_impl .
 interpretation hs: set_image hs_\<alpha> hs_invar hs_\<alpha> hs_invar hs_image using hs_image_impl .
 interpretation hs: set_sel hs_\<alpha> hs_invar hs_sel using hs_sel_impl .
+interpretation hs: set_sel' hs_\<alpha> hs_invar hs_sel' using hs_sel'_impl .
 interpretation hs: set_ins_dj hs_\<alpha> hs_invar hs_ins_dj using hs_ins_dj_impl .
 interpretation hs: set_delete hs_\<alpha> hs_invar hs_delete using hs_delete_impl .
 interpretation hs: set_ball hs_\<alpha> hs_invar hs_ball using hs_ball_impl .
@@ -160,6 +164,7 @@ export_code
   hs_inter
   hs_image
   hs_sel
+  hs_sel'
   hs_ins_dj
   hs_delete
   hs_ball

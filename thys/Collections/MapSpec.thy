@@ -275,6 +275,17 @@ begin
     apply (erule (2) sel'E[where P=P])
     apply auto
     done
+
+  lemma sel'_SomeD:
+    "\<lbrakk> sel' m P = Some (u, v); invar m \<rbrakk> \<Longrightarrow> \<alpha> m u = Some v \<and> P u v"
+    apply(cases "\<exists>u' v'. \<alpha> m u' = Some v' \<and> P u' v'")
+     apply clarsimp
+     apply(erule (2) sel'E[where P=P])
+     apply simp
+    apply(clarsimp)
+    apply(drule (1) sel'I)
+    apply simp
+    done
 end
 
 subsubsection "Map to List Conversion"

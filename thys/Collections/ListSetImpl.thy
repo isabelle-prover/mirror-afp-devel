@@ -56,6 +56,7 @@ definition ls_ball :: "'a ls \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow>
   where "ls_ball == iti_ball ls_iteratei"
 definition ls_sel :: "'a ls \<Rightarrow> ('a \<Rightarrow> 'r option) \<Rightarrow> 'r option" 
   where "ls_sel == iti_sel ls_iteratei"
+definition "ls_sel' == SetGA.sel_sel' ls_sel"
 
 definition ls_to_list :: "'a ls \<Rightarrow> 'a list" where "ls_to_list == list_of_dlist"
 definition list_to_ls :: "'a list \<Rightarrow> 'a ls" where "list_to_ls == Dlist"
@@ -82,6 +83,7 @@ lemmas ls_defs =
   ls_inj_image_def
   ls_ball_def
   ls_sel_def
+  ls_sel'_def
   ls_to_list_def
   list_to_ls_def
   ls_size_def
@@ -131,6 +133,7 @@ lemmas ls_inj_image_impl = iflt_inj_image_correct[OF ls_inj_image_filter_impl, f
 lemmas ls_ball_impl = iti_ball_correct[OF ls_iteratei_impl, folded ls_ball_def]
 
 lemmas ls_sel_impl = iti_sel_correct[OF ls_iteratei_impl, folded ls_sel_def]
+lemmas ls_sel'_impl = sel_sel'_correct[OF ls_sel_impl, folded ls_sel'_def]
 
 lemma ls_to_list_impl: "set_to_list ls_\<alpha> ls_invar ls_to_list"
 by(unfold_locales)(auto simp add: ls_defs Dlist.member_def member_set)
@@ -159,6 +162,7 @@ interpretation ls: set_image ls_\<alpha> ls_invar ls_\<alpha> ls_invar ls_image 
 interpretation ls: set_inj_image ls_\<alpha> ls_invar ls_\<alpha> ls_invar ls_inj_image using ls_inj_image_impl .
 interpretation ls: set_ball ls_\<alpha> ls_invar ls_ball using ls_ball_impl .
 interpretation ls: set_sel ls_\<alpha> ls_invar ls_sel using ls_sel_impl .
+interpretation ls: set_sel' ls_\<alpha> ls_invar ls_sel' using ls_sel'_impl .
 interpretation ls: set_to_list ls_\<alpha> ls_invar ls_to_list using ls_to_list_impl .
 interpretation ls: list_to_set ls_\<alpha> ls_invar list_to_ls using list_to_ls_impl .
 interpretation ls: set_size ls_\<alpha> ls_invar ls_size using ls_size_impl .
@@ -211,6 +215,7 @@ export_code
   ls_inj_image
   ls_ball
   ls_sel
+  ls_sel'
   ls_to_list
   list_to_ls
   ls_size

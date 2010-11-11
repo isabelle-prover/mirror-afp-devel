@@ -4,7 +4,7 @@
 *)
 header {* \isaheader{Map Implementation by Association Lists with explicit invariants} *}
 theory ListMapImpl_Invar
-imports Main MapSpec Assoc_List MapGA
+imports Main MapSpec "common/Assoc_List" MapGA
 begin
 text_raw {*\label{thy:ListMapImpl}*}
 
@@ -35,6 +35,7 @@ definition lmi_add_dj :: "('k,'v) lmi \<Rightarrow> ('k,'v) lmi \<Rightarrow> ('
   where "lmi_add_dj m1 m2 == revg m1 m2" 
 
 definition "lmi_sel == iti_sel lmi_iteratei"
+definition "lmi_sel' == sel_sel' lmi_sel"
 definition "lmi_ball == sel_ball lmi_sel"
 definition lmi_to_list :: "('u,'v) lmi \<Rightarrow> ('u\<times>'v) list"
   where "lmi_to_list = id"
@@ -59,6 +60,7 @@ lemmas lmi_defs =
   lmi_add_def
   lmi_add_dj_def
   lmi_sel_def
+  lmi_sel'_def
   lmi_ball_def
   lmi_to_list_def
   list_to_lmi_def
@@ -157,6 +159,9 @@ interpretation lmi: map_add_dj lmi_\<alpha> lmi_invar lmi_add_dj using lmi_add_d
 lemmas lmi_sel_impl = iti_sel_correct[OF lmi_iteratei_impl, folded lmi_sel_def]
 interpretation lmi: map_sel lmi_\<alpha> lmi_invar lmi_sel using lmi_sel_impl .
 
+lemmas lmi_sel'_impl = sel_sel'_correct[OF lmi_sel_impl, folded lmi_sel'_def]
+interpretation lmi: map_sel' lmi_\<alpha> lmi_invar lmi_sel' using lmi_sel'_impl .
+
 lemmas lmi_ball_impl = sel_ball_correct[OF lmi_sel_impl, folded lmi_ball_def]
 interpretation lmi: map_ball lmi_\<alpha> lmi_invar lmi_ball using lmi_ball_impl .
 
@@ -218,6 +223,7 @@ export_code
   lmi_add
   lmi_add_dj
   lmi_sel
+  lmi_sel'
   lmi_ball
   lmi_to_list
   list_to_lmi

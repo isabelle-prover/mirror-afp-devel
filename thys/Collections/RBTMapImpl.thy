@@ -41,6 +41,7 @@ definition "rm_add == it_add rm_update rm_iterate"
 definition "rm_add_dj == rm_add"
 definition "rm_isEmpty m == m=RBT.empty"
 definition "rm_sel == iti_sel rm_iteratei"
+definition "rm_sel' = sel_sel' rm_sel"
 
 definition "rm_ball == sel_ball rm_sel"
 definition "rm_to_list == rito_map_to_sorted_list rm_reverse_iterateo"
@@ -71,6 +72,7 @@ lemmas rm_defs =
   rm_add_dj_def
   rm_isEmpty_def
   rm_sel_def
+  rm_sel'_def
   rm_ball_def
   rm_to_list_def
   list_to_rm_def
@@ -688,6 +690,7 @@ lemma rm_isEmpty_impl: "map_isEmpty rm_\<alpha> rm_invar rm_isEmpty"
   done
 
 lemmas rm_sel_impl = iti_sel_correct[OF rm_iteratei_impl, folded rm_sel_def]
+lemmas rm_sel'_impl = sel_sel'_correct[OF rm_sel_impl, folded rm_sel'_def]
 
 lemmas rm_ball_impl = sel_ball_correct[OF rm_sel_impl, folded rm_ball_def]
 
@@ -737,6 +740,8 @@ interpretation rm: map_isEmpty rm_\<alpha> rm_invar rm_isEmpty
   using rm_isEmpty_impl .
 interpretation rm: map_sel rm_\<alpha> rm_invar rm_sel 
   using rm_sel_impl .
+interpretation rm: map_sel' rm_\<alpha> rm_invar rm_sel' 
+  using rm_sel'_impl .
 interpretation rm: map_ball rm_\<alpha> rm_invar rm_ball 
   using rm_ball_impl .
 interpretation rm: map_to_sorted_list rm_\<alpha> rm_invar rm_to_list 
@@ -783,6 +788,7 @@ export_code
   rm_add_dj
   rm_isEmpty
   rm_sel
+  rm_sel'
   rm_ball
   rm_to_list
   list_to_rm
