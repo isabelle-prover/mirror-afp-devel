@@ -32,7 +32,7 @@ by(simp add: fun_eq_iff mem_def)
 
 lemma mem_respect [quot_respect]:
   "(R ===> (R ===> op =) ===> op =) (op \<in>) (op \<in>)"
-by(simp add: fun_eq_iff mem_def)
+  by (auto simp add: fun_eq_iff mem_def intro!: fun_relI elim: fun_relE)
 
 lemma sum_case_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
@@ -87,11 +87,11 @@ by(rule equivpI)(auto simp add: reflp_def symp_def transp_def)
 
 lemma sum_case_respect_tlist_eq [quot_respect]:
   "((op = ===> tlist_eq) ===> (op = ===> tlist_eq) ===> op = ===> tlist_eq) sum_case sum_case"
-by(simp split: sum.split)
+  by (simp add: fun_rel_def split: sum.split)
 
 lemma prod_case_repsect_tlist_eq [quot_respect]:
   "((op = ===> op = ===> tlist_eq) ===> op = ===> tlist_eq) prod_case prod_case"
-by(simp)
+  by (simp add: fun_rel_def)
 
 lemma id_respect_tlist_eq [quot_respect]:
   "(tlist_eq ===> tlist_eq) id id"
@@ -114,11 +114,11 @@ is "TCONS"
 
 lemma TNil_respect [quot_respect]:
   "(op = ===> tlist_eq) TNIL TNIL"
-by(simp add: TNIL_def)
+  by (simp add: TNIL_def fun_rel_def)
 
 lemma TCons_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) TCONS TCONS"
-by(simp add: TCONS_def)
+  by (simp add: TCONS_def fun_rel_def)
 
 code_datatype TNil TCons
 
@@ -134,7 +134,7 @@ where "tllist_case_aux f g (xs, b) = (case xs of LNil \<Rightarrow> f b | LCons 
 
 lemma tllist_case_aux_respect [quot_respect]:
   "(op = ===> (op = ===> tlist_eq ===> op =) ===> tlist_eq ===> op =) tllist_case_aux tllist_case_aux"
-by(auto intro: ext split: llist_split)
+  by (auto intro: ext split: llist_split simp add: fun_rel_def)
 
 quotient_definition "tllist_case :: ('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> ('c, 'a) tllist \<Rightarrow> 'b) \<Rightarrow> ('c, 'a) tllist \<Rightarrow> 'b"
 is "tllist_case_aux"
@@ -376,7 +376,7 @@ subsection {* @{term "tmap"} *}
 
 lemma tMAP_respect [quot_respect]:
   "(op = ===> op = ===> tlist_eq ===> tlist_eq) tMAP tMAP"
-by(auto intro: ext)
+  by (auto intro: ext intro!: fun_relI)
 
 lemma tmap_TNil [simp, code, nitpick_simp]: "tmap f g (TNil b) = TNil (g b)"
 by(descending)(simp add: TNIL_def)
@@ -399,7 +399,7 @@ subsection {* Appending two terminated lazy lists @{term "tappend" } *}
 
 lemma tappend_respect [quot_respect]:
   "(tlist_eq ===> (op = ===> tlist_eq) ===> tlist_eq) tAPPEND tAPPEND"
-apply(auto intro: ext simp add: lappend_inf split: split_fst)
+apply(auto intro: ext simp add: lappend_inf fun_rel_def split: split_fst)
 apply(erule_tac x=ba in allE, auto)+
 done
 
@@ -415,7 +415,7 @@ subsection {* Appending a terminated lazy list to a lazy list @{term "lappendt"}
 
 lemma lappendt_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) lAPPENDt lAPPENDt"
-by(auto intro: ext)
+  by (auto intro: ext intro!: fun_relI)
 
 lemma lappendt_LNil [simp, code, nitpick_simp]: "lappendt LNil tr = tr"
 by(descending)(clarsimp simp add: TNIL_def)
@@ -428,7 +428,7 @@ subsection {* Filtering terminated lazy lists @{term tfilter} *}
 
 lemma tfilter_respect [quot_respect]: 
   "(op = ===> op = ===> tlist_eq ===> tlist_eq) tFILTER tFILTER"
-by(auto intro: ext)
+  by (auto intro: ext intro!: fun_relI)
 
 lemma tfilter_TNil [code, simp]:
   "tfilter b' P (TNil b) = TNil b"
@@ -442,7 +442,7 @@ subsection {* Concatenating a terminated lazy list of lazy lists @{term tconcat}
 
 lemma tconcat_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) tCONCAT tCONCAT"
-by(auto intro: ext)
+  by (auto intro: ext intro!: fun_relI)
 
 lemma tconcat_TNil [code, simp]: "tconcat b (TNil b') = TNil b'"
 by(descending)(simp add: TNIL_def)
@@ -454,7 +454,7 @@ subsection {* @{term tllist_all2} *}
 
 lemma tllist_all2_respect_tlist_eq [quot_respect]:
   "(op = ===> op = ===> tlist_eq ===> tlist_eq ===> op =) TLLIST_ALL2 TLLIST_ALL2"
-by(auto dest: llist_all2_lfiniteD)
+by(auto dest: llist_all2_lfiniteD simp add: fun_rel_def)
 
 lemma tllist_all2_TNil [simp]:
   "tllist_all2 P Q (TNil b) (TNil b') \<longleftrightarrow> Q b b'"
@@ -640,7 +640,7 @@ subsection {* @{term "tdropn"} *}
 
 lemma TDROPn_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) TDROPn TDROPn"
-by auto
+  by (auto intro!: fun_relI)
 
 lemma tdropn_0 [simp, code, nitpick_simp]: "tdropn 0 xs = xs"
 by descending auto

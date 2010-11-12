@@ -26,8 +26,7 @@ definition "lm_update == Assoc_List.update"
 text {* 
   Since we use the abstract type @{typ "('k, 'v) assoc_list"} for associative lists,
   to preserve the invariant of distinct maps, we cannot just use Cons for disjoint update,
-  but must resort to ordinary update. The same applies to @{text lm_add_dj} and 
-  @{text "list_to_lm_dj"} below.
+  but must resort to ordinary update. The same applies to @{text lm_add_dj} below.
 *}
 definition "lm_update_dj == lm_update"  
 definition "lm_delete k m == Assoc_List.delete k m"
@@ -40,6 +39,7 @@ definition "lm_add == it_add lm_update lm_iterate"
 definition "lm_add_dj == lm_add"
 
 definition "lm_sel == iti_sel lm_iteratei"
+definition "lm_sel' == sel_sel' lm_sel"
 definition "lm_ball == sel_ball lm_sel"
 definition lm_to_list :: "('u,'v) lm \<Rightarrow> ('u \<times> 'v) list"
   where "lm_to_list = Assoc_List.impl_of"
@@ -62,10 +62,10 @@ lemmas lm_defs =
   lm_add_def
   lm_add_dj_def
   lm_sel_def
+  lm_sel'_def
   lm_ball_def
   lm_to_list_def
   list_to_lm_def
-(*  list_to_lm_dj_def *)
 
 lemma lm_empty_impl: 
   "map_empty lm_\<alpha> lm_invar lm_empty"
@@ -143,6 +143,9 @@ interpretation lm: map_add_dj lm_\<alpha> lm_invar lm_add_dj using lm_add_dj_imp
 lemmas lm_sel_impl = iti_sel_correct[OF lm_iteratei_impl, folded lm_sel_def]
 interpretation lm: map_sel lm_\<alpha> lm_invar lm_sel using lm_sel_impl .
 
+lemmas lm_sel'_impl = sel_sel'_correct[OF lm_sel_impl, folded lm_sel'_def]
+interpretation lm: map_sel' lm_\<alpha> lm_invar lm_sel' using lm_sel'_impl .
+
 lemmas lm_ball_impl = sel_ball_correct[OF lm_sel_impl, folded lm_ball_def]
 interpretation lm: map_ball lm_\<alpha> lm_invar lm_ball using lm_ball_impl .
 
@@ -188,6 +191,7 @@ export_code
   lm_add
   lm_add_dj
   lm_sel
+  lm_sel'
   lm_ball
   lm_to_list
   list_to_lm

@@ -24,7 +24,7 @@ unfolding transp_def by blast
 
 lemma id_respect [quot_respect]:
   "(R ===> R) id id"
-by(simp add: fun_eq_iff)
+  by (auto simp add: fun_eq_iff)
 
 lemma id_preserve [quot_preserve]:
   assumes "Quotient R Abs Rep"
@@ -114,7 +114,7 @@ by(simp add: fun_eq_iff lmap_compose[symmetric] o_def del: lmap_compose)
 
 lemma LCons_respect [quot_respect]:
   "(R ===> llist_all2 R ===> llist_all2 R) LCons LCons"
-by simp
+  by (auto intro!: fun_relI)
 
 lemma LNil_preserve [quot_preserve]:
   "lmap Abs LNil = LNil"
@@ -135,7 +135,7 @@ by(simp_all add: fun_eq_iff lmap_compose[symmetric] o_def del: lmap_compose)
 lemma lmap_respect [quot_respect]:
   shows "((R1 ===> R2) ===> (llist_all2 R1) ===> llist_all2 R2) lmap lmap"
   and   "((R1 ===> op =) ===> (llist_all2 R1) ===> op =) lmap lmap"
-by(simp_all add: llist_all2_conv_all_lnth lmap_eq_lmap_conv_llist_all2)
+  by (simp_all add: llist_all2_conv_all_lnth lmap_eq_lmap_conv_llist_all2 fun_rel_def)
 
 lemma llist_all2_rsp:
   assumes r: "\<forall>x y. R x y \<longrightarrow> (\<forall>a b. R a b \<longrightarrow> S x a = T y b)"
@@ -154,7 +154,7 @@ qed
 
 lemma llist_all2_respect [quot_respect]:
   "((R ===> R ===> op =) ===> llist_all2 R ===> llist_all2 R ===> op =) llist_all2 llist_all2"
-by(simp add: llist_all2_rsp)
+  by (simp add: llist_all2_rsp fun_rel_def)
 
 lemma llist_all2_preserve [quot_preserve]:
   assumes "Quotient R Abs Rep"
@@ -184,7 +184,7 @@ qed
 lemma llist_all2_preserve2 [quot_preserve]:
   assumes "Quotient R Abs Rep"
   shows "(llist_all2 ((Rep ---> Rep ---> id) R) l m) = (l = m)"
-by(simp add: fun_map_def_raw Quotient_rel_rep[OF assms] llist_all2_eq)
+  by (simp add: fun_map_def_raw Quotient_rel_rep [OF assms] llist_all2_eq comp_def)
 
 lemma llist_corec_preserve [quot_preserve]: 
   assumes q1: "Quotient R1 Abs1 Rep1"

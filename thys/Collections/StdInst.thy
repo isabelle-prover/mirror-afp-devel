@@ -34,38 +34,6 @@ lemmas it_set_to_fifo_correct = it_set_to_List_enq_correct[OF _ fifo_empty_impl 
 
 (*#begin_generated*)
 
-  definition "lsi_sel' == SetGA.sel_sel' lsi_sel"
-  lemmas lsi_sel'_impl = SetGA.sel_sel'_correct[OF lsi_sel_impl, folded lsi_sel'_def]
-  interpretation lsi: set_sel' lsi_\<alpha> lsi_invar lsi_sel' using lsi_sel'_impl .
-  definition "ls_sel' == SetGA.sel_sel' ls_sel"
-  lemmas ls_sel'_impl = SetGA.sel_sel'_correct[OF ls_sel_impl, folded ls_sel'_def]
-  interpretation ls: set_sel' ls_\<alpha> ls_invar ls_sel' using ls_sel'_impl .
-  definition "rs_sel' == SetGA.sel_sel' rs_sel"
-  lemmas rs_sel'_impl = SetGA.sel_sel'_correct[OF rs_sel_impl, folded rs_sel'_def]
-  interpretation rs: set_sel' rs_\<alpha> rs_invar rs_sel' using rs_sel'_impl .
-  definition "hs_sel' == SetGA.sel_sel' hs_sel"
-  lemmas hs_sel'_impl = SetGA.sel_sel'_correct[OF hs_sel_impl, folded hs_sel'_def]
-  interpretation hs: set_sel' hs_\<alpha> hs_invar hs_sel' using hs_sel'_impl .
-  definition "ahs_sel' == SetGA.sel_sel' ahs_sel"
-  lemmas ahs_sel'_impl = SetGA.sel_sel'_correct[OF ahs_sel_impl, folded ahs_sel'_def]
-  interpretation ahs: set_sel' ahs_\<alpha> ahs_invar ahs_sel' using ahs_sel'_impl .
-
-  definition "lmi_sel' == MapGA.sel_sel' lmi_sel"
-  lemmas lmi_sel'_impl = MapGA.sel_sel'_correct[OF lmi_sel_impl, folded lmi_sel'_def]
-  interpretation lmi: map_sel' lmi_\<alpha> lmi_invar lmi_sel' using lmi_sel'_impl .
-  definition "lm_sel' == MapGA.sel_sel' lm_sel"
-  lemmas lm_sel'_impl = MapGA.sel_sel'_correct[OF lm_sel_impl, folded lm_sel'_def]
-  interpretation lm: map_sel' lm_\<alpha> lm_invar lm_sel' using lm_sel'_impl .
-  definition "rm_sel' == MapGA.sel_sel' rm_sel"
-  lemmas rm_sel'_impl = MapGA.sel_sel'_correct[OF rm_sel_impl, folded rm_sel'_def]
-  interpretation rm: map_sel' rm_\<alpha> rm_invar rm_sel' using rm_sel'_impl .
-  definition "hm_sel' == MapGA.sel_sel' hm_sel"
-  lemmas hm_sel'_impl = MapGA.sel_sel'_correct[OF hm_sel_impl, folded hm_sel'_def]
-  interpretation hm: map_sel' hm_\<alpha> hm_invar hm_sel' using hm_sel'_impl .
-  definition "ahm_sel' == MapGA.sel_sel' ahm_sel"
-  lemmas ahm_sel'_impl = MapGA.sel_sel'_correct[OF ahm_sel_impl, folded ahm_sel'_def]
-  interpretation ahm: map_sel' ahm_\<alpha> ahm_invar ahm_sel' using ahm_sel'_impl .
-
   definition "lili_copy == SetGA.it_copy lsi_iterate lsi_empty lsi_ins"
   lemmas lili_copy_impl = SetGA.it_copy_correct[OF lsi_iterate_impl lsi_empty_impl lsi_ins_impl, folded lili_copy_def]
   interpretation lili: set_copy lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lili_copy using lili_copy_impl .

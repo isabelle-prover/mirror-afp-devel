@@ -50,6 +50,7 @@ definition tm_isEmpty :: "('k, 'v) tm \<Rightarrow> bool"
 where "tm_isEmpty = Trie.isEmpty"
 
 definition "tm_sel == iti_sel tm_iteratei"
+definition "tm_sel' == sel_sel' tm_sel"
 
 definition "tm_ball == sel_ball tm_sel"
 definition "tm_to_list == it_map_to_list tm_iterate"
@@ -70,6 +71,7 @@ lemmas tm_defs =
   tm_add_dj_def
   tm_isEmpty_def
   tm_sel_def
+  tm_sel'_def
   tm_ball_def
   tm_to_list_def
   list_to_tm_def
@@ -121,6 +123,10 @@ lemma tm_sel_impl: "map_sel tm_\<alpha> tm_invar tm_sel"
 unfolding tm_sel_def
 by(rule iti_sel_correct tm_iteratei_impl)+
 
+lemma tm_sel'_impl: "map_sel' tm_\<alpha> tm_invar tm_sel'"
+unfolding tm_sel'_def
+by(rule sel_sel'_correct tm_sel_impl)+
+
 lemma tm_ball_impl: "map_ball tm_\<alpha> tm_invar tm_ball"
 unfolding tm_ball_def
 by(rule sel_ball_correct tm_sel_impl)+
@@ -160,6 +166,8 @@ interpretation tm: map_isEmpty tm_\<alpha> tm_invar tm_isEmpty
   using tm_isEmpty_impl .
 interpretation tm: map_sel tm_\<alpha> tm_invar tm_sel 
   using tm_sel_impl .
+interpretation tm: map_sel' tm_\<alpha> tm_invar tm_sel' 
+  using tm_sel'_impl .
 interpretation tm: map_ball tm_\<alpha> tm_invar tm_ball 
   using tm_ball_impl .
 interpretation tm: map_to_list tm_\<alpha> tm_invar tm_to_list 
@@ -197,6 +205,7 @@ export_code
   tm_add_dj
   tm_isEmpty
   tm_sel
+  tm_sel'
   tm_ball
   tm_to_list
   list_to_tm

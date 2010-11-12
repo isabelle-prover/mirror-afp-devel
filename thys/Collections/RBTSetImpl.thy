@@ -37,6 +37,7 @@ definition rs_delete :: "'a::linorder \<Rightarrow> 'a rs \<Rightarrow> 'a rs"
   where "rs_delete == s_delete rm_delete"
 definition rs_sel :: "'a::linorder rs \<Rightarrow> ('a \<Rightarrow> 'r option) \<Rightarrow> 'r option" 
   where "rs_sel == s_sel rm_sel"
+definition "rs_sel' = sel_sel' rs_sel"
 definition rs_isEmpty :: "'a::linorder rs \<Rightarrow> bool"
   where "rs_isEmpty == s_isEmpty rm_isEmpty"
 
@@ -104,6 +105,7 @@ lemmas rs_defs =
   rs_reverse_iterateoi_def
   rs_memb_def
   rs_sel_def
+  rs_sel'_def
   rs_size_def
   rs_to_list_def
   rs_union_def
@@ -128,6 +130,7 @@ lemmas rs_union_impl = s_union_correct[OF rm_add_impl, folded rs_defs]
 lemmas rs_union_dj_impl = s_union_dj_correct[OF rm_add_dj_impl, folded rs_defs]
 lemmas rs_ball_impl = s_ball_correct[OF rm_ball_impl, folded rs_defs]
 lemmas rs_sel_impl = s_sel_correct[OF rm_sel_impl, folded rs_defs]
+lemmas rs_sel'_impl = sel_sel'_correct[OF rs_sel_impl, folded rs_sel'_def]
 lemmas rs_inter_impl = it_inter_correct[OF rs_iterate_impl rs_memb_impl rs_empty_impl rs_ins_dj_impl, folded rs_inter_def]
 lemmas rs_size_impl = it_size_correct[OF rs_iterate_impl, folded rs_size_def]
 lemmas rs_image_filter_impl = it_image_filter_correct[OF rs_iterate_impl rs_empty_impl rs_ins_impl, folded rs_image_filter_def]
@@ -157,6 +160,7 @@ interpretation rs: set_union rs_\<alpha> rs_invar rs_\<alpha> rs_invar rs_\<alph
 interpretation rs: set_inter rs_\<alpha> rs_invar rs_\<alpha> rs_invar rs_\<alpha> rs_invar rs_inter using rs_inter_impl .
 interpretation rs: set_image rs_\<alpha> rs_invar rs_\<alpha> rs_invar rs_image using rs_image_impl .
 interpretation rs: set_sel rs_\<alpha> rs_invar rs_sel using rs_sel_impl .
+interpretation rs: set_sel' rs_\<alpha> rs_invar rs_sel' using rs_sel'_impl .
 interpretation rs: set_ins_dj rs_\<alpha> rs_invar rs_ins_dj using rs_ins_dj_impl .
 interpretation rs: set_delete rs_\<alpha> rs_invar rs_delete using rs_delete_impl .
 interpretation rs: set_ball rs_\<alpha> rs_invar rs_ball using rs_ball_impl .
@@ -210,6 +214,7 @@ export_code
   rs_inter
   rs_image
   rs_sel
+  rs_sel'
   rs_ins_dj
   rs_delete
   rs_ball
