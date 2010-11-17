@@ -9,9 +9,6 @@ theory BCVExec imports
   "BVExec"
 begin
 
-code_const "undefined :: cname"
-  (SML "\"\"")
-
 lemmas [code_inline] = exec_lub_def
 
 lemmas [code] = JVM_le_unfold[THEN meta_eq_to_obj_eq]
