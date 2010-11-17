@@ -345,6 +345,7 @@ title = Shivers' Control Flow Analysis
 topic = Computer Science/Programming Languages/Static Analysis
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
 date = 2010-11-16
+base = HOLCF
 abstract =
  In his dissertation, Olin Shivers introduces a concept of control flow graphs
  for functional languages, provides an algorithm to statically derive a safe

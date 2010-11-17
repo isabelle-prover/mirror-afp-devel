@@ -61,7 +61,7 @@ using the logic HOLCF in theorem prover Isabelle.
 <p></p>
 
 <!--#set var="name" value="Shivers-CFA" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOLCF/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
