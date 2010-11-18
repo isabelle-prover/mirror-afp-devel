@@ -351,7 +351,7 @@ abstract =
  for functional languages, provides an algorithm to statically derive a safe
  approximation of the control flow graph and proves this algorithm correct. In
  this research project, Shivers' algorithms and proofs are formalized
- using the logic HOLCF in theorem prover Isabelle.
+ in the HOLCF extension of HOL.
 
 [Slicing]
 title = Towards Certified Slicing 
