@@ -633,7 +633,7 @@ unfolding "cancel_at_def" by (auto simp add:take_map drop_map)
 lemma rename_gens_cancels_to_1:
   assumes "inj f"
       and "cancels_to_1 l l'"
-    shows "cancels_to_1 (map (prod_fun f g) l) (map (prod_fun f g) l')"
+    shows "cancels_to_1 (map (map_pair f g) l) (map (map_pair f g) l')"
 proof-
   from `cancels_to_1 l l'`
   obtain ls1 l1 l2 ls2
@@ -647,49 +647,49 @@ proof-
     unfolding canceling_def by auto
   from `fst l1 \<noteq> fst l2` and `inj f`
   have "f (fst l1) \<noteq> f (fst l2)" by(auto dest!:inj_on_contraD)
-  hence "fst (prod_fun f g l1) \<noteq> fst (prod_fun f g l2)" by auto
+  hence "fst (map_pair f g l1) \<noteq> fst (map_pair f g l2)" by auto
   moreover
   from `snd l1 = snd l2`
-  have "snd (prod_fun f g l1) = snd (prod_fun f g l2)" by auto
+  have "snd (map_pair f g l1) = snd (map_pair f g l2)" by auto
   ultimately
-  have "canceling (prod_fun f g (l1)) (prod_fun f g (l2))"
+  have "canceling (map_pair f g (l1)) (map_pair f g (l2))"
     unfolding canceling_def by auto
-  hence "cancels_to_1 (map (prod_fun f g) ls1 @ prod_fun f g l1 # prod_fun f g l2 # map (prod_fun f g) ls2) (map (prod_fun f g) ls1 @ map (prod_fun f g) ls2)"
+  hence "cancels_to_1 (map (map_pair f g) ls1 @ map_pair f g l1 # map_pair f g l2 # map (map_pair f g) ls2) (map (map_pair f g) ls1 @ map (map_pair f g) ls2)"
    by(rule cancels_to_1_fold)
   with `l = ls1 @ l1 # l2 # ls2` and `l' = ls1 @ ls2`
-  show "cancels_to_1 (map (prod_fun f g) l) (map (prod_fun f g) l')"
+  show "cancels_to_1 (map (map_pair f g) l) (map (map_pair f g) l')"
    by simp
 qed
 
 lemma rename_gens_cancels_to:
   assumes "inj f"
       and "cancels_to l l'"
-    shows "cancels_to (map (prod_fun f g) l) (map (prod_fun f g) l')"
+    shows "cancels_to (map (map_pair f g) l) (map (map_pair f g) l')"
 using `cancels_to l l'`
 unfolding cancels_to_def
 proof(induct rule:rtranclp_induct)
   case (step x z)
     from `cancels_to_1 x z` and `inj f`
-    have "cancels_to_1 (map (prod_fun f g) x) (map (prod_fun f g) z)"
+    have "cancels_to_1 (map (map_pair f g) x) (map (map_pair f g) z)"
       by -(rule rename_gens_cancels_to_1)
-    with `cancels_to_1^** (map (prod_fun f g) l) (map (prod_fun f g) x)`
-    show "cancels_to_1^** (map (prod_fun f g) l) (map (prod_fun f g) z)" by auto
+    with `cancels_to_1^** (map (map_pair f g) l) (map (map_pair f g) x)`
+    show "cancels_to_1^** (map (map_pair f g) l) (map (map_pair f g) z)" by auto
 qed(auto)
 
    
 lemma rename_gens_canceled:
   assumes "inj_on g (snd`set l)"
       and "canceled l"
-  shows "canceled (map (prod_fun f g) l)"
+  shows "canceled (map (map_pair f g) l)"
 unfolding canceled_def
 proof
   (* This statement is needed explicitly later in this proof *)
   have different_images: "\<And> f a b. f a \<noteq> f b \<Longrightarrow> a \<noteq> b" by auto
 
-  assume "DomainP cancels_to_1 (map (prod_fun f g) l)"
-  then obtain l' where "cancels_to_1 (map (prod_fun f g) l) l'" by auto
+  assume "DomainP cancels_to_1 (map (map_pair f g) l)"
+  then obtain l' where "cancels_to_1 (map (map_pair f g) l) l'" by auto
   then obtain i where "Suc i < length l"
-    and "canceling (map (prod_fun f g) l ! i) (map (prod_fun f g) l ! Suc i)"
+    and "canceling (map (map_pair f g) l ! i) (map (map_pair f g) l ! Suc i)"
     by(auto simp add:cancels_to_1_def cancels_to_1_at_def)
   hence "f (fst (l ! i)) \<noteq> f (fst (l ! Suc i))"
     and "g (snd (l ! i)) = g (snd (l ! Suc i))"
@@ -718,7 +718,7 @@ qed
 lemma rename_gens_normalize:
   assumes "inj f"
   and "inj_on g (snd ` set l)"
-  shows "normalize (map (prod_fun f g) l) = map (prod_fun f g) (normalize l)"
+  shows "normalize (map (map_pair f g) l) = map (map_pair f g) (normalize l)"
 proof(rule normalize_discover)
   from `inj_on g (image snd (set l))`
   have "inj_on g (image snd (set (normalize l)))"
@@ -739,10 +739,10 @@ proof(rule normalize_discover)
     thus "snd ` set (normalize l) \<subseteq> snd ` set l"
       by (auto simp add: lists_eq_set)
    qed
-  thus "canceled (map (prod_fun f g) (normalize l))" by(rule rename_gens_canceled,simp)
+  thus "canceled (map (map_pair f g) (normalize l))" by(rule rename_gens_canceled,simp)
 next
   from `inj f`
-  show "cancels_to (map (prod_fun f g) l) (map (prod_fun f g) (normalize l))"
+  show "cancels_to (map (map_pair f g) l) (map (map_pair f g) (normalize l))"
     by (rule rename_gens_cancels_to, simp)
 qed
 

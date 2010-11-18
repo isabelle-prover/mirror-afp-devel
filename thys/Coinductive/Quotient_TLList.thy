@@ -250,10 +250,10 @@ lemma tllist_corec_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
   and q2: "Quotient R2 Abs2 Rep2"
   and q3: "Quotient R3 Abs3 Rep3"
-  shows "(Rep1 ---> (Abs1 ---> sum_map (prod_fun Rep2 Rep1) Rep3) ---> tmap Abs2 Abs3) tllist_corec = tllist_corec"
+  shows "(Rep1 ---> (Abs1 ---> sum_map (map_pair Rep2 Rep1) Rep3) ---> tmap Abs2 Abs3) tllist_corec = tllist_corec"
 proof(intro ext)
   fix a f
-  let ?fmap = "Rep1 ---> (Abs1 ---> sum_map (prod_fun Rep2 Rep1) Rep3) ---> tmap Abs2 Abs3"
+  let ?fmap = "Rep1 ---> (Abs1 ---> sum_map (map_pair Rep2 Rep1) Rep3) ---> tmap Abs2 Abs3"
   have "(?fmap tllist_corec a f, tllist_corec a f) \<in> {(?fmap tllist_corec a f, tllist_corec a f)|a. True}"
     by blast
   thus "?fmap tllist_corec a f = tllist_corec a f"
