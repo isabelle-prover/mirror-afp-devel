@@ -32,7 +32,7 @@ end
 text {*
 It would be unwieldly to always write out @{text "abs_<type> x"}. We would rather like to write @{text "|x|"} if the type of @{text x} is known, as Shivers does it as well. Isabelle allows one to use the same syntax for different symbols. In that case, it generates more than one parse tree and picks the (hopefully unique) tree that typechecks.
 
-Unfortunately, this does not work well in our case: There are eight @{text "abs_<type>"} functions and some expressions later have multiple occurences of these, causing an exponential blow-up of combinations.
+Unfortunately, this does not work well in our case: There are eight @{text "abs_<type>"} functions and some expressions later have multiple occurrences of these, causing an exponential blow-up of combinations.
 
 Therefore, we use a module by Christian Sternagel and Alexander Krauss for ad-hoc overloading, where the choice of the concrete function is done at parse time and immediately. This is used in the following to set up the the symbol @{text "|_|"} for the family of abstraction functions.
 *}
@@ -151,7 +151,7 @@ setup {* Adhoc_Overloading.add_variant @{const_name approx} @{const_name cstate_
 subsection {* Lemmas about the approximation relation *}
 
 text {*
-Most of the following lemmas reduce an approximation statement about larger structures, as they are occuring the semantics functions, to statements about the components.
+Most of the following lemmas reduce an approximation statement about larger structures, as they are occurring the semantics functions, to statements about the components.
 *}
 
 lemma venv_approx_trans[trans]:
@@ -211,7 +211,7 @@ lemma ds_approx_empty[simp]: "[] \<lessapprox> []"
 subsection {* Lemma 7 *}
 
 text {*
-Shivers’ lemma 7 says that @{text \<aA>} safely approximates @{text \<A>}.
+Shivers' lemma 7 says that @{text \<aA>} safely approximates @{text \<A>}.
 *}
 
 lemma lemma7:
@@ -234,7 +234,7 @@ qed (auto simp add:d_approx_def)
 subsection {* Lemmas 8 and 9 *}
 
 text {*
-The main goal of this secion is to show that @{text \<aF>} safely approximates @{text \<F>} and that @{text \<aC>} safely approximates @{text \<C>}. This has to be shown at once, as the functions are mutually recursive and requires a fixed point induction. To that end, we have to augment the set of continuity lemmas.
+The main goal of this section is to show that @{text \<aF>} safely approximates @{text \<F>} and that @{text \<aC>} safely approximates @{text \<C>}. This has to be shown at once, as the functions are mutually recursive and requires a fixed point induction. To that end, we have to augment the set of continuity lemmas.
 *}
 
 lemma cont2cont_abs_ccache[cont2cont,simp]:
@@ -245,7 +245,7 @@ using assms
 by (rule cont2cont)(rule cont_const)
 
 text {*
-Shivers proofs these lemmas using parallel fixed point induction over the two fixed points (the one from the exact semantics and the one from the abstract semantics). But it is simpler and equivalent to just do induction over the exact semantics and keep the abstract semantics functions fixed, so this is what I am doing.
+Shivers proves these lemmas using parallel fixed point induction over the two fixed points (the one from the exact semantics and the one from the abstract semantics). But it is simpler and equivalent to just do induction over the exact semantics and keep the abstract semantics functions fixed, so this is what I am doing.
 *}
 
 

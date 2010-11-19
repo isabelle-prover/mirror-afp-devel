@@ -5,7 +5,7 @@ theory ExCF
 begin
 
 text {*
-We now alter the standard semantics given in the previous section to calculate a control flow graph instead of the return value. At this point, we still “run” the program in full, so this is not yet the statical analysis that we aim for. Instead, this is the reference for the correctness proof of the statical analysis: If an edge is recorded here, we expect it to be found by the statical analysis as well.
+We now alter the standard semantics given in the previous section to calculate a control flow graph instead of the return value. At this point, we still ``run'' the program in full, so this is not yet the static analysis that we aim for. Instead, this is the reference for the correctness proof of the static analysis: If an edge is recorded here, we expect it to be found by the static analysis as well.
 *}
 
 text {*
@@ -31,7 +31,7 @@ qed(auto simp add:le_contour_def less_contour_def Rep_contour_inverse Abs_contou
 end
 
 text {*
-Three simple lemmas helping isabelle to automatically proof statements about contour numbers.
+Three simple lemmas helping Isabelle to automatically prove statements about contour numbers.
 *}
 
 lemma nb_le_less[iff]: "nb b c \<le> b' \<longleftrightarrow> b < b'"
@@ -89,7 +89,7 @@ instance by default simp
 end
 
 text {*
-The evaluation function for values has only changed slighty: To avoid worrying about incorrect programs, we return zero when a variable lookup fails. If the labels in the program given are correct, this will not happen. Shivers makes this explicit in Section 4.1.3 by restricting the function domains to the valid programs. This is omitted here.
+The evaluation function for values has only changed slightly: To avoid worrying about incorrect programs, we return zero when a variable lookup fails. If the labels in the program given are correct, this will not happen. Shivers makes this explicit in Section 4.1.3 by restricting the function domains to the valid programs. This is omitted here.
 *}
 
 
@@ -139,7 +139,7 @@ by (cases p) auto
 text {*
 Now, our answer domain is not any more the integers, but rather call caches. These are represented as sets containing tuples of call sites (given by their label) and binding environments to the called value. The argument types are unaltered.
 
-In the functions @{text \<F>} and @{text \<C>}, upon every call, a new element is added to the resulting set. The @{text STOP} continuation now ignores its argument and retuns the empty set instead. This corresponds to Figure 4.2 and 4.3 in Shivers’ dissertation.
+In the functions @{text \<F>} and @{text \<C>}, upon every call, a new element is added to the resulting set. The @{text STOP} continuation now ignores its argument and retuns the empty set instead. This corresponds to Figure 4.2 and 4.3 in Shivers' dissertation.
 *}
 
 types ccache = "((label \<times> benv) \<times> d) set"

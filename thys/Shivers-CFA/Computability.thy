@@ -5,14 +5,14 @@ imports HOLCF HOLCFUtils
 begin
 
 text {*
-Shivers proves the computabily of the abstract semantics functions only by generic and slightly simplified example. This theory contains the abstract treatment in Section 4.4.3. Later, we will work out the deatils apply this to @{text \<aPR>}.
+Shivers proves the computability of the abstract semantics functions only by generic and slightly simplified example. This theory contains the abstract treatment in Section 4.4.3. Later, we will work out the details apply this to @{text \<aPR>}.
 *}
 
 subsection {* Non-branching case *}
 
 text {*
 
-After the following lemma (which could go into @{theory SetInterval}), we show Shivers’ Theroem 10. This says that the least fixed point of the equation
+After the following lemma (which could go into @{theory SetInterval}), we show Shivers' Theorem 10. This says that the least fixed point of the equation
 \[
 f\ x = g\ x \cup f\ (r\ x)
 \]
@@ -75,7 +75,7 @@ qed
 subsection {* Branching case *}
 
 text {*
-Actually, our functions are more complicated than the one above: The abstract semantics functions recurses with multiple arguments. So we have to handle a recursive equation of the kind
+Actually, our functions are more complicated than the one above: The abstract semantics functions recurse with multiple arguments. So we have to handle a recursive equation of the kind
 \[
 f\ x = g\ x \cup \bigcup_{a \in R\ x} f\ r.
 \]

@@ -5,13 +5,13 @@ theory Eval
 begin
 
 text {*
-We begin by giving the standard semantics for our language. Although this is not actually used to show any results, it is helpful to see that the later algorithms “look similar” to the evaluation code and the relation between calls done during evaluation and calls recorded by the control flow graph.
+We begin by giving the standard semantics for our language. Although this is not actually used to show any results, it is helpful to see that the later algorithms ``look similar'' to the evaluation code and the relation between calls done during evaluation and calls recorded by the control flow graph.
 *}
 
 text {*
-We follow the definition in Figure 3.1 and 3.2 of Shivers dissertation, with the clarifications from Section 4.1. As explained previously, our set of values encompasses just the integers, there is no separate value for \textit{false}. Also, values and procedures are not distinguished by the type system.
+We follow the definition in Figure 3.1 and 3.2 of Shivers' dissertation, with the clarifications from Section 4.1. As explained previously, our set of values encompasses just the integers, there is no separate value for \textit{false}. Also, values and procedures are not distinguished by the type system.
 
-Due to recursion, one variable can have more than one currently valid binding, and due to closures all bindinds can possibly be accessed. A simple call stack is therefore not sufficient. Instead we have a \textit{contour counter}. which is increased in each evaluation step. It can also be thought of as a time counter. The variable environment maps tuples of variables and contour counter to values, thus allowing a variable to have more than one active binding.  A contour environment lists the currently visible binding for each binding position and is preserved when a lambda expression is turned into a closure.
+Due to recursion, one variable can have more than one currently valid binding, and due to closures all bindings can possibly be accessed. A simple call stack is therefore not sufficient. Instead we have a \textit{contour counter}, which is increased in each evaluation step. It can also be thought of as a time counter. The variable environment maps tuples of variables and contour counter to values, thus allowing a variable to have more than one active binding.  A contour environment lists the currently visible binding for each binding position and is preserved when a lambda expression is turned into a closure.
 *}
 
 types contour = nat
@@ -30,7 +30,7 @@ datatype d = DI int
 types venv = "var \<times> contour \<rightharpoonup> d"
 
 text {*
-The function @{text \<A>} evaluates a syntactic value into a semantic datum. Constants and primitive operation are left untouched. Variable references are resolved in two stages: First the current binding contour is fetched from the binding environment @{text \<beta>}, then the stored value is fetched from the variable environment @{text ve}. A lambda expression is bundled with the current contour environment to form a closure.
+The function @{text \<A>} evaluates a syntactic value into a semantic datum. Constants and primitive operations are left untouched. Variable references are resolved in two stages: First the current binding contour is fetched from the binding environment @{text \<beta>}, then the stored value is fetched from the variable environment @{text ve}. A lambda expression is bundled with the current contour environment to form a closure.
 *}
 
 fun evalV :: "val \<Rightarrow> benv \<Rightarrow> venv \<Rightarrow> d" ("\<A>")
@@ -43,7 +43,7 @@ fun evalV :: "val \<Rightarrow> benv \<Rightarrow> venv \<Rightarrow> d" ("\<A>"
 
 
 text {*
-The answer domain of our semantic is the set of integers, lifted to obtain an additional element denoting bottom. Shivers distinguish runtime errors from non-termination. Here, both are represented by @{text \<bottom>}.
+The answer domain of our semantics is the set of integers, lifted to obtain an additional element denoting bottom. Shivers distinguishes runtime errors from non-termination. Here, both are represented by @{text \<bottom>}.
 *}
 
 types ans = "int lift"
@@ -83,7 +83,7 @@ using assms
 by (cases p) auto
 
 text {*
-As ususal, the semantics of a functional language is given as a denotational semantics. To that end, two functions are defined here: @{text \<F>} applies a procedure to a list of arguments. Here closures are unwrapped, the primitive operations are implemented and the terminal continuation @{text Stop} is handled. @{text \<C>} evaluates a call expression, either by evaluating procedure and arguments and passing them to @{text \<F>}, or by adding the bindings of a @{text Let} expression to the environment.
+As usual, the semantics of a functional language is given as a denotational semantics. To that end, two functions are defined here: @{text \<F>} applies a procedure to a list of arguments. Here closures are unwrapped, the primitive operations are implemented and the terminal continuation @{text Stop} is handled. @{text \<C>} evaluates a call expression, either by evaluating procedure and arguments and passing them to @{text \<F>}, or by adding the bindings of a @{text Let} expression to the environment.
 
 Note how the contour counter is incremented before each call to @{text \<F>} or when a @{text Let} expression is evaluated.
 

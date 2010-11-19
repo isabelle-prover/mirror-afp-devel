@@ -3,7 +3,7 @@ theory Utils imports Main
 begin
 
 text {*
-This is potpourri of various lemmas not specific to our project. Some of them could very well be included in the default Isabelle library.
+This is a potpourri of various lemmas not specific to our project. Some of them could very well be included in the default Isabelle library.
 *}
 
 text {*

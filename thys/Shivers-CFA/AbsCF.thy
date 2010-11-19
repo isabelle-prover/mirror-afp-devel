@@ -7,9 +7,9 @@ begin
 default_sort type
 
 text {*
-After having defined the exact meaning of a control graph, we now alter the algorithm into a statically computable. We note that the contour pointer in the exact semantics is taken from an infinite set. This is unavoidable, as recursion depth is unbounded. But if this were not the case and the set were finite, the function would be calculateable, having finite range and domain.
+After having defined the exact meaning of a control graph, we now alter the algorithm into a statically computable. We note that the contour pointer in the exact semantics is taken from an infinite set. This is unavoidable, as recursion depth is unbounded. But if this were not the case and the set were finite, the function would be calculable, having finite range and domain.
 
-Therefore, we make the set of contour counter values finite and accept that this makes our result less exact, but calculateable. We also do not work with values any more but only remember, for each variable, what possible lambdas can occur there. Because we do not have exact values any more, in a conditional expression, both branches are taken.
+Therefore, we make the set of contour counter values finite and accept that this makes our result less exact, but calculable. We also do not work with values any more but only remember, for each variable, what possible lambdas can occur there. Because we do not have exact values any more, in a conditional expression, both branches are taken.
 
 We want to leave the exact choice of the finite contour set open for now. Therefore, we define a type class capturing the relevant definitions and the fact that the set is finite. Isabelle expects type classes to be non-empty, so we show that the @{text unit} type is in this type class.
 *}
@@ -28,7 +28,7 @@ end
 text {*
 Analogous to the previous section, we define types for binding environments, closures, procedures, semantic values (which are now sets of possible procedures) and variable environment. Their types are parametrized by the chosen set of abstract contours.
 
-The abstract variable environment is a partial map to sets in Shivers’ dissertation. As he does not need to distinguish between a key not in the map and a key mapped to the empty set, this presentation is redundant. Therefore, I encoded this as a function from keys to sets of values. The theory @{theory SetMap} contains functions and lemmas to work with such maps, symbolized by an appended dot (e.g. @{text "{}."}, @{text "\<union>."}).
+The abstract variable environment is a partial map to sets in Shivers' dissertation. As he does not need to distinguish between a key not in the map and a key mapped to the empty set, this presentation is redundant. Therefore, I encoded this as a function from keys to sets of values. The theory @{theory SetMap} contains functions and lemmas to work with such maps, symbolized by an appended dot (e.g. @{text "{}."}, @{text "\<union>."}).
 *}
 
 types 'c a_benv = "label \<rightharpoonup> 'c" ("_ \<abenv>" [1000])
@@ -99,7 +99,7 @@ using assms
 by (cases p) auto
 
 text {*
-We can now define the abstract nonstandard semantics, based on the equations in Figure 4.5 and 4.6 of Shivers’ dissertation. In the @{text AStop} case, @{text "{}"} is returned, while for wrong arguments, @{text "\<bottom>"} is returned. Both actually represent the same value, the empty set, so this is just a aesthetic difference.
+We can now define the abstract nonstandard semantics, based on the equations in Figure 4.5 and 4.6 of Shivers' dissertation. In the @{text AStop} case, @{text "{}"} is returned, while for wrong arguments, @{text "\<bottom>"} is returned. Both actually represent the same value, the empty set, so this is just a aesthetic difference.
 *}
 
 fixrec   a_evalF :: "'c::contour \<afstate> discr \<rightarrow> 'c \<aans>" ("\<aF>")
@@ -174,7 +174,7 @@ lemmas a_fstate_case = prod_cases4[OF proc.exhaust, of _ "\<lambda>x _ _ _ . x",
   of _ "\<lambda>_ as _ _ _ _ _ _ vs _ . length vs = length as" _ "\<lambda> _ ds _ _ _ _ . ds" "\<lambda> _ ds _ _ _ _ _. ds" "\<lambda> _ ds _ _. ds"]
 
 text {*
-Not surprisingly, the abstract semantics of a whole program is defined using @{text \<aF>} with suitably initialized arguments. The function @{text contents} extracts a value from a singleton set. This works because we know that @{text "\<aA>"} returnes such a set when given a lambda expression.
+Not surprisingly, the abstract semantics of a whole program is defined using @{text \<aF>} with suitably initialized arguments. The function @{text the_elem} extracts a value from a singleton set. This works because we know that @{text "\<aA>"} returns such a set when given a lambda expression.
 *}
 
 definition evalCPS_a :: "prog \<Rightarrow> ('c::contour) \<aans>" ("\<aPR>")

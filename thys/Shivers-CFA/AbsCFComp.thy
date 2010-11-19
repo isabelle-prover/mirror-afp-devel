@@ -104,7 +104,7 @@ definition arg_poss :: "prog \<Rightarrow> ('c::contour a_fstate + 'c a_cstate) 
   where "arg_poss p = Discr ` (fstate_poss p <+> cstate_poss p)"
 
 text {*
-Using the auxillary results from @{theory CPSUtils}, we see that the argument space as defined here is finite.
+Using the auxiliary results from @{theory CPSUtils}, we see that the argument space as defined here is finite.
 *}
 
 lemma finite_arg_space: "finite (arg_poss p)"
@@ -113,7 +113,7 @@ lemma finite_arg_space: "finite (arg_poss p)"
 
 
 text {*
-But is it closed? I.e.\ if we pass a member of @{text arg_poss} to @{text abs_R}, are the generated recursive call arguments also in @{text arg_poss}? This is shown in @{text arg_space_complete}, after proving an auxillary result about the possible outcome of a call to @{text \<aA>} and an admissibiliy lemma.
+But is it closed? I.e.\ if we pass a member of @{text arg_poss} to @{text abs_R}, are the generated recursive call arguments also in @{text arg_poss}? This is shown in @{text arg_space_complete}, after proving an auxiliary result about the possible outcome of a call to @{text \<aA>} and an admissibility lemma.
 *}
 
 lemma evalV_possible:
@@ -322,7 +322,7 @@ lemma arg_space_complete_ps: "states \<subseteq> arg_poss p \<Longrightarrow> (\
 using arg_space_complete unfolding powerset_lift_def by auto
 
 text {*
-We are not so much interested in the finiteness of the set of possible arguments but rather of the the set of occuring arguments, when we start with the initial argument. But as this is of course a subset of the set of possible arguments, this is not hard to show.
+We are not so much interested in the finiteness of the set of possible arguments but rather of the the set of occurring arguments, when we start with the initial argument. But as this is of course a subset of the set of possible arguments, this is not hard to show.
 *}
 
 lemma UN_iterate_less: 
@@ -352,7 +352,7 @@ qed
 subsection {* A decomposition *}
 
 text {*
-The functions @{text abs_g} and @{text abs_R} are derived from @{text \<aF>} and @{text \<aC>}. This connection has yet to expressed explicitely. 
+The functions @{text abs_g} and @{text abs_R} are derived from @{text \<aF>} and @{text \<aC>}. This connection has yet to expressed explicitly. 
 *}
 
 lemma Un_commute_helper:"(a \<union> b) \<union> (c \<union> d) = (a \<union> c) \<union> (b \<union> d)"

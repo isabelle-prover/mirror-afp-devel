@@ -9,10 +9,10 @@ subsection {* Preparations *}
 text {*
 Before we state the main result of this section, we need to define
 \begin{itemize}
-\item the set of binding environments occuring in a semantic value (which exists only if it is a closure),
+\item the set of binding environments occurring in a semantic value (which exists only if it is a closure),
 \item the set of binding environments in a variable environment, using the previous definition,
-\item the set of contour counters occuring in a semantic value and
-\item the set of contour counters occuring in a variable environment.
+\item the set of contour counters occurring in a semantic value and
+\item the set of contour counters occurring in a variable environment.
 \end{itemize}
 *}
 
@@ -136,7 +136,7 @@ subsection {* The proof *}
 text {*
 The set returned by @{text \<F>} and @{text \<C>} is actually a partial map from callsite/binding environment pairs to called values. The corresponding predicate in Isabelle is @{text single_valued}.
 
-We would like to show an auxillary result about the contour counter passed to @{text \<F>} and @{text \<C>} (such that it is an unused counter when passed to @{text \<F>} and others) first. Unfortunately, this is not possible with induction proofs over fixed points: While proving the inductive case, one does not show results for the function in question, but for an information-theoretical approximation. Thus, any previously shown results are not available.
+We would like to show an auxiliary result about the contour counter passed to @{text \<F>} and @{text \<C>} (such that it is an unused counter when passed to @{text \<F>} and others) first. Unfortunately, this is not possible with induction proofs over fixed points: While proving the inductive case, one does not show results for the function in question, but for an information-theoretical approximation. Thus, any previously shown results are not available.
 We therefore intertwine the two inductions in one large proof.
 
 This is a proof by fixpoint induction, so we have are obliged to show that the predicate is admissible and that it holds for the base case, i.e. the empty set. For the proof of admissibiliy, @{theory HOLCF} provides a number of introduction lemmas that, together with some additions in @{theory HOLCFUtils} and the continuity lemmas, mechanically proove admissibiliy. The base case is trivial.

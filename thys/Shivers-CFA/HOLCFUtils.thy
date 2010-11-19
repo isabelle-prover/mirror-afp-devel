@@ -6,7 +6,7 @@ begin
 text {*
 We use @{theory HOLCF} to define the denotational semantics. By default, HOLCF does not turn the regular @{text set} type into a partial order, so this is done here. Some of the lemmas here are contributed by Brian Huffman.
 
-We start by making the type @{text book} a pointed chain-complete partial order. Because @{text "'a set"} is just an abbreviation for @{text "'a => bool"}, this gives us a pcpo for sets.
+We start by making the type @{text bool} a pointed chain-complete partial order. Because @{text "'a set"} is just an abbreviation for @{text "'a => bool"}, this gives us a pcpo for sets.
 *}
 
 instantiation bool :: po
@@ -184,7 +184,7 @@ unfolding single_valued_def
 by (intro adm_lemmas adm_not_mem cont2cont adm_subst[of f])
 
 text {*
-To match Shivers’ syntax we introduce the power-syntax for iterated function application.
+To match Shivers' syntax we introduce the power-syntax for iterated function application.
 *}
 
 abbreviation niceiterate ("(_\<^bsup>_\<^esup>)" [1000] 1000)
