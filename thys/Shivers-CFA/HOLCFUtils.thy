@@ -9,12 +9,19 @@ We use @{theory HOLCF} to define the denotational semantics. By default, HOLCF d
 We start by making the type @{text book} a pointed chain-complete partial order. Because @{text "'a set"} is just an abbreviation for @{text "'a => bool"}, this gives us a pcpo for sets.
 *}
 
-instantiation bool :: finite_po
+instantiation bool :: po
 begin
 definition
   "x \<sqsubseteq> y \<longleftrightarrow> (x \<longrightarrow> y)"
 instance by (default, unfold below_bool_def, fast+)
 end
+
+instance bool :: chfin
+apply default
+apply (drule finite_range_imp_finch)
+apply (rule finite)
+apply (simp add: finite_chain_def)
+done
 
 instance bool :: pcpo
 proof
@@ -90,7 +97,7 @@ lemma cont2cont_insert [simp, cont2cont]:
 unfolding insert_def using assms
 by (intro cont2cont)
 
-lemmas adm_subset = adm_less[where ?'b = "'a::type set", standard, unfolded sqsubset_is_subset]
+lemmas adm_subset = adm_below[where ?'b = "'a::type set", standard, unfolded sqsubset_is_subset]
 
 lemma cont2cont_UNION[cont2cont,simp]:
   assumes "cont f"
@@ -132,12 +139,6 @@ lemma cont2cont_list_case [simp, cont2cont]:
 using assms
 by (cases l) auto
 
-lemma cont2cont_prod_case [simp, cont2cont]:
-  assumes "\<And>y z. cont (\<lambda>x. f x y z)"
-  shows "cont (\<lambda>x. prod_case (f x) p)"
-using assms
-by (cases p) auto
-
 
 text {* As with the continuity lemmas, we need admissibility lemmas. *}
 
@@ -156,22 +157,10 @@ thus "y \<notin> (\<Squnion> i. Y i)"
 qed
 
 lemma adm_id[simp]: "adm (\<lambda>x . x)"
-proof(rule admI)
-fix Y :: "nat \<Rightarrow> bool"
-assume "\<forall>i. Y i" hence "Y = (\<lambda>i. True)" by -(rule ext, auto)
-hence "range Y <<| True" by simp (rule lub_const)
-hence "lub (range Y) = True" by (rule thelubI)
-thus "\<Squnion> i. Y i" by simp
-qed
+by (rule adm_chfin)
 
 lemma adm_Not[simp]: "adm Not"
-proof(rule admI)
-fix Y :: "nat \<Rightarrow> bool"
-assume "\<forall>i. \<not> Y i" hence "Y = (\<lambda>i. False)" by -(rule ext, auto)
-hence "range Y <<| False" by (auto intro: lub_const simp del: const_False_is_bot)
-hence "lub (range Y) = False" by (rule thelubI)
-thus "\<not> (\<Squnion> i. Y i)" by simp
-qed
+by (rule adm_chfin)
 
 lemma adm_prod_split:
   assumes "adm (\<lambda>p. f (fst p) (snd p))"
@@ -182,6 +171,10 @@ lemma adm_ball':
   assumes "\<And> y. adm (\<lambda>x. y \<in> A x \<longrightarrow> P x y)"
   shows "adm (\<lambda>x. \<forall>y \<in> A x . P x y)"
 by (subst Ball_def, rule adm_all[OF assms])
+
+lemma adm_not_conj:
+  "\<lbrakk>adm (\<lambda>x. \<not> P x); adm (\<lambda>x. \<not> Q x)\<rbrakk> \<Longrightarrow> adm (\<lambda>x. \<not> (P x \<and> Q x))"
+by simp
 
 lemma adm_single_valued:
  assumes "cont (\<lambda>x. f x)"

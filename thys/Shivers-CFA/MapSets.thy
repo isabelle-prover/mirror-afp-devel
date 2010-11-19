@@ -28,7 +28,7 @@ proof-
   proof (induct rule: inj_onI)
     case (1 x y)
     from "1.hyps"(3) have hyp: "\<And> a b. (Some b = x a) \<longleftrightarrow> (Some b = y a)"
-      by (simp add:expand_set_eq)
+      by (simp add: set_eq_iff)
     show ?case
     proof (rule ext)
     fix z show "x z = y z"
@@ -84,7 +84,7 @@ proof-
   proof (induct rule: inj_onI)
     case (1 x y)
     from "1.hyps"(3) have hyp: "\<And> a b. (b = x a \<and> b \<noteq> {}) = (b = y a \<and> b \<noteq> {})"
-      by -(subst (asm) (3) expand_set_eq, simp)
+      by -(subst (asm) (3) set_eq_iff, simp)
     show ?case
     proof (rule ext)
     fix z show "x z = y z"

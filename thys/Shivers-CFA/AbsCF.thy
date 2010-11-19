@@ -181,6 +181,6 @@ definition evalCPS_a :: "prog \<Rightarrow> ('c::contour) \<aans>" ("\<aPR>")
   where "\<aPR> l = (let ve = {}.;
                           \<beta> = empty;
                           f = \<aA> (L l) \<beta> ve
-                      in  \<aF>\<cdot>(Discr (contents f,[{AStop}],ve,\<abinit>)))"
+                      in  \<aF>\<cdot>(Discr (the_elem f,[{AStop}],ve,\<abinit>)))"
 
 end
