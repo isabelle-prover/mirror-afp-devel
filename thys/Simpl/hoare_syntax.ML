@@ -1190,7 +1190,7 @@ fun init_tr' [Abs (_,_,t)] =
       | us => us;
 
     val comps =
-      map (fn (Const (u, _)) => explode (unsuffix (Hoare.deco ^ Record.updateN) u))
+      map (fn (Const (u, _)) => Symbol.explode (unsuffix (Hoare.deco ^ Record.updateN) u))
         (map fst upds);
     val prfx = maxprefixs (op =) comps;
 
@@ -1379,7 +1379,7 @@ fun pname_tr' ((f as Const (@{syntax_const "_free"}, _)) $ Free (p, T)) =
       let
         (* from HOL strings to ML strings *)
         fun dest_nib c =    (* FIXME authentic syntax *)
-          (case explode c of
+          (case raw_explode c of
             ["N", "i", "b", "b", "l", "e", h] =>
               if "0" <= h andalso h <= "9" then ord h - ord "0"
               else if "A" <= h andalso h <= "F" then ord h - ord "A" + 10
