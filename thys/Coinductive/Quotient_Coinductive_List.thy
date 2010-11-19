@@ -184,7 +184,7 @@ qed
 lemma llist_all2_preserve2 [quot_preserve]:
   assumes "Quotient R Abs Rep"
   shows "(llist_all2 ((Rep ---> Rep ---> id) R) l m) = (l = m)"
-  by (simp add: fun_map_def_raw Quotient_rel_rep [OF assms] llist_all2_eq comp_def)
+  by (simp add: map_fun_def_raw Quotient_rel_rep [OF assms] llist_all2_eq comp_def)
 
 lemma llist_corec_preserve [quot_preserve]: 
   assumes q1: "Quotient R1 Abs1 Rep1"

@@ -243,7 +243,7 @@ lemma tllist_all2_preserve2 [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
   and q2: "Quotient R2 Abs2 Rep2"
   shows "(tllist_all2 ((Rep1 ---> Rep1 ---> id) R1) ((Rep2 ---> Rep2 ---> id) R2)) = (op =)"
-  by (simp add: fun_eq_iff fun_map_def comp_def Quotient_rel_rep[OF q1] Quotient_rel_rep[OF q2]
+  by (simp add: fun_eq_iff map_fun_def comp_def Quotient_rel_rep[OF q1] Quotient_rel_rep[OF q2]
     tllist_all2_eq)
 
 lemma tllist_corec_preserve [quot_preserve]: 
@@ -263,13 +263,13 @@ proof(intro ext)
     thus ?case
     proof(cases "f a")
       case (Inl l)
-      hence ?EqTCons unfolding q fun_map_def_raw 
+      hence ?EqTCons unfolding q map_fun_def_raw 
         using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2]
         by (cases l) (auto simp add: tllist_corec)
       thus ?thesis ..
     next
       case (Inr r)
-      hence ?EqTNil unfolding q fun_map_def_raw
+      hence ?EqTNil unfolding q map_fun_def_raw
         using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q3]
         by (simp add: tllist_corec)
       thus ?thesis ..
