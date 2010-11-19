@@ -4,7 +4,7 @@
 header {* Combining All Completeness Proofs *}
 
 theory Completeness
-imports ArchCompProps
+imports ArchCompProps ArchComp
 begin
 
 definition Archive :: "vertex fgraph set" where

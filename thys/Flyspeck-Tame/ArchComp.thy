@@ -20,8 +20,8 @@ by eval
 lemma pre_iso_test6: "\<forall>g \<in> set Hex. pre_iso_test g"
 by eval
 
-(* w/o Filter to keep that variant `alive' as well *)
-lemma same3: "same (tameEnum 0 312764) Tri"
+(* w/o Filter to keep that variant alive as well *)
+lemma same3: "same (tameEnum 0) Tri"
 by eval
 
 lemma same4: "same (tameEnumFilter 1 134291356) Quad"

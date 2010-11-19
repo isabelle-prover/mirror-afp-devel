@@ -369,6 +369,19 @@ author = Peter Lammich <http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/>, Ma
 date = 2007-12-14
 abstract = In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e. g. data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. The formalization is based upon a flowgraph-based program model with an operational semantics as reference point. 
 
+[Shivers-CFA]
+title = Shivers' Control Flow Analysis
+topic = Computer Science/Programming Languages/Static Analysis
+author = Joachim Breitner <mailto:mail@joachim-breitner.de>
+date = 2010-11-16
+base = HOLCF
+abstract =
+ In his dissertation, Olin Shivers introduces a concept of control flow graphs
+ for functional languages, provides an algorithm to statically derive a safe
+ approximation of the control flow graph and proves this algorithm correct. In
+ this research project, Shivers' algorithms and proofs are formalized
+ in the HOLCF extension of HOL.
+
 [Slicing]
 title = Towards Certified Slicing 
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>

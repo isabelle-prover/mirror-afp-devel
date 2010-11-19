@@ -792,7 +792,10 @@ proof(atomize_elim)
 qed
 
 declare subcls1_intros [code_pred_intro]
-code_pred subcls1
+code_pred
+  -- {* Disallow mode @{text "i_o_o"} to force @{text code_pred} in subsequent predicates not to use this inefficient mode *}
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool) 
+  subcls1
 proof -
   case subcls1 
   from subcls1.prems show thesis
@@ -806,178 +809,44 @@ text {*
 
 definition subcls' where "subcls' = subcls"
 
-code_pred [inductify] subcls' .
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  [inductify]
+  subcls'
+.
 
 lemma subcls_conv_subcls' [code_inline]:
   "(subcls1 P)^** = subcls' P"
 by(simp add: subcls'_def)
 
-text {* @{term "subcls'_i_i_i"} uses @{term subcls1_i_o_o}, but @{term subcls1_i_i_o} is much more efficient *}
-lemma subcls'_i_i_i_code [code]:
-  "subcls'_i_i_i P = rtranclp_FioB_i_i (subcls1_i_i_o P)"
-apply(rule ext)+
-apply(rule pred_iffI)
- apply(erule subcls'_i_i_iE)
- apply clarsimp
- apply(rule rtranclp_FioB_i_iI)
-  apply(unfold subcls'_def)[2]
-  apply assumption
- apply(rule ext iffI)+
-  apply(erule subcls1_i_i_oE)
-  apply assumption
- apply(erule subcls1_i_i_oI)
-apply(erule rtranclp_FioB_i_iE)
-apply clarsimp
-apply(rule subcls'_i_i_iI)
-apply(unfold subcls'_def)
-apply(erule rtranclp_induct)
- apply blast
-apply(erule subcls1_i_i_oE)
-apply(erule (1) rtranclp.rtrancl_into_rtrancl)
-done
-
 text {* 
   Change rule @{thm widen_array_object} such that predicate compiler
-  tests on class @{term Object} first. Otherwise @{text "widen_i_o_i"} never terminates.
+  tests on class @{term Object} first.
 *}
 
 lemma widen_array_object_code:
   "\<lbrakk> C = Object; is_type P A \<rbrakk> \<Longrightarrow> P \<turnstile> Array A \<le> Class C"
 by(auto intro: widen.intros)
 
-(* lemmas [code_pred_intro] =
+lemmas [code_pred_intro] =
   widen_refl widen_subcls widen_null widen_null_array widen_array_object_code widen_array_array
-code_pred [show_modes] widen 
-by(erule widen.cases) auto  *)
+code_pred 
+  widen 
+by(erule widen.cases) auto
 
-lemmas [code_pred_def] =
-  widen_refl widen_subcls widen_null widen_null_array widen_array_object_code widen_array_array
-code_pred [inductify] widen . 
-
-text {*
-  @{term widen_i_i_i} uses @{term "subcls1_i_o_o"}, which is inefficient. Better use @{term subcls1_i_o_i}.
-*}
-
-lemma widen_i_i_i_code [code]:
-  "widen_i_i_i P T U =
-   sup (if T = U then Predicate.single () else bot)
-   (sup (case T of Class C \<Rightarrow> (case U of Class D \<Rightarrow> rtranclp_FioB_i_i (subcls1_i_i_o P) C D | _ \<Rightarrow> bot) | _ \<Rightarrow> bot)
-   (sup (case T of NT \<Rightarrow> (case U of Class C \<Rightarrow> Predicate.single () | Array A \<Rightarrow> Predicate.single () | _ \<Rightarrow> bot) | _ \<Rightarrow> bot)
-   (sup (case T of Array A \<Rightarrow> (case U of Class C \<Rightarrow> if C = Object then (is_type_i_i P A) else bot | _ \<Rightarrow> bot) | _ \<Rightarrow> bot)
-        (case T of Array A \<Rightarrow> (case U of Array B \<Rightarrow> Predicate.bind (widen_i_i_i P A B) (unit_case (Predicate.bind (Predicate.if_pred (ground_type A \<noteq> NT)) (unit_case (Predicate.single ())))) | _ \<Rightarrow> bot) | _ \<Rightarrow> bot))))"
-apply(subst widen.equation)
-apply(rule pred_iffI)
- apply(erule supE bindE singleE)+
-  apply(rule supI1)
-  apply clarsimp
- apply(erule supE bindE singleE)+
-  apply(simp split del: split_if split: ty.split_asm unit.splits)
-  apply(erule bindE)
-  apply(rule supI2)
-  apply simp
-  apply(erule rtranclp_FooB_i_iE)
-  apply(erule rtranclp_FioB_i_iI)
-  apply(rule ext)+
-  apply(rule iffI)
-   apply(erule subcls1_i_i_oE)
-   apply(erule subcls1_i_o_oI)
-  apply(erule subcls1_i_o_oE)
-  apply(erule subcls1_i_i_oI)
- apply(erule supE bindE singleE)+
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI1)
-  apply(simp split: ty.split_asm)
- apply(erule supE bindE singleE)+
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI1)
-  apply(simp split: ty.split_asm)
- apply(erule supE bindE singleE)+
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI1)
-  apply(simp split: ty.split_asm unit.split_asm)
-  apply(erule bindE)
-  apply(split unit.split_asm)
-  apply(simp split: split_if_asm)
- apply(erule bindE singleE)+
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(simp split: ty.split_asm)
-apply(erule supE)
- apply(simp split: split_if_asm)
- apply(rule supI1)
- apply(rule bindI)
-  apply(rule singleI)
- apply simp
-apply(erule supE)
- apply(simp split: ty.split_asm)
- apply(rule supI2)
- apply(rule supI1)
- apply(rule bindI)
-  apply(rule singleI)
- apply(simp)
- apply(erule rtranclp_FioB_i_iE)
- apply(rule bindI)
-  apply(erule rtranclp_FooB_i_iI)
-  apply(rule ext)+
-  apply(rule iffI)
-   apply(erule subcls1_i_o_oE)
-   apply(erule subcls1_i_i_oI)
-  apply(erule subcls1_i_i_oE)
-  apply(erule subcls1_i_o_oI)
- apply(simp split: unit.split)
- apply(rule singleI)
-apply(erule supE)
- apply(simp split: ty.split_asm)
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI1)
-  apply(rule bindI)
-   apply(rule singleI)
-  apply simp
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI1)
- apply(rule bindI)
-  apply(rule singleI)
- apply simp
-apply(erule supE)
- apply(simp split: ty.split_asm)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI1)
- apply(rule bindI)
-  apply(rule singleI)
- apply(simp split: split_if_asm)
- apply(erule bindI)
- apply(simp split: unit.split)
- apply(rule singleI)
-apply(rule supI2)
-apply(rule supI2)
-apply(rule supI2)
-apply(rule supI2)
-apply(rule supI2)
-apply(rule bindI)
- apply(rule singleI)
-apply(simp split: ty.split_asm)
-done
-
-code_pred Methods .
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  Methods 
+.
 
 code_pred [inductify] Method .
 
-code_pred [inductify] has_method .
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  [inductify] has_method .
 
 (* FIXME: Necessary only because of bug in code_pred *)
-declare fun_upd_def [code_pred_inline]
+declare fun_upd_def [code_pred_inline] 
 
 code_pred Fields .
 

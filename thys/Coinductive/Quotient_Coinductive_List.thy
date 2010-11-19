@@ -184,15 +184,15 @@ qed
 lemma llist_all2_preserve2 [quot_preserve]:
   assumes "Quotient R Abs Rep"
   shows "(llist_all2 ((Rep ---> Rep ---> id) R) l m) = (l = m)"
-  by (simp add: fun_map_def_raw Quotient_rel_rep [OF assms] llist_all2_eq comp_def)
+  by (simp add: map_fun_def_raw Quotient_rel_rep [OF assms] llist_all2_eq comp_def)
 
 lemma llist_corec_preserve [quot_preserve]: 
   assumes q1: "Quotient R1 Abs1 Rep1"
   and q2: "Quotient R2 Abs2 Rep2"
-  shows "(Rep1 ---> (Abs1 ---> Option.map (prod_fun Rep2 Rep1)) ---> lmap Abs2) llist_corec = llist_corec"
+  shows "(Rep1 ---> (Abs1 ---> Option.map (map_pair Rep2 Rep1)) ---> lmap Abs2) llist_corec = llist_corec"
 proof(intro ext)
   fix a f
-  let ?fmap = "Rep1 ---> (Abs1 ---> Option.map (prod_fun Rep2 Rep1)) ---> lmap Abs2"
+  let ?fmap = "Rep1 ---> (Abs1 ---> Option.map (map_pair Rep2 Rep1)) ---> lmap Abs2"
   have "(?fmap llist_corec a f, llist_corec a f) \<in>
         {(?fmap llist_corec a f, llist_corec a f)|a. True}" by blast
   thus "?fmap llist_corec a f = llist_corec a f"

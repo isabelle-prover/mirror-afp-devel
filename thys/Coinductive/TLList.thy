@@ -52,7 +52,7 @@ lemma prod_case_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
   and q2: "Quotient R2 Abs2 Rep2"
   and q3: "Quotient R3 Abs3 Rep3"
-  shows "((Abs1 ---> Abs2 ---> Rep3) ---> prod_fun Rep1 Rep2 ---> Abs3) prod_case = prod_case"
+  shows "((Abs1 ---> Abs2 ---> Rep3) ---> map_pair Rep1 Rep2 ---> Abs3) prod_case = prod_case"
 using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2] Quotient_abs_rep[OF q3]
 by(simp add: fun_eq_iff split: prod.split)
 

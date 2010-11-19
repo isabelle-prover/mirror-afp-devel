@@ -15,8 +15,12 @@ text {*
   Inline SystemClasses definition because they are polymorphic values that violate ML's value restriction.
 *}
 
+text {*
+  Object has actually superclass, but we set it to the empty string for code generation.
+  Any other class name (like @{term undefined}) would do as well except for code generation.
+*}
 definition ObjectC :: "'m cdecl"
-where [code_inline]: "ObjectC = (Object, (undefined,[],[]))"
+where [code_inline]: "ObjectC = (Object, (STR '''',[],[]))"
 
 definition ThrowableC :: "'m cdecl"
 where [code_inline]: "ThrowableC \<equiv> (Throwable, (Object, [], []))"
