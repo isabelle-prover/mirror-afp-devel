@@ -119,10 +119,10 @@ proof-
   moreover
   have "inj_on id (snd ` set l)" by auto
   ultimately
-  have "canceled (map (prod_fun Not id) l)" 
+  have "canceled (map (map_pair Not id) l)" 
     using `canceled l` 
     by -(rule rename_gens_canceled)
-  thus "canceled (rev (map (prod_fun Not id) l))" by (rule canceled_rev)
+  thus "canceled (rev (map (map_pair Not id) l))" by (rule canceled_rev)
 qed
 
 lemma inv_fg_closure2:
