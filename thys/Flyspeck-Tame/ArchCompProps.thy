@@ -4,7 +4,7 @@
 header "Completeness of Archive Test"
 
 theory ArchCompProps
-imports TameEnumProps ArchComp
+imports TameEnumProps ArchCompAux
 begin
 
 lemma mgp_pre_iso_test: "minGraphProps g \<Longrightarrow> pre_iso_test(fgraph g)"
@@ -44,33 +44,40 @@ proof -
   thus ?thesis by auto
 qed
 
+lemma foldl_fgraph:
+  "foldl (%fins g. if final g then fgraph g # fins else fins) fgs gs =
+  rev(map fgraph (filter final gs)) @ fgs"
+by (induct gs arbitrary: fgs) simp_all
+
+lemma RTranCl_conv:
+  "g [next]\<rightarrow>* h \<longleftrightarrow> (g,h) : ((succs_rel next)^*)" (is "?L = ?R")
+proof-
+  have "?L \<Longrightarrow> ?R"
+    apply(erule RTranCl_induct)
+    apply blast
+    apply (auto elim: rtrancl_into_rtrancl)
+    done
+  moreover
+  have "?R \<Longrightarrow> ?L"
+    apply(erule converse_rtrancl_induct)
+    apply(rule RTranCl.refl)
+    apply (auto elim: RTranCl.succs)
+    done
+  ultimately show ?thesis by blast
+qed
+
 lemma enum_finals_tree:
- "\<forall>g. final g \<longrightarrow> next g = [] \<Longrightarrow> enum_finals next n todo Fs\<^isub>0 = Some Fs \<Longrightarrow>
-  set Fs = set Fs\<^isub>0 \<union> fgraph ` {h. \<exists>g \<in> set todo. g [next]\<rightarrow>* h \<and> final h}"
-apply(induct n arbitrary: todo Fs\<^isub>0) apply simp
-apply (clarsimp simp:image_def neq_Nil_conv split:split_if_asm)
- apply(rule equalityI)
-  apply (blast intro:RTranCl.refl)
- apply(rule)
- apply simp
- apply(erule disjE) apply blast
- apply (erule exE conjE)+
- apply(erule disjE) apply (fastsimp elim:RTranCl_elim)
- apply(blast)
-apply(rule equalityI)
- apply (blast intro:succs)
-apply(rule)
-apply simp
-apply(erule disjE) apply blast
-apply (erule exE conjE)+
-apply(erule disjE) apply (fastsimp elim:RTranCl_elim)
-apply(blast)
+ "enum_finals next todo Fs\<^isub>0 = Some Fs \<Longrightarrow>
+  set Fs = set Fs\<^isub>0 \<union> fgraph ` {h. (\<exists>g \<in> set todo. g [next]\<rightarrow>* h) \<and> final h}"
+apply(simp add: enum_finals_def)
+apply(drule worklist)
+apply (clarsimp simp add: foldl_fgraph RTranCl_conv)
+apply blast
 done
 
 
 lemma enum_filter_finals1:
-assumes "\<forall>g. final g \<longrightarrow> next g = []"
-shows "enum_filter_finals next n todo Fs\<^isub>0 t = Some Fs \<Longrightarrow>
+  "enum_filter_finals next n todo Fs\<^isub>0 t = Some Fs \<Longrightarrow>
   set Fs\<^isub>0 \<subseteq> set Fs"
 apply(induct n arbitrary: todo Fs\<^isub>0 t) apply simp
 apply (force simp: neq_Nil_conv split:split_if_asm)
@@ -142,7 +149,7 @@ next
           hence p: "enum_filter_finals next n todo' (fgraph g # Fs\<^isub>0) ?t' =
             Some Fs"
             using Suc.prems Cons `final g` by simp
-          have "?fg : set Fs" using enum_filter_finals1[OF assms(1) p] by auto
+          have "?fg : set Fs" using enum_filter_finals1[OF p] by auto
           from 2 show ?thesis
           proof
             assume "h=g"
@@ -183,8 +190,7 @@ next
 qed
 
 lemma enum_filter_finals_subseteq:
-assumes "\<forall>g. final g \<longrightarrow> next g = []"
-shows "enum_filter_finals next n todo Fs\<^isub>0 t = Some Fs \<Longrightarrow>
+  "enum_filter_finals next n todo Fs\<^isub>0 t = Some Fs \<Longrightarrow>
   set Fs \<subseteq> set Fs\<^isub>0 \<union> fgraph ` {h. \<exists>g \<in> set todo. g [next]\<rightarrow>* h \<and> final h}"
 apply(induct n arbitrary: todo Fs\<^isub>0 t) apply simp
 apply (clarsimp simp: neq_Nil_conv split: split_if_asm)
@@ -201,8 +207,8 @@ by(auto simp: next_tame_def next_tame0_def
               nonFinals_def filter_empty_conv finalGraph_def)
 
 lemma tameEnum_TameEnum:
-  "tameEnum p n = Some Fs \<Longrightarrow> set Fs = fgraph ` TameEnum\<^bsub>p\<^esub>"
-by(simp add:tameEnum_def TameEnumP_def enum_finals_tree[OF next_tame_of_final])
+  "tameEnum p = Some Fs \<Longrightarrow> set Fs = fgraph ` TameEnum\<^bsub>p\<^esub>"
+by(simp add:tameEnum_def TameEnumP_def enum_finals_tree)
 
 lemma TameEnum_iso_subseteq_tameEnumFilter:
   "tameEnumFilter p n = Some Fs \<Longrightarrow> fgraph ` TameEnum\<^bsub>p\<^esub> \<subseteq>\<^isub>\<simeq> set Fs"
@@ -214,12 +220,12 @@ done
 lemma tameEnumFilter_subseteq_TameEnum:
   "tameEnumFilter p n = Some Fs \<Longrightarrow> set Fs <= fgraph ` TameEnum\<^bsub>p\<^esub>"
 by(auto simp add:tameEnumFilter_def TameEnumP_def
-  dest!: enum_filter_finals_subseteq[OF next_tame_of_final])
+     dest!: enum_filter_finals_subseteq)
 
 theorem combine_evals:
- "\<forall>g \<in> set arch. pre_iso_test g \<Longrightarrow> same (tameEnum p n) arch
+ "\<forall>g \<in> set arch. pre_iso_test g \<Longrightarrow> same (tameEnum p) arch
   \<Longrightarrow> fgraph ` TameEnum\<^bsub>p\<^esub> \<subseteq>\<^isub>\<simeq> set arch"
-apply(subgoal_tac "\<exists>gs. tameEnum p n = Some gs \<and> set gs \<subseteq>\<^isub>\<simeq> set arch")
+apply(subgoal_tac "\<exists>gs. tameEnum p = Some gs \<and> set gs \<subseteq>\<^isub>\<simeq> set arch")
  apply(fastsimp simp: image_def dest: tameEnum_TameEnum)
 apply(fastsimp intro!: same_imp_iso_subseteq
   dest: tameEnum_TameEnum mgp_TameEnum mgp_pre_iso_test)

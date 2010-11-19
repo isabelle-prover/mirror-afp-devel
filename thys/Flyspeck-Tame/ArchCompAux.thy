@@ -4,7 +4,7 @@
 header {* Comparing Enumeration and Archive *}
 
 theory ArchCompAux
-imports TameEnum TrieList Arch
+imports TameEnum TrieList Arch Worklist
 begin
 
 function qsort :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
@@ -27,14 +27,10 @@ definition hash :: "nat fgraph \<Rightarrow> nat list" where
      qsort (%x y. y < x) (map (%i. foldl (op +) 0 (map size [f\<leftarrow>fs. i \<in> set f]))
                              [0..<n]))"
 
-primrec enum_finals :: "(graph \<Rightarrow> graph list) \<Rightarrow> nat \<Rightarrow> graph list \<Rightarrow> nat fgraph list
-                 \<Rightarrow> nat fgraph list option" where
-  "enum_finals succs 0 todo fins = None"
-  | "enum_finals succs (Suc n) todo fins =
-     (if todo = [] then (*let u = write (Suc n) in*) Some fins
-      else let g = hd todo; todo' = tl todo in
-        if final g then enum_finals succs n todo' (fgraph g # fins)
-        else enum_finals succs n (succs g @ todo') fins)"
+definition enum_finals :: "(graph \<Rightarrow> graph list) \<Rightarrow> graph list
+  \<Rightarrow> nat fgraph list \<Rightarrow> nat fgraph list option" where
+"enum_finals succs =
+  worklist succs (%fins g. if final g then fgraph g # fins else fins)"
 
 
 primrec enum_filter_finals ::
@@ -52,8 +48,8 @@ primrec enum_filter_finals ::
                  enum_filter_finals succs n todo' (fg # fins) (insert_trie fint h fg)
         else enum_filter_finals succs n (succs g @ todo') fins fint)"
 
-definition tameEnum :: "nat \<Rightarrow> nat \<Rightarrow> nat fgraph list option" where
-  "tameEnum p n = enum_finals (next_tame p) n [Seed p] []"
+definition tameEnum :: "nat \<Rightarrow> nat fgraph list option" where
+"tameEnum p = enum_finals (next_tame p) [Seed p] []"
 
 definition tameEnumFilter :: "nat \<Rightarrow> nat \<Rightarrow> nat fgraph list option" where
 "tameEnumFilter p n =
