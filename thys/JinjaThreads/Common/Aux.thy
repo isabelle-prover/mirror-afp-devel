@@ -257,7 +257,7 @@ by(rule Set.subset_eq)
 
 lemma eval_bot [simp]:
   "Predicate.eval bot = (\<lambda>_. False)"
-by(rule ext)(auto elim: botE)
+  by (auto simp add: fun_eq_iff)
 
 lemma not_is_emptyE:
   assumes "\<not> Predicate.is_empty P"
