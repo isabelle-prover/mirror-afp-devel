@@ -114,7 +114,7 @@ lemma wf_J_mdecl'_code [code]:
   (case WT_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body of Err \<Rightarrow> False | OK T' \<Rightarrow> P \<turnstile> T' \<le> T) \<and>
    \<D>_code body \<lfloor>Cset.set (this # pns)\<rfloor>"
  using \<D>_code_conv_\<D>[where e=body and A="\<lfloor>{this} \<union> set pns\<rfloor>"]
-by(auto intro!: ext simp add: Set_def wf_J_mdecl'_def split: err.split_asm)
+by(auto intro!: ext simp add: Cset.set_def wf_J_mdecl'_def split: err.split_asm)
  
 (* Formal code generation test *)
 ML {* @{code wf_J_prog'}  *}
