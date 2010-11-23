@@ -6,7 +6,7 @@ header {* \isaheader{Definite assignment} *}
 
 theory DefAss imports 
   Expr
-  Fset
+  Cset
 begin
 
 subsection "Hypersets"
@@ -276,9 +276,9 @@ by(auto simp add: hyper_isin_def mem_def)
 code_pred hyper_isin
 by(simp add: hyper_isin_def mem_def)
 
-text {* Lifting @{term "\<A>"} and @{term "\<D>"} to @{typ "'a fset"} *}
+text {* Lifting @{term "\<A>"} and @{term "\<D>"} to @{typ "'a Cset.set"} *}
 
-types 'a hyperset_code = "'a fset option"
+types 'a hyperset_code = "'a Cset.set option"
 
 definition hyperUn_code :: "'a hyperset_code \<Rightarrow> 'a hyperset_code \<Rightarrow> 'a hyperset_code"   (infixl "\<squnion>\<^isub>f" 65)
 where
@@ -292,16 +292,16 @@ where
 
 definition hyperDiff1_code :: "'a hyperset_code \<Rightarrow> 'a \<Rightarrow> 'a hyperset_code"   (infixl "\<ominus>\<^isub>f" 65)
 where
-  "A \<ominus>\<^isub>f a  \<equiv>  case A of None \<Rightarrow> None | \<lfloor>A\<rfloor> \<Rightarrow> \<lfloor>Fset.remove a A\<rfloor>"
+  "A \<ominus>\<^isub>f a  \<equiv>  case A of None \<Rightarrow> None | \<lfloor>A\<rfloor> \<Rightarrow> \<lfloor>Cset.remove a A\<rfloor>"
 
 definition hyper_isin_code :: "'a \<Rightarrow> 'a hyperset_code \<Rightarrow> bool"   (infix "\<in>\<in>\<^isub>f" 50)
 where
-  "a \<in>\<in>\<^isub>f A  \<equiv>  case A of None \<Rightarrow> True | \<lfloor>A\<rfloor> \<Rightarrow> Fset.member A a"
+  "a \<in>\<in>\<^isub>f A  \<equiv>  case A of None \<Rightarrow> True | \<lfloor>A\<rfloor> \<Rightarrow> Cset.member A a"
 
 definition hyper_subset_code :: "'a hyperset_code \<Rightarrow> 'a hyperset_code \<Rightarrow> bool"   (infix "\<sqsubseteq>\<^isub>f" 50)
 where
   "A \<sqsubseteq>\<^isub>f B  \<equiv>  case B of None \<Rightarrow> True
-                 | \<lfloor>B\<rfloor> \<Rightarrow> (case A of None \<Rightarrow> False | \<lfloor>A\<rfloor> \<Rightarrow> (Fset.forall (Fset.member B) A))"
+                 | \<lfloor>B\<rfloor> \<Rightarrow> (case A of None \<Rightarrow> False | \<lfloor>A\<rfloor> \<Rightarrow> (Cset.forall (Cset.member B) A))"
 
 primrec \<A>_code :: "('a,'b) exp \<Rightarrow> 'a hyperset_code"
   and \<A>s_code :: "('a,'b) exp list \<Rightarrow> 'a hyperset_code"
@@ -313,7 +313,7 @@ where
 | "\<A>_code (Val v) = \<lfloor>bot\<rfloor>"
 | "\<A>_code (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = \<A>_code e\<^isub>1 \<squnion>\<^isub>f \<A>_code e\<^isub>2"
 | "\<A>_code (Var V) = \<lfloor>bot\<rfloor>"
-| "\<A>_code (LAss V e) = \<lfloor>Fset.insert V bot\<rfloor> \<squnion>\<^isub>f \<A>_code e"
+| "\<A>_code (LAss V e) = \<lfloor>Cset.insert V bot\<rfloor> \<squnion>\<^isub>f \<A>_code e"
 | "\<A>_code (a\<lfloor>i\<rceil>) = \<A>_code a \<squnion>\<^isub>f \<A>_code i"
 | "\<A>_code (a\<lfloor>i\<rceil> := e) = \<A>_code a \<squnion>\<^isub>f \<A>_code i \<squnion>\<^isub>f \<A>_code e"
 | "\<A>_code (a\<bullet>length) = \<A>_code a"
@@ -349,7 +349,7 @@ where
 | "\<D>_code (e\<bullet>F{D}) A = \<D>_code e A"
 | "\<D>_code (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) A = (\<D>_code e\<^isub>1 A \<and> \<D>_code e\<^isub>2 (A \<squnion>\<^isub>f \<A>_code e\<^isub>1))"
 | "\<D>_code (e\<bullet>M(es)) A = (\<D>_code e A \<and> \<D>s_code es (A \<squnion>\<^isub>f \<A>_code e))"
-| "\<D>_code ({V:T=vo; e}) A = (if vo = None then \<D>_code e (A \<ominus>\<^isub>f V) else \<D>_code e (A \<squnion>\<^isub>f \<lfloor>Fset.insert V bot\<rfloor>))"
+| "\<D>_code ({V:T=vo; e}) A = (if vo = None then \<D>_code e (A \<ominus>\<^isub>f V) else \<D>_code e (A \<squnion>\<^isub>f \<lfloor>Cset.insert V bot\<rfloor>))"
 | "\<D>_code (sync\<^bsub>V\<^esub> (o') e) A = (\<D>_code o' A \<and> \<D>_code e (A \<squnion>\<^isub>f \<A>_code o'))"
 | "\<D>_code (insync\<^bsub>V\<^esub> (a) e) A = \<D>_code e A"
 | "\<D>_code (e\<^isub>1;;e\<^isub>2) A = (\<D>_code e\<^isub>1 A \<and> \<D>_code e\<^isub>2 (A \<squnion>\<^isub>f \<A>_code e\<^isub>1))"
@@ -357,43 +357,43 @@ where
   (\<D>_code e A \<and> \<D>_code e\<^isub>1 (A \<squnion>\<^isub>f \<A>_code e) \<and> \<D>_code e\<^isub>2 (A \<squnion>\<^isub>f \<A>_code e))"
 | "\<D>_code (while (e) c) A = (\<D>_code e A \<and> \<D>_code c (A \<squnion>\<^isub>f \<A>_code e))"
 | "\<D>_code (throw e) A = \<D>_code e A"
-| "\<D>_code (try e\<^isub>1 catch(C V) e\<^isub>2) A = (\<D>_code e\<^isub>1 A \<and> \<D>_code e\<^isub>2 (A \<squnion>\<^isub>f \<lfloor>Fset.insert V bot\<rfloor>))"
+| "\<D>_code (try e\<^isub>1 catch(C V) e\<^isub>2) A = (\<D>_code e\<^isub>1 A \<and> \<D>_code e\<^isub>2 (A \<squnion>\<^isub>f \<lfloor>Cset.insert V bot\<rfloor>))"
 
 | "\<D>s_code ([]) A = True"
 | "\<D>s_code (e#es) A = (\<D>_code e A \<and> \<D>s_code es (A \<squnion>\<^isub>f \<A>_code e))"
 
-primrec hyperFset :: "'a hyperset \<Rightarrow> 'a hyperset_code"
-where "hyperFset None = None"
-| "hyperFset \<lfloor>A\<rfloor> = \<lfloor>Fset A\<rfloor>"
+primrec hyperCset :: "'a hyperset \<Rightarrow> 'a hyperset_code"
+where "hyperCset None = None"
+| "hyperCset \<lfloor>A\<rfloor> = \<lfloor>Cset.Set A\<rfloor>"
 
-lemma hyperFset_inject [simp]: "hyperFset A = hyperFset B \<longleftrightarrow> A = B"
+lemma hyperCset_inject [simp]: "hyperCset A = hyperCset B \<longleftrightarrow> A = B"
 by(cases A)(case_tac [!] B, auto)
 
-lemma hyperUn_code_hyperFset [simp]: "hyperFset A \<squnion>\<^isub>f hyperFset B = hyperFset (A \<squnion> B)"
+lemma hyperUn_code_hyperCset [simp]: "hyperCset A \<squnion>\<^isub>f hyperCset B = hyperCset (A \<squnion> B)"
 by(simp add: hyperUn_code_def hyperUn_def)
 
-lemma hyperInt_code_hyperFset [simp]: "hyperFset A \<sqinter>\<^isub>f hyperFset B = hyperFset (A \<sqinter> B)"
+lemma hyperInt_code_hyperCset [simp]: "hyperCset A \<sqinter>\<^isub>f hyperCset B = hyperCset (A \<sqinter> B)"
 by(simp add: hyperInt_code_def hyperInt_def)
 
-lemma hyper_isin_code_hyperFset [simp]: "(a \<in>\<in>\<^isub>f hyperFset A) = (a \<in>\<in> A)"
+lemma hyper_isin_code_hyperCset [simp]: "(a \<in>\<in>\<^isub>f hyperCset A) = (a \<in>\<in> A)"
 by(simp add: hyper_isin_code_def hyper_isin_def mem_def)
 
-lemma hyperDiff1_code_hyperFset [simp]: "(hyperFset A) \<ominus>\<^isub>f a = hyperFset (A \<ominus> a)"
+lemma hyperDiff1_code_hyperCset [simp]: "(hyperCset A) \<ominus>\<^isub>f a = hyperCset (A \<ominus> a)"
 by(simp add: hyperDiff1_code_def hyperDiff1_def)
 
 lemma fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
-  shows  \<A>_code_conv_\<A>: "\<A>_code e = hyperFset (\<A> e)"
-  and \<A>s_code_conv_\<A>s: "\<A>s_code es = hyperFset (\<A>s es)"
+  shows  \<A>_code_conv_\<A>: "\<A>_code e = hyperCset (\<A> e)"
+  and \<A>s_code_conv_\<A>s: "\<A>s_code es = hyperCset (\<A>s es)"
 apply(induct e and es)
 apply auto
 apply(simp add: hyperUn_code_def hyperUn_def)
 done
 
 lemma fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
-  shows  \<D>_code_conv_\<D>: "\<D>_code e (hyperFset A) = \<D> e A"
-  and \<D>s_code_conv_\<D>s: "\<D>s_code es (hyperFset A) = \<D>s es A"
+  shows  \<D>_code_conv_\<D>: "\<D>_code e (hyperCset A) = \<D> e A"
+  and \<D>s_code_conv_\<D>s: "\<D>s_code es (hyperCset A) = \<D>s es A"
 apply(induct e and es arbitrary: A and A)
-apply(simp_all add: \<A>_code_conv_\<A> \<A>s_code_conv_\<A>s hyperFset.simps[symmetric] del: hyperFset.simps)
+apply(simp_all add: \<A>_code_conv_\<A> \<A>s_code_conv_\<A>s hyperCset.simps[symmetric] del: hyperCset.simps)
 done
 
 end

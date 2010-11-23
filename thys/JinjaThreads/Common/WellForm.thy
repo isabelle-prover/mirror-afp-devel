@@ -817,7 +817,8 @@ apply(rule iffI)
 apply(erule contrapos_np)
 apply simp
 apply clarify
-apply(rule bindI)
+apply (rule SUP1_I)
+apply simp
 apply(erule external_WT_defs_o_i_o_oI)
 apply(simp add: singleI)
 done
@@ -853,7 +854,8 @@ apply(rule iffI)
 apply(erule contrapos_np)
 apply(simp)
 apply clarsimp
-apply(rule bindI)
+apply(rule SUP1_I)
+apply simp
  apply(erule Method_i_i_i_o_o_o_oI)
 apply(auto simp add: singleI)
 done

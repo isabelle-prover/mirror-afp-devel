@@ -152,7 +152,7 @@ lemma card_UNIV_char: "card (UNIV :: char set) = 256"
 proof -
   from enum_distinct
   have "card (set (Enum.enum :: char list)) = length (Enum.enum :: char list)"
-    by - (rule distinct_card)
+    by (rule distinct_card)
   also have "set Enum.enum = (UNIV :: char set)" by auto
   also note enum_chars
   finally show ?thesis by (simp add: chars_def)
