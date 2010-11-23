@@ -364,7 +364,7 @@ where
 
 primrec hyperCset :: "'a hyperset \<Rightarrow> 'a hyperset_code"
 where "hyperCset None = None"
-| "hyperCset \<lfloor>A\<rfloor> = \<lfloor>Cset A\<rfloor>"
+| "hyperCset \<lfloor>A\<rfloor> = \<lfloor>Cset.Set A\<rfloor>"
 
 lemma hyperCset_inject [simp]: "hyperCset A = hyperCset B \<longleftrightarrow> A = B"
 by(cases A)(case_tac [!] B, auto)
