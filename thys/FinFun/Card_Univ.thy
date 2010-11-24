@@ -153,7 +153,7 @@ proof -
   from enum_distinct
   have "card (set (Enum.enum :: char list)) = length (Enum.enum :: char list)"
     by (rule distinct_card)
-  also have "set Enum.enum = (UNIV :: char set)" by auto
+  also have "set Enum.enum = (UNIV :: char set)" by (auto intro: in_enum)
   also note enum_chars
   finally show ?thesis by (simp add: chars_def)
 qed
