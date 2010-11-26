@@ -547,7 +547,7 @@ used to coerce the functions above to be on the natural numbers. *}
 abbreviation "ni_bij == int_decode"
 
 lemma bij_f_o_inf_f: "bij f \<Longrightarrow> f \<circ> inv f = id"
-by(simp add: bij_def surj_iff)
+  unfolding bij_def surj_iff by simp
 
 text {* The following theorem is a key theorem in showing that the
 group we are interested in is cofinitary.  It states that when you
@@ -662,8 +662,8 @@ qed;
 lemma comp_CONJ:
   "CONJ (f \<circ> g) = (CONJ f) \<circ> (CONJ g)" (is "?left = ?right")
 proof -;
-  from bij_int_decode have "surj ni_bij" using bij_def by auto;
-  with surj_iff have "ni_bij \<circ> (inv ni_bij) = id" by auto;
+  from bij_int_decode have "surj ni_bij" unfolding bij_def by auto;
+  then have "ni_bij \<circ> (inv ni_bij) = id" unfolding surj_iff by auto;
   moreover
   have "?left = (inv ni_bij) \<circ> (f \<circ> g) \<circ> ni_bij" by simp;
   hence "?left = (inv ni_bij) \<circ> ((f \<circ> id) \<circ> g) \<circ> ni_bij" by simp;
