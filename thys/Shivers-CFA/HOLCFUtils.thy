@@ -41,7 +41,7 @@ unfolding below_fun_def and below_bool_def
   by (auto simp:mem_def)
 
 lemma lub_is_union: "lub S = \<Union>S"
-apply(rule thelubI)
+apply(rule lub_eqI)
   unfolding is_lub_def and is_ub_def
   by (auto iff:sqsubset_is_subset)
 

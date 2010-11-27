@@ -432,7 +432,7 @@ proof -
     done
   then have P: "P x y"
     unfolding x y fix_def2
-    by (simp add: thelub_cprod)
+    by (simp add: lub_prod)
   have "split Q (\<Squnion>i. (iterate i\<cdot>f\<cdot>\<bottom>, iterate i\<cdot>g\<cdot>\<bottom>))"
     apply (rule admD)
     apply (simp add: split_def adm_Q)
@@ -441,7 +441,7 @@ proof -
     done
   then have Q: "Q x y"
     unfolding x y fix_def2
-    by (simp add: thelub_cprod)
+    by (simp add: lub_prod)
   from P Q show ?thesis by simp
 qed
 
