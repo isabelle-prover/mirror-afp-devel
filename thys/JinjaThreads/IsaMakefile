@@ -22,7 +22,10 @@ LOG = $(OUT)/log
 # base image is not an Isabelle release image, so always source from $(OUT)
 IMAGE=$(OUT)/$(BASE-IMAGE)
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -V outline=/proof,/ML
+# use something like the following in your .isabelle/etc/settings if your 
+# machine does not have enough memory for more threads 
+# JINJATHREADS_OPTIONS="-M 1"
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -V outline=/proof,/ML $(JINJATHREADS_OPTIONS)
 
 ## dependencies
 
