@@ -6,9 +6,9 @@
 header {* Terminated coinductive lists *}
 
 theory TLList imports
-  "Quotient_Coinductive_List"
-  "Quotient_Product"
-  "Quotient_Sum"
+  Quotient_Coinductive_List
+  Quotient_Product
+  Quotient_Sum
 begin
 
 text {*
@@ -83,7 +83,7 @@ lemma tlist_eq_iff: "tlist_eq xsa ysb \<longleftrightarrow> fst xsa = fst ysb \<
 by(cases xsa, cases ysb) auto
 
 lemma equivp_tlist_eq: "equivp tlist_eq"
-by(rule equivpI)(auto simp add: reflp_def symp_def transp_def)
+  by (auto intro!: equivpI reflpI sympI transpI) 
 
 lemma sum_case_respect_tlist_eq [quot_respect]:
   "((op = ===> tlist_eq) ===> (op = ===> tlist_eq) ===> op = ===> tlist_eq) sum_case sum_case"
