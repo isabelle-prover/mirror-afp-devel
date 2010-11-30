@@ -10,14 +10,6 @@ theory LTS imports
   "Quotient_Option"
 begin
 
-lemma option_rel_map1:
-  "option_rel R (Option.map f x) y \<longleftrightarrow> option_rel (\<lambda>x. R (f x)) x y"
-by(cases x)(case_tac [!] y, auto)
-
-lemma option_rel_map2:
-  "option_rel R x (Option.map f y) \<longleftrightarrow> option_rel (\<lambda>x y. R x (f y)) x y"
-by(cases x)(case_tac [!] y, auto)
-
 lemma option_rel_mono:
   "\<lbrakk> option_rel R x y; \<And>x y. R x y \<Longrightarrow> R' x y \<rbrakk> \<Longrightarrow> option_rel R' x y"
 by(cases x)(case_tac [!] y, auto)
@@ -70,7 +62,7 @@ by(auto intro!: ext simp add: flip_def)
 
 lemma option_rel_flip [flip_simps]:
   "option_rel (flip R) = flip (option_rel R)"
-by(simp add: fun_eq_iff split_option_all flip_def)
+by(simp add: fun_eq_iff option_rel_unfold flip_def)
 
 lemma tllist_all2_flip [flip_simps]:
   "tllist_all2 (flip P) (flip Q) xs ys \<longleftrightarrow> tllist_all2 P Q ys xs"
