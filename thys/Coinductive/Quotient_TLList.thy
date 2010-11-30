@@ -9,6 +9,9 @@ theory Quotient_TLList imports
   TLList
 begin
 
+type_mapper tmap
+  by (simp_all add: tmap_id_id [simplified id_def] tmap_compose [simplified comp_def])
+
 declare [[map tllist = (tmap, tllist_all2)]]
 
 lemma tmap_preserve [quot_preserve]:
@@ -77,9 +80,9 @@ proof -
     proof(coinduct)
       case (tllist_all2 ts ts')
       thus ?case using R Q
-        by(cases ts)(auto simp add: reflp_def)
+        by (cases ts) (auto elim: reflpE)
     qed }
-  thus ?thesis by(simp add: reflp_def)
+  thus ?thesis by (auto intro: reflpI)
 qed
 
 lemma tllist_all2_rel:
@@ -96,8 +99,8 @@ proof(intro iffI conjI)
     case (tllist_all2 r r')
     then obtain s where s: "tllist_all2 R1 R2 r s"
       and [simp]: "r' = r" by blast
-    show ?case using s Quotient_rel[OF q1, THEN iffD1] Quotient_rel[OF q2, THEN iffD1]
-      by(cases r)(auto simp add: tllist_all2_TNil1 tllist_all2_TCons1)
+    show ?case using s Quotient_rel [OF q1] Quotient_rel [OF q2]
+      by (cases r) (auto simp add: tllist_all2_TNil1 tllist_all2_TCons1)
   qed
 
   def s' == s
@@ -107,8 +110,8 @@ proof(intro iffI conjI)
     case (tllist_all2 s s')
     then obtain r where r: "tllist_all2 R1 R2 r s"
       and [simp]: "s' = s" by blast
-    show ?case using r Quotient_rel[OF q1, THEN iffD1] Quotient_rel[OF q2, THEN iffD1]
-      by(cases s)(auto simp add: tllist_all2_TNil2 tllist_all2_TCons2)
+    show ?case using r Quotient_rel [OF q1] Quotient_rel [OF q2]
+      by (cases s) (auto simp add: tllist_all2_TNil2 tllist_all2_TCons2)
   qed
 
   def ts == "tmap Abs1 Abs2 r"
@@ -120,15 +123,15 @@ proof(intro iffI conjI)
     case (Eqtllist q)
     then obtain r s where "q = (tmap Abs1 Abs2 r, tmap Abs1 Abs2 s)"
       and "tllist_all2 R1 R2 r s" by blast
-    thus ?case using Quotient_rel[OF q1, THEN iffD1] Quotient_rel[OF q2, THEN iffD1]
-      by(cases r)(fastsimp simp add: tllist_all2_TNil1 tllist_all2_TCons1)+
+    thus ?case using Quotient_rel [OF q1, THEN iffD2] Quotient_rel [OF q2, THEN iffD2]
+      by (cases r) (auto simp add: tllist_all2_TNil1 tllist_all2_TCons1)+
   qed
 next
   assume "?rhs"
   thus "?lhs"
   proof coinduct
     case (tllist_all2 r s) thus ?case
-      by(cases r)(case_tac [!] s, auto simp add: tllist_all2_TCons1 tllist_all2_TNil1 intro: Quotient_rel[OF q1, THEN iffD2] Quotient_rel[OF q2, THEN iffD2])
+      by(cases r)(case_tac [!] s, auto simp add: tllist_all2_TCons1 tllist_all2_TNil1 intro: Quotient_rel[OF q1, THEN iffD1] Quotient_rel[OF q2, THEN iffD1])
   qed
 qed
     
