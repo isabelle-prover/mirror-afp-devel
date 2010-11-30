@@ -10,37 +10,28 @@ theory Quotient_Coinductive_List imports
   Coinductive_List_Lib
 begin
 
-lemma QuotientI:
-  "\<lbrakk> \<And>a. Abs (Rep a) = a; \<And>a. E (Rep a) (Rep a);
-     \<And>r s. E r s = (E r r \<and> E s s \<and> Abs r = Abs s) \<rbrakk>
-  \<Longrightarrow> Quotient E Abs Rep"
-unfolding Quotient_def by blast
-
 lemma transpD: "\<lbrakk> transp R; R a b; R b c \<rbrakk> \<Longrightarrow> R a c"
-by(unfold transp_def) blast
-
-lemma transpI: "(\<And>a b c. \<lbrakk> R a b; R b c \<rbrakk> \<Longrightarrow> R a c) \<Longrightarrow> transp R"
-unfolding transp_def by blast
+  by (erule transpE) blast
 
 lemma id_respect [quot_respect]:
   "(R ===> R) id id"
-  by (auto simp add: fun_eq_iff)
+  by (fact id_rsp)
 
 lemma id_preserve [quot_preserve]:
   assumes "Quotient R Abs Rep"
   shows "(Rep ---> Abs) id = id"
-using Quotient_abs_rep[OF assms]
-by(simp add: fun_eq_iff)
+  using Quotient_abs_rep [OF assms] by (simp add: fun_eq_iff)
 
-
+type_mapper lmap
+  by (simp_all add: lmap_compose [simplified comp_def])
 
 declare [[map llist = (lmap, llist_all2)]]
 
 lemma reflp_llist_all2: "reflp R \<Longrightarrow> reflp (llist_all2 R)"
-by(auto simp add: reflp_def llist_all2_conv_all_lnth)
+  by (auto intro!: reflpI elim: reflpE simp add: llist_all2_conv_all_lnth)
 
 lemma symp_llist_all2: "symp R \<Longrightarrow> symp (llist_all2 R)"
-unfolding symp_def llist_all2_conv_all_lnth by auto
+  by (rule sympI) (auto simp add: llist_all2_conv_all_lnth elim: sympE)
 
 lemma llist_all2_trans:
   "\<lbrakk> llist_all2 P xs ys; llist_all2 P ys zs; transp P \<rbrakk>
@@ -55,15 +46,15 @@ apply(erule (2) transpD)
 done
 
 lemma transp_llist_all2: "transp R \<Longrightarrow> transp (llist_all2 R)"
-by(rule transpI)(rule llist_all2_trans)
+  by (rule transpI) (rule llist_all2_trans)
 
 lemma llist_equivp [quot_equiv]:
   "equivp R \<Longrightarrow> equivp (llist_all2 R)"
-by(simp add: equivp_reflp_symp_transp reflp_llist_all2 symp_llist_all2 transp_llist_all2)
+  by (simp add: equivp_reflp_symp_transp reflp_llist_all2 symp_llist_all2 transp_llist_all2)
 
 lemma Quotient_lmap_Abs_Rep:
   "Quotient R Abs Rep \<Longrightarrow> lmap Abs (lmap Rep a) = a"
-by(drule abs_o_rep)(simp add: lmap_id lmap_compose[symmetric] del: lmap_compose)
+  by (drule abs_o_rep) (simp add: lmap_id lmap_compose [symmetric] del: lmap_compose)
 
 lemma llist_all2_rel:
   assumes "Quotient R Abs Rep"
