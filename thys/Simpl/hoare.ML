@@ -1629,7 +1629,7 @@ fun mark_proven_guards proven t =
              val flt_g = HOLogic.mk_prod (flt,g);
              val flt_gT = fastype_of flt_g
              val gs = HOLogic.mk_list flt_gT [flt_g]
-             val ([_,_,cT],_) = strip_type gT;
+             val [_,_,cT] = binder_types gT;
              val grds = Const (@{const_name Language.guards}, Type (@{type_name list}, [flt_gT]) --> cT --> cT)
            in list_comb (grds,[mark_guards (mark_grd cnt) gs,c1]) end
       | mark cnt (c as Const (@{const_name Language.com.Throw},_)) [] [] = c
