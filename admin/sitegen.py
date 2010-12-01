@@ -527,10 +527,6 @@ def associate_releases(entries, versions, filename):
 					break
 			if not found:
 				warn("In file {0}: In release {1}: Release date {2} has no matching version".format(filename, line, date))
-		for entry, attributes in entries.items(): # TODO intended behaviour?
-			for version_number, dates in attributes['releases'].items():
-				if len(dates) > 1:
-					notice("In file {0}: entry {1} has multiple releases ({2!s}) for the same Isabelle version ({3})".format(filename, entry, dates, version_number))
 	except Exception as ex:
 		error("In file {0}: error".format(filename), exception = ex)
 		error("Not processing releases")
