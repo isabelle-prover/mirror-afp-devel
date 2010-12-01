@@ -104,22 +104,32 @@ done
 if [ "$DIRS" == "" ]; then DIRS=*; fi
 
 FAIL="";
+SKIPPED="";
 
 for DIR in $DIRS; do
     if [ -d $DIR ]; then
         cd $DIR
+        echo "Testing [$DIR]"
         if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
-            echo "Testing [$DIR]"
             if [ "$OPTS" == "" ]; then
                 "$ISABELLE_TOOL" make $CLEAN all || FAIL="${FAIL}${DIR} "
             else
                 "$ISABELLE_TOOL" make $CLEAN all "$OPTS" || FAIL="${FAIL}${DIR} "
             fi
             echo "Finished [$DIR]"
+        else
+            echo "Skipped [$DIR]"
+            SKIPPED="${SKIPPED}${DIR} "
         fi
         cd ..
     fi
 done
+
+if [ "$SKIPPED" != "" ]; then 
+    echo "The following tests were skipped:"
+    echo "$SKIPPED"
+    echo ""
+fi
 
 if [ "$FAIL" != "" ]; then 
     echo "The following tests failed:"
@@ -130,4 +140,3 @@ else
     echo "All tests successful."
     exit 0
 fi
-
