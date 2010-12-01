@@ -15,6 +15,7 @@ $logfile=$ARGV[0];
 $report=$ARGV[1];
 
 $FAIL="FAIL";
+$SKIPPED="skipped";
 $OK="ok";
 
 # read log file
@@ -27,6 +28,11 @@ for $i ( 0 .. $#lines) {
   $_ = $lines[$i];
   if ( /^Testing \[([^\]]+)\]/ ) {
     $tests{$1} = 1;
+  }
+  if ( /The following tests were skipped/ ) {
+    foreach $f (split (/[ \n]/,$lines[$i+1])) {
+      $skipped{$f} = 1;
+    }
   }
   if ( /The following tests failed/ ) {
     foreach $f (split (/[ \n]/,$lines[$i+1])) {
@@ -42,6 +48,7 @@ while (<IN>) {
   ($name, $f) = split /[:]/;
   $old_tests{$name} = 1;
   $old_fail{$name} = ($f =~ /$FAIL/);
+  $old_skipped{$name} = ($f =~ /$SKIPPED/);
 }
 close IN;
 
@@ -51,15 +58,15 @@ rename ($report, $report.".old");
 # write new report
 open (OUT,">$report") || die "could not open [$report] for writing.";
 foreach $t (keys tests) {
-  $status = $fail{$t} ? $FAIL : $OK;
+  $status = $fail{$t} ? $FAIL : ($skipped{$t} ? $SKIPPED : $OK);
   print OUT "$t: $status\n";
 }
 close OUT;
 
 # output diff
 foreach $t (keys old_tests) {
-  $old_status = $old_fail{$t} ? $FAIL : $OK;
-  $new_status = $fail{$t} ? $FAIL : $OK;
+  $old_status = $old_fail{$t} ? $FAIL : ($old_skipped{$t} ? $SKIPPED : $OK);
+  $new_status = $fail{$t} ? $FAIL : ($skipped{$t} ? $SKIPPED : $OK);
   if (!$tests{$t}) {
     print "[$t] was removed. Last status was $old_status.\n";
   }
