@@ -42,6 +42,8 @@
 This entry contains two theories. The first, <tt>Topology</tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <tt>LList_Topology</tt>. It develops the topology of lazy lists.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

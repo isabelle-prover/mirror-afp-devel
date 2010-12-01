@@ -38,7 +38,8 @@ files.
     Currently, only three levels of topics and subtopics are allowed, but
     you may specify as many topics as you wish. If multiple topics are
     specified, the entry will appear under each of them. Note that the
-    short name must be the same as their name in the 'thys' folder.
+    short name must be the same as their name in the 'thys' folder. The topic
+    must also appear in the 'topics' file (see below).
 
     For each author, you may provide an URI (either a web page or a mail
     address, the latter prepended with 'mailto:') in standard <protocol:uri>
@@ -73,6 +74,13 @@ files.
     the metadata file which simply means 'don't generate template 'entry.tpl'
     for this entry'.
 
+    For entries with a license other than BSD, you can add a line
+
+	license = LGPL
+
+    Only BSD and LGPL are supported.
+
+
   * File 'release-dates'
   
     To list the older releases, a mapping between date and Isabelle version
@@ -100,6 +108,18 @@ files.
     afp-AVL-Trees-2009-04-29.tar.gz
     afp-Abstract-Hoare-Logics-2007-11-27.tar.gz
     afp-Abstract-Hoare-Logics-2008-06-10.tar.gz
+
+  * File 'topics'
+
+    Each topic and its subtopics must go into there. The format looks like that
+    (where '_' denotes exactly one space character):
+
+    first_level_topic
+    __second_level_topic
+    ____third_level_topic
+    __another_second_level_topic
+
+    Only three levels of indentation are supported currently.
 
 Metadata directory
 ------------------
@@ -171,6 +191,7 @@ The other parameters are optional. Provide --help to get an explanation.
       * release of unknown entry
       * release matches no known Isabelle version 
         (i.e. release is 'too early')
+      * unknown topic is used in metadata
       
   --debug
   

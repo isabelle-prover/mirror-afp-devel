@@ -311,6 +311,7 @@ title = A Sequential Imperative Programming Language Syntax, Semantics, Hoare Lo
 author = Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
 date = 2008-02-29
 topic = Computer Science/Programming Languages/Language Definitions, Computer Science/Programming Languages/Logics
+license = LGPL
 abstract = We present the theory of Simpl, a sequential imperative programming language. We introduce its syntax, its semantics (big and small-step operational semantics) and Hoare logics for both partial as well as total correctness. We prove soundness and completeness of the Hoare logic. We integrate and automate the Hoare logic in Isabelle/HOL to obtain a practically usable verification environment for imperative programs. Simpl is independent of a concrete programming language but expressive enough to cover all common language features: mutually recursive procedures, abrupt termination and exceptions, runtime faults, local and global variables, pointers and heap, expressions with side effects, pointers to procedures, partial application and closures, dynamic method invocation and also unbounded nondeterminism.
 
 [VolpanoSmith]
@@ -410,6 +411,7 @@ abstract = Gill and Hutton formalise the worker/wrapper transformation, building
 title = Jive Data and Store Model
 author = Nicole Rauch <mailto:rauch@informatik.uni-kl.de>, Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
 date = 2005-06-20
+license = LGPL
 topic = Computer Science/Programming Languages/Misc
 abstract = This document presents the formalization of an object-oriented data and store model in Isabelle/HOL. This model is being used in the Java Interactive Verification Environment, Jive.
 
@@ -476,6 +478,7 @@ title = Invertibility in Sequent Calculi
 author = Peter Chapman <http://www.cs.st-andrews.ac.uk/~pc>
 date = 2009-08-28
 topic = Logic
+license = LGPL
 base = HOL/HOL-Nominal
 abstract = The invertibility of the rules of a sequent calculus is important for guiding proof search and can be used in some formalised proofs of Cut admissibility. We present sufficient conditions for when a rule is invertible with respect to a calculus. We illustrate the conditions with examples. It must be noted we give purely syntactic criteria; no guarantees are given as to the suitability of the rules.
 
@@ -663,6 +666,7 @@ title = Category Theory to Yoneda's Lemma
 author = Greg O'Keefe <http://users.rsise.anu.edu.au/~okeefe/>
 date = 2005-04-21
 topic = Mathematics/Category Theory
+license = LGPL
 abstract = This development proves Yoneda's lemma and aims to be readable by humans. It only defines what is needed for the lemma: categories, functors and natural transformations. Limits, adjunctions and other important concepts are not included.
 extra-history = Change history: [2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/8c2b5b3c995f">8c2b5b3c995f</a>.
 

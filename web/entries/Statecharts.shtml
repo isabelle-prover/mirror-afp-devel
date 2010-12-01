@@ -57,6 +57,8 @@ complete basis for reasoning on Statecharts. As a central meta theorem we
 prove that the well-formedness of a Statechart is preserved by the semantics.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

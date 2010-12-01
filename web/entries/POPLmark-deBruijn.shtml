@@ -47,6 +47,8 @@ de
 We present a solution to the POPLmark challenge designed by Aydemir et al., which has as a goal the formalization of the meta-theory of System F<sub>&lt;:</sub>. The formalization is carried out in the theorem prover Isabelle/HOL using an encoding based on de Bruijn indices. We start with a relatively simple formalization covering only the basic features of System F<sub>&lt;:</sub>, and explain how it can be extended to also cover records and more advanced binding constructs.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
