@@ -5,16 +5,21 @@ no_document use_thys
    "common/Dlist_add",
    "common/Array",
    "Efficient_Nat",
-   "While_Combinator"];
+   "While_Combinator",
+   "../Binomial-Heaps/BinomialHeap",
+   "../Binomial-Heaps/SkewBinomialHeap",
+   "../Finger-Trees/FingerTree"
+   ];
 
 use_thys 
    [ (* Specifications *)
-    "MapSpec", "OrderedMap", "SetSpec", "OrderedSet", "ListSpec",
+    "MapSpec", "OrderedMap", "SetSpec", "OrderedSet", "ListSpec", "AnnotatedListSpec", "PrioSpec", "PrioUniqueSpec",
      (* Generic Algorithms *)
-    "MapGA", "SetGA", "SetByMap", "ListGA", "SetIndex", "Algos",
+    "MapGA", "SetGA", "SetByMap", "ListGA", "SetIndex", "Algos", "AnnotatedListGAPrioImpl", "AnnotatedListGAPrioUniqueImpl",
      (* Implementations *)
     "MapStdImpl", "SetStdImpl",
-    "Fifo"];
+    "Fifo", "BinoPrioImpl", "SkewPrioImpl", "FTAnnotatedListImpl", "FTPrioImpl", "FTPrioUniqueImpl"
+    ];
 
 no_document use_thys ["StdInst"];
 
