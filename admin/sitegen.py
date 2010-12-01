@@ -4,7 +4,6 @@ from UserDict import DictMixin
 from optparse import OptionParser
 from sys import argv, stderr
 from functools import partial
-import textwrap
 import ConfigParser
 import os
 import re
@@ -82,6 +81,11 @@ html_entry_heading = "<h1>{0}</h1>\n<p></p>"
 # {1}: other characters
 html_entry_capitalized = """<font class="first">{0}</font>{1}\n"""
 
+# link to license text
+# {0}: display title
+# {1}: url
+html_license_link = """<a href="{1}">{0}</a>"""
+
 # wrapper for a text column in header
 # {0}: title (e. g. 'Change history')
 # {1}: text
@@ -112,6 +116,8 @@ html_entry_header_wrapper = """
     <tr><td class="datahead">Submission date:</td>
         <td class="data">{2}</td></tr>
 {3}
+    <tr><td class="datahead">License:</td>
+        <td class="data">{4}</td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
@@ -122,8 +128,8 @@ html_entry_header_wrapper = """
 
 <p></p>
 
-<!--#set var="name" value="{4}" -->
-<!--#set var="binfo" value="../browser_info/current/{5}/${{name}}" -->
+<!--#set var="name" value="{5}" -->
+<!--#set var="binfo" value="../browser_info/current/{6}/${{name}}" -->
 """
 
 # list wrapper for older releases
@@ -157,8 +163,21 @@ attribute_schema = {
 	'title': (False, None, None),
 	'abstract': (False, None, None),
 	'base': (False, None, "HOL"),
+	'license': (False, "parse_license", "BSD"),
 	'ignore': (True, None, ""),
 	'extra*': (False, "parse_extra", None)
+}
+
+### licenses
+
+# key : (title, url)
+#   'key' denotes the short name of the license (e. g. 'LGPL')
+#   'title' denotes the display title of the license (e. g. 'GNU Lesser General Public License (LGPL)')
+#   'url' contains the url of the license text
+
+licenses = {
+	'LGPL': ("GNU Lesser General Public License (LGPL)", "http://afp.sourceforge.net/LICENSE.LGPL"),
+	'BSD': ("BSD License", "http://afp.sourceforge.net/LICENSE"),
 }
 
 ### template files
@@ -290,14 +309,21 @@ class Tree(object):
 		self.subtopics = Ordered_Dict()
 		self.entries = []
 
-	def add_to_topic(self, topic, entry):
+	def add_topic(self, topic):
 		if len(topic) > 0:
 			if topic[0] not in self.subtopics:
 				tree = Tree()
 				self.subtopics[topic[0]] = tree
 			else:
 				tree = self.subtopics[topic[0]]
-			tree.add_to_topic(topic[1:], entry)
+			tree.add_topic(topic[1:])
+
+	def add_to_topic(self, topic, entry):
+		if len(topic) > 0:
+			if topic[0] not in self.subtopics:
+				warn("In entry {0}: unknown (sub)topic {1}".format(entry, topic))
+			else:
+				self.subtopics[topic[0]].add_to_topic(topic[1:], entry)
 		else:
 			self.entries.append(entry)
 
@@ -464,7 +490,7 @@ def read_versions(filename):
 # reads the list of entry releases (metadata/releases)
 def associate_releases(entries, versions, filename):
 	for _, attributes in entries.items():
-		attributes['releases'] = []
+		attributes['releases'] = Ordered_Dict()
 	prog = re.compile(release_pattern)
 	warnings = {}
 	try:
@@ -493,20 +519,46 @@ def associate_releases(entries, versions, filename):
 			entry, date = line
 			for version_number, version_date in versions:
 				if version_date <= date:
-					entries[entry]['releases'].append((version_number, date))
+					entry_releases = entries[entry]['releases']
+					if version_number not in entry_releases:
+						entry_releases[version_number] = []
+					entry_releases[version_number].append(date)
 					found = True
 					break
 			if not found:
 				warn("In file {0}: In release {1}: Release date {2} has no matching version".format(filename, line, date))
+		for entry, attributes in entries.items(): # TODO intended behaviour?
+			for version_number, dates in attributes['releases'].items():
+				if len(dates) > 1:
+					notice("In file {0}: entry {1} has multiple releases ({2!s}) for the same Isabelle version ({3})".format(filename, entry, dates, version_number))
 	except Exception as ex:
 		error("In file {0}: error".format(filename), exception = ex)
 		error("Not processing releases")
 	finally:
 		debug([(entry, attributes['releases']) for entry, attributes in entries.items()], title = "Releases")
 
+def read_topics(filename):
+	tree = Tree()
+	stack = []
+	with open(filename) as input:
+		for line in input:
+			count = 0
+			while line[count] == ' ':
+				count += 1
+			if count % 2:
+				raise Exception("Illegal indentation at line '{0}'".format(line))
+			level = count // 2
+			if level <= len(stack):
+				stack = stack[0:level]
+			else:
+				raise Exception("Illegal indentation at line '{0}'".format(line))
+			stack.append(line[count:len(line)-1])
+			tree.add_topic(stack)
+	return tree
+
 # for topics page: group entries by topic
 def collect_topics(entries):
-	tree = Tree()
+	tree = read_topics(os.path.join(metadata_dir, "topics"))
 	for entry, attributes in entries:
 		for topic in attributes['topic']:
 			tree.add_to_topic([str.strip() for str in topic.split('/')], entry)
@@ -531,6 +583,11 @@ def collect_years(entries):
 def parse_extra(extra, **kwargs):
 	k, v = extra.split(":", 1)
 	return k.strip(), v.strip()
+
+def parse_license(license, **kwargs):
+	if license not in licenses:
+		raise ValueError("Unknown license {0}".formate(license))
+	return licenses[license]
 
 # extracts name and URL from 'name <URL>' as a pair
 def parse_author(author, entry, key):
@@ -645,15 +702,16 @@ def generate_entry(entry, attributes, param):
 			generate_author_list(attributes['author'], ' ', ignore_mail = False),
 			attributes['date'],
 			text_columns,
+			html_license_link.format(attributes['license'][0], attributes['license'][1]),
 			entry,
 			attributes['base']
 		)
 	elif param == "older":
 		if len(attributes['releases']) > 1:
-			result = html_entry_older_list.format(
-				"".join(html_entry_older_release.format(version, release_date)
-						for version, release_date in attributes['releases'][1:])
-			)
+			str = ""
+			for version, release_dates in attributes['releases'].items()[1:]:
+				str += "".join(html_entry_older_release.format(version, release_date) for release_date in release_dates)
+			result = html_entry_older_list.format(str)
 		else:
 			result = "None"
 	else:
