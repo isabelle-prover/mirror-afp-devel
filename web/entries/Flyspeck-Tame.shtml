@@ -45,6 +45,8 @@
 These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his proof of the Kepler Conjecture. For explanations see the IJCAR 2006 paper by Nipkow, Bauer and Schultz.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

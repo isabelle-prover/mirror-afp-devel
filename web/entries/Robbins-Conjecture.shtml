@@ -48,6 +48,8 @@ the
 This document gives a formalization of the proof of the Robbins conjecture, following A. Mann, <i>A Complete Proof of the Robbins Conjecture</i>, 2003.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

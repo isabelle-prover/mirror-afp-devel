@@ -43,6 +43,8 @@
 These theories illustrates the verification of basic file operations (file creation, file read and file write) in the Isabelle theorem prover. We describe a file at two levels of abstraction: an abstract file represented as a resizable array, and a concrete file represented using data blocks.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

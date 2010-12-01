@@ -48,6 +48,8 @@ in
 We formalize the type system, small-step operational semantics, and type soundness proof for Featherweight Java, a simple object calculus, in Isabelle/HOL.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

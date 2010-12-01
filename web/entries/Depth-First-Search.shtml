@@ -44,6 +44,8 @@
 Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

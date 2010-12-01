@@ -43,6 +43,8 @@
 Stream Fusion is a system for removing intermediate list structures from Haskell programs; it consists of a Haskell library along with several compiler rewrite rules. (The library is available <a href="http://www.cse.unsw.edu.au/~dons/streams.html">online</a>.)<br><br>These theories contain a formalization of much of the Stream Fusion library in HOLCF. Lazy list and stream types are defined, along with coercions between the two types, as well as an equivalence relation for streams that generate the same list. List and stream versions of map, filter, foldr, enumFromTo, append, zipWith, and concatMap are defined, and the stream versions are shown to respect stream equivalence.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

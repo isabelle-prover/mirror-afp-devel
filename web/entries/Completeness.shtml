@@ -43,6 +43,8 @@ theorem
 The completeness of first-order logic is proved, following the first five pages of Wainer and Wallen's chapter of the book <i>Proof Theory</i> by Aczel et al., CUP, 1992. Their presentation of formulas allows the proofs to use symmetry arguments. Margetson formalized this theorem by early 2000. The Isar conversion is thanks to Tom Ridge. A paper describing the formalization is available <a href="Completeness-paper.pdf">[pdf]</a>.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
