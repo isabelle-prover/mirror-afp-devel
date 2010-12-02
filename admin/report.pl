@@ -80,7 +80,7 @@ foreach $t (keys old_tests) {
 
 foreach $t (keys tests) {
   if (!$old_tests{$t}) {
-    $new_status = $fail{$t} ? $FAIL : $OK;
+    $new_status = $fail{$t} ? $FAIL : ($skipped{$t} ? $SKIPPED : $OK);
     print "[$t] is new. Status is $new_status.\n";
   }
 }
