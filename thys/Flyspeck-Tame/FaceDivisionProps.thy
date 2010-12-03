@@ -3428,7 +3428,7 @@ apply(auto)
 done
 
 
-(********************* Vorbereitung für subdivFace *****************)
+(********************* Vorbereitung fÃ¼r subdivFace *****************)
 
 (**** computes the list of ram vertices **********)
 subsection {* @{text removeNones} *}
@@ -3915,7 +3915,7 @@ definition pre_subdivFace :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Ri
 "pre_subdivFace g f v' vOptionList \<equiv>
   pre_subdivFace_face f v' vOptionList \<and> \<not> invalidVertexList g f vOptionList"
 
-(* zu teilende Fläche, ursprüngliches v, erster Ram-Punkt, Anzahl der überlaufenen NOnes, rest der vol *)
+(* zu teilende FlÃ¤che, ursprÃ¼ngliches v, erster Ram-Punkt, Anzahl der Ã¼berlaufenen NOnes, rest der vol *)
 definition pre_subdivFace' :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> nat \<Rightarrow> vertex option list \<Rightarrow> bool" where
 "pre_subdivFace' g f v' ram1 n vOptionList \<equiv>
   \<not> final f \<and> v' \<in> \<V> f \<and> ram1 \<in> \<V> f
@@ -4189,7 +4189,7 @@ qed
 
 
 
-(* später ggf. pre_splitFace eliminieren *)
+(* spÃ¤ter ggf. pre_splitFace eliminieren *)
 (* nein, Elimination nicht sinnvoll *)
 lemma pre_subdivFace'_Some1':
 assumes pre_add: "pre_subdivFace' g f v' v n ((Some u) # vol)"

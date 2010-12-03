@@ -1,7 +1,7 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
     ID:          $Id: LynchInstance.thy,v 1.12 2008-06-12 06:57:16 lsf37 Exp $
-    Author:      Dami·n Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
-    Maintainer:  Dami·n Barsotti <damian at hal.famaf.unc.edu.ar>
+    Author:      Dami√°n Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
+    Maintainer:  Dami√°n Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
 
 header {* Fault-tolerant Midpoint algorithm *}

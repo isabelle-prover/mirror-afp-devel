@@ -72,10 +72,10 @@ fun bdt_fn :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt optio
          |(Some b2) \<Rightarrow> Some (Bdt_Node b1 (bdtvar vref) b2)))))"
 
 (*
-Kongruenzregeln sind das Feintuning f¸r den Simplifier (siehe Kapitel 9 im Isabelle
-Tutorial). Im Fall von case wird standardm‰ﬂig nur die case bedingung nicht
-aber die einzelnen F‰lle simplifiziert, analog dazu beim if. Dies simuliert die
-Auswertungsstrategie einer Programmiersprache, da wird auch zun‰chst nur die
+Kongruenzregeln sind das Feintuning f√ºr den Simplifier (siehe Kapitel 9 im Isabelle
+Tutorial). Im Fall von case wird standardm√§√üig nur die case bedingung nicht
+aber die einzelnen F√§lle simplifiziert, analog dazu beim if. Dies simuliert die
+Auswertungsstrategie einer Programmiersprache, da wird auch zun√§chst nur die
 Bedingung vereinfacht. Will man mehr so kann man die entsprechenden Kongruenz 
 regeln dazunehmen.
 *)
@@ -1384,7 +1384,7 @@ lemma reduced_children_parent:
  \<Longrightarrow> reduced (Node l p r)"
   by simp
 
-(*Die allgemeine Form mit i <=j \<Longrightarrow> Nodes i levellista \<subseteq> Nodes j levellista w‰re schˆner, aber wie beweist man das? *)
+(*Die allgemeine Form mit i <=j \<Longrightarrow> Nodes i levellista \<subseteq> Nodes j levellista w√§re sch√∂ner, aber wie beweist man das? *)
 lemma Nodes_subset: "Nodes i levellista \<subseteq> Nodes (Suc i) levellista"
   apply (simp add: Nodes_def)
   apply (simp add: set_split)

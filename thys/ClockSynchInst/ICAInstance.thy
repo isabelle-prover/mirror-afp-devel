@@ -1,6 +1,6 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    Author:      Dami·n Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
-    Maintainer:  Dami·n Barsotti <damian at hal.famaf.unc.edu.ar>
+    Author:      Dami√°n Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
+    Maintainer:  Dami√°n Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
 
 header {* Interactive Convergence Algorithms (ICA) *}

@@ -1,6 +1,6 @@
 (*  Title:       Much Ado about Two
-    Author:      Sascha Böhme <boehmes@informatik.tu-muenchen.de>, 2007
-    Maintainer:  Sascha Böhme <boehmes@informatik.tu-muenchen.de>
+    Author:      Sascha BÃ¶hme <boehmes@informatik.tu-muenchen.de>, 2007
+    Maintainer:  Sascha BÃ¶hme <boehmes@informatik.tu-muenchen.de>
 *)
 
 

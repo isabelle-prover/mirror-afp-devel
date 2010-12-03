@@ -1,6 +1,6 @@
 (*  Title:      statecharts/Examples/CarAudioSystem.thy
     ID:         $Id: CarAudioSystem.thy,v 1.1 2010/07/27 16:39:50 helke Exp $
-    Author:     Steffen Helke and Florian Kammüller, Software Engineering Group
+    Author:     Steffen Helke and Florian KammÃ¼ller, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)
 
