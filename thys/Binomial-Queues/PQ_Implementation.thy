@@ -695,13 +695,13 @@ by (induct xs) simp_all
 
 lemma dfs_match_subset:
   "set (dfs f (map (match a) xs)) \<subseteq> set (dfs f xs)"
-proof (induct xs rule: List.induct)
+proof (induct xs rule: list.induct)
   case (Cons x xs) then show ?case by (cases x) auto
 qed simp
 
 lemma dfs_match_distinct:
   "distinct (dfs f xs) \<Longrightarrow> distinct (dfs f (map (match a) xs))"
-proof (induct xs rule: List.induct)
+proof (induct xs rule: list.induct)
   case (Cons x xs) then show ?case
     using dfs_match_subset[of f a xs]
     by (cases x, auto)
