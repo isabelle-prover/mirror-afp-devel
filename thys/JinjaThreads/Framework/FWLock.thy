@@ -22,7 +22,7 @@ lemma has_locksE:
      \<And>n'. \<lbrakk> l = \<lfloor>(t, n')\<rfloor>; Suc n' = n \<rbrakk> \<Longrightarrow> P;
      \<And>t' n'. \<lbrakk> l = \<lfloor>(t', n')\<rfloor>; t' \<noteq> t; n = 0 \<rbrakk> \<Longrightarrow> P \<rbrakk>
   \<Longrightarrow> P"
-by(auto simp add: has_locks_iff split: split_if_asm Product_Type.split_asm)
+by(auto simp add: has_locks_iff split: split_if_asm prod.split_asm)
 
 
 inductive may_lock :: "'t lock \<Rightarrow> 't \<Rightarrow> bool" where
