@@ -142,7 +142,7 @@ by(cases l, auto split: split_if_asm intro!: may_lockI elim: may_lockE)
 
 lemma may_lock_t_may_lock_unlock_lock_t: 
   "may_lock l t \<Longrightarrow> may_lock (unlock_lock l) t"
-by(auto intro: may_lock.intros elim!: may_lockE split:Nat.split)
+by(auto intro: may_lock.intros elim!: may_lockE split: nat.split)
 
 
 lemma may_lock_has_locks_lock_lock_0: 
