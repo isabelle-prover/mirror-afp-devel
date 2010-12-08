@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Natural where {
 
