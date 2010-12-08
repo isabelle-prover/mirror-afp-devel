@@ -44,8 +44,8 @@ unfolding JVM_SemiType.sup_def JVM_SemiType.sl_def Opt.esl_def Err.sl_def
   SemiType.esl_def Err.esl_def 
 by simp
 
-(* FIXME: why is @{thm sup_fun_eq} declared [code del] in Lattices.thy? *)
-declare sup_fun_eq [code] 
+(* FIXME: why is @{thm sup_fun_def} declared [code del] in Lattices.thy? *)
+declare sup_fun_def [code] 
 
 lemma [code]: "states P mxs mxl = fst(sl P mxs mxl)"
 unfolding states_def ..

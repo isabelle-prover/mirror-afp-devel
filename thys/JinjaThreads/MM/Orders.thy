@@ -59,10 +59,10 @@ lemma refl_onPD2: "refl_onP A r ==> r a b ==> b : A"
 by(erule refl_onD2)(simp)
 
 lemma refl_onP_Int: "refl_onP A r ==> refl_onP B s ==> refl_onP (A \<inter> B) (\<lambda>a a'. r a a' \<and> s a a')"
-by(drule (1) refl_on_Int)(simp add: Collect_def split_def inf_fun_eq inf_bool_eq)
+by(drule (1) refl_on_Int)(simp add: Collect_def split_def inf_fun_def inf_bool_def)
 
 lemma refl_onP_Un: "refl_onP A r ==> refl_onP B s ==> refl_onP (A \<union> B) (\<lambda>a a'. r a a' \<or> s a a')"
-by(drule (1) refl_on_Un)(simp add: Collect_def split_def sup_fun_eq sup_bool_eq)
+by(drule (1) refl_on_Un)(simp add: Collect_def split_def sup_fun_def sup_bool_def)
 
 lemma refl_onP_empty[simp]: "refl_onP {} (\<lambda>a a'. False)"
 unfolding split_def by simp

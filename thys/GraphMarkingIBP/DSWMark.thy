@@ -261,7 +261,7 @@ theorem [simp]:
   "ClassicInit \<subseteq> (angelic RR (angelic R1' (angelic R1 (SetMarkInv init))))";
   apply (simp add: SetMarkInv_def);
   apply (simp add: ClassicInit_def angelic_def RR_def R1'_def R1_def Init_def Init''_def);
-  apply (simp add: mem_def simp_eq_emptyset inf_fun_eq inf_bool_eq); 
+  apply (simp add: mem_def simp_eq_emptyset inf_fun_def inf_bool_def); 
   apply clarify;
   apply (simp add: simp_set_function);
   apply (simp_all add: fun_eq_iff link0_def label0_def simp_set_function);
@@ -275,7 +275,7 @@ theorem [simp]:
   "(angelic RR (angelic R1' (angelic R1 (SetMarkInv final)))) \<le> ClassicFinal";
   apply (simp add: SetMarkInv_def);
   apply (simp add: ClassicFinal_def angelic_def RR_def R1'_def R1_def Final_def Final''_def Init''_def label0_def link0_def);
-  apply (simp add: mem_def simp_eq_emptyset inf_fun_eq inf_bool_eq);
+  apply (simp add: mem_def simp_eq_emptyset inf_fun_def inf_bool_def);
   apply (simp_all add: simp_set_function link0_def);
   apply safe;
   apply (simp_all add: simp_set_function);
@@ -331,7 +331,7 @@ lemma [simp]:
   apply auto;
   apply (rule_tac x = loop in exI);
   apply auto;
-  apply (simp add: QQ1_def QQ2_def sup_fun_eq sup_bool_eq);
+  apply (simp add: QQ1_def QQ2_def sup_fun_def sup_bool_def);
   by (simp add: mem_def simp_set_function exists_or);
 
 lemma [simp]:
@@ -345,8 +345,8 @@ lemma [simp]:
   apply auto;
   apply (unfold ClassicMark_rel_def);
   apply auto;
-  apply (simp add: bot_fun_eq bot_bool_eq);
-  apply (simp add: QQ3_def QQ4_def QQ5_def QQ6_def QQ7_def QQ8_def sup_fun_eq sup_bool_eq);
+  apply (simp add: bot_fun_def bot_bool_def);
+  apply (simp add: QQ3_def QQ4_def QQ5_def QQ6_def QQ7_def QQ8_def sup_fun_def sup_bool_def);
   apply (simp add: mem_def simp_set_function);
   apply (case_tac "a \<noteq> nil");
   apply auto;
@@ -371,10 +371,10 @@ theorem "\<Turnstile> ClassicPre {| pt ClassicMark |} ClassicPost";
   apply (rule le_funI)
   apply (case_tac x);
   apply (rule le_funI)
-  apply (simp add: inf_fun_eq mem_def);
+  apply (simp add: inf_fun_def mem_def);
   apply (rule le_funI)
-  apply (simp add: inf_fun_eq mem_def);
-  apply (subst inf_fun_eq)
+  apply (simp add: inf_fun_def mem_def);
+  apply (subst inf_fun_def)
   apply (simp_all add: dangelic_def);
   apply (rule_tac y = "angelic RR (angelic R1' (angelic R1 (SetMarkInv final)))" in order_trans)
   apply auto [1];
