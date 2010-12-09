@@ -22,7 +22,7 @@ lemma id_preserve [quot_preserve]:
   shows "(Rep ---> Abs) id = id"
   using Quotient_abs_rep [OF assms] by (simp add: fun_eq_iff)
 
-type_mapper lmap
+type_lifting lmap
   by (simp_all add: lmap_compose [simplified comp_def])
 
 declare [[map llist = (lmap, llist_all2)]]
