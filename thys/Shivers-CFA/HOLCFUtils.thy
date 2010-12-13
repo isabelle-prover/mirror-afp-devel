@@ -153,7 +153,7 @@ assume chain: "chain Y"
 assume "\<forall>i. y \<notin> Y i" hence  "(\<Squnion> i. Y i y) = False"
   unfolding mem_def by (auto simp del: const_False_is_bot)
 thus "y \<notin> (\<Squnion> i. Y i)"
-  using chain unfolding mem_def by (subst thelub_fun) auto
+  using chain unfolding mem_def by (subst lub_fun) auto
 qed
 
 lemma adm_id[simp]: "adm (\<lambda>x . x)"
