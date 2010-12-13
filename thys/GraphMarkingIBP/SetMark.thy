@@ -327,15 +327,15 @@ proof (rule_tac X = "SetMarkInvTerm" in hoare_diagram3)
     apply (simp_all add: SetMarkInv_def)
     done
   show "SUP SetMarkInvTerm \<sqinter> - grd (step SetMark) \<le> SetMarkInvFinal"
-  apply (auto simp add: SetMark_def SUP_L_P_def
-       less_pair_def less_I_def not_grd_dgr hoare_choice SetMarkInv_def SetMarkInvFinal_def neg_fun_pred SetMark_def)
-  apply (drule_tac x="I.loop" in spec)
-  apply (simp add: Q1_def Q2_def)
-  apply auto
-  apply (frule_tac x="I.loop" in spec)
-  apply (drule_tac x="I.final" in spec)
-  apply (simp add: Q3_def Q4_def Q5_def)
-  by auto
+    apply (auto simp add: SetMark_def SetMarkInvFinal_def neg_fun_pred simp del: bool_Compl_def)
+    apply (drule_tac x="I.loop" in spec)
+    apply (simp add: Q1_def Q2_def)
+    apply auto
+    apply (frule_tac x="I.loop" in spec)
+    apply (drule_tac x="I.final" in spec)
+    apply (simp add: Q3_def Q4_def Q5_def)
+    apply (auto)
+    done
 qed
 
 theorem (in graph) SetMark_correct1 [simp]:
