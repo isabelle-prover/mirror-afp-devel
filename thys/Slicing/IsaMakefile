@@ -1,6 +1,6 @@
 ## configurables
 
-SESSION-NAME = HRB-Slicing
+SESSION-NAME = Slicing
 BASE-IMAGE = Jinja
 
 ## targets
