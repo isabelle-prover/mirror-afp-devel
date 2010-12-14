@@ -49,4 +49,3 @@ $(LOG)/$(SESSION-NAME).gz: $(IMAGE) ROOT.ML HRBSlicing.thy \
 clean:
 	@rm -f $(LOG)/$(SESSION-NAME).gz
 	@rm -f $(OUT)/$(SESSION-NAME)
-
