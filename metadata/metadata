@@ -299,6 +299,10 @@ extra-history =
   [2010-10-15]:
         preliminary version of the Java memory model for source code
         (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/02fee0ef3ca2">02fee0ef3ca2</a>)
+  [2010-12-16]:
+        improved version of the Java memory model, also for bytecode
+        executable scheduler for source code semantics
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/1f41c1842f5a">1f41c1842f5a</a>)
 
 [Locally-Nameless-Sigma]
 title = Locally Nameless Sigma Calculus
