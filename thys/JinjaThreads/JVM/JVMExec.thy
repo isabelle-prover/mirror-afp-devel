@@ -69,8 +69,8 @@ where
 definition JVM_start_state' :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> 'heap jvm_state"
 where
   "JVM_start_state' P C M vs \<equiv>
-   let (Ts, T, D, mxs, mxl0, b) = method P C M
-   in (None, start_heap, [([], Null # vs @ replicate mxl0 undefined, C, M, 0)])"
+   let (D, Ts, T, mxs, mxl0, b) = method P C M
+   in (None, start_heap, [([], Null # vs @ replicate mxl0 undefined, D, M, 0)])"
 
 end
 

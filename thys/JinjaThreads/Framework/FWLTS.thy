@@ -103,8 +103,7 @@ locale \<tau>multithreaded_wf =
   \<tau>multithreaded _ _ _ \<tau>move +
   final_thread_wf final r convert_RA
   for \<tau>move :: "('l,'t,'x,'m,'w,'o) \<tau>moves" +
-  fixes wfs :: "'t \<Rightarrow> 'x \<times> 'm \<Rightarrow> bool"
-  assumes \<tau>move_heap: "\<lbrakk> wfs t (x, m); t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); \<tau>move (x, m) ta (x', m') \<rbrakk> \<Longrightarrow> m = m'"
+  assumes \<tau>move_heap: "\<lbrakk> t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); \<tau>move (x, m) ta (x', m') \<rbrakk> \<Longrightarrow> m = m'"
   assumes silent_tl: "\<tau>move s ta s' \<Longrightarrow> ta = \<epsilon>"
 begin
 
@@ -112,11 +111,10 @@ lemma m\<tau>move_silentD: "m\<tau>move s (t, ta) s' \<Longrightarrow> ta = (\<l
 by(auto elim!: m\<tau>move.cases dest: silent_tl)
 
 lemma m\<tau>move_heap: 
-  assumes wfs: "wfs t (fst (the (thr s t)), shr s)"
-  and redT: "redT s (t, ta) s'"
+  assumes redT: "redT s (t, ta) s'"
   and m\<tau>move: "m\<tau>move s (t, ta) s'"
   shows "shr s' = shr s"
-using m\<tau>move redT wfs
+using m\<tau>move redT
 by cases(auto dest: \<tau>move_heap elim!: redT.cases)
 
 lemma \<tau>mredT_thread_preserved:
@@ -172,35 +170,8 @@ apply(induct rule: tranclp_induct)
 apply(blast dest: \<tau>mtRedT_thread_preserved[where t=t] \<tau>mredT_add_thread_inv[where xln=xln] intro: tranclp.trancl_into_trancl)+
 done
 
-definition wfs_inv :: "bool" where
-  "wfs_inv \<equiv> (\<forall>s ta s' t. wfs t s \<longrightarrow> t \<turnstile> s -ta\<rightarrow> s' \<longrightarrow> wfs t s')"
-
-lemma wfs_invI:
-  "(\<And>s ta s' t. \<lbrakk> wfs t s; t \<turnstile> s -ta\<rightarrow> s' \<rbrakk> \<Longrightarrow> wfs t s')
-  \<Longrightarrow> wfs_inv"
-by(auto simp add: wfs_inv_def)
-
-lemma wfs_invD:
-  "\<lbrakk> wfs_inv; wfs t s; t \<turnstile> s -ta\<rightarrow> s' \<rbrakk> \<Longrightarrow> wfs t s'"
-unfolding wfs_inv_def by blast
-
-lemma wfs_inv_\<tau>s_inv:
-  assumes inv: "wfs_inv" and wfs: "wfs t s"
-  and red: "silent_moves t s s'"
-  shows "wfs t s'"
-using red wfs
-by(induct rule: rtranclp_induct)(fastsimp elim: wfs_invD[OF inv])+
-
-lemma wfs_inv_trancl_inv:
-  assumes inv: "wfs_inv" and wfs: "wfs t s"
-  and red: "silent_movet t s s'"
-  shows "wfs t s'"
-using red wfs
-by(induct rule: tranclp_induct)(fastsimp simp add: silent_move_iff elim: wfs_invD[OF inv])+
-
 lemma silent_move_into_RedT_\<tau>_inv:
   assumes move: "silent_move t (x, shr s) (x', m')"
-  and wfs: "wfs t (x, shr s)"
   and state: "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "wset s t = None"
   shows "\<tau>mredT s (redT_upd_\<epsilon> s t x' m')"
 proof -
@@ -209,58 +180,49 @@ proof -
   from red state have "s -t\<triangleright>\<epsilon>\<rightarrow> redT_upd_\<epsilon> s t x' m'"
     by -(rule redT_normal, auto simp add: redT_updLns_def o_def finfun_Diag_const2 redT_updWs_def)
   moreover from \<tau> red state have "m\<tau>move s (t, \<epsilon>) (redT_upd_\<epsilon> s t x' m')"
-    by -(rule m\<tau>move.intros, auto dest: \<tau>move_heap[OF wfs] simp add: redT_updLns_def)
+    by -(rule m\<tau>move.intros, auto dest: \<tau>move_heap simp add: redT_updLns_def)
   ultimately show ?thesis by auto
 qed
 
 lemma silent_moves_into_RedT_\<tau>_inv:
-  assumes inv: "wfs_inv"
-  and major: "silent_moves t (x, shr s) (x', m')"
-  and bisim: "wfs t (x, shr s)"
+  assumes major: "silent_moves t (x, shr s) (x', m')"
   and state: "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "wset s t = None"
   shows "\<tau>mredT^** s (redT_upd_\<epsilon> s t x' m')"
-using major bisim
+using major
 proof(induct rule: rtranclp_induct2)
   case refl with state show ?case by(cases s)(auto simp add: fun_upd_idem)
 next
   case (step x' m' x'' m'')
-  note IH = `wfs t (x, shr s) \<Longrightarrow> \<tau>mredT^** s (redT_upd_\<epsilon> s t x' m')`
-  from `wfs t (x, shr s)` `silent_moves t (x, shr s) (x', m')`
-  have wfs': "wfs t (x', m')" by(rule wfs_inv_\<tau>s_inv[OF inv])
-  with `silent_move t (x', m') (x'', m'')` state
+  from `silent_move t (x', m') (x'', m'')` state
   have "\<tau>mredT (redT_upd_\<epsilon> s t x' m') (redT_upd_\<epsilon> (redT_upd_\<epsilon> s t x' m') t x'' m'')"
     by -(rule silent_move_into_RedT_\<tau>_inv, auto)
   hence "\<tau>mredT (redT_upd_\<epsilon> s t x' m') (redT_upd_\<epsilon> s t x'' m'')" by(simp)
-  with IH[OF `wfs t (x, shr s)`] show ?case ..
+  with `\<tau>mredT^** s (redT_upd_\<epsilon> s t x' m')` show ?case ..
 qed
 
 lemma red_rtrancl_\<tau>_heapD_inv:
-  assumes inv: "wfs_inv"
-  shows "\<lbrakk> silent_moves t s s'; wfs t s \<rbrakk> \<Longrightarrow> snd s' = snd s"
+  "\<lbrakk> silent_moves t s s'; wfs t s \<rbrakk> \<Longrightarrow> snd s' = snd s"
 proof(induct rule: rtranclp_induct)
   case base show ?case ..
 next
   case (step s' s'')
-  thus ?case by(cases s, cases s', cases s'')(auto dest: \<tau>move_heap  wfs_inv_\<tau>s_inv[OF inv])
+  thus ?case by(cases s, cases s', cases s'')(auto dest: \<tau>move_heap)
 qed
 
 lemma red_trancl_\<tau>_heapD_inv:
-  assumes inv: "wfs_inv"
-  shows "\<lbrakk> silent_movet t s s'; wfs t s \<rbrakk> \<Longrightarrow> snd s' = snd s"
+  "\<lbrakk> silent_movet t s s'; wfs t s \<rbrakk> \<Longrightarrow> snd s' = snd s"
 proof(induct rule: tranclp_induct)
   case (base s') thus ?case by(cases s')(cases s, auto simp add: silent_move_iff dest: \<tau>move_heap)
 next
   case (step s' s'')
-  thus ?case by(cases s, cases s', cases s'')(auto simp add: silent_move_iff dest: \<tau>move_heap wfs_inv_trancl_inv[OF inv])
+  thus ?case by(cases s, cases s', cases s'')(auto simp add: silent_move_iff dest: \<tau>move_heap)
 qed
 
 lemma red_trancl_\<tau>_into_RedT_\<tau>_inv:
-  assumes inv: "wfs_inv"
-  and major: "silent_movet t (x, shr s) (x', m')"
-  and bisim: "wfs t (x, shr s)"
+  assumes major: "silent_movet t (x, shr s) (x', m')"
   and state: "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "wset s t = None"
   shows "\<tau>mredT^++ s (redT_upd_\<epsilon> s t x' m')"
-using major bisim
+using major
 proof(induct rule: tranclp_induct2)
   case (base x' m')
   thus ?case using state
@@ -268,9 +230,7 @@ proof(induct rule: tranclp_induct2)
 next
   case (step x' m' x'' m'')
   hence "\<tau>mredT^++ s (redT_upd_\<epsilon> s t x' m')" by blast
-  moreover from `wfs t (x, shr s)` `silent_movet t (x, shr s) (x', m')`
-  have wfs': "wfs t (x', m')" by(rule wfs_inv_trancl_inv[OF inv])
-  with `silent_move t (x', m') (x'', m'')` state
+  moreover from `silent_move t (x', m') (x'', m'')` state
   have "\<tau>mredT (redT_upd_\<epsilon> s t x' m') (redT_upd_\<epsilon> (redT_upd_\<epsilon> s t x' m') t x'' m'')"
     by -(rule silent_move_into_RedT_\<tau>_inv, auto simp add: redT_updLns_def)
   hence "\<tau>mredT (redT_upd_\<epsilon> s t x' m') (redT_upd_\<epsilon> s t x'' m'')"
@@ -279,39 +239,33 @@ next
 qed
 
 lemma \<tau>diverge_into_\<tau>mredT:
-  assumes "wfs_inv"
-  and "\<tau>diverge t (x, shr s)"
+  assumes "\<tau>diverge t (x, shr s)"
   and "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "wset s t = None"
-  and "wfs t (x, shr s)"
   shows "mthr.\<tau>diverge s"
 proof -
-  from assms have "\<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wfs t (x, shr s) \<and> \<tau>diverge t (x, shr s) \<and> wset s t = None" by blast
+  from assms have "\<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> \<tau>diverge t (x, shr s) \<and> wset s t = None" by blast
   thus ?thesis
   proof(coinduct)
     case (\<tau>diverge s)
     then obtain x where tst: "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" and "\<tau>diverge t (x, shr s)" 
-      and "wset s t = None" and "wfs t (x, shr s)" by blast
+      and "wset s t = None" by blast
     from `\<tau>diverge t (x, shr s)` obtain x' m' where "silent_move t (x, shr s) (x', m')" 
       and "\<tau>diverge t (x', m')" by cases auto
-    from `silent_move t (x, shr s) (x', m')` `wfs t (x, shr s)` tst `wset s t = None`
+    from `silent_move t (x, shr s) (x', m')` tst `wset s t = None`
     have "\<tau>mredT s (redT_upd_\<epsilon> s t x' m')" by(rule silent_move_into_RedT_\<tau>_inv)
     moreover have "thr (redT_upd_\<epsilon> s t x' m') t = \<lfloor>(x', no_wait_locks)\<rfloor>"
       using tst by(auto simp add: redT_updLns_def)
     moreover have "wset (redT_upd_\<epsilon> s t x' m') t = None" using `wset s t = None` by simp
-    moreover from `wfs t (x, shr s)` `silent_move t (x, shr s) (x', m')`
-    have "wfs t (x', shr (redT_upd_\<epsilon> s t x' m'))" by(auto intro: wfs_invD[OF `wfs_inv`])
     moreover from `\<tau>diverge t (x', m')` have "\<tau>diverge t (x', shr (redT_upd_\<epsilon> s t x' m'))" by simp
     ultimately show ?case using `\<tau>diverge t (x', m')` by blast
   qed
 qed
 
 lemma \<tau>diverge_\<tau>mredTD:
-  assumes wfs_inv
-  and div: "mthr.\<tau>diverge s"
+  assumes div: "mthr.\<tau>diverge s"
   and fin: "finite (dom (thr s))"
-  and wfs: "ts_ok (\<lambda>t x m. wfs t (x, m)) (thr s) (shr s)" (is "?wfs s")
   shows "\<exists>t x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wset s t = None \<and> \<tau>diverge t (x, shr s)"
-using fin div wfs 
+using fin div
 proof(induct A\<equiv>"dom (thr s)" arbitrary: s rule: finite_induct)
   case empty
   from `mthr.\<tau>diverge s` obtain s' where "\<tau>mredT s s'" by cases auto
@@ -319,7 +273,7 @@ proof(induct A\<equiv>"dom (thr s)" arbitrary: s rule: finite_induct)
   thus ?case ..
 next
   case (insert t A)
-  note IH = `\<And>s. \<lbrakk> A = dom (thr s); mthr.\<tau>diverge s; ?wfs s \<rbrakk>
+  note IH = `\<And>s. \<lbrakk> A = dom (thr s); mthr.\<tau>diverge s \<rbrakk>
              \<Longrightarrow> \<exists>t x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wset s t = None \<and> \<tau>diverge t (x, shr s)`
   from `insert t A = dom (thr s)`
   obtain x ln where tst: "thr s t = \<lfloor>(x, ln)\<rfloor>" by(fastsimp simp add: dom_def)
@@ -335,10 +289,10 @@ next
     have "A = dom (thr s')" using `t \<notin> A` `insert t A = dom (thr s)`
       unfolding s'_def by auto
     moreover { 
-      from xm'_def tst `mthr.\<tau>diverge s` False `?wfs s`
+      from xm'_def tst `mthr.\<tau>diverge s` False
       have "\<exists>s x. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> (ln \<noteq> no_wait_locks \<or> wset s t \<noteq> None \<or> \<not> \<tau>diverge t xm') \<and>
                   s' = (locks s, ((thr s)(t := None), shr s), wset s) \<and> xm = (x, shr s) \<and> 
-                  mthr.\<tau>diverge s \<and> silent_moves t xm' xm \<and> ?wfs s"
+                  mthr.\<tau>diverge s \<and> silent_moves t xm' xm"
         unfolding s'_def xm_def by blast
       moreover
       from False have "wfP (if \<tau>diverge t xm' then (\<lambda>s s'. False) else flip (silent_move_from t xm'))"
@@ -351,7 +305,7 @@ next
 	  and s'_def: "s' = (locks s, ((thr s)(t := None), shr s), wset s)"
 	  and xm_def: "xm = (x, shr s)"
 	  and xmxm': "silent_moves t xm' (x, shr s)"
-	  and "?wfs s" and "mthr.\<tau>diverge s" by blast
+	  and "mthr.\<tau>diverge s" by blast
         from `mthr.\<tau>diverge s` obtain s'' where "\<tau>mredT s s''" "mthr.\<tau>diverge s''" by cases auto
         from `\<tau>mredT s s''` obtain t' ta where "s -t'\<triangleright>ta\<rightarrow> s''" and "m\<tau>move s (t', ta) s''" by auto
         then obtain x' x'' m'' where red: "t' \<turnstile> \<langle>x', shr s\<rangle> -ta\<rightarrow> \<langle>x'', m''\<rangle>"
@@ -362,7 +316,6 @@ next
         from `m\<tau>move s (t', ta) s''` have [simp]: "ta = \<epsilon>"
 	  by(auto elim!: m\<tau>move.cases dest!: silent_tl)
         hence wst': "wset s t' = None" using aoe by auto
-        from `?wfs s` tst' have "wfs t' (x', shr s)" by(auto dest: ts_okD)
         from `m\<tau>move s (t', ta) s''` tst' s''
         have "\<tau>move (x', shr s) \<epsilon> (x'', m'')" by(auto elim: m\<tau>move.cases)
         show ?case
@@ -380,7 +333,7 @@ next
 	  hence "\<tau>mredT^++ s' (redT_upd_\<epsilon> s' t' x'' m'')" ..
 	  moreover have "thr s'' t = \<lfloor>(x, ln)\<rfloor>"
 	    using tst `t' \<noteq> t` s'' by auto
-	  moreover from `wfs t' (x', shr s)` `\<tau>move (x', shr s) \<epsilon> (x'', m'')` red
+	  moreover from `\<tau>move (x', shr s) \<epsilon> (x'', m'')` red
 	  have [simp]: "m'' = shr s" by(auto dest: \<tau>move_heap)
 	  hence "shr s = shr s''" using s'' by(auto)
 	  have "ln \<noteq> no_wait_locks \<or> wset s'' t \<noteq> None \<or> \<not> \<tau>diverge t xm'"
@@ -388,9 +341,6 @@ next
 	  moreover have "redT_upd_\<epsilon> s' t' x'' m'' = (locks s'', ((thr s'')(t := None), shr s''), wset s'')"
 	    unfolding s'_def using tst s'' `t' \<noteq> t`
             by(auto intro: ext elim!: rtrancl3p_cases simp add: redT_updLns_def redT_updWs_def)
-	  moreover from `wfs_inv` red `wfs t' (x', shr s)` have "wfs t' (x'', shr s)" by(auto dest: wfs_invD)
-	  with `?wfs s` s'' have "?wfs s''"
-	    by(auto intro!: ts_okI dest: ts_okD split: split_if_asm)
 	  ultimately show ?thesis using `mthr.\<tau>diverge s''` xmxm'
 	    unfolding `shr s = shr s''` by blast
         next
@@ -405,24 +355,19 @@ next
 	    by(auto simp add: flip_conv xm_def)
 	  moreover have "thr s'' t = \<lfloor>(x'', ln)\<rfloor>" using tst True s''
             by(auto simp add: redT_updLns_def)
-	  moreover from `wfs t' (x', shr s)` `\<tau>move (x', shr s) \<epsilon> (x'', m'')` red
+	  moreover from `\<tau>move (x', shr s) \<epsilon> (x'', m'')` red
 	  have [simp]: "m'' = shr s" by(auto dest: \<tau>move_heap)
 	  hence "shr s = shr s''" using s'' by auto
 	  have "s' = (locks s'', ((thr s'')(t := None), shr s''), wset s'')"
 	    using True s'' unfolding s'_def 
             by(auto intro: ext elim!: rtrancl3p_cases simp add: redT_updLns_def redT_updWs_def)
 	  moreover have "(x'', m'') = (x'', shr s'')" using s'' by auto
-	  moreover from `wfs_inv` red `wfs t' (x', shr s)` have "wfs t' (x'', shr s)" by(auto dest: wfs_invD)
-	  with `?wfs s` have "?wfs s''" using s''
-	    by(auto intro!: ts_okI dest: ts_okD split: split_if_asm)
 	  moreover from xmxm' `silent_move t (x, shr s) (x'', m'')`
 	  have "silent_moves t xm' (x'', shr s'')"
 	    unfolding `m'' = shr s` `shr s = shr s''` by auto
 	  ultimately show ?thesis using `\<not> \<tau>diverge t xm'` `mthr.\<tau>diverge s''` by blast
         qed
       qed }
-    moreover from `?wfs s` have "?wfs s'"
-      unfolding s'_def by(auto intro!: ts_okI split: split_if_asm dest: ts_okD)
     ultimately have "\<exists>t x. thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wset s' t = None \<and> \<tau>diverge t (x, shr s')" by(rule IH)
     then obtain t' x' where "thr s' t' = \<lfloor>(x', no_wait_locks)\<rfloor>"
       and "wset s' t' = None" and "\<tau>diverge t' (x', shr s')" by blast

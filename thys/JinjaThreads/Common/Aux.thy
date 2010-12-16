@@ -15,6 +15,7 @@ imports
   "Transitive_Closure_Table"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   Code_Char
+  Monad_Syntax
 begin
 
 
@@ -35,6 +36,14 @@ declare
  Let_def[simp]
  subset_insertI2 [simp]
 (*>*)
+
+lemma Option_bind_eq_None_conv:
+  "x \<guillemotright>= y = None \<longleftrightarrow> x = None \<or> (\<exists>x'. x = Some x' \<and> y x' = None)"
+by(cases x) simp_all
+
+lemma Option_bind_eq_Some_conv:
+  "x \<guillemotright>= y = Some z \<longleftrightarrow> (\<exists>x'. x = Some x' \<and> y x' = Some z)"
+by(cases x) simp_all
 
 lemma map_upds_xchg_snd:
   "\<lbrakk> length xs \<le> length ys; length xs \<le> length zs; \<forall>i. i < length xs \<longrightarrow> ys ! i = zs ! i \<rbrakk>
@@ -251,13 +260,43 @@ lemma take_list_update_beyond:
   "n \<le> m \<Longrightarrow> take n (xs[m := x]) = take n xs"
 by(cases "n \<le> length xs")(rule nth_take_lemma, simp_all)
 
+lemma takeWhile_eq_Nil_dropWhile_eq_Nil_imp_Nil:
+  "\<lbrakk> takeWhile P xs = []; dropWhile P xs = [] \<rbrakk> \<Longrightarrow> xs = []"
+by (metis dropWhile_eq_drop drop_0 list.size(3))
+
+lemma takeWhile_eq_Nil_conv:
+  "takeWhile P xs = [] \<longleftrightarrow> (xs = [] \<or> \<not> P (hd xs))"
+by(cases xs) simp_all
+
+lemma dropWhile_append1': "dropWhile P xs \<noteq> [] \<Longrightarrow> dropWhile P (xs @ ys) = dropWhile P xs @ ys"
+by(cases xs) auto
+
+lemma dropWhile_append2': "dropWhile P xs = [] \<Longrightarrow> dropWhile P (xs @ ys) = dropWhile P ys"
+by(simp)
+
+lemma takeWhile_append1': "dropWhile P xs \<noteq> [] \<Longrightarrow> takeWhile P (xs @ ys) = takeWhile P xs"
+by auto
+
+lemma takeWhile_takeWhile: "takeWhile P (takeWhile Q xs) = takeWhile (\<lambda>x. P x \<and> Q x) xs"
+by(induct xs) simp_all
+
+lemma dropWhile_eq_ConsD:
+  "dropWhile P xs = y # ys \<Longrightarrow> y \<in> set xs \<and> \<not> P y"
+by(induct xs)(auto split: split_if_asm)
+
+lemma dropWhile_eq_hd_conv: "dropWhile P xs = hd xs # rest \<longleftrightarrow> xs \<noteq> [] \<and> rest = tl xs \<and> \<not> P (hd xs)"
+by (metis append_Nil append_is_Nil_conv dropWhile_eq_Cons_conv hd.simps neq_Nil_conv takeWhile_dropWhile_id takeWhile_eq_Nil_conv tl.simps(2))
+
+lemma dropWhile_eq_same_conv: "dropWhile P xs = xs \<longleftrightarrow> (xs = [] \<or> \<not> P (hd xs))"
+by (metis dropWhile.simps(1) eq_Nil_appendI hd_dropWhile takeWhile_dropWhile_id takeWhile_eq_Nil_conv)
+
 lemma subset_code [code_unfold]:
   "set xs \<subseteq> set ys \<longleftrightarrow> (\<forall>x \<in> set xs. x \<in> set ys)"
 by(rule Set.subset_eq)
 
 lemma eval_bot [simp]:
   "Predicate.eval bot = (\<lambda>_. False)"
-  by (auto simp add: fun_eq_iff)
+by(auto simp add: fun_eq_iff)
 
 lemma not_is_emptyE:
   assumes "\<not> Predicate.is_empty P"
@@ -270,6 +309,13 @@ lemma is_emptyD:
   shows "Predicate.eval P x \<Longrightarrow> False"
 using assms
 by(simp add: Predicate.is_empty_def bot_pred_def empty_def[unfolded Collect_def])
+
+lemma eval_bind_conv:
+  "Predicate.eval (P \<guillemotright>= R) y = (\<exists>x. Predicate.eval P x \<and> Predicate.eval (R x) y)"
+by(blast elim: bindE intro: bindI)
+
+lemma eval_single_conv: "Predicate.eval (Predicate.single a) b \<longleftrightarrow> a = b"
+by(blast intro: singleI elim: singleE)
 
 
 lemma conj_asm_conv_imp:
@@ -471,7 +517,7 @@ by(simp)
 lemma prod_rec_split [simp]: "prod_rec = split"
 by(simp add: fun_eq_iff)
 
-lemma inj_Pair_snd [simp]: "inj (Pair x)" -- "Move to Aux"
+lemma inj_Pair_snd [simp]: "inj (Pair x)"
 by(rule injI) auto
 
 lemma rtranclp_False [simp]: "(\<lambda>a b. False)\<^sup>*\<^sup>* = op ="
@@ -690,6 +736,5 @@ code_const concat
   (OCaml "String.concat \"\"")
 
 hide_const (open) concat
-
 
 end

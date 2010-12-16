@@ -827,4 +827,53 @@ qed
 
 end
 
+subsection {* Determinism *}
+
+context heap_base begin
+
+lemma heap_copy_loc_deterministic:
+  assumes det: "deterministic_heap_ops"
+  and copy: "heap_copy_loc a a' al h ops h'" "heap_copy_loc a a' al h ops' h''"
+  shows "ops = ops' \<and> h' = h''"
+using copy
+by(auto elim!: heap_copy_loc.cases dest: deterministic_heap_ops_readD[OF det] deterministic_heap_ops_writeD[OF det])
+
+lemma heap_copies_deterministic:
+  assumes det: "deterministic_heap_ops"
+  and copy: "heap_copies a a' als h ops h'" "heap_copies a a' als h ops' h''"
+  shows "ops = ops' \<and> h' = h''"
+using copy
+apply(induct arbitrary: ops' h'')
+ apply(fastsimp elim!: heap_copies_cases)
+apply(erule heap_copies_cases)
+apply clarify
+apply(drule (1) heap_copy_loc_deterministic[OF det])
+apply clarify
+apply(unfold same_append_eq)
+apply blast
+done
+
+lemma heap_clone_deterministic:
+  assumes det: "deterministic_heap_ops"
+  and clone: "heap_clone P h a h' obs" "heap_clone P h a h'' obs'"
+  shows "h' = h'' \<and> obs = obs'"
+using clone
+by(fastsimp elim!: heap_clone.cases dest: heap_copies_deterministic[OF det] has_fields_fun)
+
+lemma red_external_deterministic:
+  fixes final
+  assumes det: "deterministic_heap_ops"
+  and red: "P,t \<turnstile> \<langle>a\<bullet>M(vs), (shr s)\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>" "P,t \<turnstile> \<langle>a\<bullet>M(vs), (shr s)\<rangle> -ta'\<rightarrow>ext \<langle>va', h''\<rangle>"
+  and aok: "final_thread.actions_ok final s t ta" "final_thread.actions_ok final s t ta'"
+  shows "ta = ta' \<and> va = va' \<and> h' = h''"
+using red aok
+apply(simp add: final_thread.actions_ok_iff lock_ok_las_def)
+apply(erule red_external.cases)
+apply(erule_tac [!] red_external.cases)
+apply simp_all
+apply(auto simp add: finfun_upd_apply wset_actions_ok_def dest: deterministic_heap_ops_writeD[OF det] deterministic_heap_ops_readD[OF det] heap_clone_deterministic[OF det] split: split_if_asm)
+done
+
+end
+
 end

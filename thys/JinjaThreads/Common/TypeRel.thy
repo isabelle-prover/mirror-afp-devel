@@ -821,7 +821,7 @@ by(simp add: subcls'_def)
 
 text {* 
   Change rule @{thm widen_array_object} such that predicate compiler
-  tests on class @{term Object} first.
+  tests on class @{term Object} first. Otherwise @{text "widen_i_o_i"} never terminates.
 *}
 
 lemma widen_array_object_code:
@@ -861,12 +861,12 @@ by(auto intro: Method_i_i_i_o_o_o_oI elim: Method_i_i_i_o_o_o_oE intro!: ext)
 lemma method_code [code]:
   "method P C M = 
   Predicate.the (Predicate.bind (Method_i_i_i_o_o_o_o P C M) (\<lambda>(Ts, T, m, D). Predicate.single (D, Ts, T, m)))"
-  apply (rule sym, rule the_eqI)
-  apply (simp add: method_def eval_Method_i_i_i_o_o_o_o_conv)
-  apply (rule arg_cong [where f=The])
-  apply (auto simp add: SUPR_def Sup_fun_def Sup_bool_def fun_eq_iff)
-  apply blast
-  done
+apply (rule sym, rule the_eqI)
+apply (simp add: method_def eval_Method_i_i_i_o_o_o_o_conv)
+apply (rule arg_cong [where f=The])
+apply (auto simp add: SUPR_def Sup_fun_def Sup_bool_def fun_eq_iff)
+apply blast
+done
 
 lemma eval_sees_field_i_i_i_o_o_o_conv:
   "Predicate.eval (sees_field_i_i_i_o_o_o P C F) = (\<lambda>(T, fm, D). P \<turnstile> C sees F:T (fm) in D)"
@@ -878,11 +878,11 @@ by(auto intro!: ext intro: sees_field_i_i_i_o_o_iI elim: sees_field_i_i_i_o_o_iE
 
 lemma field_code [code]:
   "field P C F = Predicate.the (Predicate.bind (sees_field_i_i_i_o_o_o P C F) (\<lambda>(T, fm, D). Predicate.single (D, T, fm)))"
-  apply (rule sym, rule the_eqI)
-  apply (simp add: field_def eval_sees_field_i_i_i_o_o_o_conv)
-  apply (rule arg_cong [where f=The])
-  apply (auto simp add: SUPR_def Sup_fun_def Sup_bool_def fun_eq_iff)
-  done
+apply (rule sym, rule the_eqI)
+apply (simp add: field_def eval_sees_field_i_i_i_o_o_o_conv)
+apply (rule arg_cong [where f=The])
+apply (auto simp add: SUPR_def Sup_fun_def Sup_bool_def fun_eq_iff)
+done
 
 lemma eval_Fields_conv:
   "Predicate.eval (Fields_i_i_o P C) = (\<lambda>FDTs. P \<turnstile> C has_fields FDTs)"

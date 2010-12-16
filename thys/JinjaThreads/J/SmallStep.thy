@@ -361,6 +361,10 @@ by(auto)
 lemma [iff]: "\<not> extTA,P,t \<turnstile> \<langle>Throw a, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 by(fastsimp elim: red_cases)
 
+lemma reds_map_Val_Throw:
+  "extTA,P,t \<turnstile> \<langle>map Val vs @ Throw a # es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<longleftrightarrow> False"
+by(induct vs arbitrary: es')(auto elim!: reds_cases)
+
 lemma reds_preserves_len:
   "extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> length es' = length es"
 by(induct es arbitrary: es')(auto elim: reds.cases)

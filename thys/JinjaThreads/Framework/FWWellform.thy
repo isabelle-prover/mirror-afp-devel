@@ -115,6 +115,10 @@ lemma wset_thread_okD:
   "\<lbrakk> wset_thread_ok ws ts; ts t = None \<rbrakk> \<Longrightarrow> ws t = None"
 by(simp add: wset_thread_ok_def)
 
+lemma wset_thread_ok_conv_dom:
+  "wset_thread_ok ws ts \<longleftrightarrow> dom ws \<subseteq> dom ts"
+by(auto simp add: wset_thread_ok_def)
+
 lemma wset_thread_ok_upd:
   "wset_thread_ok ls ts \<Longrightarrow> wset_thread_ok ls (ts(t \<mapsto> xw))"
 by(auto intro!: wset_thread_okI dest: wset_thread_okD split: split_if_asm)

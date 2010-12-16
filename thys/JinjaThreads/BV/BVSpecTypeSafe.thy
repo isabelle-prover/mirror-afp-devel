@@ -1796,16 +1796,17 @@ proof -
 qed
 
 lemma (in JVM_heap_conf) BV_correct_initial:
-  shows "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = m in C; P,start_heap \<turnstile> vs [:\<le>] Ts \<rbrakk>
+  shows "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = m in D; P,start_heap \<turnstile> vs [:\<le>] Ts \<rbrakk>
   \<Longrightarrow> \<Phi> \<turnstile> start_tid:JVM_start_state' P C M vs \<surd>"
-  apply (cases m)                            
-  apply (unfold  JVM_start_state'_def)
+  apply (cases m)
+  apply (unfold JVM_start_state'_def)
   apply (unfold correct_state_def)
   apply (simp)
   apply (rule conjI)
    apply(erule tconf_start_heap_start_tid)
   apply(rule conjI)
    apply (simp add: wf_jvm_prog_phi_def hconf_start_heap) 
+  apply(frule sees_method_idemp)
   apply (frule wt_jvm_prog_impl_wt_start, assumption+)
   apply (unfold conf_f_def wt_start_def)
   apply(auto simp add: sup_state_opt_any_Some)

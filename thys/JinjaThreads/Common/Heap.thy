@@ -82,6 +82,12 @@ where
                                | Some a \<Rightarrow> insert a (dom (typeof_addr h)))) \<and>
   (\<forall>h ad al v h'. heap_write h ad al v h' \<longrightarrow> dom (typeof_addr h') = dom (typeof_addr h))"
 
+definition deterministic_heap_ops :: bool
+where
+  "deterministic_heap_ops \<longleftrightarrow>
+  (\<forall>h ad al v v'. heap_read h ad al v \<longrightarrow> heap_read h ad al v' \<longrightarrow> v = v') \<and>
+  (\<forall>h ad al v h' h''. heap_write h ad al v h' \<longrightarrow> heap_write h ad al v h'' \<longrightarrow> h' = h'')"
+
 end
 
 lemma typeof_lit_eq_Boolean [simp]: "(typeof v = Some Boolean) = (\<exists>b. v = Bool b)"
@@ -109,7 +115,6 @@ lemma typeof_NoneD [simp,dest]:
 lemma typeof_lit_is_type:
   "typeof v = Some T \<Longrightarrow> is_type P T"
 by(cases v) auto
-
 
 context heap_base begin
 
@@ -165,6 +170,19 @@ lemma heap_ops_typeof_minimalD:
   "\<lbrakk> heap_ops_typeof_minimal; heap_write h ad al v h' \<rbrakk> \<Longrightarrow> dom (typeof_addr h') = dom (typeof_addr h)"
 by(simp_all add: heap_ops_typeof_minimal_def)
 
+lemma deterministic_heap_opsI:
+  "\<lbrakk> \<And>h ad al v v'. \<lbrakk> heap_read h ad al v; heap_read h ad al v' \<rbrakk> \<Longrightarrow> v = v';
+     \<And>h ad al v h' h''. \<lbrakk> heap_write h ad al v h'; heap_write h ad al v h'' \<rbrakk> \<Longrightarrow> h' = h''\<rbrakk>
+  \<Longrightarrow> deterministic_heap_ops"
+unfolding deterministic_heap_ops_def by blast
+
+lemma deterministic_heap_ops_readD:
+  "\<lbrakk> deterministic_heap_ops; heap_read h ad al v; heap_read h ad al v' \<rbrakk> \<Longrightarrow> v = v'"
+unfolding deterministic_heap_ops_def by blast
+
+lemma deterministic_heap_ops_writeD:
+  "\<lbrakk> deterministic_heap_ops; heap_write h ad al v h'; heap_write h ad al v h'' \<rbrakk> \<Longrightarrow> h' = h''"
+unfolding deterministic_heap_ops_def by blast
 
 end
 
@@ -297,5 +315,7 @@ apply(erule (1) map_le_dom_eq_conv_eq[OF _ sym, THEN sym])
 done
 
 end
+
+declare heap_base.typeof_h.simps [code]
 
 end

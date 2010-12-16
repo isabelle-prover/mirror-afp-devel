@@ -800,65 +800,20 @@ qed
 
 subsection {* Code generation *}
 
-lemma wf_extCall_code [code]:
-  "wf_extCall P C M Ts T \<longleftrightarrow>
-  \<not> Predicate.holds (Predicate.bind (external_WT_defs_o_i_o_o M)
-                     (\<lambda>(U, Ts', T'). if (P \<turnstile> Class C \<le> U \<and> \<not> (P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T')) \<or> P \<turnstile> U \<le> Class C 
-                                     then Predicate.single () else bot))"
-unfolding wf_extCall_def holds_eq
-apply(rule iffI)
- apply(rule notI)
- apply(erule bindE)
- apply(clarsimp)
- apply(erule external_WT_defs_o_i_o_oE)
- apply(split split_if_asm)
-  apply(blast)
- apply(erule botE)
-apply(erule contrapos_np)
-apply simp
-apply clarify
-apply (rule SUP1_I)
-apply simp
-apply(erule external_WT_defs_o_i_o_oI)
-apply(simp add: singleI)
-done
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  [inductify] wf_extCall .
 
 definition contravariant_overriding :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> bool"
 where
   "contravariant_overriding P D M Ts T =
   (\<forall>D' Ts' T' m'. P \<turnstile> D sees M:Ts' \<rightarrow> T' = m' in D' \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T')"
 
-code_pred [inductify] contravariant_overriding .
-
-
-(* FIXME code_pred uses widen_i_o_i, which does not terminate 
-code_pred [inductify] contravariant_overriding .
-thm contravariant_overriding.equation
-thm contravariant_overriding_aux.equation
-thm contravariant_overriding_aux_aux.equation
-*)
-
-lemma contravariant_overriding_code [code]:
-  "contravariant_overriding P D M Ts T \<longleftrightarrow>
-   \<not> Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P D M)
-                                     (\<lambda>(Ts', T', m', D'). if P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T' then bot else Predicate.single ()))"
-unfolding contravariant_overriding_def holds_eq
-apply(rule iffI)
- apply(rule notI)
- apply(erule bindE)
- apply clarsimp
- apply(erule Method_i_i_i_o_o_o_oE)
- apply(split split_if_asm)
-  apply(erule botE)
- apply(blast)
-apply(erule contrapos_np)
-apply(simp)
-apply clarsimp
-apply(rule SUP1_I)
-apply simp
- apply(erule Method_i_i_i_o_o_o_oI)
-apply(auto simp add: singleI)
-done
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  [inductify]
+  contravariant_overriding 
+.
 
 lemma wf_cdecl_code [code]:
   "wf_cdecl wf_md P = (\<lambda>(C,(D,fs,ms)).

@@ -184,6 +184,7 @@ where
        We could check volatility of @{term "al"} here, but this is checked by @{term "sactions"}
        in @{text sync_with} anyway. *}
   Volatile: "(t, NormalAction (WriteMem a al v)) \<leadsto>sw (t', NormalAction (ReadMem a al v'))"
+| VolatileNew: "(t, NormalAction (NewObj a C)) \<leadsto>sw (t', NormalAction (ReadMem a al v))"
 | NewObj: "(t, NormalAction (NewObj a C)) \<leadsto>sw (t', InitialThreadAction)"
 | NewArr: "(t, NormalAction (NewArr a T n)) \<leadsto>sw (t', InitialThreadAction)"
 
@@ -212,8 +213,14 @@ where
        (is_volatile P al \<longrightarrow> \<not> P,E \<turnstile> a \<le>so ws a) \<and>
        (\<forall>w' \<in> write_actions E. (ad, al) \<in> action_loc P E w' \<longrightarrow> (P,E \<turnstile> ws a \<le>hb w' \<and> P,E \<turnstile> w' \<le>hb a \<or> is_volatile P al \<and> P,E \<turnstile> ws a \<le>so w' \<and> P,E \<turnstile> w' \<le>so a) \<longrightarrow> w' = ws a))"
 
+definition thread_start_actions_ok :: "execution \<Rightarrow> bool"
+where
+  "thread_start_actions_ok E \<longleftrightarrow> 
+  (\<forall>a \<in> actions E. \<not> is_new_action (action_obs E a) \<longrightarrow> 
+     (\<exists>i. i \<le> a \<and> action_obs E i = InitialThreadAction \<and> action_tid E i = action_tid E a))"
+
 primrec wf_exec :: "'m prog \<Rightarrow> execution \<times> write_seen \<Rightarrow> bool" ("_ \<turnstile> _ \<surd>" [51, 50] 51)
-where "P \<turnstile> (E, ws) \<surd> \<longleftrightarrow> is_write_seen P E ws"
+where "P \<turnstile> (E, ws) \<surd> \<longleftrightarrow> is_write_seen P E ws \<and> thread_start_actions_ok E"
 
 inductive most_recent_write_for :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
   ("_,_ \<turnstile> _ \<leadsto>mrw _" [50, 0, 51] 51)
@@ -677,6 +684,12 @@ lemma porder_tranclp_po_so:
   "porder_on (actions E) (\<lambda>a a'. program_order E a a' \<or> sync_order P E a a')^++"
 by(rule porder_on_torder_on_tranclp_porder_onI[OF porder_program_order torder_sync_order consistent_program_order_sync_order]) auto
 
+lemma happens_before_refl:
+  assumes "a \<in> actions E"
+  shows "P,E \<turnstile> a \<le>hb a"
+using porder_happens_before[of E P]
+by(rule porder_onE)(erule refl_onPD[OF _ assms])
+
 lemma happens_before_into_po_so_tranclp:
   assumes "P,E \<turnstile> a \<le>hb a'"
   shows "(\<lambda>a a'. E \<turnstile> a \<le>po a' \<or> P,E \<turnstile> a \<le>so a')^++ a a'"
@@ -717,6 +730,35 @@ by induct(blast intro: po_sw_into_action_order transPD[OF trans_action_order])+
 lemma action_order_consistent_with_happens_before:
   "order_consistent (action_order E) (happens_before P E)"
 by(blast intro: order_consistent_subset antisym_order_consistent_self antisym_action_order happens_before_into_action_order)
+
+lemma happens_before_new_actionD:
+  assumes hb: "P,E \<turnstile> a \<le>hb a'"
+  and new: "is_new_action (action_obs E a')"
+  shows "is_new_action (action_obs E a)" "action_tid E a = action_tid E a'" "a \<le> a'"
+using hb
+proof(induct rule: converse_tranclp_induct)
+  case (base a)
+
+  case 1 from new base show ?case
+    by(auto dest: po_sw_into_action_order elim: action_orderE)
+  case 2 from new base show ?case
+    by(auto simp add: po_sw_def elim!: sync_withE elim: program_orderE synchronizes_with.cases)
+  case 3 from new base show ?case
+    by(auto dest: po_sw_into_action_order elim: action_orderE)
+next
+  case (step a a'')
+  
+  note po_sw = `po_sw P E a a''`
+    and new = `is_new_action (action_obs E a'')`
+    and tid = `action_tid E a'' = action_tid E a'`
+  
+  case 1 from new po_sw show ?case
+    by(auto dest: po_sw_into_action_order elim: action_orderE)
+  case 2 from new po_sw tid show ?case
+    by(auto simp add: po_sw_def elim!: sync_withE elim: program_orderE synchronizes_with.cases)
+  case 3 from new po_sw `a'' \<le> a'` show ?case
+    by(auto dest!: po_sw_into_action_order elim!: action_orderE)
+qed
 
 
 section {* Most recent writes and sequential consistency *}
@@ -782,11 +824,29 @@ lemma is_write_seenD:
      (\<forall>a' \<in> write_actions E. (ad, al) \<in> action_loc P E a' \<and> (P,E \<turnstile> ws a \<le>hb a' \<and> P,E \<turnstile> a' \<le>hb a \<or> is_volatile P al \<and> P,E \<turnstile> ws a \<le>so a' \<and> P,E \<turnstile> a' \<le>so a) \<longrightarrow> a' = ws a)"
 unfolding is_write_seen_def by blast
 
-lemma wf_execI [intro?]: "is_write_seen P E ws \<Longrightarrow> P \<turnstile> (E, ws) \<surd>"
+lemma thread_start_actions_okI:
+  "(\<And>a. \<lbrakk> a \<in> actions E; \<not> is_new_action (action_obs E a) \<rbrakk> 
+    \<Longrightarrow> \<exists>i. i \<le> a \<and> action_obs E i = InitialThreadAction \<and> action_tid E i = action_tid E a)
+  \<Longrightarrow> thread_start_actions_ok E"
+unfolding thread_start_actions_ok_def by blast
+
+lemma thread_start_actions_okD:
+  "\<lbrakk> thread_start_actions_ok E; a \<in> actions E; \<not> is_new_action (action_obs E a) \<rbrakk> 
+  \<Longrightarrow> \<exists>i. i \<le> a \<and> action_obs E i = InitialThreadAction \<and> action_tid E i = action_tid E a"
+unfolding thread_start_actions_ok_def by blast
+
+lemma wf_execI [intro?]:
+  "\<lbrakk> is_write_seen P E ws;
+    thread_start_actions_ok E \<rbrakk>
+  \<Longrightarrow> P \<turnstile> (E, ws) \<surd>"
 by simp
 
 lemma wf_exec_is_write_seenD:
   "P \<turnstile> (E, ws) \<surd> \<Longrightarrow> is_write_seen P E ws"
+by simp
+
+lemma wf_exec_thread_start_actions_okD:
+  "P \<turnstile> (E, ws) \<surd> \<Longrightarrow> thread_start_actions_ok E"
 by simp
 
 lemma sequentially_consistentI:
@@ -917,95 +977,17 @@ locale executions_base =
   fixes \<E> :: "execution set"
   and P :: "'m prog"
 
-locale executions_aux =
+locale executions =
   executions_base \<E> P
   for \<E> :: "execution set"
   and P :: "'m prog" +
   assumes \<E>_new_actions_for_fun:
   "\<lbrakk> E \<in> \<E>; a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
-  and \<E>_ex_new_action:
-  "\<lbrakk> E \<in> \<E>; ra \<in> read_actions E; adal \<in> action_loc P E ra \<rbrakk>
-  \<Longrightarrow> \<exists>wa. wa \<in> new_actions_for P E adal \<and> wa < ra"
-
-locale executions =
-  executions_aux \<E> P 
-  for \<E> :: "execution set"
-  and P :: "'m prog" +
-  assumes \<E>_sequential_completion:
+  and \<E>_sequential_completion:
   "\<lbrakk> E \<in> \<E>; P \<turnstile> (E, ws) \<surd>; \<And>a. \<lbrakk> a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a \<rbrakk>
   \<Longrightarrow> \<exists>E' \<in> \<E>. \<exists>ws'. P \<turnstile> (E', ws') \<surd> \<and> ltake (Fin r) E = ltake (Fin r) E' \<and> sequentially_consistent P (E', ws') \<and>
                  action_tid E r = action_tid E' r \<and> action_obs E r \<approx> action_obs E' r \<and>
                  (r \<in> actions E \<longrightarrow> r \<in> actions E')"
-
-context executions_aux begin
-
-lemma \<E>_new_same_addr_singleton:
-  assumes E: "E \<in> \<E>"
-  shows "\<exists>a. new_actions_for P E adal \<subseteq> {a}"
-by(blast dest: \<E>_new_actions_for_fun[OF E])
-
-lemma new_action_before_read:
-  assumes E: "E \<in> \<E>"
-  and ra: "ra \<in> read_actions E"
-  and adal: "adal \<in> action_loc P E ra"
-  and new: "wa \<in> new_actions_for P E adal"
-  shows "wa < ra"
-using \<E>_new_same_addr_singleton[OF E, of adal] \<E>_ex_new_action[OF E ra adal] new
-by auto
-
-lemma most_recent_write_exists:
-  assumes E: "E \<in> \<E>"
-  and ra: "ra \<in> read_actions E"
-  shows "\<exists>wa. P,E \<turnstile> ra \<leadsto>mrw wa"
-proof -
-  from ra obtain ad al where
-    adal: "(ad, al) \<in> action_loc P E ra"
-    by(rule read_action_action_locE)
-
-  def Q == "{a. a \<in> write_actions E \<and> (ad, al) \<in> action_loc P E a \<and> E \<turnstile> a \<le>a ra}"
-  let ?A = "new_actions_for P E (ad, al)"
-  let ?B = "{a. a \<in> actions E \<and> (\<exists>v'. action_obs E a = NormalAction (WriteMem ad al v')) \<and> a \<le> ra}"
-
-  have "Q \<subseteq> ?A \<union> ?B" unfolding Q_def
-    by(auto elim!: write_actions.cases action_loc_aux_cases simp add: new_actions_for_def elim: action_orderE)
-  moreover from \<E>_new_same_addr_singleton[OF E, of "(ad, al)"]
-  have "finite ?A" by(blast intro: finite_subset)
-  moreover have "finite ?B" by auto
-  ultimately have finQ: "finite Q" 
-    by(blast intro: finite_subset)
-
-  from \<E>_ex_new_action[OF E ra adal] ra obtain wa 
-    where wa: "wa \<in> Q" unfolding Q_def
-    by(fastsimp elim!: new_actionsE is_new_action.cases intro: write_actions.intros action_orderI)
-  def wa' == "Max_torder (action_order E) Q"
-
-  from wa have "Q \<noteq> {}" "Q \<subseteq> actions E" by(auto simp add: Q_def)
-  with finQ have "wa' \<in> Q" unfolding wa'_def
-    by(rule Max_torder_in_set[OF torder_action_order])
-  hence "E \<turnstile> wa' \<le>a ra" "wa' \<in> write_actions E"
-    and "(ad, al) \<in> action_loc P E wa'" by(simp_all add: Q_def)
-  with ra adal have "P,E \<turnstile> ra \<leadsto>mrw wa'"
-  proof
-    fix wa''
-    assume wa'': "wa'' \<in> write_actions E" "(ad, al) \<in> action_loc P E wa''"
-    from `wa'' \<in> write_actions E` ra
-    have "ra \<noteq> wa''" by(auto dest: read_actions_not_write_actions)
-    show "E \<turnstile> wa'' \<le>a wa' \<or> E \<turnstile> ra \<le>a wa''"
-    proof(rule disjCI)
-      assume "\<not> E \<turnstile> ra \<le>a wa''"
-      with total_onPD[OF total_action_order, of ra E wa''] 
-        `ra \<noteq> wa''` `ra \<in> read_actions E` `wa'' \<in> write_actions E`
-      have "E \<turnstile> wa'' \<le>a ra" by simp
-      with wa'' have "wa'' \<in> Q" by(simp add: Q_def)
-      with finQ show "E \<turnstile> wa'' \<le>a wa'"
-        using `Q \<subseteq> actions E` unfolding wa'_def
-        by(rule Max_torder_above[OF torder_action_order])
-    qed
-  qed
-  thus ?thesis ..
-qed
-
-end
 
 section {* Legal executions *}
 
@@ -1065,15 +1047,13 @@ where
   (* value-written for committed write actions as in E -- JMM constraint 4 *)
   (\<forall>n. \<forall>w \<in> write_actions (justifying_exec (J n)) \<inter> committed (J n). 
        let w' = action_translation (J n) w
-       in w' \<in> write_actions E \<and> action_loc P (justifying_exec (J n)) w = action_loc P E w' \<and>
-          (\<forall>adal \<in> action_loc P E w'. value_written P (justifying_exec (J n)) w adal = value_written P E w' adal)) \<and>
+       in (\<forall>adal \<in> action_loc P E w'. value_written P (justifying_exec (J n)) w adal = value_written P E w' adal)) \<and>
 
   (* write-seen for committed reads as in E -- JMM constraint 5 *)
   (\<forall>n. \<forall>r' \<in> committed (J n).
        let r = action_translation (J n) r';
            r'' = inv_into (actions (justifying_exec (J (Suc n)))) (action_translation (J (Suc n))) r
-       in r'' \<in> read_actions (justifying_exec (J (Suc n))) \<longrightarrow>
-          action_translation (J (Suc n)) (justifying_ws (J (Suc n)) r'') = ws r) \<and>
+       in action_translation (J (Suc n)) (justifying_ws (J (Suc n)) r'') = ws r) \<and>
 
   (* uncommited reads see writes that happen before them -- JMM constraint 6 *)
   (\<forall>n. \<forall>r' \<in> read_actions (justifying_exec (J (Suc n))).
@@ -1401,37 +1381,40 @@ lemma po_sw_change_prefix:
 using posw sync_with_change_prefix[OF _ prefix an a'n, of P] program_order_change_prefix[OF _ prefix an a'n]
 by(auto simp add: po_sw_def)
 
-lemma happens_before_new_actionD:
-  assumes hb: "P,E \<turnstile> a \<le>hb a'"
-  and new: "is_new_action (action_obs E a')"
-  shows "is_new_action (action_obs E a)" "action_tid E a = action_tid E a'" "a \<le> a'"
-using hb
-proof(induct rule: converse_tranclp_induct)
-  case (base a)
 
-  case 1 from new base show ?case
-    by(auto dest: po_sw_into_action_order elim: action_orderE)
-  case 2 from new base show ?case
-    by(auto simp add: po_sw_def elim!: sync_withE elim: program_orderE synchronizes_with.cases)
-  case 3 from new base show ?case
-    by(auto dest: po_sw_into_action_order elim: action_orderE)
-next
-  case (step a a'')
+lemma happens_before_new_not_new:
+  assumes tsa_ok: "thread_start_actions_ok E"
+  and a: "a \<in> actions E" 
+  and a': "a' \<in> actions E"
+  and new_a: "is_new_action (action_obs E a)"
+  and new_a': "\<not> is_new_action (action_obs E a')"
+  shows "P,E \<turnstile> a \<le>hb a'"
+proof -
+  from thread_start_actions_okD[OF tsa_ok a' new_a']
+  obtain i where "i \<le> a'"
+    and obs_i: "action_obs E i = InitialThreadAction" 
+    and "action_tid E i = action_tid E a'" by auto
+  from `i \<le> a'` a' have "i \<in> actions E"
+    by(auto simp add: actions_def le_less_trans[where y="Fin a'"])
+  with `i \<le> a'` obs_i a' new_a' have "E \<turnstile> i \<le>a a'" by(simp add: action_order_def)
+  hence "E \<turnstile> i \<le>po a'" using `action_tid E i = action_tid E a'`
+    by(rule program_orderI)
   
-  note po_sw = `po_sw P E a a''`
-    and new = `is_new_action (action_obs E a'')`
-    and tid = `action_tid E a'' = action_tid E a'`
-  
-  case 1 from new po_sw show ?case
-    by(auto dest: po_sw_into_action_order elim: action_orderE)
-  case 2 from new po_sw tid show ?case
-    by(auto simp add: po_sw_def elim!: sync_withE elim: program_orderE synchronizes_with.cases)
-  case 3 from new po_sw `a'' \<le> a'` show ?case
-    by(auto dest!: po_sw_into_action_order elim!: action_orderE)
+  moreover {
+    from `i \<in> actions E` obs_i
+    have "i \<in> sactions P E" by(auto intro: sactionsI)
+    from a `i \<in> actions E` new_a obs_i have "E \<turnstile> a \<le>a i" by(simp add: action_order_def)
+    moreover from a new_a have "a \<in> sactions P E" by(auto intro: sactionsI)
+    ultimately have "P,E \<turnstile> a \<le>so i" using `i \<in> sactions P E` by(rule sync_orderI)
+    moreover from new_a obs_i have "(action_tid E a, action_obs E a) \<leadsto>sw (action_tid E i, action_obs E i)"
+      by cases(auto intro: synchronizes_with.intros)
+    ultimately have "P,E \<turnstile> a \<le>sw i" by(rule sync_withI) }
+  ultimately show ?thesis unfolding po_sw_def_raw by(blast intro: tranclp.r_into_trancl tranclp_trans)
 qed
 
 lemma happens_before_change_prefix:
   assumes hb: "P,E \<turnstile> a \<le>hb a'"
+  and tsa_ok: "thread_start_actions_ok E'"
   and prefix: "ltake n E [\<approx>] ltake n E'"
   and an: "Fin a < n"
   and a'n: "Fin a' < n"
@@ -1460,127 +1443,24 @@ next
     have new_a: "is_new_action (action_obs E a)"
       and tid: "action_tid E a = action_tid E a'"
       and "a \<le> a'" by(rule happens_before_new_actionD)+
-    from `P,E \<turnstile> a \<le>hb a'` have "E \<turnstile> a \<le>a a'"
-      by(rule happens_before_into_action_order)
     
-    from `po_sw P E a' a''`[unfolded po_sw_def] show ?thesis
-    proof
-      assume "E \<turnstile> a' \<le>po a''"
-      with tid have "action_tid E a = action_tid E a''"
-        by(auto elim: program_orderE)
-      moreover from `E \<turnstile> a' \<le>po a''` have "E \<turnstile> a' \<le>a a''" by(auto elim: program_orderE)
-      with `E \<turnstile> a \<le>a a'` have "E \<turnstile> a \<le>a a''" by(rule transPD[OF trans_action_order])
-      ultimately have "E \<turnstile> a \<le>po a''" by -(rule program_orderI)
-      hence "E' \<turnstile> a \<le>po a''" using prefix `Fin a < n` `Fin a'' < n`
-        by(rule program_order_change_prefix)
-      thus ?thesis unfolding po_sw_def by blast
-    next
-      assume "P,E \<turnstile> a' \<le>sw a''"
-      hence sw: "(action_tid E a', action_obs E a') \<leadsto>sw (action_tid E a'', action_obs E a'')"
-        and so: "P,E \<turnstile> a' \<le>so a''" by(auto elim!: sync_withE)
-      from sw have "action_obs E a'' = InitialThreadAction" using new_a' by cases simp_all
-      with new_a have "(action_tid E a, action_obs E a) \<leadsto>sw (action_tid E a'', action_obs E a'')"
-        by cases(auto intro: synchronizes_with.intros)
-      moreover from so have "E \<turnstile> a' \<le>a a''" by(auto elim: sync_orderE)
-      with `E \<turnstile> a \<le>a a'` have "E \<turnstile> a \<le>a a''" by(rule transPD[OF trans_action_order])
-      moreover from so have "a'' \<in> sactions P E" by(auto elim: sync_orderE)
-      moreover from `E \<turnstile> a \<le>a a'` have "a \<in> actions E" by(auto elim: action_orderE)
-      with new_a have "a \<in> sactions P E" unfolding sactions_def by(simp)
-      ultimately have "P,E \<turnstile> a \<le>sw a''" by(blast intro: sync_withI sync_orderI)
-      hence "P,E' \<turnstile> a \<le>sw a''" using prefix `Fin a < n` `Fin a'' < n`
-        by(rule sync_with_change_prefix)
-      thus ?thesis unfolding po_sw_def by blast
-    qed
+    note tsa_ok moreover
+    from porder_happens_before[of E P] have "a \<in> actions E"
+      by(rule porder_onE)(erule refl_onPD1, rule `P,E \<turnstile> a \<le>hb a'`)
+    hence "a \<in> actions E'" using an by(rule actions_change_prefix[OF _ prefix])
+    moreover
+    from `po_sw P E a' a''` refl_on_program_order[of E] refl_on_sync_order[of P E]
+    have "a'' \<in> actions E"
+      unfolding po_sw_def by(auto dest: refl_onPD2 elim!: sync_withE)
+    hence "a'' \<in> actions E'" using `Fin a'' < n` by(rule actions_change_prefix[OF _ prefix])
+    moreover
+    from new_a action_obs_change_prefix[OF prefix an] 
+    have "is_new_action (action_obs E' a)" by(cases) auto
+    moreover
+    from `\<not> is_new_action (action_obs E a'')` action_obs_change_prefix[OF prefix `Fin a'' < n`]
+    have "\<not> is_new_action (action_obs E' a'')" by(auto elim: is_new_action.cases)
+    ultimately show "P,E' \<turnstile> a \<le>hb a''" by(rule happens_before_new_not_new)
   qed
 qed
-
-context executions_aux begin
-
-lemma mrw_before:
-  assumes E: "E \<in> \<E>"
-  and mrw: "P,E \<turnstile> r \<leadsto>mrw w"
-  shows "w < r"
-using mrw read_actions_not_write_actions[of r E]
-apply cases
-apply(erule action_orderE)
- apply(erule (1) new_action_before_read[OF E])
- apply(simp add: new_actions_for_def)
-apply(cases "w = r")
-apply auto
-done
-
-lemma action_order_write_readD:
-  "\<lbrakk> E \<in> \<E>; E \<turnstile> w \<le>a r; r \<in> read_actions E; w \<in> write_actions E; adal \<in> action_loc P E r; adal \<in> action_loc P E w \<rbrakk>
-  \<Longrightarrow> w < r"
-apply(erule action_orderE)
- apply(frule (2) new_actionsI)
- apply(frule \<E>_new_same_addr_singleton[where adal=adal])
- apply(frule (2) \<E>_ex_new_action)
- apply blast
-apply(cases "w=r")
- apply clarify
- apply(blast dest: read_actions_not_write_actions)
-apply simp
-done
-
-lemma prefix_same_mrw_same:
-  assumes E: "E \<in> \<E>" and E': "E' \<in> \<E>"
-  and w: "P,E \<turnstile> a \<leadsto>mrw w" and w': "P,E' \<turnstile> a \<leadsto>mrw w'"
-  and eq: "ltake (Fin a) E [\<approx>] ltake (Fin a) E'"
-  and adal: "action_loc P E a = action_loc P E' a"
-  shows "w = w'"
-proof -
-  from w obtain adal where "E \<turnstile> w \<le>a a" "a \<in> read_actions E" "w \<in> write_actions E"
-    and "adal \<in> action_loc P E a" "adal \<in> action_loc P E w" by cases auto
-  with E have "w < a" by(rule action_order_write_readD)
-  from w' obtain adal' where "E' \<turnstile> w' \<le>a a" "a \<in> read_actions E'" "w' \<in> write_actions E'" 
-    and "adal' \<in> action_loc P E' a" "adal' \<in> action_loc P E' w'" by cases auto
-  with E' have "w' < a" by(rule action_order_write_readD)
-  from `a \<in> read_actions E` have "Fin a < llength E"
-    by(auto elim: read_actions.cases actionsE)
-  from write_actions_change_prefix[OF `w \<in> write_actions E` eq] `w < a`
-  have "w \<in> write_actions E'" by simp
-  from write_actions_change_prefix[OF `w' \<in> write_actions E'` eq[symmetric]] `w' < a`
-  have "w' \<in> write_actions E" by simp
-  from `a \<in> read_actions E` `adal \<in> action_loc P E a` `adal' \<in> action_loc P E' a`
-  have "adal = adal'" unfolding adal[symmetric] by(rule action_loc_read_action_singleton)
-  from `w < a` have w_eq: "action_loc P E w = action_loc P E' w"
-    by(simp add: action_loc_change_prefix[OF eq])
-  from `w' < a` have w'_eq: "action_loc P E w' = action_loc P E' w'"
-    by(simp add: action_loc_change_prefix[OF eq])
-  show "w = w'"
-  proof(rule antisymPD[OF antisym_action_order])
-    from w `adal \<in> action_loc P E a` `w' \<in> write_actions E` `adal' \<in> action_loc P E' w'`
-    have "E \<turnstile> w' \<le>a w \<or> E \<turnstile> a \<le>a w'"
-      unfolding `adal = adal'` w'_eq[symmetric]
-      by(rule most_recent_write_recent)
-    thus "E \<turnstile> w' \<le>a w"
-    proof
-      assume "E \<turnstile> a \<le>a w'"
-      with `w' < a` `a \<in> read_actions E`
-      have False by(auto elim!: action_orderE read_actions.cases)
-      thus ?thesis ..
-    qed
-  next
-    from w' `adal' \<in> action_loc P E' a` `w \<in> write_actions E'` `adal \<in> action_loc P E w`
-    have "E' \<turnstile> w \<le>a w' \<or> E' \<turnstile> a \<le>a w"
-      unfolding `adal = adal'` w_eq by(rule most_recent_write_recent)
-    hence "E' \<turnstile> w \<le>a w'"
-    proof
-      assume "E' \<turnstile> a \<le>a w"
-      with `w < a` `a \<in> read_actions E'`
-      have False by(auto elim!: action_orderE read_actions.cases)
-      thus ?thesis ..
-    qed
-    from action_order_change_prefix[OF this eq[symmetric]] `w < a` `w' < a`
-    show "E \<turnstile> w \<le>a w'" by simp
-  qed
-qed
-
-lemma sequentially_consistent_most_recent_write_for:
-  "E \<in> \<E> \<Longrightarrow> sequentially_consistent P (E, \<lambda>r. THE w. P,E \<turnstile> r \<leadsto>mrw w)"
-by(rule sequentially_consistentI)(auto dest: most_recent_write_exists simp add: THE_most_recent_writeI)
-
-end
 
 end

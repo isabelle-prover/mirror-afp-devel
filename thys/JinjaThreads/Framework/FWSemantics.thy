@@ -18,16 +18,6 @@ where
 
 inductive_simps redT_upd_simps [simp]:
   "redT_upd s t ta x' m' s'"
-(*
-definition redT_upd :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> ('l,'t,'x,'m,'w) state"
- where 
-  "redT_upd s t ta x' m' =
-   (redT_updLs (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>,
-    ((redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t (snd (the (thr s t))) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)), m'),
-    redT_updWs (wset s) t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
-
-declare redT_upd_def [simp]
-*)
 
 definition redT_acq :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l \<Rightarrow>\<^isub>f nat) \<Rightarrow> ('l,'t,'x,'m,'w) state"
 where
@@ -49,11 +39,11 @@ lemma actions_ok_iff [simp]:
    lock_ok_las (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<and> cond_action_oks s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> \<and>
    wset_actions_ok (wset s) t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
 by(auto)
-(*
-lemma actions_ok_upd_empty_inv:
-  "thr s t = \<lfloor>xln\<rfloor> \<Longrightarrow> actions_ok (redT_upd s t \<epsilon> x' (shr s)) t ta = actions_ok s t ta"
-by(cases xln)(auto simp add: redT_updLns_def redT_updLs_def cond_action_oks_upd thread_oks_upd)
-*)
+
+lemma actions_ok_thread_oksD:
+  "actions_ok s t ta \<Longrightarrow> thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
+by(erule actions_ok.cases)
+
 inductive actions_ok' :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l,'t,'x','m,'w,'o) thread_action \<Rightarrow> bool" where
   "\<lbrakk> lock_ok_las' (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>; thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; cond_action_oks' s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>;
      wset_actions_ok (wset s) t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
@@ -346,6 +336,38 @@ lemma redT_ex_new_thread':
   shows "\<exists>m x. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
 using assms
 by(cases)(fastsimp split: split_if_asm dest!: redT_updTs_new_thread)+
+
+
+definition deterministic :: bool
+where
+  "deterministic \<longleftrightarrow> 
+  (\<forall>s t x ta' x' m' ta'' x'' m''. 
+    thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>
+    \<longrightarrow> t \<turnstile> \<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle> 
+    \<longrightarrow> t \<turnstile> \<langle>x, shr s\<rangle> -ta''\<rightarrow> \<langle>x'', m''\<rangle> 
+    \<longrightarrow> actions_ok s t ta' \<longrightarrow> actions_ok s t ta''
+    \<longrightarrow> ta' = ta'' \<and> x' = x'' \<and> m' = m'')"
+
+lemma determisticI:
+  "(\<And>s t x ta' x' m' ta'' x'' m''.
+      \<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; 
+        t \<turnstile> \<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>; t \<turnstile> \<langle>x, shr s\<rangle> -ta''\<rightarrow> \<langle>x'', m''\<rangle>; 
+        actions_ok s t ta'; actions_ok s t ta'' \<rbrakk>
+      \<Longrightarrow> ta' = ta'' \<and> x' = x'' \<and> m' = m'')
+  \<Longrightarrow> deterministic"
+unfolding deterministic_def by blast
+
+lemma deterministicD:
+  "\<lbrakk> deterministic;
+    t \<turnstile> \<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>; t \<turnstile> \<langle>x, shr s\<rangle> -ta''\<rightarrow> \<langle>x'', m''\<rangle>;
+    thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; actions_ok s t ta'; actions_ok s t ta'' \<rbrakk>
+  \<Longrightarrow> ta' = ta'' \<and> x' = x'' \<and> m' = m''"
+unfolding deterministic_def by blast
+
+lemma deterministic_THE:
+  "\<lbrakk> deterministic; thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>; actions_ok s t ta \<rbrakk>
+  \<Longrightarrow> (THE (ta, x', m'). t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> actions_ok s t ta) = (ta, x', m')"
+by(rule the_equality)(blast dest: deterministicD)+
 
 end
 

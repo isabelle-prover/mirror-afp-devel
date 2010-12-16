@@ -463,10 +463,120 @@ proof -
   qed
 qed
 
-context executions_aux begin
+locale executions_sc =
+  executions_base \<E> P
+  for \<E> :: "execution set"
+  and P :: "'m prog" +
+  assumes \<E>_new_actions_for_fun:
+  "\<lbrakk> E \<in> \<E>; a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
+  and \<E>_ex_new_action:
+  "\<lbrakk> E \<in> \<E>; ra \<in> read_actions E; adal \<in> action_loc P E ra \<rbrakk>
+  \<Longrightarrow> \<exists>wa. wa \<in> new_actions_for P E adal \<and> wa < ra"
+begin
+
+lemma \<E>_new_same_addr_singleton:
+  assumes E: "E \<in> \<E>"
+  shows "\<exists>a. new_actions_for P E adal \<subseteq> {a}"
+by(blast dest: \<E>_new_actions_for_fun[OF E])
+
+lemma new_action_before_read:
+  assumes E: "E \<in> \<E>"
+  and ra: "ra \<in> read_actions E"
+  and adal: "adal \<in> action_loc P E ra"
+  and new: "wa \<in> new_actions_for P E adal"
+  shows "wa < ra"
+using \<E>_new_same_addr_singleton[OF E, of adal] \<E>_ex_new_action[OF E ra adal] new
+by auto
+
+lemma most_recent_write_exists:
+  assumes E: "E \<in> \<E>"
+  and ra: "ra \<in> read_actions E"
+  shows "\<exists>wa. P,E \<turnstile> ra \<leadsto>mrw wa"
+proof -
+  from ra obtain ad al where
+    adal: "(ad, al) \<in> action_loc P E ra"
+    by(rule read_action_action_locE)
+
+  def Q == "{a. a \<in> write_actions E \<and> (ad, al) \<in> action_loc P E a \<and> E \<turnstile> a \<le>a ra}"
+  let ?A = "new_actions_for P E (ad, al)"
+  let ?B = "{a. a \<in> actions E \<and> (\<exists>v'. action_obs E a = NormalAction (WriteMem ad al v')) \<and> a \<le> ra}"
+
+  have "Q \<subseteq> ?A \<union> ?B" unfolding Q_def
+    by(auto elim!: write_actions.cases action_loc_aux_cases simp add: new_actions_for_def elim: action_orderE)
+  moreover from \<E>_new_same_addr_singleton[OF E, of "(ad, al)"]
+  have "finite ?A" by(blast intro: finite_subset)
+  moreover have "finite ?B" by auto
+  ultimately have finQ: "finite Q" 
+    by(blast intro: finite_subset)
+
+  from \<E>_ex_new_action[OF E ra adal] ra obtain wa 
+    where wa: "wa \<in> Q" unfolding Q_def
+    by(fastsimp elim!: new_actionsE is_new_action.cases read_actions.cases intro: write_actionsI action_orderI)
+   
+  def wa' == "Max_torder (action_order E) Q"
+
+  from wa have "Q \<noteq> {}" "Q \<subseteq> actions E" by(auto simp add: Q_def)
+  with finQ have "wa' \<in> Q" unfolding wa'_def
+    by(rule Max_torder_in_set[OF torder_action_order])
+  hence "E \<turnstile> wa' \<le>a ra" "wa' \<in> write_actions E"
+    and "(ad, al) \<in> action_loc P E wa'" by(simp_all add: Q_def)
+  with ra adal have "P,E \<turnstile> ra \<leadsto>mrw wa'"
+  proof
+    fix wa''
+    assume wa'': "wa'' \<in> write_actions E" "(ad, al) \<in> action_loc P E wa''"
+    from `wa'' \<in> write_actions E` ra
+    have "ra \<noteq> wa''" by(auto dest: read_actions_not_write_actions)
+    show "E \<turnstile> wa'' \<le>a wa' \<or> E \<turnstile> ra \<le>a wa''"
+    proof(rule disjCI)
+      assume "\<not> E \<turnstile> ra \<le>a wa''"
+      with total_onPD[OF total_action_order, of ra E wa''] 
+        `ra \<noteq> wa''` `ra \<in> read_actions E` `wa'' \<in> write_actions E`
+      have "E \<turnstile> wa'' \<le>a ra" by simp
+      with wa'' have "wa'' \<in> Q" by(simp add: Q_def)
+      with finQ show "E \<turnstile> wa'' \<le>a wa'"
+        using `Q \<subseteq> actions E` unfolding wa'_def
+        by(rule Max_torder_above[OF torder_action_order])
+    qed
+  qed
+  thus ?thesis ..
+qed
+
+
+lemma mrw_before:
+  assumes E: "E \<in> \<E>"
+  and mrw: "P,E \<turnstile> r \<leadsto>mrw w"
+  shows "w < r"
+using mrw read_actions_not_write_actions[of r E]
+apply cases
+apply(erule action_orderE)
+ apply(erule (1) new_action_before_read[OF E])
+ apply(simp add: new_actions_for_def)
+apply(cases "w = r")
+apply auto
+done
+
+lemma action_order_write_readD:
+  "\<lbrakk> E \<in> \<E>; E \<turnstile> w \<le>a r; r \<in> read_actions E; w \<in> write_actions E; adal \<in> action_loc P E r; adal \<in> action_loc P E w \<rbrakk>
+  \<Longrightarrow> w < r"
+apply(erule action_orderE)
+ apply(frule (2) new_actionsI)
+ apply(frule \<E>_new_same_addr_singleton[where adal=adal])
+ apply(frule (2) \<E>_ex_new_action)
+ apply blast
+apply(cases "w=r")
+ apply clarify
+ apply(blast dest: read_actions_not_write_actions)
+apply simp
+done
+
+
+lemma sequentially_consistent_most_recent_write_for:
+  "E \<in> \<E> \<Longrightarrow> sequentially_consistent P (E, \<lambda>r. THE w. P,E \<turnstile> r \<leadsto>mrw w)"
+by(rule sequentially_consistentI)(auto dest: most_recent_write_exists simp add: THE_most_recent_writeI)
 
 lemma ta_seq_consist_imp_sequentially_consistent:
   assumes E: "E \<in> \<E>"
+  and tsa_ok: "thread_start_actions_ok E"
   and seq: "ta_seq_consist P empty (lmap snd E)"
   shows "\<exists>ws. sequentially_consistent P (E, ws) \<and> P \<turnstile> (E, ws) \<surd>"
 proof(intro exI conjI)
@@ -584,14 +694,15 @@ proof(intro exI conjI)
         thus "E \<turnstile> ws a \<le>a a'" "E \<turnstile> a' \<le>a a" by(auto elim: sync_orderE)
       }
     qed
-  qed
+  qed(rule tsa_ok)
 qed
 
 end
 
 section {* Cut-and-update and sequentially consistent completion *}
 
-inductive foldl_list_all2 :: "('b \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b list \<Rightarrow> 'c list \<Rightarrow> 'a \<Rightarrow> bool"
+inductive foldl_list_all2 ::
+  "('b \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b list \<Rightarrow> 'c list \<Rightarrow> 'a \<Rightarrow> bool"
 for f and P and Q
 where
   "foldl_list_all2 f P Q [] [] s"
@@ -608,7 +719,8 @@ inductive_simps foldl_list_all2_Cons1:
 inductive_simps foldl_list_all2_Cons2:
   "foldl_list_all2 f P Q xs (y # ys) s"
 
-definition eq_upto_seq_inconsist :: "'m prog \<Rightarrow> obs_event action list \<Rightarrow> obs_event action list \<Rightarrow> (addr \<times> addr_loc \<rightharpoonup> val \<times> bool) \<Rightarrow> bool"
+definition eq_upto_seq_inconsist ::
+  "'m prog \<Rightarrow> obs_event action list \<Rightarrow> obs_event action list \<Rightarrow> (addr \<times> addr_loc \<rightharpoonup> val \<times> bool) \<Rightarrow> bool"
 where
   "eq_upto_seq_inconsist P =
    foldl_list_all2 (\<lambda>ob ob' vs. mrw_value P vs ob) 
@@ -652,18 +764,18 @@ apply(induct obs arbitrary: vs)
 apply(auto simp add: eq_upto_seq_inconsist_simps split: action.split obs_event.split)
 done
 
-context executions_aux begin
+context executions_sc begin
 
 lemma ta_seq_consist_mrwI:
   assumes E: "E \<in> \<E>"
   and wf: "P \<turnstile> (E, ws) \<surd>"
-  and mrw: "\<And>a. \<lbrakk> a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
-  shows "ta_seq_consist P empty (lmap snd (ltake (Fin r) E))"
+  and mrw: "\<And>a. \<lbrakk> Fin a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
+  shows "ta_seq_consist P empty (lmap snd (ltake r E))"
 proof(rule ta_seq_consist_nthI)
   fix i ad al v
-  assume i_len: "Fin i < llength (lmap snd (ltake (Fin r) E))"
-    and E_i: "lnth (lmap snd (ltake (Fin r) E)) i = NormalAction (ReadMem ad al v)"
-  from i_len have "i < r" by simp
+  assume i_len: "Fin i < llength (lmap snd (ltake r E))"
+    and E_i: "lnth (lmap snd (ltake r E)) i = NormalAction (ReadMem ad al v)"
+  from i_len have "Fin i < r" by simp
   from i_len have "i \<in> actions E" by(simp add: actions_def)
   moreover from E_i i_len have obs_i: "action_obs E i = NormalAction (ReadMem ad al v)"
     by(simp add: action_obs_def lnth_ltake)
@@ -690,9 +802,9 @@ proof(rule ta_seq_consist_nthI)
     by(simp add: lnth_ltake)(simp add: min_def)
   finally have r_E: "ltake (Fin i) E = \<dots>" .
 
-  have "mrw_values P empty (list_of (ltake (Fin i) (lmap snd (ltake (Fin r) E)))) (ad, al)
+  have "mrw_values P empty (list_of (ltake (Fin i) (lmap snd (ltake r E)))) (ad, al)
     = mrw_values P empty (map snd (list_of (ltake (Fin i) E))) (ad, al)"
-    using `i < r` by(simp add: min_def)
+    using `Fin i < r` by(auto simp add: min_def)
   also have "\<dots> = mrw_values P (mrw_value P ?vs (snd (lnth E (ws i)))) (map snd (list_of (ldropn (Suc (ws i)) (ltake (Fin i) E)))) (ad, al)"
     by(subst r_E)(simp add: list_of_lappend)
   also have "\<dots> = mrw_value P ?vs (snd (lnth E (ws i))) (ad, al)"
@@ -779,7 +891,7 @@ proof(rule ta_seq_consist_nthI)
     apply auto
     apply blast+
     done
-  finally show "\<exists>b. mrw_values P empty (list_of (ltake (Fin i) (lmap snd (ltake (Fin r) E)))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
+  finally show "\<exists>b. mrw_values P empty (list_of (ltake (Fin i) (lmap snd (ltake r E)))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
     by blast
 qed
 

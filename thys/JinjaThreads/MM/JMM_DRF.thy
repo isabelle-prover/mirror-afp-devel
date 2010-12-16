@@ -33,8 +33,10 @@ proof(rule ccontr)
 
   from r' obtain ad al v where obs_r': "action_obs E r' = NormalAction (ReadMem ad al v)"
     by(cases) auto
-  from wf have ws: "is_write_seen P E ws" by(rule wf_exec_is_write_seenD)
-  from is_write_seenD[OF this r' obs_r']
+  from wf have ws: "is_write_seen P E ws" 
+    and tsa_ok: "thread_start_actions_ok E" 
+    by(rule wf_exec_is_write_seenD wf_exec_thread_start_actions_okD)+
+  from is_write_seenD[OF ws r' obs_r']
   have ws_r: "ws r' \<in> write_actions E"
     and adal: "(ad, al) \<in> action_loc P E (ws r')"
     and v: "v = value_written P E (ws r') (ad, al)"
@@ -76,61 +78,92 @@ proof(rule ccontr)
     and "r' \<in> actions E'"
     by auto
 
+  from `P \<turnstile> (E', ws') \<surd>` have tsa_ok': "thread_start_actions_ok E'"
+    by(rule wf_exec_thread_start_actions_okD)
+
   from `r' \<in> read_actions E` have "Fin r' < llength E" by(auto elim: read_actions.cases actionsE)
   moreover from `r' \<in> actions E'` have "Fin r' < llength E'" by(auto elim: actionsE)
   ultimately have eq': "ltake (Fin (Suc r')) E [\<approx>] ltake (Fin (Suc r')) E'"
     using eq[THEN eq_into_sim_actions] r''
     by(auto simp add: ltake_Suc_conv_snoc_lnth sim_actions_def split_beta action_tid_def action_obs_def intro!: llist_all2_lappendI)
+  from r' have r'': "r' \<in> read_actions E'"
+    by(rule read_actions_change_prefix[OF _eq']) simp
+  from obs_r' have "(ad, al) \<in> action_loc P E r'" by simp
+  hence adal_r'': "(ad, al) \<in> action_loc P E' r'"
+    by(subst (asm) action_loc_change_prefix[OF eq']) simp
 
-  note sync `E' \<in> \<E>` `P \<turnstile> (E', ws') \<surd>` sc'
-  moreover from obs_r' have "(ad, al) \<in> action_loc P E r'" by simp
-  with `E \<in> \<E>` `E \<turnstile> ws r' \<le>a r'` r' ws_r have "ws r' < r'"
-    using adal by(rule action_order_write_readD)
-  with ws_r have "ws r' \<in> write_actions E'"
-    by(auto intro: write_actions_change_prefix[OF _ eq'])
-  hence "ws r' \<in> actions E'" by simp
-  moreover from `E \<in> \<E>` `E \<turnstile> w' \<le>a r'` r' w' `(ad, al) \<in> action_loc P E r'` adal_w'
-  have "w' < r'" by(rule action_order_write_readD)
+  from `\<not> P,E \<turnstile> w' \<le>hb ws r'`
+  have "\<not> is_new_action (action_obs E w')"
+  proof(rule contrapos_nn)
+    assume new_w': "is_new_action (action_obs E w')"
+    show "P,E \<turnstile> w' \<le>hb ws r'"
+    proof(cases "is_new_action (action_obs E (ws r'))")
+      case True
+      with adal new_w' adal_w' w' ws_r
+      have "ws r' \<in> new_actions_for P E (ad, al)" "w' \<in> new_actions_for P E (ad, al)"
+        by(auto simp add: new_actions_for_def)
+      with `E \<in> \<E>` have "ws r' = w'" by(rule \<E>_new_actions_for_fun)
+      thus ?thesis using w' by(auto intro: happens_before_refl)
+    next
+      case False
+      with tsa_ok w' ws_r new_w'
+      show ?thesis by(auto intro: happens_before_new_not_new)
+    qed
+  qed
+  with `E \<turnstile> w' \<le>a r'` have "w' \<le> r'" by(auto elim!: action_orderE)
+  moreover from w' r' have "w' \<noteq> r'" by(auto intro: read_actions_not_write_actions)
+  ultimately have "w' < r'" by simp
   with w' have "w' \<in> write_actions E'"
     by(auto intro: write_actions_change_prefix[OF _ eq'])
   hence "w' \<in> actions E'" by simp
-  moreover
+
   from adal_w' `w' < r'`
   have "(ad, al) \<in> action_loc P E' w'"
     by(subst action_loc_change_prefix[symmetric, OF eq']) simp_all
-  { moreover from adal `ws r' < r'`
-    have "(ad, al) \<in> action_loc P E' (ws r')"
-      by(subst action_loc_change_prefix[symmetric, OF eq']) simp_all
-    ultimately have "P,E' \<turnstile> ws r' \<dagger> w'"
-      using `ws r' \<in> write_actions E'` `w' \<in> write_actions E'`
-      unfolding conflict_def by auto }
-  ultimately have "P,E' \<turnstile> ws r' \<le>hb w' \<or> P,E' \<turnstile> w' \<le>hb ws r'"
-    by(rule correctly_synchronizedD[rule_format])
-  hence "P,E \<turnstile> ws r' \<le>hb w'" using `w' < r'` `ws r' < r'` `\<not> P,E \<turnstile> w' \<le>hb ws r'`
-    by(auto dest: happens_before_change_prefix[OF _ eq'[symmetric]])
-
-  moreover
-  from r' have "r' \<in> read_actions E'"
-    by(rule read_actions_change_prefix[OF _eq']) simp
-  from obs_r' have "(ad, al) \<in> action_loc P E r'" by simp
-  hence "(ad, al) \<in> action_loc P E' r'"
-    by(subst (asm) action_loc_change_prefix[OF eq']) simp
-  with `r' \<in> read_actions E'` `w' \<in> write_actions E'` `(ad, al) \<in> action_loc P E' w'`
+  from `r' \<in> read_actions E'` `w' \<in> write_actions E'` `(ad, al) \<in> action_loc P E' w'` adal_r''
   have "P,E' \<turnstile> r' \<dagger> w'" unfolding conflict_def by auto
   with sync `E' \<in> \<E>` `P \<turnstile> (E', ws') \<surd>` sc' `r' \<in> actions E'` `w' \<in> actions E'`
-  have "P,E' \<turnstile> r' \<le>hb w' \<or> P,E' \<turnstile> w' \<le>hb r'"
+  have hb'_r'_w': "P,E' \<turnstile> r' \<le>hb w' \<or> P,E' \<turnstile> w' \<le>hb r'"
     by(rule correctly_synchronizedD[rule_format])
   hence "P,E \<turnstile> r' \<le>hb w' \<or> P,E \<turnstile> w' \<le>hb r'" using `w' < r'`
-    by(auto intro: happens_before_change_prefix[OF _ eq'[symmetric]])
+    by(auto intro: happens_before_change_prefix[OF _ tsa_ok eq'[symmetric]])
   with `\<not> P,E \<turnstile> r' \<le>hb w'` have "P,E \<turnstile> w' \<le>hb r'" by simp
+
+  have "P,E \<turnstile> ws r' \<le>hb w'"
+  proof(cases "is_new_action (action_obs E (ws r'))")
+    case False
+    with `E \<turnstile> ws r' \<le>a r'` have "ws r' \<le> r'" by(auto elim!: action_orderE)
+    moreover from ws_r r' have "ws r' \<noteq> r'" by(auto dest: read_actions_not_write_actions)
+    ultimately have "ws r' < r'" by simp
+    with ws_r have "ws r' \<in> write_actions E'"
+      by(auto intro: write_actions_change_prefix[OF _ eq'])
+    hence "ws r' \<in> actions E'" by simp
+
+    from adal `ws r' < r'`
+    have "(ad, al) \<in> action_loc P E' (ws r')"
+      by(subst action_loc_change_prefix[symmetric, OF eq']) simp_all
+    hence "P,E' \<turnstile> ws r' \<dagger> w'"
+      using `ws r' \<in> write_actions E'` `w' \<in> write_actions E'` `(ad, al) \<in> action_loc P E' w'`
+      unfolding conflict_def by auto
+    with sync `E' \<in> \<E>` `P \<turnstile> (E', ws') \<surd>` sc' `ws r' \<in> actions E'` `w' \<in> actions E'`
+    have "P,E' \<turnstile> ws r' \<le>hb w' \<or> P,E' \<turnstile> w' \<le>hb ws r'"
+      by(rule correctly_synchronizedD[rule_format])
+    thus "P,E \<turnstile> ws r' \<le>hb w'" using `w' < r'` `ws r' < r'` `\<not> P,E \<turnstile> w' \<le>hb ws r'`
+      by(auto dest: happens_before_change_prefix[OF _ tsa_ok eq'[symmetric]])
+  next
+    case True 
+    with tsa_ok ws_r w' `\<not> is_new_action (action_obs E w')`
+    show "P,E \<turnstile> ws r' \<le>hb w'" by(auto intro: happens_before_new_not_new)
+  qed
   moreover
   from wf have "is_write_seen P E ws" by(rule wf_exec_is_write_seenD)
   ultimately have "w' = ws r'"
     using is_write_seenD[OF `is_write_seen P E ws` `r' \<in> read_actions E` obs_r']
-    `w' \<in> write_actions E` `(ad, al) \<in> action_loc P E w'` by auto
+      `w' \<in> write_actions E` `(ad, al) \<in> action_loc P E w'` `P,E \<turnstile> w' \<le>hb r'`
+    by auto
   with porder_happens_before[of E P] `\<not> P,E \<turnstile> w' \<le>hb ws r'` ws_r show False
     by(auto dest: refl_onPD[where a="ws r'"] elim!: porder_onE)
-qed    
+qed
 
 lemma justified_action_committedD:
   assumes justified: "P \<turnstile> (E, ws) justified_by J"
