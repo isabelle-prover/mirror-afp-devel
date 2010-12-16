@@ -277,6 +277,28 @@ date = 2007-12-03
 base = HOL/HOL-Word
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. For explanations on the framework semantics and the source code instantiation, see the FOOL 2008 paper by A. Lochbihler.
+extra-history = 
+  Change history:
+  [2008-04-23]:
+        added bytecode formalisation with arrays and threads, added thread joins
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f74a8be156a7">f74a8be156a7</a>)
+  [2009-04-27]:
+        added verified compiler from source code to bytecode;
+        encapsulate native methods in separate semantics
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e4f26541e58a">e4f26541e58a</a>)
+  [2009-11-30]:
+        extended compiler correctness proof to infinite and deadlocking computations
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e50282397435">e50282397435</a>)
+  [2010-06-08]:
+        added thread interruption;
+        new abstract memory model with sequential consistency as implementation
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0cb9e8dbd78d">0cb9e8dbd78d</a>)
+  [2010-06-28]:
+        new thread interruption model
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/c0440d0a1177">c0440d0a1177</a>)
+  [2010-10-15]:
+        preliminary version of the Java memory model for source code
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/02fee0ef3ca2">02fee0ef3ca2</a>)
 
 [Locally-Nameless-Sigma]
 title = Locally Nameless Sigma Calculus
