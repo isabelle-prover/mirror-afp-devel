@@ -109,8 +109,8 @@ abbreviation empty_ta :: "('l,'t,'x,'m,'w,'o list) thread_action" ("\<epsilon>")
   "empty_ta \<equiv> (\<lambda>\<^isup>f [], [], [], [], [])"
 
 
-nonterminals
-  locklets locklet
+nonterminal locklets and locklet
+
 syntax
   "_locklet"  :: "lock_action \<Rightarrow> 'l \<Rightarrow> locklet"             ("(2_/\<rightarrow>_)")
   ""         :: "locklet \<Rightarrow> locklets"             ("_")
@@ -122,8 +122,8 @@ translations
   "ta\<lbrace>\<^bsub>l\<^esub>x\<rightarrow>y\<rbrace>"                         == "CONST ta_update_locks ta x y"
 
 
-nonterminals
-  ntlets ntlet
+nonterminal ntlets and ntlet
+
 syntax
   "_ntlet"  :: "('t,'m,'x) new_thread_action \<Rightarrow> ntlet"             ("(_)")
   ""         :: "ntlet \<Rightarrow> ntlets"             ("_")
@@ -135,8 +135,8 @@ translations
   "ta\<lbrace>\<^bsub>t\<^esub>nt\<rbrace>"                       == "CONST ta_update_NewThread ta nt"
 
 
-nonterminals
-  jlets jlet
+nonterminal jlets and jlet
+
 syntax
   "_jlet"  :: "'t conditional_action \<Rightarrow> jlet"             ("(_)")
   ""         :: "jlet \<Rightarrow> jlets"             ("_")
@@ -148,8 +148,8 @@ translations
   "ta\<lbrace>\<^bsub>c\<^esub>nt\<rbrace>"                    == "CONST ta_update_Conditional ta nt"
 
 
-nonterminals
-  wslets wslet
+nonterminal wslets and wslet
+
 syntax
   "_wslet"  :: "('t, 'w) wait_set_action \<Rightarrow> wslet"             ("(_)")
   ""         :: "wslet \<Rightarrow> wslets"             ("_")
@@ -160,8 +160,9 @@ translations
   "_wsUpdate ta (_wslets b bs)"  == "_wsUpdate (_wsUpdate ta b) bs"
   "ta\<lbrace>\<^bsub>w\<^esub>ws\<rbrace>"                      == "CONST ta_update_wait_set ta ws"
 
-nonterminals
-  oalets oalet
+
+nonterminal oalets and oalet
+
 syntax
   "_oalet"  :: "'o \<Rightarrow> oalet"             ("(_)")
   ""         :: "oalet \<Rightarrow> oalets"             ("_")

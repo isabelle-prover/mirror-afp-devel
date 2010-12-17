@@ -64,7 +64,7 @@ definition list_multsel:: "'a list \<Rightarrow> nat list \<Rightarrow> 'a list"
 definition list_multupd:: "'a list \<Rightarrow> nat list \<Rightarrow> 'a list \<Rightarrow> 'a list"
   where "list_multupd xs ns ys = foldl (\<lambda>xs (n,v). xs[n:=v]) xs (zip ns ys)"
 
-nonterminals lmupdbinds lmupdbind
+nonterminal lmupdbinds and lmupdbind
 
 syntax
   -- {* multiple list update *}
@@ -90,10 +90,19 @@ definition rapp:: "'a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b" (inf
   where "rapp x f = f x"
 
 
-nonterminals newinit newinits locinit locinits switchcase switchcases
-             grds grd bdy basics basic basicblock
-
-
+nonterminal
+  newinit and
+  newinits and
+  locinit and
+  locinits and
+  switchcase and
+  switchcases and
+  grds and
+  grd and
+  bdy and
+  basics and
+  basic and
+  basicblock
 
 notation
   Skip  ("SKIP") and
@@ -340,7 +349,7 @@ translations
  "g\<rightarrow>(_antiquoteCur f)" <= "_antiquoteCur f g"
 
 
-nonterminals par pars actuals
+nonterminal par and pars and actuals
 
 syntax 
   "_par" :: "'a \<Rightarrow> par"                                ("_")
@@ -381,8 +390,8 @@ translations
 
 
 
-nonterminals
-  modifyargs
+nonterminal modifyargs
+
 syntax
   "_may_modify" :: "['a,'a,modifyargs] \<Rightarrow> bool" 
         ("_ may'_only'_modify'_globals _ in [_]" [100,100,0] 100)

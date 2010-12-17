@@ -116,8 +116,7 @@ consts access:: "Store \<Rightarrow> Location \<Rightarrow> Value"  ("_@@_" [71,
        new:: "Store \<Rightarrow> New \<Rightarrow> Value"
        update:: "Store \<Rightarrow> Location \<Rightarrow> Value \<Rightarrow> Store"
        
-nonterminals
-  smodifybinds smodifybind
+nonterminal smodifybinds and smodifybind
 syntax
   "_smodifybind" :: "['a, 'a]     \<Rightarrow> smodifybind" ("(2_ :=/ _)")
   ""         :: "smodifybind \<Rightarrow> smodifybinds"     ("_")
