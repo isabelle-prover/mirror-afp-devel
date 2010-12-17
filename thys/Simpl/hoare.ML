@@ -2079,15 +2079,18 @@ val conseq2_ss_fun    = conseq2_ss_base
                                          state_ex_sel_eq_simproc Function]
 fun conseq2_ss Record   = conseq2_ss_record
   | conseq2_ss Function = conseq2_ss_fun;
+
 in
+
 fun raw_conseq_simp_tac ctxt state_kind thms i =
   let
-    val ctxt' = Config.map MetaSimplifier.simp_depth_limit (K 0) ctxt;
+    val ctxt' = Config.put simp_depth_limit 0 ctxt;
   in
      (simp_tac ((Simplifier.context ctxt' (conseq1_ss state_kind)) addsimps thms) i)
      THEN_MAYBE
      (simp_tac (Simplifier.context ctxt' (conseq2_ss state_kind)) i)
   end
+
 end
 
 val conseq_simp_tac = raw_conseq_simp_tac;
