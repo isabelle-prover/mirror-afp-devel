@@ -609,6 +609,13 @@ date = 2006-05-22
 topic = Mathematics/Graph Theory
 abstract = These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his proof of the Kepler Conjecture. For explanations see the IJCAR 2006 paper by Nipkow, Bauer and Schultz. 
 
+[Marriage]
+title = Hall's Marriage Theorem
+author = Dongchen Jiang <mailto:dongchenjiang@googlemail.com> and Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2010-12-17
+topic = Mathematics/Combinatorics
+abstract = A proof of Hall's Marriage Theorem due to Halmos and Vaughan.
+
 [Ramsey-Infinite]
 title = Ramsey's theorem, infinitary version
 author = Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
