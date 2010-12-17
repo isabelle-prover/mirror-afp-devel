@@ -611,7 +611,7 @@ abstract = These theories present the verified enumeration of <i>tame</i> plane 
 
 [Marriage]
 title = Hall's Marriage Theorem
-author = Dongchen Jiang <mailto:dongchenjiang@googlemail.co>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Dongchen Jiang <mailto:dongchenjiang@googlemail.com>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2010-12-17
 topic = Mathematics/Combinatorics
 abstract = A proof of Hall's Marriage Theorem due to Halmos and Vaughan.
