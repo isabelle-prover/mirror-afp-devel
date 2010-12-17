@@ -1,3 +1,5 @@
+(* Authors: Dongchen Jiang and Tobias Nipkow *)
+
 theory Marriage
 imports Main 
 begin
