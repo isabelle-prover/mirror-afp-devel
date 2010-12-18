@@ -1386,7 +1386,7 @@ fun procedures_definition locname procs thy =
           in thy
              |> add_locale_cmd implN parent []
              |> ProofContext.theory_of
-             |> (fn thy => Expression.sublocale parentN (mk_loc_exp [Locale.intern thy implN]) thy)
+             |> (fn thy => Expression.sublocale parentN (mk_loc_exp [Locale.intern thy implN]) [] thy)
              |> Proof.global_terminal_proof
                  (Method.Basic (fn ctxt => Method.SIMPLE_METHOD
                                  (Locale.intro_locales_tac false ctxt [])),NONE)
