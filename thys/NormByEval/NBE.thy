@@ -1101,7 +1101,8 @@ axiomatization arity :: "cname \<Rightarrow> nat"
 primrec compile :: "tm \<Rightarrow> (nat \<Rightarrow> ml) \<Rightarrow> ml"
 where
   "compile (V x) \<sigma> = \<sigma> x"
-| "compile (C nm) \<sigma> = Clo (C\<^bsub>ML\<^esub> nm) [] (arity nm)"
+| "compile (C nm) \<sigma> =
+    (if arity nm > 0 then Clo (C\<^bsub>ML\<^esub> nm) [] (arity nm) else A\<^bsub>ML\<^esub> (C\<^bsub>ML\<^esub> nm) [])"
 | "compile (s \<bullet> t) \<sigma> = apply (compile s \<sigma>) (compile t \<sigma>)"
 | "compile (\<Lambda> t) \<sigma> = Clo (Lam\<^bsub>ML\<^esub> (compile t (V\<^bsub>ML\<^esub> 0 ## \<sigma>))) [] 1"
 
