@@ -4,15 +4,6 @@ theory Marriage
 imports Main 
 begin
 
-lemma diff_card_le_card_Diff:
-assumes "finite B" shows "card A - card B \<le> card(A - B)"
-proof-
-  have "card A - card B \<le> card A - card (A \<inter> B)"
-    using card_mono[OF assms Int_lower2, of A] by arith
-  also have "\<dots> = card(A-B)" using assms by(simp add: card_Diff_subset_Int)
-  finally show ?thesis .
-qed
-
 theorem marriage: 
   fixes A :: "'a \<Rightarrow> 'b set" and I :: "'a set"
   assumes "finite I" and "\<forall> i\<in>I. finite (A i)"
