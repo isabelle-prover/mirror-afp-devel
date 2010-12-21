@@ -9,8 +9,8 @@ theory Quotient_TLList imports
   TLList
 begin
 
-type_lifting tmap
-  by (simp_all add: tmap_id_id [simplified id_def] tmap_compose [simplified comp_def])
+type_lifting tmap: tmap
+  by (simp_all add: fun_eq_iff tmap_id_id)
 
 declare [[map tllist = (tmap, tllist_all2)]]
 
