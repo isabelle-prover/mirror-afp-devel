@@ -33,7 +33,7 @@ text {*
 An abstract rewrite system (ARS) is a binary endorelation, i.e.,
 a binary relation where domain and codomain coincide.
 *}
-types
+type_synonym
   'a ars = "('a \<times> 'a) set"
 
 subsection {* Definitions *}
@@ -651,7 +651,7 @@ text {*
 Infinite sequences over elements of type @{typ "'a"} are represented by functions
 of type @{typ "nat \<Rightarrow> 'a"}.
 *}
-types
+type_synonym
   'a iseq = "nat \<Rightarrow> 'a"
 
 lemma SN_imp_WN: assumes "SN A" shows "WN A"
@@ -1931,7 +1931,7 @@ lemma SN_empty[simp]: "SN {}" by auto
 
 subsection {* Relative Rewriting *}
 
-types 'a rel_ars = "'a ars \<times> 'a ars"
+type_synonym 'a rel_ars = "'a ars \<times> 'a ars"
 
 fun
   rel_step :: "'a rel_ars \<Rightarrow> 'a ars"
