@@ -163,10 +163,10 @@ where
     state'\<lparr> getQ := tl (getQ state')\<rparr>)
 "
 
-function (domintros, tailrec)
+partial_function (tailrec)
 exhaustiveUnitPropagate :: "State \<Rightarrow> State"
 where
-exhaustiveUnitPropagate_unfold[simp del]: 
+exhaustiveUnitPropagate_unfold[code]:
 "exhaustiveUnitPropagate state =
     (if (getConflictFlag state) \<or> (getQ state) = [] then 
         state 
@@ -174,8 +174,13 @@ exhaustiveUnitPropagate_unfold[simp del]:
         exhaustiveUnitPropagate (applyUnitPropagate state)
     )
 "
-by pat_completeness auto
-declare exhaustiveUnitPropagate_unfold[code]
+
+inductive
+exhaustiveUnitPropagate_dom :: "State \<Rightarrow> bool"
+where
+step: "(\<not> getConflictFlag state \<Longrightarrow> getQ state \<noteq> []
+   \<Longrightarrow> exhaustiveUnitPropagate_dom (applyUnitPropagate state))
+   \<Longrightarrow> exhaustiveUnitPropagate_dom state"
 
 
 definition

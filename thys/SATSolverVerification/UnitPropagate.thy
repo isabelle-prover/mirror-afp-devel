@@ -856,13 +856,13 @@ next
       using ih
       by auto
     thus ?thesis
-      using exhaustiveUnitPropagate.domintros[of "state'"]
+      using exhaustiveUnitPropagate_dom.intros[of "state'"]
       using False
       by simp
   next
     case True
     show ?thesis
-      apply (rule exhaustiveUnitPropagate.domintros)
+      apply (rule exhaustiveUnitPropagate_dom.intros)
       using True
       by simp
   qed  
@@ -880,8 +880,8 @@ shows
   "let state' = exhaustiveUnitPropagate state in 
        (getSATFlag state') = (getSATFlag state)"
 using assms
-proof (induct state rule: exhaustiveUnitPropagate.pinduct)
-  case (1 state')
+proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "(getConflictFlag state') \<or> (getQ state') = []")
@@ -935,8 +935,8 @@ shows
   "let state' = exhaustiveUnitPropagate state in 
        currentLevel (getM state') = currentLevel (getM state)"
 using assms
-proof (induct state rule: exhaustiveUnitPropagate.pinduct)
-  case (1 state')
+proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "(getConflictFlag state') \<or> (getQ state') = []")
@@ -1015,8 +1015,8 @@ shows
        InvariantVarsF (getF state') F0 Vbl
 "
 using assms
-proof (induct state rule: exhaustiveUnitPropagate.pinduct)
-  case (1 state')
+proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "(getConflictFlag state') \<or> (getQ state') = []")
@@ -1115,8 +1115,8 @@ shows
   "let state' = exhaustiveUnitPropagate state in
    InvariantConflictClauseCharacterization (getConflictFlag state') (getConflictClause state') (getF state') (getM state')"
 using assms
-proof (induct state rule: exhaustiveUnitPropagate.pinduct)
-  case (1 state')
+proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "(getConflictFlag state') \<or> (getQ state') = []")
@@ -1180,8 +1180,8 @@ shows
        InvariantNoDecisionsWhenConflict (getF state') (getM state') (currentLevel (getM state')) \<and> 
        InvariantNoDecisionsWhenUnit (getF state') (getM state') (currentLevel (getM state'))"
 using assms
-proof (induct state rule: exhaustiveUnitPropagate.pinduct)
-  case (1 state')
+proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "(getConflictFlag state') \<or> (getQ state') = []")
@@ -1281,8 +1281,8 @@ shows
   "let state' = exhaustiveUnitPropagate state in 
        InvariantGetReasonIsReason (getReason state') (getF state') (getM state') (set (getQ state'))"
 using assms
-proof (induct state rule: exhaustiveUnitPropagate.pinduct)
-  case (1 state')
+proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "(getConflictFlag state') \<or> (getQ state') = []")
@@ -1383,8 +1383,8 @@ shows
       InvariantEquivalentZL (getF state') (getM state') Phi
   "
 using assms
-proof (induct state rule: exhaustiveUnitPropagate.pinduct)
-  case (1 state')
+proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "(getConflictFlag state') \<or> (getQ state') = []")
@@ -1478,8 +1478,8 @@ shows
 "let state' = exhaustiveUnitPropagate state in
     (getConflictFlag state') \<or> (getQ state' = [])"
 using assms
-proof (induct state rule: exhaustiveUnitPropagate.pinduct)
-  case (1 state')
+proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "(getConflictFlag state') \<or> (getQ state') = []")

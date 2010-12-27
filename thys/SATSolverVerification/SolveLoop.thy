@@ -388,8 +388,8 @@ shows
 "let state' = exhaustiveUnitPropagate state in
     state' = state \<or> (state', state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
 using assms
-proof (induct state rule: exhaustiveUnitPropagate.pinduct)
-  case (1 state')
+proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "(getConflictFlag state') \<or> (getQ state') = []")
