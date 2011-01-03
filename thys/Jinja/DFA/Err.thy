@@ -134,7 +134,7 @@ lemma le_OK_conv [iff]: "e \<sqsubseteq>\<^bsub>le r\<^esub> OK x  =  (\<exists>
 lemma OK_le_conv: "OK x \<sqsubseteq>\<^bsub>le r\<^esub> e = (e = Err \<or> (\<exists>y. e = OK y \<and> x \<sqsubseteq>\<^sub>r y))"
 (*<*) by (simp add: unfold_lesub_err le_def split: err.split) (*>*)
 
-lemma top_Err [iff]: "top (le r) Err";
+lemma top_Err [iff]: "top (le r) Err"
 (*<*) by (simp add: top_def) (*>*)
 
 lemma OK_less_conv [rule_format, iff]:
