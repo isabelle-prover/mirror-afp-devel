@@ -23,16 +23,16 @@ where
 definition wtl_inst :: "'s certificate \<Rightarrow> 's binop \<Rightarrow> 's ord \<Rightarrow> 's \<Rightarrow>
               's step_type \<Rightarrow> nat \<Rightarrow> 's \<Rightarrow> 's"
 where
-  "wtl_inst cert f r T step pc s \<equiv> merge cert f r T pc (step pc s) (cert!(pc+1))"
+  "wtl_inst cert f r T step pc s = merge cert f r T pc (step pc s) (cert!(pc+1))"
 
 definition wtl_cert :: "'s certificate \<Rightarrow> 's binop \<Rightarrow> 's ord \<Rightarrow> 's \<Rightarrow> 's \<Rightarrow>
               's step_type \<Rightarrow> nat \<Rightarrow> 's \<Rightarrow> 's"
 where
-  "wtl_cert cert f r T B step pc s \<equiv>
-  if cert!pc = B then 
+  "wtl_cert cert f r T B step pc s =
+  (if cert!pc = B then 
     wtl_inst cert f r T step pc s
   else
-    if s \<sqsubseteq>\<^sub>r cert!pc then wtl_inst cert f r T step pc (cert!pc) else T"
+    if s \<sqsubseteq>\<^sub>r cert!pc then wtl_inst cert f r T step pc (cert!pc) else T)"
 
 primrec wtl_inst_list :: "'a list \<Rightarrow> 's certificate \<Rightarrow> 's binop \<Rightarrow> 's ord \<Rightarrow> 's \<Rightarrow> 's \<Rightarrow>
                     's step_type \<Rightarrow> nat \<Rightarrow> 's \<Rightarrow> 's"
@@ -44,11 +44,11 @@ where
 
 definition cert_ok :: "'s certificate \<Rightarrow> nat \<Rightarrow> 's \<Rightarrow> 's \<Rightarrow> 's set \<Rightarrow> bool"
 where
-  "cert_ok cert n T B A \<equiv> (\<forall>i < n. cert!i \<in> A \<and> cert!i \<noteq> T) \<and> (cert!n = B)"
+  "cert_ok cert n T B A \<longleftrightarrow> (\<forall>i < n. cert!i \<in> A \<and> cert!i \<noteq> T) \<and> (cert!n = B)"
 
 definition bottom :: "'a ord \<Rightarrow> 'a \<Rightarrow> bool"
 where
-  "bottom r B \<equiv> \<forall>x. B \<sqsubseteq>\<^sub>r x"
+  "bottom r B \<longleftrightarrow> (\<forall>x. B \<sqsubseteq>\<^sub>r x)"
 
 
 locale lbv = Semilat +
@@ -74,12 +74,12 @@ locale lbv = Semilat +
 
 
 lemma (in lbv) wti:
-  "wti c pc s \<equiv> merge c pc (step pc s) (c!(pc+1))"
+  "wti c pc s = merge c pc (step pc s) (c!(pc+1))"
   (*<*) by (simp add: wti_def mrg_def wtl_inst_def) (*>*)
 
 lemma (in lbv) wtc: 
-  "wtc c pc s \<equiv> if c!pc = \<bottom> then wti c pc s else if s \<sqsubseteq>\<^sub>r c!pc then wti c pc (c!pc) else \<top>"
-  (*<*) by (unfold wtc_def wti_def wtl_cert_def) (*>*)
+  "wtc c pc s = (if c!pc = \<bottom> then wti c pc s else if s \<sqsubseteq>\<^sub>r c!pc then wti c pc (c!pc) else \<top>)"
+  (*<*) by (unfold wtc_def wti_def wtl_cert_def) rule (*>*)
 
 lemma cert_okD1 [intro?]:
   "cert_ok c n T B A \<Longrightarrow> pc < n \<Longrightarrow> c!pc \<in> A"
