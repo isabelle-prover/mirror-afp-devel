@@ -157,31 +157,42 @@ lemma (in Semilat) ub2 [simp, intro?]: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk>
   (*<*) by (insert semilat) (unfold semilat_Def, simp) (*>*)
 
 lemma (in Semilat) lub [simp, intro?]:
-  "\<lbrakk> x \<sqsubseteq>\<^sub>r z; y \<sqsubseteq>\<^sub>r z; x \<in> A; y \<in> A; z \<in> A \<rbrakk> \<Longrightarrow> x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z";
+  "\<lbrakk> x \<sqsubseteq>\<^sub>r z; y \<sqsubseteq>\<^sub>r z; x \<in> A; y \<in> A; z \<in> A \<rbrakk> \<Longrightarrow> x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z"
   (*<*) by (insert semilat) (unfold semilat_Def, simp) (*>*)
 
 lemma (in Semilat) plus_le_conv [simp]:
   "\<lbrakk> x \<in> A; y \<in> A; z \<in> A \<rbrakk> \<Longrightarrow> (x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z) = (x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z)"
   (*<*) by (blast intro: ub1 ub2 lub order_trans) (*>*)
 
-lemma (in Semilat) le_iff_plus_unchanged: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> (x \<sqsubseteq>\<^sub>r y) = (x \<squnion>\<^sub>f y = y)"
+lemma (in Semilat) le_iff_plus_unchanged:
+  assumes "x \<in> A" and "y \<in> A"
+  shows "x \<sqsubseteq>\<^sub>r y \<longleftrightarrow> x \<squnion>\<^sub>f y = y" (is "?P \<longleftrightarrow> ?Q")
 (*<*)
-apply (rule iffI)
- apply (blast intro: antisym_r refl_r lub ub2)
-apply (erule subst)
-apply simp
-done
+proof
+  assume ?P
+  with assms show ?Q by (blast intro: antisym_r lub ub2)
+next
+  assume ?Q
+  then have "y = x \<squnion>\<^bsub>f\<^esub> y" by simp
+  moreover from assms have "x \<sqsubseteq>\<^bsub>r\<^esub> x \<squnion>\<^bsub>f\<^esub> y" by simp
+  ultimately show ?P by simp
+qed
 (*>*)
 
-lemma (in Semilat) le_iff_plus_unchanged2: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> (x \<sqsubseteq>\<^sub>r y) = (y \<squnion>\<^sub>f x = y)"
+lemma (in Semilat) le_iff_plus_unchanged2:
+  assumes "x \<in> A" and "y \<in> A"
+  shows "x \<sqsubseteq>\<^sub>r y \<longleftrightarrow> y \<squnion>\<^sub>f x = y" (is "?P \<longleftrightarrow> ?Q")
 (*<*)
-apply (rule iffI)
- apply (blast intro: order_antisym lub order_refl ub1)
-apply (erule subst)
-apply simp
-done 
+proof
+  assume ?P
+  with assms show ?Q by (blast intro: antisym_r lub ub1)
+next
+  assume ?Q
+  then have "y = y \<squnion>\<^bsub>f\<^esub> x" by simp
+  moreover from assms have "x \<sqsubseteq>\<^bsub>r\<^esub> y \<squnion>\<^bsub>f\<^esub> x" by simp
+  ultimately show ?P by simp
+qed
 (*>*)
-
 
 lemma (in Semilat) plus_assoc [simp]:
   assumes a: "a \<in> A" and b: "b \<in> A" and c: "c \<in> A"
@@ -312,7 +323,7 @@ done
 
 lemma is_lub_some_lub:
   "\<lbrakk> single_valued r; acyclic r; (x,u)\<in>r^*; (y,u)\<in>r^* \<rbrakk> 
-  \<Longrightarrow> is_lub (r^* ) x y (some_lub (r^* ) x y)";
+  \<Longrightarrow> is_lub (r^* ) x y (some_lub (r^* ) x y)"
   (*<*) by (fastsimp dest: single_valued_has_lubs simp add: some_lub_conv) (*>*)
 
 subsection{*An executable lub-finder*}
@@ -345,7 +356,7 @@ done
 
 lemma exec_lub_conv:
   "\<lbrakk> acyclic r; \<forall>x y. (x,y) \<in> r \<longrightarrow> f x = y; is_lub (r\<^sup>*) x y u \<rbrakk> \<Longrightarrow>
-  exec_lub r f x y = u";
+  exec_lub r f x y = u"
 (*<*)
 apply(unfold exec_lub_def)
 apply(rule_tac P = "\<lambda>z. (y,z) \<in> r\<^sup>* \<and> (z,u) \<in> r\<^sup>*" and
@@ -357,9 +368,9 @@ apply(rule_tac P = "\<lambda>z. (y,z) \<in> r\<^sup>* \<and> (z,u) \<in> r\<^sup
    apply(blast dest:rtrancl_into_rtrancl)
   apply(rename_tac s)
   apply(subgoal_tac "is_ub (r\<^sup>*) x y s")
-   prefer 2; apply(simp add:is_ub_def)
+   prefer 2 apply(simp add:is_ub_def)
   apply(subgoal_tac "(u, s) \<in> r\<^sup>*")
-   prefer 2; apply(blast dest:is_lubD)
+   prefer 2 apply(blast dest:is_lubD)
   apply(erule converse_rtranclE)
    apply blast
   apply(simp only:acyclic_def)
