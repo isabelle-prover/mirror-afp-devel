@@ -1,5 +1,4 @@
 (*
-    ID:         $Id: LBVCorrect.thy,v 1.7 2008-07-25 15:07:15 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)

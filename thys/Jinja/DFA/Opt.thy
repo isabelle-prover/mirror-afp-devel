@@ -1,9 +1,8 @@
 (*  Title:      HOL/MicroJava/BV/Opt.thy
-    ID:         $Id: Opt.thy,v 1.7 2009-03-04 14:00:59 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
-More about options
+More about options.
 *)
 
 header {* \isaheader{More about Options} *}

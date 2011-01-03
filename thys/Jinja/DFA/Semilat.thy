@@ -1,9 +1,8 @@
 (*  Title:      HOL/MicroJava/BV/Semilat.thy
-    ID:         $Id: Semilat.thy,v 1.10 2008-07-25 15:07:17 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
-Semilattices
+Semilattices.
 *)
 
 header {* 

@@ -1,5 +1,4 @@
 (*  Title:      HOL/MicroJava/BV/Typing_Framework_err.thy
-    ID:         $Id: Typing_Framework_err.thy,v 1.5 2009-08-27 17:49:29 nipkow Exp $
     Author:     Gerwin Klein
     Copyright   2000 TUM
 

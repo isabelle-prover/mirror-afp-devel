@@ -1,9 +1,8 @@
 (*  Title:      HOL/MicroJava/BV/Listn.thy
-    ID:         $Id: Listn.thy,v 1.10 2008-12-30 15:30:13 ballarin Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
-Lists of a fixed length
+Lists of a fixed length.
 *)
 
 header {* \isaheader{Fixed Length Lists} *}

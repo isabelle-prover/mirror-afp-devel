@@ -1,9 +1,8 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.14 2009-01-01 22:24:32 makarius Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
-Kildall's algorithm
+Kildall's algorithm.
 *)
 
 header {* \isaheader{Kildall's Algorithm}\label{sec:Kildall} *}

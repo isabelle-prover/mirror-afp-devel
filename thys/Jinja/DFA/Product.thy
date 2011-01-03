@@ -1,9 +1,8 @@
 (*  Title:      HOL/MicroJava/BV/Product.thy
-    ID:         $Id: Product.thy,v 1.10 2008-07-25 15:07:16 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
-Products as semilattices
+Products as semilattices.
 *)
 
 header {* \isaheader{Products as Semilattices} *}

@@ -1,5 +1,4 @@
 (*  Title:      HOL/MicroJava/BV/LBVSpec.thy
-    ID:         $Id: LBVSpec.thy,v 1.8 2009-01-01 22:24:32 makarius Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)

@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
-The error type
+The error type.
 *)
 
 header {* \isaheader{The Error Type} *}
