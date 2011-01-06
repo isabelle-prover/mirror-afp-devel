@@ -41,7 +41,7 @@ proof
     by auto
   show "carrier int_group \<subseteq> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
   proof
-    interpret int: group int_group by (rule int.a_group)
+    interpret int: group int_group by (simp add: int.a_group)
     fix x
     have plus1: "1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
       by (auto intro:gen_span.gen_gens)
@@ -49,7 +49,7 @@ proof
       by (auto intro:gen_span.gen_inv)
     moreover
     have "-1 = inv\<^bsub>int_group\<^esub> 1" 
-      by (auto intro: int.inv_equality)
+      using int.inv_equality by auto
     ultimately
     have minus1: "-1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
       by (simp)
@@ -84,7 +84,7 @@ qed
 
 lemma free_group_over_one_gen: "\<exists>h. h \<in> \<F>\<^bsub>{()}\<^esub> \<cong> int_group"
 proof-
-  interpret int: group int_group by (rule int.a_group)
+  interpret int: group int_group by (simp add: int.a_group)
 
   def f \<equiv> "\<lambda>(x::unit).(1::int)"
   have "f \<in> {()} \<rightarrow> carrier int_group"
@@ -151,7 +151,7 @@ proof-
       hence "x = replicate (length x) a" by simp
       hence "int.lift f x = int.lift f (replicate (length x) a)" by simp
       also have "... = pow int_group (int.lift_gi f a) (length x)"
-        by (induct x,auto simp add:int.lift_def)
+        by (induct x,auto simp add:int.lift_def [simplified])
       also have "... = (int.lift_gi f a) * int (length x)"
         by (induct ("length x"), auto simp add:int_distrib)
       finally have "\<dots> = 0" using `int.lift f x = 0` by simp
@@ -161,7 +161,7 @@ proof-
         using `x \<noteq> []` by auto
       moreover
       have "inv\<^bsub>int_group\<^esub> 1 = -1" 
-        by (auto intro: int.inv_equality)
+        using int.inv_equality by auto
       hence "abs (group.lift_gi int_group f a) = 1"
       using `group int_group`
         by(auto simp add: group.lift_gi_def f_def)
@@ -180,7 +180,7 @@ proof-
       by (rule int_group_gen_by_one[THEN sym])
     moreover
     have "int.lift f ` insert ` {()} = {1}"
-      by (auto simp add: int.lift_def insert_def f_def int.lift_gi_def)   
+      by (auto simp add: int.lift_def [simplified] insert_def f_def int.lift_gi_def [simplified])
     moreover
     have  "int.lift f ` \<langle>insert`{()}\<rangle>\<^bsub>\<F>\<^bsub>{()}\<^esub>\<^esub> = \<langle>int.lift f ` (insert `{()})\<rangle>\<^bsub>int_group\<^esub>"
       by (rule hom.hom_span, auto intro:insert_closed)
@@ -191,7 +191,8 @@ proof-
   ultimately
   have "int.lift f \<in> \<F>\<^bsub>{()}\<^esub> \<cong> int_group"
     using `int.lift f \<in> hom \<F>\<^bsub>{()}\<^esub> int_group`
-    by (auto intro:group_isoI simp add:hom.hom_mult free_group_is_group int.is_group)
+    using hom.hom_mult int.is_group
+    by (auto intro:group_isoI simp add: free_group_is_group)
   thus ?thesis by auto
 qed
 
