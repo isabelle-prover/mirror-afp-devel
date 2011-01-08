@@ -1659,7 +1659,7 @@ end;
 
 let
   open SatSolver ;
-  open PropLogic ;
+  open Prop_Logic ;
 
   fun mk_clauses f = 
       let fun mk_clause g = 
@@ -1676,7 +1676,7 @@ let
            | _ => [mk_clause f] end
 
   fun dptsat fm = 
-      let val fm = PropLogic.defcnf fm
+      let val fm = Prop_Logic.defcnf fm
           val s = DPT_SAT_Solver.empty_solver ()
           val clauses = [1, ~1, 2, ~2] :: mk_clauses fm
       in (DPT_SAT_Solver.init s (clauses) ;
