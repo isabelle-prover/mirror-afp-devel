@@ -107,13 +107,6 @@ theorem (in start_context) exec_pres_type:
   apply (fastsimp simp add: typeof_lit_is_type)
 
   -- New
-  apply clarsimp
-  apply (erule disjE)
-   apply clarsimp
-  apply clarsimp
-  apply (erule allE)+
-  apply (erule impE, blast)
-  apply (erule impE, blast)
   apply fastsimp
 
   -- Getfield
