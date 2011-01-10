@@ -195,7 +195,7 @@ lemma wt_blocks:
        (P,E(Vs[\<mapsto>]Ts),h \<turnstile> e:T \<and> (\<exists>Ts'. map (typeof\<^bsub>h\<^esub>) vs = map Some Ts' \<and> P \<turnstile> Ts' [\<le>] Ts))"
 (*<*)
 apply(induct Vs Ts vs e rule:blocks.induct)
-prefer 5; apply (force simp add:rel_list_all2_Cons2)
+prefer 5 apply (force simp add:rel_list_all2_Cons2)
 apply simp_all
 done
 (*>*)
