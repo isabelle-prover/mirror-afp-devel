@@ -1800,9 +1800,6 @@ qed
 
 (*theorems for the proof of share_reduce_rep_list*)
 
-lemma set_take_le: "\<And>i j. i \<le> j \<Longrightarrow> set (take i xs) \<subseteq> set (take j xs)"
-  by (induct xs)(auto simp add: take_Cons split: nat.splits)
-
 
 
 
@@ -1811,7 +1808,7 @@ proof -
   assume no_in_taken: "no \<in> set (take n nodeslist)"
   have "set (take n nodeslist) \<subseteq> set (take (Suc n) nodeslist)"
     apply -
-    apply (rule set_take_le)
+    apply (rule set_take_subset_set_take)
     apply simp
     done
   with no_in_taken show ?thesis
