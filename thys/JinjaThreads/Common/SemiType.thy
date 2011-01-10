@@ -319,6 +319,15 @@ definition sup :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty er
             else exec_lub (widen1 P) (super P) T U)
    else if (T = U) then OK T else Err"
 
+lemma sup_def':
+  "sup P = (\<lambda>T U.
+   if is_refT T \<and> is_refT U
+   then OK (if U = NT then T
+            else if T = NT then U
+            else exec_lub (widen1 P) (super P) T U)
+   else if (T = U) then OK T else Err)"
+  by (simp add: fun_eq_iff sup_def)
+
 definition esl :: "'m prog \<Rightarrow> ty esl"
 where
   "esl P = (types P, widen P, sup P)"
@@ -602,8 +611,8 @@ proof -
     hence "is_type P (exec_lub (widen1 P) (super P) A B)"
       using sup_is_type[OF wfP it] by(simp add: sup_def) }
   with is_class_Object[OF wfP] show ?thesis
-    unfolding closed_def plussub_def lift2_def sup_def
-    by(auto split: err.split ty.splits)(auto simp add: exec_lub_refl)
+    unfolding closed_def plussub_def lift2_def sup_def'
+    by (auto split: err.split ty.splits) (auto simp add: exec_lub_refl)
 qed
 
 lemma widen_into_widen1_rtrancl:

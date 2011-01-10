@@ -32,7 +32,15 @@ where
   else 
   (if T\<^isub>1 = T\<^isub>2 then OK T\<^isub>1 else Err)"
 
-
+lemma sup_def':
+  "sup P = (\<lambda>T\<^isub>1 T\<^isub>2.
+  if is_refT T\<^isub>1 \<and> is_refT T\<^isub>2 then 
+  OK (if T\<^isub>1 = NT then T\<^isub>2 else
+      if T\<^isub>2 = NT then T\<^isub>1 else
+      (Class (exec_lub (subcls1 P) (super P) (the_Class T\<^isub>1) (the_Class T\<^isub>2))))
+  else 
+  (if T\<^isub>1 = T\<^isub>2 then OK T\<^isub>1 else Err))"
+  by (simp add: sup_def fun_eq_iff)
 
 abbreviation
   subtype :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool"
@@ -141,7 +149,7 @@ lemma exec_lub_refl [simp]: "exec_lub r f T T = T"
 lemma closed_err_types:
   "wf_prog wf_mb P \<Longrightarrow> closed (err (types P)) (lift2 (sup P))"
 (*<*)
-  apply (unfold closed_def plussub_def lift2_def sup_def)
+  apply (unfold closed_def plussub_def lift2_def sup_def')
   apply (frule acyclic_subcls1)
   apply (frule single_valued_subcls1)
   apply (auto simp: is_type_def is_refT_def is_class_is_subcls split: err.split ty.splits)

@@ -193,6 +193,7 @@ lemma (in Semilat) list_update_le_listI [rule_format]:
   apply(insert semilat)
   apply (unfold Listn.le_def lesub_def semilat_def)
   apply (simp add: list_all2_conv_all_nth nth_list_update)
+  apply (auto simp add: Listn.le_def lesub_def plussub_def)
   done
 (*>*)
 
@@ -432,7 +433,7 @@ proof -
   apply(simp add: stables_def split_paired_all)
   apply(rename_tac ss w)
   apply(subgoal_tac "s_choose w \<in> s_\<alpha> w")
-   prefer 2; apply(erule choose_spec)
+   prefer 2 apply(erule choose_spec)
   apply(subgoal_tac "\<forall>(q,t) \<in> set (step (s_choose w) (ss ! (s_choose w))). q < length ss \<and> t \<in> A")
    prefer 2
    apply clarify
@@ -494,7 +495,7 @@ proof -
   apply(simp add: stables_def split_paired_all)
   apply(rename_tac ss w)
   apply(subgoal_tac "s_choose w \<in> s_\<alpha> w")
-   prefer 2; apply (erule choose_spec)
+   prefer 2 apply (erule choose_spec)
   apply(subgoal_tac "\<forall>(q,t) \<in> set (step (s_choose w) (ss ! (s_choose w))). q < length ss \<and> t \<in> A")
    prefer 2
    apply clarify

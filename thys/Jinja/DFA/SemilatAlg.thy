@@ -33,16 +33,16 @@ notation (xsymbols)
 
 definition bounded :: "'s step_type \<Rightarrow> nat \<Rightarrow> bool"
 where
-  "bounded step n \<equiv> \<forall>p<n. \<forall>\<tau>. \<forall>(q,\<tau>') \<in> set (step p \<tau>). q<n"  
+  "bounded step n \<longleftrightarrow> (\<forall>p<n. \<forall>\<tau>. \<forall>(q,\<tau>') \<in> set (step p \<tau>). q<n)"
 
 definition pres_type :: "'s step_type \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> bool"
 where
-  "pres_type step n A \<equiv> \<forall>\<tau>\<in>A. \<forall>p<n. \<forall>(q,\<tau>') \<in> set (step p \<tau>). \<tau>' \<in> A"
+  "pres_type step n A \<longleftrightarrow> (\<forall>\<tau>\<in>A. \<forall>p<n. \<forall>(q,\<tau>') \<in> set (step p \<tau>). \<tau>' \<in> A)"
 
 definition mono :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> bool"
 where
-  "mono r step n A \<equiv> 
-  \<forall>\<tau> p \<tau>'. \<tau> \<in> A \<and> p<n \<and> \<tau> \<sqsubseteq>\<^sub>r \<tau>' \<longrightarrow> set (step p \<tau>) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step p \<tau>')"
+  "mono r step n A \<longleftrightarrow>
+    (\<forall>\<tau> p \<tau>'. \<tau> \<in> A \<and> p<n \<and> \<tau> \<sqsubseteq>\<^sub>r \<tau>' \<longrightarrow> set (step p \<tau>) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step p \<tau>'))"
 
 lemma [iff]: "{} {\<sqsubseteq>\<^bsub>r\<^esub>} B" 
   (*<*) by (simp add: lesubstep_type_def) (*>*)
@@ -82,6 +82,7 @@ lemma list_update_le_listI [rule_format]:
 (*<*)
   apply (unfold Listn.le_def lesub_def semilat_def)
   apply (simp add: list_all2_conv_all_nth nth_list_update)
+  apply (simp add: lesub_def)
   done
 (*>*)
 

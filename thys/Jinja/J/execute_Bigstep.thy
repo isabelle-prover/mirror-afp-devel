@@ -167,7 +167,7 @@ ML {* let open Bigstep1 in if fst (DSeq.hd test6) = Val (Intg 160) then () else 
 code_module Bigstep2
 imports Bigstep1
 contains
- test7 = "[classObject, classL] \<turnstile> \<langle>testExpr_BuildList, (empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>";
+ test7 = "[classObject, classL] \<turnstile> \<langle>testExpr_BuildList, (empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 
 ML {*
 let open Bigstep1 Bigstep2 in

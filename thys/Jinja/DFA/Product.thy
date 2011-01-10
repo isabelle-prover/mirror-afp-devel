@@ -13,15 +13,15 @@ begin
 
 definition le :: "'a ord \<Rightarrow> 'b ord \<Rightarrow> ('a \<times> 'b) ord"
 where
-  "le r\<^isub>A r\<^isub>B \<equiv> \<lambda>(a\<^isub>1,b\<^isub>1) (a\<^isub>2,b\<^isub>2). a\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>A\<^esub> a\<^isub>2 \<and> b\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>B\<^esub> b\<^isub>2"
+  "le r\<^isub>A r\<^isub>B = (\<lambda>(a\<^isub>1,b\<^isub>1) (a\<^isub>2,b\<^isub>2). a\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>A\<^esub> a\<^isub>2 \<and> b\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>B\<^esub> b\<^isub>2)"
 
 definition sup :: "'a ebinop \<Rightarrow> 'b ebinop \<Rightarrow> ('a \<times> 'b) ebinop"
 where
-  "sup f g \<equiv> \<lambda>(a\<^isub>1,b\<^isub>1)(a\<^isub>2,b\<^isub>2). Err.sup Pair (a\<^isub>1 \<squnion>\<^sub>f a\<^isub>2) (b\<^isub>1 \<squnion>\<^sub>g b\<^isub>2)"
+  "sup f g = (\<lambda>(a\<^isub>1,b\<^isub>1)(a\<^isub>2,b\<^isub>2). Err.sup Pair (a\<^isub>1 \<squnion>\<^sub>f a\<^isub>2) (b\<^isub>1 \<squnion>\<^sub>g b\<^isub>2))"
 
 definition esl :: "'a esl \<Rightarrow> 'b esl \<Rightarrow> ('a \<times> 'b ) esl"
 where
-  "esl \<equiv> \<lambda>(A,r\<^isub>A,f\<^isub>A) (B,r\<^isub>B,f\<^isub>B). (A \<times> B, le r\<^isub>A r\<^isub>B, sup f\<^isub>A f\<^isub>B)"
+  "esl = (\<lambda>(A,r\<^isub>A,f\<^isub>A) (B,r\<^isub>B,f\<^isub>B). (A \<times> B, le r\<^isub>A r\<^isub>B, sup f\<^isub>A f\<^isub>B))"
 
 (*<*)
 abbreviation
@@ -36,7 +36,7 @@ abbreviation (xsymbols)
   "p \<sqsubseteq>(rA,rB) q == p \<sqsubseteq>\<^bsub>Product.le rA rB\<^esub> q"
 
 
-lemma unfold_lesub_prod: "x \<sqsubseteq>(r\<^isub>A,r\<^isub>B) y \<equiv> le r\<^isub>A r\<^isub>B x y"
+lemma unfold_lesub_prod: "x \<sqsubseteq>(r\<^isub>A,r\<^isub>B) y = le r\<^isub>A r\<^isub>B x y"
 (*<*) by (simp add: lesub_def) (*>*)
 
 lemma le_prod_Pair_conv [iff]: "((a\<^isub>1,b\<^isub>1) \<sqsubseteq>(r\<^isub>A,r\<^isub>B) (a\<^isub>2,b\<^isub>2)) = (a\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>A\<^esub> a\<^isub>2 & b\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>B\<^esub> b\<^isub>2)"
@@ -76,7 +76,7 @@ done
 
 lemma closed_lift2_sup:
   "\<lbrakk> closed (err A) (lift2 f); closed (err B) (lift2 g) \<rbrakk> \<Longrightarrow> 
-  closed (err(A\<times>B)) (lift2(sup f g))";
+  closed (err(A\<times>B)) (lift2(sup f g))"
 (*<*)
 apply (unfold closed_def plussub_def lift2_def err_def' sup_def)
 apply (simp split: err.split)
@@ -84,7 +84,7 @@ apply blast
 done 
 (*>*)
 
-lemma unfold_plussub_lift2: "e\<^isub>1 \<squnion>\<^bsub>lift2 f\<^esub> e\<^isub>2 \<equiv> lift2 f e\<^isub>1 e\<^isub>2"
+lemma unfold_plussub_lift2: "e\<^isub>1 \<squnion>\<^bsub>lift2 f\<^esub> e\<^isub>2 = lift2 f e\<^isub>1 e\<^isub>2"
 (*<*) by (simp add: plussub_def) (*>*)
 
 

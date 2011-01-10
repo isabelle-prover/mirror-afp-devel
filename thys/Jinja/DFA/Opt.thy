@@ -11,23 +11,23 @@ theory Opt imports Err begin
 
 definition le :: "'a ord \<Rightarrow> 'a option ord"
 where
-  "le r o\<^isub>1 o\<^isub>2 \<equiv>
-  case o\<^isub>2 of None \<Rightarrow> o\<^isub>1=None | Some y \<Rightarrow> (case o\<^isub>1 of None \<Rightarrow> True | Some x \<Rightarrow> x \<sqsubseteq>\<^sub>r y)"
+  "le r o\<^isub>1 o\<^isub>2 =
+  (case o\<^isub>2 of None \<Rightarrow> o\<^isub>1=None | Some y \<Rightarrow> (case o\<^isub>1 of None \<Rightarrow> True | Some x \<Rightarrow> x \<sqsubseteq>\<^sub>r y))"
 
 definition opt :: "'a set \<Rightarrow> 'a option set"
 where
-  "opt A \<equiv> insert None {Some y |y. y \<in> A}"
+  "opt A = insert None {Some y |y. y \<in> A}"
 
 definition sup :: "'a ebinop \<Rightarrow> 'a option ebinop"
 where
-  "sup f o\<^isub>1 o\<^isub>2 \<equiv>  
-  case o\<^isub>1 of None \<Rightarrow> OK o\<^isub>2 
+  "sup f o\<^isub>1 o\<^isub>2 =  
+  (case o\<^isub>1 of None \<Rightarrow> OK o\<^isub>2 
            | Some x \<Rightarrow> (case o\<^isub>2 of None \<Rightarrow> OK o\<^isub>1
-                                 | Some y \<Rightarrow> (case f x y of Err \<Rightarrow> Err | OK z \<Rightarrow> OK (Some z)))"
+                                 | Some y \<Rightarrow> (case f x y of Err \<Rightarrow> Err | OK z \<Rightarrow> OK (Some z))))"
 
 definition esl :: "'a esl \<Rightarrow> 'a option esl"
 where
-  "esl \<equiv> \<lambda>(A,r,f). (opt A, le r, sup f)"
+  "esl = (\<lambda>(A,r,f). (opt A, le r, sup f))"
 
 
 lemma unfold_le_opt:
@@ -80,7 +80,7 @@ apply (simp split: option.split)
 done 
 (*>*)
 
-lemma le_None [iff]: "(x \<sqsubseteq>\<^bsub>le r\<^esub> None) = (x = None)";
+lemma le_None [iff]: "(x \<sqsubseteq>\<^bsub>le r\<^esub> None) = (x = None)"
 (*<*)
 apply (unfold lesub_def le_def)
 apply (simp split: option.split)
@@ -228,7 +228,7 @@ done
 
 lemma option_map_in_optionI:
   "\<lbrakk> ox \<in> opt S; \<forall>x\<in>S. ox = Some x \<longrightarrow> f x \<in> S \<rbrakk> 
-  \<Longrightarrow> Option.map f ox \<in> opt S";
+  \<Longrightarrow> Option.map f ox \<in> opt S"
 (*<*)
 apply (unfold Option.map_def)
 apply (simp split: option.split)
