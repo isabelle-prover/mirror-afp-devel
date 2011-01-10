@@ -81,7 +81,8 @@ proof(induct f)
       case Nil thus ?thesis using Atom by (simp add:depends\<^isub>R_def)
     next
       case (Cons c cs)[simp]
-      hence "r = c*x + \<langle>cs,xs\<rangle>" using Atom by simp
+      (* FIXME: simp fails in some arithmetic procedure if list_to_set_comprehension is switched on *)
+      hence "r = c*x + \<langle>cs,xs\<rangle>" using Atom [[simproc del: list_to_set_comprehension]] by simp
       { assume "c=0" hence ?thesis using Atom by simp }
       moreover
       { assume "c\<noteq>0"

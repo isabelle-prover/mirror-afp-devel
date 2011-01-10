@@ -275,7 +275,7 @@ shows "qfree \<phi> \<Longrightarrow> \<forall> a \<in> set(Z.atoms\<^isub>0 \<p
  Z.I (map\<^bsub>fm\<^esub> (hd_coeff1 m) \<phi>) (m*x#xs) = Z.I \<phi> (x#xs)"
 proof(induct \<phi>)
   case (Atom a)
-  thus ?case using I_hd_coeff1_mult_a[OF `m>0`] by(simp split:split_if_asm)
+  thus ?case using I_hd_coeff1_mult_a[OF `m>0`] by auto
 qed simp_all
 
 end
