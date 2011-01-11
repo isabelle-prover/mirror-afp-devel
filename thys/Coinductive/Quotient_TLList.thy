@@ -9,7 +9,7 @@ theory Quotient_TLList imports
   TLList
 begin
 
-type_lifting tmap: tmap
+enriched_type tmap: tmap
   by (simp_all add: fun_eq_iff tmap_id_id)
 
 declare [[map tllist = (tmap, tllist_all2)]]
