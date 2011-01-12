@@ -288,7 +288,7 @@ next
 qed simp_all
 
 
-declare [[simp_depth_limit = 2]]
+declare [[simp_depth_limit = 4]]
 
 lemma LBex:
  "\<lbrakk> nqfree f; R.I f (x#xs); \<not>R.I (inf\<^isub>- f) xs; x \<notin> EQ f xs \<rbrakk>
@@ -297,18 +297,8 @@ apply(induct f)
 apply simp
 apply simp
 apply (case_tac a)
-apply (fastsimp simp add: depends\<^isub>R_def split: list.splits if_splits simp add: field_simps)
-apply (simp add: depends\<^isub>R_def)
-apply (split list.splits)
-apply simp
-(* FIXME: apply fastsimp/auto causes some error *)
-apply (erule allE)
-apply (erule allE)
-apply (fastsimp split: split_if_asm)
-apply (fastsimp simp add: depends\<^isub>R_def split:if_splits list.splits)
-apply (fastsimp simp add: depends\<^isub>R_def split:if_splits list.splits)
-apply simp
-apply simp
+apply(auto simp add: depends\<^isub>R_def field_simps split:if_splits list.splits)
+apply fastsimp+
 done
 
 
@@ -319,16 +309,8 @@ apply(induct f)
 apply simp
 apply simp
 apply(case_tac a)
- apply(fastsimp simp add: depends\<^isub>R_def split:if_splits list.splits simp add: field_simps)
- apply (simp add: depends\<^isub>R_def)
- apply (split list.splits)
- apply simp
- apply (erule allE)+
- apply (fastsimp split: split_if_asm)
-apply (fastsimp simp add: depends\<^isub>R_def split:if_splits list.splits)
-apply fastsimp
-apply fastsimp
-apply simp
+apply(auto simp add: depends\<^isub>R_def field_simps split:if_splits list.splits)
+apply fastsimp+
 done
 
 declare [[simp_depth_limit = 50]]

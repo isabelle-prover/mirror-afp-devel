@@ -37,7 +37,8 @@ apply(clarsimp simp:nolb_def)
 apply blast
 done
 
-declare[[simp_depth_limit=3]]
+declare[[simp_depth_limit=4]]
+
 lemma innermost_intvl:
   "\<lbrakk> nqfree f; nolb f xs l x; l < x; x \<notin> EQ f xs; R.I f (x#xs); l < y; y \<le> x\<rbrakk>
   \<Longrightarrow> R.I f (y#xs)"
@@ -81,8 +82,7 @@ proof(induct f)
       case Nil thus ?thesis using Atom by (simp add:depends\<^isub>R_def)
     next
       case (Cons c cs)[simp]
-      (* FIXME: simp fails in some arithmetic procedure if list_to_set_comprehension is switched on *)
-      hence "r = c*x + \<langle>cs,xs\<rangle>" using Atom [[simproc del: list_to_set_comprehension]] by simp
+      hence "r = c*x + \<langle>cs,xs\<rangle>" using Atom by simp
       { assume "c=0" hence ?thesis using Atom by simp }
       moreover
       { assume "c\<noteq>0"
