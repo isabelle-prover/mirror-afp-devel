@@ -6,10 +6,6 @@ import os
 from os import path
 from glob import glob
 
-from mira.environment import configuration
-
-from repositories import *
-
 from configurations import Isabelle as isabelle
 
 
