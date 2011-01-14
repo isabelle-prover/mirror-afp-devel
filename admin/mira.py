@@ -47,6 +47,11 @@ def AFP_JinjaThreads(env, case, paths, dep_paths, playground):
     """AFP JinjaThreads session"""
     return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session == 'JinjaThreads')
 
+@configuration(repos = [AFP, Isabelle], deps = [(isabelle.HOL, [1])])
+def AFP_Verified_Prover(env, case, paths, dep_paths, playground):
+    """AFP Verified-Prover session"""
+    return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session == 'Verified-Prover')
+
 @configuration(repos = [AFP, Isabelle], deps = [
     (AFP_small_sessions, [0, 1]),
     (AFP_JinjaThreads, [0, 1])
