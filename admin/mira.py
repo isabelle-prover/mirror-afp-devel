@@ -34,8 +34,8 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, select):
         path.join(loc_isabelle, 'bin', 'isabelle'), *sessions,
         ISABELLE_IMAGE_PATH = loc_image)
 
-    return (return_code == 0, Isabelle.extract_isabelle_run_summary(log),
-      {'timing': Isabelle.extract_isabelle_run_timing(log)}, {'log': log}, None)
+    return (return_code == 0, isabelle.extract_isabelle_run_summary(log),
+      {'timing': isabelle.extract_isabelle_run_timing(log)}, {'log': log}, None)
 
 @configuration(repos = [AFP, Isabelle], deps = [(isabelle.AFP_images, [1])])
 def AFP_small_sessions(env, case, paths, dep_paths, playground):
