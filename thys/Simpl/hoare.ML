@@ -782,7 +782,7 @@ fun dest_Guard (Const (@{const_name Language.com.Guard},_)$f$g$c) = (f,g,c,false
 
 fun add_declaration name decl thy =
   thy
-  |> Named_Target.init name
+  |> Named_Target.init I name
   |> Local_Theory.declaration false decl
   |> Local_Theory.exit
   |> ProofContext.theory_of;
@@ -1071,18 +1071,18 @@ val proc_nameT = HOLogic.stringT;
 
 fun add_locale name expr elems thy =
   thy 
-  |> Expression.add_locale (Binding.name name) (Binding.name name) expr elems
+  |> Expression.add_locale I (Binding.name name) (Binding.name name) expr elems
   |> snd
   |> Local_Theory.exit;
 
 fun add_locale' name expr elems thy =
   thy 
-  |> Expression.add_locale (Binding.name name) (Binding.name name) expr elems
+  |> Expression.add_locale I (Binding.name name) (Binding.name name) expr elems
   ||> Local_Theory.exit;
 
 fun add_locale_cmd name expr elems thy =
   thy 
-  |> Expression.add_locale_cmd (Binding.name name) (Binding.name name) expr elems
+  |> Expression.add_locale_cmd I (Binding.name name) (Binding.name name) expr elems
   |> snd
   |> Local_Theory.exit;
 
@@ -1139,7 +1139,7 @@ fun print_term thy t =
 
 fun add_abbrev loc mode name spec thy =
   thy
-  |> Named_Target.init loc
+  |> Named_Target.init I loc
   |> (fn lthy => let val t = Syntax.read_term (Local_Theory.target_of lthy) spec;
       in Local_Theory.abbrev mode ((Binding.name name, NoSyn), t) lthy end)
   |> #2
@@ -1322,7 +1322,7 @@ fun procedures_definition locname procs thy =
         fun add_decl_and_def lname ctxt =
             ctxt
             |> ProofContext.theory_of
-            |> Named_Target.init lname
+            |> Named_Target.init I lname
             |> Local_Theory.declaration false parameter_info_decl
             |> (fn lthy => if has_body name
                            then snd (Local_Theory.define (def lthy) lthy)
@@ -1386,7 +1386,8 @@ fun procedures_definition locname procs thy =
           in thy
              |> add_locale_cmd implN parent []
              |> ProofContext.theory_of
-             |> (fn thy => Expression.sublocale parentN (mk_loc_exp [Locale.intern thy implN]) [] thy)
+             |> (fn thy => Expression.sublocale I parentN
+                  (mk_loc_exp [Locale.intern thy implN]) [] thy)
              |> Proof.global_terminal_proof
                  (Method.Basic (fn ctxt => Method.SIMPLE_METHOD
                                  (Locale.intro_locales_tac false ctxt [])),NONE)
