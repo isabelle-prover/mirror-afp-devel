@@ -703,7 +703,7 @@ title = Flyspeck I: Tame Graphs
 author = Gertrud Bauer, Tobias Nipkow <http://www4.in.tum.de/~nipkow>
 date = 2006-05-22
 topic = Mathematics/Graph Theory
-abstract = These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his proof of the Kepler Conjecture. For explanations see the IJCAR 2006 paper by Nipkow, Bauer and Schultz. 
+abstract = These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his <i>revised</i> proof of the Kepler Conjecture. The revison concerns the definition of tameness. The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof.
 extra-history =
   Change history: [2010-11-02]: modified theories to reflect the modified
   definition of tameness in Hales' revised proof.
