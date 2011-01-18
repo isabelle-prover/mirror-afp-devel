@@ -454,7 +454,7 @@ proof -
     stkLength P C M pc' = length (fst (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT))) \<and>
     locLength P C M pc' = length (snd (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)))"
     unfolding wt_method_def
-    by (cases "is ! pc", (fastsimp dest!: list_all2_lengthD)+)
+    using [[simproc del: list_to_set_comprehension]] by (cases "is ! pc", (fastsimp dest!: list_all2_lengthD)+)
   have [simp]: "\<exists>x. x" by auto
   have [simp]: "Ex Not" by auto
   show ?thesis
@@ -696,6 +696,7 @@ proof -
       by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
     with ve Return `pc' - 1 < length is'` reachable' sees_M state_correct
     have "stkLength P C' M' pc' = stkLength P C' M' (pc' - 1) - length Ts"
+      using [[simproc del: list_to_set_comprehension]]
       apply auto
       apply (erule JVM_CFG.cases, auto)
       apply (drule sees_method_fun, fastsimp, clarsimp)
@@ -709,7 +710,7 @@ proof -
       apply (auto dest!: list_all2_lengthD)
       apply (drule sees_method_fun, fastsimp, clarsimp)
       apply (drule sees_method_fun, fastsimp, clarsimp)
-      by (auto)
+      by auto
     from `wt_method (P\<^bsub>wf\<^esub>) C' Ts' T' mxs' mxl' is' xt' (P\<^bsub>\<Phi>\<^esub> C' M')`
       `(pc' - 1) < length is'` `P\<^bsub>\<Phi>\<^esub> C' M' ! (pc' - 1) \<noteq> None`
       `is' ! (pc' - 1) = Invoke M (length Ts)`
@@ -724,6 +725,7 @@ proof -
     from `wt_method (P\<^bsub>wf\<^esub>) C' Ts' T' mxs' mxl' is' xt' (P\<^bsub>\<Phi>\<^esub> C' M')`
       ve Return `pc' - 1 < length is'` reachable' sees_M state_correct
     have "locLength P C' M' (pc' - 1) = locLength P C' M' pc'"
+      using [[simproc del: list_to_set_comprehension]]
       apply auto
       apply (erule JVM_CFG.cases, auto)
       apply (drule sees_method_fun, fastsimp, clarsimp)
