@@ -1,9 +1,14 @@
+## configurables
+
+SESSION-NAME = Lower_Semicontinuous
+BASE-IMAGE = HOL-Multivariate_Analysis
 
 ## targets
 
-default: Lower_Semicontinuous
-images: Lower_Semicontinuous
-test:
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images: $(SESSION-NAME)
 
 all: images test
 
@@ -14,18 +19,28 @@ SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf -D generated
+# not a standard image, so OUT only.
+IMAGE=$(OUT)/$(BASE-IMAGE)
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
+
+# time limit (in sec)
+MAXTIME = 3600
 
 
-## Lower_Semicontinuous
+## dependencies
 
-Lower_Semicontinuous: $(OUT)/Lower_Semicontinuous
+$(SESSION-NAME): $(BASE-IMAGE) $(OUT)/$(SESSION-NAME)
 
-$(OUT)/Lower_Semicontinuous: ROOT.ML document/root.tex *.thy
-	@$(USEDIR) -b -P http://isabelle.in.tum.de/library HOL-Multivariate_Analysis Lower_Semicontinuous
+$(BASE-IMAGE): 
+	cd $(ISABELLE_HOME)/src/HOL; $(ISABELLE_TOOL) make $(BASE-IMAGE)
+
+
+$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy document/root.tex
+	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
 
 ## clean
 
 clean:
-	@rm -f $(OUT)/Lower_Semicontinuous generated
+	@rm -f $(LOG)/$(SESSION-NAME).gz $(OUT)/$(SESSION-NAME)
