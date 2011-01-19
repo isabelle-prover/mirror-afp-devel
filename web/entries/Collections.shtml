@@ -52,6 +52,7 @@ New Implementations: ArrayList, ArrayHashMap, ArrayHashSet, TrieMap, TrieSet
 Invariant-free datastructures: Invariant implicitely hidden in typedef.
 Record-interfaces: All operations of an interface encapsulated as record.
 Examples moved to examples subdirectory
+[2010-12-01]: New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues
         </td></tr>
 
     <tr><td class="datahead">License:</td>
