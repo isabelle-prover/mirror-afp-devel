@@ -5,7 +5,7 @@ begin
 
 lemma goal2'1:
   shows "0 <= bit__or' (bit__and' x'' y'') (bit__and' (4294967295 - x'') z'')"
-  by (rule WordDefinition.uint_0)
+  by (rule Word.uint_0)
 
 lemma goal2'2:
   shows "bit__or' (bit__and' x'' y'') (bit__and' (4294967295 - x'') z'') <= 4294967295"
@@ -13,7 +13,7 @@ lemma goal2'2:
 
 lemma goal3'1:
   shows "0 <= bit__xor' (bit__or' x'' (4294967295 - y'')) z''"
-  by (rule WordDefinition.uint_0)
+  by (rule Word.uint_0)
 
 lemma goal3'2:
   shows "bit__xor' (bit__or' x'' (4294967295 - y'')) z'' <= 4294967295"

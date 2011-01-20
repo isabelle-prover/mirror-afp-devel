@@ -3,8 +3,8 @@ imports Complex_Main
 
 begin
 
-types interfaces__unsigned_32' = " int "
-types round_index' = " int "
+type_synonym interfaces__unsigned_32' = " int "
+type_synonym round_index' = " int "
 consts interfaces__unsigned_32__base__first'' :: " int "
 consts interfaces__unsigned_32__base__last'' :: " int "
 consts interfaces__unsigned_32__first'' :: " int "

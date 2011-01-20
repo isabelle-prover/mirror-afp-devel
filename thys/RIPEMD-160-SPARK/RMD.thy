@@ -4,12 +4,12 @@ imports Word
 begin
 
 
-types word32 = "32 word"
-types byte = "8 word"
-types perm = "nat => nat"
-types chain = "word32 * word32 * word32 * word32 * word32"
-types block = "nat => word32"
-types message = "nat => block"
+type_synonym word32 = "32 word"
+type_synonym byte = "8 word"
+type_synonym perm = "nat => nat"
+type_synonym chain = "word32 * word32 * word32 * word32 * word32"
+type_synonym block = "nat => word32"
+type_synonym message = "nat => block"
 
 definition f::"[nat, word32, word32, word32] => word32"
 where

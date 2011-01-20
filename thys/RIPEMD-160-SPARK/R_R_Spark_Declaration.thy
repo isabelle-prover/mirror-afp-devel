@@ -3,9 +3,9 @@ imports Complex_Main
 
 begin
 
-types block_index' = " int "
-types round_index' = " int "
-types block_permutation' = " int => int "
+type_synonym block_index' = " int "
+type_synonym round_index' = " int "
+type_synonym block_permutation' = " int => int "
 consts block_index__base__first'' :: " int "
 consts block_index__base__last'' :: " int "
 consts block_index__first'' :: " int "

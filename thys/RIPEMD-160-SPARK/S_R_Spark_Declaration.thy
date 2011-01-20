@@ -3,8 +3,8 @@ imports Complex_Main
 
 begin
 
-types round_index' = " int "
-types rotate_definition' = " int => int "
+type_synonym round_index' = " int "
+type_synonym rotate_definition' = " int => int "
 consts integer__base__first'' :: " int "
 consts integer__base__last'' :: " int "
 consts integer__first'' :: " int "

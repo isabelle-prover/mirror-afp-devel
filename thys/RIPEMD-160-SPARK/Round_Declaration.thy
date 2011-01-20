@@ -3,16 +3,16 @@ imports Complex_Main
 
 begin
 
-types interfaces__unsigned_32' = " int "
-types block_index' = " int "
-types round_index' = " int "
+type_synonym interfaces__unsigned_32' = " int "
+type_synonym block_index' = " int "
+type_synonym round_index' = " int "
 record chain' = 
   h0'chain :: " int "
   h1'chain :: " int "
   h2'chain :: " int "
   h3'chain :: " int "
   h4'chain :: " int "
-types block' = " int => int "
+type_synonym block' = " int => int "
 record chain_pair' = 
   left'chain_pair :: " chain' "
   right'chain_pair :: " chain' "
