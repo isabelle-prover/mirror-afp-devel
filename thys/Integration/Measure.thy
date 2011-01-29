@@ -406,16 +406,15 @@ lemma measure_additive: assumes ms: "measure_space M"
     also
     { 
       assume "x \<in> (\<Union>i. trivial_series2 a b i)"
-      then obtain i where "x \<in> trivial_series2 a b i"
+      then obtain i where x: "x \<in> trivial_series2 a b i"
 	by auto
       hence "x \<in> a \<union> b"
       proof (cases i)
 	case 0
-	with prems show ?thesis 
-	  by simp
+	with x show ?thesis by simp
       next
 	case (Suc n)
-	with prems show ?thesis
+	with x show ?thesis
 	  by (cases n) auto
       qed
     }

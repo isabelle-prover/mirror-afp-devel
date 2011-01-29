@@ -141,11 +141,11 @@ char_measurable : "\<chi> a \<in> measurable S x"
       show ?thesis
       proof (cases "0 \<in> g") 
         case True
-        from prems have "\<chi> a -` g = UNIV" by (auto simp add: vimage_def characteristic_function_def)
+        with `1 \<in> g` have "\<chi> a -` g = UNIV" by (auto simp add: vimage_def characteristic_function_def)
         with sigma show ?thesis by (auto simp add: sigma_algebra_UNIV) 
       next
         case False 
-        from prems have "\<chi> a -` g = a" 
+        with `1 \<in> g` have "\<chi> a -` g = a" 
 	  by (auto simp add: vimage_def characteristic_function_def)
 	with a show ?thesis by simp
       qed
@@ -155,12 +155,12 @@ char_measurable : "\<chi> a \<in> measurable S x"
       show ?thesis
       proof (cases "0 \<in> g")
 	case True
-	from prems have "\<chi> a -` g = -a" 
+	with `1 \<notin> g` have "\<chi> a -` g = -a" 
 	  by (auto simp add: vimage_def characteristic_function_def)
 	with a sigma show ?thesis by (simp add: sigma_algebra_def)
       next
 	case False
-	from prems have "\<chi> a -` g = {}" by (auto simp add: vimage_def characteristic_function_def)
+	with `1 \<notin> g` have "\<chi> a -` g = {}" by (auto simp add: vimage_def characteristic_function_def)
 	moreover from sigma have "{} \<in> S" by  (simp only: sigma_algebra_def)
 	ultimately show ?thesis by simp
       qed
@@ -386,7 +386,7 @@ next
   have "\<forall>c. {w.  a + g w * b \<le> c} \<in> measurable_sets M"
   proof (cases "b<0")    
     case False
-    from prems have "0<b" by arith
+    with `b \<noteq> 0` have "0<b" by arith
     hence "\<And>x c.  (g x * b  \<le> c - a) = (g x \<le> (c - a) / b)"  
       by (rule pos_le_divide_eq [THEN sym])
     with calc have "\<And>c. {w.  a + g w * b \<le> c} = {w. g w \<le> (c - a) / b}" 
@@ -604,12 +604,10 @@ lemma assumes f: "f \<in> rv M"
    
       next
 	case False
-	{ fix w
-	  from prems have "0<a" by (simp add: order_less_le)
-	  then have "\<exists> sqra. 0<sqra \<and> sqra\<twosuperior> = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
-	  hence "\<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}"
-	    by (auto simp only: pow2_le_abs abs_le_interval_iff)
-        }
+	with `\<not> a < 0` have "0<a" by (simp add: order_less_le)
+	then have "\<exists> sqra. 0<sqra \<and> sqra\<twosuperior> = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
+        then have "\<And>w. \<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}"
+	  by (auto simp only: pow2_le_abs abs_le_interval_iff)
 	then obtain sqra where "?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}" by fast
 	moreover have "\<dots> \<in> ?M" 
 	proof - 
@@ -758,7 +756,7 @@ lemma f_abs_plus_minus: "(\<bar>f x\<bar>::real) = pp f x + np f x"
   by  (auto simp add:positive_part_def negative_part_def)
 
 lemma nn_pp_np: assumes "nonnegative f"
-  shows "pp f = f" and "np f = (\<lambda>t. 0)" using prems
+  shows "pp f = f" and "np f = (\<lambda>t. 0)" using assms
   by (auto simp add: positive_part_def negative_part_def nonnegative_def ext)
 
 lemma pos_pp_np_help: "\<And>x. 0\<le>f x \<Longrightarrow> pp f x = f x \<and> np f x = 0"
@@ -776,7 +774,7 @@ lemma real_neg_pp_np_help: "\<And>x. f x \<le> (0::real) \<Longrightarrow> np f 
 qed(*>*)
 
 lemma real_neg_pp_np: assumes "f \<le> (\<lambda>t. (0::real))"
- shows "np f = (\<lambda>t. -f t)" and "pp f = (\<lambda>t. 0)" using prems
+ shows "np f = (\<lambda>t. -f t)" and "pp f = (\<lambda>t. 0)" using assms
   by (auto simp add: real_neg_pp_np_help ext le_fun_def)
 
 lemma assumes a: "0\<le>(a::real)" 

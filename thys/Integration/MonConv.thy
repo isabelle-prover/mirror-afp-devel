@@ -142,11 +142,10 @@ theorem real_mon_conv_times:
   assumes xy: "x\<up>(y::real)" and nn: "0\<le>z"
   shows "(\<lambda>m. z*x m)\<up>(z*y)"
 (*<*)proof -
-  { fix n 
-    from prems have "z*x n \<le> z*x (Suc n)"
-      by (simp add: real_mon_conv mult_left_mono)
-  }
-  also from prems have "(\<lambda>m. z*x m)---->(z*y)" by (simp add: real_mon_conv LIMSEQ_const LIMSEQ_mult)
+  from assms have "\<And>n. z*x n \<le> z*x (Suc n)"
+    by (simp add: real_mon_conv mult_left_mono)
+  also from xy have "(\<lambda>m. z*x m)---->(z*y)"
+    by (simp add: real_mon_conv LIMSEQ_const LIMSEQ_mult)
   ultimately show ?thesis by (simp add: real_mon_conv)
 qed(*>*)
 
@@ -155,8 +154,8 @@ theorem realfun_mon_conv_times:
   assumes xy: "x\<up>(y::'a\<Rightarrow>real)" and nn: "0\<le>z"
   shows "(\<lambda>m w. z*x m w)\<up>(\<lambda>w. z*y w)"
 (*<*)proof -
-  { fix w
-    from prems have "(\<lambda>m. z*x m w)\<up>(z*y w)" by (simp add: realfun_mon_conv_iff real_mon_conv_times) }
+  from assms have "\<And>w. (\<lambda>m. z*x m w)\<up>(z*y w)"
+    by (simp add: realfun_mon_conv_iff real_mon_conv_times)
   thus ?thesis by (auto simp add: realfun_mon_conv_iff)
 qed(*>*)
 
@@ -166,12 +165,12 @@ theorem real_mon_conv_add:
   shows "(\<lambda>m. x m + a m)\<up>(y + b)" 
 (*<*)proof - 
   { fix n
-    from prems have "x n \<le> x (Suc n)" and "a n \<le> a (Suc n)"
+    from assms have "x n \<le> x (Suc n)" and "a n \<le> a (Suc n)"
       by (simp_all add: real_mon_conv)
     hence "x n + a n \<le> x (Suc n) + a (Suc n)"
       by simp
   }
-  also from prems have "(\<lambda>m. x m + a m)---->(y + b)" by (simp add: real_mon_conv LIMSEQ_add)
+  also from assms have "(\<lambda>m. x m + a m)---->(y + b)" by (simp add: real_mon_conv LIMSEQ_add)
   ultimately show ?thesis by (simp add: real_mon_conv)
 qed(*>*)
 
@@ -179,9 +178,8 @@ theorem realfun_mon_conv_add:
   assumes xy: "x\<up>(y::'a\<Rightarrow>real)" and ab: "a\<up>(b::'a \<Rightarrow> real)"
   shows "(\<lambda>m w. x m w + a m w)\<up>(\<lambda>w. y w + b w)"
 (*<*)proof -
-  { fix w
-    from prems have "(\<lambda>m. x m w + a m w)\<up>(y w + b w)" by (simp add: realfun_mon_conv_iff real_mon_conv_add)
-  }
+  from assms have "\<And>w. (\<lambda>m. x m w + a m w)\<up>(y w + b w)"
+    by (simp add: realfun_mon_conv_iff real_mon_conv_add)
   thus ?thesis by (auto simp add: realfun_mon_conv_iff)
 qed(*>*)
 

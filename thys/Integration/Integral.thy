@@ -239,11 +239,12 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)a:(*>*) "a \<in> sfis f M
   using a
 proof cases 
   case (base x A R)
+  note base_x = this
   show ?thesis using b
   proof cases
     case (base y B S) 
                       
-    from prems have ms: "measure_space M" 
+    with assms base_x have ms: "measure_space M" 
       and f: "f = (\<lambda>t. \<Sum>i\<in>(R::nat set). x i * \<chi> (A i) t)"
       and a: "a = (\<Sum>i\<in>R. x i * measure M (A i))" 
       and Ams: "\<forall>i \<in> R. A i \<in> measurable_sets M" 
@@ -500,7 +501,7 @@ text{*Additivity and monotonicity are now almost obvious, the latter
 lemma assumes ms: "measure_space M" and a: "a \<in> sfis f M" and b: "b \<in> sfis g M"
   shows sfis_add: "a+b \<in> sfis (\<lambda>w. f w + g w) M" 
 proof -     
-  from prems have 
+  from assms have 
     "\<exists> z1 z2 C K. f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t) \<and> 
     g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t) \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i))
     \<and> b = (\<Sum>i\<in>K. z2 i * measure M (C i))
@@ -626,10 +627,10 @@ qed
 
 lemma sfis_unique: 
   assumes ms: "measure_space M" and a: "a \<in> sfis f M" and b: "b \<in> sfis f M"
-  shows "a=b" using prems
+  shows "a=b"
 proof -
   have "f\<le>f" by (simp add: le_fun_def)
-  with prems have "a\<le>b" and "b\<le>a" 
+  with assms have "a\<le>b" and "b\<le>a" 
     by (auto simp add: sfis_mono)
   thus ?thesis by simp
 qed
@@ -684,26 +685,30 @@ qed(*>*)
 lemma sfis_times:
   assumes a: "a \<in> sfis f M" and z: "0\<le>z"
   shows "z*a \<in> sfis (\<lambda>w. z*f w) M" (*<*)using a
-proof (cases)
+proof cases
   case (base x A S)
-  {fix t
-    from prems have "z*f t = (\<Sum>i\<in>S. z * (x i * \<chi> (A i) t))"
+  {
+    fix t
+    from base have "z*f t = (\<Sum>i\<in>S. z * (x i * \<chi> (A i) t))"
       by (simp add: setsum_right_distrib)
-    also { fix i 
-      have "S=S" and "z * (x i * \<chi> (A i) t) = (z * x i) * \<chi> (A i) t" by auto }
-    hence "\<dots> = (\<Sum>i\<in>S. (z * x i) * \<chi> (A i) t)" by (rule setsum_cong)
+    also have "\<dots> = (\<Sum>i\<in>S. (z * x i) * \<chi> (A i) t)"
+    proof (rule setsum_cong)
+      show "S = S" ..
+      fix i show "z * (x i * \<chi> (A i) t) = (z * x i) * \<chi> (A i) t" by auto
+    qed
     finally have "z * f t = (\<Sum>i\<in>S. z * x i * \<chi> (A i) t)" .
   }
   hence zf: "(\<lambda>w. z*f w) = (\<lambda>t. \<Sum>i\<in>S. z * x i * \<chi> (A i) t)" by (simp add: ext)
   
-  from prems have nn: "nonnegative (\<lambda>w. z*x w)" by (simp add: nonnegative_def zero_le_mult_iff)
-
-  from prems nn zf have "(\<Sum>i\<in>S. z * x i * measure M (A i)) \<in> sfis (\<lambda>w. z*f w) M" 
+  from z base have "nonnegative (\<lambda>w. z*x w)" by (simp add: nonnegative_def zero_le_mult_iff)
+  with base zf have "(\<Sum>i\<in>S. z * x i * measure M (A i)) \<in> sfis (\<lambda>w. z*f w) M" 
     by (simp add: sfis.base)
-  also { fix i 
-    have "S=S" and "(z * x i) * measure M (A i) = z * (x i * measure M (A i))" by auto }
-  hence "(\<Sum>i\<in>S. z * x i * measure M (A i)) = (\<Sum>i\<in>S. z * (x i * measure M (A i)))" by (rule setsum_cong)
-  also from prems have "\<dots> = z*a" by (simp add: setsum_right_distrib)
+  also have "(\<Sum>i\<in>S. z * x i * measure M (A i)) = (\<Sum>i\<in>S. z * (x i * measure M (A i)))"
+  proof (rule setsum_cong)
+    show "S = S" ..
+    fix i show "(z * x i) * measure M (A i) = z * (x i * measure M (A i))" by auto
+  qed
+  also from base have "\<dots> = z*a" by (simp add: setsum_right_distrib)
   finally show ?thesis .
 qed(*>*)
 
@@ -711,19 +716,18 @@ qed(*>*)
 lemma assumes ms: "measure_space M" 
   and a: "\<forall>i\<in>S. a i \<in> sfis (f i) M" and S: "finite S"
   shows sfis_setsum: "(\<Sum>i\<in>S. a i) \<in> sfis (\<lambda>t. \<Sum>i\<in>S. f i t) M" (*<*)using S a
-proof (induct)  
-  case  empty
-  with ms have "measure M {} \<in> sfis \<chi> {} M" by (simp add: measure_space_def sigma_algebra_def sfis_char)
-  with ms show ?case by (simp add: setsum_empty measure_space_def positive_def char_empty)
+proof induct
+  case empty
+  with ms have "measure M {} \<in> sfis \<chi> {} M"
+    by (simp add: measure_space_def sigma_algebra_def sfis_char)
+  with ms show ?case
+    by (simp add: setsum_empty measure_space_def positive_def char_empty)
 next
   case (insert s S)
-  { fix t
-    from prems have "(\<Sum>i \<in> insert s S. f i t) = f s t + (\<Sum>i\<in>S. f i t)"
-      by simp }
-  moreover from prems have "(\<Sum>i \<in> insert s S. a i) = a s + (\<Sum>i\<in>S. a i)"
-    by simp 
-  moreover from prems have "a s \<in> sfis (f s) M" by fast
-  moreover from prems have "(\<Sum>i\<in>S. a i) \<in> sfis (\<lambda>t. \<Sum>i\<in>S. f i t) M" by fast
+  then have "\<And>t. (\<Sum>i \<in> insert s S. f i t) = f s t + (\<Sum>i\<in>S. f i t)" by simp
+  moreover from insert have "(\<Sum>i \<in> insert s S. a i) = a s + (\<Sum>i\<in>S. a i)" by simp
+  moreover from insert have "a s \<in> sfis (f s) M" by fast
+  moreover from insert have "(\<Sum>i\<in>S. a i) \<in> sfis (\<lambda>t. \<Sum>i\<in>S. f i t) M" by fast
   moreover note ms ultimately show ?case by (simp add: sfis_add ext)
 qed(*>*)
 
@@ -753,13 +757,13 @@ lemma sfis_nn:
   shows "nonnegative f" (*<*)using f
 proof (cases)
   case (base x A S)
-  { fix t 
-    { fix i
-      from prems have "0 \<le> x i * \<chi> (A i) t" by (simp add: nonnegative_def characteristic_function_def)
-    }
-    with prems have "(\<Sum>i\<in>S. 0) \<le> f t"
+  {
+    fix t 
+    from base have "\<And>i. 0 \<le> x i * \<chi> (A i) t"
+      by (simp add: nonnegative_def characteristic_function_def)
+    with base have "(\<Sum>i\<in>S. 0) \<le> f t"
       by (simp del: setsum_0 setsum_constant add: setsum_mono)
-    hence "0 \<le> f t" by (simp)
+    hence "0 \<le> f t" by simp
   }
   thus ?thesis by (simp add: nonnegative_def)
 qed(*>*)
@@ -804,7 +808,7 @@ proof (cases)
   also
   { fix i
     assume "i \<in> S"
-    from prems have "A i \<in> measurable_sets M"
+    with base have "A i \<in> measurable_sets M"
      by simp
     with ms have "(\<lambda>t. x i * \<chi> (A i) t) \<in> rv M"
       by (simp add: char_rv const_rv rv_times_rv)
@@ -885,10 +889,11 @@ qed(*>*)
     
 lemma sfis_mon_conv_mono: 
   assumes uf: "u\<up>f" and xu: "\<And>n. x n \<in> sfis (u n) M" and xy: "x\<up>y"
-  and sr: " r \<in> sfis s M" and sf: "s \<le> f" and ms: "measure_space M"
+    and sr: "r \<in> sfis s M" and sf: "s \<le> f" and ms: "measure_space M"
   shows "r \<le> y" (*This is Satz 11.1 in Bauer*) using sr 
 proof cases
   case (base a A S)
+  note base_a = this
   
   { fix z assume znn: "0<(z::real)" and z1: "z<1"
     def B \<equiv> "(\<lambda>n. {w. z*s w \<le> u n w})" 
@@ -906,7 +911,7 @@ proof cases
 	by (simp add: const_rv rv_times_rv)
       ultimately have "B n \<in> measurable_sets M" 
 	by (simp add: B_def rv_le_rv_measurable)
-      with prems have ABms: "\<forall>i\<in>S. (A i \<inter> B n) \<in> measurable_sets M" 
+      with ms base have ABms: "\<forall>i\<in>S. (A i \<inter> B n) \<in> measurable_sets M" 
 	by (auto simp add: measure_space_def sigma_algebra_inter)
 
       from xu have "z*(\<Sum>i\<in>S. a i * measure M (A i \<inter> B n)) \<le> x n" 
@@ -925,16 +930,15 @@ proof cases
 	  also have "\<dots> = z * \<chi> (B n) t * (\<Sum>i\<in>S. a i * \<chi> (A i) t)" 
 	    by (simp add: setsum_right_distrib[THEN sym])
 	  also 
-	  from prems have "nonnegative s" 
-	    by (simp add: sfis_nn)
-	  with nnu B_def prems 
+	  from sr have "nonnegative s" by (simp add: sfis_nn)
+	  with nnu B_def base_a
 	  have "z * \<chi> (B n) t * (\<Sum>i\<in>S. a i * \<chi> (A i) t) \<le> u n t" 
 	    by (auto simp add: characteristic_function_def nonnegative_def)
 	  finally have "z*(\<Sum>i\<in>S. a i * \<chi> (A i \<inter> B n) t) \<le> u n t" .
 	}
 	 
 	also
-	from prems ABms have 
+	from ms base_a znn ABms have
 	  "z*(\<Sum>i\<in>S. a i * measure M (A i \<inter> B n)) \<in> 
 	  sfis (\<lambda>t. z*(\<Sum>i\<in>S. a i * \<chi> (A i \<inter> B n) t)) M" 
 	  by (simp add: sfis_intro sfis_times)
@@ -1033,12 +1037,11 @@ proof cases
       ----> z*(\<Sum>j\<in>S. a j * measure M (A j))" 
       by (simp add: LIMSEQ_const LIMSEQ_mult)
     
-    with 1 prems have "z*r \<le> y" 
+    with 1 xy base have "z*r \<le> y" 
       by (auto simp add: LIMSEQ_le real_mon_conv) 
   }
-  hence zr: "\<And>z. \<lbrakk>0<z; z<1\<rbrakk> \<Longrightarrow> z * r \<le> y" .
-  thus ?thesis 
-    by (rule real_le_mult_sustain)
+  hence zr: "\<And>z. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> z * r \<le> y" .
+  thus ?thesis by (rule real_le_mult_sustain)
 qed
 
 text {*Now we are ready for the second step. The integral of a
@@ -1075,12 +1078,9 @@ lemma nnfis_times:
   shows "z*a \<in> nnfis (\<lambda>w. z*f w) M" (*<*)using a
 proof (cases)
   case (base u x)
-  from prems have "(\<lambda>m w. z*u m w)\<up>(\<lambda>w. z*f w)" by (simp add: realfun_mon_conv_times)
-  also
-  { fix m 
-    from prems have "z*x m \<in> sfis (\<lambda>w. z*u m w) M" by (simp add: sfis_times)
-  }
-  moreover from prems have "(\<lambda>m. z*x m)\<up>(z*a)" by (simp add: real_mon_conv_times)
+  with nn have "(\<lambda>m w. z*u m w)\<up>(\<lambda>w. z*f w)" by (simp add: realfun_mon_conv_times)
+  also from nn base have "\<And>m. z*x m \<in> sfis (\<lambda>w. z*u m w) M" by (simp add: sfis_times)
+  moreover from a nn base have "(\<lambda>m. z*x m)\<up>(z*a)" by (simp add: real_mon_conv_times)
   ultimately have "z*a \<in> nnfis (\<lambda>w. z*f w) M" by (rule nnfis.base)
   
   with base show ?thesis by simp
@@ -1092,19 +1092,18 @@ lemma nnfis_add:
   shows "a+b \<in> nnfis (\<lambda>w. f w + g w) M" (*<*)using a
 proof (cases)
   case (base u x)
+  note base_u = this
   from b show ?thesis 
-  proof (cases)
+  proof cases
     case (base v r)
-    from prems have "(\<lambda>m w. u m w + v m w)\<up>(\<lambda>w. f w + g w)"
+    with base_u have "(\<lambda>m w. u m w + v m w)\<up>(\<lambda>w. f w + g w)"
       by (simp add: realfun_mon_conv_add)
     also
-    { fix n
-      from prems have "x n + r n \<in> sfis (\<lambda>w. u n w + v n w) M" by (simp add: sfis_add) 
-    }
-    moreover from prems have "(\<lambda>m. x m + r m)\<up>(a+b)" by (simp add: real_mon_conv_add)
+    from ms base_u base have "\<And>n. x n + r n \<in> sfis (\<lambda>w. u n w + v n w) M" by (simp add: sfis_add) 
+    moreover from ms base_u base have "(\<lambda>m. x m + r m)\<up>(a+b)" by (simp add: real_mon_conv_add)
    
     ultimately have "a+b \<in> nnfis (\<lambda>w. f w + g w) M" by (rule nnfis.base)
-    with prems show ?thesis by simp
+    with a b show ?thesis by simp
   qed
 qed(*>*)
 
@@ -1114,32 +1113,31 @@ lemma assumes ms: "measure_space M" and a: "a \<in> nnfis f M"
   shows nnfis_mono: "a \<le> b" using a
 proof (cases)
   case (base u x)
+  note base_u = this
   from b show ?thesis 
   proof (cases)
     case (base v r)
     { fix m
-      from prems have "u m \<le> f" 
+      from base_u base have "u m \<le> f" 
 	by (simp add: realfun_mon_conv_le) 
       also note fg finally have "u m \<le> g" .
-      with prems have "v\<up>g" and  "\<And>n. r n \<in> sfis (v n) M" and "r\<up>b" 
-	and "x m \<in> sfis (u m) M" and "u m \<le> g" and "measure_space M"
+      with ms base_u base have "v\<up>g" and  "\<And>n. r n \<in> sfis (v n) M" and "r\<up>b" 
+  	  and "x m \<in> sfis (u m) M" and "u m \<le> g" and "measure_space M"
 	by simp_all
       hence "x m \<le> b" 
 	by (rule sfis_mon_conv_mono)
     }
-    with prems have "a \<le> b" 
+    with ms base_u base show "a \<le> b" 
       by (auto simp add: real_mon_conv LIMSEQ_le_const2)
-    thus ?thesis using prems 
-      by simp
   qed
-qed  
+qed
 
 corollary nnfis_unique: 
   assumes ms: "measure_space M" and a: "a \<in> nnfis f M" and b: "b \<in> nnfis f M"
-  shows "a=b" (*<*)using prems
+  shows "a=b" (*<*)
 proof -
-  have "f\<le>f" by (simp add: le_fun_def)
-  with prems have "a\<le>b" and "b\<le>a" 
+  have "f\<le>f" ..
+  with assms have "a\<le>b" and "b\<le>a" 
     by (auto simp add: nnfis_mono)
   thus ?thesis by simp
 qed(*>*)
@@ -1194,9 +1192,9 @@ qed(*>*)
 
 lemma upclose_sfis: 
   assumes ms: "measure_space M" and f: "a \<in> sfis f M" and g: "b \<in> sfis g M" 
-  shows "\<exists>c. c \<in> sfis (upclose f g) M" (*<*)using f
+  shows "\<exists>c. c \<in> sfis (upclose f g) M" (*<*)
 proof -     
-  from prems have 
+  from assms have 
     "\<exists> z1 z2 C K. f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t) \<and> 
     g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t) \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i))
     \<and> b = (\<Sum>i\<in>K. z2 i * measure M (C i))
@@ -1464,8 +1462,8 @@ text{*Establishing that only nonnegative functions may arise this way
   is a triviality. *}
 
 lemma nnfis_nn: assumes "a \<in> nnfis f M"
-  shows "nonnegative f" (*<*)using prems
-proof (cases)
+  shows "nonnegative f" (*<*)using assms
+proof cases
   case (base u x)
   {fix t
     { fix n
