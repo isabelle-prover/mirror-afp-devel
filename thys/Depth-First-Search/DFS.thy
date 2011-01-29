@@ -1,6 +1,6 @@
-(*  Title:       Depth-First Search
-    Author:      Toshiaki Nishihara and Yasuhiko Minamide
-    Maintainer:  Yasuhiko Minamide <minamide at cs.tsukuba.ac.jp>
+(*  Title:      Depth-First Search
+    Author:     Toshiaki Nishihara and Yasuhiko Minamide
+    Maintainer: Yasuhiko Minamide <minamide at cs.tsukuba.ac.jp>
 *)
 
 header "Depth-First Search"
@@ -12,17 +12,15 @@ begin
 subsection "Definition of Graphs"
 
 typedecl node 
-types graph = "(node * node) list"
+type_synonym graph = "(node * node) list"
 
-primrec
-  nexts :: "[graph, node] \<Rightarrow> node list"
+primrec nexts :: "[graph, node] \<Rightarrow> node list"
 where
   "nexts [] n = []"
 | "nexts (e#es) n = (if fst e = n then snd e # nexts es n else nexts es n)"
 
-definition
-  nextss :: "[graph, node list] \<Rightarrow> node set" where
-  "nextss g xs = set g `` set xs"
+definition nextss :: "[graph, node list] \<Rightarrow> node set"
+  where "nextss g xs = set g `` set xs"
 
 lemma nexts_set: "y \<in> set (nexts g x) = ((x,y) \<in> set g)"
   by (induct g) auto
@@ -30,16 +28,14 @@ lemma nexts_set: "y \<in> set (nexts g x) = ((x,y) \<in> set g)"
 lemma nextss_Cons: "nextss g (x#xs) = set (nexts g x) \<union> nextss g xs" 
   unfolding nextss_def by (auto simp add:Image_def nexts_set)
 
-definition
-  reachable :: "[graph, node list] \<Rightarrow> node set" where
-  "reachable g xs = (set g)\<^sup>* `` set xs"
+definition reachable :: "[graph, node list] \<Rightarrow> node set"
+  where "reachable g xs = (set g)\<^sup>* `` set xs"
 
 
 subsection "Depth-First Search with Stack" 
 
-definition
-  nodes_of :: "graph \<Rightarrow> node set" where
-  "nodes_of g = set (map fst g @ map snd g)"
+definition nodes_of :: "graph \<Rightarrow> node set"
+  where "nodes_of g = set (map fst g @ map snd g)"
 
 lemma [simp]: "x \<notin> nodes_of g \<Longrightarrow> nexts g x = []"
   by (induct g) (auto simp add: nodes_of_def)
@@ -58,8 +54,6 @@ where
                         else dfs g (nexts g x@xs) (x#ys))"
 by pat_completeness auto
 
-declare wf_finite_psubset[simp] (* should be there already *)
-
 termination
 apply (relation "inv_image (finite_psubset <*lex*> less_than)  
                    (\<lambda>(g,xs,ys). (nodes_of g - set ys, size xs))")
@@ -77,7 +71,7 @@ text {*
 *}
 
 
-subsection "Depeth-First Search with Nested-Recursion"
+subsection "Depth-First Search with Nested-Recursion"
 
 function
   dfs2 :: "graph \<Rightarrow> node list \<Rightarrow> node list \<Rightarrow> node list"
@@ -118,9 +112,9 @@ next
     proof 
       assume *: "\<not> x mem ys"
       have "set (x#ys) \<subseteq> set (dfs2 (g, nexts g x, x # ys))"
-	by (rule dfs2_inv)
+        by (rule dfs2_inv)
       with 2 * show "P g xs (dfs2 (g, nexts g x, x # ys))"
-	by auto
+        by auto
     qed
   qed (rule 2)+
 qed
@@ -131,6 +125,7 @@ lemma dfs_app: "dfs g (xs@ys) zs = dfs g ys (dfs g xs zs)"
 
 lemma "dfs2 g xs ys = dfs g xs ys" 
   by (induct g xs ys rule: dfs2.induct) (auto simp add: dfs_app)
+
 
 subsection "Basic Properties"
 
@@ -167,43 +162,51 @@ lemma nextss_closed_dfs: "nextss g (dfs g xs []) \<subseteq> set (dfs g xs [])"
 lemma Image_closed_trancl: assumes "r `` X \<subseteq> X" shows "r\<^sup>* `` X = X"
 proof
   show "r\<^sup>* `` X \<subseteq> X"
-  proof(unfold Image_def, auto)
-    fix x y
-    assume y: "y \<in> X"
-    assume "(y,x) \<in> r\<^sup>*"
-    thus "x \<in> X"
-      by (induct) (insert assms y, auto simp add: Image_def)
+  proof -
+    {
+      fix x y
+      assume y: "y \<in> X"
+      assume "(y,x) \<in> r\<^sup>*"
+      then have "x \<in> X"
+        by (induct) (insert assms y, auto simp add: Image_def)
+    }
+    then show ?thesis unfolding Image_def by auto
   qed
 qed auto
 
 lemma reachable_closed_dfs: "reachable g xs \<subseteq> set(dfs g xs [])"
 proof -
   have "reachable g xs \<subseteq> reachable g (dfs g xs [])"
-    by(unfold reachable_def,rule Image_mono,auto simp add:next_subset_dfs)
+    unfolding reachable_def by (rule Image_mono) (auto simp add: next_subset_dfs)
   also have "\<dots> = set(dfs g xs [])"
-  proof(unfold reachable_def,rule Image_closed_trancl)
+    unfolding reachable_def
+  proof (rule Image_closed_trancl)
     from nextss_closed_dfs
-    show"set g `` set (dfs g xs []) \<subseteq> set (dfs g xs [])"
-      by(simp add: nextss_def)
+    show "set g `` set (dfs g xs []) \<subseteq> set (dfs g xs [])"
+      by (simp add: nextss_def)
   qed
   finally show ?thesis .
 qed
 
 lemma reachable_nexts: "reachable g (nexts g x) \<subseteq> reachable g [x]"
-  by(unfold reachable_def,auto intro:converse_rtrancl_into_rtrancl simp: nexts_set)
+  unfolding reachable_def
+  by (auto intro: converse_rtrancl_into_rtrancl simp: nexts_set)
 
-lemma reachable_append: "reachable g (xs @ ys) = reachable g xs Un reachable g ys"
-  by (unfold reachable_def, auto)
+lemma reachable_append: "reachable g (xs @ ys) = reachable g xs \<union> reachable g ys"
+  unfolding reachable_def by auto
 
 
 lemma dfs_subset_reachable_visit_nodes: "set (dfs g xs ys) \<subseteq> reachable g xs \<union> set ys"
 proof(induct g xs ys rule: dfs.induct)
+  case 1
+  then show ?case by simp
+next
   case (2 g x xs ys)
   show ?case
-  proof(cases "x \<in> set ys")
+  proof (cases "x \<in> set ys")
     case True
     with 2 show "set (dfs g (x#xs) ys) \<subseteq> reachable g (x#xs) \<union> set ys"
-      by (auto simp add:reachable_def List.member_def)
+      by (auto simp add: reachable_def List.member_def)
   next
     case False
     have "reachable g (nexts g x) \<subseteq> reachable g [x]" 
@@ -214,7 +217,8 @@ proof(induct g xs ys rule: dfs.induct)
     show "set (dfs g (x#xs) ys) \<subseteq> reachable g (x#xs) \<union> set ys"
       by (auto simp add: reachable_def List.member_def) blast
   qed
-qed(unfold reachable_def,simp)
+qed
+
 
 subsection "Correctness"
     
@@ -228,6 +232,7 @@ qed(rule reachable_closed_dfs)
 
 theorem "y \<in> set (dfs g [x] []) = ((x,y) \<in> (set g)\<^sup>*)"
   by(simp only:dfs_eq_reachable reachable_def, auto)
+
 
 subsection "Executable Code"
 
