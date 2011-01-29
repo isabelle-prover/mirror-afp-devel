@@ -1,5 +1,4 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree_Map.thy,v 1.6 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL
@@ -20,7 +19,7 @@ text {* We prove correctness of map operations
 section {* Map implementation and an abstraction function *}
 (*============================================================*)
 
-types 
+type_synonym 
   'a tarray = "(index * 'a) Tree"
 
 definition valid_tmap :: "'a tarray => bool" where
