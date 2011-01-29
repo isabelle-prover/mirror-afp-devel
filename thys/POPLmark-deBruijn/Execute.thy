@@ -2,7 +2,7 @@
 *)
 
 theory Execute
-imports POPLmarkRecord Executable_Set Efficient_Nat
+imports POPLmarkRecord "~~/src/HOL/Library/Executable_Set" "~~/src/HOL/Library/Efficient_Nat"
 begin
 
 section {* Executing the specification *}

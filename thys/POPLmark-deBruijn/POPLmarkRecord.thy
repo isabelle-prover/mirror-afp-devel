@@ -25,7 +25,7 @@ datatype of types of System \fsub{} by a new constructor @{text RcdT}
 representing record types.
 *}
 
-types name = string
+type_synonym name = string
 
 datatype type =
     TVar nat
@@ -34,13 +34,12 @@ datatype type =
   | TyAll type type  ("(3\<forall><:_./ _)" [0, 10] 10)
   | RcdT "(name \<times> type) list"
 
-types
-  fldT = "name \<times> type"
-  rcdT = "(name \<times> type) list"
+type_synonym fldT = "name \<times> type"
+type_synonym rcdT = "(name \<times> type) list"
 
 datatype binding = VarB type | TVarB type
 
-types env = "binding list"
+type_synonym env = "binding list"
 
 primrec is_TVarB :: "binding \<Rightarrow> bool"
 where
@@ -82,11 +81,10 @@ datatype trm =
   | Proj trm name  ("(_.._)" [90, 91] 90)
   | LET pat trm trm ("(LET (_ =/ _)/ IN (_))" 10)
 
-types
-  fld = "name \<times> trm"
-  rcd = "(name \<times> trm) list"
-  fpat = "name \<times> pat"
-  rpat = "(name \<times> pat) list"
+type_synonym fld = "name \<times> trm"
+type_synonym rcd = "(name \<times> trm) list"
+type_synonym fpat = "name \<times> pat"
+type_synonym rpat = "(name \<times> pat) list"
 
 text {*
 In order to motivate the typing and evaluation rules for the @{text LET}, it is
@@ -984,7 +982,7 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
     proof (induct arbitrary: T)
       case SA_Top
       from SA_Top(3) show ?case
-	by cases (auto intro: subtyping.SA_Top SA_Top)
+        by cases (auto intro: subtyping.SA_Top SA_Top)
     next
       case SA_refl_TVar show ?case by fact
     next
@@ -995,61 +993,61 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
       note SA_arrow' = SA_arrow
       from SA_arrow(5) show ?case
       proof cases
-	case SA_Top
-	with SA_arrow show ?thesis
-	  by (auto intro: subtyping.SA_Top wf_arrow elim: wf_subtypeE)
+        case SA_Top
+        with SA_arrow show ?thesis
+          by (auto intro: subtyping.SA_Top wf_arrow elim: wf_subtypeE)
       next
-	case (SA_arrow T\<^isub>1' T\<^isub>2')
-	from SA_arrow SA_arrow' have "\<Gamma> \<turnstile> S\<^isub>1 \<rightarrow> S\<^isub>2 <: T\<^isub>1' \<rightarrow> T\<^isub>2'"
-	  by (auto intro!: subtyping.SA_arrow intro: less(1) [of "T\<^isub>1"] less(1) [of "T\<^isub>2"])
-	with SA_arrow show ?thesis by simp
+        case (SA_arrow T\<^isub>1' T\<^isub>2')
+        from SA_arrow SA_arrow' have "\<Gamma> \<turnstile> S\<^isub>1 \<rightarrow> S\<^isub>2 <: T\<^isub>1' \<rightarrow> T\<^isub>2'"
+          by (auto intro!: subtyping.SA_arrow intro: less(1) [of "T\<^isub>1"] less(1) [of "T\<^isub>2"])
+        with SA_arrow show ?thesis by simp
       qed
     next
       case (SA_all \<Gamma> T\<^isub>1 S\<^isub>1 S\<^isub>2 T\<^isub>2)
       note SA_all' = SA_all
       from SA_all(5) show ?case
       proof cases
-	case SA_Top
-	with SA_all show ?thesis by (auto intro!:
-	  subtyping.SA_Top wf_all intro: wf_equallength elim: wf_subtypeE)
+        case SA_Top
+        with SA_all show ?thesis by (auto intro!:
+          subtyping.SA_Top wf_all intro: wf_equallength elim: wf_subtypeE)
       next
-	case (SA_all T\<^isub>1' T\<^isub>2')
-	from SA_all SA_all' have "\<Gamma> \<turnstile> T\<^isub>1' <: S\<^isub>1"
-	  by - (rule less(1), simp_all)
-	moreover from SA_all SA_all' have "TVarB T\<^isub>1' \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2"
-	  by - (rule less(2) [of _ "[]", simplified], simp_all)
-	with SA_all SA_all' have "TVarB T\<^isub>1' \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2'"
-	  by - (rule less(1), simp_all)
-	ultimately have "\<Gamma> \<turnstile> (\<forall><:S\<^isub>1. S\<^isub>2) <: (\<forall><:T\<^isub>1'. T\<^isub>2')"
-	  by (rule subtyping.SA_all)
-	with SA_all show ?thesis by simp
+        case (SA_all T\<^isub>1' T\<^isub>2')
+        from SA_all SA_all' have "\<Gamma> \<turnstile> T\<^isub>1' <: S\<^isub>1"
+          by - (rule less(1), simp_all)
+        moreover from SA_all SA_all' have "TVarB T\<^isub>1' \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2"
+          by - (rule less(2) [of _ "[]", simplified], simp_all)
+        with SA_all SA_all' have "TVarB T\<^isub>1' \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2'"
+          by - (rule less(1), simp_all)
+        ultimately have "\<Gamma> \<turnstile> (\<forall><:S\<^isub>1. S\<^isub>2) <: (\<forall><:T\<^isub>1'. T\<^isub>2')"
+          by (rule subtyping.SA_all)
+        with SA_all show ?thesis by simp
       qed
     next
       case (SA_Rcd \<Gamma> fs\<^isub>1 fs\<^isub>2)
       note SA_Rcd' = SA_Rcd
       from SA_Rcd(5) show ?case
       proof cases
-	case SA_Top
-	with SA_Rcd show ?thesis by (auto intro!: subtyping.SA_Top)
+        case SA_Top
+        with SA_Rcd show ?thesis by (auto intro!: subtyping.SA_Top)
       next
-	case (SA_Rcd fs\<^isub>2')
-	note `\<Gamma> \<turnstile>\<^bsub>wf\<^esub>`
-	moreover note `\<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs\<^isub>1`
-	moreover note `unique fs\<^isub>2'`
-	moreover have "\<forall>(l, T)\<in>set fs\<^isub>2'. \<exists>S. (l, S)\<in>set fs\<^isub>1 \<and> \<Gamma> \<turnstile> S <: T"
-	proof (rule ballpI)
-	  fix l T
-	  assume lT: "(l, T) \<in> set fs\<^isub>2'"
-	  with SA_Rcd obtain U where
-	    fs2: "(l, U) \<in> set fs\<^isub>2" and UT: "\<Gamma> \<turnstile> U <: T" by blast
-	  with SA_Rcd SA_Rcd' obtain S where
-	    fs1: "(l, S) \<in> set fs\<^isub>1" and SU: "\<Gamma> \<turnstile> S <: U" by blast
-	  from SA_Rcd SA_Rcd' fs2 have "(U, Q) \<in> measure size" by simp
-	  hence "\<Gamma> \<turnstile> S <: T" using SU UT by (rule less(1))
-	  with fs1 show "\<exists>S. (l, S)\<in>set fs\<^isub>1 \<and> \<Gamma> \<turnstile> S <: T" by blast
-	qed
-	ultimately have "\<Gamma> \<turnstile> RcdT fs\<^isub>1 <: RcdT fs\<^isub>2'" by (rule subtyping.SA_Rcd)
-	with SA_Rcd show ?thesis by simp
+        case (SA_Rcd fs\<^isub>2')
+        note `\<Gamma> \<turnstile>\<^bsub>wf\<^esub>`
+        moreover note `\<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs\<^isub>1`
+        moreover note `unique fs\<^isub>2'`
+        moreover have "\<forall>(l, T)\<in>set fs\<^isub>2'. \<exists>S. (l, S)\<in>set fs\<^isub>1 \<and> \<Gamma> \<turnstile> S <: T"
+        proof (rule ballpI)
+          fix l T
+          assume lT: "(l, T) \<in> set fs\<^isub>2'"
+          with SA_Rcd obtain U where
+            fs2: "(l, U) \<in> set fs\<^isub>2" and UT: "\<Gamma> \<turnstile> U <: T" by blast
+          with SA_Rcd SA_Rcd' obtain S where
+            fs1: "(l, S) \<in> set fs\<^isub>1" and SU: "\<Gamma> \<turnstile> S <: U" by blast
+          from SA_Rcd SA_Rcd' fs2 have "(U, Q) \<in> measure size" by simp
+          hence "\<Gamma> \<turnstile> S <: T" using SU UT by (rule less(1))
+          with fs1 show "\<exists>S. (l, S)\<in>set fs\<^isub>1 \<and> \<Gamma> \<turnstile> S <: T" by blast
+        qed
+        ultimately have "\<Gamma> \<turnstile> RcdT fs\<^isub>1 <: RcdT fs\<^isub>2'" by (rule subtyping.SA_Rcd)
+        with SA_Rcd show ?thesis by simp
       qed
     qed
   }
@@ -1063,39 +1061,39 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
     proof (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" M N arbitrary: \<Delta>)
       case SA_Top
       with 2 show ?case by (auto intro!: subtyping.SA_Top
-	intro: wf_equallength wfE_replace elim!: wf_subtypeE)
+        intro: wf_equallength wfE_replace elim!: wf_subtypeE)
     next
       case SA_refl_TVar
       with 2 show ?case by (auto intro!: subtyping.SA_refl_TVar
-	intro: wf_equallength wfE_replace elim!: wf_subtypeE)
+        intro: wf_equallength wfE_replace elim!: wf_subtypeE)
     next
       case (SA_trans_TVar i U T)
       show ?case
       proof (cases "i < \<parallel>\<Delta>\<parallel>")
-	case True
-	with SA_trans_TVar show ?thesis
-	  by (auto intro!: subtyping.SA_trans_TVar)
+        case True
+        with SA_trans_TVar show ?thesis
+          by (auto intro!: subtyping.SA_trans_TVar)
       next
-	case False
-	note False' = False
-	show ?thesis
-	proof (cases "i = \<parallel>\<Delta>\<parallel>")
-	  case True
-	  from SA_trans_TVar have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
-	    by (auto intro: wfE_replace elim!: wf_subtypeE)
-	  with `\<Gamma> \<turnstile> P <: Q`
-	  have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile> \<up>\<^isub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 P <: \<up>\<^isub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 Q"
-	    by (rule subtype_weaken')
-	  with SA_trans_TVar True False have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (Suc \<parallel>\<Delta>\<parallel>) 0 P <: T"
-	    by - (rule tr, simp+)
-	  with True and False and SA_trans_TVar show ?thesis
-	    by (auto intro!: subtyping.SA_trans_TVar)
-	next
-	  case False
-	  with False' have "i - \<parallel>\<Delta>\<parallel> = Suc (i - \<parallel>\<Delta>\<parallel> - 1)" by arith
-	  with False False' SA_trans_TVar show ?thesis
-	    by - (rule subtyping.SA_trans_TVar, simp+)
-	qed
+        case False
+        note False' = False
+        show ?thesis
+        proof (cases "i = \<parallel>\<Delta>\<parallel>")
+          case True
+          from SA_trans_TVar have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+            by (auto intro: wfE_replace elim!: wf_subtypeE)
+          with `\<Gamma> \<turnstile> P <: Q`
+          have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile> \<up>\<^isub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 P <: \<up>\<^isub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 Q"
+            by (rule subtype_weaken')
+          with SA_trans_TVar True False have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (Suc \<parallel>\<Delta>\<parallel>) 0 P <: T"
+            by - (rule tr, simp+)
+          with True and False and SA_trans_TVar show ?thesis
+            by (auto intro!: subtyping.SA_trans_TVar)
+        next
+          case False
+          with False' have "i - \<parallel>\<Delta>\<parallel> = Suc (i - \<parallel>\<Delta>\<parallel> - 1)" by arith
+          with False False' SA_trans_TVar show ?thesis
+            by - (rule subtyping.SA_trans_TVar, simp+)
+        qed
       qed
     next
       case SA_arrow
@@ -1103,18 +1101,18 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
     next
       case (SA_all T\<^isub>1 S\<^isub>1 S\<^isub>2 T\<^isub>2)
       thus ?case by (auto intro: subtyping.SA_all
-	SA_all(4) [of "TVarB T\<^isub>1 \<Colon> \<Delta>", simplified])
+        SA_all(4) [of "TVarB T\<^isub>1 \<Colon> \<Delta>", simplified])
     next
       case (SA_Rcd fs fs')
       from `\<Gamma> \<turnstile> P <: Q` have "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> P" by (rule wf_subtypeE)
       with SA_Rcd have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
-	by - (rule wfE_replace, simp+)
+        by - (rule wfE_replace, simp+)
       moreover from SA_Rcd have "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs" by simp
       hence "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs" by (rule wf_equallength) simp_all
       moreover note `unique fs'`
       moreover from SA_Rcd
       have "\<forall>(l, T)\<in>set fs'. \<exists>S. (l, S)\<in>set fs \<and> \<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> S <: T"
-	by blast
+        by blast
       ultimately show ?case by (rule subtyping.SA_Rcd)
     qed
   }
@@ -2424,7 +2422,7 @@ next
     proof
       assume "t\<^isub>2 \<in> value"
       with t\<^isub>1 have "t\<^isub>1 \<bullet> t\<^isub>2 \<longmapsto> t[0 \<mapsto> t\<^isub>2]"
-	by simp (rule eval_evals.intros)
+        by simp (rule eval_evals.intros)
       thus ?thesis by iprover
     next
       assume "\<exists>t'. t\<^isub>2 \<longmapsto> t'"
