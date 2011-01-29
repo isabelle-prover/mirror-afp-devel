@@ -1,6 +1,4 @@
-(*  ID:         $Id: Arrow_Utility.thy,v 1.2 2008-10-06 18:44:26 nipkow Exp $
-    Author:     Tobias Nipkow, 2002
-*)
+(*  Author:     Tobias Nipkow, 2002  *)
 
 header "Arrow's Theorem for Utility Functions"
 
@@ -16,11 +14,11 @@ alternatives and voters is assumed to be finite. *}
 typedecl alt
 typedecl indi
 
-axioms
-alt3: "\<exists>a b c::alt. distinct[a,b,c]"
-finite_alt: "finite(UNIV:: alt set)"
+axiomatization where
+  alt3: "\<exists>a b c::alt. distinct[a,b,c]" and
+  finite_alt: "finite(UNIV:: alt set)" and
 
-finite_indi: "finite(UNIV:: indi set)"
+  finite_indi: "finite(UNIV:: indi set)"
 
 lemma third_alt: "a \<noteq> b \<Longrightarrow> \<exists>c::alt. distinct[a,b,c]"
 using alt3 by simp metis
@@ -28,8 +26,8 @@ using alt3 by simp metis
 lemma alt2: "\<exists>b::alt. b \<noteq> a"
 using alt3 by simp metis
 
-types pref = "alt \<Rightarrow> real"
-      prof = "indi \<Rightarrow> pref"
+type_synonym pref = "alt \<Rightarrow> real"
+type_synonym prof = "indi \<Rightarrow> pref"
 
 definition
  top :: "pref \<Rightarrow> alt \<Rightarrow> bool" (infixr "<\<cdot>" 60) where
@@ -272,28 +270,28 @@ proof -
     show "F P a < F P c"
     proof -
       obtain P1 P2 where
-	"Extreme P1 b" and "b \<cdot>< F P1" and "b \<cdot>< P1 i" and "F P2 <\<cdot> b" and
-	[simp]: "P2 = P1(i := mktop (P1 i) b)"
-	using pivo by (unfold pivotal_def) fast
+        "Extreme P1 b" and "b \<cdot>< F P1" and "b \<cdot>< P1 i" and "F P2 <\<cdot> b" and
+        [simp]: "P2 = P1(i := mktop (P1 i) b)"
+        using pivo by (unfold pivotal_def) fast
       let ?P = "\<lambda>j. if j=i then between (P j) a b c
                     else if P1 j <\<cdot> b then mktop (P j) b else mkbot (P j) b"
       have eq: "(F P a < F P c) = (F ?P a < F ?P c)"
-	using abc by - (rule IIA, auto)
+        using abc by - (rule IIA, auto)
       have "F ?P a < F ?P b"
       proof (rule IIA')
-	fix j show "(P2 j a < P2 j b) = (?P j a < ?P j b)"
-	  using `Extreme P1 b` by(simp add: ac)
+        fix j show "(P2 j a < P2 j b) = (?P j a < ?P j b)"
+          using `Extreme P1 b` by(simp add: ac)
       next
-	show "F P2 a < F P2 b"
-	  using `F P2 <\<cdot> b` abc by(simp add: eq_sym_conv)
+        show "F P2 a < F P2 b"
+          using `F P2 <\<cdot> b` abc by(simp add: eq_sym_conv)
       qed
       also have "\<dots> < F ?P c"
       proof (rule IIA')
-	fix j show "(P1 j b < P1 j c) = (?P j b < ?P j c)"
-	  using `Extreme P1 b` `b \<cdot>< P1 i` by(simp add: ac)
+        fix j show "(P1 j b < P1 j c) = (?P j b < ?P j c)"
+          using `Extreme P1 b` `b \<cdot>< P1 i` by(simp add: ac)
       next
-	show "F P1 b < F P1 c"
-	  using `b \<cdot>< F P1` abc by(simp add: eq_sym_conv)
+        show "F P1 b < F P1 c"
+          using `b \<cdot>< F P1` abc by(simp add: eq_sym_conv)
       qed
       finally show ?thesis by(simp add:eq)
     qed
@@ -329,11 +327,11 @@ proof-
   { fix a assume neq: "a \<noteq> b" have "i dictates a,b"
     proof -
       obtain c where dist: "distinct[a,b,c]"
-	using neq third_alt by blast
+        using neq third_alt by blast
       obtain j where "pivotal j c" using pivotal_exists by fast
       hence "j dictates_except c" by(rule pivotal_xdictates)
       hence b: "j dictates a,b" 
-	using dist by(simp add:dictatesx_def dictates2_def eq_sym_conv)
+        using dist by(simp add:dictatesx_def dictates2_def eq_sym_conv)
       with pivo neq have "i = j" by(rule pivotal_is_dictator)
       thus ?thesis using b by simp
     qed
