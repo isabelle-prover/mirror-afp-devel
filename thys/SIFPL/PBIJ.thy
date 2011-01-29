@@ -9,7 +9,7 @@ section to define indistinguishability of objects and heaps. We define
 such bijections as sets of pairs which satisfy the obvious
 condition.*}
 
-types PBij = "(Location \<times> Location) set"
+type_synonym PBij = "(Location \<times> Location) set"
 definition Pbij :: "PBij set"
 where "Pbij = { \<beta> . \<forall> l1 l2 l3 l4. (l1,l2):\<beta> \<longrightarrow> (l3,l4):\<beta> \<longrightarrow> 
                               ((l1 = l3) = (l2 = l4))}"

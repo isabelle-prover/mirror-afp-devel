@@ -12,7 +12,7 @@ subsubsection {*Assertions and their semantic validity*}
 
 text{*Assertions are binary state predicates, as before.*}
 
-types "Assn" = "State \<Rightarrow> State \<Rightarrow> bool"
+type_synonym "Assn" = "State \<Rightarrow> State \<Rightarrow> bool"
 
 definition VDM_validn :: "nat \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool" 
                          (" \<Turnstile>\<^sub>_ _ : _ " 50)

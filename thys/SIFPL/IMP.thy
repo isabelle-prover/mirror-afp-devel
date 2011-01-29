@@ -55,7 +55,7 @@ subsection{*Dynamic semantics*}
 text{*States are given by stores - in our case, HOL functions
 mapping program variables to values.*}
 
-types State = "Var \<Rightarrow> Val"
+type_synonym State = "Var \<Rightarrow> Val"
 
 definition update :: "State \<Rightarrow> Var \<Rightarrow> Val \<Rightarrow> State"
 where "update s x v = (\<lambda> y . if x=y then v else s y)"

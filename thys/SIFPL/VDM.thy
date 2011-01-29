@@ -12,7 +12,7 @@ subsection {*Assertions and their semantic validity*}
 
 text{*Assertions are binary predicates over states, i.e.~are of type*}
 
-types "VDMAssn" = "State \<Rightarrow> State \<Rightarrow> bool"
+type_synonym "VDMAssn" = "State \<Rightarrow> State \<Rightarrow> bool"
 
 text{*Command $c$ satisfies assertion $A$ if all (terminating)
 operational behaviours are covered by the assertion.*}
