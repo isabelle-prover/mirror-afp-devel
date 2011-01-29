@@ -368,12 +368,12 @@ proof-
     proof
       fix r assume "r \<in> finpref A x"
       hence "x \<in> infsuff A r" and rA: "r \<in> A\<^sup>\<star>" using xA
-	by (auto simp: finpref_def infsuff_def)
+        by (auto simp: finpref_def infsuff_def)
       hence "infsuff A r \<in> nhds T x" by (auto simp: T_def)
       with adhx have  "infsuff A r \<inter> P \<noteq> {}" by (elim adhCE) auto
       then obtain t where "t \<in> infsuff A r" and tP: "t \<in> P" by auto
       then obtain s where "s \<in> A\<^sup>\<omega>" and "t = r @@ s" using rA
-	by (auto elim!: infsuff_appE)
+        by (auto elim!: infsuff_appE)
       thus "\<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P" using tP by auto
     qed
     ultimately show "x \<in> P" using safety
@@ -462,11 +462,11 @@ proof-
     hence "\<And>P. (\<forall>x\<in>A\<^sup>\<omega>. \<forall>r\<in>finpref A x. P r) = (\<forall> r\<in>A\<^sup>\<star>. P r)"
     proof (auto dest: finpref_fin)
       fix P r  assume lc: "lconst a \<in> A\<^sup>\<omega>"
-	and Pr: "\<forall>x\<in>A\<^sup>\<omega>. \<forall>r\<in>finpref A x. P r"
-	and rA: "r \<in> A\<^sup>\<star>"
+        and Pr: "\<forall>x\<in>A\<^sup>\<omega>. \<forall>r\<in>finpref A x. P r"
+        and rA: "r \<in> A\<^sup>\<star>"
       from rA lc have rlc: "r @@ lconst a \<in> A\<^sup>\<omega>" by (rule lapp_fin_infT)
       moreover from rA rlc have "r \<in> finpref A (r @@ lconst a)" 
-	by (auto simp: finpref_def llist_le_def)
+        by (auto simp: finpref_def llist_le_def)
       ultimately show "P r" using Pr by auto
     qed
     thus ?thesis by simp
@@ -565,9 +565,9 @@ proof-
     proof (induct m)
       case (basic m) thus ?case by auto
     next case (inter u v) thus ?case
-	by (blast intro: topology.Int_open [OF pptop_top])
+        by (blast intro: topology.Int_open [OF pptop_top])
     next case (union M) thus ?case
-	by (auto intro!: topology.union_open [OF pptop_top] simp: S'_def T_def)
+        by (auto intro!: topology.union_open [OF pptop_top] simp: S'_def T_def)
     qed
   next
     fix m assume "m open\<^sub>3"
@@ -576,21 +576,21 @@ proof-
     proof (induct t)
       case (basic x)
       then obtain s where sfin: "s \<in> A\<^sup>\<star>" and
-	ms: "x = suff A s"
-	by auto
+        ms: "x = suff A s"
+        by auto
       thus ?case
       proof (cases s)
-	case LNil_fin with ms
-	have "x - {LNil} = carrier" by (auto simp: ptop_carrier)
-	thus ?thesis by (auto intro!: topology.carrier_open [OF pptop_top])
+        case LNil_fin with ms
+        have "x - {LNil} = carrier" by (auto simp: ptop_carrier)
+        thus ?thesis by (auto intro!: topology.carrier_open [OF pptop_top])
       next
-	case (LCons_fin a l) with ms show ?thesis
-	  by (auto simp: ptop_def)
+        case (LCons_fin a l) with ms show ?thesis
+          by (auto simp: ptop_def)
       qed
     next case (inter u v)
       hence "(u - {LNil}) \<inter> (v - {LNil}) \<in> ptop A" by auto
       moreover have "(u - {LNil}) \<inter> (v - {LNil}) = (u \<inter> v) - {LNil}"
-	by auto
+        by auto
       ultimately show ?case by auto
     next case (union M)
       hence "\<Union>{u. \<exists>x\<in>M. u = x - {LNil}} \<in> ptop A" by auto
@@ -689,11 +689,11 @@ next
     proof (cases r)
       case (LCons a l)
       hence r_pfinpref_x: "r \<in> pfinpref A x" using r_pfinpref_x
-	by auto
+        by auto
       with H obtain s where sA: "s \<in> A\<^sup>\<infinity>" and asP: "r@@s \<in> P"
-	by  auto
+        by  auto
       moreover have "r @@ s \<in> suff A r" using sA rpos
-	by (auto simp: suff_def iff: lapp_allT_iff)
+        by (auto simp: suff_def iff: lapp_allT_iff)
       ultimately show ?thesis using suff_subset_U by auto
     qed
   qed

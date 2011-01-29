@@ -7,7 +7,7 @@
 header {* A bit of general topology *}
 
 theory Topology
-imports FuncSet Zorn
+imports "~~/src/HOL/Library/FuncSet" "~~/src/HOL/Library/Zorn"
 begin
 
 text{*
@@ -56,9 +56,7 @@ text{*A topology is defined by a set of sets (the open sets)
 that is closed under finite intersections and infinite unions.*}
 
 
-types
-  'a top = "'a set set"
-
+type_synonym 'a top = "'a set set"
 
 definition
   carr :: "'a top \<Rightarrow> 'a set" ("carrier\<index>") where
@@ -236,13 +234,13 @@ lemma subtopologyI:
   assumes H1: "\<And>s. s open \<Longrightarrow> \<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier"
   and     H2: "\<And>t. t open\<^sub>2 \<Longrightarrow> t \<inter> carrier open"
   shows "subtopology S T"
-by (auto simp: subtopology_def intro: prems)
+by (auto simp: subtopology_def intro: assms)
 
 lemma (in subtopology) subtopologyE [elim]:
   assumes major: "s open"
   and     minor: "\<And>t. \<lbrakk> t open\<^sub>2; s = t \<inter> carrier \<rbrakk> \<Longrightarrow> R"
   shows "R"
-  using prems by auto
+  using assms by auto
   
 lemma (in subtopology) subtopI [intro]:
   "t open\<^sub>2 \<Longrightarrow> t \<inter> carrier open"
@@ -259,7 +257,7 @@ lemma (in subtopology) subtop_sub:
   shows "s open\<^sub>2"
 proof -
   interpret topology T by fact
-  show ?thesis using prems by auto
+  show ?thesis using assms by auto
 qed
 
 lemma (in subtopology) subtop_topology [iff]:
@@ -279,17 +277,17 @@ proof -
     proof
       show "\<Union>M \<subseteq> \<Union>?N \<inter> carrier"
       proof
-	fix x assume "x \<in> \<Union>M"
-	then obtain s where sinM: "s \<in> M" and xins: "x \<in> s"
-	  by auto
-	from msub sinM have s_open: "s open" ..
-	then obtain t
-	  where t_open: "t open\<^sub>2" and s_inter: "s = t \<inter> carrier" by auto
-	with xins have xint: "x\<in>t" and xpoint: "x \<in> carrier" by auto
-	moreover
-	from t_open s_inter sinM have "t \<in> ?N" by auto
-	ultimately show "x \<in> \<Union>?N \<inter> carrier"
-	  by auto
+        fix x assume "x \<in> \<Union>M"
+        then obtain s where sinM: "s \<in> M" and xins: "x \<in> s"
+          by auto
+        from msub sinM have s_open: "s open" ..
+        then obtain t
+          where t_open: "t open\<^sub>2" and s_inter: "s = t \<inter> carrier" by auto
+        with xins have xint: "x\<in>t" and xpoint: "x \<in> carrier" by auto
+        moreover
+        from t_open s_inter sinM have "t \<in> ?N" by auto
+        ultimately show "x \<in> \<Union>?N \<inter> carrier"
+          by auto
       qed
     qed auto
     finally show "\<Union>M open" .
@@ -322,7 +320,7 @@ proof -
     thus "t \<inter> carrier open"
     proof induct
       case (basic u) with Asub show ?case
-	by (auto simp: A_S.carrier_topo)
+        by (auto simp: A_S.carrier_topo)
     next case (inter u v)
       hence "(u \<inter> carrier) \<inter> (v \<inter> carrier) open" by auto
       thus ?case  by (simp add: Int_ac)
@@ -505,7 +503,7 @@ lemma (in ordertop1) l1:
 proof induct
   case (basic U) thus ?case
     by (auto simp: B_def order_base_def ypoint
-	intro: xley dest: order_trans)
+        intro: xley dest: order_trans)
 qed auto
 
 lemma (in ordertop1)
@@ -586,7 +584,7 @@ corollary (in topology) Int_closed [intro!]:
  assumes abclosed: "A closed" "B closed"
   shows  "A \<inter> B closed"
 proof-
-  from prems have "\<Inter>{A, B} closed"
+  from assms have "\<Inter>{A, B} closed"
     by (blast intro!: inter_closed)
   thus ?thesis by simp
 qed
@@ -1004,9 +1002,9 @@ proof-
   let ?D = "(carrier - (closure S - S))"
   and ?C = "closure S"
   have "?D \<subseteq> carrier" by auto
-  moreover from prems have "?C \<subseteq> carrier"
+  moreover from assms have "?C \<subseteq> carrier"
     by (auto dest!: closure_subset)
-  moreover from prems have "?D dense" by auto
+  moreover from assms have "?D dense" by auto
   moreover have "?C closed" ..
   moreover from ssub have "S = ?D \<inter> ?C"
     by (simp add: diff_diff_inter subset_closure)
@@ -1901,17 +1899,17 @@ next
     next show "\<Union>?E \<subseteq> carrier" by auto
     next fix a b assume "a \<in> ?E" "b \<in> ?E"
       then obtain ua va ub vb
-	where "a \<subseteq> carrier" "ua \<in> nhds x" "va \<in> nhds y" "ua \<inter> va \<subseteq> a"
-	      "b \<subseteq> carrier" "ub \<in> nhds x" "vb \<in> nhds y" "ub \<inter> vb \<subseteq> b"
-	by auto
+        where "a \<subseteq> carrier" "ua \<in> nhds x" "va \<in> nhds y" "ua \<inter> va \<subseteq> a"
+              "b \<subseteq> carrier" "ub \<in> nhds x" "vb \<in> nhds y" "ub \<inter> vb \<subseteq> b"
+        by auto
       hence "a\<inter>b \<subseteq> carrier" "ua \<inter> ub \<in> nhds x" "va \<inter> vb \<in> nhds y" "(ua \<inter> ub) \<inter> (va \<inter> vb) \<subseteq> a \<inter> b"
-	by (auto intro!: nhds_inter simp: Int_ac)
+        by (auto intro!: nhds_inter simp: Int_ac)
       thus "a \<inter> b \<in> ?E" by blast
     next fix a b assume "a \<in> ?E" and a_sub_b:
-	"a \<subseteq> b" and b_sub_carrier: "b \<subseteq> carrier"
+        "a \<subseteq> b" and b_sub_carrier: "b \<subseteq> carrier"
       then obtain u v
-	where u_int_v: "u \<inter> v \<subseteq> a" and nhds: "u \<in> nhds x" "v \<in> nhds y"
-	by auto
+        where u_int_v: "u \<inter> v \<subseteq> a" and nhds: "u \<in> nhds x" "v \<in> nhds y"
+        by auto
       from u_int_v a_sub_b have "u \<inter> v \<subseteq> b" by auto
       with b_sub_carrier nhds show "b \<in> ?E" by blast
     qed
@@ -2033,7 +2031,7 @@ proof -
       fix A x assume x: "x \<in> carrier" "x \<notin> A" and A: "A closed" "A \<subseteq> carrier"
       from x have "{x} closed" "{x} \<subseteq> carrier" "A \<inter> {x} = {}" by auto
       with A obtain U V
-	where "U open" "A \<subseteq> U" "V open" "{x} \<subseteq> V" "U \<inter> V = {}" by (rule T4E)
+        where "U open" "A \<subseteq> U" "V open" "{x} \<subseteq> V" "U \<inter> V = {}" by (rule T4E)
       thus "\<exists>B. \<exists>U\<in>nhds x. B open \<and> A \<subseteq> B \<and> B \<inter> U = {}" by auto
     qed
   qed
