@@ -1,6 +1,6 @@
-(*  ID:         $Id: NBE.thy,v 1.12 2009-06-16 19:32:37 nipkow Exp $
-    Author:     Klaus Aehlig, Tobias Nipkow
-    Normalization by Evaluation
+(*  Author:     Klaus Aehlig, Tobias Nipkow
+
+Normalization by Evaluation.
 *)
 (*<*)
 theory NBE imports Main begin
@@ -11,11 +11,11 @@ declare Let_def[simp]
 (*>*)
 section "Terms"
 
-types vname = nat
-      ml_vname = nat
+type_synonym vname = nat
+type_synonym ml_vname = nat
 
 (* FIXME only for codegen*)
-types cname=int
+type_synonym cname = int
 
 text{* ML terms: *}
 
@@ -1035,54 +1035,54 @@ proof(induct u arbitrary:v rule:kernel.induct)
     proof-
       def pi == "\<lambda>n::nat. if n = 0 then 1 else if n = 1 then 0 else n"
       have "(\<lambda>i. V (pi i)[lift 0 (v!)/0]) = subst_decr (Suc 0) (lift 0 (v!))"
-	by(rule ext)(simp add:pi_def)
+        by(rule ext)(simp add:pi_def)
       hence "?a =
   subst (subst_decr 0 (lift_tm 0 (kernel v))) (subst (\<lambda> n. V(pi n)) (lift_ml 0 (lift_ml 0 w)[V\<^isub>U 0 []/0][V\<^isub>U 1 []/0]!))"
-	apply(subst subst_comp[OF _ _ refl])
-	prefer 3 apply simp
-	using 3(3)
-	apply simp
-	apply(rule pure_kernel)
-	apply(rule closed_ML_subst_ML2[where k="Suc 0"])
-	apply(rule closed_ML_subst_ML2[where k="Suc(Suc 0)"])
-	apply simp
-	apply simp
-	apply simp
-	apply simp
-	done
+        apply(subst subst_comp[OF _ _ refl])
+        prefer 3 apply simp
+        using 3(3)
+        apply simp
+        apply(rule pure_kernel)
+        apply(rule closed_ML_subst_ML2[where k="Suc 0"])
+        apply(rule closed_ML_subst_ML2[where k="Suc(Suc 0)"])
+        apply simp
+        apply simp
+        apply simp
+        apply simp
+        done
       also have "\<dots> =
  (subst_ml pi (lift_ml 0 (lift_ml 0 w)[V\<^isub>U 0 []/0][V\<^isub>U 1 []/0]))![lift_tm 0 (v!)/0]"
-	apply(subst subst_kernel)
-	using 3 apply auto
-	apply(rule closed_ML_subst_ML2[where k="Suc 0"])
-	apply(rule closed_ML_subst_ML2[where k="Suc(Suc 0)"])
-	apply simp
-	apply simp
-	apply simp
-	done
+        apply(subst subst_kernel)
+        using 3 apply auto
+        apply(rule closed_ML_subst_ML2[where k="Suc 0"])
+        apply(rule closed_ML_subst_ML2[where k="Suc(Suc 0)"])
+        apply simp
+        apply simp
+        apply simp
+        done
       also have "\<dots> = (subst_ml pi (lift_ml 0 (lift_ml 0 w)[V\<^isub>U 0 []/0][V\<^isub>U 1 []/0]))![lift 0 v!/0]"
       proof -
-	have "lift 0 (v!) = lift 0 v!" by (metis 3(2) kernel_lift_tm)
-	thus ?thesis by (simp cong:if_cong)
+        have "lift 0 (v!) = lift 0 v!" by (metis 3(2) kernel_lift_tm)
+        thus ?thesis by (simp cong:if_cong)
       qed
       also have "\<dots> = ?b"
       proof-
-	have 1: "subst_ml pi (lift 0 (lift 0 w)) = lift 0 (lift 0 w)"
-	  apply(simp add:lift_is_subst_ml subst_ml_comp)
-	  apply(subgoal_tac "pi \<circ> (Suc \<circ> Suc) = (Suc \<circ> Suc)")
-	  apply(simp)
-	  apply(simp add:pi_def fun_eq_iff)
-	  done
-	have "subst_ml pi (lift_ml 0 (lift_ml 0 w)[V\<^isub>U 0 []/0][V\<^isub>U 1 []/0]) =
+        have 1: "subst_ml pi (lift 0 (lift 0 w)) = lift 0 (lift 0 w)"
+          apply(simp add:lift_is_subst_ml subst_ml_comp)
+          apply(subgoal_tac "pi \<circ> (Suc \<circ> Suc) = (Suc \<circ> Suc)")
+          apply(simp)
+          apply(simp add:pi_def fun_eq_iff)
+          done
+        have "subst_ml pi (lift_ml 0 (lift_ml 0 w)[V\<^isub>U 0 []/0][V\<^isub>U 1 []/0]) =
              lift_ml 0 (lift_ml 0 w)[V\<^isub>U 1 []/0][V\<^isub>U 0 []/0]"
-	  apply(subst subst_ml_subst_ML)
-	  apply(subst subst_ml_subst_ML)
-	  apply(subst 1)
-	  apply(subst subst_ML_comp)
-	  apply(rule subst_ML_comp2[symmetric])
-	  apply(auto simp:pi_def)
-	  done
-	thus ?thesis by simp
+          apply(subst subst_ml_subst_ML)
+          apply(subst subst_ml_subst_ML)
+          apply(subst 1)
+          apply(subst subst_ML_comp)
+          apply(rule subst_ML_comp2[symmetric])
+          apply(auto simp:pi_def)
+          done
+        thus ?thesis by simp
       qed
       finally show ?thesis .
     qed
@@ -1724,20 +1724,20 @@ proof-
     next
       case (ctxt_At2 t t' s ts)
       { fix n rs assume "s = V n \<bullet>\<bullet> rs"
-	hence ?case using ctxt_At2(8)[of "size rs" "rs @ t # ts" t' n] ctxt_At2
-	  by simp (metis foldl_Nil)
+        hence ?case using ctxt_At2(8)[of "size rs" "rs @ t # ts" t' n] ctxt_At2
+          by simp (metis foldl_Nil)
       } moreover
       { fix nm rs assume "s = C nm \<bullet>\<bullet> rs"
-	hence ?case using ctxt_At2(9)[of "size rs" "rs @ t # ts" t' nm] ctxt_At2
-	  by simp (metis foldl_Nil)
+        hence ?case using ctxt_At2(9)[of "size rs" "rs @ t # ts" t' nm] ctxt_At2
+          by simp (metis foldl_Nil)
       } moreover
       { fix r rs assume "s = \<Lambda> r \<bullet>\<bullet> rs"
-	hence ?case using ctxt_At2(10)[of "size rs" "rs @ t # ts" t'] ctxt_At2
-	  by simp (metis foldl_Nil)
+        hence ?case using ctxt_At2(10)[of "size rs" "rs @ t # ts" t'] ctxt_At2
+          by simp (metis foldl_Nil)
       } moreover
       { fix v rs assume "s = term v \<bullet>\<bullet> rs"
-	hence ?case using ctxt_At2(11)[of "size rs" "rs @ t # ts" t'] ctxt_At2
-	  by simp (metis foldl_Nil)
+        hence ?case using ctxt_At2(11)[of "size rs" "rs @ t # ts" t'] ctxt_At2
+          by simp (metis foldl_Nil)
       } ultimately show ?case using tm_vector_cases[of s] by blast
     qed
   }
@@ -1826,60 +1826,60 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
     proof-
       { assume [simp]: "j=i"
         have "\<exists>rs'. dterm t' = C nm' \<bullet>\<bullet> rs' \<and> (nm = nm' \<longrightarrow> no_match rs rs')"
-	  using `ts ! i \<Rightarrow> t'`
-	proof(cases rule:Red_term_hnf_cases)
-	  case (5 v v' ts'')
-	  then obtain vs where [simp]:
-	    "v = C\<^isub>U nm' vs" "rs' = map dterm\<^bsub>ML\<^esub> (rev vs) @ map dterm ts''"
-	    using ob by(cases v) auto
-	  obtain vs' where [simp]: "v' = C\<^isub>U nm' vs'" "vs \<Rightarrow> vs'"
-	    using `v\<Rightarrow>v'` by(rule Red_ml.cases) auto
-	  obtain v' k where [arith]: "k<size vs" and "vs!k \<Rightarrow> v'"
-	    and [simp]: "vs' = vs[k := v']"
-	    using Red_ml_list_nth[OF `vs\<Rightarrow>vs'`] by fastsimp
-	  show ?thesis (is "\<exists>rs'. ?P rs' \<and> ?Q rs'")
-	  proof
-	    let ?rs' = "map dterm ((map term (rev vs) @ ts'')[(size vs - k - 1):=term v'])"
-	    have "?P ?rs'" using ob 5
-	      by(simp add: list_update_append map_update[symmetric] rev_update)
-	    moreover have "?Q ?rs'"
-	      apply rule
-	      apply(rule "1.hyps"[OF _ ob(3)])
-	      using "1.prems" 5 ob
-	      apply (auto simp:nth_append rev_nth ctxt_term[OF `vs!k \<Rightarrow> v'`] simp del: map_map)
-	      done
-	    ultimately show "?P ?rs' \<and> ?Q ?rs'" ..
-	  qed
-	next
-	  case (7 nm'' k r' ts'')
-	  show ?thesis (is "\<exists>rs'. ?P rs'")
-	  proof
-	    show "?P(map dterm (ts''[k := r']))"
-	      using 7 ob
-	      apply clarsimp
-	      apply(rule "1.hyps"[OF _ ob(3)])
-	      using 7 "1.prems" ob apply auto
-	      done
-	  qed
-	next
-	  case (9 v k r' ts'')
-	  then obtain vs where [simp]: "v = C\<^isub>U nm' vs" "rs' = map dterm\<^bsub>ML\<^esub> (rev vs) @ map dterm ts''"
-	    using ob by(cases v) auto
-	  show ?thesis (is "\<exists>rs'. ?P rs' \<and> ?Q rs'")
-	  proof
-	    let ?rs' = "map dterm ((map term (rev vs) @ ts'')[k+size vs:=r'])"
-	    have "?P ?rs'" using ob 9 by (auto simp: list_update_append)
-	    moreover have "?Q ?rs'"
-	      apply rule
-	      apply(rule "1.hyps"[OF _ ob(3)])
-	      using 9 "1.prems" ob by (auto simp:nth_append simp del: map_map)
-	    ultimately show "?P ?rs' \<and> ?Q ?rs'" ..
-	  qed
-	qed (insert ob, auto simp del: map_map)
+          using `ts ! i \<Rightarrow> t'`
+        proof(cases rule:Red_term_hnf_cases)
+          case (5 v v' ts'')
+          then obtain vs where [simp]:
+            "v = C\<^isub>U nm' vs" "rs' = map dterm\<^bsub>ML\<^esub> (rev vs) @ map dterm ts''"
+            using ob by(cases v) auto
+          obtain vs' where [simp]: "v' = C\<^isub>U nm' vs'" "vs \<Rightarrow> vs'"
+            using `v\<Rightarrow>v'` by(rule Red_ml.cases) auto
+          obtain v' k where [arith]: "k<size vs" and "vs!k \<Rightarrow> v'"
+            and [simp]: "vs' = vs[k := v']"
+            using Red_ml_list_nth[OF `vs\<Rightarrow>vs'`] by fastsimp
+          show ?thesis (is "\<exists>rs'. ?P rs' \<and> ?Q rs'")
+          proof
+            let ?rs' = "map dterm ((map term (rev vs) @ ts'')[(size vs - k - 1):=term v'])"
+            have "?P ?rs'" using ob 5
+              by(simp add: list_update_append map_update[symmetric] rev_update)
+            moreover have "?Q ?rs'"
+              apply rule
+              apply(rule "1.hyps"[OF _ ob(3)])
+              using "1.prems" 5 ob
+              apply (auto simp:nth_append rev_nth ctxt_term[OF `vs!k \<Rightarrow> v'`] simp del: map_map)
+              done
+            ultimately show "?P ?rs' \<and> ?Q ?rs'" ..
+          qed
+        next
+          case (7 nm'' k r' ts'')
+          show ?thesis (is "\<exists>rs'. ?P rs'")
+          proof
+            show "?P(map dterm (ts''[k := r']))"
+              using 7 ob
+              apply clarsimp
+              apply(rule "1.hyps"[OF _ ob(3)])
+              using 7 "1.prems" ob apply auto
+              done
+          qed
+        next
+          case (9 v k r' ts'')
+          then obtain vs where [simp]: "v = C\<^isub>U nm' vs" "rs' = map dterm\<^bsub>ML\<^esub> (rev vs) @ map dterm ts''"
+            using ob by(cases v) auto
+          show ?thesis (is "\<exists>rs'. ?P rs' \<and> ?Q rs'")
+          proof
+            let ?rs' = "map dterm ((map term (rev vs) @ ts'')[k+size vs:=r'])"
+            have "?P ?rs'" using ob 9 by (auto simp: list_update_append)
+            moreover have "?Q ?rs'"
+              apply rule
+              apply(rule "1.hyps"[OF _ ob(3)])
+              using 9 "1.prems" ob by (auto simp:nth_append simp del: map_map)
+            ultimately show "?P ?rs' \<and> ?Q ?rs'" ..
+          qed
+        qed (insert ob, auto simp del: map_map)
       }
       hence "\<exists>rs'. dterm (ts[i := t'] ! j) = C nm' \<bullet>\<bullet> rs' \<and> (nm = nm' \<longrightarrow> no_match rs rs')"
-	using `i < size ts` ob by(simp add:nth_list_update)
-      hence "?P j" using prems by auto
+        using `i < size ts` ob by(simp add:nth_list_update)
+      hence "?P j" using ob by auto
       moreover have "j < ?m" using `j < length ts` `j < size ps` by simp
       ultimately show ?thesis by blast
     qed
@@ -2064,7 +2064,8 @@ lemma no_match_preserved:
    \<Longrightarrow> no_match ps os \<Longrightarrow> os = map dterm ts \<Longrightarrow> no_match ps (map dterm ts')"
 proof(induct ps os arbitrary: ts ts' rule: no_match.induct)
   case (1 ps os)
-  obtain i nm nm' ps' os' where "ps!i = C nm  \<bullet>\<bullet> ps'" "i < size ps" "i < size os" "os!i = C nm' \<bullet>\<bullet> os'" "nm=nm' \<longrightarrow> no_match ps' os'"
+  obtain i nm nm' ps' os' where a: "ps!i = C nm  \<bullet>\<bullet> ps'" "i < size ps"
+      "i < size os" "os!i = C nm' \<bullet>\<bullet> os'" "nm=nm' \<longrightarrow> no_match ps' os'"
     using 1(4) no_match.simps[of ps os] by fastsimp
   note 1(5)[simp]
   have "C_normal (ts ! i)" using 1(2) `i < size os` by auto
@@ -2074,15 +2075,14 @@ proof(induct ps os arbitrary: ts ts' rule: no_match.induct)
   with C_redts [OF `ts!i \<Rightarrow>* ts'!i` `C_normal (ts!i)`]
     C_normal_subterm[OF `C_normal (ts!i)`]
     C_normal_subterms[OF `C_normal (ts!i)`]
-  obtain ss' rs rs' :: "tm list"
-    where "\<forall>t\<in>set rs. C_normal t"
+  obtain ss' rs rs' :: "tm list" where b: "\<forall>t\<in>set rs. C_normal t"
     "dterm (ts' ! i) = C nm' \<bullet>\<bullet> ss'" "length rs = length rs'"
     "\<forall>i<length rs. rs ! i \<Rightarrow>* rs' ! i" "ss' = map dterm rs'" "os' = map dterm rs"
     by fastsimp
   show ?case
     apply(subst no_match.simps)
     apply(rule_tac x=i in exI)
-    using prems
+    using 1 a b
     apply clarsimp
     apply(rule 1(1)[of i nm' _ nm' "map dterm rs" rs])
     apply simp_all
@@ -2125,20 +2125,20 @@ next
     thus ?case
     proof(cases rule:Red_term.cases)
       case (ctxt_At1 s')
-      then obtain k s'' where "k<length rs" "rs ! k \<Rightarrow> s''" "s' = V x \<bullet>\<bullet> rs[k := s'']"
-	using snoc(1) by force
-      then show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
+      then obtain k s'' where aux: "k<length rs" "rs ! k \<Rightarrow> s''" "s' = V x \<bullet>\<bullet> rs[k := s'']"
+        using snoc(1) by force
+      show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
       proof-
-	have "k<?n \<and> ?P k s''" using prems
-	  by (simp add:nth_append) (metis last_snoc butlast_snoc list_update_append1)
-	thus ?thesis by blast
+        have "k<?n \<and> ?P k s''" using ctxt_At1 aux
+          by (simp add:nth_append) (metis last_snoc butlast_snoc list_update_append1)
+        thus ?thesis by blast
       qed
     next
       case (ctxt_At2 t')
-      then show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
+      show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
       proof-
-	have "size rs<?n \<and> ?P (size rs) t'" using prems by simp
-	thus ?thesis by blast
+        have "size rs<?n \<and> ?P (size rs) t'" using ctxt_At2 by simp
+        thus ?thesis by blast
       qed
     qed
   qed
@@ -2180,20 +2180,20 @@ next
     thus ?case
     proof(cases rule:Red_term.cases)
       case (ctxt_At1 s')
-      then obtain k s'' where "k<length rs" "rs ! k \<Rightarrow> s''" "s' = C nm \<bullet>\<bullet> rs[k := s'']"
-	using snoc(1) by force
-      then show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
+      then obtain k s'' where aux: "k<length rs" "rs ! k \<Rightarrow> s''" "s' = C nm \<bullet>\<bullet> rs[k := s'']"
+        using snoc(1) by force
+      show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
       proof-
-	have "k<?n \<and> ?P k s''" using prems
-	  by (simp add:nth_append) (metis last_snoc butlast_snoc list_update_append1)
-	thus ?thesis by blast
+        have "k<?n \<and> ?P k s''" using ctxt_At1 aux
+          by (simp add:nth_append) (metis last_snoc butlast_snoc list_update_append1)
+        thus ?thesis by blast
       qed
     next
       case (ctxt_At2 t')
-      then show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
+      show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
       proof-
-	have "size rs<?n \<and> ?P (size rs) t'" using prems by simp
-	thus ?thesis by blast
+        have "size rs<?n \<and> ?P (size rs) t'" using ctxt_At2 by simp
+        thus ?thesis by blast
       qed
     qed
   qed
@@ -2217,7 +2217,7 @@ lemma pure_foldl_At[simp]: "pure(s \<bullet>\<bullet> ts) \<longleftrightarrow> 
 by(induct ts arbitrary: s) auto
 
 lemma nbe_C_normal_ML:
-assumes "term v \<Rightarrow>* t'" "C_normal\<^bsub>ML\<^esub> v" "pure t'" shows "normal t'"
+  assumes "term v \<Rightarrow>* t'" "C_normal\<^bsub>ML\<^esub> v" "pure t'" shows "normal t'"
 proof -
   { fix t t' i v
     assume "(t,t') : Red_term^^i"
@@ -2229,100 +2229,107 @@ proof -
       case 0 thus ?thesis using less by auto
     next
       case (Suc i)
-      then obtain i' s where "t \<Rightarrow> s" "(s,t') : Red_term^^i'" and [arith]: "i' <= i"
-	by (metis eq_imp_le less(5) Suc rel_pow_Suc_D2)
+      then obtain i' s where "t \<Rightarrow> s" and red: "(s,t') : Red_term^^i'" and [arith]: "i' <= i"
+        by (metis eq_imp_le less(5) Suc rel_pow_Suc_D2)
       hence "term v \<Rightarrow> s" using Suc less by simp
       thus ?thesis
       proof cases
-	case (term_C nm vs)
-	have 0:"no_match_compR nm vs" using prems by auto
-	let ?n = "size vs"
-	have 1: "(C nm \<bullet>\<bullet> map term (rev vs),t') : Red_term^^i'"
-	  using term_C `(s,t') : Red_term^^i'` by simp
-	with C_Red_term_it[OF 1] 
-	obtain ts ks where [simp]: "t' = C nm \<bullet>\<bullet> ts"
-	  and sz: "size ts = ?n \<and> size ks = ?n \<and>
-	  (\<forall>i<?n. (term((rev vs)!i), ts!i) : Red_term^^(ks!i) \<and> ks ! i \<le> i')"
-	  by(auto cong:conj_cong)
-	have pure_ts: "\<forall>t\<in>set ts. pure t" using `pure t'` by simp
-	{ fix i assume "i<size vs"
-	  moreover hence "(term((rev vs)!i), ts!i) : Red_term^^(ks!i)" by(metis sz)
-	  ultimately have "normal (ts!i)"
-	    apply -
-	    apply(rule less(1))
-	    prefer 5 apply assumption
-	    using sz Suc apply fastsimp
-	    apply(rule refl)
-	    using less term_C
-	    apply(auto)
-	    apply (metis in_set_conv_nth length_rev set_rev)
-	    apply (metis in_set_conv_nth pure_ts sz)
-	    done
-	} note 2 = this
-	have 3: "no_match_R nm (map dterm (map term (rev vs)))"
-	  apply(subst map_dterm_term)
-	  apply(rule no_match_R_coincide) using 0 by simp
-	have 4: "map term (rev vs) [\<Rightarrow>*] ts"
-	proof -
-          have "(C nm \<bullet>\<bullet> map term (rev vs),t'): Red_term^^i'" using prems by auto
-	  from C_Red_term_it[OF this] obtain ts' "is"
-	    where "t' = C nm  \<bullet>\<bullet> ts'"  "length ts' = ?n \<and> length is =?n \<and>
-           (\<forall>j< ?n. (map term (rev vs) ! j, ts' ! j) \<in> Red_term ^^ is ! j \<and> is ! j \<le> i')"
-	    using prems by auto
+        case (term_C nm vs)
+        with less have 0:"no_match_compR nm vs" by auto
+        let ?n = "size vs"
+        have 1: "(C nm \<bullet>\<bullet> map term (rev vs),t') : Red_term^^i'"
+          using term_C `(s,t') : Red_term^^i'` by simp
+        with C_Red_term_it[OF 1] 
+        obtain ts ks where [simp]: "t' = C nm \<bullet>\<bullet> ts"
+          and sz: "size ts = ?n \<and> size ks = ?n \<and>
+          (\<forall>i<?n. (term((rev vs)!i), ts!i) : Red_term^^(ks!i) \<and> ks ! i \<le> i')"
+          by(auto cong:conj_cong)
+        have pure_ts: "\<forall>t\<in>set ts. pure t" using `pure t'` by simp
+        { fix i assume "i<size vs"
+          moreover hence "(term((rev vs)!i), ts!i) : Red_term^^(ks!i)" by(metis sz)
+          ultimately have "normal (ts!i)"
+            apply -
+            apply(rule less(1))
+            prefer 5 apply assumption
+            using sz Suc apply fastsimp
+            apply(rule refl)
+            using less term_C
+            apply(auto)
+            apply (metis in_set_conv_nth length_rev set_rev)
+            apply (metis in_set_conv_nth pure_ts sz)
+            done
+        } note 2 = this
+        have 3: "no_match_R nm (map dterm (map term (rev vs)))"
+          apply(subst map_dterm_term)
+          apply(rule no_match_R_coincide) using 0 by simp
+        have 4: "map term (rev vs) [\<Rightarrow>*] ts"
+        proof -
+          have "(C nm \<bullet>\<bullet> map term (rev vs),t'): Red_term^^i'"
+            using red term_C by auto
+          from C_Red_term_it[OF this] obtain ts' "is" where "t' = C nm  \<bullet>\<bullet> ts'"
+            and "length ts' = ?n \<and> length is =?n \<and>
+              (\<forall>j< ?n. (map term (rev vs) ! j, ts' ! j) \<in> Red_term ^^ is ! j \<and> is ! j \<le> i')"
+            using sz by auto
           from `t' = C nm \<bullet>\<bullet> ts'` `t' = C nm \<bullet>\<bullet> ts` have "ts = ts'" by simp
-	  show ?thesis using prems by (auto  simp: rtrancl_is_UN_rel_pow)
-	qed
-	have 5: "\<forall>t\<in>set(map term vs). C_normal t"  using prems by auto
+          show ?thesis using sz by (auto  simp: rtrancl_is_UN_rel_pow)
+        qed
+        have 5: "\<forall>t\<in>set(map term vs). C_normal t"
+          using less term_C by auto
         have "no_match_R nm (map dterm ts)"
-	  apply auto
-	  apply(subgoal_tac "no_match aa (map dterm (map term (rev vs)))")
-	  prefer 2
-	  using 3 apply blast 
+          apply auto
+          apply(subgoal_tac "no_match aa (map dterm (map term (rev vs)))")
+          prefer 2
+          using 3 apply blast 
           using 4 5 no_match_preserved[OF _ _ _ refl, of "map term (rev vs)" "ts"] by simp
-	hence 6: "no_match_R nm ts" by(metis map_dterm_pure[OF pure_ts])
-	then show "normal t'"
-	  apply(simp)
-	  apply(rule normal.intros(3))
-	  using 2 sz apply(fastsimp simp:set_conv_nth)
-	  apply auto
-	  apply(subgoal_tac "no_match aa (take (size aa) ts)")
-	  apply (metis no_match)
-	  apply(fastsimp intro:no_match_take)
-	  done
+        hence 6: "no_match_R nm ts" by(metis map_dterm_pure[OF pure_ts])
+        then show "normal t'"
+          apply(simp)
+          apply(rule normal.intros(3))
+          using 2 sz apply(fastsimp simp:set_conv_nth)
+          apply auto
+          apply(subgoal_tac "no_match aa (take (size aa) ts)")
+          apply (metis no_match)
+          apply(fastsimp intro:no_match_take)
+          done
       next
-	case (term_V x vs)
-	let ?n = "size vs"
-	have 1: "(V x \<bullet>\<bullet> map term (rev vs),t') : Red_term^^i'" using term_V `(s,t') : Red_term^^i'` by simp
-	with Red_term_it[OF 1] obtain ts "is" where [simp]: "t' = V x \<bullet>\<bullet> ts" and 2: "length ts = ?n \<and>
-          length is = ?n \<and> (\<forall>j<?n. (term (rev vs ! j), ts ! j) \<in> Red_term ^^ is ! j \<and> is ! j \<le> i')"
-	  by (auto cong:conj_cong)
-	have "\<forall>j<?n. normal(ts!j)"
-	proof(clarify)
-	  fix j assume 0: "j < ?n"
-	  then have "is!j < k" using `k=Suc i` 2 by auto
-	  have red: "(term (rev vs ! j), ts ! j) \<in> Red_term ^^ is ! j" using `j < ?n` 2 by auto
-	  have pure: "pure (ts ! j)" using `pure t'` 0 2 by auto
-	  have Cnm: "C_normal\<^bsub>ML\<^esub> (rev vs ! j)" using less term_V by simp (metis 0 in_set_conv_nth length_rev set_rev)
-	  from less(1)[OF `is!j < k` refl Cnm pure red] show "normal(ts!j)" .
-	qed
-	note 3=this
-	show ?thesis by simp (metis normal.intros(1) in_set_conv_nth 2 3)
+        case (term_V x vs)
+        let ?n = "size vs"
+        have 1: "(V x \<bullet>\<bullet> map term (rev vs),t') : Red_term^^i'"
+          using term_V `(s,t') : Red_term^^i'` by simp
+        with Red_term_it[OF 1] obtain ts "is" where [simp]: "t' = V x \<bullet>\<bullet> ts"
+          and 2: "length ts = ?n \<and>
+            length is = ?n \<and> (\<forall>j<?n. (term (rev vs ! j), ts ! j) \<in> Red_term ^^ is ! j \<and>
+            is ! j \<le> i')"
+          by (auto cong:conj_cong)
+        have "\<forall>j<?n. normal(ts!j)"
+        proof(clarify)
+          fix j assume 0: "j < ?n"
+          then have "is!j < k" using `k=Suc i` 2 by auto
+          have red: "(term (rev vs ! j), ts ! j) \<in> Red_term ^^ is ! j" using `j < ?n` 2 by auto
+          have pure: "pure (ts ! j)" using `pure t'` 0 2 by auto
+          have Cnm: "C_normal\<^bsub>ML\<^esub> (rev vs ! j)" using less term_V
+            by simp (metis 0 in_set_conv_nth length_rev set_rev)
+          from less(1)[OF `is!j < k` refl Cnm pure red] show "normal(ts!j)" .
+        qed
+        note 3=this
+        show ?thesis by simp (metis normal.intros(1) in_set_conv_nth 2 3)
       next
-	case (term_Clo f vs n)
-	let ?u = "apply (lift 0 (Clo f vs n)) (V\<^isub>U 0 [])"
-	from term_Clo `(s,t') : Red_term^^i'`
-	obtain t'' where [simp]: "t' = \<Lambda> t''" and 1: "(term ?u, t'') : Red_term^^i'" by(metis Lam_Red_term_itE)
-	have "i' < k" using `k = Suc i` by arith
-	have "pure t''" using `pure t'` by simp
-	have "C_normal\<^bsub>ML\<^esub> ?u" using less term_Clo by(simp)
-	from less(1)[OF `i' < k` refl `C_normal\<^bsub>ML\<^esub> ?u` `pure t''` 1] show ?thesis by(simp add:normal.intros)
+        case (term_Clo f vs n)
+        let ?u = "apply (lift 0 (Clo f vs n)) (V\<^isub>U 0 [])"
+        from term_Clo `(s,t') : Red_term^^i'`
+        obtain t'' where [simp]: "t' = \<Lambda> t''" and 1: "(term ?u, t'') : Red_term^^i'"
+          by(metis Lam_Red_term_itE)
+        have "i' < k" using `k = Suc i` by arith
+        have "pure t''" using `pure t'` by simp
+        have "C_normal\<^bsub>ML\<^esub> ?u" using less term_Clo by(simp)
+        from less(1)[OF `i' < k` refl `C_normal\<^bsub>ML\<^esub> ?u` `pure t''` 1]
+        show ?thesis by(simp add:normal.intros)
       next
-	case (ctxt_term u')
-	have "i' < k" using `k = Suc i` by arith
-	have "C_normal\<^bsub>ML\<^esub> u'" by (rule C_normal_ML_inv)
-          (insert less ctxt_term, simp_all)
-	have "(term u', t') \<in> Red_term ^^ i'" using prems by auto
-	from less(1)[OF `i' < k` refl `C_normal\<^bsub>ML\<^esub> u'` `pure t'` this] show ?thesis .
+        case (ctxt_term u')
+        have "i' < k" using `k = Suc i` by arith
+        have "C_normal\<^bsub>ML\<^esub> u'" by (rule C_normal_ML_inv) (insert less ctxt_term, simp_all)
+        have "(term u', t') \<in> Red_term ^^ i'" using red ctxt_term by auto
+        from less(1)[OF `i' < k` refl `C_normal\<^bsub>ML\<^esub> u'` `pure t'` this] show ?thesis .
       qed
     qed
   qed
@@ -2407,7 +2414,7 @@ proof(induct ts rule:linpats.induct)
       assume "?V" thus ?thesis by(auto simp:pat_V)
     next
       assume "?C" thus ?thesis using 1(1) `i < size ts`
-	by auto (metis pat_C)
+        by auto (metis pat_C)
     qed
   qed
 qed
