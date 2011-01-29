@@ -28,8 +28,8 @@ USA
 header {* User Guide \label{sec:UserGuide}*}
 (*<*)
 theory UserGuide 
-imports "HeapList"  Vcg 
-"$ISABELLE_HOME/src/HOL/Statespace/StateSpaceSyntax" "LaTeXsugar"
+imports "HeapList" Vcg
+  "~~/src/HOL/Statespace/StateSpaceSyntax" "~~/src/HOL/Library/LaTeXsugar"
 begin 
 (*>*)
 
