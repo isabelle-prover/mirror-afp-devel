@@ -12,7 +12,7 @@ subsection{* The language *}
 typedecl state
 typedecl pname
 
-types bexp = "state \<Rightarrow> bool"
+type_synonym bexp = "state \<Rightarrow> bool"
 
 datatype
   com = Do "state \<Rightarrow> state set"

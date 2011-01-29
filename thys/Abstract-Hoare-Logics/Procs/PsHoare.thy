@@ -7,8 +7,8 @@ theory PsHoare imports PsLang begin
 
 subsection{* Hoare logic for partial correctness *}
 
-types 'a assn = "'a \<Rightarrow> state \<Rightarrow> bool"
-      'a cntxt = "('a assn \<times> com \<times> 'a assn)set"
+type_synonym 'a assn = "'a \<Rightarrow> state \<Rightarrow> bool"
+type_synonym 'a cntxt = "('a assn \<times> com \<times> 'a assn)set"
 
 definition
  valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50) where
