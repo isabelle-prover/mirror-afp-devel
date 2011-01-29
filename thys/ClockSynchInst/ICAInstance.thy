@@ -23,10 +23,9 @@ text {* The election of the basics types was based on
 \cite{shankar92mechanical}. There, the process are natural numbers and
 the real time and the clock readings are reals. *}
 
-types
-  process = nat
-  time = real       -- "real time"
-  Clocktime = real  -- "time of the clock readings (clock time)"
+type_synonym process = nat
+type_synonym time = real       -- "real time"
+type_synonym Clocktime = real  -- "time of the clock readings (clock time)"
 
 subsubsection {* Some constants *}
 
@@ -276,7 +275,7 @@ proof-
     by (simp add:real_diff_def)
   also
   from abs_triangle_ineq[where a = "f p - g q" and 
-	                       b = "g q - fiX g q r"] 
+                               b = "g q - fiX g q r"] 
   have "... <= \<Delta> + \<bar>f p - g q \<bar> + \<bar> g q - fiX g q r\<bar>"
     by simp
   also 
@@ -291,7 +290,7 @@ proof-
     by (simp add:real_diff_def)
   also
   from abs_triangle_ineq[where a = "f p - f q" and 
-	                       b = "f q - g q"] 
+                               b = "f q - g q"] 
   have "... <= 2 * \<Delta> + \<bar>f p - f q \<bar> + \<bar> f q - g q \<bar> " 
     by simp
   finally
@@ -321,7 +320,7 @@ proof(cases "\<bar>f p - f r\<bar> \<le> \<Delta>")
       from hpC and hby1 have "0<=y" by force
       with hrC and hbx have "\<bar> f r - g r \<bar> <= x + y" by auto
       with outer_IH and True show ?thesis 
-	by (auto simp add: fiX_def)
+        by (auto simp add: fiX_def)
     qed
   next
     case False 
@@ -329,12 +328,12 @@ proof(cases "\<bar>f p - f r\<bar> \<le> \<Delta>")
     proof -
       from outer_IH and False 
       have "\<bar>fiX f p r - fiX g q r\<bar> = \<bar>f r - g q\<bar>" 
-	by  (auto simp add: fiX_def)
+        by  (auto simp add: fiX_def)
       also
       have "... = \<bar> f r - f q + f q - g q \<bar>" by simp
       also
       have "... <= \<bar> f r - f q \<bar> + \<bar> f q - g q \<bar>" 
-	by arith
+        by arith
       also
       from hbx hby1 hpC hqC hrC have "... <= x + y" by force
       finally
@@ -351,14 +350,14 @@ next
     proof -
       from outer_IH and True 
       have "\<bar>fiX f p r - fiX g q r\<bar> = \<bar>f p - g r\<bar>" 
-	by  (auto simp add: fiX_def)
+        by  (auto simp add: fiX_def)
       also
       have "... = \<bar> f p - f r + f r - g r \<bar>" by simp
       also
       from abs_triangle_ineq[where a = "f p - f r" and 
-	                           b = "f r - g r"]
+                                   b = "f r - g r"]
       have "... <= \<bar> f p - f r \<bar> + \<bar> f r - g r \<bar>" 
-	by (auto simp add: real_diff_def)
+        by (auto simp add: real_diff_def)
       also
       from hbx hby1 hpC hrC have "... <= x + y" by force
       finally
@@ -370,14 +369,14 @@ next
     proof -
       from outer_IH and False 
       have "\<bar>fiX f p r - fiX g q r\<bar> = \<bar>f p - g q\<bar>" 
-	by  (auto simp add: fiX_def)
+        by  (auto simp add: fiX_def)
       also
       have "... = \<bar> f p - f q + f q - g q \<bar>" by simp
       also
       from abs_triangle_ineq[where a = "f p - f q" and 
-	                           b = "f q - g q"]
+                                   b = "f q - g q"]
       have "... <= \<bar> f p - f q \<bar> + \<bar> f q - g q \<bar>" 
-	by (auto simp add: real_diff_def)
+        by (auto simp add: real_diff_def)
       also
       from hbx hby1 hpC hqC have "... <= x + y" by force
       finally
@@ -474,24 +473,24 @@ proof-
     have " ?boundC' <= ?boundC"
     proof -
       from abs_dif_fiX_bound_C and 
-	hbx and hby1 and hby2 and  hpC and hqC  
+        hbx and hby1 and hby2 and  hpC and hqC  
       have "\<forall>r\<in>C. 
-	\<bar>fiX f p r - fiX g q r\<bar> <= x + 
-	                 (if (y <= \<Delta>) then 0 else y)"
-	by blast     
+        \<bar>fiX f p r - fiX g q r\<bar> <= x + 
+                         (if (y <= \<Delta>) then 0 else y)"
+        by blast     
       thus ?thesis using sum_le[where S=C] and finitC[OF hC] 
-	by force
+        by force
     qed
     moreover
     have "?boundnpC' <= ?boundnpC"
     proof -
       from abs_dif_fiX_bound and 
-	hbx and hby1 and  hpC and hqC  
+        hbx and hby1 and  hpC and hqC  
       have "\<forall>r\<in>({..<np}-C). \<bar>fiX f p r - fiX g q r\<bar> <= 2 * \<Delta> + x + y"
-	by blast
+        by blast
       with finitnpC
       show ?thesis
-	by (auto intro: sum_le)
+        by (auto intro: sum_le)
     qed
     ultimately
     show ?thesis by arith
@@ -502,7 +501,7 @@ proof-
   proof-
     have "?dif_div_np = ?dif / real np"
       by (auto simp add:  cfni_def left_distrib 
-	divide_inverse real_diff_def)
+        divide_inverse real_diff_def)
     hence "\<bar> cfni p f - cfni q g \<bar> = \<bar>?dif\<bar> / real np"
       by force
     with bound show "?thesis" 
@@ -615,25 +614,25 @@ have
                     real (card C) * x"
     proof-
       from bound_aux_C and 
-	hby and  hpC and hqC  
+        hby and  hpC and hqC  
       have "\<forall>r\<in>C. 
-	\<bar>fiX f p r - f q\<bar> <= x"
-	by blast     
+        \<bar>fiX f p r - f q\<bar> <= x"
+        by blast     
       thus ?thesis using sum_le[where S=C] and finitC[OF hC] 
-	by force
+        by force
     qed
     moreover
     have " (\<Sum>l\<in>({..<np}-C). \<bar> fiX f p l  - f q \<bar>) <= 
                 real (card ({..<np} - C)) * (x + \<Delta>)"
     proof -
       from bound_aux and 
-	hby and  hpC and hqC  
+        hby and  hpC and hqC  
       have "\<forall>r\<in>({..<np}-C). 
-	\<bar>fiX f p r - f q\<bar> <= x + \<Delta>"
-	by blast
+        \<bar>fiX f p r - f q\<bar> <= x + \<Delta>"
+        by blast
       thus ?thesis using sum_le[where S="{..<np}-C"] 
-	and finitnpC 
-	by force
+        and finitnpC 
+        by force
     qed
     ultimately
     show ?thesis by arith
