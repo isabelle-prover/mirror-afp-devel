@@ -6,7 +6,7 @@ section {* The Language *}
 
 subsection {* Variables and Values *}
 
-types vname = string -- "names for variables"
+type_synonym vname = string -- "names for variables"
 
 datatype val
   = Bool bool      -- "Boolean value"
@@ -58,8 +58,7 @@ where
 
 subsection {* State *}
 
-types
-  state = "vname \<rightharpoonup> val"
+type_synonym state = "vname \<rightharpoonup> val"
 
 
 text {* @{text interpret} silently assumes type correct expressions, 
@@ -132,31 +131,31 @@ proof -
       assume "\<langle>c,s\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>" and "c = c\<^isub>1;;c\<^isub>2" and "c' = Skip"
       hence "\<exists>s''. \<langle>c\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Skip,s''\<rangle> \<and> \<langle>c\<^isub>2,s''\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
       proof(induct arbitrary:c\<^isub>1 rule:converse_rtranclp_induct2)
-	case refl thus ?case by simp
+        case refl thus ?case by simp
       next
-	case (step c s c'' s'')
-	note IH = `\<And>c\<^isub>1. \<lbrakk>c'' = c\<^isub>1;;c\<^isub>2; c' = Skip\<rbrakk> 
-	  \<Longrightarrow> \<exists>sx. \<langle>c\<^isub>1,s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle> \<and> \<langle>c\<^isub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>`
-	from step
-	have "\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>" by simp
-	hence "(c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s'') \<or> 
-	  (\<exists>c\<^isub>1'. \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle> \<and> c'' = c\<^isub>1';;c\<^isub>2)"
-	  by(auto elim:red.cases)
-	thus ?case
-	proof
-	  assume "c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s''"
-	  with `\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>` `c' = Skip`
-	  show ?thesis by auto
-	next
-	  assume "\<exists>c\<^isub>1'. \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle> \<and> c'' = c\<^isub>1';;c\<^isub>2"
-	  then obtain c\<^isub>1' where "\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>" and "c'' = c\<^isub>1';;c\<^isub>2" by blast
-	  from IH[OF `c'' = c\<^isub>1';;c\<^isub>2` `c' = Skip`]
-	  obtain sx where "\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>" and "\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
-	    by blast
-	  from `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>` `\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>`
-	  have "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>" by(auto intro:converse_rtranclp_into_rtranclp)
-	  with `\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>` show ?thesis by auto
-	qed
+        case (step c s c'' s'')
+        note IH = `\<And>c\<^isub>1. \<lbrakk>c'' = c\<^isub>1;;c\<^isub>2; c' = Skip\<rbrakk> 
+          \<Longrightarrow> \<exists>sx. \<langle>c\<^isub>1,s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle> \<and> \<langle>c\<^isub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>`
+        from step
+        have "\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>" by simp
+        hence "(c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s'') \<or> 
+          (\<exists>c\<^isub>1'. \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle> \<and> c'' = c\<^isub>1';;c\<^isub>2)"
+          by(auto elim:red.cases)
+        thus ?case
+        proof
+          assume "c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s''"
+          with `\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>` `c' = Skip`
+          show ?thesis by auto
+        next
+          assume "\<exists>c\<^isub>1'. \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle> \<and> c'' = c\<^isub>1';;c\<^isub>2"
+          then obtain c\<^isub>1' where "\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>" and "c'' = c\<^isub>1';;c\<^isub>2" by blast
+          from IH[OF `c'' = c\<^isub>1';;c\<^isub>2` `c' = Skip`]
+          obtain sx where "\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>" and "\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
+            by blast
+          from `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>` `\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>`
+          have "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>" by(auto intro:converse_rtranclp_into_rtranclp)
+          with `\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>` show ?thesis by auto
+        qed
       qed }
     with `\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>` show ?thesis by simp
   qed
@@ -227,12 +226,12 @@ proof -
       assume "\<exists>c\<^isub>1'. c'' = c\<^isub>1';;c\<^isub>2 \<and> \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>"
       then obtain c\<^isub>1' where "c'' = c\<^isub>1';;c\<^isub>2" and "\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>" by blast
       from IH[OF `c'' = c\<^isub>1';;c\<^isub>2`] obtain i j sx
-	where "\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>" and "\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>"
-	and "n = i + j + 1" by blast
+        where "\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>" and "\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>"
+        and "n = i + j + 1" by blast
       from `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>` `\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>`
       have "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>\<^bsup>Suc i\<^esup> \<langle>Skip,sx\<rangle>" by(rule red_n.red_n_Rec)
       with `\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>` `n = i + j + 1` show ?thesis
-	by(rule_tac x="Suc i" in exI) auto
+        by(rule_tac x="Suc i" in exI) auto
     qed
   qed
   with that show ?thesis by blast

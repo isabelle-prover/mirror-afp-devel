@@ -9,7 +9,7 @@ subsection {* Security definitions *}
 
 datatype secLevel = Low | High
 
-types typeEnv = "vname \<rightharpoonup> secLevel"
+type_synonym typeEnv = "vname \<rightharpoonup> secLevel"
 
 inductive secExprTyping :: "typeEnv \<Rightarrow> expr \<Rightarrow> secLevel \<Rightarrow> bool" ("_ \<turnstile> _ : _")
 where typeVal:  "\<Gamma> \<turnstile> Val V : lev"
@@ -70,15 +70,15 @@ proof -
       case Low
       show ?thesis
       proof (cases T2)
-	case Low
-	with `\<Gamma> \<turnstile> e1 : T1` `\<Gamma> \<turnstile> e2 : T2` `T1 = Low`
-	have "\<Gamma> \<turnstile> e1 \<guillemotleft>bop\<guillemotright> e2 : Low" by(simp add:typeBinOp1)
-	thus ?thesis by(rule exI)
+        case Low
+        with `\<Gamma> \<turnstile> e1 : T1` `\<Gamma> \<turnstile> e2 : T2` `T1 = Low`
+        have "\<Gamma> \<turnstile> e1 \<guillemotleft>bop\<guillemotright> e2 : Low" by(simp add:typeBinOp1)
+        thus ?thesis by(rule exI)
       next
-	case High
-	with `\<Gamma> \<turnstile> e1 : T1` `\<Gamma> \<turnstile> e2 : T2` `T1 = Low`
-	have "\<Gamma> \<turnstile> e1 \<guillemotleft>bop\<guillemotright> e2 : High" by(simp add:typeBinOp3)
-	thus ?thesis by(rule exI)
+        case High
+        with `\<Gamma> \<turnstile> e1 : T1` `\<Gamma> \<turnstile> e2 : T2` `T1 = Low`
+        have "\<Gamma> \<turnstile> e1 \<guillemotleft>bop\<guillemotright> e2 : High" by(simp add:typeBinOp3)
+        thus ?thesis by(rule exI)
       qed
     next
       case High
@@ -361,7 +361,7 @@ proof -
       with `s1' = s1(V:= \<lbrakk>e\<rbrakk> s1)` `s2' = s2(V:= \<lbrakk>e\<rbrakk> s2)`
       have "s1' V' = \<lbrakk>e\<rbrakk> s1" and "s2' V' = \<lbrakk>e\<rbrakk> s2" by auto
       from `\<Gamma> \<turnstile> e : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` have "\<lbrakk>e\<rbrakk> s1 = \<lbrakk>e\<rbrakk> s2" 
-	by(auto intro:interpretLow2)
+        by(auto intro:interpretLow2)
       with `s1' V' = \<lbrakk>e\<rbrakk> s1` `s2' V' = \<lbrakk>e\<rbrakk> s2` show ?thesis by simp
     next
       case False
@@ -714,7 +714,7 @@ next
       moreover
       from IH2[OF `\<Gamma>,Low \<turnstile> c2`] have "nonInterference \<Gamma> c2" .
       ultimately show ?thesis using `\<Gamma> \<turnstile> b : Low`
-	by(auto intro:CondLowCompositionality)
+        by(auto intro:CondLowCompositionality)
     next
       assume "\<Gamma>,High \<turnstile> if (b) c1 else c2"
       thus ?thesis by(auto intro:CondHighCompositionality)
