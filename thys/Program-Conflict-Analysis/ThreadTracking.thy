@@ -231,7 +231,7 @@ lemma loc_map_loc [simp]: "loc (map LOC w) = map LOC w"
   by (unfold loc_def) simp
 
 subsubsection "Definition of the loc/env-semantics"
-types 's el_conf = "('s \<times> 's multiset)"
+type_synonym 's el_conf = "('s \<times> 's multiset)"
 
 inductive_set
   gtrp :: "('s el_conf,'l) LTS \<Rightarrow> ('s el_conf,'l el_step) LTS"

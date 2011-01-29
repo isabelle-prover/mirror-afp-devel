@@ -1261,7 +1261,7 @@ proof -
           "(cb, wb, cb') \<in> trcl (ntr fg)"
           "mon_c fg ({#s#} + ca) \<inter> (mon_c fg cb \<union> mon_ww fg wb) = {}"
           "mon_c fg cb \<inter> (mon_c fg ({#s#} + ca) \<union> mon_ww fg (map le_rem_s w1)) = {}"
-	  by fastsimp+
+          by fastsimp+
         from I(4) obtain e wb' where EE: "wb=e#wb'" "ee=ENV e" "w2'=map ENV wb'" by (cases wb, auto)
         with I(6) obtain cbh where SPLIT: "(cb,e,cbh)\<in>ntr fg" "(cbh,wb',cb')\<in>trcl (ntr fg)" by (fast dest: trcl_uncons)
         have "((s, ca + cb), ee, (s, ca + cbh)) \<in> ntrp fg" proof -

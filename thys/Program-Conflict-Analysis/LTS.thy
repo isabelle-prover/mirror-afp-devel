@@ -14,7 +14,7 @@ text {*
 
 subsection {* Definitions *}
 text {*  An LTS is modeled as a ternary relation between start configuration, transition label and end configuration *}
-types ('c,'a) LTS = "('c \<times> 'a \<times> 'c) set"
+type_synonym ('c,'a) LTS = "('c \<times> 'a \<times> 'c) set"
 
 text {* Transitive reflexive closure *}
 

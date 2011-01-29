@@ -15,8 +15,7 @@ text {*
 
   Note that we model stacks as lists here, the first element being the top element.
 *}
-types
-  'n conf = "('n list) multiset"
+type_synonym 'n conf = "('n list) multiset"
 
 text {*
   A step is labeled according to the executed edge. Additionally, we introduce a label for a procedure return step, that has no corresponding edge. 

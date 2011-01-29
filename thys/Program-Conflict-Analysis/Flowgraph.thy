@@ -25,7 +25,7 @@ text {*
 subsection "Definitions"
   
 datatype ('p,'ba) edgeAnnot = Base 'ba | Call 'p | Spawn 'p
-types ('n,'p,'ba) edge = "('n \<times> ('p,'ba) edgeAnnot \<times> 'n)"
+type_synonym ('n,'p,'ba) edge = "('n \<times> ('p,'ba) edgeAnnot \<times> 'n)"
 
 record ('n,'p,'ba,'m) flowgraph_rec =
   edges :: "('n,'p,'ba) edge set" -- "Set of annotated edges"
