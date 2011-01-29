@@ -116,7 +116,7 @@ lemma conseq_Kleymann:"\<lbrakk>\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub
 lemma DynComConseq:
   assumes "P \<subseteq> {s. \<exists>P' Q' A'.  \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P' (c s) Q',A' \<and> P \<subseteq> P' \<and> Q' \<subseteq> Q \<and> A' \<subseteq> A}" 
   shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P DynCom c Q,A"
-  using prems
+  using assms
   apply -
   apply (rule DynCom)
   apply clarsimp

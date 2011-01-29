@@ -722,11 +722,6 @@ apply (case_tac i)
 apply auto
 done
 
-lemma replicate_length [simp] : "length (replicate n x) = n"
-apply (induct n)
-apply auto
-done
-
 lemma no_in_one_ll: 
  "\<lbrakk>wf_ll pret levellista var; i<length levellista; j < length levellista; 
    no \<in> set (levellista ! i); i\<noteq>j\<rbrakk> 
@@ -929,7 +924,7 @@ next
     done
   with Suc.prems Nodesn_in_t show ?case 
     apply (simp add: Nodes_def)
-    apply (simp add: UN_Un set_split)
+    apply (simp add: set_split)
     done
 qed
 
@@ -1723,19 +1718,19 @@ lemma same_bdt_var: "\<lbrakk>bdt (Node lt1 p1 rt1) var = Some bdt1; bdt (Node l
 proof (induct bdt1)
   case Zero
   then obtain var_p1: "var p1 = 0" and var_p2: "var p2 = 0"
-    by (simp add: bdt_Some_Zero_iff)
+    by simp
   then show ?case
     by simp
 next
   case One
   then obtain var_p1: "var p1 = 1" and var_p2: "var p2 = 1"
-    by (simp add: bdt_Some_Zero_iff)
+    by simp
   then show ?case
     by simp
 next
   case (Bdt_Node lbdt v rbdt)
-  from prems obtain var_p1: "var p1 = v" and var_p2: "var p2 = v"
-    by (simp add: bdt_Some_Node_iff)
+  then obtain var_p1: "var p1 = v" and var_p2: "var p2 = v"
+    by simp
   then show ?case by simp
 qed
 

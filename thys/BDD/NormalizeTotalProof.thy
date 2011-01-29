@@ -337,7 +337,6 @@ proof -
       by simp
   qed
 next
-  prefer 2
   -- {* From postcondition inner SPEC to final postcondition *}
   fix var low high p rep levellist marka "next" 
     nexta lowb highb pb levellista ll repa pret prebdt 

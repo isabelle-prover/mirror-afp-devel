@@ -1113,7 +1113,7 @@ lemma Guard_noFaultStuckD:
   assumes "\<Gamma>\<turnstile>\<langle>Guard f g c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
   assumes "f \<notin> F"
   shows "s \<in> g"
-  using prems
+  using assms
   by (auto simp add: final_notin_def intro: exec.intros)
 
 
