@@ -1,5 +1,4 @@
 (*  Title:       Defintion and basics facts about Cantor pairing function
-    ID:         $Id: CPair.thy,v 1.8 2008-07-18 16:27:23 fhaftmann Exp $
     Author:      Michael Nedzelsky <MichaelNedzelsky at yandex.ru>, 2008
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)

@@ -756,21 +756,21 @@ proof -
       assume A3: "\<not> loc_Op2 f x y < y"
       have A3': "b_least2 f x y = y"
       proof -
-	have "b_least2 f x y \<le> y" by (rule b_least2_le_arg)
-	from A1 A3 this show ?thesis by simp
+        have "b_least2 f x y \<le> y" by (rule b_least2_le_arg)
+        from A1 A3 this show ?thesis by simp
       qed
       then show ?thesis
       proof cases
-	assume A4: "f x y \<noteq> 0"
-	with A3 have S3: "loc_Op2 f x (Suc y) = y" by (rule loc_op2_lm_2)
-	from A3' A4 have S4: "b_least2 f x (Suc y) = y" by (rule b_least2_aux3)
-	from S3 S4 show ?thesis by simp
+        assume A4: "f x y \<noteq> 0"
+        with A3 have S3: "loc_Op2 f x (Suc y) = y" by (rule loc_op2_lm_2)
+        from A3' A4 have S4: "b_least2 f x (Suc y) = y" by (rule b_least2_aux3)
+        from S3 S4 show ?thesis by simp
       next
-	assume "\<not> f x y \<noteq>  0"
-	then have A5: "f x y = 0" by simp
-	with A3 have S5: "loc_Op2 f x (Suc y) = Suc y" by (rule loc_op2_lm_3)
-	from A3' A5 have S6: "b_least2 f x (Suc y) = Suc y" by (rule b_least2_aux4)
-	from S5 S6 show ?thesis by simp
+        assume "\<not> f x y \<noteq>  0"
+        then have A5: "f x y = 0" by simp
+        with A3 have S5: "loc_Op2 f x (Suc y) = Suc y" by (rule loc_op2_lm_3)
+        from A3' A5 have S6: "b_least2 f x (Suc y) = Suc y" by (rule b_least2_aux4)
+        from S5 S6 show ?thesis by simp
       qed
     qed
   qed
@@ -904,17 +904,17 @@ proof -
     proof
       fix x show "h x = b_least2 f x (g x)"
       proof -
-	from f_at_h_nz have S1: "b_least2 f x (g x) \<le> h x" by (simp add: nz_impl_b_least2_le)
+        from f_at_h_nz have S1: "b_least2 f x (g x) \<le> h x" by (simp add: nz_impl_b_least2_le)
         from h_lt_g have "h x < g x" by auto
-	with S1 have "b_least2 f x (g x) < g x" by simp
-	then have S2: "f x (b_least2 f x (g x)) \<noteq> 0" by (rule b_least2_less_impl_nz)
-	have S3: "h x \<le> b_least2 f x (g x)"
+        with S1 have "b_least2 f x (g x) < g x" by simp
+        then have S2: "f x (b_least2 f x (g x)) \<noteq> 0" by (rule b_least2_less_impl_nz)
+        have S3: "h x \<le> b_least2 f x (g x)"
         proof (rule ccontr)
-	  assume "\<not> h x \<le> b_least2 f x (g x)" then have "b_least2 f x (g x) < h x" by auto
-	  with h_is_min have "f x (b_least2 f x (g x)) = 0" by simp
-	  with S2 show False by auto
-	qed
-	from S1 S3 show ?thesis by auto
+          assume "\<not> h x \<le> b_least2 f x (g x)" then have "b_least2 f x (g x) < h x" by auto
+          with h_is_min have "f x (b_least2 f x (g x)) = 0" by simp
+          with S2 show False by auto
+        qed
+        from S1 S3 show ?thesis by auto
       qed
     qed
   def f1_def: f1 \<equiv> "b_least2 f"
@@ -978,10 +978,10 @@ proof -
       finally have S3: "?thesis = (a < b * (a div b) + b)" by auto
       have S4: "a < b * (a div b) + b"
       proof -
-	from S1 have S4_1: "a mod b < b" by (rule mod_less_divisor)
-	also have S4_2: "b * (a div b) + a mod b = a" by (rule mod_div_equality2)
+        from S1 have S4_1: "a mod b < b" by (rule mod_less_divisor)
+        also have S4_2: "b * (a div b) + a mod b = a" by (rule mod_div_equality2)
         from S4_1 have S4_3: "b * (a div b) + a mod b < b * (a div b) + b" by arith
-	from S4_2 S4_3 show ?thesis by auto
+        from S4_2 S4_3 show ?thesis by auto
       qed
       from S3 S4 show ?thesis by auto
     qed
@@ -994,8 +994,8 @@ proof -
       then have S2: "a div b > 0" by simp
       have S3: "b \<noteq> 0"
       proof (rule ccontr)
-	assume "\<not> b \<noteq> 0" then have "b = 0" by auto
-	then have "a div b = 0" by auto
+        assume "\<not> b \<noteq> 0" then have "b = 0" by auto
+        then have "a div b = 0" by auto
         with S2 show False by auto
       qed
       from S3 have b_pos: "0 < b" by auto
@@ -1004,9 +1004,9 @@ proof -
       with S4 have S5: "b*(z+1) \<le> b*(a div b)" by simp
       moreover have "b*(a div b) \<le> a"
       proof -
-	have "b*(a div b) + (a mod b) = a" by (rule mod_div_equality2)
-	moreover have "0 \<le> a mod b" by auto
-	ultimately show ?thesis by arith
+        have "b*(a div b) + (a mod b) = a" by (rule mod_div_equality2)
+        moreover have "0 \<le> a mod b" by auto
+        ultimately show ?thesis by arith
       qed
       ultimately have S6: "b*(z+1) \<le> a" by auto
       then have "b*(z+1) - a = 0" by auto

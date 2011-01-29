@@ -736,11 +736,11 @@ proof (rule allI, rule allI)
     proof -
       fix u v show "f u < f (u + (v+1))"
       proof (induct v)
-	from A show "f u < f (u + (0 + 1))" by auto
+        from A show "f u < f (u + (0 + 1))" by auto
       next
         fix v n
-	assume A2: "f u < f (u + (n + 1))"
-	from A have S1: "f (u + (n + 1)) < f (u + (Suc n + 1))" by auto
+        assume A2: "f u < f (u + (n + 1))"
+        from A have S1: "f (u + (n + 1)) < f (u + (Suc n + 1))" by auto
         from A2 S1 show " f u < f (u + (Suc n + 1))" by (rule less_trans)
       qed
     qed
@@ -783,11 +783,11 @@ proof (rule allI, rule allI)
     proof (rule ccontr)
       assume A2: "x \<noteq> y" show False
       proof cases
-	assume A3: "x < y"
+        assume A3: "x < y"
         from A A3 have "f x < f y" by auto
         with A1 show False by auto
       next
-	assume "\<not> x < y" with A2 have A4: "y < x" by auto
+        assume "\<not> x < y" with A2 have A4: "y < x" by auto
         from A A4 have "f y < f x" by auto
         with A1 show False by auto
       qed

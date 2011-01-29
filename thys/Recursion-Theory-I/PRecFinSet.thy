@@ -321,16 +321,16 @@ proof -
       assume A1: "y \<in> nat_to_set (u + 2 ^ x)"
       show "y \<in> nat_to_set u \<union> {x}"
       proof
-	assume "y \<notin> {x}" then have S1: "y \<noteq> x" by auto
-	from A1 have "y \<le> log2 (u + 2 ^ x)" by (rule nat_to_set_lub)
+        assume "y \<notin> {x}" then have S1: "y \<noteq> x" by auto
+        from A1 have "y \<le> log2 (u + 2 ^ x)" by (rule nat_to_set_lub)
         with log2_is_x have "y \<le> x" by auto
         with S1 have y_lt_x: "y < x" by auto
         from A1 have "c_in y (u + 2 ^ x) = 1" by (simp add: x_in_u_eq)
-	then have S2: "((u + 2 ^ x) div 2^y) mod 2 = 1" by (unfold c_in_def)
+        then have S2: "((u + 2 ^ x) div 2^y) mod 2 = 1" by (unfold c_in_def)
         from y_lt_x have "((u + (2::nat) ^ x) div (2::nat)^y) mod 2 = (u div (2::nat)^y) mod 2" by (rule div_mod_lm)
         with S2 have "(u div 2^y) mod 2 = 1" by auto
-	then have "c_in y u = 1" by (simp add: c_in_def)
-	then show "y \<in> nat_to_set u" by (simp add: x_in_u_eq)
+        then have "c_in y u = 1" by (simp add: c_in_def)
+        then show "y \<in> nat_to_set u" by (simp add: x_in_u_eq)
       qed
     qed
   next
@@ -349,9 +349,9 @@ proof -
       from A1 y_notin have y_in: "y \<in> nat_to_set u" by auto
       have y_lt_x: "y < x"
       proof (rule ccontr)
-	assume "\<not> y < x"
+        assume "\<not> y < x"
         with y_ne_x have y_gt_x: "x < y" by auto
-	have "1 < (2::nat)" by auto
+        have "1 < (2::nat)" by auto
         from y_gt_x this have L1: "(2::nat)^x < 2^y" by (rule power_strict_increasing)
         from y_in have L2: "2^y \<le> u" by (rule nat_to_set_upper_bound)
         from L1 L2 have "(2::nat)^x < u" by arith
@@ -382,14 +382,14 @@ proof -
       show "(\<forall>u v. nat_to_set u = D \<and> nat_to_set v = D \<longrightarrow> u = v)"
       proof (rule allI, rule allI) fix u v show "nat_to_set u = D \<and> nat_to_set v = D \<longrightarrow> u = v"
         proof
-	  assume A2: " nat_to_set u = D \<and> nat_to_set v = D"
-	  from A2 have L1: "nat_to_set u = D" by auto
+          assume A2: " nat_to_set u = D \<and> nat_to_set v = D"
+          from A2 have L1: "nat_to_set u = D" by auto
           from A2 have L2: "nat_to_set v = D" by auto
-	  from L1 S3 have "nat_to_set u = {}" by auto
-	  then have u_z: "u = 0" by (rule empty_is_zero)
-	  from L2 S3 have "nat_to_set v = {}" by auto
-	  then have v_z: "v = 0" by (rule empty_is_zero)
-	  from u_z v_z show "u=v" by auto
+          from L1 S3 have "nat_to_set u = {}" by auto
+          then have u_z: "u = 0" by (rule empty_is_zero)
+          from L2 S3 have "nat_to_set v = {}" by auto
+          then have v_z: "v = 0" by (rule empty_is_zero)
+          from u_z v_z show "u=v" by auto
         qed
       qed
     qed
@@ -407,83 +407,83 @@ proof -
       proof (rule allI, rule allI, rule impI)
         fix u v
         assume A2: " nat_to_set u = D \<and> nat_to_set v = D"
-	from A2 have d_u_d: "nat_to_set u = D" by auto
+        from A2 have d_u_d: "nat_to_set u = D" by auto
         from A2 have d_v_d: "nat_to_set v = D" by auto
         show "u = v"
         proof (cases)
           assume A3: "D = {}"
           from A3 d_u_d have "nat_to_set u = {}" by auto
-	  then have u_z: "u = 0" by (rule empty_is_zero)
+          then have u_z: "u = 0" by (rule empty_is_zero)
           from A3 d_v_d have "nat_to_set v = {}" by auto
           then have v_z: "v = 0" by (rule empty_is_zero)
           from u_z v_z show "u = v" by auto
         next
-	  assume A3: "D \<noteq> {}"
+          assume A3: "D \<noteq> {}"
           from A3 d_u_d have "nat_to_set u \<noteq> {}" by auto
-	  then have u_pos: "u > 0" by (rule ne_imp_pos)
+          then have u_pos: "u > 0" by (rule ne_imp_pos)
           from A3 d_v_d have "nat_to_set v \<noteq> {}" by auto
           then have v_pos: "v > 0" by (rule ne_imp_pos)
           def m_def: m \<equiv> "Max D"
-	  from S1 m_def A3 have m_in: "m \<in> D" by auto
-	  from d_u_d m_def have m_u: "m = Max (nat_to_set u)" by auto
+          from S1 m_def A3 have m_in: "m \<in> D" by auto
+          from d_u_d m_def have m_u: "m = Max (nat_to_set u)" by auto
           from d_v_d m_def have m_v: "m = Max (nat_to_set v)" by auto
           from u_pos m_u log2_is_max have m_log_u: "m = log2 u" by auto
           from v_pos m_v log2_is_max have m_log_v: "m = log2 v" by auto
-	  def D1_def: D1 \<equiv> "D - {m}"
-	  def u1_def: u1 \<equiv> "u - 2^m"
-	  def v1_def: v1 \<equiv> "v - 2^m"
+          def D1_def: D1 \<equiv> "D - {m}"
+          def u1_def: u1 \<equiv> "u - 2^m"
+          def v1_def: v1 \<equiv> "v - 2^m"
           have card_D1: "card D1 \<le> n"
           proof -
             from D1_def S1 m_in have "card D1 = (card D) - 1" by (simp add: card_Diff_singleton)
-	    with S2 show ?thesis by auto
+            with S2 show ?thesis by auto
           qed
           have u_u1: "u = u1 + 2^m"
           proof -
-	    from u_pos have L1: "2 ^ log2 u \<le> u" by (rule log2_le)
-	    with m_log_u have L2: "2 ^ m \<le> u" by auto
+            from u_pos have L1: "2 ^ log2 u \<le> u" by (rule log2_le)
+            with m_log_u have L2: "2 ^ m \<le> u" by auto
             with u1_def show ?thesis by auto
           qed
-	  have u1_d1: "nat_to_set u1 = D1"
+          have u1_d1: "nat_to_set u1 = D1"
           proof -
-	    from m_log_u log2_gt have "u < 2^(m+1)" by auto
-	    with u_u1 have u1_lt_2_m: "u1 < 2^m" by auto
-	    with u_u1 have L1: "nat_to_set u = nat_to_set u1 \<union> {m}" by (simp add: add_power)
-	    have m_notin: "m \<notin> nat_to_set u1"
+            from m_log_u log2_gt have "u < 2^(m+1)" by auto
+            with u_u1 have u1_lt_2_m: "u1 < 2^m" by auto
+            with u_u1 have L1: "nat_to_set u = nat_to_set u1 \<union> {m}" by (simp add: add_power)
+            have m_notin: "m \<notin> nat_to_set u1"
             proof (rule ccontr)
-	      assume "\<not> m \<notin> nat_to_set u1" then have "m \<in> nat_to_set u1" by auto
+              assume "\<not> m \<notin> nat_to_set u1" then have "m \<in> nat_to_set u1" by auto
               then have "2^m \<le> u1" by (rule nat_to_set_upper_bound)
-	      with u1_lt_2_m show False by auto
+              with u1_lt_2_m show False by auto
             qed
-	    from L1 m_notin have "nat_to_set u1 = nat_to_set u - {m}" by auto
-	    with d_u_d have "nat_to_set u1 = D - {m}" by auto
-	    with D1_def show ?thesis by auto
+            from L1 m_notin have "nat_to_set u1 = nat_to_set u - {m}" by auto
+            with d_u_d have "nat_to_set u1 = D - {m}" by auto
+            with D1_def show ?thesis by auto
           qed
           have v_v1: "v = v1 + 2^m"
           proof -
-	    from v_pos have L1: "2 ^ log2 v \<le> v" by (rule log2_le)
-	    with m_log_v have L2: "2 ^ m \<le> v" by auto
+            from v_pos have L1: "2 ^ log2 v \<le> v" by (rule log2_le)
+            with m_log_v have L2: "2 ^ m \<le> v" by auto
             with v1_def show ?thesis by auto
           qed
-	  have v1_d1: "nat_to_set v1 = D1"
+          have v1_d1: "nat_to_set v1 = D1"
           proof -
-	    from m_log_v log2_gt have "v < 2^(m+1)" by auto
-	    with v_v1 have v1_lt_2_m: "v1 < 2^m" by auto
-	    with v_v1 have L1: "nat_to_set v = nat_to_set v1 \<union> {m}" by (simp add: add_power)
-	    have m_notin: "m \<notin> nat_to_set v1"
+            from m_log_v log2_gt have "v < 2^(m+1)" by auto
+            with v_v1 have v1_lt_2_m: "v1 < 2^m" by auto
+            with v_v1 have L1: "nat_to_set v = nat_to_set v1 \<union> {m}" by (simp add: add_power)
+            have m_notin: "m \<notin> nat_to_set v1"
             proof (rule ccontr)
-	      assume "\<not> m \<notin> nat_to_set v1" then have "m \<in> nat_to_set v1" by auto
+              assume "\<not> m \<notin> nat_to_set v1" then have "m \<in> nat_to_set v1" by auto
               then have "2^m \<le> v1" by (rule nat_to_set_upper_bound)
-	      with v1_lt_2_m show False by auto
+              with v1_lt_2_m show False by auto
             qed
-	    from L1 m_notin have "nat_to_set v1 = nat_to_set v - {m}" by auto
-	    with d_v_d have "nat_to_set v1 = D - {m}" by auto
-	    with D1_def show ?thesis by auto
+            from L1 m_notin have "nat_to_set v1 = nat_to_set v - {m}" by auto
+            with d_v_d have "nat_to_set v1 = D - {m}" by auto
+            with D1_def show ?thesis by auto
           qed
-	  from S1 D1_def have P1: "finite D1" by auto
-	  with card_D1 have P2: "finite D1 \<and> card D1 \<le> n" by auto
-	  from A_n P2 have "(\<forall>u v. nat_to_set u = D1 \<and> nat_to_set v = D1 \<longrightarrow> u = v)" by auto
-	  with u1_d1 v1_d1 have "u1 = v1" by auto
-	  with u_u1 v_v1 show "u = v" by auto
+          from S1 D1_def have P1: "finite D1" by auto
+          with card_D1 have P2: "finite D1 \<and> card D1 \<le> n" by auto
+          from A_n P2 have "(\<forall>u v. nat_to_set u = D1 \<and> nat_to_set v = D1 \<longrightarrow> u = v)" by auto
+          with u1_d1 v1_d1 have "u1 = v1" by auto
+          with u_u1 v_v1 show "u = v" by auto
         qed
       qed
     qed
@@ -589,48 +589,48 @@ proof -
         assume A1: "finite D \<and> card D = Suc n"
         from A1 have S1: "finite D" by auto
         from A1 have S2: "card D = Suc n" by auto
-	def m_def: m \<equiv> "Max D"
-	from S2 have D_ne: "D \<noteq> {}" by auto
-	with S1 m_def have m_in: "m \<in> D" by auto
-	def D1_def: D1 \<equiv> "D - {m}"
-	from S1 D1_def have d1_finite: "finite D1" by auto
-	from D1_def m_in S1 have "card D1 = card D - 1" by (simp add: card_Diff_singleton)
-	with S2 have card_d1: "card D1 = n" by auto
-	from d1_finite card_d1 have "finite D1 \<and> card D1 = n" by auto
-	with A_n have S3: "nat_to_set (set_to_nat D1) = D1" by auto
+        def m_def: m \<equiv> "Max D"
+        from S2 have D_ne: "D \<noteq> {}" by auto
+        with S1 m_def have m_in: "m \<in> D" by auto
+        def D1_def: D1 \<equiv> "D - {m}"
+        from S1 D1_def have d1_finite: "finite D1" by auto
+        from D1_def m_in S1 have "card D1 = card D - 1" by (simp add: card_Diff_singleton)
+        with S2 have card_d1: "card D1 = n" by auto
+        from d1_finite card_d1 have "finite D1 \<and> card D1 = n" by auto
+        with A_n have S3: "nat_to_set (set_to_nat D1) = D1" by auto
         def u_def: u \<equiv> "set_to_nat D"
-	def u1_def: u1 \<equiv> "set_to_nat D1"
-	from S1 m_in have "setsum (\<lambda> (x::nat). (2::nat) ^ x) D = 2 ^ m + setsum (\<lambda> x. 2 ^ x) (D - {m})" by (rule setsum_diff1')
-	with set_to_nat_def have "set_to_nat D = 2 ^ m + set_to_nat (D - {m})" by auto
-	with u_def u1_def D1_def have u_u1: "u = u1 + 2 ^ m" by auto
-	from S3 u1_def have d1_u1: "nat_to_set u1 = D1" by auto
-	have u1_lt: "u1 < 2 ^ m"
+        def u1_def: u1 \<equiv> "set_to_nat D1"
+        from S1 m_in have "setsum (\<lambda> (x::nat). (2::nat) ^ x) D = 2 ^ m + setsum (\<lambda> x. 2 ^ x) (D - {m})" by (rule setsum_diff1')
+        with set_to_nat_def have "set_to_nat D = 2 ^ m + set_to_nat (D - {m})" by auto
+        with u_def u1_def D1_def have u_u1: "u = u1 + 2 ^ m" by auto
+        from S3 u1_def have d1_u1: "nat_to_set u1 = D1" by auto
+        have u1_lt: "u1 < 2 ^ m"
         proof -
-	  have L1: "D1 \<subseteq> {i. i<m}"
+          have L1: "D1 \<subseteq> {i. i<m}"
           proof fix x
-	    assume A1: "x \<in> D1"
-	    show "x \<in> {i. i<m}"
+            assume A1: "x \<in> D1"
+            show "x \<in> {i. i<m}"
             proof
-	      from A1 D1_def have L1_1: "x \<in> D" by auto
-	      from S1 D_ne L1_1 m_def have L1_2: "x \<le> m" by auto
-	      with A1 L1_1 D1_def have "x \<noteq> m" by auto
-	      with L1_2 show "x < m" by auto
+              from A1 D1_def have L1_1: "x \<in> D" by auto
+              from S1 D_ne L1_1 m_def have L1_2: "x \<le> m" by auto
+              with A1 L1_1 D1_def have "x \<noteq> m" by auto
+              with L1_2 show "x < m" by auto
             qed
           qed
           have L2: "finite {i. i<m}" by (rule finite_interval)
-	  from L2 L1 have "set_to_nat D1 \<le> set_to_nat {i. i<m}" by (rule set_to_nat_mono)
-	  with u1_def have "u1 \<le> set_to_nat {i. i<m}" by auto
-	  with set_to_nat_of_interval have L3: "u1 \<le> 2 ^ m - 1" by auto
-	  have "0 < (2::nat) ^ m" by auto
-	  then have "(2::nat) ^ m - 1 < (2::nat) ^ m" by auto
+          from L2 L1 have "set_to_nat D1 \<le> set_to_nat {i. i<m}" by (rule set_to_nat_mono)
+          with u1_def have "u1 \<le> set_to_nat {i. i<m}" by auto
+          with set_to_nat_of_interval have L3: "u1 \<le> 2 ^ m - 1" by auto
+          have "0 < (2::nat) ^ m" by auto
+          then have "(2::nat) ^ m - 1 < (2::nat) ^ m" by auto
           with L3 show ?thesis by arith
         qed
-	from u_def have "nat_to_set (set_to_nat D) = nat_to_set u" by auto
-	also from u_u1 have "\<dots> = nat_to_set (u1 + 2 ^ m)" by auto
-	also from u1_lt have "\<dots> = nat_to_set u1 \<union> {m}" by (rule add_power)
-	also from d1_u1 have "\<dots> = D1 \<union> {m}" by auto
-	also from D1_def m_in have "\<dots> = D" by auto
-	finally show "nat_to_set (set_to_nat D) = D" by auto
+        from u_def have "nat_to_set (set_to_nat D) = nat_to_set u" by auto
+        also from u_u1 have "\<dots> = nat_to_set (u1 + 2 ^ m)" by auto
+        also from u1_lt have "\<dots> = nat_to_set u1 \<union> {m}" by (rule add_power)
+        also from d1_u1 have "\<dots> = D1 \<union> {m}" by auto
+        also from D1_def m_in have "\<dots> = D" by auto
+        finally show "nat_to_set (set_to_nat D) = D" by auto
       qed
     qed
   qed
@@ -901,33 +901,33 @@ proof -
     proof (rule allI, rule allI)
       fix x y show "f (Suc y) x = h y (f y x) x"
       proof (cases)
-	assume A: "c_in y (c_snd x) = 1"
+        assume A: "c_in y (c_snd x) = 1"
         then have S1: "y \<in> (nat_to_set (c_snd x))" by (simp add: x_in_u_eq)
-	from A h_def have S2: "h y (f y x) x = c_insert y (f y x)" by auto
-	from S1 have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y} \<union> {y}" by auto
+        from A h_def have S2: "h y (f y x) x = c_insert y (f y x)" by auto
+        from S1 have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y} \<union> {y}" by auto
         from nat_to_set_is_finite have S4: "finite ((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y})" by auto
-	with nat_to_set_srj f_def have S5: "nat_to_set (f y x) = (nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y}" by auto
-	from f_def have S6: "f (Suc y) x = set_to_nat ((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < Suc y})" by simp
+        with nat_to_set_srj f_def have S5: "nat_to_set (f y x) = (nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y}" by auto
+        from f_def have S6: "f (Suc y) x = set_to_nat ((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < Suc y})" by simp
         also from S3 have "\<dots> = set_to_nat (((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y}) \<union> {y})" by auto
-	also from S5 have "\<dots> = set_to_nat (nat_to_set (f y x) \<union> {y})" by auto
-	also have "\<dots> = c_insert y (f y x)" by (simp add: c_insert_df)
+        also from S5 have "\<dots> = set_to_nat (nat_to_set (f y x) \<union> {y})" by auto
+        also have "\<dots> = c_insert y (f y x)" by (simp add: c_insert_df)
         finally show ?thesis by (simp add: S2)
       next
-	assume A: "\<not> c_in y (c_snd x) = 1"
+        assume A: "\<not> c_in y (c_snd x) = 1"
         then have S1: "y \<notin> (nat_to_set (c_snd x))" by (simp add: x_in_u_eq)
-	from A h_def have S2: "h y (f y x) x = f y x" by auto
-	have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y}"
+        from A h_def have S2: "h y (f y x) x = f y x" by auto
+        have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y}"
         proof -
           have "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y} \<union> {z \<in> nat_to_set (c_snd x). z = y}"
-	    by auto
-	  with S1 show ?thesis by auto
+            by auto
+          with S1 show ?thesis by auto
         qed
         from nat_to_set_is_finite have S4: "finite ((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y})" by auto
-	with nat_to_set_srj f_def have S5: "nat_to_set (f y x) = (nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y}" by auto
-	from f_def have S6: "f (Suc y) x = set_to_nat ((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < Suc y})" by simp
+        with nat_to_set_srj f_def have S5: "nat_to_set (f y x) = (nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y}" by auto
+        from f_def have S6: "f (Suc y) x = set_to_nat ((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < Suc y})" by simp
         also from S3 have "\<dots> = set_to_nat (((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y}))" by auto
-	also from S5 have "\<dots> = set_to_nat (nat_to_set (f y x))" by auto
-	also have "\<dots> = f y x" by simp
+        also from S5 have "\<dots> = set_to_nat (nat_to_set (f y x))" by auto
+        also have "\<dots> = f y x" by simp
         finally show ?thesis by (simp add: S2)
       qed
     qed
@@ -969,38 +969,38 @@ proof -
     proof (rule allI, rule allI)
       fix x y show "f (Suc y) x = h y (f y x) x"
       proof (cases)
-	assume A: "c_in y (c_snd x) = 1"
+        assume A: "c_in y (c_snd x) = 1"
         then have S1: "y \<in> (nat_to_set (c_snd x))" by (simp add: x_in_u_eq)
-	from A h_def have S2: "h y (f y x) x = c_remove y (f y x)" by auto
+        from A h_def have S2: "h y (f y x) x = c_remove y (f y x)" by auto
         have "(nat_to_set (c_fst x)) - ({z \<in> nat_to_set (c_snd x). z < y} \<union> {y}) =
               ((nat_to_set (c_fst x)) - ({z \<in> nat_to_set (c_snd x). z < y}) - {y})" by auto
         then have lm1: "set_to_nat (nat_to_set (c_fst x) - ({z \<in> nat_to_set (c_snd x). z < y} \<union> {y})) =
                         set_to_nat (nat_to_set (c_fst x) - {z \<in> nat_to_set (c_snd x). z < y} - {y})" by auto
-	from S1 have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y} \<union> {y}" by auto
+        from S1 have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y} \<union> {y}" by auto
         from nat_to_set_is_finite have S4: "finite ((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y})" by auto
-	with nat_to_set_srj f_def have S5: "nat_to_set (f y x) = (nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y}" by auto
-	from f_def have S6: "f (Suc y) x = set_to_nat ((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < Suc y})" by simp
+        with nat_to_set_srj f_def have S5: "nat_to_set (f y x) = (nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y}" by auto
+        from f_def have S6: "f (Suc y) x = set_to_nat ((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < Suc y})" by simp
         also from S3 have "\<dots> = set_to_nat ((nat_to_set (c_fst x)) - ({z \<in> nat_to_set (c_snd x). z < y} \<union> {y}))" by auto
         also have "\<dots> = set_to_nat (((nat_to_set (c_fst x)) - ({z \<in> nat_to_set (c_snd x). z < y}) - {y}))" by (rule lm1)
-	also from S5 have "\<dots> = set_to_nat (nat_to_set (f y x) - {y})" by auto
-	also have "\<dots> = c_remove y (f y x)" by (simp add: c_remove_df)
+        also from S5 have "\<dots> = set_to_nat (nat_to_set (f y x) - {y})" by auto
+        also have "\<dots> = c_remove y (f y x)" by (simp add: c_remove_df)
         finally show ?thesis by (simp add: S2)
       next
-	assume A: "\<not> c_in y (c_snd x) = 1"
+        assume A: "\<not> c_in y (c_snd x) = 1"
         then have S1: "y \<notin> (nat_to_set (c_snd x))" by (simp add: x_in_u_eq)
-	from A h_def have S2: "h y (f y x) x = f y x" by auto
-	have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y}"
+        from A h_def have S2: "h y (f y x) x = f y x" by auto
+        have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y}"
         proof -
           have "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y} \<union> {z \<in> nat_to_set (c_snd x). z = y}"
-	    by auto
-	  with S1 show ?thesis by auto
+            by auto
+          with S1 show ?thesis by auto
         qed
         from nat_to_set_is_finite have S4: "finite ((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y})" by auto
-	with nat_to_set_srj f_def have S5: "nat_to_set (f y x) = (nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y}" by auto
-	from f_def have S6: "f (Suc y) x = set_to_nat ((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < Suc y})" by simp
+        with nat_to_set_srj f_def have S5: "nat_to_set (f y x) = (nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y}" by auto
+        from f_def have S6: "f (Suc y) x = set_to_nat ((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < Suc y})" by simp
         also from S3 have "\<dots> = set_to_nat (((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y}))" by auto
-	also from S5 have "\<dots> = set_to_nat (nat_to_set (f y x))" by auto
-	also have "\<dots> = f y x" by simp
+        also from S5 have "\<dots> = set_to_nat (nat_to_set (f y x))" by auto
+        also have "\<dots> = f y x" by simp
         finally show ?thesis by (simp add: S2)
       qed
     qed
