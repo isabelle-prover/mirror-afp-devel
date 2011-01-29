@@ -1,5 +1,4 @@
 (*  Title:       Cauchy's Mean Theorem
-    ID:          $Id: CauchysMeanTheorem.thy,v 1.14 2008-06-12 06:57:16 lsf37 Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
                  cleaned up a bit by Tobias Nipkow, 2007
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
@@ -595,7 +594,7 @@ proof (rule ccontr)
   hence "\<forall>e. e : set ?neq \<longrightarrow> \<not>(e > ?m)" by blast
   hence "\<forall>e. e : set ?neq \<longrightarrow> e \<le> ?m" by (simp add: linorder_not_less)
   hence "\<forall>e. e : set ?neq \<longrightarrow> e < ?m" by (simp add:order_le_less)
-  with prems listsum_mono_lt have "(\<Sum>:?neq) < ?m * (real (length ?neq))" by blast
+  with assms listsum_mono_lt have "(\<Sum>:?neq) < ?m * (real (length ?neq))" by blast
   hence
     "(\<Sum>:?neq) + (\<Sum>:?eq) < ?m * (real (length ?neq)) + (\<Sum>:?eq)" by simp
   also have
@@ -628,7 +627,7 @@ proof (rule ccontr) -- "reductio ad absurdum"
   hence "\<forall>e. e : set ?neq \<longrightarrow> \<not>(e < ?m)" by blast
   hence "\<forall>e. e : set ?neq \<longrightarrow> e \<ge> ?m" by (simp add: linorder_not_less)
   hence "\<forall>e. e : set ?neq \<longrightarrow> e > ?m" by (auto simp: order_le_less)
-  with prems listsum_mono_gt have "(\<Sum>:?neq) > ?m * (real (length ?neq))" by blast
+  with assms listsum_mono_gt have "(\<Sum>:?neq) > ?m * (real (length ?neq))" by blast
   hence
     "(\<Sum>:?neq) + (\<Sum>:?eq) > ?m * (real (length ?neq)) + (\<Sum>:?eq)" by simp
   also have
@@ -731,7 +730,7 @@ proof (simp add: split_if, rule impI)
         apply -
         apply (rule iffI)
         apply auto
-	done
+        done
     }
     thus "0 < x \<longrightarrow> pos (x # xs) = pos xs" by simp
   next
@@ -902,16 +901,16 @@ proof -
     neqne: "noteq \<noteq> []" by simp
 
   txt {* Pick two elements from xs, one greater than m, one less than m. *}
-  from prems pick_one_gt neqne obtain \<alpha> where
+  from assms pick_one_gt neqne obtain \<alpha> where
     \<alpha>_def: "\<alpha> : set noteq \<and> \<alpha> > m" unfolding neq m by auto
-  from prems pick_one_lt neqne obtain \<beta> where
+  from assms pick_one_lt neqne obtain \<beta> where
     \<beta>_def: "\<beta> : set noteq \<and> \<beta> < m" unfolding neq m by auto
   from \<alpha>_def \<beta>_def have \<alpha>_gt: "\<alpha> > m" and \<beta>_lt: "\<beta> < m" by auto
-  from prems have el_neq: "\<beta> \<noteq> \<alpha>" by simp
+  from \<alpha>_def \<beta>_def have el_neq: "\<beta> \<noteq> \<alpha>" by simp
   from neqne neq have xsne: "xs \<noteq> []" by auto
 
-  from prems have \<beta>mem: "\<beta> : set xs" by (auto simp: neq)
-  from prems have \<alpha>mem: "\<alpha> : set xs" by (auto simp: neq)
+  from \<beta>_def have \<beta>mem: "\<beta> : set xs" by (auto simp: neq)
+  from \<alpha>_def have \<alpha>mem: "\<alpha> : set xs" by (auto simp: neq)
 
   from pos_xs pos_def xsne \<alpha>mem \<beta>mem \<alpha>_def \<beta>_def have
     \<alpha>_pos: "\<alpha> > 0" and \<beta>_pos: "\<beta> > 0" by auto
@@ -945,7 +944,7 @@ proof -
   qed
 
   -- "now show that the new list has the same mean as the old list"
-  with mem prems lo bdef \<alpha>mem \<beta>mem
+  with mem nl lo bdef \<alpha>mem \<beta>mem
     have "\<Sum>:new_list = \<Sum>:xs"
       apply clarsimp
       apply (subst listsum_rmv1)
