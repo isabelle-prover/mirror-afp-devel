@@ -9,7 +9,7 @@ theory W
 imports MiniML
 begin
 
-types result_W = "(subst * typ * nat)option"
+type_synonym result_W = "(subst * typ * nat) option"
 
 -- "type inference algorithm W"
 primrec W :: "[expr, ctxt, nat] => result_W" where
@@ -33,7 +33,6 @@ primrec W :: "[expr, ctxt, nat] => result_W" where
 
 
 declare Suc_le_lessD [simp]
-declare less_imp_le [simp del]  -- "the combination loops"
 
 inductive_cases has_type_casesE:
 "A |- Var n :: t"

@@ -11,7 +11,7 @@ begin
 
 -- "@{text gen}: binding (generalising) the variables which are not free in the context"
 
-types ctxt = "type_scheme list"
+type_synonym ctxt = "type_scheme list"
     
 primrec gen :: "[ctxt, typ] => type_scheme" where
   "gen A (TVar n) = (if (n:(free_tv A)) then (FVar n) else (BVar n))"
