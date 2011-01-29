@@ -4,7 +4,7 @@
 *)
 
 theory CofGroups
-imports Main Nat_Bijection
+imports Main "~~/src/HOL/Library/Nat_Bijection"
 begin;
 
 section {* Introduction *}
@@ -455,25 +455,25 @@ next
     {
       -- "first we get an expression for @{term ?ci}"
       {
-	from all_bij and f_Ex1 have "bij f" by auto;
-	with bij_is_inj have inj_f: "inj f" by auto;
-	have "\<forall>n. inv f n = n - k"
-	proof
-	  fix n
-	  from f_eq have "f (n - k) = n"; by auto;
-	  with inv_f_eq[of f "n-k" "n"] and inj_f 
-	  show "inv f n = n-k"; by auto;
-	qed;
-	with inv_upOne_eq 
-	have "\<forall>n. ?ci n = n - k - 1" by auto;
-	hence "\<forall>n. ?ci n = n + (-1 - k)" by arith;
+        from all_bij and f_Ex1 have "bij f" by auto;
+        with bij_is_inj have inj_f: "inj f" by auto;
+        have "\<forall>n. inv f n = n - k"
+        proof
+          fix n
+          from f_eq have "f (n - k) = n"; by auto;
+          with inv_f_eq[of f "n-k" "n"] and inj_f 
+          show "inv f n = n-k"; by auto;
+        qed;
+        with inv_upOne_eq 
+        have "\<forall>n. ?ci n = n - k - 1" by auto;
+        hence "\<forall>n. ?ci n = n + (-1 - k)" by arith;
       }
       moreover;
       -- "then we check that this implies @{term ?ci} is"
       -- "a member of @{term Ex1}";
       {
-	from Ex1_Normal_form_part2[of "-1 - k"]
-	have "(\<forall>f. ((\<forall>n. f n = n + (-1 - k)) \<longrightarrow> f \<in> Ex1))" by auto;
+        from Ex1_Normal_form_part2[of "-1 - k"]
+        have "(\<forall>f. ((\<forall>n. f n = n + (-1 - k)) \<longrightarrow> f \<in> Ex1))" by auto;
       }
       ultimately 
       have "?ci \<in> Ex1"; by auto;
@@ -501,10 +501,10 @@ next;
       with bij_is_inj have inj_f: "inj f" by auto;
       have "\<forall>n. inv f n = n - k"
       proof
-	fix n
-	from f_eq have "f (n - k) = n"; by auto;
-	with inv_f_eq[of f "n-k" "n"] and inj_f 
-	show "inv f n = n-k"; by auto;
+        fix n
+        from f_eq have "f (n - k) = n"; by auto;
+        with inv_f_eq[of f "n-k" "n"] and inj_f 
+        show "inv f n = n-k"; by auto;
       qed;
       with upOne_def
       have "\<forall>n. (inv f \<circ> upOne) n = n - k + 1" by auto;
