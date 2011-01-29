@@ -15,9 +15,9 @@ types result_W = "(subst * typ * nat)option"
 primrec W :: "[expr, ctxt, nat] => result_W" where
   "W (Var i) A n =  
      (if i < length A then Some( id_subst,   
-	                         bound_typ_inst (%b. TVar(b+n)) (A!i),   
-	                         n + (min_new_bound_tv (A!i)) )  
-	              else None)"
+                                 bound_typ_inst (%b. TVar(b+n)) (A!i),   
+                                 n + (min_new_bound_tv (A!i)) )  
+                      else None)"
   
 | "W (Abs e) A n = ( (S,t,m) := W e ((FVar n)#A) (Suc n);
                      Some( S, (S n) -> t, m) )"
