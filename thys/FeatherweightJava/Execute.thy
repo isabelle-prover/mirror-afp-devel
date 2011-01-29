@@ -1,8 +1,5 @@
-(*
+(*  Author:      Lukas Bulwahn, TU Muenchen, 2009  *)
 
-Author: Lukas Bulwahn, TU Muenchen, 2009
-
-*)
 theory Execute
 imports FJSound
 begin
