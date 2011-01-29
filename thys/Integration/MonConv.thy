@@ -270,16 +270,16 @@ proof (unfold set_mon_conv)
     { fix i x
       assume "x \<in> mk_mon A i"
       hence "\<exists>j. x \<in> A j"
-	by (induct i) auto
+        by (induct i) auto
       hence "x \<in> (\<Union>i. A i)"
-	by simp
+        by simp
     }
     thus "(\<Union>i. mk_mon A i) \<subseteq> (\<Union>i. A i)"
       by auto
     
     { fix i 
       have "A i \<subseteq> mk_mon A i"
-	by (induct i) auto
+        by (induct i) auto
     }
     thus "(\<Union>i. A i) \<subseteq> (\<Union>i. mk_mon A i)"
       by auto
