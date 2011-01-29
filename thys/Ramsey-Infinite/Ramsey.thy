@@ -2,7 +2,7 @@
 header "Ramsey's Theorem"
 
 theory Ramsey
-imports Main Infinite_Set
+imports Main "~~/src/HOL/Library/Infinite_Set"
 begin
 
 
