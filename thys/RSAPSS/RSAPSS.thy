@@ -22,7 +22,7 @@ defs
   rsapss_sign:
   "rsapss_sign m e n == if (emsapss_encode m (length (nat_to_bv n) - 1)) = [] 
                           then []
-			  else (rsapss_sign_help1 (bv_to_nat (emsapss_encode m (length (nat_to_bv n) - 1)) ) e n)"
+                          else (rsapss_sign_help1 (bv_to_nat (emsapss_encode m (length (nat_to_bv n) - 1)) ) e n)"
 
   rsapss_sign_help1:
   "rsapss_sign_help1 em_nat e n == nat_to_bv_length (rsa_crypt em_nat e n) (length (nat_to_bv n))"
@@ -201,13 +201,13 @@ proof -
       case (Cons hd tl)
       show "(length (remzero (hd#tl))) <= length (hd#tl)"
       proof (cases hd)
-	assume "hd=\<zero>"
-	then have "remzero (hd#tl) = remzero tl" by simp
-	then show ?thesis using Cons by simp
+        assume "hd=\<zero>"
+        then have "remzero (hd#tl) = remzero tl" by simp
+        then show ?thesis using Cons by simp
       next
-	assume "hd=\<one>"
-	then have "remzero (hd#tl) = hd#tl" by simp
-	then show ?thesis by simp
+        assume "hd=\<one>"
+        then have "remzero (hd#tl) = hd#tl" by simp
+        then show ?thesis by simp
       qed
     qed
   qed
@@ -220,10 +220,10 @@ proof -
     proof -
       show ?thesis using length_drop[of "(8-emBits mod 8)" maskedDB] 
       proof (simp)
-	have "0 <= emBits mod 8" by simp
-	then have "8-(emBits mod 8) <= 8" by simp
-	then show  "length maskedDB + emBits mod 8 - 8 + (length a + length b) =
-	  length maskedDB + (length a + length b) + emBits mod 8 - 8" using len by arith
+        have "0 <= emBits mod 8" by simp
+        then have "8-(emBits mod 8) <= 8" by simp
+        then show  "length maskedDB + emBits mod 8 - 8 + (length a + length b) =
+          length maskedDB + (length a + length b) + emBits mod 8 - 8" using len by arith
       qed
     qed
     ultimately show ?thesis using b[of "(drop ((roundup emBits 8)*8 - emBits) maskedDB)@a@b"] by (simp add: maskedDB_zero)
@@ -279,13 +279,13 @@ proof -
       then have "(if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8 = (length (nat_to_bv (p * q)) - Suc 0) div 8 * 8" by simp
       moreover have "(length (nat_to_bv (p * q)) - Suc 0) div 8 * 8 = (length (nat_to_bv (p * q)) - Suc 0)" using len2 by (auto simp add: div_mod_equality[of "length (nat_to_bv (p * q)) - Suc 0" 8 0])
       ultimately show "length (nat_to_bv (p * q)) - Suc 0
-	\<le> (if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
+        \<le> (if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
     next
       assume len2: "(length (nat_to_bv (p*q)) - Suc 0) mod 8 ~= 0"
       then have "(if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8 = ((length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
       moreover have "length (nat_to_bv (p*q)) - Suc 0 <= ((length (nat_to_bv (p*q)) - Suc 0) div 8 + 1)*8" by auto
       ultimately show "length (nat_to_bv (p * q)) - Suc 0
-	\<le> (if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
+        \<le> (if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
     qed
     then show "168 \<le> roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8" using len1 by simp
   qed
@@ -377,15 +377,15 @@ proof -
     have e: "length (remzero (emsapss_encode_help2 (generate_M' (sha1 m) salt)
    (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p * q))"
       proof (simp only: emsapss_encode_help2)
-	show "length
-	  (remzero
-	  (emsapss_encode_help3 (sha1 (generate_M' (sha1 m) salt))
+        show "length
+          (remzero
+          (emsapss_encode_help3 (sha1 (generate_M' (sha1 m) salt))
           (length (nat_to_bv (p * q)) - Suc 0)))
-	  < length (nat_to_bv (p * q))"
-	proof (simp add: emsapss_encode_help3 emsapss_encode_help4 emsapss_encode_help5)
-	  show "length
-	    (remzero
-	    (emsapss_encode_help6
+          < length (nat_to_bv (p * q))"
+        proof (simp add: emsapss_encode_help3 emsapss_encode_help4 emsapss_encode_help5)
+          show "length
+            (remzero
+            (emsapss_encode_help6
             (generate_DB
             (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
             (length (sha1 (generate_M' (sha1 m) salt)))))
@@ -396,9 +396,9 @@ proof -
             (length (sha1 (generate_M' (sha1 m) salt)))))))
             (sha1 (generate_M' (sha1 m) salt))
             (length (nat_to_bv (p * q)) - Suc 0)))
-	    < length (nat_to_bv (p * q))"
-	  proof (simp only: emsapss_encode_help6)
-	    from a and b and d have mgf: "MGF (sha1 (generate_M' (sha1 m) salt))
+            < length (nat_to_bv (p * q))"
+          proof (simp only: emsapss_encode_help6)
+            from a and b and d have mgf: "MGF (sha1 (generate_M' (sha1 m) salt))
               (length
               (generate_DB
               (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
@@ -434,37 +434,37 @@ proof -
               (length (sha1 (generate_M' (sha1 m) salt))))))))
               (sha1 (generate_M' (sha1 m) salt))
               (length (nat_to_bv (p * q)) - Suc 0))" by (auto simp add: emsapss_encode emsapss_encode_help1 emsapss_encode_help2 emsapss_encode_help3 emsapss_encode_help4 emsapss_encode_help5 emsapss_encode_help6)
-	    have "length (remzero (emsapss_encode_help7
-	      (bvxor
-	      (generate_DB
-	      (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
+            have "length (remzero (emsapss_encode_help7
+              (bvxor
+              (generate_DB
+              (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
               (length (sha1 (generate_M' (sha1 m) salt)))))
-	      (MGF (sha1 (generate_M' (sha1 m) salt))
-	      (length
+              (MGF (sha1 (generate_M' (sha1 m) salt))
+              (length
               (generate_DB
               (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
               (length (sha1 (generate_M' (sha1 m) salt))))))))
-	      (sha1 (generate_M' (sha1 m) salt)) (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p * q))"
-	    proof (simp add: emsapss_encode_help7 emsapss_encode_help8)
-	      from p and q and x show " length
-		(remzero
-		(maskedDB_zero
-		(bvxor
-		(generate_DB
-		(generate_PS (length (nat_to_bv (p * q)) - Suc 0)
-		(length (sha1 (generate_M' (sha1 m) salt)))))
-		(MGF (sha1 (generate_M' (sha1 m) salt))
-		(length
-		(generate_DB
+              (sha1 (generate_M' (sha1 m) salt)) (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p * q))"
+            proof (simp add: emsapss_encode_help7 emsapss_encode_help8)
+              from p and q and x show " length
+                (remzero
+                (maskedDB_zero
+                (bvxor
+                (generate_DB
+                (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
+                (length (sha1 (generate_M' (sha1 m) salt)))))
+                (MGF (sha1 (generate_M' (sha1 m) salt))
+                (length
+                (generate_DB
                 (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
                 (length (sha1 (generate_M' (sha1 m) salt))))))))
-		(length (nat_to_bv (p * q)) - Suc 0) @
-		sha1 (generate_M' (sha1 m) salt) @ BC))
-		< length (nat_to_bv (p * q))" using "length_helper" and len and mgf by simp
-	    qed
-	    then show "length
-	      (remzero
-	      (if MGF (sha1 (generate_M' (sha1 m) salt))
+                (length (nat_to_bv (p * q)) - Suc 0) @
+                sha1 (generate_M' (sha1 m) salt) @ BC))
+                < length (nat_to_bv (p * q))" using "length_helper" and len and mgf by simp
+            qed
+            then show "length
+              (remzero
+              (if MGF (sha1 (generate_M' (sha1 m) salt))
               (length
               (generate_DB
               (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
@@ -483,9 +483,9 @@ proof -
               (length (sha1 (generate_M' (sha1 m) salt))))))))
               (sha1 (generate_M' (sha1 m) salt))
               (length (nat_to_bv (p * q)) - Suc 0)))
-	      < length (nat_to_bv (p * q))" using f by simp
-	  qed
-	qed
+              < length (nat_to_bv (p * q))" using f by simp
+          qed
+        qed
       qed
     from d and e show "length
       (remzero
@@ -509,22 +509,22 @@ proof -
       have "p*q = bv_to_nat (nat_to_bv (p*q))" by simp
       then have "2 ^ (length (nat_to_bv (p * q)) - Suc 0) < p*q"
       proof -
-	have "0<p*q"
-	proof -
-	  have "0<p" using a by (simp add: prime_def)
-	  moreover have "0<q" using b by (simp add: prime_def)
-	  ultimately show ?thesis by simp
-	qed
-	moreover have "2^(length (nat_to_bv (p*q)) - Suc 0) ~= p*q" 
-	proof (cases "2^(length (nat_to_bv (p*q)) - Suc 0) = p*q")
-	  assume "2^(length (nat_to_bv (p*q)) - Suc 0) = p*q"
-	  then have "p=q" using a and b and prime_equal by simp
-	  then show ?thesis using pneq by simp
-	next
-	  assume "2^(length (nat_to_bv (p*q)) - Suc 0) ~= p*q"
-	  then show ?thesis by simp
-	qed
-	ultimately show ?thesis using len_lower_bound[of "p*q"] by (simp)
+        have "0<p*q"
+        proof -
+          have "0<p" using a by (simp add: prime_def)
+          moreover have "0<q" using b by (simp add: prime_def)
+          ultimately show ?thesis by simp
+        qed
+        moreover have "2^(length (nat_to_bv (p*q)) - Suc 0) ~= p*q" 
+        proof (cases "2^(length (nat_to_bv (p*q)) - Suc 0) = p*q")
+          assume "2^(length (nat_to_bv (p*q)) - Suc 0) = p*q"
+          then have "p=q" using a and b and prime_equal by simp
+          then show ?thesis using pneq by simp
+        next
+          assume "2^(length (nat_to_bv (p*q)) - Suc 0) ~= p*q"
+          then show ?thesis by simp
+        qed
+        ultimately show ?thesis using len_lower_bound[of "p*q"] by (simp)
       qed
       then show ?thesis using e by simp
     qed

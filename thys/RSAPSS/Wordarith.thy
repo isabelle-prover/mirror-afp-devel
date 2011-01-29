@@ -121,8 +121,8 @@ proof (cases "1<n")
     proof (cases "n=2")
       assume a: "n=2" then have "nat_to_bv_helper n [] = [\<one>, \<zero>]"
       proof -
-	have "nat_to_bv_helper n [] = nat_to_bv n" using b by (simp add: nat_to_bv_def)
-	then show ?thesis using a by (simp add: nat_to_bv_non0)
+        have "nat_to_bv_helper n [] = nat_to_bv n" using b by (simp add: nat_to_bv_def)
+        then show ?thesis using a by (simp add: nat_to_bv_non0)
       qed
       then show "2 ^ (length (nat_to_bv_helper n []) - Suc 0) \<le> n" using a by simp
     next
@@ -130,8 +130,8 @@ proof (cases "1<n")
       then have a: "n=3" by simp
       then have "nat_to_bv_helper n [] = [\<one>, \<one>]"
       proof -
-	have "nat_to_bv_helper n [] = nat_to_bv n" using a by (simp add: nat_to_bv_def)
-	then show ?thesis using a by (simp add: nat_to_bv_non0)
+        have "nat_to_bv_helper n [] = nat_to_bv n" using a by (simp add: nat_to_bv_def)
+        then show ?thesis using a by (simp add: nat_to_bv_non0)
       qed
       then show "2^(length (nat_to_bv_helper n []) - Suc 0) <=n" using a by simp
     qed
@@ -143,24 +143,24 @@ proof (cases "1<n")
       2^(length (nat_to_bv_helper (n div 2) []) + 1 - Suc 0)"
     proof -
       have "length (nat_to_bv n) = length (nat_to_bv (n div 2)) + 1"
-	using a by (simp add: nat_to_bv_non0)
+        using a by (simp add: nat_to_bv_non0)
       then show ?thesis by (simp add: nat_to_bv_def)
     qed
     moreover have "(2::nat)^(length (nat_to_bv_helper (n div 2) []) + 1 - Suc 0) =
       2^(length (nat_to_bv_helper (n div 2) []) - Suc 0) * 2"
     proof auto
       have "(2::nat)^(length (nat_to_bv_helper (n div 2) []) -Suc 0)*2 =
-	2^(length (nat_to_bv_helper (n div 2) []) - Suc 0 + 1)" by simp
+        2^(length (nat_to_bv_helper (n div 2) []) - Suc 0 + 1)" by simp
       moreover have "(2::nat)^(length (nat_to_bv_helper (n div 2) []) - Suc 0 + 1) =
-	2^(length (nat_to_bv_helper (n div 2) []))"
+        2^(length (nat_to_bv_helper (n div 2) []))"
       proof -
-	have "0<n div 2" using a by arith
-	then have "0<length (nat_to_bv (n div 2))" by (simp add: nat_to_bv_non0)
-	then have "0< length (nat_to_bv_helper (n div 2) [])" using a by (simp add: nat_to_bv_def)
-	then show ?thesis by simp
+        have "0<n div 2" using a by arith
+        then have "0<length (nat_to_bv (n div 2))" by (simp add: nat_to_bv_non0)
+        then have "0< length (nat_to_bv_helper (n div 2) [])" using a by (simp add: nat_to_bv_def)
+        then show ?thesis by simp
       qed
       ultimately show "(2::nat) ^ length (nat_to_bv_helper (n div 2) []) =
-	2 ^ (length (nat_to_bv_helper (n div 2) []) - Suc 0) * 2" by simp
+        2 ^ (length (nat_to_bv_helper (n div 2) []) - Suc 0) * 2" by simp
     qed
     ultimately show  "2 ^ (length (nat_to_bv_helper n []) - Suc 0) <= n"
       using b by (simp add: nat_to_bv_def) arith
@@ -223,7 +223,7 @@ proof (induct n rule: nat_to_bv_helper_legacy_induct)
     then have "hd (nat_to_bv_helper n []) =
         hd (nat_to_bv (n div 2))"
       using nat_to_bv_non0[of "n div 2"] and c and
-	nat_to_bv_non_empty[of "n div 2"] and hd_append[of " nat_to_bv (n div 2)"] by auto
+        nat_to_bv_non_empty[of "n div 2"] and hd_append[of " nat_to_bv (n div 2)"] by auto
     then have "hd (nat_to_bv_helper n []) = hd (nat_to_bv_helper (n div 2) [])"
       using nat_to_bv_def by simp
     then show "hd (nat_to_bv_helper n []) = \<one>" using b and c by simp
@@ -313,19 +313,19 @@ proof -
     next
       assume q: "q~=2" show "p=q"
       proof -
-	from p have "~ 2 dvd p" using primerew and a by auto
+        from p have "~ 2 dvd p" using primerew and a by auto
         moreover from q have "~2 dvd q" using primerew and b by auto
-	ultimately have "~2 dvd p*q" by (simp add: odd_mul_odd)
-	moreover have "(2::nat) dvd 2^x" 
-	proof (cases "x=0")
-	  assume "x=0" then have "(2::nat)^x=1" by simp
-	  then show ?thesis using c and d and e by simp
-	next
-	  assume "x~=0" then have "0<x" by simp
-	  then show ?thesis using two_dvd_exp by simp
-	qed
-	ultimately have "2^x ~= p*q" by auto
-	then show ?thesis using c by simp
+        ultimately have "~2 dvd p*q" by (simp add: odd_mul_odd)
+        moreover have "(2::nat) dvd 2^x" 
+        proof (cases "x=0")
+          assume "x=0" then have "(2::nat)^x=1" by simp
+          then show ?thesis using c and d and e by simp
+        next
+          assume "x~=0" then have "0<x" by simp
+          then show ?thesis using two_dvd_exp by simp
+        qed
+        ultimately have "2^x ~= p*q" by auto
+        then show ?thesis using c by simp
       qed
     qed
   qed

@@ -402,13 +402,12 @@ qed
 
 lemma nat_to_bv_non0 [simp]: "n\<noteq>0 ==> nat_to_bv n = nat_to_bv (n div 2) @ [if n mod 2 = 0 then \<zero> else \<one>]"
 proof -
-  assume [simp]: "n\<noteq>0"
+  assume n: "n\<noteq>0"
   show ?thesis
     apply (subst nat_to_bv_def [of n])
     apply (simp only: nat_to_bv_helper.simps [of n])
     apply (subst unfold_nat_to_bv_helper)
-    using prems
-    apply (simp)
+    apply (simp add: n)
     apply (subst nat_to_bv_def [of "n div 2"])
     apply auto
     done
@@ -1094,9 +1093,9 @@ proof -
     qed
   next
     fix w'
-    assume "w = \<one> # w'"
+    assume weq: "w = \<one> # w'"
     from w0 have "bv_msb w = \<zero>" by simp
-    with prems show ?thesis by simp
+    with weq show ?thesis by simp
   qed
   also have "...  = bv_to_int w" by simp
   finally show ?thesis .
@@ -1404,7 +1403,7 @@ proof -
       done
     show ?thesis
     proof (simp add: bv_uminus_def,rule length_int_to_bv_upper_limit_gt0,simp_all)
-      from prems show "bv_to_int w < 0" by simp
+      from p show "bv_to_int w < 0" by simp
     next
       have "-(2^(length w - 1)) \<le> bv_to_int w"
         by (rule bv_to_int_lower_range)
@@ -2049,15 +2048,12 @@ proof (cases "0 < i")
     apply safe
     apply (simp del: norm_unsigned_nat_to_bv)
     apply (drule norm_empty_bv_to_nat_zero)
-    using prems
-    apply simp
+    using i0 apply simp
     apply (cases "norm_unsigned (nat_to_bv (nat i))")
     apply (drule norm_empty_bv_to_nat_zero [of "nat_to_bv (nat i)"])
-    using prems
-    apply simp
-    apply simp
-    using prems
-    apply (simp add: length_nat [symmetric])
+    using i0 apply simp
+    apply (simp add: i0)
+    using i0 apply (simp add: length_nat [symmetric])
     done
   finally show ?thesis
     using i0
@@ -2080,8 +2076,7 @@ next
       apply safe
       apply (simp del: norm_unsigned_nat_to_bv)
       apply (drule norm_empty_bv_to_nat_zero [of "nat_to_bv (nat (-i) - Suc 0)"])
-      using prems
-      apply simp
+      using i0 apply simp
       apply (cases "- i - 1 = 0")
       apply simp
       apply (simp add: length_nat [symmetric])
@@ -2205,7 +2200,7 @@ proof (rule ccontr)
   with xy show False by simp
 qed
 
-lemma length_nat_mono_int [simp]: "x \<le> y ==> length_nat x \<le> length_nat y"
+lemma length_nat_mono_int: "x \<le> y ==> length_nat x \<le> length_nat y"
   by (rule length_nat_mono) arith
 
 lemma length_nat_pos [simp,intro!]: "0 < x ==> 0 < length_nat x"
