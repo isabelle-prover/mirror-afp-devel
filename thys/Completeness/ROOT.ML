@@ -1,4 +1,4 @@
-no_document use_thys ["Permutation", "Multiset"];
+no_document use_thys ["~~/src/HOL/Library/Permutation", "~~/src/HOL/Library/Multiset"];
 
 use_thys [
   "Base",

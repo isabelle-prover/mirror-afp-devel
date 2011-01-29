@@ -30,7 +30,7 @@ definition
 
 translations
   "case p of XCONST zeroX \<Rightarrow> a | XCONST nextX y \<Rightarrow> b" == "(CONST vblcase a (%y. b) p)"
-				    
+
 definition
   freshVar :: "vbl set => vbl" where
   "freshVar vs = X (LEAST n. n \<notin> deX ` vs)"
@@ -338,10 +338,10 @@ where
   evalFAtom: "evalF M phi (FAtom z P vs)  = sign z (evalP M P (map phi vs))"
 | evalFConj: "evalF M phi (FConj z A0 A1) = sign z (sign z (evalF M phi A0) & sign z (evalF M phi A1))"
 | evalFAll:  "evalF M phi (FAll  z body)  = sign z (!x: (objects M).
-				                       sign z
-				                            (evalF M (%v . (case v of
-										zeroX   => x
-									      | nextX v => phi v)) body))"
+                                                       sign z
+                                                            (evalF M (%v . (case v of
+                                                                                zeroX   => x
+                                                                              | nextX v => phi v)) body))"
 
 definition
   valid :: "formula => bool" where

@@ -4,7 +4,7 @@ theory Sequents
 imports Formula
 begin 
 
-types sequent = "formula list"
+type_synonym sequent = "formula list"
 
 definition
   evalS :: "[model,vbl => object,formula list] => bool" where
@@ -44,10 +44,10 @@ definition
 
 subsection "Rules"
 
-types rule     = "sequent * (sequent set)"
+type_synonym rule = "sequent * (sequent set)"
 
 definition
-  concR	:: "rule => sequent" where
+  concR :: "rule => sequent" where
   "concR = (%(conc,prems). conc)"
 
 definition
@@ -78,12 +78,12 @@ inductive_set
    ******)
   where
     inferI: "[| (conc,prems) : rules;
-	       prems : Pow(deductions(rules))
-	    |] ==> conc : deductions(rules)"
+               prems : Pow(deductions(rules))
+            |] ==> conc : deductions(rules)"
 (*
     perms   "[| permutation conc' conc;
                 conc' : deductions(rules)
-	     |] ==> conc : deductions(rules)"
+             |] ==> conc : deductions(rules)"
 *)
   monos Pow_mono
 

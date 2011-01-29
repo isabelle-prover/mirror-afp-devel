@@ -7,9 +7,9 @@ begin
 
 subsection "pseq: type represents a processed sequent"
 
-types "atom"  = "(signs * predicate * vbl list)"
-      nform = "(nat * formula)"
-      pseq  = "(atom list * nform list)"
+type_synonym "atom"  = "(signs * predicate * vbl list)"
+type_synonym nform = "(nat * formula)"
+type_synonym pseq  = "(atom list * nform list)"
 
 definition
   sequent :: "pseq => formula list" where
@@ -53,16 +53,16 @@ definition
 definition
   subs :: "pseq => pseq set" where
   "subs = (% pseq .
-	     if SATAxiom (sequent pseq) then
-		 {}
-	     else let (atms,nforms) = pseq
-		  in  case nforms of
-			 []     => {}
-		       | nA#nAs => let (n,A) = nA
-			 	   in  (case A of
-				            FAtom z P vs  => subsFAtom atms nAs z P vs
-					  | FConj z A0 A1 => subsFConj atms nAs z A0 A1
-					  | FAll  z A     => subsFAll  atms nAs n z A (freeVarsFL (sequent pseq))))"
+             if SATAxiom (sequent pseq) then
+                 {}
+             else let (atms,nforms) = pseq
+                  in  case nforms of
+                         []     => {}
+                       | nA#nAs => let (n,A) = nA
+                                   in  (case A of
+                                            FAtom z P vs  => subsFAtom atms nAs z P vs
+                                          | FConj z A0 A1 => subsFConj atms nAs z A0 A1
+                                          | FAll  z A     => subsFAll  atms nAs n z A (freeVarsFL (sequent pseq))))"
 
 
 subsection "proofTree(Gamma) says whether tree(Gamma) is a proof"
@@ -103,10 +103,10 @@ subsection "path: eventually"
 definition
   EV :: "[nat => bool] => bool" where
   "EV f == (? n . f n)"
-	(****** 
-	 This allows blast_tac like searching to be done without hassle
-	 of removing exists rules. (hopefully).
-	 ******)
+        (****** 
+         This allows blast_tac like searching to be done without hassle
+         of removing exists rules. (hopefully).
+         ******)
 
 
 subsection "path: counter model"
@@ -420,7 +420,7 @@ lemma costBarrierDecreases':
     -- "atoms"
        apply(simp add: ss)
       apply(simp add: ss)
-	-- "conj"
+        -- "conj"
      apply clarify
      apply(simp add: ss)
      apply(erule disjE)

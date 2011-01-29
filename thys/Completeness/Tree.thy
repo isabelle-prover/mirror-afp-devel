@@ -15,7 +15,7 @@ inductive_set
     tree0: "(0,gamma) : tree subs gamma"
 
   | tree1: "[| (n,delta) : tree subs gamma; sigma : subs(delta) |]
-	   ==> (Suc n,sigma) : tree subs gamma"
+           ==> (Suc n,sigma) : tree subs gamma"
 
 declare tree.cases [elim] 
 declare tree.intros [intro] 
@@ -80,16 +80,16 @@ definition
   inherited :: "['a => 'a set,(nat * 'a) set => bool] => bool" where
   "inherited subs P \<longleftrightarrow> (!A B. (P A & P B) = P (A Un B))
                        & (!A. P A = P (incLevel ` A))
-		       & (!n Gamma A. ~(terminal subs Gamma) --> P A = P (insert (n,Gamma) A))
-		       & (P {})"
-		       
+                       & (!n Gamma A. ~(terminal subs Gamma) --> P A = P (insert (n,Gamma) A))
+                       & (P {})"
+                       
     (******
      inherited properties:
-	- preserved under: dividing into 2, join 2 parts
-			   moving up/down levels
-			   inserting non terminal nodes
-	- hold on empty node set 
-     ******)		       
+        - preserved under: dividing into 2, join 2 parts
+                           moving up/down levels
+                           inserting non terminal nodes
+        - hold on empty node set 
+     ******)                   
 
   -- "FIXME tjr why does it have to be invariant under inserting nonterminal nodes?"
 
@@ -358,8 +358,8 @@ primrec path :: "['a => 'a set,'a,(nat * 'a) set => bool,nat] => 'a"
 where
   path0:   "path subs gamma P 0       = gamma"
 | pathSuc: "path subs gamma P (Suc n) = (if terminal subs (path subs gamma P n)
-			    	          then path subs gamma P n
-					  else failingSub subs P (path subs gamma P n))"
+                                          then path subs gamma P n
+                                          else failingSub subs P (path subs gamma P n))"
 
 lemma pathFailsP: "[| inherited subs P; fans subs; ~P(tree subs gamma) |]
   ==> ~(P (tree subs (path subs gamma P n)))"
