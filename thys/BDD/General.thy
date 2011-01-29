@@ -181,9 +181,9 @@ next
       case (Node lrt r rrt)
       note Nrt=this
       from Nlt Nrt bdt1 obtain lbdt rbdt where 
-	lbdt_def: "bdt lt var = Some lbdt" and 
-	rbdt_def: "bdt rt var = Some rbdt" and 
-	bdt1_def: "bdt1 = Bdt_Node lbdt (var a) rbdt"
+        lbdt_def: "bdt lt var = Some lbdt" and 
+        rbdt_def: "bdt rt var = Some rbdt" and 
+        bdt1_def: "bdt1 = Bdt_Node lbdt (var a) rbdt"
         by (auto split: split_if_asm option.splits)
       from no_in_t show ?thesis
       proof (simp, elim disjE)
@@ -502,13 +502,13 @@ next
         with ppo Node.prems have "not = Node lt po rt"
           by (simp del: Dag_Ref add: Dag_unique)
         with Node.prems show ?thesis
-	  by simp
+          by simp
       next
-	case False
+        case False
         with Node.prems ltTip have "no \<in> set_of rt" 
           by simp
-	with ord_rt * `Dag no low high not` show ?thesis
-	  by (rule Node.hyps)
+        with ord_rt * `Dag no low high not` show ?thesis
+          by (rule Node.hyps)
       qed
     qed
   next
@@ -532,7 +532,7 @@ next
           by (simp del: Dag_Ref add: Dag_unique)
         with Node.prems show ?thesis by simp
       next
-	case False
+        case False
         with Node.prems Tip have "no \<in> set_of lt" 
           by simp
         with ord_lt * `Dag no low high not` show ?thesis

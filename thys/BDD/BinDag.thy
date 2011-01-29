@@ -105,9 +105,9 @@ lemma le_dag_trans:
       case False
       with y_z have "y < z" by (simp add: le_dag_def)
       with x_less_y have "x < z" 
-	by (auto simp add: less_dag_def intro: subdag_trans)
+        by (auto simp add: less_dag_def intro: subdag_trans)
       thus ?thesis
-	by (simp add: le_dag_def)
+        by (simp add: le_dag_def)
     qed
   qed
 
