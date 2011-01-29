@@ -5,7 +5,7 @@
 
 header{* Functional implementation of a SAT solver with Two Watch literal propagation. *}
 theory SatSolverCode
-imports SatSolverVerification Efficient_Nat
+imports SatSolverVerification "~~/src/HOL/Library/Efficient_Nat"
 begin
 
 (******************************************************************************)

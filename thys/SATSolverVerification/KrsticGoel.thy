@@ -1,5 +1,4 @@
 (*    Title:              SatSolverVerification/KrsticGoel.thy
-      ID:                 $Id: KrsticGoel.thy,v 1.5 2008-11-13 16:09:44 filipmaric Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -492,36 +491,36 @@ proof-
 
     have "InvariantVarsM (getM stateB) F0 decisionVars"
       using `getF stateB = getF stateA`
-	`getM stateB = getM stateA @ [(l, True)]` 
-	`InvariantVarsM (getM stateA) F0 decisionVars`
-	`var l \<in> decisionVars`
-	InvariantVarsMAfterDecide [of "getM stateA" "F0" "decisionVars" "l" "getM stateB"]
+        `getM stateB = getM stateA @ [(l, True)]` 
+        `InvariantVarsM (getM stateA) F0 decisionVars`
+        `var l \<in> decisionVars`
+        InvariantVarsMAfterDecide [of "getM stateA" "F0" "decisionVars" "l" "getM stateB"]
       by simp
     moreover
     have "InvariantVarsF (getF stateB) F0 decisionVars"
       using `getF stateB = getF stateA`
-	`InvariantVarsF (getF stateA) F0 decisionVars`
+        `InvariantVarsF (getF stateA) F0 decisionVars`
       by simp
     moreover
     have "InvariantConsistent (getM stateB)"
       using `getM stateB = getM stateA @ [(l, True)]` 
-	`InvariantConsistent (getM stateA)`
-	`var l \<notin> vars (elements (getM stateA))`
-	InvariantConsistentAfterDecide[of "getM stateA" "l" "getM stateB"]
+        `InvariantConsistent (getM stateA)`
+        `var l \<notin> vars (elements (getM stateA))`
+        InvariantConsistentAfterDecide[of "getM stateA" "l" "getM stateB"]
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
       using `getM stateB = getM stateA @ [(l, True)]` 
-	`InvariantUniq (getM stateA)`
-	`var l \<notin> vars (elements (getM stateA))`
-	InvariantUniqAfterDecide[of "getM stateA" "l" "getM stateB"]
+        `InvariantUniq (getM stateA)`
+        `var l \<notin> vars (elements (getM stateA))`
+        InvariantUniqAfterDecide[of "getM stateA" "l" "getM stateB"]
       by simp
     moreover
     have "InvariantReasonClauses (getF stateB) (getM stateB)"
       using `getF stateB = getF stateA`
-	`getM stateB = getM stateA @ [(l, True)]` 
-	`InvariantUniq (getM stateA)`
-	`InvariantReasonClauses (getF stateA) (getM stateA)`
+        `getM stateB = getM stateA @ [(l, True)]` 
+        `InvariantUniq (getM stateA)`
+        `InvariantReasonClauses (getF stateA) (getM stateA)`
       using InvariantReasonClausesAfterDecide[of "getF stateA" "getM stateA" "getM stateB" "l"]
       by simp
     moreover
@@ -532,17 +531,17 @@ proof-
     moreover
     have "InvariantCFalse (getConflictFlag stateB) (getM stateB) (getC stateB)"
       using `getM stateB = getM stateA @ [(l, True)]` 
-	`getConflictFlag stateB = getConflictFlag stateA`
-	`getC stateB = getC stateA`
-	`InvariantCFalse (getConflictFlag stateA) (getM stateA) (getC stateA)`
-	InvariantCFalseAfterDecide[of "getConflictFlag stateA" "getM stateA" "getC stateA" "getM stateB" "l"]
+        `getConflictFlag stateB = getConflictFlag stateA`
+        `getC stateB = getC stateA`
+        `InvariantCFalse (getConflictFlag stateA) (getM stateA) (getC stateA)`
+        InvariantCFalseAfterDecide[of "getConflictFlag stateA" "getM stateA" "getC stateA" "getM stateB" "l"]
       by simp
     moreover 
     have "InvariantCEntailed (getConflictFlag stateB) (getF stateB) (getC stateB)"
       using `getF stateB = getF stateA`
-	`getConflictFlag stateB = getConflictFlag stateA`
-	`getC stateB = getC stateA`
-	`InvariantCEntailed (getConflictFlag stateA) (getF stateA) (getC stateA)`
+        `getConflictFlag stateB = getConflictFlag stateA`
+        `getC stateB = getC stateA`
+        `InvariantCEntailed (getConflictFlag stateA) (getF stateA) (getC stateA)`
       by simp
     ultimately
     have ?thesis
@@ -571,37 +570,37 @@ proof-
     from `var ul \<in> decisionVars \<union> vars F0`
     have "InvariantVarsM (getM stateB) F0 decisionVars"
       using `getF stateB = getF stateA` 
-	`InvariantVarsM (getM stateA) F0 decisionVars`
-	`getM stateB = getM stateA @ [(ul, False)]`
-	InvariantVarsMAfterUnitPropagate[of "getM stateA" "F0" "decisionVars" "ul" "getM stateB"]
+        `InvariantVarsM (getM stateA) F0 decisionVars`
+        `getM stateB = getM stateA @ [(ul, False)]`
+        InvariantVarsMAfterUnitPropagate[of "getM stateA" "F0" "decisionVars" "ul" "getM stateB"]
       by auto
     moreover
     have "InvariantVarsF (getF stateB) F0 decisionVars"
       using `getF stateB = getF stateA`
-	`InvariantVarsF (getF stateA) F0 decisionVars`
+        `InvariantVarsF (getF stateA) F0 decisionVars`
       by simp
     moreover
     have "InvariantConsistent (getM stateB)"
       using `InvariantConsistent (getM stateA)`
-	`isUnitClause uc ul (elements (getM stateA))`
-	`getM stateB = getM stateA @ [(ul, False)]`
-	InvariantConsistentAfterUnitPropagate [of "getM stateA" "uc" "ul" "getM stateB"]
+        `isUnitClause uc ul (elements (getM stateA))`
+        `getM stateB = getM stateA @ [(ul, False)]`
+        InvariantConsistentAfterUnitPropagate [of "getM stateA" "uc" "ul" "getM stateB"]
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
       using `InvariantUniq (getM stateA)`
-	`isUnitClause uc ul (elements (getM stateA))`
-	`getM stateB = getM stateA @ [(ul, False)]`
-	InvariantUniqAfterUnitPropagate [of "getM stateA" "uc" "ul" "getM stateB"]
+        `isUnitClause uc ul (elements (getM stateA))`
+        `getM stateB = getM stateA @ [(ul, False)]`
+        InvariantUniqAfterUnitPropagate [of "getM stateA" "uc" "ul" "getM stateB"]
       by simp
     moreover
     have "InvariantReasonClauses (getF stateB) (getM stateB)"
       using `getF stateB = getF stateA` 
-	`InvariantReasonClauses (getF stateA) (getM stateA)`
-	`isUnitClause uc ul (elements (getM stateA))`
-	`getM stateB = getM stateA @ [(ul, False)]`
-	`formulaEntailsClause (getF stateA) uc`
-	InvariantReasonClausesAfterUnitPropagate[of "getF stateA" "getM stateA" "uc" "ul" "getM stateB"]
+        `InvariantReasonClauses (getF stateA) (getM stateA)`
+        `isUnitClause uc ul (elements (getM stateA))`
+        `getM stateB = getM stateA @ [(ul, False)]`
+        `formulaEntailsClause (getF stateA) uc`
+        InvariantReasonClausesAfterUnitPropagate[of "getF stateA" "getM stateA" "uc" "ul" "getM stateB"]
       by simp
     moreover
     have "InvariantEquivalent F0 (getF stateB)"
@@ -611,17 +610,17 @@ proof-
     moreover 
     have "InvariantCFalse (getConflictFlag stateB) (getM stateB) (getC stateB)"
       using `getM stateB = getM stateA @ [(ul, False)]` 
-	`getConflictFlag stateB = getConflictFlag stateA`
-	`getC stateB = getC stateA`
-	`InvariantCFalse (getConflictFlag stateA) (getM stateA) (getC stateA)`
-	InvariantCFalseAfterUnitPropagate[of "getConflictFlag stateA" "getM stateA" "getC stateA" "getM stateB" "ul"]
+        `getConflictFlag stateB = getConflictFlag stateA`
+        `getC stateB = getC stateA`
+        `InvariantCFalse (getConflictFlag stateA) (getM stateA) (getC stateA)`
+        InvariantCFalseAfterUnitPropagate[of "getConflictFlag stateA" "getM stateA" "getC stateA" "getM stateB" "ul"]
       by simp
     moreover 
     have "InvariantCEntailed (getConflictFlag stateB) (getF stateB) (getC stateB)"
       using `getF stateB = getF stateA` 
-	`getConflictFlag stateB = getConflictFlag stateA`
-	`getC stateB = getC stateA`
-	`InvariantCEntailed (getConflictFlag stateA) (getF stateA) (getC stateA)`
+        `getConflictFlag stateB = getConflictFlag stateA`
+        `getC stateB = getC stateA`
+        `InvariantCEntailed (getConflictFlag stateA) (getF stateA) (getC stateA)`
       by simp
     ultimately
     have ?thesis
@@ -644,33 +643,33 @@ proof-
   
     have "InvariantVarsM (getM stateB) F0 decisionVars"
       using `InvariantVarsM (getM stateA) F0 decisionVars`
-	`getM stateB = getM stateA`
+        `getM stateB = getM stateA`
       by simp
     moreover
     have "InvariantVarsF (getF stateB) F0 decisionVars"
       using `InvariantVarsF (getF stateA) F0 decisionVars`
-	`getF stateB = getF stateA`
+        `getF stateB = getF stateA`
       by simp
     moreover
     have "InvariantConsistent (getM stateB)"
       using `InvariantConsistent (getM stateA)`
-	`getM stateB = getM stateA`
+        `getM stateB = getM stateA`
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
       using `InvariantUniq (getM stateA)`
-	`getM stateB = getM stateA`
+        `getM stateB = getM stateA`
       by simp
     moreover
     have "InvariantReasonClauses (getF stateB) (getM stateB)"
       using `InvariantReasonClauses (getF stateA) (getM stateA)`
-	`getF stateB = getF stateA`
-	`getM stateB = getM stateA`
+        `getF stateB = getF stateA`
+        `getM stateB = getM stateA`
       by simp
     moreover
     have "InvariantEquivalent F0 (getF stateB)"
       using `InvariantEquivalent F0 (getF stateA)`
-	`getF stateB = getF stateA`
+        `getF stateB = getF stateA`
       by simp
     moreover 
     have "InvariantCFalse (getConflictFlag stateB) (getM stateB) (getC stateB)"
@@ -699,75 +698,75 @@ proof-
   {
     assume "appliedExplain stateA stateB"
     then obtain l::Literal and reason::Clause where
-	"getConflictFlag stateA = True"
-	"l el getC stateA"
-	"formulaEntailsClause (getF stateA) reason"
-	"isReason reason (opposite l) (elements (getM stateA))"
-	"getF stateB = getF stateA"
-	"getM stateB = getM stateA"
-	"getConflictFlag stateB = True"
-	"getC stateB = resolve (getC stateA) reason l"
+        "getConflictFlag stateA = True"
+        "l el getC stateA"
+        "formulaEntailsClause (getF stateA) reason"
+        "isReason reason (opposite l) (elements (getM stateA))"
+        "getF stateB = getF stateA"
+        "getM stateB = getM stateA"
+        "getConflictFlag stateB = True"
+        "getC stateB = resolve (getC stateA) reason l"
       unfolding appliedExplain_def
       by auto
 
     have "InvariantVarsM (getM stateB) F0 decisionVars"
       using `InvariantVarsM (getM stateA) F0 decisionVars`
-	`getM stateB = getM stateA`
+        `getM stateB = getM stateA`
       by simp
     moreover
     have "InvariantVarsF (getF stateB) F0 decisionVars"
       using `InvariantVarsF (getF stateA) F0 decisionVars`
-	`getF stateB = getF stateA`
+        `getF stateB = getF stateA`
       by simp
     moreover
     have "InvariantConsistent (getM stateB)"
       using 
-	`getM stateB = getM stateA`
-	`InvariantConsistent (getM stateA)`
+        `getM stateB = getM stateA`
+        `InvariantConsistent (getM stateA)`
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
       using 
-	`getM stateB = getM stateA`
-	`InvariantUniq (getM stateA)`
+        `getM stateB = getM stateA`
+        `InvariantUniq (getM stateA)`
       by simp
     moreover
     have "InvariantReasonClauses (getF stateB) (getM stateB)"
       using 
-	`getF stateB = getF stateA`
-	`getM stateB = getM stateA`
-	`InvariantReasonClauses (getF stateA) (getM stateA)`
+        `getF stateB = getF stateA`
+        `getM stateB = getM stateA`
+        `InvariantReasonClauses (getF stateA) (getM stateA)`
       by simp
     moreover
     have "InvariantEquivalent F0 (getF stateB)"
       using 
-	`getF stateB = getF stateA`
-	`InvariantEquivalent F0 (getF stateA)`
+        `getF stateB = getF stateA`
+        `InvariantEquivalent F0 (getF stateA)`
       by simp
     moreover 
     have "InvariantCFalse (getConflictFlag stateB) (getM stateB) (getC stateB)"
       using 
-	`InvariantCFalse (getConflictFlag stateA) (getM stateA) (getC stateA)`
-	`l el getC stateA`
-	`isReason reason (opposite l) (elements (getM stateA))`
-	`getM stateB = getM stateA`
-	`getC stateB = resolve (getC stateA) reason l`
-	`getConflictFlag stateA = True`
-	`getConflictFlag stateB = True`
-	InvariantCFalseAfterExplain[of "getConflictFlag stateA" "getM stateA" "getC stateA" "opposite l" "reason" "getC stateB"]
+        `InvariantCFalse (getConflictFlag stateA) (getM stateA) (getC stateA)`
+        `l el getC stateA`
+        `isReason reason (opposite l) (elements (getM stateA))`
+        `getM stateB = getM stateA`
+        `getC stateB = resolve (getC stateA) reason l`
+        `getConflictFlag stateA = True`
+        `getConflictFlag stateB = True`
+        InvariantCFalseAfterExplain[of "getConflictFlag stateA" "getM stateA" "getC stateA" "opposite l" "reason" "getC stateB"]
       by simp
     moreover 
     have "InvariantCEntailed (getConflictFlag stateB) (getF stateB) (getC stateB)"
       using 
-	`InvariantCEntailed (getConflictFlag stateA) (getF stateA) (getC stateA)`
-	`l el getC stateA`
-	`isReason reason (opposite l) (elements (getM stateA))`
-	`getF stateB = getF stateA`
-	`getC stateB = resolve (getC stateA) reason l`
-	`getConflictFlag stateA = True`
-	`getConflictFlag stateB = True`
-	`formulaEntailsClause (getF stateA) reason`
-	InvariantCEntailedAfterExplain[of "getConflictFlag stateA" "getF stateA" "getC stateA" "reason" "getC stateB" "opposite l"]
+        `InvariantCEntailed (getConflictFlag stateA) (getF stateA) (getC stateA)`
+        `l el getC stateA`
+        `isReason reason (opposite l) (elements (getM stateA))`
+        `getF stateB = getF stateA`
+        `getC stateB = resolve (getC stateA) reason l`
+        `getConflictFlag stateA = True`
+        `getConflictFlag stateB = True`
+        `formulaEntailsClause (getF stateA) reason`
+        InvariantCEntailedAfterExplain[of "getConflictFlag stateA" "getF stateA" "getC stateA" "reason" "getC stateB" "opposite l"]
       by simp
     moreover 
     ultimately
@@ -795,7 +794,7 @@ proof-
 
     have "InvariantVarsM (getM stateB) F0 decisionVars"
       using `InvariantVarsM (getM stateA) F0 decisionVars`
-	`getM stateB = getM stateA`
+        `getM stateB = getM stateA`
       by simp
     moreover
     from `InvariantCFalse (getConflictFlag stateA) (getM stateA) (getC stateA)` `getConflictFlag stateA = True`
@@ -804,60 +803,60 @@ proof-
       by simp
     with `InvariantVarsM (getM stateA) F0 decisionVars`
     have "(vars (getC stateA)) \<subseteq> vars F0 \<union> decisionVars"
-	unfolding InvariantVarsM_def
-	using valuationContainsItsFalseClausesVariables[of "getC stateA" "elements (getM stateA)"]
-	by simp
+        unfolding InvariantVarsM_def
+        using valuationContainsItsFalseClausesVariables[of "getC stateA" "elements (getM stateA)"]
+        by simp
     hence "InvariantVarsF (getF stateB) F0 decisionVars"
       using `getF stateB = getF stateA @ [getC stateA]`
-	`InvariantVarsF (getF stateA) F0 decisionVars`
-	InvariantVarsFAfterLearn [of "getF stateA" "F0" "decisionVars" "getC stateA" "getF stateB"]
+        `InvariantVarsF (getF stateA) F0 decisionVars`
+        InvariantVarsFAfterLearn [of "getF stateA" "F0" "decisionVars" "getC stateA" "getF stateB"]
       by simp
     moreover
     have "InvariantConsistent (getM stateB)"
       using `InvariantConsistent (getM stateA)`
-	`getM stateB = getM stateA`
+        `getM stateB = getM stateA`
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
       using `InvariantUniq (getM stateA)`
-	`getM stateB = getM stateA`
+        `getM stateB = getM stateA`
       by simp
     moreover
     have "InvariantReasonClauses (getF stateB) (getM stateB)"
       using
-	`InvariantReasonClauses (getF stateA) (getM stateA)`
-	`formulaEntailsClause (getF stateA) (getC stateA)`
-	`getF stateB = getF stateA @ [getC stateA]`
-	`getM stateB = getM stateA`
-	InvariantReasonClausesAfterLearn[of "getF stateA" "getM stateA" "getC stateA" "getF stateB"]
+        `InvariantReasonClauses (getF stateA) (getM stateA)`
+        `formulaEntailsClause (getF stateA) (getC stateA)`
+        `getF stateB = getF stateA @ [getC stateA]`
+        `getM stateB = getM stateA`
+        InvariantReasonClausesAfterLearn[of "getF stateA" "getM stateA" "getC stateA" "getF stateB"]
       by simp
     moreover
     have "InvariantEquivalent F0 (getF stateB)"
       using
-	`InvariantEquivalent F0 (getF stateA)`
-	`formulaEntailsClause (getF stateA) (getC stateA)`
-	`getF stateB = getF stateA @ [getC stateA]`
-	InvariantEquivalentAfterLearn[of "F0" "getF stateA" "getC stateA" "getF stateB"]
+        `InvariantEquivalent F0 (getF stateA)`
+        `formulaEntailsClause (getF stateA) (getC stateA)`
+        `getF stateB = getF stateA @ [getC stateA]`
+        InvariantEquivalentAfterLearn[of "F0" "getF stateA" "getC stateA" "getF stateB"]
       by simp
     moreover 
     have "InvariantCFalse (getConflictFlag stateB) (getM stateB) (getC stateB)"
       using `InvariantCFalse (getConflictFlag stateA) (getM stateA) (getC stateA)`
-	`getM stateB = getM stateA`
-	`getConflictFlag stateA = True`
-	`getConflictFlag stateB = True`
-	`getM stateB = getM stateA`
-	`getC stateB = getC stateA`
+        `getM stateB = getM stateA`
+        `getConflictFlag stateA = True`
+        `getConflictFlag stateB = True`
+        `getM stateB = getM stateA`
+        `getC stateB = getC stateA`
       by simp
     moreover 
     have "InvariantCEntailed (getConflictFlag stateB) (getF stateB) (getC stateB)"
       using
-	`InvariantCEntailed (getConflictFlag stateA) (getF stateA) (getC stateA)`
-	`formulaEntailsClause (getF stateA) (getC stateA)`
-	`getF stateB = getF stateA @ [getC stateA]`
-	`getConflictFlag stateA = True`
-	`getConflictFlag stateB = True`
-	`getC stateB = getC stateA`
-	InvariantCEntailedAfterLearn[of "getConflictFlag stateA" "getF stateA" "getC stateA" "getF stateB"]
+        `InvariantCEntailed (getConflictFlag stateA) (getF stateA) (getC stateA)`
+        `formulaEntailsClause (getF stateA) (getC stateA)`
+        `getF stateB = getF stateA @ [getC stateA]`
+        `getConflictFlag stateA = True`
+        `getConflictFlag stateB = True`
+        `getC stateB = getC stateA`
+        InvariantCEntailedAfterLearn[of "getConflictFlag stateA" "getF stateA" "getC stateA" "getF stateB"]
       by simp
     ultimately
     have ?thesis
@@ -928,45 +927,45 @@ proof-
     
     have "InvariantVarsM (getM stateB) F0 decisionVars"
       using `InvariantVarsM (getM stateA) F0 decisionVars`
-	`isUnitClause (getC stateA) l (elements (prefixToLevel level (getM stateA)))`
-	`isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
-	`var l \<in> vars F0 \<union> decisionVars`
-	`formulaEntailsClause (getF stateA) (getC stateA)`
-	`getF stateB = getF stateA`
-	`getM stateB = prefixToLevel level (getM stateA) @ [(l, False)]`
-	InvariantVarsMAfterBackjump[of "getM stateA" "F0" "decisionVars" "prefixToLevel level (getM stateA)" "l" "getM stateB"]
+        `isUnitClause (getC stateA) l (elements (prefixToLevel level (getM stateA)))`
+        `isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
+        `var l \<in> vars F0 \<union> decisionVars`
+        `formulaEntailsClause (getF stateA) (getC stateA)`
+        `getF stateB = getF stateA`
+        `getM stateB = prefixToLevel level (getM stateA) @ [(l, False)]`
+        InvariantVarsMAfterBackjump[of "getM stateA" "F0" "decisionVars" "prefixToLevel level (getM stateA)" "l" "getM stateB"]
       by simp
     moreover
     have "InvariantVarsF (getF stateB) F0 decisionVars"
       using `InvariantVarsF (getF stateA) F0 decisionVars`
-	`getF stateB = getF stateA`
+        `getF stateB = getF stateA`
       by simp
     moreover
     have "InvariantConsistent (getM stateB)"
       using `InvariantConsistent (getM stateA)`
-	`isUnitClause (getC stateA) l (elements (prefixToLevel level (getM stateA)))`
-	`isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
-	`getM stateB = prefixToLevel level (getM stateA) @ [(l, False)]`
-	InvariantConsistentAfterBackjump[of "getM stateA" "prefixToLevel level (getM stateA)" "getC stateA" "l" "getM stateB"]
+        `isUnitClause (getC stateA) l (elements (prefixToLevel level (getM stateA)))`
+        `isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
+        `getM stateB = prefixToLevel level (getM stateA) @ [(l, False)]`
+        InvariantConsistentAfterBackjump[of "getM stateA" "prefixToLevel level (getM stateA)" "getC stateA" "l" "getM stateB"]
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
       using `InvariantUniq (getM stateA)`
-	`isUnitClause (getC stateA) l (elements (prefixToLevel level (getM stateA)))`
-	`isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
-	`getM stateB = prefixToLevel level (getM stateA) @ [(l, False)]`
-	InvariantUniqAfterBackjump[of "getM stateA" "prefixToLevel level (getM stateA)" "getC stateA" "l" "getM stateB"]
+        `isUnitClause (getC stateA) l (elements (prefixToLevel level (getM stateA)))`
+        `isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
+        `getM stateB = prefixToLevel level (getM stateA) @ [(l, False)]`
+        InvariantUniqAfterBackjump[of "getM stateA" "prefixToLevel level (getM stateA)" "getC stateA" "l" "getM stateB"]
       by simp
     moreover
     have "InvariantReasonClauses (getF stateB) (getM stateB)"
       using `InvariantUniq (getM stateA)` `InvariantReasonClauses (getF stateA) (getM stateA)`
-	`isUnitClause (getC stateA) l (elements (prefixToLevel level (getM stateA)))`
-	`isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
-	`formulaEntailsClause (getF stateA) (getC stateA)`
-	`getF stateB = getF stateA`
-	`getM stateB = prefixToLevel level (getM stateA) @ [(l, False)]`
-	InvariantReasonClausesAfterBackjump[of "getF stateA" "getM stateA"
-	"prefixToLevel level (getM stateA)" "getC stateA"  "l" "getM stateB"]
+        `isUnitClause (getC stateA) l (elements (prefixToLevel level (getM stateA)))`
+        `isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
+        `formulaEntailsClause (getF stateA) (getC stateA)`
+        `getF stateB = getF stateA`
+        `getM stateB = prefixToLevel level (getM stateA) @ [(l, False)]`
+        InvariantReasonClausesAfterBackjump[of "getF stateA" "getM stateA"
+        "prefixToLevel level (getM stateA)" "getC stateA"  "l" "getM stateB"]
       by simp
     moreover
     have "InvariantEquivalent F0 (getF stateB)"
@@ -1425,44 +1424,44 @@ proof-
       let ?Q1 = "{M::LiteralTrail. \<exists> state. state \<in> Q \<and> (getM state) = M}"
       from `state \<in> Q`
       have "getM state \<in> ?Q1"
-	by auto
+        by auto
       from `finite decisionVars` 
       have "finite (vars F0 \<union> decisionVars)"
-	using finiteVarsFormula[of "F0"]
-	by simp
+        using finiteVarsFormula[of "F0"]
+        by simp
       hence "wf (lexLessRestricted (vars F0 \<union> decisionVars))"
       using  wfLexLessRestricted[of "vars F0 \<union> decisionVars"]
       by simp
     with `getM state \<in> ?Q1`
       obtain Mmin where "Mmin \<in> ?Q1" "\<forall>M'. (M', Mmin) \<in> lexLessRestricted (vars F0 \<union> decisionVars) \<longrightarrow> M' \<notin> ?Q1"
-	unfolding wf_eq_minimal
-	apply (erule_tac x="?Q1" in allE)
-	apply (erule_tac x="getM state" in allE)
-	by auto 
+        unfolding wf_eq_minimal
+        apply (erule_tac x="?Q1" in allE)
+        apply (erule_tac x="getM state" in allE)
+        by auto 
       from `Mmin \<in> ?Q1` obtain stateMin
-	where "stateMin \<in> Q" "(getM stateMin) = Mmin"
-	by auto
+        where "stateMin \<in> Q" "(getM stateMin) = Mmin"
+        by auto
       have "\<forall>state'. (state', stateMin) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q"
       proof
-	fix state'
-	show "(state', stateMin) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q"
-	proof
-	  assume "(state', stateMin) \<in> lexLessState F0 decisionVars"
-	  hence "(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> decisionVars)"
-	    unfolding lexLessState_def
-	    by auto
-	  from `\<forall>M'. (M', Mmin) \<in> lexLessRestricted (vars F0 \<union>  decisionVars) \<longrightarrow> M' \<notin> ?Q1`
-	    `(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> decisionVars)` `getM stateMin = Mmin`
-	  have "getM state' \<notin> ?Q1"
-	    by simp
-	  with `getM stateMin = Mmin`
-	  show "state' \<notin> Q"
-	    by auto
-	qed
+        fix state'
+        show "(state', stateMin) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q"
+        proof
+          assume "(state', stateMin) \<in> lexLessState F0 decisionVars"
+          hence "(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> decisionVars)"
+            unfolding lexLessState_def
+            by auto
+          from `\<forall>M'. (M', Mmin) \<in> lexLessRestricted (vars F0 \<union>  decisionVars) \<longrightarrow> M' \<notin> ?Q1`
+            `(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> decisionVars)` `getM stateMin = Mmin`
+          have "getM state' \<notin> ?Q1"
+            by simp
+          with `getM stateMin = Mmin`
+          show "state' \<notin> Q"
+            by auto
+        qed
       qed
       with `stateMin \<in> Q`
       have "\<exists> stateMin \<in> Q. (\<forall>state'. (state', stateMin) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q)"
-	by auto
+        by auto
     }
     thus ?thesis
       by auto
@@ -1482,38 +1481,38 @@ proof-
       let ?Q1 = "{b::bool. \<exists> state. state \<in> Q \<and> (getM state) = ?M \<and> (getConflictFlag state) = b}"
       from `state \<in> Q` 
       have "getConflictFlag state \<in> ?Q1"
-	by auto
+        by auto
       with wfBoolLess
       obtain bMin where "bMin \<in> ?Q1" "\<forall>b'. (b', bMin) \<in> boolLess \<longrightarrow> b' \<notin> ?Q1"
-	unfolding wf_eq_minimal
-	apply (erule_tac x="?Q1" in allE)
-	apply (erule_tac x="getConflictFlag state" in allE)
-	by auto
+        unfolding wf_eq_minimal
+        apply (erule_tac x="?Q1" in allE)
+        apply (erule_tac x="getConflictFlag state" in allE)
+        by auto
       from `bMin \<in> ?Q1` obtain stateMin
-	where "stateMin \<in> Q" "(getM stateMin) = ?M" "getConflictFlag stateMin = bMin"
-	by auto
+        where "stateMin \<in> Q" "(getM stateMin) = ?M" "getConflictFlag stateMin = bMin"
+        by auto
       have "\<forall>state'. (state', stateMin) \<in> boolLessState \<longrightarrow> state' \<notin> Q"
       proof
-	fix state'
-	show "(state', stateMin) \<in> boolLessState \<longrightarrow> state' \<notin> Q"
-	proof
-	  assume "(state', stateMin) \<in> boolLessState"
-	  with `getM stateMin = ?M` 
-	  have "getM state' = getM stateMin" "(getConflictFlag state', getConflictFlag stateMin) \<in> boolLess"
-	    unfolding boolLessState_def
-	    by auto
-	  from `\<forall>b'. (b', bMin) \<in> boolLess \<longrightarrow> b' \<notin> ?Q1` 
-	    `(getConflictFlag state', getConflictFlag stateMin) \<in> boolLess` `getConflictFlag stateMin = bMin`
-	  have "getConflictFlag state' \<notin> ?Q1"
-	    by simp
-	  with `getM state' = getM stateMin` `getM stateMin = ?M`
-	  show "state' \<notin> Q"
-	    by auto
-	qed
+        fix state'
+        show "(state', stateMin) \<in> boolLessState \<longrightarrow> state' \<notin> Q"
+        proof
+          assume "(state', stateMin) \<in> boolLessState"
+          with `getM stateMin = ?M` 
+          have "getM state' = getM stateMin" "(getConflictFlag state', getConflictFlag stateMin) \<in> boolLess"
+            unfolding boolLessState_def
+            by auto
+          from `\<forall>b'. (b', bMin) \<in> boolLess \<longrightarrow> b' \<notin> ?Q1` 
+            `(getConflictFlag state', getConflictFlag stateMin) \<in> boolLess` `getConflictFlag stateMin = bMin`
+          have "getConflictFlag state' \<notin> ?Q1"
+            by simp
+          with `getM state' = getM stateMin` `getM stateMin = ?M`
+          show "state' \<notin> Q"
+            by auto
+        qed
       qed
       with `stateMin \<in> Q` 
       have "\<exists> stateMin \<in> Q. (\<forall>state'. (state', stateMin) \<in> boolLessState \<longrightarrow> state' \<notin> Q)"
-	by auto
+        by auto
     }
     thus ?thesis
       by auto
@@ -1533,38 +1532,38 @@ proof-
       let ?Q1 = "{C::Clause. \<exists> state. state \<in> Q \<and> (getM state) = ?M \<and> (getC state) = C}"
       from `state \<in> Q` 
       have "getC state \<in> ?Q1"
-	by auto   
+        by auto   
       with wfMultLess[of "?M"]
       obtain Cmin where "Cmin \<in> ?Q1" "\<forall>C'. (C', Cmin) \<in> multLess ?M \<longrightarrow> C' \<notin> ?Q1"
-	unfolding wf_eq_minimal
-	apply (erule_tac x="?Q1" in allE)
-	apply (erule_tac x="getC state" in allE)
-	by auto
+        unfolding wf_eq_minimal
+        apply (erule_tac x="?Q1" in allE)
+        apply (erule_tac x="getC state" in allE)
+        by auto
       from `Cmin \<in> ?Q1` obtain stateMin
-	where "stateMin \<in> Q" "(getM stateMin) = ?M" "getC stateMin = Cmin"
-	by auto
+        where "stateMin \<in> Q" "(getM stateMin) = ?M" "getC stateMin = Cmin"
+        by auto
       have "\<forall>state'. (state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q"
       proof
-	fix state'
-	show "(state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q"
-	proof
-	  assume "(state', stateMin) \<in> multLessState"
-	  with `getM stateMin = ?M`
-	  have "getM state' = getM stateMin" "(getC state', getC stateMin) \<in> multLess ?M"
-	    unfolding multLessState_def
-	    by auto
-	  from `\<forall>C'. (C', Cmin) \<in> multLess ?M \<longrightarrow> C' \<notin> ?Q1`
-	    `(getC state', getC stateMin) \<in> multLess ?M` `getC stateMin = Cmin`
-	  have "getC state' \<notin> ?Q1"
-	    by simp
-	  with `getM state' = getM stateMin` `getM stateMin = ?M`
-	  show "state' \<notin> Q"
-	    by auto
-	qed
+        fix state'
+        show "(state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q"
+        proof
+          assume "(state', stateMin) \<in> multLessState"
+          with `getM stateMin = ?M`
+          have "getM state' = getM stateMin" "(getC state', getC stateMin) \<in> multLess ?M"
+            unfolding multLessState_def
+            by auto
+          from `\<forall>C'. (C', Cmin) \<in> multLess ?M \<longrightarrow> C' \<notin> ?Q1`
+            `(getC state', getC stateMin) \<in> multLess ?M` `getC stateMin = Cmin`
+          have "getC state' \<notin> ?Q1"
+            by simp
+          with `getM state' = getM stateMin` `getM stateMin = ?M`
+          show "state' \<notin> Q"
+            by auto
+        qed
       qed
       with `stateMin \<in> Q` 
       have "\<exists> stateMin \<in> Q. (\<forall>state'. (state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q)"
-	by auto
+        by auto
     }
     thus ?thesis
       by auto
@@ -1584,43 +1583,43 @@ proof-
       let ?C = "(getC state)"
       let ?conflictFlag = "(getConflictFlag state)"
       let ?Q1 = "{F::Formula. \<exists> state. state \<in> Q \<and> 
-	(getM state) = ?M \<and>  (getConflictFlag state) = ?conflictFlag \<and> (getC state) = ?C \<and> (getF state) = F}"
+        (getM state) = ?M \<and>  (getConflictFlag state) = ?conflictFlag \<and> (getC state) = ?C \<and> (getF state) = F}"
       from `state \<in> Q` 
       have "getF state \<in> ?Q1"
-	by auto      
+        by auto      
       with wfLearnLess[of "?C"]
       obtain Fmin where "Fmin \<in> ?Q1" "\<forall>F'. (F', Fmin) \<in> learnLess ?C \<longrightarrow> F' \<notin> ?Q1"
-	unfolding wf_eq_minimal
-	apply (erule_tac x="?Q1" in allE)
-	apply (erule_tac x="getF state" in allE)
-	by auto
+        unfolding wf_eq_minimal
+        apply (erule_tac x="?Q1" in allE)
+        apply (erule_tac x="getF state" in allE)
+        by auto
       from `Fmin \<in> ?Q1` obtain stateMin
-	where "stateMin \<in> Q" "(getM stateMin) = ?M" "getC stateMin = ?C" "getConflictFlag stateMin = ?conflictFlag" "getF stateMin = Fmin"
-	by auto
+        where "stateMin \<in> Q" "(getM stateMin) = ?M" "getC stateMin = ?C" "getConflictFlag stateMin = ?conflictFlag" "getF stateMin = Fmin"
+        by auto
       have "\<forall>state'. (state', stateMin) \<in> learnLessState \<longrightarrow> state' \<notin> Q"
       proof
-	fix state'
-	show "(state', stateMin) \<in> learnLessState \<longrightarrow> state' \<notin> Q"
-	proof
-	  assume "(state', stateMin) \<in> learnLessState"
-	  with `getM stateMin = ?M` `getC stateMin = ?C` `getConflictFlag stateMin = ?conflictFlag`
-	  have "getM state' = getM stateMin" "getC state' = getC stateMin" 
-	    "getConflictFlag state' = getConflictFlag stateMin" "(getF state', getF stateMin) \<in> learnLess ?C"
-	    unfolding learnLessState_def
-	    by auto
-	  from `\<forall>F'. (F', Fmin) \<in> learnLess ?C \<longrightarrow> F' \<notin> ?Q1`
-	    `(getF state', getF stateMin) \<in> learnLess ?C` `getF stateMin = Fmin`
-	  have "getF state' \<notin> ?Q1"
-	    by simp
-	  with `getM state' = getM stateMin` `getC state' = getC stateMin` `getConflictFlag state' = getConflictFlag stateMin`
-	    `getM stateMin = ?M` `getC stateMin = ?C` `getConflictFlag stateMin = ?conflictFlag` `getF stateMin = Fmin`
-	  show "state' \<notin> Q"
-	    by auto
-	qed
+        fix state'
+        show "(state', stateMin) \<in> learnLessState \<longrightarrow> state' \<notin> Q"
+        proof
+          assume "(state', stateMin) \<in> learnLessState"
+          with `getM stateMin = ?M` `getC stateMin = ?C` `getConflictFlag stateMin = ?conflictFlag`
+          have "getM state' = getM stateMin" "getC state' = getC stateMin" 
+            "getConflictFlag state' = getConflictFlag stateMin" "(getF state', getF stateMin) \<in> learnLess ?C"
+            unfolding learnLessState_def
+            by auto
+          from `\<forall>F'. (F', Fmin) \<in> learnLess ?C \<longrightarrow> F' \<notin> ?Q1`
+            `(getF state', getF stateMin) \<in> learnLess ?C` `getF stateMin = Fmin`
+          have "getF state' \<notin> ?Q1"
+            by simp
+          with `getM state' = getM stateMin` `getC state' = getC stateMin` `getConflictFlag state' = getConflictFlag stateMin`
+            `getM stateMin = ?M` `getC stateMin = ?C` `getConflictFlag stateMin = ?conflictFlag` `getF stateMin = Fmin`
+          show "state' \<notin> Q"
+            by auto
+        qed
       qed
       with `stateMin \<in> Q` 
       have "\<exists> stateMin \<in> Q. (\<forall>state'. (state', stateMin) \<in> learnLessState \<longrightarrow> state' \<notin> Q)"
-	by auto
+        by auto
     }
     thus ?thesis
       by auto
@@ -1644,157 +1643,157 @@ proof-
 
       from `finite decisionVars`
       have "wf (lexLessState F0 decisionVars)"
-	using wfLexLessState[of "decisionVars" "F0"]
-	by simp
+        using wfLexLessState[of "decisionVars" "F0"]
+        by simp
 
       with `state \<in> Q` obtain state0
-	where "state0 \<in> Q" "\<forall>state'. (state', state0) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q"
-	unfolding wf_eq_minimal
-	by auto
+        where "state0 \<in> Q" "\<forall>state'. (state', state0) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q"
+        unfolding wf_eq_minimal
+        by auto
       let ?Q0 = "{state. state \<in> Q \<and> (getM state) = (getM state0)}"
       from `state0 \<in> Q`
       have "state0 \<in> ?Q0"
-	by simp
+        by simp
       have "wf boolLessState"
-	using wfBoolLessState
-	.
+        using wfBoolLessState
+        .
       with `state0 \<in> Q` obtain state1
-	where "state1 \<in> ?Q0" "\<forall>state'. (state', state1) \<in> boolLessState \<longrightarrow> state' \<notin> ?Q0"
-	unfolding wf_eq_minimal
-	apply (erule_tac x="?Q0" in allE)
-	apply (erule_tac x="state0" in allE)
-	by auto
+        where "state1 \<in> ?Q0" "\<forall>state'. (state', state1) \<in> boolLessState \<longrightarrow> state' \<notin> ?Q0"
+        unfolding wf_eq_minimal
+        apply (erule_tac x="?Q0" in allE)
+        apply (erule_tac x="state0" in allE)
+        by auto
       let ?Q1 = "{state. state \<in> Q \<and> getM state = getM state0 \<and> getConflictFlag state = getConflictFlag state1}"
       from `state1 \<in> ?Q0`
       have "state1 \<in> ?Q1"
-	by simp
+        by simp
       have "wf multLessState"
-	using wfMultLessState
-	.
+        using wfMultLessState
+        .
       with `state1 \<in> ?Q1` obtain state2
-	where "state2 \<in> ?Q1" "\<forall>state'. (state', state2) \<in> multLessState \<longrightarrow> state' \<notin> ?Q1"
-	unfolding wf_eq_minimal
-	apply (erule_tac x="?Q1" in allE)
-	apply (erule_tac x="state1" in allE)
-	by auto
+        where "state2 \<in> ?Q1" "\<forall>state'. (state', state2) \<in> multLessState \<longrightarrow> state' \<notin> ?Q1"
+        unfolding wf_eq_minimal
+        apply (erule_tac x="?Q1" in allE)
+        apply (erule_tac x="state1" in allE)
+        by auto
       let ?Q2 = "{state. state \<in> Q \<and> getM state = getM state0 \<and> 
-	getConflictFlag state = getConflictFlag state1 \<and>  getC state = getC state2}"
+        getConflictFlag state = getConflictFlag state1 \<and>  getC state = getC state2}"
       from `state2 \<in> ?Q1`
       have "state2 \<in> ?Q2"
-	by simp
+        by simp
       have "wf learnLessState"
-	using wfLearnLessState
-	.
+        using wfLearnLessState
+        .
       with `state2 \<in> ?Q2` obtain state3
-	where "state3 \<in> ?Q2" "\<forall>state'. (state', state3) \<in> learnLessState \<longrightarrow> state' \<notin> ?Q2"
-	unfolding wf_eq_minimal
-	apply (erule_tac x="?Q2" in allE)
-	apply (erule_tac x="state2" in allE)
-	by auto
+        where "state3 \<in> ?Q2" "\<forall>state'. (state', state3) \<in> learnLessState \<longrightarrow> state' \<notin> ?Q2"
+        unfolding wf_eq_minimal
+        apply (erule_tac x="?Q2" in allE)
+        apply (erule_tac x="state2" in allE)
+        by auto
       from `state3 \<in> ?Q2`
       have "state3 \<in> Q"
-	by simp
+        by simp
       from `state1 \<in> ?Q0`
       have "getM state1 = getM state0"
-	by simp
+        by simp
       from `state2 \<in> ?Q1`
       have "getM state2 = getM state0" "getConflictFlag state2 = getConflictFlag state1"
-	by auto
+        by auto
       from `state3 \<in> ?Q2`
       have "getM state3 = getM state0" "getConflictFlag state3 = getConflictFlag state1" "getC state3 = getC state2"
-	by auto
+        by auto
       let ?stateMin = state3
       have "\<forall>state'. (state', ?stateMin) \<in> terminationLess F0 decisionVars \<longrightarrow> state' \<notin> Q"
       proof
-	fix state'
-	show "(state', ?stateMin) \<in> terminationLess F0 decisionVars \<longrightarrow> state' \<notin> Q"
-	proof
-	  assume "(state', ?stateMin) \<in> terminationLess F0 decisionVars"
-	  hence 
-	    "(state', ?stateMin) \<in> lexLessState F0 decisionVars \<or>
-	    (state', ?stateMin) \<in> boolLessState \<or>
-	    (state', ?stateMin) \<in> multLessState \<or>
-	    (state', ?stateMin) \<in> learnLessState"
-	    unfolding terminationLess_def
-	    by auto
-	  moreover
-	  {
-	    assume "(state', ?stateMin) \<in> lexLessState F0 decisionVars"
-	    with `getM state3 = getM state0`
-	    have "(state', state0) \<in> lexLessState F0 decisionVars"
-	      unfolding lexLessState_def
-	      by simp
-	    with `\<forall>state'. (state', state0) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q`
-	    have "state' \<notin> Q"
-	      by simp
-	  }
-	  moreover
-	  {
-	    assume "(state', ?stateMin) \<in> boolLessState"
-	    from `?stateMin \<in> ?Q2`
-	      `getM state1 = getM state0`
-	    have "getConflictFlag state3 = getConflictFlag state1" "getM state3 = getM state1"
-	      by auto
-	    with `(state', ?stateMin) \<in> boolLessState`
-	    have "(state', state1) \<in> boolLessState"
-	      unfolding boolLessState_def
-	      by simp
-	    with `\<forall>state'. (state', state1) \<in> boolLessState \<longrightarrow> state' \<notin> ?Q0`
-	    have "state' \<notin> ?Q0"
-	      by simp
-	    from `(state', state1) \<in> boolLessState` `getM state1 = getM state0`
-	    have "getM state' = getM state0"
-	      unfolding boolLessState_def
-	      by auto
-	    with `state' \<notin> ?Q0`
-	    have "state' \<notin> Q"
-	      by simp
-	  }
-	  moreover
-	  {
-	    assume "(state', ?stateMin) \<in> multLessState"
-	    from `?stateMin \<in> ?Q2` 
-	      `getM state1 = getM state0` `getM state2 = getM state0`
-	      `getConflictFlag state2 = getConflictFlag state1`
-	    have "getC state3 = getC state2" "getConflictFlag state3 = getConflictFlag state2" "getM state3 = getM state2"
-	      by auto
-	    with `(state', ?stateMin) \<in> multLessState`
-	    have "(state', state2) \<in> multLessState"
-	      unfolding multLessState_def
-	      by auto
-	    with `\<forall>state'. (state', state2) \<in> multLessState \<longrightarrow> state' \<notin> ?Q1`
-	    have "state' \<notin> ?Q1"
-	      by simp
-	    from `(state', state2) \<in> multLessState` `getM state2 = getM state0` `getConflictFlag state2 = getConflictFlag state1`
-	    have "getM state' = getM state0" "getConflictFlag state' = getConflictFlag state1"
-	      unfolding multLessState_def
-	      by auto
-	    with `state' \<notin> ?Q1`
-	    have "state' \<notin> Q"
-	      by simp
-	  }
-	  moreover
-	  {
-	    assume "(state', ?stateMin) \<in> learnLessState"
-	    with `\<forall>state'. (state', ?stateMin) \<in> learnLessState \<longrightarrow> state' \<notin> ?Q2`
-	    have "state' \<notin> ?Q2"
-	      by simp
-	    from `(state', ?stateMin) \<in> learnLessState`
-	      `getM state3 = getM state0` `getConflictFlag state3 = getConflictFlag state1` `getC state3 = getC state2`
-	    have "getM state' = getM state0" "getConflictFlag state' = getConflictFlag state1" "getC state' = getC state2"
-	      unfolding learnLessState_def
-	      by auto
-	    with `state' \<notin> ?Q2`
-	    have "state' \<notin> Q"
-	      by simp
-	  }
-	  ultimately
-	  show "state' \<notin> Q"
-	    by auto
-	qed
+        fix state'
+        show "(state', ?stateMin) \<in> terminationLess F0 decisionVars \<longrightarrow> state' \<notin> Q"
+        proof
+          assume "(state', ?stateMin) \<in> terminationLess F0 decisionVars"
+          hence 
+            "(state', ?stateMin) \<in> lexLessState F0 decisionVars \<or>
+            (state', ?stateMin) \<in> boolLessState \<or>
+            (state', ?stateMin) \<in> multLessState \<or>
+            (state', ?stateMin) \<in> learnLessState"
+            unfolding terminationLess_def
+            by auto
+          moreover
+          {
+            assume "(state', ?stateMin) \<in> lexLessState F0 decisionVars"
+            with `getM state3 = getM state0`
+            have "(state', state0) \<in> lexLessState F0 decisionVars"
+              unfolding lexLessState_def
+              by simp
+            with `\<forall>state'. (state', state0) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q`
+            have "state' \<notin> Q"
+              by simp
+          }
+          moreover
+          {
+            assume "(state', ?stateMin) \<in> boolLessState"
+            from `?stateMin \<in> ?Q2`
+              `getM state1 = getM state0`
+            have "getConflictFlag state3 = getConflictFlag state1" "getM state3 = getM state1"
+              by auto
+            with `(state', ?stateMin) \<in> boolLessState`
+            have "(state', state1) \<in> boolLessState"
+              unfolding boolLessState_def
+              by simp
+            with `\<forall>state'. (state', state1) \<in> boolLessState \<longrightarrow> state' \<notin> ?Q0`
+            have "state' \<notin> ?Q0"
+              by simp
+            from `(state', state1) \<in> boolLessState` `getM state1 = getM state0`
+            have "getM state' = getM state0"
+              unfolding boolLessState_def
+              by auto
+            with `state' \<notin> ?Q0`
+            have "state' \<notin> Q"
+              by simp
+          }
+          moreover
+          {
+            assume "(state', ?stateMin) \<in> multLessState"
+            from `?stateMin \<in> ?Q2` 
+              `getM state1 = getM state0` `getM state2 = getM state0`
+              `getConflictFlag state2 = getConflictFlag state1`
+            have "getC state3 = getC state2" "getConflictFlag state3 = getConflictFlag state2" "getM state3 = getM state2"
+              by auto
+            with `(state', ?stateMin) \<in> multLessState`
+            have "(state', state2) \<in> multLessState"
+              unfolding multLessState_def
+              by auto
+            with `\<forall>state'. (state', state2) \<in> multLessState \<longrightarrow> state' \<notin> ?Q1`
+            have "state' \<notin> ?Q1"
+              by simp
+            from `(state', state2) \<in> multLessState` `getM state2 = getM state0` `getConflictFlag state2 = getConflictFlag state1`
+            have "getM state' = getM state0" "getConflictFlag state' = getConflictFlag state1"
+              unfolding multLessState_def
+              by auto
+            with `state' \<notin> ?Q1`
+            have "state' \<notin> Q"
+              by simp
+          }
+          moreover
+          {
+            assume "(state', ?stateMin) \<in> learnLessState"
+            with `\<forall>state'. (state', ?stateMin) \<in> learnLessState \<longrightarrow> state' \<notin> ?Q2`
+            have "state' \<notin> ?Q2"
+              by simp
+            from `(state', ?stateMin) \<in> learnLessState`
+              `getM state3 = getM state0` `getConflictFlag state3 = getConflictFlag state1` `getC state3 = getC state2`
+            have "getM state' = getM state0" "getConflictFlag state' = getConflictFlag state1" "getC state' = getC state2"
+              unfolding learnLessState_def
+              by auto
+            with `state' \<notin> ?Q2`
+            have "state' \<notin> Q"
+              by simp
+          }
+          ultimately
+          show "state' \<notin> Q"
+            by auto
+        qed
       qed
       with `?stateMin \<in> Q` have "(\<exists> stateMin \<in> Q. \<forall>state'. (state', stateMin) \<in> terminationLess F0 decisionVars \<longrightarrow> state' \<notin> Q)"
-	by auto
+        by auto
     }
     thus ?thesis
       by simp
@@ -1822,10 +1821,10 @@ proof-
       fix stateA::State and stateB::State
       assume "(stateB, stateA) \<in> ?rel"
       hence "(stateB, stateA) \<in> ?rel'"
-	using `isInitialState state0 F0`
-	using invariantsHoldInValidRunsFromInitialState[of "state0" "F0" "stateA" "decisionVars"]
-	using stateIsDecreasedByValidTransitions[of "stateA" "F0" "decisionVars" "stateB"]
-	by simp
+        using `isInitialState state0 F0`
+        using invariantsHoldInValidRunsFromInitialState[of "state0" "F0" "stateA" "decisionVars"]
+        using stateIsDecreasedByValidTransitions[of "stateA" "F0" "decisionVars" "stateB"]
+        by simp
     }
     thus ?thesis
       by simp

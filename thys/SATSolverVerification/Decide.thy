@@ -1,5 +1,4 @@
 (*    Title:              SatSolverVerification/Decide.thy
-      ID:                 $Id: Decide.thy,v 1.1 2008-11-13 16:09:44 filipmaric Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -166,56 +165,56 @@ proof-
         0 \<le> reason \<and> reason < length (getF ?stateM) \<and>
         isReason (getF ?stateM ! reason) l (elements (getM ?stateM))"
       proof (cases "l el (elements (getM state))")
-	case True
-	moreover
-	hence "\<not> l el (decisions (getM state))"
-	  using *
-	  by (simp add: markedElementsAppend)
-	moreover
-	have "elementLevel l (getM state) > 0"
-	proof-
-	  {
-	    assume "\<not> ?thesis"
-	    with *
-	    have "l = ?l"
-	      using True
-	      using elementLevelAppend[of "l" "getM state" "[(?l, True)]"]
-	      by simp
-	    hence "var ?l \<in> vars (elements (getM state))"
-	      using True
-	      using valuationContainsItsLiteralsVariable[of "l" "elements (getM state)"]
-	      by simp
-	    hence False
-	      using `\<not> vars (elements (getM state)) \<supseteq> Vbl`
-	      using selectLiteral_def[of "Vbl" "state"]
-	      by auto
-	  } thus ?thesis
-	    by auto
-	qed
-	ultimately
-	obtain reason
-	  where "getReason state l = Some reason \<and>
+        case True
+        moreover
+        hence "\<not> l el (decisions (getM state))"
+          using *
+          by (simp add: markedElementsAppend)
+        moreover
+        have "elementLevel l (getM state) > 0"
+        proof-
+          {
+            assume "\<not> ?thesis"
+            with *
+            have "l = ?l"
+              using True
+              using elementLevelAppend[of "l" "getM state" "[(?l, True)]"]
+              by simp
+            hence "var ?l \<in> vars (elements (getM state))"
+              using True
+              using valuationContainsItsLiteralsVariable[of "l" "elements (getM state)"]
+              by simp
+            hence False
+              using `\<not> vars (elements (getM state)) \<supseteq> Vbl`
+              using selectLiteral_def[of "Vbl" "state"]
+              by auto
+          } thus ?thesis
+            by auto
+        qed
+        ultimately
+        obtain reason
+          where "getReason state l = Some reason \<and>
           0 \<le> reason \<and> reason < length (getF state) \<and>
           isReason (getF state ! reason) l (elements (getM state))"
-	  using `InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))`
-	  unfolding InvariantGetReasonIsReason_def
-	  by auto
-	thus ?thesis
-	  using isReasonAppend[of "nth (getF ?stateM) reason" "l" "elements (getM state)" "[?l]"]
-	  by auto
+          using `InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))`
+          unfolding InvariantGetReasonIsReason_def
+          by auto
+        thus ?thesis
+          using isReasonAppend[of "nth (getF ?stateM) reason" "l" "elements (getM state)" "[?l]"]
+          by auto
       next
-	case False
-	hence "l = ?l"
-	  using *
-	  by auto
-	hence "l el (decisions (getM ?stateM))"
-	  using markedElementIsMarkedTrue[of "l" "getM ?stateM"]
-	  by auto
-	with *
-	have False
-	  by auto
-	thus ?thesis
-	  by simp
+        case False
+        hence "l = ?l"
+          using *
+          by auto
+        hence "l el (decisions (getM ?stateM))"
+          using markedElementIsMarkedTrue[of "l" "getM ?stateM"]
+          by auto
+        with *
+        have False
+          by auto
+        thus ?thesis
+          by simp
       qed
     }
     thus ?thesis

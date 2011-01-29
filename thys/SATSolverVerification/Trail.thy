@@ -1,5 +1,4 @@
 (*    Title:              SATSolverVerification/Trail.thy
-      ID:                 $Id: Trail.thy,v 1.5 2008-11-13 16:09:44 filipmaric Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -11,7 +10,7 @@ imports MoreList
 begin
 
 text{*   Trail is a list in which some elements can be marked. *}
-types 'a Trail = "('a*bool) list"
+type_synonym 'a Trail = "('a*bool) list"
 
 abbreviation
   element :: "('a*bool) \<Rightarrow> 'a"
@@ -49,13 +48,13 @@ proof (induct M)
     proof (cases "e = element m")
       case True
       thus ?thesis
-	using eitherMarkedOrNotMarkedElement [of "m"]
-	by auto
+        using eitherMarkedOrNotMarkedElement [of "m"]
+        by auto
     next
       case False
       with Cons
       show ?thesis
-	by auto
+        by auto
     qed
 qed simp
 
@@ -254,12 +253,12 @@ proof-
       assume "(m, False) \<in> set p"
       with `isPrefix p M`
       have "(m, False) \<in> set M"
-	using prefixIsSubset[of "p" "M"]
-	by auto
+        using prefixIsSubset[of "p" "M"]
+        by auto
       with `(m, True) \<in> set M` `uniq (elements M)`
       have False
-	using uniqImpliesExclusiveTrueOrFalse[of "m" "True" "M"]
-	by simp
+        using uniqImpliesExclusiveTrueOrFalse[of "m" "True" "M"]
+        by simp
     }
     with `m \<in> set (elements p)`
     show ?thesis
@@ -569,10 +568,10 @@ proof (induct M)
     {
       assume "a \<noteq> b"
       hence "\<not> precedes a b (b # (elements M'))"
-	by (rule noElementsPrecedesFirstElement)
+        by (rule noElementsPrecedesFirstElement)
       with `b = element m` `precedes a b (elements (m # M'))`
       have False
-	by simp
+        by simp
     }
     hence "a = b"
       by auto
@@ -1110,14 +1109,14 @@ proof-
       assume "s = []"
       with `(prefixToLevel level t) @ s = t` 
       have "prefixToLevel level t = t"
-	by simp
+        by simp
       hence "currentLevel (prefixToLevel level t) \<le> level"
-	using currentLevelPrefixToLevel[of "level" "t"]
-	by simp
+        using currentLevelPrefixToLevel[of "level" "t"]
+        by simp
       with `prefixToLevel level t = t` have "currentLevel t \<le> level"
-	by simp
+        by simp
       with `level < currentLevel t` have False
-	by simp
+        by simp
     }
     thus ?thesis
       by auto
@@ -1128,34 +1127,34 @@ proof-
     {
       assume "\<not> marked (hd s)"
       have "currentLevel (prefixToLevel level t) \<le> level"
-	by (simp add:currentLevelPrefixToLevel)
+        by (simp add:currentLevelPrefixToLevel)
       from `s \<noteq> []` have "s = [hd s] @ (tl s)"
-	by simp
+        by simp
       with `(prefixToLevel level t) @ s = t` have
-	"t = (prefixToLevel level t) @ [hd s] @ (tl s)"
-	by simp
+        "t = (prefixToLevel level t) @ [hd s] @ (tl s)"
+        by simp
       hence "(prefixToLevel level t) = (prefixToLevel level ((prefixToLevel level t) @ [hd s] @ (tl s)))"
-	by simp
+        by simp
       also
       with `currentLevel (prefixToLevel level t) \<le> level` 
       have "\<dots> = ((prefixToLevel level t) @ (prefixToLevel_aux ([hd s] @ (tl s)) level (currentLevel (prefixToLevel level t))))"
-	by (auto simp add: prefixToLevelAppend)
+        by (auto simp add: prefixToLevelAppend)
       also
       have "\<dots> = 
-	((prefixToLevel level t) @ (hd s) # prefixToLevel_aux (tl s) level (currentLevel (prefixToLevel level t)))"
+        ((prefixToLevel level t) @ (hd s) # prefixToLevel_aux (tl s) level (currentLevel (prefixToLevel level t)))"
       proof-
-	from `currentLevel (prefixToLevel level t) <= level` `\<not> marked (hd s)`
-	have "prefixToLevel_aux ([hd s] @ (tl s)) level (currentLevel (prefixToLevel level t)) = 
-	  (hd s) # prefixToLevel_aux (tl s) level (currentLevel (prefixToLevel level t))"
-	  by simp
-	thus ?thesis
-	  by simp
+        from `currentLevel (prefixToLevel level t) <= level` `\<not> marked (hd s)`
+        have "prefixToLevel_aux ([hd s] @ (tl s)) level (currentLevel (prefixToLevel level t)) = 
+          (hd s) # prefixToLevel_aux (tl s) level (currentLevel (prefixToLevel level t))"
+          by simp
+        thus ?thesis
+          by simp
       qed
       ultimately
       have "(prefixToLevel level t) = (prefixToLevel level t) @ (hd s) # prefixToLevel_aux (tl s) level (currentLevel (prefixToLevel level t))"
-	by simp
+        by simp
       hence "False"
-	by auto
+        by auto
     }
     thus ?thesis
       by auto
@@ -1225,32 +1224,32 @@ proof (induct M arbitrary: i)
       case True
       with Cons `e \<noteq> element m`
       have "(elementLevel e M') + i + 1 \<le> level"
-	unfolding elementLevel_def
-	unfolding markedElementsTo_def
-	by (simp split: split_if_asm)
+        unfolding elementLevel_def
+        unfolding markedElementsTo_def
+        by (simp split: split_if_asm)
       moreover
       have "elementLevel e M' \<ge> 0"
-	by auto
+        by auto
       ultimately
       have "i + 1 \<le> level"
-	by simp
+        by simp
       with `e \<in> set (elements M')` `(elementLevel e M') + i + 1 \<le> level` Cons(1)[of "i+1"]
       have "e \<in> set (elements (prefixToLevel_aux M' level (i + 1)))"
-	by simp
+        by simp
       with `e \<noteq> element m` `i + 1 \<le> level` True 
       show ?thesis
-	by simp
+        by simp
     next
       case False
       with `e \<noteq> element m` `elementLevel e (m # M') + i \<le> level` have "elementLevel e M' + i \<le> level"
-	unfolding elementLevel_def
-	unfolding markedElementsTo_def
-	by (simp split: split_if_asm)
+        unfolding elementLevel_def
+        unfolding markedElementsTo_def
+        by (simp split: split_if_asm)
       with `e \<in> set (elements M')` have "e \<in> set (elements (prefixToLevel_aux M' level i))"
-	using Cons
-	by (auto split: split_if_asm)
+        using Cons
+        by (auto split: split_if_asm)
       with `e \<noteq> element m` False show ?thesis
-	by simp
+        by simp
     qed
   qed
 qed simp
@@ -1376,31 +1375,31 @@ next
       case True
       with `levelsCounter_aux (a # list) (m # l1) = n # l2` 
       have "levelsCounter_aux list (m # l1 @ [Suc 0]) = n # l2"
-	by simp
+        by simp
       with Cons
       show ?thesis
-	by auto
+        by auto
     next
       case False
       show ?thesis 
       proof (cases "l1 = []")
-	case True
-	with `\<not> marked a` `levelsCounter_aux (a # list) (m # l1) = n # l2` 
-	have "levelsCounter_aux list [Suc m] = n # l2"
-	  by simp
-	with Cons
-	have "Suc m <= n"
-	  by auto
-	thus ?thesis
-	  by simp
+        case True
+        with `\<not> marked a` `levelsCounter_aux (a # list) (m # l1) = n # l2` 
+        have "levelsCounter_aux list [Suc m] = n # l2"
+          by simp
+        with Cons
+        have "Suc m <= n"
+          by auto
+        thus ?thesis
+          by simp
       next
-	case False
-	with `\<not> marked a` `levelsCounter_aux (a # list) (m # l1) = n # l2` 
-	have "levelsCounter_aux list (m # butlast l1 @ [Suc (last l1)]) = n # l2"
-	  by simp
-	with Cons
-	show ?thesis
-	  by auto
+        case False
+        with `\<not> marked a` `levelsCounter_aux (a # list) (m # l1) = n # l2` 
+        have "levelsCounter_aux list (m # butlast l1 @ [Suc (last l1)]) = n # l2"
+          by simp
+        with Cons
+        show ?thesis
+          by auto
       qed
     qed
   }
@@ -1435,84 +1434,84 @@ proof-
     proof (cases "marked (hd s)")
       case True
       from `p @ s = a` have "levelsCounter a = levelsCounter (p @ s)"
-	by simp
+        by simp
       also
       have "\<dots> = levelsCounter_aux s (levelsCounter_aux p [0])"
-	unfolding levelsCounter_def
-	by (simp add: levelsCounter_auxSuffixContinues)
+        unfolding levelsCounter_def
+        by (simp add: levelsCounter_auxSuffixContinues)
       also
       have "\<dots> = levelsCounter_aux (tl s) ((levelsCounter_aux p [0]) @ [1])"
       proof-
-	from `s \<noteq> []` have "s = hd s # tl s"
-	  by simp
-	then have "levelsCounter_aux s (levelsCounter_aux p [0]) = levelsCounter_aux (hd s # tl s) (levelsCounter_aux p [0])"
-	  by simp
-	with `marked (hd s)` show ?thesis
-	  by simp
+        from `s \<noteq> []` have "s = hd s # tl s"
+          by simp
+        then have "levelsCounter_aux s (levelsCounter_aux p [0]) = levelsCounter_aux (hd s # tl s) (levelsCounter_aux p [0])"
+          by simp
+        with `marked (hd s)` show ?thesis
+          by simp
       qed
       also
       have "\<dots> = levelsCounter_aux p [0] @ (levelsCounter_aux (tl s) [1])"
-	by (simp add: levelsCounter_aux_startIrellevant)
+        by (simp add: levelsCounter_aux_startIrellevant)
       finally 
       have "levelsCounter a = levelsCounter p @ (levelsCounter_aux (tl s) [1])"
-	unfolding levelsCounter_def
-	by simp
+        unfolding levelsCounter_def
+        by simp
       hence "(levelsCounter a) = (butlast (levelsCounter p)) @ ([last (levelsCounter p)] @ (levelsCounter_aux (tl s) [1])) \<and> 
-	(last (levelsCounter p)) <= hd ([last (levelsCounter p)] @ (levelsCounter_aux (tl s) [1]))"
-	unfolding levelsCounter_def
-	using levelsCounter_auxNotEmpty[of "p"]
-	by auto
+        (last (levelsCounter p)) <= hd ([last (levelsCounter p)] @ (levelsCounter_aux (tl s) [1]))"
+        unfolding levelsCounter_def
+        using levelsCounter_auxNotEmpty[of "p"]
+        by auto
       thus ?thesis
-	by auto
+        by auto
     next
       case False
       from `p @ s = a` have "levelsCounter a = levelsCounter (p @ s)"
-	by simp
+        by simp
       also
       have "\<dots> = levelsCounter_aux s (levelsCounter_aux p [0])"
-	unfolding levelsCounter_def
-	by (simp add: levelsCounter_auxSuffixContinues)
+        unfolding levelsCounter_def
+        by (simp add: levelsCounter_auxSuffixContinues)
       also
       have "\<dots> = levelsCounter_aux (tl s) ((butlast (levelsCounter_aux p [0])) @ [Suc (last (levelsCounter_aux p [0]))])"
       proof-
-	from `s \<noteq> []` have "s = hd s # tl s"
-	  by simp
-	then have "levelsCounter_aux s (levelsCounter_aux p [0]) = levelsCounter_aux (hd s # tl s) (levelsCounter_aux p [0])"
-	  by simp
-	with `~marked (hd s)` show ?thesis
-	  by simp
+        from `s \<noteq> []` have "s = hd s # tl s"
+          by simp
+        then have "levelsCounter_aux s (levelsCounter_aux p [0]) = levelsCounter_aux (hd s # tl s) (levelsCounter_aux p [0])"
+          by simp
+        with `~marked (hd s)` show ?thesis
+          by simp
       qed
       also
       have "\<dots> = butlast (levelsCounter_aux p [0]) @ (levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))])"
-	by (simp add: levelsCounter_aux_startIrellevant)
+        by (simp add: levelsCounter_aux_startIrellevant)
       finally 
       have "levelsCounter a = butlast (levelsCounter_aux p [0]) @ (levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))])"
-	unfolding levelsCounter_def
-	by simp
+        unfolding levelsCounter_def
+        by simp
       moreover
       have "hd (levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) >= Suc (last (levelsCounter_aux p [0]))"
       proof-
-	have "(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) \<noteq> []"
-	  using levelsCounter_auxNotEmpty[of "tl s"]
-	  by simp
-	then obtain h t where "(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) = h # t"
-	  using neq_Nil_conv[of "(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))])"]
-	  by auto
-	hence "h \<ge> Suc (last (levelsCounter_aux p [0]))"
-	  using levelsCounter_auxIncreasesFirst[of "tl s"]
-	  by auto
-	with `(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) = h # t` 
-	show ?thesis
-	  by simp
+        have "(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) \<noteq> []"
+          using levelsCounter_auxNotEmpty[of "tl s"]
+          by simp
+        then obtain h t where "(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) = h # t"
+          using neq_Nil_conv[of "(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))])"]
+          by auto
+        hence "h \<ge> Suc (last (levelsCounter_aux p [0]))"
+          using levelsCounter_auxIncreasesFirst[of "tl s"]
+          by auto
+        with `(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) = h # t` 
+        show ?thesis
+          by simp
       qed
       ultimately
       have "levelsCounter a = butlast (levelsCounter p) @ (levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) \<and> 
-	last (levelsCounter p) \<le> hd (levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))])"
-	unfolding levelsCounter_def
-	by simp
+        last (levelsCounter p) \<le> hd (levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))])"
+        unfolding levelsCounter_def
+        by simp
       thus ?thesis
-	using levelsCounter_auxNotEmpty[of "tl s"]
-	by auto
+        using levelsCounter_auxNotEmpty[of "tl s"]
+        by auto
     qed
   qed
 qed

@@ -60,13 +60,13 @@ proof-
     { 
       assume "\<not> ?thesis"
       hence "clauseFalse clause (elements (prefixToLevel ((currentLevel M) - 1) M))"
-	by simp
+        by simp
       hence False
-	using `InvariantNoDecisionsWhenConflict F M (currentLevel M)`
-	using `currentLevel M > 0`
-	using `clause el F`
-	unfolding InvariantNoDecisionsWhenConflict_def
-	by (simp add: formulaFalseIffContainsFalseClause)
+        using `InvariantNoDecisionsWhenConflict F M (currentLevel M)`
+        using `currentLevel M > 0`
+        using `clause el F`
+        unfolding InvariantNoDecisionsWhenConflict_def
+        by (simp add: formulaFalseIffContainsFalseClause)
     } thus ?thesis
       by auto
   qed
@@ -81,27 +81,27 @@ proof-
     have "elementLevel ?Cl M \<ge> currentLevel M"
     proof-
       {
-	assume "elementLevel ?Cl M < currentLevel M"
-	have "isLastAssertedLiteral ?Cl (oppositeLiteralList clause) (elements M)"
-	  using getLastAssertedLiteralCharacterization[of "clause" "elements M"]
-	  using `uniq (elements M)`
-	  using `clauseFalse clause (elements M)`
-	  using `clause \<noteq> []`
-	  by simp
-	hence "clauseFalse clause (elements (prefixToLevel (elementLevel ?Cl M) M))"
-	  using clauseFalseInPrefixToLastAssertedLiteral[of "?Cl" "clause" "M"]
-	  using `clauseFalse clause (elements M)`
-	  using `uniq (elements M)`
-	  by simp
-	hence "False"
-	  using `clause el F`
-	  using `InvariantNoDecisionsWhenConflict F M (currentLevel M)`
-	  using `currentLevel M > 0`
-	  unfolding InvariantNoDecisionsWhenConflict_def
-	  using `elementLevel ?Cl M < currentLevel M`
-	  by (simp add: formulaFalseIffContainsFalseClause)
+        assume "elementLevel ?Cl M < currentLevel M"
+        have "isLastAssertedLiteral ?Cl (oppositeLiteralList clause) (elements M)"
+          using getLastAssertedLiteralCharacterization[of "clause" "elements M"]
+          using `uniq (elements M)`
+          using `clauseFalse clause (elements M)`
+          using `clause \<noteq> []`
+          by simp
+        hence "clauseFalse clause (elements (prefixToLevel (elementLevel ?Cl M) M))"
+          using clauseFalseInPrefixToLastAssertedLiteral[of "?Cl" "clause" "M"]
+          using `clauseFalse clause (elements M)`
+          using `uniq (elements M)`
+          by simp
+        hence "False"
+          using `clause el F`
+          using `InvariantNoDecisionsWhenConflict F M (currentLevel M)`
+          using `currentLevel M > 0`
+          unfolding InvariantNoDecisionsWhenConflict_def
+          using `elementLevel ?Cl M < currentLevel M`
+          by (simp add: formulaFalseIffContainsFalseClause)
       } thus ?thesis
-	by force
+        by force
     qed
     ultimately
     show ?thesis
@@ -175,12 +175,12 @@ proof-
     {
       assume "\<not> ?thesis"
       hence "elementLevel ?l (getM state) = 0"
-	using prefixToLevelElementsElementLevel[of "?l" "0" "getM state"]
-	by simp
+        using prefixToLevelElementsElementLevel[of "?l" "0" "getM state"]
+        by simp
       hence False
-	using `elementLevel ?l (getM state) = currentLevel (getM state)`
-	using `currentLevel (getM state) > 0`
-	by simp
+        using `elementLevel ?l (getM state) = currentLevel (getM state)`
+        using `currentLevel (getM state) > 0`
+        by simp
     }
     thus ?thesis
       by auto
@@ -240,11 +240,11 @@ proof-
       fix l::Literal
       assume "l el ?clause''"
       hence "l el ?clause'"
-	using listDiffIff[of "l" "?clause'" "?oppM0"]
-	by simp
+        using listDiffIff[of "l" "?clause'" "?oppM0"]
+        by simp
       hence "literalFalse l (elements (getM state))"
-	using `clauseFalse ?clause' (elements (getM state))`
-	by (simp add: clauseFalseIffAllLiteralsAreFalse)
+        using `clauseFalse ?clause' (elements (getM state))`
+        by (simp add: clauseFalseIffAllLiteralsAreFalse)
     }
     thus ?thesis
       by (simp add: clauseFalseIffAllLiteralsAreFalse)
@@ -380,30 +380,30 @@ proof-
       assume "literal el (getC state)" "literal \<noteq> opposite ?Cl"
       have "elementLevel (opposite literal) (getM state) < currentLevel (getM state)"
       proof-
-	have "elementLevel (opposite literal) (getM state) \<le> currentLevel (getM state)"
-	  using elementLevelLeqCurrentLevel[of "opposite literal" "getM state"]
-	  by simp
-	moreover
-	have "elementLevel (opposite literal) (getM state) \<noteq> currentLevel (getM state)"
-	proof-
-	  {
-	    assume "\<not> ?thesis"
-	    with `literal el (getC state)`
-	    have "literal el ?clls"
-	      by simp
-	    hence "False"
-	      using `length ?clls = 1`
-	      using `opposite ?Cl el ?clls`
-	      using `literal \<noteq> opposite ?Cl`
-	      using lengthOneImpliesOnlyElement[of "?clls" "opposite ?Cl"]
-	      by auto
-	  }
-	  thus ?thesis
-	    by auto
-	qed
-	ultimately
-	show ?thesis
-	  by simp
+        have "elementLevel (opposite literal) (getM state) \<le> currentLevel (getM state)"
+          using elementLevelLeqCurrentLevel[of "opposite literal" "getM state"]
+          by simp
+        moreover
+        have "elementLevel (opposite literal) (getM state) \<noteq> currentLevel (getM state)"
+        proof-
+          {
+            assume "\<not> ?thesis"
+            with `literal el (getC state)`
+            have "literal el ?clls"
+              by simp
+            hence "False"
+              using `length ?clls = 1`
+              using `opposite ?Cl el ?clls`
+              using `literal \<noteq> opposite ?Cl`
+              using lengthOneImpliesOnlyElement[of "?clls" "opposite ?Cl"]
+              by auto
+          }
+          thus ?thesis
+            by auto
+        qed
+        ultimately
+        show ?thesis
+          by simp
       qed
     }
     hence "isUIP (opposite ?Cl) (getC state) (getM state)"
@@ -472,15 +472,15 @@ proof-
     {
       assume "\<not> ?thesis"
       hence "isUIP (opposite ?Cl) (getC state) (getM state)"
-	using `InvariantUniq (getM state)`
-	using `isLastAssertedLiteral ?Cl (oppositeLiteralList (getC state)) (elements (getM state))`
-	using `clauseFalse (getC state) (elements (getM state))`
-	using lastDecisionThenUIP[of "getM state" "opposite ?Cl" "getC state"]
-	unfolding InvariantUniq_def
-	by simp
+        using `InvariantUniq (getM state)`
+        using `isLastAssertedLiteral ?Cl (oppositeLiteralList (getC state)) (elements (getM state))`
+        using `clauseFalse (getC state) (elements (getM state))`
+        using lastDecisionThenUIP[of "getM state" "opposite ?Cl" "getC state"]
+        unfolding InvariantUniq_def
+        by simp
       with `\<not> isUIP (opposite ?Cl) (getC state) (getM state)`
       have "False"
-	by simp
+        by simp
     } thus ?thesis
       by auto
   qed
@@ -639,12 +639,12 @@ proof-
     {
       assume "\<not> ?thesis"
       hence "elementLevel ?ll (getM state) = 0"
-	using prefixToLevelElementsElementLevel[of "?ll" "0" "getM state"]
-	by simp
+        using prefixToLevelElementsElementLevel[of "?ll" "0" "getM state"]
+        by simp
       hence False
-	using `elementLevel ?ll (getM state) = currentLevel (getM state)`
-	using `currentLevel (getM state) > 0`
-	by simp
+        using `elementLevel ?ll (getM state) = currentLevel (getM state)`
+        using `currentLevel (getM state) > 0`
+        by simp
     }
     thus ?thesis
       by auto
@@ -703,11 +703,11 @@ proof-
       fix l::Literal
       assume "l el ?C'"
       hence "l el ?res"
-	using listDiffIff[of "l" "?res" "?oppM0"]
-	by simp
+        using listDiffIff[of "l" "?res" "?oppM0"]
+        by simp
       hence "literalFalse l (elements (getM state))"
-	using `clauseFalse ?res (elements (getM state))`
-	by (simp add: clauseFalseIffAllLiteralsAreFalse)
+        using `clauseFalse ?res (elements (getM state))`
+        by (simp add: clauseFalseIffAllLiteralsAreFalse)
     }
     thus ?thesis
       by (simp add: clauseFalseIffAllLiteralsAreFalse)
@@ -776,47 +776,47 @@ proof (induct rule: wf_induct[of "multLessState"])
     show "\<forall>Q (state::State). state \<in> Q \<longrightarrow> (\<exists> stateMin \<in> Q. \<forall>state'. (state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q)"
     proof-
       {
-	fix Q :: "State set" and state :: State
-	assume "state \<in> Q"
-	let ?M = "(getM state)"
-	let ?Q1 = "{C::Clause. \<exists> state. state \<in> Q \<and> (getM state) = ?M \<and> (getC state) = C}"
-	from `state \<in> Q` 
-	have "getC state \<in> ?Q1"
-	  by auto   
-	with wfMultLess[of "?M"]
-	obtain Cmin where "Cmin \<in> ?Q1" "\<forall>C'. (C', Cmin) \<in> multLess ?M \<longrightarrow> C' \<notin> ?Q1"
-	  unfolding wf_eq_minimal
-	  apply (erule_tac x="?Q1" in allE)
-	  apply (erule_tac x="getC state" in allE)
-	  by auto
-	from `Cmin \<in> ?Q1` obtain stateMin
-	  where "stateMin \<in> Q" "(getM stateMin) = ?M" "getC stateMin = Cmin"
-	  by auto
-	have "\<forall>state'. (state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q"
-	proof
-	  fix state'
-	  show "(state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q"
-	  proof
-	    assume "(state', stateMin) \<in> multLessState"
-	    with `getM stateMin = ?M`
-	    have "getM state' = getM stateMin" "(getC state', getC stateMin) \<in> multLess ?M"
-	      unfolding multLessState_def
-	      by auto
-	    from `\<forall>C'. (C', Cmin) \<in> multLess ?M \<longrightarrow> C' \<notin> ?Q1`
-	      `(getC state', getC stateMin) \<in> multLess ?M` `getC stateMin = Cmin`
-	    have "getC state' \<notin> ?Q1"
-	      by simp
-	    with `getM state' = getM stateMin` `getM stateMin = ?M`
-	    show "state' \<notin> Q"
-	      by auto
-	  qed
-	qed
-	with `stateMin \<in> Q` 
-	have "\<exists> stateMin \<in> Q. (\<forall>state'. (state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q)"
-	  by auto
+        fix Q :: "State set" and state :: State
+        assume "state \<in> Q"
+        let ?M = "(getM state)"
+        let ?Q1 = "{C::Clause. \<exists> state. state \<in> Q \<and> (getM state) = ?M \<and> (getC state) = C}"
+        from `state \<in> Q` 
+        have "getC state \<in> ?Q1"
+          by auto   
+        with wfMultLess[of "?M"]
+        obtain Cmin where "Cmin \<in> ?Q1" "\<forall>C'. (C', Cmin) \<in> multLess ?M \<longrightarrow> C' \<notin> ?Q1"
+          unfolding wf_eq_minimal
+          apply (erule_tac x="?Q1" in allE)
+          apply (erule_tac x="getC state" in allE)
+          by auto
+        from `Cmin \<in> ?Q1` obtain stateMin
+          where "stateMin \<in> Q" "(getM stateMin) = ?M" "getC stateMin = Cmin"
+          by auto
+        have "\<forall>state'. (state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q"
+        proof
+          fix state'
+          show "(state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q"
+          proof
+            assume "(state', stateMin) \<in> multLessState"
+            with `getM stateMin = ?M`
+            have "getM state' = getM stateMin" "(getC state', getC stateMin) \<in> multLess ?M"
+              unfolding multLessState_def
+              by auto
+            from `\<forall>C'. (C', Cmin) \<in> multLess ?M \<longrightarrow> C' \<notin> ?Q1`
+              `(getC state', getC stateMin) \<in> multLess ?M` `getC stateMin = Cmin`
+            have "getC state' \<notin> ?Q1"
+              by simp
+            with `getM state' = getM stateMin` `getM stateMin = ?M`
+            show "state' \<notin> Q"
+              by auto
+          qed
+        qed
+        with `stateMin \<in> Q` 
+        have "\<exists> stateMin \<in> Q. (\<forall>state'. (state', stateMin) \<in> multLessState \<longrightarrow> state' \<notin> Q)"
+          by auto
       }
       thus ?thesis
-	by auto
+        by auto
     qed
   qed
 next
@@ -855,92 +855,92 @@ next
     have "(?state'', state') \<in> multLessState"
     proof-
       have "getM ?state'' = getM state'"
-	unfolding applyExplain_def
-	unfolding setConflictAnalysisClause_def
-	by (auto split: option.split simp add: findLastAssertedLiteral_def countCurrentLevelLiterals_def Let_def)
+        unfolding applyExplain_def
+        unfolding setConflictAnalysisClause_def
+        by (auto split: option.split simp add: findLastAssertedLiteral_def countCurrentLevelLiterals_def Let_def)
 
       let ?Cl = "getCl state'"
       let ?oppM0 = "oppositeLiteralList (elements (prefixToLevel 0 (getM state')))"
 
       have "isLastAssertedLiteral ?Cl (oppositeLiteralList (getC state')) (elements (getM state'))"
-	using ih
-	unfolding InvariantClCharacterization_def
-	by simp
+        using ih
+        unfolding InvariantClCharacterization_def
+        by simp
       hence "literalTrue ?Cl (elements (getM state'))" "?Cl el (oppositeLiteralList (getC state'))"
-	unfolding isLastAssertedLiteral_def
-	by auto
+        unfolding isLastAssertedLiteral_def
+        by auto
       hence "opposite ?Cl el getC state'"
-	using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite ?Cl" "getC state'"]
-	by simp
+        using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite ?Cl" "getC state'"]
+        by simp
 
       have "clauseFalse (getC state') (elements (getM state'))"
-	using ih
-	unfolding InvariantCFalse_def
-	by simp
+        using ih
+        unfolding InvariantCFalse_def
+        by simp
 
       have "\<not> ?Cl el (decisions (getM state'))"
       proof-
-	{
-	  assume "\<not> ?thesis"
-	  hence "isUIP (opposite ?Cl) (getC state') (getM state')"
-	    using ih 
-	    using `isLastAssertedLiteral ?Cl (oppositeLiteralList (getC state')) (elements (getM state'))`
-	    using `clauseFalse (getC state') (elements (getM state'))`
-	    using lastDecisionThenUIP[of "getM state'" "opposite ?Cl" "getC state'"]
-	    unfolding InvariantUniq_def
-	    unfolding isUIP_def
-	    by simp
-	  with `getCn state' \<noteq> 1`
-	  have "False"
-	    using CnEqual1IffUIP[of "state'"]
-	    using ih
-	    by simp
-	} thus ?thesis
-	  by auto
+        {
+          assume "\<not> ?thesis"
+          hence "isUIP (opposite ?Cl) (getC state') (getM state')"
+            using ih 
+            using `isLastAssertedLiteral ?Cl (oppositeLiteralList (getC state')) (elements (getM state'))`
+            using `clauseFalse (getC state') (elements (getM state'))`
+            using lastDecisionThenUIP[of "getM state'" "opposite ?Cl" "getC state'"]
+            unfolding InvariantUniq_def
+            unfolding isUIP_def
+            by simp
+          with `getCn state' \<noteq> 1`
+          have "False"
+            using CnEqual1IffUIP[of "state'"]
+            using ih
+            by simp
+        } thus ?thesis
+          by auto
       qed
 
       have "elementLevel ?Cl (getM state') = currentLevel (getM state')"
-	using ih
-	unfolding InvariantClCurrentLevel_def
-	by simp
+        using ih
+        unfolding InvariantClCurrentLevel_def
+        by simp
       hence "elementLevel ?Cl (getM state') > 0"
-	using ih
-	by simp
+        using ih
+        by simp
 
       obtain reason
-	where "isReason (nth (getF state') reason) ?Cl (elements (getM state'))"
-	"getReason state' ?Cl = Some reason" "0 \<le> reason \<and> reason < length (getF state')"
-	using ih
-	unfolding InvariantGetReasonIsReason_def
-	using `literalTrue ?Cl (elements (getM state'))`
-	using `\<not> ?Cl el (decisions (getM state'))`
-	using `elementLevel ?Cl (getM state') > 0`
-	by auto
+        where "isReason (nth (getF state') reason) ?Cl (elements (getM state'))"
+        "getReason state' ?Cl = Some reason" "0 \<le> reason \<and> reason < length (getF state')"
+        using ih
+        unfolding InvariantGetReasonIsReason_def
+        using `literalTrue ?Cl (elements (getM state'))`
+        using `\<not> ?Cl el (decisions (getM state'))`
+        using `elementLevel ?Cl (getM state') > 0`
+        by auto
 
       let ?res = "resolve (getC state') (getF state' ! reason) (opposite ?Cl)"
 
       have "getC ?state'' = (remdups (list_diff ?res ?oppM0))"
-	unfolding applyExplain_def
-	unfolding setConflictAnalysisClause_def
-	using `getReason state' ?Cl = Some reason`
-	by (simp add: Let_def findLastAssertedLiteral_def countCurrentLevelLiterals_def)
+        unfolding applyExplain_def
+        unfolding setConflictAnalysisClause_def
+        using `getReason state' ?Cl = Some reason`
+        by (simp add: Let_def findLastAssertedLiteral_def countCurrentLevelLiterals_def)
 
       have "(?res, getC state') \<in> multLess (getM state')"
-	using multLessResolve[of "?Cl" "getC state'" "nth (getF state') reason" "getM state'"]
-	using `opposite ?Cl el (getC state')`
-	using `isReason (nth (getF state') reason) ?Cl (elements (getM state'))`
-	by simp
+        using multLessResolve[of "?Cl" "getC state'" "nth (getF state') reason" "getM state'"]
+        using `opposite ?Cl el (getC state')`
+        using `isReason (nth (getF state') reason) ?Cl (elements (getM state'))`
+        by simp
       hence "(list_diff ?res ?oppM0, getC state') \<in> multLess (getM state')"
-	by (simp add: multLessListDiff)
+        by (simp add: multLessListDiff)
 
       have "(remdups (list_diff ?res ?oppM0), getC state') \<in> multLess (getM state')"
-	using `(list_diff ?res ?oppM0, getC state') \<in> multLess (getM state')`
-	by (simp add: multLessRemdups)
+        using `(list_diff ?res ?oppM0, getC state') \<in> multLess (getM state')`
+        by (simp add: multLessRemdups)
       thus ?thesis
-	using `getC ?state'' = (remdups (list_diff ?res ?oppM0))`
-	using `getM ?state'' = getM state'`
-	unfolding multLessState_def
-	by simp
+        using `getC ?state'' = (remdups (list_diff ?res ?oppM0))`
+        using `getM ?state'' = getM state'`
+        unfolding multLessState_def
+        by simp
     qed
     ultimately
     have "applyExplainUIP_dom ?state''"
@@ -1164,25 +1164,25 @@ next
     proof
       assume "set (a' # l') = {a}"
       hence "a' = a" "set l' \<subseteq> {a}"
-	by auto
+        by auto
       hence "b = a"
-	using `b \<in> set l'`
-	by auto
+        using `b \<in> set l'`
+        by auto
       hence "{a} \<subseteq> set l'"
-	using `b \<in> set l'`
-	by auto
+        using `b \<in> set l'`
+        by auto
       hence "set l' = {a}"
-	using `set l' \<subseteq> {a}`
-	by auto
+        using `set l' \<subseteq> {a}`
+        by auto
       thus "remdups (a' # l') = [a]"
-	using `a' = a`
-	using Cons
-	by simp
+        using `a' = a`
+        using Cons
+        by simp
     next
       assume "remdups (a' # l') = [a]"
       thus "set (a' # l') = {a}"
-	using set_remdups[of "a' # l'"]
-	by auto
+        using set_remdups[of "a' # l'"]
+        by auto
     qed
   qed
 qed
@@ -1295,7 +1295,7 @@ lemma applyLearnPreservedVariables:
     getF state' = (if getC state = [opposite (getCl state)] then 
                                getF state 
                      else 
-	                    (getF state @ [getC state])
+                            (getF state @ [getC state])
                     )"
 proof (cases "getC state = [opposite (getCl state)]")
   case True
@@ -1380,26 +1380,26 @@ next
     { 
       assume "\<not> ?thesis"
       hence "set ?oppC \<subseteq> {?l}"
-	using set_removeAll[of "?l" "?oppC"]
-	by auto
+        using set_removeAll[of "?l" "?oppC"]
+        by auto
       have "set (getC state) \<subseteq> {opposite ?l}"
       proof
-	fix x
-	assume "x \<in> set (getC state)"
-	hence "opposite x \<in> set ?oppC"
-	  using literalElListIffOppositeLiteralElOppositeLiteralList[of "x" "getC state"]
-	  by simp
-	hence "opposite x \<in> {?l}"
-	  using `set ?oppC \<subseteq> {?l}`
-	  by auto
-	thus "x \<in> {opposite ?l}"
-	  using oppositeSymmetry[of "x" "?l"]
-	  by force
+        fix x
+        assume "x \<in> set (getC state)"
+        hence "opposite x \<in> set ?oppC"
+          using literalElListIffOppositeLiteralElOppositeLiteralList[of "x" "getC state"]
+          by simp
+        hence "opposite x \<in> {?l}"
+          using `set ?oppC \<subseteq> {?l}`
+          by auto
+        thus "x \<in> {opposite ?l}"
+          using oppositeSymmetry[of "x" "?l"]
+          by force
       qed
       hence False
-	using `set (getC state) \<noteq> {opposite ?l}`
-	using `opposite ?l el getC state`
-	by (auto simp add: Let_def)
+        using `set (getC state) \<noteq> {opposite ?l}`
+        using `opposite ?l el getC state`
+        by (auto simp add: Let_def)
     } thus ?thesis
       by auto
   qed
@@ -1439,44 +1439,44 @@ next
                      getWatch2 ?state' clause = Some w2 \<and>
                      w1 el (getF ?state' ! clause) \<and> w2 el (getF ?state' ! clause)"
       proof (cases "clause < length (getF state)")
-	case True
-	thus ?thesis
-	  using `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
-	  unfolding InvariantWatchesEl_def
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add:Let_def nth_append)
+        case True
+        thus ?thesis
+          using `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+          unfolding InvariantWatchesEl_def
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add:Let_def nth_append)
       next
-	case False
-	with  `0 \<le> clause \<and> clause < length (getF ?state')`
-	have "clause = length (getF state)"
-	  using `getC state \<noteq> [opposite ?l]`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	moreover
-	have "getWatch1 ?state' clause = Some (opposite ?l)" "getWatch2 ?state' clause = Some (opposite ?ll)"
-	  using `clause = length (getF state)`
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	moreover
-	have "getF ?state' ! clause = (getC state)"
-	  using `clause = length (getF state)`
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	ultimately
-	show ?thesis
-	  using `opposite ?l el (getC state)` `opposite ?ll el (getC state)`
-	  by force
+        case False
+        with  `0 \<le> clause \<and> clause < length (getF ?state')`
+        have "clause = length (getF state)"
+          using `getC state \<noteq> [opposite ?l]`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        moreover
+        have "getWatch1 ?state' clause = Some (opposite ?l)" "getWatch2 ?state' clause = Some (opposite ?ll)"
+          using `clause = length (getF state)`
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        moreover
+        have "getF ?state' ! clause = (getC state)"
+          using `clause = length (getF state)`
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        ultimately
+        show ?thesis
+          using `opposite ?l el (getC state)` `opposite ?ll el (getC state)`
+          by force
       qed
     } thus ?thesis
       unfolding InvariantWatchesEl_def
@@ -1490,44 +1490,44 @@ next
       assume "0 \<le> clause \<and> clause < length (getF ?state')"
       have  "getWatch1 ?state' clause \<noteq> getWatch2 ?state' clause"
       proof (cases "clause < length (getF state)")
-	case True
-	thus ?thesis
-	  using `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
-	  unfolding InvariantWatchesDiffer_def
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add:Let_def nth_append)
+        case True
+        thus ?thesis
+          using `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
+          unfolding InvariantWatchesDiffer_def
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add:Let_def nth_append)
       next
-	case False
-	with  `0 \<le> clause \<and> clause < length (getF ?state')`
-	have "clause = length (getF state)"
-	  using `getC state \<noteq> [opposite ?l]`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	moreover
-	have "getWatch1 ?state' clause = Some (opposite ?l)" "getWatch2 ?state' clause = Some (opposite ?ll)"
-	  using `clause = length (getF state)`
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	moreover
-	have "getF ?state' ! clause = (getC state)"
-	  using `clause = length (getF state)`
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	ultimately
-	show ?thesis
-	  using `?ll \<noteq> ?l`
-	  by force
+        case False
+        with  `0 \<le> clause \<and> clause < length (getF ?state')`
+        have "clause = length (getF state)"
+          using `getC state \<noteq> [opposite ?l]`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        moreover
+        have "getWatch1 ?state' clause = Some (opposite ?l)" "getWatch2 ?state' clause = Some (opposite ?ll)"
+          using `clause = length (getF state)`
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        moreover
+        have "getF ?state' ! clause = (getC state)"
+          using `clause = length (getF state)`
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        ultimately
+        show ?thesis
+          using `?ll \<noteq> ?l`
+          by force
       qed
     } thus ?thesis
       unfolding InvariantWatchesDiffer_def
@@ -1543,92 +1543,92 @@ next
       have "watchCharacterizationCondition w1 w2 (getM ?state') (getF ?state' ! clause) \<and> 
             watchCharacterizationCondition w2 w1 (getM ?state') (getF ?state' ! clause)"
       proof (cases "clause < length (getF state)")
-	case True
-	thus ?thesis
-	  using `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)`
-	  unfolding InvariantWatchCharacterization_def
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  using **
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add:Let_def nth_append)
+        case True
+        thus ?thesis
+          using `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)`
+          unfolding InvariantWatchCharacterization_def
+          using `set (getC state) \<noteq> {opposite ?l}`
+          using **
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add:Let_def nth_append)
       next
-	case False
-	with  `0 \<le> clause \<and> clause < length (getF ?state')`
-	have "clause = length (getF state)"
-	  using `getC state \<noteq> [opposite ?l]`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	moreover
-	have "getWatch1 ?state' clause = Some (opposite ?l)" "getWatch2 ?state' clause = Some (opposite ?ll)"
-	  using `clause = length (getF state)`
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	moreover
-	have "\<forall> l. l el (getC state) \<and> l \<noteq> opposite ?l \<and> l \<noteq> opposite ?ll \<longrightarrow> 
+        case False
+        with  `0 \<le> clause \<and> clause < length (getF ?state')`
+        have "clause = length (getF state)"
+          using `getC state \<noteq> [opposite ?l]`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        moreover
+        have "getWatch1 ?state' clause = Some (opposite ?l)" "getWatch2 ?state' clause = Some (opposite ?ll)"
+          using `clause = length (getF state)`
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        moreover
+        have "\<forall> l. l el (getC state) \<and> l \<noteq> opposite ?l \<and> l \<noteq> opposite ?ll \<longrightarrow> 
                    elementLevel (opposite l) (getM state) \<le> elementLevel ?l (getM state) \<and> 
                    elementLevel (opposite l) (getM state) \<le> elementLevel ?ll (getM state)"
-	proof-
-	  { 
-	    fix l
-	    assume "l el (getC state)" "l \<noteq> opposite ?l" "l \<noteq> opposite ?ll"
-	    hence "opposite l el ?oppC" 
-	      using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "getC state"]
-	      by simp
-	    moreover
-	    from `l \<noteq> opposite ?l`
-	    have "opposite l \<noteq> ?l"
-	      using oppositeSymmetry[of "l" "?l"]
-	      by blast
-	    ultimately
-	    have "opposite l el (removeAll ?l ?oppC)"
-	      by simp
-	      
-	    from `clauseFalse (getC state) (elements (getM state))`
-	    have "literalFalse l (elements (getM state))"
-	      using `l el (getC state)`
-	      by (simp add: clauseFalseIffAllLiteralsAreFalse)
+        proof-
+          { 
+            fix l
+            assume "l el (getC state)" "l \<noteq> opposite ?l" "l \<noteq> opposite ?ll"
+            hence "opposite l el ?oppC" 
+              using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "getC state"]
+              by simp
+            moreover
+            from `l \<noteq> opposite ?l`
+            have "opposite l \<noteq> ?l"
+              using oppositeSymmetry[of "l" "?l"]
+              by blast
+            ultimately
+            have "opposite l el (removeAll ?l ?oppC)"
+              by simp
+              
+            from `clauseFalse (getC state) (elements (getM state))`
+            have "literalFalse l (elements (getM state))"
+              using `l el (getC state)`
+              by (simp add: clauseFalseIffAllLiteralsAreFalse)
             hence "elementLevel (opposite l) (getM state) \<le> elementLevel ?l (getM state) \<and> 
               elementLevel (opposite l) (getM state) \<le> elementLevel ?ll (getM state)"
-	      using `InvariantUniq (getM state)`
-	      unfolding InvariantUniq_def
-	      using `isLastAssertedLiteral ?l ?oppC (elements (getM state))`
-	      using lastAssertedLiteralHasHighestElementLevel[of "?l" "?oppC" "getM state"]
-	      using `isLastAssertedLiteral ?ll (removeAll ?l ?oppC) (elements (getM state))`
-	      using lastAssertedLiteralHasHighestElementLevel[of "?ll" "(removeAll ?l ?oppC)" "getM state"]
-	      using `opposite l el ?oppC` `opposite l el (removeAll ?l ?oppC)`
-	      by simp
-	  }
-	  thus ?thesis
-	    by simp
-	qed
-	moreover
-	have "getF ?state' ! clause = (getC state)"
-	  using `clause = length (getF state)`
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	moreover
-	have "getM ?state' = getM state"
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add: Let_def)
-	ultimately
-	show ?thesis
-	  using `clauseFalse (getC state) (elements (getM state))`
-	  using **
-	  unfolding watchCharacterizationCondition_def
-	  by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
+              using `InvariantUniq (getM state)`
+              unfolding InvariantUniq_def
+              using `isLastAssertedLiteral ?l ?oppC (elements (getM state))`
+              using lastAssertedLiteralHasHighestElementLevel[of "?l" "?oppC" "getM state"]
+              using `isLastAssertedLiteral ?ll (removeAll ?l ?oppC) (elements (getM state))`
+              using lastAssertedLiteralHasHighestElementLevel[of "?ll" "(removeAll ?l ?oppC)" "getM state"]
+              using `opposite l el ?oppC` `opposite l el (removeAll ?l ?oppC)`
+              by simp
+          }
+          thus ?thesis
+            by simp
+        qed
+        moreover
+        have "getF ?state' ! clause = (getC state)"
+          using `clause = length (getF state)`
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        moreover
+        have "getM ?state' = getM state"
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add: Let_def)
+        ultimately
+        show ?thesis
+          using `clauseFalse (getC state) (elements (getM state))`
+          using **
+          unfolding watchCharacterizationCondition_def
+          by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
       qed
     } thus ?thesis
       unfolding InvariantWatchCharacterization_def
@@ -1642,30 +1642,30 @@ next
       assume "clause \<in> set (getWatchList ?state' literal)"
       have "clause < length (getF ?state')"
       proof(cases "clause \<in> set (getWatchList state literal)")
-	case True
-	thus ?thesis
-	  using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)`
-	  unfolding InvariantWatchListsContainOnlyClausesFromF_def
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add:Let_def nth_append) (force)+
+        case True
+        thus ?thesis
+          using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)`
+          unfolding InvariantWatchListsContainOnlyClausesFromF_def
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add:Let_def nth_append) (force)+
       next
-	case False
-	with `clause \<in> set (getWatchList ?state' literal)`
-	have "clause = length (getF state)"
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add:Let_def nth_append split: split_if_asm)
-	thus ?thesis
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add:Let_def nth_append)
+        case False
+        with `clause \<in> set (getWatchList ?state' literal)`
+        have "clause = length (getF state)"
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add:Let_def nth_append split: split_if_asm)
+        thus ?thesis
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add:Let_def nth_append)
       qed
     } thus ?thesis
       unfolding InvariantWatchListsContainOnlyClausesFromF_def
@@ -1680,34 +1680,34 @@ next
     proof(cases "l = opposite ?l \<or> l = opposite ?ll")
       case True
       hence "getWatchList ?state' l = (length (getF state)) # getWatchList state l"
-	using `set (getC state) \<noteq> {opposite ?l}`
-	unfolding applyLearn_def
-	unfolding setWatch1_def
-	unfolding setWatch2_def
-	using `?ll \<noteq> ?l`
-	by (auto simp add:Let_def nth_append)
+        using `set (getC state) \<noteq> {opposite ?l}`
+        unfolding applyLearn_def
+        unfolding setWatch1_def
+        unfolding setWatch2_def
+        using `?ll \<noteq> ?l`
+        by (auto simp add:Let_def nth_append)
       moreover
       have "length (getF state) \<notin> set (getWatchList state l)"
-	using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)`
-	unfolding InvariantWatchListsContainOnlyClausesFromF_def
-	by auto
+        using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)`
+        unfolding InvariantWatchListsContainOnlyClausesFromF_def
+        by auto
       ultimately
       show ?thesis
-	using `InvariantWatchListsUniq (getWatchList state)`
-	unfolding InvariantWatchListsUniq_def
-	by (simp add: uniqAppendIff)
+        using `InvariantWatchListsUniq (getWatchList state)`
+        unfolding InvariantWatchListsUniq_def
+        by (simp add: uniqAppendIff)
     next
       case False
       hence "getWatchList ?state' l = getWatchList state l"
-	using `set (getC state) \<noteq> {opposite ?l}`
-	unfolding applyLearn_def
-	unfolding setWatch1_def
-	unfolding setWatch2_def
-	by (auto simp add:Let_def nth_append)
+        using `set (getC state) \<noteq> {opposite ?l}`
+        unfolding applyLearn_def
+        unfolding setWatch1_def
+        unfolding setWatch2_def
+        by (auto simp add:Let_def nth_append)
       thus ?thesis
-	using `InvariantWatchListsUniq (getWatchList state)`
-	unfolding InvariantWatchListsUniq_def
-	by simp
+        using `InvariantWatchListsUniq (getWatchList state)`
+        unfolding InvariantWatchListsUniq_def
+        by simp
     qed
   qed
   moreover
@@ -1717,30 +1717,30 @@ next
       fix c::nat and l::Literal
       have "(c \<in> set (getWatchList ?state' l)) = (Some l = getWatch1 ?state' c \<or> Some l = getWatch2 ?state' c)"
       proof (cases "c = length (getF state)")
-	case False
-	thus ?thesis
-	  using `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
-	  unfolding InvariantWatchListsCharacterization_def
-	  using `set (getC state) \<noteq> {opposite ?l}`
-	  unfolding applyLearn_def
-	  unfolding setWatch1_def
-	  unfolding setWatch2_def
-	  by (auto simp add:Let_def nth_append)
+        case False
+        thus ?thesis
+          using `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
+          unfolding InvariantWatchListsCharacterization_def
+          using `set (getC state) \<noteq> {opposite ?l}`
+          unfolding applyLearn_def
+          unfolding setWatch1_def
+          unfolding setWatch2_def
+          by (auto simp add:Let_def nth_append)
       next
-	case True
-	have "length (getF state) \<notin> set (getWatchList state l)"
-	  using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)`
-	  unfolding InvariantWatchListsContainOnlyClausesFromF_def
-	  by auto
-	thus ?thesis
-	  using `c = length (getF state)`
-	using `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
-	unfolding InvariantWatchListsCharacterization_def
-	using `set (getC state) \<noteq> {opposite ?l}`
-	unfolding applyLearn_def
-	unfolding setWatch1_def
-	unfolding setWatch2_def
-	by (auto simp add:Let_def nth_append)
+        case True
+        have "length (getF state) \<notin> set (getWatchList state l)"
+          using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)`
+          unfolding InvariantWatchListsContainOnlyClausesFromF_def
+          by auto
+        thus ?thesis
+          using `c = length (getF state)`
+        using `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
+        unfolding InvariantWatchListsCharacterization_def
+        using `set (getC state) \<noteq> {opposite ?l}`
+        unfolding applyLearn_def
+        unfolding setWatch1_def
+        unfolding setWatch2_def
+        by (auto simp add:Let_def nth_append)
     qed
   } thus ?thesis
     unfolding InvariantWatchListsCharacterization_def
@@ -1822,26 +1822,26 @@ next
     { 
       assume "\<not> ?thesis"
       hence "set ?oppC \<subseteq> {?l}"
-	using set_removeAll[of "?l" "?oppC"]
-	by auto
+        using set_removeAll[of "?l" "?oppC"]
+        by auto
       have "set (getC state) \<subseteq> {opposite ?l}"
       proof
-	fix x
-	assume "x \<in> set (getC state)"
-	hence "opposite x \<in> set ?oppC"
-	  using literalElListIffOppositeLiteralElOppositeLiteralList[of "x" "getC state"]
-	  by simp
-	hence "opposite x \<in> {?l}"
-	  using `set ?oppC \<subseteq> {?l}`
-	  by auto
-	thus "x \<in> {opposite ?l}"
-	  using oppositeSymmetry[of "x" "?l"]
-	  by force
+        fix x
+        assume "x \<in> set (getC state)"
+        hence "opposite x \<in> set ?oppC"
+          using literalElListIffOppositeLiteralElOppositeLiteralList[of "x" "getC state"]
+          by simp
+        hence "opposite x \<in> {?l}"
+          using `set ?oppC \<subseteq> {?l}`
+          by auto
+        thus "x \<in> {opposite ?l}"
+          using oppositeSymmetry[of "x" "?l"]
+          by force
       qed
       hence False
-	using `set (getC state) \<noteq> {opposite ?l}`
-	using `opposite ?l el getC state`
-	by (auto simp add: Let_def)
+        using `set (getC state) \<noteq> {opposite ?l}`
+        using `opposite ?l el getC state`
+        by (auto simp add: Let_def)
     } thus ?thesis
       by auto
   qed
@@ -2033,85 +2033,85 @@ proof-
       fix clause::Clause
       assume "clause el [getC state]"
       hence "clause = getC state"
-	by simp
+        by simp
       
       have "(\<forall> level'. level' < (getBackjumpLevel ?state') \<longrightarrow> 
                 \<not> clauseFalse clause (elements (prefixToLevel level' (getM ?state')))) \<and> 
             (\<forall> level'. level' < (getBackjumpLevel ?state') \<longrightarrow> 
                 \<not> (\<exists> l. isUnitClause clause l (elements (prefixToLevel level' (getM ?state')))))" (is "?false \<and> ?unit")
       proof(cases "getC state = [opposite ?l]")
-	case True
-	thus ?thesis
-	  using `getM ?state' = getM state` `getC ?state' = getC state` `getCl ?state' = getCl state` 
-	  unfolding getBackjumpLevel_def
-	  by (simp add: Let_def)
+        case True
+        thus ?thesis
+          using `getM ?state' = getM state` `getC ?state' = getC state` `getCl ?state' = getCl state` 
+          unfolding getBackjumpLevel_def
+          by (simp add: Let_def)
       next
-	case False
-	hence "getF ?state' = getF state @ [getC state]" 
-	  unfolding applyLearn_def
-	  unfolding setWatch2_def
-	  unfolding setWatch1_def
-	  by (auto simp add: Let_def)
+        case False
+        hence "getF ?state' = getF state @ [getC state]" 
+          unfolding applyLearn_def
+          unfolding setWatch2_def
+          unfolding setWatch1_def
+          by (auto simp add: Let_def)
 
-	show ?thesis
-	proof-
-	  have "?unit"
-	    using `clause = getC state`
-	    using `InvariantUniq (getM state)`
-	    using `InvariantConsistent (getM state)`
-	    using `getM ?state' = getM state` `getC ?state' = getC state`
-	    using `clauseFalse (getC state) (elements (getM state))`
-	    using `isMinimalBackjumpLevel (getBackjumpLevel ?state') (opposite ?l) (getC ?state') (getM ?state')`
-	    using isMinimalBackjumpLevelEnsuresIsNotUnitBeforePrefix[of "getM ?state'" "getC ?state'" "getBackjumpLevel ?state'" "opposite ?l"]
-	    unfolding InvariantUniq_def
-	    unfolding InvariantConsistent_def
-	    by simp
-	  moreover
-	  have "isUnitClause (getC state) (opposite ?l) (elements (prefixToLevel (getBackjumpLevel ?state') (getM state)))"
-	    using `InvariantUniq (getM state)`
-	    using `InvariantConsistent (getM state)`
-	    using `isMinimalBackjumpLevel (getBackjumpLevel ?state') (opposite ?l) (getC ?state') (getM ?state')`
-	    using `getM ?state' = getM state` `getC ?state' = getC state`
-	    using `clauseFalse (getC state) (elements (getM state))`
-	    using isBackjumpLevelEnsuresIsUnitInPrefix[of "getM ?state'" "getC ?state'" "getBackjumpLevel ?state'" "opposite ?l"]
-	    unfolding isMinimalBackjumpLevel_def
-	    unfolding InvariantUniq_def
-	    unfolding InvariantConsistent_def
-	    by simp
-	  hence "\<not> clauseFalse (getC state) (elements (prefixToLevel (getBackjumpLevel ?state') (getM state)))"
-	    unfolding isUnitClause_def
-	    by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
-	  have "?false"
-	  proof
-	    fix level'
-	    show "level' < getBackjumpLevel ?state' \<longrightarrow> \<not> clauseFalse clause (elements (prefixToLevel level' (getM ?state')))"
-	    proof
-	      assume "level' < getBackjumpLevel ?state'"
-	      show "\<not> clauseFalse clause (elements (prefixToLevel level' (getM ?state')))"
-	      proof-
-		have "isPrefix (prefixToLevel level' (getM state)) (prefixToLevel (getBackjumpLevel ?state') (getM state))"
-		  using `level' < getBackjumpLevel ?state'`
-		  using isPrefixPrefixToLevelLowerLevel[of "level'" "getBackjumpLevel ?state'" "getM state"]
-		  by simp
-		then obtain s
-		  where "prefixToLevel level' (getM state) @ s = prefixToLevel (getBackjumpLevel ?state') (getM state)"
-		  unfolding isPrefix_def
-		  by auto
-		hence "prefixToLevel (getBackjumpLevel ?state') (getM state) = prefixToLevel level' (getM state) @ s"
-		  by (rule sym)
-		thus ?thesis
-		  using `getM ?state' = getM state`
-		  using `clause = getC state`
-		  using `\<not> clauseFalse (getC state) (elements (prefixToLevel (getBackjumpLevel ?state') (getM state)))`
-		  unfolding isPrefix_def
-		  by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
-	      qed
-	    qed
-	  qed
-	  ultimately
-	  show ?thesis
-	    by simp
-	qed
+        show ?thesis
+        proof-
+          have "?unit"
+            using `clause = getC state`
+            using `InvariantUniq (getM state)`
+            using `InvariantConsistent (getM state)`
+            using `getM ?state' = getM state` `getC ?state' = getC state`
+            using `clauseFalse (getC state) (elements (getM state))`
+            using `isMinimalBackjumpLevel (getBackjumpLevel ?state') (opposite ?l) (getC ?state') (getM ?state')`
+            using isMinimalBackjumpLevelEnsuresIsNotUnitBeforePrefix[of "getM ?state'" "getC ?state'" "getBackjumpLevel ?state'" "opposite ?l"]
+            unfolding InvariantUniq_def
+            unfolding InvariantConsistent_def
+            by simp
+          moreover
+          have "isUnitClause (getC state) (opposite ?l) (elements (prefixToLevel (getBackjumpLevel ?state') (getM state)))"
+            using `InvariantUniq (getM state)`
+            using `InvariantConsistent (getM state)`
+            using `isMinimalBackjumpLevel (getBackjumpLevel ?state') (opposite ?l) (getC ?state') (getM ?state')`
+            using `getM ?state' = getM state` `getC ?state' = getC state`
+            using `clauseFalse (getC state) (elements (getM state))`
+            using isBackjumpLevelEnsuresIsUnitInPrefix[of "getM ?state'" "getC ?state'" "getBackjumpLevel ?state'" "opposite ?l"]
+            unfolding isMinimalBackjumpLevel_def
+            unfolding InvariantUniq_def
+            unfolding InvariantConsistent_def
+            by simp
+          hence "\<not> clauseFalse (getC state) (elements (prefixToLevel (getBackjumpLevel ?state') (getM state)))"
+            unfolding isUnitClause_def
+            by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
+          have "?false"
+          proof
+            fix level'
+            show "level' < getBackjumpLevel ?state' \<longrightarrow> \<not> clauseFalse clause (elements (prefixToLevel level' (getM ?state')))"
+            proof
+              assume "level' < getBackjumpLevel ?state'"
+              show "\<not> clauseFalse clause (elements (prefixToLevel level' (getM ?state')))"
+              proof-
+                have "isPrefix (prefixToLevel level' (getM state)) (prefixToLevel (getBackjumpLevel ?state') (getM state))"
+                  using `level' < getBackjumpLevel ?state'`
+                  using isPrefixPrefixToLevelLowerLevel[of "level'" "getBackjumpLevel ?state'" "getM state"]
+                  by simp
+                then obtain s
+                  where "prefixToLevel level' (getM state) @ s = prefixToLevel (getBackjumpLevel ?state') (getM state)"
+                  unfolding isPrefix_def
+                  by auto
+                hence "prefixToLevel (getBackjumpLevel ?state') (getM state) = prefixToLevel level' (getM state) @ s"
+                  by (rule sym)
+                thus ?thesis
+                  using `getM ?state' = getM state`
+                  using `clause = getC state`
+                  using `\<not> clauseFalse (getC state) (elements (prefixToLevel (getBackjumpLevel ?state') (getM state)))`
+                  unfolding isPrefix_def
+                  by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
+              qed
+            qed
+          qed
+          ultimately
+          show ?thesis
+            by simp
+        qed
       qed
     } thus ?thesis
       unfolding InvariantNoDecisionsWhenConflict_def
@@ -2157,7 +2157,7 @@ proof-
     {
       fix valuation::Valuation
       have "formulaTrue ((getF state @ ?M0) @ [getC state]) valuation = formulaTrue ((getF state) @ [getC state] @ ?M0) valuation"
-	by (simp add: formulaTrueIffAllClausesAreTrue)
+        by (simp add: formulaTrueIffAllClausesAreTrue)
     }
     thus ?thesis
       using `equivalentFormulae ((getF state @ ?M0) @ [getC state]) F0`
@@ -2313,8 +2313,8 @@ proof-
       with `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)`
       have "watchCharacterizationCondition w1 w2 (getM state) (nth (getF state) c)"
         "watchCharacterizationCondition w2 w1 (getM state) (nth (getF state) c)"
-	unfolding InvariantWatchCharacterization_def
-	by auto
+        unfolding InvariantWatchCharacterization_def
+        by auto
 
       let ?clause = "nth (getF state) c"
       let "?a state w1 w2" = "\<exists> l. l el ?clause \<and> literalTrue l (elements (getM state)) \<and> 
@@ -2326,176 +2326,176 @@ proof-
       have "watchCharacterizationCondition w1 w2 (getM ?state') ?clause \<and> 
             watchCharacterizationCondition w2 w1 (getM ?state') ?clause"
       proof-
-	{
-	  assume "literalFalse w1 (elements (getM ?state'))"
-	  hence "literalFalse w1 (elements (getM state))"
-	    using isPrefixPrefixToLevel[of "?level" "getM state"]
-	    using isPrefixElements[of "prefixToLevel ?level (getM state)" "getM state"]
-	    using prefixIsSubset[of "elements (prefixToLevel ?level (getM state))" "elements (getM state)"]
-	    by auto
+        {
+          assume "literalFalse w1 (elements (getM ?state'))"
+          hence "literalFalse w1 (elements (getM state))"
+            using isPrefixPrefixToLevel[of "?level" "getM state"]
+            using isPrefixElements[of "prefixToLevel ?level (getM state)" "getM state"]
+            using prefixIsSubset[of "elements (prefixToLevel ?level (getM state))" "elements (getM state)"]
+            by auto
 
-	  from `literalFalse w1 (elements (getM ?state'))`
-	  have "elementLevel (opposite w1) (getM state) \<le> ?level"
-	    using prefixToLevelElementsElementLevel[of  "opposite w1" "?level" "getM state"]
-	    by simp
+          from `literalFalse w1 (elements (getM ?state'))`
+          have "elementLevel (opposite w1) (getM state) \<le> ?level"
+            using prefixToLevelElementsElementLevel[of  "opposite w1" "?level" "getM state"]
+            by simp
 
-	  from `literalFalse w1 (elements (getM ?state'))`
-	  have "elementLevel (opposite w1) (getM ?state') = elementLevel (opposite w1) (getM state)"
-	    using elementLevelPrefixElement
-	    by simp
+          from `literalFalse w1 (elements (getM ?state'))`
+          have "elementLevel (opposite w1) (getM ?state') = elementLevel (opposite w1) (getM state)"
+            using elementLevelPrefixElement
+            by simp
 
 
-	  have "?a ?state' w1 w2 \<or> ?b ?state' w1 w2"
-	  proof (cases "?a state w1 w2")
-	    case True
-	    then obtain l
-	      where "l el ?clause" "literalTrue l (elements (getM state))" 
-	      "elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)"
-	    by auto
-	    
-	    have "literalTrue l (elements (getM ?state'))"
-	      using `elementLevel (opposite w1) (getM state) \<le> ?level`
-	      using elementLevelLtLevelImpliesMemberPrefixToLevel[of "l" "getM state" "?level"]
-	      using `elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)`
-	      using `literalTrue l (elements (getM state))`
-	      by simp
-	    moreover
-	    from `literalTrue l (elements (getM ?state'))`
-	    have "elementLevel l (getM ?state') = elementLevel l (getM state)"
-	      using elementLevelPrefixElement
-	      by simp
-	    ultimately 
-	    show ?thesis
-	      using `elementLevel (opposite w1) (getM ?state') = elementLevel (opposite w1) (getM state)`
-	      using `elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)`
-	      using `l el ?clause`
-	      by auto
-	  next
-	    case False
-	    {
-	      fix l
-	      assume "l el ?clause" "l \<noteq> w1" "l \<noteq> w2"
-	      hence "literalFalse l (elements (getM state))" 
-		"elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w1) (getM state)"
-		using `literalFalse w1 (elements (getM state))`
-		using False
-		using `watchCharacterizationCondition w1 w2 (getM state) ?clause`
-		unfolding watchCharacterizationCondition_def
-		by auto
-	      
-	      have "literalFalse l (elements (getM ?state')) \<and> 
-		elementLevel (opposite l) (getM ?state') \<le> elementLevel (opposite w1) (getM ?state')"
-	      proof-
-		have "literalFalse l (elements (getM ?state'))"
-		  using `elementLevel (opposite w1) (getM state) \<le> ?level`
-		  using elementLevelLtLevelImpliesMemberPrefixToLevel[of "opposite l" "getM state" "?level"]
-		  using `elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w1) (getM state)`
-		  using `literalFalse l (elements (getM state))`
-		  by simp
-		moreover
-		from `literalFalse l (elements (getM ?state'))`
-		have "elementLevel (opposite l) (getM ?state') = elementLevel (opposite l) (getM state)"
-		  using elementLevelPrefixElement
-		  by simp
-		ultimately 
-		show ?thesis
-		  using `elementLevel (opposite w1) (getM ?state') = elementLevel (opposite w1) (getM state)`
-		  using `elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w1) (getM state)`
-		  using `l el ?clause`
-		  by auto
-	      qed
-	    }
-	    thus ?thesis
-	      by auto
-	  qed
-	}
-	moreover
-	{
-	  assume "literalFalse w2 (elements (getM ?state'))"
-	  hence "literalFalse w2 (elements (getM state))"
-	    using isPrefixPrefixToLevel[of "?level" "getM state"]
-	    using isPrefixElements[of "prefixToLevel ?level (getM state)" "getM state"]
-	    using prefixIsSubset[of "elements (prefixToLevel ?level (getM state))" "elements (getM state)"]
-	    by auto
+          have "?a ?state' w1 w2 \<or> ?b ?state' w1 w2"
+          proof (cases "?a state w1 w2")
+            case True
+            then obtain l
+              where "l el ?clause" "literalTrue l (elements (getM state))" 
+              "elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)"
+            by auto
+            
+            have "literalTrue l (elements (getM ?state'))"
+              using `elementLevel (opposite w1) (getM state) \<le> ?level`
+              using elementLevelLtLevelImpliesMemberPrefixToLevel[of "l" "getM state" "?level"]
+              using `elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)`
+              using `literalTrue l (elements (getM state))`
+              by simp
+            moreover
+            from `literalTrue l (elements (getM ?state'))`
+            have "elementLevel l (getM ?state') = elementLevel l (getM state)"
+              using elementLevelPrefixElement
+              by simp
+            ultimately 
+            show ?thesis
+              using `elementLevel (opposite w1) (getM ?state') = elementLevel (opposite w1) (getM state)`
+              using `elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)`
+              using `l el ?clause`
+              by auto
+          next
+            case False
+            {
+              fix l
+              assume "l el ?clause" "l \<noteq> w1" "l \<noteq> w2"
+              hence "literalFalse l (elements (getM state))" 
+                "elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w1) (getM state)"
+                using `literalFalse w1 (elements (getM state))`
+                using False
+                using `watchCharacterizationCondition w1 w2 (getM state) ?clause`
+                unfolding watchCharacterizationCondition_def
+                by auto
+              
+              have "literalFalse l (elements (getM ?state')) \<and> 
+                elementLevel (opposite l) (getM ?state') \<le> elementLevel (opposite w1) (getM ?state')"
+              proof-
+                have "literalFalse l (elements (getM ?state'))"
+                  using `elementLevel (opposite w1) (getM state) \<le> ?level`
+                  using elementLevelLtLevelImpliesMemberPrefixToLevel[of "opposite l" "getM state" "?level"]
+                  using `elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w1) (getM state)`
+                  using `literalFalse l (elements (getM state))`
+                  by simp
+                moreover
+                from `literalFalse l (elements (getM ?state'))`
+                have "elementLevel (opposite l) (getM ?state') = elementLevel (opposite l) (getM state)"
+                  using elementLevelPrefixElement
+                  by simp
+                ultimately 
+                show ?thesis
+                  using `elementLevel (opposite w1) (getM ?state') = elementLevel (opposite w1) (getM state)`
+                  using `elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w1) (getM state)`
+                  using `l el ?clause`
+                  by auto
+              qed
+            }
+            thus ?thesis
+              by auto
+          qed
+        }
+        moreover
+        {
+          assume "literalFalse w2 (elements (getM ?state'))"
+          hence "literalFalse w2 (elements (getM state))"
+            using isPrefixPrefixToLevel[of "?level" "getM state"]
+            using isPrefixElements[of "prefixToLevel ?level (getM state)" "getM state"]
+            using prefixIsSubset[of "elements (prefixToLevel ?level (getM state))" "elements (getM state)"]
+            by auto
 
-	  from `literalFalse w2 (elements (getM ?state'))`
-	  have "elementLevel (opposite w2) (getM state) \<le> ?level"
-	    using prefixToLevelElementsElementLevel[of "opposite w2" "?level" "getM state"]
-	    by simp
+          from `literalFalse w2 (elements (getM ?state'))`
+          have "elementLevel (opposite w2) (getM state) \<le> ?level"
+            using prefixToLevelElementsElementLevel[of "opposite w2" "?level" "getM state"]
+            by simp
 
-	  from `literalFalse w2 (elements (getM ?state'))`
-	  have "elementLevel (opposite w2) (getM ?state') = elementLevel (opposite w2) (getM state)"
-	    using elementLevelPrefixElement
-	    by simp
+          from `literalFalse w2 (elements (getM ?state'))`
+          have "elementLevel (opposite w2) (getM ?state') = elementLevel (opposite w2) (getM state)"
+            using elementLevelPrefixElement
+            by simp
 
-	  have "?a ?state' w2 w1 \<or> ?b ?state' w2 w1"
-	  proof (cases "?a state w2 w1")
-	    case True
-	    then obtain l
-	      where "l el ?clause" "literalTrue l (elements (getM state))" 
-	      "elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)"
-	    by auto
-	    
-	    have "literalTrue l (elements (getM ?state'))"
-	      using `elementLevel (opposite w2) (getM state) \<le> ?level`
-	      using elementLevelLtLevelImpliesMemberPrefixToLevel[of "l" "getM state" "?level"]
-	      using `elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)`
-	      using `literalTrue l (elements (getM state))`
-	      by simp
-	    moreover
-	    from `literalTrue l (elements (getM ?state'))`
-	    have "elementLevel l (getM ?state') = elementLevel l (getM state)"
-	      using elementLevelPrefixElement
-	      by simp
-	    ultimately 
-	    show ?thesis
-	      using `elementLevel (opposite w2) (getM ?state') = elementLevel (opposite w2) (getM state)`
-	      using `elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)`
-	      using `l el ?clause`
-	      by auto
-	  next
-	    case False
-	    {
-	      fix l
-	      assume "l el ?clause" "l \<noteq> w1" "l \<noteq> w2"
-	      hence "literalFalse l (elements (getM state))" 
-		"elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w2) (getM state)"
-		using `literalFalse w2 (elements (getM state))`
-		using False
-		using `watchCharacterizationCondition w2 w1 (getM state) ?clause`
-		unfolding watchCharacterizationCondition_def
-		by auto
-	      
-	      have "literalFalse l (elements (getM ?state')) \<and> 
-		elementLevel (opposite l) (getM ?state') \<le> elementLevel (opposite w2) (getM ?state')"
-	      proof-
-		have "literalFalse l (elements (getM ?state'))"
-		  using `elementLevel (opposite w2) (getM state) \<le> ?level`
-		  using elementLevelLtLevelImpliesMemberPrefixToLevel[of "opposite l" "getM state" "?level"]
-		  using `elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w2) (getM state)`
-		  using `literalFalse l (elements (getM state))`
-		  by simp
-		moreover
-		from `literalFalse l (elements (getM ?state'))`
-		have "elementLevel (opposite l) (getM ?state') = elementLevel (opposite l) (getM state)"
-		  using elementLevelPrefixElement
-		  by simp
-		ultimately 
-		show ?thesis
-		  using `elementLevel (opposite w2) (getM ?state') = elementLevel (opposite w2) (getM state)`
-		  using `elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w2) (getM state)`
-		  using `l el ?clause`
-		  by auto
-	      qed
-	    }
-	    thus ?thesis
-	      by auto
-	  qed
-	}
-	ultimately
-	show ?thesis
-	  unfolding watchCharacterizationCondition_def
-	  by auto
+          have "?a ?state' w2 w1 \<or> ?b ?state' w2 w1"
+          proof (cases "?a state w2 w1")
+            case True
+            then obtain l
+              where "l el ?clause" "literalTrue l (elements (getM state))" 
+              "elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)"
+            by auto
+            
+            have "literalTrue l (elements (getM ?state'))"
+              using `elementLevel (opposite w2) (getM state) \<le> ?level`
+              using elementLevelLtLevelImpliesMemberPrefixToLevel[of "l" "getM state" "?level"]
+              using `elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)`
+              using `literalTrue l (elements (getM state))`
+              by simp
+            moreover
+            from `literalTrue l (elements (getM ?state'))`
+            have "elementLevel l (getM ?state') = elementLevel l (getM state)"
+              using elementLevelPrefixElement
+              by simp
+            ultimately 
+            show ?thesis
+              using `elementLevel (opposite w2) (getM ?state') = elementLevel (opposite w2) (getM state)`
+              using `elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)`
+              using `l el ?clause`
+              by auto
+          next
+            case False
+            {
+              fix l
+              assume "l el ?clause" "l \<noteq> w1" "l \<noteq> w2"
+              hence "literalFalse l (elements (getM state))" 
+                "elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w2) (getM state)"
+                using `literalFalse w2 (elements (getM state))`
+                using False
+                using `watchCharacterizationCondition w2 w1 (getM state) ?clause`
+                unfolding watchCharacterizationCondition_def
+                by auto
+              
+              have "literalFalse l (elements (getM ?state')) \<and> 
+                elementLevel (opposite l) (getM ?state') \<le> elementLevel (opposite w2) (getM ?state')"
+              proof-
+                have "literalFalse l (elements (getM ?state'))"
+                  using `elementLevel (opposite w2) (getM state) \<le> ?level`
+                  using elementLevelLtLevelImpliesMemberPrefixToLevel[of "opposite l" "getM state" "?level"]
+                  using `elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w2) (getM state)`
+                  using `literalFalse l (elements (getM state))`
+                  by simp
+                moreover
+                from `literalFalse l (elements (getM ?state'))`
+                have "elementLevel (opposite l) (getM ?state') = elementLevel (opposite l) (getM state)"
+                  using elementLevelPrefixElement
+                  by simp
+                ultimately 
+                show ?thesis
+                  using `elementLevel (opposite w2) (getM ?state') = elementLevel (opposite w2) (getM state)`
+                  using `elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w2) (getM state)`
+                  using `l el ?clause`
+                  by auto
+              qed
+            }
+            thus ?thesis
+              by auto
+          qed
+        }
+        ultimately
+        show ?thesis
+          unfolding watchCharacterizationCondition_def
+          by auto
       qed
     }
     thus ?thesis
@@ -2902,48 +2902,48 @@ proof-
       fix l
       show "(\<exists> c. c el (getF state) \<and> isUnitClause c l (elements (getM ?state'))) = (l = opposite ?l)" (is "?lhs = ?rhs")
       proof
-	assume "?lhs"
-	then obtain c::Clause 
-	  where "c el (getF state)" and "isUnitClause c l (elements ?prefix)"
-	  by auto
-	show "?rhs"
-	proof (cases "c el (butlast (getF state))")
-	  case True
-	  thus ?thesis
-	    using `\<forall> l c. c el (butlast (getF state)) \<longrightarrow> \<not> isUnitClause c l (elements (getM ?state'))`
-	    using `isUnitClause c l (elements ?prefix)`
-	    by auto
-	next
-	  case False
+        assume "?lhs"
+        then obtain c::Clause 
+          where "c el (getF state)" and "isUnitClause c l (elements ?prefix)"
+          by auto
+        show "?rhs"
+        proof (cases "c el (butlast (getF state))")
+          case True
+          thus ?thesis
+            using `\<forall> l c. c el (butlast (getF state)) \<longrightarrow> \<not> isUnitClause c l (elements (getM ?state'))`
+            using `isUnitClause c l (elements ?prefix)`
+            by auto
+        next
+          case False
 
-	  from `getF state \<noteq> []`
-	  have "butlast (getF state) @ [last (getF state)] = getF state"
-	    using append_butlast_last_id[of "getF state"]
-	    by simp
-	  hence "getF state = butlast (getF state) @ [last (getF state)]"
-	    by (rule sym)
-	  with `c el getF state`
-	  have "c el butlast (getF state) \<or> c el [last (getF state)]"
-	    using set_append[of "butlast (getF state)" "[last (getF state)]"]
-	    by auto
-	  hence "c = last (getF state)"
-	    using `\<not> c el (butlast (getF state))`
-	    by simp
-	  thus ?thesis
-	    using `isUnitClause (last (getF state)) (opposite ?l) (elements ?prefix)`
-	    using `isUnitClause c l (elements ?prefix)`
-	    unfolding isUnitClause_def
-	    by auto
-	qed
-	next
-	  from `getF state \<noteq> []`
-	  have "last (getF state) el (getF state)"
-	    by auto
-	  assume "?rhs"
-	  thus "?lhs"
-	    using `isUnitClause (last (getF state)) (opposite ?l) (elements ?prefix)`
-	    using `last (getF state) el (getF state)`
-	    by auto
+          from `getF state \<noteq> []`
+          have "butlast (getF state) @ [last (getF state)] = getF state"
+            using append_butlast_last_id[of "getF state"]
+            by simp
+          hence "getF state = butlast (getF state) @ [last (getF state)]"
+            by (rule sym)
+          with `c el getF state`
+          have "c el butlast (getF state) \<or> c el [last (getF state)]"
+            using set_append[of "butlast (getF state)" "[last (getF state)]"]
+            by auto
+          hence "c = last (getF state)"
+            using `\<not> c el (butlast (getF state))`
+            by simp
+          thus ?thesis
+            using `isUnitClause (last (getF state)) (opposite ?l) (elements ?prefix)`
+            using `isUnitClause c l (elements ?prefix)`
+            unfolding isUnitClause_def
+            by auto
+        qed
+        next
+          from `getF state \<noteq> []`
+          have "last (getF state) el (getF state)"
+            by auto
+          assume "?rhs"
+          thus "?lhs"
+            using `isUnitClause (last (getF state)) (opposite ?l) (elements ?prefix)`
+            using `last (getF state) el (getF state)`
+            by auto
       qed
     qed
     thus ?thesis
@@ -2979,30 +2979,30 @@ proof-
       assume "c el (getF state)"
       have "\<not> clauseFalse c (elements ?prefix)"
       proof (cases "c el (butlast (getF state))")
-	case True
-	thus ?thesis
-	  using `InvariantNoDecisionsWhenConflict (butlast (getF state)) (getM state) (currentLevel (getM state))`
-	  using `?level < currentLevel (getM state)`
-	  unfolding InvariantNoDecisionsWhenConflict_def
-	  by (simp add: formulaFalseIffContainsFalseClause)
+        case True
+        thus ?thesis
+          using `InvariantNoDecisionsWhenConflict (butlast (getF state)) (getM state) (currentLevel (getM state))`
+          using `?level < currentLevel (getM state)`
+          unfolding InvariantNoDecisionsWhenConflict_def
+          by (simp add: formulaFalseIffContainsFalseClause)
       next
-	case False
-	from `getF state \<noteq> []`
-	have "butlast (getF state) @ [last (getF state)] = getF state"
-	  using append_butlast_last_id[of "getF state"]
-	  by simp
-	hence "getF state = butlast (getF state) @ [last (getF state)]"
-	  by (rule sym)
-	with `c el getF state`
-	have "c el butlast (getF state) \<or> c el [last (getF state)]"
-	  using set_append[of "butlast (getF state)" "[last (getF state)]"]
-	  by auto
-	hence "c = last (getF state)"
-	  using `\<not> c el (butlast (getF state))`
-	  by simp
-	thus ?thesis
-	  using `\<not> clauseFalse (last (getF state)) (elements ?prefix)`
-	  by simp
+        case False
+        from `getF state \<noteq> []`
+        have "butlast (getF state) @ [last (getF state)] = getF state"
+          using append_butlast_last_id[of "getF state"]
+          by simp
+        hence "getF state = butlast (getF state) @ [last (getF state)]"
+          by (rule sym)
+        with `c el getF state`
+        have "c el butlast (getF state) \<or> c el [last (getF state)]"
+          using set_append[of "butlast (getF state)" "[last (getF state)]"]
+          by auto
+        hence "c = last (getF state)"
+          using `\<not> c el (butlast (getF state))`
+          by simp
+        thus ?thesis
+          using `\<not> clauseFalse (last (getF state)) (elements ?prefix)`
+          by simp
       qed
     } thus ?thesis
       unfolding InvariantConflictFlagCharacterization_def
@@ -3069,43 +3069,43 @@ proof-
     proof-
       have "set (getQ ?stateB) = set(getQ ?state'2) - {opposite ?l}"
       proof-
-	let ?ulSet = "{ ul. (\<exists> uc. uc el (getF ?state'1) \<and> 
+        let ?ulSet = "{ ul. (\<exists> uc. uc el (getF ?state'1) \<and> 
                                    ?l el uc \<and> 
                                    isUnitClause uc ul ((elements (getM ?state'1)) @ [opposite ?l])) }"
-	have "set (getQ ?state'2) = {opposite ?l} \<union> ?ulSet"
-	  using assertLiteralQEffect[of "?state'1" "opposite ?l" "False"]
-	  using assms
-	  using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantWatchCharacterization (getF ?state'1) (getWatch1 ?state'1) (getWatch2 ?state'1) (getM ?state'1)`
-	  by (simp add:Let_def)
-	moreover
-	have "set (getQ ?stateB) = ?ulSet"
-	  using assertLiteralQEffect[of "?state'" "opposite ?l" "False"]
-	  using assms
-	  using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantWatchCharacterization (getF ?state') (getWatch1 ?state') (getWatch2 ?state') (getM ?state')`
-	  using `\<not> getBackjumpLevel state > 0`
-	  unfolding applyBackjump_def
-	  by (simp add:Let_def)
-	moreover
-	have "\<not> (opposite ?l) \<in> ?ulSet"
-	  using assertedLiteralIsNotUnit[of "?state'" "opposite ?l" "False"]
-	  using assms
-	  using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantWatchCharacterization (getF ?state') (getWatch1 ?state') (getWatch2 ?state') (getM ?state')`
-	  using `set (getQ ?stateB) = ?ulSet`
-	  using `\<not> getBackjumpLevel state > 0`
-	  unfolding applyBackjump_def
-	  by (simp add: Let_def)
-	ultimately
-	show ?thesis
-	  by simp
+        have "set (getQ ?state'2) = {opposite ?l} \<union> ?ulSet"
+          using assertLiteralQEffect[of "?state'1" "opposite ?l" "False"]
+          using assms
+          using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
+          using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
+          using `InvariantWatchCharacterization (getF ?state'1) (getWatch1 ?state'1) (getWatch2 ?state'1) (getM ?state'1)`
+          by (simp add:Let_def)
+        moreover
+        have "set (getQ ?stateB) = ?ulSet"
+          using assertLiteralQEffect[of "?state'" "opposite ?l" "False"]
+          using assms
+          using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
+          using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
+          using `InvariantWatchCharacterization (getF ?state') (getWatch1 ?state') (getWatch2 ?state') (getM ?state')`
+          using `\<not> getBackjumpLevel state > 0`
+          unfolding applyBackjump_def
+          by (simp add:Let_def)
+        moreover
+        have "\<not> (opposite ?l) \<in> ?ulSet"
+          using assertedLiteralIsNotUnit[of "?state'" "opposite ?l" "False"]
+          using assms
+          using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
+          using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
+          using `InvariantWatchCharacterization (getF ?state') (getWatch1 ?state') (getWatch2 ?state') (getM ?state')`
+          using `set (getQ ?stateB) = ?ulSet`
+          using `\<not> getBackjumpLevel state > 0`
+          unfolding applyBackjump_def
+          by (simp add: Let_def)
+        ultimately
+        show ?thesis
+          by simp
       qed
       thus ?thesis
-	by simp
+        by simp
     qed
 
     show ?thesis
@@ -3158,11 +3158,11 @@ proof-
     have "?stateB = ?stateTmp'"
       using `getBackjumpLevel state > 0`
       using arg_cong[of "state \<lparr>
-	                       getConflictFlag := False,
+                               getConflictFlag := False,
                                getQ := [],
                                getM := ?prefix,
                                getReason := getReason state(opposite ?l \<mapsto> length (getF state) - 1)
-	                       \<rparr>"
+                               \<rparr>"
                         "state \<lparr>
                                getReason := getReason state(opposite ?l \<mapsto> length (getF state) - 1),
                                getConflictFlag := False, 
@@ -3195,46 +3195,46 @@ proof-
     proof-
       have "set (getQ ?stateB) = set(getQ ?state''2) - {opposite ?l}"
       proof-
-	let ?ulSet = "{ ul. (\<exists> uc. uc el (getF ?state''1) \<and> 
+        let ?ulSet = "{ ul. (\<exists> uc. uc el (getF ?state''1) \<and> 
                                    ?l el uc \<and> 
                                    isUnitClause uc ul ((elements (getM ?state''1)) @ [opposite ?l])) }"
-	have "set (getQ ?state''2) = {opposite ?l} \<union> ?ulSet"
-	  using assertLiteralQEffect[of "?state''1" "opposite ?l" "False"]
-	  using assms
-	  using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantWatchCharacterization (getF ?state''1) (getWatch1 ?state''1) (getWatch2 ?state''1) (getM ?state''1)`
-	  unfolding setReason_def
-	  by (simp add:Let_def)
-	moreover
-	have "set (getQ ?stateB) = ?ulSet"
-	  using assertLiteralQEffect[of "?state''" "opposite ?l" "False"]
-	  using assms
-	  using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantWatchCharacterization (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'') (getM ?state'')`
-	  using `getBackjumpLevel state > 0`
-	  unfolding applyBackjump_def
-	  unfolding setReason_def
-	  by (simp add:Let_def)
-	moreover
-	have "\<not> (opposite ?l) \<in> ?ulSet"
-	  using assertedLiteralIsNotUnit[of "?state''" "opposite ?l" "False"]
-	  using assms
-	  using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
-	  using `InvariantWatchCharacterization (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'') (getM ?state'')`
-	  using `set (getQ ?stateB) = ?ulSet`
-	  using `getBackjumpLevel state > 0`
-	  unfolding applyBackjump_def
-	  unfolding setReason_def
-	  by (simp add: Let_def)
-	ultimately
-	show ?thesis
-	  by simp
+        have "set (getQ ?state''2) = {opposite ?l} \<union> ?ulSet"
+          using assertLiteralQEffect[of "?state''1" "opposite ?l" "False"]
+          using assms
+          using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
+          using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
+          using `InvariantWatchCharacterization (getF ?state''1) (getWatch1 ?state''1) (getWatch2 ?state''1) (getM ?state''1)`
+          unfolding setReason_def
+          by (simp add:Let_def)
+        moreover
+        have "set (getQ ?stateB) = ?ulSet"
+          using assertLiteralQEffect[of "?state''" "opposite ?l" "False"]
+          using assms
+          using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
+          using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
+          using `InvariantWatchCharacterization (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'') (getM ?state'')`
+          using `getBackjumpLevel state > 0`
+          unfolding applyBackjump_def
+          unfolding setReason_def
+          by (simp add:Let_def)
+        moreover
+        have "\<not> (opposite ?l) \<in> ?ulSet"
+          using assertedLiteralIsNotUnit[of "?state''" "opposite ?l" "False"]
+          using assms
+          using `InvariantConsistent (?prefix @  [(opposite ?l, False)])`
+          using `InvariantUniq (?prefix @  [(opposite ?l, False)])`
+          using `InvariantWatchCharacterization (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'') (getM ?state'')`
+          using `set (getQ ?stateB) = ?ulSet`
+          using `getBackjumpLevel state > 0`
+          unfolding applyBackjump_def
+          unfolding setReason_def
+          by (simp add: Let_def)
+        ultimately
+        show ?thesis
+          by simp
       qed
       thus ?thesis
-	by simp
+        by simp
     qed
 
     show ?thesis
@@ -3494,29 +3494,29 @@ proof-
       fix l::Literal
       assume *: "l el (elements ?prefix) \<and> \<not> l el (decisions ?prefix) \<and> elementLevel l ?prefix > 0"
       hence "l el (elements (getM state)) \<and> \<not> l el (decisions (getM state)) \<and> elementLevel l (getM state) > 0"
-	using `InvariantUniq (getM state)`
-	unfolding InvariantUniq_def
-	using isPrefixPrefixToLevel[of "?level" "(getM state)"]
-	using isPrefixElements[of "?prefix" "getM state"]
-	using prefixIsSubset[of "elements ?prefix" "elements (getM state)"]
-	using markedElementsTrailMemPrefixAreMarkedElementsPrefix[of "getM state" "?prefix" "l"]
-	using elementLevelPrefixElement[of "l" "getBackjumpLevel state" "getM state"]
-	by auto
-	
+        using `InvariantUniq (getM state)`
+        unfolding InvariantUniq_def
+        using isPrefixPrefixToLevel[of "?level" "(getM state)"]
+        using isPrefixElements[of "?prefix" "getM state"]
+        using prefixIsSubset[of "elements ?prefix" "elements (getM state)"]
+        using markedElementsTrailMemPrefixAreMarkedElementsPrefix[of "getM state" "?prefix" "l"]
+        using elementLevelPrefixElement[of "l" "getBackjumpLevel state" "getM state"]
+        by auto
+        
       with assms
       obtain reason
-	where "reason < length (getF state)" "isReason (nth (getF state) reason) l (elements (getM state))"
-	"getReason state l = Some reason"
-	unfolding InvariantGetReasonIsReason_def
-	by auto
+        where "reason < length (getF state)" "isReason (nth (getF state) reason) l (elements (getM state))"
+        "getReason state l = Some reason"
+        unfolding InvariantGetReasonIsReason_def
+        by auto
       hence "\<exists> reason. getReason state l = Some reason \<and> 
                        reason < length (getF state) \<and> 
                        isReason (nth (getF state) reason) l (elements ?prefix)"
-	using isReasonHoldsInPrefix[of "l" "elements ?prefix" "elements (getM state)" "nth (getF state) reason"]
-	using isPrefixPrefixToLevel[of "?level" "(getM state)"]
-	using isPrefixElements[of "?prefix" "getM state"]
-	using *
-	by auto
+        using isReasonHoldsInPrefix[of "l" "elements ?prefix" "elements (getM state)" "nth (getF state) reason"]
+        using isPrefixPrefixToLevel[of "?level" "(getM state)"]
+        using isPrefixElements[of "?prefix" "getM state"]
+        using *
+        by auto
     }
     thus ?thesis
       unfolding InvariantGetReasonIsReason_def
@@ -3542,112 +3542,112 @@ proof-
       assume *: "l el (elements (getM ?stateM)) \<and> \<not> l el (decisions  (getM ?stateM)) \<and> elementLevel l  (getM ?stateM) > 0"
 
       have "isPrefix ?prefix (getM ?stateM)"
-	unfolding setReason_def
-	unfolding isPrefix_def
-	by auto
+        unfolding setReason_def
+        unfolding isPrefix_def
+        by auto
 
       have "\<exists> reason. getReason ?stateM l = Some reason \<and> 
                        reason < length (getF ?stateM) \<and> 
                        isReason (nth (getF ?stateM) reason) l (elements (getM ?stateM))"
       proof (cases "l = opposite ?l") 
-	case False
-	hence "l el (elements ?prefix)"
-	  using *
-	  using **
-	  by auto
-	moreover
-	hence "\<not> l el (decisions ?prefix)"
-	  using elementLevelAppend[of "l" "?prefix" "[(opposite ?l, False)]"]
-	  using `isPrefix ?prefix (getM ?stateM)`
-	  using markedElementsPrefixAreMarkedElementsTrail[of "?prefix" "getM ?stateM" "l"]
-	  using *
-	  using **
-	  by auto
-	moreover
-	have "elementLevel l ?prefix = elementLevel l (getM ?stateM)"
-	  using `l el (elements ?prefix)`
-	  using *
-	  using **
-	  using elementLevelAppend[of "l" "?prefix" "[(opposite ?l, False)]"]
-	  by auto
-	hence "elementLevel l ?prefix > 0"
-	  using *
-	  by simp
-	ultimately
-	obtain reason
-	  where "reason < length (getF state)" 
-	  "isReason (nth (getF state) reason) l (elements ?prefix)"
-	  "getReason state l = Some reason"
-	  using `InvariantGetReasonIsReason (getReason ?state') (getF ?state') (getM ?state') (set (getQ ?state'))`
-	  unfolding InvariantGetReasonIsReason_def
-	  by auto
-	moreover
-	have "getReason ?stateM l = getReason ?state' l"
-	  using False
-	  unfolding setReason_def
-	  by auto
-	ultimately
-	show ?thesis
-	  using isReasonAppend[of "nth (getF state) reason" "l" "elements ?prefix" "[opposite ?l]"]
-	  using **
-	  by auto
+        case False
+        hence "l el (elements ?prefix)"
+          using *
+          using **
+          by auto
+        moreover
+        hence "\<not> l el (decisions ?prefix)"
+          using elementLevelAppend[of "l" "?prefix" "[(opposite ?l, False)]"]
+          using `isPrefix ?prefix (getM ?stateM)`
+          using markedElementsPrefixAreMarkedElementsTrail[of "?prefix" "getM ?stateM" "l"]
+          using *
+          using **
+          by auto
+        moreover
+        have "elementLevel l ?prefix = elementLevel l (getM ?stateM)"
+          using `l el (elements ?prefix)`
+          using *
+          using **
+          using elementLevelAppend[of "l" "?prefix" "[(opposite ?l, False)]"]
+          by auto
+        hence "elementLevel l ?prefix > 0"
+          using *
+          by simp
+        ultimately
+        obtain reason
+          where "reason < length (getF state)" 
+          "isReason (nth (getF state) reason) l (elements ?prefix)"
+          "getReason state l = Some reason"
+          using `InvariantGetReasonIsReason (getReason ?state') (getF ?state') (getM ?state') (set (getQ ?state'))`
+          unfolding InvariantGetReasonIsReason_def
+          by auto
+        moreover
+        have "getReason ?stateM l = getReason ?state' l"
+          using False
+          unfolding setReason_def
+          by auto
+        ultimately
+        show ?thesis
+          using isReasonAppend[of "nth (getF state) reason" "l" "elements ?prefix" "[opposite ?l]"]
+          using **
+          by auto
       next
-	case True
-	show ?thesis
-	proof (cases "?level = 0")
-	  case True
-	  hence "currentLevel (getM ?stateM) = 0"
-	    using currentLevelPrefixToLevel[of "0" "getM state"]
-	    using *
-	    unfolding currentLevel_def
-	    by (simp add: markedElementsAppend)
-	  hence "elementLevel l (getM ?stateM) = 0"
-	    using `?level = 0`
-	    using elementLevelLeqCurrentLevel[of "l" "getM ?stateM"]
-	    by simp
-	  with *
-	  have False
-	    by simp
-	  thus ?thesis
-	    by simp
-	next
-	  case False
-	  let ?reason = "length (getF state) - 1"
+        case True
+        show ?thesis
+        proof (cases "?level = 0")
+          case True
+          hence "currentLevel (getM ?stateM) = 0"
+            using currentLevelPrefixToLevel[of "0" "getM state"]
+            using *
+            unfolding currentLevel_def
+            by (simp add: markedElementsAppend)
+          hence "elementLevel l (getM ?stateM) = 0"
+            using `?level = 0`
+            using elementLevelLeqCurrentLevel[of "l" "getM ?stateM"]
+            by simp
+          with *
+          have False
+            by simp
+          thus ?thesis
+            by simp
+        next
+          case False
+          let ?reason = "length (getF state) - 1"
 
-	  have "getReason ?stateM l = Some ?reason"
-	    using `?level \<noteq> 0`
-	    using `l = opposite ?l`
-	    unfolding setReason_def
-	    by auto
-	  moreover
-	  have "(nth (getF state) ?reason) = (getC state)"
-	    using `?level \<noteq> 0`
-	    using `getBackjumpLevel state > 0 \<longrightarrow> getF state \<noteq> [] \<and> last (getF state) = getC state`
-	    using last_conv_nth[of "getF state"]
-	    by simp
+          have "getReason ?stateM l = Some ?reason"
+            using `?level \<noteq> 0`
+            using `l = opposite ?l`
+            unfolding setReason_def
+            by auto
+          moreover
+          have "(nth (getF state) ?reason) = (getC state)"
+            using `?level \<noteq> 0`
+            using `getBackjumpLevel state > 0 \<longrightarrow> getF state \<noteq> [] \<and> last (getF state) = getC state`
+            using last_conv_nth[of "getF state"]
+            by simp
 
-	  hence "isUnitClause (nth (getF state) ?reason) l (elements ?prefix)"
-	    using assms
-	    using applyBackjumpEffect[of "state" "F0"]
-	    using `l = opposite ?l`
-	    by (simp add: Let_def)
-	  hence "isReason (nth (getF state) ?reason) l (elements (getM ?stateM))"
-	    using **
-	    using isUnitClauseIsReason[of "nth (getF state) ?reason" "l" "elements ?prefix" "[opposite ?l]"]
-	    using `l = opposite ?l`
-	    by simp
-	  moreover
-	  have "?reason < length (getF state)"
-	    using `?level \<noteq> 0`
-	    using `getBackjumpLevel state > 0 \<longrightarrow> getF state \<noteq> [] \<and> last (getF state) = getC state`
-	    by simp
-	  ultimately
-	  show ?thesis
-	    using `?level \<noteq> 0`
-	    using `l = opposite ?l`
-	    using **
-	    by auto
-	qed
+          hence "isUnitClause (nth (getF state) ?reason) l (elements ?prefix)"
+            using assms
+            using applyBackjumpEffect[of "state" "F0"]
+            using `l = opposite ?l`
+            by (simp add: Let_def)
+          hence "isReason (nth (getF state) ?reason) l (elements (getM ?stateM))"
+            using **
+            using isUnitClauseIsReason[of "nth (getF state) ?reason" "l" "elements ?prefix" "[opposite ?l]"]
+            using `l = opposite ?l`
+            by simp
+          moreover
+          have "?reason < length (getF state)"
+            using `?level \<noteq> 0`
+            using `getBackjumpLevel state > 0 \<longrightarrow> getF state \<noteq> [] \<and> last (getF state) = getC state`
+            by simp
+          ultimately
+          show ?thesis
+            using `?level \<noteq> 0`
+            using `l = opposite ?l`
+            using **
+            by auto
+        qed
       qed
     }
     thus ?thesis
@@ -3733,56 +3733,56 @@ proof-
     show ?thesis
     proof-
       {
-	fix level
-	assume "level < currentLevel (getM ?state')"
-	hence "level < currentLevel ?prefix"
-	  using `currentLevel (getM ?state') = currentLevel ?prefix`
-	  by simp
-	hence "prefixToLevel level (getM (applyBackjump state)) = prefixToLevel level ?prefix"
-	  using `getM ?state' = ?prefix @ [(?bLiteral, False)]`
-	  using prefixToLevelAppend[of "level" "?prefix" "[(?bLiteral, False)]"]
-	  by simp
-	have "level < ?level"
-	  using `level < currentLevel ?prefix`
-	  using `currentLevel (getM ?state') \<le> ?level`
-	  using `currentLevel (getM ?state') = currentLevel ?prefix`
-	  by simp
-	have "prefixToLevel level (getM ?state') = prefixToLevel level ?prefix"
-	  using `getM ?state' = ?prefix @ [(?bLiteral, False)]`
-	  using prefixToLevelAppend[of "level" "?prefix" "[(?bLiteral, False)]"]
-	  using `level < currentLevel ?prefix`
-	  by simp
+        fix level
+        assume "level < currentLevel (getM ?state')"
+        hence "level < currentLevel ?prefix"
+          using `currentLevel (getM ?state') = currentLevel ?prefix`
+          by simp
+        hence "prefixToLevel level (getM (applyBackjump state)) = prefixToLevel level ?prefix"
+          using `getM ?state' = ?prefix @ [(?bLiteral, False)]`
+          using prefixToLevelAppend[of "level" "?prefix" "[(?bLiteral, False)]"]
+          by simp
+        have "level < ?level"
+          using `level < currentLevel ?prefix`
+          using `currentLevel (getM ?state') \<le> ?level`
+          using `currentLevel (getM ?state') = currentLevel ?prefix`
+          by simp
+        have "prefixToLevel level (getM ?state') = prefixToLevel level ?prefix"
+          using `getM ?state' = ?prefix @ [(?bLiteral, False)]`
+          using prefixToLevelAppend[of "level" "?prefix" "[(?bLiteral, False)]"]
+          using `level < currentLevel ?prefix`
+          by simp
 
-	hence "\<not> formulaFalse (getF ?state') (elements (prefixToLevel level (getM ?state')))"  (is "?false")
-	  using `InvariantNoDecisionsWhenConflict (getF state) (getM state) (currentLevel (getM state))`
-	  unfolding InvariantNoDecisionsWhenConflict_def
-	  using `level < ?level`
-	  using `?level < currentLevel (getM state)`
-	  using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
-	  using `getF ?state' = getF state`
-	  using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
-	  using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
-	  by (auto simp add: formulaFalseIffContainsFalseClause)
-	moreover
-	have "\<not> (\<exists> clause literal. 
-	             clause el (getF ?state') \<and> 
+        hence "\<not> formulaFalse (getF ?state') (elements (prefixToLevel level (getM ?state')))"  (is "?false")
+          using `InvariantNoDecisionsWhenConflict (getF state) (getM state) (currentLevel (getM state))`
+          unfolding InvariantNoDecisionsWhenConflict_def
+          using `level < ?level`
+          using `?level < currentLevel (getM state)`
+          using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
+          using `getF ?state' = getF state`
+          using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
+          using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
+          by (auto simp add: formulaFalseIffContainsFalseClause)
+        moreover
+        have "\<not> (\<exists> clause literal. 
+                     clause el (getF ?state') \<and> 
                      isUnitClause clause literal (elements (prefixToLevel level (getM ?state'))))" (is "?unit")
-	  using `InvariantNoDecisionsWhenUnit  (getF state) (getM state) (currentLevel (getM state))`
-	  unfolding InvariantNoDecisionsWhenUnit_def
-	  using `level < ?level`
-	  using `?level < currentLevel (getM state)`
-	  using `getF ?state' = getF state`
-	  using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
-	  using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
-	  by simp
-	ultimately
-	have "?false \<and> ?unit"
-	  by simp
+          using `InvariantNoDecisionsWhenUnit  (getF state) (getM state) (currentLevel (getM state))`
+          unfolding InvariantNoDecisionsWhenUnit_def
+          using `level < ?level`
+          using `?level < currentLevel (getM state)`
+          using `getF ?state' = getF state`
+          using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
+          using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
+          by simp
+        ultimately
+        have "?false \<and> ?unit"
+          by simp
       } 
       thus ?thesis
-	unfolding InvariantNoDecisionsWhenConflict_def
-	unfolding InvariantNoDecisionsWhenUnit_def
-	by (auto simp add: Let_def)
+        unfolding InvariantNoDecisionsWhenConflict_def
+        unfolding InvariantNoDecisionsWhenUnit_def
+        by (auto simp add: Let_def)
     qed
   qed
 qed
@@ -3852,102 +3852,102 @@ proof-
     show ?thesis
     proof-
       {
-	fix level
-	assume "level < currentLevel (getM ?state')"
-	hence "level < currentLevel ?prefix"
-	  using `currentLevel (getM ?state') = currentLevel ?prefix`
-	  by simp
-	hence "prefixToLevel level (getM (applyBackjump state)) = prefixToLevel level ?prefix"
-	  using `getM ?state' = ?prefix @ [(?bLiteral, False)]`
-	  using prefixToLevelAppend[of "level" "?prefix" "[(?bLiteral, False)]"]
-	  by simp
-	have "level < ?level"
-	  using `level < currentLevel ?prefix`
-	  using `currentLevel (getM ?state') \<le> ?level`
-	  using `currentLevel (getM ?state') = currentLevel ?prefix`
-	  by simp
-	have "prefixToLevel level (getM ?state') = prefixToLevel level ?prefix"
-	  using `getM ?state' = ?prefix @ [(?bLiteral, False)]`
-	  using prefixToLevelAppend[of "level" "?prefix" "[(?bLiteral, False)]"]
-	  using `level < currentLevel ?prefix`
-	  by simp
+        fix level
+        assume "level < currentLevel (getM ?state')"
+        hence "level < currentLevel ?prefix"
+          using `currentLevel (getM ?state') = currentLevel ?prefix`
+          by simp
+        hence "prefixToLevel level (getM (applyBackjump state)) = prefixToLevel level ?prefix"
+          using `getM ?state' = ?prefix @ [(?bLiteral, False)]`
+          using prefixToLevelAppend[of "level" "?prefix" "[(?bLiteral, False)]"]
+          by simp
+        have "level < ?level"
+          using `level < currentLevel ?prefix`
+          using `currentLevel (getM ?state') \<le> ?level`
+          using `currentLevel (getM ?state') = currentLevel ?prefix`
+          by simp
+        have "prefixToLevel level (getM ?state') = prefixToLevel level ?prefix"
+          using `getM ?state' = ?prefix @ [(?bLiteral, False)]`
+          using prefixToLevelAppend[of "level" "?prefix" "[(?bLiteral, False)]"]
+          using `level < currentLevel ?prefix`
+          by simp
 
-	have "\<not> formulaFalse (butlast (getF ?state')) (elements (prefixToLevel level (getM ?state')))" 
-	  using `getF ?state' = getF state`
-	  using `InvariantNoDecisionsWhenConflict (butlast (getF state)) (getM state) (currentLevel (getM state))`
-	  using `level < ?level`
-	  using `?level < currentLevel (getM state)`
-	  using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
-	  using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
-	  unfolding InvariantNoDecisionsWhenConflict_def
-	  by (auto simp add: formulaFalseIffContainsFalseClause)
-	moreover
-	have "\<not> clauseFalse (last (getF ?state')) (elements (prefixToLevel level (getM ?state')))"
-	  using `getF ?state' = getF state`
-	  using `InvariantNoDecisionsWhenConflict [getC state] (getM state) (getBackjumpLevel state)`
-	  using `last (getF state) = getC state`
-	  using `level < ?level`
-	  using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
-	  using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
-	  unfolding InvariantNoDecisionsWhenConflict_def
-	  by (simp add: formulaFalseIffContainsFalseClause)
-	moreover
-	from `getF state \<noteq> []`
-	have "butlast (getF state) @ [last (getF state)] = getF state"
-	  using append_butlast_last_id[of "getF state"]
-	  by simp
-	hence "getF state = butlast (getF state) @ [last (getF state)]"
-	  by (rule sym)
-	ultimately
-	have "\<not> formulaFalse (getF ?state') (elements (prefixToLevel level (getM ?state')))" (is "?false")
-	  using `getF ?state' = getF state`
-	  using set_append[of "butlast (getF state)" "[last (getF state)]"]
-	  by (auto simp add: formulaFalseIffContainsFalseClause)
-	
-	have "\<not> (\<exists> clause literal. 
-	  clause el (butlast (getF ?state')) \<and> 
+        have "\<not> formulaFalse (butlast (getF ?state')) (elements (prefixToLevel level (getM ?state')))" 
+          using `getF ?state' = getF state`
+          using `InvariantNoDecisionsWhenConflict (butlast (getF state)) (getM state) (currentLevel (getM state))`
+          using `level < ?level`
+          using `?level < currentLevel (getM state)`
+          using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
+          using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
+          unfolding InvariantNoDecisionsWhenConflict_def
+          by (auto simp add: formulaFalseIffContainsFalseClause)
+        moreover
+        have "\<not> clauseFalse (last (getF ?state')) (elements (prefixToLevel level (getM ?state')))"
+          using `getF ?state' = getF state`
+          using `InvariantNoDecisionsWhenConflict [getC state] (getM state) (getBackjumpLevel state)`
+          using `last (getF state) = getC state`
+          using `level < ?level`
+          using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
+          using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
+          unfolding InvariantNoDecisionsWhenConflict_def
+          by (simp add: formulaFalseIffContainsFalseClause)
+        moreover
+        from `getF state \<noteq> []`
+        have "butlast (getF state) @ [last (getF state)] = getF state"
+          using append_butlast_last_id[of "getF state"]
+          by simp
+        hence "getF state = butlast (getF state) @ [last (getF state)]"
+          by (rule sym)
+        ultimately
+        have "\<not> formulaFalse (getF ?state') (elements (prefixToLevel level (getM ?state')))" (is "?false")
+          using `getF ?state' = getF state`
+          using set_append[of "butlast (getF state)" "[last (getF state)]"]
+          by (auto simp add: formulaFalseIffContainsFalseClause)
+        
+        have "\<not> (\<exists> clause literal. 
+          clause el (butlast (getF ?state')) \<and> 
           isUnitClause clause literal (elements (prefixToLevel level (getM ?state'))))"
-	  using `InvariantNoDecisionsWhenUnit (butlast (getF state)) (getM state) (currentLevel (getM state))`
-	  unfolding InvariantNoDecisionsWhenUnit_def
-	  using `level < ?level`
-	  using `?level < currentLevel (getM state)`
-	  using `getF ?state' = getF state`
-	  using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
-	  using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
-	  by simp
-	moreover
-	have "\<not> (\<exists> l. isUnitClause (last (getF ?state')) l (elements (prefixToLevel level (getM ?state'))))"
-	  using `getF ?state' = getF state`
-	  using `InvariantNoDecisionsWhenUnit [getC state] (getM state) (getBackjumpLevel state)`
-	  using `last (getF state) = getC state`
-	  using `level < ?level`
-	  using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
-	  using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
-	  unfolding InvariantNoDecisionsWhenUnit_def
-	  by simp
-	moreover
-	from `getF state \<noteq> []`
-	have "butlast (getF state) @ [last (getF state)] = getF state"
-	  using append_butlast_last_id[of "getF state"]
-	  by simp
-	hence "getF state = butlast (getF state) @ [last (getF state)]"
-	  by (rule sym)
-	ultimately
-	have "\<not> (\<exists> clause literal. 
-	           clause el (getF ?state') \<and> 
+          using `InvariantNoDecisionsWhenUnit (butlast (getF state)) (getM state) (currentLevel (getM state))`
+          unfolding InvariantNoDecisionsWhenUnit_def
+          using `level < ?level`
+          using `?level < currentLevel (getM state)`
+          using `getF ?state' = getF state`
+          using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
+          using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
+          by simp
+        moreover
+        have "\<not> (\<exists> l. isUnitClause (last (getF ?state')) l (elements (prefixToLevel level (getM ?state'))))"
+          using `getF ?state' = getF state`
+          using `InvariantNoDecisionsWhenUnit [getC state] (getM state) (getBackjumpLevel state)`
+          using `last (getF state) = getC state`
+          using `level < ?level`
+          using `prefixToLevel level (getM ?state') = prefixToLevel level ?prefix`
+          using prefixToLevelPrefixToLevelHigherLevel[of "level" "?level" "getM state", THEN sym]
+          unfolding InvariantNoDecisionsWhenUnit_def
+          by simp
+        moreover
+        from `getF state \<noteq> []`
+        have "butlast (getF state) @ [last (getF state)] = getF state"
+          using append_butlast_last_id[of "getF state"]
+          by simp
+        hence "getF state = butlast (getF state) @ [last (getF state)]"
+          by (rule sym)
+        ultimately
+        have "\<not> (\<exists> clause literal. 
+                   clause el (getF ?state') \<and> 
                    isUnitClause clause literal (elements (prefixToLevel level (getM ?state'))))" (is ?unit)
-	  using `getF ?state' = getF state`
-	  using set_append[of "butlast (getF state)" "[last (getF state)]"]
-	  by auto
+          using `getF ?state' = getF state`
+          using set_append[of "butlast (getF state)" "[last (getF state)]"]
+          by auto
 
-	have "?false \<and> ?unit"
-	  using `?false` `?unit`
-	  by simp
+        have "?false \<and> ?unit"
+          using `?false` `?unit`
+          by simp
       } 
       thus ?thesis
-	unfolding InvariantNoDecisionsWhenConflict_def
-	unfolding InvariantNoDecisionsWhenUnit_def
-	by (auto simp add: Let_def)
+        unfolding InvariantNoDecisionsWhenConflict_def
+        unfolding InvariantNoDecisionsWhenUnit_def
+        by (auto simp add: Let_def)
     qed
   qed
 qed
@@ -4048,26 +4048,26 @@ proof-
     have "formulaEntailsLiteral F0 ?bLiteral"
     proof-
       {
-	fix valuation::Valuation
-	assume "model valuation F0"
-	hence "formulaTrue (val2form (elements ?prefix)) valuation"
-	  using `formulaEntailsValuation F0 (elements ?prefix)`
-	  using val2formFormulaTrue[of "elements ?prefix" "valuation"]
-	  unfolding formulaEntailsValuation_def
-	  unfolding formulaEntailsLiteral_def
-	  by simp
-	hence "formulaTrue (F0 @ (val2form (elements ?prefix))) valuation"
-	  using `model valuation F0`
-	  by (simp add: formulaTrueAppend)
-	hence "literalTrue ?bLiteral valuation"
-	  using `model valuation F0`
-	  using `formulaEntailsLiteral (F0 @ val2form (elements ?prefix)) ?bLiteral`
-	  unfolding formulaEntailsLiteral_def
-	  by auto
+        fix valuation::Valuation
+        assume "model valuation F0"
+        hence "formulaTrue (val2form (elements ?prefix)) valuation"
+          using `formulaEntailsValuation F0 (elements ?prefix)`
+          using val2formFormulaTrue[of "elements ?prefix" "valuation"]
+          unfolding formulaEntailsValuation_def
+          unfolding formulaEntailsLiteral_def
+          by simp
+        hence "formulaTrue (F0 @ (val2form (elements ?prefix))) valuation"
+          using `model valuation F0`
+          by (simp add: formulaTrueAppend)
+        hence "literalTrue ?bLiteral valuation"
+          using `model valuation F0`
+          using `formulaEntailsLiteral (F0 @ val2form (elements ?prefix)) ?bLiteral`
+          unfolding formulaEntailsLiteral_def
+          by auto
       }
       thus ?thesis
-	unfolding formulaEntailsLiteral_def
-	by simp
+        unfolding formulaEntailsLiteral_def
+        by simp
     qed
   
     hence "formulaEntailsClause F0 [?bLiteral]"

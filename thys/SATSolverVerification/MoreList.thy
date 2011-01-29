@@ -6,7 +6,7 @@
 header{* MoreList *}
 
 theory MoreList
-imports Main Multiset
+imports Main "~~/src/HOL/Library/Multiset"
 begin
 
 text{* Theory contains some additional lemmas and functions for the
@@ -254,90 +254,90 @@ proof-
     proof (induct l)
       case (Cons m l')
       {
-	assume "a = m"
-	have "b = m"
-	proof-
-	  from `a = m` 
-	  have "firstPos a (m # l') = 0"
-	    by simp
-	  with Cons 
-	  have "firstPos b (m # l') = 0"
-	    by simp
-	  with `b \<in> set (m # l')` 
-	  have "firstPos b (m # l') = 0"
-	    by simp
-	  thus ?thesis
-	    using firstPosEqualZero[of "b" "m" "l'"]
-	    by simp
-	qed
-	with `a = m` 
-	have ?case
-	  by simp
+        assume "a = m"
+        have "b = m"
+        proof-
+          from `a = m` 
+          have "firstPos a (m # l') = 0"
+            by simp
+          with Cons 
+          have "firstPos b (m # l') = 0"
+            by simp
+          with `b \<in> set (m # l')` 
+          have "firstPos b (m # l') = 0"
+            by simp
+          thus ?thesis
+            using firstPosEqualZero[of "b" "m" "l'"]
+            by simp
+        qed
+        with `a = m` 
+        have ?case
+          by simp
       }
       note * = this
       moreover
       {
-	assume "b = m"
-	have "a = m"
-	proof-
-	  from `b = m` 
-	  have "firstPos b (m # l') = 0"
-	    by simp
-	  with Cons 
-	  have "firstPos a (m # l') = 0"
-	    by simp
-	  with `a \<in> set (m # l')` 
-	  have "firstPos a (m # l') = 0"
-	    by simp
-	  thus ?thesis
-	    using firstPosEqualZero[of "a" "m" "l'"]
-	    by simp
-	qed
-	with `b = m` 
-	have ?case
-	  by simp
+        assume "b = m"
+        have "a = m"
+        proof-
+          from `b = m` 
+          have "firstPos b (m # l') = 0"
+            by simp
+          with Cons 
+          have "firstPos a (m # l') = 0"
+            by simp
+          with `a \<in> set (m # l')` 
+          have "firstPos a (m # l') = 0"
+            by simp
+          thus ?thesis
+            using firstPosEqualZero[of "a" "m" "l'"]
+            by simp
+        qed
+        with `b = m` 
+        have ?case
+          by simp
       }
       note ** = this
       moreover
       {
-	assume Q: "a \<noteq> m" "b \<noteq> m"
-	from Q `a \<in> set (m # l')`
-	have "a \<in> set l'"
-	  by simp
-	from Q `b \<in> set (m # l')`
-	have "b \<in> set l'"
-	  by simp
-	from `a \<in> set l'` `b \<in> set l'` Cons
-	have "firstPos a l' = firstPos b l'"
-	  by (simp split: split_if_asm)
-	with Cons 
-	have ?case
-	  by (simp split: split_if_asm)
+        assume Q: "a \<noteq> m" "b \<noteq> m"
+        from Q `a \<in> set (m # l')`
+        have "a \<in> set l'"
+          by simp
+        from Q `b \<in> set (m # l')`
+        have "b \<in> set l'"
+          by simp
+        from `a \<in> set l'` `b \<in> set l'` Cons
+        have "firstPos a l' = firstPos b l'"
+          by (simp split: split_if_asm)
+        with Cons 
+        have ?case
+          by (simp split: split_if_asm)
       }
       note *** = this
       moreover
       {
-	have "a = m \<or> b = m \<or> a \<noteq> m \<and> b \<noteq> m"
-	  by auto
+        have "a = m \<or> b = m \<or> a \<noteq> m \<and> b \<noteq> m"
+          by auto
       }
       ultimately
       show ?thesis
       proof (cases "a = m")
-	case True
-	thus ?thesis
-	  by (rule *)
+        case True
+        thus ?thesis
+          by (rule *)
       next
-	case False
-	thus ?thesis
-	proof (cases "b = m")
-	  case True
-	  thus ?thesis
-	    by (rule **)
-	next
-	  case False
-	  with `a \<noteq> m` show ?thesis
-	    by (rule ***)
-	qed
+        case False
+        thus ?thesis
+        proof (cases "b = m")
+          case True
+          thus ?thesis
+            by (rule **)
+        next
+          case False
+          with `a \<noteq> m` show ?thesis
+            by (rule ***)
+        qed
       qed
     qed simp
   } thus ?thesis
@@ -506,25 +506,25 @@ proof (induct list)
       assume "a = l"
       have ?case
       proof-
-	from `a = l` 
-	have "firstPos (f a) (map f (l # list')) = 0"
-	  using firstPosEqualZero[of "f a" "f l" "map f list'"]
-	  by simp
-	moreover
-	from `precedes a b (l # list')` 
-	have "b \<in> set (l # list')"
-	  unfolding precedes_def
-	  by simp
-	hence "f b \<in> set (map f (l # list'))"
-	  by auto
-	moreover
-	hence "firstPos (f b) (map f (l # list')) \<ge>  0"
-	  by auto
-	ultimately
-	show ?thesis
-	  using `a = l` `f b \<in> set (map f (l # list'))`
-	  unfolding precedes_def
-	  by simp
+        from `a = l` 
+        have "firstPos (f a) (map f (l # list')) = 0"
+          using firstPosEqualZero[of "f a" "f l" "map f list'"]
+          by simp
+        moreover
+        from `precedes a b (l # list')` 
+        have "b \<in> set (l # list')"
+          unfolding precedes_def
+          by simp
+        hence "f b \<in> set (map f (l # list'))"
+          by auto
+        moreover
+        hence "firstPos (f b) (map f (l # list')) \<ge>  0"
+          by auto
+        ultimately
+        show ?thesis
+          using `a = l` `f b \<in> set (map f (l # list'))`
+          unfolding precedes_def
+          by simp
       qed
     }
     moreover
@@ -532,36 +532,36 @@ proof (induct list)
       assume "b = l"
       with `precedes a b (l # list')`
       have "a = l"
-	using noElementsPrecedesFirstElement[of "a" "l" "list'"]
-	by auto
+        using noElementsPrecedesFirstElement[of "a" "l" "list'"]
+        by auto
       from `a = l` `b = l` 
       have ?case
-	unfolding precedes_def
-	by simp
+        unfolding precedes_def
+        by simp
     }
     moreover
     {
       assume "a \<noteq> l" "b \<noteq> l"
       with `\<forall> x y. x \<noteq> y \<longrightarrow> f x \<noteq> f y`
       have "f a \<noteq> f l" "f b \<noteq> f l"
-	by auto
+        by auto
       from `precedes a b (l # list')` 
       have "b \<in> set(l # list')" "a \<in> set(l # list')" "firstPos a (l # list') \<le> firstPos b (l # list')"
-	unfolding precedes_def
-	by auto
+        unfolding precedes_def
+        by auto
       with `a \<noteq> l` `b \<noteq> l` 
       have "a \<in> set list'" "b \<in> set list'" "firstPos a list' \<le> firstPos b list'"
-	by auto
+        by auto
       hence "precedes a b list'"
-	unfolding precedes_def
-	by simp
+        unfolding precedes_def
+        by simp
       with Cons
       have "precedes (f a) (f b) (map f list')"
-	by simp
+        by simp
       with `f a \<noteq> f l` `f b \<noteq> f l`
       have ?case
-	unfolding precedes_def
-	by auto
+        unfolding precedes_def
+        by auto
     }
     ultimately 
     show ?case
@@ -596,54 +596,54 @@ proof(induct list)
     have "firstPos a (filter f (l # list')) \<le> firstPos b (filter f (l # list'))"
     proof- 
       {
-	assume "a = l"
-	with `f a` 
-	have "firstPos a (filter f (l # list')) = 0"
-	  by auto
-	with `b \<in> set (filter f (l # list'))` 
-	have ?thesis
-	  by auto
+        assume "a = l"
+        with `f a` 
+        have "firstPos a (filter f (l # list')) = 0"
+          by auto
+        with `b \<in> set (filter f (l # list'))` 
+        have ?thesis
+          by auto
       }
       moreover
       {
-	assume "b = l"
-	with `precedes a b (l # list')`
-	have "a = b"
-	  using noElementsPrecedesFirstElement[of "a" "b" "list'"]
-	  by auto
-	hence ?thesis
-	  by (simp add: precedesReflexivity)
+        assume "b = l"
+        with `precedes a b (l # list')`
+        have "a = b"
+          using noElementsPrecedesFirstElement[of "a" "b" "list'"]
+          by auto
+        hence ?thesis
+          by (simp add: precedesReflexivity)
       }
       moreover
       {
-	assume "a \<noteq> l" "b \<noteq> l"
-	with `precedes a b (l # list')` 
-	have "firstPos a list' \<le> firstPos b list'"
-	  unfolding precedes_def
-	  by auto
-	moreover
-	from `a \<noteq> l` `a \<in> set (l # list')` 
-	have "a \<in> set list'"
-	  by simp
-	moreover
-	from `b \<noteq> l` `b \<in> set (l # list')` 
-	have "b \<in> set list'"
-	  by simp
-	ultimately
-	have "precedes a b list'"
-	  unfolding precedes_def
-	  by simp
-	with `f a` `f b` Cons(1)
-	have "precedes a b (filter f list')"
-	  by simp
-	with `a \<noteq> l` `b \<noteq> l`
-	have ?thesis
-	  unfolding precedes_def
-	  by auto
+        assume "a \<noteq> l" "b \<noteq> l"
+        with `precedes a b (l # list')` 
+        have "firstPos a list' \<le> firstPos b list'"
+          unfolding precedes_def
+          by auto
+        moreover
+        from `a \<noteq> l` `a \<in> set (l # list')` 
+        have "a \<in> set list'"
+          by simp
+        moreover
+        from `b \<noteq> l` `b \<in> set (l # list')` 
+        have "b \<in> set list'"
+          by simp
+        ultimately
+        have "precedes a b list'"
+          unfolding precedes_def
+          by simp
+        with `f a` `f b` Cons(1)
+        have "precedes a b (filter f list')"
+          by simp
+        with `a \<noteq> l` `b \<noteq> l`
+        have ?thesis
+          unfolding precedes_def
+          by auto
       }
       ultimately
       show ?thesis
-	by blast
+        by blast
     qed
     ultimately
     show ?thesis
@@ -686,72 +686,72 @@ proof-
       let ?listQ = "filter (\<lambda> x. x \<in> Q) list"
       have "\<exists> aMin \<in> Q. \<forall> a'. (a', aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
       proof (cases "?listQ = []")
-	case True
-	let ?aMin = a
-	have "\<forall> a'. (a', ?aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
-	proof-
-	  {
-	    fix a'
-	    assume "(a', ?aMin) \<in> precedesOrder list"
-	    hence "a \<in> set list"
-	      unfolding precedesOrder_def
-	      unfolding precedes_def
-	      by simp
-	    with `a \<in> Q`
-	    have "a \<in> set ?listQ"
-	      by (induct list) auto
-	    with `?listQ = []` 
-	    have "False"
-	      by simp
-	    hence "a' \<notin> Q"
-	      by simp
-	  }
-	  thus ?thesis
-	    by simp
-	qed
-	with `a \<in> Q` obtain aMin where "aMin \<in> Q" "\<forall> a'. (a', aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
-	  by auto
-	thus ?thesis
-	  by auto
+        case True
+        let ?aMin = a
+        have "\<forall> a'. (a', ?aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
+        proof-
+          {
+            fix a'
+            assume "(a', ?aMin) \<in> precedesOrder list"
+            hence "a \<in> set list"
+              unfolding precedesOrder_def
+              unfolding precedes_def
+              by simp
+            with `a \<in> Q`
+            have "a \<in> set ?listQ"
+              by (induct list) auto
+            with `?listQ = []` 
+            have "False"
+              by simp
+            hence "a' \<notin> Q"
+              by simp
+          }
+          thus ?thesis
+            by simp
+        qed
+        with `a \<in> Q` obtain aMin where "aMin \<in> Q" "\<forall> a'. (a', aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
+          by auto
+        thus ?thesis
+          by auto
       next
-	case False
-	let ?aMin = "hd ?listQ"
-	from False 
-	have "?aMin \<in> Q"
-	  by (induct list) auto
-	have "\<forall> a'. (a', ?aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
-	proof
-	  fix a'
-	  {
-	    assume "(a', ?aMin) \<in> precedesOrder list"
-	    hence "a' \<in> set list" "precedes a' ?aMin list" "a' \<noteq> ?aMin"
-	      unfolding precedesOrder_def
-	      unfolding precedes_def
-	      by auto
-	    have "a' \<notin> Q"
-	    proof-
-	      {
-		assume "a' \<in> Q"
-		with `?aMin \<in> Q` `precedes a' ?aMin list`
-		have "precedes a' ?aMin ?listQ"
-		    using precedesFilter[of "a'" "?aMin" "list" "\<lambda> x. x \<in> Q"]
-		    by blast
-		from `a' \<noteq> ?aMin` 
-		have "\<not> precedes a' (hd ?listQ) (hd ?listQ # tl ?listQ)"
-		  by (rule noElementsPrecedesFirstElement)
-		with False `precedes a' ?aMin ?listQ`
-		have "False"
-		  by auto
-	      }
-	      thus ?thesis
-		by auto
-	    qed
-	  } thus "(a', ?aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
-	    by simp
-	qed
-	with `?aMin \<in> Q`
-	show ?thesis
-	  ..
+        case False
+        let ?aMin = "hd ?listQ"
+        from False 
+        have "?aMin \<in> Q"
+          by (induct list) auto
+        have "\<forall> a'. (a', ?aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
+        proof
+          fix a'
+          {
+            assume "(a', ?aMin) \<in> precedesOrder list"
+            hence "a' \<in> set list" "precedes a' ?aMin list" "a' \<noteq> ?aMin"
+              unfolding precedesOrder_def
+              unfolding precedes_def
+              by auto
+            have "a' \<notin> Q"
+            proof-
+              {
+                assume "a' \<in> Q"
+                with `?aMin \<in> Q` `precedes a' ?aMin list`
+                have "precedes a' ?aMin ?listQ"
+                    using precedesFilter[of "a'" "?aMin" "list" "\<lambda> x. x \<in> Q"]
+                    by blast
+                from `a' \<noteq> ?aMin` 
+                have "\<not> precedes a' (hd ?listQ) (hd ?listQ # tl ?listQ)"
+                  by (rule noElementsPrecedesFirstElement)
+                with False `precedes a' ?aMin ?listQ`
+                have "False"
+                  by auto
+              }
+              thus ?thesis
+                by auto
+            qed
+          } thus "(a', ?aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
+            by simp
+        qed
+        with `?aMin \<in> Q`
+        show ?thesis
+          ..
       qed
     }
     thus ?thesis
@@ -888,13 +888,13 @@ proof (induct y arbitrary: xs)
     proof (cases "x \<in> set ys")
       case True
       thus ?thesis
-	using Cons
-	by simp
+        using Cons
+        by simp
     next
       case False
       thus ?thesis
-	using Cons
-	by simp
+        using Cons
+        by simp
     qed
   qed
 qed simp
@@ -985,62 +985,62 @@ next
       case True
       show ?thesis
       proof-
-	have "set (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-	  set (x # remdups a' @ remdups (list_diff b (x # a')))"
-	  using `x \<notin> set a'`
-	  by auto
-	also have "\<dots> = set (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
-	  by auto
-	also have "\<dots> = set (x # remdups a' @ remdups (removeAll x (list_diff b a')))"
-	  by simp
-	also have "\<dots> = set (remdups a' @ x # remdups (removeAll x (list_diff b a')))"
-	  by simp
-	also have "\<dots> = set (remdups a' @ x # removeAll x (remdups (list_diff b a')))"
-	  by (simp only: remdupsRemoveAllCommute)
-	also have "\<dots> = set (remdups a') \<union> set (x # removeAll x (remdups (list_diff b a')))"
-	  by simp
-	also have "\<dots> = set (remdups a') \<union> {x} \<union> set (removeAll x (remdups (list_diff b a')))"
-	  by auto
-	also have "\<dots> = set (remdups a') \<union> set (remdups (list_diff b a'))"
-	proof-
-	  from `x \<notin> set a'` `x \<in> set b`
-	  have "x \<in> set (list_diff b a')"
-	    using listDiffIff[of "x" "b" "a'"]
-	    by simp
-	  hence "x \<in> set (remdups (list_diff b a'))"
-	    by auto
-	  thus ?thesis
-	    by auto
-	qed
-	also have "\<dots> = set (remdups (a' @ b))"
-	  using Cons(1)
-	  by simp
-	also have "\<dots> = set (remdups ((x # a') @ b))"
-	  using `x \<in> set b`
-	  by simp
-	finally show ?thesis
-	  by simp
+        have "set (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
+          set (x # remdups a' @ remdups (list_diff b (x # a')))"
+          using `x \<notin> set a'`
+          by auto
+        also have "\<dots> = set (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
+          by auto
+        also have "\<dots> = set (x # remdups a' @ remdups (removeAll x (list_diff b a')))"
+          by simp
+        also have "\<dots> = set (remdups a' @ x # remdups (removeAll x (list_diff b a')))"
+          by simp
+        also have "\<dots> = set (remdups a' @ x # removeAll x (remdups (list_diff b a')))"
+          by (simp only: remdupsRemoveAllCommute)
+        also have "\<dots> = set (remdups a') \<union> set (x # removeAll x (remdups (list_diff b a')))"
+          by simp
+        also have "\<dots> = set (remdups a') \<union> {x} \<union> set (removeAll x (remdups (list_diff b a')))"
+          by auto
+        also have "\<dots> = set (remdups a') \<union> set (remdups (list_diff b a'))"
+        proof-
+          from `x \<notin> set a'` `x \<in> set b`
+          have "x \<in> set (list_diff b a')"
+            using listDiffIff[of "x" "b" "a'"]
+            by simp
+          hence "x \<in> set (remdups (list_diff b a'))"
+            by auto
+          thus ?thesis
+            by auto
+        qed
+        also have "\<dots> = set (remdups (a' @ b))"
+          using Cons(1)
+          by simp
+        also have "\<dots> = set (remdups ((x # a') @ b))"
+          using `x \<in> set b`
+          by simp
+        finally show ?thesis
+          by simp
       qed
     next
       case False
       thus ?thesis
       proof-
-	have "set (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-	  set (x # (remdups a') @ remdups (list_diff b (x # a')))"
-	  using `x \<notin> set a'`
-	  by auto
-	also have "\<dots> = set (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
-	  by auto
-	also have "\<dots> = set (x # remdups a' @ remdups (list_diff b a'))"
-	  using `x \<notin> set b`
-	  by auto
-	also have "\<dots> = {x} \<union> set (remdups (a' @ b))"
-	  using Cons(1)
-	  by simp
-	also have "\<dots> = set (remdups ((x # a') @ b))"
-	  by auto
-	finally show ?thesis
-	  by simp
+        have "set (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
+          set (x # (remdups a') @ remdups (list_diff b (x # a')))"
+          using `x \<notin> set a'`
+          by auto
+        also have "\<dots> = set (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
+          by auto
+        also have "\<dots> = set (x # remdups a' @ remdups (list_diff b a'))"
+          using `x \<notin> set b`
+          by auto
+        also have "\<dots> = {x} \<union> set (remdups (a' @ b))"
+          using Cons(1)
+          by simp
+        also have "\<dots> = set (remdups ((x # a') @ b))"
+          by auto
+        finally show ?thesis
+          by simp
       qed
     qed
   qed
@@ -1068,75 +1068,75 @@ next
       case True
       show ?thesis
       proof-
-	have "multiset_of (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-	  multiset_of (x # remdups a' @ remdups (list_diff b (x # a')))"
-	proof-
-	  have "remdups (x # a') = x # remdups a'"
-	    using `x \<notin> set a'`
-	    by auto
-	  thus ?thesis
-	    by simp
-	qed
-	also have "\<dots> = multiset_of (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
-	  by auto
-	also have "\<dots> = multiset_of (x # remdups a' @ remdups (removeAll x (list_diff b a')))"
-	  by simp
-	also have "\<dots> = multiset_of (remdups a' @ x # remdups (removeAll x (list_diff b a')))"
-	  by (simp add: union_assoc)
-	also have "\<dots> = multiset_of (remdups a' @ x # removeAll x (remdups (list_diff b a')))"
-	  by (simp only: remdupsRemoveAllCommute)
-	also have "\<dots> = multiset_of (remdups a') + multiset_of (x # removeAll x (remdups (list_diff b a')))"
-	  by simp
-	also have "\<dots> = multiset_of (remdups a') + {#x#} + multiset_of (removeAll x (remdups (list_diff b a')))"
-	  by (simp add: union_assoc) (simp add: union_commute)
-	also have "\<dots> = multiset_of (remdups a') + multiset_of (remdups (list_diff b a'))"
-	proof-
-	  from `x \<notin> set a'` `x \<in> set b`
-	  have "x \<in> set (list_diff b a')"
-	    using listDiffIff[of "x" "b" "a'"]
-	    by simp
-	  hence "x \<in> set (remdups (list_diff b a'))"
-	    by auto
-	  thus ?thesis
-	    using removeAll_multiset[of "remdups (list_diff b a')" "x"]
-	    by (simp add: union_assoc)
-	qed
-	also have "\<dots> = multiset_of (remdups (a' @ b))"
-	  using Cons(1)
-	  by simp
-	also have "\<dots> = multiset_of (remdups ((x # a') @ b))"
-	  using `x \<in> set b`
-	  by simp
-	finally show ?thesis
-	  by simp
+        have "multiset_of (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
+          multiset_of (x # remdups a' @ remdups (list_diff b (x # a')))"
+        proof-
+          have "remdups (x # a') = x # remdups a'"
+            using `x \<notin> set a'`
+            by auto
+          thus ?thesis
+            by simp
+        qed
+        also have "\<dots> = multiset_of (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
+          by auto
+        also have "\<dots> = multiset_of (x # remdups a' @ remdups (removeAll x (list_diff b a')))"
+          by simp
+        also have "\<dots> = multiset_of (remdups a' @ x # remdups (removeAll x (list_diff b a')))"
+          by (simp add: union_assoc)
+        also have "\<dots> = multiset_of (remdups a' @ x # removeAll x (remdups (list_diff b a')))"
+          by (simp only: remdupsRemoveAllCommute)
+        also have "\<dots> = multiset_of (remdups a') + multiset_of (x # removeAll x (remdups (list_diff b a')))"
+          by simp
+        also have "\<dots> = multiset_of (remdups a') + {#x#} + multiset_of (removeAll x (remdups (list_diff b a')))"
+          by (simp add: union_assoc) (simp add: union_commute)
+        also have "\<dots> = multiset_of (remdups a') + multiset_of (remdups (list_diff b a'))"
+        proof-
+          from `x \<notin> set a'` `x \<in> set b`
+          have "x \<in> set (list_diff b a')"
+            using listDiffIff[of "x" "b" "a'"]
+            by simp
+          hence "x \<in> set (remdups (list_diff b a'))"
+            by auto
+          thus ?thesis
+            using removeAll_multiset[of "remdups (list_diff b a')" "x"]
+            by (simp add: union_assoc)
+        qed
+        also have "\<dots> = multiset_of (remdups (a' @ b))"
+          using Cons(1)
+          by simp
+        also have "\<dots> = multiset_of (remdups ((x # a') @ b))"
+          using `x \<in> set b`
+          by simp
+        finally show ?thesis
+          by simp
       qed
     next
       case False
       thus ?thesis
       proof-
-	have "multiset_of (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-	  multiset_of (x # remdups a' @ remdups (list_diff b (x # a')))"
-	proof-
-	  have "remdups (x # a') = x # remdups a'"
-	    using `x \<notin> set a'`
-	    by auto
-	  thus ?thesis
-	    by simp
-	qed
-	also have "\<dots> = multiset_of (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
-	  by auto
-	also have "\<dots> = multiset_of (x # remdups a' @ remdups (list_diff b a'))"
-	  using `x \<notin> set b`
-	  using removeAll_id[of "x" "b"]
-	  by simp
-	also have "\<dots> = {#x#} + multiset_of (remdups (a' @ b))"
-	  using Cons(1)
-	  by (simp add: union_commute)
-	also have "\<dots> = multiset_of (remdups ((x # a') @ b))"
-	  using `x \<notin> set a'` `x \<notin> set b`
-	  by (auto simp add: union_commute)
-	finally show ?thesis
-	  by simp
+        have "multiset_of (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
+          multiset_of (x # remdups a' @ remdups (list_diff b (x # a')))"
+        proof-
+          have "remdups (x # a') = x # remdups a'"
+            using `x \<notin> set a'`
+            by auto
+          thus ?thesis
+            by simp
+        qed
+        also have "\<dots> = multiset_of (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
+          by auto
+        also have "\<dots> = multiset_of (x # remdups a' @ remdups (list_diff b a'))"
+          using `x \<notin> set b`
+          using removeAll_id[of "x" "b"]
+          by simp
+        also have "\<dots> = {#x#} + multiset_of (remdups (a' @ b))"
+          using Cons(1)
+          by (simp add: union_commute)
+        also have "\<dots> = multiset_of (remdups ((x # a') @ b))"
+          using `x \<notin> set a'` `x \<notin> set b`
+          by (auto simp add: union_commute)
+        finally show ?thesis
+          by simp
       qed
     qed
   qed
@@ -1289,22 +1289,22 @@ next
       case True
       with `(a # x') @ y = z @ w`
       obtain t where "z @ t = a # x'" "t @ y = w"
-	by auto
+        by auto
       thus ?thesis
-	by auto
+        by auto
     next
       case False
       then obtain b and z' where "z = b # z'"
-	by (auto simp add: neq_Nil_conv)
+        by (auto simp add: neq_Nil_conv)
       with `(a # x') @ y = z @ w`
       have "x' @ y = z' @ w" "a = b"
-	by auto
+        by auto
       with Cons(1)[of "z'"]
       have "x' = z' \<and> y = w \<or> (\<exists>t. z' @ t = x' \<and> t @ y = w) \<or> (\<exists>t. x' @ t = z' \<and> t @ w = y)"
-	by simp
+        by simp
       with `a = b` `z = b # z'` 
       show ?thesis
-	by auto
+        by auto
     qed
   qed simp
 qed
