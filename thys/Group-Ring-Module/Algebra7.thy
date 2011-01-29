@@ -2224,7 +2224,7 @@ apply ((erule exE)+, erule conjE)
   apply (frule sym, thin_tac "a = \<Sigma>\<^sub>e M g n")
   apply (cut_tac n = n and f = g in nsum_minus,
          rule allI, simp add:Pi_def, simp)
-	
+
  apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a (g x)) \<in> {j. j \<le> n} \<rightarrow> 
                                                  finitesum_base M I f")
  apply blast

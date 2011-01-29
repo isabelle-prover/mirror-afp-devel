@@ -25,7 +25,7 @@
  **)   
 
 theory Algebra4
-imports Algebra3 "~~/src/HOL/Library/Binomial" Zorn
+imports Algebra3 "~~/src/HOL/Library/Binomial" "~~/src/HOL/Library/Zorn"
 begin
 
 section "20. Abelian groups"
@@ -62,7 +62,7 @@ definition
            mop::'a set \<Rightarrow> 'a set, zero :: 'a set \<rparr>" where
   "aqgrp A H = \<lparr>carrier = set_rcs (b_ag A) H,
          pop = \<lambda>X. \<lambda>Y. (c_top (b_ag A) H X Y), 
-	 mop = \<lambda>X. (c_iop (b_ag A) H X), zero = H \<rparr>"
+         mop = \<lambda>X. (c_iop (b_ag A) H X), zero = H \<rparr>"
 
 definition 
   ag_idmap :: "_ \<Rightarrow> ('a \<Rightarrow> 'a)"  ("(aI\<^bsub>_\<^esub>)") where
@@ -2248,7 +2248,7 @@ done
 
 lemma (in Ring) rEQMulR:
   "\<lbrakk>x \<in> carrier R; y \<in> carrier R; z \<in> carrier R; x = y \<rbrakk>
-	\<Longrightarrow> x \<cdot>\<^sub>r z = y \<cdot>\<^sub>r z"
+        \<Longrightarrow> x \<cdot>\<^sub>r z = y \<cdot>\<^sub>r z"
 by simp
 
 lemma (in Ring) ring_tOp_assoc:"\<lbrakk>x \<in> carrier R; y \<in> carrier R; z \<in> carrier R \<rbrakk>
@@ -2381,7 +2381,7 @@ done
 
 lemma (in Ring) rMulLC:
      "\<lbrakk>x \<in> carrier R; y \<in> carrier R; z \<in> carrier R\<rbrakk>
-	\<Longrightarrow> x \<cdot>\<^sub>r (y \<cdot>\<^sub>r z) = y \<cdot>\<^sub>r (x \<cdot>\<^sub>r z)"
+        \<Longrightarrow> x \<cdot>\<^sub>r (y \<cdot>\<^sub>r z) = y \<cdot>\<^sub>r (x \<cdot>\<^sub>r z)"
   apply (subst ring_tOp_assoc [THEN sym], assumption+)
   apply (subst ring_tOp_commute [of "x" "y"], assumption+)
   apply (subst ring_tOp_assoc, assumption+)
@@ -2572,11 +2572,11 @@ lemma (in Ring) nsZeroI: "\<And> n.  x = \<zero>  \<Longrightarrow> nscal R x n 
   by (simp only:nsZero)
 
 lemma (in Ring) nsEqElm:  "\<lbrakk> x \<in> carrier R; y \<in> carrier R; x = y \<rbrakk>
-	\<Longrightarrow> (nscal R x n) = (nscal R y n)"
+        \<Longrightarrow> (nscal R x n) = (nscal R y n)"
   by simp
 
 lemma (in Ring) nsDistr:  "x \<in> carrier R 
-	\<Longrightarrow> (nscal R x n) \<plusminus> (nscal R x m) = nscal R x (n + m)"
+        \<Longrightarrow> (nscal R x n) \<plusminus> (nscal R x m) = nscal R x (n + m)"
 apply (cut_tac ring_is_ag)
   apply (induct_tac m)
   apply simp
@@ -2590,7 +2590,7 @@ apply (cut_tac ring_is_ag)
   done
 
 lemma (in Ring) nsDistrL:  "\<lbrakk>x \<in> carrier R; y \<in> carrier R \<rbrakk>
-	\<Longrightarrow> (nscal R x n) \<plusminus> (nscal R y n) = nscal R (x \<plusminus> y) n"
+        \<Longrightarrow> (nscal R x n) \<plusminus> (nscal R y n) = nscal R (x \<plusminus> y) n"
   apply (cut_tac ring_is_ag)
   apply (induct_tac n)
   apply simp 
@@ -2609,7 +2609,7 @@ lemma (in Ring) nsDistrL:  "\<lbrakk>x \<in> carrier R; y \<in> carrier R \<rbra
 done
  
 lemma (in Ring) nsMulDistrL:"\<lbrakk> x \<in> carrier R; y \<in> carrier R \<rbrakk>
-	\<Longrightarrow> x \<cdot>\<^sub>r (nscal R y n) = nscal R (x \<cdot>\<^sub>r y) n";
+        \<Longrightarrow> x \<cdot>\<^sub>r (nscal R y n) = nscal R (x \<cdot>\<^sub>r y) n";
   apply (induct_tac n)
   apply simp
   apply (simp add:ring_times_x_0)
@@ -2620,7 +2620,7 @@ lemma (in Ring) nsMulDistrL:"\<lbrakk> x \<in> carrier R; y \<in> carrier R \<rb
 done
  
 lemma (in Ring) nsMulDistrR:"\<lbrakk> x \<in> carrier R; y \<in> carrier R\<rbrakk>
-	\<Longrightarrow> (nscal R y n) \<cdot>\<^sub>r x = nscal R (y \<cdot>\<^sub>r x) n"
+        \<Longrightarrow> (nscal R y n) \<cdot>\<^sub>r x = nscal R (y \<cdot>\<^sub>r x) n"
   apply (frule_tac x = y and n = n in nsClose,
          simp add:ring_tOp_commute[of "n \<times>\<^bsub>R\<^esub> y" "x"],
          simp add:nsMulDistrL,
@@ -2660,7 +2660,7 @@ done
 
 lemma (in Ring) npGTPowZero_sub:
   " \<And> n. \<lbrakk> x \<in> carrier R; npow R x m = \<zero> \<rbrakk>
-	\<Longrightarrow>(m \<le> n) \<longrightarrow> (npow R x n = \<zero> )";
+        \<Longrightarrow>(m \<le> n) \<longrightarrow> (npow R x n = \<zero> )";
   apply (rule impI)
   apply (subgoal_tac "npow R x n = (npow R x (n-m)) \<cdot>\<^sub>r (npow R x m)")
   apply simp
@@ -2672,7 +2672,7 @@ lemma (in Ring) npGTPowZero_sub:
 
 lemma (in Ring) npGTPowZero:
   "\<And> n. \<lbrakk> x \<in> carrier R; npow R x m = \<zero>; m \<le> n \<rbrakk>
-	\<Longrightarrow> npow R x n = \<zero>"
+        \<Longrightarrow> npow R x n = \<zero>"
   apply (cut_tac x = x and m = m and n = n in npGTPowZero_sub, assumption+)
   apply simp
   done
@@ -2707,11 +2707,11 @@ apply (simp only:npow_suc,
 done
 
 lemma (in Ring) npMulEleL: "\<And> n. x \<in> carrier R 
-	\<Longrightarrow> (npow R x n) \<cdot>\<^sub>r x =  npow R x (Suc n)"
+        \<Longrightarrow> (npow R x n) \<cdot>\<^sub>r x =  npow R x (Suc n)"
 by (simp add:npMulElmL[THEN sym])
 
 lemma (in Ring) npMulElmR: "\<And> n. x \<in> carrier R 
-	\<Longrightarrow> (npow R x n) \<cdot>\<^sub>r x =  npow R x (Suc n)"
+        \<Longrightarrow> (npow R x n) \<cdot>\<^sub>r x =  npow R x (Suc n)"
   apply ( frule_tac n = n in npClose[of "x"])
    apply (simp only:ring_tOp_commute,
           subst npMulElmL, assumption, simp, simp)
@@ -2832,7 +2832,7 @@ apply (cut_tac fSum_zero[of "Suc n" "m - Suc n" f])
 done
 
 lemma (in Ring) nsumMulEleL: "\<And> n. \<lbrakk> \<forall> i. f i \<in> carrier R; x \<in> carrier R \<rbrakk>
-	\<Longrightarrow> x \<cdot>\<^sub>r (nsum R f n) = nsum R (\<lambda> i. x \<cdot>\<^sub>r (f i)) n"
+        \<Longrightarrow> x \<cdot>\<^sub>r (nsum R f n) = nsum R (\<lambda> i. x \<cdot>\<^sub>r (f i)) n"
   apply (cut_tac ring_is_ag)
   apply (induct_tac "n")
   apply simp
@@ -2845,7 +2845,7 @@ done
 
 lemma (in Ring) nsumMulElmL:
   "\<And> n. \<lbrakk> \<forall> i. f i \<in> carrier R; x \<in> carrier R \<rbrakk>
-	\<Longrightarrow> x \<cdot>\<^sub>r (nsum R f n) = nsum R (\<lambda> i. x \<cdot>\<^sub>r (f i)) n"
+        \<Longrightarrow> x \<cdot>\<^sub>r (nsum R f n) = nsum R (\<lambda> i. x \<cdot>\<^sub>r (f i)) n"
   apply (cut_tac ring_is_ag)
   apply (induct_tac "n")
   apply simp
@@ -2857,7 +2857,7 @@ lemma (in Ring) nsumMulElmL:
 
 lemma (in aGroup) nsumTailTr:
          "(\<forall>j\<le>(Suc n). f j \<in> carrier A) \<longrightarrow>
-	  nsum A f (Suc n) = (nsum A (\<lambda> i. (f (Suc i))) n) \<plusminus> (f 0)"
+          nsum A f (Suc n) = (nsum A (\<lambda> i. (f (Suc i))) n) \<plusminus> (f 0)"
   apply (induct_tac "n")
   apply simp
   apply (rule impI, 
@@ -2883,12 +2883,12 @@ lemma (in aGroup) nsumTailTr:
  
 lemma (in aGroup) nsumTail:
       "\<forall>j \<le> (Suc n). f j \<in> carrier A \<Longrightarrow>
-	    nsum A f (Suc n) = (nsum A (\<lambda> i. (f (Suc i))) n) \<plusminus> (f 0)"
+            nsum A f (Suc n) = (nsum A (\<lambda> i. (f (Suc i))) n) \<plusminus> (f 0)"
   by (cut_tac nsumTailTr[of n f], simp)
 
 lemma (in aGroup) nsumElmTail:
   "\<forall>i. f i \<in> carrier A 
-	\<Longrightarrow> nsum A f (Suc n) = (nsum A (\<lambda> i. (f (Suc i))) n) \<plusminus> (f 0)"
+        \<Longrightarrow> nsum A f (Suc n) = (nsum A (\<lambda> i. (f (Suc i))) n) \<plusminus> (f 0)"
   apply (cut_tac n = n and f = f in nsumTail,
          rule allI, simp, simp)
 done
@@ -2915,7 +2915,7 @@ by (cut_tac nsum_addTr[of n f g], simp)
 
 lemma (in aGroup) nsumElmAdd:
   "\<lbrakk> \<forall> i. f i \<in> carrier A; \<forall> i. g i \<in> carrier A\<rbrakk>   
-       	\<Longrightarrow> nsum A (\<lambda> i. (f i) \<plusminus> (g i)) n = (nsum A f n) \<plusminus> (nsum A g n)"
+        \<Longrightarrow> nsum A (\<lambda> i. (f i) \<plusminus> (g i)) n = (nsum A f n) \<plusminus> (nsum A g n)"
  apply (cut_tac nsum_add[of n f g])
  apply simp
  apply (rule allI, simp)+
@@ -2951,10 +2951,10 @@ done
 
 lemma (in Ring) npeSum2_sub_muly:
   "\<lbrakk> x \<in> carrier R; y \<in> carrier R \<rbrakk> \<Longrightarrow>
-	y \<cdot>\<^sub>r(nsum R (\<lambda>i. nscal R ((npow R x (n-i)) \<cdot>\<^sub>r (npow R y i))
-				(n choose i)) n)
-    	= nsum R (\<lambda>i. nscal R ((npow R x (n-i)) \<cdot>\<^sub>r (npow R y (i+1)))
-				(n choose i)) n"
+        y \<cdot>\<^sub>r(nsum R (\<lambda>i. nscal R ((npow R x (n-i)) \<cdot>\<^sub>r (npow R y i))
+                                (n choose i)) n)
+        = nsum R (\<lambda>i. nscal R ((npow R x (n-i)) \<cdot>\<^sub>r (npow R y (i+1)))
+                                (n choose i)) n"
   apply (cut_tac ring_is_ag)
   apply (subst nsumMulElmL)
     apply (rule allI)
@@ -2998,7 +2998,7 @@ lemma diffLessSuc: "m \<le> n \<Longrightarrow> Suc (n-m) = Suc n - m";
 
 lemma (in Ring) npow_suc_i:
   "\<lbrakk> x \<in> carrier R; i \<le> n \<rbrakk>
-	\<Longrightarrow> npow R x (Suc n - i) =  x \<cdot>\<^sub>r (npow R x (n-i))"
+        \<Longrightarrow> npow R x (Suc n - i) =  x \<cdot>\<^sub>r (npow R x (n-i))"
   apply (subst diffLessSuc [THEN sym, of "i" "n"], assumption)
   apply (frule_tac n = "n - i" in npClose,
          simp add:ring_tOp_commute[of x])
@@ -3006,7 +3006,7 @@ lemma (in Ring) npow_suc_i:
 (**
 lemma (in Ring) nsumEqFunc_sub:
   "\<lbrakk>  \<And> i. f i \<in> carrier R; \<And> i. g i \<in> carrier R \<rbrakk>
-	\<Longrightarrow> ( \<forall> i. i \<le> n \<longrightarrow> f i = g i) \<longrightarrow> (nsum0 R f n = nsum0 R g n)";
+        \<Longrightarrow> ( \<forall> i. i \<le> n \<longrightarrow> f i = g i) \<longrightarrow> (nsum0 R f n = nsum0 R g n)";
   apply (induct_tac "n")
   apply simp+
   done
@@ -3023,10 +3023,10 @@ lemma (in Ring) npeSum2_sub_mulx: "\<lbrakk> x \<in> carrier R; y \<in> carrier 
   x \<cdot>\<^sub>r (nsum R (\<lambda> i. nscal R ((npow R x (n-i)) \<cdot>\<^sub>r (npow R y i)) 
                                                         (n choose i)) n)
    = (nsum R (\<lambda>i. nscal R
-			  ((npow R x (Suc n - Suc i)) \<cdot>\<^sub>r (npow R y (Suc i)))
-			  (n choose Suc i)) n) \<plusminus> 
-		(nscal R ((npow R x (Suc n - 0)) \<cdot>\<^sub>r (npow R y 0))
-			(Suc n choose 0))" 
+                          ((npow R x (Suc n - Suc i)) \<cdot>\<^sub>r (npow R y (Suc i)))
+                          (n choose Suc i)) n) \<plusminus> 
+                (nscal R ((npow R x (Suc n - 0)) \<cdot>\<^sub>r (npow R y 0))
+                        (Suc n choose 0))" 
   apply (cut_tac ring_is_ag)
   apply (simp only: binomial_n0)
   apply (subst aGroup.nsumElmTail [THEN sym, of R "\<lambda> i. nscal R ((npow R x (Suc n - i)) \<cdot>\<^sub>r (npow R y i)) (n choose i)"], assumption+)
@@ -3060,12 +3060,12 @@ done
 
 lemma (in Ring) npeSum2_sub_mulx2:
   "\<lbrakk> x \<in> carrier R; y \<in> carrier R \<rbrakk> \<Longrightarrow>
-	x \<cdot>\<^sub>r (nsum R (\<lambda> i. nscal R ((npow R x (n-i)) \<cdot>\<^sub>r (npow R y i))
-				(n choose i)) n)
-	= (nsum R  (\<lambda>i. nscal R
-			  ((npow R x (n - i)) \<cdot>\<^sub>r ((npow R y i) \<cdot>\<^sub>r y ))
-			  (n choose Suc i)) n) \<plusminus> 
-		(\<zero> \<plusminus> ((x \<cdot>\<^sub>r (npow R x n)) \<cdot>\<^sub>r (1\<^sub>r)))"
+        x \<cdot>\<^sub>r (nsum R (\<lambda> i. nscal R ((npow R x (n-i)) \<cdot>\<^sub>r (npow R y i))
+                                (n choose i)) n)
+        = (nsum R  (\<lambda>i. nscal R
+                          ((npow R x (n - i)) \<cdot>\<^sub>r ((npow R y i) \<cdot>\<^sub>r y ))
+                          (n choose Suc i)) n) \<plusminus> 
+                (\<zero> \<plusminus> ((x \<cdot>\<^sub>r (npow R x n)) \<cdot>\<^sub>r (1\<^sub>r)))"
 apply (subst  npeSum2_sub_mulx, assumption+, simp)
 apply (frule npClose[of x n])
 apply (subst ring_tOp_commute[of x], assumption+)
@@ -3088,9 +3088,9 @@ done
 
 lemma (in Ring) npeSum2:
   "\<And> n. \<lbrakk> x \<in> carrier R; y \<in> carrier R \<rbrakk>
-	\<Longrightarrow> npow R (x \<plusminus> y) n =
-		nsum R (\<lambda> i. nscal R ((npow R x (n-i)) \<cdot>\<^sub>r (npow R y i))
-				       ( n choose i) ) n"
+        \<Longrightarrow> npow R (x \<plusminus> y) n =
+                nsum R (\<lambda> i. nscal R ((npow R x (n-i)) \<cdot>\<^sub>r (npow R y i))
+                                       ( n choose i) ) n"
   apply (cut_tac ring_is_ag)
   apply (induct_tac "n")
 
@@ -3174,7 +3174,7 @@ lemma (in aGroup) nsum_zeroTr:
 lemma (in Ring) npAdd:
   "\<lbrakk> x \<in> carrier R; y \<in> carrier R;
      npow R x m = \<zero>; npow R y n = \<zero> \<rbrakk>
-	\<Longrightarrow> npow R (x \<plusminus> y) (m + n) = \<zero>"
+        \<Longrightarrow> npow R (x \<plusminus> y) (m + n) = \<zero>"
   apply (subst npeSum2, assumption+)
 
   apply (rule aGroup.nsum_zeroTr [THEN mp])
@@ -3196,8 +3196,8 @@ lemma (in Ring) npAdd:
 
 lemma (in Ring) npInverse:
   "\<And>n. x \<in> carrier R 
-	\<Longrightarrow> npow R (-\<^sub>a x) n = npow R x n 
-	    \<or> npow R (-\<^sub>a x) n = -\<^sub>a (npow R x n)"
+        \<Longrightarrow> npow R (-\<^sub>a x) n = npow R x n 
+            \<or> npow R (-\<^sub>a x) n = -\<^sub>a (npow R x n)"
   apply (induct_tac n)
  (* n=0 *)
   apply simp
@@ -3221,7 +3221,7 @@ done
 
 lemma (in Ring) npMul:
   "\<And> n. \<lbrakk> x \<in> carrier R; y \<in> carrier R \<rbrakk>
-	\<Longrightarrow> npow R (x \<cdot>\<^sub>r y) n = (npow R x n) \<cdot>\<^sub>r (npow R y n)"
+        \<Longrightarrow> npow R (x \<cdot>\<^sub>r y) n = (npow R x n) \<cdot>\<^sub>r (npow R y n)"
   apply (induct_tac "n")
  (* n=0 *)
   apply simp
