@@ -16,8 +16,8 @@ text{*We introduce two further kinds of states. Initial states do not
 contain operand stacks, terminal states lack operand stacks and local
 variables, but include return values.*}
 
-types InitState = "Store \<times> Heap"
-types TermState = "Heap \<times> Val"
+type_synonym InitState = "Store \<times> Heap"
+type_synonym TermState = "Heap \<times> Val"
 
 text{*A judgements relating to a specific program point $C.m.l$
 consists of pre- and post-conditions, an invariant, and
@@ -25,33 +25,33 @@ consists of pre- and post-conditions, an invariant, and
 annotations relate initial states to states,
 i.e.~are of type*}
 
-types Assn = "InitState \<Rightarrow> State \<Rightarrow> bool"
+type_synonym Assn = "InitState \<Rightarrow> State \<Rightarrow> bool"
 
 text{*Post-conditions additionally depend on a terminal state*}
 
-types Post = "InitState \<Rightarrow> State \<Rightarrow> TermState \<Rightarrow> bool"
+type_synonym Post = "InitState \<Rightarrow> State \<Rightarrow> TermState \<Rightarrow> bool"
 
 text{*Invariants hold for the heap components of all future
 (reachable) states in the current frame as well as its subframes. They
 relate these heaps to the current state and the initial state of the
 current frame.*}
 
-types Inv = "InitState \<Rightarrow> State \<Rightarrow> Heap \<Rightarrow> bool"
+type_synonym Inv = "InitState \<Rightarrow> State \<Rightarrow> Heap \<Rightarrow> bool"
 
 text{*Local annotations of a method implementation are collected in a
 table of type*}
 
-types ANNO = "(Label, Assn) AssList"
+type_synonym ANNO = "(Label, Assn) AssList"
 
 text{*Implicitly, the labels are always interpreted with respect to
 the current method. In addition to such a table, the behaviour of
 methods is specified by a partial-correctness assertion of type*}
 
-types MethSpec = "InitState \<Rightarrow> TermState \<Rightarrow> bool"
+type_synonym MethSpec = "InitState \<Rightarrow> TermState \<Rightarrow> bool"
 
 text{*and a method invariant of type*}
 
-types MethInv = "InitState \<Rightarrow> Heap \<Rightarrow> bool"
+type_synonym MethInv = "InitState \<Rightarrow> Heap \<Rightarrow> bool"
 
 text{*A method invariant is expected to be satisfied by the heap
 components of all states during the execution of the method, including
@@ -59,7 +59,7 @@ states in subframes, irrespectively of the termination behaviour.*}
 
 text{*All method specifications are collected in a table of type*}
 
-types MSPEC = "(Class \<times> Method, MethSpec \<times> MethInv \<times> ANNO) AssList"
+type_synonym MSPEC = "(Class \<times> Method, MethSpec \<times> MethInv \<times> ANNO) AssList"
 
 text{*A table of this type assigns to each method a
 partial-correctness specification, a method invariant, and a table of
@@ -131,7 +131,7 @@ text{*The derivation system is formulated using contexts $G$ of
 proof-theoretic assumptions representing local judgements. The type of
 contexts is*}
 
-types CTXT = "(Class \<times> Method \<times> Label, Assn \<times> Post \<times> Inv) AssList"
+type_synonym CTXT = "(Class \<times> Method \<times> Label, Assn \<times> Post \<times> Inv) AssList"
 
 text{*The existence of the proof context also motivates that the
 hypotheses in the syntax-directed rules are formulated using an

@@ -15,7 +15,7 @@ partial map type $\alpha \rightharpoonup \beta$ to finite domains, we
 found it easier for the present development to use the following adhoc
 data type of association lists.*}
 
-types ('a,'b) AssList = "('a \<times> 'b) list"
+type_synonym ('a,'b) AssList = "('a \<times> 'b) list"
 
 primrec lookup::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> ('b option)" ("_\<down>_" [90,0] 90)
 where

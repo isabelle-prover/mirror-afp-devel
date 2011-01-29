@@ -331,7 +331,7 @@ corresponding pattern match operation. In order to simplify the
 compilation, function identifiers are taken to be pairs of class names
 and method names.*}
 
-types Fun = "Class \<times> Method"
+type_synonym Fun = "Class \<times> Method"
 
 datatype Prim =
   IntPrim int
@@ -347,12 +347,12 @@ datatype Expr =
 | CondE Var Expr Expr
 | MatchE Var Expr Var Var Expr
 
-types FunProg = "(Fun,Var list \<times> Expr) AssList"
+type_synonym FunProg = "(Fun,Var list \<times> Expr) AssList"
 
 text{*The type system uses contexts that associate a type (natural
 number) to function identifiers.*}
 
-types TP_Sig = "(Fun, nat) AssList"
+type_synonym TP_Sig = "(Fun, nat) AssList"
 
 text{* We first give the rules for primitive expressions.*}
 

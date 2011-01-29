@@ -36,7 +36,7 @@ datatype Val = RVal Ref | IVal int
 text{*The type of (instruction) labels is fixed, since the operational
 semantics increments the program counter after each instruction.*}
 
-types Label = int
+type_synonym Label = int
 
 text{*Regarding the instructions, we support basic operand-stack
 manipulations, object creation, field modifications, casts, static
@@ -72,13 +72,13 @@ label. The operational semantics assumes that instructions are
 labelled consecutively\footnote{In the paper, we slightly abstract
 from this by including a successor functions on labels}.*}
 
-types Mbody = "Var list \<times> (Label, Instr) AssList \<times> Label" 
+type_synonym Mbody = "Var list \<times> (Label, Instr) AssList \<times> Label" 
 
 text{*A class definition associates method bodies to method names.*}
-types Classdef = "(Method, Mbody) AssList"
+type_synonym Classdef = "(Method, Mbody) AssList"
 
 text{*Finally, a program consists of classes.*}
-types Prog = "(Class, Classdef) AssList"
+type_synonym Prog = "(Class, Classdef) AssList"
 
 text{*Taken together, the three types @{text Prog}, @{text Classdef},
 and @{text Mbody} represent an abstract model of the virtual machine
@@ -96,7 +96,7 @@ type-correctness, nor do we require that all (or indeed any) of the
 fields stem from the static definition of the class, or a super-class.
 Note, however, that type correctness can be expressed in the logic.*}
 
-types Object = "Class \<times> (Field, Val) AssList"
+type_synonym Object = "Class \<times> (Field, Val) AssList"
 
 text{*The heap is represented as a map from addresses to values.  The
 JVM specification does not prescribe any particular object layout. The
@@ -111,18 +111,18 @@ a history of update operations.  H\"ahnle et al.~use a variant of the
 latter in their dynamic logic for a {\sc
 JavaCard}~~\cite{HaehnleM:Cassis2005}.*}
 
-types Heap = "(Addr, Object) AssList"
+type_synonym Heap = "(Addr, Object) AssList"
 
 text{*Later, one might extend heaps by a component for static fields.*}
 
 text{*The types of the (register) store and the operand stack are as
 expected.*}
 
-types Store = "(Var, Val) AssList"
-types OpStack = "Val list"
+type_synonym Store = "(Var, Val) AssList"
+type_synonym OpStack = "Val list"
 
 text{*States contain an operand stack, a store, and a heap.*}
-types State = "OpStack \<times> Store \<times> Heap"
+type_synonym State = "OpStack \<times> Store \<times> Heap"
 
 definition heap::"State \<Rightarrow> Heap"
 where "heap s = snd(snd s)"
