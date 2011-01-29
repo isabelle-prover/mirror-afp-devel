@@ -1,5 +1,4 @@
 (*  Title:       An example submission to the Archive of Formal Proof
-    ID:          $Id: Submission.thy,v 1.11 2008-06-12 06:57:16 lsf37 Exp $
     Author:      Gerwin Klein <kleing at cse.unsw.edu.au>, 2004
     Maintainer:  Gerwin Klein <kleing at cse.unsw.edu.au>
 *)
@@ -115,7 +114,7 @@ in the AFP by importing them. For example, if you build on theory W in
 the article MiniML, the way to import it is:
 
 \begin{verbatim}
-theory MyTheory
+theory My_Theory
   imports "../MiniML/W"
 begin
 \end{verbatim}
@@ -124,7 +123,7 @@ To build on a theory that is in the Isabelle distribtion, but not in
 one of the standard images like HOL, use something like the following:
 
 \begin{verbatim}
-theory MyTheory
+theory My_Theory
   imports "~~/src/HOL/Number_Theory/Number_Theory"
 begin
 \end{verbatim}
