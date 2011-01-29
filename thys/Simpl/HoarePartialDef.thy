@@ -29,8 +29,7 @@ USA
 header {* Hoare Logic for Partial Correctness *}
 theory HoarePartialDef imports Semantic begin
 
-types 
-  ('s,'p) quadruple = "('s assn \<times> 'p \<times> 's assn \<times> 's assn)"
+type_synonym ('s,'p) quadruple = "('s assn \<times> 'p \<times> 's assn \<times> 's assn)"
 
 subsection {* Validity of Hoare Tuples: @{text "\<Gamma>,\<Theta>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A"} *}
 

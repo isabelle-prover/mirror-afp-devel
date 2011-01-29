@@ -36,9 +36,8 @@ text {* We use a shallow embedding of boolean expressions as well as assertions
 as sets of states. 
 *}
 
-types
-  's bexp = "'s set"
-  's assn = "'s set"
+type_synonym 's bexp = "'s set"
+type_synonym 's assn = "'s set"
 
 datatype ('s, 'p, 'f) com =
     Skip
@@ -282,22 +281,22 @@ proof (induct c)
       case Nil
       from Seq.hyps (1) [OF Cons_x1_xs1] Nil
       have "normalize c1 = x1"
-	by simp
+        by simp
       with Cons_x1_xs1 Nil x_x1 xs_rest show ?thesis
-	apply (cases "flatten (normalize c2)")
-	apply (fastsimp simp add: flatten_nonEmpty)
-	apply simp
-	done
+        apply (cases "flatten (normalize c2)")
+        apply (fastsimp simp add: flatten_nonEmpty)
+        apply simp
+        done
     next
       case Cons
       from Seq.hyps (1) [OF Cons_x1_xs1] Cons
       have "normalize c1 = Seq x1 (sequence Seq xs1)"
-	by simp
+        by simp
       with Cons_x1_xs1 Nil x_x1 xs_rest show ?thesis
-	apply (cases "flatten (normalize c2)")
-	apply (fastsimp simp add: flatten_nonEmpty)
-	apply (simp split: list.splits)
-	done
+        apply (cases "flatten (normalize c2)")
+        apply (fastsimp simp add: flatten_nonEmpty)
+        apply (simp split: list.splits)
+        done
     qed
   qed
 qed (auto)

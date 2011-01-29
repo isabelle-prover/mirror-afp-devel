@@ -213,26 +213,26 @@ next
                   A q Z)})" (is "(P', c, Q', A') \<in> \<Theta> \<union> ?Spec")
       then show "\<Gamma>,?\<Theta>'\<turnstile>\<^bsub>/F\<^esub> P' c Q',A'"
       proof (cases rule: UnE [consumes 1])
-	assume "(P',c,Q',A') \<in> \<Theta>" 
-	then show ?thesis
-	  by (blast intro: HoarePartialDef.Asm)
+        assume "(P',c,Q',A') \<in> \<Theta>" 
+        then show ?thesis
+          by (blast intro: HoarePartialDef.Asm)
       next
-	assume "(P',c,Q',A') \<in> ?Spec" 
-	then show ?thesis
-	proof (clarify)
-	  fix q Z
-	  assume q: "q \<in> Procs"
-	  show "\<Gamma>,?\<Theta>'\<turnstile>\<^bsub>/F\<^esub> (P q Z \<inter> {s. ((s, q), \<tau>, p) \<in> r}) 
+        assume "(P',c,Q',A') \<in> ?Spec" 
+        then show ?thesis
+        proof (clarify)
+          fix q Z
+          assume q: "q \<in> Procs"
+          show "\<Gamma>,?\<Theta>'\<turnstile>\<^bsub>/F\<^esub> (P q Z \<inter> {s. ((s, q), \<tau>, p) \<in> r}) 
                          Call  q 
                         (Q q Z),(A q Z)"
-	  proof -
-	    from q
-	    have "\<Gamma>,?\<Theta>'\<turnstile>\<^bsub>/F\<^esub> (P q Z) Call q (Q q Z),(A q Z)"
-	      by - (rule HoarePartialDef.Asm,blast)
-	    thus ?thesis
-	      by (rule HoarePartialDef.conseqPre) blast
-	  qed
-	qed
+          proof -
+            from q
+            have "\<Gamma>,?\<Theta>'\<turnstile>\<^bsub>/F\<^esub> (P q Z) Call q (Q q Z),(A q Z)"
+              by - (rule HoarePartialDef.Asm,blast)
+            thus ?thesis
+              by (rule HoarePartialDef.conseqPre) blast
+          qed
+        qed
       qed
     qed
     then show "\<Gamma>,\<Theta> \<union> (\<Union>q\<in>Procs. \<Union>Z. {(P q Z, Call q, Q q Z,A q Z)})

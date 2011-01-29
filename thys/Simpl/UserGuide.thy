@@ -892,7 +892,7 @@ apply (hoare_rule HoareTotal_ProcRec2
   txt {* We can directly express the termination condition described above with
   the @{text "<*mlex*>"} construction. Either state component @{text N} decreases,
   or it stays the same and @{text M} decreases or this also stays the same, but
-  then the procedure name has to decrease.*}	
+  then the procedure name has to decrease.*}
   txt {* @{subgoals [margin=80,display]} *}
 apply  simp_all
   txt {* @{subgoals [margin=75,display]} *}

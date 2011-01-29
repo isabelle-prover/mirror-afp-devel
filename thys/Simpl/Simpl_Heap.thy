@@ -80,7 +80,7 @@ proof
       fix x
       assume x: "x \<in> ref"
       show "x \<in> range Rep_ref"
-	by (rule Rep_ref_induct) (auto simp add: ref_def)
+        by (rule Rep_ref_induct) (auto simp add: ref_def)
     qed
   qed
   ultimately have "finite ref"
