@@ -1,5 +1,4 @@
 (*  Title:      Fun With Functions
-    ID:         $Id: FunWithFunctions.thy,v 1.4 2009-06-24 11:23:55 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -63,34 +62,34 @@ proof -
       assume "~i\<le>1"
       show ?case
       proof cases
-	assume "i mod 2 = 0"
-	hence "EX k. i=2*k" by arith
-	then obtain k where "i = 2*k" ..
-	hence "0 < k" and "k<i" using `~i\<le>1` by arith+
-	hence "f(k) = k" using less(1) by blast
-	thus "f(i) = i" using `i = 2*k` by(simp add:f_times 2)
+        assume "i mod 2 = 0"
+        hence "EX k. i=2*k" by arith
+        then obtain k where "i = 2*k" ..
+        hence "0 < k" and "k<i" using `~i\<le>1` by arith+
+        hence "f(k) = k" using less(1) by blast
+        thus "f(i) = i" using `i = 2*k` by(simp add:f_times 2)
       next
-	assume "i mod 2 \<noteq> 0"
-	hence "EX k. i=2*k+1" by arith
-	then obtain k where "i = 2*k+1" ..
-	hence "0<k" and "k+1<i" using `~i\<le>1` by arith+
-	have "2*k < f(2*k+1)"
-	proof -
-	  have "2*k = 2*f(k)" using less(1) `i=2*k+1` by simp
-	  also have "\<dots> = f(2*k)" by(simp add:f_times 2)
-	  also have "\<dots> < f(2*k+1)" using f_mono[of "2*k" "2*k+1"] by simp
-	  finally show ?thesis .
-	qed
-	moreover
-	have "f(2*k+1) < 2*(k+1)"
-	proof -
-	  have "f(2*k+1) < f(2*k+2)" using f_mono[of "2*k+1" "2*k+2"] by simp
-	  also have "\<dots> = f(2*(k+1))" by simp
-	  also have "\<dots> = 2*f(k+1)" by(simp only:f_times 2)
-	  also have "f(k+1) = k+1" using less(1) `i=2*k+1` `~i\<le>1` by simp
-	  finally show ?thesis .
-	qed
-	ultimately show "f(i) = i" using `i = 2*k+1` by arith
+        assume "i mod 2 \<noteq> 0"
+        hence "EX k. i=2*k+1" by arith
+        then obtain k where "i = 2*k+1" ..
+        hence "0<k" and "k+1<i" using `~i\<le>1` by arith+
+        have "2*k < f(2*k+1)"
+        proof -
+          have "2*k = 2*f(k)" using less(1) `i=2*k+1` by simp
+          also have "\<dots> = f(2*k)" by(simp add:f_times 2)
+          also have "\<dots> < f(2*k+1)" using f_mono[of "2*k" "2*k+1"] by simp
+          finally show ?thesis .
+        qed
+        moreover
+        have "f(2*k+1) < 2*(k+1)"
+        proof -
+          have "f(2*k+1) < f(2*k+2)" using f_mono[of "2*k+1" "2*k+2"] by simp
+          also have "\<dots> = f(2*(k+1))" by simp
+          also have "\<dots> = 2*f(k+1)" by(simp only:f_times 2)
+          also have "f(k+1) = k+1" using less(1) `i=2*k+1` `~i\<le>1` by simp
+          finally show ?thesis .
+        qed
+        ultimately show "f(i) = i" using `i = 2*k+1` by arith
       qed
     qed
   qed
@@ -131,7 +130,7 @@ proof -
       case (Suc n)
       have "real(Suc(Suc n))*r + real(Suc n) =
             r + (real(Suc n)*r + real n) + 1" (is "?a = ?b")
-	by(simp add:real_of_nat_Suc field_simps)
+        by(simp add:real_of_nat_Suc field_simps)
       hence "f ?a = f ?b" by simp
       also have "\<dots> = f r + f(real(Suc n)*r + real n)" by(rule f_add)
       also have "\<dots> = f r + real(Suc n) * f r" by(simp only:Suc)
