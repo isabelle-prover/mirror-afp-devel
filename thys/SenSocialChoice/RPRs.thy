@@ -42,7 +42,7 @@ orders per type, we need to repeat some things.
 
 *}
 
-types 'a RPR = "('a * 'a) set"
+type_synonym 'a RPR = "('a * 'a) set"
 
 abbreviation rpr_eq_syntax :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<^bsub>_\<^esub>\<preceq> _" [50, 1000, 51] 50) where
   "x \<^bsub>r\<^esub>\<preceq> y == (x, y) \<in> r"
@@ -99,14 +99,13 @@ lemma complete_less_not: "\<lbrakk> complete A r; hasw [x,y] A; \<not> x \<^bsub
 lemma complete_indiff_not: "\<lbrakk> complete A r; hasw [x,y] A; \<not> x \<^bsub>r\<^esub>\<approx> y \<rbrakk> \<Longrightarrow> x \<^bsub>r\<^esub>\<prec> y \<or> y \<^bsub>r\<^esub>\<prec> x"
   unfolding complete_def indifferent_pref_def strict_pref_def by auto
 
-lemma complete_exh[consumes 2, case_names xPy yPx xIy]:
+lemma complete_exh:
   assumes "complete A r"
       and "hasw [x,y] A"
-      and "x \<^bsub>r\<^esub>\<prec> y \<Longrightarrow> P"
-      and "y \<^bsub>r\<^esub>\<prec> x \<Longrightarrow> P"
-      and "x \<^bsub>r\<^esub>\<approx> y \<Longrightarrow> P"
-  shows "P"
-  using prems unfolding complete_def strict_pref_def indifferent_pref_def by auto
+  obtains (xPy) "x \<^bsub>r\<^esub>\<prec> y"
+    | (yPx) "y \<^bsub>r\<^esub>\<prec> x"
+    | (xIy) "x \<^bsub>r\<^esub>\<approx> y"
+  using assms unfolding complete_def strict_pref_def indifferent_pref_def by auto
 
 text{*
 
@@ -183,7 +182,7 @@ subsection{* Profiles *}
 text {* A \emph{profile} (also termed a collection of \emph{ballots}) maps
 each individual to an RPR for that individual. *}
 
-types ('a, 'i) Profile = "'i \<Rightarrow> 'a RPR"
+type_synonym ('a, 'i) Profile = "'i \<Rightarrow> 'a RPR"
 
 definition profile :: "'a set \<Rightarrow> 'i set \<Rightarrow> ('a, 'i) Profile \<Rightarrow> bool" where
   "profile A Is P \<equiv> Is \<noteq> {} \<and> (\<forall>i \<in> Is. rpr A (P i))"

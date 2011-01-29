@@ -322,7 +322,7 @@ next
     hence finiteS: "finite S" by auto
     from h obtain xs'
       where Sxs': "set xs' \<subseteq> S"
-	and dlxs': "distinct xs' \<and> length xs' = n"
+        and dlxs': "distinct xs' \<and> length xs' = n"
       by (unfold has_def hasw_def, blast)
     with distinct_card have "card (set xs') = n" by auto
     with finiteS Sxs' card_mono have "card S \<ge> n" by auto
