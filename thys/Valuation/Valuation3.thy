@@ -934,7 +934,7 @@ definition
   v_completion :: "['b \<Rightarrow> ant, 'b \<Rightarrow> ant, _, ('b, 'm) Ring_scheme] \<Rightarrow> bool" 
                ("(4Completion\<^bsub>_ _\<^esub> _ _)" [90,90,90,91]90) where
   "Completion\<^bsub>v v'\<^esub> K K' \<longleftrightarrow> subfield K K' \<and>
-		 Complete\<^bsub>v'\<^esub> K' \<and> (\<forall>x \<in> carrier K. v x = v' x) \<and>
+      Complete\<^bsub>v'\<^esub> K' \<and> (\<forall>x \<in> carrier K. v x = v' x) \<and>
       (\<forall>x \<in> carrier K'. (\<exists>f. Cauchy\<^bsub>K v\<^esub> f \<and> lim\<^bsub>K' v'\<^esub> f x))"
 
 lemma (in Corps) subfield_zero:"\<lbrakk>Corps K'; subfield K K'\<rbrakk> \<Longrightarrow> \<zero>\<^bsub>K\<^esub> = \<zero>\<^bsub>K'\<^esub>"
