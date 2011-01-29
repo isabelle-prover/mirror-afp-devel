@@ -201,7 +201,7 @@ proof (clarsimp simp add: Inv2a_def Inv2a_inner_def)
     with act 
     show ?thesis
       by(auto simp add: StartBallot_def HNextPart_def 
-	                InitializePhase_def Inv2a_innermost_def)
+                        InitializePhase_def Inv2a_innermost_def)
   qed
 qed
 
@@ -309,7 +309,7 @@ proof(clarsimp simp add: Inv2a_def Inv2a_inner_def)
     with act 
     show ?thesis
       by(auto simp add: Fail_def HNextPart_def 
-	InitializePhase_def Inv2a_innermost_def)
+        InitializePhase_def Inv2a_innermost_def)
   qed
 qed
 
@@ -526,7 +526,7 @@ proof(clarsimp simp add: Inv2a_def Inv2a_inner_def)
           InitializePhase_def Inv2a_innermost_def)
   qed
 qed
-	 
+
 lemma HEndPhase1_blocksOf:
   "HEndPhase1 s s' p \<Longrightarrow> blocksOf s' q \<subseteq> blocksOf s q \<union> {dblock s' q}"
 by (auto simp add: EndPhase1_def blocksOf_def

@@ -133,7 +133,7 @@ proof -
   from act inv inv2a
   show ?thesis
     by(auto simp del: HStartBallot_def simp  add: HInv4a_def phase
-	       elim: HStartBallot_HInv4a1 HStartBallot_HInv4a2)
+               elim: HStartBallot_HInv4a1 HStartBallot_HInv4a2)
 qed
 
 lemma HStartBallot_HInv4a_q:
@@ -328,7 +328,7 @@ proof -
   with act inv inv2a
   show ?thesis
     by(auto simp del: HEndPhase1_def simp  add: HInv4a_def 
-	       elim: HEndPhase1_HInv4a1 HEndPhase1_HInv4a2)
+               elim: HEndPhase1_HInv4a1 HEndPhase1_HInv4a2)
 qed
 
 lemma HEndPhase1_HInv4a_q:

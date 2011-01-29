@@ -109,16 +109,16 @@ proof(clarsimp simp add: HInv3_def HInv3_inner_def)
       case True
       with act pq inv2b h3l' HInv3_L_sym[OF h3l']  
       show ?thesis
-	by(auto dest: Phase1or2ReadThen_HInv3_pq HInv3_R_sym)
+        by(auto dest: Phase1or2ReadThen_HInv3_pq HInv3_R_sym)
     next
       case False
       from nh3l h3l' act
       have "(\<not>hasRead s pp dd qq \<or> \<not>hasRead s qq dd pp) 
-	    \<and> hasRead s' pp dd qq \<and> hasRead s' qq dd pp"
-	by(auto simp add: HInv3_L_def Phase1or2ReadThen_def)
+            \<and> hasRead s' pp dd qq \<and> hasRead s' qq dd pp"
+        by(auto simp add: HInv3_L_def Phase1or2ReadThen_def)
       with act False
       show ?thesis
-	by(auto dest: Phase1or2ReadThen_HInv3_hasRead)
+        by(auto dest: Phase1or2ReadThen_HInv3_hasRead)
     qed
   qed
 qed

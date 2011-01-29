@@ -252,11 +252,11 @@ proof -
     proof -
       from inv4a act i1
       have "\<exists>d\<in>D. mbal(disk s d p) \<le> mbal(dblock s p)"
-	by(auto simp add: MajoritySet_def HInv4a_def 
-	                  HInv4a2_def Phase1or2Write_def)
+        by(auto simp add: MajoritySet_def HInv4a_def 
+                          HInv4a2_def Phase1or2Write_def)
       with True i2
       show "bal(dblock s q) < mbal(dblock s p)"
-	by auto
+        by auto
     qed
     with hasread dblock' True i1 i2 i3 act
     show ?thesis
@@ -526,12 +526,12 @@ proof -
       case True
       with p32 p31 HEndPhase1_blocksOf[OF act]
       show ?thesis
-	by auto
+        by auto
     next
       case False
       from dblock[OF False] subsetD[OF HEndPhase1_blocksOf[OF act, of q] p32]
       show ?thesis
-	by(auto simp add: blocksOf_def)
+        by(auto simp add: blocksOf_def)
     qed
     with p31
     show ?thesis
@@ -585,13 +585,13 @@ proof -
     with inv2a'
     have "bal(dblock s' p) \<in> Ballot p \<union> {0}"
       by(auto simp add: Inv2a_def Inv2a_inner_def 
-	                Inv2a_innermost_def blocksOf_def)  
+                        Inv2a_innermost_def blocksOf_def)  
     with bal_pos have bal_in_p: "bal(dblock s' p) \<in> Ballot p"
       by auto
     from inv2a have "Inv2a_inner s q" by(auto simp add: Inv2a_def)
     hence "\<forall>d\<in>D. mbal(disk s d q) \<in> Ballot q \<union> {0}"
       by(auto simp add: Inv2a_inner_def Inv2a_innermost_def 
-	                blocksOf_def)
+                        blocksOf_def)
     with p24 bal_pos
     have "\<forall>d\<in>D. mbal(disk s d q) \<in> Ballot q"
       by force
@@ -697,44 +697,44 @@ proof -
     proof -
       from True asm4 dblock HEndPhase1_allBlocks[OF act]
       have p32: "  bal(dblock s q)\<le> bal(dblock s' p) 
-	         \<and> inp(dblock s q) \<noteq> inp(dblock s' p)"
-	by(auto simp add: maxBalInp_def)
+                 \<and> inp(dblock s q) \<noteq> inp(dblock s' p)"
+        by(auto simp add: maxBalInp_def)
       from inv2a
       have "bal(dblock s' p) \<in> Ballot p \<union> {0}"
-	by(auto simp add: Inv2a_def Inv2a_inner_def 
+        by(auto simp add: Inv2a_def Inv2a_inner_def 
                           Inv2a_innermost_def blocksOf_def)
       moreover
       from Ballot_disj Ballot_nzero pnq
       have "Ballot q \<inter> (Ballot p \<union> {0}) = {}"
-	by auto
+        by auto
       ultimately
       have "bal(dblock s' p) \<noteq> bal(dblock s q)"
-	using bal_dblk_q
-	by auto
+        using bal_dblk_q
+        by auto
       with p32
       show ?thesis
-	by auto
+        by auto
     qed
     have "\<exists>D\<in>MajoritySet.\<forall>d\<in>D. bal(dblock s q) < mbal(disk s d p) \<and> hasRead s p d q"
     proof -
       from  act
       have "\<exists>D\<in>MajoritySet.\<forall>d\<in>D. d\<in>disksWritten s p \<and> (\<forall>q\<in>UNIV-{p}. hasRead s p d q)"
-	by(auto simp add: EndPhase1_def MajoritySet_def)
+        by(auto simp add: EndPhase1_def MajoritySet_def)
       then obtain D
-	where act1: "\<forall>d\<in>D. d\<in>disksWritten s p \<and> (\<forall>q\<in>UNIV-{p}. hasRead s p d q)"
-	and Dmaj: "D\<in>MajoritySet"
-	by auto
+        where act1: "\<forall>d\<in>D. d\<in>disksWritten s p \<and> (\<forall>q\<in>UNIV-{p}. hasRead s p d q)"
+        and Dmaj: "D\<in>MajoritySet"
+        by auto
       from inv2b
       have "\<forall>d. Inv2b_inner s p d" by(auto simp add: Inv2b_def)
       with act1 pnq phase_p bal
       have "\<forall>d\<in>D. bal(dblock s' p)= mbal(disk s d p) \<and> hasRead s p d q" 
-	by(auto simp add: Inv2b_def Inv2b_inner_def)
+        by(auto simp add: Inv2b_def Inv2b_inner_def)
       with p21 Dmaj
       have "\<forall>d\<in>D. bal(dblock s q)< mbal(disk s d p) \<and> hasRead s p d q"
-	by auto
+        by auto
       with Dmaj
       show ?thesis
-	by auto
+        by auto
     qed
     then obtain D
       where p22: "D\<in>MajoritySet \<and> (\<forall>d\<in>D. bal(dblock s q) < mbal(disk s d p) \<and> hasRead s p d q)"
@@ -743,70 +743,70 @@ proof -
     proof -
       have "dblock s q \<in> allBlocksRead s p \<longrightarrow> inp(dblock s' p) = inp(dblock s q)"
       proof auto
-	assume dblock_q: "dblock s q \<in> allBlocksRead s p"
-	from inv2a_q
-	have "(bal(dblock s q)=0) = (inp (dblock s q) = NotAnInput)"
-	  by(auto simp add: Inv2a_def Inv2a_inner_def 
+        assume dblock_q: "dblock s q \<in> allBlocksRead s p"
+        from inv2a_q
+        have "(bal(dblock s q)=0) = (inp (dblock s q) = NotAnInput)"
+          by(auto simp add: Inv2a_def Inv2a_inner_def 
                             blocksOf_def Inv2a_innermost_def)
-	with bal_dblk_q Ballot_nzero dblock_q InputsOrNi
-	have dblock_q_nib: "dblock s q \<in> nonInitBlks s p"
-	  by(auto simp add: nonInitBlks_def blocksSeen_def)
-	with act
-	have dblock_max: "inp(dblock s' p)=inp(maxBlk s p)"
-	  by(auto simp add: EndPhase1_def)
-	from maxBlk_in_nonInitBlks[OF dblock_q_nib inv1]
-	have max_in_nib: "maxBlk s p \<in> nonInitBlks s p" ..
-	hence "nonInitBlks s p \<subseteq> allBlocks s"
-	  by(auto simp add: allBlocks_def nonInitBlks_def 
+        with bal_dblk_q Ballot_nzero dblock_q InputsOrNi
+        have dblock_q_nib: "dblock s q \<in> nonInitBlks s p"
+          by(auto simp add: nonInitBlks_def blocksSeen_def)
+        with act
+        have dblock_max: "inp(dblock s' p)=inp(maxBlk s p)"
+          by(auto simp add: EndPhase1_def)
+        from maxBlk_in_nonInitBlks[OF dblock_q_nib inv1]
+        have max_in_nib: "maxBlk s p \<in> nonInitBlks s p" ..
+        hence "nonInitBlks s p \<subseteq> allBlocks s"
+          by(auto simp add: allBlocks_def nonInitBlks_def 
                             blocksSeen_def blocksOf_def rdBy_def 
                             allBlocksRead_def allRdBlks_def)
-	with True subsetD[OF this max_in_nib]
-	have "bal (dblock s q) \<le> bal (maxBlk s p) \<longrightarrow> inp (maxBlk s p) = inp (dblock s q)"
-	  by(auto simp add: maxBalInp_def)
-	with maxBlk_in_nonInitBlks[OF dblock_q_nib inv1] 
+        with True subsetD[OF this max_in_nib]
+        have "bal (dblock s q) \<le> bal (maxBlk s p) \<longrightarrow> inp (maxBlk s p) = inp (dblock s q)"
+          by(auto simp add: maxBalInp_def)
+        with maxBlk_in_nonInitBlks[OF dblock_q_nib inv1] 
              dblock_q_nib dblock_max
-	show "inp(dblock s' p) = inp(dblock s q)"
-	  by auto
+        show "inp(dblock s' p) = inp(dblock s q)"
+          by auto
       qed
       with p21
       have "dblock s q \<notin> block ` allRdBlks s p"
-	by(auto simp add: allBlocksRead_def)
+        by(auto simp add: allBlocksRead_def)
       hence "\<forall>d. dblock s q \<notin> block ` blocksRead s p d"
-	by(auto simp add: allRdBlks_def)
+        by(auto simp add: allRdBlks_def)
       thus ?thesis
-	by force
+        by force
     qed
     have p24: "\<forall>d\<in>D. \<not> (\<exists>br\<in> blocksRead s q d. bal(dblock s q) \<le> mbal (block br))"
     proof -
       from inv2c phase
       have "\<forall>d. \<forall>br\<in>blocksRead s q d. mbal(block br)<mbal(dblock s q)"
-	and "bal(dblock s q) = mbal(dblock s q)"
-	by(auto simp add: Inv2c_def Inv2c_inner_def)
+        and "bal(dblock s q) = mbal(dblock s q)"
+        by(auto simp add: Inv2c_def Inv2c_inner_def)
       thus ?thesis
-	by force
+        by force
     qed
     have p25: "\<forall>d\<in>D. \<not>hasRead s q d p"
     proof auto
       fix d
       assume  d_in_D: "d \<in> D" 
-	and hasRead_qdp: "hasRead s q d p"
+        and hasRead_qdp: "hasRead s q d p"
       have p31: "\<lparr>block=dblock s p, proc=p\<rparr>\<in>blocksRead s q d"
       proof -
-	from "d_in_D" p22 
-	have hasRead_pdq: "hasRead s p d q" by auto
-	with hasRead_qdp phase phase_p inv3
-	have "HInv3_R s q p d"
-	  by(auto simp add: HInv3_def HInv3_inner_def HInv3_L_def)
-	with p23 d_in_D
-	show ?thesis
-	  by(auto simp add: HInv3_R_def)
+        from "d_in_D" p22 
+        have hasRead_pdq: "hasRead s p d q" by auto
+        with hasRead_qdp phase phase_p inv3
+        have "HInv3_R s q p d"
+          by(auto simp add: HInv3_def HInv3_inner_def HInv3_L_def)
+        with p23 d_in_D
+        show ?thesis
+          by(auto simp add: HInv3_R_def)
       qed
       from p21 act
       have p32: "bal(dblock s q) < mbal(dblock s p)"
-	by(auto simp add: EndPhase1_def)
+        by(auto simp add: EndPhase1_def)
       with p31 d_in_D hasRead_qdp p24 
       show False
-	by(force)
+        by(force)
     qed
     with p22
     show ?thesis
@@ -1108,7 +1108,7 @@ proof(auto simp add: maxBalInp_def)
       by auto
     have "allBlocksRead s p \<subseteq> allBlocks s"
       by(auto simp add: allBlocksRead_def allRdBlks_def 
-	              allBlocks_def blocksOf_def rdBy_def)
+                      allBlocks_def blocksOf_def rdBy_def)
     from subsetD[OF this ba_blksread] ba_balinp bal bk dblock' inv5_1
     show ?thesis
       by(auto simp add: maxBalInp_def)
