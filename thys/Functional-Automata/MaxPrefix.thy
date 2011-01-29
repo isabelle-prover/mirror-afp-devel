@@ -5,7 +5,7 @@
 header "Maximal prefix"
 
 theory MaxPrefix
-imports List_Prefix
+imports "~~/src/HOL/Library/List_Prefix"
 begin
 
 definition
@@ -13,7 +13,7 @@ definition
 "is_maxpref P xs ys =
  (xs <= ys & (xs=[] | P xs) & (!zs. zs <= ys & P zs --> zs <= xs))"
 
-types 'a splitter = "'a list => 'a list * 'a list"
+type_synonym 'a splitter = "'a list => 'a list * 'a list"
 
 definition
  is_maxsplitter :: "('a list => bool) => 'a splitter => bool" where

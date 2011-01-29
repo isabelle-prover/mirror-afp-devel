@@ -1,5 +1,4 @@
-(*  ID:         $Id: DA.thy,v 1.6 2007-07-22 20:44:19 makarius Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
@@ -9,7 +8,7 @@ theory DA
 imports AutoProj
 begin
 
-types ('a,'s)da = "'s * ('a => 's => 's) * ('s => bool)"
+type_synonym ('a,'s)da = "'s * ('a => 's => 's) * ('s => bool)"
 
 definition
  foldl2 :: "('a => 'b => 'b) => 'a list => 'b => 'b" where

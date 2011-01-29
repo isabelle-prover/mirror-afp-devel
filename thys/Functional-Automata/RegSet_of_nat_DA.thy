@@ -17,7 +17,7 @@ theory RegSet_of_nat_DA
 imports Regular_Set DA
 begin
 
-types 'a nat_next = "'a => nat => nat"
+type_synonym 'a nat_next = "'a => nat => nat"
 
 abbreviation
   deltas :: "'a nat_next => 'a list => nat => nat" where
