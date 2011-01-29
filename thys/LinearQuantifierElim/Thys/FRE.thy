@@ -1,6 +1,4 @@
-(*  ID:         $Id: FRE.thy,v 1.4 2009-01-30 14:15:31 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory FRE
 imports LinArith
@@ -71,29 +69,29 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Atom Less Cons by simp }
       moreover
       { assume "c<0"
-	hence "x < (r - \<langle>cs,xs\<rangle>)/c" (is "_ < ?u") using `r < c*x + \<langle>cs,xs\<rangle>`
-	  by (simp add: field_simps)
-	have ?thesis
-	proof (rule ccontr)
-	  assume "\<not> R.I (Atom a) (y#xs)"
-	  hence "?u \<le> y" using Atom Less Cons `c<0`
-	    by (auto simp add: field_simps)
-	  hence "?u < u" using `y<u` by simp
-	  with `x<?u` show False using Atom Less Cons `c<0`
-	    by(auto simp:depends\<^isub>R_def)
-	qed } moreover
+        hence "x < (r - \<langle>cs,xs\<rangle>)/c" (is "_ < ?u") using `r < c*x + \<langle>cs,xs\<rangle>`
+          by (simp add: field_simps)
+        have ?thesis
+        proof (rule ccontr)
+          assume "\<not> R.I (Atom a) (y#xs)"
+          hence "?u \<le> y" using Atom Less Cons `c<0`
+            by (auto simp add: field_simps)
+          hence "?u < u" using `y<u` by simp
+          with `x<?u` show False using Atom Less Cons `c<0`
+            by(auto simp:depends\<^isub>R_def)
+        qed } moreover
       { assume "c>0"
-	hence "x > (r - \<langle>cs,xs\<rangle>)/c" (is "_ > ?l") using `r < c*x + \<langle>cs,xs\<rangle>`
-	  by (simp add: field_simps)
-	have ?thesis
-	proof (rule ccontr)
-	  assume "\<not> R.I (Atom a) (y#xs)"
-	  hence "?l \<ge> y" using Atom Less Cons `c>0`
-	    by (auto simp add: field_simps)
-	  hence "?l > l" using `y>l` by simp
-	  with `?l<x` show False using Atom Less Cons `c>0`
-	    by (auto simp:depends\<^isub>R_def)
-	qed }
+        hence "x > (r - \<langle>cs,xs\<rangle>)/c" (is "_ > ?l") using `r < c*x + \<langle>cs,xs\<rangle>`
+          by (simp add: field_simps)
+        have ?thesis
+        proof (rule ccontr)
+          assume "\<not> R.I (Atom a) (y#xs)"
+          hence "?l \<ge> y" using Atom Less Cons `c>0`
+            by (auto simp add: field_simps)
+          hence "?l > l" using `y>l` by simp
+          with `?l<x` show False using Atom Less Cons `c>0`
+            by (auto simp:depends\<^isub>R_def)
+        qed }
       ultimately show ?thesis by force
     qed
   next
@@ -107,8 +105,8 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Atom Eq Cons by simp }
       moreover
       { assume "c\<noteq>0"
-	hence ?thesis using `r = c*x + \<langle>cs,xs\<rangle>` Atom Eq Cons `l<y` `y<u`
-	  by(auto simp: mult_ac depends\<^isub>R_def split:if_splits) }
+        hence ?thesis using `r = c*x + \<langle>cs,xs\<rangle>` Atom Eq Cons `l<y` `y<u`
+          by(auto simp: mult_ac depends\<^isub>R_def split:if_splits) }
       ultimately show ?thesis by force
     qed
   qed
@@ -139,7 +137,7 @@ proof
     with `?FR` obtain r cs s ds
       where "R.I (subst \<phi> (between (r,cs) (s,ds))) xs"
       by(auto simp: FR\<^isub>1_def eval_def diff_minus[symmetric]
-	diff_divide_distrib set_ebounds	I_subst `nqfree \<phi>`) blast
+        diff_divide_distrib set_ebounds I_subst `nqfree \<phi>`) blast
     hence "R.I \<phi> (eval (between (r,cs) (s,ds)) xs # xs)"
       by(simp add:I_subst `nqfree \<phi>`)
     hence ?EX .. }

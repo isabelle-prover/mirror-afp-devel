@@ -1,10 +1,9 @@
-(*  Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 header{* Presburger arithmetic *}
 
 theory PresArith
-imports GCD QE ListVector
+imports GCD QE "~~/src/HOL/Library/ListVector"
 begin
 
 declare iprod_assoc[simp]
@@ -183,23 +182,23 @@ proof(induct a)
       with Le have "\<bar>k\<bar> dvd m" by simp
       let ?m' = "m div \<bar>k\<bar>"
       have "?m' > 0" using `\<bar>k\<bar> dvd m` pos_imp_zdiv_pos_iff `m>0` `k\<noteq>0`
-	by(simp add:zdvd_imp_le)
+        by(simp add:zdvd_imp_le)
       have 1: "k*(x*?m') = sgn k * x * m"
       proof -
-	have "k*(x*?m') = (sgn k * abs k) * (x * ?m')"
-	  by(simp only: mult_sgn_abs)
-	also have "\<dots> = sgn k * x * (abs k * ?m')" by simp
-	also have "\<dots> = sgn k * x * m"
-	  using zdvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:algebra_simps)
-	finally show ?thesis .
+        have "k*(x*?m') = (sgn k * abs k) * (x * ?m')"
+          by(simp only: mult_sgn_abs)
+        also have "\<dots> = sgn k * x * (abs k * ?m')" by simp
+        also have "\<dots> = sgn k * x * m"
+          using zdvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:algebra_simps)
+        finally show ?thesis .
       qed
       have "I\<^isub>Z (hd_coeff1 m (Le i ks)) (m*x#xs) \<longleftrightarrow>
             (i*?m' \<le> sgn k * m*x + ?m' * \<langle>ks',xs\<rangle>)"
-	using `k\<noteq>0` by(simp add: algebra_simps)
+        using `k\<noteq>0` by(simp add: algebra_simps)
       also have "\<dots> \<longleftrightarrow> ?m'*i \<le> ?m' * (k*x + \<langle>ks',xs\<rangle>)" using 1
-	by(simp (no_asm_simp) add:algebra_simps)
+        by(simp (no_asm_simp) add:algebra_simps)
       also have "\<dots> \<longleftrightarrow> i \<le> k*x + \<langle>ks',xs\<rangle>" using `?m'>0`
-	by(simp add: mult_compare_simps)
+        by(simp add: mult_compare_simps)
       finally show ?thesis by(simp)
     qed
   qed
@@ -218,19 +217,19 @@ next
       with Dvd have "k dvd m" by simp
       let ?m' = "m div k"
       have "?m' \<noteq> 0" using `k dvd m` zdiv_eq_0_iff `m>0` `k\<noteq>0`
-	by(simp add:linorder_not_less zdvd_imp_le)
+        by(simp add:linorder_not_less zdvd_imp_le)
       have 1: "k*(x*?m') = x * m"
       proof -
-	have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-	also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-	  by(simp add:algebra_simps)
-	finally show ?thesis .
+        have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
+        also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
+          by(simp add:algebra_simps)
+        finally show ?thesis .
       qed
       have "I\<^isub>Z (hd_coeff1 m (Dvd d i ks)) (m*x#xs) \<longleftrightarrow>
             (?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
-	using `k\<noteq>0` by(simp add: algebra_simps)
+        using `k\<noteq>0` by(simp add: algebra_simps)
       also have "\<dots> \<longleftrightarrow> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
-	by(simp (no_asm_simp) add:algebra_simps)
+        by(simp (no_asm_simp) add:algebra_simps)
       also have "\<dots> \<longleftrightarrow> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
       finally show ?thesis by(simp add:algebra_simps)
     qed
@@ -250,19 +249,19 @@ next
       with NDvd have "k dvd m" by simp
       let ?m' = "m div k"
       have "?m' \<noteq> 0" using `k dvd m` zdiv_eq_0_iff `m>0` `k\<noteq>0`
-	by(simp add:linorder_not_less zdvd_imp_le)
+        by(simp add:linorder_not_less zdvd_imp_le)
       have 1: "k*(x*?m') = x * m"
       proof -
-	have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-	also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-	  by(simp add:algebra_simps)
-	finally show ?thesis .
+        have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
+        also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
+          by(simp add:algebra_simps)
+        finally show ?thesis .
       qed
       have "I\<^isub>Z (hd_coeff1 m (NDvd d i ks)) (m*x#xs) \<longleftrightarrow>
             \<not>(?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
-	using `k\<noteq>0` by(simp add: algebra_simps)
+        using `k\<noteq>0` by(simp add: algebra_simps)
       also have "\<dots> \<longleftrightarrow> \<not> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
-	by(simp (no_asm_simp) add:algebra_simps)
+        by(simp (no_asm_simp) add:algebra_simps)
       also have "\<dots> \<longleftrightarrow> \<not> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
       finally show ?thesis by(simp add:algebra_simps)
     qed

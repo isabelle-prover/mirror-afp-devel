@@ -1,6 +1,4 @@
-(*  ID:         $Id: DLO.thy,v 1.5 2009-07-01 05:47:54 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 header "DLO"
 

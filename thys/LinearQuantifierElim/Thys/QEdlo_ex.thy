@@ -1,11 +1,7 @@
-(*  ID:         $Id: QEdlo_ex.thy,v 1.4 2009-03-16 19:27:44 makarius Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory QEdlo_ex imports QEdlo
 begin
-
-(* ML "set short_names" *)
 
 (* tweaking the reflection setup *)
 

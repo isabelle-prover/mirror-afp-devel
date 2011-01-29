@@ -1,9 +1,7 @@
-(*  ID:         $Id: QEdlo.thy,v 1.5 2009-02-27 17:46:41 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory QEdlo
-imports DLO "~~/src/HOL/ex/Reflection"
+imports DLO "~~/src/HOL/Library/Reflection"
 begin
 
 subsection "DNF-based quantifier elimination"

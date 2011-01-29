@@ -1,11 +1,9 @@
-(*  ID:         $Id: LinArith.thy,v 1.7 2009-01-30 14:15:31 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 header{* Linear real arithmetic *}
 
 theory LinArith
-imports QE ListVector Complex_Main
+imports QE "~~/src/HOL/Library/ListVector" Complex_Main
 begin
 
 declare iprod_assoc[simp]
@@ -185,14 +183,14 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Less Cons by simp }
       moreover
       { assume "c<0"
-	hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> + 1)/c)" using Less Cons
-	  by(auto simp add: field_simps)
-	hence ?thesis .. }
+        hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> + 1)/c)" using Less Cons
+          by(auto simp add: field_simps)
+        hence ?thesis .. }
       moreover
       { assume "c>0"
-	hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> - 1)/c)" using Less Cons
-	  by(auto simp add: field_simps)
-	hence ?thesis .. }
+        hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> - 1)/c)" using Less Cons
+          by(auto simp add: field_simps)
+        hence ?thesis .. }
       ultimately show ?thesis by force
     qed
   next
@@ -205,14 +203,14 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Eq Cons by simp }
       moreover
       { assume "c<0"
-	hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> + 1)/c)" using Eq Cons
-	  by(auto simp add: field_simps)
-	hence ?thesis .. }
+        hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> + 1)/c)" using Eq Cons
+          by(auto simp add: field_simps)
+        hence ?thesis .. }
       moreover
       { assume "c>0"
-	hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> - 1)/c)" using Eq Cons
-	  by(auto simp add: field_simps)
-	hence ?thesis .. }
+        hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> - 1)/c)" using Eq Cons
+          by(auto simp add: field_simps)
+        hence ?thesis .. }
       ultimately show ?thesis by force
     qed
   qed
@@ -244,14 +242,14 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Less Cons by simp }
       moreover
       { assume "c<0"
-	hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> - 1)/c)" using Less Cons
-	  by(auto simp add: field_simps)
-	hence ?thesis .. }
+        hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> - 1)/c)" using Less Cons
+          by(auto simp add: field_simps)
+        hence ?thesis .. }
       moreover
       { assume "c>0"
-	hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> + 1)/c)" using Less Cons
-	  by(auto simp add: field_simps)
-	hence ?thesis .. }
+        hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> + 1)/c)" using Less Cons
+          by(auto simp add: field_simps)
+        hence ?thesis .. }
       ultimately show ?thesis by force
     qed
   next
@@ -264,14 +262,14 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Eq Cons by simp }
       moreover
       { assume "c<0"
-	hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> - 1)/c)" using Eq Cons
-	  by(auto simp add: field_simps)
-	hence ?thesis .. }
+        hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> - 1)/c)" using Eq Cons
+          by(auto simp add: field_simps)
+        hence ?thesis .. }
       moreover
       { assume "c>0"
-	hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> + 1)/c)" using Eq Cons
-	  by(auto simp add: field_simps)
-	hence ?thesis .. }
+        hence "?P (Atom a) ((r - \<langle>cs,xs\<rangle> + 1)/c)" using Eq Cons
+          by(auto simp add: field_simps)
+        hence ?thesis .. }
       ultimately show ?thesis by force
     qed
   qed

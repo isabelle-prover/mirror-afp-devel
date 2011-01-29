@@ -1,6 +1,4 @@
-(*  ID:         $Id: QElin.thy,v 1.5 2009-02-27 17:46:41 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory QElin
 imports LinArith
@@ -49,11 +47,11 @@ proof
     proof
       fix a assume "a \<in> set as"
       then obtain r c cs
-	where "a = Less r (c#cs)" "c>0" "(r/c,(-1/c)*\<^sub>s cs) \<in> ?Ls"
-	using asm 2 by fastsimp
+        where "a = Less r (c#cs)" "c>0" "(r/c,(-1/c)*\<^sub>s cs) \<in> ?Ls"
+        using asm 2 by fastsimp
       moreover hence "(r - \<langle>cs,xs\<rangle>)/c \<le> Max ?lbs"
-	using asm fins
-	by(auto intro!: Max_ge_iff[THEN iffD2])
+        using asm fins
+        by(auto intro!: Max_ge_iff[THEN iffD2])
           (force simp add:field_simps)
       ultimately show "I\<^isub>R a ((Max ?lbs + 1) # xs)" by (simp add: field_simps)
     qed
@@ -64,11 +62,11 @@ proof
     proof
       fix a assume "a \<in> set as"
       then obtain r c cs
-	where "a = Less r (c#cs)" "c<0" "(r/c,(-1/c)*\<^sub>s cs) \<in> ?Us"
-	using asm 2 by fastsimp
+        where "a = Less r (c#cs)" "c<0" "(r/c,(-1/c)*\<^sub>s cs) \<in> ?Us"
+        using asm 2 by fastsimp
       moreover hence "Min ?ubs \<le> (r - \<langle>cs,xs\<rangle>)/c"
-	using asm fins
-	by(auto intro!: Min_le_iff[THEN iffD2])
+        using asm fins
+        by(auto intro!: Min_le_iff[THEN iffD2])
           (force simp add:field_simps)
       ultimately show "I\<^isub>R a ((Min ?ubs - 1) # xs)" by (simp add: field_simps)
     qed

@@ -1,6 +1,4 @@
-(*  ID:         $Id: QEpres.thy,v 1.11 2009-02-27 17:46:41 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory QEpres
 imports PresArith
@@ -115,75 +113,75 @@ proof -
     assume "?QE"
     { assume "?lbs = []"
       with `?QE` obtain n where "n < ?lcm" and
-	A: "\<forall>a \<in> ?Ds. I\<^isub>Z a (n#xs)" using 1
-	by(auto simp:IZ_asubst qe_pres\<^isub>1_def)
+        A: "\<forall>a \<in> ?Ds. I\<^isub>Z a (n#xs)" using 1
+        by(auto simp:IZ_asubst qe_pres\<^isub>1_def)
       have "?Ls = {}" using `?lbs = []` set_lbounds[of as]
-	by (auto simp add:filter_empty_conv split:atom.split list.split)
+        by (auto simp add:filter_empty_conv split:atom.split list.split)
       have "\<exists>x. ?P x"
       proof cases
-	assume "?Us = {}"
-	with `?Ls = {}` have "set as = ?Ds" using as by(simp (no_asm_use))blast
-	hence "?P n" using A by auto
-	thus ?thesis ..
+        assume "?Us = {}"
+        with `?Ls = {}` have "set as = ?Ds" using as by(simp (no_asm_use))blast
+        hence "?P n" using A by auto
+        thus ?thesis ..
       next
-	assume "?Us \<noteq> {}"
-	let ?M = "{\<langle>tl ks, xs\<rangle> - i|ks i. Le i ks \<in> ?Us}" let ?m = "Min ?M"
-	have "finite ?M"
-	proof -
-	  have "finite ( (\<lambda>Le i ks \<Rightarrow> \<langle>tl ks, xs\<rangle> - i) `
+        assume "?Us \<noteq> {}"
+        let ?M = "{\<langle>tl ks, xs\<rangle> - i|ks i. Le i ks \<in> ?Us}" let ?m = "Min ?M"
+        have "finite ?M"
+        proof -
+          have "finite ( (\<lambda>Le i ks \<Rightarrow> \<langle>tl ks, xs\<rangle> - i) `
                          {a\<in>set as. \<exists>i k ks. k<0 \<and> a = Le i (k#ks)} )"
-	    (is "finite ?B")
-	    by simp
-	  also have "?B = ?M" using hd
-	    by(fastsimp simp:image_def neq_Nil_conv split:atom.splits list.splits)
+            (is "finite ?B")
+            by simp
+          also have "?B = ?M" using hd
+            by(fastsimp simp:image_def neq_Nil_conv split:atom.splits list.splits)
           finally show ?thesis by auto
-	qed
-	have "?M \<noteq> {}"
-	proof -
-	  from `?Us \<noteq> {}` obtain i k ks where "Le i (k#ks) \<in> ?Us \<and> k<0"
-	    by (fastsimp split:atom.splits list.splits)
-	  thus ?thesis by auto
-	qed
-	let ?k = "(n - ?m) div ?lcm + 1" let ?x = "n - ?k * ?lcm"
-	have "\<forall>a \<in> ?Ds. I\<^isub>Z a (?x # xs)"
-	proof (intro allI ballI)
-	  fix a assume "a \<in> ?Ds"
-	  let ?d = "divisor a"
-	  have 2: "?d dvd ?lcm" using `a \<in> ?Ds` by(simp add:dvd_zlcms)
-	  have "?x mod ?d = n mod ?d" (is "?l = ?r")
-	  proof -
-	    have "?l = (?r - ((?k * ?lcm) mod ?d)) mod ?d"
-	      by(rule mod_diff_eq)
-	    also have "(?k * ?lcm) mod ?d = 0"
-	      by(simp add: dvd_eq_mod_eq_0[symmetric] dvd_mult[OF 2])
-	    finally show ?thesis by simp
-	  qed
-	  thus "I\<^isub>Z a (?x#xs)" using A I_cyclic[of a n ?x] `a \<in> ?Ds` 1 by auto
-	qed
-	moreover
-	have "\<forall>a\<in> ?Us. I\<^isub>Z a (?x#xs)"
-	proof
-	  fix a assume "a \<in> ?Us"
-	  then obtain l ks where [simp]: "a = Le l (-1#ks)" using hd
-	    by(fastsimp split:atom.splits list.splits)
-	  have "?m \<le> \<langle>ks,xs\<rangle> - l"
-	    using Min_le_iff[OF `finite ?M` `?M \<noteq> {}`] `a \<in> ?Us` by fastsimp
-	  moreover have "(n - ?m) mod ?lcm < ?lcm"
-	    by(simp add: pos_mod_bound[OF zlcms_pos] norm)
-	  ultimately show "I\<^isub>Z a (?x#xs)"
-	    by(simp add:zmult_div_cancel algebra_simps)
-	qed
-	moreover
-	have "set as = ?Ds \<union> ?Us" using as `?Ls = {}`
-	  by (simp (no_asm_use)) blast
-	ultimately have "?P(?x)" by auto
-	thus ?thesis ..
+        qed
+        have "?M \<noteq> {}"
+        proof -
+          from `?Us \<noteq> {}` obtain i k ks where "Le i (k#ks) \<in> ?Us \<and> k<0"
+            by (fastsimp split:atom.splits list.splits)
+          thus ?thesis by auto
+        qed
+        let ?k = "(n - ?m) div ?lcm + 1" let ?x = "n - ?k * ?lcm"
+        have "\<forall>a \<in> ?Ds. I\<^isub>Z a (?x # xs)"
+        proof (intro allI ballI)
+          fix a assume "a \<in> ?Ds"
+          let ?d = "divisor a"
+          have 2: "?d dvd ?lcm" using `a \<in> ?Ds` by(simp add:dvd_zlcms)
+          have "?x mod ?d = n mod ?d" (is "?l = ?r")
+          proof -
+            have "?l = (?r - ((?k * ?lcm) mod ?d)) mod ?d"
+              by(rule mod_diff_eq)
+            also have "(?k * ?lcm) mod ?d = 0"
+              by(simp add: dvd_eq_mod_eq_0[symmetric] dvd_mult[OF 2])
+            finally show ?thesis by simp
+          qed
+          thus "I\<^isub>Z a (?x#xs)" using A I_cyclic[of a n ?x] `a \<in> ?Ds` 1 by auto
+        qed
+        moreover
+        have "\<forall>a\<in> ?Us. I\<^isub>Z a (?x#xs)"
+        proof
+          fix a assume "a \<in> ?Us"
+          then obtain l ks where [simp]: "a = Le l (-1#ks)" using hd
+            by(fastsimp split:atom.splits list.splits)
+          have "?m \<le> \<langle>ks,xs\<rangle> - l"
+            using Min_le_iff[OF `finite ?M` `?M \<noteq> {}`] `a \<in> ?Us` by fastsimp
+          moreover have "(n - ?m) mod ?lcm < ?lcm"
+            by(simp add: pos_mod_bound[OF zlcms_pos] norm)
+          ultimately show "I\<^isub>Z a (?x#xs)"
+            by(simp add:zmult_div_cancel algebra_simps)
+        qed
+        moreover
+        have "set as = ?Ds \<union> ?Us" using as `?Ls = {}`
+          by (simp (no_asm_use)) blast
+        ultimately have "?P(?x)" by auto
+        thus ?thesis ..
       qed }
     moreover
     { assume "?lbs \<noteq> []"
       with `?QE` obtain il ksl m
-	where "\<forall>a\<in>set as. I\<^isub>Z (asubst (il + m) ksl a) xs"
-	by(auto simp:qe_pres\<^isub>1_def)
+        where "\<forall>a\<in>set as. I\<^isub>Z (asubst (il + m) ksl a) xs"
+        by(auto simp:qe_pres\<^isub>1_def)
       hence "?P(il + m + \<langle>ksl,xs\<rangle>)" by(simp add:IZ_asubst)
       hence "\<exists>x. ?P x" .. }
     ultimately show "\<exists>x. ?P x" by blast
@@ -194,13 +192,13 @@ proof -
       assume "?lbs = []"
       moreover
       have "\<exists>x. 0 \<le> x \<and> x < ?lcm \<and> (\<forall>a \<in> ?Ds. I\<^isub>Z a (x # xs))"
-	(is "\<exists>x. ?P x")
+        (is "\<exists>x. ?P x")
       proof
-	{ fix a assume "a \<in> ?Ds"
-	  hence "I\<^isub>Z a ((x mod ?lcm) # xs) = I\<^isub>Z a (x # xs)" using 1
-	    by (fastsimp del:iffI intro: I_cyclic
-	        simp: mod_mod_cancel dvd_zlcms) }
-	thus "?P(x mod ?lcm)" using x norm by(simp add: zlcms_pos)
+        { fix a assume "a \<in> ?Ds"
+          hence "I\<^isub>Z a ((x mod ?lcm) # xs) = I\<^isub>Z a (x # xs)" using 1
+            by (fastsimp del:iffI intro: I_cyclic
+                simp: mod_mod_cancel dvd_zlcms) }
+        thus "?P(x mod ?lcm)" using x norm by(simp add: zlcms_pos)
       qed
       ultimately show ?thesis by (auto simp:qe_pres\<^isub>1_def IZ_asubst)
     next
@@ -210,70 +208,70 @@ proof -
       let ?n = "(x - ?lm) mod ?lcm"
       have "finite ?L"
       proof -
-	have "finite((\<lambda>(i,ks). i-\<langle>ks,xs\<rangle>) ` set(lbounds as) )" (is "finite ?B")
-	  by simp
-	also have "?B = ?L" by auto
-	finally show ?thesis by auto
+        have "finite((\<lambda>(i,ks). i-\<langle>ks,xs\<rangle>) ` set(lbounds as) )" (is "finite ?B")
+          by simp
+        also have "?B = ?L" by auto
+        finally show ?thesis by auto
       qed
       moreover have "?L \<noteq> {}" using `?lbs \<noteq> []`
-	by(fastsimp simp:neq_Nil_conv)
+        by(fastsimp simp:neq_Nil_conv)
       ultimately have "?lm \<in> ?L" by(rule Max_in)
       then obtain li lks where "(li,lks)\<in> set ?lbs" and lm: "?lm = li-\<langle>lks,xs\<rangle>"
-	by blast
+        by blast
       moreover
       have n: "0 \<le> ?n \<and> ?n < ?lcm" using norm by(simp add:zlcms_pos)
       moreover
       { fix a assume "a \<in> set as"
-	with x have "I\<^isub>Z a (x # xs)" by blast
-	have "I\<^isub>Z a ((li + ?n - \<langle>lks,xs\<rangle>) # xs)"
-	proof -
-	  { assume "a \<in> ?Ls"
-	    then obtain i ks where [simp]: "a = Le i (1#ks)" using hd
-	      by(fastsimp split:atom.splits list.splits)
-	    from `a \<in> ?Ls` have "i-\<langle>ks,xs\<rangle> \<in> ?L" by(fastsimp simp:set_lbounds)
-	    hence "i-\<langle>ks,xs\<rangle> \<le> li - \<langle>lks,xs\<rangle>"
-	      using lm[symmetric] `finite ?L` `?L \<noteq> {}` by auto
-	    hence ?thesis using n by simp }
-	  moreover
-	  { assume "a \<in> ?Us"
-	    then obtain i ks where [simp]: "a = Le i (-1#ks)" using hd
-	      by(fastsimp split:atom.splits list.splits)
-	    have "Le li (1#lks) \<in> set as" using `(li,lks) \<in> set ?lbs` hd
-	      by(auto simp:set_lbounds)
-	    hence "li - \<langle>lks,xs\<rangle> \<le> x" using x by auto
+        with x have "I\<^isub>Z a (x # xs)" by blast
+        have "I\<^isub>Z a ((li + ?n - \<langle>lks,xs\<rangle>) # xs)"
+        proof -
+          { assume "a \<in> ?Ls"
+            then obtain i ks where [simp]: "a = Le i (1#ks)" using hd
+              by(fastsimp split:atom.splits list.splits)
+            from `a \<in> ?Ls` have "i-\<langle>ks,xs\<rangle> \<in> ?L" by(fastsimp simp:set_lbounds)
+            hence "i-\<langle>ks,xs\<rangle> \<le> li - \<langle>lks,xs\<rangle>"
+              using lm[symmetric] `finite ?L` `?L \<noteq> {}` by auto
+            hence ?thesis using n by simp }
+          moreover
+          { assume "a \<in> ?Us"
+            then obtain i ks where [simp]: "a = Le i (-1#ks)" using hd
+              by(fastsimp split:atom.splits list.splits)
+            have "Le li (1#lks) \<in> set as" using `(li,lks) \<in> set ?lbs` hd
+              by(auto simp:set_lbounds)
+            hence "li - \<langle>lks,xs\<rangle> \<le> x" using x by auto
             hence "(x - ?lm) mod ?lcm \<le> x - ?lm"
-	      using lm by(simp add: zmod_le_nonneg_dividend)
-	    hence ?thesis using `I\<^isub>Z a (x # xs)` lm by auto }
-	  moreover
-	  { assume "a \<in> ?Ds"
-	    have ?thesis
-	    proof(rule I_cyclic[THEN iffD2, OF _ _ _ `I\<^isub>Z a (x # xs)`])
-	      show "is_dvd a" using `a \<in> ?Ds` by simp
-	      show "hd_coeff a = 1" using `a \<in> ?Ds` hd
-		by(fastsimp split:atom.splits list.splits)
-	      have "li + (x-?lm) mod ?lcm - \<langle>lks,xs\<rangle> = ?lm + (x-?lm) mod ?lcm"
-		using lm by arith
-	      hence "(li + (x-?lm) mod ?lcm - \<langle>lks,xs\<rangle>) mod divisor a =
-		     (?lm + (x-?lm) mod ?lcm) mod divisor a" by (simp only:)
-	      also have "\<dots> =
-	(?lm mod divisor a + (x-?lm) mod ?lcm mod divisor a) mod divisor a"
-		by(rule mod_add_eq)
-	      also have
-	"\<dots> = (?lm mod divisor a + (x-?lm) mod divisor a) mod divisor a"
-		using `is_dvd a` `a\<in> set as`
-		by(simp add: mod_mod_cancel dvd_zlcms)
-	      also have "\<dots> = (?lm + (x-?lm)) mod divisor a"
-		by(rule mod_add_eq[symmetric])
-	      also have "\<dots> = x mod divisor a" by simp
-	      finally
-	      show "(li + ?n - \<langle>lks,xs\<rangle>) mod divisor a = x mod divisor a"
-		using norm by(auto simp:pos_mod_sign zlcms_pos)
-	    qed }
-	  ultimately show ?thesis using `a \<in> set as` as by blast
-	qed
+              using lm by(simp add: zmod_le_nonneg_dividend)
+            hence ?thesis using `I\<^isub>Z a (x # xs)` lm by auto }
+          moreover
+          { assume "a \<in> ?Ds"
+            have ?thesis
+            proof(rule I_cyclic[THEN iffD2, OF _ _ _ `I\<^isub>Z a (x # xs)`])
+              show "is_dvd a" using `a \<in> ?Ds` by simp
+              show "hd_coeff a = 1" using `a \<in> ?Ds` hd
+                by(fastsimp split:atom.splits list.splits)
+              have "li + (x-?lm) mod ?lcm - \<langle>lks,xs\<rangle> = ?lm + (x-?lm) mod ?lcm"
+                using lm by arith
+              hence "(li + (x-?lm) mod ?lcm - \<langle>lks,xs\<rangle>) mod divisor a =
+                     (?lm + (x-?lm) mod ?lcm) mod divisor a" by (simp only:)
+              also have "\<dots> =
+        (?lm mod divisor a + (x-?lm) mod ?lcm mod divisor a) mod divisor a"
+                by(rule mod_add_eq)
+              also have
+        "\<dots> = (?lm mod divisor a + (x-?lm) mod divisor a) mod divisor a"
+                using `is_dvd a` `a\<in> set as`
+                by(simp add: mod_mod_cancel dvd_zlcms)
+              also have "\<dots> = (?lm + (x-?lm)) mod divisor a"
+                by(rule mod_add_eq[symmetric])
+              also have "\<dots> = x mod divisor a" by simp
+              finally
+              show "(li + ?n - \<langle>lks,xs\<rangle>) mod divisor a = x mod divisor a"
+                using norm by(auto simp:pos_mod_sign zlcms_pos)
+            qed }
+          ultimately show ?thesis using `a \<in> set as` as by blast
+        qed
       }
       ultimately show ?thesis using `?lbs \<noteq> []`
-	by (simp (no_asm_simp) add:qe_pres\<^isub>1_def IZ_asubst split_def)
+        by (simp (no_asm_simp) add:qe_pres\<^isub>1_def IZ_asubst split_def)
            (force simp del:int_nat_eq)
     qed
   qed
@@ -300,20 +298,20 @@ proof -
     next
       case (Dvd d i ks)[simp]
       then obtain k ks' where [simp]: "ks = k#ks'" using b
-	by(auto split:list.splits)
+        by(auto split:list.splits)
       have k: "k \<in> set(map hd_coeff as)" using `b \<in> set as` by force
       have "zlcms (map hd_coeff as) div k \<noteq> 0"
-	using b hd0 dvd_zlcms[OF k]
-	by(auto simp add:dvd_def)
+        using b hd0 dvd_zlcms[OF k]
+        by(auto simp add:dvd_def)
       thus ?thesis using b by (simp)
     next
       case (NDvd d i ks)[simp]
       then obtain k ks' where [simp]: "ks = k#ks'" using b
-	by(auto split:list.splits)
+        by(auto split:list.splits)
       have k: "k \<in> set(map hd_coeff as)" using `b \<in> set as` by force
       have "zlcms (map hd_coeff as) div k \<noteq> 0"
-	using b hd0 dvd_zlcms[OF k]
-	by(auto simp add:dvd_def)
+        using b hd0 dvd_zlcms[OF k]
+        by(auto simp add:dvd_def)
       thus ?thesis using b by (simp)
     qed
   qed
