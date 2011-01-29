@@ -20,7 +20,7 @@ declare split_if_asm[split]
 
 typedecl guest
 typedecl key
-types card = "key * key"
+type_synonym card = "key * key"
 typedecl room
 
 record state =

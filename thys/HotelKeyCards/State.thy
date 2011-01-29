@@ -289,16 +289,16 @@ proof induct
     next
       assume [simp]: "r1 = r"
       hence safe': "owns s r = Some g1 \<or> safe s r"
-	using safe by auto
+        using safe by auto
       thus ?thesis
       proof
-	assume "safe s r"
-	with s card_g1 have False by simp
-	thus ?thesis ..
+        assume "safe s r"
+        with s card_g1 have False by simp
+        thus ?thesis ..
       next
-	assume [simp]: "owns s r = Some g1"
-	thus "owns ?s' r = Some g"
-	  using s card_g card_g1 by simp
+        assume [simp]: "owns s r = Some g1"
+        thus "owns ?s' r = Some g"
+          using s card_g card_g1 by simp
       qed
     qed
   next
@@ -333,29 +333,29 @@ proof induct
       have "g \<in> isin s r \<or> g = g1" using isin by auto
       thus ?thesis
       proof
-	assume "g \<in> isin s r"
-	then moreover have "safe s r" using safe by auto
-	ultimately show ?thesis using IH by simp
+        assume "g \<in> isin s r"
+        then moreover have "safe s r" using safe by auto
+        ultimately show ?thesis using IH by simp
       next
-	assume [simp]: "g = g1"
-	have "k2 = roomk s r1 \<or> k1 = roomk s r1"
-	  using `roomk s r1 \<in> {k1,k2}` by auto
-	thus ?thesis
-	proof
-	  assume "k2 = roomk s r1"
-	  with card_g1 s safe show ?thesis
-	  by(auto simp add: safe_only_owner_enter_normal)
+        assume [simp]: "g = g1"
+        have "k2 = roomk s r1 \<or> k1 = roomk s r1"
+          using `roomk s r1 \<in> {k1,k2}` by auto
+        thus ?thesis
+        proof
+          assume "k2 = roomk s r1"
+          with card_g1 s safe show ?thesis
+          by(auto simp add: safe_only_owner_enter_normal)
       next
-	assume [simp]: "k1 = roomk s r1"
-	have "owns s r = Some g1 \<or> safe s r" using safe by auto
-	thus ?thesis
-	proof
-	  assume "owns s r = Some g1" thus ?thesis by simp
-	next
-	  assume "safe s r"
-	  hence False using s card_g1 by auto
-	  thus ?thesis ..
-	qed
+        assume [simp]: "k1 = roomk s r1"
+        have "owns s r = Some g1 \<or> safe s r" using safe by auto
+        thus ?thesis
+        proof
+          assume "owns s r = Some g1" thus ?thesis by simp
+        next
+          assume "safe s r"
+          hence False using s card_g1 by auto
+          thus ?thesis ..
+        qed
       qed
     qed
   qed
