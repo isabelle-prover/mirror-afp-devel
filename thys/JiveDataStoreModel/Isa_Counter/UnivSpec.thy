@@ -1,5 +1,4 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: UnivSpec.thy,v 1.5 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Nicole Rauch <rauch at informatik.uni-kl.de>, 2005
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL

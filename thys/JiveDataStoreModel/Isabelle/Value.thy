@@ -1,5 +1,4 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Value.thy,v 1.5 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>  and  
                  Nicole Rauch <rauch at informatik.uni-kl.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
@@ -19,17 +18,17 @@ text {* This theory contains our model of the values in the store. The store is 
   proper formalizations of the Java types in Isabelle, which will then be used here.
   *}
   
-types JavaInt   = int
-types JavaShort = int
-types JavaByte  = int
-types JavaBoolean  = bool
+type_synonym JavaInt = int
+type_synonym JavaShort = int
+type_synonym JavaByte = int
+type_synonym JavaBoolean = bool
 
 text {* The objects of each class are identified by a unique ID.
 We use elements of type @{typ nat} here, but in general it is sufficient to use
 an infinite type with a successor function and a comparison predicate.
 *}
 
-types ObjectId  = nat
+type_synonym ObjectId = nat
 
 text {* The definition of the datatype @{text Value}. Values can be of the Java types 
 boolean, int, short and byte. Additionally, they can be an object reference,

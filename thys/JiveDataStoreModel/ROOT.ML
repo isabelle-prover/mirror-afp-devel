@@ -1,22 +1,14 @@
-(* $Id: ROOT.ML,v 1.3 2007-08-07 18:30:19 makarius Exp $ *)
-(* License: LGPL *)
-
-Thy_Load.legacy_add_path "Isabelle";
-Thy_Load.legacy_add_path "Isabelle_Store";
-Thy_Load.legacy_add_path "Isa_Counter";
-Thy_Load.legacy_add_path "Isa_Counter_Store";
-
 use_thys [
-  "TypeIds",
-  "JavaType",
-  "DirectSubtypes",
-  "Subtype",
-  "Attributes",
-  "AttributesIndep",
-  "Value",
-  "Location",
-  "Store",
-  "StoreProperties",
-  "JML",
-  "UnivSpec"
+  "Isa_Counter/TypeIds",
+  "Isabelle/JavaType",
+  "Isa_Counter/DirectSubtypes",
+  "Isabelle/Subtype",
+  "Isa_Counter_Store/Attributes",
+  "Isabelle_Store/AttributesIndep",
+  "Isabelle/Value",
+  "Isabelle_Store/Location",
+  "Isabelle_Store/Store",
+  "Isabelle_Store/StoreProperties",
+  "Isabelle/JML",
+  "Isa_Counter/UnivSpec"
 ];

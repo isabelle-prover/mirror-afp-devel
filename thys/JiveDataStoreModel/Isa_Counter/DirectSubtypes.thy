@@ -1,5 +1,4 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: DirectSubtypes.thy,v 1.7 2008-06-12 06:57:24 lsf37 Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>  and  
                  Nicole Rauch <rauch at informatik.uni-kl.de>, 2005
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>

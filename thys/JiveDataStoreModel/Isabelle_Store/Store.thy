@@ -1,5 +1,4 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Store.thy,v 1.8 2008-06-12 06:57:24 lsf37 Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -280,13 +279,13 @@ proof -
     proof (cases "k=l")
       case True
       with alive_y show ?thesis
-	by (simp add: alloc_eq alive_def aliveImpl_def split: Value.splits)
+        by (simp add: alloc_eq alive_def aliveImpl_def split: Value.splits)
     next
       case False
       from s have "\<forall> l. aliveImpl (vals (Rep_Store s) l) (Rep_Store s)"
-	by (simp add: Store_def)
+        by (simp add: Store_def)
       with False show ?thesis
-	by (simp add: aliveImpl_def split: Value.splits)
+        by (simp add: aliveImpl_def split: Value.splits)
     qed
   qed
   moreover
@@ -298,14 +297,14 @@ proof -
     proof -
       from unalive alive_l
       have "k\<noteq>l"
-	by (auto simp add: alive_def aliveImpl_def split: Value.splits)
+        by (auto simp add: alive_def aliveImpl_def split: Value.splits)
       hence "vals ?s_upd k = vals (Rep_Store s) k"
-	by simp
+        by simp
       moreover from unalive 
       have "\<not> aliveImpl (ref k) (Rep_Store s)"
-	by (simp add: aliveImpl_def split: Value.splits)
+        by (simp add: aliveImpl_def split: Value.splits)
       ultimately show ?thesis
-	using s by (simp add: Store_def)
+        using s by (simp add: Store_def)
     qed
   qed
   moreover
@@ -315,13 +314,13 @@ proof -
     proof (cases "k=l")
       case True
       with type_conform show ?thesis
-	by simp
+        by simp
     next
       case False
       hence "vals ?s_upd k = vals (Rep_Store s) k"
-	by simp
+        by simp
       with s show ?thesis
-	by (simp add: Store_def)
+        by (simp add: Store_def)
     qed
   qed
   ultimately show ?thesis
@@ -451,13 +450,13 @@ proof -
     proof (cases "l = arrLenLoc T (newAID (Rep_Store s) T)")
       case True
       thus ?thesis
-	by (simp add: aliveImpl_def split: Value.splits)
+        by (simp add: aliveImpl_def split: Value.splits)
     next
       case False
       from s have "\<forall> l. aliveImpl (vals (Rep_Store s) l) (Rep_Store s)"
-	by (simp add: Store_def)
+        by (simp add: Store_def)
       with False show ?thesis
-	by (auto intro: less_SucI simp add: aliveImpl_def split: Value.splits)
+        by (auto intro: less_SucI simp add: aliveImpl_def split: Value.splits)
     qed
   qed
   moreover
@@ -473,11 +472,11 @@ proof -
       case False
       from unalive
       have "\<not> aliveImpl (ref l) (Rep_Store s)"
-	by (simp add: aliveImpl_def split: Value.splits split_if_asm)
+        by (simp add: aliveImpl_def split: Value.splits split_if_asm)
       with s have "vals (Rep_Store s) l = init (ltype l)"
-	by (simp add: Store_def)
+        by (simp add: Store_def)
       with False show ?thesis 
-	by simp
+        by simp
     qed
   qed
   moreover 
@@ -615,11 +614,11 @@ next
     assume new: "x=new s t" show ?thesis 
     proof (cases t)
       case new_instance with new show ?thesis
-	by (simp add: alive_def aliveImpl_def new_def alloc_def
+        by (simp add: alive_def aliveImpl_def new_def alloc_def
                       alloc_new_instance_in_Store [THEN Abs_Store_inverse])
     next
       case new_array with new show ?thesis
-	by (simp add: alive_def aliveImpl_def new_def alloc_def
+        by (simp add: alive_def aliveImpl_def new_def alloc_def
                       alloc_new_array_in_Store [THEN Abs_Store_inverse])
     qed
   qed
@@ -681,23 +680,23 @@ proof -
       assume alive_l_s: "alive (ref l) s"
       with new_unalive_old_Store
       have l_not_new: "ref l \<noteq> new s t"
-	by fastsimp
+        by fastsimp
       hence "vals (Rep_Store (s\<langle>t\<rangle>)) l = s@@l"
-	by (cases t) 
+        by (cases t) 
            (auto simp add: alloc_def new_def access_def 
                  alloc_new_instance_in_Store [THEN Abs_Store_inverse] 
                  alloc_new_array_in_Store [THEN Abs_Store_inverse])
       with access_alloc_vals 
       show ?thesis 
-	by simp
+        by simp
     next
       assume ref_new: "ref l = new s t"
       with no_arr_len_new
       have "s\<langle>t\<rangle>@@l = init (ltype l)"
-	by (simp add: access_new)
+        by (simp add: access_new)
       moreover
       from ref_new have "s@@l = init (ltype l)"
-	by simp
+        by simp
       ultimately
       show ?thesis by simp
     qed
@@ -730,7 +729,7 @@ next
     proof (rule ccontr)
       assume "\<not> (\<exists>C. newOID (Rep_Store s1) C \<noteq> newOID (Rep_Store s2) C)"
       then have "newOID (Rep_Store s1) = newOID (Rep_Store s2)"
-	by (blast intro: ext)
+        by (blast intro: ext)
       with False show False ..
     qed
     with eq_alive obtain C 
@@ -745,43 +744,43 @@ next
       case False
       have "\<exists> T. newAID (Rep_Store s1) T \<noteq> newAID (Rep_Store s2) T"
       proof (rule ccontr)
-	assume "\<not> (\<exists>T. newAID (Rep_Store s1) T \<noteq> newAID (Rep_Store s2) T)"
-	then have "newAID (Rep_Store s1) = newAID (Rep_Store s2)"
-	  by (blast intro: ext)
-	with False show False ..
+        assume "\<not> (\<exists>T. newAID (Rep_Store s1) T \<noteq> newAID (Rep_Store s2) T)"
+        then have "newAID (Rep_Store s1) = newAID (Rep_Store s2)"
+          by (blast intro: ext)
+        with False show False ..
       qed
       with eq_alive obtain T 
-	where "newAID (Rep_Store s1) T \<noteq> newAID (Rep_Store s2) T"
+        where "newAID (Rep_Store s1) T \<noteq> newAID (Rep_Store s2) T"
               "\<forall> a. alive (arrV T a) s1 = alive (arrV T a) s2" by auto
       then show ?thesis
-	by (simp add: all_le_eq alive_def aliveImpl_def)
+        by (simp add: all_le_eq alive_def aliveImpl_def)
     next
       case True note eq_newAID = this
       show ?thesis
       proof (cases "vals (Rep_Store s1) = vals (Rep_Store s2)")
-	case True
-	with eq_newOID eq_newAID 
-	have "(Rep_Store s1) = (Rep_Store s2)"
-	  by (cases "Rep_Store s1",cases "Rep_Store s2") simp
-	hence "s1=s2"
-	  by (simp add: Rep_Store_inject)
-	with neq_s1_s2 show ?thesis
-	  by simp
+        case True
+        with eq_newOID eq_newAID 
+        have "(Rep_Store s1) = (Rep_Store s2)"
+          by (cases "Rep_Store s1",cases "Rep_Store s2") simp
+        hence "s1=s2"
+          by (simp add: Rep_Store_inject)
+        with neq_s1_s2 show ?thesis
+          by simp
       next
-	case False
-	have "\<exists> l. vals (Rep_Store s1) l \<noteq> vals (Rep_Store s2) l"
-	proof (rule ccontr)
-	  assume "\<not> (\<exists>l. vals (Rep_Store s1) l \<noteq> vals (Rep_Store s2) l)"
-	  hence "vals (Rep_Store s1) = vals (Rep_Store s2)"
-	    by (blast intro: ext)
-	  with False show False ..
-	qed
-	then obtain l
-	  where "vals (Rep_Store s1) l \<noteq> vals (Rep_Store s2) l"
-	  by auto
-	with eq_access have "False"
-	  by (simp add: access_def)
-	thus ?thesis ..
+        case False
+        have "\<exists> l. vals (Rep_Store s1) l \<noteq> vals (Rep_Store s2) l"
+        proof (rule ccontr)
+          assume "\<not> (\<exists>l. vals (Rep_Store s1) l \<noteq> vals (Rep_Store s2) l)"
+          hence "vals (Rep_Store s1) = vals (Rep_Store s2)"
+            by (blast intro: ext)
+          with False show False ..
+        qed
+        then obtain l
+          where "vals (Rep_Store s1) l \<noteq> vals (Rep_Store s2) l"
+          by auto
+        with eq_access have "False"
+          by (simp add: access_def)
+        thus ?thesis ..
       qed
     qed
   qed
@@ -807,7 +806,7 @@ proof (rule Store_eqI [rule_format])
     also have "\<dots> = (alive y (s\<langle>l:=x\<rangle>) \<or> y = new (s\<langle>l:=x\<rangle>) t)"
     proof -
       have "new s t = new (s\<langle>l:=x\<rangle>) t"
-	by simp
+        by simp
       thus ?thesis by simp
     qed
     also have "\<dots> = alive y (s\<langle>l:=x\<rangle>\<langle>t\<rangle>)"
@@ -834,18 +833,18 @@ next
     next
       case False
       then obtain T n where 
-	t: "t=new_array T n" and k: "k=arr_len (new s (new_array T n))"
-	by (cases t) auto
+        t: "t=new_array T n" and k: "k=arr_len (new s (new_array T n))"
+        by (cases t) auto
       from k have k': "k=arr_len (new (s\<langle>l := x\<rangle>) (new_array T n))"
-	by simp
+        by simp
       from neq_l_k 
       have  "s\<langle>t\<rangle>\<langle>l := x\<rangle>@@k = s\<langle>t\<rangle>@@k" by simp
       also from t k 
       have "\<dots> = intgV (int n)"
-	by simp
+        by simp
       also from t k'
       have "\<dots> = s\<langle>l := x\<rangle>\<langle>t\<rangle>@@k"
-	by (simp del: new_update)
+        by (simp del: new_update)
       finally show ?thesis .
     qed
   next
@@ -859,72 +858,72 @@ next
     have lemma_3_3: "s\<langle>l:=x,t\<rangle>@@l = s\<langle>l:=x\<rangle>@@l"
     proof -
       from neq_l_new have "ref l \<noteq> new (s\<langle>l:=x\<rangle>) t"
-	by simp
+        by simp
       hence "isNewArr t \<longrightarrow> l \<noteq> arr_len (new (s\<langle>l:=x\<rangle>) t)"
-	by (cases t) auto
+        by (cases t) auto
       thus ?thesis
-	by (simp)
+        by (simp)
     qed
     show ?thesis
     proof (cases "alive x s")
       case True note alive_x = this
       show ?thesis
       proof (cases "alive (ref l) s")
-	case True note alive_l = this
-	show ?thesis
-	proof (cases "typeof x \<le> ltype l")
-	  case True 
-	  with alive_l alive_x
-	  have "s\<langle>l:=x\<rangle>@@l = x"
-	    by (rule update_access_same)
-	  moreover
-	  have "s\<langle>t\<rangle>\<langle>l:=x\<rangle>@@l = x"
-	  proof -
-	    from alive_l neq_l_new have "alive (ref l) (s\<langle>t\<rangle>)"
-	      by (simp add: lemma_3_1)
-	    moreover
-	    from alive_x neq_x_new have "alive x (s\<langle>t\<rangle>)"
-	      by (simp add: lemma_3_2)
-	    ultimately
-	    show "s\<langle>t\<rangle>\<langle>l:=x\<rangle>@@l = x"
-	      using True by (rule update_access_same)
-	  qed
-	  ultimately show ?thesis 
-	    using eq_l_k lemma_3_3 by simp
-	next
-	  case False
-	  thus ?thesis by simp
-	qed
+        case True note alive_l = this
+        show ?thesis
+        proof (cases "typeof x \<le> ltype l")
+          case True 
+          with alive_l alive_x
+          have "s\<langle>l:=x\<rangle>@@l = x"
+            by (rule update_access_same)
+          moreover
+          have "s\<langle>t\<rangle>\<langle>l:=x\<rangle>@@l = x"
+          proof -
+            from alive_l neq_l_new have "alive (ref l) (s\<langle>t\<rangle>)"
+              by (simp add: lemma_3_1)
+            moreover
+            from alive_x neq_x_new have "alive x (s\<langle>t\<rangle>)"
+              by (simp add: lemma_3_2)
+            ultimately
+            show "s\<langle>t\<rangle>\<langle>l:=x\<rangle>@@l = x"
+              using True by (rule update_access_same)
+          qed
+          ultimately show ?thesis 
+            using eq_l_k lemma_3_3 by simp
+        next
+          case False
+          thus ?thesis by simp
+        qed
       next
-	case False note not_alive_l = this
-	from not_alive_l neq_l_new have "\<not> alive (ref l) (s\<langle>t\<rangle>)"
-	  by (simp add: lemma_3_1)
-	then have "s\<langle>t\<rangle>\<langle>l:=x\<rangle>@@l = init (ltype l)"
-	  by simp
-	also from not_alive_l have "\<dots> = s\<langle>l:=x\<rangle>@@l"
-	  by simp
-	also have "\<dots> = s\<langle>l:=x\<rangle>\<langle>t\<rangle>@@l" 
-	  by (simp add: lemma_3_3)
-	finally show ?thesis by (simp add: eq_l_k)
+        case False note not_alive_l = this
+        from not_alive_l neq_l_new have "\<not> alive (ref l) (s\<langle>t\<rangle>)"
+          by (simp add: lemma_3_1)
+        then have "s\<langle>t\<rangle>\<langle>l:=x\<rangle>@@l = init (ltype l)"
+          by simp
+        also from not_alive_l have "\<dots> = s\<langle>l:=x\<rangle>@@l"
+          by simp
+        also have "\<dots> = s\<langle>l:=x\<rangle>\<langle>t\<rangle>@@l" 
+          by (simp add: lemma_3_3)
+        finally show ?thesis by (simp add: eq_l_k)
       qed
     next
       case False note not_alive_x = this
       from not_alive_x neq_x_new have "\<not> alive x (s\<langle>t\<rangle>)"
-	by (simp add: lemma_3_2)
+        by (simp add: lemma_3_2)
       then have "s\<langle>t\<rangle>\<langle>l:=x\<rangle>@@l = s\<langle>t\<rangle>@@l"
-	by (simp)
+        by (simp)
       also have "\<dots> = s@@l"
       proof -
-	from neq_l_new 
-	have "isNewArr t \<longrightarrow> l \<noteq> arr_len (new s t)"
-	  by (cases t) auto
-	thus ?thesis
-	  by (simp)
+        from neq_l_new 
+        have "isNewArr t \<longrightarrow> l \<noteq> arr_len (new s t)"
+          by (cases t) auto
+        thus ?thesis
+          by (simp)
       qed
       also from not_alive_x have "\<dots> = s\<langle>l:=x\<rangle>@@l"
-	by (simp)
+        by (simp)
       also have "\<dots> = s\<langle>l:=x\<rangle>\<langle>t\<rangle>@@l"
-	by (simp add: lemma_3_3)
+        by (simp add: lemma_3_3)
       finally show ?thesis by (simp add: eq_l_k)
     qed
   qed
