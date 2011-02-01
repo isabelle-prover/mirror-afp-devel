@@ -645,8 +645,14 @@ lemma tllist_all2_mono:
   \<Longrightarrow> tllist_all2 P' Q' xs ys"
 by descending(auto elim!: llist_all2_mono)
 
-subsection {* From a terminated lazy list to a lazy list @{term llist_of_tllist} *}
+lemma tllist_all2_code [code]:
+  "tllist_all2 P Q (TNil b) (TNil b') \<longleftrightarrow> Q b b'"
+  "tllist_all2 P Q (TNil b) (TCons y ys) \<longleftrightarrow> False"
+  "tllist_all2 P Q (TCons x xs) (TNil b') \<longleftrightarrow> False"
+  "tllist_all2 P Q (TCons x xs) (TCons y ys) \<longleftrightarrow> P x y \<and> tllist_all2 P Q xs ys"
+by(simp_all add: tllist_all2_TNil1 tllist_all2_TNil2)
 
+subsection {* From a terminated lazy list to a lazy list @{term llist_of_tllist} *}
 
 lemma llist_of_tllist_TNil [simp, code, nitpick_simp]:
   "llist_of_tllist (TNil b) = LNil"
@@ -709,7 +715,7 @@ lemma tnth_TCons:
   "tnth (TCons x xs) n = (case n of 0 \<Rightarrow> x | Suc n' \<Rightarrow> tnth xs n')"
 by(descending)(auto simp add: TCONS_def lnth_LCons split: nat.split)
 
-lemma [simp, nitpick_simp]:
+lemma tnth_code [simp, nitpick_simp, code]:
   shows tnth_0: "tnth (TCons x xs) 0 = x"
   and tnth_Suc_TCons: "tnth (TCons x xs) (Suc n) = tnth xs n"
 by(simp_all add: tnth_TCons)
