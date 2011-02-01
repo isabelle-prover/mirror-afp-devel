@@ -279,6 +279,9 @@ extra-history =
   [2010-08-17]:
         Koenig's lemma as an example application for coinductive lists
         (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f81ce373fa96">f81ce373fa96</a>)
+  [2010-02-01]:
+        lazy implementation of coinductive (terminated) lists for the code generator
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6034973dce83">6034973dce83</a>)
 
 [Stream-Fusion]
 title = Stream Fusion
