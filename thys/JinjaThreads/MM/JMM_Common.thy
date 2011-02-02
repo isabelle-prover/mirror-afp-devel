@@ -29,13 +29,13 @@ context \<tau>multithreaded begin
 inductive_set \<E> :: "('l,'t,'x,'m,'w) state \<Rightarrow> ('t \<times> 'o) llist set"
   for \<sigma> :: "('l,'t,'x,'m,'w) state"
 where
-  "mthr.Runs \<sigma> E'
+  "mthr.\<tau>Runs \<sigma> E'
   \<Longrightarrow> lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')) \<in> \<E> \<sigma>"
 
 lemma actions_\<E>E_aux:
   fixes \<sigma> E'
   defines "E == lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
-  assumes mthr: "mthr.Runs \<sigma> E'"
+  assumes mthr: "mthr.\<tau>Runs \<sigma> E'"
   and a: "Fin a < llength E"
   obtains m n t ta
   where "lnth E a = (t, \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n)"
@@ -72,7 +72,7 @@ lemma actions_\<E>E:
   and a: "Fin a < llength E"
   obtains E' m n t ta
   where "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
-  and "mthr.Runs \<sigma> E'"
+  and "mthr.\<tau>Runs \<sigma> E'"
   and "lnth E a = (t, \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n)"
   and "n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" and "Fin m < tlength E'"
   and "a = (\<Sum>i<m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + n"
@@ -80,10 +80,122 @@ lemma actions_\<E>E:
 proof -
   from E obtain E' ws
     where E: "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
-    and "mthr.Runs \<sigma> E'" by(rule \<E>.cases) blast
-  from `mthr.Runs \<sigma> E'` a[unfolded E]
+    and "mthr.\<tau>Runs \<sigma> E'" by(rule \<E>.cases) blast
+  from `mthr.\<tau>Runs \<sigma> E'` a[unfolded E]
   show ?thesis
-    by(rule actions_\<E>E_aux)(fold E, rule that[OF E `mthr.Runs \<sigma> E'`])
+    by(rule actions_\<E>E_aux)(fold E, rule that[OF E `mthr.\<tau>Runs \<sigma> E'`])
+qed
+
+end
+
+context \<tau>multithreaded_wf begin
+
+text {* Alternative characterisation for @{term "\<E>"} *}
+lemma \<E>_conv_Runs:
+  "\<E> \<sigma> = lconcat ` lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ` {E. mthr.Runs \<sigma> E}"
+  (is "?lhs = ?rhs")
+proof(intro equalityI subsetI)
+  fix E
+  assume "E \<in> ?lhs"
+  then obtain E' where E: "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
+    and \<tau>Runs: "mthr.\<tau>Runs \<sigma> E'" by(blast elim: \<E>.cases)
+  obtain E'' where E': "E' = tmap (\<lambda>(tls, s', tl, s''). tl) (sum_case (\<lambda>(tls, s'). \<lfloor>s'\<rfloor>) Map.empty) E''"
+    and \<tau>Runs': "mthr.\<tau>Runs_table2 \<sigma> E''"
+    using \<tau>Runs by(rule mthr.\<tau>Runs_into_\<tau>Runs_table2)
+  have "mthr.Runs \<sigma> (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) 
+                                      (LCons (case terminal E'' of Inl (tls, s') \<Rightarrow> llist_of tls | Inr tls \<Rightarrow> tls) LNil)))"
+    (is "mthr.Runs _ ?E'''")
+    using \<tau>Runs' by(rule mthr.\<tau>Runs_table2_into_Runs)
+  moreover 
+  let ?tail = "\<lambda>E''. case terminal E'' of Inl (tls, s') \<Rightarrow> llist_of tls | Inr tls \<Rightarrow> tls"
+  {
+    have "E = lconcat (lfilter (\<lambda>xs. xs \<noteq> LNil) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')))"
+      unfolding E by(simp add: lconcat_lfilter_neq_LNil)
+    also have "\<dots> = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E''))))"
+      by(simp add: E' lfilter_lmap lmap_compose[symmetric] o_def split_def)
+    also
+    have "(lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')),
+           lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil)))) \<in>
+          {(lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')),
+           lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))))
+          |E''. \<exists>\<sigma>. mthr.\<tau>Runs_table2 \<sigma> E''}" 
+      (is "_ \<in> ?r")
+      using \<tau>Runs' by blast
+    hence "lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')) = 
+          lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil)))"
+    proof(coinduct rule: llist_equalityI)
+      case (Eqllist q)
+      then obtain E'' \<sigma> 
+        where q: "q = (lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')), lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))))"
+        and \<tau>Runs': "mthr.\<tau>Runs_table2 \<sigma> E''"
+        by blast
+      show ?case
+      proof(cases "fst q")
+        case LNil
+        hence "\<forall>(tls, s', (t, ta), s'') \<in> lset (llist_of_tllist E''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []"
+          using q by(auto simp add: lfilter_empty_conv)
+        hence "\<forall>(t, ta) \<in> lset (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []"
+          by(cases "lfinite (llist_of_tllist E'')")(fastsimp simp add: lset_lappend_lfinite split_beta lset_lconcat_lfinite lappend_inf mthr.silent_move2_def dest: mthr.\<tau>Runs_table2_silentsD[OF \<tau>Runs'] mthr.\<tau>Runs_table2_terminal_silentsD[OF \<tau>Runs'] mthr.\<tau>Runs_table2_terminal_inf_stepD[OF \<tau>Runs'] m\<tau>move_silentD inf_step_silentD silent_moves2_silentD split: sum.split_asm)+
+        hence "lfilter (\<lambda>(t, ta). obs_a ta \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))) = LNil"
+          by(simp add: lfilter_empty_conv split_beta)
+        thus ?thesis using LNil q by simp
+      next
+        case (LCons tl tls')
+        then obtain tls s' s'' tlsstlss' where tls': "tls' = lmap (\<lambda>(tls, s', tta, s''). tta) tlsstlss'"
+          and filter: "lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) (llist_of_tllist E'') = LCons (tls, s', tl, s'') tlsstlss'"
+          using q by(fastsimp simp add: lmap_eq_LCons_conv)
+        from lfilter_eq_LConsD[OF filter]
+        obtain us vs where eq: "llist_of_tllist E'' = lappend us (LCons (tls, s', tl, s'') vs)"
+          and fin: "lfinite us"
+          and empty: "\<forall>(tls, s', (t, ta), s'')\<in>lset us. obs_a ta = []"
+          and neq_empty: "obs_a (snd tl) \<noteq> []"
+          and tlsstlss': "tlsstlss' = lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) vs"
+          by(auto simp add: split_beta)
+        from eq obtain E''' where E'': "E'' = lappendt us E'''" 
+          and eq': "llist_of_tllist E''' = LCons (tls, s', tl, s'') vs"
+          and terminal: "terminal E''' = terminal E''"
+          unfolding llist_of_tllist_eq_lappend_conv by auto
+        from \<tau>Runs' fin E'' obtain \<sigma>' where \<tau>Runs'': "mthr.\<tau>Runs_table2 \<sigma>' E'''"
+          by(auto dest: mthr.\<tau>Runs_table2_lappendtD)
+        then obtain \<sigma>'' E'''' where "mthr.\<tau>Runs_table2 \<sigma>'' E''''" "E''' = TCons (tls, s', tl, s'') E''''"
+          using eq' by cases auto
+        moreover from \<tau>Runs' E'' fin
+        have "\<forall>(tls, s, tl, s')\<in>lset us. \<forall>(t, ta)\<in>set tls. ta = \<epsilon>"
+          by(fastsimp dest: mthr.\<tau>Runs_table2_silentsD m\<tau>move_silentD simp add: mthr.silent_move2_def)
+        hence "lfilter (\<lambda>(t, ta). obs_a ta \<noteq> []) (lconcat (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) us)) = LNil"
+          using empty by(auto simp add: lfilter_empty_conv lset_lconcat_lfinite split_beta)
+        moreover from \<tau>Runs'' eq' have "snd ` set tls \<subseteq> {\<epsilon>}"
+          by(cases)(fastsimp dest: silent_moves2_silentD)+
+        hence "[(t, ta)\<leftarrow>tls . obs_a ta \<noteq> []] = []"
+          by(auto simp add: filter_empty_conv split_beta)
+        ultimately have ?EqLCons
+          using LCons q E'' fin tls' tlsstlss' filter eq' neq_empty
+          by(fastsimp simp add: lmap_lappend_distrib lappend_assoc lfilter_lappend_lfinite split_beta simp del: split_paired_Ex)
+        thus ?thesis ..
+      qed
+    qed
+    also have "lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) \<dots> = lfilter (\<lambda>obs. obs \<noteq> LNil) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))))"
+      unfolding lfilter_lmap by(simp add: o_def split_def)
+    finally have "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?E''')"
+      by(simp add: lconcat_lfilter_neq_LNil) }
+  ultimately show "E \<in> ?rhs" by blast
+next
+  fix E
+  assume "E \<in> ?rhs"
+  then obtain E' where E: "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) E')"
+    and Runs: "mthr.Runs \<sigma> E'" by blast
+  from Runs obtain E'' where E': "E' = lmap (\<lambda>(s, tl, s'). tl) E''"
+    and Runs': "mthr.Runs_table \<sigma> E''" by(rule mthr.Runs_into_Runs_table)
+  have "mthr.\<tau>Runs \<sigma> (tmap (\<lambda>(s, tl, s'). tl) id (tfilter None (\<lambda>(s, tl, s'). \<not> m\<tau>move s tl s') (tllist_of_llist (Some (llast (LCons \<sigma> (lmap (\<lambda>(s, tl, s'). s') E'')))) E'')))"
+    (is "mthr.\<tau>Runs _ ?E'''")
+    using Runs' by(rule mthr.Runs_table_into_\<tau>Runs)
+  moreover
+  have "(\<lambda>(s, (t, ta), s'). obs_a ta \<noteq> []) = (\<lambda>(s, (t, ta), s'). obs_a ta \<noteq> [] \<and> \<not> m\<tau>move s (t, ta) s')"
+    by(rule ext)(auto dest: m\<tau>move_silentD)
+  hence "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) (llist_of_tllist ?E'''))"
+    unfolding E E'
+    by(subst (1 2) lconcat_lfilter_neq_LNil[symmetric])(simp add: lfilter_lmap lfilter_lfilter o_def split_def)
+  ultimately show "E \<in> ?lhs" by(blast intro: \<E>.intros)
 qed
 
 end
@@ -1151,12 +1263,12 @@ proof(rule thread_start_actions_okI)
       by(rule contrapos_nn)(auto dest: thr_start_state_RunningD)
     
     from E obtain E' where E': "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
-      and Runs: "if.mthr.Runs start_state E'"
+      and \<tau>Runs: "if.mthr.\<tau>Runs start_state E'"
       by(rule if.\<E>.cases)
     from a E' `a \<ge> length start_heap_obs`
     have Fin_a: "Fin ?a < llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')))"
       by(cases "llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')))")(auto simp add: actions_def)
-    with Runs obtain m n t ta
+    with \<tau>Runs obtain m n t ta
     where a_obs: "lnth (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))) (a - length start_heap_obs) = (t, \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n)"
       and n: "n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" 
       and m: "Fin m < tlength E'"
@@ -1170,15 +1282,15 @@ proof(rule thread_start_actions_okI)
     let ?m_E' = "ltake (Fin m) (llist_of_tllist E')"
     have E'_unfold: "E' = lappendt (ltake (Fin m) (llist_of_tllist E')) (TCons (tnth E' m) ?E')"
       unfolding tdropn_Suc_conv_tdropn[OF m] lappendt_ltake_tdropn ..
-    hence "if.mthr.Runs start_state (lappendt ?m_E' (TCons (tnth E' m) ?E'))"
-      using Runs by simp
+    hence "if.mthr.\<tau>Runs start_state (lappendt ?m_E' (TCons (tnth E' m) ?E'))"
+      using \<tau>Runs by simp
     then obtain \<sigma>' where \<sigma>_\<sigma>': "if.mthr.\<tau>rtrancl3p start_state (list_of ?m_E') \<sigma>'"
-      and Runs': "if.mthr.Runs \<sigma>' (TCons (tnth E' m) ?E')"
-      by(rule if.mthr.Runs_lappendtE) simp
-    from Runs' obtain \<sigma>'' \<sigma>''' where \<sigma>'_\<sigma>'': "if.mthr.silent_moves \<sigma>' \<sigma>''"
+      and \<tau>Runs': "if.mthr.\<tau>Runs \<sigma>' (TCons (tnth E' m) ?E')"
+      by(rule if.mthr.\<tau>Runs_lappendtE) simp
+    from \<tau>Runs' obtain \<sigma>'' \<sigma>''' where \<sigma>'_\<sigma>'': "if.mthr.silent_moves \<sigma>' \<sigma>''"
       and red_a: "if.redT \<sigma>'' (t, ta) \<sigma>'''"
       and n\<tau>: "\<not> if.m\<tau>move \<sigma>'' (t, ta) \<sigma>'''"
-      and Runs'': "if.mthr.Runs \<sigma>''' ?E'"
+      and \<tau>Runs'': "if.mthr.\<tau>Runs \<sigma>''' ?E'"
       unfolding E'_m by cases
     from red_a obtain status x ln where tst: "thr \<sigma>'' t = \<lfloor>((status, x), ln)\<rfloor>" by cases auto
     show ?thesis
@@ -1320,7 +1432,7 @@ proof -
         and E'': "E'' \<in> if.\<E> start_state" unfolding start_heap_obs_def  by auto
 
       from E'' obtain E' where E': "E'' = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
-        and Runs: "if.mthr.Runs start_state E'"
+        and \<tau>Runs: "if.mthr.\<tau>Runs start_state E'"
         by(rule if.\<E>.cases)
 
       have r_len: "length start_heap_obs \<le> ?r"
@@ -1338,7 +1450,7 @@ proof -
       
       from r have "?r - ?n \<in> actions E''" by(auto)
       hence "Fin (?r - ?n) < llength E''" by(rule actionsE)
-      with Runs obtain r_m r_n t_r ta_r 
+      with \<tau>Runs obtain r_m r_n t_r ta_r 
         where E_r: "lnth E'' (?r - ?n) = (t_r, \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> ! r_n)"
         and r_n: "r_n < length \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>" and r_m: "Fin r_m < tlength E'"
         and r_conv: "?r - ?n = (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + r_n"
@@ -1349,15 +1461,15 @@ proof -
       let ?r_m_E' = "ltake (Fin r_m) (llist_of_tllist E')"
       have E'_unfold: "E' = lappendt (ltake (Fin r_m) (llist_of_tllist E')) (TCons (tnth E' r_m) ?E')"
         unfolding tdropn_Suc_conv_tdropn[OF r_m] lappendt_ltake_tdropn ..
-      hence "if.mthr.Runs start_state (lappendt ?r_m_E' (TCons (tnth E' r_m) ?E'))"
-        using Runs by simp
+      hence "if.mthr.\<tau>Runs start_state (lappendt ?r_m_E' (TCons (tnth E' r_m) ?E'))"
+        using \<tau>Runs by simp
       then obtain \<sigma>' where \<sigma>_\<sigma>': "if.mthr.\<tau>rtrancl3p start_state (list_of ?r_m_E') \<sigma>'"
-        and Runs': "if.mthr.Runs \<sigma>' (TCons (tnth E' r_m) ?E')"
-        by(rule if.mthr.Runs_lappendtE) simp
-      from Runs' obtain \<sigma>'' \<sigma>''' where \<sigma>'_\<sigma>'': "if.mthr.silent_moves \<sigma>' \<sigma>''"
+        and \<tau>Runs': "if.mthr.\<tau>Runs \<sigma>' (TCons (tnth E' r_m) ?E')"
+        by(rule if.mthr.\<tau>Runs_lappendtE) simp
+      from \<tau>Runs' obtain \<sigma>'' \<sigma>''' where \<sigma>'_\<sigma>'': "if.mthr.silent_moves \<sigma>' \<sigma>''"
         and red_ra: "if.redT \<sigma>'' (t_r, ta_r) \<sigma>'''"
         and n\<tau>: "\<not> if.m\<tau>move \<sigma>'' (t_r, ta_r) \<sigma>'''"
-        and Runs'': "if.mthr.Runs \<sigma>''' ?E'"
+        and \<tau>Runs'': "if.mthr.\<tau>Runs \<sigma>''' ?E'"
         unfolding E'_r_m by cases
 
       note \<sigma>_\<sigma>'
@@ -1403,7 +1515,7 @@ proof -
       finally have "ta_seq_consist P ?vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?r_m_E'))))" .
       from sequential_completion[OF cut_and_update ta_seq_consist_convert_RA \<sigma>_\<sigma>'' this red_ra n\<tau>]
       obtain ta' ttas' 
-        where "if.mthr.Runs \<sigma>'' (TCons (t_r, ta') ttas')"
+        where "if.mthr.\<tau>Runs \<sigma>'' (TCons (t_r, ta') ttas')"
         and sc: "ta_seq_consist P (mrw_values P empty (map snd start_heap_obs)) 
                    (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of (list_of ?r_m_E')) (LCons (t_r, ta') (llist_of_tllist ttas')))))"
           and eq_ta: "eq_upto_seq_inconsist P \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> (mrw_values P ?vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?r_m_E'))))"
@@ -1413,9 +1525,9 @@ proof -
       let ?E_sc'' = "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist ?E_sc'))"
       let ?E_sc = "lappend (llist_of start_heap_obs) ?E_sc''"
 
-      from \<sigma>_\<sigma>'' `if.mthr.Runs \<sigma>'' (TCons (t_r, ta') ttas')`
-      have "if.mthr.Runs start_state ?E_sc'" 
-        by(rule if.mthr.\<tau>rtrancl3p_into_Runs)
+      from \<sigma>_\<sigma>'' `if.mthr.\<tau>Runs \<sigma>'' (TCons (t_r, ta') ttas')`
+      have "if.mthr.\<tau>Runs start_state ?E_sc'" 
+        by(rule if.mthr.\<tau>rtrancl3p_into_\<tau>Runs)
       hence "?E_sc'' \<in> if.\<E> start_state" by(rule if.\<E>.intros)
       hence "?E_sc \<in> ?\<E>" by(rule imageI)
       moreover from `?E_sc'' \<in> if.\<E> start_state`
@@ -1653,14 +1765,14 @@ next
     from E obtain E'' where E: "E = lappend (llist_of ?init_obs) E''"
       and E'': "E'' \<in> mthr.if.\<E> (start_state f P C M vs)" by auto
     from E'' obtain E' where E': "E'' = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
-      and Runs: "mthr.if.mthr.Runs (start_state f P C M vs) E'" by(rule mthr.if.\<E>.cases)
+      and \<tau>Runs: "mthr.if.mthr.\<tau>Runs (start_state f P C M vs) E'" by(rule mthr.if.\<E>.cases)
     
     from E E'' a' n `n \<le> a'` adal have a': "a' - n \<in> new_actions_for P E'' adal"
       by(auto simp add: new_actions_for_def lnth_lappend2 action_obs_def actions_lappend elim: actionsE)
     
     from a' have "a' - n \<in> actions E''" by(auto elim: new_actionsE)
     hence "Fin (a' - n) < llength E''" by(rule actionsE)
-    with Runs obtain a'_m a'_n t_a' ta_a'
+    with \<tau>Runs obtain a'_m a'_n t_a' ta_a'
       where E_a': "lnth E'' (a' - n) = (t_a', \<lbrace>ta_a'\<rbrace>\<^bsub>o\<^esub> ! a'_n)"
       and a'_n: "a'_n < length \<lbrace>ta_a'\<rbrace>\<^bsub>o\<^esub>" and a'_m: "Fin a'_m < tlength E'"
       and a'_conv: "a' - n = (\<Sum>i<a'_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + a'_n"
@@ -1689,17 +1801,17 @@ next
       
       have E'_unfold': "E' = lappendt (ltake (Fin a'_m) (llist_of_tllist E')) (TCons (tnth E' a'_m) (tdropn (Suc a'_m) E'))"
         unfolding tdropn_Suc_conv_tdropn[OF a'_m] lappendt_ltake_tdropn ..
-      hence "mthr.if.mthr.Runs (start_state f P C M vs) (lappendt (ltake (Fin a'_m) (llist_of_tllist E')) (TCons (tnth E' a'_m) (tdropn (Suc a'_m) E')))"
-        using Runs by simp
+      hence "mthr.if.mthr.\<tau>Runs (start_state f P C M vs) (lappendt (ltake (Fin a'_m) (llist_of_tllist E')) (TCons (tnth E' a'_m) (tdropn (Suc a'_m) E')))"
+        using \<tau>Runs by simp
       then obtain \<sigma>'
         where \<sigma>_\<sigma>': "mthr.if.mthr.\<tau>rtrancl3p (start_state f P C M vs) (list_of (ltake (Fin a'_m) (llist_of_tllist E'))) \<sigma>'"
-        and Runs': "mthr.if.mthr.Runs \<sigma>' (TCons (tnth E' a'_m) (tdropn (Suc a'_m) E'))"
-        by(rule mthr.if.mthr.Runs_lappendtE) simp
-      from Runs' obtain \<sigma>'' \<sigma>'''
+        and \<tau>Runs': "mthr.if.mthr.\<tau>Runs \<sigma>' (TCons (tnth E' a'_m) (tdropn (Suc a'_m) E'))"
+        by(rule mthr.if.mthr.\<tau>Runs_lappendtE) simp
+      from \<tau>Runs' obtain \<sigma>'' \<sigma>'''
         where \<sigma>'_\<sigma>'': "mthr.if.mthr.silent_moves \<sigma>' \<sigma>''"
         and red_a': "mthr.if.redT \<sigma>'' (t_a', ta_a') \<sigma>'''"
         and "\<not> mthr.if.m\<tau>move \<sigma>'' (t_a', ta_a') \<sigma>'''"
-        and Runs'': "mthr.if.mthr.Runs \<sigma>''' (tdropn (Suc a'_m) E')"
+        and \<tau>Runs'': "mthr.if.mthr.\<tau>Runs \<sigma>''' (tdropn (Suc a'_m) E')"
         unfolding E'_a'_m by cases
       from New_ta_a' a'_n have "NormalAction (NewHeapElem ad CTn') \<in> set \<lbrace>ta_a'\<rbrace>\<^bsub>o\<^esub>"
         unfolding in_set_conv_nth by blast
@@ -1737,7 +1849,7 @@ next
       hence "Fin (a - n) < llength E''" by(rule actionsE)
 
 
-      with Runs obtain a_m a_n t_a ta_a 
+      with \<tau>Runs obtain a_m a_n t_a ta_a 
         where E_a: "lnth E'' (a - n) = (t_a, \<lbrace>ta_a\<rbrace>\<^bsub>o\<^esub> ! a_n)"
         and a_n: "a_n < length \<lbrace>ta_a\<rbrace>\<^bsub>o\<^esub>" and a_m: "Fin a_m < tlength E'"
         and a_conv: "a - n = (\<Sum>i<a_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + a_n"
@@ -1756,15 +1868,15 @@ next
   
       have E'_unfold: "E' = lappendt (ltake (Fin a_m) (llist_of_tllist E')) (TCons (tnth E' a_m) ?E')"
         unfolding tdropn_Suc_conv_tdropn[OF a_m] lappendt_ltake_tdropn ..
-      hence "mthr.if.mthr.Runs (start_state f P C M vs) (lappendt (ltake (Fin a_m) (llist_of_tllist E')) (TCons (tnth E' a_m) ?E'))"
-        using Runs by simp
+      hence "mthr.if.mthr.\<tau>Runs (start_state f P C M vs) (lappendt (ltake (Fin a_m) (llist_of_tllist E')) (TCons (tnth E' a_m) ?E'))"
+        using \<tau>Runs by simp
       then obtain \<sigma>' where \<sigma>_\<sigma>': "mthr.if.mthr.\<tau>rtrancl3p (start_state f P C M vs) (list_of (ltake (Fin a_m) (llist_of_tllist E'))) \<sigma>'"
-        and Runs': "mthr.if.mthr.Runs \<sigma>' (TCons (tnth E' a_m) ?E')"
-        by(rule mthr.if.mthr.Runs_lappendtE) simp
-      from Runs' obtain \<sigma>'' \<sigma>''' where "mthr.if.mthr.silent_moves \<sigma>' \<sigma>''"
+        and \<tau>Runs': "mthr.if.mthr.\<tau>Runs \<sigma>' (TCons (tnth E' a_m) ?E')"
+        by(rule mthr.if.mthr.\<tau>Runs_lappendtE) simp
+      from \<tau>Runs' obtain \<sigma>'' \<sigma>''' where "mthr.if.mthr.silent_moves \<sigma>' \<sigma>''"
         and red_a: "mthr.if.redT \<sigma>'' (t_a, ta_a) \<sigma>'''"
         and "\<not> mthr.if.m\<tau>move \<sigma>'' (t_a, ta_a) \<sigma>'''"
-        and Runs'': "mthr.if.mthr.Runs \<sigma>''' ?E'"
+        and \<tau>Runs'': "mthr.if.mthr.\<tau>Runs \<sigma>''' ?E'"
         unfolding E'_a_m by cases
       from New_ta_a a_n have "NormalAction (NewHeapElem ad CTn) \<in> set \<lbrace>ta_a\<rbrace>\<^bsub>o\<^esub>"
         unfolding in_set_conv_nth by blast
@@ -1816,17 +1928,17 @@ next
     
         have E'_unfold': "?E' = lappendt (ltake (Fin (a'_m - Suc a_m)) (llist_of_tllist ?E')) (TCons (tnth ?E' (a'_m - Suc a_m)) (tdropn (Suc (a'_m - Suc a_m)) ?E'))"
           unfolding tdropn_Suc_conv_tdropn[OF a'_m_a_m] lappendt_ltake_tdropn ..
-        hence "mthr.if.mthr.Runs \<sigma>''' (lappendt (ltake (Fin (a'_m - Suc a_m)) (llist_of_tllist ?E')) (TCons (tnth ?E' (a'_m - Suc a_m)) (tdropn (Suc (a'_m - Suc a_m)) ?E')))"
-          using Runs'' by simp
+        hence "mthr.if.mthr.\<tau>Runs \<sigma>''' (lappendt (ltake (Fin (a'_m - Suc a_m)) (llist_of_tllist ?E')) (TCons (tnth ?E' (a'_m - Suc a_m)) (tdropn (Suc (a'_m - Suc a_m)) ?E')))"
+          using \<tau>Runs'' by simp
         then obtain \<sigma>''''
           where \<sigma>'''_\<sigma>'''': "mthr.if.mthr.\<tau>rtrancl3p \<sigma>''' (list_of (ltake (Fin (a'_m - Suc a_m)) (llist_of_tllist ?E'))) \<sigma>''''"
-          and Runs''': "mthr.if.mthr.Runs \<sigma>'''' (TCons (tnth ?E' (a'_m - Suc a_m)) (tdropn (Suc (a'_m - Suc a_m)) ?E'))"
-          by(rule mthr.if.mthr.Runs_lappendtE) simp
-        from Runs''' obtain \<sigma>''''' \<sigma>''''''
+          and \<tau>Runs''': "mthr.if.mthr.\<tau>Runs \<sigma>'''' (TCons (tnth ?E' (a'_m - Suc a_m)) (tdropn (Suc (a'_m - Suc a_m)) ?E'))"
+          by(rule mthr.if.mthr.\<tau>Runs_lappendtE) simp
+        from \<tau>Runs''' obtain \<sigma>''''' \<sigma>''''''
           where \<sigma>''''_\<sigma>''''': "mthr.if.mthr.silent_moves \<sigma>'''' \<sigma>'''''"
           and red_a': "mthr.if.redT \<sigma>''''' (t_a', ta_a') \<sigma>''''''"
           and "\<not> mthr.if.m\<tau>move \<sigma>''''' (t_a', ta_a') \<sigma>''''''"
-          and Runs''''': "mthr.if.mthr.Runs \<sigma>'''''' (tdropn (Suc (a'_m - Suc a_m)) ?E')"
+          and \<tau>Runs''''': "mthr.if.mthr.\<tau>Runs \<sigma>'''''' (tdropn (Suc (a'_m - Suc a_m)) ?E')"
           unfolding E'_a'_m' by cases
         from New_ta_a' a'_n have "NormalAction (NewHeapElem ad CTn') \<in> set \<lbrace>ta_a'\<rbrace>\<^bsub>o\<^esub>"
           unfolding in_set_conv_nth by blast
@@ -1958,7 +2070,7 @@ proof -
     from E obtain E'' where E: "E = lappend ?obs_prefix E''"
       and E'': "E'' \<in> mthr.if.\<E> (start_state f P C M vs)" by auto
     from E'' obtain E' where E': "E'' = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
-      and Runs: "mthr.if.mthr.Runs (start_state f P C M vs) E'"
+      and \<tau>Runs: "mthr.if.mthr.\<tau>Runs (start_state f P C M vs) E'"
       by(rule mthr.if.\<E>.cases)
 
     have ra_len: "length (lift_start_obs start_tid start_heap_obs) \<le> ra"
@@ -1982,7 +2094,7 @@ proof -
       
     from ra have "ra - ?n \<in> actions E''" by(auto)
     hence "Fin (ra - ?n) < llength E''" by(rule actionsE)
-    with Runs obtain ra_m ra_n t_ra ta_ra 
+    with \<tau>Runs obtain ra_m ra_n t_ra ta_ra 
       where E_ra: "lnth E'' (ra - ?n) = (t_ra, \<lbrace>ta_ra\<rbrace>\<^bsub>o\<^esub> ! ra_n)"
       and ra_n: "ra_n < length \<lbrace>ta_ra\<rbrace>\<^bsub>o\<^esub>" and ra_m: "Fin ra_m < tlength E'"
       and ra_conv: "ra - ?n = (\<Sum>i<ra_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + ra_n"
@@ -1993,15 +2105,15 @@ proof -
     
     have E'_unfold: "E' = lappendt (ltake (Fin ra_m) (llist_of_tllist E')) (TCons (tnth E' ra_m) ?E')"
       unfolding tdropn_Suc_conv_tdropn[OF ra_m] lappendt_ltake_tdropn ..
-    hence "mthr.if.mthr.Runs (start_state f P C M vs) (lappendt (ltake (Fin ra_m) (llist_of_tllist E')) (TCons (tnth E' ra_m) ?E'))"
-      using Runs by simp
+    hence "mthr.if.mthr.\<tau>Runs (start_state f P C M vs) (lappendt (ltake (Fin ra_m) (llist_of_tllist E')) (TCons (tnth E' ra_m) ?E'))"
+      using \<tau>Runs by simp
     then obtain \<sigma>' where \<sigma>_\<sigma>': "mthr.if.mthr.\<tau>rtrancl3p (start_state f P C M vs) (list_of (ltake (Fin ra_m) (llist_of_tllist E'))) \<sigma>'"
-      and Runs': "mthr.if.mthr.Runs \<sigma>' (TCons (tnth E' ra_m) ?E')"
-      by(rule mthr.if.mthr.Runs_lappendtE) simp
-    from Runs' obtain \<sigma>'' \<sigma>''' where \<sigma>'_\<sigma>'': "mthr.if.mthr.silent_moves \<sigma>' \<sigma>''"
+      and \<tau>Runs': "mthr.if.mthr.\<tau>Runs \<sigma>' (TCons (tnth E' ra_m) ?E')"
+      by(rule mthr.if.mthr.\<tau>Runs_lappendtE) simp
+    from \<tau>Runs' obtain \<sigma>'' \<sigma>''' where \<sigma>'_\<sigma>'': "mthr.if.mthr.silent_moves \<sigma>' \<sigma>''"
       and red_ra: "mthr.if.redT \<sigma>'' (t_ra, ta_ra) \<sigma>'''"
       and "\<not> mthr.if.m\<tau>move \<sigma>'' (t_ra, ta_ra) \<sigma>'''"
-      and Runs'': "mthr.if.mthr.Runs \<sigma>''' ?E'"
+      and \<tau>Runs'': "mthr.if.mthr.\<tau>Runs \<sigma>''' ?E'"
       unfolding E'_ra_m by cases
 
     note \<sigma>_\<sigma>'

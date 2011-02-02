@@ -5,7 +5,6 @@ no_document use_thys
    "Transitive_Closure_Table",
    "Code_Char",
    "Predicate_Compile_Alternative_Defs",
-   "Cset",
    "Zorn",
    "Monad_Syntax",
    "../Jinja/DFA/Typing_Framework_err",

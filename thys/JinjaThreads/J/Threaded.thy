@@ -749,6 +749,24 @@ next
     by(auto elim!: red_cases dest: sees_method_fun simp add: map_eq_append_conv append_eq_map_conv append_eq_append_conv2 reds_map_Val_Throw Cons_eq_append_conv append_eq_Cons_conv)
 qed(fastsimp elim!: red_cases reds_cases dest: deterministic_heap_ops_readD[OF det] deterministic_heap_ops_writeD[OF det] iff: reds_map_Val_Throw)+
 
+lemma red_mthr_deterministic:
+  assumes det: "deterministic_heap_ops"
+  shows "red_mthr.deterministic P"
+proof(rule red_mthr.determisticI)
+  fix s t x ta' x' m' ta'' x'' m''
+  assume "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
+    and red: "mred P t (x, shr s) ta' (x', m')" "mred P t (x, shr s) ta'' (x'', m'')"
+    and aok: "red_mthr.actions_ok s t ta'" "red_mthr.actions_ok s t ta''"
+  moreover obtain e xs where [simp]: "x = (e, xs)" by(cases x)
+  moreover obtain e' xs' where [simp]: "x' = (e', xs')" by(cases x')
+  moreover obtain e'' xs'' where [simp]: "x'' = (e'', xs'')" by(cases x'')
+  ultimately have "extTA2J P,P,t \<turnstile> \<langle>e,(shr s, xs)\<rangle> -ta'\<rightarrow> \<langle>e',(m', xs')\<rangle>"
+    and "extTA2J P,P,t \<turnstile> \<langle>e,(shr s, xs)\<rangle> -ta''\<rightarrow> \<langle>e'',(m'', xs'')\<rangle>"
+    by simp_all
+  from red_deterministic[OF det this aok]
+  show "ta' = ta'' \<and> x' = x'' \<and> m' = m''" by simp
+qed
+
 end
 
 end

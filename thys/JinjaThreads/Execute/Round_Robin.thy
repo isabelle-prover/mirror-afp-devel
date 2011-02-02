@@ -30,8 +30,19 @@ definition enqueue_new_threads :: "'t list \<Rightarrow> ('t,'x,'m) new_thread_a
 where
   "enqueue_new_threads = foldl enqueue_new_thread"
 
+primrec round_robin_update_state :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 't list round_robin"
+where 
+  "round_robin_update_state n0 (queue, n) t ta =
+   (let queue' = enqueue_new_threads queue \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>
+    in if n = 0 then (rotate1 queue', n0) else (queue', n - 1))"
+
 context multithreaded_base begin
 
+abbreviation round_robin_step :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
+where
+  "round_robin_step n0 \<sigma> s t \<equiv> step_thread (round_robin_update_state n0 \<sigma> t) s t"
+
+(*
 primrec round_robin_step :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
 where
   "round_robin_step n0 (queue, n) s t =
@@ -52,6 +63,8 @@ where
       else
         None
     | None \<Rightarrow> None)"
+*)
+
 
 partial_function (option) round_robin_reschedule :: "'t \<Rightarrow> 
     't list \<Rightarrow> nat \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
@@ -122,8 +135,6 @@ next
   thus ?case by(simp add: enqueue_new_threads_def)
 qed
 
-context multithreaded_base begin
-
 lemma round_robin_reschedule_induct [consumes 1, case_names head rotate]:
   assumes major: "t0 \<in> set queue"
   and head: "\<And>queue. P (t0 # queue)"
@@ -147,6 +158,9 @@ next
   with t t0 show ?case by(simp add: rotate)
 qed
 
+context multithreaded_base begin
+
+(*
 lemma round_robin_step_NoneD:
   "round_robin_step n0 \<sigma> s t = None \<Longrightarrow> t \<notin> active_threads s"
 apply(cases \<sigma>)
@@ -169,10 +183,11 @@ lemma round_robin_step_eq_Some_activeD:
 apply(cases \<sigma>)
 apply(fastsimp split: split_if_asm simp add: split_beta actions_ok_iff intro: active_threads.intros)
 done
+*)
 
 declare actions_ok_iff [simp del]
 declare actions_ok.cases [rule del]
-
+(*
 lemma round_robin_step_Some_NoneD:
   "round_robin_step n0 \<sigma> s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>
   \<Longrightarrow> \<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln"
@@ -182,21 +197,26 @@ lemma round_robin_step_Some_SomeD:
   "\<lbrakk> deterministic; round_robin_step n0 \<sigma> s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor> \<rbrakk>
   \<Longrightarrow> \<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> actions_ok s t ta"
 by(cases \<sigma>)(clarsimp simp add: split_beta deterministic_THE split: split_if_asm)
+*)
 
 lemma round_robin_step_invar_None:
   "\<lbrakk> round_robin_step n0 \<sigma> s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>; round_robin_invar \<sigma> (dom (thr s)) \<rbrakk>
   \<Longrightarrow> round_robin_invar \<sigma>' (dom (thr s))"
-by(cases \<sigma>)(clarsimp split: split_if_asm simp add: split_beta)
+by(cases \<sigma>)(auto dest: step_thread_Some_NoneD simp add: set_enqueue_new_threads distinct_enqueue_new_threads)
 
 lemma round_robin_step_invar_Some:
   "\<lbrakk> deterministic; round_robin_step n0 \<sigma> s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>; round_robin_invar \<sigma> (dom (thr s)) \<rbrakk>
   \<Longrightarrow> round_robin_invar \<sigma>' (dom (thr s) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})"
 apply(cases \<sigma>)
-apply(clarsimp split: split_if_asm simp add: split_beta set_enqueue_new_threads deterministic_THE)
+apply clarsimp
+apply(frule (1) step_thread_Some_SomeD)
+apply(auto split: split_if_asm simp add: split_beta set_enqueue_new_threads deterministic_THE)
 apply(auto simp add: actions_ok_iff distinct_enqueue_new_threads)
 done
 
+(*
 declare round_robin_step.simps [simp del]
+*)
 
 lemma round_robin_reschedule_Cons:
   "round_robin_reschedule t0 (t0 # queue) n0 s = None"
@@ -220,7 +240,7 @@ next
   have "round_robin_step n0 (t # queue, n0) s t = None" 
     and "round_robin_reschedule t0 (queue @ [t]) n0 s = None"
     by(simp_all add: round_robin_reschedule_Cons)
-  from this(1) have "t \<notin> active_threads s" by(rule round_robin_step_NoneD)
+  from this(1) have "t \<notin> active_threads s" by(rule step_thread_NoneD)
   moreover from `round_robin_reschedule t0 (queue @ [t]) n0 s = None` 
   have "set (takeWhile (\<lambda>t'. t' \<noteq> t0) (queue @ [t])) \<inter> active_threads s = {}"
     by(rule rotate.hyps)
@@ -250,7 +270,7 @@ next
     with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>` `t' \<noteq> t0`
     have "round_robin_step n0 (t' # queue, n0) s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
-    thus ?thesis by(rule round_robin_step_Some_NoneD)
+    thus ?thesis by(blast dest: step_thread_Some_NoneD)
   qed
 qed
 
@@ -276,7 +296,7 @@ next
     with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>` `t' \<noteq> t0`
     have "round_robin_step n0 (t' # queue, n0) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
-    thus ?thesis by(rule round_robin_step_Some_SomeD[OF `deterministic`])
+    thus ?thesis by(blast dest: step_thread_Some_SomeD[OF `deterministic`])
   qed
 qed
 
@@ -354,7 +374,7 @@ proof -
     with rr \<sigma> have "round_robin_step n0 (t # queue', n) s t = None"
       and "round_robin_reschedule t (queue' @ [t]) n0 s = None" by simp_all
     from `round_robin_step n0 (t # queue', n) s t = None`
-    have "t \<notin> active_threads s" by(rule round_robin_step_NoneD)
+    have "t \<notin> active_threads s" by(rule step_thread_NoneD)
     moreover from `round_robin_reschedule t (queue' @ [t]) n0 s = None`
     have "set (takeWhile (\<lambda>x. x \<noteq> t) (queue' @ [t])) \<inter> active_threads s = {}"
       by(rule round_robin_reschedule_NoneD) simp
@@ -379,7 +399,7 @@ proof -
   proof(cases "round_robin_step n0 (t' # queue', n) s t'")
     case (Some a)
     with rr queue \<sigma> have "round_robin_step n0 (t' # queue', n) s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>" by simp
-    thus ?thesis by(rule round_robin_step_Some_NoneD)
+    thus ?thesis by(blast dest: step_thread_Some_NoneD)
   next
     case None
     with rr queue \<sigma> have "round_robin_reschedule t' (queue' @ [t']) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>" by simp
@@ -400,7 +420,7 @@ proof -
   proof(cases "round_robin_step n0 (t' # queue', n) s t'")
     case (Some a)
     with rr queue \<sigma> have "round_robin_step n0 (t' # queue', n) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
-    thus ?thesis by(rule round_robin_step_Some_SomeD[OF `deterministic`])
+    thus ?thesis by(blast dest: step_thread_Some_SomeD[OF `deterministic`])
   next
     case None
     with rr queue \<sigma> have "round_robin_reschedule t' (queue' @ [t']) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
@@ -500,6 +520,17 @@ definition enqueue_new_threads :: "'queue \<Rightarrow> ('t,'x,'m) new_thread_ac
 where
   "enqueue_new_threads = foldl enqueue_new_thread"
 
+primrec round_robin_update_state :: "nat \<Rightarrow> 'queue round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 'queue round_robin"
+where 
+  "round_robin_update_state n0 (queue, n) t ta =
+   (let queue' = enqueue_new_threads queue \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>
+    in if n = 0 then (queue_rotate1 queue', n0) else (queue', n - 1))"
+
+abbreviation round_robin_step :: "nat \<Rightarrow> 'queue round_robin \<Rightarrow> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 'queue round_robin) option"
+where
+  "round_robin_step n0 \<sigma> s t \<equiv> step_thread (round_robin_update_state n0 \<sigma> t) s t"
+
+(*
 primrec round_robin_step :: "nat \<Rightarrow> 'queue round_robin \<Rightarrow> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 'queue round_robin) option"
 where
   "round_robin_step n0 (queue, n) s t =
@@ -526,6 +557,7 @@ where
       else
         None
     | None \<Rightarrow> None)"
+*)
 
 partial_function (option) round_robin_reschedule ::
   "'t \<Rightarrow> 'queue \<Rightarrow> nat \<Rightarrow> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 'queue round_robin) option"
@@ -616,6 +648,7 @@ locale round_robin =
   and queue_push :: "'t \<Rightarrow> 'queue \<Rightarrow> 'queue"
 begin
 
+(*
 lemma deterministic_THE2:
   assumes "\<alpha>.deterministic"
   and tst: "thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor>"
@@ -632,6 +665,7 @@ apply(clarsimp split: split_if_asm)
  apply simp
 apply(erule bot1E)
 done
+*)
 
 lemma queue_rotate1_correct:
   assumes "queue_invar queue" "queue_\<alpha> queue \<noteq> []"
@@ -656,6 +690,16 @@ apply(induct ntas arbitrary: queue)
 apply(simp_all add: enqueue_new_threads_def Round_Robin.enqueue_new_threads_def enqueue_thread_correct)
 done
 
+lemma round_robin_update_thread_correct:
+  assumes "round_robin_invar \<sigma> T" "t' \<in> T"
+  shows "round_robin_\<alpha> (round_robin_update_state n0 \<sigma> t ta) = Round_Robin.round_robin_update_state n0 (round_robin_\<alpha> \<sigma>) t ta"
+using assms
+apply(cases \<sigma>)
+apply(auto simp add: round_robin_\<alpha>_def queue_rotate1_correct enqueue_threads_correct)
+apply(subst queue_rotate1_correct)
+apply(auto simp add: enqueue_threads_correct)
+done
+
 lemma round_robin_step_correct:
   assumes det: "\<alpha>.deterministic"
   and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s"
@@ -665,44 +709,33 @@ lemma round_robin_step_correct:
   and "option_case True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (round_robin_step n0 \<sigma> s t)"
   (is ?thesis2)
 proof -
-  obtain queue n where \<sigma>: "\<sigma> = (queue, n)" by(cases \<sigma>)
   have "?thesis1 \<and> ?thesis2"
-  proof(cases "round_robin_step n0 \<sigma> s t")
-    case None
-    with invar \<sigma> show ?thesis
-      by(fastsimp simp add: thr.lookup_correct round_robin_\<alpha>_def \<alpha>.round_robin_step.simps ws.lookup_correct split_beta holds_eq split: split_if_asm)
+  proof(cases "dom (thr_\<alpha> (thr s)) = {}")
+    case True
+    thus ?thesis using invar
+      apply(cases \<sigma>)
+      apply(auto dest: step_thread_Some_NoneD[OF det] step_thread_Some_SomeD[OF det])
+      apply(fastsimp simp add: \<alpha>.step_thread_eq_None_conv elim: \<alpha>.active_threads.cases intro: sym)
+      done
   next
-    case (Some a)
-    then obtain t' taxm \<sigma>' 
-      where rrs: "round_robin_step n0 \<sigma> s t = \<lfloor>(t', taxm, \<sigma>')\<rfloor>" by(cases a) auto
-    with invar \<sigma> have queue: "queue_\<alpha> queue \<noteq> []" by(auto split: split_if_asm simp add: thr.lookup_correct)
-    show ?thesis
-    proof(cases "taxm")
-      case None
-      with rrs invar \<sigma> queue show ?thesis
-        by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.round_robin_step.simps round_robin_\<alpha>_def split_beta queue_rotate1_correct split: split_if_asm)
-    next
-      case (Some a)
-      with rrs obtain ta x' m'
-        where rrs: "round_robin_step n0 \<sigma> s t =  \<lfloor>(t', \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
-        by(cases a) fastsimp
-      with invar \<sigma> queue show ?thesis
-        apply(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.round_robin_step.simps round_robin_\<alpha>_def split_beta queue_rotate1_correct enqueue_threads_correct set_enqueue_new_threads \<alpha>.deterministic_THE[OF det, where s="state_\<alpha> s", simplified] deterministic_THE2[OF det] holds_eq split: split_if_asm)
-        apply(fastsimp intro: distinct_enqueue_new_threads dest: \<alpha>.actions_ok_thread_oksD)
-        apply(fastsimp intro: distinct_enqueue_new_threads dest: \<alpha>.actions_ok_thread_oksD)
-        apply blast
-        apply blast
-        apply(fastsimp intro: distinct_enqueue_new_threads dest: \<alpha>.actions_ok_thread_oksD)
-        apply(fastsimp intro: distinct_enqueue_new_threads dest: \<alpha>.actions_ok_thread_oksD)
-        apply blast
-        apply blast
-        done
-    qed
+    case False
+    then obtain t' where t': "t' \<in> dom (thr_\<alpha> (thr s))" by blast
+    hence ?thesis1
+      using step_thread_correct(1)[of round_robin_invar \<sigma> s round_robin_\<alpha> "round_robin_update_state n0 \<sigma> t" t, OF det invar]
+      unfolding o_def using invar
+      by(subst (asm) round_robin_update_thread_correct) auto
+    moreover
+    { fix ta :: "('l, 't, 'x, 'm, 'w, 'o list) thread_action"
+      assume "FWThread.thread_oks (thr_\<alpha> (thr s)) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
+      moreover from t' invar have "queue_\<alpha> (fst \<sigma>) \<noteq> []" by(cases \<sigma>) auto
+      ultimately have "round_robin_invar (round_robin_update_state n0 \<sigma> t ta) (dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})"
+        using invar t' by(cases \<sigma>)(auto simp add: queue_rotate1_correct enqueue_threads_correct set_enqueue_new_threads iff del: domIff intro: distinct_enqueue_new_threads) }
+    from step_thread_correct(2)[OF det, of round_robin_invar \<sigma> s "round_robin_update_state n0 \<sigma> t" t, OF invar this]
+    have ?thesis2 using t' invar by simp
+    ultimately show ?thesis by blast
   qed
-  thus ?thesis1 ?thesis2 by simp_all
+  thus ?thesis1 ?thesis2 by blast+
 qed
-
-declare round_robin_step.simps [simp del]
 
 lemma round_robin_reschedule_correct:
   assumes det: "\<alpha>.deterministic"
@@ -712,7 +745,7 @@ lemma round_robin_reschedule_correct:
      \<alpha>.round_robin_reschedule t0 (queue_\<alpha> queue) n0 (state_\<alpha> s)"
   and "option_case True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (round_robin_reschedule t0 queue n0 s)"
 using t0 invar
-proof(induct "queue_\<alpha> queue" arbitrary: queue n rule: \<alpha>.round_robin_reschedule_induct)
+proof(induct "queue_\<alpha> queue" arbitrary: queue n rule: round_robin_reschedule_induct)
   case head
   { case 1 thus ?case using head[symmetric]
       by(subst round_robin_reschedule.simps)(subst \<alpha>.round_robin_reschedule.simps, clarsimp simp add: split_beta queue.dequeue_correct) 
@@ -905,7 +938,7 @@ lemmas [code] =
   round_robin_base.queue_rotate1_def
   round_robin_base.enqueue_new_thread.simps
   round_robin_base.enqueue_new_threads_def
-  round_robin_base.round_robin_step.simps
+  round_robin_base.round_robin_update_state.simps
   round_robin_base.round_robin_reschedule.simps
   round_robin_base.round_robin.simps
   round_robin_base.round_robin_start_def

@@ -386,6 +386,20 @@ lemma \<tau>mRedT_preserves_final_thread:
   "\<lbrakk> \<tau>mredT^** s s'; final_thread s t \<rbrakk> \<Longrightarrow> final_thread s' t"
 by(induct rule: rtranclp.induct)(blast intro: \<tau>mredT_preserves_final_thread)+
 
+lemma silent_moves2_silentD:
+  assumes "rtrancl3p mthr.silent_move2 s ttas s'"
+  and "(t, ta) \<in> set ttas"
+  shows "ta = \<epsilon>"
+using assms
+by(induct)(auto simp add: mthr.silent_move2_def dest: m\<tau>move_silentD)
+
+lemma inf_step_silentD:
+  assumes step: "trsys.inf_step mthr.silent_move2 s ttas"
+  and lset: "(t, ta) \<in> lset ttas"
+  shows "ta = \<epsilon>"
+using lset step
+by(induct arbitrary: s rule: lset_induct)(fastsimp elim: trsys.inf_step.cases simp add: mthr.silent_move2_def dest: m\<tau>move_silentD)+
+
 end
 
 subsection {* The multithreaded semantics with a well-founded relation on states *}

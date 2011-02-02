@@ -17,8 +17,8 @@ where "compM f \<equiv> \<lambda>(M, Ts, T, m). (M, Ts, T, f M Ts T m)"
 definition compC :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a cdecl \<Rightarrow> 'b cdecl"
 where "compC f  \<equiv>  \<lambda>(C,D,Fdecls,Mdecls). (C,D,Fdecls, map (compM (f C)) Mdecls)"
 
-definition compP :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a prog \<Rightarrow> 'b prog"
-where "compP f  \<equiv>  map (compC f)"
+primrec compP :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a prog \<Rightarrow> 'b prog"
+where "compP f (Program P) = Program (map (compC f) P)"
 
 text{* Compilation preserves the program structure.  Therfore lookup
 functions either commute with compilation (like method lookup) or are
@@ -36,13 +36,13 @@ done
 lemma class_compP:
   "class P C = Some (D, fs, ms)
   \<Longrightarrow> class (compP f P) C = Some (D, fs, map (compM (f C)) ms)"
-by(simp add:class_def compP_def compC_def map_of_map4)
+by(cases P)(simp add:class_def compP_def compC_def map_of_map4)
 
 
 lemma class_compPD:
   "class (compP f P) C = Some (D, fs, cms)
   \<Longrightarrow> \<exists>ms. class P C = Some(D,fs,ms) \<and> cms = map (compM (f C)) ms"
-(*<*)by(clarsimp simp add:class_def compP_def compC_def map_of_map4)(*>*)
+by(cases P)(clarsimp simp add:class_def compP_def compC_def map_of_map4)
 
 
 lemma [simp]: "is_class (compP f P) C = is_class P C"
@@ -51,7 +51,8 @@ lemma [simp]: "is_class (compP f P) C = is_class P C"
 
 lemma [simp]: "class (compP f P) C = Option.map (\<lambda>c. snd(compC f (C,c))) (class P C)"
 (*<*)
-apply(simp add:compP_def compC_def class_def map_of_map4)
+apply(cases P)
+apply(simp add:compC_def class_def map_of_map4)
 apply(simp add:split_def)
 done
 (*>*)
@@ -208,10 +209,11 @@ lemma [simp]: "field (compP f P) F D = field P F D"
 
 section{*Invariance of @{term wf_prog} under compilation *}
 
-lemma [iff]: "distinct_fst (compP f P) = distinct_fst P"
+lemma [iff]: "distinct_fst (the_Program (compP f P)) = distinct_fst (the_Program P)"
 (*<*)
+apply(cases P)
 apply(simp add:distinct_fst_def compP_def compC_def)
-apply(induct P)
+apply(induct_tac list)
 apply (auto simp:image_iff)
 done
 (*>*)
@@ -227,16 +229,16 @@ done
 
 
 lemma [iff]: "wf_syscls (compP f P) = wf_syscls P"
-by(auto simp add:wf_syscls_def)(auto simp add: compP_def compC_def image_def Bex_def)
+by(auto simp add:wf_syscls_def)
 
 lemma [iff]: "wf_fdecl (compP f P) = wf_fdecl P"
 (*<*)by(simp add:wf_fdecl_def)(*>*)
 
 
 lemma set_compP:
- "((C,D,fs,ms') \<in> set(compP f P)) =
-  (\<exists>ms. (C,D,fs,ms) \<in> set P \<and> ms' = map (compM (f C)) ms)"
-(*<*)by(fastsimp simp add:compP_def compC_def image_iff Bex_def)(*>*)
+ "(class (compP f P) C = \<lfloor>(D,fs,ms')\<rfloor>) \<longleftrightarrow> 
+  (\<exists>ms. class P C = \<lfloor>(D,fs,ms)\<rfloor> \<and> ms' = map (compM (f C)) ms)"
+by(cases P)(auto simp add: compC_def image_iff map_of_map4)
 
 lemma compP_has_method: "compP f P \<turnstile> C has M \<longleftrightarrow> P \<turnstile> C has M"
 unfolding has_method_def
@@ -278,16 +280,15 @@ unfolding wf_extCall_def_raw by auto
 lemma wf_cdecl_compPI:
   assumes wf1_imp_wf2: 
     "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^isub>1 P C (M,Ts,T,m); P \<turnstile> C sees M:Ts\<rightarrow>T = m in C \<rbrakk> \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, f C M Ts T m)"
-  and wfcP1: "\<forall>x\<in>set P. wf_cdecl wf\<^isub>1 P x"
-  and xcomp: "x \<in> set (compP f P)"
+  and wfcP1: "\<forall>C rest. class P C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf\<^isub>1 P (C, rest)"
+  and xcomp: "class (compP f P) C = \<lfloor>rest'\<rfloor>"
   and wf: "wf_prog p P"
-  shows "wf_cdecl wf\<^isub>2 (compP f P) x"
+  shows "wf_cdecl wf\<^isub>2 (compP f P) (C, rest')"
 proof -
-  obtain C D fs ms' where x: "x = (C, D, fs, ms')"
-    by(cases x, auto)
-  with xcomp obtain ms where xsrc: "(C,D,fs,ms) \<in> set P"
+  obtain D fs ms' where x: "rest' = (D, fs, ms')" by(cases rest')
+  with xcomp obtain ms where xsrc: "class P C = \<lfloor>(D,fs,ms)\<rfloor>"
     and ms': "ms' = map (compM (f C)) ms"
-    by(auto simp add: set_compP)
+    by(auto simp add: set_compP compC_def)
   from xsrc wfcP1 have wf1: "wf_cdecl wf\<^isub>1 P (C,D,fs,ms)" by blast
   { fix field
     assume "field \<in> set fs"
@@ -302,7 +303,7 @@ proof -
       and mset: "(M, Ts', T', body) \<in> set ms"
       by(clarsimp simp add: image_iff compM_def)
     moreover from mset xsrc wfcP1 have "wf_mdecl wf\<^isub>1 P C (M,Ts',T',body)"
-      by(auto simp add: wf_cdecl_def)
+      by(fastsimp simp add: wf_cdecl_def)
     moreover from wf xsrc mset x have "P \<turnstile> C sees M:Ts'\<rightarrow>T' = body in C"
       by(auto intro: mdecl_visible)
     ultimately have "wf_mdecl wf\<^isub>2 (compP f P) C m"
@@ -358,23 +359,23 @@ assumes lift:
     \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, f C M Ts T m)"
 and wf: "wf_prog wf\<^isub>1 P"
 shows "wf_prog wf\<^isub>2 (compP f P)"
-(*<*)
 using wf
-by (simp add:wf_prog_def) (blast intro:wf_cdecl_compPI lift wf)
-(*>*)
+apply (clarsimp simp add:wf_prog_def2)
+apply(rule wf_cdecl_compPI[OF lift], assumption+)
+apply(auto intro: wf)
+done
 
 lemma wf_cdecl_compPD:
   assumes wf1_imp_wf2: 
     "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^isub>1 (compP f P) C (M,Ts,T,f C M Ts T m); compP f P \<turnstile> C sees M:Ts\<rightarrow>T = f C M Ts T m in C \<rbrakk> \<Longrightarrow> wf_mdecl wf\<^isub>2 P C (M,Ts,T, m)"
-  and wfcP1: "\<forall>x\<in>set (compP f P). wf_cdecl wf\<^isub>1 (compP f P) x"
-  and xcomp: "x \<in> set P"
+  and wfcP1: "\<forall>C rest. class (compP f P) C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf\<^isub>1 (compP f P) (C, rest)"
+  and xcomp: "class P C = \<lfloor>rest\<rfloor>"
   and wf: "wf_prog wf_md (compP f P)"
-  shows "wf_cdecl wf\<^isub>2 P x"
+  shows "wf_cdecl wf\<^isub>2 P (C, rest)"
 proof -
-  obtain C D fs ms' where x: "x = (C, D, fs, ms')"
-    by(cases x, auto)
-  with xcomp have xsrc: "(C,D,fs,map (compM (f C)) ms') \<in> set (compP f P)"
-    by(auto simp add: set_compP)
+  obtain D fs ms' where x: "rest = (D, fs, ms')" by(cases rest)
+  with xcomp have xsrc: "class (compP f P) C = \<lfloor>(D,fs,map (compM (f C)) ms')\<rfloor>"
+    by(auto simp add: set_compP compC_def)
   from xsrc wfcP1 have wf1: "wf_cdecl wf\<^isub>1 (compP f P) (C,D,fs,map (compM (f C)) ms')" by blast
   { fix field
     assume "field \<in> set fs"
@@ -440,9 +441,10 @@ and lift:
     \<Longrightarrow> wf_mdecl wf2 P C (M,Ts,T,m)"
 shows "wf_prog wf2 P"
 using wf
-by(simp add:wf_prog_def) (blast intro:wf_cdecl_compPD lift wf)
-
-
+apply(clarsimp simp add:wf_prog_def2)
+apply(rule wf_cdecl_compPD[OF lift], assumption+) 
+apply(auto intro: wf)
+done
 
 lemma WT_binop_compP [simp]: "compP f P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<longleftrightarrow> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T"
 by(fastsimp)

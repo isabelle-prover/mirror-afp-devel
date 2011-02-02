@@ -358,6 +358,10 @@ lemma is_lub_Void [iff]:
   "P \<turnstile> lub(Void, Void) = T \<longleftrightarrow> T = Void"
 by(auto intro: is_lub.intros elim: is_lub.cases)
 
+lemma is_lubI[code_pred_intro]: "\<lbrakk>P \<turnstile> U \<le> T; P \<turnstile> V \<le> T; \<forall>T'. P \<turnstile> U \<le> T' \<longrightarrow> P \<turnstile> V \<le> T' \<longrightarrow> P \<turnstile> T \<le> T'\<rbrakk> \<Longrightarrow> P \<turnstile> lub(U, V) = T"
+by(blast intro: is_lub.intros)
+
+
 subsection{* Method lookup *}
 
 inductive Methods :: "'m prog \<Rightarrow> cname \<Rightarrow> (mname \<rightharpoonup> (ty list \<times> ty \<times> 'm) \<times> cname) \<Rightarrow> bool" ("_ \<turnstile> _ sees'_methods _" [51,51,51] 50)
@@ -748,59 +752,11 @@ subsection {* Code generation *}
 
 text {* New introduction rules for subcls1 *}
 
-lemma subcls1_intros:
- "C \<noteq> Object \<Longrightarrow> subcls1 ((C, D, rest) # P) C D"
- "\<lbrakk> subcls1 P C D; C \<noteq> Object; C \<noteq> C' \<rbrakk> \<Longrightarrow> subcls1 ((C', D', rest) # P) C D"
-apply -
- apply(rule subcls1I)
-  apply(simp add: class_def)
- apply assumption
-apply(erule subcls1.cases)
-apply(rule subcls1I)
- apply(simp add: class_def)
-apply assumption
-done
-
-lemma subcls1_cases:
-  assumes "subcls1 P C D"
-  obtains rest P' where "P = (C, D, rest) # P'" "C \<noteq> Object"
-  | rest C' D' P' where "P = (C', D', rest) # P'" "subcls1 P' C D" "C \<noteq> Object" "C \<noteq> C'"
-proof(atomize_elim)
-  from assms
-  show "(\<exists>rest P'. P = (C, D, rest) # P' \<and> C \<noteq> Object) \<or>
-    (\<exists>C' D' rest P'. P = (C', D', rest) # P' \<and> P' \<turnstile> C \<prec>\<^sup>1 D \<and> C \<noteq> Object \<and> C \<noteq> C')"
-  proof(induct P)
-    case Nil thus ?case
-      by(auto elim: subcls1.cases simp add: class_def)
-  next
-    case (Cons a P)
-    obtain C' D' rest where [simp]: "a = (C', D', rest)" by(cases a)
-    show ?case
-    proof(cases "C = C'")
-      case True
-      with `(a # P) \<turnstile> C \<prec>\<^sup>1 D` show ?thesis
-        by(auto elim: subcls1.cases simp add: class_def)
-    next
-      case False
-      with `(a # P) \<turnstile> C \<prec>\<^sup>1 D` have "P \<turnstile> C \<prec>\<^sup>1 D"
-        by(auto elim!: subcls1.cases simp add: class_def intro: subcls1I)
-      with Cons have "(\<exists>C' D' rest P'. a # P = (C', D', rest) # P' \<and> P' \<turnstile> C \<prec>\<^sup>1 D \<and> C \<noteq> Object \<and> C \<noteq> C')"
-        using False by(auto)
-      thus ?thesis ..
-    qed
-  qed
-qed
-
-declare subcls1_intros [code_pred_intro]
 code_pred
   -- {* Disallow mode @{text "i_o_o"} to force @{text code_pred} in subsequent predicates not to use this inefficient mode *}
-  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool) 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) 
   subcls1
-proof -
-  case subcls1 
-  from subcls1.prems show thesis
-    by(rule subcls1_cases)(assumption|erule that[OF _ refl refl])+
-qed
+.
 
 text {*
   Introduce proper constant @{text "subcls'"} for @{term "subcls"}
@@ -831,6 +787,7 @@ by(auto intro: widen.intros)
 lemmas [code_pred_intro] =
   widen_refl widen_subcls widen_null widen_null_array widen_array_object_code widen_array_array
 code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
   widen 
 by(erule widen.cases) auto
 
@@ -839,20 +796,37 @@ code_pred
   Methods 
 .
 
-code_pred [inductify] Method .
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool)
+  [inductify]
+  Method
+.
 
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
-  [inductify] has_method .
+  [inductify]
+  has_method 
+.
 
 (* FIXME: Necessary only because of bug in code_pred *)
-declare fun_upd_def [code_pred_inline] 
+declare fun_upd_def [code_pred_inline]
 
-code_pred Fields .
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  Fields 
+.
 
-code_pred [inductify, skip_proof] has_field .
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool)
+  [inductify, skip_proof]
+  has_field
+.
 
-code_pred [inductify, skip_proof] sees_field .
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool)
+  [inductify, skip_proof]
+  sees_field
+.
 
 lemma eval_Method_i_i_i_o_o_o_o_conv:
   "Predicate.eval (Method_i_i_i_o_o_o_o P C M) = (\<lambda>(Ts, T, m, D). P \<turnstile> C sees M:Ts\<rightarrow>T=m in D)"
@@ -893,4 +867,3 @@ lemma fields_code [code]:
 by(simp add: fields_def Predicate.the_def eval_Fields_conv)
 
 end
-

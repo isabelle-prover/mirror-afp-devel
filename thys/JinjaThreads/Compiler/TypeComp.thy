@@ -757,7 +757,6 @@ corollary wt_instrs_Cons3[simp]:
 using wt_instrs_Cons[where ?xt = "[]"]
 by (simp add:shift_def)
 
-
 lemma wt_instrs_xapp:
   "\<lbrakk> \<turnstile> is\<^isub>1 @ is\<^isub>2, xt [::] \<tau>s\<^isub>1 @ ty\<^isub>i' (Class D # ST) E A # \<tau>s\<^isub>2;
      \<forall>\<tau> \<in> set \<tau>s\<^isub>1. \<forall>ST' LT'. \<tau> = Some(ST',LT') \<longrightarrow> 
