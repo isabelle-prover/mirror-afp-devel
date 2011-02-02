@@ -13,7 +13,7 @@ no_document use_thys
    "../Jinja/DFA/LBVComplete",
    "../FinFun/FinFun",
    "../Coinductive/TLList",
-   "../Collections/ListSetImpl_Invar,
+   "../Collections/ListSetImpl_Invar",
    "../Collections/RBTMapImpl",
    "../Collections/TrieMapImpl",
    "../Collections/ListMapImpl",
