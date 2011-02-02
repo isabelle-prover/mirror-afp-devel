@@ -2,7 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Refinement for multithreaded states} *}
+header {* \chapter{Schedulers}
+          \isaheader{Refinement for multithreaded states} *}
 
 theory State_Refinement imports
   "../Framework/FWSemantics"

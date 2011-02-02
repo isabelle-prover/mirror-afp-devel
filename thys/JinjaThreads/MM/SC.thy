@@ -4,8 +4,7 @@
     Based on the Jinja theories Common/Objects.thy and Common/Conform by David von Oheimb
 *)
 
-header {* \chapter{Memory Models}
-          \isaheader{The heap implemented as a map} *}
+header {* \isaheader{The heap implemented as a map} *}
 
 theory SC imports 
   "../Common/Conform"
