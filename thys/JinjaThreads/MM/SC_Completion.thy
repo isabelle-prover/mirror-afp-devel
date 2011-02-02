@@ -974,10 +974,10 @@ proof(rule sc_completionI)
     by(rule sc_completionD[OF sc_c])
 qed
 
-lemma complete_sc_in_Runs:
+lemma complete_sc_in_\<tau>Runs:
   assumes cau: "sc_completion s vs"
   and ta_seq_consist_convert_RA: "\<And>vs ln. ta_seq_consist P vs (llist_of (convert_RA ln))"
-  shows "mthr.Runs s (complete_sc s vs)"
+  shows "mthr.\<tau>Runs s (complete_sc s vs)"
 proof -
   def s' \<equiv> s and vs' \<equiv> vs
   def ttas \<equiv> "complete_sc s' vs'"
@@ -989,9 +989,9 @@ proof -
     by(auto simp add: mthr.\<tau>rtrancl3p_Nil_eq_\<tau>moves)
   hence "\<exists>ttas'. ttas = complete_sc s' (?vs ttas') \<and> mthr.\<tau>rtrancl3p s ttas' s' \<and> ta_seq_consist P vs (llist_of (?ttas' ttas'))"
     unfolding ttas_def by blast
-  thus "mthr.Runs s' ttas"
-  proof(coinduct s' ttas rule: mthr.Runs.coinduct)
-    case (Runs s' ttas)
+  thus "mthr.\<tau>Runs s' ttas"
+  proof(coinduct s' ttas rule: mthr.\<tau>Runs.coinduct)
+    case (\<tau>Runs s' ttas)
     then obtain ttas' where ttas: "ttas = complete_sc s' (?vs ttas')"
       and Red: "mthr.\<tau>rtrancl3p s ttas' s'"
       and sc: "ta_seq_consist P vs (llist_of (?ttas' ttas'))" by blast
@@ -1203,11 +1203,11 @@ proof -
   qed
 qed
 
-lemma sequential_completion_Runs:
+lemma sequential_completion_\<tau>Runs:
   assumes "sc_completion s vs"
   and "\<And>vs ln. ta_seq_consist P vs (llist_of (convert_RA ln))"
-  shows "\<exists>ttas. mthr.Runs s ttas \<and> ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of_tllist ttas)))"
-using complete_sc_ta_seq_consist[OF assms] complete_sc_in_Runs[OF assms]
+  shows "\<exists>ttas. mthr.\<tau>Runs s ttas \<and> ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of_tllist ttas)))"
+using complete_sc_ta_seq_consist[OF assms] complete_sc_in_\<tau>Runs[OF assms]
 by blast
 
 
@@ -1256,7 +1256,7 @@ lemma sequential_completion:
   and red: "redT s' (t, ta) s''"
   and \<tau>: "\<not> m\<tau>move s' (t, ta) s''"
   shows
-  "\<exists>ta' ttas'. mthr.Runs s' (TCons (t, ta') ttas') \<and> 
+  "\<exists>ta' ttas'. mthr.\<tau>Runs s' (TCons (t, ta') ttas') \<and> 
      ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of ttas) (LCons (t, ta') (llist_of_tllist ttas'))))) \<and> 
      eq_upto_seq_inconsist P \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
 proof -
@@ -1307,13 +1307,13 @@ proof -
   with cut_and_update_imp_sc_completion[OF cut_and_update] \<tau>Red'
   have "sc_completion s''' (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ [(t, ta')]))))"
     by(rule sc_completion_shift)
-  from sequential_completion_Runs[OF this ta_seq_consist_convert_RA]
-  obtain ttas' where Runs: "\<tau>trsys.Runs redT m\<tau>move s''' ttas'"
+  from sequential_completion_\<tau>Runs[OF this ta_seq_consist_convert_RA]
+  obtain ttas' where \<tau>Runs: "\<tau>trsys.\<tau>Runs redT m\<tau>move s''' ttas'"
     and sc'': "ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ [(t, ta')])))) 
                                 (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of_tllist ttas')))"
     by blast
-  from mthr.\<tau>rtrancl3p_into_Runs[OF \<tau>Red'' Runs]
-  have "mthr.Runs s' (TCons (t, ta') ttas')" by simp
+  from mthr.\<tau>rtrancl3p_into_\<tau>Runs[OF \<tau>Red'' \<tau>Runs]
+  have "mthr.\<tau>Runs s' (TCons (t, ta') ttas')" by simp
   moreover from sc sc' sc''
   have "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of ttas) (LCons (t, ta') (llist_of_tllist ttas')))))"
     unfolding lmap_lappend_distrib lconcat_lappend by(simp add: o_def ta_seq_consist_lappend split_def list_of_lconcat)

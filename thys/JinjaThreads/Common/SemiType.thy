@@ -181,7 +181,7 @@ qed
 
 fun wf_measure_widen1 :: "'a prog \<Rightarrow> ty \<Rightarrow> nat" where
   "wf_measure_widen1 P (Class C) = class_numbering P C"
-| "wf_measure_widen1 P (Array T) = length P + wf_measure_widen1 P T"
+| "wf_measure_widen1 P (Array T) = length (the_Program P) + wf_measure_widen1 P T"
 | "wf_measure_widen1 P T = 0"
 
 lemma wf_converse_widen1:
@@ -191,8 +191,8 @@ proof(rule wf_subset)
   show "wf (measure (wf_measure_widen1 P))"
     by auto
 next
-  from wfP have lengthP: "length P > 0"
-    by(auto simp add: wf_prog_def wf_syscls_def)
+  from wfP have lengthP: "length (the_Program P) > 0"
+    by(cases P)(auto simp add: wf_prog_def wf_syscls_def is_class_def)
   { fix x y
     have "P \<turnstile> x <\<^sup>1 y \<Longrightarrow> wf_measure_widen1 P y < wf_measure_widen1 P x"
     proof(induct rule: widen1.induct)
@@ -612,7 +612,7 @@ proof -
       using sup_is_type[OF wfP it] by(simp add: sup_def) }
   with is_class_Object[OF wfP] show ?thesis
     unfolding closed_def plussub_def lift2_def sup_def'
-    by (auto split: err.split ty.splits) (auto simp add: exec_lub_refl)
+    by(auto split: err.split ty.splits)(auto simp add: exec_lub_refl)
 qed
 
 lemma widen_into_widen1_rtrancl:

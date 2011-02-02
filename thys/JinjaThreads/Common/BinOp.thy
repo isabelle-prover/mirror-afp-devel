@@ -421,9 +421,15 @@ by(cases bop) auto
 
 subsection {* Code generator setup *}
 
-code_pred WT_binop .
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  WT_binop 
+.
 
-code_pred WTrt_binop .
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  WTrt_binop 
+.
 
 lemma eval_WTrt_binop_i_i_i_i_o:
   "Predicate.eval (WTrt_binop_i_i_i_i_o P T1 bop T2) T \<longleftrightarrow> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T"

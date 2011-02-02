@@ -51,77 +51,52 @@ where
   (C = Thread \<longrightarrow> (\<exists>m. (run, [], Void, m) \<in> set ms) \<and> (interrupted_flag, Boolean, \<lparr>volatile=True\<rparr>) \<in> set fs)"
 
 definition wf_syscls :: "'m prog \<Rightarrow> bool"
-where "wf_syscls P \<equiv> {Object, Throwable, Thread, String} \<union> sys_xcpts \<subseteq> set(map fst P) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
+where "wf_syscls P \<equiv> (\<forall>C \<in> {Object, Throwable, Thread, String} \<union> sys_xcpts. is_class P C) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
 
 definition wf_prog :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> bool"
-where "wf_prog wf_md P  \<equiv>  wf_syscls P \<and> (\<forall>c \<in> set P. wf_cdecl wf_md P c) \<and> distinct_fst P"
+where 
+  "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> (\<forall>c \<in> set (the_Program P). wf_cdecl wf_md P c) \<and> distinct_fst (the_Program P)"
+
+lemma wf_prog_def2:
+  "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> (\<forall>C rest. class P C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf_md P (C, rest)) \<and> distinct_fst (the_Program P)"
+by(cases P)(auto simp add: wf_prog_def dest: map_of_SomeD map_of_SomeI)
 
 subsection{* Well-formedness lemmas *}
 
 lemma class_wf: 
   "\<lbrakk>class P C = Some c; wf_prog wf_md P\<rbrakk> \<Longrightarrow> wf_cdecl wf_md P (C,c)"
-(*<*)
-apply (unfold wf_prog_def class_def)
-apply (fast dest: map_of_SomeD)
-done
-(*>*)
+by (cases P) (fastsimp dest: map_of_SomeD simp add: wf_prog_def)
 
-lemma class_Object [simp]: 
-  "wf_prog wf_md P \<Longrightarrow> \<exists>C fs ms. class P Object = Some (C,fs,ms)"
-(*<*)
-apply (unfold wf_prog_def wf_syscls_def class_def)
-apply (auto simp: map_of_SomeI)
-done
-(*>*)
+lemma [simp]:
+  assumes "wf_prog wf_md P"
+  shows class_Object: "\<exists>C fs ms. class P Object = Some (C,fs,ms)"
+  and class_Thread:  "\<exists>C fs ms. class P Thread = Some (C,fs,ms)"
+  and class_String: "\<exists>C fs ms. class P String = Some (C,fs,ms)"
+using assms
+by(case_tac [!] P) (auto simp: map_of_SomeI wf_syscls_def wf_prog_def is_class_def)
 
-lemma class_Thread [simp]: 
-  "wf_prog wf_md P \<Longrightarrow> \<exists>C fs ms. class P Thread = Some (C,fs,ms)"
-(*<*)
-apply (unfold wf_prog_def wf_syscls_def class_def)
-apply (auto simp: map_of_SomeI)
-done
-(*>*)
-
-lemma class_String [simp]: 
-  "wf_prog wf_md P \<Longrightarrow> \<exists>C fs ms. class P String = Some (C,fs,ms)"
-(*<*)
-apply (unfold wf_prog_def wf_syscls_def class_def)
-apply (auto simp: map_of_SomeI)
-done
-(*>*)
-
-lemma is_class_Object [simp]:
-  "wf_prog wf_md P \<Longrightarrow> is_class P Object"
-(*<*)by (simp add: is_class_def)(*>*)
-
-lemma is_class_Thread [simp]:
-  "wf_prog wf_md P \<Longrightarrow> is_class P Thread"
-(*<*)by (simp add: is_class_def)(*>*)
-
-lemma is_class_String [simp]:
-  "wf_prog wf_md P \<Longrightarrow> is_class P String"
-(*<*)by (simp add: is_class_def)(*>*)
+lemma [simp]:
+  assumes "wf_prog wf_md P"
+  shows is_class_Object: "is_class P Object"
+  and is_class_Thread: "is_class P Thread"
+  and is_class_String: "is_class P String"
+using assms by(simp_all add: is_class_def)
 
 lemma is_class_xcpt:
   "\<lbrakk> C \<in> sys_xcpts; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_class P C"
-(*<*)
-  apply (simp add: wf_prog_def wf_syscls_def is_class_def class_def)
-  apply (fastsimp intro!: map_of_SomeI)
-  done
-(*>*)
+by(cases P)(simp add: wf_syscls_def is_class_def class_def wf_prog_def)
 
 lemma xcpt_subcls_Throwable:
   "\<lbrakk> C \<in> sys_xcpts; wf_prog wf_md P \<rbrakk> \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* Throwable"
-by (simp add: wf_prog_def wf_syscls_def is_class_def class_def)
+by(cases P)(simp add: wf_prog_def wf_syscls_def is_class_def class_def)
 
 lemma is_class_Throwable:
   "wf_prog wf_md P \<Longrightarrow> is_class P Throwable"
-by(auto simp add: wf_prog_def wf_syscls_def is_class_def class_def map_of_SomeI)
+by(cases P)(auto simp add: wf_prog_def wf_syscls_def is_class_def class_def map_of_SomeI)
 
 lemma is_class_sub_Throwable:
   "\<lbrakk> wf_prog wf_md P; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk> \<Longrightarrow> is_class P C"
 by(erule subcls_is_class1)(erule is_class_Throwable)
-
 
 context heap_base begin
 lemma wf_preallocatedE:
@@ -164,7 +139,6 @@ apply(rule conjI)
 apply(unfold reflcl_tranclp[symmetric, where r="subcls1 P"])
 apply(blast)
 done
-
 
 lemma wf_cdecl_supD: 
   "\<lbrakk>wf_cdecl wf_md P (C,D,r); C \<noteq> Object\<rbrakk> \<Longrightarrow> is_class P D"
@@ -313,14 +287,7 @@ next
   with PDE obtain fsD MsD where classD: "class P D = \<lfloor>(E, fsD, MsD)\<rfloor>"
     by(auto simp add: is_class_def elim!: subcls1.cases)
   thus "is_class P E" using wf PDE
-    apply -
-    apply(erule subcls1.cases, clarsimp)
-    apply(clarsimp simp: wf_prog_def)
-    apply(drule_tac x="(D, E, fsD, MsD)" in bspec)
-    apply(clarsimp simp add: class_def)
-    apply(erule map_of_is_SomeD)
-    apply(erule_tac C="D" in wf_cdecl_supD)
-    .
+    by(auto elim!: subcls1.cases dest: class_wf simp: wf_cdecl_def)
 qed
 
 lemma is_class_is_subcls:
@@ -340,18 +307,8 @@ apply(auto)
 done
 
 lemma is_type_pTs:
-assumes "wf_prog wf_md P" and "(C,S,fs,ms) \<in> set P" and "(M,Ts,T,m) \<in> set ms"
-shows "set Ts \<subseteq> types P"
-(*<*)
-proof
-  from prems have "wf_mdecl wf_md P C (M,Ts,T,m)" 
-    by (unfold wf_prog_def wf_cdecl_def) auto  
-  hence "\<forall>t \<in> set Ts. is_type P t" by (unfold wf_mdecl_def) auto
-  moreover fix t assume "t \<in> set Ts"
-  ultimately have "is_type P t" by blast
-  thus "t \<in> types P" by(simp)
-qed
-(*>*)
+  "\<lbrakk> wf_prog wf_md P; class P C = \<lfloor>(S,fs,ms)\<rfloor>; (M,Ts,T,m) \<in> set ms \<rbrakk> \<Longrightarrow> set Ts \<subseteq> types P"
+by(fastsimp dest: class_wf simp add: wf_cdecl_def wf_mdecl_def)
 
 lemma widen_asym_1: 
   assumes wfP: "wf_prog wf_md P"
@@ -483,39 +440,33 @@ lemma sees_method_mono2:
 
 
 lemma mdecls_visible:
-assumes wf: "wf_prog wf_md P" and "class": "is_class P C"
-shows "\<And>D fs ms. class P C = Some(D,fs,ms)
+  assumes wf: "wf_prog wf_md P" and "class": "is_class P C"
+  shows "\<And>D fs ms. class P C = Some(D,fs,ms)
          \<Longrightarrow> \<exists>Mm. P \<turnstile> C sees_methods Mm \<and> (\<forall>(M,Ts,T,m) \<in> set ms. Mm M = Some((Ts,T,m),C))"
-(*<*)
 using wf "class"
 proof (induct rule:subcls1_induct)
   case Object
   with wf have "distinct_fst ms"
-    by (unfold class_def wf_prog_def wf_cdecl_def) (fastsimp dest:map_of_SomeD)
+    by(auto dest: class_wf simp add: wf_cdecl_def)
   with Object show ?case by(fastsimp intro!: sees_methods_Object map_of_SomeI)
 next
   case Subcls
   with wf have "distinct_fst ms"
-    by (unfold class_def wf_prog_def wf_cdecl_def) (fastsimp dest:map_of_SomeD)
+    by(auto dest: class_wf simp add: wf_cdecl_def)
   with Subcls show ?case
     by(fastsimp elim:sees_methods_rec dest:subcls1D map_of_SomeI
                 simp:is_class_def)
 qed
-(*>*)
 
 
 lemma mdecl_visible:
-assumes wf: "wf_prog wf_md P" and C: "(C,S,fs,ms) \<in> set P" and  m: "(M,Ts,T,m) \<in> set ms"
-shows "P \<turnstile> C sees M:Ts\<rightarrow>T = m in C"
-(*<*)
+  assumes wf: "wf_prog wf_md P" and C: "class P C = \<lfloor>(S,fs,ms)\<rfloor>" and  m: "(M,Ts,T,m) \<in> set ms"
+  shows "P \<turnstile> C sees M:Ts\<rightarrow>T = m in C"
 proof -
-  from wf C have "class": "class P C = Some (S,fs,ms)"
-    by (auto simp add: wf_prog_def class_def is_class_def intro: map_of_SomeI)
-  from "class" have "is_class P C" by(auto simp:is_class_def)                   
-  with prems "class" show ?thesis
+  from C have "is_class P C" by(auto simp:is_class_def)
+  with assms show ?thesis
     by(bestsimp simp:Method_def dest:mdecls_visible)
 qed
-(*>*)
 
 lemma sees_wf_extCall:
   "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T=meth in D \<rbrakk> \<Longrightarrow> wf_extCall P D M Ts T"
@@ -564,8 +515,7 @@ lemma sub_Thread_sees_run:
 proof -
   from class_Thread[OF wf] obtain T' fsT MsT
     where classT: "class P Thread = \<lfloor>(T', fsT, MsT)\<rfloor>" by blast
-  with wf have wfcThread: "wf_cdecl wf_md P (Thread, T', fsT, MsT)"
-    by(auto dest: map_of_is_SomeD bspec simp add: wf_prog_def class_def)
+  hence wfcThread: "wf_cdecl wf_md P (Thread, T', fsT, MsT)" using wf by(rule class_wf)
   then obtain mrunT where runThread: "(run, [], Void, mrunT) \<in> set MsT"
     by(auto simp add: wf_cdecl_def)
   moreover have "\<exists>MmT. P \<turnstile> Thread sees_methods MmT \<and>
@@ -588,10 +538,10 @@ lemma wf_Object_method_empty:
   shows False
 proof -
   from wf obtain O' fs ms
-    where classO: "class P Object = \<lfloor>(O', fs, ms)\<rfloor>"
-    by(fastsimp dest!: is_class_Object simp add: is_class_def)
+    where classO: "class P Object = \<lfloor>(O', fs, ms)\<rfloor>" 
+    by(fastsimp dest!: class_Object)
   from wf classO have "ms = []"
-    by(auto simp add: wf_prog_def wf_cdecl_def class_def dest: map_of_is_SomeD bspec)
+    by(auto dest: class_wf simp add: wf_cdecl_def)
   with classO sees show False
     by(auto elim: Methods.cases simp: Method_def)
 qed
@@ -603,22 +553,28 @@ lemma wf_prog_lift:
    \<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T = m in C; is_class P C; set Ts \<subseteq> types P; A P C (M,Ts,T,m) \<rbrakk>
    \<Longrightarrow> B P C (M,Ts,T,m)"
   shows "wf_prog (\<lambda>P C bd. B P C bd) P"
-using wf
-apply (unfold wf_prog_def wf_cdecl_def)
-apply clarsimp
-apply (drule (1) bspec)
-apply(subgoal_tac "is_class P a")
- apply (unfold wf_mdecl_def)
- apply clarsimp
- apply (drule (1) bspec)
- apply clarsimp
- apply (frule mdecl_visible [OF wf], assumption+)
- apply (frule is_type_pTs [OF wf], assumption+)
- apply(rule rule[OF wf], assumption+)
-apply(drule weak_map_of_SomeI)
-apply(simp add: is_class_def class_def)
-done
-
+proof(cases P)
+  case (Program P')
+  thus ?thesis using wf
+    apply(clarsimp simp add: wf_prog_def wf_cdecl_def)
+    apply(drule (1) bspec)
+    apply(rename_tac C D fs ms)
+    apply(subgoal_tac "is_class P C")
+     prefer 2
+     apply(simp add: is_class_def)
+     apply(drule weak_map_of_SomeI)
+     apply(simp add: Program)
+    apply(clarsimp simp add: Program wf_mdecl_def)
+    apply(drule (1) bspec)
+    apply clarsimp
+    apply(frule (1) map_of_SomeI)
+    apply(rule rule[OF wf, unfolded Program])
+    apply(clarsimp simp add: is_class_def)
+    apply(rule mdecl_visible[OF wf[unfolded Program]])
+    apply(fastsimp intro: is_type_pTs [OF wf, unfolded Program])+
+    done
+qed
+    
 subsection{* Well-formedness and field lookup *}
 
 lemma wf_Fields_Ex:
@@ -656,7 +612,7 @@ proof -
   from wf obtain O' fs ms where classO: "class P Object = \<lfloor>(O', fs, ms)\<rfloor>"
     by -(drule is_class_Object,auto simp add: is_class_def)
   from wf classO have "fs = []"
-    by(auto simp add: wf_prog_def wf_cdecl_def class_def dest: map_of_is_SomeD bspec)
+    by(auto dest: class_wf simp add: wf_cdecl_def)
   with classO show ?thesis
     by(auto intro: has_fields_Object)
 qed
@@ -830,7 +786,7 @@ declare set_append [symmetric, code_unfold]
 
 lemma wf_syscls_code [code]:
   "wf_syscls P \<longleftrightarrow>
-   set [Object, Throwable, Thread, String] \<union> sys_xcpts \<subseteq> set (map fst P) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
+   (\<forall>C \<in> set [Object, Throwable, Thread, String] \<union> sys_xcpts. is_class P C) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
 by(simp add: wf_syscls_def)
 
 end

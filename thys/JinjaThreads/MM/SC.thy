@@ -4,8 +4,7 @@
     Based on the Jinja theories Common/Objects.thy and Common/Conform by David von Oheimb
 *)
 
-header {* \chapter{Memory Models}
-          \isaheader{The heap implemented as a map} *}
+header {* \isaheader{The heap implemented as a map} *}
 
 theory SC imports 
   "../Common/Conform"
@@ -427,5 +426,13 @@ code_pred
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
   sc_heap_write .
+
+lemma eval_sc_heap_read_i_i_i_o:
+  "Predicate.eval (sc_heap_read_i_i_i_o h ad al) = sc_heap_read h ad al"
+by(auto elim: sc_heap_read_i_i_i_oE intro: sc_heap_read_i_i_i_oI intro!: ext)
+
+lemma eval_sc_heap_write_i_i_i_i_o:
+  "Predicate.eval (sc_heap_write_i_i_i_i_o h ad al v) = sc_heap_write h ad al v"
+by(auto elim: sc_heap_write_i_i_i_i_oE intro: sc_heap_write_i_i_i_i_oI intro!: ext)
 
 end

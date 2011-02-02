@@ -7,10 +7,10 @@ header {* \isaheader{Abstract scheduler} *}
 theory Scheduler imports
   State_Refinement
   "../Framework/FWProgressAux"
+  "../Framework/FWLTS"
   "../../Collections/SetSpec"
   "../../Collections/MapSpec"
   "../../Collections/ListSpec"
-  "../../Coinductive/TLList"
 begin
 
 types
@@ -260,22 +260,22 @@ where
 
 primrec exec_step :: 
   "'s \<times> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> 
-   'q option \<times> 's \<times> ('l,'t,'m,'m_t,'m_w) state_refine + ('l,'t,'m,'m_t,'m_w) state_refine"
+   ('s \<times> 't \<times> ('l,'t,'x,'m,'w,'o list) thread_action) \<times> 's \<times> ('l,'t,'m,'m_t,'m_w) state_refine + ('l,'t,'m,'m_t,'m_w) state_refine"
 where
   "exec_step (\<sigma>, s) =
    (case execT \<sigma> s of 
       None \<Rightarrow> Inr s
-    | Some (\<sigma>', t, ta, s') \<Rightarrow> Inl (output \<sigma> t ta, \<sigma>', s'))"
+    | Some (\<sigma>', t, ta, s') \<Rightarrow> Inl ((\<sigma>, t, ta), \<sigma>', s'))"
 
 declare exec_step.simps [simp del]
 
-definition exec_aux :: "'s \<times> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> ('q option, ('l,'t,'m,'m_t,'m_w) state_refine) tllist"
+definition exec_aux :: "'s \<times> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> ('s \<times> 't \<times> ('l,'t,'x,'m,'w,'o list) thread_action, ('l,'t,'m,'m_t,'m_w) state_refine) tllist"
 where
   "exec_aux \<sigma>s = tllist_corec \<sigma>s exec_step"
 
 definition exec :: "'s \<Rightarrow> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> ('q, ('l,'t,'m,'m_t,'m_w) state_refine diverge) tllist"
 where 
-  "exec \<sigma> s = tmap the id (tfilter Diverge (\<lambda>q. q \<noteq> None) (tmap id Final (exec_aux (\<sigma>, s))))"
+  "exec \<sigma> s = tmap the id (tfilter Diverge (\<lambda>q. q \<noteq> None) (tmap (\<lambda>(\<sigma>, t, ta). output \<sigma> t ta) Final (exec_aux (\<sigma>, s))))"
 
 end
 
@@ -298,17 +298,13 @@ proof -
 qed
 
 locale scheduler_ext_base =
-  scheduler_base
+  scheduler_base_aux
     final r convert_RA
-    schedule "output" "pick_wakeup_via_sel ws_sel" \<sigma>_invar
     thr_\<alpha> thr_invar thr_empty thr_lookup thr_update
-    ws_\<alpha> ws_invar ws_empty ws_lookup ws_update ws_delete ws_iterate
+    ws_\<alpha> ws_invar ws_empty ws_lookup
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
-  and schedule :: "('l,'t,'x,'m,'w,'o,'m_t,'m_w,'s) scheduler"
-  and "output" :: "'s \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 'q option"
-  and \<sigma>_invar :: "'s \<Rightarrow> 't set \<Rightarrow> bool"
   and thr_\<alpha> :: "'m_t \<Rightarrow> ('l,'t,'x) thread_info"
   and thr_invar :: "'m_t \<Rightarrow> bool"
   and thr_empty :: "'m_t"
@@ -320,8 +316,6 @@ locale scheduler_ext_base =
   and ws_empty :: "'m_w"
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
   and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
   +
   fixes thr'_\<alpha> :: "'s_t \<Rightarrow> 't set"
@@ -619,47 +613,118 @@ qed
 lemma exec_step_into_redT:
   assumes invar: "state_invar s" "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))" 
   and wstok: "wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))"
-  and exec: "exec_step (\<sigma>, s) = Inl (q, \<sigma>', s')"
-  obtains t ta
-  where "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')" "q = output \<sigma> t ta"
+  and exec: "exec_step (\<sigma>, s) = Inl ((\<sigma>'', t, ta), \<sigma>', s')"
+  shows "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')" "\<sigma>'' = \<sigma>"
   and "state_invar s'" "\<sigma>_invar \<sigma>' (dom (thr_\<alpha> (thr s')))"
 proof -
-  from exec obtain t ta where execT: "execT \<sigma> s = \<lfloor>(\<sigma>', t, ta, s')\<rfloor>" 
-    and q: "q = output \<sigma> t ta"
-    by(fastsimp simp add: exec_step.simps split_beta)
-  from invar wstok execT have red: "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')" 
-    and invar': "state_invar s'" "\<sigma>_invar \<sigma>' (dom (thr_\<alpha> (thr s')))"
-    by(rule execT_Some)+
-  with q show thesis by -(rule that)
+  from exec have execT: "execT \<sigma> s = \<lfloor>(\<sigma>', t, ta, s')\<rfloor>" 
+    and q: "\<sigma>'' = \<sigma>" by(auto simp add: exec_step.simps split_beta)
+  from invar wstok execT show red: "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')" 
+    and invar': "state_invar s'" "\<sigma>_invar \<sigma>' (dom (thr_\<alpha> (thr s')))" "\<sigma>'' = \<sigma>"
+    by(rule execT_Some)+(rule q)
+qed
+
+lemma exec_step_InrD:
+  assumes "state_invar s" "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))" 
+  and "exec_step (\<sigma>, s) = Inr s'"
+  shows "\<alpha>.active_threads (state_\<alpha> s) = {}"
+  and "s' = s"
+using assms
+by(auto simp add: exec_step_def dest: execT_None)
+
+lemma (in multithreaded_base) red_in_active_threads:
+  assumes "s -t\<triangleright>ta\<rightarrow> s'"
+  shows "t \<in> active_threads s"
+using assms
+by cases(auto intro: active_threads.intros)
+
+lemma exec_aux_into_Runs:
+  assumes "state_invar s" "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))" 
+  and "wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))"
+  shows "\<alpha>.mthr.Runs (state_\<alpha> s) (lmap snd (llist_of_tllist (exec_aux (\<sigma>, s))))"
+  and "tfinite (exec_aux (\<sigma>, s)) \<Longrightarrow> state_invar (terminal (exec_aux (\<sigma>, s)))" (is "_ \<Longrightarrow> ?thesis2")
+proof -
+  def ttls \<equiv> "lmap snd (llist_of_tllist (exec_aux (\<sigma>, s)))"
+  def s_\<alpha> \<equiv> "state_\<alpha> s"
+  have "\<exists>\<sigma> s. ttls = lmap snd (llist_of_tllist (exec_aux (\<sigma>, s))) \<and> s_\<alpha> = state_\<alpha> s \<and> state_invar s \<and> \<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s))) \<and> wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))"
+    using assms unfolding ttls_def s_\<alpha>_def by blast
+  thus "\<alpha>.mthr.Runs s_\<alpha> ttls"
+  proof(coinduct)
+    case (Runs s_\<alpha> ttls)
+    then obtain \<sigma> s where [simp]: "s_\<alpha> = state_\<alpha> s"
+      and [simp]: "ttls = lmap snd (llist_of_tllist (exec_aux (\<sigma>, s)))"
+      and invar: "state_invar s" "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))"
+      and wstok: "wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))" by blast
+    show ?case
+    proof(cases "exec_aux (\<sigma>, s)")
+      case (TNil s')
+      hence "\<alpha>.active_threads (state_\<alpha> s) = {}" "s' = s"
+        by(auto simp add: exec_aux_def tllist_corec split: sum.split_asm dest: exec_step_InrD[OF invar])
+      hence ?Stuck using TNil by(auto dest: \<alpha>.red_in_active_threads)
+      thus ?thesis ..
+    next
+      case (TCons \<sigma>tta ttls')
+      then obtain t ta \<sigma>' s' \<sigma>''
+        where [simp]: "\<sigma>tta = (\<sigma>'', t, ta)"
+        and [simp]: "ttls' = exec_aux (\<sigma>', s')"
+        and step: "exec_step (\<sigma>, s) = Inl ((\<sigma>'', t, ta), \<sigma>', s')"
+        unfolding exec_aux_def by(subst (asm) (2) tllist_corec)(fastsimp split: sum.split_asm)
+      from invar wstok step
+      have redT: "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')"
+        and [simp]: "\<sigma>'' = \<sigma>"
+        and invar': "state_invar s'" "\<sigma>_invar \<sigma>' (dom (thr_\<alpha> (thr s')))"
+        by(rule exec_step_into_redT)+
+      from wstok \<alpha>.redT_preserves_wset_thread_ok[OF redT]
+      have "wset_thread_ok (ws_\<alpha> (wset s')) (thr_\<alpha> (thr s'))" by simp
+      with invar' redT TCons have ?Step by(auto simp del: split_paired_Ex)
+      thus ?thesis ..
+    qed
+  qed
+next
+  assume "tfinite (exec_aux (\<sigma>, s))"
+  thus "?thesis2" using assms
+  proof(induct "exec_aux (\<sigma>, s)" arbitrary: \<sigma> s rule: tfinite_induct)
+    case TNil thus ?case
+      by(auto simp add: exec_aux_def tllist_corec split_beta split: sum.split_asm dest: exec_step_InrD)
+  next
+    case (TCons \<sigma>tta ttls)
+    from `TCons \<sigma>tta ttls = exec_aux (\<sigma>, s)`
+    obtain \<sigma>'' t ta \<sigma>' s' 
+      where [simp]: "\<sigma>tta = (\<sigma>'', t, ta)"
+      and ttls: "ttls = exec_aux (\<sigma>', s')"
+      and step: "exec_step (\<sigma>, s) = Inl ((\<sigma>'', t, ta), \<sigma>', s')"
+      unfolding exec_aux_def by(subst (asm) (2) tllist_corec)(fastsimp split: sum.split_asm)
+    note ttls moreover
+    from `state_invar s` `\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))` `wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))` step
+    have [simp]: "\<sigma>'' = \<sigma>"
+      and invar': "state_invar s'" "\<sigma>_invar \<sigma>' (dom (thr_\<alpha> (thr s')))"
+      and redT: "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')"
+      by(rule exec_step_into_redT)+
+    note invar' moreover
+    from \<alpha>.redT_preserves_wset_thread_ok[OF redT] `wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))`
+    have "wset_thread_ok (ws_\<alpha> (wset s')) (thr_\<alpha> (thr s'))" by simp
+    ultimately have "state_invar (terminal (exec_aux (\<sigma>', s')))" by(rule TCons)
+    with `TCons \<sigma>tta ttls = exec_aux (\<sigma>, s)`[symmetric]
+    show ?case unfolding ttls by simp
+  qed
 qed
 
 end
 
-locale scheduler_ext =
+locale scheduler_ext_aux =
   scheduler_ext_base
     final r convert_RA
-    schedule "output" \<sigma>_invar
     thr_\<alpha> thr_invar thr_empty thr_lookup thr_update thr_iterate
-    ws_\<alpha> ws_invar ws_empty ws_lookup ws_update ws_delete ws_iterate ws_sel
+    ws_\<alpha> ws_invar ws_empty ws_lookup ws_update ws_sel
     thr'_\<alpha> thr'_invar thr'_empty thr'_ins_dj
   +
-  scheduler_spec
+  scheduler_aux
     final r convert_RA
-    schedule \<sigma>_invar
-    thr_\<alpha> thr_invar
-    ws_\<alpha> ws_invar 
+    thr_\<alpha> thr_invar thr_empty thr_lookup thr_update
+    ws_\<alpha> ws_invar ws_empty ws_lookup
   +
-  thr!: finite_map thr_\<alpha> thr_invar +
-  thr!: map_empty thr_\<alpha> thr_invar thr_empty +
-  thr!: map_lookup thr_\<alpha> thr_invar thr_lookup +
-  thr!: map_update thr_\<alpha> thr_invar thr_update +
   thr!: map_iterate thr_\<alpha> thr_invar thr_iterate +
-  ws!: map ws_\<alpha> ws_invar +
-  ws!: map_empty ws_\<alpha> ws_invar ws_empty +
-  ws!: map_lookup ws_\<alpha> ws_invar ws_lookup +
   ws!: map_update ws_\<alpha> ws_invar ws_update +
-  ws!: map_delete ws_\<alpha> ws_invar ws_delete +
-  ws!: map_iterate ws_\<alpha> ws_invar ws_iterate +
   ws!: map_sel' ws_\<alpha> ws_invar ws_sel +
   thr'!: finite_set thr'_\<alpha> thr'_invar +
   thr'!: set_empty thr'_\<alpha> thr'_invar thr'_empty +
@@ -667,9 +732,6 @@ locale scheduler_ext =
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
-  and schedule :: "('l,'t,'x,'m,'w,'o,'m_t,'m_w,'s) scheduler"
-  and "output" :: "'s \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 'q option"
-  and \<sigma>_invar :: "'s \<Rightarrow> 't set \<Rightarrow> bool"
   and thr_\<alpha> :: "'m_t \<Rightarrow> ('l,'t,'x) thread_info"
   and thr_invar :: "'m_t \<Rightarrow> bool"
   and thr_empty :: "'m_t"
@@ -681,31 +743,12 @@ locale scheduler_ext =
   and ws_empty :: "'m_w"
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
   and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
   and thr'_\<alpha> :: "'s_t \<Rightarrow> 't set"
   and thr'_invar :: "'s_t \<Rightarrow> bool"
   and thr'_empty :: "'s_t"
   and thr'_ins_dj :: "'t \<Rightarrow> 's_t \<Rightarrow> 's_t"
-
-sublocale scheduler_ext < 
-  pick_wakeup_spec
-    final r convert_RA
-    pick_wakeup \<sigma>_invar
-    thr_\<alpha> thr_invar
-    ws_\<alpha> ws_invar
-by(rule pick_wakeup_spec_via_sel)(unfold_locales)
-
-sublocale scheduler_ext < 
-  scheduler
-    final r convert_RA
-    schedule "output" "pick_wakeup" \<sigma>_invar
-    thr_\<alpha> thr_invar thr_empty thr_lookup thr_update
-    ws_\<alpha> ws_invar ws_empty ws_lookup ws_update ws_delete ws_iterate
-by(unfold_locales)
-
-context scheduler_ext begin
+begin
 
 lemma active_threads_correct [simp]:
   assumes "state_invar s"
@@ -769,6 +812,256 @@ qed
 
 end
 
+locale scheduler_ext =
+  scheduler_ext_aux
+    final r convert_RA
+    thr_\<alpha> thr_invar thr_empty thr_lookup thr_update thr_iterate
+    ws_\<alpha> ws_invar ws_empty ws_lookup ws_update ws_sel
+    thr'_\<alpha> thr'_invar thr'_empty thr'_ins_dj
+  +
+  scheduler_spec
+    final r convert_RA
+    schedule \<sigma>_invar
+    thr_\<alpha> thr_invar
+    ws_\<alpha> ws_invar 
+  +
+  ws!: map_delete ws_\<alpha> ws_invar ws_delete +
+  ws!: map_iterate ws_\<alpha> ws_invar ws_iterate
+  for final :: "'x \<Rightarrow> bool"
+  and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) Predicate.pred"
+  and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
+  and schedule :: "('l,'t,'x,'m,'w,'o,'m_t,'m_w,'s) scheduler"
+  and "output" :: "'s \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 'q option"
+  and \<sigma>_invar :: "'s \<Rightarrow> 't set \<Rightarrow> bool"
+  and thr_\<alpha> :: "'m_t \<Rightarrow> ('l,'t,'x) thread_info"
+  and thr_invar :: "'m_t \<Rightarrow> bool"
+  and thr_empty :: "'m_t"
+  and thr_lookup :: "'t \<Rightarrow> 'm_t \<rightharpoonup> ('x \<times> 'l released_locks)"
+  and thr_update :: "'t \<Rightarrow> 'x \<times> 'l released_locks \<Rightarrow> 'm_t \<Rightarrow> 'm_t"
+  and thr_iterate :: "('m_t, 't, 'x \<times> 'l released_locks, 's_t) map_iterator"
+  and ws_\<alpha> :: "'m_w \<Rightarrow> ('w,'t) wait_sets"
+  and ws_invar :: "'m_w \<Rightarrow> bool"
+  and ws_empty :: "'m_w"
+  and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
+  and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
+  and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
+  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
+  and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and thr'_\<alpha> :: "'s_t \<Rightarrow> 't set"
+  and thr'_invar :: "'s_t \<Rightarrow> bool"
+  and thr'_empty :: "'s_t"
+  and thr'_ins_dj :: "'t \<Rightarrow> 's_t \<Rightarrow> 's_t"
+
+sublocale scheduler_ext < 
+  pick_wakeup_spec
+    final r convert_RA
+    pick_wakeup \<sigma>_invar
+    thr_\<alpha> thr_invar
+    ws_\<alpha> ws_invar
+by(rule pick_wakeup_spec_via_sel)(unfold_locales)
+
+sublocale scheduler_ext < 
+  scheduler
+    final r convert_RA
+    schedule "output" "pick_wakeup" \<sigma>_invar
+    thr_\<alpha> thr_invar thr_empty thr_lookup thr_update
+    ws_\<alpha> ws_invar ws_empty ws_lookup ws_update ws_delete ws_iterate
+by(unfold_locales)
+
+subsection {* Schedulers for deterministic small-step semantics *}
+
+text {*
+  The default code equations for @{term Predicate.the} impose the type class constraint @{text "eq"}
+  on the predicate elements. For the semantics, which contains the heap, there might be no such
+  instance, so we use new constants for which other code equations can be used.
+  These do not add the type class constraint, but may fail more often with non-uniqueness exception.
+*}
+
+definition singleton2 where [simp]: "singleton2 = Predicate.singleton"
+definition the_only2 where [simp]: "the_only2 = Predicate.the_only"
+definition the2 where [simp]: "the2 = Predicate.the"
+
+context multithreaded_base begin
+
+definition step_thread :: "(('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 's) \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 's) option"
+where
+  "step_thread update_state s t =
+   (case thr s t of
+      \<lfloor>(x, ln)\<rfloor> \<Rightarrow>
+      if ln = no_wait_locks then
+        if \<exists>ta x' m'. t \<turnstile> (x, shr s) -ta\<rightarrow> (x', m') \<and> actions_ok s t ta then
+          let
+            (ta, x', m') = THE (ta, x', m'). t \<turnstile> (x, shr s) -ta\<rightarrow> (x', m') \<and> actions_ok s t ta
+          in
+            \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, update_state ta)\<rfloor>
+        else
+          None
+      else if may_acquire_all (locks s) t ln \<and> \<not> waiting (wset s t) then 
+        \<lfloor>(t, None, update_state ((\<lambda>\<^isup>f []), [], [], [], convert_RA ln))\<rfloor>
+      else
+        None
+    | None \<Rightarrow> None)"
+
+lemma step_thread_NoneD:
+  "step_thread update_state s t = None \<Longrightarrow> t \<notin> active_threads s"
+unfolding step_thread_def 
+by(fastsimp simp add: split_beta elim!: active_threads.cases split: split_if_asm)
+
+lemma inactive_step_thread_eq_NoneI:
+  "t \<notin> active_threads s \<Longrightarrow> step_thread update_state s t = None"
+unfolding step_thread_def
+by(fastsimp simp add: split_beta split: split_if_asm intro: active_threads.intros)
+
+lemma step_thread_eq_None_conv:
+  "step_thread update_state s t = None \<longleftrightarrow> t \<notin> active_threads s"
+by(blast dest: step_thread_NoneD intro: inactive_step_thread_eq_NoneI)
+
+lemma step_thread_eq_Some_activeD:
+  "step_thread update_state s t = \<lfloor>(t', taxm\<sigma>')\<rfloor> 
+  \<Longrightarrow> t' = t \<and> t \<in> active_threads s"
+unfolding step_thread_def 
+by(fastsimp split: split_if_asm simp add: split_beta intro: active_threads.intros)
+
+declare actions_ok_iff [simp del]
+declare actions_ok.cases [rule del]
+
+lemma step_thread_Some_NoneD:
+  "step_thread update_state s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>
+  \<Longrightarrow> \<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln \<and> \<sigma>' = update_state ((\<lambda>\<^isup>f []), [], [], [], convert_RA ln)"
+unfolding step_thread_def
+by(auto split: split_if_asm simp add: split_beta elim!: neq_no_wait_locksE)
+
+lemma step_thread_Some_SomeD:
+  "\<lbrakk> deterministic; step_thread update_state s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor> \<rbrakk>
+  \<Longrightarrow> \<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> actions_ok s t ta \<and> \<sigma>' = update_state ta"
+unfolding step_thread_def
+by(auto simp add: split_beta deterministic_THE split: split_if_asm)
+
+end
+
+context scheduler_base_aux begin
+
+definition step_thread ::
+  "(('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 's) \<Rightarrow> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> 't \<Rightarrow>
+   ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 's) option"
+where 
+  "step_thread update_state s t =
+  (case thr_lookup t (thr s) of
+      \<lfloor>(x, ln)\<rfloor> \<Rightarrow>
+      if ln = no_wait_locks then
+        let
+          reds = do {
+            (ta, x', m') \<leftarrow> r t (x, shr s);
+            if actions_ok s t ta then Predicate.single (ta, x', m') else bot
+          }
+        in
+          if Predicate.holds (reds \<guillemotright>= (\<lambda>_. Predicate.single ())) then
+            let
+              (ta, x', m') = the2 reds
+            in 
+              \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, update_state ta)\<rfloor>
+          else
+            None
+      else if may_acquire_all (locks s) t ln \<and> \<not> waiting (ws_lookup t (wset s)) then 
+        \<lfloor>(t, None, update_state ((\<lambda>\<^isup>f []), [], [], [], convert_RA ln))\<rfloor>
+      else
+        None
+    | None \<Rightarrow> None)"
+
+end
+
+context scheduler_aux begin
+
+lemma deterministic_THE2:
+  assumes "\<alpha>.deterministic"
+  and tst: "thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor>"
+  and red: "Predicate.eval (r t (x, shr s)) (ta, x', m')"
+  and aok: "\<alpha>.actions_ok (state_\<alpha> s) t ta"
+  shows "Predicate.the (r t (x, shr s) \<guillemotright>= (\<lambda>(ta, x', m'). if \<alpha>.actions_ok (state_\<alpha> s) t ta then Predicate.single (ta, x', m') else bot)) = (ta, x', m')"
+proof -
+  note \<alpha>.actions_ok_iff[simp del] \<alpha>.actions_ok.cases[rule del]
+  show ?thesis unfolding the_def
+    apply(rule the_equality)
+     apply(rule bindI[OF red])
+     apply(simp add: singleI aok)
+    apply(erule bindE)
+    apply(clarsimp split: split_if_asm)
+     apply(drule (1) \<alpha>.deterministicD[OF `\<alpha>.deterministic`, where s="state_\<alpha> s", simplified, OF red _ tst aok])
+     apply simp
+    apply(erule bot1E)
+    done
+qed
+
+lemma step_thread_correct:
+  assumes det: "\<alpha>.deterministic"
+  and invar: "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s"
+  shows
+  "Option.map (apsnd (apsnd \<sigma>_\<alpha>)) (step_thread update_state s t) = \<alpha>.step_thread (\<sigma>_\<alpha> \<circ> update_state) (state_\<alpha> s) t" (is ?thesis1)
+  and "(\<And>ta. FWThread.thread_oks (thr_\<alpha> (thr s)) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<Longrightarrow> \<sigma>_invar (update_state ta) (dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) \<Longrightarrow> option_case True (\<lambda>(t, taxm, \<sigma>). \<sigma>_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (step_thread update_state s t)"
+  (is "(\<And>ta. ?tso ta \<Longrightarrow> ?inv ta) \<Longrightarrow> ?thesis2")
+proof -
+  have "?thesis1 \<and> ((\<forall>ta. ?tso ta \<longrightarrow> ?inv ta) \<longrightarrow> ?thesis2)"
+  proof(cases "step_thread update_state s t")
+    case None
+    with invar show ?thesis
+      by(fastsimp simp add: thr.lookup_correct \<alpha>.step_thread_def step_thread_def ws.lookup_correct split_beta holds_eq split: split_if_asm)
+  next
+    case (Some a)
+    then obtain t' taxm \<sigma>' 
+      where rrs: "step_thread update_state s t = \<lfloor>(t', taxm, \<sigma>')\<rfloor>" by(cases a) auto
+    show ?thesis
+    proof(cases "taxm")
+      case None
+      with rrs invar have ?thesis1
+        by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta split: split_if_asm)
+      moreover {
+        let ?ta = "((\<lambda>\<^isup>f []), [], [], [], convert_RA (snd (the (thr_lookup t (thr s)))))"
+        assume "?tso ?ta \<longrightarrow> ?inv ?ta"
+        hence ?thesis2 using None rrs
+          by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta split: split_if_asm) }
+      ultimately show ?thesis by blast
+    next
+      case (Some a)
+      with rrs obtain ta x' m'
+        where rrs: "step_thread update_state s t =  \<lfloor>(t', \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
+        by(cases a) fastsimp
+      with invar have ?thesis1 
+        by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta \<alpha>.deterministic_THE[OF det, where s="state_\<alpha> s", simplified] deterministic_THE2[OF det] holds_eq split: split_if_asm) blast+
+      moreover {
+        assume "?tso ta \<longrightarrow> ?inv ta"
+        hence ?thesis2 using rrs invar
+          by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta \<alpha>.deterministic_THE[OF det, where s="state_\<alpha> s", simplified] deterministic_THE2[OF det] holds_eq split: split_if_asm)(auto simp add: \<alpha>.actions_ok_iff) 
+      }
+      ultimately show ?thesis by blast
+    qed
+  qed
+  thus ?thesis1 "(\<And>ta. ?tso ta \<Longrightarrow> ?inv ta) \<Longrightarrow> ?thesis2" by blast+
+qed
+
+lemma step_thread_eq_None_conv:
+  assumes det: "\<alpha>.deterministic"
+  and invar: "state_invar s"
+  shows "step_thread update_state s t = None \<longleftrightarrow> t \<notin> \<alpha>.active_threads (state_\<alpha> s)"
+using assms step_thread_correct(1)[OF det _ invar, of "\<lambda>_ _. True", of id update_state t]
+by(simp add: option_map_id \<alpha>.step_thread_eq_None_conv)
+
+lemma step_thread_Some_NoneD:
+  assumes det: "\<alpha>.deterministic"
+  and step: "step_thread update_state s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>"
+  and invar: "state_invar s"
+  shows "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln \<and> \<sigma>' = update_state ((\<lambda>\<^isup>f []), [], [], [], convert_RA ln)"
+using assms step_thread_correct(1)[OF det _ invar, of "\<lambda>_ _. True", of id update_state t']
+by(fastsimp simp add: option_map_id dest: \<alpha>.step_thread_Some_NoneD[OF sym])
+
+lemma step_thread_Some_SomeD:
+  assumes det: "\<alpha>.deterministic"
+  and step: "step_thread update_state s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
+  and invar: "state_invar s"
+  shows "\<exists>x. thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> Predicate.eval (r t (x, shr s)) (ta, x', m') \<and> actions_ok s t ta \<and> \<sigma>' = update_state ta"
+using assms step_thread_correct(1)[OF det _ invar, of "\<lambda>_ _. True", of id update_state t']
+by(auto simp add: option_map_id dest: \<alpha>.step_thread_Some_SomeD[OF det sym])
+
+end
 
 subsection {* Code Generator setup *}
 
@@ -782,6 +1075,7 @@ lemmas [code] =
   scheduler_base_aux.cond_action_ok.simps
   scheduler_base_aux.cond_action_oks_def
   scheduler_base_aux.actions_ok_def
+  scheduler_base_aux.step_thread_def
 
 lemmas [code] =
   scheduler_base.exec_updW.simps
@@ -795,6 +1089,34 @@ lemmas [code] =
 lemmas [code] =
   scheduler_ext_base.active_threads.simps
 
+lemma singleton2_code [code]:
+  "singleton2 dfault (Predicate.Seq f) =
+  (case f () of
+    Predicate.Empty \<Rightarrow> dfault ()
+  | Predicate.Insert x P \<Rightarrow> 
+    if Predicate.is_empty P then x else FinFun.code_abort (\<lambda>_. singleton2 dfault (Predicate.Seq f))
+  | Predicate.Join P xq \<Rightarrow>
+    if Predicate.is_empty P then 
+      the_only2 dfault xq
+    else if Predicate.null xq then singleton2 dfault P else FinFun.code_abort (\<lambda>_. singleton2 dfault (Predicate.Seq f)))"
+unfolding singleton2_def the_only2_def
+by(auto simp only: singleton_code code_abort_def split: seq.split split_if)
 
+lemma the_only2_code [code]:
+  "the_only2 dfault Predicate.Empty = FinFun.code_abort dfault"
+  "the_only2 dfault (Predicate.Insert x P) = 
+  (if Predicate.is_empty P then x else FinFun.code_abort (\<lambda>_. the_only2 dfault (Predicate.Insert x P)))"
+  "the_only2 dfault (Predicate.Join P xq) = 
+  (if Predicate.is_empty P then 
+     the_only2 dfault xq
+   else if Predicate.null xq then 
+     singleton2 dfault P 
+   else
+     FinFun.code_abort (\<lambda>_. the_only2 dfault (Predicate.Join P xq)))"
+unfolding singleton2_def the_only2_def by simp_all
+
+lemma the2_eq [code]:
+  "the2 A = singleton2 (\<lambda>x. Predicate.not_unique A) A"
+unfolding the2_def singleton2_def by(rule the_eq)
 
 end
