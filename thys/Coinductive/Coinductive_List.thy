@@ -659,8 +659,8 @@ proof -
   qed
 qed
 
-lemma lmap_LNil [simp, nitpick_simp]: "lmap f LNil = LNil"
-  and lmap_LCons [simp, nitpick_simp]:
+lemma lmap_LNil [simp, nitpick_simp, code]: "lmap f LNil = LNil"
+  and lmap_LCons [simp, nitpick_simp, code]:
   "lmap f (LCons M N) = LCons (f M) (lmap f N)"
   by (simp_all add: lmap_def llist_corec)
 
@@ -734,10 +734,10 @@ qed
 
 lemma lappend_LNil_LNil [simp, nitpick_simp]: "lappend LNil LNil = LNil"
   and lappend_LNil_LCons [simp, nitpick_simp]: "lappend LNil (LCons l l') = LCons l (lappend LNil l')"
-  and lappend_LCons [simp, nitpick_simp]: "lappend (LCons l l') m = LCons l (lappend l' m)"
+  and lappend_LCons [simp, nitpick_simp, code]: "lappend (LCons l l') m = LCons l (lappend l' m)"
   by (simp_all add: lappend_def llist_corec)
 
-lemma lappend_LNil1 [simp]: "lappend LNil l = l"
+lemma lappend_LNil1 [simp, code]: "lappend LNil l = l"
   by (coinduct l rule: llist_fun_equalityI) auto
 
 lemma lappend_LNil2 [simp]: "lappend l LNil = l"

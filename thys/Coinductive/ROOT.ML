@@ -6,4 +6,4 @@ no_document use_thys
 	 "Quotient_Sum",
          "Infinite_Set"];
 
-use_thy "Coinductive";
+use_thys ["Coinductive", "Lazy_TLList"];
