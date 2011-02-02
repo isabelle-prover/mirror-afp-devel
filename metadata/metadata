@@ -345,6 +345,10 @@ extra-history =
         improved version of the Java memory model, also for bytecode
         executable scheduler for source code semantics
         (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/1f41c1842f5a">1f41c1842f5a</a>)
+  [2011-02-02]:
+        simplified code generator setup
+        new random scheduler
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/3059dafd013f">3059dafd013f</a>)
 
 [Locally-Nameless-Sigma]
 title = Locally Nameless Sigma Calculus
