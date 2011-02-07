@@ -39,8 +39,8 @@ text {*
 
 subsection {* types and well-formedness of vectors / matrices *}
 
-types 'a vec = "'a list"
-types 'a mat = "'a vec list" (* list of column-vectors *)
+type_synonym 'a vec = "'a list"
+type_synonym 'a mat = "'a vec list" (* list of column-vectors *)
 
 
 (* vector of given length *)

@@ -34,7 +34,7 @@ Polynomials represented as trees
 *}
 datatype ('v,'a)tpoly = PVar 'v | PNum 'a | PSum "('v,'a)tpoly list" | PMult "('v,'a)tpoly list"
 
-types ('v,'a)assign = "'v \<Rightarrow> 'a"
+type_synonym ('v,'a)assign = "'v \<Rightarrow> 'a"
 
 fun eval_tpoly :: "('v,'a :: semiring_1)assign \<Rightarrow> ('v,'a)tpoly \<Rightarrow> 'a"
 where "eval_tpoly \<alpha> (PVar x) = \<alpha> x"
@@ -53,7 +53,7 @@ text {*
 text {* Definition of type @{text monom} *}
 
 
-types 'v monom = "('v \<times> nat)list" 
+type_synonym 'v monom = "('v \<times> nat)list" 
 text {* 
 \begin{itemize}
 \item $[(x,n),(y,m)]$ represent $x^n \cdot y^m$
@@ -402,7 +402,7 @@ declare monom_mult.simps[simp del]
 text {*
 Polynomials are represented with as sum of monomials multiplied by some coefficient 
 *}
-types ('v,'a)poly = "('v monom \<times> 'a)list"
+type_synonym ('v,'a)poly = "('v monom \<times> 'a)list"
 
 text {*
 The polynomials we construct satisfy the following invariants:
