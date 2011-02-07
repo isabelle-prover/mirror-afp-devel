@@ -178,17 +178,16 @@ qed
 
 subsection {* Closure computation *}
 
-fun succs :: "nat list \<Rightarrow> rexp_pair \<Rightarrow> rexp_pairs" where
-"succs as (r, s) = map (\<lambda>a. (ederiv a r, ederiv a s)) as"
+fun test :: "rexp_pairs * rexp_pairs \<Rightarrow> bool"
+where "test (ws, ps) = (case ws of [] \<Rightarrow>  False | (p,q)#_ \<Rightarrow> final p = final q)"
 
-definition test :: "rexp_pairs * rexp_pairs \<Rightarrow> bool"
-where "test = (\<lambda>([],_) \<Rightarrow> False | ((p,q)#_, _) \<Rightarrow> final p = final q)"
-
-definition step :: "nat list \<Rightarrow> rexp_pairs * rexp_pairs \<Rightarrow> rexp_pairs * rexp_pairs"
-where "step as = (\<lambda>(ws,ps).
-    let 
-      ps' = hd ws # ps;
-      new = filter (\<lambda>p. p \<notin> set ps' \<union> set ws) (succs as (hd ws))
+fun step :: "nat list \<Rightarrow> rexp_pairs * rexp_pairs \<Rightarrow> rexp_pairs * rexp_pairs"
+where "step as (ws,ps) =
+    (let 
+      (r, s) = hd ws;
+      ps' = (r, s) # ps;
+      succs = map (\<lambda>a. (ederiv a r, ederiv a s)) as;
+      new = filter (\<lambda>p. p \<notin> set ps' \<union> set ws) succs
     in (new @ tl ws, ps'))"
 
 definition closure ::
@@ -211,8 +210,8 @@ and atoms: "atoms r \<union> atoms s \<subseteq> set as"
 shows "lang r = lang s"
 proof-
   { fix st have "pre_bisim as r s st \<Longrightarrow> test st \<Longrightarrow> pre_bisim as r s (step as st)"
-      unfolding pre_bisim_def test_def step_def
-      by (cases st) (auto simp: split_def split: list.splits
+      unfolding pre_bisim_def
+      by (cases st) (auto simp: split_def split: list.splits prod.splits
         dest!: subsetD[OF atoms_ederiv]) }
   moreover
   from atoms

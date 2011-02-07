@@ -33,7 +33,7 @@ lemma neg_fun_pred: "(- A) x = - (A x)";
   by (simp add: fun_Compl_def);
 
 lemma bot_fun_pred: "bot i = {}";
-  by (simp add: bot_fun_eq);
+  by (simp add: bot_fun_def);
 
 subsection {*  Finite sets and cardinal properties  *}
 
@@ -176,14 +176,14 @@ begin
   instance proof;
   fix x::"('a \<Rightarrow> 'b)" fix Y
     show  "x \<sqinter> \<Squnion>Y = (SUP y:Y. x \<sqinter> y)";
-    apply (simp_all add: fun_eq_iff inf_fun_eq SUPR_def Sup_fun_def inf_sup_distributivity);
+    apply (simp_all add: fun_eq_iff inf_fun_def SUPR_def Sup_fun_def inf_sup_distributivity);
     apply auto;
     apply (case_tac "(op \<sqinter> (x xa) ` {y. \<exists>f\<in>Y. y = f xa}) = {y. \<exists>f\<in>Y. y = x xa \<sqinter> f xa}");
     by auto;
   next;
   fix x::"('a \<Rightarrow> 'b)" fix Y
     show  "x \<squnion> \<Sqinter> Y = (INF y:Y. x \<squnion> y)";
-    apply (simp_all add: fun_eq_iff sup_fun_eq INFI_def Inf_fun_def sup_inf_distributivity);
+    apply (simp_all add: fun_eq_iff sup_fun_def INFI_def Inf_fun_def sup_inf_distributivity);
     apply auto;
     apply (case_tac "(op \<squnion> (x xa) ` {y. \<exists>f\<in>Y. y = f xa}) = {y. \<exists>f\<in>Y. y = x xa \<squnion> f xa}");
     by auto;
@@ -196,11 +196,11 @@ begin
   instance proof;
   fix x::bool fix Y
     show  "x \<sqinter> \<Squnion>Y = (SUP y:Y. x \<sqinter> y)";
-    by (simp_all add: inf_bool_eq SUPR_def Sup_bool_def);
+    by (simp_all add: inf_bool_def SUPR_def Sup_bool_def);
   next;
   fix x::bool fix Y
     show  "x \<squnion> \<Sqinter> Y = (INF y:Y. x \<squnion> y)";
-    by (simp_all add: sup_bool_eq INFI_def Inf_bool_def);
+    by (simp_all add: sup_bool_def INFI_def Inf_bool_def);
   qed;
 end;
 

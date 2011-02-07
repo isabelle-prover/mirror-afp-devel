@@ -89,7 +89,6 @@ by(cases ta, auto split: if_splits)
 primrec thread_ok :: "('l,'t,'x) thread_info \<Rightarrow> ('t,'x','m) new_thread_action \<Rightarrow> bool"
 where
   "thread_ok ts (NewThread t x m) = free_thread_id ts t"
-| "thread_ok ts NewThreadFail = (\<not> (\<exists>t. free_thread_id ts t))"
 | "thread_ok ts (ThreadExists t) = (\<not> free_thread_id ts t)"
 
 primrec thread_oks :: "('l,'t,'x) thread_info \<Rightarrow> ('t,'x','m) new_thread_action list \<Rightarrow> bool"

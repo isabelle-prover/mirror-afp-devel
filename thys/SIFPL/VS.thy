@@ -141,7 +141,7 @@ done
 text{*We introduce an explicit fixed point construction over the type
 $TT$ of the invariants $\Phi$.*}
 
-types TT = "(State \<times> State) \<Rightarrow> bool"
+type_synonym TT = "(State \<times> State) \<Rightarrow> bool"
 
 text{*We deliberately introduce a new type here since the agreement
 with @{text VDMAssn} (modulo currying) is purely coincidental. In

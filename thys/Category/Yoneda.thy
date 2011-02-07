@@ -69,22 +69,22 @@ proof (rule funcsetI)
       set_cod = F \<^sub>\<o> B\<rparr>"
     proof (simp add: set_arrow_def, intro conjI)
       show "Hom A B \<subseteq> U" and "F\<^sub>\<o> B \<subseteq> U"
-	by (simp_all add: U_def)
+        by (simp_all add: U_def)
       show "(\<lambda>f\<in>Hom A B. set_func (F\<^sub>\<a> f) a) \<in> Hom A B \<rightarrow> F\<^sub>\<o> B"
       proof (rule funcsetI, simp)
-	fix f
-	assume f: "f \<in> Hom A B"
-	with A B have "F\<^sub>\<a> f \<in> Hom\<^sub>2 (F\<^sub>\<o> A) (F\<^sub>\<o> B)"
-	  by (rule functors_preserve_homsets)
-	hence "F\<^sub>\<a> f \<in> ar Set" 
-	  and "set_dom (F\<^sub>\<a> f) = (F\<^sub>\<o> A)"
-	  and "set_cod (F\<^sub>\<a> f) = (F\<^sub>\<o> B)"
-	  by (simp_all add: hom_def BB_Set Set_def)
-	hence "set_func (F\<^sub>\<a> f) : (F\<^sub>\<o> A) \<rightarrow> (F\<^sub>\<o> B)"
-	  by (simp add: Set_def set_cat_def set_arrow_def)
-	thus "set_func (F\<^sub>\<a> f) a \<in> F\<^sub>\<o> B"
-	  using `a \<in> F\<^sub>\<o> A`
-	  by (rule funcset_mem)
+        fix f
+        assume f: "f \<in> Hom A B"
+        with A B have "F\<^sub>\<a> f \<in> Hom\<^sub>2 (F\<^sub>\<o> A) (F\<^sub>\<o> B)"
+          by (rule functors_preserve_homsets)
+        hence "F\<^sub>\<a> f \<in> ar Set" 
+          and "set_dom (F\<^sub>\<a> f) = (F\<^sub>\<o> A)"
+          and "set_cod (F\<^sub>\<a> f) = (F\<^sub>\<o> B)"
+          by (simp_all add: hom_def BB_Set Set_def)
+        hence "set_func (F\<^sub>\<a> f) : (F\<^sub>\<o> A) \<rightarrow> (F\<^sub>\<o> B)"
+          by (simp add: Set_def set_cat_def set_arrow_def)
+        thus "set_func (F\<^sub>\<a> f) a \<in> F\<^sub>\<o> B"
+          using `a \<in> F\<^sub>\<o> A`
+          by (rule funcset_mem)
       qed
     qed
   qed

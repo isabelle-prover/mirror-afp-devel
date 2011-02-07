@@ -72,10 +72,10 @@ fun bdt_fn :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt optio
          |(Some b2) \<Rightarrow> Some (Bdt_Node b1 (bdtvar vref) b2)))))"
 
 (*
-Kongruenzregeln sind das Feintuning f¸r den Simplifier (siehe Kapitel 9 im Isabelle
-Tutorial). Im Fall von case wird standardm‰ﬂig nur die case bedingung nicht
-aber die einzelnen F‰lle simplifiziert, analog dazu beim if. Dies simuliert die
-Auswertungsstrategie einer Programmiersprache, da wird auch zun‰chst nur die
+Kongruenzregeln sind das Feintuning f√ºr den Simplifier (siehe Kapitel 9 im Isabelle
+Tutorial). Im Fall von case wird standardm√§√üig nur die case bedingung nicht
+aber die einzelnen F√§lle simplifiziert, analog dazu beim if. Dies simuliert die
+Auswertungsstrategie einer Programmiersprache, da wird auch zun√§chst nur die
 Bedingung vereinfacht. Will man mehr so kann man die entsprechenden Kongruenz 
 regeln dazunehmen.
 *)
@@ -181,9 +181,9 @@ next
       case (Node lrt r rrt)
       note Nrt=this
       from Nlt Nrt bdt1 obtain lbdt rbdt where 
-	lbdt_def: "bdt lt var = Some lbdt" and 
-	rbdt_def: "bdt rt var = Some rbdt" and 
-	bdt1_def: "bdt1 = Bdt_Node lbdt (var a) rbdt"
+        lbdt_def: "bdt lt var = Some lbdt" and 
+        rbdt_def: "bdt rt var = Some rbdt" and 
+        bdt1_def: "bdt1 = Bdt_Node lbdt (var a) rbdt"
         by (auto split: split_if_asm option.splits)
       from no_in_t show ?thesis
       proof (simp, elim disjE)
@@ -502,13 +502,13 @@ next
         with ppo Node.prems have "not = Node lt po rt"
           by (simp del: Dag_Ref add: Dag_unique)
         with Node.prems show ?thesis
-	  by simp
+          by simp
       next
-	case False
+        case False
         with Node.prems ltTip have "no \<in> set_of rt" 
           by simp
-	with ord_rt * `Dag no low high not` show ?thesis
-	  by (rule Node.hyps)
+        with ord_rt * `Dag no low high not` show ?thesis
+          by (rule Node.hyps)
       qed
     qed
   next
@@ -532,7 +532,7 @@ next
           by (simp del: Dag_Ref add: Dag_unique)
         with Node.prems show ?thesis by simp
       next
-	case False
+        case False
         with Node.prems Tip have "no \<in> set_of lt" 
           by simp
         with ord_lt * `Dag no low high not` show ?thesis
@@ -719,11 +719,6 @@ lemma replicate_elem: "i < n ==>  (replicate n x !i) = x"
 apply (induct n)
 apply simp
 apply (case_tac i)
-apply auto
-done
-
-lemma replicate_length [simp] : "length (replicate n x) = n"
-apply (induct n)
 apply auto
 done
 
@@ -929,7 +924,7 @@ next
     done
   with Suc.prems Nodesn_in_t show ?case 
     apply (simp add: Nodes_def)
-    apply (simp add: UN_Un set_split)
+    apply (simp add: set_split)
     done
 qed
 
@@ -1384,7 +1379,7 @@ lemma reduced_children_parent:
  \<Longrightarrow> reduced (Node l p r)"
   by simp
 
-(*Die allgemeine Form mit i <=j \<Longrightarrow> Nodes i levellista \<subseteq> Nodes j levellista w‰re schˆner, aber wie beweist man das? *)
+(*Die allgemeine Form mit i <=j \<Longrightarrow> Nodes i levellista \<subseteq> Nodes j levellista w√§re sch√∂ner, aber wie beweist man das? *)
 lemma Nodes_subset: "Nodes i levellista \<subseteq> Nodes (Suc i) levellista"
   apply (simp add: Nodes_def)
   apply (simp add: set_split)
@@ -1723,19 +1718,19 @@ lemma same_bdt_var: "\<lbrakk>bdt (Node lt1 p1 rt1) var = Some bdt1; bdt (Node l
 proof (induct bdt1)
   case Zero
   then obtain var_p1: "var p1 = 0" and var_p2: "var p2 = 0"
-    by (simp add: bdt_Some_Zero_iff)
+    by simp
   then show ?case
     by simp
 next
   case One
   then obtain var_p1: "var p1 = 1" and var_p2: "var p2 = 1"
-    by (simp add: bdt_Some_Zero_iff)
+    by simp
   then show ?case
     by simp
 next
   case (Bdt_Node lbdt v rbdt)
-  from prems obtain var_p1: "var p1 = v" and var_p2: "var p2 = v"
-    by (simp add: bdt_Some_Node_iff)
+  then obtain var_p1: "var p1 = v" and var_p2: "var p2 = v"
+    by simp
   then show ?case by simp
 qed
 
@@ -1800,9 +1795,6 @@ qed
 
 (*theorems for the proof of share_reduce_rep_list*)
 
-lemma set_take_le: "\<And>i j. i \<le> j \<Longrightarrow> set (take i xs) \<subseteq> set (take j xs)"
-  by (induct xs)(auto simp add: take_Cons split: nat.splits)
-
 
 
 
@@ -1811,7 +1803,7 @@ proof -
   assume no_in_taken: "no \<in> set (take n nodeslist)"
   have "set (take n nodeslist) \<subseteq> set (take (Suc n) nodeslist)"
     apply -
-    apply (rule set_take_le)
+    apply (rule set_take_subset_set_take)
     apply simp
     done
   with no_in_taken show ?thesis

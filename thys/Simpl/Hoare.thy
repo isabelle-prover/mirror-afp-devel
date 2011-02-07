@@ -360,38 +360,38 @@ proof (rule ccontr)
       case 0
       have "k \<le> 0" by fact hence "k = 0" by simp
       thus "f (g 0) = f (g k)"
-	by simp
+        by simp
     next
       case (Suc n)
       have k_Suc_n: "k \<le> Suc n" by fact
       then show "f (g (Suc n)) = f (g k)"
       proof (cases "k = Suc n")
-	case True
-	thus ?thesis by simp
+        case True
+        thus ?thesis by simp
       next
-	case False
-	with k_Suc_n
-	have "k \<le> n"
-	  by simp
-	with Suc.hyps
-	have n_k: "f (g n) = f (g k)" by simp
-	from le_g have le: "f (g (Suc n)) \<le> f (g n)"
-	  by simp
-	show ?thesis
-	proof (cases "f (g (Suc n)) = f (g n)")
-	  case True with n_k show ?thesis by simp
-	next
-	  case False
-	  with le have "f (g (Suc n)) < f (g n)"
-	    by simp
-	  with n_k k have "f (g (Suc n)) < f z"
-	    by simp
-	  with min_z have "g (Suc n) \<notin> range g"
-	    by blast
-	  hence False by simp
-	  thus ?thesis
-	    by simp
-	qed
+        case False
+        with k_Suc_n
+        have "k \<le> n"
+          by simp
+        with Suc.hyps
+        have n_k: "f (g n) = f (g k)" by simp
+        from le_g have le: "f (g (Suc n)) \<le> f (g n)"
+          by simp
+        show ?thesis
+        proof (cases "f (g (Suc n)) = f (g n)")
+          case True with n_k show ?thesis by simp
+        next
+          case False
+          with le have "f (g (Suc n)) < f (g n)"
+            by simp
+          with n_k k have "f (g (Suc n)) < f z"
+            by simp
+          with min_z have "g (Suc n) \<notin> range g"
+            by blast
+          hence False by simp
+          thus ?thesis
+            by simp
+        qed
       qed
     qed
   qed

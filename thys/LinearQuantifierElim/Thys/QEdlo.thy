@@ -1,9 +1,7 @@
-(*  ID:         $Id: QEdlo.thy,v 1.5 2009-02-27 17:46:41 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory QEdlo
-imports DLO "~~/src/HOL/ex/Reflection"
+imports DLO "~~/src/HOL/Library/Reflection"
 begin
 
 subsection "DNF-based quantifier elimination"
@@ -43,6 +41,7 @@ proof
   hence 0: "Less 0 0 \<notin> set as" by (auto simp:qe_dlo\<^isub>1_def)
   with qe1 have 1: "\<forall>x\<in>?Ls. \<forall>y\<in>?Us. xs ! x < xs ! y"
     by (fastsimp simp:qe_dlo\<^isub>1_def)
+  have finite: "finite ?Ls" "finite ?Us" by (rule finite_set)+
   { fix i x
     assume "Less i 0 \<in> set as | Less 0 i \<in> set as"
     moreover hence "i \<noteq> 0" using 0 by iprover
@@ -50,21 +49,21 @@ proof
   } note this[simp]
   { assume nonempty: "?Ls \<noteq> {} \<and> ?Us \<noteq> {}"
     hence "Max (\<Union>x\<in>?Ls. {xs!x}) < Min (\<Union>x\<in>?Us. {xs!x})"
-      using 1 by(simp)
+      using 1 finite by auto
     then obtain m where "?lb < m \<and> m < ?ub" using dense by blast
     hence "\<forall>i\<in>?Ls. xs!i < m" and "\<forall>j\<in>?Us. m < xs!j"
-      using nonempty by auto
+      using nonempty finite by auto
     hence "\<forall>a \<in> set as. I\<^isub>d\<^isub>l\<^isub>o a (m # xs)" using 2[OF 0] by(auto simp:less)
     hence ?R .. }
   moreover
   { assume asm: "?Ls \<noteq> {} \<and> ?Us = {}"
     then obtain m where "?lb < m" using no_ub by blast
-    hence "\<forall>a\<in> set as. I\<^isub>d\<^isub>l\<^isub>o a (m # xs)" using 2[OF 0] asm by auto
+    hence "\<forall>a\<in> set as. I\<^isub>d\<^isub>l\<^isub>o a (m # xs)" using 2[OF 0] asm finite by auto
     hence ?R .. }
   moreover
   { assume asm: "?Ls = {} \<and> ?Us \<noteq> {}"
     then obtain m where "m < ?ub" using no_lb by blast
-    hence "\<forall>a\<in> set as. I\<^isub>d\<^isub>l\<^isub>o a (m # xs)" using 2[OF 0] asm by auto
+    hence "\<forall>a\<in> set as. I\<^isub>d\<^isub>l\<^isub>o a (m # xs)" using 2[OF 0] asm finite by auto
     hence ?R .. }
   moreover
   { assume "?Ls = {} \<and> ?Us = {}"

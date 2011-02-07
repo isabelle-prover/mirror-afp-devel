@@ -8,7 +8,7 @@ theory RegExp2NAe
 imports "../Regular-Sets/Regular_Exp" NAe
 begin
 
-types 'a bitsNAe = "('a,bool list)nae"
+type_synonym 'a bitsNAe = "('a,bool list)nae"
 
 abbreviation
   Cons_syn :: "'a => 'a list set => 'a list set" (infixr "##" 65) where

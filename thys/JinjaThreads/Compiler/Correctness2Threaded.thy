@@ -261,67 +261,6 @@ sublocale J1_JVM_heap_conf_base < Red1_execd!:
     "\<tau>MOVE2 (compP2 P)"
 by(unfold_locales)
 
-context J1_JVM_heap_conf_base begin
-
-lemma \<tau>exec_1_heap_unchanged:
-  assumes exec: "exec_1_d (compP2 P) t (Normal (xcp, h, frs)) \<epsilon> (Normal (xcp', h', frs'))"
-  and bl: "bisim1_list1 t h ex exs xcp frs"
-  and \<tau>: "\<tau>Move2 (compP2 P) (xcp, h, frs)"
-  shows "h' = h"
-using bl exec \<tau>
-apply(cases)
-apply(auto elim!: jvmd_NormalE)
-apply(cases xcp)
-apply auto
-apply(rename_tac stk loc C M pc FRS)
-apply(case_tac "instrs_of (compP2 P) C M ! pc")
-apply(simp_all split: split_if_asm)
-apply(auto dest: \<tau>external_red_external_aggr_heap_unchanged simp add: split_beta)
-done
-
-lemma mexecd_\<tau>mthr_wf:
-  "\<tau>multithreaded_wf JVM_final (mexecd (compP2 P)) (\<tau>MOVE2 (compP2 P)) (\<lambda>t s2. \<exists>s1. wbisim1 t s1 s2)"
-proof
-  fix t x2 m2 ta2 x2' m2'
-  assume "\<exists>s1. wbisim1 t s1 (x2, m2)" "mexecd (compP2 P) t (x2, m2) ta2 (x2', m2')"
-    and "\<tau>MOVE2 (compP2 P) (x2, m2) ta2 (x2', m2')"
-  thus "m2 = m2'" by(cases x2, cases x2')(auto dest: \<tau>exec_1_heap_unchanged)
-next
-  fix s ta s'
-  assume "\<tau>MOVE2 (compP2 P) s ta s'"
-  thus "ta = \<epsilon>" by(simp add: split_beta)
-qed
-
-end
-
-sublocale J1_JVM_heap_conf_base < mexecd_mthr!:
-  \<tau>multithreaded_wf 
-    JVM_final
-    "mexecd (compP2 P)"
-    convert_RA
-    "\<tau>MOVE2 (compP2 P)" 
-    "\<lambda>t s2. \<exists>s1. wbisim1 t s1 s2" 
-by(rule mexecd_\<tau>mthr_wf)
-
-context JVM_heap_base begin
-
-lemma \<tau>exec_1_taD:
-  assumes exec: "exec_1_d (compP2 P) t (Normal (xcp, h, frs)) ta (Normal (xcp', h', frs'))"
-  and \<tau>: "\<tau>Move2 (compP2 P) (xcp, h, frs)"
-  shows "ta = \<epsilon>"
-using assms
-apply(auto elim!: jvmd_NormalE simp add: split_beta)
-apply(cases xcp)
-apply auto
-apply(rename_tac stk loc C M pc FRS)
-apply(case_tac "instrs_of (compP2 P) C M ! pc")
-apply(simp_all split: split_if_asm)
-apply(auto dest: \<tau>external_red_external_aggr_TA_empty) 
-done
-
-end
-
-
 context J1_JVM_conf_read begin
 
 theorem Red1_exec1_FWwbisim:
@@ -536,16 +475,16 @@ context J1_JVM_heap_conf begin
 lemma bisim_J1_JVM_start:
   assumes wf: "wf_J1_prog P"
   and start: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=body in C"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=body in D"
   and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   shows "Red1_execd.mbisim (J1_start_state P C M vs) (JVM_start_state (compP2 P) C M vs)"
 proof -
-  let ?e = "blocks1 0 (Class C#Ts) body"
+  let ?e = "blocks1 0 (Class D#Ts) body"
   let ?xs = "Null # vs @ replicate (max_vars body) undefined"
 
   from sees_wf_mdecl[OF wf sees] obtain T'
     where B: "\<B> body (Suc (length Ts))"
-    and wt: "P,Class C # Ts \<turnstile>1 body :: T'"
+    and wt: "P,Class D # Ts \<turnstile>1 body :: T'"
     and da: "\<D> body \<lfloor>{..length Ts}\<rfloor>"
     and sv: "syncvars body"
     by(auto simp add: wf_mdecl_def)
@@ -557,13 +496,13 @@ proof -
   moreover
   from wf have wf': "wf_jvm_prog\<^bsub>compTP P\<^esub> (compP2 P)" by(rule wt_compTP_compP2)
   from sees_method_compP[OF sees, of "\<lambda>C M Ts T. compMb2"]
-  have sees': "compP2 P \<turnstile> C sees M: Ts\<rightarrow>T = compMb2 body in C" by(simp add: compP2_def)
+  have sees': "compP2 P \<turnstile> C sees M: Ts\<rightarrow>T = compMb2 body in D" by(simp add: compP2_def)
   from conf have "compP2 P,start_heap \<turnstile> vs [:\<le>] Ts" by(simp add: compP2_def heap_base.compP_confs)
   from BV_correct_initial[OF wf' start sees' this] sees'
-  have "compTP P \<turnstile> start_tid:(None, start_heap, [([], ?xs, C, M, 0)]) \<surd>"
+  have "compTP P \<turnstile> start_tid:(None, start_heap, [([], ?xs, D, M, 0)]) \<surd>"
       by(simp add: JVM_start_state'_def compP2_def compMb2_def)
-  hence "bisim1_list1 start_tid start_heap (?e, ?xs) [] None [([], ?xs, C, M, 0)]"
-    using sees
+  hence "bisim1_list1 start_tid start_heap (?e, ?xs) [] None [([], ?xs, D, M, 0)]"
+    using sees_method_idemp[OF sees]
   proof
     from `bsok ?e 0` show "P,?e,0,start_heap \<turnstile> (?e, ?xs) \<leftrightarrow> ([], ?xs, 0, None)"
       by(rule bisim1_refl)

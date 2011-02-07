@@ -782,7 +782,7 @@ fun dest_Guard (Const (@{const_name Language.com.Guard},_)$f$g$c) = (f,g,c,false
 
 fun add_declaration name decl thy =
   thy
-  |> Named_Target.init name
+  |> Named_Target.init I name
   |> Local_Theory.declaration false decl
   |> Local_Theory.exit
   |> ProofContext.theory_of;
@@ -1071,18 +1071,18 @@ val proc_nameT = HOLogic.stringT;
 
 fun add_locale name expr elems thy =
   thy 
-  |> Expression.add_locale (Binding.name name) (Binding.name name) expr elems
+  |> Expression.add_locale I (Binding.name name) (Binding.name name) expr elems
   |> snd
   |> Local_Theory.exit;
 
 fun add_locale' name expr elems thy =
   thy 
-  |> Expression.add_locale (Binding.name name) (Binding.name name) expr elems
+  |> Expression.add_locale I (Binding.name name) (Binding.name name) expr elems
   ||> Local_Theory.exit;
 
 fun add_locale_cmd name expr elems thy =
   thy 
-  |> Expression.add_locale_cmd (Binding.name name) (Binding.name name) expr elems
+  |> Expression.add_locale_cmd I (Binding.name name) (Binding.name name) expr elems
   |> snd
   |> Local_Theory.exit;
 
@@ -1139,7 +1139,7 @@ fun print_term thy t =
 
 fun add_abbrev loc mode name spec thy =
   thy
-  |> Named_Target.init loc
+  |> Named_Target.init I loc
   |> (fn lthy => let val t = Syntax.read_term (Local_Theory.target_of lthy) spec;
       in Local_Theory.abbrev mode ((Binding.name name, NoSyn), t) lthy end)
   |> #2
@@ -1322,7 +1322,7 @@ fun procedures_definition locname procs thy =
         fun add_decl_and_def lname ctxt =
             ctxt
             |> ProofContext.theory_of
-            |> Named_Target.init lname
+            |> Named_Target.init I lname
             |> Local_Theory.declaration false parameter_info_decl
             |> (fn lthy => if has_body name
                            then snd (Local_Theory.define (def lthy) lthy)
@@ -1386,7 +1386,8 @@ fun procedures_definition locname procs thy =
           in thy
              |> add_locale_cmd implN parent []
              |> ProofContext.theory_of
-             |> (fn thy => Expression.sublocale parentN (mk_loc_exp [Locale.intern thy implN]) thy)
+             |> (fn thy => Expression.sublocale I parentN
+                  (mk_loc_exp [Locale.intern thy implN]) [] thy)
              |> Proof.global_terminal_proof
                  (Method.Basic (fn ctxt => Method.SIMPLE_METHOD
                                  (Locale.intro_locales_tac false ctxt [])),NONE)
@@ -1629,7 +1630,7 @@ fun mark_proven_guards proven t =
              val flt_g = HOLogic.mk_prod (flt,g);
              val flt_gT = fastype_of flt_g
              val gs = HOLogic.mk_list flt_gT [flt_g]
-             val ([_,_,cT],_) = strip_type gT;
+             val [_,_,cT] = binder_types gT;
              val grds = Const (@{const_name Language.guards}, Type (@{type_name list}, [flt_gT]) --> cT --> cT)
            in list_comb (grds,[mark_guards (mark_grd cnt) gs,c1]) end
       | mark cnt (c as Const (@{const_name Language.com.Throw},_)) [] [] = c
@@ -2079,15 +2080,18 @@ val conseq2_ss_fun    = conseq2_ss_base
                                          state_ex_sel_eq_simproc Function]
 fun conseq2_ss Record   = conseq2_ss_record
   | conseq2_ss Function = conseq2_ss_fun;
+
 in
+
 fun raw_conseq_simp_tac ctxt state_kind thms i =
   let
-    val ctxt' = Config.map MetaSimplifier.simp_depth_limit (K 0) ctxt;
+    val ctxt' = Config.put simp_depth_limit 0 ctxt;
   in
      (simp_tac ((Simplifier.context ctxt' (conseq1_ss state_kind)) addsimps thms) i)
      THEN_MAYBE
      (simp_tac (Simplifier.context ctxt' (conseq2_ss state_kind)) i)
   end
+
 end
 
 val conseq_simp_tac = raw_conseq_simp_tac;

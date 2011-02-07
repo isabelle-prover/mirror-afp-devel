@@ -16,10 +16,10 @@ subsection{* Syntax *}
 
 (*------------------------------------------------------------------*)
 subsubsection{* Basic datatypes *}
-types    Variable  = nat
-datatype Literal   = Pos Variable | Neg Variable
-types    Clause    = "Literal list"
-types    Formula   = "Clause list"
+type_synonym Variable  = nat
+datatype Literal = Pos Variable | Neg Variable
+type_synonym Clause = "Literal list"
+type_synonym Formula = "Clause list"
 
 text{* Notice that instead of set or multisets, lists are used in
 definitions of clauses and formulae. This is done because SAT solver
@@ -177,17 +177,17 @@ next
       case True
       with varInClauseVars 
       have "\<exists> literal. literal el clause \<and> var literal = variable" 
-	by simp
+        by simp
       thus ?thesis 
-	by auto
+        by auto
     next
       case False
       with P 
       have "variable \<in> vars formula" 
-	by simp
+        by simp
       with Cons
       show ?thesis 
-	by auto
+        by auto
     qed
   next
     assume "?rhs (clause # formula)"
@@ -271,35 +271,39 @@ lemma literalsWithSameVariableAreEqualOrOpposite:
   fixes literal1::Literal and literal2::Literal
   shows "(var literal1 = var literal2) = (literal1 = literal2 \<or> opposite literal1 = literal2)" (is "?lhs = ?rhs")
 proof
-assume ?lhs
-show ?rhs
-proof (cases literal1)
-  case "Pos"
-  show ?thesis proof (cases literal2)
+  assume ?lhs
+  show ?rhs
+  proof (cases literal1)
     case "Pos"
-    from prems show ?thesis 
-      by simp
+    note Pos1 = this
+    show ?thesis
+    proof (cases literal2)
+      case "Pos"
+      with `?lhs` Pos1 show ?thesis 
+        by simp
+    next
+      case "Neg"
+      with `?lhs` Pos1 show ?thesis 
+        by simp
+    qed
   next
     case "Neg"
-    from prems show ?thesis 
-      by simp
+    note Neg1 = this
+    show ?thesis
+    proof (cases literal2)
+      case "Pos"
+      with `?lhs` Neg1 show ?thesis 
+        by simp
+    next
+      case "Neg"
+      with `?lhs` Neg1 show ?thesis 
+        by simp
+    qed
   qed
 next
-  case "Neg"
-  show ?thesis proof (cases literal2)
-    case "Pos"
-    from prems show ?thesis 
-      by simp
-  next
-    case "Neg"
-    from prems show ?thesis 
-      by simp
-  qed
-qed
-next
-assume ?rhs
-thus ?lhs 
-  by auto
+  assume ?rhs
+  thus ?lhs 
+    by auto
 qed
 
 text{* The list of literals obtained by negating all literals of a
@@ -380,7 +384,7 @@ subsection{* Semantics *}
 (*------------------------------------------------------------------*)
 subsubsection{* Valuations *}
 
-types    Valuation = "Literal list"
+type_synonym Valuation = "Literal list"
 
 lemma valuationContainsItsLiteralsVariable: 
   fixes literal :: Literal and valuation :: Valuation
@@ -477,16 +481,16 @@ next
       case True
       with ih 
       show "?rhs (literal' # valuation')" 
-	by auto
+        by auto
     next
       case False
       with ih 
       have "var literal' = var literal" 
-	by simp
+        by simp
       hence "literal' = literal \<or> opposite literal' = literal"
-	by (simp add:literalsWithSameVariableAreEqualOrOpposite)
+        by (simp add:literalsWithSameVariableAreEqualOrOpposite)
       thus "?rhs (literal' # valuation')" 
-	by auto
+        by auto
     qed
   qed
 qed
@@ -687,15 +691,15 @@ proof -
     proof (cases "clause = [literal]")
       case True
       thus ?thesis
-	by simp
+        by simp
     next
       case False
       with `clause el formula`
       have "clause el (removeAll [literal] formula)"
-	by simp
+        by simp
       with `formulaTrue (removeAll [literal] formula) (valuation @ [literal])` 
       show ?thesis
-	by (simp add: formulaTrueIffAllClausesAreTrue)
+        by (simp add: formulaTrueIffAllClausesAreTrue)
     qed
   }
   thus ?thesis
@@ -818,27 +822,27 @@ next
       case True
       with `\<not> inconsistent valuation1` 
       have "\<not> literalFalse literal valuation1" 
-	by (auto simp add:inconsistentCharacterization)
+        by (auto simp add:inconsistentCharacterization)
       with `literalFalse literal (valuation1 @ valuation2)` 
       have "literalFalse literal valuation2" 
-	by auto
+        by auto
       with True 
       show ?thesis 
-	by auto
+        by auto
     next
       case False
       with `literalTrue literal (valuation1 @ valuation2)` 
       have "literalTrue literal valuation2"
-	by auto
+        by auto
       with `\<not> inconsistent valuation2` 
       have "\<not> literalFalse literal valuation2"
-	by (auto simp add:inconsistentCharacterization)
+        by (auto simp add:inconsistentCharacterization)
       with `literalFalse literal (valuation1 @ valuation2)` 
       have "literalFalse literal valuation1"
-	by auto
+        by auto
       with `literalTrue literal valuation2`
       show ?thesis 
-	by auto
+        by auto
     qed
     thus ?thesis 
       by simp
@@ -1077,10 +1081,10 @@ proof
       assume "clause el formula0"
       with subset 
       have "clause el formula" 
-	by simp
+        by simp
       with `model valuation formula` 
       have "clauseTrue clause valuation" 
-	by (simp add: formulaTrueIffAllClausesAreTrue)
+        by (simp add: formulaTrueIffAllClausesAreTrue)
     } hence "formulaTrue formula0 valuation" 
       by (simp add: formulaTrueIffAllClausesAreTrue)
     with `model valuation formula` 
@@ -1309,35 +1313,35 @@ next
     proof (cases "clauseTautology c'")
       case True
       hence "?filt (c' # F') = ?filt F'"
-	by auto
+        by auto
       hence "satisfiable (?filt F')"
-	using `satisfiable (?filt (c' # F'))`
-	by simp
+        using `satisfiable (?filt (c' # F'))`
+        by simp
       hence "satisfiable F'"
-	using Cons
-	by simp
+        using Cons
+        by simp
       thus ?thesis
-	using satisfiableAppendTautology[of "F'" "c'"]
-	using `clauseTautology c'`
-	unfolding satisfiable_def
-	by (auto simp add: formulaTrueIffAllClausesAreTrue)
+        using satisfiableAppendTautology[of "F'" "c'"]
+        using `clauseTautology c'`
+        unfolding satisfiable_def
+        by (auto simp add: formulaTrueIffAllClausesAreTrue)
     next
       case False
       hence "?filt (c' # F') = c' # ?filt F'"
-	by auto   
+        by auto   
       hence "satisfiable (c' # ?filt F')"
-	using `satisfiable (?filt (c' # F'))`
-	by simp
+        using `satisfiable (?filt (c' # F'))`
+        by simp
       moreover
       have "\<forall> c. c el ?filt' F' \<longrightarrow> clauseTautology c"
-	by simp
+        by simp
       ultimately
       have "satisfiable ((c' # ?filt F') @ ?filt' F')"
-	using satisfiableAppendTautologicalFormula[of "c' # ?filt F'" "?filt' F'"]
-	by (simp (no_asm_use))
+        using satisfiableAppendTautologicalFormula[of "c' # ?filt F'" "?filt' F'"]
+        by (simp (no_asm_use))
       thus ?thesis
-	unfolding satisfiable_def
-	by (auto simp add: formulaTrueIffAllClausesAreTrue)
+        unfolding satisfiable_def
+        by (auto simp add: formulaTrueIffAllClausesAreTrue)
     qed
   qed
 qed
@@ -1608,18 +1612,18 @@ proof
       assume "clause el formula'"
       show "formulaEntailsClause formula clause"
       proof -
-	{
-	  fix valuation :: Valuation
-	  assume "model valuation formula"
-	  with `?lhs` 
-	  have "model valuation formula'"
-	    by (simp add:formulaEntailsFormula_def)
-	  with `clause el formula'` 
-	  have "clauseTrue clause valuation"
-	    by (simp add:formulaTrueIffAllClausesAreTrue)
-	}
-	thus ?thesis 
-	  by (simp add:formulaEntailsClause_def)
+        {
+          fix valuation :: Valuation
+          assume "model valuation formula"
+          with `?lhs` 
+          have "model valuation formula'"
+            by (simp add:formulaEntailsFormula_def)
+          with `clause el formula'` 
+          have "clauseTrue clause valuation"
+            by (simp add:formulaTrueIffAllClausesAreTrue)
+        }
+        thus ?thesis 
+          by (simp add:formulaEntailsClause_def)
       qed
     qed
   qed
@@ -1631,17 +1635,17 @@ next
       fix valuation :: Valuation
       assume "model valuation formula"
       {
-	fix clause :: Clause
-	assume "clause el formula'"
-	with `?rhs` 
-	have "formulaEntailsClause formula clause"
-	  by auto
-	with `model valuation formula` 
-	have "clauseTrue clause valuation"
-	  by (simp add:formulaEntailsClause_def)
+        fix clause :: Clause
+        assume "clause el formula'"
+        with `?rhs` 
+        have "formulaEntailsClause formula clause"
+          by auto
+        with `model valuation formula` 
+        have "clauseTrue clause valuation"
+          by (simp add:formulaEntailsClause_def)
       }
       hence "(formulaTrue formula' valuation)"
-	by (simp add:formulaTrueIffAllClausesAreTrue)
+        by (simp add:formulaTrueIffAllClausesAreTrue)
     }
     thus ?thesis
       by (simp add:formulaEntailsFormula_def)
@@ -1740,17 +1744,17 @@ proof -
       assume "formulaEntailsLiteral formula (opposite literal)"
       with modelV' 
       have "literalFalse literal valuation'"
-	by (auto simp add:formulaEntailsLiteral_def)
+        by (auto simp add:formulaEntailsLiteral_def)
       from `literalTrue literal valuation'` `literalFalse literal valuation'` modelV' 
       have "False"
-	by (simp add:inconsistentCharacterization)
+        by (simp add:inconsistentCharacterization)
     }
     moreover
     {
       assume "\<not> literal el formula"
       with `clause el formula` `literal el clause`
       have "False"
-	by (simp add:literalElFormulaCharacterization)
+        by (simp add:literalElFormulaCharacterization)
     }
     ultimately
     have "False"
@@ -1773,35 +1777,35 @@ proof -
     proof (cases "var literal \<in> vars valuation")
       case True
       {
-	assume "literalTrue literal valuation"
-	with `model valuation (removeAll [literal] formula)` 
-	have "model valuation formula"
-	  by (auto simp add:formulaTrueIffAllClausesAreTrue)
-	with `\<not> satisfiable formula` 
-	have "False"
-	  by (auto simp add:satisfiable_def)
+        assume "literalTrue literal valuation"
+        with `model valuation (removeAll [literal] formula)` 
+        have "model valuation formula"
+          by (auto simp add:formulaTrueIffAllClausesAreTrue)
+        with `\<not> satisfiable formula` 
+        have "False"
+          by (auto simp add:satisfiable_def)
       }
       with True 
       show ?thesis 
-	using variableDefinedImpliesLiteralDefined [of "literal" "valuation"]
-	by auto
+        using variableDefinedImpliesLiteralDefined [of "literal" "valuation"]
+        by auto
     next
       case False
       with `model valuation (removeAll [literal] formula)` 
       have "model (valuation @ [literal]) (removeAll [literal] formula)"
-	by (rule modelExpand)
+        by (rule modelExpand)
       hence 
-	"formulaTrue (removeAll [literal] formula) (valuation @ [literal])" and "consistent (valuation @ [literal])"
-	by auto
+        "formulaTrue (removeAll [literal] formula) (valuation @ [literal])" and "consistent (valuation @ [literal])"
+        by auto
       from `formulaTrue (removeAll [literal] formula) (valuation @ [literal])` 
       have "formulaTrue formula (valuation @ [literal])"
-	by (rule trueFormulaWithSingleLiteralClause)
+        by (rule trueFormulaWithSingleLiteralClause)
       with `consistent (valuation @ [literal])` 
       have "model (valuation @ [literal]) formula"
-	by simp
+        by simp
       with `\<not> satisfiable formula` 
       have "False"
-	by (auto simp add:satisfiable_def)
+        by (auto simp add:satisfiable_def)
       thus ?thesis ..
     qed
   }
@@ -1825,58 +1829,58 @@ proof-
     proof (cases "\<exists> l. l el c \<and> (literalTrue l v)")
       case True
       thus ?thesis
-	using clauseTrueIffContainsTrueLiteral
-	by simp
+        using clauseTrueIffContainsTrueLiteral
+        by simp
     next
       case False
       let ?v' = "v @ (oppositeLiteralList c)"
 
       have "\<not> inconsistent (oppositeLiteralList c)"
       proof-
-	{
-	  assume "\<not> ?thesis"
-	  then obtain l::Literal
-	    where "l el (oppositeLiteralList c)" "opposite l el (oppositeLiteralList c)"
-	    using inconsistentCharacterization [of "oppositeLiteralList c"]
-	    by auto
-	  hence "(opposite l) el c" "l el c"
-	    using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "c"]
-	    using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite l" "c"]
-	    by auto
-	  hence "clauseTautology c"
-	    using clauseTautologyCharacterization[of "c"]
-	    by auto
-	  with `\<not> clauseTautology c`
-	  have "False"
-	    by simp
-	}
-	thus ?thesis
-	  by auto
+        {
+          assume "\<not> ?thesis"
+          then obtain l::Literal
+            where "l el (oppositeLiteralList c)" "opposite l el (oppositeLiteralList c)"
+            using inconsistentCharacterization [of "oppositeLiteralList c"]
+            by auto
+          hence "(opposite l) el c" "l el c"
+            using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "c"]
+            using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite l" "c"]
+            by auto
+          hence "clauseTautology c"
+            using clauseTautologyCharacterization[of "c"]
+            by auto
+          with `\<not> clauseTautology c`
+          have "False"
+            by simp
+        }
+        thus ?thesis
+          by auto
       qed
       with False `model v F`
       have "consistent ?v'"
-	using inconsistentAppend[of "v" "oppositeLiteralList c"]
-	unfolding consistent_def
-	using literalElListIffOppositeLiteralElOppositeLiteralList
-	by auto
+        using inconsistentAppend[of "v" "oppositeLiteralList c"]
+        unfolding consistent_def
+        using literalElListIffOppositeLiteralElOppositeLiteralList
+        by auto
       moreover
       from `model v F`
       have "formulaTrue F ?v'"
-	using formulaTrueAppendValuation
-	by simp
+        using formulaTrueAppendValuation
+        by simp
       moreover
       have "formulaTrue (val2form (oppositeLiteralList c)) ?v'"
-	using val2formFormulaTrue[of "oppositeLiteralList c" "v @ oppositeLiteralList c"]
-	by simp
+        using val2formFormulaTrue[of "oppositeLiteralList c" "v @ oppositeLiteralList c"]
+        by simp
       ultimately
       have "model ?v' (F @ val2form (oppositeLiteralList c))"
-	by (simp add: formulaTrueAppend)
+        by (simp add: formulaTrueAppend)
       with `\<not> satisfiable (F @ val2form (oppositeLiteralList c))`
       have "False"
-	unfolding satisfiable_def
-	by auto
+        unfolding satisfiable_def
+        by auto
       thus ?thesis
-	by simp
+        by simp
     qed
   }
   thus ?thesis
@@ -1915,15 +1919,15 @@ proof-
     have "formulaEntailsLiteral (F' @ val2form valuation @ F'') l"
     proof-
       {
-	fix valuation'::Valuation
-	assume "formulaTrue (F' @ val2form valuation @ F'') valuation'"
-	hence "literalTrue l valuation'"
-	  using `[l] el val2form valuation`
-	  using formulaTrueIffAllClausesAreTrue[of "F' @ val2form valuation @ F''" "valuation'"]
-	  by (auto simp add: clauseTrueIffContainsTrueLiteral)
+        fix valuation'::Valuation
+        assume "formulaTrue (F' @ val2form valuation @ F'') valuation'"
+        hence "literalTrue l valuation'"
+          using `[l] el val2form valuation`
+          using formulaTrueIffAllClausesAreTrue[of "F' @ val2form valuation @ F''" "valuation'"]
+          by (auto simp add: clauseTrueIffContainsTrueLiteral)
       } thus ?thesis
-	unfolding formulaEntailsLiteral_def
-	by simp
+        unfolding formulaEntailsLiteral_def
+        by simp
     qed
   }
   thus ?thesis
@@ -2175,32 +2179,32 @@ proof
     proof-
       from `clauseTrue c v'` 
       obtain l :: Literal
-	where "l el c" and "literalTrue l v'"
-	by (auto simp add: clauseTrueIffContainsTrueLiteral)
+        where "l el c" and "literalTrue l v'"
+        by (auto simp add: clauseTrueIffContainsTrueLiteral)
       have "\<not> literalFalse l v"
       proof-
-	{
-	  assume "\<not> ?thesis"
-	  hence "opposite l el v"
-	    by simp
-	  with `model v' (F1 @ val2form v @ F2)`
-	  have "opposite l el v'"
-	    using val2formFormulaTrue[of "v" "v'"]
-	    by auto (simp add: formulaTrueAppend)
-	  with `literalTrue l v'` `consistent v'`
-	  have "False"
-	    by (simp add: inconsistentCharacterization)
-	}
-	thus ?thesis
-	  by auto
+        {
+          assume "\<not> ?thesis"
+          hence "opposite l el v"
+            by simp
+          with `model v' (F1 @ val2form v @ F2)`
+          have "opposite l el v'"
+            using val2formFormulaTrue[of "v" "v'"]
+            by auto (simp add: formulaTrueAppend)
+          with `literalTrue l v'` `consistent v'`
+          have "False"
+            by (simp add: inconsistentCharacterization)
+        }
+        thus ?thesis
+          by auto
       qed
       with `l el c`
       have  "l el (removeFalseLiterals c v)"
-	unfolding removeFalseLiterals_def
-	by simp
+        unfolding removeFalseLiterals_def
+        by simp
       with `literalTrue l v'`
       show ?thesis
-	by (auto simp add: clauseTrueIffContainsTrueLiteral)
+        by (auto simp add: clauseTrueIffContainsTrueLiteral)
     qed
     ultimately
     show "model v' ?lhs"
@@ -2229,9 +2233,9 @@ proof-
   thus ?thesis
     using `equivalentFormulae (F1 @ val2form v @ [removeFalseLiterals c v] @ F2) (F' @ [c])`
     using equivalentFormulaeTransitivity[of 
-	      "(F1 @ val2form v @ [remdups (removeFalseLiterals c v)] @ F2)"
-	      "(F1 @ val2form v @ [removeFalseLiterals c v] @ F2)" 
-	      "F' @ [c]"]
+              "(F1 @ val2form v @ [remdups (removeFalseLiterals c v)] @ F2)"
+              "(F1 @ val2form v @ [removeFalseLiterals c v] @ F2)" 
+              "F' @ [c]"]
     by simp
 qed
 
@@ -2258,16 +2262,16 @@ proof
     proof-
       from `clauseTrue c v`
       obtain l :: Literal
-	where "literalTrue l v" and "l el c"
-	by (auto simp add:clauseTrueIffContainsTrueLiteral)
+        where "literalTrue l v" and "l el c"
+        by (auto simp add:clauseTrueIffContainsTrueLiteral)
       with `formulaTrue (F @ val2form v) v'`
       have "literalTrue l v'"
-	using val2formFormulaTrue[of "v" "v'"]
-	using formulaTrueAppend[of "F" "val2form v"]
-	by simp
+        using val2formFormulaTrue[of "v" "v'"]
+        using formulaTrueAppend[of "F" "val2form v"]
+        by simp
       thus ?thesis
-	using `l el c`
-	by (auto simp add:clauseTrueIffContainsTrueLiteral)
+        using `l el c`
+        by (auto simp add:clauseTrueIffContainsTrueLiteral)
     qed
     ultimately
     show "model v' (F' @ [c])"
@@ -2309,25 +2313,25 @@ proof-
     hence "\<not> l el (oppositeLiteralList valuation)"
     proof-
       {
-	assume "l el (oppositeLiteralList valuation)"
-	hence "(opposite l) el valuation"
-	  using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "oppositeLiteralList valuation"]
-	  by simp
-	hence "formulaEntailsLiteral F (opposite l)"
-	  using `formulaEntailsValuation F valuation`
-	  unfolding formulaEntailsValuation_def
-	  by simp
-	hence "literalFalse l valuation'"
-	  using `consistent valuation'`
-	  using `formulaTrue F valuation'`
-	  unfolding formulaEntailsLiteral_def
-	  by simp
-	with `literalTrue l valuation'`
-	  `consistent valuation'`
-	have False
-	  by (simp add: inconsistentCharacterization)
+        assume "l el (oppositeLiteralList valuation)"
+        hence "(opposite l) el valuation"
+          using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "oppositeLiteralList valuation"]
+          by simp
+        hence "formulaEntailsLiteral F (opposite l)"
+          using `formulaEntailsValuation F valuation`
+          unfolding formulaEntailsValuation_def
+          by simp
+        hence "literalFalse l valuation'"
+          using `consistent valuation'`
+          using `formulaTrue F valuation'`
+          unfolding formulaEntailsLiteral_def
+          by simp
+        with `literalTrue l valuation'`
+          `consistent valuation'`
+        have False
+          by (simp add: inconsistentCharacterization)
       } thus ?thesis
-	by auto
+        by auto
     qed
     ultimately
     have "model valuation' (list_diff clause (oppositeLiteralList valuation))"
@@ -2365,24 +2369,24 @@ proof -
       case False
       with `l1 el clause1` 
       have "l1 el (resolve clause1 clause2 literal)" 
-	by (auto simp add:resolve_def)
+        by (auto simp add:resolve_def)
       with `literalTrue l1 valuation` 
       show ?thesis 
-	by (auto simp add: clauseTrueIffContainsTrueLiteral)
+        by (auto simp add: clauseTrueIffContainsTrueLiteral)
     next
       case True
       from `model valuation [clause1, clause2]` 
       have "consistent valuation" 
-	by simp
+        by simp
       from True `literalTrue l1 valuation` `literalTrue l2 valuation` `consistent valuation` 
       have "literal \<noteq> opposite l2"
-	by (auto simp add:inconsistentCharacterization)
+        by (auto simp add:inconsistentCharacterization)
       with `l2 el clause2` 
       have "l2 el (resolve clause1 clause2 literal)"
-	by (auto simp add:resolve_def)
+        by (auto simp add:resolve_def)
       with `literalTrue l2 valuation` 
       show ?thesis
-	by (auto simp add: clauseTrueIffContainsTrueLiteral)
+        by (auto simp add: clauseTrueIffContainsTrueLiteral)
     qed
   } 
   thus ?thesis 
@@ -2431,19 +2435,19 @@ proof -
     proof-
       from `l el (resolve clause1 clause2 literal)` 
       have "l el (removeAll literal clause1) \<or> l el (removeAll (opposite literal) clause2)"
-	unfolding resolve_def
-	by simp
+        unfolding resolve_def
+        by simp
       thus ?thesis 
       proof
-	assume "l el (removeAll literal clause1)"
-	thus "literalFalse l valuation"
-	  using `clauseFalse (removeAll literal clause1) valuation`
-	  by (simp add: clauseFalseIffAllLiteralsAreFalse)
+        assume "l el (removeAll literal clause1)"
+        thus "literalFalse l valuation"
+          using `clauseFalse (removeAll literal clause1) valuation`
+          by (simp add: clauseFalseIffAllLiteralsAreFalse)
       next
-	assume "l el (removeAll (opposite literal) clause2)"
-	thus "literalFalse l valuation"
-	  using `clauseFalse (removeAll (opposite literal) clause2) valuation`
-	  by (simp add: clauseFalseIffAllLiteralsAreFalse)
+        assume "l el (removeAll (opposite literal) clause2)"
+        thus "literalFalse l valuation"
+          using `clauseFalse (removeAll (opposite literal) clause2) valuation`
+          by (simp add: clauseFalseIffAllLiteralsAreFalse)
       qed
     qed
   }
@@ -2488,22 +2492,22 @@ proof -
       case True
       with `literalTrue l valuation'` 
       show ?thesis
-	by simp
+        by simp
     next
       case False
       with `l el uClause` `isUnitClause uClause uLiteral valuation` 
       have "literalFalse l valuation"
-	by (simp add: isUnitClause_def)
+        by (simp add: isUnitClause_def)
       from `formulaTrue (val2form valuation) valuation'` 
       have "\<forall> literal :: Literal. literal el valuation \<longrightarrow> literal el valuation'"
-	using val2formFormulaTrue [of "valuation" "valuation'"]
-	by simp
+        using val2formFormulaTrue [of "valuation" "valuation'"]
+        by simp
       with `literalFalse l valuation` 
       have "literalFalse l valuation'"
-	by auto
+        by auto
       with `literalTrue l valuation'` `consistent valuation'` 
       have "False"
-	by (simp add:inconsistentCharacterization)
+        by (simp add:inconsistentCharacterization)
       thus ?thesis ..
     qed
   }
@@ -2619,12 +2623,12 @@ proof -
       assume "literal' el (removeAll uLiteral uClause)"
       with `clauseFalse (removeAll uLiteral uClause) valuation` 
       have "literalFalse literal' valuation"
-	by (simp add:clauseFalseIffAllLiteralsAreFalse)
+        by (simp add:clauseFalseIffAllLiteralsAreFalse)
       with `\<not> literalTrue uLiteral valuation` `\<not> literalFalse uLiteral valuation`
       have "precedes (opposite literal') uLiteral (valuation @ valuation') \<and> (opposite literal') \<noteq> uLiteral"
-	using `uLiteral el valuation'`
-	using precedesMemberHeadMemberTail [of "opposite literal'" "valuation" "uLiteral" "valuation'"]
-	by auto
+        using `uLiteral el valuation'`
+        using precedesMemberHeadMemberTail [of "opposite literal'" "valuation" "uLiteral" "valuation'"]
+        by auto
     }
     thus ?thesis 
       by simp
@@ -2673,11 +2677,11 @@ proof -
       assume "literal' el (removeAll literal clause)"
       from `literal' el (removeAll literal clause)` * 
       have "precedes (opposite literal') literal prefix"
-	by simp
+        by simp
       with `literal el prefix` 
       have "literalFalse literal' prefix"
-	unfolding precedes_def
-	by (auto split: split_if_asm)
+        unfolding precedes_def
+        by (auto split: split_if_asm)
     }
     thus ?thesis
       by (auto simp add:clauseFalseIffAllLiteralsAreFalse)
@@ -2736,12 +2740,12 @@ proof-
     proof
       assume "l el ?oppc"
       hence "opposite l el clause"
-	using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "?oppc"]
-	by simp
+        using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "?oppc"]
+        by simp
       thus "l el valuation"
-	using `clauseFalse clause valuation`
-	using clauseFalseIffAllLiteralsAreFalse[of "clause" "valuation"]
-	by auto
+        using `clauseFalse clause valuation`
+        using clauseFalseIffAllLiteralsAreFalse[of "clause" "valuation"]
+        by auto
     qed
   qed
   hence "l' el valuation"
@@ -2769,28 +2773,28 @@ proof-
       assume "literal' el ?oppc \<and> literal' \<noteq> ?l"
       show "\<not> precedes ?l literal' valuation"
       proof (cases "literalTrue literal' valuation")
-	case False
-	thus ?thesis
-	  unfolding precedes_def
-	  by simp
+        case False
+        thus ?thesis
+          unfolding precedes_def
+          by simp
       next
-	case True
-	with `literal' el ?oppc \<and> literal' \<noteq> ?l`
-	have "literal' el ?f"
-	  by simp
-	have "uniq ?f"
-	  using `uniq valuation`
-	  by (simp add: uniqDistinct)
-	hence "\<not> precedes ?l literal' ?f"
-	  using lastPrecedesNoElement[of "?f"]
-	  using `literal' el ?oppc \<and> literal' \<noteq> ?l`
-	  unfolding getLastAssertedLiteral_def
-	  by auto
-	thus ?thesis
-	  using precedesFilter[of "?l" "literal'" "valuation" "\<lambda> l. l el ?oppc"]
-	  using `literal' el ?oppc \<and> literal' \<noteq> ?l`
-	  using `?l el ?oppc`
-	  by auto
+        case True
+        with `literal' el ?oppc \<and> literal' \<noteq> ?l`
+        have "literal' el ?f"
+          by simp
+        have "uniq ?f"
+          using `uniq valuation`
+          by (simp add: uniqDistinct)
+        hence "\<not> precedes ?l literal' ?f"
+          using lastPrecedesNoElement[of "?f"]
+          using `literal' el ?oppc \<and> literal' \<noteq> ?l`
+          unfolding getLastAssertedLiteral_def
+          by auto
+        thus ?thesis
+          using precedesFilter[of "?l" "literal'" "valuation" "\<lambda> l. l el ?oppc"]
+          using `literal' el ?oppc \<and> literal' \<noteq> ?l`
+          using `?l el ?oppc`
+          by auto
       qed
     qed
   qed
@@ -2877,22 +2881,22 @@ proof -
       assume "l el literalList" "l \<noteq> literal"
       have "\<not> precedes literal l (valuation @ [literal])" 
       proof (cases "literalTrue l valuation")
-	case False
-	with `l \<noteq> literal` 
-	show ?thesis
-	  unfolding precedes_def
-	  by simp
+        case False
+        with `l \<noteq> literal` 
+        show ?thesis
+          unfolding precedes_def
+          by simp
       next
-	case True
-	from `\<not> literalTrue literal valuation` `literalTrue literal [literal]` `literalTrue l valuation` 
-	have "precedes l literal (valuation @ [literal])"
-	  using precedesMemberHeadMemberTail[of "l" "valuation" "literal" "[literal]"]
-	  by auto
-	with `l \<noteq> literal` `literalTrue l valuation` `literalTrue literal [literal]`
-	show ?thesis
-	  using precedesAntisymmetry[of "l" "valuation @ [literal]" "literal"]
-	  unfolding precedes_def
-	  by auto
+        case True
+        from `\<not> literalTrue literal valuation` `literalTrue literal [literal]` `literalTrue l valuation` 
+        have "precedes l literal (valuation @ [literal])"
+          using precedesMemberHeadMemberTail[of "l" "valuation" "literal" "[literal]"]
+          by auto
+        with `l \<noteq> literal` `literalTrue l valuation` `literalTrue literal [literal]`
+        show ?thesis
+          using precedesAntisymmetry[of "l" "valuation @ [literal]" "literal"]
+          unfolding precedes_def
+          by auto
       qed
     } thus ?thesis 
       by simp

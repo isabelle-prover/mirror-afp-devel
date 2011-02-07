@@ -69,7 +69,7 @@ theorem mono_mono_dgr [simp]: "dmono D \<Longrightarrow> mono_mono (dgr D)"
   apply (simp add: mono_mono_def mono_def)
   apply safe
   apply (simp_all add: dgr_def)
-  apply (simp_all add: le_fun_def inf_fun_eq)
+  apply (simp_all add: le_fun_def inf_fun_def)
   apply safe
   apply (rule_tac y = "(step D (x xa) xb)" in order_trans)
   apply simp_all
@@ -316,7 +316,7 @@ lemma  grd_dgr:
   apply (unfold INFI_def)
   apply (unfold compl_Inf)
   apply (unfold SUPR_def)
-  apply (simp_all add: bot_fun_eq)
+  apply (simp_all add: bot_fun_def)
   apply (case_tac "(uminus ` range (\<lambda>j\<Colon>'b. D (i, j) \<bottom>)) = {P\<Colon>'a. \<exists>j\<Colon>'b. P = - D (i, j) \<bottom>}")
   by auto
 

@@ -8,6 +8,7 @@ theory JVMThreaded imports
   JVMDefensive
   "../Common/ConformThreaded"
   "../Framework/FWLiftingSem"
+  "../Framework/FWProgressAux"
 begin
 
 primrec JVM_final :: "jvm_thread_state \<Rightarrow> bool"
@@ -232,5 +233,41 @@ using assms unfolding execd_mthr.RedT_def
 by(induct)(auto dest!: execd_hext intro: hext_trans simp add: execd_mthr.RedT_def)
 
 end
+
+lemma (in JVM_heap_base) mexec_final_wf: "final_thread_wf JVM_final (mexec P)"
+proof(unfold_locales)
+  fix x t m ta x' m'
+  assume "JVM_final x" "mexec P t (x, m) ta (x', m')"
+  moreover obtain xcp frs tls where x: "x = (xcp, frs)" by (cases x, auto)
+  ultimately have "frs = []" by simp
+  moreover have "\<not> P,t \<turnstile> (xcp, m, []) -ta-jvm\<rightarrow> (fst x', m', snd x')"
+    by(simp add: exec_1_iff)
+  ultimately show False using `mexec P t (x, m) ta (x', m')` x by(auto)
+qed
+
+sublocale JVM_heap_base < exec_mthr!: final_thread_wf
+  JVM_final
+  "mexec P"
+  convert_RA
+  for P
+by(rule mexec_final_wf)
+
+lemma (in JVM_heap_base) mexecd_final_wf: "final_thread_wf JVM_final (mexecd P)"
+proof(unfold_locales)
+  fix x t m ta x' m'
+  assume "JVM_final x" "mexecd P t (x, m) ta (x', m')"
+  moreover obtain xcp frs where x: "x = (xcp, frs)" by (cases x, auto)
+  ultimately have "frs = []" by simp
+  moreover have "\<not> P,t \<turnstile> Normal (xcp, m, []) -ta-jvmd\<rightarrow> Normal (fst x', m', snd x')"
+    by(auto elim!: exec_1_d.cases simp add: exec_d_def split: split_if_asm)
+  ultimately show False using `mexecd P t (x, m) ta (x', m')` x by(auto)
+qed
+
+sublocale JVM_heap_base < execd_mthr!: final_thread_wf 
+  JVM_final
+  "mexecd P"
+  convert_RA
+  for P
+by(rule mexecd_final_wf)
 
 end

@@ -18,7 +18,7 @@ Our approach is completely parametric in the state space.
 We define expressions (@{text bexp}) as functions from states
 to the booleans: *}
 
-types bexp = "state \<Rightarrow> bool"
+type_synonym bexp = "state \<Rightarrow> bool"
 
 text{*
 Instead of modelling the syntax of boolean expressions, we

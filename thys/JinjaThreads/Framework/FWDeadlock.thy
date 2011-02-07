@@ -641,6 +641,74 @@ lemma deadlock_no_red:
 unfolding deadlock_eq_deadlocked'
 by(rule deadlocked'_no_red)
 
+lemma deadlock_no_active_threads:
+  assumes dead: "deadlock s"
+  shows "active_threads s = {}"
+proof(rule equals0I)
+  fix t
+  assume active: "t \<in> active_threads s"
+  then obtain x ln where tst: "thr s t = Some (x, ln)"
+    by(auto simp add: active_threads_iff)
+  show False
+  proof(cases "ln = no_wait_locks")
+    case True
+    with tst active obtain ta x' m' where red: "t \<turnstile> (x, shr s) -ta\<rightarrow> (x', m')"
+      and aok: "actions_ok s t ta" by(auto simp add: active_threads_iff)
+    let ?LT = "collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> {t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>}"
+    from red have cs: "t \<turnstile> \<langle>x, shr s\<rangle> ?LT \<wrong>"
+      by(rule can_syncI) simp
+    from dead tst have "\<And>w. wset s t \<noteq> \<lfloor>WokenUp w\<rfloor>"
+      unfolding True by(rule deadlockD3[rule_format])
+    with aok have wst: "wset s t = None"
+      by(auto simp add: wset_actions_ok_def split: split_if_asm)
+    from red have "\<not> final x" by(auto)
+    with dead tst obtain "\<And>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt\<in>LT. must_wait s t lt t')"
+      using wst unfolding True by(rule deadlockD1) blast
+    from this[of ?LT] cs obtain t'' x'' ln'' lt 
+      where "thr s t'' = Some (x'', ln'')"
+      and lt: "lt \<in> ?LT"
+      and mw: "must_wait s t lt t''" by fastsimp
+    from lt show ?thesis
+    proof
+      fix l
+      assume "l \<in> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
+        and [simp]: "lt = Inl l"
+      hence "Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)" by(blast intro: collect_locksD)
+    then obtain xs ys where tall: "\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l = xs @ Lock # ys"
+        unfolding in_set_conv_decomp by blast
+      from mw have hl: "has_lock ((locks s)\<^sub>f l) t''"
+        and "t'' \<noteq> t" by auto
+      from aok have "lock_actions_ok ((locks s)\<^sub>f l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)"
+        by(auto simp add: lock_ok_las_def)
+      hence lao: "lock_actions_ok ((locks s)\<^sub>f l) t xs" 
+        and mll: "may_lock (upd_locks ((locks s)\<^sub>f l) t xs) t"
+        unfolding tall by simp_all
+      from hl `t'' \<noteq> t` lao have "has_lock (upd_locks ((locks s)\<^sub>f l) t xs) t''" by simp
+      with mll `t'' \<noteq> t` show False by(auto dest: has_lock_may_lock_t_eq)
+    next
+      fix t'
+      assume "t' \<in> {t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>}"
+        and [simp]: "lt = Inr t'"
+      with mw have "Join t' \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" "not_final_thread s t'" by auto
+      thus False using aok by(fastsimp dest: cond_action_oks_Join)
+    qed
+  next
+    case False
+    with active tst have maa: "may_acquire_all (locks s) t ln"
+      and wait: "\<not> waiting (wset s t)"
+      by(simp_all add: active_threads_iff)
+    from False obtain l where "0 < ln\<^sub>f l"
+      by(auto simp add: expand_finfun_eq fun_eq_iff)
+    with dead tst obtain l' t' x' ln' where "0 < ln\<^sub>f l'" "t \<noteq> t'" 
+      and "thr s t' = Some (x', ln')" "has_lock ((locks s)\<^sub>f l') t'"
+      using wait by(rule deadlockD2) auto
+    from maa `0 < ln\<^sub>f l'` have "may_lock ((locks s)\<^sub>f l') t" 
+      by(rule may_acquire_allD)
+    with `t \<noteq> t'` `has_lock ((locks s)\<^sub>f l') t'`
+    show False by(auto dest: has_lock_may_lock_t_eq)
+  qed
+qed
+
 end
 
 locale preserve_deadlocked = 

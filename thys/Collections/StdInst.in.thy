@@ -43,9 +43,6 @@ lemmas it_set_to_fifo_correct = it_set_to_List_enq_correct[OF _ fifo_empty_impl 
 
 
 (*#patterns
- SetGA.sel_sel'@set_sel': (x:set)sel \<Rightarrow> (x:set)sel'
- MapGA.sel_sel'@map_sel': (x:map)sel \<Rightarrow> (x:map)sel'
-
  SetGA.it_copy@set_copy: (x:set)iterate (y:set)empty (y:set)ins \<Rightarrow> (x,y)copy
  SetGA.it_union@set_union: (x:set)iterate (y:set)ins \<Rightarrow> (x,y,y)union
  SetGA.it_union_dj@set_union_dj: (x:set)iterate (y:set)ins_dj \<Rightarrow> (x,y,y)union_dj

@@ -193,7 +193,7 @@ lemmas sup_loc_Cons1 [iff] = list_all2_Cons1 [of "sup_ty_opt P", standard]
 
 lemma sup_loc_def:
   "P \<turnstile> LT [\<le>\<^sub>\<top>] LT' \<equiv> Listn.le (sup_ty_opt P) LT LT'"
-(*<*) by (unfold Listn.le_def lesub_def) (*>*)
+(*<*) by (simp add: Listn.le_def lesub_def) (*>*)
 
 lemma sup_loc_widens_conv [iff]:
   "P \<turnstile> map OK Ts [\<le>\<^sub>\<top>] map OK Ts' = P \<turnstile> Ts [\<le>] Ts'"

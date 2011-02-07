@@ -508,10 +508,10 @@ next
       case (Normal w')
       with lift_exec [where c=c1, OF exec_lc1] s
       have "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> \<Rightarrow> Normal (project w')"
-	by (simp add: project\<^isub>x_def)
+        by (simp add: project\<^isub>x_def)
       from Seq.hyps (3) [rule_format, OF this] Normal
       show "lift\<^isub>e \<Gamma>\<turnstile>lift\<^isub>c c2 \<down> w"
-	by (auto simp add: project\<^isub>x_def xstate_map_convs)
+        by (auto simp add: project\<^isub>x_def xstate_map_convs)
     qed (auto)
   }
   ultimately show ?case
@@ -541,10 +541,10 @@ next
       case (Normal w')
       with lift_exec [where c=c, OF exec_lc] s
       have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal (project w')"
-	by (simp add: project\<^isub>x_def)
+        by (simp add: project\<^isub>x_def)
       from WhileTrue.hyps (4) [rule_format, OF this] Normal
       show "lift\<^isub>e \<Gamma>\<turnstile>lift\<^isub>c (While b c) \<down> w"
-	by (auto simp add: project\<^isub>x_def xstate_map_convs)
+        by (auto simp add: project\<^isub>x_def xstate_map_convs)
     qed (auto)
   }
   ultimately show ?case
@@ -592,10 +592,10 @@ next
     proof -
       from lift_exec [where c=c1, OF exec_lc1] s
       have "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> \<Rightarrow> Abrupt (project w)"
-	by (simp add: project\<^isub>x_def)
+        by (simp add: project\<^isub>x_def)
       from Catch.hyps (3) [rule_format, OF this] 
       show "lift\<^isub>e \<Gamma>\<turnstile>lift\<^isub>c c2 \<down> Normal w"
-	by (auto simp add: project\<^isub>x_def xstate_map_convs)
+        by (auto simp add: project\<^isub>x_def xstate_map_convs)
     qed
   }
   ultimately show ?case
@@ -1156,13 +1156,13 @@ next
     have "\<Gamma>'\<turnstile> While b (rename N c) \<down> t"
     proof -
       from exec_rename_to_exec [OF \<Gamma> exec_rc] obtain t'
-	where exec_c: "\<Gamma>\<turnstile> \<langle>c,Normal s\<rangle> \<Rightarrow> t'" and t': "(t' = Stuck \<or> t' = t)"
-	by auto
+        where exec_c: "\<Gamma>\<turnstile> \<langle>c,Normal s\<rangle> \<Rightarrow> t'" and t': "(t' = Stuck \<or> t' = t)"
+        by auto
       with s_in_b noStuck obtain "t'=t" and "\<Gamma>\<turnstile> \<langle>While b c,t\<rangle> \<Rightarrow>\<notin>{Stuck}"
-	by (auto simp add: final_notin_def intro: exec.intros)
+        by (auto simp add: final_notin_def intro: exec.intros)
       with exec_c WhileTrue.hyps
       show ?thesis
-	by auto
+        by auto
     qed
   }
   ultimately show ?case
@@ -1208,15 +1208,15 @@ next
     have "\<Gamma>'\<turnstile>rename N c2 \<down> Normal t"
     proof -
       from exec_rename_to_exec [OF \<Gamma> exec_rc1] obtain t'
-	where exec_c: "\<Gamma>\<turnstile> \<langle>c1,Normal s\<rangle> \<Rightarrow> t'" and "(t' = Stuck \<or> t' = Abrupt t)"
-	by auto
+        where exec_c: "\<Gamma>\<turnstile> \<langle>c1,Normal s\<rangle> \<Rightarrow> t'" and "(t' = Stuck \<or> t' = Abrupt t)"
+        by auto
       with noStuck have t': "t'=Abrupt t" 
-	by (fastsimp simp add: final_notin_def intro: exec.intros)
+        by (fastsimp simp add: final_notin_def intro: exec.intros)
       with exec_c noStuck have "\<Gamma>\<turnstile> \<langle>c2,Normal t\<rangle> \<Rightarrow>\<notin>{Stuck}"
-	by (auto simp add: final_notin_def intro: exec.intros)
+        by (auto simp add: final_notin_def intro: exec.intros)
       with exec_c t' Catch.hyps
       show ?thesis
-	by auto
+        by auto
     qed
   }
   ultimately show ?case

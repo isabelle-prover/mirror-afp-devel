@@ -116,21 +116,21 @@ proof -
     show "choiceFn A (?sdf P)"
     proof(rule r_c_qt_imp_cf[OF finiteA])
       show "complete A (?sdf P)" and "refl_on A (?sdf P)"
-	unfolding strict_pref_def by auto
+        unfolding strict_pref_def by auto
       show "quasi_trans (?sdf P)"
       proof
-	fix x y z assume xy: "x \<^bsub>(?sdf P)\<^esub>\<prec> y" and yz: "y \<^bsub>(?sdf P)\<^esub>\<prec> z"
-	from xy yz have xyzA: "x \<in> A" "y \<in> A" "z \<in> A"
- 	  unfolding strict_pref_def by auto
-	from xy yz have AxRy: "\<forall>i \<in> Is. x \<^bsub>(P i)\<^esub>\<preceq> y"
-    	            and ExPy: "\<exists>i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> y"
-	            and AyRz: "\<forall>i \<in> Is. y \<^bsub>(P i)\<^esub>\<preceq> z"
-	  unfolding strict_pref_def by auto
-	from AxRy AyRz ud have AxRz: "\<forall>i \<in> Is. x \<^bsub>(P i)\<^esub>\<preceq> z"
-	  by - (unfold universal_domain_def, blast dest: rpr_le_trans)
-	from ExPy AyRz ud have ExPz: "\<exists>i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> z"
-	  by - (unfold universal_domain_def, blast dest: rpr_less_le_trans)
-	from xyzA AxRz ExPz show "x \<^bsub>(?sdf P)\<^esub>\<prec> z" unfolding strict_pref_def by auto
+        fix x y z assume xy: "x \<^bsub>(?sdf P)\<^esub>\<prec> y" and yz: "y \<^bsub>(?sdf P)\<^esub>\<prec> z"
+        from xy yz have xyzA: "x \<in> A" "y \<in> A" "z \<in> A"
+          unfolding strict_pref_def by auto
+        from xy yz have AxRy: "\<forall>i \<in> Is. x \<^bsub>(P i)\<^esub>\<preceq> y"
+                    and ExPy: "\<exists>i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> y"
+                    and AyRz: "\<forall>i \<in> Is. y \<^bsub>(P i)\<^esub>\<preceq> z"
+          unfolding strict_pref_def by auto
+        from AxRy AyRz ud have AxRz: "\<forall>i \<in> Is. x \<^bsub>(P i)\<^esub>\<preceq> z"
+          by - (unfold universal_domain_def, blast dest: rpr_le_trans)
+        from ExPy AyRz ud have ExPz: "\<exists>i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> z"
+          by - (unfold universal_domain_def, blast dest: rpr_less_le_trans)
+        from xyzA AxRz ExPz show "x \<^bsub>(?sdf P)\<^esub>\<prec> z" unfolding strict_pref_def by auto
       qed
     qed
   qed
@@ -309,8 +309,8 @@ proof -
     obtain P
       where profileP: "profile A Is P"
         and xPiy: "x \<^bsub>(P i)\<^esub>\<prec> y"
-	and vPjx: "v \<^bsub>(P j)\<^esub>\<prec> x"
-	and AyPv: "\<forall>i \<in> Is. y \<^bsub>(P i)\<^esub>\<prec> v"
+        and vPjx: "v \<^bsub>(P j)\<^esub>\<prec> x"
+        and AyPv: "\<forall>i \<in> Is. y \<^bsub>(P i)\<^esub>\<prec> v"
       using liberal_witness_three[OF threeA twoIs] by blast
     from vPjx j djvu xu profileP have vPx: "v \<^bsub>(sdf P)\<^esub>\<prec> x"
       by (unfold decisive_def strict_pref_def, auto)
@@ -340,8 +340,8 @@ proof -
     obtain P
       where profileP: "profile A Is P"
         and xPiy: "x \<^bsub>(P i)\<^esub>\<prec> y"
-	and uPjx: "u \<^bsub>(P j)\<^esub>\<prec> x"
-	and AyPu: "\<forall>i \<in> Is. y \<^bsub>(P i)\<^esub>\<prec> u"
+        and uPjx: "u \<^bsub>(P j)\<^esub>\<prec> x"
+        and AyPu: "\<forall>i \<in> Is. y \<^bsub>(P i)\<^esub>\<prec> u"
       using liberal_witness_three[OF threeA twoIs] by blast
     from uPjx j djuv xv profileP have uPx: "u \<^bsub>(sdf P)\<^esub>\<prec> x"
       by (unfold decisive_def strict_pref_def, auto)
@@ -362,7 +362,7 @@ proof -
       where profileP: "profile A Is P"
         and yPix: "y \<^bsub>(P i)\<^esub>\<prec> x"
         and vPjy: "v \<^bsub>(P j)\<^esub>\<prec> y"
-	and AxPv: "\<forall>i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> v"
+        and AxPv: "\<forall>i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> v"
       using liberal_witness_three[OF threeA twoIs] by blast
     from yPix i diyx profileP have yPx: "y \<^bsub>(sdf P)\<^esub>\<prec> x"
       by (unfold decisive_def strict_pref_def, auto)
@@ -383,7 +383,7 @@ proof -
       where profileP: "profile A Is P"
         and yPix: "y \<^bsub>(P i)\<^esub>\<prec> x"
         and uPjy: "u \<^bsub>(P j)\<^esub>\<prec> y"
-	and AxPu: "\<forall>i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> u"
+        and AxPu: "\<forall>i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> u"
       using liberal_witness_three[OF threeA twoIs] by blast
     from yPix i diyx profileP have yPx: "y \<^bsub>(sdf P)\<^esub>\<prec> x"
       by (unfold decisive_def strict_pref_def, auto)

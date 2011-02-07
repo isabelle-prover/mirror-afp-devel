@@ -44,6 +44,8 @@
 The correctness is shown of binary search tree operations (lookup, insert and remove) implementing a set. Two versions are given, for both structured and linear (tactic-style) proofs. An implementation of integer-indexed maps is also verified.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

@@ -57,6 +57,8 @@ bootstrapping</em> to get constant-time <em>findMin</em> and <em>meld</em>
 operations.  Our implementation follows the paper by Brodal and Okasaki.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

@@ -355,6 +355,8 @@ interpretation jmm'!: heap_typesafe
 
 subsection {* Syntax translations *}
 
+notation jmm'.external_WT' ("_,_ \<turnstile>jmm' (_\<bullet>_'(_')) : _" [50,0,0,0,50] 60)
+
 abbreviation jmm'_red_external :: 
   "'m prog \<Rightarrow> thread_id \<Rightarrow> JMM_heap \<Rightarrow> addr \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> JMM_heap external_thread_action \<Rightarrow> 
     extCallRet \<Rightarrow> JMM_heap \<Rightarrow> bool"
@@ -366,6 +368,11 @@ abbreviation jmm'_red_external_syntax ::
   ("_,_ \<turnstile>jmm' (\<langle>(_\<bullet>_'(_')),/_\<rangle>) -_\<rightarrow>ext (\<langle>(_),/(_)\<rangle>)" [50, 0, 0, 0, 0, 0, 0, 0, 0] 51)
 where
   "P,t \<turnstile>jmm' \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<equiv> jmm'_red_external P t h a M vs ta va h'"
+
+abbreviation jmm'_red_external_aggr :: 
+  "'m prog \<Rightarrow> thread_id \<Rightarrow> addr \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> JMM_heap 
+    \<Rightarrow> JMM_heap external_thread_action \<times> extCallRet \<times> JMM_heap \<Rightarrow> bool"
+where "jmm'_red_external_aggr P \<equiv> jmm'.red_external_aggr TYPE('m) P P"
 
 abbreviation jmm'_heap_copy_loc :: "'m prog \<Rightarrow> addr \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> JMM_heap \<Rightarrow> obs_event list \<Rightarrow> JMM_heap \<Rightarrow> bool"
 where "jmm'_heap_copy_loc \<equiv> jmm'.heap_copy_loc TYPE('m)"

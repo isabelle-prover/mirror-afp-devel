@@ -12,13 +12,21 @@ imports
   MapSpec
   OrderedMap
   ListSpec
-  Fifo
+  AnnotatedListSpec
+  PrioSpec
+  PrioUniqueSpec
 (* Implementations *)
   SetStdImpl
   MapStdImpl
   StdInst
   RecordSetImpl
   RecordMapImpl
+  Fifo
+  BinoPrioImpl
+  SkewPrioImpl
+  FTAnnotatedListImpl
+  FTPrioImpl
+  FTPrioUniqueImpl
 
 (* Miscellanneous*)
   DatRef

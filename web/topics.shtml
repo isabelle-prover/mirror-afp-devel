@@ -106,7 +106,9 @@
 <strong>Compiling:</strong>&nbsp;<a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling-Exceptions-Correctly</a> &nbsp;
 <a href="entries/NormByEval.shtml">NormByEval</a> &nbsp;
 
-<strong>Static Analysis:</strong>&nbsp;<a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a> &nbsp;
+<strong>Static Analysis:</strong>&nbsp;<a href="entries/RIPEMD-160-SPARK.shtml">RIPEMD-160-SPARK</a> &nbsp;
+<a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a> &nbsp;
+<a href="entries/Shivers-CFA.shtml">Shivers-CFA</a> &nbsp;
 <a href="entries/Slicing.shtml">Slicing</a> &nbsp;
 <a href="entries/HRB-Slicing.shtml">HRB-Slicing</a> &nbsp;
 
@@ -161,6 +163,7 @@
 <h3>Analysis</h3>
 
 <div class="list">
+<a href="entries/Lower_Semicontinuous.shtml">Lower_Semicontinuous</a> &nbsp;
 <a href="entries/Cauchy.shtml">Cauchy</a> &nbsp;
 <a href="entries/Integration.shtml">Integration</a> &nbsp;
 <a href="entries/Polynomials.shtml">Polynomials</a> &nbsp;
@@ -196,6 +199,7 @@
 <h3>Combinatorics</h3>
 
 <div class="list">
+<a href="entries/Marriage.shtml">Marriage</a> &nbsp;
 <a href="entries/Ramsey-Infinite.shtml">Ramsey-Infinite</a> &nbsp;
 </div>
 

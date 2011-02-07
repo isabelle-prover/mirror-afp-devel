@@ -1,11 +1,9 @@
-(*  ID:         $Id: Logic.thy,v 1.5 2008-06-12 06:57:24 lsf37 Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 header{* Logic *}
 
 theory Logic
-imports Main FuncSet
+imports Main "~~/src/HOL/Library/FuncSet"
 begin
 
 text{* \noindent

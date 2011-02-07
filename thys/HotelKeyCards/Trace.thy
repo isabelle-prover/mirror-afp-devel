@@ -269,7 +269,7 @@ next
     thus ?case by blast
   next
     assume "\<not>(x = a \<or> P a)"
-    show ?case using prems by clarsimp (fastsimp intro!: Cons_eq_appendI)
+    with assms Cons show ?case by clarsimp (fastsimp intro!: Cons_eq_appendI)
   qed
 qed
 
@@ -277,7 +277,7 @@ lemma ownsD: "owns s r = Some g \<Longrightarrow>
  EX s\<^isub>1 s\<^isub>2 g c. s = s\<^isub>2 @ [Check_in g r c] @ s\<^isub>1 \<and> no_Check_in s\<^isub>2 r"
 apply(induct s)
  apply simp
-apply (auto split:event.splits if_splits)
+apply (auto split:event.splits)
 apply(rule_tac x = s in exI)
 apply(rule_tac x = "[]" in exI)
 apply simp
@@ -348,38 +348,38 @@ proof -
       let ?s = "s\<^isub>3 @ ?b" and ?t = "(e \<cdot> s\<^isub>3) @ ?b"
       show ?case
       proof(cases e)
-	case (Enter g'' r' c)[simp]
-	show "g' = g"
-	proof cases
-	  assume [simp]: "r' = r"
-	  show "g' = g"
-	  proof cases
-	    assume [simp]: "g'' = g"
-	    have 1: "hotel ?s" and 2: "c \<in> cards ?s g" using `hotel ?t` by auto
-	    have 3: "safe ?s r" using `no_Check_in ((e \<cdot> s\<^isub>3) @ s\<^isub>2) r` 0
-	      by(simp add:safe_def) blast
-	    obtain k\<^isub>1 k\<^isub>2 where [simp]: "c = (k\<^isub>1,k\<^isub>2)" by force
-	    have "roomk ?s r = k'"
-	      using safe_roomk_currk[OF 1 safe_safe[OF 3]]
-		`no_Check_in ((e \<cdot> s\<^isub>3) @ s\<^isub>2) r` by auto
-	    hence "k\<^isub>1 \<noteq> roomk ?s r"
-	      using no_checkin_no_newkey[where s\<^isub>2 = "s\<^isub>3 @ [Enter g' r (k,k')] @ s\<^isub>2"]
-		1 2 `no_Check_in ((e \<cdot> s\<^isub>3) @ s\<^isub>2) r` by auto
-	    hence "k\<^isub>2 = roomk ?s r" using `hotel ?t` by auto
-	    with only_owner_enter_normal[OF 1 safe_safe[OF 3]] 2
-	    have "owns ?t r =  \<lfloor>g\<rfloor>" by auto
-	    moreover have "owns ?t r = \<lfloor>g'\<rfloor>"
-	      using `hotel ?t` `no_Check_in ((e \<cdot> s\<^isub>3) @ s\<^isub>2) r` by simp
-	    ultimately show "g' = g" by simp
-	  next
-	    assume "g'' \<noteq> g" thus "g' = g" using Cons by auto
-	  qed
-	next
-	  assume "r' \<noteq> r" thus "g' = g" using Cons by auto
-	qed
+        case (Enter g'' r' c)[simp]
+        show "g' = g"
+        proof cases
+          assume [simp]: "r' = r"
+          show "g' = g"
+          proof cases
+            assume [simp]: "g'' = g"
+            have 1: "hotel ?s" and 2: "c \<in> cards ?s g" using `hotel ?t` by auto
+            have 3: "safe ?s r" using `no_Check_in ((e \<cdot> s\<^isub>3) @ s\<^isub>2) r` 0
+              by(simp add:safe_def) blast
+            obtain k\<^isub>1 k\<^isub>2 where [simp]: "c = (k\<^isub>1,k\<^isub>2)" by force
+            have "roomk ?s r = k'"
+              using safe_roomk_currk[OF 1 safe_safe[OF 3]]
+                `no_Check_in ((e \<cdot> s\<^isub>3) @ s\<^isub>2) r` by auto
+            hence "k\<^isub>1 \<noteq> roomk ?s r"
+              using no_checkin_no_newkey[where s\<^isub>2 = "s\<^isub>3 @ [Enter g' r (k,k')] @ s\<^isub>2"]
+                1 2 `no_Check_in ((e \<cdot> s\<^isub>3) @ s\<^isub>2) r` by auto
+            hence "k\<^isub>2 = roomk ?s r" using `hotel ?t` by auto
+            with only_owner_enter_normal[OF 1 safe_safe[OF 3]] 2
+            have "owns ?t r =  \<lfloor>g\<rfloor>" by auto
+            moreover have "owns ?t r = \<lfloor>g'\<rfloor>"
+              using `hotel ?t` `no_Check_in ((e \<cdot> s\<^isub>3) @ s\<^isub>2) r` by simp
+            ultimately show "g' = g" by simp
+          next
+            assume "g'' \<noteq> g" thus "g' = g" using Cons by auto
+          qed
+        next
+          assume "r' \<noteq> r" thus "g' = g" using Cons by auto
+        qed
       qed (insert Cons, auto)
     qed
-  } with prems show "owns s r = \<lfloor>g\<rfloor>" by(auto simp:safe_def)
+  } with assms show "owns s r = \<lfloor>g\<rfloor>" by(auto simp:safe_def)
 qed
 text_raw{*
   \end{minipage}

@@ -1,2 +1,2 @@
-no_document use_thy "Infinite_Set";
+no_document use_thy "~~/src/HOL/Library/Infinite_Set";
 use_thy "FOL_Fitting";

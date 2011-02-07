@@ -1,6 +1,4 @@
-(*  ID:         $Id: QElin_inf.thy,v 1.10 2009-02-27 17:46:41 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory QElin_inf
 imports LinArith
@@ -37,7 +35,8 @@ apply(clarsimp simp:nolb_def)
 apply blast
 done
 
-declare[[simp_depth_limit=3]]
+declare[[simp_depth_limit=4]]
+
 lemma innermost_intvl:
   "\<lbrakk> nqfree f; nolb f xs l x; l < x; x \<notin> EQ f xs; R.I f (x#xs); l < y; y \<le> x\<rbrakk>
   \<Longrightarrow> R.I f (y#xs)"
@@ -55,23 +54,23 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Atom by simp }
       moreover
       { assume "c<0"
-	hence "x < (r - \<langle>cs,xs\<rangle>)/c" (is "_ < ?u") using `r < c*x + \<langle>cs,xs\<rangle>`
-	  by (simp add: field_simps)
-	have ?thesis
-	proof (rule ccontr)
-	  assume "\<not> R.I (Atom a) (y#xs)"
-	  hence "?u \<le> y" using Atom `c<0`
-	    by (auto simp add: field_simps)
-	  with `x<?u` show False using Atom `c<0`
-	    by(auto simp:depends\<^isub>R_def)
-	qed } moreover
+        hence "x < (r - \<langle>cs,xs\<rangle>)/c" (is "_ < ?u") using `r < c*x + \<langle>cs,xs\<rangle>`
+          by (simp add: field_simps)
+        have ?thesis
+        proof (rule ccontr)
+          assume "\<not> R.I (Atom a) (y#xs)"
+          hence "?u \<le> y" using Atom `c<0`
+            by (auto simp add: field_simps)
+          with `x<?u` show False using Atom `c<0`
+            by(auto simp:depends\<^isub>R_def)
+        qed } moreover
       { assume "c>0"
-	hence "x > (r - \<langle>cs,xs\<rangle>)/c" (is "_ > ?l") using `r < c*x + \<langle>cs,xs\<rangle>`
-	  by (simp add: field_simps)
-	then have "?l < y" using Atom `c>0`
-	    by (auto simp:depends\<^isub>R_def Ball_def nolb_def)
+        hence "x > (r - \<langle>cs,xs\<rangle>)/c" (is "_ > ?l") using `r < c*x + \<langle>cs,xs\<rangle>`
+          by (simp add: field_simps)
+        then have "?l < y" using Atom `c>0`
+            by (auto simp:depends\<^isub>R_def Ball_def nolb_def)
                (metis linorder_not_le antisym order_less_trans)
-	hence ?thesis using `c>0` by (simp add: field_simps)
+        hence ?thesis using `c>0` by (simp add: field_simps)
       } ultimately show ?thesis by force
     qed
   next
@@ -85,8 +84,8 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Atom by simp }
       moreover
       { assume "c\<noteq>0"
-	hence ?thesis using `r = c*x + \<langle>cs,xs\<rangle>` Atom
-	  by(auto simp: mult_ac depends\<^isub>R_def split:if_splits) }
+        hence ?thesis using `r = c*x + \<langle>cs,xs\<rangle>` Atom
+          by(auto simp: mult_ac depends\<^isub>R_def split:if_splits) }
       ultimately show ?thesis by force
     qed
   qed
@@ -126,20 +125,20 @@ next
     { assume "d<0"
       have "s < d*x + \<langle>ds,xs\<rangle>" using Atom 1 by simp
       moreover have "d*x < d*(r + \<langle>cs,xs\<rangle>)" using `d<0` Atom 1
-	by (simp add: mult_strict_left_mono_neg)
+        by (simp add: mult_strict_left_mono_neg)
       ultimately have "s < d * (r + \<langle>cs,xs\<rangle>) + \<langle>ds,xs\<rangle>" by(simp add:algebra_simps)
       hence ?thesis using 1
-	by (auto simp add: iprod_left_add_distrib algebra_simps)
+        by (auto simp add: iprod_left_add_distrib algebra_simps)
     } moreover
     { let ?L = "(s - \<langle>ds,xs\<rangle>) / d" let ?U = "r + \<langle>cs,xs\<rangle>"
       assume "d>0"
       hence "?U < x" and "\<forall>y. ?U < y \<and> y < x \<longrightarrow> y \<noteq> ?L"
         and "\<forall>y. ?U < y \<and> y \<le> x \<longrightarrow> ?L < y" using Atom 1
-	by(simp_all add:nolb_def depends\<^isub>R_def Ball_def field_simps)
+        by(simp_all add:nolb_def depends\<^isub>R_def Ball_def field_simps)
       hence "?L < ?U \<or> ?L = ?U"
-	by (metis linorder_neqE_linordered_idom real_le_refl)
+        by (metis linorder_neqE_linordered_idom real_le_refl)
       hence ?thesis using Atom 1 `d>0`
-	by (simp add: iprod_left_add_distrib field_simps)
+        by (simp add: iprod_left_add_distrib field_simps)
     } ultimately show ?thesis by force
   next
     case 2 thus ?thesis using Atom
@@ -164,10 +163,10 @@ next
     moreover
     { assume "d<0"
       with Atom 1 have "r + \<langle>cs,xs\<rangle> < (s - \<langle>ds,xs\<rangle>)/d" (is "?a < ?b")
-	by(simp add:field_simps iprod_left_add_distrib)
+        by(simp add:field_simps iprod_left_add_distrib)
       then obtain x where "?a < x" "x < ?b" by(metis dense)
       hence " \<forall>y. ?a < y \<and> y \<le> x \<longrightarrow> s < d*y + \<langle>ds,xs\<rangle>"
-	using `d<0` by (simp add:field_simps)
+        using `d<0` by (simp add:field_simps)
       (metis add_le_cancel_right mult_le_cancel_left real_le_antisym real_le_linear real_mult_commute xt1(8))
       hence ?thesis using 1 `?a<x` by auto
     } moreover
@@ -176,20 +175,20 @@ next
       with Atom 1 have "?a < ?b \<or> ?a = ?b" by auto
       hence ?thesis
       proof
-	assume "?a = ?b"
-	thus ?thesis using `d>0` Atom 1
-	  by(simp add:field_simps iprod_left_add_distrib)
+        assume "?a = ?b"
+        thus ?thesis using `d>0` Atom 1
+          by(simp add:field_simps iprod_left_add_distrib)
             (metis add_0_left add_less_cancel_right right_distrib real_mult_commute real_mult_less_mono2)
       next
-	assume "?a < ?b"
-	{ fix x assume "r+\<langle>cs,xs\<rangle> < x \<and> x \<le> r+\<langle>cs,xs\<rangle> + 1"
-	  hence "d*(r + \<langle>cs,xs\<rangle>) < d*x"
-	    using `d>0` by(metis real_mult_less_mono2)
-	  hence "s < d*x + \<langle>ds,xs\<rangle>" using `d>0` `?a < ?b`
-	    by (simp add:algebra_simps iprod_left_add_distrib)
-	}
-	thus ?thesis using 1 `d>0`
-	  by(force simp: iprod_left_add_distrib)
+        assume "?a < ?b"
+        { fix x assume "r+\<langle>cs,xs\<rangle> < x \<and> x \<le> r+\<langle>cs,xs\<rangle> + 1"
+          hence "d*(r + \<langle>cs,xs\<rangle>) < d*x"
+            using `d>0` by(metis real_mult_less_mono2)
+          hence "s < d*x + \<langle>ds,xs\<rangle>" using `d>0` `?a < ?b`
+            by (simp add:algebra_simps iprod_left_add_distrib)
+        }
+        thus ?thesis using 1 `d>0`
+          by(force simp: iprod_left_add_distrib)
       qed
     } ultimately show ?thesis by (metis less_linear)
   qed (insert Atom, auto split:split_if_asm intro: less_add_one)
@@ -241,7 +240,7 @@ proof
            "\<not> R.I (inf\<^isub>- f) xs"
     with `?QE` `nqfree f` obtain r cs where "R.I (subst\<^isub>+ f (r,cs)) xs"
       by(fastsimp simp:qe_eps\<^isub>1_def set_ebounds diff_divide_distrib eval_def
-	diff_minus[symmetric] I_subst `nqfree f`)
+        diff_minus[symmetric] I_subst `nqfree f`)
     then obtain leps where "R.I f (leps#xs)"
       using I_subst_peps[OF `nqfree f`] by fastsimp
     hence ?EX .. }
@@ -259,7 +258,7 @@ next
     and "\<forall>rcs \<in> set ?ebs. \<not> R.I (subst f rcs) xs"
     hence noE: "\<forall>e \<in> EQ f xs. \<not> R.I f (e#xs)" using `nqfree f`
       by (force simp:set_ebounds I_subst diff_divide_distrib eval_def
-	diff_minus[symmetric] split:split_if_asm)
+        diff_minus[symmetric] split:split_if_asm)
     hence "x \<notin> EQ f xs" using x by fastsimp
     obtain l where "l \<in> LB f xs" "l < x"
       using LBex[OF `nqfree f` x `\<not> R.I(inf\<^isub>- f) xs` `x \<notin> EQ f xs`] ..
@@ -274,7 +273,7 @@ next
       by blast
     then moreover have "R.I (subst\<^isub>+ f (r/c, (-1/c) *\<^sub>s cs)) xs" using noE
       by(auto intro!: I_subst_peps2[OF `nqfree f`]
-	simp:EQ2_def diff_divide_distrib algebra_simps)
+        simp:EQ2_def diff_divide_distrib algebra_simps)
     ultimately have ?QE
       by(simp add:qe_eps\<^isub>1_def bex_Un set_lbounds) metis
   } ultimately show ?QE by blast

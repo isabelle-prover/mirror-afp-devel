@@ -1,5 +1,4 @@
-(*  ID:         $Id: MaxChop.thy,v 1.10 2008-10-07 14:07:44 fhaftmann Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
@@ -9,7 +8,7 @@ theory MaxChop
 imports MaxPrefix
 begin
 
-types   'a chopper = "'a list => 'a list list * 'a list"
+type_synonym 'a chopper = "'a list => 'a list list * 'a list"
 
 definition
  is_maxchopper :: "('a list => bool) => 'a chopper => bool" where

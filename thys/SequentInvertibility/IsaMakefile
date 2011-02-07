@@ -20,18 +20,17 @@ LOG = $(OUT)/log
 # time limit (in sec)
 MAXTIME = 500
 
-# turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
-ifeq ($(ISABELLE_IMAGE_PATH),)
+# not a release image, so only $(OUT)
 IMAGE=$(OUT)/$(BASE-IMAGE)
-else
-IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
-endif
 
 USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
 ## dependencies
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): $(BASE-IMAGE) $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(BASE-IMAGE):
+	cd $(ISABELLE_HOME)/src/HOL && $(ISABELLE_TOOL) make $(BASE-IMAGE)
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex 
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)

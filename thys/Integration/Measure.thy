@@ -105,29 +105,29 @@ proof -
     next
       case empty
       from sig have "{}\<in>a" 
-	by (simp only: sigma_algebra_def)     
+        by (simp only: sigma_algebra_def)     
       thus "{} \<in> Q" 
-	by (simp add: Q_def)
+        by (simp add: Q_def)
     next
       case complement
       fix r assume "r \<in> Q"
       then obtain r1 where im: "r1 = f -` r" and a: "r1 \<in> a" 
-	by (simp add: Q_def)
+        by (simp add: Q_def)
       with sig have "-r1 \<in> a" 
-	by (simp only: sigma_algebra_def)
+        by (simp only: sigma_algebra_def)
       with im Q_def show "-r \<in> Q" 
-	by (simp add: vimage_Compl)
+        by (simp add: vimage_Compl)
     next
       case Union
       fix r assume "\<And>i::nat. r i \<in> Q"
-      then obtain r1 where im: "\<And>i. r1 i =  f -` r i" and a: "\<And>i. r1 i \<in>	a" 
-	by (simp add: Q_def)
+      then obtain r1 where im: "\<And>i. r1 i =  f -` r i" and a: "\<And>i. r1 i \<in>        a" 
+        by (simp add: Q_def)
       from a sig have "UNION UNIV r1 \<in> a" 
-	by (auto simp only: sigma_algebra_def)
+        by (auto simp only: sigma_algebra_def)
       with im Q_def show "UNION UNIV r \<in> Q" 
-	by (auto simp add: vimage_UN)
+        by (auto simp add: vimage_UN)
     qed }
-	
+        
   hence "(sigma b) \<subseteq> Q" ..
   thus "f \<in> measurable a (sigma b)" 
     by (auto simp add: measurable_def Q_def)
@@ -184,7 +184,7 @@ lemma mkdisjoint_disj:
       fix x assume x: "x \<in> mkdisjoint A m2"
       with eq have"x \<notin> A n" by simp
       also from up have "A n = (\<Union>i\<in>{..n}. mkdisjoint A i)" 
-	by (rule mkdisjoint_un) 
+        by (rule mkdisjoint_un) 
       also 
       from less2 have "m1 \<in> {..n}" by simp
       hence "mkdisjoint A m1 \<subseteq> (\<Union>i\<in>{..n}. mkdisjoint A i)" by auto
@@ -262,7 +262,7 @@ proof -
       case (Suc i)
       have "A (Suc i) - A i = A (Suc i) \<inter> - A i" by blast
       with Suc ms Ams show ?thesis 
-	by (auto simp add: measure_space_def sigma_algebra_def sigma_algebra_inter)
+        by (auto simp add: measure_space_def sigma_algebra_def sigma_algebra_inter)
     qed
   } 
   hence i: "\<And>i. mkdisjoint A i \<in> measurable_sets M" .
@@ -310,16 +310,16 @@ proof -
     proof -
       have "UNIV = {..n} \<union> {n<..}" by auto
       hence "(\<Union>i. if i\<le>n then mkdisjoint A i else {}) = 
-	(\<Union>i\<in>{..n}. if i\<le>n then mkdisjoint A i else {}) 
-	\<union>  (\<Union>i\<in>{n<..}. if i\<le>n then mkdisjoint A i else {})" 
-	by (auto simp add: UN_Un)
+        (\<Union>i\<in>{..n}. if i\<le>n then mkdisjoint A i else {}) 
+        \<union>  (\<Union>i\<in>{n<..}. if i\<le>n then mkdisjoint A i else {})" 
+        by (auto simp add: UN_Un)
       moreover
       { have "(\<Union>i\<in>{n<..}. if i\<le>n then mkdisjoint A i else {}) = {}"
-	  by force }
+          by force }
       hence "\<dots> = (\<Union>i\<in>{..n}. mkdisjoint A i)" 
-	by auto
+        by auto
       ultimately show 
-	"(\<Union>i\<in>{..n}. mkdisjoint A i) = (\<Union>i. if i\<le>n then mkdisjoint A i else {})" by simp
+        "(\<Union>i\<in>{..n}. mkdisjoint A i) = (\<Union>i. if i\<le>n then mkdisjoint A i else {})" by simp
     qed
     
     ultimately have 
@@ -388,17 +388,17 @@ lemma measure_additive: assumes ms: "measure_space M"
       assume "x \<in> a \<union> b"
       hence "\<exists>i. x \<in> trivial_series2 a b i"
       proof 
-	assume "x \<in> a"
-	hence "x \<in> trivial_series2 a b 0"
-	  by simp
-	thus "\<exists>i. x \<in> trivial_series2 a b i"
-	  by fast
+        assume "x \<in> a"
+        hence "x \<in> trivial_series2 a b 0"
+          by simp
+        thus "\<exists>i. x \<in> trivial_series2 a b i"
+          by fast
       next
-	assume "x \<in> b"
-	hence "x \<in> trivial_series2 a b 1"
-	  by simp
-	thus "\<exists>i. x \<in> trivial_series2 a b i"
-	  by fast
+        assume "x \<in> b"
+        hence "x \<in> trivial_series2 a b 1"
+          by simp
+        thus "\<exists>i. x \<in> trivial_series2 a b i"
+          by fast
       qed
     }
     hence "(x \<in> a \<union> b) \<Longrightarrow> (x \<in> (\<Union>i. trivial_series2 a b i))"
@@ -406,17 +406,16 @@ lemma measure_additive: assumes ms: "measure_space M"
     also
     { 
       assume "x \<in> (\<Union>i. trivial_series2 a b i)"
-      then obtain i where "x \<in> trivial_series2 a b i"
-	by auto
+      then obtain i where x: "x \<in> trivial_series2 a b i"
+        by auto
       hence "x \<in> a \<union> b"
       proof (cases i)
-	case 0
-	with prems show ?thesis 
-	  by simp
+        case 0
+        with x show ?thesis by simp
       next
-	case (Suc n)
-	with prems show ?thesis
-	  by (cases n) auto
+        case (Suc n)
+        with x show ?thesis
+          by (cases n) auto
       qed
     }
     ultimately show "(x \<in> a \<union> b) = (x \<in> (\<Union>i. trivial_series2 a b i))"

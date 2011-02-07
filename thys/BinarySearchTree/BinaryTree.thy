@@ -27,12 +27,12 @@ where
   "setOf Tip = {}"
 | "setOf (T t1 x t2) = (setOf t1) Un (setOf t2) Un {x}"
 
-types
+type_synonym
   -- {* we require index to have an irreflexive total order < *}
   -- {* apart from that, we do not rely on index being int *}
   index = int 
 
-types -- {* hash function type *}
+type_synonym -- {* hash function type *}
   'a hash = "'a => index"
 
 definition eqs :: "'a hash => 'a => 'a set" where
@@ -681,7 +681,7 @@ proof (induct t)
                           setOf t1 Un setOf t2" 
                 proof -
                   from ex have xOk: "x : eqs h e" by (simp add: eqs_def)                  
-		  have t1Ok: "(setOf t1) Int (eqs h e) = {}"
+                  have t1Ok: "(setOf t1) Int (eqs h e) = {}"
                   proof (rule disjCond)
                     fix y :: 'a 
                     assume y_in_t1: "y : setOf t1"

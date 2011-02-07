@@ -254,9 +254,9 @@ proof -
       have aux1: "(1::int) \<ge> 0" by simp
       from k and aneg have "\<bar>a\<bar> = 2*(-1-k) + 1" by simp
       with k2 aux1 have "?a = nat (2*(-1-k)) + nat 1"
-	by (simp only: nat_add_distrib)
+        by (simp only: nat_add_distrib)
       with aux2 have "?a = (nat 2)*nat(-1-k) + nat 1"
-	by (simp only: nat_mult_distrib)
+        by (simp only: nat_mult_distrib)
       thus ?thesis by simp
     qed
   qed
@@ -301,13 +301,13 @@ proof -
     proof (cases)
       assume bpos: "b \<ge> 0" then obtain q where "q = int m" by simp
       with p aneg bpos absabc mn_rel have "?Q p q" 
-	by (simp add: zgcd_commute)
+        by (simp add: zgcd_commute)
       thus ?thesis by (rule exI)
     next
       assume "\<not> b\<ge>0" hence bneg: "b<0" by simp 
       then obtain q where "q = - int m" by simp
       with p aneg bneg absabc mn_rel have "?Q p q" 
-	by (simp add: zgcd_commute mult_ac)
+        by (simp add: zgcd_commute mult_ac)
       thus ?thesis by (rule exI)
     qed
     thus ?thesis by (simp only: exI)
@@ -412,10 +412,10 @@ proof -
     proof -
       have "?g \<noteq> 0"
       proof
-	assume "?g=0"
-	hence "nat \<bar>\<alpha>\<bar>=0" by (unfold zgcd_def, auto simp add: gcd_zero)
-	hence "\<alpha>=0" by arith
-	with albega0 show False by simp
+        assume "?g=0"
+        hence "nat \<bar>\<alpha>\<bar>=0" by (unfold zgcd_def, auto simp add: gcd_zero)
+        hence "\<alpha>=0" by arith
+        with albega0 show False by simp
       qed
       hence "?g>0" by (auto simp only: zgcd_geq_zero less_int_def)
       with gnot1 show ?thesis by simp
@@ -424,7 +424,7 @@ proof -
     proof -
       have "?g dvd \<alpha> \<and> ?g dvd \<beta>" by auto
       with albega have "?g dvd \<bar>k\<bar> \<and> ?g dvd \<bar>l\<bar>" 
-	by (simp add: power2_eq_square zmult_commute)  
+        by (simp add: power2_eq_square zmult_commute)  
       hence "?g dvd k \<and> ?g dvd l" by simp
       thus ?thesis by (simp add: zgcd_greatest_iff)
     qed
@@ -445,14 +445,14 @@ proof -
     moreover
     { assume "\<alpha> \<in> zOdd"
       with newabc albega0 alphabeta_relprime obtain p q where 
-	"p=\<alpha> \<and> q=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
-	by auto
+        "p=\<alpha> \<and> q=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
+        by auto
       hence ?thesis by auto }
     moreover
     { assume "\<beta> \<in> zOdd"
       with newabc albega0 alphabeta_relprime obtain p q where 
-	"q=\<alpha> \<and> p=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
-	by (auto simp add: add_ac zgcd_commute)
+        "q=\<alpha> \<and> p=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
+        by (auto simp add: add_ac zgcd_commute)
       hence ?thesis by auto }
     ultimately show ?thesis by auto
   qed
@@ -465,7 +465,7 @@ proof -
     also have "\<dots> < u^2 + v^2" 
     proof -
       from uv0 have v2non0: "0 \<noteq> v^2" 
-	by (auto simp add: power2_eq_square zero_le_power2)
+        by (auto simp add: power2_eq_square zero_le_power2)
       have "0 \<le> v^2" by (rule zero_le_power2)
       with v2non0 have "0 < v^2" by (auto simp add: less_int_def)
       thus ?thesis by auto
@@ -536,12 +536,12 @@ proof (rule ccontr)
     proof -
       have "?c^2 * ?g^4 = (a^4+b^4)*?g^4"
       proof -
-	have "?c^2 * ?g^4 = (?c*?g^2)^2" 
-	  by (simp only: quartic_square_square power_mult_distrib)
-	also with cgz have "\<dots> = (z^2)^2" by simp
-	also have "\<dots> = z^4" by (rule quartic_square_square)
-	also with zgab have "\<dots> = ?g^4*(a^4+b^4)" by simp
-	finally show ?thesis by simp
+        have "?c^2 * ?g^4 = (?c*?g^2)^2" 
+          by (simp only: quartic_square_square power_mult_distrib)
+        also with cgz have "\<dots> = (z^2)^2" by simp
+        also have "\<dots> = z^4" by (rule quartic_square_square)
+        also with zgab have "\<dots> = ?g^4*(a^4+b^4)" by simp
+        finally show ?thesis by simp
       qed
       with g0 show ?thesis by auto
     qed
@@ -567,8 +567,8 @@ proof (rule ccontr)
     { assume "b \<in> zOdd"
       then obtain p q where "p = b" and "q = a" and "p \<in> zOdd" by simp    
       with ab abc have 
-	"p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
-	by (auto simp add: zgcd_commute zmult_commute)
+        "p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
+        by (auto simp add: zgcd_commute zmult_commute)
       hence ?thesis by auto }
     ultimately show ?thesis by auto
   qed

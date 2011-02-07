@@ -5,7 +5,7 @@
 header "Combining automata and regular expressions, including code generation"
 
 theory AutoRegExp
-imports Automata RegExp2NA RegExp2NAe Executable_Set
+imports Automata RegExp2NA RegExp2NAe "~~/src/HOL/Library/Executable_Set"
 begin
 
 theorem "DA.accepts (na2da(rexp2na r)) w = (w : lang r)"

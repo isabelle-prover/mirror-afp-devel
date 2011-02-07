@@ -5,7 +5,7 @@
 header {* Categories *}
 
 theory Cat
-imports FuncSet
+imports "~~/src/HOL/Library/FuncSet"
 begin
 
 subsection {* Definitions *}

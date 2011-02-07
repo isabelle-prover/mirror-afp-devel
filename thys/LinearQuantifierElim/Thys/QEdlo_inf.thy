@@ -1,6 +1,4 @@
-(*  ID:         $Id: QEdlo_inf.thy,v 1.7 2009-02-27 17:46:41 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory QEdlo_inf
 imports DLO

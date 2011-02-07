@@ -43,6 +43,8 @@
 We present the verification of the normalisation of a binary decision diagram (BDD). The normalisation follows the original algorithm presented by Bryant in 1986 and transforms an ordered BDD in a reduced, ordered and shared BDD. The verification is based on Hoare logics.
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

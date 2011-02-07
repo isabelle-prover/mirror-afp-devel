@@ -1,6 +1,6 @@
 (*  Title:      statecharts/DataSpace/Contrib.thy
     ID:         $Id: Contrib.thy,v 1.3 2010/07/23 15:34:04 helke Exp $
-    Author:     Steffen Helke and Florian Kammüller, Software Engineering Group
+    Author:     Steffen Helke and Florian KammÃ¼ller, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)
 

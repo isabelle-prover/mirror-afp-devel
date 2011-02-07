@@ -34,7 +34,7 @@ theorem hoare_sequential:
 
 theorem hoare_choice:
   "\<Turnstile> p {| S \<sqinter> T |} q = (\<Turnstile> p {| S |} q \<and> \<Turnstile> p {| T |} q)"
-  by (simp_all add: Hoare_def inf_fun_eq)
+  by (simp_all add: Hoare_def inf_fun_def)
 
 theorem hoare_assume:
   "(\<Turnstile> P {| assume R |} Q) = (P \<sqinter> R \<le> Q)"
@@ -62,7 +62,7 @@ theorem hoare_Sup:
   by (simp add: Hoare_def Sup_least)
   
 lemma hoare_magic [simp]: "\<Turnstile> P {| top |} Q" 
-  by (simp add: Hoare_def top_fun_eq)
+  by (simp add: Hoare_def top_fun_def)
 
 lemma hoare_demonic: "\<Turnstile> P {| demonic R |} Q = (\<forall> s . s \<in> P \<longrightarrow>  R s \<subseteq> Q)"
   apply (unfold Hoare_def demonic_def)

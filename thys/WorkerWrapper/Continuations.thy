@@ -138,10 +138,6 @@ lemma eval_body'_eval_body_final_eq: "eval_body_final oo unwrapC oo wrapC = eval
   apply (rule ext_cfun)+
   apply (case_tac xa)
      apply (simp_all add: unwrapC_def)
-  apply (case_tac "wrapC\<cdot>x\<cdot>Expr1")
-    apply simp_all
-  apply (case_tac "wrapC\<cdot>x\<cdot>Expr2")
-    apply simp_all
   done
 
 definition

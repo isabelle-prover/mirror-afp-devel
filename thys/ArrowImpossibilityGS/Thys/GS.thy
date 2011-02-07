@@ -86,15 +86,15 @@ proof-
       case (Suc n)
       let ?up = "(?M n)(inv h n := P' (inv h n))"
       have 1: "?M(Suc n) = ?up" using surjh Suc(2)
-	by(simp (no_asm_simp) add:fun_eq_iff f_inv_into_f)
-	  (metis injh inv_f_f less_antisym)
+        by(simp (no_asm_simp) add:fun_eq_iff f_inv_into_f)
+          (metis injh inv_f_f less_antisym)
       show ?case
       proof(rule ccontr)
-	assume "\<not> ?case"
-	with `?M(Suc n) = ?up` Suc have 0: "f ?up \<noteq> f(?M n)" by simp
- 	from nonmanip[OF MProf P'Lin 0] assms(3) show False
-	  using N surjh Suc Lin_irrefl[OF P'Lin]
-	  by(fastsimp simp: f_inv_into_f)
+        assume "\<not> ?case"
+        with `?M(Suc n) = ?up` Suc have 0: "f ?up \<noteq> f(?M n)" by simp
+        from nonmanip[OF MProf P'Lin 0] assms(3) show False
+          using N surjh Suc Lin_irrefl[OF P'Lin]
+          by(fastsimp simp: f_inv_into_f)
       qed
     qed
   }
@@ -120,17 +120,17 @@ proof -
       case (Suc n)
       show ?case
       proof cases
-	assume "f(?M n) = f(?M(Suc n))"
-	thus ?case using Suc by simp
+        assume "f(?M n) = f(?M(Suc n))"
+        thus ?case using Suc by simp
       next
-	let ?up = "(?M n)(inv h n := Top S (P(inv h n)))"
-	assume "f(?M n) \<noteq> f(?M(Suc n))"
-	also have eq: "?M(Suc n) = ?up" using surjh Suc
-	  by(simp (no_asm_simp) add:fun_eq_iff f_inv_into_f)
-	    (metis injh inv_f_eq less_antisym)
-	finally have n: "f(?M n) \<noteq> f(?up)" .
-	with nonmanip[OF MProf Top_in_Lin n[symmetric]] Suc eq `P:Prof`
-	show ?case by (simp add:Top_def Prof_def Pi_def)
+        let ?up = "(?M n)(inv h n := Top S (P(inv h n)))"
+        assume "f(?M n) \<noteq> f(?M(Suc n))"
+        also have eq: "?M(Suc n) = ?up" using surjh Suc
+          by(simp (no_asm_simp) add:fun_eq_iff f_inv_into_f)
+            (metis injh inv_f_eq less_antisym)
+        finally have n: "f(?M n) \<noteq> f(?up)" .
+        with nonmanip[OF MProf Top_in_Lin n[symmetric]] Suc eq `P:Prof`
+        show ?case by (simp add:Top_def Prof_def Pi_def)
       qed
     qed
   }
@@ -146,8 +146,8 @@ proof (rule Pi_I)
     proof(simp add: total_on_def, intro allI impI)
       fix a b :: alt assume "a\<noteq>b"
       thus "(a,b) \<in> swf f P \<or> (b,a) \<in> swf f P"
-	unfolding swf_def using una_Top[of P "{a,b}"] `P:Prof`
-	by simp(metis insert_commute)
+        unfolding swf_def using una_Top[of P "{a,b}"] `P:Prof`
+        by simp(metis insert_commute)
     qed
     show "irrefl(swf f P)" by(simp add: irrefl_def swf_def)
     show "trans(swf f P)"
@@ -156,22 +156,22 @@ proof (rule Pi_I)
       hence "a\<noteq>c" by(auto simp: insert_commute)
       note 3 = Top_in_Prof[OF `P:Prof`, of "{a,b,c}"]
       { assume "f (Top {a, b, c} \<circ> P) = a"
-	hence "f(Top{a,b} \<circ> P) = a"
-	  using mono[OF 3 Top_in_Prof[OF `P:Prof`], of "{a,b}"]
-	  by(auto simp:Top_def)
-	with `f(Top{a,b} \<circ> P) = b` `a\<noteq>b` have False by simp
+        hence "f(Top{a,b} \<circ> P) = a"
+          using mono[OF 3 Top_in_Prof[OF `P:Prof`], of "{a,b}"]
+          by(auto simp:Top_def)
+        with `f(Top{a,b} \<circ> P) = b` `a\<noteq>b` have False by simp
       } moreover
       { assume "f (Top {a, b, c} \<circ> P) = b"
-	hence "f(Top{b,c} \<circ> P) = b"
-	  using mono[OF 3 Top_in_Prof[OF `P:Prof`], of "{b,c}"]
-	  by(auto simp:Top_def)
-	with `f(Top{b,c} \<circ> P) = c` `b\<noteq>c` have False by simp
+        hence "f(Top{b,c} \<circ> P) = b"
+          using mono[OF 3 Top_in_Prof[OF `P:Prof`], of "{b,c}"]
+          by(auto simp:Top_def)
+        with `f(Top{b,c} \<circ> P) = c` `b\<noteq>c` have False by simp
       }
       ultimately have "f (Top {a, b, c} \<circ> P) = c"
-	using una_Top[OF `P:Prof`, of "{a,b,c}", simplified] by blast
+        using una_Top[OF `P:Prof`, of "{a,b,c}", simplified] by blast
       hence "f(Top{a,c} \<circ> P) = c" (is ?R)
-	using mono[OF 3 Top_in_Prof[OF `P:Prof`], of "{a,c}"]
-	by (auto simp:Top_def)
+        using mono[OF 3 Top_in_Prof[OF `P:Prof`], of "{a,c}"]
+        by (auto simp:Top_def)
       thus "a\<noteq>c \<and> ?R" using `a\<noteq>c` by blast
     qed
   qed

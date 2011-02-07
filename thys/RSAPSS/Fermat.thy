@@ -1,6 +1,6 @@
 (*  Title:      RSAPSS/Fermat.thy
-    Author:     Christina Lindenberg, Kai Wirt, Technische Universit‰t Darmstadt
-    Copyright:  2005 - Technische Universit‰t Darmstadt 
+    Author:     Christina Lindenberg, Kai Wirt, Technische Universit√§t Darmstadt
+    Copyright:  2005 - Technische Universit√§t Darmstadt 
 *)
 
 header "Fermats little theorem"

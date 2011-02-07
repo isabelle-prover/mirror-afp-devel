@@ -11,6 +11,6 @@ typedecl guest
 typedecl key
 typedecl room
 
-types card = "key * key"
+type_synonym card = "key * key"
 
 end

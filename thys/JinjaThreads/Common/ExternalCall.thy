@@ -158,9 +158,21 @@ where
   "\<lbrakk> heap_copy_loc a a' al h ob h'; heap_copies a a' als h' obs h'' \<rbrakk>
   \<Longrightarrow> heap_copies a a' (al # als) h (ob @ obs) h''"
 
+inductive_cases heap_copies_cases:
+  "heap_copies a a' [] h ops h'"
+  "heap_copies a a' (al#als) h ops h'"
+
 -- {*
   Cloning an interrupted thread yields an interrupted thread (cf. Sun JVM 1.6.0\_07).
   Since the interrupt flag is stored inside the thread object, heap\_clone correctly copies the interrupt status.
+  However, we do not use fields for thread id or whether it has been started yet. 
+  Starting a clone of a started thread with Sun JVM 1.6.0\_07 raises an illegal thread state exception,
+  we just start another thread.
+  The thread at \texttt{http://mail.openjdk.java.net/pipermail/core-libs-dev/2010-August/004715.html} discusses 
+  the general problem of thread cloning and argues against that.
+  The bug report \texttt{http://bugs.sun.com/bugdatabase/view\_bug.do?bug\_id=6968584} 
+  changes the Thread class implementation
+  such that \texttt{Object.clone()} can no longer be accessed for Thread and subclasses.
 
   Array cells are never volatile themselves.
   *}

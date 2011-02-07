@@ -8,7 +8,7 @@ theory NAe
 imports NA
 begin
 
-types ('a,'s)nae = "('a option,'s)na"
+type_synonym ('a,'s)nae = "('a option,'s)na"
 
 abbreviation
   eps :: "('a,'s)nae => ('s * 's)set" where

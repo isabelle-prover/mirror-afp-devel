@@ -24,7 +24,7 @@
 **)
 
 theory Algebra1
-imports Main FuncSet
+imports Main "~~/src/HOL/Library/FuncSet"
 begin
 
 chapter "0. Preliminaries"

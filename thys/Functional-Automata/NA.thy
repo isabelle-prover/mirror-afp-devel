@@ -8,7 +8,7 @@ theory NA
 imports AutoProj
 begin
 
-types ('a,'s)na = "'s * ('a => 's => 's set) * ('s => bool)"
+type_synonym ('a,'s) na = "'s * ('a => 's => 's set) * ('s => bool)"
 
 primrec delta :: "('a,'s)na => 'a list => 's => 's set" where
 "delta A []    p = {p}" |

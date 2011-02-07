@@ -1,5 +1,4 @@
-(*  ID:         $Id: AutoProj.thy,v 1.6 2007-07-22 20:44:18 makarius Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 
 Is there an optimal order of arguments for `next'?

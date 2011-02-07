@@ -1,2 +1,2 @@
-no_document use_thy "Nat_Bijection";
-use_thy "./CofGroups"
+no_document use_thy "~~/src/HOL/Library/Nat_Bijection";
+use_thy "CofGroups"

@@ -104,7 +104,7 @@ done
 lemma DynComConseq:
   assumes "P \<subseteq> {s. \<exists>P' Q' A'.  \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F \<^esub>P' (c s) Q',A' \<and> P \<subseteq> P' \<and> Q' \<subseteq> Q \<and> A' \<subseteq> A}" 
   shows "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F \<^esub>P DynCom c Q,A"
-  using prems
+  using assms
   apply -
   apply (rule hoaret.DynCom)
   apply clarsimp

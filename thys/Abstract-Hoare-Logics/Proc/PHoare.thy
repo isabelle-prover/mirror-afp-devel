@@ -12,7 +12,7 @@ now depend on them as well as on the state. Initially we do not fix
 the type of auxiliary variables but parameterize the type of
 assertions with a type variable @{typ 'a}:*}
 
-types 'a assn = "'a \<Rightarrow> state \<Rightarrow> bool"
+type_synonym 'a assn = "'a \<Rightarrow> state \<Rightarrow> bool"
 
 text{*
 The second major change is the need to reason about Hoare
@@ -21,7 +21,7 @@ by induction where we assume that all @{term CALL}s satisfy the given
 pre/postconditions and have to show that the body does as well. The
 assumption is stored in a context, which is a set of Hoare triples:*}
 
-types 'a cntxt = "('a assn \<times> com \<times> 'a assn)set"
+type_synonym 'a cntxt = "('a assn \<times> com \<times> 'a assn)set"
 
 text{*\noindent In the presence of only a single procedure the context will
 always be empty or a singleton set. With multiple procedures, larger

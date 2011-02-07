@@ -47,10 +47,10 @@ proofs in this theory, so that one can compare both approaches.
 
 subsection {*Small-Step Computation: @{text "\<Gamma>\<turnstile>(cs, css, s) \<rightarrow> (cs', css', s')"}*}
 
-types ('s,'p,'f) continuation = "('s,'p,'f) com list \<times> ('s,'p,'f) com list"
+type_synonym ('s,'p,'f) continuation = "('s,'p,'f) com list \<times> ('s,'p,'f) com list"
  
-types ('s,'p,'f) config = "('s,'p,'f)com list \<times> 
-                           ('s,'p,'f)continuation list \<times> ('s,'f) xstate"
+type_synonym ('s,'p,'f) config =
+  "('s,'p,'f)com list \<times> ('s,'p,'f)continuation list \<times> ('s,'f) xstate"
 
 
 
@@ -590,42 +590,42 @@ next
     proof (cases t')
       case (Normal t'')
       with exec_c1 have "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow> t'"
-	by (auto intro: exec.CatchMiss)
+        by (auto intro: exec.CatchMiss)
       moreover
       from execs_rest Normal have "\<Gamma>\<turnstile>\<langle>cs,css,t'\<rangle> \<Rightarrow> t"
-	by (cases) auto
+        by (cases) auto
       ultimately show ?thesis
-	by (rule execs.Cons)
+        by (rule execs.Cons)
     next
       case (Abrupt t'')
       from execs_rest Abrupt have "\<Gamma>\<turnstile>\<langle>c2#cs,css,Normal t''\<rangle> \<Rightarrow> t"
-	by (cases) auto
+        by (cases) auto
       then obtain v where
-	  exec_c2: "\<Gamma>\<turnstile>\<langle>c2,Normal t''\<rangle> \<Rightarrow> v" and
+          exec_c2: "\<Gamma>\<turnstile>\<langle>c2,Normal t''\<rangle> \<Rightarrow> v" and
           rest: "\<Gamma>\<turnstile>\<langle>cs,css,v\<rangle> \<Rightarrow> t"
-	by cases
+        by cases
       from exec_c1 Abrupt exec_c2
       have "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow> v"
-	by  - (rule exec.CatchMatch, auto)
+        by  - (rule exec.CatchMatch, auto)
       from this rest
       show ?thesis
-	by (rule execs.Cons)
+        by (rule execs.Cons)
     next
       case (Fault f)
       with exec_c1 have "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow> Fault f"
-	by (auto intro: exec.intros)
+        by (auto intro: exec.intros)
       moreover from execs_rest Fault have "\<Gamma>\<turnstile>\<langle>cs,css,Fault f\<rangle> \<Rightarrow> t"
-	by (cases) auto
+        by (cases) auto
       ultimately show ?thesis
-	by (rule execs.Cons)
+        by (rule execs.Cons)
     next
       case Stuck
       with exec_c1 have "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow> Stuck"
-	by (auto intro: exec.intros)
+        by (auto intro: exec.intros)
       moreover from execs_rest Stuck have "\<Gamma>\<turnstile>\<langle>cs,css,Stuck\<rangle> \<Rightarrow> t"
-	by (cases) auto
+        by (cases) auto
       ultimately show ?thesis
-	by (rule execs.Cons)
+        by (rule execs.Cons)
     qed
     with Catch show ?thesis by simp
   next
@@ -641,43 +641,43 @@ next
       case (Normal t'')
       with exec_body bdy
       have "\<Gamma>\<turnstile>\<langle>Call p ,Normal s\<rangle> \<Rightarrow> Normal t''" 
-	by (auto intro: exec.intros)
+        by (auto intro: exec.intros)
       moreover
       from execs_rest Normal
       have "\<Gamma>\<turnstile>\<langle>cs,css ,Normal t''\<rangle> \<Rightarrow> t" 
-	by cases auto
+        by cases auto
       ultimately show ?thesis by (rule execs.Cons)
     next
       case (Abrupt t'')
       with exec_body bdy
       have "\<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow> Abrupt t''"
-	by (auto intro: exec.intros)
+        by (auto intro: exec.intros)
       moreover
       from execs_rest Abrupt have 
-	"\<Gamma>\<turnstile>\<langle>Throw # cs,css,Normal t''\<rangle> \<Rightarrow> t"
-	by (cases) auto
+        "\<Gamma>\<turnstile>\<langle>Throw # cs,css,Normal t''\<rangle> \<Rightarrow> t"
+        by (cases) auto
       then obtain v where 
-	"\<Gamma>\<turnstile>\<langle>Throw,Normal t''\<rangle> \<Rightarrow> v" and 
+        "\<Gamma>\<turnstile>\<langle>Throw,Normal t''\<rangle> \<Rightarrow> v" and 
         rest: "\<Gamma>\<turnstile>\<langle>cs,css,v\<rangle> \<Rightarrow> t"
-	by (clarsimp elim!: execs_elim_cases)
+        by (clarsimp elim!: execs_elim_cases)
       moreover from this have "v=Abrupt t''"
-	by (auto elim: exec_Normal_elim_cases)
+        by (auto elim: exec_Normal_elim_cases)
       ultimately 
       show ?thesis by (auto intro: execs.Cons)
     next
       case (Fault f)
       with exec_body bdy have "\<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow> Fault f"
-	by (auto intro: exec.intros)
+        by (auto intro: exec.intros)
       moreover from execs_rest Fault have "\<Gamma>\<turnstile>\<langle>cs,css,Fault f\<rangle> \<Rightarrow> t"
-	by (cases) (auto elim: execs_elim_cases dest: Fault_end)
+        by (cases) (auto elim: execs_elim_cases dest: Fault_end)
       ultimately 
       show ?thesis by (rule execs.Cons)
     next
       case Stuck
       with exec_body bdy have "\<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow> Stuck"
-	by (auto intro: exec.intros)
+        by (auto intro: exec.intros)
       moreover from execs_rest Stuck have "\<Gamma>\<turnstile>\<langle>cs,css,Stuck\<rangle> \<Rightarrow> t"
-	by (cases) (auto elim: execs_elim_cases dest: Stuck_end)
+        by (cases) (auto elim: execs_elim_cases dest: Stuck_end)
       ultimately 
       show ?thesis by (rule execs.Cons)
     qed 
@@ -884,30 +884,30 @@ next
       case (Normal t')
       with exec_body bdy
       have "\<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow> Normal t'"
-	by (auto intro: exec.intros)
+        by (auto intro: exec.intros)
       with term_rest have "\<Gamma>\<turnstile>cs,css\<Down>Normal t'"
-	by iprover
+        by iprover
       with Normal show ?thesis
-	by (auto intro: terminatess.intros terminates.intros
+        by (auto intro: terminatess.intros terminates.intros
                  elim: exec_Normal_elim_cases)
     next
       case (Abrupt t')
       with exec_body bdy
       have "\<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow> Abrupt t'"
-	by (auto intro: exec.intros)
+        by (auto intro: exec.intros)
       with term_rest have "\<Gamma>\<turnstile>cs,css\<Down>Abrupt t'"
-	by iprover
+        by iprover
       with Abrupt show ?thesis
-	by (fastsimp intro: terminatess.intros terminates.intros
+        by (fastsimp intro: terminatess.intros terminates.intros
                      elim: exec_Normal_elim_cases)
     next
       case Fault
       thus ?thesis
-	by (iprover intro: terminatess_Fault)
+        by (iprover intro: terminatess_Fault)
     next
       case Stuck
       thus ?thesis
-	by (iprover intro: terminatess_Stuck)
+        by (iprover intro: terminatess_Stuck)
     qed
   qed
 next
@@ -940,36 +940,36 @@ next
     proof (cases t)
       case (Normal t')
       with exec_c1 have "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow> t" 
-	by (auto intro: exec.intros)
+        by (auto intro: exec.intros)
       with term_rest have "\<Gamma>\<turnstile>cs,css\<Down>t"
-	by iprover
+        by iprover
       with Normal show ?thesis
-	by (iprover intro: terminatess.intros)
+        by (iprover intro: terminatess.intros)
     next
       case (Abrupt t')
       with exec_c1 term_c2 have "\<Gamma>\<turnstile>c2 \<down> Normal t'"
-	by auto
+        by auto
       moreover
       {
-	fix w
+        fix w
         assume exec_c2: "\<Gamma>\<turnstile>\<langle>c2,Normal t'\<rangle> \<Rightarrow> w" 
-	have "\<Gamma>\<turnstile>cs,css\<Down>w" 
-	proof -
-	  from exec_c1 Abrupt exec_c2
-	  have "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow> w"
-	    by (auto intro: exec.intros)
-	  with term_rest show ?thesis by simp
-	qed
+        have "\<Gamma>\<turnstile>cs,css\<Down>w" 
+        proof -
+          from exec_c1 Abrupt exec_c2
+          have "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow> w"
+            by (auto intro: exec.intros)
+          with term_rest show ?thesis by simp
+        qed
       }
       ultimately
       show ?thesis using Abrupt
-	by (auto intro: terminatess.intros)
+        by (auto intro: terminatess.intros)
     next
       case Fault thus ?thesis
-	by (iprover intro: terminatess_Fault)
+        by (iprover intro: terminatess_Fault)
     next
       case Stuck thus ?thesis
-	by (iprover intro: terminatess_Stuck)
+        by (iprover intro: terminatess_Stuck)
     qed
   qed
 qed
@@ -1255,215 +1255,215 @@ next
       case True
       with not_finished' simul Suc.hyps
       show ?thesis
-	by auto
+        by auto
     next
       case False
       with i_le_Suc_k
       have eq_i_k: "i=k"
-	by simp
+        by simp
       show "\<Gamma>\<turnstile>p i \<rightarrow> p (Suc i)"
       proof -
-	obtain cs' css' t' where 
-	  f_Suc_i: "f (Suc i) = (cs', css', t')"
-	  by (cases "f (Suc i)")
-	obtain cs'' css'' t'' where 
-	  f_i: "f i = (cs'',css'',t'')"
-	  by (cases "f i")
-	from not_finished eq_i_k 
-	have pcs_pcss_not_Nil: "\<not> (pcs i = [] \<and> pcss i = [])"
-	  by auto
-	from simul [rule_format, of i] i_le_Suc_k f_i
-	have pcs_pcss_i:
+        obtain cs' css' t' where 
+          f_Suc_i: "f (Suc i) = (cs', css', t')"
+          by (cases "f (Suc i)")
+        obtain cs'' css'' t'' where 
+          f_i: "f i = (cs'',css'',t'')"
+          by (cases "f i")
+        from not_finished eq_i_k 
+        have pcs_pcss_not_Nil: "\<not> (pcs i = [] \<and> pcss i = [])"
+          by auto
+        from simul [rule_format, of i] i_le_Suc_k f_i
+        have pcs_pcss_i:
           "if pcss i = [] then css''=css \<and> cs''=pcs i@cs 
            else cs''=pcs i \<and> 
            css''= butlast (pcss i)@
                        [(fst (last (pcss i))@cs,(snd (last (pcss i)))@cs)]@
                        css"
-	  by (simp add: CS_def CSS_def S_def cong: if_cong)
-	from simul [rule_format, of "Suc i"] i_le_Suc_k f_Suc_i 
-	have pcs_pcss_Suc_i: 
+          by (simp add: CS_def CSS_def S_def cong: if_cong)
+        from simul [rule_format, of "Suc i"] i_le_Suc_k f_Suc_i 
+        have pcs_pcss_Suc_i: 
         "if pcss (Suc i) = [] then css' = css \<and> cs' = pcs (Suc i) @ cs
          else cs' = pcs (Suc i) \<and>
               css' = butlast (pcss (Suc i)) @
                [(fst (last (pcss (Suc i))) @ cs, snd (last (pcss (Suc i))) @ cs)] @ 
                css"
-	  by (simp add: CS_def CSS_def S_def cong: if_cong)
-	show ?thesis
-	proof (cases "pcss i = []")
-	  case True
-	  note pcss_Nil = this
-	  with pcs_pcss_i pcs_pcss_not_Nil obtain p ps where
-	    pcs_i: "pcs i = p#ps" and
-	    css'': "css''=css" and 
-	    cs'': "cs''=(p#ps)@cs"
-	    by (auto simp add: neq_Nil_conv)
-	  with f_i have "f i = (p#(ps@cs),css,t'')"
-	    by simp
-	  with f_Suc_i f_step [rule_format, of i]
-	  have step_css: "\<Gamma>\<turnstile> (p#(ps@cs),css,t'') \<rightarrow> (cs',css',t')"
-	    by simp
-	  from step_Cons' [OF this, of p "ps@cs"]
-	  obtain css''' where
-	    css''': "css' = css''' @ css" 
+          by (simp add: CS_def CSS_def S_def cong: if_cong)
+        show ?thesis
+        proof (cases "pcss i = []")
+          case True
+          note pcss_Nil = this
+          with pcs_pcss_i pcs_pcss_not_Nil obtain p ps where
+            pcs_i: "pcs i = p#ps" and
+            css'': "css''=css" and 
+            cs'': "cs''=(p#ps)@cs"
+            by (auto simp add: neq_Nil_conv)
+          with f_i have "f i = (p#(ps@cs),css,t'')"
+            by simp
+          with f_Suc_i f_step [rule_format, of i]
+          have step_css: "\<Gamma>\<turnstile> (p#(ps@cs),css,t'') \<rightarrow> (cs',css',t')"
+            by simp
+          from step_Cons' [OF this, of p "ps@cs"]
+          obtain css''' where
+            css''': "css' = css''' @ css" 
             "if css''' = [] then \<exists>p. cs' = p @ ps @ cs
             else (\<exists>pnorm pabr. css'''=[(pnorm @ ps @ cs,pabr @ ps @ cs)])"
-	    by auto
-	  show ?thesis
-	  proof (cases "css''' = []")
-	    case True
-	    with css'''
-	    obtain p' where 
-	      css': "css' = css" and
-	      cs': "cs' = p' @ ps @ cs"
-	      by auto
-		(*from cs' css' f_Suc_i f_i [rule_format, of "Suc k"]
-		have p_ps_not_Nil: "p'@ps \<noteq> Nil"
-		by auto*)
-	    from css' cs' step_css 
-	    have step: "\<Gamma>\<turnstile> (p#(ps@cs),css,t'') \<rightarrow> (p'@ps@cs,css,t')"
-	      by simp
-	    hence "\<Gamma>\<turnstile> ((p#ps)@cs,css,t'') \<rightarrow> ((p'@ps)@cs,css,t')"
-	      by simp
-	    from drop_suffix_css_step' [OF drop_suffix_same_css_step [OF this], 
+            by auto
+          show ?thesis
+          proof (cases "css''' = []")
+            case True
+            with css'''
+            obtain p' where 
+              css': "css' = css" and
+              cs': "cs' = p' @ ps @ cs"
+              by auto
+                (*from cs' css' f_Suc_i f_i [rule_format, of "Suc k"]
+                have p_ps_not_Nil: "p'@ps \<noteq> Nil"
+                by auto*)
+            from css' cs' step_css 
+            have step: "\<Gamma>\<turnstile> (p#(ps@cs),css,t'') \<rightarrow> (p'@ps@cs,css,t')"
+              by simp
+            hence "\<Gamma>\<turnstile> ((p#ps)@cs,css,t'') \<rightarrow> ((p'@ps)@cs,css,t')"
+              by simp
+            from drop_suffix_css_step' [OF drop_suffix_same_css_step [OF this], 
               where xs="css" and css="[]" and css'="[]"]
-	    have  "\<Gamma>\<turnstile> (p#ps,[],t'') \<rightarrow> (p'@ps,[],t')"
-	      by simp 
-	    moreover 
-	    from css' cs' pcs_pcss_Suc_i
-	    obtain "pcs (Suc i) = p'@ps" and "pcss (Suc i) = []"
-	      by (simp split: split_if_asm)
-	    ultimately show ?thesis
-	      using pcs_i pcss_Nil f_i f_Suc_i
-	      by (simp add: CS_def CSS_def S_def p_def)
-	  next
-	    case False
-	    with css'''
-	    obtain pnorm pabr where 
-	      css': "css'=css'''@css"
-	      "css'''=[(pnorm @ ps @ cs,pabr @ ps @ cs)]"
-	      by auto
-	    with css''' step_css 
-	    have "\<Gamma>\<turnstile> (p#ps@cs,css,t'') \<rightarrow> (cs',[(pnorm@ps@cs,pabr@ps@cs)]@css,t')"
-	      by simp
-	    then 
-	    have "\<Gamma>\<turnstile>(p#ps, css, t'') \<rightarrow> (cs', [(pnorm@ps, pabr@ps)] @ css, t')" 
-	      by (rule drop_suffix_hd_css_step)
-	    from drop_suffix_css_step' [OF this,
+            have  "\<Gamma>\<turnstile> (p#ps,[],t'') \<rightarrow> (p'@ps,[],t')"
+              by simp 
+            moreover 
+            from css' cs' pcs_pcss_Suc_i
+            obtain "pcs (Suc i) = p'@ps" and "pcss (Suc i) = []"
+              by (simp split: split_if_asm)
+            ultimately show ?thesis
+              using pcs_i pcss_Nil f_i f_Suc_i
+              by (simp add: CS_def CSS_def S_def p_def)
+          next
+            case False
+            with css'''
+            obtain pnorm pabr where 
+              css': "css'=css'''@css"
+              "css'''=[(pnorm @ ps @ cs,pabr @ ps @ cs)]"
+              by auto
+            with css''' step_css 
+            have "\<Gamma>\<turnstile> (p#ps@cs,css,t'') \<rightarrow> (cs',[(pnorm@ps@cs,pabr@ps@cs)]@css,t')"
+              by simp
+            then 
+            have "\<Gamma>\<turnstile>(p#ps, css, t'') \<rightarrow> (cs', [(pnorm@ps, pabr@ps)] @ css, t')" 
+              by (rule drop_suffix_hd_css_step)
+            from drop_suffix_css_step' [OF this,
               where css="[]" and xs="css" and css'="[(pnorm@ps, pabr@ps)]"]
-	    have "\<Gamma>\<turnstile> (p#ps,[],t'') \<rightarrow> (cs',[(pnorm@ps, pabr@ps)],t')"
-	      by simp
-	    moreover
-	    from css' pcs_pcss_Suc_i
-	    obtain "pcs (Suc i) = cs'" "pcss (Suc i) = [(pnorm@ps, pabr@ps)]"
-	      apply (cases "pcss (Suc i)")
-	      apply (auto split: split_if_asm)
-	      done
-	    ultimately show ?thesis
-	      using pcs_i pcss_Nil f_i f_Suc_i   
-	      by (simp add: p_def CS_def CSS_def S_def)
-	  qed
-	next
-	  case False
-	  note pcss_i_not_Nil = this
-	  with pcs_pcss_i obtain
-	    cs'': "cs''=pcs i" and  
-	    css'': "css''= butlast (pcss i)@
+            have "\<Gamma>\<turnstile> (p#ps,[],t'') \<rightarrow> (cs',[(pnorm@ps, pabr@ps)],t')"
+              by simp
+            moreover
+            from css' pcs_pcss_Suc_i
+            obtain "pcs (Suc i) = cs'" "pcss (Suc i) = [(pnorm@ps, pabr@ps)]"
+              apply (cases "pcss (Suc i)")
+              apply (auto split: split_if_asm)
+              done
+            ultimately show ?thesis
+              using pcs_i pcss_Nil f_i f_Suc_i   
+              by (simp add: p_def CS_def CSS_def S_def)
+          qed
+        next
+          case False
+          note pcss_i_not_Nil = this
+          with pcs_pcss_i obtain
+            cs'': "cs''=pcs i" and  
+            css'': "css''= butlast (pcss i)@
                             [(fst (last (pcss i))@cs,(snd (last (pcss i)))@cs)]@
                             css"
-	    by auto
-	  from f_Suc_i f_i f_step [rule_format, of i]
-	  have step_i_full: "\<Gamma>\<turnstile> (cs'',css'',t'') \<rightarrow> (cs',css',t')"
-	    by simp
-	  show ?thesis
-	  proof (cases cs'')
-	    case (Cons c' cs)
-	    with step_Cons' [OF step_i_full]
-	    obtain css''' where css': "css' = css'''@css''"
-	      by auto
-	    with step_i_full 
-	    have "\<Gamma>\<turnstile> (cs'',css'',t'') \<rightarrow> (cs',css'''@css'',t')"
-	      by simp
-	    from Cons_change_css_step [OF this, where xss="pcss i"] Cons cs''
-	    have "\<Gamma>\<turnstile> (pcs i, pcss i,t'') \<rightarrow> (cs',css'''@pcss i,t')"
-	      by simp
-	    moreover
-	    from cs'' css'' css' False pcs_pcss_Suc_i
-	    obtain "pcs (Suc i) = cs'" "pcss (Suc i) = css'''@pcss i"
-	      apply (auto  split: split_if_asm)
-	      apply (drule (4) last_butlast_app)
-	      by simp
-	    ultimately show ?thesis
-	      using f_i f_Suc_i
-	      by (simp add: p_def CS_def CSS_def S_def)
-	  next
-	    case Nil
-	    note cs''_Nil = this
-	    show ?thesis
-	    proof (cases "butlast (pcss i)")
-	      case (Cons bpcs bpcss)
-	      with cs''_Nil step_i_full css''
-	      have "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',css',t')"
-		by simp
-	      moreover
-	      from step_Nil [OF this]
-	      have css': "css'=tl css''"
-		by simp
-	      ultimately have 
-		step_i_full: "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',tl css'',t')"
-		by simp
-	      from css'' Cons pcss_i_not_Nil
-	      have "hd css'' = hd (pcss i)"
-		by (auto simp add: neq_Nil_conv split: split_if_asm)
-	      with cs'' cs''_Nil
-		Nil_change_css_step [where ass="[hd css'']" and
+            by auto
+          from f_Suc_i f_i f_step [rule_format, of i]
+          have step_i_full: "\<Gamma>\<turnstile> (cs'',css'',t'') \<rightarrow> (cs',css',t')"
+            by simp
+          show ?thesis
+          proof (cases cs'')
+            case (Cons c' cs)
+            with step_Cons' [OF step_i_full]
+            obtain css''' where css': "css' = css'''@css''"
+              by auto
+            with step_i_full 
+            have "\<Gamma>\<turnstile> (cs'',css'',t'') \<rightarrow> (cs',css'''@css'',t')"
+              by simp
+            from Cons_change_css_step [OF this, where xss="pcss i"] Cons cs''
+            have "\<Gamma>\<turnstile> (pcs i, pcss i,t'') \<rightarrow> (cs',css'''@pcss i,t')"
+              by simp
+            moreover
+            from cs'' css'' css' False pcs_pcss_Suc_i
+            obtain "pcs (Suc i) = cs'" "pcss (Suc i) = css'''@pcss i"
+              apply (auto  split: split_if_asm)
+              apply (drule (4) last_butlast_app)
+              by simp
+            ultimately show ?thesis
+              using f_i f_Suc_i
+              by (simp add: p_def CS_def CSS_def S_def)
+          next
+            case Nil
+            note cs''_Nil = this
+            show ?thesis
+            proof (cases "butlast (pcss i)")
+              case (Cons bpcs bpcss)
+              with cs''_Nil step_i_full css''
+              have "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',css',t')"
+                by simp
+              moreover
+              from step_Nil [OF this]
+              have css': "css'=tl css''"
+                by simp
+              ultimately have 
+                step_i_full: "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',tl css'',t')"
+                by simp
+              from css'' Cons pcss_i_not_Nil
+              have "hd css'' = hd (pcss i)"
+                by (auto simp add: neq_Nil_conv split: split_if_asm)
+              with cs'' cs''_Nil
+                Nil_change_css_step [where ass="[hd css'']" and
                 css="tl css''" and ass'="[]" and 
                 xss="tl (pcss i)", simplified, OF step_i_full [simplified]]
-	      have "\<Gamma>\<turnstile> (pcs i,[hd (pcss i)]@tl (pcss i),t'') \<rightarrow> (cs',tl (pcss i),t')"
-		by simp
-	      with pcss_i_not_Nil 
-	      have "\<Gamma>\<turnstile> (pcs i,pcss i,t'') \<rightarrow> (cs',tl (pcss i),t')"
-		by simp
-	      moreover
-	      from css' css'' cs''_Nil Cons pcss_i_not_Nil pcs_pcss_Suc_i
-	      obtain "pcs (Suc i) = cs'" "pcss (Suc i) = tl (pcss i)" 
-		apply (clarsimp  split: split_if_asm)
-		apply (drule (4) last_butlast_tl)
-		by simp
-	      ultimately show ?thesis
-		using f_i f_Suc_i
-		by (simp add: p_def CS_def CSS_def S_def)
-	    next
-	      case Nil
-	      with css'' pcss_i_not_Nil
-	      obtain pnorm pabr
-		where css'': "css''= [(pnorm@cs,pabr@cs)]@css" and
+              have "\<Gamma>\<turnstile> (pcs i,[hd (pcss i)]@tl (pcss i),t'') \<rightarrow> (cs',tl (pcss i),t')"
+                by simp
+              with pcss_i_not_Nil 
+              have "\<Gamma>\<turnstile> (pcs i,pcss i,t'') \<rightarrow> (cs',tl (pcss i),t')"
+                by simp
+              moreover
+              from css' css'' cs''_Nil Cons pcss_i_not_Nil pcs_pcss_Suc_i
+              obtain "pcs (Suc i) = cs'" "pcss (Suc i) = tl (pcss i)" 
+                apply (clarsimp  split: split_if_asm)
+                apply (drule (4) last_butlast_tl)
+                by simp
+              ultimately show ?thesis
+                using f_i f_Suc_i
+                by (simp add: p_def CS_def CSS_def S_def)
+            next
+              case Nil
+              with css'' pcss_i_not_Nil
+              obtain pnorm pabr
+                where css'': "css''= [(pnorm@cs,pabr@cs)]@css" and
                 pcss_i: "pcss i = [(pnorm,pabr)]"
-		by (force simp add: neq_Nil_conv split: split_if_asm)
-	      with cs''_Nil step_i_full
-	      have "\<Gamma>\<turnstile>([],[(pnorm@cs,pabr@cs)]@css,t'') \<rightarrow> (cs',css',t')"
-		by simp
-	      from step_Nil [OF this]
-	      obtain 
-		css': "css'=css" and
-		cs': "(case t'' of
+                by (force simp add: neq_Nil_conv split: split_if_asm)
+              with cs''_Nil step_i_full
+              have "\<Gamma>\<turnstile>([],[(pnorm@cs,pabr@cs)]@css,t'') \<rightarrow> (cs',css',t')"
+                by simp
+              from step_Nil [OF this]
+              obtain 
+                css': "css'=css" and
+                cs': "(case t'' of
                          Abrupt s' \<Rightarrow> cs' = pabr @ cs \<and> t' = Normal s'
                        | _ \<Rightarrow> cs' = pnorm @ cs \<and> t' = t'')"
-		by (simp cong: xstate.case_cong)
-	      let "?pcs_Suc_i " = "(case t'' of Abrupt s' \<Rightarrow> pabr | _ \<Rightarrow> pnorm)"
-	      from cs'
-	      have "\<Gamma>\<turnstile>([],[(pnorm,pabr)],t'') \<rightarrow> (?pcs_Suc_i,[],t')"
-		by (auto intro: step.intros split: xstate.splits)
-	      moreover
-	      from css'' css' cs' pcss_i pcs_pcss_Suc_i
-	      obtain "pcs (Suc i) = ?pcs_Suc_i" "pcss (Suc i) = []"
-		by (simp split: split_if_asm xstate.splits)
-	      ultimately
-	      show ?thesis
-		using pcss_i cs'' cs''_Nil f_i f_Suc_i
-		by (simp add: p_def CS_def CSS_def S_def)
-	    qed
-	  qed
-	qed
+                by (simp cong: xstate.case_cong)
+              let "?pcs_Suc_i " = "(case t'' of Abrupt s' \<Rightarrow> pabr | _ \<Rightarrow> pnorm)"
+              from cs'
+              have "\<Gamma>\<turnstile>([],[(pnorm,pabr)],t'') \<rightarrow> (?pcs_Suc_i,[],t')"
+                by (auto intro: step.intros split: xstate.splits)
+              moreover
+              from css'' css' cs' pcss_i pcs_pcss_Suc_i
+              obtain "pcs (Suc i) = ?pcs_Suc_i" "pcss (Suc i) = []"
+                by (simp split: split_if_asm xstate.splits)
+              ultimately
+              show ?thesis
+                using pcss_i cs'' cs''_Nil f_i f_Suc_i
+                by (simp add: p_def CS_def CSS_def S_def)
+            qed
+          qed
+        qed
       qed
     qed
   qed
@@ -1564,150 +1564,150 @@ next
       case True
       with Suc.hyps [OF c_unfinished', rule_format, of i] c_unfinished
       show ?thesis
-	by auto
+        by auto
     next
       case False
       with i_le_Suc_k have eq_i_Suc_k: "i=Suc k"
-	by auto
+        by auto
       obtain cs' css' t' where 
-	f_Suc_k: "f (Suc k) = (cs', css', t')"
-	by (cases "f (Suc k)")
+        f_Suc_k: "f (Suc k) = (cs', css', t')"
+        by (cases "f (Suc k)")
       obtain cs'' css'' t'' where 
-	f_k: "f k = (cs'',css'',t'')"
-	by (cases "f k")
+        f_k: "f k = (cs'',css'',t'')"
+        by (cases "f k")
       with Suc.hyps [OF c_unfinished',rule_format, of k] 
       obtain pcs pcss where  
-	pcs_pcss_k: 
-	"if pcss = [] then css'' = css \<and> cs'' = pcs @ cs
+        pcs_pcss_k: 
+        "if pcss = [] then css'' = css \<and> cs'' = pcs @ cs
          else cs'' = pcs \<and>
               css'' = butlast pcss @ 
                            [(fst (last pcss) @ cs, snd (last pcss) @ cs)] @ 
                            css"
-	by (auto simp add: CSS_def CS_def cong: if_cong)
+        by (auto simp add: CSS_def CS_def cong: if_cong)
       from c_unfinished [rule_format, of k] f_k pcs_pcss_k
       have pcs_pcss_empty: "\<not> (pcs = [] \<and> pcss = [])" 
-	by (auto simp add: CS_def CSS_def S_def split: split_if_asm)
+        by (auto simp add: CS_def CSS_def S_def split: split_if_asm)
       show ?thesis
       proof (cases "pcss = []")
-	case True
-	note pcss_Nil = this
-	with pcs_pcss_k pcs_pcss_empty obtain p ps where
-	  pcs_i: "pcs = p#ps" and
-	  css'': "css''=css" and 
-	  cs'': "cs''=(p#ps)@cs"
-	  by (cases "pcs") auto
-	with f_k have "f k = (p#(ps@cs),css,t'')"
-	  by simp 
-	with f_Suc_k f_step [rule_format, of k]
-	have step_css: "\<Gamma>\<turnstile> (p#(ps@cs),css,t'') \<rightarrow> (cs',css',t')"
-	  by simp
-	from step_Cons' [OF this, of p "ps@cs"]
-	obtain css''' where
-	  css''': "css' = css''' @ css" 
+        case True
+        note pcss_Nil = this
+        with pcs_pcss_k pcs_pcss_empty obtain p ps where
+          pcs_i: "pcs = p#ps" and
+          css'': "css''=css" and 
+          cs'': "cs''=(p#ps)@cs"
+          by (cases "pcs") auto
+        with f_k have "f k = (p#(ps@cs),css,t'')"
+          by simp 
+        with f_Suc_k f_step [rule_format, of k]
+        have step_css: "\<Gamma>\<turnstile> (p#(ps@cs),css,t'') \<rightarrow> (cs',css',t')"
+          by simp
+        from step_Cons' [OF this, of p "ps@cs"]
+        obtain css''' where
+          css''': "css' = css''' @ css" 
           "if css''' = [] then \<exists>p. cs' = p @ ps @ cs
           else (\<exists>pnorm pabr. css'''=[(pnorm @ ps @ cs,pabr @ ps @ cs)])"
-	  by auto
-	show ?thesis
-	proof (cases "css''' = []")
-	  case True
-	  with css'''
-	  obtain p' where 
-	    css': "css' = css" and
-	    cs': "cs' = p' @ ps @ cs"
-	    by auto
-	  from css' cs' f_Suc_k
-	  show ?thesis
-	    apply (rule_tac x="p'@ps" in exI) 
-	    apply (rule_tac x="[]" in exI)
-	    apply (simp add: CSS_def CS_def eq_i_Suc_k)
-	    done
-	next
-	  case False
-	  with css'''
-	  obtain pnorm pabr where 
-	    css': "css'=css'''@css"
-	    "css'''=[(pnorm @ ps @ cs,pabr @ ps @ cs)]"
-	    by auto
-	  with f_Suc_k eq_i_Suc_k
-	  show ?thesis
-	    apply (rule_tac x="cs'" in exI)
-	    apply (rule_tac x="[(pnorm@ps, pabr@ps)]" in exI) 
-	    by (simp add: CSS_def CS_def)
-	qed
+          by auto
+        show ?thesis
+        proof (cases "css''' = []")
+          case True
+          with css'''
+          obtain p' where 
+            css': "css' = css" and
+            cs': "cs' = p' @ ps @ cs"
+            by auto
+          from css' cs' f_Suc_k
+          show ?thesis
+            apply (rule_tac x="p'@ps" in exI) 
+            apply (rule_tac x="[]" in exI)
+            apply (simp add: CSS_def CS_def eq_i_Suc_k)
+            done
+        next
+          case False
+          with css'''
+          obtain pnorm pabr where 
+            css': "css'=css'''@css"
+            "css'''=[(pnorm @ ps @ cs,pabr @ ps @ cs)]"
+            by auto
+          with f_Suc_k eq_i_Suc_k
+          show ?thesis
+            apply (rule_tac x="cs'" in exI)
+            apply (rule_tac x="[(pnorm@ps, pabr@ps)]" in exI) 
+            by (simp add: CSS_def CS_def)
+        qed
       next
-	case False
-	note pcss_k_not_Nil = this
-	with pcs_pcss_k obtain
-	  cs'': "cs''=pcs" and  
-	  css'': "css''= butlast pcss@
+        case False
+        note pcss_k_not_Nil = this
+        with pcs_pcss_k obtain
+          cs'': "cs''=pcs" and  
+          css'': "css''= butlast pcss@
                            [(fst (last pcss)@cs,(snd (last pcss))@cs)]@
                            css"
-	  by auto
-	from f_Suc_k f_k f_step [rule_format, of k]
-	have step_i_full: "\<Gamma>\<turnstile> (cs'',css'',t'') \<rightarrow> (cs',css',t')"
-	  by simp 
-	show ?thesis
-	proof (cases cs'')
-	  case (Cons c' cs)
-	  with step_Cons' [OF step_i_full]
-	  obtain css''' where css': "css' = css'''@css''"
-	    by auto
-	  with cs'' css'' f_Suc_k eq_i_Suc_k pcss_k_not_Nil
-	  show ?thesis
-	    apply (rule_tac x="cs'" in exI)
-	    apply (rule_tac x="css'''@pcss" in exI)
-	    by (clarsimp simp add: CSS_def CS_def butlast_append)
-	next
-	  case Nil
-	  note cs''_Nil = this
-	  show ?thesis
-	  proof (cases "butlast pcss")
-	    case (Cons bpcs bpcss)
-	    with cs''_Nil step_i_full css''
-	    have "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',css',t')"
-	      by simp
-	    moreover
-	    from step_Nil [OF this]
-	    obtain css': "css'=tl css''" and
+          by auto
+        from f_Suc_k f_k f_step [rule_format, of k]
+        have step_i_full: "\<Gamma>\<turnstile> (cs'',css'',t'') \<rightarrow> (cs',css',t')"
+          by simp 
+        show ?thesis
+        proof (cases cs'')
+          case (Cons c' cs)
+          with step_Cons' [OF step_i_full]
+          obtain css''' where css': "css' = css'''@css''"
+            by auto
+          with cs'' css'' f_Suc_k eq_i_Suc_k pcss_k_not_Nil
+          show ?thesis
+            apply (rule_tac x="cs'" in exI)
+            apply (rule_tac x="css'''@pcss" in exI)
+            by (clarsimp simp add: CSS_def CS_def butlast_append)
+        next
+          case Nil
+          note cs''_Nil = this
+          show ?thesis
+          proof (cases "butlast pcss")
+            case (Cons bpcs bpcss)
+            with cs''_Nil step_i_full css''
+            have "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',css',t')"
+              by simp
+            moreover
+            from step_Nil [OF this]
+            obtain css': "css'=tl css''" and
                    cs': "cs' = (case t'' of Abrupt s' \<Rightarrow> snd (hd css'') 
                                  | _ \<Rightarrow> fst (hd css''))"
-	      by (auto split: xstate.splits)
-	    from css'' Cons pcss_k_not_Nil
-	    have "hd css'' = hd pcss"
-	      by (auto simp add: neq_Nil_conv split: split_if_asm)
-	    with css' cs' css'' cs''_Nil Cons pcss_k_not_Nil f_Suc_k eq_i_Suc_k  
-	    show ?thesis
-	      apply (rule_tac x="cs'" in exI)
-	      apply (rule_tac x="tl pcss" in exI)
-	      apply (clarsimp split: xstate.splits 
+              by (auto split: xstate.splits)
+            from css'' Cons pcss_k_not_Nil
+            have "hd css'' = hd pcss"
+              by (auto simp add: neq_Nil_conv split: split_if_asm)
+            with css' cs' css'' cs''_Nil Cons pcss_k_not_Nil f_Suc_k eq_i_Suc_k  
+            show ?thesis
+              apply (rule_tac x="cs'" in exI)
+              apply (rule_tac x="tl pcss" in exI)
+              apply (clarsimp split: xstate.splits 
                        simp add: CS_def CSS_def neq_Nil_conv split: split_if_asm)
-	      done
-	  next
-	    case Nil
-	    with css'' pcss_k_not_Nil
-	    obtain pnorm pabr
-	      where css'': "css''= [(pnorm@cs,pabr@cs)]@css" and
+              done
+          next
+            case Nil
+            with css'' pcss_k_not_Nil
+            obtain pnorm pabr
+              where css'': "css''= [(pnorm@cs,pabr@cs)]@css" and
               pcss_k: "pcss = [(pnorm,pabr)]"
-	      by (force simp add: neq_Nil_conv split: split_if_asm)
-	    with cs''_Nil step_i_full
-	    have "\<Gamma>\<turnstile>([],[(pnorm@cs,pabr@cs)]@css,t'') \<rightarrow> (cs',css',t')"
-	      by simp
-	    from step_Nil [OF this]
-	    obtain 
-	      css': "css'=css" and
-	      cs': "(case t'' of
+              by (force simp add: neq_Nil_conv split: split_if_asm)
+            with cs''_Nil step_i_full
+            have "\<Gamma>\<turnstile>([],[(pnorm@cs,pabr@cs)]@css,t'') \<rightarrow> (cs',css',t')"
+              by simp
+            from step_Nil [OF this]
+            obtain 
+              css': "css'=css" and
+              cs': "(case t'' of
               Abrupt s' \<Rightarrow> cs' = pabr @ cs \<and> t' = Normal s'
               | _ \<Rightarrow> cs' = pnorm @ cs \<and> t' = t'')"
-	      by (simp cong: xstate.case_cong)
-	    let "?pcs_Suc_k " = "(case t'' of Abrupt s' \<Rightarrow> pabr | _ \<Rightarrow> pnorm)"
-	    from css'' css' cs' pcss_k f_Suc_k eq_i_Suc_k
-	    show ?thesis
-	      apply (rule_tac x="?pcs_Suc_k" in exI)
-	      apply (rule_tac x="[]" in exI)
-	      apply (simp split: xstate.splits add: CS_def CSS_def)
-	      done
-	  qed
-	qed
+              by (simp cong: xstate.case_cong)
+            let "?pcs_Suc_k " = "(case t'' of Abrupt s' \<Rightarrow> pabr | _ \<Rightarrow> pnorm)"
+            from css'' css' cs' pcss_k f_Suc_k eq_i_Suc_k
+            show ?thesis
+              apply (rule_tac x="?pcs_Suc_k" in exI)
+              apply (rule_tac x="[]" in exI)
+              apply (simp split: xstate.splits add: CS_def CSS_def)
+              done
+          qed
+        qed
       qed
     qed
   qed
@@ -1780,30 +1780,30 @@ proof -
                 CSS (f i)= butlast pcss@
                            [(fst (last pcss)@cs,(snd (last pcss))@cs)]@
                            css)"
-	by (rule steps_hd_progress 
+        by (rule steps_hd_progress 
         [OF f_0 f_step, where k=k, OF less_k_prop])
       from skolemize2 [OF this] obtain pcs pcss where
-	pcs_pcss: 
-	    "\<forall>i\<le>k. 
+        pcs_pcss: 
+            "\<forall>i\<le>k. 
                (if pcss i = [] then CSS (f i)=css \<and> CS (f i)=pcs i@cs 
                 else CS (f i)=pcs i \<and> 
                      CSS (f i)= butlast (pcss i)@
                            [(fst (last (pcss i))@cs,(snd (last (pcss i)))@cs)]@
                            css)"
-	by iprover
+        by iprover
       from pcs_pcss [rule_format, of k] CS_f_k CSS_f_k 
       have finished: "pcs k = []" "pcss k = []"
-	by (auto simp add: CS_def CSS_def S_def split: split_if_asm)
+        by (auto simp add: CS_def CSS_def S_def split: split_if_asm)
       from pcs_pcss
       have simul: "\<forall>i\<le>k. (if pcss i = [] then CSS (f i)=css \<and> CS (f i)=pcs i@cs 
                    else CS (f i)=pcs i \<and> 
                      CSS (f i)= butlast (pcss i)@
                            [(fst (last (pcss i))@cs,(snd (last (pcss i)))@cs)]@
                             css)"
-	by auto
+        by auto
       from steps_hd_drop_suffix_finite [OF f_0 f_step less_k_prop simul] finished
       show ?thesis
-	by simp
+        by simp
     qed
     hence "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> S (f k)"
       by (rule steps_impl_exec)
@@ -2027,12 +2027,12 @@ next
       assume "(s, t) \<in> r" "f (Suc 0) = ([], [], Normal t)"
       with f_step [of 1]
       show False
-	by (auto elim: step_elim_cases)
+        by (auto elim: step_elim_cases)
     next
       assume "\<forall>t. (s, t) \<notin> r" "f (Suc 0) = ([], [], Stuck)"
       with f_step [of 1]
       show False
-	by (auto elim: step_elim_cases)
+        by (auto elim: step_elim_cases)
     qed
   qed
 next
@@ -2186,54 +2186,54 @@ next
       assume "\<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> \<Rightarrow> t"
       assume inf: "inf \<Gamma> [] [([], [Throw])] t"
       then obtain f where
-	f_0: "f 0 = ([],[([], [Throw])],t)" and
-	f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
-	by (auto simp add: inf_def)
+        f_0: "f 0 = ([],[([], [Throw])],t)" and
+        f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
+        by (auto simp add: inf_def)
       show False
       proof (cases t)
-	case (Normal t')
-	with f_0 f_step [rule_format, of 0]
-	have "f (Suc 0) = ([],[],(Normal t'))"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of "Suc 0"]
-	show False
-	  by (auto elim: step.cases)
-      next	  
-	case (Abrupt t')
-	with f_0 f_step [rule_format, of 0]
-	have "f (Suc 0) = ([Throw],[],(Normal t'))"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of "Suc 0"]
-	have "f (Suc (Suc 0)) = ([],[],(Abrupt t'))"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of "Suc(Suc 0)"]
-	show False
-	  by (auto elim: step.cases)
+        case (Normal t')
+        with f_0 f_step [rule_format, of 0]
+        have "f (Suc 0) = ([],[],(Normal t'))"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of "Suc 0"]
+        show False
+          by (auto elim: step.cases)
+      next        
+        case (Abrupt t')
+        with f_0 f_step [rule_format, of 0]
+        have "f (Suc 0) = ([Throw],[],(Normal t'))"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of "Suc 0"]
+        have "f (Suc (Suc 0)) = ([],[],(Abrupt t'))"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of "Suc(Suc 0)"]
+        show False
+          by (auto elim: step.cases)
       next
-	case (Fault m)
-	with f_0 f_step [rule_format, of 0]
-	have "f (Suc 0) = ([],[],Fault m)"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of 1]
-	have "f (Suc (Suc 0)) = ([],[],Fault m)"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of "Suc (Suc 0)"]
-	show False
-	  by (auto elim: step.cases)
+        case (Fault m)
+        with f_0 f_step [rule_format, of 0]
+        have "f (Suc 0) = ([],[],Fault m)"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of 1]
+        have "f (Suc (Suc 0)) = ([],[],Fault m)"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of "Suc (Suc 0)"]
+        show False
+          by (auto elim: step.cases)
       next
-	case Stuck
-	with f_0 f_step [rule_format, of 0]
-	have "f (Suc 0) = ([],[],Stuck)"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of 1]
-	have "f (Suc (Suc 0)) = ([],[],Stuck)"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of "Suc (Suc 0)"]
-	show False
-	  by (auto elim: step.cases)
+        case Stuck
+        with f_0 f_step [rule_format, of 0]
+        have "f (Suc 0) = ([],[],Stuck)"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of 1]
+        have "f (Suc (Suc 0)) = ([],[],Stuck)"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of "Suc (Suc 0)"]
+        show False
+          by (auto elim: step.cases)
       qed
     qed
-  qed	
+  qed   
   show ?case
   proof (rule not_infI)
     fix f
@@ -2343,45 +2343,45 @@ next
       assume eval: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> \<Rightarrow> t" 
       assume inf: "inf \<Gamma> [] [([], [c2])] t"
       then obtain f where
-	f_0: "f 0 = ([],[([], [c2] )],t)" and
-	f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
-	by (auto simp add: inf_def)
+        f_0: "f 0 = ([],[([], [c2] )],t)" and
+        f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
+        by (auto simp add: inf_def)
       show False
       proof (cases t)
-	case (Normal t')
-	with f_0 f_step [rule_format, of 0]
-	have "f (Suc 0) = ([],[],Normal t')"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of 1]
-	show False
-	  by (auto elim: step_elim_cases)
+        case (Normal t')
+        with f_0 f_step [rule_format, of 0]
+        have "f (Suc 0) = ([],[],Normal t')"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of 1]
+        show False
+          by (auto elim: step_elim_cases)
       next
-	case (Abrupt t')
-	with f_0 f_step [rule_format, of 0]
-	have "f (Suc 0) = ([c2],[],Normal t')"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step eval Abrupt
-	have "inf \<Gamma> [c2] [] (Normal t')"
-	  apply (simp add: inf_def)
-	  apply (rule_tac x="\<lambda>i. f (Suc i)" in exI)
-	  by simp
-	with eval hyp_c2 Abrupt show False by simp
+        case (Abrupt t')
+        with f_0 f_step [rule_format, of 0]
+        have "f (Suc 0) = ([c2],[],Normal t')"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step eval Abrupt
+        have "inf \<Gamma> [c2] [] (Normal t')"
+          apply (simp add: inf_def)
+          apply (rule_tac x="\<lambda>i. f (Suc i)" in exI)
+          by simp
+        with eval hyp_c2 Abrupt show False by simp
       next
-	case (Fault m)
-	with f_0 f_step [rule_format, of 0]
-	have "f (Suc 0) = ([],[],Fault m)"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of 1]
-	show False
-	  by (auto elim: step_elim_cases)
+        case (Fault m)
+        with f_0 f_step [rule_format, of 0]
+        have "f (Suc 0) = ([],[],Fault m)"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of 1]
+        show False
+          by (auto elim: step_elim_cases)
       next
-	case Stuck
-	with f_0 f_step [rule_format, of 0]
-	have "f (Suc 0) = ([],[],Stuck)"
-	  by (auto elim: step_Normal_elim_cases)
-	with f_step [rule_format, of 1]
-	show False
-	  by (auto elim: step_elim_cases)
+        case Stuck
+        with f_0 f_step [rule_format, of 0]
+        have "f (Suc 0) = ([],[],Stuck)"
+          by (auto elim: step_Normal_elim_cases)
+        with f_step [rule_format, of 1]
+        show False
+          by (auto elim: step_elim_cases)
       qed
     qed
   qed
@@ -2491,12 +2491,12 @@ proof -
       fix f
       assume "\<forall>i. \<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* f i \<and> \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
       hence "\<exists>f. f 0 = (cs, css, s) \<and> (\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i))"
-	by (rule renumber [to_pred])
+        by (rule renumber [to_pred])
       moreover from terminatess
       have "\<not> (\<exists>f. f 0 = (cs, css, s) \<and> (\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)))"
-	by (rule terminatess_impl_not_inf [unfolded inf_def])
+        by (rule terminatess_impl_not_inf [unfolded inf_def])
       ultimately show False
-	by simp
+        by simp
     qed
   qed
   hence "\<not> (\<exists>f. \<forall>i. (f (Suc i), f i)
@@ -2514,30 +2514,30 @@ proof -
     proof (rule exI [where x=f],rule allI)
       fix i
       show "(f (Suc i), f i) \<in> {(y, x). \<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* x \<and> \<Gamma>\<turnstile>x \<rightarrow> y}\<^sup>+"
-      proof -	
-	{
-	  fix i have "\<Gamma>\<turnstile>(cs,css,s) \<rightarrow>\<^sup>* f i"
-	  proof (induct i)
-	    case 0 show "\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* f 0"
-	      by (simp add: f0)
-	  next
-	    case (Suc n)
-	    have "\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* f n"  by fact
-	    with seq show "\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* f (Suc n)"
-	      by (blast intro: tranclp_into_rtranclp rtranclp_trans)
-	  qed
-	}
-	hence "\<Gamma>\<turnstile>(cs,css,s) \<rightarrow>\<^sup>* f i"
-	  by iprover
-	with seq have
-	  "(f (Suc i), f i) \<in> {(y, x). \<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* x \<and> \<Gamma>\<turnstile>x \<rightarrow>\<^sup>+ y}"
-	  by clarsimp
-	moreover 
-	have "\<forall>y. \<Gamma>\<turnstile>f i \<rightarrow>\<^sup>+ y\<longrightarrow>\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* f i\<longrightarrow>\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* y"
-	  by (blast intro: tranclp_into_rtranclp rtranclp_trans)
-	ultimately 
-	show ?thesis 
-	  by (subst lem)
+      proof -   
+        {
+          fix i have "\<Gamma>\<turnstile>(cs,css,s) \<rightarrow>\<^sup>* f i"
+          proof (induct i)
+            case 0 show "\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* f 0"
+              by (simp add: f0)
+          next
+            case (Suc n)
+            have "\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* f n"  by fact
+            with seq show "\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* f (Suc n)"
+              by (blast intro: tranclp_into_rtranclp rtranclp_trans)
+          qed
+        }
+        hence "\<Gamma>\<turnstile>(cs,css,s) \<rightarrow>\<^sup>* f i"
+          by iprover
+        with seq have
+          "(f (Suc i), f i) \<in> {(y, x). \<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* x \<and> \<Gamma>\<turnstile>x \<rightarrow>\<^sup>+ y}"
+          by clarsimp
+        moreover 
+        have "\<forall>y. \<Gamma>\<turnstile>f i \<rightarrow>\<^sup>+ y\<longrightarrow>\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* f i\<longrightarrow>\<Gamma>\<turnstile>(cs, css, s) \<rightarrow>\<^sup>* y"
+          by (blast intro: tranclp_into_rtranclp rtranclp_trans)
+        ultimately 
+        show ?thesis 
+          by (subst lem)
       qed
     qed
   qed
@@ -2610,7 +2610,7 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
       have "\<Gamma>\<turnstile>([the (\<Gamma> (p i))], seq css i, Normal (s i)) \<rightarrow>\<^sup>+ 
               ([the (\<Gamma> (p (Suc i)))], css i@seq css i, Normal (s (Suc i)))".
       thus "\<Gamma>\<turnstile> (f i) \<rightarrow>\<^sup>+ (f (i+1))"
-	by (simp add: f_def)
+        by (simp add: f_def)
     qed
     moreover from termi_css [rule_format, of 0]
     have "\<not> (\<exists>f. (f 0 = ([the (\<Gamma> (p 0))],[],Normal (s 0)) \<and> 
@@ -2655,22 +2655,22 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
     proof 
       fix i
       from inf' [rule_format, of i] obtain css where
-	 css: "\<Gamma>\<turnstile>([the (\<Gamma> (p i))],[],Normal (s i)) \<rightarrow>\<^sup>+ 
+         css: "\<Gamma>\<turnstile>([the (\<Gamma> (p i))],[],Normal (s i)) \<rightarrow>\<^sup>+ 
                 ([the (\<Gamma> (p (i+1)))],css,Normal (s (i+1)))"
-	by fastsimp
+        by fastsimp
       hence "\<Gamma>\<turnstile>([the (\<Gamma> (p i))], seq CSS i, Normal (s i)) \<rightarrow>\<^sup>+ 
                   ([the (\<Gamma> (p (i+1)))], CSS i @ seq CSS i, Normal (s (i+1)))"
-	apply -
-	apply (unfold CSS_def)
-	apply (rule someI2 
+        apply -
+        apply (unfold CSS_def)
+        apply (rule someI2 
               [where P="\<lambda>css. 
                     \<Gamma>\<turnstile>([the (\<Gamma> (p i))],[],Normal (s i))\<rightarrow>\<^sup>+
                          ([the (\<Gamma> (p (i+1)))],css, Normal (s (i+1)))"])
-	apply (rule css)
-	apply (fastsimp dest: app_css_steps)
-	done
+        apply (rule css)
+        apply (fastsimp dest: app_css_steps)
+        done
       thus "\<Gamma>\<turnstile> (f i) \<rightarrow>\<^sup>+ (f (i+1))"
-	by (simp add: f_def)
+        by (simp add: f_def)
     qed
     moreover from inf' [rule_format, of 0]
     have "\<Gamma>\<turnstile>the (\<Gamma> (p 0)) \<down> Normal (s 0)" 
@@ -2725,193 +2725,193 @@ proof (induct c1, simp)
       note cs1_Nil = this
       show ?thesis
       proof (cases css1)
-	case Nil
-	with cs1_Nil show ?thesis
-	  by (auto intro: terminatess.intros)
+        case Nil
+        with cs1_Nil show ?thesis
+          by (auto intro: terminatess.intros)
       next
-	case (Cons nrms_abrs css1')
-	then obtain nrms abrs where nrms_abrs: "nrms_abrs=(nrms,abrs)"
-	  by (cases "nrms_abrs")
-	have "\<Gamma> \<turnstile> ([],(nrms,abrs)#css1',Normal s1') \<rightarrow> (nrms,css1',Normal s1')"
-	  by (rule step.intros)
-	from hyp [simplified cs1_Nil Cons nrms_abrs Normal, OF this]
-	have "\<Gamma>\<turnstile>nrms,css1'\<Down>Normal s1'".
-	from ExitBlockNormal [OF this] cs1_Nil Cons nrms_abrs Normal
-	show ?thesis
-	  by auto
+        case (Cons nrms_abrs css1')
+        then obtain nrms abrs where nrms_abrs: "nrms_abrs=(nrms,abrs)"
+          by (cases "nrms_abrs")
+        have "\<Gamma> \<turnstile> ([],(nrms,abrs)#css1',Normal s1') \<rightarrow> (nrms,css1',Normal s1')"
+          by (rule step.intros)
+        from hyp [simplified cs1_Nil Cons nrms_abrs Normal, OF this]
+        have "\<Gamma>\<turnstile>nrms,css1'\<Down>Normal s1'".
+        from ExitBlockNormal [OF this] cs1_Nil Cons nrms_abrs Normal
+        show ?thesis
+          by auto
       qed
     next
       case (Cons c1 cs1')
       have "\<Gamma>\<turnstile>c1#cs1',css1\<Down>Normal s1'"
       proof (cases c1)
-	case Skip
-	have "\<Gamma> \<turnstile> (Skip#cs1',css1,Normal s1') \<rightarrow> (cs1',css1,Normal s1')"
-	  by (rule step.intros)
-	from hyp [simplified Cons Skip Normal, OF this]
-	have "\<Gamma>\<turnstile>cs1',css1\<Down>Normal s1'".
-	with Normal Skip show ?thesis
-	  by (auto intro: terminatess.intros terminates.intros 
-	          elim: exec_Normal_elim_cases)
+        case Skip
+        have "\<Gamma> \<turnstile> (Skip#cs1',css1,Normal s1') \<rightarrow> (cs1',css1,Normal s1')"
+          by (rule step.intros)
+        from hyp [simplified Cons Skip Normal, OF this]
+        have "\<Gamma>\<turnstile>cs1',css1\<Down>Normal s1'".
+        with Normal Skip show ?thesis
+          by (auto intro: terminatess.intros terminates.intros 
+                  elim: exec_Normal_elim_cases)
       next
-	case (Basic f)
-	have "\<Gamma> \<turnstile> (Basic f#cs1',css1,Normal s1') \<rightarrow> (cs1',css1,Normal (f s1'))"
-	  by (rule step.intros)
-	from hyp [simplified Cons Basic Normal, OF this]
-	have "\<Gamma>\<turnstile>cs1',css1\<Down>Normal (f s1')".
-	with Normal Basic show ?thesis
-	  by (auto intro: terminatess.intros terminates.intros 
-	          elim: exec_Normal_elim_cases)
+        case (Basic f)
+        have "\<Gamma> \<turnstile> (Basic f#cs1',css1,Normal s1') \<rightarrow> (cs1',css1,Normal (f s1'))"
+          by (rule step.intros)
+        from hyp [simplified Cons Basic Normal, OF this]
+        have "\<Gamma>\<turnstile>cs1',css1\<Down>Normal (f s1')".
+        with Normal Basic show ?thesis
+          by (auto intro: terminatess.intros terminates.intros 
+                  elim: exec_Normal_elim_cases)
       next
-	case (Spec r)
-	with Normal show ?thesis
-	  apply simp
-	  apply (rule terminatess.Cons)
-	  apply  (fastsimp intro: terminates.intros)
-	  apply (clarify)
-	  apply (erule exec_Normal_elim_cases)
-	  apply  clarsimp
-	  apply  (rule hyp)
-	  apply  (fastsimp intro: step.intros simp add: Cons Spec Normal )
-	  apply (fastsimp intro: terminatess_Stuck)
-	  done
+        case (Spec r)
+        with Normal show ?thesis
+          apply simp
+          apply (rule terminatess.Cons)
+          apply  (fastsimp intro: terminates.intros)
+          apply (clarify)
+          apply (erule exec_Normal_elim_cases)
+          apply  clarsimp
+          apply  (rule hyp)
+          apply  (fastsimp intro: step.intros simp add: Cons Spec Normal )
+          apply (fastsimp intro: terminatess_Stuck)
+          done
       next
-	case (Seq c\<^isub>1 c\<^isub>2)
-	have "\<Gamma> \<turnstile> (Seq c\<^isub>1 c\<^isub>2#cs1',css1,Normal s1') \<rightarrow> (c\<^isub>1#c\<^isub>2#cs1',css1,Normal s1')"
-	  by (rule step.intros)
-	from hyp [simplified Cons Seq Normal, OF this]
-	have "\<Gamma>\<turnstile>c\<^isub>1 # c\<^isub>2 # cs1',css1\<Down>Normal s1'".
-	with Normal Seq show ?thesis
-	  by (fastsimp intro: terminatess.intros terminates.intros
+        case (Seq c\<^isub>1 c\<^isub>2)
+        have "\<Gamma> \<turnstile> (Seq c\<^isub>1 c\<^isub>2#cs1',css1,Normal s1') \<rightarrow> (c\<^isub>1#c\<^isub>2#cs1',css1,Normal s1')"
+          by (rule step.intros)
+        from hyp [simplified Cons Seq Normal, OF this]
+        have "\<Gamma>\<turnstile>c\<^isub>1 # c\<^isub>2 # cs1',css1\<Down>Normal s1'".
+        with Normal Seq show ?thesis
+          by (fastsimp intro: terminatess.intros terminates.intros
                    elim: terminatess_elim_cases exec_Normal_elim_cases)
       next
-	case (Cond b c\<^isub>1 c\<^isub>2)
-	show ?thesis
-	proof (cases "s1' \<in> b")
-	  case True
-	  hence "\<Gamma>\<turnstile>(Cond b c\<^isub>1 c\<^isub>2#cs1',css1,Normal s1') \<rightarrow> (c\<^isub>1#cs1',css1,Normal s1')"
-	    by (rule step.intros)
-	  from hyp [simplified Cons Cond Normal, OF this]
-	  have "\<Gamma>\<turnstile>c\<^isub>1 # cs1',css1\<Down>Normal s1'".
-	  with Normal Cond True show ?thesis
-	    by (fastsimp intro: terminatess.intros terminates.intros
+        case (Cond b c\<^isub>1 c\<^isub>2)
+        show ?thesis
+        proof (cases "s1' \<in> b")
+          case True
+          hence "\<Gamma>\<turnstile>(Cond b c\<^isub>1 c\<^isub>2#cs1',css1,Normal s1') \<rightarrow> (c\<^isub>1#cs1',css1,Normal s1')"
+            by (rule step.intros)
+          from hyp [simplified Cons Cond Normal, OF this]
+          have "\<Gamma>\<turnstile>c\<^isub>1 # cs1',css1\<Down>Normal s1'".
+          with Normal Cond True show ?thesis
+            by (fastsimp intro: terminatess.intros terminates.intros
               elim: terminatess_elim_cases exec_Normal_elim_cases)
-	next
-	  case False
-	  hence "\<Gamma>\<turnstile>(Cond b c\<^isub>1 c\<^isub>2#cs1',css1,Normal s1') \<rightarrow> (c\<^isub>2#cs1',css1,Normal s1')"
-	    by (rule step.intros)
-	  from hyp [simplified Cons Cond Normal, OF this]
-	  have "\<Gamma>\<turnstile>c\<^isub>2 # cs1',css1\<Down>Normal s1'".
-	  with Normal Cond False show ?thesis
-	    by (fastsimp intro: terminatess.intros terminates.intros
+        next
+          case False
+          hence "\<Gamma>\<turnstile>(Cond b c\<^isub>1 c\<^isub>2#cs1',css1,Normal s1') \<rightarrow> (c\<^isub>2#cs1',css1,Normal s1')"
+            by (rule step.intros)
+          from hyp [simplified Cons Cond Normal, OF this]
+          have "\<Gamma>\<turnstile>c\<^isub>2 # cs1',css1\<Down>Normal s1'".
+          with Normal Cond False show ?thesis
+            by (fastsimp intro: terminatess.intros terminates.intros
               elim: terminatess_elim_cases exec_Normal_elim_cases)
-	qed
+        qed
       next
-	case (While b c')
-	show ?thesis
-	proof (cases "s1' \<in> b")
-	  case True
-	  then have "\<Gamma>\<turnstile>(While b c' # cs1', css1, Normal s1') \<rightarrow> 
+        case (While b c')
+        show ?thesis
+        proof (cases "s1' \<in> b")
+          case True
+          then have "\<Gamma>\<turnstile>(While b c' # cs1', css1, Normal s1') \<rightarrow> 
                        (c' # While b c' # cs1', css1, Normal s1')"
-	    by (rule step.intros)
-	  from hyp [simplified Cons While Normal, OF this]
-	  have "\<Gamma>\<turnstile>c' # While b c' # cs1',css1\<Down>Normal s1'".
-	  with Cons While True Normal
-	  show ?thesis
-	    by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
-	            elim: terminatess_elim_cases exec_Normal_elim_cases)
-	next
-	  case False
-	  then 
-	  have "\<Gamma>\<turnstile>(While b c' # cs1', css1, Normal s1') \<rightarrow> (cs1', css1, Normal s1')"
-	    by (rule step.intros)
-	  from hyp [simplified Cons While Normal, OF this]
-	  have "\<Gamma>\<turnstile>cs1',css1\<Down>Normal s1'".
-	  with Cons While False Normal
-	  show ?thesis
-	    by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
-	            elim: terminatess_elim_cases exec_Normal_elim_cases)
-	qed
+            by (rule step.intros)
+          from hyp [simplified Cons While Normal, OF this]
+          have "\<Gamma>\<turnstile>c' # While b c' # cs1',css1\<Down>Normal s1'".
+          with Cons While True Normal
+          show ?thesis
+            by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+                    elim: terminatess_elim_cases exec_Normal_elim_cases)
+        next
+          case False
+          then 
+          have "\<Gamma>\<turnstile>(While b c' # cs1', css1, Normal s1') \<rightarrow> (cs1', css1, Normal s1')"
+            by (rule step.intros)
+          from hyp [simplified Cons While Normal, OF this]
+          have "\<Gamma>\<turnstile>cs1',css1\<Down>Normal s1'".
+          with Cons While False Normal
+          show ?thesis
+            by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+                    elim: terminatess_elim_cases exec_Normal_elim_cases)
+        qed
       next
-	case (Call p)
-	show ?thesis
-	proof (cases "\<Gamma> p")
-	  case None
-	  with Call Normal show ?thesis
-	    by (fastsimp intro: terminatess.intros terminates.intros terminatess_Stuck
-	         elim: exec_Normal_elim_cases)
-	next
-	  case (Some bdy)
-	  then
-	  have "\<Gamma> \<turnstile> (Call p#cs1',css1,Normal s1') \<rightarrow> 
+        case (Call p)
+        show ?thesis
+        proof (cases "\<Gamma> p")
+          case None
+          with Call Normal show ?thesis
+            by (fastsimp intro: terminatess.intros terminates.intros terminatess_Stuck
+                 elim: exec_Normal_elim_cases)
+        next
+          case (Some bdy)
+          then
+          have "\<Gamma> \<turnstile> (Call p#cs1',css1,Normal s1') \<rightarrow> 
                     ([bdy],(cs1',Throw#cs1')#css1,Normal s1')"
-	    by (rule step.intros)
-	  from hyp [simplified Cons Call Normal Some, OF this]
-	  have "\<Gamma>\<turnstile>[bdy],(cs1', Throw # cs1') # css1\<Down>Normal s1'".
-	  with Some Call Normal show ?thesis
-	    apply simp
-	    apply (rule terminatess.intros)
-	    apply (blast elim: terminatess_elim_cases intro: terminates.intros)
-	    apply clarify
-	    apply (erule terminatess_elim_cases)
-	    apply (erule exec_Normal_elim_cases)
-	    prefer 2
-	    apply  simp
-	    apply (erule_tac x=t in allE)
-	    apply (case_tac t)
-	    apply (auto intro: terminatess_Stuck terminatess_Fault exec.intros 
-	            elim: terminatess_elim_cases exec_Normal_elim_cases)
-	    done
-	qed
+            by (rule step.intros)
+          from hyp [simplified Cons Call Normal Some, OF this]
+          have "\<Gamma>\<turnstile>[bdy],(cs1', Throw # cs1') # css1\<Down>Normal s1'".
+          with Some Call Normal show ?thesis
+            apply simp
+            apply (rule terminatess.intros)
+            apply (blast elim: terminatess_elim_cases intro: terminates.intros)
+            apply clarify
+            apply (erule terminatess_elim_cases)
+            apply (erule exec_Normal_elim_cases)
+            prefer 2
+            apply  simp
+            apply (erule_tac x=t in allE)
+            apply (case_tac t)
+            apply (auto intro: terminatess_Stuck terminatess_Fault exec.intros 
+                    elim: terminatess_elim_cases exec_Normal_elim_cases)
+            done
+        qed
       next
-	case (DynCom c')
-	have "\<Gamma> \<turnstile> (DynCom c'#cs1',css1,Normal s1') \<rightarrow> (c' s1'#cs1',css1,Normal s1')"
-	  by (rule step.intros)
-	from hyp [simplified Cons DynCom Normal, OF this]
-	have "\<Gamma>\<turnstile>c' s1'#cs1',css1\<Down>Normal s1'".
-	with Normal DynCom show ?thesis
-	  by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
-	            elim: terminatess_elim_cases exec_Normal_elim_cases)
+        case (DynCom c')
+        have "\<Gamma> \<turnstile> (DynCom c'#cs1',css1,Normal s1') \<rightarrow> (c' s1'#cs1',css1,Normal s1')"
+          by (rule step.intros)
+        from hyp [simplified Cons DynCom Normal, OF this]
+        have "\<Gamma>\<turnstile>c' s1'#cs1',css1\<Down>Normal s1'".
+        with Normal DynCom show ?thesis
+          by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+                    elim: terminatess_elim_cases exec_Normal_elim_cases)
       next
-	case (Guard f g c')
-	show ?thesis
-	proof (cases "s1' \<in> g")
-	  case True
-	  then have "\<Gamma> \<turnstile> (Guard f g c'#cs1',css1,Normal s1') \<rightarrow> (c'#cs1',css1,Normal s1')"
-	    by (rule step.intros)
-	  from hyp [simplified Cons Guard Normal, OF this]
-	  have "\<Gamma>\<turnstile>c'#cs1',css1\<Down>Normal s1'".
-	  with Normal Guard True show ?thesis
-	    by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
-	            elim: terminatess_elim_cases exec_Normal_elim_cases)
-	next
-	  case False
-	  with Guard Normal show ?thesis
-	    by (fastsimp intro: terminatess.intros terminatess_Fault 
-	                        terminates.intros  
-	         elim:  exec_Normal_elim_cases)
-	qed
+        case (Guard f g c')
+        show ?thesis
+        proof (cases "s1' \<in> g")
+          case True
+          then have "\<Gamma> \<turnstile> (Guard f g c'#cs1',css1,Normal s1') \<rightarrow> (c'#cs1',css1,Normal s1')"
+            by (rule step.intros)
+          from hyp [simplified Cons Guard Normal, OF this]
+          have "\<Gamma>\<turnstile>c'#cs1',css1\<Down>Normal s1'".
+          with Normal Guard True show ?thesis
+            by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+                    elim: terminatess_elim_cases exec_Normal_elim_cases)
+        next
+          case False
+          with Guard Normal show ?thesis
+            by (fastsimp intro: terminatess.intros terminatess_Fault 
+                                terminates.intros  
+                 elim:  exec_Normal_elim_cases)
+        qed
       next
-	case Throw
-	have "\<Gamma> \<turnstile> (Throw#cs1',css1,Normal s1') \<rightarrow> (cs1',css1,Abrupt s1')"
-	  by (rule step.intros)
-	from hyp [simplified Cons Throw Normal, OF this]
-	have "\<Gamma>\<turnstile>cs1',css1\<Down>Abrupt s1'".
-	with Normal Throw show ?thesis
-	  by (auto intro: terminatess.intros terminates.intros 
-	          elim: exec_Normal_elim_cases)
+        case Throw
+        have "\<Gamma> \<turnstile> (Throw#cs1',css1,Normal s1') \<rightarrow> (cs1',css1,Abrupt s1')"
+          by (rule step.intros)
+        from hyp [simplified Cons Throw Normal, OF this]
+        have "\<Gamma>\<turnstile>cs1',css1\<Down>Abrupt s1'".
+        with Normal Throw show ?thesis
+          by (auto intro: terminatess.intros terminates.intros 
+                  elim: exec_Normal_elim_cases)
       next
-	case (Catch c\<^isub>1 c\<^isub>2)
-	have "\<Gamma> \<turnstile> (Catch c\<^isub>1 c\<^isub>2#cs1',css1,Normal s1') \<rightarrow> 
+        case (Catch c\<^isub>1 c\<^isub>2)
+        have "\<Gamma> \<turnstile> (Catch c\<^isub>1 c\<^isub>2#cs1',css1,Normal s1') \<rightarrow> 
                   ([c\<^isub>1], (cs1',c\<^isub>2#cs1')# css1,Normal s1')"
-	  by (rule step.intros)
-	from hyp [simplified Cons Catch Normal, OF this]
-	have "\<Gamma>\<turnstile>[c\<^isub>1],(cs1', c\<^isub>2 # cs1') # css1\<Down>Normal s1'".
-	with Normal Catch show ?thesis
-	  by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
-	            elim: terminatess_elim_cases exec_Normal_elim_cases)
-      qed	
+          by (rule step.intros)
+        from hyp [simplified Cons Catch Normal, OF this]
+        have "\<Gamma>\<turnstile>[c\<^isub>1],(cs1', c\<^isub>2 # cs1') # css1\<Down>Normal s1'".
+        with Normal Catch show ?thesis
+          by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+                    elim: terminatess_elim_cases exec_Normal_elim_cases)
+      qed       
       with Cons Normal show ?thesis
-	by simp
+        by simp
     qed
   next
     case (Abrupt s1')
@@ -2921,32 +2921,32 @@ proof (induct c1, simp)
       note cs1_Nil = this
       show ?thesis
       proof (cases css1)
-	case Nil
-	with cs1_Nil show ?thesis by (auto intro: terminatess.intros)
+        case Nil
+        with cs1_Nil show ?thesis by (auto intro: terminatess.intros)
       next
-	case (Cons nrms_abrs css1')
-	then obtain nrms abrs where nrms_abrs: "nrms_abrs=(nrms,abrs)"
-	  by (cases "nrms_abrs")
-	have "\<Gamma> \<turnstile> ([],(nrms,abrs)#css1',Abrupt s1') \<rightarrow> (abrs,css1',Normal s1')"
-	  by (rule step.intros)
-	from hyp [simplified cs1_Nil Cons nrms_abrs Abrupt, OF this]
-	have "\<Gamma>\<turnstile>abrs,css1'\<Down>Normal s1'".
-	from ExitBlockAbrupt [OF this] cs1_Nil Cons nrms_abrs Abrupt
-	show ?thesis
-	  by auto
+        case (Cons nrms_abrs css1')
+        then obtain nrms abrs where nrms_abrs: "nrms_abrs=(nrms,abrs)"
+          by (cases "nrms_abrs")
+        have "\<Gamma> \<turnstile> ([],(nrms,abrs)#css1',Abrupt s1') \<rightarrow> (abrs,css1',Normal s1')"
+          by (rule step.intros)
+        from hyp [simplified cs1_Nil Cons nrms_abrs Abrupt, OF this]
+        have "\<Gamma>\<turnstile>abrs,css1'\<Down>Normal s1'".
+        from ExitBlockAbrupt [OF this] cs1_Nil Cons nrms_abrs Abrupt
+        show ?thesis
+          by auto
       qed
     next
       case (Cons c1 cs1')
       have "\<Gamma>\<turnstile>c1#cs1',css1\<Down>Abrupt s1'"
       proof -
-	have "\<Gamma> \<turnstile> (c1#cs1',css1,Abrupt s1') \<rightarrow> (cs1',css1,Abrupt s1')"
-	  by (rule step.intros)
-	from hyp [simplified Cons Abrupt, OF this]
-	have "\<Gamma>\<turnstile>cs1',css1\<Down>Abrupt s1'".
-	with Cons Abrupt
-	show ?thesis
-	  by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
-	            elim: terminatess_elim_cases exec_Normal_elim_cases)
+        have "\<Gamma> \<turnstile> (c1#cs1',css1,Abrupt s1') \<rightarrow> (cs1',css1,Abrupt s1')"
+          by (rule step.intros)
+        from hyp [simplified Cons Abrupt, OF this]
+        have "\<Gamma>\<turnstile>cs1',css1\<Down>Abrupt s1'".
+        with Cons Abrupt
+        show ?thesis
+          by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+                    elim: terminatess_elim_cases exec_Normal_elim_cases)
       qed
       with Cons Abrupt show ?thesis by simp
     qed
@@ -3210,7 +3210,7 @@ next
            (Cond b c1 c2) 
           {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t},
           {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
-    by (rule hoaret.Cond)	
+    by (rule hoaret.Cond)       
 next
   case (While b c) 
   let ?unroll = "({(s,t). s\<in>b \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t})\<^sup>*"
@@ -3240,7 +3240,7 @@ next
       fix Z
       from While 
       have hyp_c: "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub>
-	    {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
+            {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                 \<Gamma>\<turnstile>the (\<Gamma> p)\<down>Normal \<sigma> \<and> 
                (\<exists>cs css. \<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (c # cs,css,Normal s))}
               c 
@@ -3249,8 +3249,8 @@ next
       show "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> ?P' Z  \<inter> b) c 
                        ({t. (t, \<sigma>) \<in> ?r} \<inter> ?P' Z),(?A Z)"
       proof (rule allI, rule ConseqMGT [OF hyp_c])
-	fix \<tau> s
-	assume  asm: "s\<in> {\<tau>} \<inter> 
+        fix \<tau> s
+        assume  asm: "s\<in> {\<tau>} \<inter> 
                    {t. (Z, t) \<in> ?unroll \<and> 
                       (\<forall>e. (Z,e)\<in>?unroll \<longrightarrow> e\<in>b
                            \<longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
@@ -3260,9 +3260,9 @@ next
                      (\<exists>cs css. \<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* 
                                   (While b c#cs,css,Normal t))}
                    \<inter> b"
-	then obtain cs css where  
-	  s_eq_\<tau>: "s=\<tau>" and
-	  Z_s_unroll: "(Z,s) \<in> ?unroll" and
+        then obtain cs css where  
+          s_eq_\<tau>: "s=\<tau>" and
+          Z_s_unroll: "(Z,s) \<in> ?unroll" and
           noabort:"\<forall>e. (Z,e)\<in>?unroll \<longrightarrow> e\<in>b
                         \<longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                             (\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>Abrupt u \<longrightarrow> 
@@ -3270,24 +3270,24 @@ next
           termi:  "\<Gamma>\<turnstile>the (\<Gamma> p) \<down> Normal \<sigma>" and
           reach: "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* 
                     (While b c#cs,css,Normal s)"and
-	  s_in_b: "s\<in>b" 
-	  by blast
-	have reach_c: 
-	  "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (c#While b c#cs,css,Normal s)"
-	proof -
-	  note reach
-	  also from s_in_b  
-	  have "\<Gamma>\<turnstile>(While b c#cs,css,Normal s)\<rightarrow> 
+          s_in_b: "s\<in>b" 
+          by blast
+        have reach_c: 
+          "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (c#While b c#cs,css,Normal s)"
+        proof -
+          note reach
+          also from s_in_b  
+          have "\<Gamma>\<turnstile>(While b c#cs,css,Normal s)\<rightarrow> 
                   (c#While b c#cs,css,Normal s)"
-	    by (rule step.WhileTrue)
-	  finally
-	  show ?thesis .
-	qed
-	from reach termi have
-	  termi_while: "\<Gamma>\<turnstile>While b c \<down> Normal s"
-	  by (rule steps_preserves_termination)
-	show "s \<in> {t. t = s \<and> \<Gamma>\<turnstile>\<langle>c,Normal t\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
-	              \<Gamma>\<turnstile>the (\<Gamma> p) \<down> Normal \<sigma> \<and>
+            by (rule step.WhileTrue)
+          finally
+          show ?thesis .
+        qed
+        from reach termi have
+          termi_while: "\<Gamma>\<turnstile>While b c \<down> Normal s"
+          by (rule steps_preserves_termination)
+        show "s \<in> {t. t = s \<and> \<Gamma>\<turnstile>\<langle>c,Normal t\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
+                      \<Gamma>\<turnstile>the (\<Gamma> p) \<down> Normal \<sigma> \<and>
                    (\<exists>cs css. \<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (c#cs,css,Normal t))} \<and>
         (\<forall>t. t \<in> {t. \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t} \<longrightarrow>
              t \<in> {t. (t,\<tau>) \<in> ?r} \<inter>  
@@ -3301,33 +3301,33 @@ next
                                  (While b c # cs,css,Normal t))}) \<and> 
          (\<forall>t. t \<in> {t. \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Abrupt t} \<longrightarrow>
              t \<in> {t. \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt t})"
-	  (is "?C1 \<and> ?C2 \<and> ?C3")
-	proof (intro conjI)
-	  from Z_s_unroll noabort s_in_b termi reach_c show ?C1 
-	    by blast
-	next
-	  {
-	    fix t 
-	    assume s_t: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t"
-	    with s_eq_\<tau> termi_while s_in_b have "(t,\<tau>) \<in> ?r"
-	      by blast
-	    moreover
-	    from Z_s_unroll s_t s_in_b 
-	    have "(Z, t) \<in> ?unroll"
-	      by (blast intro: rtrancl_into_rtrancl)
-	    moreover 
-	    have "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (While b c#cs,css,Normal t)"
-	    proof -
-	      note reach_c
-	      also from s_t
-	      have "\<Gamma>\<turnstile>(c#While b c#cs,css,Normal s)\<rightarrow>\<^sup>*
+          (is "?C1 \<and> ?C2 \<and> ?C3")
+        proof (intro conjI)
+          from Z_s_unroll noabort s_in_b termi reach_c show ?C1 
+            by blast
+        next
+          {
+            fix t 
+            assume s_t: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t"
+            with s_eq_\<tau> termi_while s_in_b have "(t,\<tau>) \<in> ?r"
+              by blast
+            moreover
+            from Z_s_unroll s_t s_in_b 
+            have "(Z, t) \<in> ?unroll"
+              by (blast intro: rtrancl_into_rtrancl)
+            moreover 
+            have "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (While b c#cs,css,Normal t)"
+            proof -
+              note reach_c
+              also from s_t
+              have "\<Gamma>\<turnstile>(c#While b c#cs,css,Normal s)\<rightarrow>\<^sup>*
                       (While b c#cs,css, Normal t)"
-		by (rule exec_impl_steps)
-	      finally show ?thesis .
-	    qed
-	    moreover note noabort termi
-	    ultimately 
-	    have "(t,\<tau>) \<in> ?r \<and> (Z, t) \<in> ?unroll \<and> 
+                by (rule exec_impl_steps)
+              finally show ?thesis .
+            qed
+            moreover note noabort termi
+            ultimately 
+            have "(t,\<tau>) \<in> ?r \<and> (Z, t) \<in> ?unroll \<and> 
                   (\<forall>e. (Z,e)\<in>?unroll \<longrightarrow> e\<in>b
                         \<longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                             (\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>Abrupt u \<longrightarrow> 
@@ -3335,18 +3335,18 @@ next
                   \<Gamma>\<turnstile>the (\<Gamma> p) \<down> Normal \<sigma> \<and>
                     (\<exists>cs css. \<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* 
                                  (While b c # cs,css, Normal t))"
-	      by iprover
-	  }
-	  then show ?C2 by blast
-	next
-	  {
-	    fix t
-	    assume s_t:  "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Abrupt t" 
-	    from Z_s_unroll noabort s_t s_in_b 
-	    have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
-	      by blast
-	  } thus ?C3 by simp
-	qed
+              by iprover
+          }
+          then show ?C2 by blast
+        next
+          {
+            fix t
+            assume s_t:  "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Abrupt t" 
+            from Z_s_unroll noabort s_t s_in_b 
+            have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
+              by blast
+          } thus ?C3 by simp
+        qed
       qed
     qed
   next
@@ -3363,96 +3363,96 @@ next
      (\<forall>t. t\<in>?A s \<longrightarrow> t\<in>?A Z)"
     proof (intro conjI)
       {
-	fix e
-	assume "(Z,e) \<in> ?unroll" "e \<in> b"
-	from this WhileNoFault
-	have "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
+        fix e
+        assume "(Z,e) \<in> ?unroll" "e \<in> b"
+        from this WhileNoFault
+        have "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                (\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>Abrupt u \<longrightarrow> 
                     \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u)" (is "?Prop Z e")
-	proof (induct rule: converse_rtrancl_induct [consumes 1])
-	  assume e_in_b: "e \<in> b"
-	  assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	  with e_in_b WhileNoFault
-	  have cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	    by (auto simp add: final_notin_def intro: exec.intros)
-	  moreover
-	  {
-	    fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
-	    with e_in_b have "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow> Abrupt u"
-	      by (blast intro: exec.intros)
-	  }
-	  ultimately
-	  show "?Prop e e"
-	    by iprover
-	next
-	  fix Z r
-	  assume e_in_b: "e\<in>b" 
-	  assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	  assume hyp: "\<lbrakk>e\<in>b;\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))\<rbrakk>
+        proof (induct rule: converse_rtrancl_induct [consumes 1])
+          assume e_in_b: "e \<in> b"
+          assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+          with e_in_b WhileNoFault
+          have cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+            by (auto simp add: final_notin_def intro: exec.intros)
+          moreover
+          {
+            fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
+            with e_in_b have "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow> Abrupt u"
+              by (blast intro: exec.intros)
+          }
+          ultimately
+          show "?Prop e e"
+            by iprover
+        next
+          fix Z r
+          assume e_in_b: "e\<in>b" 
+          assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+          assume hyp: "\<lbrakk>e\<in>b;\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))\<rbrakk>
                        \<Longrightarrow> ?Prop r e"
-	  assume Z_r:
-	    "(Z, r) \<in> {(Z, r). Z \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r}"
-	  with WhileNoFault
-	  have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	    by (auto simp add: final_notin_def intro: exec.intros)
-	  from hyp [OF e_in_b this] obtain
-	    cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" and
+          assume Z_r:
+            "(Z, r) \<in> {(Z, r). Z \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r}"
+          with WhileNoFault
+          have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+            by (auto simp add: final_notin_def intro: exec.intros)
+          from hyp [OF e_in_b this] obtain
+            cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" and
             Abrupt_r: "\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u \<longrightarrow> 
                             \<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Abrupt u"
-	    by simp
-	  
-	   {
-	    fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
-	    with Abrupt_r have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Abrupt u" by simp
-	    moreover from  Z_r obtain
-	      "Z \<in> b"  "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
-	      by simp
-	    ultimately have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u"
-	      by (blast intro: exec.intros)
-	  }
-	  with cNoFault show "?Prop Z e"
-	    by iprover
-	qed
+            by simp
+          
+           {
+            fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
+            with Abrupt_r have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Abrupt u" by simp
+            moreover from  Z_r obtain
+              "Z \<in> b"  "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
+              by simp
+            ultimately have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u"
+              by (blast intro: exec.intros)
+          }
+          with cNoFault show "?Prop Z e"
+            by iprover
+        qed
       }
       with P show "s \<in> ?P' s"
-	by blast
+        by blast
     next
       {
-	fix t
-	assume "termination": "t \<notin> b"
-	assume "(Z, t) \<in> ?unroll"
-	hence "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
+        fix t
+        assume "termination": "t \<notin> b"
+        assume "(Z, t) \<in> ?unroll"
+        hence "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
         proof (induct rule: converse_rtrancl_induct [consumes 1])
-	  from "termination" 
-	  show "\<Gamma>\<turnstile>\<langle>While b c,Normal t\<rangle> \<Rightarrow> Normal t"
-	    by (blast intro: exec.WhileFalse)
-	next
-	  fix Z r
-	  assume first_body: 
-	         "(Z, r) \<in> {(s, t). s \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t}"
-	  assume "(r, t) \<in> ?unroll"
-	  assume rest_loop: "\<Gamma>\<turnstile>\<langle>While b c, Normal r\<rangle> \<Rightarrow> Normal t"
-	  show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
-	  proof -
-	    from first_body obtain
-	      "Z \<in> b" "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
-	      by fast
-	    moreover
-	    from rest_loop have
-	      "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Normal t"
-	      by fast
-	    ultimately show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
-	      by (rule exec.WhileTrue)
-	  qed
-	qed
+          from "termination" 
+          show "\<Gamma>\<turnstile>\<langle>While b c,Normal t\<rangle> \<Rightarrow> Normal t"
+            by (blast intro: exec.WhileFalse)
+        next
+          fix Z r
+          assume first_body: 
+                 "(Z, r) \<in> {(s, t). s \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t}"
+          assume "(r, t) \<in> ?unroll"
+          assume rest_loop: "\<Gamma>\<turnstile>\<langle>While b c, Normal r\<rangle> \<Rightarrow> Normal t"
+          show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
+          proof -
+            from first_body obtain
+              "Z \<in> b" "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
+              by fast
+            moreover
+            from rest_loop have
+              "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Normal t"
+              by fast
+            ultimately show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
+              by (rule exec.WhileTrue)
+          qed
+        qed
       }
       with P
       show "\<forall>t. t\<in>(?P' s \<inter> - b)
             \<longrightarrow>t\<in>{t. \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t}"
-	by blast
+        by blast
     next
       from P show "\<forall>t. t\<in>?A s \<longrightarrow> t\<in>?A Z"
-	by simp
+        by simp
     qed
   qed
 next
@@ -3494,24 +3494,24 @@ next
         "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>)\<rightarrow>\<^sup>* (Call q # cs,css,Normal Z)"
         "\<Gamma>\<turnstile>the (\<Gamma> p) \<down> Normal \<sigma>"
       hence "\<Gamma>\<turnstile>Call q \<down> Normal Z"
-	by (rule steps_preserves_termination)
+        by (rule steps_preserves_termination)
       with q_defined show "\<Gamma>\<turnstile>Call q \<down> Normal Z"
-	by (auto elim: terminates_Normal_elim_cases)
+        by (auto elim: terminates_Normal_elim_cases)
     next
       fix cs css
       assume reach: 
         "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (Call q#cs,css,Normal Z)"
       moreover have "\<Gamma>\<turnstile>(Call q # cs,css, Normal Z) \<rightarrow> 
                         ([the (\<Gamma> q)],(cs,Throw#cs)#css, Normal Z)"
-	by (rule step.Call) (insert q_defined,auto)
+        by (rule step.Call) (insert q_defined,auto)
       ultimately
       have "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>+ ([the (\<Gamma> q)],(cs,Throw#cs)#css,Normal Z)"
-	by (rule rtranclp_into_tranclp1)
+        by (rule rtranclp_into_tranclp1)
       moreover
       assume termi: "\<Gamma>\<turnstile>the (\<Gamma> p) \<down> Normal \<sigma>"
       ultimately
       show "((Z,q), \<sigma>,p) \<in> termi_call_steps \<Gamma>"
-	by (auto simp add: termi_call_steps_def)
+        by (auto simp add: termi_call_steps_def)
     qed
   qed
 next
@@ -3586,28 +3586,28 @@ next
     proof (rule ConseqMGT [OF hyp_c], safe)
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" "Z\<in>g"
       thus "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	by (auto simp add: final_notin_def intro: exec.intros)
+        by (auto simp add: final_notin_def intro: exec.intros)
     next
       fix cs css
       assume "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (Guard f g c#cs,css,Normal Z)"
       also
       assume "Z \<in> g"
       hence "\<Gamma>\<turnstile>(Guard f g c#cs,css,Normal Z) \<rightarrow> (c#cs,css,Normal Z)" 
-	by (rule step.Guard)
+        by (rule step.Guard)
       finally show "\<exists>cs css. \<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (c#cs,css,Normal Z)"
-	by iprover
+        by iprover
     next
       fix t
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
-	     "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal t" "Z \<in> g"
+             "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal t" "Z \<in> g"
       thus "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow> Normal t"
-	by (auto simp add: final_notin_def intro: exec.intros )
+        by (auto simp add: final_notin_def intro: exec.intros )
     next
       fix t
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
-	      "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Abrupt t" "Z \<in> g"
+              "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Abrupt t" "Z \<in> g"
       thus "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow> Abrupt t"
-	by (auto simp add: final_notin_def intro: exec.intros )
+        by (auto simp add: final_notin_def intro: exec.intros )
     qed 
     from True this show ?thesis
       by (rule conseqPre [OF Guarantee]) auto 
@@ -3623,32 +3623,32 @@ next
     proof (rule ConseqMGT [OF hyp_c], safe)
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
       thus "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	using False
-	by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros)
+        using False
+        by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros)
     next
       fix cs css
       assume "\<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (Guard f g c#cs,css,Normal Z)"
       also assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
       hence "Z \<in> g"
-	using False by (auto simp add: final_notin_def intro: exec.GuardFault)
+        using False by (auto simp add: final_notin_def intro: exec.GuardFault)
       hence "\<Gamma>\<turnstile>(Guard f g c#cs,css,Normal Z) \<rightarrow> (c#cs,css,Normal Z)" 
-	by (rule step.Guard)
+        by (rule step.Guard)
       finally show "\<exists>cs css. \<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal \<sigma>) \<rightarrow>\<^sup>* (c#cs,css,Normal Z)"
-	by iprover
+        by iprover
     next
       fix t
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
-	"\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal t"
+        "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal t"
       thus "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow> Normal t"
-	using False
-	by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros )
+        using False
+        by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros )
     next
       fix t
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
-	     "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
+             "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
       thus "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow> Abrupt t"
-	using False
-	by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros )
+        using False
+        by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros )
     qed
     then show ?thesis
       apply (rule conseqPre [OF hoaret.Guard])

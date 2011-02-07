@@ -154,7 +154,7 @@ proof -
     fix f assume bijf: "bij_betw f Is Is"
     show "(x \<^bsub>(MMD Is P)\<^esub>\<preceq> y) = (x \<^bsub>(MMD Is (P \<circ> f))\<^esub>\<preceq> y)"
       using card_compose_bij[OF bijf, where P="\<lambda>i. x \<^bsub>(P i)\<^esub>\<prec> y"]
-	    card_compose_bij[OF bijf, where P="\<lambda>i. y \<^bsub>(P i)\<^esub>\<prec> x"]
+            card_compose_bij[OF bijf, where P="\<lambda>i. y \<^bsub>(P i)\<^esub>\<prec> x"]
       unfolding MMD_def by simp
   qed
 next
@@ -199,39 +199,39 @@ next
     show "x \<^bsub>(MMD Is P')\<^esub>\<prec> y"
     proof
       from xRSCFy xPyxP'yC yP'xyPxC show "x \<^bsub>(MMD Is P')\<^esub>\<preceq> y"
-	unfolding MMD_def by auto
+        unfolding MMD_def by auto
     next
       {
-	assume xIky: "x \<^bsub>(P k)\<^esub>\<approx> y" and xP'ky: "x \<^bsub>(P' k)\<^esub>\<prec> y"
-	have "card ?xPy < card ?xP'y"
-	proof -
-	  from xIky have knP: "k \<notin> ?xPy"
-	    unfolding indifferent_pref_def strict_pref_def by blast
-	  from kIs xP'ky have kP': "k \<in> ?xP'y" by simp
-	  from finiteIs xPy knP kP' show ?thesis
-	    by (blast intro: psubset_card_mono finite_subset)
-	qed
-	with xRSCFy yP'xyPxC have "card ?yP'x < card ?xP'y"
-	  unfolding MMD_def by auto
+        assume xIky: "x \<^bsub>(P k)\<^esub>\<approx> y" and xP'ky: "x \<^bsub>(P' k)\<^esub>\<prec> y"
+        have "card ?xPy < card ?xP'y"
+        proof -
+          from xIky have knP: "k \<notin> ?xPy"
+            unfolding indifferent_pref_def strict_pref_def by blast
+          from kIs xP'ky have kP': "k \<in> ?xP'y" by simp
+          from finiteIs xPy knP kP' show ?thesis
+            by (blast intro: psubset_card_mono finite_subset)
+        qed
+        with xRSCFy yP'xyPxC have "card ?yP'x < card ?xP'y"
+          unfolding MMD_def by auto
       }
       moreover
       {
-	assume yPkx: "y \<^bsub>(P k)\<^esub>\<prec> x" and xR'ky: "x \<^bsub>(P' k)\<^esub>\<preceq> y"
-	have "card ?yP'x < card ?yPx"
-	proof -
-	  from kIs yPkx have kP: "k \<in> ?yPx" by simp
-	  from kIs xR'ky have knP': "k \<notin> ?yP'x"
-	    unfolding strict_pref_def by blast
-	  from yP'xyPx kP knP' have "?yP'x \<subset> ?yPx" by blast
-	  with finiteIs show ?thesis
-	    by (blast intro: psubset_card_mono finite_subset)
-	qed
-	with xRSCFy xPyxP'yC have "card ?yP'x < card ?xP'y"
-	  unfolding MMD_def by auto
+        assume yPkx: "y \<^bsub>(P k)\<^esub>\<prec> x" and xR'ky: "x \<^bsub>(P' k)\<^esub>\<preceq> y"
+        have "card ?yP'x < card ?yPx"
+        proof -
+          from kIs yPkx have kP: "k \<in> ?yPx" by simp
+          from kIs xR'ky have knP': "k \<notin> ?yP'x"
+            unfolding strict_pref_def by blast
+          from yP'xyPx kP knP' have "?yP'x \<subset> ?yPx" by blast
+          with finiteIs show ?thesis
+            by (blast intro: psubset_card_mono finite_subset)
+        qed
+        with xRSCFy xPyxP'yC have "card ?yP'x < card ?xP'y"
+          unfolding MMD_def by auto
       }
       moreover note kcond
       ultimately show "\<not>(y \<^bsub>(MMD Is P')\<^esub>\<preceq> x)"
-	unfolding MMD_def by auto
+        unfolding MMD_def by auto
     qed
   qed
 qed
@@ -268,15 +268,15 @@ next
     show "refl_on A (swapAltsP P a b i)"
     proof(rule refl_onI)
       from profileP iIs abA show "swapAltsP P a b i \<subseteq> A \<times> A"
-	unfolding swapAltsP_def by (blast dest: swapAlts_in_set_iff)
+        unfolding swapAltsP_def by (blast dest: swapAlts_in_set_iff)
       from profileP iIs abA show "\<And>x. x \<in> A \<Longrightarrow> x \<^bsub>(swapAltsP P a b i)\<^esub>\<preceq> x"
-	unfolding swapAltsP_def swapAlts_def by auto
+        unfolding swapAltsP_def swapAlts_def by auto
     qed
   next
     from profileP iIs abA show "complete A (swapAltsP P a b i)"
       unfolding swapAltsP_def
       by - (rule completeI, simp, rule rpr_complete[where A=A],
-	    auto iff: swapAlts_in_set_iff)
+            auto iff: swapAlts_in_set_iff)
   next
     from profileP iIs show "trans (swapAltsP P a b i)"
       unfolding swapAltsP_def by (blast dest: rpr_le_trans intro: transI)
@@ -360,14 +360,14 @@ proof -
     show "(a \<^bsub>(P i)\<^esub>\<preceq> b) \<longleftrightarrow> (a \<^bsub>((P' \<circ> h') i)\<^esub>\<preceq> b)"
     proof(cases rule: complete_exh)
       case xPy with profileP profileP' xyA iIs ab hh' hf bijf show ?thesis
-	unfolding strict_pref_def bij_betw_def by (simp, blast)
+        unfolding strict_pref_def bij_betw_def by (simp, blast)
     next
       case yPx with profileP profileP' xyA iIs ab hh' hg bijg show ?thesis
-	unfolding strict_pref_def bij_betw_def by (simp, blast)
+        unfolding strict_pref_def bij_betw_def by (simp, blast)
     next
       case xIy with profileP profileP' xyA iIs ab hrest[where j=i] show ?thesis
-	unfolding indifferent_pref_def strict_pref_def bij_betw_def
-	by (simp, blast dest: rpr_complete)
+        unfolding indifferent_pref_def strict_pref_def bij_betw_def
+        by (simp, blast dest: rpr_complete)
     qed
   qed (simp_all add: profileP profile_bij_profile[OF profileP' bijh'])
   moreover
@@ -435,17 +435,17 @@ proof -
     show "rpr A (?P' i)"
     proof
       from profileP iIs show "complete A (?P' i)"
-	unfolding complete_def by (simp, blast dest: rpr_complete)
+        unfolding complete_def by (simp, blast dest: rpr_complete)
       from profileP iIs xyA show "refl_on A (?P' i)"
-	by - (rule refl_onI, auto)
+        by - (rule refl_onI, auto)
       show "trans (?P' i)"
       proof(cases "i \<in> C")
-	case False with profileP iIs show ?thesis
-	  by (simp, blast dest: rpr_le_trans intro: transI)
+        case False with profileP iIs show ?thesis
+          by (simp, blast dest: rpr_le_trans intro: transI)
       next
-	case True with profileP iIs C CxPy xyA show ?thesis
-	  unfolding strict_pref_def
-	  by - (rule transI, simp, blast dest: rpr_le_trans rpr_complete)
+        case True with profileP iIs C CxPy xyA show ?thesis
+          unfolding strict_pref_def
+          by - (rule transI, simp, blast dest: rpr_le_trans rpr_complete)
       qed
     qed
   next
@@ -468,7 +468,7 @@ proof -
     have "{ i \<in> Is. x \<^bsub>(?P' i)\<^esub>\<prec> y } = { i \<in> Is. x \<^bsub>(?P' i)\<^esub>\<prec> y } - C"
     proof -
       from C have "\<And>i. \<lbrakk> i \<in> Is; x \<^bsub>(?P' i)\<^esub>\<prec> y \<rbrakk> \<Longrightarrow> i \<in> Is - C"
-	unfolding indifferent_pref_def strict_pref_def by auto
+        unfolding indifferent_pref_def strict_pref_def by auto
       thus ?thesis by blast
     qed
     also have "\<dots> = { i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> y } - C" by auto
@@ -479,11 +479,11 @@ proof -
     also have "\<dots> = card { i \<in> Is. y \<^bsub>(?P' i)\<^esub>\<prec> x }" (is "card ?lhs = card ?rhs")
     proof -
       from profileP xyA have "\<And>i. \<lbrakk> i \<in> Is; y \<^bsub>(?P' i)\<^esub>\<prec> x \<rbrakk> \<Longrightarrow> y \<^bsub>(P i)\<^esub>\<prec> x"
-	unfolding strict_pref_def by (simp split: split_if_asm, blast dest: rpr_complete)
+        unfolding strict_pref_def by (simp split: split_if_asm, blast dest: rpr_complete)
       hence "?rhs \<subseteq> ?lhs" by blast
       moreover
       from profileP xyA have "\<And>i. \<lbrakk> i \<in> Is; y \<^bsub>(P i)\<^esub>\<prec> x \<rbrakk> \<Longrightarrow> y \<^bsub>(?P' i)\<^esub>\<prec> x"
-	unfolding strict_pref_def by simp
+        unfolding strict_pref_def by simp
       hence "?lhs \<subseteq> ?rhs" by blast
       ultimately show ?thesis by simp
     qed
@@ -498,7 +498,7 @@ lemma positively_responsive_prefer:
       and tallyP: "card { i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> y } > card { i \<in> Is. y \<^bsub>(P i)\<^esub>\<prec> x }"
   shows "x \<^bsub>(scf P)\<^esub>\<prec> y"
 proof -
-  from prems obtain P' k
+  from assms obtain P' k
     where profileP': "profile A Is P'"
       and F: "\<And>i. \<lbrakk>i \<in> Is; x \<^bsub>(P' i)\<^esub>\<prec> y\<rbrakk> \<Longrightarrow> x \<^bsub>(P i)\<^esub>\<prec> y"
       and G: "\<And>i. \<lbrakk>i \<in> Is; x \<^bsub>(P' i)\<^esub>\<approx> y\<rbrakk> \<Longrightarrow> x \<^bsub>(P i)\<^esub>\<preceq> y"
@@ -561,7 +561,7 @@ that receives the most votes, or the set of such alternatives in the case of
 a tie. Profiles are restricted to those where each individual casts a vote
 in favour of a single alternative. *}
 
-types ('a, 'i) SVProfile = "'i \<Rightarrow> 'a"
+type_synonym ('a, 'i) SVProfile = "'i \<Rightarrow> 'a"
 
 definition svprofile :: "'a set \<Rightarrow> 'i set \<Rightarrow> ('a, 'i) SVProfile \<Rightarrow> bool" where
   "svprofile A Is F \<equiv> Is \<noteq> {} \<and> F ` Is \<subseteq> A"

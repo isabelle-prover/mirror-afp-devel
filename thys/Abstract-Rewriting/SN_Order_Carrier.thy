@@ -60,8 +60,8 @@ proof (unfold_locales)
       fix i
       show "f i + i \<le> f 0"
       proof (induct i, simp)
-	case (Suc i)
-	with spec[OF steps, of i] show ?case by auto
+        case (Suc i)
+        with spec[OF steps, of i] show ?case by auto
       qed
     qed
     hence "f (Suc (f 0)) + Suc (f 0) \<le> f 0" by blast
@@ -119,8 +119,8 @@ proof (unfold_locales)
       fix i
       show "f i + int i \<le> f 0"
       proof (induct i)
-	case (Suc i)
-	with spec[OF steps, of i] show ?case by auto
+        case (Suc i)
+        with spec[OF steps, of i] show ?case by auto
       qed simp
     qed
     have contra: "\<forall> i. int (Suc i) \<le> f 0" 

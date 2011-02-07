@@ -52,6 +52,8 @@ Lebesgue-style integration plays a major role in advanced probability. We formal
 This article is of historical interest only. Lebesgue-style integration and probability theory are now available as part of the Isabelle/HOL distribution (directory Probability).
         </td></tr>
 
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

@@ -1,5 +1,4 @@
-(*  ID:         $Id: CertDlo.thy,v 1.2 2008-01-11 15:22:13 lsf37 Exp $
-    Author:     Tobias Nipkow, 2007
+(*  Author:     Tobias Nipkow, 2007
 
 A simple certificate based checker for q-free dlo formulae.
 Certificate is cycle.

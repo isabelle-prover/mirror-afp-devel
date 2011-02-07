@@ -73,16 +73,16 @@ proof
     show "rpr A (?P' i)"
     proof(cases "i = j")
       case True with has3A show ?thesis
-	by - (rule rprI, simp_all add: trans_def, blast+)
+        by - (rule rprI, simp_all add: trans_def, blast+)
     next
       case False hence ij: "i \<noteq> j" .
       show ?thesis
       proof
-	from iIs profileP have "complete A (P i)" by (blast dest: rpr_complete)
-	with ij show "complete A (?P' i)" by (simp add: complete_def, blast)
-	from iIs profileP have "refl_on A (P i)" by (auto simp add: rpr_def)
-	with has3A ij show "refl_on A (?P' i)" by (simp, blast)
-	from ij has3A show "trans (?P' i)" by (clarsimp simp add: trans_def)
+        from iIs profileP have "complete A (P i)" by (blast dest: rpr_complete)
+        with ij show "complete A (?P' i)" by (simp add: complete_def, blast)
+        from iIs profileP have "refl_on A (P i)" by (auto simp add: rpr_def)
+        with has3A ij show "refl_on A (?P' i)" by (simp, blast)
+        from ij has3A show "trans (?P' i)" by (clarsimp simp add: trans_def)
       qed
     qed
   next
@@ -131,7 +131,7 @@ proof
     next
       case True
       from profileP' jIs jxyzP' have "x \<^bsub>(P' j)\<^esub>\<prec> z"
-	by (auto dest: rpr_less_trans)
+        by (auto dest: rpr_less_trans)
       with True ab iIs jxzP profileP profileP' has3A
       show ?thesis unfolding profile_def strict_pref_def by auto
     qed
@@ -178,16 +178,16 @@ proof
     show "rpr A (?P' i)"
     proof(cases "i = j")
       case True with has3A show ?thesis
-	by - (rule rprI, simp_all add: trans_def, blast+)
+        by - (rule rprI, simp_all add: trans_def, blast+)
     next
       case False hence ij: "i \<noteq> j" .
       show ?thesis
       proof
-	from iIs profileP have "complete A (P i)" by (auto simp add: rpr_def)
-	with ij show "complete A (?P' i)" by (simp add: complete_def, blast)
-	from iIs profileP have "refl_on A (P i)" by (auto simp add: rpr_def)
-	with has3A ij show "refl_on A (?P' i)" by (simp, blast)
-	from ij has3A show "trans (?P' i)" by (clarsimp simp add: trans_def)
+        from iIs profileP have "complete A (P i)" by (auto simp add: rpr_def)
+        with ij show "complete A (?P' i)" by (simp add: complete_def, blast)
+        from iIs profileP have "refl_on A (P i)" by (auto simp add: rpr_def)
+        with has3A ij show "refl_on A (?P' i)" by (simp, blast)
+        from ij has3A show "trans (?P' i)" by (clarsimp simp add: trans_def)
       qed
     qed
   next
@@ -231,7 +231,7 @@ proof
     next
       case True
       from profileP' jIs jxyzP' have "z \<^bsub>(P' j)\<^esub>\<prec> y"
-	by (auto dest: rpr_less_trans)
+        by (auto dest: rpr_less_trans)
       with True ab iIs jyzP profileP profileP' has3A
       show ?thesis unfolding profile_def strict_pref_def by auto
     qed
@@ -495,7 +495,7 @@ proof -
     assume Vcard: "1 < card V"
     then obtain j where jV: "{j} \<subseteq> V"
       using has_extend_witness[where xs="[]", OF card_has[where n="card V"]] by auto
-	-- {* Split an individual from the "minimal" set. *}
+        -- {* Split an individual from the "minimal" set. *}
     let ?V1 = "{j}"
     let ?V2 = "V - ?V1"
     let ?V3 = "Is - V"
@@ -505,7 +505,7 @@ proof -
     from jV VIs
     have jV2V3: "Is = ?V1 \<union> ?V2 \<union> ?V3 \<and> ?V1 \<inter> ?V2 = {} \<and> ?V1 \<inter> ?V3 = {} \<and> ?V2 \<inter> ?V3 = {}"
       by auto
-	-- {* Show that that individual is semi-decisive for $x$ over $z$. *}
+        -- {* Show that that individual is semi-decisive for $x$ over $z$. *}
     from has_extend_witness'[OF has3A xyA]
     obtain z where threeDist: "hasw [x,y,z] A" by auto
     from sd_exists_witness[OF threeDist jV2V3] VIs Vnotempty
@@ -518,54 +518,54 @@ proof -
     proof(rule rpr_less_le_trans[where y="y"])
       from profileP swf show "rpr A (swf P)" by auto
     next
-	-- {* V2 is semi-decisive, and everyone else opposes their choice. Ergo they prevail. *}
+        -- {* V2 is semi-decisive, and everyone else opposes their choice. Ergo they prevail. *}
       show "x \<^bsub>(swf P)\<^esub>\<prec> y"
       proof -
-	from profileP V3xyzP
-	have "\<forall>i \<in> ?V3. y \<^bsub>(P i)\<^esub>\<prec> x" by (blast dest: rpr_less_trans)
-	with profileP V1xyzP V2xyzP Vsd
-	show ?thesis unfolding semidecisive_def by auto
+        from profileP V3xyzP
+        have "\<forall>i \<in> ?V3. y \<^bsub>(P i)\<^esub>\<prec> x" by (blast dest: rpr_less_trans)
+        with profileP V1xyzP V2xyzP Vsd
+        show ?thesis unfolding semidecisive_def by auto
       qed
     next
       -- {* This result is unfortunately quite tortuous. *}
       from SWF_rpr[OF swf] show "y \<^bsub>(swf P)\<^esub>\<preceq> z"
       proof(rule rpr_less_not[OF _ _ notI])
-	from threeDist show "hasw [z, y] A" by auto
+        from threeDist show "hasw [z, y] A" by auto
       next
-	assume zPy: "z \<^bsub>(swf P)\<^esub>\<prec> y"
-	have "semidecisive swf A Is ?V2 z y"
-	proof
-	  from VIs show "V - {j} \<subseteq> Is" by blast
-	next
-	  fix P'
-	  assume profileP': "profile A Is P'"
-	    and V2yz': "\<And>i. i \<in> ?V2 \<Longrightarrow> z \<^bsub>(P' i)\<^esub>\<prec> y"
+        assume zPy: "z \<^bsub>(swf P)\<^esub>\<prec> y"
+        have "semidecisive swf A Is ?V2 z y"
+        proof
+          from VIs show "V - {j} \<subseteq> Is" by blast
+        next
+          fix P'
+          assume profileP': "profile A Is P'"
+            and V2yz': "\<And>i. i \<in> ?V2 \<Longrightarrow> z \<^bsub>(P' i)\<^esub>\<prec> y"
             and nV2yz': "\<And>i. i \<in> Is - ?V2 \<Longrightarrow> y \<^bsub>(P' i)\<^esub>\<prec> z"
-	  from iia have "\<And>a b. \<lbrakk> a \<in> {y, z}; b \<in> {y, z} \<rbrakk> \<Longrightarrow> (a \<^bsub>(swf P)\<^esub>\<preceq> b) = (a \<^bsub>(swf P')\<^esub>\<preceq> b)"
-	  proof(rule iiaE)
-	    from threeDist show yzA: "{y,z} \<subseteq> A" by simp
-	  next
-	    fix i assume iIs: "i \<in> Is"
-	    fix a b assume ab: "a \<in> {y, z}" "b \<in> {y, z}"
-	    with VIs profileP V2xyzP
-	    have V2yzP: "\<forall>i \<in> ?V2. z \<^bsub>(P i)\<^esub>\<prec> y" by (blast dest: rpr_less_trans)
-	    show "(a \<^bsub>(P' i)\<^esub>\<preceq> b) = (a \<^bsub>(P i)\<^esub>\<preceq> b)"
-	    proof(cases "i \<in> ?V2")
-	      case True
-	      with VIs profileP profileP' ab V2yz' V2yzP threeDist
-	      show ?thesis unfolding strict_pref_def profile_def by auto
-	    next
-	      case False
-	      from V1xyzP V3xyzP
-	      have "\<forall>i \<in> Is - ?V2. y \<^bsub>(P i)\<^esub>\<prec> z" by auto
-	      with iIs False VIs jV profileP profileP' ab nV2yz' threeDist
-	      show ?thesis unfolding profile_def strict_pref_def by auto
-	    qed
-	  qed (simp_all add: profileP profileP')
-	  with zPy show "z \<^bsub>(swf P')\<^esub>\<prec> y" unfolding strict_pref_def by blast
-	qed
-	with VIs Vsd Vmin[where V'="?V2"] V2card V2notempty threeDist show False
-	  by auto
+          from iia have "\<And>a b. \<lbrakk> a \<in> {y, z}; b \<in> {y, z} \<rbrakk> \<Longrightarrow> (a \<^bsub>(swf P)\<^esub>\<preceq> b) = (a \<^bsub>(swf P')\<^esub>\<preceq> b)"
+          proof(rule iiaE)
+            from threeDist show yzA: "{y,z} \<subseteq> A" by simp
+          next
+            fix i assume iIs: "i \<in> Is"
+            fix a b assume ab: "a \<in> {y, z}" "b \<in> {y, z}"
+            with VIs profileP V2xyzP
+            have V2yzP: "\<forall>i \<in> ?V2. z \<^bsub>(P i)\<^esub>\<prec> y" by (blast dest: rpr_less_trans)
+            show "(a \<^bsub>(P' i)\<^esub>\<preceq> b) = (a \<^bsub>(P i)\<^esub>\<preceq> b)"
+            proof(cases "i \<in> ?V2")
+              case True
+              with VIs profileP profileP' ab V2yz' V2yzP threeDist
+              show ?thesis unfolding strict_pref_def profile_def by auto
+            next
+              case False
+              from V1xyzP V3xyzP
+              have "\<forall>i \<in> Is - ?V2. y \<^bsub>(P i)\<^esub>\<prec> z" by auto
+              with iIs False VIs jV profileP profileP' ab nV2yz' threeDist
+              show ?thesis unfolding profile_def strict_pref_def by auto
+            qed
+          qed (simp_all add: profileP profileP')
+          with zPy show "z \<^bsub>(swf P')\<^esub>\<prec> y" unfolding strict_pref_def by blast
+        qed
+        with VIs Vsd Vmin[where V'="?V2"] V2card V2notempty threeDist show False
+          by auto
       qed (simp add: profileP threeDist)
     qed
     have "semidecisive swf A Is ?V1 x z"
@@ -579,24 +579,24 @@ proof -
          and nV1yz': "\<And>i. i \<in> Is - ?V1 \<Longrightarrow> z \<^bsub>(P' i)\<^esub>\<prec> x"
       from iia have "\<And>a b. \<lbrakk> a \<in> {x, z}; b \<in> {x, z} \<rbrakk> \<Longrightarrow> (a \<^bsub>(swf P)\<^esub>\<preceq> b) = (a \<^bsub>(swf P')\<^esub>\<preceq> b)"
       proof(rule iiaE)
-	from threeDist show xzA: "{x,z} \<subseteq> A" by simp
+        from threeDist show xzA: "{x,z} \<subseteq> A" by simp
       next
-	fix i assume iIs: "i \<in> Is"
-	fix a b assume ab: "a \<in> {x, z}" "b \<in> {x, z}"
-	show "(a \<^bsub>(P' i)\<^esub>\<preceq> b) = (a \<^bsub>(P i)\<^esub>\<preceq> b)"
-	proof(cases "i \<in> ?V1")
-	  case True
-	  with jV VIs profileP V1xyzP
-	  have "\<forall>i \<in> ?V1. x \<^bsub>(P i)\<^esub>\<prec> z" by (blast dest: rpr_less_trans)
-	  with True jV VIs profileP profileP' ab V1yz' threeDist
-	  show ?thesis unfolding strict_pref_def profile_def by auto
-	next
-	  case False
-	  from V2xyzP V3xyzP
-	  have "\<forall>i \<in> Is - ?V1. z \<^bsub>(P i)\<^esub>\<prec> x" by auto
-	  with iIs False VIs jV profileP profileP' ab nV1yz' threeDist
-	  show ?thesis unfolding strict_pref_def profile_def by auto
-	qed
+        fix i assume iIs: "i \<in> Is"
+        fix a b assume ab: "a \<in> {x, z}" "b \<in> {x, z}"
+        show "(a \<^bsub>(P' i)\<^esub>\<preceq> b) = (a \<^bsub>(P i)\<^esub>\<preceq> b)"
+        proof(cases "i \<in> ?V1")
+          case True
+          with jV VIs profileP V1xyzP
+          have "\<forall>i \<in> ?V1. x \<^bsub>(P i)\<^esub>\<prec> z" by (blast dest: rpr_less_trans)
+          with True jV VIs profileP profileP' ab V1yz' threeDist
+          show ?thesis unfolding strict_pref_def profile_def by auto
+        next
+          case False
+          from V2xyzP V3xyzP
+          have "\<forall>i \<in> Is - ?V1. z \<^bsub>(P i)\<^esub>\<prec> x" by auto
+          with iIs False VIs jV profileP profileP' ab nV1yz' threeDist
+          show ?thesis unfolding strict_pref_def profile_def by auto
+        qed
       qed (simp_all add: profileP profileP')
       with xPz show "x \<^bsub>(swf P')\<^esub>\<prec> z" unfolding strict_pref_def by blast
     qed

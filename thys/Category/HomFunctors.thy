@@ -39,7 +39,7 @@ proof (rule funcsetI)
       fix g'
       assume "g' \<in> Hom A (Dom f)"
       from 3 and this show "(\<lambda>g\<in>Hom A (Dom f). f \<bullet> g) g' \<in> Hom A (Cod f)"
-	by simp (rule funcset_mem)
+        by simp (rule funcset_mem)
     qed
   qed
 qed
@@ -138,15 +138,15 @@ proof-
     proof-
       from 10 have "h \<in> Ar" by (simp add: hom_def)
       have 100: "(op \<bullet>) : Hom (Dom f) (Dom g) \<rightarrow> Hom A (Dom f) \<rightarrow> Hom A (Dom g)"
-	by (rule AA.comp_types)
+        by (rule AA.comp_types)
       have "f \<in> Hom (Dom f) (Cod f)" using f by (simp add: hom_def)
       hence 101: "f \<in> Hom (Dom f) (Dom g)" using fg by simp
       from 100 and 101
       have "(op \<bullet>) f : Hom A (Dom f) \<rightarrow> Hom A (Dom g)"
-	by (rule funcset_mem)
+        by (rule funcset_mem)
       from this and 10 
       show "f \<bullet> h \<in> Hom A (Dom g)"
-	by (rule funcset_mem)
+        by (rule funcset_mem)
     qed
     hence "Cod (f \<bullet> h) = Dom g" 
       and "Dom (f \<bullet> h) = A"

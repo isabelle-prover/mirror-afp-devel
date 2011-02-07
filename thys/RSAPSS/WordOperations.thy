@@ -1,6 +1,6 @@
 (*  Title:      RSAPSS/Wordoperations.thy
-    Author:     Christina Lindenberg, Kai Wirt, Technische Universit‰t Darmstadt
-    Copyright:  2005 - Technische Universit‰t Darmstadt
+    Author:     Christina Lindenberg, Kai Wirt, Technische Universit√§t Darmstadt
+    Copyright:  2005 - Technische Universit√§t Darmstadt
 *)
 
 header  {* Extensions to the Word theory required for SHA1 *}
@@ -9,7 +9,7 @@ theory WordOperations
 imports Word
 begin
 
-types bv = "bit list"
+type_synonym bv = "bit list"
 
 datatype HEX = x0 | x1 | x2 | x3 | x4 | x5 | x6 | x7 | x8 | x9 | xA | xB | xC | xD | xE | xF
 

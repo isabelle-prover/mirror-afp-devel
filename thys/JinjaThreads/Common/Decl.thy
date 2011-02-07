@@ -22,18 +22,22 @@ types
 
   'm cdecl = "cname \<times> 'm class"  -- "class declaration"
 
-  'm prog  = "'m cdecl list"     -- "program"
+datatype
+  'm prog = Program "'m cdecl list" 
 
 translations
   (type) "fdecl"   <= (type) "String.literal \<times> ty \<times> fmod"
   (type) "'c mdecl" <= (type) "String.literal \<times> ty list \<times> ty \<times> 'c"
   (type) "'c class" <= (type) "String.literal \<times> fdecl list \<times> ('c mdecl) list"
   (type) "'c cdecl" <= (type) "String.literal \<times> ('c class)"
-  (type) "'c prog" <= (type) "('c cdecl) list"
 
-definition "class" :: "'m prog \<Rightarrow> cname \<rightharpoonup> 'm class"
+primrec the_Program :: "'m prog \<Rightarrow> 'm cdecl list"
 where
-  "class  \<equiv>  map_of"
+  "the_Program (Program P) = P"
+
+primrec "class" :: "'m prog \<Rightarrow> cname \<rightharpoonup> 'm class"
+where
+  "class (Program p) = map_of p"
 
 definition is_class :: "'m prog \<Rightarrow> cname \<Rightarrow> bool"
 where
@@ -41,9 +45,10 @@ where
 
 lemma finite_is_class: "finite {C. is_class P C}"
 (*<*)
-apply (unfold is_class_def class_def)
+apply(cases P)
+apply (unfold is_class_def)
 apply (fold dom_def)
-apply (rule finite_dom_map_of)
+apply(simp add: finite_dom_map_of)
 done
 (*>*)
 
@@ -66,34 +71,23 @@ where "types P \<equiv> {T. is_type P T}"
 subsection {* Code generation *}
 
 lemma is_class_intros [code_pred_intro]:
-  "is_class ((C, data) # P) C"
-  "is_class P C \<Longrightarrow> is_class ((D, data) # P) C"
-by(auto simp add: is_class_def class_def simp del: split_paired_Ex)
+  "class P C \<noteq> None \<Longrightarrow> is_class P C"
+by(auto simp add: is_class_def)
 
-lemma is_class_cases:
-  assumes "is_class P C"
-  obtains data P' where "P = (C, data) # P'"
-  | D data P' where "P = (D, data) # P'" "is_class P' C"
-using assms
-by(cases P)(fastsimp simp add: is_class_def class_def split: split_if_asm)+
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> bool)
+  is_class 
+unfolding is_class_def by simp
 
-code_pred is_class
-by(erule is_class_cases) fastsimp+
+declare is_class_def[code]
 
-lemma is_type_intros [code_pred_intro]:
-  "is_type P Integer"
-  "is_type P Void"
-  "is_type P NT"
-  "is_type P Boolean"
-  "is_class P C \<Longrightarrow> is_type P (Class C)"
-  "is_type P T \<Longrightarrow> is_type P (T\<lfloor>\<rceil>)"
-by(simp_all)
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> bool)
+  [inductify]
+  is_type
+.
 
-code_pred is_type
-proof -
-  case is_type
-  thus thesis
-    by(cases xa) auto
-qed
+declare is_type.equation(2)[code del]
+declare is_type.simps [code]
 
 end

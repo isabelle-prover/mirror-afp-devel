@@ -186,7 +186,7 @@ lemma deadlocked1_imp_\<tau>s_deadlocked2:
   and dead: "r1.deadlocked s1 t"
   shows "\<exists>s2'. r2.mthr.silent_moves s2 s2' \<and> r2.deadlocked s2' t \<and> s1 \<approx>m s2'"
 proof -
-  from mfinal1_inv_simulation[OF bisim_inv_wfs_inv2[OF bisim_inv] mbisim]
+  from mfinal1_inv_simulation[OF mbisim]
   obtain ls2 ts2 m2 ws2 where red1: "r2.mthr.silent_moves s2 (ls2, (ts2, m2), ws2)"
     and "s1 \<approx>m (ls2, (ts2, m2), ws2)" and "m2 = shr s2" 
     and fin: "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread (ls2, (ts2, m2), ws2) t" by auto
@@ -369,7 +369,7 @@ lemma deadlock1_imp_\<tau>s_deadlock2:
   and dead: "r1.deadlock s1"
   shows "\<exists>s2'. r2.mthr.silent_moves s2 s2' \<and> r2.deadlock s2' \<and> s1 \<approx>m s2'"
 proof -
-  from mfinal1_inv_simulation[OF bisim_inv_wfs_inv2[OF bisim_inv] mbisim]
+  from mfinal1_inv_simulation[OF mbisim]
   obtain ls2 ts2 m2 ws2 where red1: "r2.mthr.silent_moves s2 (ls2, (ts2, m2), ws2)"
     and "s1 \<approx>m (ls2, (ts2, m2), ws2)" and "m2 = shr s2" 
     and fin: "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread (ls2, (ts2, m2), ws2) t" by auto

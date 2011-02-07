@@ -4,8 +4,7 @@ theory CArrays imports Main begin
 text {* For these arrays there is no
         built-in protection against reading or writing out-of-bounds. *}
 
-types
-  'a cArray = "nat => 'a"
+type_synonym 'a cArray = "nat => 'a"
 
 definition makeCArray :: "nat => 'a => 'a cArray" where
   "makeCArray arraySize fillValue index == 

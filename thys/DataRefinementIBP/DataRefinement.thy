@@ -81,7 +81,7 @@ theorem data_refinement_top [simp]:
 theorem data_refinement_choice2:
   "mono S \<Longrightarrow> mono S' \<Longrightarrow> DataRefinement p (Q::('a \<Rightarrow>'b::boolean_algebra)) R R' S \<Longrightarrow> DataRefinement p Q' R R' S' \<Longrightarrow> 
      DataRefinement p (Q \<squnion> Q') R R' ( S \<sqinter> S')"
-  apply (simp add: DataRefinement_def sup_fun_eq)
+  apply (simp add: DataRefinement_def sup_fun_def)
   apply (simp add: angelic_disjunctive hoare_choice)
   apply safe
   apply (rule hoare_mono)

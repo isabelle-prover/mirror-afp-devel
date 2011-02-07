@@ -23,12 +23,12 @@ text {*
 
 
 lemma mono_top[simp]: "mono top"
-  by (simp add: mono_def top_fun_eq)
+  by (simp add: mono_def top_fun_def)
 
 
 
 lemma mono_choice[simp]: "mono S \<Longrightarrow> mono T \<Longrightarrow> mono (S \<sqinter> T)"
-  apply (simp add: mono_def inf_fun_eq)
+  apply (simp add: mono_def inf_fun_def)
   apply safe
   apply (rule_tac y = "S x" in order_trans)
   apply simp_all
@@ -88,11 +88,11 @@ theorem demonic_bottom:
 
 theorem demonic_bottom_top [simp]:
   "demonic \<bottom>  = \<top>"
-  by (simp add: fun_eq_iff inf_fun_eq sup_fun_eq demonic_def simp_set_function inf_bool_eq top_fun_eq bot_fun_eq)
+  by (simp add: fun_eq_iff inf_fun_def sup_fun_def demonic_def simp_set_function inf_bool_def top_fun_def bot_fun_def)
 
 theorem demonic_sup_inf:
   "demonic (Q \<squnion> Q') = demonic Q \<sqinter> demonic Q'"
-  by (simp add: fun_eq_iff inf_fun_eq sup_fun_eq demonic_def simp_set_function inf_bool_eq)
+  by (simp add: fun_eq_iff inf_fun_def sup_fun_def demonic_def simp_set_function inf_bool_def)
 
 
 
@@ -130,7 +130,7 @@ theorem angelic_bottom [simp]:
 
 theorem angelic_disjunctive:
   "angelic R ((p::'a::boolean_algebra) \<squnion> q) = angelic R p \<squnion> angelic R q"
-by (simp add: fun_eq_iff inf_fun_eq sup_fun_eq angelic_def simp_set_function inf_bool_eq sup_bool_eq inf_sup_distrib1)
+by (simp add: fun_eq_iff inf_fun_def sup_fun_def angelic_def simp_set_function inf_bool_def sup_bool_def inf_sup_distrib1)
 
 theorem angelic_udisjunctive1:
   "angelic R ((Sup P)::'a::distributive_complete_lattice) = (SUP p:P . (angelic R p))"
@@ -164,7 +164,7 @@ definition
   "((grd S)::'a::boolean_algebra) = - (S bot)"
 
 lemma grd_choice[simp]: "grd (S \<sqinter> T) = (grd S) \<squnion> (grd T)"
-  by (simp add: grd_def compl_inf inf_fun_eq)
+  by (simp add: grd_def compl_inf inf_fun_def)
 
 lemma grd_demonic: "grd (demonic Q) = {s . \<exists> s' . s' \<in> (Q s) }" 
   apply (simp add: grd_def demonic_def)

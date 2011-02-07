@@ -1,3 +1,9 @@
+(*  Title:      JinjaThreads/Common/WellForm_Exec.thy
+    Author:     Andreas Lochbihler
+*)
+
+header {* \isaheader{Executable type inference} *}
+
 theory WellType_Exec imports
   WellType
   "../Common/SemiType"
@@ -6,6 +12,111 @@ begin
 
 declare Listn.lesub_list_impl_same_size[simp del]
 declare listE_length [simp del]
+
+
+inductive WT_code :: "J_prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_ \<turnstile> _ ::' _"   [51,51,51]50)
+  and WTs_code :: "J_prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [::''] _"   [51,51,51]50)
+  for P :: "J_prog"
+  where
+
+  WTNew_code:
+  "is_class P C  \<Longrightarrow>
+  P,E \<turnstile> new C ::' Class C"
+
+| WTNewArray_code:
+  "\<lbrakk> P,E \<turnstile> e ::' Integer; is_type P T \<rbrakk> \<Longrightarrow>
+  P,E \<turnstile> newA T\<lfloor>e\<rceil> ::' T\<lfloor>\<rceil>"
+
+| WTCast_code:
+  "\<lbrakk> P,E \<turnstile> e ::' T; P \<turnstile> U \<le> T \<or> P \<turnstile> T \<le> U; is_type P U \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> Cast U e ::' U"
+
+| WTInstanceOf_code:
+  "\<lbrakk> P,E \<turnstile> e ::' T; P \<turnstile> U \<le> T \<or> P \<turnstile> T \<le> U; is_type P U; is_refT T; is_refT U \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e instanceof U ::' Boolean"
+
+| WTVal_code:
+  "typeof v = Some T \<Longrightarrow>
+  P,E \<turnstile> Val v ::' T"
+
+| WTVar_code:
+  "E V = Some T \<Longrightarrow>
+  P,E \<turnstile> Var V ::' T"
+
+| WTBinOp_code:
+  "\<lbrakk> P,E \<turnstile> e1 ::' T1; P,E \<turnstile> e2 ::' T2; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e1\<guillemotleft>bop\<guillemotright>e2 ::' T"
+
+| WTLAss_code:
+  "\<lbrakk> E V = Some T;  P,E \<turnstile> e ::' T';  P \<turnstile> T' \<le> T;  V \<noteq> this \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> V:=e ::' Void"
+
+| WTAAcc_code:
+  "\<lbrakk> P,E \<turnstile> a ::' T\<lfloor>\<rceil>; P,E \<turnstile> i ::' Integer \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> a\<lfloor>i\<rceil> ::' T"
+
+| WTAAss_code:
+  "\<lbrakk> P,E \<turnstile> a ::' T\<lfloor>\<rceil>; P,E \<turnstile> i ::' Integer; P,E \<turnstile> e ::' T'; P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> a\<lfloor>i\<rceil> := e ::' Void"
+
+| WTALength_code:
+  "P,E \<turnstile> a ::' T\<lfloor>\<rceil> \<Longrightarrow> P,E \<turnstile> a\<bullet>length ::' Integer"
+
+| WTFAcc_code:
+  "\<lbrakk> P,E \<turnstile> e ::' Class C;  P \<turnstile> C sees F:T (fm) in D \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<bullet>F{D} ::' T"
+
+| WTFAss_code:
+  "\<lbrakk> P,E \<turnstile> e\<^isub>1 ::' Class C;  P \<turnstile> C sees F:T (fm) in D;  P,E \<turnstile> e\<^isub>2 ::' T';  P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 ::' Void"
+
+| WTCall_code:
+  "\<lbrakk> P,E \<turnstile> e ::' Class C; \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
+     P,E \<turnstile> es [::'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<bullet>M(es) ::' T"
+
+| WTExternal_code:
+  "\<lbrakk> P,E \<turnstile> e ::' T; P,E \<turnstile> es [::'] Ts; P \<turnstile> T\<bullet>M(Ts') :: U; P \<turnstile> Ts [\<le>] Ts' \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<bullet>M(es) ::' U"
+
+| WTBlock_code:
+  "\<lbrakk> is_type P T;  P,E(V \<mapsto> T) \<turnstile> e ::' T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> case typeof v of None \<Rightarrow> False | Some T' \<Rightarrow> P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow>  P,E \<turnstile> {V:T=vo; e} ::' T'"
+
+| WTSynchronized_code:
+  "\<lbrakk> P,E \<turnstile> o' ::' T; is_refT T; T \<noteq> NT; P,E \<turnstile> e ::' T' \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> sync(o') e ::' T'"
+
+| WTSeq_code:
+  "\<lbrakk> P,E \<turnstile> e\<^isub>1::'T\<^isub>1;  P,E \<turnstile> e\<^isub>2::'T\<^isub>2 \<rbrakk>
+  \<Longrightarrow>  P,E \<turnstile> e\<^isub>1;;e\<^isub>2 ::' T\<^isub>2"
+| WTCond_code:
+  "\<lbrakk> P,E \<turnstile> e ::' Boolean;  P,E \<turnstile> e\<^isub>1::'T\<^isub>1;  P,E \<turnstile> e\<^isub>2::'T\<^isub>2; SemiType.sup P T\<^isub>1 T\<^isub>2 = OK T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 ::' T"
+
+| WTWhile_code:
+  "\<lbrakk> P,E \<turnstile> e ::' Boolean;  P,E \<turnstile> c::'T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> while (e) c ::' Void"
+
+| WTThrow_code:
+  "\<lbrakk> P,E \<turnstile> e ::' Class C; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk> \<Longrightarrow> 
+  P,E \<turnstile> throw e ::' Void"
+
+| WTTry_code:
+  "\<lbrakk> P,E \<turnstile> e\<^isub>1 ::' T;  P,E(V \<mapsto> Class C) \<turnstile> e\<^isub>2 ::' T; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 ::' T"
+
+| WTNil_code: "P,E \<turnstile> [] [::'] []"
+
+| WTCons_code: "\<lbrakk> P,E \<turnstile> e ::' T; P,E \<turnstile> es [::'] Ts \<rbrakk> \<Longrightarrow> P,E \<turnstile> e#es [::'] T#Ts"
+
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  [detect_switches, skip_proof]
+  WT_code
+.
+
+(*
 
 primrec WT_code :: "J_prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty err"
   and WTs_code :: "J_prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> ty list err"
@@ -162,6 +273,8 @@ declare
   lift_eq_OK_conv [simp]
   lift2_eq_OK_conv [simp]
 
+*)
+
 lemma assumes wf: "wf_prog wf_md P"
   shows WT_is_type: "\<lbrakk> P,E \<turnstile> e :: T; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> is_type P T"
   and WTs_is_type: "\<lbrakk> P,E \<turnstile> es [::] Ts; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> set Ts \<subseteq> types P"
@@ -193,7 +306,39 @@ apply simp
 apply simp
 done
 
+lemma assumes wf: "wf_prog wf_md P"
+  shows WT_code_into_WT: 
+  "\<lbrakk> P,E \<turnstile> e ::' T; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> e :: T"
 
+  and WTs_code_into_WTs:
+  "\<lbrakk> P,E \<turnstile> es [::'] Ts; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> es [::] Ts"
+proof(induct rule: WT_code_WTs_code.inducts)
+  case (WTBlock_code U E V e' T vo)
+  from `is_type P U` `ran E \<subseteq> types P`
+  have "ran (E(V \<mapsto> U)) \<subseteq> types P" by(auto simp add: ran_def)
+  hence "P,E(V \<mapsto> U) \<turnstile> e' :: T" by(rule WTBlock_code)
+  with `is_type P U` show ?case
+    using `case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> case typeof v of None \<Rightarrow> False | \<lfloor>T'\<rfloor> \<Rightarrow> P \<turnstile> T' \<le> U` by auto
+next
+  case (WTCond_code E e e1 T1 e2 T2 T)
+  from `ran E \<subseteq> types P` have "P,E \<turnstile> e :: Boolean" "P,E \<turnstile> e1 :: T1" "P,E \<turnstile> e2 :: T2"
+    by(rule WTCond_code)+
+  moreover with `ran E \<subseteq> types P` have "is_type P T1" "is_type P T2"
+    by(blast intro: WT_is_type[OF wf])+
+  hence "P \<turnstile> lub(T1, T2) = T" using `sup P T1 T2 = OK T` by(rule sup_is_lubI[OF wf])
+  ultimately show ?case ..
+next
+  case (WTTry_code E e1 T V C e2)
+  from `ran E \<subseteq> types P` have "P,E \<turnstile> e1 :: T" by(rule WTTry_code)
+  moreover from `P \<turnstile> C \<preceq>\<^sup>* Throwable` have "is_class P C"
+    by(rule is_class_sub_Throwable[OF wf])
+  with `ran E \<subseteq> types P` have "ran (E(V \<mapsto> Class C)) \<subseteq> types P"
+    by(auto simp add: ran_def)
+  hence "P,E(V \<mapsto> Class C) \<turnstile> e2 :: T" by(rule WTTry_code)
+  ultimately show ?case using `P \<turnstile> C \<preceq>\<^sup>* Throwable` ..
+qed blast+
+
+(*
 lemma assumes wf: "wf_prog wf_md P"
   shows WT_code_OK_into_WT: 
   "\<lbrakk> WT_code P E e = OK T; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> e :: T"
@@ -341,7 +486,42 @@ next
   with e' have "P,E(V \<mapsto> Class C) \<turnstile> e' :: T" by(rule TryCatch)
   ultimately show ?case using sub by auto
 qed(auto split: split_if_asm)
+*)
 
+lemma assumes wf: "wf_prog wf_md P"
+  shows WT_into_WT_code: 
+  "\<lbrakk> P,E \<turnstile> e :: T; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> e ::' T"
+
+  and WT_into_WTs_code_OK:
+  "\<lbrakk> P,E \<turnstile> es [::] Ts; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> es [::'] Ts"
+proof(induct rule: WT_WTs.inducts)
+  case (WTBlock U E V e' T vo)
+  from `is_type P U` `ran E \<subseteq> types P`
+  have "ran (E(V \<mapsto> U)) \<subseteq> types P" by(auto simp add: ran_def)
+  hence "P,E(V \<mapsto> U) \<turnstile> e' ::' T" by(rule WTBlock)
+  with `is_type P U` show ?case
+    using `case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> U`
+    by(auto intro: WTBlock_code)
+next
+  case (WTCond E e e1 T1 e2 T2 T)
+  from `ran E \<subseteq> types P` have "P,E \<turnstile> e ::' Boolean" "P,E \<turnstile> e1 ::' T1" "P,E \<turnstile> e2 ::' T2"
+    by(rule WTCond)+
+  moreover from `P,E \<turnstile> e1 :: T1` `P,E \<turnstile> e2 :: T2` `ran E \<subseteq> types P` have "is_type P T1" "is_type P T2"
+    by(blast intro: WT_is_type[OF wf])+
+  hence "sup P T1 T2 = OK T" using `P \<turnstile> lub(T1, T2) = T` by(rule is_lub_subD[OF wf])
+  ultimately show ?case ..
+next
+  case (WTTry E e1 T V C e2)
+  from `ran E \<subseteq> types P` have "P,E \<turnstile> e1 ::' T" by(rule WTTry)
+  moreover from `P \<turnstile> C \<preceq>\<^sup>* Throwable` have "is_class P C"
+    by(rule is_class_sub_Throwable[OF wf])
+  with `ran E \<subseteq> types P` have "ran (E(V \<mapsto> Class C)) \<subseteq> types P"
+    by(auto simp add: ran_def)
+  hence "P,E(V \<mapsto> Class C) \<turnstile> e2 ::' T" by(rule WTTry)
+  ultimately show ?case using `P \<turnstile> C \<preceq>\<^sup>* Throwable` ..
+qed(blast intro: WT_code_WTs_code.intros)+
+
+(*
 lemma assumes wf: "wf_prog wf_md P"
   shows WT_into_WT_code_OK: 
   "\<lbrakk> P,E \<turnstile> e :: T; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> WT_code P E e = OK T"
@@ -421,11 +601,18 @@ next
     by(auto simp add: ran_def)
   with WTTry show ?case by(simp add: fun_upd_def)
 qed simp_all
+*)
 
+theorem WT_eq_WT_code:
+  assumes "wf_prog wf_md P"
+  and "ran E \<subseteq> types P"
+  shows "P,E \<turnstile> e :: T \<longleftrightarrow> P,E \<turnstile> e ::' T"
+using assms by(blast intro: WT_code_into_WT WT_into_WT_code)
+(*
 theorem WT_eq_WT_code:
   assumes "wf_prog wf_md P"
   and "ran E \<subseteq> types P"
   shows "P,E \<turnstile> e :: T \<longleftrightarrow> WT_code P E e = OK T"
 using assms by(blast intro: WT_code_OK_into_WT WT_into_WT_code_OK)
-
+*)
 end

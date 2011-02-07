@@ -41,7 +41,7 @@ proof
     by auto
   show "carrier int_group \<subseteq> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
   proof
-    interpret int: group int_group by (rule int.a_group)
+    interpret int: group int_group by (simp add: int.a_group)
     fix x
     have plus1: "1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
       by (auto intro:gen_span.gen_gens)
@@ -49,7 +49,7 @@ proof
       by (auto intro:gen_span.gen_inv)
     moreover
     have "-1 = inv\<^bsub>int_group\<^esub> 1" 
-      by (auto intro: int.inv_equality)
+      using int.inv_equality by auto
     ultimately
     have minus1: "-1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
       by (simp)
@@ -84,7 +84,7 @@ qed
 
 lemma free_group_over_one_gen: "\<exists>h. h \<in> \<F>\<^bsub>{()}\<^esub> \<cong> int_group"
 proof-
-  interpret int: group int_group by (rule int.a_group)
+  interpret int: group int_group by (simp add: int.a_group)
 
   def f \<equiv> "\<lambda>(x::unit).(1::int)"
   have "f \<in> {()} \<rightarrow> carrier int_group"
@@ -151,7 +151,7 @@ proof-
       hence "x = replicate (length x) a" by simp
       hence "int.lift f x = int.lift f (replicate (length x) a)" by simp
       also have "... = pow int_group (int.lift_gi f a) (length x)"
-        by (induct x,auto simp add:int.lift_def)
+        by (induct x,auto simp add:int.lift_def [simplified])
       also have "... = (int.lift_gi f a) * int (length x)"
         by (induct ("length x"), auto simp add:int_distrib)
       finally have "\<dots> = 0" using `int.lift f x = 0` by simp
@@ -161,7 +161,7 @@ proof-
         using `x \<noteq> []` by auto
       moreover
       have "inv\<^bsub>int_group\<^esub> 1 = -1" 
-        by (auto intro: int.inv_equality)
+        using int.inv_equality by auto
       hence "abs (group.lift_gi int_group f a) = 1"
       using `group int_group`
         by(auto simp add: group.lift_gi_def f_def)
@@ -180,7 +180,7 @@ proof-
       by (rule int_group_gen_by_one[THEN sym])
     moreover
     have "int.lift f ` insert ` {()} = {1}"
-      by (auto simp add: int.lift_def insert_def f_def int.lift_gi_def)   
+      by (auto simp add: int.lift_def [simplified] insert_def f_def int.lift_gi_def [simplified])
     moreover
     have  "int.lift f ` \<langle>insert`{()}\<rangle>\<^bsub>\<F>\<^bsub>{()}\<^esub>\<^esub> = \<langle>int.lift f ` (insert `{()})\<rangle>\<^bsub>int_group\<^esub>"
       by (rule hom.hom_span, auto intro:insert_closed)
@@ -191,7 +191,8 @@ proof-
   ultimately
   have "int.lift f \<in> \<F>\<^bsub>{()}\<^esub> \<cong> int_group"
     using `int.lift f \<in> hom \<F>\<^bsub>{()}\<^esub> int_group`
-    by (auto intro:group_isoI simp add:hom.hom_mult free_group_is_group int.is_group)
+    using hom.hom_mult int.is_group
+    by (auto intro:group_isoI simp add: free_group_is_group)
   thus ?thesis by auto
 qed
 
@@ -200,7 +201,7 @@ subsection {* Free Groups over isomorphic sets of generators *}
 text {* Free Groups are isomorphic if their set of generators are isomorphic. *}
 
 definition lift_generator_function :: "('a \<Rightarrow> 'b) \<Rightarrow> (bool \<times> 'a) list \<Rightarrow> (bool \<times> 'b) list"
-where "lift_generator_function f = map (prod_fun id f)"
+where "lift_generator_function f = map (map_pair id f)"
 
 theorem isomorphic_free_groups:
   assumes "bij_betw f gens1 gens2"
@@ -208,28 +209,28 @@ theorem isomorphic_free_groups:
 unfolding lift_generator_function_def
 proof(rule group_isoI)
   show "\<forall>x\<in>carrier \<F>\<^bsub>gens1\<^esub>.
-       map (prod_fun id f) x = \<one>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> \<longrightarrow> x = \<one>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub>"
+       map (map_pair id f) x = \<one>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> \<longrightarrow> x = \<one>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub>"
     by(auto simp add:free_group_def)
 next
   from `bij_betw f gens1 gens2` have "inj_on f gens1" by (auto simp:bij_betw_def)
-  show "map (prod_fun id f) ` carrier \<F>\<^bsub>gens1\<^esub> = carrier \<F>\<^bsub>gens2\<^esub>"
+  show "map (map_pair id f) ` carrier \<F>\<^bsub>gens1\<^esub> = carrier \<F>\<^bsub>gens2\<^esub>"
   proof(rule Set.set_eqI,rule iffI)
     from `bij_betw f gens1 gens2` have "f ` gens1 = gens2" by (auto simp:bij_betw_def)
     fix x :: "(bool \<times> 'b) list"
-    assume "x \<in> image (map (prod_fun id f)) (carrier \<F>\<^bsub>gens1\<^esub>)"
-    then obtain y :: "(bool \<times> 'a) list" where "x = map (prod_fun id f) y"
+    assume "x \<in> image (map (map_pair id f)) (carrier \<F>\<^bsub>gens1\<^esub>)"
+    then obtain y :: "(bool \<times> 'a) list" where "x = map (map_pair id f) y"
                     and "y \<in> carrier \<F>\<^bsub>gens1\<^esub>" by auto
     from `y \<in> carrier \<F>\<^bsub>gens1\<^esub>`
     have "canceled y" and "y \<in> lists(UNIV\<times>gens1)" by (auto simp add:free_group_def)
 
     from `y \<in> lists (UNIV\<times>gens1)`
-      and `x = map (prod_fun id f) y`
+      and `x = map (map_pair id f) y`
       and `image f gens1 = gens2`
     have "x \<in> lists (UNIV\<times>gens2)"
       by (auto iff:lists_eq_set)
     moreover
 
-    from `x = map (prod_fun id f) y`
+    from `x = map (map_pair id f) y`
      and `y \<in> lists (UNIV\<times>gens1)`
      and `canceled y`
      and `inj_on f gens1`
@@ -242,13 +243,13 @@ next
     assume "x \<in> carrier \<F>\<^bsub>gens2\<^esub>"
     hence "canceled x" and "x \<in> lists (UNIV\<times>gens2)"
       unfolding free_group_def by auto
-    def y \<equiv> "map (prod_fun id (the_inv_into gens1 f)) x"
-    have "map (prod_fun id f) y =
-          map (prod_fun id f) (map (prod_fun id (the_inv_into gens1 f)) x)"
+    def y \<equiv> "map (map_pair id (the_inv_into gens1 f)) x"
+    have "map (map_pair id f) y =
+          map (map_pair id f) (map (map_pair id (the_inv_into gens1 f)) x)"
       by (simp add:y_def)
-    also have "\<dots> = map (prod_fun id f \<circ> prod_fun id (the_inv_into gens1 f)) x"
+    also have "\<dots> = map (map_pair id f \<circ> map_pair id (the_inv_into gens1 f)) x"
       by simp
-    also have "\<dots> = map (prod_fun id (f \<circ> the_inv_into gens1 f)) x"
+    also have "\<dots> = map (map_pair id (f \<circ> the_inv_into gens1 f)) x"
       by auto
     also have "\<dots> = map id x"
     proof(rule map_ext, rule impI)
@@ -261,18 +262,18 @@ next
       with `bij_betw f gens1 gens2` have "snd xa \<in> f`gens1"
         by (auto simp add: bij_betw_def)
 
-      have "prod_fun id (f \<circ> the_inv_into gens1 f) xa
-            = prod_fun id (f \<circ> the_inv_into gens1 f) (fst xa, snd xa)" by simp
+      have "map_pair id (f \<circ> the_inv_into gens1 f) xa
+            = map_pair id (f \<circ> the_inv_into gens1 f) (fst xa, snd xa)" by simp
       also have "\<dots> = (fst xa, f (the_inv_into gens1 f (snd xa)))"
         by (auto simp del:pair_collapse)
       also with `snd xa \<in> image f gens1` and `inj_on f gens1`
            have "\<dots> = (fst xa, snd xa)"
            by (auto elim:f_the_inv_into_f simp del:pair_collapse)
       also have "\<dots> = id xa" by simp
-      finally show "prod_fun id (f \<circ> the_inv_into gens1 f) xa = id xa".
+      finally show "map_pair id (f \<circ> the_inv_into gens1 f) xa = id xa".
     qed
     also have "\<dots> = x" unfolding id_def by auto
-    finally have "map (prod_fun id f) y = x".
+    finally have "map (map_pair id f) y = x".
     moreover
     {
       from `bij_betw f gens1 gens2`
@@ -295,7 +296,7 @@ next
       have "y \<in> carrier \<F>\<^bsub>gens1\<^esub>" by (simp add:free_group_def)
     }
     ultimately
-    show "x \<in> map (prod_fun id f) ` carrier \<F>\<^bsub>gens1\<^esub>" by auto
+    show "x \<in> map (map_pair id f) ` carrier \<F>\<^bsub>gens1\<^esub>" by auto
   qed
 next
   from `bij_betw f gens1 gens2` have "inj_on f gens1" by (auto simp:bij_betw_def)
@@ -313,25 +314,25 @@ next
   with `inj_on f gens1` have "inj_on f (occuring_generators (x@y))"
     by (rule subset_inj_on) *)
 
-  have "map (prod_fun id f) (x \<otimes>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub> y)
-       = map (prod_fun id f) (normalize (x@y))" by (simp add:free_group_def)
+  have "map (map_pair id f) (x \<otimes>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub> y)
+       = map (map_pair id f) (normalize (x@y))" by (simp add:free_group_def)
   also (* from `inj_on f (occuring_generators (x@y))` *)
        from `x \<in> lists(UNIV\<times>gens1)` and `y \<in> lists(UNIV\<times>gens1)`
         and `inj_on f gens1`
-       have "\<dots> = normalize (map (prod_fun id f) (x@y))"
+       have "\<dots> = normalize (map (map_pair id f) (x@y))"
          by -(rule rename_gens_normalize[THEN sym],
               auto intro!: subset_inj_on[OF `inj_on f gens1`] iff:lists_eq_set)
-  also have "\<dots> = normalize (map (prod_fun id f) x @ map (prod_fun id f) y)"
+  also have "\<dots> = normalize (map (map_pair id f) x @ map (map_pair id f) y)"
        by (auto)
-  also have "\<dots> = map (prod_fun id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (prod_fun id f) y"
+  also have "\<dots> = map (map_pair id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (map_pair id f) y"
        by (simp add:free_group_def)
-  finally have "map (prod_fun id f) (x \<otimes>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub> y) =
-                map (prod_fun id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (prod_fun id f) y".
+  finally have "map (map_pair id f) (x \<otimes>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub> y) =
+                map (map_pair id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (map_pair id f) y".
   }
   thus "\<forall>x\<in>carrier \<F>\<^bsub>gens1\<^esub>.
        \<forall>y\<in>carrier \<F>\<^bsub>gens1\<^esub>.
-          map (prod_fun id f) (x \<otimes>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub> y) =
-          map (prod_fun id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (prod_fun id f) y"
+          map (map_pair id f) (x \<otimes>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub> y) =
+          map (map_pair id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (map_pair id f) y"
    by auto
 qed (auto intro: free_group_is_group)
 

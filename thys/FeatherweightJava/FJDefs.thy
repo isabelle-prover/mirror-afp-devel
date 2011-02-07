@@ -24,13 +24,13 @@ class tables) and defines several constants ({\tt Object} and {\tt this}).
 
 subsubsection{* Type definitions *}
 
-types varName    = "nat"
-types methodName = "nat"
-types className  = "nat"
+type_synonym varName = nat
+type_synonym methodName = nat
+type_synonym className = nat
 record varDef     = 
   vdName :: "varName"
   vdType :: "className"
-types varCtx     = "varName \<rightharpoonup> className"
+type_synonym varCtx = "varName \<rightharpoonup> className"
 
 subsubsection{* Constants *}
 
@@ -79,7 +79,7 @@ record classDef =
 
 subsubsection {* Class Tables *}
 
-types classTable = "className \<rightharpoonup> classDef"
+type_synonym classTable = "className \<rightharpoonup> classDef"
 
 subsection {* Sub-expression Relation *}
 

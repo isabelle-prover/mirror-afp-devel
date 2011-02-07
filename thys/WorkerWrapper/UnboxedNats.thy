@@ -31,7 +31,7 @@ text{* Standard definition of factorial. *}
 
 fixrec fac :: "Nat \<rightarrow> Nat"
 where
-  "fac\<cdot>n = If n =\<^sub>B 0 then 1 else n * fac\<cdot>(n - 1) fi"
+  "fac\<cdot>n = If n =\<^sub>B 0 then 1 else n * fac\<cdot>(n - 1)"
 
 declare fac.simps[simp del]
 
@@ -40,7 +40,7 @@ by fixrec_simp
 
 definition
   fac_body :: "(Nat \<rightarrow> Nat) \<rightarrow> Nat \<rightarrow> Nat" where
-  "fac_body \<equiv> \<Lambda> r n. If n =\<^sub>B 0 then 1 else n * r\<cdot>(n - 1) fi"
+  "fac_body \<equiv> \<Lambda> r n. If n =\<^sub>B 0 then 1 else n * r\<cdot>(n - 1)"
 
 lemma fac_body_strict[simp]: "fac_body\<cdot>r\<cdot>\<bottom> = \<bottom>"
   unfolding fac_body_def by simp
@@ -108,7 +108,7 @@ definition
   "fac_body' \<equiv> \<Lambda> r n.
      unbox\<cdot>(If box\<cdot>n =\<^sub>B 0
               then 1
-              else unbox\<cdot>(box\<cdot>n - 1) >>= r >>= (\<Lambda> b. box\<cdot>n * box\<cdot>b) fi)"
+              else unbox\<cdot>(box\<cdot>n - 1) >>= r >>= (\<Lambda> b. box\<cdot>n * box\<cdot>b))"
 
 lemma fac_body'_fac_body: "fac_body' = unwrapB oo fac_body oo wrapB" (is "?lhs = ?rhs")
 proof(rule ext_cfun)+

@@ -1,5 +1,4 @@
-(*  ID:         $Id: RegExp2NA.thy,v 1.8 2007-07-22 20:44:19 makarius Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
@@ -9,7 +8,7 @@ theory RegExp2NA
 imports "../Regular-Sets/Regular_Exp" NA
 begin
 
-types 'a bitsNA = "('a,bool list)na"
+type_synonym 'a bitsNA = "('a,bool list)na"
 
 abbreviation
   Cons_syn :: "'a => 'a list set => 'a list set" (infixr "##" 65) where

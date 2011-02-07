@@ -1,7 +1,7 @@
 (*  Title:      RSAPSS/Pdifference.thy
     ID:         $Id: Pdifference.thy,v 1.11 2009-09-01 19:44:51 fhaftmann Exp $
-    Author:     Christina Lindenberg, Kai Wirt, Technische Universit‰t Darmstadt
-    Copyright:  2005 - Technische Universit‰t Darmstadt 
+    Author:     Christina Lindenberg, Kai Wirt, Technische Universit√§t Darmstadt
+    Copyright:  2005 - Technische Universit√§t Darmstadt 
 *)
 header "Positive differences"
 

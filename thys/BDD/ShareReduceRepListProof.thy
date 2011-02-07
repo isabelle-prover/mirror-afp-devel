@@ -223,58 +223,58 @@ proof - (* From invariant to postcondition *)
     proof (cases "high no = Null")
       case True
       with no_balanced have "low no = Null"
-	by simp
+        by simp
       with True have no_Leaf: "isLeaf_pt no low high"
-	by (simp add: isLeaf_pt_def)
+        by (simp add: isLeaf_pt_def)
       with isLeaf_var have varno: "var no <= 1"
-	by simp
+        by simp
       from same_var [rule_format, OF no_in_ns hd_term_in_ns] varno
       have "var (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa]) \<le> 1"
-	by simp
+        by simp
       with hd_isLeaf_var have 
-	"isLeaf_pt (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa]) low high"
-	by simp
+        "isLeaf_pt (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa]) low high"
+        by simp
       with while_inv hd_term_in_ns repNodes_not_empty show ?thesis
-	apply (simp add: isLeaf_pt_def)
-	apply (erule_tac x=
+        apply (simp add: isLeaf_pt_def)
+        apply (erule_tac x=
           "hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa]" in ballE)
-	prefer 2
-	apply simp
-	apply (simp (no_asm_use) add: repNodes_eq_def)
-	apply (rule filter_hd_P_rep_indep)
-	apply   (simp (no_asm_simp))
-	apply  (simp (no_asm_simp))
-	apply assumption
-	done
+        prefer 2
+        apply simp
+        apply (simp (no_asm_use) add: repNodes_eq_def)
+        apply (rule filter_hd_P_rep_indep)
+        apply   (simp (no_asm_simp))
+        apply  (simp (no_asm_simp))
+        apply assumption
+        done
     next
       assume hno_nNull:  "high no \<noteq> Null"
       with share_case have repchildren_neq: "(repa \<propto> low) no \<noteq> (repa \<propto> high) no"
-	by simp
+        by simp
       from repNodes_not_empty have 
-	"repNodes_eq  (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa]) no low high repa"
-	by (rule hd_filter_prop)
+        "repNodes_eq  (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa]) no low high repa"
+        by (rule hd_filter_prop)
       then 
       have "(repa \<propto> low) (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa]) = 
               (repa \<propto> low) no \<and> 
             (repa \<propto> high) (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa]) = 
               (repa \<propto> high) no"
-	by (simp add: repNodes_eq_def)
+        by (simp add: repNodes_eq_def)
       with repchildren_neq have 
-	"(repa \<propto> low) (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa])
-	\<noteq> (repa \<propto> high) (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa])"
-	by simp
+        "(repa \<propto> low) (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa])
+        \<noteq> (repa \<propto> high) (hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa])"
+        by simp
       with while_inv hd_term_in_ns repNodes_not_empty show ?thesis
-	apply (simp add: isLeaf_pt_def)
-	apply (erule_tac x=
+        apply (simp add: isLeaf_pt_def)
+        apply (erule_tac x=
           "hd [sn\<leftarrow>ns . repNodes_eq sn no low high repa]" in ballE)
-	prefer 2
-	apply simp
-	apply (simp (no_asm_use) add: repNodes_eq_def)
-	apply (rule filter_hd_P_rep_indep)
-	apply simp
-	apply fastsimp
-	apply fastsimp
-	done
+        prefer 2
+        apply simp
+        apply (simp (no_asm_use) add: repNodes_eq_def)
+        apply (rule filter_hd_P_rep_indep)
+        apply simp
+        apply fastsimp
+        apply fastsimp
+        done
     qed
     with hd_term_in_ns
     show ?thesis
@@ -350,12 +350,12 @@ next
       assume no_in_take_Sucna: " no \<in> set (prx @ [node])"
       show "?P no \<and> ?Q no"
       proof (cases "no = node")
-	case False
-	note no_noteq_nln=this
-	with no_in_take_Sucna 
-	have no_in_take_n: "no \<in> set prx"
-	  by auto
-	with no_in_take_n while_inv obtain 
+        case False
+        note no_noteq_nln=this
+        with no_in_take_Sucna 
+        have no_in_take_n: "no \<in> set prx"
+          by auto
+        with no_in_take_n while_inv obtain 
           repa_no_nNull: " repa no \<noteq> Null" and
           repa_cases: "(if (repa \<propto> low) no = (repa \<propto> high) no \<and> low no \<noteq> Null 
           then repa no = (repa \<propto> low) no
@@ -364,14 +364,14 @@ next
           (\<forall>no1\<in>set prx. ((repa \<propto> high) no1 = (repa \<propto> high) no 
           \<and> (repa \<propto> low) no1 = (repa \<propto> low) no) 
           = (repa no = repa no1)))"
-	  using [[simp_depth_limit = 2]]
+          using [[simp_depth_limit = 2]]
           by auto 
-	from no_in_take_n 
-	have no_in_nodeslist: "no \<in> set (prx @ node # sfx)"
-	  by auto
-	from repa_no_nNull no_noteq_nln have ext_repa_nNull: "?P no"
+        from no_in_take_n 
+        have no_in_nodeslist: "no \<in> set (prx @ node # sfx)"
           by auto
-	from no_in_nodeslist nodes_balanced_ordered obtain
+        from repa_no_nNull no_noteq_nln have ext_repa_nNull: "?P no"
+          by auto
+        from no_in_nodeslist nodes_balanced_ordered obtain
           nln_nNull: "node \<noteq> Null" and
           nln_balanced_children: "(low node = Null) = (high node = Null)" and
           lnln_notin_nodeslist: "low node \<notin> set (prx @ node # sfx)" and
@@ -383,8 +383,8 @@ next
           apply (erule_tac x="node" in ballE)
           apply auto
           done
-	from  no_in_nodeslist nodes_balanced_ordered no_in_take_Sucna 
-	obtain 
+        from  no_in_nodeslist nodes_balanced_ordered no_in_take_Sucna 
+        obtain 
           no_nNull: "no \<noteq> Null" and
           balanced_children: "(low no = Null) = (high no = Null)" and
           lno_notin_nodeslist: "low no \<notin> set (prx @ node # sfx)" and
@@ -396,16 +396,16 @@ next
           apply (erule_tac x=no in ballE)
           apply auto
           done
-	from lno_notin_nodeslist  
-	have ext_rep_null_comp_low: 
-	  "(repa (node := repa (low node)) \<propto> low) no = (repa \<propto> low) no"
+        from lno_notin_nodeslist  
+        have ext_rep_null_comp_low: 
+          "(repa (node := repa (low node)) \<propto> low) no = (repa \<propto> low) no"
           by (auto simp add: null_comp_def)
-	from hno_notin_nodeslist 
-	have ext_rep_null_comp_high: 
-	  "(repa (node := repa (low node)) \<propto> high) no = (repa \<propto> high) no"
+        from hno_notin_nodeslist 
+        have ext_rep_null_comp_high: 
+          "(repa (node := repa (low node)) \<propto> high) no = (repa \<propto> high) no"
           by (auto simp add: null_comp_def)
-	have share_reduce_if: "?Q no"
-	proof (cases "(repa (node := repa (low node)) \<propto> low) no = 
+        have share_reduce_if: "?Q no"
+        proof (cases "(repa (node := repa (low node)) \<propto> low) no = 
             (repa(node := repa (low node)) \<propto> high) no \<and> low no \<noteq> Null")
           case True
           then obtain 
@@ -426,34 +426,34 @@ next
             by simp
           with True repchildren_eq_nln show ?thesis
             by auto
-	next
+        next
           assume share_case_ext: 
-	    " \<not> ((repa(node := repa (low node)) \<propto> low) no = 
+            " \<not> ((repa(node := repa (low node)) \<propto> low) no = 
             (repa(node := repa (low node)) \<propto> high) no \<and> low no \<noteq> Null)"
           from not_Leaf isLeaf_var_nln 
           have "1 < var node"
             by simp
           with all_nodes_same_var 
           have all_nodes_nl_Suc0_l_var: "\<forall>x \<in> set (prx @ node # sfx). 1 < var x"
-	    using [[simp_depth_limit=1]]
-	    by auto
+            using [[simp_depth_limit=1]]
+            by auto
           with nodes_balanced_ordered 
           have all_nodes_nl_noLeaf: 
-	    "\<forall>x \<in> set (prx @ node # sfx). \<not> isLeaf_pt x low high"
-	    apply -
-	    apply rule
-	    apply (drule_tac x=x in bspec,assumption)
-	    apply (drule_tac x=x in bspec,assumption)
-	    apply auto
-	    done
+            "\<forall>x \<in> set (prx @ node # sfx). \<not> isLeaf_pt x low high"
+            apply -
+            apply rule
+            apply (drule_tac x=x in bspec,assumption)
+            apply (drule_tac x=x in bspec,assumption)
+            apply auto
+            done
           from nodes_balanced_ordered 
           have all_nodes_nl_balanced: 
-	    "\<forall>x \<in> set (prx @ node # sfx). (low x = Null) = (high x = Null)"
-	    apply -
-	    apply rule
-	    apply (drule_tac x=x in bspec,assumption)
-	    apply auto
-	    done
+            "\<forall>x \<in> set (prx @ node # sfx). (low x = Null) = (high x = Null)"
+            apply -
+            apply rule
+            apply (drule_tac x=x in bspec,assumption)
+            apply auto
+            done
           from all_nodes_nl_Suc0_l_var no_in_nodeslist 
           have Suc0_l_var_no: "1 < var no"
             by auto
@@ -486,37 +486,37 @@ next
             (hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa]) no low high repa"
             by (rule hd_filter_prop)
           with repa_no 
-	  have rep_children_eq_no_repa_no: 
-	    "(repa \<propto> low) (repa no) = (repa \<propto> low) no \<and> 
+          have rep_children_eq_no_repa_no: 
+            "(repa \<propto> low) (repa no) = (repa \<propto> low) no \<and> 
              (repa \<propto> high) (repa no) = (repa \<propto> high) no"
             by (simp add: repNodes_eq_def) 
           from lno_notin_nodeslist rep_repa_nc 
           have rep_repa_nc_low_no: "rep (low no) = repa (low no)"
             apply -
             apply (erule_tac x="low no" in allE)
-	    apply auto
-	    done
+            apply auto
+            done
           have "\<forall>x \<in> set (prx @ [node]). 
             repNodes_eq x no low high (repa(node := repa (low node))) = 
             repNodes_eq x no low high repa"
           proof (rule ballI, unfold repNodes_eq_def)
             fix x
             assume x_in_take_Sucn: " x \<in> set (prx @ [node])"
-	    hence x_in_nodeslist: "x \<in> set (prx @ node # sfx)"
-	      by auto
+            hence x_in_nodeslist: "x \<in> set (prx @ node # sfx)"
+              by auto
             with all_nodes_nl_noLeaf nodes_balanced_ordered 
             have children_nNull_x: "low x \<noteq> Null \<and> high x \<noteq> Null"
-	      apply -
-	      apply (drule_tac x=x in bspec,assumption)
-	      apply (drule_tac x=x in bspec,assumption)
-	      apply (auto simp add: isLeaf_pt_def) 
-	      done
+              apply -
+              apply (drule_tac x=x in bspec,assumption)
+              apply (drule_tac x=x in bspec,assumption)
+              apply (auto simp add: isLeaf_pt_def) 
+              done
             from x_in_nodeslist nodes_balanced_ordered 
             have "low x \<notin> set (prx @ node # sfx) \<and> high x \<notin> set (prx @ node # sfx)"
-	      apply -
-	      apply (drule_tac x=x in bspec,assumption)
-	      apply auto
-	      done
+              apply -
+              apply (drule_tac x=x in bspec,assumption)
+              apply auto
+              done
             with lno_notin_nodeslist hno_notin_nodeslist 
               children_nNull_x lno_nNull hno_nNull
             show "((repa(node := repa (low node)) \<propto> high) x = 
@@ -524,11 +524,11 @@ next
               (repa(node := repa (low node)) \<propto> low) x = 
               (repa(node := repa (low node)) \<propto> low) no) =
               ((repa \<propto> high) x = (repa \<propto> high) no \<and> 
-	      (repa \<propto> low) x = (repa \<propto> low) no)"
+              (repa \<propto> low) x = (repa \<propto> low) no)"
               by (simp add: null_comp_def)
           qed
           then have filter_extrep_rep: 
-	    "[sn\<leftarrow>(prx @ [node]). repNodes_eq sn no low high 
+            "[sn\<leftarrow>(prx @ [node]). repNodes_eq sn no low high 
                                    (repa(node := repa (low node)))] = 
             [sn\<leftarrow>(prx @ [node]) . repNodes_eq sn no low high repa]"
             by (rule P_eq_list_filter)
@@ -550,7 +550,7 @@ next
             case True
             note rno_nln=this
             from rep_repa_nc_low_no rep_children_eq_no_repa_no lno_nNull 
-	      node_nNull_rep_nNull 
+              node_nNull_rep_nNull 
             have low_rep_no_nNull: "low (repa no) \<noteq> Null"
               apply (simp add: null_comp_def)
               apply auto
@@ -559,7 +559,7 @@ next
             have high_rap_no_nNull: "high (repa no) \<noteq> Null"
               apply -
               apply (drule_tac x="repa no" in bspec)
-	      apply auto
+              apply auto
               done
             with low_rep_no_nNull rno_nln rep_children_eq_no_repa_no 
             have "repa (low node) = (repa \<propto> low) no \<and> 
@@ -592,7 +592,7 @@ next
             fix no1
             assume no1_in_take_Sucn: " no1 \<in> set (prx@[node])"
             hence no1_in_nodeslist: "no1 \<in> set (prx @ node # sfx)"
-	      by auto
+              by auto
             show "((repa(node := repa (low node)) \<propto> high) no1 = 
                  (repa(node := repa (low node)) \<propto> high) no \<and>
                  (repa(node := repa (low node)) \<propto> low) no1 = 
@@ -603,68 +603,68 @@ next
               case True
               show ?thesis
               proof (rule, elim conjE)
-		assume ext_repa_no_no1: 
-		  "(repa(node := repa (low node))) no = 
+                assume ext_repa_no_no1: 
+                  "(repa(node := repa (low node))) no = 
                     (repa(node := repa (low node))) no1"
-		with True no_noteq_nln 
-		have repa_no_repa_low_nln: "repa no = repa (low node)"
+                with True no_noteq_nln 
+                have repa_no_repa_low_nln: "repa no = repa (low node)"
                   by simp
-		from filter_n_notempty 
-		have repa_no_in_take_n:  
-		  "hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] 
+                from filter_n_notempty 
+                have repa_no_in_take_n:  
+                  "hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] 
                     \<in> set prx "
                   apply -
                   apply (rule hd_filter_in_list)
                   apply auto
                   done
-		with repa_no 
-		have repa_no_in_nodeslist: "repa no \<in> set (prx @ node # sfx)"
-		  by auto
-		from lnln_notin_nodeslist rep_repa_nc 
-		have rep_repa_low_nln: "rep (low node) = repa (low node)"
-		  by auto
-		from all_nodes_nl_noLeaf nln_balanced_children
-		have "low node \<noteq> Null"
-		  by (auto simp add: isLeaf_pt_def)
-		with rep_repa_low_nln lnln_notin_nodeslist lno_nNull 
-		  nln_varrep_le_var 
-		have "repa (low node) \<notin> set (prx @ node # sfx)"
+                with repa_no 
+                have repa_no_in_nodeslist: "repa no \<in> set (prx @ node # sfx)"
+                  by auto
+                from lnln_notin_nodeslist rep_repa_nc 
+                have rep_repa_low_nln: "rep (low node) = repa (low node)"
+                  by auto
+                from all_nodes_nl_noLeaf nln_balanced_children
+                have "low node \<noteq> Null"
+                  by (auto simp add: isLeaf_pt_def)
+                with rep_repa_low_nln lnln_notin_nodeslist lno_nNull 
+                  nln_varrep_le_var 
+                have "repa (low node) \<notin> set (prx @ node # sfx)"
                   by (simp add: null_comp_def) 
-		with repa_no_repa_low_nln repa_no_in_nodeslist 
-		show "(repa(node := repa (low node)) \<propto> high) no1 = 
+                with repa_no_repa_low_nln repa_no_in_nodeslist 
+                show "(repa(node := repa (low node)) \<propto> high) no1 = 
                   (repa(node := repa (low node)) \<propto> high) no \<and>
                   (repa(node := repa (low node)) \<propto> low) no1 = 
                   (repa(node := repa (low node)) \<propto> low) no"
                   by simp
               next
-		assume no_no1_high: 
+                assume no_no1_high: 
                   "(repa(node := repa (low node)) \<propto> high) no1 = 
                   (repa(node := repa (low node)) \<propto> high) no"
-		assume no_no1_low: 
+                assume no_no1_low: 
                   "(repa(node := repa (low node)) \<propto> low) no1 = 
                   (repa(node := repa (low node)) \<propto> low) no"
-		from True repchildren_eq_nln 
-		have repachildren_eq_no1: " repa (low no1) = repa (high no1)"
+                from True repchildren_eq_nln 
+                have repachildren_eq_no1: " repa (low no1) = repa (high no1)"
                   by simp
-		from not_Leaf True nln_balanced_children 
-		have children_nNull_no1: "(low no1) \<noteq> Null \<and> high no1 \<noteq> Null"
+                from not_Leaf True nln_balanced_children 
+                have children_nNull_no1: "(low no1) \<noteq> Null \<and> high no1 \<noteq> Null"
                   by (simp add: isLeaf_pt_def)
-		with repachildren_eq_no1 
-		have repchildren_eq_no1: "(repa \<propto> low) no1 = (repa \<propto> high) no1"
+                with repachildren_eq_no1 
+                have repchildren_eq_no1: "(repa \<propto> low) no1 = (repa \<propto> high) no1"
                   by (simp add: null_comp_def)
-		from no_no1_low children_nNull_no1 lno_nNull 
+                from no_no1_low children_nNull_no1 lno_nNull 
                   lnln_notin_nodeslist lno_notin_nodeslist True 
-		have rep_low_eq_no_no1: "(repa \<propto> low) no1 = (repa \<propto> low) no"
+                have rep_low_eq_no_no1: "(repa \<propto> low) no1 = (repa \<propto> low) no"
                   by (simp add: null_comp_def)
-		from no_no1_high children_nNull_no1 hno_nNull 
+                from no_no1_high children_nNull_no1 hno_nNull 
                   hnln_notin_nodeslist hno_notin_nodeslist True 
-		have rep_high_eq_no_no1: "(repa \<propto> high) no1 = (repa \<propto> high) no"
+                have rep_high_eq_no_no1: "(repa \<propto> high) no1 = (repa \<propto> high) no"
                   by (simp add: null_comp_def)
-		with rep_low_eq_no_no1 repchildren_eq_no1 
-		have "(repa \<propto> low) no = (repa \<propto> high) no"
+                with rep_low_eq_no_no1 repchildren_eq_no1 
+                have "(repa \<propto> low) no = (repa \<propto> high) no"
                   by simp
-		with repchildren_neq_no 
-		show "(repa(node := repa (low node))) no = 
+                with repchildren_neq_no 
+                show "(repa(node := repa (low node))) no = 
                   (repa(node := repa (low node))) no1"
                   by simp
               qed
@@ -673,55 +673,55 @@ next
               from no1_in_nodeslist nodes_balanced_ordered 
               have children_notin_nl_no1: 
               "low no1 \<notin> set (prx @ node # sfx) \<and> high no1 \<notin> set (prx @ node # sfx)"
-		apply -
-		apply (drule_tac x=no1 in bspec,assumption)
-		by auto
+                apply -
+                apply (drule_tac x=no1 in bspec,assumption)
+                by auto
               from no1_neq_nln no1_in_take_Sucn 
               have no1_in_take_n: "no1 \<in> set prx"
-		by auto
+                by auto
               from no1_in_nodeslist all_nodes_nl_noLeaf all_nodes_nl_balanced 
               have children_nNull_no1: "(low no1) \<noteq> Null \<and> high no1 \<noteq> Null"
                 by  (auto simp add: isLeaf_pt_def)
               show ?thesis
               proof (rule, elim conjE)
-		assume ext_repa_high_no1_no: 
+                assume ext_repa_high_no1_no: 
                 "(repa(node := repa (low node)) \<propto> high) no1 
                   = (repa(node := repa (low node)) \<propto> high) no" 
-		assume ext_repa_low_no1_no: 
+                assume ext_repa_low_no1_no: 
                   "(repa(node := repa (low node)) \<propto> low) no1 
                   = (repa(node := repa (low node)) \<propto> low) no"
-		from children_nNull_no1 hno_nNull ext_repa_high_no1_no 
-		  children_notin_nl_no1 
-		  hno_notin_nodeslist 
-		have repa_high_no1_no: "(repa \<propto> high) no1 = (repa \<propto> high) no"
+                from children_nNull_no1 hno_nNull ext_repa_high_no1_no 
+                  children_notin_nl_no1 
+                  hno_notin_nodeslist 
+                have repa_high_no1_no: "(repa \<propto> high) no1 = (repa \<propto> high) no"
                   by (simp add: null_comp_def)
-		from children_nNull_no1 lno_nNull ext_repa_low_no1_no 
-		  children_notin_nl_no1 lno_notin_nodeslist 
-		have repa_low_no1_no: "(repa \<propto> low) no1 = (repa \<propto> low) no"
+                from children_nNull_no1 lno_nNull ext_repa_low_no1_no 
+                  children_notin_nl_no1 lno_notin_nodeslist 
+                have repa_low_no1_no: "(repa \<propto> low) no1 = (repa \<propto> low) no"
                   by (simp add: null_comp_def)
-		from repchildren_neq_no repa_high_no1_no repa_low_no1_no 
-		have "(repa \<propto> low) no1 \<noteq> (repa \<propto> high) no1"
+                from repchildren_neq_no repa_high_no1_no repa_low_no1_no 
+                have "(repa \<propto> low) no1 \<noteq> (repa \<propto> high) no1"
                   by simp
-		from no1_in_take_n share_case_inv repa_high_no1_no repa_low_no1_no 
-		have "repa no = repa no1"
+                from no1_in_take_n share_case_inv repa_high_no1_no repa_low_no1_no 
+                have "repa no = repa no1"
                   by auto
-		with no_noteq_nln no1_neq_nln 
-		show " (repa(node := repa (low node))) no = 
+                with no_noteq_nln no1_neq_nln 
+                show " (repa(node := repa (low node))) no = 
                   (repa(node := repa (low node))) no1"
                   by simp
               next
-		assume "(repa(node := repa (low node))) no = 
+                assume "(repa(node := repa (low node))) no = 
                   (repa(node := repa (low node))) no1"
-		with no_noteq_nln no1_neq_nln 
-		have "repa no = repa no1"
+                with no_noteq_nln no1_neq_nln 
+                have "repa no = repa no1"
                   by simp
-		with share_case_inv no1_in_take_n 
-		have "((repa \<propto> high) no1 = (repa \<propto> high) no \<and> 
-		  (repa \<propto> low) no1 = (repa \<propto> low) no)"
+                with share_case_inv no1_in_take_n 
+                have "((repa \<propto> high) no1 = (repa \<propto> high) no \<and> 
+                  (repa \<propto> low) no1 = (repa \<propto> low) no)"
                   by auto
-		with children_notin_nl_no1 children_nNull_no1 lno_notin_nodeslist 
+                with children_notin_nl_no1 children_nNull_no1 lno_notin_nodeslist 
                   hno_notin_nodeslist lno_nNull hno_nNull 
-		show "(repa(node := repa (low node)) \<propto> high) no1 = 
+                show "(repa(node := repa (low node)) \<propto> high) no1 = 
                 (repa(node := repa (low node)) \<propto> high) no \<and>
                 (repa(node := repa (low node)) \<propto> low) no1 = 
                 (repa(node := repa (low node)) \<propto> low) no"
@@ -730,34 +730,34 @@ next
             qed
           qed
           from ext_repa_ext_repa ext_repa_no share_case_ext repchildren_eq_nln this 
-	  show ?thesis
-	    using [[simp_depth_limit=4]]
-	    by auto 
-	qed
-	with ext_repa_nNull show ?thesis
+          show ?thesis
+            using [[simp_depth_limit=4]]
+            by auto 
+        qed
+        with ext_repa_nNull show ?thesis
           by auto
       next
-	assume no_nln: "no = node"
-	hence no_in_nodeslist: "no \<in> set (prx @ node # sfx)"
+        assume no_nln: "no = node"
+        hence no_in_nodeslist: "no \<in> set (prx @ node # sfx)"
           by simp
-	from no_nln not_Leaf no_in_nodeslist 
-	  nodes_balanced_ordered [rule_format, OF this] obtain  
+        from no_nln not_Leaf no_in_nodeslist 
+          nodes_balanced_ordered [rule_format, OF this] obtain  
           low_no_nNull: "low no \<noteq> Null" and
           high_no_nNull: "high no \<noteq> Null" and
           rep_low_no_nNull: "rep (low no) \<noteq> Null" and
           lno_notin_nl: "low no \<notin> set (prx @ node # sfx)" and
           hno_notin_nl: "high no \<notin> set (prx @ node # sfx)" and
           children_nNull_no: "(low no \<noteq> Null) \<and> (high no \<noteq> Null)"
-	  apply (unfold isLeaf_pt_def)
-	  apply blast
+          apply (unfold isLeaf_pt_def)
+          apply blast
           done
-	then have "low no \<notin> set prx"
-	  by auto
-	with rep_repa_nc no_nln rep_low_no_nNull 
-	have "(repa(node := repa (low node))) no \<noteq> Null"
+        then have "low no \<notin> set prx"
+          by auto
+        with rep_repa_nc no_nln rep_low_no_nNull 
+        have "(repa(node := repa (low node))) no \<noteq> Null"
           by simp
-	moreover
-	have "(if (repa(node := repa (low node)) \<propto> low) no = 
+        moreover
+        have "(if (repa(node := repa (low node)) \<propto> low) no = 
                   (repa(node := repa (low node)) \<propto> high) no \<and> low no \<noteq> Null
           then (repa(node := repa (low node))) no = 
                (repa(node := repa (low node)) \<propto> low) no
@@ -774,7 +774,7 @@ next
             (repa(node := repa (low node)) \<propto> low) no) =
             ((repa(node := repa (low node))) no = 
             (repa(node := repa (low node))) no1)))"
-	proof (cases "(repa(node := repa (low node)) \<propto> low) no = 
+        proof (cases "(repa(node := repa (low node)) \<propto> low) no = 
           (repa(node := repa (low node)) \<propto> high) no \<and> low no \<noteq> Null")
           case True
           note red_case=this
@@ -787,7 +787,7 @@ next
             by (auto simp add: null_comp_def)
           from children_nNull_no hno_notin_nl 
           have ext_repa_eq_repa_high: 
-	    "(repa(node := repa (low node)) \<propto> high) no 
+            "(repa(node := repa (low node)) \<propto> high) no 
             = (repa \<propto> high) no "
             by (auto simp add: null_comp_def)
           from no_nln children_nNull_no 
@@ -795,9 +795,9 @@ next
             by (simp add: null_comp_def)
           with red_case ext_repa_eq_repa_high ext_repa_eq_repa_low no_nln 
           show ?thesis 
-	    using [[simp_depth_limit=2]]
+            using [[simp_depth_limit=2]]
             by (auto simp del: null_comp_not_Null)
-	next
+        next
           assume share_case: " \<not> ((repa(node := repa (low node)) \<propto> low) no 
             = (repa(node := repa (low node)) \<propto> high) no \<and> low no \<noteq> Null)"
           with low_no_nNull have "(repa(node := repa (low node)) \<propto> low) no 
@@ -810,13 +810,13 @@ next
             by (simp add: null_comp_def)
           with repchildren_eq_nln no_nln show ?thesis
             by simp
-	qed
-	ultimately show ?thesis
-	  using repchildren_eq_nln
-	  apply -
-	  apply (simp only:)
-	  apply (simp (no_asm))
-	  done
+        qed
+        ultimately show ?thesis
+          using repchildren_eq_nln
+          apply -
+          apply (simp only:)
+          apply (simp (no_asm))
+          done
       qed
     qed
     from nodes_unmodif nodes_modif
@@ -890,11 +890,11 @@ next
       assume no_in_take_Sucn: " no \<in> set (prx @ [node])"
       assume share_prop: "\<not> ((repb \<propto> low) no = (repb \<propto> high) no \<and> low no \<noteq> Null)"
       from share_prop have share_or: 
-	"(repb \<propto> low) no \<noteq> (repb \<propto> high) no \<or> low no = Null"
-	using [[simp_depth_limit=2]]
+        "(repb \<propto> low) no \<noteq> (repb \<propto> high) no \<or> low no = Null"
+        using [[simp_depth_limit=2]]
         by simp
       from no_in_take_Sucn have no_in_nl: "no \<in> set (prx @ node # sfx)"
-	by auto
+        by auto
       from nodes_balanced_ordered [rule_format, OF this] obtain
         no_nNull: "no \<noteq> Null" and
         balanced_no: "(low no = Null) = (high no = Null)" and
@@ -909,19 +909,19 @@ next
         case False
         note no_notin_nl=this
         with no_in_take_Sucn have no_in_take_n: "no \<in> set prx"
-	  by auto
+          by auto
         from False repa_repb_nc have repb_repa_no: "repb no = repa no" 
           by auto
         with while_inv [rule_format, OF no_in_take_n] no_in_take_n obtain 
           repa_no_nNull: "repa no \<noteq> Null" and
           while_share_red_exp: 
-	  "(if (repa \<propto> low) no = (repa \<propto> high) no \<and> low no \<noteq> Null 
+          "(if (repa \<propto> low) no = (repa \<propto> high) no \<and> low no \<noteq> Null 
               then repa no = (repa \<propto> low) no
               else repa no = hd [sn\<leftarrow>prx . repNodes_eq sn no low high repa] \<and>
               repa (repa no) = repa no \<and> 
               (\<forall>no1\<in>set prx. ((repa \<propto> high) no1 = (repa \<propto> high) no \<and> 
               (repa \<propto> low) no1 = (repa \<propto> low) no) = (repa no = repa no1)))"
-	  using [[simp_depth_limit = 2]]
+          using [[simp_depth_limit = 2]]
           by auto 
         from no_in_take_n 
         have filter_take_n_notempty: "[sn\<leftarrow>prx. 
@@ -931,9 +931,9 @@ next
           apply (auto simp add: repNodes_eq_def)
           done
         then have hd_term_n_Sucn: 
-	  "hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] 
+          "hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] 
               = hd [sn\<leftarrow>prx@[node] . repNodes_eq sn no low high repa]"
-	  by auto
+          by auto
         thus ?thesis
         proof (cases "low no = Null")
           case True
@@ -944,23 +944,23 @@ next
             by (simp add: isLeaf_pt_def)
           from True while_share_red_exp 
           have while_low_Null: 
-	    "repa no = hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] \<and>
+            "repa no = hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] \<and>
              repa (repa no) = repa no \<and> 
              (\<forall>no1\<in>set prx. ((repa \<propto> high) no1 = (repa \<propto> high) no 
              \<and> (repa \<propto> low) no1 = (repa \<propto> low) no) = (repa no = repa no1))"
             by auto
           have all_nodes_in_nl_Leafs: 
-	    "\<forall>x \<in> set (prx @ node # sfx). isLeaf_pt x low high"
+            "\<forall>x \<in> set (prx @ node # sfx). isLeaf_pt x low high"
           proof (intro ballI)
             fix x
             assume x_in_nodeslist: "x \<in> set (prx @ node # sfx)"
             from isLeaf_no isLeaf_var_no have "var no \<le> 1"
               by simp
-	    with all_nodes_same_var [rule_format, OF x_in_nodeslist no_in_nl]
-	    have "var x \<le> 1"
-	      by simp
+            with all_nodes_same_var [rule_format, OF x_in_nodeslist no_in_nl]
+            have "var x \<le> 1"
+              by simp
             with nodes_balanced_ordered [rule_format, OF x_in_nodeslist]
-	    show "isLeaf_pt x low high"
+            show "isLeaf_pt x low high"
               by (auto simp add: isLeaf_pt_def)  
           qed
           have "\<forall> x \<in> set (prx@[node]). repNodes_eq x no low high repb 
@@ -969,7 +969,7 @@ next
             fix x
             assume x_in_take_Sucn: "x \<in> set (prx@[node])"
             hence x_in_nodeslist: "x \<in> set (prx @ node # sfx)"
-	      by auto
+              by auto
             with all_nodes_in_nl_Leafs have "isLeaf_pt x low high"
               by auto
             with isLeaf_no repa_repb_nc show "repNodes_eq x no low high repb 
@@ -996,30 +996,30 @@ next
           have all_nodes_nl_var: "\<forall> x \<in> set (prx @ node # sfx). 1 < var x"
             apply -
             apply (rule ballI)
-	    apply (drule_tac x=no in bspec,assumption)
-	    apply (drule_tac x=x in bspec,assumption)
-	    apply auto
-	    done
+            apply (drule_tac x=no in bspec,assumption)
+            apply (drule_tac x=x in bspec,assumption)
+            apply auto
+            done
           with nodes_balanced_ordered 
           have all_nodes_nl_nLeaf: 
-	    "\<forall>x \<in> set (prx @ node # sfx). \<not> isLeaf_pt x low high"
-	    apply -
-	    apply (rule ballI)
-	    apply (drule_tac x=x in bspec,assumption)
-	    apply (drule_tac x=x in bspec,assumption)
-	    apply auto
-	    done
+            "\<forall>x \<in> set (prx @ node # sfx). \<not> isLeaf_pt x low high"
+            apply -
+            apply (rule ballI)
+            apply (drule_tac x=x in bspec,assumption)
+            apply (drule_tac x=x in bspec,assumption)
+            apply auto
+            done
           from lno_nNull share_or 
           have repbchildren_eq_no: "(repb \<propto> low) no \<noteq> (repb \<propto> high) no"
             by simp
           with lno_nNull hno_nNull lno_notin_nl hno_notin_nl repa_repb_nc  
-	    nodes_notin_nl_neq_nln 
+            nodes_notin_nl_neq_nln 
           have repachildren_eq_no: "(repa \<propto> low) no \<noteq> (repa \<propto> high) no"
-	    using [[simp_depth_limit=2]]
+            using [[simp_depth_limit=2]]
             by (simp add: null_comp_def) 
           with while_share_red_exp 
           have repa_no_def: 
-	    "repa no = hd [sn\<leftarrow>prx . repNodes_eq sn no low high repa] "
+            "repa no = hd [sn\<leftarrow>prx . repNodes_eq sn no low high repa] "
             by auto
           with no_notin_nl repa_repb_nc 
           have "repb no =  hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] "
@@ -1034,7 +1034,7 @@ next
             fix x
             assume x_in_take_Sucn: "x \<in> set (prx@[node]) "
             hence x_in_nodeslist: "x \<in> set (prx @ node # sfx)"
-	      by auto
+              by auto
             with all_nodes_nl_nLeaf have x_nLeaf: "\<not> isLeaf_pt x low high"
               by auto
             from nodes_balanced_ordered [rule_format, OF x_in_nodeslist] obtain
@@ -1043,7 +1043,7 @@ next
               hx_notin_nl: "high x \<notin> set (prx @ node # sfx)" 
               by auto
             with nodes_notin_nl_neq_nln lno_notin_nl hno_notin_nl lno_nNull 
-	      hno_nNull repa_repb_nc 
+              hno_nNull repa_repb_nc 
             show " repNodes_eq x no low high repa = repNodes_eq x no low high repb"
               by (simp add: repNodes_eq_def null_comp_def)
           qed
@@ -1071,19 +1071,19 @@ next
             fix x
             assume x_in_nodeslist: "x \<in> set (prx @ node # sfx)"
             have all_nodes_in_nl_Leafs: 
-	      "\<forall>x \<in> set (prx @ node # sfx). isLeaf_pt x low high"
+              "\<forall>x \<in> set (prx @ node # sfx). isLeaf_pt x low high"
             proof (intro ballI)
               fix x
               assume x_in_nodeslist: " x \<in> set (prx @ node # sfx)"
-	      from isLeaf_no isLeaf_var_no have "var no \<le> 1"
-		by simp
-	      with all_nodes_same_var [rule_format, OF x_in_nodeslist no_in_nl]
-	      have "var x \<le> 1"
-		by simp
+              from isLeaf_no isLeaf_var_no have "var no \<le> 1"
+                by simp
+              with all_nodes_same_var [rule_format, OF x_in_nodeslist no_in_nl]
+              have "var x \<le> 1"
+                by simp
               with nodes_balanced_ordered [rule_format, OF x_in_nodeslist]
-	      show "isLeaf_pt x low high"
-		by (auto simp add: isLeaf_pt_def)
-	    qed
+              show "isLeaf_pt x low high"
+                by (auto simp add: isLeaf_pt_def)
+            qed
             with x_in_nodeslist have "isLeaf_pt x low high"
               by auto
             with isLeaf_no repa_repb_nc 
@@ -1094,7 +1094,7 @@ next
             hd [sn\<leftarrow> (prx @ node # sfx). repNodes_eq sn node low high repb]"
             apply -
             apply (subgoal_tac 
-	      "[sn\<leftarrow> (prx@node#sfx). repNodes_eq sn node low high repa] 
+              "[sn\<leftarrow> (prx@node#sfx). repNodes_eq sn node low high repa] 
               = [sn\<leftarrow>(prx @ node # sfx) . repNodes_eq sn node low high repb]")
             apply simp
             apply (rule P_eq_list_filter)
@@ -1109,16 +1109,16 @@ next
           then
           have "hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn node low high repb] = 
                 hd [sn\<leftarrow>(prx @ node # sfx). repNodes_eq sn node low high repb]"
-	    apply -
-	    apply (rule hd_filter_app [symmetric])
-	    apply auto
-	    done
+            apply -
+            apply (rule hd_filter_app [symmetric])
+            apply auto
+            done
           with repb_no_whole_nl no_nln show ?thesis
             by simp         
         next
           assume no_nLeaf: " \<not> isLeaf_pt no low high"
           with share_or balanced_no have "(repb \<propto> low) no \<noteq> (repb \<propto> high) no"
-	    using [[simp_depth_limit=2]]
+            using [[simp_depth_limit=2]]
             by (simp add: isLeaf_pt_def)
           from no_nLeaf share_cond no_nln have "repa (low no) \<noteq> repa (high no)"
             by auto
@@ -1130,20 +1130,20 @@ next
             fix x
             assume x_in_nodeslist: " x \<in> set (prx@node#sfx)"
             have all_nodes_in_nl_Leafs: 
-	      "\<forall>x \<in> set (prx@node#sfx). \<not> isLeaf_pt x low high"
+              "\<forall>x \<in> set (prx@node#sfx). \<not> isLeaf_pt x low high"
             proof (intro ballI)
               fix x
               assume x_in_nodeslist: " x \<in> set (prx@node#sfx)"
               from no_nLeaf isLeaf_var_no have "1 < var no "
                 by simp
-	      with all_nodes_same_var [rule_format, OF x_in_nodeslist no_in_nl]
+              with all_nodes_same_var [rule_format, OF x_in_nodeslist no_in_nl]
               have "1 < var x" 
-		by auto
+                by auto
               with nodes_balanced_ordered [rule_format, OF x_in_nodeslist]
-	      show "\<not> isLeaf_pt x low high"
-		apply (unfold isLeaf_pt_def)
-		apply fastsimp
-		done
+              show "\<not> isLeaf_pt x low high"
+                apply (unfold isLeaf_pt_def)
+                apply fastsimp
+                done
             qed
             with x_in_nodeslist have x_nLeaf: "\<not> isLeaf_pt x low high"
               by auto
@@ -1152,17 +1152,17 @@ next
                   \<and> low x \<notin> set (prx@node#sfx) \<and> high x \<notin> set (prx@node#sfx)"
               by auto
             with x_nLeaf balanced_no no_nLeaf repa_repb_nc 
-	      nodes_notin_nl_neq_nln lno_notin_nl hno_notin_nl
+              nodes_notin_nl_neq_nln lno_notin_nl hno_notin_nl
             show "repNodes_eq x no low high repb = repNodes_eq x no low high repa"
-	      using [[simp_depth_limit=2]]
+              using [[simp_depth_limit=2]]
               by (simp add: repNodes_eq_def null_comp_def isLeaf_pt_def)
           qed
           with repb_no_def no_nln 
           have repb_no_whole_nl: 
-	    "repb no = hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn node low high repb]"
+            "repb no = hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn node low high repb]"
             apply -
             apply (subgoal_tac 
-		  "[sn\<leftarrow>(prx@node#sfx). repNodes_eq sn node low high repa] 
+                  "[sn\<leftarrow>(prx@node#sfx). repNodes_eq sn node low high repa] 
                   = [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn node low high repb]")
             apply simp
             apply (rule P_eq_list_filter)
@@ -1175,7 +1175,7 @@ next
             apply (auto simp add: repNodes_eq_def)
             done
           then have 
-	    "hd [sn\<leftarrow> (prx@[node]) . repNodes_eq sn node low high repb] = 
+            "hd [sn\<leftarrow> (prx@[node]) . repNodes_eq sn node low high repb] = 
             hd [sn\<leftarrow>(prx@node#sfx) . repNodes_eq sn node low high repb]"
             apply -
             apply (rule hd_filter_app [symmetric])
@@ -1193,7 +1193,7 @@ next
       assume no_in_take_Sucn: "no \<in> set (prx@[node])"
       assume red_cond_no: " (repb \<propto> low) no = (repb \<propto> high) no \<and> low no \<noteq> Null"
       from no_in_take_Sucn have no_in_nl: "no \<in> set (prx@node#sfx)"
-	by auto
+        by auto
       from nodes_balanced_ordered [rule_format, OF this]obtain
         no_nNull: "no \<noteq> Null" and
         balanced_no: "(low no = Null) = (high no = Null)" and
@@ -1208,19 +1208,19 @@ next
         case False
         note no_notin_nl=this
         with no_in_take_Sucn have no_in_take_n: "no \<in> set prx"
-	  by auto
+          by auto
         from False repa_repb_nc have repb_repa_no: "repb no = repa no" 
           by auto
         with while_inv [rule_format, OF no_in_take_n] obtain 
           repa_no_nNull: "repa no \<noteq> Null" and
           while_share_red_exp: 
-	  "(if (repa \<propto> low) no = (repa \<propto> high) no \<and> low no \<noteq> Null 
+          "(if (repa \<propto> low) no = (repa \<propto> high) no \<and> low no \<noteq> Null 
           then repa no = (repa \<propto> low) no
           else repa no = hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] \<and>
           repa (repa no) = repa no \<and> 
           (\<forall>no1\<in>set prx. ((repa \<propto> high) no1 = (repa \<propto> high) no \<and> 
           (repa \<propto> low) no1 = (repa \<propto> low) no) = (repa no = repa no1)))"
-	  using [[simp_depth_limit=2]]
+          using [[simp_depth_limit=2]]
           by auto
         from red_cond_no nodes_notin_nl_neq_nln lno_notin_nl 
           hno_notin_nl while_share_red_exp balanced_no repa_repb_nc 
@@ -1238,7 +1238,7 @@ next
         assume "no = node"
         with share_cond 
         have share_cond_pre: 
-	  "isLeaf_pt no low high \<or> repa (low no) \<noteq> repa (high no)" 
+          "isLeaf_pt no low high \<or> repa (low no) \<noteq> repa (high no)" 
           by simp
         show ?thesis
         proof (cases "isLeaf_pt no low high")
@@ -1253,7 +1253,7 @@ next
           with no_nLeaf lno_notin_nl hno_notin_nl nodes_notin_nl_neq_nln 
             balanced_no repa_repb_nc
           have "repb (low no) \<noteq> repb (high no)"
-	    using [[simp_depth_limit=2]]
+            using [[simp_depth_limit=2]]
             by (auto simp add: isLeaf_pt_def)
           with no_nLeaf balanced_no have "(repb \<propto> low) no \<noteq> (repb \<propto> high) no"
             by (simp add: null_comp_def isLeaf_pt_def)
@@ -1275,7 +1275,7 @@ next
       fix no
       assume no_in_take_Sucn: "no \<in> set (prx@[node])"
       hence no_in_nl: "no \<in> set (prx@node#sfx)"
-	by auto
+        by auto
       from nodes_balanced_ordered [rule_format, OF this] obtain
         no_nNull: "no \<noteq> Null" and
         balanced_no: "(low no = Null) = (high no = Null)" and
@@ -1302,19 +1302,19 @@ next
         note no_notin_nl=this
         with no_in_take_Sucn 
         have no_in_take_n: "no \<in> set prx"
-	  by auto
+          by auto
         from False repa_repb_nc have repb_repa_no: "repb no = repa no" 
           by auto
         with while_inv [rule_format, OF no_in_take_n] obtain 
           repa_no_nNull: "repa no \<noteq> Null" and
           while_share_red_exp: 
-	  "(if (repa \<propto> low) no = (repa \<propto> high) no \<and> low no \<noteq> Null 
+          "(if (repa \<propto> low) no = (repa \<propto> high) no \<and> low no \<noteq> Null 
               then repa no = (repa \<propto> low) no
               else repa no = hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] \<and>
               repa (repa no) = repa no \<and> 
               (\<forall>no1\<in>set prx. ((repa \<propto> high) no1 = (repa \<propto> high) no \<and> 
               (repa \<propto> low) no1 = (repa \<propto> low) no) = (repa no = repa no1)))"
-	  using [[simp_depth_limit=2]]
+          using [[simp_depth_limit=2]]
           by auto
         from repb_repa_no repa_no_nNull have repb_no_nNull: "?P no"
           by simp
@@ -1325,14 +1325,14 @@ next
             by auto
         next
           assume share_case_repb: 
-	    " \<not> ((repb \<propto> low) no = (repb \<propto> high) no \<and> low no \<noteq> Null)"
+            " \<not> ((repb \<propto> low) no = (repb \<propto> high) no \<and> low no \<noteq> Null)"
           with repb_no_share_def no_in_take_Sucn 
           have repb_no_def: "repb no = hd [sn\<leftarrow> (prx@[node]). 
             repNodes_eq sn no low high repb]"
             by auto
           with share_case_repb 
           have "(repb \<propto> low) no \<noteq> (repb \<propto> high) no \<or> low no = Null"
-	    using [[simp_depth_limit=2]]
+            using [[simp_depth_limit=2]]
             by simp
           thus ?thesis
           proof (cases "low no = Null")
@@ -1344,7 +1344,7 @@ next
               by (simp add: isLeaf_pt_def)
             from True while_share_red_exp 
             have while_low_Null: 
-	      "repa no = hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] \<and>
+              "repa no = hd [sn\<leftarrow>prx. repNodes_eq sn no low high repa] \<and>
                   repa (repa no) = repa no \<and> 
                   (\<forall>no1\<in>set prx. ((repa \<propto> high) no1 = (repa \<propto> high) no 
               \<and> (repa \<propto> low) no1 = (repa \<propto> low) no) = (repa no = repa no1))"
@@ -1362,34 +1362,34 @@ next
               apply auto
               done
             have all_nodes_in_nl_Leafs: 
-	      "\<forall>x \<in> set (prx@node#sfx). isLeaf_pt x low high"
+              "\<forall>x \<in> set (prx@node#sfx). isLeaf_pt x low high"
             proof (intro ballI)
               fix x
               assume x_in_nodeslist: " x \<in> set (prx@node#sfx)"
               from isLeaf_no isLeaf_var_no have "var no \<le> 1"
                 by simp
               with all_nodes_same_var [rule_format, OF x_in_nodeslist no_in_nl] 
-	      have "var x \<le> 1" 
-		by simp
+              have "var x \<le> 1" 
+                by simp
               with nodes_balanced_ordered [rule_format, OF x_in_nodeslist]
-	      show "isLeaf_pt x low high"
+              show "isLeaf_pt x low high"
                 by (auto simp add: isLeaf_pt_def)
             qed
             from no_in_take_Sucn have 
               filter_Sucn_no_notempty: 
-	      "[sn\<leftarrow>(prx@[node]). repNodes_eq sn no low high repb] \<noteq> []"
+              "[sn\<leftarrow>(prx@[node]). repNodes_eq sn no low high repb] \<noteq> []"
               apply -
               apply (rule filter_not_empty)
               apply (auto simp add: repNodes_eq_def)
               done
             then have hd_term_in_take_Sucn: 
-	      "hd [sn\<leftarrow>(prx@[node]) . repNodes_eq sn no low high repb] 
+              "hd [sn\<leftarrow>(prx@[node]) . repNodes_eq sn no low high repb] 
                   \<in> set (prx@[node])"
               by (rule hd_filter_in_list)
             then have hd_term_in_nl: 
-	      "hd [sn\<leftarrow>(prx@[node]) . repNodes_eq sn no low high repb] 
+              "hd [sn\<leftarrow>(prx@[node]) . repNodes_eq sn no low high repb] 
               \<in> set (prx@node#sfx)"
-	      by auto 
+              by auto 
             with all_nodes_in_nl_Leafs 
             have hd_term_Leaf: "isLeaf_pt (hd [sn\<leftarrow> (prx@[node]). 
               repNodes_eq sn no low high repb]) low high "
@@ -1408,7 +1408,7 @@ next
               assume repb_no_nln: " repb no = node"
               with hd_term_Leaf isLeaf_no all_nodes_in_nl_Leafs  
               have nested_hd_repa_repb: 
-		"hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn 
+                "hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn 
                    (hd [sn\<leftarrow>(prx@[node]) . repNodes_eq sn no low high repb]) 
                         low high repa] =  
                  hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn 
@@ -1425,21 +1425,21 @@ next
                 done
               then have "hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn 
                     ( hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn no low high repb]) 
-		          low high repb] = 
+                          low high repb] = 
                     hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn 
                     ( hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn no low high repb]) 
-		           low high repb]"
+                           low high repb]"
                 apply -
                 apply (rule hd_filter_app [symmetric])
                 apply auto
                 done
               then have hd_term_nodeslist_Sucn: 
-		"hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn 
+                "hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn 
                     ( hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn no low high repb]) 
                              low high repb] =
                     hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn 
                     ( hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn no low high repb]) 
-		          low high repb]"
+                          low high repb]"
                 by simp
               from no_in_take_Sucn filter_Sucn_no_notempty 
               have filter_filter: "hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn  
@@ -1458,7 +1458,7 @@ next
               with nested_hd_repa_repb 
               have "repb (repb no) =  hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn 
                     (hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn no low high repb]) 
-		        low high repb]"
+                        low high repb]"
                 by simp
               with hd_term_nodeslist_Sucn 
               have "repb (repb no) =  hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn 
@@ -1500,19 +1500,19 @@ next
               proof (cases "no1 = node")
                 case False
                 with no1_in_take_Sucn have "no1 \<in> set prx"
-		  by auto
+                  by auto
                 with while_low_same_rep repachildren_eq_no_no1 
-		have "repa no = repa no1"
+                have "repa no = repa no1"
                   by auto
                 with repa_repb_nc no_notin_nl False repbchildren_eq_no_no1 
-		show ?thesis 
+                show ?thesis 
                   by auto
               next
                 assume no1_nln: "no1 = node"
                 hence no1_in_take_Sucn: "no1 \<in> set (prx@[node])"
-		  by auto
+                  by auto
                 hence no1_in_nl: "no1 \<in> set (prx@node#sfx)"
-		  by auto
+                  by auto
                 from nodes_balanced_ordered [rule_format, OF this] have 
                   balanced_no1: "(low no1 = Null) = (high no1 = Null)"
                   by auto
@@ -1543,8 +1543,8 @@ next
               qed
             qed
             with repb_repb_no repb_no_share_def no_in_take_Sucn share_case_repb 
-	    show ?thesis
-	      using [[simp_depth_limit=4]]
+            show ?thesis
+              using [[simp_depth_limit=4]]
               by auto
           next
             assume lno_nNull: "low no \<noteq> Null"
@@ -1557,7 +1557,7 @@ next
             with repbchildren_neq_no lno_nNull repa_repb_nc 
               lno_notin_nl hno_notin_nl nodes_notin_nl_neq_nln 
             have repachildren_neq_no: "(repa \<propto> low) no \<noteq> (repa \<propto> high) no"
-	      using [[simp_depth_limit=2]]
+              using [[simp_depth_limit=2]]
               by (auto simp add: null_comp_def)
             with while_share_red_exp 
             have repa_while_inv: "repa (repa no) = repa no 
@@ -1568,7 +1568,7 @@ next
             have no_nLeaf: "\<not> isLeaf_pt no low high"
               by (simp add: isLeaf_pt_def)
             have all_nodes_in_nl_nLeafs: 
-	      "\<forall>x \<in> set (prx@node#sfx). \<not> isLeaf_pt x low high"
+              "\<forall>x \<in> set (prx@node#sfx). \<not> isLeaf_pt x low high"
             proof (intro ballI)
               fix x
               assume x_in_nodeslist: " x \<in> set (prx@node#sfx)"
@@ -1576,10 +1576,10 @@ next
                 by simp
               with all_nodes_same_var [rule_format, OF x_in_nodeslist no_in_nl] 
               have "1 < var x"
-		by simp
+                by simp
               with nodes_balanced_ordered [rule_format, OF x_in_nodeslist]
               show " \<not> isLeaf_pt x low high"
-		using [[simp_depth_limit = 2]]
+                using [[simp_depth_limit = 2]]
                 by (auto simp add: isLeaf_pt_def)
             qed
             have repb_repb_no: "repb (repb no) = repb no"
@@ -1591,15 +1591,15 @@ next
               have repb_no_in_take_Sucn: "repb no \<in> set (prx@[node])"
                 by simp
               hence repb_no_in_nl: "repb no \<in> set (prx@node#sfx)"
-		by auto
+                by auto
               from all_nodes_in_nl_nLeafs repb_no_in_nl 
               have repb_no_nLeaf: "\<not> isLeaf_pt (repb no) low high"
                 by auto
               from nodes_balanced_ordered [rule_format, OF repb_no_in_nl]
               have "(low (repb no) = Null) = (high (repb no) = Null) 
                 \<and> low (repb no) \<notin> set (prx@node#sfx) \<and> 
-		high (repb no) \<notin> set (prx@node#sfx)"
-	        by auto
+                high (repb no) \<notin> set (prx@node#sfx)"
+                by auto
               from filter_take_Sucn_not_empty 
               have " repNodes_eq (hd [sn\<leftarrow>(prx@[node]). 
                 repNodes_eq sn no low high repb]) no low high repb"
@@ -1614,17 +1614,17 @@ next
                 by simp
               with repb_no_in_take_Sucn repb_no_share_def 
               have repb_repb_no_double_hd: 
-		"repb (repb no) = hd [sn\<leftarrow>(prx@[node]). 
+                "repb (repb no) = hd [sn\<leftarrow>(prx@[node]). 
                 repNodes_eq sn (repb no) low high repb]"
                 by auto
               from filter_take_Sucn_not_empty 
               have " hd [sn\<leftarrow>(prx@[node]). 
                 repNodes_eq sn (repb no) low high repb] = repb no"
-		apply (simp only: repb_no_def )
+                apply (simp only: repb_no_def )
                 apply (rule filter_hd_P_rep_indep)
-		apply (auto simp add: repNodes_eq_def)
-		done
-	      with repb_repb_no_double_hd show ?thesis
+                apply (auto simp add: repNodes_eq_def)
+                done
+              with repb_repb_no_double_hd show ?thesis
                 by simp
             qed
             have "(\<forall>no1\<in>set (prx@[node]). 
@@ -1634,7 +1634,7 @@ next
               fix no1
               assume no1_in_take_Sucn: "no1 \<in> set (prx@[node])"
               hence no1_in_nl: "no1 \<in> set (prx@node#sfx)"
-		by auto
+                by auto
               from all_nodes_in_nl_nLeafs no1_in_nl 
               have no1_nLeaf: "\<not> isLeaf_pt no1 low high"
                 by auto
@@ -1648,26 +1648,26 @@ next
                 case False
                 note no1_neq_nln=this
                 with no1_in_take_Sucn 
-		have no1_in_take_n: "no1 \<in> set prx"
-		  by auto
+                have no1_in_take_n: "no1 \<in> set prx"
+                  by auto
                 with repa_while_inv have "((repa \<propto> high) no1 = (repa \<propto> high) no 
                   \<and> (repa \<propto> low) no1 = (repa \<propto> low) no) = (repa no = repa no1)"
                   by fastsimp
                 with no1_props no1_nLeaf no_nLeaf balanced_no lno_notin_nl 
                   hno_notin_nl nodes_notin_nl_neq_nln no_notin_nl 
-		  no1_neq_nln repa_repb_nc
+                  no1_neq_nln repa_repb_nc
                 show ?thesis
-		  using [[simp_depth_limit=1]]
+                  using [[simp_depth_limit=1]]
                   by (auto simp add: null_comp_def isLeaf_pt_def)
               next
                 assume no1_nln: " no1 = node"
                 show ?thesis
                 proof
                   assume repbchildren_eq_no1_no: 
-		    "(repb \<propto> high) no1 = (repb \<propto> high) no 
+                    "(repb \<propto> high) no1 = (repb \<propto> high) no 
                     \<and> (repb \<propto> low) no1 = (repb \<propto> low) no"
                   with repbchildren_neq_no 
-		  have "(repb \<propto> high) no1 \<noteq> (repb \<propto> low) no1"
+                  have "(repb \<propto> high) no1 \<noteq> (repb \<propto> low) no1"
                     by auto
                   with repb_no_share_def no1_in_take_Sucn 
                   have repb_no1_def: " repb no1 = hd [sn\<leftarrow>(prx@[node]). 
@@ -1679,13 +1679,13 @@ next
                   proof -
                     have "\<forall>x \<in> set (prx@[node]). 
                       repNodes_eq x no1 low high repb = 
-		      repNodes_eq x no low high repb"
+                      repNodes_eq x no low high repb"
                     proof (intro ballI)
                       fix x
                       assume x_in_take_Sucn: "x \<in> set (prx@[node])"
                       with repbchildren_eq_no1_no 
                       show "repNodes_eq x no1 low high repb = 
-			repNodes_eq x no low high repb"
+                        repNodes_eq x no low high repb"
                         by (simp add: repNodes_eq_def)
                     qed
                     then show ?thesis
@@ -1696,7 +1696,7 @@ next
                 next
                   assume repb_no_no1_eq: "repb no = repb no1"
                   from no1_nln repb_node repb_no_def have repb_no1_def: 
-		    "repb no1 =  
+                    "repb no1 =  
                     hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn node low high repa]"
                     by auto
                   with no1_nln repb_no_def repb_no_no1_eq 
@@ -1712,22 +1712,22 @@ next
                     apply auto
                     done
                   then have hd_Sucn_hd_whole_list: 
-		    "hd [sn\<leftarrow>(prx@[node]) . 
+                    "hd [sn\<leftarrow>(prx@[node]) . 
                     repNodes_eq sn no low high repb] =  
                     hd [sn\<leftarrow> (prx@node#sfx). repNodes_eq sn no low high repb]"
                     by simp
                   have hd_nl_repb_repa: 
-		    "[sn\<leftarrow> (prx@node#sfx). repNodes_eq sn no low high repb] 
+                    "[sn\<leftarrow> (prx@node#sfx). repNodes_eq sn no low high repb] 
                     = [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no low high repa]"
                   proof -
                     have "\<forall>x \<in> set (prx@node#sfx).  
-		      repNodes_eq x no low high repb =  
+                      repNodes_eq x no low high repb =  
                       repNodes_eq x no low high repa"
                     proof (intro ballI)
                       fix x
                       assume x_in_nl: "x \<in> set (prx@node#sfx)"
                       from all_nodes_in_nl_nLeafs x_in_nl 
-		      have x_nLeaf: "\<not> isLeaf_pt x low high"
+                      have x_nLeaf: "\<not> isLeaf_pt x low high"
                         by auto
                       from  nodes_balanced_ordered [rule_format, OF x_in_nl]
                       have x_props: "(low x = Null) = (high x = Null) \<and> 
@@ -1736,8 +1736,8 @@ next
                       with x_nLeaf lno_nNull hno_nNull lno_notin_nl hno_notin_nl 
                         nodes_notin_nl_neq_nln repa_repb_nc 
                       show "repNodes_eq x no low high repb = 
-			repNodes_eq x no low high repa"
-			using [[simp_depth_limit=1]]
+                        repNodes_eq x no low high repa"
+                        using [[simp_depth_limit=1]]
                         by (simp add: repNodes_eq_def isLeaf_pt_def null_comp_def)
                     qed
                     then show ?thesis
@@ -1745,7 +1745,7 @@ next
                   qed
                   with repb_Sucn_repa_nl_hd hd_Sucn_hd_whole_list 
                   have filter_nl_no_no1: 
-		    "hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no low high repa] 
+                    "hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no low high repa] 
                     =  hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no1 low high repa]"
                     by simp
                   from no_in_nl have filter_no_not_empty: 
@@ -1762,35 +1762,35 @@ next
                     done
                   from repb_no_def hd_Sucn_hd_whole_list hd_nl_repb_repa 
                   have "repb no =
-		    hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no low high repa]" 
+                    hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no low high repa]" 
                     by simp
                   with hd_filter_prop [OF filter_no_not_empty ]
                   have repNodes_no_repa: "repNodes_eq (repb no) no low high repa"
-		    by auto
+                    by auto
                   from repb_no1_def no1_nln 
                   have 
-		    "repb no1 = hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no1 
-		    low high repa]"
+                    "repb no1 = hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no1 
+                    low high repa]"
                     by simp
                   with hd_filter_prop [OF filter_no1_not_empty ]
                   have "repNodes_eq (repb no1) no1 low high repa"
-		    by auto
+                    by auto
                   with filter_nl_no_no1 repNodes_no_repa repb_no_no1_eq 
                   have "(repa \<propto> high) no1 = 
-		    (repa \<propto> high) no \<and> (repa \<propto> low) no1 = (repa \<propto> low) no"
+                    (repa \<propto> high) no \<and> (repa \<propto> low) no1 = (repa \<propto> low) no"
                     by (simp add: repNodes_eq_def)
                   with hno_nNull no1_props no1_nLeaf lno_nNull lno_notin_nl 
                     hno_notin_nl nodes_notin_nl_neq_nln repa_repb_nc
                   show "(repb \<propto> high) no1 = 
-		    (repb \<propto> high) no \<and> (repb \<propto> low) no1 = (repb \<propto> low) no"
-		    using [[simp_depth_limit=1]]
+                    (repb \<propto> high) no \<and> (repb \<propto> low) no1 = (repb \<propto> low) no"
+                    using [[simp_depth_limit=1]]
                     by (auto simp add: isLeaf_pt_def null_comp_def)
                 qed
               qed
             qed
             with repb_repb_no repb_no_share_def share_case_repb no_in_take_Sucn 
             show ?thesis
-	      using [[simp_depth_limit=1]]
+              using [[simp_depth_limit=1]]
               by auto
           qed
         qed
@@ -1802,7 +1802,7 @@ next
           "repb no = hd [sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no low high repa]"
           by simp
         from no_nln have "no \<in> set (prx@node#sfx)"
-	  by auto
+          by auto
         then have filter_nl_repa_not_empty: 
           "[sn\<leftarrow>(prx@node#sfx). repNodes_eq sn no low high repa] \<noteq> []"
           apply -
@@ -1836,17 +1836,17 @@ next
                 = hd [sn\<leftarrow>(prx@[node]). repNodes_eq sn no low high repb]"
             by (auto simp add: isLeaf_pt_def)
           from isLeaf_no nodes_balanced_ordered [rule_format, OF no_in_nl]
-	  have var_no: "var no \<le> 1" 
+          have var_no: "var no \<le> 1" 
             by auto
           have all_nodes_nl_var_l_1: "\<forall>x \<in> set (prx@node#sfx). var x \<le> 1"
           proof (intro ballI)
             fix x
             assume x_in_nl: " x \<in> set (prx@node#sfx)"
-	    from all_nodes_same_var [rule_format, OF x_in_nl no_in_nl] var_no 
+            from all_nodes_same_var [rule_format, OF x_in_nl no_in_nl] var_no 
             show " var x \<le> 1"
-	      by auto
-	  qed              
-	  have all_nodes_nl_Leafs: "\<forall>x \<in> set (prx@node#sfx). isLeaf_pt x low high" 
+              by auto
+          qed              
+          have all_nodes_nl_Leafs: "\<forall>x \<in> set (prx@node#sfx). isLeaf_pt x low high" 
           proof (intro ballI)
             fix x
             assume x_in_nl: " x \<in> set (prx@node#sfx)"
@@ -1866,7 +1866,7 @@ next
             have repb_no_in_take_Sucn: "repb no \<in> set (prx@[node])"
               by simp
             hence repb_no_in_nl: "repb no \<in> set (prx@[node])"
-	      by auto
+              by auto
             with all_nodes_nl_Leafs 
             have repb_no_Leaf: "isLeaf_pt (repb no) low high" 
               by auto
@@ -1877,7 +1877,7 @@ next
             from filter_take_Sucn_not_empty 
             show ?thesis
               apply (simp only: repb_repb_no_def  )
-	      apply (simp only: repb_no_def)
+              apply (simp only: repb_no_def)
               apply (rule filter_hd_P_rep_indep)
               apply (auto simp add: repNodes_eq_def)
               done
@@ -1890,7 +1890,7 @@ next
             assume no1_in_take_Sucn: "no1 \<in> set (prx@[node])"
             from no1_in_take_Sucn 
             have "no1 \<in> set (prx@node#sfx)"
-	      by auto
+              by auto
             with all_nodes_nl_Leafs 
             have isLeaf_no1: "isLeaf_pt no1 low high"
               by auto
@@ -1944,10 +1944,10 @@ next
           proof (intro ballI)
             fix x
             assume x_in_nl: " x \<in> set (prx@node#sfx)"
-	    with all_nodes_same_var [rule_format, OF x_in_nl no_in_nl] var_no 
-	    show "1 < var x"
-	      by simp
-	  qed	      
+            with all_nodes_same_var [rule_format, OF x_in_nl no_in_nl] var_no 
+            show "1 < var x"
+              by simp
+          qed         
           have all_nodes_nl_nLeafs: "\<forall> x \<in> set (prx@node#sfx). \<not> isLeaf_pt x low high" 
           proof (intro ballI)
             fix x
@@ -1966,7 +1966,7 @@ next
           with repa_repb_nc lno_notin_nl hno_notin_nl 
             nodes_notin_nl_neq_nln lno_nNull hno_nNull 
           have repbchildren_neq_no: "(repb \<propto> low) no \<noteq> (repb \<propto> high) no"
-	    using [[simp_depth_limit=1]]
+            using [[simp_depth_limit=1]]
             by (auto simp add: null_comp_def)
           have repb_repb_no: "repb (repb no) = repb no"
           proof -
@@ -1995,7 +1995,7 @@ next
               by auto
             from filter_take_Sucn_not_empty show ?thesis
               apply (simp only: repb_repb_no_def )
-	      apply (simp only: repb_no_def)
+              apply (simp only: repb_no_def)
               apply (rule filter_hd_P_rep_indep)
               apply (auto simp add: repNodes_eq_def)
               done
@@ -2008,7 +2008,7 @@ next
             fix no1
             assume no1_in_take_Sucn: " no1 \<in> set (prx@[node])"
             hence no1_in_nodeslist: "no1 \<in> set (prx@node#sfx)"
-	      by auto
+              by auto
             with all_nodes_nl_nLeafs 
             have no1_nLeaf: "\<not> isLeaf_pt no1 low high"
               by auto
@@ -2055,7 +2055,7 @@ next
                 apply simp
                 done
               then have repb_no_in_nl: "repb no \<in> set (prx@node#sfx)"
-		by auto
+                by auto
               from filter_take_Sucn_not_empty 
               have repNodes_repb_no: "repNodes_eq (repb no) no low high repb"
                 apply (simp only: repb_no_def)
@@ -2084,9 +2084,9 @@ next
                   by (auto simp add: isLeaf_pt_def null_comp_def)
                 with rep_repb_nc no1_props 
                 have "repb (low no1) \<notin> set (prx@node#sfx)"
-		  by auto
+                  by auto
                 with repb_no1_def repb_no_no1 no1_props no1_nLeaf 
-		have "repb no \<notin> set (prx@node#sfx)"
+                have "repb no \<notin> set (prx@node#sfx)"
                   by (simp add: isLeaf_pt_def null_comp_def)
                 with repb_no_in_nl show ?thesis
                   by simp
@@ -2118,7 +2118,7 @@ next
           qed
           with repb_repb_no repb_no_share_def no_in_take_Sucn repbchildren_neq_no
           show ?thesis
-	    using [[simp_depth_limit=2]]
+            using [[simp_depth_limit=2]]
             by fastsimp
         qed
         with repb_no_nNull show ?thesis

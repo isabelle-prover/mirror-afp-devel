@@ -1,6 +1,6 @@
-(*  Title:       Fast Fourier Transform
-    Author:      Clemens Ballarin <ballarin at in.tum.de>, started 12 April 2005
-    Maintainer:  Clemens Ballarin <ballarin at in.tum.de>
+(*  Title:      Fast Fourier Transform
+    Author:     Clemens Ballarin <ballarin at in.tum.de>, started 12 April 2005
+    Maintainer: Clemens Ballarin <ballarin at in.tum.de>
 *)
 
 theory FFT
@@ -398,7 +398,7 @@ lemma power_diff_inverse:
     apply (simp add: nonzero_power_inverse
       nonzero_inverse_eq_divide [THEN sym] nz)
    apply simp
-  apply (simp add: power_Suc nonzero_mult_divide_cancel_left nz)
+  apply (simp add: nz)
   done
 
 lemma power_diff_rev_if:
@@ -442,7 +442,7 @@ theorem DFT_inverse:
       (\<Sum>j = 0..<i. ?sum2 i j n) + (\<Sum>j = i..<n. ?sum1 i j n)"
       (is "?s = _")
       by (simp add: root_summation_inv nat_dvd_not_less
-	setsum_add_split_nat_ivl [where f = "%j. ?sum i j n"])
+        setsum_add_split_nat_ivl [where f = "%j. ?sum i j n"])
     also from i_less i_diff
     have "... = (\<Sum>j = i..<n. ?sum1 i j n)"
       by (simp add: root_summation_inv nat_dvd_not_less)

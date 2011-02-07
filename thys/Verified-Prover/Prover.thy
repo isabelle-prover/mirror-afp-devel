@@ -1,13 +1,13 @@
 
 theory Prover
-imports Main Infinite_Set
+imports Main "~~/src/HOL/Library/Infinite_Set"
 begin
 
 subsection "Formulas"
 
-types pred = nat
+type_synonym pred = nat
 
-types var = nat
+type_synonym var = nat
 
 datatype form = 
   PAtom pred "var list"
@@ -54,11 +54,11 @@ definition
 lemma size_finst[simp]: "size (finst f m) = size f"
   by (simp add: finst_def)
 
-types seq = "form list"
+type_synonym seq = "form list"
 
-types nform = "nat * form"
+type_synonym nform = "nat * form"
 
-types nseq = "nform list"
+type_synonym nseq = "nform list"
 
 definition
   s_of_ns :: "nseq => seq" where
@@ -103,14 +103,14 @@ where
   "subs [] = [[]]"
 | "subs (x#xs) =
   (let (m,f) = x in
-		case f of
-			PAtom p vs => if NAtom p vs : set (map snd xs) then [] else [xs@[(0,PAtom p vs)]]
-			| NAtom p vs => if PAtom p vs : set (map snd xs) then [] else [xs@[(0,NAtom p vs)]] 
-			| FConj f g => [xs@[(0,f)],xs@[(0,g)]]
-			| FDisj f g => [xs@[(0,f),(0,g)]]
-			| FAll f => [xs@[(0,finst f (newvar (sfv (s_of_ns (x#xs)))))]]
-			| FEx f => [xs@[(0,finst f m),(Suc m,FEx f)]]
-		)"
+                case f of
+                        PAtom p vs => if NAtom p vs : set (map snd xs) then [] else [xs@[(0,PAtom p vs)]]
+                        | NAtom p vs => if PAtom p vs : set (map snd xs) then [] else [xs@[(0,NAtom p vs)]] 
+                        | FConj f g => [xs@[(0,f)],xs@[(0,g)]]
+                        | FDisj f g => [xs@[(0,f),(0,g)]]
+                        | FAll f => [xs@[(0,finst f (newvar (sfv (s_of_ns (x#xs)))))]]
+                        | FEx f => [xs@[(0,finst f m),(Suc m,FEx f)]]
+                )"
 
 
 subsection "Derivations"
@@ -163,7 +163,7 @@ lemma deriv_exists: "(n,x) \<in> deriv s ==> x \<noteq> [] ==> ~ is_axiom (s_of_
 *)
 
 lemma deriv_upwards: "(n,list) \<in> deriv s ==> ~ is_axiom (s_of_ns (list)) ==> (\<exists>zs. (Suc n, zs) \<in> deriv s & zs : set (subs list))"
-  apply(case_tac list) apply(force intro: step) 
+  apply(case_tac list) apply force
   apply(case_tac a) apply(case_tac b)
        apply(simp add: Let_def) apply(rule) apply(simp add: s_of_ns_def) apply(force dest: not_is_axiom_subs)
       apply(simp add: Let_def) apply(rule) apply(simp add: s_of_ns_def) apply(force dest: not_is_axiom_subs)
@@ -217,7 +217,7 @@ lemma deriv: "deriv y = insert (0,y) (inc ` (Union (deriv ` {w. ~is_axiom (s_of_
   apply(rule set_eqI)
   apply(simp add: split_paired_all)
   apply(case_tac a)
-   apply(force simp: deriv0 inc_def)
+   apply(force simp: inc_def)
   apply(force simp: deriv_deriv_child inc_def)
   done
 
@@ -310,9 +310,9 @@ subsection "Models"
 
 typedecl U
 
-types model = "U set * (pred => U list => bool)"
+type_synonym model = "U set * (pred => U list => bool)"
 
-types env = "var => U" 
+type_synonym env = "var => U" 
 
 primrec FEval :: "model => env => form => bool"
 where
@@ -544,7 +544,7 @@ lemma max_exists: "finite (X::nat set) ==> X \<noteq> {} --> (\<exists>x. x \<in
   -- "poor max lemmas in lib"
 
 lemma inj_finite_image_eq_finite: "inj_on f Z ==> finite (f ` Z) = finite Z"
-  by (blast intro: finite_imageI finite_imageD) 
+  by (blast intro: finite_imageD) 
 
 lemma finite_inc: "finite (inc ` X) = finite X"
   apply(rule inj_finite_image_eq_finite)
@@ -992,8 +992,8 @@ lemma (in loc2) model':
       apply(subgoal_tac "contains f (na+nb+y) (0, NAtom nat list)")
        apply(subgoal_tac "nb+na=na+nb") 
         apply(simp) apply(subgoal_tac "is_axiom (s_of_ns (snd (f (na+nb+y))))")
-	 apply(drule_tac is_axiom_finite_deriv) apply(force dest: is_path_f)
-	apply(simp add: contains_def considers_def) apply(case_tac "snd (f (na + nb + y))") apply(simp) apply(simp add: s_of_ns_def is_axiom.simps) apply(force)
+         apply(drule_tac is_axiom_finite_deriv) apply(force dest: is_path_f)
+        apply(simp add: contains_def considers_def) apply(case_tac "snd (f (na + nb + y))") apply(simp) apply(simp add: s_of_ns_def is_axiom.simps) apply(force)
        apply(force)
       apply(force intro: contains_propagates_natoms contains_propagates_patoms)
 
@@ -1112,7 +1112,7 @@ lemma ex_iter': "(\<exists>n. R (iter g a n)) = (R a | (\<exists>n. R (iter g (g
 lemma ex_iter: "(\<exists>n. R (iter g a n)) = (if R a then True else (\<exists>n. R (iter g (g a) n)))"
   apply (rule trans) 
   apply (rule ex_iter') 
-  apply (force ); 
+  apply (force )
   done
 
 definition
@@ -1220,7 +1220,12 @@ lemma membership_simps:
   "x \<in> set (y # ys) \<longleftrightarrow> x = y \<or> x \<in> set ys"
   by simp_all
 
-lemmas ss = list.simps if_True if_False flatten.simps map.simps bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def Let_def newvar_def subs.simps split_beta append_Nil append_Cons subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms membership_simps
+lemmas ss = list.simps if_True if_False flatten.simps map.simps
+  bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv
+  form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def
+  Let_def newvar_def subs.simps split_beta append_Nil append_Cons
+  subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms
+  membership_simps
 
 lemmas prove'_Nil = prove' [of "[]", simplified, standard]
 lemmas prove'_Cons = prove' [of "x#l", simplified, standard]

@@ -27,18 +27,17 @@ consts
   -- "value used for padding"
   fillByte :: byte
 
-consts
-  blockSize :: nat  -- "in bytes"
+axiomatization
+  blockSize :: nat  -- "in bytes" and
   numBlocks :: nat  -- "total number of blocks in the file system"
-axioms
-  nonZeroBlockSize: "blockSize > 0"
+where
+  nonZeroBlockSize: "blockSize > 0" and
   nonZeroNumBlocks: "numBlocks > 0"
 
 (* ------------------------------------------------------------ *)
 subsection {* Abstract File *}
 
-types
-  AFile = "byte rArray" -- "abstract file is a resizable array of bytes"
+type_synonym AFile = "byte rArray" -- "abstract file is a resizable array of bytes"
 
 definition makeAF :: AFile
  where  -- "initial file has size 0"
@@ -63,8 +62,7 @@ definition afWrite :: "AFile => nat => byte ~=> AFile" where
 (* ------------------------------------------------------------ *)
 subsection {* Concrete File *}
 
-types
-  Block = "byte cArray" -- "array of @{term blockSize} bytes"
+type_synonym Block = "byte cArray" -- "array of @{term blockSize} bytes"
 
 record CFile =
   fileSize      :: nat -- "in bytes"
@@ -237,7 +235,7 @@ apply (subgoal_tac "(fileSize cfile1 + blockSize - Suc 0) <=
   (index + blockSize)", simp add: div_le_mono)
 apply (subgoal_tac "(fileSize cfile1 + blockSize - Suc 0) < 
   (fileSize cfile1 + blockSize)", simp)
-apply (simp_all add: div_add_self2 nonZeroBlockSize)
+apply (simp_all add: nonZeroBlockSize)
 done
 
 
@@ -258,7 +256,7 @@ apply (case_tac "byteIndex div blockSize < numBlocks", simp_all)
 apply (case_tac "byteIndex < fileSize cfile1", simp_all)
 apply (simp_all add: cfWriteNoExtend_def cfExtendFile_def Let_def)
 apply auto
-apply (simp add: div_add_self2 nonZeroBlockSize)
+apply (simp add: nonZeroBlockSize)
 done
 
 lemma modInequalityLemma:

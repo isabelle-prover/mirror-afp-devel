@@ -6,8 +6,8 @@ header {* \isaheader{Unobservable steps for the JVM} *}
 
 theory JVMTau imports
   TypeComp
-  "../JVM/JVMDefensive"
-  "../Framework/LTS"
+  "../JVM/JVMThreaded"
+  "../Framework/FWLTS"
 begin
 
 declare nth_append [simp del]
@@ -411,6 +411,57 @@ by(clarsimp simp add: \<tau>move2_iff compP2_def compMb2_def nth_append nth_Cons
 
 abbreviation \<tau>MOVE2 :: "jvm_prog \<Rightarrow> ((addr option \<times> frame list) \<times> 'heap, 'heap jvm_thread_action) trsys"
 where "\<tau>MOVE2 P \<equiv> \<lambda>((xcp, frs), h) ta s. \<tau>Move2 P (xcp, h, frs) \<and> ta = \<epsilon>"
+
+lemma \<tau>jvmd_heap_unchanged: 
+  "\<lbrakk> P,t \<turnstile> Normal (xcp, h, frs) -\<epsilon>-jvmd\<rightarrow> Normal (xcp', h', frs'); \<tau>Move2 P (xcp, h, frs) \<rbrakk>
+  \<Longrightarrow> h = h'"
+apply(erule jvmd_NormalE)
+apply(clarsimp)
+apply(cases xcp)
+ apply(rename_tac stk loc C M pc FRS M' Ts T mxs mxl ins xt)
+ apply(case_tac "ins ! pc")
+ apply(auto simp add: split_beta split: split_if_asm dest: \<tau>external_red_external_aggr_heap_unchanged)
+done
+
+lemma mexecd_\<tau>mthr_wf:
+  "\<tau>multithreaded_wf JVM_final (mexecd P) (\<tau>MOVE2 P)"
+proof
+  fix t x h ta x' h'
+  assume "mexecd P t (x, h) ta (x', h')"
+    and "\<tau>MOVE2 P (x, h) ta (x', h')"
+  thus "h = h'"
+    by(cases x)(cases x', auto dest: \<tau>jvmd_heap_unchanged)
+next
+  fix s ta s'
+  assume "\<tau>MOVE2 P s ta s'" thus "ta = \<epsilon>" by(simp add: split_beta)
+qed
+
+end
+
+sublocale JVM_heap_base < execd_mthr!: 
+  \<tau>multithreaded_wf 
+    JVM_final
+    "mexecd P"
+    convert_RA
+    "\<tau>MOVE2 P"
+  for P
+by(rule mexecd_\<tau>mthr_wf)
+
+context JVM_heap_base begin
+
+lemma \<tau>exec_1_taD:
+  assumes exec: "exec_1_d P t (Normal (xcp, h, frs)) ta (Normal (xcp', h', frs'))"
+  and \<tau>: "\<tau>Move2 P (xcp, h, frs)"
+  shows "ta = \<epsilon>"
+using assms
+apply(auto elim!: jvmd_NormalE simp add: split_beta)
+apply(cases xcp)
+apply auto
+apply(rename_tac stk loc C M pc FRS)
+apply(case_tac "instrs_of P C M ! pc")
+apply(simp_all split: split_if_asm)
+apply(auto dest: \<tau>external_red_external_aggr_TA_empty) 
+done
 
 end
 

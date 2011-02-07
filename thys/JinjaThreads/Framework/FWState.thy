@@ -18,7 +18,6 @@ datatype lock_action =
 
 datatype ('t,'x,'m) new_thread_action =
     NewThread 't 'x 'm
-  | NewThreadFail
   | ThreadExists 't
 
 datatype 't conditional_action = 
@@ -110,8 +109,7 @@ abbreviation empty_ta :: "('l,'t,'x,'m,'w,'o list) thread_action" ("\<epsilon>")
   "empty_ta \<equiv> (\<lambda>\<^isup>f [], [], [], [], [])"
 
 
-nonterminals
-  locklets locklet
+nonterminal locklets and locklet
 syntax
   "_locklet"  :: "lock_action \<Rightarrow> 'l \<Rightarrow> locklet"             ("(2_/\<rightarrow>_)")
   ""         :: "locklet \<Rightarrow> locklets"             ("_")
@@ -123,8 +121,7 @@ translations
   "ta\<lbrace>\<^bsub>l\<^esub>x\<rightarrow>y\<rbrace>"                         == "CONST ta_update_locks ta x y"
 
 
-nonterminals
-  ntlets ntlet
+nonterminal ntlets and ntlet
 syntax
   "_ntlet"  :: "('t,'m,'x) new_thread_action \<Rightarrow> ntlet"             ("(_)")
   ""         :: "ntlet \<Rightarrow> ntlets"             ("_")
@@ -136,8 +133,7 @@ translations
   "ta\<lbrace>\<^bsub>t\<^esub>nt\<rbrace>"                       == "CONST ta_update_NewThread ta nt"
 
 
-nonterminals
-  jlets jlet
+nonterminal jlets and jlet
 syntax
   "_jlet"  :: "'t conditional_action \<Rightarrow> jlet"             ("(_)")
   ""         :: "jlet \<Rightarrow> jlets"             ("_")
@@ -149,8 +145,7 @@ translations
   "ta\<lbrace>\<^bsub>c\<^esub>nt\<rbrace>"                    == "CONST ta_update_Conditional ta nt"
 
 
-nonterminals
-  wslets wslet
+nonterminal wslets and wslet
 syntax
   "_wslet"  :: "('t, 'w) wait_set_action \<Rightarrow> wslet"             ("(_)")
   ""         :: "wslet \<Rightarrow> wslets"             ("_")
@@ -161,8 +156,7 @@ translations
   "_wsUpdate ta (_wslets b bs)"  == "_wsUpdate (_wsUpdate ta b) bs"
   "ta\<lbrace>\<^bsub>w\<^esub>ws\<rbrace>"                      == "CONST ta_update_wait_set ta ws"
 
-nonterminals
-  oalets oalet
+nonterminal oalets and oalet
 syntax
   "_oalet"  :: "'o \<Rightarrow> oalet"             ("(_)")
   ""         :: "oalet \<Rightarrow> oalets"             ("_")
@@ -248,17 +242,21 @@ lemma neq_no_wait_locksE:
 using assms
 by(auto simp add: neq_no_wait_locks_conv)
 
+text {*
+  Use type variables for components instead of @{typ "('l,'t,'x,'m,'w) state"} in types for state projections
+  to allow to reuse them for refined state implementations for code generation.
+*}
 
-definition locks :: "('l,'t,'x,'m,'w) state \<Rightarrow> ('l,'t) locks" where
+definition locks :: "('locks \<times> ('thread_info \<times> 'm) \<times> 'wsets) \<Rightarrow> 'locks" where
   "locks lstsmws \<equiv> fst lstsmws"
 
-definition thr :: "('l,'t,'x,'m,'w) state \<Rightarrow> ('l,'t,'x) thread_info" where
+definition thr :: "('locks \<times> ('thread_info \<times> 'm) \<times> 'wsets) \<Rightarrow> 'thread_info" where
   "thr lstsmws \<equiv> fst (fst (snd lstsmws))"
 
-definition shr :: "('l,'t,'x,'m,'w) state \<Rightarrow> 'm" where
+definition shr :: "('locks \<times> ('thread_info \<times> 'm) \<times> 'wsets) \<Rightarrow> 'm" where
   "shr lstsmws \<equiv> snd (fst (snd lstsmws))"
 
-definition wset :: "('l,'t,'x,'m,'w) state \<Rightarrow> ('w,'t) wait_sets" where
+definition wset :: "('locks \<times> ('thread_info \<times> 'm) \<times> 'wsets) \<Rightarrow> 'wsets" where
   "wset lstsmws \<equiv> snd (snd lstsmws)"
 
 lemma locks_conv [simp]: "locks (ls, tsmws) = ls"
@@ -277,21 +275,17 @@ primrec convert_new_thread_action :: "('x \<Rightarrow> 'x') \<Rightarrow> ('t,'
 where
   "convert_new_thread_action f (NewThread t x m) = NewThread t (f x) m"
 | "convert_new_thread_action f (ThreadExists t) = ThreadExists t"
-| "convert_new_thread_action f NewThreadFail = NewThreadFail"
 
 lemma convert_new_thread_action_inv [simp]:
   "NewThread t x h = convert_new_thread_action f nta \<longleftrightarrow> (\<exists>x'. nta = NewThread t x' h \<and> x = f x')"
   "ThreadExists t = convert_new_thread_action f nta \<longleftrightarrow> nta = ThreadExists t"
-  "NewThreadFail = convert_new_thread_action f nta \<longleftrightarrow> nta = NewThreadFail"
   "convert_new_thread_action f nta = NewThread t x h \<longleftrightarrow> (\<exists>x'. nta = NewThread t x' h \<and> x = f x')"
   "convert_new_thread_action f nta = ThreadExists t \<longleftrightarrow> nta = ThreadExists t"
-  "convert_new_thread_action f nta = NewThreadFail \<longleftrightarrow> nta = NewThreadFail"
 by(cases nta, auto)+
 
 lemma convert_new_thread_action_eqI: 
   "\<lbrakk> \<And>t x m. nta = NewThread t x m \<Longrightarrow> nta' = NewThread t (f x) m;
-     \<And>t. nta = ThreadExists t \<Longrightarrow> nta' = ThreadExists t;
-     nta = NewThreadFail \<Longrightarrow> nta' = NewThreadFail \<rbrakk>
+     \<And>t. nta = ThreadExists t \<Longrightarrow> nta' = ThreadExists t \<rbrakk>
   \<Longrightarrow> convert_new_thread_action f nta = nta'"
 apply(cases nta)
 apply auto

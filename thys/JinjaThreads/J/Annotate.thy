@@ -235,10 +235,10 @@ where
 | Anno_codeALength:
   "P,E \<turnstile> a \<leadsto>' a' \<Longrightarrow> P,E \<turnstile> a\<bullet>length \<leadsto>' a'\<bullet>length"
 | Anno_codeFAcc:
-  "\<lbrakk> P,E \<turnstile> e \<leadsto>' e'; WT_code P E e' = OK (Class C); P \<turnstile> C sees F:T (fm) in D \<rbrakk>
+  "\<lbrakk> P,E \<turnstile> e \<leadsto>' e'; P,E \<turnstile> e' ::' Class C; P \<turnstile> C sees F:T (fm) in D \<rbrakk>
    \<Longrightarrow> P,E \<turnstile> e\<bullet>F{STR []} \<leadsto>' e'\<bullet>F{D}"
 | Anno_codeFAccALength:
-  "\<lbrakk> P,E \<turnstile> e \<leadsto>' e'; WT_code P E e' = OK (T\<lfloor>\<rceil>) \<rbrakk>
+  "\<lbrakk> P,E \<turnstile> e \<leadsto>' e'; P,E \<turnstile> e' ::' T\<lfloor>\<rceil> \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<bullet>array_length_field_name{STR []} \<leadsto>' e'\<bullet>length"
 | Anno_codeFAccSuper:
   -- {* In class C with super class D, "super" is syntactic sugar for "((D) this)" (cf. JLS, 15.11.2) *}
@@ -247,7 +247,7 @@ where
   \<Longrightarrow> P,E \<turnstile> Var super\<bullet>F{STR []} \<leadsto>' (Cast (Class D) (Var this))\<bullet>F{D'}"
 | Anno_codeFAss:
   "\<lbrakk> P,E \<turnstile> e1 \<leadsto>' e1';  P,E \<turnstile> e2 \<leadsto>' e2';
-     WT_code P E e1' = OK (Class C); P \<turnstile> C sees F:T (fm) in D \<rbrakk>
+     P,E \<turnstile> e1' ::' Class C; P \<turnstile> C sees F:T (fm) in D \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e1\<bullet>F{STR []} := e2 \<leadsto>' e1'\<bullet>F{D} := e2'"
 | Anno_codeFAssSuper:
   "\<lbrakk> E this = \<lfloor>Class C\<rfloor>; C \<noteq> Object; class P C = \<lfloor>(D, fs, ms)\<rfloor>;
@@ -325,7 +325,7 @@ next
   have "ran (E(V \<mapsto> Class C)) \<union> set (block_types e2) \<subseteq> types P"
     by(auto simp add: ran_def)
   thus ?case using AnnoTry by(simp del: fun_upd_apply)(blast intro: Anno_code_Annos_code.intros)
-qed(simp_all,(blast intro: Anno_code_Annos_code.intros WT_into_WT_code_OK[OF wf])+)
+qed(simp_all,(blast intro: Anno_code_Annos_code.intros WT_into_WT_code[OF wf])+)
 
 lemma assumes wf: "wf_prog wf_md P"
   shows Anno_code_into_Anno: "\<lbrakk> P,E \<turnstile> e \<leadsto>' e'; ran E \<union> set (block_types e) \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> e \<leadsto> e'"
@@ -342,7 +342,7 @@ next
   have "ran (E(V \<mapsto> Class C)) \<union> set (block_types e2) \<subseteq> types P"
     by(auto simp add: ran_def)
   thus ?case using Anno_codeTry by(simp del: fun_upd_apply)(blast intro: Anno_Annos.intros)
-qed(simp_all,(blast intro: Anno_Annos.intros WT_code_OK_into_WT[OF wf])+)
+qed(simp_all,(blast intro: Anno_Annos.intros WT_code_into_WT[OF wf])+)
 
 lemma assumes wf: "wf_prog wf_md P"
   shows WT_block_types_is_type: "P,E \<turnstile> e :: T \<Longrightarrow> set (block_types e) \<subseteq> types P"

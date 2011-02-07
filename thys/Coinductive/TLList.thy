@@ -6,9 +6,9 @@
 header {* Terminated coinductive lists *}
 
 theory TLList imports
-  "Quotient_Coinductive_List"
-  "Quotient_Product"
-  "Quotient_Sum"
+  Quotient_Coinductive_List
+  Quotient_Product
+  Quotient_Sum
 begin
 
 text {*
@@ -32,7 +32,7 @@ by(simp add: fun_eq_iff mem_def)
 
 lemma mem_respect [quot_respect]:
   "(R ===> (R ===> op =) ===> op =) (op \<in>) (op \<in>)"
-by(simp add: fun_eq_iff mem_def)
+  by (auto simp add: fun_eq_iff mem_def intro!: fun_relI elim: fun_relE)
 
 lemma sum_case_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
@@ -52,7 +52,7 @@ lemma prod_case_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
   and q2: "Quotient R2 Abs2 Rep2"
   and q3: "Quotient R3 Abs3 Rep3"
-  shows "((Abs1 ---> Abs2 ---> Rep3) ---> prod_fun Rep1 Rep2 ---> Abs3) prod_case = prod_case"
+  shows "((Abs1 ---> Abs2 ---> Rep3) ---> map_pair Rep1 Rep2 ---> Abs3) prod_case = prod_case"
 using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2] Quotient_abs_rep[OF q3]
 by(simp add: fun_eq_iff split: prod.split)
 
@@ -83,15 +83,15 @@ lemma tlist_eq_iff: "tlist_eq xsa ysb \<longleftrightarrow> fst xsa = fst ysb \<
 by(cases xsa, cases ysb) auto
 
 lemma equivp_tlist_eq: "equivp tlist_eq"
-by(rule equivpI)(auto simp add: reflp_def symp_def transp_def)
+  by (auto intro!: equivpI reflpI sympI transpI) 
 
 lemma sum_case_respect_tlist_eq [quot_respect]:
   "((op = ===> tlist_eq) ===> (op = ===> tlist_eq) ===> op = ===> tlist_eq) sum_case sum_case"
-by(simp split: sum.split)
+  by (simp add: fun_rel_def split: sum.split)
 
 lemma prod_case_repsect_tlist_eq [quot_respect]:
   "((op = ===> op = ===> tlist_eq) ===> op = ===> tlist_eq) prod_case prod_case"
-by(simp)
+  by (simp add: fun_rel_def)
 
 lemma id_respect_tlist_eq [quot_respect]:
   "(tlist_eq ===> tlist_eq) id id"
@@ -114,11 +114,11 @@ is "TCONS"
 
 lemma TNil_respect [quot_respect]:
   "(op = ===> tlist_eq) TNIL TNIL"
-by(simp add: TNIL_def)
+  by (simp add: TNIL_def fun_rel_def)
 
 lemma TCons_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) TCONS TCONS"
-by(simp add: TCONS_def)
+  by (simp add: TCONS_def fun_rel_def)
 
 code_datatype TNil TCons
 
@@ -134,7 +134,7 @@ where "tllist_case_aux f g (xs, b) = (case xs of LNil \<Rightarrow> f b | LCons 
 
 lemma tllist_case_aux_respect [quot_respect]:
   "(op = ===> (op = ===> tlist_eq ===> op =) ===> tlist_eq ===> op =) tllist_case_aux tllist_case_aux"
-by(auto intro: ext split: llist_split)
+  by (auto intro: ext split: llist_split simp add: fun_rel_def)
 
 quotient_definition "tllist_case :: ('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> ('c, 'a) tllist \<Rightarrow> 'b) \<Rightarrow> ('c, 'a) tllist \<Rightarrow> 'b"
 is "tllist_case_aux"
@@ -283,11 +283,11 @@ text {*
   This way, many results are transferred easily.
 *}
 
-definition tllist_of_llist :: "'b \<Rightarrow> 'a llist \<Rightarrow> ('a, 'b) tllist"
-where
-  "tllist_of_llist s tls = 
-   tllist_corec tls (\<lambda>tls. case tls of LNil \<Rightarrow> Inr s 
-                           |  LCons tl tls' \<Rightarrow> Inl (tl, tls'))"
+definition TLLIST_OF_LLIST :: "'a \<Rightarrow> 'b llist \<Rightarrow> 'b llist \<times> 'a"
+where "TLLIST_OF_LLIST a xs = (xs, a)"
+
+quotient_definition "tllist_of_llist :: 'a \<Rightarrow> 'b llist \<Rightarrow> ('b, 'a) tllist"
+is "TLLIST_OF_LLIST"
 
 primrec TERMINAL :: "('a llist \<times> 'b) \<Rightarrow> 'b"
 where "TERMINAL (xs, c) = (if lfinite xs then c else undefined)"
@@ -352,19 +352,103 @@ where "TDROPn n (xs, b) = (ldropn n xs, b)"
 quotient_definition "tdropn :: nat \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 is "TDROPn"
 
-subsection {* From a lazy list to a terminated lazy list @{term tllist_of_llist } *}
+abbreviation tset :: "('a, 'b) tllist \<Rightarrow> 'a set" 
+where "tset xs \<equiv> lset (llist_of_tllist xs)"
 
-lemma tllist_of_llist_simps [simp, code, nitpick_simp]:
-  fixes tl
-  shows tllist_of_llist_LNil: "tllist_of_llist s LNil = TNil s"
-  and tllist_of_llist_LCons: "tllist_of_llist s (LCons tl tls)  = TCons tl (tllist_of_llist s tls)"
-by(simp_all add: tllist_of_llist_def tllist_corec)
+abbreviation tfinite :: "('a, 'b) tllist \<Rightarrow> bool"
+where "tfinite xs \<equiv> lfinite (llist_of_tllist xs)"
 
-subsection {* The terminal element @{term "terminal"} *}
+subsection {* Respectfulness theorems *}
+
+lemma tllist_of_llist_respect [quot_respect]:
+  "(op = ===> op = ===> tlist_eq) TLLIST_OF_LLIST TLLIST_OF_LLIST"
+by(auto intro!: fun_relI simp add: TLLIST_OF_LLIST_def)
 
 lemma TERMINAL_respect [quot_respect]:
   "(tlist_eq ===> op =) TERMINAL TERMINAL"
 by(auto)
+
+lemma tMAP_respect [quot_respect]:
+  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tMAP tMAP"
+  by (auto intro: ext intro!: fun_relI)
+
+lemma tAPPEND_respect [quot_respect]:
+  "(tlist_eq ===> (op = ===> tlist_eq) ===> tlist_eq) tAPPEND tAPPEND"
+apply(auto intro: ext simp add: lappend_inf fun_rel_def split: split_fst)
+apply(erule_tac x=ba in allE, auto)+
+done
+
+lemma lAPPENDt_respect [quot_respect]:
+  "(op = ===> tlist_eq ===> tlist_eq) lAPPENDt lAPPENDt"
+by(auto intro!: ext fun_relI)
+
+lemma tFILTER_respect [quot_respect]: 
+  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tFILTER tFILTER"
+  by (auto intro: ext intro!: fun_relI)
+
+lemma tCONCAT_respect [quot_respect]:
+  "(op = ===> tlist_eq ===> tlist_eq) tCONCAT tCONCAT"
+  by (auto intro: ext intro!: fun_relI)
+
+lemma tllist_all2_respect_tlist_eq [quot_respect]:
+  "(op = ===> op = ===> tlist_eq ===> tlist_eq ===> op =) TLLIST_ALL2 TLLIST_ALL2"
+by(auto dest: llist_all2_lfiniteD simp add: fun_rel_def)
+
+lemma llist_of_tllist_respect [quot_respect]: 
+  "(tlist_eq ===> op =) fst fst"
+by auto
+
+lemma TNTH_respect [quot_respect]:
+  "(tlist_eq ===> op =) TNTH TNTH"
+by auto
+
+lemma TLENGTH_respect [quot_respect]:
+  "(tlist_eq ===> op =) TLENGTH TLENGTH"
+by auto
+
+lemma TDROPn_respect [quot_respect]:
+  "(op = ===> tlist_eq ===> tlist_eq) TDROPn TDROPn"
+  by (auto intro!: fun_relI)
+
+subsection {* From a lazy list to a terminated lazy list @{term tllist_of_llist } *}
+
+lemma tllist_of_llist_LNil: "tllist_of_llist s LNil = TNil s"
+by(descending)(simp add: TLLIST_OF_LLIST_def TNIL_def)
+
+lemma tllist_of_llist_LCons:
+  fixes tl
+  shows "tllist_of_llist s (LCons tl tls)  = TCons tl (tllist_of_llist s tls)"
+by(descending)(simp add: TCONS_def TLLIST_OF_LLIST_def)
+
+lemmas tllist_of_llist_simps [simp, code, nitpick_simp] =
+  tllist_of_llist_LNil tllist_of_llist_LCons
+
+lemma tllist_of_llist_conv_corec:
+  fixes s :: "'a" and tls :: "'b llist"
+  shows
+  "tllist_of_llist s tls = 
+   tllist_corec tls (\<lambda>tls. case tls of LNil \<Rightarrow> Inr s 
+                           |  LCons tl tls' \<Rightarrow> Inl (tl, tls'))"
+proof(descending)
+  fix s :: 'a and tls :: "'b llist"
+  have "(TLLIST_OF_LLIST s tls, tllist_corec_aux tls (llist_case (Inr s) (\<lambda>tl tls'. Inl (tl, tls')))) \<in>
+       {(TLLIST_OF_LLIST s tls, tllist_corec_aux tls (llist_case (Inr s) (\<lambda>tl tls'. Inl (tl, tls'))))|tls. True}"
+    by blast
+  thus "tlist_eq (TLLIST_OF_LLIST s tls) (tllist_corec_aux tls (llist_case (Inr s) (\<lambda>tl tls'. Inl (tl, tls'))))"
+  proof(coinduct rule: tlist_eq_coinduct)
+    case (tlist_eq q)
+    then obtain tls where "q = (TLLIST_OF_LLIST s tls, tllist_corec_aux tls (llist_case (Inr s) (\<lambda>tl tls'. Inl (tl, tls'))))" by blast
+    thus ?case
+      by(cases tls)(fastsimp simp add: tllist_corec_aux TLLIST_OF_LLIST_def TCONS_def TNIL_def apfst_def map_pair_def split_beta)+
+  qed
+qed
+
+lemma tllist_of_llist_eq_lappendt_conv:
+  "tllist_of_llist a xs = lappendt ys zs \<longleftrightarrow> 
+  (\<exists>xs' a'. xs = lappend ys xs' \<and> zs = tllist_of_llist a' xs' \<and> (lfinite ys \<longrightarrow> a = a'))"
+by(descending)(fastsimp simp add: TLLIST_OF_LLIST_def)
+
+subsection {* The terminal element @{term "terminal"} *}
 
 lemma terminal_TNil [simp, code, nitpick_simp]: "terminal (TNil b) = b"
 by(descending)(simp add: TNIL_def)
@@ -372,11 +456,11 @@ by(descending)(simp add: TNIL_def)
 lemma terminal_TCons [simp, code, nitpick_simp]: "terminal (TCons x xs) = terminal xs"
 by(descending)(auto simp add: TCONS_def)
 
-subsection {* @{term "tmap"} *}
+lemma terminal_tllist_of_llist:
+  "terminal (tllist_of_llist y xs) = (if lfinite xs then y else undefined)"
+by(descending)(auto simp add: TLLIST_OF_LLIST_def)
 
-lemma tMAP_respect [quot_respect]:
-  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tMAP tMAP"
-by(auto intro: ext)
+subsection {* @{term "tmap"} *}
 
 lemma tmap_TNil [simp, code, nitpick_simp]: "tmap f g (TNil b) = TNil (g b)"
 by(descending)(simp add: TNIL_def)
@@ -387,6 +471,16 @@ by(descending)(auto simp add: TCONS_def)
 lemma tmap_compose [simp]: "tmap (f o f') (g o g') ts = tmap f g (tmap f' g' ts)"
 by(descending) auto
 
+lemma tmap_eq_TCons_conv:
+  "tmap f g xs = TCons y ys \<longleftrightarrow>
+  (\<exists>z zs. xs = TCons z zs \<and> f z = y \<and> tmap f g zs = ys)"
+by(cases xs) simp_all
+
+lemma TCons_eq_tmap_conv:
+  "TCons y ys = tmap f g xs \<longleftrightarrow>
+  (\<exists>z zs. xs = TCons z zs \<and> f z = y \<and> tmap f g zs = ys)"
+by(cases xs) auto
+
 lemma tmap_id_id [id_simps]:
   "tmap id id = id"
 proof
@@ -395,13 +489,16 @@ proof
     by(descending)(auto simp add: lmap_id)
 qed
 
+lemma tmap_eq_TNil_conv:
+  "tmap f g xs = TNil y \<longleftrightarrow> (\<exists>y'. xs = TNil y' \<and> g y' = y)"
+by(cases xs) simp_all
+
+lemma TNil_eq_tmap_conv:
+  "TNil y = tmap f g xs \<longleftrightarrow> (\<exists>y'. xs = TNil y' \<and> g y' = y)"
+by(cases xs) auto
+
 subsection {* Appending two terminated lazy lists @{term "tappend" } *}
 
-lemma tappend_respect [quot_respect]:
-  "(tlist_eq ===> (op = ===> tlist_eq) ===> tlist_eq) tAPPEND tAPPEND"
-apply(auto intro: ext simp add: lappend_inf split: split_fst)
-apply(erule_tac x=ba in allE, auto)+
-done
 
 lemma tappend_TNil [simp, code, nitpick_simp]: 
   "tappend (TNil b) f = f b"
@@ -413,10 +510,6 @@ by(descending)(auto simp add: TCONS_def)
 
 subsection {* Appending a terminated lazy list to a lazy list @{term "lappendt"} *}
 
-lemma lappendt_respect [quot_respect]:
-  "(op = ===> tlist_eq ===> tlist_eq) lAPPENDt lAPPENDt"
-by(auto intro: ext)
-
 lemma lappendt_LNil [simp, code, nitpick_simp]: "lappendt LNil tr = tr"
 by(descending)(clarsimp simp add: TNIL_def)
 
@@ -424,11 +517,13 @@ lemma lappendt_LCons [simp, code, nitpick_simp]:
   "lappendt (LCons x xs) tr = TCons x (lappendt xs tr)"
 by(descending)(auto simp add: TCONS_def)
 
-subsection {* Filtering terminated lazy lists @{term tfilter} *}
+lemma terminal_lappendt_lfinite [simp]:
+  assumes "lfinite xs"
+  shows "terminal (lappendt xs ys) = terminal ys"
+using assms
+by(induct) simp_all
 
-lemma tfilter_respect [quot_respect]: 
-  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tFILTER tFILTER"
-by(auto intro: ext)
+subsection {* Filtering terminated lazy lists @{term tfilter} *}
 
 lemma tfilter_TNil [code, simp]:
   "tfilter b' P (TNil b) = TNil b"
@@ -438,11 +533,20 @@ lemma tfilter_TCons [code, simp]:
   "tfilter b P (TCons a tr) = (if P a then TCons a (tfilter b P tr) else tfilter b P tr)"
 by(descending)(auto simp add: TCONS_def)
 
-subsection {* Concatenating a terminated lazy list of lazy lists @{term tconcat} *}
+lemma tfilter_empty_conv:
+  "tfilter y P xs = TNil y' \<longleftrightarrow> (\<forall>x \<in> tset xs. \<not> P x) \<and> (if tfinite xs then terminal xs = y' else y = y')"
+apply(descending)
+apply(auto simp add: TNIL_def)
+apply(auto simp add: lfilter_empty_conv)
+done
 
-lemma tconcat_respect [quot_respect]:
-  "(op = ===> tlist_eq ===> tlist_eq) tCONCAT tCONCAT"
-by(auto intro: ext)
+lemma tfilter_eq_TConsD:
+  "tfilter a P ys = TCons x xs \<Longrightarrow>
+   \<exists>us vs. ys = lappendt us (TCons x vs) \<and> lfinite us \<and> (\<forall>u\<in>lset us. \<not> P u) \<and> P x \<and> xs = tfilter a P vs"
+by(descending)(fastsimp simp add: TCONS_def apfst_def map_pair_def split_def split_paired_Ex dest: lfilter_eq_LConsD)
+
+
+subsection {* Concatenating a terminated lazy list of lazy lists @{term tconcat} *}
 
 lemma tconcat_TNil [code, simp]: "tconcat b (TNil b') = TNil b'"
 by(descending)(simp add: TNIL_def)
@@ -451,10 +555,6 @@ lemma tconcat_TCons [code, simp]: "tconcat b (TCons a tr) = lappendt a (tconcat 
 by(descending)(clarsimp simp add: TCONS_def)
 
 subsection {* @{term tllist_all2} *}
-
-lemma tllist_all2_respect_tlist_eq [quot_respect]:
-  "(op = ===> op = ===> tlist_eq ===> tlist_eq ===> op =) TLLIST_ALL2 TLLIST_ALL2"
-by(auto dest: llist_all2_lfiniteD)
 
 lemma tllist_all2_TNil [simp]:
   "tllist_all2 P Q (TNil b) (TNil b') \<longleftrightarrow> Q b b'"
@@ -545,11 +645,14 @@ lemma tllist_all2_mono:
   \<Longrightarrow> tllist_all2 P' Q' xs ys"
 by descending(auto elim!: llist_all2_mono)
 
-subsection {* From a terminated lazy list to a lazy list @{term llist_of_tllist} *}
+lemma tllist_all2_code [code]:
+  "tllist_all2 P Q (TNil b) (TNil b') \<longleftrightarrow> Q b b'"
+  "tllist_all2 P Q (TNil b) (TCons y ys) \<longleftrightarrow> False"
+  "tllist_all2 P Q (TCons x xs) (TNil b') \<longleftrightarrow> False"
+  "tllist_all2 P Q (TCons x xs) (TCons y ys) \<longleftrightarrow> P x y \<and> tllist_all2 P Q xs ys"
+by(simp_all add: tllist_all2_TNil1 tllist_all2_TNil2)
 
-lemma llist_of_tllist_respect [quot_respect]: 
-  "(tlist_eq ===> op =) fst fst"
-by auto
+subsection {* From a terminated lazy list to a lazy list @{term llist_of_tllist} *}
 
 lemma llist_of_tllist_TNil [simp, code, nitpick_simp]:
   "llist_of_tllist (TNil b) = LNil"
@@ -597,11 +700,12 @@ lemma llist_of_tllist_tconcat:
   "llist_of_tllist (tconcat b trs) = lconcat (llist_of_tllist trs)"
 by descending auto
 
-subsection {* The nth element of a terminated lazy list @{term "tnth"} *}
+lemma llist_of_tllist_eq_lappend_conv:
+  "llist_of_tllist xs = lappend us vs \<longleftrightarrow> 
+  (\<exists>ys. xs = lappendt us ys \<and> vs = llist_of_tllist ys \<and> terminal xs = terminal ys)"
+by(descending)(auto simp add: split_paired_Ex)
 
-lemma TNTH_respect [quot_respect]:
-  "(tlist_eq ===> op =) TNTH TNTH"
-by auto
+subsection {* The nth element of a terminated lazy list @{term "tnth"} *}
 
 lemma tnth_TNil [nitpick_simp]:
   "tnth (TNil b) n = undefined n"
@@ -611,7 +715,7 @@ lemma tnth_TCons:
   "tnth (TCons x xs) n = (case n of 0 \<Rightarrow> x | Suc n' \<Rightarrow> tnth xs n')"
 by(descending)(auto simp add: TCONS_def lnth_LCons split: nat.split)
 
-lemma [simp, nitpick_simp]:
+lemma tnth_code [simp, nitpick_simp, code]:
   shows tnth_0: "tnth (TCons x xs) 0 = x"
   and tnth_Suc_TCons: "tnth (TCons x xs) (Suc n) = tnth xs n"
 by(simp_all add: tnth_TCons)
@@ -622,9 +726,6 @@ by(descending)(auto)
 
 subsection {* The length of a terminated lazy list @{term "tlength"} *}
 
-lemma TLENGTH_respect [quot_respect]:
-  "(tlist_eq ===> op =) TLENGTH TLENGTH"
-by auto
 
 lemma [simp, code, nitpick_simp]:
   shows tlength_TNil: "tlength (TNil b) = 0"
@@ -637,10 +738,6 @@ lemma llength_llist_of_tllist [simp]: "llength (llist_of_tllist xs) = tlength xs
 by descending auto
 
 subsection {* @{term "tdropn"} *}
-
-lemma TDROPn_respect [quot_respect]:
-  "(op = ===> tlist_eq ===> tlist_eq) TDROPn TDROPn"
-by auto
 
 lemma tdropn_0 [simp, code, nitpick_simp]: "tdropn 0 xs = xs"
 by descending auto
@@ -671,5 +768,31 @@ by descending auto
 
 lemma tnth_tdropn [simp]: "Fin (n + m) < tlength xs \<Longrightarrow> tnth (tdropn n xs) m = tnth xs (m + n)"
 by descending auto
+
+subsection {* @{term "tset"} *}
+
+lemma tset_induct [consumes 1, case_names find step]:
+  assumes "x \<in> tset xs"
+  and "\<And>xs. P (TCons x xs)"
+  and "\<And>x' xs. \<lbrakk> x \<in> tset xs; x \<noteq> x'; P xs \<rbrakk> \<Longrightarrow> P (TCons x' xs)"
+  shows "P xs"
+using assms
+apply(descending)
+apply(clarsimp simp add: TCONS_def)
+apply(drule lset_induct, auto)
+done
+
+subsection {* @{term "tfinite"} *}
+
+lemma tfinite_induct [consumes 1, case_names TNil TCons]:
+  assumes "tfinite xs"
+  and "\<And>y. P (TNil y)"
+  and "\<And>x xs. \<lbrakk>tfinite xs; P xs\<rbrakk> \<Longrightarrow> P (TCons x xs)"
+  shows "P xs"
+using assms
+apply(descending)
+apply(clarsimp simp add: TNIL_def TCONS_def)
+apply(drule lfinite.induct, auto)
+done
 
 end

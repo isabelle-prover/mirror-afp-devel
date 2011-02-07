@@ -228,23 +228,23 @@ proof (rule funcsetI)
     show "comp (set_cat U) g f \<in> hom (set_cat U) A C"
     proof-
       have "comp (set_cat U) g f = 
-	\<lparr>
-	set_dom = A, 
-	set_func = compose (set_dom f) (set_func g) (set_func f),
-	set_cod = C
-	\<rparr>"
-	by (simp add: set_cat_def set_comp_def comp_cod comp_dom)
+        \<lparr>
+        set_dom = A, 
+        set_func = compose (set_dom f) (set_func g) (set_func f),
+        set_cod = C
+        \<rparr>"
+        by (simp add: set_cat_def set_comp_def comp_cod comp_dom)
       also have "\<dots> \<in> hom (set_cat U) A C"
       proof (rule set_homI)
-	from f_AB show "A \<subseteq> U" ..
-	from g_BC show "C \<subseteq> U" ..
-	from f_AB have fs_f: "set_func f: A \<rightarrow> B" ..
-	from g_BC have fs_g: "set_func g: B \<rightarrow> C" ..
-	from fs_g and fs_f
-	show " compose (set_dom f) (set_func g) (set_func f) : A \<rightarrow> C"
-	  by (simp only: comp_dom) (rule funcset_compose)
-	show "compose (set_dom f) (set_func g) (set_func f) \<in> extensional A"
-	  by (simp only: comp_dom) (rule compose_extensional)
+        from f_AB show "A \<subseteq> U" ..
+        from g_BC show "C \<subseteq> U" ..
+        from f_AB have fs_f: "set_func f: A \<rightarrow> B" ..
+        from g_BC have fs_g: "set_func g: B \<rightarrow> C" ..
+        from fs_g and fs_f
+        show " compose (set_dom f) (set_func g) (set_func f) : A \<rightarrow> C"
+          by (simp only: comp_dom) (rule funcset_compose)
+        show "compose (set_dom f) (set_func g) (set_func f) \<in> extensional A"
+          by (simp only: comp_dom) (rule compose_extensional)
       qed
       finally show ?thesis .
     qed
@@ -253,7 +253,7 @@ qed
 
 text {* We reason explicitly about the function component of the
 composite arrow, leaving the rest to the simplifier. *}
-	  
+
 lemma set_comp_associative:
   fixes f and g and h
   assumes f: "f \<in> ar (set_cat U)" 

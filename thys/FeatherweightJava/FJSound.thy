@@ -50,44 +50,43 @@ subsection{* Method Types and Field Declarations of Subtypes *}
 lemma A_1_1:
   assumes "CT \<turnstile> C <: D" and "CT OK"
   shows "(mtype(CT,m,D) = Cs \<rightarrow> C0) \<Longrightarrow> (mtype(CT,m,C) = Cs \<rightarrow> C0)"
-using assms
+  using assms
 proof (induct rule:subtyping.induct)
   case (s_refl C CT) show ?case by fact
-  next
+next
   case (s_trans C CT D E) thus ?case by auto
-  next
+next
   case (s_super CT C CDef D)
   hence "CT \<turnstile> CDef OK" and "cName CDef = C" 
     by(auto elim:ct_typing.cases)
   with s_super obtain M 
-    where "CT \<turnstile>+ M OK IN C" and "cMethods CDef = M" 
+    where M: "CT \<turnstile>+ M OK IN C" and cMethods: "cMethods CDef = M" 
     by(auto elim:class_typing.cases)
   let ?lookup_m = "lookup M (\<lambda>md. (mName md =m))"
   show ?case
   proof(cases "\<exists>mDef. ?lookup_m = Some mDef") 
-  case True
-    then obtain mDef where "?lookup_m = Some mDef" by(rule exE)
+    case True
+    then obtain mDef where m: "?lookup_m = Some mDef" by(rule exE)
     hence mDef_name: "mName mDef = m" by (rule lookup_true)
-    have "CT \<turnstile> mDef OK IN C" using prems by(auto simp add:method_typings_lookup)
+    have "CT \<turnstile> mDef OK IN C" using M m by(auto simp add:method_typings_lookup)
     then obtain CDef' m' D' Cs' C0'
-      where "CT C = Some CDef'"
+      where CT: "CT C = Some CDef'"
         and "cSuper CDef' = D'"
         and "mName mDef = m'"
-        and "mReturn mDef = C0'"
-        and "varDefs_types (mParams mDef) = Cs'"
+        and mReturn: "mReturn mDef = C0'"
+        and varDefs_types: "varDefs_types (mParams mDef) = Cs'"
         and "\<forall>Ds D0. (mtype(CT,m',D') = Ds \<rightarrow> D0) \<longrightarrow> Cs'=Ds \<and> C0'=D0"
       by (auto elim: method_typing.cases) 
-   with s_super mDef_name have 
-         "CDef=CDef'" 
-     and "D=D'" 
-     and "m=m'" 
-     and "\<forall>Ds D0. (mtype(CT,m,D) = Ds \<rightarrow> D0) \<longrightarrow> Cs'=Ds \<and> C0' = D0" 
-     using prems by auto
-   thus ?thesis using prems by (auto intro:mtype.intros)
+    with s_super mDef_name have "CDef=CDef'" 
+      and "D=D'" 
+      and "m=m'" 
+      and "\<forall>Ds D0. (mtype(CT,m,D) = Ds \<rightarrow> D0) \<longrightarrow> Cs'=Ds \<and> C0' = D0" 
+      by auto
+    thus ?thesis using s_super cMethods m CT mReturn varDefs_types by (auto intro:mtype.intros)
   next 
-  case False
-   hence "?lookup_m = None" by (simp add: lookup_split)
-   show ?thesis using prems by (auto simp add:mtype.intros)  
+    case False
+    hence "?lookup_m = None" by (simp add: lookup_split)
+    then show ?thesis using s_super cMethods by (auto simp add:mtype.intros)  
   qed
 qed
 
@@ -115,13 +114,13 @@ subsection{* Substitution Lemma *}
  
 lemma A_1_2:
   assumes "CT OK"
-  and "\<Gamma> = \<Gamma>1 ++ \<Gamma>2"                            
-  and "\<Gamma>2 = [xs [\<mapsto>] Bs]"                         
-  and "length xs = length ds"
-  and "length Bs = length ds"                      
-  and "\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs"
+    and "\<Gamma> = \<Gamma>1 ++ \<Gamma>2"                            
+    and "\<Gamma>2 = [xs [\<mapsto>] Bs]"                         
+    and "length xs = length ds"
+    and "length Bs = length ds"                      
+    and "\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs"
   shows "CT;\<Gamma> \<turnstile>+ es:Ds \<Longrightarrow> \<exists>Cs. (CT;\<Gamma>1 \<turnstile>+ ([ds/xs]es):Cs \<and> CT \<turnstile>+ Cs <: Ds)" (is "?TYPINGS \<Longrightarrow> ?P1")
-  and  "CT;\<Gamma> \<turnstile> e:D \<Longrightarrow> \<exists>C. (CT;\<Gamma>1 \<turnstile> ((ds/xs)e):C \<and> CT \<turnstile> C <: D)" (is "?TYPING \<Longrightarrow> ?P2")
+    and "CT;\<Gamma> \<turnstile> e:D \<Longrightarrow> \<exists>C. (CT;\<Gamma>1 \<turnstile> ((ds/xs)e):C \<and> CT \<turnstile> C <: D)" (is "?TYPING \<Longrightarrow> ?P2")
 proof -
   let ?COMMON_ASMS = "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
   have RESULT:"  (?TYPINGS \<longrightarrow> ?COMMON_ASMS \<longrightarrow> ?P1)
@@ -132,25 +131,26 @@ proof -
     proof (rule impI)
       have "(CT;\<Gamma>1 \<turnstile>+ ([ds/xs][]):[]) \<and> (CT \<turnstile>+ [] <: [])"
         by (auto simp add: typings_typing.intros subtypings.intros)
-      from this show "\<exists>Cs.(CT;\<Gamma>1 \<turnstile>+ ([ds/xs][]):Cs) \<and> (CT \<turnstile>+ Cs <: [])" by auto;
+      then show "\<exists>Cs.(CT;\<Gamma>1 \<turnstile>+ ([ds/xs][]):Cs) \<and> (CT \<turnstile>+ Cs <: [])" by auto
     qed
   next
-   case(ts_cons CT \<Gamma> e0 C0 es Cs')
-   show ?case
-   proof (rule impI)
-     assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
-     with ts_cons have e0_typ: "CT;\<Gamma> \<turnstile> e0 : C0" by fastsimp
-     with ts_cons asms have 
-       "\<exists>C.(CT;\<Gamma>1 \<turnstile> (ds/xs) e0 : C) \<and> (CT \<turnstile> C <: C0)" 
-       and "\<exists>Cs.(CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs) \<and> (CT \<turnstile>+ Cs <: Cs')" 
-       by auto
-     then obtain C Cs where
-       "(CT;\<Gamma>1 \<turnstile> (ds/xs) e0 : C) \<and> (CT \<turnstile> C <: C0)" 
-       and "(CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs) \<and> (CT \<turnstile>+ Cs <: Cs')" by auto
-     hence "CT;\<Gamma>1 \<turnstile>+ [ds/xs](e0#es) : (C#Cs)"
-       and "CT \<turnstile>+ (C#Cs) <: (C0#Cs')" 
-       by (auto simp add: typings_typing.intros subtypings.intros)
-     then show "\<exists>Cs. CT;\<Gamma>1 \<turnstile>+ map (substs [xs [\<mapsto>] ds]) (e0 # es) : Cs \<and> CT \<turnstile>+ Cs <: (C0 # Cs')" by auto
+    case(ts_cons CT \<Gamma> e0 C0 es Cs')
+    show ?case
+    proof (rule impI)
+      assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
+      with ts_cons have e0_typ: "CT;\<Gamma> \<turnstile> e0 : C0" by fastsimp
+      with ts_cons asms have 
+          "\<exists>C.(CT;\<Gamma>1 \<turnstile> (ds/xs) e0 : C) \<and> (CT \<turnstile> C <: C0)" 
+        and "\<exists>Cs.(CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs) \<and> (CT \<turnstile>+ Cs <: Cs')" 
+        by auto
+      then obtain C Cs where
+          "(CT;\<Gamma>1 \<turnstile> (ds/xs) e0 : C) \<and> (CT \<turnstile> C <: C0)" 
+        and "(CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs) \<and> (CT \<turnstile>+ Cs <: Cs')" by auto
+      hence "CT;\<Gamma>1 \<turnstile>+ [ds/xs](e0#es) : (C#Cs)"
+        and "CT \<turnstile>+ (C#Cs) <: (C0#Cs')" 
+        by (auto simp add: typings_typing.intros subtypings.intros)
+      then show "\<exists>Cs. CT;\<Gamma>1 \<turnstile>+ map (substs [xs [\<mapsto>] ds]) (e0 # es) : Cs \<and> CT \<turnstile>+ Cs <: (C0 # Cs')"
+        by auto
     qed
   next
     case (t_var \<Gamma> x C' CT)
@@ -176,19 +176,21 @@ proof -
       next
         case (Some Bi)
         with G_def t_var have c'_eq_bi: "C' = Bi" by (auto simp add: map_add_SomeD)
-        from prems have "length xs = length Bs" by simp
-        with Some G2_def have "\<exists>i.(Bs!i = Bi) \<and> (i < length Bs) \<and> (\<forall>l.((length l = length Bs) \<longrightarrow> ([xs[\<mapsto>]l] x = Some (l!i))))" 
+        from `length xs = length ds` asms have "length xs = length Bs" by simp
+        with Some G2_def have "\<exists>i.(Bs!i = Bi) \<and> (i < length Bs) \<and>
+            (\<forall>l.((length l = length Bs) \<longrightarrow> ([xs[\<mapsto>]l] x = Some (l!i))))" 
           by (auto simp add: map_upds_index)
-        then obtain i where 
-          bs_i_proj:"(Bs!i = Bi)" 
-          and  i_len:"i < length Bs"
-          and  P:"(\<And>(l::exp list).((length l = length Bs) \<longrightarrow> ([xs[\<mapsto>]l] x = Some (l!i))))" 
+        then obtain i where bs_i_proj: "(Bs!i = Bi)" 
+          and i_len: "i < length Bs"
+          and P: "(\<And>(l::exp list).((length l = length Bs) \<longrightarrow> ([xs[\<mapsto>]l] x = Some (l!i))))"
           by fastsimp
-        from lengths P have subst_x:"([xs[\<mapsto>]ds]x = Some (ds!i))" by auto
-        from prems obtain As where as_ex:"CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs" by fastsimp
+        from lengths P have subst_x: "([xs[\<mapsto>]ds]x = Some (ds!i))" by auto
+        from asms obtain As where as_ex:"CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs" by fastsimp
         hence "length As = length Bs" by (auto simp add: subtypings_length)
-        hence proj_i:"CT;\<Gamma>1 \<turnstile> ds!i : As!i \<and> CT \<turnstile> As!i <: Bs!i" using i_len lengths as_ex by (auto simp add: typings_proj)
-        hence "CT;\<Gamma>1 \<turnstile> (ds/xs)(Var x) : As!i \<and> CT \<turnstile> As!i <: C'" using c'_eq_bi bs_i_proj subst_x by auto
+        hence proj_i:"CT;\<Gamma>1 \<turnstile> ds!i : As!i \<and> CT \<turnstile> As!i <: Bs!i"
+          using i_len lengths as_ex by (auto simp add: typings_proj)
+        hence "CT;\<Gamma>1 \<turnstile> (ds/xs)(Var x) : As!i \<and> CT \<turnstile> As!i <: C'"
+          using c'_eq_bi bs_i_proj subst_x by auto
         thus ?thesis ..
       qed
     qed
@@ -196,120 +198,128 @@ proof -
     case(t_field CT \<Gamma> e0 C0 Cf fi fDef Ci)
     show ?case
     proof(rule impI)
-      assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
+      assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and>
+        (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
       from t_field have flds: "fields(CT,C0) = Cf" by fastsimp
-      from prems obtain C where e0_typ: "CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C" and sub: "CT \<turnstile> C <: C0"  by auto
+      from t_field asms obtain C where e0_typ: "CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C" and sub: "CT \<turnstile> C <: C0"
+        by auto
       from sub_fields[OF sub flds] obtain Dg where flds_C: "fields(CT,C) = (Cf@Dg)" ..
-      from t_field have lookup_CfDg: "lookup (Cf@Dg) (\<lambda>fd. vdName fd = fi) = Some fDef" by(simp add:lookup_append)
-      from e0_typ flds_C lookup_CfDg t_field have "CT;\<Gamma>1 \<turnstile> (ds/xs)(FieldProj e0 fi) : Ci" by(simp add:typings_typing.intros)
+      from t_field have lookup_CfDg: "lookup (Cf@Dg) (\<lambda>fd. vdName fd = fi) = Some fDef"
+        by(simp add:lookup_append)
+      from e0_typ flds_C lookup_CfDg t_field have "CT;\<Gamma>1 \<turnstile> (ds/xs)(FieldProj e0 fi) : Ci"
+        by(simp add:typings_typing.intros)
       moreover have "CT \<turnstile> Ci <: Ci" by (simp add:subtyping.intros)
       ultimately show "\<exists>C. CT;\<Gamma>1 \<turnstile> (ds/xs)(FieldProj e0 fi) : C \<and> CT \<turnstile> C <: Ci" by auto
     qed
   next
     case(t_invk CT \<Gamma> e0 C0 m Ds C es Cs)
     show ?case
-      proof(rule impI)
-        assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
-        hence ct_ok: "CT OK" ..
-        from t_invk have mtyp: "mtype(CT,m,C0) = Ds \<rightarrow> C" 
-          and subs: "CT \<turnstile>+ Cs <: Ds"
-          and lens: "length es = length Ds"
-          by auto
-        from prems obtain C' where e0_typ: "CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C'" and sub': "CT \<turnstile> C' <: C0" by auto
-        from prems obtain Cs' where es_typ: "CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs'" and subs': "CT \<turnstile>+ Cs' <: Cs" by auto
-        have subst_e: "(ds/xs)(MethodInvk e0 m es) = MethodInvk ((ds/xs)e0) m ([ds/xs]es)" 
-          by(auto simp add:substs_subst_list1_subst_list2.simps subst_list1_eq_map_substs)
-        from 
-          e0_typ
-          A_1_1[OF sub' ct_ok mtyp] 
-          es_typ
-          subtypings_trans[OF subs' subs] 
-          lens 
-          subst_e
-        have "CT;\<Gamma>1 \<turnstile> (ds/xs)(MethodInvk e0 m es) : C" by(auto simp add:typings_typing.intros)
-        moreover have "CT \<turnstile> C <: C" by(simp add:subtyping.intros)
-        ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(MethodInvk e0 m es) : C' \<and> CT \<turnstile> C' <: C" by auto
-      qed
-    next
+    proof(rule impI)
+      assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs])
+          \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
+      hence ct_ok: "CT OK" ..
+      from t_invk have mtyp: "mtype(CT,m,C0) = Ds \<rightarrow> C" 
+        and subs: "CT \<turnstile>+ Cs <: Ds"
+        and lens: "length es = length Ds"
+        by auto
+      from t_invk asms obtain C' where
+          e0_typ: "CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C'" and sub': "CT \<turnstile> C' <: C0" by auto
+      from t_invk asms obtain Cs' where
+          es_typ: "CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs'" and subs': "CT \<turnstile>+ Cs' <: Cs" by auto
+      have subst_e: "(ds/xs)(MethodInvk e0 m es) = MethodInvk ((ds/xs)e0) m ([ds/xs]es)" 
+        by(auto simp add:substs_subst_list1_subst_list2.simps subst_list1_eq_map_substs)
+      from 
+        e0_typ
+        A_1_1[OF sub' ct_ok mtyp] 
+        es_typ
+        subtypings_trans[OF subs' subs] 
+        lens 
+        subst_e
+      have "CT;\<Gamma>1 \<turnstile> (ds/xs)(MethodInvk e0 m es) : C" by(auto simp add:typings_typing.intros)
+      moreover have "CT \<turnstile> C <: C" by(simp add:subtyping.intros)
+      ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(MethodInvk e0 m es) : C' \<and> CT \<turnstile> C' <: C" by auto
+    qed
+  next
     case(t_new CT C Df es Ds \<Gamma> Cs)
     show ?case
-      proof(rule impI)
-        assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
-        hence ct_ok: "CT OK" ..
-        from t_new have
-              subs: "CT \<turnstile>+ Cs <: Ds"
-          and flds: "fields(CT,C) = Df"
-          and len: "length es = length Df"
-          and vdts: "varDefs_types Df = Ds"
-          by auto
-        from prems obtain Cs' where es_typ: "CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs'" and subs': "CT \<turnstile>+ Cs' <: Cs" by auto
-        have subst_e: "(ds/xs)(New C es) = New C ([ds/xs]es)" 
-          by(auto simp add:substs_subst_list1_subst_list2.simps subst_list2_eq_map_substs)
-        from es_typ subtypings_trans[OF subs' subs] flds subst_e len vdts
-        have "CT;\<Gamma>1 \<turnstile> (ds/xs)(New C es) : C" by(auto simp add:typings_typing.intros)
-        moreover have "CT \<turnstile> C <: C" by(simp add:subtyping.intros)
-        ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(New C es) : C' \<and> CT \<turnstile> C' <: C" by auto
-      qed
-    next
+    proof(rule impI)
+      assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
+      hence ct_ok: "CT OK" ..
+      from t_new have
+        subs: "CT \<turnstile>+ Cs <: Ds"
+        and flds: "fields(CT,C) = Df"
+        and len: "length es = length Df"
+        and vdts: "varDefs_types Df = Ds"
+        by auto
+      from t_new asms obtain Cs' where
+        es_typ: "CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs'" and subs': "CT \<turnstile>+ Cs' <: Cs" by auto
+      have subst_e: "(ds/xs)(New C es) = New C ([ds/xs]es)" 
+        by(auto simp add:substs_subst_list1_subst_list2.simps subst_list2_eq_map_substs)
+      from es_typ subtypings_trans[OF subs' subs] flds subst_e len vdts
+      have "CT;\<Gamma>1 \<turnstile> (ds/xs)(New C es) : C" by(auto simp add:typings_typing.intros)
+      moreover have "CT \<turnstile> C <: C" by(simp add:subtyping.intros)
+      ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(New C es) : C' \<and> CT \<turnstile> C' <: C" by auto
+    qed
+  next
     case(t_ucast CT \<Gamma> e0 D C)
     show ?case
-      proof(rule impI)
-        assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
-        from prems obtain C' where e0_typ: "CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C'" 
-                              and  sub1:"CT \<turnstile> C' <: D" 
-                              and  sub2:"CT \<turnstile> D <: C" by auto
-        from sub1 sub2 have "CT \<turnstile> C' <: C" by (rule s_trans)	
-	with e0_typ have "CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C" by(auto simp add: typings_typing.intros)
-	moreover have "CT \<turnstile> C <: C" by (rule s_refl)
-	ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C' \<and> CT \<turnstile> C' <: C" by auto
-      qed
-    next
+    proof(rule impI)
+      assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
+      from t_ucast asms obtain C' where e0_typ: "CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C'" 
+        and  sub1:"CT \<turnstile> C' <: D" 
+        and  sub2:"CT \<turnstile> D <: C" by auto
+      from sub1 sub2 have "CT \<turnstile> C' <: C" by (rule s_trans)
+      with e0_typ have "CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C" by(auto simp add: typings_typing.intros)
+      moreover have "CT \<turnstile> C <: C" by (rule s_refl)
+      ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C' \<and> CT \<turnstile> C' <: C" by auto
+    qed
+  next
     case(t_dcast CT \<Gamma> e0 D C)
     show ?case
-      proof(rule impI)
-        assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
-        from prems obtain C' where e0_typ:"CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C'" by auto
-        have "(CT \<turnstile> C' <: C)  \<or> 
-              (C \<noteq> C' \<and> CT \<turnstile> C <: C') \<or> 
-              (CT \<turnstile> C \<not><: C' \<and> CT \<turnstile> C' \<not><: C)" by blast
-        moreover 
-	{ assume "CT \<turnstile> C' <: C" 
-          with e0_typ have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" by (auto simp add: typings_typing.intros)
-        }
-        moreover 
-	{ assume "(C \<noteq> C' \<and> CT \<turnstile> C <: C')" 
-          with e0_typ have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" by (auto simp add: typings_typing.intros)
-        }
-        moreover 
-	{ assume "(CT \<turnstile> C \<not><: C' \<and> CT \<turnstile> C' \<not><: C)" 
-          with e0_typ have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" by (auto simp add: typings_typing.intros)
-        }
-        ultimately have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" by auto
-	moreover have "CT \<turnstile> C <: C" by(rule s_refl)
-        ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C' \<and> CT \<turnstile> C' <: C" by auto
-      qed
-    next
+    proof(rule impI)
+      assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
+      from t_dcast asms obtain C' where e0_typ:"CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C'" by auto
+      have "(CT \<turnstile> C' <: C)  \<or> 
+        (C \<noteq> C' \<and> CT \<turnstile> C <: C') \<or> 
+        (CT \<turnstile> C \<not><: C' \<and> CT \<turnstile> C' \<not><: C)" by blast
+      moreover 
+      { assume "CT \<turnstile> C' <: C" 
+        with e0_typ have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" by (auto simp add: typings_typing.intros)
+      }
+      moreover 
+      { assume "(C \<noteq> C' \<and> CT \<turnstile> C <: C')" 
+        with e0_typ have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" by (auto simp add: typings_typing.intros)
+      }
+      moreover 
+      { assume "(CT \<turnstile> C \<not><: C' \<and> CT \<turnstile> C' \<not><: C)" 
+        with e0_typ have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" by (auto simp add: typings_typing.intros)
+      }
+      ultimately have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" by auto
+      moreover have "CT \<turnstile> C <: C" by(rule s_refl)
+      ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C' \<and> CT \<turnstile> C' <: C" by auto
+    qed
+  next
     case(t_scast CT \<Gamma> e0 D C)
     show ?case
-      proof(rule impI)
-        assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
-        from prems obtain C' where e0_typ:"CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C'" 
-                              and sub1: "CT \<turnstile> C' <: D" 
-                              and nsub1: "CT \<turnstile> C \<not><: D"  
-                              and nsub2: "CT \<turnstile> D \<not><: C" by auto
-	from not_subtypes[OF sub1 nsub1 nsub2] have "CT \<turnstile> C' \<not><: C" by fastsimp
-	moreover have "CT \<turnstile> C \<not><: C'" proof(rule ccontr)
-	  assume "\<not> CT \<turnstile> C \<not><: C'"
-	  hence "CT \<turnstile> C <: C'" by auto
-	  hence "CT \<turnstile> C <: D" using sub1 by(rule s_trans)
-	  with nsub1 show "False" by auto
-	qed	
-	ultimately have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" using e0_typ by (auto simp add: typings_typing.intros)
-        thus "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C' \<and> CT \<turnstile> C' <: C" by (auto simp add: s_refl)
+    proof(rule impI)
+      assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
+      from t_scast asms obtain C' where e0_typ:"CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C'" 
+        and sub1: "CT \<turnstile> C' <: D" 
+        and nsub1: "CT \<turnstile> C \<not><: D"  
+        and nsub2: "CT \<turnstile> D \<not><: C" by auto
+      from not_subtypes[OF sub1 nsub1 nsub2] have "CT \<turnstile> C' \<not><: C" by fastsimp
+      moreover have "CT \<turnstile> C \<not><: C'" proof(rule ccontr)
+        assume "\<not> CT \<turnstile> C \<not><: C'"
+        hence "CT \<turnstile> C <: C'" by auto
+        hence "CT \<turnstile> C <: D" using sub1 by(rule s_trans)
+        with nsub1 show "False" by auto
       qed
+      ultimately have "CT;\<Gamma>1 \<turnstile> (ds/xs) (Cast C e0) : C" using e0_typ by (auto simp add: typings_typing.intros)
+      thus "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C' \<and> CT \<turnstile> C' <: C" by (auto simp add: s_refl)
     qed
-    thus "?TYPINGS \<Longrightarrow> ?P1" and "?TYPING \<Longrightarrow> ?P2" using prems by auto
   qed
+  thus "?TYPINGS \<Longrightarrow> ?P1" and "?TYPING \<Longrightarrow> ?P2" using assms by auto
+qed
     
 
 subsection{* Weakening Lemma *}
@@ -396,12 +406,14 @@ proof(induct rule: reduction.induct)
     and length_Cf_es: "length Cf'' = length es" 
     and subs: "CT \<turnstile>+ Cs <: Ds"
     by(auto elim:typing.cases)
-  with Ca_Ca' have  Cf_Cf'': "Cf = Cf''" by(auto simp add:fields_functional[OF flds ct_ok]);
+  with Ca_Ca' have  Cf_Cf'': "Cf = Cf''" by(auto simp add:fields_functional[OF flds ct_ok])
   from length_Cf_es Cf_Cf'' lookup2_index[OF lkup2] obtain i where 
     i_bound: "i < length es" 
     and "e' = es!i" 
     and "lookup Cf (\<lambda>fd. vdName fd = fi) = Some (Cf!i)" by auto
-  moreover with C_def Ds_def lkup lkup2 have "Ds!i = C" using Ca_Ca' Cf_Cf' Cf_Cf'' i_bound length_Cf_es flds'
+  moreover
+  with C_def Ds_def lkup lkup2 have "Ds!i = C"
+    using Ca_Ca' Cf_Cf' Cf_Cf'' i_bound length_Cf_es flds'
     by (auto simp add:nth_map varDefs_types_def fields_functional[OF flds ct_ok])
   moreover with subs es_typs have 
     "CT;\<Gamma> \<turnstile> (es!i):(Cs!i)" and "CT \<turnstile> (Cs!i) <: (Ds!i)" using i_bound
@@ -412,27 +424,35 @@ next
   from r_invk have mb: "mbody(CT,m,Ca) = xs . e" by fastsimp
   from r_invk obtain Ca' Ds Cs
     where "CT;\<Gamma> \<turnstile> New Ca es : Ca'"
-    and  "mtype(CT,m,Ca') = Cs \<rightarrow> C" 
+    and "mtype(CT,m,Ca') = Cs \<rightarrow> C" 
     and ds_typs: "CT;\<Gamma> \<turnstile>+ ds : Ds" 
     and Ds_subs: "CT \<turnstile>+ Ds <: Cs" 
     and l1: "length ds = length Cs" by(auto elim:typing.cases)
   hence new_typ: "CT;\<Gamma> \<turnstile> New Ca es : Ca" 
     and mt: "mtype(CT,m,Ca) = Cs \<rightarrow> C" by (auto elim:typing.cases)
-  from ds_typs new_typ have "CT;\<Gamma> \<turnstile>+ (ds @[New Ca es]) : (Ds @[Ca])" by (simp add:typings_append)
+  from ds_typs new_typ have "CT;\<Gamma> \<turnstile>+ (ds @[New Ca es]) : (Ds @[Ca])"
+    by (simp add:typings_append)
   moreover from A_1_4[OF _ mb mt] r_invk obtain Da E  
     where "CT \<turnstile> Ca <: Da" 
     and E_sub_C: "CT \<turnstile> E <: C" 
     and e0_typ1: "CT;[xs[\<mapsto>]Cs,this\<mapsto>Da] \<turnstile> e : E" by auto
-  moreover with Ds_subs have "CT \<turnstile>+ (Ds@[Ca]) <: (Cs@[Da])" by(auto simp add:subtyping_append)
-  ultimately have ex: "\<exists>As. CT;\<Gamma> \<turnstile>+ (ds @[New Ca es]) : As \<and> CT \<turnstile>+ As <: (Cs@[Da])" by auto
-  from e0_typ1 have e0_typ2: "CT;(\<Gamma> ++ [xs[\<mapsto>]Cs,this\<mapsto>Da]) \<turnstile> e : E" by(simp only:A_1_3)
-  from e0_typ2 mtype_mbody_length[OF mt mb] have e0_typ3: "CT;(\<Gamma> ++ [(xs@[this])[\<mapsto>](Cs@[Da])]) \<turnstile> e : E" by(force simp only:map_shuffle)
+  moreover with Ds_subs have "CT \<turnstile>+ (Ds@[Ca]) <: (Cs@[Da])"
+    by(auto simp add:subtyping_append)
+  ultimately have ex: "\<exists>As. CT;\<Gamma> \<turnstile>+ (ds @[New Ca es]) : As \<and> CT \<turnstile>+ As <: (Cs@[Da])"
+    by auto
+  from e0_typ1 have e0_typ2: "CT;(\<Gamma> ++ [xs[\<mapsto>]Cs,this\<mapsto>Da]) \<turnstile> e : E"
+    by(simp only:A_1_3)
+  from e0_typ2 mtype_mbody_length[OF mt mb]
+  have e0_typ3: "CT;(\<Gamma> ++ [(xs@[this])[\<mapsto>](Cs@[Da])]) \<turnstile> e : E"
+    by(force simp only:map_shuffle)
   let ?\<Gamma>1 = "\<Gamma>" and ?\<Gamma>2 = "[(xs@[this])[\<mapsto>](Cs@[Da])]"
   have g_def: "(?\<Gamma>1 ++ ?\<Gamma>2) = (?\<Gamma>1 ++ ?\<Gamma>2)" and g2_def: "?\<Gamma>2 = ?\<Gamma>2" by auto
-  from A_1_2[OF _ g_def g2_def _ _ ex] e0_typ3 r_invk l1 mtype_mbody_length[OF mt mb] obtain E' 
-    where e'_typ: "CT;\<Gamma> \<turnstile> substs [(xs@[this])[\<mapsto>](ds@[New Ca es])] e : E'" 
+  from A_1_2[OF _ g_def g2_def _ _ ex] e0_typ3 r_invk l1 mtype_mbody_length[OF mt mb]
+  obtain E' where e'_typ: "CT;\<Gamma> \<turnstile> substs [(xs@[this])[\<mapsto>](ds@[New Ca es])] e : E'" 
     and E'_sub_E: "CT \<turnstile> E' <: E" by force
-  moreover from e'_typ l1 mtype_mbody_length[OF mt mb] have "CT;\<Gamma> \<turnstile> substs [xs[\<mapsto>]ds,this\<mapsto>(New Ca es)] e : E'" by(auto simp only:map_shuffle)
+  moreover from e'_typ l1 mtype_mbody_length[OF mt mb]
+  have "CT;\<Gamma> \<turnstile> substs [xs[\<mapsto>]ds,this\<mapsto>(New Ca es)] e : E'"
+    by(auto simp only:map_shuffle)
   moreover from E'_sub_E E_sub_C have "CT \<turnstile> E' <: C" by (rule subtyping.s_trans)
   ultimately show ?case using r_invk by auto
 next
@@ -443,8 +463,7 @@ next
   thus ?case using r_cast by (auto elim: typing.cases)
 next
   case (rc_field CT e0 e0' f)
-  then obtain C0 Cf fd
-    where "CT;\<Gamma> \<turnstile> e0 : C0" 
+  then obtain C0 Cf fd where "CT;\<Gamma> \<turnstile> e0 : C0" 
     and Cf_def: "fields(CT,C0) = Cf" 
     and fd_def:"lookup Cf (\<lambda>fd. (vdName fd = f))  = Some fd"
     and "vdType fd = C" 
@@ -806,64 +825,64 @@ theorem Thm_2_4_3:
   shows "(val(e1) \<and> (\<exists>D. CT;empty \<turnstile> e1 : D \<and> CT \<turnstile> D <: C))
       \<or> (\<exists>D C es. (Cast D (New C es) \<in> subexprs(e1) \<and> CT \<turnstile> C \<not><: D))" 
 proof -  
-from assms Cor_2_4_1_multi[OF multisteps ct_ok e_typ] obtain C1 
-  where e1_typ: "CT;empty \<turnstile> e1 : C1" 
-  and C1_sub_C: "CT \<turnstile> C1 <: C" by auto
-from e1_typ have "((\<exists>C0 es fi. (FieldProj (New C0 es) fi) \<in> subexprs(e1))  
-               \<or> (\<exists>C0 es m ds. (MethodInvk (New C0 es) m ds) \<in> subexprs(e1))
-               \<or> (\<exists>C0 D es. (Cast D (New C0 es)) \<in> subexprs(e1))
-               \<or> val(e1))" (is "?F e1 \<or> ?M e1 \<or> ?C e1 \<or> ?V e1")  by (simp add: closed_subterm_split)
-moreover 
-{ assume "?F e1" 
-  then obtain C0 es fi where fp: "FieldProj (New C0 es) fi \<in> subexprs(e1)" by auto
-  then obtain Ci where "CT;empty \<turnstile> FieldProj (New C0 es) fi : Ci" using e1_typ by(force simp add:subexpr_typing)
-  then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" by (force elim: typing.cases)
-  hence "C0 = C0'" by (auto elim:typing.cases)
-  with new_typ obtain Df where f1: "fields(CT,C0) = Df" and lens: "length es = length Df" by(auto elim:typing.cases)
-  from Thm_2_4_2_1[OF e1_typ fp] obtain Cf fDef 
-    where f2: "fields(CT,C0) = Cf" 
-    and lkup: "lookup Cf (\<lambda>fd. vdName fd = fi) = Some(fDef)" by force
-  moreover from fields_functional[OF f1 ct_ok f2] lens have "length es = length Cf" by auto 
-  moreover from lookup_index[OF lkup] obtain i where 
-    "i<length Cf" 
-    and "fDef = Cf ! i"
-    and "(length Cf = length es) \<longrightarrow> lookup2 Cf es (\<lambda>fd. vdName fd = fi) = Some (es ! i)" by auto
-  ultimately have "lookup2 Cf es (\<lambda>fd. vdName fd = fi) = Some (es!i)" by auto
-  with f2 have "CT \<turnstile> FieldProj(New C0 es) fi \<rightarrow> (es!i)" by(auto intro:reduction.intros)
-  with fp have "\<exists>e2. CT \<turnstile> e1 \<rightarrow> e2" by(simp add:subexpr_reduct)
-  with no_step have ?thesis by auto 
-} moreover {
-  assume "?M e1"
-  then obtain C0 es m ds where mi:"MethodInvk (New C0 es) m ds \<in> subexprs(e1)" by auto
-  then obtain D where "CT;empty \<turnstile> MethodInvk (New C0 es) m ds : D" using e1_typ by(force simp add:subexpr_typing)
-  then obtain C0' Es E 
-    where m_typ: "CT;empty \<turnstile> New C0 es : C0'" 
-    and "mtype(CT,m,C0') = Es \<rightarrow> E"
-    and "length ds = length Es"
-    by (auto elim:typing.cases)
-  from Thm_2_4_2_2[OF e1_typ mi] obtain xs e0 where mb: "mbody(CT, m, C0) = xs . e0" and "length xs = length ds" by auto
-  hence "CT \<turnstile> (MethodInvk (New C0 es) m ds) \<rightarrow> (substs[xs[\<mapsto>]ds,this\<mapsto>(New C0 es)]e0)"  by(auto simp add:reduction.intros)
-  with mi have "\<exists>e2. CT \<turnstile> e1 \<rightarrow> e2" by(simp add:subexpr_reduct)
-  with no_step have ?thesis by auto 
-} moreover {
-  assume "?C e1"
-  then obtain C0 D es where c_def: "Cast D (New C0 es) \<in> subexprs(e1)" by auto
-  then obtain D' where "CT;empty \<turnstile> Cast D (New C0 es) : D'" using e1_typ by (force simp add:subexpr_typing)
-  then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" and D_eq_D': "D = D'" by (auto elim:typing.cases)
-  hence C0_eq_C0': "C0 = C0'" by(auto elim:typing.cases)
-  hence ?thesis proof(cases "CT \<turnstile> C0 <: D")
-    case True
-    hence "CT \<turnstile> Cast D (New C0 es) \<rightarrow> (New C0 es)" by(auto simp add:reduction.intros)
-    with c_def have "\<exists>e2. CT \<turnstile> e1 \<rightarrow> e2" by (simp add:subexpr_reduct)
-    with no_step show ?thesis by auto
-  next
-    case False
-    with c_def show ?thesis by auto
-  qed
-} moreover {
-  assume "?V e1"
-  hence ?thesis using prems by(auto simp add:Cor_2_4_1_multi)
-} ultimately show ?thesis by blast
+  from assms Cor_2_4_1_multi[OF multisteps ct_ok e_typ] obtain C1 
+    where e1_typ: "CT;empty \<turnstile> e1 : C1" 
+    and C1_sub_C: "CT \<turnstile> C1 <: C" by auto
+  from e1_typ have "((\<exists>C0 es fi. (FieldProj (New C0 es) fi) \<in> subexprs(e1))  
+    \<or> (\<exists>C0 es m ds. (MethodInvk (New C0 es) m ds) \<in> subexprs(e1))
+    \<or> (\<exists>C0 D es. (Cast D (New C0 es)) \<in> subexprs(e1))
+    \<or> val(e1))" (is "?F e1 \<or> ?M e1 \<or> ?C e1 \<or> ?V e1")  by (simp add: closed_subterm_split)
+  moreover 
+  { assume "?F e1" 
+    then obtain C0 es fi where fp: "FieldProj (New C0 es) fi \<in> subexprs(e1)" by auto
+    then obtain Ci where "CT;empty \<turnstile> FieldProj (New C0 es) fi : Ci" using e1_typ by(force simp add:subexpr_typing)
+    then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" by (force elim: typing.cases)
+    hence "C0 = C0'" by (auto elim:typing.cases)
+    with new_typ obtain Df where f1: "fields(CT,C0) = Df" and lens: "length es = length Df" by(auto elim:typing.cases)
+    from Thm_2_4_2_1[OF e1_typ fp] obtain Cf fDef 
+      where f2: "fields(CT,C0) = Cf" 
+      and lkup: "lookup Cf (\<lambda>fd. vdName fd = fi) = Some(fDef)" by force
+    moreover from fields_functional[OF f1 ct_ok f2] lens have "length es = length Cf" by auto 
+    moreover from lookup_index[OF lkup] obtain i where 
+      "i<length Cf" 
+      and "fDef = Cf ! i"
+      and "(length Cf = length es) \<longrightarrow> lookup2 Cf es (\<lambda>fd. vdName fd = fi) = Some (es ! i)" by auto
+    ultimately have "lookup2 Cf es (\<lambda>fd. vdName fd = fi) = Some (es!i)" by auto
+    with f2 have "CT \<turnstile> FieldProj(New C0 es) fi \<rightarrow> (es!i)" by(auto intro:reduction.intros)
+    with fp have "\<exists>e2. CT \<turnstile> e1 \<rightarrow> e2" by(simp add:subexpr_reduct)
+    with no_step have ?thesis by auto 
+  } moreover {
+    assume "?M e1"
+    then obtain C0 es m ds where mi:"MethodInvk (New C0 es) m ds \<in> subexprs(e1)" by auto
+    then obtain D where "CT;empty \<turnstile> MethodInvk (New C0 es) m ds : D" using e1_typ by(force simp add:subexpr_typing)
+    then obtain C0' Es E 
+      where m_typ: "CT;empty \<turnstile> New C0 es : C0'" 
+      and "mtype(CT,m,C0') = Es \<rightarrow> E"
+      and "length ds = length Es"
+      by (auto elim:typing.cases)
+    from Thm_2_4_2_2[OF e1_typ mi] obtain xs e0 where mb: "mbody(CT, m, C0) = xs . e0" and "length xs = length ds" by auto
+    hence "CT \<turnstile> (MethodInvk (New C0 es) m ds) \<rightarrow> (substs[xs[\<mapsto>]ds,this\<mapsto>(New C0 es)]e0)"  by(auto simp add:reduction.intros)
+    with mi have "\<exists>e2. CT \<turnstile> e1 \<rightarrow> e2" by(simp add:subexpr_reduct)
+    with no_step have ?thesis by auto 
+  } moreover {
+    assume "?C e1"
+    then obtain C0 D es where c_def: "Cast D (New C0 es) \<in> subexprs(e1)" by auto
+    then obtain D' where "CT;empty \<turnstile> Cast D (New C0 es) : D'" using e1_typ by (force simp add:subexpr_typing)
+    then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" and D_eq_D': "D = D'" by (auto elim:typing.cases)
+    hence C0_eq_C0': "C0 = C0'" by(auto elim:typing.cases)
+    hence ?thesis proof(cases "CT \<turnstile> C0 <: D")
+      case True
+      hence "CT \<turnstile> Cast D (New C0 es) \<rightarrow> (New C0 es)" by(auto simp add:reduction.intros)
+      with c_def have "\<exists>e2. CT \<turnstile> e1 \<rightarrow> e2" by (simp add:subexpr_reduct)
+      with no_step show ?thesis by auto
+    next
+      case False
+      with c_def show ?thesis by auto
+    qed
+  } moreover {
+    assume "?V e1"
+    hence ?thesis using assms by(auto simp add:Cor_2_4_1_multi)
+  } ultimately show ?thesis by blast
 qed
 
 end 

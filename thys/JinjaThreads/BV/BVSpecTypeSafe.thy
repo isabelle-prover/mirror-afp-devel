@@ -543,6 +543,8 @@ lemma Load_correct:
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>' \<surd>"
   by (fastsimp dest: sees_method_fun [of _ C] elim!: confTs_confT_sup)
 
+declare [[simproc del: list_to_set_comprehension]]
+
 lemma Store_correct:
 "\<lbrakk> wf_prog wt P;
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C;
@@ -570,6 +572,8 @@ lemma Push_correct:
   apply clarsimp
   apply (blast dest: typeof_lit_conf)
   done
+
+declare [[simproc add: list_to_set_comprehension]]
 
 lemma Checkcast_correct:
 "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P;
@@ -841,6 +845,7 @@ apply (drule (1) sees_method_fun)
 apply fastsimp
 done
 
+declare [[simproc del: list_to_set_comprehension]]
 
 lemma IfFalse_correct:
 "\<lbrakk> wf_prog wt P; 
@@ -854,6 +859,8 @@ apply clarsimp
 apply (drule (1) sees_method_fun)
 apply fastsimp
 done
+
+declare [[simproc add: list_to_set_comprehension]]
 
 lemma BinOp_correct:
 "\<lbrakk> wf_prog wt P; 
@@ -911,6 +918,8 @@ apply (drule (1) sees_method_fun)
 apply fastsimp
 done
 
+declare [[simproc del: list_to_set_comprehension]]
+
 lemma Throw_correct:
 "\<lbrakk> wf_prog wt P; 
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
@@ -928,6 +937,8 @@ apply(auto)
 apply(drule (1) non_npD)
 apply fastsimp+
 done
+
+declare [[simproc add: list_to_set_comprehension]]
 
 lemma NewArray_correct:
   assumes wf:   "wf_prog wt P"
@@ -1796,16 +1807,17 @@ proof -
 qed
 
 lemma (in JVM_heap_conf) BV_correct_initial:
-  shows "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = m in C; P,start_heap \<turnstile> vs [:\<le>] Ts \<rbrakk>
+  shows "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = m in D; P,start_heap \<turnstile> vs [:\<le>] Ts \<rbrakk>
   \<Longrightarrow> \<Phi> \<turnstile> start_tid:JVM_start_state' P C M vs \<surd>"
-  apply (cases m)                            
-  apply (unfold  JVM_start_state'_def)
+  apply (cases m)
+  apply (unfold JVM_start_state'_def)
   apply (unfold correct_state_def)
   apply (simp)
   apply (rule conjI)
    apply(erule tconf_start_heap_start_tid)
   apply(rule conjI)
    apply (simp add: wf_jvm_prog_phi_def hconf_start_heap) 
+  apply(frule sees_method_idemp)
   apply (frule wt_jvm_prog_impl_wt_start, assumption+)
   apply (unfold conf_f_def wt_start_def)
   apply(auto simp add: sup_state_opt_any_Some)

@@ -43,10 +43,10 @@ datatype cmd
 
 fun num_inner_nodes :: "cmd \<Rightarrow> nat" ("#:_")
 where "#:Skip              = 1"
-  | "#:(V:=e)              = 2"       (* zus√\<currency>tzlicher Skip-Knoten *)
+  | "#:(V:=e)              = 2"       (* zus√§tzlicher Skip-Knoten *)
   | "#:(c\<^isub>1;;c\<^isub>2)            = #:c\<^isub>1 + #:c\<^isub>2"
   | "#:(if (b) c\<^isub>1 else c\<^isub>2) = #:c\<^isub>1 + #:c\<^isub>2 + 1"
-  | "#:(while (b) c)       = #:c + 2" (* zus√\<currency>tzlicher Skip-Knoten *)
+  | "#:(while (b) c)       = #:c + 2" (* zus√§tzlicher Skip-Knoten *)
   
 
 

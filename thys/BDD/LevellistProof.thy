@@ -161,42 +161,42 @@ next
       assume "n \<in> set (concat ll')"
       from in_set_concat_idx [OF this]
       obtain i where i_bound: "i < length ll'" and n_in: "n \<in> set (ll' ! i)"
-	by blast
+        by blast
       have "n \<in> set (concat ll) \<union> set_of t"
       proof (cases "i \<le> var p")
-	case True
-	with wf_ll obtain prx where 
-	  ll'_ll: "ll' ! i = prx @ ll ! i" and
-	  prx: "\<forall>pt \<in> set prx. pt \<in> set_of t"  and
-	  leq: "length ll' = length ll"
-	  apply (clarsimp simp add: wf_levellist_def Node)
-	  apply (erule_tac x="i" in allE)
-	  apply clarsimp
-	  done
-	show ?thesis
-	proof (cases "n \<in> set prx")
-	  case True
-	  with prx have "n \<in> set_of t"
-	    by simp
-	  thus ?thesis by simp
-	next
-	  case False
-	  with n_in ll'_ll
-	  have "n \<in> set (ll ! i)"
-	    by simp
-	  with i_bound leq
-	  have "n \<in> set (concat ll)"
-	    by auto
-	  thus ?thesis by simp
-	qed
+        case True
+        with wf_ll obtain prx where 
+          ll'_ll: "ll' ! i = prx @ ll ! i" and
+          prx: "\<forall>pt \<in> set prx. pt \<in> set_of t"  and
+          leq: "length ll' = length ll"
+          apply (clarsimp simp add: wf_levellist_def Node)
+          apply (erule_tac x="i" in allE)
+          apply clarsimp
+          done
+        show ?thesis
+        proof (cases "n \<in> set prx")
+          case True
+          with prx have "n \<in> set_of t"
+            by simp
+          thus ?thesis by simp
+        next
+          case False
+          with n_in ll'_ll
+          have "n \<in> set (ll ! i)"
+            by simp
+          with i_bound leq
+          have "n \<in> set (concat ll)"
+            by auto
+          thus ?thesis by simp
+        qed
       next
-	case False
-	with wf_ll obtain "ll'!i = ll!i" "length ll' = length ll"
-	  by (auto simp add: wf_levellist_def Node)
-	with n_in i_bound
-	have "n \<in> set (concat ll)"
-	  by auto
-	thus ?thesis by simp
+        case False
+        with wf_ll obtain "ll'!i = ll!i" "length ll' = length ll"
+          by (auto simp add: wf_levellist_def Node)
+        with n_in i_bound
+        have "n \<in> set (concat ll)"
+          by auto
+        thus ?thesis by simp
       qed
     }
     thus ?thesis by auto
@@ -207,43 +207,43 @@ qed
     show "set (concat ll) \<union> set_of t \<subseteq> set (concat ll')"
     proof -
       {
-	fix n
-	assume "n \<in> set (concat ll)"
-	from in_set_concat_idx [OF this]
-	obtain i where i_bound: "i < length ll" and n_in: "n \<in> set (ll ! i)"
-	  by blast
-	with wf_ll
-	obtain "n \<in> set (ll' ! i)" "length ll = length ll'"
-	  apply (clarsimp simp add: wf_levellist_def Node)
-	  apply (case_tac "i \<le> var p")
-	  apply  fastsimp
-	  apply fastsimp
-	  done
-	with i_bound have "n \<in> set (concat ll')"
-	  by auto
+        fix n
+        assume "n \<in> set (concat ll)"
+        from in_set_concat_idx [OF this]
+        obtain i where i_bound: "i < length ll" and n_in: "n \<in> set (ll ! i)"
+          by blast
+        with wf_ll
+        obtain "n \<in> set (ll' ! i)" "length ll = length ll'"
+          apply (clarsimp simp add: wf_levellist_def Node)
+          apply (case_tac "i \<le> var p")
+          apply  fastsimp
+          apply fastsimp
+          done
+        with i_bound have "n \<in> set (concat ll')"
+          by auto
       }
       moreover
       {
-	fix n
-	assume "n \<in> set_of t"
-	with wf_ll obtain "n \<in> set (ll' ! var n)" "length ll' = length ll"
-	  by (auto simp add: wf_levellist_def Node)
-	with root
-	
-	    next
+        fix n
+        assume "n \<in> set_of t"
+        with wf_ll obtain "n \<in> set (ll' ! var n)" "length ll' = length ll"
+          by (auto simp add: wf_levellist_def Node)
+        with root
+        
+            next
 
-	  proof (cases prx)
-	    case Nil
-	    with ll'_ll i_bound leq n_in
-	    have "n \<in> set (concat ll)"
-	      by auto
-	    thus ?thesis by simp
-	  next
-	    case (Cons p prx')
-	    show ?thesis
-	      
-	      apply auto
-	*)  
+          proof (cases prx)
+            case Nil
+            with ll'_ll i_bound leq n_in
+            have "n \<in> set (concat ll)"
+              by auto
+            thus ?thesis by simp
+          next
+            case (Cons p prx')
+            show ?thesis
+              
+              apply auto
+        *)  
       
 
 (*
@@ -386,187 +386,187 @@ proof -
     proof (cases "rt")
       case Tip 
       show ?thesis
-	using size_rt_dec Tip lt_Tip Tip lt rt  
+        using size_rt_dec Tip lt_Tip Tip lt rt  
       proof (clarsimp)
-	case (goal1 marka nexta levellista lla markb nextb levellistb llb)
-	have lla: "Levellist levellista nexta lla" by fact
-	have llb: "Levellist levellistb nextb llb" by fact
-	have wfll_lt: "wf_levellist Tip ll lla var"
+        case (goal1 marka nexta levellista lla markb nextb levellistb llb)
+        have lla: "Levellist levellista nexta lla" by fact
+        have llb: "Levellist levellistb nextb llb" by fact
+        have wfll_lt: "wf_levellist Tip ll lla var"
                       "wf_marking Tip mark marka m" by fact+
-	
-	then have ll_lla: "ll = lla"
-	  by (simp add: wf_levellist_def)
+        
+        then have ll_lla: "ll = lla"
+          by (simp add: wf_levellist_def)
 
-	moreover
-	with wfll_lt lt_Tip lt have "marka = mark"
-	  by (simp add: wf_marking_def)
-	moreover
-	have wfll_rt:"wf_levellist Tip lla llb var"
+        moreover
+        with wfll_lt lt_Tip lt have "marka = mark"
+          by (simp add: wf_marking_def)
+        moreover
+        have wfll_rt:"wf_levellist Tip lla llb var"
                      "wf_marking Tip marka markb m" by fact+
-	then have lla_llb: "lla = llb"
-	  by (simp add: wf_levellist_def)
-	moreover 
-	with wfll_rt Tip rt have "markb = marka"
-	  by (simp add: wf_marking_def)
-	moreover
-	from varsll llb ll_lla lla_llb
-	obtain "var p < length levellistb" "var p < length llb"
-	  by (simp add: Levellist_length)
-	with llb pnN
-	have llc: "Levellist (levellistb[var p := p]) (nextb(p := levellistb ! var p))
+        then have lla_llb: "lla = llb"
+          by (simp add: wf_levellist_def)
+        moreover 
+        with wfll_rt Tip rt have "markb = marka"
+          by (simp add: wf_marking_def)
+        moreover
+        from varsll llb ll_lla lla_llb
+        obtain "var p < length levellistb" "var p < length llb"
+          by (simp add: Levellist_length)
+        with llb pnN
+        have llc: "Levellist (levellistb[var p := p]) (nextb(p := levellistb ! var p))
                     (llb[var p := p # llb ! var p])"
-	  apply (clarsimp simp add: Levellist_def map_update)
-	  apply (erule_tac x=i in allE)
-	  apply clarsimp
-	  apply (subgoal_tac "p \<notin> set (llb ! i) ")
-	  prefer 2
-	  using  p_notin_ll ll_lla lla_llb
-	  apply  simp
-	  apply (case_tac "i=var p")
-	  apply  simp
-	  apply simp
-	  done
-	ultimately 
-	show ?case
-	  using lt_Tip Tip varsll
-	  apply (clarsimp simp add: wf_levellist_def wf_marking_def)
-	proof -
-	  fix i
-	  assume varsllb: "var p < length llb"
-	  assume "i \<le> var p"
-	  show "\<exists>prx. llb[var p := p#llb!var p]!i = prx @ llb!i \<and>
+          apply (clarsimp simp add: Levellist_def map_update)
+          apply (erule_tac x=i in allE)
+          apply clarsimp
+          apply (subgoal_tac "p \<notin> set (llb ! i) ")
+          prefer 2
+          using  p_notin_ll ll_lla lla_llb
+          apply  simp
+          apply (case_tac "i=var p")
+          apply  simp
+          apply simp
+          done
+        ultimately 
+        show ?case
+          using lt_Tip Tip varsll
+          apply (clarsimp simp add: wf_levellist_def wf_marking_def)
+        proof -
+          fix i
+          assume varsllb: "var p < length llb"
+          assume "i \<le> var p"
+          show "\<exists>prx. llb[var p := p#llb!var p]!i = prx @ llb!i \<and>
                     (\<forall>pt\<in>set prx. pt = p \<and> var pt = i)"
-	  proof (cases "i = var p")
-	    case True
-	    with pnN lt rt varsllb lt_Tip Tip show ?thesis
-	      apply -
-	      apply (rule_tac x="[p]" in exI)
-	      apply (simp add: subdag_eq_def)
-	      done
-	  next
-	    assume "i \<noteq> var p"
-	    with varsllb show ?thesis
-	      apply -
-	      apply (rule_tac x="[]" in exI)
-	      apply (simp add: subdag_eq_def)
-	      done
-	  qed
-	qed
+          proof (cases "i = var p")
+            case True
+            with pnN lt rt varsllb lt_Tip Tip show ?thesis
+              apply -
+              apply (rule_tac x="[p]" in exI)
+              apply (simp add: subdag_eq_def)
+              done
+          next
+            assume "i \<noteq> var p"
+            with varsllb show ?thesis
+              apply -
+              apply (rule_tac x="[]" in exI)
+              apply (simp add: subdag_eq_def)
+              done
+          qed
+        qed
       qed
     next
       case (Node dag1 a dag2)
       have rt_node: "rt = Node dag1 a dag2" by fact
       with rt have high_p: "high p = a"
-	by simp
+        by simp
       have s: "\<And>nexta. (\<forall>p. next p = nexta p) = (next = nexta)"
-	by (auto intro: ext)
+        by (auto intro: ext)
       show ?thesis
-	using size_rt_dec size_lt_dec rt_node lt_Tip Tip lt rt  
-	apply (clarsimp simp del: set_of_Node split del: split_if simp add: s)
+        using size_rt_dec size_lt_dec rt_node lt_Tip Tip lt rt  
+        apply (clarsimp simp del: set_of_Node split del: split_if simp add: s)
       proof -      
-	case (goal1 marka levellista lla)
-	have lla: "Levellist levellista next lla" by fact
-	have wfll_lt:"wf_levellist Tip ll lla var"
+        case (goal1 marka levellista lla)
+        have lla: "Levellist levellista next lla" by fact
+        have wfll_lt:"wf_levellist Tip ll lla var"
                      "wf_marking Tip mark marka m" by fact+
-	from this have ll_lla: "ll = lla"
-	  by (simp add: wf_levellist_def)
-	moreover
-	from wfll_lt lt_Tip lt have marklrec: "marka = mark"
-	  by (simp add: wf_marking_def)
-	from orderedt varsll lla ll_lla rt_node lt_Tip high_p
-	have var_highp_bound: "var (high p) < length levellista"
-	  by (auto simp add: Levellist_length)
-	from orderedt high_p rt_node lt_Tip
-	have ordered_rt: "ordered (Node dag1 (high p) dag2) var"
-	  by simp
-	from high_p marklrec marked_child_ll lt rt lt_Tip rt_node ll_lla
-	have mark_rt: "(\<forall>n\<in>set_of (Node dag1 (high p) dag2).
+        from this have ll_lla: "ll = lla"
+          by (simp add: wf_levellist_def)
+        moreover
+        from wfll_lt lt_Tip lt have marklrec: "marka = mark"
+          by (simp add: wf_marking_def)
+        from orderedt varsll lla ll_lla rt_node lt_Tip high_p
+        have var_highp_bound: "var (high p) < length levellista"
+          by (auto simp add: Levellist_length)
+        from orderedt high_p rt_node lt_Tip
+        have ordered_rt: "ordered (Node dag1 (high p) dag2) var"
+          by simp
+        from high_p marklrec marked_child_ll lt rt lt_Tip rt_node ll_lla
+        have mark_rt: "(\<forall>n\<in>set_of (Node dag1 (high p) dag2).
               if marka n = m
               then n \<in> set (lla ! var n) \<and>
                    (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> marka p = m)
               else n \<notin> set (concat lla))"
-	  apply (simp only: BinDag.set_of.simps)
-	  apply clarify
-	  apply (drule_tac x=n in bspec)
-	  apply  blast
-	  apply assumption
-	  done
-	show ?case
-	  apply (rule conjI)
-	  apply  (rule var_highp_bound)
-	  apply (rule conjI)
-	  apply  (rule ordered_rt)
-	  apply (rule conjI)
-	  apply  (rule mark_rt)
-	  apply clarify
-	  apply clarsimp
-	proof -
-	  case (goal1 markb nextb levellistb llb)
-	  have llb: "Levellist levellistb nextb llb" by fact
-	  have wfll_rt: "wf_levellist (Node dag1 (high p) dag2) lla llb var" by fact
-	  have wfmarking_rt: "wf_marking (Node dag1 (high p) dag2) marka markb m" by fact
-	  from wfll_rt varsll llb ll_lla 
-	  obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
-	    by (simp add: Levellist_length wf_levellist_def)
-	  with p_notin_ll ll_lla wfll_rt
-	  have p_notin_llb: "\<forall>i < length llb. p \<notin> set (llb ! i)"
-	    apply -
-	    apply (intro allI impI)
-	    apply (clarsimp simp add: wf_levellist_def)
-	    apply (case_tac "i \<le> var (high p)")
-	    apply  (drule_tac x=i in spec)
-	    using  orderedt rt_node lt_Tip high_p
-	    apply  clarsimp
-	    apply (drule_tac x=i in spec)
-	    apply (drule_tac x=i in spec)
-	    apply clarsimp
-	    done
-	  with llb pnN var_p_bounds
-	  have llc: "Levellist (levellistb[var p := p]) 
+          apply (simp only: BinDag.set_of.simps)
+          apply clarify
+          apply (drule_tac x=n in bspec)
+          apply  blast
+          apply assumption
+          done
+        show ?case
+          apply (rule conjI)
+          apply  (rule var_highp_bound)
+          apply (rule conjI)
+          apply  (rule ordered_rt)
+          apply (rule conjI)
+          apply  (rule mark_rt)
+          apply clarify
+          apply clarsimp
+        proof -
+          case (goal1 markb nextb levellistb llb)
+          have llb: "Levellist levellistb nextb llb" by fact
+          have wfll_rt: "wf_levellist (Node dag1 (high p) dag2) lla llb var" by fact
+          have wfmarking_rt: "wf_marking (Node dag1 (high p) dag2) marka markb m" by fact
+          from wfll_rt varsll llb ll_lla 
+          obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
+            by (simp add: Levellist_length wf_levellist_def)
+          with p_notin_ll ll_lla wfll_rt
+          have p_notin_llb: "\<forall>i < length llb. p \<notin> set (llb ! i)"
+            apply -
+            apply (intro allI impI)
+            apply (clarsimp simp add: wf_levellist_def)
+            apply (case_tac "i \<le> var (high p)")
+            apply  (drule_tac x=i in spec)
+            using  orderedt rt_node lt_Tip high_p
+            apply  clarsimp
+            apply (drule_tac x=i in spec)
+            apply (drule_tac x=i in spec)
+            apply clarsimp
+            done
+          with llb pnN var_p_bounds
+          have llc: "Levellist (levellistb[var p := p]) 
                         (nextb(p := levellistb ! var p))
                         (llb[var p := p # llb ! var p])"
-	    apply (clarsimp simp add: Levellist_def map_update)
-	    apply (erule_tac x=i in allE)
-	    apply (erule_tac x=i in allE)
-	    apply clarsimp
-	    apply (case_tac "i=var p")
-	    apply  simp
-	    apply simp
-	    done
-	  then show ?case
-	    apply simp
-	    using wfll_rt wfmarking_rt
-	          lt_Tip rt_node varsll orderedt lt rt pnN ll_lla marklrec
-	    apply (clarsimp simp add: wf_levellist_def wf_marking_def)
-	    apply (intro conjI)
-	    apply  (rule allI)
-	    apply  (rule conjI)
-	    apply   (erule_tac x="q" in allE)  
-	    apply   (case_tac "var p = var q")
-	    apply    fastsimp
-	    apply   fastsimp
-	    apply  (case_tac "var p = var q")
-	    apply   fastsimp
-	    apply  fastsimp
-	    apply (rule allI)
-	    apply (rotate_tac 4)
-	    apply (erule_tac x="i" in allE)
-	    apply (case_tac "i=var p")
-	    apply  simp
-	    apply (case_tac "var (high p) < i")
-	    apply  simp
-	    apply simp
-	    apply (erule exE)
-	    apply (rule_tac x="prx" in exI)
-	    apply (intro conjI)
-	    apply  simp
-	    apply clarify
-	    apply (rotate_tac 15)
-	    apply (erule_tac x="pt" in ballE)
-	    apply  fastsimp
-	    apply fastsimp
-	    done
-	qed
+            apply (clarsimp simp add: Levellist_def map_update)
+            apply (erule_tac x=i in allE)
+            apply (erule_tac x=i in allE)
+            apply clarsimp
+            apply (case_tac "i=var p")
+            apply  simp
+            apply simp
+            done
+          then show ?case
+            apply simp
+            using wfll_rt wfmarking_rt
+                  lt_Tip rt_node varsll orderedt lt rt pnN ll_lla marklrec
+            apply (clarsimp simp add: wf_levellist_def wf_marking_def)
+            apply (intro conjI)
+            apply  (rule allI)
+            apply  (rule conjI)
+            apply   (erule_tac x="q" in allE)  
+            apply   (case_tac "var p = var q")
+            apply    fastsimp
+            apply   fastsimp
+            apply  (case_tac "var p = var q")
+            apply   fastsimp
+            apply  fastsimp
+            apply (rule allI)
+            apply (rotate_tac 4)
+            apply (erule_tac x="i" in allE)
+            apply (case_tac "i=var p")
+            apply  simp
+            apply (case_tac "var (high p) < i")
+            apply  simp
+            apply simp
+            apply (erule exE)
+            apply (rule_tac x="prx" in exI)
+            apply (intro conjI)
+            apply  simp
+            apply clarify
+            apply (rotate_tac 15)
+            apply (erule_tac x="pt" in ballE)
+            apply  fastsimp
+            apply fastsimp
+            done
+        qed
       qed
     qed
   next
@@ -600,43 +600,43 @@ proof -
       have wfmarking_lt:"wf_marking lt mark marka m" by fact
       from wfll_lt lt_Node 
       have lla_eq_ll: "length lla = length ll"
-	by (simp add: wf_levellist_def)
+        by (simp add: wf_levellist_def)
       with ll lla have lla_eq_ll': "length levellista = length levellist"
-	by (simp add: Levellist_length)
+        by (simp add: Levellist_length)
       with orderedt rt lt_Node lt varsll' 
       obtain ordered_rt: 
-	"ordered rt var" "(high p \<noteq> Null \<longrightarrow> var (high p) < length levellista)" 
-	by (cases rt) auto
+        "ordered rt var" "(high p \<noteq> Null \<longrightarrow> var (high p) < length levellista)" 
+        by (cases rt) auto
       from wfll_lt lt_Node 
       have nodes_in_lla: "\<forall> q. q \<in> set_of lt \<longrightarrow> q \<in> set (lla ! (q\<rightarrow>var))"
-	by (simp add: wf_levellist_def)
+        by (simp add: wf_levellist_def)
       from wfll_lt lt_Node lt 
       have lla_st: "(\<forall>i \<le> (low p)\<rightarrow>var. 
                       (\<exists>prx. (lla ! i) = prx@(ll ! i) \<and> 
                              (\<forall>pt \<in> set prx. pt \<in> set_of lt \<and> pt\<rightarrow>var = i)))"
-	by (simp add: wf_levellist_def)
+        by (simp add: wf_levellist_def)
       from wfll_lt lt_Node lt 
       have lla_nc: "\<forall>i. ((low p)\<rightarrow>var) < i \<longrightarrow> (lla ! i) = (ll ! i)"
-	by (simp add: wf_levellist_def)
+        by (simp add: wf_levellist_def)
       from wfmarking_lt lt_Node lt 
       have mot_nc: "\<forall> n. n \<notin> set_of lt \<longrightarrow> mark n = marka n"
-	by (simp add: wf_marking_def)
+        by (simp add: wf_marking_def)
       from wfmarking_lt lt_Node lt 
       have mit_marked: "\<forall>n. n \<in> set_of lt \<longrightarrow> marka n = m"
-	by (simp add: wf_marking_def)
+        by (simp add: wf_marking_def)
       from marked_child_ll nodes_in_lla mot_nc mit_marked lla_st 
       have mark_rt: "\<forall>n\<in>set_of rt.
-	     if marka n = m
+             if marka n = m
              then n \<in> set (lla ! var n) \<and>
                  (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> marka p = m)
              else n \<notin> set (concat lla)"
-	apply -
+        apply -
         apply (rule ballI)
         apply (drule_tac x="n" in bspec)
         apply (simp)
       proof -
         fix n
-	  
+          
         assume nodes_in_lla: "\<forall>q. q \<in> set_of lt \<longrightarrow> q \<in> set (lla ! var q)"
         assume mot_nc: "\<forall>n. n \<notin> set_of lt \<longrightarrow> mark n = marka n"
         assume mit_marked: "\<forall>n. n \<in> set_of lt \<longrightarrow> marka n = m"
@@ -644,11 +644,11 @@ proof -
          then n \<in> set (ll ! var n) \<and>
               (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m)
          else n \<notin> set (concat ll)"
-	
+        
         assume lla_st: "\<forall>i\<le>var (low p). 
                              \<exists>prx. lla ! i = prx @ ll ! i \<and> 
                              (\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)"
-	
+        
         assume n_in_rt: " n \<in> set_of rt"
         show n_in_lla_marked: "if marka n = m
            then n \<in> set (lla ! var n) \<and>
@@ -658,12 +658,12 @@ proof -
           case True
           from True nodes_in_lla have n_in_ll: "n \<in> set (lla ! var n)"
             by simp
-	  moreover
-	  from True wfmarking_lt
-	  have "marka n = m"
-	    apply (cases lt)
-	    apply (auto simp add: wf_marking_def)
-	    done
+          moreover
+          from True wfmarking_lt
+          have "marka n = m"
+            apply (cases lt)
+            apply (auto simp add: wf_marking_def)
+            done
           moreover
           {
             fix nt p
@@ -678,47 +678,47 @@ proof -
           }
           ultimately show ?thesis
             using n_in_rt
-	    apply clarsimp
-	    done
+            apply clarsimp
+            done
         next
           assume n_notin_lt: "n \<notin> set_of lt" 
-	  show ?thesis
-	  proof (cases "marka n = m")
-	    case True
+          show ?thesis
+          proof (cases "marka n = m")
+            case True
             from n_notin_lt mot_nc have marka_eq_mark: "mark n = marka n"
               by simp
-	    from marka_eq_mark True have n_marked: "mark n = m"
+            from marka_eq_mark True have n_marked: "mark n = m"
               by simp
             from rt n_in_rt have nnN: "n \<noteq> Null"
               apply -
               apply (rule set_of_nn [rule_format])
               apply fastsimp
               apply assumption
-	      done
+              done
             from marked_child_ll n_in_rt marka_eq_mark nnN n_marked 
-	    have n_in_ll: "n \<in> set (ll ! var n)"
+            have n_in_ll: "n \<in> set (ll ! var n)"
               by fastsimp
             from marked_child_ll n_in_rt marka_eq_mark nnN n_marked lt rt 
-	    have nt_mark: "\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m"
+            have nt_mark: "\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m"
               by simp
             from nodes_in_lla n_in_ll lla_st 
-	    have n_in_lla: "n \<in> set (lla ! var n)"
+            have n_in_lla: "n \<in> set (lla ! var n)"
             proof (cases "var (low p) < (var n)")
               case True
               with lla_nc have "(lla ! var n) = (ll ! var n)"
-		by fastsimp
+                by fastsimp
               with n_in_ll show ?thesis
-		by fastsimp
+                by fastsimp
             next
               assume varnslp: " \<not> var (low p) < var n"
               with lla_st 
-	      have ll_in_lla: "\<exists>prx. lla ! (var n) = prx @ ll ! (var n)"
-		apply -
-		apply (erule_tac x="var n" in allE)
-		apply fastsimp
-		done
+              have ll_in_lla: "\<exists>prx. lla ! (var n) = prx @ ll ! (var n)"
+                apply -
+                apply (erule_tac x="var n" in allE)
+                apply fastsimp
+                done
               with n_in_ll show ?thesis
-		by fastsimp
+                by fastsimp
             qed
             {
               fix nt pt
@@ -726,275 +726,275 @@ proof -
               assume pt_in_nt: "pt \<in> set_of nt"
               have " marka pt = m"
               proof (cases "pt \<in> set_of lt")
-		case True
-		with mit_marked show ?thesis
+                case True
+                with mit_marked show ?thesis
                   by fastsimp
               next
-		assume pt_notin_lt: " pt \<notin> set_of lt"
-		with mot_nc have "mark pt = marka pt"
+                assume pt_notin_lt: " pt \<notin> set_of lt"
+                with mot_nc have "mark pt = marka pt"
                   by fastsimp
-		with nt_mark nt_Dag pt_in_nt show ?thesis
+                with nt_mark nt_Dag pt_in_nt show ?thesis
                   by fastsimp
               qed
             }
             then have nt_marka: 
-	      "\<forall>nt pt. Dag n low high nt \<and> pt \<in> set_of nt \<longrightarrow> marka pt = m"
+              "\<forall>nt pt. Dag n low high nt \<and> pt \<in> set_of nt \<longrightarrow> marka pt = m"
               by fastsimp
             with n_in_lla nt_marka True show ?thesis
               by fastsimp
-	  next
-	    case False
-	    note n_not_marka = this
-	    with wfmarking_lt n_notin_lt
-	    have "mark n \<noteq> m" 
-	      by (simp add: wf_marking_def lt_Node)
-	    with marked_child_ll
-	    have n_notin_ll: "n \<notin> set (concat ll)"
-	      by simp
-	    show ?thesis
-	    proof (cases "n \<in> set (concat lla)")
-	      case False with n_not_marka show ?thesis by simp
-	    next
-	      case True
-	      with wf_levellist_subset [OF wfll_lt] n_notin_ll
-	      have "n \<in> set_of lt"
-		by blast
-	      with n_notin_lt have False by simp
-	      thus ?thesis ..
-	    qed
-	  qed
-	qed
+          next
+            case False
+            note n_not_marka = this
+            with wfmarking_lt n_notin_lt
+            have "mark n \<noteq> m" 
+              by (simp add: wf_marking_def lt_Node)
+            with marked_child_ll
+            have n_notin_ll: "n \<notin> set (concat ll)"
+              by simp
+            show ?thesis
+            proof (cases "n \<in> set (concat lla)")
+              case False with n_not_marka show ?thesis by simp
+            next
+              case True
+              with wf_levellist_subset [OF wfll_lt] n_notin_ll
+              have "n \<in> set_of lt"
+                by blast
+              with n_notin_lt have False by simp
+              thus ?thesis ..
+            qed
+          qed
+        qed
       qed
       show ?case
-	apply (intro conjI ordered_rt mark_rt)
-	apply clarify
+        apply (intro conjI ordered_rt mark_rt)
+        apply clarify
       proof -
-	case (goal1 markb nextb levellistb llb)
-	have llb: "Levellist levellistb nextb llb" by fact
-	have wfll_rt: "wf_levellist rt lla llb var" by fact
-	have wfmarking_rt: "wf_marking rt marka markb m" by fact
-	show ?case
-	proof (cases rt)
-	  case Tip
-	  from wfll_rt Tip have lla_llb: "lla = llb"
-	    by (simp add: wf_levellist_def)
-	  moreover
-	  from wfmarking_rt Tip rt have "markb = marka"
-	    by (simp add: wf_marking_def)
-	  moreover
-	  from wfll_lt varsll llb lla_llb 
-	  obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
-	    by (simp add: Levellist_length wf_levellist_def lt_Node Tip)
-	  with p_notin_ll lla_llb wfll_lt
-	  have p_notin_llb: "\<forall>i < length llb. p \<notin> set (llb ! i)"
-	    apply -
-	    apply (intro allI impI)
-	    apply (clarsimp simp add: wf_levellist_def lt_Node)
-	    apply (case_tac "i \<le> var l")
-	    apply  (drule_tac x=i in spec)
-	    using  orderedt Tip lt_Node 
-	    apply  clarsimp
-	    apply (drule_tac x=i in spec)
-	    apply (drule_tac x=i in spec)
-	    apply clarsimp
-	    done
-	  with llb pnN var_p_bounds
-	  have llc: "Levellist (levellistb[var p := p]) 
+        case (goal1 markb nextb levellistb llb)
+        have llb: "Levellist levellistb nextb llb" by fact
+        have wfll_rt: "wf_levellist rt lla llb var" by fact
+        have wfmarking_rt: "wf_marking rt marka markb m" by fact
+        show ?case
+        proof (cases rt)
+          case Tip
+          from wfll_rt Tip have lla_llb: "lla = llb"
+            by (simp add: wf_levellist_def)
+          moreover
+          from wfmarking_rt Tip rt have "markb = marka"
+            by (simp add: wf_marking_def)
+          moreover
+          from wfll_lt varsll llb lla_llb 
+          obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
+            by (simp add: Levellist_length wf_levellist_def lt_Node Tip)
+          with p_notin_ll lla_llb wfll_lt
+          have p_notin_llb: "\<forall>i < length llb. p \<notin> set (llb ! i)"
+            apply -
+            apply (intro allI impI)
+            apply (clarsimp simp add: wf_levellist_def lt_Node)
+            apply (case_tac "i \<le> var l")
+            apply  (drule_tac x=i in spec)
+            using  orderedt Tip lt_Node 
+            apply  clarsimp
+            apply (drule_tac x=i in spec)
+            apply (drule_tac x=i in spec)
+            apply clarsimp
+            done
+          with llb pnN var_p_bounds
+          have llc: "Levellist (levellistb[var p := p]) 
                         (nextb(p := levellistb ! var p))
                         (llb[var p := p # llb ! var p])"
-	    apply (clarsimp simp add: Levellist_def map_update)
-	    apply (erule_tac x=i in allE)
-	    apply (erule_tac x=i in allE)
-	    apply clarsimp
-	    apply (case_tac "i=var p")
-	    apply  simp
-	    apply simp
-	    done	  
-	  ultimately show ?thesis
-	    
-	    using Tip lt_Node varsll orderedt lt rt pnN wfll_lt wfmarking_lt 
-	    apply (clarsimp simp add: wf_levellist_def wf_marking_def)
-	    apply (intro conjI)
-	    apply  (rule allI)
-	    apply  (rule conjI)
-	    apply   (erule_tac x="q" in allE)  
-	    apply   (case_tac "var p = var q")
-	    apply    fastsimp
-	    apply   fastsimp
-	    apply  (case_tac "var p = var q")
-	    apply   fastsimp
-	    apply  fastsimp
-	    apply (rule allI)
-	    apply (rotate_tac 4)
-	    apply (erule_tac x="i" in allE)
-	    apply (case_tac "i=var p")
-	    apply  simp
-	    apply (case_tac "var (low p) < i")
-	    apply  simp
-	    apply simp
-	    apply (erule exE)
-	    apply (rule_tac x="prx" in exI)
-	    apply (intro conjI)
-	    apply  simp
-	    apply clarify
-	    apply (rotate_tac 15)
-	    apply (erule_tac x="pt" in ballE)
-	    apply  fastsimp
-	    apply fastsimp
-	    done
-	next
-	  case (Node lrt r rrt)
-	  have rt_Node: "rt = Node lrt r rrt" by fact
-	  from wfll_rt rt_Node 
-	  have llb_eq_lla: "length llb = length lla"
-	    by (simp add: wf_levellist_def)
-	  with llb lla 
-	  have llb_eq_lla': "length levellistb = length levellista"
-	    by (simp add: Levellist_length)
-	  from wfll_rt rt_Node 
-	  have nodes_in_llb: "\<forall>q. q \<in> set_of rt \<longrightarrow> q \<in> set (llb ! (q\<rightarrow>var))"
-	    by (simp add: wf_levellist_def)
-	  from wfll_rt rt_Node rt 
-	  have llb_st: "(\<forall> i \<le> (high p)\<rightarrow>var. 
+            apply (clarsimp simp add: Levellist_def map_update)
+            apply (erule_tac x=i in allE)
+            apply (erule_tac x=i in allE)
+            apply clarsimp
+            apply (case_tac "i=var p")
+            apply  simp
+            apply simp
+            done          
+          ultimately show ?thesis
+            
+            using Tip lt_Node varsll orderedt lt rt pnN wfll_lt wfmarking_lt 
+            apply (clarsimp simp add: wf_levellist_def wf_marking_def)
+            apply (intro conjI)
+            apply  (rule allI)
+            apply  (rule conjI)
+            apply   (erule_tac x="q" in allE)  
+            apply   (case_tac "var p = var q")
+            apply    fastsimp
+            apply   fastsimp
+            apply  (case_tac "var p = var q")
+            apply   fastsimp
+            apply  fastsimp
+            apply (rule allI)
+            apply (rotate_tac 4)
+            apply (erule_tac x="i" in allE)
+            apply (case_tac "i=var p")
+            apply  simp
+            apply (case_tac "var (low p) < i")
+            apply  simp
+            apply simp
+            apply (erule exE)
+            apply (rule_tac x="prx" in exI)
+            apply (intro conjI)
+            apply  simp
+            apply clarify
+            apply (rotate_tac 15)
+            apply (erule_tac x="pt" in ballE)
+            apply  fastsimp
+            apply fastsimp
+            done
+        next
+          case (Node lrt r rrt)
+          have rt_Node: "rt = Node lrt r rrt" by fact
+          from wfll_rt rt_Node 
+          have llb_eq_lla: "length llb = length lla"
+            by (simp add: wf_levellist_def)
+          with llb lla 
+          have llb_eq_lla': "length levellistb = length levellista"
+            by (simp add: Levellist_length)
+          from wfll_rt rt_Node 
+          have nodes_in_llb: "\<forall>q. q \<in> set_of rt \<longrightarrow> q \<in> set (llb ! (q\<rightarrow>var))"
+            by (simp add: wf_levellist_def)
+          from wfll_rt rt_Node rt 
+          have llb_st: "(\<forall> i \<le> (high p)\<rightarrow>var. 
                          (\<exists> prx. (llb ! i) = prx@(lla ! i) \<and> 
                          (\<forall>pt \<in> set prx. pt \<in> set_of rt \<and> pt\<rightarrow>var = i)))"
-	    by (simp add: wf_levellist_def)
-	  from wfll_rt rt_Node rt 
-	  have llb_nc: 
-	    "\<forall>i. ((high p)\<rightarrow>var) < i \<longrightarrow> (llb ! i) = (lla ! i)"
-	    by (simp add: wf_levellist_def)
-	  from wfmarking_rt rt_Node rt 
-	  have mort_nc: "\<forall>n. n \<notin> set_of rt \<longrightarrow> marka n = markb n"
-	    by (simp add: wf_marking_def)
-	  from wfmarking_rt rt_Node rt 
-	  have mirt_marked: "\<forall>n. n \<in> set_of rt \<longrightarrow> markb n = m"
-	    by (simp add: wf_marking_def)
-	  with p_notin_ll wfll_rt wfll_lt
-	  have p_notin_llb: "\<forall>i < length llb. p \<notin> set (llb ! i)"
-	    apply -
-	    apply (intro allI impI)
-	    apply (clarsimp simp add: wf_levellist_def lt_Node rt_Node)
-	    apply (case_tac "i \<le> var r")
-	    apply  (drule_tac x=i in spec)
-	    using  orderedt rt_Node lt_Node 
-	    apply  clarsimp
-	    apply  (erule disjE)
-	    apply   clarsimp
-	    apply  (case_tac "i \<le> var l")
-	    apply   (drule_tac x=i in spec)
-	    apply   clarsimp
-	    apply  clarsimp
-	    apply (subgoal_tac "llb ! i = lla ! i")
-	    prefer 2
-	    apply  clarsimp
-	    apply (case_tac "i \<le> var l")
-	    apply  (drule_tac x=i in spec, erule impE, assumption)
-	    apply  clarsimp
-	    using  orderedt rt_Node lt_Node 
-	    apply  clarsimp
-	    apply clarsimp
-	    done
-	  from wfll_lt wfll_rt varsll lla llb
-	  obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
-	    by (simp add: Levellist_length wf_levellist_def lt_Node rt_Node)
-	  with p_notin_llb llb pnN var_p_bounds
-	  have llc: "Levellist (levellistb[var p := p]) 
+            by (simp add: wf_levellist_def)
+          from wfll_rt rt_Node rt 
+          have llb_nc: 
+            "\<forall>i. ((high p)\<rightarrow>var) < i \<longrightarrow> (llb ! i) = (lla ! i)"
+            by (simp add: wf_levellist_def)
+          from wfmarking_rt rt_Node rt 
+          have mort_nc: "\<forall>n. n \<notin> set_of rt \<longrightarrow> marka n = markb n"
+            by (simp add: wf_marking_def)
+          from wfmarking_rt rt_Node rt 
+          have mirt_marked: "\<forall>n. n \<in> set_of rt \<longrightarrow> markb n = m"
+            by (simp add: wf_marking_def)
+          with p_notin_ll wfll_rt wfll_lt
+          have p_notin_llb: "\<forall>i < length llb. p \<notin> set (llb ! i)"
+            apply -
+            apply (intro allI impI)
+            apply (clarsimp simp add: wf_levellist_def lt_Node rt_Node)
+            apply (case_tac "i \<le> var r")
+            apply  (drule_tac x=i in spec)
+            using  orderedt rt_Node lt_Node 
+            apply  clarsimp
+            apply  (erule disjE)
+            apply   clarsimp
+            apply  (case_tac "i \<le> var l")
+            apply   (drule_tac x=i in spec)
+            apply   clarsimp
+            apply  clarsimp
+            apply (subgoal_tac "llb ! i = lla ! i")
+            prefer 2
+            apply  clarsimp
+            apply (case_tac "i \<le> var l")
+            apply  (drule_tac x=i in spec, erule impE, assumption)
+            apply  clarsimp
+            using  orderedt rt_Node lt_Node 
+            apply  clarsimp
+            apply clarsimp
+            done
+          from wfll_lt wfll_rt varsll lla llb
+          obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
+            by (simp add: Levellist_length wf_levellist_def lt_Node rt_Node)
+          with p_notin_llb llb pnN var_p_bounds
+          have llc: "Levellist (levellistb[var p := p]) 
                         (nextb(p := levellistb ! var p))
                         (llb[var p := p # llb ! var p])"
-	    apply (clarsimp simp add: Levellist_def map_update)
-	    apply (erule_tac x=i in allE)
-	    apply (erule_tac x=i in allE)
-	    apply clarsimp
-	    apply (case_tac "i=var p")
-	    apply  simp
-	    apply simp
-	    done	  
-	  then show ?thesis
-	  proof (clarsimp)
-	    show "wf_levellist (Node lt p rt) ll (llb[var p := p#llb ! var p]) var \<and>
+            apply (clarsimp simp add: Levellist_def map_update)
+            apply (erule_tac x=i in allE)
+            apply (erule_tac x=i in allE)
+            apply clarsimp
+            apply (case_tac "i=var p")
+            apply  simp
+            apply simp
+            done          
+          then show ?thesis
+          proof (clarsimp)
+            show "wf_levellist (Node lt p rt) ll (llb[var p := p#llb ! var p]) var \<and>
                   wf_marking (Node lt p rt) mark (markb(p := m)) m"
-	    proof -
+            proof -
               have nodes_in_upllb: "\<forall> q. q \<in> set_of (Node lt p rt) 
-		\<longrightarrow> q \<in> set (llb[var p :=p # llb ! var p] ! (var q))"
-		apply -
-		apply (rule allI)
-		apply (rule impI)
+                \<longrightarrow> q \<in> set (llb[var p :=p # llb ! var p] ! (var q))"
+                apply -
+                apply (rule allI)
+                apply (rule impI)
               proof -
-		fix q
-		assume q_in_t: "q \<in> set_of (Node lt p rt)"
-		show q_in_upllb: 
-		  "q \<in> set (llb[var p :=p # llb ! var p] ! (var q))"
-		proof (cases "q \<in> set_of rt")
-		  case True
-		  with nodes_in_llb have q_in_llb: "q \<in> set (llb ! (var q))"
-		    by fastsimp
-		  from orderedt rt_Node lt_Node lt rt 
-		  have ordered_rt: "ordered rt var"
-		    by fastsimp
-		  from True rt ordered_rt rt_Node lt lt_Node have "var q \<le> var r"
-		    apply -                
-		    apply (drule subnodes_ordered)
-		    apply fastsimp
-		    apply fastsimp
-		    apply fastsimp
-		    done
-		  with orderedt rt lt rt_Node lt_Node have "var q < var p"
-		    by fastsimp
-		  then have 
-		    "llb[var p :=p#llb ! var p] ! var q = 
+                fix q
+                assume q_in_t: "q \<in> set_of (Node lt p rt)"
+                show q_in_upllb: 
+                  "q \<in> set (llb[var p :=p # llb ! var p] ! (var q))"
+                proof (cases "q \<in> set_of rt")
+                  case True
+                  with nodes_in_llb have q_in_llb: "q \<in> set (llb ! (var q))"
+                    by fastsimp
+                  from orderedt rt_Node lt_Node lt rt 
+                  have ordered_rt: "ordered rt var"
+                    by fastsimp
+                  from True rt ordered_rt rt_Node lt lt_Node have "var q \<le> var r"
+                    apply -                
+                    apply (drule subnodes_ordered)
+                    apply fastsimp
+                    apply fastsimp
+                    apply fastsimp
+                    done
+                  with orderedt rt lt rt_Node lt_Node have "var q < var p"
+                    by fastsimp
+                  then have 
+                    "llb[var p :=p#llb ! var p] ! var q = 
                      llb ! var q"
-		    by fastsimp
-		  with q_in_llb show ?thesis
-		    by fastsimp
-		next
-		  assume q_notin_rt: "q \<notin> set_of rt"
-		  show "q \<in> set (llb[var p :=p # llb ! var p] ! var q)"
-		  proof (cases "q \<in> set_of lt")
-		    case True
-		    assume q_in_lt: "q \<in> set_of lt"
-		    with nodes_in_lla have q_in_lla: "q \<in> set (lla ! (var q))"
+                    by fastsimp
+                  with q_in_llb show ?thesis
+                    by fastsimp
+                next
+                  assume q_notin_rt: "q \<notin> set_of rt"
+                  show "q \<in> set (llb[var p :=p # llb ! var p] ! var q)"
+                  proof (cases "q \<in> set_of lt")
+                    case True
+                    assume q_in_lt: "q \<in> set_of lt"
+                    with nodes_in_lla have q_in_lla: "q \<in> set (lla ! (var q))"
                       by fastsimp
-		    from orderedt rt_Node lt_Node lt rt 
-		    have ordered_lt: "ordered lt var"
+                    from orderedt rt_Node lt_Node lt rt 
+                    have ordered_lt: "ordered lt var"
                       by fastsimp
-		    from q_in_lt lt ordered_lt rt_Node rt lt_Node 
-		    have "var q \<le> var l"
+                    from q_in_lt lt ordered_lt rt_Node rt lt_Node 
+                    have "var q \<le> var l"
                       apply -                
                       apply (drule subnodes_ordered)
                       apply fastsimp
                       apply fastsimp
                       apply fastsimp
                       done
-		    with orderedt rt lt rt_Node lt_Node have qsp: "var q < var p"
+                    with orderedt rt lt rt_Node lt_Node have qsp: "var q < var p"
                       by fastsimp
-		    then show ?thesis
-		    proof (cases "var q \<le> var (high p)")
+                    then show ?thesis
+                    proof (cases "var q \<le> var (high p)")
                       case True
                       with llb_st 
-		      have "\<exists>prx. (llb ! (var q)) = prx@(lla ! (var q))"
-			by fastsimp
+                      have "\<exists>prx. (llb ! (var q)) = prx@(lla ! (var q))"
+                        by fastsimp
                       with nodes_in_lla q_in_lla 
-		      have q_in_llb: "q \<in> set (llb ! (var q))"
-			by fastsimp
+                      have q_in_llb: "q \<in> set (llb ! (var q))"
+                        by fastsimp
                       from qsp 
-		      have "llb[var p :=p#llb ! var p]!var q = 
-			       llb ! (var q)"
-			by fastsimp
+                      have "llb[var p :=p#llb ! var p]!var q = 
+                               llb ! (var q)"
+                        by fastsimp
                       with q_in_llb show ?thesis
-			by fastsimp
+                        by fastsimp
                     next
                       assume "\<not> var q \<le> var (high p)"
                       with llb_nc have "llb ! (var q) = lla ! (var q)"
-			by fastsimp
+                        by fastsimp
                       with q_in_lla have q_in_llb: "q \<in> set (llb ! (var q))"
-			by fastsimp
+                        by fastsimp
                       from qsp have 
-			"llb[var p :=p # llb ! var p] ! var q = llb ! (var q)"
-			by fastsimp
+                        "llb[var p :=p # llb ! var p] ! var q = llb ! (var q)"
+                        by fastsimp
                       with q_in_llb show ?thesis
-			by fastsimp
+                        by fastsimp
                     qed
-		  next
+                  next
                     assume q_notin_lt: "q \<notin> set_of lt"
                     with q_notin_rt rt lt rt_Node lt_Node q_in_t have qp: "q = p"
                       by fastsimp
@@ -1002,34 +1002,34 @@ proof -
                       by fastsimp
                     with qp show ?thesis
                       by simp
-		  qed
-		qed
+                  qed
+                qed
               qed
               have prx_ll_st: "\<forall>i \<le> var p. 
                (\<exists>prx. llb[var p :=p#llb!var p]!i = prx@(ll!i) \<and>
                      (\<forall>pt \<in> set prx. pt \<in> set_of (Node lt p rt) \<and> var pt = i))"
-		apply -
-		apply (rule allI)
-		apply (rule impI)
+                apply -
+                apply (rule allI)
+                apply (rule impI)
               proof -
-		fix i
-		assume isep: "i \<le> var p"
-		show "\<exists>prx. llb[var p :=p#llb!var p]!i = prx@ll!i \<and>
+                fix i
+                assume isep: "i \<le> var p"
+                show "\<exists>prx. llb[var p :=p#llb!var p]!i = prx@ll!i \<and>
                   (\<forall>pt\<in>set prx. pt \<in> set_of (Node lt p rt) \<and> var pt = i)"
-		proof (cases "i = var p")
-		  case True
-		  with orderedt lt lt_Node rt rt_Node 
-		  have lpsp: "var (low p) < var p"
+                proof (cases "i = var p")
+                  case True
+                  with orderedt lt lt_Node rt rt_Node 
+                  have lpsp: "var (low p) < var p"
                     by fastsimp
-		  with orderedt lt lt_Node rt rt_Node 
-		  have hpsp: "var (high p) < var p"
+                  with orderedt lt lt_Node rt rt_Node 
+                  have hpsp: "var (high p) < var p"
                     by fastsimp
-		  with lpsp lla_nc 
-		  have llall: "lla ! var p = ll ! var p"
+                  with lpsp lla_nc 
+                  have llall: "lla ! var p = ll ! var p"
                     by fastsimp
-		  with hpsp llb_nc have "llb ! var p = ll ! var p"
+                  with hpsp llb_nc have "llb ! var p = ll ! var p"
                     by fastsimp
-		  with llb_eq_lla lla_eq_ll isep True varsll lt rt show ?thesis
+                  with llb_eq_lla lla_eq_ll isep True varsll lt rt show ?thesis
                     apply -
                     apply (rule_tac x="[p]" in exI)
                     apply (rule conjI)
@@ -1037,10 +1037,10 @@ proof -
                     apply (rule ballI)
                     apply fastsimp
                     done
-		next
-		  assume inp: " i \<noteq> var p"
-		  show ?thesis
-		  proof (cases "var (low p) < i")
+                next
+                  assume inp: " i \<noteq> var p"
+                  show ?thesis
+                  proof (cases "var (low p) < i")
                     case True
                     with lla_nc have llall: "lla ! i = ll ! i"
                       by fastsimp
@@ -1049,148 +1049,148 @@ proof -
                     proof (cases "var (high p) < i")
                       case True
                       with llall llb_nc have "llb ! i = ll ! i"
-			by fastsimp
+                        by fastsimp
                       with inp True vpsi varsll lt rt show ?thesis
-			apply -
-			apply (rule_tac x="[]" in exI)
-			apply (rule conjI)
-			apply simp
-			apply (rule ballI)
-			apply fastsimp
-			done
+                        apply -
+                        apply (rule_tac x="[]" in exI)
+                        apply (rule conjI)
+                        apply simp
+                        apply (rule ballI)
+                        apply fastsimp
+                        done
                     next
                       assume isehp: " \<not> var (high p) < i"
                       with vpsi lla_nc have lla_ll: "lla ! i = ll ! i"
-			by fastsimp
+                        by fastsimp
                       with isehp llb_st 
-		      have prx_lla: "\<exists>prx. llb ! i = prx @ lla ! i \<and> 
+                      have prx_lla: "\<exists>prx. llb ! i = prx @ lla ! i \<and> 
                         (\<forall>pt\<in>set prx. pt \<in> set_of rt \<and> var pt = i)"
-			apply -
-			apply (erule_tac x="i" in allE)
-			apply simp
-			done
+                        apply -
+                        apply (erule_tac x="i" in allE)
+                        apply simp
+                        done
                       with lla_ll inp rt show ?thesis
-			apply -
-			apply (erule exE)
-			apply (rule_tac x="prx" in exI)
-			apply simp
-			done
+                        apply -
+                        apply (erule exE)
+                        apply (rule_tac x="prx" in exI)
+                        apply simp
+                        done
                     qed
-		  next
+                  next
                     assume iselp: "\<not> var (low p) < i"
                     show ?thesis
                     proof (cases "var (high p) < i")
                       case True
                       with llb_nc have llb_ll: "llb ! i = lla ! i"
-			by fastsimp
+                        by fastsimp
                       with iselp lla_st 
-		      have prx_ll: "\<exists>prx. lla ! i = prx @ ll ! i \<and> 
-			(\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)"
-			apply -
-			apply (erule_tac x="i" in allE)
-			apply simp
-			done
+                      have prx_ll: "\<exists>prx. lla ! i = prx @ ll ! i \<and> 
+                        (\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)"
+                        apply -
+                        apply (erule_tac x="i" in allE)
+                        apply simp
+                        done
                       with llb_ll inp lt show ?thesis
-			apply -
-			apply (erule exE)
-			apply (rule_tac x="prx" in exI)
-			apply simp
-			done
+                        apply -
+                        apply (erule exE)
+                        apply (rule_tac x="prx" in exI)
+                        apply simp
+                        done
                     next
                       assume isehp: " \<not> var (high p) < i"
                       from iselp lla_st 
-		      have prxl: "\<exists>prx. lla ! i = prx @ ll ! i \<and> 
-			(\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)" 
-			by fastsimp
+                      have prxl: "\<exists>prx. lla ! i = prx @ ll ! i \<and> 
+                        (\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)" 
+                        by fastsimp
                       from isehp llb_st 
-		      have prxh: "\<exists>prx. llb ! i = prx @ lla ! i \<and> 
-			(\<forall>pt\<in>set prx. pt \<in> set_of rt \<and> var pt = i)"
-			by fastsimp
+                      have prxh: "\<exists>prx. llb ! i = prx @ lla ! i \<and> 
+                        (\<forall>pt\<in>set prx. pt \<in> set_of rt \<and> var pt = i)"
+                        by fastsimp
                       with prxl inp lt pnN rt show ?thesis
-			apply -
-			apply (elim exE)
-			apply (rule_tac x="prxa @ prx" in exI)
-			apply simp
-			apply (elim conjE)
-			apply fastsimp
-			done
+                        apply -
+                        apply (elim exE)
+                        apply (rule_tac x="prxa @ prx" in exI)
+                        apply simp
+                        apply (elim conjE)
+                        apply fastsimp
+                        done
                     qed
-		  qed
-		qed
+                  qed
+                qed
               qed
               have big_Nodes_nc: "\<forall>i. (p->var) < i 
-		\<longrightarrow> (llb[var p :=p # llb ! var p]) ! i = ll ! i"
-		apply -
-		apply (rule allI)
-		apply (rule impI)
+                \<longrightarrow> (llb[var p :=p # llb ! var p]) ! i = ll ! i"
+                apply -
+                apply (rule allI)
+                apply (rule impI)
               proof -
-		fix i
-		assume psi: "var p < i"
-		with orderedt lt rt lt_Node rt_Node have lpsi: "var (low p) < i" 
-		  by fastsimp
-		with lla_nc have lla_ll: "lla ! i = ll ! i"
-		  by fastsimp
-		from psi orderedt lt rt lt_Node rt_Node have hpsi: "var (high p) < i" 
-		  by fastsimp
-		with llb_nc have llb_lla: "llb ! i = lla ! i"
-		  by fastsimp
-		from psi 
-		have upllb_llb: "llb[var p :=p#llb!var p]!i = llb!i"
-		  by fastsimp
-		from upllb_llb llb_lla lla_ll 
-		show "llb[var p :=p # llb ! var p] ! i = ll ! i"
-		  by fastsimp
+                fix i
+                assume psi: "var p < i"
+                with orderedt lt rt lt_Node rt_Node have lpsi: "var (low p) < i" 
+                  by fastsimp
+                with lla_nc have lla_ll: "lla ! i = ll ! i"
+                  by fastsimp
+                from psi orderedt lt rt lt_Node rt_Node have hpsi: "var (high p) < i" 
+                  by fastsimp
+                with llb_nc have llb_lla: "llb ! i = lla ! i"
+                  by fastsimp
+                from psi 
+                have upllb_llb: "llb[var p :=p#llb!var p]!i = llb!i"
+                  by fastsimp
+                from upllb_llb llb_lla lla_ll 
+                show "llb[var p :=p # llb ! var p] ! i = ll ! i"
+                  by fastsimp
               qed
               from lla_eq_ll llb_eq_lla 
-	      have length_eq: "length (llb[var p :=p # llb ! var p]) = length ll"
-		by fastsimp
+              have length_eq: "length (llb[var p :=p # llb ! var p]) = length ll"
+                by fastsimp
               from length_eq big_Nodes_nc prx_ll_st nodes_in_upllb 
               have wf_ll_upllb: 
-		"wf_levellist (Node lt p rt) ll (llb[var p :=p # llb ! var p]) var"
-		by (simp add: wf_levellist_def)
+                "wf_levellist (Node lt p rt) ll (llb[var p :=p # llb ! var p]) var"
+                by (simp add: wf_levellist_def)
               have mark_nc: 
-		"\<forall> n. n \<notin> set_of (Node lt p rt) \<longrightarrow> (markb(p:=m)) n = mark n"
-		apply -
-		apply (rule allI)
-		apply (rule impI)
+                "\<forall> n. n \<notin> set_of (Node lt p rt) \<longrightarrow> (markb(p:=m)) n = mark n"
+                apply -
+                apply (rule allI)
+                apply (rule impI)
               proof -
-		fix n
-		assume nnit: "n \<notin> set_of (Node lt p rt)"
-		with lt rt have nnilt: " n \<notin> set_of lt"
-		  by fastsimp
-		from nnit lt rt have nnirt: " n \<notin> set_of rt"
-		  by fastsimp
-		with nnilt mot_nc mort_nc have mb_eq_m: "markb n = mark n"
-		  by fastsimp
-		from nnit have "n\<noteq>p"
-		  by fastsimp
-		then have upmarkb_markb: "(markb(p :=m)) n = markb n"
-		  by fastsimp
-		with mb_eq_m show "(markb(p :=m)) n = mark n"
-		  by fastsimp
+                fix n
+                assume nnit: "n \<notin> set_of (Node lt p rt)"
+                with lt rt have nnilt: " n \<notin> set_of lt"
+                  by fastsimp
+                from nnit lt rt have nnirt: " n \<notin> set_of rt"
+                  by fastsimp
+                with nnilt mot_nc mort_nc have mb_eq_m: "markb n = mark n"
+                  by fastsimp
+                from nnit have "n\<noteq>p"
+                  by fastsimp
+                then have upmarkb_markb: "(markb(p :=m)) n = markb n"
+                  by fastsimp
+                with mb_eq_m show "(markb(p :=m)) n = mark n"
+                  by fastsimp
               qed
               have mark_c: "\<forall> n. n \<in> set_of (Node lt p rt) \<longrightarrow> (markb(p :=m)) n = m"
-		apply -
-		apply (intro allI)
-		apply (rule impI)
+                apply -
+                apply (intro allI)
+                apply (rule impI)
               proof -
-		fix n
-		assume nint: " n \<in> set_of (Node lt p rt)"
-		show "(markb(p :=m)) n = m"
-		proof (cases "n=p")
-		  case True
-		  then show ?thesis
+                fix n
+                assume nint: " n \<in> set_of (Node lt p rt)"
+                show "(markb(p :=m)) n = m"
+                proof (cases "n=p")
+                  case True
+                  then show ?thesis
                     by fastsimp
-		next
-		  assume nnp: " n \<noteq> p"
-		  show ?thesis
-		  proof (cases "n \<in> set_of rt")
+                next
+                  assume nnp: " n \<noteq> p"
+                  show ?thesis
+                  proof (cases "n \<in> set_of rt")
                     case True
                     with mirt_marked have "markb n = m"
                       by fastsimp
                     with nnp show ?thesis
                       by fastsimp
-		  next
+                  next
                     assume nninrt: " n \<notin> set_of rt"
                     with nint nnp have ninlt: "n \<in> set_of lt"
                       by fastsimp
@@ -1202,17 +1202,17 @@ proof -
                       by fastsimp
                     with nnp show ?thesis
                       by fastsimp
-		  qed
-		qed
+                  qed
+                qed
               qed
               from mark_c mark_nc 
-	      have wf_mark: "wf_marking (Node lt p rt) mark (markb(p :=m)) m"
-		by (simp add: wf_marking_def)
+              have wf_mark: "wf_marking (Node lt p rt) mark (markb(p :=m)) m"
+                by (simp add: wf_marking_def)
               with wf_ll_upllb show ?thesis
-		by fastsimp
+                by fastsimp
             qed
-	  qed
-	qed
+          qed
+        qed
       qed
     qed
   qed
@@ -1248,20 +1248,20 @@ next
       from marked_child_ll pnN have pinll: "p \<in> set (ll ! var p)"
         apply -
         apply (drule_tac x="p" in bspec)
-	apply  simp
+        apply  simp
         apply fastsimp
         done
       from marked_st marked_child_ll lt rt show ?thesis
         apply -
         apply (rule allI)
-	apply (erule_tac x="q" in allE)
-	apply (rule impI)
-	apply (erule impE)
-	apply  assumption
+        apply (erule_tac x="q" in allE)
+        apply (rule impI)
+        apply (erule impE)
+        apply  assumption
         apply (drule_tac x="q" in bspec)
-	apply  simp
-	apply fastsimp
-	done
+        apply  simp
+        apply fastsimp
+        done
     qed
     have levellist_nc: "\<forall> i \<le> var p. (\<exists> prx. ll ! i = prx@(ll ! i) \<and>
       (\<forall> pt \<in> set prx. pt \<in> set_of (Node lt p rt) \<and> var pt = i))"

@@ -1,3 +1,9 @@
+(*  Title:      JinjaThreads/MM/MM.thy
+    Author:     Andreas Lochbihler
+*)
+
+header {* \chapter{Memory Models} *}
+
 theory MM imports "../Common/Heap" begin
 
 definition new_Addr :: "(addr \<rightharpoonup> 'b) \<Rightarrow> addr option"

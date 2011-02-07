@@ -28,6 +28,7 @@ definition ahs_delete :: "'a::hashable \<Rightarrow> 'a ahs \<Rightarrow> 'a ahs
   where "ahs_delete == s_delete ahm_delete"
 definition ahs_sel :: "'a::hashable ahs \<Rightarrow> ('a \<Rightarrow> 'r option) \<Rightarrow> 'r option" 
   where "ahs_sel == s_sel ahm_sel"
+definition "ahs_sel' == SetGA.sel_sel' ahs_sel"
 definition ahs_isEmpty :: "'a::hashable ahs \<Rightarrow> bool"
   where "ahs_isEmpty == s_isEmpty ahm_isEmpty"
 
@@ -78,6 +79,7 @@ lemmas ahs_defs =
   ahs_iteratei_def
   ahs_memb_def
   ahs_sel_def
+  ahs_sel'_def
   ahs_size_def
   ahs_to_list_def
   ahs_union_def
@@ -96,6 +98,7 @@ lemmas ahs_union_impl = s_union_correct[OF ahm_add_impl, folded ahs_defs]
 lemmas ahs_union_dj_impl = s_union_dj_correct[OF ahm_add_dj_impl, folded ahs_defs]
 lemmas ahs_ball_impl = s_ball_correct[OF ahm_ball_impl, folded ahs_defs]
 lemmas ahs_sel_impl = s_sel_correct[OF ahm_sel_impl, folded ahs_defs]
+lemmas ahs_sel'_impl = sel_sel'_correct[OF ahs_sel_impl, folded ahs_sel'_def]
 lemmas ahs_inter_impl = it_inter_correct[OF ahs_iterate_impl ahs_memb_impl ahs_empty_impl ahs_ins_dj_impl, folded ahs_inter_def]
 lemmas ahs_size_impl = it_size_correct[OF ahs_iterate_impl, folded ahs_size_def]
 lemmas ahs_image_filter_impl = it_image_filter_correct[OF ahs_iterate_impl ahs_empty_impl ahs_ins_impl, folded ahs_image_filter_def]
@@ -117,6 +120,7 @@ interpretation ahs: set_union ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar ahs_
 interpretation ahs: set_inter ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar ahs_inter using ahs_inter_impl .
 interpretation ahs: set_image ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar ahs_image using ahs_image_impl .
 interpretation ahs: set_sel ahs_\<alpha> ahs_invar ahs_sel using ahs_sel_impl .
+interpretation ahs: set_sel' ahs_\<alpha> ahs_invar ahs_sel' using ahs_sel'_impl .
 interpretation ahs: set_ins_dj ahs_\<alpha> ahs_invar ahs_ins_dj using ahs_ins_dj_impl .
 interpretation ahs: set_delete ahs_\<alpha> ahs_invar ahs_delete using ahs_delete_impl .
 interpretation ahs: set_ball ahs_\<alpha> ahs_invar ahs_ball using ahs_ball_impl .
@@ -160,6 +164,7 @@ export_code
   ahs_inter
   ahs_image
   ahs_sel
+  ahs_sel'
   ahs_ins_dj
   ahs_delete
   ahs_ball

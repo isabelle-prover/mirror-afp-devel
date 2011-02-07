@@ -740,6 +740,9 @@ done
 
 end
 
+declare nth_append[simp del]
+declare [[simproc del: list_to_set_comprehension]]
+
 context TC2 begin
 
 corollary wt_instrs_app3[simp]:
@@ -753,8 +756,6 @@ corollary wt_instrs_Cons3[simp]:
   \<Longrightarrow> \<turnstile> (i # is),[] [::] \<tau> # \<tau>' # \<tau>s"
 using wt_instrs_Cons[where ?xt = "[]"]
 by (simp add:shift_def)
-
-declare nth_append[simp del]
 
 lemma wt_instrs_xapp:
   "\<lbrakk> \<turnstile> is\<^isub>1 @ is\<^isub>2, xt [::] \<tau>s\<^isub>1 @ ty\<^isub>i' (Class D # ST) E A # \<tau>s\<^isub>2;
@@ -809,9 +810,10 @@ lemma wt_instrs_xapp_Any:
   \<turnstile> is\<^isub>1 @ is\<^isub>2, xt @ [(0,size is\<^isub>1 - Suc n,None,size is\<^isub>1,size ST)] [::] \<tau>s\<^isub>1 @ ty\<^isub>i' (Class Throwable # ST) E A # \<tau>s\<^isub>2"
 by(erule (3) wt_instrs_xapp) simp
 
-declare nth_append[simp]
-
 end
+
+declare [[simproc add: list_to_set_comprehension]]
+declare nth_append[simp]
 
 lemma drop_Cons_Suc:
   "\<And>xs. drop n xs = y#ys \<Longrightarrow> drop (Suc n) xs = ys"

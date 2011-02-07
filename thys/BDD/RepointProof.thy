@@ -473,87 +473,87 @@ proof -
       case (goal1 lowa higha pa)
       have lrepta: "Dag pa lowa higha lrept" by fact
       have low_lowa_nc: 
-	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt" by fact
+        "\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt" by fact
       from lrept_dag lrepta  obtain 
-	pa_def: "pa = (rep \<propto> low) (rep p)" and
-	lowa_higha_def: "\<forall>no \<in> set_of lrept. 
+        pa_def: "pa = (rep \<propto> low) (rep p)" and
+        lowa_higha_def: "\<forall>no \<in> set_of lrept. 
         lowa no = (rep \<propto> low) no \<and> higha no = (rep \<propto> high) no"
-	apply -
-	apply (rotate_tac 1)
-	apply (drule Dags_eq_hp_eq)
-	apply auto
-	done
+        apply -
+        apply (rotate_tac 1)
+        apply (drule Dags_eq_hp_eq)
+        apply auto
+        done
       from rept_dag have rept_DAG: "DAG rept"
-	by (rule Dag_is_DAG)
+        by (rule Dag_is_DAG)
       with rept_def have rp_notin_lrept: "rep p \<notin> set_of lrept"
-	by simp
+        by simp
       from rept_DAG rept_def have rp_notin_rrept: "rep p \<notin> set_of rrept"
-	by simp
+        by simp
       have rrepta: "Dag ((rep \<propto> id) (higha (rep p))) 
                        (rep \<propto> lowa(rep p := pa)) (rep \<propto> higha) rrept"
       proof -
-	from low_lowa_nc rp_notin_lrept 
-	have "(rep \<propto> high) (rep p) = (rep \<propto> higha) (rep p)"
+        from low_lowa_nc rp_notin_lrept 
+        have "(rep \<propto> high) (rep p) = (rep \<propto> higha) (rep p)"
           by (auto simp add: null_comp_def)
-	with rrept_dag have higha_mixed_rrept: 
+        with rrept_dag have higha_mixed_rrept: 
           "Dag ((rep \<propto> id) (higha (rep p))) (rep \<propto> low) (rep \<propto> high) rrept"
           by (simp add: id_trans)
-	thm low_high_exchange_dag
-	with low_lowa_nc lowa_higha_def rno_rrept 
-	have lowa_higha_rrept:
+        thm low_high_exchange_dag
+        with low_lowa_nc lowa_higha_def rno_rrept 
+        have lowa_higha_rrept:
             "Dag ((rep \<propto> id) (higha (rep p))) (rep \<propto> lowa) (rep \<propto> higha) rrept"
           apply -
           apply (rule low_high_exchange_dag)
           apply auto
           done
-	have "Dag ((rep \<propto> id) (higha (rep p))) (rep \<propto> lowa) (rep \<propto> higha) rrept = 
+        have "Dag ((rep \<propto> id) (higha (rep p))) (rep \<propto> lowa) (rep \<propto> higha) rrept = 
               Dag ((rep \<propto> id) (higha (rep p))) 
                       (rep \<propto> lowa(rep p := pa)) (rep \<propto> higha) rrept"
-	proof -
+        proof -
           have "\<forall>no \<in> set_of rrept. 
-	            (rep \<propto> lowa) no = (rep \<propto> lowa(rep p := pa)) no \<and>
+                    (rep \<propto> lowa) no = (rep \<propto> lowa(rep p := pa)) no \<and>
                     (rep \<propto> higha) no = (rep \<propto> higha) no"
           proof 
             fix no
             assume no_in_rrept: "no \<in> set_of rrept"
             with rp_notin_rrept have "no \<noteq> rep p" 
-	      by blast
+              by blast
             thus "(rep \<propto> lowa) no = (rep \<propto> lowa(rep p := pa)) no \<and> 
-	      (rep \<propto> higha) no = (rep \<propto> higha) no"
-	      by (simp add: null_comp_def)
+              (rep \<propto> higha) no = (rep \<propto> higha) no"
+              by (simp add: null_comp_def)
           qed
           thus ?thesis
             by (rule heaps_eq_Dag_eq)
-	qed
-	with lowa_higha_rrept show ?thesis
+        qed
+        with lowa_higha_rrept show ?thesis
           by simp
       qed
       show ?case
-	apply (rule_tac x=rrept in exI)
-	apply (rule conjI)
-	apply  (rule rrepta)
-	apply (rule conjI)
-	apply  (rule rno_rrept)
-	apply clarify
+        apply (rule_tac x=rrept in exI)
+        apply (rule conjI)
+        apply  (rule rrepta)
+        apply (rule conjI)
+        apply  (rule rno_rrept)
+        apply clarify
       proof -
-	case (goal1 lowb highb pb)
-	have rreptb: "Dag pb lowb highb rrept" by fact
-	have ab_nc: "\<forall>pt. pt \<notin> set_of rrept \<longrightarrow> 
-	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt" by fact
-	from rreptb rrept_dag obtain
-	  pb_def: "pb = ((rep \<propto> high) (rep p))" and
-	  lowb_highb_def: "\<forall>no \<in> set_of rrept. 
+        case (goal1 lowb highb pb)
+        have rreptb: "Dag pb lowb highb rrept" by fact
+        have ab_nc: "\<forall>pt. pt \<notin> set_of rrept \<longrightarrow> 
+                        (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt" by fact
+        from rreptb rrept_dag obtain
+          pb_def: "pb = ((rep \<propto> high) (rep p))" and
+          lowb_highb_def: "\<forall>no \<in> set_of rrept. 
                               lowb no = (rep \<propto> low) no \<and> highb no = (rep \<propto> high) no"
-	  apply -
-	  apply (rotate_tac 1)
-	  apply (drule Dags_eq_hp_eq)
-	  apply auto
-	  done
-	have rept_end_dag: " Dag (rep p) lowb (highb(rep p := pb)) rept"
-	proof -
-	  have "\<forall>no \<in> set_of rept. 
+          apply -
+          apply (rotate_tac 1)
+          apply (drule Dags_eq_hp_eq)
+          apply auto
+          done
+        have rept_end_dag: " Dag (rep p) lowb (highb(rep p := pb)) rept"
+        proof -
+          have "\<forall>no \<in> set_of rept. 
                 lowb no = (rep \<propto> low) no \<and> (highb(rep p := pb)) no = (rep \<propto> high) no"
-	  proof
+          proof
             fix no
             assume no_in_rept: " no \<in> set_of rept"
             show "lowb no = (rep \<propto> low) no \<and> 
@@ -561,77 +561,77 @@ proof -
             proof (cases "no \<in> set_of rrept")
               case True
               with lowb_highb_def pb_def show ?thesis
-		by simp
+                by simp
             next
               assume no_notin_rrept: " no \<notin> set_of rrept"
               show ?thesis
               proof (cases "no \<in> set_of lrept")
-		case True
-		with no_notin_rrept rp_notin_lrept ab_nc
-		have ab_nc_no: "lowa no = lowb no \<and> higha no = highb no"
-		  apply -
-		  apply (erule_tac x=no in allE)
-		  apply (erule impE)
-		  apply simp
-		  apply (subgoal_tac "no \<noteq> rep p")
-		  apply simp
-		  apply blast
-		  done
-		from lowa_higha_def True have 
-		  "lowa no = (rep \<propto> low) no \<and> higha no = (rep \<propto> high) no"
-		  by auto
-		with ab_nc_no 
-		have "lowb no = (rep \<propto> low) no \<and> highb no =(rep \<propto> high) no" 
-		  by simp
-		with rp_notin_lrept True show ?thesis
-		  apply (subgoal_tac "no \<noteq> rep p")
-		  apply simp
-		  apply blast
-		  done
+                case True
+                with no_notin_rrept rp_notin_lrept ab_nc
+                have ab_nc_no: "lowa no = lowb no \<and> higha no = highb no"
+                  apply -
+                  apply (erule_tac x=no in allE)
+                  apply (erule impE)
+                  apply simp
+                  apply (subgoal_tac "no \<noteq> rep p")
+                  apply simp
+                  apply blast
+                  done
+                from lowa_higha_def True have 
+                  "lowa no = (rep \<propto> low) no \<and> higha no = (rep \<propto> high) no"
+                  by auto
+                with ab_nc_no 
+                have "lowb no = (rep \<propto> low) no \<and> highb no =(rep \<propto> high) no" 
+                  by simp
+                with rp_notin_lrept True show ?thesis
+                  apply (subgoal_tac "no \<noteq> rep p")
+                  apply simp
+                  apply blast
+                  done
               next
-		assume no_notin_lrept: " no \<notin> set_of lrept"
-		with no_in_rept rept_def no_notin_rrept have no_rp: "no = rep p"
-		  by simp
-		with rp_notin_lrept low_lowa_nc 
-		have a_nc: "low no = lowa no \<and> high no = higha no"
-		  by auto
-		from rp_notin_rrept no_rp ab_nc 
-		have "(lowa(rep p := pa)) no = lowb no \<and> higha no = highb no"
-		  by auto
-		with a_nc pa_def no_rp 
-		have "(rep \<propto> low) no = lowb no \<and> high no = highb no"
-		  by auto
-		with pb_def no_rp show ?thesis
-		  by simp
+                assume no_notin_lrept: " no \<notin> set_of lrept"
+                with no_in_rept rept_def no_notin_rrept have no_rp: "no = rep p"
+                  by simp
+                with rp_notin_lrept low_lowa_nc 
+                have a_nc: "low no = lowa no \<and> high no = higha no"
+                  by auto
+                from rp_notin_rrept no_rp ab_nc 
+                have "(lowa(rep p := pa)) no = lowb no \<and> higha no = highb no"
+                  by auto
+                with a_nc pa_def no_rp 
+                have "(rep \<propto> low) no = lowb no \<and> high no = highb no"
+                  by auto
+                with pb_def no_rp show ?thesis
+                  by simp
               qed
             qed
-	  qed
-	  with rept_dag 
-	  have "Dag (rep p) lowb (highb(rep p := pb)) rept = 
+          qed
+          with rept_dag 
+          have "Dag (rep p) lowb (highb(rep p := pb)) rept = 
                 Dag (rep p) (rep \<propto> low) (rep \<propto> high) rept"      
             apply -
             apply (rule heaps_eq_Dag_eq)
             apply auto
             done
-	  with rept_dag p_nNull show ?thesis
+          with rept_dag p_nNull show ?thesis
             by simp
-	qed
-	have "(\<forall>pt. pt \<notin> set_of rept \<longrightarrow> low pt = lowb pt \<and> 
+        qed
+        have "(\<forall>pt. pt \<notin> set_of rept \<longrightarrow> low pt = lowb pt \<and> 
                     high pt = (highb(rep p := pb)) pt)"
-	proof (intro allI impI)
-	  fix pt
-	  assume pt_notin_rept: "pt \<notin> set_of rept"
-	  with rept_def obtain
+        proof (intro allI impI)
+          fix pt
+          assume pt_notin_rept: "pt \<notin> set_of rept"
+          with rept_def obtain
             pt_notin_lrept: "pt \<notin> set_of lrept" and
             pt_notin_rrept: "pt \<notin> set_of rrept" and
             pt_neq_rp: "pt \<noteq> rep p"
             by simp
-	  with low_lowa_nc ab_nc 
-	  show "low pt = lowb pt \<and> high pt = (highb(rep p := pb)) pt"
+          with low_lowa_nc ab_nc 
+          show "low pt = lowb pt \<and> high pt = (highb(rep p := pb)) pt"
             by auto
-	qed
-	with rept_end_dag show ?case
-	  by simp
+        qed
+        with rept_end_dag show ?case
+          by simp
       qed
     qed
   qed
@@ -717,91 +717,91 @@ proof -
       case (goal1 lowa higha pa)
       have lrepta: "Dag pa lowa higha lrept" by fact
       have low_lowa_nc: 
-	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt" by fact
+        "\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt" by fact
       from lrept_dag lrepta  obtain 
-	pa_def: "pa = (rep \<propto> low) (rep p)" and
-	lowa_higha_def: "\<forall>no \<in> set_of lrept. 
+        pa_def: "pa = (rep \<propto> low) (rep p)" and
+        lowa_higha_def: "\<forall>no \<in> set_of lrept. 
         lowa no = (rep \<propto> low) no \<and> higha no = (rep \<propto> high) no"
-	apply -
-	apply (rotate_tac 1)
-	apply (drule Dags_eq_hp_eq)
-	apply auto
-	done
+        apply -
+        apply (rotate_tac 1)
+        apply (drule Dags_eq_hp_eq)
+        apply auto
+        done
       from rept_dag have rept_DAG: "DAG rept"
-	by (rule Dag_is_DAG)
+        by (rule Dag_is_DAG)
       with rept_def have rp_notin_lrept: "rep p \<notin> set_of lrept"
-	by simp
+        by simp
       from rept_DAG rept_def have rp_notin_rrept: "rep p \<notin> set_of rrept"
-	by simp
+        by simp
       have rrepta: "Dag ((rep \<propto> id) (higha (rep p))) 
                        (rep \<propto> lowa(rep p := pa)) (rep \<propto> higha) rrept"
       proof -
-	from low_lowa_nc rp_notin_lrept 
-	have "(rep \<propto> high) (rep p) = (rep \<propto> higha) (rep p)"
+        from low_lowa_nc rp_notin_lrept 
+        have "(rep \<propto> high) (rep p) = (rep \<propto> higha) (rep p)"
           by (auto simp add: null_comp_def)
-	with rrept_dag have higha_mixed_rrept: 
+        with rrept_dag have higha_mixed_rrept: 
           "Dag ((rep \<propto> id) (higha (rep p))) (rep \<propto> low) (rep \<propto> high) rrept"
           by (simp add: id_trans)
-	thm low_high_exchange_dag
-	with low_lowa_nc lowa_higha_def rno_rrept 
-	have lowa_higha_rrept:
+        thm low_high_exchange_dag
+        with low_lowa_nc lowa_higha_def rno_rrept 
+        have lowa_higha_rrept:
             "Dag ((rep \<propto> id) (higha (rep p))) (rep \<propto> lowa) (rep \<propto> higha) rrept"
           apply -
           apply (rule low_high_exchange_dag)
           apply auto
           done
-	have "Dag ((rep \<propto> id) (higha (rep p))) (rep \<propto> lowa) (rep \<propto> higha) rrept = 
+        have "Dag ((rep \<propto> id) (higha (rep p))) (rep \<propto> lowa) (rep \<propto> higha) rrept = 
               Dag ((rep \<propto> id) (higha (rep p))) 
                       (rep \<propto> lowa(rep p := pa)) (rep \<propto> higha) rrept"
-	proof -
+        proof -
           have "\<forall>no \<in> set_of rrept. 
-	            (rep \<propto> lowa) no = (rep \<propto> lowa(rep p := pa)) no \<and>
+                    (rep \<propto> lowa) no = (rep \<propto> lowa(rep p := pa)) no \<and>
                     (rep \<propto> higha) no = (rep \<propto> higha) no"
           proof 
             fix no
             assume no_in_rrept: "no \<in> set_of rrept"
             with rp_notin_rrept have "no \<noteq> rep p" 
-	      by blast
+              by blast
             thus "(rep \<propto> lowa) no = (rep \<propto> lowa(rep p := pa)) no \<and> 
-	      (rep \<propto> higha) no = (rep \<propto> higha) no"
-	      by (simp add: null_comp_def)
+              (rep \<propto> higha) no = (rep \<propto> higha) no"
+              by (simp add: null_comp_def)
           qed
           thus ?thesis
             by (rule heaps_eq_Dag_eq)
-	qed
-	with lowa_higha_rrept show ?thesis
+        qed
+        with lowa_higha_rrept show ?thesis
           by simp
       qed
       show ?case
-	apply (rule_tac x=rrept in exI)
-	apply (rule conjI)
-	apply  (rule rrepta)
-	apply (rule conjI)
-	apply  (rule rno_rrept)
-	apply (rule conjI)
-	using rept_dag rept_def rrepta
-	apply  (simp only: Dag_dag)
-	apply  (clarsimp simp add: id_trans Dag_dag)
-	apply clarify
+        apply (rule_tac x=rrept in exI)
+        apply (rule conjI)
+        apply  (rule rrepta)
+        apply (rule conjI)
+        apply  (rule rno_rrept)
+        apply (rule conjI)
+        using rept_dag rept_def rrepta
+        apply  (simp only: Dag_dag)
+        apply  (clarsimp simp add: id_trans Dag_dag)
+        apply clarify
       proof -
-	case (goal1 lowb highb pb)
-	have rreptb: "Dag pb lowb highb rrept" by fact
-	have ab_nc: "\<forall>pt. pt \<notin> set_of rrept \<longrightarrow> 
-	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt" by fact
-	from rreptb rrept_dag obtain
-	  pb_def: "pb = ((rep \<propto> high) (rep p))" and
-	  lowb_highb_def: "\<forall>no \<in> set_of rrept. 
+        case (goal1 lowb highb pb)
+        have rreptb: "Dag pb lowb highb rrept" by fact
+        have ab_nc: "\<forall>pt. pt \<notin> set_of rrept \<longrightarrow> 
+                        (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt" by fact
+        from rreptb rrept_dag obtain
+          pb_def: "pb = ((rep \<propto> high) (rep p))" and
+          lowb_highb_def: "\<forall>no \<in> set_of rrept. 
                               lowb no = (rep \<propto> low) no \<and> highb no = (rep \<propto> high) no"
-	  apply -
-	  apply (rotate_tac 1)
-	  apply (drule Dags_eq_hp_eq)
-	  apply auto
-	  done
-	have rept_end_dag: " Dag (rep p) lowb (highb(rep p := pb)) rept"
-	proof -
-	  have "\<forall>no \<in> set_of rept. 
+          apply -
+          apply (rotate_tac 1)
+          apply (drule Dags_eq_hp_eq)
+          apply auto
+          done
+        have rept_end_dag: " Dag (rep p) lowb (highb(rep p := pb)) rept"
+        proof -
+          have "\<forall>no \<in> set_of rept. 
                 lowb no = (rep \<propto> low) no \<and> (highb(rep p := pb)) no = (rep \<propto> high) no"
-	  proof
+          proof
             fix no
             assume no_in_rept: " no \<in> set_of rept"
             show "lowb no = (rep \<propto> low) no \<and> 
@@ -809,77 +809,77 @@ proof -
             proof (cases "no \<in> set_of rrept")
               case True
               with lowb_highb_def pb_def show ?thesis
-		by simp
+                by simp
             next
               assume no_notin_rrept: " no \<notin> set_of rrept"
               show ?thesis
               proof (cases "no \<in> set_of lrept")
-		case True
-		with no_notin_rrept rp_notin_lrept ab_nc
-		have ab_nc_no: "lowa no = lowb no \<and> higha no = highb no"
-		  apply -
-		  apply (erule_tac x=no in allE)
-		  apply (erule impE)
-		  apply simp
-		  apply (subgoal_tac "no \<noteq> rep p")
-		  apply simp
-		  apply blast
-		  done
-		from lowa_higha_def True have 
-		  "lowa no = (rep \<propto> low) no \<and> higha no = (rep \<propto> high) no"
-		  by auto
-		with ab_nc_no 
-		have "lowb no = (rep \<propto> low) no \<and> highb no =(rep \<propto> high) no" 
-		  by simp
-		with rp_notin_lrept True show ?thesis
-		  apply (subgoal_tac "no \<noteq> rep p")
-		  apply simp
-		  apply blast
-		  done
+                case True
+                with no_notin_rrept rp_notin_lrept ab_nc
+                have ab_nc_no: "lowa no = lowb no \<and> higha no = highb no"
+                  apply -
+                  apply (erule_tac x=no in allE)
+                  apply (erule impE)
+                  apply simp
+                  apply (subgoal_tac "no \<noteq> rep p")
+                  apply simp
+                  apply blast
+                  done
+                from lowa_higha_def True have 
+                  "lowa no = (rep \<propto> low) no \<and> higha no = (rep \<propto> high) no"
+                  by auto
+                with ab_nc_no 
+                have "lowb no = (rep \<propto> low) no \<and> highb no =(rep \<propto> high) no" 
+                  by simp
+                with rp_notin_lrept True show ?thesis
+                  apply (subgoal_tac "no \<noteq> rep p")
+                  apply simp
+                  apply blast
+                  done
               next
-		assume no_notin_lrept: " no \<notin> set_of lrept"
-		with no_in_rept rept_def no_notin_rrept have no_rp: "no = rep p"
-		  by simp
-		with rp_notin_lrept low_lowa_nc 
-		have a_nc: "low no = lowa no \<and> high no = higha no"
-		  by auto
-		from rp_notin_rrept no_rp ab_nc 
-		have "(lowa(rep p := pa)) no = lowb no \<and> higha no = highb no"
-		  by auto
-		with a_nc pa_def no_rp 
-		have "(rep \<propto> low) no = lowb no \<and> high no = highb no"
-		  by auto
-		with pb_def no_rp show ?thesis
-		  by simp
+                assume no_notin_lrept: " no \<notin> set_of lrept"
+                with no_in_rept rept_def no_notin_rrept have no_rp: "no = rep p"
+                  by simp
+                with rp_notin_lrept low_lowa_nc 
+                have a_nc: "low no = lowa no \<and> high no = higha no"
+                  by auto
+                from rp_notin_rrept no_rp ab_nc 
+                have "(lowa(rep p := pa)) no = lowb no \<and> higha no = highb no"
+                  by auto
+                with a_nc pa_def no_rp 
+                have "(rep \<propto> low) no = lowb no \<and> high no = highb no"
+                  by auto
+                with pb_def no_rp show ?thesis
+                  by simp
               qed
             qed
-	  qed
-	  with rept_dag 
-	  have "Dag (rep p) lowb (highb(rep p := pb)) rept = 
+          qed
+          with rept_dag 
+          have "Dag (rep p) lowb (highb(rep p := pb)) rept = 
                 Dag (rep p) (rep \<propto> low) (rep \<propto> high) rept"      
             apply -
             apply (rule heaps_eq_Dag_eq)
             apply auto
             done
-	  with rept_dag p_nNull show ?thesis
+          with rept_dag p_nNull show ?thesis
             by simp
-	qed
-	have "(\<forall>pt. pt \<notin> set_of rept \<longrightarrow> low pt = lowb pt \<and> 
+        qed
+        have "(\<forall>pt. pt \<notin> set_of rept \<longrightarrow> low pt = lowb pt \<and> 
                     high pt = (highb(rep p := pb)) pt)"
-	proof (intro allI impI)
-	  fix pt
-	  assume pt_notin_rept: "pt \<notin> set_of rept"
-	  with rept_def obtain
+        proof (intro allI impI)
+          fix pt
+          assume pt_notin_rept: "pt \<notin> set_of rept"
+          with rept_def obtain
             pt_notin_lrept: "pt \<notin> set_of lrept" and
             pt_notin_rrept: "pt \<notin> set_of rrept" and
             pt_neq_rp: "pt \<noteq> rep p"
             by simp
-	  with low_lowa_nc ab_nc 
-	  show "low pt = lowb pt \<and> high pt = (highb(rep p := pb)) pt"
+          with low_lowa_nc ab_nc 
+          show "low pt = lowb pt \<and> high pt = (highb(rep p := pb)) pt"
             by auto
-	qed
-	with rept_end_dag show ?case
-	  by simp
+        qed
+        with rept_end_dag show ?case
+          by simp
       qed
     qed
   qed

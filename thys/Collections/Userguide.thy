@@ -16,10 +16,17 @@ text {*
 
   The relation between the data structures of the collection framework and standard Isabelle types (e.g. for sets and maps) is established by abstraction functions.
 
-  Currently, the Isabelle Collections Framework provides set and map implementations based on (associative) lists, red-black trees, hashing and tries. 
-  Moreover, an implementation of a FIFO-queue based on lists is provided.
+  Currently, the following interfaces and data-structures are provided by the Isabelle Collections Framework:
+  \begin{itemize}
+    \item Set and map implementations based on (associative) lists, red-black trees, hashing and tries.
+    \item An implementation of a FIFO-queue based on two stacks.
+    \item Annotated lists implemented by finger trees.
+    \item Priority queues implemented by binomial heaps, skew binomial heaps, and annotated lists (via finger trees).
+  \end{itemize}
 
-  Finger trees and priority queues are implemented in a separate AFP entry.
+  The red-black trees are imported from the standard isabelle library. The binomial and skew binomial heaps are
+  imported from the {\em Binomial-Heaps} entry of the archive of formal proofs. The finger trees are imported from
+  the {\em Finger-Trees} entry of the archive of formal proofs.
 *}
 
 subsection "Getting Started"
@@ -520,13 +527,13 @@ text_raw {*\label{sec:userguide.design}*}
 
     *}
 
-  subsection {* Grouping Functions *}
+  subsection {* Record Based Interfaces *}
   text {*
     We have experimented with grouping functions of an interface together via a record.
     This has the advantage that parameterization of generic algorithms becomes simpler,
     as multiple function parameters are replaced by a single record parameter.
     For maps and sets, theories @{theory RecordSetImpl} and @{theory RecordMapImpl} provide these instantiations 
-    for all implementations (except for tries).
+    for all implementations (except for tries). Moreover, the priority queue implementations contain such records for all important operations.
     The records do not include operations that depend on extra type variables because these operations would become monomorphic due to Isabelle's type system restrictions.
 
     *}

@@ -50,9 +50,9 @@ proof(cases "chosen s=NotAnInput")
         \<and> (\<forall>q \<in> UNIV - {p}. hasRead s p d q)"
         by(auto simp add: MajoritySet_def, blast)
       then obtain d 
-	where dinD: "d\<in>D" 
-	and ddisk: "d \<in> disksWritten s p"
-	and dhasR: "\<forall>q \<in> UNIV - {p}. hasRead s p d q"
+        where dinD: "d\<in>D" 
+        and ddisk: "d \<in> disksWritten s p"
+        and dhasR: "\<forall>q \<in> UNIV - {p}. hasRead s p d q"
         by auto
       from inv2b
       have "Inv2b_inner s p d"
@@ -150,7 +150,7 @@ proof(cases "chosen s=NotAnInput")
     with phase phase_q hasRead inv3 p41
     show "\<lparr>block = dblock s p, proc = p\<rparr> \<in> blocksRead s q d"
       by(auto simp add: HInv3_def HInv3_inner_def 
-	                HInv3_L_def HInv3_R_def)
+                        HInv3_L_def HInv3_R_def)
   qed
   have p36: "\<forall>q. \<forall>d\<in>D. phase s' q=1 \<and> bal(dblock s p) \<le> mbal(dblock s' q) \<and> hasRead s' q d p
                         \<longrightarrow> (\<exists>br\<in>blocksRead s' q d. bal(block br) = bal(dblock s p))"
@@ -333,34 +333,34 @@ next
       assume Dmaj: "D \<in> MajoritySet"
       show "\<exists>d\<in>D. bal (dblock s p) < mbal (disk s d q) \<longrightarrow> hasRead s p d q"
       proof(cases "p=q")
-	assume pq: "p=q"
-	thus ?thesis
-	proof auto
-	  from maj majorities_intersect Dmaj
-	  have "?D\<inter>D\<noteq>{}"
-	    by(auto simp add: MajoritySet_def)
-	  hence "\<exists>d\<in>?D\<inter>D. d\<in> disksWritten s p" by auto
-	  then obtain d where d: "d\<in> disksWritten s p" and "d\<in>?D\<inter>D"
-	    by auto
-	  hence dD: "d\<in>D" by auto
-	  from d inv2b
-	  have "disk s d p = dblock s p"
-	    by(auto simp add: Inv2b_def Inv2b_inner_def)
-	  with inv2c phase
-	  have "bal(dblock s p) = mbal(disk s d p) "
-	    by(auto simp add: Inv2c_def Inv2c_inner_def)
-	  with dD pq
-	  show  "\<exists>d\<in>D. bal (dblock s q) < mbal (disk s d q) \<longrightarrow> hasRead s q d q"
-	    by auto
-	qed
+        assume pq: "p=q"
+        thus ?thesis
+        proof auto
+          from maj majorities_intersect Dmaj
+          have "?D\<inter>D\<noteq>{}"
+            by(auto simp add: MajoritySet_def)
+          hence "\<exists>d\<in>?D\<inter>D. d\<in> disksWritten s p" by auto
+          then obtain d where d: "d\<in> disksWritten s p" and "d\<in>?D\<inter>D"
+            by auto
+          hence dD: "d\<in>D" by auto
+          from d inv2b
+          have "disk s d p = dblock s p"
+            by(auto simp add: Inv2b_def Inv2b_inner_def)
+          with inv2c phase
+          have "bal(dblock s p) = mbal(disk s d p) "
+            by(auto simp add: Inv2c_def Inv2c_inner_def)
+          with dD pq
+          show  "\<exists>d\<in>D. bal (dblock s q) < mbal (disk s d q) \<longrightarrow> hasRead s q d q"
+            by auto
+        qed
       next
-	case False
-	with p42
-	have "\<exists>D\<in>MajoritySet. \<forall>d\<in>D. hasRead s p d q"
-	  by auto
-	with majorities_intersect Dmaj
-	show ?thesis
-	  by(auto simp add: MajoritySet_def, blast)
+        case False
+        with p42
+        have "\<exists>D\<in>MajoritySet. \<forall>d\<in>D. hasRead s p d q"
+          by auto
+        with majorities_intersect Dmaj
+        show ?thesis
+          by(auto simp add: MajoritySet_def, blast)
       qed
     qed
     with inv5 act
@@ -376,8 +376,8 @@ next
       (\<exists>p. \<exists>D\<in>MajoritySet.(\<forall>d\<in>D.  b \<le> bal(disk s d p)))"
         by(auto simp add: valueChosen_def, force)
       with majority_nonempty obtain b p D d
-	where "IsMajority D \<and> b\<in> (UN p. Ballot p) \<and>  
-	       maxBalInp s b (chosen s) \<and> d\<in>D \<and> b \<le> bal(disk s d p)"
+        where "IsMajority D \<and> b\<in> (UN p. Ballot p) \<and>  
+               maxBalInp s b (chosen s) \<and> d\<in>D \<and> b \<le> bal(disk s d p)"
         by(auto simp add: MajoritySet_def, blast)
       with disk_allblks
       show ?thesis

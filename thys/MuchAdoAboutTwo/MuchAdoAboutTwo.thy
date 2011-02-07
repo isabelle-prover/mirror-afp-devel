@@ -1,6 +1,6 @@
 (*  Title:       Much Ado about Two
-    Author:      Sascha Böhme <boehmes@informatik.tu-muenchen.de>, 2007
-    Maintainer:  Sascha Böhme <boehmes@informatik.tu-muenchen.de>
+    Author:      Sascha BÃ¶hme <boehmes@informatik.tu-muenchen.de>, 2007
+    Maintainer:  Sascha BÃ¶hme <boehmes@informatik.tu-muenchen.de>
 *)
 
 
@@ -1323,7 +1323,7 @@ proof (rule ccontr)
       assume "Two \<in> set (map (h2 i) ys)"
       hence "Two \<in> (h2 i) ` (set ys)" by simp
       then obtain j where j_def: "j \<in> set ys \<and> Two = h2 i j" 
-	using Set.image_iff [where f="h2 i"] by auto
+        using Set.image_iff [where f="h2 i"] by auto
       hence "i + 1 = j" by (simp split: if_splits)
       with Suc_i_not_in_ys and j_def show False by simp
     qed

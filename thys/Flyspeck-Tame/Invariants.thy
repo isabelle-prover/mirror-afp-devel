@@ -1204,7 +1204,7 @@ proof -
 		    apply (rule splitFace_f12_f21_neq_norm) apply (rule pre) apply simp apply (rule fdg)
 		   apply (simp add: minGraphProps4 vertices_graph)
 
-(* zweite groﬂe Implikation *)
+(* zweite gro√üe Implikation *)
 		  apply (simp add: normFaces_def)
 		  apply (subgoal_tac "(x - |faceListAt g | ) < n") apply simp
 		   apply (rule splitFace_f12_f21_neq_norm) apply (rule pre) apply simp
@@ -1381,7 +1381,7 @@ apply (rule equalityI)
   apply (rule pre_splitFace_pre_split_face) apply assumption
  apply (simp only: pre_splitFace_def)
 
-(* R¸ckrichtung *)
+(* R√ºckrichtung *)
 apply (rule subsetI)
 apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
  apply (case_tac "va < | faceListAt g' |")

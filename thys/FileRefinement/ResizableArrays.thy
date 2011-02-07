@@ -3,8 +3,7 @@ theory ResizableArrays imports Main begin
 
 text {* These arrays resize themselves, padding with fillValue. *}
 
-types
-  'a rArray = "nat * (nat => 'a)"
+type_synonym 'a rArray = "nat * (nat => 'a)"
 
 definition fillAndUpdate :: "nat => (nat => 'a) => nat => 'a => 'a => (nat => 'a)" where
   "fillAndUpdate len f i value fillValue j ==

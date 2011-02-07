@@ -1,5 +1,4 @@
 (*  Title:       The Cauchy-Schwarz Inequality
-    ID:          $Id: CauchySchwarz.thy,v 1.5 2007-06-13 20:14:38 makarius Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
@@ -56,7 +55,7 @@ text {* We now define a vector type to be a tuple of (function,
 length). Where the function is of type @{typ "nat\<Rightarrow>real"}. We also
 define some accessor functions and appropriate notation. *}
 
-types vector = "(nat\<Rightarrow>real) * nat";
+type_synonym vector = "(nat\<Rightarrow>real) * nat";
 
 definition
   ith :: "vector \<Rightarrow> nat \<Rightarrow> real" ("((_)\<^sub>_)" [80,100] 100) where

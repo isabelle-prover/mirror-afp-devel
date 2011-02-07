@@ -1,5 +1,4 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: StoreProperties.thy,v 1.13 2008-07-25 17:11:23 fhaftmann Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -206,18 +205,18 @@ proof
     have "s\<langle>t\<rangle>@@k = s@@k"
     proof -
       from reach_k have isRef: "isRefV (s\<langle>t\<rangle>@@k)"
-	by (rule reachable_isRef)
+        by (rule reachable_isRef)
       have "\<not> isArrLenLoc k"
       proof (rule ccontr,simp)
-	assume "isArrLenLoc k"
-	then have "typeof (s\<langle>t\<rangle>@@k) = IntgT"
-	  by (rule val_ArrLen_IntgT)
-	with isRef 
-	show "False"
-	  by (cases "(s\<langle>t\<rangle>@@k)") simp_all
+        assume "isArrLenLoc k"
+        then have "typeof (s\<langle>t\<rangle>@@k) = IntgT"
+          by (rule val_ArrLen_IntgT)
+        with isRef 
+        show "False"
+          by (cases "(s\<langle>t\<rangle>@@k)") simp_all
       qed
       thus ?thesis
-	by (rule access_alloc')
+        by (rule access_alloc')
     qed
     ultimately have "s\<turnstile> l reachable_from (s@@k)"
       by simp
@@ -238,18 +237,18 @@ next
     have "s\<langle>t\<rangle>@@k = s@@k"
     proof -
       from reach_k have isRef: "isRefV (s@@k)"
-	by (rule reachable_isRef)
+        by (rule reachable_isRef)
       have "\<not> isArrLenLoc k"
       proof (rule ccontr,simp)
-	assume "isArrLenLoc k"
-	then have "typeof (s@@k) = IntgT"
-	  by (rule val_ArrLen_IntgT)
-	with isRef 
-	show "False"
-	  by (cases "(s@@k)") simp_all
+        assume "isArrLenLoc k"
+        then have "typeof (s@@k) = IntgT"
+          by (rule val_ArrLen_IntgT)
+        with isRef 
+        show "False"
+          by (cases "(s@@k)") simp_all
       qed
       thus ?thesis
-	by (rule access_alloc')
+        by (rule access_alloc')
     qed
     ultimately have "s\<langle>t\<rangle>\<turnstile> l reachable_from (s\<langle>t\<rangle>@@k)"
       by simp
@@ -298,26 +297,26 @@ proof
       then have "s\<langle>l := y\<rangle>@@k = s@@k" by simp
       moreover 
       from not_m_k k_not_Null have "\<not> s\<turnstile> m reachable_from (s@@k)"
-	by (iprover intro: reach.intros)
+        by (iprover intro: reach.intros)
       ultimately show False
-	using not_m_y hyp by simp
+        using not_m_y hyp by simp
     next
       case True note eq_l_k = this
       show ?thesis
       proof (cases "alive (ref l) s \<and> alive y s \<and> typeof y \<le> ltype l")
-	case True
-	with eq_l_k have "s\<langle>l := y\<rangle>@@k = y"
-	  by simp
-	with not_m_y hyp show False by simp
+        case True
+        with eq_l_k have "s\<langle>l := y\<rangle>@@k = y"
+          by simp
+        with not_m_y hyp show False by simp
       next
-	case False
-	hence "s\<langle>l := y\<rangle> = s"
-	  by auto
-	moreover 
-	from not_m_k k_not_Null have "\<not> s\<turnstile> m reachable_from (s@@k)"
-	  by (iprover intro: reach.intros)
-	ultimately show False
-	  using not_m_y hyp by simp
+        case False
+        hence "s\<langle>l := y\<rangle> = s"
+          by auto
+        moreover 
+        from not_m_k k_not_Null have "\<not> s\<turnstile> m reachable_from (s@@k)"
+          by (iprover intro: reach.intros)
+        ultimately show False
+          using not_m_y hyp by simp
       qed
     qed
   qed
@@ -495,7 +494,7 @@ lemma disj_cases [consumes 1]:
   assumes "\<And> l.  \<not> s\<turnstile> l reachable_from x \<Longrightarrow> P"
   assumes "\<And> l.  \<not> s\<turnstile> l reachable_from y \<Longrightarrow> P"
   shows "P"
-using prems by (auto simp add: disj_def)
+  using assms by (auto simp add: disj_def)
 
 text {* Lemma 3.3 (i) in \cite{Poetzsch-Heffter97specification} *}
 lemma disj1: "\<lbrakk>disj x y s; \<not> s\<turnstile> l reachable_from x; \<not> s\<turnstile> l reachable_from y\<rbrakk> 
@@ -628,15 +627,15 @@ proof -
     show "s@@l = r@@l"
     proof -
       from reach_l s_t have "s@@l=t@@l"
-	by (simp add: xeq_def)
+        by (simp add: xeq_def)
       also have "t@@l = r@@l"
       proof -
-	from s_t have "\<forall> l. s\<turnstile> l reachable_from x \<longrightarrow> s@@l = t@@l"
-	  by (simp add: xeq_def)
-	from reach9 [OF this] reach_l have "t\<turnstile> l reachable_from x"
-	  by simp
-	with t_r show ?thesis
-	  by (simp add: xeq_def)
+        from s_t have "\<forall> l. s\<turnstile> l reachable_from x \<longrightarrow> s@@l = t@@l"
+          by (simp add: xeq_def)
+        from reach9 [OF this] reach_l have "t\<turnstile> l reachable_from x"
+          by simp
+        with t_r show ?thesis
+          by (simp add: xeq_def)
       qed
       finally show ?thesis .
     qed
@@ -665,28 +664,28 @@ next
       case (objLoc cf a)
       have "l = objLoc cf a" by fact
       hence "s\<turnstile> l reachable_from (objV (cls cf) a)"
-	by simp
+        by simp
       with xeq show ?thesis
-	by (simp add: xeq_def)
+        by (simp add: xeq_def)
     next
       case (staticLoc f)
       have "l = staticLoc f" by fact
       with static_eq show ?thesis 
-	by (simp add: xeq_def)
+        by (simp add: xeq_def)
     next
       case (arrLenLoc T a)
       have "l = arrLenLoc T a" by fact
       hence "s\<turnstile> l reachable_from (arrV T a)"
-	by simp
+        by simp
       with xeq show ?thesis
-	by (simp add: xeq_def)
+        by (simp add: xeq_def)
     next
       case (arrLoc T a i)
       have "l = arrLoc T a i" by fact
       hence "s\<turnstile> l reachable_from (arrV T a)"
-	by simp
+        by simp
       with xeq show ?thesis
-	by (simp add: xeq_def)
+        by (simp add: xeq_def)
     qed
   qed
 qed
@@ -819,27 +818,27 @@ proof (rule xeq2)
       case False note unalive_x_s = this
       show ?thesis
       proof (cases "alive x t")
-	case True
-	with t_s show ?thesis 
-	  by (subst xeq1_sym) (simp add: lessalive_def)
+        case True
+        with t_s show ?thesis 
+          by (subst xeq1_sym) (simp add: lessalive_def)
       next
-	case False 
-	show ?thesis
-	proof (rule xeqI)
-	  from False unalive_x_s show "alive x s = alive x t" by simp
-	next
-	  fix l assume reach_s_x: "s\<turnstile> l reachable_from x"
-	  with unalive_x_s have x: "x = ref l" 
-	    by (rule ref_reach_unalive)
-	  with unalive_x_s have "s@@l = init (ltype l)"
-	    by simp
-	  also from reach_s_x x have "t\<turnstile> l reachable_from x"
-	    by (auto intro: reach.Immediate unreachable_Null)
-	  with False x have "t@@l = init (ltype l)"
-	    by simp
-	  finally show "s@@l = t@@l"
-	    by simp
-	qed
+        case False 
+        show ?thesis
+        proof (rule xeqI)
+          from False unalive_x_s show "alive x s = alive x t" by simp
+        next
+          fix l assume reach_s_x: "s\<turnstile> l reachable_from x"
+          with unalive_x_s have x: "x = ref l" 
+            by (rule ref_reach_unalive)
+          with unalive_x_s have "s@@l = init (ltype l)"
+            by simp
+          also from reach_s_x x have "t\<turnstile> l reachable_from x"
+            by (auto intro: reach.Immediate unreachable_Null)
+          with False x have "t@@l = init (ltype l)"
+            by simp
+          finally show "s@@l = t@@l"
+            by simp
+        qed
       qed
     qed
   qed
@@ -1061,7 +1060,7 @@ proof
     next
       case True
       from not_Null have "treach (typeof (ref k)) (typeof (s@@k))"
-	by (rule treach_ref_l')
+        by (rule treach_ref_l')
       also note True
       finally have "treach (typeof (ref k)) (typeof (ref l))" .
       with not_k_l show False ..

@@ -21,7 +21,9 @@ imports
   "Compiler/Preprocessor"
   "MM/SC"
   "MM/SC_Interp"
+  "MM/SC_Collections"
   "MM/JMM"
+  "Execute/J_Execute"
 begin
 
 

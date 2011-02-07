@@ -4,7 +4,7 @@
 *)
 header "List Interleaving Operator"
 theory Interleave
-imports Main Permutation Misc
+imports Main "~~/src/HOL/Library/Permutation" Misc
 begin
 text_raw {*\label{thy:Interleave}*}
 
@@ -107,8 +107,8 @@ lemma interleave_cont_rev_conc[simp]: "b@a \<in> a\<otimes>b"
 done
 
 lemma interleave_not_empty: "a\<otimes>b ~= {}" 
-	apply(induct rule: interleave.induct)
-	apply(auto)
+  apply(induct rule: interleave.induct)
+  apply(auto)
 done
 
 lemma cons_interleave_split: "\<lbrakk>a#l \<in> l1\<otimes>l2\<rbrakk> \<Longrightarrow> (EX lh . l1=a#lh & l \<in> lh\<otimes>l2 | l2=a#lh & l \<in> l1\<otimes>lh )"

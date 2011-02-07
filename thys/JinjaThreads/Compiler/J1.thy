@@ -1536,7 +1536,7 @@ proof -
     by(unfold_locales)(auto elim!: Red1.cases simp add: final_iff)
 qed
 
-lemma Red1_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1 P) (\<tau>MOVE1 P) wfs"
+lemma Red1_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1 P) (\<tau>MOVE1 P)"
 proof -
   interpret final_thread_wf final_expr1 "mred1 P" convert_RA
     by(rule Red1_final_thread_wf)
@@ -1552,7 +1552,7 @@ proof -
   qed
 qed
 
-lemma Red1'_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1' P) (\<tau>MOVE1 P) wfs"
+lemma Red1'_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1' P) (\<tau>MOVE1 P)"
 proof -
   interpret final_thread_wf final_expr1 "mred1' P" convert_RA
     by(rule Red1'_final_thread_wf)
@@ -1576,8 +1576,7 @@ sublocale J1_heap_base < Red1_mthr!:
     "mred1 P"
     convert_RA
     "\<tau>MOVE1 P"
-    wfs
-  for P wfs
+  for P
 by(rule Red1_\<tau>mthr_wf)
 
 sublocale J1_heap_base < Red1'_mthr!:
@@ -1586,8 +1585,7 @@ sublocale J1_heap_base < Red1'_mthr!:
     "mred1' P"
     convert_RA
     "\<tau>MOVE1 P"
-    wfs
-  for P wfs
+  for P
 by(rule Red1'_\<tau>mthr_wf)
 
 context J1_heap_base begin

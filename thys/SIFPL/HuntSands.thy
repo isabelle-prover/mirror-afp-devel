@@ -22,7 +22,7 @@ post-relations $R$ and $S$ (both instantiated to $\approx$ in Section
 \ref{sec:BaseLineNI}), and by a specification $A$ that directly links
 pre- and post-states.*}
 
-types TT = "(State \<times> State) \<Rightarrow> bool"
+type_synonym TT = "(State \<times> State) \<Rightarrow> bool"
 
 definition RSsecure::"(State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow>
                       (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow> IMP \<Rightarrow> bool"
@@ -65,7 +65,7 @@ subsection{*Basic definitions*}
 
 text{*Contexts map program variables to lattice elements.*}
 
-types "CONTEXT" = "Var \<Rightarrow> L"
+type_synonym "CONTEXT" = "Var \<Rightarrow> L"
 
 definition upd ::"CONTEXT \<Rightarrow> Var \<Rightarrow> L \<Rightarrow> CONTEXT"
 where "upd G x p = (\<lambda> y . if x=y then p else G y)"

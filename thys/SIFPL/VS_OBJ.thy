@@ -434,7 +434,7 @@ done
 text{*The type of invariants $\Phi$ includes a component that holds a
 partial bijection.*}
 
-types TT = "(State \<times> State \<times> PBij) \<Rightarrow> bool"
+type_synonym TT = "(State \<times> State \<times> PBij) \<Rightarrow> bool"
 
 text{*The operator constructing an assertion from an invariant.*}
 

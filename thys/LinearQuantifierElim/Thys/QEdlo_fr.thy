@@ -1,6 +1,4 @@
-(*  ID:         $Id: QEdlo_fr.thy,v 1.3 2009-02-27 17:46:41 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory QEdlo_fr
 imports DLO
@@ -67,17 +65,17 @@ proof(induct f)
       case 0[simp]
       show ?thesis
       proof (cases j)
-	case 0 thus ?thesis using Atom by simp
+        case 0 thus ?thesis using Atom by simp
       next
-	case Suc thus ?thesis using Atom by(simp add:EQ_def)
+        case Suc thus ?thesis using Atom by(simp add:EQ_def)
       qed
     next
       case Suc[simp]
       show ?thesis
       proof (cases j)
-	case 0 thus ?thesis using Atom by(simp add:EQ_def)
+        case 0 thus ?thesis using Atom by(simp add:EQ_def)
       next
-	case Suc thus ?thesis using Atom by simp
+        case Suc thus ?thesis using Atom by simp
       qed
     qed
   qed

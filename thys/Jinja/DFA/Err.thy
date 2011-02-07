@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
-The error type
+The error type.
 *)
 
 header {* \isaheader{The Error Type} *}
@@ -22,33 +22,33 @@ where
 
 definition lift :: "('a \<Rightarrow> 'b err) \<Rightarrow> ('a err \<Rightarrow> 'b err)"
 where
-  "lift f e \<equiv> case e of Err \<Rightarrow> Err | OK x \<Rightarrow> f x"
+  "lift f e = (case e of Err \<Rightarrow> Err | OK x \<Rightarrow> f x)"
 
 definition lift2 :: "('a \<Rightarrow> 'b \<Rightarrow> 'c err) \<Rightarrow> 'a err \<Rightarrow> 'b err \<Rightarrow> 'c err"
 where
-  "lift2 f e\<^isub>1 e\<^isub>2 \<equiv>
-  case e\<^isub>1 of Err  \<Rightarrow> Err | OK x \<Rightarrow> (case e\<^isub>2 of Err \<Rightarrow> Err | OK y \<Rightarrow> f x y)"
+  "lift2 f e\<^isub>1 e\<^isub>2 =
+  (case e\<^isub>1 of Err  \<Rightarrow> Err | OK x \<Rightarrow> (case e\<^isub>2 of Err \<Rightarrow> Err | OK y \<Rightarrow> f x y))"
 
 definition le :: "'a ord \<Rightarrow> 'a err ord"
 where
-  "le r e\<^isub>1 e\<^isub>2 \<equiv>
-  case e\<^isub>2 of Err \<Rightarrow> True | OK y \<Rightarrow> (case e\<^isub>1 of Err \<Rightarrow> False | OK x \<Rightarrow> x \<sqsubseteq>\<^sub>r y)"
+  "le r e\<^isub>1 e\<^isub>2 =
+  (case e\<^isub>2 of Err \<Rightarrow> True | OK y \<Rightarrow> (case e\<^isub>1 of Err \<Rightarrow> False | OK x \<Rightarrow> x \<sqsubseteq>\<^sub>r y))"
 
 definition sup :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a err \<Rightarrow> 'b err \<Rightarrow> 'c err)"
 where
-  "sup f \<equiv> lift2 (\<lambda>x y. OK (x \<squnion>\<^sub>f y))"
+  "sup f = lift2 (\<lambda>x y. OK (x \<squnion>\<^sub>f y))"
 
 definition err :: "'a set \<Rightarrow> 'a err set"
 where
-  "err A \<equiv> insert Err {OK x|x. x\<in>A}"
+  "err A = insert Err {OK x|x. x\<in>A}"
 
 definition esl :: "'a sl \<Rightarrow> 'a esl"
 where
-  "esl \<equiv> \<lambda>(A,r,f). (A, r, \<lambda>x y. OK(f x y))"
+  "esl = (\<lambda>(A,r,f). (A, r, \<lambda>x y. OK(f x y)))"
 
 definition sl :: "'a esl \<Rightarrow> 'a err sl"
 where
-  "sl \<equiv> \<lambda>(A,r,f). (err A, le r, lift2 f)"
+  "sl = (\<lambda>(A,r,f). (err A, le r, lift2 f))"
 
 abbreviation
   err_semilat :: "'a esl \<Rightarrow> bool" where
@@ -60,12 +60,12 @@ where
 | "strict f (OK x) = f x"
 
 lemma err_def':
-  "err A \<equiv> insert Err {x. \<exists>y\<in>A. x = OK y}"
+  "err A = insert Err {x. \<exists>y\<in>A. x = OK y}"
 (*<*)
 proof -
   have eq: "err A = insert Err {x. \<exists>y\<in>A. x = OK y}"
     by (unfold err_def) blast
-  show "err A \<equiv> insert Err {x. \<exists>y\<in>A. x = OK y}" by (simp add: eq)
+  show "err A = insert Err {x. \<exists>y\<in>A. x = OK y}" by (simp add: eq)
 qed
 (*>*)
 
@@ -79,7 +79,7 @@ lemma not_Err_eq: "(x \<noteq> Err) = (\<exists>a. x = OK a)"
 lemma not_OK_eq: "(\<forall>y. x \<noteq> OK y) = (x = Err)"
 (*<*) by (cases x) auto   (*>*)
 
-lemma unfold_lesub_err: "e1 \<sqsubseteq>\<^bsub>le r\<^esub> e2 \<equiv> le r e1 e2"
+lemma unfold_lesub_err: "e1 \<sqsubseteq>\<^bsub>le r\<^esub> e2 = le r e1 e2"
 (*<*) by (simp add: lesub_def) (*>*)
 
 lemma le_err_refl: "\<forall>x. x \<sqsubseteq>\<^sub>r x \<Longrightarrow> e \<sqsubseteq>\<^bsub>le r\<^esub> e"
@@ -134,7 +134,7 @@ lemma le_OK_conv [iff]: "e \<sqsubseteq>\<^bsub>le r\<^esub> OK x  =  (\<exists>
 lemma OK_le_conv: "OK x \<sqsubseteq>\<^bsub>le r\<^esub> e = (e = Err \<or> (\<exists>y. e = OK y \<and> x \<sqsubseteq>\<^sub>r y))"
 (*<*) by (simp add: unfold_lesub_err le_def split: err.split) (*>*)
 
-lemma top_Err [iff]: "top (le r) Err";
+lemma top_Err [iff]: "top (le r) Err"
 (*<*) by (simp add: top_def) (*>*)
 
 lemma OK_less_conv [rule_format, iff]:

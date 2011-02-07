@@ -1,5 +1,4 @@
-(*  ID:         $Id: CertLin.thy,v 1.4 2009-01-30 14:15:31 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
+(*  Author:     Tobias Nipkow, 2007
 
 A simple certificate checker for q-free linear arithmetic:
 is linear combination of atoms and certificate contradictory?

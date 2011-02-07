@@ -87,14 +87,6 @@ end
 lemma some_choice: "(\<exists>a. \<forall>b. P b (a b)) \<longleftrightarrow> (\<forall>b. \<exists>a. P b a)"
 by metis
 
-consts finfun_to_list :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a list"
-specification (finfun_to_list)
-  set_finfun_to_list [simp]: "\<And>f :: 'a \<Rightarrow>\<^isub>f 'b. set (finfun_to_list f) = (finfun_dom f)\<^sub>f"
-  distinct_finfun_to_list: "\<And>f. distinct (finfun_to_list f)"
-apply(fold all_conj_distrib)
-apply(subst some_choice)
-apply(blast intro: finite_distinct_list[OF finite_finfun_dom])
-done
 
 definition convert_RA :: "addr released_locks \<Rightarrow> obs_event list"
 where "convert_RA ln = map SyncLock (finfun_to_list ln)"

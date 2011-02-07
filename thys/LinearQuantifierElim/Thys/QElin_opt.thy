@@ -1,6 +1,4 @@
-(*  ID:         $Id: QElin_opt.thy,v 1.3 2009-02-27 17:46:41 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory QElin_opt
 imports QElin

@@ -361,6 +361,10 @@ by(auto)
 lemma [iff]: "\<not> extTA,P,t \<turnstile> \<langle>Throw a, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 by(fastsimp elim: red_cases)
 
+lemma reds_map_Val_Throw:
+  "extTA,P,t \<turnstile> \<langle>map Val vs @ Throw a # es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<longleftrightarrow> False"
+by(induct vs arbitrary: es')(auto elim!: reds_cases)
+
 lemma reds_preserves_len:
   "extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> length es' = length es"
 by(induct es arbitrary: es')(auto elim: reds.cases)
@@ -527,7 +531,7 @@ done
 
 end
 
-lemmas red_reds_intros_code [code_pred_intro] =
+lemmas [code_pred_intro] =
   J_heap_base.RedNew J_heap_base.RedNewFail J_heap_base.NewArrayRed J_heap_base.RedNewArray J_heap_base.RedNewArrayNegative
   J_heap_base.RedNewArrayFail J_heap_base.CastRed J_heap_base.RedCast J_heap_base.RedCastFail J_heap_base.InstanceOfRed
   J_heap_base.RedInstanceOf J_heap_base.BinOpRed1 J_heap_base.BinOpRed2 J_heap_base.RedBinOp J_heap_base.RedVar
@@ -536,20 +540,39 @@ lemmas red_reds_intros_code [code_pred_intro] =
   J_heap_base.RedAAssNull J_heap_base.RedAAssBounds J_heap_base.RedAAssStore J_heap_base.RedAAss J_heap_base.ALengthRed
   J_heap_base.RedALength J_heap_base.RedALengthNull J_heap_base.FAccRed J_heap_base.RedFAcc J_heap_base.RedFAccNull
   J_heap_base.FAssRed1 J_heap_base.FAssRed2 J_heap_base.RedFAss J_heap_base.RedFAssNull J_heap_base.CallObj
-  J_heap_base.CallParams 
-  J_heap_base.RedCall_code J_heap_base.RedCallExternal_code J_heap_base.RedCallNull_code
+  J_heap_base.CallParams
+
+declare
+  J_heap_base.RedCall_code[code_pred_intro RedCall_code]
+  J_heap_base.RedCallExternal_code[code_pred_intro RedCallExternal_code]
+  J_heap_base.RedCallNull_code[code_pred_intro RedCallNull_code]
+
+lemmas [code_pred_intro] =
   J_heap_base.BlockRed J_heap_base.RedBlock J_heap_base.SynchronizedRed1 J_heap_base.SynchronizedNull
   J_heap_base.LockSynchronized J_heap_base.SynchronizedRed2 J_heap_base.UnlockSynchronized
   J_heap_base.SeqRed J_heap_base.RedSeq J_heap_base.CondRed J_heap_base.RedCondT J_heap_base.RedCondF J_heap_base.RedWhile
-  J_heap_base.ThrowRed J_heap_base.RedThrowNull J_heap_base.TryRed J_heap_base.RedTry J_heap_base.RedTryCatch
+  J_heap_base.ThrowRed
+
+declare
+  J_heap_base.RedThrowNull[code_pred_intro RedThrowNull']
+
+lemmas [code_pred_intro] =
+  J_heap_base.TryRed J_heap_base.RedTry J_heap_base.RedTryCatch
   J_heap_base.RedTryFail J_heap_base.ListRed1 J_heap_base.ListRed2
   J_heap_base.NewArrayThrow J_heap_base.CastThrow J_heap_base.InstanceOfThrow J_heap_base.BinOpThrow1 J_heap_base.BinOpThrow2
   J_heap_base.LAssThrow J_heap_base.AAccThrow1 J_heap_base.AAccThrow2 J_heap_base.AAssThrow1 J_heap_base.AAssThrow2
   J_heap_base.AAssThrow3 J_heap_base.ALengthThrow J_heap_base.FAccThrow J_heap_base.FAssThrow1 J_heap_base.FAssThrow2
   J_heap_base.CallThrowObj 
-  J_heap_base.CallThrowParams_code
+
+declare
+  J_heap_base.CallThrowParams_code[code_pred_intro CallThrowParams_code]
+
+lemmas [code_pred_intro] =
   J_heap_base.BlockThrow J_heap_base.SynchronizedThrow1 J_heap_base.SynchronizedThrow2 J_heap_base.SeqThrow
-  J_heap_base.CondThrow J_heap_base.ThrowThrow
+  J_heap_base.CondThrow
+
+declare
+  J_heap_base.ThrowThrow[code_pred_intro ThrowThrow']
 
 code_pred
   (modes:
@@ -573,30 +596,31 @@ proof -
     SynchronizedThrow2 SeqThrow CondThrow ThrowThrow])
 
     case (RedCall s a C M Ts T pns body D vs)
-    with that(42)[OF refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s pns D Ts body C T]
+    with RedCall_code[OF refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s pns D Ts body C T]
     show ?thesis by(simp add: o_def)
   next
     case (RedCallExternal s a T M vs ta va h' ta' e' s')
-    with that(43)[OF refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s ta va h' T]
+    with RedCallExternal_code[OF refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s ta va h' T]
     show ?thesis by(simp add: o_def)
   next
     case (RedCallNull M vs s)
-    with that(44)[OF refl refl refl refl refl refl refl refl refl refl, of M "map Val vs" s]
+    with RedCallNull_code[OF refl refl refl refl refl refl refl refl refl refl, of M "map Val vs" s]
     show ?thesis by(simp add: o_def)
   next
     case (CallThrowParams es vs a es' v M s)
-    with that(80)[OF refl refl refl refl refl refl refl refl refl refl, of v M "map Val vs @ Throw a # es'" s]
-    show ?thesis apply(auto simp add: is_Throws_conv)
+    with CallThrowParams_code[OF refl refl refl refl refl refl refl refl refl refl, of v M "map Val vs @ Throw a # es'" s]
+    show ?thesis 
+      apply(auto simp add: is_Throws_conv)
       apply(erule meta_impE)
       apply(subst dropWhile_append2)
       apply auto
       done
   next
     case RedThrowNull thus ?thesis
-      by-(erule (4) that(59)[OF refl refl refl refl refl refl refl refl refl refl])
+      by-(erule (4) RedThrowNull'[OF refl refl refl refl refl refl refl refl refl refl])
   next
     case ThrowThrow thus ?thesis
-      by-(erule (4) that(86)[OF refl refl refl refl refl refl refl refl refl refl])
+      by-(erule (4) ThrowThrow'[OF refl refl refl refl refl refl refl refl refl refl])
   qed(assumption|erule (4) that[OF refl refl refl refl refl refl refl refl refl refl])+
 next
   case reds

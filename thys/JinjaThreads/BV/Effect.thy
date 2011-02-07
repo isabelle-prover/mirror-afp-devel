@@ -555,9 +555,9 @@ lemma eff\<^isub>i_Invoke_code:
                                               (\<lambda>(Ts', U). if P \<turnstile> Ts [\<le>] Ts' then Predicate.single U else bot))
            else fst (snd (snd (method P C M)))
    in (U # drop (n+1) ST, LT))"
-apply(clarsimp simp add: Predicate.the_def Predicate.bind_def Predicate.single_def eval_external_WT_i_i_i_o_o_conv)
-apply(rule arg_cong[where f=The])
-apply(rule ext)
+apply (clarsimp simp add: Predicate.the_def Predicate.bind_def Predicate.single_def SUPR_def Sup_fun_def Sup_bool_def eval_external_WT_i_i_i_o_o_conv)
+apply (rule arg_cong[where f=The])
+apply (rule ext)
 apply blast
 done
 
@@ -575,7 +575,7 @@ lemma app\<^isub>i_Putfield_code:
   "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) \<longleftrightarrow>
    P \<turnstile> T\<^isub>2 \<le> (Class C) \<and>
    Predicate.holds (Predicate.bind (sees_field_i_i_i_o_o_i P C F C) (\<lambda>(T, fm). if P \<turnstile> T\<^isub>1 \<le> T then Predicate.single () else bot))"
-by(auto simp add: Predicate.bind_def Predicate.single_def holds_eq eval_sees_field_i_i_i_o_i_conv)
+by (auto simp add: holds_eq eval_sees_field_i_i_i_o_i_conv split: if_splits)
 
 lemma app\<^isub>i_ALoad_code:
   "app\<^isub>i (ALoad, P, pc, mxs, T\<^isub>r, (T1#T2#ST,LT)) = 
@@ -595,7 +595,7 @@ by(simp add: split: ty.split)
 lemma app\<^isub>i_BinOpInstr_code:
   "app\<^isub>i (BinOpInstr bop, P, pc, mxs, T\<^isub>r, (T2#T1#ST,LT)) = 
    Predicate.holds (Predicate.bind (WTrt_binop_i_i_i_i_o P T1 bop T2) (\<lambda>T. Predicate.single ()))"
-by(simp add: Predicate.bind_def Predicate.single_def holds_eq eval_WTrt_binop_i_i_i_i_o)
+by (auto simp add: holds_eq eval_WTrt_binop_i_i_i_i_o)
 
 lemma app\<^isub>i_Invoke_code:
   "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
@@ -608,7 +608,12 @@ lemma app\<^isub>i_Invoke_code:
                Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P C M) 
                                                (\<lambda>(Ts, _). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
                               | _ \<Rightarrow> False))))"
-by(auto simp add: Predicate.bind_def Predicate.single_def holds_eq eval_external_WT_i_i_i_o_o_conv eval_Method_i_i_i_o_o_o_o_conv split: ty.split)
+proof -
+  have bind_Ex: "\<And>P f. Predicate.bind P f = Predicate.Pred (\<lambda>x. (\<exists>y. Predicate.eval P y \<and> Predicate.eval (f y) x))"
+    by (rule pred_eqI) auto
+  thus ?thesis
+    by (auto simp add: bind_Ex Predicate.single_def holds_eq eval_external_WT_i_i_i_o_o_conv eval_Method_i_i_i_o_o_o_o_conv split: ty.split)
+qed
 
 lemma app\<^isub>i_Throw_code:
   "app\<^isub>i (ThrowExc, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 

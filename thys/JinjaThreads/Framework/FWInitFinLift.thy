@@ -112,7 +112,6 @@ locale if_\<tau>multithreaded_wf = \<tau>multithreaded_wf +
   and r :: "('l,'t,'x,'m,'w,'o) semantics" 
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and \<tau>move :: "('l,'t,'x,'m,'w,'o) \<tau>moves"
-  and wfs :: "'t \<Rightarrow> 'x \<times> 'm \<Rightarrow> bool"
 
 sublocale if_\<tau>multithreaded_wf < if_multithreaded
 by unfold_locales
@@ -122,15 +121,14 @@ sublocale if_\<tau>multithreaded_wf < if_\<tau>multithreaded .
 context if_\<tau>multithreaded_wf begin
 
 lemma \<tau>multithreaded_wf_init_fin:
-  "\<tau>multithreaded_wf init_fin_final init_fin init_fin_\<tau>move (\<lambda>t ((s, x), m). wfs t (x, m))"
-  (is "\<tau>multithreaded_wf _ _ _ ?wfs")
+  "\<tau>multithreaded_wf init_fin_final init_fin init_fin_\<tau>move"
 proof(unfold_locales)
   fix x t m ta x' m'
   assume "init_fin_final x" and "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')"
   thus False by(cases x)(auto)
 next
   fix t x m ta x' m'
-  assume "init_fin_\<tau>move (x, m) ta (x', m')" "?wfs t (x, m)" "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')" 
+  assume "init_fin_\<tau>move (x, m) ta (x', m')" "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')" 
   thus "m = m'" by(cases)(auto dest: \<tau>move_heap)
 next
   fix s ta s'
@@ -145,7 +143,6 @@ sublocale if_\<tau>multithreaded_wf < "if"!: \<tau>multithreaded_wf
   "init_fin"
   "map NormalAction \<circ> convert_RA"
   "init_fin_\<tau>move"
-  "\<lambda>t ((s, x), m). wfs t (x, m)"
 by(rule \<tau>multithreaded_wf_init_fin)
 
 primrec init_fin_lift :: "('t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> 't \<Rightarrow> status \<times> 'x \<Rightarrow> 'm \<Rightarrow> bool"
@@ -240,7 +237,6 @@ locale \<tau>lifting_inv = \<tau>multithreaded_wf +
   and r :: "('l,'t,'x,'m,'w,'o) semantics" 
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and \<tau>move :: "('l,'t,'x,'m,'w,'o) \<tau>moves"
-  and wfs :: "'t \<Rightarrow> 'x \<times> 'm \<Rightarrow> bool"
   and Q :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
   and P :: "'i \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
 

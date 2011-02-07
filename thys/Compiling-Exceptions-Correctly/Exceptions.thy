@@ -1,5 +1,4 @@
-(*  ID:         $Id: Exceptions.thy,v 1.9 2008-06-21 19:01:49 makarius Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   2004 TU Muenchen
 *)
 
@@ -30,13 +29,13 @@ datatype instr =
 
 datatype item = VAL int | HAN nat
 
-types code = "instr list"
-      stack = "item list"
+type_synonym code = "instr list"
+type_synonym stack = "item list"
 
 fun jump where
   "jump l [] = []"
-  | "jump l (Label l' # cs) = (if l = l' then cs else jump l cs)"
-  | "jump l (c # cs) = jump l cs"
+| "jump l (Label l' # cs) = (if l = l' then cs else jump l cs)"
+| "jump l (c # cs) = jump l cs"
 
 lemma size_jump1: "size (jump l cs) < Suc (size cs)"
 apply(induct cs)
@@ -54,17 +53,17 @@ done
 
 function (sequential) exec2 :: "bool \<Rightarrow> code \<Rightarrow> stack \<Rightarrow> stack" where
   "exec2 True [] s = s"
-  | "exec2 True (Push i#cs) s = exec2 True cs (VAL i # s)"
-  | "exec2 True (ADD#cs) (VAL j # VAL i # s) = exec2 True cs (VAL(i+j) # s)"
-  | "exec2 True (THROW#cs) s = exec2 False cs s"
-  | "exec2 True (Mark l#cs) s = exec2 True cs (HAN l # s)"
-  | "exec2 True (Unmark#cs) (v # HAN l # s) = exec2 True cs (v # s)"
-  | "exec2 True (Label l#cs) s = exec2 True cs s"
-  | "exec2 True (Jump l#cs) s = exec2 True (jump l cs) s"
+| "exec2 True (Push i#cs) s = exec2 True cs (VAL i # s)"
+| "exec2 True (ADD#cs) (VAL j # VAL i # s) = exec2 True cs (VAL(i+j) # s)"
+| "exec2 True (THROW#cs) s = exec2 False cs s"
+| "exec2 True (Mark l#cs) s = exec2 True cs (HAN l # s)"
+| "exec2 True (Unmark#cs) (v # HAN l # s) = exec2 True cs (v # s)"
+| "exec2 True (Label l#cs) s = exec2 True cs s"
+| "exec2 True (Jump l#cs) s = exec2 True (jump l cs) s"
 
-  | "exec2 False cs [] = []"
-  | "exec2 False cs (VAL i # s) = exec2 False cs s"
-  | "exec2 False cs (HAN l # s) = exec2 True (jump l cs) s"
+| "exec2 False cs [] = []"
+| "exec2 False cs (VAL i # s) = exec2 False cs s"
+| "exec2 False cs (HAN l # s) = exec2 True (jump l cs) s"
 by pat_completeness auto
 
 termination by (relation

@@ -358,6 +358,10 @@ lemma is_lub_Void [iff]:
   "P \<turnstile> lub(Void, Void) = T \<longleftrightarrow> T = Void"
 by(auto intro: is_lub.intros elim: is_lub.cases)
 
+lemma is_lubI[code_pred_intro]: "\<lbrakk>P \<turnstile> U \<le> T; P \<turnstile> V \<le> T; \<forall>T'. P \<turnstile> U \<le> T' \<longrightarrow> P \<turnstile> V \<le> T' \<longrightarrow> P \<turnstile> T \<le> T'\<rbrakk> \<Longrightarrow> P \<turnstile> lub(U, V) = T"
+by(blast intro: is_lub.intros)
+
+
 subsection{* Method lookup *}
 
 inductive Methods :: "'m prog \<Rightarrow> cname \<Rightarrow> (mname \<rightharpoonup> (ty list \<times> ty \<times> 'm) \<times> cname) \<Rightarrow> bool" ("_ \<turnstile> _ sees'_methods _" [51,51,51] 50)
@@ -748,56 +752,11 @@ subsection {* Code generation *}
 
 text {* New introduction rules for subcls1 *}
 
-lemma subcls1_intros:
- "C \<noteq> Object \<Longrightarrow> subcls1 ((C, D, rest) # P) C D"
- "\<lbrakk> subcls1 P C D; C \<noteq> Object; C \<noteq> C' \<rbrakk> \<Longrightarrow> subcls1 ((C', D', rest) # P) C D"
-apply -
- apply(rule subcls1I)
-  apply(simp add: class_def)
- apply assumption
-apply(erule subcls1.cases)
-apply(rule subcls1I)
- apply(simp add: class_def)
-apply assumption
-done
-
-lemma subcls1_cases:
-  assumes "subcls1 P C D"
-  obtains rest P' where "P = (C, D, rest) # P'" "C \<noteq> Object"
-  | rest C' D' P' where "P = (C', D', rest) # P'" "subcls1 P' C D" "C \<noteq> Object" "C \<noteq> C'"
-proof(atomize_elim)
-  from assms
-  show "(\<exists>rest P'. P = (C, D, rest) # P' \<and> C \<noteq> Object) \<or>
-    (\<exists>C' D' rest P'. P = (C', D', rest) # P' \<and> P' \<turnstile> C \<prec>\<^sup>1 D \<and> C \<noteq> Object \<and> C \<noteq> C')"
-  proof(induct P)
-    case Nil thus ?case
-      by(auto elim: subcls1.cases simp add: class_def)
-  next
-    case (Cons a P)
-    obtain C' D' rest where [simp]: "a = (C', D', rest)" by(cases a)
-    show ?case
-    proof(cases "C = C'")
-      case True
-      with `(a # P) \<turnstile> C \<prec>\<^sup>1 D` show ?thesis
-        by(auto elim: subcls1.cases simp add: class_def)
-    next
-      case False
-      with `(a # P) \<turnstile> C \<prec>\<^sup>1 D` have "P \<turnstile> C \<prec>\<^sup>1 D"
-        by(auto elim!: subcls1.cases simp add: class_def intro: subcls1I)
-      with Cons have "(\<exists>C' D' rest P'. a # P = (C', D', rest) # P' \<and> P' \<turnstile> C \<prec>\<^sup>1 D \<and> C \<noteq> Object \<and> C \<noteq> C')"
-        using False by(auto)
-      thus ?thesis ..
-    qed
-  qed
-qed
-
-declare subcls1_intros [code_pred_intro]
-code_pred subcls1
-proof -
-  case subcls1 
-  from subcls1.prems show thesis
-    by(rule subcls1_cases)(assumption|erule that[OF _ refl refl])+
-qed
+code_pred
+  -- {* Disallow mode @{text "i_o_o"} to force @{text code_pred} in subsequent predicates not to use this inefficient mode *}
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) 
+  subcls1
+.
 
 text {*
   Introduce proper constant @{text "subcls'"} for @{term "subcls"}
@@ -806,35 +765,15 @@ text {*
 
 definition subcls' where "subcls' = subcls"
 
-code_pred [inductify] subcls' .
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  [inductify]
+  subcls'
+.
 
 lemma subcls_conv_subcls' [code_inline]:
   "(subcls1 P)^** = subcls' P"
 by(simp add: subcls'_def)
-
-text {* @{term "subcls'_i_i_i"} uses @{term subcls1_i_o_o}, but @{term subcls1_i_i_o} is much more efficient *}
-lemma subcls'_i_i_i_code [code]:
-  "subcls'_i_i_i P = rtranclp_FioB_i_i (subcls1_i_i_o P)"
-apply(rule ext)+
-apply(rule pred_iffI)
- apply(erule subcls'_i_i_iE)
- apply clarsimp
- apply(rule rtranclp_FioB_i_iI)
-  apply(unfold subcls'_def)[2]
-  apply assumption
- apply(rule ext iffI)+
-  apply(erule subcls1_i_i_oE)
-  apply assumption
- apply(erule subcls1_i_i_oI)
-apply(erule rtranclp_FioB_i_iE)
-apply clarsimp
-apply(rule subcls'_i_i_iI)
-apply(unfold subcls'_def)
-apply(erule rtranclp_induct)
- apply blast
-apply(erule subcls1_i_i_oE)
-apply(erule (1) rtranclp.rtrancl_into_rtrancl)
-done
 
 text {* 
   Change rule @{thm widen_array_object} such that predicate compiler
@@ -845,145 +784,49 @@ lemma widen_array_object_code:
   "\<lbrakk> C = Object; is_type P A \<rbrakk> \<Longrightarrow> P \<turnstile> Array A \<le> Class C"
 by(auto intro: widen.intros)
 
-(* lemmas [code_pred_intro] =
+lemmas [code_pred_intro] =
   widen_refl widen_subcls widen_null widen_null_array widen_array_object_code widen_array_array
-code_pred [show_modes] widen 
-by(erule widen.cases) auto  *)
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  widen 
+by(erule widen.cases) auto
 
-lemmas [code_pred_def] =
-  widen_refl widen_subcls widen_null widen_null_array widen_array_object_code widen_array_array
-code_pred [inductify] widen . 
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  Methods 
+.
 
-text {*
-  @{term widen_i_i_i} uses @{term "subcls1_i_o_o"}, which is inefficient. Better use @{term subcls1_i_o_i}.
-*}
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool)
+  [inductify]
+  Method
+.
 
-lemma widen_i_i_i_code [code]:
-  "widen_i_i_i P T U =
-   sup (if T = U then Predicate.single () else bot)
-   (sup (case T of Class C \<Rightarrow> (case U of Class D \<Rightarrow> rtranclp_FioB_i_i (subcls1_i_i_o P) C D | _ \<Rightarrow> bot) | _ \<Rightarrow> bot)
-   (sup (case T of NT \<Rightarrow> (case U of Class C \<Rightarrow> Predicate.single () | Array A \<Rightarrow> Predicate.single () | _ \<Rightarrow> bot) | _ \<Rightarrow> bot)
-   (sup (case T of Array A \<Rightarrow> (case U of Class C \<Rightarrow> if C = Object then (is_type_i_i P A) else bot | _ \<Rightarrow> bot) | _ \<Rightarrow> bot)
-        (case T of Array A \<Rightarrow> (case U of Array B \<Rightarrow> Predicate.bind (widen_i_i_i P A B) (unit_case (Predicate.bind (Predicate.if_pred (ground_type A \<noteq> NT)) (unit_case (Predicate.single ())))) | _ \<Rightarrow> bot) | _ \<Rightarrow> bot))))"
-apply(subst widen.equation)
-apply(rule pred_iffI)
- apply(erule supE bindE singleE)+
-  apply(rule supI1)
-  apply clarsimp
- apply(erule supE bindE singleE)+
-  apply(simp split del: split_if split: ty.split_asm unit.splits)
-  apply(erule bindE)
-  apply(rule supI2)
-  apply simp
-  apply(erule rtranclp_FooB_i_iE)
-  apply(erule rtranclp_FioB_i_iI)
-  apply(rule ext)+
-  apply(rule iffI)
-   apply(erule subcls1_i_i_oE)
-   apply(erule subcls1_i_o_oI)
-  apply(erule subcls1_i_o_oE)
-  apply(erule subcls1_i_i_oI)
- apply(erule supE bindE singleE)+
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI1)
-  apply(simp split: ty.split_asm)
- apply(erule supE bindE singleE)+
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI1)
-  apply(simp split: ty.split_asm)
- apply(erule supE bindE singleE)+
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI1)
-  apply(simp split: ty.split_asm unit.split_asm)
-  apply(erule bindE)
-  apply(split unit.split_asm)
-  apply(simp split: split_if_asm)
- apply(erule bindE singleE)+
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(simp split: ty.split_asm)
-apply(erule supE)
- apply(simp split: split_if_asm)
- apply(rule supI1)
- apply(rule bindI)
-  apply(rule singleI)
- apply simp
-apply(erule supE)
- apply(simp split: ty.split_asm)
- apply(rule supI2)
- apply(rule supI1)
- apply(rule bindI)
-  apply(rule singleI)
- apply(simp)
- apply(erule rtranclp_FioB_i_iE)
- apply(rule bindI)
-  apply(erule rtranclp_FooB_i_iI)
-  apply(rule ext)+
-  apply(rule iffI)
-   apply(erule subcls1_i_o_oE)
-   apply(erule subcls1_i_i_oI)
-  apply(erule subcls1_i_i_oE)
-  apply(erule subcls1_i_o_oI)
- apply(simp split: unit.split)
- apply(rule singleI)
-apply(erule supE)
- apply(simp split: ty.split_asm)
-  apply(rule supI2)
-  apply(rule supI2)
-  apply(rule supI1)
-  apply(rule bindI)
-   apply(rule singleI)
-  apply simp
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI1)
- apply(rule bindI)
-  apply(rule singleI)
- apply simp
-apply(erule supE)
- apply(simp split: ty.split_asm)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI2)
- apply(rule supI1)
- apply(rule bindI)
-  apply(rule singleI)
- apply(simp split: split_if_asm)
- apply(erule bindI)
- apply(simp split: unit.split)
- apply(rule singleI)
-apply(rule supI2)
-apply(rule supI2)
-apply(rule supI2)
-apply(rule supI2)
-apply(rule supI2)
-apply(rule bindI)
- apply(rule singleI)
-apply(simp split: ty.split_asm)
-done
-
-code_pred Methods .
-
-code_pred [inductify] Method .
-
-code_pred [inductify] has_method .
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  [inductify]
+  has_method 
+.
 
 (* FIXME: Necessary only because of bug in code_pred *)
 declare fun_upd_def [code_pred_inline]
 
-code_pred Fields .
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  Fields 
+.
 
-code_pred [inductify, skip_proof] has_field .
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool)
+  [inductify, skip_proof]
+  has_field
+.
 
-code_pred [inductify, skip_proof] sees_field .
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool)
+  [inductify, skip_proof]
+  sees_field
+.
 
 lemma eval_Method_i_i_i_o_o_o_o_conv:
   "Predicate.eval (Method_i_i_i_o_o_o_o P C M) = (\<lambda>(Ts, T, m, D). P \<turnstile> C sees M:Ts\<rightarrow>T=m in D)"
@@ -992,10 +835,11 @@ by(auto intro: Method_i_i_i_o_o_o_oI elim: Method_i_i_i_o_o_o_oE intro!: ext)
 lemma method_code [code]:
   "method P C M = 
   Predicate.the (Predicate.bind (Method_i_i_i_o_o_o_o P C M) (\<lambda>(Ts, T, m, D). Predicate.single (D, Ts, T, m)))"
-apply(simp add: method_def Predicate.the_def Predicate.bind_def Predicate.single_def eval_Method_i_i_i_o_o_o_o_conv)
-apply(rule arg_cong[where f=The])
-apply(rule ext)
-apply clarsimp
+apply (rule sym, rule the_eqI)
+apply (simp add: method_def eval_Method_i_i_i_o_o_o_o_conv)
+apply (rule arg_cong [where f=The])
+apply (auto simp add: SUPR_def Sup_fun_def Sup_bool_def fun_eq_iff)
+apply blast
 done
 
 lemma eval_sees_field_i_i_i_o_o_o_conv:
@@ -1008,10 +852,10 @@ by(auto intro!: ext intro: sees_field_i_i_i_o_o_iI elim: sees_field_i_i_i_o_o_iE
 
 lemma field_code [code]:
   "field P C F = Predicate.the (Predicate.bind (sees_field_i_i_i_o_o_o P C F) (\<lambda>(T, fm, D). Predicate.single (D, T, fm)))"
-apply(simp add: field_def Predicate.the_def Predicate.bind_def Predicate.single_def eval_sees_field_i_i_i_o_o_o_conv)
-apply(rule arg_cong[where f=The])
-apply(rule ext)
-apply clarsimp
+apply (rule sym, rule the_eqI)
+apply (simp add: field_def eval_sees_field_i_i_i_o_o_o_conv)
+apply (rule arg_cong [where f=The])
+apply (auto simp add: SUPR_def Sup_fun_def Sup_bool_def fun_eq_iff)
 done
 
 lemma eval_Fields_conv:
@@ -1023,4 +867,3 @@ lemma fields_code [code]:
 by(simp add: fields_def Predicate.the_def eval_Fields_conv)
 
 end
-

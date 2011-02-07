@@ -97,16 +97,16 @@ next
       case (Normal r')
       with exec_c2 r
       show "t\<in>Normal ` Q \<union> Abrupt ` A"
-	apply -
-	apply (rule cvalidt_postD [OF valid_c2 ctxt _ _ t_notin_F])
-	apply auto
-	done
+        apply -
+        apply (rule cvalidt_postD [OF valid_c2 ctxt _ _ t_notin_F])
+        apply auto
+        done
     next
       case (Abrupt r')
       with exec_c2 have "t=Abrupt r'"
-	by (auto elim: exec_elim_cases)
+        by (auto elim: exec_elim_cases)
       with Abrupt r show ?thesis
-	by auto
+        by auto
     next
       case Fault with r show ?thesis by blast
     next
@@ -120,23 +120,23 @@ next
     proof -
       from valid_c1 ctxt P
       have "\<Gamma>\<turnstile>c1\<down> Normal s"
-	by (rule cvalidt_termD)
+        by (rule cvalidt_termD)
       moreover
       {
-	fix r assume exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> \<Rightarrow> r"
-	have "\<Gamma>\<turnstile>c2 \<down> r"
-	proof (cases r)
-	  case (Normal r')
-	  with cvalidt_postD [OF valid_c1 ctxt exec_c1 P]
-	  have r: "r\<in>Normal ` R"
-	    by auto
-	  with cvalidt_termD [OF valid_c2 ctxt] exec_c1
-	  show "\<Gamma>\<turnstile>c2 \<down> r"
-	    by auto
-	qed auto	
+        fix r assume exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> \<Rightarrow> r"
+        have "\<Gamma>\<turnstile>c2 \<down> r"
+        proof (cases r)
+          case (Normal r')
+          with cvalidt_postD [OF valid_c1 ctxt exec_c1 P]
+          have r: "r\<in>Normal ` R"
+            by auto
+          with cvalidt_termD [OF valid_c2 ctxt] exec_c1
+          show "\<Gamma>\<turnstile>c2 \<down> r"
+            by auto
+        qed auto        
       }
       ultimately show ?thesis
-	by (iprover intro: terminates.intros)
+        by (iprover intro: terminates.intros)
     qed
   qed
 next
@@ -154,17 +154,17 @@ next
     proof (cases "s\<in>b")
       case True
       with exec have "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> \<Rightarrow> t"
-	by cases auto
+        by cases auto
       with P True 
       show ?thesis
-	by - (rule cvalidt_postD [OF valid_c1 ctxt _ _ t_notin_F],auto)
+        by - (rule cvalidt_postD [OF valid_c1 ctxt _ _ t_notin_F],auto)
     next
       case False
       with exec P have "\<Gamma>\<turnstile>\<langle>c2,Normal s\<rangle> \<Rightarrow> t"
-	by cases auto
+        by cases auto
       with P False 
       show ?thesis
-	by - (rule cvalidt_postD [OF valid_c2 ctxt _ _ t_notin_F],auto)
+        by - (rule cvalidt_postD [OF valid_c2 ctxt _ _ t_notin_F],auto)
     qed
   next
     fix s
@@ -190,7 +190,7 @@ next
     proof (induct)
       fix s t
       assume hyp: 
-	"\<And>s' t. \<lbrakk>(s',s)\<in>r; \<Gamma>\<turnstile>\<langle>While b c,Normal s'\<rangle> \<Rightarrow> t; s' \<in> P; t \<notin> Fault ` F\<rbrakk>
+        "\<And>s' t. \<lbrakk>(s',s)\<in>r; \<Gamma>\<turnstile>\<langle>While b c,Normal s'\<rangle> \<Rightarrow> t; s' \<in> P; t \<notin> Fault ` F\<rbrakk>
                  \<Longrightarrow> t \<in> Normal ` (P \<inter> - b) \<union> Abrupt ` A"
       assume exec: "\<Gamma>\<turnstile>\<langle>While b c,Normal s\<rangle> \<Rightarrow> t"
       assume P: "s \<in> P"
@@ -198,42 +198,42 @@ next
       from exec
       show "t \<in> Normal ` (P \<inter> - b) \<union> Abrupt ` A"
       proof (cases)
-	fix s'
-	assume b: "s\<in>b"
-	assume exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> s'" 
-	assume exec_w: "\<Gamma>\<turnstile>\<langle>While b c,s'\<rangle> \<Rightarrow> t"
-	from exec_w t_notin_F have "s' \<notin> Fault ` F"
-	  by (auto dest: Fault_end)
-	from exec_c P b valid_c ctxt this
-	have s': "s' \<in> Normal ` ({s'. (s', s) \<in> r} \<inter> P) \<union> Abrupt ` A"
-	  by (auto simp add: cvalidt_def validt_def valid_def)
-	show ?thesis
-	proof (cases s')
-	  case Normal 
-	  with exec_w s' t_notin_F
-	  show ?thesis
-	    by - (rule hyp,auto)
-	next
-	  case Abrupt
-	  with exec_w have "t=s'"
-	    by (auto dest: Abrupt_end)
-	  with Abrupt s' show ?thesis
-	    by blast
-	next
-	  case Fault
-	  with exec_w have "t=s'"
-	    by (auto dest: Fault_end)
-	  with Fault s' show ?thesis
-	    by blast
-	next
-	  case Stuck
-	  with exec_w have "t=s'"
-	    by (auto dest: Stuck_end)
-	  with Stuck s' show ?thesis
-	    by blast
-	qed
+        fix s'
+        assume b: "s\<in>b"
+        assume exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> s'" 
+        assume exec_w: "\<Gamma>\<turnstile>\<langle>While b c,s'\<rangle> \<Rightarrow> t"
+        from exec_w t_notin_F have "s' \<notin> Fault ` F"
+          by (auto dest: Fault_end)
+        from exec_c P b valid_c ctxt this
+        have s': "s' \<in> Normal ` ({s'. (s', s) \<in> r} \<inter> P) \<union> Abrupt ` A"
+          by (auto simp add: cvalidt_def validt_def valid_def)
+        show ?thesis
+        proof (cases s')
+          case Normal 
+          with exec_w s' t_notin_F
+          show ?thesis
+            by - (rule hyp,auto)
+        next
+          case Abrupt
+          with exec_w have "t=s'"
+            by (auto dest: Abrupt_end)
+          with Abrupt s' show ?thesis
+            by blast
+        next
+          case Fault
+          with exec_w have "t=s'"
+            by (auto dest: Fault_end)
+          with Fault s' show ?thesis
+            by blast
+        next
+          case Stuck
+          with exec_w have "t=s'"
+            by (auto dest: Stuck_end)
+          with Stuck s' show ?thesis
+            by blast
+        qed
       next
-	assume "s\<notin>b" "t=Normal s" with P show ?thesis by simp
+        assume "s\<notin>b" "t=Normal s" with P show ?thesis by simp
       qed
     qed
     with wprems show "t \<in> Normal ` (P \<inter> - b) \<union> Abrupt ` A" by blast
@@ -250,30 +250,30 @@ next
       assume P: "s \<in> P"
       show "\<Gamma>\<turnstile>While b c \<down> Normal s"
       proof (cases "s \<in> b")
-	case False with P show ?thesis
-	  by (blast intro: terminates.intros)
+        case False with P show ?thesis
+          by (blast intro: terminates.intros)
       next
-	case True
-	with valid_c P ctxt
-	have "\<Gamma>\<turnstile>c \<down> Normal s"
-	  by (simp add: cvalidt_def validt_def)
-	moreover
-	{
-	  fix s'
-	  assume exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> s'"
-	  have "\<Gamma>\<turnstile>While b c \<down> s'"
-	  proof (cases s')
-	    case (Normal s'')
-	    with exec_c P True valid_c ctxt
-	    have s': "s' \<in> Normal ` ({s'. (s', s) \<in> r} \<inter> P)"
-	      by (fastsimp simp add: cvalidt_def validt_def valid_def)
-	    then show ?thesis
-	      by (blast intro: hyp)
-	  qed auto
-	}
-	ultimately
-	show ?thesis
-	  by (blast intro: terminates.intros)
+        case True
+        with valid_c P ctxt
+        have "\<Gamma>\<turnstile>c \<down> Normal s"
+          by (simp add: cvalidt_def validt_def)
+        moreover
+        {
+          fix s'
+          assume exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> s'"
+          have "\<Gamma>\<turnstile>While b c \<down> s'"
+          proof (cases s')
+            case (Normal s'')
+            with exec_c P True valid_c ctxt
+            have s': "s' \<in> Normal ` ({s'. (s', s) \<in> r} \<inter> P)"
+              by (fastsimp simp add: cvalidt_def validt_def valid_def)
+            then show ?thesis
+              by (blast intro: hyp)
+          qed auto
+        }
+        ultimately
+        show ?thesis
+          by (blast intro: terminates.intros)
       qed
     qed
   qed
@@ -343,69 +343,69 @@ next
       assume ctxt: "\<forall>(P, p, Q, A)\<in>\<Theta>. \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P (Call p) Q,A" 
       from wf
       have "\<And>\<tau> p P Q A.  \<lbrakk>\<tau>p = (\<tau>,p); (P,p,Q,A) \<in> Specs\<rbrakk> \<Longrightarrow> 
-                  \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> (p))) Q,A"	
+                  \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> (p))) Q,A"    
       proof (induct \<tau>p rule: wf_induct [rule_format, consumes 1, case_names WF])
-	case (WF \<tau>p \<tau> p P Q A)
-	have \<tau>p: "\<tau>p = (\<tau>, p)" by fact
-	have p: "(P, p, Q, A) \<in> Specs" by fact
-	{
-	  fix q P' Q' A'
+        case (WF \<tau>p \<tau> p P Q A)
+        have \<tau>p: "\<tau>p = (\<tau>, p)" by fact
+        have p: "(P, p, Q, A) \<in> Specs" by fact
+        {
+          fix q P' Q' A'
           assume q: "(P',q,Q',A') \<in> Specs"
-	  have "\<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' \<inter> {s. ((s,q), \<tau>,p) \<in> r}) (Call q) Q',A'"
-	  proof (rule validtI)
-	    fix s t
-	    assume exec_q: 
-	      "\<Gamma>\<turnstile>\<langle>Call q,Normal s\<rangle> \<Rightarrow> t"
+          have "\<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' \<inter> {s. ((s,q), \<tau>,p) \<in> r}) (Call q) Q',A'"
+          proof (rule validtI)
+            fix s t
+            assume exec_q: 
+              "\<Gamma>\<turnstile>\<langle>Call q,Normal s\<rangle> \<Rightarrow> t"
             assume Pre: "s \<in> P' \<inter> {s. ((s,q), \<tau>,p) \<in> r}"
-	    assume t_notin_F: "t \<notin> Fault ` F"
-	    from Pre q \<tau>p
-	    have valid_bdy: 
-	      "\<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({s} \<inter> P') the (\<Gamma> q) Q',A'"
-	      by - (rule WF.hyps, auto)
-	    from Pre q
-	    have Pre': "s \<in> {s} \<inter> P'"
-	      by auto
+            assume t_notin_F: "t \<notin> Fault ` F"
+            from Pre q \<tau>p
+            have valid_bdy: 
+              "\<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({s} \<inter> P') the (\<Gamma> q) Q',A'"
+              by - (rule WF.hyps, auto)
+            from Pre q
+            have Pre': "s \<in> {s} \<inter> P'"
+              by auto
             from exec_q show "t \<in> Normal ` Q' \<union> Abrupt ` A'"
-	    proof (cases)
-	      fix bdy 
-	      assume bdy: "\<Gamma> q = Some bdy"
-	      assume exec_bdy: "\<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> \<Rightarrow> t"
-	      from valid_bdy [simplified bdy the.simps]  t_notin_F exec_bdy Pre'
-	      have "t \<in> Normal ` Q' \<union> Abrupt ` A'"
-		by (auto simp add: validt_def valid_def)
-	      with Pre q 
-	      show ?thesis
-		by auto
-	    next
-	      assume "\<Gamma> q = None"
-	      with q valid_body have False by auto
-	      thus ?thesis ..
-	    qed
-	  next
-	    fix s
-	    assume Pre: "s \<in> P' \<inter> {s. ((s,q), \<tau>,p) \<in> r}"
-	    from Pre q \<tau>p
-	    have valid_bdy: 
-	      "\<Gamma> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({s} \<inter> P') (the (\<Gamma> q)) Q',A'"
-	      by - (rule WF.hyps, auto)
-	    from Pre q
-	    have Pre': "s \<in> {s} \<inter> P'"
-	      by auto
-	    from valid_bdy ctxt Pre'
-	    have "\<Gamma>\<turnstile>the (\<Gamma> q) \<down> Normal s"
-	      by (auto simp add: validt_def)
-	    with valid_body q 
-	    show "\<Gamma>\<turnstile>Call q\<down> Normal s"
-	      by (fastsimp intro: terminates.Call)
-	  qed
-	}
-	hence "\<forall>(P, p, Q, A)\<in>Specs_wf p \<tau>. \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P Call p Q,A"
-	  by (auto simp add: cvalidt_def Specs_wf)
-	with ctxt have "\<forall>(P, p, Q, A)\<in>\<Theta> \<union> Specs_wf p \<tau>. \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P Call p Q,A"
-	  by auto
-	with p valid_body 
-	show "\<Gamma> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A"
-	  by (simp add: cvalidt_def) blast
+            proof (cases)
+              fix bdy 
+              assume bdy: "\<Gamma> q = Some bdy"
+              assume exec_bdy: "\<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> \<Rightarrow> t"
+              from valid_bdy [simplified bdy the.simps]  t_notin_F exec_bdy Pre'
+              have "t \<in> Normal ` Q' \<union> Abrupt ` A'"
+                by (auto simp add: validt_def valid_def)
+              with Pre q 
+              show ?thesis
+                by auto
+            next
+              assume "\<Gamma> q = None"
+              with q valid_body have False by auto
+              thus ?thesis ..
+            qed
+          next
+            fix s
+            assume Pre: "s \<in> P' \<inter> {s. ((s,q), \<tau>,p) \<in> r}"
+            from Pre q \<tau>p
+            have valid_bdy: 
+              "\<Gamma> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({s} \<inter> P') (the (\<Gamma> q)) Q',A'"
+              by - (rule WF.hyps, auto)
+            from Pre q
+            have Pre': "s \<in> {s} \<inter> P'"
+              by auto
+            from valid_bdy ctxt Pre'
+            have "\<Gamma>\<turnstile>the (\<Gamma> q) \<down> Normal s"
+              by (auto simp add: validt_def)
+            with valid_body q 
+            show "\<Gamma>\<turnstile>Call q\<down> Normal s"
+              by (fastsimp intro: terminates.Call)
+          qed
+        }
+        hence "\<forall>(P, p, Q, A)\<in>Specs_wf p \<tau>. \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P Call p Q,A"
+          by (auto simp add: cvalidt_def Specs_wf)
+        with ctxt have "\<forall>(P, p, Q, A)\<in>\<Theta> \<union> Specs_wf p \<tau>. \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P Call p Q,A"
+          by auto
+        with p valid_body 
+        show "\<Gamma> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A"
+          by (simp add: cvalidt_def) blast
       qed
     }
     note lem = this
@@ -422,24 +422,24 @@ next
       assume t_notin_F: "t \<notin> Fault ` F"
       from exec_call show "t \<in> Normal ` Q \<union> Abrupt ` A"
       proof (cases)
-	fix bdy 
-	assume bdy: "\<Gamma> p = Some bdy"
-	assume exec_body: "\<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> \<Rightarrow> t"
-	from exec_body bdy p P t_notin_F 
+        fix bdy 
+        assume bdy: "\<Gamma> p = Some bdy"
+        assume exec_body: "\<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> \<Rightarrow> t"
+        from exec_body bdy p P t_notin_F 
           valid_body' [of "s", OF ctxt] 
           ctxt
-	have "t \<in> Normal ` Q \<union> Abrupt ` A"
-	  apply (simp only: cvalidt_def validt_def valid_def) 
-	  apply (drule (1) bspec)
-	  apply auto
-	  done
-	with p P 
-	show ?thesis
-	  by simp
+        have "t \<in> Normal ` Q \<union> Abrupt ` A"
+          apply (simp only: cvalidt_def validt_def valid_def) 
+          apply (drule (1) bspec)
+          apply auto
+          done
+        with p P 
+        show ?thesis
+          by simp
       next
-	assume "\<Gamma> p = None"
-	with p valid_body have False by auto
-	thus ?thesis by simp
+        assume "\<Gamma> p = None"
+        with p valid_body have False by auto
+        thus ?thesis by simp
       qed
     next
       fix s
@@ -447,11 +447,11 @@ next
       assume P: "s \<in> P"
       show "\<Gamma>\<turnstile>Call p \<down> Normal s"
       proof -
-	from ctxt P p valid_body' [of "s",OF ctxt]
-	have "\<Gamma>\<turnstile>(the (\<Gamma> p)) \<down> Normal s"
-	  by (auto simp add: cvalidt_def validt_def)
-	with valid_body p show ?thesis
-	  by (fastsimp intro: terminates.Call)
+        from ctxt P p valid_body' [of "s",OF ctxt]
+        have "\<Gamma>\<turnstile>(the (\<Gamma> p)) \<down> Normal s"
+          by (auto simp add: cvalidt_def validt_def)
+        with valid_body p show ?thesis
+          by (fastsimp intro: terminates.Call)
       qed
     qed
   qed
@@ -480,7 +480,7 @@ next
       from cvalidt_termD [OF valid_c [rule_format, OF P] ctxt P]
       have "\<Gamma>\<turnstile>c s \<down> Normal s" .
       thus ?thesis
-	by (rule terminates.intros)
+        by (rule terminates.intros)
     qed
   qed
 next
@@ -514,10 +514,10 @@ next
       assume exec_c2: "\<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s'\<rangle> \<Rightarrow> t"
       from cvalidt_postD [OF valid_c1 ctxt exec_c1 P]
       have "Abrupt s' \<in> Abrupt ` R"
-	by auto
+        by auto
       with cvalidt_postD [OF valid_c2 ctxt] exec_c2 t_notin_F
       show ?thesis
-	by fastsimp
+        by fastsimp
     next
       assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> t" 
       assume notAbr: "\<not> isAbr t"
@@ -525,7 +525,7 @@ next
       have "t \<in> Normal ` Q \<union> Abrupt ` R" .
       with notAbr
       show ?thesis
-	by auto
+        by auto
     qed
   next
     fix s
@@ -535,20 +535,20 @@ next
     proof -
       from valid_c1 ctxt P
       have "\<Gamma>\<turnstile>c\<^isub>1\<down> Normal s"
-	by (rule cvalidt_termD)
+        by (rule cvalidt_termD)
       moreover
       {
-	fix r assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> Abrupt r"
-	from cvalidt_postD [OF valid_c1 ctxt exec_c1 P]
-	have r: "Abrupt r\<in>Normal ` Q \<union> Abrupt ` R"
-	  by auto
-	hence "Abrupt r\<in>Abrupt ` R" by fast
-	with cvalidt_termD [OF valid_c2 ctxt] exec_c1
-	have "\<Gamma>\<turnstile>c\<^isub>2 \<down> Normal r"
-	  by fast
+        fix r assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> Abrupt r"
+        from cvalidt_postD [OF valid_c1 ctxt exec_c1 P]
+        have r: "Abrupt r\<in>Normal ` Q \<union> Abrupt ` R"
+          by auto
+        hence "Abrupt r\<in>Abrupt ` R" by fast
+        with cvalidt_termD [OF valid_c2 ctxt] exec_c1
+        have "\<Gamma>\<turnstile>c\<^isub>2 \<down> Normal r"
+          by fast
       }
       ultimately show ?thesis
-	by (iprover intro: terminates.intros)
+        by (iprover intro: terminates.intros)
     qed
   qed
 next
@@ -566,18 +566,18 @@ next
     proof -
       from adapt [rule_format, OF P]
       obtain P' and Q' and A' where 
-	valid_P'_Q': "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P' c Q',A'"
-	and weaken: "s \<in> P'" "Q' \<subseteq>  Q" "A'\<subseteq> A"
-	by blast
+        valid_P'_Q': "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P' c Q',A'"
+        and weaken: "s \<in> P'" "Q' \<subseteq>  Q" "A'\<subseteq> A"
+        by blast
       from exec valid_P'_Q' ctxt t_notin_F
       have P'_Q': "Normal s \<in> Normal ` P' \<longrightarrow> 
-	t \<in> Normal ` Q' \<union> Abrupt ` A'"
-	by (unfold cvalidt_def validt_def valid_def) blast
+        t \<in> Normal ` Q' \<union> Abrupt ` A'"
+        by (unfold cvalidt_def validt_def valid_def) blast
       hence "s \<in> P' \<longrightarrow> t \<in> Normal ` Q' \<union> Abrupt ` A'"
-	by blast
+        by blast
       with weaken 
       show ?thesis
-	by blast
+        by blast
     qed
   next
     fix s
@@ -587,12 +587,12 @@ next
     proof -
       from P adapt
       obtain P' and Q' and  A' where 
-	"\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P' c Q',A'"
-	"s \<in> P'"
-	by blast
+        "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P' c Q',A'"
+        "s \<in> P'"
+        by blast
       with ctxt
       show ?thesis
-	by (simp add: cvalidt_def validt_def)
+        by (simp add: cvalidt_def validt_def)
     qed
   qed
 next
@@ -761,12 +761,12 @@ next
       fix r t
       assume "\<Gamma>\<turnstile>\<langle>c1,Normal Z\<rangle> \<Rightarrow> Normal r" "\<Gamma>\<turnstile>\<langle>c2,Normal r\<rangle> \<Rightarrow> Normal t"
       then show "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t"
-	by (rule exec.intros)
+        by (rule exec.intros)
     next
       fix r t
       assume "\<Gamma>\<turnstile>\<langle>c1,Normal Z\<rangle> \<Rightarrow> Normal r" "\<Gamma>\<turnstile>\<langle>c2,Normal r\<rangle> \<Rightarrow> Abrupt t"
       then show "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t"
-	by (rule exec.intros)
+        by (rule exec.intros)
     qed
   qed
 next
@@ -806,7 +806,7 @@ next
                (Cond b c1 c2)
               {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t},
               {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
-    by (rule hoaret.Cond)	
+    by (rule hoaret.Cond)       
 next
   case (While b c)
   let ?unroll = "({(s,t). s\<in>b \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t})\<^sup>*"
@@ -839,8 +839,8 @@ next
       show "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> ?P' Z  \<inter> b) c 
                        ({t. (t, \<sigma>) \<in> ?r} \<inter> ?P' Z),(?A Z)"
       proof (rule allI, rule ConseqMGT [OF hyp_c])
-	fix \<sigma> s
-	assume  "s\<in> {\<sigma>} \<inter>  
+        fix \<sigma> s
+        assume  "s\<in> {\<sigma>} \<inter>  
                    {t. (Z, t) \<in> ?unroll \<and> 
                       (\<forall>e. (Z,e)\<in>?unroll \<longrightarrow> e\<in>b
                            \<longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
@@ -848,17 +848,17 @@ next
                                     \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u)) \<and>
                       \<Gamma>\<turnstile>(While b c)\<down>Normal t}
                    \<inter> b"
-	then obtain 
+        then obtain 
           s_eq_\<sigma>: "s=\<sigma>" and
-	  Z_s_unroll: "(Z,s) \<in> ?unroll" and
+          Z_s_unroll: "(Z,s) \<in> ?unroll" and
           noabort:"\<forall>e. (Z,e)\<in>?unroll \<longrightarrow> e\<in>b
                         \<longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                             (\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>Abrupt u \<longrightarrow> 
                                   \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u)" and
           while_term:  "\<Gamma>\<turnstile>(While b c)\<down>Normal s" and
-	  s_in_b: "s\<in>b" 
-	  by blast
-	show "s \<in> {t. t = s \<and> \<Gamma>\<turnstile>\<langle>c,Normal t\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
+          s_in_b: "s\<in>b" 
+          by blast
+        show "s \<in> {t. t = s \<and> \<Gamma>\<turnstile>\<langle>c,Normal t\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                        \<Gamma>\<turnstile>c\<down>Normal t} \<and>
         (\<forall>t. t \<in> {t. \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t} \<longrightarrow>
              t \<in> {t. (t,\<sigma>) \<in> ?r} \<inter>  
@@ -870,43 +870,43 @@ next
                       \<Gamma>\<turnstile>(While b c)\<down>Normal t})  \<and> 
          (\<forall>t. t \<in> {t. \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Abrupt t} \<longrightarrow>
              t \<in> {t. \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt t})"
-	  (is "?C1 \<and> ?C2 \<and> ?C3")
-	proof (intro conjI)
-	  from Z_s_unroll noabort s_in_b while_term show ?C1 
-	    by (blast elim: terminates_Normal_elim_cases)
-	next
-	  {
-	    fix t 
-	    assume s_t: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t"
-	    with s_eq_\<sigma> while_term s_in_b have "(t,\<sigma>) \<in> ?r"
-	      by blast
-	    moreover
-	    from Z_s_unroll s_t s_in_b 
-	    have "(Z, t) \<in> ?unroll"
-	      by (blast intro: rtrancl_into_rtrancl)
-	    moreover from while_term s_t s_in_b 
-	    have "\<Gamma>\<turnstile>(While b c)\<down>Normal t"
-	      by (blast elim: terminates_Normal_elim_cases)
-	    moreover note noabort
-	    ultimately 
-	    have "(t,\<sigma>) \<in> ?r \<and> (Z, t) \<in> ?unroll \<and> 
+          (is "?C1 \<and> ?C2 \<and> ?C3")
+        proof (intro conjI)
+          from Z_s_unroll noabort s_in_b while_term show ?C1 
+            by (blast elim: terminates_Normal_elim_cases)
+        next
+          {
+            fix t 
+            assume s_t: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t"
+            with s_eq_\<sigma> while_term s_in_b have "(t,\<sigma>) \<in> ?r"
+              by blast
+            moreover
+            from Z_s_unroll s_t s_in_b 
+            have "(Z, t) \<in> ?unroll"
+              by (blast intro: rtrancl_into_rtrancl)
+            moreover from while_term s_t s_in_b 
+            have "\<Gamma>\<turnstile>(While b c)\<down>Normal t"
+              by (blast elim: terminates_Normal_elim_cases)
+            moreover note noabort
+            ultimately 
+            have "(t,\<sigma>) \<in> ?r \<and> (Z, t) \<in> ?unroll \<and> 
                   (\<forall>e. (Z,e)\<in>?unroll \<longrightarrow> e\<in>b
                         \<longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                             (\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>Abrupt u \<longrightarrow> 
                                   \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u)) \<and>
                   \<Gamma>\<turnstile>(While b c)\<down>Normal t"
-	      by iprover
-	  }
-	  then show ?C2 by blast
-	next
-	  {
-	    fix t
-	    assume s_t:  "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Abrupt t" 
-	    from Z_s_unroll noabort s_t s_in_b
-	    have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
-	      by blast
-	  } thus ?C3 by simp
-	qed
+              by iprover
+          }
+          then show ?C2 by blast
+        next
+          {
+            fix t
+            assume s_t:  "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Abrupt t" 
+            from Z_s_unroll noabort s_t s_in_b
+            have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
+              by blast
+          } thus ?C3 by simp
+        qed
       qed
     qed
   next
@@ -921,96 +921,96 @@ next
      (\<forall>t. t\<in>?A s \<longrightarrow> t\<in>?A Z)"
     proof (intro conjI)
       {
-	fix e
-	assume "(Z,e) \<in> ?unroll" "e \<in> b"
-	from this WhileNoFault
-	have "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
+        fix e
+        assume "(Z,e) \<in> ?unroll" "e \<in> b"
+        from this WhileNoFault
+        have "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                (\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>Abrupt u \<longrightarrow> 
                     \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u)" (is "?Prop Z e")
-	proof (induct rule: converse_rtrancl_induct [consumes 1])
-	  assume e_in_b: "e \<in> b"
-	  assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	  with e_in_b WhileNoFault
-	  have cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	    by (auto simp add: final_notin_def intro: exec.intros)
-	  moreover
-	  {
-	    fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
-	    with e_in_b have "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow> Abrupt u"
-	      by (blast intro: exec.intros)
-	  }
-	  ultimately
-	  show "?Prop e e"
-	    by iprover
-	next
-	  fix Z r
-	  assume e_in_b: "e\<in>b" 
-	  assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	  assume hyp: "\<lbrakk>e\<in>b;\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))\<rbrakk>
+        proof (induct rule: converse_rtrancl_induct [consumes 1])
+          assume e_in_b: "e \<in> b"
+          assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+          with e_in_b WhileNoFault
+          have cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+            by (auto simp add: final_notin_def intro: exec.intros)
+          moreover
+          {
+            fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
+            with e_in_b have "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow> Abrupt u"
+              by (blast intro: exec.intros)
+          }
+          ultimately
+          show "?Prop e e"
+            by iprover
+        next
+          fix Z r
+          assume e_in_b: "e\<in>b" 
+          assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+          assume hyp: "\<lbrakk>e\<in>b;\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))\<rbrakk>
                        \<Longrightarrow> ?Prop r e"
-	  assume Z_r:
-	    "(Z, r) \<in> {(Z, r). Z \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r}"
-	  with WhileNoFault
-	  have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	    by (auto simp add: final_notin_def intro: exec.intros)
-	  from hyp [OF e_in_b this] obtain
-	    cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" and
+          assume Z_r:
+            "(Z, r) \<in> {(Z, r). Z \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r}"
+          with WhileNoFault
+          have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+            by (auto simp add: final_notin_def intro: exec.intros)
+          from hyp [OF e_in_b this] obtain
+            cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" and
             Abrupt_r: "\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u \<longrightarrow> 
                             \<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Abrupt u"
-	    by simp
-	  
-	   {
-	    fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
-	    with Abrupt_r have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Abrupt u" by simp
-	    moreover from  Z_r obtain
-	      "Z \<in> b"  "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
-	      by simp
-	    ultimately have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u"
-	      by (blast intro: exec.intros)
-	  }
-	  with cNoFault show "?Prop Z e"
-	    by iprover
-	qed
+            by simp
+          
+           {
+            fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
+            with Abrupt_r have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Abrupt u" by simp
+            moreover from  Z_r obtain
+              "Z \<in> b"  "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
+              by simp
+            ultimately have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u"
+              by (blast intro: exec.intros)
+          }
+          with cNoFault show "?Prop Z e"
+            by iprover
+        qed
       }
       with P show "s \<in> ?P' s"
-	by blast
+        by blast
     next
       {
-	fix t
-	assume "termination": "t \<notin> b"
-	assume "(Z, t) \<in> ?unroll"
-	hence "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
+        fix t
+        assume "termination": "t \<notin> b"
+        assume "(Z, t) \<in> ?unroll"
+        hence "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
         proof (induct rule: converse_rtrancl_induct [consumes 1])
-	  from "termination" 
-	  show "\<Gamma>\<turnstile>\<langle>While b c,Normal t\<rangle> \<Rightarrow> Normal t"
-	    by (blast intro: exec.WhileFalse)
-	next
-	  fix Z r
-	  assume first_body: 
-	         "(Z, r) \<in> {(s, t). s \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t}"
-	  assume "(r, t) \<in> ?unroll"
-	  assume rest_loop: "\<Gamma>\<turnstile>\<langle>While b c, Normal r\<rangle> \<Rightarrow> Normal t"
-	  show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
-	  proof -
-	    from first_body obtain
-	      "Z \<in> b" "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
-	      by fast
-	    moreover
-	    from rest_loop have
-	      "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Normal t"
-	      by fast
-	    ultimately show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
-	      by (rule exec.WhileTrue)
-	  qed
-	qed
+          from "termination" 
+          show "\<Gamma>\<turnstile>\<langle>While b c,Normal t\<rangle> \<Rightarrow> Normal t"
+            by (blast intro: exec.WhileFalse)
+        next
+          fix Z r
+          assume first_body: 
+                 "(Z, r) \<in> {(s, t). s \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t}"
+          assume "(r, t) \<in> ?unroll"
+          assume rest_loop: "\<Gamma>\<turnstile>\<langle>While b c, Normal r\<rangle> \<Rightarrow> Normal t"
+          show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
+          proof -
+            from first_body obtain
+              "Z \<in> b" "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
+              by fast
+            moreover
+            from rest_loop have
+              "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Normal t"
+              by fast
+            ultimately show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
+              by (rule exec.WhileTrue)
+          qed
+        qed
       }
       with P
       show "(\<forall>t. t\<in>(?P' s \<inter> - b)
             \<longrightarrow>t\<in>{t. \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t})"
-	by blast
+        by blast
     next
       from P show "\<forall>t. t\<in>?A s \<longrightarrow> t\<in>?A Z"
-	by simp
+        by simp
     qed
   qed
 next
@@ -1265,22 +1265,22 @@ next
       have "\<Gamma>\<turnstile> (c1, Normal Z) \<rightarrow>\<^sup>* (Skip, Normal t)".
       from steps_redexes_Seq [OF this red] 
       obtain c'' where
-	steps_c'': "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow>\<^sup>* (c'', Normal t)" and
-	Skip: "Seq Skip c2 \<in> redexes c''"
-	by blast
+        steps_c'': "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow>\<^sup>* (c'', Normal t)" and
+        Skip: "Seq Skip c2 \<in> redexes c''"
+        by blast
       note steps_c''
       also 
       have step_Skip: "\<Gamma>\<turnstile> (Seq Skip c2,Normal t) \<rightarrow> (c2,Normal t)"
-	by (rule step.SeqSkip)
+        by (rule step.SeqSkip)
       from step_redexes [OF step_Skip Skip]
       obtain c''' where
-	step_c''': "\<Gamma>\<turnstile> (c'', Normal t) \<rightarrow> (c''', Normal t)" and
-	c2: "c2 \<in> redexes c'''"
-	by blast
+        step_c''': "\<Gamma>\<turnstile> (c'', Normal t) \<rightarrow> (c''', Normal t)" and
+        c2: "c2 \<in> redexes c'''"
+        by blast
       note step_c'''
       finally show ?thesis
-	using c2
-	by blast
+        using c2
+        by blast
     qed
   next
     fix t 
@@ -1330,15 +1330,15 @@ next
       also
       from b
       have "\<Gamma>\<turnstile>(Cond b c1 c2, Normal Z) \<rightarrow> (c1, Normal Z)"
-	by (rule step.CondTrue)
+        by (rule step.CondTrue)
       from step_redexes [OF this redex_c'] obtain c'' where
-	step_c'': "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow> (c'', Normal Z)" and 
-	c1: "c1 \<in> redexes c''"
-	by blast
+        step_c'': "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow> (c'', Normal Z)" and 
+        c1: "c1 \<in> redexes c''"
+        by blast
       note step_c''
       finally show ?thesis
-	using c1
-	by blast
+        using c1
+        by blast
     qed
   next
     fix t assume "Z \<in> b" "\<Gamma>\<turnstile>\<langle>c1,Normal Z\<rangle> \<Rightarrow> Normal t"
@@ -1382,15 +1382,15 @@ next
       also
       from b
       have "\<Gamma>\<turnstile>(Cond b c1 c2, Normal Z) \<rightarrow> (c2, Normal Z)"
-	by (rule step.CondFalse)
+        by (rule step.CondFalse)
       from step_redexes [OF this redex_c'] obtain c'' where
-	step_c'': "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow> (c'', Normal Z)" and 
-	c1: "c2 \<in> redexes c''"
-	by blast
+        step_c'': "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow> (c'', Normal Z)" and 
+        c1: "c2 \<in> redexes c''"
+        by blast
       note step_c''
       finally show ?thesis
-	using c1
-	by blast
+        using c1
+        by blast
     qed
   next
     fix t assume "Z \<notin> b" "\<Gamma>\<turnstile>\<langle>c2,Normal Z\<rangle> \<Rightarrow> Normal t"
@@ -1410,7 +1410,7 @@ next
            (Cond b c1 c2) 
           {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t},
           {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
-    by (rule hoaret.Cond)	
+    by (rule hoaret.Cond)       
 next
   case (While b c) 
   let ?unroll = "({(s,t). s\<in>b \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t})\<^sup>*"
@@ -1440,7 +1440,7 @@ next
       fix Z
       from While 
       have hyp_c: "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub>
-	    {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
+            {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                 \<Gamma>\<turnstile>Call p\<down>Normal \<sigma> \<and> 
                (\<exists>c'. \<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ (c',Normal s) \<and> c \<in> redexes c')}
               c 
@@ -1449,8 +1449,8 @@ next
       show "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> ?P' Z  \<inter> b) c 
                        ({t. (t, \<sigma>) \<in> ?r} \<inter> ?P' Z),(?A Z)"
       proof (rule allI, rule ConseqMGT [OF hyp_c])
-	fix \<tau> s
-	assume  asm: "s\<in> {\<tau>} \<inter> 
+        fix \<tau> s
+        assume  asm: "s\<in> {\<tau>} \<inter> 
                    {t. (Z, t) \<in> ?unroll \<and> 
                       (\<forall>e. (Z,e)\<in>?unroll \<longrightarrow> e\<in>b
                            \<longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
@@ -1460,43 +1460,43 @@ next
                      (\<exists>c'. \<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ 
                                   (c',Normal t) \<and> While b c \<in> redexes c')}
                    \<inter> b"
-	then obtain c' where  
-	  s_eq_\<tau>: "s=\<tau>" and
-	  Z_s_unroll: "(Z,s) \<in> ?unroll" and
+        then obtain c' where  
+          s_eq_\<tau>: "s=\<tau>" and
+          Z_s_unroll: "(Z,s) \<in> ?unroll" and
           noabort:"\<forall>e. (Z,e)\<in>?unroll \<longrightarrow> e\<in>b
                         \<longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                             (\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>Abrupt u \<longrightarrow> 
                                   \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u)" and
           termi:  "\<Gamma>\<turnstile>Call p \<down> Normal \<sigma>" and
           reach: "\<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ (c',Normal s)" and
-	  red_c': "While b c \<in> redexes c'" and
-	  s_in_b: "s\<in>b" 
-	  by blast
-	obtain c'' where
-	  reach_c: "\<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ (c'',Normal s)" 
+          red_c': "While b c \<in> redexes c'" and
+          s_in_b: "s\<in>b" 
+          by blast
+        obtain c'' where
+          reach_c: "\<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ (c'',Normal s)" 
                    "Seq c (While b c) \<in> redexes c''"
-	proof -
-	  note reach
-	  also from s_in_b  
-	  have "\<Gamma>\<turnstile>(While b c,Normal s) \<rightarrow> (Seq c (While b c),Normal s)"
-	    by (rule step.WhileTrue)
-	  from step_redexes [OF this red_c'] obtain c'' where
-	    step: "\<Gamma>\<turnstile> (c', Normal s) \<rightarrow> (c'', Normal s)" and
-	    red_c'': "Seq c (While b c) \<in> redexes c''"
-	    by blast
-	  note step
-	  finally
-	  show ?thesis 
-	    using red_c''
-	    by (blast intro: that)
-	qed
-	from reach termi 
-	have "\<Gamma>\<turnstile>c' \<down> Normal s"
-	  by (rule steps_preserves_termination')
-	from redexes_preserves_termination [OF this red_c']
-	have termi_while: "\<Gamma>\<turnstile>While b c \<down> Normal s" .
-	show "s \<in> {t. t = s \<and> \<Gamma>\<turnstile>\<langle>c,Normal t\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
-	              \<Gamma>\<turnstile>Call p \<down> Normal \<sigma> \<and>
+        proof -
+          note reach
+          also from s_in_b  
+          have "\<Gamma>\<turnstile>(While b c,Normal s) \<rightarrow> (Seq c (While b c),Normal s)"
+            by (rule step.WhileTrue)
+          from step_redexes [OF this red_c'] obtain c'' where
+            step: "\<Gamma>\<turnstile> (c', Normal s) \<rightarrow> (c'', Normal s)" and
+            red_c'': "Seq c (While b c) \<in> redexes c''"
+            by blast
+          note step
+          finally
+          show ?thesis 
+            using red_c''
+            by (blast intro: that)
+        qed
+        from reach termi 
+        have "\<Gamma>\<turnstile>c' \<down> Normal s"
+          by (rule steps_preserves_termination')
+        from redexes_preserves_termination [OF this red_c']
+        have termi_while: "\<Gamma>\<turnstile>While b c \<down> Normal s" .
+        show "s \<in> {t. t = s \<and> \<Gamma>\<turnstile>\<langle>c,Normal t\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
+                      \<Gamma>\<turnstile>Call p \<down> Normal \<sigma> \<and>
                    (\<exists>c'. \<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ (c',Normal t) \<and> c \<in> redexes c')} \<and>
         (\<forall>t. t \<in> {t. \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t} \<longrightarrow>
              t \<in> {t. (t,\<tau>) \<in> ?r} \<inter>  
@@ -1510,60 +1510,60 @@ next
                           While b c \<in> redexes c')}) \<and> 
          (\<forall>t. t \<in> {t. \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Abrupt t} \<longrightarrow>
              t \<in> {t. \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt t})"
-	  (is "?C1 \<and> ?C2 \<and> ?C3")
-	proof (intro conjI)
-	  from Z_s_unroll noabort s_in_b termi reach_c show ?C1 
-	    apply clarsimp	    
-	    apply (drule redexes_subset)
-	    apply simp
-	    apply (blast intro: root_in_redexes)
-	    done
-	next
-	  {
-	    fix t 
-	    assume s_t: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t"
-	    with s_eq_\<tau> termi_while s_in_b have "(t,\<tau>) \<in> ?r"
-	      by blast
-	    moreover
-	    from Z_s_unroll s_t s_in_b 
-	    have "(Z, t) \<in> ?unroll"
-	      by (blast intro: rtrancl_into_rtrancl)
-	    moreover 
-	    obtain c'' where
-	      reach_c'': "\<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ (c'',Normal t)" 
+          (is "?C1 \<and> ?C2 \<and> ?C3")
+        proof (intro conjI)
+          from Z_s_unroll noabort s_in_b termi reach_c show ?C1 
+            apply clarsimp          
+            apply (drule redexes_subset)
+            apply simp
+            apply (blast intro: root_in_redexes)
+            done
+        next
+          {
+            fix t 
+            assume s_t: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t"
+            with s_eq_\<tau> termi_while s_in_b have "(t,\<tau>) \<in> ?r"
+              by blast
+            moreover
+            from Z_s_unroll s_t s_in_b 
+            have "(Z, t) \<in> ?unroll"
+              by (blast intro: rtrancl_into_rtrancl)
+            moreover 
+            obtain c'' where
+              reach_c'': "\<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ (c'',Normal t)" 
                         "(While b c) \<in> redexes c''"
-	    proof -
-	      note reach_c (1)
-	      also from s_in_b  
-	      have "\<Gamma>\<turnstile>(While b c,Normal s)\<rightarrow> (Seq c (While b c),Normal s)"
-		by (rule step.WhileTrue)
-	      have "\<Gamma>\<turnstile> (Seq c (While b c), Normal s) \<rightarrow>\<^sup>+
+            proof -
+              note reach_c (1)
+              also from s_in_b  
+              have "\<Gamma>\<turnstile>(While b c,Normal s)\<rightarrow> (Seq c (While b c),Normal s)"
+                by (rule step.WhileTrue)
+              have "\<Gamma>\<turnstile> (Seq c (While b c), Normal s) \<rightarrow>\<^sup>+
                         (While b c, Normal t)"
-	      proof -
-		from exec_impl_steps_Normal [OF s_t]
-		have "\<Gamma>\<turnstile> (c, Normal s) \<rightarrow>\<^sup>* (Skip, Normal t)".
-		hence "\<Gamma>\<turnstile> (Seq c (While b c), Normal s) \<rightarrow>\<^sup>* 
+              proof -
+                from exec_impl_steps_Normal [OF s_t]
+                have "\<Gamma>\<turnstile> (c, Normal s) \<rightarrow>\<^sup>* (Skip, Normal t)".
+                hence "\<Gamma>\<turnstile> (Seq c (While b c), Normal s) \<rightarrow>\<^sup>* 
                           (Seq Skip (While b c), Normal t)"
-		  by (rule SeqSteps) auto
-		moreover
-		have "\<Gamma>\<turnstile>(Seq Skip (While b c), Normal t)\<rightarrow>(While b c, Normal t)"
-		  by (rule step.SeqSkip)
-		ultimately show ?thesis by (rule rtranclp_into_tranclp1)
-	      qed
-	      from steps_redexes' [OF this reach_c (2)]  
-	      obtain c''' where
-		step: "\<Gamma>\<turnstile> (c'', Normal s) \<rightarrow>\<^sup>+ (c''', Normal t)" and
-		red_c'': "While b c \<in> redexes c'''"
-		by blast
-	      note step
-	      finally
-	      show ?thesis 
-		using red_c''
-		by (blast intro: that)
-	    qed
-	    moreover note noabort termi
-	    ultimately 
-	    have "(t,\<tau>) \<in> ?r \<and> (Z, t) \<in> ?unroll \<and> 
+                  by (rule SeqSteps) auto
+                moreover
+                have "\<Gamma>\<turnstile>(Seq Skip (While b c), Normal t)\<rightarrow>(While b c, Normal t)"
+                  by (rule step.SeqSkip)
+                ultimately show ?thesis by (rule rtranclp_into_tranclp1)
+              qed
+              from steps_redexes' [OF this reach_c (2)]  
+              obtain c''' where
+                step: "\<Gamma>\<turnstile> (c'', Normal s) \<rightarrow>\<^sup>+ (c''', Normal t)" and
+                red_c'': "While b c \<in> redexes c'''"
+                by blast
+              note step
+              finally
+              show ?thesis 
+                using red_c''
+                by (blast intro: that)
+            qed
+            moreover note noabort termi
+            ultimately 
+            have "(t,\<tau>) \<in> ?r \<and> (Z, t) \<in> ?unroll \<and> 
                   (\<forall>e. (Z,e)\<in>?unroll \<longrightarrow> e\<in>b
                         \<longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                             (\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>Abrupt u \<longrightarrow> 
@@ -1571,18 +1571,18 @@ next
                   \<Gamma>\<turnstile>Call p \<down> Normal \<sigma> \<and>
                     (\<exists>c'. \<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ (c', Normal t) \<and> 
                              While b c \<in> redexes c')"
-	      by iprover
-	  }
-	  then show ?C2 by blast
-	next
-	  {
-	    fix t
-	    assume s_t:  "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Abrupt t" 
-	    from Z_s_unroll noabort s_t s_in_b 
-	    have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
-	      by blast
-	  } thus ?C3 by simp
-	qed
+              by iprover
+          }
+          then show ?C2 by blast
+        next
+          {
+            fix t
+            assume s_t:  "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Abrupt t" 
+            from Z_s_unroll noabort s_t s_in_b 
+            have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
+              by blast
+          } thus ?C3 by simp
+        qed
       qed
     qed
   next 
@@ -1599,96 +1599,96 @@ next
      (\<forall>t. t\<in>?A s \<longrightarrow> t\<in>?A Z)"
     proof (intro conjI)
       {
-	fix e
-	assume "(Z,e) \<in> ?unroll" "e \<in> b"
-	from this WhileNoFault
-	have "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
+        fix e
+        assume "(Z,e) \<in> ?unroll" "e \<in> b"
+        from this WhileNoFault
+        have "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                (\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>Abrupt u \<longrightarrow> 
                     \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u)" (is "?Prop Z e")
-	proof (induct rule: converse_rtrancl_induct [consumes 1])
-	  assume e_in_b: "e \<in> b"
-	  assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	  with e_in_b WhileNoFault
-	  have cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	    by (auto simp add: final_notin_def intro: exec.intros)
-	  moreover
-	  {
-	    fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
-	    with e_in_b have "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow> Abrupt u"
-	      by (blast intro: exec.intros)
-	  }
-	  ultimately
-	  show "?Prop e e"
-	    by iprover
-	next
-	  fix Z r
-	  assume e_in_b: "e\<in>b" 
-	  assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	  assume hyp: "\<lbrakk>e\<in>b;\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))\<rbrakk>
+        proof (induct rule: converse_rtrancl_induct [consumes 1])
+          assume e_in_b: "e \<in> b"
+          assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+          with e_in_b WhileNoFault
+          have cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+            by (auto simp add: final_notin_def intro: exec.intros)
+          moreover
+          {
+            fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
+            with e_in_b have "\<Gamma>\<turnstile>\<langle>While b c,Normal e\<rangle> \<Rightarrow> Abrupt u"
+              by (blast intro: exec.intros)
+          }
+          ultimately
+          show "?Prop e e"
+            by iprover
+        next
+          fix Z r
+          assume e_in_b: "e\<in>b" 
+          assume WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+          assume hyp: "\<lbrakk>e\<in>b;\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))\<rbrakk>
                        \<Longrightarrow> ?Prop r e"
-	  assume Z_r:
-	    "(Z, r) \<in> {(Z, r). Z \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r}"
-	  with WhileNoFault
-	  have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	    by (auto simp add: final_notin_def intro: exec.intros)
-	  from hyp [OF e_in_b this] obtain
-	    cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" and
+          assume Z_r:
+            "(Z, r) \<in> {(Z, r). Z \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r}"
+          with WhileNoFault
+          have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
+            by (auto simp add: final_notin_def intro: exec.intros)
+          from hyp [OF e_in_b this] obtain
+            cNoFault: "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" and
             Abrupt_r: "\<forall>u. \<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u \<longrightarrow> 
                             \<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Abrupt u"
-	    by simp
-	  
-	   {
-	    fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
-	    with Abrupt_r have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Abrupt u" by simp
-	    moreover from  Z_r obtain
-	      "Z \<in> b"  "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
-	      by simp
-	    ultimately have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u"
-	      by (blast intro: exec.intros)
-	  }
-	  with cNoFault show "?Prop Z e"
-	    by iprover
-	qed
+            by simp
+          
+           {
+            fix u assume "\<Gamma>\<turnstile>\<langle>c,Normal e\<rangle> \<Rightarrow> Abrupt u"
+            with Abrupt_r have "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Abrupt u" by simp
+            moreover from  Z_r obtain
+              "Z \<in> b"  "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
+              by simp
+            ultimately have "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Abrupt u"
+              by (blast intro: exec.intros)
+          }
+          with cNoFault show "?Prop Z e"
+            by iprover
+        qed
       }
       with P show "s \<in> ?P' s"
-	by blast
+        by blast
     next
       {
-	fix t
-	assume "termination": "t \<notin> b"
-	assume "(Z, t) \<in> ?unroll"
-	hence "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
+        fix t
+        assume "termination": "t \<notin> b"
+        assume "(Z, t) \<in> ?unroll"
+        hence "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
         proof (induct rule: converse_rtrancl_induct [consumes 1])
-	  from "termination" 
-	  show "\<Gamma>\<turnstile>\<langle>While b c,Normal t\<rangle> \<Rightarrow> Normal t"
-	    by (blast intro: exec.WhileFalse)
-	next
-	  fix Z r
-	  assume first_body: 
-	         "(Z, r) \<in> {(s, t). s \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t}"
-	  assume "(r, t) \<in> ?unroll"
-	  assume rest_loop: "\<Gamma>\<turnstile>\<langle>While b c, Normal r\<rangle> \<Rightarrow> Normal t"
-	  show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
-	  proof -
-	    from first_body obtain
-	      "Z \<in> b" "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
-	      by fast
-	    moreover
-	    from rest_loop have
-	      "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Normal t"
-	      by fast
-	    ultimately show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
-	      by (rule exec.WhileTrue)
-	  qed
-	qed
+          from "termination" 
+          show "\<Gamma>\<turnstile>\<langle>While b c,Normal t\<rangle> \<Rightarrow> Normal t"
+            by (blast intro: exec.WhileFalse)
+        next
+          fix Z r
+          assume first_body: 
+                 "(Z, r) \<in> {(s, t). s \<in> b \<and> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> Normal t}"
+          assume "(r, t) \<in> ?unroll"
+          assume rest_loop: "\<Gamma>\<turnstile>\<langle>While b c, Normal r\<rangle> \<Rightarrow> Normal t"
+          show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
+          proof -
+            from first_body obtain
+              "Z \<in> b" "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal r"
+              by fast
+            moreover
+            from rest_loop have
+              "\<Gamma>\<turnstile>\<langle>While b c,Normal r\<rangle> \<Rightarrow> Normal t"
+              by fast
+            ultimately show "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t"
+              by (rule exec.WhileTrue)
+          qed
+        qed
       }
       with P
       show "\<forall>t. t\<in>(?P' s \<inter> - b)
             \<longrightarrow>t\<in>{t. \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t}"
-	by blast
+        by blast
     next
       from P show "\<forall>t. t\<in>?A s \<longrightarrow> t\<in>?A Z"
-	by simp
+        by simp
     qed
   qed
 next
@@ -1730,10 +1730,10 @@ next
       assume red_c': "Call q \<in> redexes c'"
       show "\<Gamma>\<turnstile>Call q \<down> Normal Z"
       proof -
-	from steps_preserves_termination' [OF steps_c' termi]
-	have "\<Gamma>\<turnstile>c' \<down> Normal Z" .
-	from redexes_preserves_termination [OF this red_c']
-	show ?thesis .
+        from steps_preserves_termination' [OF steps_c' termi]
+        have "\<Gamma>\<turnstile>c' \<down> Normal Z" .
+        from redexes_preserves_termination [OF this red_c']
+        show ?thesis .
       qed
     next
       fix c'
@@ -1742,10 +1742,10 @@ next
       assume red_c': "Call q \<in> redexes c'"
       from redex_redexes [OF this]
       have "redex c' = Call q"
-	by auto
+        by auto
       with termi steps_c' 
       show "((Z, q), \<sigma>, p) \<in> termi_call_steps \<Gamma>"
-	by (auto simp add: termi_call_steps_def)
+        by (auto simp add: termi_call_steps_def)
     qed
   qed
 next
@@ -1825,32 +1825,32 @@ next
     proof (rule ConseqMGT [OF hyp_c], safe)
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" "Z\<in>g"
       thus "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	by (auto simp add: final_notin_def intro: exec.intros)
+        by (auto simp add: final_notin_def intro: exec.intros)
     next
       fix c'
       assume steps: "\<Gamma>\<turnstile> (Call p, Normal \<sigma>) \<rightarrow>\<^sup>+ (c', Normal Z)"
       assume c': "Guard f g c \<in> redexes c'"
       assume "Z \<in> g"
       from this have "\<Gamma>\<turnstile>(Guard f g c,Normal Z) \<rightarrow> (c,Normal Z)"
-	by (rule step.Guard)
+        by (rule step.Guard)
       from step_redexes [OF this c'] obtain c'' where
-	step: "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow> (c'', Normal Z)"  and c'': "c \<in> redexes c''"
-	by blast
+        step: "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow> (c'', Normal Z)"  and c'': "c \<in> redexes c''"
+        by blast
       note steps also note step 
       finally show "\<exists>c'. \<Gamma>\<turnstile> (Call p, Normal \<sigma>) \<rightarrow>\<^sup>+ (c', Normal Z) \<and> c \<in> redexes c'"
-	using c'' by blast
+        using c'' by blast
     next
       fix t
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
-	     "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal t" "Z \<in> g"
+             "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal t" "Z \<in> g"
       thus "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow> Normal t"
-	by (auto simp add: final_notin_def intro: exec.intros )
+        by (auto simp add: final_notin_def intro: exec.intros )
     next
       fix t
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
-	      "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Abrupt t" "Z \<in> g"
+              "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Abrupt t" "Z \<in> g"
       thus "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow> Abrupt t"
-	by (auto simp add: final_notin_def intro: exec.intros )
+        by (auto simp add: final_notin_def intro: exec.intros )
     qed 
     from True this show ?thesis
       by (rule conseqPre [OF Guarantee]) auto 
@@ -1867,8 +1867,8 @@ next
     proof (rule ConseqMGT [OF hyp_c], safe)
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
       thus "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-	using False
-	by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros)
+        using False
+        by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros)
     next
       fix c'
       assume steps: "\<Gamma>\<turnstile> (Call p, Normal \<sigma>) \<rightarrow>\<^sup>+ (c', Normal Z)"
@@ -1876,27 +1876,27 @@ next
 
       assume "Z \<in> g"
       from this have "\<Gamma>\<turnstile>(Guard f g c,Normal Z) \<rightarrow> (c,Normal Z)"
-	by (rule step.Guard)
+        by (rule step.Guard)
       from step_redexes [OF this c'] obtain c'' where
-	step: "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow> (c'', Normal Z)"  and c'': "c \<in> redexes c''"
-	by blast
+        step: "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow> (c'', Normal Z)"  and c'': "c \<in> redexes c''"
+        by blast
       note steps also note step 
       finally show "\<exists>c'. \<Gamma>\<turnstile> (Call p, Normal \<sigma>) \<rightarrow>\<^sup>+ (c', Normal Z) \<and> c \<in> redexes c'"
-	using c'' by blast
+        using c'' by blast
     next
       fix t
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
-	"\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal t"
+        "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal t"
       thus "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow> Normal t"
-	using False
-	by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros )
+        using False
+        by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros )
     next
       fix t
       assume "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
-	     "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
+             "\<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Abrupt t"
       thus "\<Gamma>\<turnstile>\<langle>Guard f g c ,Normal Z\<rangle> \<Rightarrow> Abrupt t"
-	using False
-	by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros )
+        using False
+        by (cases "Z\<in> g") (auto simp add: final_notin_def intro: exec.intros )
     qed
     then show ?thesis
       apply (rule conseqPre [OF hoaret.Guard])
@@ -1977,22 +1977,22 @@ next
       have "\<Gamma>\<turnstile> (c\<^isub>1, Normal Z) \<rightarrow>\<^sup>* (Throw, Normal t)".
       from steps_redexes_Catch [OF this red] 
       obtain c'' where
-	steps_c'': "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow>\<^sup>* (c'', Normal t)" and
-	Catch: "Catch Throw c\<^isub>2 \<in> redexes c''"
-	by blast
+        steps_c'': "\<Gamma>\<turnstile> (c', Normal Z) \<rightarrow>\<^sup>* (c'', Normal t)" and
+        Catch: "Catch Throw c\<^isub>2 \<in> redexes c''"
+        by blast
       note steps_c''
       also 
       have step_Catch: "\<Gamma>\<turnstile> (Catch Throw c\<^isub>2,Normal t) \<rightarrow> (c\<^isub>2,Normal t)"
-	by (rule step.CatchThrow)
+        by (rule step.CatchThrow)
       from step_redexes [OF step_Catch Catch]
       obtain c''' where
-	step_c''': "\<Gamma>\<turnstile> (c'', Normal t) \<rightarrow> (c''', Normal t)" and
-	c2: "c\<^isub>2 \<in> redexes c'''"
-	by blast
+        step_c''': "\<Gamma>\<turnstile> (c'', Normal t) \<rightarrow> (c''', Normal t)" and
+        c2: "c\<^isub>2 \<in> redexes c'''"
+        by blast
       note step_c'''
       finally show ?thesis
-	using c2
-	by blast
+        using c2
+        by blast
     qed
   qed
   moreover
@@ -2297,14 +2297,14 @@ next
       assume exec_bdy: "\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow> Normal t"
       hence "\<Gamma>\<turnstile>c s t \<down> Normal (return s t)"
       proof -
-	from exec_bdy bdy
-	have "\<Gamma>\<turnstile>\<langle>(Call p ),Normal (init s)\<rangle> \<Rightarrow> Normal t"
-	  by (auto simp add: intro: exec.intros)
-	from cvalidD [OF valid_modif [rule_format, of "init s"] ctxt' this] P 
-	  res_modif
-	have "return' s t = return s t"
-	  by auto
-	with termi_c exec_bdy show ?thesis by auto
+        from exec_bdy bdy
+        have "\<Gamma>\<turnstile>\<langle>(Call p ),Normal (init s)\<rangle> \<Rightarrow> Normal t"
+          by (auto simp add: intro: exec.intros)
+        from cvalidD [OF valid_modif [rule_format, of "init s"] ctxt' this] P 
+          res_modif
+        have "return' s t = return s t"
+          by auto
+        with termi_c exec_bdy show ?thesis by auto
       qed
     }
     with bdy termi_bdy
@@ -2443,14 +2443,14 @@ next
       assume exec_bdy: "\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow> Normal t"
       hence "\<Gamma>\<turnstile>c s t \<down> Normal (return s t)"
       proof -
-	from exec_bdy bdy
-	have "\<Gamma>\<turnstile>\<langle>(Call p ),Normal (init s)\<rangle> \<Rightarrow> Normal t"
-	  by (auto simp add: intro: exec.intros)
-	from cvalidD [OF valid_modif [rule_format, of "init s"] ctxt' this] P 
-	  res_modif
-	have "return' s t = return s t"
-	  by auto
-	with termi_c exec_bdy show ?thesis by auto
+        from exec_bdy bdy
+        have "\<Gamma>\<turnstile>\<langle>(Call p ),Normal (init s)\<rangle> \<Rightarrow> Normal t"
+          by (auto simp add: intro: exec.intros)
+        from cvalidD [OF valid_modif [rule_format, of "init s"] ctxt' this] P 
+          res_modif
+        have "return' s t = return s t"
+          by auto
+        with termi_c exec_bdy show ?thesis by auto
       qed
     }
     with bdy termi_bdy
@@ -2615,14 +2615,14 @@ next
       assume exec_bdy: "\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow> Normal t"
       hence "\<Gamma>\<turnstile>c s t \<down> Normal (return s t)"
       proof -
-	from exec_bdy bdy
-	have "\<Gamma>\<turnstile>\<langle>Call (p s),Normal (init s)\<rangle> \<Rightarrow> Normal t"
-	  by (auto simp add: intro: exec.intros)
-	from cvalidD [OF valid_modif [rule_format, of s "init s"] ctxt' this] P 
-	  ret_modif
-	have "return' s t = return s t"
-	  by auto
-	with termi_c exec_bdy show ?thesis by auto
+        from exec_bdy bdy
+        have "\<Gamma>\<turnstile>\<langle>Call (p s),Normal (init s)\<rangle> \<Rightarrow> Normal t"
+          by (auto simp add: intro: exec.intros)
+        from cvalidD [OF valid_modif [rule_format, of s "init s"] ctxt' this] P 
+          ret_modif
+        have "return' s t = return s t"
+          by auto
+        with termi_c exec_bdy show ?thesis by auto
       qed
     }
     with bdy termi_bdy
@@ -2784,14 +2784,14 @@ next
       assume exec_bdy: "\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow> Normal t"
       hence "\<Gamma>\<turnstile>c s t \<down> Normal (return s t)"
       proof -
-	from exec_bdy bdy
-	have "\<Gamma>\<turnstile>\<langle>Call (p s),Normal (init s)\<rangle> \<Rightarrow> Normal t"
-	  by (auto simp add: intro: exec.intros)
-	from cvalidD [OF valid_modif [rule_format, of s "init s"] ctxt' this] P 
-	  ret_modif
-	have "return' s t = return s t"
-	  by auto
-	with termi_c exec_bdy show ?thesis by auto
+        from exec_bdy bdy
+        have "\<Gamma>\<turnstile>\<langle>Call (p s),Normal (init s)\<rangle> \<Rightarrow> Normal t"
+          by (auto simp add: intro: exec.intros)
+        from cvalidD [OF valid_modif [rule_format, of s "init s"] ctxt' this] P 
+          ret_modif
+        have "return' s t = return s t"
+          by auto
+        with termi_c exec_bdy show ?thesis by auto
       qed
     }
     with bdy termi_bdy
@@ -2953,12 +2953,12 @@ proof (rule cvalidtI)
       assume "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> Fault f"
       from cvalidt_postD [OF valid_c1 ctxt this P] t t_notin_F
       show ?thesis
-	by blast
+        by blast
     next
       assume "\<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s\<rangle> \<Rightarrow> Fault f"
       from cvalidD [OF valid_c2 ctxt' this P] t t_notin_F
       show ?thesis
-	by blast
+        by blast
     qed
   next
     case Stuck
@@ -3026,16 +3026,16 @@ proof (rule cvalidtI)
       hence "f \<notin> -F" by simp
       with exec Fault
       have "\<Gamma>\<turnstile>\<langle>strip_guards (-F) c,Normal s\<rangle> \<Rightarrow> Fault f" 
-	by (auto intro: exec_to_exec_strip_guards_Fault)
+        by (auto intro: exec_to_exec_strip_guards_Fault)
       from cvalidD [OF valid_strip ctxt' this P] Fault
       have False
-	by auto
+        by auto
       thus ?thesis ..
     next
       case False
       with cvalidt_postD [OF valid ctxt'' exec P] Fault
       show ?thesis
-	by auto
+        by auto
     qed
   next
     case Stuck
@@ -3100,13 +3100,13 @@ proof (rule cvalidtI)
       hence "f \<notin> -F" by simp
       with cvalidD [OF validFlip ctxtFlip exec P] Fault
       have False
-	by auto
+        by auto
       thus ?thesis ..
     next
       case False
       with cvalidt_postD [OF valid ctxt' exec P] Fault
       show ?thesis
-	by auto
+        by auto
     qed
   next
     case Stuck
@@ -3407,13 +3407,13 @@ proof -
     have "\<Gamma>\<turnstile>c\<down>Normal s"
     proof -
       from P validt_c have "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>c\<down>Normal s"
-	by (auto simp add: validt_def)
+        by (auto simp add: validt_def)
       moreover
       from P valid_c
       have "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}"
-	by (auto simp add: valid_def  final_notin_def)
+        by (auto simp add: valid_def  final_notin_def)
       ultimately show ?thesis
-	by (rule terminates_restrict_to_terminates)
+        by (rule terminates_restrict_to_terminates)
     qed
    }
    ultimately show ?thesis

@@ -848,7 +848,7 @@ proof -
     by(unfold_locales)(auto elim!: red0.cases simp add: split_def)
 qed
 
-lemma red0_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr0 (mred0 P) (\<tau>MOVE0 P) wfs"
+lemma red0_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr0 (mred0 P) (\<tau>MOVE0 P)"
 proof -
   interpret final_thread_wf final_expr0 "mred0 P" by(rule red0_final_thread_wf)
   show ?thesis
@@ -859,7 +859,7 @@ proof -
   qed(simp add: split_beta)
 qed
 
-lemma red_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr (mred P) (\<tau>MOVE P) wfs"
+lemma red_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr (mred P) (\<tau>MOVE P)"
 proof
   fix x1 m1 t ta1 x1' m1'
   assume "mred P t (x1, m1) ta1 (x1', m1')" "\<tau>MOVE P (x1, m1) ta1 (x1', m1')"
@@ -874,8 +874,7 @@ sublocale J_heap_base < red_mthr!:
     "mred P"
     convert_RA
     "\<tau>MOVE P"
-    wfs
-  for P wfs
+  for P
 by(rule red_\<tau>mthr_wf)
 
 sublocale J_heap_base < red0_mthr!:
@@ -884,8 +883,7 @@ sublocale J_heap_base < red0_mthr!:
     "mred0 P"
     convert_RA
     "\<tau>MOVE0 P"
-    wfs
-  for P wfs
+  for P
 by(rule red0_\<tau>mthr_wf)
 
 context J_heap_base begin

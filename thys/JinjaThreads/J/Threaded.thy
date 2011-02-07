@@ -720,4 +720,53 @@ sublocale J_heap_base < red_mthr!: final_thread_wf
   for P
 by(rule final_thread_wf_interp)
 
+section {* Determinism *}
+
+context J_heap_base begin
+
+lemma
+  fixes final
+  assumes det: "deterministic_heap_ops"
+  shows red_deterministic:
+  "\<lbrakk> convert_extTA extTA,P,t \<turnstile> \<langle>e, (shr s, xs)\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; 
+     convert_extTA extTA,P,t \<turnstile> \<langle>e, (shr s, xs)\<rangle> -ta'\<rightarrow> \<langle>e'', s''\<rangle>;
+     final_thread.actions_ok final s t ta; final_thread.actions_ok final s t ta' \<rbrakk> 
+  \<Longrightarrow> ta = ta' \<and> e' = e'' \<and> s' = s''"
+  and reds_deterministic:
+  "\<lbrakk> convert_extTA extTA,P,t \<turnstile> \<langle>es, (shr s, xs)\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; 
+     convert_extTA extTA,P,t \<turnstile> \<langle>es, (shr s, xs)\<rangle> [-ta'\<rightarrow>] \<langle>es'', s''\<rangle>;
+     final_thread.actions_ok final s t ta; final_thread.actions_ok final s t ta' \<rbrakk> 
+  \<Longrightarrow> ta = ta' \<and> es' = es'' \<and> s' = s''"
+proof(induct e "(shr s, xs)" ta e' s' and es "(shr s, xs)" ta es' s' arbitrary: e'' s'' xs and es'' s'' xs rule: red_reds.inducts)
+  case RedCall thus ?case by(auto elim!: red_cases dest: sees_method_fun simp add: map_eq_append_conv)
+next
+  case RedCallExternal thus ?case
+    by(auto elim!: red_cases dest: red_external_deterministic[OF det] simp add: final_thread.actions_ok_iff map_eq_append_conv)
+next
+  case RedCallNull thus ?case by(auto elim!: red_cases dest: sees_method_fun simp add: map_eq_append_conv)
+next
+  case CallThrowParams thus ?case
+    by(auto elim!: red_cases dest: sees_method_fun simp add: map_eq_append_conv append_eq_map_conv append_eq_append_conv2 reds_map_Val_Throw Cons_eq_append_conv append_eq_Cons_conv)
+qed(fastsimp elim!: red_cases reds_cases dest: deterministic_heap_ops_readD[OF det] deterministic_heap_ops_writeD[OF det] iff: reds_map_Val_Throw)+
+
+lemma red_mthr_deterministic:
+  assumes det: "deterministic_heap_ops"
+  shows "red_mthr.deterministic P"
+proof(rule red_mthr.determisticI)
+  fix s t x ta' x' m' ta'' x'' m''
+  assume "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
+    and red: "mred P t (x, shr s) ta' (x', m')" "mred P t (x, shr s) ta'' (x'', m'')"
+    and aok: "red_mthr.actions_ok s t ta'" "red_mthr.actions_ok s t ta''"
+  moreover obtain e xs where [simp]: "x = (e, xs)" by(cases x)
+  moreover obtain e' xs' where [simp]: "x' = (e', xs')" by(cases x')
+  moreover obtain e'' xs'' where [simp]: "x'' = (e'', xs'')" by(cases x'')
+  ultimately have "extTA2J P,P,t \<turnstile> \<langle>e,(shr s, xs)\<rangle> -ta'\<rightarrow> \<langle>e',(m', xs')\<rangle>"
+    and "extTA2J P,P,t \<turnstile> \<langle>e,(shr s, xs)\<rangle> -ta''\<rightarrow> \<langle>e'',(m'', xs'')\<rangle>"
+    by simp_all
+  from red_deterministic[OF det this aok]
+  show "ta' = ta'' \<and> x' = x'' \<and> m' = m''" by simp
+qed
+
+end
+
 end

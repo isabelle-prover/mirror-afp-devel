@@ -1,21 +1,8 @@
 header {* Lazy Lists *}
 
 theory LazyList
-imports HOLCF
+imports HOLCF Int_Discrete
 begin
-
-text {* Discrete cpo instance for @{typ int}. *}
-
-instantiation int :: discrete_cpo
-begin
-
-definition below_int_def:
-  "(x::int) \<sqsubseteq> y \<longleftrightarrow> x = y"
-
-instance proof
-qed (rule below_int_def)
-
-end
 
 domain 'a LList = LNil | LCons (lazy 'a) (lazy "'a LList")
  
@@ -33,7 +20,7 @@ fixrec
 where
   "filterL\<cdot>p\<cdot>LNil = LNil"
 | "filterL\<cdot>p\<cdot>(LCons\<cdot>x\<cdot>xs) =
-    (If p\<cdot>x then LCons\<cdot>x\<cdot>(filterL\<cdot>p\<cdot>xs) else filterL\<cdot>p\<cdot>xs fi)"
+    (If p\<cdot>x then LCons\<cdot>x\<cdot>(filterL\<cdot>p\<cdot>xs) else filterL\<cdot>p\<cdot>xs)"
 
 lemma filterL_strict [simp]: "filterL\<cdot>p\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp

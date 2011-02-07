@@ -1,5 +1,4 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.13 2008/10/07 14:07:44 fhaftmann Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -162,7 +161,7 @@ assumes "r \<in> A\<^sup>\<star>" "r \<notin> UNIV\<^sup>\<star>"
 proof-
   have "A \<subseteq> UNIV" by auto
   hence "A\<^sup>\<star> \<subseteq> UNIV\<^sup>\<star>" by (rule finlsts_mono)
-  thus ?thesis using prems by auto
+  thus ?thesis using assms by auto
 qed
 
 lemma finT_simp [simp]:
@@ -767,7 +766,7 @@ qed
 lemma lbutlast_lapp_llast:
 assumes "l \<in> A\<^sup>\<clubsuit>"
   shows "l = lbutlast l @@ (llast l ## LNil)"
-  using prems by induct auto
+  using assms by induct auto
 
 lemma llast_snoc [simp]:
   assumes fin: "xs \<in> A\<^sup>\<star>"
@@ -852,15 +851,15 @@ next assume lconst: "lconst a \<in> UNIV\<^sup>\<star>"
     thus "lconst a \<noteq> l"
     proof (rule finlsts_induct, simp_all)
       fix a' l' assume 
-	al': "lconst a \<noteq> l'" and
-	l'A: "l' \<in> UNIV\<^sup>\<star>"
+        al': "lconst a \<noteq> l'" and
+        l'A: "l' \<in> UNIV\<^sup>\<star>"
       from al' show  "lconst a \<noteq> a' ## l'"
       proof (rule contrapos_np)
-	assume notal: "\<not> lconst a \<noteq> a' ## l'"
-	hence "lconst a = a' ## l'" by simp
-	hence "a ## lconst a = a' ## l'"
-	  by (rule subst [OF lconst_unfold])
-	thus "lconst a = l'" by auto
+        assume notal: "\<not> lconst a \<noteq> a' ## l'"
+        hence "lconst a = a' ## l'" by simp
+        hence "a ## lconst a = a' ## l'"
+          by (rule subst [OF lconst_unfold])
+        thus "lconst a = l'" by auto
       qed
     qed
   qed
@@ -921,8 +920,8 @@ proof-
     next      
       case (LCons_fin l a) show ?case
       proof
-	fix t from LCons_fin show  "a ## l \<le> t \<and> t \<le> a ## l \<longrightarrow> a ## l = t"
-	  by (cases "t") blast+
+        fix t from LCons_fin show  "a ## l \<le> t \<and> t \<le> a ## l \<longrightarrow> a ## l = t"
+          by (cases "t") blast+
       qed
     qed
     thus ?thesis using st ts by blast
@@ -956,7 +955,7 @@ proof-
     proof (clarify)
       fix r assume ral: "r \<le> a ## l"
       thus "r \<in> A\<^sup>\<star>" using LCons_fin
-	by (cases r) auto
+        by (cases r) auto
     qed
   qed
   with rs show ?thesis by auto
@@ -1150,10 +1149,10 @@ proof-
       case (LCons a' l')
       note acons = this with binf show ?thesis
       proof (cases b)
-	case (LCons b' l'')
-	with acons pref have "a' = b'" "finpref A l' \<subseteq> finpref A l''"
-	  by (auto simp: finpref_def)
-	thus ?thesis using acons LCons q by auto
+        case (LCons b' l'')
+        with acons pref have "a' = b'" "finpref A l' \<subseteq> finpref A l''"
+          by (auto simp: finpref_def)
+        thus ?thesis using acons LCons q by auto
       qed
     qed
   qed
@@ -1186,27 +1185,27 @@ proof-
       note tx = `t \<le> x`
       show ?case
       proof(rule disjCI)
-	assume tal: "\<not> t \<le> a ## l"
-	show "LCons a l \<le> t"
-	proof (cases t)
-	  case LNil thus ?thesis using tal by auto
-	next case (LCons b ts) note tcons = this show ?thesis
-	  proof (cases x)
-	    case LNil thus ?thesis using alx by auto
-	  next
-	    case (LCons c xs)
-	    from alx  LCons have ac: "a = c" and lxs: "l \<le> xs"
-	      by auto
-	    from tx tcons LCons have bc: "b = c" and tsxs: "ts \<le> xs"
-	      by auto
-	    from tcons tal ac bc have tsl: "\<not> ts \<le> l"
-	      by auto
-	    from LCons_fin lxs tsxs tsl have "l \<le> ts"
-	      by auto
-	    with tcons ac bc show ?thesis
-	      by auto
-	  qed
-	qed
+        assume tal: "\<not> t \<le> a ## l"
+        show "LCons a l \<le> t"
+        proof (cases t)
+          case LNil thus ?thesis using tal by auto
+        next case (LCons b ts) note tcons = this show ?thesis
+          proof (cases x)
+            case LNil thus ?thesis using alx by auto
+          next
+            case (LCons c xs)
+            from alx  LCons have ac: "a = c" and lxs: "l \<le> xs"
+              by auto
+            from tx tcons LCons have bc: "b = c" and tsxs: "ts \<le> xs"
+              by auto
+            from tcons tal ac bc have tsl: "\<not> ts \<le> l"
+              by auto
+            from LCons_fin lxs tsxs tsl have "l \<le> ts"
+              by auto
+            with tcons ac bc show ?thesis
+              by auto
+          qed
+        qed
       qed
     qed
   qed

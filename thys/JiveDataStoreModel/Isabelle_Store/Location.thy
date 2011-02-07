@@ -1,5 +1,4 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Location.thy,v 1.8 2008-06-12 06:57:24 lsf37 Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL

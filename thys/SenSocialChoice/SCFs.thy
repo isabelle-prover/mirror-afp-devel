@@ -66,14 +66,14 @@ proof
   next
     case (insert a B)
     hence finiteB: "finite B"
-	and aA: "a \<in> A"
-	and AB: "B \<subseteq> A"
-	and aB: "a \<notin> B"
-	and cF: "B \<noteq> {} \<Longrightarrow> choiceSet B r \<noteq> {}" by - blast
+        and aA: "a \<in> A"
+        and AB: "B \<subseteq> A"
+        and aB: "a \<notin> B"
+        and cF: "B \<noteq> {} \<Longrightarrow> choiceSet B r \<noteq> {}" by - blast
     show ?case
     proof(cases "B = {}")
       case True with aA r show ?thesis
-	unfolding choiceSet_def by blast
+        unfolding choiceSet_def by blast
     next
       case False
       with cF obtain b where bCF: "b \<in> choiceSet B r" by blast
@@ -81,20 +81,20 @@ proof
       have "a \<^bsub>r\<^esub>\<prec> b \<or> b \<^bsub>r\<^esub>\<preceq> a" unfolding choiceSet_def strict_pref_def by blast
       thus ?thesis
       proof
-	assume ab: "b \<^bsub>r\<^esub>\<preceq> a"
-	with bCF show ?thesis unfolding choiceSet_def by auto
+        assume ab: "b \<^bsub>r\<^esub>\<preceq> a"
+        with bCF show ?thesis unfolding choiceSet_def by auto
       next
-	assume ab: "a \<^bsub>r\<^esub>\<prec> b"
-	have "a \<in> choiceSet (insert a B) r"
-	proof(rule ccontr)
-	  assume aCF: "a \<notin> choiceSet (insert a B) r"
-	  from aB have "\<And>b. b \<in> B \<Longrightarrow> a \<noteq> b" by auto
-	  with aCF aA AB c r obtain b' where B: "b' \<in> B" "b' \<^bsub>r\<^esub>\<prec> a"
-	    unfolding choiceSet_def complete_def strict_pref_def by blast
-	  with ab qt have "b' \<^bsub>r\<^esub>\<prec> b" by (blast dest: quasi_transD)
-	  with bCF B show False unfolding choiceSet_def strict_pref_def by blast
-	qed
-	thus ?thesis by auto
+        assume ab: "a \<^bsub>r\<^esub>\<prec> b"
+        have "a \<in> choiceSet (insert a B) r"
+        proof(rule ccontr)
+          assume aCF: "a \<notin> choiceSet (insert a B) r"
+          from aB have "\<And>b. b \<in> B \<Longrightarrow> a \<noteq> b" by auto
+          with aCF aA AB c r obtain b' where B: "b' \<in> B" "b' \<^bsub>r\<^esub>\<prec> a"
+            unfolding choiceSet_def complete_def strict_pref_def by blast
+          with ab qt have "b' \<^bsub>r\<^esub>\<prec> b" by (blast dest: quasi_transD)
+          with bCF B show False unfolding choiceSet_def strict_pref_def by blast
+        qed
+        thus ?thesis by auto
       qed
     qed
   qed
@@ -112,7 +112,7 @@ text {* A \emph{social choice function} (SCF), also called a
 somehow aggregates society's opinions, expressed as a profile, into a
 preference relation. *}
 
-types ('a, 'i) SCF = "('a, 'i) Profile \<Rightarrow> 'a RPR"
+type_synonym ('a, 'i) SCF = "('a, 'i) Profile \<Rightarrow> 'a RPR"
 
 text {* The least we require of an SCF is that it be \emph{complete} and
 some function of the profile. The latter condition is usually implied by
@@ -126,7 +126,7 @@ where
 lemma SCFI[intro]:
   assumes c: "\<And>P. Pcond A Is P \<Longrightarrow> complete A (scf P)"
   shows "SCF scf A Is Pcond"
-  unfolding SCF_def using prems by blast
+  unfolding SCF_def using assms by blast
 
 lemma SCF_completeD[dest]: "\<lbrakk> SCF scf A Is Pcond; Pcond A Is P \<rbrakk> \<Longrightarrow> complete A (scf P)"
   unfolding SCF_def by blast

@@ -1,7 +1,6 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: LynchInstance.thy,v 1.12 2008-06-12 06:57:16 lsf37 Exp $
-    Author:      Dami·n Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
-    Maintainer:  Dami·n Barsotti <damian at hal.famaf.unc.edu.ar>
+    Author:      Dami√°n Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
+    Maintainer:  Dami√°n Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
 
 header {* Fault-tolerant Midpoint algorithm *}
@@ -21,10 +20,9 @@ text {* The election of the basics types was based on
 \cite{shankar92mechanical}. There, the process are natural numbers and
 the real time and the clock readings are reals. *}
 
-types
-  process = nat  
-  time = real      -- "real time"
-  Clocktime = real -- "time of the clock readings (clock time)"
+type_synonym process = nat  
+type_synonym time = real      -- "real time"
+type_synonym Clocktime = real -- "time of the clock readings (clock time)"
 
 subsubsection {* Some constants *}
 
@@ -127,7 +125,7 @@ next
       assume "f x \<le> f m" thus ?thesis using m by blast
     next
       assume "~ f x \<le> f m" thus ?thesis using m
-	by(simp add:linorder_not_le order_less_le)
+        by(simp add:linorder_not_le order_less_le)
           (blast intro: order_trans)
     qed
   qed
@@ -154,7 +152,7 @@ next
       assume "f m \<le> f x" thus ?thesis using m by blast
     next
       assume "~ f m \<le> f x" thus ?thesis using m
-	by(simp add:linorder_not_le order_less_le)
+        by(simp add:linorder_not_le order_less_le)
           (blast intro: order_trans)
     qed
   qed
@@ -191,36 +189,36 @@ proof-
       assume asm2: "Suc n <= np"
       with asm have "?P n" by simp
       then obtain S where
-	SinPR : "S\<subseteq>PR" and 
-	cardS: "card S = n" and 
-	HI: "(\<forall>i\<in>S. \<forall>j\<in>PR - S. f j \<le> f i)" 
-	by blast
+        SinPR : "S\<subseteq>PR" and 
+        cardS: "card S = n" and 
+        HI: "(\<forall>i\<in>S. \<forall>j\<in>PR - S. f j \<le> f i)" 
+        by blast
       let ?e = "SOME i. i\<in>PR-S \<and> 
-	(\<forall>j\<in>PR-S. f j \<le> f i)"
+        (\<forall>j\<in>PR-S. f j \<le> f i)"
       let ?S = "insert  ?e S"
       have "\<exists>i. i\<in>PR-S \<and> (\<forall>j\<in>PR-S. f j \<le> f i)"
       proof-
-	from SinPR and finite_subset 
-	have "finite (PR-S)" 
-	  by auto
-	moreover
-	from cardS and asm2 SinPR
-	have "S\<subset>PR" by auto
-	hence "PR-S \<noteq> {}" by auto
-	ultimately
-	show ?thesis using ex_Maxf by blast
+        from SinPR and finite_subset 
+        have "finite (PR-S)" 
+          by auto
+        moreover
+        from cardS and asm2 SinPR
+        have "S\<subset>PR" by auto
+        hence "PR-S \<noteq> {}" by auto
+        ultimately
+        show ?thesis using ex_Maxf by blast
       qed
       hence 
-	ePRS: "?e \<in> PR-S" and maxH: "(\<forall>j \<in> PR-S. f j \<le> f ?e)"
-	by (auto dest!: someI_ex)
+        ePRS: "?e \<in> PR-S" and maxH: "(\<forall>j \<in> PR-S. f j \<le> f ?e)"
+        by (auto dest!: someI_ex)
       from maxH and HI
       have "(\<forall>i\<in>?S. \<forall>j\<in>PR - ?S. f j \<le> f i)"
-	by blast
+        by blast
       moreover
       from SinPR and finite_subset 
       cardS and ePRS 
       have "card ?S = Suc n"  
-	by (auto dest: card_insert_disjoint)
+        by (auto dest: card_insert_disjoint)
       moreover
       have "?S \<subseteq> PR" using SinPR and ePRS by auto
       ultimately
@@ -254,36 +252,36 @@ proof-
       assume asm2: "Suc n <= np"
       with asm have "?P n" by simp
       then obtain S where
-	SinPR : "S\<subseteq>PR" and 
-	cardS: "card S = n" and 
-	HI: "(\<forall>i\<in>S. \<forall>j\<in>PR - S. f i \<le> f j)" 
-	by blast
+        SinPR : "S\<subseteq>PR" and 
+        cardS: "card S = n" and 
+        HI: "(\<forall>i\<in>S. \<forall>j\<in>PR - S. f i \<le> f j)" 
+        by blast
       let ?e = "SOME i. i\<in>PR-S \<and> 
-	(\<forall>j\<in>PR-S. f i \<le> f j)"
+        (\<forall>j\<in>PR-S. f i \<le> f j)"
       let ?S = "insert  ?e S"
       have "\<exists>i. i\<in>PR-S \<and> (\<forall>j\<in>PR-S. f i \<le> f j)"
       proof-
-	from SinPR and finite_subset 
-	have "finite (PR-S)" 
-	  by auto
-	moreover
-	from cardS and asm2 SinPR
-	have "S\<subset>PR" by auto
-	hence "PR-S \<noteq> {}" by auto
-	ultimately
-	show ?thesis using ex_Minf by blast
+        from SinPR and finite_subset 
+        have "finite (PR-S)" 
+          by auto
+        moreover
+        from cardS and asm2 SinPR
+        have "S\<subset>PR" by auto
+        hence "PR-S \<noteq> {}" by auto
+        ultimately
+        show ?thesis using ex_Minf by blast
       qed
       hence 
-	ePRS: "?e \<in> PR-S" and minH: "(\<forall>j \<in> PR-S. f ?e \<le> f j)"
-	by (auto dest!: someI_ex)
+        ePRS: "?e \<in> PR-S" and minH: "(\<forall>j \<in> PR-S. f ?e \<le> f j)"
+        by (auto dest!: someI_ex)
       from minH and  HI 
       have "(\<forall>i\<in>?S. \<forall>j\<in>PR - ?S. f i \<le> f j)"
-	by blast
+        by blast
       moreover
       from SinPR and finite_subset and
-	cardS and ePRS
+        cardS and ePRS
       have "card ?S = Suc n" 
-	by (auto dest: card_insert_disjoint)
+        by (auto dest: card_insert_disjoint)
       moreover
       have "?S \<subseteq> PR" using SinPR and ePRS by auto
       ultimately
@@ -553,15 +551,15 @@ proof
     show "r \<le> f i"
     proof-
       from asm2 and exist_reduce have
-	"\<exists> j \<in> PR-(kmax f PR \<union> kmin f PR). f j = r" by blast
+        "\<exists> j \<in> PR-(kmax f PR \<union> kmin f PR). f j = r" by blast
       then obtain j 
       where fjr:"j \<in> PR-(kmax f PR \<union> kmin f PR) \<and> f j = r" 
-	by blast
+        by blast
       hence "j \<in> (PR - kmax f PR)"
-	by blast
+        by blast
       from this fjr asm  
       show ?thesis using kmax_prop
-	by auto
+        by auto
     qed
   qed
 qed
@@ -576,15 +574,15 @@ proof
     show "f i <= r"
     proof-
       from asm2 and exist_reduce have
-	"\<exists> j\<in> PR-(kmax f PR \<union> kmin f PR). f j = r" by blast
+        "\<exists> j\<in> PR-(kmax f PR \<union> kmin f PR). f j = r" by blast
       then obtain j 
       where fjr:"j \<in> PR-(kmax f PR \<union> kmin f PR) \<and> f j = r" 
-	by blast
+        by blast
       hence "j \<in> (PR - kmin f PR)"
-	by blast
+        by blast
       from this fjr asm  
       show ?thesis using kmin_prop
-	by auto
+        by auto
     qed
   qed
 qed
@@ -613,11 +611,11 @@ proof-
       by (simp add: abs_mult)
     finally
       have "\<bar>a * d - b * d\<bar> = \<bar>a - b\<bar> * d"
-	.
+        .
     (* This sublemma is solved by ICS, file: abs_distrib_mult.ics *)
     (* It is not solved nor 
        by (auto simp add: left_distrib  real_diff_def)(arith) 
-	in Isabelle  *)
+        in Isabelle  *)
   }
   with ch and divide_inverse show ?thesis
     by (auto simp add: divide_inverse)
@@ -740,34 +738,34 @@ proof-
     show "card PR + (khl + 1) \<le> card C + card (PR - kmin f PR)" 
     proof-
       from hnk and hCk have 
-	"np + khl < np + card C - khl" by arith 
+        "np + khl < np + card C - khl" by arith 
       also
       from kmin_prop
       have "... = np + card C - card (kmin f PR)"
-	by auto
+        by auto
       also
       have "... = card C + (card PR - card (kmin f PR))"
       proof-
-	from kmin_prop have
-	  "card (kmin f PR) <= card PR"
-	  by (intro card_mono, auto)
-	thus ?thesis by (simp)
+        from kmin_prop have
+          "card (kmin f PR) <= card PR"
+          by (intro card_mono, auto)
+        thus ?thesis by (simp)
       qed
       also
       from kmin_prop 
       have "... = card C +  card (PR - kmin f PR)" 
       proof-
-	from kmin_prop and finite_kmin have 
-	  "card PR - card (kmin f PR) =  card (PR - kmin f PR)"
-	  by (intro card_Diff_subset[THEN sym])(auto)
-	thus ?thesis by auto
+        from kmin_prop and finite_kmin have 
+          "card PR - card (kmin f PR) =  card (PR - kmin f PR)"
+          by (intro card_Diff_subset[THEN sym])(auto)
+        thus ?thesis by auto
       qed
       finally
       show ?thesis 
-	by (simp)
+        by (simp)
     qed
   qed
-	
+        
   have "C \<inter> (PR - kmin f PR) \<inter> (PR - kmax g PR) \<noteq> {}"
   proof(intro subsets_int)
     show "finite PR" by simp
@@ -783,9 +781,9 @@ proof-
     proof-
       from kmax_prop and finite_kmax
       have "card (PR - kmax g PR)= card PR - card (kmax g PR) " 
-	by  (intro card_Diff_subset, auto)
+        by  (intro card_Diff_subset, auto)
       with kmax_prop have 
-	"card (PR - kmax g PR) = card PR - khl" by simp
+        "card (PR - kmax g PR) = card PR - khl" by simp
       with b1
       show ?thesis by arith
     qed
@@ -913,9 +911,9 @@ proof-
     proof-
       from  mxfinC mnginC hby1 abs_le_D1
       have "f mxf + - f mng <= y" 
-	by (auto simp add: real_diff_def)
+        by (auto simp add: real_diff_def)
       thus ?thesis
-	by (auto simp add: real_diff_def)
+        by (auto simp add: real_diff_def)
     qed
     also
     from  mnginC hbx abs_le_D1
@@ -951,7 +949,7 @@ proof-
     also
     from  mxninC hbx 
     have "... <= (g mxg + - f mnf) + x"
-	by (auto dest!: abs_le_D2)
+        by (auto dest!: abs_le_D2)
     also
     have 
       "... = (g mxg + - g mnf ) + ( g mnf + - f mnf) + x"
@@ -961,9 +959,9 @@ proof-
     proof-
       from  mxginC mnfinC hby2 abs_le_D1
       have "g mxg + - g mnf <= y" 
-	by (auto simp add: real_diff_def)
+        by (auto simp add: real_diff_def)
       thus ?thesis
-	by (auto simp add: real_diff_def)
+        by (auto simp add: real_diff_def)
     qed
     also
     from  mnfinC hbx

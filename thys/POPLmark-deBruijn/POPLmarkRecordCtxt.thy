@@ -259,7 +259,7 @@ next
     proof
       assume "t\<^isub>2 \<in> value"
       with t\<^isub>1 have "t\<^isub>1 \<bullet> t\<^isub>2 \<longmapsto>\<^sub>c t[0 \<mapsto> t\<^isub>2]"
-	by simp (rule eval.intros)
+        by simp (rule eval.intros)
       thus ?thesis by (iprover intro: C_Hole)
     next
       assume "\<exists>E t\<^isub>0 t\<^isub>0'. E \<in> ctxt \<and> t\<^isub>2 = E t\<^isub>0 \<and> t\<^isub>0 \<longmapsto>\<^sub>c t\<^isub>0'"

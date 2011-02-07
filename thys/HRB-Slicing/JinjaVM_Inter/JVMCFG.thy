@@ -590,7 +590,7 @@ next
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_IfFalse_True show ?case
-    by (fastsimp dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
+    using [[simproc del: list_to_set_comprehension]] by (fastsimp dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_New_Update C P C0 Main M pc Cl ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)` `C \<noteq> ClassMain P`

@@ -574,6 +574,8 @@ lemma Load_correct:
 \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
   by (fastsimp dest: sees_method_fun [of _ C] elim!: confTs_confT_sup)
 
+declare [[simproc del: list_to_set_comprehension]]
+
 lemma Store_correct:
 "\<lbrakk> wf_prog wt P;
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C;
@@ -1074,6 +1076,8 @@ lemma BV_correct_initial:
   apply (unfold conf_f_def wt_start_def)
   apply fastsimp
   done
+
+declare [[simproc add: list_to_set_comprehension]]
 (*>*)
 
 theorem typesafe:

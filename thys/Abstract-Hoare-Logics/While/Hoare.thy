@@ -10,7 +10,7 @@ subsection{* Hoare logic for partial correctness *}
 text{* We continue our semantic approach by modelling assertions just
 like boolean expressions, i.e.\ as functions:*}
 
-types assn = "state \<Rightarrow> bool"
+type_synonym assn = "state \<Rightarrow> bool"
 
 text{*Hoare triples are triples of the form @{text"{P} c {Q}"}, where
 the assertions @{text P} and @{text Q} are the so-called pre and

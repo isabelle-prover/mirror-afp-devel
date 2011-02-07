@@ -17,7 +17,7 @@ domain 'a llist =
   | lcons (lazy "'a") (lazy "'a llist") (infixr ":@" 65)
 
 lemma llist_case_distr_strict:
-  "f\<cdot>\<bottom> = \<bottom> \<Longrightarrow> f\<cdot>(llist_when\<cdot>g\<cdot>h\<cdot>xxs) = llist_when\<cdot>(f\<cdot>g)\<cdot>(\<Lambda> x xs. f\<cdot>(h\<cdot>x\<cdot>xs))\<cdot>xxs"
+  "f\<cdot>\<bottom> = \<bottom> \<Longrightarrow> f\<cdot>(llist_case\<cdot>g\<cdot>h\<cdot>xxs) = llist_case\<cdot>(f\<cdot>g)\<cdot>(\<Lambda> x xs. f\<cdot>(h\<cdot>x\<cdot>xs))\<cdot>xxs"
   by (cases xxs) simp_all
 
 fixrec lsingleton :: "'a \<rightarrow> 'a llist"
@@ -70,7 +70,7 @@ by fixrec_simp
 fixrec lfilter :: "('a \<rightarrow> tr) \<rightarrow> 'a llist \<rightarrow> 'a llist"
 where
   "lfilter\<cdot>p\<cdot>lnil = lnil"
-| "lfilter\<cdot>p\<cdot>(x :@ xs) = If p\<cdot>x then x :@ lfilter\<cdot>p\<cdot>xs else lfilter\<cdot>p\<cdot>xs fi"
+| "lfilter\<cdot>p\<cdot>(x :@ xs) = If p\<cdot>x then x :@ lfilter\<cdot>p\<cdot>xs else lfilter\<cdot>p\<cdot>xs"
 
 lemma lfilter_strict[simp]: "lfilter\<cdot>p\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp
@@ -95,7 +95,7 @@ qed simp_all
 fixrec ldropWhile :: "('a \<rightarrow> tr) \<rightarrow> 'a llist \<rightarrow> 'a llist"
 where
   "ldropWhile\<cdot>p\<cdot>lnil = lnil"
-| "ldropWhile\<cdot>p\<cdot>(x :@ xs) = If p\<cdot>x then ldropWhile\<cdot>p\<cdot>xs else x :@ xs fi"
+| "ldropWhile\<cdot>p\<cdot>(x :@ xs) = If p\<cdot>x then ldropWhile\<cdot>p\<cdot>xs else x :@ xs"
 
 lemma ldropWhile_strict[simp]: "ldropWhile\<cdot>p\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp
@@ -166,10 +166,10 @@ text{* This @{term "zipWith"} function follows Haskell's in being more
 permissive: zipping uneven lists results in a list as long as the
 shortest one. This is what the backtracking monad expects. *}
 
-fixrec (permissive) lzipWith :: "('a \<rightarrow> 'b \<rightarrow> 'c) \<rightarrow> 'a llist \<rightarrow> 'b llist \<rightarrow> 'c llist"
+fixrec lzipWith :: "('a \<rightarrow> 'b \<rightarrow> 'c) \<rightarrow> 'a llist \<rightarrow> 'b llist \<rightarrow> 'c llist"
 where
   "lzipWith\<cdot>f\<cdot>(a :@ as)\<cdot>(b :@ bs) = f\<cdot>a\<cdot>b :@ lzipWith\<cdot>f\<cdot>as\<cdot>bs"
-| "lzipWith\<cdot>f\<cdot>xs\<cdot>ys = lnil"
+| (unchecked) "lzipWith\<cdot>f\<cdot>xs\<cdot>ys = lnil"
 
 lemma lzipWith_simps [simp]:
   "lzipWith\<cdot>f\<cdot>(x :@ xs)\<cdot>(y :@ ys) = f\<cdot>x\<cdot>y :@ lzipWith\<cdot>f\<cdot>xs\<cdot>ys"

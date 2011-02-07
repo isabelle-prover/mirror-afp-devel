@@ -4,7 +4,7 @@
 header {* Combining All Completeness Proofs *}
 
 theory Completeness
-imports ArchCompProps
+imports ArchCompProps ArchComp
 begin
 
 definition Archive :: "vertex fgraph set" where
@@ -13,9 +13,9 @@ definition Archive :: "vertex fgraph set" where
 
 theorem TameEnum_Archive:  "fgraph ` TameEnum \<subseteq>\<^isub>\<simeq> Archive"
 using combine_evals[OF pre_iso_test3 same3]
-      combine_evals_filter[OF pre_iso_test4 same4]
-      combine_evals_filter[OF pre_iso_test5 same5]
-      combine_evals_filter[OF pre_iso_test6 same6]
+      combine_evals[OF pre_iso_test4 same4]
+      combine_evals[OF pre_iso_test5 same5]
+      combine_evals[OF pre_iso_test6 same6]
 by(fastsimp simp:TameEnum_def Archive_def image_def iso_subseteq_def
        iso_in_def eval_nat_numeral le_Suc_eq)
 

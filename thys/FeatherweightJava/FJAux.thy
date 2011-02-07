@@ -58,51 +58,52 @@ lemma map_upds_index:
                             \<longrightarrow> ([xs[\<mapsto>]Bs] x = Some (Bs !i))))" 
   (is "\<exists>i. ?P i xs As" 
    is "\<exists>i.(?P1 i As) \<and> (?P2 i As) \<and> (\<forall>Bs::('c list).(?P3 i xs As Bs))")
-using assms proof(induct "xs" "As" rule:list_induct2)
-assume "[[][\<mapsto>][]] x = Some Ai"
-moreover have "\<not>[[][\<mapsto>][]] x = Some Ai" by auto
-ultimately show "\<exists>i. ?P i [] []" by contradiction
+  using assms
+proof(induct "xs" "As" rule:list_induct2)
+  assume "[[][\<mapsto>][]] x = Some Ai"
+  moreover have "\<not>[[][\<mapsto>][]] x = Some Ai" by auto
+  ultimately show "\<exists>i. ?P i [] []" by contradiction
 next
-fix xa xs y ys 
-assume length_xs_ys: "length xs = length ys"
-and IH: "[xs [\<mapsto>] ys] x = Some Ai \<Longrightarrow> \<exists>i. ?P i xs ys"
-and map_eq_Some: "[xa # xs [\<mapsto>] y # ys] x = Some Ai"
-from prems have map_decomp: "[xa#xs [\<mapsto>] y#ys] = [xa\<mapsto>y] ++ [xs[\<mapsto>]ys]" by fastsimp
-from length_xs_ys IH map_eq_Some show "\<exists>i. ?P i (xa#xs) (y # ys)"
-proof(cases "[xs[\<mapsto>]ys]x")
-  case(Some Ai')
-  hence "([xa \<mapsto>y] ++ [xs[\<mapsto>]ys]) x = Some Ai'" by(rule map_add_find_right)
-  hence P: "[xs[\<mapsto>]ys] x = Some Ai" using prems by simp
-  from IH[OF P] obtain i where 
-    R1: "ys ! i = Ai" 
-    and R2: "i < length ys" 
-    and pre_r3: "\<forall>(Bs::'c list). ?P3 i xs ys Bs" by fastsimp
-  { fix Bs::"'c list"
-    assume length_Bs: "length Bs = length (y#ys)"
-    then obtain n where "length (y#ys) = Suc n" by auto
-    with length_Bs obtain b bs where Bs_def: "Bs = b#bs" by (auto simp add:length_Suc_conv)
-    with length_Bs have "length ys = length bs" by simp
-    with pre_r3 have "([xa\<mapsto>b] ++ [xs[\<mapsto>]bs]) x = Some (bs!i)" by(auto simp only:map_add_find_right)
-    with pre_r3 Bs_def length_Bs have "?P3 (i+1) (xa#xs) (y#ys) Bs" by simp }
-  with R1 R2 have "?P (i+1) (xa#xs) (y#ys)" by auto
-  thus ?thesis ..
-next
-  case None
-  with map_decomp have "[xa\<mapsto>y] x = Some Ai" using prems by (auto simp only:map_add_SomeD)
-  hence ai_def: "y = Ai" and x_eq_xa:"x=xa" by (auto simp only:map_upd_Some_unfold)  
-  { fix Bs::"'c list"
-    assume length_Bs: "length Bs = length (y#ys)"
-    then obtain n where "length (y#ys) = Suc n" by auto
-    with length_Bs obtain b bs where Bs_def: "Bs = b#bs" by (auto simp add:length_Suc_conv)
-    with length_Bs have "length ys = length bs" by simp
-    hence "dom([xs[\<mapsto>]ys]) = dom([xs[\<mapsto>]bs])" by auto
-    with None have "[xs[\<mapsto>]bs] x = None" by (auto simp only:domIff)
-    moreover from x_eq_xa have sing_map: "[xa\<mapsto>b] x = Some b" by (auto simp only:map_upd_Some_unfold)
-    ultimately have "([xa\<mapsto>b] ++ [xs[\<mapsto>]bs]) x = Some b" by (auto simp only:map_add_Some_iff)
-    with Bs_def have "?P3 0 (xa#xs) (y#ys) Bs" by simp }
-  with ai_def have "?P 0 (xa#xs) (y#ys)" by auto
-  thus ?thesis ..
-qed
+  fix xa xs y ys 
+  assume length_xs_ys: "length xs = length ys"
+    and IH: "[xs [\<mapsto>] ys] x = Some Ai \<Longrightarrow> \<exists>i. ?P i xs ys"
+    and map_eq_Some: "[xa # xs [\<mapsto>] y # ys] x = Some Ai"
+  then have map_decomp: "[xa#xs [\<mapsto>] y#ys] = [xa\<mapsto>y] ++ [xs[\<mapsto>]ys]" by fastsimp
+  show "\<exists>i. ?P i (xa#xs) (y # ys)"
+  proof(cases "[xs[\<mapsto>]ys]x")
+    case(Some Ai')
+    hence "([xa \<mapsto>y] ++ [xs[\<mapsto>]ys]) x = Some Ai'" by(rule map_add_find_right)
+    hence P: "[xs[\<mapsto>]ys] x = Some Ai" using map_eq_Some Some by simp
+    from IH[OF P] obtain i where 
+      R1: "ys ! i = Ai" 
+      and R2: "i < length ys" 
+      and pre_r3: "\<forall>(Bs::'c list). ?P3 i xs ys Bs" by fastsimp
+    { fix Bs::"'c list"
+      assume length_Bs: "length Bs = length (y#ys)"
+      then obtain n where "length (y#ys) = Suc n" by auto
+      with length_Bs obtain b bs where Bs_def: "Bs = b#bs" by (auto simp add:length_Suc_conv)
+      with length_Bs have "length ys = length bs" by simp
+      with pre_r3 have "([xa\<mapsto>b] ++ [xs[\<mapsto>]bs]) x = Some (bs!i)" by(auto simp only:map_add_find_right)
+      with pre_r3 Bs_def length_Bs have "?P3 (i+1) (xa#xs) (y#ys) Bs" by simp }
+    with R1 R2 have "?P (i+1) (xa#xs) (y#ys)" by auto
+    thus ?thesis ..
+  next
+    case None
+    with map_decomp map_eq_Some have "[xa\<mapsto>y] x = Some Ai" by (auto simp only:map_add_SomeD)
+    hence ai_def: "y = Ai" and x_eq_xa:"x=xa" by (auto simp only:map_upd_Some_unfold)  
+    { fix Bs::"'c list"
+      assume length_Bs: "length Bs = length (y#ys)"
+      then obtain n where "length (y#ys) = Suc n" by auto
+      with length_Bs obtain b bs where Bs_def: "Bs = b#bs" by (auto simp add:length_Suc_conv)
+      with length_Bs have "length ys = length bs" by simp
+      hence "dom([xs[\<mapsto>]ys]) = dom([xs[\<mapsto>]bs])" by auto
+      with None have "[xs[\<mapsto>]bs] x = None" by (auto simp only:domIff)
+      moreover from x_eq_xa have sing_map: "[xa\<mapsto>b] x = Some b" by (auto simp only:map_upd_Some_unfold)
+      ultimately have "([xa\<mapsto>b] ++ [xs[\<mapsto>]bs]) x = Some b" by (auto simp only:map_add_Some_iff)
+      with Bs_def have "?P3 0 (xa#xs) (y#ys) Bs" by simp }
+    with ai_def have "?P 0 (xa#xs) (y#ys)" by auto
+    thus ?thesis ..
+  qed
 qed
 
 subsection{* FJ Lemmas *} 
@@ -150,7 +151,7 @@ next
   case (Cons h1 t1)
   { assume asm:"f h1"
     hence "0<length (h1 # t1) \<and> e = (h1 # t1) ! 0" 
-      using prems by (auto simp add:lookup.simps);
+      using Cons by (auto simp add:lookup.simps)
     moreover { 
       assume "length (h1 # t1) = length l2"  
       hence "length l2 = Suc (length t1)" by auto
@@ -161,20 +162,20 @@ next
   } moreover { 
     assume asm:"\<not> (f h1)"
     hence "lookup t1 f = Some e" 
-      using prems by (auto simp add:lookup.simps)
+      using Cons by (auto simp add:lookup.simps)
     then obtain i where 
       "i<length t1" 
       and "e = t1 ! i" 
       and  ih:"(length t1 = length (tl l2) \<longrightarrow> lookup2 t1 (tl l2) f = Some ((tl l2) ! i))" 
-      using prems by blast
-    hence "Suc i < length (h1#t1) \<and> e = (h1#t1)!(Suc i)" using prems by auto
+      using Cons by blast
+    hence "Suc i < length (h1#t1) \<and> e = (h1#t1)!(Suc i)" using Cons by auto
     moreover {
       assume "length (h1 # t1) = length l2"
       hence lens:"length l2 = Suc (length t1)" by auto
       then obtain h2 t2 where l2_def:"l2 = h2#t2" by (auto simp add: length_Suc_conv)
       hence "lookup2 t1 t2 f = Some (t2 ! i)" using ih l2_def lens by auto
       hence "lookup2 (h1 # t1) l2 f = Some (l2!(Suc i))" 
-	using asm l2_def by(auto simp: add lookup2.simps)
+        using asm l2_def by(auto simp: add lookup2.simps)
     }
     ultimately have ?case by auto
   }
@@ -191,13 +192,13 @@ next
   hence "length l2 = Suc (length t1)" by auto
   then obtain h2 t2 where l2_def:"l2 = h2#t2" by (auto simp add: length_Suc_conv)
   { assume asm:"f h1"
-    hence "e = h2" using prems by (auto simp add:lookup2.simps) 
+    hence "e = h2" using Cons l2_def by (auto simp add:lookup2.simps)
     hence "0<length (h2#t2) \<and> e = (h2#t2) ! 0 \<and> lookup (h1 # t1) f = Some ((h1 # t1) ! 0)"
       using asm by (auto simp add:lookup.simps)
     hence ?case using l2_def by auto
   } moreover { 
     assume asm:"\<not> (f h1)"
-    hence "\<exists>i<length t2. e = t2 ! i \<and> lookup t1 f = Some (t1 ! i)" using prems l2_def by auto
+    hence "\<exists>i<length t2. e = t2 ! i \<and> lookup t1 f = Some (t1 ! i)" using Cons l2_def by auto
     then obtain i where "i<length t2 \<and>  e = t2 ! i \<and> lookup t1 f = Some (t1 ! i)" by auto
     hence "(Suc i) < length(h2#t2) \<and> e = ((h2#t2) ! (Suc i)) \<and> lookup (h1#t1) f = Some ((h1#t1) ! (Suc i))" 
       using asm by (force simp add: lookup.simps)
@@ -259,7 +260,7 @@ next
     and "DgCf' = Dg' @ Cf" 
     using f_class_inv c_not_obj by (auto elim:fields.cases)
   hence "Dg' = Dg" using f_class by auto
-  thus ?case using prems by force
+  thus ?case using `DgCf = Dg @ Cf` and `DgCf' = Dg' @ Cf` by force
 qed
 
 subsubsection{* Subtyping and Typing *}
@@ -307,7 +308,7 @@ lemma typings_append:
   shows "CT;\<Gamma> \<turnstile>+ (es@[e]) : (Cs@[C])"
 proof - 
   have "length es = length Cs" using assms by(simp_all add:typings_lengths)
-  thus "CT;\<Gamma> \<turnstile>+ (es@[e]) : (Cs@[C])" using prems
+  thus "CT;\<Gamma> \<turnstile>+ (es@[e]) : (Cs@[C])" using assms
   proof(induct "es" "Cs" rule:list_induct2)
     have "CT;\<Gamma> \<turnstile>+ []:[]" by(simp add:typings_typing.ts_nil)
     moreover from assms have "CT;\<Gamma> \<turnstile> e : C" by simp
@@ -424,11 +425,12 @@ proof(induct rule:subtyping.induct)
   case s_refl thus ?case by auto
 next 
   case (s_trans CT C D E Da)
-  have da_nsub_d:"CT \<turnstile> Da \<not><: D" proof(rule ccontr)
+  have da_nsub_d:"CT \<turnstile> Da \<not><: D"
+  proof(rule ccontr)
     assume "\<not> CT \<turnstile> Da \<not><: D"
     hence da_sub_d:"CT \<turnstile> Da <: D" by auto
-    have d_sub_e:"CT \<turnstile> D <: E" using prems by fastsimp
-    thus "False" using prems by (force simp add:subtyping.s_trans[OF da_sub_d d_sub_e])
+    have d_sub_e:"CT \<turnstile> D <: E" using s_trans by fastsimp
+    thus "False" using s_trans by (force simp add:subtyping.s_trans[OF da_sub_d d_sub_e])
   qed 
   have d_nsub_da:"CT \<turnstile> D \<not><: Da" using s_trans by auto
   from da_nsub_d d_nsub_da s_trans show "CT \<turnstile> C \<not><: Da" by auto
@@ -437,10 +439,10 @@ next
   have "C \<noteq> Da" proof(rule ccontr)
     assume "\<not> C \<noteq> Da"
     hence "C = Da" by auto 
-    hence "CT \<turnstile> Da <: D" using prems by(auto simp add: subtyping.s_super)
-    thus "False" using prems by auto
+    hence "CT \<turnstile> Da <: D" using s_super by(auto simp add: subtyping.s_super)
+    thus "False" using s_super by auto
   qed
-  thus ?case using prems by (auto simp add: not_subtypes_aux)
+  thus ?case using s_super by (auto simp add: not_subtypes_aux)
 qed
 
 subsubsection{* Sub-Expressions *}

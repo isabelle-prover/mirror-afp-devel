@@ -11,7 +11,7 @@ subsection{* The language *}
 
 typedecl state
 
-types bexp = "state \<Rightarrow> bool"
+type_synonym bexp = "state \<Rightarrow> bool"
 
 datatype com = Do "(state \<Rightarrow> state set)"
                     | Semi  com com            ("_; _"  [60, 60] 10)

@@ -1,9 +1,8 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.14 2009-01-01 22:24:32 makarius Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
-Kildall's algorithm
+Kildall's algorithm.
 *)
 
 header {* \isaheader{Kildall's Algorithm}\label{sec:Kildall} *}
@@ -25,7 +24,7 @@ where
 definition iter :: "'s binop \<Rightarrow> 's step_type \<Rightarrow>
           's list \<Rightarrow> nat set \<Rightarrow> 's list \<times> nat set"
 where
-  "iter f step \<tau>s w \<equiv>
+  "iter f step \<tau>s w =
    while (\<lambda>(\<tau>s,w). w \<noteq> {})
          (\<lambda>(\<tau>s,w). let p = SOME p. p \<in> w
                    in propa f (step p (\<tau>s!p)) \<tau>s (w-{p}))
@@ -33,11 +32,11 @@ where
 
 definition unstables :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> nat set"
 where
-  "unstables r step \<tau>s \<equiv> {p. p < size \<tau>s \<and> \<not>stable r step \<tau>s p}"
+  "unstables r step \<tau>s = {p. p < size \<tau>s \<and> \<not>stable r step \<tau>s p}"
 
 definition kildall :: "'s ord \<Rightarrow> 's binop \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> 's list"
 where
-  "kildall r f step \<tau>s \<equiv> fst(iter f step \<tau>s (unstables r step \<tau>s))"
+  "kildall r f step \<tau>s = fst(iter f step \<tau>s (unstables r step \<tau>s))"
 
 primrec merges :: "'s binop \<Rightarrow> (nat \<times> 's) list \<Rightarrow> 's list \<Rightarrow> 's list"
 where
@@ -160,9 +159,10 @@ lemma (in Semilat) list_update_le_listI [rule_format]:
   "set xs \<subseteq> A \<longrightarrow> set ys \<subseteq> A \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<longrightarrow> p < size xs \<longrightarrow>  
    x \<sqsubseteq>\<^bsub>r\<^esub> ys!p \<longrightarrow> x\<in>A \<longrightarrow> xs[p := x \<squnion>\<^bsub>f\<^esub> xs!p] [\<sqsubseteq>\<^bsub>r\<^esub>] ys"
 (*<*)
-  apply(insert semilat)
+  apply (insert semilat)
   apply (unfold Listn.le_def lesub_def semilat_def)
   apply (simp add: list_all2_conv_all_nth nth_list_update)
+  apply (simp add: lesub_def)
   done
 (*>*)
 
@@ -382,7 +382,7 @@ proof -
   apply(simp add: stables_def split_paired_all)
   apply(rename_tac ss w)
   apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
-   prefer 2; apply (fast intro: someI)
+   prefer 2 apply (fast intro: someI)
   apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
    prefer 2
    apply clarify
@@ -433,7 +433,7 @@ proof -
   apply(simp add: stables_def split_paired_all)
   apply(rename_tac ss w)
   apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
-   prefer 2; apply (fast intro: someI)
+   prefer 2 apply (fast intro: someI)
   apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
    prefer 2
    apply clarify

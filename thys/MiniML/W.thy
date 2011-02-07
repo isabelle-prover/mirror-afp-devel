@@ -9,15 +9,15 @@ theory W
 imports MiniML
 begin
 
-types result_W = "(subst * typ * nat)option"
+type_synonym result_W = "(subst * typ * nat) option"
 
 -- "type inference algorithm W"
 primrec W :: "[expr, ctxt, nat] => result_W" where
   "W (Var i) A n =  
      (if i < length A then Some( id_subst,   
-	                         bound_typ_inst (%b. TVar(b+n)) (A!i),   
-	                         n + (min_new_bound_tv (A!i)) )  
-	              else None)"
+                                 bound_typ_inst (%b. TVar(b+n)) (A!i),   
+                                 n + (min_new_bound_tv (A!i)) )  
+                      else None)"
   
 | "W (Abs e) A n = ( (S,t,m) := W e ((FVar n)#A) (Suc n);
                      Some( S, (S n) -> t, m) )"
@@ -33,7 +33,6 @@ primrec W :: "[expr, ctxt, nat] => result_W" where
 
 
 declare Suc_le_lessD [simp]
-declare less_imp_le [simp del]  -- "the combination loops"
 
 inductive_cases has_type_casesE:
 "A |- Var n :: t"

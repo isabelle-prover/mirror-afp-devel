@@ -1,6 +1,6 @@
 (*  Title:      statecharts/SA/SA.thy
     ID:         $Id: SA.thy,v 1.1 2010/07/23 16:18:43 helke Exp $
-    Author:     Steffen Helke and Florian Kammüller, Software Engineering Group
+    Author:     Steffen Helke and Florian KammÃ¼ller, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)
 

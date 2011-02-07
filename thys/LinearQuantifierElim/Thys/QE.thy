@@ -1,5 +1,4 @@
-(*  Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 header{* Quantifier elimination *}
 

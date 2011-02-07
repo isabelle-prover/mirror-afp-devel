@@ -373,6 +373,8 @@ apply auto
 done
 (*>*)
 
+code_pred final .
+
 subsection {* converting results from external calls *}
 
 primrec extRet2J :: "('a, 'b) exp \<Rightarrow> extCallRet \<Rightarrow> ('a, 'b) exp"

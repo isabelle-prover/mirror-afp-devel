@@ -10,6 +10,12 @@ theory Coinductive_List_Lib imports
   Coinductive_Nat
 begin
 
+text {* Move functions define in this theory to same namespace as @{theory Coinductive_List} *}
+
+code_modulename SML
+  Coinductive_List Coinductive_List
+  Coinductive_List_Lib Coinductive_List
+
 subsection {* Library function definitions *}
 
 definition llist_corec2 :: "'a \<Rightarrow> ('a \<Rightarrow> (('b \<times> 'a) option + 'b llist)) \<Rightarrow> 'b llist"
@@ -103,7 +109,7 @@ where [nitpick_simp]:
 
 coinductive ldistinct :: "'a llist \<Rightarrow> bool"
 where 
-  LNil [simp, code]: "ldistinct LNil"
+  LNil [simp]: "ldistinct LNil"
 | LCons: "\<lbrakk> x \<notin> lset xs; ldistinct xs \<rbrakk> \<Longrightarrow> ldistinct (LCons x xs)"
 
 hide_fact (open) LNil LCons
@@ -225,6 +231,8 @@ proof
   show "lmap id xs = id xs"
     by(coinduct xs rule: llist_fun_equalityI) simp_all
 qed
+
+
 
 subsection {* Corecursion with termination: @{term "llist_corec2"} *}
 
@@ -2073,6 +2081,22 @@ apply(simp_all)
 apply(auto simp only: insert_def Collect_def Un_def mem_def)
 done
 
+lemma lmap_cong:
+  assumes eq: "xs = ys"
+  and set: "\<And>x. x \<in> lset ys \<Longrightarrow> f x = g x"
+  shows "lmap f xs = lmap g xs"
+proof -
+  have "(lmap f ys, lmap g ys) \<in> {(lmap f ys, lmap g ys)|ys. \<forall>x\<in>lset ys. f x = g x}" 
+    using set by blast
+  thus ?thesis unfolding eq
+  proof(coinduct rule: llist_equalityI)
+    case (Eqllist q)
+    then obtain ys where q: "q = (lmap f ys, lmap g ys)"
+      and set: "\<forall>x\<in>lset ys. f x = g x" by blast
+    thus ?case by(cases ys) auto
+  qed
+qed
+
 
 subsection {* Taking and dropping from a lazy list: @{term "ltakeWhile"} and @{term "ldropWhile"} *}
 
@@ -2610,6 +2634,10 @@ subsection {* Distinct lazy lists @{term "ldistinct"} *}
 
 inductive_simps ldistinct_LCons [code, simp]:
   "ldistinct (LCons x xs)"
+
+lemma ldistinct_LNil_code [code]:
+  "ldistinct LNil = True"
+by simp
 
 lemma ldistinct_llist_of [simp]:
   "ldistinct (llist_of xs) \<longleftrightarrow> distinct xs"
@@ -4064,6 +4092,46 @@ proof -
       thus ?thesis ..
     qed
   qed
+qed
+
+lemma lconcat_lfilter_neq_LNil:
+  "lconcat (lfilter (\<lambda>xs. xs \<noteq> LNil) xss) = lconcat xss"
+unfolding lconcat_def
+by(simp add: lfilter_conj)
+
+lemma lset_lconcat_lfinite:
+  assumes fin: "\<forall>xs \<in> lset xss. lfinite xs"
+  shows "lset (lconcat xss) = (\<Union>xs\<in>lset xss. lset xs)"
+  (is "?lhs = ?rhs")
+proof(intro equalityI subsetI)
+  fix x
+  assume "x \<in> ?lhs"
+  thus "x \<in> ?rhs"
+  proof(induct "lconcat xss" arbitrary: xss rule: lset_induct)
+    case (find yss)
+    obtain xs' xss' xss'' where xss: "xss = lappend (llist_of xss') (LCons (LCons x xs') xss'')"
+      and "yss = lappend xs' (lconcat xss'')"
+      and "set xss' \<subseteq> {LNil}"
+      using find[symmetric] unfolding lconcat_eq_LCons_conv by blast
+    thus ?case by simp
+  next
+    case (step x' xs yss)
+    from `LCons x' xs = lconcat yss`[symmetric]
+    obtain xs' xss' xss''
+      where "yss = lappend (llist_of xss') (LCons (LCons x' xs') xss'')" 
+      and "xs = lappend xs' (lconcat xss'')"
+      and "set xss' \<subseteq> {LNil}" 
+      unfolding lconcat_eq_LCons_conv by blast
+    thus ?case
+      using `x \<noteq> x'` `xs = lconcat (LCons xs' xss'') \<Longrightarrow> x \<in> (\<Union>xs \<in> lset (LCons xs' xss''). lset xs)`
+      by auto
+  qed
+next
+  fix x
+  assume "x \<in> ?rhs"
+  then obtain xs where "x \<in> lset xs" "xs \<in> lset xss" by blast
+  from `xs \<in> lset xss` show "x \<in> ?lhs" using fin
+    by(induct)(simp_all add: `x \<in> lset xs`)
 qed
 
 lemma lconcat_ltake:

@@ -1,6 +1,4 @@
-(*  ID:         $Id: Cooper.thy,v 1.5 2009-02-27 17:46:41 nipkow Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 theory Cooper
 imports PresArith
@@ -99,14 +97,14 @@ proof(induct \<phi> rule:min_inf.induct)
       hence "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
              da dvd i + (j * x + \<langle>js,xs\<rangle>)"
       proof -
-	have "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
+        have "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
-	  by(simp add: algebra_simps)
-	also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
-	  by (metis dvd_diff zdvd_zdiffD dvd_mult zmult_commute)
-	also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
-	  by(simp add: algebra_simps)
-	finally show ?thesis .
+          by(simp add: algebra_simps)
+        also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
+          by (metis dvd_diff zdvd_zdiffD dvd_mult zmult_commute)
+        also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
+          by(simp add: algebra_simps)
+        finally show ?thesis .
       qed
       then show ?thesis using Cons by (simp add:ring_distribs)
     qed
@@ -127,14 +125,14 @@ next
       hence "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
              da dvd i + (j * x + \<langle>js,xs\<rangle>)"
       proof -
-	have "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
+        have "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
-	  by(simp add: algebra_simps)
-	also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
-	  by (metis dvd_diff zdvd_zdiffD dvd_mult zmult_commute)
-	also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
-	  by(simp add: algebra_simps)
-	finally show ?thesis .
+          by(simp add: algebra_simps)
+        also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
+          by (metis dvd_diff zdvd_zdiffD dvd_mult zmult_commute)
+        also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
+          by(simp add: algebra_simps)
+        finally show ?thesis .
       qed
       then show ?thesis using Cons by (simp add:ring_distribs)
     qed
@@ -162,7 +160,7 @@ proof(induct \<phi>)
       case Nil thus ?thesis using Le Atom by simp
     next
       case (Cons k ks) thus ?thesis using Le Atom
-	by (auto simp:lbounds_def Ball_def split:split_if_asm) arith
+        by (auto simp:lbounds_def Ball_def split:split_if_asm) arith
     qed
   next
     case (Dvd m i js)
@@ -173,19 +171,19 @@ proof(induct \<phi>)
       case (Cons k ks)
       show ?thesis
       proof cases
-	assume "k=0" thus ?thesis using Cons Dvd Atom by simp
+        assume "k=0" thus ?thesis using Cons Dvd Atom by simp
       next
-	assume "k\<noteq>0"
-	hence "m dvd d" using Cons Dvd Atom by auto
-	have "m dvd i + (x + \<langle>ks,xs\<rangle>) \<Longrightarrow> m dvd i + (x - d + \<langle>ks,xs\<rangle>)"
-	  (is "?L \<Longrightarrow> _")
-	proof -
-	  assume ?L
-	  hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d"
-	    by (metis `m dvd d` dvd_diff)
-	  thus ?thesis by(simp add:algebra_simps)
-	qed
-	thus ?thesis using Atom Dvd Cons by(auto split:split_if_asm)
+        assume "k\<noteq>0"
+        hence "m dvd d" using Cons Dvd Atom by auto
+        have "m dvd i + (x + \<langle>ks,xs\<rangle>) \<Longrightarrow> m dvd i + (x - d + \<langle>ks,xs\<rangle>)"
+          (is "?L \<Longrightarrow> _")
+        proof -
+          assume ?L
+          hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d"
+            by (metis `m dvd d` dvd_diff)
+          thus ?thesis by(simp add:algebra_simps)
+        qed
+        thus ?thesis using Atom Dvd Cons by(auto split:split_if_asm)
       qed
     qed
   next
@@ -197,18 +195,18 @@ proof(induct \<phi>)
       case (Cons k ks)
       show ?thesis
       proof cases
-	assume "k=0" thus ?thesis using Cons NDvd Atom by simp
+        assume "k=0" thus ?thesis using Cons NDvd Atom by simp
       next
-	assume "k\<noteq>0"
-	hence "m dvd d" using Cons NDvd Atom by auto
-	have "m dvd i + (x - d + \<langle>ks,xs\<rangle>) \<Longrightarrow> m dvd i + (x + \<langle>ks,xs\<rangle>)"
-	  (is "?L \<Longrightarrow> _")
-	proof -
-	  assume ?L
-	  hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d" by(simp add:algebra_simps)
-	  thus ?thesis by (metis `m dvd d` zdvd_zdiffD)
-	qed
-	thus ?thesis using Atom NDvd Cons by(auto split:split_if_asm)
+        assume "k\<noteq>0"
+        hence "m dvd d" using Cons NDvd Atom by auto
+        have "m dvd i + (x - d + \<langle>ks,xs\<rangle>) \<Longrightarrow> m dvd i + (x + \<langle>ks,xs\<rangle>)"
+          (is "?L \<Longrightarrow> _")
+        proof -
+          assume ?L
+          hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d" by(simp add:algebra_simps)
+          thus ?thesis by (metis `m dvd d` zdvd_zdiffD)
+        qed
+        thus ?thesis using Atom NDvd Cons by(auto split:split_if_asm)
       qed
     qed
   qed

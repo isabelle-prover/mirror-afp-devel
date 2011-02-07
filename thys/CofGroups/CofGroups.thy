@@ -4,7 +4,7 @@
 *)
 
 theory CofGroups
-imports Main Nat_Bijection
+imports Main "~~/src/HOL/Library/Nat_Bijection"
 begin;
 
 section {* Introduction *}
@@ -455,25 +455,25 @@ next
     {
       -- "first we get an expression for @{term ?ci}"
       {
-	from all_bij and f_Ex1 have "bij f" by auto;
-	with bij_is_inj have inj_f: "inj f" by auto;
-	have "\<forall>n. inv f n = n - k"
-	proof
-	  fix n
-	  from f_eq have "f (n - k) = n"; by auto;
-	  with inv_f_eq[of f "n-k" "n"] and inj_f 
-	  show "inv f n = n-k"; by auto;
-	qed;
-	with inv_upOne_eq 
-	have "\<forall>n. ?ci n = n - k - 1" by auto;
-	hence "\<forall>n. ?ci n = n + (-1 - k)" by arith;
+        from all_bij and f_Ex1 have "bij f" by auto;
+        with bij_is_inj have inj_f: "inj f" by auto;
+        have "\<forall>n. inv f n = n - k"
+        proof
+          fix n
+          from f_eq have "f (n - k) = n"; by auto;
+          with inv_f_eq[of f "n-k" "n"] and inj_f 
+          show "inv f n = n-k"; by auto;
+        qed;
+        with inv_upOne_eq 
+        have "\<forall>n. ?ci n = n - k - 1" by auto;
+        hence "\<forall>n. ?ci n = n + (-1 - k)" by arith;
       }
       moreover;
       -- "then we check that this implies @{term ?ci} is"
       -- "a member of @{term Ex1}";
       {
-	from Ex1_Normal_form_part2[of "-1 - k"]
-	have "(\<forall>f. ((\<forall>n. f n = n + (-1 - k)) \<longrightarrow> f \<in> Ex1))" by auto;
+        from Ex1_Normal_form_part2[of "-1 - k"]
+        have "(\<forall>f. ((\<forall>n. f n = n + (-1 - k)) \<longrightarrow> f \<in> Ex1))" by auto;
       }
       ultimately 
       have "?ci \<in> Ex1"; by auto;
@@ -501,10 +501,10 @@ next;
       with bij_is_inj have inj_f: "inj f" by auto;
       have "\<forall>n. inv f n = n - k"
       proof
-	fix n
-	from f_eq have "f (n - k) = n"; by auto;
-	with inv_f_eq[of f "n-k" "n"] and inj_f 
-	show "inv f n = n-k"; by auto;
+        fix n
+        from f_eq have "f (n - k) = n"; by auto;
+        with inv_f_eq[of f "n-k" "n"] and inj_f 
+        show "inv f n = n-k"; by auto;
       qed;
       with upOne_def
       have "\<forall>n. (inv f \<circ> upOne) n = n - k + 1" by auto;
@@ -547,7 +547,7 @@ used to coerce the functions above to be on the natural numbers. *}
 abbreviation "ni_bij == int_decode"
 
 lemma bij_f_o_inf_f: "bij f \<Longrightarrow> f \<circ> inv f = id"
-by(simp add: bij_def surj_iff)
+  unfolding bij_def surj_iff by simp
 
 text {* The following theorem is a key theorem in showing that the
 group we are interested in is cofinitary.  It states that when you
@@ -662,8 +662,8 @@ qed;
 lemma comp_CONJ:
   "CONJ (f \<circ> g) = (CONJ f) \<circ> (CONJ g)" (is "?left = ?right")
 proof -;
-  from bij_int_decode have "surj ni_bij" using bij_def by auto;
-  with surj_iff have "ni_bij \<circ> (inv ni_bij) = id" by auto;
+  from bij_int_decode have "surj ni_bij" unfolding bij_def by auto;
+  then have "ni_bij \<circ> (inv ni_bij) = id" unfolding surj_iff by auto;
   moreover
   have "?left = (inv ni_bij) \<circ> (f \<circ> g) \<circ> ni_bij" by simp;
   hence "?left = (inv ni_bij) \<circ> ((f \<circ> id) \<circ> g) \<circ> ni_bij" by simp;

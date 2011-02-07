@@ -28,7 +28,9 @@ USA
 
 header "Example: Quicksort on Heap Lists"
 
-theory Quicksort imports "../Vcg" "../HeapList" Permutation begin
+theory Quicksort
+imports "../Vcg" "../HeapList" "~~/src/HOL/Library/Permutation"
+begin
 
 record globals_heap = 
   next_' :: "ref \<Rightarrow> ref"

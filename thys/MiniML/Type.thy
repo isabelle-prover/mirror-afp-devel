@@ -22,7 +22,7 @@ primrec mk_scheme :: "typ => type_scheme" where
 | "mk_scheme (t1 -> t2) = ((mk_scheme t1) =-> (mk_scheme t2))"
 
 -- "type variable substitution"
-types subst = "nat => typ"
+type_synonym subst = "nat => typ"
 
 class type_struct =
   fixes free_tv :: "'a => nat set"
@@ -415,7 +415,7 @@ lemma cod_app_subst [simp]:
   "[| v : free_tv(S n); v~=n |] ==> v : cod S"
 apply (unfold dom_def cod_def UNION_def Bex_def)
 apply (simp (no_asm))
-apply (safe intro!: exI conjI notI)
+apply (safe intro!: exI)
 prefer 2 apply (assumption)
 apply simp
 done

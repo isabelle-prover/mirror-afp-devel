@@ -9,6 +9,9 @@ theory Quotient_TLList imports
   TLList
 begin
 
+;enriched_type tmap: tmap
+   by (simp_all add: fun_eq_iff tmap_id_id)
+
 declare [[map tllist = (tmap, tllist_all2)]]
 
 lemma tmap_preserve [quot_preserve]:
@@ -37,10 +40,10 @@ proof -
       then obtain ts ts' where [simp]: "TS = tmap f g ts" "TS' = tmap f' g' ts'"
         and ts: "tllist_all2 R1 R3 ts ts'" by blast
       from ts show ?case using f g
-        by cases auto
+        by cases (auto elim: fun_relE)
     qed      
     }
-  thus ?thesis by simp
+  thus ?thesis by (auto intro!: fun_relI)
 qed
 
 lemma Quotient_tmap_Abs_Rep:
@@ -77,9 +80,9 @@ proof -
     proof(coinduct)
       case (tllist_all2 ts ts')
       thus ?case using R Q
-        by(cases ts)(auto simp add: reflp_def)
+        by (cases ts) (auto elim: reflpE)
     qed }
-  thus ?thesis by(simp add: reflp_def)
+  thus ?thesis by (auto intro: reflpI)
 qed
 
 lemma tllist_all2_rel:
@@ -96,8 +99,8 @@ proof(intro iffI conjI)
     case (tllist_all2 r r')
     then obtain s where s: "tllist_all2 R1 R2 r s"
       and [simp]: "r' = r" by blast
-    show ?case using s Quotient_rel[OF q1, THEN iffD1] Quotient_rel[OF q2, THEN iffD1]
-      by(cases r)(auto simp add: tllist_all2_TNil1 tllist_all2_TCons1)
+    show ?case using s Quotient_rel [OF q1] Quotient_rel [OF q2]
+      by (cases r) (auto simp add: tllist_all2_TNil1 tllist_all2_TCons1)
   qed
 
   def s' == s
@@ -107,8 +110,8 @@ proof(intro iffI conjI)
     case (tllist_all2 s s')
     then obtain r where r: "tllist_all2 R1 R2 r s"
       and [simp]: "s' = s" by blast
-    show ?case using r Quotient_rel[OF q1, THEN iffD1] Quotient_rel[OF q2, THEN iffD1]
-      by(cases s)(auto simp add: tllist_all2_TNil2 tllist_all2_TCons2)
+    show ?case using r Quotient_rel [OF q1] Quotient_rel [OF q2]
+      by (cases s) (auto simp add: tllist_all2_TNil2 tllist_all2_TCons2)
   qed
 
   def ts == "tmap Abs1 Abs2 r"
@@ -120,15 +123,15 @@ proof(intro iffI conjI)
     case (Eqtllist q)
     then obtain r s where "q = (tmap Abs1 Abs2 r, tmap Abs1 Abs2 s)"
       and "tllist_all2 R1 R2 r s" by blast
-    thus ?case using Quotient_rel[OF q1, THEN iffD1] Quotient_rel[OF q2, THEN iffD1]
-      by(cases r)(fastsimp simp add: tllist_all2_TNil1 tllist_all2_TCons1)+
+    thus ?case using Quotient_rel [OF q1, THEN iffD2] Quotient_rel [OF q2, THEN iffD2]
+      by (cases r) (auto simp add: tllist_all2_TNil1 tllist_all2_TCons1)+
   qed
 next
   assume "?rhs"
   thus "?lhs"
   proof coinduct
     case (tllist_all2 r s) thus ?case
-      by(cases r)(case_tac [!] s, auto simp add: tllist_all2_TCons1 tllist_all2_TNil1 intro: Quotient_rel[OF q1, THEN iffD2] Quotient_rel[OF q2, THEN iffD2])
+      by(cases r)(case_tac [!] s, auto simp add: tllist_all2_TCons1 tllist_all2_TNil1 intro: Quotient_rel[OF q1, THEN iffD1] Quotient_rel[OF q2, THEN iffD1])
   qed
 qed
     
@@ -146,7 +149,7 @@ by(simp add: fun_eq_iff tmap_compose[symmetric] o_def tmap_id_id[unfolded id_def
 
 lemma TCons_respect [quot_respect]:
   "(R ===> tllist_all2 R Q ===> tllist_all2 R Q) TCons TCons"
-by simp
+  by (auto intro!: fun_relI)
 
 lemma TNil_preserve [quot_preserve]:
   assumes "Quotient R2 Abs2 Rep2"
@@ -156,7 +159,7 @@ by(simp add: fun_eq_iff)
 
 lemma LNil_respect [quot_respect]:
   "(R2 ===> tllist_all2 R1 R2) TNil TNil"
-by simp
+  by auto
 
 lemma tllist_all2_eq [id_simps]: "tllist_all2 (op =) (op =) = (op =)"
 proof(rule ext)+
@@ -200,7 +203,7 @@ qed
 lemma tllist_all2_respect [quot_respect]:
   "((R1 ===> R1 ===> op =) ===> (R2 ===> R2 ===> op =) ===>
     tllist_all2 R1 R2 ===> tllist_all2 R1 R2 ===> op =) tllist_all2 tllist_all2"
-by(simp add: tllist_all2_rsp)
+  by (simp add: tllist_all2_rsp fun_rel_def)
 
 lemma tllist_all2_prs:
   assumes q1: "Quotient R1 Abs1 Rep1"
@@ -243,16 +246,17 @@ lemma tllist_all2_preserve2 [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
   and q2: "Quotient R2 Abs2 Rep2"
   shows "(tllist_all2 ((Rep1 ---> Rep1 ---> id) R1) ((Rep2 ---> Rep2 ---> id) R2)) = (op =)"
-by(simp add: fun_eq_iff fun_map_def_raw Quotient_rel_rep[OF q1] Quotient_rel_rep[OF q2] tllist_all2_eq)
+  by (simp add: fun_eq_iff map_fun_def comp_def Quotient_rel_rep[OF q1] Quotient_rel_rep[OF q2]
+    tllist_all2_eq)
 
 lemma tllist_corec_preserve [quot_preserve]: 
   assumes q1: "Quotient R1 Abs1 Rep1"
   and q2: "Quotient R2 Abs2 Rep2"
   and q3: "Quotient R3 Abs3 Rep3"
-  shows "(Rep1 ---> (Abs1 ---> sum_map (prod_fun Rep2 Rep1) Rep3) ---> tmap Abs2 Abs3) tllist_corec = tllist_corec"
+  shows "(Rep1 ---> (Abs1 ---> sum_map (map_pair Rep2 Rep1) Rep3) ---> tmap Abs2 Abs3) tllist_corec = tllist_corec"
 proof(intro ext)
   fix a f
-  let ?fmap = "Rep1 ---> (Abs1 ---> sum_map (prod_fun Rep2 Rep1) Rep3) ---> tmap Abs2 Abs3"
+  let ?fmap = "Rep1 ---> (Abs1 ---> sum_map (map_pair Rep2 Rep1) Rep3) ---> tmap Abs2 Abs3"
   have "(?fmap tllist_corec a f, tllist_corec a f) \<in> {(?fmap tllist_corec a f, tllist_corec a f)|a. True}"
     by blast
   thus "?fmap tllist_corec a f = tllist_corec a f"
@@ -262,15 +266,15 @@ proof(intro ext)
     thus ?case
     proof(cases "f a")
       case (Inl l)
-      hence ?EqTCons unfolding q fun_map_def_raw 
+      hence ?EqTCons unfolding q map_fun_def_raw 
         using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2]
-        by(cases l)(subst (1 2) tllist_corec, auto)
+        by (cases l) (auto simp add: tllist_corec)
       thus ?thesis ..
     next
       case (Inr r)
-      hence ?EqTNil unfolding q fun_map_def_raw
+      hence ?EqTNil unfolding q map_fun_def_raw
         using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q3]
-        by(subst (1 2) tllist_corec)(simp)
+        by (simp add: tllist_corec)
       thus ?thesis ..
     qed
   qed

@@ -6,46 +6,9 @@ header{* \isaheader{Progress result for both of the multithreaded JVMs} *}
 theory BVProgressThreaded
 imports
   "../Framework/FWProgress"
-  "../Framework/FWLiftingSem"
   BVNoTypeError
   "../JVM/JVMThreaded"
 begin
-
-lemma (in JVM_heap_base) mexec_final_wf: "final_thread_wf JVM_final (mexec P)"
-proof(unfold_locales)
-  fix x t m ta x' m'
-  assume "JVM_final x" "mexec P t (x, m) ta (x', m')"
-  moreover obtain xcp frs tls where x: "x = (xcp, frs)" by (cases x, auto)
-  ultimately have "frs = []" by simp
-  moreover have "\<not> P,t \<turnstile> (xcp, m, []) -ta-jvm\<rightarrow> (fst x', m', snd x')"
-    by(simp add: exec_1_iff)
-  ultimately show False using `mexec P t (x, m) ta (x', m')` x by(auto)
-qed
-
-sublocale JVM_heap_base < exec_mthr!: final_thread_wf
-  JVM_final
-  "mexec P"
-  convert_RA
-  for P
-by(rule mexec_final_wf)
-
-lemma (in JVM_heap_base) mexecd_final_wf: "final_thread_wf JVM_final (mexecd P)"
-proof(unfold_locales)
-  fix x t m ta x' m'
-  assume "JVM_final x" "mexecd P t (x, m) ta (x', m')"
-  moreover obtain xcp frs where x: "x = (xcp, frs)" by (cases x, auto)
-  ultimately have "frs = []" by simp
-  moreover have "\<not> P,t \<turnstile> Normal (xcp, m, []) -ta-jvmd\<rightarrow> Normal (fst x', m', snd x')"
-    by(auto elim!: exec_1_d.cases simp add: exec_d_def split: split_if_asm)
-  ultimately show False using `mexecd P t (x, m) ta (x', m')` x by(auto)
-qed
-
-sublocale JVM_heap_base < execd_mthr!: final_thread_wf 
-  JVM_final
-  "mexecd P"
-  convert_RA
-  for P
-by(rule mexecd_final_wf)
 
 lemma (in JVM_heap_conf_base') mexec_eq_mexecd:
   "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; \<Phi> \<turnstile> t: (xcp, h, frs) \<surd> \<rbrakk> \<Longrightarrow> mexec P t ((xcp, frs), h) = mexecd P t ((xcp, frs), h)"
@@ -978,7 +941,7 @@ context JVM_heap_conf begin
 lemma correct_jvm_state_initial:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and start: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = m in C"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = m in D"
   and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   shows "correct_jvm_state \<Phi> (JVM_start_state P C M vs)"
 using assms BV_correct_initial[OF wf start sees conf]

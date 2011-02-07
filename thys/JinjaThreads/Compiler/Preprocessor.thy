@@ -54,10 +54,12 @@ proof -
   qed
 
   { fix C D fs ms M Ts T pns body
-    assume "(C, D, fs, ms) \<in> set P"
+    assume "(C, D, fs, ms) \<in> set (the_Program P)"
       and "(M, Ts, T, pns, body) \<in> set ms"
+    from `(C, D, fs, ms) \<in> set (the_Program P)` have "class P C = \<lfloor>(D, fs, ms)\<rfloor>" using wf'
+      by(cases P)(auto simp add: wf_prog_def dest: map_of_SomeI)
     with wf' have sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in C"
-      by(rule mdecl_visible)
+      using `(M, Ts, T, pns, body) \<in> set ms` by(rule mdecl_visible)
 
     from sees_method_compP[OF this, where f="annotate_Mb_code P"]
     have sees': "annotate_prog_code P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, annotate_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body) in C"
@@ -74,10 +76,8 @@ proof -
     hence "annotate_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body = annotate P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body"
       unfolding annotate_code_def annotate_def
       by -(rule arg_cong[where f="THE_default body"], auto intro!: ext intro: Anno_code_into_Anno[OF wf'] Anno_into_Anno_code[OF wf']) }
-  thus ?thesis unfolding annotate_prog_code_def annotate_prog_def compP_def
-    by(auto simp add: compC_def compM_def annotate_Mb_def annotate_Mb_code_def)
+  thus ?thesis unfolding annotate_prog_code_def annotate_prog_def
+    by(cases P)(auto simp add: compC_def compM_def annotate_Mb_def annotate_Mb_code_def)
 qed
 
-
 end
-

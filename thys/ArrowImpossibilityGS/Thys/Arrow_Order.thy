@@ -1,10 +1,8 @@
-(*  ID:         $Id: Arrow_Order.thy,v 1.2 2009-01-01 22:24:32 makarius Exp $
-    Author:     Tobias Nipkow, 2007
-*)
+(*  Author:     Tobias Nipkow, 2007  *)
 
 header "Arrow's Theorem for Strict Linear Orders"
 
-theory Arrow_Order imports Main FuncSet Zorn
+theory Arrow_Order imports Main "~~/src/HOL/Library/FuncSet" "~~/src/HOL/Library/Zorn"
 begin
 
 text{* This theory formalizes the third proof due to
@@ -21,9 +19,9 @@ typedecl indi
 
 abbreviation "I == (UNIV::indi set)"
 
-axioms
-alt3: "\<exists>a b c::alt. distinct[a,b,c]"
-finite_indi: "finite I"
+axiomatization where
+  alt3: "\<exists>a b c::alt. distinct[a,b,c]" and
+  finite_indi: "finite I"
 
 abbreviation "N == card I"
 
@@ -33,7 +31,7 @@ using alt3 by simp metis
 lemma alt2: "\<exists>b::alt. b \<noteq> a"
 using alt3 by simp metis
 
-types pref = "(alt * alt)set"
+type_synonym pref = "(alt * alt)set"
 
 definition "Lin == {L::pref. strict_linear_order L}"
 
@@ -170,12 +168,12 @@ proof -
     moreover
     { assume "a\<noteq>a'"
       hence "!!i. (a',a) : Q i" using d1 d2 `P : Prof`
-	by(simp add:in_above in_below Q_def Prof_def Pi_def below_Lin)
+        by(simp add:in_above in_below Q_def Prof_def Pi_def below_Lin)
       hence "(a',a) : F Q" using u `Q : Prof` by(simp add:unanimity_def)
     } moreover
     { assume "b\<noteq>b'"
       hence "!!i. (b,b') : Q i" using d1 d2 `P : Prof`
-	by(simp add:in_above in_below Q_def Prof_def Pi_def below_Lin)
+        by(simp add:in_above in_below Q_def Prof_def Pi_def below_Lin)
       hence "(b,b') : F Q" using u `Q : Prof` by(simp add:unanimity_def)
     }
     ultimately have "(a',b') : F Q" using `F Q : Lin`
@@ -268,7 +266,7 @@ proof -
       by(simp add:unanimity_def notin_Lin_iff const_Lin_Prof)
     have "?Pi N = (%p. Lab)" using surjh
       by(auto simp:image_def fun_eq_iff Bex_def Collect_def
-	atLeastLessThan_def lessThan_def)
+        atLeastLessThan_def lessThan_def)
     moreover
     have "F(%i. Lab):Lin" using `F:SWF` `Lab:Lin` by(simp add:Prof_def Pi_def)
     ultimately have 2: "(a,b) \<in> F(?Pi N)" using u `(a,b) : Lab` `Lab:Lin`
@@ -296,7 +294,7 @@ proof -
         in_mkbot in_mktop in_above Prof_def Pi_def)
     hence "(c,e) : F ?W \<longleftrightarrow> (a,b) : F(?Pi(n+1))"
       using pairwise_neutrality[of c e a b ?W "?Pi(n+1)"]
-	`a\<noteq>b` dist `?W : Prof` PiProf by simp
+        `a\<noteq>b` dist `?W : Prof` PiProf by simp
     hence "(c,e) : F ?W" using n(3) by blast
     have "\<forall>i. (e,d) : ?W i \<longleftrightarrow> (b,a) : ?Pi n i"
       using dist `P : Prof` `(c,d) \<in> P(inv h n)` `inj h`
@@ -304,7 +302,7 @@ proof -
         in_mkbot in_mktop in_above Prof_def Pi_def)
     hence "(e,d) : F ?W \<longleftrightarrow> (b,a) : F(?Pi n)"
       using pairwise_neutrality[of e d b a ?W "?Pi n"]
-	`a\<noteq>b` dist `?W : Prof` PiProf by simp blast
+        `a\<noteq>b` dist `?W : Prof` PiProf by simp blast
     hence "(e,d) : F ?W" using n(2) by auto
     with `(c,e) : F ?W` `?W : Prof` `F:SWF`
     have "(c,d) \<in> F ?W" unfolding Pi_def slo_defs trans_def by blast

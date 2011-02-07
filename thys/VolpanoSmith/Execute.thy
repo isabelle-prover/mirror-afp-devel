@@ -1,15 +1,12 @@
-(*
+(*  Author:     Lukas Bulwahn, TU Muenchen, 2009  *)
 
-Author: Lukas Bulwahn, TU Muenchen, 2009
-
-*)
 theory Execute
 imports secTypes
 begin
 
 section {* Executing the small step semantics *}
 
-code_pred (modes: i => o => bool as exec_red, i =>  i * o => bool, i => o * i => bool, i => i => bool) red .
+code_pred (modes: i => o => bool as exec_red, i => i * o => bool, i => o * i => bool, i => i => bool) red .
 thm red.equation
 
 definition [code]: "one_step x = Predicate.the (exec_red x)"

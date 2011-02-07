@@ -40,6 +40,8 @@ where "hm_isEmpty hm = HashMap_Impl.isEmpty (impl_of_RBT_HM hm)"
 definition hm_sel :: "('k :: hashable, 'v) hashmap \<Rightarrow> ('k \<Rightarrow> 'v \<rightharpoonup> 'a) \<rightharpoonup> 'a"
 where "hm_sel hm = HashMap_Impl.sel (impl_of_RBT_HM hm)"
 
+definition "hm_sel' = sel_sel' hm_sel"
+
 definition "hm_iterate f hm == HashMap_Impl.iterate f (impl_of_RBT_HM hm)"
 definition "hm_iteratei c f hm == HashMap_Impl.iteratei c f (impl_of_RBT_HM hm)"
 
@@ -137,6 +139,10 @@ lemma hm_sel_impl: "map_sel hm_\<alpha> hm_invar hm_sel"
   unfolding hm_sel_def_raw hm_\<alpha>_def o_def
   by(rule map_sel_altI)(blast intro: sel_correct'[OF impl_of_RBT_HM_invar])+
 
+lemma hm_sel'_impl: "map_sel' hm_\<alpha> hm_invar hm_sel'"
+  unfolding hm_sel'_def
+  by(rule sel_sel'_correct hm_sel_impl)+
+
 lemma hm_iterate_impl: 
   "map_iterate hm_\<alpha> hm_invar hm_iterate"
 apply (unfold_locales)
@@ -181,6 +187,7 @@ interpretation hm: map_update_dj hm_\<alpha> hm_invar hm_update_dj using hm_upda
 interpretation hm: map_delete hm_\<alpha> hm_invar hm_delete using hm_delete_impl .
 interpretation hm: finite_map hm_\<alpha> hm_invar using hm_is_finite_map .
 interpretation hm: map_sel hm_\<alpha> hm_invar hm_sel using hm_sel_impl .
+interpretation hm: map_sel' hm_\<alpha> hm_invar hm_sel' using hm_sel'_impl .
 interpretation hm: map_isEmpty hm_\<alpha> hm_invar hm_isEmpty using hm_isEmpty_impl .
 interpretation hm: map_iterate hm_\<alpha> hm_invar hm_iterate using hm_iterate_impl .
 interpretation hm: map_iteratei hm_\<alpha> hm_invar hm_iteratei using hm_iteratei_impl .
@@ -215,6 +222,7 @@ export_code
   hm_update_dj
   hm_delete
   hm_sel
+  hm_sel'
   hm_isEmpty
   hm_iterate
   hm_iteratei

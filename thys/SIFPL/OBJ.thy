@@ -85,18 +85,18 @@ datatype Val = RVal Ref | IVal int
 text{*The heap is a finite map from locations to objects. Objects have
 a dynamic class and a field map.*}
 
-types Object = "Class \<times> ((Field \<times> Val) list)"
-types Heap = "(Location \<times> Object) list"
+type_synonym Object = "Class \<times> ((Field \<times> Val) list)"
+type_synonym Heap = "(Location \<times> Object) list"
 
 text{*Stores contain values for all variables, and states are pairs of
 stores and heaps.*}
 
-types Store = "Var \<Rightarrow> Val"
+type_synonym Store = "Var \<Rightarrow> Val"
 
 definition update :: "Store \<Rightarrow> Var \<Rightarrow> Val \<Rightarrow> Store"
 where "update s x v = (\<lambda> y . if x=y then v else s y)"
 
-types State = "Store \<times> Heap"
+type_synonym State = "Store \<times> Heap"
 
 text{*Arithmetic and boolean expressions are as before.*}
 

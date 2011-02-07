@@ -141,7 +141,6 @@ theorem (in start_context) exec_pres_type:
   apply (clarsimp)
   apply (erule allE)+
   apply(erule impE, blast)
-  apply(erule impE, blast)
   apply(force split: option.splits)
 
   -- ALoad
@@ -149,7 +148,6 @@ theorem (in start_context) exec_pres_type:
    apply(rule conjI)
     apply(fastsimp split: option.splits)
    apply(erule allE)+
-   apply(erule impE, blast)
    apply(erule impE, blast)
    apply arith
   apply(erule disjE)
@@ -159,7 +157,6 @@ theorem (in start_context) exec_pres_type:
    apply(fastsimp split: option.splits)
   apply(erule allE)+
   apply(erule impE, blast)
-  apply(erule impE, blast)
   apply arith
 
   -- AStore
@@ -168,7 +165,6 @@ theorem (in start_context) exec_pres_type:
     apply(fastsimp split: option.splits)
    apply(erule allE)+
    apply(erule impE, blast)
-   apply(erule impE, blast)
    apply arith
   apply(erule disjE)
    apply(fastsimp)
@@ -176,7 +172,6 @@ theorem (in start_context) exec_pres_type:
   apply(rule conjI)
    apply(fastsimp split: option.splits)
   apply(erule allE)+
-  apply(erule impE, blast)
   apply(erule impE, blast)
   apply arith
 
@@ -186,7 +181,6 @@ theorem (in start_context) exec_pres_type:
     apply(fastsimp split: option.splits)
    apply(erule allE)+
    apply(erule impE, blast)
-   apply(erule impE, blast)
    apply arith
   apply(erule disjE)
    apply(fastsimp)
@@ -194,7 +188,6 @@ theorem (in start_context) exec_pres_type:
   apply(rule conjI)
    apply(fastsimp split: option.splits)
   apply(erule allE)+
-  apply(erule impE, blast)
   apply(erule impE, blast)
   apply arith
 
@@ -295,7 +288,6 @@ theorem (in start_context) exec_pres_type:
   apply(rule conjI)
    apply(erule allE)+
    apply(erule impE, blast)
-   apply(erule impE, blast)
    apply(clarsimp split: option.splits)
   apply fastsimp
 
@@ -346,7 +338,6 @@ theorem (in start_context) exec_pres_type:
   apply(clarsimp)
   apply(erule allE)+
   apply(rotate_tac -2)
-  apply(erule impE, blast)
   apply(erule impE, blast)
   apply(clarsimp split: option.splits)
   done

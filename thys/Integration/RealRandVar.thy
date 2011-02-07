@@ -1,7 +1,7 @@
 header {*Real-Valued Random Variables*}
 
 theory RealRandVar
-imports Measure Countable
+imports Measure "~~/src/HOL/Library/Countable"
 begin
 
 text {*While most of the above material was modeled after Hurd's work
@@ -141,28 +141,28 @@ char_measurable : "\<chi> a \<in> measurable S x"
       show ?thesis
       proof (cases "0 \<in> g") 
         case True
-        from prems have "\<chi> a -` g = UNIV" by (auto simp add: vimage_def characteristic_function_def)
+        with `1 \<in> g` have "\<chi> a -` g = UNIV" by (auto simp add: vimage_def characteristic_function_def)
         with sigma show ?thesis by (auto simp add: sigma_algebra_UNIV) 
       next
         case False 
-        from prems have "\<chi> a -` g = a" 
-	  by (auto simp add: vimage_def characteristic_function_def)
-	with a show ?thesis by simp
+        with `1 \<in> g` have "\<chi> a -` g = a" 
+          by (auto simp add: vimage_def characteristic_function_def)
+        with a show ?thesis by simp
       qed
       
     next
       case False
       show ?thesis
       proof (cases "0 \<in> g")
-	case True
-	from prems have "\<chi> a -` g = -a" 
-	  by (auto simp add: vimage_def characteristic_function_def)
-	with a sigma show ?thesis by (simp add: sigma_algebra_def)
+        case True
+        with `1 \<notin> g` have "\<chi> a -` g = -a" 
+          by (auto simp add: vimage_def characteristic_function_def)
+        with a sigma show ?thesis by (simp add: sigma_algebra_def)
       next
-	case False
-	from prems have "\<chi> a -` g = {}" by (auto simp add: vimage_def characteristic_function_def)
-	moreover from sigma have "{} \<in> S" by  (simp only: sigma_algebra_def)
-	ultimately show ?thesis by simp
+        case False
+        with `1 \<notin> g` have "\<chi> a -` g = {}" by (auto simp add: vimage_def characteristic_function_def)
+        moreover from sigma have "{} \<in> S" by  (simp only: sigma_algebra_def)
+        ultimately show ?thesis by simp
       qed
     qed}
   thus ?thesis by (unfold measurable_def) blast
@@ -186,11 +186,11 @@ proof -
     { fix a 
       assume "f \<in> measurable (measurable_sets M) \<bool>"
       hence "\<forall>b\<in>\<bool>. f -` b \<in> measurable_sets M"
-	by (unfold measurable_def) blast
+        by (unfold measurable_def) blast
       also have "{..a} \<in> \<bool>" 
-	by (simp only: Borelsets_def) (rule sigma.basic, blast)
+        by (simp only: Borelsets_def) (rule sigma.basic, blast)
       ultimately have "{w. f w \<le> a} \<in> measurable_sets M" 
-	by (auto simp add: vimage_def) 
+        by (auto simp add: vimage_def) 
     }
     thus "\<And>a. f \<in> rv M \<Longrightarrow> {w. f w \<le> a} \<in> measurable_sets M" 
       by (simp add: rv_def)
@@ -226,25 +226,25 @@ proof
     {
       fix w n 
       have "0 < inverse (real (Suc (n::nat)))" 
-	by simp                                
+        by simp                                
       hence "f w \<le> a - inverse (real (Suc n)) \<Longrightarrow> f w < a" 
-	by arith                                           
+        by arith                                           
     }
     also
     { fix w
       have "(\<lambda>n. inverse (real (Suc n))) ----> 0" 
-	by (rule LIMSEQ_inverse_real_of_nat)
+        by (rule LIMSEQ_inverse_real_of_nat)
 
       also assume "f w < a"
       hence "0 < a - f w" by simp
      
       ultimately have 
-	"\<exists>n0. \<forall>n. n0 \<le> n \<longrightarrow> abs (inverse (real (Suc n))) < a - f w" 
-	by (auto simp add: LIMSEQ_def dist_real_def) 
+        "\<exists>n0. \<forall>n. n0 \<le> n \<longrightarrow> abs (inverse (real (Suc n))) < a - f w" 
+        by (auto simp add: LIMSEQ_def dist_real_def) 
       then obtain n where  "abs (inverse (real (Suc n))) < a - f w" 
-	by blast
+        by blast
       hence "f w \<le> a - inverse (real (Suc n))" 
-	by arith
+        by arith
       hence "\<exists>n. f w \<le> a - inverse (real (Suc n))" ..
     }
     ultimately show ?thesis by auto
@@ -287,7 +287,7 @@ lemma assumes sigma: "sigma_algebra A" and ge: "\<forall>a. {w. a \<le> f w} \<i
       hence "0 < f w - a" by simp
 
       ultimately have "\<exists>n0. \<forall>n. n0 \<le> n \<longrightarrow> abs (inverse (real (Suc n))) < f w - a" 
-	by (auto simp add: LIMSEQ_def dist_real_def) 
+        by (auto simp add: LIMSEQ_def dist_real_def) 
       then obtain n where  "abs (inverse (real (Suc n))) < f w - a" by blast      
       hence "a + inverse (real (Suc n)) \<le> f w" by arith
       hence "\<exists>n. a + inverse (real (Suc n)) \<le> f w" ..
@@ -386,7 +386,7 @@ next
   have "\<forall>c. {w.  a + g w * b \<le> c} \<in> measurable_sets M"
   proof (cases "b<0")    
     case False
-    from prems have "0<b" by arith
+    with `b \<noteq> 0` have "0<b" by arith
     hence "\<And>x c.  (g x * b  \<le> c - a) = (g x \<le> (c - a) / b)"  
       by (rule pos_le_divide_eq [THEN sym])
     with calc have "\<And>c. {w.  a + g w * b \<le> c} = {w. g w \<le> (c - a) / b}" 
@@ -444,7 +444,7 @@ proof -
       hence "\<exists>s\<in>\<rat>. f w < s \<and> s < g w" by (rule Rats_dense_in_real)
       hence "\<exists>s\<in>\<rat>. w \<in> {w. f w < s} \<inter> {w. s < g w}" by simp
       hence "\<exists>i. w \<in> ?I i"
-	by(simp add:Let_def)(metis surj_of_rat_nat_to_rat_surj)
+        by(simp add:Let_def)(metis surj_of_rat_nat_to_rat_surj)
       hence "w \<in> (\<Union>i. ?I i)" by simp
     }
     thus "{w. f w < g w} \<subseteq> (\<Union>i. ?I i)" ..
@@ -458,9 +458,9 @@ proof -
     { fix s
       note sig
       also from ms f have "{w. f w < s} \<in> measurable_sets M" (is "?a\<in>?M") 
-	by (simp add: rv_less_iff)
+        by (simp add: rv_less_iff)
       moreover from ms g have "{w. s < g w} \<in> ?M" (is "?b \<in> ?M") 
-	by (simp add: rv_gr_iff)
+        by (simp add: rv_gr_iff)
       ultimately have "?a \<inter> ?b \<in> ?M" by (rule sigma_algebra_inter)
     }
     hence "\<forall>i. ?I i \<in> measurable_sets M" by (simp add: Let_def)
@@ -571,7 +571,7 @@ lemma assumes f: "f \<in> rv M"
       
       case True
       { fix w
-	note True
+        note True
         also have "0 \<le> (f w)\<twosuperior>" by simp
         finally have "((f w)\<twosuperior> \<le> a) = False" by simp
       } hence "?F a = {}" by simp
@@ -581,44 +581,42 @@ lemma assumes f: "f \<in> rv M"
       case False
       show ?thesis
       proof (cases "a = 0")
-	
-	case True also
-	{ fix w
-	  have "0 \<le> (f w)\<twosuperior>" by simp
-	  hence "((f w)\<twosuperior> \<le> 0) \<Longrightarrow> ((f w)\<twosuperior> = 0)" by (simp only: order_antisym)
-	  hence "((f w)\<twosuperior> \<le> 0) = ((f w)\<twosuperior> = 0)" by (force simp add: numeral_2_eq_2)
-	  also have "\<dots> = (f w = 0)" by simp	
-	  finally have "((f w)\<twosuperior> \<le> 0) = \<dots>" .
-	}
-	
-	ultimately have "?F a = {w. f w = 0}" by simp
-	moreover have "\<dots> = {w. f w \<le> 0} \<inter> {w. 0 \<le> f w}" by auto
-	moreover have "\<dots> \<in> ?M"
-	proof - 
-	  from ms f have "{w. f w \<le> 0} \<in> ?M" by (simp only: rv_le_iff)
-	  also from ms f have "{w. 0 \<le> f w} \<in> ?M" by (simp only: rv_ge_iff)
-	  ultimately show ?thesis using sig by (simp only: sigma_algebra_inter)
-	qed
-	
-	ultimately show ?thesis by simp
+        
+        case True also
+        { fix w
+          have "0 \<le> (f w)\<twosuperior>" by simp
+          hence "((f w)\<twosuperior> \<le> 0) \<Longrightarrow> ((f w)\<twosuperior> = 0)" by (simp only: order_antisym)
+          hence "((f w)\<twosuperior> \<le> 0) = ((f w)\<twosuperior> = 0)" by (force simp add: numeral_2_eq_2)
+          also have "\<dots> = (f w = 0)" by simp     
+          finally have "((f w)\<twosuperior> \<le> 0) = \<dots>" .
+        }
+        
+        ultimately have "?F a = {w. f w = 0}" by simp
+        moreover have "\<dots> = {w. f w \<le> 0} \<inter> {w. 0 \<le> f w}" by auto
+        moreover have "\<dots> \<in> ?M"
+        proof - 
+          from ms f have "{w. f w \<le> 0} \<in> ?M" by (simp only: rv_le_iff)
+          also from ms f have "{w. 0 \<le> f w} \<in> ?M" by (simp only: rv_ge_iff)
+          ultimately show ?thesis using sig by (simp only: sigma_algebra_inter)
+        qed
+        
+        ultimately show ?thesis by simp
    
       next
-	case False
-	{ fix w
-	  from prems have "0<a" by (simp add: order_less_le)
-	  then have "\<exists> sqra. 0<sqra \<and> sqra\<twosuperior> = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
-	  hence "\<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}"
-	    by (auto simp only: pow2_le_abs abs_le_interval_iff)
-        }
-	then obtain sqra where "?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}" by fast
-	moreover have "\<dots> \<in> ?M" 
-	proof - 
-	  from ms f have "{w. f w \<le> sqra} \<in> ?M" by (simp only: rv_le_iff)
-	  also from ms f have "{w. -sqra \<le> f w} \<in> ?M" by (simp only: rv_ge_iff)
-	  ultimately show ?thesis using sig by (simp only: sigma_algebra_inter)
-	qed
-	
-	ultimately show ?thesis by simp
+        case False
+        with `\<not> a < 0` have "0<a" by (simp add: order_less_le)
+        then have "\<exists> sqra. 0<sqra \<and> sqra\<twosuperior> = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
+        then have "\<And>w. \<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}"
+          by (auto simp only: pow2_le_abs abs_le_interval_iff)
+        then obtain sqra where "?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}" by fast
+        moreover have "\<dots> \<in> ?M" 
+        proof - 
+          from ms f have "{w. f w \<le> sqra} \<in> ?M" by (simp only: rv_le_iff)
+          also from ms f have "{w. -sqra \<le> f w} \<in> ?M" by (simp only: rv_ge_iff)
+          ultimately show ?thesis using sig by (simp only: sigma_algebra_inter)
+        qed
+        
+        ultimately show ?thesis by simp
       
       qed 
     qed
@@ -696,21 +694,21 @@ proof -
     { 
       fix w
       from mon_conv have up: "(\<lambda>n. u n w)\<up>f w" 
-	by (simp only: realfun_mon_conv_iff)
+        by (simp only: realfun_mon_conv_iff)
       { 
-	fix i
-	from up have "u i w \<le> f w" 
-	  by (rule real_mon_conv_le)
-	also assume "f w \<le> a"
-	finally have  "u i w \<le> a" . 
+        fix i
+        from up have "u i w \<le> f w" 
+          by (rule real_mon_conv_le)
+        also assume "f w \<le> a"
+        finally have  "u i w \<le> a" . 
       }                              
                                      
       also 
       { assume "\<And>i. u i w \<le> a"
-	also from up have "(\<lambda>n. u n w) ----> f w" 
-	  by (simp only: real_mon_conv)
-	ultimately have "f w \<le> a" 
-	  by (simp add: LIMSEQ_le_const2)
+        also from up have "(\<lambda>n. u n w) ----> f w" 
+          by (simp only: real_mon_conv)
+        ultimately have "f w \<le> a" 
+          by (simp add: LIMSEQ_le_const2)
       }
       ultimately have "(f w \<le> a) = (\<forall>i. u i w \<le> a)" by fast
     }
@@ -758,7 +756,7 @@ lemma f_abs_plus_minus: "(\<bar>f x\<bar>::real) = pp f x + np f x"
   by  (auto simp add:positive_part_def negative_part_def)
 
 lemma nn_pp_np: assumes "nonnegative f"
-  shows "pp f = f" and "np f = (\<lambda>t. 0)" using prems
+  shows "pp f = f" and "np f = (\<lambda>t. 0)" using assms
   by (auto simp add: positive_part_def negative_part_def nonnegative_def ext)
 
 lemma pos_pp_np_help: "\<And>x. 0\<le>f x \<Longrightarrow> pp f x = f x \<and> np f x = 0"
@@ -776,7 +774,7 @@ lemma real_neg_pp_np_help: "\<And>x. f x \<le> (0::real) \<Longrightarrow> np f 
 qed(*>*)
 
 lemma real_neg_pp_np: assumes "f \<le> (\<lambda>t. (0::real))"
- shows "np f = (\<lambda>t. -f t)" and "pp f = (\<lambda>t. 0)" using prems
+ shows "np f = (\<lambda>t. -f t)" and "pp f = (\<lambda>t. 0)" using assms
   by (auto simp add: real_neg_pp_np_help ext le_fun_def)
 
 lemma assumes a: "0\<le>(a::real)" 
@@ -788,7 +786,7 @@ lemma assumes a: "0\<le>(a::real)"
     proof (cases "0 \<le> f t")
       case True
       from a this a real_le_refl[of 0] have le: "0*0\<le>a*f t" 
-	by (rule mult_mono)
+        by (rule mult_mono)
       hence "pp (\<lambda>t. a*f t) t = a*f t" by (simp add: positive_part_def)
       also from True have "\<dots> = a*pp f t" by (simp add: positive_part_def)
       finally have 1: "pp (\<lambda>t. a*f t) t = a*pp f t" .
@@ -802,12 +800,12 @@ lemma assumes a: "0\<le>(a::real)"
       from this a have "(f t)*a \<le> 0*a" by (rule mult_right_mono)
       hence le: "a*f t \<le> 0" by (simp add: real_mult_commute)
       hence "pp (\<lambda>t. a*f t) t = 0" 
-	by (cases "a*f t<0") (auto simp add: positive_part_def order_le_less ) 
+        by (cases "a*f t<0") (auto simp add: positive_part_def order_le_less ) 
       also from False have "\<dots> = a*pp f t" by (simp add: positive_part_def)
       finally have 1: "pp (\<lambda>t. a*f t) t = a*pp f t" .
       
       from le have "np (\<lambda>t. a*f t) t = -a*f t" 
-	by (cases "a*f t=0") (auto simp add: negative_part_def order_le_less)
+        by (cases "a*f t=0") (auto simp add: negative_part_def order_le_less)
       also from False have "\<dots> = a*np f t" by (simp add: negative_part_def)
       finally show ?thesis using 1 by fast
     qed
@@ -823,7 +821,7 @@ lemma assumes a: "(a::real)\<le>0"
     proof (cases "0 \<le> f t")
       case True 
       with a have le: "a*f t\<le>0*f t" 
-	by (rule mult_right_mono)
+        by (rule mult_right_mono)
       hence "pp (\<lambda>t. a*f t) t = 0" by (simp add: real_neg_pp_np_help)
       also from True have "\<dots> = -a*np f t" by (simp add: negative_part_def)
       finally have 1: "pp (\<lambda>t. a*f t) t = -a*np f t" .
@@ -862,21 +860,21 @@ proof -
     proof (cases "0\<le>a")
       case True
       hence "{w. pp f w \<le> a} = {w. f w \<le> a}" 
-	by (auto simp add: positive_part_def)
+        by (auto simp add: positive_part_def)
       moreover note fm moreover
       from True have "{w. np f w \<le> a} = {w. -a \<le> f w}" 
-	by (auto simp add: negative_part_def)
+        by (auto simp add: negative_part_def)
       moreover from ms f have "\<dots> \<in> measurable_sets M" 
-	by (simp add: rv_ge_iff)
+        by (simp add: rv_ge_iff)
       ultimately show ?thesis by simp
     next
       case False
       hence "{w. pp f w \<le> a} = {}" 
-	by (auto simp add: positive_part_def)
+        by (auto simp add: positive_part_def)
       also from False have "{w. np f w \<le> a} = {}" 
-	by (auto simp add: negative_part_def)
+        by (auto simp add: negative_part_def)
       moreover from ms have "{} \<in> measurable_sets M" 
-	by (simp add: measure_space_def sigma_algebra_def)
+        by (simp add: measure_space_def sigma_algebra_def)
       ultimately show ?thesis by simp
     qed
   } with ms show "pp f \<in> rv M" and "np f \<in> rv M" 

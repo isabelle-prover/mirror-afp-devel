@@ -43,6 +43,8 @@ definition ts_delete :: "'a list \<Rightarrow> 'a ts \<Rightarrow> 'a ts"
 definition ts_sel :: "'a ts \<Rightarrow> ('a list \<Rightarrow> 'r option) \<Rightarrow> 'r option" 
   where "ts_sel == s_sel tm_sel"
 
+definition "ts_sel' == sel_sel' ts_sel"
+
 definition ts_isEmpty :: "'a ts \<Rightarrow> bool"
   where "ts_isEmpty == s_isEmpty tm_isEmpty"
 
@@ -99,6 +101,7 @@ lemmas ts_defs =
   ts_iteratei_def
   ts_memb_def
   ts_sel_def
+  ts_sel'_def
   ts_size_def
   ts_to_list_def
   ts_union_def
@@ -116,6 +119,7 @@ lemmas ts_union_impl = s_union_correct[OF tm_add_impl, folded ts_defs]
 lemmas ts_union_dj_impl = s_union_dj_correct[OF tm_add_dj_impl, folded ts_defs]
 lemmas ts_ball_impl = s_ball_correct[OF tm_ball_impl, folded ts_defs]
 lemmas ts_sel_impl = s_sel_correct[OF tm_sel_impl, folded ts_defs]
+lemmas ts_sel'_impl = sel_sel'_correct[OF ts_sel_impl, folded ts_defs]
 lemmas ts_inter_impl = it_inter_correct[OF ts_iterate_impl ts_memb_impl ts_empty_impl ts_ins_dj_impl, folded ts_inter_def]
 lemmas ts_size_impl = it_size_correct[OF ts_iterate_impl, folded ts_size_def]
 lemmas ts_image_filter_impl = it_image_filter_correct[OF ts_iterate_impl ts_empty_impl ts_ins_impl, folded ts_image_filter_def]
@@ -136,6 +140,7 @@ interpretation ts: set_union ts_\<alpha> ts_invar ts_\<alpha> ts_invar ts_\<alph
 interpretation ts: set_inter ts_\<alpha> ts_invar ts_\<alpha> ts_invar ts_\<alpha> ts_invar ts_inter using ts_inter_impl .
 interpretation ts: set_image ts_\<alpha> ts_invar ts_\<alpha> ts_invar ts_image using ts_image_impl .
 interpretation ts: set_sel ts_\<alpha> ts_invar ts_sel using ts_sel_impl .
+interpretation ts: set_sel' ts_\<alpha> ts_invar ts_sel' using ts_sel'_impl .
 interpretation ts: set_ins_dj ts_\<alpha> ts_invar ts_ins_dj using ts_ins_dj_impl .
 interpretation ts: set_delete ts_\<alpha> ts_invar ts_delete using ts_delete_impl .
 interpretation ts: set_ball ts_\<alpha> ts_invar ts_ball using ts_ball_impl .
@@ -179,6 +184,7 @@ export_code
   ts_inter
   ts_image
   ts_sel
+  ts_sel'
   ts_ins_dj
   ts_delete
   ts_ball

@@ -73,17 +73,17 @@ proof -
     moreover have "!!m. m \<ge> 0 \<and> m dvd int a \<and> m \<noteq> int a \<Longrightarrow> m=1" 
     proof -
       { fix m assume m: "m \<ge> 0 \<and> m dvd int a \<and> m \<noteq> int a"
-	then obtain k::int where k: "int a = m*k" by (auto simp add: dvd_def)
-	from m have "int (nat m) = m" by auto
-	with k have "int a = (int (nat m)) * k" by simp
-	hence "nat (int a) = nat ( (int (nat m)) * k )" by simp
-	hence "a = nat ( (int (nat m)) * k )" by (simp only: nat_int)
-	also have "\<dots> = (nat m) * (nat k)" by (simp add: nat_int nat_mult_distrib)
-	finally have "nat m dvd a" by auto
-	with pra have "nat m = a \<or> nat m = 1" by (auto simp add: prime_def)
-	moreover from m have "nat m \<noteq> a" by auto
-	ultimately have "nat m = 1" by auto
-	hence "m = 1" by arith }
+        then obtain k::int where k: "int a = m*k" by (auto simp add: dvd_def)
+        from m have "int (nat m) = m" by auto
+        with k have "int a = (int (nat m)) * k" by simp
+        hence "nat (int a) = nat ( (int (nat m)) * k )" by simp
+        hence "a = nat ( (int (nat m)) * k )" by (simp only: nat_int)
+        also have "\<dots> = (nat m) * (nat k)" by (simp add: nat_int nat_mult_distrib)
+        finally have "nat m dvd a" by auto
+        with pra have "nat m = a \<or> nat m = 1" by (auto simp add: prime_def)
+        moreover from m have "nat m \<noteq> a" by auto
+        ultimately have "nat m = 1" by auto
+        hence "m = 1" by arith }
       thus "!!m. m \<ge> 0 \<and> m dvd int a \<and> m \<noteq> int a \<Longrightarrow> m=1" by auto
     qed
     ultimately show ?thesis by (auto simp add: zprime_def)
@@ -386,53 +386,53 @@ proof -
     next
       case (Cons p ps) 
       hence ass: "primel ps \<and> prime p \<and> a*b=p^n*(prod ps)^n \<and> gcd a b=1 " 
-	and IH: "!!a b. primel ps \<and> a*b = (prod ps)^n \<and> gcd a b=1 \<Longrightarrow> \<exists> k. a = k^n" 
-	by (auto simp add: primel_def power_mult_distrib)
+        and IH: "!!a b. primel ps \<and> a*b = (prod ps)^n \<and> gcd a b=1 \<Longrightarrow> \<exists> k. a = k^n" 
+        by (auto simp add: primel_def power_mult_distrib)
       hence pnab: "p^n dvd a*b" and pn0: "p^n \<noteq> 0" 
-	by (auto simp add: prime_def)
+        by (auto simp add: prime_def)
       moreover
       { assume pa: "p dvd a"
-	have "\<not> p dvd b"
-	proof (rule ccontr, simp)
-	  assume "p dvd b"
-	  with pa have "p dvd gcd a b" by (simp add: gcd_greatest_iff)
-	  with ass show "False" by (auto simp add: prime_def)
-	qed
-	with ass pnab have "p^n dvd a" by (simp add: prime_power_dvd_cancel_right)
-	then obtain A where A: "a = p^n * A" by (auto simp add: dvd_def)
-	with ass pn0 have "A*b = (prod ps)^n" by auto
-	moreover have "gcd A b=1"
-	proof -
-	  let ?g = "gcd A b"
-	  have "?g dvd A \<and> ?g dvd b" by (simp add: gcd_greatest)
-	  with A have "?g dvd a \<and> ?g dvd b" by (simp add: dvd_mult)
-	  hence "?g dvd gcd a b" by (simp only: gcd_greatest)
-	  with ass show "?g = 1" by auto
-	qed
-	moreover from IH ass have 
-	  "A*b = (prod ps)^n \<and> gcd A b=1 \<Longrightarrow> \<exists> k. A = k^n" by auto
-	ultimately have "\<exists> k. A = k^n" by auto
-	then obtain k where "A = k^n" by auto
-	with A have "a = (p*k)^n" by (auto simp add: power_mult_distrib)
-	hence "\<exists> k. a = k^n" by blast }
+        have "\<not> p dvd b"
+        proof (rule ccontr, simp)
+          assume "p dvd b"
+          with pa have "p dvd gcd a b" by (simp add: gcd_greatest_iff)
+          with ass show "False" by (auto simp add: prime_def)
+        qed
+        with ass pnab have "p^n dvd a" by (simp add: prime_power_dvd_cancel_right)
+        then obtain A where A: "a = p^n * A" by (auto simp add: dvd_def)
+        with ass pn0 have "A*b = (prod ps)^n" by auto
+        moreover have "gcd A b=1"
+        proof -
+          let ?g = "gcd A b"
+          have "?g dvd A \<and> ?g dvd b" by (simp add: gcd_greatest)
+          with A have "?g dvd a \<and> ?g dvd b" by (simp add: dvd_mult)
+          hence "?g dvd gcd a b" by (simp only: gcd_greatest)
+          with ass show "?g = 1" by auto
+        qed
+        moreover from IH ass have 
+          "A*b = (prod ps)^n \<and> gcd A b=1 \<Longrightarrow> \<exists> k. A = k^n" by auto
+        ultimately have "\<exists> k. A = k^n" by auto
+        then obtain k where "A = k^n" by auto
+        with A have "a = (p*k)^n" by (auto simp add: power_mult_distrib)
+        hence "\<exists> k. a = k^n" by blast }
       moreover
       { assume "\<not> p dvd a" 
-	moreover from ass pnab have "p^n dvd b*a \<and> prime p"
-	  by (auto simp only: mult_ac)
-	ultimately have "p^n dvd b" by (simp add: prime_power_dvd_cancel_right)
-	then obtain B where B: "b = p^n * B" by (auto simp add: dvd_def)
-	with ass pn0 have "a*B = (prod ps)^n" by auto
-	moreover have "gcd a B=1"
-	proof -
-	  let ?g = "gcd a B"
-	  have "?g dvd a \<and> ?g dvd B" by (simp add: gcd_greatest)
-	  with B have "?g dvd a \<and> ?g dvd b" by (simp add: dvd_mult)
-	  hence "?g dvd gcd a b" by (simp only: gcd_greatest)
-	  with ass show "?g = 1" by auto
-	qed
-	moreover from IH ass have 
-	  "a*B = (prod ps)^n \<and> gcd a B=1 \<Longrightarrow> \<exists> k. a = k^n" by auto
-	ultimately have "\<exists> k. a = k^n" by auto }
+        moreover from ass pnab have "p^n dvd b*a \<and> prime p"
+          by (auto simp only: mult_ac)
+        ultimately have "p^n dvd b" by (simp add: prime_power_dvd_cancel_right)
+        then obtain B where B: "b = p^n * B" by (auto simp add: dvd_def)
+        with ass pn0 have "a*B = (prod ps)^n" by auto
+        moreover have "gcd a B=1"
+        proof -
+          let ?g = "gcd a B"
+          have "?g dvd a \<and> ?g dvd B" by (simp add: gcd_greatest)
+          with B have "?g dvd a \<and> ?g dvd b" by (simp add: dvd_mult)
+          hence "?g dvd gcd a b" by (simp only: gcd_greatest)
+          with ass show "?g = 1" by auto
+        qed
+        moreover from IH ass have 
+          "a*B = (prod ps)^n \<and> gcd a B=1 \<Longrightarrow> \<exists> k. a = k^n" by auto
+        ultimately have "\<exists> k. a = k^n" by auto }
       ultimately show "\<exists> k. a = k^n" by auto
     qed
     moreover from abcn relprime have "gcd a b=1 \<and> a*b=c^n" by simp

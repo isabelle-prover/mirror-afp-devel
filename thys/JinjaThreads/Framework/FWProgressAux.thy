@@ -45,6 +45,31 @@ lemma must_sync_can_sync_conv:
   "t \<turnstile> \<langle>x, m\<rangle> \<wrong> \<longleftrightarrow> (\<exists>LT. t \<turnstile> \<langle>x, m\<rangle> LT \<wrong>)"
 by(auto intro: must_sync_ex_can_sync can_sync_must_sync)
 
+
+inductive_set active_threads :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't set"
+for s :: "('l,'t,'x,'m,'w) state"
+where
+  "\<lbrakk> thr s t = Some (x, ln);
+     ln = no_wait_locks;
+     t \<turnstile> (x, shr s) -ta\<rightarrow> x'm';
+     actions_ok s t ta \<rbrakk>
+  \<Longrightarrow> t \<in> active_threads s"
+| "\<lbrakk> thr s t = Some (x, ln);
+     ln \<noteq> no_wait_locks;
+     \<not> waiting (wset s t);
+     may_acquire_all (locks s) t ln \<rbrakk>
+  \<Longrightarrow> t \<in> active_threads s"
+
+lemma active_threads_iff:
+  "active_threads s = 
+  {t. \<exists>x ln. thr s t = Some (x, ln) \<and>
+             (if ln = no_wait_locks 
+              then \<exists>ta x' m'. t \<turnstile> (x, shr s) -ta\<rightarrow> (x', m') \<and> actions_ok s t ta
+              else \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln)}"
+apply(auto elim!: active_threads.cases intro: active_threads.intros)
+apply blast
+done
+
 end
 
 text {* Well-formedness conditions for final *}

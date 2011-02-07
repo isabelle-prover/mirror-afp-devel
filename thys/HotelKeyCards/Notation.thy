@@ -5,7 +5,7 @@
 
 (*<*)
 theory Notation
-imports LaTeXsugar
+imports "~~/src/HOL/Library/LaTeXsugar"
 begin
 
 abbreviation

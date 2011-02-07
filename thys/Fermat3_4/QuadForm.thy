@@ -125,7 +125,7 @@ proof -
     have "?P dvd (b*p + a*q)*(b*p - a*q)"
     proof -
       have "(b*p + a*q)*(b*p - a*q)= b^2*?P - q^2*?A"  
-	by (simp add: eval_nat_numeral field_simps)
+        by (simp add: eval_nat_numeral field_simps)
       also from U have "\<dots> = (b^2 - q^2*U)*?P" by (simp add: field_simps)
       finally show ?thesis by simp
     qed
@@ -236,9 +236,9 @@ proof -
     proof -
       have "(b*p + a*q)*(b*p - a*q) = (b*p)^2 - (a*q)^2" by (rule zspecial_product)
       also have "\<dots> = b^2 * p^2 + b^2*N*q^2 - b^2*N*q^2 - a^2*q^2" 
-	by (simp add: power_mult_distrib)
+        by (simp add: power_mult_distrib)
       also with ass have "\<dots> = b^2*P^n - q^2*A^n" 
-	by (simp only: mult_ac zadd_zmult_distrib zadd_zmult_distrib2)
+        by (simp only: mult_ac zadd_zmult_distrib zadd_zmult_distrib2)
       also with U have "\<dots> = (b^2-q^2*U)*P^n" by (simp only: zdiff_zmult_distrib)
       finally show ?thesis by (simp add: mult_ac)
     qed
@@ -246,70 +246,70 @@ proof -
     proof -
       have PdvdPn: "P dvd P^n"
       proof -
-	from ass have "\<exists> m. n = Suc m" by (simp add: not0_implies_Suc)
-	then obtain m where "n = Suc m" by auto
-	hence "P^n = P*(P^m)" by auto
-	thus ?thesis by auto
+        from ass have "\<exists> m. n = Suc m" by (simp add: not0_implies_Suc)
+        then obtain m where "n = Suc m" by auto
+        hence "P^n = P*(P^m)" by auto
+        thus ?thesis by auto
       qed
       have "\<not> P dvd b*p+a*q \<or>  \<not> P dvd b*p-a*q"
       proof (rule ccontr, simp)
-	assume "P dvd b*p+a*q \<and> P dvd b*p-a*q" 
-	hence "P dvd (b*p+a*q)+(b*p-a*q) \<and> P dvd (b*p+a*q)-(b*p-a*q)" 
-	  by (simp only: dvd_add, simp only: dvd_diff)
-	hence "P dvd 2*(b*p) \<and> P dvd 2*(a*q)" by (simp only: mult_2, auto)
-	with ass have "(P dvd 2 \<or> P dvd b*p) \<and> (P dvd 2 \<or> P dvd a*q)" 
-	  by (simp add: zprime_zdvd_zmult_general)
-	hence "P dvd 2 \<or> (P dvd b*p \<and> P dvd a*q)" by auto
-	moreover have "\<not> P dvd 2"
-	proof (rule ccontr, simp)
-	  assume pdvd2: "P dvd 2" 
-	  have "P \<le> 2"
-	  proof (rule ccontr)
-	    assume "\<not> P \<le> 2" hence Pl2: "P > 2" by simp
-	    with pdvd2 show False by (simp add: zdvd_not_zless)
-	  qed
-	  moreover from ass have "P > 1" by (simp only: zprime_def)
-	  ultimately have "P=2" by auto
-	  with ass have "2 \<in> zOdd" by simp
-	  moreover have "2 \<in> zEven" by (simp add: zEven_def)
-	  ultimately show False by (simp add: odd_iff_not_even)
-	qed
-	ultimately have "P dvd b*p \<and> P dvd a*q" by auto
-	with ass have "(P dvd b \<or> P dvd p) \<and> (P dvd a \<or> P dvd q)" 
-	  by (auto simp only: zprime_zdvd_zmult_general)
-	moreover have "\<not> P dvd p \<and> \<not> P dvd q"
-	proof (auto dest: ccontr)
-	  assume Pdvdp: "P dvd p"
-	  hence "P dvd p^2" by (simp only: dvd_mult power2_eq_square)
-	  with PdvdPn have "P dvd P^n-p^2" by (simp only: dvd_diff)
-	  with ass have "P dvd N*(q*q)" by (simp add: power2_eq_square)
-	  with ass have "P dvd N \<or> P dvd q" by (auto dest: zprime_zdvd_zmult_general)
-	  hence "P dvd N*q" by auto
-	  with Pdvdp have "P dvd zgcd p (N*q)" by (simp add: zgcd_greatest_iff)
-	  with ass show False by (auto simp add: zprime_def)
-	next
-	  assume "P dvd q"
-	  hence PdvdNq: "P dvd N*q" by simp
-	  hence "P dvd N*q*q" by simp
-	  hence "P dvd N*q^2" by (simp add: power2_eq_square mult_ac)
-	  with PdvdPn have "P dvd P^n-N*q^2" by (simp only: dvd_diff)
-	  with ass have "P dvd p*p" by (simp add: power2_eq_square)
-	  with ass have "P dvd p" by (auto dest: zprime_zdvd_zmult_general)
-	  with PdvdNq have "P dvd zgcd p (N*q)" by (simp add: zgcd_greatest_iff)
-	  with ass show False by (auto simp add: zprime_def)
-	qed
-	ultimately have "P dvd a \<and> P dvd b" by auto
-	hence "P dvd zgcd a b" by (simp add: zgcd_greatest_iff)
-	with ass show False by (auto simp add: zprime_def)
+        assume "P dvd b*p+a*q \<and> P dvd b*p-a*q" 
+        hence "P dvd (b*p+a*q)+(b*p-a*q) \<and> P dvd (b*p+a*q)-(b*p-a*q)" 
+          by (simp only: dvd_add, simp only: dvd_diff)
+        hence "P dvd 2*(b*p) \<and> P dvd 2*(a*q)" by (simp only: mult_2, auto)
+        with ass have "(P dvd 2 \<or> P dvd b*p) \<and> (P dvd 2 \<or> P dvd a*q)" 
+          by (simp add: zprime_zdvd_zmult_general)
+        hence "P dvd 2 \<or> (P dvd b*p \<and> P dvd a*q)" by auto
+        moreover have "\<not> P dvd 2"
+        proof (rule ccontr, simp)
+          assume pdvd2: "P dvd 2" 
+          have "P \<le> 2"
+          proof (rule ccontr)
+            assume "\<not> P \<le> 2" hence Pl2: "P > 2" by simp
+            with pdvd2 show False by (simp add: zdvd_not_zless)
+          qed
+          moreover from ass have "P > 1" by (simp only: zprime_def)
+          ultimately have "P=2" by auto
+          with ass have "2 \<in> zOdd" by simp
+          moreover have "2 \<in> zEven" by (simp add: zEven_def)
+          ultimately show False by (simp add: odd_iff_not_even)
+        qed
+        ultimately have "P dvd b*p \<and> P dvd a*q" by auto
+        with ass have "(P dvd b \<or> P dvd p) \<and> (P dvd a \<or> P dvd q)" 
+          by (auto simp only: zprime_zdvd_zmult_general)
+        moreover have "\<not> P dvd p \<and> \<not> P dvd q"
+        proof (auto dest: ccontr)
+          assume Pdvdp: "P dvd p"
+          hence "P dvd p^2" by (simp only: dvd_mult power2_eq_square)
+          with PdvdPn have "P dvd P^n-p^2" by (simp only: dvd_diff)
+          with ass have "P dvd N*(q*q)" by (simp add: power2_eq_square)
+          with ass have "P dvd N \<or> P dvd q" by (auto dest: zprime_zdvd_zmult_general)
+          hence "P dvd N*q" by auto
+          with Pdvdp have "P dvd zgcd p (N*q)" by (simp add: zgcd_greatest_iff)
+          with ass show False by (auto simp add: zprime_def)
+        next
+          assume "P dvd q"
+          hence PdvdNq: "P dvd N*q" by simp
+          hence "P dvd N*q*q" by simp
+          hence "P dvd N*q^2" by (simp add: power2_eq_square mult_ac)
+          with PdvdPn have "P dvd P^n-N*q^2" by (simp only: dvd_diff)
+          with ass have "P dvd p*p" by (simp add: power2_eq_square)
+          with ass have "P dvd p" by (auto dest: zprime_zdvd_zmult_general)
+          with PdvdNq have "P dvd zgcd p (N*q)" by (simp add: zgcd_greatest_iff)
+          with ass show False by (auto simp add: zprime_def)
+        qed
+        ultimately have "P dvd a \<and> P dvd b" by auto
+        hence "P dvd zgcd a b" by (simp add: zgcd_greatest_iff)
+        with ass show False by (auto simp add: zprime_def)
       qed
       moreover
       { assume "\<not> P dvd b*p+a*q"
-	with Pn_dvd_prod and ass have "P^n dvd b*p-a*q" 
-	  by (rule_tac a="b*p+a*q" in zprime_power_zdvd_cancel_left, simp) }
+        with Pn_dvd_prod and ass have "P^n dvd b*p-a*q" 
+          by (rule_tac a="b*p+a*q" in zprime_power_zdvd_cancel_left, simp) }
       moreover
       { assume "\<not> P dvd b*p-a*q"
-	with Pn_dvd_prod and ass have "P^n dvd b*p+a*q" 
-	  by (rule_tac a="b*p+a*q" in zprime_power_zdvd_cancel_right, simp) }
+        with Pn_dvd_prod and ass have "P^n dvd b*p+a*q" 
+          by (rule_tac a="b*p+a*q" in zprime_power_zdvd_cancel_right, simp) }
       ultimately show ?thesis by auto
     qed
     moreover 
@@ -466,7 +466,7 @@ proof -
     with h1 have "?h =0 \<or> ?h >1" by auto
     moreover
     { assume "?h = 0" hence "nat\<bar>?b\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0" 
-	by (unfold zgcd_def, auto simp add: gcd_zero)
+        by (unfold zgcd_def, auto simp add: gcd_zero)
       hence "?a = 0 \<and> ?b = 0" by arith
       with abP have "?P^3 = 0" by auto
       with P have False by (unfold zprime_def, auto)
@@ -476,110 +476,110 @@ proof -
       then obtain g where g: "zprime g \<and> g dvd ?h" by blast
       hence "g dvd ?b \<and> g dvd ?a" by (simp add: zgcd_greatest_iff)
       with g have g1: "g dvd q \<or> g dvd 3*p^2-N*q^2" 
-	and g2: "g dvd p \<or> g dvd p^2 - 3*N*q^2"
-	by (auto simp add: zprime_zdvd_zmult_general)
+        and g2: "g dvd p \<or> g dvd p^2 - 3*N*q^2"
+        by (auto simp add: zprime_zdvd_zmult_general)
       from g have gpos: "g \<ge> 0" by (auto simp only: zprime_def)
       have "g dvd ?P"
       proof (cases)
-	assume "g dvd q"
-	hence gNq: "g dvd N*q^2" by (auto simp add: dvd_def power2_eq_square)
-	show ?thesis
-	proof (cases)
-	  assume gp: "g dvd p"
-	  hence "g dvd p^2" by (auto simp add: dvd_def power2_eq_square)
-	  with gNq show ?thesis by auto
-	next
-	  assume "\<not> g dvd p" with g2 have "g dvd p^2 - 3*N*q^2" by auto
-	  moreover from gNq have "g dvd 4*(N*q^2)" by (rule dvd_mult)
-	  ultimately have "g dvd p^2 - 3*(N*q^2) + 4*(N*q^2)" 
-	    by (simp only: mult_ac dvd_add)
-	  moreover have "p^2 - 3*(N*q^2)+4*(N*q^2) = p^2 + N*q^2" by arith
-	  ultimately show ?thesis by simp
-	qed
+        assume "g dvd q"
+        hence gNq: "g dvd N*q^2" by (auto simp add: dvd_def power2_eq_square)
+        show ?thesis
+        proof (cases)
+          assume gp: "g dvd p"
+          hence "g dvd p^2" by (auto simp add: dvd_def power2_eq_square)
+          with gNq show ?thesis by auto
+        next
+          assume "\<not> g dvd p" with g2 have "g dvd p^2 - 3*N*q^2" by auto
+          moreover from gNq have "g dvd 4*(N*q^2)" by (rule dvd_mult)
+          ultimately have "g dvd p^2 - 3*(N*q^2) + 4*(N*q^2)" 
+            by (simp only: mult_ac dvd_add)
+          moreover have "p^2 - 3*(N*q^2)+4*(N*q^2) = p^2 + N*q^2" by arith
+          ultimately show ?thesis by simp
+        qed
       next
-	assume "\<not> g dvd q" with g1 have gpq: "g dvd 3*p^2-N*q^2" by simp
-	show ?thesis
-	proof (cases)
-	  assume "g dvd p"
-	  hence "g dvd 4*p^2" by (auto simp add: dvd_def power2_eq_square)
-	  with gpq have " g dvd 4*p^2 - (3*p^2 - N*q^2)" by (simp only: dvd_diff)
-	  moreover have "4*p^2 - (3*p^2 - N*q^2) = p^2 + N*q^2" by arith
-	  ultimately show ?thesis by simp
-	next
-	  assume "\<not> g dvd p" with g2 have "g dvd p^2 - 3*N*q^2" by auto
-	  with gpq have "g dvd 3*p^2-N*q^2 - (p^2 - 3*N*q^2)" 
-	    by (simp only: dvd_diff)
-	  moreover have "3*p^2-N*q^2 - (p^2 - 3*N*q^2) = 2*?P" by auto
-	  ultimately have "g dvd 2*?P" by simp
-	  with g have "g dvd 2 \<or> g dvd ?P" by (simp only: zprime_zdvd_zmult)
-	  moreover have "\<not> g dvd 2" 
-	  proof (rule ccontr, simp)
-	    assume gdvd2: "g dvd 2" 
-	    have "g \<le> 2" 
-	    proof (rule ccontr)
-	      assume "\<not> g \<le> 2" hence "g > 2" by simp
-	      moreover have "(0::int) < 2" by auto
-	      ultimately have "\<not> g dvd 2" by (auto simp only: zdvd_not_zless)
-	      with gdvd2 show False by simp
-	    qed
-	    moreover from g have "g \<ge> 2" by (simp add: zprime_def)
-	    ultimately have "g = 2" by auto
-	    with g have "2 dvd ?a \<and> 2 dvd ?b" by (auto simp add: zgcd_greatest_iff)
-	    hence "2 dvd ?a^2 \<and> 2 dvd N*?b^2"
-	      by (simp add: power2_eq_square)
-	    with abP have "2 dvd ?P^3" by (simp only: dvd_add)
-	    hence "?P^3 \<in> zEven" by (auto simp add: dvd_def zEven_def)
-	    moreover have "?P^3 \<in> zOdd"
-	    proof -
-	      from Podd have "?P*?P^2 \<in> zOdd" 
-		by (simp only: odd_times_odd power2_eq_square)
-	      thus ?thesis by (simp only: cube_square)
-	    qed
-	    ultimately show False by (auto simp only: odd_iff_not_even)
-	  qed
-	  ultimately show ?thesis by simp
-	qed 
+        assume "\<not> g dvd q" with g1 have gpq: "g dvd 3*p^2-N*q^2" by simp
+        show ?thesis
+        proof (cases)
+          assume "g dvd p"
+          hence "g dvd 4*p^2" by (auto simp add: dvd_def power2_eq_square)
+          with gpq have " g dvd 4*p^2 - (3*p^2 - N*q^2)" by (simp only: dvd_diff)
+          moreover have "4*p^2 - (3*p^2 - N*q^2) = p^2 + N*q^2" by arith
+          ultimately show ?thesis by simp
+        next
+          assume "\<not> g dvd p" with g2 have "g dvd p^2 - 3*N*q^2" by auto
+          with gpq have "g dvd 3*p^2-N*q^2 - (p^2 - 3*N*q^2)" 
+            by (simp only: dvd_diff)
+          moreover have "3*p^2-N*q^2 - (p^2 - 3*N*q^2) = 2*?P" by auto
+          ultimately have "g dvd 2*?P" by simp
+          with g have "g dvd 2 \<or> g dvd ?P" by (simp only: zprime_zdvd_zmult)
+          moreover have "\<not> g dvd 2" 
+          proof (rule ccontr, simp)
+            assume gdvd2: "g dvd 2" 
+            have "g \<le> 2" 
+            proof (rule ccontr)
+              assume "\<not> g \<le> 2" hence "g > 2" by simp
+              moreover have "(0::int) < 2" by auto
+              ultimately have "\<not> g dvd 2" by (auto simp only: zdvd_not_zless)
+              with gdvd2 show False by simp
+            qed
+            moreover from g have "g \<ge> 2" by (simp add: zprime_def)
+            ultimately have "g = 2" by auto
+            with g have "2 dvd ?a \<and> 2 dvd ?b" by (auto simp add: zgcd_greatest_iff)
+            hence "2 dvd ?a^2 \<and> 2 dvd N*?b^2"
+              by (simp add: power2_eq_square)
+            with abP have "2 dvd ?P^3" by (simp only: dvd_add)
+            hence "?P^3 \<in> zEven" by (auto simp add: dvd_def zEven_def)
+            moreover have "?P^3 \<in> zOdd"
+            proof -
+              from Podd have "?P*?P^2 \<in> zOdd" 
+                by (simp only: odd_times_odd power2_eq_square)
+              thus ?thesis by (simp only: cube_square)
+            qed
+            ultimately show False by (auto simp only: odd_iff_not_even)
+          qed
+          ultimately show ?thesis by simp
+        qed 
       qed 
       with P gpos have "g = 1 \<or> g = ?P" by (auto simp only: zprime_def)
       with g have "g = ?P" by (simp add: zprime_def)
       with g have Pab: "?P dvd ?a \<and> ?P dvd ?b" by (auto simp add: zgcd_greatest_iff)
       have ?thesis
       proof -
-	from Pab P have "?P dvd p \<or> ?P dvd p^2- 3*N*q^2" 
-	  by (auto simp add: zprime_zdvd_zmult_general)
-	moreover 
-	{ assume "?P dvd p^2 - 3*N*q^2"
-	  moreover have "?P dvd 3*(p^2 + N*q^2)"
-	    by (auto simp only: dvd_refl dvd_mult)
-	  ultimately have "?P dvd p^2- 3*N*q^2 + 3*(p^2+N*q^2)" 
-	    by (simp only: dvd_add)
-	  hence "?P dvd 4*p^2" by auto
-	  with P have "?P dvd 4 \<or> ?P dvd p^2" 
-	    by (simp only: zprime_zdvd_zmult_general)
-	  moreover have "\<not> ?P dvd 4"
-	  proof (rule ccontr, simp)
-	    assume Pdvd4: "?P dvd 4"
-	    have "?P \<le> 4" 
-	    proof (rule ccontr)
-	      assume "\<not> ?P \<le> 4" hence "?P > 4" by simp
-	      moreover have "(0::int) < 4" by auto
-	      ultimately have "\<not> ?P dvd 4" by (auto simp only: zdvd_not_zless)
-	      with Pdvd4 show False by simp
-	    qed
-	    moreover from P have "?P \<ge> 2" by (auto simp add: zprime_def)
-	    moreover have "?P \<noteq> 2 \<and> ?P \<noteq> 4"
-	    proof (rule ccontr, simp)
-	      assume "?P = 2 \<or> ?P = 4" hence "?P \<in> zEven" 
-		by (auto simp add: zEven_def)
-	      with Podd show False by (simp add: odd_iff_not_even)
-	    qed
-	    ultimately have "?P = 3" by auto
-	    with Pdvd4 have "(3::int) dvd 4" by simp
-	    thus False by arith
-	  qed
-	  ultimately have "?P dvd p*p" by (simp add: power2_eq_square)
-	  with P have ?thesis by (auto dest: zprime_zdvd_zmult_general) }
-	ultimately show ?thesis by auto
+        from Pab P have "?P dvd p \<or> ?P dvd p^2- 3*N*q^2" 
+          by (auto simp add: zprime_zdvd_zmult_general)
+        moreover 
+        { assume "?P dvd p^2 - 3*N*q^2"
+          moreover have "?P dvd 3*(p^2 + N*q^2)"
+            by (auto simp only: dvd_refl dvd_mult)
+          ultimately have "?P dvd p^2- 3*N*q^2 + 3*(p^2+N*q^2)" 
+            by (simp only: dvd_add)
+          hence "?P dvd 4*p^2" by auto
+          with P have "?P dvd 4 \<or> ?P dvd p^2" 
+            by (simp only: zprime_zdvd_zmult_general)
+          moreover have "\<not> ?P dvd 4"
+          proof (rule ccontr, simp)
+            assume Pdvd4: "?P dvd 4"
+            have "?P \<le> 4" 
+            proof (rule ccontr)
+              assume "\<not> ?P \<le> 4" hence "?P > 4" by simp
+              moreover have "(0::int) < 4" by auto
+              ultimately have "\<not> ?P dvd 4" by (auto simp only: zdvd_not_zless)
+              with Pdvd4 show False by simp
+            qed
+            moreover from P have "?P \<ge> 2" by (auto simp add: zprime_def)
+            moreover have "?P \<noteq> 2 \<and> ?P \<noteq> 4"
+            proof (rule ccontr, simp)
+              assume "?P = 2 \<or> ?P = 4" hence "?P \<in> zEven" 
+                by (auto simp add: zEven_def)
+              with Podd show False by (simp add: odd_iff_not_even)
+            qed
+            ultimately have "?P = 3" by auto
+            with Pdvd4 have "(3::int) dvd 4" by simp
+            thus False by arith
+          qed
+          ultimately have "?P dvd p*p" by (simp add: power2_eq_square)
+          with P have ?thesis by (auto dest: zprime_zdvd_zmult_general) }
+        ultimately show ?thesis by auto
       qed }
     ultimately show ?thesis by blast
   qed
@@ -592,7 +592,7 @@ proof -
     with h1 have "?h =0 \<or> ?h >1" by auto
     moreover
     { assume "?h = 0" hence "nat\<bar>N\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0" 
-	by (unfold zgcd_def, auto simp add: gcd_zero)
+        by (unfold zgcd_def, auto simp add: gcd_zero)
       hence "N = 0" by arith
       with N1 have False by auto
       hence ?thesis by simp }
@@ -601,12 +601,12 @@ proof -
       then obtain g where g: "zprime g \<and> g dvd ?h" by blast
       hence gN: "g dvd N" and "g dvd ?a" by (auto simp add: zgcd_greatest_iff)
       hence "g dvd p*p^2 - N*(3*p*q^2)" 
-	by (auto simp only: zdiff_zmult_distrib2 mult_ac)
+        by (auto simp only: zdiff_zmult_distrib2 mult_ac)
       with gN have "g dvd p*p^2 - N*(3*p*q^2) + N*(3*p*q^2)" 
-	by (simp only: dvd_add dvd_mult2)
+        by (simp only: dvd_add dvd_mult2)
       hence "g dvd p*p^2" by simp
       with g have "g dvd p \<or> g dvd p*p"
-	by (simp add: zprime_zdvd_zmult_general power2_eq_square)
+        by (simp add: zprime_zdvd_zmult_general power2_eq_square)
       with g have gp: "g dvd p" by (auto dest: zprime_zdvd_zmult_general)
       hence "g dvd p^2" by (simp add: power2_eq_square)
       with gN have gP: "g dvd ?P" by auto
@@ -855,7 +855,7 @@ proof -
       with abcd have e1: "a-b = 4*e" by arith
       hence e2: "a+3*b = 4*(e+b)" by auto
       have "4*?A = (a+3*b)^2 + 3*(a-b)^2" 
-	by (simp add: eval_nat_numeral field_simps)
+        by (simp add: eval_nat_numeral field_simps)
       also with e1 e2 have "\<dots> = (4*(e+b))^2+3*(4*e)^2" by (simp(no_asm_simp))
       finally have "?A = 4*((e+b)^2 + 3*e^2)" by (simp add: eval_nat_numeral field_simps)
       moreover have "is_qfN ((e+b)^2 + 3*e^2) 3" by (unfold is_qfN_def, auto)
@@ -866,13 +866,13 @@ proof -
       with abcd have e1: "a+b = 4*(e+d+1)" by auto
       hence e2: "a- 3*b = 4*(e+d-b+1)" by auto
       have "4*?A = (a- 3*b)^2 + 3*(a+b)^2"
-	by (simp add: eval_nat_numeral field_simps)
+        by (simp add: eval_nat_numeral field_simps)
       also with e1 e2 have "\<dots> = (4*(e+d-b+1))^2 +3*(4*(e+d+1))^2"
-	by (simp (no_asm_simp))
+        by (simp (no_asm_simp))
       finally have "?A = 4*((e+d-b+1)^2+3*(e+d+1)^2)"
-	by (simp add: eval_nat_numeral field_simps)
+        by (simp add: eval_nat_numeral field_simps)
       moreover have "is_qfN ((e+d-b+1)^2 + 3*(e+d+1)^2) 3" 
-	by (unfold is_qfN_def, auto)
+        by (unfold is_qfN_def, auto)
       ultimately have ?thesis by blast }
     ultimately have ?thesis by auto }
   ultimately show ?thesis by auto
@@ -904,14 +904,14 @@ proof (rule ccontr, simp)
     proof (cases)
       assume odd: "(int n) \<in> zOdd" 
       from Bn ass have "zprime P \<and> int n > 0 \<and> is_qfN (P*int n) 3 \<and> \<not> is_qfN P 3"
-	by simp
+        by simp
       hence "\<exists> R. zprime R \<and> R dvd int n \<and> \<not> is_qfN R 3" 
-	by (rule qfN_primedivisor_not)
+        by (rule qfN_primedivisor_not)
       then obtain R where R: "zprime R \<and> R dvd int n \<and> \<not> is_qfN R 3" by auto
       moreover with odd have "R \<in> zOdd"
       proof -
-	from R obtain U where "int n = R*U" by (auto simp add: dvd_def)
-	with odd show ?thesis by (auto dest: odd_mult_odd_prop)
+        from R obtain U where "int n = R*U" by (auto simp add: dvd_def)
+        with odd show ?thesis by (auto dest: odd_mult_odd_prop)
       qed
       moreover from Bn have "?A (int n)" by simp
       ultimately show False by auto
@@ -925,20 +925,20 @@ proof (rule ccontr, simp)
       hence "2^2 dvd (int n)*P" by (simp add: mult_ac)
       moreover have "\<not> 2 dvd P"
       proof (rule ccontr, simp)
-	assume "2 dvd P" 
-	with ass have "P \<in> zOdd \<and> P \<in> zEven" by (simp add: dvd_def zEven_def)
-	thus False by (simp only: even_odd_conj)
+        assume "2 dvd P" 
+        with ass have "P \<in> zOdd \<and> P \<in> zEven" by (simp add: dvd_def zEven_def)
+        thus False by (simp only: even_odd_conj)
       qed
       moreover have "zprime 2" by (rule zprime_2)
       ultimately have "2^2 dvd int n" 
-	by (rule_tac p="2" in zprime_power_zdvd_cancel_right)
+        by (rule_tac p="2" in zprime_power_zdvd_cancel_right)
       then obtain im::int where "int n = 4*im" by (auto simp add: dvd_def)
       moreover obtain m::nat where "m = nat im" by auto
       ultimately have m: "n = 4*m" by arith
       with B have "is_qfN (P*int m) 3" by (auto simp add: int_mult)
       moreover from m Bn have "m > 0" by auto
       moreover from m Bn have "?A (int m)" 
-	by (auto simp add: int_mult)
+        by (auto simp add: int_mult)
       ultimately have Bm: "?B m" by simp
       from Bn m have "m < n" by arith
       with IH Bm show False by auto
@@ -1176,7 +1176,7 @@ proof -
       assume "\<not> b = 3*p^2*q - 3*q^3"
       with b have "b = - 3*p^2*q + 3*q^3" by simp
       with r s have "b = 3*r^2*s - 3*s^3" 
-	by (simp add: power2_minus power3_minus)
+        by (simp add: power2_minus power3_minus)
       moreover from ar s have "a = r^3 - 9*r*s^2" by (simp add: power2_minus)
       ultimately show ?thesis by (unfold is_cube_form_def, auto)
     qed
@@ -1354,17 +1354,17 @@ proof -
       with ass have w3pos: "w^3 \<ge> 0" by simp
       have "w\<ge>0"
       proof (rule ccontr)
-	assume "\<not> w\<ge>0" hence "-w > 0" by auto
-	hence "(-1 * w)^3 > 0" by (auto simp only: zero_less_power)
-	hence "(-1)^3* (w^3) > 0" by (simp only: power_mult_distrib)
-	hence "w^3 < 0" by (simp add: neg_one_odd_power)
-	with w3pos show False by auto
+        assume "\<not> w\<ge>0" hence "-w > 0" by auto
+        hence "(-1 * w)^3 > 0" by (auto simp only: zero_less_power)
+        hence "(-1)^3* (w^3) > 0" by (simp only: power_mult_distrib)
+        hence "w^3 < 0" by (simp add: neg_one_odd_power)
+        with w3pos show False by auto
       qed
       moreover have "w \<noteq> 0" 
       proof (rule ccontr)
-	assume "\<not>w\<noteq>0" with ass have "0 \<in> zOdd" by simp
-	moreover have "0 \<in> zEven" by (simp add: zEven_def)
-	ultimately show False by (auto simp add: odd_iff_not_even)
+        assume "\<not>w\<noteq>0" with ass have "0 \<in> zOdd" by simp
+        moreover have "0 \<in> zEven" by (simp add: zEven_def)
+        ultimately show False by (auto simp add: odd_iff_not_even)
       qed
       ultimately show ?thesis by (auto)
     qed
@@ -1415,7 +1415,7 @@ proof -
     moreover
     { assume k1: "\<bar>k\<bar> > 1" 
       with p2 have "\<bar>k\<bar>*2 < \<bar>k\<bar>*p" 
-	by (simp only: zmult_zless_mono2)
+        by (simp only: zmult_zless_mono2)
       with k1 have "\<bar>k\<bar>*p > 2" by auto }
    ultimately have "\<bar>k\<bar>*p > 2" by auto
    moreover from p2 have "\<bar>p\<bar> = p" by auto
@@ -1470,7 +1470,7 @@ proof -
     proof -
       have "3 \<in> zOdd \<and> ?p \<in> zOdd" by (unfold zOdd_def, auto)
       with p pn3 have "?L3 * (Legendre ?p 3) = (-1::int)^(3*nat m)"
-	by (simp add: zprime_3 Quadratic_Reciprocity nat_mult_distrib)
+        by (simp add: zprime_3 Quadratic_Reciprocity nat_mult_distrib)
       with neg1cube show ?thesis by (simp add: power_mult)
     qed
     moreover have "Legendre ?p 3 = 1"
@@ -1479,12 +1479,12 @@ proof -
       hence "QuadRes 3 ?p" by (unfold QuadRes_def, blast)
       moreover have "\<not> [?p = 0] (mod 3)"
       proof (rule ccontr, simp)
-	assume "[?p = 0] (mod 3)"
-	hence "3 dvd ?p" by (simp add: zcong_def)
-	moreover have "3 dvd 6*m" by (auto simp add: dvd_def)
-	ultimately have "3 dvd ?p- 6*m" by (simp only: dvd_diff)
-	hence "(3::int) dvd 1" by simp
-	thus False by auto
+        assume "[?p = 0] (mod 3)"
+        hence "3 dvd ?p" by (simp add: zcong_def)
+        moreover have "3 dvd 6*m" by (auto simp add: dvd_def)
+        ultimately have "3 dvd ?p- 6*m" by (simp only: dvd_diff)
+        hence "(3::int) dvd 1" by simp
+        thus False by auto
       qed
       ultimately show ?thesis by (unfold Legendre_def, auto)
     qed
