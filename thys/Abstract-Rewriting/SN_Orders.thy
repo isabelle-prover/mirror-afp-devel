@@ -62,6 +62,8 @@ class max_ordered_monoid_add = ordered_ab_semigroup + ab_semigroup_add + monoid_
   and max0_mono: "ge x y \<Longrightarrow> ge (max0 x) (max0 y)"
   and max0_x: "ge (max0 x) x"
 
+class max_ordered_semiring_1 = max_ordered_monoid_add + ordered_semiring_1
+
 
 text {*
    We do not use a class to define order-pairs of a strict and a weak-order 
