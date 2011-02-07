@@ -40,14 +40,9 @@ text {*
 
 subsection {* The standard semiring over the naturals *}
 
-instantiation nat :: ordered_semiring_1
+instantiation nat :: max_ordered_semiring_1
 begin
 fun ge_nat :: "nat \<Rightarrow> nat \<Rightarrow> bool" where "ge_nat x y = (y \<le> x)"
-instance by (intro_classes, auto)
-end
-
-instantiation nat :: max_ordered_monoid_add
-begin
 fun max0_nat :: "nat \<Rightarrow> nat" where "max0_nat x = x"
 instance by (intro_classes, auto)
 end
@@ -101,16 +96,11 @@ subsection {* The standard semiring over the integers *}
 definition int_mono :: "int \<Rightarrow> bool" where "int_mono x \<equiv> x \<ge> 1"
 
 
-instantiation int :: ordered_semiring_1
+instantiation int :: max_ordered_semiring_1
 begin
 fun ge_int :: "int \<Rightarrow> int \<Rightarrow> bool" where "ge_int x y = (y \<le> x)"
-instance by (intro_classes, auto simp: mult_right_mono mult_left_mono)
-end
-
-instantiation int :: max_ordered_monoid_add
-begin
 fun max0_int :: "int \<Rightarrow> int" where "max0_int x = max 0 x"
-instance by (intro_classes, auto)
+instance by (intro_classes, auto simp: mult_right_mono mult_left_mono)
 end
 
 instantiation int :: poly_carrier
@@ -240,16 +230,11 @@ definition rat_mono :: "rat \<Rightarrow> bool" where "rat_mono x \<equiv> x \<g
 
 
 
-instantiation rat :: ordered_semiring_1
+instantiation rat :: max_ordered_semiring_1
 begin
 fun ge_rat :: "rat \<Rightarrow> rat \<Rightarrow> bool" where "ge_rat x y = (y \<le> x)"
-instance by (intro_classes, auto simp: mult_right_mono mult_left_mono)
-end
-
-instantiation rat :: max_ordered_monoid_add
-begin
 fun max0_rat :: "rat \<Rightarrow> rat" where "max0_rat x = max 0 x"
-instance by (intro_classes, auto)
+instance by (intro_classes, auto simp: mult_right_mono mult_left_mono)
 end
 
 instantiation rat :: poly_carrier
@@ -381,7 +366,7 @@ text {* plus is interpreted as max, times is interpreted as plus, 0 is -infinity
 datatype arctic = MinInfty | Num_arc int
 
 
-instantiation arctic :: ordered_semiring_1
+instantiation arctic :: max_ordered_semiring_1
 begin
 fun plus_arctic :: "arctic \<Rightarrow> arctic \<Rightarrow> arctic"
 where "plus_arctic MinInfty y = y"
@@ -399,6 +384,7 @@ definition zero_arctic :: arctic
 where "zero_arctic = MinInfty"
 definition one_arctic :: arctic
 where "one_arctic = Num_arc 0"
+definition max0_arctic :: "arctic \<Rightarrow> arctic" where [simp]: "max0_arctic \<equiv> id"
 instance
 proof
   fix x y :: arctic
@@ -470,7 +456,16 @@ next
 next
   show "(1 :: arctic) \<ge> 0"
     by (simp add: zero_arctic_def one_arctic_def)
-qed
+next
+  fix x :: arctic
+  show "x \<ge> 0" by (cases x, auto simp: zero_arctic_def)
+next
+  fix x :: arctic
+  show "max0 x \<ge> x" by (cases x, auto)
+next
+  fix x :: arctic
+  show "x + 0 = x" by (cases x, auto simp: zero_arctic_def)
+qed auto
 end
 
 
@@ -566,7 +561,7 @@ text {* completely analogous to the integers, where one has to use delta-orderin
 datatype arctic_rat = MinInfty_rat | Num_arc_rat rat
 
 
-instantiation arctic_rat :: ordered_semiring_1
+instantiation arctic_rat :: max_ordered_semiring_1
 begin
 fun plus_arctic_rat :: "arctic_rat \<Rightarrow> arctic_rat \<Rightarrow> arctic_rat"
 where "plus_arctic_rat MinInfty_rat y = y"
@@ -584,6 +579,7 @@ definition zero_arctic_rat :: arctic_rat
 where "zero_arctic_rat = MinInfty_rat"
 definition one_arctic_rat :: arctic_rat
 where "one_arctic_rat = Num_arc_rat 0"
+definition max0_arctic_rat :: "arctic_rat \<Rightarrow> arctic_rat" where [simp]: "max0_arctic_rat \<equiv> id"
 instance
 proof
   fix x y :: arctic_rat
@@ -655,7 +651,16 @@ next
 next
   show "(1 :: arctic_rat) \<ge> 0"
     by (simp add: zero_arctic_rat_def one_arctic_rat_def)
-qed
+next
+  fix x :: arctic_rat
+  show "x \<ge> 0" by (cases x, auto simp: zero_arctic_rat_def)
+next
+  fix x :: arctic_rat
+  show "max0 x \<ge> x" by (cases x, auto)
+next
+  fix x :: arctic_rat
+  show "x + 0 = x" by (cases x, auto simp: zero_arctic_rat_def)
+qed auto
 end
 
 
