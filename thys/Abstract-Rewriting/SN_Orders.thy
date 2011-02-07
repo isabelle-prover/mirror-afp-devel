@@ -119,7 +119,8 @@ locale weak_SN_both_mono_ordered_semiring_1 =
    and  arc_pos :: "'a \<Rightarrow> bool"
   assumes weak_gt_both_mono: "\<forall> x y. (x,y) \<in> set xys \<longrightarrow> weak_gt x y \<Longrightarrow> \<exists> gt. SN_both_mono_ordered_semiring_1 default gt arc_pos \<and> (\<forall> x y. (x,y) \<in> set xys \<longrightarrow> gt x y)"
 
-class poly_carrier = ordered_semiring_1 + comm_semiring_1
+class poly_carrier = max_ordered_semiring_1 + comm_semiring_1 (* max_ordered can be replaced by ordered,
+  max is only added for Scala export *)
 
 locale poly_order_carrier = SN_one_mono_ordered_semiring_1 default gt 
   for default :: "'a :: poly_carrier" and gt +
