@@ -3504,7 +3504,7 @@ fun solve_modifies_tac ctxt state_kind state_space i =
                      (REPEAT_ALL_NEW (resolve_tac [conjI,impI,refl]) k))) i
   in
     (trace_tac ctxt "solve_modifies_tac" THEN
-     clarsimp_tac (global_claset_of HOL.thy,
+     clarsimp_tac (global_claset_of @{theory HOL},
                         (Simplifier.context ctxt (global_simpset_of @{theory Set}))
                          addsimps ([mex_def,meq_def]@K_convs)
                          addsimprocs (state_upd_simproc Record::(state_simprocs Record))
