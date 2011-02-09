@@ -8,5 +8,5 @@ fi
 
 TMP=/tmp/releases
 
-ssh $LN,afp@shell.sourceforge.net "ls /home/groups/a/af/afp/htdocs/release" > $TMP
+ssh $LN,afp@shell.sourceforge.net "ls /home/project-web/afp/htdocs/release" > $TMP
 cat $TMP | grep -v "current\\.tar\\.gz\\|devel\\.tar\\.gz\\|entry-status\\.txt\\|afp-....-..-..\\.tar\\.gz" 
