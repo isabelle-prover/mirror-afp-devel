@@ -9,7 +9,7 @@
 
 ## settings
 
-VERSION=afp-2009-2
+VERSION=afp-2011
 
 DEST=afp@web.sourceforge.net:htdocs/
 SRC=afp.hg.sourceforge.net/hgroot/afp/$VERSION
