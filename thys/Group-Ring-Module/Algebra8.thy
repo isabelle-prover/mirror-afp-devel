@@ -18,7 +18,7 @@
 theory Algebra8 imports Algebra7 begin
 
 
-section "4. nsum and Generators (continued)" 
+section "nsum and Generators (continued)" 
 
 lemma (in Module) unique_expression_last:" \<lbrakk>free_generator R M H; 
         f \<in> {j. j \<le> Suc n} \<rightarrow> H; s \<in> {j. j \<le> Suc n} \<rightarrow> carrier R;
@@ -371,7 +371,7 @@ apply (cut_tac sc_Ring, frule Ring.whole_ideal)
  apply assumption
 done
 
-section "5. existence of homomorphism"
+section "Existence of homomorphism"
 
 definition
   fgs :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 'a set]  \<Rightarrow>
@@ -1909,7 +1909,7 @@ apply (rule contrapos_pp, simp+)
         simp add:fsps_def fsp_def)
 done
 
-section "6. Nakayama lemma" 
+section "Nakayama lemma" 
 
 definition
   Lcg :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, nat] \<Rightarrow> bool" where
@@ -2254,7 +2254,7 @@ apply (frule qmodule_module [of N])
          simp add:surjec_def surj_to_def qmodule_carr)
 done
 
-section "7. direct sum and direct products of modules"
+section "Direct sum and direct products of modules"
 
 definition
   prodM_sprod :: "[('r, 'm) Ring_scheme, 'i set, 

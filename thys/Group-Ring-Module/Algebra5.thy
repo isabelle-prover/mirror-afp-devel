@@ -21,7 +21,7 @@
 
 theory Algebra5 imports Algebra4 begin
 
-section "6. Operation of ideals"
+section "Operation of ideals"
 
 lemma (in Ring) ideal_sumTr1:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrightarrow> 
           A \<minusplus> B = \<Inter> {J. ideal R J \<and> (A \<union> B) \<subseteq> J}"
@@ -362,7 +362,7 @@ lemma (in Ring) coprime_n_idealsTr4:"\<lbrakk>(\<forall>k \<le> (Suc n). ideal R
 apply (simp add:coprime_n_idealsTr3)
 done
 
-section "7. direct product1, general case"
+section "Direct product1, general case"
 
 definition
   prod_tOp :: "['i set,  'i \<Rightarrow> ('a, 'm) Ring_scheme] \<Rightarrow> 
@@ -421,7 +421,7 @@ definition
               \<Rightarrow> (nat \<Rightarrow> 'a) Ring" (infixl "\<Oplus>\<^sub>r" 80) where
   "A1 \<Oplus>\<^sub>r A2 = prodrg {0, Suc 0} (prodB1 A1 A2)"
 
-text {* Don't try (Prod_ring (Nset n) B) \<Oplus>\<^sub>r (B (Suc n)) *}
+text {* Don't try @{text "(Prod_ring (Nset n) B) \<Oplus>\<^sub>r (B (Suc n))"} *}
 
 lemma carr_prodrg_mem_eq:"\<lbrakk>f \<in> carrier (r\<Pi>\<^bsub>I\<^esub> A); g \<in> carrier (r\<Pi>\<^bsub>I\<^esub> A);
        \<forall>i\<in>I. f i = g i \<rbrakk> \<Longrightarrow> f = g" 
@@ -901,7 +901,7 @@ apply blast
 done
 
 text{* A direct product of a finite number of rings defined with
- ac_fProd_Rg is equal to that defined by using carr_prodag. *}
+ @{text "ac_fProd_Rg"} is equal to that defined by using @{text "carr_prodag"}. *}
 
 definition
  fprodrg :: "[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> 
@@ -932,7 +932,7 @@ apply (simp add:prodrg_ring)
 done
 
 
-section "8. Chinese remainder theorem"
+section "Chinese remainder theorem"
 
 lemma Chinese_remTr1:"\<lbrakk>Ring A; \<forall>k \<le> (n::nat). ideal A (J k); 
  \<forall>k \<le> n. B k = qring A (J k); \<forall>k \<le> n. S k = pj A (J k) \<rbrakk> \<Longrightarrow>
@@ -1047,7 +1047,9 @@ lemma (in Ring) coprime_2_n:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrighta
 apply (simp add:Prod2Rg_def Nset_1)
 done
 
-text{* In this and following lemmata, ideals A and B are of type ('a, 'more) RingType_scheme. Don't try (r\<Pi>\<^sub>(Nset n) B) \<Oplus>\<^sub>r B (Suc n) *}
+text{* In this and following lemmata, ideals A and B are of type 
+       @{text "('a, 'more) RingType_scheme"}. Don't try 
+       @{text "(r\<Pi>\<^sub>(Nset n) B) \<Oplus>\<^sub>r B (Suc n)"} *}
 
 lemma (in Ring) A_to_prodag2_hom:"\<lbrakk>ideal R A; ideal R B; S 0 = pj R A; 
       S (Suc 0) = pj R B\<rbrakk>  \<Longrightarrow> 
@@ -1652,7 +1654,7 @@ apply (rule ballI)
  apply (simp add:ideal_ring_multiple [of "A"])
 done
 
-section "9. Addition of finite elements of a ring and ideal_multiplication"
+section {* Addition of finite elements of a ring and @{text "ideal_multiplication"} *}
 text{* We consider sum in an abelian group *}
 
 lemma (in aGroup) nsum_mem1Tr:" A +> J  \<Longrightarrow>  
@@ -2827,7 +2829,7 @@ apply simp
 apply (rule principal_ideal_n_pow1[of "a" "n"], assumption+)
 done
 
-text{* more about ideal_n_prod *}
+text{* more about @{text "ideal_n_prod"} *}
 
 lemma (in Ring) nprod_eqTr:" f \<in> {j. j \<le> (n::nat)} \<rightarrow> carrier R \<and>
        g \<in> {j. j \<le> n} \<rightarrow> carrier R \<and> (\<forall>j \<le> n. f j = g j) \<longrightarrow>
@@ -3026,7 +3028,7 @@ apply (frule principal_pow_prime_condTr[of "a" "n - Suc 0"], assumption+)
 apply simp apply simp
 done
 
-section "10. extension and contraction"
+section "Extension and contraction"
 
 
 locale TwoRings = Ring +
@@ -3208,7 +3210,7 @@ apply (rule i_extension_mono [of "f" "I"
 apply (rule i_contract_ideal, assumption+)
 done
 
-section "11. complete system of representatives"
+section "Complete system of representatives"
 
 definition
   csrp_fn :: "[_, 'a set] \<Rightarrow> 'a set \<Rightarrow> 'a" where
@@ -3308,7 +3310,7 @@ apply(cut_tac Ring,
       simp add:csrp_eq_coset)
 done
 
-section "12. polynomial ring" 
+section "Polynomial ring" 
 
 text{* In this section, we treat a ring of polynomials over a ring S.
        Numbers are of type ant *}
@@ -3344,9 +3346,9 @@ locale PolynRg = Ring +
            \<exists>f. pol_coeff S f \<and> x = polyn_expr R X (fst f) f"
 
 (** a polynomial is an element of a polynomial ring **)
-section "13. addition and multiplication of polyn_exprs"
+section {* Addition and multiplication of @{text "polyn_exprs"} *}
 
-subsection "simple properties of a polyn_ring"
+subsection {* Simple properties of a @{text "polyn_ring"} *}
 
 lemma Subring_subset:"Subring R S \<Longrightarrow> carrier S \<subseteq> carrier R"
 by (simp add:Subring_def)
@@ -3451,7 +3453,7 @@ apply (drule_tac x = "Suc 0" in spec)
         simp add:Ring.ring_one)
 done
 
-subsection "coefficients of a polynomial" 
+subsection "Coefficients of a polynomial" 
 
 lemma (in PolynRg) pol_coeff_split:"pol_coeff S f = pol_coeff S (fst f, snd f)"
 by simp
@@ -3490,7 +3492,7 @@ lemma (in PolynRg) Slide_pol_coeff:"\<lbrakk>pol_coeff S c; n < (fst c)\<rbrakk>
 apply (simp add: pol_coeff_def)
 done
 
-subsection "addition of polyn_exprs"
+subsection {* Addition of @{text "polyn_exprs"} *}
 
 lemma (in PolynRg) monomial_mem:"pol_coeff S c \<Longrightarrow> 
                         \<forall>j \<le> (fst c). (snd c) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup> \<in> carrier R"
@@ -3987,9 +3989,9 @@ apply (rule allI, rule impI,
 apply (cases c)
 using algfree [simplified algfree_cond_def] by (auto simp add: polyn_expr_def)
 
-subsection "multiplication of pol_exprs"
+subsection {* Multiplication of @{text "pol_exprs"} *}
 
-subsection "multiplication"
+subsection "Multiplication"
 
 definition
   ext_cf :: "[('a, 'm) Ring_scheme, nat, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> 
@@ -4468,7 +4470,7 @@ lemma (in PolynRg) polyn_expr_tOp_c:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbra
                   (polyn_expr R X (fst c) c) \<cdot>\<^sub>r (polyn_expr R X (fst d) d)"  
 by (cases c, cases d) (simp add: polyn_expr_tOpTr)
 
-section "14. the degree of a polynomial"
+section "The degree of a polynomial"
 
 lemma (in PolynRg) polyn_degreeTr:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow>
        (polyn_expr R X k c = \<zero> ) = ({j. j \<le> k \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>} = {})"

@@ -947,7 +947,7 @@ apply (frule_tac d = x and m = xa and X = X in
  apply (simp add:Torder.not_le_less)
 done
 
-section "2. Pre"    (* pre elements *)
+section "Pre elements"  
 
 definition
   ExPre :: "_ \<Rightarrow> 'a \<Rightarrow> bool" where
@@ -1147,7 +1147,7 @@ apply (frule_tac E = E and a = a and f = f in ord_isom_Pre1, assumption+,
         assumption+, simp) 
 done
 
-section "3. transfinite induction"
+section "Transfinite induction"
 
 lemma (in Worder) transfinite_induction:"\<lbrakk>minimum_elem D (carrier D) s0; P s0; \<forall>t\<in>carrier D. ((\<forall>u\<in> segment D t. P u) \<longrightarrow> P t)\<rbrakk> \<Longrightarrow> \<forall>x\<in>carrier D. P x" 
 apply (rule contrapos_pp, simp+)
@@ -1170,7 +1170,7 @@ apply (rule contrapos_pp, simp+)
   apply (erule bexE, simp add:segment_def)
 done
 
-section "4. ordered_set2. Lemmas to prove Zorn's lemma "
+section {* @{text "Ordered_set2"}. Lemmas to prove Zorn's lemma. *}
  
 definition
   adjunct_ord ::"[_ , 'a] \<Rightarrow> _" where
@@ -1534,7 +1534,7 @@ apply (frule Torder_adjunct_ord[of a])
   apply unfold_locales
 done
  
-section "5. Zorn's lemma"
+section "Zorn's lemma"
 
 definition
   Chain :: "_ \<Rightarrow> 'a set \<Rightarrow> bool" where
@@ -3855,10 +3855,10 @@ apply (frule_tac  C = "{}" in g_Zorn_lemma1, assumption+,
        blast)
 done
 
-chapter "3. Group Theory. Focused on Jordan Hoelder theorem"
+chapter "Group Theory. Focused on Jordan Hoelder theorem"
     
 
-section "1. Definition of a Group"
+section "Definition of a Group"
 
 record 'a Group = "'a carrier" + 
   top      :: "['a, 'a ] \<Rightarrow> 'a" (infixl "\<cdot>\<index>" 70)
@@ -4124,7 +4124,7 @@ by (rule mult_closed,
        simp add:i_closed, assumption)
 
 
-section "2. Subgroups"
+section "Subgroups"
 
 definition
   sg ::"[_ , 'a set ] \<Rightarrow> bool"  ("_ \<guillemotright> _ " [60, 61]60) where
@@ -4545,7 +4545,7 @@ lemma (in Group) Gp_inherited:"\<lbrakk>G \<guillemotright> K; G \<guillemotrigh
                                 Gp (Gp G L) K = Gp G K" 
 by (simp add:Gp_def)
 
-section "3. Cosets"
+section "Cosets"
 
 (* left cosets *)
 lemma (in Group) mem_lcs:"\<lbrakk>G \<guillemotright> H; a \<in> carrier G; x \<in> a \<diamondsuit> H\<rbrakk>  \<Longrightarrow> 
@@ -4936,7 +4936,7 @@ lemma (in Group) subg_lcs:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K
                                    x \<diamondsuit>\<^bsub>(Gp G K)\<^esub> H = x \<diamondsuit> H"
 by (simp add:lcs_def, simp add:Gp_def)
 
-section "4. Normal subgroups and Quotient groups"
+section "Normal subgroups and Quotient groups"
 
 lemma (in Group) nsg1:"\<lbrakk>G \<guillemotright> H; b \<in> carrier G; h \<in> H;
        \<forall>a\<in> carrier G. \<forall>h\<in>H. (a \<cdot> h)\<cdot> (\<rho> a) \<in> H\<rbrakk> \<Longrightarrow> b \<cdot> h \<cdot> (\<rho> b) \<in> H"

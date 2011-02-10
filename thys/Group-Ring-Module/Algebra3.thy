@@ -27,7 +27,7 @@
 theory Algebra3 imports Algebra2 begin
 
 
-section "5. Setproducts"
+section "Setproducts"
        
 definition
   commutators:: "_ \<Rightarrow> 'a set" where
@@ -293,7 +293,7 @@ apply (frule_tac x = xa and y = y in sg_mult_closed[of "H"], assumption+,
        simp)
 done
 
-section "6. preliminary lemmas for Zassenhaus"
+section "Preliminary lemmas for Zassenhaus"
 
 lemma (in Group) Gp_sg_subset:"\<lbrakk>G \<guillemotright> H; Gp G H \<guillemotright> K\<rbrakk> \<Longrightarrow> K \<subseteq> H"
 by (frule Group_Gp[of "H"],
@@ -810,7 +810,7 @@ apply (frule subg_sg_sg[of "H" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"], as
        simp add:Gp_inherited[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K" "H"])
 done
 
-section "7. homomorphism"
+section "Homomorphism"
 
 lemma gHom: "\<lbrakk>Group F; Group G; f \<in> gHom F G ; x \<in> carrier F; 
            y \<in> carrier F\<rbrakk>  \<Longrightarrow> f (x \<cdot>\<^bsub>F\<^esub> y) = (f x) \<cdot>\<^bsub>G\<^esub> (f y)"
@@ -958,7 +958,7 @@ apply (rule ballI)
 done
 
 
-section "8. gkernel"
+section "Gkernel"
 
 lemma gkernTr1:"\<lbrakk>Group F; Group G; f \<in> gHom F G; x \<in> gker\<^bsub>F,G\<^esub> f\<rbrakk> \<Longrightarrow>                    x \<in> carrier F"
 apply (simp add: gkernel_def)
@@ -1109,7 +1109,7 @@ apply (rule ballI,
        simp add:idmap_def compose_def) 
 done
 
-section "9. Image"
+section "Image"
 
 lemma inv_gHom:"\<lbrakk>Group F; Group G; gbij\<^bsub>F,G\<^esub> f\<rbrakk> \<Longrightarrow> (Ifn F G f) \<in> gHom G F"
 apply (simp add:gHom_def) 
@@ -1289,7 +1289,7 @@ apply (cut_tac Pj_im_subg [of "G" "H" "K"])
 apply simp apply (rule Group_axioms | assumption)+
 done
 
-section "10 incuded homomorphisms"
+section "Induced homomorphisms"
 
 lemma inducedhomTr:"\<lbrakk>Group F; Group G; f \<in> gHom F G; 
   S \<in> set_rcs F (gker\<^bsub>F,G\<^esub> f); s1 \<in> S; s2 \<in> S \<rbrakk> \<Longrightarrow> f s1 = f s2"
@@ -1453,7 +1453,7 @@ apply (frule gker_hom_to_img [of "F" "G" "f"], assumption+)
 apply (simp add:induced_ghom_def)
 done
 
-subsection "11 Homomorphism therems"
+subsection "Homomorphism therems"
 
 definition
   iota :: "('a, 'm) Group_scheme \<Rightarrow> ('a \<Rightarrow> 'a)"  
@@ -1794,7 +1794,7 @@ apply (frule induced_ghom_ginjec [of "G/H" "G/N" "Qmp G H N"], assumption+)
 apply (simp add:gkerQmp [of "H" "N"])
 done
 
-section "12. Isomorphims"
+section "Isomorphims"
 
 theorem (in Group) isom2:"\<lbrakk>G \<triangleright> H; G \<triangleright> N; H \<subseteq> N\<rbrakk> \<Longrightarrow>
                ((G/H)/(carrier ((Gp G N)/H))) \<cong>  (G/N)"
@@ -1853,7 +1853,7 @@ apply (rule subsetI, simp, erule conjE, simp)
  apply (frule_tac a = x in a_in_rcs[of "N"], assumption+, simp)
 done     
 
-subsection " An automorphism groups"
+subsection "An automorphism groups"
 
 definition
   automg :: "_  \<Rightarrow> 
@@ -1881,7 +1881,7 @@ apply (unfold Group_def [of "automg G"])
 apply(auto simp: automg_def Pi_def gbij_comp_bij automgroupTr1 IdTr2 Id_l_unit l_inv_gHom inv_gbijec_gbijec)
 done
 
-subsection "complete system of representatives"
+subsection "Complete system of representatives"
 
 definition
   gcsrp :: "_ \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" where
@@ -2086,9 +2086,9 @@ apply (simp add:isomorphic_def)
 apply (frule gcsrp_map_gbijec[of "N"], blast)
 done
  
-section "14. Zassenhaus"
+section "Zassenhaus"
 
-text{* we show H \<rightarrow> H N/N is gsurjective *}
+text{* we show @{text "H \<rightarrow> H N/N"} is gsurjective *}
 
 lemma (in Group) homom4Tr1:"\<lbrakk>G \<triangleright> N; G \<guillemotright> H\<rbrakk> \<Longrightarrow>  Group ((Gp G (H \<struct>\<^bsub>G\<^esub> N)) / N)" 
 apply (frule Gp_smult_sg_nsg[of "H" "N"], assumption+)
@@ -2270,7 +2270,7 @@ apply (rule ZassenhausTr5_1[of "G" "H" "H1" "K" "K1"], assumption+)
 done
 
 
-section "15. chain of groups I"  
+section "Chain of groups I"  
 
 definition
   d_gchain :: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool" where
@@ -2630,7 +2630,7 @@ apply (rule contrapos_pp, simp+)
 apply (erule conjE, simp) 
 done
 
-section "16. Existence of reduced chain" 
+section "Existence of reduced chain" 
 
 lemma (in Group) D_gchain_is_d_gchain:"D_gchain G n f \<Longrightarrow> d_gchain G n f"
 apply (simp add:D_gchain_def)
@@ -3327,7 +3327,7 @@ apply (cut_tac ex_W_cmpserTr0m [of "m"])
 apply simp
 done
 
-section "17. Existence of reduced chain and composition series"
+section "Existence of reduced chain and composition series"
 
 lemma (in Group) ex_W_cmpserTr3m1:"\<lbrakk>tw_cmpser G (m::nat) f; 
        W_cmpser G ((card (f ` {i. i \<le> m})) - 1) g; 
@@ -3396,7 +3396,7 @@ apply (simp add:red_ch_cd_def)
 apply (simp add:red_chain_def)
 done
 
-section "18. Chain of groups II"
+section "Chain of groups II"
 
 definition
   Gchain :: "[nat, nat \<Rightarrow> (('a set), 'more) Group_scheme] \<Rightarrow> bool" where
@@ -4097,9 +4097,9 @@ apply (auto del:equalityI)
 apply (simp add:isom_gch_units)
 done
 
-section "19. Jordan Hoelder theorem"
+section "Jordan Hoelder theorem"
 
-subsection "rfn_tools. tools to treat refinement of a cmpser, rtos"
+subsection {* @{text "Rfn_tools"}. Tools to treat refinement of a cmpser, rtos. *}
 
 lemma rfn_tool1:"\<lbrakk> 0 < (r::nat); (k::nat) = i * r + j; j < r \<rbrakk> 
                                                   \<Longrightarrow> (k div r) = i"  
