@@ -478,7 +478,7 @@ def read_versions(filename):
 					error("Not processing releases")
 					return []
 				else:
-					versions.append((version, release_date))
+					versions.append((version, release_date.strip()))
 	except Exception as ex:
 		error("In file {0}: error".format(filename), exception = ex)
 		error("Not processing releases")
