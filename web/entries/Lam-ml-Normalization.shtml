@@ -86,7 +86,10 @@ Handling variable binding is one of the main difficulties in formal proofs. In t
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2009-2: <a href="../release/afp-<!--#echo var="name" -->-2010-09-01.tar.gz">afp-<!--#echo var="name" -->-2010-09-01.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
