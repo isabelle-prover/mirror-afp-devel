@@ -52,7 +52,7 @@ FinFuns are total functions that are constant except for a finite set of points,
 
 [2010-08-13]:
 new concept domain of a FinFun as a FinFun
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/34b3517cbc09">34b3517cbc09</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/34b3517cbc09">34b3517cbc09</a>)<br>
 [2010-11-04]:
 new conversion function from FinFun to list of elements in the domain
 (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0c167102e6ed">0c167102e6ed</a>)

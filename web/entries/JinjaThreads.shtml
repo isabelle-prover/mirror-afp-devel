@@ -49,28 +49,28 @@ We extend the Jinja source code semantics by Klein and Nipkow with Java-style ar
 
 [2008-04-23]:
 added bytecode formalisation with arrays and threads, added thread joins
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f74a8be156a7">f74a8be156a7</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f74a8be156a7">f74a8be156a7</a>)<br>
 [2009-04-27]:
 added verified compiler from source code to bytecode;
 encapsulate native methods in separate semantics
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e4f26541e58a">e4f26541e58a</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e4f26541e58a">e4f26541e58a</a>)<br>
 [2009-11-30]:
 extended compiler correctness proof to infinite and deadlocking computations
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e50282397435">e50282397435</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e50282397435">e50282397435</a>)<br>
 [2010-06-08]:
 added thread interruption;
 new abstract memory model with sequential consistency as implementation
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0cb9e8dbd78d">0cb9e8dbd78d</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0cb9e8dbd78d">0cb9e8dbd78d</a>)<br>
 [2010-06-28]:
 new thread interruption model
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/c0440d0a1177">c0440d0a1177</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/c0440d0a1177">c0440d0a1177</a>)<br>
 [2010-10-15]:
 preliminary version of the Java memory model for source code
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/02fee0ef3ca2">02fee0ef3ca2</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/02fee0ef3ca2">02fee0ef3ca2</a>)<br>
 [2010-12-16]:
 improved version of the Java memory model, also for bytecode
 executable scheduler for source code semantics
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/1f41c1842f5a">1f41c1842f5a</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/1f41c1842f5a">1f41c1842f5a</a>)<br>
 [2011-02-02]:
 simplified code generator setup
 new random scheduler

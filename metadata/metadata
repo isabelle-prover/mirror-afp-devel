@@ -194,7 +194,7 @@ extra-history =
   Change history:
   [2010-08-13]:
         new concept domain of a FinFun as a FinFun
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/34b3517cbc09">34b3517cbc09</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/34b3517cbc09">34b3517cbc09</a>)<br>
   [2010-11-04]:
         new conversion function from FinFun to list of elements in the domain
         (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0c167102e6ed">0c167102e6ed</a>)
@@ -207,13 +207,14 @@ date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
 extra-history = 
-  [2010-10-08]: New Interfaces: OrderedSet, OrderedMap, List
-    Fifo now implements list-interface: Function names changed: put/get --> enqueue/dequeue
-    New Implementations: ArrayList, ArrayHashMap, ArrayHashSet, TrieMap, TrieSet
+  Change history:
+  [2010-10-08]: New Interfaces: OrderedSet, OrderedMap, List.
+    Fifo now implements list-interface: Function names changed: put/get --> enqueue/dequeue.
+    New Implementations: ArrayList, ArrayHashMap, ArrayHashSet, TrieMap, TrieSet.
     Invariant-free datastructures: Invariant implicitely hidden in typedef.
     Record-interfaces: All operations of an interface encapsulated as record.
-    Examples moved to examples subdirectory
-  [2010-12-01]: New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues
+    Examples moved to examples subdirectory.<br>
+  [2010-12-01]: New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues.
 
 [FileRefinement]
 title = File Refinement
@@ -248,8 +249,8 @@ abstract =
   been essential to formalize matrix-interpretations and arctic
   interpretations.
 extra-history =
-  Change history: [2010-09-17]: Moved theory on arbitrary (ordered)
-  semirings to Abstract Rewriting.
+  Change history: 
+  [2010-09-17]: Moved theory on arbitrary (ordered) semirings to Abstract Rewriting.
 
 [Huffman]
 title = The Textbook Proof of Huffman's Algorithm 
@@ -268,17 +269,17 @@ extra-history =
   Change history:
   [2010-06-10]:
         coinductive lists: setup for quotient package
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/015574f3bf3c">015574f3bf3c</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/015574f3bf3c">015574f3bf3c</a>)<br>
   [2010-06-28]:
         new codatatype terminated lazy lists
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e12de475c558">e12de475c558</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e12de475c558">e12de475c558</a>)<br>
   [2010-08-04]:
         terminated lazy lists: setup for quotient package;
         more lemmas
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6ead626f1d01">6ead626f1d01</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6ead626f1d01">6ead626f1d01</a>)<br>
   [2010-08-17]:
         Koenig's lemma as an example application for coinductive lists
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f81ce373fa96">f81ce373fa96</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f81ce373fa96">f81ce373fa96</a>)<br>
   [2011-02-01]:
         lazy implementation of coinductive (terminated) lists for the code generator
         (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6034973dce83">6034973dce83</a>)
@@ -323,28 +324,28 @@ extra-history =
   Change history:
   [2008-04-23]:
         added bytecode formalisation with arrays and threads, added thread joins
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f74a8be156a7">f74a8be156a7</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f74a8be156a7">f74a8be156a7</a>)<br>
   [2009-04-27]:
         added verified compiler from source code to bytecode;
         encapsulate native methods in separate semantics
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e4f26541e58a">e4f26541e58a</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e4f26541e58a">e4f26541e58a</a>)<br>
   [2009-11-30]:
         extended compiler correctness proof to infinite and deadlocking computations
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e50282397435">e50282397435</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e50282397435">e50282397435</a>)<br>
   [2010-06-08]:
         added thread interruption;
         new abstract memory model with sequential consistency as implementation
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0cb9e8dbd78d">0cb9e8dbd78d</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0cb9e8dbd78d">0cb9e8dbd78d</a>)<br>
   [2010-06-28]:
         new thread interruption model
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/c0440d0a1177">c0440d0a1177</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/c0440d0a1177">c0440d0a1177</a>)<br>
   [2010-10-15]:
         preliminary version of the Java memory model for source code
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/02fee0ef3ca2">02fee0ef3ca2</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/02fee0ef3ca2">02fee0ef3ca2</a>)<br>
   [2010-12-16]:
         improved version of the Java memory model, also for bytecode
         executable scheduler for source code semantics
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/1f41c1842f5a">1f41c1842f5a</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/1f41c1842f5a">1f41c1842f5a</a>)<br>
   [2011-02-02]:
         simplified code generator setup
         new random scheduler
@@ -593,7 +594,8 @@ abstract =
   involving strong normalization constitute by far the biggest part of this
   theory. One of those is Newman's lemma.
 extra-history =
-  Change history: [2010-09-17]: Added theories defining several (ordered)
+  Change history: 
+  [2010-09-17]: Added theories defining several (ordered)
   semirings related to strong normalization and giving some standard
   instances.
 
@@ -672,8 +674,8 @@ abstract =
   which contains several termination techniques. The provided theories have
   been essential to  formalize polynomial interpretations.
 extra-history =
-  Change history: [2010-09-17]: Moved theories on arbitrary (ordered)
-  semirings to Abstract Rewriting.
+  Change history: 
+  [2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
 
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
@@ -724,7 +726,8 @@ date = 2006-05-22
 topic = Mathematics/Graph Theory
 abstract = These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his <i>revised</i> proof of the Kepler Conjecture. The revison concerns the definition of tameness. The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof.
 extra-history =
-  Change history: [2010-11-02]: modified theories to reflect the modified
+  Change history: 
+  [2010-11-02]: modified theories to reflect the modified
   definition of tameness in Hales' revised proof.
 
 [Marriage]
@@ -748,7 +751,9 @@ date = 2005-04-21
 topic = Mathematics/Category Theory
 license = LGPL
 abstract = This development proves Yoneda's lemma and aims to be readable by humans. It only defines what is needed for the lemma: categories, functors and natural transformations. Limits, adjunctions and other important concepts are not included.
-extra-history = Change history: [2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/8c2b5b3c995f">8c2b5b3c995f</a>.
+extra-history = 
+    Change history: 
+    [2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/8c2b5b3c995f">8c2b5b3c995f</a>.
 
 [Category2]
 title = Category Theory

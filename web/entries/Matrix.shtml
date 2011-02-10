@@ -64,8 +64,7 @@ interpretations.
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
-[2010-09-17]: Moved theory on arbitrary (ordered)
-semirings to Abstract Rewriting.
+[2010-09-17]: Moved theory on arbitrary (ordered) semirings to Abstract Rewriting.
         </td></tr>
 
     <tr><td class="datahead">License:</td>
