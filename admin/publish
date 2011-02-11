@@ -75,7 +75,7 @@ function check_isabelle_tool()
 ISABELLE_TOOL=isabelle
 INTERACTIVE="yes"
 
-while getopts "ft:r:" OPT
+while getopts "ft:r" OPT
 do
     case "$OPT" in
       r)
