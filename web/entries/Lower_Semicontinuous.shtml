@@ -57,7 +57,7 @@ We define the notions of lower and upper semicontinuity for functions from a met
 <p></p>
 
 <!--#set var="name" value="Lower_Semicontinuous" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL-Multivariate_Analysis/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
