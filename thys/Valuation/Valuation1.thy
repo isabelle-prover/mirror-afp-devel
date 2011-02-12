@@ -24,7 +24,9 @@ theory Valuation1
 imports  "../Group-Ring-Module/Algebra9"  
 begin
 
-section "1. int and ant (augmented integers )"
+chapter "Preliminaries"
+
+section "Int and ant (augmented integers)"
 
 lemma int_less_mono:"(a::nat) < b \<Longrightarrow> int a < int b"
 apply simp
@@ -289,7 +291,7 @@ apply (subgoal_tac "z = int (nat z)")
 apply blast apply simp
 done
 
-section "2. nsets"
+section "nsets"
 
 lemma nsetTr1:"\<lbrakk>j \<in> nset a b; j \<noteq> a\<rbrakk> \<Longrightarrow> j \<in> nset (Suc a) b"
 apply (simp add:nset_def) 
@@ -574,10 +576,10 @@ apply (rule contrapos_pp, simp+)
  apply (simp add:n_notin_Nset_pred) 
 done
 
-chapter "1. elementary properties of a valuation"
+chapter "Elementary properties of a valuation"
 
 
-section "1. definition of a valuation"
+section "Definition of a valuation"
       
 definition
   valuation :: "[('b, 'm) Ring_scheme, 'b \<Rightarrow> ant] \<Rightarrow> bool" where
@@ -835,7 +837,7 @@ by (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
        frule val_1px[of v "-\<^sub>a x"],
        simp add:aGroup.ag_mOp_closed, assumption, simp add:val_minus_eq)
 
-section "2. the normal valuation of v"
+section "The normal valuation of v"
 
 definition
   Lv :: "[('r, 'm) Ring_scheme , 'r \<Rightarrow> ant] \<Rightarrow> ant" (* Least nonnegative value *) where
@@ -1396,7 +1398,7 @@ apply (subst aneq_natneq, simp)
 done
 
 
-section "3. valuation ring"
+section "Valuation ring"
 
 definition
   Vr :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant] \<Rightarrow> ('r, 'm) Ring_scheme" where
@@ -1809,7 +1811,7 @@ by (simp add:Vr_def Sr_def,
       (rule subsetI, simp, erule conjE, simp add:val_pos_n_val_pos[THEN sym]))
 
 
-section "4. ideals in a valuation ring"
+section "Ideals in a valuation ring"
 
 lemma (in Corps) Vr_has_poss_elem:"valuation K v \<Longrightarrow> 
                  \<exists>x\<in>carrier (Vr K v) - {\<zero>\<^bsub>Vr K v\<^esub>}. 0 < v x" 
@@ -2515,7 +2517,7 @@ lemma (in Corps) Vr_ideal_powTr1:"\<lbrakk>valuation K v; ideal (Vr K v) I;
  I \<noteq> carrier (Vr K v); b \<in> I\<rbrakk>  \<Longrightarrow> b \<in> (vp K v)"
 by (frule ideal_sub_vp[of v I], assumption+, simp add:subsetD)
 
-section "5. pow of vp and n_value -- convergence --"
+section {* pow of vp and @{text "n_value"} -- convergence -- *}
 
 lemma (in Corps) n_value_x_1:"\<lbrakk>valuation K v; 0 \<le> n; 
                     x \<in> (vp K v) \<^bsup>(Vr K v) n\<^esup>\<rbrakk> \<Longrightarrow>  n \<le> (n_val K v x)"
@@ -3139,7 +3141,7 @@ apply (frule_tac y = "- v' a" in ale_minus[of "0"], simp add:a_minus_minus,
        simp)
 done
 
-section "6. equivalent valuations"
+section "Equivalent valuations"
 
 definition
   v_equiv :: "[_ , 'r \<Rightarrow> ant, 'r \<Rightarrow> ant] \<Rightarrow> bool" where
@@ -3289,7 +3291,7 @@ apply (rule ballI, rule impI, simp add:val_pos_n_val_pos,
        assumption)
 done
 
-section "7.  prime divisors"
+section "Prime divisors"
 
 definition
   prime_divisor :: "[_, 'b \<Rightarrow> ant] \<Rightarrow>
@@ -3450,7 +3452,7 @@ apply (rule n_val_representative[of "P"], assumption,
        frule val_equiv_axiom1[of "\<nu>\<^bsub>K P\<^esub>"], simp)
 done
 
-section "8. approximation"
+section "Approximation"
     
 definition
   valuations :: "[_ , nat, nat \<Rightarrow> ('r \<Rightarrow> ant)] \<Rightarrow> bool" where

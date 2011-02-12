@@ -1026,7 +1026,7 @@ apply (subst Ring.ring_inv1_1[of "R"], assumption+)
 apply (simp del:npow_suc add:Subring_minus_ring_minus)
 done
 
-subsection "multiplication of polynomials"
+subsection "Multiplication of polynomials"
 
 lemma (in PolynRg) deg_mult_pols:"\<lbrakk>Idomain S;
       p \<in> carrier R; p \<noteq> \<zero>; q \<in> carrier R; q \<noteq> \<zero> \<rbrakk> \<Longrightarrow> 
@@ -1181,7 +1181,7 @@ apply (induct_tac d)
  apply (simp add:deg_n_of_X)
 done
 
-subsection "degree with value in aug_minf"
+subsection {* Degree with value in @{text "aug_minf"} *}
 
 lemma (in PolynRg) nonzero_deg_pos:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk> \<Longrightarrow> 
                                                  0 \<le> deg R S X p"
@@ -1336,7 +1336,7 @@ apply (subst deg_mult_pols1[of c p], assumption+,
        simp add:aadd_0_l)
 done
  
-section "15. homomorphism of polynomial rings"
+section "Homomorphism of polynomial rings"
 
 definition
   cf_h :: " ('a \<Rightarrow> 'b) \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<times> (nat \<Rightarrow> 'b)" where
@@ -2763,7 +2763,7 @@ apply (case_tac "polyn_expr R X n (n, c) = \<zero>\<^bsub>R\<^esub>", simp add:e
  apply (simp add:erH_rHom_cf)
 done
 
-section "16. relatively prime polynomials"
+section "Relatively prime polynomials"
 
 definition
   rel_prime_pols :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
@@ -3242,7 +3242,7 @@ apply (subst aadd_assoc_m[of _ "deg R S X f" "- deg R S X f"],
         rule aGroup.ag_pOp_closed, assumption+)
 done 
 
-subsection "polynomial, coeff mod P"
+subsection "Polynomial, coeff mod P"
 
 definition
   P_mod :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a set,

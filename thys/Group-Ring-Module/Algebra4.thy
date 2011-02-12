@@ -28,7 +28,7 @@ theory Algebra4
 imports Algebra3 "~~/src/HOL/Library/Binomial" "~~/src/HOL/Library/Zorn"
 begin
 
-section "20. Abelian groups"
+section "Abelian groups"
 
 record 'a aGroup = "'a carrier" + 
   pop      :: "['a, 'a ] \<Rightarrow> 'a"  (infixl "\<plusminus>\<index>" 62) 
@@ -485,7 +485,7 @@ apply (rule allI, rule impI)
  apply (simp add:invfun_r)
 done
 
-subsection "20-1. Homomorphism of abelian groups"
+subsection "Homomorphism of abelian groups"
 
 definition
   aHom :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme] \<Rightarrow> ('a \<Rightarrow> 'b) set" where
@@ -843,7 +843,7 @@ apply (cut_tac aGroup.ex_zero[of "G"], simp add:aGroup.l_zero)
 apply assumption
 done
 
-subsection "20-2 quotient abelian group"
+subsection "Quotient abelian group"
 
 definition
   ar_coset :: "['a, _ , 'a set] \<Rightarrow> 'a set" (** a_rcs **)
@@ -1000,7 +1000,7 @@ abbreviation
   "f\<degree>\<^bsub>F,G\<^esub> == rind_hom F G f"
                                                           (* tOp \<rightarrow> pOp *) 
 
-section "21 direct product and direct sum of abelian groups, in general case"
+section "Direct product and direct sum of abelian groups, in general case"
 
 definition
   Un_carrier :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> 'a set" where
@@ -1648,7 +1648,7 @@ apply (simp add:dsumag_def)
 done
 
 
-subsection "characterization of a direct product"
+subsection "Characterization of a direct product"
 
 lemma direct_prod_mem_eq:"\<lbrakk>\<forall>j\<in>I. aGroup (A j); f \<in> carrier (a\<Pi>\<^bsub>I\<^esub> A);
        g \<in> carrier (a\<Pi>\<^bsub>I\<^esub> A); \<forall>j\<in>I. (PRoject I A j) f = (PRoject I A j) g\<rbrakk> \<Longrightarrow>
@@ -2076,9 +2076,9 @@ done
 
 
 
-chapter "4. Ring theory"
+chapter "Ring theory"
 
-section "1. Definition of a ring and an ideal"
+section "Definition of a ring and an ideal"
 
 record 'a Ring = "'a aGroup" + 
   tp ::  "['a, 'a ] \<Rightarrow> 'a" (infixl "\<cdot>\<^sub>r\<index>" 70)
@@ -2534,7 +2534,7 @@ apply (simp add:Sr_def Sr_one)
 done
 
 
-section "2. Calculation of elements"
+section "Calculation of elements"
  (** The author of this part is L. Chen, revised by H. Murao and Y.
      Santo  **)
 
@@ -3232,7 +3232,7 @@ lemma (in Ring) npMul:
     apply (rule npClose, assumption+)+
   done
 
-section "3. ring homomorphisms"
+section "Ring homomorphisms"
 
 definition
   rHom :: "[('a, 'm) Ring_scheme, ('b, 'm1) Ring_scheme] 
@@ -3896,8 +3896,8 @@ lemma (in Ring) sum_of_prideals:"\<lbrakk>\<forall>l \<le> n. f l \<in> carrier 
 apply (simp add:sum_of_prideals0)
 done
  
-text {* later, we show sum_pr_ideals is the least ideal containing 
-        {f 0, f 1,\<dots>, f n} *}
+text {* later, we show @{text "sum_pr_ideals"} is the least ideal containing 
+        @{text "{f 0, f 1,\<dots>, f n}"} *}
 
 lemma (in Ring) sum_of_prideals1:"\<forall>f. (\<forall>l \<le> n. f l \<in> carrier R) \<longrightarrow> 
                                     f ` {i. i \<le> n} \<subseteq> (sum_pr_ideals R f n)" 
@@ -3993,7 +3993,7 @@ apply (rule ballI)+
         simp add:Ring.ring_times_x_0)
 done
 
-subsection "ring of integers"
+subsection "Ring of integers"
 
 definition
   Zr :: "int Ring" where
@@ -4126,7 +4126,7 @@ apply (frule Zr_gen_Zleast [of "I"], assumption+)
  apply blast
 done
 
-section "4. quotient rings" 
+section "Quotient rings" 
 
 lemma (in Ring) mem_set_ar_cos:"\<lbrakk>ideal R I; a \<in> carrier R\<rbrakk> \<Longrightarrow> 
                                          a \<uplus>\<^bsub>R\<^esub> I \<in> set_ar_cos R I"
@@ -4976,7 +4976,7 @@ apply (rule Ring.rcostOp, assumption+)
 apply (rule Ring.npClose, assumption+)
 done
 
-section "5. Primary ideals, Prime ideals"
+section "Primary ideals, Prime ideals"
 
 definition
   maximal_set :: "['a set set, 'a set] \<Rightarrow> bool" where
@@ -5324,8 +5324,8 @@ apply (subgoal_tac "(sum_pr_ideals R f n) \<in> S")
  apply (simp add: sum_of_prideals)
 done
 
-text{* This proves that (sum_pr_ideals R f n) is the smallest ideal containing
- f ` (Nset n) *} 
+text{* This proves that @{text "(sum_pr_ideals R f n)"} is the smallest ideal containing
+ @{text "f ` (Nset n)"} *} 
 
 primrec ideal_n_prod::"[('a, 'm) Ring_scheme, nat,  nat \<Rightarrow> 'a set] \<Rightarrow> 'a set"
 where
@@ -5485,7 +5485,7 @@ lemma (in Ring) ideal_prod_el2:"\<lbrakk>ideal R I; ideal R J; a \<in> (I \<diam
 by (frule ideal_prod_la2 [of "I" "J"], assumption+,
        rule subsetD, assumption+)
 
-text{* i\<Pi>\<^bsub>R,n\<^esub> J is the product of ideals *}
+text{* @{text "i\<Pi>\<^bsub>R,n\<^esub> J"} is the product of ideals *}
 lemma (in Ring) ele_n_prodTr0:"\<lbrakk>\<forall>k \<le> (Suc n). ideal R (J k);
              a \<in> i\<Pi>\<^bsub>R,(Suc n)\<^esub> J \<rbrakk> \<Longrightarrow> a \<in> (i\<Pi>\<^bsub>R,n\<^esub> J) \<and> a \<in> (J (Suc n))"
 apply (simp add:Nset_Suc[of n])

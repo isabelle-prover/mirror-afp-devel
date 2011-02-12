@@ -58,8 +58,7 @@ been essential to  formalize polynomial interpretations.
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
-[2010-09-17]: Moved theories on arbitrary (ordered)
-semirings to Abstract Rewriting.
+[2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
         </td></tr>
 
     <tr><td class="datahead">License:</td>
@@ -101,7 +100,10 @@ semirings to Abstract Rewriting.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2009-2: <a href="../release/afp-<!--#echo var="name" -->-2010-08-11.tar.gz">afp-<!--#echo var="name" -->-2010-08-11.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

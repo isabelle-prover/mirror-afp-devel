@@ -88,7 +88,10 @@ proven, as well as some isomorphisms results about Free Groups.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2009-2: <a href="../release/afp-<!--#echo var="name" -->-2010-07-01.tar.gz">afp-<!--#echo var="name" -->-2010-07-01.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

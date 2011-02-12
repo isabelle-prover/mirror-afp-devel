@@ -27,12 +27,12 @@ theory Algebra1
 imports Main "~~/src/HOL/Library/FuncSet"
 begin
 
-chapter "0. Preliminaries"
+chapter "Preliminaries"
 
 text{* Some of the lemmas of this section are proved in src/HOL/Integ
    of Isabelle version 2003. *}
 
-section "0. lemmas for logical manipulation"
+section "Lemmas for logical manipulation"
 
 lemma True_then:"True \<longrightarrow> P \<Longrightarrow> P"
 by simp
@@ -56,7 +56,7 @@ by blast
 lemma forball_contra1:"\<lbrakk>\<forall>y\<in>A. P x y \<longrightarrow> Q y; \<forall>y\<in>A. \<not> Q y\<rbrakk> \<Longrightarrow> \<forall>y\<in>A. \<not> P x y"
 by blast  
 
-section "1. Natural numbers and Integers"
+section "Natural numbers and Integers"
 
 text{* Elementary properties of natural numbers and integers *}
 
@@ -124,7 +124,7 @@ lemma nat_eq_le:"m = (n::nat) \<Longrightarrow> m \<le> n"
 by simp
 
 
-subsection "integers"
+subsection "Integers"
 
 lemma non_zero_int:" (n::int) \<noteq> 0 \<Longrightarrow> 0 < n \<or> n < 0"
 by arith
@@ -325,14 +325,14 @@ lemma zdiv_pos_pos_l:"\<lbrakk> (0::int) < w; 0 \<le> z * w\<rbrakk> \<Longright
 by (simp add:zmult_commute, frule zdiv_pos_mono_r[of "w" "0" "z"], simp, 
         assumption)
 
-section "2. Sets"
+section "Sets"
 
 (* Preliminary properties of sets are proved here. Some of them are 
  already proved by L. Paulson and others. *)
 
-subsection "a short notes for proof steps" 
+subsection "A short notes for proof steps" 
 
-subsection "sets" 
+subsection "Sets" 
 
 lemma inEx:"x \<in> A \<Longrightarrow> \<exists>y\<in>A. y = x"
 by simp
@@ -490,7 +490,7 @@ lemma not_sub:"\<not> A \<subseteq> B \<Longrightarrow> \<exists>a. a\<in>A \<an
 by blast
 
 
-section "3. Functions"
+section "Functions"
 
 definition
   cmp :: "['b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> ('a \<Rightarrow> 'c)" where
@@ -1082,7 +1082,7 @@ apply (simp add:comp_inj[of "f" "A" "B" "g" "C"])
 apply (simp add:compose_surj)
 done
 
-section "4.Nsets"
+section "Nsets"
 
  (* NSet is the set of natural numbers, and "Nset n" is the set of 
 natural numbers from 0 through n  *)
@@ -1776,8 +1776,8 @@ apply (frule ex_Nleast [of "A"])
  apply simp
 done
 
-subsection "lemmas for Existence of reduced chain. Later some of lemmas 
-            should be removed. "
+subsection "Lemmas for existence of reduced chain."
+(* Later some of these lemmas should be removed. *)
 
 lemma jointgd_tool1:" 0 < i \<Longrightarrow> 0 \<le> i - Suc 0"
 by arith
@@ -1842,7 +1842,7 @@ apply (simp add:compose_def)
         apply blast
 done
 
-section "4'. Lower bounded set of integers"
+section "Lower bounded set of integers"
 
 (* In this section. I prove that a lower bounded set of integers
   has the minimal element *)
@@ -1963,7 +1963,7 @@ lemma less_convert2:"\<lbrakk>a = b; b < c\<rbrakk> \<Longrightarrow> a < c"
 apply auto
 done 
 
-section "5. augmented integer: integer and \<infinity> -\<infinity> "
+section {* Augmented integer: integer and @{text "\<infinity>-\<infinity>"} *}
 
 definition
   zag :: "(int * int) set" where
@@ -3014,9 +3014,9 @@ apply (cut_tac mem_ant[of "b"], simp add:aug_inf_def,
        erule exE, simp add:aminus)
 done
 
-subsection "ordring of integers and ordering ants"
+subsection "Ordering of integers and ordering nats"
 
-subsection{*The @{text "\<le>"} Ordering*}
+subsection {*The @{text "\<le>"} Ordering*}
 
 lemma zneq_aneq:"(n \<noteq> m) = ((ant n) \<noteq> (ant m))" 
 apply (rule iffI)
@@ -3266,7 +3266,7 @@ apply (simp only:ant_1[THEN sym]) apply (simp only:asprod_mult)
 apply simp
 done
 
-subsection "aug ordering"
+subsection "Aug ordering"
 
 lemma aless_imp_le:" x < (y::ant) \<Longrightarrow> x \<le> y"
 by (simp add:less_ant_def)
@@ -3577,7 +3577,7 @@ apply (unfold an_def)
  apply (subst a_zdz[of "int (m - n) + int n" "int n"], simp)
 done
 
-section "6. amin, amax"
+section "Amin, amax"
 
 definition
   amin :: "[ant, ant] \<Rightarrow> ant" where
@@ -3793,7 +3793,7 @@ lemma inf_in_aug_inf:"\<infinity>  \<in> Z\<^sub>\<infinity>"
 apply (simp add:aug_inf_def, simp add:not_sym)
 done
 
-subsection "maximum element of a set of ants"
+subsection "Maximum element of a set of ants"
 
 primrec aasc_seq :: "[ant set, ant, nat] \<Rightarrow> ant"
 where
@@ -3990,7 +3990,7 @@ apply (simp add:aadd_minus_inv[of "b"])
 apply (simp add: aadd_0_r)
 done
 
-section "7. cardinality of sets"
+section "Cardinality of sets"
 
 text {* cardinality is defined for the finite sets only *}
 
@@ -4582,7 +4582,7 @@ apply (subst inj_on_def, simp)
 apply (simp add:ninv_r_inv)
 done
 
-subsection "lemmas required in Algebra6.thy"
+subsection "Lemmas required in Algebra6.thy"
 
 lemma ge2_zmult_pos:"\<lbrakk>2 \<le> m; 0 < z\<rbrakk> \<Longrightarrow> 1 < int m * z"
 by (cut_tac less_le_trans[of "1" "2" "m"],
@@ -4732,11 +4732,11 @@ lemma aless_neq :"(x::ant) < y \<Longrightarrow> x \<noteq> y"
 by (rule contrapos_pp, simp+)
 
 
-chapter "1. Ordered Set"
+chapter "Ordered Set"
 
 (* In this chapter, I prove Zorn's lemma in general form. *)
 
-section "1. Basic Concepts of Ordered Sets"
+section "Basic Concepts of Ordered Sets"
 
 record 'a carrier =
   carrier :: "'a set"
@@ -5039,7 +5039,7 @@ apply (simp add:SIod_carrier)
 apply (rule rel_SIod[of "D" "E"], assumption+)
 done 
 
-subsection {*total ordering *}
+subsection {* Total ordering *}
 
 locale Torder = Order + 
        assumes le_linear: "\<lbrakk>a \<in> carrier D; b \<in> carrier D\<rbrakk> \<Longrightarrow>
@@ -5116,7 +5116,7 @@ apply (simp add:Iod_carrier)+
 done
 
 
-subsection {* two ordered sets *}
+subsection {* Two ordered sets *}
 
 definition
   Order_Pow :: "'a set \<Rightarrow> 'a set Order"    ("(po _)" [999] 1000) where
@@ -5153,7 +5153,7 @@ apply (unfold split_paired_all)
 apply (auto intro: funcset_eq)
 done
  
-subsection {* homomorphism of ordered sets *}
+subsection {* Homomorphism of ordered sets *}
 
 definition
  ord_inj :: "[('a, 'm0) Order_scheme, ('b, 'm1) Order_scheme, 

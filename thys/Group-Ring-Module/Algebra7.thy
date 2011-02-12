@@ -16,9 +16,9 @@
 
 theory Algebra7 imports Algebra6 begin
 
-chapter "5. Modules"
+chapter "Modules"
 
-section "1. Basic properties of Modules"
+section "Basic properties of Modules"
 
 record ('a, 'b) Module = "'a aGroup" +
   sprod  :: "'b \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>\<^sub>s\<index>" 76)
@@ -755,7 +755,7 @@ apply (simp add:HOM_def)
         simp add:Module.sprod_one)
 done
 
-section "2. injective hom, surjective hom, bijective hom and iverse hom"
+section "Injective hom, surjective hom, bijective hom and inverse hom"
 
 definition
   invmfun :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
@@ -3675,7 +3675,7 @@ apply (erule exE, (erule bexE)+)
 done
 
 (*
-section "3. a module over two rings"
+section "A module over two rings"
 
 record ('a, 'r, 's) bModule = "'a aGroup" +
   sc_l  :: "'r \<Rightarrow> 'a \<Rightarrow> 'a"    (infixl "\<cdot>\<^bsub>sl\<^esub>\<index>" 70)
@@ -3832,7 +3832,7 @@ definition
                              \<Rightarrow> bool" where
   "faithful R M \<longleftrightarrow> Ann\<^bsub>R\<^esub> M = {\<zero>\<^bsub>R\<^esub>}"
 
-section "4. nsum and Generators"
+section "nsum and Generators"
 
 definition
   generator :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
@@ -4228,7 +4228,7 @@ apply (simp add:finite_generator_def [of "R" "N"])
  apply blast
 done
     
-subsection "4-1. sum up coefficients" 
+subsection "Sum up coefficients" 
  text{* Symbolic calculation. *}    
 
 lemma (in Module) similar_termTr:"\<lbrakk>ideal R A; a \<in> A\<rbrakk> \<Longrightarrow>
@@ -4985,7 +4985,7 @@ lemma (in Module) finite_lin_span:
 apply (simp add:finite_lin_spanTr3)
 done
 
-subsection "4-2. free generators"
+subsection "Free generators"
 
 definition
   free_generator :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 'a set]

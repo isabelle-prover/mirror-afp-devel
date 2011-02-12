@@ -81,7 +81,10 @@ This work presents a verification of an implementation in SPARK/ADA of the crypt
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2009-2: <a href="../release/afp-<!--#echo var="name" -->-2011-01-19.tar.gz">afp-<!--#echo var="name" -->-2011-01-19.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

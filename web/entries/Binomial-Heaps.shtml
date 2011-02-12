@@ -96,7 +96,10 @@ operations.  Our implementation follows the paper by Brodal and Okasaki.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2009-2: <a href="../release/afp-<!--#echo var="name" -->-2010-10-28.tar.gz">afp-<!--#echo var="name" -->-2010-10-28.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
