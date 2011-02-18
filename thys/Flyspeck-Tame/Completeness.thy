@@ -14,7 +14,7 @@ using combine_evals_filter[OF pre_iso_test3 same3]
       combine_evals_filter[OF pre_iso_test4 same4]
       combine_evals_filter[OF pre_iso_test5 same5]
       combine_evals_filter[OF pre_iso_test6 same6]
-by(fastsimp simp:TameEnum_def Archive_def image_def eqi_gr.defs
+by(fastsimp simp:TameEnum_def Archive_def image_def qle_gr.defs
        eval_nat_numeral le_Suc_eq)
 
 
@@ -57,7 +57,7 @@ proof -
 	dest:RTranCl_inv[OF inv_inv_next_plane])
   with `tame g` `final g` have "p \<le> 3" by(blast intro:tame5)
   with g1 `tame g` `final g` show ?thesis using TameEnum_Archive
-    by(simp add: eqi_gr.defs TameEnum_def TameEnumP_def)
+    by(simp add: qle_gr.defs TameEnum_def TameEnumP_def)
       (blast intro: TameEnum_comp)
 qed
 

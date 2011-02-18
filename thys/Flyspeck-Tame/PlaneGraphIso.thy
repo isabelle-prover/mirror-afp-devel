@@ -3,7 +3,7 @@
 header{* Isomorphisms Between Plane Graphs *}
 
 theory PlaneGraphIso
-imports Main Eqi_Locale
+imports Main Quasi_Order
 begin
 
 (* FIXME globalize *)
@@ -886,16 +886,14 @@ done
 
 subsection{* Elementhood and containment modulo *}
 
-interpretation eqi_gr: eqi "op \<simeq>"
+interpretation qle_gr: quasi_order "op \<simeq>"
 proof qed (auto intro:iso_fgraph_trans)
 
-(* globalize syntax *)
-
-abbreviation eqi_gr_in :: "'a fgraph \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "\<in>\<^isub>\<simeq>" 60)
-where "x \<in>\<^isub>\<simeq> M \<equiv> eqi_gr.in_eqi x M"
-abbreviation eqi_gr_sub :: "'a fgraph set \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "\<subseteq>\<^isub>\<simeq>" 60)
-where "x \<subseteq>\<^isub>\<simeq> M \<equiv> eqi_gr.subseteq_eqi x M"
-abbreviation eqi_gr_eq :: "'a fgraph set \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "=\<^isub>\<simeq>" 60)
-where "x =\<^isub>\<simeq> M \<equiv> eqi_gr.seteq_eqi x M"
+abbreviation qle_gr_in :: "'a fgraph \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "\<in>\<^isub>\<simeq>" 60)
+where "x \<in>\<^isub>\<simeq> M \<equiv> qle_gr.in_qle x M"
+abbreviation qle_gr_sub :: "'a fgraph set \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "\<subseteq>\<^isub>\<simeq>" 60)
+where "x \<subseteq>\<^isub>\<simeq> M \<equiv> qle_gr.subseteq_qle x M"
+abbreviation qle_gr_eq :: "'a fgraph set \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "=\<^isub>\<simeq>" 60)
+where "x =\<^isub>\<simeq> M \<equiv> qle_gr.seteq_qle x M"
 
 end

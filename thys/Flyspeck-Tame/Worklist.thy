@@ -1,5 +1,5 @@
 theory Worklist
-imports "~~/src/HOL/Library/While_Combinator" RTranCl Eqi_Locale
+imports "~~/src/HOL/Library/While_Combinator" RTranCl Quasi_Order
 begin
 
 definition
@@ -31,16 +31,16 @@ lemma worklist_aux_unfold[code]:
 by(simp add: worklist_aux_Nil worklist_aux_Cons split: list.split)
 
 definition
-  worklist_dfs_aux :: "('a \<Rightarrow> 'a list) \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> 's)
+  worklist_tree_aux :: "('a \<Rightarrow> 'a list) \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> 's)
     \<Rightarrow> 'a list * 's \<Rightarrow> ('a list * 's)option"
 where
-"worklist_dfs_aux succs = worklist_aux (%s. succs)"
+"worklist_tree_aux succs = worklist_aux (%s. succs)"
 
-lemma worklist_dfs_aux_unfold[code]:
-"worklist_dfs_aux succs f (ws,s) =
+lemma worklist_tree_aux_unfold[code]:
+"worklist_tree_aux succs f (ws,s) =
  (case ws of [] \<Rightarrow> Some([],s) |
-  x#ws' \<Rightarrow> worklist_dfs_aux succs f (succs x @ ws', f x s))"
-by(simp add: worklist_dfs_aux_def worklist_aux_Nil worklist_aux_Cons split: list.split)
+  x#ws' \<Rightarrow> worklist_tree_aux succs f (succs x @ ws', f x s))"
+by(simp add: worklist_tree_aux_def worklist_aux_Nil worklist_aux_Cons split: list.split)
 
 
 abbreviation Rel :: "('a \<Rightarrow> 'a list) \<Rightarrow> ('a * 'a)set" where
@@ -72,8 +72,8 @@ lemma worklist_end_empty:
 unfolding worklist_aux_def
 by (drule while_option_stop) simp
 
-theorem worklist_dfs_aux_Some_foldl:
-assumes "worklist_dfs_aux succs f (ws,s) = Some(ws',s')"
+theorem worklist_tree_aux_Some_foldl:
+assumes "worklist_tree_aux succs f (ws,s) = Some(ws',s')"
 shows "EX rs. set rs = ((Rel succs)^*) `` (set ws) &
               s' = foldl (%s x. f x s) s rs"
 proof -
@@ -85,7 +85,7 @@ proof -
           set done Un ((Rel succs)^*) `` set ws'"
   let ?P = "%(ws,s). EX done. ?Q ws s done"
   have 0: "while_option ?b ?c (ws,s) = Some(ws',s')"
-    using assms by(simp add: worklist_dfs_aux_def worklist_aux_def)
+    using assms by(simp add: worklist_tree_aux_def worklist_aux_def)
   from while_option_stop[OF 0] have "ws' = []" by simp
   have init: "?P (ws,s)"
     apply auto
@@ -113,15 +113,15 @@ proof -
   then show ?thesis using `ws'=[]` by auto
 qed
 
-definition "worklist_dfs succs f ws s =
-  (case worklist_dfs_aux succs f (ws,s) of
+definition "worklist_tree succs f ws s =
+  (case worklist_tree_aux succs f (ws,s) of
      None \<Rightarrow> None | Some(ws,s) \<Rightarrow> Some s)"
 
-theorem worklist_dfs_Some_foldl:
-  "worklist_dfs succs f ws s = Some s' \<Longrightarrow>
+theorem worklist_tree_Some_foldl:
+  "worklist_tree succs f ws s = Some s' \<Longrightarrow>
    EX rs. set rs = ((Rel succs)^*) `` (set ws) &
               s' = foldl (%s x. f x s) s rs"
-by(simp add: worklist_dfs_def worklist_dfs_aux_Some_foldl split:option.splits prod.splits)
+by(simp add: worklist_tree_def worklist_tree_aux_Some_foldl split:option.splits prod.splits)
 
 lemma invariant_succs:
 assumes "invariant I succs"
@@ -137,8 +137,8 @@ proof-
   } with assms(2) show ?thesis by blast
 qed
 
-lemma worklist_dfs_aux_rule:
-assumes "worklist_dfs_aux succs f (ws,s) = Some(ws',s')"
+lemma worklist_tree_aux_rule:
+assumes "worklist_tree_aux succs f (ws,s) = Some(ws',s')"
 and "invariant I succs"
 and "ALL x : set ws. I x"
 and "!!s. P [] s s"
@@ -146,7 +146,7 @@ and "!!r x ws s. I x \<Longrightarrow> \<forall>x \<in> set ws. I x \<Longrighta
 shows "\<exists>rs. set rs = ((Rel succs)^* ) `` (set ws) \<and> P rs s s'"
 proof-
   let ?R = "(Rel succs)\<^sup>* `` set ws"
-  from worklist_dfs_aux_Some_foldl[OF assms(1)] obtain rs where
+  from worklist_tree_aux_Some_foldl[OF assms(1)] obtain rs where
     rs: "set rs = ?R" "s' = foldl (%s x. f x s) s rs" by blast
   { fix xs have "(ALL x : set xs. I x) \<Longrightarrow> P xs s (foldl (%s x. f x s) s xs)"
     proof(induct xs arbitrary: s)
@@ -158,8 +158,8 @@ proof-
   with invariant_succs[OF assms(2,3)] show ?thesis by (metis rs)
 qed
 
-lemma worklist_dfs_aux_rule2:
-assumes "worklist_dfs_aux succs f (ws,s) = Some(ws',s')"
+lemma worklist_tree_aux_rule2:
+assumes "worklist_tree_aux succs f (ws,s) = Some(ws',s')"
 and "invariant I succs"
 and "ALL x : set ws. I x"
 and "S s" and "!!x s. I x \<Longrightarrow> S s \<Longrightarrow> S(f x s)"
@@ -169,7 +169,7 @@ and "!!r x ws s. I x \<Longrightarrow> \<forall>x \<in> set ws. I x \<Longrighta
 shows "\<exists>rs. set rs = ((Rel succs)^* ) `` (set ws) \<and> P rs s s'"
 proof-
   let ?R = "(Rel succs)\<^sup>* `` set ws"
-  from worklist_dfs_aux_Some_foldl[OF assms(1)] obtain rs where
+  from worklist_tree_aux_Some_foldl[OF assms(1)] obtain rs where
     rs: "set rs = ?R" "s' = foldl (%s x. f x s) s rs" by blast
   { fix xs have "(ALL x : set xs. I x) \<Longrightarrow> S s \<Longrightarrow> P xs s (foldl (%s x. f x s) s xs)"
     proof(induct xs arbitrary: s)
@@ -181,21 +181,21 @@ proof-
   with invariant_succs[OF assms(2,3)] assms(4) show ?thesis by (metis rs)
 qed
 
-lemma worklist_dfs_rule:
-assumes "worklist_dfs succs f ws s = Some(s')"
+lemma worklist_tree_rule:
+assumes "worklist_tree succs f ws s = Some(s')"
 and "invariant I succs"
 and "ALL x : set ws. I x"
 and "!!s. P [] s s"
 and "!!r x ws s. I x \<Longrightarrow> \<forall>x \<in> set ws. I x \<Longrightarrow> P ws (f x s) r \<Longrightarrow> P (x#ws) s r"
 shows "EX rs. set rs = ((Rel succs)^*) `` (set ws) \<and> P rs s s'"
 proof-
-  obtain ws' where "worklist_dfs_aux succs f (ws,s) = Some(ws',s')" using assms(1)
-    by(simp add: worklist_dfs_def split: option.split_asm prod.split_asm)
-  from worklist_dfs_aux_rule[where P=P,OF this assms(2-5)] show ?thesis by blast
+  obtain ws' where "worklist_tree_aux succs f (ws,s) = Some(ws',s')" using assms(1)
+    by(simp add: worklist_tree_def split: option.split_asm prod.split_asm)
+  from worklist_tree_aux_rule[where P=P,OF this assms(2-5)] show ?thesis by blast
 qed
 
-lemma worklist_dfs_rule2:
-assumes "worklist_dfs succs f ws s = Some(s')"
+lemma worklist_tree_rule2:
+assumes "worklist_tree succs f ws s = Some(s')"
 and "invariant I succs"
 and "ALL x : set ws. I x"
 and "S s" and "!!x s. I x \<Longrightarrow> S s \<Longrightarrow> S(f x s)"
@@ -204,31 +204,31 @@ and "!!r x ws s. I x \<Longrightarrow> \<forall>x \<in> set ws. I x \<Longrighta
   \<Longrightarrow> P ws (f x s) r \<Longrightarrow> P (x#ws) s r"
 shows "EX rs. set rs = ((Rel succs)^*) `` (set ws) \<and> P rs s s'"
 proof-
-  obtain ws' where "worklist_dfs_aux succs f (ws,s) = Some(ws',s')" using assms(1)
-    by(simp add: worklist_dfs_def split: option.split_asm prod.split_asm)
-  from worklist_dfs_aux_rule2[where P=P and S=S,OF this assms(2-7)]
+  obtain ws' where "worklist_tree_aux succs f (ws,s) = Some(ws',s')" using assms(1)
+    by(simp add: worklist_tree_def split: option.split_asm prod.split_asm)
+  from worklist_tree_aux_rule2[where P=P and S=S,OF this assms(2-7)]
   show ?thesis by blast
 qed
 
-lemma worklist_dfs_aux_state_inv:
-assumes "worklist_dfs_aux succs f (ws,s) = Some(ws',s')"
+lemma worklist_tree_aux_state_inv:
+assumes "worklist_tree_aux succs f (ws,s) = Some(ws',s')"
 and "I s"
 and "!!x s. I s \<Longrightarrow> I(f x s)"
 shows "I s'"
 proof-
-  from worklist_dfs_aux_rule[where P="%ws s s'. I s \<longrightarrow> I s'" and I="%x. True",
+  from worklist_tree_aux_rule[where P="%ws s s'. I s \<longrightarrow> I s'" and I="%x. True",
     OF assms(1)] assms(2-3)
   show ?thesis by(auto simp: invariant_def)
 qed
 
-lemma worklist_dfs_state_inv:
-  "worklist_dfs succs f ws s = Some(s')
+lemma worklist_tree_state_inv:
+  "worklist_tree succs f ws s = Some(s')
    \<Longrightarrow> I s \<Longrightarrow> (!!x s. I s \<Longrightarrow> I(f x s)) \<Longrightarrow> I s'"
-unfolding worklist_dfs_def
-by(auto intro: worklist_dfs_aux_state_inv split: option.splits)
+unfolding worklist_tree_def
+by(auto intro: worklist_tree_aux_state_inv split: option.splits)
 
 
-locale set_modulo = eqi +
+locale set_modulo = quasi_order +
 fixes empty :: "'s"
 and insert_mod :: "'a => 's => 's"
 and set_of :: "'s => 'a set"
@@ -238,7 +238,7 @@ assumes set_of_empty: "set_of empty = {}"
 and set_of_insert_mod: "I x \<Longrightarrow> S s \<and> (\<forall>x \<in> set_of s. I x)
   \<Longrightarrow>
   set_of(insert_mod x s) = insert x (set_of s) \<or>
-  (EX y : set_of s. x \<simeq> y) \<and> set_of (insert_mod x s) = set_of s"
+  (EX y : set_of s. x \<preceq> y) \<and> set_of (insert_mod x s) = set_of s"
 and S_empty: "S empty"
 and S_insert_mod: "S s \<Longrightarrow> S (insert_mod x s)"
 begin
@@ -260,28 +260,28 @@ lemma SI_insert_mod2: "(!!x. inv0 x \<Longrightarrow> I (f x)) \<Longrightarrow>
   inv0 x \<Longrightarrow> SI s \<Longrightarrow> SI (insert_mod2 P f x s)"
 by (metis insert_mod2_def SI_insert_mod)
 
-definition worklist_dfs_coll_aux ::
+definition worklist_tree_coll_aux ::
   "('b \<Rightarrow> 'b list) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b list \<Rightarrow> 's \<Rightarrow> 's option"
 where
-"worklist_dfs_coll_aux succs P f = worklist_dfs succs (insert_mod2 P f)"
+"worklist_tree_coll_aux succs P f = worklist_tree succs (insert_mod2 P f)"
 
-definition worklist_dfs_coll ::
+definition worklist_tree_coll ::
   "('b \<Rightarrow> 'b list) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b list \<Rightarrow> 's option"
 where
-"worklist_dfs_coll succs P f ws = worklist_dfs_coll_aux succs P f ws empty"
+"worklist_tree_coll succs P f ws = worklist_tree_coll_aux succs P f ws empty"
 
-lemma worklist_dfs_coll_aux_equiv:
-assumes "worklist_dfs_coll_aux succs P f ws s = Some s'"
+lemma worklist_tree_coll_aux_equiv:
+assumes "worklist_tree_coll_aux succs P f ws s = Some s'"
 and "invariant inv0 succs"
 and "\<forall>x \<in> set ws. inv0 x"
 and "!!x. inv0 x \<Longrightarrow> I(f x)"
 and "SI s"
-shows "set_of s' =\<^isub>\<simeq>
+shows "set_of s' =\<^isub>\<preceq>
   f ` {x : (Rel succs)^* `` (set ws). P x} \<union> set_of s"
 apply(insert assms(1))
-unfolding worklist_dfs_coll_aux_def
-apply(drule worklist_dfs_rule2[where I = inv0 and S = SI and
-  P = "%ws s s'. SI s \<longrightarrow> set_of s' =\<^isub>\<simeq> f ` {x : set ws. P x} Un set_of s",
+unfolding worklist_tree_coll_aux_def
+apply(drule worklist_tree_rule2[where I = inv0 and S = SI and
+  P = "%ws s s'. SI s \<longrightarrow> set_of s' =\<^isub>\<preceq> f ` {x : set ws. P x} Un set_of s",
   OF _ assms(2,3,5)])
    apply(simp add: SI_insert_mod2 assms(4))
   apply(clarsimp)
@@ -292,15 +292,15 @@ apply(drule worklist_dfs_rule2[where I = inv0 and S = SI and
   apply (simp add: SI_insert_mod)
   apply(erule disjE)
    prefer 2
-   apply(rule seteq_eqi_trans)
+   apply(rule seteq_qle_trans)
     apply assumption
    apply (simp add: "defs")
    apply blast
-  apply(rule seteq_eqi_trans)
+  apply(rule seteq_qle_trans)
    apply assumption
   apply (simp add: "defs")
   apply blast
- apply(rule seteq_eqi_trans)
+ apply(rule seteq_qle_trans)
   apply assumption
  apply (simp add: "defs")
  apply blast
@@ -308,22 +308,22 @@ using assms(5)
 apply auto
 done
 
-lemma worklist_dfs_coll_equiv:
-  "worklist_dfs_coll succs P f ws = Some s' \<Longrightarrow> invariant inv0 succs
+lemma worklist_tree_coll_equiv:
+  "worklist_tree_coll succs P f ws = Some s' \<Longrightarrow> invariant inv0 succs
    \<Longrightarrow> \<forall>x \<in> set ws. inv0 x \<Longrightarrow> (!!x. inv0 x \<Longrightarrow> I(f x))
-   \<Longrightarrow> set_of s' =\<^isub>\<simeq> f ` {x : (Rel succs)^* `` (set ws). P x}"
-unfolding worklist_dfs_coll_def
-apply(drule (2) worklist_dfs_coll_aux_equiv)
+   \<Longrightarrow> set_of s' =\<^isub>\<preceq> f ` {x : (Rel succs)^* `` (set ws). P x}"
+unfolding worklist_tree_coll_def
+apply(drule (2) worklist_tree_coll_aux_equiv)
 apply(auto simp: set_of_empty SI_empty)
 done
 
-lemma worklist_dfs_coll_aux_subseteq:
-  "worklist_dfs_coll_aux succs P f ws t\<^isub>0 = Some t \<Longrightarrow>
+lemma worklist_tree_coll_aux_subseteq:
+  "worklist_tree_coll_aux succs P f ws t\<^isub>0 = Some t \<Longrightarrow>
   invariant inv0 succs \<Longrightarrow>  ALL g : set ws. inv0 g \<Longrightarrow>
   (!!x. inv0 x \<Longrightarrow> I(f x)) \<Longrightarrow> SI t\<^isub>0 \<Longrightarrow>
   set_of t \<subseteq> set_of t\<^isub>0 \<union> f ` {h : (Rel succs)^* `` set ws. P h}"
-unfolding worklist_dfs_coll_aux_def
-apply(drule worklist_dfs_rule2[where I = inv0 and S = SI and P =
+unfolding worklist_tree_coll_aux_def
+apply(drule worklist_tree_rule2[where I = inv0 and S = SI and P =
   "%ws t t'. set_of t' \<subseteq> set_of t \<union> f ` {g \<in> set ws. P g}"])
       apply assumption
      apply assumption
@@ -338,20 +338,20 @@ apply(drule worklist_dfs_rule2[where I = inv0 and S = SI and P =
 apply blast
 done
 
-lemma worklist_dfs_coll_subseteq:
-  "worklist_dfs_coll succs P f ws = Some t \<Longrightarrow>
+lemma worklist_tree_coll_subseteq:
+  "worklist_tree_coll succs P f ws = Some t \<Longrightarrow>
   invariant inv0 succs \<Longrightarrow>  ALL g : set ws. inv0 g \<Longrightarrow>
   (!!x. inv0 x \<Longrightarrow> I(f x)) \<Longrightarrow>
   set_of t \<subseteq> f ` {h : (Rel succs)^* `` set ws. P h}"
-unfolding worklist_dfs_coll_def
-apply(drule (1) worklist_dfs_coll_aux_subseteq)
+unfolding worklist_tree_coll_def
+apply(drule (1) worklist_tree_coll_aux_subseteq)
 apply(auto simp: set_of_empty SI_empty)
 done
 
-lemma worklist_dfs_coll_inv:
-  "worklist_dfs_coll succs P f ws = Some s \<Longrightarrow> S s"
-unfolding worklist_dfs_coll_def worklist_dfs_coll_aux_def
-apply(drule worklist_dfs_state_inv[where I = S])
+lemma worklist_tree_coll_inv:
+  "worklist_tree_coll succs P f ws = Some s \<Longrightarrow> S s"
+unfolding worklist_tree_coll_def worklist_tree_coll_aux_def
+apply(drule worklist_tree_state_inv[where I = S])
 apply (auto simp: S_empty insert_mod2_def S_insert_mod)
 done
 

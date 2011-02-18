@@ -1,5 +1,5 @@
 theory Maps
-imports Worklist Eqi_Locale
+imports Worklist Quasi_Order
 begin
 
 locale maps =
@@ -17,34 +17,34 @@ definition "set_of m = (UN x. set(map_of m x))"
 
 end
 
-locale set_mod_maps = maps empty up map_of M + eqi equi
+locale set_mod_maps = maps empty up map_of M + quasi_order qle
 for empty :: "'m"
 and up :: "'m \<Rightarrow> 'a \<Rightarrow> 'b list \<Rightarrow> 'm"
 and map_of :: "'m \<Rightarrow> 'a \<Rightarrow> 'b list"
 and M :: "'m \<Rightarrow> bool"
-and equi :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<simeq>" 60)
+and qle :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<preceq>" 60)
 +
-fixes equiv_test :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
+fixes subsumed :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
 and I :: "'b \<Rightarrow> bool"
 and key :: "'b \<Rightarrow> 'a"
-assumes equiv_iff_eqi: "I x \<Longrightarrow> I y \<Longrightarrow> equiv_test x y = (x \<simeq> y)"
+assumes equiv_iff_qle: "I x \<Longrightarrow> I y \<Longrightarrow> subsumed x y = (x \<preceq> y)"
 and "key=key"
 begin
 
 definition "insert_mod x m =
   (let k = key x; ys = map_of m k
-   in if (EX y : set ys. equiv_test x y) then m else up m k (x#ys))"
+   in if (EX y : set ys. subsumed x y) then m else up m k (x#ys))"
 
 end
 
 sublocale
   set_mod_maps <
-  set_by_maps: set_modulo equi empty insert_mod set_of I M
+  set_by_maps: set_modulo qle empty insert_mod set_of I M
 proof
   case goal1 show ?case by(simp add:set_of_def map_empty)
 next
   case goal2 thus ?case
-    by (auto simp: Let_def insert_mod_def set_of_def map_up equiv_iff_eqi
+    by (auto simp: Let_def insert_mod_def set_of_def map_up equiv_iff_qle
       split:split_if_asm)
 next
   case goal3 show ?case by(simp add: M_empty)
