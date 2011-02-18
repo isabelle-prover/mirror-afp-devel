@@ -1,51 +1,8 @@
-(*  Author:     Tobias Nipkow
-*)
+(*  Author: Tobias Nipkow  *)
 
 theory ArchStat
-imports TameEnum TrieList Arch
+imports TameEnum ArchCompAux
 begin
-
-function qsort :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-  "qsort le []       = []"
-  | "qsort le (x#xs) = qsort le [y\<leftarrow>xs . ~ le x y] @ [x] @
-		       qsort le [y\<leftarrow>xs . le x y]"
-by pat_completeness auto
-termination by (relation "measure (size o snd)")
-  (auto simp add: length_filter_le [THEN le_less_trans])
-
-definition fgraph :: "graph \<Rightarrow> nat fgraph" where
-"fgraph g = map vertices (faces g)"
-
-definition nof_vertices :: "'a fgraph \<Rightarrow> nat" where
-"nof_vertices = length o remdups o concat"
-
-definition hash :: "nat fgraph \<Rightarrow> nat list" where
-"hash fs = (let n = nof_vertices fs in
-   [n, size fs] @
-   qsort (%x y. y < x) (map (%i. foldl (op +) 0 (map size [f:fs. i \<in> set f]))
-                           [0..<n]))"
-
-primrec
- enum_finals :: "(graph \<Rightarrow> graph list) \<Rightarrow> nat \<Rightarrow> graph list \<Rightarrow> nat fgraph list
-                 \<Rightarrow> nat fgraph list option" where
-  "enum_finals succs 0 todo fins = None"
-| "enum_finals succs (Suc n) todo fins =
-   (if todo = [] then Some fins
-    else let g = hd todo; todo' = tl todo in
-      if final g then enum_finals succs n todo' (fgraph g # fins)
-      else enum_finals succs n (succs g @ todo') fins)"
-
-definition fins :: "nat \<Rightarrow> nat \<Rightarrow> nat fgraph list option" where
-"fins p n = enum_finals (next_tame p) n [Seed p] []"
-
-definition same :: "nat fgraph list option \<Rightarrow> nat fgraph list \<Rightarrow> bool" where
-"same fgso ags = (case fgso of None \<Rightarrow> False | Some fgs \<Rightarrow>
- let niso_test = (%fs1 fs2. iso_test (nof_vertices fs1,fs1)
-                                     (nof_vertices fs2,fs2));
-     tfgs = trie_of_list hash fgs;
-     tags = trie_of_list hash ags in
- (list_all (%fg. list_ex (niso_test fg) (lookup_trie tags (hash fg))) fgs &
-  list_all (%ag. list_ex (niso_test ag) (lookup_trie tfgs (hash ag))) ags))"
 
 definition stat :: "nat fgraph list \<Rightarrow> nat * nat * nat * nat * nat" where
 "stat A =
@@ -60,9 +17,15 @@ value [code] "stat Tri"
 value [code] "stat Quad"
 value [code] "stat Pent"
 value [code] "stat Hex"
-value [code] "stat Hept"
-value [code] "stat Oct"
 
+(* nof graphs, max nof faces, total nof faces, max nof vertices, total nof vertices *)
+(* NEW
+3: (9, 26, 212, 15, 124)
+4: (1105, 25, 21787, 15, 15015)
+5: (15991, 24, 294921, 15, 221421)
+6: (1657, 23, 31169, 15, 23071)
+*)
+(* OLD *)
 (* 3: (  20, 32,   440, 18,   260) *)
 (* 4: ( 923, 29, 16533, 18, 11444) *)
 (* 5: (1545, 26, 27223, 17, 19668) *)
@@ -70,25 +33,47 @@ value [code] "stat Oct"
 (* 7: (  23, 18,   357, 13,   278) *)
 (* 8: (  22, 19,   333, 14,   266) *)
 
-primrec countgs :: "(graph \<Rightarrow> graph list) \<Rightarrow> nat \<Rightarrow> nat*nat \<Rightarrow> graph list \<Rightarrow> (nat*nat) option" where
-  "countgs succs 0       ij todo = None"
-| "countgs succs (Suc n) ij todo =
-   (if todo = [] then Some ij
-    else let g = hd todo; todo' = tl todo in
-      if final g then countgs succs n (fst ij, snd ij + 1) todo'
-      else countgs succs n (fst ij + 1, snd ij) (succs g @ todo'))"
+types config = "(nat,nat fgraph)tries * nat * nat"
+fun insert_mod :: "graph \<Rightarrow> config \<Rightarrow> config" where
+"insert_mod x (t,tot,fins) =
+ (if final x
+  then
+    let
+      fg = fgraph x; h = hash fg; ys = Tries.lookup t h;
+      t' = if (EX y:set ys. iso_test fg y) then t else Tries.update t h (fg#ys)
+    in (t', tot+1, fins+1)
+  else (t,tot+1,fins))"
 
-definition count :: "nat \<Rightarrow> nat \<Rightarrow> (nat*nat) option" where
-"count p n = countgs (next_tame p) n (1,0) [Seed p]"
+definition worklist_collect_aux ::
+  "(graph \<Rightarrow> graph list) \<Rightarrow> graph list \<Rightarrow> config \<Rightarrow> config option"
+where
+"worklist_collect_aux succs = worklist_dfs succs insert_mod"
 
-ML"set Toplevel.timing"
-value [code] "count 0 100000"
-value [code] "count 1 8000000"
-value [code] "count 2 20000000"
-value [code] "count 3 4000000"
-value [code] "count 4 1000000"
-value [code] "count 5 2000000"
+fun stat_of_tries where
+"stat_of_tries(Tries vs al) =
+   (if vs=[] then [] else [length vs]) @
+   concat(map (%(a,t). stat_of_tries t) al)"
 
+definition "avgmax ns = (listsum ns, length ns, max_list ns)"
+
+definition count where
+"count p =
+ (case worklist_collect_aux (next_tame p) [Seed p] (Tries [] [],1,0) of
+  None \<Rightarrow> None |
+  Some(t,n,f) \<Rightarrow> Some(avgmax(stat_of_tries t),n,f))"
+
+
+ML"Toplevel.timing := true"
+(* (total number of entries, number of leaves, max number of enries per leaf),
+   total number of graphs, number of final graphs
+*)
+value [code] "count 0" (* (9, 6, 3), 312764, 501 *)
+value [code] "count 1" (* (1105, 418, 17), 134291356, 27050 *)
+value [code] "count 2" (* (15991, 5189, 97), 1401437009, 301560 *)
+value [code] "count 3" (* (1657, 498, 35), 334466383, 19120 *)
+(* 11 hours *)
+end
+(* OLD *)
 (* 3:    (58021,   793) *)
 (* 4:  (5631754, 17486) in 30 *)
 (* 5: (11444023, 15746) in 50 *)
@@ -97,4 +82,3 @@ value [code] "count 5 2000000"
 (* 8:  (1402944,   234) in  6 *)
 (* sum: 23069034 *)
 
-end
