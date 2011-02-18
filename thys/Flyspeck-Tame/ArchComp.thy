@@ -3,7 +3,7 @@
 header "Comparing Enumeration and Archive"
 
 theory ArchComp
-imports ArchCompAux Efficient_Nat
+imports ArchCompProps "~~/src/HOL/Library/Efficient_Nat"
 begin
 
 subsection {* Proofs by evaluation using generated code *}
