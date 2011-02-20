@@ -151,7 +151,7 @@ text {*
 text_raw {* \paragraph {@{text \<alpha>} - Level:} *}
 
   -- "A state contains the set of discovered states and a workset"
-types ('Q,'L) br_state = "'Q set \<times> 'Q set"
+type_synonym ('Q,'L) br_state = "'Q set \<times> 'Q set"
 
   -- {* Set of states that are non-empty (accept a tree) after adding the 
   state $q$ to the set of discovered states *}
@@ -390,7 +390,7 @@ text {*
 
   A similar algorithm is sketched in \cite{tata2007}(Exercise~1.18).
 *}
-types ('Q,'L) br'_state = "'Q set \<times> 'Q set \<times> (('Q,'L) ta_rule \<rightharpoonup> nat)"
+type_synonym ('Q,'L) br'_state = "'Q set \<times> 'Q set \<times> (('Q,'L) ta_rule \<rightharpoonup> nat)"
 
   -- {* Abstraction to @{text \<alpha>}-level *}
 definition br'_\<alpha> :: "('Q,'L) br'_state \<Rightarrow> ('Q,'L) br_state" 
@@ -850,7 +850,7 @@ text {*
   The set of discovered states is refined by a map from discovered states to 
   their witnesses:
 *}
-types ('Q,'L) brw_state = "('Q\<rightharpoonup>'L tree) \<times> 'Q set \<times> (('Q,'L) ta_rule \<rightharpoonup> nat)"
+type_synonym ('Q,'L) brw_state = "('Q\<rightharpoonup>'L tree) \<times> 'Q set \<times> (('Q,'L) ta_rule \<rightharpoonup> nat)"
 
 definition brw_\<alpha> :: "('Q,'L) brw_state \<Rightarrow> ('Q,'L) br'_state" 
   where "brw_\<alpha> = (\<lambda>(Q,W,rcm). (dom Q,W,rcm))"
@@ -1242,7 +1242,7 @@ text {*
   (cf. Theory~@{theory "Exploration"} in the Isabelle Collections Framework) is refined to compute the product automaton.
 *}
 
-types ('Q1,'Q2,'L) frp_state = 
+type_synonym ('Q1,'Q2,'L) frp_state = 
   "('Q1\<times>'Q2) set \<times> ('Q1\<times>'Q2) list \<times> (('Q1\<times>'Q2),'L) ta_rule set"
 
 definition frp_\<alpha> :: "('Q1,'Q2,'L) frp_state \<Rightarrow> ('Q1\<times>'Q2) dfs_state"

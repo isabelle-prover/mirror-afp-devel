@@ -1008,10 +1008,10 @@ proof (induct arbitrary: P rule: b_accessible.induct[case_names IH])
       moreover from Cons obtain t where "accs (ta_rules TA) t q" by auto
       ultimately have 
         "\<forall>i<length (q#qs). accs (ta_rules TA) ((t#ts) ! i) ((q#qs) ! i)"
-	      apply auto
-	      apply (case_tac i)
-	      apply auto
-	      done
+        apply auto
+        apply (case_tac i)
+        apply auto
+        done
       thus ?case using L by auto
     qed
     thus thesis by (blast intro: that)

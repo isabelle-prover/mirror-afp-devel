@@ -7,7 +7,7 @@ theory Ta_impl
 imports 
   Main
 
-  "Efficient_Nat" 
+  "~~/src/HOL/Library/Efficient_Nat" 
   "../Collections/common/Misc" 
   "../Collections/Collections" 
 
@@ -561,7 +561,7 @@ text {*
 *}
 
   -- "State of the product-automaton DFS-algorithm"
-types ('q1,'q2,'l) pa_state 
+type_synonym ('q1,'q2,'l) pa_state 
   = "('q1\<times>'q2) hs \<times> ('q1\<times>'q2) list \<times> ('q1\<times>'q2,'l) ta_rule ls"
 
   -- {* Abstraction mapping to algorithm specified in 
@@ -1372,7 +1372,7 @@ qed
     a worklist and a map from rules to the number of distinct states on 
     its RHS that have not yet been discovered or are still on the worklist
 *}
-types ('Q,'L) brc_state 
+type_synonym ('Q,'L) brc_state 
   = "'Q hs \<times> 'Q list \<times> (('Q,'L) ta_rule, nat) hm"
 
 -- {* Abstraction to @{text \<alpha>'}-level: *}
@@ -1666,7 +1666,7 @@ lemma brec_construct_witness_correct:
   by (auto 
     simp add: construct_witness_def brec_construct_witness_def hm_correct)
 
-types ('Q,'L) brec_state 
+type_synonym ('Q,'L) brec_state 
   = "(('Q,'L tree) hm 
       \<times> 'Q fifo 
       \<times> (('Q,'L) ta_rule, nat) hm 
@@ -2067,7 +2067,7 @@ text {*
   overhead with typeclass emulation.
 *}
 
-types htai = "(nat,nat) hashedTa"
+type_synonym htai = "(nat,nat) hashedTa"
 
 definition htai_mem :: "_ \<Rightarrow> htai \<Rightarrow> bool" 
   where "htai_mem == hta_mem"
