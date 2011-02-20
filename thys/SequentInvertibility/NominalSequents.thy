@@ -2,7 +2,7 @@
 (* Author : Peter Chapman *)
 header "First Order Sequents" 
 theory NominalSequents
-imports Multiset Nominal
+imports "~~/src/HOL/Library/Multiset" Nominal
 begin
 
 atom_decl var
@@ -36,9 +36,9 @@ datatype sequent = Sequent "form multiset" "form multiset" (" (_) \<Rightarrow>*
 (* We have that any step in a rule, be it a primitive rule or an instance of a rule in a derivation
    can be represented as a list of premisses and a conclusion.  We need a list since a list is finite
    by definition *)
-types rule = "sequent list * sequent"
+type_synonym rule = "sequent list * sequent"
 
-types deriv = "sequent * nat"
+type_synonym deriv = "sequent * nat"
 
 abbreviation
 multiset_plus (infixl "\<oplus>" 80) where
@@ -295,19 +295,19 @@ shows "\<exists> Ps. Ps \<noteq> [] \<and>
              (\<forall> p \<in> set Ps. \<exists> n\<le>m. (p,n) \<in> derivable R)"
 using assms
 proof (cases)
-    case base
-    then show "\<exists> Ps. Ps \<noteq> [] \<and>
-                     (Ps,C) \<in> R \<and> 
-                     (\<forall> p \<in> set Ps. \<exists> n\<le>m. (p,n) \<in> derivable R)" using assms by simp
+  case base
+  then show "\<exists> Ps. Ps \<noteq> [] \<and>
+    (Ps,C) \<in> R \<and> 
+    (\<forall> p \<in> set Ps. \<exists> n\<le>m. (p,n) \<in> derivable R)" using assms by simp
 next
-    case (step r n)
-    then obtain Ps where "r = (Ps,C)" and "m=n" by (cases r) (auto)
-    then have "fst r = Ps" and "snd r = C" by auto
-    then show "\<exists> Ps. Ps \<noteq> [] \<and>
-                     (Ps,C) \<in> R \<and> 
-                     (\<forall> p \<in> set Ps. \<exists> n\<le>m. (p,n) \<in> derivable R)" 
-         using `r \<in> R` and `m=n` and prems(5,6)
-         by (rule_tac x=Ps in exI) (auto)
+  case (step r n)
+  then obtain Ps where "r = (Ps,C)" and "m=n" by (cases r) (auto)
+  then have "fst r = Ps" and "snd r = C" by auto
+  then show "\<exists> Ps. Ps \<noteq> [] \<and>
+    (Ps,C) \<in> R \<and> 
+    (\<forall> p \<in> set Ps. \<exists> n\<le>m. (p,n) \<in> derivable R)" 
+    using `r \<in> R` and `m=n` and step(4,5)
+    by (rule_tac x=Ps in exI) (auto)
 qed
 
 
@@ -317,13 +317,13 @@ assumes "(Ps,C) \<in> upRules"
 shows "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Cpd0 F Fs\<RM>) \<or> C = (\<LM>Cpd0 F Fs\<RM> \<Rightarrow>* \<Empt>)"
 using assms
 proof (cases)
-case (I F Fs)
-then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
-then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
-then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Cpd0 F Fs\<RM>) \<or> C = (\<LM>Cpd0 F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-     using `mset C \<equiv> \<LM>Cpd0 F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Cpd0 F Fs"]
-     by auto
+  case (I F Fs)
+  then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
+  then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using assms by simp
+  then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Cpd0 F Fs\<RM>) \<or> C = (\<LM>Cpd0 F Fs\<RM> \<Rightarrow>* \<Empt>)" 
+    using `mset C \<equiv> \<LM>Cpd0 F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
+      and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Cpd0 F Fs"]
+    by auto
 qed
 
 lemma provRuleCharacterise:
@@ -331,13 +331,13 @@ assumes "(Ps,C) \<in> provRules"
 shows "\<exists> F x A. (C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)) \<and> x \<sharp> set_of_prem (Ps - A)"
 using assms
 proof (cases)
-case (I F x A)
-then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
-then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> provRules" using prems by simp
-then show "\<exists> F x A. (C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)) \<and> x \<sharp> set_of_prem (Ps - A)" 
-     using `mset C = \<LM> F \<nabla> [x].A \<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)` and `x \<sharp> set_of_prem (Ps - A)`
-     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
-     by auto
+  case (I F x A)
+  then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
+  then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> provRules" using assms by simp
+  then show "\<exists> F x A. (C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)) \<and> x \<sharp> set_of_prem (Ps - A)" 
+    using `mset C = \<LM> F \<nabla> [x].A \<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)` and `x \<sharp> set_of_prem (Ps - A)`
+      and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
+    by auto
 qed
 
 lemma nprovRuleCharacterise:
@@ -345,13 +345,13 @@ assumes "(Ps,C) \<in> nprovRules"
 shows "\<exists> F x A. C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)"
 using assms
 proof (cases)
-case (I F x A)
-then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
-then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> nprovRules" using prems by simp
-then show "\<exists> F x A. C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)" 
-     using `mset C = \<LM> F \<nabla> [x].A \<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
-     by auto
+  case (I F x A)
+  then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
+  then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> nprovRules" using assms by simp
+  then show "\<exists> F x A. C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)" 
+    using `mset C = \<LM> F \<nabla> [x].A \<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
+      and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
+    by auto
 qed
 
 
@@ -463,31 +463,31 @@ lemma switch:
 fixes A :: "form" and As :: "form_list"
 shows "y \<sharp> A \<Longrightarrow> [y,x]A = [(y,x)]\<bullet>A" and "y \<sharp> As \<Longrightarrow> [y,x]As = [(y,x)]\<bullet>As"
 proof (nominal_induct A and As avoiding: x y rule:form_form_list.strong_inducts)
-print_cases
-case (At n xs s t)
-   then have "t \<sharp> xs" using form.fresh by auto
-   then show ?case using perm_nat_def[where pi="[(t,s)]" and i=n] and switchAux[where y=t and Xs=xs] by auto
+  case (At n xs s t)
+  then have "t \<sharp> xs" using form.fresh by auto
+  then show ?case using perm_nat_def[where pi="[(t,s)]" and i=n] and switchAux[where y=t and Xs=xs]
+    by auto
 next
-case FNil
-   then show ?case by auto
+  case FNil
+  then show ?case by auto
 next
-case (FCons B Bs s t)
-   then show ?case by auto
+  case (FCons B Bs s t)
+  then show ?case by auto
 next
-case (Cpd0 Str Bs s t)
-   then show ?case using prems(1)[where ba=t and b=s] and form.fresh 
-                   and perm_string[where s="Str" and pi="[(t,s)]"] by auto
+  case (Cpd0 Str Bs s t)
+  then show ?case using Cpd0.hyps[where ba=t and b=s] and form.fresh
+    and perm_string[where s="Str" and pi="[(t,s)]"] by auto
 next
-case (Cpd1 F a B s t)
-   then have "t \<sharp> B" using form.fresh(3)[where ?x3.0=F and ?x1.0=a and ?x2.0=B and a=t] 
-                      and fresh_atm[where a=a and b=t] and fresh_string[where a=t and s=F] 
-                      and fresh_abs_funE[OF pt_var_inst, OF at_var_inst,where x=B and b=t and a=a]
-                      and finSupp(1)[where A=B] by auto
-   then show ?case using prems(4)[where ba=t and b=s] and form.fresh and prems(1,2)
-                   and perm_string[where pi="[(t,s)]" and s=F] and fresh_atm by (perm_simp)
+  case (Cpd1 F a B s t)
+  then have "t \<sharp> B" using form.fresh(3)[where ?x3.0=F and ?x1.0=a and ?x2.0=B and a=t] 
+    and fresh_atm[where a=a and b=t] and fresh_string[where a=t and s=F] 
+    and fresh_abs_funE[OF pt_var_inst, OF at_var_inst,where x=B and b=t and a=a]
+    and finSupp(1)[where A=B] by auto
+  then show ?case using Cpd1(4)[where ba=t and b=s] and form.fresh and Cpd1(1,2)
+    and perm_string[where pi="[(t,s)]" and s=F] and fresh_atm by perm_simp
 next
-case ff
-   then show ?case by auto
+  case ff
+  then show ?case by auto
 qed
 (*>*)
     

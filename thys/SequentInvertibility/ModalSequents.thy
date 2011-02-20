@@ -3,7 +3,7 @@
 header "Modal Sequents"
 
 theory ModalSequents
-imports Multiset
+imports "~~/src/HOL/Library/Multiset"
 
 begin
 
@@ -146,9 +146,9 @@ datatype ('a, 'b) form = At "nat"
 (*<*)
 datatype ('a,'b) sequent = Sequent "(('a,'b) form) multiset" "(('a,'b) form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
 
-types ('a,'b) rule = "('a,'b) sequent list * ('a,'b) sequent"
+type_synonym ('a,'b) rule = "('a,'b) sequent list * ('a,'b) sequent"
 
-types ('a,'b) deriv = "('a,'b) sequent * nat"
+type_synonym ('a,'b) deriv = "('a,'b) sequent * nat"
 
 consts
   (* extend a sequent by adding another one.  A form of weakening.  *)
@@ -408,13 +408,13 @@ assumes "(Ps,C) \<in> upRules"
 shows "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)"
 using assms
 proof (cases)
-case (I F Fs)
-then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
-then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
-then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-     using `mset C = \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset.simps [where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
-     by auto
+  case (I F Fs)
+  then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
+  then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using assms by simp
+  then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
+    using `mset C = \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
+      and mset.simps [where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
+    by auto
 qed
 
 lemma modRule2Characterise:
@@ -422,15 +422,15 @@ assumes "(Ps,C) \<in> modRules2"
 shows "Ps \<noteq> [] \<and> (\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> C = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>))"
 using assms
 proof (cases)
-case (I F Fs)
-then have "Ps \<noteq> []" by simp
-from prems obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
-then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> modRules2" using prems by simp
-then have "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> C = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-     using `mset C = \<LM>Modal F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Modal F Fs"]
-     by auto
-thus ?thesis using `Ps \<noteq> []` by auto
+  case (I F Fs)
+  then have "Ps \<noteq> []" by simp
+  obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
+  then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> modRules2" using assms by simp
+  then have "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> C = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)" 
+    using `mset C = \<LM>Modal F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
+      and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Modal F Fs"]
+    by auto
+  thus ?thesis using `Ps \<noteq> []` by auto
 qed
 
 lemma modRule1Characterise:
@@ -440,14 +440,15 @@ shows "\<exists> F Fs \<Gamma> \<Delta> ps r. (Ps,C) = extendRule (M\<cdot>\<Gam
                      r = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>))"
 using assms
 proof (cases)
-case (I r \<Gamma> \<Delta>)
-then have "r \<in> modRules2" by auto
-obtain ps c where "r = (ps,c)" by (cases r) auto
-with `r \<in> modRules2` obtain F Fs where "c = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> c = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
-     using modRule2Characterise[where C=c and Ps=ps] by auto
-with prems(3) prems(4) show ?thesis using `r = (ps,c)` apply-
-     apply (rule_tac x=F in exI) apply (rule_tac x=Fs in exI) apply (rule_tac x=\<Gamma> in exI)
-     apply (rule_tac x=\<Delta> in exI) by auto
+  case (I r \<Gamma> \<Delta>)
+  then have "r \<in> modRules2" by auto
+  obtain ps c where "r = (ps,c)" by (cases r) auto
+  with `r \<in> modRules2` obtain F Fs where "c = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> c = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
+    using modRule2Characterise[where C=c and Ps=ps] by auto
+  with I show ?thesis using `r = (ps,c)`
+    apply -
+    apply (rule_tac x=F in exI) apply (rule_tac x=Fs in exI) apply (rule_tac x=\<Gamma> in exI)
+    apply (rule_tac x=\<Delta> in exI) apply auto done
 qed
 
 lemma extendEmpty:
@@ -2240,7 +2241,7 @@ qed
 datatype C = con
 datatype BD = BOX ("\<box>")| DIAMOND ("\<diamond>")
 
-types CDBD_form = "(C,BD) form"
+type_synonym CDBD_form = "(C,BD) form"
 
 abbreviation con_form (infixl "\<and>*" 80) where
    "p \<and>* (q :: CDBD_form) \<equiv> Compound con [p,q]"

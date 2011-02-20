@@ -2,8 +2,7 @@
 header "Single Succedent"
 
 theory SingleSuccedent
-imports Multiset
-
+imports "~~/src/HOL/Library/Multiset"
 begin
 
 (* Has the empty formula O, which will mean we can have empty right-hand sides *)
@@ -32,9 +31,9 @@ datatype 'a sequent = Sequent "('a form) multiset" "('a form)" (" (_) \<Rightarr
 (* We have that any step in a rule, be it a primitive rule or an instance of a rule in a derivation
    can be represented as a list of premisses and a conclusion.  We need a list since a list is finite
    by definition *)
-types 'a rule = "'a sequent list * 'a sequent"
+type_synonym 'a rule = "'a sequent list * 'a sequent"
 
-types 'a deriv = "'a sequent * nat"
+type_synonym 'a deriv = "'a sequent * nat"
 
 abbreviation
 multiset_plus (infixl "\<oplus>" 80) where
@@ -136,34 +135,34 @@ lemma deriv_to_deriv2:
 assumes "C \<in> derivable' R"
 shows "\<exists> n. (C,n) \<in> derivable R"
 using assms
-    proof (induct)
-    case (base C)
-    then have "(C,0) \<in> derivable R" by auto
-    then show ?case by blast
+proof (induct)
+  case (base C)
+  then have "(C,0) \<in> derivable R" by auto
+  then show ?case by blast
 next
-    case (step r)
-    then obtain ps c where "r = (ps,c)" and "ps \<noteq> []" by (cases r) auto
-    then have aa: "\<forall> p \<in> set ps. \<exists> n. (p,n) \<in> derivable R" using prems(4) by auto
-    then have "\<exists> m. \<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R"
-        proof (induct ps)
-        case Nil
-        then show ?case  by auto
-    next
-        case (Cons a as)
-        then have "\<exists> m. \<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
-        then obtain m where "\<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
-        moreover from `\<forall> p \<in> set (a # as). \<exists> n. (p,n) \<in> derivable R` have
-             "\<exists> n. (a,n) \<in> derivable R" by auto
-        then obtain m' where "(a,m') \<in> derivable R" by blast
-        ultimately have "\<forall> p \<in> set (a # as). \<exists> n\<le>(max m m'). (p,n) \<in> derivable R" apply (auto simp add:Ball_def)
-             apply (rule_tac x=m' in exI) apply simp
-             apply (drule_tac x=x in spec) apply auto by (rule_tac x=n in exI) auto
-        then show ?case by blast
-        qed
-    then obtain m where "\<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R" by blast
-    with `r = (ps,c)` and `r \<in> R` have "(c,m+1) \<in> derivable R" using `ps \<noteq> []` and
-        derivable.step[where r="(ps,c)" and R=R and m=m] by auto
-    then show ?case using `r = (ps,c)` by auto
+  case (step r)
+  then obtain ps c where "r = (ps,c)" and "ps \<noteq> []" by (cases r) auto
+  then have aa: "\<forall> p \<in> set ps. \<exists> n. (p,n) \<in> derivable R" using step(3) by auto
+  then have "\<exists> m. \<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R"
+  proof (induct ps)
+    case Nil
+    then show ?case  by auto
+  next
+    case (Cons a as)
+    then have "\<exists> m. \<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
+    then obtain m where "\<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
+    moreover from `\<forall> p \<in> set (a # as). \<exists> n. (p,n) \<in> derivable R` have
+      "\<exists> n. (a,n) \<in> derivable R" by auto
+    then obtain m' where "(a,m') \<in> derivable R" by blast
+    ultimately have "\<forall> p \<in> set (a # as). \<exists> n\<le>(max m m'). (p,n) \<in> derivable R" apply (auto simp add:Ball_def)
+      apply (rule_tac x=m' in exI) apply simp
+      apply (drule_tac x=x in spec) apply auto by (rule_tac x=n in exI) auto
+    then show ?case by blast
+  qed
+  then obtain m where "\<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R" by blast
+  with `r = (ps,c)` and `r \<in> R` have "(c,m+1) \<in> derivable R" using `ps \<noteq> []` and
+    derivable.step[where r="(ps,c)" and R=R and m=m] by auto
+  then show ?case using `r = (ps,c)` by auto
 qed
 
 (* definition of invertible rule and invertible set of rules.  It's a bit nasty, but all it really says is
@@ -1021,7 +1020,7 @@ qed
 
 datatype cdi = con | dis | imp
 
-types cdi_form = "cdi form"
+type_synonym cdi_form = "cdi form"
 
 abbreviation con_form (infixl "\<and>*" 80) where
    "p \<and>* q \<equiv> Compound con [p,q]"

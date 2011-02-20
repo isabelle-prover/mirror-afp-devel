@@ -3,7 +3,7 @@
 header "Rule Set Transformations"
  
 theory SRCTransforms
-imports Multiset
+imports "~~/src/HOL/Library/Multiset"
 begin
 
 datatype 'a form = At "nat"
@@ -21,9 +21,9 @@ abbreviation multiset_empty ("\<Empt>" 75) where
 (* We have that any step in a rule, be it a primitive rule or an instance of a rule in a derivation
    can be represented as a list of premisses and a conclusion.  We need a list since a list is finite
    by definition *)
-types 'a rule = "'a sequent list * 'a sequent"
+type_synonym 'a rule = "'a sequent list * 'a sequent"
 
-types 'a deriv = "'a sequent * nat"
+type_synonym 'a deriv = "'a sequent * nat"
 
 abbreviation
 multiset_plus (infixl "\<oplus>" 80) where
@@ -130,34 +130,36 @@ lemma deriv_to_deriv2:
 assumes "C \<in> derivable' R"
 shows "\<exists> n. (C,n) \<in> derivable R"
 using assms
-    proof (induct)
-    case (base C)
-    then have "(C,0) \<in> derivable R" by auto
-    then show ?case by blast
+proof (induct)
+  case (base C)
+  then have "(C,0) \<in> derivable R" by auto
+  then show ?case by blast
 next
-    case (step r)
-    then obtain ps c where "r = (ps,c)" and "ps \<noteq> []" by (cases r) auto
-    then have aa: "\<forall> p \<in> set ps. \<exists> n. (p,n) \<in> derivable R" using prems(4) by auto
-    then have "\<exists> m. \<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R"
-        proof (induct ps)
-        case Nil
-        then show ?case  by auto
-    next
-        case (Cons a as)
-        then have "\<exists> m. \<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
-        then obtain m where "\<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
-        moreover from `\<forall> p \<in> set (a # as). \<exists> n. (p,n) \<in> derivable R` have
-             "\<exists> n. (a,n) \<in> derivable R" by auto
-        then obtain m' where "(a,m') \<in> derivable R" by blast
-        ultimately have "\<forall> p \<in> set (a # as). \<exists> n\<le>(max m m'). (p,n) \<in> derivable R" apply (auto simp add:Ball_def)
-             apply (rule_tac x=m' in exI) apply simp
-             apply (drule_tac x=x in spec) apply auto by (rule_tac x=n in exI) auto
-        then show ?case by blast
-        qed
-    then obtain m where "\<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R" by blast
-    with `r = (ps,c)` and `r \<in> R` have "(c,m+1) \<in> derivable R" using `ps \<noteq> []` and
-        derivable.step[where r="(ps,c)" and R=R and m=m] by auto
-    then show ?case using `r = (ps,c)` by auto
+  case (step r)
+  then obtain ps c where "r = (ps,c)" and "ps \<noteq> []" by (cases r) auto
+  then have aa: "\<forall> p \<in> set ps. \<exists> n. (p,n) \<in> derivable R" using step(3) by auto
+  then have "\<exists> m. \<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R"
+  proof (induct ps)
+    case Nil
+    then show ?case  by auto
+  next
+    case (Cons a as)
+    then have "\<exists> m. \<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
+    then obtain m where "\<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
+    moreover from `\<forall> p \<in> set (a # as). \<exists> n. (p,n) \<in> derivable R` have
+      "\<exists> n. (a,n) \<in> derivable R" by auto
+    then obtain m' where "(a,m') \<in> derivable R" by blast
+    ultimately have "\<forall> p \<in> set (a # as). \<exists> n\<le>(max m m'). (p,n) \<in> derivable R"
+      apply (auto simp add:Ball_def)
+      apply (rule_tac x=m' in exI) apply simp
+      apply (drule_tac x=x in spec) apply auto
+      apply (rule_tac x=n in exI) apply auto done
+    then show ?case by blast
+  qed
+  then obtain m where "\<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R" by blast
+  with `r = (ps,c)` and `r \<in> R` have "(c,m+1) \<in> derivable R" using `ps \<noteq> []` and
+    derivable.step[where r="(ps,c)" and R=R and m=m] by auto
+  then show ?case using `r = (ps,c)` by auto
 qed
 
 (* definition of invertible rule and invertible set of rules.  It's a bit nasty, but all it really says is
@@ -209,8 +211,8 @@ shows "At i :# \<Gamma> \<and> At i :# \<Delta>"
 using assms
 proof-
   from assms have "\<exists> \<Gamma>' \<Delta>'. \<Gamma> = \<Gamma>' \<oplus> At i \<and> \<Delta> = \<Delta>' \<oplus> At i" 
-     using extend_def[where forms=S and seq="\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>"]
-     by (rule_tac x="antec S" in exI,rule_tac x="succ S" in exI) auto
+    using extend_def[where forms=S and seq="\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>"]
+    by (rule_tac x="antec S" in exI,rule_tac x="succ S" in exI) auto
   then show ?thesis by auto
 qed
 
@@ -219,8 +221,8 @@ assumes "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarr
 shows "ff :# \<Gamma>"
 proof-
   from assms have "\<exists> \<Gamma>'. \<Gamma> = \<Gamma>' \<oplus> ff" 
-     using extend_def[where forms=S and seq="\<LM>ff \<RM> \<Rightarrow>* \<Empt>"]
-     by (rule_tac x="antec S" in exI) auto
+    using extend_def[where forms=S and seq="\<LM>ff \<RM> \<Rightarrow>* \<Empt>"]
+    by (rule_tac x="antec S" in exI) auto
   then show ?thesis by auto
 qed
 
@@ -232,16 +234,17 @@ assumes a:"At i :# \<Gamma> \<and> At i :# \<Delta>"
     and b:"Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable R*"
 proof-
-from a have "\<Gamma> = \<Gamma> \<ominus> At i \<oplus> At i \<and> \<Delta> = \<Delta> \<ominus> At i \<oplus> At i" by auto
-then have "extend ((\<Gamma> \<ominus> At i) \<Rightarrow>* (\<Delta> \<ominus> At i)) (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)" 
-     using extend_def[where forms="\<Gamma> \<ominus> At i \<Rightarrow>* \<Delta> \<ominus> At i" and seq="\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>"] by auto
-moreover
-have "([],\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) \<in> R" using b by auto
-ultimately
-have "([],\<Gamma> \<Rightarrow>* \<Delta>) \<in> R*" 
-     using extRules.I[where R=R and r="([],  \<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)" and seq="\<Gamma> \<ominus> At i \<Rightarrow>* \<Delta> \<ominus> At i"] 
-       and extendRule_def[where forms="\<Gamma> \<ominus> At i \<Rightarrow>* \<Delta> \<ominus> At i" and R="([],  \<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)"] by auto
-then show ?thesis using derivable.base[where R="R*" and C="\<Gamma> \<Rightarrow>* \<Delta>"] by auto
+  from a have "\<Gamma> = \<Gamma> \<ominus> At i \<oplus> At i \<and> \<Delta> = \<Delta> \<ominus> At i \<oplus> At i" by auto
+  then have "extend ((\<Gamma> \<ominus> At i) \<Rightarrow>* (\<Delta> \<ominus> At i)) (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)" 
+    using extend_def[where forms="\<Gamma> \<ominus> At i \<Rightarrow>* \<Delta> \<ominus> At i" and seq="\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>"]
+    by auto
+  moreover
+  have "([],\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) \<in> R" using b by auto
+  ultimately
+  have "([],\<Gamma> \<Rightarrow>* \<Delta>) \<in> R*" 
+    using extRules.I[where R=R and r="([],  \<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)" and seq="\<Gamma> \<ominus> At i \<Rightarrow>* \<Delta> \<ominus> At i"] 
+      and extendRule_def[where forms="\<Gamma> \<ominus> At i \<Rightarrow>* \<Delta> \<ominus> At i" and R="([],  \<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)"] by auto
+  then show ?thesis using derivable.base[where R="R*" and C="\<Gamma> \<Rightarrow>* \<Delta>"] by auto
 qed
 
 lemma containFalsum:
@@ -249,22 +252,22 @@ assumes a: "ff :# \<Gamma>"
    and  b: "Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable R*"
 proof-
-from a have "\<Gamma> = \<Gamma> \<ominus> ff \<oplus> ff" by auto
-then have "extend (\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>) (\<LM>ff\<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)"
-     using extend_def[where forms="\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>" and seq="\<LM>ff\<RM> \<Rightarrow>* \<Empt>"] by auto 
-moreover
-have "([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>) \<in> R" using b by auto
-ultimately have "([],\<Gamma> \<Rightarrow>* \<Delta>) \<in> R*"
-     using extRules.I[where R=R and r="([],  \<LM>ff\<RM> \<Rightarrow>* \<Empt>)" and seq="\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>"] 
-       and extendRule_def[where forms="\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>" and R="([],  \<LM>ff\<RM> \<Rightarrow>* \<Empt>)"] by auto
-then show ?thesis using derivable.base[where R="R*" and C="\<Gamma> \<Rightarrow>* \<Delta>"] by auto
+  from a have "\<Gamma> = \<Gamma> \<ominus> ff \<oplus> ff" by auto
+  then have "extend (\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>) (\<LM>ff\<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)"
+    using extend_def[where forms="\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>" and seq="\<LM>ff\<RM> \<Rightarrow>* \<Empt>"] by auto 
+  moreover
+  have "([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>) \<in> R" using b by auto
+  ultimately have "([],\<Gamma> \<Rightarrow>* \<Delta>) \<in> R*"
+    using extRules.I[where R=R and r="([],  \<LM>ff\<RM> \<Rightarrow>* \<Empt>)" and seq="\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>"] 
+      and extendRule_def[where forms="\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>" and R="([],  \<LM>ff\<RM> \<Rightarrow>* \<Empt>)"] by auto
+  then show ?thesis using derivable.base[where R="R*" and C="\<Gamma> \<Rightarrow>* \<Delta>"] by auto
 qed 
 
 (* Lemma which says that if r is an identity rule, then r is of the form
    ([], P \<Rightarrow>* P) *)
 lemma characteriseAx:
 shows "r \<in> Ax \<Longrightarrow> r = ([],\<LM> ff \<RM> \<Rightarrow>* \<Empt>) \<or> (\<exists> i. r = ([], \<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>))"
-apply (cases r) by (rule Ax.cases) auto
+  apply (cases r) by (rule Ax.cases) auto
 
 (* A lemma about the last rule used in a derivation, i.e. that one exists *)
 lemma characteriseLast:
@@ -323,13 +326,13 @@ assumes "(Ps,C) \<in> upRules"
 shows "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)"
 using assms
 proof (cases)
-case (I F Fs)
-then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
-then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
-then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-     using `mset C \<equiv> \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
-     by auto
+  case (I F Fs)
+  then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
+  then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using assms by simp
+  then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
+    using `mset C \<equiv> \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
+      and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
+    by auto
 qed
 
 lemma extendEmpty:
@@ -646,62 +649,62 @@ shows   "T \<in> derivable' R*"
 (*<*)
 using assms
 proof (induct n arbitrary: T rule: nat_less_induct)
-case (1 n T)
-    then have IH: "\<forall>m<n. r1 = (( \<Empt> \<Rightarrow>* \<LM>A\<RM>) # ( \<LM>A\<RM> \<Rightarrow>* \<Empt>) # ps, c) \<and> r1 \<in> upRules \<longrightarrow>
-                         R1 \<subseteq> upRules \<and> R = Ax \<union> R1 \<longrightarrow>
-                         (\<forall> T. (T, m) \<in> derivable (R \<union> {r1})* \<longrightarrow>
-                         (\<forall> \<Gamma> \<Delta> B.
-                         ((\<Gamma> \<Rightarrow>* \<Delta> \<oplus> B) \<in> derivable' R* \<longrightarrow> (\<Gamma> \<oplus> B \<Rightarrow>* \<Delta>) \<in> derivable' R*) \<longrightarrow> 
-                         (\<Gamma> \<Rightarrow>* \<Delta>) \<in> derivable' R*) \<longrightarrow>
-                         T \<in> derivable' R*)" by blast
-    from prems have prm: "(T,n) \<in> derivable (R \<union> {r1})*" by blast
-    show ?case
-    proof (cases n)
+  case (1 n T)
+  then have IH: "\<forall>m<n. r1 = (( \<Empt> \<Rightarrow>* \<LM>A\<RM>) # ( \<LM>A\<RM> \<Rightarrow>* \<Empt>) # ps, c) \<and> r1 \<in> upRules \<longrightarrow>
+    R1 \<subseteq> upRules \<and> R = Ax \<union> R1 \<longrightarrow>
+    (\<forall> T. (T, m) \<in> derivable (R \<union> {r1})* \<longrightarrow>
+    (\<forall> \<Gamma> \<Delta> B.
+    ((\<Gamma> \<Rightarrow>* \<Delta> \<oplus> B) \<in> derivable' R* \<longrightarrow> (\<Gamma> \<oplus> B \<Rightarrow>* \<Delta>) \<in> derivable' R*) \<longrightarrow> 
+    (\<Gamma> \<Rightarrow>* \<Delta>) \<in> derivable' R*) \<longrightarrow>
+    T \<in> derivable' R*)" by blast
+  from 1 have prm: "(T,n) \<in> derivable (R \<union> {r1})*" by blast
+  show ?case
+  proof (cases n)
     case 0
-        with prm have "(T,0) \<in> derivable (R \<union> {r1})*" by simp
-        then have "([],T) \<in> (R \<union> {r1})*" by (rule derivable.cases) auto
-        then obtain S r where ext: "extendRule S r = ([],T)" and "r \<in> (R \<union> {r1})" by (rule extRules.cases) auto
-        then have "r \<in> R \<or> r = r1" by auto
-        with a have "r \<in> R" using ext by (auto simp add:extendRule_def)
-        then have "([],T) \<in> R*" using ext and extRules.I[where r=r and R=R and seq=S] by auto
-        then show "T \<in> derivable' R*" by auto
-    next
+    with prm have "(T,0) \<in> derivable (R \<union> {r1})*" by simp
+    then have "([],T) \<in> (R \<union> {r1})*" by (rule derivable.cases) auto
+    then obtain S r where ext: "extendRule S r = ([],T)" and "r \<in> (R \<union> {r1})" by (rule extRules.cases) auto
+    then have "r \<in> R \<or> r = r1" by auto
+    with a have "r \<in> R" using ext by (auto simp add:extendRule_def)
+    then have "([],T) \<in> R*" using ext and extRules.I[where r=r and R=R and seq=S] by auto
+    then show "T \<in> derivable' R*" by auto
+  next
     case (Suc n')
-        with prm have prm': "(T,n'+1) \<in> derivable (R \<union> {r1})*" by auto
-        then obtain Ps where ne: "Ps \<noteq> []"
-                       and   ex: "(Ps,T) \<in> (R \<union> {r1})*"
-                       and   "\<forall> P \<in> set Ps. \<exists> m\<le>n'. (P,m) \<in> derivable (R \<union> {r1})*"
-             using characteriseLast[where C=T and m=n' and R="(R \<union> {r1})*"] by auto
-        with IH have e: "\<forall> P \<in> set Ps. P \<in> derivable' R*" using a b and prm' and `n = Suc n'`
-             apply (auto simp only:Ball_def) apply (drule_tac x=x in spec) apply auto
-             apply (drule_tac x=m in spec) apply auto apply (drule_tac x=x in spec) apply simp
-             apply (insert CA[simplified]) apply (subgoal_tac "R = Ax \<union> R1") apply blast apply (insert b) by blast
-        from ex obtain S r where ext: "extendRule S r = (Ps,T)" and "r \<in> (R \<union> {r1})" by (rule extRules.cases) auto
-        then have "r \<in> R \<or> r = r1" by blast
-        moreover
-           {assume "r \<in> R"
-            with ext have "(Ps,T) \<in> R*" using extRules.I[where r=r and R=R and seq=S] by auto
-            with e have "T \<in> derivable' R*" using ne and
-                 derivable'.step[where r="(Ps,T)" and R="R*"] by auto
-           }
-        moreover
-           {assume "r = r1"
-            with e and a and ext have "(extend S (\<LM>A\<RM> \<Rightarrow>* \<Empt>)) \<in> derivable' R*"
-                                 and  "(extend S (\<Empt> \<Rightarrow>* \<LM>A\<RM>)) \<in> derivable' R*"
-                 by (auto simp add:extendRule_def)
-            then have "S \<in> derivable' R*" using CA apply-
-                 apply (drule_tac x="antec S" in spec) apply (drule_tac x="succ S" in spec) apply (drule_tac x=A in spec)
-                 apply (simp add:extend_def) by (cases S) auto
-            then obtain s where "(S,s) \<in> derivable R*" using deriv_to_deriv2 by auto
-            then have "(extend S c,s) \<in> derivable R*" 
-                 using dpWeak[where R=R and R'=R1 and \<Gamma>="antec S" and \<Delta>="succ S"
-                              and \<Gamma>'="antec c" and \<Delta>'="succ c" and n=s] and b
-                 apply (auto simp add:extend_def union_ac) by (cases S) auto
-            with ext have "(T,s) \<in> derivable R*" using `r = r1` and a by (auto simp add:extendRule_def)
-            then have "T \<in> derivable' R*" by auto
-           }
-        ultimately show "T \<in> derivable' R*" by blast
-    qed
+    with prm have prm': "(T,n'+1) \<in> derivable (R \<union> {r1})*" by auto
+    then obtain Ps where ne: "Ps \<noteq> []"
+      and   ex: "(Ps,T) \<in> (R \<union> {r1})*"
+      and   "\<forall> P \<in> set Ps. \<exists> m\<le>n'. (P,m) \<in> derivable (R \<union> {r1})*"
+      using characteriseLast[where C=T and m=n' and R="(R \<union> {r1})*"] by auto
+    with IH have e: "\<forall> P \<in> set Ps. P \<in> derivable' R*" using a b and prm' and `n = Suc n'`
+      apply (auto simp only:Ball_def) apply (drule_tac x=x in spec) apply auto
+      apply (drule_tac x=m in spec) apply auto apply (drule_tac x=x in spec) apply simp
+      apply (insert CA[simplified]) apply (subgoal_tac "R = Ax \<union> R1") apply blast apply (insert b) by blast
+    from ex obtain S r where ext: "extendRule S r = (Ps,T)" and "r \<in> (R \<union> {r1})" by (rule extRules.cases) auto
+    then have "r \<in> R \<or> r = r1" by blast
+    moreover
+    {assume "r \<in> R"
+      with ext have "(Ps,T) \<in> R*" using extRules.I[where r=r and R=R and seq=S] by auto
+      with e have "T \<in> derivable' R*" using ne and
+        derivable'.step[where r="(Ps,T)" and R="R*"] by auto
+    }
+    moreover
+    {assume "r = r1"
+      with e and a and ext have "(extend S (\<LM>A\<RM> \<Rightarrow>* \<Empt>)) \<in> derivable' R*"
+        and  "(extend S (\<Empt> \<Rightarrow>* \<LM>A\<RM>)) \<in> derivable' R*"
+        by (auto simp add:extendRule_def)
+      then have "S \<in> derivable' R*" using CA apply-
+        apply (drule_tac x="antec S" in spec) apply (drule_tac x="succ S" in spec) apply (drule_tac x=A in spec)
+        apply (simp add:extend_def) by (cases S) auto
+      then obtain s where "(S,s) \<in> derivable R*" using deriv_to_deriv2 by auto
+      then have "(extend S c,s) \<in> derivable R*" 
+        using dpWeak[where R=R and R'=R1 and \<Gamma>="antec S" and \<Delta>="succ S"
+          and \<Gamma>'="antec c" and \<Delta>'="succ c" and n=s] and b
+        apply (auto simp add:extend_def union_ac) by (cases S) auto
+      with ext have "(T,s) \<in> derivable R*" using `r = r1` and a by (auto simp add:extendRule_def)
+      then have "T \<in> derivable' R*" by auto
+    }
+    ultimately show "T \<in> derivable' R*" by blast
+  qed
 qed
 (*>*)
 
