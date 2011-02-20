@@ -9,7 +9,7 @@ theory LBVSpec
 imports SemilatAlg Opt
 begin
 
-types
+type_synonym
   's certificate = "'s list"   
 
 primrec merge :: "'s certificate \<Rightarrow> 's binop \<Rightarrow> 's ord \<Rightarrow> 's \<Rightarrow> nat \<Rightarrow> (nat \<times> 's) list \<Rightarrow> 's \<Rightarrow> 's"

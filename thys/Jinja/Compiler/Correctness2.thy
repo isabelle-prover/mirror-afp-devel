@@ -6,7 +6,7 @@
 header {* \isaheader{Correctness of Stage 2} *}
 
 theory Correctness2
-imports List_Prefix Compiler2
+imports "~~/src/HOL/Library/List_Prefix" Compiler2
 begin
 
 (*<*)hide_const (open) Throw(*>*)
@@ -424,12 +424,12 @@ next
       have "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 (throw e) h\<^isub>2 ls\<^isub>2 C M ?pc v xa (v\<^isub>1#vs) frs
                      (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))" by fact
       ultimately obtain pc\<^isub>2 where
-	pc\<^isub>2: "?pc \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc + size(compE\<^isub>2 e\<^isub>2) \<and>
+        pc\<^isub>2: "?pc \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc + size(compE\<^isub>2 e\<^isub>2) \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>2 ?pc (size vs + 1))" and
-	2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 (v\<^isub>1#vs) ls\<^isub>2 pc\<^isub>2 frs"
-	using BinOpThrow\<^isub>2\<^isub>1.prems by fastsimp
+        2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 (v\<^isub>1#vs) ls\<^isub>2 pc\<^isub>2 frs"
+        using BinOpThrow\<^isub>2\<^isub>1.prems by fastsimp
       have 3: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
-	using 2 BinOpThrow\<^isub>2\<^isub>1.prems pc\<^isub>2 by(auto simp:handle_Cons)
+        using 2 BinOpThrow\<^isub>2\<^isub>1.prems pc\<^isub>2 by(auto simp:handle_Cons)
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 3] by auto
       hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     }
@@ -514,13 +514,13 @@ next
       have "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 (throw e') h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 v xa (w#vs) frs
                     (I - pcs (compxE\<^isub>2 e\<^isub>1 pc (length vs)))" by fact
       ultimately obtain pc\<^isub>2 where
-	pc\<^isub>2: "?pc\<^isub>1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1 + size(compE\<^isub>2 e\<^isub>2) \<and>
+        pc\<^isub>2: "?pc\<^isub>1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1 + size(compE\<^isub>2 e\<^isub>2) \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>2 ?pc\<^isub>1 (size vs + 1))" and
-	2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 (w#vs) ls\<^isub>2 pc\<^isub>2 frs"
-	using FAssThrow\<^isub>2\<^isub>1.prems by fastsimp
+        2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 (w#vs) ls\<^isub>2 pc\<^isub>2 frs"
+        using FAssThrow\<^isub>2\<^isub>1.prems by fastsimp
       have 3: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
-	using 2 FAssThrow\<^isub>2\<^isub>1.prems pc\<^isub>2 by(auto simp:handle_Cons)
-      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 3]	by auto
+        using 2 FAssThrow\<^isub>2\<^isub>1.prems pc\<^isub>2 by(auto simp:handle_Cons)
+      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 3] by auto
       hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     }
     thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by iprover
@@ -561,10 +561,10 @@ next
       note 1
       also have "P \<turnstile> ?\<sigma>\<^isub>2' -jvm\<rightarrow>
                      (None,h\<^isub>3,([v],ls\<^isub>3,D,M',size(compE\<^isub>2 body))#?frs\<^isub>2)"
-	using val IH_body Call\<^isub>1.prems M'_code M'_xtab
-	by (fastsimp simp del:split_paired_Ex)
+        using val IH_body Call\<^isub>1.prems M'_code M'_xtab
+        by (fastsimp simp del:split_paired_Ex)
       also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None, h\<^isub>3, (v # vs, ls\<^isub>2, C,M,?pc\<^isub>2+1)#frs)"
-	using Call\<^isub>1 M'_code M'_in_D by(auto simp: nth_append compMb\<^isub>2_def)
+        using Call\<^isub>1 M'_code M'_in_D by(auto simp: nth_append compMb\<^isub>2_def)
       finally show ?trans by(simp add:add_assoc)
     qed
   next
@@ -572,16 +572,16 @@ next
     proof
       assume throw: ?throw
       with IH_body obtain pc\<^isub>2 where
-	pc\<^isub>2: "0 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < size(compE\<^isub>2 body) \<and>
+        pc\<^isub>2: "0 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < size(compE\<^isub>2 body) \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>3 xa (compxE\<^isub>2 body 0 0)" and
-	2: "P \<turnstile> ?\<sigma>\<^isub>2' -jvm\<rightarrow> handle P D M' xa h\<^isub>3 [] ls\<^isub>3 pc\<^isub>2 ?frs\<^isub>2"
-	using Call\<^isub>1.prems M'_code M'_xtab
-	by (fastsimp simp del:split_paired_Ex)
+        2: "P \<turnstile> ?\<sigma>\<^isub>2' -jvm\<rightarrow> handle P D M' xa h\<^isub>3 [] ls\<^isub>3 pc\<^isub>2 ?frs\<^isub>2"
+        using Call\<^isub>1.prems M'_code M'_xtab
+        by (fastsimp simp del:split_paired_Ex)
       have "handle P D M' xa h\<^isub>3 [] ls\<^isub>3 pc\<^isub>2 ?frs\<^isub>2 =
             handle P C M xa h\<^isub>3 (rev pvs @ Addr a # vs) ls\<^isub>2 ?pc\<^isub>2 frs"
-	using pc\<^isub>2 M'_in_D by(auto simp add:handle_def)
+        using pc\<^isub>2 M'_in_D by(auto simp add:handle_def)
       also have "\<dots> = handle P C M xa h\<^isub>3 vs ls\<^isub>2 ?pc\<^isub>2 frs"
-	using Call\<^isub>1.prems by(auto simp add:handle_append handle_Cons)
+        using Call\<^isub>1.prems by(auto simp add:handle_append handle_Cons)
       finally have "?H ?pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 2] by auto
       thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
@@ -602,14 +602,14 @@ next
       have "PROP ?Ps es h\<^isub>1 ls\<^isub>1 es' h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 pvs xa es'' (w#vs) frs
         (I - pcs (compxE\<^isub>2 e pc (length vs)))" by fact
       ultimately have "\<exists>pc\<^isub>2.
-	(?pc\<^isub>1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1 + size(compEs\<^isub>2 es) \<and>
+        (?pc\<^isub>1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1 + size(compEs\<^isub>2 es) \<and>
          \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxEs\<^isub>2 es ?pc\<^isub>1 (size vs + 1))) \<and>
-	P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 (w#vs) ls\<^isub>2 pc\<^isub>2 frs"
-	(is "\<exists>pc\<^isub>2. ?PC pc\<^isub>2 \<and> ?Exec pc\<^isub>2")
-	using CallParamsThrow\<^isub>1 by force
+        P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 (w#vs) ls\<^isub>2 pc\<^isub>2 frs"
+        (is "\<exists>pc\<^isub>2. ?PC pc\<^isub>2 \<and> ?Exec pc\<^isub>2")
+        using CallParamsThrow\<^isub>1 by force
       then obtain pc\<^isub>2 where pc\<^isub>2: "?PC pc\<^isub>2" and 2: "?Exec pc\<^isub>2" by iprover
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 2] CallParamsThrow\<^isub>1
-	by(auto simp:handle_Cons)
+        by(auto simp:handle_Cons)
       hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     }
     thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by iprover
@@ -657,7 +657,7 @@ next
       assume val: ?val
       note eval\<^isub>1
       also have "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> (None,h\<^isub>2,(v#vs,ls\<^isub>2,C,M,?pc\<^isub>2)#frs)"
-	using val Seq\<^isub>1.prems IH\<^isub>2 by fastsimp
+        using val Seq\<^isub>1.prems IH\<^isub>2 by fastsimp
       finally show ?trans by(simp add:add_assoc)
     qed
   next
@@ -665,11 +665,11 @@ next
     proof
       assume throw: ?throw
       then obtain pc\<^isub>2 where
-	pc\<^isub>2: "?pc\<^isub>1+1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>2 \<and>
+        pc\<^isub>2: "?pc\<^isub>1+1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>2 \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>2 (?pc\<^isub>1+1) (size vs))" and
-	eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
-	using IH\<^isub>2 Seq\<^isub>1.prems by fastsimp
-      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2]	by auto
+        eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
+        using IH\<^isub>2 Seq\<^isub>1.prems by fastsimp
+      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2] by auto
       thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
@@ -693,9 +693,9 @@ next
       assume val: ?val
       note eval\<^isub>1
       also have "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> (None,h\<^isub>2,(v#vs,ls\<^isub>2,C,M,?pc\<^isub>1')#frs)"
-	using val CondT\<^isub>1 by(fastsimp simp:Int_Un_distrib)
+        using val CondT\<^isub>1 by(fastsimp simp:Int_Un_distrib)
       also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^isub>2,(v#vs,ls\<^isub>2,C,M,?pc\<^isub>2')#frs)"
-	using CondT\<^isub>1 by(auto simp:add_assoc)
+        using CondT\<^isub>1 by(auto simp:add_assoc)
       finally show ?trans by(simp add:add_assoc)
     qed
   next
@@ -707,11 +707,11 @@ next
       moreover
       have "PROP ?P e\<^isub>1 h\<^isub>1 ls\<^isub>1 e' h\<^isub>2 ls\<^isub>2 C M (?pc\<^isub>1+1) v xa vs frs ?I" by fact
       ultimately obtain pc\<^isub>2 where
-	pc\<^isub>2: "?pc\<^isub>1+1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1' \<and>
+        pc\<^isub>2: "?pc\<^isub>1+1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1' \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>1 (?pc\<^isub>1+1) (size vs))" and
-	eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
-	using CondT\<^isub>1.prems by (fastsimp simp:Int_Un_distrib)
-      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2]	by auto
+        eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
+        using CondT\<^isub>1.prems by (fastsimp simp:Int_Un_distrib)
+      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2] by auto
       thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
@@ -733,7 +733,7 @@ next
       assume val: ?val
       note eval\<^isub>1
       also have "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> (None,h\<^isub>2,(v#vs,ls\<^isub>2,C,M,?pc\<^isub>2')#frs)"
-	using val CondF\<^isub>1 by(fastsimp simp:Int_Un_distrib)
+        using val CondF\<^isub>1 by(fastsimp simp:Int_Un_distrib)
       finally show ?trans by(simp add:add_assoc)
     qed
   next
@@ -745,11 +745,11 @@ next
       moreover
       have "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 e' h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>2 v xa vs frs ?I" by fact
       ultimately obtain pc\<^isub>2 where
-	pc\<^isub>2: "?pc\<^isub>2 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>2' \<and>
+        pc\<^isub>2: "?pc\<^isub>2 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>2' \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>2 ?pc\<^isub>2 ?d)" and
-	eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
-	using CondF\<^isub>1.prems by(fastsimp simp:Int_Un_distrib)
-      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2]	by auto
+        eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
+        using CondF\<^isub>1.prems by(fastsimp simp:Int_Un_distrib)
+      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2] by auto
       thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
@@ -796,7 +796,7 @@ next
       assume val: ?val
       note 1
       also have "P \<turnstile> ?\<sigma>\<^isub>2 -jvm\<rightarrow> (None,h\<^isub>3,(v#vs,ls\<^isub>3,C,M,?pc'+3)#frs)"
-	using val WhileT\<^isub>1 by (auto simp add:add_assoc eval_nat_numeral)
+        using val WhileT\<^isub>1 by (auto simp add:add_assoc eval_nat_numeral)
       finally show ?trans by(simp add:add_assoc eval_nat_numeral)
     qed
   next
@@ -806,10 +806,10 @@ next
       moreover
       have "PROP ?P (while (e) c) h\<^isub>2 ls\<^isub>2 e\<^isub>3 h\<^isub>3 ls\<^isub>3 C M pc v xa vs frs I" by fact
       ultimately obtain pc\<^isub>2 where
-	pc\<^isub>2: "pc \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc'+3 \<and>
+        pc\<^isub>2: "pc \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc'+3 \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>3 xa (compxE\<^isub>2 (while (e) c) pc (size vs))" and
-	2: "P \<turnstile> ?\<sigma>\<^isub>2 -jvm\<rightarrow> handle P C M xa h\<^isub>3 vs ls\<^isub>3 pc\<^isub>2 frs"
-	using WhileT\<^isub>1.prems by (auto simp:add_assoc eval_nat_numeral)
+        2: "P \<turnstile> ?\<sigma>\<^isub>2 -jvm\<rightarrow> handle P C M xa h\<^isub>3 vs ls\<^isub>3 pc\<^isub>2 frs"
+        using WhileT\<^isub>1.prems by (auto simp:add_assoc eval_nat_numeral)
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 2] by auto
       thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
@@ -837,11 +837,11 @@ next
       have "PROP ?P c h\<^isub>1 ls\<^isub>1 (throw e') h\<^isub>2 ls\<^isub>2 C M (?pc\<^isub>1+1) v xa vs frs
                     (I - pcs (compxE\<^isub>2 e pc (size vs)))" by fact
       ultimately obtain pc\<^isub>2 where
-	pc\<^isub>2: "?pc\<^isub>1+1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1' \<and>
+        pc\<^isub>2: "?pc\<^isub>1+1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1' \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 c (?pc\<^isub>1+1) (size vs))" and
-	eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
-	using WhileBodyThrow\<^isub>1.prems by (fastsimp simp:Int_Un_distrib)
-      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2]	by auto
+        eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
+        using WhileBodyThrow\<^isub>1.prems by (fastsimp simp:Int_Un_distrib)
+      have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2] by auto
       thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
@@ -857,12 +857,12 @@ next
       assume ?throw
       hence "P \<turnstile> (None, h\<^isub>0, (vs, ls\<^isub>0, C, M, pc) # frs) -jvm\<rightarrow>
                  (None, h\<^isub>1, (Addr xa#vs, ls\<^isub>1, C, M, ?pc) # frs)"
-	using Throw\<^isub>1 by fastsimp
+        using Throw\<^isub>1 by fastsimp
       also have "P \<turnstile> \<dots> -jvm\<rightarrow> handle P C M xa h\<^isub>1 (Addr xa#vs) ls\<^isub>1 ?pc frs"
-	using Throw\<^isub>1.prems by(auto simp add:handle_def)
+        using Throw\<^isub>1.prems by(auto simp add:handle_def)
       also have "handle P C M xa h\<^isub>1 (Addr xa#vs) ls\<^isub>1 ?pc frs =
                  handle P C M xa h\<^isub>1 vs ls\<^isub>1 ?pc frs"
-	using Throw\<^isub>1.prems by(auto simp add:handle_Cons)
+        using Throw\<^isub>1.prems by(auto simp add:handle_Cons)
       finally have "?H ?pc" by simp
       thus "\<exists>pc\<^isub>1. ?H pc\<^isub>1" by iprover
     qed
@@ -880,12 +880,12 @@ next
       assume throw: ?throw
       have "P \<turnstile> (None, h\<^isub>0, (vs, ls\<^isub>0, C, M, pc) # frs) -jvm\<rightarrow>
                  (None, h\<^isub>1, (Null#vs, ls\<^isub>1, C, M, ?pc) # frs)"
-	using ThrowNull\<^isub>1 by fastsimp
+        using ThrowNull\<^isub>1 by fastsimp
       also have "P \<turnstile> \<dots> -jvm\<rightarrow>  handle P C M ?xa h\<^isub>1 (Null#vs) ls\<^isub>1 ?pc frs"
-	using ThrowNull\<^isub>1.prems by(auto simp add:handle_def)
+        using ThrowNull\<^isub>1.prems by(auto simp add:handle_def)
       also have "handle P C M ?xa h\<^isub>1 (Null#vs) ls\<^isub>1 ?pc frs =
                  handle P C M ?xa h\<^isub>1 vs ls\<^isub>1 ?pc frs"
-	using ThrowNull\<^isub>1.prems by(auto simp add:handle_Cons)
+        using ThrowNull\<^isub>1.prems by(auto simp add:handle_Cons)
       finally have "?H ?pc" using throw by simp
       thus "\<exists>pc\<^isub>1. ?H pc\<^isub>1" by iprover
     qed
@@ -953,7 +953,7 @@ next
     proof
       assume val: ?val
       note 1 also have "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> (None,h\<^isub>2,(v#vs,ls\<^isub>2,C,M,?pc\<^isub>2)#frs)"
-	using val beforex\<^isub>2 IH\<^isub>2 TryCatch\<^isub>1.prems by auto
+        using val beforex\<^isub>2 IH\<^isub>2 TryCatch\<^isub>1.prems by auto
       finally show ?trans by(simp add:add_assoc)
     qed
   next
@@ -961,12 +961,12 @@ next
     proof
       assume throw: ?throw
       then obtain pc\<^isub>2 where
-	pc\<^isub>2: "?pc\<^isub>1+2 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>2 \<and>
+        pc\<^isub>2: "?pc\<^isub>1+2 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>2 \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>2 ?pc\<^isub>1' (size vs))" and
-	2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
-	using IH\<^isub>2 beforex\<^isub>2 TryCatch\<^isub>1.prems by auto
+        2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
+        using IH\<^isub>2 beforex\<^isub>2 TryCatch\<^isub>1.prems by auto
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 2]
-	by (simp add:match_ex_entry) (fastsimp)
+        by (simp add:match_ex_entry) (fastsimp)
       thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
@@ -1019,7 +1019,7 @@ next
       assume val: ?val
       note 1
       also have "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> (None,h\<^isub>2,(rev(ws) @ vs,ls\<^isub>2,C,M,?pc\<^isub>2)#frs)"
-	using val IHs Cons\<^isub>1.prems by fastsimp
+        using val IHs Cons\<^isub>1.prems by fastsimp
       finally show ?trans by(simp add:add_assoc)
     qed
   next
@@ -1027,13 +1027,13 @@ next
     proof
       assume throw: ?throw
       then obtain pc\<^isub>2 where
-	pc\<^isub>2: "?pc\<^isub>1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>2 \<and>
+        pc\<^isub>2: "?pc\<^isub>1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>2 \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxEs\<^isub>2 es ?pc\<^isub>1 (size vs + 1))" and
-	2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 (v#vs) ls\<^isub>2 pc\<^isub>2 frs"
-	using IHs Cons\<^isub>1.prems
-	by(fastsimp simp:Cons_eq_append_conv neq_Nil_conv)
+        2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 (v#vs) ls\<^isub>2 pc\<^isub>2 frs"
+        using IHs Cons\<^isub>1.prems
+        by(fastsimp simp:Cons_eq_append_conv neq_Nil_conv)
       have "?H pc\<^isub>2" using Cons\<^isub>1.prems pc\<^isub>2 jvm_trans[OF 1 2]
-	by (auto simp add: handle_Cons)
+        by (auto simp add: handle_Cons)
       thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed

@@ -26,18 +26,18 @@ primrec compE\<^isub>2 :: "expr\<^isub>1 \<Rightarrow> instr list"
 | "compE\<^isub>2 ({i:T; e}) = compE\<^isub>2 e"
 | "compE\<^isub>2 (e\<^isub>1;;e\<^isub>2) = compE\<^isub>2 e\<^isub>1 @ [Pop] @ compE\<^isub>2 e\<^isub>2"
 | "compE\<^isub>2 (if (e) e\<^isub>1 else e\<^isub>2) =
-	(let cnd   = compE\<^isub>2 e;
-	     thn   = compE\<^isub>2 e\<^isub>1;
-	     els   = compE\<^isub>2 e\<^isub>2;
-	     test  = IfFalse (int(size thn + 2)); 
-	     thnex = Goto (int(size els + 1))
-	 in cnd @ [test] @ thn @ [thnex] @ els)"
+        (let cnd   = compE\<^isub>2 e;
+             thn   = compE\<^isub>2 e\<^isub>1;
+             els   = compE\<^isub>2 e\<^isub>2;
+             test  = IfFalse (int(size thn + 2)); 
+             thnex = Goto (int(size els + 1))
+         in cnd @ [test] @ thn @ [thnex] @ els)"
 | "compE\<^isub>2 (while (e) c) =
-	(let cnd   = compE\<^isub>2 e;
-	     bdy   = compE\<^isub>2 c;
-	     test  = IfFalse (int(size bdy + 3)); 
-	     loop  = Goto (-int(size bdy + size cnd + 2))
-	 in cnd @ [test] @ bdy @ [Pop] @ [loop] @ [Push Unit])"
+        (let cnd   = compE\<^isub>2 e;
+             bdy   = compE\<^isub>2 c;
+             test  = IfFalse (int(size bdy + 3)); 
+             loop  = Goto (-int(size bdy + size cnd + 2))
+         in cnd @ [test] @ bdy @ [Pop] @ [loop] @ [Push Unit])"
 | "compE\<^isub>2 (throw e) = compE\<^isub>2 e @ [instr.Throw]"
 | "compE\<^isub>2 (try e\<^isub>1 catch(C i) e\<^isub>2) =
    (let catch = compE\<^isub>2 e\<^isub>2
@@ -67,9 +67,9 @@ primrec compxE\<^isub>2  :: "expr\<^isub>1      \<Rightarrow> pc \<Rightarrow> n
 | "compxE\<^isub>2 (e\<^isub>1;;e\<^isub>2) pc d =
    compxE\<^isub>2 e\<^isub>1 pc d @ compxE\<^isub>2 e\<^isub>2 (pc+size(compE\<^isub>2 e\<^isub>1)+1) d"
 | "compxE\<^isub>2 (if (e) e\<^isub>1 else e\<^isub>2) pc d =
-	(let pc\<^isub>1   = pc + size(compE\<^isub>2 e) + 1;
-	     pc\<^isub>2   = pc\<^isub>1 + size(compE\<^isub>2 e\<^isub>1) + 1
-	 in compxE\<^isub>2 e pc d @ compxE\<^isub>2 e\<^isub>1 pc\<^isub>1 d @ compxE\<^isub>2 e\<^isub>2 pc\<^isub>2 d)"
+        (let pc\<^isub>1   = pc + size(compE\<^isub>2 e) + 1;
+             pc\<^isub>2   = pc\<^isub>1 + size(compE\<^isub>2 e\<^isub>1) + 1
+         in compxE\<^isub>2 e pc d @ compxE\<^isub>2 e\<^isub>1 pc\<^isub>1 d @ compxE\<^isub>2 e\<^isub>2 pc\<^isub>2 d)"
 | "compxE\<^isub>2 (while (b) e) pc d =
    compxE\<^isub>2 b pc d @ compxE\<^isub>2 e (pc+size(compE\<^isub>2 b)+1) d"
 | "compxE\<^isub>2 (throw e) pc d = compxE\<^isub>2 e pc d"

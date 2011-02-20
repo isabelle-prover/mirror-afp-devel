@@ -27,20 +27,24 @@ datatype
         | IfFalse int               -- "branch if top of stack false"
         | Throw                     -- "throw top of stack as exception"
 
-types
+type_synonym
   bytecode = "instr list"
 
+type_synonym
   ex_entry = "pc \<times> pc \<times> cname \<times> pc \<times> nat" 
   -- "start-pc, end-pc, exception type, handler-pc, remaining stack depth"
 
+type_synonym
   ex_table = "ex_entry list"
 
+type_synonym
   jvm_method = "nat \<times> nat \<times> bytecode \<times> ex_table"
    -- "max stacksize"
    -- "number of local variables. Add 1 + no. of parameters to get no. of registers"
    -- "instruction sequence"
    -- "exception handler table"
 
+type_synonym
   jvm_prog = "jvm_method prog" 
 
 end

@@ -343,7 +343,7 @@ next
       have "P \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>Val v,s\<rangle>" by (simp add: eval_finalId)
       moreover from finals e have "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es,s\<rangle>" by(fast intro:hyp)
       ultimately have "P \<turnstile> \<langle>Val v#es,s\<rangle> [\<Rightarrow>] \<langle>Val v#es,s\<rangle>"
-	by (rule eval_evals.intros)
+        by (rule eval_evals.intros)
       with e show ?thesis by simp
     next
       fix a assume e: "e = Throw a"

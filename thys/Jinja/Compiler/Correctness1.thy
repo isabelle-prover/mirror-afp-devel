@@ -152,24 +152,24 @@ next
     show "?R ls'"
     proof
       show "compP\<^isub>1 P \<turnstile>\<^sub>1 \<langle>compE\<^isub>1 Vs {V:T; e},(h,ls)\<rangle> \<Rightarrow> \<langle>fin\<^isub>1 e',(h',ls')\<rangle>"
-	using 1 by(simp add:Block\<^isub>1)
+        using 1 by(simp add:Block\<^isub>1)
     next
       show "l'(V := l V) \<subseteq>\<^sub>m [Vs [\<mapsto>] ls']"
       proof -
-	have "l' \<subseteq>\<^sub>m [Vs [\<mapsto>] ls', V \<mapsto> ls' ! length Vs]"
-	  using len' rel' by simp
-	moreover
-	{ assume VinVs: "V \<in> set Vs"
-	  hence "hidden (Vs @ [V]) (last_index Vs V)"
+        have "l' \<subseteq>\<^sub>m [Vs [\<mapsto>] ls', V \<mapsto> ls' ! length Vs]"
+          using len' rel' by simp
+        moreover
+        { assume VinVs: "V \<in> set Vs"
+          hence "hidden (Vs @ [V]) (last_index Vs V)"
             by(rule hidden_last_index)
-	  hence "unmod (compE\<^isub>1 (Vs @ [V]) e) (last_index Vs V)"
-	    by(rule hidden_unmod)
-	  moreover have "last_index Vs V < length ls"
-	    using len' VinVs by simp
-	  ultimately have "ls ! last_index Vs V = ls' ! last_index Vs V"
-	    by(rule eval\<^isub>1_preserves_unmod[OF 1])
-	}
-	ultimately show ?thesis using Block_lem[OF rel] len' by auto
+          hence "unmod (compE\<^isub>1 (Vs @ [V]) e) (last_index Vs V)"
+            by(rule hidden_unmod)
+          moreover have "last_index Vs V < length ls"
+            using len' VinVs by simp
+          ultimately have "ls ! last_index Vs V = ls' ! last_index Vs V"
+            by(rule eval\<^isub>1_preserves_unmod[OF 1])
+        }
+        ultimately show ?thesis using Block_lem[OF rel] len' by auto
       qed
     qed
   qed
@@ -222,22 +222,22 @@ next
     next
       show "l\<^isub>2(V := l\<^isub>1 V) \<subseteq>\<^sub>m [Vs [\<mapsto>] ls\<^isub>2]"
       proof -
-	have "l\<^isub>2 \<subseteq>\<^sub>m [Vs [\<mapsto>] ls\<^isub>2, V \<mapsto> ls\<^isub>2 ! length Vs]"
-	  using len\<^isub>1 rel\<^isub>2 by simp
-	moreover
-	{ assume VinVs: "V \<in> set Vs"
-	  hence "hidden (Vs @ [V]) (last_index Vs V)" by(rule hidden_last_index)
-	  hence "unmod (compE\<^isub>1 (Vs @ [V]) e\<^isub>2) (last_index Vs V)"
-	    by(rule hidden_unmod)
-	  moreover have "last_index Vs V < length ?ls"
-	    using len\<^isub>1 VinVs by simp
-	  ultimately have "?ls ! last_index Vs V = ls\<^isub>2 ! last_index Vs V"
-	    by(rule eval\<^isub>1_preserves_unmod[OF 2])
-	  moreover have "last_index Vs V < size Vs" using VinVs by simp
-	  ultimately have "ls\<^isub>1 ! last_index Vs V = ls\<^isub>2 ! last_index Vs V"
-	    using len\<^isub>1 by(simp del:size_last_index_conv)
-	}
-	ultimately show ?thesis using Block_lem[OF rel\<^isub>1] len\<^isub>1  by simp
+        have "l\<^isub>2 \<subseteq>\<^sub>m [Vs [\<mapsto>] ls\<^isub>2, V \<mapsto> ls\<^isub>2 ! length Vs]"
+          using len\<^isub>1 rel\<^isub>2 by simp
+        moreover
+        { assume VinVs: "V \<in> set Vs"
+          hence "hidden (Vs @ [V]) (last_index Vs V)" by(rule hidden_last_index)
+          hence "unmod (compE\<^isub>1 (Vs @ [V]) e\<^isub>2) (last_index Vs V)"
+            by(rule hidden_unmod)
+          moreover have "last_index Vs V < length ?ls"
+            using len\<^isub>1 VinVs by simp
+          ultimately have "?ls ! last_index Vs V = ls\<^isub>2 ! last_index Vs V"
+            by(rule eval\<^isub>1_preserves_unmod[OF 2])
+          moreover have "last_index Vs V < size Vs" using VinVs by simp
+          ultimately have "ls\<^isub>1 ! last_index Vs V = ls\<^isub>2 ! last_index Vs V"
+            using len\<^isub>1 by(simp del:size_last_index_conv)
+        }
+        ultimately show ?thesis using Block_lem[OF rel\<^isub>1] len\<^isub>1  by simp
       qed
     qed
   qed
@@ -546,8 +546,8 @@ next
       moreover
       have "A\<^isub>2 \<subseteq> set (Vs@[V'])" using TryCatch.prems A_fv[OF A\<^isub>2] by simp blast
       ultimately show ?thesis using TryCatch A\<^isub>1 A\<^isub>2
-	by(fastsimp simp add: hyperset_defs image_last_index last_index_size_conv
-	  Diff_subset_conv inj_on_image_Int[OF inj_on_last_index])
+        by(fastsimp simp add: hyperset_defs image_last_index last_index_size_conv
+          Diff_subset_conv inj_on_image_Int[OF inj_on_last_index])
     qed
   qed
 next
@@ -564,7 +564,7 @@ next
     have "A\<^isub>2 \<subseteq> set Vs" using Cond.prems A_fv[OF A\<^isub>2] by simp blast
     ultimately have ?case using Cond
       by(auto simp add:hyperset_defs image_Un
-	  inj_on_image_Int[OF inj_on_last_index])
+          inj_on_image_Int[OF inj_on_last_index])
   }
   ultimately show ?case by fastsimp
 qed (auto simp add:hyperset_defs)
@@ -735,7 +735,7 @@ shows "\<D> (compE\<^isub>1 (V#Vs) e) \<lfloor>{..length Vs}\<rfloor>"
 (*<*)
 proof -
   have "{..size Vs} = {..<size(V#Vs)}" by auto
-  thus ?thesis using prems by (simp only:)(rule D_compE\<^isub>1)
+  thus ?thesis using assms by (simp only:)(rule D_compE\<^isub>1)
 qed
 (*>*)
 

@@ -12,7 +12,7 @@ begin
 
 subsection "Well-Typedness"
 
-types 
+type_synonym 
   env\<^isub>1  = "ty list"   --"type environment indexed by variable number"
 
 inductive

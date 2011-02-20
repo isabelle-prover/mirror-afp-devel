@@ -141,8 +141,8 @@ proof -
         apply clarsimp
         apply (drule has_visible_field)
         apply (drule (1) has_field_mono)
-	      apply (drule (1) hconfD)
-	      apply (unfold oconf_def has_field_def)
+        apply (drule (1) hconfD)
+        apply (unfold oconf_def has_field_def)
         apply clarsimp
         apply (fastsimp dest: has_fields_fun)
         done                            

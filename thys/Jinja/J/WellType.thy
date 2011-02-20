@@ -10,7 +10,7 @@ theory WellType
 imports "../Common/Objects" Expr
 begin
 
-types 
+type_synonym
   env  = "vname \<rightharpoonup> ty"
 
 inductive

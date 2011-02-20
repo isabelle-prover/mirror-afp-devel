@@ -10,7 +10,7 @@ theory Typing_Framework imports Semilattices begin
 text {* 
   The relationship between dataflow analysis and a welltyped-instruction predicate. 
 *}
-types
+type_synonym
   's step_type = "nat \<Rightarrow> 's \<Rightarrow> (nat \<times> 's) list"
 
 definition stable :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> nat \<Rightarrow> bool"

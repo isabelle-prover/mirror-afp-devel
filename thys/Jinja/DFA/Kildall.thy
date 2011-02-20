@@ -373,7 +373,7 @@ proof -
    (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts) \<and>
    (\<forall>p\<in>w. p < n)" and
    r = "{(ss',ss) . ss [\<sqsubset>\<^sub>r] ss'} <*lex*> finite_psubset"
-	 in while_rule)
+         in while_rule)
 
   -- "Invariant holds initially:"
   apply (simp add:stables_def)
@@ -450,7 +450,7 @@ proof -
   apply clarify
   apply (simp del: listE_length
       add: lex_prod_def finite_psubset_def 
-	   bounded_nat_set_is_finite)
+           bounded_nat_set_is_finite)
   apply (rule termination_lemma)
   apply (rule assms)
   apply assumption+

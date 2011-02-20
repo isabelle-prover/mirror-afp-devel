@@ -11,13 +11,12 @@ header {*
 *}
 
 theory Semilat
-imports Main While_Combinator
+imports Main "~~/src/HOL/Library/While_Combinator"
 begin
 
-types 
-  'a ord    = "'a \<Rightarrow> 'a \<Rightarrow> bool"
-  'a binop  = "'a \<Rightarrow> 'a \<Rightarrow> 'a"
-  'a sl     = "'a set \<times> 'a ord \<times> 'a binop"
+type_synonym 'a ord    = "'a \<Rightarrow> 'a \<Rightarrow> bool"
+type_synonym 'a binop  = "'a \<Rightarrow> 'a \<Rightarrow> 'a"
+type_synonym 'a sl     = "'a set \<times> 'a ord \<times> 'a binop"
 
 consts
   "lesub" :: "'a \<Rightarrow> 'a ord \<Rightarrow> 'a \<Rightarrow> bool"

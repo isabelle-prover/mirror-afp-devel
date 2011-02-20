@@ -7,7 +7,7 @@ header {* \isaheader{Jinja Values} *}
 
 theory Value imports TypeRel begin
 
-types addr = nat
+type_synonym addr = nat
 
 datatype val
   = Unit        -- "dummy result value of void expressions"

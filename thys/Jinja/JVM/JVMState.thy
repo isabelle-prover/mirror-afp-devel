@@ -13,9 +13,10 @@ theory JVMState imports "../Common/Objects" begin
 
 section {* Frame Stack *}
 
-types 
+type_synonym 
   pc = nat
 
+type_synonym
   frame = "val list \<times> val list \<times> cname \<times> mname \<times> pc"
   -- "operand stack" 
   -- "registers (including this pointer, method parameters, and local variables)"
@@ -24,7 +25,8 @@ types
   -- "program counter within frame"
 
 section {* Runtime State *}
-types
+
+type_synonym
   jvm_state = "addr option \<times> heap \<times> frame list"  
   -- "exception flag, heap, frames"
   

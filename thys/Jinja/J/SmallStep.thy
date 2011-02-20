@@ -256,7 +256,7 @@ proof -
       thus ?case by(blast intro:red\<^isub>1)
     qed
     }
-  with prems show ?thesis by fastsimp
+  with assms show ?thesis by fastsimp
 qed
 (*>*)
 
@@ -345,7 +345,7 @@ qed (simp_all add:red_reds.intros)
 lemma Red_lcl_add:
 assumes "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow>* \<langle>e',(h',l')\<rangle>" shows "P \<turnstile> \<langle>e,(h,l\<^isub>0++l)\<rangle> \<rightarrow>* \<langle>e',(h',l\<^isub>0++l')\<rangle>"
 (*<*)
-using prems
+using assms
 proof(induct rule:converse_rtrancl_induct_red)
   case 1 thus ?case by simp
 next

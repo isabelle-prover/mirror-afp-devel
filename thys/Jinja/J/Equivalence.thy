@@ -503,19 +503,19 @@ next
     proof (cases "l\<^isub>1 V")
       assume None: "l\<^isub>1 V = None"
       hence "P \<turnstile> \<langle>{V:T; e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>{V:T; e\<^isub>1},(h\<^isub>1, l\<^isub>1(V := l\<^isub>0 V))\<rangle>"
-	using s\<^isub>0 s\<^isub>1 red by(simp add: BlockRedNone[OF _ _ unass])
+        using s\<^isub>0 s\<^isub>1 red by(simp add: BlockRedNone[OF _ _ unass])
       moreover
       have "P \<turnstile> \<langle>{V:T; e\<^isub>1},(h\<^isub>1, l\<^isub>1(V := l\<^isub>0 V))\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2, l\<^isub>2(V := l\<^isub>0 V))\<rangle>"
-	using IH[of _ "l\<^isub>1(V := l\<^isub>0 V)"] s\<^isub>1 None by(simp add:fun_upd_idem)
+        using IH[of _ "l\<^isub>1(V := l\<^isub>0 V)"] s\<^isub>1 None by(simp add:fun_upd_idem)
       ultimately show ?case by(rule converse_rtrancl_into_rtrancl)
     next
       fix v assume Some: "l\<^isub>1 V = Some v"
       hence "P \<turnstile> \<langle>{V:T;e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>{V:T := Val v; e\<^isub>1},(h\<^isub>1,l\<^isub>1(V := l\<^isub>0 V))\<rangle>"
-	using s\<^isub>0 s\<^isub>1 red by(simp add: BlockRedSome[OF _ _ unass])
+        using s\<^isub>0 s\<^isub>1 red by(simp add: BlockRedSome[OF _ _ unass])
       moreover
       have "P \<turnstile> \<langle>{V:T := Val v; e\<^isub>1},(h\<^isub>1,l\<^isub>1(V:= l\<^isub>0 V))\<rangle> \<rightarrow>*
                 \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2(V:=l\<^isub>0 V))\<rangle>"
-	using InitBlockRedsFinal[OF _ fin,of _ _ "l\<^isub>1(V:=l\<^isub>0 V)" V]
+        using InitBlockRedsFinal[OF _ fin,of _ _ "l\<^isub>1(V:=l\<^isub>0 V)" V]
               Some reds s\<^isub>1 by(simp add:fun_upd_idem)
       ultimately show ?case by(rule converse_rtrancl_into_rtrancl)
     qed
@@ -615,8 +615,8 @@ shows Red_fv: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e
 proof (induct rule:red_reds_inducts)
   case (RedCall h l a C fs M Ts T pns body D vs)
   hence "fv body \<subseteq> {this} \<union> set pns"
-    using prems by(fastsimp dest!:sees_wf_mdecl simp:wf_mdecl_def)
-  with prems show ?case by fastsimp
+    using assms by(fastsimp dest!:sees_wf_mdecl simp:wf_mdecl_def)
+  with RedCall.hyps show ?case by fastsimp
 qed auto
 (*>*)
 
@@ -750,7 +750,7 @@ shows "P \<turnstile> \<langle>e\<bullet>M(es), s\<^isub>0\<rangle> \<rightarrow
 proof -
   have wf: "size Ts = size pns \<and> distinct pns \<and> this \<notin> set pns"
     and wt: "fv body \<subseteq> {this} \<union> set pns"
-    using prems by(fastsimp dest!:sees_wf_mdecl simp:wf_mdecl_def)+
+    using assms by(fastsimp dest!:sees_wf_mdecl simp:wf_mdecl_def)+
   from body[THEN Red_lcl_add, of l\<^isub>2]
   have body': "P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2(this\<mapsto> Addr a, pns[\<mapsto>]vs))\<rangle> \<rightarrow>* \<langle>ef,(h\<^isub>3,l\<^isub>2++l\<^isub>3)\<rangle>"
     by (simp add:l\<^isub>2')
@@ -767,7 +767,7 @@ proof -
     by(rule RedCall)(auto simp: assms wf, rule assms(5))
   also (rtrancl_into_rtrancl) have "P \<turnstile> \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^isub>2,l\<^isub>2)\<rangle>
                  \<rightarrow>* \<langle>ef,(h\<^isub>3,override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns))\<rangle>"
-    by(rule blocksRedsFinal, insert prems wf body', simp_all)
+    by(rule blocksRedsFinal, insert assms wf body', simp_all)
   finally show ?thesis using eql\<^isub>2 by simp
 qed
 (*>*)
@@ -961,8 +961,8 @@ next
     next
       fix a
       assume "P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw a,s'\<rangle>" "e' = throw a"
-      with eval_true show "P \<turnstile> \<langle>while(b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"	
-	by (iprover intro: WhileBodyThrow)
+      with eval_true show "P \<turnstile> \<langle>while(b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"        
+        by (iprover intro: WhileBodyThrow)
     qed
   qed
 qed
@@ -1213,27 +1213,27 @@ proof -
       have e_es: "e # es = map Val vs @ throw x # es'" by fact
       show "P \<turnstile> \<langle>e # es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs @ e' # es',s'\<rangle>"
       proof (cases vs)
-	case Nil
-	with e_es obtain "e=throw x" "es=es'" by simp
-	moreover from eval_e e'
-	have "P \<turnstile> \<langle>throw x # es,s\<rangle> [\<Rightarrow>] \<langle>Throw a # es,s'\<rangle>"
-	  by (iprover intro: ConsThrow)
-	ultimately show ?thesis using Nil e' by simp
+        case Nil
+        with e_es obtain "e=throw x" "es=es'" by simp
+        moreover from eval_e e'
+        have "P \<turnstile> \<langle>throw x # es,s\<rangle> [\<Rightarrow>] \<langle>Throw a # es,s'\<rangle>"
+          by (iprover intro: ConsThrow)
+        ultimately show ?thesis using Nil e' by simp
       next
-	case (Cons v vs')
-	have vs: "vs = v # vs'" by fact
-	with e_es obtain 
-	  e: "e=Val v" and es:"es= map Val vs' @ throw x # es'"
-	  by simp
-	from e 
-	have "P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>Val v,s\<rangle>"
-	  by (iprover intro: eval_evals.Val)
-	moreover from es 
-	have "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs' @ e' # es',s'\<rangle>"
-	  by (rule Cons.hyps)
-	ultimately show 
-	  "P \<turnstile> \<langle>e#es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs @ e' # es',s'\<rangle>"
-	  using vs by (auto intro: eval_evals.Cons)
+        case (Cons v vs')
+        have vs: "vs = v # vs'" by fact
+        with e_es obtain 
+          e: "e=Val v" and es:"es= map Val vs' @ throw x # es'"
+          by simp
+        from e 
+        have "P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>Val v,s\<rangle>"
+          by (iprover intro: eval_evals.Val)
+        moreover from es 
+        have "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs' @ e' # es',s'\<rangle>"
+          by (rule Cons.hyps)
+        ultimately show 
+          "P \<turnstile> \<langle>e#es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs @ e' # es',s'\<rangle>"
+          using vs by (auto intro: eval_evals.Cons)
       qed
     qed
   }

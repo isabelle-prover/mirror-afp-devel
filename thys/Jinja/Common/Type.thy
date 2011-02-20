@@ -8,10 +8,9 @@ header {* \isaheader{Jinja types} *}
 
 theory Type imports Aux begin
 
-types
- cname = string -- "class names"
- mname = string -- "method name"
- vname = string -- "names for local/field variables"
+type_synonym cname = string -- "class names"
+type_synonym mname = string -- "method name"
+type_synonym vname = string -- "names for local/field variables"
 
 definition Object :: cname
 where

@@ -10,7 +10,7 @@ theory LBVJVM
 imports "../DFA/Abstract_BV" TF_JVM
 begin
 
-types prog_cert = "cname \<Rightarrow> mname \<Rightarrow> ty\<^isub>i' err list"
+type_synonym prog_cert = "cname \<Rightarrow> mname \<Rightarrow> ty\<^isub>i' err list"
 
 definition check_cert :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> bool"
 where

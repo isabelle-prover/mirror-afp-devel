@@ -6,7 +6,7 @@
 header {* \isaheader{Example for generating executable code from JVM semantics}\label{sec:JVMListExample} *}
 
 theory JVMListExample
-imports "../Common/SystemClasses" JVMExec Efficient_Nat
+imports "../Common/SystemClasses" JVMExec "~~/src/HOL/Library/Efficient_Nat"
 begin
 
 definition list_name :: string

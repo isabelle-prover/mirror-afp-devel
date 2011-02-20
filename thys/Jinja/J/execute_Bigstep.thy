@@ -6,7 +6,9 @@
 
 header {* \isaheader{Code Generation For BigStep} *}
 
-theory execute_Bigstep imports BigStep Examples Efficient_Nat begin
+theory execute_Bigstep imports BigStep Examples
+  "~~/src/HOL/Library/Efficient_Nat"
+begin
 
 consts_code
   "new_Addr"

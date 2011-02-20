@@ -8,11 +8,9 @@ header {* \chapter{Compilation}\label{cha:comp}
 
 theory J1 imports "../J/BigStep" begin
 
-types
-  expr\<^isub>1 = "nat exp"
-  J\<^isub>1_prog = "expr\<^isub>1 prog"
-
-  state\<^isub>1 = "heap \<times> (val list)"
+type_synonym expr\<^isub>1 = "nat exp"
+type_synonym J\<^isub>1_prog = "expr\<^isub>1 prog"
+type_synonym state\<^isub>1 = "heap \<times> (val list)"
 
 primrec
   max_vars :: "'a exp \<Rightarrow> nat"

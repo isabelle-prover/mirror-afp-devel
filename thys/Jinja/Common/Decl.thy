@@ -8,15 +8,15 @@ header {* \isaheader{Class Declarations and Programs} *}
 
 theory Decl imports Type begin
 
-types 
+type_synonym 
   fdecl    = "vname \<times> ty"        -- "field declaration"
-
+type_synonym
   'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- {* method = name, arg.\ types, return type, body *}
-
+type_synonym
   'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
-
+type_synonym
   'm cdecl = "cname \<times> 'm class"  -- "class declaration"
-
+type_synonym
   'm prog  = "'m cdecl list"     -- "program"
 
 (*<*)

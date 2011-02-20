@@ -9,7 +9,7 @@ theory DefAss imports BigStep begin
 
 subsection "Hypersets"
 
-types 'a hyperset = "'a set option"
+type_synonym 'a hyperset = "'a set option"
 
 definition hyperUn :: "'a hyperset \<Rightarrow> 'a hyperset \<Rightarrow> 'a hyperset"   (infixl "\<squnion>" 65)
 where

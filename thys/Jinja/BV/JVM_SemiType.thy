@@ -9,12 +9,12 @@ header {* \isaheader{The JVM Type System as Semilattice} *}
 
 theory JVM_SemiType imports SemiType begin
 
-types ty\<^isub>l = "ty err list"
-types ty\<^isub>s = "ty list"
-types ty\<^isub>i = "ty\<^isub>s \<times> ty\<^isub>l"
-types ty\<^isub>i' = "ty\<^isub>i option"
-types ty\<^isub>m = "ty\<^isub>i' list"
-types ty\<^isub>P = "mname \<Rightarrow> cname \<Rightarrow> ty\<^isub>m"
+type_synonym ty\<^isub>l = "ty err list"
+type_synonym ty\<^isub>s = "ty list"
+type_synonym ty\<^isub>i = "ty\<^isub>s \<times> ty\<^isub>l"
+type_synonym ty\<^isub>i' = "ty\<^isub>i option"
+type_synonym ty\<^isub>m = "ty\<^isub>i' list"
+type_synonym ty\<^isub>P = "mname \<Rightarrow> cname \<Rightarrow> ty\<^isub>m"
 
 
 definition stk_esl :: "'c prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>s esl"

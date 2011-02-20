@@ -10,8 +10,9 @@ theory Objects imports TypeRel Value begin
 
 subsection{* Objects *}
 
-types 
+type_synonym
   fields = "vname \<times> cname \<rightharpoonup> val"  -- "field name, defining class, value"
+type_synonym
   obj = "cname \<times> fields"    -- "class instance with class name and fields"
 
 definition obj_ty  :: "obj \<Rightarrow> ty"
@@ -32,7 +33,7 @@ lemma [simp]: "obj_ty (C,fs) = Class C"
 
 subsection{* Heap *}
 
-types heap  = "addr \<rightharpoonup> obj"
+type_synonym heap  = "addr \<rightharpoonup> obj"
 
 abbreviation
   cname_of :: "heap \<Rightarrow> addr \<Rightarrow> cname" where

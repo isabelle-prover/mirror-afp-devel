@@ -13,8 +13,8 @@ begin
 
 datatype 'a err = Err | OK 'a
 
-types 'a ebinop = "'a \<Rightarrow> 'a \<Rightarrow> 'a err"
-types 'a esl = "'a set \<times> 'a ord \<times> 'a ebinop"
+type_synonym 'a ebinop = "'a \<Rightarrow> 'a \<Rightarrow> 'a err"
+type_synonym 'a esl = "'a set \<times> 'a ord \<times> 'a ebinop"
 
 primrec ok_val :: "'a err \<Rightarrow> 'a"
 where

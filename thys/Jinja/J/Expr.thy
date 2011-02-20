@@ -28,9 +28,11 @@ datatype 'a exp
   | throw "('a exp)"
   | TryCatch "('a exp)" cname 'a "('a exp)"     ("try _/ catch'(_ _') _"  [0,99,80,79] 70)
 
-types
+type_synonym
   expr = "vname exp"            -- "Jinja expression"
+type_synonym
   J_mb = "vname list \<times> expr"    -- "Jinja method body: parameter names and expression"
+type_synonym
   J_prog = "J_mb prog"          -- "Jinja program"
 
 text{*The semantics of binary operators: *}

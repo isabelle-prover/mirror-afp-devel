@@ -20,7 +20,7 @@ of the overriding method becomes more specific, the argument types
 become more general.
 *}
 
-types 'm wf_mdecl_test = "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
+type_synonym 'm wf_mdecl_test = "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
 
 definition wf_fdecl :: "'m prog \<Rightarrow> fdecl \<Rightarrow> bool"
 where
@@ -244,7 +244,7 @@ assumes "wf_prog wf_md P" and "(C,S,fs,ms) \<in> set P" and "(M,Ts,T,m) \<in> se
 shows "set Ts \<subseteq> types P"
 (*<*)
 proof
-  from prems have "wf_mdecl wf_md P C (M,Ts,T,m)" 
+  from assms have "wf_mdecl wf_md P C (M,Ts,T,m)" 
     by (unfold wf_prog_def wf_cdecl_def) auto  
   hence "\<forall>t \<in> set Ts. is_type P t" by (unfold wf_mdecl_def) auto
   moreover fix t assume "t \<in> set Ts"
@@ -302,7 +302,7 @@ apply auto
 apply(drule (1) bspec, simp)
 apply(erule_tac x=D in allE, erule_tac x=Ts in allE, erule_tac x=T in allE)
 apply(fastsimp simp:map_add_def split:option.split)
-done;
+done
 (*>*)
 
 
@@ -343,7 +343,7 @@ proof -
   from wf C have "class": "class P C = Some (S,fs,ms)"
     by (auto simp add: wf_prog_def class_def is_class_def intro: map_of_SomeI)
   from "class" have "is_class P C" by(auto simp:is_class_def)                   
-  with prems "class" show ?thesis
+  with assms "class" show ?thesis
     by(bestsimp simp:Method_def dest:mdecls_visible)
 qed
 (*>*)
