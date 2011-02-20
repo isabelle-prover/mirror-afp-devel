@@ -1,2 +1,2 @@
-no_document use_thys ["Zorn", "Infinite_Set"];
+no_document use_thys ["~~/src/HOL/Library/Zorn", "~~/src/HOL/Library/Infinite_Set"];
 use_thy "Cardinal_Order_Relation";

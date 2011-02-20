@@ -2,7 +2,8 @@ header {* Cardinal-order relations  *}
 
 (* author: Andrei Popescu *)
 
-theory Cardinal_Order_Relation imports Infinite_Set Constructions_on_Wellorders 
+theory Cardinal_Order_Relation
+imports "~~/src/HOL/Library/Infinite_Set" Constructions_on_Wellorders 
 begin
 
 

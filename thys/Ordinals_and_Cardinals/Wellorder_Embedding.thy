@@ -2,7 +2,8 @@ header {* Well-order embeddings  *}
 
 (* author: Andrei Popescu *)
 
-theory Wellorder_Embedding imports Zorn Fun2 Wellorder_Relation 
+theory Wellorder_Embedding
+imports "~~/src/HOL/Library/Zorn" Fun2 Wellorder_Relation 
 begin
 
 

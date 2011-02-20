@@ -2,7 +2,7 @@ header {* More on injections, bijections and inverses   *}
 
 (* author: Andrei Popescu *)
 
-theory Fun2 imports Infinite_Set
+theory Fun2 imports "~~/src/HOL/Library/Infinite_Set"
 begin
 
 
