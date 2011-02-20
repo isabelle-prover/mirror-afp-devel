@@ -65,7 +65,7 @@ text {*
   abstract hashmap w.r.t. maps.
 *}
 
-types ('k, 'v) hm = "('k, 'v) hashmap"
+type_synonym ('k, 'v) hm = "('k, 'v) hashmap"
 
   -- "Abstract concrete hashmap to map"
 definition "hm_\<alpha> == ahm_\<alpha> \<circ> hm_\<alpha>' \<circ> impl_of_RBT_HM"

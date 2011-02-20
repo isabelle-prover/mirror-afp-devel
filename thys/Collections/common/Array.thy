@@ -151,18 +151,19 @@ proof(cases a)
       case (1 n)
       show ?case
       proof(cases "n < array_length (Array A)")
-	case False
-	thus ?thesis by(simp add: assoc_list_of_array_code.simps)
+        case False
+        thus ?thesis by(simp add: assoc_list_of_array_code.simps)
       next
-	case True
-	hence "zip [Suc n..<length A] (drop (Suc n) A) = assoc_list_of_array_code (Array A) (Suc n)" by(rule 1)
-	moreover from True have "n < length A" by simp
-	moreover then obtain a A' where A: "drop n A = a # A'" by(cases "drop n A") auto
-	moreover with `n < length A` have [simp]: "a = A ! n"
-	  by(subst append_take_drop_id[symmetric, where n=n])(simp add: nth_append min_def)
-	moreover from A have "drop (Suc n) A = A'"
-	  by(induct A arbitrary: n)(simp_all add: drop_Cons split: nat.split_asm)
-	ultimately show ?thesis by(subst upt_rec)(simp add: assoc_list_of_array_code.simps)
+        case True
+        hence "zip [Suc n..<length A] (drop (Suc n) A) = assoc_list_of_array_code (Array A) (Suc n)"
+          by(rule 1)
+        moreover from True have "n < length A" by simp
+        moreover then obtain a A' where A: "drop n A = a # A'" by(cases "drop n A") auto
+        moreover with `n < length A` have [simp]: "a = A ! n"
+          by(subst append_take_drop_id[symmetric, where n=n])(simp add: nth_append min_def)
+        moreover from A have "drop (Suc n) A = A'"
+          by(induct A arbitrary: n)(simp_all add: drop_Cons split: nat.split_asm)
+        ultimately show ?thesis by(subst upt_rec)(simp add: assoc_list_of_array_code.simps)
       qed
     qed }
   note this[of 0]

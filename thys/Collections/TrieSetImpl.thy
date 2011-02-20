@@ -16,7 +16,7 @@ text {*
 
 subsection "Definitions"
 
-types
+type_synonym
   'a ts = "('a, unit) trie"
 
 definition ts_\<alpha> :: "'a ts \<Rightarrow> 'a list set" 

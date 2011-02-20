@@ -24,7 +24,7 @@ text {*
   We will then show that our implementation based on hashcode-map and bucket-map 
   is a correct implementation of this specification.
 *}
-types 
+type_synonym 
   ('k,'v) abs_hashmap = "hashcode \<rightharpoonup> ('k \<rightharpoonup> 'v)"
 
   -- "Map entry of map by function"
@@ -213,7 +213,7 @@ text {*
   thus, indirectly, w.r.t. the corresponding map.
 *}
 
-types
+type_synonym
   ('k,'v) hm_impl = "(hashcode, ('k,'v) lm) rm"
 
 subsubsection "Operations"

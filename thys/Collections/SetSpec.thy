@@ -103,7 +103,7 @@ text {*
   The function is applied in any order. Proofs over the iteration are
   done by establishing invariants over the iteration.
   *}
-types
+type_synonym
   ('s,'a,'\<sigma>) iterator = "('a \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 's \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
 
 
@@ -136,7 +136,7 @@ text {*
   Iterators may have a break-condition, that interrupts the iteration before
   the last element has been visited.
 *}
-types
+type_synonym
   ('s,'a,'\<sigma>) iteratori = "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 's \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
 
 

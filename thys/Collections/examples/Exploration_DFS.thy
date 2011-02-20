@@ -18,7 +18,7 @@ subsection "Definitions"
 -- {*
   The concrete algorithm uses a hashset (@{typ [source] "'q hs"}) and a worklist. 
 *}
-types 'q hs_dfs_state = "'q hs \<times> 'q list"
+type_synonym 'q hs_dfs_state = "'q hs \<times> 'q list"
 
 -- {* The loop terminates on empty worklist *}
 definition hs_dfs_cond :: "'q hs_dfs_state \<Rightarrow> bool" 

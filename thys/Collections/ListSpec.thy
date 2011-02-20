@@ -284,8 +284,8 @@ lemma foldr_rule_P:
   apply (auto simp add: IP IF)
   done
 
-types ('s,'x,'\<sigma>) list_iteratori = "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('x \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 's \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
-types ('s,'x,'\<sigma>) list_iterator = "('x \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 's \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
+type_synonym ('s,'x,'\<sigma>) list_iteratori = "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('x \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 's \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
+type_synonym ('s,'x,'\<sigma>) list_iterator = "('x \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 's \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
 
 locale list_iteratei = list +
   constrains \<alpha> :: "'s \<Rightarrow> 'x list"

@@ -4,8 +4,8 @@ no_document use_thys
    "common/RBT_add",
    "common/Dlist_add",
    "common/Array",
-   "Efficient_Nat",
-   "While_Combinator",
+   "~~/src/HOL/Library/Efficient_Nat",
+   "~~/src/HOL/Library/While_Combinator",
    "../Binomial-Heaps/BinomialHeap",
    "../Binomial-Heaps/SkewBinomialHeap",
    "../Finger-Trees/FingerTree"
@@ -13,9 +13,11 @@ no_document use_thys
 
 use_thys 
    [ (* Specifications *)
-    "MapSpec", "OrderedMap", "SetSpec", "OrderedSet", "ListSpec", "AnnotatedListSpec", "PrioSpec", "PrioUniqueSpec",
+    "MapSpec", "OrderedMap", "SetSpec", "OrderedSet", "ListSpec", "AnnotatedListSpec",
+    "PrioSpec", "PrioUniqueSpec",
      (* Generic Algorithms *)
-    "MapGA", "SetGA", "SetByMap", "ListGA", "SetIndex", "Algos", "AnnotatedListGAPrioImpl", "AnnotatedListGAPrioUniqueImpl",
+    "MapGA", "SetGA", "SetByMap", "ListGA", "SetIndex", "Algos", "AnnotatedListGAPrioImpl",
+    "AnnotatedListGAPrioUniqueImpl",
      (* Implementations *)
     "MapStdImpl", "SetStdImpl",
     "Fifo", "BinoPrioImpl", "SkewPrioImpl", "FTAnnotatedListImpl", "FTPrioImpl", "FTPrioUniqueImpl"

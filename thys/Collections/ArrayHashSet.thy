@@ -12,7 +12,7 @@ text {*
 *}
 
 subsection "Definitions"
-types
+type_synonym
   'a ahs = "('a::hashable,unit) ahm"
 
 definition ahs_\<alpha> :: "'a::hashable ahs \<Rightarrow> 'a set" where "ahs_\<alpha> == s_\<alpha> ahm_\<alpha>"

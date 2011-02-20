@@ -408,15 +408,15 @@ proof -
   interpret s2: set_ins \<alpha>2 invar2 ins2 by fact
 
   show ?thesis
-	  apply (unfold_locales)
-	  apply (unfold it_image_filter_def)
-	  apply (rule_tac 
-        I = "\<lambda>it res. invar2 res \<and> \<alpha>2 res = {b. \<exists>a\<in>\<alpha>1 s - it. f a = Some b}"
-        in s1.iterate_rule_P)
-	  apply (auto simp add: s2.empty_correct s2.ins_correct split: option.split)
-	  apply (rule_tac I = "\<lambda>it res. invar2 res" in s1.iterate_rule_P)
-	  apply (auto simp add: s2.empty_correct s2.ins_correct split: option.split)
-	  done
+    apply (unfold_locales)
+    apply (unfold it_image_filter_def)
+    apply (rule_tac 
+      I = "\<lambda>it res. invar2 res \<and> \<alpha>2 res = {b. \<exists>a\<in>\<alpha>1 s - it. f a = Some b}"
+      in s1.iterate_rule_P)
+    apply (auto simp add: s2.empty_correct s2.ins_correct split: option.split)
+    apply (rule_tac I = "\<lambda>it res. invar2 res" in s1.iterate_rule_P)
+    apply (auto simp add: s2.empty_correct s2.ins_correct split: option.split)
+    done
 qed
 
 subsection {* Injective Image-Filter (by iterate)*}
@@ -565,10 +565,10 @@ proof -
   interpret s2: set_memb \<alpha>2 invar2 memb2 by fact
 
   show ?thesis
-	  apply (unfold_locales)
-	  apply (unfold ball_disjoint_def)
+    apply (unfold_locales)
+    apply (unfold ball_disjoint_def)
     apply (auto simp add: s1.ball_correct s2.memb_correct)
-	  done
+    done
 qed
 
 subsection {* Selection (by iteratei) *}
@@ -743,21 +743,21 @@ proof -
       apply simp
         -- "Init"
       apply (simp add: s3.empty_correct)
-	      -- "Step"
-	    apply (rule_tac 
+        -- "Step"
+      apply (rule_tac 
              I="\<lambda>it2 res2. invar3 res2 \<and> 
                 \<alpha>3 res2 = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 } 
                           \<union> { f x y | y. P x y \<and> y\<in>\<alpha>2 s2 - it2 }" 
              in s2.iterate_rule_P)
-	        -- "Invar"
+          -- "Invar"
         apply simp
-	        -- "Init"
+          -- "Init"
         apply simp
-	        -- "Step"
-	      apply (auto simp add: s3.ins_correct) [1]
-	        -- "Final"
-	      apply auto [1]
-	      -- "Final"
+          -- "Step"
+        apply (auto simp add: s3.ins_correct) [1]
+          -- "Final"
+        apply auto [1]
+        -- "Final"
       apply simp
     done
   thus ?T1 ?T2 by auto
@@ -802,24 +802,24 @@ proof -
       in s1.iterate_rule_P)
         -- "Invar"
       apply simp
-	      -- "Init"
+        -- "Init"
       apply (simp add: s3.empty_correct)
-	      -- "Step"
-	    apply (rule_tac 
+        -- "Step"
+      apply (rule_tac 
              I="\<lambda>it2 res2. invar3 res2 \<and> 
                   \<alpha>3 res2 = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 } 
                             \<union> { f x y | y. P x y \<and> y\<in>\<alpha>2 s2 - it2 }" 
         in s2.iterate_rule_P)
-	        -- "Invar"
+          -- "Invar"
         apply simp
-	        -- "Init"
+          -- "Init"
         apply simp
-	        -- "Step"
+          -- "Step"
         apply (subgoal_tac "P x xa \<Longrightarrow> f x xa \<notin> \<alpha>3 \<sigma>'")
-	      apply (auto simp add: s3.ins_dj_correct) [1]
+        apply (auto simp add: s3.ins_dj_correct) [1]
         apply (auto dest: INJ) [1]
-	        -- "Final"
-	      apply auto [1]
+          -- "Final"
+        apply auto [1]
 
         -- "Final"
       apply simp

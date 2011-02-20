@@ -6,7 +6,7 @@ header {* \chapter{Isabelle Collections Framework Userguide} *}
 theory Userguide
 imports 
   Collections
-  Efficient_Nat
+  "~~/src/HOL/Library/Efficient_Nat"
 begin
 text_raw {*\label{thy:Userguide}*}
 
@@ -422,7 +422,7 @@ text_raw {*\label{sec:userguide.ext}*}
     *}
 
   -- "The type of the data structure should be available as the two-letter abbreviation: "
-  types 'a lsi' = "'a list"
+  type_synonym 'a lsi' = "'a list"
   -- "The abstraction function:"
   definition "lsi'_\<alpha> == set"
   -- "The invariant: In our case we constrain the lists to be distinct:"

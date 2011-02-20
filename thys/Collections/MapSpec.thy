@@ -90,7 +90,7 @@ text {*
   map entry, in arbitrary order.
   Proving of properties is done by invariant reasoning.
 *}
-types
+type_synonym
   ('s,'u,'v,'\<sigma>) map_iterator = "('u \<Rightarrow> 'v \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 's \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
 
 locale map_iterate = finite_map +
@@ -130,7 +130,7 @@ text {*
   An iterator can also contain a continuation condition. Iteration is
   interrupted if the condition becomes false.
 *}
-types
+type_synonym
   ('s,'u,'v,'\<sigma>) map_iteratori = 
     "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('u \<Rightarrow> 'v \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 's \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
 

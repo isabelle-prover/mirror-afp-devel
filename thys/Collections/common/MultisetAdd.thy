@@ -1,5 +1,5 @@
 theory MultisetAdd
-imports Multiset
+imports "~~/src/HOL/Library/Multiset"
 begin
 
 (* Lemmas for Multisets *)

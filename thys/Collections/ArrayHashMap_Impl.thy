@@ -203,27 +203,27 @@ proof -
       assume "i < length [x\<leftarrow>xs . x \<noteq> []]" "j < length [x\<leftarrow>xs . x \<noteq> []]" "i \<noteq> j"
       from filter_nth_ex_nth[OF `i < length [x\<leftarrow>xs . x \<noteq> []]`]
       obtain i' where "i' \<ge> i" "i' < length xs" and ith: "[x\<leftarrow>xs . x \<noteq> []] ! i = xs ! i'" 
-	and eqi: "[x\<leftarrow>take i' xs . x \<noteq> []] = take i [x\<leftarrow>xs . x \<noteq> []]" by blast
+        and eqi: "[x\<leftarrow>take i' xs . x \<noteq> []] = take i [x\<leftarrow>xs . x \<noteq> []]" by blast
       from filter_nth_ex_nth[OF `j < length [x\<leftarrow>xs . x \<noteq> []]`]
       obtain j' where "j' \<ge> j" "j' < length xs" and jth: "[x\<leftarrow>xs . x \<noteq> []] ! j = xs ! j'"
-	and eqj: "[x\<leftarrow>take j' xs . x \<noteq> []] = take j [x\<leftarrow>xs . x \<noteq> []]" by blast
+        and eqj: "[x\<leftarrow>take j' xs . x \<noteq> []] = take j [x\<leftarrow>xs . x \<noteq> []]" by blast
       show "[x\<leftarrow>xs . x \<noteq> []] ! i \<noteq> [x\<leftarrow>xs . x \<noteq> []] ! j"
       proof
-	assume "[x\<leftarrow>xs . x \<noteq> []] ! i = [x\<leftarrow>xs . x \<noteq> []] ! j"
-	hence eq: "xs ! i' = xs ! j'" using ith jth by simp
-	from `i < length [x\<leftarrow>xs . x \<noteq> []]`
-	have "[x\<leftarrow>xs . x \<noteq> []] ! i \<in> set [x\<leftarrow>xs . x \<noteq> []]" by(rule nth_mem)
-	with ith have "xs ! i' \<noteq> []" by simp
-	then obtain kv where "kv \<in> set (xs ! i')" by(fastsimp simp add: neq_Nil_conv)
-	with no_junk[OF `i' < length xs`] have "bounded_hashcode (length xs) (fst kv) = i'"
-	  by(simp add: bucket_ok_def)
-	moreover from eq `kv \<in> set (xs ! i')` have "kv \<in> set (xs ! j')" by simp
-	with no_junk[OF `j' < length xs`] have "bounded_hashcode (length xs) (fst kv) = j'"
-	  by(simp add: bucket_ok_def)
-	ultimately have [simp]: "i' = j'" by simp
-	from `i < length [x\<leftarrow>xs . x \<noteq> []]` have "i = length (take i [x\<leftarrow>xs . x \<noteq> []])" by simp
-	also from eqi eqj have "take i [x\<leftarrow>xs . x \<noteq> []] = take j [x\<leftarrow>xs . x \<noteq> []]" by simp
-	finally show False using `i \<noteq> j` `j < length [x\<leftarrow>xs . x \<noteq> []]` by simp
+        assume "[x\<leftarrow>xs . x \<noteq> []] ! i = [x\<leftarrow>xs . x \<noteq> []] ! j"
+        hence eq: "xs ! i' = xs ! j'" using ith jth by simp
+        from `i < length [x\<leftarrow>xs . x \<noteq> []]`
+        have "[x\<leftarrow>xs . x \<noteq> []] ! i \<in> set [x\<leftarrow>xs . x \<noteq> []]" by(rule nth_mem)
+        with ith have "xs ! i' \<noteq> []" by simp
+        then obtain kv where "kv \<in> set (xs ! i')" by(fastsimp simp add: neq_Nil_conv)
+        with no_junk[OF `i' < length xs`] have "bounded_hashcode (length xs) (fst kv) = i'"
+          by(simp add: bucket_ok_def)
+        moreover from eq `kv \<in> set (xs ! i')` have "kv \<in> set (xs ! j')" by simp
+        with no_junk[OF `j' < length xs`] have "bounded_hashcode (length xs) (fst kv) = j'"
+          by(simp add: bucket_ok_def)
+        ultimately have [simp]: "i' = j'" by simp
+        from `i < length [x\<leftarrow>xs . x \<noteq> []]` have "i = length (take i [x\<leftarrow>xs . x \<noteq> []])" by simp
+        also from eqi eqj have "take i [x\<leftarrow>xs . x \<noteq> []] = take j [x\<leftarrow>xs . x \<noteq> []]" by simp
+        finally show False using `i \<noteq> j` `j < length [x\<leftarrow>xs . x \<noteq> []]` by simp
       qed
     qed
     moreover have "inj_on (map fst) {x \<in> set xs. x \<noteq> []}"

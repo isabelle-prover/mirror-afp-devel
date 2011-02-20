@@ -4,7 +4,7 @@
 *)
 header {* \isaheader{Data Refinement for the While-Combinator} *}
 theory DatRef
-imports Main "common/Misc" While_Combinator
+imports Main "common/Misc" "~~/src/HOL/Library/While_Combinator"
 begin
 text_raw {*\label{thy:DatRef}*}
 

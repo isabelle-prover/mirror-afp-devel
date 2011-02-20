@@ -15,7 +15,7 @@ text {*
 
 
 subsection "Definitions"
-types
+type_synonym
   'a hs = "('a::hashable,unit) hm"
 
 definition hs_\<alpha> :: "'a::hashable hs \<Rightarrow> 'a set" where "hs_\<alpha> == s_\<alpha> hm_\<alpha>"

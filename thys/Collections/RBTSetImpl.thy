@@ -21,7 +21,7 @@ text {*
 *}
 
 subsection "Definitions"
-types
+type_synonym
   'a rs = "('a::linorder,unit) rm"
 
 definition rs_\<alpha> :: "'a::linorder rs \<Rightarrow> 'a set" where "rs_\<alpha> == s_\<alpha> rm_\<alpha>"

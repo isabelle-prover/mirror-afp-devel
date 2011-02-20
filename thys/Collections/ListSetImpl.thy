@@ -12,7 +12,7 @@ text {*
   In this theory, sets are implemented by distinct lists. Abbreviations: ls,l
 *}
 
-types
+type_synonym
   'a ls = "'a dlist"
 
 subsection "Definitions"

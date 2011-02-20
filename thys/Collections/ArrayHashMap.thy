@@ -24,7 +24,7 @@ proof
     by(simp add: empty_correct)
 qed
 
-types ('k,'v) ahm = "('k,'v) hashmap"
+type_synonym ('k,'v) ahm = "('k,'v) hashmap"
 
 lemma ahm_invar_impl_of [simp, intro]: "ArrayHashMap_Impl.ahm_invar (impl_of hm)"
 using impl_of[of hm] by simp

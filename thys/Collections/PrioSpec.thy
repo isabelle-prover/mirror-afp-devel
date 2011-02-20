@@ -1,6 +1,6 @@
 header {*\isaheader{Specification of Priority Queues}*}
 theory PrioSpec
-imports Main Multiset
+imports Main "~~/src/HOL/Library/Multiset"
 begin
 
 text {* 

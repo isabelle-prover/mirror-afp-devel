@@ -1,5 +1,5 @@
 header {* \isaheader{The type of associative lists} *}
-theory Assoc_List imports AssocList begin
+theory Assoc_List imports "~~/src/HOL/Library/AssocList" begin
 
 subsection {* Additional operations for associative lists *}
 

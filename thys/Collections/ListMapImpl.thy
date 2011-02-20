@@ -14,7 +14,7 @@ text {*
   This implementation uses the abbreviations: lm, l
  *}
 
-types ('k,'v) lm = "('k,'v) assoc_list"
+type_synonym ('k,'v) lm = "('k,'v) assoc_list"
 
 subsection "Functions"
 

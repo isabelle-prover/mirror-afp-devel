@@ -14,7 +14,7 @@ text {*
   This implementation uses the abbreviations: lmi, l
  *}
 
-types ('k,'v) lmi = "('k\<times>'v) list"
+type_synonym ('k,'v) lmi = "('k\<times>'v) list"
 
 subsection "Functions"
 

@@ -14,7 +14,7 @@ text {*
 
 subsection {* Operations *}
 
-types ('k, 'v) tm = "('k, 'v) trie"
+type_synonym ('k, 'v) tm = "('k, 'v) trie"
 
 definition tm_\<alpha> :: "('k, 'v) tm \<Rightarrow> 'k list \<rightharpoonup> 'v"
 where "tm_\<alpha> = Trie.lookup"

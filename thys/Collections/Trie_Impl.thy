@@ -145,12 +145,12 @@ next
       case (Cons k' ks'')
       with Some empty ks' show ?thesis
       proof(cases "k' = k")
-	case False
-	from Some Cons empty have "delete_aux k ts = []"
-	  by(clarsimp simp add: Let_def split: split_if_asm)
-	with False have "map_of ts k' = None"
+        case False
+        from Some Cons empty have "delete_aux k ts = []"
+          by(clarsimp simp add: Let_def split: split_if_asm)
+        with False have "map_of ts k' = None"
           by(cases "map_of ts k'")(auto dest: map_of_is_SomeD simp add: delete_aux_eq_Nil_conv)
-	thus ?thesis using False Some Cons empty by simp
+        thus ?thesis using False Some Cons empty by simp
       next
         case True
         with Some empty ks' Cons show ?thesis
@@ -186,18 +186,18 @@ next
       case True[simp]
       show ?thesis
       proof(cases "map_of ts k")
-	case None thus ?thesis by simp
+        case None thus ?thesis by simp
       next
-	case (Some t)
-	thus ?thesis 
-	proof(cases "isEmpty (delete t ks)")
-	  case True
-	  with Some invar show ?thesis
+        case (Some t)
+        thus ?thesis 
+        proof(cases "isEmpty (delete t ks)")
+          case True
+          with Some invar show ?thesis
             by(auto simp add: map_of_delete_aux isEmpty_conv dest: delete_eq_empty_lookup_other_fail)
-	next
-	  case False
-	  thus ?thesis using Some IH[of t ks''] invar by(auto simp add: update_conv')
-	qed
+        next
+          case False
+          thus ?thesis using Some IH[of t ks''] invar by(auto simp add: update_conv')
+        qed
       qed
     qed
   qed

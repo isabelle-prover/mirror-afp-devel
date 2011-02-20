@@ -22,7 +22,7 @@ text {*
 subsection "Generic Search Algorithm"
 
   -- "The algorithm contains a set of discovered states and a workset"
-types '\<Sigma> sse_state = "'\<Sigma> set \<times> '\<Sigma> set"
+type_synonym '\<Sigma> sse_state = "'\<Sigma> set \<times> '\<Sigma> set"
 
   -- "Loop body"
 inductive_set 
@@ -218,7 +218,7 @@ text {*
   to a DFS-algorithm, that uses a stack to implement the workset.
 *}
 
-types '\<Sigma> dfs_state = "'\<Sigma> set \<times> '\<Sigma> list"
+type_synonym '\<Sigma> dfs_state = "'\<Sigma> set \<times> '\<Sigma> list"
 
 definition dfs_\<alpha> :: "'\<Sigma> dfs_state \<Rightarrow> '\<Sigma> sse_state" 
   where "dfs_\<alpha> S == let (\<Sigma>,W)=S in (\<Sigma>,set W)"

@@ -14,7 +14,7 @@
 header {* Miscellaneous Definitions and Lemmas *}
 
 theory Misc
-imports Main Multiset
+imports Main "~~/src/HOL/Library/Multiset"
 begin
 text_raw {*\label{thy:Misc}*}
 
@@ -213,16 +213,16 @@ subsection {* Sets *}
     also have "... = (inv f) ` S'"
     proof
       show "{a. f a : S'} <= inv f ` S'"
-	using inj by(force intro: image_eqI)
+        using inj by(force intro: image_eqI)
       show "inv f ` S' <= {a. f a : S'}"
       proof
-	fix x
-	assume "x : inv f ` S'"
-	then obtain y where "y : S'" "x = inv f y" by blast
-	moreover from `y : S'` obtain x' where "f x' = y"
+        fix x
+        assume "x : inv f ` S'"
+        then obtain y where "y : S'" "x = inv f y" by blast
+        moreover from `y : S'` obtain x' where "f x' = y"
           unfolding S'_def by blast
-	hence "f (inv f y) = y" unfolding inv_def by(rule someI)
-	ultimately show "x : {a. f a : S'}" by simp
+        hence "f (inv f y) = y" unfolding inv_def by(rule someI)
+        ultimately show "x : {a. f a : S'}" by simp
       qed
     qed
     also have "finite S'" using fin unfolding S'_def by blast
@@ -340,40 +340,40 @@ lemma mset_cases'[case_names empty add]: "\<lbrakk> M={#} \<Longrightarrow> P; !
 done
   
 subsubsection {* Count *}
-	lemma count_ne_remove: "\<lbrakk> x ~= t\<rbrakk> \<Longrightarrow> count S x = count (S-{#t#}) x"
-	  by (auto)
+        lemma count_ne_remove: "\<lbrakk> x ~= t\<rbrakk> \<Longrightarrow> count S x = count (S-{#t#}) x"
+          by (auto)
   lemma mset_empty_count[simp]: "(\<forall>p. count M p = 0) = (M={#})"
     by (auto simp add: multiset_eq_iff)
 
 subsubsection {* Union, difference and intersection *}
 
   lemma size_diff_se: "\<lbrakk>t :# S\<rbrakk> \<Longrightarrow> size S = size (S - {#t#}) + 1" proof (unfold size_def)
-		let ?SIZE = "setsum (count S) (set_of S)"
-		assume A: "t :# S"
-		from A have SPLITPRE: "finite (set_of S) & {t}\<subseteq>(set_of S)" by auto
-		hence "?SIZE = setsum (count S) (set_of S - {t}) + setsum (count S) {t}" by (blast dest: setsum_subset_split)
-		hence "?SIZE = setsum (count S) (set_of S - {t}) + count (S) t" by auto
-		moreover with A have "count S t = count (S-{#t#}) t + 1" by auto
-		ultimately have D: "?SIZE = setsum (count S) (set_of S - {t}) + count (S-{#t#}) t + 1" by (arith)
-		moreover have "setsum (count S) (set_of S - {t}) = setsum (count (S-{#t#})) (set_of S - {t})" proof -
-			have "ALL x:(set_of S - {t}) . count S x = count (S-{#t#}) x" by (auto iff add: count_ne_remove)
-			thus ?thesis by simp
-		qed
-		ultimately have D: "?SIZE = setsum (count (S-{#t#})) (set_of S - {t}) + count (S-{#t#}) t + 1" by (simp)
-		moreover
-		{ assume CASE: "count (S-{#t#}) t = 0"
-			from CASE have "set_of S - {t} = set_of (S-{#t#})" by (auto iff add: set_of_def)
-			with CASE D have "?SIZE = setsum (count (S-{#t#})) (set_of (S - {#t#})) + 1" by simp
-		}
-		moreover
-		{ assume CASE: "count (S-{#t#}) t ~= 0"
-			from CASE have 1: "set_of S = set_of (S-{#t#})" by (auto iff add: set_of_def)
-			moreover from D have "?SIZE = setsum (count (S-{#t#})) (set_of S - {t}) + setsum (count (S-{#t#})) {t} + 1" by simp
-			moreover from SPLITPRE setsum_subset_split have "setsum (count (S-{#t#})) (set_of S) = setsum (count (S-{#t#})) (set_of S - {t}) + setsum (count (S-{#t#})) {t}" by (blast)
-			ultimately have "?SIZE = setsum (count (S-{#t#})) (set_of (S-{#t#})) + 1" by simp
-		}
-		ultimately show "?SIZE = setsum (count (S-{#t#})) (set_of (S - {#t#})) + 1" by blast
-	qed
+                let ?SIZE = "setsum (count S) (set_of S)"
+                assume A: "t :# S"
+                from A have SPLITPRE: "finite (set_of S) & {t}\<subseteq>(set_of S)" by auto
+                hence "?SIZE = setsum (count S) (set_of S - {t}) + setsum (count S) {t}" by (blast dest: setsum_subset_split)
+                hence "?SIZE = setsum (count S) (set_of S - {t}) + count (S) t" by auto
+                moreover with A have "count S t = count (S-{#t#}) t + 1" by auto
+                ultimately have D: "?SIZE = setsum (count S) (set_of S - {t}) + count (S-{#t#}) t + 1" by (arith)
+                moreover have "setsum (count S) (set_of S - {t}) = setsum (count (S-{#t#})) (set_of S - {t})" proof -
+                        have "ALL x:(set_of S - {t}) . count S x = count (S-{#t#}) x" by (auto iff add: count_ne_remove)
+                        thus ?thesis by simp
+                qed
+                ultimately have D: "?SIZE = setsum (count (S-{#t#})) (set_of S - {t}) + count (S-{#t#}) t + 1" by (simp)
+                moreover
+                { assume CASE: "count (S-{#t#}) t = 0"
+                        from CASE have "set_of S - {t} = set_of (S-{#t#})" by (auto iff add: set_of_def)
+                        with CASE D have "?SIZE = setsum (count (S-{#t#})) (set_of (S - {#t#})) + 1" by simp
+                }
+                moreover
+                { assume CASE: "count (S-{#t#}) t ~= 0"
+                        from CASE have 1: "set_of S = set_of (S-{#t#})" by (auto iff add: set_of_def)
+                        moreover from D have "?SIZE = setsum (count (S-{#t#})) (set_of S - {t}) + setsum (count (S-{#t#})) {t} + 1" by simp
+                        moreover from SPLITPRE setsum_subset_split have "setsum (count (S-{#t#})) (set_of S) = setsum (count (S-{#t#})) (set_of S - {t}) + setsum (count (S-{#t#})) {t}" by (blast)
+                        ultimately have "?SIZE = setsum (count (S-{#t#})) (set_of (S-{#t#})) + 1" by simp
+                }
+                ultimately show "?SIZE = setsum (count (S-{#t#})) (set_of (S - {#t#})) + 1" by blast
+        qed
 
   (* TODO: Check whether this proof can be done simpler *)
   lemma mset_union_diff_comm: "t :# S \<Longrightarrow> T + (S - {#t#}) = (T + S) - {#t#}" proof -
@@ -439,14 +439,14 @@ subsubsection {* Union, difference and intersection *}
   lemma diff_union_inverse2[simp]: "B + A - B = (A::'a multiset)"
     by (auto iff add: multiset_eq_conv_count_eq)
 *)
-	lemma union_diff_assoc_se: "t :# B \<Longrightarrow> (A+B)-{#t#} = A + (B-{#t#})"
-	  by (auto iff add: multiset_eq_iff)
+        lemma union_diff_assoc_se: "t :# B \<Longrightarrow> (A+B)-{#t#} = A + (B-{#t#})"
+          by (auto iff add: multiset_eq_iff)
   (*lemma union_diff_assoc_se2: "t :# A \<Longrightarrow> (A+B)-{#t#} = (A-{#t#}) + B"
     by (auto iff add: multiset_eq_conv_count_eq)
   lemmas union_diff_assoc_se = union_diff_assoc_se1 union_diff_assoc_se2*)
 
-	lemma union_diff_assoc: "C-B={#} \<Longrightarrow> (A+B)-C = A + (B-C)"
-	  by (simp add: multiset_eq_iff)
+        lemma union_diff_assoc: "C-B={#} \<Longrightarrow> (A+B)-C = A + (B-C)"
+          by (simp add: multiset_eq_iff)
 
   lemma mset_union_1_elem1[simp]: "({#a#} = M+{#b#}) = (a=b & M={#})" proof
     assume A: "{#a#} = M+{#b#}"
@@ -661,7 +661,7 @@ subsubsection {* Union, difference and intersection *}
   qed
 
 
-subsubsection {* Singleton multisets *}		
+subsubsection {* Singleton multisets *}         
   lemma mset_singletonI[intro!]: "a :# {#a#}"
     by auto
 
@@ -1753,16 +1753,16 @@ subsection {* Functions of type @{typ "bool\<Rightarrow>bool"}*}
 
 
 subsection {* Definite and indefinite description *}
-	text "Combined definite and indefinite description for binary predicate"
+        text "Combined definite and indefinite description for binary predicate"
   lemma some_theI: assumes EX: "\<exists>a b . P a b" and BUN: "!! b1 b2 . \<lbrakk>\<exists>a . P a b1; \<exists>a . P a b2\<rbrakk> \<Longrightarrow> b1=b2" 
     shows "P (SOME a . \<exists>b . P a b) (THE b . \<exists>a . P a b)"
   proof -
-		from EX have "EX b . P (SOME a . EX b . P a b) b" by (rule someI_ex)
-		moreover from EX have "EX b . EX a . P a b" by blast
+                from EX have "EX b . P (SOME a . EX b . P a b) b" by (rule someI_ex)
+                moreover from EX have "EX b . EX a . P a b" by blast
     with BUN theI'[of "\<lambda>b . EX a . P a b"] have "EX a . P a (THE b . EX a . P a b)" by (unfold Ex1_def, blast)
-		moreover note BUN
-		ultimately show ?thesis by (fast)
-	qed
+                moreover note BUN
+                ultimately show ?thesis by (fast)
+        qed
 
   lemma some_insert_self[simp]: "S\<noteq>{} \<Longrightarrow> insert (SOME x. x\<in>S) S = S"
     by (auto intro: someI)
@@ -2199,7 +2199,7 @@ next
       case False
       with `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
       moreover hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
-	by(rule snoc)
+        by(rule snoc)
       ultimately show ?thesis by(auto simp add: nth_append)
     next
       case True[simp]

@@ -13,7 +13,7 @@ text {*
 *}
 
 
-types
+type_synonym
   'a lsi = "'a list"
 
 subsection "Definitions"

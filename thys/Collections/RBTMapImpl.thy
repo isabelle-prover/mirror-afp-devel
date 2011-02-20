@@ -20,7 +20,7 @@ text {*
   The abbreviations used by this implementation are rm,r.
 *}
 
-types ('k,'v) rm = "('k,'v) RBT.rbt"
+type_synonym ('k,'v) rm = "('k,'v) RBT.rbt"
 
 subsection "Definitions"
 definition "rm_\<alpha> == RBT.lookup"

@@ -22,7 +22,7 @@ text {*
 *}
 
 subsection {* Definitions *}
-types 'a fifo = "'a list \<times> 'a list"
+type_synonym 'a fifo = "'a list \<times> 'a list"
 
   -- "The empty fifo"
 definition fifo_empty :: "'a fifo" where "fifo_empty == ([],[])"

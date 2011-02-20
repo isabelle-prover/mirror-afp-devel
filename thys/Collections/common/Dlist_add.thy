@@ -1,5 +1,5 @@
 header {* \isaheader{Additions to Distinct Lists} *}
-theory Dlist_add imports Dlist "Misc" begin
+theory Dlist_add imports "~~/src/HOL/Library/Dlist" Misc begin
 
 primrec remove1' :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where

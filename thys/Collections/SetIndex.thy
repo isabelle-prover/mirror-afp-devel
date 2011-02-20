@@ -187,7 +187,7 @@ begin
         simp add: ci_invar_def m.update_correct m.lookup_correct 
                   t.empty_correct t.ins_correct Let_def 
         split: option.split) [1]
-	      
+        
       apply (rule ext)
     proof -
       case (goal1 x it m i)
@@ -209,16 +209,16 @@ begin
                           t.ins_correct t.empty_correct ci_\<alpha>'_def)
           also {
             have "None = ci_\<alpha>' m (f x)" 
-		            by (simp add: ci_\<alpha>'_def)
+              by (simp add: ci_\<alpha>'_def)
             also from goal1(4) have "\<dots> = index_map f (s\<alpha> s - it) i" by simp
             finally have E: "{xa \<in> s\<alpha> s - it. f xa = i} = {}" 
               by (simp add: index_map_def index_def split: split_if_asm)
             moreover have 
               "{xa \<in> s\<alpha> s - (it - {x}). f xa = i} 
                = {xa \<in> s\<alpha> s - it. f xa = i} \<union> {x}"
-		            using goal1(2,3) by auto
+              using goal1(2,3) by auto
             ultimately have "Some {x} = index_map f (s\<alpha> s - (it - {x})) i"
-		            by (unfold index_map_def index_def) auto
+              by (unfold index_map_def index_def) auto
           } finally show ?thesis .
         next
           case (Some ss)[simp]
@@ -228,18 +228,18 @@ begin
           hence "ci_\<alpha>' (idx_build_stepfun' f x m) i = Some (insert x (t\<alpha> ss))"
             by (simp add: m.update_correct t.ins_correct ci_\<alpha>'_def)
           also {
-	            have "Some (t\<alpha> ss) = ci_\<alpha>' m (f x)" 
-		            by (simp add: ci_\<alpha>'_def)
+              have "Some (t\<alpha> ss) = ci_\<alpha>' m (f x)" 
+                by (simp add: ci_\<alpha>'_def)
             also from goal1(4) have "\<dots> = index_map f (s\<alpha> s - it) i" by simp
             finally have E: "{xa \<in> s\<alpha> s - it. f xa = i} = t\<alpha> ss" 
               by (simp add: index_map_def index_def split: split_if_asm)
             moreover have 
               "{xa \<in> s\<alpha> s - (it - {x}). f xa = i} 
                = {xa \<in> s\<alpha> s - it. f xa = i} \<union> {x}"
-		          using goal1(2,3) by auto
+              using goal1(2,3) by auto
             ultimately have 
               "Some (insert x (t\<alpha> ss)) = index_map f (s\<alpha> s - (it - {x})) i"
-		          by (unfold index_map_def index_def) auto
+              by (unfold index_map_def index_def) auto
           }
           finally show ?thesis .
         qed
@@ -256,9 +256,9 @@ begin
         also have 
           "{xa \<in> s\<alpha> s - (it - {x}). f xa = i} = {xa \<in> s\<alpha> s - it. f xa = i}"
           using goal1(2,3) C by auto
-	hence "index_map f (s\<alpha> s - it) i = index_map f (s\<alpha> s - (it-{x})) i"
-	  by (unfold index_map_def index_def) simp
-	finally show ?thesis .
+  hence "index_map f (s\<alpha> s - it) i = index_map f (s\<alpha> s - (it-{x})) i"
+    by (unfold index_map_def index_def) simp
+  finally show ?thesis .
       qed
     qed
     with I show ?T1 ?T2 by auto

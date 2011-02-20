@@ -18,7 +18,7 @@ text {*
   for a couple of standard types.
 *}
 
-types 
+type_synonym 
   hashcode = "nat"
 
 class hashable =
