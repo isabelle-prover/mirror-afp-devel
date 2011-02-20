@@ -7,8 +7,8 @@ header {* Terminated coinductive lists *}
 
 theory TLList imports
   Quotient_Coinductive_List
-  Quotient_Product
-  Quotient_Sum
+  "~~/src/HOL/Library/Quotient_Product"
+  "~~/src/HOL/Library/Quotient_Sum"
 begin
 
 text {*

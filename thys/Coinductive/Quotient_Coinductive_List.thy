@@ -6,7 +6,7 @@
 header {* Quotient preservation and respectfulness theorems for coinductive lists *}
 
 theory Quotient_Coinductive_List imports
-  Quotient_Syntax
+  "~~/src/HOL/Library/Quotient_Syntax"
   Coinductive_List_Lib
 begin
 

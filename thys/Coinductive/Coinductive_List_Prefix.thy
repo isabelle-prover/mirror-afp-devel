@@ -4,7 +4,7 @@
 *)
 theory Coinductive_List_Prefix imports
   Coinductive_List_Lib
-  List_Prefix
+  "~~/src/HOL/Library/List_Prefix"
 begin
 
 section {* Prefix ordering on lazy lists as ordering for the type class order *}
@@ -125,7 +125,7 @@ proof
     next
       case (LCons x xs')
       with le obtain ys' zs' where "ys = LCons x ys'" "zs = LCons x zs'"
-	"xs' \<le> ys'" "xs' \<le> zs'" by(auto simp add: LCons_lprefix_conv)
+        "xs' \<le> ys'" "xs' \<le> zs'" by(auto simp add: LCons_lprefix_conv)
       with us LCons have ?LeLCons by auto
       thus ?thesis ..
     qed

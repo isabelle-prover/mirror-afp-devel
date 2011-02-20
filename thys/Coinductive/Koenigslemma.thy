@@ -6,11 +6,11 @@ header {* Example: Koenig's lemma *}
 
 theory Koenigslemma imports 
   Coinductive_List_Lib 
-  Infinite_Set
+  "~~/src/HOL/Library/Infinite_Set"
 begin
 
-types 'node graph = "'node \<Rightarrow> 'node \<Rightarrow> bool"
-types 'node path = "'node llist"
+type_synonym 'node graph = "'node \<Rightarrow> 'node \<Rightarrow> bool"
+type_synonym 'node path = "'node llist"
 
 coinductive_set paths :: "'node graph \<Rightarrow> 'node path set"
 for graph :: "'node graph"

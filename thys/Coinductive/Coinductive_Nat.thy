@@ -6,7 +6,7 @@
 header {* Coinductive natural numbers *}
 
 theory Coinductive_Nat imports
-  Nat_Infinity
+  "~~/src/HOL/Library/Nat_Infinity"
 begin
 
 text {*
@@ -39,13 +39,13 @@ proof
       case (inat x)
       show ?case
       proof(cases "x = 0")
-	case True thus ?thesis by simp
+        case True thus ?thesis by simp
       next
-	case False
-	then obtain n where "x = iSuc n"
-	  by(cases x)(fastsimp simp add: iSuc_def zero_inat_def gr0_conv_Suc
+        case False
+        then obtain n where "x = iSuc n"
+          by(cases x)(fastsimp simp add: iSuc_def zero_inat_def gr0_conv_Suc
                                split: inat.splits)+
-	thus ?thesis by auto
+        thus ?thesis by auto
       qed
     qed
   qed
@@ -197,7 +197,7 @@ proof -
     next
       case False
       with `m \<le> n` obtain m' n' where "m = iSuc m'" "n = n' + 1" "m' \<le> n'"
-	by(cases m rule: inat_coexhaust, simp)
+        by(cases m rule: inat_coexhaust, simp)
           (cases n rule: inat_coexhaust, auto simp add: iSuc_plus_1[symmetric])
       hence ?Le_inat_add by fastsimp
       thus ?thesis ..
