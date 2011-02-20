@@ -16,11 +16,10 @@ datatype ('s,'e)expr = true
                         | And "('s,'e)expr" "('s,'e)expr"
                         | Or  "('s,'e)expr" "('s,'e)expr"
  
-types
-   'd guard = "('d data) => bool"
-   ('e,'d)action = "('e set * 'd pupdate)"
-   ('s,'e,'d)label = "(('s,'e)expr * 'd guard * ('e,'d)action)"
-   ('s,'e,'d)trans = "('s * ('s,'e,'d)label * 's)"
+type_synonym 'd guard = "('d data) => bool"
+type_synonym ('e,'d)action = "('e set * 'd pupdate)"
+type_synonym ('s,'e,'d)label = "(('s,'e)expr * 'd guard * ('e,'d)action)"
+type_synonym ('s,'e,'d)trans = "('s * ('s,'e,'d)label * 's)"
 
 primrec
    eval_expr :: "[('s set * 'e set), ('s,'e)expr] \<Rightarrow> bool" where 

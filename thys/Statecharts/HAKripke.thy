@@ -10,9 +10,8 @@ theory HAKripke
 imports HASem "Kripke"
 begin
 
-types
-  ('s,'e,'d)hakripke = "(('s,'e,'d)status,('s,'e,'d)atomar)kripke"
-  ('s,'e,'d)hactl    = "(('s,'e,'d)status,('s,'e,'d)atomar)ctl"
+type_synonym ('s,'e,'d)hakripke = "(('s,'e,'d)status,('s,'e,'d)atomar)kripke"
+type_synonym ('s,'e,'d)hactl    = "(('s,'e,'d)status,('s,'e,'d)atomar)ctl"
 
 definition
   LabelFunSem :: "('s,'e,'d)hierauto
