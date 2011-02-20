@@ -43,8 +43,8 @@ We consider a program to be a well-formed Jinja program,
 together with a given base class and a main method
 *}
 
-types jvmprog = "wf_jvmprog \<times> cname \<times> mname"
-types callstack = "(cname \<times> mname \<times> pc) list"
+type_synonym jvmprog = "wf_jvmprog \<times> cname \<times> mname"
+type_synonym callstack = "(cname \<times> mname \<times> pc) list"
 
 text {*
 The state is modeled as $\textrm{heap} \times \textrm{stack-variables} \times \textrm{local-variables}$
@@ -58,7 +58,7 @@ array for the stack in Jinja's state representation), whereas local variables ar
 by their position in the array of local variables of Jinja's state representation.
 *}
 
-types state = "heap \<times> ((nat \<times> nat) \<Rightarrow> val) \<times> ((nat \<times> nat) \<Rightarrow> val)"
+type_synonym state = "heap \<times> ((nat \<times> nat) \<Rightarrow> val) \<times> ((nat \<times> nat) \<Rightarrow> val)"
 
 
 abbreviation heap_of :: "state \<Rightarrow> heap"
@@ -487,7 +487,7 @@ where "j_node_Exit \<equiv> (_ [],None _)"
 
 text {* An edge is a triple, consisting of two nodes and the edge kind *}
 
-types j_edge = "(j_node \<times> state edge_kind \<times> j_node)"
+type_synonym j_edge = "(j_node \<times> state edge_kind \<times> j_node)"
 
 
 subsection {* CFG *}

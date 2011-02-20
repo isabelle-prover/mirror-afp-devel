@@ -5,7 +5,7 @@ theory Com imports Main begin
 
 section {* Variables and Values *}
 
-types vname = string -- "names for variables"
+type_synonym vname = string -- "names for variables"
 
 datatype val
   = Bool bool      -- "Boolean value"
@@ -58,8 +58,7 @@ by(induct c) auto
 
 section {* The state *}
 
-types
-  state = "vname \<rightharpoonup> val"
+type_synonym state = "vname \<rightharpoonup> val"
 
 fun "interpret" :: "expr \<Rightarrow> state \<Rightarrow> val option"
 where Val: "interpret (Val v) s = Some v"

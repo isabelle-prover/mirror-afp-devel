@@ -2,7 +2,7 @@ header {* \isaheader{Formalization of Bit Vectors} *}
 
 theory BitVector imports Main begin
 
-types bit_vector = "bool list"
+type_synonym bit_vector = "bool list"
 
 fun bv_leqs :: "bit_vector \<Rightarrow> bit_vector \<Rightarrow> bool" ("_ \<preceq>\<^isub>b _" 99)
   where bv_Nils:"[] \<preceq>\<^isub>b [] = True"

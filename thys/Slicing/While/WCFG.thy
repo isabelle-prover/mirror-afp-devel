@@ -53,7 +53,7 @@ by(cases n) auto
 
 subsection{* CFG edges *}
 
-types w_edge = "(w_node \<times> state edge_kind \<times> w_node)"
+type_synonym w_edge = "(w_node \<times> state edge_kind \<times> w_node)"
 
 inductive While_CFG :: "cmd \<Rightarrow> w_node \<Rightarrow> state edge_kind \<Rightarrow> w_node \<Rightarrow> bool"
   ("_ \<turnstile> _ -_\<rightarrow> _")
@@ -401,15 +401,15 @@ next
       assume edge:"prog1 \<turnstile> (_ l _) -et\<rightarrow> n"
       show ?thesis
       proof(cases "n = (_Exit_)")
-	case True
-	with edge have "prog1;; prog2 \<turnstile> (_ l _) -et\<rightarrow> (_0_) \<oplus> #:prog1"
-	  by(fastsimp intro:WCFG_SeqConnect)
-	thus ?thesis by blast
+        case True
+        with edge have "prog1;; prog2 \<turnstile> (_ l _) -et\<rightarrow> (_0_) \<oplus> #:prog1"
+          by(fastsimp intro:WCFG_SeqConnect)
+        thus ?thesis by blast
       next
-	case False
-	with edge have "prog1;; prog2 \<turnstile> (_ l _) -et\<rightarrow> n"
-	  by(fastsimp intro:WCFG_SeqFirst)
-	thus ?thesis by blast
+        case False
+        with edge have "prog1;; prog2 \<turnstile> (_ l _) -et\<rightarrow> n"
+          by(fastsimp intro:WCFG_SeqFirst)
+        thus ?thesis by blast
       qed
     qed
   next
@@ -424,25 +424,25 @@ next
       assume "prog2 \<turnstile> n -et\<rightarrow> (_ l' _)"
       show ?thesis
       proof(cases "n = (_Entry_)")
-	case True
-	with `prog2 \<turnstile> n -et\<rightarrow> (_ l' _)` have "l' = 0" by(auto dest:WCFG_EntryD)
-	obtain l'' et'' where "l'' < #:prog1" 
-	  and "prog1 \<turnstile> (_ l'' _) -et''\<rightarrow> (_Exit_)"
-	  by(erule less_num_nodes_edge_Exit)
-	hence "prog1;;prog2 \<turnstile> (_ l'' _) -et''\<rightarrow> (_0_) \<oplus> #:prog1"
-	  by(fastsimp intro:WCFG_SeqConnect)
-	with `l' = 0` `l = l' + #:prog1` show ?thesis by simp blast
+        case True
+        with `prog2 \<turnstile> n -et\<rightarrow> (_ l' _)` have "l' = 0" by(auto dest:WCFG_EntryD)
+        obtain l'' et'' where "l'' < #:prog1" 
+          and "prog1 \<turnstile> (_ l'' _) -et''\<rightarrow> (_Exit_)"
+          by(erule less_num_nodes_edge_Exit)
+        hence "prog1;;prog2 \<turnstile> (_ l'' _) -et''\<rightarrow> (_0_) \<oplus> #:prog1"
+          by(fastsimp intro:WCFG_SeqConnect)
+        with `l' = 0` `l = l' + #:prog1` show ?thesis by simp blast
       next
-	case False
-	with `prog2 \<turnstile> n -et\<rightarrow> (_ l' _)`
-	have "prog1;;prog2 \<turnstile> n \<oplus> #:prog1 -et\<rightarrow> (_ l' _) \<oplus> #:prog1"
-	  by(fastsimp intro:WCFG_SeqSecond)
-	with `l = l' + #:prog1` show ?thesis  by simp blast
+        case False
+        with `prog2 \<turnstile> n -et\<rightarrow> (_ l' _)`
+        have "prog1;;prog2 \<turnstile> n \<oplus> #:prog1 -et\<rightarrow> (_ l' _) \<oplus> #:prog1"
+          by(fastsimp intro:WCFG_SeqSecond)
+        with `l = l' + #:prog1` show ?thesis  by simp blast
       qed
     next
       assume "prog2 \<turnstile> (_ l' _) -et\<rightarrow> n"
       hence "prog1;;prog2 \<turnstile> (_ l' _) \<oplus> #:prog1 -et\<rightarrow> n \<oplus> #:prog1"
-	by(fastsimp intro:WCFG_SeqSecond)
+        by(fastsimp intro:WCFG_SeqSecond)
       with `l = l' + #:prog1` show ?thesis  by simp blast
     qed
   qed
@@ -466,64 +466,64 @@ next
     proof(cases "l' < #:prog1")
       case True
       from IH1[OF this] obtain n et 
-	where "prog1 \<turnstile> n -et\<rightarrow> (_ l' _) \<or> prog1 \<turnstile> (_ l' _) -et\<rightarrow> n" by blast
+        where "prog1 \<turnstile> n -et\<rightarrow> (_ l' _) \<or> prog1 \<turnstile> (_ l' _) -et\<rightarrow> n" by blast
       thus ?thesis
       proof
-	assume edge:"prog1 \<turnstile> n -et\<rightarrow> (_ l' _)"
-	show ?thesis
-	proof(cases "n = (_Entry_)")
-	  case True
-	  with edge have "l' = 0" by(auto dest:WCFG_EntryD)
-	  have "if (b) prog1 else prog2 \<turnstile> (_0_) -(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>\<rightarrow> 
-	                                  (_0_) \<oplus> 1"
-	    by(rule WCFG_CondTrue)
-	  with `l' = 0` `l = l' + 1` show ?thesis by simp blast
-	next
-	  case False
-	  with edge have "if (b) prog1 else prog2 \<turnstile> n \<oplus> 1 -et\<rightarrow> (_ l' _) \<oplus> 1"
-	    by(fastsimp intro:WCFG_CondThen)
-	  with `l = l' + 1` show ?thesis by simp blast
-	qed
+        assume edge:"prog1 \<turnstile> n -et\<rightarrow> (_ l' _)"
+        show ?thesis
+        proof(cases "n = (_Entry_)")
+          case True
+          with edge have "l' = 0" by(auto dest:WCFG_EntryD)
+          have "if (b) prog1 else prog2 \<turnstile> (_0_) -(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>\<rightarrow> 
+                                          (_0_) \<oplus> 1"
+            by(rule WCFG_CondTrue)
+          with `l' = 0` `l = l' + 1` show ?thesis by simp blast
+        next
+          case False
+          with edge have "if (b) prog1 else prog2 \<turnstile> n \<oplus> 1 -et\<rightarrow> (_ l' _) \<oplus> 1"
+            by(fastsimp intro:WCFG_CondThen)
+          with `l = l' + 1` show ?thesis by simp blast
+        qed
       next
-	assume "prog1 \<turnstile> (_ l' _) -et\<rightarrow> n"
-	hence "if (b) prog1 else prog2 \<turnstile> (_ l' _) \<oplus> 1 -et\<rightarrow> n \<oplus> 1"
-	  by(fastsimp intro:WCFG_CondThen)
-	with `l = l' + 1` show ?thesis by simp blast
+        assume "prog1 \<turnstile> (_ l' _) -et\<rightarrow> n"
+        hence "if (b) prog1 else prog2 \<turnstile> (_ l' _) \<oplus> 1 -et\<rightarrow> n \<oplus> 1"
+          by(fastsimp intro:WCFG_CondThen)
+        with `l = l' + 1` show ?thesis by simp blast
       qed
     next
       case False
       hence "#:prog1 \<le> l'" by simp
       then obtain l'' where "l' = l'' + #:prog1" and "l'' = l' - #:prog1"
-	by simp
+        by simp
       from `l' = l'' + #:prog1` `l = l' + 1` `l < #:(if (b) prog1 else prog2)`
       have "l'' < #:prog2" by simp
       from IH2[OF this] obtain n et 
-	where "prog2 \<turnstile> n -et\<rightarrow> (_ l'' _) \<or> prog2 \<turnstile> (_ l'' _) -et\<rightarrow> n" by blast
+        where "prog2 \<turnstile> n -et\<rightarrow> (_ l'' _) \<or> prog2 \<turnstile> (_ l'' _) -et\<rightarrow> n" by blast
       thus ?thesis
       proof
-	assume "prog2 \<turnstile> n -et\<rightarrow> (_ l'' _)"
-	show ?thesis
-	proof(cases "n = (_Entry_)")
-	  case True
-	  with `prog2 \<turnstile> n -et\<rightarrow> (_ l'' _)` have "l'' = 0" by(auto dest:WCFG_EntryD)
-	  have "if (b) prog1 else prog2 \<turnstile> (_0_) -(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>\<rightarrow> 
-	                                  (_0_) \<oplus> (#:prog1 + 1)"
-	    by(rule WCFG_CondFalse)
-	  with `l'' = 0` `l' = l'' + #:prog1` `l = l' + 1` show ?thesis by simp blast
-	next
-	  case False
-	  with `prog2 \<turnstile> n -et\<rightarrow> (_ l'' _)`
-	  have "if (b) prog1 else prog2 \<turnstile> n \<oplus> (#:prog1 + 1) -et\<rightarrow> 
-	                                  (_ l'' _) \<oplus> (#:prog1 + 1)"
-	    by(fastsimp intro:WCFG_CondElse)
-	  with `l = l' + 1` `l' = l'' + #:prog1` show ?thesis by simp blast
-	qed
+        assume "prog2 \<turnstile> n -et\<rightarrow> (_ l'' _)"
+        show ?thesis
+        proof(cases "n = (_Entry_)")
+          case True
+          with `prog2 \<turnstile> n -et\<rightarrow> (_ l'' _)` have "l'' = 0" by(auto dest:WCFG_EntryD)
+          have "if (b) prog1 else prog2 \<turnstile> (_0_) -(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>\<rightarrow> 
+                                          (_0_) \<oplus> (#:prog1 + 1)"
+            by(rule WCFG_CondFalse)
+          with `l'' = 0` `l' = l'' + #:prog1` `l = l' + 1` show ?thesis by simp blast
+        next
+          case False
+          with `prog2 \<turnstile> n -et\<rightarrow> (_ l'' _)`
+          have "if (b) prog1 else prog2 \<turnstile> n \<oplus> (#:prog1 + 1) -et\<rightarrow> 
+                                          (_ l'' _) \<oplus> (#:prog1 + 1)"
+            by(fastsimp intro:WCFG_CondElse)
+          with `l = l' + 1` `l' = l'' + #:prog1` show ?thesis by simp blast
+        qed
       next
-	assume "prog2 \<turnstile> (_ l'' _) -et\<rightarrow> n"
-	hence "if (b) prog1 else prog2 \<turnstile> (_ l'' _) \<oplus> (#:prog1 + 1) -et\<rightarrow> 
-	                                 n \<oplus> (#:prog1 + 1)"
-	  by(fastsimp intro:WCFG_CondElse)
-	with `l = l' + 1` `l' = l'' + #:prog1` show ?thesis by simp blast
+        assume "prog2 \<turnstile> (_ l'' _) -et\<rightarrow> n"
+        hence "if (b) prog1 else prog2 \<turnstile> (_ l'' _) \<oplus> (#:prog1 + 1) -et\<rightarrow> 
+                                         n \<oplus> (#:prog1 + 1)"
+          by(fastsimp intro:WCFG_CondElse)
+        with `l = l' + 1` `l' = l'' + #:prog1` show ?thesis by simp blast
       qed
     qed
   qed
@@ -544,50 +544,50 @@ next
       case True
       with `1 \<le> l` have "l = 1" by simp
       have "while (b) prog' \<turnstile> (_0_) -(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>\<rightarrow> (_1_)"
-	by(rule WCFG_WhileFalse)
+        by(rule WCFG_WhileFalse)
       with `l = 1` show ?thesis by simp blast
     next
       case False
       with `1 \<le> l` have "2 \<le> l" by simp
       then obtain l' where "l = l' + 2" and "l' = l - 2" 
-	by(simp del:add_2_eq_Suc')
+        by(simp del:add_2_eq_Suc')
       from `l = l' + 2` `l < #:while (b) prog'` have "l' < #:prog'" by simp
       from IH[OF this] obtain n et 
-	where "prog' \<turnstile> n -et\<rightarrow> (_ l' _) \<or> prog' \<turnstile> (_ l' _) -et\<rightarrow> n" by blast
+        where "prog' \<turnstile> n -et\<rightarrow> (_ l' _) \<or> prog' \<turnstile> (_ l' _) -et\<rightarrow> n" by blast
       thus ?thesis
       proof
-	assume "prog' \<turnstile> n -et\<rightarrow> (_ l' _)"
-	show ?thesis
-	proof(cases "n = (_Entry_)")
-	  case True
-	  with `prog' \<turnstile> n -et\<rightarrow> (_ l' _)` have "l' = 0" by(auto dest:WCFG_EntryD)
-	  have "while (b) prog' \<turnstile> (_0_) -(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>\<rightarrow> 
-	                          (_0_) \<oplus> 2"
-	    by(rule WCFG_WhileTrue)
-	  with `l' = 0` `l = l' + 2` show ?thesis by simp blast
-	next
-	  case False
-	  with `prog' \<turnstile> n -et\<rightarrow> (_ l' _)`
-	  have "while (b) prog' \<turnstile> n \<oplus> 2 -et\<rightarrow> (_ l' _) \<oplus> 2"
-	    by(fastsimp intro:WCFG_WhileBody)
-	  with `l = l' + 2` show ?thesis by simp blast
-	qed
+        assume "prog' \<turnstile> n -et\<rightarrow> (_ l' _)"
+        show ?thesis
+        proof(cases "n = (_Entry_)")
+          case True
+          with `prog' \<turnstile> n -et\<rightarrow> (_ l' _)` have "l' = 0" by(auto dest:WCFG_EntryD)
+          have "while (b) prog' \<turnstile> (_0_) -(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>\<rightarrow> 
+                                  (_0_) \<oplus> 2"
+            by(rule WCFG_WhileTrue)
+          with `l' = 0` `l = l' + 2` show ?thesis by simp blast
+        next
+          case False
+          with `prog' \<turnstile> n -et\<rightarrow> (_ l' _)`
+          have "while (b) prog' \<turnstile> n \<oplus> 2 -et\<rightarrow> (_ l' _) \<oplus> 2"
+            by(fastsimp intro:WCFG_WhileBody)
+          with `l = l' + 2` show ?thesis by simp blast
+        qed
       next
-	assume "prog' \<turnstile> (_ l' _) -et\<rightarrow> n"
-	show ?thesis
-	proof(cases "n = (_Exit_)")
-	  case True
-	  with `prog' \<turnstile> (_ l' _) -et\<rightarrow> n`
-	  have "while (b) prog' \<turnstile> (_ l' _) \<oplus> 2 -et\<rightarrow> (_0_)"
-	    by(fastsimp intro:WCFG_WhileBodyExit)
-	  with `l = l' + 2` show ?thesis by simp blast
-	next
-	  case False
-	  with `prog' \<turnstile> (_ l' _) -et\<rightarrow> n`
-	  have "while (b) prog' \<turnstile> (_ l' _) \<oplus> 2 -et\<rightarrow> n \<oplus> 2"
-	    by(fastsimp intro:WCFG_WhileBody)
-	  with `l = l' + 2` show ?thesis by simp blast
-	qed
+        assume "prog' \<turnstile> (_ l' _) -et\<rightarrow> n"
+        show ?thesis
+        proof(cases "n = (_Exit_)")
+          case True
+          with `prog' \<turnstile> (_ l' _) -et\<rightarrow> n`
+          have "while (b) prog' \<turnstile> (_ l' _) \<oplus> 2 -et\<rightarrow> (_0_)"
+            by(fastsimp intro:WCFG_WhileBodyExit)
+          with `l = l' + 2` show ?thesis by simp blast
+        next
+          case False
+          with `prog' \<turnstile> (_ l' _) -et\<rightarrow> n`
+          have "while (b) prog' \<turnstile> (_ l' _) \<oplus> 2 -et\<rightarrow> n \<oplus> 2"
+            by(fastsimp intro:WCFG_WhileBody)
+          with `l = l' + 2` show ?thesis by simp blast
+        qed
       qed
     qed
   qed

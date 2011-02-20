@@ -138,7 +138,7 @@ proof(induct rule:converse_rtranclp_induct3)
   case refl thus ?case by simp
 next
   case (step c s l c'' s'' l'')
-  from prems have "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s'',l''\<rangle>"
+  then have "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s'',l''\<rangle>"
     and "\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>" by simp_all
   from `prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s'',l''\<rangle>` have "\<langle>c,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>"
     by(fastsimp intro:step_red)

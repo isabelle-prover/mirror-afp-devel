@@ -161,7 +161,7 @@ next
     assume "as = [] \<and> n = n''"
     with `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "valid_node n'"
       by(fastsimp intro:path_valid_node(2) DynPDG_path_CFG_path 
-	                DynPDG_path_cdep)
+                        DynPDG_path_cdep)
     with `as = [] \<and> n = n''` `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'`
     have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
       by(auto intro:DynPDG_path_Nil)
@@ -173,24 +173,24 @@ next
     proof
       assume "\<exists>nx asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^isub>d* n'' \<and> as = asx@asx'"
       then obtain nx asx asx' where "n -asx\<rightarrow>\<^bsub>cd\<^esub> nx" and "nx -asx'\<rightarrow>\<^isub>d* n''"
-	and "as = asx@asx'" by auto
+        and "as = asx@asx'" by auto
       from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "n'' -as'\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_cdep)
       with `nx -asx'\<rightarrow>\<^isub>d* n''` have "nx -asx'@as'\<rightarrow>\<^isub>d* n'"
-	by(fastsimp intro:DynPDG_path_Append)
+        by(fastsimp intro:DynPDG_path_Append)
       with `n -asx\<rightarrow>\<^bsub>cd\<^esub> nx` `as = asx@asx'`
       have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
-	by auto
+        by auto
       thus ?thesis by simp
     next
       assume "\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^isub>d* n'' \<and> as = asx@asx'"
       then obtain nx V asx asx' where "n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx" and "nx -asx'\<rightarrow>\<^isub>d* n''"
-	and "as = asx@asx'" by auto
+        and "as = asx@asx'" by auto
       from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "n'' -as'\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_cdep)
       with `nx -asx'\<rightarrow>\<^isub>d* n''` have "nx -asx'@as'\<rightarrow>\<^isub>d* n'"
-	by(fastsimp intro:DynPDG_path_Append)
+        by(fastsimp intro:DynPDG_path_Append)
       with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx` `as = asx@asx'`
       have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
-	by auto
+        by auto
       thus ?thesis by simp
     qed
   qed
@@ -204,7 +204,7 @@ next
     assume "as = [] \<and> n = n''"
     with `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_node n'"
       by(fastsimp intro:path_valid_node(2) DynPDG_path_CFG_path 
-	                DynPDG_path_ddep)
+                        DynPDG_path_ddep)
     with `as = [] \<and> n = n''` `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'`
     have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
       by(fastsimp intro:DynPDG_path_Nil)
@@ -216,24 +216,24 @@ next
     proof
       assume "\<exists>nx asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^isub>d* n'' \<and> as = asx@asx'"
       then obtain nx asx asx' where "n -asx\<rightarrow>\<^bsub>cd\<^esub> nx" and "nx -asx'\<rightarrow>\<^isub>d* n''"
-	and "as = asx@asx'" by auto
+        and "as = asx@asx'" by auto
       from `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' -as'\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_ddep)
       with `nx -asx'\<rightarrow>\<^isub>d* n''` have "nx -asx'@as'\<rightarrow>\<^isub>d* n'"
-	by(fastsimp intro:DynPDG_path_Append)
+        by(fastsimp intro:DynPDG_path_Append)
       with `n -asx\<rightarrow>\<^bsub>cd\<^esub> nx` `as = asx@asx'`
       have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
-	by auto
+        by auto
       thus ?thesis by simp
     next
       assume "\<exists>nx V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^isub>d* n'' \<and> as = asx@asx'"
       then obtain nx V' asx asx' where "n -{V'}asx\<rightarrow>\<^bsub>dd\<^esub> nx" and "nx -asx'\<rightarrow>\<^isub>d* n''"
-	and "as = asx@asx'" by auto
+        and "as = asx@asx'" by auto
       from `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' -as'\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_ddep)
       with `nx -asx'\<rightarrow>\<^isub>d* n''` have "nx -asx'@as'\<rightarrow>\<^isub>d* n'"
-	by(fastsimp intro:DynPDG_path_Append)
+        by(fastsimp intro:DynPDG_path_Append)
       with `n -{V'}asx\<rightarrow>\<^bsub>dd\<^esub> nx` `as = asx@asx'`
       have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
-	by auto
+        by auto
       thus ?thesis by simp
     qed
   qed
@@ -285,7 +285,7 @@ proof -
     assume inset:"n'' \<in> set (sourcenodes as)" and Defs:"V \<in> Def n''"
     hence "\<exists>nx \<in> set (sourcenodes as). V \<in> Def nx" by auto
     then obtain nx ns' ns'' where nodes:"sourcenodes as = ns'@nx#ns''"
-	and Defs':"V \<in> Def nx" and notDef:"\<forall>nx' \<in> set ns''. V \<notin> Def nx'"
+        and Defs':"V \<in> Def nx" and notDef:"\<forall>nx' \<in> set ns''. V \<notin> Def nx'"
       by(fastsimp elim!:rightmost_element_property)
     from nodes obtain as' a as''
       where as'':"sourcenodes as'' = ns''" and as:"as=as'@a#as''"

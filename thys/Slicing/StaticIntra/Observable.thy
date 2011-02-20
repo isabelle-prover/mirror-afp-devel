@@ -32,15 +32,15 @@ proof -
     proof(rule ccontr)
       assume "n' \<noteq> n"
       from `n' \<in> obs n S` obtain as where "n -as\<rightarrow>* n'"
-	and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S"
-	and "n' \<in> S" by(erule obsE)
+        and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S"
+        and "n' \<in> S" by(erule obsE)
       from `n -as\<rightarrow>* n'` `\<forall>nx \<in> set(sourcenodes as). nx \<notin> S` `n' \<noteq> n` `n \<in> S`
       show False
       proof(induct rule:path.induct)
-	case (Cons_path n'' as n' a n)
-	from `\<forall>nx\<in>set (sourcenodes (a#as)). nx \<notin> S` `sourcenode a = n`
-	have "n \<notin> S" by(simp add:sourcenodes_def)
-	with `n \<in> S` show False by simp
+        case (Cons_path n'' as n' a n)
+        from `\<forall>nx\<in>set (sourcenodes (a#as)). nx \<notin> S` `sourcenode a = n`
+        have "n \<notin> S" by(simp add:sourcenodes_def)
+        with `n \<in> S` show False by simp
       qed simp
     qed }
   with `n \<in> obs n S` show ?thesis by fastsimp

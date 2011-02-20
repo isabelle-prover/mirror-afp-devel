@@ -106,13 +106,13 @@ proof
     proof (cases "match_ex_table (P\<^bsub>wf\<^esub>) (cname_of h a) pc (ex_table_of (P\<^bsub>wf\<^esub>) C M)")
       case None
       with step_case IH show ?thesis
-	by simp
+        by simp
     next
       case (Some e)
       with step_case x
       show ?thesis
-	by (cases "length cs' = a'",
-	    auto simp: nth_Cons' (* nth_locs *) nth_locss)
+        by (cases "length cs' = a'",
+            auto simp: nth_Cons' (* nth_locs *) nth_locss)
     qed
   qed
 qed
@@ -161,20 +161,20 @@ proof
     proof (cases "match_ex_table (P\<^bsub>wf\<^esub>) (cname_of h a) pc (ex_table_of (P\<^bsub>wf\<^esub>) C M)")
       case None
       with step_case IH show ?thesis
-	by simp
+        by simp
     next
       case (Some e)
       show ?thesis
       proof (cases "a' = length cs'")
-	case True
-	with Some step_case frs calldepth idx x
-	show ?thesis
-	  by (fastsimp simp: nth_Cons')
+        case True
+        with Some step_case frs calldepth idx x
+        show ?thesis
+          by (fastsimp simp: nth_Cons')
       next
-	case False
-	with Some step_case frs calldepth idx x
-	show ?thesis
-	  by (fastsimp simp: nth_Cons' nth_stkss)
+        case False
+        with Some step_case frs calldepth idx x
+        show ?thesis
+          by (fastsimp simp: nth_Cons' nth_stkss)
       qed
     qed
   qed
@@ -224,24 +224,24 @@ next
     next
       case (Cons a' cs'')
       then have [simp]: "a' = (C,M,pc)"
-	by (cases a', fastsimp)
+        by (cases a', fastsimp)
       from Cons obtain T Ts mxs mxl "is" xt
-	where sees_M: "(P\<^bsub>wf\<^esub>) \<turnstile> C sees M:Ts\<rightarrow>T = (mxs,mxl,is,xt) in C"
-	by (clarsimp simp: bv_conform_def correct_state_def)
+        where sees_M: "(P\<^bsub>wf\<^esub>) \<turnstile> C sees M:Ts\<rightarrow>T = (mxs,mxl,is,xt) in C"
+        by (clarsimp simp: bv_conform_def correct_state_def)
       with Cons
       have "pc < length is"
-	by (auto dest: sees_method_fun
-	         simp: bv_conform_def)
+        by (auto dest: sees_method_fun
+                 simp: bv_conform_def)
       from wf_jvmprog_is_wf [of P] sees_M
       have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
-	by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
+        by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
       with `pc < length is` sees_M
       have "length Ts = locLength P C M 0 - Suc mxl"
-	by (auto dest!: list_all2_lengthD
-	          simp: wt_method_def wt_start_def)
+        by (auto dest!: list_all2_lengthD
+                  simp: wt_method_def wt_start_def)
       with Cons sees_M show ?case
-	by (cases cs'',
-	    (fastsimp dest: sees_method_fun simp: bv_conform_def)+)
+        by (cases cs'',
+            (fastsimp dest: sees_method_fun simp: bv_conform_def)+)
     qed
   qed
 qed
@@ -468,93 +468,93 @@ proof -
     proof (cases x)
       case None [simp]
       with ve Invoke obtain Q where kind: "kind a = (Q)\<^isub>\<surd>"
-	by (auto elim!: JVM_CFG.cases)
+        by (auto elim!: JVM_CFG.cases)
       with ve Invoke have "(C',M',pc')#cs' = (C,M,pc)#cs"
-	by (auto elim!: JVM_CFG.cases)
+        by (auto elim!: JVM_CFG.cases)
       with state_correct kind show ?thesis
-	by simp
+        by simp
     next
       case (Some aa) [simp]
       with ve Invoke obtain xf where [simp]: "aa = ((C',M',pc')#cs' , xf)"
-	by (auto elim!: JVM_CFG.cases)
+        by (auto elim!: JVM_CFG.cases)
       from ve Invoke obtain f where kind: "kind a = \<Up>f"
-	by -(clarsimp, erule JVM_CFG.cases, auto)
+        by -(clarsimp, erule JVM_CFG.cases, auto)
       show ?thesis
       proof (cases xf)
-	case True [simp]
-	with a_pred Invoke have stk_n: "stk (length cs, stkLength P C M pc - Suc n) = Null"
-	  apply auto
-	  by (erule JVM_CFG.cases, simp_all)
-	from ve Invoke kind
-	have [simp]: "f = (\<lambda>(h,stk,loc).
-	  (h, 
-	   stk((length cs',(stkLength P C' M' pc') - 1) := Addr (addr_of_sys_xcpt NullPointer)),
-	  loc))"
-	  by -(clarsimp, erule JVM_CFG.cases, auto)
-	from ve Invoke
-	have "find_handler_for P NullPointer ((C,M,pc)#cs) = (C',M',pc')#cs'"
-	  by -(clarsimp, erule JVM_CFG.cases, auto)
-	with Invoke state_correct kind stk_n trg_state_correct applicable sees_M
-	  `preallocated h`
-	show ?thesis
-	  apply (cases "the (P\<^bsub>\<Phi>\<^esub> C M ! pc)",
-	         auto simp: bv_conform_def stkss_purge
-	          simp del: find_handler_for.simps exec.simps app\<^isub>i.simps fun_upd_apply)
-	  apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct)
-	    apply fastsimp
-	   apply (fastsimp simp: split_beta split: split_if_asm)
-	  by fastsimp
+        case True [simp]
+        with a_pred Invoke have stk_n: "stk (length cs, stkLength P C M pc - Suc n) = Null"
+          apply auto
+          by (erule JVM_CFG.cases, simp_all)
+        from ve Invoke kind
+        have [simp]: "f = (\<lambda>(h,stk,loc).
+          (h, 
+           stk((length cs',(stkLength P C' M' pc') - 1) := Addr (addr_of_sys_xcpt NullPointer)),
+          loc))"
+          by -(clarsimp, erule JVM_CFG.cases, auto)
+        from ve Invoke
+        have "find_handler_for P NullPointer ((C,M,pc)#cs) = (C',M',pc')#cs'"
+          by -(clarsimp, erule JVM_CFG.cases, auto)
+        with Invoke state_correct kind stk_n trg_state_correct applicable sees_M
+          `preallocated h`
+        show ?thesis
+          apply (cases "the (P\<^bsub>\<Phi>\<^esub> C M ! pc)",
+                 auto simp: bv_conform_def stkss_purge
+                  simp del: find_handler_for.simps exec.simps app\<^isub>i.simps fun_upd_apply)
+          apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct)
+            apply fastsimp
+           apply (fastsimp simp: split_beta split: split_if_asm)
+          by fastsimp
       next
-	case False [simp]
-	from a_pred Invoke
-	have [simp]: "m = M'"
-	  by -(clarsimp, erule JVM_CFG.cases, auto)
-	from a_pred Invoke
-	have [simp]: "pc' = 0"
-	  by -(clarsimp, erule JVM_CFG.cases, auto)
-	from ve Invoke
-	have [simp]: "cs' = (C,M,pc)#cs"
-	  by -(clarsimp, erule JVM_CFG.cases, auto)
-	from ve Invoke kind
-	have [simp]:
-	  "f = (\<lambda>s. exec_instr (Invoke m n) P s (length cs) (stkLength P C M pc)
-	                       arbitrary (locLength P C' M' 0))"
-	  by -(clarsimp, erule JVM_CFG.cases, auto)
-	from state_correct obtain ST LT where [simp]:
-	  "(P\<^bsub>\<Phi>\<^esub>) C M ! pc = \<lfloor>(ST,LT)\<rfloor>"
-	  by (auto simp: bv_conform_def correct_state_def)
-	from a_pred Invoke
-	have [simp]:
-	  "fst (method (P\<^bsub>wf\<^esub>)
+        case False [simp]
+        from a_pred Invoke
+        have [simp]: "m = M'"
+          by -(clarsimp, erule JVM_CFG.cases, auto)
+        from a_pred Invoke
+        have [simp]: "pc' = 0"
+          by -(clarsimp, erule JVM_CFG.cases, auto)
+        from ve Invoke
+        have [simp]: "cs' = (C,M,pc)#cs"
+          by -(clarsimp, erule JVM_CFG.cases, auto)
+        from ve Invoke kind
+        have [simp]:
+          "f = (\<lambda>s. exec_instr (Invoke m n) P s (length cs) (stkLength P C M pc)
+                               arbitrary (locLength P C' M' 0))"
+          by -(clarsimp, erule JVM_CFG.cases, auto)
+        from state_correct obtain ST LT where [simp]:
+          "(P\<^bsub>\<Phi>\<^esub>) C M ! pc = \<lfloor>(ST,LT)\<rfloor>"
+          by (auto simp: bv_conform_def correct_state_def)
+        from a_pred Invoke
+        have [simp]:
+          "fst (method (P\<^bsub>wf\<^esub>)
           (cname_of h (the_Addr (stk (length cs, length ST - Suc n)))) M') = C'"
-	  by -(clarsimp, erule JVM_CFG.cases, auto)
-	from a_pred Invoke
-	have [simp]: "stk (length cs, length ST - Suc n) \<noteq> Null"
-	  by -(clarsimp, erule JVM_CFG.cases, auto)
-	from state_correct applicable sees_M Invoke
-	have [simp]: "ST ! n \<noteq> NT"
-	  apply (auto simp: correct_state_def bv_conform_def)
-	  apply (drule_tac p="n" and ys="ST" in list_all2_nthD)
-	   apply simp
-	  by clarsimp
-	from applicable Invoke sees_M
-	have "length ST > n"
-	  by auto
-	with trg_state_correct Invoke
-	have [simp]: "stkLength P C' M' 0 = 0"
-	  by (auto simp: split_beta correct_state_def
-	          split: split_if_asm)
-	from trg_state_correct Invoke `length ST > n`
-	have "locLength P C' M' 0 =
-	  Suc n + fst(snd(snd(snd(snd(method (P\<^bsub>wf\<^esub>) 
-	           (cname_of h (the_Addr (stk (length cs, length ST - Suc n)))) M')))))"
-	  by (auto simp: split_beta  (* nth_stks *) correct_state_def
-	          dest!: list_all2_lengthD
-	          split: split_if_asm)
-	with Invoke state_correct trg_state_correct `length ST > n`
-	have "JVMExec.exec  (P\<^bsub>wf\<^esub>, state_to_jvm_state P ((C, M, pc) # cs) s)
-	    =
-	    \<lfloor>(None, h,
+          by -(clarsimp, erule JVM_CFG.cases, auto)
+        from a_pred Invoke
+        have [simp]: "stk (length cs, length ST - Suc n) \<noteq> Null"
+          by -(clarsimp, erule JVM_CFG.cases, auto)
+        from state_correct applicable sees_M Invoke
+        have [simp]: "ST ! n \<noteq> NT"
+          apply (auto simp: correct_state_def bv_conform_def)
+          apply (drule_tac p="n" and ys="ST" in list_all2_nthD)
+           apply simp
+          by clarsimp
+        from applicable Invoke sees_M
+        have "length ST > n"
+          by auto
+        with trg_state_correct Invoke
+        have [simp]: "stkLength P C' M' 0 = 0"
+          by (auto simp: split_beta correct_state_def
+                  split: split_if_asm)
+        from trg_state_correct Invoke `length ST > n`
+        have "locLength P C' M' 0 =
+          Suc n + fst(snd(snd(snd(snd(method (P\<^bsub>wf\<^esub>) 
+                   (cname_of h (the_Addr (stk (length cs, length ST - Suc n)))) M')))))"
+          by (auto simp: split_beta  (* nth_stks *) correct_state_def
+                  dest!: list_all2_lengthD
+                  split: split_if_asm)
+        with Invoke state_correct trg_state_correct `length ST > n`
+        have "JVMExec.exec  (P\<^bsub>wf\<^esub>, state_to_jvm_state P ((C, M, pc) # cs) s)
+            =
+            \<lfloor>(None, h,
                  (stks (stkLength P C' M' pc') (\<lambda>a. stk (Suc (length cs), a)),
                   locs (locLength P C' M' pc')
                    (\<lambda>a'. (\<lambda>(a, b).
@@ -563,23 +563,23 @@ proof -
                             else arbitrary) (Suc (length cs), a')),
                   C', M', pc') #
                  (stks (length ST) (\<lambda>a. stk (length cs, a)),
-	          locs (length LT) (\<lambda>a. loc (length cs, a)), C, M, pc) #
+                  locs (length LT) (\<lambda>a. loc (length cs, a)), C, M, pc) #
                  zip (stkss P cs stk) (zip (locss P cs loc) cs))\<rfloor>"
-	  apply (auto simp: split_beta  (* nth_stks *) bv_conform_def)
-	   apply (rule nth_equalityI)
-	    apply simp
-	   apply (cases ST,
-	          auto simp: nth_Cons' nth_append min_max.inf_absorb1 min_max.inf_absorb2)
-	  apply (rule nth_equalityI)
-	   apply simp
-	  by (auto simp: (* nth_locs *) (* nth_stks *) rev_nth nth_Cons' nth_append min_def)
-	with Invoke state_correct kind trg_state_correct applicable sees_M
-	show ?thesis
-	  apply (cases "the (P\<^bsub>\<Phi>\<^esub> C M ! pc)",
-	         auto simp: bv_conform_def stkss_purge rev_nth (* nth_stks *)
-	            simp del: find_handler_for.simps exec.simps app\<^isub>i.simps)
-	  apply(subst locss_invoke_purge, simp)
-	  by simp
+          apply (auto simp: split_beta  (* nth_stks *) bv_conform_def)
+           apply (rule nth_equalityI)
+            apply simp
+           apply (cases ST,
+                  auto simp: nth_Cons' nth_append min_max.inf_absorb1 min_max.inf_absorb2)
+          apply (rule nth_equalityI)
+           apply simp
+          by (auto simp: (* nth_locs *) (* nth_stks *) rev_nth nth_Cons' nth_append min_def)
+        with Invoke state_correct kind trg_state_correct applicable sees_M
+        show ?thesis
+          apply (cases "the (P\<^bsub>\<Phi>\<^esub> C M ! pc)",
+                 auto simp: bv_conform_def stkss_purge rev_nth (* nth_stks *)
+                    simp del: find_handler_for.simps exec.simps app\<^isub>i.simps)
+          apply(subst locss_invoke_purge, simp)
+          by simp
       qed
     qed
   next
@@ -789,7 +789,7 @@ proof -
        apply (simp add: bv_conform_def stkss_purge del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
          apply fastsimp
-	apply fastsimp
+        apply fastsimp
        apply clarsimp
       by (auto simp: split_beta bv_conform_def stks_purge' stkss_purge
            simp del: find_handler_for.simps)
@@ -815,7 +815,7 @@ proof -
        apply (simp add: bv_conform_def stkss_purge del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
          apply fastsimp
-	apply (fastsimp simp: split_beta)
+        apply (fastsimp simp: split_beta)
        apply clarsimp
       by (auto simp: split_beta bv_conform_def stks_purge' stkss_purge
            simp del: find_handler_for.simps)
@@ -841,7 +841,7 @@ proof -
        apply (simp add: bv_conform_def stkss_purge del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
          apply fastsimp
-	apply (fastsimp simp: split_beta)
+        apply (fastsimp simp: split_beta)
        apply clarsimp
       by (auto simp: split_beta bv_conform_def stks_purge' stkss_purge
            simp del: find_handler_for.simps)
@@ -866,7 +866,7 @@ proof -
        apply (simp add: bv_conform_def stkss_purge del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
          apply fastsimp
-	apply (fastsimp simp: split_beta)
+        apply (fastsimp simp: split_beta)
        apply clarsimp
       by (auto simp: split_beta bv_conform_def
            simp del: find_handler_for.simps)
@@ -878,7 +878,7 @@ proof -
       where "stk(length cs, stkLength P C M pc - 1) = Null \<or>
              stk(length cs, stkLength P C M pc - 1) = Addr a"
       by (cases "stk(length cs, stkLength P C M pc - 1)",
-	  auto simp: is_refT_def bv_conform_def correct_state_def conf_def)
+          auto simp: is_refT_def bv_conform_def correct_state_def conf_def)
     with Throw state_correct ve trg_state_correct a_pred applicable sees_M `preallocated h`
     show ?thesis
       apply (clarsimp simp del: exec.simps)
@@ -890,7 +890,7 @@ proof -
        apply (clarsimp simp: stkss_purge simp del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
          apply fastsimp
-	apply (simp add: hd_stks)
+        apply (simp add: hd_stks)
        apply simp
       apply (clarsimp simp: stkss_purge simp del: exec.simps find_handler_for.simps)
       apply (simp del: find_handler_for.simps exec.simps cong: if_cong)
@@ -1208,29 +1208,29 @@ proof(unfold_locales)
       case (Load nat)
       with sem_step s s' c prog 
       have c': "c' = (C,M,pc+1)#cs"
-	by (auto elim!: sem.cases)
+        by (auto elim!: sem.cases)
       from applicable sees_M Load
       have "nat < length LT"
-	by simp
+        by simp
       from sees_M Load have "Suc pc \<in> set (succs (is ! pc) (ST,LT) pc)"
-	by simp
+        by simp
       with prog sem_step Load v_cs_succ
       have v_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
-	(is "valid_edge prog ?e1")
-	by (auto elim!: sem.cases intro: JCFG_Straight_NoExc)
+        (is "valid_edge prog ?e1")
+        by (auto elim!: sem.cases intro: JCFG_Straight_NoExc)
       with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	by -(simp,
+        by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
           auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
       moreover from Load jvm_exec loc' stk' c c' s s' prog wt `nat < length LT`
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	by (auto intro!: ext
-	           simp: JVM_CFG_Interpret.kinds_def
+        by (auto intro!: ext
+                   simp: JVM_CFG_Interpret.kinds_def
                          nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
-	                 not_less_eq_eq Suc_le_eq)
+                         not_less_eq_eq Suc_le_eq)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
       ultimately show ?thesis by fastsimp
@@ -1238,31 +1238,31 @@ proof(unfold_locales)
       case (Store nat)
       with sem_step s s' c prog
       have c': "c' = (C,M,pc+1)#cs"
-	by (auto elim!: sem.cases)
+        by (auto elim!: sem.cases)
       from applicable Store sees_M
       have "length ST > 0 \<and> nat < length LT"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastsimp+)
       from sees_M Store have "Suc pc \<in> set (succs (is ! pc) (ST, LT) pc)"
-	by simp
+        by simp
       with prog sem_step Store v_cs_succ
       have v_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
-	(is "valid_edge prog ?e1")
-	by (fastsimp elim: sem.cases intro: JCFG_Straight_NoExc)
+        (is "valid_edge prog ?e1")
+        by (fastsimp elim: sem.cases intro: JCFG_Straight_NoExc)
       with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	by -(simp,
+        by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
           auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
       moreover from Store jvm_exec stk' loc' c c' s s' prog wt
-	`length ST > 0 \<and> nat < length LT`
+        `length ST > 0 \<and> nat < length LT`
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	by (auto intro!: ext
-	           simp: JVM_CFG_Interpret.kinds_def
-	                 nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
-	                 not_less_eq_eq hd_stks)
+        by (auto intro!: ext
+                   simp: JVM_CFG_Interpret.kinds_def
+                         nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
+                         not_less_eq_eq hd_stks)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
       ultimately show ?thesis by fastsimp
@@ -1270,26 +1270,26 @@ proof(unfold_locales)
       case (Push val)
       with sem_step s s' c prog 
       have c': "c' = (C,M,pc+1)#cs"
-	by (auto elim!: sem.cases)
+        by (auto elim!: sem.cases)
       from sees_M Push have "Suc pc \<in> set (succs (is ! pc) (ST, LT) pc)"
-	by simp
+        by simp
       with prog sem_step Push v_cs_succ
       have v_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
-	(is "valid_edge prog ?e1")
-	by (fastsimp elim: sem.cases intro: JCFG_Straight_NoExc)
+        (is "valid_edge prog ?e1")
+        by (fastsimp elim: sem.cases intro: JCFG_Straight_NoExc)
       with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	by -(simp,
+        by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
           auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
       moreover from Push jvm_exec stk' loc' c c' s s' prog wt
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	by (auto intro!: ext
-	           simp: JVM_CFG_Interpret.kinds_def
-	                 nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
-	                 not_less_eq_eq)
+        by (auto intro!: ext
+                   simp: JVM_CFG_Interpret.kinds_def
+                         nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
+                         not_less_eq_eq)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
       ultimately show ?thesis by fastsimp
@@ -1297,936 +1297,936 @@ proof(unfold_locales)
       case (New Cl)
       show ?thesis
       proof (cases "new_Addr h")
-	case None
-	with New sem_step s s' c prog prealloc
-	have c': "c' = find_handler_for P OutOfMemory c"
-	  by (fastsimp elim!: sem.cases 
-	                dest: find_handler_find_handler_forD)
-	with jvm_exec New None prealloc
-	have f2c_frs'_c': "framestack_to_callstack frs' = c'"
-	  by (auto dest!: find_handler_find_handler_forD)
-	with New c' v_cs v_cs_f2c_frs'
-	have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc). new_Addr h = None)\<^isub>\<surd>,
-	  (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
-	  (is "valid_edge prog ?e1")
-	  apply auto
-	       apply (rule JCFG_New_Exc_Pred, fastsimp+)
-	      apply (rule_tac x="(\<lambda>(h, stk, loc). new_Addr h = None)" in exI)
-	      apply (rule JCFG_New_Exc_Pred, fastsimp+)
-	     apply (cases "find_handler_for P OutOfMemory cs")
-	      apply (rule exI)
-	      apply clarsimp
-	      apply (rule JCFG_New_Exc_Exit, fastsimp+)
-	     apply clarsimp
-	     apply (rule_tac x="\<lambda>(h, stk, loc).
+        case None
+        with New sem_step s s' c prog prealloc
+        have c': "c' = find_handler_for P OutOfMemory c"
+          by (fastsimp elim!: sem.cases 
+                        dest: find_handler_find_handler_forD)
+        with jvm_exec New None prealloc
+        have f2c_frs'_c': "framestack_to_callstack frs' = c'"
+          by (auto dest!: find_handler_find_handler_forD)
+        with New c' v_cs v_cs_f2c_frs'
+        have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc). new_Addr h = None)\<^isub>\<surd>,
+          (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
+          (is "valid_edge prog ?e1")
+          apply auto
+               apply (rule JCFG_New_Exc_Pred, fastsimp+)
+              apply (rule_tac x="(\<lambda>(h, stk, loc). new_Addr h = None)" in exI)
+              apply (rule JCFG_New_Exc_Pred, fastsimp+)
+             apply (cases "find_handler_for P OutOfMemory cs")
+              apply (rule exI)
+              apply clarsimp
+              apply (rule JCFG_New_Exc_Exit, fastsimp+)
+             apply clarsimp
+             apply (rule_tac x="\<lambda>(h, stk, loc).
                (h, stk((length list, stkLength P a aa b - Suc 0) :=
-	                Addr (addr_of_sys_xcpt OutOfMemory)),
+                        Addr (addr_of_sys_xcpt OutOfMemory)),
                loc)" in exI)
-	     apply (rule JCFG_New_Exc_Update, fastsimp+)
-	    apply (rule JCFG_New_Exc_Pred, fastsimp+)
-	   apply (rule exI)
-	   apply (rule JCFG_New_Exc_Pred, fastsimp+)
-	  apply (rule exI)
-	  by (rule JCFG_New_Exc_Update, fastsimp+)
-	show ?thesis
-	proof (cases c')
-	  case Nil
-	  with prog sem_step New c
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
-	    \<Up>id,
-	    (_Exit_))"
-	    (is "valid_edge prog ?e2")
-	    by (fastsimp elim: sem.cases intro: JCFG_New_Exc_Exit)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
-	    by -(simp,
-	      rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+             apply (rule JCFG_New_Exc_Update, fastsimp+)
+            apply (rule JCFG_New_Exc_Pred, fastsimp+)
+           apply (rule exI)
+           apply (rule JCFG_New_Exc_Pred, fastsimp+)
+          apply (rule exI)
+          by (rule JCFG_New_Exc_Update, fastsimp+)
+        show ?thesis
+        proof (cases c')
+          case Nil
+          with prog sem_step New c
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
+            \<Up>id,
+            (_Exit_))"
+            (is "valid_edge prog ?e2")
+            by (fastsimp elim: sem.cases intro: JCFG_New_Exc_Exit)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
+            by -(simp,
+              rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	  moreover from Nil None New sem_step c c' s s' prog
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto elim!: sem.cases simp: JVM_CFG_Interpret.kinds_def)
-	  moreover from None s have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis using Nil by fastsimp
-	next
-	  case (Cons a cs')
-	  then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
-	  from jvm_exec c s None New
-	  have "update_loc loc frs' = loc"
-	    by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc], simp)
-	  with loc' have "loc' = loc"
-	    by simp
-	  from c Cons s s' sem_step jvm_exec prog	
-	  have "(C',M',pc')#cs' = framestack_to_callstack frs'"
-	    by (auto elim!: sem.cases)
-	  moreover obtain stk'' loc'' frs'' where frs': "frs' = (stk'',loc'',C',M',pc')#frs''"
-	    and cs': "cs' = framestack_to_callstack frs''" using calculation
-	    by (cases frs', fastsimp+)
-	  ultimately
-	  have "update_stk stk frs' =
-	    stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt OutOfMemory))"
-	    using c s c' None Cons prog New trg_state_correct wt jvm_exec prealloc stk'
-	    by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
-	      auto dest!: list_all2_lengthD
-	            simp: hd_stks split_beta framestack_to_callstack_def
-	                  correct_state_def)
-	  with stk' have stk':
-	    "stk' = 
-	    stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt OutOfMemory))"
-	    by simp
-	  from New Cons v_cs_f2c_frs' v_cs f2c_frs'_c'
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
-	    \<Up>(\<lambda>(h,stk,loc).
-	      (h,
+          moreover from Nil None New sem_step c c' s s' prog
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto elim!: sem.cases simp: JVM_CFG_Interpret.kinds_def)
+          moreover from None s have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis using Nil by fastsimp
+        next
+          case (Cons a cs')
+          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          from jvm_exec c s None New
+          have "update_loc loc frs' = loc"
+            by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc], simp)
+          with loc' have "loc' = loc"
+            by simp
+          from c Cons s s' sem_step jvm_exec prog       
+          have "(C',M',pc')#cs' = framestack_to_callstack frs'"
+            by (auto elim!: sem.cases)
+          moreover obtain stk'' loc'' frs'' where frs': "frs' = (stk'',loc'',C',M',pc')#frs''"
+            and cs': "cs' = framestack_to_callstack frs''" using calculation
+            by (cases frs', fastsimp+)
+          ultimately
+          have "update_stk stk frs' =
+            stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt OutOfMemory))"
+            using c s c' None Cons prog New trg_state_correct wt jvm_exec prealloc stk'
+            by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
+              auto dest!: list_all2_lengthD
+                    simp: hd_stks split_beta framestack_to_callstack_def
+                          correct_state_def)
+          with stk' have stk':
+            "stk' = 
+            stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt OutOfMemory))"
+            by simp
+          from New Cons v_cs_f2c_frs' v_cs f2c_frs'_c'
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
+            \<Up>(\<lambda>(h,stk,loc).
+              (h,
                stk((length cs',(stkLength P C' M' pc') - 1) :=
                  Addr (addr_of_sys_xcpt OutOfMemory)),
                loc)
              ),
-	    (_ c',None _))"
-	    (is "valid_edge prog ?e2")
-	    apply auto
-	      apply (rule JCFG_New_Exc_Update)
-	         apply fastsimp
-	        apply fastsimp
-	       using Cons c' apply simp
-	      apply simp
-	     using v_pred_edge c' Cons apply clarsimp
-	    using v_pred_edge c' Cons apply clarsimp
-	    done
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+            (_ c',None _))"
+            (is "valid_edge prog ?e2")
+            apply auto
+              apply (rule JCFG_New_Exc_Update)
+                 apply fastsimp
+                apply fastsimp
+               using Cons c' apply simp
+              apply simp
+             using v_pred_edge c' Cons apply clarsimp
+            using v_pred_edge c' Cons apply clarsimp
+            done
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
-	  moreover from New c c' s s' loc' stk' `loc' = loc` prog jvm_exec None
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto dest: find_handler_heap_eqD
-	             simp: JVM_CFG_Interpret.kinds_def)
-	  moreover from None s
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	qed
+          moreover from New c c' s s' loc' stk' `loc' = loc` prog jvm_exec None
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto dest: find_handler_heap_eqD
+                     simp: JVM_CFG_Interpret.kinds_def)
+          moreover from None s
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis by fastsimp
+        qed
       next
-	case (Some obj)
-	with New sem_step s s' c prog prealloc
-	have c': "c' = (C,M,Suc pc)#cs"
-	  by (auto elim!: sem.cases)
-	with New jvm_exec Some
-	have f2c_frs'_c': "framestack_to_callstack frs' = c'"
-	  by auto
-	with New c' v_cs v_cs_f2c_frs'
-	have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc). new_Addr h \<noteq> None)\<^isub>\<surd>,
-	  (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
-	  (is "valid_edge prog ?e1")
-	  apply auto
-	    apply (fastsimp intro!: JCFG_New_Normal_Pred)
-	   apply (rule exI)
-	   apply (fastsimp intro!: JCFG_New_Normal_Pred)
-	  apply (rule exI)
-	  by (fastsimp intro!: JCFG_New_Normal_Update)
-	from New sees_M have "Suc pc \<in> set (succs (is ! pc) (ST, LT) pc)"
-	  by simp
-	with prog New c' sem_step prog v_cs_succ
-	have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
+        case (Some obj)
+        with New sem_step s s' c prog prealloc
+        have c': "c' = (C,M,Suc pc)#cs"
+          by (auto elim!: sem.cases)
+        with New jvm_exec Some
+        have f2c_frs'_c': "framestack_to_callstack frs' = c'"
+          by auto
+        with New c' v_cs v_cs_f2c_frs'
+        have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc). new_Addr h \<noteq> None)\<^isub>\<surd>,
+          (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
+          (is "valid_edge prog ?e1")
+          apply auto
+            apply (fastsimp intro!: JCFG_New_Normal_Pred)
+           apply (rule exI)
+           apply (fastsimp intro!: JCFG_New_Normal_Pred)
+          apply (rule exI)
+          by (fastsimp intro!: JCFG_New_Normal_Update)
+        from New sees_M have "Suc pc \<in> set (succs (is ! pc) (ST, LT) pc)"
+          by simp
+        with prog New c' sem_step prog v_cs_succ
+        have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
           \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
           (_ (C,M,Suc pc)#cs,None _))"
-	  (is "valid_edge prog ?e2")
-	  by (auto elim!: sem.cases intro: JCFG_New_Normal_Update JCFG_New_Normal_Pred)
-	with v_pred_edge `identifies n c` c c'
-	have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	  by -(simp,
+          (is "valid_edge prog ?e2")
+          by (auto elim!: sem.cases intro: JCFG_New_Normal_Update JCFG_New_Normal_Pred)
+        with v_pred_edge `identifies n c` c c'
+        have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+          by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
             auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	moreover from New jvm_exec loc' stk' c c' s s' prog Some
-	have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	  by (auto intro!: ext
-	             simp: JVM_CFG_Interpret.kinds_def
-	                   nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons'
-	                   not_less_eq_eq hd_stks)
-	moreover from Some s
-	have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+        moreover from New jvm_exec loc' stk' c c' s s' prog Some
+        have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+          by (auto intro!: ext
+                     simp: JVM_CFG_Interpret.kinds_def
+                           nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons'
+                           not_less_eq_eq hd_stks)
+        moreover from Some s
+        have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-	ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastsimp
       qed
     next
       case (Getfield Fd Cl)
       with applicable sees_M
       have "length ST > 0"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr where ST [simp]: "ST = ST1#STr" by (cases ST, fastsimp+)
       show ?thesis
       proof (cases "stk(length cs, stkLength P C M pc - 1) = Null")
-	case True
-	with Getfield sem_step s s' c prog prealloc wt
-	have c': "c' = find_handler_for P NullPointer c"
-	  by (cases "the (h (the_Addr Null))",
-	      auto elim!: sem.cases 
-	           dest!: find_handler_find_handler_forD
-	            simp: hd_stks)
-	with Getfield True jvm_exec prealloc
-	have "framestack_to_callstack frs' = c'"
-	  by (auto simp: split_beta dest!: find_handler_find_handler_forD)
-	with Getfield prog c' v_cs v_cs_f2c_frs'
-	have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) = Null)\<^isub>\<surd>,
-	  (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
-	  (is "valid_edge prog ?e1")
-	  apply (auto simp del: find_handler_for.simps)
-	    apply (fastsimp intro!: JCFG_Getfield_Exc_Pred)
-	   apply (fastsimp intro!: JCFG_Getfield_Exc_Pred)
-	  apply auto
-	   apply (cases "find_handler_for P NullPointer cs")
- 	    apply (fastsimp intro!: JCFG_Getfield_Exc_Exit)
-	   apply (fastsimp intro!: JCFG_Getfield_Exc_Update)
-	  apply (fastsimp intro!: JCFG_Getfield_Exc_Update)
-	  done
-	show ?thesis
-	proof (cases c')
-	  case Nil
-	  with Getfield c prog c' v_pred_edge
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
-	    \<Up>id,
-	    (_Exit_))"
-	    (is "valid_edge prog ?e2")
-	    by (fastsimp intro: JCFG_Getfield_Exc_Exit)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
-	    by -(simp,
-	      rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+        case True
+        with Getfield sem_step s s' c prog prealloc wt
+        have c': "c' = find_handler_for P NullPointer c"
+          by (cases "the (h (the_Addr Null))",
+              auto elim!: sem.cases 
+                   dest!: find_handler_find_handler_forD
+                    simp: hd_stks)
+        with Getfield True jvm_exec prealloc
+        have "framestack_to_callstack frs' = c'"
+          by (auto simp: split_beta dest!: find_handler_find_handler_forD)
+        with Getfield prog c' v_cs v_cs_f2c_frs'
+        have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) = Null)\<^isub>\<surd>,
+          (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
+          (is "valid_edge prog ?e1")
+          apply (auto simp del: find_handler_for.simps)
+            apply (fastsimp intro!: JCFG_Getfield_Exc_Pred)
+           apply (fastsimp intro!: JCFG_Getfield_Exc_Pred)
+          apply auto
+           apply (cases "find_handler_for P NullPointer cs")
+            apply (fastsimp intro!: JCFG_Getfield_Exc_Exit)
+           apply (fastsimp intro!: JCFG_Getfield_Exc_Update)
+          apply (fastsimp intro!: JCFG_Getfield_Exc_Update)
+          done
+        show ?thesis
+        proof (cases c')
+          case Nil
+          with Getfield c prog c' v_pred_edge
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
+            \<Up>id,
+            (_Exit_))"
+            (is "valid_edge prog ?e2")
+            by (fastsimp intro: JCFG_Getfield_Exc_Exit)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
+            by -(simp,
+              rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	  moreover from Nil True Getfield sem_step c c' s s' prog wt `length ST > 0`
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto elim!: sem.cases
-	              simp: hd_stks split_beta JVM_CFG_Interpret.kinds_def)
-	  moreover from True s
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis using Nil by fastsimp
-	next
-	  case (Cons a cs')
-	  then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
-	  from jvm_exec c s True Getfield wt ST
-	  have "update_loc loc frs' = loc"
-	    by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
-	         auto simp: split_beta hd_stks)
-	  with loc' have "loc' = loc"
-	    by simp
-	  from c Cons s s' sem_step jvm_exec prog
-	  have cs'_f2c_frs': "(C',M',pc')#cs' = framestack_to_callstack frs'"
-	    by (auto elim!: sem.cases)
-	  moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
-	    and "cs' = framestack_to_callstack frs''" using calculation
-	    by (cases frs', fastsimp+)
-	  ultimately
-	  have "update_stk stk frs' =
-	    stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
-	    using c s c' True Cons prog Getfield trg_state_correct wt ST jvm_exec prealloc stk'
-	    by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
-	      auto dest!: list_all2_lengthD
-	            simp: hd_stks split_beta framestack_to_callstack_def
-	                  correct_state_def)
-	  with stk' have stk':
-	    "stk' = 
-	    stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
-	    by simp
-	  from prog Cons Getfield c' v_cs v_cs_f2c_frs' jvm_exec
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
-	    \<Up>(\<lambda>(h,stk,loc).
-	      (h,
+          moreover from Nil True Getfield sem_step c c' s s' prog wt `length ST > 0`
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto elim!: sem.cases
+                      simp: hd_stks split_beta JVM_CFG_Interpret.kinds_def)
+          moreover from True s
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis using Nil by fastsimp
+        next
+          case (Cons a cs')
+          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          from jvm_exec c s True Getfield wt ST
+          have "update_loc loc frs' = loc"
+            by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
+                 auto simp: split_beta hd_stks)
+          with loc' have "loc' = loc"
+            by simp
+          from c Cons s s' sem_step jvm_exec prog
+          have cs'_f2c_frs': "(C',M',pc')#cs' = framestack_to_callstack frs'"
+            by (auto elim!: sem.cases)
+          moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
+            and "cs' = framestack_to_callstack frs''" using calculation
+            by (cases frs', fastsimp+)
+          ultimately
+          have "update_stk stk frs' =
+            stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
+            using c s c' True Cons prog Getfield trg_state_correct wt ST jvm_exec prealloc stk'
+            by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
+              auto dest!: list_all2_lengthD
+                    simp: hd_stks split_beta framestack_to_callstack_def
+                          correct_state_def)
+          with stk' have stk':
+            "stk' = 
+            stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
+            by simp
+          from prog Cons Getfield c' v_cs v_cs_f2c_frs' jvm_exec
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
+            \<Up>(\<lambda>(h,stk,loc).
+              (h,
                stk((length cs',(stkLength P C' M' pc') - 1) :=
                  Addr (addr_of_sys_xcpt NullPointer)),
                loc)
              ),
-	    (_ c',None _))"
-	    (is "valid_edge prog ?e2")
-	    apply (auto simp del: exec.simps find_handler_for.simps)
- 	        apply (rule JCFG_Getfield_Exc_Update, fastsimp+)
-	       apply (simp only: cs'_f2c_frs')
-	      apply (fastsimp intro!: JCFG_Getfield_Exc_Pred)
-	     apply (fastsimp intro!: JCFG_Getfield_Exc_Update)
-	    by (simp only: cs'_f2c_frs')
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+            (_ c',None _))"
+            (is "valid_edge prog ?e2")
+            apply (auto simp del: exec.simps find_handler_for.simps)
+                apply (rule JCFG_Getfield_Exc_Update, fastsimp+)
+               apply (simp only: cs'_f2c_frs')
+              apply (fastsimp intro!: JCFG_Getfield_Exc_Pred)
+             apply (fastsimp intro!: JCFG_Getfield_Exc_Update)
+            by (simp only: cs'_f2c_frs')
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
-	  moreover from Getfield c c' s s' loc' stk' prog True jvm_exec
-	    `loc' = loc` wt ST
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto dest: find_handler_heap_eqD
-	             simp: JVM_CFG_Interpret.kinds_def split_beta hd_stks)
-	  moreover from True s
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	qed
+          moreover from Getfield c c' s s' loc' stk' prog True jvm_exec
+            `loc' = loc` wt ST
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto dest: find_handler_heap_eqD
+                     simp: JVM_CFG_Interpret.kinds_def split_beta hd_stks)
+          moreover from True s
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis by fastsimp
+        qed
       next
-	case False
-	with Getfield sem_step s s' c prog prealloc wt `length ST > 0`
-	have c': "c' = (C,M,Suc pc)#cs"
-	  by (auto elim!: sem.cases 
-	            simp: split_beta hd_stks)
-	with False Getfield jvm_exec prealloc
-	have "framestack_to_callstack frs' = c'"
-	  by (auto dest!: find_handler_find_handler_forD simp: split_beta)
-	with Getfield c' v_cs v_cs_f2c_frs'
-	have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) \<noteq> Null)\<^isub>\<surd>,
-	  (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
-	  (is "valid_edge prog ?e1")
-	  apply auto
-	    apply (fastsimp intro: JCFG_Getfield_Normal_Pred)
-	   apply (fastsimp intro: JCFG_Getfield_Normal_Pred)
-	  by (fastsimp intro: JCFG_Getfield_Normal_Update)
-	with prog c' Getfield v_cs_succ sees_M
-	have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
+        case False
+        with Getfield sem_step s s' c prog prealloc wt `length ST > 0`
+        have c': "c' = (C,M,Suc pc)#cs"
+          by (auto elim!: sem.cases 
+                    simp: split_beta hd_stks)
+        with False Getfield jvm_exec prealloc
+        have "framestack_to_callstack frs' = c'"
+          by (auto dest!: find_handler_find_handler_forD simp: split_beta)
+        with Getfield c' v_cs v_cs_f2c_frs'
+        have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) \<noteq> Null)\<^isub>\<surd>,
+          (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
+          (is "valid_edge prog ?e1")
+          apply auto
+            apply (fastsimp intro: JCFG_Getfield_Normal_Pred)
+           apply (fastsimp intro: JCFG_Getfield_Normal_Pred)
+          by (fastsimp intro: JCFG_Getfield_Normal_Update)
+        with prog c' Getfield v_cs_succ sees_M
+        have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
           \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
           (_ (C,M,Suc pc)#cs,None _))"
-	  (is "valid_edge prog ?e2")
-	  by (fastsimp intro: JCFG_Getfield_Normal_Update)
-	with v_pred_edge `identifies n c` c c'
-	have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	  by -(simp,
+          (is "valid_edge prog ?e2")
+          by (fastsimp intro: JCFG_Getfield_Normal_Update)
+        with v_pred_edge `identifies n c` c c'
+        have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+          by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
             auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	moreover from Getfield jvm_exec stk' loc' c c' s s' prog False wt ST
-	have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	  by (auto intro!: ext
-	             simp: nth_stkss nth_locss nth_tl nth_Cons' hd_stks
-	                   not_less_eq_eq split_beta JVM_CFG_Interpret.kinds_def)
-	moreover from False s
-	have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+        moreover from Getfield jvm_exec stk' loc' c c' s s' prog False wt ST
+        have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+          by (auto intro!: ext
+                     simp: nth_stkss nth_locss nth_tl nth_Cons' hd_stks
+                           not_less_eq_eq split_beta JVM_CFG_Interpret.kinds_def)
+        moreover from False s
+        have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-	ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastsimp
       qed
     next
       case (Putfield Fd Cl)
       with applicable sees_M
       have "length ST > 1"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr' where "ST = ST1#STr'"
-	by (cases ST, fastsimp+)
+        by (cases ST, fastsimp+)
       with `length ST > 1` obtain ST2 STr
-	where ST: "ST = ST1#ST2#STr"
-	by (cases STr', fastsimp+)
+        where ST: "ST = ST1#ST2#STr"
+        by (cases STr', fastsimp+)
       show ?thesis
       proof (cases "stk(length cs, stkLength P C M pc - 2) = Null")
-	case True
-	with Putfield sem_step s s' c prog prealloc wt `length ST > 1`
-	have c': "c' = find_handler_for P NullPointer c"
-	  by (auto elim!: sem.cases 
-	           dest!: find_handler_find_handler_forD
-	            simp: hd_tl_stks split_beta)
-	with Putfield jvm_exec True prealloc `length ST > 1` wt
-	have "framestack_to_callstack frs' = c'"
-	  by (auto dest!: find_handler_find_handler_forD simp: split_beta hd_tl_stks)
-	with Putfield c' v_cs v_cs_f2c_frs'
-	have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) = Null)\<^isub>\<surd>,
-	  (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
-	  (is "valid_edge prog ?e1")
-	  apply (auto simp del: find_handler_for.simps)
-	    apply (fastsimp intro: JCFG_Putfield_Exc_Pred)
-	   apply (fastsimp intro: JCFG_Putfield_Exc_Pred)
-	  apply (cases "find_handler_for P NullPointer ((C, M, pc)#cs)")
-	   apply (fastsimp intro: JCFG_Putfield_Exc_Exit)
-	  by (fastsimp intro: JCFG_Putfield_Exc_Update)
-	show ?thesis
-	proof (cases c')
-	  case Nil
-	  with Putfield c prog c' v_pred_edge
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
-	    \<Up>id,
-	    (_Exit_))"
-	    (is "valid_edge prog ?e2")
-	    by (fastsimp intro: JCFG_Putfield_Exc_Exit)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
-	    by -(simp,
-	      rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+        case True
+        with Putfield sem_step s s' c prog prealloc wt `length ST > 1`
+        have c': "c' = find_handler_for P NullPointer c"
+          by (auto elim!: sem.cases 
+                   dest!: find_handler_find_handler_forD
+                    simp: hd_tl_stks split_beta)
+        with Putfield jvm_exec True prealloc `length ST > 1` wt
+        have "framestack_to_callstack frs' = c'"
+          by (auto dest!: find_handler_find_handler_forD simp: split_beta hd_tl_stks)
+        with Putfield c' v_cs v_cs_f2c_frs'
+        have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) = Null)\<^isub>\<surd>,
+          (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
+          (is "valid_edge prog ?e1")
+          apply (auto simp del: find_handler_for.simps)
+            apply (fastsimp intro: JCFG_Putfield_Exc_Pred)
+           apply (fastsimp intro: JCFG_Putfield_Exc_Pred)
+          apply (cases "find_handler_for P NullPointer ((C, M, pc)#cs)")
+           apply (fastsimp intro: JCFG_Putfield_Exc_Exit)
+          by (fastsimp intro: JCFG_Putfield_Exc_Update)
+        show ?thesis
+        proof (cases c')
+          case Nil
+          with Putfield c prog c' v_pred_edge
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
+            \<Up>id,
+            (_Exit_))"
+            (is "valid_edge prog ?e2")
+            by (fastsimp intro: JCFG_Putfield_Exc_Exit)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
+            by -(simp,
+              rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	  moreover from Nil True Putfield sem_step c c' s s' prog wt ST
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto elim!: sem.cases
-	              simp: split_beta JVM_CFG_Interpret.kinds_def)
-	  moreover from True s
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis using Nil by fastsimp
-	next
-	  case (Cons a cs')
-	  then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
-	  from jvm_exec c s True Putfield ST wt
-	  have "update_loc loc frs' = loc"
-	    by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
-	         auto simp: split_beta hd_tl_stks split_if_eq1)
-	  with sem_step s s' c prog jvm_exec
-	  have loc':"loc' = loc"
-	    by (clarsimp elim!: sem.cases)
-	  from c Cons s s' sem_step jvm_exec prog	
-	  have "stk' = update_stk stk frs'"
-	    and cs'_f2c_frs': "(C',M',pc')#cs' = framestack_to_callstack frs'"
-	    by (auto elim!: sem.cases)
-	  moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
-	    and "cs' = framestack_to_callstack frs''" using calculation
-	    by (cases frs', fastsimp+)
-	  ultimately
-	  have stk':
-	    "update_stk stk frs' =
-	    stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
-	    using c s Cons True prog Putfield ST wt trg_state_correct jvm_exec
-	    by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
-	      auto dest!: list_all2_lengthD
-	            simp: hd_stks hd_tl_stks split_beta framestack_to_callstack_def
-	                  correct_state_def)
-	  from Cons Putfield c prog c' v_pred_edge v_cs_f2c_frs' jvm_exec
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
-	    \<Up>(\<lambda>(h,stk,loc).
-	      (h, stk((length cs',(stkLength P C' M' pc') - 1) :=
-	            Addr (addr_of_sys_xcpt NullPointer)), loc) ),
-	    (_ c',None _))"
-	    (is "valid_edge prog ?e2")
-	    by (auto intro!: JCFG_Putfield_Exc_Update)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+          moreover from Nil True Putfield sem_step c c' s s' prog wt ST
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto elim!: sem.cases
+                      simp: split_beta JVM_CFG_Interpret.kinds_def)
+          moreover from True s
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis using Nil by fastsimp
+        next
+          case (Cons a cs')
+          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          from jvm_exec c s True Putfield ST wt
+          have "update_loc loc frs' = loc"
+            by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
+                 auto simp: split_beta hd_tl_stks split_if_eq1)
+          with sem_step s s' c prog jvm_exec
+          have loc':"loc' = loc"
+            by (clarsimp elim!: sem.cases)
+          from c Cons s s' sem_step jvm_exec prog       
+          have "stk' = update_stk stk frs'"
+            and cs'_f2c_frs': "(C',M',pc')#cs' = framestack_to_callstack frs'"
+            by (auto elim!: sem.cases)
+          moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
+            and "cs' = framestack_to_callstack frs''" using calculation
+            by (cases frs', fastsimp+)
+          ultimately
+          have stk':
+            "update_stk stk frs' =
+            stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
+            using c s Cons True prog Putfield ST wt trg_state_correct jvm_exec
+            by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
+              auto dest!: list_all2_lengthD
+                    simp: hd_stks hd_tl_stks split_beta framestack_to_callstack_def
+                          correct_state_def)
+          from Cons Putfield c prog c' v_pred_edge v_cs_f2c_frs' jvm_exec
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
+            \<Up>(\<lambda>(h,stk,loc).
+              (h, stk((length cs',(stkLength P C' M' pc') - 1) :=
+                    Addr (addr_of_sys_xcpt NullPointer)), loc) ),
+            (_ c',None _))"
+            (is "valid_edge prog ?e2")
+            by (auto intro!: JCFG_Putfield_Exc_Update)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
-	  moreover from True Putfield c c' s s' loc' stk' `stk' = update_stk stk frs'`
-	                jvm_exec wt ST
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto dest: find_handler_heap_eqD
-	             simp: JVM_CFG_Interpret.kinds_def hd_tl_stks split_beta)
-	  moreover from True s
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	qed
+          moreover from True Putfield c c' s s' loc' stk' `stk' = update_stk stk frs'`
+                        jvm_exec wt ST
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto dest: find_handler_heap_eqD
+                     simp: JVM_CFG_Interpret.kinds_def hd_tl_stks split_beta)
+          moreover from True s
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis by fastsimp
+        qed
       next
-	case False
-	with Putfield sem_step s s' c prog prealloc wt `length ST > 1`
-	have c': "c' = (C,M,Suc pc)#cs"
-	  by (auto elim!: sem.cases 
-	            simp: hd_tl_stks split_beta)
-	with Putfield False jvm_exec `length ST > 1` wt
-	have "framestack_to_callstack frs' = c'"
-	  by (auto simp: split_beta hd_tl_stks)
-	with Putfield c' v_cs v_cs_f2c_frs'
-	have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) \<noteq> Null)\<^isub>\<surd>,
-	  (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
-	  (is "valid_edge prog ?e1")
-	  apply auto
-	    apply (fastsimp intro: JCFG_Putfield_Normal_Pred)
-	   apply (fastsimp intro: JCFG_Putfield_Normal_Pred)
-	  by (fastsimp intro: JCFG_Putfield_Normal_Update)
-	with prog Putfield c' v_cs_succ sees_M
-	have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
+        case False
+        with Putfield sem_step s s' c prog prealloc wt `length ST > 1`
+        have c': "c' = (C,M,Suc pc)#cs"
+          by (auto elim!: sem.cases 
+                    simp: hd_tl_stks split_beta)
+        with Putfield False jvm_exec `length ST > 1` wt
+        have "framestack_to_callstack frs' = c'"
+          by (auto simp: split_beta hd_tl_stks)
+        with Putfield c' v_cs v_cs_f2c_frs'
+        have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) \<noteq> Null)\<^isub>\<surd>,
+          (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
+          (is "valid_edge prog ?e1")
+          apply auto
+            apply (fastsimp intro: JCFG_Putfield_Normal_Pred)
+           apply (fastsimp intro: JCFG_Putfield_Normal_Pred)
+          by (fastsimp intro: JCFG_Putfield_Normal_Update)
+        with prog Putfield c' v_cs_succ sees_M
+        have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
           \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
           (_ (C,M,Suc pc)#cs,None _))"
-	  (is "valid_edge prog ?e2")
-	  by (fastsimp intro: JCFG_Putfield_Normal_Update)
-	with v_pred_edge `identifies n c` c c'
-	have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	  by -(simp,
+          (is "valid_edge prog ?e2")
+          by (fastsimp intro: JCFG_Putfield_Normal_Update)
+        with v_pred_edge `identifies n c` c c'
+        have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+          by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
             auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	moreover from Putfield jvm_exec stk' loc' c c' s s' prog False wt ST
-	have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	  by (auto intro!: ext
-	             simp: JVM_CFG_Interpret.kinds_def split_beta
-	                   (* nth_stks *) nth_stkss (* nth_locs *) nth_locss nth_Cons'
-	                   not_less_eq_eq)
-	moreover from False s
-	have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+        moreover from Putfield jvm_exec stk' loc' c c' s s' prog False wt ST
+        have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+          by (auto intro!: ext
+                     simp: JVM_CFG_Interpret.kinds_def split_beta
+                           (* nth_stks *) nth_stkss (* nth_locs *) nth_locss nth_Cons'
+                           not_less_eq_eq)
+        moreover from False s
+        have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-	ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastsimp
       qed
     next
       case (Checkcast Cl)
       with applicable sees_M
       have "length ST > 0"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr where ST: "ST = ST1#STr" by (cases ST, fastsimp+)
       show ?thesis
       proof (cases "\<not> cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs,length ST - Suc 0))")
-	case True
-	with Checkcast sem_step s s' c prog prealloc wt `length ST > 0`
-	have c': "c' = find_handler_for P ClassCast c"
-	  by (auto elim!: sem.cases 
-	           dest!: find_handler_find_handler_forD
-	            simp: hd_stks split_beta)
-	with jvm_exec Checkcast True prealloc `length ST > 0` wt
-	have "framestack_to_callstack frs' = c'"
-	  by (auto dest!: find_handler_find_handler_forD simp: hd_stks)
-	with Checkcast c' v_cs v_cs_f2c_frs'
-	have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc). \<not> cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^isub>\<surd>,
-	  (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
-	  (is "valid_edge prog ?e1")
-	  apply (auto simp del: find_handler_for.simps)
-	    apply (fastsimp intro: JCFG_Checkcast_Exc_Pred)
-	   apply (fastsimp intro: JCFG_Checkcast_Exc_Pred)
-	  apply (cases "find_handler_for P ClassCast ((C,M,pc)#cs)")
-	   apply (fastsimp intro: JCFG_Checkcast_Exc_Exit)
-	  by (fastsimp intro: JCFG_Checkcast_Exc_Update)
-	show ?thesis
-	proof (cases c')
-	  case Nil
-	  with Checkcast c prog c' v_pred_edge
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
-	    \<Up>id,
-	    (_Exit_))"
-	    (is "valid_edge prog ?e2")
-	    by (fastsimp intro: JCFG_Checkcast_Exc_Exit)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
-	    by -(simp,
-	      rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+        case True
+        with Checkcast sem_step s s' c prog prealloc wt `length ST > 0`
+        have c': "c' = find_handler_for P ClassCast c"
+          by (auto elim!: sem.cases 
+                   dest!: find_handler_find_handler_forD
+                    simp: hd_stks split_beta)
+        with jvm_exec Checkcast True prealloc `length ST > 0` wt
+        have "framestack_to_callstack frs' = c'"
+          by (auto dest!: find_handler_find_handler_forD simp: hd_stks)
+        with Checkcast c' v_cs v_cs_f2c_frs'
+        have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc). \<not> cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^isub>\<surd>,
+          (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
+          (is "valid_edge prog ?e1")
+          apply (auto simp del: find_handler_for.simps)
+            apply (fastsimp intro: JCFG_Checkcast_Exc_Pred)
+           apply (fastsimp intro: JCFG_Checkcast_Exc_Pred)
+          apply (cases "find_handler_for P ClassCast ((C,M,pc)#cs)")
+           apply (fastsimp intro: JCFG_Checkcast_Exc_Exit)
+          by (fastsimp intro: JCFG_Checkcast_Exc_Update)
+        show ?thesis
+        proof (cases c')
+          case Nil
+          with Checkcast c prog c' v_pred_edge
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
+            \<Up>id,
+            (_Exit_))"
+            (is "valid_edge prog ?e2")
+            by (fastsimp intro: JCFG_Checkcast_Exc_Exit)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
+            by -(simp,
+              rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	  moreover from Nil True Checkcast sem_step c c' s s' prog wt `length ST > 0`
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto elim!: sem.cases
-	              simp: hd_stks split_beta JVM_CFG_Interpret.kinds_def)
-	  moreover from True s wt
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis using Nil by fastsimp
-	next
-	  case (Cons a cs')
-	  then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
-	  from jvm_exec c s True Checkcast ST wt
-	  have loc'': "update_loc loc frs' = loc"
-	    by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
-	         auto simp: split_beta hd_tl_stks split_if_eq1)
-	  from c Cons s s' sem_step jvm_exec prog	
-	  have "stk' = update_stk stk frs'"
-	    and [simp]: "framestack_to_callstack frs' = (C', M', pc')#cs'"
-	    by (auto elim!: sem.cases)
-	  moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
-	    and "cs' = framestack_to_callstack frs''" using calculation
-	    by (cases frs', fastsimp+)
-	  ultimately
-	  have stk'':
-	    "update_stk stk frs' =
-	    stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt ClassCast))"
-	    using c s Cons True prog Checkcast ST wt trg_state_correct jvm_exec
-	    by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
-	      auto dest!: list_all2_lengthD
-	            simp: hd_stks hd_tl_stks split_beta framestack_to_callstack_def
-	                  correct_state_def)
-	  from prog Checkcast Cons c c' v_pred_edge v_cs_f2c_frs'
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
-	    \<Up>(\<lambda>(h,stk,loc).
-	      (h,
+          moreover from Nil True Checkcast sem_step c c' s s' prog wt `length ST > 0`
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto elim!: sem.cases
+                      simp: hd_stks split_beta JVM_CFG_Interpret.kinds_def)
+          moreover from True s wt
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis using Nil by fastsimp
+        next
+          case (Cons a cs')
+          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          from jvm_exec c s True Checkcast ST wt
+          have loc'': "update_loc loc frs' = loc"
+            by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
+                 auto simp: split_beta hd_tl_stks split_if_eq1)
+          from c Cons s s' sem_step jvm_exec prog       
+          have "stk' = update_stk stk frs'"
+            and [simp]: "framestack_to_callstack frs' = (C', M', pc')#cs'"
+            by (auto elim!: sem.cases)
+          moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
+            and "cs' = framestack_to_callstack frs''" using calculation
+            by (cases frs', fastsimp+)
+          ultimately
+          have stk'':
+            "update_stk stk frs' =
+            stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt ClassCast))"
+            using c s Cons True prog Checkcast ST wt trg_state_correct jvm_exec
+            by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
+              auto dest!: list_all2_lengthD
+                    simp: hd_stks hd_tl_stks split_beta framestack_to_callstack_def
+                          correct_state_def)
+          from prog Checkcast Cons c c' v_pred_edge v_cs_f2c_frs'
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
+            \<Up>(\<lambda>(h,stk,loc).
+              (h,
                stk((length cs',(stkLength P C' M' pc') - 1) :=
                  Addr (addr_of_sys_xcpt ClassCast)),
                loc)
              ),
-	    (_ c',None _))"
-	    (is "valid_edge prog ?e2")
-	    by (auto intro!: JCFG_Checkcast_Exc_Update)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+            (_ c',None _))"
+            (is "valid_edge prog ?e2")
+            by (auto intro!: JCFG_Checkcast_Exc_Update)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
-	  moreover from True Checkcast c s s' loc' stk' loc'' stk''
-	                prog wt ST jvm_exec
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto dest: find_handler_heap_eqD
-	                simp: JVM_CFG_Interpret.kinds_def split_beta)
-	  moreover from True s wt
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	qed
+          moreover from True Checkcast c s s' loc' stk' loc'' stk''
+                        prog wt ST jvm_exec
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto dest: find_handler_heap_eqD
+                        simp: JVM_CFG_Interpret.kinds_def split_beta)
+          moreover from True s wt
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis by fastsimp
+        qed
       next
-	case False
-	with Checkcast sem_step s s' c prog prealloc wt `length ST > 0`
-	have c': "c' = (C,M,Suc pc)#cs"
-	  by (auto elim!: sem.cases 
-	            simp: hd_stks split_beta)
-	with prog Checkcast sem_step c s v_cs_succ sees_M
-	have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc). cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^isub>\<surd>,
-	  (_ (C,M,Suc pc)#cs,None _))"
-	  (is "valid_edge prog ?e1")
-	  by (auto intro!: JCFG_Checkcast_Normal_Pred elim: sem.cases)
-	with `identifies n c` c c'
-	have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	  by -(simp,
+        case False
+        with Checkcast sem_step s s' c prog prealloc wt `length ST > 0`
+        have c': "c' = (C,M,Suc pc)#cs"
+          by (auto elim!: sem.cases 
+                    simp: hd_stks split_beta)
+        with prog Checkcast sem_step c s v_cs_succ sees_M
+        have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc). cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^isub>\<surd>,
+          (_ (C,M,Suc pc)#cs,None _))"
+          (is "valid_edge prog ?e1")
+          by (auto intro!: JCFG_Checkcast_Normal_Pred elim: sem.cases)
+        with `identifies n c` c c'
+        have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
+          by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
             auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	moreover from Checkcast jvm_exec stk' loc' c s s' prog False wt ST
-	have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	  by (auto elim!: sem.cases
-	          intro!: ext
-	            simp: split_beta hd_stks JVM_CFG_Interpret.kinds_def
+        moreover from Checkcast jvm_exec stk' loc' c s s' prog False wt ST
+        have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
+          by (auto elim!: sem.cases
+                  intro!: ext
+                    simp: split_beta hd_stks JVM_CFG_Interpret.kinds_def
                           (* nth_stks *) nth_stkss (* nth_locs *) nth_locss nth_Cons'
-	                  not_less_eq_eq)
-	moreover from False s wt
-	have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
+                          not_less_eq_eq)
+        moreover from False s wt
+        have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-	ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastsimp
       qed
     next
       case (Invoke M' n')
       with applicable sees_M
       have "length ST > n'"
-	by clarsimp
+        by clarsimp
       moreover obtain STn where "STn = take n' ST" by fastsimp
       moreover obtain STs where "STs = ST ! n'" by fastsimp
       moreover obtain STr where "STr = drop (Suc n') ST" by fastsimp
       ultimately have ST:" ST = STn@STs#STr \<and> length STn = n'"
-	by (auto simp: id_take_nth_drop)
+        by (auto simp: id_take_nth_drop)
       with jvm_exec c s Invoke wt
       have "h = h'"
-	by (auto dest: find_handler_heap_eqD
-	         simp: split_beta (* nth_stks *) nth_Cons' split_if_eq1)
+        by (auto dest: find_handler_heap_eqD
+                 simp: split_beta (* nth_stks *) nth_Cons' split_if_eq1)
       show ?thesis
       proof (cases "stk(length cs, stkLength P C M pc - Suc n') = Null")
-	case True
-	with Invoke sem_step prog prealloc wt ST
-	have c': "c' = find_handler_for P NullPointer c"
-	  apply (auto elim!: sem.cases
-	              simp: (* nth_stks *) split_beta nth_Cons' ST
-	              split: split_if_asm)
-	   by (auto dest!: find_handler_find_handler_forD)
-	with jvm_exec True Invoke wt ST prealloc
-	have "framestack_to_callstack frs' = c'"
-	  by (auto dest!: find_handler_find_handler_forD
-	            simp: split_beta nth_Cons' (* nth_stks *) split_if_eq1)
-	with Invoke c' v_cs v_cs_f2c_frs'
-	have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - Suc n') = Null )\<^isub>\<surd>,
-	  (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
-	  (is "valid_edge prog ?e1")
-	  apply (auto simp del: find_handler_for.simps)
-	    apply (fastsimp intro: JCFG_Invoke_Exc_Pred)
-	   apply (fastsimp intro: JCFG_Invoke_Exc_Pred)
-	  apply (cases "find_handler_for P NullPointer ((C, M, pc) # cs)")
-	   apply (fastsimp intro: JCFG_Invoke_Exc_Exit)
-	  by (fastsimp intro: JCFG_Invoke_Exc_Update)
-	show ?thesis
-	proof (cases c')
-	  case Nil
-	  with prog Invoke c c' v_pred_edge
-	  have v_exec_edge: "valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
-	    \<Up>id,
-	    (_Exit_))"
-	    (is "valid_edge prog ?e2")
-	    by (fastsimp intro: JCFG_Invoke_Exc_Exit)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(simp,
+        case True
+        with Invoke sem_step prog prealloc wt ST
+        have c': "c' = find_handler_for P NullPointer c"
+          apply (auto elim!: sem.cases
+                      simp: (* nth_stks *) split_beta nth_Cons' ST
+                      split: split_if_asm)
+           by (auto dest!: find_handler_find_handler_forD)
+        with jvm_exec True Invoke wt ST prealloc
+        have "framestack_to_callstack frs' = c'"
+          by (auto dest!: find_handler_find_handler_forD
+                    simp: split_beta nth_Cons' (* nth_stks *) split_if_eq1)
+        with Invoke c' v_cs v_cs_f2c_frs'
+        have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - Suc n') = Null )\<^isub>\<surd>,
+          (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
+          (is "valid_edge prog ?e1")
+          apply (auto simp del: find_handler_for.simps)
+            apply (fastsimp intro: JCFG_Invoke_Exc_Pred)
+           apply (fastsimp intro: JCFG_Invoke_Exc_Pred)
+          apply (cases "find_handler_for P NullPointer ((C, M, pc) # cs)")
+           apply (fastsimp intro: JCFG_Invoke_Exc_Exit)
+          by (fastsimp intro: JCFG_Invoke_Exc_Update)
+        show ?thesis
+        proof (cases c')
+          case Nil
+          with prog Invoke c c' v_pred_edge
+          have v_exec_edge: "valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
+            \<Up>id,
+            (_Exit_))"
+            (is "valid_edge prog ?e2")
+            by (fastsimp intro: JCFG_Invoke_Exc_Exit)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(simp,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	  moreover from Invoke jvm_exec stk' loc' c c' s s'
-	    prog True wt ST prealloc Nil `h = h'`
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto dest!: find_handler_find_handler_forD
-	              simp: split_beta JVM_CFG_Interpret.kinds_def
-	                    (* nth_stks *) nth_Cons' split_if_eq1 framestack_to_callstack_def)
-	  moreover from s True
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+          moreover from Invoke jvm_exec stk' loc' c c' s s'
+            prog True wt ST prealloc Nil `h = h'`
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto dest!: find_handler_find_handler_forD
+                      simp: split_beta JVM_CFG_Interpret.kinds_def
+                            (* nth_stks *) nth_Cons' split_if_eq1 framestack_to_callstack_def)
+          moreover from s True
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	next
-	  case (Cons a cs')
-	  then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" 
-	    by (cases a, fastsimp)
-	  from jvm_exec c s True Invoke ST wt
-	  have loc'': "update_loc loc frs' = loc"
-	    by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
-	         auto simp: split_beta split_if_eq1 nth_Cons' (* nth_stks *))
-	  from c Cons s s' sem_step jvm_exec prog	
-	  have "stk' = update_stk stk frs'"
-	    and [simp]: "framestack_to_callstack frs' = (C',M',pc')#cs'"
-	    by (auto elim!: sem.cases)
-	  moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
-	    and "cs' = framestack_to_callstack frs''" using calculation
-	    by (cases frs', fastsimp+)
-	  ultimately
-	  have stk'':
-	    "update_stk stk frs' =
-	    stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
-	    using c s Cons True prog Invoke ST wt trg_state_correct jvm_exec
-	    by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
-	      auto dest!: list_all2_lengthD
-	            simp: (* nth_stks *) nth_Cons' split_beta correct_state_def split_if_eq1)
-	  from Cons Invoke c prog c' v_pred_edge v_cs_f2c_frs'
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
-	    \<Up>(\<lambda>(h,stk,loc).
-	      (h, stk((length cs',(stkLength P C' M' pc') - 1) :=
-	                 Addr (addr_of_sys_xcpt NullPointer)), loc) ),
-	    (_ c',None _))"
-	    (is "valid_edge prog ?e2")
-	    by (auto intro!: JCFG_Invoke_Exc_Update)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+          ultimately show ?thesis by fastsimp
+        next
+          case (Cons a cs')
+          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" 
+            by (cases a, fastsimp)
+          from jvm_exec c s True Invoke ST wt
+          have loc'': "update_loc loc frs' = loc"
+            by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
+                 auto simp: split_beta split_if_eq1 nth_Cons' (* nth_stks *))
+          from c Cons s s' sem_step jvm_exec prog       
+          have "stk' = update_stk stk frs'"
+            and [simp]: "framestack_to_callstack frs' = (C',M',pc')#cs'"
+            by (auto elim!: sem.cases)
+          moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
+            and "cs' = framestack_to_callstack frs''" using calculation
+            by (cases frs', fastsimp+)
+          ultimately
+          have stk'':
+            "update_stk stk frs' =
+            stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
+            using c s Cons True prog Invoke ST wt trg_state_correct jvm_exec
+            by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
+              auto dest!: list_all2_lengthD
+                    simp: (* nth_stks *) nth_Cons' split_beta correct_state_def split_if_eq1)
+          from Cons Invoke c prog c' v_pred_edge v_cs_f2c_frs'
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
+            \<Up>(\<lambda>(h,stk,loc).
+              (h, stk((length cs',(stkLength P C' M' pc') - 1) :=
+                         Addr (addr_of_sys_xcpt NullPointer)), loc) ),
+            (_ c',None _))"
+            (is "valid_edge prog ?e2")
+            by (auto intro!: JCFG_Invoke_Exc_Update)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
-	  moreover from Cons True Invoke jvm_exec c c' s s' loc' stk' loc'' stk''
-	                prog wt ST `h = h'`
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto simp: JVM_CFG_Interpret.kinds_def split_beta)
-	  moreover from True s
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	qed
+          moreover from Cons True Invoke jvm_exec c c' s s' loc' stk' loc'' stk''
+                        prog wt ST `h = h'`
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto simp: JVM_CFG_Interpret.kinds_def split_beta)
+          moreover from True s
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis by fastsimp
+        qed
       next
-	case False
-	obtain D where D:
-	  "D = fst (method P\<^bsub>wf\<^esub> (cname_of h (the_Addr (stk (length cs, length ST - Suc n')))) M')"
-	  by simp
-	from c wt s state_correct
-	have "(P\<^bsub>wf\<^esub>),h \<turnstile> stks (length ST) (\<lambda>a. stk (length cs, a)) [:\<le>] ST"
-	  by (clarsimp simp: bv_conform_def correct_state_def)
-	with False ST wt
-	have "STs \<noteq> NT"
-	  apply -
-	  apply (drule_tac p="n'" in list_all2_nthD)
-	   apply simp
-	  apply (auto simp: nth_Cons' split: split_if_asm)
-	  by (induct STn, auto simp: nth_Cons' split: split_if_asm)
-	with applicable ST Invoke sees_M
-	obtain D' where D': "STs = Class D'"
-	  by (clarsimp simp: nth_append)
-	from Invoke c s jvm_exec False wt ST D
-	obtain loc'' where frs': "frs' = ([],loc'',D,M',0)#(snd(snd(state_to_jvm_state P c s)))"
-	  by (auto simp: split_beta split_if_eq1 (* nth_stks *) nth_Cons' ST)
-	with trg_state_correct
-	obtain Ts' T' mb' where D_sees_M': "(P\<^bsub>wf\<^esub>) \<turnstile> D sees M':Ts'\<rightarrow>T' = mb' in D"
-	  by (auto simp: correct_state_def)
-	from state_correct c s wt ST D'
-	have stk_wt: "P\<^bsub>wf\<^esub>,h \<turnstile> stk (length cs, length STn + length STr) #
+        case False
+        obtain D where D:
+          "D = fst (method P\<^bsub>wf\<^esub> (cname_of h (the_Addr (stk (length cs, length ST - Suc n')))) M')"
+          by simp
+        from c wt s state_correct
+        have "(P\<^bsub>wf\<^esub>),h \<turnstile> stks (length ST) (\<lambda>a. stk (length cs, a)) [:\<le>] ST"
+          by (clarsimp simp: bv_conform_def correct_state_def)
+        with False ST wt
+        have "STs \<noteq> NT"
+          apply -
+          apply (drule_tac p="n'" in list_all2_nthD)
+           apply simp
+          apply (auto simp: nth_Cons' split: split_if_asm)
+          by (induct STn, auto simp: nth_Cons' split: split_if_asm)
+        with applicable ST Invoke sees_M
+        obtain D' where D': "STs = Class D'"
+          by (clarsimp simp: nth_append)
+        from Invoke c s jvm_exec False wt ST D
+        obtain loc'' where frs': "frs' = ([],loc'',D,M',0)#(snd(snd(state_to_jvm_state P c s)))"
+          by (auto simp: split_beta split_if_eq1 (* nth_stks *) nth_Cons' ST)
+        with trg_state_correct
+        obtain Ts' T' mb' where D_sees_M': "(P\<^bsub>wf\<^esub>) \<turnstile> D sees M':Ts'\<rightarrow>T' = mb' in D"
+          by (auto simp: correct_state_def)
+        from state_correct c s wt ST D'
+        have stk_wt: "P\<^bsub>wf\<^esub>,h \<turnstile> stk (length cs, length STn + length STr) #
           stks (length STn + length STr) (\<lambda>a. stk (length cs, a)) [:\<le>] STn @ Class D' # STr"
-	  by (auto simp: correct_state_def)
-	have "(stk (length cs, length STn + length STr) #
-	  stks (length STn + length STr) (\<lambda>a. stk (length cs, a))) ! length STn =
-	  stk (length cs, length STr) "
-	  by (auto simp: nth_Cons' (* nth_stks *) ST)
-	with stk_wt
-	have "P\<^bsub>wf\<^esub>,h \<turnstile> stk (length cs, length STr) :\<le> Class D'"
-	  by (drule_tac P="conf (P\<^bsub>wf\<^esub>) h" and p="length STn" in list_all2_nthD,
-	    auto simp: nth_append)
-	with False ST wt
-	have subD': "(P\<^bsub>wf\<^esub>) \<turnstile> (cname_of h (the_Addr (stk (length cs, length ST - Suc n')))) \<preceq>\<^sup>* D'"
-	  by (cases "stk (length cs, length STr)", auto simp: conf_def)
-	from trg_state_correct frs' D_sees_M' Invoke s c
-	have "length Ts' = n'"
-	  by (auto dest: sees_method_fun simp: correct_state_def)
-	with c trg_state_correct wt ST D_sees_M' D P_wf frs' subD' D'
-	obtain Ts T mxs mxl "is" xt
-	  where stk_sees_M':
-	  "(P\<^bsub>wf\<^esub>) \<turnstile> (cname_of h (the_Addr (stk (length cs, length ST - Suc n'))))
-	                   sees M':Ts\<rightarrow>T = (mxs,mxl,is,xt) in D"
-	  by (auto dest: sees_method_fun
-	          dest!: sees_method_mono
-	           simp: correct_state_def split_beta nth_append wf_jvm_prog_phi_def
-	       simp del: ST)
-	with c s False jvm_exec Invoke frs' wt `length ST > n'`
-	have loc'':
-	  "loc'' = stk (length cs, length ST - Suc n') #
-	           rev (take n' (stks (length ST) (\<lambda>a. stk(length cs, a)))) @
-	           replicate mxl arbitrary"
-	  by (auto simp: split_beta (* nth_stks *) split_if_eq1 simp del: ST)
-	with trg_state_correct frs' Invoke wt `length ST > n'`
-	have locLength_trg:
-	  "locLength P D M' 0 = n' + Suc mxl"
-	  by (auto dest: list_all2_lengthD simp: correct_state_def)
-	from stk' frs' c s
-	have "stk' = stk"
-	  by (auto intro!: ext
-	             simp: (* nth_stks *) nth_stkss nth_Cons' not_less_eq_eq Suc_le_eq
-	         simp del: ST)
-	from loc' frs' c s loc'' wt ST
-	have upd_loc': "loc' = (\<lambda>(a, b).
+          by (auto simp: correct_state_def)
+        have "(stk (length cs, length STn + length STr) #
+          stks (length STn + length STr) (\<lambda>a. stk (length cs, a))) ! length STn =
+          stk (length cs, length STr) "
+          by (auto simp: nth_Cons' (* nth_stks *) ST)
+        with stk_wt
+        have "P\<^bsub>wf\<^esub>,h \<turnstile> stk (length cs, length STr) :\<le> Class D'"
+          by (drule_tac P="conf (P\<^bsub>wf\<^esub>) h" and p="length STn" in list_all2_nthD,
+            auto simp: nth_append)
+        with False ST wt
+        have subD': "(P\<^bsub>wf\<^esub>) \<turnstile> (cname_of h (the_Addr (stk (length cs, length ST - Suc n')))) \<preceq>\<^sup>* D'"
+          by (cases "stk (length cs, length STr)", auto simp: conf_def)
+        from trg_state_correct frs' D_sees_M' Invoke s c
+        have "length Ts' = n'"
+          by (auto dest: sees_method_fun simp: correct_state_def)
+        with c trg_state_correct wt ST D_sees_M' D P_wf frs' subD' D'
+        obtain Ts T mxs mxl "is" xt
+          where stk_sees_M':
+          "(P\<^bsub>wf\<^esub>) \<turnstile> (cname_of h (the_Addr (stk (length cs, length ST - Suc n'))))
+                           sees M':Ts\<rightarrow>T = (mxs,mxl,is,xt) in D"
+          by (auto dest: sees_method_fun
+                  dest!: sees_method_mono
+                   simp: correct_state_def split_beta nth_append wf_jvm_prog_phi_def
+               simp del: ST)
+        with c s False jvm_exec Invoke frs' wt `length ST > n'`
+        have loc'':
+          "loc'' = stk (length cs, length ST - Suc n') #
+                   rev (take n' (stks (length ST) (\<lambda>a. stk(length cs, a)))) @
+                   replicate mxl arbitrary"
+          by (auto simp: split_beta (* nth_stks *) split_if_eq1 simp del: ST)
+        with trg_state_correct frs' Invoke wt `length ST > n'`
+        have locLength_trg:
+          "locLength P D M' 0 = n' + Suc mxl"
+          by (auto dest: list_all2_lengthD simp: correct_state_def)
+        from stk' frs' c s
+        have "stk' = stk"
+          by (auto intro!: ext
+                     simp: (* nth_stks *) nth_stkss nth_Cons' not_less_eq_eq Suc_le_eq
+                 simp del: ST)
+        from loc' frs' c s loc'' wt ST
+        have upd_loc': "loc' = (\<lambda>(a, b).
            if a = Suc (length cs) \<longrightarrow> Suc (n' + mxl) \<le> b then loc (a, b)
            else if b \<le> n' then stk (length cs, Suc (n' + length STr) - (Suc n' - b))
                 else arbitrary)"
-	  by (auto intro!: ext
-	             simp: (* nth_locs *) nth_locss nth_Cons' nth_append rev_nth (* nth_stks *) 
-	                   not_less_eq_eq Suc_le_eq less_Suc_eq add_commute
+          by (auto intro!: ext
+                     simp: (* nth_locs *) nth_locss nth_Cons' nth_append rev_nth (* nth_stks *) 
+                           not_less_eq_eq Suc_le_eq less_Suc_eq add_commute
                            min_max.inf_absorb1 min_max.inf_absorb2 min_max.sup_absorb1 min_max.sup_absorb2)
-	from frs' jvm_exec sem_step prog
-	have c': "c' = (D,M',0)#c"
-	  by (auto elim!: sem.cases)
-	from frs'
-	have "framestack_to_callstack frs' = (D, M', 0) # (C, M, pc) # cs"
-	  by simp
-	with Invoke c' v_cs v_cs_f2c_frs'
-	have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk',loc).
-	    stk'(length cs, stkLength P C M pc - Suc n') \<noteq> Null \<and>
-	    fst(method (P\<^bsub>wf\<^esub>)
-	         (cname_of h (the_Addr(stk'(length cs, stkLength P C M pc - Suc n')))) M'
-	    ) = D
-	  )\<^isub>\<surd>,
-	  (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
-	  (is "valid_edge prog ?e1")
-	  apply auto
-	    apply (fastsimp intro: JCFG_Invoke_Normal_Pred)
-	   apply (fastsimp intro: JCFG_Invoke_Normal_Pred)
-	  apply (rule exI)
-	  by (fastsimp intro: JCFG_Invoke_Normal_Update)
-	with Invoke v_cs_f2c_frs' c' v_cs
-	have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
+        from frs' jvm_exec sem_step prog
+        have c': "c' = (D,M',0)#c"
+          by (auto elim!: sem.cases)
+        from frs'
+        have "framestack_to_callstack frs' = (D, M', 0) # (C, M, pc) # cs"
+          by simp
+        with Invoke c' v_cs v_cs_f2c_frs'
+        have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk',loc).
+            stk'(length cs, stkLength P C M pc - Suc n') \<noteq> Null \<and>
+            fst(method (P\<^bsub>wf\<^esub>)
+                 (cname_of h (the_Addr(stk'(length cs, stkLength P C M pc - Suc n')))) M'
+            ) = D
+          )\<^isub>\<surd>,
+          (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
+          (is "valid_edge prog ?e1")
+          apply auto
+            apply (fastsimp intro: JCFG_Invoke_Normal_Pred)
+           apply (fastsimp intro: JCFG_Invoke_Normal_Pred)
+          apply (rule exI)
+          by (fastsimp intro: JCFG_Invoke_Normal_Update)
+        with Invoke v_cs_f2c_frs' c' v_cs
+        have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
           \<Up>(\<lambda>s.
-	    exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s
-	      (length cs) (stkLength P C M pc) 0 (locLength P D M' 0)
-	  ),
+            exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s
+              (length cs) (stkLength P C M pc) 0 (locLength P D M' 0)
+          ),
           (_ (D,M',0)#c,None _))"
-	  (is "valid_edge prog ?e2")
-	  by (fastsimp intro!: JCFG_Invoke_Normal_Update
-	             simp del: exec.simps valid_callstack.simps)
-	with v_pred_edge `identifies n c` c c' locLength_trg
-	have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	  by -(simp,
+          (is "valid_edge prog ?e2")
+          by (fastsimp intro!: JCFG_Invoke_Normal_Update
+                     simp del: exec.simps valid_callstack.simps)
+        with v_pred_edge `identifies n c` c c' locLength_trg
+        have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+          by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
             auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	moreover from s s' `h = h'` `stk' = stk` upd_loc'
-	  locLength_trg stk_sees_M' Invoke c wt ST
-	have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'" 
-	  by (simp add: JVM_CFG_Interpret.kinds_def)
-	moreover from False s D wt have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+        moreover from s s' `h = h'` `stk' = stk` upd_loc'
+          locLength_trg stk_sees_M' Invoke c wt ST
+        have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'" 
           by (simp add: JVM_CFG_Interpret.kinds_def)
-	ultimately show ?thesis by fastsimp
+        moreover from False s D wt have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+          by (simp add: JVM_CFG_Interpret.kinds_def)
+        ultimately show ?thesis by fastsimp
       qed
     next
       case Return
       with applicable sees_M
       have "length ST > 0"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr where ST: "ST = ST1#STr" by (cases ST, fastsimp+)
       show ?thesis
       proof (cases cs)
-	case Nil
-	with sem_step s s' c prog Return
-	have c': "c' = [] \<and> C = C0 \<and> M = M0"
-	  by (auto elim!: sem.cases)
-	with prog sem_step Return Nil c
-	have v_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  \<Up>id,
-	  (_Exit_))"
-	  (is "valid_edge prog ?e1")
-	  by (fastsimp intro: JCFG_ReturnExit elim: sem.cases)
-	with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	  by -(simp,
+        case Nil
+        with sem_step s s' c prog Return
+        have c': "c' = [] \<and> C = C0 \<and> M = M0"
+          by (auto elim!: sem.cases)
+        with prog sem_step Return Nil c
+        have v_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+          \<Up>id,
+          (_Exit_))"
+          (is "valid_edge prog ?e1")
+          by (fastsimp intro: JCFG_ReturnExit elim: sem.cases)
+        with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
+          by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
             auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	moreover from Return sem_step c c' s s' prog wt Nil `length ST > 0`
-	have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	  by (auto elim!: sem.cases simp: JVM_CFG_Interpret.kinds_def)
-	moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
+        moreover from Return sem_step c c' s s' prog wt Nil `length ST > 0`
+        have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
+          by (auto elim!: sem.cases simp: JVM_CFG_Interpret.kinds_def)
+        moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-	ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastsimp
       next
-	case (Cons a cs')
-	with c obtain D M' pc' where c: "c = (C,M,pc)#(D,M',pc')#cs'" by (cases a, fastsimp)
-	with prog sem_step Return
-	have c': "c' = (D,M',Suc pc')#cs'"
-	  by (auto elim!: sem.cases)
-	from c s jvm_exec Return
-	have "h = h'"
-	  by (auto simp: split_beta)
-	from c s jvm_exec loc' Return
-	have "loc' = loc"
-	  by (auto intro!: ext
-	             simp: split_beta not_less_eq_eq Suc_le_eq not_less_eq less_Suc_eq_le
-	                   (* nth_locs *) nth_locss hd_stks nth_Cons')
-	from c s jvm_exec stk' Return ST wt trg_state_correct
-	have stk_upd:
-	  "stk' =
-	  stk((length cs', stkLength P D M' (Suc pc') - 1) :=
-	    stk(Suc (length cs'), length ST - 1))"
-	  by (auto intro!: ext
-	            dest!: list_all2_lengthD
-	             simp: split_beta not_less_eq_eq Suc_le_eq
-	                   (* nth_stks *) nth_stkss hd_stks nth_Cons' correct_state_def)
-	from jvm_exec Return c' c
-	have "framestack_to_callstack frs' = c'"
-	  by auto
-	with Return v_cs v_cs_f2c_frs' c' c
-	have v_edge: "valid_edge prog ((_ (C,M,pc)#(D,M',pc')#cs',None _),
-	  \<Up>(\<lambda>s. exec_instr Return P s
-	     (Suc (length cs')) (stkLength P C M pc) (stkLength P D M' (Suc pc')) 0),
-	  (_ (D,M',Suc pc')#cs',None _))"
-	  (is "valid_edge prog ?e1")
-	  by (fastsimp intro: JCFG_Return_Update)
-	with `identifies n c` c c' 
-	have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	  by -(simp,
+        case (Cons a cs')
+        with c obtain D M' pc' where c: "c = (C,M,pc)#(D,M',pc')#cs'" by (cases a, fastsimp)
+        with prog sem_step Return
+        have c': "c' = (D,M',Suc pc')#cs'"
+          by (auto elim!: sem.cases)
+        from c s jvm_exec Return
+        have "h = h'"
+          by (auto simp: split_beta)
+        from c s jvm_exec loc' Return
+        have "loc' = loc"
+          by (auto intro!: ext
+                     simp: split_beta not_less_eq_eq Suc_le_eq not_less_eq less_Suc_eq_le
+                           (* nth_locs *) nth_locss hd_stks nth_Cons')
+        from c s jvm_exec stk' Return ST wt trg_state_correct
+        have stk_upd:
+          "stk' =
+          stk((length cs', stkLength P D M' (Suc pc') - 1) :=
+            stk(Suc (length cs'), length ST - 1))"
+          by (auto intro!: ext
+                    dest!: list_all2_lengthD
+                     simp: split_beta not_less_eq_eq Suc_le_eq
+                           (* nth_stks *) nth_stkss hd_stks nth_Cons' correct_state_def)
+        from jvm_exec Return c' c
+        have "framestack_to_callstack frs' = c'"
+          by auto
+        with Return v_cs v_cs_f2c_frs' c' c
+        have v_edge: "valid_edge prog ((_ (C,M,pc)#(D,M',pc')#cs',None _),
+          \<Up>(\<lambda>s. exec_instr Return P s
+             (Suc (length cs')) (stkLength P C M pc) (stkLength P D M' (Suc pc')) 0),
+          (_ (D,M',Suc pc')#cs',None _))"
+          (is "valid_edge prog ?e1")
+          by (fastsimp intro: JCFG_Return_Update)
+        with `identifies n c` c c' 
+        have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
+          by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
             auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	moreover from stk' loc' s s' `h = h'` `loc' = loc` stk_upd wt
-	have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	  by (simp add: JVM_CFG_Interpret.kinds_def)
-	moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
+        moreover from stk' loc' s s' `h = h'` `loc' = loc` stk_upd wt
+        have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-	ultimately show ?thesis by fastsimp
+        moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
+          by (simp add: JVM_CFG_Interpret.kinds_def)
+        ultimately show ?thesis by fastsimp
       qed
     next
       case Pop
       with sem_step s s' c prog 
       have c': "c' = (C,M,pc+1)#cs"
-	by (auto elim!: sem.cases)
+        by (auto elim!: sem.cases)
       from Pop sees_M applicable
       have "ST \<noteq> []"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr where ST: "ST = ST1#STr"
-	by (cases ST, fastsimp+)
+        by (cases ST, fastsimp+)
       with c' jvm_exec Pop
       have "framestack_to_callstack frs' = c'"
-	by auto
+        by auto
       with Pop v_cs v_cs_f2c_frs' c'
       have v_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
-	(is "valid_edge prog ?e1")
-	by (fastsimp intro: JCFG_Straight_NoExc)
+        (is "valid_edge prog ?e1")
+        by (fastsimp intro: JCFG_Straight_NoExc)
       with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	by -(simp,
+        by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
           auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
       moreover from Pop jvm_exec s s' stk' loc' c wt ST
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	by (auto intro!: ext
- 	           simp: nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
-	                 not_less_eq_eq Suc_le_eq JVM_CFG_Interpret.kinds_def)
+        by (auto intro!: ext
+                   simp: nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
+                         not_less_eq_eq Suc_le_eq JVM_CFG_Interpret.kinds_def)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
       ultimately show ?thesis by fastsimp
@@ -2234,34 +2234,34 @@ proof(unfold_locales)
       case IAdd
       with sem_step s s' c prog 
       have c': "c' = (C,M,pc+1)#cs"
-	by (auto elim!: sem.cases)
+        by (auto elim!: sem.cases)
       from IAdd applicable sees_M
       have "length ST > 1"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr' where "ST = ST1#STr'" by (cases ST, fastsimp+)
       with `length ST > 1` obtain ST2 STr
-	where ST: "ST = ST1#ST2#STr" by (cases STr', fastsimp+)
+        where ST: "ST = ST1#ST2#STr" by (cases STr', fastsimp+)
       from c' jvm_exec IAdd
       have "framestack_to_callstack frs' = c'"
-	by auto
+        by auto
       with IAdd c' v_cs v_cs_f2c_frs'
       have v_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
-	(is "valid_edge prog ?e1")
-	by (fastsimp intro: JCFG_Straight_NoExc)
+        (is "valid_edge prog ?e1")
+        by (fastsimp intro: JCFG_Straight_NoExc)
       with `identifies n c` c c'
       have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	by -(simp,
+        by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
           auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
       moreover from IAdd jvm_exec c s s' stk' loc' wt ST
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	by (auto intro!: ext
-	           simp: nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
-	                 hd_stks hd_tl_stks
-	                 not_less_eq_eq Suc_le_eq JVM_CFG_Interpret.kinds_def)
+        by (auto intro!: ext
+                   simp: nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
+                         hd_stks hd_tl_stks
+                         not_less_eq_eq Suc_le_eq JVM_CFG_Interpret.kinds_def)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
       ultimately show ?thesis by fastsimp
@@ -2269,95 +2269,95 @@ proof(unfold_locales)
       case (IfFalse b)
       with applicable sees_M
       have "ST \<noteq> []"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr where ST [simp]: "ST = ST1#STr" by (cases ST, fastsimp+)
       show ?thesis
       proof (cases "stk (length cs, stkLength P C M pc - 1) = Bool False \<and> b \<noteq> 1")
-	case True
-	with sem_step s s' c prog IfFalse wt ST
-	have c': "c' = (C,M,nat (int pc + b))#cs"
-	  by (auto elim!: sem.cases
-	            simp: hd_stks)
-	with jvm_exec IfFalse True
-	have "framestack_to_callstack frs' = c'"
-	  by auto
-	with c' IfFalse True v_cs v_cs_f2c_frs'
-	have v_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+        case True
+        with sem_step s s' c prog IfFalse wt ST
+        have c': "c' = (C,M,nat (int pc + b))#cs"
+          by (auto elim!: sem.cases
+                    simp: hd_stks)
+        with jvm_exec IfFalse True
+        have "framestack_to_callstack frs' = c'"
+          by auto
+        with c' IfFalse True v_cs v_cs_f2c_frs'
+        have v_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
           (\<lambda>(h,stk,loc). stk (length cs, stkLength P C M pc - 1) = Bool False)\<^isub>\<surd>,
           (_ (C,M,nat (int pc + b))#cs,None _))"
-	  (is "valid_edge prog ?e1")
-	  by (fastsimp intro: JCFG_IfFalse_False)
-	with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	  by -(simp,
+          (is "valid_edge prog ?e1")
+          by (fastsimp intro: JCFG_IfFalse_False)
+        with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
+          by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
             auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	moreover from IfFalse True jvm_exec c s s' stk' loc' wt ST
-	have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	  by (auto intro!: ext
-	             simp: hd_stks nth_stkss nth_locss nth_Cons' nth_tl
-	                   JVM_CFG_Interpret.kinds_def not_less_eq_eq)
-	moreover from True s
-	have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
+        moreover from IfFalse True jvm_exec c s s' stk' loc' wt ST
+        have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
+          by (auto intro!: ext
+                     simp: hd_stks nth_stkss nth_locss nth_Cons' nth_tl
+                           JVM_CFG_Interpret.kinds_def not_less_eq_eq)
+        moreover from True s
+        have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-	ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastsimp
       next
-	case False
-	have "nat (int pc + 1) = Suc pc"
-	  by (cases pc, auto)
-	with False sem_step s s' c prog IfFalse wt ST
-	have c': "c' = (C,M,Suc pc)#cs"
-	  by (auto elim!: sem.cases simp: hd_stks)
-	with jvm_exec IfFalse False
-	have "framestack_to_callstack frs' = c'"
-	  by auto
-	with c' IfFalse False v_cs v_cs_f2c_frs'
-	have v_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+        case False
+        have "nat (int pc + 1) = Suc pc"
+          by (cases pc, auto)
+        with False sem_step s s' c prog IfFalse wt ST
+        have c': "c' = (C,M,Suc pc)#cs"
+          by (auto elim!: sem.cases simp: hd_stks)
+        with jvm_exec IfFalse False
+        have "framestack_to_callstack frs' = c'"
+          by auto
+        with c' IfFalse False v_cs v_cs_f2c_frs'
+        have v_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
           (\<lambda>(h,stk,loc). stk (length cs, stkLength P C M pc - 1) \<noteq> Bool False \<or> b = 1)\<^isub>\<surd>,
           (_ (C,M,Suc pc)#cs,None _))"
-	  (is "valid_edge prog ?e1")
-	  by (fastsimp intro: JCFG_IfFalse_Next)
-	with `identifies n c` c c'
-	have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	  by -(simp,
+          (is "valid_edge prog ?e1")
+          by (fastsimp intro: JCFG_IfFalse_Next)
+        with `identifies n c` c c'
+        have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
+          by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
             auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	moreover from IfFalse False jvm_exec c s s' stk' loc' wt ST
-	have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	  by (auto intro!: ext
-	             simp: hd_stks nth_stkss nth_locss nth_Cons' nth_tl
-	                   JVM_CFG_Interpret.kinds_def not_less_eq_eq)
-	moreover from False s
-	have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
+        moreover from IfFalse False jvm_exec c s s' stk' loc' wt ST
+        have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
+          by (auto intro!: ext
+                     simp: hd_stks nth_stkss nth_locss nth_Cons' nth_tl
+                           JVM_CFG_Interpret.kinds_def not_less_eq_eq)
+        moreover from False s
+        have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-	ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastsimp
       qed
     next
       case (Goto i)
       with sem_step s s' c prog 
       have c': "c' = (C,M,nat (int pc + i))#cs"
-	by (auto elim!: sem.cases)
+        by (auto elim!: sem.cases)
       with jvm_exec Goto
       have "framestack_to_callstack frs' = c'"
-	by auto
+        by auto
       with c' Goto v_cs v_cs_f2c_frs'
       have v_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
         \<Up>id,
         (_ (C,M,nat (int pc + i))#cs,None _))"
-	(is "valid_edge prog ?e1")
-	by (fastsimp intro: JCFG_Goto_Update)
+        (is "valid_edge prog ?e1")
+        by (fastsimp intro: JCFG_Goto_Update)
       with `identifies n c` c c'
       have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	by -(simp,
+        by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
           auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
       moreover from Goto jvm_exec c s s' stk' loc'
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	by (auto intro!: ext
-	           simp: nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons'
-	                 JVM_CFG_Interpret.kinds_def not_less_eq_eq)
+        by (auto intro!: ext
+                   simp: nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons'
+                         JVM_CFG_Interpret.kinds_def not_less_eq_eq)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
       ultimately show ?thesis by fastsimp
@@ -2365,34 +2365,34 @@ proof(unfold_locales)
       case CmpEq
       with sem_step s s' c prog 
       have c': "c' = (C,M,Suc pc)#cs"
-	by (auto elim!: sem.cases)
+        by (auto elim!: sem.cases)
       from CmpEq applicable sees_M
       have "length ST > 1"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr' where "ST = ST1#STr'" by (cases ST, fastsimp+)
       with `length ST > 1` obtain ST2 STr
-	where ST: "ST = ST1#ST2#STr" by (cases STr', fastsimp+)
+        where ST: "ST = ST1#ST2#STr" by (cases STr', fastsimp+)
       from c' CmpEq jvm_exec
       have "framestack_to_callstack frs' = c'"
-	by auto
+        by auto
       with c' CmpEq v_cs v_cs_f2c_frs'
       have v_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
-	(is "valid_edge prog ?e1")
-	by (fastsimp intro: JCFG_Straight_NoExc)
+        (is "valid_edge prog ?e1")
+        by (fastsimp intro: JCFG_Straight_NoExc)
       with `identifies n c` c c'
       have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
-	by -(simp,
+        by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
           auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
       moreover from CmpEq jvm_exec c s s' stk' loc' wt ST
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
-	by (auto intro!: ext
-	           simp: nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
-	                 hd_stks hd_tl_stks
-	                 not_less_eq_eq JVM_CFG_Interpret.kinds_def)
+        by (auto intro!: ext
+                   simp: nth_stkss (* nth_stks *) nth_locss (* nth_locs *) nth_Cons' nth_tl
+                         hd_stks hd_tl_stks
+                         not_less_eq_eq JVM_CFG_Interpret.kinds_def)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
       ultimately show ?thesis by fastsimp
@@ -2400,231 +2400,231 @@ proof(unfold_locales)
       case Throw
       with sees_M applicable
       have "ST \<noteq> []"
-	by clarsimp
+        by clarsimp
       then obtain ST1 STr where ST: "ST = ST1#STr" by (cases ST, fastsimp+)
       from jvm_exec sem_step
       have f2c_frs'_eq_c': "framestack_to_callstack frs' = c'"
-	by (auto elim: sem.cases)
+        by (auto elim: sem.cases)
       show ?thesis
       proof (cases "stk(length cs, stkLength P C M pc - 1) = Null")
-	case True
-	with sem_step Throw s s' c prog wt ST prealloc
-	have c':"c' = find_handler_for P NullPointer c"
-	  by (fastsimp elim!: sem.cases
-	                dest: find_handler_find_handler_forD
-	                simp: hd_stks)
-	with Throw v_cs v_cs_f2c_frs' f2c_frs'_eq_c' prealloc
-	have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc).
-	    (stk(length cs, stkLength P C M pc - 1) = Null \<and>
-	     find_handler_for P NullPointer ((C,M,pc)#cs) = c') \<or>
-	    (stk(length cs, stkLength P C M pc - 1) \<noteq> Null \<and>
-	     find_handler_for P (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1))))
-	       ((C,M,pc)#cs) = c')
-	  )\<^isub>\<surd>,
-	(_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
-	(is "valid_edge prog ?e1")
-	apply (auto simp del: find_handler_for.simps)
- 	  apply (fastsimp intro: JCFG_Throw_Pred)
-	 apply (fastsimp intro: JCFG_Throw_Pred)
-	apply (cases "find_handler_for P NullPointer ((C, M, pc) # cs)")
-	 apply (fastsimp intro: JCFG_Throw_Exit)
-	by (fastsimp intro: JCFG_Throw_Update)
-	show ?thesis
-	proof (cases c')
-	  case Nil
-	  with prog Throw c c' sem_step v_pred_edge
-	  have v_exec_edge: "valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
-	    \<Up>id,
-	    (_Exit_))"
-	    (is "valid_edge prog ?e2")
-	    by (auto intro: JCFG_Throw_Exit)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(simp,
+        case True
+        with sem_step Throw s s' c prog wt ST prealloc
+        have c':"c' = find_handler_for P NullPointer c"
+          by (fastsimp elim!: sem.cases
+                        dest: find_handler_find_handler_forD
+                        simp: hd_stks)
+        with Throw v_cs v_cs_f2c_frs' f2c_frs'_eq_c' prealloc
+        have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc).
+            (stk(length cs, stkLength P C M pc - 1) = Null \<and>
+             find_handler_for P NullPointer ((C,M,pc)#cs) = c') \<or>
+            (stk(length cs, stkLength P C M pc - 1) \<noteq> Null \<and>
+             find_handler_for P (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1))))
+               ((C,M,pc)#cs) = c')
+          )\<^isub>\<surd>,
+        (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
+        (is "valid_edge prog ?e1")
+        apply (auto simp del: find_handler_for.simps)
+          apply (fastsimp intro: JCFG_Throw_Pred)
+         apply (fastsimp intro: JCFG_Throw_Pred)
+        apply (cases "find_handler_for P NullPointer ((C, M, pc) # cs)")
+         apply (fastsimp intro: JCFG_Throw_Exit)
+        by (fastsimp intro: JCFG_Throw_Update)
+        show ?thesis
+        proof (cases c')
+          case Nil
+          with prog Throw c c' sem_step v_pred_edge
+          have v_exec_edge: "valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
+            \<Up>id,
+            (_Exit_))"
+            (is "valid_edge prog ?e2")
+            by (auto intro: JCFG_Throw_Exit)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(simp,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
-	  moreover from Throw jvm_exec c c' s s' stk' loc'
-	    True Nil wt ST trg_state_correct prealloc
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (cases frs',
-	        auto dest: find_handler_find_handler_forD
-	             simp: JVM_CFG_Interpret.kinds_def split_beta correct_state_def)
-	  moreover from True s wt c' c have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+          moreover from Throw jvm_exec c c' s s' stk' loc'
+            True Nil wt ST trg_state_correct prealloc
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (cases frs',
+                auto dest: find_handler_find_handler_forD
+                     simp: JVM_CFG_Interpret.kinds_def split_beta correct_state_def)
+          moreover from True s wt c' c have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	next
-	  case (Cons a cs')
-	  then obtain C' M' pc'
-	    where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
-	  with jvm_exec s loc' c True Throw wt ST
-	  have "loc' = loc"
-	    by (auto intro!: ext
-	               simp: find_handler_loc_fun_eq'
-	                     not_less_eq_eq nth_Cons' (* nth_locs *) nth_locss)
-	  from c Cons s s' sem_step jvm_exec prog
-	  have "stk' = update_stk stk frs'"
-	    and "(C',M',pc')#cs' = framestack_to_callstack frs'"
-	    by (auto elim!: sem.cases)
-	  moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
-	    and "cs' = framestack_to_callstack frs''" using calculation
-	    by (cases frs', fastsimp+)
-	  ultimately
-	  have stk'':
-	    "update_stk stk frs' =
-	    stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
-	    using c s Cons True prog Throw ST wt trg_state_correct jvm_exec
-	    by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
-	      auto dest!: list_all2_lengthD
-	            simp: (* nth_stks *) nth_Cons' split_beta correct_state_def split_if_eq1)
-	  from `(C',M',pc')#cs' = framestack_to_callstack frs'` Cons
-	  have "framestack_to_callstack frs' = c'"
-	    by simp
-	  with Cons Throw v_cs v_cs_f2c_frs' v_pred_edge
-	  have v_exec_edge:
-	    "valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
-	    \<Up>(\<lambda>(h,stk,loc).
-	    (h,
-	     stk((length cs',stkLength P C' M' pc' - 1) :=
-	      if (stk(length cs, stkLength P C M pc - 1) = Null)
-	        then Addr (addr_of_sys_xcpt NullPointer)
-	        else (stk(length cs, stkLength P C M pc - 1))),
-	     loc)
-	    ),
-	    (_ c',None _))"
-	    (is "valid_edge prog ?e2")
-	    by (auto intro!: JCFG_Throw_Update)
-	  with v_pred_edge `identifies n c` c c' True prog
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
-              rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
-	  moreover from Cons True Throw jvm_exec c c' s s' `loc' = loc` stk' stk'' wt ST
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto dest: find_handler_heap_eqD simp: JVM_CFG_Interpret.kinds_def)
-	  moreover from True s wt c c'
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	qed
-      next
-	case False
-	with sem_step Throw s s' c prog wt ST prealloc
-	have c':
-	  "c' = find_handler_for P
-	    (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1)))) c"
-	  by (fastsimp elim!: sem.cases
-	                dest: find_handler_find_handler_forD
-	                simp: hd_stks)
-	with Throw v_cs v_cs_f2c_frs' f2c_frs'_eq_c'
-	have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-	  (\<lambda>(h,stk,loc).
-	    (stk(length cs, stkLength P C M pc - 1) = Null \<and>
-	     find_handler_for P NullPointer ((C,M,pc)#cs) = c') \<or>
-	    (stk(length cs, stkLength P C M pc - 1) \<noteq> Null \<and>
-	     find_handler_for P (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1))))
-	       ((C,M,pc)#cs) = c')
-	  )\<^isub>\<surd>,
-	(_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
-	(is "valid_edge prog ?e1")
-	apply (auto simp del: find_handler_for.simps)
-	  apply (fastsimp intro: JCFG_Throw_Pred)
-	 apply (fastsimp intro: JCFG_Throw_Pred)
-	apply (cases "find_handler_for P
-	  (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1)))) ((C,M,pc)#cs)")
-	 apply (fastsimp intro: JCFG_Throw_Exit)
-	by (fastsimp intro: JCFG_Throw_Update)
-	show ?thesis
-	proof (cases c')
-	  case Nil
-	  with prog Throw c c' v_pred_edge
-	  have v_exec_edge: "valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
-	    \<Up>id,
-	    (_Exit_))"
-	    (is "valid_edge prog ?e2")
-	    by (auto intro!: JCFG_Throw_Exit)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(rule JVM_CFG_Interpret.path.Cons_path,
+          ultimately show ?thesis by fastsimp
+        next
+          case (Cons a cs')
+          then obtain C' M' pc'
+            where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          with jvm_exec s loc' c True Throw wt ST
+          have "loc' = loc"
+            by (auto intro!: ext
+                       simp: find_handler_loc_fun_eq'
+                             not_less_eq_eq nth_Cons' (* nth_locs *) nth_locss)
+          from c Cons s s' sem_step jvm_exec prog
+          have "stk' = update_stk stk frs'"
+            and "(C',M',pc')#cs' = framestack_to_callstack frs'"
+            by (auto elim!: sem.cases)
+          moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
+            and "cs' = framestack_to_callstack frs''" using calculation
+            by (cases frs', fastsimp+)
+          ultimately
+          have stk'':
+            "update_stk stk frs' =
+            stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
+            using c s Cons True prog Throw ST wt trg_state_correct jvm_exec
+            by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
+              auto dest!: list_all2_lengthD
+                    simp: (* nth_stks *) nth_Cons' split_beta correct_state_def split_if_eq1)
+          from `(C',M',pc')#cs' = framestack_to_callstack frs'` Cons
+          have "framestack_to_callstack frs' = c'"
+            by simp
+          with Cons Throw v_cs v_cs_f2c_frs' v_pred_edge
+          have v_exec_edge:
+            "valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
+            \<Up>(\<lambda>(h,stk,loc).
+            (h,
+             stk((length cs',stkLength P C' M' pc' - 1) :=
+              if (stk(length cs, stkLength P C M pc - 1) = Null)
+                then Addr (addr_of_sys_xcpt NullPointer)
+                else (stk(length cs, stkLength P C M pc - 1))),
+             loc)
+            ),
+            (_ c',None _))"
+            (is "valid_edge prog ?e2")
+            by (auto intro!: JCFG_Throw_Update)
+          with v_pred_edge `identifies n c` c c' True prog
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
-	  moreover from Throw jvm_exec c c' s s' False Nil trg_state_correct wt ST
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (cases frs',
-	        auto dest: find_handler_find_handler_forD
-	             simp: JVM_CFG_Interpret.kinds_def correct_state_def)
-	  moreover from False s wt c' c 
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+          moreover from Cons True Throw jvm_exec c c' s s' `loc' = loc` stk' stk'' wt ST
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto dest: find_handler_heap_eqD simp: JVM_CFG_Interpret.kinds_def)
+          moreover from True s wt c c'
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	next
-	  case (Cons a cs')
-	  then obtain C' M' pc'
-	    where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
-	  with jvm_exec s loc' c Throw wt ST
-	  have "loc' = loc"
-	    by (auto intro!: ext
-	               simp: find_handler_loc_fun_eq'
-	                     not_less_eq_eq nth_Cons' (* nth_locs *) nth_locss)
-	  from c Cons s s' sem_step jvm_exec prog
-	  have "stk' = update_stk stk frs'"
-	    and "(C',M',pc')#cs' = framestack_to_callstack frs'"
-	    by (auto elim!: sem.cases)
-	  moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
-	    and "cs' = framestack_to_callstack frs''" using calculation
-	    by (cases frs', fastsimp+)
-	  ultimately
-	  have stk'':
-	    "update_stk stk frs' =
-	    stk((length cs',stkLength P C' M' pc' - Suc 0) :=
-	      Addr (the_Addr (stk((length cs, stkLength P C M pc - Suc 0)))))"
-	    using c s Cons False prog Throw ST wt trg_state_correct jvm_exec
-	    by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
-	      auto dest!: list_all2_lengthD
-	            simp: (* nth_stks *) nth_Cons' split_beta correct_state_def split_if_eq1)
-	  from applicable False Throw ST sees_M
-	  have "is_refT ST1"
-	    by clarsimp
-	  with state_correct wt ST c False
-	  have addr_the_addr_stk_eq:
-	    "Addr(the_Addr(stk(length cs, length STr))) = stk(length cs, length STr)"
-	    by (cases "stk (length cs, length STr)",
-	      auto simp: correct_state_def is_refT_def conf_def)
-	  from `(C',M',pc')#cs' = framestack_to_callstack frs'` Cons
-	  have "framestack_to_callstack frs' = c'"
-	    by simp
-	  with Cons Throw v_cs v_cs_f2c_frs' v_pred_edge
-	  have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
-	    \<Up>(\<lambda>(h,stk,loc).
-	    (h,
-	    stk((length cs',stkLength P C' M' pc' - 1) :=
-	      if (stk(length cs, stkLength P C M pc - 1) = Null)
-	        then Addr (addr_of_sys_xcpt NullPointer)
-	        else (stk(length cs, stkLength P C M pc - 1))),
-	    loc)),
-	    (_ c',None _))"
-	    (is "valid_edge prog ?e2")
-	    by (auto intro!: JCFG_Throw_Update)
-	  with v_pred_edge `identifies n c` c c' Nil
-	  have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
-	    by -(rule JVM_CFG_Interpret.path.Cons_path,
-	      rule JVM_CFG_Interpret.path.Cons_path,
+          ultimately show ?thesis by fastsimp
+        qed
+      next
+        case False
+        with sem_step Throw s s' c prog wt ST prealloc
+        have c':
+          "c' = find_handler_for P
+            (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1)))) c"
+          by (fastsimp elim!: sem.cases
+                        dest: find_handler_find_handler_forD
+                        simp: hd_stks)
+        with Throw v_cs v_cs_f2c_frs' f2c_frs'_eq_c'
+        have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
+          (\<lambda>(h,stk,loc).
+            (stk(length cs, stkLength P C M pc - 1) = Null \<and>
+             find_handler_for P NullPointer ((C,M,pc)#cs) = c') \<or>
+            (stk(length cs, stkLength P C M pc - 1) \<noteq> Null \<and>
+             find_handler_for P (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1))))
+               ((C,M,pc)#cs) = c')
+          )\<^isub>\<surd>,
+        (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
+        (is "valid_edge prog ?e1")
+        apply (auto simp del: find_handler_for.simps)
+          apply (fastsimp intro: JCFG_Throw_Pred)
+         apply (fastsimp intro: JCFG_Throw_Pred)
+        apply (cases "find_handler_for P
+          (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1)))) ((C,M,pc)#cs)")
+         apply (fastsimp intro: JCFG_Throw_Exit)
+        by (fastsimp intro: JCFG_Throw_Update)
+        show ?thesis
+        proof (cases c')
+          case Nil
+          with prog Throw c c' v_pred_edge
+          have v_exec_edge: "valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>([],True)\<rfloor> _),
+            \<Up>id,
+            (_Exit_))"
+            (is "valid_edge prog ?e2")
+            by (auto intro!: JCFG_Throw_Exit)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
               auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
-	  moreover from Cons False Throw jvm_exec c c' s s' loc' stk'
-	    addr_the_addr_stk_eq prog wt ST `loc' = loc` stk''
-	  have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
-	    by (auto dest: find_handler_heap_eqD
-	             simp: JVM_CFG_Interpret.kinds_def)
-	  moreover from False s wt c c'
-	  have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
-	    by (simp add: JVM_CFG_Interpret.kinds_def)
-	  ultimately show ?thesis by fastsimp
-	qed
+          moreover from Throw jvm_exec c c' s s' False Nil trg_state_correct wt ST
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (cases frs',
+                auto dest: find_handler_find_handler_forD
+                     simp: JVM_CFG_Interpret.kinds_def correct_state_def)
+          moreover from False s wt c' c 
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis by fastsimp
+        next
+          case (Cons a cs')
+          then obtain C' M' pc'
+            where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          with jvm_exec s loc' c Throw wt ST
+          have "loc' = loc"
+            by (auto intro!: ext
+                       simp: find_handler_loc_fun_eq'
+                             not_less_eq_eq nth_Cons' (* nth_locs *) nth_locss)
+          from c Cons s s' sem_step jvm_exec prog
+          have "stk' = update_stk stk frs'"
+            and "(C',M',pc')#cs' = framestack_to_callstack frs'"
+            by (auto elim!: sem.cases)
+          moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
+            and "cs' = framestack_to_callstack frs''" using calculation
+            by (cases frs', fastsimp+)
+          ultimately
+          have stk'':
+            "update_stk stk frs' =
+            stk((length cs',stkLength P C' M' pc' - Suc 0) :=
+              Addr (the_Addr (stk((length cs, stkLength P C M pc - Suc 0)))))"
+            using c s Cons False prog Throw ST wt trg_state_correct jvm_exec
+            by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
+              auto dest!: list_all2_lengthD
+                    simp: (* nth_stks *) nth_Cons' split_beta correct_state_def split_if_eq1)
+          from applicable False Throw ST sees_M
+          have "is_refT ST1"
+            by clarsimp
+          with state_correct wt ST c False
+          have addr_the_addr_stk_eq:
+            "Addr(the_Addr(stk(length cs, length STr))) = stk(length cs, length STr)"
+            by (cases "stk (length cs, length STr)",
+              auto simp: correct_state_def is_refT_def conf_def)
+          from `(C',M',pc')#cs' = framestack_to_callstack frs'` Cons
+          have "framestack_to_callstack frs' = c'"
+            by simp
+          with Cons Throw v_cs v_cs_f2c_frs' v_pred_edge
+          have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
+            \<Up>(\<lambda>(h,stk,loc).
+            (h,
+            stk((length cs',stkLength P C' M' pc' - 1) :=
+              if (stk(length cs, stkLength P C M pc - 1) = Null)
+                then Addr (addr_of_sys_xcpt NullPointer)
+                else (stk(length cs, stkLength P C M pc - 1))),
+            loc)),
+            (_ c',None _))"
+            (is "valid_edge prog ?e2")
+            by (auto intro!: JCFG_Throw_Update)
+          with v_pred_edge `identifies n c` c c' Nil
+          have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
+            by -(rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.Cons_path,
+              rule JVM_CFG_Interpret.path.empty_path,
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
+          moreover from Cons False Throw jvm_exec c c' s s' loc' stk'
+            addr_the_addr_stk_eq prog wt ST `loc' = loc` stk''
+          have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
+            by (auto dest: find_handler_heap_eqD
+                     simp: JVM_CFG_Interpret.kinds_def)
+          moreover from False s wt c c'
+          have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
+            by (simp add: JVM_CFG_Interpret.kinds_def)
+          ultimately show ?thesis by fastsimp
+        qed
       qed
     qed
   qed

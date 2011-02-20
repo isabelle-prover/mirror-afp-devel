@@ -212,7 +212,7 @@ proof(induct rule:WCFG_induct)
     case None
     { fix v assume "interpret e s' = Some v"
       with `\<forall>V'\<in>rhs_aux e. s V' = s' V'` have "interpret e s = Some v"
-	by(fastsimp intro:rhs_interpret_eq)
+        by(fastsimp intro:rhs_interpret_eq)
       with None have False by(fastsimp split:split_if_asm) }
     with None show ?thesis by fastsimp
   next

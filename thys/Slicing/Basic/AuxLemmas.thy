@@ -27,7 +27,7 @@ proof(atomize_elim)
       case False
       with `\<exists>y\<in>set (x'#xs'). P y` have "\<exists>y\<in>set xs'. P y" by simp
       from IH[OF this] obtain y ys zs where "xs' = zs@y#ys"
-	and "P y" and "\<forall>z\<in>set zs. \<not> P z" by blast
+        and "P y" and "\<forall>z\<in>set zs. \<not> P z" by blast
       from `\<forall>z\<in>set zs. \<not> P z` False have "\<forall>z\<in>set (x'#zs). \<not> P z" by simp
       with `xs' = zs@y#ys` `P y` show ?thesis by (metis Cons_eq_append_conv)
     qed
@@ -52,7 +52,7 @@ proof(atomize_elim)
     proof(cases "\<exists>y\<in>set xs'. P y")
       case True
       from IH[OF this] obtain y ys zs where "xs' = ys @ y # zs"
-	and "P y" and "\<forall>z\<in>set zs. \<not> P z" by blast
+        and "P y" and "\<forall>z\<in>set zs. \<not> P z" by blast
       thus ?thesis by (metis Cons_eq_append_conv)
     next
       case False
@@ -94,40 +94,40 @@ proof(atomize_elim)
     next
       case (Cons x' xs')
       with `\<forall>zs. xs \<noteq> (y' # ys') @ zs` have "x' \<noteq> y' \<or> (\<forall>zs. xs' \<noteq> ys' @ zs)"
-	by simp
+        by simp
       show ?thesis
       proof(cases "x' = y'")
-	case True
-	with `x' \<noteq> y' \<or> (\<forall>zs. xs' \<noteq> ys' @ zs)` have "\<forall>zs. xs' \<noteq> ys' @ zs" by simp
-	from IH[OF this] have "\<exists>j zs. xs' = take j ys' @ zs \<and> j < length ys' \<and>
-	  (\<forall>k. j < k \<longrightarrow> (\<forall>zs'. xs' \<noteq> take k ys' @ zs'))" .
-	then obtain j zs where "xs' = take j ys' @ zs"
-	  and "j < length ys'"
-	  and all_sub:"\<forall>k. j < k \<longrightarrow> (\<forall>zs'. xs' \<noteq> take k ys' @ zs')"
-	  by blast
-	from `xs' = take j ys' @ zs` True
-	  have "(x'#xs') = take (Suc j) (y' # ys') @ zs"
-	  by simp
-	from all_sub True have all_imp:"\<forall>k. j < k \<longrightarrow> 
-	  (\<forall>zs'. (x'#xs') \<noteq> take (Suc k) (y' # ys') @ zs')"
-	  by auto
-	{ fix l assume "(Suc j) < l"
-	  then obtain k where [simp]:"l = Suc k" by(cases l) auto
-	  with `(Suc j) < l` have "j < k" by simp
-	  with all_imp 
-	  have "\<forall>zs'. (x'#xs') \<noteq> take (Suc k) (y' # ys') @ zs'"
-	    by simp
-	  hence "\<forall>zs'. (x'#xs') \<noteq> take l (y' # ys') @ zs'"
-	    by simp }
-	with `(x'#xs') = take (Suc j) (y' # ys') @ zs` `j < length ys'` Cons
-	show ?thesis by (metis Suc_length_conv less_Suc_eq_0_disj)
+        case True
+        with `x' \<noteq> y' \<or> (\<forall>zs. xs' \<noteq> ys' @ zs)` have "\<forall>zs. xs' \<noteq> ys' @ zs" by simp
+        from IH[OF this] have "\<exists>j zs. xs' = take j ys' @ zs \<and> j < length ys' \<and>
+          (\<forall>k. j < k \<longrightarrow> (\<forall>zs'. xs' \<noteq> take k ys' @ zs'))" .
+        then obtain j zs where "xs' = take j ys' @ zs"
+          and "j < length ys'"
+          and all_sub:"\<forall>k. j < k \<longrightarrow> (\<forall>zs'. xs' \<noteq> take k ys' @ zs')"
+          by blast
+        from `xs' = take j ys' @ zs` True
+          have "(x'#xs') = take (Suc j) (y' # ys') @ zs"
+          by simp
+        from all_sub True have all_imp:"\<forall>k. j < k \<longrightarrow> 
+          (\<forall>zs'. (x'#xs') \<noteq> take (Suc k) (y' # ys') @ zs')"
+          by auto
+        { fix l assume "(Suc j) < l"
+          then obtain k where [simp]:"l = Suc k" by(cases l) auto
+          with `(Suc j) < l` have "j < k" by simp
+          with all_imp 
+          have "\<forall>zs'. (x'#xs') \<noteq> take (Suc k) (y' # ys') @ zs'"
+            by simp
+          hence "\<forall>zs'. (x'#xs') \<noteq> take l (y' # ys') @ zs'"
+            by simp }
+        with `(x'#xs') = take (Suc j) (y' # ys') @ zs` `j < length ys'` Cons
+        show ?thesis by (metis Suc_length_conv less_Suc_eq_0_disj)
       next
-	case False
-	with Cons have "\<forall>i zs'. i > 0 \<longrightarrow> xs \<noteq> take i (y' # ys') @ zs'"
-	  by auto(case_tac i,auto)
-	moreover
-	have "\<exists>zs. xs = take 0 (y' # ys') @ zs" by simp
-	ultimately show ?thesis by(rule_tac x="0" in exI,auto)
+        case False
+        with Cons have "\<forall>i zs'. i > 0 \<longrightarrow> xs \<noteq> take i (y' # ys') @ zs'"
+          by auto(case_tac i,auto)
+        moreover
+        have "\<exists>zs. xs = take 0 (y' # ys') @ zs" by simp
+        ultimately show ?thesis by(rule_tac x="0" in exI,auto)
       qed
     qed
   qed

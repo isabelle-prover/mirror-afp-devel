@@ -64,9 +64,9 @@ next
     case True
     { fix as' assume path':"n -as'\<rightarrow>* (_Exit_)"
       with inner have notempty:"as' \<noteq> []"
-	by(cases as',auto elim!:path.cases simp:inner_node_def)
+        by(cases as',auto elim!:path.cases simp:inner_node_def)
       with path' inner have hd:"hd (sourcenodes as') = n"
-	by -(rule path_sourcenode)
+        by -(rule path_sourcenode)
       from notempty have "sourcenodes as' \<noteq> []" by(simp add:sourcenodes_def)
       with hd[THEN sym] have "n \<in> set (sourcenodes as')" by simp }
     hence "\<forall>as. n -as\<rightarrow>* (_Exit_) \<longrightarrow> n \<in> set (sourcenodes as)" by simp
@@ -167,12 +167,12 @@ proof(atomize_elim)
     proof(cases "n' postdominates n''")
       case True
       with `\<not> n' postdominates n` `sourcenode a = n` `targetnode a = n''` 
-	`valid_edge a`
+        `valid_edge a`
       show ?thesis by blast
     next
       case False
       from IH[OF `n' postdominates nx` this] show ?thesis
-	by clarsimp(rule_tac x="a#as'" in exI,clarsimp)
+        by clarsimp(rule_tac x="a#as'" in exI,clarsimp)
     qed
   qed simp
 qed
@@ -449,12 +449,12 @@ proof(atomize_elim)
     proof(cases "n' strongly-postdominates n''")
       case True
       with `\<not> n' strongly-postdominates n` `sourcenode a = n` `targetnode a = n''`
-	`valid_edge a`
+        `valid_edge a`
       show ?thesis by blast
     next
       case False
       from IH[OF `n' strongly-postdominates nx` this] show ?thesis
-	by clarsimp(rule_tac x="a#as'" in exI,clarsimp)
+        by clarsimp(rule_tac x="a#as'" in exI,clarsimp)
     qed
   qed simp
 qed
@@ -534,27 +534,27 @@ proof(atomize_elim)
                          \<longrightarrow> targetnode a' \<in> N" by blast
       from True `\<not> n strongly-postdominates (sourcenode a)`
       have allPaths:"\<forall>k \<ge> 1. \<exists>as nx. sourcenode a -as\<rightarrow>* nx \<and> length as \<ge> k 
-	\<and> n \<notin> set(sourcenodes as)" by(auto simp:strong_postdominate_def)
+        \<and> n \<notin> set(sourcenodes as)" by(auto simp:strong_postdominate_def)
       then obtain as nx where "sourcenode a -as\<rightarrow>* nx"
-	and "length as \<ge> k + 1" and "n \<notin> set(sourcenodes as)"
-	by (erule_tac x="k + 1" in allE) auto
+        and "length as \<ge> k + 1" and "n \<notin> set(sourcenodes as)"
+        by (erule_tac x="k + 1" in allE) auto
       then obtain ax as' where [simp]:"as = ax#as'" and "valid_edge ax"
-	and "sourcenode ax = sourcenode a" and "targetnode ax -as'\<rightarrow>* nx"
-	by -(erule path.cases,auto)
+        and "sourcenode ax = sourcenode a" and "targetnode ax -as'\<rightarrow>* nx"
+        by -(erule path.cases,auto)
       with allImp have "targetnode ax \<in> N" by fastsimp
       with all have "n strongly-postdominates (targetnode ax)"
-	by auto
+        by auto
       then obtain k' where k':"k' = (SOME i. i \<ge> 1 \<and>
-	(\<forall>as nx. targetnode ax -as\<rightarrow>* nx \<and> length as \<ge> i 
-	         \<longrightarrow> n \<in> set(sourcenodes as)))" by simp
+        (\<forall>as nx. targetnode ax -as\<rightarrow>* nx \<and> length as \<ge> i 
+                 \<longrightarrow> n \<in> set(sourcenodes as)))" by simp
       with `n strongly-postdominates (targetnode ax)`
       have "k' \<ge> 1 \<and> (\<forall>as nx. targetnode ax -as\<rightarrow>* nx \<and> length as \<ge> k'
         \<longrightarrow> n \<in> set(sourcenodes as))"
-	by(auto elim!:someI_ex simp:strong_postdominate_def)
+        by(auto elim!:someI_ex simp:strong_postdominate_def)
       hence "k' \<ge> 1"
-	and spdAll:"\<forall>as nx. targetnode ax -as\<rightarrow>* nx \<and> length as \<ge> k'
-	\<longrightarrow> n \<in> set(sourcenodes as)"
-	by simp_all
+        and spdAll:"\<forall>as nx. targetnode ax -as\<rightarrow>* nx \<and> length as \<ge> k'
+        \<longrightarrow> n \<in> set(sourcenodes as)"
+        by simp_all
       from `targetnode ax \<in> N` k' have "k' \<in> ?N'" by blast
       moreover
       from this `targetnode ax \<in> N` have "?N' \<noteq> {}" by auto
@@ -562,7 +562,7 @@ proof(atomize_elim)
       hence "k' \<le> k" by simp
       with `targetnode ax -as'\<rightarrow>* nx` `length as \<ge> k + 1` spdAll 
       have "n \<in> set(sourcenodes as')"
-	by fastsimp
+        by fastsimp
       with `n \<notin> set(sourcenodes as)` show False by(simp add:sourcenodes_def)
     qed
   qed

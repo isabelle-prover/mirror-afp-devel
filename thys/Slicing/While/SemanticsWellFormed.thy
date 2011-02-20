@@ -28,41 +28,41 @@ proof(unfold_locales)
     proof(induct rule:converse_rtranclp_induct3)
       case refl
       from `l' < #:prog` have "valid_node prog (_ l' _)"
-	by(fastsimp dest:less_num_nodes_edge simp:valid_node_def valid_edge_def)
+        by(fastsimp dest:less_num_nodes_edge simp:valid_node_def valid_edge_def)
       hence "CFG.valid_node sourcenode targetnode (valid_edge prog) (_ l' _)"
-	by(simp add:valid_node_def While_CFG.valid_node_def)
+        by(simp add:valid_node_def While_CFG.valid_node_def)
       hence "CFG.path sourcenode targetnode (valid_edge prog) (_ l' _) [] (_ l' _)"
-	by(rule While_CFG.empty_path)
+        by(rule While_CFG.empty_path)
       thus ?case by(auto simp:While_CFG.kinds_def)
     next
       case (step c s l c'' s'' l'')
       from `(\<lambda>(c, s, l) (c', s', l'). 
-	prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>) (c,s,l) (c'',s'',l'')`
+        prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>) (c,s,l) (c'',s'',l'')`
       have "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s'',l''\<rangle>" by simp
       from `\<exists>as. CFG.path sourcenode targetnode (valid_edge prog)
-	(_ l'' _) as (_ l' _) \<and>
+        (_ l'' _) as (_ l' _) \<and>
        transfers (CFG.kinds kind as) s'' = s' \<and>
        preds (CFG.kinds kind as) s''`
       obtain as where "CFG.path sourcenode targetnode (valid_edge prog)
-	(_ l'' _) as (_ l' _)"
-	and "transfers (CFG.kinds kind as) s'' = s'"
-	and "preds (CFG.kinds kind as) s''" by auto
+        (_ l'' _) as (_ l' _)"
+        and "transfers (CFG.kinds kind as) s'' = s'"
+        and "preds (CFG.kinds kind as) s''" by auto
       from `prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s'',l''\<rangle>` obtain et 
-	where "prog \<turnstile> (_ l _) -et\<rightarrow> (_ l'' _)"
-	and "transfer et s = s''" and "pred et s"
-	by(erule step_WCFG_edge)
+        where "prog \<turnstile> (_ l _) -et\<rightarrow> (_ l'' _)"
+        and "transfer et s = s''" and "pred et s"
+        by(erule step_WCFG_edge)
       from `prog \<turnstile> (_ l _) -et\<rightarrow> (_ l'' _)`
-	`CFG.path sourcenode targetnode (valid_edge prog) (_ l'' _) as (_ l' _)` 
+        `CFG.path sourcenode targetnode (valid_edge prog) (_ l'' _) as (_ l' _)` 
       have "CFG.path sourcenode targetnode (valid_edge prog)
-	(_ l _) (((_ l _),et,(_ l'' _))#as) (_ l' _)"
-	by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
+        (_ l _) (((_ l _),et,(_ l'' _))#as) (_ l' _)"
+        by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
       moreover
       from `transfers (CFG.kinds kind as) s'' = s'` `transfer et s = s''`
       have "transfers (CFG.kinds kind (((_ l _),et,(_ l'' _))#as)) s = s'"
-	by(simp add:While_CFG.kinds_def)
+        by(simp add:While_CFG.kinds_def)
       moreover from `preds (CFG.kinds kind as) s''` `pred et s` `transfer et s = s''`
       have "preds (CFG.kinds kind (((_ l _),et,(_ l'' _))#as)) s"
-	by(simp add:While_CFG.kinds_def)
+        by(simp add:While_CFG.kinds_def)
       ultimately show ?case by blast
     qed
   with `labels prog l' c'`

@@ -110,13 +110,13 @@ proof(rule ccontr)
       with `n'' -as\<rightarrow>* n'` have [simp]:"n' = n''" by(fastsimp elim:path.cases)
       from more_than_one
       have "\<not> (\<exists>m. obs (sourcenode a) (PDG_BS S) = {m} \<or> 
-	       obs (sourcenode a) (PDG_BS S) = {})"
-	by auto
+               obs (sourcenode a) (PDG_BS S) = {})"
+        by auto
       with `obs n' (PDG_BS S) = {n'}` True `valid_edge a` show ?thesis
-	apply(rule_tac x="a" in exI)
-	apply(rule_tac x="[]" in exI)
-	apply(rule_tac x="[]" in exI)
-	by(auto intro!:empty_path)
+        apply(rule_tac x="a" in exI)
+        apply(rule_tac x="[]" in exI)
+        apply(rule_tac x="[]" in exI)
+        by(auto intro!:empty_path)
     next
       case False
       hence "as \<noteq> []" .
@@ -127,32 +127,32 @@ proof(rule ccontr)
         case True
         with `n'' -as\<rightarrow>* n'` `valid_edge a` `obs n' (PDG_BS S) = {n'}` more_than_one
         show ?thesis
-	  apply(rule_tac x="a" in exI)
-	  apply(rule_tac x="[]" in exI)
-	  apply(rule_tac x="as" in exI)
-	  by(fastsimp intro:empty_path)
+          apply(rule_tac x="a" in exI)
+          apply(rule_tac x="[]" in exI)
+          apply(rule_tac x="as" in exI)
+          by(fastsimp intro:empty_path)
       next
         case False
-	with `obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)`
-	have "obs n' (PDG_BS S) \<subset> obs n'' (PDG_BS S)" by simp
-	with `obs n' (PDG_BS S) = {n'}` obtain ni where "n' \<in> obs n'' (PDG_BS S)"
-	  and "ni \<in> obs n'' (PDG_BS S)" and "n' \<noteq> ni" by auto
-	from IH[OF this `obs n' (PDG_BS S) = {n'}` 
+        with `obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)`
+        have "obs n' (PDG_BS S) \<subset> obs n'' (PDG_BS S)" by simp
+        with `obs n' (PDG_BS S) = {n'}` obtain ni where "n' \<in> obs n'' (PDG_BS S)"
+          and "ni \<in> obs n'' (PDG_BS S)" and "n' \<noteq> ni" by auto
+        from IH[OF this `obs n' (PDG_BS S) = {n'}` 
           `\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)` `as \<noteq> []`] obtain a' as' as''
-	  where "n'' -as'\<rightarrow>* sourcenode a'" and "targetnode a' -as''\<rightarrow>* n'"
-	  and "valid_edge a'" and [simp]:"as = as'@a'#as''" 
-	  and "obs (targetnode a') (PDG_BS S) = {n'}"
-	  and more_than_one':"\<not> (\<exists>m. obs (sourcenode a') (PDG_BS S) = {m} \<or> 
-	  obs (sourcenode a') (PDG_BS S) = {})"
-	  by blast
-	from `n'' -as'\<rightarrow>* sourcenode a'` `valid_edge a`
+          where "n'' -as'\<rightarrow>* sourcenode a'" and "targetnode a' -as''\<rightarrow>* n'"
+          and "valid_edge a'" and [simp]:"as = as'@a'#as''" 
+          and "obs (targetnode a') (PDG_BS S) = {n'}"
+          and more_than_one':"\<not> (\<exists>m. obs (sourcenode a') (PDG_BS S) = {m} \<or> 
+          obs (sourcenode a') (PDG_BS S) = {})"
+          by blast
+        from `n'' -as'\<rightarrow>* sourcenode a'` `valid_edge a`
         have "n -a#as'\<rightarrow>* sourcenode a'" by(fastsimp intro:path.Cons_path)
-	with `targetnode a' -as''\<rightarrow>* n'` `obs (targetnode a') (PDG_BS S) = {n'}`
+        with `targetnode a' -as''\<rightarrow>* n'` `obs (targetnode a') (PDG_BS S) = {n'}`
           more_than_one' `valid_edge a'` show ?thesis
-	  apply(rule_tac x="a'" in exI)
-	  apply(rule_tac x="a#as'" in exI)
-	  apply(rule_tac x="as''" in exI)
-	  by fastsimp
+          apply(rule_tac x="a'" in exI)
+          apply(rule_tac x="a#as'" in exI)
+          apply(rule_tac x="as''" in exI)
+          by fastsimp
       qed
     qed
   qed simp
@@ -196,7 +196,7 @@ proof(rule ccontr)
       hence "nx postdominates sourcenode a" by simp
       from `m \<in> obs (sourcenode a) (PDG_BS S)` `nx \<in> obs (sourcenode a) (PDG_BS S)`
       obtain asx' where "sourcenode a -asx'\<rightarrow>* m" and "nx \<notin> set(sourcenodes asx')"
-	by(fastsimp elim:obs.cases)
+        by(fastsimp elim:obs.cases)
       with `nx postdominates sourcenode a` have "nx postdominates m"
         by(rule postdominate_path_targetnode)
       with `\<not> nx postdominates m` show False by simp
@@ -210,59 +210,59 @@ proof(rule ccontr)
       case True
       from `m \<in> obs (sourcenode a) (PDG_BS S)` `nx \<in> obs (sourcenode a) (PDG_BS S)`
       obtain xs where "sourcenode a -xs\<rightarrow>* m" and "nx \<notin> set(sourcenodes xs)"
-	by(fastsimp elim:obsE)
+        by(fastsimp elim:obsE)
       obtain x' xs' where [simp]:"xs = x'#xs'"
       proof(cases xs)
-	case Nil
-	with `sourcenode a -xs\<rightarrow>* m` have [simp]:"sourcenode a = m" by fastsimp
-	with `m \<in> obs (sourcenode a) (PDG_BS S)` 
-	have "m \<in> (PDG_BS S)" by(fastsimp elim:obsE)
-	with `valid_node m` have "obs m (PDG_BS S) = {m}"
-	  by(rule n_in_obs)
-	with `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m` have False
-	  by fastsimp
-	thus ?thesis by simp
+        case Nil
+        with `sourcenode a -xs\<rightarrow>* m` have [simp]:"sourcenode a = m" by fastsimp
+        with `m \<in> obs (sourcenode a) (PDG_BS S)` 
+        have "m \<in> (PDG_BS S)" by(fastsimp elim:obsE)
+        with `valid_node m` have "obs m (PDG_BS S) = {m}"
+          by(rule n_in_obs)
+        with `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m` have False
+          by fastsimp
+        thus ?thesis by simp
       qed blast
       from `sourcenode a -xs\<rightarrow>* m` have "sourcenode a = sourcenode x'" 
-	and "valid_edge x'" and "targetnode x' -xs'\<rightarrow>* m"
-	by(auto elim:path_split_Cons)
+        and "valid_edge x'" and "targetnode x' -xs'\<rightarrow>* m"
+        by(auto elim:path_split_Cons)
       from `targetnode x' -xs'\<rightarrow>* m` `nx \<notin> set(sourcenodes xs)` `valid_edge x'` 
-	`valid_node m` True
+        `valid_node m` True
       have "\<not> nx postdominates (targetnode x')" 
-	by(fastsimp simp:postdominate_def sourcenodes_def)
+        by(fastsimp simp:postdominate_def sourcenodes_def)
       from `nx \<noteq> m` True have "nx \<noteq> (_Exit_)" by simp
       with `obs (targetnode a) (PDG_BS S) = {nx}`
       have "nx postdominates (targetnode a)"
-	by(fastsimp intro:obs_postdominate)
+        by(fastsimp intro:obs_postdominate)
       from `obs (targetnode a) (PDG_BS S) = {nx}`
       obtain ys where "targetnode a -ys\<rightarrow>* nx" 
-	and "\<forall>nx' \<in> set(sourcenodes ys). nx' \<notin> (PDG_BS S)"
-	and "nx \<in> (PDG_BS S)" by(fastsimp elim:obsE)
+        and "\<forall>nx' \<in> set(sourcenodes ys). nx' \<notin> (PDG_BS S)"
+        and "nx \<in> (PDG_BS S)" by(fastsimp elim:obsE)
       hence "nx \<notin> set(sourcenodes ys)"by fastsimp
       have "sourcenode a \<noteq> nx"
       proof
-	assume "sourcenode a = nx"
-	from `nx \<in> obs (sourcenode a) (PDG_BS S)`
-	have "nx \<in> (PDG_BS S)" by -(erule obsE)
-	with `valid_node nx` have "obs nx (PDG_BS S) = {nx}" by -(erule n_in_obs)
-	with `sourcenode a = nx` `m \<in> obs (sourcenode a) (PDG_BS S)` 
-	  `nx \<noteq> m` show False by fastsimp
+        assume "sourcenode a = nx"
+        from `nx \<in> obs (sourcenode a) (PDG_BS S)`
+        have "nx \<in> (PDG_BS S)" by -(erule obsE)
+        with `valid_node nx` have "obs nx (PDG_BS S) = {nx}" by -(erule n_in_obs)
+        with `sourcenode a = nx` `m \<in> obs (sourcenode a) (PDG_BS S)` 
+          `nx \<noteq> m` show False by fastsimp
       qed
       with `nx \<notin> set(sourcenodes ys)` have "nx \<notin> set(sourcenodes (a#ys))"
-	by(fastsimp simp:sourcenodes_def)
+        by(fastsimp simp:sourcenodes_def)
       from `valid_edge a` `targetnode a -ys\<rightarrow>* nx`
       have "sourcenode a -a#ys\<rightarrow>* nx" by(fastsimp intro:Cons_path)
       from `sourcenode a -a#ys\<rightarrow>* nx` `nx \<notin> set(sourcenodes (a#ys))`
-	`nx postdominates (targetnode a)` `valid_edge x'`
+        `nx postdominates (targetnode a)` `valid_edge x'`
         `\<not> nx postdominates (targetnode x')` `sourcenode a = sourcenode x'`
       have "(sourcenode a) controls\<^isub>s nx"
-	by(fastsimp simp:standard_control_dependence_def)
+        by(fastsimp simp:standard_control_dependence_def)
       with `nx \<in> (PDG_BS S)` have "sourcenode a \<in> (PDG_BS S)"
         by(rule cd_closed)
       with `valid_edge a` have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
-	by(fastsimp intro!:n_in_obs)
+        by(fastsimp intro!:n_in_obs)
       with `m \<in> obs (sourcenode a) (PDG_BS S)`
-	`nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m`
+        `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m`
       show False by simp
     next
       case False
@@ -393,13 +393,13 @@ proof(rule ccontr)
       with `n'' -as\<rightarrow>* n'` have [simp]:"n' = n''" by(fastsimp elim:path.cases)
       from more_than_one
       have "\<not> (\<exists>m. obs (sourcenode a) (PDG_BS S) = {m} \<or> 
-	       obs (sourcenode a) (PDG_BS S) = {})"
-	by auto
+               obs (sourcenode a) (PDG_BS S) = {})"
+        by auto
       with `obs n' (PDG_BS S) = {n'}` True `valid_edge a` show ?thesis
-	apply(rule_tac x="a" in exI)
-	apply(rule_tac x="[]" in exI)
-	apply(rule_tac x="[]" in exI)
-	by(auto intro!:empty_path)
+        apply(rule_tac x="a" in exI)
+        apply(rule_tac x="[]" in exI)
+        apply(rule_tac x="[]" in exI)
+        by(auto intro!:empty_path)
     next
       case False
       hence "as \<noteq> []" .
@@ -410,32 +410,32 @@ proof(rule ccontr)
         case True
         with `n'' -as\<rightarrow>* n'` `valid_edge a` `obs n' (PDG_BS S) = {n'}` more_than_one
         show ?thesis
-	  apply(rule_tac x="a" in exI)
-	  apply(rule_tac x="[]" in exI)
-	  apply(rule_tac x="as" in exI)
-	  by(fastsimp intro:empty_path)
+          apply(rule_tac x="a" in exI)
+          apply(rule_tac x="[]" in exI)
+          apply(rule_tac x="as" in exI)
+          by(fastsimp intro:empty_path)
       next
         case False
-	with `obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)`
-	have "obs n' (PDG_BS S) \<subset> obs n'' (PDG_BS S)" by simp
-	with `obs n' (PDG_BS S) = {n'}` obtain ni where "n' \<in> obs n'' (PDG_BS S)"
-	  and "ni \<in> obs n'' (PDG_BS S)" and "n' \<noteq> ni" by auto
-	from IH[OF this `obs n' (PDG_BS S) = {n'}` 
+        with `obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)`
+        have "obs n' (PDG_BS S) \<subset> obs n'' (PDG_BS S)" by simp
+        with `obs n' (PDG_BS S) = {n'}` obtain ni where "n' \<in> obs n'' (PDG_BS S)"
+          and "ni \<in> obs n'' (PDG_BS S)" and "n' \<noteq> ni" by auto
+        from IH[OF this `obs n' (PDG_BS S) = {n'}` 
           `\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)` `as \<noteq> []`] obtain a' as' as''
-	  where "n'' -as'\<rightarrow>* sourcenode a'" and "targetnode a' -as''\<rightarrow>* n'"
-	  and "valid_edge a'" and [simp]:"as = as'@a'#as''" 
-	  and "obs (targetnode a') (PDG_BS S) = {n'}"
-	  and more_than_one':"\<not> (\<exists>m. obs (sourcenode a') (PDG_BS S) = {m} \<or> 
-	  obs (sourcenode a') (PDG_BS S) = {})"
-	  by blast
-	from `n'' -as'\<rightarrow>* sourcenode a'` `valid_edge a`
+          where "n'' -as'\<rightarrow>* sourcenode a'" and "targetnode a' -as''\<rightarrow>* n'"
+          and "valid_edge a'" and [simp]:"as = as'@a'#as''" 
+          and "obs (targetnode a') (PDG_BS S) = {n'}"
+          and more_than_one':"\<not> (\<exists>m. obs (sourcenode a') (PDG_BS S) = {m} \<or> 
+          obs (sourcenode a') (PDG_BS S) = {})"
+          by blast
+        from `n'' -as'\<rightarrow>* sourcenode a'` `valid_edge a`
         have "n -a#as'\<rightarrow>* sourcenode a'" by(fastsimp intro:path.Cons_path)
-	with `targetnode a' -as''\<rightarrow>* n'` `obs (targetnode a') (PDG_BS S) = {n'}`
+        with `targetnode a' -as''\<rightarrow>* n'` `obs (targetnode a') (PDG_BS S) = {n'}`
           more_than_one' `valid_edge a'` show ?thesis
-	  apply(rule_tac x="a'" in exI)
-	  apply(rule_tac x="a#as'" in exI)
-	  apply(rule_tac x="as''" in exI)
-	  by fastsimp
+          apply(rule_tac x="a'" in exI)
+          apply(rule_tac x="a#as'" in exI)
+          apply(rule_tac x="as''" in exI)
+          by fastsimp
       qed
     qed
   qed simp
@@ -480,9 +480,9 @@ proof(rule ccontr)
       hence "nx strongly-postdominates sourcenode a" by simp
       from `m \<in> obs (sourcenode a) (PDG_BS S)` `nx \<in> obs (sourcenode a) (PDG_BS S)`
       obtain asx' where "sourcenode a -asx'\<rightarrow>* m" and "nx \<notin> set(sourcenodes asx')"
-	by(fastsimp elim:obs.cases)
+        by(fastsimp elim:obs.cases)
       with `nx strongly-postdominates sourcenode a` have "nx strongly-postdominates m"
-	by(rule strong_postdominate_path_targetnode)
+        by(rule strong_postdominate_path_targetnode)
       with `\<not> nx strongly-postdominates m` show False by simp
     qed
     with `nx \<in> obs (sourcenode a) (PDG_BS S)` `valid_node nx` `nx \<noteq> (_Exit_)` 
@@ -494,59 +494,59 @@ proof(rule ccontr)
       case True
       from `m \<in> obs (sourcenode a) (PDG_BS S)` `nx \<in> obs (sourcenode a) (PDG_BS S)`
       obtain xs where "sourcenode a -xs\<rightarrow>* m" and "nx \<notin> set(sourcenodes xs)"
-	by(fastsimp elim:obsE)
+        by(fastsimp elim:obsE)
       obtain x' xs' where [simp]:"xs = x'#xs'"
       proof(cases xs)
-	case Nil
-	with `sourcenode a -xs\<rightarrow>* m` have [simp]:"sourcenode a = m" by fastsimp
-	with `m \<in> obs (sourcenode a) (PDG_BS S)` 
-	have "m \<in> (PDG_BS S)" by(fastsimp elim:obsE)
-	with `valid_node m` have "obs m (PDG_BS S) = {m}"
-	  by(rule n_in_obs)
-	with `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m` have False
-	  by fastsimp
-	thus ?thesis by simp
+        case Nil
+        with `sourcenode a -xs\<rightarrow>* m` have [simp]:"sourcenode a = m" by fastsimp
+        with `m \<in> obs (sourcenode a) (PDG_BS S)` 
+        have "m \<in> (PDG_BS S)" by(fastsimp elim:obsE)
+        with `valid_node m` have "obs m (PDG_BS S) = {m}"
+          by(rule n_in_obs)
+        with `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m` have False
+          by fastsimp
+        thus ?thesis by simp
       qed blast
       from `sourcenode a -xs\<rightarrow>* m` have "sourcenode a = sourcenode x'" 
-	and "valid_edge x'" and "targetnode x' -xs'\<rightarrow>* m"
-	by(auto elim:path_split_Cons)
+        and "valid_edge x'" and "targetnode x' -xs'\<rightarrow>* m"
+        by(auto elim:path_split_Cons)
       from `targetnode x' -xs'\<rightarrow>* m` `nx \<notin> set(sourcenodes xs)` `valid_edge x'` 
-	`valid_node m` True
+        `valid_node m` True
       have "\<not> nx strongly-postdominates (targetnode x')" 
-	by(fastsimp simp:strong_postdominate_def postdominate_def sourcenodes_def)
+        by(fastsimp simp:strong_postdominate_def postdominate_def sourcenodes_def)
       from `nx \<noteq> m` True have "nx \<noteq> (_Exit_)" by simp
       with `obs (targetnode a) (PDG_BS S) = {nx}`
       have "nx strongly-postdominates (targetnode a)"
-	by(fastsimp intro:obs_strong_postdominate)
+        by(fastsimp intro:obs_strong_postdominate)
       from `obs (targetnode a) (PDG_BS S) = {nx}`
       obtain ys where "targetnode a -ys\<rightarrow>* nx" 
-	and "\<forall>nx' \<in> set(sourcenodes ys). nx' \<notin> (PDG_BS S)"
-	and "nx \<in> (PDG_BS S)" by(fastsimp elim:obsE)
+        and "\<forall>nx' \<in> set(sourcenodes ys). nx' \<notin> (PDG_BS S)"
+        and "nx \<in> (PDG_BS S)" by(fastsimp elim:obsE)
       hence "nx \<notin> set(sourcenodes ys)"by fastsimp
       have "sourcenode a \<noteq> nx"
       proof
-	assume "sourcenode a = nx"
-	from `nx \<in> obs (sourcenode a) (PDG_BS S)`
-	have "nx \<in> (PDG_BS S)" by -(erule obsE)
-	with `valid_node nx` have "obs nx (PDG_BS S) = {nx}" by -(erule n_in_obs)
-	with `sourcenode a = nx` `m \<in> obs (sourcenode a) (PDG_BS S)` 
-	  `nx \<noteq> m` show False by fastsimp
+        assume "sourcenode a = nx"
+        from `nx \<in> obs (sourcenode a) (PDG_BS S)`
+        have "nx \<in> (PDG_BS S)" by -(erule obsE)
+        with `valid_node nx` have "obs nx (PDG_BS S) = {nx}" by -(erule n_in_obs)
+        with `sourcenode a = nx` `m \<in> obs (sourcenode a) (PDG_BS S)` 
+          `nx \<noteq> m` show False by fastsimp
       qed
       with `nx \<notin> set(sourcenodes ys)` have "nx \<notin> set(sourcenodes (a#ys))"
-	by(fastsimp simp:sourcenodes_def)
+        by(fastsimp simp:sourcenodes_def)
       from `valid_edge a` `targetnode a -ys\<rightarrow>* nx`
       have "sourcenode a -a#ys\<rightarrow>* nx" by(fastsimp intro:Cons_path)
       from `sourcenode a -a#ys\<rightarrow>* nx` `nx \<notin> set(sourcenodes (a#ys))`
-	`nx strongly-postdominates (targetnode a)` `valid_edge x'`
+        `nx strongly-postdominates (targetnode a)` `valid_edge x'`
         `\<not> nx strongly-postdominates (targetnode x')` `sourcenode a = sourcenode x'`
       have "(sourcenode a) weakly controls nx"
-	by(fastsimp simp:weak_control_dependence_def)
+        by(fastsimp simp:weak_control_dependence_def)
       with `nx \<in> (PDG_BS S)` have "sourcenode a \<in> (PDG_BS S)"
         by(rule cd_closed)
       with `valid_edge a` have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
-	by(fastsimp intro!:n_in_obs)
+        by(fastsimp intro!:n_in_obs)
       with `m \<in> obs (sourcenode a) (PDG_BS S)`
-	`nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m`
+        `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m`
       show False by simp
     next
       case False
@@ -635,13 +635,13 @@ proof(rule ccontr)
       with `n'' -as\<rightarrow>* n'` have [simp]:"n' = n''" by(fastsimp elim:path.cases)
       from more_than_one
       have "\<not> (\<exists>m. obs (sourcenode a) (?WOD_BS) = {m} \<or> 
-	       obs (sourcenode a) (?WOD_BS) = {})"
-	by auto
+               obs (sourcenode a) (?WOD_BS) = {})"
+        by auto
       with `obs n' (?WOD_BS) = {n'}` True `valid_edge a` show ?thesis
-	apply(rule_tac x="a" in exI)
-	apply(rule_tac x="[]" in exI)
-	apply(rule_tac x="[]" in exI)
-	by(auto intro!:empty_path)
+        apply(rule_tac x="a" in exI)
+        apply(rule_tac x="[]" in exI)
+        apply(rule_tac x="[]" in exI)
+        by(auto intro!:empty_path)
     next
       case False
       hence "as \<noteq> []" .
@@ -652,32 +652,32 @@ proof(rule ccontr)
         case True
         with `n'' -as\<rightarrow>* n'` `valid_edge a` `obs n' (?WOD_BS) = {n'}` more_than_one
         show ?thesis
-	  apply(rule_tac x="a" in exI)
-	  apply(rule_tac x="[]" in exI)
-	  apply(rule_tac x="as" in exI)
-	  by(fastsimp intro:empty_path)
+          apply(rule_tac x="a" in exI)
+          apply(rule_tac x="[]" in exI)
+          apply(rule_tac x="as" in exI)
+          by(fastsimp intro:empty_path)
       next
         case False
-	with `obs n' (?WOD_BS) \<subseteq> obs n'' (?WOD_BS)`
-	have "obs n' (?WOD_BS) \<subset> obs n'' (?WOD_BS)" by simp
-	with `obs n' (?WOD_BS) = {n'}` obtain ni where "n' \<in> obs n'' (?WOD_BS)"
-	  and "ni \<in> obs n'' (?WOD_BS)" and "n' \<noteq> ni" by auto
-	from IH[OF this `obs n' (?WOD_BS) = {n'}` 
+        with `obs n' (?WOD_BS) \<subseteq> obs n'' (?WOD_BS)`
+        have "obs n' (?WOD_BS) \<subset> obs n'' (?WOD_BS)" by simp
+        with `obs n' (?WOD_BS) = {n'}` obtain ni where "n' \<in> obs n'' (?WOD_BS)"
+          and "ni \<in> obs n'' (?WOD_BS)" and "n' \<noteq> ni" by auto
+        from IH[OF this `obs n' (?WOD_BS) = {n'}` 
           `\<forall>n'\<in>set (sourcenodes as). n' \<notin> (?WOD_BS)` `as \<noteq> []`] obtain a' as' as''
-	  where "n'' -as'\<rightarrow>* sourcenode a'" and "targetnode a' -as''\<rightarrow>* n'"
-	  and "valid_edge a'" and [simp]:"as = as'@a'#as''" 
-	  and "obs (targetnode a') (?WOD_BS) = {n'}"
-	  and more_than_one':"\<not> (\<exists>m. obs (sourcenode a') (?WOD_BS) = {m} \<or> 
-	  obs (sourcenode a') (?WOD_BS) = {})"
-	  by blast
-	from `n'' -as'\<rightarrow>* sourcenode a'` `valid_edge a`
+          where "n'' -as'\<rightarrow>* sourcenode a'" and "targetnode a' -as''\<rightarrow>* n'"
+          and "valid_edge a'" and [simp]:"as = as'@a'#as''" 
+          and "obs (targetnode a') (?WOD_BS) = {n'}"
+          and more_than_one':"\<not> (\<exists>m. obs (sourcenode a') (?WOD_BS) = {m} \<or> 
+          obs (sourcenode a') (?WOD_BS) = {})"
+          by blast
+        from `n'' -as'\<rightarrow>* sourcenode a'` `valid_edge a`
         have "n -a#as'\<rightarrow>* sourcenode a'" by(fastsimp intro:path.Cons_path)
-	with `targetnode a' -as''\<rightarrow>* n'` `obs (targetnode a') (?WOD_BS) = {n'}`
+        with `targetnode a' -as''\<rightarrow>* n'` `obs (targetnode a') (?WOD_BS) = {n'}`
           more_than_one' `valid_edge a'` show ?thesis
-	  apply(rule_tac x="a'" in exI)
-	  apply(rule_tac x="a#as'" in exI)
-	  apply(rule_tac x="as''" in exI)
-	  by fastsimp
+          apply(rule_tac x="a'" in exI)
+          apply(rule_tac x="a#as'" in exI)
+          apply(rule_tac x="as''" in exI)
+          by fastsimp
       qed
     qed
   qed simp
@@ -729,7 +729,7 @@ proof(rule ccontr)
         where [simp]:"asx' = ai@ax#ai'" "ns = sourcenodes ai" "nx' = sourcenode ax"
         by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
       from `targetnode a -asx'\<rightarrow>* m` have "targetnode a -ai\<rightarrow>* sourcenode ax"
-	by(fastsimp dest:path_split)
+        by(fastsimp dest:path_split)
       with `nx' \<in> ?WOD_BS` `\<forall>nx \<in> set ns. nx \<notin> ?WOD_BS` 
       have "nx' \<in> obs (targetnode a) ?WOD_BS" by(fastsimp intro:obs_elem)
       with `obs (targetnode a) (?WOD_BS) = {nx}` have "nx' = nx" by simp

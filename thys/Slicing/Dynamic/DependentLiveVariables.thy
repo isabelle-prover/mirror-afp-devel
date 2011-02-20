@@ -370,11 +370,11 @@ proof -
     proof
       assume "sourcenode ax -{V}ax#asx@as''\<rightarrow>\<^bsub>dd\<^esub> last(targetnodes (ax#asx@as''))"
       hence "sourcenode ax -{V}ax#asx@as''\<rightarrow>\<^bsub>dd\<^esub> last(targetnodes (ax#asx@as''))"
-	by simp
+        by simp
       with `\<forall>n''\<in>set (sourcenodes (ax#asx)). V \<notin> Def n''`
       show False
-	by(fastsimp elim:DynPDG_edge.cases 
-	            simp:dyn_data_dependence_def sourcenodes_def)
+        by(fastsimp elim:DynPDG_edge.cases 
+                    simp:dyn_data_dependence_def sourcenodes_def)
     qed
     with `(V,asx@as'',asx@as') \<in> dependent_live_vars n'` 
       `n' = last(targetnodes (ax#asx@as'))`

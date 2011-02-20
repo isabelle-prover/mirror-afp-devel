@@ -108,7 +108,7 @@ next
       case True
       from IH1[OF this] obtain c' where "labels c\<^isub>1 l' c'" by auto
       with `l = l' + 1` have "labels (if (b) c\<^isub>1 else c\<^isub>2) l c'"
-	by(fastsimp dest:Labels_CondTrue)
+        by(fastsimp dest:Labels_CondTrue)
       thus ?thesis by auto
     next
       case False
@@ -118,7 +118,7 @@ next
       have "l'' < #:c\<^isub>2" by simp
       from IH2[OF this] obtain c' where "labels c\<^isub>2 l'' c'" by auto
       with `l' = l'' + #:c\<^isub>1` `l = l' + 1` have "labels (if (b) c\<^isub>1 else c\<^isub>2) l c'"
-	by(fastsimp dest:Labels_CondFalse)
+        by(fastsimp dest:Labels_CondFalse)
       thus ?thesis by auto
     qed
   qed
@@ -141,11 +141,11 @@ next
       case False
       with `\<not> l < 1` have "2 \<le> l" by simp
       then obtain l' where "l = l' + 2" and "l' = l - 2" 
-	by(simp del:add_2_eq_Suc')
+        by(simp del:add_2_eq_Suc')
       from `l = l' + 2` `l < #:while (b) c'` have "l' < #:c'" by simp
       from IH[OF this] obtain c'' where "labels c' l' c''" by auto
       with `l = l' + 2` have "labels (while (b) c') l (c'';;while (b) c')"
-	by(fastsimp dest:Labels_WhileBody)
+        by(fastsimp dest:Labels_WhileBody)
       thus ?thesis by auto
     qed
   qed

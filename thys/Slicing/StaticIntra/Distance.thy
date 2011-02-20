@@ -157,36 +157,36 @@ proof -
     next
       case (Cons_path n'' as n' a n)
       note imp = `\<forall>a. valid_edge a \<and> n = sourcenode a \<and>
-	              targetnode a = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and>
-	                                         distance (targetnode a') n' (x - 1) \<and>
+                      targetnode a = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and>
+                                                 distance (targetnode a') n' (x - 1) \<and>
                                                  valid_edge a' \<and> targetnode a' = nx)
                     \<longrightarrow> \<not> distance (targetnode a) n' (x - 1)`
       note all = `\<forall>as'. n -as'\<rightarrow>* n' \<longrightarrow> x \<le> length as'`
       from `n'' -as\<rightarrow>* n'` obtain y where "distance n'' n' y"
-	and "y \<le> length as" by(erule every_path_distance)
+        and "y \<le> length as" by(erule every_path_distance)
       from `distance n'' n' y` obtain as' where "n'' -as'\<rightarrow>* n'"
-	and "y = length as'"
-	by(auto elim:distance.cases)
+        and "y = length as'"
+        by(auto elim:distance.cases)
       show False
       proof(cases "y < length as")
-	case True
-	from `valid_edge a` `sourcenode a = n` `targetnode a = n''` `n'' -as'\<rightarrow>* n'`
-	have "n -a#as'\<rightarrow>* n'" by -(rule path.Cons_path)
-	with all have "x \<le> length (a#as')" by blast
-	with `x = length (a#as)` True `y = length as'` show False by simp
+        case True
+        from `valid_edge a` `sourcenode a = n` `targetnode a = n''` `n'' -as'\<rightarrow>* n'`
+        have "n -a#as'\<rightarrow>* n'" by -(rule path.Cons_path)
+        with all have "x \<le> length (a#as')" by blast
+        with `x = length (a#as)` True `y = length as'` show False by simp
       next
-	case False
-	with `y \<le> length as` `x = length (a#as)` have "y = x - 1" by simp
-	from `targetnode a = n''` `distance n'' n' y`
-	have "distance (targetnode a) n' y" by simp
-	with `valid_edge a`
-	obtain a' where "sourcenode a = sourcenode a'"
-	  and "distance (targetnode a') n' y" and "valid_edge a'"
-	  and "targetnode a' = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and>
+        case False
+        with `y \<le> length as` `x = length (a#as)` have "y = x - 1" by simp
+        from `targetnode a = n''` `distance n'' n' y`
+        have "distance (targetnode a) n' y" by simp
+        with `valid_edge a`
+        obtain a' where "sourcenode a = sourcenode a'"
+          and "distance (targetnode a') n' y" and "valid_edge a'"
+          and "targetnode a' = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and>
                                               distance (targetnode a') n' y \<and>
                                               valid_edge a' \<and> targetnode a' = nx)"
-	  by(auto dest:only_one_SOME_dist_edge)
-	with imp `sourcenode a = n` `y = x - 1` show False by fastsimp
+          by(auto dest:only_one_SOME_dist_edge)
+        with imp `sourcenode a = n` `y = x - 1` show False by fastsimp
       qed
     qed
   qed

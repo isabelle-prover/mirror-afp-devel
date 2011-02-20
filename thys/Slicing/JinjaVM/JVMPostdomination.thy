@@ -72,27 +72,27 @@ next
     proof (cases "C \<in> set SystemClasses")
       case True
       thus ?thesis
-	by (auto simp: wf_cdecl_def SystemClasses_def ObjectC_def NullPointerC_def
-	               OutOfMemoryC_def ClassCastC_def EP_def class_def)
+        by (auto simp: wf_cdecl_def SystemClasses_def ObjectC_def NullPointerC_def
+                       OutOfMemoryC_def ClassCastC_def EP_def class_def)
     next
       case False
       with C_in_EP
       have [simp]: "C = (''C'', the (class EP ''C''))"
-	by (auto simp: EP_def SystemClasses_def class_def)
+        by (auto simp: EP_def SystemClasses_def class_def)
       show ?thesis
-	apply (auto dest!: i_max_2D
-	             simp: wf_cdecl_def class_def EP_def wf_mdecl_def wt_method_def Phi_EP_def
-	                   wt_start_def check_types_def states_def JVM_SemiType.sl_def
-	                   stk_esl_def upto_esl_def loc_sl_def SemiType.esl_def
-	                   SemiType.sup_def Err.sl_def Err.le_def err_def Listn.sl_def
-	                   Err.esl_def Opt.esl_def Product.esl_def relevant_entries_def)
-	  apply (fastsimp simp: SystemClasses_def ObjectC_def)
-	 apply (clarsimp simp: Method_def)
-	 apply (cases rule: Methods.cases,
-	        (fastsimp simp: class_def SystemClasses_def ObjectC_def)+)
-	apply (clarsimp simp: Method_def)
-	by (cases rule: Methods.cases,
-	    (fastsimp simp: class_def SystemClasses_def ObjectC_def)+)
+        apply (auto dest!: i_max_2D
+                     simp: wf_cdecl_def class_def EP_def wf_mdecl_def wt_method_def Phi_EP_def
+                           wt_start_def check_types_def states_def JVM_SemiType.sl_def
+                           stk_esl_def upto_esl_def loc_sl_def SemiType.esl_def
+                           SemiType.sup_def Err.sl_def Err.le_def err_def Listn.sl_def
+                           Err.esl_def Opt.esl_def Product.esl_def relevant_entries_def)
+          apply (fastsimp simp: SystemClasses_def ObjectC_def)
+         apply (clarsimp simp: Method_def)
+         apply (cases rule: Methods.cases,
+                (fastsimp simp: class_def SystemClasses_def ObjectC_def)+)
+        apply (clarsimp simp: Method_def)
+        by (cases rule: Methods.cases,
+            (fastsimp simp: class_def SystemClasses_def ObjectC_def)+)
     qed
   qed
   with distinct_EP
@@ -212,43 +212,43 @@ proof -
       case None [simp]
       from vn
       show ?thesis
-	apply (cases cs)
-	 apply simp
-	apply (case_tac list)
-	 apply clarsimp
-	 apply (drule method_in_EP_is_M)
-	 apply clarsimp
-	apply clarsimp
-	apply (drule method_in_EP_is_M)
-	apply clarsimp
-	apply (case_tac lista)
-	 apply clarsimp
-	 apply (drule method_in_EP_is_M)
-	 apply clarsimp
-	 apply (case_tac ba, clarsimp, clarsimp)
-	apply clarsimp
-	apply (drule method_in_EP_is_M)
-	apply clarsimp
-	by (case_tac ba, clarsimp, clarsimp)
+        apply (cases cs)
+         apply simp
+        apply (case_tac list)
+         apply clarsimp
+         apply (drule method_in_EP_is_M)
+         apply clarsimp
+        apply clarsimp
+        apply (drule method_in_EP_is_M)
+        apply clarsimp
+        apply (case_tac lista)
+         apply clarsimp
+         apply (drule method_in_EP_is_M)
+         apply clarsimp
+         apply (case_tac ba, clarsimp, clarsimp)
+        apply clarsimp
+        apply (drule method_in_EP_is_M)
+        apply clarsimp
+        by (case_tac ba, clarsimp, clarsimp)
     next
       case (Some f) [simp]
       obtain cs'' xf where [simp]: "f = (cs'', xf)"
-	by (cases f, fastsimp)
+        by (cases f, fastsimp)
       from vn
       show ?thesis
-	apply (cases cs)
-	 apply clarsimp
-	 apply (erule JVM_CFG.cases, clarsimp+)
-	apply (case_tac list)
-	 apply clarsimp
-	 apply (frule method_in_EP_is_M)
-	 apply (case_tac b)
-	  apply (erule JVM_CFG.cases, clarsimp+)
-	 apply (erule JVM_CFG.cases, clarsimp+)
-	apply (frule method_in_EP_is_M)
-	apply (case_tac b)
-	 apply (erule JVM_CFG.cases, clarsimp+)
-	by (erule JVM_CFG.cases, clarsimp+)
+        apply (cases cs)
+         apply clarsimp
+         apply (erule JVM_CFG.cases, clarsimp+)
+        apply (case_tac list)
+         apply clarsimp
+         apply (frule method_in_EP_is_M)
+         apply (case_tac b)
+          apply (erule JVM_CFG.cases, clarsimp+)
+         apply (erule JVM_CFG.cases, clarsimp+)
+        apply (frule method_in_EP_is_M)
+        apply (case_tac b)
+         apply (erule JVM_CFG.cases, clarsimp+)
+        by (erule JVM_CFG.cases, clarsimp+)
     qed
   qed
 qed
@@ -312,7 +312,7 @@ proof
     have "JVM_CFG_Interpret.path ?prog (_ [(''C'', ''M'', 0)],None _) [?edge2, ?edge3] (_Exit_)"
       apply rule
          apply rule
-	    apply (auto simp: JVM_CFG_Interpret.path.empty_path Phi_EP_def)
+            apply (auto simp: JVM_CFG_Interpret.path.empty_path Phi_EP_def)
        apply (rule JCFG_ReturnExit, auto)
       by (rule JCFG_Straight_NoExc, auto simp: Phi_EP_def)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_ [(''C'', ''M'', 0)],None _) as (_Exit_)"
@@ -321,7 +321,7 @@ proof
     have "JVM_CFG_Interpret.path ?prog (_Entry_) [?edge1, ?edge2] (_ [(''C'', ''M'', 1)],None _)"
       apply rule
          apply rule
-	    apply (auto simp: JVM_CFG_Interpret.path.empty_path Phi_EP_def)
+            apply (auto simp: JVM_CFG_Interpret.path.empty_path Phi_EP_def)
        apply (rule JCFG_Straight_NoExc, auto simp: Phi_EP_def)
       by (rule JCFG_EntryStart, auto)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_Entry_) as (_ [(''C'', ''M'', Suc 0)],None _)"
@@ -479,255 +479,255 @@ proof -
     case Entry
     thus ?thesis
       by (rule_tac B="{(_Exit_), (_ [(C0, Main, 0)],None _)}" in finite_subset,
-	auto dest: JVMCFG_EntryD)
+        auto dest: JVMCFG_EntryD)
   next
     case (Node cs x) [simp]
     show ?thesis
     proof (cases cs)
       case Nil
       thus ?thesis
-	by (rule_tac B="{}" in finite_subset,
-	  auto elim: JVM_CFG.cases)
+        by (rule_tac B="{}" in finite_subset,
+          auto elim: JVM_CFG.cases)
     next
       case (Cons a cs') [simp]
       obtain C M pc where [simp]: "a = (C,M,pc)" by (cases a, fastsimp)
       have finite_classes: "finite {C. is_class (P\<^bsub>wf\<^esub>) C}"
-	by (rule finite_is_class)
+        by (rule finite_is_class)
       from valid_node have "is_class (P\<^bsub>wf\<^esub>) C"
-	apply (auto simp: JVM_CFG_Interpret.valid_node_def)
-	 apply (cases x, auto)
-	  apply (cases cs', auto dest!: sees_method_is_class)
-	 apply (cases cs', auto dest!: sees_method_is_class)
-	apply (cases cs', auto dest!: sees_method_is_class)
-	 apply (cases x, auto dest!: sees_method_is_class)
-	by (cases x, auto dest!: sees_method_is_class)
+        apply (auto simp: JVM_CFG_Interpret.valid_node_def)
+         apply (cases x, auto)
+          apply (cases cs', auto dest!: sees_method_is_class)
+         apply (cases cs', auto dest!: sees_method_is_class)
+        apply (cases cs', auto dest!: sees_method_is_class)
+         apply (cases x, auto dest!: sees_method_is_class)
+        by (cases x, auto dest!: sees_method_is_class)
       show ?thesis
       proof (cases "instrs_of (P\<^bsub>wf\<^esub>) C M ! pc")
-	case (Load nat)
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,Suc pc)#cs',x _)}" in finite_subset)
-	   by (auto elim: JVM_CFG.cases)
+        case (Load nat)
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,Suc pc)#cs',x _)}" in finite_subset)
+           by (auto elim: JVM_CFG.cases)
       next
-	case (Store nat)
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,Suc pc)#cs',x _)}" in finite_subset)
-	   by (auto elim: JVM_CFG.cases)
+        case (Store nat)
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,Suc pc)#cs',x _)}" in finite_subset)
+           by (auto elim: JVM_CFG.cases)
       next
-	case (Push val)
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,Suc pc)#cs',x _)}" in finite_subset)
-	   by (auto elim: JVM_CFG.cases)
+        case (Push val)
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,Suc pc)#cs',x _)}" in finite_subset)
+           by (auto elim: JVM_CFG.cases)
       next
-	case (New C')
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,pc)#cs',\<lfloor>((C,M,Suc pc)#cs',False)\<rfloor> _),
-	    (_ (C,M,pc)#cs',\<lfloor>(find_handler_for P OutOfMemory ((C,M,pc)#cs'),True)\<rfloor> _),
-	    (_ fst(the(x)),None _)}" in finite_subset)
-	   apply (rule subsetI)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
+        case (New C')
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,pc)#cs',\<lfloor>((C,M,Suc pc)#cs',False)\<rfloor> _),
+            (_ (C,M,pc)#cs',\<lfloor>(find_handler_for P OutOfMemory ((C,M,pc)#cs'),True)\<rfloor> _),
+            (_ fst(the(x)),None _)}" in finite_subset)
+           apply (rule subsetI)
+           apply (clarsimp simp del: find_handler_for.simps)
+           by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
       next
-	case (Getfield Fd C')
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,pc)#cs',\<lfloor>((C,M,Suc pc)#cs',False)\<rfloor> _),
-	    (_ (C,M,pc)#cs',\<lfloor>(find_handler_for P NullPointer ((C,M,pc)#cs'),True)\<rfloor> _),
-	    (_ fst(the(x)),None _)}" in finite_subset)
-	   apply (rule subsetI)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
+        case (Getfield Fd C')
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,pc)#cs',\<lfloor>((C,M,Suc pc)#cs',False)\<rfloor> _),
+            (_ (C,M,pc)#cs',\<lfloor>(find_handler_for P NullPointer ((C,M,pc)#cs'),True)\<rfloor> _),
+            (_ fst(the(x)),None _)}" in finite_subset)
+           apply (rule subsetI)
+           apply (clarsimp simp del: find_handler_for.simps)
+           by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
       next
-	case (Putfield Fd C')
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,pc)#cs',\<lfloor>((C,M,Suc pc)#cs',False)\<rfloor> _),
-	    (_ (C,M,pc)#cs',\<lfloor>(find_handler_for P NullPointer ((C,M,pc)#cs'),True)\<rfloor> _),
-	    (_ fst(the(x)),None _)}" in finite_subset)
-	   apply (rule subsetI)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
+        case (Putfield Fd C')
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,pc)#cs',\<lfloor>((C,M,Suc pc)#cs',False)\<rfloor> _),
+            (_ (C,M,pc)#cs',\<lfloor>(find_handler_for P NullPointer ((C,M,pc)#cs'),True)\<rfloor> _),
+            (_ fst(the(x)),None _)}" in finite_subset)
+           apply (rule subsetI)
+           apply (clarsimp simp del: find_handler_for.simps)
+           by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
       next
-	case (Checkcast C')
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _),
-	    (_ (C,M,pc)#cs',\<lfloor>(find_handler_for P ClassCast ((C,M,pc)#cs'),True)\<rfloor> _),
-	    (_ fst(the(x)),None _)}" in finite_subset)
-	   apply (rule subsetI)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
+        case (Checkcast C')
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _),
+            (_ (C,M,pc)#cs',\<lfloor>(find_handler_for P ClassCast ((C,M,pc)#cs'),True)\<rfloor> _),
+            (_ fst(the(x)),None _)}" in finite_subset)
+           apply (rule subsetI)
+           apply (clarsimp simp del: find_handler_for.simps)
+           by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
       next
-	case (Invoke M' n')
-	with finite_classes valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="
-	    {n'. (\<exists>D. is_class (P\<^bsub>wf\<^esub>) D \<and> n' = (_ (C,M,pc)#cs',\<lfloor>((D,M',0)#(C,M,pc)#cs',False)\<rfloor> _))}
-	    \<union> {(_ (C,M,pc)#cs',\<lfloor>(find_handler_for P NullPointer ((C,M,pc)#cs'),True)\<rfloor> _),
-	       (_ fst(the(x)),None _)}"
-	    in finite_subset)
-	   apply (rule subsetI)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   apply (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
-	  apply (clarsimp simp del: find_handler_for.simps)
-	  apply (drule sees_method_is_class)
-	  by (clarsimp simp del: find_handler_for.simps)
+        case (Invoke M' n')
+        with finite_classes valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="
+            {n'. (\<exists>D. is_class (P\<^bsub>wf\<^esub>) D \<and> n' = (_ (C,M,pc)#cs',\<lfloor>((D,M',0)#(C,M,pc)#cs',False)\<rfloor> _))}
+            \<union> {(_ (C,M,pc)#cs',\<lfloor>(find_handler_for P NullPointer ((C,M,pc)#cs'),True)\<rfloor> _),
+               (_ fst(the(x)),None _)}"
+            in finite_subset)
+           apply (rule subsetI)
+           apply (clarsimp simp del: find_handler_for.simps)
+           apply (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
+          apply (clarsimp simp del: find_handler_for.simps)
+          apply (drule sees_method_is_class)
+          by (clarsimp simp del: find_handler_for.simps)
       next
-	case Return
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="
-	    {(_ (fst(hd(cs')),fst(snd(hd(cs'))),Suc(snd(snd(hd(cs')))))#(tl cs'),None _),
-	     (_Exit_)}" in finite_subset)
-	   apply (rule subsetI)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
+        case Return
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="
+            {(_ (fst(hd(cs')),fst(snd(hd(cs'))),Suc(snd(snd(hd(cs')))))#(tl cs'),None _),
+             (_Exit_)}" in finite_subset)
+           apply (rule subsetI)
+           apply (clarsimp simp del: find_handler_for.simps)
+           by (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
       next
-	case Pop
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _)}" in finite_subset)
-	   by (auto elim: JVM_CFG.cases)
+        case Pop
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _)}" in finite_subset)
+           by (auto elim: JVM_CFG.cases)
       next
-	case IAdd
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _)}" in finite_subset)
-	   by (auto elim: JVM_CFG.cases)
+        case IAdd
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _)}" in finite_subset)
+           by (auto elim: JVM_CFG.cases)
       next
-	case (Goto i)
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,nat (int pc + i))#cs',None _)}" in finite_subset)
-	   by (auto elim: JVM_CFG.cases)
+        case (Goto i)
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,nat (int pc + i))#cs',None _)}" in finite_subset)
+           by (auto elim: JVM_CFG.cases)
       next
-	case CmpEq
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _)}" in finite_subset)
-	   by (auto elim: JVM_CFG.cases)
+        case CmpEq
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _)}" in finite_subset)
+           by (auto elim: JVM_CFG.cases)
       next
-	case (IfFalse i)
-	with valid_node
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _),
-	    (_ (C,M,nat (int pc + i))#cs',None _)}" in finite_subset)
-	   by (auto elim: JVM_CFG.cases)
+        case (IfFalse i)
+        with valid_node
+        show ?thesis
+          apply auto
+          apply (rule_tac B="{(_ (C,M,Suc pc)#cs',None _),
+            (_ (C,M,nat (int pc + i))#cs',None _)}" in finite_subset)
+           by (auto elim: JVM_CFG.cases)
       next
-	case Throw
-	have "finite {(l,pc'). l < Suc (length cs') \<and>
-	  pc' < (\<Sum>i\<le>(length cs'). (length (instrs_of (P\<^bsub>wf\<^esub>) (fst (((C, M, pc) # cs') ! i))
+        case Throw
+        have "finite {(l,pc'). l < Suc (length cs') \<and>
+          pc' < (\<Sum>i\<le>(length cs'). (length (instrs_of (P\<^bsub>wf\<^esub>) (fst (((C, M, pc) # cs') ! i))
           (fst (snd (((C, M, pc) # cs') ! i))))))}"
-	  (is "finite ?f1")
-	  by (auto intro: finite_cartesian_product bounded_nat_set_is_finite)
-	hence f_1: "finite {(l,pc'). l < length ((C, M, pc) # cs') \<and>
-	    pc' < length (instrs_of (P\<^bsub>wf\<^esub>) (fst(((C,M,pc)#cs')!l)) (fst(snd(((C,M,pc)#cs')!l))))}"
-	  apply (rule_tac B="?f1" in finite_subset)
-	   apply clarsimp
-	   apply (rule less_le_trans)
-	    defer
-	    apply (rule_tac A="{a}" in setsum_mono2)
-	      by simp_all
-	from valid_node Throw
-	show ?thesis
-	  apply auto
-	  apply (rule_tac B="
-	    {n'. \<exists>Cx Mx pc' h cs'' pcx. (C,M,pc)#cs' = cs''@[(Cx,Mx,pcx)]@h \<and>
-	      pc' < length (instrs_of (P\<^bsub>wf\<^esub>) Cx Mx) \<and>
-	      n' = (_ (C,M,pc)#cs',\<lfloor>((Cx,Mx,pc')#h,True)\<rfloor> _)}
-	    \<union> {(_ fst(the(x)),None _), (_Exit_), (_ (C,M,pc)#cs',\<lfloor>([],True)\<rfloor> _)}"
-	    in finite_subset)
-	   apply (rule subsetI)
-	   apply clarsimp
-	   apply (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   apply (case_tac "find_handler_for P Exc ((C,M,pc)#cs')", simp)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   apply (erule impE)
-	    apply (case_tac "list", fastsimp, fastsimp)
-	   apply (frule find_handler_for_tl_eq)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   apply (erule_tac x="list" in allE)
-	   apply (clarsimp simp del: find_handler_for.simps)
-	   apply fastsimp
-	  apply (subgoal_tac 
-	    "finite (
-	      (\<lambda>(Cx,Mx,pc',h,cs'',pcx).  (_ (C, M, pc) # cs',\<lfloor>((Cx, Mx, pc') # h, True)\<rfloor> _)) `
-	      {(Cx,Mx,pc',h,cs'',pcx). (C, M, pc) # cs' = cs'' @ (Cx, Mx, pcx) # h \<and>
-	        pc' < length (instrs_of P\<^bsub>wf\<^esub> Cx Mx)})")
-	   apply (case_tac "((\<lambda>(Cx, Mx, pc', h, cs'', pcx).
-	     (_ (C, M, pc) # cs',\<lfloor>((Cx, Mx, pc') # h, True)\<rfloor> _)) `
-	     {(Cx, Mx, pc', h, cs'', pcx).
+          (is "finite ?f1")
+          by (auto intro: finite_cartesian_product bounded_nat_set_is_finite)
+        hence f_1: "finite {(l,pc'). l < length ((C, M, pc) # cs') \<and>
+            pc' < length (instrs_of (P\<^bsub>wf\<^esub>) (fst(((C,M,pc)#cs')!l)) (fst(snd(((C,M,pc)#cs')!l))))}"
+          apply (rule_tac B="?f1" in finite_subset)
+           apply clarsimp
+           apply (rule less_le_trans)
+            defer
+            apply (rule_tac A="{a}" in setsum_mono2)
+              by simp_all
+        from valid_node Throw
+        show ?thesis
+          apply auto
+          apply (rule_tac B="
+            {n'. \<exists>Cx Mx pc' h cs'' pcx. (C,M,pc)#cs' = cs''@[(Cx,Mx,pcx)]@h \<and>
+              pc' < length (instrs_of (P\<^bsub>wf\<^esub>) Cx Mx) \<and>
+              n' = (_ (C,M,pc)#cs',\<lfloor>((Cx,Mx,pc')#h,True)\<rfloor> _)}
+            \<union> {(_ fst(the(x)),None _), (_Exit_), (_ (C,M,pc)#cs',\<lfloor>([],True)\<rfloor> _)}"
+            in finite_subset)
+           apply (rule subsetI)
+           apply clarsimp
+           apply (erule JVM_CFG.cases, simp_all del: find_handler_for.simps)
+           apply (clarsimp simp del: find_handler_for.simps)
+           apply (case_tac "find_handler_for P Exc ((C,M,pc)#cs')", simp)
+           apply (clarsimp simp del: find_handler_for.simps)
+           apply (erule impE)
+            apply (case_tac "list", fastsimp, fastsimp)
+           apply (frule find_handler_for_tl_eq)
+           apply (clarsimp simp del: find_handler_for.simps)
+           apply (erule_tac x="list" in allE)
+           apply (clarsimp simp del: find_handler_for.simps)
+           apply fastsimp
+          apply (subgoal_tac 
+            "finite (
+              (\<lambda>(Cx,Mx,pc',h,cs'',pcx).  (_ (C, M, pc) # cs',\<lfloor>((Cx, Mx, pc') # h, True)\<rfloor> _)) `
+              {(Cx,Mx,pc',h,cs'',pcx). (C, M, pc) # cs' = cs'' @ (Cx, Mx, pcx) # h \<and>
+                pc' < length (instrs_of P\<^bsub>wf\<^esub> Cx Mx)})")
+           apply (case_tac "((\<lambda>(Cx, Mx, pc', h, cs'', pcx).
+             (_ (C, M, pc) # cs',\<lfloor>((Cx, Mx, pc') # h, True)\<rfloor> _)) `
+             {(Cx, Mx, pc', h, cs'', pcx).
                (C, M, pc) # cs' = cs'' @ (Cx, Mx, pcx) # h \<and>
-	       pc' < length (instrs_of (P\<^bsub>wf\<^esub>) Cx Mx)}) =
-	     {n'. \<exists>Cx Mx pc' h.
+               pc' < length (instrs_of (P\<^bsub>wf\<^esub>) Cx Mx)}) =
+             {n'. \<exists>Cx Mx pc' h.
                 (\<exists>cs'' pcx. (C, M, pc) # cs' = cs'' @ (Cx, Mx, pcx) # h) \<and>
                 pc' < length (instrs_of (P\<^bsub>wf\<^esub>) Cx Mx) \<and>
                 n' = (_ (C, M, pc) # cs',\<lfloor>((Cx, Mx, pc') # h, True)\<rfloor> _)}")
-	    apply clarsimp
-	   apply (erule notE)
-	   apply (rule equalityI)
-	    apply clarsimp
-	   apply clarsimp
-	   apply (rule_tac x="(Cx,Mx,pc',h,cs'',pcx)" in image_eqI)
-	    apply clarsimp
-	   apply clarsimp
-	  apply (rule finite_imageI)
-	  apply (subgoal_tac "finite (
-	    (\<lambda>(l, pc'). (fst(((C, M, pc)#cs') ! l),
-	                 fst(snd(((C, M, pc)#cs') ! l)),
-	                 pc',
-	                 drop l cs',
-	                 take l ((C, M, pc)#cs'),
-	                 snd(snd(((C, M, pc)#cs') ! l))
-	                )
-	    ) ` {(l, pc'). l < length ((C,M,pc)#cs') \<and>
-	                   pc' < length (instrs_of (P\<^bsub>wf\<^esub>) (fst(((C, M, pc)#cs') ! l))
-	                                                (fst(snd(((C, M, pc)#cs') ! l))))})")
-	   apply (case_tac "((\<lambda>(l, pc').
+            apply clarsimp
+           apply (erule notE)
+           apply (rule equalityI)
+            apply clarsimp
+           apply clarsimp
+           apply (rule_tac x="(Cx,Mx,pc',h,cs'',pcx)" in image_eqI)
+            apply clarsimp
+           apply clarsimp
+          apply (rule finite_imageI)
+          apply (subgoal_tac "finite (
+            (\<lambda>(l, pc'). (fst(((C, M, pc)#cs') ! l),
+                         fst(snd(((C, M, pc)#cs') ! l)),
+                         pc',
+                         drop l cs',
+                         take l ((C, M, pc)#cs'),
+                         snd(snd(((C, M, pc)#cs') ! l))
+                        )
+            ) ` {(l, pc'). l < length ((C,M,pc)#cs') \<and>
+                           pc' < length (instrs_of (P\<^bsub>wf\<^esub>) (fst(((C, M, pc)#cs') ! l))
+                                                        (fst(snd(((C, M, pc)#cs') ! l))))})")
+           apply (case_tac "((\<lambda>(l, pc').
              (fst (((C, M, pc) # cs') ! l),
-	      fst (snd (((C, M, pc) # cs') ! l)),
-	      pc',
-	      drop l cs',
+              fst (snd (((C, M, pc) # cs') ! l)),
+              pc',
+              drop l cs',
               take l ((C, M, pc) # cs'),
-	      snd (snd (((C, M, pc) # cs') ! l))
-	     )) ` {(l, pc'). l < length ((C,M,pc)#cs') \<and>
+              snd (snd (((C, M, pc) # cs') ! l))
+             )) ` {(l, pc'). l < length ((C,M,pc)#cs') \<and>
                              pc' < length (instrs_of (P\<^bsub>wf\<^esub>) (fst (((C, M, pc) # cs') ! l))
                                                           (fst (snd (((C, M, pc) # cs') ! l))))})
-	     = {(Cx, Mx, pc', h, cs'', pcx).
+             = {(Cx, Mx, pc', h, cs'', pcx).
                 (C, M, pc) # cs' = cs'' @ (Cx, Mx, pcx) # h \<and>
-	        pc' < length (instrs_of (P\<^bsub>wf\<^esub>) Cx Mx)}")
-	    apply clarsimp
-	   apply (erule notE)
-	   apply (rule equalityI)
-	    apply clarsimp
-	    apply (rule id_take_nth_drop [of _ "(C,M,pc)#cs'", simplified])
-	    apply simp
-	   apply clarsimp
-	   apply (rule_tac x="(length ad,ab)" in image_eqI)
-	    apply clarsimp
-	    apply (case_tac ad, clarsimp, clarsimp)
-	   apply clarsimp
-	   apply (case_tac ad, clarsimp, clarsimp)
-	  apply (rule finite_imageI)
-	  by (rule f_1)
+                pc' < length (instrs_of (P\<^bsub>wf\<^esub>) Cx Mx)}")
+            apply clarsimp
+           apply (erule notE)
+           apply (rule equalityI)
+            apply clarsimp
+            apply (rule id_take_nth_drop [of _ "(C,M,pc)#cs'", simplified])
+            apply simp
+           apply clarsimp
+           apply (rule_tac x="(length ad,ab)" in image_eqI)
+            apply clarsimp
+            apply (case_tac ad, clarsimp, clarsimp)
+           apply clarsimp
+           apply (case_tac ad, clarsimp, clarsimp)
+          apply (rule finite_imageI)
+          by (rule f_1)
       qed
     qed
   qed

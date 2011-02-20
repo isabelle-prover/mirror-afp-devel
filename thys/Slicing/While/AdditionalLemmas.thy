@@ -121,7 +121,7 @@ next
     from `if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -kind a\<rightarrow> n'' \<oplus> 1` 
     have "if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -[((_ l _) \<oplus> 1,kind a,n'' \<oplus> 1)]\<rightarrow>* n'' \<oplus> 1"
       by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path 
-	          simp:While_CFG.valid_node_def valid_edge_def)
+                  simp:While_CFG.valid_node_def valid_edge_def)
     with Exit `[((_ l _),kind a,n'')] \<oplus>s 1 = [a] \<oplus>s 1`  `n' = (_Exit_)` `as = []`
     show ?thesis by(fastsimp simp:label_incrs_def)
   qed
@@ -180,7 +180,7 @@ next
     have "if (b) c\<^isub>1 else prog \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) 
           -[((_ l _) \<oplus> (#:c\<^isub>1 + 1),kind a,n'' \<oplus> (#:c\<^isub>1 + 1))]\<rightarrow>* n'' \<oplus> (#:c\<^isub>1 + 1)"
       by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path 
-	          simp:While_CFG.valid_node_def valid_edge_def)
+                  simp:While_CFG.valid_node_def valid_edge_def)
     with Exit `[((_ l _),kind a,n'')] \<oplus>s (#:c\<^isub>1 + 1) = [a] \<oplus>s (#:c\<^isub>1 + 1)` `n' = (_Exit_)`
       `as = []` 
     show ?thesis by(fastsimp simp:label_incrs_def)
@@ -316,7 +316,7 @@ next
     hence "prog1;;prog2 \<turnstile> sourcenode ax -[(sourcenode ax,kind ax,(_0_) \<oplus> #:prog1)]\<rightarrow>*
                           (_0_) \<oplus> #:prog1"
       by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path 
-	          simp:While_CFG.valid_node_def valid_edge_def)
+                  simp:While_CFG.valid_node_def valid_edge_def)
     with `prog1;;prog2 \<turnstile> (_ l _) -asx\<rightarrow>* sourcenode ax`
     have "prog1;;prog2 \<turnstile> (_ l _) -asx@[(sourcenode ax,kind ax,(_0_) \<oplus> #:prog1)]\<rightarrow>*
                          (_0_) \<oplus> #:prog1"
@@ -374,22 +374,22 @@ next
       case True
       with `prog2 \<turnstile> targetnode ax' -asx'\<rightarrow>* (_ l' _)` `targetnode ax' = (_0_)`
       have "l' = 0" by(auto elim:While_CFG.path.cases)
-      with `prog1;;prog2 \<turnstile> sourcenode ax -kind ax\<rightarrow> (_0_) \<oplus> #:prog1`	
+      with `prog1;;prog2 \<turnstile> sourcenode ax -kind ax\<rightarrow> (_0_) \<oplus> #:prog1`     
       have "prog1;;prog2 \<turnstile> sourcenode ax -[(sourcenode ax,kind ax,(_ l _))]\<rightarrow>* 
-	                   (_ l _)"
-	by(auto intro!:While_CFG.path.intros 
-	            simp:While_CFG.valid_node_def valid_edge_def,blast)
+                           (_ l _)"
+        by(auto intro!:While_CFG.path.intros 
+                    simp:While_CFG.valid_node_def valid_edge_def,blast)
       thus ?thesis by blast
     next
       case False
       with `prog2 \<turnstile> targetnode ax' -asx'\<rightarrow>* (_ l' _)` `targetnode ax' = (_0_)`
       have "prog1;;prog2 \<turnstile> (_0_) \<oplus> #:prog1 -asx' \<oplus>s #:prog1\<rightarrow>* (_ l' _) \<oplus> #:prog1"
-	by(fastsimp intro:path_SeqSecond)
+        by(fastsimp intro:path_SeqSecond)
       hence "prog1;;prog2 \<turnstile> (_0_) \<oplus> #:prog1 -asx' \<oplus>s #:prog1\<rightarrow>* (_ l _)" by simp
       with `prog1;;prog2 \<turnstile> sourcenode ax -kind ax\<rightarrow> (_0_) \<oplus> #:prog1`
       have "prog1;;prog2 \<turnstile> sourcenode ax -(sourcenode ax,kind ax,(_0_) \<oplus> #:prog1)#
-	                                  (asx' \<oplus>s #:prog1)\<rightarrow>* (_ l _)"
-	by(fastsimp intro: While_CFG.Cons_path simp:valid_node_def valid_edge_def)
+                                          (asx' \<oplus>s #:prog1)\<rightarrow>* (_ l _)"
+        by(fastsimp intro: While_CFG.Cons_path simp:valid_node_def valid_edge_def)
       thus ?thesis by blast
     qed
     then obtain asx'' where "prog1;;prog2 \<turnstile> sourcenode ax -asx''\<rightarrow>* (_ l _)" by blast
@@ -435,72 +435,72 @@ next
     proof(cases "l' < #:prog1")
       case True
       from IH1[OF this] obtain as as' where "prog1 \<turnstile> (_ l' _) -as\<rightarrow>* (_Exit_)"
-	and "prog1 \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l' _)" by blast
+        and "prog1 \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l' _)" by blast
       from `prog1 \<turnstile> (_ l' _) -as\<rightarrow>* (_Exit_)`
       have "if (b) prog1 else prog2 \<turnstile> (_ l' _) \<oplus> 1 -as \<oplus>s 1\<rightarrow>* (_Exit_) \<oplus> 1"
-	by(fastsimp intro:path_CondTrue)
+        by(fastsimp intro:path_CondTrue)
       hence "if (b) prog1 else prog2 \<turnstile> (_ l _) -as \<oplus>s 1\<rightarrow>* (_Exit_)"
-	by simp
+        by simp
       from `prog1 \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l' _)` obtain ax asx
-	where "prog1 \<turnstile> (_Entry_) -ax#asx\<rightarrow>* (_ l' _)"
-	by(cases as',auto elim:While_CFG.cases)
+        where "prog1 \<turnstile> (_Entry_) -ax#asx\<rightarrow>* (_ l' _)"
+        by(cases as',auto elim:While_CFG.cases)
       hence "(_Entry_) = sourcenode ax" and "valid_edge prog1 ax"
-	and "prog1 \<turnstile> targetnode ax -asx\<rightarrow>* (_ l' _)"
-	by(auto intro:While_CFG.path_split_Cons)
+        and "prog1 \<turnstile> targetnode ax -asx\<rightarrow>* (_ l' _)"
+        by(auto intro:While_CFG.path_split_Cons)
       hence "targetnode ax = (_0_)" by(fastsimp dest:WCFG_EntryD simp:valid_edge_def)
       with `prog1 \<turnstile> targetnode ax -asx\<rightarrow>* (_ l' _)`
       have "if (b) prog1 else prog2 \<turnstile> (_0_) \<oplus> 1 -asx \<oplus>s 1\<rightarrow>* (_ l' _) \<oplus> 1"
-	by(fastsimp intro:path_CondTrue)
+        by(fastsimp intro:path_CondTrue)
       with WCFG_CondTrue[of b prog1 prog2]
       have "if (b) prog1 else prog2 \<turnstile> (_0_) 
-	-((_0_),(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>,(_0_) \<oplus> 1)#(asx \<oplus>s 1)\<rightarrow>* 
-	 (_ l' _) \<oplus> 1"
-	by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
+        -((_0_),(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>,(_0_) \<oplus> 1)#(asx \<oplus>s 1)\<rightarrow>* 
+         (_ l' _) \<oplus> 1"
+        by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
       with WCFG_Entry[of "if (b) prog1 else prog2"]
       have "if (b) prog1 else prog2 \<turnstile> (_Entry_) -((_Entry_),(\<lambda>s. True)\<^isub>\<surd>,(_0_))#
-	((_0_),(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>,(_0_) \<oplus> 1)#(asx \<oplus>s 1)\<rightarrow>* 
-	 (_ l' _) \<oplus> 1"
-	by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
+        ((_0_),(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>,(_0_) \<oplus> 1)#(asx \<oplus>s 1)\<rightarrow>* 
+         (_ l' _) \<oplus> 1"
+        by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
       with `if (b) prog1 else prog2 \<turnstile> (_ l _) -as \<oplus>s 1\<rightarrow>* (_Exit_)`
       show ?thesis by simp blast
     next
       case False
       hence "#:prog1 \<le> l'" by simp
       then obtain l'' where [simp]:"l' = l'' + #:prog1" and "l'' = l' - #:prog1"
-	by simp
+        by simp
       from  `l < #:(if (b) prog1 else prog2)` 
       have "l'' < #:prog2" by simp
       from IH2[OF this] obtain as as' where "prog2 \<turnstile> (_ l'' _) -as\<rightarrow>* (_Exit_)"
-	and "prog2 \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l'' _)" by blast
+        and "prog2 \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l'' _)" by blast
       from `prog2 \<turnstile> (_ l'' _) -as\<rightarrow>* (_Exit_)`
       have "if (b) prog1 else prog2 \<turnstile> (_ l'' _) \<oplus> (#:prog1 + 1) 
-	-as \<oplus>s (#:prog1 + 1)\<rightarrow>* (_Exit_) \<oplus> (#:prog1 + 1)"
-	by(fastsimp intro:path_CondFalse)
+        -as \<oplus>s (#:prog1 + 1)\<rightarrow>* (_Exit_) \<oplus> (#:prog1 + 1)"
+        by(fastsimp intro:path_CondFalse)
       hence "if (b) prog1 else prog2 \<turnstile> (_ l _) -as \<oplus>s (#:prog1 + 1)\<rightarrow>* (_Exit_)"
-	by(simp add:nat_add_assoc)
+        by(simp add:nat_add_assoc)
       from `prog2 \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l'' _)` obtain ax asx
-	where "prog2 \<turnstile> (_Entry_) -ax#asx\<rightarrow>* (_ l'' _)"
-	by(cases as',auto elim:While_CFG.cases)
+        where "prog2 \<turnstile> (_Entry_) -ax#asx\<rightarrow>* (_ l'' _)"
+        by(cases as',auto elim:While_CFG.cases)
       hence "(_Entry_) = sourcenode ax" and "valid_edge prog2 ax"
-	and "prog2 \<turnstile> targetnode ax -asx\<rightarrow>* (_ l'' _)"
-	by(auto intro:While_CFG.path_split_Cons)
+        and "prog2 \<turnstile> targetnode ax -asx\<rightarrow>* (_ l'' _)"
+        by(auto intro:While_CFG.path_split_Cons)
       hence "targetnode ax = (_0_)" by(fastsimp dest:WCFG_EntryD simp:valid_edge_def)
       with `prog2 \<turnstile> targetnode ax -asx\<rightarrow>* (_ l'' _)`
       have "if (b) prog1 else prog2 \<turnstile> (_0_) \<oplus> (#:prog1 + 1) -asx \<oplus>s (#:prog1 + 1)\<rightarrow>*
-	(_ l'' _) \<oplus> (#:prog1 + 1)"
-	by(fastsimp intro:path_CondFalse)
+        (_ l'' _) \<oplus> (#:prog1 + 1)"
+        by(fastsimp intro:path_CondFalse)
       with WCFG_CondFalse[of b prog1 prog2]
       have "if (b) prog1 else prog2 \<turnstile> (_0_) 
-	-((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_0_) \<oplus> (#:prog1 + 1))#
-	(asx \<oplus>s  (#:prog1 + 1))\<rightarrow>* (_ l'' _) \<oplus>  (#:prog1 + 1)"
-	by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
+        -((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_0_) \<oplus> (#:prog1 + 1))#
+        (asx \<oplus>s  (#:prog1 + 1))\<rightarrow>* (_ l'' _) \<oplus>  (#:prog1 + 1)"
+        by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
       with WCFG_Entry[of "if (b) prog1 else prog2"]
       have "if (b) prog1 else prog2 \<turnstile> (_Entry_) -((_Entry_),(\<lambda>s. True)\<^isub>\<surd>,(_0_))#
-	((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_0_) \<oplus> (#:prog1 + 1))#
-	(asx \<oplus>s (#:prog1 + 1))\<rightarrow>* (_ l'' _) \<oplus> (#:prog1 + 1)"
-	by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
+        ((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_0_) \<oplus> (#:prog1 + 1))#
+        (asx \<oplus>s (#:prog1 + 1))\<rightarrow>* (_ l'' _) \<oplus> (#:prog1 + 1)"
+        by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
       with 
-	`if (b) prog1 else prog2 \<turnstile> (_ l _) -as \<oplus>s (#:prog1 + 1)\<rightarrow>* (_Exit_)`
+        `if (b) prog1 else prog2 \<turnstile> (_ l _) -as \<oplus>s (#:prog1 + 1)\<rightarrow>* (_Exit_)`
       show ?thesis by(simp add:nat_add_assoc,blast)
     qed
   qed
@@ -535,78 +535,78 @@ next
       with `1 \<le> l` have [simp]:"l = 1" by simp
       from WCFG_WhileFalseSkip[of b prog']
       have "while (b) prog' \<turnstile> (_1_) -[((_1_),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)"
-	by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path
+        by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path
                     simp:valid_node_def valid_edge_def)
       from WCFG_WhileFalse[of b prog']
       have "while (b) prog' \<turnstile> (_0_) 
-	-[((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_1_))]\<rightarrow>* (_1_)"
-	by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path
+        -[((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_1_))]\<rightarrow>* (_1_)"
+        by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path
                     simp:While_CFG.valid_node_def valid_edge_def)
       with WCFG_Entry[of "while (b) prog'"]
       have "while (b) prog' \<turnstile> (_Entry_) -((_Entry_),(\<lambda>s. True)\<^isub>\<surd>,(_0_))#
-	[((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_1_))]\<rightarrow>* (_1_)"
-	by(fastsimp intro:While_CFG.Cons_path simp:valid_node_def valid_edge_def)
+        [((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_1_))]\<rightarrow>* (_1_)"
+        by(fastsimp intro:While_CFG.Cons_path simp:valid_node_def valid_edge_def)
       with `while (b) prog' \<turnstile> (_1_) -[((_1_),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)` 
       show ?thesis by simp blast
     next
       case False
       with `1 \<le> l` have "2 \<le> l" by simp
       then obtain l' where [simp]:"l = l' + 2" and "l' = l - 2" 
-	by(simp del:add_2_eq_Suc')
+        by(simp del:add_2_eq_Suc')
       from `l < #:while (b) prog'` have "l' < #:prog'" by simp
       from IH[OF this] obtain as as' where "prog' \<turnstile> (_ l' _) -as\<rightarrow>* (_Exit_)"
-	and "prog' \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l' _)" by blast
+        and "prog' \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l' _)" by blast
       from `prog' \<turnstile> (_ l' _) -as\<rightarrow>* (_Exit_)` obtain ax asx where
-	"prog' \<turnstile> (_ l' _) -asx@[ax]\<rightarrow>* (_Exit_)"
-	by(induct as rule:rev_induct,auto elim:While_CFG.cases)
+        "prog' \<turnstile> (_ l' _) -asx@[ax]\<rightarrow>* (_Exit_)"
+        by(induct as rule:rev_induct,auto elim:While_CFG.cases)
       hence "prog' \<turnstile> (_ l' _) -asx\<rightarrow>* sourcenode ax" and "valid_edge prog' ax"
-	and "(_Exit_) = targetnode ax"
-	by(auto intro:While_CFG.path_split_snoc)
+        and "(_Exit_) = targetnode ax"
+        by(auto intro:While_CFG.path_split_snoc)
       then obtain lx where "sourcenode ax = (_ lx _)"
-	by(cases "sourcenode ax") auto
+        by(cases "sourcenode ax") auto
       with `prog' \<turnstile> (_ l' _) -asx\<rightarrow>* sourcenode ax`
       have "while (b) prog' \<turnstile> (_ l' _) \<oplus> 2 -asx \<oplus>s 2\<rightarrow>* sourcenode ax \<oplus> 2"
-	by(fastsimp intro:path_While simp del:label_incr.simps)
+        by(fastsimp intro:path_While simp del:label_incr.simps)
       from WCFG_WhileFalseSkip[of b prog']
       have "while (b) prog' \<turnstile> (_1_) -[((_1_),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)"
-	by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path
+        by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path
                     simp:valid_node_def valid_edge_def)
       with WCFG_WhileFalse[of b prog']
       have "while (b) prog' \<turnstile> (_0_) -((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_1_))#
-	[((_1_),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)"
-	by(fastsimp intro:While_CFG.Cons_path simp:valid_node_def valid_edge_def)
+        [((_1_),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)"
+        by(fastsimp intro:While_CFG.Cons_path simp:valid_node_def valid_edge_def)
       with `valid_edge prog' ax` `(_Exit_) = targetnode ax` `sourcenode ax = (_ lx _)`
       have "while (b) prog' \<turnstile> sourcenode ax \<oplus> 2 -(sourcenode ax \<oplus> 2,kind ax,(_0_))#
-	((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_1_))#
-	[((_1_),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)"
-	by(fastsimp intro:While_CFG.Cons_path dest:WCFG_WhileBodyExit
-	            simp:valid_node_def valid_edge_def)
+        ((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_1_))#
+        [((_1_),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)"
+        by(fastsimp intro:While_CFG.Cons_path dest:WCFG_WhileBodyExit
+                    simp:valid_node_def valid_edge_def)
       with `while (b) prog' \<turnstile> (_ l' _) \<oplus> 2 -asx \<oplus>s 2\<rightarrow>* sourcenode ax \<oplus> 2`
       have path:"while (b) prog' \<turnstile> (_ l' _) \<oplus> 2 -(asx \<oplus>s 2)@
-	((sourcenode ax \<oplus> 2,kind ax,(_0_))#
-	((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_1_))#
-	[((_1_),\<Up>id,(_Exit_))])\<rightarrow>* (_Exit_)"
-	by(rule While_CFG.path_Append)
+        ((sourcenode ax \<oplus> 2,kind ax,(_0_))#
+        ((_0_),(\<lambda>s. interpret b s = Some false)\<^isub>\<surd>,(_1_))#
+        [((_1_),\<Up>id,(_Exit_))])\<rightarrow>* (_Exit_)"
+        by(rule While_CFG.path_Append)
       from `prog' \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l' _)` obtain ax' asx'
-	where "prog' \<turnstile> (_Entry_) -ax'#asx'\<rightarrow>* (_ l' _)"
-	by(cases as',auto elim:While_CFG.cases)
+        where "prog' \<turnstile> (_Entry_) -ax'#asx'\<rightarrow>* (_ l' _)"
+        by(cases as',auto elim:While_CFG.cases)
       hence "(_Entry_) = sourcenode ax'" and "valid_edge prog' ax'"
-	and "prog' \<turnstile> targetnode ax' -asx'\<rightarrow>* (_ l' _)"
-	by(auto intro:While_CFG.path_split_Cons)
+        and "prog' \<turnstile> targetnode ax' -asx'\<rightarrow>* (_ l' _)"
+        by(auto intro:While_CFG.path_split_Cons)
       hence "targetnode ax' = (_0_)" by(fastsimp dest:WCFG_EntryD simp:valid_edge_def)
       with `prog' \<turnstile> targetnode ax' -asx'\<rightarrow>* (_ l' _)`
       have "while (b) prog' \<turnstile> (_0_) \<oplus> 2 -asx' \<oplus>s 2\<rightarrow>* (_ l' _) \<oplus> 2"
-	by(fastsimp intro:path_While)
+        by(fastsimp intro:path_While)
       with WCFG_WhileTrue[of b prog']
       have "while (b) prog' \<turnstile> (_0_) 
-	-((_0_),(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>,(_0_) \<oplus> 2)#(asx' \<oplus>s 2)\<rightarrow>* 
-	(_ l' _) \<oplus> 2"
-	by(fastsimp intro:While_CFG.Cons_path simp:valid_node_def valid_edge_def)
+        -((_0_),(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>,(_0_) \<oplus> 2)#(asx' \<oplus>s 2)\<rightarrow>* 
+        (_ l' _) \<oplus> 2"
+        by(fastsimp intro:While_CFG.Cons_path simp:valid_node_def valid_edge_def)
       with WCFG_Entry[of "while (b) prog'"]
       have "while (b) prog' \<turnstile> (_Entry_) -((_Entry_),(\<lambda>s. True)\<^isub>\<surd>,(_0_))#
-	((_0_),(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>,(_0_) \<oplus> 2)#(asx' \<oplus>s 2)\<rightarrow>* 
-	(_ l' _) \<oplus> 2"
-	by(fastsimp intro:While_CFG.Cons_path simp:valid_node_def valid_edge_def)
+        ((_0_),(\<lambda>s. interpret b s = Some true)\<^isub>\<surd>,(_0_) \<oplus> 2)#(asx' \<oplus>s 2)\<rightarrow>* 
+        (_ l' _) \<oplus> 2"
+        by(fastsimp intro:While_CFG.Cons_path simp:valid_node_def valid_edge_def)
       with path show ?thesis by simp blast
     qed
   qed

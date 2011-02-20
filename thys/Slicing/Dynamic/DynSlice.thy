@@ -109,183 +109,183 @@ next
       with `x \<longrightarrow> y` ex ex' have [simp]:"ex = kind a' \<and> ex' = kind a'" by simp
       have "pred ex s"
       proof(cases ex)
-	case (Predicate Q)
-	with ex ex' True `x \<longrightarrow> y` have [simp]:"transfer ex s = s" 
-	  and [simp]:"transfer ex' s' = s'"
-	  by(cases "kind a'",auto)+
-	show ?thesis
-	proof(cases "n -[a']\<rightarrow>\<^bsub>cd\<^esub> n'")
-	  case True
-	  { fix V' assume "V' \<in> Use n"
-	    with True `valid_edge a'`
-	    have "(V',[],a'#[]@[]) \<in> dependent_live_vars n'"
-	      by(fastsimp intro:dep_vars_Cons_cdep DynPDG_path_Nil 
-		          simp:targetnodes_def)
-	    with all `as = a'#as'` have "state_val s V' = state_val s' V'"
-	      by fastsimp }
-	  with `pred ex' s'` `valid_edge a'`
-	  show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
-	next
-	  case False
-	  from ex True Predicate have "kind a' = (Q)\<^isub>\<surd>" by(auto split:split_if_asm)
-	  from True `slice_path as = x#xs` `as = a'#as'` have "n -[a']\<rightarrow>\<^isub>d* n'"
-	    by(auto simp:targetnodes_def)
-	  thus ?thesis
-	  proof(induct rule:DynPDG_path.cases)
-	    case (DynPDG_path_Nil nx)
-	    hence False by simp
-	    thus ?case by simp
-	  next
-	    case (DynPDG_path_Append_cdep nx asx n'' asx' nx')
-	    from `[a'] = asx@asx'` 
-	    have "(asx = [a'] \<and> asx' = []) \<or> (asx = [] \<and> asx' = [a'])"
-	      by (cases asx) auto
-	    hence False
-	    proof
-	      assume "asx = [a'] \<and> asx' = []"
-	      with `n'' -asx'\<rightarrow>\<^bsub>cd\<^esub> nx'` show False
-		by(fastsimp elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
-	    next
-	      assume "asx = [] \<and> asx' = [a']"
-	      with `nx -asx\<rightarrow>\<^isub>d* n''` have "nx = n''" and "asx' = [a']"
-		by(auto intro:DynPDG_empty_path_eq_nodes)
-	      with `n = nx` `n' = nx'` `n'' -asx'\<rightarrow>\<^bsub>cd\<^esub> nx'` False
-	      show False by simp
-	    qed
-	    thus ?thesis by simp
-	  next
-	    case (DynPDG_path_Append_ddep nx asx n'' V asx' nx')
-	    from `[a'] = asx@asx'` 
-	    have "(asx = [a'] \<and> asx' = []) \<or> (asx = [] \<and> asx' = [a'])"
-	      by (cases asx) auto
-	    thus ?case
-	    proof
-	      assume "asx = [a'] \<and> asx' = []"
-	      with `n'' -{V}asx'\<rightarrow>\<^bsub>dd\<^esub> nx'` have False
-		by(fastsimp elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
-	      thus ?thesis by simp
-	    next
-	      assume "asx = [] \<and> asx' = [a']"
-	      with `nx -asx\<rightarrow>\<^isub>d* n''` have "nx = n''"
-		by(simp add:DynPDG_empty_path_eq_nodes)
-	      { fix V' assume "V' \<in> Use n"
-		from `n'' -{V}asx'\<rightarrow>\<^bsub>dd\<^esub> nx'` `asx = [] \<and> asx' = [a']` `n' = nx'`
-		have "(V,[],[]) \<in> dependent_live_vars n'"
-		  by(fastsimp intro:dep_vars_Use elim:DynPDG_edge.cases
-		    simp:dyn_data_dependence_def)
-		with `V' \<in> Use n` `n'' -{V}asx'\<rightarrow>\<^bsub>dd\<^esub> nx'` `asx = [] \<and> asx' = [a']`
-		  `n = nx` `nx = n''` `n' = nx'`
-		have "(V',[],[a']) \<in> dependent_live_vars n'"
-		  by(auto elim:dep_vars_Cons_ddep simp:targetnodes_def)
-		with all `as = a'#as'` have "state_val s V' = state_val s' V'"
-		  by fastsimp }
-	      with `pred ex' s'` `valid_edge a'` ex ex' True `x \<longrightarrow> y` show ?thesis
-		by(fastsimp elim:CFG_edge_Uses_pred_equal)
-	    qed
-	  qed
-	qed
+        case (Predicate Q)
+        with ex ex' True `x \<longrightarrow> y` have [simp]:"transfer ex s = s" 
+          and [simp]:"transfer ex' s' = s'"
+          by(cases "kind a'",auto)+
+        show ?thesis
+        proof(cases "n -[a']\<rightarrow>\<^bsub>cd\<^esub> n'")
+          case True
+          { fix V' assume "V' \<in> Use n"
+            with True `valid_edge a'`
+            have "(V',[],a'#[]@[]) \<in> dependent_live_vars n'"
+              by(fastsimp intro:dep_vars_Cons_cdep DynPDG_path_Nil 
+                          simp:targetnodes_def)
+            with all `as = a'#as'` have "state_val s V' = state_val s' V'"
+              by fastsimp }
+          with `pred ex' s'` `valid_edge a'`
+          show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
+        next
+          case False
+          from ex True Predicate have "kind a' = (Q)\<^isub>\<surd>" by(auto split:split_if_asm)
+          from True `slice_path as = x#xs` `as = a'#as'` have "n -[a']\<rightarrow>\<^isub>d* n'"
+            by(auto simp:targetnodes_def)
+          thus ?thesis
+          proof(induct rule:DynPDG_path.cases)
+            case (DynPDG_path_Nil nx)
+            hence False by simp
+            thus ?case by simp
+          next
+            case (DynPDG_path_Append_cdep nx asx n'' asx' nx')
+            from `[a'] = asx@asx'` 
+            have "(asx = [a'] \<and> asx' = []) \<or> (asx = [] \<and> asx' = [a'])"
+              by (cases asx) auto
+            hence False
+            proof
+              assume "asx = [a'] \<and> asx' = []"
+              with `n'' -asx'\<rightarrow>\<^bsub>cd\<^esub> nx'` show False
+                by(fastsimp elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
+            next
+              assume "asx = [] \<and> asx' = [a']"
+              with `nx -asx\<rightarrow>\<^isub>d* n''` have "nx = n''" and "asx' = [a']"
+                by(auto intro:DynPDG_empty_path_eq_nodes)
+              with `n = nx` `n' = nx'` `n'' -asx'\<rightarrow>\<^bsub>cd\<^esub> nx'` False
+              show False by simp
+            qed
+            thus ?thesis by simp
+          next
+            case (DynPDG_path_Append_ddep nx asx n'' V asx' nx')
+            from `[a'] = asx@asx'` 
+            have "(asx = [a'] \<and> asx' = []) \<or> (asx = [] \<and> asx' = [a'])"
+              by (cases asx) auto
+            thus ?case
+            proof
+              assume "asx = [a'] \<and> asx' = []"
+              with `n'' -{V}asx'\<rightarrow>\<^bsub>dd\<^esub> nx'` have False
+                by(fastsimp elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
+              thus ?thesis by simp
+            next
+              assume "asx = [] \<and> asx' = [a']"
+              with `nx -asx\<rightarrow>\<^isub>d* n''` have "nx = n''"
+                by(simp add:DynPDG_empty_path_eq_nodes)
+              { fix V' assume "V' \<in> Use n"
+                from `n'' -{V}asx'\<rightarrow>\<^bsub>dd\<^esub> nx'` `asx = [] \<and> asx' = [a']` `n' = nx'`
+                have "(V,[],[]) \<in> dependent_live_vars n'"
+                  by(fastsimp intro:dep_vars_Use elim:DynPDG_edge.cases
+                    simp:dyn_data_dependence_def)
+                with `V' \<in> Use n` `n'' -{V}asx'\<rightarrow>\<^bsub>dd\<^esub> nx'` `asx = [] \<and> asx' = [a']`
+                  `n = nx` `nx = n''` `n' = nx'`
+                have "(V',[],[a']) \<in> dependent_live_vars n'"
+                  by(auto elim:dep_vars_Cons_ddep simp:targetnodes_def)
+                with all `as = a'#as'` have "state_val s V' = state_val s' V'"
+                  by fastsimp }
+              with `pred ex' s'` `valid_edge a'` ex ex' True `x \<longrightarrow> y` show ?thesis
+                by(fastsimp elim:CFG_edge_Uses_pred_equal)
+            qed
+          qed
+        qed
       qed simp
       { fix V assume "V \<in> Use n'"
-	from `V \<in> Use n'` have "(V,[],[]) \<in> dependent_live_vars n'" 
-	  by(rule dep_vars_Use)
-	have "state_val (transfer ex s) V = state_val (transfer ex' s') V"
-	proof(cases "n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'")
-	  case True
-	  hence "V \<in> Def n"
-	    by(auto elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
-	  have "\<And>V. V \<in> Use n \<Longrightarrow> state_val s V = state_val s' V"
-	  proof -
-	    fix V' assume "V' \<in> Use n"
-	    with `(V,[],[]) \<in> dependent_live_vars n'` True
-	    have "(V',[],[a']) \<in> dependent_live_vars n'"
-	      by(fastsimp intro:dep_vars_Cons_ddep simp:targetnodes_def)
-	    with all `as = a'#as'` show "state_val s V' = state_val s' V'" by auto
-	  qed
-	  with `valid_edge a'` `pred ex' s'` `pred ex s`
-	  have "\<forall>V \<in> Def n. state_val (transfer (kind a') s) V =
+        from `V \<in> Use n'` have "(V,[],[]) \<in> dependent_live_vars n'" 
+          by(rule dep_vars_Use)
+        have "state_val (transfer ex s) V = state_val (transfer ex' s') V"
+        proof(cases "n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'")
+          case True
+          hence "V \<in> Def n"
+            by(auto elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
+          have "\<And>V. V \<in> Use n \<Longrightarrow> state_val s V = state_val s' V"
+          proof -
+            fix V' assume "V' \<in> Use n"
+            with `(V,[],[]) \<in> dependent_live_vars n'` True
+            have "(V',[],[a']) \<in> dependent_live_vars n'"
+              by(fastsimp intro:dep_vars_Cons_ddep simp:targetnodes_def)
+            with all `as = a'#as'` show "state_val s V' = state_val s' V'" by auto
+          qed
+          with `valid_edge a'` `pred ex' s'` `pred ex s`
+          have "\<forall>V \<in> Def n. state_val (transfer (kind a') s) V =
                               state_val (transfer (kind a') s') V"
-	    by simp(rule CFG_edge_transfer_uses_only_Use,auto)
-	  with `V \<in> Def n` have "state_val (transfer (kind a') s) V = 
-	                 state_val (transfer (kind a') s') V"
-	    by simp
-	  thus ?thesis by fastsimp
-	next
-	  case False
-	  with `last(targetnodes as) = n'` `as = a'#as'`
-	    `(V,[],[]) \<in> dependent_live_vars n'`
-	  have "(V,[a'],[a']) \<in> dependent_live_vars n'"
-	    by(fastsimp intro:dep_vars_Cons_keep)
-	  from `(V,[a'],[a']) \<in> dependent_live_vars n'` all `as = a'#as'`
-	  have states_eq:"state_val s V = state_val s' V"
-	    by auto
-	  from `valid_edge a'` `V \<in> Use n'` False `pred ex s`
-	  have "state_val (transfers (kinds [a']) s) V = state_val s V"
-	    apply(auto intro!:no_ddep_same_state path_edge simp:targetnodes_def)
-	    apply(simp add:kinds_def)
-	    by(case_tac as',auto)
-	  moreover
-	  from `valid_edge a'` `V \<in> Use n'` False `pred ex' s'`
-	  have "state_val (transfers (kinds [a']) s') V = state_val s' V"
-	    apply(auto intro!:no_ddep_same_state path_edge simp:targetnodes_def)
-	    apply(simp add:kinds_def)
-	    by(case_tac as',auto)
-	  ultimately show ?thesis using states_eq by(auto simp:kinds_def)
-	qed }
+            by simp(rule CFG_edge_transfer_uses_only_Use,auto)
+          with `V \<in> Def n` have "state_val (transfer (kind a') s) V = 
+                         state_val (transfer (kind a') s') V"
+            by simp
+          thus ?thesis by fastsimp
+        next
+          case False
+          with `last(targetnodes as) = n'` `as = a'#as'`
+            `(V,[],[]) \<in> dependent_live_vars n'`
+          have "(V,[a'],[a']) \<in> dependent_live_vars n'"
+            by(fastsimp intro:dep_vars_Cons_keep)
+          from `(V,[a'],[a']) \<in> dependent_live_vars n'` all `as = a'#as'`
+          have states_eq:"state_val s V = state_val s' V"
+            by auto
+          from `valid_edge a'` `V \<in> Use n'` False `pred ex s`
+          have "state_val (transfers (kinds [a']) s) V = state_val s V"
+            apply(auto intro!:no_ddep_same_state path_edge simp:targetnodes_def)
+            apply(simp add:kinds_def)
+            by(case_tac as',auto)
+          moreover
+          from `valid_edge a'` `V \<in> Use n'` False `pred ex' s'`
+          have "state_val (transfers (kinds [a']) s') V = state_val s' V"
+            apply(auto intro!:no_ddep_same_state path_edge simp:targetnodes_def)
+            apply(simp add:kinds_def)
+            by(case_tac as',auto)
+          ultimately show ?thesis using states_eq by(auto simp:kinds_def)
+        qed }
       hence "\<forall>V \<in> Use n'. state_val (transfer ex s) V = 
-	                        state_val (transfer ex' s') V" by simp
+                                state_val (transfer ex' s') V" by simp
       with `pred ex s` `es = ex#esx` `es' = ex'#esx'` show ?thesis by simp
     next
       case False
       with ex have cases_x:"ex = (case kind a' of \<Up>f \<Rightarrow> \<Up>id | (Q)\<^isub>\<surd> \<Rightarrow> (\<lambda>s. True)\<^isub>\<surd>)"
-	by simp
+        by simp
       from cases_x have "pred ex s" by(cases "kind a'",auto)
       show ?thesis
       proof(cases y)
-	case True
-	with ex' have [simp]:"ex' = kind a'" by simp
-	{ fix V assume "V \<in> Use n'"
-	  from `V \<in> Use n'` have "(V,[],[]) \<in> dependent_live_vars n'"
-	    by(rule dep_vars_Use)
-	  from `slice_path as = x#xs` `as = a'#as'` `\<not> x` 
-	  have "\<not> n -[a']\<rightarrow>\<^isub>d* n'" by(simp add:targetnodes_def)
-	  hence "\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'" by(fastsimp dest:DynPDG_path_ddep)
-	  with `last(targetnodes as) = n'` `as = a'#as'`
-	    `(V,[],[]) \<in> dependent_live_vars n'`
-	  have "(V,[a'],[a']) \<in> dependent_live_vars n'"
-	    by(fastsimp intro:dep_vars_Cons_keep)
-	  with all `as = a'#as'` have "state_val s V = state_val s' V" by auto
-	  from `valid_edge a'` `V \<in> Use n'` `pred ex' s'`
-	    `\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'` `last(targetnodes as) = n'` `as = a'#as'`
-	  have "state_val (transfers (kinds [a']) s') V = state_val s' V"
-	    apply(auto intro!:no_ddep_same_state path_edge)
-	    apply(simp add:kinds_def)
-	    by(case_tac as',auto)
-	  with `state_val s V = state_val s' V` cases_x
-	  have "state_val (transfer ex s) V =
+        case True
+        with ex' have [simp]:"ex' = kind a'" by simp
+        { fix V assume "V \<in> Use n'"
+          from `V \<in> Use n'` have "(V,[],[]) \<in> dependent_live_vars n'"
+            by(rule dep_vars_Use)
+          from `slice_path as = x#xs` `as = a'#as'` `\<not> x` 
+          have "\<not> n -[a']\<rightarrow>\<^isub>d* n'" by(simp add:targetnodes_def)
+          hence "\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'" by(fastsimp dest:DynPDG_path_ddep)
+          with `last(targetnodes as) = n'` `as = a'#as'`
+            `(V,[],[]) \<in> dependent_live_vars n'`
+          have "(V,[a'],[a']) \<in> dependent_live_vars n'"
+            by(fastsimp intro:dep_vars_Cons_keep)
+          with all `as = a'#as'` have "state_val s V = state_val s' V" by auto
+          from `valid_edge a'` `V \<in> Use n'` `pred ex' s'`
+            `\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'` `last(targetnodes as) = n'` `as = a'#as'`
+          have "state_val (transfers (kinds [a']) s') V = state_val s' V"
+            apply(auto intro!:no_ddep_same_state path_edge)
+            apply(simp add:kinds_def)
+            by(case_tac as',auto)
+          with `state_val s V = state_val s' V` cases_x
+          have "state_val (transfer ex s) V =
                 state_val (transfer ex' s') V"
-	    by(cases "kind a'",simp_all add:kinds_def) }
-	hence "\<forall>V \<in> Use n'. state_val (transfer ex s) V =
+            by(cases "kind a'",simp_all add:kinds_def) }
+        hence "\<forall>V \<in> Use n'. state_val (transfer ex s) V =
                            state_val (transfer ex' s') V" by simp
-	with `as = a'#as'` `es = ex#esx` `es' = ex'#esx'` `pred ex s` 
-	show ?thesis by simp
+        with `as = a'#as'` `es = ex#esx` `es' = ex'#esx'` `pred ex s` 
+        show ?thesis by simp
       next
-	case False
-	with ex' have cases_y:"ex' = (case kind a' of \<Up>f \<Rightarrow> \<Up>id | (Q)\<^isub>\<surd> \<Rightarrow> (\<lambda>s. True)\<^isub>\<surd>)"
-	  by simp
-	with cases_x have [simp]:"ex = ex'" by(cases "kind a'") auto
-	{ fix V assume "V \<in> Use n'"
-	  from `V \<in> Use n'` have "(V,[],[]) \<in> dependent_live_vars n'"
-	    by(rule dep_vars_Use)
-	  from `slice_path as = x#xs` `as = a'#as'` `\<not> x` 
-	  have "\<not> n -[a']\<rightarrow>\<^isub>d* n'" by(simp add:targetnodes_def)
-	  hence no_dep:"\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'" by(fastsimp dest:DynPDG_path_ddep)
-	  with `last(targetnodes as) = n'` `as = a'#as'`
-	    `(V,[],[]) \<in> dependent_live_vars n'`
-	  have "(V,[a'],[a']) \<in> dependent_live_vars n'"
-	    by(fastsimp intro:dep_vars_Cons_keep)
-	  with all `as = a'#as'` have "state_val s V = state_val s' V" by auto }
-	with `as = a'#as'` cases_x `es = ex#esx` `es' = ex'#esx'` `pred ex s`
-	show ?thesis by(cases "kind a'",auto)
+        case False
+        with ex' have cases_y:"ex' = (case kind a' of \<Up>f \<Rightarrow> \<Up>id | (Q)\<^isub>\<surd> \<Rightarrow> (\<lambda>s. True)\<^isub>\<surd>)"
+          by simp
+        with cases_x have [simp]:"ex = ex'" by(cases "kind a'") auto
+        { fix V assume "V \<in> Use n'"
+          from `V \<in> Use n'` have "(V,[],[]) \<in> dependent_live_vars n'"
+            by(rule dep_vars_Use)
+          from `slice_path as = x#xs` `as = a'#as'` `\<not> x` 
+          have "\<not> n -[a']\<rightarrow>\<^isub>d* n'" by(simp add:targetnodes_def)
+          hence no_dep:"\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'" by(fastsimp dest:DynPDG_path_ddep)
+          with `last(targetnodes as) = n'` `as = a'#as'`
+            `(V,[],[]) \<in> dependent_live_vars n'`
+          have "(V,[a'],[a']) \<in> dependent_live_vars n'"
+            by(fastsimp intro:dep_vars_Cons_keep)
+          with all `as = a'#as'` have "state_val s V = state_val s' V" by auto }
+        with `as = a'#as'` cases_x `es = ex#esx` `es' = ex'#esx'` `pred ex s`
+        show ?thesis by(cases "kind a'",auto)
       qed
     qed
   next
@@ -297,206 +297,206 @@ next
       hence imp':"\<forall>V xs. (V,xs,as') \<in> dependent_live_vars n' \<longrightarrow>
                        state_val (transfer ex s) V = state_val (transfer ex' s') V" .
       from IH[OF `targetnode a' -as'\<rightarrow>* n'` `xs \<preceq>\<^isub>b ys` `slice_path as' = xs`
-	`select_edge_kinds as' xs = esx` `select_edge_kinds as' ys = esx'` 
-	this `preds esx' (transfer ex' s')`]
+        `select_edge_kinds as' xs = esx` `select_edge_kinds as' ys = esx'` 
+        this `preds esx' (transfer ex' s')`]
       have all':"\<forall>V\<in>Use n'. state_val (transfers esx (transfer ex s)) V =
                              state_val (transfers esx' (transfer ex' s')) V"
-	and "preds esx (transfer ex s)" by simp_all
+        and "preds esx (transfer ex s)" by simp_all
       have "pred ex s"
       proof(cases ex)
-	case (Predicate Q)
-	with `slice_path as = x#xs` `as = a'#as'` `last(targetnodes as) = n'` ex 
-	have "ex = (\<lambda>s. True)\<^isub>\<surd> \<or> n -a'#as'\<rightarrow>\<^isub>d* n'"
-	  by(cases "kind a'",auto split:split_if_asm) 
-	thus ?thesis
-	proof
-	  assume "ex = (\<lambda>s. True)\<^isub>\<surd>" thus ?thesis by simp
-	next
-	  assume "n -a'#as'\<rightarrow>\<^isub>d* n'"
-	  with `slice_path as = x#xs` `as = a'#as'` `last(targetnodes as) = n'` ex
-	  have [simp]:"ex = kind a'" by clarsimp
-	  with `x \<longrightarrow> y` ex ex' have [simp]:"ex' = ex" by(cases x) auto
-	  from `n -a'#as'\<rightarrow>\<^isub>d* n'` show ?thesis
-	  proof(induct rule:DynPDG_path_rev_cases)
-	    case DynPDG_path_Nil
-	    hence False by simp
-	    thus ?thesis by simp
-	  next
-	    case (DynPDG_path_cdep_Append n'' asx asx')
-	    from `n -asx\<rightarrow>\<^bsub>cd\<^esub> n''`have "asx \<noteq> []"
-	      by(auto elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
-	    with `n -asx\<rightarrow>\<^bsub>cd\<^esub> n''` `n'' -asx'\<rightarrow>\<^isub>d* n'` `a'#as' = asx@asx'`
-	    have cdep:"\<exists>as1 as2 n''. n -a'#as1\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> 
-	                             n'' -as2\<rightarrow>\<^isub>d* n' \<and> as' = as1@as2"
-	      by(cases asx) auto 
-	    { fix V assume "V \<in> Use n"
-	      with cdep `last(targetnodes as) = n'` `as = a'#as'`
-	      have "(V,[],as) \<in> dependent_live_vars n'"
-		by(fastsimp intro:dep_vars_Cons_cdep)
-	      with all have "state_val s V = state_val s' V" by blast }
-	    with `valid_edge a'` `pred ex' s'`
-	    show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
-	  next
-	    case (DynPDG_path_ddep_Append V n'' asx asx')
-	    from `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` obtain ai ais where "asx = ai#ais"
-	      by(cases asx)(auto dest:DynPDG_ddep_edge_CFG_path)
-	    with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` have "sourcenode ai = n"
-	      by(fastsimp dest:DynPDG_ddep_edge_CFG_path elim:path.cases)
-	    from `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `asx = ai#ais`
-	    have "last(targetnodes asx) = n''"
-	      by(fastsimp intro:path_targetnode dest:DynPDG_ddep_edge_CFG_path)
-	    { fix V' assume "V' \<in> Use n"
-	      from `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` have "(V,[],[]) \<in> dependent_live_vars n''"
-		by(fastsimp elim:DynPDG_edge.cases dep_vars_Use 
-		            simp:dyn_data_dependence_def)
-	      with `n'' -asx'\<rightarrow>\<^isub>d* n'` have "(V,[],[]@asx') \<in> dependent_live_vars n'"
-		by(rule dependent_live_vars_dep_dependent_live_vars)
-	      have "(V',[],as) \<in> dependent_live_vars n'"
-	      proof(cases "asx' = []")
-		case True
-		with `n'' -asx'\<rightarrow>\<^isub>d* n'` have "n'' = n'"
-		  by(fastsimp intro:DynPDG_empty_path_eq_nodes)
-		with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `V' \<in> Use n` True `as = a'#as'`
-		  `a'#as' = asx@asx'`
-		show ?thesis by(fastsimp intro:dependent_live_vars_ddep_empty_fst)
-	      next
-		case False
-		with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `asx = ai#ais`
-		  `(V,[],[]@asx') \<in> dependent_live_vars n'`
-		have "(V,ais@[],ais@asx') \<in> dependent_live_vars n'"
-		  by(fastsimp intro:ddep_dependent_live_vars_keep_notempty)
-		from `n'' -asx'\<rightarrow>\<^isub>d* n'` False have "last(targetnodes asx') = n'"
-		  by -(rule path_targetnode,rule DynPDG_path_CFG_path)
-		with `(V,ais@[],ais@asx') \<in> dependent_live_vars n'`
-		  `V' \<in> Use n` `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `asx = ai#ais`
-		  `sourcenode ai = n` `last(targetnodes asx) = n''` False
-		have "(V',[],ai#ais@asx') \<in> dependent_live_vars n'"
-		  by(fastsimp intro:dep_vars_Cons_ddep simp:targetnodes_def)
-		with `asx = ai#ais` `a'#as' = asx@asx'` `as = a'#as'`
-		show ?thesis by simp
-	      qed
-	      with all have "state_val s V' = state_val s' V'" by blast }
-	    with `pred ex' s'` `valid_edge a'`
-	    show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
-	  qed
-	qed
+        case (Predicate Q)
+        with `slice_path as = x#xs` `as = a'#as'` `last(targetnodes as) = n'` ex 
+        have "ex = (\<lambda>s. True)\<^isub>\<surd> \<or> n -a'#as'\<rightarrow>\<^isub>d* n'"
+          by(cases "kind a'",auto split:split_if_asm) 
+        thus ?thesis
+        proof
+          assume "ex = (\<lambda>s. True)\<^isub>\<surd>" thus ?thesis by simp
+        next
+          assume "n -a'#as'\<rightarrow>\<^isub>d* n'"
+          with `slice_path as = x#xs` `as = a'#as'` `last(targetnodes as) = n'` ex
+          have [simp]:"ex = kind a'" by clarsimp
+          with `x \<longrightarrow> y` ex ex' have [simp]:"ex' = ex" by(cases x) auto
+          from `n -a'#as'\<rightarrow>\<^isub>d* n'` show ?thesis
+          proof(induct rule:DynPDG_path_rev_cases)
+            case DynPDG_path_Nil
+            hence False by simp
+            thus ?thesis by simp
+          next
+            case (DynPDG_path_cdep_Append n'' asx asx')
+            from `n -asx\<rightarrow>\<^bsub>cd\<^esub> n''`have "asx \<noteq> []"
+              by(auto elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
+            with `n -asx\<rightarrow>\<^bsub>cd\<^esub> n''` `n'' -asx'\<rightarrow>\<^isub>d* n'` `a'#as' = asx@asx'`
+            have cdep:"\<exists>as1 as2 n''. n -a'#as1\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> 
+                                     n'' -as2\<rightarrow>\<^isub>d* n' \<and> as' = as1@as2"
+              by(cases asx) auto 
+            { fix V assume "V \<in> Use n"
+              with cdep `last(targetnodes as) = n'` `as = a'#as'`
+              have "(V,[],as) \<in> dependent_live_vars n'"
+                by(fastsimp intro:dep_vars_Cons_cdep)
+              with all have "state_val s V = state_val s' V" by blast }
+            with `valid_edge a'` `pred ex' s'`
+            show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
+          next
+            case (DynPDG_path_ddep_Append V n'' asx asx')
+            from `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` obtain ai ais where "asx = ai#ais"
+              by(cases asx)(auto dest:DynPDG_ddep_edge_CFG_path)
+            with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` have "sourcenode ai = n"
+              by(fastsimp dest:DynPDG_ddep_edge_CFG_path elim:path.cases)
+            from `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `asx = ai#ais`
+            have "last(targetnodes asx) = n''"
+              by(fastsimp intro:path_targetnode dest:DynPDG_ddep_edge_CFG_path)
+            { fix V' assume "V' \<in> Use n"
+              from `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` have "(V,[],[]) \<in> dependent_live_vars n''"
+                by(fastsimp elim:DynPDG_edge.cases dep_vars_Use 
+                            simp:dyn_data_dependence_def)
+              with `n'' -asx'\<rightarrow>\<^isub>d* n'` have "(V,[],[]@asx') \<in> dependent_live_vars n'"
+                by(rule dependent_live_vars_dep_dependent_live_vars)
+              have "(V',[],as) \<in> dependent_live_vars n'"
+              proof(cases "asx' = []")
+                case True
+                with `n'' -asx'\<rightarrow>\<^isub>d* n'` have "n'' = n'"
+                  by(fastsimp intro:DynPDG_empty_path_eq_nodes)
+                with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `V' \<in> Use n` True `as = a'#as'`
+                  `a'#as' = asx@asx'`
+                show ?thesis by(fastsimp intro:dependent_live_vars_ddep_empty_fst)
+              next
+                case False
+                with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `asx = ai#ais`
+                  `(V,[],[]@asx') \<in> dependent_live_vars n'`
+                have "(V,ais@[],ais@asx') \<in> dependent_live_vars n'"
+                  by(fastsimp intro:ddep_dependent_live_vars_keep_notempty)
+                from `n'' -asx'\<rightarrow>\<^isub>d* n'` False have "last(targetnodes asx') = n'"
+                  by -(rule path_targetnode,rule DynPDG_path_CFG_path)
+                with `(V,ais@[],ais@asx') \<in> dependent_live_vars n'`
+                  `V' \<in> Use n` `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `asx = ai#ais`
+                  `sourcenode ai = n` `last(targetnodes asx) = n''` False
+                have "(V',[],ai#ais@asx') \<in> dependent_live_vars n'"
+                  by(fastsimp intro:dep_vars_Cons_ddep simp:targetnodes_def)
+                with `asx = ai#ais` `a'#as' = asx@asx'` `as = a'#as'`
+                show ?thesis by simp
+              qed
+              with all have "state_val s V' = state_val s' V'" by blast }
+            with `pred ex' s'` `valid_edge a'`
+            show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
+          qed
+        qed
       qed simp
       with all' `preds esx (transfer ex s)` `es = ex#esx` `es' = ex'#esx'`
       show ?thesis by simp
     next
       case False
       then obtain V' xs' where "(V',xs',as') \<in> dependent_live_vars n'"
-	and "state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'"
-	by auto
+        and "state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'"
+        by auto
       show ?thesis
       proof(cases "n -a'#as'\<rightarrow>\<^isub>d* n'")
-	case True
-	with `slice_path as = x#xs` `as = a'#as'` `last(targetnodes as) = n'` ex
-	have [simp]:"ex = kind a'" by clarsimp
-	with `x \<longrightarrow> y` ex ex' have [simp]:"ex' = ex" by(cases x) auto
-	{ fix V assume "V \<in> Use (sourcenode a')"
-	  hence "(V,[],[]) \<in> dependent_live_vars (sourcenode a')"
-	    by(rule dep_vars_Use)
-	  with `n -a'#as'\<rightarrow>\<^isub>d* n'` have "(V,[],[]@a'#as') \<in> dependent_live_vars n'"
-	    by(fastsimp intro:dependent_live_vars_dep_dependent_live_vars)
-	  with all `as = a'#as'` have "state_val s V = state_val s' V"
-	    by fastsimp }
-	with `pred ex' s'` `valid_edge a'` have "pred ex s"
-	  by(fastsimp intro:CFG_edge_Uses_pred_equal)
-	show ?thesis
-	proof(cases "V' \<in> Def n")
-	  case True
-	  with `state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'`
-	    `valid_edge a'` `pred ex' s'` `pred ex s`
-	    CFG_edge_transfer_uses_only_Use[of a' s s']
-	  obtain V'' where "V'' \<in> Use n"
-	    and "state_val s V'' \<noteq> state_val s' V''"
-	    by auto
-	  from True `(V',xs',as') \<in> dependent_live_vars n'`
-	    `targetnode a' -as'\<rightarrow>* n'` `last(targetnodes as) = n'` `as = a'#as'`
-	    `valid_edge a'` `n = sourcenode a'`[THEN sym]
-	  have "n -{V'}a'#xs'\<rightarrow>\<^bsub>dd\<^esub> last(targetnodes (a'#xs'))"
-	    by -(drule dependent_live_vars_dependent_edge,
-	      auto dest!: dependent_live_vars_dependent_edge 
-	           dest:DynPDG_ddep_edge_CFG_path path_targetnode 
-	           simp del:`n = sourcenode a'`)
-	  with `(V',xs',as') \<in> dependent_live_vars n'` `V'' \<in> Use n`
-	    `last(targetnodes as) = n'` `as = a'#as'`
-	  have "(V'',[],as) \<in> dependent_live_vars n'" 
-	    by(fastsimp intro:dep_vars_Cons_ddep)
-	  with all have "state_val s V'' = state_val s' V''" by blast
-	  with `state_val s V'' \<noteq> state_val s' V''` have False by simp
-	  thus ?thesis by simp
-	next
-	  case False
-	  with `valid_edge a'` `pred ex s`
-	  have "state_val (transfer (kind a') s) V' = state_val s V'"
-	    by(fastsimp intro:CFG_edge_no_Def_equal)
-	  moreover
-	  from False `valid_edge a'` `pred ex' s'`
-	  have "state_val (transfer (kind a') s') V' = state_val s' V'"
-	    by(fastsimp intro:CFG_edge_no_Def_equal)
-	  ultimately have "state_val s V' \<noteq> state_val s' V'"
-	    using `state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'`
-	    by simp
-	  from False have "\<not> n -{V'}a'#xs'\<rightarrow>\<^bsub>dd\<^esub> 
-	                   last(targetnodes (a'#xs'))"
-	    by(auto elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
-	  with `(V',xs',as') \<in> dependent_live_vars n'` `last(targetnodes as) = n'`
-	    `as = a'#as'`
-	  have "(V',a'#xs',a'#as') \<in> dependent_live_vars n'"
-	    by(fastsimp intro:dep_vars_Cons_keep)
-	  with `as = a'#as'` all have "state_val s V' = state_val s' V'" by auto
-	  with `state_val s V' \<noteq> state_val s' V'` have False by simp
-	  thus ?thesis by simp
-	qed
+        case True
+        with `slice_path as = x#xs` `as = a'#as'` `last(targetnodes as) = n'` ex
+        have [simp]:"ex = kind a'" by clarsimp
+        with `x \<longrightarrow> y` ex ex' have [simp]:"ex' = ex" by(cases x) auto
+        { fix V assume "V \<in> Use (sourcenode a')"
+          hence "(V,[],[]) \<in> dependent_live_vars (sourcenode a')"
+            by(rule dep_vars_Use)
+          with `n -a'#as'\<rightarrow>\<^isub>d* n'` have "(V,[],[]@a'#as') \<in> dependent_live_vars n'"
+            by(fastsimp intro:dependent_live_vars_dep_dependent_live_vars)
+          with all `as = a'#as'` have "state_val s V = state_val s' V"
+            by fastsimp }
+        with `pred ex' s'` `valid_edge a'` have "pred ex s"
+          by(fastsimp intro:CFG_edge_Uses_pred_equal)
+        show ?thesis
+        proof(cases "V' \<in> Def n")
+          case True
+          with `state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'`
+            `valid_edge a'` `pred ex' s'` `pred ex s`
+            CFG_edge_transfer_uses_only_Use[of a' s s']
+          obtain V'' where "V'' \<in> Use n"
+            and "state_val s V'' \<noteq> state_val s' V''"
+            by auto
+          from True `(V',xs',as') \<in> dependent_live_vars n'`
+            `targetnode a' -as'\<rightarrow>* n'` `last(targetnodes as) = n'` `as = a'#as'`
+            `valid_edge a'` `n = sourcenode a'`[THEN sym]
+          have "n -{V'}a'#xs'\<rightarrow>\<^bsub>dd\<^esub> last(targetnodes (a'#xs'))"
+            by -(drule dependent_live_vars_dependent_edge,
+              auto dest!: dependent_live_vars_dependent_edge 
+                   dest:DynPDG_ddep_edge_CFG_path path_targetnode 
+                   simp del:`n = sourcenode a'`)
+          with `(V',xs',as') \<in> dependent_live_vars n'` `V'' \<in> Use n`
+            `last(targetnodes as) = n'` `as = a'#as'`
+          have "(V'',[],as) \<in> dependent_live_vars n'" 
+            by(fastsimp intro:dep_vars_Cons_ddep)
+          with all have "state_val s V'' = state_val s' V''" by blast
+          with `state_val s V'' \<noteq> state_val s' V''` have False by simp
+          thus ?thesis by simp
+        next
+          case False
+          with `valid_edge a'` `pred ex s`
+          have "state_val (transfer (kind a') s) V' = state_val s V'"
+            by(fastsimp intro:CFG_edge_no_Def_equal)
+          moreover
+          from False `valid_edge a'` `pred ex' s'`
+          have "state_val (transfer (kind a') s') V' = state_val s' V'"
+            by(fastsimp intro:CFG_edge_no_Def_equal)
+          ultimately have "state_val s V' \<noteq> state_val s' V'"
+            using `state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'`
+            by simp
+          from False have "\<not> n -{V'}a'#xs'\<rightarrow>\<^bsub>dd\<^esub> 
+                           last(targetnodes (a'#xs'))"
+            by(auto elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
+          with `(V',xs',as') \<in> dependent_live_vars n'` `last(targetnodes as) = n'`
+            `as = a'#as'`
+          have "(V',a'#xs',a'#as') \<in> dependent_live_vars n'"
+            by(fastsimp intro:dep_vars_Cons_keep)
+          with `as = a'#as'` all have "state_val s V' = state_val s' V'" by auto
+          with `state_val s V' \<noteq> state_val s' V'` have False by simp
+          thus ?thesis by simp
+        qed
       next
-	case False
-	{ assume "V' \<in> Def n"
-	  with `(V',xs',as') \<in> dependent_live_vars n'` `targetnode a' -as'\<rightarrow>* n'`
-	    `valid_edge a'`
-	  have "n -a'#as'\<rightarrow>\<^isub>d* n'"
-	    by -(drule dependent_live_vars_dependent_edge,
-	      auto dest:DynPDG_path_ddep DynPDG_path_Append)
-	  with False have "False" by simp }
-	hence "V' \<notin> Def (sourcenode a')" by fastsimp
-	from False `slice_path as = x#xs` `as = a'#as'`
-	  `last(targetnodes as) = n'` `as' \<noteq> []`
-	have "\<not> x" by(auto simp:targetnodes_def)
-	with ex have cases:"ex = (case kind a' of \<Up>f \<Rightarrow> \<Up>id | (Q)\<^isub>\<surd> \<Rightarrow> (\<lambda>s. True)\<^isub>\<surd>)"
-	  by simp
-	have "state_val s V' \<noteq> state_val s' V'"
-	proof(cases y)
-	  case True
-	  with ex' have [simp]:"ex' = kind a'" by simp
-	  from `V' \<notin> Def (sourcenode a')` `valid_edge a'` `pred ex' s'`
-	  have states_eq:"state_val (transfer (kind a') s') V' = state_val s' V'"
-	    by(fastsimp intro:CFG_edge_no_Def_equal)
-	  from cases have "state_val s V' = state_val (transfer ex s) V'"
-	    by(cases "kind a'") auto
-	  with states_eq
-	    `state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'`
-	  show ?thesis by simp
-	next
-	  case False
-	  with ex' have "ex' = (case kind a' of \<Up>f \<Rightarrow> \<Up>id | (Q)\<^isub>\<surd> \<Rightarrow> (\<lambda>s. True)\<^isub>\<surd>)"
-	    by simp
-	  with cases have "state_val s V' = state_val (transfer ex s) V'"
-	    and "state_val s' V' = state_val (transfer ex' s') V'"
-	    by(cases "kind a'",auto)+
-	  with `state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'` 
-	  show ?thesis by simp
-	qed
-	from `V' \<notin> Def (sourcenode a')` 
-	have "\<not> n -{V'}a'#xs'\<rightarrow>\<^bsub>dd\<^esub> last(targetnodes (a'#xs'))"
-	  by(auto elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
-	with `(V',xs',as') \<in> dependent_live_vars n'` `last(targetnodes as) = n'`
-	  `as = a'#as'`
-	have "(V',a'#xs',a'#as') \<in> dependent_live_vars n'"
-	  by(fastsimp intro:dep_vars_Cons_keep)
-	with `as = a'#as'` all have "state_val s V' = state_val s' V'" by auto
-	with `state_val s V' \<noteq> state_val s' V'` have False by simp
-	thus ?thesis by simp
+        case False
+        { assume "V' \<in> Def n"
+          with `(V',xs',as') \<in> dependent_live_vars n'` `targetnode a' -as'\<rightarrow>* n'`
+            `valid_edge a'`
+          have "n -a'#as'\<rightarrow>\<^isub>d* n'"
+            by -(drule dependent_live_vars_dependent_edge,
+              auto dest:DynPDG_path_ddep DynPDG_path_Append)
+          with False have "False" by simp }
+        hence "V' \<notin> Def (sourcenode a')" by fastsimp
+        from False `slice_path as = x#xs` `as = a'#as'`
+          `last(targetnodes as) = n'` `as' \<noteq> []`
+        have "\<not> x" by(auto simp:targetnodes_def)
+        with ex have cases:"ex = (case kind a' of \<Up>f \<Rightarrow> \<Up>id | (Q)\<^isub>\<surd> \<Rightarrow> (\<lambda>s. True)\<^isub>\<surd>)"
+          by simp
+        have "state_val s V' \<noteq> state_val s' V'"
+        proof(cases y)
+          case True
+          with ex' have [simp]:"ex' = kind a'" by simp
+          from `V' \<notin> Def (sourcenode a')` `valid_edge a'` `pred ex' s'`
+          have states_eq:"state_val (transfer (kind a') s') V' = state_val s' V'"
+            by(fastsimp intro:CFG_edge_no_Def_equal)
+          from cases have "state_val s V' = state_val (transfer ex s) V'"
+            by(cases "kind a'") auto
+          with states_eq
+            `state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'`
+          show ?thesis by simp
+        next
+          case False
+          with ex' have "ex' = (case kind a' of \<Up>f \<Rightarrow> \<Up>id | (Q)\<^isub>\<surd> \<Rightarrow> (\<lambda>s. True)\<^isub>\<surd>)"
+            by simp
+          with cases have "state_val s V' = state_val (transfer ex s) V'"
+            and "state_val s' V' = state_val (transfer ex' s') V'"
+            by(cases "kind a'",auto)+
+          with `state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'` 
+          show ?thesis by simp
+        qed
+        from `V' \<notin> Def (sourcenode a')` 
+        have "\<not> n -{V'}a'#xs'\<rightarrow>\<^bsub>dd\<^esub> last(targetnodes (a'#xs'))"
+          by(auto elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
+        with `(V',xs',as') \<in> dependent_live_vars n'` `last(targetnodes as) = n'`
+          `as = a'#as'`
+        have "(V',a'#xs',a'#as') \<in> dependent_live_vars n'"
+          by(fastsimp intro:dep_vars_Cons_keep)
+        with `as = a'#as'` all have "state_val s V' = state_val s' V'" by auto
+        with `state_val s V' \<noteq> state_val s' V'` have False by simp
+        thus ?thesis by simp
       qed
     qed
   qed
