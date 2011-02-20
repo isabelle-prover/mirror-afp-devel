@@ -1,9 +1,7 @@
 header {*  Preliminaries  *}
 
 theory Preliminaries
-
-imports Main Lattice_Syntax
-
+imports Main "~~/src/HOL/Library/Lattice_Syntax"
 begin
 
 subsection {*Simplification Lemmas*}

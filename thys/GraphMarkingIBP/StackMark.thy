@@ -1,9 +1,7 @@
 header {*  Marking Using a Stack  *}
 
 theory StackMark
-
 imports SetMark DataRefinement
-
 begin
 
 text{*

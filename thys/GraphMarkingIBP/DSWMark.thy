@@ -1,9 +1,7 @@
 header {* Deutsch-Schorr-Waite Marking Algorithm *}
 
 theory DSWMark
-
 imports LinkMark
-
 begin
 
 text{*

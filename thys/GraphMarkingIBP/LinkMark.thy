@@ -2,9 +2,7 @@
 header {*  Generalization of Deutsch-Schorr-Waite Algorithm  *}
 
 theory LinkMark
-
 imports StackMark
-
 begin
 
 text {*

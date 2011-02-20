@@ -2,9 +2,7 @@
 header {*  Marking Using a Set  *}
 
 theory SetMark
-
 imports Graph "../DataRefinementIBP/DataRefinement"
-
 begin
 
 text{*

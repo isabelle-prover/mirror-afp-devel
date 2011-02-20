@@ -1,9 +1,7 @@
 header {* Address Graph  *}
 
 theory Graph
-
 imports Main
-
 begin
 
 text {* 
