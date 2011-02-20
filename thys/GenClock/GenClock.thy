@@ -1,5 +1,4 @@
 (*  Title:       Formalization of Schneider's generalized clock synchronization protocol.
-    ID:          $Id: GenClock.thy,v 1.7 2009-04-29 20:01:46 nipkow Exp $
     Author:      Alwen Tiu, LORIA, June 11, 2005
     Maintainer:  Alwen Tiu <Alwen.Tiu at loria.fr>
 *)
@@ -11,11 +10,10 @@ subsection{* Types and constants definitions *}
 text{* Process is represented by natural numbers. The type 'event' corresponds
 to synchronization rounds. *}
 
-types
-  process = nat
-  event = nat      (* synchronization rounds *)
-  time = real
-  Clocktime = real
+type_synonym process = nat
+type_synonym event = nat      (* synchronization rounds *)
+type_synonym time = real
+type_synonym Clocktime = real
 
 axiomatization
   \<delta> :: real and
@@ -77,59 +75,62 @@ definition
 subsection{* Clock conditions *}
 
 text{* Some general assumptions *}
-axioms
+axiomatization where
   constants_ax: "0 < \<beta> \<and> 0 < \<mu> \<and> 0 < rmin 
   \<and> rmin \<le> rmax \<and> 0 < \<rho> \<and> 0 < np \<and> maxfaults \<le> np"
 
+axiomatization where
   PC_monotone: "\<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> PC p s \<le> PC p t"
 
+axiomatization where
   VClock: "\<forall> p t i. correct p t \<and> te p i \<le> t \<and> t < te p (i + 1) \<longrightarrow> VC p t = IC p i t"
 
+axiomatization where
   IClock: "\<forall> p t i. correct p t \<longrightarrow> IC p i t = PC p t + Adj p i"
 
 text{* Condition 1: initial skew *}
-axioms
+axiomatization where
   init: "\<forall> p. correct p 0 \<longrightarrow> 0 \<le> PC p 0 \<and> PC p 0 \<le> \<mu>"
 
 text{* Condition 2: bounded drift *}
-axioms
-  rate_1: "\<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> PC p t - PC p s \<le> (t - s)*(1 + \<rho>)"
+axiomatization where
+  rate_1: "\<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> PC p t - PC p s \<le> (t - s)*(1 + \<rho>)" and
   rate_2: "\<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> (t - s)*(1 - \<rho>) \<le> PC p t - PC p s"
 
 text{* Condition 3: bounded interval *}
-axioms
-  rts0: "\<forall> p t i. correct p t \<and> t \<le> te p (i+1) \<longrightarrow> t - te p i \<le> rmax"
+axiomatization where
+  rts0: "\<forall> p t i. correct p t \<and> t \<le> te p (i+1) \<longrightarrow> t - te p i \<le> rmax" and
   rts1: "\<forall> p t i. correct p t \<and> te p (i+1) \<le> t \<longrightarrow> rmin \<le> t - te p i"
 
 text{* Condition 4 : bounded delay *}
-axioms
-  rts2a: "\<forall> p q t i. correct p t \<and> correct q t \<and> te q i + \<beta> \<le> t \<longrightarrow> te p i \<le> t" 
+axiomatization where
+  rts2a: "\<forall> p q t i. correct p t \<and> correct q t \<and> te q i + \<beta> \<le> t \<longrightarrow> te p i \<le> t"  and
   rts2b: "\<forall> p q i. correct p (te p i) \<and> correct q (te q i) \<longrightarrow> abs(te p i - te q i) \<le> \<beta>"
 
 text{* Condition 5: initial synchronization *}
-axioms
+axiomatization where
   synch0: "\<forall> p. te p 0 = 0"
 
 text{* Condition 6: nonoverlap *}
-axioms
+axiomatization where
   nonoverlap: "\<beta> \<le> rmin"
 
 text{* Condition 7: reading errors *}
-axioms
+axiomatization where
   readerror: "\<forall> p q i. correct p (te p (i+1)) \<and> correct q (te p (i+1)) \<longrightarrow> 
               abs(\<theta> p (i+1) q - IC q i (te p (i+1))) \<le> \<Lambda>"
 
 text{* Condition 8: bounded faults *}
-axioms
-  correct_closed: "\<forall> p s t. s \<le> t \<and> correct p t \<longrightarrow> correct p s"
+axiomatization where
+  correct_closed: "\<forall> p s t. s \<le> t \<and> correct p t \<longrightarrow> correct p s" and
   correct_count:  "\<forall> t. np - maxfaults \<le> count (\<lambda> p. correct p t) np"
 
 text{* Condition 9: Translation invariance *}
-axioms
+axiomatization where
   trans_inv: "\<forall> p f x. 0 \<le> x \<longrightarrow> cfn p (\<lambda> y. f y + x) = cfn p f + x"
 
 text{* Condition 10: precision enhancement *}
-axioms
+axiomatization where
   prec_enh: 
   "\<forall> ppred p q f g x y. 
           np - maxfaults \<le> count ppred np \<and> 
@@ -138,7 +139,7 @@ axioms
       \<longrightarrow> abs(cfn p f - cfn q g) \<le> \<pi> x y"
 
 text{* Condition 11: accuracy preservation *}
-axioms
+axiomatization where
   acc_prsv:
   "\<forall> ppred p q f x. okRead1 f x ppred \<and> np - maxfaults \<le> count ppred np
           \<and> ppred p \<and> ppred q \<longrightarrow> abs(cfn p f - f q) \<le> \<alpha> x"
