@@ -5,7 +5,7 @@
 header {* Free Boolean algebras *}
 
 theory Free_Boolean_Algebra
-imports Main Lattice_Syntax
+imports Main "~~/src/HOL/Library/Lattice_Syntax"
 begin
 
 (*<*)
