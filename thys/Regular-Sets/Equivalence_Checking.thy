@@ -1,7 +1,7 @@
 header {* Deciding Regular Expression Equivalence *}
 
 theory Equivalence_Checking
-imports Regular_Exp While_Combinator
+imports Regular_Exp "~~/src/HOL/Library/While_Combinator"
 begin
 
 text{* This theory is based on work by Jan Rutten \cite{Rutten98}. *}
@@ -122,8 +122,8 @@ by (induct r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
 
 subsection {* Bisimulation between regular expressions *}
 
-types rexp_pair = "nat rexp * nat rexp"
-types rexp_pairs = "rexp_pair list"
+type_synonym rexp_pair = "nat rexp * nat rexp"
+type_synonym rexp_pairs = "rexp_pair list"
 
 definition is_bisimulation :: 
   "nat list \<Rightarrow> rexp_pairs \<Rightarrow> bool"

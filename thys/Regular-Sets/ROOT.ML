@@ -1,2 +1,2 @@
-no_document use_thys ["While_Combinator", "Reflection"];
+no_document use_thys ["~~/src/HOL/Library/While_Combinator", "~~/src/HOL/Library/Reflection"];
 use_thys ["Regexp_Method"];
