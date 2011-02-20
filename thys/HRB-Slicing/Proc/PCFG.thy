@@ -69,7 +69,7 @@ datatype p_edge_kind =
 | CEdge "pname \<times> expr list \<times> vname list"
 
 
-types p_edge = "(label \<times> p_edge_kind \<times> label)"
+type_synonym p_edge = "(label \<times> p_edge_kind \<times> label)"
 
 inductive Proc_CFG :: "cmd \<Rightarrow> label \<Rightarrow> p_edge_kind \<Rightarrow> label \<Rightarrow> bool"
 ("_ \<turnstile> _ -_\<rightarrow>\<^isub>p _")
@@ -1107,13 +1107,13 @@ proof(induct procs prog ps p rule:containsCall_induct)
         ps' = psx@[qx] \<and> (qx,insx,outsx,cx) \<in> set procs \<and>
         containsCall procs cx [] p \<and> containsCall procs c psx qx"
       then obtain qx insx outsx cx psx
-	where "ps' = psx@[qx]" and "(qx,insx,outsx,cx) \<in> set procs"
-	and "containsCall procs cx [] p"
-	and "containsCall procs c psx qx" by blast
+        where "ps' = psx@[qx]" and "(qx,insx,outsx,cx) \<in> set procs"
+        and "containsCall procs cx [] p"
+        and "containsCall procs c psx qx" by blast
       from `(q,ins,outs,c) \<in> set procs` `containsCall procs c psx qx`
       have "containsCall procs (Call q es' rets') (q#psx) qx" by fastsimp
       with `ps' = psx@[qx]` `ps = q#ps'` `(qx,insx,outsx,cx) \<in> set procs`
-	`containsCall procs cx [] p` show ?thesis by fastsimp
+        `containsCall procs cx [] p` show ?thesis by fastsimp
     qed
   qed
 qed auto

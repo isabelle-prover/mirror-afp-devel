@@ -63,17 +63,17 @@ proof(atomize_elim)
     proof(cases "n' = Exit")
       case True
       with `c\<^isub>2' \<turnstile> n -et\<rightarrow>\<^isub>p n'` `n \<noteq> Entry` have "c\<^isub>1;; c\<^isub>2' \<turnstile> n \<oplus> #:c\<^isub>1 -et\<rightarrow>\<^isub>p Exit \<oplus> #:c\<^isub>1"
-	by(fastsimp intro:Proc_CFG.Proc_CFG_SeqSecond)
+        by(fastsimp intro:Proc_CFG.Proc_CFG_SeqSecond)
       moreover from `n \<noteq> Entry` have "n \<oplus> #:c\<^isub>1 \<noteq> Entry" by(cases n) auto
       ultimately
       have "c\<^isub>1;; c\<^isub>2';; c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 -et\<rightarrow>\<^isub>p Label (#:c\<^isub>1;; c\<^isub>2')"
-	by(fastsimp intro:Proc_CFG_SeqConnect)
+        by(fastsimp intro:Proc_CFG_SeqConnect)
       with `Label l = n \<oplus> #:c\<^isub>1` show ?thesis by fastsimp
     next
       case False
       with Proc_CFG_SeqSecond
       have "(c\<^isub>1;; c\<^isub>2');; c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 -et\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1"
-	by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_SeqSecond)
+        by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_SeqSecond)
       with `Label l = n \<oplus> #:c\<^isub>1` show ?thesis by fastsimp
     qed
   next
@@ -83,18 +83,18 @@ proof(atomize_elim)
       case True
       with `c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p n'` `n \<noteq> Entry`
       have "if (b) c\<^isub>1 else c\<^isub>2' \<turnstile> n \<oplus> 1 -et\<rightarrow>\<^isub>p Exit \<oplus> 1"
-	by(fastsimp intro:Proc_CFG.Proc_CFG_CondThen)
+        by(fastsimp intro:Proc_CFG.Proc_CFG_CondThen)
       moreover from `n \<noteq> Entry` have "n \<oplus> 1 \<noteq> Entry" by(cases n) auto
       ultimately
       have "if (b) c\<^isub>1 else c\<^isub>2';; c\<^isub>2 \<turnstile> n \<oplus> 1 -et\<rightarrow>\<^isub>p Label (#:if (b) c\<^isub>1 else c\<^isub>2')"
-	by(fastsimp intro:Proc_CFG_SeqConnect)
+        by(fastsimp intro:Proc_CFG_SeqConnect)
       with `Label l = n \<oplus> 1` show ?thesis by fastsimp
     next
       case False
       hence "n' \<oplus> 1 \<noteq> Exit" by(cases n') auto
       with Proc_CFG_CondThen
       have  "if (b) c\<^isub>1 else c\<^isub>2';; c\<^isub>2 \<turnstile> Label l -et\<rightarrow>\<^isub>p n' \<oplus> 1"
-	by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_CondThen)
+        by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_CondThen)
       with `Label l = n \<oplus> 1` show ?thesis by fastsimp
     qed
   next
@@ -104,19 +104,19 @@ proof(atomize_elim)
       case True
       with `c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p n'` `n \<noteq> Entry`
       have "if (b) c\<^isub>2' else c\<^isub>1 \<turnstile> n \<oplus> (#:c\<^isub>2' + 1) -et\<rightarrow>\<^isub>p Exit \<oplus> (#:c\<^isub>2' + 1)"
-	by(fastsimp intro:Proc_CFG.Proc_CFG_CondElse)
+        by(fastsimp intro:Proc_CFG.Proc_CFG_CondElse)
       moreover from `n \<noteq> Entry` have "n \<oplus> (#:c\<^isub>2' + 1) \<noteq> Entry" by(cases n) auto
       ultimately
       have "if (b) c\<^isub>2' else c\<^isub>1;; c\<^isub>2 \<turnstile> n \<oplus> (#:c\<^isub>2' + 1) -et\<rightarrow>\<^isub>p 
-	Label (#:if (b) c\<^isub>2' else c\<^isub>1)"
-	by(fastsimp intro:Proc_CFG_SeqConnect)
+        Label (#:if (b) c\<^isub>2' else c\<^isub>1)"
+        by(fastsimp intro:Proc_CFG_SeqConnect)
       with `Label l = n \<oplus> (#:c\<^isub>2' + 1)` show ?thesis by fastsimp
     next
       case False
       hence "n' \<oplus> (#:c\<^isub>2' + 1) \<noteq> Exit" by(cases n') auto
       with Proc_CFG_CondElse
       have  "if (b) c\<^isub>2' else c\<^isub>1 ;; c\<^isub>2 \<turnstile> Label l -et\<rightarrow>\<^isub>p n' \<oplus> (#:c\<^isub>2' + 1)"
-	by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_CondElse)
+        by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_CondElse)
       with `Label l = n \<oplus> (#:c\<^isub>2' + 1)` show ?thesis by fastsimp
     qed
   qed (auto intro:Proc_CFG.intros)
@@ -249,7 +249,7 @@ next
     with `valid_edge wfp a` `sourcenode a = (p, nx)` `targetnode a = n''`
       `n'' = (p,nx')` show ?thesis
       by(fastsimp intro:PCFG_edge_SeqFirst_target_Label 
-	           simp:intra_kind_def valid_edge_def)
+                   simp:intra_kind_def valid_edge_def)
   next
     case Entry
     with `valid_edge wfp a` `targetnode a = n''` `n'' = (p,nx')`
@@ -313,44 +313,44 @@ proof -
       with `(Main, nx) = sourcenode a`[THEN sym] have [simp]:"nx = n" by simp
       from `n \<noteq> Entry` `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
       have "c\<^isub>1;;prog \<turnstile> n \<oplus> #:c\<^isub>1 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> #:c\<^isub>1"
-	by(fastsimp intro:Proc_CFG_edge_SeqSecond_source_not_Entry)
+        by(fastsimp intro:Proc_CFG_edge_SeqSecond_source_not_Entry)
       hence "c\<^isub>1;;prog,procs \<turnstile> (Main,n \<oplus> #:c\<^isub>1) -kind a\<rightarrow> (Main,nx' \<oplus> #:c\<^isub>1)"
-	by(rule PCFG.Main)
+        by(rule PCFG.Main)
       thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     next
       assume "(Main, n) = targetnode a"
       show ?thesis
       proof(cases "nx = Entry")
-	case True
-	with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` 
-	have "nx' = Exit \<or> nx' = Label 0" by(fastsimp dest:Proc_CFG_EntryD)
-	thus ?thesis
-	proof
-	  assume "nx' = Exit"
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	  show ?thesis by simp
-	next
-	  assume "nx' = Label 0"
-	  obtain l etx where "c\<^isub>1 \<turnstile> Label l -IEdge etx\<rightarrow>\<^isub>p Exit" and "l \<le> #:c\<^isub>1"
-	    by(erule Proc_CFG_Exit_edge)
-	  hence "c\<^isub>1;;prog \<turnstile> Label l -IEdge etx\<rightarrow>\<^isub>p Label #:c\<^isub>1"
-	    by(fastsimp intro:Proc_CFG_SeqConnect)
-	  with `nx' = Label 0` 
-	  have "c\<^isub>1;;prog,procs \<turnstile> (Main,Label l) -etx\<rightarrow> (Main,nx'\<oplus>#:c\<^isub>1)"
-	    by(fastsimp intro:PCFG.Main)
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	  show ?thesis
-	    by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
-	qed
+        case True
+        with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` 
+        have "nx' = Exit \<or> nx' = Label 0" by(fastsimp dest:Proc_CFG_EntryD)
+        thus ?thesis
+        proof
+          assume "nx' = Exit"
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+          show ?thesis by simp
+        next
+          assume "nx' = Label 0"
+          obtain l etx where "c\<^isub>1 \<turnstile> Label l -IEdge etx\<rightarrow>\<^isub>p Exit" and "l \<le> #:c\<^isub>1"
+            by(erule Proc_CFG_Exit_edge)
+          hence "c\<^isub>1;;prog \<turnstile> Label l -IEdge etx\<rightarrow>\<^isub>p Label #:c\<^isub>1"
+            by(fastsimp intro:Proc_CFG_SeqConnect)
+          with `nx' = Label 0` 
+          have "c\<^isub>1;;prog,procs \<turnstile> (Main,Label l) -etx\<rightarrow> (Main,nx'\<oplus>#:c\<^isub>1)"
+            by(fastsimp intro:PCFG.Main)
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+          show ?thesis
+            by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        qed
       next
-	case False
-	with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
-	have "c\<^isub>1;;prog \<turnstile> nx \<oplus> #:c\<^isub>1 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> #:c\<^isub>1"
-	  by(fastsimp intro:Proc_CFG_edge_SeqSecond_source_not_Entry)
-	hence "c\<^isub>1;;prog,procs \<turnstile> (Main,nx \<oplus> #:c\<^isub>1) -kind a\<rightarrow> (Main,nx' \<oplus> #:c\<^isub>1)"
-	  by(rule PCFG.Main)
-	with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        case False
+        with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
+        have "c\<^isub>1;;prog \<turnstile> nx \<oplus> #:c\<^isub>1 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> #:c\<^isub>1"
+          by(fastsimp intro:Proc_CFG_edge_SeqSecond_source_not_Entry)
+        hence "c\<^isub>1;;prog,procs \<turnstile> (Main,nx \<oplus> #:c\<^isub>1) -kind a\<rightarrow> (Main,nx' \<oplus> #:c\<^isub>1)"
+          by(rule PCFG.Main)
+        with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+        show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
       qed
     qed
   next
@@ -411,9 +411,9 @@ proof -
       with `(Main, nx) = sourcenode a`[THEN sym] have [simp]:"nx = n" by simp
       from `n \<noteq> Entry` `prog \<turnstile> nx -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx'`
       have "c\<^isub>1;;prog \<turnstile> n \<oplus> #:c\<^isub>1 -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx' \<oplus> #:c\<^isub>1"
-	by(fastsimp intro:Proc_CFG_edge_SeqSecond_source_not_Entry)
+        by(fastsimp intro:Proc_CFG_edge_SeqSecond_source_not_Entry)
       hence "c\<^isub>1;;prog,procs \<turnstile> (Main,n \<oplus> #:c\<^isub>1) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> #:c\<^isub>1)"
-	by -(rule PCFG.MainCallReturn)
+        by -(rule PCFG.MainCallReturn)
       thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     next
       assume "(Main, n) = targetnode a"
@@ -421,9 +421,9 @@ proof -
       have "nx \<noteq> Entry" by(fastsimp dest:Proc_CFG_Call_Labels)
       with `prog \<turnstile> nx -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx'`
       have "c\<^isub>1;;prog \<turnstile> nx \<oplus> #:c\<^isub>1 -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx' \<oplus> #:c\<^isub>1"
-	by(fastsimp intro:Proc_CFG_edge_SeqSecond_source_not_Entry)
+        by(fastsimp intro:Proc_CFG_edge_SeqSecond_source_not_Entry)
       hence "c\<^isub>1;;prog,procs \<turnstile> (Main,nx \<oplus> #:c\<^isub>1) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> #:c\<^isub>1)"
-	by -(rule PCFG.MainCallReturn)
+        by -(rule PCFG.MainCallReturn)
       with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym] 
       show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     qed
@@ -521,44 +521,44 @@ proof -
       with `(Main, nx) = sourcenode a`[THEN sym] have [simp]:"nx = n" by simp
       from `n \<noteq> Entry` `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
       have "if (b) prog else c\<^isub>2 \<turnstile> n \<oplus> 1 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> 1"
-	by(fastsimp intro:Proc_CFG_edge_CondTrue_source_not_Entry)
+        by(fastsimp intro:Proc_CFG_edge_CondTrue_source_not_Entry)
       hence "if (b) prog else c\<^isub>2,procs \<turnstile> (Main,n \<oplus> 1) -kind a\<rightarrow> (Main,nx' \<oplus> 1)"
-	by(rule PCFG.Main)
+        by(rule PCFG.Main)
       thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     next
       assume "(Main, n) = targetnode a"
       show ?thesis
       proof(cases "nx = Entry")
-	case True
-	with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
-	have "nx' = Exit \<or> nx' = Label 0" by(fastsimp dest:Proc_CFG_EntryD)
-	thus ?thesis
-	proof
-	  assume "nx' = Exit"
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	  show ?thesis by simp
-	next
-	  assume "nx' = Label 0"
-	  have "if (b) prog else c\<^isub>2 \<turnstile> Label 0 
-	    -IEdge (\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow>\<^isub>p Label 1"
-	    by(rule Proc_CFG_CondTrue)
-	  with `nx' = Label 0` 
-	  have "if (b) prog else c\<^isub>2,procs \<turnstile> (Main,Label 0) 
-	    -(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> 1)" 
-	    by(fastsimp intro:PCFG.Main)
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	  show ?thesis
-	    by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
-	qed
+        case True
+        with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
+        have "nx' = Exit \<or> nx' = Label 0" by(fastsimp dest:Proc_CFG_EntryD)
+        thus ?thesis
+        proof
+          assume "nx' = Exit"
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+          show ?thesis by simp
+        next
+          assume "nx' = Label 0"
+          have "if (b) prog else c\<^isub>2 \<turnstile> Label 0 
+            -IEdge (\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow>\<^isub>p Label 1"
+            by(rule Proc_CFG_CondTrue)
+          with `nx' = Label 0` 
+          have "if (b) prog else c\<^isub>2,procs \<turnstile> (Main,Label 0) 
+            -(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> 1)" 
+            by(fastsimp intro:PCFG.Main)
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+          show ?thesis
+            by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        qed
       next
-	case False
-	with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
-	have "if (b) prog else c\<^isub>2 \<turnstile> nx \<oplus> 1 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> 1"
-	  by(fastsimp intro:Proc_CFG_edge_CondTrue_source_not_Entry)
-	hence "if (b) prog else c\<^isub>2,procs \<turnstile> (Main,nx \<oplus> 1) -kind a\<rightarrow> 
-	  (Main,nx' \<oplus> 1)" by(rule PCFG.Main)
-	with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        case False
+        with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
+        have "if (b) prog else c\<^isub>2 \<turnstile> nx \<oplus> 1 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> 1"
+          by(fastsimp intro:Proc_CFG_edge_CondTrue_source_not_Entry)
+        hence "if (b) prog else c\<^isub>2,procs \<turnstile> (Main,nx \<oplus> 1) -kind a\<rightarrow> 
+          (Main,nx' \<oplus> 1)" by(rule PCFG.Main)
+        with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+        show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
       qed
     qed
   next
@@ -620,9 +620,9 @@ proof -
       with `(Main, nx) = sourcenode a`[THEN sym] have [simp]:"nx = n" by simp
       from `n \<noteq> Entry` `prog \<turnstile> nx -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx'`
       have "if (b) prog else c\<^isub>2 \<turnstile> n \<oplus> 1 -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx' \<oplus> 1"
-	by(fastsimp intro:Proc_CFG_edge_CondTrue_source_not_Entry)
+        by(fastsimp intro:Proc_CFG_edge_CondTrue_source_not_Entry)
       hence "if (b) prog else c\<^isub>2,procs \<turnstile> (Main,n \<oplus> 1) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> 
-	(Main,nx' \<oplus> 1)" by -(rule PCFG.MainCallReturn)
+        (Main,nx' \<oplus> 1)" by -(rule PCFG.MainCallReturn)
       thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     next
       assume "(Main, n) = targetnode a"
@@ -630,9 +630,9 @@ proof -
       have "nx \<noteq> Entry" by(fastsimp dest:Proc_CFG_Call_Labels)
       with `prog \<turnstile> nx -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx'`
       have "if (b) prog else c\<^isub>2 \<turnstile> nx \<oplus> 1 -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx' \<oplus> 1"
-	by(fastsimp intro:Proc_CFG_edge_CondTrue_source_not_Entry)
+        by(fastsimp intro:Proc_CFG_edge_CondTrue_source_not_Entry)
       hence "if (b) prog else c\<^isub>2,procs \<turnstile> (Main,nx \<oplus> 1) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> 1)"
-	by -(rule PCFG.MainCallReturn)
+        by -(rule PCFG.MainCallReturn)
       with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
       show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     qed
@@ -736,44 +736,44 @@ proof -
       with `(Main, nx) = sourcenode a`[THEN sym] have [simp]:"nx = n" by simp
       from `n \<noteq> Entry` `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
       have "if (b) c\<^isub>1 else prog \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> (#:c\<^isub>1 + 1)"
-	by(fastsimp intro:Proc_CFG_edge_CondFalse_source_not_Entry)
+        by(fastsimp intro:Proc_CFG_edge_CondFalse_source_not_Entry)
       hence "if (b) c\<^isub>1 else prog,procs \<turnstile> (Main,n \<oplus> (#:c\<^isub>1 + 1)) -kind a\<rightarrow> 
-	(Main,nx' \<oplus> (#:c\<^isub>1 + 1))" by(rule PCFG.Main)
+        (Main,nx' \<oplus> (#:c\<^isub>1 + 1))" by(rule PCFG.Main)
       thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     next
       assume "(Main, n) = targetnode a"
       show ?thesis
       proof(cases "nx = Entry")
-	case True
-	with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` 
-	have "nx' = Exit \<or> nx' = Label 0" by(fastsimp dest:Proc_CFG_EntryD)
-	thus ?thesis
-	proof
-	  assume "nx' = Exit"
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	  show ?thesis by simp
-	next
-	  assume "nx' = Label 0"
-	  have "if (b) c\<^isub>1 else prog \<turnstile> Label 0 
-	    -IEdge (\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>\<rightarrow>\<^isub>p Label (#:c\<^isub>1 + 1)"
-	    by(rule Proc_CFG_CondFalse)
-	  with `nx' = Label 0` 
-	  have "if (b) c\<^isub>1 else prog,procs \<turnstile> (Main,Label 0) 
-	    -(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> (#:c\<^isub>1 + 1))" 
-	    by(fastsimp intro:PCFG.Main)
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	  show ?thesis
-	    by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
-	qed
+        case True
+        with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` 
+        have "nx' = Exit \<or> nx' = Label 0" by(fastsimp dest:Proc_CFG_EntryD)
+        thus ?thesis
+        proof
+          assume "nx' = Exit"
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+          show ?thesis by simp
+        next
+          assume "nx' = Label 0"
+          have "if (b) c\<^isub>1 else prog \<turnstile> Label 0 
+            -IEdge (\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>\<rightarrow>\<^isub>p Label (#:c\<^isub>1 + 1)"
+            by(rule Proc_CFG_CondFalse)
+          with `nx' = Label 0` 
+          have "if (b) c\<^isub>1 else prog,procs \<turnstile> (Main,Label 0) 
+            -(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> (#:c\<^isub>1 + 1))" 
+            by(fastsimp intro:PCFG.Main)
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+          show ?thesis
+            by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        qed
       next
-	case False
-	with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
-	have "if (b) c\<^isub>1 else prog \<turnstile> nx \<oplus> (#:c\<^isub>1 + 1) -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> (#:c\<^isub>1 + 1)"
-	  by(fastsimp intro:Proc_CFG_edge_CondFalse_source_not_Entry)
-	hence "if (b) c\<^isub>1 else prog,procs \<turnstile> (Main,nx \<oplus> (#:c\<^isub>1 + 1)) -kind a\<rightarrow> 
+        case False
+        with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
+        have "if (b) c\<^isub>1 else prog \<turnstile> nx \<oplus> (#:c\<^isub>1 + 1) -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> (#:c\<^isub>1 + 1)"
+          by(fastsimp intro:Proc_CFG_edge_CondFalse_source_not_Entry)
+        hence "if (b) c\<^isub>1 else prog,procs \<turnstile> (Main,nx \<oplus> (#:c\<^isub>1 + 1)) -kind a\<rightarrow> 
           (Main,nx' \<oplus> (#:c\<^isub>1 + 1))" by(rule PCFG.Main)
-	with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym] 
-	show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym] 
+        show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
       qed
     qed
   next
@@ -836,9 +836,9 @@ proof -
       with `(Main, nx) = sourcenode a`[THEN sym] have [simp]:"nx = n" by simp
       from `n \<noteq> Entry` `prog \<turnstile> nx -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx'`
       have "if (b) c\<^isub>1 else prog \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) -CEdge (p, es, rets)\<rightarrow>\<^isub>p 
-	nx' \<oplus> (#:c\<^isub>1 + 1)" by(fastsimp intro:Proc_CFG_edge_CondFalse_source_not_Entry)
+        nx' \<oplus> (#:c\<^isub>1 + 1)" by(fastsimp intro:Proc_CFG_edge_CondFalse_source_not_Entry)
       hence "if (b) c\<^isub>1 else prog,procs \<turnstile> (Main,n \<oplus> (#:c\<^isub>1 + 1)) 
-	-(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> (#:c\<^isub>1 + 1))" by -(rule PCFG.MainCallReturn)
+        -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> (#:c\<^isub>1 + 1))" by -(rule PCFG.MainCallReturn)
       thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     next
       assume "(Main, n) = targetnode a"
@@ -846,9 +846,9 @@ proof -
       have "nx \<noteq> Entry" by(fastsimp dest:Proc_CFG_Call_Labels)
       with `prog \<turnstile> nx -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx'`
       have "if (b) c\<^isub>1 else prog \<turnstile> nx \<oplus> (#:c\<^isub>1 + 1) -CEdge (p, es, rets)\<rightarrow>\<^isub>p 
-	nx' \<oplus> (#:c\<^isub>1 + 1)" by(fastsimp intro:Proc_CFG_edge_CondFalse_source_not_Entry)
+        nx' \<oplus> (#:c\<^isub>1 + 1)" by(fastsimp intro:Proc_CFG_edge_CondFalse_source_not_Entry)
       hence "if (b) c\<^isub>1 else prog,procs \<turnstile> (Main,nx \<oplus> (#:c\<^isub>1 + 1)) 
-	-(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> (#:c\<^isub>1 + 1))" by -(rule PCFG.MainCallReturn)
+        -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> (#:c\<^isub>1 + 1))" by -(rule PCFG.MainCallReturn)
       with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
       show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     qed
@@ -953,64 +953,64 @@ proof -
       with `(Main, nx) = sourcenode a`[THEN sym] have [simp]:"nx = n" by simp
       show ?thesis
       proof(cases "nx' = Exit")
-	case True
-	with `n \<noteq> Entry` `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
-	have "while (b) prog \<turnstile> n \<oplus> 2 -IEdge (kind a)\<rightarrow>\<^isub>p Label 0"
-	  by(fastsimp intro:Proc_CFG_WhileBodyExit)
-	hence "while (b) prog,procs \<turnstile> (Main,n \<oplus> 2) -kind a\<rightarrow> (Main,Label 0)"
-	  by(rule PCFG.Main)
-	thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        case True
+        with `n \<noteq> Entry` `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
+        have "while (b) prog \<turnstile> n \<oplus> 2 -IEdge (kind a)\<rightarrow>\<^isub>p Label 0"
+          by(fastsimp intro:Proc_CFG_WhileBodyExit)
+        hence "while (b) prog,procs \<turnstile> (Main,n \<oplus> 2) -kind a\<rightarrow> (Main,Label 0)"
+          by(rule PCFG.Main)
+        thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
       next
-	case False
-	with `n \<noteq> Entry` `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
-	have "while (b) prog \<turnstile> n \<oplus> 2 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> 2"
-	  by(fastsimp intro:Proc_CFG_edge_WhileBody_source_not_Entry)
-	hence "while (b) prog,procs \<turnstile> (Main,n \<oplus> 2) -kind a\<rightarrow> (Main,nx' \<oplus> 2)"
-	  by(rule PCFG.Main)
-	thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        case False
+        with `n \<noteq> Entry` `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'`
+        have "while (b) prog \<turnstile> n \<oplus> 2 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> 2"
+          by(fastsimp intro:Proc_CFG_edge_WhileBody_source_not_Entry)
+        hence "while (b) prog,procs \<turnstile> (Main,n \<oplus> 2) -kind a\<rightarrow> (Main,nx' \<oplus> 2)"
+          by(rule PCFG.Main)
+        thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
       qed
     next
       assume "(Main, n) = targetnode a"
       show ?thesis
       proof(cases "nx = Entry")
-	case True
-	with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` 
-	have "nx' = Exit \<or> nx' = Label 0" by(fastsimp dest:Proc_CFG_EntryD)
-	thus ?thesis
-	proof
-	  assume "nx' = Exit"
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	  show ?thesis by simp
-	next
-	  assume "nx' = Label 0"
-	  have "while (b) prog \<turnstile> Label 0 
-	    -IEdge (\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow>\<^isub>p Label 2"
-	    by(rule Proc_CFG_WhileTrue)
-	  hence "while (b) prog,procs \<turnstile> (Main,Label 0) 
-	    -(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow> (Main,Label 2)"
-	    by(fastsimp intro:PCFG.Main)
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	    `nx' = Label 0` show ?thesis
-	    by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
-	qed
+        case True
+        with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` 
+        have "nx' = Exit \<or> nx' = Label 0" by(fastsimp dest:Proc_CFG_EntryD)
+        thus ?thesis
+        proof
+          assume "nx' = Exit"
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+          show ?thesis by simp
+        next
+          assume "nx' = Label 0"
+          have "while (b) prog \<turnstile> Label 0 
+            -IEdge (\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow>\<^isub>p Label 2"
+            by(rule Proc_CFG_WhileTrue)
+          hence "while (b) prog,procs \<turnstile> (Main,Label 0) 
+            -(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow> (Main,Label 2)"
+            by(fastsimp intro:PCFG.Main)
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+            `nx' = Label 0` show ?thesis
+            by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        qed
       next
-	case False
-	show ?thesis
-	proof(cases "nx' = Exit")
-	  case True
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	  show ?thesis by simp
-	next
-	  case False
-	  with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` `nx \<noteq> Entry`
-	  have "while (b) prog \<turnstile> nx \<oplus> 2 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> 2"
-	    by(fastsimp intro:Proc_CFG_edge_WhileBody_source_not_Entry)
-	  hence "while (b) prog,procs \<turnstile> (Main,nx \<oplus> 2)  -kind a\<rightarrow> 
+        case False
+        show ?thesis
+        proof(cases "nx' = Exit")
+          case True
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+          show ?thesis by simp
+        next
+          case False
+          with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` `nx \<noteq> Entry`
+          have "while (b) prog \<turnstile> nx \<oplus> 2 -IEdge (kind a)\<rightarrow>\<^isub>p nx' \<oplus> 2"
+            by(fastsimp intro:Proc_CFG_edge_WhileBody_source_not_Entry)
+          hence "while (b) prog,procs \<turnstile> (Main,nx \<oplus> 2)  -kind a\<rightarrow> 
             (Main,nx' \<oplus> 2)" by(rule PCFG.Main)
-	  with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
-	  show ?thesis
-	    by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
-	qed
+          with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym]
+          show ?thesis
+            by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
+        qed
       qed
     qed
   next
@@ -1073,12 +1073,12 @@ proof -
       assume "(Main,n) = sourcenode a"
       with `(Main, nx) = sourcenode a`[THEN sym] have [simp]:"nx = n" by simp
       from `prog \<turnstile> nx -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx'` have "nx' \<noteq> Exit"
-	by(fastsimp dest:Proc_CFG_Call_Labels)
+        by(fastsimp dest:Proc_CFG_Call_Labels)
       with `n \<noteq> Entry` `prog \<turnstile> nx -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx'`
       have "while (b) prog \<turnstile> n \<oplus> 2 -CEdge (p, es, rets)\<rightarrow>\<^isub>p 
-	nx' \<oplus> 2" by(fastsimp intro:Proc_CFG_edge_WhileBody_source_not_Entry)
+        nx' \<oplus> 2" by(fastsimp intro:Proc_CFG_edge_WhileBody_source_not_Entry)
       hence "while (b) prog,procs \<turnstile> (Main,n \<oplus> 2) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> 2)"
-	by -(rule PCFG.MainCallReturn)
+        by -(rule PCFG.MainCallReturn)
       thus ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     next
       assume "(Main, n) = targetnode a"
@@ -1086,9 +1086,9 @@ proof -
       have "nx \<noteq> Entry" and "nx' \<noteq> Exit" by(auto dest:Proc_CFG_Call_Labels)
       with `prog \<turnstile> nx -CEdge (p, es, rets)\<rightarrow>\<^isub>p nx'`
       have "while (b) prog \<turnstile> nx \<oplus> 2 -CEdge (p, es, rets)\<rightarrow>\<^isub>p 
-	nx' \<oplus> 2" by(fastsimp intro:Proc_CFG_edge_WhileBody_source_not_Entry)
+        nx' \<oplus> 2" by(fastsimp intro:Proc_CFG_edge_WhileBody_source_not_Entry)
       hence "while (b) prog,procs \<turnstile> (Main,nx \<oplus> 2) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,nx' \<oplus> 2)"
-	by -(rule PCFG.MainCallReturn)
+        by -(rule PCFG.MainCallReturn)
       with `(Main, n) = targetnode a` `(Main, nx') = targetnode a`[THEN sym] 
       show ?thesis by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
     qed
@@ -1181,26 +1181,26 @@ proof(atomize_elim)
     proof
       assume [simp]:"l = 0"
       have "wfp \<turnstile> (Main,Entry) -[((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))]\<rightarrow>*
-	(Main,Label 0)" 
-	by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_Entry
-       	            simp:valid_edge_def ProcCFG.valid_node_def)
+        (Main,Label 0)" 
+        by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_Entry
+                    simp:valid_edge_def ProcCFG.valid_node_def)
       moreover
       have "wfp \<turnstile> (Main,Label 0) 
-	-((Main,Label 0),\<Up>(\<lambda>cf. update cf V e),(Main,Label 1))#
-	[((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
-	by(fastsimp intro:ProcCFG.Cons_path ProcCFG.path.intros Main Proc_CFG_LAss 
-	  Proc_CFG_LAssSkip simp:valid_edge_def ProcCFG.valid_node_def)
+        -((Main,Label 0),\<Up>(\<lambda>cf. update cf V e),(Main,Label 1))#
+        [((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
+        by(fastsimp intro:ProcCFG.Cons_path ProcCFG.path.intros Main Proc_CFG_LAss 
+          Proc_CFG_LAssSkip simp:valid_edge_def ProcCFG.valid_node_def)
       ultimately show ?thesis by(fastsimp simp:intra_kind_def)
     next
       assume [simp]:"l = 1"
       have "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
-	[((Main,Label 0),\<Up>(\<lambda>cf. update cf V e),(Main,Label 1))]\<rightarrow>* (Main,Label 1)"
-	by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_LAss ProcCFG.Cons_path 
-	  Main Proc_CFG_Entry simp:ProcCFG.valid_node_def valid_edge_def)
+        [((Main,Label 0),\<Up>(\<lambda>cf. update cf V e),(Main,Label 1))]\<rightarrow>* (Main,Label 1)"
+        by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_LAss ProcCFG.Cons_path 
+          Main Proc_CFG_Entry simp:ProcCFG.valid_node_def valid_edge_def)
       moreover
       have "wfp \<turnstile> (Main,Label 1) -[((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* 
-	(Main,Exit)" by(fastsimp intro:ProcCFG.path.intros  Main Proc_CFG_LAssSkip
-	simp:valid_edge_def ProcCFG.valid_node_def)
+        (Main,Exit)" by(fastsimp intro:ProcCFG.path.intros  Main Proc_CFG_LAssSkip
+        simp:valid_edge_def ProcCFG.valid_node_def)
       ultimately show ?thesis by(fastsimp simp:intra_kind_def)
     qed
   next
@@ -1220,58 +1220,58 @@ proof(atomize_elim)
       from `Rep_wf_prog wfp = (c\<^isub>1;; c\<^isub>2, procs)`
       obtain wfp' where [simp]:"Rep_wf_prog wfp' = (c\<^isub>1, procs)" by(erule wfp_Seq1)
       from IH1[OF True this] obtain as as' 
-	where path1:"wfp' \<turnstile> (Main, Label l) -as\<rightarrow>* (Main, Exit)"
-	and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
-	and path2:"wfp' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l)"
-	and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
+        where path1:"wfp' \<turnstile> (Main, Label l) -as\<rightarrow>* (Main, Exit)"
+        and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
+        and path2:"wfp' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l)"
+        and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
       from path1 have "as \<noteq> []" by(fastsimp elim:ProcCFG.path.cases)
       then obtain ax asx where [simp]:"as = asx@[ax]"
-	by(cases as rule:rev_cases) fastsimp+
+        by(cases as rule:rev_cases) fastsimp+
       with path1 have "wfp' \<turnstile> (Main, Label l) -asx\<rightarrow>* sourcenode ax"
-	and "valid_edge wfp' ax" and "targetnode ax = (Main, Exit)"
-	by(auto elim:ProcCFG.path_split_snoc)
+        and "valid_edge wfp' ax" and "targetnode ax = (Main, Exit)"
+        by(auto elim:ProcCFG.path_split_snoc)
       from `valid_edge wfp' ax` `targetnode ax = (Main, Exit)`
       obtain nx where "sourcenode ax = (Main,nx)" 
-	by(fastsimp elim:PCFG.cases simp:valid_edge_def)
+        by(fastsimp elim:PCFG.cases simp:valid_edge_def)
       with `wfp' \<turnstile> (Main, Label l) -asx\<rightarrow>* sourcenode ax` have "nx \<noteq> Entry"
-	by fastsimp
+        by fastsimp
       moreover
       from `valid_edge wfp' ax` `sourcenode ax = (Main,nx)` have "nx \<noteq> Exit"
-	by(fastsimp intro:ProcCFGExit.Exit_source)
+        by(fastsimp intro:ProcCFGExit.Exit_source)
       ultimately obtain lx where [simp]:"nx = Label lx" by(cases nx) auto
       with `wfp' \<turnstile> (Main, Label l) -asx\<rightarrow>* sourcenode ax` 
-	`sourcenode ax = (Main,nx)` intra1
+        `sourcenode ax = (Main,nx)` intra1
       have path3:"wfp \<turnstile> (Main, Label l) -asx\<rightarrow>* (Main, Label lx)"
-	by -(rule path_SeqFirst,auto)
+        by -(rule path_SeqFirst,auto)
       from `valid_edge wfp' ax` `targetnode ax = (Main, Exit)`
-	`sourcenode ax = (Main,nx)` wf
+        `sourcenode ax = (Main,nx)` wf
       obtain etx where "c\<^isub>1 \<turnstile> Label lx -etx\<rightarrow>\<^isub>p Exit" 
-	by(fastsimp elim!:PCFG.cases simp:valid_edge_def)
+        by(fastsimp elim!:PCFG.cases simp:valid_edge_def)
       then obtain et where [simp]:"etx = IEdge et" 
-	by(cases etx)(auto dest:Proc_CFG_Call_Labels)
+        by(cases etx)(auto dest:Proc_CFG_Call_Labels)
       with `c\<^isub>1 \<turnstile> Label lx -etx\<rightarrow>\<^isub>p Exit` have "intra_kind et"
-	by(fastsimp intro:Proc_CFG_IEdge_intra_kind)
+        by(fastsimp intro:Proc_CFG_IEdge_intra_kind)
       from `c\<^isub>1 \<turnstile> Label lx -etx\<rightarrow>\<^isub>p Exit` path3
       have path4:"wfp \<turnstile> (Main, Label l) -asx@
-	[((Main, Label lx),et,(Main,Label 0 \<oplus> #:c\<^isub>1))] \<rightarrow>* (Main,Label 0 \<oplus> #:c\<^isub>1)"
-	by(fastsimp intro:ProcCFG.path_Append ProcCFG.path.intros Proc_CFG_SeqConnect
-	  Main simp:ProcCFG.valid_node_def valid_edge_def)
+        [((Main, Label lx),et,(Main,Label 0 \<oplus> #:c\<^isub>1))] \<rightarrow>* (Main,Label 0 \<oplus> #:c\<^isub>1)"
+        by(fastsimp intro:ProcCFG.path_Append ProcCFG.path.intros Proc_CFG_SeqConnect
+          Main simp:ProcCFG.valid_node_def valid_edge_def)
       from `Rep_wf_prog wfp = (c\<^isub>1;; c\<^isub>2, procs)`
       obtain wfp'' where [simp]:"Rep_wf_prog wfp'' = (c\<^isub>2, procs)" by(erule wfp_Seq2)
       from IH2[OF _ this,of "0"] obtain asx' 
-	where "wfp'' \<turnstile> (Main, Label 0) -asx'\<rightarrow>* (Main, Exit)"
-	and "\<forall>a\<in>set asx'. intra_kind (kind a)" by blast
+        where "wfp'' \<turnstile> (Main, Label 0) -asx'\<rightarrow>* (Main, Exit)"
+        and "\<forall>a\<in>set asx'. intra_kind (kind a)" by blast
       with path4 intra1 `intra_kind et` have "wfp \<turnstile> (Main, Label l) 
-	-(asx@[((Main, Label lx),et,(Main,Label 0 \<oplus> #:c\<^isub>1))])@(asx' \<oplus>s #:c\<^isub>1)\<rightarrow>*
-	(Main, Exit \<oplus> #:c\<^isub>1)"
-	by -(erule ProcCFG.path_Append,rule path_Main_SeqSecond,auto)
+        -(asx@[((Main, Label lx),et,(Main,Label 0 \<oplus> #:c\<^isub>1))])@(asx' \<oplus>s #:c\<^isub>1)\<rightarrow>*
+        (Main, Exit \<oplus> #:c\<^isub>1)"
+        by -(erule ProcCFG.path_Append,rule path_Main_SeqSecond,auto)
       moreover
       from intra1 `intra_kind et` `\<forall>a\<in>set asx'. intra_kind (kind a)`
       have "\<forall>a \<in> set ((asx@[((Main, Label lx),et,(Main,Label #:c\<^isub>1))])@(asx' \<oplus>s #:c\<^isub>1)).
-	intra_kind (kind a)" by(auto simp:label_incrs_def)
+        intra_kind (kind a)" by(auto simp:label_incrs_def)
       moreover
       from path2 intra2 have "wfp \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l)"
-	by -(rule path_SeqFirst,auto)
+        by -(rule path_SeqFirst,auto)
       ultimately show ?thesis using `\<forall>a\<in>set as'. intra_kind (kind a)` by fastsimp
     next
       case False
@@ -1281,65 +1281,65 @@ proof(atomize_elim)
       from `Rep_wf_prog wfp = (c\<^isub>1;; c\<^isub>2, procs)`
       obtain wfp' where [simp]:"Rep_wf_prog wfp' = (c\<^isub>2, procs)" by(erule wfp_Seq2)
       from IH2[OF `l' < #:c\<^isub>2` this] obtain as as' 
-	where path1:"wfp' \<turnstile> (Main, Label l') -as\<rightarrow>* (Main, Exit)"
-	and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
-	and path2:"wfp' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l')"
-	and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
+        where path1:"wfp' \<turnstile> (Main, Label l') -as\<rightarrow>* (Main, Exit)"
+        and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
+        and path2:"wfp' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l')"
+        and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
       from path1 intra1
       have "wfp \<turnstile> (Main, Label l' \<oplus> #:c\<^isub>1) -as \<oplus>s #:c\<^isub>1\<rightarrow>* (Main, Exit \<oplus> #:c\<^isub>1)"
-	by -(rule path_Main_SeqSecond,auto)
+        by -(rule path_Main_SeqSecond,auto)
       moreover
       from path2 have "as' \<noteq> []" by(fastsimp elim:ProcCFG.path.cases)
       with path2 obtain ax' asx' where [simp]:"as' = ax'#asx'"
-	and "sourcenode ax' = (Main, Entry)" and "valid_edge wfp' ax'" 
-	and "wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l')"
-	by -(erule ProcCFG.path_split_Cons,fastsimp+)
+        and "sourcenode ax' = (Main, Entry)" and "valid_edge wfp' ax'" 
+        and "wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l')"
+        by -(erule ProcCFG.path_split_Cons,fastsimp+)
       from `wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l')`
       have "targetnode ax' \<noteq> (Main,Exit)" by fastsimp
       with `valid_edge wfp' ax'` `sourcenode ax' = (Main, Entry)` wf
       have "targetnode ax' = (Main,Label 0)"
-	by(fastsimp elim:PCFG.cases dest:Proc_CFG_EntryD simp:valid_edge_def)
+        by(fastsimp elim:PCFG.cases dest:Proc_CFG_EntryD simp:valid_edge_def)
       with `wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l')` intra2
       have path3:"wfp \<turnstile> (Main,Label 0 \<oplus> #:c\<^isub>1) -asx' \<oplus>s #:c\<^isub>1\<rightarrow>* 
-	(Main, Label l' \<oplus> #:c\<^isub>1)" by -(rule path_Main_SeqSecond,auto)
+        (Main, Label l' \<oplus> #:c\<^isub>1)" by -(rule path_Main_SeqSecond,auto)
       from `Rep_wf_prog wfp = (c\<^isub>1;; c\<^isub>2, procs)`
       obtain wfp'' where [simp]:"Rep_wf_prog wfp'' = (c\<^isub>1, procs)" by(erule wfp_Seq1)
       from IH1[OF _ this,of "0"] obtain xs 
-	where "wfp'' \<turnstile> (Main, Label 0) -xs\<rightarrow>* (Main, Exit)"
-	and "\<forall>a\<in>set xs. intra_kind (kind a)" by blast
+        where "wfp'' \<turnstile> (Main, Label 0) -xs\<rightarrow>* (Main, Exit)"
+        and "\<forall>a\<in>set xs. intra_kind (kind a)" by blast
       from `wfp'' \<turnstile> (Main, Label 0) -xs\<rightarrow>* (Main, Exit)` have "xs \<noteq> []"
-	by(fastsimp elim:ProcCFG.path.cases)
+        by(fastsimp elim:ProcCFG.path.cases)
       then obtain x xs' where [simp]:"xs = xs'@[x]"
-	by(cases xs rule:rev_cases) fastsimp+
+        by(cases xs rule:rev_cases) fastsimp+
       with `wfp'' \<turnstile> (Main, Label 0) -xs\<rightarrow>* (Main, Exit)`
       have "wfp'' \<turnstile> (Main, Label 0) -xs'\<rightarrow>* sourcenode x"
-	and "valid_edge wfp'' x" and "targetnode x = (Main, Exit)"
-	by(auto elim:ProcCFG.path_split_snoc)
+        and "valid_edge wfp'' x" and "targetnode x = (Main, Exit)"
+        by(auto elim:ProcCFG.path_split_snoc)
       from `valid_edge wfp'' x` `targetnode x = (Main, Exit)`
       obtain nx where "sourcenode x = (Main,nx)" 
-	by(fastsimp elim:PCFG.cases simp:valid_edge_def)
+        by(fastsimp elim:PCFG.cases simp:valid_edge_def)
       with `wfp'' \<turnstile> (Main, Label 0) -xs'\<rightarrow>* sourcenode x` have "nx \<noteq> Entry"
-	by fastsimp
+        by fastsimp
       from `valid_edge wfp'' x` `sourcenode x = (Main,nx)` have "nx \<noteq> Exit"
-	by(fastsimp intro:ProcCFGExit.Exit_source)
+        by(fastsimp intro:ProcCFGExit.Exit_source)
       with `nx \<noteq> Entry` obtain lx where [simp]:"nx = Label lx" by(cases nx) auto
       from `wfp'' \<turnstile> (Main, Label 0) -xs'\<rightarrow>* sourcenode x` 
-	`sourcenode x = (Main,nx)` `\<forall>a\<in>set xs. intra_kind (kind a)`
+        `sourcenode x = (Main,nx)` `\<forall>a\<in>set xs. intra_kind (kind a)`
       have "wfp \<turnstile> (Main, Entry) 
-	-((Main, Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main, Label 0))#xs'\<rightarrow>* sourcenode x"
-	apply simp apply(rule path_SeqFirst[OF `Rep_wf_prog wfp'' = (c\<^isub>1, procs)`])
-	apply(auto intro!:ProcCFG.Cons_path)
-	by(auto intro:Main Proc_CFG_Entry simp:valid_edge_def intra_kind_def)
+        -((Main, Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main, Label 0))#xs'\<rightarrow>* sourcenode x"
+        apply simp apply(rule path_SeqFirst[OF `Rep_wf_prog wfp'' = (c\<^isub>1, procs)`])
+        apply(auto intro!:ProcCFG.Cons_path)
+        by(auto intro:Main Proc_CFG_Entry simp:valid_edge_def intra_kind_def)
       with `valid_edge wfp'' x` `targetnode x = (Main, Exit)` path3
-	`sourcenode x = (Main,nx)` `nx \<noteq> Entry` `sourcenode x = (Main,nx)` wf
+        `sourcenode x = (Main,nx)` `nx \<noteq> Entry` `sourcenode x = (Main,nx)` wf
       have "wfp \<turnstile> (Main, Entry) -((((Main, Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main, Label 0))#xs')@
-	[(sourcenode x,kind x,(Main,Label #:c\<^isub>1))])@(asx' \<oplus>s #:c\<^isub>1)\<rightarrow>* 
-	(Main, Label l' \<oplus> #:c\<^isub>1)" 
-	by(fastsimp intro:ProcCFG.path_Append ProcCFG.path.intros Main 
-	  Proc_CFG_SeqConnect elim!:PCFG.cases dest:Proc_CFG_Call_Labels
-	  simp:ProcCFG.valid_node_def valid_edge_def)
+        [(sourcenode x,kind x,(Main,Label #:c\<^isub>1))])@(asx' \<oplus>s #:c\<^isub>1)\<rightarrow>* 
+        (Main, Label l' \<oplus> #:c\<^isub>1)" 
+        by(fastsimp intro:ProcCFG.path_Append ProcCFG.path.intros Main 
+          Proc_CFG_SeqConnect elim!:PCFG.cases dest:Proc_CFG_Call_Labels
+          simp:ProcCFG.valid_node_def valid_edge_def)
       ultimately show ?thesis using intra1 intra2 `\<forall>a\<in>set xs. intra_kind (kind a)`
-	by(fastsimp simp:label_incrs_def intra_kind_def)
+        by(fastsimp simp:label_incrs_def intra_kind_def)
     qed
   next
     case (Cond b c\<^isub>1 c\<^isub>2)
@@ -1358,95 +1358,95 @@ proof(atomize_elim)
       from `Rep_wf_prog wfp = (if (b) c\<^isub>1 else c\<^isub>2, procs)`
       obtain wfp' where [simp]:"Rep_wf_prog wfp' = (c\<^isub>1, procs)" by(erule wfp_CondTrue)
       from IH1[OF _ this,of 0] obtain as 
-	where path:"wfp' \<turnstile> (Main, Label 0) -as\<rightarrow>* (Main, Exit)"
-	and intra:"\<forall>a\<in>set as. intra_kind (kind a)" by blast
+        where path:"wfp' \<turnstile> (Main, Label 0) -as\<rightarrow>* (Main, Exit)"
+        and intra:"\<forall>a\<in>set as. intra_kind (kind a)" by blast
       have "if (b) c\<^isub>1 else c\<^isub>2,procs \<turnstile> (Main,Label 0)
-	-(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow> (Main,Label 0 \<oplus> 1)"
-	by(fastsimp intro:Main Proc_CFG_CondTrue)
+        -(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow> (Main,Label 0 \<oplus> 1)"
+        by(fastsimp intro:Main Proc_CFG_CondTrue)
       with path intra have "wfp \<turnstile> (Main,Label 0)
-	-[((Main,Label 0),(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>,(Main,Label 0 \<oplus> 1))]@
-	(as \<oplus>s 1)\<rightarrow>* (Main,Exit \<oplus> 1)"
-	apply - apply(rule ProcCFG.path_Append)	apply(rule ProcCFG.path.intros)+
-	prefer 5 apply(rule path_Main_CondTrue)
-	apply(auto intro:ProcCFG.path.intros simp:valid_edge_def)
-	by(fastsimp simp:ProcCFG.valid_node_def valid_edge_def)
+        -[((Main,Label 0),(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>,(Main,Label 0 \<oplus> 1))]@
+        (as \<oplus>s 1)\<rightarrow>* (Main,Exit \<oplus> 1)"
+        apply - apply(rule ProcCFG.path_Append) apply(rule ProcCFG.path.intros)+
+        prefer 5 apply(rule path_Main_CondTrue)
+        apply(auto intro:ProcCFG.path.intros simp:valid_edge_def)
+        by(fastsimp simp:ProcCFG.valid_node_def valid_edge_def)
       moreover
       have "if (b) c\<^isub>1 else c\<^isub>2,procs \<turnstile> (Main,Entry) -(\<lambda>s. True)\<^isub>\<surd>\<rightarrow> 
-	(Main,Label 0)" by(fastsimp intro:Main Proc_CFG_Entry)
+        (Main,Label 0)" by(fastsimp intro:Main Proc_CFG_Entry)
       hence "wfp \<turnstile> (Main,Entry) -[((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))]\<rightarrow>* 
-	(Main,Label 0)"
-	by(fastsimp intro:ProcCFG.path.intros 
-	            simp:ProcCFG.valid_node_def valid_edge_def)
+        (Main,Label 0)"
+        by(fastsimp intro:ProcCFG.path.intros 
+                    simp:ProcCFG.valid_node_def valid_edge_def)
       ultimately show ?thesis using `l = 0` `\<forall>a\<in>set as. intra_kind (kind a)` 
-	by(fastsimp simp:label_incrs_def intra_kind_def)
+        by(fastsimp simp:label_incrs_def intra_kind_def)
     next
       case False
       hence "0 < l" by simp
       then obtain l' where [simp]:"l = l' + 1" and "l' = l - 1" by simp
       show ?thesis
       proof(cases "l' < #:c\<^isub>1")
-	case True
-	from `Rep_wf_prog wfp = (if (b) c\<^isub>1 else c\<^isub>2, procs)`
-	obtain wfp' where [simp]:"Rep_wf_prog wfp' = (c\<^isub>1, procs)" 
-	  by(erule wfp_CondTrue)
-	from IH1[OF True this] obtain as as' 
-	  where path1:"wfp' \<turnstile> (Main, Label l') -as\<rightarrow>* (Main, Exit)"
-	  and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
-	  and path2:"wfp' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l')"
-	  and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
-	from path1 intra1
-	have "wfp \<turnstile> (Main, Label l' \<oplus> 1) -as \<oplus>s 1\<rightarrow>* (Main, Exit \<oplus> 1)"
-	  by -(rule path_Main_CondTrue,auto)
-	moreover
-	from path2 obtain ax' asx' where [simp]:"as' = ax'#asx'"
-	  and "sourcenode ax' = (Main,Entry)" and "valid_edge wfp' ax'"
-	  and "wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l')"
-	  by -(erule ProcCFG.path.cases,fastsimp+)
-	with wf have "targetnode ax' = (Main,Label 0)"
-	  by(fastsimp elim:PCFG.cases dest:Proc_CFG_EntryD Proc_CFG_Call_Labels 
-	              simp:valid_edge_def)
-	with `wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l')` intra2
-	have "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
-	  ((Main,Label 0),(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>,(Main,Label 0 \<oplus> 1))#
-	  (asx' \<oplus>s 1)\<rightarrow>* (Main,Label l' \<oplus> 1)"
-	  apply - apply(rule ProcCFG.path.intros)+ apply(rule path_Main_CondTrue) 
-	  by(auto intro:Main Proc_CFG_Entry Proc_CFG_CondTrue simp:valid_edge_def)
-	ultimately show ?thesis using intra1 intra2
-	  by(fastsimp simp:label_incrs_def intra_kind_def)
+        case True
+        from `Rep_wf_prog wfp = (if (b) c\<^isub>1 else c\<^isub>2, procs)`
+        obtain wfp' where [simp]:"Rep_wf_prog wfp' = (c\<^isub>1, procs)" 
+          by(erule wfp_CondTrue)
+        from IH1[OF True this] obtain as as' 
+          where path1:"wfp' \<turnstile> (Main, Label l') -as\<rightarrow>* (Main, Exit)"
+          and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
+          and path2:"wfp' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l')"
+          and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
+        from path1 intra1
+        have "wfp \<turnstile> (Main, Label l' \<oplus> 1) -as \<oplus>s 1\<rightarrow>* (Main, Exit \<oplus> 1)"
+          by -(rule path_Main_CondTrue,auto)
+        moreover
+        from path2 obtain ax' asx' where [simp]:"as' = ax'#asx'"
+          and "sourcenode ax' = (Main,Entry)" and "valid_edge wfp' ax'"
+          and "wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l')"
+          by -(erule ProcCFG.path.cases,fastsimp+)
+        with wf have "targetnode ax' = (Main,Label 0)"
+          by(fastsimp elim:PCFG.cases dest:Proc_CFG_EntryD Proc_CFG_Call_Labels 
+                      simp:valid_edge_def)
+        with `wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l')` intra2
+        have "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
+          ((Main,Label 0),(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>,(Main,Label 0 \<oplus> 1))#
+          (asx' \<oplus>s 1)\<rightarrow>* (Main,Label l' \<oplus> 1)"
+          apply - apply(rule ProcCFG.path.intros)+ apply(rule path_Main_CondTrue) 
+          by(auto intro:Main Proc_CFG_Entry Proc_CFG_CondTrue simp:valid_edge_def)
+        ultimately show ?thesis using intra1 intra2
+          by(fastsimp simp:label_incrs_def intra_kind_def)
       next
-	case False
-	hence "#:c\<^isub>1 \<le> l'" by simp
-	then obtain l'' where [simp]:"l' = l'' + #:c\<^isub>1" and "l'' = l' - #:c\<^isub>1" by simp
-	from  `l < #:(if (b) c\<^isub>1 else c\<^isub>2)` have "l'' < #:c\<^isub>2" by simp
-	from `Rep_wf_prog wfp = (if (b) c\<^isub>1 else c\<^isub>2, procs)`
-	obtain wfp'' where [simp]:"Rep_wf_prog wfp'' = (c\<^isub>2, procs)" 
-	  by(erule wfp_CondFalse)
-	from IH2[OF `l'' < #:c\<^isub>2` this] obtain as as' 
-	  where path1:"wfp'' \<turnstile> (Main, Label l'') -as\<rightarrow>* (Main, Exit)"
-	  and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
-	  and path2:"wfp'' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l'')"
-	  and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
-	from path1 intra1
-	have "wfp \<turnstile> (Main, Label l'' \<oplus> (#:c\<^isub>1 + 1)) -as \<oplus>s (#:c\<^isub>1 + 1)\<rightarrow>* 
-	  (Main, Exit \<oplus> (#:c\<^isub>1 + 1))"
-	  by -(rule path_Main_CondFalse,auto simp:add_assoc)
-	moreover
-	from path2 obtain ax' asx' where [simp]:"as' = ax'#asx'"
-	  and "sourcenode ax' = (Main,Entry)" and "valid_edge wfp'' ax'"
-	  and "wfp'' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l'')"
-	  by -(erule ProcCFG.path.cases,fastsimp+)
-	with wf have "targetnode ax' = (Main,Label 0)"
-	  by(fastsimp elim:PCFG.cases dest:Proc_CFG_EntryD Proc_CFG_Call_Labels 
-	              simp:valid_edge_def)
-	with `wfp'' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l'')` intra2
-	have "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
-	  ((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,
-	  (Main,Label (#:c\<^isub>1 + 1)))#(asx' \<oplus>s (#:c\<^isub>1 + 1))\<rightarrow>* 
-	  (Main,Label l'' \<oplus> (#:c\<^isub>1 + 1))"
-	  apply - apply(rule ProcCFG.path.intros)+ apply(rule path_Main_CondFalse)
-	  by(auto intro:Main Proc_CFG_Entry Proc_CFG_CondFalse simp:valid_edge_def)
-	ultimately show ?thesis using intra1 intra2
-	  by(fastsimp simp:label_incrs_def intra_kind_def add_assoc)
+        case False
+        hence "#:c\<^isub>1 \<le> l'" by simp
+        then obtain l'' where [simp]:"l' = l'' + #:c\<^isub>1" and "l'' = l' - #:c\<^isub>1" by simp
+        from  `l < #:(if (b) c\<^isub>1 else c\<^isub>2)` have "l'' < #:c\<^isub>2" by simp
+        from `Rep_wf_prog wfp = (if (b) c\<^isub>1 else c\<^isub>2, procs)`
+        obtain wfp'' where [simp]:"Rep_wf_prog wfp'' = (c\<^isub>2, procs)" 
+          by(erule wfp_CondFalse)
+        from IH2[OF `l'' < #:c\<^isub>2` this] obtain as as' 
+          where path1:"wfp'' \<turnstile> (Main, Label l'') -as\<rightarrow>* (Main, Exit)"
+          and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
+          and path2:"wfp'' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l'')"
+          and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
+        from path1 intra1
+        have "wfp \<turnstile> (Main, Label l'' \<oplus> (#:c\<^isub>1 + 1)) -as \<oplus>s (#:c\<^isub>1 + 1)\<rightarrow>* 
+          (Main, Exit \<oplus> (#:c\<^isub>1 + 1))"
+          by -(rule path_Main_CondFalse,auto simp:add_assoc)
+        moreover
+        from path2 obtain ax' asx' where [simp]:"as' = ax'#asx'"
+          and "sourcenode ax' = (Main,Entry)" and "valid_edge wfp'' ax'"
+          and "wfp'' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l'')"
+          by -(erule ProcCFG.path.cases,fastsimp+)
+        with wf have "targetnode ax' = (Main,Label 0)"
+          by(fastsimp elim:PCFG.cases dest:Proc_CFG_EntryD Proc_CFG_Call_Labels 
+                      simp:valid_edge_def)
+        with `wfp'' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main, Label l'')` intra2
+        have "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
+          ((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,
+          (Main,Label (#:c\<^isub>1 + 1)))#(asx' \<oplus>s (#:c\<^isub>1 + 1))\<rightarrow>* 
+          (Main,Label l'' \<oplus> (#:c\<^isub>1 + 1))"
+          apply - apply(rule ProcCFG.path.intros)+ apply(rule path_Main_CondFalse)
+          by(auto intro:Main Proc_CFG_Entry Proc_CFG_CondFalse simp:valid_edge_def)
+        ultimately show ?thesis using intra1 intra2
+          by(fastsimp simp:label_incrs_def intra_kind_def add_assoc)
       qed
     qed
   next
@@ -1460,99 +1460,99 @@ proof(atomize_elim)
     proof(cases "l = 0")
       case True
       hence "wfp \<turnstile> (Main,Label l) - 
-	((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,(Main,Label 1))#
-	[((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
-	by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_WhileFalseSkip 
-	  Proc_CFG_WhileFalse simp:valid_edge_def)
+        ((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,(Main,Label 1))#
+        [((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
+        by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_WhileFalseSkip 
+          Proc_CFG_WhileFalse simp:valid_edge_def)
       moreover
       have "while (b) c' \<turnstile> Entry -IEdge (\<lambda>s. True)\<^isub>\<surd>\<rightarrow>\<^isub>p Label 0" by(rule Proc_CFG_Entry)
       with `l = 0` have "wfp \<turnstile> (Main,Entry) 
-	-[((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))]\<rightarrow>* (Main,Label l)"
-	by(fastsimp intro:ProcCFG.path.intros Main 
-	             simp:ProcCFG.valid_node_def valid_edge_def)
+        -[((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))]\<rightarrow>* (Main,Label l)"
+        by(fastsimp intro:ProcCFG.path.intros Main 
+                     simp:ProcCFG.valid_node_def valid_edge_def)
       ultimately show ?thesis by(fastsimp simp:intra_kind_def)
     next
       case False
       hence "1 \<le> l" by simp
       thus ?thesis
       proof(cases "l < 2")
-	case True
-	with `1 \<le> l` have [simp]:"l = 1" by simp
-	have "wfp \<turnstile> (Main,Label l) -[((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
-	  by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_WhileFalseSkip 
-	              simp:valid_edge_def)
-	moreover
-	have "while (b) c' \<turnstile> Label 0 -IEdge (\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>\<rightarrow>\<^isub>p 
-	  Label 1" by(rule Proc_CFG_WhileFalse)
-	hence "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
-	  [((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,(Main,Label 1))]\<rightarrow>*
-	  (Main,Label l)"
-	  by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_Entry 
-	               simp:ProcCFG.valid_node_def valid_edge_def)
-	ultimately show ?thesis by(fastsimp simp:intra_kind_def)
+        case True
+        with `1 \<le> l` have [simp]:"l = 1" by simp
+        have "wfp \<turnstile> (Main,Label l) -[((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
+          by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_WhileFalseSkip 
+                      simp:valid_edge_def)
+        moreover
+        have "while (b) c' \<turnstile> Label 0 -IEdge (\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>\<rightarrow>\<^isub>p 
+          Label 1" by(rule Proc_CFG_WhileFalse)
+        hence "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
+          [((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,(Main,Label 1))]\<rightarrow>*
+          (Main,Label l)"
+          by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_Entry 
+                       simp:ProcCFG.valid_node_def valid_edge_def)
+        ultimately show ?thesis by(fastsimp simp:intra_kind_def)
       next
-	case False
-	with `1 \<le> l` have "2 \<le> l" by simp
-	then obtain l' where [simp]:"l = l' + 2" and "l' = l - 2" 
-	  by(simp del:add_2_eq_Suc')
-	from `l < #:while (b) c'` have "l' < #:c'" by simp
-	from `Rep_wf_prog wfp = (while (b) c', procs)`
-	obtain wfp' where [simp]:"Rep_wf_prog wfp' = (c', procs)" 
-	  by(erule wfp_WhileBody)
-	from IH[OF `l' < #:c'` this] obtain as as' 
-	  where path1:"wfp' \<turnstile> (Main, Label l') -as\<rightarrow>* (Main, Exit)"
-	  and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
-	  and path2:"wfp' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l')"
-	  and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
-	from path1 have "as \<noteq> []" by(fastsimp elim:ProcCFG.path.cases)
-	with path1 obtain ax asx where [simp]:"as = asx@[ax]"
-	  and "wfp' \<turnstile> (Main, Label l') -asx\<rightarrow>* sourcenode ax"
-	  and "valid_edge wfp' ax" and "targetnode ax = (Main, Exit)"
-	  by -(erule ProcCFG.path_split_snoc,fastsimp+)
-	with wf obtain lx etx where "sourcenode ax = (Main,Label lx)"
-	  and "intra_kind (kind ax)"
-	  apply(auto elim!:PCFG.cases dest:Proc_CFG_Call_Labels simp:valid_edge_def)
-	  by(case_tac n)(auto dest:Proc_CFG_IEdge_intra_kind)
-	with `wfp' \<turnstile> (Main, Label l') -asx\<rightarrow>* sourcenode ax` intra1
-	have "wfp \<turnstile> (Main, Label l' \<oplus> 2) -asx \<oplus>s 2\<rightarrow>* (Main,Label lx \<oplus> 2)"
-	  by -(rule path_Main_WhileBody,auto)
-	from `valid_edge wfp' ax` `sourcenode ax = (Main,Label lx)`
-	  `targetnode ax = (Main, Exit)` `intra_kind (kind ax)` wf
-	have "while (b) c',procs \<turnstile> (Main,Label lx \<oplus> 2) -kind ax\<rightarrow> 
-	  (Main,Label 0)"
-	  by(fastsimp intro!:Main Proc_CFG_WhileBodyExit elim!:PCFG.cases 
-	                dest:Proc_CFG_Call_Labels simp:valid_edge_def)
-	hence "wfp \<turnstile> (Main,Label lx \<oplus> 2) 
-	  -((Main,Label lx \<oplus> 2),kind ax,(Main,Label 0))#
-	  ((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,(Main,Label 1))#
-	  [((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
-	  by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_WhileFalse 
-	    Proc_CFG_WhileFalseSkip simp:valid_edge_def)
-	with `wfp \<turnstile> (Main, Label l' \<oplus> 2) -asx \<oplus>s 2\<rightarrow>* (Main,Label lx \<oplus> 2)`
-	have "wfp \<turnstile> (Main, Label l) -(asx \<oplus>s 2)@
-	  (((Main,Label lx \<oplus> 2),kind ax,(Main,Label 0))#
-	  ((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,(Main,Label 1))#
-	  [((Main,Label 1),\<Up>id,(Main,Exit))])\<rightarrow>* (Main,Exit)"
-	  by(fastsimp intro:ProcCFG.path_Append)
-	moreover
-	from path2 have "as' \<noteq> []" by(fastsimp elim:ProcCFG.path.cases)
-	with path2 obtain ax' asx' where [simp]:"as' = ax'#asx'"
-	  and "wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main,Label l')"
-	  and "valid_edge wfp' ax'" and "sourcenode ax' = (Main, Entry)"
-	  by -(erule ProcCFG.path_split_Cons,fastsimp+)
-	with wf have "targetnode ax' = (Main,Label 0)" and "intra_kind (kind ax')"
-	  by(fastsimp elim!:PCFG.cases dest:Proc_CFG_Call_Labels 
-	    Proc_CFG_EntryD simp:intra_kind_def valid_edge_def)+
-	with `wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main,Label l')` intra2
-	have "wfp \<turnstile> (Main, Label 0 \<oplus> 2) -asx' \<oplus>s 2\<rightarrow>* (Main,Label l' \<oplus> 2)"
-	  by -(rule path_Main_WhileBody,auto simp del:add_2_eq_Suc')
-	hence "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
-	  ((Main,Label 0),(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>,(Main,Label 2))#
-	  (asx' \<oplus>s 2)\<rightarrow>* (Main,Label l)"
-	  by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_WhileTrue 
-	    Proc_CFG_Entry simp:valid_edge_def)
-	ultimately show ?thesis using `intra_kind (kind ax)` intra1 intra2
-	  by(fastsimp simp:label_incrs_def intra_kind_def)
+        case False
+        with `1 \<le> l` have "2 \<le> l" by simp
+        then obtain l' where [simp]:"l = l' + 2" and "l' = l - 2" 
+          by(simp del:add_2_eq_Suc')
+        from `l < #:while (b) c'` have "l' < #:c'" by simp
+        from `Rep_wf_prog wfp = (while (b) c', procs)`
+        obtain wfp' where [simp]:"Rep_wf_prog wfp' = (c', procs)" 
+          by(erule wfp_WhileBody)
+        from IH[OF `l' < #:c'` this] obtain as as' 
+          where path1:"wfp' \<turnstile> (Main, Label l') -as\<rightarrow>* (Main, Exit)"
+          and intra1:"\<forall>a\<in>set as. intra_kind (kind a)"
+          and path2:"wfp' \<turnstile> (Main, Entry) -as'\<rightarrow>* (Main, Label l')"
+          and intra2:"\<forall>a\<in>set as'. intra_kind (kind a)" by blast
+        from path1 have "as \<noteq> []" by(fastsimp elim:ProcCFG.path.cases)
+        with path1 obtain ax asx where [simp]:"as = asx@[ax]"
+          and "wfp' \<turnstile> (Main, Label l') -asx\<rightarrow>* sourcenode ax"
+          and "valid_edge wfp' ax" and "targetnode ax = (Main, Exit)"
+          by -(erule ProcCFG.path_split_snoc,fastsimp+)
+        with wf obtain lx etx where "sourcenode ax = (Main,Label lx)"
+          and "intra_kind (kind ax)"
+          apply(auto elim!:PCFG.cases dest:Proc_CFG_Call_Labels simp:valid_edge_def)
+          by(case_tac n)(auto dest:Proc_CFG_IEdge_intra_kind)
+        with `wfp' \<turnstile> (Main, Label l') -asx\<rightarrow>* sourcenode ax` intra1
+        have "wfp \<turnstile> (Main, Label l' \<oplus> 2) -asx \<oplus>s 2\<rightarrow>* (Main,Label lx \<oplus> 2)"
+          by -(rule path_Main_WhileBody,auto)
+        from `valid_edge wfp' ax` `sourcenode ax = (Main,Label lx)`
+          `targetnode ax = (Main, Exit)` `intra_kind (kind ax)` wf
+        have "while (b) c',procs \<turnstile> (Main,Label lx \<oplus> 2) -kind ax\<rightarrow> 
+          (Main,Label 0)"
+          by(fastsimp intro!:Main Proc_CFG_WhileBodyExit elim!:PCFG.cases 
+                        dest:Proc_CFG_Call_Labels simp:valid_edge_def)
+        hence "wfp \<turnstile> (Main,Label lx \<oplus> 2) 
+          -((Main,Label lx \<oplus> 2),kind ax,(Main,Label 0))#
+          ((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,(Main,Label 1))#
+          [((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
+          by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_WhileFalse 
+            Proc_CFG_WhileFalseSkip simp:valid_edge_def)
+        with `wfp \<turnstile> (Main, Label l' \<oplus> 2) -asx \<oplus>s 2\<rightarrow>* (Main,Label lx \<oplus> 2)`
+        have "wfp \<turnstile> (Main, Label l) -(asx \<oplus>s 2)@
+          (((Main,Label lx \<oplus> 2),kind ax,(Main,Label 0))#
+          ((Main,Label 0),(\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>,(Main,Label 1))#
+          [((Main,Label 1),\<Up>id,(Main,Exit))])\<rightarrow>* (Main,Exit)"
+          by(fastsimp intro:ProcCFG.path_Append)
+        moreover
+        from path2 have "as' \<noteq> []" by(fastsimp elim:ProcCFG.path.cases)
+        with path2 obtain ax' asx' where [simp]:"as' = ax'#asx'"
+          and "wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main,Label l')"
+          and "valid_edge wfp' ax'" and "sourcenode ax' = (Main, Entry)"
+          by -(erule ProcCFG.path_split_Cons,fastsimp+)
+        with wf have "targetnode ax' = (Main,Label 0)" and "intra_kind (kind ax')"
+          by(fastsimp elim!:PCFG.cases dest:Proc_CFG_Call_Labels 
+            Proc_CFG_EntryD simp:intra_kind_def valid_edge_def)+
+        with `wfp' \<turnstile> targetnode ax' -asx'\<rightarrow>* (Main,Label l')` intra2
+        have "wfp \<turnstile> (Main, Label 0 \<oplus> 2) -asx' \<oplus>s 2\<rightarrow>* (Main,Label l' \<oplus> 2)"
+          by -(rule path_Main_WhileBody,auto simp del:add_2_eq_Suc')
+        hence "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
+          ((Main,Label 0),(\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>,(Main,Label 2))#
+          (asx' \<oplus>s 2)\<rightarrow>* (Main,Label l)"
+          by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_WhileTrue 
+            Proc_CFG_Entry simp:valid_edge_def)
+        ultimately show ?thesis using `intra_kind (kind ax)` intra1 intra2
+          by(fastsimp simp:label_incrs_def intra_kind_def)
       qed
     qed
   next
@@ -1563,30 +1563,30 @@ proof(atomize_elim)
     proof(cases "l = 0")
       case True
       have "wfp \<turnstile> (Main,Label 0) -((Main,Label 0),(\<lambda>s. False)\<^isub>\<surd>,(Main,Label 1))#
-	[((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
-	by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_CallSkip MainCallReturn
-	  Proc_CFG_Call simp:valid_edge_def)
+        [((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
+        by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_CallSkip MainCallReturn
+          Proc_CFG_Call simp:valid_edge_def)
       moreover
       have "Call p es rets,procs \<turnstile> (Main,Entry) -(\<lambda>s. True)\<^isub>\<surd>\<rightarrow> (Main,Label 0)"
-	by(fastsimp intro:Main Proc_CFG_Entry)
+        by(fastsimp intro:Main Proc_CFG_Entry)
       hence "wfp \<turnstile> (Main,Entry) -[((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))]\<rightarrow>*
-	(Main,Label 0)"
-	by(fastsimp intro:ProcCFG.path.intros 
-	  simp:ProcCFG.valid_node_def valid_edge_def)
+        (Main,Label 0)"
+        by(fastsimp intro:ProcCFG.path.intros 
+          simp:ProcCFG.valid_node_def valid_edge_def)
       ultimately show ?thesis using `l = 0` by(fastsimp simp:intra_kind_def)
     next
       case False
       with `l < #:Call p es rets` have "l = 1" by simp
       have "wfp \<turnstile> (Main,Label 1) -[((Main,Label 1),\<Up>id,(Main,Exit))]\<rightarrow>* (Main,Exit)"
-	by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_CallSkip
-	            simp:valid_edge_def)
+        by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_CallSkip
+                    simp:valid_edge_def)
       moreover
       have "Call p es rets,procs \<turnstile> (Main,Label 0) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,Label 1)"
-	by(fastsimp intro:MainCallReturn Proc_CFG_Call)
+        by(fastsimp intro:MainCallReturn Proc_CFG_Call)
       hence "wfp \<turnstile> (Main,Entry) -((Main,Entry),(\<lambda>s. True)\<^isub>\<surd>,(Main,Label 0))#
-	[((Main,Label 0),(\<lambda>s. False)\<^isub>\<surd>,(Main,Label 1))]\<rightarrow>* (Main,Label 1)"
-	by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_Entry 
-	            simp:ProcCFG.valid_node_def valid_edge_def)
+        [((Main,Label 0),(\<lambda>s. False)\<^isub>\<surd>,(Main,Label 1))]\<rightarrow>* (Main,Label 1)"
+        by(fastsimp intro:ProcCFG.path.intros Main Proc_CFG_Entry 
+                    simp:ProcCFG.valid_node_def valid_edge_def)
       ultimately show ?thesis using `l = 1` by(fastsimp simp:intra_kind_def)
     qed
   qed
@@ -1758,12 +1758,12 @@ proof(atomize_elim)
       and "wfp \<turnstile> (p,Exit) -[((p,Exit),(\<lambda>cf. snd cf = (Main,Label lx'))\<hookleftarrow>\<^bsub>p\<^esub>
       (\<lambda>cf cf'. cf'(rets [:=] map cf outs)),(Main,Label lx'))]\<rightarrow>* (Main,Label lx')"
       by(fastsimp intro:ProcCFG.path.intros 
-	simp:ProcCFG.valid_node_def valid_edge_def)+
+        simp:ProcCFG.valid_node_def valid_edge_def)+
     moreover
     from `prog \<turnstile> Label lx -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label lx'`
     have "lx < #:prog" and "lx' < #:prog"
       by(auto intro:Proc_CFG_sourcelabel_less_num_nodes 
-	            Proc_CFG_targetlabel_less_num_nodes)
+                    Proc_CFG_targetlabel_less_num_nodes)
     from `Rep_wf_prog wfp = (prog,procs)` `lx < #:prog` obtain as 
       where "wfp \<turnstile> (Main,Entry) -as\<rightarrow>* (Main,Label lx)"
       and "\<forall>a \<in> set as. intra_kind (kind a)"
@@ -1779,14 +1779,14 @@ proof(atomize_elim)
       (as@[((Main,Label lx),(\<lambda>s. True):(Main,Label lx')\<hookrightarrow>\<^bsub>p\<^esub>
       map (\<lambda>e cf. interpret e cf) es,(p,Entry))])"
       by(fastsimp intro:ProcCFG.same_level_path_valid_path_Append 
-	ProcCFG.intras_same_level_path simp:ProcCFG.valid_path_def)
+        ProcCFG.intras_same_level_path simp:ProcCFG.valid_path_def)
     moreover
     from `\<forall>a \<in> set as'. intra_kind (kind a)` 
     have "CFG.valid_path kind (get_return_edges wfp) 
       ([((p,Exit),(\<lambda>cf. snd cf = (Main,Label lx'))\<hookleftarrow>\<^bsub>p\<^esub>
       (\<lambda>cf cf'. cf'(rets [:=] map cf outs)),(Main,Label lx'))]@as')"
       by(fastsimp intro:ProcCFG.valid_path_same_level_path_Append 
-	ProcCFG.intras_same_level_path simp:ProcCFG.valid_path_def)
+        ProcCFG.intras_same_level_path simp:ProcCFG.valid_path_def)
     ultimately show ?case by(fastsimp intro:ProcCFG.path_Append simp:ProcCFG.vp_def)
   next
     case (snoc p' ps')
@@ -1810,7 +1810,7 @@ proof(atomize_elim)
       by(erule containsCall_empty_Proc_CFG_Call_edge)
     hence "lx < #:c'" and "lx' < #:c'"
       by(auto intro:Proc_CFG_sourcelabel_less_num_nodes 
-	            Proc_CFG_targetlabel_less_num_nodes)
+                    Proc_CFG_targetlabel_less_num_nodes)
     from `lx < #:c'` `Rep_wf_prog wfp = (prog,procs)` `(p',ins',outs',c') \<in> set procs`
       `containsCall procs prog ps' p'` obtain asx 
       where "wfp \<turnstile> (p',Entry) -asx\<rightarrow>* (p',Label lx)"
@@ -1819,7 +1819,7 @@ proof(atomize_elim)
     with pathE have pathE2:"CFG.valid_path' sourcenode targetnode kind 
       (valid_edge wfp) (get_return_edges wfp) (Main, Entry) (as@asx) (p', Label lx)"
       by(fastsimp intro:ProcCFG.path_Append ProcCFG.valid_path_same_level_path_Append
-	ProcCFG.intras_same_level_path simp:ProcCFG.vp_def)
+        ProcCFG.intras_same_level_path simp:ProcCFG.vp_def)
     from `lx' < #:c'` `Rep_wf_prog wfp = (prog,procs)`
       `(p',ins',outs',c') \<in> set procs` `containsCall procs prog ps' p'` 
     obtain asx' where "wfp \<turnstile> (p',Label lx') -asx'\<rightarrow>* (p',Exit)"
@@ -1828,7 +1828,7 @@ proof(atomize_elim)
     with pathX have pathX2:"CFG.valid_path' sourcenode targetnode kind 
       (valid_edge wfp) (get_return_edges wfp) (p', Label lx') (asx'@as') (Main, Exit)"
       by(fastsimp intro:ProcCFG.path_Append ProcCFG.same_level_path_valid_path_Append
-	ProcCFG.intras_same_level_path simp:ProcCFG.vp_def)
+        ProcCFG.intras_same_level_path simp:ProcCFG.vp_def)
     from edge `(p,ins,outs,c) \<in> set procs` `(p',ins',outs',c') \<in> set procs`
       `containsCall procs prog ps' p'`
     have "prog,procs \<turnstile> (p',Label lx) -(\<lambda>s. True):(p',Label lx')\<hookrightarrow>\<^bsub>p\<^esub>
@@ -1843,7 +1843,7 @@ proof(atomize_elim)
       (\<lambda>cf cf'. cf'(rets [:=] map cf outs)),(p',Label lx'))]\<rightarrow>* 
       (p',Label lx')"
       by(fastsimp intro:ProcCFG.path.intros 
-	          simp:ProcCFG.valid_node_def valid_edge_def)+
+                  simp:ProcCFG.valid_node_def valid_edge_def)+
     from path pathE2 have "CFG.valid_path' sourcenode targetnode kind (valid_edge wfp)
       (get_return_edges wfp) (Main, Entry) ((as@asx)@[((p',Label lx),
       (\<lambda>s. True):(p',Label lx')\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es,(p,Entry))])
@@ -1884,25 +1884,25 @@ proof -
     have "prog,procs \<turnstile> (Main, Entry) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main, Exit)"
       by(fastsimp intro:PCFG.Main Proc_CFG_Entry_Exit)
     hence EXpath:"wfp \<turnstile> (Main,Entry) -[((Main,Entry),(\<lambda>s. False)\<^isub>\<surd>,(Main,Exit))]\<rightarrow>*
-	(Main,Exit)"
+        (Main,Exit)"
       by(fastsimp intro:ProcCFG.path.intros
-	simp:valid_edge_def ProcCFG.valid_node_def)
+        simp:valid_edge_def ProcCFG.valid_node_def)
     show ?case
     proof(cases n)
       case (Label l)
       with `prog \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` `(Main, nx) = sourcenode a`[THEN sym]
         `(Main, nx') = targetnode a`[THEN sym] disj
       have "l < #:prog" by(auto intro:Proc_CFG_sourcelabel_less_num_nodes
-	Proc_CFG_targetlabel_less_num_nodes)
+        Proc_CFG_targetlabel_less_num_nodes)
       with `Rep_wf_prog wfp = (prog,procs)` 
       obtain as as' where "wfp \<turnstile> (Main,Entry) -as\<rightarrow>* (Main,Label l)"
-	and "\<forall>a \<in> set as. intra_kind (kind a)"
-	and "wfp \<turnstile> (Main,Label l) -as'\<rightarrow>* (Main,Exit)"
-	and "\<forall>a \<in> set as'. intra_kind (kind a)"
-	by -(erule Label_Proc_CFG_Entry_Exit_path_Main)+
+        and "\<forall>a \<in> set as. intra_kind (kind a)"
+        and "wfp \<turnstile> (Main,Label l) -as'\<rightarrow>* (Main,Exit)"
+        and "\<forall>a \<in> set as'. intra_kind (kind a)"
+        by -(erule Label_Proc_CFG_Entry_Exit_path_Main)+
       with Label show ?thesis
-	apply(rule_tac x="as" in exI) apply(rule_tac x="as'" in exI) apply simp
-	by(fastsimp intro:ProcCFG.intra_path_vp simp:ProcCFG.intra_path_def)
+        apply(rule_tac x="as" in exI) apply(rule_tac x="as'" in exI) apply simp
+        by(fastsimp intro:ProcCFG.intra_path_vp simp:ProcCFG.intra_path_def)
     next
       case Entry
       hence "wfp \<turnstile> (Main,Entry) -[]\<rightarrow>* (Main,n)" by(fastsimp intro:ProcCFG.empty_path)
@@ -1911,10 +1911,10 @@ proof -
       case Exit
       hence "wfp \<turnstile> (Main,n) -[]\<rightarrow>* (Main,Exit)" by(fastsimp intro:ProcCFG.empty_path)
       with Exit EXpath show ?thesis using Exit
-	apply(rule_tac x="[((Main,Entry),(\<lambda>s. False)\<^isub>\<surd>,(Main,Exit))]" in exI) 
-	apply simp
-	by(fastsimp intro:ProcCFG.intra_path_vp 
-	  simp:ProcCFG.intra_path_def intra_kind_def)
+        apply(rule_tac x="[((Main,Entry),(\<lambda>s. False)\<^isub>\<surd>,(Main,Exit))]" in exI) 
+        apply simp
+        by(fastsimp intro:ProcCFG.intra_path_vp 
+          simp:ProcCFG.intra_path_def intra_kind_def)
     qed
   next
     case (Proc px ins outs c nx nx' ps)
@@ -1933,44 +1933,44 @@ proof -
       by(fastsimp intro:PCFG.Proc Proc_CFG_Entry_Exit)
     hence EXpath:"wfp \<turnstile> (px,Entry) -[((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]\<rightarrow>* 
       (px,Exit)" by(fastsimp intro:ProcCFG.path.intros 
-	simp:valid_edge_def ProcCFG.valid_node_def)
+        simp:valid_edge_def ProcCFG.valid_node_def)
     show ?case
     proof(cases n)
       case (Label l)
       with `c \<turnstile> nx -IEdge (kind a)\<rightarrow>\<^isub>p nx'` disj `(px, nx) = sourcenode a`[THEN sym]
         `(px, nx') = targetnode a`[THEN sym]
       have "l < #:c" by(auto intro:Proc_CFG_sourcelabel_less_num_nodes
-	Proc_CFG_targetlabel_less_num_nodes)
+        Proc_CFG_targetlabel_less_num_nodes)
       with `Rep_wf_prog wfp = (prog,procs)` `(px, ins, outs, c) \<in> set procs` 
-	`containsCall procs prog ps px`
+        `containsCall procs prog ps px`
       obtain as as' where "wfp \<turnstile> (px,Entry) -as\<rightarrow>* (px,Label l)"
-	and "\<forall>a \<in> set as. intra_kind (kind a)"
-	and "wfp \<turnstile> (px,Label l) -as'\<rightarrow>* (px,Exit)"
-	and "\<forall>a \<in> set as'. intra_kind (kind a)"
-	by -(erule Label_Proc_CFG_Entry_Exit_path_Proc)+
+        and "\<forall>a \<in> set as. intra_kind (kind a)"
+        and "wfp \<turnstile> (px,Label l) -as'\<rightarrow>* (px,Exit)"
+        and "\<forall>a \<in> set as'. intra_kind (kind a)"
+        by -(erule Label_Proc_CFG_Entry_Exit_path_Proc)+
       with path path' show ?thesis using Label
-	apply(rule_tac x="asx@as" in exI) apply(rule_tac x="as'@asx'" in exI)
-	by(auto intro:ProcCFG.path_Append ProcCFG.valid_path_same_level_path_Append
-	  ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
-	  simp:ProcCFG.vp_def)
+        apply(rule_tac x="asx@as" in exI) apply(rule_tac x="as'@asx'" in exI)
+        by(auto intro:ProcCFG.path_Append ProcCFG.valid_path_same_level_path_Append
+          ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
+          simp:ProcCFG.vp_def)
     next
       case Entry
       from EXpath path' have "CFG.valid_path' sourcenode targetnode kind 
-	(valid_edge wfp) (get_return_edges wfp) (px,Entry) 
-	([((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]@asx') (Main, Exit)"
-	apply(unfold ProcCFG.vp_def) apply(erule conjE) apply(rule conjI)
-	by(fastsimp intro:ProcCFG.path_Append 
-	  ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
-	  simp:intra_kind_def)+
+        (valid_edge wfp) (get_return_edges wfp) (px,Entry) 
+        ([((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]@asx') (Main, Exit)"
+        apply(unfold ProcCFG.vp_def) apply(erule conjE) apply(rule conjI)
+        by(fastsimp intro:ProcCFG.path_Append 
+          ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
+          simp:intra_kind_def)+
       with path Entry show ?thesis by simp blast
     next
       case Exit
       with path EXpath path' show ?thesis
-	apply(rule_tac x="asx@[((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]" in exI)
-	apply simp
-	by(fastsimp intro:ProcCFG.path_Append 
-	  ProcCFG.valid_path_same_level_path_Append ProcCFG.intras_same_level_path
-	  simp:ProcCFG.vp_def ProcCFG.intra_path_def intra_kind_def)
+        apply(rule_tac x="asx@[((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]" in exI)
+        apply simp
+        by(fastsimp intro:ProcCFG.path_Append 
+          ProcCFG.valid_path_same_level_path_Append ProcCFG.intras_same_level_path
+          simp:ProcCFG.vp_def ProcCFG.intra_path_def intra_kind_def)
     qed
   next
     case (MainCall l px es rets nx' ins outs c)
@@ -1980,41 +1980,41 @@ proof -
       with `(Main, Label l) = sourcenode a`[THEN sym] 
       have [simp]:"n = Label l" "p = Main" by simp_all
       with `prog \<turnstile> Label l -CEdge (px, es, rets)\<rightarrow>\<^isub>p nx'` have "l < #:prog"
-	by(fastsimp intro:Proc_CFG_sourcelabel_less_num_nodes)
+        by(fastsimp intro:Proc_CFG_sourcelabel_less_num_nodes)
       with `Rep_wf_prog wfp = (prog,procs)` 
       obtain as as' where "wfp \<turnstile> (Main,Entry) -as\<rightarrow>* (Main,Label l)"
-	and "\<forall>a \<in> set as. intra_kind (kind a)"
-	and "wfp \<turnstile> (Main,Label l) -as'\<rightarrow>* (Main,Exit)"
-	and "\<forall>a \<in> set as'. intra_kind (kind a)"
-	by -(erule Label_Proc_CFG_Entry_Exit_path_Main)+
+        and "\<forall>a \<in> set as. intra_kind (kind a)"
+        and "wfp \<turnstile> (Main,Label l) -as'\<rightarrow>* (Main,Exit)"
+        and "\<forall>a \<in> set as'. intra_kind (kind a)"
+        by -(erule Label_Proc_CFG_Entry_Exit_path_Main)+
       thus ?thesis 
-	by(fastsimp intro:ProcCFG.intra_path_vp simp:ProcCFG.intra_path_def)
+        by(fastsimp intro:ProcCFG.intra_path_vp simp:ProcCFG.intra_path_def)
     next
       assume "(p,n) = targetnode a"
       with `(px, Entry) = targetnode a`[THEN sym] 
       have [simp]:"n = Entry" "p = px" by simp_all
       from `prog \<turnstile> Label l -CEdge (px, es, rets)\<rightarrow>\<^isub>p nx'`
       have "containsCall procs prog [] px" 
-	by(rule Proc_CFG_Call_containsCall)
+        by(rule Proc_CFG_Call_containsCall)
       with `Rep_wf_prog wfp = (prog,procs)` `(px, ins, outs, c) \<in> set procs`
       obtain as' where Xpath:"CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (px,Exit) as' (Main,Exit)"
-	by -(erule Entry_to_Entry_and_Exit_to_Exit)      
+        (valid_edge wfp) (get_return_edges wfp) (px,Exit) as' (Main,Exit)"
+        by -(erule Entry_to_Entry_and_Exit_to_Exit)      
       from `containsCall procs prog [] px` `(px, ins, outs, c) \<in> set procs`
       have "prog,procs \<turnstile> (px, Entry) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (px, Exit)"
-	by(fastsimp intro:PCFG.Proc Proc_CFG_Entry_Exit)
+        by(fastsimp intro:PCFG.Proc Proc_CFG_Entry_Exit)
       hence "wfp \<turnstile> (px,Entry) -[((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]\<rightarrow>* (px,Exit)"
-	by(fastsimp intro:ProcCFG.path.intros 
-	  simp:valid_edge_def ProcCFG.valid_node_def)
+        by(fastsimp intro:ProcCFG.path.intros 
+          simp:valid_edge_def ProcCFG.valid_node_def)
       with Xpath have "CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (px,Entry) 
-	([((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]@as') (Main,Exit)"
-	apply(unfold ProcCFG.vp_def) apply(erule conjE) apply(rule conjI)
-	by(fastsimp intro:ProcCFG.path_Append 
-	  ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
-	  simp:intra_kind_def)+
+        (valid_edge wfp) (get_return_edges wfp) (px,Entry) 
+        ([((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]@as') (Main,Exit)"
+        apply(unfold ProcCFG.vp_def) apply(erule conjE) apply(rule conjI)
+        by(fastsimp intro:ProcCFG.path_Append 
+          ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
+          simp:intra_kind_def)+
       with `containsCall procs prog [] px` `Rep_wf_prog wfp = (prog,procs)`
-	`(px, ins, outs, c) \<in> set procs`
+        `(px, ins, outs, c) \<in> set procs`
       show ?thesis by(fastsimp elim:Entry_to_Entry_and_Exit_to_Exit)
     qed
   next
@@ -2025,27 +2025,27 @@ proof -
       with `(px, Label l) = sourcenode a`[THEN sym] 
       have [simp]:"n = Label l" "p = px" by simp_all
       with `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'` have "l < #:c"
-	by(fastsimp intro:Proc_CFG_sourcelabel_less_num_nodes)
+        by(fastsimp intro:Proc_CFG_sourcelabel_less_num_nodes)
       from `Rep_wf_prog wfp = (prog,procs)` `l < #:c` 
-	`containsCall procs prog ps px` `(px, ins, outs, c) \<in> set procs`
+        `containsCall procs prog ps px` `(px, ins, outs, c) \<in> set procs`
       obtain as as' where "wfp \<turnstile> (px,Label l) -as\<rightarrow>* (px,Exit)"
-	and "\<forall>a \<in> set as. intra_kind (kind a)"
-	and "wfp \<turnstile> (px,Entry) -as'\<rightarrow>* (px,Label l)"
-	and "\<forall>a \<in> set as'. intra_kind (kind a)"
-	by -(erule Label_Proc_CFG_Entry_Exit_path_Proc)+
+        and "\<forall>a \<in> set as. intra_kind (kind a)"
+        and "wfp \<turnstile> (px,Entry) -as'\<rightarrow>* (px,Label l)"
+        and "\<forall>a \<in> set as'. intra_kind (kind a)"
+        by -(erule Label_Proc_CFG_Entry_Exit_path_Proc)+
       moreover
       from `Rep_wf_prog wfp = (prog,procs)` `containsCall procs prog ps px`
-	`(px, ins, outs, c) \<in> set procs` obtain asx asx' 
-	where" CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (Main,Entry) asx (px,Entry)"
-	and "CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (px,Exit) asx' (Main,Exit)"
-	by -(erule Entry_to_Entry_and_Exit_to_Exit)+
+        `(px, ins, outs, c) \<in> set procs` obtain asx asx' 
+        where" CFG.valid_path' sourcenode targetnode kind
+        (valid_edge wfp) (get_return_edges wfp) (Main,Entry) asx (px,Entry)"
+        and "CFG.valid_path' sourcenode targetnode kind
+        (valid_edge wfp) (get_return_edges wfp) (px,Exit) asx' (Main,Exit)"
+        by -(erule Entry_to_Entry_and_Exit_to_Exit)+
       ultimately show ?thesis 
-	apply(rule_tac x="asx@as'" in exI) apply(rule_tac x="as@asx'" in exI)
-	by(auto intro:ProcCFG.path_Append ProcCFG.valid_path_same_level_path_Append
-	  ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
-	  simp:ProcCFG.vp_def)
+        apply(rule_tac x="asx@as'" in exI) apply(rule_tac x="as@asx'" in exI)
+        by(auto intro:ProcCFG.path_Append ProcCFG.valid_path_same_level_path_Append
+          ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
+          simp:ProcCFG.vp_def)
     next
       assume "(p,n) = targetnode a"
       with `(p', Entry) = targetnode a`[THEN sym] 
@@ -2054,28 +2054,28 @@ proof -
       have "containsCall procs c [] p'" by(rule Proc_CFG_Call_containsCall)
       with `containsCall procs prog ps px` `(px, ins, outs, c) \<in> set procs`
       have "containsCall procs prog (ps@[px]) p'"
-	by(rule containsCall_in_proc)
+        by(rule containsCall_in_proc)
       with `(p', ins', outs', c') \<in> set procs`
       have "prog,procs \<turnstile> (p', Entry) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (p', Exit)"
-	by(fastsimp intro:PCFG.Proc Proc_CFG_Entry_Exit)
+        by(fastsimp intro:PCFG.Proc Proc_CFG_Entry_Exit)
       hence "wfp \<turnstile> (p',Entry) -[((p',Entry),(\<lambda>s. False)\<^isub>\<surd>,(p',Exit))]\<rightarrow>* (p',Exit)"
-	by(fastsimp intro:ProcCFG.path.intros 
-	  simp:valid_edge_def ProcCFG.valid_node_def)
+        by(fastsimp intro:ProcCFG.path.intros 
+          simp:valid_edge_def ProcCFG.valid_node_def)
       moreover
       from `Rep_wf_prog wfp = (prog,procs)` `(p', ins', outs', c') \<in> set procs`
-	`containsCall procs prog (ps@[px]) p'`
+        `containsCall procs prog (ps@[px]) p'`
       obtain as as' where "CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (Main,Entry) as (p',Entry)"
-	and "CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (p',Exit) as' (Main,Exit)"
-	by -(erule Entry_to_Entry_and_Exit_to_Exit)+
+        (valid_edge wfp) (get_return_edges wfp) (Main,Entry) as (p',Entry)"
+        and "CFG.valid_path' sourcenode targetnode kind
+        (valid_edge wfp) (get_return_edges wfp) (p',Exit) as' (Main,Exit)"
+        by -(erule Entry_to_Entry_and_Exit_to_Exit)+
       ultimately show ?thesis
-	apply(rule_tac x="as" in exI)
-	apply(rule_tac x="[((p',Entry),(\<lambda>s. False)\<^isub>\<surd>,(p',Exit))]@as'" in exI)
-	apply(unfold ProcCFG.vp_def)
-	by(fastsimp intro:ProcCFG.path_Append 
-	  ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
-	  simp:intra_kind_def)+
+        apply(rule_tac x="as" in exI)
+        apply(rule_tac x="[((p',Entry),(\<lambda>s. False)\<^isub>\<surd>,(p',Exit))]@as'" in exI)
+        apply(unfold ProcCFG.vp_def)
+        by(fastsimp intro:ProcCFG.path_Append 
+          ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
+          simp:intra_kind_def)+
     qed
   next
     case (MainReturn l px es rets l' ins outs c)
@@ -2088,39 +2088,39 @@ proof -
       have "containsCall procs prog [] px" by(rule Proc_CFG_Call_containsCall)
       with `(px, ins, outs, c) \<in> set procs`
       have "prog,procs \<turnstile> (px, Entry) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (px, Exit)"
-	by(fastsimp intro:PCFG.Proc Proc_CFG_Entry_Exit)
+        by(fastsimp intro:PCFG.Proc Proc_CFG_Entry_Exit)
       hence "wfp \<turnstile> (px,Entry) -[((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]\<rightarrow>* (px,Exit)"
-	by(fastsimp intro:ProcCFG.path.intros 
-	  simp:valid_edge_def ProcCFG.valid_node_def)
+        by(fastsimp intro:ProcCFG.path.intros 
+          simp:valid_edge_def ProcCFG.valid_node_def)
       moreover
       from `Rep_wf_prog wfp = (prog,procs)` `(px, ins, outs, c) \<in> set procs`
-	`containsCall procs prog [] px`
+        `containsCall procs prog [] px`
       obtain as as' where "CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (Main,Entry) as (px,Entry)"
-	and "CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (px,Exit) as' (Main,Exit)"
-	by -(erule Entry_to_Entry_and_Exit_to_Exit)+
+        (valid_edge wfp) (get_return_edges wfp) (Main,Entry) as (px,Entry)"
+        and "CFG.valid_path' sourcenode targetnode kind
+        (valid_edge wfp) (get_return_edges wfp) (px,Exit) as' (Main,Exit)"
+        by -(erule Entry_to_Entry_and_Exit_to_Exit)+
       ultimately show ?thesis
-	apply(rule_tac x="as@[((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]" in exI)
-	apply(rule_tac x="as'" in exI)
-	apply(unfold ProcCFG.vp_def)
-	by(fastsimp intro:ProcCFG.path_Append 
-	  ProcCFG.valid_path_same_level_path_Append ProcCFG.intras_same_level_path
-	  simp:intra_kind_def)+
+        apply(rule_tac x="as@[((px,Entry),(\<lambda>s. False)\<^isub>\<surd>,(px,Exit))]" in exI)
+        apply(rule_tac x="as'" in exI)
+        apply(unfold ProcCFG.vp_def)
+        by(fastsimp intro:ProcCFG.path_Append 
+          ProcCFG.valid_path_same_level_path_Append ProcCFG.intras_same_level_path
+          simp:intra_kind_def)+
     next
       assume "(p, n) = targetnode a"
       with `(Main, Label l') = targetnode a`[THEN sym] 
       have [simp]:"n = Label l'" "p = Main" by simp_all
       with `prog \<turnstile> Label l -CEdge (px, es, rets)\<rightarrow>\<^isub>p Label l'` have "l' < #:prog"
-	by(fastsimp intro:Proc_CFG_targetlabel_less_num_nodes)
+        by(fastsimp intro:Proc_CFG_targetlabel_less_num_nodes)
       with `Rep_wf_prog wfp = (prog,procs)` 
       obtain as as' where "wfp \<turnstile> (Main,Entry) -as\<rightarrow>* (Main,Label l')"
-	and "\<forall>a \<in> set as. intra_kind (kind a)"
-	and "wfp \<turnstile> (Main,Label l') -as'\<rightarrow>* (Main,Exit)"
-	and "\<forall>a \<in> set as'. intra_kind (kind a)"
-	by -(erule Label_Proc_CFG_Entry_Exit_path_Main)+
+        and "\<forall>a \<in> set as. intra_kind (kind a)"
+        and "wfp \<turnstile> (Main,Label l') -as'\<rightarrow>* (Main,Exit)"
+        and "\<forall>a \<in> set as'. intra_kind (kind a)"
+        by -(erule Label_Proc_CFG_Entry_Exit_path_Main)+
       thus ?thesis 
-	by(fastsimp intro:ProcCFG.intra_path_vp simp:ProcCFG.intra_path_def)
+        by(fastsimp intro:ProcCFG.intra_path_vp simp:ProcCFG.intra_path_def)
     qed
   next
     case (ProcReturn px ins outs c l p' es' rets' l' ins' outs' c' ps)
@@ -2133,54 +2133,54 @@ proof -
       have "containsCall procs c [] p'" by(rule Proc_CFG_Call_containsCall)
       with `containsCall procs prog ps px` `(px, ins, outs, c) \<in> set procs`
       have "containsCall procs prog (ps@[px]) p'"
-	by(rule containsCall_in_proc)
+        by(rule containsCall_in_proc)
       with `(p', ins', outs', c') \<in> set procs`
       have "prog,procs \<turnstile> (p', Entry) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (p', Exit)"
-	by(fastsimp intro:PCFG.Proc Proc_CFG_Entry_Exit)
+        by(fastsimp intro:PCFG.Proc Proc_CFG_Entry_Exit)
       hence "wfp \<turnstile> (p',Entry) -[((p',Entry),(\<lambda>s. False)\<^isub>\<surd>,(p',Exit))]\<rightarrow>* (p',Exit)"
-	by(fastsimp intro:ProcCFG.path.intros 
-	  simp:valid_edge_def ProcCFG.valid_node_def)
+        by(fastsimp intro:ProcCFG.path.intros 
+          simp:valid_edge_def ProcCFG.valid_node_def)
       moreover
       from `Rep_wf_prog wfp = (prog,procs)` `(p', ins', outs', c') \<in> set procs`
-	`containsCall procs prog (ps@[px]) p'`
+        `containsCall procs prog (ps@[px]) p'`
       obtain as as' where "CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (Main,Entry) as (p',Entry)"
-	and "CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (p',Exit) as' (Main,Exit)"
-	by -(erule Entry_to_Entry_and_Exit_to_Exit)+
+        (valid_edge wfp) (get_return_edges wfp) (Main,Entry) as (p',Entry)"
+        and "CFG.valid_path' sourcenode targetnode kind
+        (valid_edge wfp) (get_return_edges wfp) (p',Exit) as' (Main,Exit)"
+        by -(erule Entry_to_Entry_and_Exit_to_Exit)+
       ultimately show ?thesis
-	apply(rule_tac x="as@[((p',Entry),(\<lambda>s. False)\<^isub>\<surd>,(p',Exit))]" in exI)
-	apply(rule_tac x="as'" in exI)
-	apply(unfold ProcCFG.vp_def)
-	by(fastsimp intro:ProcCFG.path_Append 
-	  ProcCFG.valid_path_same_level_path_Append ProcCFG.intras_same_level_path
-	  simp:intra_kind_def)+
+        apply(rule_tac x="as@[((p',Entry),(\<lambda>s. False)\<^isub>\<surd>,(p',Exit))]" in exI)
+        apply(rule_tac x="as'" in exI)
+        apply(unfold ProcCFG.vp_def)
+        by(fastsimp intro:ProcCFG.path_Append 
+          ProcCFG.valid_path_same_level_path_Append ProcCFG.intras_same_level_path
+          simp:intra_kind_def)+
     next
       assume "(p, n) = targetnode a"
       with `(px, Label l') = targetnode a`[THEN sym] 
       have [simp]:"n = Label l'" "p = px" by simp_all
       with `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'` have "l' < #:c"
-	by(fastsimp intro:Proc_CFG_targetlabel_less_num_nodes)
+        by(fastsimp intro:Proc_CFG_targetlabel_less_num_nodes)
       from `Rep_wf_prog wfp = (prog,procs)` `l' < #:c` 
-	`containsCall procs prog ps px` `(px, ins, outs, c) \<in> set procs`
+        `containsCall procs prog ps px` `(px, ins, outs, c) \<in> set procs`
       obtain as as' where "wfp \<turnstile> (px,Label l') -as\<rightarrow>* (px,Exit)"
-	and "\<forall>a \<in> set as. intra_kind (kind a)"
-	and "wfp \<turnstile> (px,Entry) -as'\<rightarrow>* (px,Label l')"
-	and "\<forall>a \<in> set as'. intra_kind (kind a)"
-	by -(erule Label_Proc_CFG_Entry_Exit_path_Proc)+
+        and "\<forall>a \<in> set as. intra_kind (kind a)"
+        and "wfp \<turnstile> (px,Entry) -as'\<rightarrow>* (px,Label l')"
+        and "\<forall>a \<in> set as'. intra_kind (kind a)"
+        by -(erule Label_Proc_CFG_Entry_Exit_path_Proc)+
       moreover
       from `Rep_wf_prog wfp = (prog,procs)` `containsCall procs prog ps px`
-	`(px, ins, outs, c) \<in> set procs` obtain asx asx' 
-	where" CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (Main,Entry) asx (px,Entry)"
-	and "CFG.valid_path' sourcenode targetnode kind
-	(valid_edge wfp) (get_return_edges wfp) (px,Exit) asx' (Main,Exit)"
-	by -(erule Entry_to_Entry_and_Exit_to_Exit)+
+        `(px, ins, outs, c) \<in> set procs` obtain asx asx' 
+        where" CFG.valid_path' sourcenode targetnode kind
+        (valid_edge wfp) (get_return_edges wfp) (Main,Entry) asx (px,Entry)"
+        and "CFG.valid_path' sourcenode targetnode kind
+        (valid_edge wfp) (get_return_edges wfp) (px,Exit) asx' (Main,Exit)"
+        by -(erule Entry_to_Entry_and_Exit_to_Exit)+
       ultimately show ?thesis 
-	apply(rule_tac x="asx@as'" in exI) apply(rule_tac x="as@asx'" in exI)
-	by(auto intro:ProcCFG.path_Append ProcCFG.valid_path_same_level_path_Append
-	  ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
-	  simp:ProcCFG.vp_def)
+        apply(rule_tac x="asx@as'" in exI) apply(rule_tac x="as@asx'" in exI)
+        by(auto intro:ProcCFG.path_Append ProcCFG.valid_path_same_level_path_Append
+          ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
+          simp:ProcCFG.vp_def)
     qed
   next
     case (MainCallReturn nx px es rets nx')
@@ -2212,7 +2212,7 @@ proof -
     `(px, nx) = sourcenode a`[THEN sym] `(px, nx') = targetnode a`[THEN sym]
     have "l < #:c"
       by(auto intro:Proc_CFG_sourcelabel_less_num_nodes
-	Proc_CFG_targetlabel_less_num_nodes)
+        Proc_CFG_targetlabel_less_num_nodes)
     with `Rep_wf_prog wfp = (prog,procs)` `(px, ins, outs, c) \<in> set procs` 
       `containsCall procs prog ps px`
     obtain as as' where "wfp \<turnstile> (px,Entry) -as\<rightarrow>* (px,Label l)"
@@ -2231,8 +2231,8 @@ proof -
     ultimately show ?thesis
       apply(rule_tac x="asx@as" in exI) apply(rule_tac x="as'@asx'" in exI)
       by(auto intro:ProcCFG.path_Append ProcCFG.valid_path_same_level_path_Append
-	ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
-	simp:ProcCFG.vp_def)
+        ProcCFG.same_level_path_valid_path_Append ProcCFG.intras_same_level_path
+        simp:ProcCFG.vp_def)
   qed
 qed
 
@@ -2287,62 +2287,62 @@ proof -
     proof
       assume "n = (Main,Exit)"
       from mex2 have "n' = (Main,Exit) \<or> (\<exists>a Q p f. n' = sourcenode a \<and> 
-	valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)" 
-	by(simp add:ProcCFGExit.method_exit_def)
+        valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)" 
+        by(simp add:ProcCFGExit.method_exit_def)
       thus ?thesis
       proof
-	assume "n' = (Main,Exit)"
-	with `n = (Main,Exit)` show ?thesis by simp
+        assume "n' = (Main,Exit)"
+        with `n = (Main,Exit)` show ?thesis by simp
       next
-	assume "\<exists>a Q p f. n' = sourcenode a \<and> 
-	  valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
-	then obtain a Q p f where "n' = sourcenode a"
-	  and "valid_edge wfp a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" by blast
-	from `valid_edge wfp a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	have "get_proc (sourcenode a) = p" by(rule ProcCFG.get_proc_return)
-	with `get_proc n = get_proc n'` `n = (Main,Exit)` `n' = sourcenode a`
-	have "get_proc (Main,Exit) = p" by simp
-	hence "p = Main" by simp
-	with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "kind a = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
-	with `valid_edge wfp a` have False by(rule ProcCFG.Main_no_return_source)
-	thus ?thesis by simp
+        assume "\<exists>a Q p f. n' = sourcenode a \<and> 
+          valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
+        then obtain a Q p f where "n' = sourcenode a"
+          and "valid_edge wfp a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" by blast
+        from `valid_edge wfp a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+        have "get_proc (sourcenode a) = p" by(rule ProcCFG.get_proc_return)
+        with `get_proc n = get_proc n'` `n = (Main,Exit)` `n' = sourcenode a`
+        have "get_proc (Main,Exit) = p" by simp
+        hence "p = Main" by simp
+        with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "kind a = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
+        with `valid_edge wfp a` have False by(rule ProcCFG.Main_no_return_source)
+        thus ?thesis by simp
       qed
     next
       assume "\<exists>a Q p f. n = sourcenode a \<and> 
-	valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
+        valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       then obtain a Q p f where "n = sourcenode a"
-	and "valid_edge wfp a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" by blast
+        and "valid_edge wfp a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" by blast
       from `valid_edge wfp a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "get_proc (sourcenode a) = p" by(rule ProcCFG.get_proc_return)
       from mex2 have "n' = (Main,Exit) \<or> (\<exists>a Q p f. n' = sourcenode a \<and> 
-	valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)" 
-	by(simp add:ProcCFGExit.method_exit_def)
+        valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)" 
+        by(simp add:ProcCFGExit.method_exit_def)
       thus ?thesis
       proof
-	assume "n' = (Main,Exit)"
-	from `get_proc (sourcenode a) = p` `get_proc n = get_proc n'`
-	  `n' = (Main,Exit)` `n = sourcenode a`
-	have "get_proc (Main,Exit) = p" by simp
-	hence "p = Main" by simp
-	with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "kind a = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
-	with `valid_edge wfp a` have False by(rule ProcCFG.Main_no_return_source)
-	thus ?thesis by simp
+        assume "n' = (Main,Exit)"
+        from `get_proc (sourcenode a) = p` `get_proc n = get_proc n'`
+          `n' = (Main,Exit)` `n = sourcenode a`
+        have "get_proc (Main,Exit) = p" by simp
+        hence "p = Main" by simp
+        with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "kind a = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
+        with `valid_edge wfp a` have False by(rule ProcCFG.Main_no_return_source)
+        thus ?thesis by simp
       next
-	assume "\<exists>a Q p f. n' = sourcenode a \<and> 
-	  valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
-	then obtain a' Q' p' f' where "n' = sourcenode a'"
-	  and "valid_edge wfp a'" and "kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'" by blast
-	from `valid_edge wfp a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'`
-	have "get_proc (sourcenode a') = p'" by(rule ProcCFG.get_proc_return)
-	with `get_proc n = get_proc n'` `get_proc (sourcenode a) = p`
-	  `n = sourcenode a` `n' = sourcenode a'`
-	have "p' = p" by simp
-	from `valid_edge wfp a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	have "sourcenode a = (p,Exit)" by(auto elim:PCFG.cases simp:valid_edge_def)
-	from `valid_edge wfp a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'`
-	have "sourcenode a' = (p',Exit)" by(auto elim:PCFG.cases simp:valid_edge_def)
-	with `n = sourcenode a` `n' = sourcenode a'` `p' = p`
-	  `sourcenode a = (p,Exit)` show ?thesis by simp
+        assume "\<exists>a Q p f. n' = sourcenode a \<and> 
+          valid_edge wfp a \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
+        then obtain a' Q' p' f' where "n' = sourcenode a'"
+          and "valid_edge wfp a'" and "kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'" by blast
+        from `valid_edge wfp a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'`
+        have "get_proc (sourcenode a') = p'" by(rule ProcCFG.get_proc_return)
+        with `get_proc n = get_proc n'` `get_proc (sourcenode a) = p`
+          `n = sourcenode a` `n' = sourcenode a'`
+        have "p' = p" by simp
+        from `valid_edge wfp a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+        have "sourcenode a = (p,Exit)" by(auto elim:PCFG.cases simp:valid_edge_def)
+        from `valid_edge wfp a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'`
+        have "sourcenode a' = (p',Exit)" by(auto elim:PCFG.cases simp:valid_edge_def)
+        with `n = sourcenode a` `n' = sourcenode a'` `p' = p`
+          `sourcenode a = (p,Exit)` show ?thesis by simp
       qed
     qed
   qed

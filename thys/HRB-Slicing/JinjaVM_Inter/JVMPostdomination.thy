@@ -730,19 +730,19 @@ next
     proof (cases "C \<in> set SystemClasses")
       case True
       thus ?thesis
-	by (auto simp: wf_cdecl_def SystemClasses_def ObjectC_def NullPointerC_def
-	  OutOfMemoryC_def ClassCastC_def EP_def class_def)
+        by (auto simp: wf_cdecl_def SystemClasses_def ObjectC_def NullPointerC_def
+          OutOfMemoryC_def ClassCastC_def EP_def class_def)
     next
       case False
       with C_in_EP have "C = (''C'', the (class EP ''C''))"
-	by (auto simp: EP_def SystemClasses_def class_def)
+        by (auto simp: EP_def SystemClasses_def class_def)
       thus ?thesis
-	by (auto dest!: i_max_2D elim: Methods.cases
-	  simp: wf_cdecl_def class_def EP_def wf_mdecl_def wt_method_def Phi_EP_def
-	  wt_start_def check_types_def states_def JVM_SemiType.sl_def SystemClasses_def
-	  stk_esl_def upto_esl_def loc_sl_def SemiType.esl_def ObjectC_def
-	  SemiType.sup_def Err.sl_def Err.le_def err_def Listn.sl_def Method_def
-	  Err.esl_def Opt.esl_def Product.esl_def relevant_entries_def)
+        by (auto dest!: i_max_2D elim: Methods.cases
+          simp: wf_cdecl_def class_def EP_def wf_mdecl_def wt_method_def Phi_EP_def
+          wt_start_def check_types_def states_def JVM_SemiType.sl_def SystemClasses_def
+          stk_esl_def upto_esl_def loc_sl_def SemiType.esl_def ObjectC_def
+          SemiType.sup_def Err.sl_def Err.le_def err_def Listn.sl_def Method_def
+          Err.esl_def Opt.esl_def Product.esl_def relevant_entries_def)
     qed
   qed
   ultimately show "(\<forall>c\<in>set EP. wf_cdecl

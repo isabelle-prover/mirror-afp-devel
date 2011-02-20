@@ -99,7 +99,7 @@ proof(atomize_elim)
       from `l = l' + #:c\<^isub>1` `l < #:c\<^isub>1;;c\<^isub>2` have "l' < #:c\<^isub>2" by simp
       from IH2[OF this] obtain c' where "labels c\<^isub>2 l' c'" by auto
       with `l = l' + #:c\<^isub>1` have "labels (c\<^isub>1;;c\<^isub>2) l c'" 
-	by(fastsimp intro:Labels_Seq2)
+        by(fastsimp intro:Labels_Seq2)
       thus ?thesis by auto
     qed
   next
@@ -116,21 +116,21 @@ proof(atomize_elim)
       then obtain l' where "l = l' + 1" and "l' = l - 1" by simp
       thus ?thesis
       proof(cases "l' < #:c\<^isub>1")
-	case True
-	from IH1[OF this] obtain c' where "labels c\<^isub>1 l' c'" by auto
-	with `l = l' + 1` have "labels (if (b) c\<^isub>1 else c\<^isub>2) l c'"
-	  by(fastsimp dest:Labels_CondTrue)
-	thus ?thesis by auto
+        case True
+        from IH1[OF this] obtain c' where "labels c\<^isub>1 l' c'" by auto
+        with `l = l' + 1` have "labels (if (b) c\<^isub>1 else c\<^isub>2) l c'"
+          by(fastsimp dest:Labels_CondTrue)
+        thus ?thesis by auto
       next
-	case False
-	hence "#:c\<^isub>1 \<le> l'" by simp
-	then obtain l'' where "l' = l'' + #:c\<^isub>1" and "l'' = l' - #:c\<^isub>1" by simp
-	from `l' = l'' + #:c\<^isub>1` `l = l' + 1` `l < #:if (b) c\<^isub>1 else c\<^isub>2`
-	have "l'' < #:c\<^isub>2" by simp
-	from IH2[OF this] obtain c' where "labels c\<^isub>2 l'' c'" by auto
-	with `l' = l'' + #:c\<^isub>1` `l = l' + 1` have "labels (if (b) c\<^isub>1 else c\<^isub>2) l c'"
-	  by(fastsimp dest:Labels_CondFalse)
-	thus ?thesis by auto
+        case False
+        hence "#:c\<^isub>1 \<le> l'" by simp
+        then obtain l'' where "l' = l'' + #:c\<^isub>1" and "l'' = l' - #:c\<^isub>1" by simp
+        from `l' = l'' + #:c\<^isub>1` `l = l' + 1` `l < #:if (b) c\<^isub>1 else c\<^isub>2`
+        have "l'' < #:c\<^isub>2" by simp
+        from IH2[OF this] obtain c' where "labels c\<^isub>2 l'' c'" by auto
+        with `l' = l'' + #:c\<^isub>1` `l = l' + 1` have "labels (if (b) c\<^isub>1 else c\<^isub>2) l c'"
+          by(fastsimp dest:Labels_CondFalse)
+        thus ?thesis by auto
       qed
     qed
   next
@@ -145,19 +145,19 @@ proof(atomize_elim)
       case False
       show ?thesis
       proof(cases "l < 2")
-	case True
-	with `\<not> l < 1` have "l = 1" by simp
-	thus ?thesis by(fastsimp intro:Labels_WhileExit)
+        case True
+        with `\<not> l < 1` have "l = 1" by simp
+        thus ?thesis by(fastsimp intro:Labels_WhileExit)
       next
-	case False
-	with `\<not> l < 1` have "2 \<le> l" by simp
-	then obtain l' where "l = l' + 2" and "l' = l - 2" 
-	  by(simp del:add_2_eq_Suc')
-	from `l = l' + 2` `l < #:while (b) c'` have "l' < #:c'" by simp
-	from IH[OF this] obtain c'' where "labels c' l' c''" by auto
-	with `l = l' + 2` have "labels (while (b) c') l (c'';;while (b) c')"
-	  by(fastsimp dest:Labels_WhileBody)
-	thus ?thesis by auto
+        case False
+        with `\<not> l < 1` have "2 \<le> l" by simp
+        then obtain l' where "l = l' + 2" and "l' = l - 2" 
+          by(simp del:add_2_eq_Suc')
+        from `l = l' + 2` `l < #:while (b) c'` have "l' < #:c'" by simp
+        from IH[OF this] obtain c'' where "labels c' l' c''" by auto
+        with `l = l' + 2` have "labels (while (b) c') l (c'';;while (b) c')"
+          by(fastsimp dest:Labels_WhileBody)
+        thus ?thesis by auto
       qed
     qed
   next

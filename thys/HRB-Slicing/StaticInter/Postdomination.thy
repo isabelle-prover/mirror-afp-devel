@@ -156,21 +156,21 @@ proof(induct rule:valid_node_cases)
     proof(rule method_exit_cases)
       assume "pex = (_Exit_)"
       with `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* pex` have "as \<noteq> []" 
-	apply(clarsimp simp:intra_path_def) apply(erule path.cases)
-	by (drule sym,simp,drule Exit_noteq_Entry,auto)
+        apply(clarsimp simp:intra_path_def) apply(erule path.cases)
+        by (drule sym,simp,drule Exit_noteq_Entry,auto)
       with `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* pex` have "hd (sourcenodes as) = (_Entry_)" 
-	by(fastsimp intro:path_sourcenode simp:intra_path_def)
+        by(fastsimp intro:path_sourcenode simp:intra_path_def)
       with `as \<noteq> []`show ?thesis by(fastsimp intro:hd_in_set simp:sourcenodes_def)
     next
       fix a Q p f assume "pex = sourcenode a" and "valid_edge a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       from `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* pex` have "get_proc (_Entry_) = get_proc pex"
-	by(rule intra_path_get_procs)
+        by(rule intra_path_get_procs)
       hence "get_proc pex = Main" by(simp add:get_proc_Entry)
       from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "get_proc (sourcenode a) = p"
-	by(rule get_proc_return)
+        by(rule get_proc_return)
       with `pex = sourcenode a` `get_proc pex = Main` have "p = Main" by simp
       with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have False
-	by simp (rule Main_no_return_source)
+        by simp (rule Main_no_return_source)
       thus ?thesis by simp
     qed }
   with Entry show ?thesis 
@@ -186,9 +186,9 @@ next
     case True
     { fix as pex assume "n -as\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
       with `\<not> method_exit n` have "as \<noteq> []" 
-	by(fastsimp elim:path.cases simp:intra_path_def)
+        by(fastsimp elim:path.cases simp:intra_path_def)
       with `n -as\<rightarrow>\<^isub>\<iota>* pex` inner have "hd (sourcenodes as) = n"
-	by(fastsimp intro:path_sourcenode simp:intra_path_def)
+        by(fastsimp intro:path_sourcenode simp:intra_path_def)
       from `as \<noteq> []` have "sourcenodes as \<noteq> []" by(simp add:sourcenodes_def)
       with `hd (sourcenodes as) = n`[THEN sym] 
       have "n \<in> set (sourcenodes as)" by simp }
@@ -196,7 +196,7 @@ next
       by fastsimp
     with True inner show ?thesis 
       by(fastsimp intro:empty_path 
-	           simp:postdominate_def inner_is_valid intra_path_def)
+                   simp:postdominate_def inner_is_valid intra_path_def)
   next
     case False
     with inner show ?thesis by(fastsimp dest:inner_is_valid Exit_path)
@@ -302,11 +302,11 @@ proof(atomize_elim)
     proof(cases "n' postdominates n''")
       case True
       with `\<not> n' postdominates n` `sourcenode a = n` `targetnode a = n''`
-	`valid_edge a` show ?thesis by blast
+        `valid_edge a` show ?thesis by blast
     next
       case False
       from IH[OF `n' postdominates nx` this] show ?thesis
-	by clarsimp(rule_tac x="a#as'" in exI,clarsimp)
+        by clarsimp(rule_tac x="a#as'" in exI,clarsimp)
     qed
   qed simp
 qed
@@ -371,33 +371,33 @@ proof(atomize_elim)
     proof(cases asx)
       case Nil
       with `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex` have "pex = sourcenode a"
-	by(fastsimp simp:intra_path_def)
+        by(fastsimp simp:intra_path_def)
       with `method_exit pex` have "method_exit (sourcenode a)" by simp
       thus ?thesis
       proof(rule method_exit_cases)
-	assume "sourcenode a = (_Exit_)"
-	with `valid_edge a` have False by(rule Exit_source)
-	thus ?thesis by simp
+        assume "sourcenode a = (_Exit_)"
+        with `valid_edge a` have False by(rule Exit_source)
+        thus ?thesis by simp
       next
-	fix a' Q f p assume "sourcenode a = sourcenode a'"
-	  and "valid_edge a'" and "kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
-	hence False using `intra_kind (kind a)` `valid_edge a`
-	  by(fastsimp dest:return_edges_only simp:intra_kind_def)
-	thus ?thesis by simp
+        fix a' Q f p assume "sourcenode a = sourcenode a'"
+          and "valid_edge a'" and "kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
+        hence False using `intra_kind (kind a)` `valid_edge a`
+          by(fastsimp dest:return_edges_only simp:intra_kind_def)
+        thus ?thesis by simp
       qed
     next
       case (Cons ax asx')
       with `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex`
       have "sourcenode a -[]@ax#asx'\<rightarrow>* pex" 
-	and "\<forall>a \<in> set (ax#asx'). intra_kind (kind a)" by(simp_all add:intra_path_def)
+        and "\<forall>a \<in> set (ax#asx'). intra_kind (kind a)" by(simp_all add:intra_path_def)
       from `sourcenode a -[]@ax#asx'\<rightarrow>* pex`
       have "sourcenode a = sourcenode ax" and "valid_edge ax"
-	and "targetnode ax -asx'\<rightarrow>* pex"	 by(fastsimp dest:path_split)+
+        and "targetnode ax -asx'\<rightarrow>* pex"  by(fastsimp dest:path_split)+
       with `\<forall>a \<in> set (ax#asx'). intra_kind (kind a)`
       have "targetnode ax -asx'\<rightarrow>\<^isub>\<iota>* pex" by(simp add:intra_path_def)
       with `n \<notin> set(sourcenodes asx)` Cons `method_exit pex`
       have "\<not> n postdominates targetnode ax"
-	by(fastsimp simp:postdominate_def sourcenodes_def) 
+        by(fastsimp simp:postdominate_def sourcenodes_def) 
       with `sourcenode a = sourcenode ax` `valid_edge ax` show ?thesis by blast
     qed
   qed
@@ -438,19 +438,19 @@ proof(atomize_elim)
       case inner
       have "intra_kind (kind a')"
       proof(cases "kind a'" rule:edge_kind_cases)
-	case Intra thus ?thesis by simp
+        case Intra thus ?thesis by simp
       next
-	case (Call Q r p fs)
-	with `valid_edge a'` have "get_proc(targetnode a') = p" by(rule get_proc_call)
-	with `(_Exit_) = targetnode a'` get_proc_Exit have "p = Main" by simp
-	with `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` have "kind a' = Q:r\<hookrightarrow>\<^bsub>Main\<^esub>fs" by simp
-	with `valid_edge a'` have False by(rule Main_no_call_target)
-	thus ?thesis by simp
+        case (Call Q r p fs)
+        with `valid_edge a'` have "get_proc(targetnode a') = p" by(rule get_proc_call)
+        with `(_Exit_) = targetnode a'` get_proc_Exit have "p = Main" by simp
+        with `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` have "kind a' = Q:r\<hookrightarrow>\<^bsub>Main\<^esub>fs" by simp
+        with `valid_edge a'` have False by(rule Main_no_call_target)
+        thus ?thesis by simp
       next
-	case (Return Q p f)
-	from `valid_edge a'` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(_Exit_) = targetnode a'`[THEN sym]
-	have False by(rule Exit_no_return_target)
-	thus ?thesis by simp
+        case (Return Q p f)
+        from `valid_edge a'` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(_Exit_) = targetnode a'`[THEN sym]
+        have False by(rule Exit_no_return_target)
+        thus ?thesis by simp
       qed
       with `valid_edge a'` `(_Exit_) = targetnode a'` `inner_node (sourcenode a')` 
       show ?thesis by simp blast
@@ -494,21 +494,21 @@ proof(atomize_elim)
       case inner
       have "intra_kind (kind a')"
       proof(cases "kind a'" rule:edge_kind_cases)
-	case Intra thus ?thesis by simp
+        case Intra thus ?thesis by simp
       next
-	case (Call Q r p fs)
-	from `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
-	  `(_Entry_) = sourcenode a'`[THEN sym]
-	have False by(rule Entry_no_call_source)
-	thus ?thesis by simp
+        case (Call Q r p fs)
+        from `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
+          `(_Entry_) = sourcenode a'`[THEN sym]
+        have False by(rule Entry_no_call_source)
+        thus ?thesis by simp
       next
-	case (Return Q p f)
-	with `valid_edge a'` have "get_proc(sourcenode a') = p" 
-	  by(rule get_proc_return)
-	with `(_Entry_) = sourcenode a'` get_proc_Entry have "p = Main" by simp
-	with `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "kind a' = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
-	with `valid_edge a'` have False by(rule Main_no_return_source)
-	thus ?thesis by simp
+        case (Return Q p f)
+        with `valid_edge a'` have "get_proc(sourcenode a') = p" 
+          by(rule get_proc_return)
+        with `(_Entry_) = sourcenode a'` get_proc_Entry have "p = Main" by simp
+        with `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "kind a' = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
+        with `valid_edge a'` have False by(rule Main_no_return_source)
+        thus ?thesis by simp
       qed
       with `valid_edge a'` `(_Entry_) = sourcenode a'` `inner_node (targetnode a')` 
       show ?thesis by simp blast

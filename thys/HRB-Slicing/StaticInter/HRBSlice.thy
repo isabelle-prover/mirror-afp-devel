@@ -225,8 +225,8 @@ proof -
     hence "CFG_node (parent_node n) s\<longrightarrow>\<^bsub>cd\<^esub> n" by(rule SDG_edge_sum_SDG_edge)
     with `n \<in> HRB_slice S` show ?thesis
       by(fastsimp elim:combine_SDG_slices.cases 
-	         intro:combine_SDG_slices.intros cdep_slice1 cdep_slice2 
-	          simp:HRB_slice_def)
+                 intro:combine_SDG_slices.intros cdep_slice1 cdep_slice2 
+                  simp:HRB_slice_def)
   qed
 qed
 
@@ -466,7 +466,7 @@ next
     from IH[OF this] have "n'' \<in> sum_SDG_slice2 nx" .
     with `nx i-ns'\<rightarrow>\<^isub>d* n'` show ?thesis
       by(fastsimp intro:slice2_is_SDG_path_slice2 
-	                intra_SDG_path_is_SDG_path)
+                        intra_SDG_path_is_SDG_path)
   next
     assume "n'' \<in> set ns'"
     with `nx i-ns'\<rightarrow>\<^isub>d* n'` show ?case by(rule in_intra_SDG_path_in_slice2)
@@ -501,14 +501,14 @@ next
     from IH2[OF this] have "n'' \<in> sum_SDG_slice2 n\<^isub>3" .
     with `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` show ?thesis 
       by(fastsimp intro:slice2_ret_slice2 slice2_param_out_slice2 
-	                SDG_edge_sum_SDG_edge)
+                        SDG_edge_sum_SDG_edge)
   next
     assume "n'' = n\<^isub>3"
     from `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 s-p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 s-p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4" 
       by(fastsimp intro:SDG_edge_sum_SDG_edge)
     hence "n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4"
       by(fastsimp intro:return_slice2 param_out_slice2 refl_slice2 
-	                sum_SDG_edge_valid_SDG_node)
+                        sum_SDG_edge_valid_SDG_node)
     with `n'' = n\<^isub>3` show ?thesis by simp
   qed
 next
@@ -521,7 +521,7 @@ next
     `sourcenode a' = parent_node n\<^isub>3` `targetnode a' = parent_node n\<^isub>4`
   have "matched n\<^isub>1 ([]@n\<^isub>1#ns'@[n\<^isub>3]) n\<^isub>4"
     by(fastsimp intro:matched.matched_bracket_param matched_Nil 
-	         elim:SDG_edge_valid_SDG_node)
+                 elim:SDG_edge_valid_SDG_node)
   then obtain nsx where "n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4" by(erule matched_is_SDG_path)
   from `n'' \<in> set (ns@n\<^isub>1#ns'@[n\<^isub>3])` 
   have "((n'' \<in> set ns \<or> n'' = n\<^isub>1) \<or> n'' \<in> set ns') \<or> n'' = n\<^isub>3" by auto
@@ -565,7 +565,7 @@ next
     from IH[OF `n'' \<in> set ns`] have "n'' \<in> HRB_slice {nx}" by simp
     with `nx i-ns'\<rightarrow>\<^isub>d* n'` `n' \<in> S` show ?thesis
       by(fastsimp intro:HRB_slice_is_SDG_path_HRB_slice 
-	                intra_SDG_path_is_SDG_path)
+                        intra_SDG_path_is_SDG_path)
   next
     assume "n'' \<in> set ns'"
     with `nx i-ns'\<rightarrow>\<^isub>d* n'` `n' \<in> S` show ?case 
@@ -603,7 +603,7 @@ next
       by(rule in_matched_in_slice2)
     with `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n'' \<in> sum_SDG_slice2 n\<^isub>4"
       by(fastsimp intro:slice2_ret_slice2 slice2_param_out_slice2 
-	                SDG_edge_sum_SDG_edge)
+                        SDG_edge_sum_SDG_edge)
     from `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "valid_SDG_node n\<^isub>4"
       by(fastsimp intro:SDG_edge_valid_SDG_node)
     hence "n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4" by(rule refl_slice1)
@@ -639,7 +639,7 @@ next
     `sourcenode a' = parent_node n\<^isub>3` `targetnode a' = parent_node n\<^isub>4`
   have "matched n\<^isub>1 ([]@n\<^isub>1#ns'@[n\<^isub>3]) n\<^isub>4"
     by(fastsimp intro:matched.matched_bracket_param matched_Nil 
-	         elim:SDG_edge_valid_SDG_node)
+                 elim:SDG_edge_valid_SDG_node)
   then obtain nsx where "n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4" by(erule matched_is_SDG_path)
   from `n'' \<in> set (ns@n\<^isub>1#ns'@[n\<^isub>3])` 
   have "((n'' \<in> set ns \<or> n'' = n\<^isub>1) \<or> n'' \<in> set ns') \<or> n'' = n\<^isub>3" by auto
@@ -705,8 +705,8 @@ next
       from `nx \<in> {n\<^isub>1}` have "nx = n\<^isub>1" by simp
       with `n \<in> sum_SDG_slice1 nx` `n\<^isub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^isub>2 \<or> n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2`
       have "n \<in> sum_SDG_slice1 n\<^isub>2" 
-	by(fastsimp intro:slice1_call_slice1 slice1_param_in_slice1 
-	                  SDG_edge_sum_SDG_edge)
+        by(fastsimp intro:slice1_call_slice1 slice1_param_in_slice1 
+                          SDG_edge_sum_SDG_edge)
       thus ?case
         by(fastsimp intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
     next
@@ -714,11 +714,11 @@ next
       from `nx \<in> {n\<^isub>1}` have "nx = n\<^isub>1" by simp
       with `n' \<in> sum_SDG_slice1 nx` `n\<^isub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^isub>2 \<or> n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2`
       have "n' \<in> sum_SDG_slice1 n\<^isub>2" 
-	by(fastsimp intro:slice1_call_slice1 slice1_param_in_slice1 
-	                  SDG_edge_sum_SDG_edge)
+        by(fastsimp intro:slice1_call_slice1 slice1_param_in_slice1 
+                          SDG_edge_sum_SDG_edge)
       with `n'' s-p'\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n')` `n \<in> sum_SDG_slice2 n'` show ?case
-	by(fastsimp intro:combine_SDG_slices.combSlice_Return_parent_node 
-	             simp:HRB_slice_def)
+        by(fastsimp intro:combine_SDG_slices.combSlice_Return_parent_node 
+                     simp:HRB_slice_def)
     qed
     from `matched n\<^isub>2 ns' n\<^isub>3` obtain nsx where "n\<^isub>2 is-nsx\<rightarrow>\<^isub>d* n\<^isub>3"
       by(erule matched_is_SDG_path)
@@ -762,33 +762,33 @@ proof(atomize_elim)
     proof(cases "parent_node n'' = (_Exit_)")
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
-	by(rule valid_SDG_node_parent_Exit)
+        by(rule valid_SDG_node_parent_Exit)
       with `n'' s\<longrightarrow>\<^bsub>cd\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
       from `n'' s\<longrightarrow>\<^bsub>cd\<^esub> n` have "valid_SDG_node n''"
-	by(rule sum_SDG_edge_valid_SDG_node)
+        by(rule sum_SDG_edge_valid_SDG_node)
       from this False obtain ns 
-	where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
-	by(erule Entry_cc_SDG_path_to_inner_node)
+        where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
+        by(erule Entry_cc_SDG_path_to_inner_node)
       with `n'' s\<longrightarrow>\<^bsub>cd\<^esub> n` have "CFG_node (_Entry_) cc-ns@[n'']\<rightarrow>\<^isub>d* n"
-	by(fastsimp intro:ccSp_Append_cdep sum_SDG_edge_SDG_edge)
+        by(fastsimp intro:ccSp_Append_cdep sum_SDG_edge_SDG_edge)
       hence "CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n"
-	by(rule cc_SDG_path_ics_SDG_path)
+        by(rule cc_SDG_path_ics_SDG_path)
       from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
       show ?thesis
       proof
-	assume "n = n'"
-	with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+        assume "n = n'"
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
       next
-	assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
-	then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
-	  by blast
-	then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
-	  by -(erule ics_SDG_path_split)
-	with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-	show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+        assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
+        then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
+          by blast
+        then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
+          by -(erule ics_SDG_path_split)
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
+        show ?thesis by(fastsimp intro:ics_SDG_path_Append)
       qed
     qed
   next
@@ -801,49 +801,49 @@ proof(atomize_elim)
     proof(cases "parent_node n'' = (_Exit_)")
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
-	by(rule valid_SDG_node_parent_Exit)
+        by(rule valid_SDG_node_parent_Exit)
       with `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
       from `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` have "valid_SDG_node n''"
-	by(rule sum_SDG_edge_valid_SDG_node)
+        by(rule sum_SDG_edge_valid_SDG_node)
       from this False obtain ns 
-	where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
-	by(erule Entry_cc_SDG_path_to_inner_node)
+        where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
+        by(erule Entry_cc_SDG_path_to_inner_node)
      hence "CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n''"
-	by(rule cc_SDG_path_ics_SDG_path)
+        by(rule cc_SDG_path_ics_SDG_path)
       show ?thesis
       proof(cases "n'' = n")
-	case True
-	from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
-	show ?thesis
-	proof
-	  assume "n = n'"
-	  with `n'' = n` show ?thesis by simp
-	next
-	  assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
-	  with `n'' = n` show ?thesis by fastsimp
-	qed
+        case True
+        from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
+        show ?thesis
+        proof
+          assume "n = n'"
+          with `n'' = n` show ?thesis by simp
+        next
+          assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
+          with `n'' = n` show ?thesis by fastsimp
+        qed
       next
-	case False
-	with `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` `CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n''`
-	have "CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n"
-	  by -(rule icsSp_Append_ddep)
-	from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
-	show ?thesis
-	proof
-	  assume "n = n'"
-	  with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
-	next
-	  assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
-	  then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
-	    by blast
-	  then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
-	    by -(erule ics_SDG_path_split)
-	  with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-	  show ?thesis by(fastsimp intro:ics_SDG_path_Append)
-	qed
+        case False
+        with `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` `CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n''`
+        have "CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n"
+          by -(rule icsSp_Append_ddep)
+        from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
+        show ?thesis
+        proof
+          assume "n = n'"
+          with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+        next
+          assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
+          then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
+            by blast
+          then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
+            by -(erule ics_SDG_path_split)
+          with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
+          show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+        qed
       qed
     qed
   next
@@ -857,33 +857,33 @@ proof(atomize_elim)
     proof(cases "parent_node n'' = (_Exit_)")
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
-	by(rule valid_SDG_node_parent_Exit)
+        by(rule valid_SDG_node_parent_Exit)
       with `n'' s-p\<rightarrow>\<^bsub>call\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
       from `n'' s-p\<rightarrow>\<^bsub>call\<^esub> n` have "valid_SDG_node n''"
-	by(rule sum_SDG_edge_valid_SDG_node)
+        by(rule sum_SDG_edge_valid_SDG_node)
       from this False obtain ns 
-	where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
-	by(erule Entry_cc_SDG_path_to_inner_node)
+        where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
+        by(erule Entry_cc_SDG_path_to_inner_node)
       with `n'' s-p\<rightarrow>\<^bsub>call\<^esub> n` have "CFG_node (_Entry_) cc-ns@[n'']\<rightarrow>\<^isub>d* n"
-	by(fastsimp intro:ccSp_Append_call sum_SDG_edge_SDG_edge)
+        by(fastsimp intro:ccSp_Append_call sum_SDG_edge_SDG_edge)
       hence "CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n"
-	by(rule cc_SDG_path_ics_SDG_path)
+        by(rule cc_SDG_path_ics_SDG_path)
       from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
       show ?thesis
       proof
-	assume "n = n'"
-	with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+        assume "n = n'"
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
       next
-	assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
-	then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
-	  by blast
-	then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
-	  by -(erule ics_SDG_path_split)
-	with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-	show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+        assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
+        then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
+          by blast
+        then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
+          by -(erule ics_SDG_path_split)
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
+        show ?thesis by(fastsimp intro:ics_SDG_path_Append)
       qed
     qed
   next
@@ -897,33 +897,33 @@ proof(atomize_elim)
     proof(cases "parent_node n'' = (_Exit_)")
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
-	by(rule valid_SDG_node_parent_Exit)
+        by(rule valid_SDG_node_parent_Exit)
       with `n'' s-p:V\<rightarrow>\<^bsub>in\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
       from `n'' s-p:V\<rightarrow>\<^bsub>in\<^esub> n` have "valid_SDG_node n''"
-	by(rule sum_SDG_edge_valid_SDG_node)
+        by(rule sum_SDG_edge_valid_SDG_node)
       from this False obtain ns 
-	where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
-	by(erule Entry_cc_SDG_path_to_inner_node)
+        where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
+        by(erule Entry_cc_SDG_path_to_inner_node)
       hence "CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n''"
-	by(rule cc_SDG_path_ics_SDG_path)
+        by(rule cc_SDG_path_ics_SDG_path)
       with `n'' s-p:V\<rightarrow>\<^bsub>in\<^esub> n` have "CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n"
-	by -(rule icsSp_Append_param_in)
+        by -(rule icsSp_Append_param_in)
       from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
       show ?thesis
       proof
-	assume "n = n'"
-	with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+        assume "n = n'"
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
       next
-	assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
-	then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
-	  by blast
-	then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
-	  by -(erule ics_SDG_path_split)
-	with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-	show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+        assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
+        then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
+          by blast
+        then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
+          by -(erule ics_SDG_path_split)
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
+        show ?thesis by(fastsimp intro:ics_SDG_path_Append)
       qed
     qed
   next
@@ -937,33 +937,33 @@ proof(atomize_elim)
     proof(cases "parent_node n'' = (_Exit_)")
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
-	by(rule valid_SDG_node_parent_Exit)
+        by(rule valid_SDG_node_parent_Exit)
       with `n'' s-p\<rightarrow>\<^bsub>sum\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
       from `n'' s-p\<rightarrow>\<^bsub>sum\<^esub> n` have "valid_SDG_node n''"
-	by(rule sum_SDG_edge_valid_SDG_node)
+        by(rule sum_SDG_edge_valid_SDG_node)
       from this False obtain ns 
-	where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
-	by(erule Entry_cc_SDG_path_to_inner_node)
+        where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
+        by(erule Entry_cc_SDG_path_to_inner_node)
       hence "CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n''"
-	by(rule cc_SDG_path_ics_SDG_path)
+        by(rule cc_SDG_path_ics_SDG_path)
       with `n'' s-p\<rightarrow>\<^bsub>sum\<^esub> n` have "CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n"
-	by -(rule icsSp_Append_sum)
+        by -(rule icsSp_Append_sum)
       from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
       show ?thesis
       proof
-	assume "n = n'"
-	with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+        assume "n = n'"
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
       next
-	assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
-	then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
-	  by blast
-	then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
-	  by -(erule ics_SDG_path_split)
-	with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-	show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+        assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
+        then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
+          by blast
+        then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
+          by -(erule ics_SDG_path_split)
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
+        show ?thesis by(fastsimp intro:ics_SDG_path_Append)
       qed
     qed
   qed
@@ -994,7 +994,7 @@ proof(atomize_elim)
     from `\<forall>n' \<in> S. valid_SDG_node n'` `n' \<in> S` have "valid_SDG_node n'" by simp
     with `nx \<in> sum_SDG_slice1 n'` have "valid_SDG_node nx"
       by(auto elim:slice1_ics_SDG_path ics_SDG_path_split 
-	      intro:ics_SDG_path_valid_SDG_node)
+              intro:ics_SDG_path_valid_SDG_node)
     with `n \<in> sum_SDG_slice2 nx`
     obtain nsx where "n irs-nsx\<rightarrow>\<^isub>d* nx" by(erule slice2_irs_SDG_path)
     show ?case
@@ -1030,7 +1030,7 @@ proof(atomize_elim)
         then obtain ns' where "nx ics-ns'\<rightarrow>\<^isub>d* n'" by -(erule ics_SDG_path_split)
         with `realizable (CFG_node (_Entry_)) ns nx`
         obtain ns'' where "realizable (CFG_node (_Entry_)) (ns@ns'') n'"
-	  by(erule realizable_Append_ics_SDG_path)
+          by(erule realizable_Append_ics_SDG_path)
         with `n \<in> set ns` `n' \<in> S` show ?thesis by fastsimp
       qed
     qed

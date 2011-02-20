@@ -585,18 +585,18 @@ proof(atomize_elim)
     proof(cases "kind a'" rule:edge_kind_cases)
       case Intra
       with `upd_cs cs (a'#as') = []` have "upd_cs cs as' = []"
-	by(fastsimp simp:intra_kind_def)
+        by(fastsimp simp:intra_kind_def)
       with `cs \<noteq> []` have "as' \<noteq> []" by fastsimp
       from IH[OF `upd_cs cs as' = []` `cs \<noteq> []` this] obtain xs ys where "as' = xs@ys"
-	and "xs \<noteq> []" and "upd_cs cs xs = []" and "upd_cs [] ys = []"
-	and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs xs' \<noteq> []" by blast
+        and "xs \<noteq> []" and "upd_cs cs xs = []" and "upd_cs [] ys = []"
+        and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs xs' \<noteq> []" by blast
       from `upd_cs cs xs = []` Intra have "upd_cs cs (a'#xs) = []"
-	by(fastsimp simp:intra_kind_def)
+        by(fastsimp simp:intra_kind_def)
       from `\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs xs' \<noteq> []` `xs \<noteq> []` Intra
       have "\<forall>xs' ys'. a'#xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs xs' \<noteq> []"
-	apply auto
-	apply(case_tac xs') apply(auto simp:intra_kind_def)
-	by(erule_tac x="[]" in allE,fastsimp)+
+        apply auto
+        apply(case_tac xs') apply(auto simp:intra_kind_def)
+        by(erule_tac x="[]" in allE,fastsimp)+
       with `as' = xs@ys` `upd_cs cs (a'#xs) = []` `upd_cs [] ys = []`
       show ?thesis apply(rule_tac x="a'#xs" in exI) by fastsimp
     next
@@ -604,39 +604,39 @@ proof(atomize_elim)
       with `upd_cs cs (a'#as') = []` have "upd_cs (a'#cs) as' = []" by simp
       with `cs \<noteq> []` have "as' \<noteq> []" by fastsimp
       from IH[OF `upd_cs (a'#cs) as' = []` _ this] obtain xs ys where "as' = xs@ys"
-	and "xs \<noteq> []" and "upd_cs (a'#cs) xs = []" and "upd_cs [] ys = []"
-	and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs (a'#cs) xs' \<noteq> []" by blast
+        and "xs \<noteq> []" and "upd_cs (a'#cs) xs = []" and "upd_cs [] ys = []"
+        and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs (a'#cs) xs' \<noteq> []" by blast
       from `upd_cs (a'#cs) xs = []` Call have "upd_cs cs (a'#xs) = []" by simp
       from `\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs (a'#cs) xs' \<noteq> []` 
-	`xs \<noteq> []` `cs \<noteq> []` Call
+        `xs \<noteq> []` `cs \<noteq> []` Call
       have "\<forall>xs' ys'. a'#xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs xs' \<noteq> []"
-	by auto(case_tac xs',auto)
+        by auto(case_tac xs',auto)
       with `as' = xs@ys` `upd_cs cs (a'#xs) = []` `upd_cs [] ys = []`
       show ?thesis apply(rule_tac x="a'#xs" in exI) by fastsimp
     next
       case (Return Q p f)
       with `upd_cs cs (a'#as') = []` `cs \<noteq> []` obtain c' cs' where "cs = c'#cs'"
-	and "upd_cs cs' as' = []" by(cases cs) auto
+        and "upd_cs cs' as' = []" by(cases cs) auto
       show ?thesis
       proof(cases "cs' = []")
-	case True
-	with `cs = c'#cs'` `upd_cs cs' as' = []` Return show ?thesis
-	  apply(rule_tac x="[a']" in exI) apply clarsimp
-	  by(case_tac xs') auto
+        case True
+        with `cs = c'#cs'` `upd_cs cs' as' = []` Return show ?thesis
+          apply(rule_tac x="[a']" in exI) apply clarsimp
+          by(case_tac xs') auto
       next
-	case False
-	with `upd_cs cs' as' = []` have "as' \<noteq> []" by fastsimp
-	from IH[OF `upd_cs cs' as' = []` False this] obtain xs ys where "as' = xs@ys"
-	  and "xs \<noteq> []" and "upd_cs cs' xs = []" and "upd_cs [] ys = []"
-	  and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs' xs' \<noteq> []" by blast
-	from `upd_cs cs' xs = []` `cs = c'#cs'` Return have "upd_cs cs (a'#xs) = []"
-	  by simp
-	from `\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs' xs' \<noteq> []`
-	  `xs \<noteq> []` `cs = c'#cs'` Return
-	have "\<forall>xs' ys'. a'#xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs xs' \<noteq> []"
-	  by auto(case_tac xs',auto)
-	with `as' = xs@ys` `upd_cs cs (a'#xs) = []` `upd_cs [] ys = []`
-	show ?thesis apply(rule_tac x="a'#xs" in exI) by fastsimp
+        case False
+        with `upd_cs cs' as' = []` have "as' \<noteq> []" by fastsimp
+        from IH[OF `upd_cs cs' as' = []` False this] obtain xs ys where "as' = xs@ys"
+          and "xs \<noteq> []" and "upd_cs cs' xs = []" and "upd_cs [] ys = []"
+          and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs' xs' \<noteq> []" by blast
+        from `upd_cs cs' xs = []` `cs = c'#cs'` Return have "upd_cs cs (a'#xs) = []"
+          by simp
+        from `\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs' xs' \<noteq> []`
+          `xs \<noteq> []` `cs = c'#cs'` Return
+        have "\<forall>xs' ys'. a'#xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs cs xs' \<noteq> []"
+          by auto(case_tac xs',auto)
+        with `as' = xs@ys` `upd_cs cs (a'#xs) = []` `upd_cs [] ys = []`
+        show ?thesis apply(rule_tac x="a'#xs" in exI) by fastsimp
       qed
     qed
   qed
@@ -860,7 +860,7 @@ next
        then obtain xs where "a#xs = as''" and "as = xs@as'" by auto
        from IH1[OF `as = xs@as'`] have "valid_path_aux cs' xs" .
        with `a#xs = as''`[THEN sym] `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
-	 `a \<in> get_return_edges c'`
+         `a \<in> get_return_edges c'`
        show ?thesis by simp
      qed
    next
@@ -874,7 +874,7 @@ next
       hence "as = []@tl as'" by(cases as') auto
       from IH2[OF this] have "valid_path_aux (upd_cs cs' []) (tl as')" .
        with `as'' = [] \<and> a#as = as'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
-	 `a \<in> get_return_edges c'`
+         `a \<in> get_return_edges c'`
        show ?thesis by fastsimp
     next
       assume "\<exists>xs. a#xs = as'' \<and> as = xs@as'"
@@ -1274,14 +1274,14 @@ next
       from IH2[OF this] 
       have "valid_path_rev_aux (upd_rev_cs cs' []) (butlast as'')" .
       with `as' = [] \<and> as@[a] = as''` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `cs = c' # cs'`
-	`c' \<in> get_return_edges a` show ?thesis by fastsimp
+        `c' \<in> get_return_edges a` show ?thesis by fastsimp
     next
       assume "\<exists>xs. as = as''@xs \<and> xs@[a] = as'"
       then obtain xs where "as = as''@xs" and "xs@[a] = as'" by auto
       from IH2[OF `as = as''@xs`] 
       have "valid_path_rev_aux (upd_rev_cs cs' xs) as''" .
       with `xs@[a] = as'` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `cs = c' # cs'`
-	`c' \<in> get_return_edges a`
+        `c' \<in> get_return_edges a`
       show ?thesis by fastsimp
     qed
   }
@@ -1379,13 +1379,13 @@ next
       case Nil
       from IH have "upd_rev_cs [] (a#as') = upd_rev_cs [] as'" .
       with Call Nil have "upd_rev_cs cs ((a#as')@[a']) = upd_rev_cs cs (as'@[a'])"
-	by(auto simp:intra_kind_def)
+        by(auto simp:intra_kind_def)
       thus ?thesis by simp
     next
       case (Cons c' cs')
       from IH have "upd_rev_cs cs' (a#as') = upd_rev_cs cs' as'" .
       with Call Cons have "upd_rev_cs cs ((a#as')@[a']) = upd_rev_cs cs (as'@[a'])"
-	by(auto simp:intra_kind_def)
+        by(auto simp:intra_kind_def)
       thus ?thesis by simp
     qed
   qed
@@ -1423,14 +1423,14 @@ next
       case Nil
       from IH have "upd_rev_cs [] (a#as') = a#(upd_rev_cs [] as')" .
       with Call Nil have "upd_rev_cs cs ((a#as')@[a']) = a#(upd_rev_cs cs (as'@[a']))"
-	by(auto simp:intra_kind_def)
+        by(auto simp:intra_kind_def)
       thus ?thesis by simp
     next
       case (Cons c' cs')
       from IH have "upd_rev_cs cs' (a#as') = a#(upd_rev_cs cs' as')" .
       with Call Cons 
       have "upd_rev_cs cs ((a#as')@[a']) = a#(upd_rev_cs cs (as'@[a']))"
-	by(auto simp:intra_kind_def)
+        by(auto simp:intra_kind_def)
       thus ?thesis by simp
     qed
   qed
@@ -1977,18 +1977,18 @@ proof(atomize_elim)
     proof
       assume "\<forall>a\<in>set as. intra_kind (kind a)"
       with `intra_kind (kind a)` have "\<forall>a'\<in>set (a#as). intra_kind (kind a')"
-	by simp
+        by simp
       thus ?case by simp
     next
       assume "\<exists>asx a asx' Q p f c' cs'. as = asx@a#asx' \<and> same_level_path_aux cs asx \<and>
                 kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f \<and> upd_cs cs asx = c'#cs' \<and> upd_cs cs (asx@[a]) = [] \<and> 
-	        a \<in> get_return_edges c' \<and> valid_edge c' \<and> 
-	        (\<forall>a\<in>set asx'. intra_kind (kind a))"
+                a \<in> get_return_edges c' \<and> valid_edge c' \<and> 
+                (\<forall>a\<in>set asx'. intra_kind (kind a))"
       then obtain asx a' Q p f asx' c' cs' where "as = asx@a'#asx'" 
-	and "same_level_path_aux cs asx" and "upd_cs cs (asx@[a']) = []"
-	and "upd_cs cs asx = c'#cs'" and assms:"a' \<in> get_return_edges c'"
-	"kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f" "valid_edge c'" "\<forall>a\<in>set asx'. intra_kind (kind a)"
-	by blast
+        and "same_level_path_aux cs asx" and "upd_cs cs (asx@[a']) = []"
+        and "upd_cs cs asx = c'#cs'" and assms:"a' \<in> get_return_edges c'"
+        "kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f" "valid_edge c'" "\<forall>a\<in>set asx'. intra_kind (kind a)"
+        by blast
       from `as = asx@a'#asx'` have "a#as = (a#asx)@a'#asx'" by simp
       moreover
       from `intra_kind (kind a)` `same_level_path_aux cs asx`
@@ -2022,20 +2022,20 @@ proof(atomize_elim)
     proof
       assume "\<forall>a'\<in>set as. intra_kind (kind a')"
       with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` have "upd_cs cs (a#as) = a#cs"
-	by(fastsimp intro:upd_cs_intra_path)
+        by(fastsimp intro:upd_cs_intra_path)
       with `upd_cs cs (a#as) = []` have False by simp
       thus ?case by simp
     next
       assume "\<exists>asx a' asx' Q p f c' cs'. as = asx@a'#asx' \<and> 
-	        same_level_path_aux (a#cs) asx \<and> kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f \<and> 
-	        upd_cs (a#cs) asx = c'#cs' \<and> upd_cs (a#cs) (asx@[a']) = [] \<and> 
-	        a' \<in> get_return_edges c' \<and> valid_edge c' \<and> 
-	        (\<forall>a\<in>set asx'. intra_kind (kind a))"
+                same_level_path_aux (a#cs) asx \<and> kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f \<and> 
+                upd_cs (a#cs) asx = c'#cs' \<and> upd_cs (a#cs) (asx@[a']) = [] \<and> 
+                a' \<in> get_return_edges c' \<and> valid_edge c' \<and> 
+                (\<forall>a\<in>set asx'. intra_kind (kind a))"
       then obtain asx a' Q' p' f' asx' c' cs' where "as = asx@a'#asx'" 
-	and "same_level_path_aux (a#cs) asx" and "upd_cs (a#cs) (asx@[a']) = []"
-	and "upd_cs (a#cs) asx = c'#cs'" and assms:"a' \<in> get_return_edges c'"
-	"kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'" "valid_edge c'" "\<forall>a\<in>set asx'. intra_kind (kind a)"
-	by blast
+        and "same_level_path_aux (a#cs) asx" and "upd_cs (a#cs) (asx@[a']) = []"
+        and "upd_cs (a#cs) asx = c'#cs'" and assms:"a' \<in> get_return_edges c'"
+        "kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'" "valid_edge c'" "\<forall>a\<in>set asx'. intra_kind (kind a)"
+        by blast
       from `as = asx@a'#asx'` have "a#as = (a#asx)@a'#asx'" by simp
       moreover
       from `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `same_level_path_aux (a#cs) asx`
@@ -2075,30 +2075,30 @@ proof(atomize_elim)
       moreover
       have "same_level_path_aux cs []" by simp
       ultimately show ?case 
-	using `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `\<forall>a'\<in>set as. intra_kind (kind a')` `cs = c'#cs'`
-	  `a \<in> get_return_edges c'` `valid_edge c'`
-	by fastsimp
+        using `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `\<forall>a'\<in>set as. intra_kind (kind a')` `cs = c'#cs'`
+          `a \<in> get_return_edges c'` `valid_edge c'`
+        by fastsimp
     next
       assume "\<exists>asx a' asx' Q' p' f' c'' cs''. as = asx@a'#asx' \<and>
-	same_level_path_aux cs' asx \<and> kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f' \<and> upd_cs cs' asx = c''#cs'' \<and>
-	upd_cs cs' (asx@[a']) = [] \<and> a' \<in> get_return_edges c'' \<and> valid_edge c'' \<and>
-	(\<forall>a'\<in>set asx'. intra_kind (kind a'))"
+        same_level_path_aux cs' asx \<and> kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f' \<and> upd_cs cs' asx = c''#cs'' \<and>
+        upd_cs cs' (asx@[a']) = [] \<and> a' \<in> get_return_edges c'' \<and> valid_edge c'' \<and>
+        (\<forall>a'\<in>set asx'. intra_kind (kind a'))"
       then obtain asx a' asx' Q' p' f' c'' cs'' where "as = asx@a'#asx'"
-	and "same_level_path_aux cs' asx" and "upd_cs cs' asx = c''#cs''" 
-	and "upd_cs cs' (asx@[a']) = []" and assms:"a' \<in> get_return_edges c''" 
-	"kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'" "valid_edge c''" "\<forall>a'\<in>set asx'. intra_kind (kind a')"
-	by blast
+        and "same_level_path_aux cs' asx" and "upd_cs cs' asx = c''#cs''" 
+        and "upd_cs cs' (asx@[a']) = []" and assms:"a' \<in> get_return_edges c''" 
+        "kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'" "valid_edge c''" "\<forall>a'\<in>set asx'. intra_kind (kind a')"
+        by blast
       from `as = asx@a'#asx'` have "a#as = (a#asx)@a'#asx'" by simp
       moreover
       from `same_level_path_aux cs' asx` `cs = c'#cs'` `a \<in> get_return_edges c'`
-	`kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+        `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "same_level_path_aux cs (a#asx)" by simp
       moreover
       from `upd_cs cs' asx = c''#cs''` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
       have "upd_cs cs (a#asx) = c''#cs''" by simp
       moreover
       from `upd_cs cs' (asx@[a']) = []` `cs = c'#cs'` `a \<in> get_return_edges c'`
-	`kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+        `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "upd_cs cs ((a#asx)@[a']) = []" by simp
       ultimately show ?case using assms by blast
     qed
@@ -2386,14 +2386,14 @@ next
       case True
       with `cs = c'#cs'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "upd_cs cs [a] = []" by simp
       with `\<forall>xs ys. a#as = xs@ys \<and> ys \<noteq> [] \<longrightarrow> upd_cs cs xs \<noteq> []` False have False
-	apply(erule_tac x="[a]" in allE) by fastsimp
+        apply(erule_tac x="[a]" in allE) by fastsimp
       thus ?thesis by simp
     next
       case False
       from `\<forall>xs ys. a#as = xs@ys \<and> ys \<noteq> [] \<longrightarrow> upd_cs cs xs \<noteq> []`
-	`kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
+        `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
       have "\<forall>xs ys. as = xs@ys \<and> ys \<noteq> [] \<longrightarrow> upd_cs cs' xs \<noteq> []"
-	by(clarsimp,erule_tac x="a#xs" in allE,simp)
+        by(clarsimp,erule_tac x="a#xs" in allE,simp)
       from IH[OF False `upd_cs cs' as = []` this]
       have "last as \<in> get_return_edges (last cs')" .
       with `as \<noteq> []` False `cs = c'#cs'` show ?thesis by(simp add:targetnodes_def)
@@ -2428,26 +2428,26 @@ proof(atomize_elim)
       with `length cs = length cfsx` have "length cs = length []" by simp
       from Nil `intra_kind (kind a)` 
       obtain cfx where transfer:"transfer (kind a) (cfsx@cf#cfs) = []@cfx#cfs"
-	"transfer (kind a) (cfsx@cf#cfs') = []@cfx#cfs'"
-	by(cases "kind a",auto simp:kinds_def intra_kind_def)
+        "transfer (kind a) (cfsx@cf#cfs') = []@cfx#cfs'"
+        by(cases "kind a",auto simp:kinds_def intra_kind_def)
       from IH[OF `length cs = length []`] obtain cfsx' cfx' 
-	where "transfers (kinds as) ([]@cfx#cfs) = cfsx'@cfx'#cfs"
-	and "transfers (kinds as) ([]@cfx#cfs') = cfsx'@cfx'#cfs'"
-	and "length cfsx' = length (upd_cs cs as)" by blast
+        where "transfers (kinds as) ([]@cfx#cfs) = cfsx'@cfx'#cfs"
+        and "transfers (kinds as) ([]@cfx#cfs') = cfsx'@cfx'#cfs'"
+        and "length cfsx' = length (upd_cs cs as)" by blast
       with `length (upd_cs cs (a#as)) = length (upd_cs cs as)` transfer
       show ?thesis by(fastsimp simp:kinds_def)
     next
       case (Cons x xs)
       with `intra_kind (kind a)` obtain cfx' 
-	where transfer:"transfer (kind a) (cfsx@cf#cfs) = (cfx'#xs)@cf#cfs"
-	"transfer (kind a) (cfsx@cf#cfs') = (cfx'#xs)@cf#cfs'"
-	by(cases "kind a",auto simp:kinds_def intra_kind_def)
+        where transfer:"transfer (kind a) (cfsx@cf#cfs) = (cfx'#xs)@cf#cfs"
+        "transfer (kind a) (cfsx@cf#cfs') = (cfx'#xs)@cf#cfs'"
+        by(cases "kind a",auto simp:kinds_def intra_kind_def)
       from `length cs = length cfsx` Cons have "length cs = length (cfx'#xs)"
-	by simp
+        by simp
       from IH[OF this] obtain cfs'' cf''
-	where "transfers (kinds as) ((cfx'#xs)@cf#cfs) = cfs''@cf''#cfs"
-	and "transfers (kinds as) ((cfx'#xs)@cf#cfs') = cfs''@cf''#cfs'"
-	and "length cfs'' = length (upd_cs cs as)" by blast
+        where "transfers (kinds as) ((cfx'#xs)@cf#cfs) = cfs''@cf''#cfs"
+        and "transfers (kinds as) ((cfx'#xs)@cf#cfs') = cfs''@cf''#cfs'"
+        and "length cfs'' = length (upd_cs cs as)" by blast
       with `length (upd_cs cs (a#as)) = length (upd_cs cs as)` transfer
       show ?thesis by(fastsimp simp:kinds_def)
     qed
@@ -2480,33 +2480,33 @@ proof(atomize_elim)
      proof(cases cs')
        case Nil
        with `cs = c'#cs'` `length cs = length cfsx` obtain cfx
-	 where [simp]:"cfsx = [cfx]" by(cases cfsx) auto
+         where [simp]:"cfsx = [cfx]" by(cases cfsx) auto
        with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` obtain cf' 
-	 where transfer:"transfer (kind a) (cfsx@cf#cfs) = []@cf'#cfs"
-	 "transfer (kind a) (cfsx@cf#cfs') = []@cf'#cfs'"
-	 by fastsimp
+         where transfer:"transfer (kind a) (cfsx@cf#cfs) = []@cf'#cfs"
+         "transfer (kind a) (cfsx@cf#cfs') = []@cf'#cfs'"
+         by fastsimp
        from Nil have "length cs' = length []" by simp
        from IH[OF this] obtain cfsx' cfx' 
-	 where "transfers (kinds as) ([]@cf'#cfs) = cfsx'@cfx'#cfs"
-	 and "transfers (kinds as) ([]@cf'#cfs') = cfsx'@cfx'#cfs'"
-	 and "length cfsx' = length (upd_cs cs' as)" by blast
+         where "transfers (kinds as) ([]@cf'#cfs) = cfsx'@cfx'#cfs"
+         and "transfers (kinds as) ([]@cf'#cfs') = cfsx'@cfx'#cfs'"
+         and "length cfsx' = length (upd_cs cs' as)" by blast
        with `length (upd_cs cs (a#as)) = length (upd_cs cs' as)` transfer
        show ?thesis by(fastsimp simp:kinds_def)
     next
       case (Cons cx csx)
       with `cs = c'#cs'` `length cs = length cfsx` obtain x x' xs
-	where [simp]:"cfsx = x#x'#xs" and "length xs = length csx"
-	by(cases cfsx,auto,case_tac list,fastsimp+)
+        where [simp]:"cfsx = x#x'#xs" and "length xs = length csx"
+        by(cases cfsx,auto,case_tac list,fastsimp+)
       with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` obtain cf' 
-	where transfer:"transfer (kind a) ((x#x'#xs)@cf#cfs) = (cf'#xs)@cf#cfs"
-	"transfer (kind a) ((x#x'#xs)@cf#cfs') = (cf'#xs)@cf#cfs'"
-	by fastsimp
+        where transfer:"transfer (kind a) ((x#x'#xs)@cf#cfs) = (cf'#xs)@cf#cfs"
+        "transfer (kind a) ((x#x'#xs)@cf#cfs') = (cf'#xs)@cf#cfs'"
+        by fastsimp
       from `cs = c'#cs'` `length cs = length cfsx` have "length cs' = length (cf'#xs)"
-	by simp
+        by simp
       from IH[OF this] obtain cfsx' cfx 
-	where "transfers (kinds as) ((cf'#xs)@cf#cfs) = cfsx'@cfx#cfs"
-	and "transfers (kinds as) ((cf'#xs)@cf#cfs') = cfsx'@cfx#cfs'"
-	and "length cfsx' = length (upd_cs cs' as)" by blast
+        where "transfers (kinds as) ((cf'#xs)@cf#cfs) = cfsx'@cfx#cfs"
+        and "transfers (kinds as) ((cf'#xs)@cf#cfs') = cfsx'@cfx#cfs'"
+        and "length cfsx' = length (upd_cs cs' as)" by blast
       with `length (upd_cs cs (a#as)) = length (upd_cs cs' as)` transfer
       show ?thesis by(fastsimp simp:kinds_def)
     qed
@@ -2554,8 +2554,8 @@ next
       case Cons
       with `valid_call_list cs m`
       obtain c Q r p fs where "valid_edge c" and "kind c = Q:r\<hookrightarrow>\<^bsub>get_proc m\<^esub>fs"
-	by(auto simp:valid_call_list_def,erule_tac x="[]" in allE,
-	   auto simp:sourcenodes_def)
+        by(auto simp:valid_call_list_def,erule_tac x="[]" in allE,
+           auto simp:sourcenodes_def)
       with `get_proc m = Main` have "kind c = Q:r\<hookrightarrow>\<^bsub>Main\<^esub>fs" by simp
       with `valid_edge c` have False by(rule Main_no_call_target)
       thus ?thesis by simp
@@ -2660,9 +2660,9 @@ next
       case (Cons cx csx)
       with `cs = c' # cs'` `valid_call_list cs m`
       obtain Qx rx fsx where "valid_edge cx" 
-	and "kind cx = Qx:rx\<hookrightarrow>\<^bsub>get_proc (sourcenode c')\<^esub>fsx"
-	by(auto simp:valid_call_list_def,erule_tac x="[c']" in allE,
-	   auto simp:sourcenodes_def)
+        and "kind cx = Qx:rx\<hookrightarrow>\<^bsub>get_proc (sourcenode c')\<^esub>fsx"
+        by(auto simp:valid_call_list_def,erule_tac x="[c']" in allE,
+           auto simp:sourcenodes_def)
       with `get_proc (sourcenode c') = Main` have "kind cx = Qx:rx\<hookrightarrow>\<^bsub>Main\<^esub>fsx" by simp
       with `valid_edge cx` have False by(rule Main_no_call_target)
       thus ?thesis by simp
@@ -2793,73 +2793,73 @@ proof(atomize_elim)
     next
       case (Cons a' as')
       with `n -as\<rightarrow>* n'` Cons have "n = sourcenode a'" and "valid_edge a'" 
-	and "targetnode a' -as'\<rightarrow>* n'"
-	by(auto intro:path_split_Cons)
+        and "targetnode a' -as'\<rightarrow>* n'"
+        by(auto intro:path_split_Cons)
       show ?thesis
       proof(cases "kind a'" rule:edge_kind_cases)
-	case Intra
-	with Cons `same_level_path_aux [] as` have "same_level_path_aux [] as'"
-	  by(fastsimp simp:intra_kind_def)
-	moreover
-	from Intra Cons `upd_cs [] as = []` have "upd_cs [] as' = []"
-	  by(fastsimp simp:intra_kind_def)
-	ultimately obtain as'' where "targetnode a' -as''\<rightarrow>\<^isub>\<iota>* n'"
-	  and "set (sourcenodes as'') \<subseteq> set (sourcenodes as')"
-	  using IH Cons `targetnode a' -as'\<rightarrow>* n'`
-	  by(erule_tac x="as'" in allE) auto
-	from `n = sourcenode a'` `valid_edge a'` Intra `targetnode a' -as''\<rightarrow>\<^isub>\<iota>* n'`
-	have "n -a'#as''\<rightarrow>\<^isub>\<iota>* n'" by(fastsimp intro:Cons_path simp:intra_path_def)
-	with `set (sourcenodes as'') \<subseteq> set (sourcenodes as')` Cons show ?thesis
-	  by(rule_tac x="a'#as''" in exI,auto simp:sourcenodes_def)
+        case Intra
+        with Cons `same_level_path_aux [] as` have "same_level_path_aux [] as'"
+          by(fastsimp simp:intra_kind_def)
+        moreover
+        from Intra Cons `upd_cs [] as = []` have "upd_cs [] as' = []"
+          by(fastsimp simp:intra_kind_def)
+        ultimately obtain as'' where "targetnode a' -as''\<rightarrow>\<^isub>\<iota>* n'"
+          and "set (sourcenodes as'') \<subseteq> set (sourcenodes as')"
+          using IH Cons `targetnode a' -as'\<rightarrow>* n'`
+          by(erule_tac x="as'" in allE) auto
+        from `n = sourcenode a'` `valid_edge a'` Intra `targetnode a' -as''\<rightarrow>\<^isub>\<iota>* n'`
+        have "n -a'#as''\<rightarrow>\<^isub>\<iota>* n'" by(fastsimp intro:Cons_path simp:intra_path_def)
+        with `set (sourcenodes as'') \<subseteq> set (sourcenodes as')` Cons show ?thesis
+          by(rule_tac x="a'#as''" in exI,auto simp:sourcenodes_def)
       next
-	case (Call Q p f)
-	with Cons `same_level_path_aux [] as`
-	have "same_level_path_aux [a'] as'" by simp
-	from Call Cons `upd_cs [] as = []` have "upd_cs [a'] as' = []" by simp
-	hence "as' \<noteq> []" by fastsimp
-	with `upd_cs [a'] as' = []` obtain xs ys where "as' = xs@ys" and "xs \<noteq> []"
-	and "upd_cs [a'] xs = []" and "upd_cs [] ys = []"
-	and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs [a'] xs' \<noteq> []"
-	  by -(erule upd_cs_empty_split,auto)
-	from `same_level_path_aux [a'] as'` `as' = xs@ys` `upd_cs [a'] xs = []`
-	have "same_level_path_aux [a'] xs" and "same_level_path_aux [] ys"
-	  by(auto intro:slpa_split)
-	from `same_level_path_aux [a'] xs` `upd_cs [a'] xs = []`
-	  `\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs [a'] xs' \<noteq> []`
-	have "last xs \<in> get_return_edges (last [a'])"
-	  by(fastsimp intro!:slpa_get_return_edges)
-	with `valid_edge a'` Call
-	obtain a where "valid_edge a" and "sourcenode a = sourcenode a'"
-	  and "targetnode a = targetnode (last xs)" and "kind a = (\<lambda>cf. False)\<^isub>\<surd>"
-	  by -(drule call_return_node_edge,auto)
-	from `targetnode a = targetnode (last xs)` `xs \<noteq> []`
-	have "targetnode a = targetnode (last (a'#xs))" by simp
-	from `as' = xs@ys` `xs \<noteq> []` Cons have "length ys < length as" by simp
-	from `targetnode a' -as'\<rightarrow>* n'` `as' = xs@ys` `xs \<noteq> []`
-	have "targetnode (last (a'#xs)) -ys\<rightarrow>* n'"
-	  by(cases xs rule:rev_cases,auto dest:path_split)
-	with IH `length ys < length as` `same_level_path_aux [] ys`
-	  `upd_cs [] ys = []`
-	obtain as'' where "targetnode (last (a'#xs)) -as''\<rightarrow>\<^isub>\<iota>* n'"
-	  and "set(sourcenodes as'') \<subseteq> set(sourcenodes ys)"
-	  apply(erule_tac x="ys" in allE) apply clarsimp
-	  apply(erule_tac x="targetnode (last (a'#xs))" in allE) 
-	  by clarsimp
-	from `sourcenode a = sourcenode a'` `n = sourcenode a'`
-	  `targetnode a = targetnode (last (a'#xs))` `valid_edge a`
-	  `kind a = (\<lambda>cf. False)\<^isub>\<surd>` `targetnode (last (a'#xs)) -as''\<rightarrow>\<^isub>\<iota>* n'`
-	have "n -a#as''\<rightarrow>\<^isub>\<iota>* n'"
-	  by(fastsimp intro:Cons_path simp:intra_path_def intra_kind_def)
-	moreover
-	from `set(sourcenodes as'') \<subseteq> set(sourcenodes ys)` Cons `as' = xs@ys`
-	  `sourcenode a = sourcenode a'`
-	have "set(sourcenodes (a#as'')) \<subseteq> set(sourcenodes as)"
-	  by(auto simp:sourcenodes_def)
-	ultimately show ?thesis by blast
+        case (Call Q p f)
+        with Cons `same_level_path_aux [] as`
+        have "same_level_path_aux [a'] as'" by simp
+        from Call Cons `upd_cs [] as = []` have "upd_cs [a'] as' = []" by simp
+        hence "as' \<noteq> []" by fastsimp
+        with `upd_cs [a'] as' = []` obtain xs ys where "as' = xs@ys" and "xs \<noteq> []"
+        and "upd_cs [a'] xs = []" and "upd_cs [] ys = []"
+        and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs [a'] xs' \<noteq> []"
+          by -(erule upd_cs_empty_split,auto)
+        from `same_level_path_aux [a'] as'` `as' = xs@ys` `upd_cs [a'] xs = []`
+        have "same_level_path_aux [a'] xs" and "same_level_path_aux [] ys"
+          by(auto intro:slpa_split)
+        from `same_level_path_aux [a'] xs` `upd_cs [a'] xs = []`
+          `\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs [a'] xs' \<noteq> []`
+        have "last xs \<in> get_return_edges (last [a'])"
+          by(fastsimp intro!:slpa_get_return_edges)
+        with `valid_edge a'` Call
+        obtain a where "valid_edge a" and "sourcenode a = sourcenode a'"
+          and "targetnode a = targetnode (last xs)" and "kind a = (\<lambda>cf. False)\<^isub>\<surd>"
+          by -(drule call_return_node_edge,auto)
+        from `targetnode a = targetnode (last xs)` `xs \<noteq> []`
+        have "targetnode a = targetnode (last (a'#xs))" by simp
+        from `as' = xs@ys` `xs \<noteq> []` Cons have "length ys < length as" by simp
+        from `targetnode a' -as'\<rightarrow>* n'` `as' = xs@ys` `xs \<noteq> []`
+        have "targetnode (last (a'#xs)) -ys\<rightarrow>* n'"
+          by(cases xs rule:rev_cases,auto dest:path_split)
+        with IH `length ys < length as` `same_level_path_aux [] ys`
+          `upd_cs [] ys = []`
+        obtain as'' where "targetnode (last (a'#xs)) -as''\<rightarrow>\<^isub>\<iota>* n'"
+          and "set(sourcenodes as'') \<subseteq> set(sourcenodes ys)"
+          apply(erule_tac x="ys" in allE) apply clarsimp
+          apply(erule_tac x="targetnode (last (a'#xs))" in allE) 
+          by clarsimp
+        from `sourcenode a = sourcenode a'` `n = sourcenode a'`
+          `targetnode a = targetnode (last (a'#xs))` `valid_edge a`
+          `kind a = (\<lambda>cf. False)\<^isub>\<surd>` `targetnode (last (a'#xs)) -as''\<rightarrow>\<^isub>\<iota>* n'`
+        have "n -a#as''\<rightarrow>\<^isub>\<iota>* n'"
+          by(fastsimp intro:Cons_path simp:intra_path_def intra_kind_def)
+        moreover
+        from `set(sourcenodes as'') \<subseteq> set(sourcenodes ys)` Cons `as' = xs@ys`
+          `sourcenode a = sourcenode a'`
+        have "set(sourcenodes (a#as'')) \<subseteq> set(sourcenodes as)"
+          by(auto simp:sourcenodes_def)
+        ultimately show ?thesis by blast
       next
-	case (Return Q p f)
-	with Cons `same_level_path_aux [] as` have False by simp
-	thus ?thesis by simp
+        case (Return Q p f)
+        with Cons `same_level_path_aux [] as` have False by simp
+        thus ?thesis by simp
       qed
     qed
   qed
@@ -3325,35 +3325,35 @@ proof -
       by(auto intro:get_proc_return[THEN sym])
     show ?thesis
     proof(cases "\<forall>xs ys. as' = xs@ys \<longrightarrow> 
-	(\<not> same_level_path_rev_aux [a'] ys \<or> upd_rev_cs [a'] ys \<noteq> [])")
+        (\<not> same_level_path_rev_aux [a'] ys \<or> upd_rev_cs [a'] ys \<noteq> [])")
       case True
       with `valid_path_rev_aux [a'] as'` `(_Entry_) -as'\<rightarrow>* sourcenode a'`
-	`valid_return_list [a'] (sourcenode a')`
+        `valid_return_list [a'] (sourcenode a')`
       obtain ax Qx fx where "valid_edge ax" and "kind ax = Qx\<hookleftarrow>\<^bsub>get_proc (_Entry_)\<^esub>fx"
-	by(fastsimp dest!:vpra_no_slpra)
+        by(fastsimp dest!:vpra_no_slpra)
       hence False by(fastsimp intro:Main_no_return_source simp:get_proc_Entry)
       thus ?thesis by simp
     next
       case False
       then obtain xs ys where "as' = xs@ys" and "same_level_path_rev_aux [a'] ys"
-	and "upd_rev_cs [a'] ys = []" by auto
+        and "upd_rev_cs [a'] ys = []" by auto
       with Return have "same_level_path_rev_aux [] (ys@[a'])"
-	and "upd_rev_cs [] (ys@[a']) = []" by simp_all
+        and "upd_rev_cs [] (ys@[a']) = []" by simp_all
       from `upd_rev_cs [a'] ys = []` have "ys \<noteq> []" by auto
       with `(_Entry_) -as'\<rightarrow>* sourcenode a'` `as' = xs@ys`
       have "hd(sourcenodes ys) -ys\<rightarrow>* sourcenode a'"
-	by(cases ys)(auto dest:path_split_second simp:sourcenodes_def)
+        by(cases ys)(auto dest:path_split_second simp:sourcenodes_def)
       with `targetnode a' = n` `valid_edge a'`
       have "hd(sourcenodes ys) -ys@[a']\<rightarrow>* n"
-	by(fastsimp intro:path_Append path_edge)
+        by(fastsimp intro:path_Append path_edge)
       with `same_level_path_rev_aux [] (ys@[a'])` `upd_rev_cs [] (ys@[a']) = []`
       have "same_level_path (ys@[a'])"
-	by(fastsimp dest:slpra_to_slpa simp:same_level_path_def valid_return_list_def)
+        by(fastsimp dest:slpra_to_slpa simp:same_level_path_def valid_return_list_def)
       with `hd(sourcenodes ys) -ys@[a']\<rightarrow>* n` have "hd(sourcenodes ys) -ys@[a']\<rightarrow>\<^bsub>sl\<^esub>* n"
-	by(simp add:slp_def)
+        by(simp add:slp_def)
       with `as = as'@[a']` `as' = xs@ys` Return
       have "\<exists>as' as'' n'. as = as'@as'' \<and> as'' \<noteq> [] \<and> n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n"
-	by(rule_tac x="xs" in exI) auto
+        by(rule_tac x="xs" in exI) auto
       thus ?thesis by simp
     qed
   qed
@@ -3387,98 +3387,98 @@ proof(atomize_elim)
       have "((\<exists>a' as'. as = as'@[a'] \<and> intra_kind(kind a')) \<or>
          (\<exists>a' as' Q r p fs. as = as'@[a'] \<and> kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)) \<or>
          (\<exists>as' as'' n'. as = as'@as'' \<and> as'' \<noteq> [] \<and> n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n)"
-	by(fastsimp dest!:valid_Entry_path_cases)
+        by(fastsimp dest!:valid_Entry_path_cases)
       thus ?thesis apply -
       proof(erule disjE)+
-	assume "\<exists>a' as'. as = as'@[a'] \<and> intra_kind(kind a')"
-	then obtain a' as' where "as = as'@[a']" and "intra_kind(kind a')" by blast
-	from `(_Entry_) -as\<rightarrow>\<^isub>\<surd>* n` `as = as'@[a']`
-	have "(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'" and "valid_edge a'"
-	  and "targetnode a' = n"
-	  by(auto intro:vp_split_snoc)
-	from `valid_edge a'` `intra_kind(kind a')`
-	have "sourcenode a' -[a']\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'"
-	  by(fastsimp intro:path_edge intras_same_level_path simp:slp_def)
-	from IH `(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'` `as = as'@[a']`
-	obtain xs where "(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* sourcenode a'" 
-	  and "set (sourcenodes xs) \<subseteq> set (sourcenodes as')"
-	  and "\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
-	  apply(erule_tac x="as'" in allE) by auto
-	from `(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* sourcenode a'` `sourcenode a' -[a']\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'`
-	have "(_Entry_) -xs@[a']\<rightarrow>\<^isub>\<surd>* targetnode a'" by(rule vp_slp_Append)
-	with `targetnode a' = n` have "(_Entry_) -xs@[a']\<rightarrow>\<^isub>\<surd>* n" by simp
-	moreover
-	from `set (sourcenodes xs) \<subseteq> set (sourcenodes as')` `as = as'@[a']`
-	have "set (sourcenodes (xs@[a'])) \<subseteq> set (sourcenodes as)"
-	  by(auto simp:sourcenodes_def)
-	moreover
-	from `\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)` 
-	  `intra_kind(kind a')`
-	have "\<forall>a'\<in>set (xs@[a']). intra_kind (kind a') \<or> 
-	                         (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
-	  by fastsimp
-	ultimately show ?thesis by blast
+        assume "\<exists>a' as'. as = as'@[a'] \<and> intra_kind(kind a')"
+        then obtain a' as' where "as = as'@[a']" and "intra_kind(kind a')" by blast
+        from `(_Entry_) -as\<rightarrow>\<^isub>\<surd>* n` `as = as'@[a']`
+        have "(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'" and "valid_edge a'"
+          and "targetnode a' = n"
+          by(auto intro:vp_split_snoc)
+        from `valid_edge a'` `intra_kind(kind a')`
+        have "sourcenode a' -[a']\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'"
+          by(fastsimp intro:path_edge intras_same_level_path simp:slp_def)
+        from IH `(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'` `as = as'@[a']`
+        obtain xs where "(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* sourcenode a'" 
+          and "set (sourcenodes xs) \<subseteq> set (sourcenodes as')"
+          and "\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
+          apply(erule_tac x="as'" in allE) by auto
+        from `(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* sourcenode a'` `sourcenode a' -[a']\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'`
+        have "(_Entry_) -xs@[a']\<rightarrow>\<^isub>\<surd>* targetnode a'" by(rule vp_slp_Append)
+        with `targetnode a' = n` have "(_Entry_) -xs@[a']\<rightarrow>\<^isub>\<surd>* n" by simp
+        moreover
+        from `set (sourcenodes xs) \<subseteq> set (sourcenodes as')` `as = as'@[a']`
+        have "set (sourcenodes (xs@[a'])) \<subseteq> set (sourcenodes as)"
+          by(auto simp:sourcenodes_def)
+        moreover
+        from `\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)` 
+          `intra_kind(kind a')`
+        have "\<forall>a'\<in>set (xs@[a']). intra_kind (kind a') \<or> 
+                                 (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
+          by fastsimp
+        ultimately show ?thesis by blast
       next
-	assume "\<exists>a' as' Q r p fs. as = as'@[a'] \<and> kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
-	then obtain a' as' Q r p fs where "as = as'@[a']" and "kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" 
-	  by blast
-	from `(_Entry_) -as\<rightarrow>\<^isub>\<surd>* n` `as = as'@[a']`
-	have "(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'" and "valid_edge a'"
-	  and "targetnode a' = n"
-	  by(auto intro:vp_split_snoc)
-	from IH `(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'` `as = as'@[a']`
-	obtain xs where "(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* sourcenode a'" 
-	  and "set (sourcenodes xs) \<subseteq> set (sourcenodes as')"
-	  and "\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
-	  apply(erule_tac x="as'" in allE) by auto
-	from `targetnode a' = n` `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	  `(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* sourcenode a'`
-	have "(_Entry_) -xs@[a']\<rightarrow>\<^isub>\<surd>* n"
-	  by(fastsimp intro:path_Append path_edge vpa_snoc_Call 
-	               simp:vp_def valid_path_def)
-	moreover
-	from `set (sourcenodes xs) \<subseteq> set (sourcenodes as')` `as = as'@[a']`
-	have "set (sourcenodes (xs@[a'])) \<subseteq> set (sourcenodes as)"
-	  by(auto simp:sourcenodes_def)
-	moreover
-	from `\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)` 
-	  `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	have "\<forall>a'\<in>set (xs@[a']). intra_kind (kind a') \<or> 
-	                         (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
-	  by fastsimp
-	ultimately show ?thesis by blast
+        assume "\<exists>a' as' Q r p fs. as = as'@[a'] \<and> kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
+        then obtain a' as' Q r p fs where "as = as'@[a']" and "kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" 
+          by blast
+        from `(_Entry_) -as\<rightarrow>\<^isub>\<surd>* n` `as = as'@[a']`
+        have "(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'" and "valid_edge a'"
+          and "targetnode a' = n"
+          by(auto intro:vp_split_snoc)
+        from IH `(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'` `as = as'@[a']`
+        obtain xs where "(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* sourcenode a'" 
+          and "set (sourcenodes xs) \<subseteq> set (sourcenodes as')"
+          and "\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
+          apply(erule_tac x="as'" in allE) by auto
+        from `targetnode a' = n` `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+          `(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* sourcenode a'`
+        have "(_Entry_) -xs@[a']\<rightarrow>\<^isub>\<surd>* n"
+          by(fastsimp intro:path_Append path_edge vpa_snoc_Call 
+                       simp:vp_def valid_path_def)
+        moreover
+        from `set (sourcenodes xs) \<subseteq> set (sourcenodes as')` `as = as'@[a']`
+        have "set (sourcenodes (xs@[a'])) \<subseteq> set (sourcenodes as)"
+          by(auto simp:sourcenodes_def)
+        moreover
+        from `\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)` 
+          `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+        have "\<forall>a'\<in>set (xs@[a']). intra_kind (kind a') \<or> 
+                                 (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
+          by fastsimp
+        ultimately show ?thesis by blast
       next
-	assume "\<exists>as' as'' n'. as = as'@as'' \<and> as'' \<noteq> [] \<and> n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n"
-	then obtain as' as'' n' where "as = as'@as''" and "as'' \<noteq> []"
-	  and "n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n" by blast
-	from `(_Entry_) -as\<rightarrow>\<^isub>\<surd>* n` `as = as'@as''` `as'' \<noteq> []`
-	have "(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* hd(sourcenodes as'')"
-	  by(cases as'',auto intro:vp_split simp:sourcenodes_def)
-	from `n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n` `as'' \<noteq> []` have "hd(sourcenodes as'') = n'"
-	  by(fastsimp intro:path_sourcenode simp:slp_def)
-	from `as = as'@as''` `as'' \<noteq> []` have "length as' < length as" by simp
-	with IH `(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* hd(sourcenodes as'')`
-	  `hd(sourcenodes as'') = n'`
-	obtain xs where "(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* n'" 
-	  and "set (sourcenodes xs) \<subseteq> set (sourcenodes as')"
-	  and "\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
-	  apply(erule_tac x="as'" in allE) by auto
-	from `n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n` obtain ys where "n' -ys\<rightarrow>\<^isub>\<iota>* n"
-	  and "set(sourcenodes ys) \<subseteq> set(sourcenodes as'')"
-	  by(erule same_level_path_inner_path)
-	from `(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* n'` `n' -ys\<rightarrow>\<^isub>\<iota>* n` have "(_Entry_) -xs@ys\<rightarrow>\<^isub>\<surd>* n"
-	  by(fastsimp intro:vp_slp_Append intra_path_slp)
-	moreover
-	from `set (sourcenodes xs) \<subseteq> set (sourcenodes as')`
-	  `set(sourcenodes ys) \<subseteq> set(sourcenodes as'')` `as = as'@as''`
-	have "set (sourcenodes (xs@ys)) \<subseteq> set(sourcenodes as)"
-	  by(auto simp:sourcenodes_def)
-	moreover
-	from `\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)`
-	  `n' -ys\<rightarrow>\<^isub>\<iota>* n`
-	have "\<forall>a'\<in>set (xs@ys). intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
-	  by(fastsimp simp:intra_path_def)
-	ultimately show ?thesis by blast
+        assume "\<exists>as' as'' n'. as = as'@as'' \<and> as'' \<noteq> [] \<and> n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n"
+        then obtain as' as'' n' where "as = as'@as''" and "as'' \<noteq> []"
+          and "n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n" by blast
+        from `(_Entry_) -as\<rightarrow>\<^isub>\<surd>* n` `as = as'@as''` `as'' \<noteq> []`
+        have "(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* hd(sourcenodes as'')"
+          by(cases as'',auto intro:vp_split simp:sourcenodes_def)
+        from `n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n` `as'' \<noteq> []` have "hd(sourcenodes as'') = n'"
+          by(fastsimp intro:path_sourcenode simp:slp_def)
+        from `as = as'@as''` `as'' \<noteq> []` have "length as' < length as" by simp
+        with IH `(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* hd(sourcenodes as'')`
+          `hd(sourcenodes as'') = n'`
+        obtain xs where "(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* n'" 
+          and "set (sourcenodes xs) \<subseteq> set (sourcenodes as')"
+          and "\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
+          apply(erule_tac x="as'" in allE) by auto
+        from `n' -as''\<rightarrow>\<^bsub>sl\<^esub>* n` obtain ys where "n' -ys\<rightarrow>\<^isub>\<iota>* n"
+          and "set(sourcenodes ys) \<subseteq> set(sourcenodes as'')"
+          by(erule same_level_path_inner_path)
+        from `(_Entry_) -xs\<rightarrow>\<^isub>\<surd>* n'` `n' -ys\<rightarrow>\<^isub>\<iota>* n` have "(_Entry_) -xs@ys\<rightarrow>\<^isub>\<surd>* n"
+          by(fastsimp intro:vp_slp_Append intra_path_slp)
+        moreover
+        from `set (sourcenodes xs) \<subseteq> set (sourcenodes as')`
+          `set(sourcenodes ys) \<subseteq> set(sourcenodes as'')` `as = as'@as''`
+        have "set (sourcenodes (xs@ys)) \<subseteq> set(sourcenodes as)"
+          by(auto simp:sourcenodes_def)
+        moreover
+        from `\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)`
+          `n' -ys\<rightarrow>\<^isub>\<iota>* n`
+        have "\<forall>a'\<in>set (xs@ys). intra_kind (kind a') \<or> (\<exists>Q r p fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)"
+          by(fastsimp simp:intra_path_def)
+        ultimately show ?thesis by blast
       qed
     qed
   qed

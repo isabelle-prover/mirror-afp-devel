@@ -580,14 +580,14 @@ next
     proof(cases "ms'' = []")
       case True
       with `(\<exists>m\<in>set (tl (m # ms'' @ ms)).
-	\<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or>
-	hd (m # ms'' @ ms) \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m = sourcenode a` callstack
+        \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or>
+        hd (m # ms'' @ ms) \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m = sourcenode a` callstack
       have "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastsimp
       from `valid_edge a` `a' \<in> get_return_edges a` have "valid_edge a'"
-	by(rule get_return_edges_valid)
+        by(rule get_return_edges_valid)
       with `valid_edge a` `a' \<in> get_return_edges a`
       have "call_of_return_node (targetnode a') (sourcenode a)"
-	by(fastsimp simp:call_of_return_node_def return_node_def)
+        by(fastsimp simp:call_of_return_node_def return_node_def)
       with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` True show ?thesis by fastsimp
     next
       case False
@@ -632,7 +632,7 @@ next
     proof
       assume "ms'' = []"
       with callstack
-	`\<exists>m\<in>set (tl (m # ms'' @ ms)). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `\<exists>m\<in>set (tl (m # ms'' @ ms)). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       show False by fastsimp
     qed
     with `hd (tl (m # ms'' @ ms)) = targetnode a`
@@ -722,7 +722,7 @@ lemma silent_moves_slp:
   by(fastsimp dest!:silent_moves_slpa_path
                    [of _ _ _ "[]" _ _ _ _ _ _ "[]" "[]",simplified] 
               simp:targetnodes_def valid_call_list_def valid_return_list_def 
-		   same_level_path_def slp_def)
+                   same_level_path_def slp_def)
 
 
 lemma slpa_silent_moves_callstacks_eq:
@@ -931,228 +931,228 @@ proof(atomize_elim)
     proof(cases as rule:rev_cases)
       case Nil
       with `S,kind \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` have "ms = ms'"
-	by(fastsimp elim:silent_moves.cases)
+        by(fastsimp elim:silent_moves.cases)
       thus ?thesis by simp
     next
       case (snoc as' a')
       with `S,kind \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
       obtain ms'' s'' where "S,kind \<turnstile> (m#ms,s) =as'\<Rightarrow>\<^isub>\<tau> (ms'',s'')"
-	and "S,kind \<turnstile> (ms'',s'') =[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
-	by(fastsimp elim:silent_moves_split)
+        and "S,kind \<turnstile> (ms'',s'') =[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
+        by(fastsimp elim:silent_moves_split)
       from snoc have "length as' < length as" by simp
       from `S,kind \<turnstile> (ms'',s'') =[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
       have "S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')"
-	by(fastsimp elim:silent_moves.cases)
+        by(fastsimp elim:silent_moves.cases)
       show ?thesis
       proof(cases "kind a'" rule:edge_kind_cases)
-	case Intra
-	with `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')`
-	have "valid_edge a'" and "m' = targetnode a'"
-	  by(auto elim:silent_move.cases simp:intra_kind_def)
-	from `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')` `intra_kind (kind a')`
-	have "ms'' = sourcenode a'#ms'"
-	  by -(erule silent_move.cases,auto simp:intra_kind_def,(cases ms'',auto)+)
-	with IH `length as' < length as` `S,kind \<turnstile> (m#ms,s) =as'\<Rightarrow>\<^isub>\<tau> (ms'',s'')`
-	have "(\<exists>asx ax asx'. as' = asx @ ax # asx' \<and> (\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
-	  call_of_return_node (hd ms') (sourcenode ax) \<and> 
-	  targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a') \<or> ms' = ms"
-	  by simp blast
-	thus ?thesis
-	proof
-	  assume "\<exists>asx ax asx'. as' = asx @ ax # asx' \<and> 
-	    (\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
-	    call_of_return_node (hd ms') (sourcenode ax) \<and> 
-	    targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'"
-	  then obtain asx ax asx' where "as' = asx @ ax # asx'"
-	    and "\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
-	    and "call_of_return_node (hd ms') (sourcenode ax)"
-	    and "targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'"
-	    by blast
-	  from `as' = asx @ ax # asx'` have "as'@[a'] = asx @ ax # (asx' @ [a'])"
-	    by simp
-	  moreover
-	  from `targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'` `intra_kind (kind a')` 
-	    `m' = targetnode a'` `valid_edge a'`
-	  have "targetnode ax -asx'@[a']\<rightarrow>\<^bsub>sl\<^esub>* m'"
-	    by(fastsimp intro:path_Append path_edge same_level_path_aux_Append 
-	      upd_cs_Append simp:slp_def same_level_path_def intra_kind_def)
-	  ultimately show ?thesis using `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
-	    `call_of_return_node (hd ms') (sourcenode ax)` snoc by blast
-	next
-	  assume "ms' = ms" thus ?thesis by simp
-	qed
+        case Intra
+        with `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')`
+        have "valid_edge a'" and "m' = targetnode a'"
+          by(auto elim:silent_move.cases simp:intra_kind_def)
+        from `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')` `intra_kind (kind a')`
+        have "ms'' = sourcenode a'#ms'"
+          by -(erule silent_move.cases,auto simp:intra_kind_def,(cases ms'',auto)+)
+        with IH `length as' < length as` `S,kind \<turnstile> (m#ms,s) =as'\<Rightarrow>\<^isub>\<tau> (ms'',s'')`
+        have "(\<exists>asx ax asx'. as' = asx @ ax # asx' \<and> (\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
+          call_of_return_node (hd ms') (sourcenode ax) \<and> 
+          targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a') \<or> ms' = ms"
+          by simp blast
+        thus ?thesis
+        proof
+          assume "\<exists>asx ax asx'. as' = asx @ ax # asx' \<and> 
+            (\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
+            call_of_return_node (hd ms') (sourcenode ax) \<and> 
+            targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'"
+          then obtain asx ax asx' where "as' = asx @ ax # asx'"
+            and "\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
+            and "call_of_return_node (hd ms') (sourcenode ax)"
+            and "targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'"
+            by blast
+          from `as' = asx @ ax # asx'` have "as'@[a'] = asx @ ax # (asx' @ [a'])"
+            by simp
+          moreover
+          from `targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'` `intra_kind (kind a')` 
+            `m' = targetnode a'` `valid_edge a'`
+          have "targetnode ax -asx'@[a']\<rightarrow>\<^bsub>sl\<^esub>* m'"
+            by(fastsimp intro:path_Append path_edge same_level_path_aux_Append 
+              upd_cs_Append simp:slp_def same_level_path_def intra_kind_def)
+          ultimately show ?thesis using `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
+            `call_of_return_node (hd ms') (sourcenode ax)` snoc by blast
+        next
+          assume "ms' = ms" thus ?thesis by simp
+        qed
       next
-	case (Call Q r p fs)
-	with `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')` obtain a''
-	  where "valid_edge a'" and "a'' \<in> get_return_edges a'"
-	  and "hd ms'' = sourcenode a'" and "m' = targetnode a'"
-	  and "ms' = (targetnode a'')#tl ms''" and "length ms'' = length s''"
-	  and "pred (kind a') s''"
-	  by(auto elim:silent_move.cases simp:intra_kind_def)
-	from `valid_edge a'` `a'' \<in> get_return_edges a'` have "valid_edge a''"
-	  by(rule get_return_edges_valid)
-	from `valid_edge a''` `valid_edge a'` `a'' \<in> get_return_edges a'`
-	have "return_node (targetnode a'')" by(fastsimp simp:return_node_def)
-	with `valid_edge a'` `valid_edge a''`
-	  `a'' \<in> get_return_edges a'` `ms' = (targetnode a'')#tl ms''`
-	have "call_of_return_node (hd ms') (sourcenode a')"
-	  by(simp add:call_of_return_node_def) blast
-	with snoc `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `m' = targetnode a'` `valid_edge a'`
-	show ?thesis by(fastsimp intro:empty_path simp:slp_def same_level_path_def)
+        case (Call Q r p fs)
+        with `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')` obtain a''
+          where "valid_edge a'" and "a'' \<in> get_return_edges a'"
+          and "hd ms'' = sourcenode a'" and "m' = targetnode a'"
+          and "ms' = (targetnode a'')#tl ms''" and "length ms'' = length s''"
+          and "pred (kind a') s''"
+          by(auto elim:silent_move.cases simp:intra_kind_def)
+        from `valid_edge a'` `a'' \<in> get_return_edges a'` have "valid_edge a''"
+          by(rule get_return_edges_valid)
+        from `valid_edge a''` `valid_edge a'` `a'' \<in> get_return_edges a'`
+        have "return_node (targetnode a'')" by(fastsimp simp:return_node_def)
+        with `valid_edge a'` `valid_edge a''`
+          `a'' \<in> get_return_edges a'` `ms' = (targetnode a'')#tl ms''`
+        have "call_of_return_node (hd ms') (sourcenode a')"
+          by(simp add:call_of_return_node_def) blast
+        with snoc `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `m' = targetnode a'` `valid_edge a'`
+        show ?thesis by(fastsimp intro:empty_path simp:slp_def same_level_path_def)
       next
-	case (Return Q p f)
-	with `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')` 
-	have "valid_edge a'" and "hd ms'' = sourcenode a'"
-	  and "hd(tl ms'') = targetnode a'" and "m'#ms' = tl ms''"
-	  and "length ms'' = length s''" and "length s'' = Suc(length s')"
-	  and "s' \<noteq> []"
-	  by(auto elim:silent_move.cases simp:intra_kind_def)
-	hence "ms'' = sourcenode a' # targetnode a' # ms'" by(cases ms'') auto
-	with `length as' < length as` `S,kind \<turnstile> (m#ms,s) =as'\<Rightarrow>\<^isub>\<tau> (ms'',s'')` IH
-	have "(\<exists>asx ax asx'. as' = asx @ ax # asx' \<and> (\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
-	  call_of_return_node (targetnode a') (sourcenode ax) \<and>
-	  targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a') \<or> ms = targetnode a' # ms'"
-	  apply - apply(erule_tac x="as'" in allE) apply clarsimp
-	  apply(erule_tac x="sourcenode a'" in allE)
-	  apply(erule_tac x="targetnode a' # ms'" in allE)
-	  by fastsimp
-	thus ?thesis
-	proof
-	  assume "\<exists>asx ax asx'. as' = asx @ ax # asx' \<and> 
-	    (\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
-	    call_of_return_node (targetnode a') (sourcenode ax) \<and>
-	    targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'"
-	  then obtain asx ax asx' where "as' = asx @ ax # asx'"
-	    and "\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" 
-	    and "call_of_return_node (targetnode a') (sourcenode ax)"
-	    and "targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'" by blast
-	  from `as' = asx @ ax # asx'` snoc have"length asx < length as" by simp
-	  moreover
-	  from `S,kind \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` snoc `as' = asx @ ax # asx'`
-	  obtain msx sx where "S,kind \<turnstile> (m#ms,s) =asx\<Rightarrow>\<^isub>\<tau> (msx,sx)"
-	    and "S,kind \<turnstile> (msx,sx) =ax#asx'@[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
-	    by(fastsimp elim:silent_moves_split)
-	  from `S,kind \<turnstile> (msx,sx) =ax#asx'@[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
-	  obtain xs x ys y where "S,kind \<turnstile> (msx,sx) -ax\<rightarrow>\<^isub>\<tau> (xs,x)"
-	    and "S,kind \<turnstile> (xs,x) =asx'\<Rightarrow>\<^isub>\<tau> (ys,y)"
-	    and "S,kind \<turnstile> (ys,y) =[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
-	    apply - apply(erule silent_moves.cases) apply auto
-	    by(erule silent_moves_split) auto
-	  from `S,kind \<turnstile> (msx,sx) -ax\<rightarrow>\<^isub>\<tau> (xs,x)` `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	  obtain msx' ax' where "msx = sourcenode ax#msx'" 
-	    and "ax' \<in> get_return_edges ax"
-	    and [simp]:"xs = (targetnode ax)#(targetnode ax')#msx'"
-	    and "length x = Suc(length sx)" and "length msx = length sx"
-	    apply - apply(erule silent_move.cases) apply(auto simp:intra_kind_def)
-	    by(cases msx,auto)+
-	  from `S,kind \<turnstile> (ys,y) =[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` obtain msy 
-	    where "ys = sourcenode a'#msy"
-	    apply - apply(erule silent_moves.cases) apply auto
-	    apply(erule silent_move.cases)
-	    by(cases ys,auto)+
-	  with `S,kind \<turnstile> (xs,x) =asx'\<Rightarrow>\<^isub>\<tau> (ys,y)` 
-	    `targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'`
-	    `xs = (targetnode ax)#(targetnode ax')#msx'`
-	  have "(targetnode ax')#msx' = msy" apply simp
-	    by(fastsimp intro:silent_moves_same_level_path)
-	  with `S,kind \<turnstile> (ys,y) =[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` 
-	    `ys = sourcenode a'#msy`
-	  have "m' = targetnode a'" and "msx' = ms'"
-	    by(fastsimp elim:silent_moves.cases silent_move.cases 
-	                simp:intra_kind_def)+
-	  with `S,kind \<turnstile> (m#ms,s) =asx\<Rightarrow>\<^isub>\<tau> (msx,sx)` `msx = sourcenode ax#msx'`
-	  have "S,kind \<turnstile> (m#ms,s) =asx\<Rightarrow>\<^isub>\<tau> (sourcenode ax#ms',sx)" by simp
-	  ultimately have "(\<exists>xs x xs'. asx = xs@x#xs' \<and> 
-	    (\<exists>Q r p fs. kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
-	    call_of_return_node (hd ms') (sourcenode x) \<and>
-	    targetnode x -xs'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode ax) \<or> ms = ms'" using IH
-	    by simp blast
-	  thus ?thesis
-	  proof
-	    assume "\<exists>xs x xs'. asx = xs@x#xs' \<and> (\<exists>Q r p fs. kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
-	      call_of_return_node (hd ms') (sourcenode x) \<and>
-	      targetnode x -xs'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode ax"
-	    then obtain xs x xs' where "asx = xs@x#xs'"
-	      and "\<exists>Q r p fs. kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" 
-	      and "call_of_return_node (hd ms') (sourcenode x)"
-	      and "targetnode x -xs'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode ax" by blast
-	    from `asx = xs@x#xs'` `as' = asx @ ax # asx'` snoc
-	    have "as = xs@x#(xs'@ax#asx'@[a'])" by simp
-	    from `S,kind \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `valid_node m` rest
-	    have "m -as\<rightarrow>* m'" and "valid_path_aux cs as"
-	      by(auto dest:silent_moves_vpa_path[of _ _ _ _ _ _ _ _ _ rs cs]
-		      simp:valid_call_list_def valid_return_list_def targetnodes_def)
-	    hence "m -as\<rightarrow>\<^isub>\<surd>* m'" 
-	      by(fastsimp intro:valid_path_aux_valid_path simp:vp_def)
-	    with snoc have "m -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'"
-	      by(auto elim:path_split_snoc dest:valid_path_aux_split 
-		simp:vp_def valid_path_def)
-	    with `as' = asx @ ax # asx'`
-	    have "valid_edge ax" and "targetnode ax -asx'\<rightarrow>* sourcenode a'"
-	      by(auto dest:path_split simp:vp_def)
-	    hence "sourcenode ax -ax#asx'\<rightarrow>* sourcenode a'"
-	      by(fastsimp intro:Cons_path)
-	    from `valid_edge a'` have "sourcenode a' -[a']\<rightarrow>* targetnode a'"
-	      by(rule path_edge)
-	    with `sourcenode ax -ax#asx'\<rightarrow>* sourcenode a'`
-	    have "sourcenode ax -(ax#asx')@[a']\<rightarrow>* targetnode a'"
-	      by(rule path_Append)
-	    from `m -as\<rightarrow>\<^isub>\<surd>* m'` snoc `as' = asx @ ax # asx'` snoc
-	    have "valid_path_aux ([]@(upd_cs [] asx)) (ax # asx' @ [a'])"
-	      by(fastsimp dest:valid_path_aux_split simp:vp_def valid_path_def)
-	    hence "valid_path_aux [] (ax#asx'@[a'])" 
-	      by(rule valid_path_aux_callstack_prefix)
-	    with `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	    have "valid_path_aux [ax] (asx'@[a'])" by fastsimp
-	    hence "valid_path_aux (upd_cs [ax] asx') [a']"
-	      by(rule valid_path_aux_split)
-	    from `targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'`
-	    have "same_level_path_aux [] asx'" and "upd_cs [] asx' = []" 
-	      by(simp_all add:slp_def same_level_path_def)
-	    hence "upd_cs ([]@[ax]) asx' = []@[ax]"
-	      by(rule same_level_path_upd_cs_callstack_Append)
-	    with `valid_path_aux (upd_cs [ax] asx') [a']`
-	    have "valid_path_aux [ax] [a']" by(simp del:valid_path_aux.simps)
-	    with `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	    have "a' \<in> get_return_edges ax" by simp
-	    with `upd_cs ([]@[ax]) asx' = []@[ax]` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	    have "upd_cs [ax] (asx'@[a']) = []" by(fastsimp intro:upd_cs_Append)
-	    with `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	    have "upd_cs [] (ax#asx'@[a']) = []" by fastsimp
-	    from `targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'`
-	    have "same_level_path_aux [] asx'" and "upd_cs [] asx' = []" 
-	      by(simp_all add:slp_def same_level_path_def)
-	    hence "same_level_path_aux ([]@[ax]) asx'" 
-	      by -(rule same_level_path_aux_callstack_Append)
-	    with `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` 
-	      `a' \<in> get_return_edges ax` `upd_cs ([]@[ax]) asx' = []@[ax]`
-	    have "same_level_path_aux [] ((ax#asx')@[a'])"
-	      by(fastsimp intro:same_level_path_aux_Append)
-	    with `upd_cs [] (ax#asx'@[a']) = []`
-	      `sourcenode ax -(ax#asx')@[a']\<rightarrow>* targetnode a'`
-	    have "sourcenode ax -(ax#asx')@[a']\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'"
-	      by(simp add:slp_def same_level_path_def)
-	    with `targetnode x -xs'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode ax`
-	    have "targetnode x -xs'@((ax#asx')@[a'])\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'"
-	      by(rule slp_Append)
-	    with `\<exists>Q r p fs. kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
-	      `call_of_return_node (hd ms') (sourcenode x)`
-	      `as = xs@x#(xs'@ax#asx'@[a'])` `m' = targetnode a'`
-	    show ?thesis by simp blast
-	  next
-	    assume "ms = ms'" thus ?thesis by simp
-	  qed
-	next
-	  assume "ms = targetnode a' # ms'"
-	  from `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	    `ms'' = sourcenode a' # targetnode a' # ms'`
-	  have "\<exists>m \<in> set (targetnode a' # ms'). \<exists>m'. call_of_return_node m m' \<and> 
-	    m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-	    by(fastsimp elim!:silent_move.cases simp:intra_kind_def)
-	  with `ms = targetnode a' # ms'` callstack
-	  have False by fastsimp
-	  thus ?thesis by simp
-	qed
+        case (Return Q p f)
+        with `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')` 
+        have "valid_edge a'" and "hd ms'' = sourcenode a'"
+          and "hd(tl ms'') = targetnode a'" and "m'#ms' = tl ms''"
+          and "length ms'' = length s''" and "length s'' = Suc(length s')"
+          and "s' \<noteq> []"
+          by(auto elim:silent_move.cases simp:intra_kind_def)
+        hence "ms'' = sourcenode a' # targetnode a' # ms'" by(cases ms'') auto
+        with `length as' < length as` `S,kind \<turnstile> (m#ms,s) =as'\<Rightarrow>\<^isub>\<tau> (ms'',s'')` IH
+        have "(\<exists>asx ax asx'. as' = asx @ ax # asx' \<and> (\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
+          call_of_return_node (targetnode a') (sourcenode ax) \<and>
+          targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a') \<or> ms = targetnode a' # ms'"
+          apply - apply(erule_tac x="as'" in allE) apply clarsimp
+          apply(erule_tac x="sourcenode a'" in allE)
+          apply(erule_tac x="targetnode a' # ms'" in allE)
+          by fastsimp
+        thus ?thesis
+        proof
+          assume "\<exists>asx ax asx'. as' = asx @ ax # asx' \<and> 
+            (\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
+            call_of_return_node (targetnode a') (sourcenode ax) \<and>
+            targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'"
+          then obtain asx ax asx' where "as' = asx @ ax # asx'"
+            and "\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" 
+            and "call_of_return_node (targetnode a') (sourcenode ax)"
+            and "targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'" by blast
+          from `as' = asx @ ax # asx'` snoc have"length asx < length as" by simp
+          moreover
+          from `S,kind \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` snoc `as' = asx @ ax # asx'`
+          obtain msx sx where "S,kind \<turnstile> (m#ms,s) =asx\<Rightarrow>\<^isub>\<tau> (msx,sx)"
+            and "S,kind \<turnstile> (msx,sx) =ax#asx'@[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
+            by(fastsimp elim:silent_moves_split)
+          from `S,kind \<turnstile> (msx,sx) =ax#asx'@[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
+          obtain xs x ys y where "S,kind \<turnstile> (msx,sx) -ax\<rightarrow>\<^isub>\<tau> (xs,x)"
+            and "S,kind \<turnstile> (xs,x) =asx'\<Rightarrow>\<^isub>\<tau> (ys,y)"
+            and "S,kind \<turnstile> (ys,y) =[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
+            apply - apply(erule silent_moves.cases) apply auto
+            by(erule silent_moves_split) auto
+          from `S,kind \<turnstile> (msx,sx) -ax\<rightarrow>\<^isub>\<tau> (xs,x)` `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+          obtain msx' ax' where "msx = sourcenode ax#msx'" 
+            and "ax' \<in> get_return_edges ax"
+            and [simp]:"xs = (targetnode ax)#(targetnode ax')#msx'"
+            and "length x = Suc(length sx)" and "length msx = length sx"
+            apply - apply(erule silent_move.cases) apply(auto simp:intra_kind_def)
+            by(cases msx,auto)+
+          from `S,kind \<turnstile> (ys,y) =[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` obtain msy 
+            where "ys = sourcenode a'#msy"
+            apply - apply(erule silent_moves.cases) apply auto
+            apply(erule silent_move.cases)
+            by(cases ys,auto)+
+          with `S,kind \<turnstile> (xs,x) =asx'\<Rightarrow>\<^isub>\<tau> (ys,y)` 
+            `targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'`
+            `xs = (targetnode ax)#(targetnode ax')#msx'`
+          have "(targetnode ax')#msx' = msy" apply simp
+            by(fastsimp intro:silent_moves_same_level_path)
+          with `S,kind \<turnstile> (ys,y) =[a']\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` 
+            `ys = sourcenode a'#msy`
+          have "m' = targetnode a'" and "msx' = ms'"
+            by(fastsimp elim:silent_moves.cases silent_move.cases 
+                        simp:intra_kind_def)+
+          with `S,kind \<turnstile> (m#ms,s) =asx\<Rightarrow>\<^isub>\<tau> (msx,sx)` `msx = sourcenode ax#msx'`
+          have "S,kind \<turnstile> (m#ms,s) =asx\<Rightarrow>\<^isub>\<tau> (sourcenode ax#ms',sx)" by simp
+          ultimately have "(\<exists>xs x xs'. asx = xs@x#xs' \<and> 
+            (\<exists>Q r p fs. kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
+            call_of_return_node (hd ms') (sourcenode x) \<and>
+            targetnode x -xs'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode ax) \<or> ms = ms'" using IH
+            by simp blast
+          thus ?thesis
+          proof
+            assume "\<exists>xs x xs'. asx = xs@x#xs' \<and> (\<exists>Q r p fs. kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
+              call_of_return_node (hd ms') (sourcenode x) \<and>
+              targetnode x -xs'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode ax"
+            then obtain xs x xs' where "asx = xs@x#xs'"
+              and "\<exists>Q r p fs. kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" 
+              and "call_of_return_node (hd ms') (sourcenode x)"
+              and "targetnode x -xs'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode ax" by blast
+            from `asx = xs@x#xs'` `as' = asx @ ax # asx'` snoc
+            have "as = xs@x#(xs'@ax#asx'@[a'])" by simp
+            from `S,kind \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `valid_node m` rest
+            have "m -as\<rightarrow>* m'" and "valid_path_aux cs as"
+              by(auto dest:silent_moves_vpa_path[of _ _ _ _ _ _ _ _ _ rs cs]
+                      simp:valid_call_list_def valid_return_list_def targetnodes_def)
+            hence "m -as\<rightarrow>\<^isub>\<surd>* m'" 
+              by(fastsimp intro:valid_path_aux_valid_path simp:vp_def)
+            with snoc have "m -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'"
+              by(auto elim:path_split_snoc dest:valid_path_aux_split 
+                simp:vp_def valid_path_def)
+            with `as' = asx @ ax # asx'`
+            have "valid_edge ax" and "targetnode ax -asx'\<rightarrow>* sourcenode a'"
+              by(auto dest:path_split simp:vp_def)
+            hence "sourcenode ax -ax#asx'\<rightarrow>* sourcenode a'"
+              by(fastsimp intro:Cons_path)
+            from `valid_edge a'` have "sourcenode a' -[a']\<rightarrow>* targetnode a'"
+              by(rule path_edge)
+            with `sourcenode ax -ax#asx'\<rightarrow>* sourcenode a'`
+            have "sourcenode ax -(ax#asx')@[a']\<rightarrow>* targetnode a'"
+              by(rule path_Append)
+            from `m -as\<rightarrow>\<^isub>\<surd>* m'` snoc `as' = asx @ ax # asx'` snoc
+            have "valid_path_aux ([]@(upd_cs [] asx)) (ax # asx' @ [a'])"
+              by(fastsimp dest:valid_path_aux_split simp:vp_def valid_path_def)
+            hence "valid_path_aux [] (ax#asx'@[a'])" 
+              by(rule valid_path_aux_callstack_prefix)
+            with `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+            have "valid_path_aux [ax] (asx'@[a'])" by fastsimp
+            hence "valid_path_aux (upd_cs [ax] asx') [a']"
+              by(rule valid_path_aux_split)
+            from `targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'`
+            have "same_level_path_aux [] asx'" and "upd_cs [] asx' = []" 
+              by(simp_all add:slp_def same_level_path_def)
+            hence "upd_cs ([]@[ax]) asx' = []@[ax]"
+              by(rule same_level_path_upd_cs_callstack_Append)
+            with `valid_path_aux (upd_cs [ax] asx') [a']`
+            have "valid_path_aux [ax] [a']" by(simp del:valid_path_aux.simps)
+            with `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+            have "a' \<in> get_return_edges ax" by simp
+            with `upd_cs ([]@[ax]) asx' = []@[ax]` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+            have "upd_cs [ax] (asx'@[a']) = []" by(fastsimp intro:upd_cs_Append)
+            with `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+            have "upd_cs [] (ax#asx'@[a']) = []" by fastsimp
+            from `targetnode ax -asx'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode a'`
+            have "same_level_path_aux [] asx'" and "upd_cs [] asx' = []" 
+              by(simp_all add:slp_def same_level_path_def)
+            hence "same_level_path_aux ([]@[ax]) asx'" 
+              by -(rule same_level_path_aux_callstack_Append)
+            with `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` 
+              `a' \<in> get_return_edges ax` `upd_cs ([]@[ax]) asx' = []@[ax]`
+            have "same_level_path_aux [] ((ax#asx')@[a'])"
+              by(fastsimp intro:same_level_path_aux_Append)
+            with `upd_cs [] (ax#asx'@[a']) = []`
+              `sourcenode ax -(ax#asx')@[a']\<rightarrow>* targetnode a'`
+            have "sourcenode ax -(ax#asx')@[a']\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'"
+              by(simp add:slp_def same_level_path_def)
+            with `targetnode x -xs'\<rightarrow>\<^bsub>sl\<^esub>* sourcenode ax`
+            have "targetnode x -xs'@((ax#asx')@[a'])\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'"
+              by(rule slp_Append)
+            with `\<exists>Q r p fs. kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
+              `call_of_return_node (hd ms') (sourcenode x)`
+              `as = xs@x#(xs'@ax#asx'@[a'])` `m' = targetnode a'`
+            show ?thesis by simp blast
+          next
+            assume "ms = ms'" thus ?thesis by simp
+          qed
+        next
+          assume "ms = targetnode a' # ms'"
+          from `S,kind \<turnstile> (ms'',s'') -a'\<rightarrow>\<^isub>\<tau> (m'#ms',s')` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+            `ms'' = sourcenode a' # targetnode a' # ms'`
+          have "\<exists>m \<in> set (targetnode a' # ms'). \<exists>m'. call_of_return_node m m' \<and> 
+            m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+            by(fastsimp elim!:silent_move.cases simp:intra_kind_def)
+          with `ms = targetnode a' # ms'` callstack
+          have False by fastsimp
+          thus ?thesis by simp
+        qed
       qed
     qed
   qed
@@ -1176,7 +1176,7 @@ proof(atomize_elim)
     `valid_return_list rs m` `length rs = length cs`
   have "m -as\<rightarrow>* m'"
     by(auto dest:silent_moves_vpa_path[of _ _ _ _ _ _ _ _ _ rs cs]
-	    simp:valid_call_list_def valid_return_list_def targetnodes_def)
+            simp:valid_call_list_def valid_return_list_def targetnodes_def)
   from `S,kind \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `valid_node m`
     `\<forall>mx \<in> set ms. \<exists>mx'. call_of_return_node mx mx' \<and> mx' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     `\<forall>i < length rs. rs!i \<in> get_return_edges (cs!i)` `ms = targetnodes rs`
@@ -1211,30 +1211,30 @@ proof(atomize_elim)
       case True
       with `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>call\<^esub> CFG_node m'"
-	by(fastsimp intro:sum_SDG_call_edge)
+        by(fastsimp intro:sum_SDG_call_edge)
       with `CFG_node m' \<in> sum_SDG_slice1 nx`
       have "CFG_node (sourcenode a) \<in> sum_SDG_slice1 nx" by -(rule call_slice1)
       with `as = as'@a#as''` `\<exists>Q r p fs. kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	`call_of_return_node (hd ms') (sourcenode a)`
-	`targetnode a -as''\<rightarrow>\<^bsub>sl\<^esub>* m'` show ?thesis by blast
+        `call_of_return_node (hd ms') (sourcenode a)`
+        `targetnode a -as''\<rightarrow>\<^bsub>sl\<^esub>* m'` show ?thesis by blast
     next
       case False
       with `targetnode a -asx\<rightarrow>\<^isub>\<iota>* m'` `m' \<noteq> (_Exit_)` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       obtain ns where "CFG_node (targetnode a) cd-ns\<rightarrow>\<^isub>d* CFG_node m'"
-	by(fastsimp elim!:in_proc_cdep_SDG_path)
+        by(fastsimp elim!:in_proc_cdep_SDG_path)
       hence "CFG_node (targetnode a) is-ns\<rightarrow>\<^isub>d* CFG_node m'"
-	by(fastsimp intro:intra_SDG_path_is_SDG_path cdep_SDG_path_intra_SDG_path)
+        by(fastsimp intro:intra_SDG_path_is_SDG_path cdep_SDG_path_intra_SDG_path)
       with `CFG_node m' \<in> sum_SDG_slice1 nx`
       have "CFG_node (targetnode a) \<in> sum_SDG_slice1 nx"
-	by -(rule is_SDG_path_slice1)
+        by -(rule is_SDG_path_slice1)
       from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>call\<^esub> CFG_node (targetnode a)"
-	by(fastsimp intro:sum_SDG_call_edge)
+        by(fastsimp intro:sum_SDG_call_edge)
       with `CFG_node (targetnode a) \<in> sum_SDG_slice1 nx`
       have "CFG_node (sourcenode a) \<in> sum_SDG_slice1 nx" by -(rule call_slice1)
       with `as = as'@a#as''` `\<exists>Q r p fs. kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	`call_of_return_node (hd ms') (sourcenode a)`
-	`targetnode a -as''\<rightarrow>\<^bsub>sl\<^esub>* m'` show ?thesis by blast
+        `call_of_return_node (hd ms') (sourcenode a)`
+        `targetnode a -as''\<rightarrow>\<^bsub>sl\<^esub>* m'` show ?thesis by blast
     qed
   next
     assume "ms' = ms" thus ?thesis by simp
@@ -1388,7 +1388,7 @@ proof -
       case (PredicateEdge Q)
       with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `valid_edge a`
       obtain Q' where "slice_kind S a = (Q')\<^isub>\<surd>"
-	by -(erule kind_Predicate_notin_slice_slice_kind_Predicate)
+        by -(erule kind_Predicate_notin_slice_slice_kind_Predicate)
       with `sx' = transfer (slice_kind S a) sx` `sx \<noteq> []`
       show ?thesis by(cases sx) auto
     qed (auto simp:intra_kind_def)
@@ -1748,19 +1748,19 @@ proof -
       case True
       from `S,kind \<turnstile> ([m],[cf]) =as'\<Rightarrow>\<^isub>\<tau> (sourcenode a#msx,x)`
       obtain rs' where "msx = targetnodes rs' \<and> length rs' = length (upd_cs [] as')"
-	by(fastsimp dest!:silent_moves_no_slice_edges[where cs="[]" and rs="[]"]
-	            simp:targetnodes_def)
+        by(fastsimp dest!:silent_moves_no_slice_edges[where cs="[]" and rs="[]"]
+                    simp:targetnodes_def)
       with True have "upd_cs [] as' = []"  by(cases rs')(auto simp:targetnodes_def)
       with `CFG_node (sourcenode a) \<in> sum_SDG_slice1 nx` `nx \<in> S`
       have "slice_edge S (upd_cs [] as') a"
-	by(cases "kind a",auto intro:combSlice_refl 
-	  simp:slice_edge_def SDG_to_CFG_set_def HRB_slice_def)
+        by(cases "kind a",auto intro:combSlice_refl 
+          simp:slice_edge_def SDG_to_CFG_set_def HRB_slice_def)
       hence "slice_edges S (upd_cs [] as') (a#as'') \<noteq> []" by simp
       with `as = as'@a#as''` show ?thesis by(fastsimp dest:slice_edges_Nil_split)
     next
       case False
       from IH[OF `S,kind \<turnstile> ([m],[cf]) =as'\<Rightarrow>\<^isub>\<tau> (sourcenode a#msx,x)` 
-	`valid_node m` this `CFG_node (sourcenode a) \<in> sum_SDG_slice1 nx`]
+        `valid_node m` this `CFG_node (sourcenode a) \<in> sum_SDG_slice1 nx`]
       have "slice_edges S [] as' \<noteq> []" .
       with `as = as'@a#as''` show ?thesis by(fastsimp dest:slice_edges_Nil_split)
     qed
@@ -1768,7 +1768,7 @@ proof -
   moreover
   from `S,kind \<turnstile> ([m],[cf]) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` have "slice_edges S [] as = []"
     by(fastsimp dest!:silent_moves_no_slice_edges[where cs="[]" and rs="[]"] 
-	        simp:targetnodes_def)
+                simp:targetnodes_def)
   ultimately show False by simp
 qed
 
@@ -1815,7 +1815,7 @@ next
       by(fastsimp simp:slice_edge_def intra_kind_def)
     with `intra_kind (kind a')` have "transfer (slice_kind S a') s = s"
       by(cases s)(auto,cases "kind a'",
-	auto simp:slice_kind_def Let_def intra_kind_def)
+        auto simp:slice_kind_def Let_def intra_kind_def)
     hence "transfers (slice_kinds S (a'#as')) s
          = transfers (slice_kinds S as') s"
       by(simp add:slice_kinds_def)
@@ -1847,7 +1847,7 @@ proof(atomize_elim)
     by(erule every_path_distance)
   from `distance m m' x` `obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m'}`
   show "\<exists>as'. m -as'\<rightarrow>\<^isub>\<iota>* m' \<and> preds (slice_kinds S as') (cf#cfs) \<and> 
-	      slice_edges S cs as' = []"
+              slice_edges S cs as' = []"
   proof(induct x arbitrary:m rule:nat.induct)
     case zero
     from `distance m m' 0` have "m = m'"
@@ -1872,12 +1872,12 @@ proof(atomize_elim)
       assume "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
       from `valid_edge a` `m = sourcenode a` have "valid_node m" by simp
       with `m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` have "obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m}"
-	by -(rule n_in_obs_intra)
+        by -(rule n_in_obs_intra)
       with `obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m'}` have "m = m'" by simp
       with `valid_node m` have "m -[]\<rightarrow>\<^isub>\<iota>* m'" 
-	by(fastsimp intro:empty_path simp:intra_path_def)
+        by(fastsimp intro:empty_path simp:intra_path_def)
       with `distance m m' (Suc x)` show False
-	by(fastsimp elim:distance.cases)
+        by(fastsimp elim:distance.cases)
     qed
     from `distance (targetnode a) m' x` `m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     obtain mx where "mx \<in> obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
@@ -1907,26 +1907,26 @@ proof(atomize_elim)
     proof(cases "kind a")
       case (UpdateEdge f)
       with `m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m = sourcenode a` have "slice_kind S a = \<Up>id"
-	by(fastsimp intro:slice_kind_Upd)
+        by(fastsimp intro:slice_kind_Upd)
       hence "transfer (slice_kind S a) (cf#cfs) = (cf#cfs)" 
-	and "pred (slice_kind S a) (cf#cfs)" by simp_all
+        and "pred (slice_kind S a) (cf#cfs)" by simp_all
       with `preds (slice_kinds S as) (cf#cfs)` 
       have "preds (slice_kinds S (a#as)) (cf#cfs)"
-	by(simp add:slice_kinds_def)
+        by(simp add:slice_kinds_def)
       with `m -a#as\<rightarrow>\<^isub>\<iota>* m'` `slice_edges S cs (a#as) = []` show ?thesis
-	by blast
+        by blast
     next
       case (PredicateEdge Q)
       with `m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m = sourcenode a` `distance m m' (Suc x)`  
-	`obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m'}` `distance (targetnode a) m' x`
-	target
+        `obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m'}` `distance (targetnode a) m' x`
+        target
       have "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
-	by(fastsimp intro:slice_kind_Pred_obs_nearer_SOME)
+        by(fastsimp intro:slice_kind_Pred_obs_nearer_SOME)
       hence "transfer (slice_kind S a) (cf#cfs) = (cf#cfs)" 
-	and "pred (slice_kind S a) (cf#cfs)" by simp_all
+        and "pred (slice_kind S a) (cf#cfs)" by simp_all
       with `preds (slice_kinds S as) (cf#cfs)` 
       have "preds (slice_kinds S (a#as)) (cf#cfs)"
-	by(simp add:slice_kinds_def)
+        by(simp add:slice_kinds_def)
       with `m -a#as\<rightarrow>\<^isub>\<iota>* m'` `slice_edges S cs (a#as) = []` show ?thesis by blast
     qed (auto simp:intra_kind_def)
   qed
@@ -1959,90 +1959,90 @@ proof(atomize_elim)
     next
       case (Cons a' as')
       with `n -as\<rightarrow>* n'` Cons have "n = sourcenode a'" and "valid_edge a'" 
-	and "targetnode a' -as'\<rightarrow>* n'"
-	by(auto intro:path_split_Cons)
+        and "targetnode a' -as'\<rightarrow>* n'"
+        by(auto intro:path_split_Cons)
       show ?thesis
       proof(cases "kind a'" rule:edge_kind_cases)
-	case Intra
-	with Cons `same_level_path_aux [] as` have "same_level_path_aux [] as'"
-	  by(fastsimp simp:intra_kind_def)
-	moreover
-	from Intra Cons `upd_cs [] as = []` have "upd_cs [] as' = []"
-	  by(fastsimp simp:intra_kind_def)
-	moreover
-	from `slice_edges S cs as = []` Cons Intra
-	have "slice_edges S cs as' = []" and "\<not> slice_edge S cs a'"
-	  by(cases "slice_edge S cs a'",auto simp:intra_kind_def)+
-	ultimately obtain as'' where "targetnode a' -as''\<rightarrow>\<^isub>\<iota>* n'"
-	  and "slice_edges S cs as'' = []"
-	  using IH Cons `targetnode a' -as'\<rightarrow>* n'`
-	  by(erule_tac x="as'" in allE) auto
-	from `n = sourcenode a'` `valid_edge a'` Intra `targetnode a' -as''\<rightarrow>\<^isub>\<iota>* n'`
-	have "n -a'#as''\<rightarrow>\<^isub>\<iota>* n'" by(fastsimp intro:Cons_path simp:intra_path_def)
-	moreover
-	from `slice_edges S cs as'' = []` `\<not> slice_edge S cs a'` Intra
-	have "slice_edges S cs (a'#as'') = []" by(auto simp:intra_kind_def)
-	ultimately show ?thesis by blast
+        case Intra
+        with Cons `same_level_path_aux [] as` have "same_level_path_aux [] as'"
+          by(fastsimp simp:intra_kind_def)
+        moreover
+        from Intra Cons `upd_cs [] as = []` have "upd_cs [] as' = []"
+          by(fastsimp simp:intra_kind_def)
+        moreover
+        from `slice_edges S cs as = []` Cons Intra
+        have "slice_edges S cs as' = []" and "\<not> slice_edge S cs a'"
+          by(cases "slice_edge S cs a'",auto simp:intra_kind_def)+
+        ultimately obtain as'' where "targetnode a' -as''\<rightarrow>\<^isub>\<iota>* n'"
+          and "slice_edges S cs as'' = []"
+          using IH Cons `targetnode a' -as'\<rightarrow>* n'`
+          by(erule_tac x="as'" in allE) auto
+        from `n = sourcenode a'` `valid_edge a'` Intra `targetnode a' -as''\<rightarrow>\<^isub>\<iota>* n'`
+        have "n -a'#as''\<rightarrow>\<^isub>\<iota>* n'" by(fastsimp intro:Cons_path simp:intra_path_def)
+        moreover
+        from `slice_edges S cs as'' = []` `\<not> slice_edge S cs a'` Intra
+        have "slice_edges S cs (a'#as'') = []" by(auto simp:intra_kind_def)
+        ultimately show ?thesis by blast
       next
-	case (Call Q r p f)
-	with Cons `same_level_path_aux [] as`
-	have "same_level_path_aux [a'] as'" by simp
-	from Call Cons `upd_cs [] as = []` have "upd_cs [a'] as' = []"
-	  by simp
-	hence "as' \<noteq> []" by fastsimp
-	with `upd_cs [a'] as' = []` obtain xs ys where "as' = xs@ys" and "xs \<noteq> []"
-	and "upd_cs [a'] xs = []" and "upd_cs [] ys = []"
-	and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs [a'] xs' \<noteq> []"
-	  by -(erule upd_cs_empty_split,auto)
-	from `same_level_path_aux [a'] as'` `as' = xs@ys` `upd_cs [a'] xs = []`
-	have "same_level_path_aux [a'] xs"  and "same_level_path_aux [] ys"
-	  by(rule slpa_split)+
-	with `upd_cs [a'] xs = []` have "upd_cs ([a']@cs) xs = []@cs"
-	  by(fastsimp intro:same_level_path_upd_cs_callstack_Append)
-	from `slice_edges S cs as = []` Cons Call
-	have "slice_edges S (a'#cs) as' = []" and "\<not> slice_edge S cs a'"
-	  by(cases "slice_edge S cs a'",auto)+
-	from `slice_edges S (a'#cs) as' = []` `as' = xs@ys` 
-	  `upd_cs ([a']@cs) xs = []@cs`
-	have "slice_edges S cs ys = []" 
-	  by(fastsimp dest:slice_edges_Nil_split)
-	from `same_level_path_aux [a'] xs` `upd_cs [a'] xs = []`
-	  `\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs [a'] xs' \<noteq> []`
-	have "last xs \<in> get_return_edges (last [a'])"
-	  by(fastsimp intro!:slpa_get_return_edges)
-	with `valid_edge a'` Call
-	obtain a where "valid_edge a" and "sourcenode a = sourcenode a'"
-	  and "targetnode a = targetnode (last xs)" and "kind a = (\<lambda>cf. False)\<^isub>\<surd>"
-	  by -(drule call_return_node_edge,auto)
-	from `targetnode a = targetnode (last xs)` `xs \<noteq> []`
-	have "targetnode a = targetnode (last (a'#xs))" by simp
-	from `as' = xs@ys` `xs \<noteq> []` Cons have "length ys < length as" by simp
-	from `targetnode a' -as'\<rightarrow>* n'` `as' = xs@ys` `xs \<noteq> []`
-	have "targetnode (last (a'#xs)) -ys\<rightarrow>* n'"
-	  by(cases xs rule:rev_cases,auto dest:path_split)
-	with IH `length ys < length as` `same_level_path_aux [] ys`
-	  `upd_cs [] ys = []` `slice_edges S cs ys = []`
-	obtain as'' where "targetnode (last (a'#xs)) -as''\<rightarrow>\<^isub>\<iota>* n'"
-	  and "slice_edges S cs as'' = []"
-	  apply(erule_tac x="ys" in allE) apply clarsimp
-	  apply(erule_tac x="targetnode (last (a'#xs))" in allE) 
-	  apply clarsimp apply(erule_tac x="cs" in allE)
-	  by clarsimp
-	from `sourcenode a = sourcenode a'` `n = sourcenode a'`
-	  `targetnode a = targetnode (last (a'#xs))` `valid_edge a`
-	  `kind a = (\<lambda>cf. False)\<^isub>\<surd>` `targetnode (last (a'#xs)) -as''\<rightarrow>\<^isub>\<iota>* n'`
-	have "n -a#as''\<rightarrow>\<^isub>\<iota>* n'"
-	  by(fastsimp intro:Cons_path simp:intra_path_def intra_kind_def)
-	moreover
-	from `kind a = (\<lambda>cf. False)\<^isub>\<surd>` `slice_edges S cs as'' = []`
-	  `\<not> slice_edge S cs a'` `sourcenode a = sourcenode a'`
-	have "slice_edges S cs (a#as'') = []" 
-	  by(cases "kind a'")(auto simp:slice_edge_def)
-	ultimately show ?thesis by blast
+        case (Call Q r p f)
+        with Cons `same_level_path_aux [] as`
+        have "same_level_path_aux [a'] as'" by simp
+        from Call Cons `upd_cs [] as = []` have "upd_cs [a'] as' = []"
+          by simp
+        hence "as' \<noteq> []" by fastsimp
+        with `upd_cs [a'] as' = []` obtain xs ys where "as' = xs@ys" and "xs \<noteq> []"
+        and "upd_cs [a'] xs = []" and "upd_cs [] ys = []"
+        and "\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs [a'] xs' \<noteq> []"
+          by -(erule upd_cs_empty_split,auto)
+        from `same_level_path_aux [a'] as'` `as' = xs@ys` `upd_cs [a'] xs = []`
+        have "same_level_path_aux [a'] xs"  and "same_level_path_aux [] ys"
+          by(rule slpa_split)+
+        with `upd_cs [a'] xs = []` have "upd_cs ([a']@cs) xs = []@cs"
+          by(fastsimp intro:same_level_path_upd_cs_callstack_Append)
+        from `slice_edges S cs as = []` Cons Call
+        have "slice_edges S (a'#cs) as' = []" and "\<not> slice_edge S cs a'"
+          by(cases "slice_edge S cs a'",auto)+
+        from `slice_edges S (a'#cs) as' = []` `as' = xs@ys` 
+          `upd_cs ([a']@cs) xs = []@cs`
+        have "slice_edges S cs ys = []" 
+          by(fastsimp dest:slice_edges_Nil_split)
+        from `same_level_path_aux [a'] xs` `upd_cs [a'] xs = []`
+          `\<forall>xs' ys'. xs = xs'@ys' \<and> ys' \<noteq> [] \<longrightarrow> upd_cs [a'] xs' \<noteq> []`
+        have "last xs \<in> get_return_edges (last [a'])"
+          by(fastsimp intro!:slpa_get_return_edges)
+        with `valid_edge a'` Call
+        obtain a where "valid_edge a" and "sourcenode a = sourcenode a'"
+          and "targetnode a = targetnode (last xs)" and "kind a = (\<lambda>cf. False)\<^isub>\<surd>"
+          by -(drule call_return_node_edge,auto)
+        from `targetnode a = targetnode (last xs)` `xs \<noteq> []`
+        have "targetnode a = targetnode (last (a'#xs))" by simp
+        from `as' = xs@ys` `xs \<noteq> []` Cons have "length ys < length as" by simp
+        from `targetnode a' -as'\<rightarrow>* n'` `as' = xs@ys` `xs \<noteq> []`
+        have "targetnode (last (a'#xs)) -ys\<rightarrow>* n'"
+          by(cases xs rule:rev_cases,auto dest:path_split)
+        with IH `length ys < length as` `same_level_path_aux [] ys`
+          `upd_cs [] ys = []` `slice_edges S cs ys = []`
+        obtain as'' where "targetnode (last (a'#xs)) -as''\<rightarrow>\<^isub>\<iota>* n'"
+          and "slice_edges S cs as'' = []"
+          apply(erule_tac x="ys" in allE) apply clarsimp
+          apply(erule_tac x="targetnode (last (a'#xs))" in allE) 
+          apply clarsimp apply(erule_tac x="cs" in allE)
+          by clarsimp
+        from `sourcenode a = sourcenode a'` `n = sourcenode a'`
+          `targetnode a = targetnode (last (a'#xs))` `valid_edge a`
+          `kind a = (\<lambda>cf. False)\<^isub>\<surd>` `targetnode (last (a'#xs)) -as''\<rightarrow>\<^isub>\<iota>* n'`
+        have "n -a#as''\<rightarrow>\<^isub>\<iota>* n'"
+          by(fastsimp intro:Cons_path simp:intra_path_def intra_kind_def)
+        moreover
+        from `kind a = (\<lambda>cf. False)\<^isub>\<surd>` `slice_edges S cs as'' = []`
+          `\<not> slice_edge S cs a'` `sourcenode a = sourcenode a'`
+        have "slice_edges S cs (a#as'') = []" 
+          by(cases "kind a'")(auto simp:slice_edge_def)
+        ultimately show ?thesis by blast
       next
-	case (Return Q p f)
-	with Cons `same_level_path_aux [] as` have False by simp
-	thus ?thesis by simp
+        case (Return Q p f)
+        with Cons `same_level_path_aux [] as` have False by simp
+        thus ?thesis by simp
       qed
     qed
   qed
@@ -2082,19 +2082,19 @@ proof(atomize_elim)
     proof(cases "as' = []")
       case True
       with `S,f \<turnstile> (ms',s') =as'\<Rightarrow>* (ms'',s'')` have [simp]:"ms'' = ms'" "s'' = s'"
-	by(auto elim:trans_observable_moves.cases)
+        by(auto elim:trans_observable_moves.cases)
       from `S,f \<turnstile> (ms,s) =as\<Rightarrow> (ms',s')` have "length ms = length s"
-	by(rule observable_moves_equal_length)
+        by(rule observable_moves_equal_length)
       hence "S,f \<turnstile> (ms,s) =[]\<Rightarrow>* (ms,s)" by(rule tom_Nil)
       with `S,f \<turnstile> (ms,s) =as\<Rightarrow> (ms',s')` True show ?thesis by fastsimp
     next
       case False
       from IH[OF this] obtain xs xs' msx sx where "as' = xs @ [last xs']"
-	and "S,f \<turnstile> (ms',s') =xs\<Rightarrow>* (msx,sx)" 
-	and "S,f \<turnstile> (msx,sx) =xs'\<Rightarrow> (ms'',s'')" by blast
+        and "S,f \<turnstile> (ms',s') =xs\<Rightarrow>* (msx,sx)" 
+        and "S,f \<turnstile> (msx,sx) =xs'\<Rightarrow> (ms'',s'')" by blast
       from `S,f \<turnstile> (ms,s) =as\<Rightarrow> (ms',s')` `S,f \<turnstile> (ms',s') =xs\<Rightarrow>* (msx,sx)`
       have "S,f \<turnstile> (ms,s) =(last as)#xs\<Rightarrow>* (msx,sx)"
-	by(rule trans_observable_moves.tom_Cons)
+        by(rule trans_observable_moves.tom_Cons)
       with `S,f \<turnstile> (msx,sx) =xs'\<Rightarrow> (ms'',s'')` `as' = xs @ [last xs']`
       show ?thesis by fastsimp
     qed
@@ -2244,138 +2244,138 @@ proof(atomize_elim)
       by(auto simp:call_of_return_node_def in_set_conv_nth)
     show ?case
     proof(cases "(\<forall>m \<in> set ms. \<exists>m'. call_of_return_node m m' \<and> 
-	m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<and> m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
+        m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<and> m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
       case True
       with `m = sourcenode a` `length ms = length cs` `intra_kind (kind a)`
-	`\<forall>i<length cs. call_of_return_node (ms ! i) (sourcenode (cs ! i))`
+        `\<forall>i<length cs. call_of_return_node (ms ! i) (sourcenode (cs ! i))`
       have "slice_edge S cs a"
-	by(fastsimp simp:slice_edge_def in_set_conv_nth intra_kind_def)
+        by(fastsimp simp:slice_edge_def in_set_conv_nth intra_kind_def)
       with `intra_kind (kind a)`
       have "slice_edges S cs (a#as) = a#slice_edges S cs as"
-	by(fastsimp simp:intra_kind_def)
+        by(fastsimp simp:intra_kind_def)
       from True `pred (kind a) s` `valid_edge a` `intra_kind (kind a)`
-	`\<forall>mx \<in> set ms. return_node mx` `length ms = length cs` `m = sourcenode a`
-	`length s = Suc (length cs)` `length (transfer (kind a) s) = Suc (length cs)`
+        `\<forall>mx \<in> set ms. return_node mx` `length ms = length cs` `m = sourcenode a`
+        `length s = Suc (length cs)` `length (transfer (kind a) s) = Suc (length cs)`
       have "S,kind \<turnstile> (sourcenode a#ms,s) -a\<rightarrow> (targetnode a#ms,transfer (kind a) s)"
-	by(fastsimp intro!:observable_move_intra)
+        by(fastsimp intro!:observable_move_intra)
       with `length ms = length cs` `length s = Suc (length cs)`
       have "S,kind \<turnstile> (sourcenode a#ms,s) =[]@[a]\<Rightarrow> 
-	              (targetnode a#ms,transfer (kind a) s)"
-	by(fastsimp intro:observable_moves_snoc silent_moves_Nil)
+                      (targetnode a#ms,transfer (kind a) s)"
+        by(fastsimp intro:observable_moves_snoc silent_moves_Nil)
       with `S,kind \<turnstile> (targetnode a # ms,transfer (kind a) s) =slice_edges S cs as\<Rightarrow>*
         (ms'',s'')`
       have "S,kind \<turnstile> (sourcenode a#ms,s) =last [a]#slice_edges S cs as\<Rightarrow>* (ms'',s'')"
-	by(fastsimp intro:tom_Cons)
+        by(fastsimp intro:tom_Cons)
       with `slice_edges S cs (a#as) = a#slice_edges S cs as`
       have "S,kind \<turnstile> (sourcenode a#ms,s) =slice_edges S cs (a#as)\<Rightarrow>* (ms'',s'')"
-	by simp
+        by simp
       moreover
       from `slice_edges S cs as = slice_edges S cs as''` `slice_edge S cs a`
-	`intra_kind (kind a)`
+        `intra_kind (kind a)`
       have "slice_edges S cs (a#as) = slice_edges S cs (a#as'')"
-	by(fastsimp simp:intra_kind_def)
+        by(fastsimp simp:intra_kind_def)
       ultimately show ?thesis 
-	using paths `m = sourcenode a` `valid_edge a` `intra_kind (kind a)`
-	`length ms = length cs` `slice_edges S cs (a#as) = a#slice_edges S cs as`
-	apply(rule_tac x="ms" in exI)
-	apply(rule_tac x="ms''" in exI)
-	apply(rule_tac x="s''" in exI)
-	apply(rule_tac x="as'" in exI)
-	apply(rule_tac x="ms'" in exI)
-	apply(rule_tac x="a#as''" in exI)
-	by(auto intro:Cons_path simp:intra_kind_def)
+        using paths `m = sourcenode a` `valid_edge a` `intra_kind (kind a)`
+        `length ms = length cs` `slice_edges S cs (a#as) = a#slice_edges S cs as`
+        apply(rule_tac x="ms" in exI)
+        apply(rule_tac x="ms''" in exI)
+        apply(rule_tac x="s''" in exI)
+        apply(rule_tac x="as'" in exI)
+        apply(rule_tac x="ms'" in exI)
+        apply(rule_tac x="a#as''" in exI)
+        by(auto intro:Cons_path simp:intra_kind_def)
     next
       case False
       with `\<forall>mx \<in> set ms. return_node mx`
       have disj:"(\<exists>m \<in> set ms. \<exists>m'. call_of_return_node m m' \<and> 
-	m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or> m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-	by(fastsimp dest:return_node_call_of_return_node)
+        m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or> m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+        by(fastsimp dest:return_node_call_of_return_node)
       with `m = sourcenode a` `length ms = length cs` `intra_kind (kind a)`
-	`\<forall>i<length cs. call_of_return_node (ms ! i) (sourcenode (cs ! i))`
+        `\<forall>i<length cs. call_of_return_node (ms ! i) (sourcenode (cs ! i))`
       have "\<not> slice_edge S cs a" 
-	by(fastsimp simp:slice_edge_def in_set_conv_nth intra_kind_def)
+        by(fastsimp simp:slice_edge_def in_set_conv_nth intra_kind_def)
       with `intra_kind (kind a)`
       have "slice_edges S cs (a#as) = slice_edges S cs as"
-	by(fastsimp simp:intra_kind_def)
+        by(fastsimp simp:intra_kind_def)
       from disj `pred (kind a) s` `valid_edge a` `intra_kind (kind a)`
-	`\<forall>mx \<in> set ms. return_node mx` `length ms = length cs` `m = sourcenode a`
-	`length s = Suc (length cs)` `length (transfer (kind a) s) = Suc (length cs)`
+        `\<forall>mx \<in> set ms. return_node mx` `length ms = length cs` `m = sourcenode a`
+        `length s = Suc (length cs)` `length (transfer (kind a) s) = Suc (length cs)`
       have "S,kind \<turnstile> (sourcenode a#ms,s) -a\<rightarrow>\<^isub>\<tau> (targetnode a#ms,transfer (kind a) s)"
-	by(fastsimp intro!:silent_move_intra)
+        by(fastsimp intro!:silent_move_intra)
       from `S,kind \<turnstile> (targetnode a # ms,transfer (kind a) s) =slice_edges S cs as\<Rightarrow>*
                       (ms'',s'')`
       show ?thesis
       proof(rule trans_observable_moves.cases)
-	fix msx sx n\<^isub>c' f
-	assume "targetnode a # ms = msx"
-	  and "transfer (kind a) s = sx" and "slice_edges S cs as = []"
-	  and [simp]:"ms'' = msx" "s'' = sx" and "length msx = length sx"
-	from `slice_edges S cs (a#as) = slice_edges S cs as` 
-	  `slice_edges S cs as = []`
-	have "slice_edges S cs (a#as) = []" by simp 
-	with `length ms = length cs` `length s = Suc (length cs)`
-	have "S,kind \<turnstile> (sourcenode a#ms,s) =slice_edges S cs (a#as)\<Rightarrow>*
-	                (sourcenode a#ms,s)"
-	  by(fastsimp intro:tom_Nil)
-	moreover
-	from `S,kind \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `targetnode a # ms = msx`
-	  `transfer (kind a) s = sx` `ms'' = msx` `s'' = sx`
-	  `S,kind \<turnstile> (sourcenode a#ms,s) -a\<rightarrow>\<^isub>\<tau> (targetnode a#ms,transfer (kind a) s)`
-	have "S,kind \<turnstile> (sourcenode a#ms,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
-	  by(fastsimp intro:silent_moves_Cons)
-	from this `valid_edge a` `\<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i)`
-	  `ms = targetnodes rs` `valid_return_list rs m` `length rs = length cs`
-	  `length s = Suc (length cs)` `m = sourcenode a`
-	have "sourcenode a -a#as'\<rightarrow>* m'" and "valid_path_aux cs (a#as')"
-	  by -(rule silent_moves_vpa_path,(fastsimp simp:targetnodes_def)+)+
-	ultimately show ?thesis using `m = sourcenode a` `length ms = length cs`
-	  `\<forall>i<length cs. call_of_return_node (ms ! i) (sourcenode (cs ! i))`
-	  `slice_edges S cs (a#as) = []` `intra_kind (kind a)`
-	  `S,kind \<turnstile> (sourcenode a#ms,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
-	  `ms = targetnodes rs`
-	  apply(rule_tac x="ms" in exI)
-	  apply(rule_tac x="sourcenode a#ms" in exI)
-	  apply(rule_tac x="s" in exI)
-	  apply(rule_tac x="a#as'" in exI)
-	  apply(rule_tac x="ms'" in exI)
-	  apply(rule_tac x="[]" in exI)
-	  by(auto simp:intra_kind_def)
+        fix msx sx n\<^isub>c' f
+        assume "targetnode a # ms = msx"
+          and "transfer (kind a) s = sx" and "slice_edges S cs as = []"
+          and [simp]:"ms'' = msx" "s'' = sx" and "length msx = length sx"
+        from `slice_edges S cs (a#as) = slice_edges S cs as` 
+          `slice_edges S cs as = []`
+        have "slice_edges S cs (a#as) = []" by simp 
+        with `length ms = length cs` `length s = Suc (length cs)`
+        have "S,kind \<turnstile> (sourcenode a#ms,s) =slice_edges S cs (a#as)\<Rightarrow>*
+                        (sourcenode a#ms,s)"
+          by(fastsimp intro:tom_Nil)
+        moreover
+        from `S,kind \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `targetnode a # ms = msx`
+          `transfer (kind a) s = sx` `ms'' = msx` `s'' = sx`
+          `S,kind \<turnstile> (sourcenode a#ms,s) -a\<rightarrow>\<^isub>\<tau> (targetnode a#ms,transfer (kind a) s)`
+        have "S,kind \<turnstile> (sourcenode a#ms,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
+          by(fastsimp intro:silent_moves_Cons)
+        from this `valid_edge a` `\<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i)`
+          `ms = targetnodes rs` `valid_return_list rs m` `length rs = length cs`
+          `length s = Suc (length cs)` `m = sourcenode a`
+        have "sourcenode a -a#as'\<rightarrow>* m'" and "valid_path_aux cs (a#as')"
+          by -(rule silent_moves_vpa_path,(fastsimp simp:targetnodes_def)+)+
+        ultimately show ?thesis using `m = sourcenode a` `length ms = length cs`
+          `\<forall>i<length cs. call_of_return_node (ms ! i) (sourcenode (cs ! i))`
+          `slice_edges S cs (a#as) = []` `intra_kind (kind a)`
+          `S,kind \<turnstile> (sourcenode a#ms,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
+          `ms = targetnodes rs`
+          apply(rule_tac x="ms" in exI)
+          apply(rule_tac x="sourcenode a#ms" in exI)
+          apply(rule_tac x="s" in exI)
+          apply(rule_tac x="a#as'" in exI)
+          apply(rule_tac x="ms'" in exI)
+          apply(rule_tac x="[]" in exI)
+          by(auto simp:intra_kind_def)
       next
-	fix S' f msx sx asx msx' sx' asx' msx'' sx''
-	assume [simp]:"S = S'" and "kind = f" and "targetnode a # ms = msx"
-	  and "transfer (kind a) s = sx" and "slice_edges S cs as = last asx # asx'"
-	  and "ms'' = msx''" and "s'' = sx''" 
-	  and "S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')"
-	  and "S',f \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')"
-	from `kind = f` have [simp]:"f = kind" by simp
-	from `S,kind \<turnstile> (sourcenode a#ms,s) -a\<rightarrow>\<^isub>\<tau> 
-	  (targetnode a#ms,transfer (kind a) s)` `S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')`
-	  `transfer (kind a) s = sx` `targetnode a # ms = msx`
-	have "S,kind \<turnstile> (sourcenode a#ms,s) =a#asx\<Rightarrow> (msx',sx')"
-	  by(fastsimp intro:silent_move_observable_moves)
-	with `S',f \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')` `ms'' = msx''` `s'' = sx''`
-	have "S,kind \<turnstile> (sourcenode a#ms,s) =last (a#asx)#asx'\<Rightarrow>* (ms'',s'')"
-	  by(fastsimp intro:trans_observable_moves.tom_Cons)
-	moreover
-	from `S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')` have "asx \<noteq> []"
-	  by(fastsimp elim:observable_moves.cases)
-	with `slice_edges S cs (a#as) = slice_edges S cs as`
-	  `slice_edges S cs as = last asx # asx'`
-	have "slice_edges S cs (a#as) = last (a#asx)#asx'" by simp
-	moreover
-	from `\<not> slice_edge S cs a` `slice_edges S cs as = slice_edges S cs as''`
-	  `intra_kind (kind a)`
-	have "slice_edges S cs (a # as) = slice_edges S cs (a # as'')"
-	  by(fastsimp simp:intra_kind_def)
-	ultimately show ?thesis using paths `m = sourcenode a` `intra_kind (kind a)`
-	  `length ms = length cs` `ms = targetnodes rs` `valid_edge a`
-	  apply(rule_tac x="ms" in exI)
-	  apply(rule_tac x="ms''" in exI)
-	  apply(rule_tac x="s''" in exI)
-	  apply(rule_tac x="as'" in exI)
-	  apply(rule_tac x="ms'" in exI)
-	  apply(rule_tac x="a#as''" in exI)
-	  by(auto intro:Cons_path simp:intra_kind_def)
+        fix S' f msx sx asx msx' sx' asx' msx'' sx''
+        assume [simp]:"S = S'" and "kind = f" and "targetnode a # ms = msx"
+          and "transfer (kind a) s = sx" and "slice_edges S cs as = last asx # asx'"
+          and "ms'' = msx''" and "s'' = sx''" 
+          and "S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')"
+          and "S',f \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')"
+        from `kind = f` have [simp]:"f = kind" by simp
+        from `S,kind \<turnstile> (sourcenode a#ms,s) -a\<rightarrow>\<^isub>\<tau> 
+          (targetnode a#ms,transfer (kind a) s)` `S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')`
+          `transfer (kind a) s = sx` `targetnode a # ms = msx`
+        have "S,kind \<turnstile> (sourcenode a#ms,s) =a#asx\<Rightarrow> (msx',sx')"
+          by(fastsimp intro:silent_move_observable_moves)
+        with `S',f \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')` `ms'' = msx''` `s'' = sx''`
+        have "S,kind \<turnstile> (sourcenode a#ms,s) =last (a#asx)#asx'\<Rightarrow>* (ms'',s'')"
+          by(fastsimp intro:trans_observable_moves.tom_Cons)
+        moreover
+        from `S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')` have "asx \<noteq> []"
+          by(fastsimp elim:observable_moves.cases)
+        with `slice_edges S cs (a#as) = slice_edges S cs as`
+          `slice_edges S cs as = last asx # asx'`
+        have "slice_edges S cs (a#as) = last (a#asx)#asx'" by simp
+        moreover
+        from `\<not> slice_edge S cs a` `slice_edges S cs as = slice_edges S cs as''`
+          `intra_kind (kind a)`
+        have "slice_edges S cs (a # as) = slice_edges S cs (a # as'')"
+          by(fastsimp simp:intra_kind_def)
+        ultimately show ?thesis using paths `m = sourcenode a` `intra_kind (kind a)`
+          `length ms = length cs` `ms = targetnodes rs` `valid_edge a`
+          apply(rule_tac x="ms" in exI)
+          apply(rule_tac x="ms''" in exI)
+          apply(rule_tac x="s''" in exI)
+          apply(rule_tac x="as'" in exI)
+          apply(rule_tac x="ms'" in exI)
+          apply(rule_tac x="a#as''" in exI)
+          by(auto intro:Cons_path simp:intra_kind_def)
       qed
     qed
   next
@@ -2457,148 +2457,148 @@ proof(atomize_elim)
       by(auto simp:call_of_return_node_def)
     show ?case
     proof(cases "(\<forall>m \<in> set xs. \<exists>m'. call_of_return_node m m' \<and> 
-	m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<and> sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
+        m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<and> sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
       case True
       with `\<forall>i<length (a#cs). call_of_return_node (ms ! i) (sourcenode ((a#cs) ! i))`
-	`length ms = length (a#cs)` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+        `length ms = length (a#cs)` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "slice_edge S cs a"
-	apply(auto simp:slice_edge_def in_set_conv_nth)
-	by(erule_tac x="Suc i" in allE) auto
+        apply(auto simp:slice_edge_def in_set_conv_nth)
+        by(erule_tac x="Suc i" in allE) auto
       with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "slice_edges S cs (a#as) = a#slice_edges S (a#cs) as" by simp
       from True `pred (kind a) s` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	`valid_edge a'` `a' \<in> get_return_edges a`
-	`\<forall>mx \<in> set xs. return_node mx` `length ms = length (a#cs)` `m = sourcenode a`
-	`length s = Suc (length cs)` 
-	`length (transfer (kind a) s) = Suc (length (a#cs))`
+        `valid_edge a'` `a' \<in> get_return_edges a`
+        `\<forall>mx \<in> set xs. return_node mx` `length ms = length (a#cs)` `m = sourcenode a`
+        `length s = Suc (length cs)` 
+        `length (transfer (kind a) s) = Suc (length (a#cs))`
       have "S,kind \<turnstile> (sourcenode a#xs,s) -a\<rightarrow> 
-	(targetnode a#targetnode a'#xs,transfer (kind a) s)"
-	by -(rule_tac a'="a'" in observable_move_call,fastsimp+)
+        (targetnode a#targetnode a'#xs,transfer (kind a) s)"
+        by -(rule_tac a'="a'" in observable_move_call,fastsimp+)
       with `length ms = length (a#cs)` `length s = Suc (length cs)`
       have "S,kind \<turnstile> (sourcenode a#xs,s) =[]@[a]\<Rightarrow> 
-	(targetnode a#targetnode a'#xs,transfer (kind a) s)"
-	by(fastsimp intro:observable_moves_snoc silent_moves_Nil)
+        (targetnode a#targetnode a'#xs,transfer (kind a) s)"
+        by(fastsimp intro:observable_moves_snoc silent_moves_Nil)
       with `S,kind \<turnstile> (targetnode a # ms,transfer (kind a) s) 
-	=slice_edges S (a#cs) as\<Rightarrow>* (ms'',s'')` `x = targetnode a'`
+        =slice_edges S (a#cs) as\<Rightarrow>* (ms'',s'')` `x = targetnode a'`
       have "S,kind \<turnstile> (sourcenode a#xs,s) =last [a]#slice_edges S (a#cs) as\<Rightarrow>* 
-	(ms'',s'')"
-	by -(rule tom_Cons,auto)
+        (ms'',s'')"
+        by -(rule tom_Cons,auto)
       with `slice_edges S cs (a#as) = a#slice_edges S (a#cs) as`
       have "S,kind \<turnstile> (sourcenode a#xs,s) =slice_edges S cs (a#as)\<Rightarrow>* (ms'',s'')"
-	by simp
+        by simp
       moreover
       from `slice_edges S (a#cs) as = slice_edges S (a#cs) as''`
-	`slice_edge S cs a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+        `slice_edge S cs a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "slice_edges S cs (a#as) = slice_edges S cs (a#as'')" by simp
       ultimately show ?thesis
-	using paths `m = sourcenode a` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	  `length ms = length (a#cs)` `xs = targetnodes rs`
-	  `slice_edges S cs (a#as) = a#slice_edges S (a#cs) as`
-	apply(rule_tac x="xs" in exI)
-	apply(rule_tac x="ms''" in exI)
-	apply(rule_tac x="s''" in exI)
-	apply(rule_tac x="as'" in exI)
-	apply(rule_tac x="ms'" in exI)
-	apply(rule_tac x="a#as''" in exI)
-	by(auto intro:Cons_path simp:targetnodes_def)
+        using paths `m = sourcenode a` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+          `length ms = length (a#cs)` `xs = targetnodes rs`
+          `slice_edges S cs (a#as) = a#slice_edges S (a#cs) as`
+        apply(rule_tac x="xs" in exI)
+        apply(rule_tac x="ms''" in exI)
+        apply(rule_tac x="s''" in exI)
+        apply(rule_tac x="as'" in exI)
+        apply(rule_tac x="ms'" in exI)
+        apply(rule_tac x="a#as''" in exI)
+        by(auto intro:Cons_path simp:targetnodes_def)
     next
       case False
       with `\<forall>mx \<in> set xs. return_node mx`
       have disj:"(\<exists>m \<in> set xs. \<exists>m'. call_of_return_node m m' \<and> 
-	m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or> sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-	by(fastsimp dest:return_node_call_of_return_node)
+        m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or> sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+        by(fastsimp dest:return_node_call_of_return_node)
       with `\<forall>i<length (a#cs). call_of_return_node (ms ! i) (sourcenode ((a#cs) ! i))`
-	`length ms = length (a#cs)` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+        `length ms = length (a#cs)` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "\<not> slice_edge S cs a"
-	apply(auto simp:slice_edge_def in_set_conv_nth)
-	by(erule_tac x="Suc i" in allE) auto
+        apply(auto simp:slice_edge_def in_set_conv_nth)
+        by(erule_tac x="Suc i" in allE) auto
       with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "slice_edges S cs (a#as) = slice_edges S (a#cs) as" by simp
       from disj `pred (kind a) s` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	`valid_edge a'` `a' \<in> get_return_edges a`
-	`\<forall>mx \<in> set xs. return_node mx` `length ms = length (a#cs)` `m = sourcenode a`
-	`length s = Suc (length cs)` 
-	`length (transfer (kind a) s) = Suc (length (a#cs))`
+        `valid_edge a'` `a' \<in> get_return_edges a`
+        `\<forall>mx \<in> set xs. return_node mx` `length ms = length (a#cs)` `m = sourcenode a`
+        `length s = Suc (length cs)` 
+        `length (transfer (kind a) s) = Suc (length (a#cs))`
       have "S,kind \<turnstile> (sourcenode a#xs,s) -a\<rightarrow>\<^isub>\<tau>
-	(targetnode a#targetnode a'#xs,transfer (kind a) s)"
-	by -(rule_tac a'="a'" in silent_move_call,fastsimp+)
+        (targetnode a#targetnode a'#xs,transfer (kind a) s)"
+        by -(rule_tac a'="a'" in silent_move_call,fastsimp+)
       from `S,kind \<turnstile> (targetnode a # ms,transfer (kind a) s) 
-	=slice_edges S (a#cs) as\<Rightarrow>* (ms'',s'')`
+        =slice_edges S (a#cs) as\<Rightarrow>* (ms'',s'')`
       show ?thesis
       proof(rule trans_observable_moves.cases)
-	fix msx sx S' f
-	assume "targetnode a # ms = msx"
-	  and "transfer (kind a) s = sx" and "slice_edges S (a#cs) as = []"
-	  and [simp]:"ms'' = msx" "s'' = sx" and "length msx = length sx"
-	from `slice_edges S cs (a#as) = slice_edges S (a#cs) as` 
-	  `slice_edges S (a#cs) as = []`
-	have "slice_edges S cs (a#as) = []" by simp
-	with `length ms = length (a#cs)` `length s = Suc (length cs)`
-	have "S,kind \<turnstile> (sourcenode a#xs,s) =slice_edges S cs (a#as)\<Rightarrow>*
-	                (sourcenode a#xs,s)"
-	  by(fastsimp intro:tom_Nil)
-	moreover
-	from `S,kind \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `targetnode a # ms = msx`
-	  `transfer (kind a) s = sx` `ms'' = msx` `s'' = sx` `x = targetnode a'`
-	  `S,kind \<turnstile> (sourcenode a#xs,s) -a\<rightarrow>\<^isub>\<tau> 
-	  (targetnode a#targetnode a'#xs,transfer (kind a) s)`
-	have "S,kind \<turnstile> (sourcenode a#xs,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
-	  by(auto intro:silent_moves_Cons)
-	from this `valid_edge a` 
-	  `\<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i)`
-	  `xs = targetnodes rs` `valid_return_list rs m` `length rs = length cs`
-	  `length s = Suc (length cs)` `m = sourcenode a`
-	have "sourcenode a -a#as'\<rightarrow>* m'" and "valid_path_aux cs (a#as')"
-	  by -(rule silent_moves_vpa_path,(fastsimp simp:targetnodes_def)+)+
-	ultimately show ?thesis using `m = sourcenode a` `length ms = length (a#cs)`
-	  `\<forall>i<length (a#cs). call_of_return_node (ms ! i) (sourcenode ((a#cs) ! i))`
-	  `slice_edges S cs (a#as) = []` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	  `S,kind \<turnstile> (sourcenode a#xs,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
-	  `xs = targetnodes rs`
-	  apply(rule_tac x="xs" in exI)
-	  apply(rule_tac x="sourcenode a#xs" in exI)
-	  apply(rule_tac x="s" in exI)
-	  apply(rule_tac x="a#as'" in exI)
-	  apply(rule_tac x="ms'" in exI)
-	  apply(rule_tac x="[]" in exI)
-	  by auto
+        fix msx sx S' f
+        assume "targetnode a # ms = msx"
+          and "transfer (kind a) s = sx" and "slice_edges S (a#cs) as = []"
+          and [simp]:"ms'' = msx" "s'' = sx" and "length msx = length sx"
+        from `slice_edges S cs (a#as) = slice_edges S (a#cs) as` 
+          `slice_edges S (a#cs) as = []`
+        have "slice_edges S cs (a#as) = []" by simp
+        with `length ms = length (a#cs)` `length s = Suc (length cs)`
+        have "S,kind \<turnstile> (sourcenode a#xs,s) =slice_edges S cs (a#as)\<Rightarrow>*
+                        (sourcenode a#xs,s)"
+          by(fastsimp intro:tom_Nil)
+        moreover
+        from `S,kind \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `targetnode a # ms = msx`
+          `transfer (kind a) s = sx` `ms'' = msx` `s'' = sx` `x = targetnode a'`
+          `S,kind \<turnstile> (sourcenode a#xs,s) -a\<rightarrow>\<^isub>\<tau> 
+          (targetnode a#targetnode a'#xs,transfer (kind a) s)`
+        have "S,kind \<turnstile> (sourcenode a#xs,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
+          by(auto intro:silent_moves_Cons)
+        from this `valid_edge a` 
+          `\<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i)`
+          `xs = targetnodes rs` `valid_return_list rs m` `length rs = length cs`
+          `length s = Suc (length cs)` `m = sourcenode a`
+        have "sourcenode a -a#as'\<rightarrow>* m'" and "valid_path_aux cs (a#as')"
+          by -(rule silent_moves_vpa_path,(fastsimp simp:targetnodes_def)+)+
+        ultimately show ?thesis using `m = sourcenode a` `length ms = length (a#cs)`
+          `\<forall>i<length (a#cs). call_of_return_node (ms ! i) (sourcenode ((a#cs) ! i))`
+          `slice_edges S cs (a#as) = []` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+          `S,kind \<turnstile> (sourcenode a#xs,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
+          `xs = targetnodes rs`
+          apply(rule_tac x="xs" in exI)
+          apply(rule_tac x="sourcenode a#xs" in exI)
+          apply(rule_tac x="s" in exI)
+          apply(rule_tac x="a#as'" in exI)
+          apply(rule_tac x="ms'" in exI)
+          apply(rule_tac x="[]" in exI)
+          by auto
       next
-	fix S' f msx sx asx msx' sx' asx' msx'' sx''
-	assume [simp]:"S = S'" and "kind = f" and "targetnode a # ms = msx"
-	  and "transfer (kind a) s = sx" 
-	  and "slice_edges S (a#cs) as = last asx # asx'"
-	  and "ms'' = msx''" and "s'' = sx''" 
-	  and "S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')"
-	  and "S',f \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')"
-	from `kind = f` have [simp]:"f = kind" by simp
-	from `S,kind \<turnstile> (sourcenode a#xs,s) -a\<rightarrow>\<^isub>\<tau> 
-	  (targetnode a#targetnode a'#xs,transfer (kind a) s)`
-	  `S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')` `x = targetnode a'`
-	  `transfer (kind a) s = sx` `targetnode a # ms = msx`
-	have "S,kind \<turnstile> (sourcenode a#xs,s) =a#asx\<Rightarrow> (msx',sx')"
-	  by(auto intro:silent_move_observable_moves)
-	with `S',f \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')` `ms'' = msx''` `s'' = sx''`
-	have "S,kind \<turnstile> (sourcenode a#xs,s) =last (a#asx)#asx'\<Rightarrow>* (ms'',s'')"
-	  by(fastsimp intro:trans_observable_moves.tom_Cons)
-	moreover
-	from `S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')` have "asx \<noteq> []"
-	  by(fastsimp elim:observable_moves.cases)
-	with `slice_edges S cs (a#as) = slice_edges S (a#cs) as`
-	  `slice_edges S (a#cs) as = last asx # asx'`
-	have "slice_edges S cs (a#as) = last (a#asx)#asx'" by simp
-	moreover
-	from `\<not> slice_edge S cs a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	  `slice_edges S (a#cs) as = slice_edges S (a#cs) as''`
-	have "slice_edges S cs (a # as) = slice_edges S cs (a # as'')" by simp
-	ultimately show ?thesis using paths `m = sourcenode a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-	  `length ms = length (a#cs)` `xs = targetnodes rs` `valid_edge a`
-	  apply(rule_tac x="xs" in exI)
-	  apply(rule_tac x="ms''" in exI)
-	  apply(rule_tac x="s''" in exI)
-	  apply(rule_tac x="as'" in exI)
-	  apply(rule_tac x="ms'" in exI)
-	  apply(rule_tac x="a#as''" in exI)
-	  by(auto intro:Cons_path simp:targetnodes_def)
+        fix S' f msx sx asx msx' sx' asx' msx'' sx''
+        assume [simp]:"S = S'" and "kind = f" and "targetnode a # ms = msx"
+          and "transfer (kind a) s = sx" 
+          and "slice_edges S (a#cs) as = last asx # asx'"
+          and "ms'' = msx''" and "s'' = sx''" 
+          and "S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')"
+          and "S',f \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')"
+        from `kind = f` have [simp]:"f = kind" by simp
+        from `S,kind \<turnstile> (sourcenode a#xs,s) -a\<rightarrow>\<^isub>\<tau> 
+          (targetnode a#targetnode a'#xs,transfer (kind a) s)`
+          `S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')` `x = targetnode a'`
+          `transfer (kind a) s = sx` `targetnode a # ms = msx`
+        have "S,kind \<turnstile> (sourcenode a#xs,s) =a#asx\<Rightarrow> (msx',sx')"
+          by(auto intro:silent_move_observable_moves)
+        with `S',f \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')` `ms'' = msx''` `s'' = sx''`
+        have "S,kind \<turnstile> (sourcenode a#xs,s) =last (a#asx)#asx'\<Rightarrow>* (ms'',s'')"
+          by(fastsimp intro:trans_observable_moves.tom_Cons)
+        moreover
+        from `S',f \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')` have "asx \<noteq> []"
+          by(fastsimp elim:observable_moves.cases)
+        with `slice_edges S cs (a#as) = slice_edges S (a#cs) as`
+          `slice_edges S (a#cs) as = last asx # asx'`
+        have "slice_edges S cs (a#as) = last (a#asx)#asx'" by simp
+        moreover
+        from `\<not> slice_edge S cs a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+          `slice_edges S (a#cs) as = slice_edges S (a#cs) as''`
+        have "slice_edges S cs (a # as) = slice_edges S cs (a # as'')" by simp
+        ultimately show ?thesis using paths `m = sourcenode a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+          `length ms = length (a#cs)` `xs = targetnodes rs` `valid_edge a`
+          apply(rule_tac x="xs" in exI)
+          apply(rule_tac x="ms''" in exI)
+          apply(rule_tac x="s''" in exI)
+          apply(rule_tac x="as'" in exI)
+          apply(rule_tac x="ms'" in exI)
+          apply(rule_tac x="a#as''" in exI)
+          by(auto intro:Cons_path simp:targetnodes_def)
       qed
     qed
   next
@@ -2676,165 +2676,165 @@ proof(atomize_elim)
       by(simp add:call_of_return_node_def) blast
     show ?case
     proof(cases "(\<forall>m \<in> set (targetnode a#ms). \<exists>m'. call_of_return_node m m' \<and> 
-	m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)")
+        m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)")
       case True
       then obtain x where "call_of_return_node (targetnode a) x"
-	and "x \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastsimp
+        and "x \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastsimp
       with `call_of_return_node (targetnode a) (sourcenode c')`
       have "sourcenode c' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastsimp
       with True `\<forall>i<length cs'. call_of_return_node (ms ! i) (sourcenode (cs' ! i))`
-	`length ms = length cs'` `cs = c' # cs'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+        `length ms = length cs'` `cs = c' # cs'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "slice_edge S cs a"
-	apply(auto simp:slice_edge_def in_set_conv_nth) 
-	by(erule_tac x="i" in allE) auto
+        apply(auto simp:slice_edge_def in_set_conv_nth) 
+        by(erule_tac x="i" in allE) auto
       with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c' # cs'`
       have "slice_edges S cs (a#as) = a#slice_edges S cs' as" by simp
       from True `pred (kind a) s` `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	`\<forall>mx \<in> set ms. return_node mx` `length ms = length cs'` 
-	`length s = Suc (length cs)` `m = sourcenode a`
-	`length (transfer (kind a) s) = Suc (length cs')`
-	`return_node (targetnode a)` `cs = c' # cs'`
+        `\<forall>mx \<in> set ms. return_node mx` `length ms = length cs'` 
+        `length s = Suc (length cs)` `m = sourcenode a`
+        `length (transfer (kind a) s) = Suc (length cs')`
+        `return_node (targetnode a)` `cs = c' # cs'`
       have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) -a\<rightarrow> 
-	(targetnode a#ms,transfer (kind a) s)"
-	by(auto intro!:observable_move_return)
+        (targetnode a#ms,transfer (kind a) s)"
+        by(auto intro!:observable_move_return)
       with `length ms = length cs'` `length s = Suc (length cs)` `cs = c' # cs'`
       have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =[]@[a]\<Rightarrow>
-	(targetnode a#ms,transfer (kind a) s)"
-	by(fastsimp intro:observable_moves_snoc silent_moves_Nil)
+        (targetnode a#ms,transfer (kind a) s)"
+        by(fastsimp intro:observable_moves_snoc silent_moves_Nil)
       with `S,kind \<turnstile> (targetnode a # ms,transfer (kind a) s) 
                      =slice_edges S cs' as\<Rightarrow>* (ms'',s'')`
       have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) 
-	=last [a]#slice_edges S cs' as\<Rightarrow>* (ms'',s'')"
-	by -(rule tom_Cons,auto)
+        =last [a]#slice_edges S cs' as\<Rightarrow>* (ms'',s'')"
+        by -(rule tom_Cons,auto)
       with `slice_edges S cs (a#as) = a#slice_edges S cs' as`
       have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =slice_edges S cs (a#as)\<Rightarrow>* 
-	(ms'',s'')" by simp
+        (ms'',s'')" by simp
       moreover
       from `slice_edges S cs' as = slice_edges S cs' as''`
-	`slice_edge S cs a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c' # cs'`
+        `slice_edge S cs a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c' # cs'`
       have "slice_edges S cs (a#as) = slice_edges S cs (a#as'')" by simp
       ultimately show ?thesis
-	using paths `m = sourcenode a` `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	  `length ms = length cs'` `ms = targetnodes rs'` `cs = c' # cs'`
-	  `slice_edges S cs (a#as) = a#slice_edges S cs' as`
-	  `a \<in> get_return_edges c'` 
-	  `call_of_return_node (targetnode a) (sourcenode c')`
-	apply(rule_tac x="targetnode a#ms" in exI)
-	apply(rule_tac x="ms''" in exI)
-	apply(rule_tac x="s''" in exI)
-	apply(rule_tac x="as'" in exI)
-	apply(rule_tac x="ms'" in exI)
-	apply(rule_tac x="a#as''" in exI)
-	apply(auto intro:Cons_path simp:targetnodes_def)
-	by(case_tac i) auto
+        using paths `m = sourcenode a` `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+          `length ms = length cs'` `ms = targetnodes rs'` `cs = c' # cs'`
+          `slice_edges S cs (a#as) = a#slice_edges S cs' as`
+          `a \<in> get_return_edges c'` 
+          `call_of_return_node (targetnode a) (sourcenode c')`
+        apply(rule_tac x="targetnode a#ms" in exI)
+        apply(rule_tac x="ms''" in exI)
+        apply(rule_tac x="s''" in exI)
+        apply(rule_tac x="as'" in exI)
+        apply(rule_tac x="ms'" in exI)
+        apply(rule_tac x="a#as''" in exI)
+        apply(auto intro:Cons_path simp:targetnodes_def)
+        by(case_tac i) auto
     next
       case False
       with `\<forall>mx \<in> set ms. return_node mx` `return_node (targetnode a)`
       have "\<exists>m \<in> set (targetnode a # ms). \<exists>m'. call_of_return_node m m' \<and> 
-	m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-	by(fastsimp dest:return_node_call_of_return_node)
+        m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+        by(fastsimp dest:return_node_call_of_return_node)
       with `\<forall>i<length cs'. call_of_return_node (ms ! i) (sourcenode (cs' ! i))`
-	`length ms = length cs'` `cs = c' # cs'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	`call_of_return_node (targetnode a) (sourcenode c')`
+        `length ms = length cs'` `cs = c' # cs'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+        `call_of_return_node (targetnode a) (sourcenode c')`
       have "\<not> slice_edge S cs a"
-	apply(auto simp:slice_edge_def in_set_conv_nth)
-	by(erule_tac x="i" in allE) auto
+        apply(auto simp:slice_edge_def in_set_conv_nth)
+        by(erule_tac x="i" in allE) auto
       with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c' # cs'`
       have "slice_edges S cs (a#as) = slice_edges S cs' as" by simp
       from `pred (kind a) s` `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	`\<forall>mx \<in> set ms. return_node mx` `length ms = length cs'` 
-	`length s = Suc (length cs)` `m = sourcenode a`
-	`length (transfer (kind a) s) = Suc (length cs')`
-	`return_node (targetnode a)` `cs = c' # cs'`
-	`\<exists>m \<in> set (targetnode a # ms). \<exists>m'. call_of_return_node m m' \<and> 
-	m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `\<forall>mx \<in> set ms. return_node mx` `length ms = length cs'` 
+        `length s = Suc (length cs)` `m = sourcenode a`
+        `length (transfer (kind a) s) = Suc (length cs')`
+        `return_node (targetnode a)` `cs = c' # cs'`
+        `\<exists>m \<in> set (targetnode a # ms). \<exists>m'. call_of_return_node m m' \<and> 
+        m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) -a\<rightarrow>\<^isub>\<tau>
-	(targetnode a#ms,transfer (kind a) s)"
-	by(auto intro!:silent_move_return)
+        (targetnode a#ms,transfer (kind a) s)"
+        by(auto intro!:silent_move_return)
       from `S,kind \<turnstile> (targetnode a # ms,transfer (kind a) s) 
                      =slice_edges S cs' as\<Rightarrow>* (ms'',s'')`
       show ?thesis
       proof(rule trans_observable_moves.cases)
-	fix msx sx S' f'
-	assume "targetnode a # ms = msx"
-	  and "transfer (kind a) s = sx" and "slice_edges S cs' as = []"
-	  and [simp]:"ms'' = msx" "s'' = sx" and "length msx = length sx"
-	from `slice_edges S cs (a#as) = slice_edges S cs' as` 
-	  `slice_edges S cs' as = []`
-	have "slice_edges S cs (a#as) = []" by simp
-	with `length ms = length cs'` `length s = Suc (length cs)` `cs = c' # cs'`
-	have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =slice_edges S cs (a#as)\<Rightarrow>*
-	                (sourcenode a#targetnode a#ms,s)"
-	  by(fastsimp intro:tom_Nil)
-	moreover
-	from `S,kind \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `targetnode a # ms = msx`
-	  `transfer (kind a) s = sx` `ms'' = msx` `s'' = sx`
-	  `S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) -a\<rightarrow>\<^isub>\<tau> 
-	  (targetnode a#ms,transfer (kind a) s)`
-	have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
-	  by(auto intro:silent_moves_Cons)
-	from this `valid_edge a` 
-	  `\<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i)`
-	  `valid_return_list rs m` `length rs = length cs`
-	  `length s = Suc (length cs)` `m = sourcenode a`
-	  `ms = targetnodes rs'` `rs = r'#rs'` `cs = c' # cs'`
-	have "sourcenode a -a#as'\<rightarrow>* m'" and "valid_path_aux cs (a#as')"
-	  by -(rule silent_moves_vpa_path,(fastsimp simp:targetnodes_def)+)+
-	ultimately show ?thesis using `m = sourcenode a` `length ms = length cs'`
-	  `\<forall>i<length cs'. call_of_return_node (ms ! i) (sourcenode (cs' ! i))`
-	  `slice_edges S cs (a#as) = []` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	  `S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
-	  `ms = targetnodes rs'` `rs = r'#rs'` `cs = c' # cs'`
-	  `call_of_return_node (targetnode a) (sourcenode c')`
-	  apply(rule_tac x="targetnode a#ms" in exI)
-	  apply(rule_tac x="sourcenode a#targetnode a#ms" in exI)
-	  apply(rule_tac x="s" in exI)
-	  apply(rule_tac x="a#as'" in exI)
-	  apply(rule_tac x="ms'" in exI)
-	  apply(rule_tac x="[]" in exI)
-	  apply(auto simp:targetnodes_def)
-	  by(case_tac i) auto
+        fix msx sx S' f'
+        assume "targetnode a # ms = msx"
+          and "transfer (kind a) s = sx" and "slice_edges S cs' as = []"
+          and [simp]:"ms'' = msx" "s'' = sx" and "length msx = length sx"
+        from `slice_edges S cs (a#as) = slice_edges S cs' as` 
+          `slice_edges S cs' as = []`
+        have "slice_edges S cs (a#as) = []" by simp
+        with `length ms = length cs'` `length s = Suc (length cs)` `cs = c' # cs'`
+        have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =slice_edges S cs (a#as)\<Rightarrow>*
+                        (sourcenode a#targetnode a#ms,s)"
+          by(fastsimp intro:tom_Nil)
+        moreover
+        from `S,kind \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')` `targetnode a # ms = msx`
+          `transfer (kind a) s = sx` `ms'' = msx` `s'' = sx`
+          `S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) -a\<rightarrow>\<^isub>\<tau> 
+          (targetnode a#ms,transfer (kind a) s)`
+        have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')"
+          by(auto intro:silent_moves_Cons)
+        from this `valid_edge a` 
+          `\<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i)`
+          `valid_return_list rs m` `length rs = length cs`
+          `length s = Suc (length cs)` `m = sourcenode a`
+          `ms = targetnodes rs'` `rs = r'#rs'` `cs = c' # cs'`
+        have "sourcenode a -a#as'\<rightarrow>* m'" and "valid_path_aux cs (a#as')"
+          by -(rule silent_moves_vpa_path,(fastsimp simp:targetnodes_def)+)+
+        ultimately show ?thesis using `m = sourcenode a` `length ms = length cs'`
+          `\<forall>i<length cs'. call_of_return_node (ms ! i) (sourcenode (cs' ! i))`
+          `slice_edges S cs (a#as) = []` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+          `S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#ms',s')`
+          `ms = targetnodes rs'` `rs = r'#rs'` `cs = c' # cs'`
+          `call_of_return_node (targetnode a) (sourcenode c')`
+          apply(rule_tac x="targetnode a#ms" in exI)
+          apply(rule_tac x="sourcenode a#targetnode a#ms" in exI)
+          apply(rule_tac x="s" in exI)
+          apply(rule_tac x="a#as'" in exI)
+          apply(rule_tac x="ms'" in exI)
+          apply(rule_tac x="[]" in exI)
+          apply(auto simp:targetnodes_def)
+          by(case_tac i) auto
       next
-	fix S' f' msx sx asx msx' sx' asx' msx'' sx''
-	assume [simp]:"S = S'" and "kind = f'" and "targetnode a # ms = msx"
-	  and "transfer (kind a) s = sx" 
-	  and "slice_edges S cs' as = last asx # asx'"
-	  and "ms'' = msx''" and "s'' = sx''" 
-	  and "S',f' \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')"
-	  and "S',f' \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')"
-	from `kind = f'` have [simp]:"f' = kind" by simp
-	from `S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) -a\<rightarrow>\<^isub>\<tau> 
-	  (targetnode a#ms,transfer (kind a) s)`
-	  `S',f' \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')`
-	  `transfer (kind a) s = sx` `targetnode a # ms = msx`
-	have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =a#asx\<Rightarrow> (msx',sx')"
-	  by(auto intro:silent_move_observable_moves)
-	with `S',f' \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')` `ms'' = msx''` `s'' = sx''`
-	have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =last (a#asx)#asx'\<Rightarrow>* 
-	  (ms'',s'')"
-	  by(fastsimp intro:trans_observable_moves.tom_Cons)
-	moreover
-	from `S',f' \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')` have "asx \<noteq> []"
-	  by(fastsimp elim:observable_moves.cases)
-	with `slice_edges S cs (a#as) = slice_edges S cs' as`
-	  `slice_edges S cs' as = last asx # asx'`
-	have "slice_edges S cs (a#as) = last (a#asx)#asx'" by simp
-	moreover
-	from `\<not> slice_edge S cs a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	  `slice_edges S cs' as = slice_edges S cs' as''` `cs = c' # cs'`
-	have "slice_edges S cs (a # as) = slice_edges S cs (a # as'')" by simp
-	ultimately show ?thesis using paths `m = sourcenode a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-	  `length ms = length cs'` `ms = targetnodes rs'` `valid_edge a`
-	  `rs = r'#rs'` `cs = c' # cs'` `r' \<in> get_return_edges c'`
-	  `call_of_return_node (targetnode a) (sourcenode c')`
-	  apply(rule_tac x="targetnode a#ms" in exI)
-	  apply(rule_tac x="ms''" in exI)
-	  apply(rule_tac x="s''" in exI)
-	  apply(rule_tac x="as'" in exI)
-	  apply(rule_tac x="ms'" in exI)
-	  apply(rule_tac x="a#as''" in exI)
-	  apply(auto intro:Cons_path simp:targetnodes_def)
-	  by(case_tac i) auto
+        fix S' f' msx sx asx msx' sx' asx' msx'' sx''
+        assume [simp]:"S = S'" and "kind = f'" and "targetnode a # ms = msx"
+          and "transfer (kind a) s = sx" 
+          and "slice_edges S cs' as = last asx # asx'"
+          and "ms'' = msx''" and "s'' = sx''" 
+          and "S',f' \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')"
+          and "S',f' \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')"
+        from `kind = f'` have [simp]:"f' = kind" by simp
+        from `S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) -a\<rightarrow>\<^isub>\<tau> 
+          (targetnode a#ms,transfer (kind a) s)`
+          `S',f' \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')`
+          `transfer (kind a) s = sx` `targetnode a # ms = msx`
+        have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =a#asx\<Rightarrow> (msx',sx')"
+          by(auto intro:silent_move_observable_moves)
+        with `S',f' \<turnstile> (msx',sx') =asx'\<Rightarrow>* (msx'',sx'')` `ms'' = msx''` `s'' = sx''`
+        have "S,kind \<turnstile> (sourcenode a#targetnode a#ms,s) =last (a#asx)#asx'\<Rightarrow>* 
+          (ms'',s'')"
+          by(fastsimp intro:trans_observable_moves.tom_Cons)
+        moreover
+        from `S',f' \<turnstile> (msx,sx) =asx\<Rightarrow> (msx',sx')` have "asx \<noteq> []"
+          by(fastsimp elim:observable_moves.cases)
+        with `slice_edges S cs (a#as) = slice_edges S cs' as`
+          `slice_edges S cs' as = last asx # asx'`
+        have "slice_edges S cs (a#as) = last (a#asx)#asx'" by simp
+        moreover
+        from `\<not> slice_edge S cs a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+          `slice_edges S cs' as = slice_edges S cs' as''` `cs = c' # cs'`
+        have "slice_edges S cs (a # as) = slice_edges S cs (a # as'')" by simp
+        ultimately show ?thesis using paths `m = sourcenode a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+          `length ms = length cs'` `ms = targetnodes rs'` `valid_edge a`
+          `rs = r'#rs'` `cs = c' # cs'` `r' \<in> get_return_edges c'`
+          `call_of_return_node (targetnode a) (sourcenode c')`
+          apply(rule_tac x="targetnode a#ms" in exI)
+          apply(rule_tac x="ms''" in exI)
+          apply(rule_tac x="s''" in exI)
+          apply(rule_tac x="as'" in exI)
+          apply(rule_tac x="ms'" in exI)
+          apply(rule_tac x="a#as''" in exI)
+          apply(auto intro:Cons_path simp:targetnodes_def)
+          by(case_tac i) auto
       qed
     qed
   qed
@@ -2900,34 +2900,34 @@ proof -
     proof(cases "as' = []")
       case True
       with `S,f \<turnstile> (ms',s') =as'\<Rightarrow>* (ms'',s'')` have "ms' = ms'' \<and> s' = s''"
-	by(fastsimp elim:trans_observable_moves.cases dest:observable_move_notempty)
+        by(fastsimp elim:trans_observable_moves.cases dest:observable_move_notempty)
       from `((ms',s'),(ms',transfer (slice_kind S ax) s\<^isub>2)) \<in> WS S`
       have "length ms' = length (transfer (slice_kind S ax) s\<^isub>2)"
-	by(fastsimp elim:WS.cases)
+        by(fastsimp elim:WS.cases)
       with `S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =asx'@[ax]\<Rightarrow> 
-	(ms',transfer (slice_kind S ax) s\<^isub>2)`
+        (ms',transfer (slice_kind S ax) s\<^isub>2)`
       have "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =(last (asx'@[ax]))#[]\<Rightarrow>* 
-	(ms',transfer (slice_kind S ax) s\<^isub>2)"
-	by(fastsimp intro:trans_observable_moves.intros)
+        (ms',transfer (slice_kind S ax) s\<^isub>2)"
+        by(fastsimp intro:trans_observable_moves.intros)
       with `((ms',s'),(ms',transfer (slice_kind S ax) s\<^isub>2)) \<in> WS S` `as = asx@[ax]`
-	`ms' = ms'' \<and> s' = s''` True
+        `ms' = ms'' \<and> s' = s''` True
       show ?thesis by(fastsimp simp:slice_kinds_def)
     next
       case False
       from IH[OF `((ms',s'),(ms',transfer (slice_kind S ax) s\<^isub>2)) \<in> WS S` this 
-	`f = kind`]
+        `f = kind`]
       have "((ms'',s''),(ms'',transfers (slice_kinds S as') 
-	(transfer (slice_kind S ax) s\<^isub>2))) \<in> WS S"
-	and "S,slice_kind S \<turnstile> (ms',transfer (slice_kind S ax) s\<^isub>2) =as'\<Rightarrow>* 
-	(ms'',transfers (slice_kinds S as') (transfer (slice_kind S ax) s\<^isub>2))" 
-	by simp_all
+        (transfer (slice_kind S ax) s\<^isub>2))) \<in> WS S"
+        and "S,slice_kind S \<turnstile> (ms',transfer (slice_kind S ax) s\<^isub>2) =as'\<Rightarrow>* 
+        (ms'',transfers (slice_kinds S as') (transfer (slice_kind S ax) s\<^isub>2))" 
+        by simp_all
       with `S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =asx'@[ax]\<Rightarrow> 
                                (ms',transfer (slice_kind S ax) s\<^isub>2)`
       have "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =(last (asx'@[ax]))#as'\<Rightarrow>* 
-	(ms'',transfers (slice_kinds S as') (transfer (slice_kind S ax) s\<^isub>2))"
-	by(fastsimp intro:trans_observable_moves.tom_Cons)
+        (ms'',transfers (slice_kinds S as') (transfer (slice_kind S ax) s\<^isub>2))"
+        by(fastsimp intro:trans_observable_moves.tom_Cons)
       with `((ms'',s''),(ms'',transfers (slice_kinds S as') 
-	(transfer (slice_kind S ax) s\<^isub>2))) \<in> WS S` False `as = asx@[ax]`
+        (transfer (slice_kind S ax) s\<^isub>2))) \<in> WS S` False `as = asx@[ax]`
       show ?thesis by(fastsimp simp:slice_kinds_def)
     qed
   qed
@@ -3159,8 +3159,8 @@ proof(atomize_elim)
       by(simp add:slice_kinds_def transfers_split)
     ultimately show ?case
       using `valid_node m'` `valid_call_list cs' m'` 
-	`\<forall>i<length rs'. rs' ! i \<in> get_return_edges (cs' ! i)` 
-	`valid_return_list rs' m'` `length rs' = length cs'` `ms' = targetnodes rs'`
+        `\<forall>i<length rs'. rs' ! i \<in> get_return_edges (cs' ! i)` 
+        `valid_return_list rs' m'` `length rs' = length cs'` `ms' = targetnodes rs'`
       apply(rule_tac x="as@asx'" in exI)
       apply(rule_tac x="cs'" in exI)
       apply(rule_tac x="rs'" in exI)
@@ -3220,7 +3220,7 @@ proof(atomize_elim)
       by simp
     with `valid_node m` have "m -as'\<rightarrow>* m'" and "valid_path_aux [] as'"
       by(auto intro:silent_moves_vpa_path[of _ _ _ _ _ _ _ _ _ "[]"]
-	       simp:targetnodes_def valid_return_list_def)
+               simp:targetnodes_def valid_return_list_def)
     hence "m -as'\<rightarrow>\<^isub>\<surd>* m'" by(simp add:vp_def valid_path_def)
     from `S,kind \<turnstile> ([m],[cf]) =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',transfers (kinds as) [cf])`
     have "slice_edges S [] as' = []"
@@ -3232,7 +3232,7 @@ proof(atomize_elim)
       \<exists>mx'. call_of_return_node mx mx' \<and> mx' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
       by -(erule silent_moves_called_node_in_slice1_nodestack_in_slice1
         [of _ _ _ _ _ _ _ _ _ "[]" "[]"],
-	auto intro:refl_slice1 simp:targetnodes_def valid_return_list_def)
+        auto intro:refl_slice1 simp:targetnodes_def valid_return_list_def)
     from `S,kind \<turnstile> ([m],[cf]) =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',transfers (kinds as) [cf])`
       `(([m],[cf]),([m],[cf])) \<in> WS S`
     have WS:"((m'#ms',transfers (kinds as) [cf]),([m],[cf])) \<in> WS S"
@@ -3250,9 +3250,9 @@ proof(atomize_elim)
     proof(rule ccontr)
       assume "ms' \<noteq> []"
       with `S,kind \<turnstile> ([m],[cf]) =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',transfers (kinds as) [cf])`
-	`valid_node m` `valid_node m'` `CFG_node m' \<in> S`
+        `valid_node m` `valid_node m'` `CFG_node m' \<in> S`
       show False
-	by(fastsimp elim:silent_moves_nonempty_nodestack_False intro:refl_slice1)
+        by(fastsimp elim:silent_moves_nonempty_nodestack_False intro:refl_slice1)
     qed
     with `S,kind \<turnstile> ([m],[cf]) =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',transfers (kinds as) [cf])`
     have "S,kind \<turnstile> ([m],[cf]) =as'\<Rightarrow>\<^isub>\<tau> ([m'],transfers (kinds as) [cf])"
@@ -3308,8 +3308,8 @@ proof(atomize_elim)
       (slice_edges S [] asx)) [cf] = 
       transfers (slice_kinds S asx) [cf]"
       by(auto elim:slice_tom_preds_vp[of _ _ _ _ _ _ _ _ "[]" "[]"]
-	      simp:valid_call_list_def valid_return_list_def targetnodes_def 
-	           vp_def valid_path_def)
+              simp:valid_call_list_def valid_return_list_def targetnodes_def 
+                   vp_def valid_path_def)
     from `transfers (slice_kinds S asx) [cf] \<noteq> []`
     obtain cf' cfs' where eq:"transfers (slice_kinds S asx) [cf] = 
       cf'#cfs'" by(cases "transfers (slice_kinds S asx) [cf]") auto
@@ -3343,7 +3343,7 @@ proof(atomize_elim)
       and "preds (slice_kinds S asx') (cf'#cfs')"
       and "slice_edges S csx asx' = []"
       by -(erule exists_sliced_intra_path_preds,
-	auto intro:HRB_slice_refl simp:SDG_to_CFG_set_def)
+        auto intro:HRB_slice_refl simp:SDG_to_CFG_set_def)
     with eq have "preds (slice_kinds S asx') 
       (transfers (slice_kinds S asx) [cf])" by simp
     with `preds (slice_kinds S asx) [cf]`

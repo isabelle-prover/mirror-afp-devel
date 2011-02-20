@@ -32,16 +32,16 @@ proof -
     proof(rule ccontr)
       assume "n' \<noteq> n"
       from `n' \<in> obs_intra n S` obtain as where "n -as\<rightarrow>\<^isub>\<iota>* n'"
-	and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S"
-	and "n' \<in> S" by(fastsimp elim:obs_intra.cases)
+        and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S"
+        and "n' \<in> S" by(fastsimp elim:obs_intra.cases)
       from `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n -as\<rightarrow>* n'" by(simp add:intra_path_def)
       from this `\<forall>nx \<in> set(sourcenodes as). nx \<notin> S` `n' \<noteq> n` `n \<in> S`
       show False
       proof(induct rule:path.induct)
-	case (Cons_path n'' as n' a n)
-	from `\<forall>nx\<in>set (sourcenodes (a#as)). nx \<notin> S` `sourcenode a = n`
-	have "n \<notin> S" by(simp add:sourcenodes_def)
-	with `n \<in> S` show False by simp
+        case (Cons_path n'' as n' a n)
+        from `\<forall>nx\<in>set (sourcenodes (a#as)). nx \<notin> S` `sourcenode a = n`
+        have "n \<notin> S" by(simp add:sourcenodes_def)
+        with `n \<in> S` show False by simp
       qed simp
     qed }
   with `n \<in> obs_intra n S` show ?thesis by fastsimp
@@ -173,10 +173,10 @@ case (Cons x xs)
       case False
       from nsx Cons
       have "obs_intra z S \<noteq> {} \<longrightarrow>
-	(\<exists>x''\<in>set (zs @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S)"
-	by clarsimp(erule_tac x="[]" in allE,auto)
+        (\<exists>x''\<in>set (zs @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S)"
+        by clarsimp(erule_tac x="[]" in allE,auto)
       with False have "\<exists>x''\<in>set (zs @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S"
-	by simp
+        by simp
       with `xs = zs@n#nsx'` 
       have "\<exists>n' \<in> set xs. \<exists>nx. call_of_return_node n' nx \<and> nx \<notin> S" by fastsimp
       with Cons `n'#nsx' \<in> obs xs S` show ?thesis by(simp add:Let_def)
@@ -215,75 +215,75 @@ proof(atomize_elim)
     proof(cases ns'')
       case Nil
       with `ns' \<in> obs (nx#ns'') S` obtain x where "ns' = [x]" and "x \<in> obs_intra nx S"
-	by(auto simp:Let_def split:split_if_asm)
+        by(auto simp:Let_def split:split_if_asm)
       with Nil show ?thesis by fastsimp
     next
       case Cons
       with `\<forall>n \<in> set ns''. return_node n` have "\<forall>a\<in>set (tl ns''). return_node a"
-	by simp
+        by simp
       show ?thesis
       proof(cases "\<exists>n' \<in> set ns''. \<exists>nx'. call_of_return_node n' nx' \<and> nx' \<notin> S")
-	case True
-	with `ns' \<in> obs (nx#ns'') S` have "ns' \<in> obs ns'' S" by simp
-	from IH[OF this `\<forall>a\<in>set (tl ns''). return_node a`]
-	obtain nsx n nsx' n' where split:"ns'' = nsx @ n # nsx'"
-	  "ns' = n' # nsx'" "n' \<in> obs_intra n S"
-	  "\<forall>nx\<in>set nsx'. \<exists>nx'. call_of_return_node nx nx' \<and> nx' \<in> S"
-	  and imp:"\<forall>xs x xs'. nsx = xs @ x # xs' \<and> obs_intra x S \<noteq> {} \<longrightarrow>
+        case True
+        with `ns' \<in> obs (nx#ns'') S` have "ns' \<in> obs ns'' S" by simp
+        from IH[OF this `\<forall>a\<in>set (tl ns''). return_node a`]
+        obtain nsx n nsx' n' where split:"ns'' = nsx @ n # nsx'"
+          "ns' = n' # nsx'" "n' \<in> obs_intra n S"
+          "\<forall>nx\<in>set nsx'. \<exists>nx'. call_of_return_node nx nx' \<and> nx' \<in> S"
+          and imp:"\<forall>xs x xs'. nsx = xs @ x # xs' \<and> obs_intra x S \<noteq> {} \<longrightarrow>
           (\<exists>x''\<in>set (xs' @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S)"
-	  by blast
-	from True `ns'' = nsx @ n # nsx'`
-	  `\<forall>nx\<in>set nsx'. \<exists>nx'. call_of_return_node nx nx' \<and> nx' \<in> S`
-	have "(\<exists>nx'. call_of_return_node n nx' \<and> nx' \<notin> S) \<or>
-	  (\<exists>n'\<in>set nsx. \<exists>nx'. call_of_return_node n' nx' \<and> nx' \<notin> S)" by fastsimp
-	thus ?thesis
-	proof
-	  assume "\<exists>nx'. call_of_return_node n nx' \<and> nx' \<notin> S"
-	  with split show ?thesis by clarsimp
-	next
-	  assume "\<exists>n'\<in>set nsx. \<exists>nx'. call_of_return_node n' nx' \<and> nx' \<notin> S"
-	  with imp have "\<forall>xs x xs'. nx#nsx = xs @ x # xs' \<and> obs_intra x S \<noteq> {} \<longrightarrow>
+          by blast
+        from True `ns'' = nsx @ n # nsx'`
+          `\<forall>nx\<in>set nsx'. \<exists>nx'. call_of_return_node nx nx' \<and> nx' \<in> S`
+        have "(\<exists>nx'. call_of_return_node n nx' \<and> nx' \<notin> S) \<or>
+          (\<exists>n'\<in>set nsx. \<exists>nx'. call_of_return_node n' nx' \<and> nx' \<notin> S)" by fastsimp
+        thus ?thesis
+        proof
+          assume "\<exists>nx'. call_of_return_node n nx' \<and> nx' \<notin> S"
+          with split show ?thesis by clarsimp
+        next
+          assume "\<exists>n'\<in>set nsx. \<exists>nx'. call_of_return_node n' nx' \<and> nx' \<notin> S"
+          with imp have "\<forall>xs x xs'. nx#nsx = xs @ x # xs' \<and> obs_intra x S \<noteq> {} \<longrightarrow>
           (\<exists>x''\<in>set (xs' @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S)"
-	    apply clarsimp apply(case_tac xs) apply auto
-	    by(erule_tac x="list" in allE,auto)+
-	  with split Cons show ?thesis by auto
-	qed
+            apply clarsimp apply(case_tac xs) apply auto
+            by(erule_tac x="list" in allE,auto)+
+          with split Cons show ?thesis by auto
+        qed
       next
-	case False
-	hence "\<forall>n'\<in>set ns''. \<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S" by simp
-	show ?thesis
-	proof(cases "obs_intra nx S = {}")
-	  case True
-	  with `ns' \<in> obs (nx#ns'') S` have "ns' \<in> obs ns'' S" by simp
-	  from IH[OF this `\<forall>a\<in>set (tl ns''). return_node a`]
-	  obtain nsx n nsx' n' where split:"ns'' = nsx @ n # nsx'"
-	    "ns' = n' # nsx'" "n' \<in> obs_intra n S"
-	    "\<forall>nx\<in>set nsx'. \<exists>nx'. call_of_return_node nx nx' \<and> nx' \<in> S"
-	    and imp:"\<forall>xs x xs'. nsx = xs @ x # xs' \<and> obs_intra x S \<noteq> {} \<longrightarrow>
+        case False
+        hence "\<forall>n'\<in>set ns''. \<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S" by simp
+        show ?thesis
+        proof(cases "obs_intra nx S = {}")
+          case True
+          with `ns' \<in> obs (nx#ns'') S` have "ns' \<in> obs ns'' S" by simp
+          from IH[OF this `\<forall>a\<in>set (tl ns''). return_node a`]
+          obtain nsx n nsx' n' where split:"ns'' = nsx @ n # nsx'"
+            "ns' = n' # nsx'" "n' \<in> obs_intra n S"
+            "\<forall>nx\<in>set nsx'. \<exists>nx'. call_of_return_node nx nx' \<and> nx' \<in> S"
+            and imp:"\<forall>xs x xs'. nsx = xs @ x # xs' \<and> obs_intra x S \<noteq> {} \<longrightarrow>
             (\<exists>x''\<in>set (xs' @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S)"
-	    by blast
-	  from True imp Cons 
-	  have "\<forall>xs x xs'. nx#nsx = xs @ x # xs' \<and> obs_intra x S \<noteq> {} \<longrightarrow>
+            by blast
+          from True imp Cons 
+          have "\<forall>xs x xs'. nx#nsx = xs @ x # xs' \<and> obs_intra x S \<noteq> {} \<longrightarrow>
             (\<exists>x''\<in>set (xs' @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S)"
-	    by clarsimp(case_tac xs,clarsimp+,erule_tac x="list" in allE,auto)
-	  with split Cons show ?thesis by auto
-	next
-	  case False
-	  with `\<forall>n'\<in>set ns''. \<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S`
-	    `ns' \<in> obs (nx # ns'') S`
-	  obtain nx'' where "ns' = nx''#ns''" and "nx'' \<in> obs_intra nx S"
-	  by(fastsimp simp:Let_def split:split_if_asm)
-	  { fix n' assume "n'\<in>set ns''"
-	    with `\<forall>n \<in> set ns''. return_node n` have "return_node n'" by simp
-	    hence "\<exists>!n''. call_of_return_node n' n''" 
-	      by(rule return_node_call_of_return_node)
-	    from `n'\<in>set ns''` 
-	      `\<forall>n'\<in>set ns''. \<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S`
-	    have "\<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S" by simp
-	    with `\<exists>!n''. call_of_return_node n' n''` 
-	    have "\<exists>n''. call_of_return_node n' n'' \<and> n'' \<in> S" by fastsimp }
-	  with `ns' = nx''#ns''` `nx'' \<in> obs_intra nx S` show ?thesis by fastsimp
-	qed
+            by clarsimp(case_tac xs,clarsimp+,erule_tac x="list" in allE,auto)
+          with split Cons show ?thesis by auto
+        next
+          case False
+          with `\<forall>n'\<in>set ns''. \<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S`
+            `ns' \<in> obs (nx # ns'') S`
+          obtain nx'' where "ns' = nx''#ns''" and "nx'' \<in> obs_intra nx S"
+          by(fastsimp simp:Let_def split:split_if_asm)
+          { fix n' assume "n'\<in>set ns''"
+            with `\<forall>n \<in> set ns''. return_node n` have "return_node n'" by simp
+            hence "\<exists>!n''. call_of_return_node n' n''" 
+              by(rule return_node_call_of_return_node)
+            from `n'\<in>set ns''` 
+              `\<forall>n'\<in>set ns''. \<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S`
+            have "\<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S" by simp
+            with `\<exists>!n''. call_of_return_node n' n''` 
+            have "\<exists>n''. call_of_return_node n' n'' \<and> n'' \<in> S" by fastsimp }
+          with `ns' = nx''#ns''` `nx'' \<in> obs_intra nx S` show ?thesis by fastsimp
+        qed
       qed
     qed
   qed

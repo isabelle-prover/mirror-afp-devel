@@ -36,11 +36,11 @@ lemma wf_jvmprog_is_wf: "wf_jvm_prog (PROG P)"
 
 subsubsection {* Interprocedural CFG *}
 
-types jvm_method = "wf_jvmprog \<times> cname \<times> mname"
+type_synonym jvm_method = "wf_jvmprog \<times> cname \<times> mname"
 datatype var = Heap | Local "nat" | Stack "nat" | Exception
 datatype val = Hp "heap" | Value "Value.val"
 
-types state = "var \<rightharpoonup> val"
+type_synonym state = "var \<rightharpoonup> val"
 
 definition valid_state :: "state \<Rightarrow> bool"
   where "valid_state s \<equiv> (\<forall>val. s Heap \<noteq> Some (Value val))
@@ -67,9 +67,10 @@ abbreviation locAt :: "state \<Rightarrow> nat \<Rightarrow> Value.val"
   where "locAt s n \<equiv> the_Value (the (s (Local n)))"
 
 datatype nodeType = Enter | Normal | Return | Exceptional "pc option" "nodeType"
-types cfg_node = "cname \<times> mname \<times> pc option \<times> nodeType"
+type_synonym cfg_node = "cname \<times> mname \<times> pc option \<times> nodeType"
 
-types cfg_edge = "cfg_node \<times> (var, val, cname \<times> mname \<times> pc, cname \<times> mname) edge_kind \<times> cfg_node"
+type_synonym
+  cfg_edge = "cfg_node \<times> (var, val, cname \<times> mname \<times> pc, cname \<times> mname) edge_kind \<times> cfg_node"
 
 definition ClassMain :: "wf_jvmprog \<Rightarrow> cname"
   where "ClassMain P \<equiv> SOME Name. \<not> is_class (PROG P) Name"
