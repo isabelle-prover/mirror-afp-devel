@@ -10,7 +10,7 @@ text {* Note that everything is strict in the state type. *}
 
 domain ('a,'s) Step = Done | Skip 's | Yield (lazy 'a) 's
 
-types ('a, 's) Stepper = "'s \<rightarrow> ('a, 's) Step"
+type_synonym ('a, 's) Stepper = "'s \<rightarrow> ('a, 's) Step"
 
 domain ('a,'s) Stream = Stream (lazy "('a, 's) Stepper") 's
 

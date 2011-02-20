@@ -178,7 +178,7 @@ by (simp add: unstream_foldrS)
 
 subsection {* EnumFromTo function *}
 
-types int' = "int\<^sub>\<bottom>"
+type_synonym int' = "int\<^sub>\<bottom>"
 
 fixrec
   enumFromToStep :: "int' \<rightarrow> (int')\<^sub>\<bottom> \<rightarrow> (int', (int')\<^sub>\<bottom>) Step"
