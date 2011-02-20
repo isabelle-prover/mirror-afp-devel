@@ -1,9 +1,7 @@
 header {* Hoare Triples  *}
 
 theory Hoare
-
 imports Statements WellFoundedTransitive
-
 begin
 
 text {*

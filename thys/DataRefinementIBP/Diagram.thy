@@ -1,9 +1,7 @@
 header {*  Predicate Transformers Semantics of Invariant Diagrams  *}
 
 theory Diagram
-
 imports Hoare
-
 begin
 
 text {*

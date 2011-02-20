@@ -1,10 +1,9 @@
 header {*Program Statements as Predicate Transformers*}
 
 theory Statements
-
 imports Preliminaries
-
 begin
+
 text {*
   Program statements are modeled as predicate transformers, functions from predicates to predicates.
   If $\mathit{State}$ is the type of program states, then a program $S$ is a a function from 

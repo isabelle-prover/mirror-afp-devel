@@ -1,9 +1,7 @@
 header {*  Data Refinement of Diagrams *}
 
 theory DataRefinement
-
 imports Diagram
-
 begin
 
 text{*

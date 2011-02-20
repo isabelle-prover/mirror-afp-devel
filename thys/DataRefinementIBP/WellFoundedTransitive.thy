@@ -1,9 +1,7 @@
 header {*  Well founded and transitive relations  *}
 
 theory WellFoundedTransitive
-
 imports Preliminaries
-
 begin
 
 class well_founded_transitive = ord +
