@@ -18,7 +18,7 @@ subsection{* Hughes lists, naive reverse, worker-wrapper optimisation. *}
 
 text{* The ``Hughes'' list type. *}
 
-types 'a H = "'a llist \<rightarrow> 'a llist"
+type_synonym 'a H = "'a llist \<rightarrow> 'a llist"
 
 definition
   list2H :: "'a llist \<rightarrow> 'a H" where
@@ -211,16 +211,16 @@ proof(rule fix_least)
       case bottom thus ?thesis by simp
     next
       case lnil thus ?thesis
-	unfolding lrev_work2_def
-	by (subst fix_eq[where F="lrev_body2"], simp)
+        unfolding lrev_work2_def
+        by (subst fix_eq[where F="lrev_body2"], simp)
     next
       case (lcons y ys)
       hence "lrev_body3\<cdot>lrev_work2\<cdot>xs = lrev_work2\<cdot>ys oo list2H\<cdot>(y :@ lnil)" by simp
       also have "\<dots> = list2H\<cdot>((wrapH\<cdot>lrev_work2)\<cdot>ys) oo list2H\<cdot>(y :@ lnil)"
-	using lrev_wwfusion[where xs=ys] by simp
+        using lrev_wwfusion[where xs=ys] by simp
       also from lcons have "\<dots> = lrev_body2\<cdot>lrev_work2\<cdot>xs" by simp
       also have "\<dots> = lrev_work2\<cdot>xs"
-	unfolding lrev_work2_def by (simp only: fix_eq[symmetric])
+        unfolding lrev_work2_def by (simp only: fix_eq[symmetric])
       finally show ?thesis by simp
     qed
   }

@@ -176,7 +176,7 @@ homomorphism.
 
 *}
 
-types UNatAcc = "UNat \<rightarrow> UNat\<^sub>\<bottom>"
+type_synonym UNatAcc = "UNat \<rightarrow> UNat\<^sub>\<bottom>"
 
 definition
   n2a :: "UNat \<rightarrow> UNatAcc" where

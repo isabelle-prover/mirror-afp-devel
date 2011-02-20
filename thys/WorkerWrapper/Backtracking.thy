@@ -40,11 +40,10 @@ less obvious than Gill/Hutton's example. Also note @{text
 to work in a strict setting, we need to thunkify @{text "Failure"},
 which complicates reasoning. The ONE domain is a bit fiddly. *}
 
-types
-  Observation = "Nat llist"
-  Failure = "Observation"
-  Success = "Nat \<rightarrow> Failure \<rightarrow> Observation"
-  K = "Success \<rightarrow> Failure \<rightarrow> Observation"
+type_synonym Observation = "Nat llist"
+type_synonym Failure = "Observation"
+type_synonym Success = "Nat \<rightarrow> Failure \<rightarrow> Observation"
+type_synonym K = "Success \<rightarrow> Failure \<rightarrow> Observation"
 
 (* FIXME what is blah? *)
 

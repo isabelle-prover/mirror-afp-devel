@@ -39,7 +39,7 @@ subsection{* Optimised data type. *}
 text {* Implement sets using lazy lists for now. Lifting up HOL's @{typ "'a
 set"} type causes continuity grief. *}
 
-types NatSet = "Nat llist"
+type_synonym NatSet = "Nat llist"
 
 definition
   SetEmpty :: "NatSet" where

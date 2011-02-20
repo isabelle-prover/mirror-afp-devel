@@ -28,7 +28,7 @@ notation for unboxed operators of \citet{SPJ-JL:1991}. *}
 
 default_sort predomain
 
-types UNat = "nat discr"
+type_synonym UNat = "nat discr"
 
 instantiation discr :: (zero) zero
 begin
@@ -311,7 +311,7 @@ subsection{* The flat domain of natural numbers *}
 text{* Lift arithmetic to the boxed naturals. Define some things that make
 playing with boxed naturals more convenient. *}
 
-types Nat = "UNat Box"
+type_synonym Nat = "UNat Box"
 
 instantiation Box :: ("{predomain, zero}") zero
 begin

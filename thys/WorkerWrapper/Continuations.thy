@@ -14,7 +14,7 @@ section{* Tagless interpreter via double-barreled continuations *}
 
 text{*\label{sec:continuations} *}
 
-types 'a Cont = "('a \<rightarrow> 'a) \<rightarrow> 'a"
+type_synonym 'a Cont = "('a \<rightarrow> 'a) \<rightarrow> 'a"
 
 definition
   val2cont :: "'a \<rightarrow> 'a Cont" where

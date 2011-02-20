@@ -128,9 +128,8 @@ lemma [simp]: "x2y\<cdot>(y2x\<cdot>x) = (case x of KY \<Rightarrow> KY | JY \<R
 text{* Next we lift our mappings to functions, and establish the
 requisite identity for worker/wrapper to apply. *}
 
-types
-  C = "X \<rightarrow> X"
-  D = "Y \<rightarrow> Y"
+type_synonym C = "X \<rightarrow> X"
+type_synonym D = "Y \<rightarrow> Y"
 
 definition dc_wrap :: "D \<rightarrow> C" where
   "dc_wrap \<equiv> \<Lambda> f. y2x oo f oo x2y"

@@ -51,7 +51,7 @@ lemma lfp_fusion_pointed:
   assumes Cfg: "\<And>f. C\<cdot>(F\<cdot>f) = G\<cdot>(C\<cdot>f)"
       and strictC: "C\<cdot>\<bottom> = \<bottom>"
   shows "C\<cdot>(fix\<cdot>F) = fix\<cdot>G"
-  using lfp_fusion[where f=F and g=C and h=G] prems by (simp add: cfcomp1)
+  using lfp_fusion[where f=F and g=C and h=G] assms by (simp add: cfcomp1)
 
 (*<*)
 end
