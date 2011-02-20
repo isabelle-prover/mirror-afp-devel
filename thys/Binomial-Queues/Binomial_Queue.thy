@@ -3,7 +3,7 @@
 header {* Functional Binomial Queues *}
 
 theory Binomial_Queue
-imports PQ More_List
+imports PQ "~~/src/HOL/Library/More_List"
 begin
 
 subsection {* Type definition and projections *}
@@ -19,7 +19,7 @@ primrec val :: "('a, 'b) bintree \<Rightarrow> 'b" where
 primrec children :: "('a, 'b) bintree \<Rightarrow> ('a, 'b) bintree list" where
   "children (Node _ _ ts) = ts"
 
-types ('a, 'b) binqueue = "('a, 'b) bintree option list"
+type_synonym ('a, 'b) binqueue = "('a, 'b) bintree option list"
 
 lemma binqueue_induct [case_names Empty None Some, induct type: binqueue]:
   assumes "P []"
