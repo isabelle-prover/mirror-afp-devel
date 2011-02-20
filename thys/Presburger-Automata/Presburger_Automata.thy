@@ -3,13 +3,13 @@
 *)
 
 theory Presburger_Automata
-imports DFS Nat_Bijection
+imports DFS "~~/src/HOL/Library/Nat_Bijection"
 begin
 
 section {* General automata *}
 
 definition
-  "reach tr p as q \<equiv> (q = foldl tr p as)"
+  "reach tr p as q = (q = foldl tr p as)"
 
 lemma reach_nil: "reach tr p [] p" by (simp add: reach_def)
 
@@ -35,7 +35,7 @@ lemma reach_inj: "\<lbrakk>reach tr p a q; reach tr p a q'\<rbrakk> \<Longrighta
   by (simp add: reach_def)
 
 definition
-  "accepts tr P s as \<equiv> P (foldl tr s as)"
+  "accepts tr P s as = P (foldl tr s as)"
 
 locale Automaton =
   fixes trans :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
@@ -60,7 +60,7 @@ section {* BDDs *}
 
 definition
   is_alph :: "nat \<Rightarrow> bool list \<Rightarrow> bool" where
-  "is_alph n \<equiv> \<lambda>w. length w = n"
+  "is_alph n = (\<lambda>w. length w = n)"
 
 datatype 'a bdd = Leaf 'a | Branch "'a bdd" "'a bdd"
 
@@ -255,29 +255,28 @@ lemma add_leaves_binop_subset:
 
 section {* DFAs *}
 
-types
-  bddtable = "nat bdd list"
-  astate = "bool list"
-  dfa = "bddtable \<times> astate"
+type_synonym bddtable = "nat bdd list"
+type_synonym astate = "bool list"
+type_synonym dfa = "bddtable \<times> astate"
 
 definition
   dfa_is_node :: "dfa \<Rightarrow> nat \<Rightarrow> bool" where
-  "dfa_is_node A \<equiv> \<lambda>q. q < length (fst A)"
+  "dfa_is_node A = (\<lambda>q. q < length (fst A))"
 
 definition
   wf_dfa :: "dfa \<Rightarrow> nat \<Rightarrow> bool" where
-  "wf_dfa A n \<equiv>
-     list_all (bddh n) (fst A) \<and>
+  "wf_dfa A n =
+    (list_all (bddh n) (fst A) \<and>
      list_all (bdd_all (dfa_is_node A)) (fst A) \<and>
      length (snd A) = length (fst A) \<and>
-     length (fst A) > 0"
+     length (fst A) > 0)"
 
 definition
   dfa_trans :: "dfa \<Rightarrow> nat \<Rightarrow> bool list \<Rightarrow> nat" where
   "dfa_trans A q bs \<equiv> bdd_lookup (fst A ! q) bs"
 definition
   dfa_accepting :: "dfa \<Rightarrow> nat \<Rightarrow> bool" where
-  "dfa_accepting A q \<equiv> snd A ! q"
+  "dfa_accepting A q = snd A ! q"
 
 locale aut_dfa =
   fixes A n
@@ -325,10 +324,10 @@ where
       let (y'', xs') = fold_map_idx f (Suc i) y' xs in (y'', x' # xs'))"
 
 definition init_tr :: "dfa \<Rightarrow> bool list list" where
-  "init_tr \<equiv> \<lambda>(bd,as). make_tr (\<lambda>i. make_tr (\<lambda>j. as ! i \<noteq> as ! j) i 0) (length bd - 1) 1"
+  "init_tr = (\<lambda>(bd,as). make_tr (\<lambda>i. make_tr (\<lambda>j. as ! i \<noteq> as ! j) i 0) (length bd - 1) 1)"
 
 definition tr_lookup :: "bool list list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
-  "tr_lookup \<equiv> \<lambda>T i j. (if i = j then False else if i > j then T ! (i - 1) ! j else T ! (j - 1) ! i)"
+  "tr_lookup = (\<lambda>T i j. (if i = j then False else if i > j then T ! (i - 1) ! j else T ! (j - 1) ! i))"
 
 fun check_eq :: "nat bdd \<Rightarrow> nat bdd \<Rightarrow> bool list list \<Rightarrow> bool" where
   "check_eq (Leaf i) (Leaf j) T = (\<not> tr_lookup T i j)" |
@@ -337,12 +336,12 @@ fun check_eq :: "nat bdd \<Rightarrow> nat bdd \<Rightarrow> bool list list \<Ri
   "check_eq (Branch l1 r1) (Branch l2 r2) T = (check_eq l1 l2 T \<and> check_eq r1 r2 T)"
 
 definition iter :: "dfa \<Rightarrow> bool list list \<Rightarrow> bool \<times> bool list list" where
-  "iter \<equiv> \<lambda>(bd,as) T. fold_map_idx (\<lambda>i. fold_map_idx (\<lambda>j c b.
+  "iter = (\<lambda>(bd,as) T. fold_map_idx (\<lambda>i. fold_map_idx (\<lambda>j c b.
      let b' = b \<or> \<not> check_eq (bd ! i) (bd ! j) T
-     in (c \<or> b \<noteq> b', b')) 0) 1 False T"
+     in (c \<or> b \<noteq> b', b')) 0) 1 False T)"
 
 definition count_tr :: "bool list list \<Rightarrow> nat" where
-  "count_tr \<equiv> foldl (foldl (\<lambda>y x. if x then y else Suc y)) 0"
+  "count_tr = foldl (foldl (\<lambda>y x. if x then y else Suc y)) 0"
 
 lemma fold_map_idx_fst_snd_eq:
   assumes f: "\<And>i c x. fst (f i c x) = (c \<or> x \<noteq> snd (f i c x))"
@@ -413,11 +412,11 @@ proof (induct M T rule: fixpt.induct)
 qed
 
 definition dist_nodes :: "dfa \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
-  "dist_nodes \<equiv> \<lambda>M n m p q. \<exists>w. length w = n \<and> list_all (is_alph m) w \<and>
-     dfa_accepting M (dfa_steps M p w) \<noteq> dfa_accepting M (dfa_steps M q w)"
+  "dist_nodes = (\<lambda>M n m p q. \<exists>w. length w = n \<and> list_all (is_alph m) w \<and>
+     dfa_accepting M (dfa_steps M p w) \<noteq> dfa_accepting M (dfa_steps M q w))"
 
 definition wf_tr :: "dfa \<Rightarrow> bool list list \<Rightarrow> bool" where
-  "wf_tr \<equiv> \<lambda>M T. length T = length (fst M) - 1 \<and> (\<forall>i < length T. length (T ! i) = i + 1)"
+  "wf_tr = (\<lambda>M T. length T = length (fst M) - 1 \<and> (\<forall>i < length T. length (T ! i) = i + 1))"
 
 lemma make_tr_len: "length (make_tr f n i) = n"
   by (induct n arbitrary: i) simp_all
@@ -564,20 +563,20 @@ next
       then obtain bs where O: "bddh (length bs) l1 \<and> bddh (length bs) l2 \<and> (\<exists>n<m. dist_nodes M n v (bdd_lookup l1 bs) (bdd_lookup l2 bs))" unfolding IV1 by blast
       from bddh_exists obtain k1 k2 where K1: "bddh k1 r1" and K2: "bddh k2 r2" by blast
       with O have "bddh (length bs + max k1 k2) l1" and "bddh (length bs + max k1 k2) l2" and "bddh (length bs + max k1 k2) r1" and "bddh (length bs + max k1 k2) r2"
-	by (simp add: bddh_ge[of "length bs" "length bs + max k1 k2"] bddh_ge[of k1 "length bs + max k1 k2"] bddh_ge[of k2 "length bs + max k1 k2"])+
+        by (simp add: bddh_ge[of "length bs" "length bs + max k1 k2"] bddh_ge[of k1 "length bs + max k1 k2"] bddh_ge[of k2 "length bs + max k1 k2"])+
       with O have "bddh (length (False # bs @ replicate (max k1 k2) False)) (Branch l1 r1) \<and> bddh (length (False # bs @ replicate (max k1 k2) False)) (Branch l2 r2) \<and>
-	(\<exists>n<m. dist_nodes M n v (bdd_lookup (Branch l1 r1) (False # bs @ replicate (max k1 k2) False)) (bdd_lookup (Branch l2 r2) (False # bs @ replicate (max k1 k2) False)))"
-	by (auto simp: bdd_lookup_append)
+        (\<exists>n<m. dist_nodes M n v (bdd_lookup (Branch l1 r1) (False # bs @ replicate (max k1 k2) False)) (bdd_lookup (Branch l2 r2) (False # bs @ replicate (max k1 k2) False)))"
+        by (auto simp: bdd_lookup_append)
       thus ?thesis by (rule exI)
     next
       assume "?R"
       then obtain bs where O: "bddh (length bs) r1 \<and> bddh (length bs) r2 \<and> (\<exists>n<m. dist_nodes M n v (bdd_lookup r1 bs) (bdd_lookup r2 bs))" unfolding IV2 by blast
       from bddh_exists obtain k1 k2 where K1: "bddh k1 l1" and K2: "bddh k2 l2" by blast
       with O have "bddh (length bs + max k1 k2) l1" and "bddh (length bs + max k1 k2) l2" and "bddh (length bs + max k1 k2) r1" and "bddh (length bs + max k1 k2) r2"
-	by (simp add: bddh_ge[of "length bs" "length bs + max k1 k2"] bddh_ge[of k1 "length bs + max k1 k2"] bddh_ge[of k2 "length bs + max k1 k2"])+
+        by (simp add: bddh_ge[of "length bs" "length bs + max k1 k2"] bddh_ge[of k1 "length bs + max k1 k2"] bddh_ge[of k2 "length bs + max k1 k2"])+
       with O have "bddh (length (True # bs @ replicate (max k1 k2) False)) (Branch l1 r1) \<and> bddh (length (True # bs @ replicate (max k1 k2) False)) (Branch l2 r2) \<and>
-	(\<exists>n<m. dist_nodes M n v (bdd_lookup (Branch l1 r1) (True # bs @ replicate (max k1 k2) False)) (bdd_lookup (Branch l2 r2) (True # bs @ replicate (max k1 k2) False)))"
-	by (auto simp: bdd_lookup_append)
+        (\<exists>n<m. dist_nodes M n v (bdd_lookup (Branch l1 r1) (True # bs @ replicate (max k1 k2) False)) (bdd_lookup (Branch l2 r2) (True # bs @ replicate (max k1 k2) False)))"
+        by (auto simp: bdd_lookup_append)
       thus ?thesis by (rule exI)
     qed
   next
@@ -696,29 +695,29 @@ using assms proof (induct M T arbitrary: m rule: fixpt_induct)
     proof -
       fix m' show "\<forall>p q. dfa_is_node M q \<and> p < q \<longrightarrow> tr_lookup T q p = (\<exists>n < m' + m. dist_nodes M n v p q)"
       proof (induct m')
-	case 0 with 1 show ?case by simp
+        case 0 with 1 show ?case by simp
       next
-	case (Suc m')
-	{ fix p' q' assume H: "dfa_is_node M q'" and H2: "p' < q'"
-	  note 1(2,3) Suc
-	  moreover from Suc 1 have "0 < m' + m" by simp
-	  moreover note H H2
-	  ultimately have "tr_lookup (snd (iter M T)) q' p' = (\<exists>n < Suc (m' + m). dist_nodes M n v p' q')" by (rule iter_dist_nodes)
-	  with F have "tr_lookup T q' p' = (\<exists>n < Suc m' + m. dist_nodes M n v p' q')" by simp
-	} thus ?case by simp
+        case (Suc m')
+        { fix p' q' assume H: "dfa_is_node M q'" and H2: "p' < q'"
+          note 1(2,3) Suc
+          moreover from Suc 1 have "0 < m' + m" by simp
+          moreover note H H2
+          ultimately have "tr_lookup (snd (iter M T)) q' p' = (\<exists>n < Suc (m' + m). dist_nodes M n v p' q')" by (rule iter_dist_nodes)
+          with F have "tr_lookup T q' p' = (\<exists>n < Suc m' + m. dist_nodes M n v p' q')" by simp
+        } thus ?case by simp
       qed
     qed
     {
       fix p' q' assume H: "dfa_is_node M q' \<and> p' < q'"
       have "tr_lookup T q' p' = (\<exists>n. dist_nodes M n v p' q')" proof
-	assume "tr_lookup T q' p'"
-	with H C[of 0] show "\<exists>n. dist_nodes M n v p' q'" by auto
+        assume "tr_lookup T q' p'"
+        with H C[of 0] show "\<exists>n. dist_nodes M n v p' q'" by auto
       next
-	assume H': "\<exists>n. dist_nodes M n v p' q'"
-	then obtain n where "dist_nodes M n v p' q'" by blast
-	moreover have "n < Suc n + m" by simp
-	ultimately have "\<exists>n' < Suc n + m. dist_nodes M n' v p' q'" by blast
-	with H C[of "Suc n"] show "tr_lookup T q' p'" by simp
+        assume H': "\<exists>n. dist_nodes M n v p' q'"
+        then obtain n where "dist_nodes M n v p' q'" by blast
+        moreover have "n < Suc n + m" by simp
+        ultimately have "\<exists>n' < Suc n + m. dist_nodes M n' v p' q'" by blast
+        with H C[of "Suc n"] show "tr_lookup T q' p'" by simp
       qed
     } hence "\<forall>p q. dfa_is_node M q \<and> p < q \<longrightarrow> tr_lookup T q p = (\<exists>n. dist_nodes M n v p q)" by simp
     with False `dfa_is_node M q` `p < q` show ?thesis by simp
@@ -821,38 +820,38 @@ next
       case (Suc j')
       from 0 Cons(5,9) have 1: "y = Some m \<and> m < l \<or> (y = None \<and> \<not> tr_lookup T jj ii \<and> m = l)" by (cases y, cases "tr_lookup T jj ii", auto)
       thus ?thesis proof (elim disjE)
-	assume H: "y = Some m \<and> m < l"
-	from Suc have "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = (mk_eqcl' xs ii (Suc jj) l T ! j' = Some m)" by simp
-	also from H have "\<dots> = (xs ! j' = Some m)" proof (induct xs arbitrary: jj j') 
-	  case (Cons a xs jj j') thus ?case by (cases j') simp+
-	qed simp
-	also from Suc have "\<dots> = ((y # xs) ! j = Some m)" by simp
-	also from Cons(2)[of i j m] Cons(8,10) Suc 0 H have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by simp
-	finally show ?thesis by simp
+        assume H: "y = Some m \<and> m < l"
+        from Suc have "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = (mk_eqcl' xs ii (Suc jj) l T ! j' = Some m)" by simp
+        also from H have "\<dots> = (xs ! j' = Some m)" proof (induct xs arbitrary: jj j') 
+          case (Cons a xs jj j') thus ?case by (cases j') simp+
+        qed simp
+        also from Suc have "\<dots> = ((y # xs) ! j = Some m)" by simp
+        also from Cons(2)[of i j m] Cons(8,10) Suc 0 H have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by simp
+        finally show ?thesis by simp
       next
-	assume H: "y = None \<and> \<not> tr_lookup T jj ii \<and> m = l"
-	with Suc have "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = (mk_eqcl' xs ii (Suc jj) l T ! j' = Some l)" by simp
-	also have "\<dots> = (\<not> tr_lookup T (j' + Suc jj) ii)" proof (rule mk_eqcl'_nth')
-	  from Cons(5) show "\<And>x k. \<lbrakk>x \<in> set xs; x = Some k\<rbrakk> \<Longrightarrow> k < l" by simp
-	  show "\<And>i'. \<lbrakk>i' < length xs; \<not> tr_lookup T (i' + Suc jj) ii\<rbrakk> \<Longrightarrow> xs ! i' = None" proof -
-	    fix i' assume "i' < length xs" "\<not> tr_lookup T (i' + Suc jj) ii"
-	    with Cons(6)[of "Suc i'"] show "xs ! i' = None" by simp
-	  qed
-	  from Cons(7) show "ii < Suc jj" by simp
-	  from Cons(10) Suc show "j' < length xs" by simp
-	qed
-	also from Suc H 0 have "\<dots> = (\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii)" by (simp add: nat_add_commute) 
-	also have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii)" proof
-	  assume H': "\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii"
-	  hence "\<not> tr_lookup T ii (j + jj)" by (auto simp: tr_lookup_def)
-	  with H' Cons(3)[of "i + jj" ii "j + jj"] Cons(4,7,8,10) show "\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii" by simp
-	next
-	  assume H': "\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii"
-	  hence "\<not> tr_lookup T (j + jj) (i + jj)" by (auto simp: tr_lookup_def)
-	  with H' Cons(3)[of "j + jj" "i + jj" ii] Cons(4,7,8,10) show "\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii" by simp
-	qed
-	also from 0 H have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by simp
-	finally show ?thesis by simp
+        assume H: "y = None \<and> \<not> tr_lookup T jj ii \<and> m = l"
+        with Suc have "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = (mk_eqcl' xs ii (Suc jj) l T ! j' = Some l)" by simp
+        also have "\<dots> = (\<not> tr_lookup T (j' + Suc jj) ii)" proof (rule mk_eqcl'_nth')
+          from Cons(5) show "\<And>x k. \<lbrakk>x \<in> set xs; x = Some k\<rbrakk> \<Longrightarrow> k < l" by simp
+          show "\<And>i'. \<lbrakk>i' < length xs; \<not> tr_lookup T (i' + Suc jj) ii\<rbrakk> \<Longrightarrow> xs ! i' = None" proof -
+            fix i' assume "i' < length xs" "\<not> tr_lookup T (i' + Suc jj) ii"
+            with Cons(6)[of "Suc i'"] show "xs ! i' = None" by simp
+          qed
+          from Cons(7) show "ii < Suc jj" by simp
+          from Cons(10) Suc show "j' < length xs" by simp
+        qed
+        also from Suc H 0 have "\<dots> = (\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii)" by (simp add: nat_add_commute) 
+        also have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii)" proof
+          assume H': "\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii"
+          hence "\<not> tr_lookup T ii (j + jj)" by (auto simp: tr_lookup_def)
+          with H' Cons(3)[of "i + jj" ii "j + jj"] Cons(4,7,8,10) show "\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii" by simp
+        next
+          assume H': "\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii"
+          hence "\<not> tr_lookup T (j + jj) (i + jj)" by (auto simp: tr_lookup_def)
+          with H' Cons(3)[of "j + jj" "i + jj" ii] Cons(4,7,8,10) show "\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii" by simp
+        qed
+        also from 0 H have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by simp
+        finally show ?thesis by simp
       qed
     qed
   next
@@ -860,59 +859,59 @@ next
     show ?thesis proof (cases j)
       case 0
       have "m \<le> l" proof (rule mk_eqcl'_bound)
-	from Cons(5) show "\<And>x k. \<lbrakk>x \<in> set (y # xs); x = Some k\<rbrakk> \<Longrightarrow> k < l" by simp
-	from Cons(8) have "i < length (mk_eqcl' (y # xs) ii jj l T)" by (simp add: mk_eqcl'_len)
-	with Cons(9) have "\<exists>i < length (mk_eqcl' (y # xs) ii jj l T). mk_eqcl' (y # xs) ii jj l T ! i = Some m" by blast
-	thus "Some m \<in> set (mk_eqcl' (y # xs) ii jj l T)" by (simp only: in_set_conv_nth)
-	show "Some m = Some m" by simp
+        from Cons(5) show "\<And>x k. \<lbrakk>x \<in> set (y # xs); x = Some k\<rbrakk> \<Longrightarrow> k < l" by simp
+        from Cons(8) have "i < length (mk_eqcl' (y # xs) ii jj l T)" by (simp add: mk_eqcl'_len)
+        with Cons(9) have "\<exists>i < length (mk_eqcl' (y # xs) ii jj l T). mk_eqcl' (y # xs) ii jj l T ! i = Some m" by blast
+        thus "Some m \<in> set (mk_eqcl' (y # xs) ii jj l T)" by (simp only: in_set_conv_nth)
+        show "Some m = Some m" by simp
       qed
       hence "m < l \<or> m = l" by auto
       thus ?thesis proof (elim disjE)
-	assume H: "m < l"
-	with Cons(9) have I: "(y # xs) ! i = Some m" proof (induct ("y # xs") arbitrary: jj i)
-	  case (Cons a l jj i) thus ?case by (cases i) (auto, cases "tr_lookup T jj ii \<or> a \<noteq> None", simp+)
-	qed simp
-	from 0 H have "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = ((y#xs) ! j = Some m)" by (cases "tr_lookup T jj ii \<or> y \<noteq> None") simp+
-	also from Cons(8,10) I have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by (rule Cons(2))
-	finally show ?thesis by simp
+        assume H: "m < l"
+        with Cons(9) have I: "(y # xs) ! i = Some m" proof (induct ("y # xs") arbitrary: jj i)
+          case (Cons a l jj i) thus ?case by (cases i) (auto, cases "tr_lookup T jj ii \<or> a \<noteq> None", simp+)
+        qed simp
+        from 0 H have "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = ((y#xs) ! j = Some m)" by (cases "tr_lookup T jj ii \<or> y \<noteq> None") simp+
+        also from Cons(8,10) I have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by (rule Cons(2))
+        finally show ?thesis by simp
       next
-	assume H: "m = l"
-	from Cons(5,6,7,8) have "(mk_eqcl' (y # xs) ii jj l T ! i = Some l) = (\<not> tr_lookup T (i + jj) ii)" by (rule mk_eqcl'_nth')
-	with H Cons(9) have I: "\<not> tr_lookup T (i + jj) ii" by simp
+        assume H: "m = l"
+        from Cons(5,6,7,8) have "(mk_eqcl' (y # xs) ii jj l T ! i = Some l) = (\<not> tr_lookup T (i + jj) ii)" by (rule mk_eqcl'_nth')
+        with H Cons(9) have I: "\<not> tr_lookup T (i + jj) ii" by simp
 
-	with 0 H Cons(5) have "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = (\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii \<and> y = None)" by auto
-	also from Cons(6)[of 0] 0 have "\<dots> = (\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii)" by auto
-	also have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii)" proof
-	  assume H': "\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii"
-	  hence "\<not> tr_lookup T ii (j + jj)" by (auto simp: tr_lookup_def)
-	  with H' Cons(3)[of "i + jj" ii "j + jj"] Cons(4,7,8,10) show "\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii" by simp
-	next
-	  assume H': "\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii" 
-	  hence "\<not> tr_lookup T (j + jj) (i + jj)" by (auto simp: tr_lookup_def)
-	  with H' Cons(3)[of "j + jj" "i + jj" ii] Cons(4,7,8,10) show "\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii" by simp
-	qed
-	also from I have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by simp
-	finally show ?thesis by simp
+        with 0 H Cons(5) have "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = (\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii \<and> y = None)" by auto
+        also from Cons(6)[of 0] 0 have "\<dots> = (\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii)" by auto
+        also have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii)" proof
+          assume H': "\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii"
+          hence "\<not> tr_lookup T ii (j + jj)" by (auto simp: tr_lookup_def)
+          with H' Cons(3)[of "i + jj" ii "j + jj"] Cons(4,7,8,10) show "\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii" by simp
+        next
+          assume H': "\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii" 
+          hence "\<not> tr_lookup T (j + jj) (i + jj)" by (auto simp: tr_lookup_def)
+          with H' Cons(3)[of "j + jj" "i + jj" ii] Cons(4,7,8,10) show "\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii" by simp
+        qed
+        also from I have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by simp
+        finally show ?thesis by simp
       qed
     next
       case (Suc j')
       hence "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = (mk_eqcl' xs ii (Suc jj) l T ! j' = Some m)" by simp
       also have "\<dots> = (\<not> tr_lookup T (i' + Suc jj) (j' + Suc jj))" proof (rule Cons(1))
-	show "\<And>i' j' k. \<lbrakk>i' < length xs; j' < length xs; xs ! i' = Some k\<rbrakk> \<Longrightarrow> (xs ! j' = Some k) = (\<not> tr_lookup T (i' + Suc jj) (j' + Suc jj))" proof -
-	  fix i' j' k assume "i' < length xs" "j' < length xs" "xs ! i' = Some k"
-	  with Cons(2)[of "Suc i'" "Suc j'" k] show "(xs ! j' = Some k) = (\<not> tr_lookup T (i' + Suc jj) (j' + Suc jj))" by simp
-	qed
-	from Cons(3) show "\<And>a b c. \<lbrakk>a \<le> length T; b \<le> length T; c \<le> length T; \<not> tr_lookup T a b; \<not> tr_lookup T b c \<rbrakk> \<Longrightarrow> \<not> tr_lookup T a c" by blast
-	from Cons(4) show "length xs + Suc jj = length T + 1" by simp
-	from Cons(5) show "\<And>x k. \<lbrakk>x \<in> set xs; x = Some k\<rbrakk> \<Longrightarrow> k < l" by simp
-	show "\<And>i'. \<lbrakk>i' < length xs; \<not> tr_lookup T (i' + Suc jj) ii\<rbrakk> \<Longrightarrow> xs ! i' = None" proof -
-	  fix i' assume "i' < length xs" "\<not> tr_lookup T (i' + Suc jj) ii"
-	  with Cons(6)[of "Suc i'"] show "xs ! i' = None" by simp
-	qed
-	from Cons(7) show "ii < Suc jj" by simp
-	from Cons(8) `i=Suc i'` show "i' < length xs" by simp
-	from Cons(9) `i=Suc i'` show "mk_eqcl' xs ii (Suc jj) l T ! i' = Some m" by simp
-	from Cons(10) Suc show "j' < length xs" by simp
+        show "\<And>i' j' k. \<lbrakk>i' < length xs; j' < length xs; xs ! i' = Some k\<rbrakk> \<Longrightarrow> (xs ! j' = Some k) = (\<not> tr_lookup T (i' + Suc jj) (j' + Suc jj))" proof -
+          fix i' j' k assume "i' < length xs" "j' < length xs" "xs ! i' = Some k"
+          with Cons(2)[of "Suc i'" "Suc j'" k] show "(xs ! j' = Some k) = (\<not> tr_lookup T (i' + Suc jj) (j' + Suc jj))" by simp
+        qed
+        from Cons(3) show "\<And>a b c. \<lbrakk>a \<le> length T; b \<le> length T; c \<le> length T; \<not> tr_lookup T a b; \<not> tr_lookup T b c \<rbrakk> \<Longrightarrow> \<not> tr_lookup T a c" by blast
+        from Cons(4) show "length xs + Suc jj = length T + 1" by simp
+        from Cons(5) show "\<And>x k. \<lbrakk>x \<in> set xs; x = Some k\<rbrakk> \<Longrightarrow> k < l" by simp
+        show "\<And>i'. \<lbrakk>i' < length xs; \<not> tr_lookup T (i' + Suc jj) ii\<rbrakk> \<Longrightarrow> xs ! i' = None" proof -
+          fix i' assume "i' < length xs" "\<not> tr_lookup T (i' + Suc jj) ii"
+          with Cons(6)[of "Suc i'"] show "xs ! i' = None" by simp
+        qed
+        from Cons(7) show "ii < Suc jj" by simp
+        from Cons(8) `i=Suc i'` show "i' < length xs" by simp
+        from Cons(9) `i=Suc i'` show "mk_eqcl' xs ii (Suc jj) l T ! i' = Some m" by simp
+        from Cons(10) Suc show "j' < length xs" by simp
       qed
       also from Suc `i=Suc i'` have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by simp
       finally show ?thesis by simp
@@ -1018,7 +1017,7 @@ using assms proof (induct xs zs ii T rule: mk_eqcl.induct)
     have "\<And>x k. \<lbrakk>x \<in> set (mk_eqcl' xs i (Suc i) (length zs) T); x = Some k\<rbrakk> \<Longrightarrow> k < length (zs @ [i])" proof -
       fix x k assume H': "x \<in> set (mk_eqcl' xs i (Suc i) (length zs) T)" " x = Some k"
       { fix x' k' assume "x' \<in> set xs" "x' = Some k'"
-	with 2 have "k' < length zs" by simp
+        with 2 have "k' < length zs" by simp
       } from this H' have "k \<le> length zs" by (rule mk_eqcl'_bound)
       thus "k < length (zs @ [i])" by simp
     qed
@@ -1061,11 +1060,11 @@ next
       with 2(2) have I: "zs ! i' < length (None # xs) + i \<and> (i \<le> zs ! i' \<longrightarrow> (None # xs) ! (zs ! i' - i) = Some i')" by simp
       with H have G1: "(zs @ [i]) ! i' < length (mk_eqcl' xs i (Suc i) (length zs) T) + Suc i" by (auto simp: mk_eqcl'_len nth_append)
       { assume H': "Suc i \<le> (zs @ [i]) ! i'"
-	then obtain k where K: "(zs @ [i]) ! i' - i = Suc k" by (cases "(zs @ [i]) ! i' - i") simp+
-	hence K': "k = (zs @ [i]) ! i' - Suc i" by simp
-	from K H' H I have "xs ! k = Some i'" by (simp add: nth_append)
-	with K I H have "mk_eqcl' xs i (Suc i) (length zs) T ! k = Some i'" by (auto simp add: mk_eqcl'_Some nth_append)
-	with K' have "mk_eqcl' xs i (Suc i) (length zs) T ! ((zs @ [i]) ! i' - Suc i) = Some i'" by simp
+        then obtain k where K: "(zs @ [i]) ! i' - i = Suc k" by (cases "(zs @ [i]) ! i' - i") simp+
+        hence K': "k = (zs @ [i]) ! i' - Suc i" by simp
+        from K H' H I have "xs ! k = Some i'" by (simp add: nth_append)
+        with K I H have "mk_eqcl' xs i (Suc i) (length zs) T ! k = Some i'" by (auto simp add: mk_eqcl'_Some nth_append)
+        with K' have "mk_eqcl' xs i (Suc i) (length zs) T ! ((zs @ [i]) ! i' - Suc i) = Some i'" by simp
       } with G1 show ?thesis by simp
     qed simp
   qed
@@ -1092,20 +1091,20 @@ next
       def k \<equiv> "length zs"
       hence K: "snd (mk_eqcl (None # xs) zs i T) ! k = i" by (simp add: mk_eqcl_snd_nth split_beta)
       { assume "j \<noteq> k"
-	hence "j < k \<or> j > k" by auto
-	hence "snd (mk_eqcl (None # xs) zs i T) ! j \<noteq> i" proof (elim disjE)
-	  assume H': "j < k"
-	  from k_def have "k < length (zs @ [i])" by simp
-	  also have "\<dots> \<le> length (snd (mk_eqcl (mk_eqcl' xs i (Suc i) (length zs) T) (zs @ [i]) (Suc i) T))" by (simp only: mk_eqcl_len_snd)
-	  also have "\<dots> = length (snd (mk_eqcl (None # xs) zs i T))" by (simp add: split_beta)
-	  finally have K': "k < length (snd (mk_eqcl (None # xs) zs i T))" by simp
-	  from 2(3,4) H' this have "snd (mk_eqcl (None # xs) zs i T) ! j < snd (mk_eqcl (None # xs) zs i T) ! k" by (rule mk_eqcl_snd_mon)
-	  with K show ?thesis by simp
-	next
-	  assume H': "j > k"
-	  from 2(3,4) H' 2(5) have "snd (mk_eqcl (None # xs) zs i T) ! k < snd (mk_eqcl (None # xs) zs i T) ! j" by (rule mk_eqcl_snd_mon)
-	  with K show ?thesis by simp
-	qed
+        hence "j < k \<or> j > k" by auto
+        hence "snd (mk_eqcl (None # xs) zs i T) ! j \<noteq> i" proof (elim disjE)
+          assume H': "j < k"
+          from k_def have "k < length (zs @ [i])" by simp
+          also have "\<dots> \<le> length (snd (mk_eqcl (mk_eqcl' xs i (Suc i) (length zs) T) (zs @ [i]) (Suc i) T))" by (simp only: mk_eqcl_len_snd)
+          also have "\<dots> = length (snd (mk_eqcl (None # xs) zs i T))" by (simp add: split_beta)
+          finally have K': "k < length (snd (mk_eqcl (None # xs) zs i T))" by simp
+          from 2(3,4) H' this have "snd (mk_eqcl (None # xs) zs i T) ! j < snd (mk_eqcl (None # xs) zs i T) ! k" by (rule mk_eqcl_snd_mon)
+          with K show ?thesis by simp
+        next
+          assume H': "j > k"
+          from 2(3,4) H' 2(5) have "snd (mk_eqcl (None # xs) zs i T) ! k < snd (mk_eqcl (None # xs) zs i T) ! j" by (rule mk_eqcl_snd_mon)
+          with K show ?thesis by simp
+        qed
       }
       with H k_def have "j = length zs" by auto
       with H show ?thesis by (simp add: split_beta)
@@ -1114,7 +1113,7 @@ next
       then obtain k where K: "snd (mk_eqcl (None # xs) zs i T) ! j - i = Suc k" by (cases "snd (mk_eqcl (None # xs) zs i T) ! j - i") simp+
       hence K': "k = snd (mk_eqcl (None # xs) zs i T) ! j - Suc i" by simp
       from H IV have "fst (mk_eqcl (mk_eqcl' xs i (Suc i) (length zs) T) (zs @ [i]) (Suc i) T) ! (snd (mk_eqcl (mk_eqcl' xs i (Suc i) (length zs) T) (zs @ [i]) (Suc i) T) ! j - Suc i) = j"
-	by (auto simp: split_beta)
+        by (auto simp: split_beta)
       with K' have "fst (mk_eqcl (None # xs) zs i T) ! Suc k = j" by (simp add: split_beta)
       with K show ?thesis by simp
     qed
@@ -1180,22 +1179,22 @@ next
     have "(fst (mk_eqcl (None # xs) zs ii T) ! i = fst (mk_eqcl (None # xs) zs ii T) ! j) = (\<not> tr_lookup T (i + ii) (j + ii))" proof (cases i)
       case 0
       with J have "(fst (mk_eqcl (None # xs) zs ii T) ! i = fst (mk_eqcl (None # xs) zs ii T) ! j) = (fst (mk_eqcl (mk_eqcl' xs ii (Suc ii) (length zs) T) (zs @ [ii]) (Suc ii) T) ! j' = length zs)"
-	by (auto simp add: split_beta)
+        by (auto simp add: split_beta)
       also from H J have "\<dots> = (mk_eqcl' xs ii (Suc ii) (length zs) T ! j' = Some (length zs))" by (simp add: mk_eqcl_fst_Some mk_eqcl'_len)
       also have "\<dots> = (\<not> tr_lookup T (j' + Suc ii) ii)" proof -
-	have "\<And>x k. \<lbrakk>x \<in> set xs; x = Some k\<rbrakk> \<Longrightarrow> k < length zs" proof -
-	  fix x k assume "x \<in> set xs" "x = Some k"
-	  with 2(4)[of x k] show "k < length zs" by simp
-	qed moreover
-	have "\<And>i'. \<lbrakk>i' < length xs; \<not> tr_lookup T (i' + Suc ii) ii\<rbrakk> \<Longrightarrow> xs ! i' = None" proof -
-	  fix i' assume H: "i' < length xs" "\<not> tr_lookup T (i' + Suc ii) ii"
-	  { assume H': "xs ! i' \<noteq> None"
-	    then obtain k where "xs ! i' = Some k" by (cases "xs ! i'") simp+
-	    with 2(2)[of "Suc i'" 0 k] H have False by simp
-	  } thus "xs ! i' = None" by (cases "xs ! i'") simp+
-	qed moreover
-	from H J have "ii < Suc ii" "j' < length xs" by simp+
-	ultimately show ?thesis by (rule mk_eqcl'_nth')
+        have "\<And>x k. \<lbrakk>x \<in> set xs; x = Some k\<rbrakk> \<Longrightarrow> k < length zs" proof -
+          fix x k assume "x \<in> set xs" "x = Some k"
+          with 2(4)[of x k] show "k < length zs" by simp
+        qed moreover
+        have "\<And>i'. \<lbrakk>i' < length xs; \<not> tr_lookup T (i' + Suc ii) ii\<rbrakk> \<Longrightarrow> xs ! i' = None" proof -
+          fix i' assume H: "i' < length xs" "\<not> tr_lookup T (i' + Suc ii) ii"
+          { assume H': "xs ! i' \<noteq> None"
+            then obtain k where "xs ! i' = Some k" by (cases "xs ! i'") simp+
+            with 2(2)[of "Suc i'" 0 k] H have False by simp
+          } thus "xs ! i' = None" by (cases "xs ! i'") simp+
+        qed moreover
+        from H J have "ii < Suc ii" "j' < length xs" by simp+
+        ultimately show ?thesis by (rule mk_eqcl'_nth')
       qed
       also from J 0 have "\<dots> = (\<not> tr_lookup T (i + ii) (j + ii))" by (auto simp: tr_lookup_def)
       finally show ?thesis by simp
@@ -1203,40 +1202,40 @@ next
       case (Suc i')
       have "\<And>i j k. \<lbrakk>i < length (mk_eqcl' xs ii (Suc ii) (length zs) T); j < length (mk_eqcl' xs ii (Suc ii) (length zs) T); mk_eqcl' xs ii (Suc ii) (length zs) T ! i = Some k\<rbrakk>
          \<Longrightarrow> (mk_eqcl' xs ii (Suc ii) (length zs) T ! j = Some k) = (\<not> tr_lookup T (i + Suc ii) (j + Suc ii))" proof -
-	fix i j k assume H: "i < length (mk_eqcl' xs ii (Suc ii) (length zs) T)" "j < length (mk_eqcl' xs ii (Suc ii) (length zs) T)" "mk_eqcl' xs ii (Suc ii) (length zs) T ! i = Some k"
-	{ fix i' j' k assume "i' < length xs" "j' < length xs" "xs ! i' = Some k"
-	  with 2(2)[of "Suc i'" "Suc j'" k] have "(xs ! j' = Some k) = (\<not> tr_lookup T (i' + Suc ii) (j' + Suc ii))" by simp
-	} moreover
-	note 2(3) moreover
-	from 2(5) have "length xs + Suc ii = length T + 1" by simp moreover
-	{ fix x k assume "x \<in> set xs" "x = Some k"
-	  with 2(4)[of x k] have "k < length zs" by simp
-	} moreover
-	have "\<And>i'. \<lbrakk>i' < length xs; \<not> tr_lookup T (i' + Suc ii) ii\<rbrakk> \<Longrightarrow> xs ! i' = None" proof -
-	  fix i' assume H': "i' < length xs" "\<not> tr_lookup T (i' + Suc ii) ii"
-	  { assume "xs ! i' \<noteq> None"
-	    then obtain k where K: "xs ! i' = Some k" by (cases "xs ! i'") simp+
-	    with H' 2(2)[of "Suc i'" 0 k] have False by simp 
-	  } thus "xs ! i' = None" by (cases "xs ! i' = None") simp+
-	qed moreover
-	have "ii < Suc ii" by simp moreover
-	from H have "i < length xs" by (simp add: mk_eqcl'_len) moreover
-	note H(3) moreover
-	from H have "j < length xs" by (simp add: mk_eqcl'_len)
-	ultimately show "(mk_eqcl' xs ii (Suc ii) (length zs) T ! j = Some k) = (\<not> tr_lookup T (i + Suc ii) (j + Suc ii))" by (rule mk_eqcl'_nth)
+        fix i j k assume H: "i < length (mk_eqcl' xs ii (Suc ii) (length zs) T)" "j < length (mk_eqcl' xs ii (Suc ii) (length zs) T)" "mk_eqcl' xs ii (Suc ii) (length zs) T ! i = Some k"
+        { fix i' j' k assume "i' < length xs" "j' < length xs" "xs ! i' = Some k"
+          with 2(2)[of "Suc i'" "Suc j'" k] have "(xs ! j' = Some k) = (\<not> tr_lookup T (i' + Suc ii) (j' + Suc ii))" by simp
+        } moreover
+        note 2(3) moreover
+        from 2(5) have "length xs + Suc ii = length T + 1" by simp moreover
+        { fix x k assume "x \<in> set xs" "x = Some k"
+          with 2(4)[of x k] have "k < length zs" by simp
+        } moreover
+        have "\<And>i'. \<lbrakk>i' < length xs; \<not> tr_lookup T (i' + Suc ii) ii\<rbrakk> \<Longrightarrow> xs ! i' = None" proof -
+          fix i' assume H': "i' < length xs" "\<not> tr_lookup T (i' + Suc ii) ii"
+          { assume "xs ! i' \<noteq> None"
+            then obtain k where K: "xs ! i' = Some k" by (cases "xs ! i'") simp+
+            with H' 2(2)[of "Suc i'" 0 k] have False by simp 
+          } thus "xs ! i' = None" by (cases "xs ! i' = None") simp+
+        qed moreover
+        have "ii < Suc ii" by simp moreover
+        from H have "i < length xs" by (simp add: mk_eqcl'_len) moreover
+        note H(3) moreover
+        from H have "j < length xs" by (simp add: mk_eqcl'_len)
+        ultimately show "(mk_eqcl' xs ii (Suc ii) (length zs) T ! j = Some k) = (\<not> tr_lookup T (i + Suc ii) (j + Suc ii))" by (rule mk_eqcl'_nth)
       qed moreover
       note 2(3) moreover
       have "\<And>x k. \<lbrakk>x \<in> set (mk_eqcl' xs ii (Suc ii) (length zs) T); x = Some k\<rbrakk> \<Longrightarrow> k < length (zs @ [ii])" proof -
-	fix x k assume H: "x \<in> set (mk_eqcl' xs ii (Suc ii) (length zs) T)" "x = Some k"
-	{ fix x k assume "x \<in> set xs" "x = Some k"
-	  with 2(4)[of x k] have "k < length zs" by simp
-	} from this H have "k \<le> length zs" by (rule mk_eqcl'_bound)
-	thus "k < length (zs @ [ii])" by simp
+        fix x k assume H: "x \<in> set (mk_eqcl' xs ii (Suc ii) (length zs) T)" "x = Some k"
+        { fix x k assume "x \<in> set xs" "x = Some k"
+          with 2(4)[of x k] have "k < length zs" by simp
+        } from this H have "k \<le> length zs" by (rule mk_eqcl'_bound)
+        thus "k < length (zs @ [ii])" by simp
       qed moreover
       from 2(5) have "length (mk_eqcl' xs ii (Suc ii) (length zs) T) + Suc ii = length T + 1" by (simp add: mk_eqcl'_len) moreover
       from H Suc J have "i' < length (mk_eqcl' xs ii (Suc ii) (length zs) T)" "j' < length (mk_eqcl' xs ii (Suc ii) (length zs) T)" by (simp add: mk_eqcl'_len)+
       ultimately have IV: "(fst (mk_eqcl (mk_eqcl' xs ii (Suc ii) (length zs) T) (zs @ [ii]) (Suc ii) T) ! i' = fst (mk_eqcl (mk_eqcl' xs ii (Suc ii) (length zs) T) (zs @ [ii]) (Suc ii) T) ! j') =
-	(\<not> tr_lookup T (i' + Suc ii) (j' + Suc ii))" by (rule 2(1))
+        (\<not> tr_lookup T (i' + Suc ii) (j' + Suc ii))" by (rule 2(1))
       with Suc J show ?thesis by (simp add: split_beta)
     qed
   } note L = this
@@ -1260,13 +1259,13 @@ next
     next
       case (Suc i')
       have "\<And>i j k. \<lbrakk>i < length xs; j < length xs; xs ! i = Some k\<rbrakk> \<Longrightarrow> (xs ! j = Some k) = (\<not> tr_lookup T (i + Suc ii) (j + Suc ii))" proof -
-	fix i j k assume "i < length xs" "j < length xs" "xs ! i = Some k"
-	with 3(2)[of "Suc i" "Suc j" k] show "(xs ! j = Some k) = (\<not> tr_lookup T (i + Suc ii) (j + Suc ii))" by simp
+        fix i j k assume "i < length xs" "j < length xs" "xs ! i = Some k"
+        with 3(2)[of "Suc i" "Suc j" k] show "(xs ! j = Some k) = (\<not> tr_lookup T (i + Suc ii) (j + Suc ii))" by simp
       qed moreover
       note 3(3) moreover
       have "\<And>x k. \<lbrakk>x \<in> set xs; x = Some k\<rbrakk> \<Longrightarrow> k < length zs" proof -
-	fix x k assume "x \<in> set xs" "x = Some k"
-	with 3(4)[of x k] show "k < length zs" by simp
+        fix x k assume "x \<in> set xs" "x = Some k"
+        with 3(4)[of x k] show "k < length zs" by simp
       qed moreover
       from 3(5) H Suc J have "length xs + Suc ii = length T + 1" "i' < length xs" "j' < length xs" by simp+
       ultimately have "(fst (mk_eqcl xs zs (Suc ii) T) ! i' = fst (mk_eqcl xs zs (Suc ii) T) ! j') = (\<not> tr_lookup T (i' + Suc ii) (j' + Suc ii))" by (rule 3(1))
@@ -1282,11 +1281,11 @@ next
 qed
 
 definition min_dfa :: "dfa \<Rightarrow> dfa" where
-  "min_dfa \<equiv> \<lambda>(bd, as). let (os, ns) = mk_eqcl (replicate (length bd) None) [] 0 (fixpt (bd, as) (init_tr (bd, as))) in
-      (map (\<lambda>p. bdd_map (\<lambda>q. os ! q) (bd ! p)) ns, map (\<lambda>p. as ! p) ns)"
+  "min_dfa = (\<lambda>(bd, as). let (os, ns) = mk_eqcl (replicate (length bd) None) [] 0 (fixpt (bd, as) (init_tr (bd, as))) in
+      (map (\<lambda>p. bdd_map (\<lambda>q. os ! q) (bd ! p)) ns, map (\<lambda>p. as ! p) ns))"
 
 definition eq_nodes :: "dfa \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
-  "eq_nodes \<equiv> \<lambda>M v p q. \<not> (\<exists>n. dist_nodes M n v p q)"
+  "eq_nodes = (\<lambda>M v p q. \<not> (\<exists>n. dist_nodes M n v p q))"
 
 lemma mk_eqcl_fixpt_fst_bound:
   assumes "dfa_is_node M i"
@@ -1317,13 +1316,13 @@ proof -
     have "\<And>a b c. \<lbrakk>a \<le> length (fixpt M (init_tr M)); b \<le> length (fixpt M (init_tr M)); c \<le> length (fixpt M (init_tr M)); \<not> tr_lookup (fixpt M (init_tr M)) a b; \<not> tr_lookup (fixpt M (init_tr M)) b c\<rbrakk>
       \<Longrightarrow> \<not> tr_lookup (fixpt M (init_tr M)) a c" proof -
       fix a b c assume H': "a \<le> length (fixpt M (init_tr M))" "b \<le> length (fixpt M (init_tr M))" "c \<le> length (fixpt M (init_tr M))" "\<not> tr_lookup (fixpt M (init_tr M)) a b"
-	"\<not> tr_lookup (fixpt M (init_tr M)) b c"
+        "\<not> tr_lookup (fixpt M (init_tr M)) b c"
       { fix q assume H'': "q \<le> length (fixpt M (init_tr M))"
-	from assms have "length (fst M) > 0" by (simp add: wf_dfa_def) 
-	then obtain m where M: "length (fst M) = Suc m" by (cases "length (fst M)") simp+
-	hence M': "m = length (fst M) - 1" by simp
-	with H'' WF have "q \<le> m" by (simp add: wf_tr_def)
-	with M have "q < length (fst M)" by simp
+        from assms have "length (fst M) > 0" by (simp add: wf_dfa_def) 
+        then obtain m where M: "length (fst M) = Suc m" by (cases "length (fst M)") simp+
+        hence M': "m = length (fst M) - 1" by simp
+        with H'' WF have "q \<le> m" by (simp add: wf_tr_def)
+        with M have "q < length (fst M)" by simp
       }
       with H' have D: "dfa_is_node M a" "dfa_is_node M b" "dfa_is_node M c" by (auto simp: dfa_is_node_def)
       with H'(4,5) assms(1) have "\<not> (\<exists>n. dist_nodes M n v a b)" "\<not> (\<exists>n. dist_nodes M n v b c)" by (simp add: fixpt_dist_nodes[symmetric])+
@@ -1499,25 +1498,24 @@ qed
 
 section {* NFAs *}
 
-types
-  nbddtable = "bool list bdd list"
-  nfa = "nbddtable \<times> astate"
+type_synonym nbddtable = "bool list bdd list"
+type_synonym nfa = "nbddtable \<times> astate"
 
 definition
   nfa_is_node :: "nfa \<Rightarrow> bool list \<Rightarrow> bool" where
-  "nfa_is_node A \<equiv> \<lambda>qs. length qs = length (fst A)"
+  "nfa_is_node A = (\<lambda>qs. length qs = length (fst A))"
 
 definition
   wf_nfa :: "nfa \<Rightarrow> nat \<Rightarrow> bool" where
-  "wf_nfa A n \<equiv>
-     list_all (bddh n) (fst A) \<and>
+  "wf_nfa A n =
+    (list_all (bddh n) (fst A) \<and>
      list_all (bdd_all (nfa_is_node A)) (fst A) \<and>
      length (snd A) = length (fst A) \<and>
-     length (fst A) > 0"
+     length (fst A) > 0)"
 
 definition
   set_of_bv :: "bool list \<Rightarrow> nat set" where
-  "set_of_bv bs \<equiv> {i. i < length bs \<and> bs ! i}"
+  "set_of_bv bs = {i. i < length bs \<and> bs ! i}"
 
 fun
   bv_or :: "bool list \<Rightarrow> bool list \<Rightarrow> bool list"
@@ -1560,7 +1558,7 @@ where
 
 definition
   nfa_emptybdd :: "nat \<Rightarrow> bool list bdd" where
-  "nfa_emptybdd n \<equiv> Leaf (replicate n False)"
+  "nfa_emptybdd n = Leaf (replicate n False)"
 
 lemma bdd_all_is_node_subsetbdd:
   assumes "list_all (bdd_all (nfa_is_node A)) (fst A)"
@@ -1602,11 +1600,11 @@ using assms proof (induct bdds q obdd rule: subsetbdd.induct)
       assume "(\<exists>i. ?P i) \<or> ?Q \<or> ?R" thus "(\<exists>i. ?S i) \<or> ?R" by (elim disjE) auto
     next
       assume "(\<exists>i. ?S i) \<or> ?R" thus "(\<exists>i. ?P i) \<or> ?Q \<or> ?R" proof (elim disjE)
-	assume "\<exists>i. ?S i"
-	then obtain i where I: "?S i" ..
-	{ assume "i = 0" with I have "?Q" by simp }
-	{ assume "i \<noteq> 0" then obtain j where "i = Suc j" by (cases i) simp+ with I have "\<exists>j. ?P j" by auto }
-	with `i=0 \<Longrightarrow> ?Q` show ?thesis by (cases "i=0") simp+
+        assume "\<exists>i. ?S i"
+        then obtain i where I: "?S i" ..
+        { assume "i = 0" with I have "?Q" by simp }
+        { assume "i \<noteq> 0" then obtain j where "i = Suc j" by (cases i) simp+ with I have "\<exists>j. ?P j" by auto }
+        with `i=0 \<Longrightarrow> ?Q` show ?thesis by (cases "i=0") simp+
       qed simp
     qed
     finally have "((\<exists>i<length xs. xs ! i \<and> bdd_lookup (bdds ! i) ws ! a) \<or> bdd_lookup (bdd_binop bv_or bdd bdd') ws ! a) =
@@ -1621,10 +1619,10 @@ using assms proof (induct bdds q obdd rule: subsetbdd.induct)
       assume "(\<exists>i. ?S i) \<or> ?R" thus "(\<exists>i. ?P i) \<or> ?R" by (elim disjE) auto
     next
       assume "(\<exists>i. ?P i) \<or> ?R" thus "(\<exists>i. ?S i) \<or> ?R" proof (elim disjE)
-	assume "\<exists>i. ?P i"
-	then obtain i where "?P i" ..
-	then obtain j where "i = Suc j" by (cases i) simp+
-	with `?P i` show ?thesis by auto
+        assume "\<exists>i. ?P i"
+        then obtain i where "?P i" ..
+        then obtain j where "i = Suc j" by (cases i) simp+
+        with `?P i` show ?thesis by auto
       qed simp
     qed
     with False H show ?thesis by simp
@@ -1652,14 +1650,14 @@ qed
 
 definition
   nfa_trans :: "nfa \<Rightarrow> bool list \<Rightarrow> bool list \<Rightarrow> bool list" where
-  "nfa_trans A qs bs \<equiv> bdd_lookup (subsetbdd (fst A) qs (nfa_emptybdd (length qs))) bs"
+  "nfa_trans A qs bs = bdd_lookup (subsetbdd (fst A) qs (nfa_emptybdd (length qs))) bs"
 
 fun nfa_accepting' :: "bool list \<Rightarrow> bool list \<Rightarrow> bool" where
   "nfa_accepting' [] bs = False"
 | "nfa_accepting' as [] = False"
 | "nfa_accepting' (a # as) (b # bs) = (a \<and> b \<or> nfa_accepting' as bs)"
 definition nfa_accepting :: "nfa \<Rightarrow> bool list \<Rightarrow> bool" where
-  "nfa_accepting A \<equiv> nfa_accepting' (snd A)"
+  "nfa_accepting A = nfa_accepting' (snd A)"
 
 lemma nfa_accepting'_set_of_bv: "nfa_accepting' l r = (set_of_bv l \<inter> set_of_bv r \<noteq> {})"
 proof -
@@ -1670,27 +1668,27 @@ proof -
     proof (induct as q rule: nfa_accepting'.induct)
       case (3 a as q qs)
       thus ?case proof (cases "a\<and>q")
-	case False
-	with 3 have "nfa_accepting' as qs = (\<exists>i < length as. i < length qs \<and> as ! i \<and> qs ! i)" (is "?T = _") by simp
-	also have "\<dots> = (\<exists>j < length as. j < length qs \<and> (a#as) ! Suc j \<and> (q#qs) ! Suc j)" by simp
-	also have "\<dots> = (\<exists>j < length (a#as). j < length (q#qs) \<and> (a#as) ! j \<and> (q#qs) ! j)" (is "(\<exists>j. ?P j) = (\<exists>j. ?Q j)")
-	proof
-	  assume "\<exists>j. ?P j"
-	  then obtain j where "?P j" ..
-	  hence "?Q (Suc j)" by simp
-	  thus "\<exists>j. ?Q j" by (rule exI)
-	next
-	  assume "\<exists>j. ?Q j"
-	  then obtain j where J: "?Q j" ..
-	  with False obtain i where "j = Suc i" by (cases j) simp+
-	  with J have "?P i" by simp
-	  thus "\<exists>i. ?P i" by (rule exI)
-	qed
-	also from False have "\<dots> = ((a\<and>q \<and> ?Q 0) \<or> (\<not> (a\<and>q) \<and> (\<exists>j. ?Q j)))" by auto
-	also have "\<dots> = ((a \<and> q \<and> (\<exists>j. ?Q j)) \<or> (\<not>(a\<and>q) \<and> (\<exists>j. ?Q j)))" by auto
-	also have "\<dots> = (\<exists>j. ?Q j)" by auto
-	finally have "?T = (\<exists>j. ?Q j)" .
-	with False show ?thesis by auto
+        case False
+        with 3 have "nfa_accepting' as qs = (\<exists>i < length as. i < length qs \<and> as ! i \<and> qs ! i)" (is "?T = _") by simp
+        also have "\<dots> = (\<exists>j < length as. j < length qs \<and> (a#as) ! Suc j \<and> (q#qs) ! Suc j)" by simp
+        also have "\<dots> = (\<exists>j < length (a#as). j < length (q#qs) \<and> (a#as) ! j \<and> (q#qs) ! j)" (is "(\<exists>j. ?P j) = (\<exists>j. ?Q j)")
+        proof
+          assume "\<exists>j. ?P j"
+          then obtain j where "?P j" ..
+          hence "?Q (Suc j)" by simp
+          thus "\<exists>j. ?Q j" by (rule exI)
+        next
+          assume "\<exists>j. ?Q j"
+          then obtain j where J: "?Q j" ..
+          with False obtain i where "j = Suc i" by (cases j) simp+
+          with J have "?P i" by simp
+          thus "\<exists>i. ?P i" by (rule exI)
+        qed
+        also from False have "\<dots> = ((a\<and>q \<and> ?Q 0) \<or> (\<not> (a\<and>q) \<and> (\<exists>j. ?Q j)))" by auto
+        also have "\<dots> = ((a \<and> q \<and> (\<exists>j. ?Q j)) \<or> (\<not>(a\<and>q) \<and> (\<exists>j. ?Q j)))" by auto
+        also have "\<dots> = (\<exists>j. ?Q j)" by auto
+        finally have "?T = (\<exists>j. ?Q j)" .
+        with False show ?thesis by auto
       qed (auto simp: 3)
     qed simp+
   qed
@@ -1705,7 +1703,7 @@ lemma nfa_accepting_set_of_bv: "nfa_accepting A q = (set_of_bv (snd A) \<inter> 
 
 definition
   nfa_startnode :: "nfa \<Rightarrow> bool list" where
-  "nfa_startnode A \<equiv> (replicate (length (fst A)) False)[0:=True]"
+  "nfa_startnode A = (replicate (length (fst A)) False)[0:=True]"
 
 locale aut_nfa =
   fixes A n
@@ -1749,7 +1747,7 @@ subsection {* Negation *}
 
 definition
   negate_dfa :: "dfa \<Rightarrow> dfa" where
-  "negate_dfa \<equiv> \<lambda>(t,a). (t, map Not a)"
+  "negate_dfa = (\<lambda>(t,a). (t, map Not a))"
 
 lemma negate_wf_dfa: "wf_dfa (negate_dfa A) l = wf_dfa A l"
   by (simp add: negate_dfa_def wf_dfa_def dfa_is_node_def split_beta)
@@ -1777,40 +1775,40 @@ subsection {* Product Automaton *}
 
 definition
   prod_succs :: "dfa \<Rightarrow> dfa \<Rightarrow> nat \<times> nat \<Rightarrow> (nat \<times> nat) list" where
-  "prod_succs A B \<equiv> \<lambda>(i, j). add_leaves (bdd_binop Pair (fst A ! i) (fst B ! j)) []"
+  "prod_succs A B = (\<lambda>(i, j). add_leaves (bdd_binop Pair (fst A ! i) (fst B ! j)) [])"
 
 definition
-  "prod_is_node A B \<equiv> \<lambda>(i, j). dfa_is_node A i \<and> dfa_is_node B j"
+  "prod_is_node A B = (\<lambda>(i, j). dfa_is_node A i \<and> dfa_is_node B j)"
 
 definition
   prod_invariant :: "dfa \<Rightarrow> dfa \<Rightarrow> nat option list list \<times> (nat \<times> nat) list \<Rightarrow> bool" where
-  "prod_invariant A B \<equiv> \<lambda>(tab, ps).
-     length tab = length (fst A) \<and> (\<forall>tab'\<in>set tab. length tab' = length (fst B))"
+  "prod_invariant A B = (\<lambda>(tab, ps).
+     length tab = length (fst A) \<and> (\<forall>tab'\<in>set tab. length tab' = length (fst B)))"
 
 definition
-  "prod_ins \<equiv> \<lambda>(i, j). \<lambda>(tab, ps).
+  "prod_ins = (\<lambda>(i, j). \<lambda>(tab, ps).
      (tab[i := (tab ! i)[j := Some (length ps)]],
-      ps @ [(i, j)])"
+      ps @ [(i, j)]))"
 
 definition
   prod_memb :: "nat \<times> nat \<Rightarrow> nat option list list \<times> (nat \<times> nat) list \<Rightarrow> bool" where
-  "prod_memb \<equiv> \<lambda>(i, j). \<lambda>(tab, ps). tab ! i ! j \<noteq> None"
+  "prod_memb = (\<lambda>(i, j). \<lambda>(tab, ps). tab ! i ! j \<noteq> None)"
 
 definition
   prod_empt :: "dfa \<Rightarrow> dfa \<Rightarrow> nat option list list \<times> (nat \<times> nat) list" where
-  "prod_empt A B \<equiv> (replicate (length (fst A)) (replicate (length (fst B)) None), [])"
+  "prod_empt A B = (replicate (length (fst A)) (replicate (length (fst B)) None), [])"
 
 definition
   prod_dfs :: "dfa \<Rightarrow> dfa \<Rightarrow> nat \<times> nat \<Rightarrow> nat option list list \<times> (nat \<times> nat) list" where
-  "prod_dfs A B x \<equiv> gen_dfs (prod_succs A B) prod_ins prod_memb (prod_empt A B) [x]"
+  "prod_dfs A B x = gen_dfs (prod_succs A B) prod_ins prod_memb (prod_empt A B) [x]"
 
 definition
   binop_dfa :: "(bool \<Rightarrow> bool \<Rightarrow> bool) \<Rightarrow> dfa \<Rightarrow> dfa \<Rightarrow> dfa" where
-  "binop_dfa f A B \<equiv>
-     let (tab, ps) = prod_dfs A B (0, 0)
+  "binop_dfa f A B =
+    (let (tab, ps) = prod_dfs A B (0, 0)
      in
        (map (\<lambda>(i, j). bdd_binop (\<lambda>k l. the (tab ! k ! l)) (fst A ! i) (fst B ! j)) ps,
-        map (\<lambda>(i, j). f (snd A ! i) (snd B ! j)) ps)"
+        map (\<lambda>(i, j). f (snd A ! i) (snd B ! j)) ps))"
 
 locale prod_DFS =
   fixes A B n
@@ -1877,20 +1875,20 @@ proof -
       case True
       show ?thesis
       proof (cases "y2 = j")
-	case True
-	with step y `y1 = i` show ?thesis
-	  by (auto simp add: prod_ins_def prod_memb_def split_beta nth_append
-	    prod_invariant_def prod_is_node_def dfa_is_node_def)
+        case True
+        with step y `y1 = i` show ?thesis
+          by (auto simp add: prod_ins_def prod_memb_def split_beta nth_append
+            prod_invariant_def prod_is_node_def dfa_is_node_def)
       next
-	case False
-	with step y `y1 = i` show ?thesis
-	  by (auto simp add: prod_ins_def prod_memb_def split_beta nth_append
-	    prod_invariant_def prod_is_node_def dfa_is_node_def)
+        case False
+        with step y `y1 = i` show ?thesis
+          by (auto simp add: prod_ins_def prod_memb_def split_beta nth_append
+            prod_invariant_def prod_is_node_def dfa_is_node_def)
       qed
     next
       case False
       with step y show ?thesis
-	by (auto simp add: prod_ins_def prod_memb_def split_beta nth_append)
+        by (auto simp add: prod_ins_def prod_memb_def split_beta nth_append)
     qed
   qed
   then show ?thesis by (simp add: prod_dfs_def)
@@ -2019,10 +2017,10 @@ proof -
       assume bs: "length (bs::bool list) = n"
       moreover note i j
       moreover from well_formed1 well_formed2 have "dfa_is_node A 0" and "dfa_is_node B 0"
-	by (simp add: dfa_is_node_def wf_dfa_def)+
+        by (simp add: dfa_is_node_def wf_dfa_def)+
       moreover note ij_k
       ultimately obtain m where "fst (prod_dfs A B (0, 0)) ! dfa_trans A i bs ! dfa_trans B j bs = Some m"
-	and "m < length (snd (prod_dfs A B (0, 0)))" by (rule prod_dfs_statetrans)
+        and "m < length (snd (prod_dfs A B (0, 0)))" by (rule prod_dfs_statetrans)
       then show "the (fst (prod_dfs A B (0,0)) ! dfa_trans A i bs ! dfa_trans B j bs) < length (snd (prod_dfs A B (0,0)))" by simp
     qed
     with bddh_tr1 bddh_tr2 have 2: "bdd_all (\<lambda>q. q < length (snd (prod_dfs A B (0, 0)))) (bdd_binop (\<lambda>k l. the (fst (prod_dfs A B (0,0)) ! k ! l)) (fst A ! i) (fst B ! j))"
@@ -2065,10 +2063,10 @@ proof -
     proof (induct arbitrary: s\<^isub>1 s\<^isub>2)
       case Nil
       from is_node_s1_s2
-	s1 s2 `dfa_is_node A s\<^isub>1` `dfa_is_node B s\<^isub>2`
+        s1 s2 `dfa_is_node A s\<^isub>1` `dfa_is_node B s\<^isub>2`
       have "(0, 0) = (s\<^isub>1, s\<^isub>2)"
-	using start `fst (prod_dfs A B (0,0)) ! s\<^isub>1 ! s\<^isub>2 = Some 0`
-	by (rule prod_dfs_inj)
+        using start `fst (prod_dfs A B (0,0)) ! s\<^isub>1 ! s\<^isub>2 = Some 0`
+        by (rule prod_dfs_inj)
       moreover have "dfa_reach A 0 [] 0" by (rule reach_nil)
       moreover have "dfa_reach B 0 [] 0" by (rule reach_nil)
       ultimately show ?case by simp
@@ -2079,40 +2077,40 @@ proof -
       with snoc binop_wf_dfa [of f] have "dfa_is_node (binop_dfa f A B) j" by (simp add: dfa_reach_is_node)
       then have j: "j < length (snd (prod_dfs A B (0,0)))" by (simp add: binop_dfa_def dfa_is_node_def split_beta)
       with prod_dfs_bij [OF is_node_s1_s2,
-	of "fst (snd (prod_dfs A B (0,0)) ! j)" "snd (snd (prod_dfs A B (0,0)) ! j)"]
+        of "fst (snd (prod_dfs A B (0,0)) ! j)" "snd (snd (prod_dfs A B (0,0)) ! j)"]
       have j_tr1: "dfa_is_node A (fst (snd (prod_dfs A B (0,0)) ! j))"
-	and j_tr2: "dfa_is_node B (snd (snd (prod_dfs A B (0,0)) ! j))"
-	and Some_j: "fst (prod_dfs A B (0,0)) ! fst (snd (prod_dfs A B (0,0)) ! j) ! snd (snd (prod_dfs A B (0,0)) ! j) = Some j"
-	by auto
+        and j_tr2: "dfa_is_node B (snd (snd (prod_dfs A B (0,0)) ! j))"
+        and Some_j: "fst (prod_dfs A B (0,0)) ! fst (snd (prod_dfs A B (0,0)) ! j) ! snd (snd (prod_dfs A B (0,0)) ! j) = Some j"
+        by auto
       note j_tr1 j_tr2 s1 s2 Some_j
       ultimately obtain k
-	where k: "fst (prod_dfs A B (0,0)) ! 
+        where k: "fst (prod_dfs A B (0,0)) ! 
           dfa_trans A (fst (snd (prod_dfs A B (0, 0)) ! j)) bs !
           dfa_trans B (snd (snd (prod_dfs A B (0, 0)) ! j)) bs = Some k"
         and s_tr1': "dfa_is_node A (dfa_trans A (fst (snd (prod_dfs A B (0,0)) ! j)) bs)"
-	and s_tr2': "dfa_is_node B (dfa_trans B (snd (snd (prod_dfs A B (0,0)) ! j)) bs)"
-	by (rule prod_dfs_statetrans)
+        and s_tr2': "dfa_is_node B (dfa_trans B (snd (snd (prod_dfs A B (0,0)) ! j)) bs)"
+        by (rule prod_dfs_statetrans)
 
       from well_formed1 well_formed2 j_tr1 j_tr2 snoc
       have lh: "bddh (length bs) (fst A ! fst (snd (prod_dfs A B (0,0)) ! j))"
-	and rh: "bddh (length bs) (fst B ! snd (snd (prod_dfs A B (0,0)) ! j))"
-	by (auto simp: wf_dfa_def dfa_is_node_def list_all_iff is_alph_def)
+        and rh: "bddh (length bs) (fst B ! snd (snd (prod_dfs A B (0,0)) ! j))"
+        by (auto simp: wf_dfa_def dfa_is_node_def list_all_iff is_alph_def)
       from snoc(3)[unfolded dfa_trans_def binop_dfa_def Let_def split_beta fst_conv nth_map[OF j] bdd_lookup_binop[OF lh,OF rh], folded dfa_trans_def] k
       have "fst (prod_dfs A B (0,0)) ! s\<^isub>1 ! s\<^isub>2 = Some k" by simp
       with is_node_s1_s2 `dfa_is_node A s\<^isub>1` `dfa_is_node B s\<^isub>2` s_tr1' s_tr2'
       have "(s\<^isub>1, s\<^isub>2) = (dfa_trans A (fst (snd (prod_dfs A B (0,0)) ! j)) bs, dfa_trans B (snd (snd (prod_dfs A B (0,0)) ! j)) bs)"
-	using k
-	by (rule prod_dfs_inj)
+        using k
+        by (rule prod_dfs_inj)
       moreover from snoc Some_j j_tr1 j_tr2
       have "dfa_reach A 0 bss (fst (snd (prod_dfs A B (0,0)) ! j))" by simp
       hence "dfa_reach A 0 (bss @ [bs]) (dfa_trans A (fst (snd (prod_dfs A B (0,0)) ! j)) bs)"
-	by (rule reach_snoc)
+        by (rule reach_snoc)
       moreover from snoc Some_j j_tr1 j_tr2
       have "dfa_reach B 0 bss (snd (snd (prod_dfs A B (0,0)) ! j))" by simp
       hence "dfa_reach B 0 (bss @ [bs]) (dfa_trans B (snd (snd (prod_dfs A B (0,0)) ! j)) bs)"
-	by (rule reach_snoc)
+        by (rule reach_snoc)
       ultimately show "dfa_reach A 0 (bss @ [bs]) s\<^isub>1 \<and> dfa_reach B 0 (bss @ [bs]) s\<^isub>2"
-	by simp
+        by simp
     qed
   next
     assume ?rhs
@@ -2121,52 +2119,52 @@ proof -
     proof (induct arbitrary: s\<^isub>2)
       case Nil
       with start s1 s2 show ?case
-	by (auto intro: reach_nil simp: reach_nil_iff)
+        by (auto intro: reach_nil simp: reach_nil_iff)
     next
       case (snoc j bss bs s\<^isub>2)
       from snoc(3)
       obtain s\<^isub>2' where reach_s2': "dfa_reach B 0 bss s\<^isub>2'" and s2': "s\<^isub>2 = dfa_trans B s\<^isub>2' bs"
-	by (auto simp: reach_snoc_iff)
+        by (auto simp: reach_snoc_iff)
       from snoc(2) [OF reach_s2'] snoc(4)
       obtain m where reach_m: "dfa_reach (binop_dfa f A B) 0 bss m"
         and m: "fst (prod_dfs A B (0,0)) ! j ! s\<^isub>2' = Some m"
         and j: "dfa_is_node A j" and s2'': "dfa_is_node B s\<^isub>2'"
-	by auto
+        by auto
       from snoc have "list_all (is_alph n) bss" by simp
       with binop_wf_dfa reach_m dfa_startnode_is_node[OF binop_wf_dfa]
       have m_less: "dfa_is_node (binop_dfa f A B) m"
-	by (rule dfa_reach_is_node)
+        by (rule dfa_reach_is_node)
       from is_node_s1_s2 m j s2''
       have m': "(m < length (snd (prod_dfs A B (0,0))) \<and>
-	snd (prod_dfs A B (0,0)) ! m = (j, s\<^isub>2'))"
-	by (simp add: prod_dfs_bij [symmetric])
+        snd (prod_dfs A B (0,0)) ! m = (j, s\<^isub>2'))"
+        by (simp add: prod_dfs_bij [symmetric])
       with j s2'' have "dfa_is_node A (fst (snd (prod_dfs A B (0,0)) ! m))"
-	"dfa_is_node B (snd (snd (prod_dfs A B (0,0)) ! m))"
-	by simp_all
+        "dfa_is_node B (snd (snd (prod_dfs A B (0,0)) ! m))"
+        by simp_all
       with well_formed1 well_formed2 snoc
       have bddh: "bddh (length bs) (fst A ! fst (snd (prod_dfs A B (0,0)) ! m))"
-	"bddh (length bs) (fst B ! snd (snd (prod_dfs A B (0,0)) ! m))"
-	by (simp add: wf_dfa_def is_alph_def dfa_is_node_def list_all_iff)+
+        "bddh (length bs) (fst B ! snd (snd (prod_dfs A B (0,0)) ! m))"
+        by (simp add: wf_dfa_def is_alph_def dfa_is_node_def list_all_iff)+
       from snoc have "length bs = n" by (simp add: is_alph_def)
       then obtain k where k: "fst (prod_dfs A B (0,0)) !
-	  dfa_trans A j bs ! dfa_trans B s\<^isub>2' bs = Some k"
-	and s_tr1: "dfa_is_node A (dfa_trans A j bs)"
-	and s_tr2: "dfa_is_node B (dfa_trans B s\<^isub>2' bs)"
-	using j s2'' s1 s2 m
-	by (rule prod_dfs_statetrans)
+          dfa_trans A j bs ! dfa_trans B s\<^isub>2' bs = Some k"
+        and s_tr1: "dfa_is_node A (dfa_trans A j bs)"
+        and s_tr2: "dfa_is_node B (dfa_trans B s\<^isub>2' bs)"
+        using j s2'' s1 s2 m
+        by (rule prod_dfs_statetrans)
       show ?case
-	apply (rule exI)
-	apply (simp add: s2')
-	apply (intro conjI)
-	apply (rule reach_snoc)
-	apply (rule reach_m)
-	apply (cut_tac m_less)
-	apply (simp add: dfa_trans_def binop_dfa_def split_beta dfa_is_node_def)
-	apply (simp add: bddh bdd_lookup_binop split_beta)
-	apply (simp add: dfa_trans_def[symmetric] m' k)
-	apply (rule s_tr1)
-	apply (rule s_tr2)
-	done
+        apply (rule exI)
+        apply (simp add: s2')
+        apply (intro conjI)
+        apply (rule reach_snoc)
+        apply (rule reach_m)
+        apply (cut_tac m_less)
+        apply (simp add: dfa_trans_def binop_dfa_def split_beta dfa_is_node_def)
+        apply (simp add: bddh bdd_lookup_binop split_beta)
+        apply (simp add: dfa_trans_def[symmetric] m' k)
+        apply (rule s_tr1)
+        apply (rule s_tr2)
+        done
     qed
   qed
 qed
@@ -2225,7 +2223,7 @@ qed
 
 definition
   and_dfa :: "dfa \<Rightarrow> dfa \<Rightarrow> dfa" where
-  "and_dfa \<equiv> binop_dfa op \<and>"
+  "and_dfa = binop_dfa op \<and>"
 
 lemma and_wf_dfa:
   assumes "wf_dfa M n"
@@ -2242,7 +2240,7 @@ lemma and_dfa_accepts:
 
 definition
   or_dfa :: "dfa \<Rightarrow> dfa \<Rightarrow> dfa" where
-  "or_dfa \<equiv> binop_dfa op \<or>"
+  "or_dfa = binop_dfa op \<or>"
 
 lemma or_wf_dfa:
   assumes "wf_dfa M n" and "wf_dfa N n"
@@ -2257,7 +2255,7 @@ lemma or_dfa_accepts:
     
 definition
   imp_dfa :: "dfa \<Rightarrow> dfa \<Rightarrow> dfa" where
-  "imp_dfa \<equiv> binop_dfa op \<longrightarrow>"
+  "imp_dfa = binop_dfa op \<longrightarrow>"
 
 lemma imp_wf_dfa:
   assumes "wf_dfa M n" and "wf_dfa N n"
@@ -2275,7 +2273,7 @@ subsection {* Transforming DFAs to NFAs *}
 
 definition
   nfa_of_dfa :: "dfa \<Rightarrow> nfa" where
-  "nfa_of_dfa \<equiv> \<lambda>(bdd,as). (map (bdd_map (\<lambda>q. replicate (length bdd) False[q:=True])) bdd, as)"
+  "nfa_of_dfa = (\<lambda>(bdd,as). (map (bdd_map (\<lambda>q. replicate (length bdd) False[q:=True])) bdd, as))"
 
 lemma dfa2wf_nfa:
   assumes "wf_dfa M n"
@@ -2332,26 +2330,26 @@ proof -
       fix i assume H: "i < length (fst M)"
       show "nfa_trans (nfa_of_dfa M) j bs ! i = replicate (length (fst M)) False[m := True] ! i" (is "?lhs = ?rhs")
       proof
-	assume lhs: "?lhs"
-	from V2 snoc have "wf_nfa (nfa_of_dfa M) (length bs)" by (simp add: is_alph_def) moreover
-	note JL moreover
-	from H have IL: "i < length (fst (nfa_of_dfa M))" by (simp add: nfa_of_dfa_def split_beta) moreover
-	from `?lhs` have "bdd_lookup (subsetbdd (fst (nfa_of_dfa M)) j (nfa_emptybdd (length j))) bs ! i" by (simp add: nfa_trans_def) 
-	ultimately have "\<exists>x < length j. j ! x \<and> bdd_lookup (fst (nfa_of_dfa M) ! x) bs ! i" by (simp add: bdd_lookup_subsetbdd)
-	then obtain x where xl: "x < length j" and xj: "j ! x" and xs: "bdd_lookup (fst (nfa_of_dfa M) ! x) bs ! i" by blast
-	with snoc J PL' have "x = p" by (cases "p = x") simp+
-	with xs PL snoc(3,4) m_def show "replicate (length (fst M)) False[m := True] ! i"
-	  by (simp add: nfa_of_dfa_def split_beta dfa_trans_def dfa_is_node_def wf_dfa_def is_alph_def bdd_map_bdd_lookup list_all_iff)
+        assume lhs: "?lhs"
+        from V2 snoc have "wf_nfa (nfa_of_dfa M) (length bs)" by (simp add: is_alph_def) moreover
+        note JL moreover
+        from H have IL: "i < length (fst (nfa_of_dfa M))" by (simp add: nfa_of_dfa_def split_beta) moreover
+        from `?lhs` have "bdd_lookup (subsetbdd (fst (nfa_of_dfa M)) j (nfa_emptybdd (length j))) bs ! i" by (simp add: nfa_trans_def) 
+        ultimately have "\<exists>x < length j. j ! x \<and> bdd_lookup (fst (nfa_of_dfa M) ! x) bs ! i" by (simp add: bdd_lookup_subsetbdd)
+        then obtain x where xl: "x < length j" and xj: "j ! x" and xs: "bdd_lookup (fst (nfa_of_dfa M) ! x) bs ! i" by blast
+        with snoc J PL' have "x = p" by (cases "p = x") simp+
+        with xs PL snoc(3,4) m_def show "replicate (length (fst M)) False[m := True] ! i"
+          by (simp add: nfa_of_dfa_def split_beta dfa_trans_def dfa_is_node_def wf_dfa_def is_alph_def bdd_map_bdd_lookup list_all_iff)
       next
-	assume rhs: "?rhs"
-	with H mL have "m = i" by (cases "m = i") (simp add: dfa_is_node_def)+
-	from PL snoc(3,4) m_def `m = i` H have "bdd_lookup (fst (nfa_of_dfa M) ! p) bs ! i"
-	  by (simp add: nfa_of_dfa_def split_beta dfa_is_node_def wf_dfa_def is_alph_def list_all_iff bdd_map_bdd_lookup dfa_trans_def)
-	with PL' J have E: "\<exists>p < length j. j ! p \<and> bdd_lookup( fst (nfa_of_dfa M) ! p) bs ! i" by auto
-	from snoc(4) V2 have V': "wf_nfa (nfa_of_dfa M) (length bs)" by (simp add: is_alph_def)
-	from H have H': "i < length (fst (nfa_of_dfa M))" by (simp add: nfa_of_dfa_def split_beta)
-	from H' V' E JL have "bdd_lookup (subsetbdd (fst (nfa_of_dfa M)) j (nfa_emptybdd (length j))) bs ! i" by (simp add: bdd_lookup_subsetbdd)
-	thus "?lhs" by (simp add: nfa_trans_def)
+        assume rhs: "?rhs"
+        with H mL have "m = i" by (cases "m = i") (simp add: dfa_is_node_def)+
+        from PL snoc(3,4) m_def `m = i` H have "bdd_lookup (fst (nfa_of_dfa M) ! p) bs ! i"
+          by (simp add: nfa_of_dfa_def split_beta dfa_is_node_def wf_dfa_def is_alph_def list_all_iff bdd_map_bdd_lookup dfa_trans_def)
+        with PL' J have E: "\<exists>p < length j. j ! p \<and> bdd_lookup( fst (nfa_of_dfa M) ! p) bs ! i" by auto
+        from snoc(4) V2 have V': "wf_nfa (nfa_of_dfa M) (length bs)" by (simp add: is_alph_def)
+        from H have H': "i < length (fst (nfa_of_dfa M))" by (simp add: nfa_of_dfa_def split_beta)
+        from H' V' E JL have "bdd_lookup (subsetbdd (fst (nfa_of_dfa M)) j (nfa_emptybdd (length j))) bs ! i" by (simp add: bdd_lookup_subsetbdd)
+        thus "?lhs" by (simp add: nfa_trans_def)
       qed
     qed
     with MR show ?case by auto
@@ -2491,32 +2489,32 @@ qed simp+
 
 definition
   subset_succs :: "nfa \<Rightarrow> bool list \<Rightarrow> bool list list" where
-  "subset_succs A qs \<equiv> add_leaves (subsetbdd (fst A) qs (nfa_emptybdd (length qs))) []"
+  "subset_succs A qs = add_leaves (subsetbdd (fst A) qs (nfa_emptybdd (length qs))) []"
 
 definition
   subset_invariant :: "nfa \<Rightarrow> nat option bdd \<times> bool list list \<Rightarrow> bool" where
-  "subset_invariant A \<equiv> \<lambda>(bdd, qss). bddh (length (fst A)) bdd"
+  "subset_invariant A = (\<lambda>(bdd, qss). bddh (length (fst A)) bdd)"
 
 definition
-  "subset_ins qs \<equiv> \<lambda>(bdd, qss). (bddinsert bdd qs (Some (length qss)), qss @ [qs])"
+  "subset_ins qs = (\<lambda>(bdd, qss). (bddinsert bdd qs (Some (length qss)), qss @ [qs]))"
 
 definition
   subset_memb :: "bool list \<Rightarrow> nat option bdd \<times> bool list list \<Rightarrow> bool" where
-  "subset_memb qs \<equiv> \<lambda>(bdd, qss). bdd_lookup bdd qs \<noteq> None"
+  "subset_memb qs = (\<lambda>(bdd, qss). bdd_lookup bdd qs \<noteq> None)"
 
 definition
   subset_empt :: "nat option bdd \<times> bool list list" where
-  "subset_empt \<equiv> (Leaf None, [])"
+  "subset_empt = (Leaf None, [])"
 
 definition
   subset_dfs :: "nfa \<Rightarrow> bool list \<Rightarrow> nat option bdd \<times> bool list list" where
-  "subset_dfs A x \<equiv> gen_dfs (subset_succs A) subset_ins subset_memb subset_empt [x]"
+  "subset_dfs A x = gen_dfs (subset_succs A) subset_ins subset_memb subset_empt [x]"
 
 definition
   det_nfa :: "nfa \<Rightarrow> dfa" where
-  "det_nfa A \<equiv> let (bdd, qss) = subset_dfs A (nfa_startnode A) in
+  "det_nfa A = (let (bdd, qss) = subset_dfs A (nfa_startnode A) in
              (map (\<lambda>qs. bdd_map (\<lambda>qs. the (bdd_lookup bdd qs)) (subsetbdd (fst A) qs (nfa_emptybdd (length qs)))) qss,
-              map (\<lambda>qs. nfa_accepting A qs) qss)"
+              map (\<lambda>qs. nfa_accepting A qs) qss))"
 
 locale subset_DFS =
   fixes A n
@@ -2581,14 +2579,14 @@ proof -
       case True
       hence "(x = qq \<and> length l1 = vv \<or> x \<noteq> qq \<and> bdd_lookup bd1 qq = Some vv) = (x = qq \<and> length l1 = vv)" by simp
       also have "\<dots> = (vv < length l2 \<and> l2 ! vv = qq)" proof
-	assume H: "vv < length l2 \<and> l2 ! vv = qq"
-	show "x = qq \<and> length l1 = vv" proof (cases "vv = length l1")
-	  case False
-	  with H SS have "vv < length l1" by simp
-	  with SS have "l2 ! vv = l1 ! vv" by (simp add: nth_append)
-	  with False H SS `x = qq` have "vv < length l1 \<and> l1 ! vv = x" by auto
-	  with X show ?thesis by auto
-	qed (simp add: True)
+        assume H: "vv < length l2 \<and> l2 ! vv = qq"
+        show "x = qq \<and> length l1 = vv" proof (cases "vv = length l1")
+          case False
+          with H SS have "vv < length l1" by simp
+          with SS have "l2 ! vv = l1 ! vv" by (simp add: nth_append)
+          with False H SS `x = qq` have "vv < length l1 \<and> l1 ! vv = x" by auto
+          with X show ?thesis by auto
+        qed (simp add: True)
       qed (auto simp: SS)
       finally show ?thesis .
     next
@@ -2669,14 +2667,14 @@ proof -
       fix p assume P: "p \<in> set (subset_succs A q)"
       with TR have 3: "(nfa_startnode A,p) \<in> (succsr (subset_succs A))\<^sup>*" by (simp add: succsr_def rtrancl_into_rtrancl)
       from Q' have "list_all (nfa_is_node A) (subset_succs A q)"
-	by (rule succs_is_node)
+        by (rule succs_is_node)
       with P have 4: "nfa_is_node A p" by (simp add: list_all_iff)
       with Q 3 have "subset_memb p (subset_dfs A (nfa_startnode A))"
-	by (simp add: dfs_eq_rtrancl)
+        by (simp add: dfs_eq_rtrancl)
       with BT have "bdd_lookup bt p \<noteq> None" by (simp add: subset_memb_def)
       with BT obtain j where j: "bdd_lookup (fst (subset_dfs A (nfa_startnode A))) p = Some j" by (cases "bdd_lookup bt p") simp+
       from 4 Q j have "j < length (snd (subset_dfs A (nfa_startnode A))) \<and> (snd (subset_dfs A (nfa_startnode A))) ! j = p"
-	by (auto simp add: subset_dfs_bij)
+        by (auto simp add: subset_dfs_bij)
       with j BT 4 have "\<exists>j. bdd_lookup bt p = Some j \<and> j < length ls" by auto
     }
     hence "\<forall>p \<in> set (subset_succs A q). \<exists>j. bdd_lookup bt p = Some j \<and> j < length ls" by auto
@@ -2707,11 +2705,11 @@ proof
       case (snoc j bss bs)
       with assms well_formed have J: "nfa_is_node A j" by (simp add: nfa_reach_is_node)
       with snoc well_formed have "bddh n (subsetbdd (fst A) j (nfa_emptybdd (length j)))"
-	by (simp add: wf_nfa_def bddh_subsetbdd nfa_emptybdd_def)
+        by (simp add: wf_nfa_def bddh_subsetbdd nfa_emptybdd_def)
       with snoc(3) have "bdd_lookup (subsetbdd (fst A) j (nfa_emptybdd (length j))) bs \<in> set (add_leaves (subsetbdd (fst A) j (nfa_emptybdd (length j))) [])"
-	by (auto simp: add_leaves_bdd_lookup)
+        by (auto simp: add_leaves_bdd_lookup)
       hence "(j, bdd_lookup (subsetbdd (fst A) j (nfa_emptybdd (length j))) bs) \<in> (succsr (subset_succs A))\<^sup>*"
-	by (auto simp:  succsr_def subset_succs_def)
+        by (auto simp:  succsr_def subset_succs_def)
       with snoc show ?case by (simp add: nfa_trans_def)
     qed simp
   qed 
@@ -2943,7 +2941,7 @@ using assms by (induct v bdd rule: quantify_bdd.induct) (simp add: bdd_all_bdd_b
 
 definition
   quantify_nfa :: "nat \<Rightarrow> nfa \<Rightarrow> nfa" where
-  "quantify_nfa i \<equiv> \<lambda>(bdds, as). (map (quantify_bdd i) bdds, as)"
+  "quantify_nfa i = (\<lambda>(bdds, as). (map (quantify_bdd i) bdds, as))"
 
 lemma quantify_nfa_well_formed_aut:
   assumes "wf_nfa N (Suc n)"
@@ -3154,29 +3152,29 @@ subsection {* Right Quotient *}
 
 definition
   rquot_succs :: "nat bdd list \<times> bool list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list" where
-  "rquot_succs M \<equiv> (\<lambda>n x. [bdd_lookup (fst M ! x) (replicate n False)])"
+  "rquot_succs M = (\<lambda>n x. [bdd_lookup (fst M ! x) (replicate n False)])"
 
 definition
   rquot_invariant :: "nat bdd list \<times> bool list \<Rightarrow> bool list \<Rightarrow> bool" where
-  "rquot_invariant M \<equiv> (\<lambda>l. length l = length (fst M))"
+  "rquot_invariant M = (\<lambda>l. length l = length (fst M))"
 
 definition
-  "rquot_ins \<equiv> (\<lambda>x l. l[x:=True])"
+  "rquot_ins = (\<lambda>x l. l[x:=True])"
 
 definition
   rquot_memb :: "nat \<Rightarrow> bool list \<Rightarrow> bool" where
-  "rquot_memb \<equiv> \<lambda>x l. l ! x"
+  "rquot_memb = (\<lambda>x l. l ! x)"
 
 definition
   rquot_empt :: "nat bdd list \<times> bool list \<Rightarrow> bool list" where
-  "rquot_empt M \<equiv> replicate (length (fst M)) False"
+  "rquot_empt M = replicate (length (fst M)) False"
 
 definition 
-  "rquot_dfs M n x \<equiv> gen_dfs (rquot_succs M n) rquot_ins rquot_memb (rquot_empt M) [x]"
+  "rquot_dfs M n x = gen_dfs (rquot_succs M n) rquot_ins rquot_memb (rquot_empt M) [x]"
 
 definition
   zeros :: "nat \<Rightarrow> nat \<Rightarrow> bool list list" where
-  "zeros m n \<equiv> replicate m (replicate n False)"
+  "zeros m n = replicate m (replicate n False)"
 
 lemma zeros_is_alpha: "list_all (is_alph v) (zeros n v)"
   by (induct n) (simp add: zeros_def is_alph_def)+
@@ -3251,7 +3249,7 @@ qed simp
 
 definition
   rquot :: "dfa \<Rightarrow> nat \<Rightarrow> dfa" where
-  "rquot \<equiv> \<lambda>(bd, as) v. (bd, map_index (\<lambda>x n. nfa_accepting' as (rquot_dfs (bd, as) v n)) as 0)"
+  "rquot = (\<lambda>(bd, as) v. (bd, map_index (\<lambda>x n. nfa_accepting' as (rquot_dfs (bd, as) v n)) as 0))"
 
 lemma rquot_well_formed_aut:
   assumes "wf_dfa M n"
@@ -3606,17 +3604,17 @@ proof (rule finite_subset)
       case True
       then have "i = int (nat i)" by simp
       moreover from i S have "nat i \<in> {n. n < nat j}"
-	by auto
+        by auto
       ultimately have "i \<in> int ` {n. n < nat j}"
-	by (rule image_eqI)
+        by (rule image_eqI)
       then show ?thesis ..
     next
       case False
       then have "i = - int (nat (- i))" by simp
       moreover from i S have "nat (- i) \<in> {n. n < nat j}"
-	by auto
+        by auto
       ultimately have "i \<in> (\<lambda>n. - int n) ` {n. n < nat j}"
-	by (rule image_eqI)
+        by (rule image_eqI)
       then show ?thesis ..
     qed
   qed
@@ -3638,29 +3636,29 @@ lemma mk_nat_vecs_mod_eq: "xs \<in> set (mk_nat_vecs n) \<Longrightarrow> map (\
   done
 
 definition
-  "dioph_succs n ks m \<equiv> List.map_filter (\<lambda>xs.
+  "dioph_succs n ks m = List.map_filter (\<lambda>xs.
      if eval_dioph ks xs mod 2 = m mod 2
      then Some ((m - eval_dioph ks xs) div 2)
      else None) (mk_nat_vecs n)"
 
 definition
   dioph_is_node :: "int list \<Rightarrow> int \<Rightarrow> int \<Rightarrow> bool" where
-  "dioph_is_node ks l m \<equiv> \<bar>m\<bar> \<le> max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>)"
+  "dioph_is_node ks l m = (\<bar>m\<bar> \<le> max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>))"
 
 definition
   dioph_invariant :: "int list \<Rightarrow> int \<Rightarrow> nat option list \<times> int list \<Rightarrow> bool" where
-  "dioph_invariant ks l \<equiv> \<lambda>(is, js). length is = nat (2 * max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + 1)"
+  "dioph_invariant ks l = (\<lambda>(is, js). length is = nat (2 * max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + 1))"
 
 definition
-  "dioph_ins m \<equiv> \<lambda>(is, js). (is[int_encode m := Some (length js)], js @ [m])"
+  "dioph_ins m = (\<lambda>(is, js). (is[int_encode m := Some (length js)], js @ [m]))"
 
 definition
   dioph_memb :: "int \<Rightarrow> nat option list \<times> int list \<Rightarrow> bool" where
-  "dioph_memb m \<equiv> \<lambda>(is, js). is ! int_encode m \<noteq> None"
+  "dioph_memb m = (\<lambda>(is, js). is ! int_encode m \<noteq> None)"
 
 definition
   dioph_empt :: "int list \<Rightarrow> int \<Rightarrow> nat option list \<times> int list" where
-  "dioph_empt ks l \<equiv> (replicate (nat (2 * max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + 1)) None, [])"
+  "dioph_empt ks l = (replicate (nat (2 * max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + 1)) None, [])"
 
 lemma int_encode_bound: "dioph_is_node ks l m \<Longrightarrow>
   int_encode m < nat (2 * max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + 1)"
@@ -3707,7 +3705,7 @@ next
 qed
 
 definition
-  "dioph_dfs n ks l \<equiv> gen_dfs (dioph_succs n ks) dioph_ins dioph_memb (dioph_empt ks l) [l]"
+  "dioph_dfs n ks l = gen_dfs (dioph_succs n ks) dioph_ins dioph_memb (dioph_empt ks l) [l]"
 
 primrec make_bdd :: "(nat list \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> 'a bdd"
 where
@@ -3715,14 +3713,14 @@ where
 | "make_bdd f (Suc n) xs = Branch (make_bdd f n (xs @ [0])) (make_bdd f n (xs @ [1]))"
 
 definition
-  "eq_dfa n ks l \<equiv>
-     let (is, js) = dioph_dfs n ks l
+  "eq_dfa n ks l =
+    (let (is, js) = dioph_dfs n ks l
      in
        (map (\<lambda>j. make_bdd (\<lambda>xs.
           if eval_dioph ks xs mod 2 = j mod 2
           then the (is ! int_encode ((j - eval_dioph ks xs) div 2))
           else length js) n []) js @ [Leaf (length js)],
-        map (\<lambda>j. j = 0) js @ [False])"
+        map (\<lambda>j. j = 0) js @ [False]))"
 
 primrec nat_of_bool :: "bool \<Rightarrow> nat"
 where
@@ -3899,7 +3897,7 @@ proof -
     then show ?case
       by (cases "y = i")
         (auto simp add: dioph_ins_def dioph_memb_def dioph_is_node_def split_beta dioph_invariant_def
-	  int_encode_bound nth_append inj_eq [OF inj_int_encode])
+          int_encode_bound nth_append inj_eq [OF inj_int_encode])
   qed
   then show ?thesis by (simp add: dioph_dfs_def)
 qed
@@ -3994,7 +3992,7 @@ next
     with False k k' Cons show ?thesis
       by (subst eval_dioph_div_mod)
         (simp add: nats_of_boolss_div2 nats_of_boolss_mod2 is_alph_def
-	 dfa_trans_def eq_dfa_error)
+         dfa_trans_def eq_dfa_error)
   qed
 qed
 
@@ -4061,7 +4059,7 @@ qed
 subsection {* Diophantine Inequations *}
 
 definition
-  "dioph_ineq_succs n ks m \<equiv> map (\<lambda>xs.
+  "dioph_ineq_succs n ks m = map (\<lambda>xs.
      (m - eval_dioph ks xs) div 2) (mk_nat_vecs n)"
 
 interpretation dioph_ineq_dfs: DFS "dioph_ineq_succs n ks" "dioph_is_node ks l"
@@ -4105,15 +4103,15 @@ next
 qed
 
 definition
-  "dioph_ineq_dfs n ks l \<equiv> gen_dfs (dioph_ineq_succs n ks) dioph_ins dioph_memb (dioph_empt ks l) [l]"
+  "dioph_ineq_dfs n ks l = gen_dfs (dioph_ineq_succs n ks) dioph_ins dioph_memb (dioph_empt ks l) [l]"
 
 definition
-  "ineq_dfa n ks l \<equiv>
-     let (is, js) = dioph_ineq_dfs n ks l
+  "ineq_dfa n ks l =
+    (let (is, js) = dioph_ineq_dfs n ks l
      in
        (map (\<lambda>j. make_bdd (\<lambda>xs.
           the (is ! int_encode ((j - eval_dioph ks xs) div 2))) n []) js,
-        map (\<lambda>j. 0 \<le> j) js)"
+        map (\<lambda>j. 0 \<le> j) js))"
 
 lemma dioph_ineq_dfs_bij:
   "(fst (dioph_ineq_dfs n ks l) ! int_encode i = Some k \<and> dioph_is_node ks l i) =
@@ -4134,7 +4132,7 @@ proof -
     then show ?case
       by (cases "y = i")
         (auto simp add: dioph_ins_def dioph_memb_def dioph_is_node_def split_beta dioph_invariant_def
-	  int_encode_bound nth_append inj_eq [OF inj_int_encode])
+          int_encode_bound nth_append inj_eq [OF inj_int_encode])
   qed
   then show ?thesis by (simp add: dioph_ineq_dfs_def)
 qed
@@ -4281,7 +4279,7 @@ datatype pf =
   | Exist pf
   | Neg pf
 
-types passign = "nat list"
+type_synonym passign = "nat list"
 
 primrec eval_pf :: "pf \<Rightarrow> passign \<Rightarrow> bool"
 where

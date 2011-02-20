@@ -10,7 +10,7 @@ imports Main
 begin
 
 definition
-  "succsr succs \<equiv> {(x, y). y \<in> set (succs x)}"
+  "succsr succs = {(x, y). y \<in> set (succs x)}"
 
 partial_function (tailrec)
   gen_dfs
@@ -80,13 +80,13 @@ lemma dfs_induct[consumes 2, case_names base step]:
   done
 
 definition
-  "succss xs \<equiv> \<Union>x\<in>xs. set (succs x)"
+  "succss xs = (\<Union>x\<in>xs. set (succs x))"
 
 definition
-  "set_of S \<equiv> {x. is_node x \<and> memb x S}"
+  "set_of S = {x. is_node x \<and> memb x S}"
 
 definition
-  "reachable xs \<equiv> {(x, y). y \<in> set (succs x)}\<^sup>* `` xs"
+  "reachable xs = {(x, y). y \<in> set (succs x)}\<^sup>* `` xs"
 
 lemma visit_subset_dfs: "invariant S \<Longrightarrow> list_all is_node xs \<Longrightarrow>
   is_node y \<Longrightarrow> memb y S \<Longrightarrow> memb y (dfs S xs)"
@@ -209,13 +209,13 @@ proof -
     proof (cases "memb x S")
       case False
       then show ?thesis
-	apply simp
-	apply (rule step)
-	apply assumption
-	apply (rule I)
-	apply assumption
-	apply (rule step)+
-	done
+        apply simp
+        apply (rule step)
+        apply assumption
+        apply (rule I)
+        apply assumption
+        apply (rule step)+
+        done
     qed (simp add: step)
   qed simp
   then show ?thesis ..

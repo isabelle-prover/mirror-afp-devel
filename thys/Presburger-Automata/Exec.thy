@@ -3,7 +3,7 @@
 *)
 
 theory Exec
-imports Presburger_Automata Efficient_Nat
+imports Presburger_Automata "~~/src/HOL/Library/Efficient_Nat"
 begin
 
 declare gen_dfs_simps [code]
