@@ -4,7 +4,9 @@ Author: Alexander Katovsky
 
 header "Natural Transformation"
 
-theory NatTrans imports Functors begin
+theory NatTrans
+imports Functors
+begin
 
 record ('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans = 
   NTDom :: "('o1, 'o2, 'm1, 'm2, 'a, 'b) Functor" 

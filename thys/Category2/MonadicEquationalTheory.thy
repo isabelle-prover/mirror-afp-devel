@@ -4,7 +4,9 @@ Author: Alexander Katovsky
 
 header "Monadic Equational Theory"
 
-theory MonadicEquationalTheory imports Category Universe begin
+theory MonadicEquationalTheory
+imports Category Universe
+begin
 
 record ('t,'f) Signature = 
   BaseTypes :: "'t set" ("Ty\<index>")

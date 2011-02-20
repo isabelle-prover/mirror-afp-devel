@@ -4,7 +4,9 @@ Author: Alexander Katovsky
 
 header "Yoneda"
 
-theory Yoneda imports NatTrans SetCat begin
+theory Yoneda
+imports NatTrans SetCat
+begin
 
 definition "YFtorNT' C f \<equiv> \<lparr>NTDom = Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f] , NTCod = Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> f] ,
                        NatTransMap = \<lambda> B . Hom\<^bsub>C\<^esub>[B,f]\<rparr>"

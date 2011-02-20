@@ -4,7 +4,9 @@ Author: Alexander Katovsky
 
 header "Universe"
 
-theory Universe imports "~~/src/HOL/ZF/MainZF" begin
+theory Universe
+imports "~~/src/HOL/ZF/MainZF"
+begin
 
 
 locale Universe = 

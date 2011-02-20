@@ -4,7 +4,9 @@ Author: Alexander Katovsky
 
 header "Functor"
 
-theory Functors imports Category begin
+theory Functors
+imports Category
+begin
 
 record ('o1, 'o2, 'm1, 'm2, 'a, 'b) Functor = 
   CatDom :: "('o1,'m1,'a)Category_scheme" 

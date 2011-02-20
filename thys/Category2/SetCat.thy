@@ -4,7 +4,9 @@ Author: Alexander Katovsky
 
 header "The Category of Sets"
 
-theory SetCat imports Functors Universe begin
+theory SetCat
+imports Functors Universe
+begin
 
 notation (xsymbols) Elem (infixl "|\<in>|" 70)
 notation (xsymbols) HOLZF.subset (infixl "|\<subseteq>|" 71)

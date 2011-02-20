@@ -4,7 +4,9 @@ Author: Alexander Katovsky
 
 header "Category"
 
-theory Category imports FuncSet begin
+theory Category
+imports "~~/src/HOL/Library/FuncSet"
+begin
 
 record ('o,'m) Category = 
   Obj :: "'o set" ("obj\<index>" 70) 
