@@ -41,8 +41,8 @@ by(fastsimp dest!: confluentD[of R a b c] dest: tranclp_DomainP rtranclpD[where 
 
 subsection {* Definition of the @{term "canceling"} relation *}
 
-types 'a "g_i" = "(bool \<times> 'a)" (* A generator or its inverse *)
-types 'a "word_g_i" = "'a g_i list" (* A word in the generators or their inverses *)
+type_synonym 'a "g_i" = "(bool \<times> 'a)" (* A generator or its inverse *)
+type_synonym 'a "word_g_i" = "'a g_i list" (* A word in the generators or their inverses *)
 
 text {*
 These type aliases encode the notion of a ``generator or its inverse''
