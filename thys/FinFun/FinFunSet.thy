@@ -10,7 +10,7 @@ theory FinFunSet imports FinFun begin
 
 text {* Instantiate FinFun predicates just like predicates as sets in Set.thy *}
 
-types 'a set\<^isub>f = "'a \<Rightarrow>\<^isub>f bool"
+type_synonym 'a set\<^isub>f = "'a \<Rightarrow>\<^isub>f bool"
 
 instantiation "finfun" :: (type, ord) ord
 begin

@@ -1,2 +1,2 @@
-no_document use_thys ["Enum", "Infinite_Set"];
+no_document use_thys ["~~/src/HOL/Library/Infinite_Set"];
 use_thys ["FinFunSet"];
