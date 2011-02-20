@@ -376,7 +376,7 @@ primrec n_unwrap:: "('e,'a) Node \<Rightarrow> ('e \<times> 'a)" where
   "n_unwrap (Node3 _ a b c) = undefined"
 
 
-types ('e,'a) ViewnRes = "(('e,'a) Node \<times> ('e,'a) FingerTreeStruc) option"
+type_synonym ('e,'a) ViewnRes = "(('e,'a) Node \<times> ('e,'a) FingerTreeStruc) option"
 lemma viewnres_cases:
   fixes r :: "('e,'a) ViewnRes"
   obtains (Nil) "r=None" |
@@ -648,7 +648,7 @@ lemma viewRn_list: "viewRn t = Some (nd, s)
 
 
 
-types ('e,'a) viewres = "(('e \<times>'a) \<times> ('e,'a) FingerTreeStruc) option"
+type_synonym ('e,'a) viewres = "(('e \<times>'a) \<times> ('e,'a) FingerTreeStruc) option"
 
 text {* Detach the leftmost element. Return @{const None} on empty finger tree. *}
 definition viewL :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> ('e,'a) viewres" 
@@ -1062,9 +1062,9 @@ lemma app_list[simp]: "toList (app t1 t2) = (toList t1) @ (toList t2)"
 
 subsubsection "Splitting"
 
-types ('e,'a) SplitDigit = 
+type_synonym ('e,'a) SplitDigit = 
   "('e,'a) Node list  \<times> ('e,'a) Node \<times> ('e,'a) Node list"
-types ('e,'a) SplitTree  = 
+type_synonym ('e,'a) SplitTree  = 
   "('e,'a) FingerTreeStruc \<times> ('e,'a) Node \<times> ('e,'a) FingerTreeStruc"
 
   text {* Auxiliary functions to create a correct finger tree 

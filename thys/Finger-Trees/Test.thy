@@ -1,5 +1,5 @@
 theory Test
-imports Efficient_Nat FingerTree
+imports "~~/src/HOL/Library/Efficient_Nat" FingerTree
 begin
   text {*
     Test code generation, to early detect problems with code generator.
