@@ -1,8 +1,7 @@
 (*  Title:      ListPre.thy
-    Author:     Ludovic Henrio and Florian Kammuller
-                2006
+    Author:     Ludovic Henrio and Florian Kammuller, 2006
 
-    Note:       List lemmata and other general stuff as preparation for ASP
+List lemmata and other general stuff as preparation for ASP.
 *)
 
 header {* List features *}
@@ -108,8 +107,8 @@ proof (induct xs, simp)
   obtain "length xs = length ly" and "length lz = length xs" 
     by auto
   from 
-    prems(5)[OF this prems(1)[OF this `P [] [] []`]] 
-    prems(5) `ys = b#ly` `zs = c#lz` 
+    Cons(5)[OF this Cons(1)[OF this `P [] [] []`]] 
+    Cons(5) `ys = b#ly` `zs = c#lz` 
   show ?case by simp
 qed
 
@@ -129,8 +128,8 @@ proof (induct l, simp)
   case (Cons x l) thus ?case
   proof (auto split: nat.split)
     fix n j assume "n \<le> length l" and "j < Suc n"
-    with prems(1) show "(x#(list_insert l n a))!j = (x#l)!j"
-      by (cases j, simp_all)
+    with Cons(1) show "(x#(list_insert l n a))!j = (x#l)!j"
+      by (cases j) simp_all
   qed
 qed
 
@@ -139,8 +138,8 @@ proof (induct l, simp)
   case (Cons x l) thus ?case
   proof (auto split: nat.split)
     fix n j assume "j \<le> Suc (length l)" and "Suc n \<le> j" 
-    with prems(1) show "(list_insert l n a)!j = (x#l)!j"
-      by (cases j, simp_all)
+    with Cons(1) show "(list_insert l n a)!j = (x#l)!j"
+      by (cases j) simp_all
   qed
 qed
 
@@ -156,8 +155,8 @@ proof (induct l, simp)
   case (Cons x l) thus ?case
   proof (auto split: nat.split)
     fix n j assume "Suc n \<le> j" 
-    with prems(1) show "(list_insert l n a)!j = (x#l)!j"
-      by (cases j, simp_all)
+    with Cons(1) show "(list_insert l n a)!j = (x#l)!j"
+      by (cases j) simp_all
   qed
 qed
 

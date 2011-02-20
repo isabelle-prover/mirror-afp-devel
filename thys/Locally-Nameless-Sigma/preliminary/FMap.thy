@@ -1,19 +1,18 @@
 (*  Title:      FMap.thy
-    Author:     Ludovic Henrio and Florian Kammuller
-                2006
+    Author:     Ludovic Henrio and Florian Kammuller, 2006
 
-    Note:       Finite maps for Sigma-calculus
-                Idea use axiomatic type classes to preserve
-                usability of datatype afterwards, i.e. definition
-                of an object as a finite map of labels to fields in
-                a datatype.
+Finite maps for Sigma-calculus
+Idea use axiomatic type classes to preserve
+usability of datatype afterwards, i.e. definition
+of an object as a finite map of labels to fields in
+a datatype.
 *)
 
 header {* Finite maps with axclasses *}
 
 theory FMap imports ListPre begin
 
-types ('a, 'b) fmap = "('a :: finite) ~=> 'b" (infixl "-~>" 50)
+type_synonym ('a, 'b) fmap = "('a :: finite) ~=> 'b" (infixl "-~>" 50)
 
 class inftype =
 assumes infinite: "\<not>finite UNIV"
@@ -100,7 +99,7 @@ next
       case False with `F a = Some y` `fst x = a` 
       have "F (fst x) \<noteq> Some (snd x)" by auto
       with `(F -- x) a = Some b` have "F a = Some b" 
-	unfolding fmap_minus_direct_def by auto
+        unfolding fmap_minus_direct_def by auto
       with `F a \<noteq> Some b` show False by simp
     qed
   next
@@ -195,13 +194,13 @@ next
     proof -
       fix z
       assume 
-	"z \<in> {(xa, y). xa \<in> dom (F(fst x \<mapsto> snd x)) 
-	             \<and> (F(fst x \<mapsto> snd x)) xa = Some y}"
+        z: "z \<in> {(xa, y). xa \<in> dom (F(fst x \<mapsto> snd x)) 
+                     \<and> (F(fst x \<mapsto> snd x)) xa = Some y}"
       hence "z = x \<or> ((fst z) \<in> dom F \<and> F (fst z) = Some (snd z))"
       proof (cases "fst x = fst z")
-	case True thus ?thesis using prems by fastsimp
+        case True thus ?thesis using z by auto
       next
-	case False thus ?thesis using prems by fastsimp
+        case False thus ?thesis using z by auto
       qed
       thus "z \<in> insert x {(x, y). x \<in> dom F \<and> F x = Some y}" by fastsimp
     qed
@@ -226,7 +225,7 @@ proof (rule_tac f = P in arg_cong)
     proof (rule_tac a = "F a" in ex1I)
       assume "F a = Some b"
       thus "F a = Some b \<and> a \<in> dom F" 
-	by (simp add: dom_def)
+        by (simp add: dom_def)
     next
       fix x assume "F a = Some b" and "x = Some b \<and> a \<in> dom F"
       thus "x = F a" by simp
@@ -243,7 +242,7 @@ proof (rule_tac f = P in arg_cong)
     next
       case (Some a)
       hence "x \<in> fst ` {(x, y). x \<in> dom F \<and> F x = Some y}"
-	by (simp add: image_def dom_def)
+        by (simp add: image_def dom_def)
       with nin_x show ?thesis by simp
     qed
   qed
@@ -340,38 +339,38 @@ proof -
     proof (induct F)
       case empty thus ?case
       proof (intro strip)
-	fix F' :: "'a -~> 'b" assume "{} = set_fmap F'"
-	hence "\<And>a. F' a = None" unfolding set_fmap_def by auto
-	hence "F' = empty" by (rule ext)
-	with `P empty` rep_fmap_base[of P empty] 
-	show "pred_set_fmap P (set_fmap F')" by simp
+        fix F' :: "'a -~> 'b" assume "{} = set_fmap F'"
+        hence "\<And>a. F' a = None" unfolding set_fmap_def by auto
+        hence "F' = empty" by (rule ext)
+        with `P empty` rep_fmap_base[of P empty] 
+        show "pred_set_fmap P (set_fmap F')" by simp
       qed
     next
       case (insert x Fa) thus ?case
       proof (intro strip)
-	fix Fb :: "'a -~> 'b"
-	assume "insert x Fa = set_fmap Fb"
-	from 
-	  set_fmap_minus_insert[OF `x \<notin> Fa` this]
-	  `\<forall>F'. Fa = set_fmap F' \<longrightarrow> pred_set_fmap P (set_fmap F')` 
-	  rep_fmap_base[of P "Fb -- x"]
-	have "P (Fb -- x)" by blast
-	with 
-	  `\<forall>F x z. x \<notin> dom F \<longrightarrow> P F \<longrightarrow> P (F(x \<mapsto> z))` 
-	  fst_notin_fmap_minus_dom[OF `insert x Fa = set_fmap Fb`]
-	have "P ((Fb -- x)(fst x \<mapsto> snd x))" by blast
-	moreover
-	from 
-	  insert_absorb[OF insert_lem[OF `insert x Fa = set_fmap Fb`]]
-	  set_fmap_minus_iff[of Fb x]
-	  set_fmap_inv2[OF 
-	   fst_notin_fmap_minus_dom[OF `insert x Fa = set_fmap Fb`]] 
-	have "set_fmap Fb = set_fmap ((Fb -- x)(fst x \<mapsto> snd x))"
-	  by simp
-	ultimately
-	show "pred_set_fmap P (set_fmap Fb)" 
-	  using rep_fmap_base[of P "(Fb -- x)(fst x \<mapsto> snd x)"]
-	  by simp
+        fix Fb :: "'a -~> 'b"
+        assume "insert x Fa = set_fmap Fb"
+        from 
+          set_fmap_minus_insert[OF `x \<notin> Fa` this]
+          `\<forall>F'. Fa = set_fmap F' \<longrightarrow> pred_set_fmap P (set_fmap F')` 
+          rep_fmap_base[of P "Fb -- x"]
+        have "P (Fb -- x)" by blast
+        with 
+          `\<forall>F x z. x \<notin> dom F \<longrightarrow> P F \<longrightarrow> P (F(x \<mapsto> z))` 
+          fst_notin_fmap_minus_dom[OF `insert x Fa = set_fmap Fb`]
+        have "P ((Fb -- x)(fst x \<mapsto> snd x))" by blast
+        moreover
+        from 
+          insert_absorb[OF insert_lem[OF `insert x Fa = set_fmap Fb`]]
+          set_fmap_minus_iff[of Fb x]
+          set_fmap_inv2[OF 
+           fst_notin_fmap_minus_dom[OF `insert x Fa = set_fmap Fb`]] 
+        have "set_fmap Fb = set_fmap ((Fb -- x)(fst x \<mapsto> snd x))"
+          by simp
+        ultimately
+        show "pred_set_fmap P (set_fmap Fb)" 
+          using rep_fmap_base[of P "(Fb -- x)(fst x \<mapsto> snd x)"]
+          by simp
       qed
     qed
   } 
@@ -410,48 +409,48 @@ next
     next
       case False thus ?thesis
       proof -
-	from `F2 \<noteq> Map.empty` 
-	have "\<forall>l\<in>dom F2. \<exists>f'. F2 = f'(l \<mapsto> the (F2 l)) \<and> l \<notin> dom f'"
-	  by (simp add: one_more_dom)
-	moreover
-	from `dom (F(x \<mapsto> y)) = dom F2` have "x \<in> dom F2" by force
-	ultimately have "\<exists>f'. F2 = f'(x \<mapsto> the (F2 x)) \<and> x \<notin> dom f'" by blast
-	then obtain F2' where "F2 = F2'(x \<mapsto> the (F2 x))" and "x \<notin> dom F2'" 
-	  by auto
+        from `F2 \<noteq> Map.empty` 
+        have "\<forall>l\<in>dom F2. \<exists>f'. F2 = f'(l \<mapsto> the (F2 l)) \<and> l \<notin> dom f'"
+          by (simp add: one_more_dom)
+        moreover
+        from `dom (F(x \<mapsto> y)) = dom F2` have "x \<in> dom F2" by force
+        ultimately have "\<exists>f'. F2 = f'(x \<mapsto> the (F2 x)) \<and> x \<notin> dom f'" by blast
+        then obtain F2' where "F2 = F2'(x \<mapsto> the (F2 x))" and "x \<notin> dom F2'" 
+          by auto
 
-	from `F3 \<noteq> Map.empty` 
-	have "\<forall>l\<in>dom F3. \<exists>f'. F3 = f'(l \<mapsto> the (F3 l)) \<and> l \<notin> dom f'"
-	  by (simp add: one_more_dom)
-	moreover from `dom F3 = dom (F(x \<mapsto> y))` have "x \<in> dom F3" by force
-	ultimately have "\<exists>f'. F3 = f'(x \<mapsto> the (F3 x)) \<and> x \<notin> dom f'" by blast
-	then obtain F3' where "F3 = F3'(x \<mapsto> the (F3 x))" and "x \<notin> dom F3'" 
-	  by auto
+        from `F3 \<noteq> Map.empty` 
+        have "\<forall>l\<in>dom F3. \<exists>f'. F3 = f'(l \<mapsto> the (F3 l)) \<and> l \<notin> dom f'"
+          by (simp add: one_more_dom)
+        moreover from `dom F3 = dom (F(x \<mapsto> y))` have "x \<in> dom F3" by force
+        ultimately have "\<exists>f'. F3 = f'(x \<mapsto> the (F3 x)) \<and> x \<notin> dom f'" by blast
+        then obtain F3' where "F3 = F3'(x \<mapsto> the (F3 x))" and "x \<notin> dom F3'" 
+          by auto
 
-	show ?thesis
-	proof -
-	  from `dom (F(x \<mapsto> y)) = dom F2` `F2 = F2'(x \<mapsto> the (F2 x))`
-	  have "dom (F(x \<mapsto> y)) = dom (F2'(x \<mapsto> the (F2 x)))" by simp
-	  with `x \<notin> dom F` `x \<notin> dom F2'` have "dom F = dom F2'" by auto
-	  
-	  moreover
-	  from `dom F3 = dom (F(x \<mapsto> y))` `F3 = F3'(x \<mapsto> the (F3 x))`
-	  have "dom (F(x \<mapsto> y)) = dom (F3'(x \<mapsto> the (F3 x)))" by simp
-	  with `x \<notin> dom F` `x \<notin> dom F3'` have "dom F3' = dom F" by auto
+        show ?thesis
+        proof -
+          from `dom (F(x \<mapsto> y)) = dom F2` `F2 = F2'(x \<mapsto> the (F2 x))`
+          have "dom (F(x \<mapsto> y)) = dom (F2'(x \<mapsto> the (F2 x)))" by simp
+          with `x \<notin> dom F` `x \<notin> dom F2'` have "dom F = dom F2'" by auto
+          
+          moreover
+          from `dom F3 = dom (F(x \<mapsto> y))` `F3 = F3'(x \<mapsto> the (F3 x))`
+          have "dom (F(x \<mapsto> y)) = dom (F3'(x \<mapsto> the (F3 x)))" by simp
+          with `x \<notin> dom F` `x \<notin> dom F3'` have "dom F3' = dom F" by auto
 
-	  ultimately have "P F F2' F3'" using prems by simp
+          ultimately have "P F F2' F3'" using insert by simp
 
-	  with 
-	    `\<And>F1 F2 F3 x a b c.
+          with 
+            `\<And>F1 F2 F3 x a b c.
               \<lbrakk> P F1 F2 F3; dom F1 = dom F2; dom F3 = dom F1; x \<notin> dom F1 \<rbrakk>
               \<Longrightarrow> P (F1(x \<mapsto> a)) (F2(x \<mapsto> b)) (F3(x \<mapsto> c))`
-	    `dom F = dom F2'`
-	    `dom F3' = dom F`
-	    `x \<notin> dom F`
-	  have "P (F(x \<mapsto> y)) (F2'(x \<mapsto> the (F2 x))) (F3'(x \<mapsto> the (F3 x)))" 
-	    by simp
-	  with `F2 = F2'(x \<mapsto> the (F2 x))` `F3 = F3'(x \<mapsto> the (F3 x))`
-	  show "P (F(x \<mapsto> y)) F2 F3" by simp
-	qed
+            `dom F = dom F2'`
+            `dom F3' = dom F`
+            `x \<notin> dom F`
+          have "P (F(x \<mapsto> y)) (F2'(x \<mapsto> the (F2 x))) (F3'(x \<mapsto> the (F3 x)))" 
+            by simp
+          with `F2 = F2'(x \<mapsto> the (F2 x))` `F3 = F3'(x \<mapsto> the (F3 x))`
+          show "P (F(x \<mapsto> y)) F2 F3" by simp
+        qed
       qed
     qed
   qed
@@ -518,12 +517,12 @@ next
     show "P s p ((f(l \<mapsto> t)) la) (f' la) la"
     proof (cases "la = l")
       case True with sp predfl show ?thesis 
-	unfolding pred_cof_def
-	by simp
+        unfolding pred_cof_def
+        by simp
     next
       case False with indom sp predf show ?thesis 
-	unfolding pred_cof_def
-	by force
+        unfolding pred_cof_def
+        by force
     qed
   qed
 qed

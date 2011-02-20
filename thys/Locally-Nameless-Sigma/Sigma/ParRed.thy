@@ -1,4 +1,4 @@
-(*  Title:      /ParRed.thy
+(*  Title:      Sigma/ParRed.thy
     Author:     Ludovic Henrio and Florian Kammuller
     Copyright   2006
 
@@ -337,15 +337,15 @@ proof -
     with `finite L` show ?case
     proof 
       (auto simp: body_def, unfold pred_cof_def,
-	rule_tac x = "L \<union> FV t" in exI, simp, clarify)
+        rule_tac x = "L \<union> FV t" in exI, simp, clarify)
       fix s p assume 
-	"s \<notin> L" and "p \<notin> L" and "s \<noteq> p" and
-	"s \<notin> FV t" and "p \<notin> FV t"
+        "s \<notin> L" and "p \<notin> L" and "s \<noteq> p" and
+        "s \<notin> FV t" and "p \<notin> FV t"
       from 
-	this(1-3) pred 
-	sclose_sopen_eq_t[OF this(4-5) this(3)]
+        this(1-3) pred 
+        sclose_sopen_eq_t[OF this(4-5) this(3)]
       show "\<exists>t'. t\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t' \<and> t = \<sigma>[s,p] t'"
-	by (rule_tac x = "t\<^bsup>[Fvar s,Fvar p]\<^esup>" in exI, simp add: openz_def closez_def)
+        by (rule_tac x = "t\<^bsup>[Fvar s,Fvar p]\<^esup>" in exI, simp add: openz_def closez_def)
     qed
   qed
 qed
@@ -378,7 +378,7 @@ proof -
       "\<forall>x v v'. v \<Rightarrow>\<^sub>\<beta> v' \<longrightarrow> (\<exists>L. finite L \<and> pred_cof L ([x \<rightarrow> v] t) ([x \<rightarrow> v'] t'))"
     hence
       "\<exists>L. finite L \<and> pred_cof L ([x \<rightarrow> v] t) ([x \<rightarrow> v'] t')"
-	by auto
+        by auto
   }note Lex = this
 
   {
@@ -409,16 +409,16 @@ proof -
       fix x v v' assume "v \<Rightarrow>\<^sub>\<beta> v'"
       from Lex[OF this pred_u]
       obtain L where
-	"finite L" and "pred_cof L ([x \<rightarrow> v] u) ([x \<rightarrow> v'] u')"
-	by auto
+        "finite L" and "pred_cof L ([x \<rightarrow> v] u) ([x \<rightarrow> v'] u')"
+        by auto
       with
-	ssubst_preserves_lc[of t v x]
-	ssubst_preserves_body[of u v x]
-	`lc t` par_beta_lc[OF `v \<Rightarrow>\<^sub>\<beta> v'`] `body u`
-	`v \<Rightarrow>\<^sub>\<beta> v'` pred_t
+        ssubst_preserves_lc[of t v x]
+        ssubst_preserves_body[of u v x]
+        `lc t` par_beta_lc[OF `v \<Rightarrow>\<^sub>\<beta> v'`] `body u`
+        `v \<Rightarrow>\<^sub>\<beta> v'` pred_t
       show "[x \<rightarrow> v] Upd t l u \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] Upd t' l u'"
-	unfolding pred_cof_def
-	by auto
+        unfolding pred_cof_def
+        by auto
     qed
   next
     case (Upd' f f' T t t' l) 
@@ -428,28 +428,28 @@ proof -
       from `Obj f T \<Rightarrow>\<^sub>\<beta> Obj f' T` `l \<in> dom f` have "l \<in> dom f'" by auto
       fix x v v' assume "v \<Rightarrow>\<^sub>\<beta> v'"
       with
-	domssubst[OF `l \<in> dom f`]
-	ssubst_preserves_lc[of "Obj f T" v x]
-	ssubst_preserves_body[of t v x]
-	`lc (Obj f T)` par_beta_lc[OF `v \<Rightarrow>\<^sub>\<beta> v'`] `body t`
-	pred_obj
+        domssubst[OF `l \<in> dom f`]
+        ssubst_preserves_lc[of "Obj f T" v x]
+        ssubst_preserves_body[of t v x]
+        `lc (Obj f T)` par_beta_lc[OF `v \<Rightarrow>\<^sub>\<beta> v'`] `body t`
+        pred_obj
       have 
-	"[x \<rightarrow> v] Obj f T \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] Obj f' T" and
-	"lc ([x \<rightarrow> v] Obj f T)" and "body ([x \<rightarrow> v] t)"
-	by auto
+        "[x \<rightarrow> v] Obj f T \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] Obj f' T" and
+        "lc ([x \<rightarrow> v] Obj f T)" and "body ([x \<rightarrow> v] t)"
+        by auto
       note lem = 
-	pbeta_Upd'[OF this(1)[simplified] _ _ 
+        pbeta_Upd'[OF this(1)[simplified] _ _ 
                       domssubst[OF `l \<in> dom f`] 
-	              this(2)[simplified] this(3)]
+                      this(2)[simplified] this(3)]
 
       from Lex[OF `v \<Rightarrow>\<^sub>\<beta> v'` pred_t]
       obtain L where
-	"finite L" and "pred_cof L ([x \<rightarrow> v] t) ([x \<rightarrow> v'] t')"
-	by auto
+        "finite L" and "pred_cof L ([x \<rightarrow> v] t) ([x \<rightarrow> v'] t')"
+        by auto
       with lem[of L "[x \<rightarrow> v'] t'"] ssubstoption_insert[OF `l \<in> dom f'`]
       show "[x \<rightarrow> v] Upd (Obj f T) l t \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] Obj (f'(l \<mapsto> t')) T"
-	unfolding pred_cof_def
-	by auto
+        unfolding pred_cof_def
+        by auto
     qed
   next
     case (beta f f' T l p p') 
@@ -458,22 +458,22 @@ proof -
     proof (intro strip)
       fix x v v' assume "v \<Rightarrow>\<^sub>\<beta> v'"
       from 
-	par_beta_lc[OF this]
-	ssubst_preserves_lc[OF `lc p`]
+        par_beta_lc[OF this]
+        ssubst_preserves_lc[OF `lc p`]
       have "lc v" and "lc v'" and "lc ([x \<rightarrow> v] p)" by auto
       note lem = 
-	pbeta_beta[OF _ domssubst[OF `l \<in> dom f`] _ 
-	              lcobj[OF `lc (Obj f T)` this(1)] this(3)]
+        pbeta_beta[OF _ domssubst[OF `l \<in> dom f`] _ 
+                      lcobj[OF `lc (Obj f T)` this(1)] this(3)]
       from `Obj f T \<Rightarrow>\<^sub>\<beta> Obj f' T` have "dom f = dom f'" by auto
       with `l \<in> dom f` have "the (ssubst_option x v' (f' l)) = [x \<rightarrow> v'] the (f' l)"
-	by auto
+        by auto
       with
-	lem[of x "\<lambda>l. ssubst_option x v' (f' l)" "[x \<rightarrow> v'] p'"]
-	`v \<Rightarrow>\<^sub>\<beta> v'` pred_obj pred_p
-	ssubst_openz_distrib[OF `lc v'`]
+        lem[of x "\<lambda>l. ssubst_option x v' (f' l)" "[x \<rightarrow> v'] p'"]
+        `v \<Rightarrow>\<^sub>\<beta> v'` pred_obj pred_p
+        ssubst_openz_distrib[OF `lc v'`]
       show
-	"[x \<rightarrow> v] Call (Obj f T) l p \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] (the (f' l)\<^bsup>[Obj f' T, p']\<^esup>)"
-	by simp
+        "[x \<rightarrow> v] Call (Obj f T) l p \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] (the (f' l)\<^bsup>[Obj f' T, p']\<^esup>)"
+        by simp
     qed
   next
     case (Obj f f' T) note pred = fmap_ball_all3[OF this(1) this(3)]
@@ -481,35 +481,35 @@ proof -
     proof (intro strip)
       fix x v v'
       def pred_bnd \<equiv> "\<lambda>s p b b' l::Label. \<exists>t''. [x \<rightarrow> v] the b\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t'' 
-	                                      \<and> [x \<rightarrow> v'] the b' = \<sigma>[s,p] t''"
+                                              \<and> [x \<rightarrow> v'] the b' = \<sigma>[s,p] t''"
       assume "v \<Rightarrow>\<^sub>\<beta> v'"
       with pred `dom f' = dom f` fmap_ex_cof2[of f' f pred_bnd] 
       obtain L where
-	"finite L" and 
-	predf: "\<forall>l\<in>dom f. pred_cof L ([x \<rightarrow> v] the (f l)) ([x \<rightarrow> v'] the (f' l))"
-	unfolding pred_cof_def pred_bnd_def 
-	by auto
+        "finite L" and 
+        predf: "\<forall>l\<in>dom f. pred_cof L ([x \<rightarrow> v] the (f l)) ([x \<rightarrow> v'] the (f' l))"
+        unfolding pred_cof_def pred_bnd_def 
+        by auto
 
       have "\<forall>l\<in>dom (\<lambda>l. ssubst_option x v (f l)). body (the (ssubst_option x v (f l)))"
       proof (intro strip, simp)
-	fix l' :: Label assume "l' \<in> dom f"
-	with `\<forall>l\<in>dom f. body (the(f l))` have "body (the (f l'))" by blast
-	note ssubst_preserves_body[OF this]
-	from 
-	  this[of v x] par_beta_lc[OF `v \<Rightarrow>\<^sub>\<beta> v'`]
-	  `l' \<in> dom f` ssubst_option_lem[of f x v]
-	show "body (the (ssubst_option x v (f l')))" by auto
+        fix l' :: Label assume "l' \<in> dom f"
+        with `\<forall>l\<in>dom f. body (the(f l))` have "body (the (f l'))" by blast
+        note ssubst_preserves_body[OF this]
+        from 
+          this[of v x] par_beta_lc[OF `v \<Rightarrow>\<^sub>\<beta> v'`]
+          `l' \<in> dom f` ssubst_option_lem[of f x v]
+        show "body (the (ssubst_option x v (f l')))" by auto
       qed
       note intro = pbeta_Obj[OF _ `finite L` _ this]
       from
-	predf
-	ssubst_option_lem[of f x v]
-	ssubst_option_lem[of f' x v'] `dom f' = dom f`
-	dom_ssubstoption_lem[of x v f]
-	dom_ssubstoption_lem[of x v' f']
+        predf
+        ssubst_option_lem[of f x v]
+        ssubst_option_lem[of f' x v'] `dom f' = dom f`
+        dom_ssubstoption_lem[of x v f]
+        dom_ssubstoption_lem[of x v' f']
       show "[x \<rightarrow> v] Obj f T \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] Obj f' T"
-	unfolding pred_cof_def
-	by (simp, intro intro[of "(\<lambda>l. ssubst_option x v' (f' l))" T], auto)
+        unfolding pred_cof_def
+        by (simp, intro intro[of "(\<lambda>l. ssubst_option x v' (f' l))" T], auto)
     qed
   next
     case (Bnd L t t') note pred = this(2)
@@ -519,33 +519,33 @@ proof -
       from `finite L`
       show "\<exists>L. finite L \<and> pred_cof L ([x \<rightarrow> v] t) ([x \<rightarrow> v'] t')"
       proof (rule_tac x = "L \<union> {x} \<union> FV v'" in exI, 
-	  unfold pred_cof_def, auto)
-	fix s p assume "s \<notin> L" and "p \<notin> L" and "s \<noteq> p"
-	with pred 
-	obtain t'' where
-	  "t\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t''" and
-	  "\<forall>x v v'. v \<Rightarrow>\<^sub>\<beta> v' \<longrightarrow> [x \<rightarrow> v] (t\<^bsup>[Fvar s,Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] t''" and
-	  "t' = \<sigma>[s,p] t''"
-	  by blast
-	from this(2) `v \<Rightarrow>\<^sub>\<beta> v'` 
-	have ssubst_pbeta: "[x \<rightarrow> v] (t\<^bsup>[Fvar s,Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] t''" by blast
-	
-	assume "s \<noteq> x" and "p \<noteq> x"
-	hence "x \<notin> FV (Fvar s)" and "x \<notin> FV (Fvar p)" by auto
-	from 
-	  ssubst_pbeta
-	  par_beta_lc[OF `v \<Rightarrow>\<^sub>\<beta> v'`] ssubst_sopen_commute[OF _ this]
-	have "[x \<rightarrow> v] t\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] t''" by (simp add: openz_def)
-	moreover
-	assume "s \<notin> FV v'" and "p \<notin> FV v'"
-	from 
-	  ssubst_sclose_commute[OF this not_sym[OF `s \<noteq> x`] 
-	                                not_sym[OF `p \<noteq> x`]] 
-	  `t' = \<sigma>[s,p] t''`
-	have "[x \<rightarrow> v'] t' = \<sigma>[s,p] [x \<rightarrow> v'] t''" by (simp add: closez_def)
-	ultimately
-	show "\<exists>t''. [x \<rightarrow> v] t\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t'' \<and> [x \<rightarrow> v'] t' = \<sigma>[s,p] t''" 
-	  by (rule_tac x = "[x \<rightarrow> v'] t''" in exI, simp)
+          unfold pred_cof_def, auto)
+        fix s p assume "s \<notin> L" and "p \<notin> L" and "s \<noteq> p"
+        with pred 
+        obtain t'' where
+          "t\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t''" and
+          "\<forall>x v v'. v \<Rightarrow>\<^sub>\<beta> v' \<longrightarrow> [x \<rightarrow> v] (t\<^bsup>[Fvar s,Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] t''" and
+          "t' = \<sigma>[s,p] t''"
+          by blast
+        from this(2) `v \<Rightarrow>\<^sub>\<beta> v'` 
+        have ssubst_pbeta: "[x \<rightarrow> v] (t\<^bsup>[Fvar s,Fvar p]\<^esup>) \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] t''" by blast
+        
+        assume "s \<noteq> x" and "p \<noteq> x"
+        hence "x \<notin> FV (Fvar s)" and "x \<notin> FV (Fvar p)" by auto
+        from 
+          ssubst_pbeta
+          par_beta_lc[OF `v \<Rightarrow>\<^sub>\<beta> v'`] ssubst_sopen_commute[OF _ this]
+        have "[x \<rightarrow> v] t\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> [x \<rightarrow> v'] t''" by (simp add: openz_def)
+        moreover
+        assume "s \<notin> FV v'" and "p \<notin> FV v'"
+        from 
+          ssubst_sclose_commute[OF this not_sym[OF `s \<noteq> x`] 
+                                        not_sym[OF `p \<noteq> x`]] 
+          `t' = \<sigma>[s,p] t''`
+        have "[x \<rightarrow> v'] t' = \<sigma>[s,p] [x \<rightarrow> v'] t''" by (simp add: closez_def)
+        ultimately
+        show "\<exists>t''. [x \<rightarrow> v] t\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t'' \<and> [x \<rightarrow> v'] t' = \<sigma>[s,p] t''" 
+          by (rule_tac x = "[x \<rightarrow> v'] t''" in exI, simp)
       qed
     qed
   qed
@@ -820,31 +820,31 @@ proof -
     proof (intro strip)
       fix sa :: fVariable and pa :: fVariable
       assume 
-	sapa: "sa \<notin> L1 \<union> L2 \<union> FV t \<union> {s} \<union> {p} 
-	       \<and> pa \<notin> L1 \<union> L2 \<union> FV t \<union> {s} \<union> {p} \<and> sa \<noteq> pa"
+        sapa: "sa \<notin> L1 \<union> L2 \<union> FV t \<union> {s} \<union> {p} 
+               \<and> pa \<notin> L1 \<union> L2 \<union> FV t \<union> {s} \<union> {p} \<and> sa \<noteq> pa"
       with sp par_beta_lc[OF `y \<Rightarrow>\<^sub>\<beta> u`]
       have "s \<noteq> p" and "s \<notin> FV (Fvar pa)" and "lc y" and "lc u" by auto
       from 
-	sopen_sclose_eq_ssubst[OF this(1-3)] 
+        sopen_sclose_eq_ssubst[OF this(1-3)] 
         sopen_sclose_eq_ssubst[OF this(1-2) this(4)]
-	renaming_par_beta `x = \<sigma>[s,p] y` `y \<Rightarrow>\<^sub>\<beta> u`
+        renaming_par_beta `x = \<sigma>[s,p] y` `y \<Rightarrow>\<^sub>\<beta> u`
       have "x\<^bsup>[Fvar sa, Fvar pa]\<^esup> \<Rightarrow>\<^sub>\<beta> (\<sigma>[s,p] u\<^bsup>[Fvar sa, Fvar pa]\<^esup>)"
-	by (auto simp: openz_def closez_def)
+        by (auto simp: openz_def closez_def)
       
       moreover
       from 
-	sapa par_beta_preserves_FV[OF `t \<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> y`]
-	sopen_FV[of 0 "Fvar s" "Fvar p" t]
+        sapa par_beta_preserves_FV[OF `t \<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> y`]
+        sopen_FV[of 0 "Fvar s" "Fvar p" t]
         par_beta_preserves_FV[OF `y \<Rightarrow>\<^sub>\<beta> u`]
         sclose_subset_FV[of 0 s p u]
       have "sa \<notin> FV (\<sigma>[s,p] u)" and "pa \<notin> FV (\<sigma>[s,p] u)" and "sa \<noteq> pa"
-	by (auto simp: openz_def closez_def)
+        by (auto simp: openz_def closez_def)
       from sym[OF sclose_sopen_eq_t[OF this]] 
       have "\<sigma>[s,p] u = \<sigma>[sa,pa] (\<sigma>[s,p] u\<^bsup>[Fvar sa, Fvar pa]\<^esup>)"
-	by (simp add: openz_def closez_def)
+        by (simp add: openz_def closez_def)
 
       ultimately show "\<exists>t. x\<^bsup>[Fvar sa,Fvar pa]\<^esup> \<Rightarrow>\<^sub>\<beta> t \<and> \<sigma>[s,p] u = \<sigma>[sa,pa] t" 
-	by blast
+        by blast
     qed
   }note 
       this[OF `t \<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t'` `ta = \<sigma>[s,p] t'` `t' \<Rightarrow>\<^sub>\<beta> u`]
@@ -893,30 +893,29 @@ next
     fix L1 :: "fVariable \<Rightarrow> bool" and L2 :: "fVariable \<Rightarrow> bool"
     {
       fix 
-	L :: "fVariable \<Rightarrow> bool" and
-	t :: sterm and F :: "Label -~> sterm" and
+        L :: "fVariable \<Rightarrow> bool" and
+        t :: sterm and F :: "Label -~> sterm" and
         P :: "sterm \<Rightarrow> sterm \<Rightarrow> fVariable \<Rightarrow> fVariable \<Rightarrow> bool"
       assume 
-	"dom F1 = dom F" and
-        "\<forall>l\<in>dom (F1(x \<mapsto> a)). 
-	   \<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p
-	    \<longrightarrow> P (the ((F1(x \<mapsto> a)) l)) (the ((F(x \<mapsto> t)) l)) s p"
+        "dom F1 = dom F" and
+        *: "\<forall>l\<in>dom (F1(x \<mapsto> a)). 
+           \<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p
+            \<longrightarrow> P (the ((F1(x \<mapsto> a)) l)) (the ((F(x \<mapsto> t)) l)) s p"
       hence 
-	F: "\<forall>l\<in>dom F1. \<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p
-	     \<longrightarrow> P (the(F1 l)) (the(F l)) s p"
+        F: "\<forall>l\<in>dom F1. \<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p
+             \<longrightarrow> P (the(F1 l)) (the(F l)) s p"
       proof (intro strip)
-	fix l :: Label and s :: fVariable and p :: fVariable
-	assume "l \<in> dom F1" hence "l \<in> dom (F1(x \<mapsto> a))" by simp
-	moreover assume "s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p"
-	ultimately
-	have "P (the((F1(x \<mapsto> a)) l)) (the((F(x \<mapsto> t)) l)) s p"
-	  using prems(8) by blast
-	moreover from `x \<notin> dom F1` `l \<in> dom F1` have "l \<noteq> x" by auto
-	ultimately show "P (the(F1 l)) (the(F l)) s p" by force
+        fix l :: Label and s :: fVariable and p :: fVariable
+        assume "l \<in> dom F1" hence "l \<in> dom (F1(x \<mapsto> a))" by simp
+        moreover assume "s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p"
+        ultimately
+        have "P (the((F1(x \<mapsto> a)) l)) (the((F(x \<mapsto> t)) l)) s p"
+          using * by blast
+        moreover from `x \<notin> dom F1` `l \<in> dom F1` have "l \<noteq> x" by auto
+        ultimately show "P (the(F1 l)) (the(F l)) s p" by force
       qed
 
-      from prems(8)
-      have "\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> P a t s p" by auto
+      from * have "\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> P a t s p" by auto
       note this F
     }
     note pred = this
@@ -932,12 +931,12 @@ next
     note predb = tmp(1) note predF2 = tmp(2)
 
     assume 
-      "\<forall>l\<in>dom (F1(x \<mapsto> a)). \<forall>s p. s \<notin> L1 \<and> p \<notin> L1 \<and> s \<noteq> p 
+      a: "\<forall>l\<in>dom (F1(x \<mapsto> a)). \<forall>s p. s \<notin> L1 \<and> p \<notin> L1 \<and> s \<noteq> p 
         \<longrightarrow> (\<exists>t. (the ((F1(x \<mapsto> a)) l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t 
                \<and> (\<forall>z. the ((F1(x \<mapsto> a)) l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> z 
                    \<longrightarrow> (\<exists>u. t \<Rightarrow>\<^sub>\<beta> u \<and> z \<Rightarrow>\<^sub>\<beta> u))) 
                \<and> the ((F3(x \<mapsto> c)) l) = \<sigma>[s,p] t)" and
-      "\<forall>l\<in>dom (F1(x \<mapsto> a)). \<forall>s p. s \<notin> L2 \<and> p \<notin> L2 \<and> s \<noteq> p 
+      b: "\<forall>l\<in>dom (F1(x \<mapsto> a)). \<forall>s p. s \<notin> L2 \<and> p \<notin> L2 \<and> s \<noteq> p 
         \<longrightarrow> (\<exists>t. the ((F1(x \<mapsto> a)) l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t 
                \<and> the ((F2(x \<mapsto> b)) l) = \<sigma>[s,p] t)" and
       "finite L1" and "finite L2"
@@ -955,13 +954,13 @@ next
       from this(1) have "finite (La \<union> FV c \<union> FV b)" by simp
       from exFresh_s_p_cof[OF this]
       obtain s p where 
-	sp: "s \<notin> La \<union> FV c \<union> FV b \<and> p \<notin> La \<union> FV c \<union> FV b \<and> s \<noteq> p" 
-	by auto
+        sp: "s \<notin> La \<union> FV c \<union> FV b \<and> p \<notin> La \<union> FV c \<union> FV b \<and> s \<noteq> p" 
+        by auto
       with pred_c obtain u where "c\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u" by blast
       from par_beta_lc[OF this] have "lc (c\<^bsup>[Fvar s,Fvar p]\<^esup>)" by simp
       with lc_body[of "c\<^bsup>[Fvar s,Fvar p]\<^esup>" s p] sp sclose_sopen_eq_t[of s c p 0]
       have c: "body c" by (auto simp: closez_def openz_def)
-	  
+          
       from sp pred_b obtain u where "b\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u" by blast      
       from par_beta_lc[OF this] have "lc (b\<^bsup>[Fvar s,Fvar p]\<^esup>)" by simp
       with lc_body[of "b\<^bsup>[Fvar s,Fvar p]\<^esup>" s p] sp sclose_sopen_eq_t[of s b p 0]
@@ -969,8 +968,8 @@ next
       note c this
     }note bodycb = this
     from 
-      predF3[OF sym[OF `dom F3 = dom F1`] prems(7)]
-      predF2[OF `dom F1 = dom F2` prems(8)]
+      predF3[OF sym[OF `dom F3 = dom F1`] a]
+      predF2[OF `dom F1 = dom F2` b]
       `finite L1` `finite L2`
     have 
       "\<exists>L'. finite L' 
@@ -983,7 +982,7 @@ next
                           \<longrightarrow> (\<exists>t. the (F2 l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t 
                                  \<and> the (lu l) = \<sigma>[s,p] t)) 
           \<and> (\<forall>l\<in>dom F1. body (the (F2 l))))"
-      by (rule_tac x = L1 in allE[OF prems(3)], simp)
+      by (rule_tac x = L1 in allE[OF insert(1)], simp)
     then obtain Lb f where 
       "finite Lb" and "dom f = dom F1" and
       pred_F3: "\<forall>l\<in>dom F1. \<forall>s p. s \<notin> La \<union> Lb \<and> p \<notin> La \<union> Lb \<and> s \<noteq> p 
@@ -1035,8 +1034,8 @@ next
                 \<and> the (lu l) = \<sigma>[s,p] t'))
                 \<and> (\<forall>l\<in>dom (F1(x \<mapsto> a)). body (the ((F2(x \<mapsto> b)) l))))"
       by (rule_tac x = "La \<union> Lb" in exI, 
-	simp (no_asm_simp) only: conjI simp_thms(22),
-	rule_tac x = "(f(x \<mapsto> t))" in exI, simp)
+        simp (no_asm_simp) only: conjI simp_thms(22),
+        rule_tac x = "(f(x \<mapsto> t))" in exI, simp)
   qed
 qed
 
@@ -1078,105 +1077,105 @@ proof (rule impI [THEN allI [THEN allI]])
       fix z assume "Upd t l u \<Rightarrow>\<^sub>\<beta> z"
       thus "\<exists>u. Upd t' l u' \<Rightarrow>\<^sub>\<beta> u \<and> z \<Rightarrow>\<^sub>\<beta> u"
       proof (induct rule: Upd_par_red)
-	  (* Upd: case Upd
-	     Upd t' l u' \<Rightarrow>\<^sub>\<beta> Upd tb l ub \<and> Upd ta l ua \<Rightarrow>\<^sub>\<beta> Upd tb l ub *)
-	case (upd ta ua La)
-	from 
-	  diamond_binder[OF `finite L` pred_u this(2-3)]
-	  this(1) pred_t
-	  par_beta_lc[OF this(1)] par_beta_lc[OF `t \<Rightarrow>\<^sub>\<beta> t'`]
-	obtain L' ub tb where 
-	  "t' \<Rightarrow>\<^sub>\<beta> tb" and "lc t'" and "ta \<Rightarrow>\<^sub>\<beta> tb" and 
-	  "lc ta" and "finite L'" and
-	  "\<forall>s p. s \<notin> L' \<and> p \<notin> L' \<and> s \<noteq> p 
-	    \<longrightarrow> (\<exists>u. u'\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> ub = \<sigma>[s,p] u)" and
-	  "\<forall>s p. s \<notin> L' \<and> p \<notin> L' \<and> s \<noteq> p 
-	    \<longrightarrow> (\<exists>u. ua\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> ub = \<sigma>[s,p] u)"
-	  by auto
-	from 
-	  par_beta.pbeta_Upd[OF this(1-2) this(5-6)]
+          (* Upd: case Upd
+             Upd t' l u' \<Rightarrow>\<^sub>\<beta> Upd tb l ub \<and> Upd ta l ua \<Rightarrow>\<^sub>\<beta> Upd tb l ub *)
+        case (upd ta ua La)
+        from 
+          diamond_binder[OF `finite L` pred_u this(2-3)]
+          this(1) pred_t
+          par_beta_lc[OF this(1)] par_beta_lc[OF `t \<Rightarrow>\<^sub>\<beta> t'`]
+        obtain L' ub tb where 
+          "t' \<Rightarrow>\<^sub>\<beta> tb" and "lc t'" and "ta \<Rightarrow>\<^sub>\<beta> tb" and 
+          "lc ta" and "finite L'" and
+          "\<forall>s p. s \<notin> L' \<and> p \<notin> L' \<and> s \<noteq> p 
+            \<longrightarrow> (\<exists>u. u'\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> ub = \<sigma>[s,p] u)" and
+          "\<forall>s p. s \<notin> L' \<and> p \<notin> L' \<and> s \<noteq> p 
+            \<longrightarrow> (\<exists>u. ua\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> ub = \<sigma>[s,p] u)"
+          by auto
+        from 
+          par_beta.pbeta_Upd[OF this(1-2) this(5-6)]
           par_beta.pbeta_Upd[OF this(3-5) this(7)]
-	  par_beta_body[OF this(5-6)]
-	  par_beta_body[OF this(5) this(7)] `z = Upd ta l ua`
-	show ?case by (force simp: exI[of _ "Upd tb l ub"])
+          par_beta_body[OF this(5-6)]
+          par_beta_body[OF this(5) this(7)] `z = Upd ta l ua`
+        show ?case by (force simp: exI[of _ "Upd tb l ub"])
       next
-	case (obj f fa T ua La)
-	  (* Upd: case Obj
-	     Upd (Obj f' T) l u' \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> ub)) T 
-	   \<and> Obj (fa(l \<mapsto> ua)) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> ub)) T *)
-	from diamond_binder[OF `finite L` pred_u this(4-5)]
-	obtain Lb ub where
-	  "finite Lb" and
-	  ub1: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
-	         \<longrightarrow> (\<exists>u. ua\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> ub = \<sigma>[s,p] u)" and
-	  ub2: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
-	         \<longrightarrow> (\<exists>u. u'\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> ub = \<sigma>[s,p] u)"
-	  by auto
-	from `Obj f T = t` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T`
-	have "t \<Rightarrow>\<^sub>\<beta> Obj fa T" by simp
-	with pred_t obtain a where "t' \<Rightarrow>\<^sub>\<beta> a" "Obj fa T \<Rightarrow>\<^sub>\<beta> a"
-	  by auto
-	with 
-	  par_beta_lc[OF this(2)] 
-	  par_beta_body[OF `finite Lb` ub1]
-	obtain fb where
-	  "t' \<Rightarrow>\<^sub>\<beta> Obj fb T" and "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" and
-	  "lc (Obj fa T)" and "body ua"
-	  by auto
-	from Obj_pbeta_subst[OF `finite Lb` ub1 this(2-4)] 
-	have "Obj (fa(l \<mapsto> ua)) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> ub)) T" by assumption
-	moreover
-	from 
-	  `t \<Rightarrow>\<^sub>\<beta> t'` `Obj f T = t`
-	  par_beta_lc[OF `t \<Rightarrow>\<^sub>\<beta> t'`] `t' \<Rightarrow>\<^sub>\<beta> Obj fb T`
-	  par_beta_body[OF `finite Lb` ub2]
-	obtain f' where 
-	  "t' = Obj f' T" and "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and 
-	  "lc (Obj f' T)" and "body u'"
-	  by auto
-	note par_beta.pbeta_Upd'[OF this(2) `finite Lb` ub2 _ this(3-4)]
-	moreover
-	from 
-	  `t \<Rightarrow>\<^sub>\<beta> t'` `Obj f T = t` `t' = Obj f' T`
-	  `l \<in> dom f` Obj_pbeta[of f T f']
-	have "l \<in> dom f'" by simp
-	ultimately
-	show ?case
-	  using `z = Obj (fa(l \<mapsto> ua)) T` `t' = Obj f' T`
-	  by (rule_tac x = "Obj (fb(l \<mapsto> ub)) T" in exI, simp)
+        case (obj f fa T ua La)
+          (* Upd: case Obj
+             Upd (Obj f' T) l u' \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> ub)) T 
+           \<and> Obj (fa(l \<mapsto> ua)) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> ub)) T *)
+        from diamond_binder[OF `finite L` pred_u this(4-5)]
+        obtain Lb ub where
+          "finite Lb" and
+          ub1: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
+                 \<longrightarrow> (\<exists>u. ua\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> ub = \<sigma>[s,p] u)" and
+          ub2: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
+                 \<longrightarrow> (\<exists>u. u'\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> ub = \<sigma>[s,p] u)"
+          by auto
+        from `Obj f T = t` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T`
+        have "t \<Rightarrow>\<^sub>\<beta> Obj fa T" by simp
+        with pred_t obtain a where "t' \<Rightarrow>\<^sub>\<beta> a" "Obj fa T \<Rightarrow>\<^sub>\<beta> a"
+          by auto
+        with 
+          par_beta_lc[OF this(2)] 
+          par_beta_body[OF `finite Lb` ub1]
+        obtain fb where
+          "t' \<Rightarrow>\<^sub>\<beta> Obj fb T" and "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" and
+          "lc (Obj fa T)" and "body ua"
+          by auto
+        from Obj_pbeta_subst[OF `finite Lb` ub1 this(2-4)] 
+        have "Obj (fa(l \<mapsto> ua)) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> ub)) T" by assumption
+        moreover
+        from 
+          `t \<Rightarrow>\<^sub>\<beta> t'` `Obj f T = t`
+          par_beta_lc[OF `t \<Rightarrow>\<^sub>\<beta> t'`] `t' \<Rightarrow>\<^sub>\<beta> Obj fb T`
+          par_beta_body[OF `finite Lb` ub2]
+        obtain f' where 
+          "t' = Obj f' T" and "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and 
+          "lc (Obj f' T)" and "body u'"
+          by auto
+        note par_beta.pbeta_Upd'[OF this(2) `finite Lb` ub2 _ this(3-4)]
+        moreover
+        from 
+          `t \<Rightarrow>\<^sub>\<beta> t'` `Obj f T = t` `t' = Obj f' T`
+          `l \<in> dom f` Obj_pbeta[of f T f']
+        have "l \<in> dom f'" by simp
+        ultimately
+        show ?case
+          using `z = Obj (fa(l \<mapsto> ua)) T` `t' = Obj f' T`
+          by (rule_tac x = "Obj (fb(l \<mapsto> ub)) T" in exI, simp)
       qed
     qed
   next
     case (pbeta_Obj f' f L T) note pred = this(3)
     show ?case
     proof (clarify)
-	(* Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T \<and> Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T *)
+        (* Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T \<and> Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T *)
       fix fa La
       assume 
-	"dom fa = dom f" and "finite La" and
+        "dom fa = dom f" and "finite La" and
         "\<forall>l\<in>dom f. \<forall>s p. s \<notin> La \<and> p \<notin> La \<and> s \<noteq> p
-	             \<longrightarrow> (\<exists>t. the (f l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t 
-	                    \<and> the (fa l) = \<sigma>[s,p] t)"
+                     \<longrightarrow> (\<exists>t. the (f l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t 
+                            \<and> the (fa l) = \<sigma>[s,p] t)"
       from 
-	exL_exMap[OF sym[OF this(1)] `dom f' = dom f` 
-	             `finite L` pred this(2)]
-	this(1) this(3) `dom f' = dom f`
+        exL_exMap[OF sym[OF this(1)] `dom f' = dom f` 
+                     `finite L` pred this(2)]
+        this(1) this(3) `dom f' = dom f`
       obtain Lb fb where 
-	"dom fb = dom f'" and "dom fb = dom fa" and "finite Lb" and
-	"\<forall>l\<in>dom f'. \<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
-	              \<longrightarrow> (\<exists>t. the (f' l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t 
-	                     \<and> the (fb l) = \<sigma>[s,p] t)" and
-	"\<forall>l\<in>dom f'. body (the (f' l))" and
-	"\<forall>l\<in>dom fa. \<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
-	              \<longrightarrow> (\<exists>t. the (fa l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t 
-	                     \<and> the (fb l) = \<sigma>[s,p] t)" and
-	"\<forall>l\<in>dom fa. body (the (fa l))"
-	by auto
+        "dom fb = dom f'" and "dom fb = dom fa" and "finite Lb" and
+        "\<forall>l\<in>dom f'. \<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
+                      \<longrightarrow> (\<exists>t. the (f' l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t 
+                             \<and> the (fb l) = \<sigma>[s,p] t)" and
+        "\<forall>l\<in>dom f'. body (the (f' l))" and
+        "\<forall>l\<in>dom fa. \<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
+                      \<longrightarrow> (\<exists>t. the (fa l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t 
+                             \<and> the (fb l) = \<sigma>[s,p] t)" and
+        "\<forall>l\<in>dom fa. body (the (fa l))"
+        by auto
       from 
-	par_beta.pbeta_Obj[OF this(1) this(3-5)]
-	par_beta.pbeta_Obj[OF this(2) this(3) this(6-7)]
+        par_beta.pbeta_Obj[OF this(1) this(3-5)]
+        par_beta.pbeta_Obj[OF this(2) this(3) this(6-7)]
       show "\<exists>u. Obj f' T \<Rightarrow>\<^sub>\<beta> u \<and> Obj fa T \<Rightarrow>\<^sub>\<beta> u"
-	by (rule_tac x = "Obj fb T" in exI, simp)
+        by (rule_tac x = "Obj fb T" in exI, simp)
     qed
   next
     case (pbeta_Upd' f T f' L t t' l) 
@@ -1186,86 +1185,86 @@ proof (rule impI [THEN allI [THEN allI]])
       fix z assume "Upd (Obj f T) l t \<Rightarrow>\<^sub>\<beta> z"
       thus "\<exists>u. Obj (f'(l \<mapsto> t')) T \<Rightarrow>\<^sub>\<beta> u \<and> z \<Rightarrow>\<^sub>\<beta> u"
       proof (induct rule: Upd_par_red)
-	  (* Upd': case Upd 
-	     Obj (f'(l \<mapsto> t')) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T 
-	   \<and> Upd (Obj fa T) l ta \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T *)
-	case (upd a ta La) note pred_ta = this(3)
-	from `Obj f T \<Rightarrow>\<^sub>\<beta> a` `z = Upd a l ta`
-	obtain fa where 
-	  "Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T" and "z = Upd (Obj fa T) l ta"
-	  by auto
-	from this(1) pred_obj
-	obtain b where "Obj f' T \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b"
-	  by (elim allE impE exE conjE, simp)
-	with 
-	  par_beta_lc[OF this(1)] par_beta_lc[OF this(2)]
-	obtain fb where 
-	  "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj f' T)" and
+          (* Upd': case Upd 
+             Obj (f'(l \<mapsto> t')) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T 
+           \<and> Upd (Obj fa T) l ta \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T *)
+        case (upd a ta La) note pred_ta = this(3)
+        from `Obj f T \<Rightarrow>\<^sub>\<beta> a` `z = Upd a l ta`
+        obtain fa where 
+          "Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T" and "z = Upd (Obj fa T) l ta"
+          by auto
+        from this(1) pred_obj
+        obtain b where "Obj f' T \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b"
+          by (elim allE impE exE conjE, simp)
+        with 
+          par_beta_lc[OF this(1)] par_beta_lc[OF this(2)]
+        obtain fb where 
+          "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj f' T)" and
           "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj fa T)"
-	  by auto
-	from diamond_binder[OF `finite L` prems(5) `finite La` pred_ta]
-	obtain Lb tb where 
-	  "finite Lb" and
-	  cb1: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
- 	         \<longrightarrow> (\<exists>u. t'\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> tb = \<sigma>[s,p] u)" and
-	  cb2: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
-	         \<longrightarrow> (\<exists>u. ta\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> tb = \<sigma>[s,p] u)"
-	  by auto
-	from 
-	  par_beta_body[OF this(1-2)] 
-	  Obj_pbeta_subst[OF `finite Lb` cb1 `Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T`
-	                     `lc (Obj f' T)`]
-	have "Obj (f'(l \<mapsto> t')) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T" 
-	  by simp
-	moreover
-	from Obj_pbeta[OF `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T`] prems(6)
-	have "l \<in> dom fa" by simp
-	from 
-	  par_beta_body[OF `finite Lb` cb2]
-	  par_beta.pbeta_Upd'[OF `Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T` `finite Lb` 
-	                         cb2 this `lc (Obj fa T)`]
-	have "Upd (Obj fa T) l ta \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T" by simp
-	ultimately
-	show ?case
-	  using `z = Upd (Obj fa T) l ta`
-	  by (rule_tac x = "Obj (fb(l \<mapsto> tb)) T" in exI, simp)
+          by auto
+        from diamond_binder[OF `finite L` pbeta_Upd'(4) `finite La` pred_ta]
+        obtain Lb tb where 
+          "finite Lb" and
+          cb1: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
+                 \<longrightarrow> (\<exists>u. t'\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> tb = \<sigma>[s,p] u)" and
+          cb2: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
+                 \<longrightarrow> (\<exists>u. ta\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> tb = \<sigma>[s,p] u)"
+          by auto
+        from 
+          par_beta_body[OF this(1-2)] 
+          Obj_pbeta_subst[OF `finite Lb` cb1 `Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T`
+                             `lc (Obj f' T)`]
+        have "Obj (f'(l \<mapsto> t')) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T" 
+          by simp
+        moreover
+        from Obj_pbeta[OF `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T`] `l \<in> dom f`
+        have "l \<in> dom fa" by simp
+        from 
+          par_beta_body[OF `finite Lb` cb2]
+          par_beta.pbeta_Upd'[OF `Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T` `finite Lb` 
+                                 cb2 this `lc (Obj fa T)`]
+        have "Upd (Obj fa T) l ta \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T" by simp
+        ultimately
+        show ?case
+          using `z = Upd (Obj fa T) l ta`
+          by (rule_tac x = "Obj (fb(l \<mapsto> tb)) T" in exI, simp)
       next
-	  (* Upd': case Obj 
-	     Obj (f'(l \<mapsto> t')) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T 
-	   \<and> Obj (fa(l \<mapsto> ta)) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T *)
-	case (obj f'' fa T' ta La) 
-	note pred_ta = this(5) and this
-	hence 
-	  "l \<in> dom f" and "Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T" and
-	  "z = Obj (fa(l \<mapsto> ta)) T"
-	  by auto
-	from diamond_binder[OF `finite L` pred_bnd `finite La` pred_ta]
-	obtain Lb tb where
-	  "finite Lb" and
-	  tb1: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
-	         \<longrightarrow> (\<exists>u. t'\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> tb = \<sigma>[s,p] u)" and
-	  tb2: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
-	         \<longrightarrow> (\<exists>u. ta\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> tb = \<sigma>[s,p] u)"
-	  by auto
-	from `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T` pred_obj
-	obtain b where "Obj f' T \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b"
-	  by (elim allE impE exE conjE, simp)
-	with par_beta_lc[OF this(1)] par_beta_lc[OF this(2)]
-	obtain fb where 
-	  "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" "lc (Obj f' T)" and
-	  "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" "lc (Obj fa T)"
-	  by auto
-	from 
-	  par_beta_body[OF `finite Lb` tb1] 
-	  Obj_pbeta_subst[OF `finite Lb` tb1 this(1-2)]
-	  par_beta_body[OF `finite Lb` tb2] 
-	  Obj_pbeta_subst[OF `finite Lb` tb2 this(3-4)]
-	have 
-	  "Obj (f'(l \<mapsto> t')) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T" and
-	  "Obj (fa(l \<mapsto> ta)) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T" 
-	  by simp+
-	with `z = Obj (fa(l \<mapsto> ta)) T` show ?case
-	  by (rule_tac x = "Obj (fb(l \<mapsto> tb)) T" in exI, simp)
+          (* Upd': case Obj 
+             Obj (f'(l \<mapsto> t')) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T 
+           \<and> Obj (fa(l \<mapsto> ta)) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T *)
+        case (obj f'' fa T' ta La) 
+        note pred_ta = this(5) and this
+        hence 
+          "l \<in> dom f" and "Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T" and
+          "z = Obj (fa(l \<mapsto> ta)) T"
+          by auto
+        from diamond_binder[OF `finite L` pred_bnd `finite La` pred_ta]
+        obtain Lb tb where
+          "finite Lb" and
+          tb1: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
+                 \<longrightarrow> (\<exists>u. t'\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> tb = \<sigma>[s,p] u)" and
+          tb2: "\<forall>s p. s \<notin> Lb \<and> p \<notin> Lb \<and> s \<noteq> p 
+                 \<longrightarrow> (\<exists>u. ta\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> tb = \<sigma>[s,p] u)"
+          by auto
+        from `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T` pred_obj
+        obtain b where "Obj f' T \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b"
+          by (elim allE impE exE conjE, simp)
+        with par_beta_lc[OF this(1)] par_beta_lc[OF this(2)]
+        obtain fb where 
+          "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" "lc (Obj f' T)" and
+          "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" "lc (Obj fa T)"
+          by auto
+        from 
+          par_beta_body[OF `finite Lb` tb1] 
+          Obj_pbeta_subst[OF `finite Lb` tb1 this(1-2)]
+          par_beta_body[OF `finite Lb` tb2] 
+          Obj_pbeta_subst[OF `finite Lb` tb2 this(3-4)]
+        have 
+          "Obj (f'(l \<mapsto> t')) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T" and
+          "Obj (fa(l \<mapsto> ta)) T \<Rightarrow>\<^sub>\<beta> Obj (fb(l \<mapsto> tb)) T" 
+          by simp+
+        with `z = Obj (fa(l \<mapsto> ta)) T` show ?case
+          by (rule_tac x = "Obj (fb(l \<mapsto> tb)) T" in exI, simp)
       qed
     qed
   next
@@ -1276,59 +1275,59 @@ proof (rule impI [THEN allI [THEN allI]])
       fix z assume "Call t l u \<Rightarrow>\<^sub>\<beta> z"
       thus "\<exists>u. Call t' l u' \<Rightarrow>\<^sub>\<beta> u \<and> z \<Rightarrow>\<^sub>\<beta> u"
       proof (induct rule: Call_par_red)
-	  (* Call: case Call 
-	     Call t' l u' \<Rightarrow>\<^sub>\<beta> Call tb l ub \<and> Call t' l u' \<Rightarrow>\<^sub>\<beta> Call tb l ub *)
-	case (call ta ua)
-	from 
-	  this(1-2) pred_t pred_u
-	obtain tb ub where "t' \<Rightarrow>\<^sub>\<beta> tb" "u' \<Rightarrow>\<^sub>\<beta> ub" "ta \<Rightarrow>\<^sub>\<beta> tb" "ua \<Rightarrow>\<^sub>\<beta> ub"
-	  by (elim allE impE exE conjE, simp)
-	from 
-	  par_beta_lc[OF this(1)] par_beta_lc[OF this(2)]
-	  par_beta.pbeta_Call[OF this(1-2)]
-	  par_beta_lc[OF this(3)] par_beta_lc[OF this(4)] 
-	  par_beta.pbeta_Call[OF this(3-4)]
-	  `z = Call ta l ua`
-	show ?case
-	  by (rule_tac x = "Call tb l ub" in exI, simp)
+          (* Call: case Call 
+             Call t' l u' \<Rightarrow>\<^sub>\<beta> Call tb l ub \<and> Call t' l u' \<Rightarrow>\<^sub>\<beta> Call tb l ub *)
+        case (call ta ua)
+        from 
+          this(1-2) pred_t pred_u
+        obtain tb ub where "t' \<Rightarrow>\<^sub>\<beta> tb" "u' \<Rightarrow>\<^sub>\<beta> ub" "ta \<Rightarrow>\<^sub>\<beta> tb" "ua \<Rightarrow>\<^sub>\<beta> ub"
+          by (elim allE impE exE conjE, simp)
+        from 
+          par_beta_lc[OF this(1)] par_beta_lc[OF this(2)]
+          par_beta.pbeta_Call[OF this(1-2)]
+          par_beta_lc[OF this(3)] par_beta_lc[OF this(4)] 
+          par_beta.pbeta_Call[OF this(3-4)]
+          `z = Call ta l ua`
+        show ?case
+          by (rule_tac x = "Call tb l ub" in exI, simp)
       next
-	  (* Call: case beta 
-	     Call (Obj f' T) l u' \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>)
-	   \<and> the (fa l)\<^bsup>[Obj fa T,ua]\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>) *)
-	case (beta f fa T ua) 
-	from this(1-2) have "t \<Rightarrow>\<^sub>\<beta> Obj fa T" by simp
-	with `u \<Rightarrow>\<^sub>\<beta> ua` pred_t pred_u
-	obtain b ub where 
-	  "t' \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b" and "u' \<Rightarrow>\<^sub>\<beta> ub" and "ua \<Rightarrow>\<^sub>\<beta> ub"
-	  by (elim allE impE exE conjE, simp)
-	from this(1-2) par_beta_lc[OF this(2)]
-	obtain fb where 
-	  "t' \<Rightarrow>\<^sub>\<beta> Obj fb T" and 
-	  "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj fa T)"
-	  by auto
-	from 
-	  par_beta_beta[OF `l \<in> dom fa` this(2) `ua \<Rightarrow>\<^sub>\<beta> ub` this(3)]
-	  par_beta_lc[OF `ua \<Rightarrow>\<^sub>\<beta> ub`]
-	have "the (fa l)\<^bsup>[Obj fa T,ua]\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>)" by simp
-	moreover
-	from `l \<in> dom fa` Obj_pbeta[OF `Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T`]
-	have "l \<in> dom fb" by simp
-	from 
-	  `t \<Rightarrow>\<^sub>\<beta> t'` sym[OF `Obj f T = t`]
-	  par_beta_lc[OF `t \<Rightarrow>\<^sub>\<beta> t'`] `t' \<Rightarrow>\<^sub>\<beta> Obj fb T`
-	obtain f' where 
-	  "t' = Obj f' T" and "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and
-	  "lc (Obj f' T)"
-	  by auto
-	from 
-	  Obj_pbeta[OF this(2)] `l \<in> dom fb`
-	  par_beta.pbeta_beta[OF this(2) _ `u' \<Rightarrow>\<^sub>\<beta> ub` this(3)]
+          (* Call: case beta 
+             Call (Obj f' T) l u' \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>)
+           \<and> the (fa l)\<^bsup>[Obj fa T,ua]\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>) *)
+        case (beta f fa T ua) 
+        from this(1-2) have "t \<Rightarrow>\<^sub>\<beta> Obj fa T" by simp
+        with `u \<Rightarrow>\<^sub>\<beta> ua` pred_t pred_u
+        obtain b ub where 
+          "t' \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b" and "u' \<Rightarrow>\<^sub>\<beta> ub" and "ua \<Rightarrow>\<^sub>\<beta> ub"
+          by (elim allE impE exE conjE, simp)
+        from this(1-2) par_beta_lc[OF this(2)]
+        obtain fb where 
+          "t' \<Rightarrow>\<^sub>\<beta> Obj fb T" and 
+          "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj fa T)"
+          by auto
+        from 
+          par_beta_beta[OF `l \<in> dom fa` this(2) `ua \<Rightarrow>\<^sub>\<beta> ub` this(3)]
+          par_beta_lc[OF `ua \<Rightarrow>\<^sub>\<beta> ub`]
+        have "the (fa l)\<^bsup>[Obj fa T,ua]\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>)" by simp
+        moreover
+        from `l \<in> dom fa` Obj_pbeta[OF `Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T`]
+        have "l \<in> dom fb" by simp
+        from 
+          `t \<Rightarrow>\<^sub>\<beta> t'` sym[OF `Obj f T = t`]
+          par_beta_lc[OF `t \<Rightarrow>\<^sub>\<beta> t'`] `t' \<Rightarrow>\<^sub>\<beta> Obj fb T`
+        obtain f' where 
+          "t' = Obj f' T" and "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and
+          "lc (Obj f' T)"
+          by auto
+        from 
+          Obj_pbeta[OF this(2)] `l \<in> dom fb`
+          par_beta.pbeta_beta[OF this(2) _ `u' \<Rightarrow>\<^sub>\<beta> ub` this(3)]
           par_beta_lc[OF `u' \<Rightarrow>\<^sub>\<beta> ub`]
-	have "Call (Obj f' T) l u' \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>)" by auto
-	ultimately
-	show ?case
-	  using `t' = Obj f' T` `z = (the (fa l)\<^bsup>[Obj fa T,ua]\<^esup>)`
-	  by (rule_tac x = "(the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>)" in exI, simp)
+        have "Call (Obj f' T) l u' \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>)" by auto
+        ultimately
+        show ?case
+          using `t' = Obj f' T` `z = (the (fa l)\<^bsup>[Obj fa T,ua]\<^esup>)`
+          by (rule_tac x = "(the (fb l)\<^bsup>[Obj fb T,ub]\<^esup>)" in exI, simp)
       qed
     qed
   next
@@ -1339,63 +1338,63 @@ proof (rule impI [THEN allI [THEN allI]])
       fix z assume "Call (Obj f T) l p \<Rightarrow>\<^sub>\<beta> z"
       thus "\<exists>u. the (f' l)\<^bsup>[Obj f' T,p']\<^esup> \<Rightarrow>\<^sub>\<beta> u \<and> z \<Rightarrow>\<^sub>\<beta> u"
       proof (induct rule: Call_par_red)
-	  (* beta: case Call 
-	     Call (Obj fa T) l pa \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>) 
-	   \<and> the (f' l)\<^bsup>[Obj f' T,p']\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>) *)
-	case (call a pa)
-	then obtain fa where 
-	  "Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T" and "z = Call (Obj fa T) l pa"
-	  by auto
-	from 
-	  this(1) `p \<Rightarrow>\<^sub>\<beta> pa` pred_obj pred_p
-	obtain b pb where 
-	  "Obj f' T \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b" and 
-	  "p' \<Rightarrow>\<^sub>\<beta> pb" and "pa \<Rightarrow>\<^sub>\<beta> pb"
-	  by (elim allE impE exE conjE, simp)
-	with par_beta_lc[OF this(1)] par_beta_lc[OF this(2)]
-	obtain fb where 
-	  "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj f' T)" and
-	  "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj fa T)"
-	  by auto
-	from this(1) `l \<in> dom f` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj f' T` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T`
-	have "l \<in> dom f'" and "l \<in> dom fa" by auto
-	from `p' \<Rightarrow>\<^sub>\<beta> pb` `pa \<Rightarrow>\<^sub>\<beta> pb` par_beta_lc
-	have "p' \<Rightarrow>\<^sub>\<beta> pb" and "lc p'" and "pa \<Rightarrow>\<^sub>\<beta> pb" and "lc pa" by auto
-	from 
-	  par_beta.pbeta_beta[OF `Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T` `l \<in> dom fa`
-	                          this(3) `lc (Obj fa T)` this(4)] 
-	  par_beta_beta[OF `l \<in> dom f'` `Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T`
-	                    this(1) `lc (Obj f' T)` this(2)]
-	  `z = Call (Obj fa T) l pa`
-	show ?case
-	  by (rule_tac x = "(the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>)" in exI, simp)
+          (* beta: case Call 
+             Call (Obj fa T) l pa \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>) 
+           \<and> the (f' l)\<^bsup>[Obj f' T,p']\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>) *)
+        case (call a pa)
+        then obtain fa where 
+          "Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T" and "z = Call (Obj fa T) l pa"
+          by auto
+        from 
+          this(1) `p \<Rightarrow>\<^sub>\<beta> pa` pred_obj pred_p
+        obtain b pb where 
+          "Obj f' T \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b" and 
+          "p' \<Rightarrow>\<^sub>\<beta> pb" and "pa \<Rightarrow>\<^sub>\<beta> pb"
+          by (elim allE impE exE conjE, simp)
+        with par_beta_lc[OF this(1)] par_beta_lc[OF this(2)]
+        obtain fb where 
+          "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj f' T)" and
+          "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj fa T)"
+          by auto
+        from this(1) `l \<in> dom f` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj f' T` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T`
+        have "l \<in> dom f'" and "l \<in> dom fa" by auto
+        from `p' \<Rightarrow>\<^sub>\<beta> pb` `pa \<Rightarrow>\<^sub>\<beta> pb` par_beta_lc
+        have "p' \<Rightarrow>\<^sub>\<beta> pb" and "lc p'" and "pa \<Rightarrow>\<^sub>\<beta> pb" and "lc pa" by auto
+        from 
+          par_beta.pbeta_beta[OF `Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T` `l \<in> dom fa`
+                                  this(3) `lc (Obj fa T)` this(4)] 
+          par_beta_beta[OF `l \<in> dom f'` `Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T`
+                            this(1) `lc (Obj f' T)` this(2)]
+          `z = Call (Obj fa T) l pa`
+        show ?case
+          by (rule_tac x = "(the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>)" in exI, simp)
       next
-	  (* beta: case beta 
-	     the (f' l)\<^bsup>[Obj f' T,p']\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>)
-	  \<and>  the (fa l)\<^bsup>[Obj fa T,pa]\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>) *)
-	case (beta f'' fa Ta pa)
-	hence "Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T" and "z = (the (fa l)\<^bsup>[Obj fa T,pa]\<^esup>)"
-	  by auto
-	with `p \<Rightarrow>\<^sub>\<beta> pa` pred_obj pred_p
-	obtain b pb where 
-	  "Obj f' T \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b" and
-	  "p' \<Rightarrow>\<^sub>\<beta> pb" and "pa \<Rightarrow>\<^sub>\<beta> pb"
-	  by (elim allE impE exE conjE, simp)
-	with par_beta_lc
-	obtain fb where 
-	  "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj f' T)" and "lc p'" and
-	  "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj fa T)" and "lc pa"
-	  by auto
-	from `l \<in> dom f` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj f' T` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T`
-	have "l \<in> dom f'" and "l \<in> dom fa" by auto
-	from
-	  par_beta_beta[OF `l \<in> dom f'` `Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T` 
-	                   `p' \<Rightarrow>\<^sub>\<beta> pb` `lc (Obj f' T)` `lc p'`]
-	  par_beta_beta[OF `l \<in> dom fa` `Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T` 
-	                   `pa \<Rightarrow>\<^sub>\<beta> pb` `lc (Obj fa T)` `lc pa`]
-	  `z = (the (fa l)\<^bsup>[Obj fa T,pa]\<^esup>)`
-	show ?case
-	  by (rule_tac x = "(the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>)" in exI, simp)
+          (* beta: case beta 
+             the (f' l)\<^bsup>[Obj f' T,p']\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>)
+          \<and>  the (fa l)\<^bsup>[Obj fa T,pa]\<^esup> \<Rightarrow>\<^sub>\<beta> (the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>) *)
+        case (beta f'' fa Ta pa)
+        hence "Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T" and "z = (the (fa l)\<^bsup>[Obj fa T,pa]\<^esup>)"
+          by auto
+        with `p \<Rightarrow>\<^sub>\<beta> pa` pred_obj pred_p
+        obtain b pb where 
+          "Obj f' T \<Rightarrow>\<^sub>\<beta> b" and "Obj fa T \<Rightarrow>\<^sub>\<beta> b" and
+          "p' \<Rightarrow>\<^sub>\<beta> pb" and "pa \<Rightarrow>\<^sub>\<beta> pb"
+          by (elim allE impE exE conjE, simp)
+        with par_beta_lc
+        obtain fb where 
+          "Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj f' T)" and "lc p'" and
+          "Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T" and "lc (Obj fa T)" and "lc pa"
+          by auto
+        from `l \<in> dom f` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj f' T` `Obj f T \<Rightarrow>\<^sub>\<beta> Obj fa T`
+        have "l \<in> dom f'" and "l \<in> dom fa" by auto
+        from
+          par_beta_beta[OF `l \<in> dom f'` `Obj f' T \<Rightarrow>\<^sub>\<beta> Obj fb T` 
+                           `p' \<Rightarrow>\<^sub>\<beta> pb` `lc (Obj f' T)` `lc p'`]
+          par_beta_beta[OF `l \<in> dom fa` `Obj fa T \<Rightarrow>\<^sub>\<beta> Obj fb T` 
+                           `pa \<Rightarrow>\<^sub>\<beta> pb` `lc (Obj fa T)` `lc pa`]
+          `z = (the (fa l)\<^bsup>[Obj fa T,pa]\<^esup>)`
+        show ?case
+          by (rule_tac x = "(the (fb l)\<^bsup>[Obj fb T,pb]\<^esup>)" in exI, simp)
       qed
     qed
   qed

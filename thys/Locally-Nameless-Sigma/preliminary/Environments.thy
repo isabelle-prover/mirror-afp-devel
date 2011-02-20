@@ -1,9 +1,6 @@
 (*  Title:      Environments.thy
-    ID:         $Id: Environments.thy,v 1.1 2009/11/12 11:55:48 flokam Exp $
-    Author:     Florian Kammuller and Henry Sudhof
-                2008
+    Author:     Florian Kammuller and Henry Sudhof, 2008
 *)
-
 
 theory Environments imports Main begin 
 
@@ -58,13 +55,13 @@ proof (cases e)
 next
   case (Env f) with assms show ?thesis
   proof (cases "x \<in> dom f", simp)
-    case False from prems show ?thesis
+    case False with assms Env show ?thesis
     proof (cases "y \<in> dom f", simp_all, intro ext)
       fix xa :: string
-      case False from prems show "(f(x \<mapsto> a,y \<mapsto> b)) xa = (f(y \<mapsto> b,x \<mapsto> a)) xa"
+      case False with assms show "(f(x \<mapsto> a,y \<mapsto> b)) xa = (f(y \<mapsto> b,x \<mapsto> a)) xa"
       proof (cases "xa = x", simp)
-	case False from prems show ?thesis
-	  by (cases "xa = y", simp_all)
+        case False with assms show ?thesis
+          by (cases "xa = y", simp_all)
       qed
     qed
   qed
@@ -111,7 +108,7 @@ lemma not_malformed_smaller:
 proof (cases e)
   case Malformed with assms show ?thesis by simp (* contradiction *)
 next
-  case (Env f) from ok_finite[OF assms] prems show ?thesis
+  case (Env f) with ok_finite[OF assms] assms show ?thesis
     by (cases "a \<notin> dom f", simp_all)
 qed
 
@@ -256,13 +253,14 @@ lemma in_env_smaller:
   assumes "x \<in> (env_dom (e\<lparr>a:X\<rparr>))" and "x \<noteq> a"
   shows "x \<in> env_dom e"
 proof -
-  from not_malformed[OF assms(1)] obtain f where "e\<lparr>a:X\<rparr> = Env f" by auto
+  from not_malformed[OF assms(1)] obtain f where f: "e\<lparr>a:X\<rparr> = Env f" by auto
   with assms show ?thesis
   proof (cases e)
     case Malformed with `e\<lparr>a:X\<rparr> = Env f` 
-    show ?thesis by simp (* contradiction *)
+    have False by simp
+    then show ?thesis ..
   next
-    case (Env f') from prems show ?thesis
+    case (Env f') with assms f show ?thesis
       by (simp, cases "a \<in> dom f'", simp_all, force)
   qed
 qed
@@ -280,12 +278,12 @@ lemma get_env_bigger:
   assumes "x \<in> (env_dom (e\<lparr>a:X\<rparr>))" and "x \<noteq> a"
   shows "e!x = e\<lparr>a:X\<rparr>!x"
 proof -
-  from not_malformed[OF assms(1)] obtain f where "e\<lparr>a:X\<rparr> = Env f" by auto
+  from not_malformed[OF assms(1)] obtain f where f: "e\<lparr>a:X\<rparr> = Env f" by auto
   thus ?thesis proof (cases e)
     case Malformed with `e\<lparr>a:X\<rparr> = Env f`
     show ?thesis by simp (* contradiction *)
   next
-    case (Env f') from prems show ?thesis
+    case (Env f') with assms f show ?thesis
       by (cases "a \<notin> dom f'", auto)
   qed
 qed
@@ -421,11 +419,11 @@ proof -
     thus "((f1 ++ f2)(x \<mapsto> X)) xa = (f1(x \<mapsto> X) ++ f2) xa"
     proof (cases "x = xa", simp_all)
       case False thus "(f1 ++ f2) xa = (f1(x \<mapsto> X) ++ f2) xa" 
-	by (simp add: map_add_def split: option.split)
+        by (simp add: map_add_def split: option.split)
     next
       case True with `x \<notin> dom f1` `x \<notin> dom f2` 
       have "(f1(xa \<mapsto> X) ++ f2) xa = Some X"
-	by (auto simp: map_add_Some_iff)
+        by (auto simp: map_add_Some_iff)
       thus "Some X = (f1(xa \<mapsto> X) ++ f2) xa" by simp
     qed
   qed
@@ -452,20 +450,20 @@ proof -
       case True 
       with `x \<noteq> y` `x \<notin> dom f1` `x \<notin> dom f2` `y \<notin> dom f1` `y \<notin> dom f2`
       have "(f1(xa \<mapsto> X,y \<mapsto> Y) ++ f2) xa = Some X"
-	by (auto simp: map_add_Some_iff)
+        by (auto simp: map_add_Some_iff)
       thus "Some X = (f1(xa \<mapsto> X,y \<mapsto> Y) ++ f2) xa" by simp
     next
       case False thus ?thesis
       proof (cases "y = xa", simp_all)
-	case False with `x \<noteq> xa` 
-	show "(f1 ++ f2) xa = (f1(x \<mapsto> X,y \<mapsto> Y) ++ f2) xa" 
-	  by (simp add: map_add_def split: option.split)
+        case False with `x \<noteq> xa` 
+        show "(f1 ++ f2) xa = (f1(x \<mapsto> X,y \<mapsto> Y) ++ f2) xa" 
+          by (simp add: map_add_def split: option.split)
       next
-	case True 
-	with `x \<noteq> y` `x \<notin> dom f1` `x \<notin> dom f2` `y \<notin> dom f1` `y \<notin> dom f2`
-	have "(f1(x \<mapsto> X,xa \<mapsto> Y) ++ f2) xa = Some Y"
-	  by (auto simp: map_add_Some_iff)
-	thus "Some Y = (f1(x \<mapsto> X, xa \<mapsto> Y) ++ f2) xa" by simp
+        case True 
+        with `x \<noteq> y` `x \<notin> dom f1` `x \<notin> dom f2` `y \<notin> dom f1` `y \<notin> dom f2`
+        have "(f1(x \<mapsto> X,xa \<mapsto> Y) ++ f2) xa = Some Y"
+          by (auto simp: map_add_Some_iff)
+        thus "Some Y = (f1(x \<mapsto> X, xa \<mapsto> Y) ++ f2) xa" by simp
       qed
     qed
   qed
