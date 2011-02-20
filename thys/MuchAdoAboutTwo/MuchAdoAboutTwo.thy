@@ -8,7 +8,7 @@ header {* Much Ado about Two *}
 
 (*<*)
 theory MuchAdoAboutTwo
-imports Permutation
+imports "~~/src/HOL/Library/Permutation"
 begin
 (*>*)
 
