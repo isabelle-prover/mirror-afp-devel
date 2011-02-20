@@ -1,5 +1,5 @@
 theory Test
-imports Efficient_Nat BinomialHeap SkewBinomialHeap
+imports "~~/src/HOL/Library/Efficient_Nat" BinomialHeap SkewBinomialHeap
 begin
   text {*
     This theory is included into teh session, in order to

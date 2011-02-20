@@ -1,7 +1,7 @@
 header "Binomial Heaps"
 
 theory BinomialHeap
-imports Main Multiset
+imports Main "~~/src/HOL/Library/Multiset"
 begin
 
 subsection {* Datatype Definition *}
@@ -9,7 +9,7 @@ subsection {* Datatype Definition *}
 text {* Binomial heaps are lists of binomial trees. *}
 datatype ('e, 'a) BinomialTree = 
   Node 'e "'a::linorder" nat "('e , 'a) BinomialTree list"
-types ('e, 'a) BinomialQueue_inv = "('e, 'a::linorder) BinomialTree list"
+type_synonym ('e, 'a) BinomialQueue_inv = "('e, 'a::linorder) BinomialTree list"
 
 locale BinomialHeapStruc_loc
 begin

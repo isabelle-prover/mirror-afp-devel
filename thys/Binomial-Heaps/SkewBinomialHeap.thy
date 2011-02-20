@@ -1,7 +1,7 @@
 header "Skew Binomial Heaps"
 
 theory SkewBinomialHeap
-imports Main Multiset
+imports Main "~~/src/HOL/Library/Multiset"
 begin
 
 text {* Skew Binomial Queues as specified by Brodal and Okasaki \cite{BrOk96}
@@ -31,7 +31,7 @@ subsection "Datatype"
 datatype ('e, 'a) SkewBinomialTree = 
   Node 'e "'a::linorder" nat "('e , 'a) SkewBinomialTree list"
 
-types ('e, 'a) SkewBinomialQueue = "('e, 'a::linorder) SkewBinomialTree list"
+type_synonym ('e, 'a) SkewBinomialQueue = "('e, 'a::linorder) SkewBinomialTree list"
 
 locale SkewBinomialHeapStruc_loc
 begin
@@ -1729,9 +1729,8 @@ and
 ('e,'a) BsSkewElem =
   Element 'e 'a "('e,'a) BsSkewBinomialTree list"
 
-types 
-  ('e,'a) BsSkewHeap = "unit + ('e,'a) BsSkewElem"
-  ('e,'a) BsSkewBinomialQueue = "('e,'a) BsSkewBinomialTree list"
+type_synonym ('e,'a) BsSkewHeap = "unit + ('e,'a) BsSkewElem"
+type_synonym ('e,'a) BsSkewBinomialQueue = "('e,'a) BsSkewBinomialTree list"
 
 
 
