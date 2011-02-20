@@ -1,7 +1,7 @@
 header {* Introduction *}
 (*<*) 
 theory Lam_ml
-imports Nominal LaTeXsugar
+imports Nominal "~~/src/HOL/Library/LaTeXsugar"
 begin (*>*)
 text_raw {* \label{chap:formal} *}
 
@@ -887,22 +887,22 @@ principle for the reduction relation. For this we need that $y$ is fresh for
       by(auto simp add:fresh_prod fresh_atm)
     from red  r show "P" 
     proof (cases rule:reduction.strong_cases
-	[ where x="y"and xa="y" and xb="y" and xc="y" and xd="y" 
-	  and xe="y" and xf="y" and xg="z" and y="y"])
+        [ where x="y"and xa="y" and xb="y" and xc="y" and xd="y" 
+          and xe="y" and xf="y" and xg="z" and y="y"])
       case (r6 s t' u) -- "if $t$ makes a step we use assumption T"
       with y have m: "t \<mapsto> t'"   "r' = t' to y in n" by auto
       thus "P" using T[of t'] r by auto
     next
       case (r7 _ _ n') with y have n: "n \<mapsto> n'" and r': "r' = t to y in n'"
-	by (auto simp add: alpha)
+        by (auto simp add: alpha)
       txt {* Since @{term "k = [y]n\<ggreater>L"}, the reduction @{thm n} occurs within
-	the stack $k$. Hence, we need to establish this stack reduction. *}
+        the stack $k$. Hence, we need to establish this stack reduction. *}
       have "[y]n\<ggreater>L \<mapsto> [y]n'\<ggreater>L" unfolding stack_reduction_def
       proof 
-	fix u have "u to y in n \<mapsto> u to y in n'" using n .. 
-	hence "(u to y in n) \<star> L \<mapsto> (u to y in n') \<star> L" ..
-	thus " u \<star> [y]n\<ggreater>L \<mapsto> u \<star> [y]n'\<ggreater>L" 
-	  by simp
+        fix u have "u to y in n \<mapsto> u to y in n'" using n .. 
+        hence "(u to y in n) \<star> L \<mapsto> (u to y in n') \<star> L" ..
+        thus " u \<star> [y]n\<ggreater>L \<mapsto> u \<star> [y]n'\<ggreater>L" 
+          by simp
       qed
       moreover have "r = t \<star> [y]n'\<ggreater>L" using r r' by simp
       ultimately show "P" by (rule K)
@@ -914,19 +914,19 @@ principle for the reduction relation. For this we need that $y$ is fresh for
       case (r9 _) -- "The case of an $\\eta$-reduction is a stack
 reduction as well."
       with y have n: "n = [Var y]" and r': "r' = t" 
-	by(auto simp add: alpha)
+        by(auto simp add: alpha)
       { fix u have "u to y in n \<mapsto> u" unfolding n ..
-	hence "(u to y in n) \<star> L \<mapsto> u \<star> L " ..
-	hence "u \<star> [y]n\<ggreater>L \<mapsto> u \<star> L" by simp
-      }	hence "[y]n\<ggreater>L \<mapsto> L" unfolding stack_reduction_def ..
+        hence "(u to y in n) \<star> L \<mapsto> u \<star> L " ..
+        hence "u \<star> [y]n\<ggreater>L \<mapsto> u \<star> L" by simp
+      } hence "[y]n\<ggreater>L \<mapsto> L" unfolding stack_reduction_def ..
       moreover have "r = t \<star> L" using r r' by simp
       ultimately show "P" by (rule K)
     next
       case (r10 u _ v) -- "The assoc case holds by A."
       with y z have 
-	"t = (u to z in v)" 
-	"r' = u to z in (v to y in n)" 
-	"z \<sharp> (y,n)" by (auto simp add: fresh_prod alpha)
+        "t = (u to z in v)" 
+        "r' = u to z in (v to y in n)" 
+        "z \<sharp> (y,n)" by (auto simp add: fresh_prod alpha)
       thus "P" using A[of z y n] r by auto
     qed (insert y, auto)  -- "No other reductions are possible."
   next 
@@ -936,7 +936,7 @@ $L$. We get a reduction of the stack $k$ by moving the first stack frame
     case (3 L')
     hence L: "L \<mapsto> L'" and  r: "r = (t to y in n) \<star> L'" by auto
     { fix s from L have  "(s to y in n) \<star> L \<mapsto> (s to y in n) \<star> L'" 
-	unfolding stack_reduction_def ..
+        unfolding stack_reduction_def ..
       hence "s \<star> [y]n\<ggreater>L \<mapsto> s \<star> [y]n\<ggreater>L'" by simp
     } hence "[y]n\<ggreater>L \<mapsto> [y]n\<ggreater>L'" unfolding stack_reduction_def by auto
     moreover from r have "r = t \<star> [y]n\<ggreater>L'" by simp
@@ -949,13 +949,13 @@ $L$. We get a reduction of the stack $k$ by moving the first stack frame
              "L = [z]n'\<ggreater>K"
              "r = (s to x in v to z in n') \<star> K" by fact+
     { fix u from red have "u \<star> [y]n\<ggreater>L = ((u to x in v) to z in n') \<star> K "
-	by(auto intro: arg_cong[where f="\<lambda> x . x \<star> K"])
+        by(auto intro: arg_cong[where f="\<lambda> x . x \<star> K"])
       moreover 
       { from xf have "(u to x in v) to z in n' \<mapsto> u to x in (v to z in n')" ..
-	hence "((u to x in v) to z in n') \<star> K \<mapsto> (u to x in (v to z in n')) \<star> K"
-	  by rule 
+        hence "((u to x in v) to z in n') \<star> K \<mapsto> (u to x in (v to z in n')) \<star> K"
+          by rule 
       } ultimately  have "u \<star> [y]n\<ggreater>L \<mapsto> (u to x in (v to z in n')) \<star> K" 
-	by (simp (no_asm_simp) del:dismantle_simp)
+        by (simp (no_asm_simp) del:dismantle_simp)
       hence "u \<star> [y]n\<ggreater>L \<mapsto> u \<star> [x](v to z in n')\<ggreater>K" by simp
     } hence "[y]n\<ggreater>L \<mapsto>  [x](v to z in n')\<ggreater> K" 
       unfolding stack_reduction_def by simp
@@ -1041,7 +1041,7 @@ next
       assume a2: "NEUT t \<and> CR3_RED t (\<tau>1 \<rightarrow> \<tau>2)"
       have "SN(u)" using a1 ih_CR1_\<tau>1 by (simp add: CR1_def)
       then show "(App t u)\<in>RED \<tau>2" 
-	using ih_CR2_\<tau>1 ih_CR3_\<tau>2 a1 a2 by (blast intro: sub_induction)
+        using ih_CR2_\<tau>1 ih_CR3_\<tau>2 a1 a2 by (blast intro: sub_induction)
     qed
   }
 next
@@ -1050,9 +1050,9 @@ next
     have ih_CR1_\<sigma>: "CR1 \<sigma>" by fact
     { fix t assume t_red: "t \<in> RED (T \<sigma>)"
       { fix s assume "s \<in> RED \<sigma>" 
-	hence "SN s" using ih_CR1_\<sigma> by (auto simp add: CR1_def)
-	hence "SN ([s])" by (rule SN_Ret)
-	hence "SN ([s] \<star> Id)" by simp
+        hence "SN s" using ih_CR1_\<sigma> by (auto simp add: CR1_def)
+        hence "SN ([s])" by (rule SN_Ret)
+        hence "SN ([s] \<star> Id)" by simp
       } hence "Id \<in> SRED \<sigma>" by simp
       with t_red have "SN (t)" by (auto simp del: SRED.simps)
     } thus "CR1 (T \<sigma>)" unfolding CR1_def by blast
@@ -1060,9 +1060,9 @@ next
     case 2 -- {* follows since \isa{SN} is preserved under redcution *}
     { fix t t'::trm  assume t_red: "t \<in> RED (T \<sigma>)" and t_t': "t \<mapsto> t'" 
       { fix k assume k: "k \<in> SRED \<sigma>"
-	with t_red have "SN(t \<star> k)" by simp
-	moreover from t_t' have "t \<star> k \<mapsto> t' \<star> k" ..
-	ultimately have "SN(t' \<star> k)" by (rule SN_preserved) 
+        with t_red have "SN(t \<star> k)" by simp
+        moreover from t_t' have "t \<star> k \<mapsto> t' \<star> k" ..
+        ultimately have "SN(t' \<star> k)" by (rule SN_preserved) 
       } hence "t' \<in> RED (T \<sigma>)"  by (simp del: SRED.simps)
     } thus "CR2 (T \<sigma>)"unfolding CR2_def by blast
   next
@@ -1070,34 +1070,34 @@ next
     { fix t assume t'_red: "\<And> t' . t \<mapsto> t' \<Longrightarrow> t' \<in> RED (T \<sigma>)" 
       and neut_t: "NEUT t"
       { fix k assume k_red: "k \<in> SRED \<sigma>" 
-	fix x have "NEUT (Var x)" unfolding NEUT_def by simp 
-	hence "Var x \<in> RED \<sigma>" using normal_var ih_CR4_\<sigma> 
-	  by (simp add: CR4_def)
-	hence "SN ([Var x] \<star> k)" using k_red by simp
-	hence "SSN k" by (rule SN_SSN)
-	then have "SN (t \<star> k)" using k_red
-	proof (induct k rule:SSN.induct)
-	  case (SSN_intro k)
-	  have ih : "\<And>k'. \<lbrakk> k \<mapsto> k' ; k' \<in> SRED \<sigma> \<rbrakk>  \<Longrightarrow> SN (t \<star> k')"
-	    and k_red: "k \<in> SRED \<sigma>" by fact+
-	  { fix r assume r: "t \<star> k \<mapsto> r"
-	    hence "SN r" using neut_t
-	    proof (cases rule:dismantle_cases')
-	      case (T t') hence t_t': "t \<mapsto> t'" and r_def: "r = t' \<star> k" . 
-	      from t_t' have "t' \<in> RED (T \<sigma>)" by (rule t'_red)
-	      thus "SN r" using k_red r_def by simp
-	    next
-	      case (K k') hence k_k': "k \<mapsto> k'" and r_def: "r = t \<star> k'" .
-	      { fix s assume "s \<in> RED \<sigma>" 
-		hence "SN ([s] \<star> k)" using k_red
-		  by simp
-		moreover have "[s] \<star> k \<mapsto> [s] \<star> k'"
-		  using k_k' unfolding stack_reduction_def ..   
-		ultimately have "SN ([s] \<star> k')" ..
-	      } hence "k' \<in> SRED \<sigma>" by simp
-	      with k_k' show "SN r" unfolding r_def by (rule ih)
-	    qed } thus "SN (t \<star> k)" .. 
-	qed } hence "t \<in> RED (T \<sigma>)" by simp
+        fix x have "NEUT (Var x)" unfolding NEUT_def by simp 
+        hence "Var x \<in> RED \<sigma>" using normal_var ih_CR4_\<sigma> 
+          by (simp add: CR4_def)
+        hence "SN ([Var x] \<star> k)" using k_red by simp
+        hence "SSN k" by (rule SN_SSN)
+        then have "SN (t \<star> k)" using k_red
+        proof (induct k rule:SSN.induct)
+          case (SSN_intro k)
+          have ih : "\<And>k'. \<lbrakk> k \<mapsto> k' ; k' \<in> SRED \<sigma> \<rbrakk>  \<Longrightarrow> SN (t \<star> k')"
+            and k_red: "k \<in> SRED \<sigma>" by fact+
+          { fix r assume r: "t \<star> k \<mapsto> r"
+            hence "SN r" using neut_t
+            proof (cases rule:dismantle_cases')
+              case (T t') hence t_t': "t \<mapsto> t'" and r_def: "r = t' \<star> k" . 
+              from t_t' have "t' \<in> RED (T \<sigma>)" by (rule t'_red)
+              thus "SN r" using k_red r_def by simp
+            next
+              case (K k') hence k_k': "k \<mapsto> k'" and r_def: "r = t \<star> k'" .
+              { fix s assume "s \<in> RED \<sigma>" 
+                hence "SN ([s] \<star> k)" using k_red
+                  by simp
+                moreover have "[s] \<star> k \<mapsto> [s] \<star> k'"
+                  using k_k' unfolding stack_reduction_def ..   
+                ultimately have "SN ([s] \<star> k')" ..
+              } hence "k' \<in> SRED \<sigma>" by simp
+              with k_k' show "SN r" unfolding r_def by (rule ih)
+            qed } thus "SN (t \<star> k)" .. 
+        qed } hence "t \<in> RED (T \<sigma>)" by simp
     } thus "CR3 (T \<sigma>)" unfolding CR3_def CR3_RED_def by blast
   }
 qed
@@ -1139,12 +1139,12 @@ proof -
     proof (induct b rule: SN.induct)
       case (SN_intro y)
       show ?case
-	apply (rule hyp)
-	apply (erule SNI')
-	apply (erule SNI')
-	apply (rule SN.SN_intro)
-	apply (erule SN_intro)+
-	done
+        apply (rule hyp)
+        apply (erule SNI')
+        apply (erule SNI')
+        apply (rule SN.SN_intro)
+        apply (erule SN_intro)+
+        done
     qed
   qed
   from b show ?thesis by (rule r)
@@ -1170,7 +1170,7 @@ proof -
   with a show ?thesis using z
     by(cases rule: reduction.strong_cases
        [where x ="x" and xa="x" and xb="x" and xc="x" and 
-	      xd="x" and xe="x" and xf="x" and xg="x" and y="z"])
+              xd="x" and xe="x" and xf="x" and xg="x" and y="z"])
         (auto simp add: abs_fresh alpha fresh_atm)
 qed
 
@@ -1213,70 +1213,70 @@ RED \<sigma>"
       assume as2: "\<forall>s\<in>RED \<tau>. t[x::=s]\<in>RED \<sigma>"
       have "CR3_RED (App (\<Lambda> x. t) u) \<sigma>" unfolding CR3_RED_def
       proof(intro strip)
-	fix r
-	assume red: "App (\<Lambda> x .t) u \<mapsto> r"
-	moreover
-	{ assume "\<exists>t'. t \<mapsto> t' \<and> r = App (\<Lambda> x . t') u"
-	  then obtain t' where a1: "t \<mapsto> t'" and a2: "r = App (\<Lambda> x .t') u" by
+        fix r
+        assume red: "App (\<Lambda> x .t) u \<mapsto> r"
+        moreover
+        { assume "\<exists>t'. t \<mapsto> t' \<and> r = App (\<Lambda> x . t') u"
+          then obtain t' where a1: "t \<mapsto> t'" and a2: "r = App (\<Lambda> x .t') u" by
 blast
-	  have "App (\<Lambda> x .t') u\<in>RED \<sigma>" using ih1 a1 as1 as2
-	    apply(auto)
-	    apply(drule_tac x="t'" in meta_spec)
-	    apply(simp)
-	    apply(drule meta_mp)
-	    prefer 2
-	    apply(auto)[1]
-	    apply(rule ballI)
-	    apply(drule_tac x="s" in bspec)
-	    apply(simp)
-	    apply(subgoal_tac "CR2 \<sigma>")(*A*)
-	    apply(unfold CR2_def)[1]
-	    apply(drule_tac x="t[x::=s]" in spec)
-	    apply(drule_tac x="t'[x::=s]" in spec)
-	    apply(simp add: reduction_subst)
-	    (*A*)
-	    apply(simp add: RED_props)
-	    done
-	  then have "r\<in>RED \<sigma>" using a2 by simp
-	} note rt = this
-	moreover
-	{ assume "\<exists>u'. u \<mapsto> u' \<and> r = App (\<Lambda> x . t) u'"
-	  then obtain u' where b1: "u \<mapsto> u'" and b2: "r = App (\<Lambda> x .t) u'" by
+          have "App (\<Lambda> x .t') u\<in>RED \<sigma>" using ih1 a1 as1 as2
+            apply(auto)
+            apply(drule_tac x="t'" in meta_spec)
+            apply(simp)
+            apply(drule meta_mp)
+            prefer 2
+            apply(auto)[1]
+            apply(rule ballI)
+            apply(drule_tac x="s" in bspec)
+            apply(simp)
+            apply(subgoal_tac "CR2 \<sigma>")(*A*)
+            apply(unfold CR2_def)[1]
+            apply(drule_tac x="t[x::=s]" in spec)
+            apply(drule_tac x="t'[x::=s]" in spec)
+            apply(simp add: reduction_subst)
+            (*A*)
+            apply(simp add: RED_props)
+            done
+          then have "r\<in>RED \<sigma>" using a2 by simp
+        } note rt = this
+        moreover
+        { assume "\<exists>u'. u \<mapsto> u' \<and> r = App (\<Lambda> x . t) u'"
+          then obtain u' where b1: "u \<mapsto> u'" and b2: "r = App (\<Lambda> x .t) u'" by
 blast
-	  have "App (\<Lambda> x .t) u'\<in>RED \<sigma>" using ih2 b1 as1 as2
-	    apply(auto)
-	    apply(drule_tac x="u'" in meta_spec)
-	    apply(simp)
-	    apply(drule meta_mp)
-	    apply(subgoal_tac "CR2 \<tau>")
-	    apply(unfold CR2_def)[1]
-	    apply(drule_tac x="u" in spec)
-	    apply(drule_tac x="u'" in spec)
-	    apply(simp)
-	    apply(simp add: RED_props)
-	    apply(simp)
-	    done
-	  then have "r\<in>RED \<sigma>" using b2 by simp
-	} note ru= this
-	moreover
-	{ assume "r = t[x::=u]"
-	  then have "r\<in>RED \<sigma>" using as1 as2 by auto
-	} note r = this
-	
-	ultimately show "r \<in> RED \<sigma>" 
-	  (* one wants to use the strong elimination principle; for this one 
-	     has to know that x\<sharp>u *)
-	apply(cases) 
-	apply(auto)
-	apply(drule red_Lam)
-	apply(drule disjE)prefer 3 apply simp
-	apply(auto)[1]
-	prefer 2
-	apply(auto simp add: alpha subst_rename')[1]
-	apply(subgoal_tac "App s' u = t[x::=u]")
-	apply(auto)
-	apply(auto simp add: forget)
-	done
+          have "App (\<Lambda> x .t) u'\<in>RED \<sigma>" using ih2 b1 as1 as2
+            apply(auto)
+            apply(drule_tac x="u'" in meta_spec)
+            apply(simp)
+            apply(drule meta_mp)
+            apply(subgoal_tac "CR2 \<tau>")
+            apply(unfold CR2_def)[1]
+            apply(drule_tac x="u" in spec)
+            apply(drule_tac x="u'" in spec)
+            apply(simp)
+            apply(simp add: RED_props)
+            apply(simp)
+            done
+          then have "r\<in>RED \<sigma>" using b2 by simp
+        } note ru= this
+        moreover
+        { assume "r = t[x::=u]"
+          then have "r\<in>RED \<sigma>" using as1 as2 by auto
+        } note r = this
+        
+        ultimately show "r \<in> RED \<sigma>" 
+          (* one wants to use the strong elimination principle; for this one 
+             has to know that x\<sharp>u *)
+        apply(cases) 
+        apply(auto)
+        apply(drule red_Lam)
+        apply(drule disjE)prefer 3 apply simp
+        apply(auto)[1]
+        prefer 2
+        apply(auto simp add: alpha subst_rename')[1]
+        apply(subgoal_tac "App s' u = t[x::=u]")
+        apply(auto)
+        apply(auto simp add: forget)
+        done
     qed
     moreover 
     have "NEUT (App (\<Lambda> x . t) u)" unfolding NEUT_def by (auto)
@@ -1337,18 +1337,18 @@ proof -
       have sn2: "\<And> q' K . \<lbrakk>q \<mapsto> q'; SN q'\<rbrakk> \<Longrightarrow> P p q' K" by fact
       show "P p q K"
       proof (induct K rule: measure_induct_rule[where f="length"])
-	case (less k)
-	have le: "\<And> k' . |k'| < |k| \<Longrightarrow> P p q k'" by fact
-	{ fix p' assume "p \<mapsto> p'"
-	  moreover have "SN q" by fact
-	  ultimately have "P p' q k" using sn1 by auto }
-	moreover
-	{ fix q' K  assume r: "q \<mapsto> q'" 
-	  have "SN q" by fact
-	  hence "SN q'" using r by (rule SN_preserved)
-	  with r have "P p q' K" using sn2 by auto }
-	ultimately show ?case using le
-	  by (auto intro:hyp)
+        case (less k)
+        have le: "\<And> k' . |k'| < |k| \<Longrightarrow> P p q k'" by fact
+        { fix p' assume "p \<mapsto> p'"
+          moreover have "SN q" by fact
+          ultimately have "P p' q k" using sn1 by auto }
+        moreover
+        { fix q' K  assume r: "q \<mapsto> q'" 
+          have "SN q" by fact
+          hence "SN q'" using r by (rule SN_preserved)
+          with r have "P p q' K" using sn2 by auto }
+        ultimately show ?case using le
+          by (auto intro:hyp)
       qed
     qed
   qed 
@@ -1431,7 +1431,7 @@ term @{term "(v to z' in n)" }, we have to push the swapping over $z'$ *}
       by (auto simp add: abs_fun_eq1 alpha' name_swap_bij )
     finally 
       have "r =  (u to x in (([(x, x')] \<bullet> v) to z in ([(z, z')] \<bullet> n))) \<star> L" 
-	using ch by (simp del: trm.inject) }
+        using ch by (simp del: trm.inject) }
   ultimately show "P" 
     by (rule A[where n="[(z, z')] \<bullet> n" and v="([(x, x')] \<bullet> v)"]) 
 qed (insert r T K, auto)
@@ -1534,13 +1534,13 @@ proof -
       case (1 p q k) -- "We obtain an induction hypothesis for $p$, $q$, and
 $k$."
       have ih_p: 
-	"\<And> p' m . \<lbrakk>p \<mapsto> p'; q = m \<star> k; SN (m[x::=p'] \<star> k); x \<sharp> p'; x \<sharp> k\<rbrakk>
-	    \<Longrightarrow> SN (([p'] to x in m) \<star> k)" by fact
+        "\<And> p' m . \<lbrakk>p \<mapsto> p'; q = m \<star> k; SN (m[x::=p'] \<star> k); x \<sharp> p'; x \<sharp> k\<rbrakk>
+            \<Longrightarrow> SN (([p'] to x in m) \<star> k)" by fact
       have ih_q: 
-	"\<And> q' m k . \<lbrakk>q \<mapsto> q'; q' = m \<star> k; SN (m[x::=p] \<star> k); x \<sharp> p; x \<sharp> k\<rbrakk>
+        "\<And> q' m k . \<lbrakk>q \<mapsto> q'; q' = m \<star> k; SN (m[x::=p] \<star> k); x \<sharp> p; x \<sharp> k\<rbrakk>
             \<Longrightarrow> SN (([p] to x in m) \<star> k)" by fact
       have ih_k: 
-	"\<And> k' m . \<lbrakk> |k'| < |k|; q = m \<star> k'; SN (m[x::=p] \<star> k'); x \<sharp> p; x \<sharp> k'\<rbrakk>
+        "\<And> k' m . \<lbrakk> |k'| < |k|; q = m \<star> k'; SN (m[x::=p] \<star> k'); x \<sharp> p; x \<sharp> k'\<rbrakk>
             \<Longrightarrow> SN (([p] to x in m) \<star> k')" by fact
       have q: "q = m \<star> k" and sn: "SN (m[x::=p] \<star> k)" by fact+
       have xp: "x \<sharp> p" and xk: "x \<sharp> k" by fact+
@@ -1552,102 +1552,102 @@ rule. We already require $x$ to be suitably fresh. To instantiate the rule, we
 need another fresh name. *}
 
       { fix r assume red: "([p] to x in m) \<star> k \<mapsto> r"
-	from xp xk have x1 : "x \<sharp> ([p] to x in m) \<star> k "  
-	  by (simp add: abs_fresh)
-	with red have x2: "x \<sharp> r" by (rule reduction_fresh)
-	obtain z::name where z: "z \<sharp> (x,p,m,k,r)" 
-	  using ex_fresh[of "(x,p,m,k,r)"] by (auto simp add: fresh_prod)
-	have "SN r"
-	proof (cases rule:dismantle_strong_cases
-	    [of   "[p] to x in m"   k r x x z ])
-	  case (5 r') have r: "r = r' \<star> k" and r': "[p] to x in m \<mapsto> r'" by fact+
-	  txt {* To handle the case of a reduction occurring somewhere in @{term
+        from xp xk have x1 : "x \<sharp> ([p] to x in m) \<star> k "  
+          by (simp add: abs_fresh)
+        with red have x2: "x \<sharp> r" by (rule reduction_fresh)
+        obtain z::name where z: "z \<sharp> (x,p,m,k,r)" 
+          using ex_fresh[of "(x,p,m,k,r)"] by (auto simp add: fresh_prod)
+        have "SN r"
+        proof (cases rule:dismantle_strong_cases
+            [of   "[p] to x in m"   k r x x z ])
+          case (5 r') have r: "r = r' \<star> k" and r': "[p] to x in m \<mapsto> r'" by fact+
+          txt {* To handle the case of a reduction occurring somewhere in @{term
 "[p] to x in m" }, we need to contract the freshness conditions to this subterm.
 This allows the use of the strong inversion rule for the reduction relation.*}
-	  from x1 x2 r 
-	  have xl:"(x \<sharp> [p] to x in m)" and xr:"x \<sharp> r'" by auto
-	  from z have zl: "z \<sharp> ([p] to x in m)"   "x \<noteq> z" 
-	    by (auto simp add: abs_fresh fresh_prod fresh_atm)
-	  with r' have zr: "z \<sharp> r'"  by (blast intro:reduction_fresh)
-	  -- {* handle all reductions of @{term "[p] to x in m"} *}
-	  from r' show "SN r" proof (cases rule:reduction.strong_cases
-	      [where x="x" and xa="x" and xb="x" and xc="x" and xd="x" 
-		and xe="x" and xf="x"and xg="x" and y="z"])
+          from x1 x2 r 
+          have xl:"(x \<sharp> [p] to x in m)" and xr:"x \<sharp> r'" by auto
+          from z have zl: "z \<sharp> ([p] to x in m)"   "x \<noteq> z" 
+            by (auto simp add: abs_fresh fresh_prod fresh_atm)
+          with r' have zr: "z \<sharp> r'"  by (blast intro:reduction_fresh)
+          -- {* handle all reductions of @{term "[p] to x in m"} *}
+          from r' show "SN r" proof (cases rule:reduction.strong_cases
+              [where x="x" and xa="x" and xb="x" and xc="x" and xd="x" 
+                and xe="x" and xf="x"and xg="x" and y="z"])
 txt {* The case where @{term "p \<mapsto> p'"} is interesting, because it requires
 reasioning about the reflexive transitive closure of the reduction relation. *}
-	    case (r6 s s' t)  hence ch: "[p] \<mapsto> s'"   "r' = s' to x in m" 
-	      using xl xr by (auto)
-	    from this obtain p' where s: "s' = [p']" and  p : "p \<mapsto> p'" 
-	      by (blast dest:red_Ret)
-	    from p have "((m\<star>k)[x::=p]) \<mapsto>\<^isup>* ((m\<star>k)[x::=p'])" 
-	      by (rule red_subst)
-	    with xk have "((m[x::=p]) \<star> k) \<mapsto>\<^isup>* ((m[x::=p']) \<star> k)" 
-	      by (simp add: ssubst_forget)
-	    hence sn: "SN ((m[x::=p']) \<star> k)" using sn by (rule SN_trans)
-	    from p xp have xp' : "x \<sharp> p'" by (rule reduction_fresh)
-	    from ch s have rr: "r' = [p'] to x in m" by simp
-	    from p q  sn xp' xk
-	    show "SN r" unfolding r rr by (rule ih_p)
-	  next
+            case (r6 s s' t)  hence ch: "[p] \<mapsto> s'"   "r' = s' to x in m" 
+              using xl xr by (auto)
+            from this obtain p' where s: "s' = [p']" and  p : "p \<mapsto> p'" 
+              by (blast dest:red_Ret)
+            from p have "((m\<star>k)[x::=p]) \<mapsto>\<^isup>* ((m\<star>k)[x::=p'])" 
+              by (rule red_subst)
+            with xk have "((m[x::=p]) \<star> k) \<mapsto>\<^isup>* ((m[x::=p']) \<star> k)" 
+              by (simp add: ssubst_forget)
+            hence sn: "SN ((m[x::=p']) \<star> k)" using sn by (rule SN_trans)
+            from p xp have xp' : "x \<sharp> p'" by (rule reduction_fresh)
+            from ch s have rr: "r' = [p'] to x in m" by simp
+            from p q  sn xp' xk
+            show "SN r" unfolding r rr by (rule ih_p)
+          next
 
-	    case(r7 s t m') hence "r' = [p] to x in m'" and "m \<mapsto> m'" 
-	      using xl xr by (auto simp add: alpha)
-	    hence rr: "r' = [p] to x in m'" by simp
-	    from q `m \<mapsto> m'` have  "q \<mapsto> m' \<star> k" by(simp add: dismantle_red)
-	    moreover have "m' \<star> k = m' \<star> k" .. -- "a triviality"
-	    moreover { from `m \<mapsto> m'` have "(m[x::=p]) \<star> k \<mapsto> (m'[x::=p]) \<star> k"
-		by (simp add: dismantle_red reduction_subst)
-	      with sn have "SN(m'[x::=p] \<star> k)" .. }
-	    ultimately show "SN r" using xp xk unfolding r rr by (rule ih_q)
-	  next  
-	      
-	    case (r8 s t) -- {* the $\beta$-case is handled by assumption *}
-	    hence "r' = m[x::=p]" using xl xr by(auto simp add: alpha)
-	    thus "SN r" unfolding r using sn by simp
-	  next 
+            case(r7 s t m') hence "r' = [p] to x in m'" and "m \<mapsto> m'" 
+              using xl xr by (auto simp add: alpha)
+            hence rr: "r' = [p] to x in m'" by simp
+            from q `m \<mapsto> m'` have  "q \<mapsto> m' \<star> k" by(simp add: dismantle_red)
+            moreover have "m' \<star> k = m' \<star> k" .. -- "a triviality"
+            moreover { from `m \<mapsto> m'` have "(m[x::=p]) \<star> k \<mapsto> (m'[x::=p]) \<star> k"
+                by (simp add: dismantle_red reduction_subst)
+              with sn have "SN(m'[x::=p] \<star> k)" .. }
+            ultimately show "SN r" using xp xk unfolding r rr by (rule ih_q)
+          next  
+              
+            case (r8 s t) -- {* the $\beta$-case is handled by assumption *}
+            hence "r' = m[x::=p]" using xl xr by(auto simp add: alpha)
+            thus "SN r" unfolding r using sn by simp
+          next 
 
-	    case (r9 s) -- {* the $\eta$-case is handled by assumption as well
+            case (r9 s) -- {* the $\eta$-case is handled by assumption as well
 *} 
-	    hence "m = [Var x]" and "r' = [p]" using xl xr 
+            hence "m = [Var x]" and "r' = [p]" using xl xr 
               by(auto simp add: alpha)
-	    hence "r' = m[x::=p]" by simp
-	    thus "SN r" unfolding r using sn by simp
-	  qed (simp_all only: xr xl zl zr abs_fresh , auto)
-	  -- {* There are no other possible reductions of @{term "[p] to x in
+            hence "r' = m[x::=p]" by simp
+            thus "SN r" unfolding r using sn by simp
+          qed (simp_all only: xr xl zl zr abs_fresh , auto)
+          -- {* There are no other possible reductions of @{term "[p] to x in
 m"}. *}
-	next
+        next
 
-	  case (6 k') 
-	  have k: "k \<mapsto> k'" and r: "r = ([p] to x in m) \<star> k'" by fact+
-	  from q k have "q \<mapsto> m \<star> k'" unfolding stack_reduction_def by blast
-	  moreover have "m \<star> k' = m \<star> k'" ..
-	  moreover { have "SN (m[x::=p] \<star> k)" by fact
-	    moreover have "(m[x::=p]) \<star> k \<mapsto> (m[x::=p]) \<star> k'" 
-	      using k unfolding stack_reduction_def .. 
-	    ultimately have "SN (m[x::=p] \<star> k')" .. }
-	  moreover note xp 
-	  moreover from k xk  have "x \<sharp> k'"
-	    by (rule stack_reduction_fresh)
-	  ultimately show "SN r" unfolding r by (rule ih_q)
-	next
+          case (6 k') 
+          have k: "k \<mapsto> k'" and r: "r = ([p] to x in m) \<star> k'" by fact+
+          from q k have "q \<mapsto> m \<star> k'" unfolding stack_reduction_def by blast
+          moreover have "m \<star> k' = m \<star> k'" ..
+          moreover { have "SN (m[x::=p] \<star> k)" by fact
+            moreover have "(m[x::=p]) \<star> k \<mapsto> (m[x::=p]) \<star> k'" 
+              using k unfolding stack_reduction_def .. 
+            ultimately have "SN (m[x::=p] \<star> k')" .. }
+          moreover note xp 
+          moreover from k xk  have "x \<sharp> k'"
+            by (rule stack_reduction_fresh)
+          ultimately show "SN r" unfolding r by (rule ih_q)
+        next
 txt {* The case of an assoc interaction between @{term "[p] to x in m" } and
 @{term "k"} is easily handled by the induction hypothesis, since @{term
 "(m[x::=p]) \<star> k"} remains fixed under assoc. *}
-	  case (8 s t u L)
-	  hence k: "k = [z]u\<ggreater>L"
-	    and r: "r = ([p] to x in (m to z in u)) \<star> L" 
-	    and u: "x \<sharp> u" 
-	    by(auto simp add: alpha fresh_prod)
-	  let ?k = L and ?m = "m to z in u"
-	  from k z have "|?k| < |k|" by (simp add: fresh_prod)
-	  moreover have "q =  ?m \<star> ?k" using k q by simp
-	  moreover { from k u z xp have "(?m[x::=p] \<star> ?k) = (m[x::=p]) \<star> k" 
-	    by(simp add: fresh_prod forget)
-	  hence "SN (?m[x::=p] \<star> ?k)" using sn by simp }
-	  moreover from xp xk k have "x \<sharp> p" and "x \<sharp> ?k" by auto
-	  ultimately show "SN r" unfolding r by (rule ih_k)
-	qed (insert red z x1 x2 xp xk ,
-	    auto simp add: fresh_prod fresh_atm abs_fresh)
+          case (8 s t u L)
+          hence k: "k = [z]u\<ggreater>L"
+            and r: "r = ([p] to x in (m to z in u)) \<star> L" 
+            and u: "x \<sharp> u" 
+            by(auto simp add: alpha fresh_prod)
+          let ?k = L and ?m = "m to z in u"
+          from k z have "|?k| < |k|" by (simp add: fresh_prod)
+          moreover have "q =  ?m \<star> ?k" using k q by simp
+          moreover { from k u z xp have "(?m[x::=p] \<star> ?k) = (m[x::=p]) \<star> k" 
+            by(simp add: fresh_prod forget)
+          hence "SN (?m[x::=p] \<star> ?k)" using sn by simp }
+          moreover from xp xk k have "x \<sharp> p" and "x \<sharp> ?k" by auto
+          ultimately show "SN r" unfolding r by (rule ih_k)
+        qed (insert red z x1 x2 xp xk ,
+            auto simp add: fresh_prod fresh_atm abs_fresh)
       } thus "SN (([p] to x in m) \<star> k)" ..
     qed } 
   moreover have "SN ((n[x::=p]) \<star> k)" by fact
@@ -1667,17 +1667,17 @@ proof -
     { fix p assume p: "p \<in> RED \<sigma>"
       hence snp: "SN p" using RED_props by(simp add: CR1_def)
       obtain x'::name where x: "x' \<sharp> (t, p, K)" 
-	using ex_fresh[of "(t,p,K)"] by (auto)
+        using ex_fresh[of "(t,p,K)"] by (auto)
       from p t k have "SN((t[x::=p]) \<star> K)" by auto
       with x have "SN ((([(x',x)] \<bullet> t )[x'::=p]) \<star> K)" 
-	by (simp add: fresh_prod subst_rename)
+        by (simp add: fresh_prod subst_rename)
       with snp x  have snx': "SN (([p] to x' in ([(x',x)] \<bullet> t )) \<star> K)" 
-	by (auto intro: to_RED_aux)
+        by (auto intro: to_RED_aux)
       from x have "[p] to x' in ([(x',x)] \<bullet> t ) = [p] to x in t" 
-	by simp (metis alpha' fresh_prod name_swap_bij x)
+        by simp (metis alpha' fresh_prod name_swap_bij x)
       moreover have "([p] to x in t) \<star> K  = [p] \<star> [x]t\<ggreater>K" by simp
       ultimately have snx: "SN([p] \<star> [x]t\<ggreater>K)" using snx' 
-	by (simp del: trm.inject)
+        by (simp del: trm.inject)
     } hence "[x]t\<ggreater>K \<in> SRED \<sigma>" by simp
     with s have "SN((s to x in t) \<star> K)" by(auto simp del: SRED.simps) 
   } thus "s to x in t \<in> RED (T \<tau>)" by simp
