@@ -62,8 +62,7 @@ next
   with Ts length dist have length':"length pns' = length Ts'" 
     and dist':"distinct pns'" and notin:"p' \<notin> set pns'" by simp_all
   from i_length Ts have n_length:"n < length Ts'" by simp
-  from prems(1)[OF length' dist' this,of "E(p' \<mapsto> T')"]
-  have map:"(E(p' \<mapsto> T')(pns' [\<mapsto>] Ts')) (pns'!n) = Some(Ts'!n)" .
+  with length' dist' have map:"(E(p' \<mapsto> T')(pns' [\<mapsto>] Ts')) (pns'!n) = Some(Ts'!n)" by fact
   with notin have "(E(p' \<mapsto> T')(pns' [\<mapsto>] Ts')) p' = Some T'" by simp
   with pns Ts map show ?case by simp
 qed
@@ -102,17 +101,17 @@ next
     proof(rule disjE)
       assume "P,E,h \<turnstile> Val v : T'"
       with T' obtain a Cs C' S where h:"h a = Some(C',S)" and v:"v = Ref(a,Cs)"
-	and last:"last Cs = D"
-	by(fastsimp dest:typeof_Class_Subo)
+        and last:"last Cs = D"
+        by(fastsimp dest:typeof_Class_Subo)
       from casts' v last T obtain Cs' Ds where "P \<turnstile> Path D to C via Cs'"
-	and "Ds = Cs@\<^sub>pCs'" and "w' = Ref(a,Ds)"
-	by(auto elim:casts_to.cases)
+        and "Ds = Cs@\<^sub>pCs'" and "w' = Ref(a,Ds)"
+        by(auto elim:casts_to.cases)
       with casts T v last path_unique show ?thesis
-	by auto(erule casts_to.cases,auto simp:path_via_def path_unique_def)
+        by auto(erule casts_to.cases,auto simp:path_via_def path_unique_def)
     next
       assume "P,E,h \<turnstile> Val v : NT"
       with wf eval sconf wte have "v = Null"
-	by(fastsimp dest:eval_preserves_type)
+        by(fastsimp dest:eval_preserves_type)
       with casts casts' show ?thesis by(fastsimp elim:casts_to.cases)
     qed
   qed
@@ -288,14 +287,14 @@ next
     proof (rule disjE)
       assume "P \<turnstile> Path D to C unique"
       with path_via path_via' eq last have "Cs' = Xs'"
-	by(fastsimp simp add:path_via_def path_unique_def)
+        by(fastsimp simp add:path_via_def path_unique_def)
       with eq ref Ds show ?thesis by simp
     next
       assume "P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs  \<longrightarrow> Subobjs\<^isub>R P C Cs)"
       with "class" wf obtain Cs'' where "P \<turnstile> Path C to D via Cs''"
-	by(auto dest:leq_implies_path)
+        by(auto dest:leq_implies_path)
       with path_via path_via' wf eq last have "Cs' = Xs'"
-	by(auto dest:path_via_reverse)
+        by(auto dest:path_via_reverse)
       with eq ref Ds show ?thesis by simp
     qed
   next
@@ -329,15 +328,15 @@ next
     proof(rule disjE)
       assume path_unique:"P \<turnstile> Path D to C unique"
       with last have "P \<turnstile> D \<preceq>\<^sup>* C" 
-	by(fastsimp dest:Subobjs_subclass simp:path_unique_def)
+        by(fastsimp dest:Subobjs_subclass simp:path_unique_def)
       with notleq last eq show ?thesis by simp
     next
       assume ass:"P \<turnstile> C \<preceq>\<^sup>* D \<and> 
-	          (\<forall>Cs. P \<turnstile> Path C to D via Cs  \<longrightarrow> Subobjs\<^isub>R P C Cs)"
+                  (\<forall>Cs. P \<turnstile> Path C to D via Cs  \<longrightarrow> Subobjs\<^isub>R P C Cs)"
       with "class" wf obtain Cs'' where path_via':"P \<turnstile> Path C to D via Cs''"
-	by(auto dest:leq_implies_path)
+        by(auto dest:leq_implies_path)
       with path_via wf eq last have "Cs'' = [D]"
-	by(fastsimp dest:path_via_reverse)
+        by(fastsimp dest:path_via_reverse)
       with ass path_via' have "Subobjs\<^isub>R P C [D]" by simp
       thus ?thesis by(fastsimp dest:hd_SubobjsR)
     qed
@@ -1191,7 +1190,7 @@ next
       from IH[OF eval_val wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
     next
       fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
-	  s ws ws'
+          s ws ws'
       assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
       from IH[OF eval_ref wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
     next
@@ -1212,7 +1211,7 @@ next
       from IH[OF eval_val wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
     next
       fix C'' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
-	  s ws ws'
+          s ws ws'
       assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
       from IH[OF eval_ref wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
     next
@@ -1242,37 +1241,37 @@ next
     next
       fix es'' ex' s w ws
       assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>" 
-	and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2'\<rangle>"
-	and e2:"e\<^isub>2 = throw ex'"
+        and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2'\<rangle>"
+        and e2:"e\<^isub>2 = throw ex'"
       from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_throw[simplified eq] wtes this] e2
       have "vs = ws \<and> ex = ex' \<and> es' = es'' \<and> s\<^isub>2 = s\<^isub>2'"
-	by(fastsimp dest:map_Val_throw_eq)
+        by(fastsimp dest:map_Val_throw_eq)
       with e2 show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
     next
       fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
-	  s ws ws'
+          s ws ws'
       assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
-	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
+        and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
       from IH1[OF eval_ref wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this]
       show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-	by(fastsimp dest:sym[THEN map_Val_throw_False])
+        by(fastsimp dest:sym[THEN map_Val_throw_False])
     next
       fix s ws
       assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
-	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
-	and e2:"e\<^isub>2 = THROW NullPointer"
+        and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
+        and e2:"e\<^isub>2 = THROW NullPointer"
       from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this] 
       show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-	by(fastsimp dest:sym[THEN map_Val_throw_False])
+        by(fastsimp dest:sym[THEN map_Val_throw_False])
     qed
   next
     fix C' assume "Copt = Some C'"
@@ -1284,37 +1283,37 @@ next
     next
       fix es'' ex' s w ws
       assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>" 
-	and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2'\<rangle>"
-	and e2:"e\<^isub>2 = throw ex'"
+        and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2'\<rangle>"
+        and e2:"e\<^isub>2 = throw ex'"
       from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_throw[simplified eq] wtes this] e2
       have "vs = ws \<and> ex = ex' \<and> es' = es'' \<and> s\<^isub>2 = s\<^isub>2'"
-	by(fastsimp dest:map_Val_throw_eq)
+        by(fastsimp dest:map_Val_throw_eq)
       with e2 show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
     next
       fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
-	  s ws ws'
+          s ws ws'
       assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
-	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
+        and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
       from IH1[OF eval_ref wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this]
       show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-	by(fastsimp dest:sym[THEN map_Val_throw_False])
+        by(fastsimp dest:sym[THEN map_Val_throw_False])
     next
       fix s ws
       assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
-	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
-	and e2:"e\<^isub>2 = THROW NullPointer"
+        and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
+        and e2:"e\<^isub>2 = THROW NullPointer"
       from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this] 
       show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-	by(fastsimp dest:sym[THEN map_Val_throw_False])
+        by(fastsimp dest:sym[THEN map_Val_throw_False])
     qed
   qed
 next
@@ -1439,65 +1438,65 @@ next
       from sconf'' show "P \<turnstile> h\<^isub>2 \<surd>" by(simp add:sconf_def)
     next
       { fix V v assume map:"[this \<mapsto> Ref (a,Cs'), pns [\<mapsto>] vs'] V = Some v"
-	have "\<exists>T. (E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts)) V = Some T \<and> 
+        have "\<exists>T. (E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts)) V = Some T \<and> 
                    P,h\<^isub>2 \<turnstile> v :\<le> T"
-	proof(cases "V \<in> set (this#pns)")
-	  case False with map show ?thesis by simp
-	next
-	  case True
-	  hence "V = this \<or> V \<in> set pns" by simp
-	  thus ?thesis
-	  proof(rule disjE)
-	    assume V:"V = this"
-	    with map this_not_pns have "v = Ref(a,Cs')" by simp
-	    with V h2 subo this_not_pns have 
-	      "(E(this \<mapsto> Class (last Cs'),pns [\<mapsto>] Ts)) V = Some(Class (last Cs'))"
-	      and "P,h\<^isub>2 \<turnstile> v :\<le> Class (last Cs')" by simp_all
-	    thus ?thesis by simp
-	  next
-	    assume "V \<in> set pns"
-	    then obtain i where V:"V = pns!i" and length_i:"i < length pns"
-	      by(auto simp:in_set_conv_nth)
-	    from Casts have "length Ts = length vs'"
-	      by(induct rule:Casts_to.induct,auto)
-	    with length have "length pns = length vs'" by simp
-	    with map dist V length_i have v:"v = vs'!i" by(fastsimp dest:maps_nth)
-	    from length dist length_i
-	    have env:"(E(this \<mapsto> Class (last Cs'))(pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
-	      by(rule_tac E="E(this \<mapsto> Class (last Cs'))" in nth_maps,simp_all)
-	    from wf Casts wtes subs eq param_types eval'' sconf'
-	    have "\<forall>i < length Ts. P,h\<^isub>2 \<turnstile> vs'!i :\<le> Ts!i"
-	      by simp(rule Casts_conf,auto)
-	    with length_i length env V v show ?thesis by simp
-	  qed
-	qed }
+        proof(cases "V \<in> set (this#pns)")
+          case False with map show ?thesis by simp
+        next
+          case True
+          hence "V = this \<or> V \<in> set pns" by simp
+          thus ?thesis
+          proof(rule disjE)
+            assume V:"V = this"
+            with map this_not_pns have "v = Ref(a,Cs')" by simp
+            with V h2 subo this_not_pns have 
+              "(E(this \<mapsto> Class (last Cs'),pns [\<mapsto>] Ts)) V = Some(Class (last Cs'))"
+              and "P,h\<^isub>2 \<turnstile> v :\<le> Class (last Cs')" by simp_all
+            thus ?thesis by simp
+          next
+            assume "V \<in> set pns"
+            then obtain i where V:"V = pns!i" and length_i:"i < length pns"
+              by(auto simp:in_set_conv_nth)
+            from Casts have "length Ts = length vs'"
+              by(induct rule:Casts_to.induct,auto)
+            with length have "length pns = length vs'" by simp
+            with map dist V length_i have v:"v = vs'!i" by(fastsimp dest:maps_nth)
+            from length dist length_i
+            have env:"(E(this \<mapsto> Class (last Cs'))(pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
+              by(rule_tac E="E(this \<mapsto> Class (last Cs'))" in nth_maps,simp_all)
+            from wf Casts wtes subs eq param_types eval'' sconf'
+            have "\<forall>i < length Ts. P,h\<^isub>2 \<turnstile> vs'!i :\<le> Ts!i"
+              by simp(rule Casts_conf,auto)
+            with length_i length env V v show ?thesis by simp
+          qed
+        qed }
       thus "P,h\<^isub>2 \<turnstile> l\<^isub>2' (:\<le>)\<^sub>w E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts)"
-	using l2' by(simp add:lconf_def)
+        using l2' by(simp add:lconf_def)
     next
       { fix V Tx assume env:"(E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts)) V = Some Tx"
-	have "is_type P Tx"
-	proof(cases "V \<in> set (this#pns)")
-	  case False
-	  with env sconf'' show ?thesis
-	    by(clarsimp simp:sconf_def envconf_def)
-	next
-	  case True
-	  hence "V = this \<or> V \<in> set pns" by simp
-	  thus ?thesis
-	  proof(rule disjE)
-	    assume "V = this"
-	    with env this_not_pns have "Tx = Class(last Cs')" by simp
-	    with "class" show ?thesis by simp
-	  next
-	    assume "V \<in> set pns"
-	    then obtain i where V:"V = pns!i" and length_i:"i < length pns"
-	      by(auto simp:in_set_conv_nth)
-	    with dist length env have "Tx = Ts!i" by(fastsimp dest:maps_nth)
-	    with length_i length have "Tx \<in> set Ts"
-	      by(fastsimp simp:in_set_conv_nth)
-	    with param_type show ?thesis by simp
-	  qed
-	qed }
+        have "is_type P Tx"
+        proof(cases "V \<in> set (this#pns)")
+          case False
+          with env sconf'' show ?thesis
+            by(clarsimp simp:sconf_def envconf_def)
+        next
+          case True
+          hence "V = this \<or> V \<in> set pns" by simp
+          thus ?thesis
+          proof(rule disjE)
+            assume "V = this"
+            with env this_not_pns have "Tx = Class(last Cs')" by simp
+            with "class" show ?thesis by simp
+          next
+            assume "V \<in> set pns"
+            then obtain i where V:"V = pns!i" and length_i:"i < length pns"
+              by(auto simp:in_set_conv_nth)
+            with dist length env have "Tx = Ts!i" by(fastsimp dest:maps_nth)
+            with length_i length have "Tx \<in> set Ts"
+              by(fastsimp simp:in_set_conv_nth)
+            with param_type show ?thesis by simp
+          qed
+        qed }
       thus "P \<turnstile> E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<surd>" by (simp add:envconf_def)
     qed
     from IH3[OF eval_body'' wt_new_body this] have "e' = e\<^isub>2 \<and> (h\<^isub>3, l\<^isub>3) = (h',l')" .
@@ -1616,65 +1615,65 @@ next
       from sconf'' show "P \<turnstile> h\<^isub>2 \<surd>" by(simp add:sconf_def)
     next
       { fix V v assume map:"[this \<mapsto> Ref (a,Ds), pns [\<mapsto>] vs'] V = Some v"
-	have "\<exists>T. (E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts)) V = Some T \<and> 
+        have "\<exists>T. (E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts)) V = Some T \<and> 
                    P,h\<^isub>2 \<turnstile> v :\<le> T"
-	proof(cases "V \<in> set (this#pns)")
-	  case False with map show ?thesis by simp
-	next
-	  case True
-	  hence "V = this \<or> V \<in> set pns" by simp
-	  thus ?thesis
-	  proof(rule disjE)
-	    assume V:"V = this"
-	    with map this_not_pns have "v = Ref(a,Ds)" by simp
-	    with V h2 subo this_not_pns have
-	      "(E(this \<mapsto> Class (last Ds),pns [\<mapsto>] Ts)) V = Some(Class (last Ds))"
-	      and "P,h\<^isub>2 \<turnstile> v :\<le> Class (last Ds)" by simp_all
-	    thus ?thesis by simp
-	  next
-	    assume "V \<in> set pns"
-	    then obtain i where V:"V = pns!i" and length_i:"i < length pns"
-	      by(auto simp:in_set_conv_nth)
-	    from Casts have "length Ts = length vs'"
-	      by(induct rule:Casts_to.induct,auto)
-	    with length have "length pns = length vs'" by simp
-	    with map dist V length_i have v:"v = vs'!i" by(fastsimp dest:maps_nth)
-	    from length dist length_i
-	    have env:"(E(this \<mapsto> Class (last Ds))(pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
-	      by(rule_tac E="E(this \<mapsto> Class (last Ds))" in nth_maps,simp_all)
-	    from wf Casts wtes subs eval'' sconf'
-	    have "\<forall>i < length Ts. P,h\<^isub>2 \<turnstile> vs'!i :\<le> Ts!i"
-	      by -(rule Casts_conf,auto)
-	    with length_i length env V v show ?thesis by simp
-	  qed
-	qed }
+        proof(cases "V \<in> set (this#pns)")
+          case False with map show ?thesis by simp
+        next
+          case True
+          hence "V = this \<or> V \<in> set pns" by simp
+          thus ?thesis
+          proof(rule disjE)
+            assume V:"V = this"
+            with map this_not_pns have "v = Ref(a,Ds)" by simp
+            with V h2 subo this_not_pns have
+              "(E(this \<mapsto> Class (last Ds),pns [\<mapsto>] Ts)) V = Some(Class (last Ds))"
+              and "P,h\<^isub>2 \<turnstile> v :\<le> Class (last Ds)" by simp_all
+            thus ?thesis by simp
+          next
+            assume "V \<in> set pns"
+            then obtain i where V:"V = pns!i" and length_i:"i < length pns"
+              by(auto simp:in_set_conv_nth)
+            from Casts have "length Ts = length vs'"
+              by(induct rule:Casts_to.induct,auto)
+            with length have "length pns = length vs'" by simp
+            with map dist V length_i have v:"v = vs'!i" by(fastsimp dest:maps_nth)
+            from length dist length_i
+            have env:"(E(this \<mapsto> Class (last Ds))(pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
+              by(rule_tac E="E(this \<mapsto> Class (last Ds))" in nth_maps,simp_all)
+            from wf Casts wtes subs eval'' sconf'
+            have "\<forall>i < length Ts. P,h\<^isub>2 \<turnstile> vs'!i :\<le> Ts!i"
+              by -(rule Casts_conf,auto)
+            with length_i length env V v show ?thesis by simp
+          qed
+        qed }
       thus "P,h\<^isub>2 \<turnstile> l\<^isub>2' (:\<le>)\<^sub>w E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts)"
-	using l2' by(simp add:lconf_def)
+        using l2' by(simp add:lconf_def)
     next
       { fix V Tx assume env:"(E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts)) V = Some Tx"
-	have "is_type P Tx"
-	proof(cases "V \<in> set (this#pns)")
-	  case False
-	  with env sconf'' show ?thesis
-	    by(clarsimp simp:sconf_def envconf_def)
-	next
-	  case True
-	  hence "V = this \<or> V \<in> set pns" by simp
-	  thus ?thesis
-	  proof(rule disjE)
-	    assume "V = this"
-	    with env this_not_pns have "Tx = Class(last Ds)" by simp
-	    with "class" show ?thesis by simp
-	  next
-	    assume "V \<in> set pns"
-	    then obtain i where V:"V = pns!i" and length_i:"i < length pns"
-	      by(auto simp:in_set_conv_nth)
-	    with dist length env have "Tx = Ts!i" by(fastsimp dest:maps_nth)
-	    with length_i length have "Tx \<in> set Ts"
-	      by(fastsimp simp:in_set_conv_nth)
-	    with param_type show ?thesis by simp
-	  qed
-	qed }
+        have "is_type P Tx"
+        proof(cases "V \<in> set (this#pns)")
+          case False
+          with env sconf'' show ?thesis
+            by(clarsimp simp:sconf_def envconf_def)
+        next
+          case True
+          hence "V = this \<or> V \<in> set pns" by simp
+          thus ?thesis
+          proof(rule disjE)
+            assume "V = this"
+            with env this_not_pns have "Tx = Class(last Ds)" by simp
+            with "class" show ?thesis by simp
+          next
+            assume "V \<in> set pns"
+            then obtain i where V:"V = pns!i" and length_i:"i < length pns"
+              by(auto simp:in_set_conv_nth)
+            with dist length env have "Tx = Ts!i" by(fastsimp dest:maps_nth)
+            with length_i length have "Tx \<in> set Ts"
+              by(fastsimp simp:in_set_conv_nth)
+            with param_type show ?thesis by simp
+          qed
+        qed }
       thus "P \<turnstile> E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<surd>" by (simp add:envconf_def)
     qed
     from IH3[OF eval_body'' wt_body this] have "e' = e\<^isub>2 \<and> (h\<^isub>3, l\<^isub>3) = (h',l')" .
@@ -1702,14 +1701,14 @@ next
     proof(rule eval_cases)
       fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2'\<rangle>"
       from IH1[OF eval_throw wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" 
-	by simp
+        by simp
     next
       fix es' ex' s w ws
       assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>"
-	and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es',s\<^isub>2'\<rangle>"
+        and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es',s\<^isub>2'\<rangle>"
       from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_throw[simplified eq] wtes this] 
       show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by(fastsimp dest:map_Val_throw_False)
     next
@@ -1717,15 +1716,15 @@ next
           s ws ws'
       assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
       from IH1[OF eval_ref wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" 
-	by simp
+        by simp
     next
       fix s ws
       assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
-	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
-	and e2:"e\<^isub>2 = THROW NullPointer"
+        and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
+        and e2:"e\<^isub>2 = THROW NullPointer"
       from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this] e2
       show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
     qed
@@ -1736,14 +1735,14 @@ next
     proof(rule eval_cases)
       fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2'\<rangle>"
       from IH1[OF eval_throw wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" 
-	by simp
+        by simp
     next
       fix es' ex' s w ws
       assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>"
-	and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es',s\<^isub>2'\<rangle>"
+        and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es',s\<^isub>2'\<rangle>"
       from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_throw[simplified eq] wtes this] 
       show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by(fastsimp dest:map_Val_throw_False)
     next
@@ -1751,15 +1750,15 @@ next
           s ws ws'
       assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
       from IH1[OF eval_ref wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" 
-	by simp
+        by simp
     next
       fix s ws
       assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
-	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
-	and e2:"e\<^isub>2 = THROW NullPointer"
+        and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
+        and e2:"e\<^isub>2 = THROW NullPointer"
       from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-	by(fastsimp intro:eval_preserves_sconf)
+        by(fastsimp intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this] e2
       show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
     qed

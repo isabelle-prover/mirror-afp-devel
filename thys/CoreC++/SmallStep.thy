@@ -314,11 +314,11 @@ proof -
     next
       case (step e\<^isub>0 s\<^isub>0 e s)
       have Red:"((e\<^isub>0,s\<^isub>0),e,s) \<in> Red P E"
-	and R:"R e (hp s) (lcl s) e' (hp s') (lcl s')" by fact+
+        and R:"R e (hp s) (lcl s) e' (hp s') (lcl s')" by fact+
       from IH[OF Red[simplified] R] show ?case .
     qed
     }
-  with prems show ?thesis by fastsimp
+  with assms show ?thesis by fastsimp
 qed
 
 
@@ -408,8 +408,7 @@ qed (simp_all add:red_reds.intros)
 
 lemma Red_lcl_add:
 assumes "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow>* \<langle>e',(h',l')\<rangle>" shows "P,E \<turnstile> \<langle>e,(h,l\<^isub>0++l)\<rangle> \<rightarrow>* \<langle>e',(h',l\<^isub>0++l')\<rangle>"
-
-using prems
+using assms
 proof(induct rule:converse_rtrancl_induct_red)
   case 1 thus ?case by simp
 next

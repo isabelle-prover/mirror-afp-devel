@@ -13,7 +13,7 @@ begin
 
 section {*Hypersets*}
 
-types hyperset = "vname set option"
+type_synonym hyperset = "vname set option"
 
 definition hyperUn :: "hyperset \<Rightarrow> hyperset \<Rightarrow> hyperset"   (infixl "\<squnion>" 65) where
   "A \<squnion> B  \<equiv>  case A of None \<Rightarrow> None

@@ -11,10 +11,9 @@ header {* \isaheader{CoreC++ types} *}
 theory Type imports Aux begin
 
 
-types
- cname = string -- "class names"
- mname = string -- "method name"
- vname = string -- "names for local/field variables"
+type_synonym cname = string -- "class names"
+type_synonym mname = string -- "method name"
+type_synonym vname = string -- "names for local/field variables"
  
 definition this :: vname where
   "this \<equiv> ''this''"
@@ -60,7 +59,7 @@ lemma not_refTE:
   "\<lbrakk> \<not>is_refT T; T = Void \<or> T = Boolean \<or> T = Integer \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
 by (cases T, auto simp add: is_refT_def)
 
-types 
+type_synonym 
   env  = "vname \<rightharpoonup> ty"
 
 end

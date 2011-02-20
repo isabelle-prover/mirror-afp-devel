@@ -20,7 +20,7 @@ expressions is defined elsewhere (in theory @{text WellType}).
 CoreC++ allows covariant return types *}
 
 
-types wf_mdecl_test = "prog \<Rightarrow> cname \<Rightarrow> mdecl \<Rightarrow> bool"
+type_synonym wf_mdecl_test = "prog \<Rightarrow> cname \<Rightarrow> mdecl \<Rightarrow> bool"
 
 definition wf_fdecl :: "prog \<Rightarrow> fdecl \<Rightarrow> bool" where
   "wf_fdecl P \<equiv> \<lambda>(F,T). is_type P T"
@@ -73,9 +73,8 @@ lemma is_class_xcpt:
 lemma is_type_pTs:
 assumes "wf_prog wf_md P" and "(C,S,fs,ms) \<in> set P" and "(M,Ts,T,m) \<in> set ms"
 shows "set Ts \<subseteq> types P"
-
 proof
-  from prems have "wf_mdecl wf_md P C (M,Ts,T,m)"
+  from assms have "wf_mdecl wf_md P C (M,Ts,T,m)"
     by (unfold wf_prog_def wf_cdecl_def) auto
   hence "\<forall>t \<in> set Ts. is_type P t" by (unfold wf_mdecl_def) auto
   moreover fix t assume "t \<in> set Ts"
@@ -605,20 +604,20 @@ next
     next
       case False
       with subo'' obtain D D' where leq:"P \<turnstile> C \<preceq>\<^sup>* D" and subS:"P \<turnstile> D \<prec>\<^sub>S D'"
-	and suboR:"Subobjs\<^isub>R P D' [C']"
-	by (auto elim:Subobjs.cases dest:hd_SubobjsR)
+        and suboR:"Subobjs\<^isub>R P D' [C']"
+        by (auto elim:Subobjs.cases dest:hd_SubobjsR)
       from suboR have C':"C' = D'" by (fastsimp dest:hd_SubobjsR)
       from leq wf obtain Ds where steps:"P,C \<turnstile> [C] \<sqsubseteq> Ds@[D]"
-	by (auto dest:subcls_leq_path)
+        by (auto dest:subcls_leq_path)
       hence suboSteps:"Subobjs P C (Ds@[D])" using "class" wf
-	apply (induct rule:rtrancl_induct)
-	 apply (erule Subobjs_Base)
-	apply (auto elim!:leq_path1.cases)
-	apply (subgoal_tac "Subobjs\<^isub>R P D [D]")
-	 apply (fastsimp dest:Subobjs_subclass intro:Subobjs_Sh)
-	apply (fastsimp dest!:subclsSD intro:SubobjsR_Base wf_cdecl_supD 
-	                                     class_wf ShBaseclass_isBaseclass)
-	done
+        apply (induct rule:rtrancl_induct)
+         apply (erule Subobjs_Base)
+        apply (auto elim!:leq_path1.cases)
+        apply (subgoal_tac "Subobjs\<^isub>R P D [D]")
+         apply (fastsimp dest:Subobjs_subclass intro:Subobjs_Sh)
+        apply (fastsimp dest!:subclsSD intro:SubobjsR_Base wf_cdecl_supD 
+                                             class_wf ShBaseclass_isBaseclass)
+        done
       hence step:"P,C \<turnstile> (Ds@[D]) \<sqsubset>\<^sup>1 [D']" using subS by (rule leq_path_sh)
       with steps empty False C' show ?thesis by simp
     qed
@@ -1026,12 +1025,12 @@ proof
       with True notempty Ds have "last (C#Cs') = C" by simp
       with notempty have "last Cs' = C" by simp
       with notempty have Cset:"C \<in> set Cs'"
-	apply (auto simp add:in_set_conv_decomp)
-	apply (rule_tac x="butlast Cs'" in exI)
-	apply (rule_tac x="[]" in exI)
-	apply (drule append_butlast_last_id)
-	apply simp
-	done
+        apply (auto simp add:in_set_conv_decomp)
+        apply (rule_tac x="butlast Cs'" in exI)
+        apply (rule_tac x="[]" in exI)
+        apply (drule append_butlast_last_id)
+        apply simp
+        done
       from subo wf have "C \<notin> set Cs'" by (rule unique1)
       with Cset show ?thesis by simp
     next
@@ -1039,16 +1038,16 @@ proof
       with D'Ds' have tlnotempty:"tl Ds \<noteq> []" by simp
       with Cons last D'Ds' have "last (tl Ds) = C" by simp
       with tlnotempty have "C \<in> set (tl Ds)"
-	apply (auto simp add:in_set_conv_decomp)
-	apply (rule_tac x="butlast (tl Ds)" in exI)
-	apply (rule_tac x="[]" in exI)
-	apply (drule append_butlast_last_id)
-	apply simp
-	done
+        apply (auto simp add:in_set_conv_decomp)
+        apply (rule_tac x="butlast (tl Ds)" in exI)
+        apply (rule_tac x="[]" in exI)
+        apply (drule append_butlast_last_id)
+        apply simp
+        done
       hence Cset:"C \<in> set (Cs'@(tl Ds))" by simp
       from suboapp eq wf have "C \<notin> set (Cs'@(tl Ds))"
-	by (subgoal_tac "Subobjs P C (C#(Cs'@(tl Ds)))",
-	  rule_tac Cs="[]" in unique1,simp_all)
+        by (subgoal_tac "Subobjs P C (C#(Cs'@(tl Ds)))",
+          rule_tac Cs="[]" in unique1,simp_all)
       with Cset show ?thesis by simp
     qed
   next
@@ -1064,28 +1063,28 @@ proof
       case Nil
       with suboC XXs have "Subobjs P C [C,X]" by simp
       thus ?thesis
-	apply -
-	apply (rule r_into_trancl)
-	apply (rule subclsR_subcls1)
-	apply (rule_tac Cs="[]" in Subobjs_subclsR)
-	apply simp
-	done
+        apply -
+        apply (rule r_into_trancl)
+        apply (rule subclsR_subcls1)
+        apply (rule_tac Cs="[]" in Subobjs_subclsR)
+        apply simp
+        done
     next
       case (Cons Y Ys)
       with suboC XXs have subo'':"Subobjs P C ([C,Y]@Ys@[X])" by simp
       hence plus:"(C,Y) \<in> (subcls1 P)\<^sup>+"
-	apply -
-	apply (rule r_into_trancl)
-	apply (rule subclsR_subcls1)
-	apply (rule_tac Cs="[]" in Subobjs_subclsR)
-	apply simp
-	done
+        apply -
+        apply (rule r_into_trancl)
+        apply (rule subclsR_subcls1)
+        apply (rule_tac Cs="[]" in Subobjs_subclsR)
+        apply simp
+        done
       from subo'' have "P \<turnstile> Y \<preceq>\<^sup>* X"
-	apply -
-	apply (subgoal_tac "Subobjs P C ([C]@Y#(Ys@[X]))")
-	 apply (drule Subobjs_Subobjs)
-	 apply (drule_tac C="Y" in Subobjs_subclass) apply simp_all
-	done
+        apply -
+        apply (subgoal_tac "Subobjs P C ([C]@Y#(Ys@[X]))")
+         apply (drule Subobjs_Subobjs)
+         apply (drule_tac C="Y" in Subobjs_subclass) apply simp_all
+        done
       with plus show ?thesis by (fastsimp elim:trancl_rtrancl_trancl)
     qed
     from lastleq X have leq:"P \<turnstile> X \<preceq>\<^sup>* C" by simp
@@ -1127,7 +1126,7 @@ next
       by (fastsimp simp:is_class_def)
     hence classD:"is_class P D" using subS wf
       by (auto intro:wf_cdecl_supD dest:class_wf dest!:subclsSD 
-	       elim:ShBaseclass_isBaseclass)
+               elim:ShBaseclass_isBaseclass)
     with Cleqlast subS have "Subobjs P C [D]"
       by (fastsimp intro:Subobjs_Sh SubobjsR_Base)
     thus ?thesis by (fastsimp simp:path_via_def)
@@ -1277,16 +1276,16 @@ proof -
     proof (cases "tl Cs' = []")
       case True
       with subo hd last have "C' = D"
-	by (subgoal_tac "Cs' = [C']",auto dest!:SubobjsR_nonempty hd_Cons_tl)
+        by (subgoal_tac "Cs' = [C']",auto dest!:SubobjsR_nonempty hd_Cons_tl)
       with path_via have "last Cs = D"
-	by (auto simp:path_via_def)
+        by (auto simp:path_via_def)
       with True show ?thesis by simp
     next
       case False
       from subo have Cs':"Cs' = hd Cs'#tl Cs'"
-	by (auto dest:SubobjsR_nonempty)
+        by (auto dest:SubobjsR_nonempty)
       from False have "last(hd Cs'#tl Cs') = last (tl Cs')"
-	by (rule last_ConsR)
+        by (rule last_ConsR)
       with False Cs' last show ?thesis by simp
     qed
   with path_unique suboApp 
@@ -1297,16 +1296,16 @@ proof -
     proof (cases "tl Cs' = []")
       case True
       with subo hd last have "C' = D"
-	by (subgoal_tac "Cs' = [C']",auto dest!:SubobjsR_nonempty hd_Cons_tl)
+        by (subgoal_tac "Cs' = [C']",auto dest!:SubobjsR_nonempty hd_Cons_tl)
       with path_via2 have "last Cs'' = D"
-	by (auto simp:path_via_def)
+        by (auto simp:path_via_def)
       with True show ?thesis by simp
     next
       case False
       from subo have Cs':"Cs' = hd Cs'#tl Cs'"
-	by (auto dest:SubobjsR_nonempty)
+        by (auto dest:SubobjsR_nonempty)
       from False have "last(hd Cs'#tl Cs') = last (tl Cs')"
-	by (rule last_ConsR)
+        by (rule last_ConsR)
       with False Cs' last show ?thesis by simp
     qed
     with path_via2 noteq have False using all subo hd wf
@@ -1567,8 +1566,7 @@ lemma leq_method_subtypes:
   and wf:"wf_prog wf_md P"
   shows "\<forall>Ts T m Cs. P \<turnstile> C has M = (Ts,T,m) via Cs \<longrightarrow> 
                        Ts = Ts' \<and> P \<turnstile> T' \<le> T"
-
-using prems
+using assms
 proof (induct rule:rtrancl.induct)
   fix C
   assume Cleast:"P \<turnstile> C has least M = (Ts',T',m') via Ds"
@@ -1578,25 +1576,25 @@ proof (induct rule:rtrancl.induct)
       by (fastsimp simp:LeastMethodDef_def HasMethodDef_def)
     { assume "Ds = Cs"
       with Cleast Chas have "Ts = Ts' \<and> T' = T"
-	by (auto simp:LeastMethodDef_def HasMethodDef_def MethodDefs_def)
+        by (auto simp:LeastMethodDef_def HasMethodDef_def MethodDefs_def)
       hence "Ts = Ts' \<and> P \<turnstile> T' \<le> T" by auto }
     moreover
     { assume "(Ds,Cs) \<in> (leq_path1 P C)\<^sup>+"
       hence subcls:"(last Ds,last Cs) \<in> (subcls1 P)\<^sup>+" using wf
-	by -(rule last_leq_paths)
+        by -(rule last_leq_paths)
       from Chas obtain Bs fs ms where "class P (last Cs) = Some(Bs,fs,ms)" 
-	and "map_of ms M = Some(Ts,T,m)"
-	by (auto simp:HasMethodDef_def MethodDefs_def)
+        and "map_of ms M = Some(Ts,T,m)"
+        by (auto simp:HasMethodDef_def MethodDefs_def)
       hence ex:"\<forall>Bs' fs' ms' Ts' T' m'. class P (last Ds) = Some(Bs',fs',ms') \<and> 
         map_of ms' M = Some(Ts',T',m') \<longrightarrow> Ts = Ts' \<and> P \<turnstile> T' \<le> T"
-	using subcls wf
-	by -(rule subclsPlus_subtype,auto)
+        using subcls wf
+        by -(rule subclsPlus_subtype,auto)
       from Cleast obtain Bs' fs' ms' where "class P (last Ds) = Some(Bs',fs',ms')" 
-	and "map_of ms' M = Some(Ts',T',m')"
-	by (auto simp:LeastMethodDef_def MethodDefs_def)
+        and "map_of ms' M = Some(Ts',T',m')"
+        by (auto simp:LeastMethodDef_def MethodDefs_def)
       with ex have "Ts = Ts'" and "P \<turnstile> T' \<le> T" by auto }
       ultimately have "Ts = Ts'" and "P \<turnstile> T' \<le> T" using path
-	by (auto dest!:rtranclD) }
+        by (auto dest!:rtranclD) }
   thus "\<forall>Ts T m Cs. P \<turnstile> C has M = (Ts, T, m) via Cs \<longrightarrow> 
                       Ts = Ts' \<and> P \<turnstile> T' \<le> T"
     by (simp add:HasMethodDef_def MethodDefs_def)
@@ -1620,23 +1618,23 @@ next
       by (auto simp:LeastMethodDef_def HasMethodDef_def)
     { assume "Ds = Cs'@\<^sub>pCs"
       with Dleast Dhas have "Ts = Ts' \<and> T' = T"
-	by (auto simp:LeastMethodDef_def HasMethodDef_def MethodDefs_def)
+        by (auto simp:LeastMethodDef_def HasMethodDef_def MethodDefs_def)
       hence "Ts = Ts' \<and> T' = T" by auto }
     moreover
     { assume "(Ds,Cs'@\<^sub>pCs) \<in> (leq_path1 P D)\<^sup>+"
       hence subcls:"(last Ds,last (Cs'@\<^sub>pCs)) \<in> (subcls1 P)\<^sup>+" using wf
-	by -(rule last_leq_paths)
+        by -(rule last_leq_paths)
       from Dhas obtain Bs fs ms where "class P (last (Cs'@\<^sub>pCs)) = Some(Bs,fs,ms)" 
-	and "map_of ms M = Some(Ts,T,m)"
-	by (auto simp:HasMethodDef_def MethodDefs_def)
+        and "map_of ms M = Some(Ts,T,m)"
+        by (auto simp:HasMethodDef_def MethodDefs_def)
       hence ex:"\<forall>Bs' fs' ms' Ts' T' m'. class P (last Ds) = Some(Bs',fs',ms') \<and> 
                  map_of ms' M = Some(Ts',T',m') \<longrightarrow> 
-	             Ts = Ts' \<and> P \<turnstile> T' \<le> T"
-	using subcls wf
-	by -(rule subclsPlus_subtype,auto)
+                     Ts = Ts' \<and> P \<turnstile> T' \<le> T"
+        using subcls wf
+        by -(rule subclsPlus_subtype,auto)
       from Dleast obtain Bs' fs' ms' where "class P (last Ds) = Some(Bs',fs',ms')" 
-	and "map_of ms' M = Some(Ts',T',m')"
-	by (auto simp:LeastMethodDef_def MethodDefs_def)
+        and "map_of ms' M = Some(Ts',T',m')"
+        by (auto simp:LeastMethodDef_def MethodDefs_def)
       with ex have "Ts = Ts'" and "P \<turnstile> T' \<le> T" by auto }
     ultimately have "Ts = Ts'" and "P \<turnstile> T' \<le> T" using path
       by (auto dest!:rtranclD) }
@@ -1653,8 +1651,7 @@ lemma leq_methods_subtypes:
   shows "\<forall>Ts T m Cs Cs'. P \<turnstile> Path D to C via Cs' \<and> P,D \<turnstile> Ds \<sqsubseteq> Cs'@\<^sub>pCs \<and> Cs \<noteq> [] \<and> 
                          P \<turnstile> C has M = (Ts,T,m) via Cs 
                                 \<longrightarrow>  Ts = Ts' \<and> P \<turnstile> T' \<le> T"
-
-using prems
+using assms
 proof (induct rule:rtrancl.induct)
   fix C
   assume Cleast:"(Ds,(Ts',T',m')) \<in> MinimalMethodDefs P C M"
@@ -1667,25 +1664,25 @@ proof (induct rule:rtrancl.induct)
       by(auto simp:appendPath_def split:split_if_asm)
     { assume "Ds = Cs"
       with Cleast Chas have "Ts = Ts' \<and> T' = T"
-	by (auto simp:MinimalMethodDefs_def HasMethodDef_def MethodDefs_def)
+        by (auto simp:MinimalMethodDefs_def HasMethodDef_def MethodDefs_def)
       hence "Ts = Ts' \<and> P \<turnstile> T' \<le> T" by auto }
     moreover
     { assume "(Ds,Cs) \<in> (leq_path1 P C)\<^sup>+"
       hence subcls:"(last Ds,last Cs) \<in> (subcls1 P)\<^sup>+" using wf
-	by -(rule last_leq_paths)
+        by -(rule last_leq_paths)
       from Chas obtain Bs fs ms where "class P (last Cs) = Some(Bs,fs,ms)" 
-	and "map_of ms M = Some(Ts,T,m)"
-	by (auto simp:HasMethodDef_def MethodDefs_def)
+        and "map_of ms M = Some(Ts,T,m)"
+        by (auto simp:HasMethodDef_def MethodDefs_def)
       hence ex:"\<forall>Bs' fs' ms' Ts' T' m'. class P (last Ds) = Some(Bs',fs',ms') \<and> 
         map_of ms' M = Some(Ts',T',m') \<longrightarrow> Ts = Ts' \<and> P \<turnstile> T' \<le> T"
-	using subcls wf
-	by -(rule subclsPlus_subtype,auto)
+        using subcls wf
+        by -(rule subclsPlus_subtype,auto)
       from Cleast obtain Bs' fs' ms' where "class P (last Ds) = Some(Bs',fs',ms')" 
-	and "map_of ms' M = Some(Ts',T',m')"
-	by (auto simp:MinimalMethodDefs_def MethodDefs_def)
+        and "map_of ms' M = Some(Ts',T',m')"
+        by (auto simp:MinimalMethodDefs_def MethodDefs_def)
       with ex have "Ts = Ts'" and "P \<turnstile> T' \<le> T" by auto }
       ultimately have "Ts = Ts'" and "P \<turnstile> T' \<le> T" using leq'
-	by (auto dest!:rtranclD) }
+        by (auto dest!:rtranclD) }
   thus "\<forall>Ts T m Cs Cs'. P \<turnstile> Path C to C via Cs' \<and> P,C \<turnstile> Ds \<sqsubseteq> Cs' @\<^sub>p Cs \<and> Cs \<noteq> [] \<and> 
                         P \<turnstile> C has M = (Ts, T, m) via Cs \<longrightarrow> 
                             Ts = Ts' \<and> P \<turnstile> T' \<le> T" by blast
@@ -1708,23 +1705,23 @@ next
       by (fastsimp intro:has_path_has)
     { assume "Ds = Cs'@\<^sub>pCs"
       with Dleast Dhas have "Ts = Ts' \<and> T' = T"
-	by (auto simp:MinimalMethodDefs_def HasMethodDef_def MethodDefs_def)
+        by (auto simp:MinimalMethodDefs_def HasMethodDef_def MethodDefs_def)
       hence "Ts = Ts' \<and> T' = T" by auto }
     moreover
     { assume "(Ds,Cs'@\<^sub>pCs) \<in> (leq_path1 P D)\<^sup>+"
       hence subcls:"(last Ds,last (Cs'@\<^sub>pCs)) \<in> (subcls1 P)\<^sup>+" using wf
-	by -(rule last_leq_paths)
+        by -(rule last_leq_paths)
       from Dhas obtain Bs fs ms where "class P (last (Cs'@\<^sub>pCs)) = Some(Bs,fs,ms)" 
-	and "map_of ms M = Some(Ts,T,m)"
-	by (auto simp:HasMethodDef_def MethodDefs_def)
+        and "map_of ms M = Some(Ts,T,m)"
+        by (auto simp:HasMethodDef_def MethodDefs_def)
       hence ex:"\<forall>Bs' fs' ms' Ts' T' m'. class P (last Ds) = Some(Bs',fs',ms') \<and> 
                  map_of ms' M = Some(Ts',T',m') \<longrightarrow> 
-	             Ts = Ts' \<and> P \<turnstile> T' \<le> T"
-	using subcls wf
-	by -(rule subclsPlus_subtype,auto)
+                     Ts = Ts' \<and> P \<turnstile> T' \<le> T"
+        using subcls wf
+        by -(rule subclsPlus_subtype,auto)
       from Dleast obtain Bs' fs' ms' where "class P (last Ds) = Some(Bs',fs',ms')" 
-	and "map_of ms' M = Some(Ts',T',m')"
-	by (auto simp:MinimalMethodDefs_def MethodDefs_def)
+        and "map_of ms' M = Some(Ts',T',m')"
+        by (auto simp:MinimalMethodDefs_def MethodDefs_def)
       with ex have "Ts = Ts'" and "P \<turnstile> T' \<le> T" by auto }
     ultimately have "Ts = Ts'" and "P \<turnstile> T' \<le> T" using leq_path
       by (auto dest!:rtranclD) }
@@ -1770,7 +1767,7 @@ proof -
       case False
       assume last:"last Cs = hd Ds"
       from notempty False have "last (tl Ds) = last Ds"
-	by -(drule hd_Cons_tl,drule_tac x="hd Ds" in last_ConsR,simp)
+        by -(drule hd_Cons_tl,drule_tac x="hd Ds" in last_ConsR,simp)
       with False show ?thesis by simp
     qed
     hence eq:"(Cs @\<^sub>p Ds) @\<^sub>p [last Ds] = (Cs @\<^sub>p Ds)"
@@ -1778,14 +1775,14 @@ proof -
     from least_method wf
     have "P \<turnstile> last Ds has least M = (Ts',T',pns',body') via [last Ds]"
       by(auto dest:Subobj_last_isClass intro:Subobjs_Base subobjs_rel
-	simp:LeastMethodDef_def MethodDefs_def)
+        simp:LeastMethodDef_def MethodDefs_def)
     with notempty
     have "P \<turnstile> last (Cs@\<^sub>pDs) has least M = (Ts',T',pns',body') via [last Ds]"
       by -(drule_tac Cs'="Cs" in appendPath_last,simp)
     with overrider wf eq have "(Cs',Ts,T,pns,body) \<in> MinimalMethodDefs P C M"
       and "P,C \<turnstile> Cs' \<sqsubseteq> Cs @\<^sub>p Ds"
       by -(auto simp:FinalOverriderMethodDef_def OverriderMethodDefs_def,
-	drule wf_sees_method_fun,auto)
+        drule wf_sees_method_fun,auto)
     with sub wf path notempty has show ?thesis
       by -(drule leq_methods_subtypes,simp_all,blast)+
   qed

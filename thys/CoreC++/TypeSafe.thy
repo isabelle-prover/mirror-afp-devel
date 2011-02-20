@@ -93,12 +93,12 @@ next
   with map conf eq have fconf:"P,h \<turnstile> fs'(F \<mapsto> v') (:\<le>) map_of fs"
     by (simp add:fconf_def)
   from oconf have "\<forall>Cs fs'. (Cs,fs') \<in> S \<longrightarrow> Subobjs P D Cs \<and> 
-	            (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
+                    (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
                                 P,h \<turnstile> fs' (:\<le>) map_of fs)"
     by(simp add:oconf_def)
   with suboD classDs fconf 
   have oconf':"\<forall>Cs fs'. (Cs,fs') \<in> ?S' \<longrightarrow> Subobjs P D Cs \<and> 
-	            (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
+                    (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
                                 P,h \<turnstile> fs' (:\<le>) map_of fs)"
     by auto
   from oconf have all:"\<forall>Cs. Subobjs P D Cs \<longrightarrow> (\<exists>!fs'. (Cs,fs') \<in> S)"
@@ -641,7 +641,7 @@ next
     then obtain C where "T = Class C" by auto
     with casts wt env wf show ?thesis
       by(auto elim!:casts_to.cases,
-	 auto intro!:sym[OF appendPath_last] Subobjs_nonempty split:split_if_asm 
+         auto intro!:sym[OF appendPath_last] Subobjs_nonempty split:split_if_asm 
               simp:path_via_def,drule_tac Cs="Cs" in Subobjs_appendPath,auto)
   qed
 next
@@ -757,29 +757,29 @@ next
     proof(rule subE)
       assume "T' = T" and notclass:"\<forall>C. T' \<noteq> Class C"
       from IH[OF sconf wte] notclass have wte':"P,E,h' \<turnstile> e' : T'" 
-	by(cases T') auto
+        by(cases T') auto
       from wtval' notemptyCs field wte' sub show ?thesis
-	by(rule WTrtFAss)
+        by(rule WTrtFAss)
     next
       fix C' D assume T':"T' = Class C'" and T:"T = Class D" 
-	and path_unique:"P \<turnstile> Path C' to D unique"
+        and path_unique:"P \<turnstile> Path C' to D unique"
       from IH[OF sconf wte] T' have "P,E,h' \<turnstile> e' : Class C' \<or> P,E,h' \<turnstile> e' : NT"
-	by simp
+        by simp
       thus ?thesis
       proof(rule disjE)
-	assume wte':"P,E,h' \<turnstile> e' : Class C'"
-	from wtval' notemptyCs field wte' sub T' show ?thesis 
-	  by (fastsimp intro: WTrtFAss)
+        assume wte':"P,E,h' \<turnstile> e' : Class C'"
+        from wtval' notemptyCs field wte' sub T' show ?thesis 
+          by (fastsimp intro: WTrtFAss)
       next
-	assume wte':"P,E,h' \<turnstile> e' : NT"
-	from wtval' notemptyCs field wte' sub T show ?thesis
-	  by (fastsimp intro: WTrtFAss)
+        assume wte':"P,E,h' \<turnstile> e' : NT"
+        from wtval' notemptyCs field wte' sub T show ?thesis
+          by (fastsimp intro: WTrtFAss)
       qed
     next
       fix C' assume T':"T' = NT" and T:"T = Class C'"
       from IH[OF sconf wte] T' have wte':"P,E,h' \<turnstile> e' : NT" by simp
       from wtval' notemptyCs field wte' sub T show ?thesis
-	by (fastsimp intro: WTrtFAss)
+        by (fastsimp intro: WTrtFAss)
     qed
   next
     fix T' assume wtval:"P,E,h \<turnstile> Val v : NT"
@@ -832,7 +832,7 @@ next
     with wf have "P,E,h \<turnstile> ref (a',Ds'') : T'"
       by (auto intro!:appendPath_last[THEN sym] Subobjs_nonempty
         split:split_if_asm simp:path_via_def,
-	drule_tac Cs="Xs" in Subobjs_appendPath,auto)
+        drule_tac Cs="Xs" in Subobjs_appendPath,auto)
     with h have "P,E,(h(a\<mapsto>(D,insert(Ds,fs(F \<mapsto> Ref(a',Ds'')))(S-{(Ds,fs)})))) \<turnstile> 
       ref (a',Ds'') : T'"
       by auto
@@ -863,27 +863,27 @@ next
     proof(rule WTrt_elim_cases)
       fix C Cs Ts Ts' m
       assume wte:"P,E,h \<turnstile> e : Class C"
-	and method:"P \<turnstile> C has least M = (Ts, T, m) via Cs"
-	and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
+        and method:"P \<turnstile> C has least M = (Ts, T, m) via Cs"
+        and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
       from IH[OF sconf wte] have "P,E,h' \<turnstile> e' : NT \<or> P,E,h' \<turnstile> e' : Class C" by auto
       thus ?thesis
       proof(rule disjE)
-	assume wte':"P,E,h' \<turnstile> e' : NT"
-	have "P,E,h' \<turnstile> es [:] Ts'"
-	  by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
-	with wte' show ?thesis by(rule WTrtCallNT)
+        assume wte':"P,E,h' \<turnstile> e' : NT"
+        have "P,E,h' \<turnstile> es [:] Ts'"
+          by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+        with wte' show ?thesis by(rule WTrtCallNT)
       next
-	assume wte':"P,E,h' \<turnstile> e' : Class C"
-	have wtes':"P,E,h' \<turnstile> es [:] Ts'"
-	  by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
-	from wte' method wtes' subs show ?thesis by(rule WTrtCall)
+        assume wte':"P,E,h' \<turnstile> e' : Class C"
+        have wtes':"P,E,h' \<turnstile> es [:] Ts'"
+          by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+        from wte' method wtes' subs show ?thesis by(rule WTrtCall)
       qed
     next
       fix Ts 
       assume wte:"P,E,h \<turnstile> e : NT" and wtes:"P,E,h \<turnstile> es [:] Ts"
       from IH[OF sconf wte] have wte':"P,E,h' \<turnstile> e' : NT" by simp
       have "P,E,h' \<turnstile> es [:] Ts"
-	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+        by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
       with wte' show ?thesis by(rule WTrtCallNT)
     qed
     with None show ?thesis by simp
@@ -894,27 +894,27 @@ next
     proof(rule WTrt_elim_cases)
       fix C' Cs Ts Ts' m
       assume wte:"P,E,h \<turnstile> e : Class C'" and path_unique:"P \<turnstile> Path C' to C unique"
-	and method:"P \<turnstile> C has least M = (Ts, T, m) via Cs"
-	and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
+        and method:"P \<turnstile> C has least M = (Ts, T, m) via Cs"
+        and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
       from IH[OF sconf wte] have "P,E,h' \<turnstile> e' : NT \<or> P,E,h' \<turnstile> e' : Class C'" by auto
       thus ?thesis
       proof(rule disjE)
-	assume wte':"P,E,h' \<turnstile> e' : NT"
-	have "P,E,h' \<turnstile> es [:] Ts'"
-	  by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
-	with wte' show ?thesis by(rule WTrtCallNT)
+        assume wte':"P,E,h' \<turnstile> e' : NT"
+        have "P,E,h' \<turnstile> es [:] Ts'"
+          by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+        with wte' show ?thesis by(rule WTrtCallNT)
       next
-	assume wte':"P,E,h' \<turnstile> e' : Class C'"
-	have wtes':"P,E,h' \<turnstile> es [:] Ts'"
-	  by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
-	from wte' path_unique method wtes' subs show ?thesis by(rule WTrtStaticCall)
+        assume wte':"P,E,h' \<turnstile> e' : Class C'"
+        have wtes':"P,E,h' \<turnstile> es [:] Ts'"
+          by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+        from wte' path_unique method wtes' subs show ?thesis by(rule WTrtStaticCall)
       qed
     next
       fix Ts 
       assume wte:"P,E,h \<turnstile> e : NT" and wtes:"P,E,h \<turnstile> es [:] Ts"
       from IH[OF sconf wte] have wte':"P,E,h' \<turnstile> e' : NT" by simp
       have "P,E,h' \<turnstile> es [:] Ts"
-	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+        by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
       with wte' show ?thesis by(rule WTrtCallNT)
     qed
     with Some show ?thesis by simp
@@ -934,28 +934,28 @@ next
     proof (rule WTrt_elim_cases)
       fix C Cs Ts Ts' m
       assume wte: "P,E,h \<turnstile> Val v : Class C"
-	and method:"P \<turnstile> C has least M = (Ts,T,m) via Cs"
-	and wtes: "P,E,h \<turnstile> es [:] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
+        and method:"P \<turnstile> C has least M = (Ts,T,m) via Cs"
+        and wtes: "P,E,h \<turnstile> es [:] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
       from wtes have "length es = length Ts'" by(rule WTrts_same_length)
       with reds have "length es' = length Ts'"
-	by -(drule reds_length,simp)
+        by -(drule reds_length,simp)
       with IH[OF sconf wtes] subs obtain Ts'' where wtes':"P,E,h' \<turnstile> es' [:] Ts''"
-	and subs':"P \<turnstile> Ts'' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
+        and subs':"P \<turnstile> Ts'' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
       have wte':"P,E,h' \<turnstile> Val v : Class C"
-	by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
+        by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
       from wte' method wtes' subs' show ?thesis
-	by(rule WTrtCall)
+        by(rule WTrtCall)
     next
       fix Ts
       assume wte:"P,E,h \<turnstile> Val v : NT" 
-	and wtes:"P,E,h \<turnstile> es [:] Ts"
+        and wtes:"P,E,h \<turnstile> es [:] Ts"
       from wtes have "length es = length Ts" by(rule WTrts_same_length)
       with reds have "length es' = length Ts"
-	by -(drule reds_length,simp)
+        by -(drule reds_length,simp)
       with IH[OF sconf wtes] obtain Ts' where wtes':"P,E,h' \<turnstile> es' [:] Ts'"
-	and "P \<turnstile> Ts' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
+        and "P \<turnstile> Ts' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
       have wte':"P,E,h' \<turnstile> Val v : NT"
-	by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
+        by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
       from wte' wtes' show ?thesis by(rule WTrtCallNT)
     qed
     with None show ?thesis by simp
@@ -966,28 +966,28 @@ next
     proof(rule WTrt_elim_cases)
       fix C' Cs Ts Ts' m
       assume wte:"P,E,h \<turnstile> Val v : Class C'" and path_unique:"P \<turnstile> Path C' to C unique"
-	and method:"P \<turnstile> C has least M = (Ts,T,m) via Cs"
-	and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
+        and method:"P \<turnstile> C has least M = (Ts,T,m) via Cs"
+        and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
       from wtes have "length es = length Ts'" by(rule WTrts_same_length)
       with reds have "length es' = length Ts'"
-	by -(drule reds_length,simp)
+        by -(drule reds_length,simp)
       with IH[OF sconf wtes] subs obtain Ts'' where wtes':"P,E,h' \<turnstile> es' [:] Ts''"
-	and subs':"P \<turnstile> Ts'' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
+        and subs':"P \<turnstile> Ts'' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
       have wte':"P,E,h' \<turnstile> Val v : Class C'"
-	by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
+        by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
       from wte' path_unique method wtes' subs' show ?thesis
-	by(rule WTrtStaticCall)
+        by(rule WTrtStaticCall)
     next
       fix Ts
       assume wte:"P,E,h \<turnstile> Val v : NT" 
-	and wtes:"P,E,h \<turnstile> es [:] Ts"
+        and wtes:"P,E,h \<turnstile> es [:] Ts"
       from wtes have "length es = length Ts" by(rule WTrts_same_length)
       with reds have "length es' = length Ts"
-	by -(drule reds_length,simp)
+        by -(drule reds_length,simp)
       with IH[OF sconf wtes] obtain Ts' where wtes':"P,E,h' \<turnstile> es' [:] Ts'"
-	and "P \<turnstile> Ts' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
+        and "P \<turnstile> Ts' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
       have wte':"P,E,h' \<turnstile> Val v : NT"
-	by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
+        by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
       from wte' wtes' show ?thesis by(rule WTrtCallNT)
     qed
     with Some show ?thesis by simp
@@ -1365,9 +1365,9 @@ next
       fix ex esx
       assume "types_conf P E (hp s'') (ex#esx) (T'#Ts')"
       hence type':"P,E,hp s'' \<turnstile> ex :\<^bsub>NT\<^esub> T'" 
-	and types':"types_conf P E (hp s'') esx Ts'" by simp_all
+        and types':"types_conf P E (hp s'') esx Ts'" by simp_all
       from type' obtain Tx where type'':"P,E,hp s'' \<turnstile> ex : Tx"
-	by(cases T') auto
+        by(cases T') auto
       from IH[OF types'] obtain Tsx where "P,E,hp s'' \<turnstile> esx [:] Tsx" by auto
       with type'' show "\<exists>Ts'. P,E,hp s'' \<turnstile> ex#esx [:] Ts'" by auto
     qed
@@ -1633,7 +1633,7 @@ proof -
     with sconf' have wf_config':"P,E,s' \<turnstile> e' : T \<surd>" by(simp add:wf_config_def)
     { assume "\<not> final e'"
       from Progress[OF wf wf_config' D' this] nored have False
-	by simp }
+        by simp }
     hence "final e'" by fast
     with wte' show ?thesis by(auto simp:final_def)
   next
@@ -1642,7 +1642,7 @@ proof -
     with sconf' have wf_config':"P,E,s' \<turnstile> e' : T \<surd>" by(simp add:wf_config_def)
     { assume "\<not> final e'"
       from Progress[OF wf wf_config' D' this] nored have False
-	by simp }
+        by simp }
     hence "final e'" by fast
     with wte' show ?thesis by(auto simp:final_def)
   next
@@ -1651,7 +1651,7 @@ proof -
     with sconf' have wf_config':"P,E,s' \<turnstile> e' : T \<surd>" by(simp add:wf_config_def)
     { assume "\<not> final e'"
       from Progress[OF wf wf_config' D' this] nored have False
-	by simp }
+        by simp }
     hence "final e'" by fast
     with wte' show ?thesis by(auto simp:final_def)
   next
@@ -1660,7 +1660,7 @@ proof -
     with sconf' have wf_config':"P,E,s' \<turnstile> e' : T \<surd>" by(simp add:wf_config_def)
     { assume "\<not> final e'"
       from Progress[OF wf wf_config' D' this] nored have False
-	by simp }
+        by simp }
     hence "final e'" by fast
     with wte' show ?thesis by(auto simp:final_def)
   next
@@ -1671,16 +1671,16 @@ proof -
       assume wte':"P,E,hp s' \<turnstile> e' : T"
       with sconf' have wf_config':"P,E,s' \<turnstile> e' : T \<surd>" by(simp add:wf_config_def)
       { assume "\<not> final e'"
-	from Progress[OF wf wf_config' D' this] nored have False
-	  by simp }
+        from Progress[OF wf wf_config' D' this] nored have False
+          by simp }
       hence "final e'" by fast
       with wte' show ?thesis by(auto simp:final_def)
     next
       assume wte':"P,E,hp s' \<turnstile> e' : NT"
       with sconf' have wf_config':"P,E,s' \<turnstile> e' : NT \<surd>" by(simp add:wf_config_def)
       { assume "\<not> final e'"
-	from Progress[OF wf wf_config' D' this] nored have False
-	  by simp }
+        from Progress[OF wf wf_config' D' this] nored have False
+          by simp }
       hence "final e'" by fast
       with wte' Class show ?thesis by(auto simp:final_def)
     qed

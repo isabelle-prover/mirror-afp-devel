@@ -13,8 +13,9 @@ theory Objects imports SubObj begin
 
 section{* Objects *}
 
-types
+type_synonym
   subo = "(path \<times> (vname \<rightharpoonup> val))"     -- "subobjects realized on the heap"
+type_synonym
   obj  = "cname \<times> subo set"            -- "mdc and subobject"
 
 
@@ -56,7 +57,7 @@ lemma [simp]: "obj_ty (C,S) = Class C"
 
 section{* Heap *}
 
-types heap  = "addr \<rightharpoonup> obj"
+type_synonym heap  = "addr \<rightharpoonup> obj"
 
 abbreviation
   cname_of :: "heap \<Rightarrow> addr \<Rightarrow> cname" where

@@ -13,7 +13,7 @@ begin
 
 section {* General definitions *}
 
-types
+type_synonym
   subobj = "cname  \<times> path"
 
 definition mdc :: "subobj \<Rightarrow> cname" where
@@ -149,7 +149,7 @@ proof (induct Cs')
     next
       case False
       with Nil show ?thesis 
-	by (auto dest!:subclsS_subcls1)
+        by (auto dest!:subclsS_subcls1)
     qed
   next
     case (Cons C'' Cs'')

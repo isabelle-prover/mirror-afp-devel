@@ -26,7 +26,7 @@ definition oconf :: "prog \<Rightarrow> heap \<Rightarrow> obj \<Rightarrow> boo
   "P,h \<turnstile> obj \<surd>  \<equiv> let (C,S) = obj in 
       (\<forall>Cs. Subobjs P C Cs \<longrightarrow> (\<exists>!fs'. (Cs,fs') \<in> S)) \<and> 
       (\<forall>Cs fs'. (Cs,fs') \<in> S \<longrightarrow> Subobjs P C Cs \<and> 
-	            (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
+                    (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
                                 P,h \<turnstile> fs' (:\<le>) map_of fs))"  
 
 definition hconf :: "prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile> _ \<surd>" [51,51] 50) where

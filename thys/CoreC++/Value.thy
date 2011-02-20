@@ -11,10 +11,9 @@ header {* \isaheader{CoreC++ values} *}
 theory Value imports Type begin
 
 
-types 
-  addr = nat
-  path = "cname list"            -- "Path-component in subobjects"
-  reference = "addr \<times> path"
+type_synonym addr = nat
+type_synonym path = "cname list"            -- "Path-component in subobjects"
+type_synonym reference = "addr \<times> path"
 
 datatype val
   = Unit           -- "dummy result value of void expressions"

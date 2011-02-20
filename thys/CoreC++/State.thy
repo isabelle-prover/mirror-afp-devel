@@ -8,8 +8,9 @@ header {* \isaheader{Program State} *}
 
 theory State imports Exceptions begin
 
-types
+type_synonym
   locals = "vname \<rightharpoonup> val"      -- "local vars, incl. params and ``this''"
+type_synonym
   state  = "heap \<times> locals"
 
 definition hp :: "state \<Rightarrow> heap" where
