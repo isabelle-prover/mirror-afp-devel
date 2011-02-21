@@ -11,7 +11,7 @@
 *)
 header {* \isaheader{Map Implementation by Red-Black-Trees} *}
 theory RBTMapImpl
-imports OrderedMap More_List "common/RBT_add" MapGA 
+imports OrderedMap "~~/src/HOL/Library/More_List" "common/RBT_add" MapGA 
 begin
 text_raw {*\label{thy:RBTMapImpl}*}
 

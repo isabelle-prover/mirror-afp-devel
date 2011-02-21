@@ -3,7 +3,7 @@
 header {* Archive *}
 
 theory Arch
-imports Main Efficient_Nat
+imports Main "~~/src/HOL/Library/Efficient_Nat"
 begin
 
 setup {*

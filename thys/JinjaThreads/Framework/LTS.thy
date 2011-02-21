@@ -7,7 +7,7 @@ header {* \isaheader{Labelled transition systems} *}
 theory LTS imports
   "../Common/Aux"
   "../../Coinductive/TLList"
-  "Quotient_Option"
+  "~~/src/HOL/Library/Quotient_Option"
 begin
 
 lemma option_rel_mono:

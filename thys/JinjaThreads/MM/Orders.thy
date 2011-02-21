@@ -6,7 +6,7 @@ header {* \isaheader{Orders as predicates} *}
 
 theory Orders imports
   Main
-  "Zorn"
+  "~~/src/HOL/Library/Zorn"
 begin
 
 section {* Preliminaries *}

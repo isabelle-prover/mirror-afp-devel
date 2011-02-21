@@ -12,10 +12,10 @@ theory Aux
 imports
   Main
   "../../FinFun/FinFun"
-  "Transitive_Closure_Table"
+  "~~/src/HOL/Library/Transitive_Closure_Table"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
-  Code_Char
-  Monad_Syntax
+  "~~/src/HOL/Library/Code_Char"
+  "~~/src/HOL/Library/Monad_Syntax"
 begin
 
 
