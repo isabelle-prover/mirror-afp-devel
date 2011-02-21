@@ -12,8 +12,8 @@ text {*
 We assume that the program to be investigated is already parsed into a syntax tree. Furthermore, we assume that distinct labels were added to distinguish different code positions and that the program has been alphatised, i.e. that each variable name is only bound once. This binding position is, as a convenience, considered part of the variable name.
 *}
 
-types label = nat
-types var = "label \<times> string"
+type_synonym label = nat
+type_synonym var = "label \<times> string"
 
 definition "binder" :: "var \<Rightarrow> label" where [simp]: "binder v = fst v"
 
@@ -31,7 +31,7 @@ datatype lambda = Lambda label "var list" call
               | Let label "(var \<times> lambda) list" call
      and val = L lambda | R label var | C label int | P prim
 
-types prog = lambda
+type_synonym prog = lambda
 
 text {*
 Three example programs. These were generated using the Haskell implementation

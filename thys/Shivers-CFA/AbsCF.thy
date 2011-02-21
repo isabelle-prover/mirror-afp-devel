@@ -31,17 +31,17 @@ Analogous to the previous section, we define types for binding environments, clo
 The abstract variable environment is a partial map to sets in Shivers' dissertation. As he does not need to distinguish between a key not in the map and a key mapped to the empty set, this presentation is redundant. Therefore, I encoded this as a function from keys to sets of values. The theory @{theory SetMap} contains functions and lemmas to work with such maps, symbolized by an appended dot (e.g. @{text "{}."}, @{text "\<union>."}).
 *}
 
-types 'c a_benv = "label \<rightharpoonup> 'c" ("_ \<abenv>" [1000])
-      'c a_closure = "lambda \<times> 'c \<abenv>" ("_ \<aclosure>" [1000])
+type_synonym 'c a_benv = "label \<rightharpoonup> 'c" ("_ \<abenv>" [1000])
+type_synonym 'c a_closure = "lambda \<times> 'c \<abenv>" ("_ \<aclosure>" [1000])
 
 datatype 'c proc ("_ \<aproc>" [1000])
   = PC "'c \<aclosure>"
   | PP prim
   | AStop
 
-types 'c a_d = "'c \<aproc> set" ("_ \<ad>" [1000])
+type_synonym 'c a_d = "'c \<aproc> set" ("_ \<ad>" [1000])
 
-types 'c a_venv = "var \<times> 'c \<Rightarrow> 'c \<ad>" ("_ \<avenv>" [1000])
+type_synonym 'c a_venv = "var \<times> 'c \<Rightarrow> 'c \<ad>" ("_ \<avenv>" [1000])
 
 text {*
 The evaluation function now ignores constants and returns singletons for primitive operations and lambda expressions.
@@ -60,11 +60,11 @@ text {*
 The types of the calculated graph, the arguments to @{text \<aF>} and @{text \<aC>} resemble closely the types in the exact case, with each type replaced by its abstract counterpart.
 *}
 
-types 'c a_ccache = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>) set" ("_ \<accache>" [1000])
-      'c a_ans = "'c \<accache>" ("_ \<aans>" [1000])
+type_synonym 'c a_ccache = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>) set" ("_ \<accache>" [1000])
+type_synonym 'c a_ans = "'c \<accache>" ("_ \<aans>" [1000])
 
-types 'c a_fstate = "('c \<aproc> \<times> 'c \<ad> list \<times> 'c \<avenv> \<times> 'c)" ("_ \<afstate>" [1000])
-      'c a_cstate = "(call \<times> 'c \<abenv> \<times> 'c \<avenv> \<times> 'c)" ("_ \<acstate>" [1000])
+type_synonym 'c a_fstate = "('c \<aproc> \<times> 'c \<ad> list \<times> 'c \<avenv> \<times> 'c)" ("_ \<afstate>" [1000])
+type_synonym 'c a_cstate = "(call \<times> 'c \<abenv> \<times> 'c \<avenv> \<times> 'c)" ("_ \<acstate>" [1000])
 
 text {*
 And yet again, cont2cont results need to be shown for our custom data types.

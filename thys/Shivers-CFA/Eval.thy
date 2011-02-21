@@ -14,9 +14,9 @@ We follow the definition in Figure 3.1 and 3.2 of Shivers' dissertation, with th
 Due to recursion, one variable can have more than one currently valid binding, and due to closures all bindings can possibly be accessed. A simple call stack is therefore not sufficient. Instead we have a \textit{contour counter}, which is increased in each evaluation step. It can also be thought of as a time counter. The variable environment maps tuples of variables and contour counter to values, thus allowing a variable to have more than one active binding.  A contour environment lists the currently visible binding for each binding position and is preserved when a lambda expression is turned into a closure.
 *}
 
-types contour = nat
-      benv = "label \<rightharpoonup> contour"
-      closure = "lambda \<times> benv"
+type_synonym contour = nat
+type_synonym benv = "label \<rightharpoonup> contour"
+type_synonym closure = "lambda \<times> benv"
 
 text {*
 The set of semantic values consist of the integers, closures, primitive operations and a special value @{text Stop}. This is passed as an argument to the program and represents the terminal continuation. When this value occurs in the first position of a call, the program terminates.
@@ -27,7 +27,7 @@ datatype d = DI int
            | DP prim
            | Stop
 
-types venv = "var \<times> contour \<rightharpoonup> d"
+type_synonym venv = "var \<times> contour \<rightharpoonup> d"
 
 text {*
 The function @{text \<A>} evaluates a syntactic value into a semantic datum. Constants and primitive operations are left untouched. Variable references are resolved in two stages: First the current binding contour is fetched from the binding environment @{text \<beta>}, then the stored value is fetched from the variable environment @{text ve}. A lambda expression is bundled with the current contour environment to form a closure.
@@ -46,7 +46,7 @@ text {*
 The answer domain of our semantics is the set of integers, lifted to obtain an additional element denoting bottom. Shivers distinguishes runtime errors from non-termination. Here, both are represented by @{text \<bottom>}.
 *}
 
-types ans = "int lift"
+type_synonym ans = "int lift"
 
 text {*
 To be able to do case analysis on the custom datatypes @{text lambda}, @{text d}, @{text call} and @{text prim} inside a function defined with @{text fixrec}, we need continuity results for them. These are all of the same shape and proven by case analysis on the discriminator.
@@ -90,8 +90,8 @@ Note how the contour counter is incremented before each call to @{text \<F>} or 
 With mutually recursive equations, such as those given here, the existence of a function satisfying these is not obvious. Therefore, the @{text fixrec} command from the @{theory HOLCF} package is used. This takes a set of equations and builds a functional from that. It mechanically proofs that this functional is continuous and thus a least fixed point exists. This is then used to define @{text \<F>} and @{text \<C>} and proof the equations given here. To use the @{theory HOLCF} setup, the continuous function arrow @{text \<rightarrow>} with application operator @{text \<cdot>} is used and our types are wrapped in @{text discr} and @{text lift} to indicate which partial order is to be used.
 *}
 
-types fstate = "(d \<times> d list \<times> venv \<times> contour)"
-      cstate = "(call \<times> benv \<times> venv \<times> contour)"
+type_synonym fstate = "(d \<times> d list \<times> venv \<times> contour)"
+type_synonym cstate = "(call \<times> benv \<times> venv \<times> contour)"
 
 
 fixrec   evalF :: "fstate discr \<rightarrow> ans" ("\<F>")

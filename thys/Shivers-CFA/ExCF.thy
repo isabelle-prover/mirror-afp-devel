@@ -49,15 +49,15 @@ text {*
 The other types used in our semantics functions have not changed.
 *}
 
-types benv = "label \<rightharpoonup> contour"
-      closure = "lambda \<times> benv"
+type_synonym benv = "label \<rightharpoonup> contour"
+type_synonym closure = "lambda \<times> benv"
 
 datatype d = DI int
            | DC closure
            | DP prim
            | Stop
 
-types venv = "var \<times> contour \<rightharpoonup> d"
+type_synonym venv = "var \<times> contour \<rightharpoonup> d"
 
 text {*
 As we do not use the type system to distinguish procedural from non-procedural values, we define a predicate for that.
@@ -142,11 +142,11 @@ Now, our answer domain is not any more the integers, but rather call caches. The
 In the functions @{text \<F>} and @{text \<C>}, upon every call, a new element is added to the resulting set. The @{text STOP} continuation now ignores its argument and retuns the empty set instead. This corresponds to Figure 4.2 and 4.3 in Shivers' dissertation.
 *}
 
-types ccache = "((label \<times> benv) \<times> d) set"
-      ans = ccache
+type_synonym ccache = "((label \<times> benv) \<times> d) set"
+type_synonym ans = ccache
 
-types fstate = "(d \<times> d list \<times> venv \<times> contour)"
-      cstate = "(call \<times> benv \<times> venv \<times> contour)"
+type_synonym fstate = "(d \<times> d list \<times> venv \<times> contour)"
+type_synonym cstate = "(call \<times> benv \<times> venv \<times> contour)"
 
 
 fixrec   evalF :: "fstate discr \<rightarrow> ans" ("\<F>")
