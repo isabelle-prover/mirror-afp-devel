@@ -42,7 +42,7 @@ proof-
     unfolding InvariantVarsQ_def
     by (auto simp add: Let_def)
   moreover
-  hence "solve_loop_dom (?istate, (vars F0))"
+  hence "solve_loop_dom ?istate (vars F0)"
     using SolveLoopTermination[of "?istate" "?F0'" "vars F0" "F0"]
     using finiteVarsFormula[of "F0"]
     using varsSubsetFormula[of "?F0'" "F0"]

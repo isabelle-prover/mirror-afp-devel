@@ -275,10 +275,10 @@ where
     )
 "
 
-function (domintros, tailrec)
+partial_function (tailrec)
 applyExplainUIP :: "State \<Rightarrow> State"
 where
-applyExplainUIP_unfold[simp del]:
+applyExplainUIP_unfold:
 "applyExplainUIP state = 
     (if (getCn state = 1) then 
          state
@@ -286,8 +286,15 @@ applyExplainUIP_unfold[simp del]:
          applyExplainUIP (applyExplain (getCl state) state)
     )
 "
-by pat_completeness auto
-declare applyExplainUIP_unfold[code]
+
+inductive
+applyExplainUIP_dom :: "State \<Rightarrow> bool"
+where
+step:
+"(getCn state \<noteq> 1
+    \<Longrightarrow> applyExplainUIP_dom (applyExplain (getCl state) state))
+  \<Longrightarrow> applyExplainUIP_dom state
+"
 
 definition
 applyLearn :: "State \<Rightarrow> State"
@@ -372,10 +379,10 @@ where
 "
 
 
-function (domintros, tailrec) 
+partial_function (tailrec) 
 solve_loop :: "State \<Rightarrow> Variable set \<Rightarrow> State"
 where
-solve_loop_unfold [simp del]: 
+solve_loop_unfold: 
 "solve_loop state Vbl = 
     (if (getSATFlag state) \<noteq> UNDEF then
         state
@@ -384,8 +391,14 @@ solve_loop_unfold [simp del]:
         solve_loop state' Vbl
     )
 "
-by pat_completeness auto
-declare solve_loop_unfold[code]
+
+inductive
+solve_loop_dom :: "State \<Rightarrow> Variable set \<Rightarrow> bool"
+where
+step:
+"(getSATFlag state = UNDEF
+    \<Longrightarrow> solve_loop_dom (solve_loop_body state Vbl) Vbl)
+  \<Longrightarrow> solve_loop_dom state Vbl"
 
 definition solve::"Formula \<Rightarrow> ExtendedBool"
 where

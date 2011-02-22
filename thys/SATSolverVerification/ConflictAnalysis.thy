@@ -826,7 +826,7 @@ next
   proof (cases "getCn state' = 1")
     case True
     show ?thesis
-      apply (rule applyExplainUIP.domintros)
+      apply (rule applyExplainUIP_dom.intros)
       using True
       by simp
   next
@@ -947,7 +947,7 @@ next
       using ih
       by auto
     thus ?thesis
-      using applyExplainUIP.domintros[of "state'"]
+      using applyExplainUIP_dom.intros[of "state'"]
       using False
       by simp
   qed
@@ -971,8 +971,8 @@ shows
         (getReason state' = getReason state)" 
   (is "let state' = applyExplainUIP state in ?p state state'")
 using assms
-proof(induct state rule: applyExplainUIP.pinduct)
-  case (1 state')
+proof(induct state rule: applyExplainUIP_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "getCn state' = 1")
@@ -1015,8 +1015,8 @@ lemma isUIPApplyExplainUIP:
   shows "let state' = (applyExplainUIP state) in
            isUIP (opposite (getCl state')) (getC state') (getM state')"
 using assms
-proof(induct state rule: applyExplainUIP.pinduct)
-  case (1 state')
+proof(induct state rule: applyExplainUIP_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "getCn state' = 1")
@@ -1088,8 +1088,8 @@ shows
       InvariantClCurrentLevel (getCl state') (getM state') \<and> 
       InvariantUniqC (getC state')"
 using assms
-proof(induct state rule: applyExplainUIP.pinduct)
-  case (1 state')
+proof(induct state rule: applyExplainUIP_dom.induct)
+  case (step state')
   note ih = this
   show ?case
   proof (cases "getCn state' = 1")

@@ -1467,7 +1467,7 @@ assumes
   "InvariantVarsQ (getQ state) F0 Vbl"
   "InvariantVarsF (getF state) F0 Vbl"
 shows
-  "solve_loop_dom (state, Vbl)"
+  "solve_loop_dom state Vbl"
 using assms
 proof (induct rule: wf_induct[of "terminationLessState1 (vars F0 \<union> Vbl)"])
   case 1
@@ -1483,7 +1483,7 @@ next
   proof (cases "getSATFlag state' = UNDEF")
     case False
     show ?thesis
-      apply (rule solve_loop.domintros)
+      apply (rule solve_loop_dom.intros)
       using False
       by simp
   next
@@ -1517,11 +1517,11 @@ next
            ih(16) ih(17) ih(18) ih(19) ih(20) ih(21) ih(22) ih(23)
      using True
      by (auto simp only: Let_def)
-   hence "solve_loop_dom (?state'', Vbl)"
+   hence "solve_loop_dom ?state'' Vbl"
      using ih
      by auto
    thus ?thesis
-     using solve_loop.domintros[of "state'" "Vbl"]
+     using solve_loop_dom.intros[of "state'" "Vbl"]
      using True
      by simp
  qed
@@ -1530,7 +1530,7 @@ qed
 
 lemma SATFlagAfterSolveLoop:
 assumes
-  "solve_loop_dom (state, Vbl)"
+  "solve_loop_dom state Vbl"
   "InvariantConsistent (getM state)"
   "InvariantUniq (getM state)"
   "InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)" and 
@@ -1559,8 +1559,8 @@ shows
   "let state' = solve_loop state Vbl in 
          (getSATFlag state' = FALSE \<and> \<not> satisfiable F0') \<or> (getSATFlag state' = TRUE  \<and> satisfiable F0')"
 using assms
-proof (induct state Vbl rule: solve_loop.pinduct)
-  case (1 state' Vbl)
+proof (induct state Vbl rule: solve_loop_dom.induct)
+  case (step state' Vbl)
   note ih = this
   show ?case
   proof (cases "getSATFlag state' = UNDEF")
@@ -1615,7 +1615,7 @@ proof (induct state Vbl rule: solve_loop.pinduct)
     ultimately
     show ?thesis
       using True
-      using ih(2)[of "solve_loop_body state' Vbl"]
+      using ih(2)
       using ih(21)
       using ih(22)
       using ih(23)
