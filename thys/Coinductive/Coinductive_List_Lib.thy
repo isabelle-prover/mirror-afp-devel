@@ -1997,7 +1997,7 @@ lemma lsetp_into_lset:
   "lsetp xs x \<Longrightarrow> x \<in> lset xs"
 by(induct rule: lsetp.induct)(blast intro: lset_intros)+
 
-lemma lset_eq_lsetp [nitpick_def]:
+lemma lset_eq_lsetp [nitpick_unfold]:
   "lset = lsetp"
 by(auto intro: lset_into_lsetp dest: lsetp_into_lset simp: mem_def intro!: ext)
 
