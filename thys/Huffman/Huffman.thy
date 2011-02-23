@@ -1360,9 +1360,9 @@ next
     next
       assume b\<^isub>1: "b \<notin> alphabet t\<^isub>1" show ?case
       proof cases
-	assume "b \<in> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
+        assume "b \<in> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
       next
-	assume "b \<notin> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
+        assume "b \<notin> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
       qed
     qed
   next
@@ -1370,30 +1370,30 @@ next
     proof cases
       assume a\<^isub>2: "a \<in> alphabet t\<^isub>2" show ?case
       proof cases
-	assume b\<^isub>1: "b \<in> alphabet t\<^isub>1"
-	hence "b \<notin> alphabet t\<^isub>2" using c by auto
-	thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
+        assume b\<^isub>1: "b \<in> alphabet t\<^isub>1"
+        hence "b \<notin> alphabet t\<^isub>2" using c by auto
+        thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
       next
-	assume b\<^isub>1: "b \<notin> alphabet t\<^isub>1" show ?case
-	proof cases
-	  assume "b \<in> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
-	next
-	  assume "b \<notin> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
-	qed
+        assume b\<^isub>1: "b \<notin> alphabet t\<^isub>1" show ?case
+        proof cases
+          assume "b \<in> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
+        next
+          assume "b \<notin> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
+        qed
       qed
     next
       assume a\<^isub>2: "a \<notin> alphabet t\<^isub>2" show ?case
       proof cases
-	assume b\<^isub>1: "b \<in> alphabet t\<^isub>1"
-	hence "b \<notin> alphabet t\<^isub>2" using c by auto
-	thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
+        assume b\<^isub>1: "b \<in> alphabet t\<^isub>1"
+        hence "b \<notin> alphabet t\<^isub>2" using c by auto
+        thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
       next
-	assume b\<^isub>1: "b \<notin> alphabet t\<^isub>1" show ?case
-	proof cases
-	  assume "b \<in> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
-	next
-	  assume "b \<notin> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
-	qed
+        assume b\<^isub>1: "b \<notin> alphabet t\<^isub>1" show ?case
+        proof cases
+          assume "b \<in> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
+        next
+          assume "b \<notin> alphabet t\<^isub>2" thus ?case using a\<^isub>1 a\<^isub>2 b\<^isub>1 w\<^isub>1 w\<^isub>2 hyps by simp
+        qed
       qed
     qed
   qed
@@ -1423,26 +1423,26 @@ next
       note l\<^isub>1 = Leaf
       show ?thesis
       proof (cases "height t\<^isub>2 = 0")
-	case True
-	note h\<^isub>2 = True
-	show ?thesis
-	proof (cases t\<^isub>2)
-	  case Leaf thus ?thesis using l\<^isub>1 hyps by auto metis+
-	next
-	  case InnerNode thus ?thesis using h\<^isub>2 by simp
-	qed
+        case True
+        note h\<^isub>2 = True
+        show ?thesis
+        proof (cases t\<^isub>2)
+          case Leaf thus ?thesis using l\<^isub>1 hyps by auto metis+
+        next
+          case InnerNode thus ?thesis using h\<^isub>2 by simp
+        qed
       next
-	case False
-	note h\<^isub>2 = False
-	show ?thesis
+        case False
+        note h\<^isub>2 = False
+        show ?thesis
         proof cases
-	  assume "c = b" thus ?thesis using l\<^isub>1 h\<^isub>2 hyps by simp
-	next
-	  assume "c \<noteq> b"
-	  have "sibling t\<^isub>2 b \<in> alphabet t\<^isub>2" using `c \<noteq> b` l\<^isub>1 h\<^isub>2 hyps
-	    by (simp add: sibling_ne_imp_sibling_in_alphabet)
-	  thus ?thesis using `c \<noteq> b` l\<^isub>1 h\<^isub>2 hyps by auto
-	qed
+          assume "c = b" thus ?thesis using l\<^isub>1 h\<^isub>2 hyps by simp
+        next
+          assume "c \<noteq> b"
+          have "sibling t\<^isub>2 b \<in> alphabet t\<^isub>2" using `c \<noteq> b` l\<^isub>1 h\<^isub>2 hyps
+            by (simp add: sibling_ne_imp_sibling_in_alphabet)
+          thus ?thesis using `c \<noteq> b` l\<^isub>1 h\<^isub>2 hyps by auto
+        qed
       qed
     next
       case InnerNode thus ?thesis using h\<^isub>1 by simp
@@ -1456,43 +1456,43 @@ next
       note h\<^isub>2 = True
       show ?thesis
       proof (cases t\<^isub>2)
-	case (Leaf w\<^isub>d d)
-	note l\<^isub>2 = Leaf
-	show ?thesis
+        case (Leaf w\<^isub>d d)
+        note l\<^isub>2 = Leaf
+        show ?thesis
         proof cases
-	  assume "d = b" thus ?thesis using h\<^isub>1 l\<^isub>2 hyps by simp
-	next
-	  assume "d \<noteq> b" show ?thesis
-	  proof (cases "b \<in> alphabet t\<^isub>1")
-	    case True
-	    hence "sibling t\<^isub>1 b \<in> alphabet t\<^isub>1" using `d \<noteq> b` h\<^isub>1 l\<^isub>2 hyps
-	      by (simp add: sibling_ne_imp_sibling_in_alphabet)
-	    thus ?thesis using True `d \<noteq> b` h\<^isub>1 l\<^isub>2 hyps
-	      by (simp add: alphabet_swapLeaves)
-	  next
-	    case False thus ?thesis using `d \<noteq> b` l\<^isub>2 hyps by simp
-	  qed
-	qed
+          assume "d = b" thus ?thesis using h\<^isub>1 l\<^isub>2 hyps by simp
+        next
+          assume "d \<noteq> b" show ?thesis
+          proof (cases "b \<in> alphabet t\<^isub>1")
+            case True
+            hence "sibling t\<^isub>1 b \<in> alphabet t\<^isub>1" using `d \<noteq> b` h\<^isub>1 l\<^isub>2 hyps
+              by (simp add: sibling_ne_imp_sibling_in_alphabet)
+            thus ?thesis using True `d \<noteq> b` h\<^isub>1 l\<^isub>2 hyps
+              by (simp add: alphabet_swapLeaves)
+          next
+            case False thus ?thesis using `d \<noteq> b` l\<^isub>2 hyps by simp
+          qed
+        qed
       next
-	case InnerNode thus ?thesis using h\<^isub>2 by simp
+        case InnerNode thus ?thesis using h\<^isub>2 by simp
       qed
     next
       case False
       note h\<^isub>2 = False
       show ?thesis
       proof (cases "b \<in> alphabet t\<^isub>1")
-	case True thus ?thesis using h\<^isub>1 h\<^isub>2 hyps by auto
+        case True thus ?thesis using h\<^isub>1 h\<^isub>2 hyps by auto
       next
-	case False
-	note b\<^isub>1 = False
-	show ?thesis
-	proof (cases "b \<in> alphabet t\<^isub>2")
-	  case True thus ?thesis using b\<^isub>1 h\<^isub>1 h\<^isub>2 hyps
-	    by (auto simp: in_alphabet_imp_sibling_in_alphabet
-	                   alphabet_swapLeaves)
-	next
-	  case False thus ?thesis using b\<^isub>1 h\<^isub>1 h\<^isub>2 hyps by simp
-	qed
+        case False
+        note b\<^isub>1 = False
+        show ?thesis
+        proof (cases "b \<in> alphabet t\<^isub>2")
+          case True thus ?thesis using b\<^isub>1 h\<^isub>1 h\<^isub>2 hyps
+            by (auto simp: in_alphabet_imp_sibling_in_alphabet
+                           alphabet_swapLeaves)
+        next
+          case False thus ?thesis using b\<^isub>1 h\<^isub>1 h\<^isub>2 hyps by simp
+        qed
       qed
     qed
   qed
@@ -1661,7 +1661,7 @@ proof (cases "a \<noteq> sibling t c \<and> b \<noteq> c")
       by (auto simp: swapFourSyms_def)
     also have "\<dots> = a" using True assms
       by (metis sibling_reciprocal sibling_swapSyms_other_sibling
-	  swapLeaves_id swapSyms_def)
+          swapLeaves_id swapSyms_def)
     finally have "sibling ?t\<^isub>s b = a" .
     with abba show ?thesis ..
   qed
@@ -1930,24 +1930,24 @@ proof -
     proof cases
       assume "a = c" show ?thesis
       proof cases
-	assume "b = d" thus ?thesis using `a = c` True assms
-	  by (simp add: lems)
+        assume "b = d" thus ?thesis using `a = c` True assms
+          by (simp add: lems)
       next
-	assume "b \<noteq> d" thus ?thesis using `a = c` True assms
-	  by (simp add: lems)
+        assume "b \<noteq> d" thus ?thesis using `a = c` True assms
+          by (simp add: lems)
       qed
     next
       assume "a \<noteq> c" show ?thesis
       proof cases
-	assume "b = d" thus ?thesis using `a \<noteq> c` True assms
-	  by (simp add: lems)
+        assume "b = d" thus ?thesis using `a \<noteq> c` True assms
+          by (simp add: lems)
       next
-	assume "b \<noteq> d"
-	have "cost (swapFourSyms t a b c d) \<le> cost (swapSyms t a c)"
-	  using `b \<noteq> d` `a \<noteq> c` True assms by (clarsimp simp: lems)
-	also have "\<dots> \<le> cost t" using `b \<noteq> d` `a \<noteq> c` True assms
-	  by (clarsimp simp: lems)
-	finally show ?thesis .
+        assume "b \<noteq> d"
+        have "cost (swapFourSyms t a b c d) \<le> cost (swapSyms t a c)"
+          using `b \<noteq> d` `a \<noteq> c` True assms by (clarsimp simp: lems)
+        also have "\<dots> \<le> cost t" using `b \<noteq> d` `a \<noteq> c` True assms
+          by (clarsimp simp: lems)
+        finally show ?thesis .
       qed
     qed
   next
@@ -2103,18 +2103,18 @@ proof (unfold optimum_def, clarify)
       by (simp add: optimum_def)
     also have "\<dots> = cost ?u'"
       proof -
-	have "cost ?v + freq ?u' a + freq ?u' (sibling ?u' a) = cost ?u'"
-	  using c\<^isub>u\<^isub>' s\<^isub>a assms by (subst cost_mergeSibling) auto
-	moreover have "w\<^isub>a = freq ?u' a" "w\<^isub>b = freq ?u' b"
-	  using f\<^isub>u\<^isub>' f\<^isub>u [THEN sym] assms by clarsimp+
-	ultimately show ?thesis using s\<^isub>a by simp
+        have "cost ?v + freq ?u' a + freq ?u' (sibling ?u' a) = cost ?u'"
+          using c\<^isub>u\<^isub>' s\<^isub>a assms by (subst cost_mergeSibling) auto
+        moreover have "w\<^isub>a = freq ?u' a" "w\<^isub>b = freq ?u' b"
+          using f\<^isub>u\<^isub>' f\<^isub>u [THEN sym] assms by clarsimp+
+        ultimately show ?thesis using s\<^isub>a by simp
       qed
     also have "\<dots> \<le> cost u"
       proof -
-	have "minima u a b" using a\<^isub>u f\<^isub>u assms
-	  by (subst twice_freq_le_imp_minima) auto
-	with c\<^isub>u show ?thesis using a\<^isub>c a\<^isub>d d\<^isub>c d\<^isub>d dc [THEN not_sym]
-	  by (rule cost_swapFourSyms_le)
+        have "minima u a b" using a\<^isub>u f\<^isub>u assms
+          by (subst twice_freq_le_imp_minima) auto
+        with c\<^isub>u show ?thesis using a\<^isub>c a\<^isub>d d\<^isub>c d\<^isub>d dc [THEN not_sym]
+          by (rule cost_swapFourSyms_le)
       qed
     finally show ?thesis .
   qed
@@ -2303,37 +2303,37 @@ proof (induct ts rule: length_induct)
       note ts' = Cons
       show ?thesis
       proof (cases t\<^isub>a)
-	case (Leaf w\<^isub>a a)
-	note l\<^isub>a = Leaf
-	show ?thesis
-	proof (cases t\<^isub>b)
-	  case (Leaf w\<^isub>b b)
-	  note l\<^isub>b = Leaf
-	  show ?thesis
-	  proof -
-	    let ?us = "insortTree (uniteTrees t\<^isub>a t\<^isub>b) ts''"
-	    let ?us' = "insortTree (Leaf (w\<^isub>a + w\<^isub>b) a) ts''"
-	    let ?t\<^isub>s = "splitLeaf (huffman ?us') w\<^isub>a a w\<^isub>b b"
-	    have e\<^isub>1: "huffman ts = huffman ?us" using ts' ts by simp
-	    have e\<^isub>2: "huffman ?us = ?t\<^isub>s" using l\<^isub>a l\<^isub>b ts' ts hyps
-	      by (auto simp: splitLeaf_huffman_commute uniteTrees_def)
+        case (Leaf w\<^isub>a a)
+        note l\<^isub>a = Leaf
+        show ?thesis
+        proof (cases t\<^isub>b)
+          case (Leaf w\<^isub>b b)
+          note l\<^isub>b = Leaf
+          show ?thesis
+          proof -
+            let ?us = "insortTree (uniteTrees t\<^isub>a t\<^isub>b) ts''"
+            let ?us' = "insortTree (Leaf (w\<^isub>a + w\<^isub>b) a) ts''"
+            let ?t\<^isub>s = "splitLeaf (huffman ?us') w\<^isub>a a w\<^isub>b b"
+            have e\<^isub>1: "huffman ts = huffman ?us" using ts' ts by simp
+            have e\<^isub>2: "huffman ?us = ?t\<^isub>s" using l\<^isub>a l\<^isub>b ts' ts hyps
+              by (auto simp: splitLeaf_huffman_commute uniteTrees_def)
 
-	    have "optimum (huffman ?us')" using l\<^isub>a ts' ts hyps
-	      by (drule_tac x = ?us' in spec)
-	         (auto dest: sortedByWeight_Cons_imp_sortedByWeight
-		       simp: sortedByWeight_insortTree)
-	    hence "optimum ?t\<^isub>s" using l\<^isub>a l\<^isub>b ts' ts hyps
-	      apply simp
-	      apply (rule optimum_splitLeaf)
-	      by (auto dest!: height\<^isub>F_0_imp_Leaf_freq\<^isub>F_in_set
-		              sortedByWeight_Cons_imp_forall_weight_ge)
-	    thus "optimum (huffman ts)" using e\<^isub>1 e\<^isub>2 by simp
-	  qed
-	next
-	  case InnerNode thus ?thesis using ts' ts hyps by simp
-	qed
+            have "optimum (huffman ?us')" using l\<^isub>a ts' ts hyps
+              by (drule_tac x = ?us' in spec)
+                 (auto dest: sortedByWeight_Cons_imp_sortedByWeight
+                       simp: sortedByWeight_insortTree)
+            hence "optimum ?t\<^isub>s" using l\<^isub>a l\<^isub>b ts' ts hyps
+              apply simp
+              apply (rule optimum_splitLeaf)
+              by (auto dest!: height\<^isub>F_0_imp_Leaf_freq\<^isub>F_in_set
+                              sortedByWeight_Cons_imp_forall_weight_ge)
+            thus "optimum (huffman ts)" using e\<^isub>1 e\<^isub>2 by simp
+          qed
+        next
+          case InnerNode thus ?thesis using ts' ts hyps by simp
+        qed
       next
-	case InnerNode thus ?thesis using ts' ts hyps by simp
+        case InnerNode thus ?thesis using ts' ts hyps by simp
       qed
     qed
   qed

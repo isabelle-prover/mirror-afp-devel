@@ -438,17 +438,17 @@ next
       assume i: "i < length m1"
       show "m1 ! i = m2 ! i"
       proof (rule nth_equalityI)
-	show "length (m1 ! i) = length (m2 ! i)" using wf1 wf2 i unfolding mat_def by (auto simp: vec_def)
+        show "length (m1 ! i) = length (m2 ! i)" using wf1 wf2 i unfolding mat_def by (auto simp: vec_def)
       next
-	show "\<forall> j < length (m1 ! i). m1 ! i ! j = m2 ! i ! j" 
-	proof (intro allI impI)
-	  fix j
-	  assume j: "j < length (m1 ! i)"
-	  from i j wf1 have i1: "i < nc" and j1: "j < nr" unfolding mat_def by (auto simp: vec_def)
-	  from `?r` j1 have "col m1 i ! j = col m2 i ! j"
-	    by (simp add: row_col[OF wf1 j1 i1, symmetric] row_col[OF wf2 j1 i1, symmetric])
-	  thus "m1 ! i ! j = m2 ! i ! j" unfolding col_def .
-	qed
+        show "\<forall> j < length (m1 ! i). m1 ! i ! j = m2 ! i ! j" 
+        proof (intro allI impI)
+          fix j
+          assume j: "j < length (m1 ! i)"
+          from i j wf1 have i1: "i < nc" and j1: "j < nr" unfolding mat_def by (auto simp: vec_def)
+          from `?r` j1 have "col m1 i ! j = col m2 i ! j"
+            by (simp add: row_col[OF wf1 j1 i1, symmetric] row_col[OF wf2 j1 i1, symmetric])
+          thus "m1 ! i ! j = m2 ! i ! j" unfolding col_def .
+        qed
       qed
     qed
   qed
@@ -467,8 +467,8 @@ proof -
     hence j: "j < nr" using transpose[OF wf] wf i unfolding row_def col_def mat_def by (auto simp: vec_def)
     show "row (transpose nr m) i ! j = col m i ! j"
       by (simp only: row_col[OF transpose[OF wf] i j],
-	simp only: col_transpose_is_row[OF wf j],
-	simp only: row_col[OF wf j i])
+        simp only: col_transpose_is_row[OF wf j],
+        simp only: row_col[OF wf j i])
   qed
 qed
 
@@ -626,10 +626,10 @@ proof -
     assume i: "i < nr" and j: "j < nc"
     show "transpose nr ?m12 ! i ! j = mat_plusI pl ?t1 ?t2 ! i ! j"      
       by (simp only: transpose_index[OF wf12 i j],
-	simp only: mat_plus_index[OF wft1 wft2 i j],
-	simp only: mat_plus_index[OF wf1 wf2 j i],
-	simp only: transpose_index[OF wf1 i j],
-	simp only: transpose_index[OF wf2 i j])
+        simp only: mat_plus_index[OF wft1 wft2 i j],
+        simp only: mat_plus_index[OF wf1 wf2 j i],
+        simp only: transpose_index[OF wf1 i j],
+        simp only: transpose_index[OF wf2 i j])
   qed
 qed
       
@@ -698,8 +698,8 @@ proof (induct nr arbitrary: v1 v2)
       fix i
       assume i: "i < Suc nrr"
       show "rel (v1 ! i) (v2 ! i)"
-	using `?l` v1 v2 i
-	by (cases i, auto simp: rec)
+        using `?l` v1 v2 i
+        by (cases i, auto simp: rec)
     qed
   qed
 qed simp
@@ -743,10 +743,10 @@ proof (induct nc arbitrary: m1 m2)
       assume i: "i < Suc ncc" 
       show "\<forall> j < nr. rel (m1 ! i ! j) (m2 ! i ! j)"
       proof (cases i, simp add: m1 m2, simp only: vec_comp_all_index[OF wf1 wf2, symmetric], rule ge)
-	case (Suc ii)	
-	with i have " ii < ncc" by simp
-	with Suc 
-	show ?thesis by (simp add: m1 m2, simp add: ge2)
+        case (Suc ii)   
+        with i have " ii < ncc" by simp
+        with Suc 
+        show ?thesis by (simp add: m1 m2, simp add: ge2)
       qed
     qed
   qed
@@ -771,7 +771,7 @@ proof -
     fix i
     assume i: "i < nc"
     show "?l i = ?r i" using vec_pre_gt_index[OF mp[OF spec[OF vl1] i] mp[OF spec[OF vl2] i]] by auto
-  qed	  
+  qed     
   show ?thesis
   proof (simp only: Not_eq_iff[symmetric, of "mat_pre_gtI gt m1 m2"], unfold mat_pre_gtI_def list_ex_iff set_zip l2 min_max.inf_idem l1[symmetric])
     show "(\<not> (\<exists> (x,y) \<in> {(m1 ! i, m2 ! i) | i. i < nc}. vec_pre_gtI gt x y)) = (\<not> (\<exists> i<nc. \<exists> j<nr. gt (m1 ! i ! j) (m2 ! i ! j)))"
@@ -1057,7 +1057,7 @@ next
       let ?uc = "scalar_prod u cc"
       let ?bca = "times (times b c) a"
       have "plus (times (plus (times b c) ?rv) a) (plus (times b ?uc) ?recl) = plus (plus ?bca (times ?rv a)) (plus (times b ?uc) ?recl)" 
-	by (simp add: left_distrib)
+        by (simp add: left_distrib)
       also have "\<dots> = plus (plus ?bca (times ?rv a)) (plus ?recl (times b ?uc))" by (simp add: add_commute)
       also have "\<dots> = plus ?bca (plus (plus (times ?rv a) ?recl) (times b ?uc))" by (simp add: add_assoc)
       also have "\<dots> = plus ?bca (plus ?recr (times b ?uc))" by (simp only: rec)
@@ -1094,11 +1094,11 @@ proof -
       assume jlen: "j < length (?m12_3 ! i)"
       with wf12_3 i have j: "j < nr" unfolding mat_def by (auto simp: vec_def)      
       show "?m12_3 ! i ! j = ?m1_23 ! i ! j"
-	by (simp only: mat_mult_to_scalar[OF wf12 wf3 j i],
-	     simp only: mat_mult_to_scalar[OF wf1 wf23 j i], 
-	     simp only: row_mat_mult_to_scalar[OF wf1 wf2 j],
-	     simp only: col_mat_mult_to_scalar[OF wf2 wf3 i], 
-	     simp only: scalar_product_assoc[OF wf2 row[OF wf1 j] col[OF wf3 i]])
+        by (simp only: mat_mult_to_scalar[OF wf12 wf3 j i],
+             simp only: mat_mult_to_scalar[OF wf1 wf23 j i], 
+             simp only: row_mat_mult_to_scalar[OF wf1 wf2 j],
+             simp only: col_mat_mult_to_scalar[OF wf2 wf3 i], 
+             simp only: scalar_product_assoc[OF wf2 row[OF wf1 j] col[OF wf3 i]])
     qed
   qed
 qed
@@ -1203,10 +1203,10 @@ proof -
     show "?m1_23 ! i ! j = ?m12_13 ! i ! j"
       by (simp only: mat_mult_to_scalar[OF wf1 wf23 j i],
            simp only: mat_plus_index[OF wf12 wf13 i j],
-	   simp only: mat_mult_to_scalar[OF wf1 wf2 j i],
-	   simp only: mat_mult_to_scalar[OF wf1 wf3 j i],
-	   simp only: col_mat_plus[OF wf2 wf3 i],
-	rule scalar_vec_plus_distrib_right[OF row[OF wf1 j] col[OF wf2 i] col[OF wf3 i]])
+           simp only: mat_mult_to_scalar[OF wf1 wf2 j i],
+           simp only: mat_mult_to_scalar[OF wf1 wf3 j i],
+           simp only: col_mat_plus[OF wf2 wf3 i],
+        rule scalar_vec_plus_distrib_right[OF row[OF wf1 j] col[OF wf2 i] col[OF wf3 i]])
   qed
 qed
 
@@ -1230,10 +1230,10 @@ proof -
     show "?m12_3 ! i ! j = ?m13_23 ! i ! j"
       by (simp only: mat_mult_to_scalar[OF wf12 wf3 j i],
            simp only: mat_plus_index[OF wf13 wf23 i j],
-	   simp only: mat_mult_to_scalar[OF wf1 wf3 j i],
-	   simp only: mat_mult_to_scalar[OF wf2 wf3 j i],
-	   simp only: row_mat_plus[OF wf1 wf2 j],
-	   rule scalar_vec_plus_distrib_left[OF row[OF wf1 j] row[OF wf2 j] col[OF wf3 i]])
+           simp only: mat_mult_to_scalar[OF wf1 wf3 j i],
+           simp only: mat_mult_to_scalar[OF wf2 wf3 j i],
+           simp only: row_mat_plus[OF wf1 wf2 j],
+           rule scalar_vec_plus_distrib_left[OF row[OF wf1 j] row[OF wf2 j] col[OF wf3 i]])
   qed
 qed
 end
@@ -1441,12 +1441,12 @@ proof -
       by auto      
     show "ge (?m13 ! i ! j)  (?m23 ! i ! j)"
       by (simp only: mat_mult_to_scalar[OF wf1 wf3 j i],
-	simp only: mat_mult_to_scalar[OF wf2 wf3 j i], 
-	rule scalar_prod_mono_left[OF row[OF wf1 j] row[OF wf2 j] col[OF wf3 i]],
-	simp only: vec_ge_index[OF row[OF wf1 j] row[OF wf2 j]],
+        simp only: mat_mult_to_scalar[OF wf2 wf3 j i], 
+        rule scalar_prod_mono_left[OF row[OF wf1 j] row[OF wf2 j] col[OF wf3 i]],
+        simp only: vec_ge_index[OF row[OF wf1 j] row[OF wf2 j]],
         (auto simp: row_col[OF wf1 j] row_col[OF wf2 j] col_def ge1a j)[1],
-	simp only: vec_ge_index[OF col[OF wf3 i] vec0],
-	rule ge2a)
+        simp only: vec_ge_index[OF col[OF wf3 i] vec0],
+        rule ge2a)
   qed
 qed  
 
@@ -1474,11 +1474,11 @@ proof -
       by auto
     show "ge (?m12 ! i ! j) (?m13 ! i ! j)"
       by  (simp only: mat_mult_to_scalar[OF wf1 wf2 j i],
-	simp only: mat_mult_to_scalar[OF wf1 wf3 j i],
-	rule scalar_prod_mono_right[OF row[OF wf1 j] col[OF wf2 i] col[OF wf3 i]], 
-	simp only: vec_ge_index[OF col[OF wf2 i] col[OF wf3 i]], rule ge2a, 
-	simp only: vec_ge_index[OF row[OF wf1 j] vec0],
-	simp add: row_col[OF wf1 j] vec0I_def col_def, rule ge1a) 
+        simp only: mat_mult_to_scalar[OF wf1 wf3 j i],
+        rule scalar_prod_mono_right[OF row[OF wf1 j] col[OF wf2 i] col[OF wf3 i]], 
+        simp only: vec_ge_index[OF col[OF wf2 i] col[OF wf3 i]], rule ge2a, 
+        simp only: vec_ge_index[OF row[OF wf1 j] vec0],
+        simp add: row_col[OF wf1 j] vec0I_def col_def, rule ge1a) 
   qed
 qed
 
@@ -1903,8 +1903,8 @@ proof -
     assume i: "i < nc" and j: "j < nr"
     show "gt (mat_plus x z ! i ! j) (mat_plus y u ! i ! j)"
     proof (
-	simp only: mat_plus_index[OF wfx wfz i j],
-	simp only: mat_plus_index[OF wfy wfu i j],
+        simp only: mat_plus_index[OF wfx wfz i j],
+        simp only: mat_plus_index[OF wfy wfu i j],
         rule plus_gt_both_mono)
       show "gt (x ! i ! j) (y ! i ! j)" using gt1 i j mat_comp_all_index[OF wfx wfy] by auto
     next
@@ -1934,19 +1934,19 @@ proof -
     show "gt (?xz ! i ! j) (?yz ! i ! j)"
     proof (
         simp only: mat_mult_to_scalar[OF wfx wfz j i],
-	simp only: mat_mult_to_scalar[OF wfy wfz j i],
-	rule scalar_prod_left_mono[OF wfxj wfyj wfzi],
-	simp only: vec_comp_all_index[OF wfxj wfyj],
-	intro allI impI
+        simp only: mat_mult_to_scalar[OF wfy wfz j i],
+        rule scalar_prod_left_mono[OF wfxj wfyj wfzi],
+        simp only: vec_comp_all_index[OF wfxj wfyj],
+        intro allI impI
       )
       fix k
       assume k: "k < nc"
       from gt1 mat_comp_all_index[OF wfx wfy, of gt] j k
       show "gt (row x j ! k) (row y j ! k)"
-	by (
-	  simp only: row_col[OF wfx j k],
-	  simp only: row_col[OF wfy j k],
-	  unfold col_def, auto)
+        by (
+          simp only: row_col[OF wfx j k],
+          simp only: row_col[OF wfy j k],
+          unfold col_def, auto)
     qed
   qed
 qed
@@ -2034,7 +2034,7 @@ lemma mat_arc_pos_plus: assumes n_pos: "n > 0"
   shows "mat_arc_pos (mat_plus m1 m2)"
 proof -
   from n_pos wf1 obtain v1 mm1 where m1: "m1 = v1 # mm1" unfolding mat_def by (cases m1, auto)
-  from n_pos wf2 obtain v2 mm2 where m2: "m2 = v2 # mm2" unfolding mat_def by (cases m2, auto)	
+  from n_pos wf2 obtain v2 mm2 where m2: "m2 = v2 # mm2" unfolding mat_def by (cases m2, auto)  
   from n_pos wf1 m1 obtain a1 vv1 where v1: "v1 = a1 # vv1" unfolding mat_def by (cases v1, auto simp: vec_def)
   from n_pos wf2 m2 obtain a2 vv2 where v2: "v2 = a2 # vv2" unfolding mat_def by (cases v2, auto simp: vec_def)
   from m1 v1 arc_pos have "arc_pos a1" unfolding mat_arc_posI_def by simp
@@ -2050,7 +2050,7 @@ lemma mat_arc_pos_mult: assumes n_pos: "n > 0"
   shows "mat_arc_pos (mat_mult n m1 m2)"
 proof -
   from n_pos wf1 obtain v1 mm1 where m1: "m1 = v1 # mm1" unfolding mat_def by (cases m1, auto)
-  from n_pos wf2 obtain v2 mm2 where m2: "m2 = v2 # mm2" unfolding mat_def by (cases m2, auto)	
+  from n_pos wf2 obtain v2 mm2 where m2: "m2 = v2 # mm2" unfolding mat_def by (cases m2, auto)  
   from n_pos wf1 m1 obtain a1 vv1 where v1: "v1 = a1 # vv1" unfolding mat_def by (cases v1, auto simp: vec_def)
   from n_pos wf2 m2 obtain a2 vv2 where v2: "v2 = a2 # vv2" unfolding mat_def by (cases v2, auto simp: vec_def)
   from m1 v1 ap1 have a1: "arc_pos a1" unfolding mat_arc_posI_def by simp

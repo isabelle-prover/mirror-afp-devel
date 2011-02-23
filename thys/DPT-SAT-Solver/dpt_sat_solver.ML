@@ -167,9 +167,9 @@ in
         let val x = Array.sub (a, !k)
         in if p x then
            (
-	             Array.update (a, !j, x) ;
-	             j := !j + 1
-	         ) else () ; 
+                     Array.update (a, !j, x) ;
+                     j := !j + 1
+                 ) else () ; 
            k := !k + 1 end
     ) ;
     k := !j ;
@@ -191,9 +191,9 @@ in
         let val y = Array.sub (a, !k)
         in if p x y then
            (
-	             Array.update (a, !j, y) ;
-	             j := !j + 1
-	         ) else () end
+                     Array.update (a, !j, y) ;
+                     j := !j + 1
+                 ) else () end
     ) ;
     k := !j ;
     while !k < size do
@@ -211,11 +211,11 @@ in
     while !k < size do
     (
         let val x = Array.sub (a, !k) in
-	          if p (!k) x then
+                  if p (!k) x then
             (
-	              Array.update (a, !j, x) ;
-	              j := !j + 1
-	          ) else () ;
+                      Array.update (a, !j, x) ;
+                      j := !j + 1
+                  ) else () ;
             k := !k + 1 end
     ) ;
     k := !j ;
@@ -237,8 +237,8 @@ in
         let val y = Array.sub (a, !k) 
         in if p x (!k) y then
            (
-	             Array.update (a, !j, y) ;
-	             j := !j + 1
+                     Array.update (a, !j, y) ;
+                     j := !j + 1
            ) else () end
     ) ;
     k := !j ;
@@ -314,8 +314,8 @@ in if !(#size v) = cap then
 fun of_array a triv =
 let val n = Array.length a
 in {contents = Unsynchronized.ref (array_extend a n (capacity_for n triv) triv), 
-	  size = Unsynchronized.ref n, 
-	  dummy = triv} : 'a t end
+          size = Unsynchronized.ref n, 
+          dummy = triv} : 'a t end
 
 
 fun of_list l triv =
@@ -326,8 +326,8 @@ let val n = length l
                            init (i + 1) t)
 in init 0 l ;
    {contents = Unsynchronized.ref a, 
-	  size = Unsynchronized.ref n, 
-	  dummy = triv} : 'a t end
+          size = Unsynchronized.ref n, 
+          dummy = triv} : 'a t end
 
 fun to_array (v : 'a t) = 
 let val a = Array.array (!(#size v), #dummy v)
@@ -350,7 +350,7 @@ in if n > cap then
    (
        (#contents v) :=
        array_extend (!(#contents v)) (!(#size v)) 
-	                  (capacity_atleast n cap (#dummy v)) (#dummy v)
+                          (capacity_atleast n cap (#dummy v)) (#dummy v)
    )
    else () ;
    ArraySlice.modify (fn _ => x)
@@ -365,7 +365,7 @@ in if n > cap then
    (
        (#contents v) :=
        array_extend (!(#contents v)) (!(#size v)) 
-	                  (capacity_atleast n cap (#dummy v)) (#dummy v)
+                          (capacity_atleast n cap (#dummy v)) (#dummy v)
    )
    else () ;
    ArraySlice.modify f 
