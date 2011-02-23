@@ -55,13 +55,13 @@ assumes "g' \<in> set (generatePolygon n v f g)" "inv g"
         "f \<in> set(nonFinals g)" "v \<in> \<V> f" "3 \<le> n"
 shows "faceSquanderLowerBound g' \<ge> faceSquanderLowerBound g + \<d> n"
 proof -
-  from genPoly_new_face[OF prems(1) inv_mgp[OF prems(2)] prems(3-5)] obtain f
+  from genPoly_new_face[OF assms(1) inv_mgp[OF assms(2)] assms(3-5)] obtain f
     where f: "f \<in> set (finals g') - set(finals g)"
     and size: "|vertices f| = n" by auto
-  have g': "g' \<in> set(next_plane0 (n - 3) g)" using prems(5)
-    by(rule_tac in_next_plane0I[OF prems(1,3-5)]) simp
-  note dist = minGraphProps11'[OF inv_mgp[OF prems(2)]]
-  note inv' = invariantE[OF inv_inv_next_plane0, OF g' prems(2)]
+  have g': "g' \<in> set(next_plane0 (n - 3) g)" using assms(5)
+    by(rule_tac in_next_plane0I[OF assms(1,3-5)]) simp
+  note dist = minGraphProps11'[OF inv_mgp[OF assms(2)]]
+  note inv' = invariantE[OF inv_inv_next_plane0, OF g' assms(2)]
   note dist' = minGraphProps11'[OF inv_mgp[OF inv']]
   note subset = next_plane0_finals_subset[OF g']
   have "faceSquanderLowerBound g' \<ge>

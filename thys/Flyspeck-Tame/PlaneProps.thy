@@ -101,9 +101,9 @@ assumes "g' \<in> set (generatePolygon n v f g)" "f \<in> set (nonFinals g)"
         "v \<in> \<V> f" "3 \<le> n" "n < 4+p"
 shows "g' \<in> set (next_plane0\<^bsub>p\<^esub> g)"
 proof -
-  have "\<not> final g" using prems(2)
+  have "\<not> final g" using assms(2)
     by(auto simp: nonFinals_def finalGraph_def filter_empty_conv)
-  thus ?thesis using prems by(auto simp:next_plane0_def Bex_def)
+  thus ?thesis using assms by(auto simp:next_plane0_def Bex_def)
 qed
 
 
@@ -225,24 +225,24 @@ lemma next_plane0_incr_except:
 assumes "g' \<in> set (next_plane0\<^bsub>p\<^esub> g)" "inv g" "v \<in> \<V> g"
 shows "except g v \<le> except g' v"
 proof (unfold except_def)
-  note inv' = invariantE[OF inv_inv_next_plane0, OF prems(1,2)]
-  note mgp = inv_mgp[OF prems(2)] and mgp' = inv_mgp[OF inv']
+  note inv' = invariantE[OF inv_inv_next_plane0, OF assms(1,2)]
+  note mgp = inv_mgp[OF assms(2)] and mgp' = inv_mgp[OF inv']
   note dist = distinct_filter[OF mgp_dist_facesAt[OF mgp `v : \<V> g`]]
   have "v \<in> \<V> g'"
-    using prems(3) next_plane0_vertices_subset[OF prems(1) mgp] by blast
+    using assms(3) next_plane0_vertices_subset[OF assms(1) mgp] by blast
   note dist' = distinct_filter[OF mgp_dist_facesAt[OF mgp' `v : \<V> g'`]]
   have "|[f\<leftarrow>facesAt g v . final f \<and> 5 \<le> |vertices f| ]| =
         card{f\<in> set(facesAt g v) . final f \<and> 5 \<le> |vertices f|}"
     (is "?L = card ?M") using distinct_card[OF dist] by simp
   also have "?M = {f\<in> \<F> g. v \<in> \<V> f \<and> final f \<and> 5 \<le> |vertices f|}"
-    by(simp add: minGraphProps_facesAt_eq[OF mgp prems(3)])
+    by(simp add: minGraphProps_facesAt_eq[OF mgp assms(3)])
   also have "\<dots> = {f \<in> set(finals g) . v \<in> \<V> f \<and> 5 \<le> |vertices f|}"
     by(auto simp:finals_def)
   also have "card \<dots> \<le> card{f \<in> set(finals g'). v \<in> \<V> f \<and> 5 \<le> |vertices f|}"
     (is "_ \<le> card ?M")
     apply(rule card_mono)
     apply simp
-    using next_plane0_finals_subset[OF prems(1)] by blast
+    using next_plane0_finals_subset[OF assms(1)] by blast
   also have "?M = {f\<in> \<F> g' . v \<in> \<V> f \<and> final f \<and> 5 \<le> |vertices f|}"
     by(auto simp:finals_def)
   also have "\<dots> = {f \<in> set(facesAt g' v) . final f \<and> 5 \<le> |vertices f|}"
@@ -327,16 +327,16 @@ lemma next_plane0_len_filter_eq:
 assumes "g' \<in> set (next_plane0\<^bsub>p\<^esub> g)" "inv g" "v \<in> \<V> g" "finalVertex g v"
 shows "|filter P (facesAt g' v)| = |filter P (facesAt g v)|"
 proof -
-  note inv' = invariantE[OF inv_inv_next_plane0, OF prems(1,2)]
-  note mgp = inv_mgp[OF prems(2)] and mgp' = inv_mgp[OF inv']
+  note inv' = invariantE[OF inv_inv_next_plane0, OF assms(1,2)]
+  note mgp = inv_mgp[OF assms(2)] and mgp' = inv_mgp[OF inv']
   note dist = distinct_filter[OF mgp_dist_facesAt[OF mgp `v : \<V> g`]]
   have "v \<in> \<V> g'"
-    using prems(3) next_plane0_vertices_subset[OF prems(1) mgp] by blast
+    using assms(3) next_plane0_vertices_subset[OF assms(1) mgp] by blast
   note dist' = distinct_filter[OF mgp_dist_facesAt[OF mgp' `v : \<V> g'`]]
   have "|filter P (facesAt g' v)| = card{f \<in> set(facesAt g' v) . P f}"
     using distinct_card[OF dist'] by simp
   also have "\<dots> = card{f \<in> set(facesAt g v) . P f}"
-    by(simp add: next_plane0_finalVertex_facesAt_eq[OF prems])
+    by(simp add: next_plane0_finalVertex_facesAt_eq[OF assms])
   also have "\<dots> = |filter P (facesAt g v)|"
     using distinct_card[OF dist] by simp
   finally show ?thesis .
