@@ -675,9 +675,9 @@ lemma blocksReds:
          P \<turnstile> \<langle>e, (h,l(Vs [\<mapsto>] vs))\<rangle> \<rightarrow>* \<langle>e', (h',l')\<rangle> \<rbrakk>
         \<Longrightarrow> P \<turnstile> \<langle>blocks(Vs,Ts,vs,e), (h,l)\<rangle> \<rightarrow>* \<langle>blocks(Vs,Ts,map (the \<circ> l') Vs,e'), (h',override_on l' l (set Vs))\<rangle>"
 (*<*)
-proof(induct Vs Ts vs e rule:blocks.induct)
-  case (5 V Vs T Ts v vs e) show ?case
-    using InitBlockReds[OF "5.hyps"[of "l(V\<mapsto>v)"]] "5.prems"
+proof(induct Vs Ts vs e rule:blocks_induct)
+  case (1 V Vs T Ts v vs e) show ?case
+    using InitBlockReds[OF "1.hyps"[of "l(V\<mapsto>v)"]] "1.prems"
     by(auto simp:override_on_upd_lemma)
 qed auto
 (*>*)
@@ -687,9 +687,9 @@ lemma blocksFinal:
  "\<And>l. \<lbrakk> length Vs = length Ts; length vs = length Ts; final e \<rbrakk> \<Longrightarrow>
        P \<turnstile> \<langle>blocks(Vs,Ts,vs,e), (h,l)\<rangle> \<rightarrow>* \<langle>e, (h,l)\<rangle>"
 (*<*)
-proof(induct Vs Ts vs e rule:blocks.induct)
-  case 5
-  show ?case using "5.prems" InitBlockReds[OF "5.hyps"]
+proof(induct Vs Ts vs e rule:blocks_induct)
+  case 1
+  show ?case using "1.prems" InitBlockReds[OF "1.hyps"]
     by(fastsimp elim!:finalE elim: rtrancl_into_rtrancl[OF _ RedInitBlock]
                                    rtrancl_into_rtrancl[OF _ InitBlockThrow])
 qed auto

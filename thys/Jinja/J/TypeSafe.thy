@@ -108,7 +108,7 @@ few lemmas first. *}
 lemma [iff]: "\<And>A. \<lbrakk> length Vs = length Ts; length vs = length Ts\<rbrakk> \<Longrightarrow>
  \<D> (blocks (Vs,Ts,vs,e)) A = \<D> e (A \<squnion> \<lfloor>set Vs\<rfloor>)"
 (*<*)
-apply(induct Vs Ts vs e rule:blocks.induct)
+apply(induct Vs Ts vs e rule:blocks_induct)
 apply(simp_all add:hyperset_defs)
 done
 (*>*)
@@ -194,8 +194,8 @@ lemma wt_blocks:
        (P,E,h \<turnstile> blocks(Vs,Ts,vs,e) : T) =
        (P,E(Vs[\<mapsto>]Ts),h \<turnstile> e:T \<and> (\<exists>Ts'. map (typeof\<^bsub>h\<^esub>) vs = map Some Ts' \<and> P \<turnstile> Ts' [\<le>] Ts))"
 (*<*)
-apply(induct Vs Ts vs e rule:blocks.induct)
-prefer 5 apply (force simp add:rel_list_all2_Cons2)
+apply(induct Vs Ts vs e rule:blocks_induct)
+apply (force simp add:rel_list_all2_Cons2)
 apply simp_all
 done
 (*>*)
