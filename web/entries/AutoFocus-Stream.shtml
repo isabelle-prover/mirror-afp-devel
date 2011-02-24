@@ -62,7 +62,7 @@ We formalize the AutoFocus Semantics (a time-synchronous subset of the Focus for
 <p></p>
 
 <!--#set var="name" value="AutoFocus-Stream" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/List-Infinite/Nat-Interval-Logic/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
