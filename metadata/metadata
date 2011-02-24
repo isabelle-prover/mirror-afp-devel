@@ -231,6 +231,13 @@ author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
 topic = Computer Science/Data Structures
 abstract = This theory provides functions for finding the index of an element in a list, by predicate and by value.
 
+[List-Infinite]
+title = Infinite Lists
+date = 2011-02-23
+author = David Trachtenherz <http://www.in.tum.de/~trachten>
+topic = Computer Science/Data Structures
+abstract = We introduce a theory of infinite lists in HOL formalized as functions over naturals (folder ListInf, theories ListInf and ListInf_Prefix). It also provides additional results for finite lists (theory ListInf/List2), natural numbers (folder CommonArith, esp. division/modulo, naturals with infinity), sets (folder CommonSet, esp. cutting/truncating sets, traversing sets of naturals).
+
 [Matrix]
 title = Executable Matrix Operations on Matrices of Arbitrary Dimensions
 topic = Computer Science/Data Structures
@@ -358,6 +365,13 @@ author = Ludovic Henrio <mailto:Ludovic.Henrio@sophia.inria.fr>, Florian Kamm&uu
 date = 2010-04-30
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We present a Theory of Objects based on the original functional sigma-calculus by Abadi and Cardelli but with an additional parameter to methods. We prove confluence of the operational semantics following the outline of Nipkow's proof of confluence for the lambda-calculus reusing his theory Commutation, a generic diamond lemma reduction. We furthermore formalize a simple type system for our sigma-calculus including a proof of type safety. The entire development uses the concept of Locally Nameless representation for binders. We reuse an earlier proof of confluence for a simpler sigma-calculus based on de Bruijn indices and lists to represent objects.
+
+[AutoFocus-Stream]
+title = AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics
+author = David Trachtenherz <http://www.in.tum.de/~trachten/>
+date = 2011-02-23
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = We formalize the AutoFocus Semantics (a time-synchronous subset of the Focus formalism) as stream processing functions on finite and infinite message streams represented as finite/infinite lists. The formalization comprises both the conventional single-clocking semantics (uniform global clock for all components and communications channels) and its extension to multi-clocking semantics (internal execution clocking of a component may be a multiple of the external communication clocking). The semantics is defined by generic stream processing functions making it suitable for simulation/code generation in Isabelle/HOL. Furthermore, a number of AutoFocus semantics properties are formalized using definitions from the IntervalLogic theories.
 
 [POPLmark-deBruijn]
 title = POPLmark Challenge Via de Bruijn Indices 
@@ -563,6 +577,13 @@ author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2008-01-11
 topic = Logic
 abstract = This article formalizes quantifier elimination procedures for dense linear orders, linear real arithmetic and Presburger arithmetic. In each case both a DNF-based non-elementary algorithm and one or more (doubly) exponential NNF-based algorithms are formalized, including the well-known algorithms by Ferrante and Rackoff and by Cooper. The NNF-based algorithms for dense linear orders are new but based on Ferrante and Rackoff and on an algorithm by Loos and Weisspfenning which simulates infenitesimals. All algorithms are directly executable. In particular, they yield reflective quantifier elimination procedures for HOL itself. The formalization makes heavy use of locales and is therefore highly modular.
+
+[Nat-Interval-Logic]
+title = Interval Temporal Logic on Natural Numbers
+author = David Trachtenherz <http://www.in.tum.de/~trachten/>
+date = 2011-02-23
+topic = Logic
+abstract = We introduce a theory of temporal logic operators using sets of natural numbers as time domain, formalized in a shallow embedding manner. The theory comprises special natural intervals (theory IL_Interval: open and closed intervals, continuous and modulo intervals, interval traversing results), operators for shifting intervals to left/right on the number axis as well as expanding/contracting intervals by constant factors (theory IL_IntervalOperators.thy), and ultimately definitions and results for unary and binary temporal operators on arbitrary natural sets (theory IL_TemporalOperators).
 
 [Recursion-Theory-I]
 title = Recursion Theory I 
