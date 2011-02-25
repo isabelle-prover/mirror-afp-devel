@@ -1969,9 +1969,7 @@ proof -
           by simp
         hence "n < length ys --> ys ! (length ys - Suc n) = rev ys ! n" ..
         from this and noty
-        have "ys ! (length ys - Suc n) = rev ys ! n" ..
-        thus "(y # ys) ! (length ys - n) = rev ys ! n"
-          by (simp add: nth_Cons' noty linorder_not_less [symmetric])
+        show "ys ! (length ys - Suc n) = rev ys ! n" ..
       next
         assume "~ n < length ys"
         hence x: "length ys \<le> n" by simp
