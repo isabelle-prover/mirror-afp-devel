@@ -708,10 +708,7 @@ lemma (in TC2) wt_IfFalse:
   "\<lbrakk> 2 \<le> i; nat i < size \<tau>s + 2; P \<turnstile> ty\<^isub>i' ST E A \<le>' \<tau>s ! nat(i - 2) \<rbrakk>
   \<Longrightarrow> \<turnstile> [IfFalse i],[] [::] ty\<^isub>i' (Boolean # ST) E A # ty\<^isub>i' ST E A # \<tau>s"
 (*<*)
-apply(clarsimp simp add: ty\<^isub>i'_def wt_defs)
-apply(auto simp add: nth_Cons split:nat.split)
-apply(simp add:nat_diff_distrib)
-done
+by(simp add: ty\<^isub>i'_def wt_defs eval_nat_numeral nat_diff_distrib)
 (*>*)
 
 
@@ -1264,9 +1261,6 @@ apply (clarsimp simp: wt_instrs_def after_def mxl mxs)
 apply clarsimp
 apply (drule (1) less_antisym)
 apply (clarsimp simp: wt_defs xcpt_app_pcs xcpt_eff_pcs ty\<^isub>i'_def)
-apply (cases "size (compE\<^isub>2 e)")
- apply (simp del: compxE\<^isub>2_size_convs nth_append add: neq_Nil_conv)
-apply (simp add: mxl)
 done
 (*>*)
 
