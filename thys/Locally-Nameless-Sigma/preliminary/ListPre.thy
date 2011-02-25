@@ -138,7 +138,7 @@ proof (induct l, simp)
   case (Cons x l) thus ?case
   proof (auto split: nat.split)
     fix n j assume "j \<le> Suc (length l)" and "Suc n \<le> j" 
-    with Cons(1) show "(list_insert l n a)!j = (x#l)!j"
+    with Cons(1) show "(list_insert l n a)!j = l!(j - Suc 0)"
       by (cases j) simp_all
   qed
 qed
@@ -155,7 +155,7 @@ proof (induct l, simp)
   case (Cons x l) thus ?case
   proof (auto split: nat.split)
     fix n j assume "Suc n \<le> j" 
-    with Cons(1) show "(list_insert l n a)!j = (x#l)!j"
+    with Cons(1) show "(list_insert l n a)!j = l!(j - Suc 0)"
       by (cases j) simp_all
   qed
 qed
