@@ -6,7 +6,7 @@
 header {* Results for natural arithmetics *}
 
 theory Util_Nat
-imports Nat
+imports Main
 begin
 
 subsection {* Some convenience arithmetic lemmata *}

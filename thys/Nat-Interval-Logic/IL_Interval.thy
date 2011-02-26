@@ -7,9 +7,8 @@ header {* Intervals and operations for temporal logic declarations *}
 
 theory IL_Interval
 imports 
-  Main Nat_Infinity 
-  SetInterval2 InfiniteSet2 SetIntervalStep
-  Util_Nat Util_MinMax Util_Div
+  "../List-Infinite/CommonSet/InfiniteSet2"
+  "../List-Infinite/CommonSet/SetIntervalStep"
 begin
 
 subsection {* Time intervals -- definitions and basic lemmata *}

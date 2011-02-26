@@ -7,7 +7,7 @@
 header {* Order and linear order: min and max *}
 
 theory Util_MinMax
-imports Lattices
+imports Main
 begin
 
 subsection {* Additional lemmata about @{term min} and @{term max} *}

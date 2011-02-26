@@ -6,7 +6,7 @@
 header {* Results for division and modulo operators on integers *}
 
 theory Util_Div
-imports Util_Nat Presburger Sledgehammer
+imports Util_Nat
 begin
 
 

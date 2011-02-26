@@ -180,7 +180,7 @@ by (rule icard_mono, rule Diff_subset)
 
 thm Finite_Set.card_psubset
 lemma icard_psubset: "\<lbrakk> A \<subseteq> B; icard A < icard B \<rbrakk> \<Longrightarrow> A \<subset> B"
-by (metis iless_ile psubset_eq)
+by (metis less_le psubset_eq)
 
 thm SetInterval2.card_partition
 lemma icard_partition: "
