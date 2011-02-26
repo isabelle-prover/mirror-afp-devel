@@ -15,13 +15,9 @@ text {*
   with constructors @{term "0 :: inat"} and @{term "iSuc"}.
 *}
 
-lemma iSuc_plus: "iSuc n + m = iSuc (n + m)"
-by (metis add_assoc add_commute plus_1_iSuc(2))
+lemmas iSuc_plus = iadd_Suc
 
-lemma plus_inat_eq_0_conv:
-  fixes n :: inat 
-  shows "n + m = 0 \<longleftrightarrow> n = 0 \<and> m = 0"
-by(cases n, cases m)(simp_all add: zero_inat_def)
+lemmas plus_inat_eq_0_conv = iadd_is_0
 
 coinductive_set inat :: "inat \<Rightarrow> bool"
 where "0 \<in> inat"
@@ -317,26 +313,6 @@ proof -
   qed
 qed
 
-subsection {* minus for @{typ inat} *}
-
-instantiation inat :: minus begin
-
-definition
-  "minus n m = (case n of Fin n \<Rightarrow> (case m of Fin m \<Rightarrow> Fin (n - m) | \<infinity> \<Rightarrow> 0) 
-                            | \<infinity> \<Rightarrow> \<infinity>)"
-
-instance ..
-
-end
-
-lemma minus_inat_simps [simp]:
-  "Fin n - Fin m = Fin (n - m)"
-  "Fin n - \<infinity> = 0"
-  "0 - n' = 0"
-  "\<infinity> - n' = \<infinity>"
-  "n' - 0 = n'"
-by(simp_all add: minus_inat_def zero_inat_def split: inat.split)
-
 lemma iSuc_minus_iSuc [simp]: "iSuc n - iSuc m = n - m"
 by(simp add: iSuc_def split: inat.split)
 
@@ -355,15 +331,12 @@ by (metis Fin_add_mono add_commute neq_iff)
 lemma Fin_add2_eq [simp]: "y + Fin x = z + Fin x \<longleftrightarrow> y = z"
 by (metis Fin_add1_eq add_commute)
 
-primrec the_Fin :: "inat \<Rightarrow> nat"
-where "the_Fin (Fin n) = n"
-
 lemma Fin_less_Fin_plusI: "x < y \<Longrightarrow> Fin x < Fin y + z"
 by(cases z) simp_all
 
 lemma Fin_less_Fin_plusI2:
   "Fin y < z \<Longrightarrow> Fin (x + y) < Fin x + z"
-by (metis Fin_add_mono nat_add_commute plus_inat_simps(1))
+by (metis Fin_add_mono plus_inat_simps(1))
 
 lemma min_Fin1_conv_Fin: "\<And>a b. min (Fin a) b = Fin (case b of Fin b' \<Rightarrow> min a b' | \<infinity> \<Rightarrow> a)"
   and min_Fin2_conv_Fin: "\<And>a b. min a (Fin b) = Fin (case a of Fin a' \<Rightarrow> min a' b | \<infinity> \<Rightarrow> b)"

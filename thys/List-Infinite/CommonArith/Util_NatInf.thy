@@ -39,11 +39,6 @@ lemmas inat_arith_defs =
   plus_inat_def diff_inat_def times_inat_def div_inat_def mod_inat_def
 declare zero_inat_def[simp]
 
-primrec the_Fin :: "inat \<Rightarrow> nat" where
-  "the_Fin (Fin n) = n"
-
-lemma Fin_the_Fin: "n \<noteq> \<infinity> \<Longrightarrow> Fin (the_Fin n) = n" by fastsimp
-
 
 lemmas ineq0_conv_Fin[simp] = i0_less[symmetric, unfolded zero_inat_def]
 
