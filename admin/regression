@@ -113,7 +113,7 @@ echo "begin hg pull/update" >> $LOG
 
 # hg pull -u to newest version of archive 
 cd $WORKING_COPY || fail "could not cd to $WORKING_COPY"
-hg pull -u -q >> $LOG 2>&1 || fail "could not hg pull."
+hg pull -u >> $LOG 2>&1 || fail "could not hg pull."
 
 echo "end hg pull/update" >> $LOG
 echo >> $LOG
