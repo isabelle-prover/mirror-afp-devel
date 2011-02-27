@@ -113,7 +113,7 @@ echo "begin hg pull/update" >> $LOG
 
 # hg pull -u to newest version of archive 
 cd $WORKING_COPY || fail "could not cd to $WORKING_COPY"
-hg pull -u -q >> $LOG 2>&1 || fail "could not hg pull."
+hg pull -u >> $LOG 2>&1 || fail "could not hg pull."
 
 echo "end hg pull/update" >> $LOG
 echo >> $LOG
@@ -202,19 +202,22 @@ if [ "$SNAPSHOT" == "1" ]; then
     STATUS=entry-status.txt
     WEB=~/html-data/afp
     AFPRELEASE=$WEB/release
-    mkdir -p $AFPRELEASE
+    mkdir -p $AFPRELEASE || fail "could not mkdir $AFPRELEASE"
     cp $REPORT $AFPRELEASE/$STATUS
-    hg archive -q -I thys -I web $EXPORT
+    cd $WORKING_COPY || fail "could not cd $WORKING_COPY"
+    hg archive -I thys -I web $EXPORT >> $LOG 2>&1 || fail "could not hg archive"
+    echo "Exported thys/web from hg" >> $LOG
     
     # update status report
-    cp $REPORT $EXPORT/$STATUS
+    cp $REPORT $EXPORT/$STATUS || fail "could not cp $REPORT $EXPORT/$STATUS"
     echo >> $EXPORT/$STATUS
     echo `date` >> $EXPORT/$STATUS
 
     # make devel tar files
-    tar cf $EXPORT.tar $EXPORT/thys
-    gzip --best -f $EXPORT.tar
+    tar cf $EXPORT.tar $EXPORT/thys || fail "could not tar thys"
+    gzip --best -f $EXPORT.tar || fail "could not gzip $EXPORT.tar"
     mv $EXPORT.tar.gz $AFPRELEASE
+    echo "Produced tar at $AFPRELEASE/$EXPORT.tar.gz" >> $LOG
 
     cd $EXPORT/thys
     for DIR in `ls -d *`; do
@@ -250,11 +253,13 @@ if [ "$SNAPSHOT" == "1" ]; then
     perl -pi -e "s:entries/:devel-entries/:g" $WEB/devel.shtml
 
     perl -pi -e "s:index:devel:" $DEVENTRIES/nav.html
+    echo "Finished adjusting entry .shtml pages" >> $LOG
       
     # prepare generated html
     BROWSER_DEVEL=$WEB/browser_info/devel
     mkdir -p $BROWSER_DEVEL
     cp -r $BROWSER_INFO/* $BROWSER_DEVEL
+    echo "Finished copying $BROWSER_INFO/* to $BROWSER_DEVEL"
 
     # fix permissions
     chmod -R g=u $WEB
