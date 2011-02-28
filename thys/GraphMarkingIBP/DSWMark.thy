@@ -174,15 +174,10 @@ theorem step4 [simp]:
   "DataRefinement Loop'' Q4'' RR RR (demonic QQ6)"
   apply (simp add: DataRefinement_def hoare_demonic angelic_def  QQ6_def Q4''_def
        Loop''_def subset_eq simp_eq_emptyset)
-
-  apply safe
-  apply (simp add: RR_def)
-  apply auto
-  apply (rule ext)
-  apply (simp_all)
-  apply (simp_all add: RR_def g_def gg_def if_set_elim)
+  apply (auto simp add: RR_def)
   apply (case_tac "i")
-  by auto
+  apply (simp_all add: RR_def g_def gg_def if_set_elim)
+  done
 
 theorem step5 [simp]:
   "DataRefinement Loop'' Q5'' RR RR (demonic QQ7)"

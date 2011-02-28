@@ -706,7 +706,7 @@ proof -
     have ffmg': "map_default b ?g' = y(a' := b')" by(auto intro: ext simp add: map_default_def restrict_map_def)
     with f y have f_Abs: "f(\<^sup>f a' := b') = Abs_finfun (map_default b ?g')" by(auto simp add: finfun_update_def)
     have g': "The (?the (f(\<^sup>f a' := b'))) = ?g'"
-    proof
+    proof (rule the_equality)
       from fing' bnrang' f_Abs show "?the (f(\<^sup>f a' := b')) ?g'" by(auto simp add: finfun_update_def restrict_map_def)
     next
       fix g' assume "?the (f(\<^sup>f a' := b')) g'"
@@ -788,7 +788,7 @@ proof(cases "finite (UNIV :: 'a set)")
   case False
   hence "finfun_default ((\<lambda>\<^isup>f c) :: 'a \<Rightarrow>\<^isub>f 'b) = c" by(simp add: finfun_default_const)
   moreover have "(THE g :: 'a \<rightharpoonup> 'b. (\<lambda>\<^isup>f c) = Abs_finfun (map_default c g) \<and> finite (dom g) \<and> c \<notin> ran g) = empty"
-  proof
+  proof (rule the_equality)
     show "(\<lambda>\<^isup>f c) = Abs_finfun (map_default c empty) \<and> finite (dom empty) \<and> c \<notin> ran empty"
       by(auto simp add: finfun_const_def)
   next
@@ -809,7 +809,7 @@ next
   proof(cases "c = undefined")
     case True
     have the: "The ?the = empty"
-    proof
+    proof (rule the_equality)
       from True show "?the empty" by(auto simp add: finfun_const_def)
     next
       fix g'
@@ -827,7 +827,7 @@ next
   next
     case False
     have the: "The ?the = (\<lambda>a :: 'a. Some c)"
-    proof
+    proof (rule the_equality)
       from False True show "?the (\<lambda>a :: 'a. Some c)"
         by(auto simp add: map_default_def_raw finfun_const_def dom_def ran_def)
     next
