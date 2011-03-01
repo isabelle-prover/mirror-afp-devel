@@ -43,6 +43,11 @@ function fail()
   exit 2
 }
 
+function timestamp()
+{
+   echo "[timestamp: `date "+%Y-%m-%d %H:%M:%S"`]"
+}
+
 function check_isabelle()
 {
   [ -x $ISABELLE_TOOL ] || fail "No isabelle tool wrapper found at [$ISABELLE_TOOL]."
@@ -106,6 +111,8 @@ if [ "$DIRS" == "" ]; then DIRS=*; fi
 FAIL="";
 SKIPPED="";
 
+timestamp
+
 for DIR in $DIRS; do
     if [ -d $DIR ]; then
         cd $DIR
@@ -121,7 +128,8 @@ for DIR in $DIRS; do
             echo "Skipped [$DIR]"
             SKIPPED="${SKIPPED}${DIR} "
         fi
-        cd ..
+        timestamp
+        cd ..    
     fi
 done
 
