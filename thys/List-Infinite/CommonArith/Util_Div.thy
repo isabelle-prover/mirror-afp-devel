@@ -970,7 +970,7 @@ proof -
     finally have b_a_div_s': "(b - a) div m = \<dots>" .
     have "(b mod m - a mod m) div m = 0"
       by (rule div_less, rule less_imp_diff_less, 
-	  rule mod_less_divisor, rule m_as)
+          rule mod_less_divisor, rule m_as)
     thus ?thesis
       using b_a_div_s' as'
       by simp
@@ -992,10 +992,10 @@ proof -
       thm a_div_less
       thm a_div_less[THEN zero_less_diff[THEN iffD2]]
       thm a_div_less[THEN zero_less_diff[THEN iffD2],
-	THEN Suc_le_eq[THEN iffD2]]
+        THEN Suc_le_eq[THEN iffD2]]
       thm diff_add_assoc2
       by (simp only: diff_add_assoc2
-	a_div_less[THEN zero_less_diff[THEN iffD2], THEN Suc_le_eq[THEN iffD2]])
+        a_div_less[THEN zero_less_diff[THEN iffD2], THEN Suc_le_eq[THEN iffD2]])
     finally have b_a_div_s': "b div m - a div m = \<dots>" .
     
     have "(b - a) div m = ?b_a1 div m" 
@@ -1014,8 +1014,8 @@ proof -
       thm diff_add_assoc[of "a mod m" "m + b mod m"]
       thm trans_le_add1[of "a mod m" m, OF mod_le_divisor]
       by (simp only: add_assoc m_as
-	diff_add_assoc[of "a mod m" "m + b mod m"]
-	trans_le_add1[of "a mod m" m, OF mod_le_divisor])
+        diff_add_assoc[of "a mod m" "m + b mod m"]
+        trans_le_add1[of "a mod m" m, OF mod_le_divisor])
     also have "\<dots> = b div m - a div m - Suc 0
       + (m + b mod m - a mod m) div m"
       thm div_mult_self1
