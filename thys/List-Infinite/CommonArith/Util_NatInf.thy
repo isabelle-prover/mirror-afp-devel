@@ -6,7 +6,7 @@
 header {* Results for natural arithmetics with infinity *}
 
 theory Util_NatInf
-imports "$ISABELLE_HOME/src/HOL/Library/Nat_Infinity"
+imports "~~/src/HOL/Library/Nat_Infinity"
 begin
 
 

@@ -4,7 +4,9 @@
     Maintainer:  
 *)
 
-theory Lightweight_Java_Proof imports Lightweight_Java_Equivalence Infinite_Set begin
+theory Lightweight_Java_Proof
+imports Lightweight_Java_Equivalence "~~/src/HOL/Library/Infinite_Set"
+begin
 
 lemmas wf_intros = wf_object_wf_varstate_wf_heap_wf_config_wf_stmt_wf_meth_wf_class_common_wf_class_wf_program.intros [simplified]
 lemmas wf_induct = wf_object_wf_varstate_wf_heap_wf_config_wf_stmt_wf_meth_wf_class_common_wf_class_wf_program.induct [simplified]

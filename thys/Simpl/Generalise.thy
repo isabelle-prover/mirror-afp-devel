@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-theory Generalise imports "$ISABELLE_HOME/src/HOL/Statespace/DistinctTreeProver"
+theory Generalise imports "~~/src/HOL/Statespace/DistinctTreeProver"
 uses ("generalise_state.ML")
 begin
 

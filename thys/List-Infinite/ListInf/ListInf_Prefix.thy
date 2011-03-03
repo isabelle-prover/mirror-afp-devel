@@ -6,7 +6,7 @@
 header {* Prefices on finite and infinite lists *}
 
 theory ListInf_Prefix
-imports "$ISABELLE_HOME/src/HOL/Library/List_Prefix" ListInf
+imports "~~/src/HOL/Library/List_Prefix" ListInf
 begin
 
 

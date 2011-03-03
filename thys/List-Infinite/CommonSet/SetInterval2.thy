@@ -7,7 +7,7 @@ header {* Sets of natural numbers *}
 
 theory SetInterval2
 imports 
-  "$ISABELLE_HOME/src/HOL/Library/Infinite_Set"
+  "~~/src/HOL/Library/Infinite_Set"
   Util_Set
   "../CommonArith/Util_MinMax"
   "../CommonArith/Util_NatInf"
