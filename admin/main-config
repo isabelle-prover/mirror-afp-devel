@@ -4,3 +4,22 @@
 # values: "email1 email2 .. emailn"
 MAIN_NOTIFY="kleing@cse.unsw.edu.au nipkow@in.tum.de lp15@cam.ac.uk brianh@cs.pdx.edu bulwahn@in.tum.de krauss@in.tum.de"
 
+# settings for preparing an Isabelle development snapshot
+DISTPREFIX=~/afp/isadist
+ISABELLE_DEVEL=$DISTPREFIX/Isabelle
+ISABELLE_IDENT=$DISTPREFIX/ISABELLE_IDENT
+
+ISA_ADMIN=~/isabelle/Admin
+ISA_SETTINGS=$ISA_ADMIN/isatest/settings
+SHORT=afp-poly
+
+AFP_CONTRIB=~/afp/contrib
+
+# logging
+DATE=$(date "+%Y-%m-%d")
+
+LOG=~/afp/log/afp-test
+DISTLOG=$LOG-dist-$DATE.log
+MASTERLOG=~/afp/log/afp-test.log
+REPORT=~/afp/log/report
+

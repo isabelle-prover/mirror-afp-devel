@@ -12,18 +12,8 @@
 
 ## settings
 
-ISABELLE_RELEASES=/home/isabelle
-ISABELLE_DEVEL=~/isadist/Isabelle
-ISABELLE_IDENT=~/isadist/ISABELLE_IDENT
+ISABELLE_RELEASES=${ISABELLE_RELEASES:-/home/isabelle}
 WORKING_COPY=~/afp
-DATE=$(date "+%Y-%m-%d")
-
-LOG=~/afp-log/afp-test
-MASTERLOG=~/afp-log/afp-test.log
-REPORT=~/afp-log/report
-
-SHORT=mac-poly64-M4
-SETTINGS=~/settings/$SHORT
 
 HOST="$(hostname -s)"
 
@@ -39,6 +29,7 @@ TMP=`mktemp -q /tmp/afp-regression.mail.XXXXXX` \
 #
 
 PRG="$(basename "$0")"
+DIR="$(dirname "$0")"
 
 ## functions
 
@@ -66,22 +57,15 @@ fi
 if [ "$1" == "-" ]; then
   AFP_VER="development"
   WORKING_COPY=$WORKING_COPY/devel
+
+  . $WORKING_COPY/admin/main-config || fail "could not read main-config."
+
+  "$DIR/prepare-release" || fail "could not prepare Isabelle snapshot."
+
   ISABELLE_TOOL=$ISABELLE_DEVEL/bin/isabelle
 
-  ERRORDIR=$HOME/var
-  RUNNING=$HOME/var/running
-  if [ -f "$RUNNING/$SHORT.running" ]; then
-    echo "`date` $HOST: Skipped test. Isabelle test still running." >> $MASTERLOG
-    exit 1
-  fi
-  cat $SETTINGS >> $ISABELLE_DEVEL/etc/settings
   ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
-  
-  if [ ! -r "$ISABELLE_IMAGE_PATH/HOL" -o ! -r "$ISABELLE_IMAGE_PATH/HOLCF" -o ! -r "$ISABELLE_IMAGE_PATH/HOL-Nominal" ]; then
-    echo "`date` $HOST: Skipped test. Isabelle devel version broken (HOL, HOLCF, or HOL-Nominal image not readable)." 
-    exit 1
-  fi
   
   LOG=$LOG-devel-$DATE.log
   SNAPSHOT=1;
@@ -95,6 +79,9 @@ if [ "$1" == "-" ]; then
 else
   AFP_VER="release ($1)"
   WORKING_COPY=$WORKING_COPY/release
+
+  . $WORKING_COPY/admin/main-config || fail "could not read main-config."
+
   ISABELLE_TOOL=$ISABELLE_RELEASES/$1/bin/isabelle
   ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$ISABELLE_RELEASES/$1/heaps/$ML_IDENTIFIER/"
@@ -104,7 +91,6 @@ else
   ISABELLE_VER="release -- $($ISABELLE_TOOL version)"
 fi
 
-. $WORKING_COPY/admin/main-config || fail "could not read main-config."
 MAIL=$WORKING_COPY/admin/mail-attach
 
 echo "Start test for $WORKING_COPY at `date`, $HOST" > $LOG
@@ -259,7 +245,7 @@ if [ "$SNAPSHOT" == "1" ]; then
     BROWSER_DEVEL=$WEB/browser_info/devel
     mkdir -p $BROWSER_DEVEL
     cp -r $BROWSER_INFO/* $BROWSER_DEVEL
-    echo "Finished copying $BROWSER_INFO/* to $BROWSER_DEVEL"
+    echo "Finished copying $BROWSER_INFO/* to $BROWSER_DEVEL" >> $LOG
 
     # fix permissions
     chmod -R g=u $WEB
