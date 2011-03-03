@@ -168,6 +168,39 @@ td.datahead {
 ;
 }
 
+td.status-ok {
+ font: normal normal bold medium sans-serif;
+ color: #000000;
+ background-color: #00FF99;
+ margin:  1em 1em auto 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+;
+}
+
+td.status-FAIL {
+ font: normal normal bold medium sans-serif;
+ color: #000000;
+ background-color: #DD2222;
+ margin:  1em 1em auto 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+;
+}
+
+td.status-skipped {
+ font: normal normal bold medium sans-serif;
+ color: #000000;
+ background-color: #FFFF99;
+ margin:  1em 1em auto 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+;
+}
+
 td.data {
  font: normal normal normal medium sans-serif;
  color: #000000;

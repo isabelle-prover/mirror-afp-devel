@@ -1,9 +1,9 @@
 <!-- afp development version  -->
 
-	<tr><td class="datahead" valign="top">Status: [<!--#echo
+	<tr><td class="status-<!--#echo var="status"-->" valign="top">Status: [<!--#echo
 	var="status"-->]</td> <td class="data"> This is the development
-	version of this entry generated for <a
-	href="http://isabelle.in.tum.de/devel/"><!--#echo var="version"
+	version, revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/log/<!--#echo var="afp-version"-->"><!--#echo var="afp-version"--></a>, of this entry, generated for Isabelle revision <a
+	href="http://isabelle.in.tum.de/repos/isabelle/changelog/<!--#echo var="version"-->"><!--#echo var="version"
 	--></a>. The development version might change over time and is only
 	permanently archived at Isabelle release points. It is provided as a
 	preview of the next  upcoming release. Please refer to release
