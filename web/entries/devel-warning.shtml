@@ -1,6 +1,6 @@
 <!-- afp development version  -->
 
-	<tr><td class="datahead" valign="top">Status: [<!--#echo
+	<tr><td class="status-<!--#echo var="status"-->" valign="top">Status: [<!--#echo
 	var="status"-->]</td> <td class="data"> This is the development
 	version, revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/log/<!--#echo var="afp-version"-->"><!--#echo var="afp-version"--></a>, of this entry, generated for Isabelle revision <a
 	href="http://isabelle.in.tum.de/repos/isabelle/changelog/<!--#echo var="version"-->"><!--#echo var="version"
