@@ -48,6 +48,7 @@ This work presents a machine-checked tree automata library for Standard-ML, OCam
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>

@@ -56,6 +56,7 @@ The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as 
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>

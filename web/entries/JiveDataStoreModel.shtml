@@ -51,6 +51,7 @@ This document presents the formalization of an object-oriented data and store mo
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>

@@ -51,6 +51,7 @@ We present a formalization of parts of Melvin Fitting's book ``First-Order Logic
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>

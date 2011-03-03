@@ -50,6 +50,7 @@ Two models of an electronic hotel key card system are contrasted: a state based 
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>
