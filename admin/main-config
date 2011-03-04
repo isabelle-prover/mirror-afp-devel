@@ -15,6 +15,8 @@ SHORT=afp-poly
 
 AFP_CONTRIB=~/afp/contrib
 
+WEB=~/afp/web
+
 # logging
 DATE=$(date "+%Y-%m-%d")
 

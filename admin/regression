@@ -91,7 +91,7 @@ else
   ISABELLE_VER="release -- $($ISABELLE_TOOL version)"
 fi
 
-MAIL=$WORKING_COPY/admin/mail-attach
+MAIL="$WORKING_COPY/admin/mail-attach"
 
 echo "Start test for $WORKING_COPY at `date`, $HOST" > $LOG
 echo >> $LOG
@@ -183,78 +183,5 @@ rm -f $TMP
 
 # make devel snapshot
 if [ "$SNAPSHOT" == "1" ]; then
-    echo "`date`: start preparing devel snapshot" >> $LOG
-    EXPORT=afp-devel
-    STATUS=entry-status.txt
-    WEB=~/html-data/afp
-    AFPRELEASE=$WEB/release
-    mkdir -p $AFPRELEASE || fail "could not mkdir $AFPRELEASE"
-    cp $REPORT $AFPRELEASE/$STATUS
-    cd $WORKING_COPY || fail "could not cd $WORKING_COPY"
-    hg archive -I thys -I web $EXPORT >> $LOG 2>&1 || fail "could not hg archive"
-    echo "Exported thys/web from hg" >> $LOG
-    
-    # update status report
-    cp $REPORT $EXPORT/$STATUS || fail "could not cp $REPORT $EXPORT/$STATUS"
-    echo >> $EXPORT/$STATUS
-    echo `date` >> $EXPORT/$STATUS
-
-    # make devel tar files
-    tar cf $EXPORT.tar $EXPORT/thys || fail "could not tar thys"
-    gzip --best -f $EXPORT.tar || fail "could not gzip $EXPORT.tar"
-    mv $EXPORT.tar.gz $AFPRELEASE
-    echo "Produced tar at $AFPRELEASE/$EXPORT.tar.gz" >> $LOG
-
-    cd $EXPORT/thys
-    for DIR in `ls -d *`; do
-        if [ -d $DIR ]; then
-            TF=afp-$DIR-devel.tar
-            tar -cf $TF $DIR
-            gzip --best -f $TF
-            mv $TF.gz $AFPRELEASE
-        fi
-    done
-    cd ../..    
-
-    # prepare development entries
-    DEVENTRIES=$WEB/devel-entries
-    mkdir -p $DEVENTRIES
-    cp -r $EXPORT/web/entries/* $DEVENTRIES
-    perl -pi -e "s:browser_info/current/:browser_info/devel/:g" $DEVENTRIES/*.shtml
-    perl -pi -e "s:current.tar.gz:devel.tar.gz:g" $DEVENTRIES/*.shtml
-    VERSION=$(env LC_ALL=C date "+%d-%b-%Y")
-    perl -pi -e "s:-VERSION-:Isabelle-$VERSION:g" $DEVENTRIES/*.shtml
-    perl -pi -e "s:-INCLUDE-:#include:g" $DEVENTRIES/*.shtml
-    # inefficient. should write a perl script that does this all at once.
-    for F in $DEVENTRIES/*.shtml; do
-        BASE=$(basename $F)
-        ENTRY=${BASE%.shtml}
-        LINE=$(grep ^$ENTRY: $REPORT) 
-        STATUS=${LINE#"$ENTRY: "}
-        if [ "$STATUS" != "" ]; then
-            perl -pi -e "s:-STATUS-:$STATUS:g" $F
-        fi
-    done
-    cp $EXPORT/web/index.shtml $WEB/devel.shtml
-    perl -pi -e "s:entries/:devel-entries/:g" $WEB/devel.shtml
-
-    perl -pi -e "s:index:devel:" $DEVENTRIES/nav.html
-    echo "Finished adjusting entry .shtml pages" >> $LOG
-      
-    # prepare generated html
-    BROWSER_DEVEL=$WEB/browser_info/devel
-    mkdir -p $BROWSER_DEVEL
-    cp -r $BROWSER_INFO/* $BROWSER_DEVEL
-    echo "Finished copying $BROWSER_INFO/* to $BROWSER_DEVEL" >> $LOG
-
-    # fix permissions
-    chmod -R g=u $WEB
-    chmod -R a+r $WEB
-    find $WEB -type d | xargs chmod g+s
-    find $WEB -type d | xargs chmod a+x
-
-    # clean up export dir, leave prepared pages in $WEB
-    rm -rf $EXPORT
-    
-    echo "`date`: finished preparing devel snapshot" >> $LOG
+    $WORKING_COPY/admin/make-web-devel "$BROWSER_INFO" $ISABELLE_HG_ID $AFP_HG_ID || fail "failed to prepare snapshot"
 fi
