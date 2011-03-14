@@ -108,6 +108,7 @@ title = Executable Transitive Closures of Finite Relations
 topic = Computer Science/Algorithms
 date = 2011-03-14
 author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+license = LGPL
 abstract = We provide a generic work-list algorithm to compute the transitive closure of finite relations where only successors of newly detected states are generated. This algorithm is then instantiated for lists over arbitrary carriers and red black trees (which are faster but require a linear order on the carrier), respectively.  Our formalization was performed as part of the IsaFoR/CeTA project where reflexive transitive closures of large tree automata have to be computed.
 
 [MuchAdoAboutTwo]
@@ -258,6 +259,7 @@ title = Executable Matrix Operations on Matrices of Arbitrary Dimensions
 topic = Computer Science/Data Structures
 date = 2010-06-17
 author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+license = LGPL
 abstract =
   We provide the operations of matrix addition, multiplication,
   transposition, and matrix comparisons as executable functions over
@@ -621,6 +623,7 @@ title = Abstract Rewriting
 topic = Logic/Rewriting
 date = 2010-06-14
 author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+license = LGPL
 abstract =
   We present an Isabelle formalization of abstract rewriting (see, e.g.,
   the book by Baader and Nipkow). First, we define standard relations like
@@ -700,6 +703,7 @@ title = Executable Multivariate Polynomials
 author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 date = 2010-08-10
 topic = Mathematics/Analysis
+license = LGPL
 abstract =
   We define multivariate polynomials over arbitrary (ordered) semirings in
   combination with (executable) operations like addition, multiplication,
