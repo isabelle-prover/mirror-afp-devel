@@ -1,2 +1,2 @@
-use_thys ["Extended_Reals", "Lower_Semicontinuous"];
+use_thys ["Lower_Semicontinuous"];
 

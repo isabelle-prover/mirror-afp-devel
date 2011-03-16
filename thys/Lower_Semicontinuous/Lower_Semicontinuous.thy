@@ -1,10 +1,11 @@
-(* Title: Lower_Semicontinuous.thy
-   Author: Bogdan Grechuk; University of Edinburgh *)
+(*  Title:     thys/Lower_Semicontinuous/Lower_Semicontinuous.thy
+    Author:    Bogdan Grechuk, University of Edinburgh
+*)
 
 header {* Lower semicontinuous functions *}
 
 theory Lower_Semicontinuous
-imports Multivariate_Analysis Set_Algebras Extended_Reals
+imports Multivariate_Analysis Set_Algebras
 begin
 
 subsection{* Relative interior in one dimension *}
@@ -130,7 +131,7 @@ unfolding lsc_at_open continuous_at_open using assms by auto
 
 lemma lsc_at_real:
 fixes f :: "'a::metric_space => extreal"
-assumes "f x0 ~= -\<infinity>" "f x0 ~= PInfty"
+assumes "\<bar>f x0\<bar> \<noteq> \<infinity>"
 shows "lsc_at x0 f <-> (!e. e>0 --> (EX T. open T & x0 : T & (!y : T. f y > f x0 - e)))"
 (is "?lhs <-> ?rhs")
 proof-
@@ -259,14 +260,14 @@ proof-
     also have "...<=(INF y:(ball x0 e - {x0}). f y)" apply (subst INF_mono) by auto
     finally have "EX e:{e. e>0}. C <= (INF y:(ball x0 e - {x0}). f y)" using e_def by auto
   }
-  hence "f x0 <= Liminf (at x0) f" unfolding Liminf_at apply (subst infeal_le_Sup) by auto
+  hence "f x0 <= Liminf (at x0) f" unfolding Liminf_at apply (subst extreal_le_Sup) by auto
 }
 moreover
 { assume inf: "f x0 <= Liminf (at x0) f"
   { fix C assume "C<f x0"
     from this obtain y where y_def: "C<y & y<f x0" using extreal_dense by auto
     from this obtain e where e_def: "e>0 & y <= INFI (ball x0 e - {x0}) f"
-      using inf infeal_le_Sup[of "f x0" "{0<..}" "(%e. INFI (ball x0 e - {x0}) f)"]
+      using inf extreal_le_Sup[of "f x0" "{0<..}" "(%e. INFI (ball x0 e - {x0}) f)"]
       unfolding Liminf_at by auto
     hence "ALL z:(ball x0 e - {x0}). y <= f z" unfolding INFI_def using le_Inf_iff[of y] by auto
     hence "ALL z:ball x0 e. y <= f z" using y_def by auto
@@ -337,7 +338,7 @@ proof-
       } hence "f x0 = -\<infinity>" using extreal_bot by auto
       hence "f x0 <= l" by auto }
     moreover
-    { assume fin: "l ~= PInfty & l ~= -\<infinity>"
+    { assume fin: "\<bar>l\<bar> \<noteq> \<infinity>"
       { fix e assume e_def: "(e :: extreal)>0"
         from this obtain N where N_def: "ALL n>=N. f(x n) : {l - e <..< l + e}"
            apply (subst tendsto_obtains_N[of "f o x" l "{l - e <..< l + e}"])
@@ -593,7 +594,7 @@ moreover
         } hence "f x0 <= l" using extreal_bot[of "f x0"] by auto
       }
       moreover
-      { assume fin: "l ~= PInfty & l ~= -\<infinity>"
+      { assume fin: "\<bar>l\<bar> \<noteq> \<infinity>"
         { fix e assume e_def: "(e :: extreal)>0"
           from this obtain N where N_def: "ALL n>=N. f(x n) : {l - e <..< l + e}"
              apply (subst tendsto_obtains_N[of "f o x" l "{l - e <..< l + e}"])
@@ -857,7 +858,7 @@ proof-
       by (auto intro: le_SUPI)
     hence "extreal z >= (INF y:ball x e1. f y)" using xz_def by auto
     hence *: "ALL y>extreal z. EX t. t : ball x e1 & f t <= y"
-      using infeal_Inf_le[of "ball x e1" f "extreal z"] by auto
+      using extreal_Inf_le[of "ball x e1" f "extreal z"] by auto
     obtain t where t_def: "t : ball x e1 & f t <= extreal(z+e1)"
       using e1_def *[rule_format, of "extreal(z+e1)"] by auto
     hence epi: "(t,z+e1):Epigraph UNIV f" unfolding Epigraph_def by auto
@@ -1676,7 +1677,7 @@ proof-
     hence "INFI (ball x e) f <= min (f x) (Liminf (at x) f)"
       unfolding min_Liminf_at apply (subst le_SUPI) by auto
     hence "EX y. y : ball x e & f y <= z"
-      using infeal_Inf_le[of "ball x e" f "min (f x) (Liminf (at x) f)"] z_def by auto
+      using extreal_Inf_le[of "ball x e" f "min (f x) (Liminf (at x) f)"] z_def by auto
     hence "EX y. dist x y < e & y : domain f" unfolding domain_def ball_def using z_def by auto
   } hence "x:closure(domain f)" unfolding closure_approachable by (auto simp add: dist_commute)
 } ultimately show ?thesis by auto
@@ -1872,7 +1873,6 @@ proof-
     by (metis min_max.sup_absorb1 min_max.sup_absorb2 real_le_linear)
   hence "max a (b-e):T" using e_def by auto
   moreover have "max a (b-e):{a..<b}" using e_def `a<b` by auto
-  (*moreover have "max a (b-e) ~= b" using e_def `a<b` by auto*)
   ultimately have "EX y:{a..<b}. y : T & y ~= b" by auto
 } thus ?thesis unfolding islimpt_def by auto
 qed

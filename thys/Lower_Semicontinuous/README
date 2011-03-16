@@ -1,5 +1,2 @@
 This directory contains the formalization of lower semicontinuous functions and
-their epigraphs. This uses the convex analysis found in
-HOL-Multivivariate_Analysis. The archive contains also a version of infinite
-real numbers which is planed to be merged with the version in HOL/Probability
-and moved to HOL/Library.
+their epigraphs. It uses the convex analysis found in HOL-Multivariate_Analysis.
