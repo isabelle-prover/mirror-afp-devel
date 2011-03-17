@@ -270,12 +270,12 @@ apply ((rule allI)+, rule impI)
  apply (erule conjE)+
   apply (frule_tac H = H and f = f and n = "Suc n" and s = s and g = g and 
        m = m and t = t in unique_expression6, assumption+)
-  apply (cut_tac n = "Suc n" in finite_Nset,
+  apply (cut_tac k = "Suc n" in finite_Collect_le_nat,
          frule_tac A = "{j. j \<le> Suc n}" and f = f in inj_on_iff_eq_card,
-         simp, simp add:card_Nset)
-  apply (cut_tac n = m in finite_Nset,
+         simp)
+  apply (cut_tac k = m in finite_Collect_le_nat,
          frule_tac A = "{j. j \<le> m}" and f = g in inj_on_iff_eq_card,
-         simp, simp add:card_Nset,
+         simp,
          thin_tac "card (g ` {j. j \<le> m}) = Suc m")
   apply (frule sym, thin_tac "Suc n = m", simp)  
   apply (cut_tac a = "Suc n" and A = "{j. j \<le> Suc n}" and f = g in 
@@ -2175,21 +2175,20 @@ apply (frule Ring.ring_one[of R],
          h_in_linear_span, assumption+)
   apply (frule_tac H = "h ` {j. j \<le> card H - Suc 0 - Suc 0}" in NAKTr3)
   apply (simp add:generator_sub_carrier)
-  apply (rule finite_imageI, simp add:finite_Nset) 
+  apply (rule finite_imageI, simp) 
   apply (thin_tac "H = h ` {j. j \<le> card H - Suc 0} \<and>
            h (card H - Suc 0)
            \<in> linear_span R M A (h ` {j. j \<le> card H - Suc 0 - Suc 0})")
-  apply (cut_tac n = "card H - Suc 0 - Suc 0" in finite_Nset,
+  apply (cut_tac k = "card H - Suc 0 - Suc 0" in finite_Collect_le_nat,
          frule_tac A = "{j. j \<le> card H - Suc 0 - Suc 0}" and f = h in 
                    card_image_le,
-         cut_tac n = "card H - Suc 0 - Suc 0" in card_Nset,
          simp)
   apply (frule_tac m = "Suc 0" and n = "card H" in  Suc_leI,
          simp add:Suc_Suc_Tr, simp add:finite_generator_def) (*
   apply (rule_tac i = "card (h ` {j. j \<le> card H - Suc (Suc 0)})" and 
          j = "card H - Suc 0" and k = "card H" in Nat.le_less_trans, assumption+)  
   apply simp*)
-  apply (cut_tac n = "card H - Suc 0 - Suc 0" in finite_Nset,
+  apply (cut_tac k = "card H - Suc 0 - Suc 0" in finite_Collect_le_nat,
          frule_tac F = "{j. j \<le> card H - Suc 0 - Suc 0}" and h = h in 
          finite_imageI, simp add:finite_generator_def)
 done

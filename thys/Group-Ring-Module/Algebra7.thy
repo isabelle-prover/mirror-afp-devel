@@ -4655,7 +4655,7 @@ apply (frule_tac s = s and n = n1 and f = f in  same_together[of A
   apply (rule extend_fun, assumption+)
  apply (simp add:bij_to_def)
 apply (rule_tac A = "f ` {j. j \<le> n1}" and n = "card (f `{j. j \<le> n1}) - Suc 0" and f = g in Nset2finite_inj)
- apply (rule finite_imageI, simp add:finite_Nset)
+ apply (rule finite_imageI, simp)
  apply (frule_tac f = f and n = n1 and A = "h ` {j. j \<le> (Suc n)}" in card_Nset_im)
  apply (simp, assumption)
 apply (subgoal_tac "finite (h ` {j. j \<le> (Suc n)})")
@@ -4663,13 +4663,13 @@ apply (frule_tac f = f and A = "{j. j \<le> n1}" and B = "h ` {j. j \<le> (Suc n
        in image_sub0, simp)
  apply (cut_tac B = "h ` {j. j \<le> (Suc n)}" and A = "f ` {j. j \<le> n1}" in 
         card_mono, simp,  assumption+,
-        insert finite_Nset [of "Suc n"],
+        insert finite_Collect_le_nat [of "Suc n"],
         frule card_image_le [of "{j. j \<le> (Suc n)}" "h"],
         frule_tac i = "card (f ` {j. j \<le> n1})" and 
          j = "card (h ` {j. j \<le> (Suc n)})" and k = "card {j. j \<le> (Suc n)}" in
         le_trans, assumption+)
- apply (simp add:card_Nset[of "Suc n"])
- apply (rule finite_imageI, simp add:finite_Nset)
+ apply simp
+ apply (rule finite_imageI, simp)
 done
 
 lemma two_func_imageTr:"\<lbrakk> h \<in> {j. j \<le> Suc n} \<rightarrow> B; 
@@ -5090,7 +5090,7 @@ apply (subgoal_tac "bij_to g {j. j \<le> (card (f ` {j. j \<le> n}) - Suc 0)}
                                   (f ` {j. j \<le> n})")
  apply (simp add:l_comb_def, blast)
 apply (simp add:bij_to_def)
-apply (cut_tac finite_Nset[of n],
+apply (cut_tac finite_Collect_le_nat[of n],
         frule finite_imageI[of "{j. j \<le> n}" f])
 apply (rule_tac A = "f ` {j. j \<le> n}" and n = "card (f ` {j. j \<le> n}) - 
         Suc 0" and f = g in Nset2finite_inj, assumption)
@@ -5745,7 +5745,6 @@ lemma (in Module) unique_expression7_1:"\<lbrakk>free_generator R M H;
     t \<in> {j. j \<le> m} \<rightarrow> carrier R; 
     l_comb R M n s f = l_comb R M m t g; 
    \<forall>j \<in> {j. j \<le> n}. s j \<noteq> \<zero>\<^bsub>R\<^esub>; \<forall>k\<in>{j. j \<le> m}. t k \<noteq> \<zero>\<^bsub>R\<^esub>\<rbrakk> \<Longrightarrow> n = m"
-apply (cut_tac finite_Nset [of "n"], cut_tac finite_Nset [of "m"])
 apply (frule_tac A = "{j. j \<le> n}" and f = f in card_image,
        frule_tac A = "{j. j \<le> m}" and f = g in card_image)
 apply (frule_tac H = H and f = f and n = n and s = s and g = g and t = t and 
@@ -5753,7 +5752,6 @@ apply (frule_tac H = H and f = f and n = n and s = s and g = g and t = t and
 apply (rotate_tac -3, frule sym, 
        thin_tac "card (f ` {j. j \<le> n}) = card ({j. j \<le> n})")
 apply simp
-apply (simp add:card_Nset)
 done
 
 lemma (in Module) unique_expression7_2:"\<lbrakk>free_generator R M H;

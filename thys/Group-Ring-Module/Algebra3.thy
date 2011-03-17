@@ -2591,8 +2591,8 @@ done
 
 lemma (in Group) card_im_D_gchain:"\<lbrakk>0 < n; D_gchain G n f\<rbrakk> 
                                    \<Longrightarrow> card (f `{i. i \<le> n}) = Suc n"
-apply (insert finite_Nset [of "n"], frule D_gchain1 [of "n"])
-apply (subst card_image, assumption+, simp add:card_Nset)
+apply (frule D_gchain1 [of "n"])
+apply (subst card_image, assumption+, simp)
 done
 
 lemma (in Group) w_cmpser_gr:"\<lbrakk>0 < r; w_cmpser G r f; i \<le> r\<rbrakk>
@@ -3190,7 +3190,7 @@ lemma (in Group) ex_redchainTr4:"\<lbrakk>d_gchain G (Suc n) f; f n \<noteq> f (
 apply (cut_tac image_Nset_Suc [of "f" "n"])
 apply simp
 apply (rule card_insert_disjoint)
-apply (simp add:finite_Nset)
+apply (simp)
 apply (simp add:last_mem_excluded)
 done
 
@@ -3236,7 +3236,7 @@ apply (simp add: ex_redchainTr1)
         apply simp  apply simp  apply simp
  apply (simp add:psubset_eq)
  apply (cut_tac f = f and n = n in image_Nsetn_card_pos,
-        cut_tac n = n in finite_Nset, 
+        cut_tac k = n in finite_Collect_le_nat, 
         frule_tac F = "{i. i \<le> n}" and h = f in finite_imageI,
         frule_tac n = n and f = f in last_mem_excluded,
         rule not_sym, assumption)
@@ -3308,7 +3308,7 @@ apply (frule_tac n = "card (f ` {i. i \<le> n}) - Suc 0" and f = g and
         frule_tac x = "Suc n" in spec, simp,
         simp add:psubset_eq)
  apply (cut_tac f = f and n = n in image_Nsetn_card_pos,
-        cut_tac n = n in finite_Nset, 
+        cut_tac k = n in finite_Collect_le_nat, 
         frule_tac F = "{i. i \<le> n}" and h = f in finite_imageI,
         frule_tac n = n and f = f in last_mem_excluded,
         rule not_sym, assumption)
@@ -3342,9 +3342,8 @@ apply (frule ex_redchainTr1 [of "m" "f" "g"])
 apply (frule_tac ex_redchainTr1_1 [of "m" "f" "g"])
  apply (simp add:tW_cmpser_def tw_cmpser_def)
  apply (case_tac "m = 0") apply simp
- apply (insert finite_Nset [of "0"])
  apply (cut_tac card_image_le [of "{0::nat}" "f"])
- apply (simp add:card_Nset [of "0"], simp) 
+ apply (simp, simp)
 apply (simp add:tW_cmpser_def)
  apply (case_tac "card (f ` {i. i \<le> m}) \<le> Suc 0") apply simp
  apply (simp add:td_gchain_def tw_cmpser_def) 
@@ -3522,18 +3521,14 @@ done
 
 lemma isom_gch_units_transpTr3:"\<lbrakk>Ugp E; Gchain n g; i \<le> n\<rbrakk>
                          \<Longrightarrow> finite ({i. i \<le> n \<and> g i \<cong> E} - {i})"
-apply (insert finite_Nset [of "n"])
 apply (rule finite_subset[of "{i. i \<le> n \<and> g i \<cong> E} - {i}" "{i. i \<le> n}"])
-apply (rule subsetI, simp)
-apply assumption
-done  
+apply (rule subsetI, simp+)
+done
 
 lemma isom_gch_units_transpTr4:"\<lbrakk>Ugp E; Gchain n g; i \<le> n\<rbrakk>
                          \<Longrightarrow> finite ({i. i \<le> n \<and> g i \<cong> E} - {i, j})"
-apply (insert finite_Nset [of "n"])
 apply (rule finite_subset[of "{i. i \<le> n \<and> g i \<cong> E} - {i, j}" "{i. i \<le> n}"])
-apply (rule subsetI, simp)
-apply assumption
+apply (rule subsetI, simp+)
 done
 
 lemma isom_gch_units_transpTr5_1:"\<lbrakk>Ugp E; Gchain n g; Gchain n h; i \<le> (n::nat);
@@ -3679,11 +3674,8 @@ apply simp
 done
 
 lemma isom_tgch_unitsTr0_2:"Ugp E  \<Longrightarrow> finite ({i. i \<le> (n::nat) \<and> g i \<cong> E})"
-apply (insert finite_Nset [of "n"])
-(*apply (subgoal_tac "{i. i \<in> Nset n \<and> g i \<cong> E} \<subseteq> Nset n")*)
 apply (rule finite_subset[of "{i. i \<le> n \<and> g i \<cong> E}" "{i. i \<le> n}"])
-apply (rule subsetI, simp)
-apply assumption
+apply (rule subsetI, simp+)
 done
 
 lemma isom_tgch_unitsTr0_3:"\<lbrakk>Ugp E; Gchain (Suc n) g; \<not> g (Suc n) \<cong> E\<rbrakk>
@@ -3718,11 +3710,11 @@ apply (case_tac "g (Suc n) \<cong> E")
  apply (frule isom_gch_unitsTr4 [of "g (Suc n)" "h (Suc n)" "E"], assumption+)
 apply (subst card_insert_disjoint) 
  apply (rule finite_subset[of "{i. i \<le> n \<and> g i \<cong> E}" "{i. i \<le> n}"])
- apply (rule subsetI, simp) apply (simp add:finite_Nset)
+ apply (rule subsetI, simp) apply (simp)
  apply simp
 apply (subst card_insert_disjoint) 
  apply (rule finite_subset[of "{i. i \<le> n \<and> h i \<cong> E}" "{i. i \<le> n}"])
- apply (rule subsetI, simp) apply (simp add:finite_Nset) apply simp
+ apply (rule subsetI, simp) apply simp apply simp
  apply simp
  apply (cut_tac isom_gch_units_transpTr7[of E "Suc n" "Suc n" "Suc n" g h])
  apply (subgoal_tac "{i. i \<le> Suc n \<and> g i \<cong> E} = {i. i \<le> n \<and> g i \<cong> E}",
@@ -3961,7 +3953,7 @@ done
 lemma isom_gch_unitsTr1_7:"\<lbrakk>Ugp E; Gchain (Suc n) h; k \<noteq> Suc n; 
     k \<le> (Suc n)\<rbrakk> \<Longrightarrow> card {i. i \<le> (Suc n) \<and> 
     cmp h (transpos k (Suc n)) i \<cong> E} =  card {i. i \<le> (Suc n) \<and> h i \<cong> E}"
-apply (cut_tac finite_Nset[of "Suc n"])
+apply (cut_tac finite_Collect_le_nat[of "Suc n"])
 apply (frule isom_gch_unitsTr1_7_1 [of "E" "n" "h" "k"], assumption+)
 apply (cut_tac n_in_Nsetn[of "Suc n"])
 apply (case_tac "h (Suc n) \<cong> E")
@@ -4581,8 +4573,8 @@ lemma (in Group) rfn_compseries_iM:"\<lbrakk>0 < r; 0 < s; compseries G r f;
       h \<in> wcsr_rfns G r f s\<rbrakk>  \<Longrightarrow> card (h `{i. i \<le> (s * r)}) = r + 1"
 apply (frule compseries_is_D_gchain, assumption+)
 apply (frule D_gchain1)
- apply (simp add:finite_Nset)
- apply (subst card_Nset[THEN sym, of "r"])
+ apply simp
+ apply (subst card_Collect_le_nat[THEN sym, of "r"])
  apply (subst card_image[THEN sym, of "f" "{i. i \<le> r}"], assumption+)
  apply (rule card_eq[of "h ` {i. i \<le> (s * r)}" "f ` {i. i \<le> r}"])
 apply (frule rfn_compseries_iMTr1[of "r" "s" "f" "h"], assumption+)
@@ -5433,7 +5425,7 @@ done
 
 lemma length_wcmpser0_6:"\<lbrakk>Group G; w_cmpser G (Suc (Suc n)) f\<rbrakk> \<Longrightarrow> 
                                           0 < card (f ` {i. i \<le> (Suc n)})"
-apply (insert finite_Nset [of "Suc n"])
+apply (insert finite_Collect_le_nat [of "Suc n"])
 apply (frule finite_imageI [of "{i. i \<le> (Suc n)}" "f"])
 apply (subgoal_tac "{f 0} \<subseteq> f ` {i. i \<le> (Suc n)}")
 apply (frule card_mono [of "f ` {i. i \<le> (Suc n)}" "{f 0}"], assumption+)
@@ -5445,10 +5437,10 @@ done
 
 lemma length_wcmpser0_7:"\<lbrakk>Group G; w_cmpser G (Suc (Suc n)) f\<rbrakk> \<Longrightarrow>
                      card {i. i \<le> n \<and> Qw_cmpser G f i \<cong> E} \<le> Suc n"
-apply (insert finite_Nset [of "n"])
+apply (insert finite_Collect_le_nat [of "n"])
 apply (subgoal_tac "{i. i \<le> n \<and> Qw_cmpser G f i \<cong> E} \<subseteq> {i. i \<le> n}")
 apply (frule card_mono [of "{i. i \<le> n}" "{i. i \<le> n \<and> Qw_cmpser G f i \<cong> E}"])
- apply (assumption, simp add:card_Nset)
+ apply (assumption, simp)
 apply (rule subsetI, simp add:CollectI)
 done
 
@@ -5485,7 +5477,7 @@ apply (frule_tac n = "Suc n" and f = f and i = "Suc n" in
  prefer 2  apply (rule length_wcmpser0_3, assumption+)
  prefer 2
   apply (subgoal_tac "finite {i. i \<le> (Suc n)}")
-  apply (rule finite_imageI, assumption+, simp add:finite_Nset)
+  apply (rule finite_imageI, assumption+, simp)
  prefer 2 
  apply (thin_tac " \<not> Qw_cmpser G f (Suc n) \<cong> E",
         thin_tac " w_cmpser G (Suc n) f",
