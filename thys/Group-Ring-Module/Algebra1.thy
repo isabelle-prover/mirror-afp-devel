@@ -1667,13 +1667,6 @@ apply (simp add:Suc_Suc_Tr)
 apply (auto );  
 done
 
-lemma finite_Nset:"finite {j. j \<le> (n::nat)}"
-apply (induct_tac n)
- apply simp 
- apply (subst Nset_Suc) 
- apply simp
-done
-
 lemma func_pre:"f \<in> {j. j \<le> (Suc n)} \<rightarrow> A \<Longrightarrow> f \<in> {j. j \<le> n} \<rightarrow> A"
 by (simp add:Pi_def)
 
@@ -4066,24 +4059,6 @@ apply (rule contrapos_pp, simp+)
  apply simp
 done
 
-lemma card_Nset_Tr0:"Suc n \<notin> {i. i \<le> n}"
-by simp
-
-lemma card_Nset_Tr1:"card {i. i \<le> n} = Suc n \<Longrightarrow> 
-         card (insert (Suc n) {i. i \<le> n}) = Suc (Suc n)"
- apply (subst card_insert_disjoint)
- apply (simp add:finite_Nset)
- apply (simp add:card_Nset_Tr0)
- apply simp
- done
-
-lemma card_Nset:" card {i. i \<le> n} = Suc n"
- apply (induct_tac n)
- apply simp
- (* thm card_insert_disjoint *)
- apply (subst Nset_Suc)
- apply (simp add:card_Nset_Tr1)
- done
 
 lemma Nset2_prep1:"\<lbrakk>finite A; card A = Suc (Suc n) \<rbrakk> \<Longrightarrow> \<exists>x. x\<in>A" 
 apply (frule card_nonzero[of "A"])
@@ -4125,10 +4100,8 @@ by (simp add:Nset2_finiteTr)
 
 lemma Nset2finite_inj_tr0:"j \<in> {i. i \<le> (n::nat)} \<Longrightarrow>
                                      card ({i. i \<le> n} - {j}) = n"
-apply (insert finite_Nset [of "n"],
-       subst card_Diff_singleton [of "{i. i \<le> n}" "j"], assumption+,
-       subst card_Nset[of "n"], simp)
-done
+by simp
+
 
 lemma Nset2finite_inj_tr1:"\<lbrakk> i \<le> (n::nat); j \<le> n; f i = f j; i \<noteq> j \<rbrakk> \<Longrightarrow> 
        f ` ({i. i \<le> n} - {j}) = f ` {i. i \<le> n}"
@@ -4141,7 +4114,7 @@ done
 
 lemma Nset2finite_inj:"\<lbrakk>finite A; card A = Suc n; surj_to f {i. i \<le> n} A \<rbrakk> \<Longrightarrow> 
         inj_on f {i. i \<le> n}"
-by (metis Collect_def card_Nset eq_card_imp_inj_on finite_Nset surj_to_def)
+by (metis Collect_def card_Collect_le_nat eq_card_imp_inj_on finite_Collect_le_nat surj_to_def)
 
 definition
   zmax :: "[int, int] \<Rightarrow> int" where
@@ -4217,12 +4190,8 @@ apply (simp add:surj_to_def)
 done
 
 lemma image_Nsetn_card_pos:" 0 < card (f ` {i. i \<le> (n::nat)})"
-apply (cut_tac finite_Nset [of "n::nat"],
-       frule finite_imageI[of "{i. i \<le> n}" "f"])
-apply (rule nonempty_card_pos[of "f ` {i. i \<le> n}"], assumption)
-apply (cut_tac n_in_Nsetn[of "n"],
-       frule mem_in_image2[of "n" "{i. i \<le> n}" "f"])
-apply (rule nonempty, assumption+) 
+apply(rule nonempty_card_pos)
+apply auto
 done
 
 lemma card_image_Nsetn_Suc
@@ -4258,9 +4227,9 @@ apply (simp add:slide_def)
 done
 
 lemma card_nset:"i < (j :: nat) \<Longrightarrow> card (nset i j) = Suc (j - i)"
-apply (cut_tac finite_Nset [of "j - i"], frule slide_inj [of "i" "j"])
-apply ( frule card_image [of "slide i" "{k. k \<le> (j - i)}"])
-apply (simp add:card_Nset, frule slide_surj [of "i" "j"], simp add:surj_to_def)
+apply (frule slide_inj [of "i" "j"])
+apply (frule card_image [of "slide i" "{k. k \<le> (j - i)}"])
+apply (simp, frule slide_surj [of "i" "j"], simp add:surj_to_def)
 done
 
 lemma sliden_hom:"i < j \<Longrightarrow> (sliden i) \<in> nset i j \<rightarrow>  {k. k \<le> (j - i)}"
@@ -4363,7 +4332,6 @@ apply (simp add:surj_to_def,
        frule image_sub [of "transpos i j" "{i. i \<le> n}" "{i. i \<le> n}" 
        "{i. i \<le> n}"], simp)
 apply (frule transpos_inj [of "i" "n" "j"], assumption+,
-       cut_tac finite_Nset[of "n"],
        frule card_image [of "transpos i j" "{i. i \<le> n}"],
        simp add:card_seteq)
 done
@@ -4481,7 +4449,6 @@ proof -
  apply simp
  apply (frule image_sub [of "f" "{i. i \<le> n}" "{i. i \<le> n}" "{i. i \<le> n}"])
  apply simp+ 
- apply (insert finite_Nset [of "n"])
  apply (cut_tac card_image [of "f" "{i. i \<le> n}"])
  apply (simp add:card_seteq) apply assumption
  done
@@ -4518,25 +4485,19 @@ done
 
 lemma enumeration:"\<lbrakk>f \<in> {i. i \<le> (n::nat)} \<rightarrow> {i. i \<le> m}; inj_on f {i. i \<le> n}\<rbrakk>
                      \<Longrightarrow>  n \<le> m"
-  apply (frule image_sub[of f "{i. i \<le> n}" "{i. i \<le> m}" "{i. i \<le> n}"])
-  apply simp
-  apply (frule card_image[of f "{i. i \<le> n}"])
-  apply (cut_tac card_Nset[of n],
-         cut_tac card_Nset[of m])
-  apply (cut_tac finite_Nset[of m],
-        frule card_mono[of "{i. i \<le> m}" "f ` {i. i \<le> n}"], assumption+)
-  apply simp 
-done 
+apply (frule image_sub[of f "{i. i \<le> n}" "{i. i \<le> m}" "{i. i \<le> n}"])
+ apply simp
+apply (frule card_image[of f "{i. i \<le> n}"])
+apply(drule card_mono[OF finite_Collect_le_nat])
+apply simp
+done
  
 lemma enumerate_1:"\<lbrakk>\<forall>j \<le> (n::nat). f j \<in> A; \<forall>j \<le> (m::nat). g j \<in> A; 
      inj_on f {i. i \<le> n}; inj_on g {j. j \<le> m}; f `{j. j \<le> n} = A; 
      g ` {j. j \<le> m} = A \<rbrakk> \<Longrightarrow> n = m"
- apply (cut_tac finite_Nset[of m],
-        cut_tac finite_Nset[of n])
- apply (frule card_image[of f "{i. i \<le> n}"],
-        frule card_image[of g "{i. i \<le> m}"])
- apply simp
-  apply (cut_tac card_Nset[of n], cut_tac card_Nset[of m], simp)
+apply (frule card_image[of f "{i. i \<le> n}"],
+       frule card_image[of g "{i. i \<le> m}"])
+apply simp
 done
 
 definition

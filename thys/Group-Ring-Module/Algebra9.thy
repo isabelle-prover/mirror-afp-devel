@@ -3755,10 +3755,10 @@ apply (rule conjI)
         frule_tac f = ga and A = "{j. j \<le> card (fa ` {j. j \<le> n}) - Suc 0}"
         and B = "fa ` {j. j \<le> n}" and ?B1.0 = A in extend_fun, assumption+)
   apply simp
-  apply (cut_tac n = n in finite_Nset,
-         cut_tac n = "card (fa ` {j. j \<le> n}) - Suc 0" in finite_Nset,
+  apply (cut_tac k = n in finite_Collect_le_nat,
+         cut_tac k = "card (fa ` {j. j \<le> n}) - Suc 0" in finite_Collect_le_nat,
          cut_tac F = "{j. j \<le> n}" and h = fa in finite_imageI,
-         assumption) thm mem_in_image
+         assumption)
   apply (frule_tac f = fa and A = "{j. j \<le> n}" and B = A and a = 0 in
          mem_in_image, simp,
          frule_tac x = "fa 0" and A = "fa ` {j. j \<le> n}" in nonempty,
