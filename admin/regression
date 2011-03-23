@@ -65,7 +65,8 @@ if [ "$1" == "-" ]; then
   ISABELLE_TOOL=$ISABELLE_DEVEL/bin/isabelle
 
   ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
-  export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
+  ISABELLE_HOME_USER=`$ISABELLE_TOOL getenv -b ISABELLE_HOME_USER` || fail "could not identify ISABELLE_HOME_USER"
+  export ISABELLE_IMAGE_PATH="$ISABELLE_HOME_USER/heaps/$ML_IDENTIFIER/"
   
   LOG=$LOG-devel-$DATE.log
   SNAPSHOT=1;
