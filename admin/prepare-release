@@ -14,7 +14,6 @@ WORKING_COPY=~/afp/devel
 function fail()
 {
   echo "$1" >&2
-  log "FAILED, $1"
   exit 2
 }
 
@@ -44,8 +43,10 @@ ln -s $AFP_CONTRIB $ISABELLE_DEVEL/contrib
 
 cat $ISA_SETTINGS/$SHORT >> $ISABELLE_DEVEL/etc/settings
 
-. $ISA_SETTINGS/$SHORT
-rm -r $ISABELLE_HOME_USER/heaps
+ISABELLE=$ISABELLE_DEVEL/bin/isabelle
+ISABELLE_HOME_USER="$($ISABELLE getenv -b ISABELLE_HOME_USER)"
+[ -d $ISABELLE_HOME_USER ] || fail "[$ISABELLE_HOME_USER] not a directory."
+rm -rf $ISABELLE_HOME_USER/heaps
 
 cd $ISABELLE_DEVEL/src/HOL
 ../../bin/isabelle make HOL >> $DISTLOG 2>&1
