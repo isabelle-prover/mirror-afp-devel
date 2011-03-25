@@ -55,7 +55,8 @@ lemma [code]: "deleteAround g v ps =
       (let vs = (\<lambda>f. let n = f\<bullet>v
                      in if |vertices f| = 4 then [n, f\<bullet>n] else [n])
        in removeKeyList (concat(map vs (facesAt g v))) ps)"
-   by (simp only: Let_def deleteAround_def nextV2)
+  by (simp only: concat_map_singleton Let_def deleteAround_def nextV2)
+
 lemma length_deleteAround: "length (deleteAround g v ps) \<le> length ps"
   by (auto simp only: deleteAround_def length_removeKeyList Let_def)
 
