@@ -86,6 +86,11 @@ html_entry_capitalized = """<font class="first">{0}</font>{1}\n"""
 # {1}: url
 html_license_link = """<a href="{1}">{0}</a>"""
 
+# link to another entry
+# {0}: display title
+# {1}: url
+html_entry_link = """<a href="{1}">{0}</a>"""
+
 # wrapper for a text column in header
 # {0}: title (e. g. 'Change history')
 # {1}: text
@@ -101,8 +106,10 @@ html_entry_text_wrapper = """
 # {1}: author
 # {2}: date
 # {3}: text columns (html_entry_text_wrapper)
-# {4}: name
-# {5}: base (e. g. HOL or HOLCF)
+# {4}: license
+# {5}: entry
+# {6}: base (e. g. HOL or HOLCF)
+# {7}: depends-on
 # {{...}} is for escaping, because Py's format syntax collides with SSI
 html_entry_header_wrapper = """
 <table width="80%" class="data">
@@ -118,6 +125,7 @@ html_entry_header_wrapper = """
 {3}
     <tr><td class="datahead">License:</td>
         <td class="data">{4}</td></tr>
+{7}
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
@@ -130,6 +138,12 @@ html_entry_header_wrapper = """
 
 <!--#set var="name" value="{5}" -->
 <!--#set var="binfo" value="../browser_info/current/{6}/${{name}}" -->
+"""
+
+html_entry_depends_on_wrapper = """
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data">{0}</td></tr>
 """
 
 # list wrapper for older releases
@@ -165,7 +179,8 @@ attribute_schema = {
 	'base': (False, None, "HOL"),
 	'license': (False, "parse_license", "BSD"),
 	'ignore': (True, None, ""),
-	'extra*': (False, "parse_extra", None)
+	'extra*': (False, "parse_extra", None),
+	'depends-on': (False, "parse_depends_on", ""),
 }
 
 ### licenses
@@ -598,6 +613,12 @@ def parse_author(author, entry, key):
 		notice("In entry {0}: For {1} {2} no URL specified".format(entry, key, author))
 		return author, None
 
+# splits list of dependencies. returns empty list if no dependency is
+# given
+def parse_depends_on(dependency, **kwargs):
+	deps = [x.strip() for x in dependency.split(',')]
+	return filter(lambda x: x <> '', deps)
+
 def generate_link_list(entries):
 	return ''.join([html_topic_link.format(e) for e in entries])
 
@@ -675,6 +696,15 @@ def format_entry_text(title, text):
 		title, "\n" + text
 	)
 
+def depends_on_string(deps):
+	return ', '.join(html_entry_link.format(dep, dep + ".shtml") for dep in deps)
+
+def format_depends_on(deps):
+	if len(deps) == 0:
+		return ''
+	else:
+		return html_entry_depends_on_wrapper.format(depends_on_string(deps))
+
 # HTML formatting for entry page
 # supports the following parameters:
 #   'header' for entry header (author, title, date etc.)
@@ -700,7 +730,8 @@ def generate_entry(entry, attributes, param):
 			text_columns,
 			html_license_link.format(attributes['license'][0], attributes['license'][1]),
 			entry,
-			attributes['base']
+			attributes['base'],
+			format_depends_on(attributes['depends-on']),
 		)
 	elif param == "older":
 		if len(attributes['releases']) > 1:
@@ -843,18 +874,41 @@ def handle_template(entries, template, content):
 		output_filename = os.path.join(dest_subdir, template + output_suffix)
 		write_output(output_filename, content, partial(generator, not_ignored))
 
+# creates a makefile
+def makefile(entries, dir):
+	try:
+		with open(os.path.join(dir, "IsaMakefile"), "w") as output:
+			for k, attributes in entries.items():
+				output.write(".PHONY: {0}\n".format(k))
+				output.write("{0}: {1}\n"
+						.format(k, " ".join(attributes["depends-on"])))
+				output.write("	make -C {0} -f IsaMakefile all\n\n".format(k))
+	except IOException as ex:
+		failed = True
+		error("Error writing Makefile {0}".format(filename), exception = ex)
+
+# checks whether all dependencies are present
+def check_deps(entries):
+	keys = set(entries.keys())
+	for key, attributes in entries.items():
+		deps = set(attributes["depends-on"])
+		if not deps.issubset(keys):
+			warn("In entry {0}: Missing dependencies {1}"
+					.format(key, deps - keys))
+
 if __name__ == "__main__":
-	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR] metadata-dir")
+	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR | --makefile=THYS_DIR] metadata-dir")
 	parser.add_option("--no-warn", action = "store_false", dest = "enable_warnings", default = True, help = "disable output of warnings")
 	parser.add_option("--check", action = "store", type = "string", dest = "thys_dir", help = "compare the contents of the metadata file with actual file system contents")
 	parser.add_option("--dest", action = "store", type = "string", dest = "dest_dir", help = "generate files for each template in the metadata directory")
 	parser.add_option("--debug", action = "store_true", dest = "enable_debug", default = False, help = "display debug output")
+	parser.add_option("--makefile", action = "store", type = "string", dest = "makefile_dir", help = "generate a makefile for building the whole AFP")
 
 	(options, args) = parser.parse_args(argv)
 	if len(args) != 2:
 		parser.error("You must supply at least one parameter. For usage, supply --help.")
-	if not options.thys_dir and not options.dest_dir:
-		parser.error("You must supply at least one of --check or --dest")
+	if not options.thys_dir and not options.dest_dir and not options.makefile_dir:
+		parser.error("You must supply at least one of --check or --dest or --makefile")
 
 	metadata_dir = args[1]
 
@@ -865,6 +919,8 @@ if __name__ == "__main__":
 	debug(entries, title = "Entries from metadata file")
 	if len(entries) == 0:
 		warn("In metadata: No entries found")
+	check_deps(entries)
+
 
 	# perform check
 	if options.thys_dir:
@@ -881,3 +937,6 @@ if __name__ == "__main__":
 		stats = Stats()
 		scan_templates(entries)
 		print(stats)
+
+	if options.makefile_dir:
+		makefile(entries, options.makefile_dir)
