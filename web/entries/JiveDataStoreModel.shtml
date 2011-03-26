@@ -49,8 +49,6 @@ This document presents the formalization of an object-oriented data and store mo
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
