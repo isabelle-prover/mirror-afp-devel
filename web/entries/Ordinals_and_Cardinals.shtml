@@ -50,6 +50,7 @@ We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the p
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>

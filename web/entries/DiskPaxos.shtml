@@ -53,6 +53,7 @@ Disk Paxos is an algorithm for building arbitrary fault-tolerant distributed sys
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>
