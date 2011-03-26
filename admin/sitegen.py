@@ -101,8 +101,9 @@ html_entry_text_wrapper = """
 # {1}: author
 # {2}: date
 # {3}: text columns (html_entry_text_wrapper)
-# {4}: name
-# {5}: base (e. g. HOL or HOLCF)
+# {4}: license
+# {5}: entry
+# {6}: base (e. g. HOL or HOLCF)
 # {{...}} is for escaping, because Py's format syntax collides with SSI
 html_entry_header_wrapper = """
 <table width="80%" class="data">
