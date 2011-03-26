@@ -125,9 +125,7 @@ html_entry_header_wrapper = """
 {3}
     <tr><td class="datahead">License:</td>
         <td class="data">{4}</td></tr>
-
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data">{7}</td></tr>
+{7}
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
@@ -140,6 +138,12 @@ html_entry_header_wrapper = """
 
 <!--#set var="name" value="{5}" -->
 <!--#set var="binfo" value="../browser_info/current/{6}/${{name}}" -->
+"""
+
+html_entry_depends_on_wrapper = """
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data">{0}</td></tr>
 """
 
 # list wrapper for older releases
@@ -692,8 +696,14 @@ def format_entry_text(title, text):
 		title, "\n" + text
 	)
 
-def format_depends_on(deps):
+def depends_on_string(deps):
 	return ', '.join(html_entry_link.format(dep, dep + ".shtml") for dep in deps)
+
+def format_depends_on(deps):
+	if len(deps) == 0:
+		return ''
+	else:
+		return html_entry_depends_on_wrapper.format(depends_on_string(deps))
 
 # HTML formatting for entry page
 # supports the following parameters:
