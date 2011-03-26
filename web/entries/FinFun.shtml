@@ -58,8 +58,22 @@ new conversion function from FinFun to list of elements in the domain
 (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0c167102e6ed">0c167102e6ed</a>)
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2010-08-13]:
+new concept domain of a FinFun as a FinFun
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/34b3517cbc09">34b3517cbc09</a>)
+[2010-11-04]:
+new conversion function from FinFun to list of elements in the domain
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0c167102e6ed">0c167102e6ed</a>)
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

@@ -60,6 +60,9 @@ prove that the well-formedness of a Statechart is preserved by the semantics.
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"></td></tr>
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
