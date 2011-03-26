@@ -110,7 +110,7 @@ executable scheduler for source code semantics
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"></td></tr>
+        <td class="data"><a href="Jinja.shtml">Jinja</a>, <a href="Collections.shtml">Collections</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->

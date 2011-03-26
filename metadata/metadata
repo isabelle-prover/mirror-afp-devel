@@ -42,6 +42,7 @@ author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2004-03-30
 topic = Computer Science/Automata and Formal Languages
 abstract = This theory defines deterministic and nondeterministic automata in a functional representation: the transition function/relation and the finality predicate are just functions. Hence the state space may be infinite. It is shown how to convert regular expressions into such automata. A scanner (generator) is implemented with the help of functional automata: the scanner chops the input up into longest recognized substrings. Finally we also show how to convert a certain subclass of functional automata (essentially the finite deterministic ones) into regular sets.
+depends-on = Regular-Sets
 
 [Statecharts]
 title = Formalizing Statecharts using Hierarchical Automata
@@ -67,6 +68,7 @@ author = Peter Lammich <mailto:peter.lammich@uni-muenster.de>
 date = 2009-11-25
 topic = Computer Science/Automata and Formal Languages
 abstract = This work presents a machine-checked tree automata library for Standard-ML, OCaml and Haskell. The algorithms are efficient by using appropriate data structures like RB-trees. The available algorithms for non-deterministic automata include membership query, reduction, intersection, union, and emptiness check with computation of a witness for non-emptiness. The executable algorithms are derived from less-concrete, non-executable algorithms using data-refinement techniques. The concrete data structures are from the Isabelle Collections Framework. Moreover, this work contains a formalization of the class of tree-regular languages and its closure properties under set operations.
+depends-on = Collections
 
 [DPT-SAT-Solver]
 title = A Fast SAT Solver for Isabelle in Standard ML
@@ -95,6 +97,7 @@ author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <htt
 date = 2010-05-28
 topic = Computer Science/Algorithms
 abstract = The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as a benchmark in many formalizations of pointer programs. The main purpose of this mechanization is to show how data refinement of invariant based programs can be used in verifying practical algorithms. The verification starts with an abstract algorithm working on a graph given by a relation <i>next</i> on nodes. Gradually the abstract program is refined into Deutsch-Schorr-Waite graph marking algorithm where only one bit per graph node of additional memory is used for marking. 
+depends-on = DataRefinementIBP
 
 [SATSolverVerification]
 title = Formal Verification of Modern SAT Solvers 
@@ -110,6 +113,7 @@ date = 2011-03-14
 author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
 abstract = We provide a generic work-list algorithm to compute the transitive closure of finite relations where only successors of newly detected states are generated. This algorithm is then instantiated for lists over arbitrary carriers and red black trees (which are faster but require a linear order on the carrier), respectively.  Our formalization was performed as part of the IsaFoR/CeTA project where reflexive transitive closures of large tree automata have to be computed.
+depends-on = Collections, Abstract-Rewriting
 
 [MuchAdoAboutTwo]
 title = Much Ado About Two 
@@ -152,6 +156,7 @@ author = Veronika Ortner, Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
 date = 2008-02-29
 topic = Computer Science/Data Structures
 abstract = We present the verification of the normalisation of a binary decision diagram (BDD). The normalisation follows the original algorithm presented by Bryant in 1986 and transforms an ordered BDD in a reduced, ordered and shared BDD. The verification is based on Hoare logics.
+depends-on = Simpl
 
 [BinarySearchTree]
 title = Binary Search Trees
@@ -223,6 +228,7 @@ author = Peter Lammich <mailto:peter.lammich@uni-muenster.de>
 date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
+depends-on = Binomial-Heaps, Finger-Trees
 extra-history = 
   Change history:
   [2010-10-08]: New Interfaces: OrderedSet, OrderedMap, List.
@@ -273,6 +279,7 @@ abstract =
   which contains several termination techniques. The provided theories have
   been essential to formalize matrix-interpretations and arctic
   interpretations.
+depends-on = Abstract-Rewriting
 extra-history =
   Change history: 
   [2010-09-17]: Moved theory on arbitrary (ordered) semirings to Abstract Rewriting.
@@ -345,6 +352,7 @@ date = 2007-12-03
 base = HOL/HOL-Word
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. For explanations on the framework semantics and the source code instantiation, see the FOOL 2008 paper by A. Lochbihler.
+depends-on = Jinja, Collections
 extra-history = 
   Change history:
   [2008-04-23]:
@@ -497,6 +505,7 @@ date = 2008-09-16
 base = HOL/Jinja
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = Slicing is a widely-used technique with applications in e.g. compiler technology and software security. Thus verification of algorithms in these areas is often based on the correctness of slicing, which should ideally be proven independent of concrete programming languages and with the help of well-known verifying techniques such as proof assistants. As a first step in this direction, this contribution presents a framework for dynamic and static intraprocedural slicing based on control flow and program dependence graphs. Abstracting from concrete syntax we base the framework on a graph representation of the program fulfilling certain structural and well-formedness properties.<br><br>The formalization consists of the basic framework (in subdirectory Basic/), the correctness proof for dynamic slicing (in subdirectory Dynamic/), the correctness proof for static intraprocedural slicing (in subdirectory StaticIntra/) and instantiations of the framework with a simple While language (in subdirectory While/) and the sophisticated object-oriented bytecode language of Jinja (in subdirectory JinjaVM/). For more information on the framework, see the TPHOLS 2008 paper by Wasserrab and Lochbihler and the PLAS 2009 paper by Wasserrab et al. 
+depends-on = Jinja
 
 [HRB-Slicing]
 title = Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer
@@ -505,6 +514,7 @@ date = 2009-11-13
 base = HOL/Jinja
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = After verifying <a href="Slicing.shtml">dynamic and static interprocedural slicing</a>, we present a modular framework for static interprocedural slicing. To this end, we formalized the standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together with summary edges as presented by Reps et al. (see FSE 1994). The framework is again modular in the programming language by using an abstract CFG, defined via structural and well-formedness properties. Using a weak simulation between the original and sliced graph, we were able to prove the correctness of static interprocedural slicing. We also instantiate our framework with a simple While language with procedures. This shows that the chosen abstractions are indeed valid. 
+depends-on = Jinja
 
 [WorkerWrapper]
 title = The Worker/Wrapper Transformation
@@ -544,6 +554,7 @@ date = 2010-03-23
 topic = Computer Science/Security
 ignore = entry
 abstract = In this contribution, we show how correctness proofs for <a href="Slicing.shtml">intra-</a> and <a href="HRB-Slicing.shtml">interprocedural slicing</a> can be used to prove that slicing is able to guarantee information flow noninterference.  Moreover, we also illustrate how to lift the control flow graphs of the respective frameworks such that they fulfil the additional assumptions needed in the noninterference proofs. A detailed description of the intraprocedural proof and its interplay with the slicing framework can be found in the PLAS'09 paper by Wasserrab et al.
+depends-on = Slicing, HRB-Slicing
 
 [Verified-Prover]
 title = A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
@@ -603,6 +614,7 @@ date = 2011-02-23
 base = HOL/List-Infinite
 topic = Logic
 abstract = We introduce a theory of temporal logic operators using sets of natural numbers as time domain, formalized in a shallow embedding manner. The theory comprises special natural intervals (theory IL_Interval: open and closed intervals, continuous and modulo intervals, interval traversing results), operators for shifting intervals to left/right on the number axis as well as expanding/contracting intervals by constant factors (theory IL_IntervalOperators.thy), and ultimately definitions and results for unary and binary temporal operators on arbitrary natural sets (theory IL_TemporalOperators).
+depends-on = List-Infinite
 
 [Recursion-Theory-I]
 title = Recursion Theory I 
@@ -653,6 +665,7 @@ abstract =
  and in other fields. This theory provides the definition of Free Group as
  the set of fully canceled words in the generators. The universal property is
  proven, as well as some isomorphisms results about Free Groups.
+depends-on = Ordinals_and_Cardinals
 
 [CofGroups]
 title = An Example of a Cofinitary Group in Isabelle/HOL
@@ -682,6 +695,7 @@ date = 2007-08-08
 topic = Mathematics/Algebra
 base = HOL/Group-Ring-Module
 abstract = Convergence with respect to a valuation is discussed as convergence of a Cauchy sequence. Cauchy sequences of polynomials are defined. They are used to formalize Hensel's lemma.
+depends-on = Group-Ring-Module
 
 [Cauchy]
 title = Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality 
@@ -716,6 +730,7 @@ abstract =
   href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA-system</a>
   which contains several termination techniques. The provided theories have
   been essential to  formalize polynomial interpretations.
+depends-on = Abstract-Rewriting
 extra-history =
   Change history: 
   [2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
@@ -740,6 +755,7 @@ author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>
 date = 2007-08-12
 topic = Mathematics/Number Theory
 abstract = This document presents the mechanised proofs of the following results:<ul><li>any prime number of the form 4m+1 can be written as the sum of two squares;</li><li>any natural number can be written as the sum of four squares</li></ul>
+depends-on = Fermat3_4
 
 [ArrowImpossibilityGS]
 title = Arrow and Gibbard-Satterthwaite 
@@ -761,6 +777,7 @@ author = Stefan Friedrich
 date = 2004-04-26
 topic = Mathematics/Topology
 abstract = This entry contains two theories. The first, <tt>Topology</tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <tt>LList_Topology</tt>. It develops the topology of lazy lists.
+depends-on = Lazy-Lists-II
 
 [Flyspeck-Tame]
 title = Flyspeck I: Tame Graphs 
@@ -825,6 +842,7 @@ author = Stefan Friedrich
 date = 2004-04-26
 topic = Computer Science/Data Structures
 abstract = This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
+depends-on = Coinductive
 
 [Example-Submission]
 title = Example Submission

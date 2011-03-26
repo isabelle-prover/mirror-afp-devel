@@ -71,7 +71,7 @@ interpretations.
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"></td></tr>
+        <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a></td></tr>
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
