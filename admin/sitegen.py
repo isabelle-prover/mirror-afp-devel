@@ -879,11 +879,16 @@ def handle_template(entries, template, content):
 def makefile(entries, dir):
 	try:
 		with open(os.path.join(dir, "IsaMakefile"), "w") as output:
+			output.write(".PHONY: all\n")
+			output.write("all:")
+			for k, _ in entries.items():
+				output.write(" {0}".format(k))
+			output.write("\n\n")
 			for k, attributes in entries.items():
 				output.write(".PHONY: {0}\n".format(k))
 				output.write("{0}: {1}\n"
 						.format(k, " ".join(attributes["depends-on"])))
-				output.write("	make -C {0} -f IsaMakefile all\n\n".format(k))
+				output.write("	make -C {0} -f IsaMakefile all\n\n".format(k))			
 	except IOException as ex:
 		failed = True
 		error("Error writing Makefile {0}".format(filename), exception = ex)
