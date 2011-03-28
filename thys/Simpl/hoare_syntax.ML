@@ -706,7 +706,7 @@ fun is_pos t =
 
 
 fun infer_type ctxt t =
-  Syntax.check_term ctxt (ProofContext.decode_term ctxt t);
+  Syntax.check_term ctxt (#2 (ProofContext.decode_term ctxt t));
 
 
 (* NOTE: operations on actual terms *)
