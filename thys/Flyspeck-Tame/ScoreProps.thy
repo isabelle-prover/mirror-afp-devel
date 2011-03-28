@@ -312,7 +312,7 @@ proof -
         proof-
           have "set (ExcessNotAtRecList (deleteAround g a ps) g) <=
                 set (map fst (deleteAround g a ps))"
-            by(rule ExcessNotAtRecList_subset)
+            by(rule ExcessNotAtRecList_subset[simplified concat_map_singleton])
           also have "\<dots> <= set (map fst ps)"
             using deleteAround_subset by fastsimp
           finally show ?thesis using prem by(auto simp: isTable_def)
@@ -393,7 +393,7 @@ next
       by (rule deleteAround_subset)
     then have "set [fst p. p \<leftarrow> deleteAround g a ps]
       \<subseteq> set [fst p. p \<leftarrow> ps]" by auto
-    finally have "a \<in> set (map fst ps)" .
+    finally have "a \<in> set (map fst ps)" by simp
     with a show False by contradiction
   qed
   with H1 H2 show "?P ((a,b)#ps)"
@@ -477,12 +477,12 @@ proof (intro exI conjI)
     by(rule separated_ExcessNotAtRecList[OF mgp fin t])
 
   have "set (ExcessNotAtRecList ?ps g) \<subseteq> set (map fst ?ps)"
-    by (rule ExcessNotAtRecList_subset)
+    by (rule ExcessNotAtRecList_subset[simplified concat_map_singleton])
   also have "\<dots> \<subseteq> set (vertices g)" by (rule ExcessTable_subset)
   finally show "set ?V \<subseteq> set (vertices g)" .
 
   show "distinct ?V"
-   by (simp add: distinct_ExcessNotAtRecList distinct_ExcessTable)
+    by (simp add: distinct_ExcessNotAtRecList distinct_ExcessTable[simplified concat_map_singleton])
 qed
 
 lemma excess_eq:
