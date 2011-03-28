@@ -9,6 +9,21 @@ from glob import glob
 from configurations import Isabelle as isabelle
 
 
+def extract_afp_status(logdata):
+
+    status = dict((session, 'ok') for name in re.findall(r'Testing \[([^\]]+)\]', logdata))
+
+    for match in re.findall(r'The following tests failed:\n([^\n]*)', logdata):
+        for session in match.split(' '):
+            status[session] = 'FAIL'
+
+    for match in re.findall(r'The following tests were skipped:\n([^\n]*)', logdata):
+        for session in match.split(' '):
+            status[session] = 'skipped'
+
+    return status
+
+
 def run_afp_sessions(env, case, paths, dep_paths, playground, select):
 
     (loc_afp, loc_isabelle) = paths
@@ -30,8 +45,12 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, select):
         path.join(loc_isabelle, 'bin', 'isabelle'), *sessions,
         ISABELLE_IMAGE_PATH = loc_image)
 
+    data = {'status': extract_afp_status(log),
+      'timing': isabelle.extract_isabelle_run_timing(log) }
+
     return (return_code == 0, isabelle.extract_isabelle_run_summary(log),
-      {'timing': isabelle.extract_isabelle_run_timing(log)}, {'log': log}, None)
+      data, {'log': log}, None)
+
 
 @configuration(repos = [AFP, Isabelle], deps = [(isabelle.AFP_images, [1])])
 def AFP_small_sessions(env, case, paths, dep_paths, playground):
