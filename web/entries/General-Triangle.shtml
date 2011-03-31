@@ -43,7 +43,7 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-Some acute-angled triangle are special, e.g. right-angled or isoscele triangles. Some are not of this kind, but, without measuring angles, look as if they are. In that sense, there is exactly one general triangle. This well-known fact is proven here formally.
+Some acute-angled triangles are special, e.g. right-angled or isoscele triangles. Some are not of this kind, but, without measuring angles, look as if they were. In that sense, there is exactly one general triangle. This well-known fact is proven here formally.
         </td></tr>
 
     <tr><td class="datahead">License:</td>
