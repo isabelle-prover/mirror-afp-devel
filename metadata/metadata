@@ -1,3 +1,11 @@
+[General-Triangle]
+title = The General Triangle Is Unique
+author = Joachim Breitner <mailto:mail@joachim-breitner.de>
+topic = Mathematics/Geometry
+base = HOL
+date = 2011-04-01
+abstract = Some acute-angled triangles are special, e.g. right-angled or isoscele triangles. Some are not of this kind, but, without measuring angles, look as if they were. In that sense, there is exactly one general triangle. This well-known fact is proven here formally.
+
 [LightweightJava]
 title = Lightweight Java
 author = Rok Strni&scaron;a <http://rok.strnisa.com/lj/>, Matthew Parkinson <http://research.microsoft.com/people/mattpark/>
