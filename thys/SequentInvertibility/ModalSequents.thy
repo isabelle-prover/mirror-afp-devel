@@ -1,5 +1,7 @@
 (*<*)
 (* AUTHOR : Peter Chapman  *)
+(* License: LGPL *)
+
 header "Modal Sequents"
 
 theory ModalSequents

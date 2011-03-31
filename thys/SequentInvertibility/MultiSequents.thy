@@ -1,4 +1,5 @@
 (* Author : Peter Chapman *)
+(* License: LGPL *)
 (*<*)
 header "Multisuccedent Sequents"
 

@@ -1,5 +1,6 @@
 (*  Title:       Category theory using Isar and Locales
     Author:      Greg O'Keefe, June, July, August 2003
+    License: LGPL
 *)
 
 header {* {{\sf Set}} is a Category *}

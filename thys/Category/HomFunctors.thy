@@ -1,5 +1,6 @@
 (*  Title:       Category theory using Isar and Locales
     Author:      Greg O'Keefe, June, July, August 2003
+    License: LGPL
 
 Define homfunctors, prove that they are functors.
 *)

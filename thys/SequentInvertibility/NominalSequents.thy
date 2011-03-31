@@ -1,5 +1,6 @@
 (*<*)
 (* Author : Peter Chapman *)
+(* License: LGPL *)
 header "First Order Sequents" 
 theory NominalSequents
 imports "~~/src/HOL/Library/Multiset" Nominal

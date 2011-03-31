@@ -1,4 +1,6 @@
-(*<*)(*  Author : Peter Chapman *)
+(*<*)
+(*  Author : Peter Chapman *)
+(* License: LGPL *)
 header "Single Succedent"
 
 theory SingleSuccedent

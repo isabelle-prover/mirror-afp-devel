@@ -1,5 +1,6 @@
 (*<*)
 (* Author : Peter Chapman *)
+(* License: LGPL *)
 header "Rule Set Transformations"
  
 theory SRCTransforms
