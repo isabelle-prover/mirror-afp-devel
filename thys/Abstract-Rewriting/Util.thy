@@ -196,44 +196,6 @@ qed
 
 subsection {* Functions on Lists *}
 
-text {* A tail recursive variant for @{term "concat(map f xs)"}. *}
-primrec rev_append :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
-where "rev_append [] ys = ys"
-    | "rev_append (x#xs) ys = rev_append xs (x#ys)"
-
-text {* @{const rev_append} is characterized through @{const rev} and @{const append}. *}
-lemma rev_append_conv[simp]: "rev_append xs ys = rev xs @ ys"
-  by (induct xs arbitrary: ys) auto
-declare rev_append.simps[simp del]
-
-(* FIXME: cf. List.concat_map ??? *)
-primrec flat_map_aux :: "('a \<Rightarrow> 'b list) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'b list"
-where "flat_map_aux f [] ys = rev ys"
-    | "flat_map_aux f (x#xs) ys = flat_map_aux f xs (rev_append (f x) ys)"
-
-lemma flat_map_aux_conv: "flat_map_aux f xs ys = rev ys @ concat(map f xs)"
-  by (induct xs arbitrary: ys) auto
-
-definition flat_map where "flat_map f xs \<equiv> flat_map_aux f xs []"
-
-text {* @{const flat_map_aux} is no longer needed. *}
-hide_const flat_map_aux 
-
-lemma flat_map_concat_map_conv[simp]: "flat_map f xs = concat(map f xs)"
-  unfolding flat_map_def flat_map_aux_conv by simp
-
-text {* For code-generation, replace algebraically nice functions by
-efficient and/or tail recursive ones. *}
-lemma [code_inline]: "concat(map f xs) = flat_map f xs"
-  by (rule flat_map_concat_map_conv[symmetric])
-
-lemma flat_map_cong[fundef_cong]:
-  fixes f g::"'a \<Rightarrow> 'b list"
-  assumes "xs = ys" and "\<And>(x::'a). x \<in> set ys \<Longrightarrow> f x = g x"
-  shows "flat_map f xs = flat_map g ys"
-using map_cong[OF assms] by simp
-
-
 lemma list_all_cong[fundef_cong]: fixes xs ys f g 
   assumes "xs = ys" and "\<And>x. x \<in> set ys \<Longrightarrow> f x = g x" 
   shows "list_all f xs = list_all g ys" 
