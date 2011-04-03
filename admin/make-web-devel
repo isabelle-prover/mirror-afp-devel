@@ -7,7 +7,9 @@ WORKING_COPY="$DIR/.."
 
 BROWSER_INFO="$1"
 ISABELLE_HG_ID="$2"
-AFP_HG_ID="$3"
+ISABELLE_DATE="$3"
+AFP_HG_ID="$4"
+AFP_DATE="$5"
 
 REPORT=$REPORT-devel
 
@@ -29,9 +31,7 @@ function fail()
     echo "Exported thys/web from hg" >> $LOG
 
     # update status report
-    cp $REPORT $EXPORT/$STATUS || fail "could not cp $REPORT $EXPORT/$STATUS"
-    echo >> $EXPORT/$STATUS
-    echo `date` >> $EXPORT/$STATUS
+    admin/mkstatus.py $REPORT admin/status.tpl "$ISABELLE_HG_ID" "$ISABELLE_DATE" "$AFP_HG_ID" "$AFP_DATE" >> $WEB/status.shtml || fail "could not generate status.shtml"
 
     # make devel tar files
     tar cf $EXPORT.tar $EXPORT/thys || fail "could not tar thys"

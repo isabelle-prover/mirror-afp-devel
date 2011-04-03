@@ -76,6 +76,7 @@ if [ "$1" == "-" ]; then
   [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
 
   ISABELLE_HG_ID="$(cat $ISABELLE_IDENT)"
+  ISABELLE_DATE=$DATE
   ISABELLE_VER="devel -- hg id $ISABELLE_HG_ID"
 else
   AFP_VER="release ($1)"
@@ -106,6 +107,8 @@ echo "end hg pull/update" >> $LOG
 echo >> $LOG
 
 AFP_HG_ID="$(hg id -i)"
+AFP_HG_ID="${AFP_HG_ID%+}"
+AFP_DATE="$(hg log -l 1 -r $AFP_HG_ID --template '{date|isodate}')"
 AFP_VERSION="AFP version: $AFP_VER -- hg id $AFP_HG_ID"
 ISA_VERSION="Isabelle version: $ISABELLE_VER"
 
@@ -184,5 +187,5 @@ rm -f $TMP
 
 # make devel snapshot
 if [ "$SNAPSHOT" == "1" ]; then
-    $WORKING_COPY/admin/make-web-devel "$BROWSER_INFO" $ISABELLE_HG_ID $AFP_HG_ID || fail "failed to prepare snapshot"
+    $WORKING_COPY/admin/make-web-devel "$BROWSER_INFO" $ISABELLE_HG_ID "$ISABELLE_DATE" $AFP_HG_ID "$AFP_DATE"|| fail "failed to prepare snapshot"
 fi
