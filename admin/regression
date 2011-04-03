@@ -134,6 +134,8 @@ if [ -n "$DIFF" ]; then
 The status of the following AFP entries changed or remains FAIL: 
 $DIFF
 
+Full entry status at http://afp.sourceforge.net/status.shtml
+
 $AFP_VERSION
 $ISA_VERSION
 Test ended on: $HOST, `date`.
