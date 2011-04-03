@@ -31,7 +31,7 @@ function fail()
     echo "Exported thys/web from hg" >> $LOG
 
     # update status report
-    admin/mkstatus.py $REPORT admin/status.tpl "$ISABELLE_HG_ID" "$ISABELLE_DATE" "$AFP_HG_ID" "$AFP_DATE" >> $WEB/status.shtml || fail "could not generate status.shtml"
+    admin/mkstatus.py $REPORT admin/status.tpl "$ISABELLE_HG_ID" "$ISABELLE_DATE" "$AFP_HG_ID" "$AFP_DATE" > $WEB/status.shtml || fail "could not generate status.shtml"
 
     # make devel tar files
     tar cf $EXPORT.tar $EXPORT/thys || fail "could not tar thys"
