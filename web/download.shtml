@@ -49,7 +49,7 @@
       <a href="release/afp-devel.tar.gz"><tt>afp-devel.tar.gz</tt></a>     
       [<!--#fsize file="release/afp-devel.tar.gz" -->]
 
-      [<a href="release/entry-status.txt">entry status</a>]
+      [<a href="status.shtml">entry status</a>]
   </td></tr></tr>
 
 	<tr><td class="head">Mercurial access:</td></tr>	
