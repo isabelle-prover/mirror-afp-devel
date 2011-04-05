@@ -311,7 +311,7 @@ translations
 
 parse_ast_translation {*
 let
-fun tr c asts = Syntax.mk_appl (Constant c) (map Syntax.strip_positions_ast asts)
+fun tr c asts = Ast.mk_appl (Ast.Constant c) (map Syntax.strip_positions_ast asts)
 in [(@{syntax_const "_antiquoteCur0"}, tr @{syntax_const "_antiquoteCur"}),
     (@{syntax_const "_antiquoteOld0"}, tr @{syntax_const "_antiquoteOld"})]
 end
@@ -319,7 +319,7 @@ end
 
 print_ast_translation {*
 let
-fun tr c asts = Syntax.mk_appl (Constant c) asts
+fun tr c asts = Ast.mk_appl (Ast.Constant c) asts
 in [(@{syntax_const "_antiquoteCur"}, tr @{syntax_const "_antiquoteCur0"}),
     (@{syntax_const "_antiquoteOld"}, tr @{syntax_const "_antiquoteOld0"})]
 end
@@ -327,7 +327,7 @@ end
 
 print_ast_translation {*
 let
-fun dest_abs (Appl [Constant @{syntax_const "_abs"},x,t]) = (x,t)
+fun dest_abs (Ast.Appl [Ast.Constant @{syntax_const "_abs"},x,t]) = (x,t)
   | dest_abs _ = raise Match;
 fun spec_tr' [P,c,Q,A] =
   let 
@@ -335,15 +335,15 @@ fun spec_tr' [P,c,Q,A] =
     val (_ ,c') = dest_abs c;
     val (_ ,Q') = dest_abs Q;
     val (_ ,A') = dest_abs A; 
-  in if (A'=Constant @{const_syntax bot})
-     then Syntax.mk_appl (Constant @{syntax_const "_SpecNoAbrupt"}) [x', P', c', Q'] 
-     else Syntax.mk_appl (Constant @{syntax_const "_Spec"}) [x', P', c', Q', A'] end;
+  in if (A' = Ast.Constant @{const_syntax bot})
+     then Ast.mk_appl (Ast.Constant @{syntax_const "_SpecNoAbrupt"}) [x', P', c', Q'] 
+     else Ast.mk_appl (Ast.Constant @{syntax_const "_Spec"}) [x', P', c', Q', A'] end;
 fun whileAnnoFix_tr' [b,I,V,c] =
   let
     val (x',I') = dest_abs I;
     val (_ ,V') = dest_abs V;
     val (_ ,c') = dest_abs c;
-  in Syntax.mk_appl (Constant @{syntax_const "_WhileFix_inv_var"}) [b,x',I',V',c']
+  in Ast.mk_appl (Ast.Constant @{syntax_const "_WhileFix_inv_var"}) [b,x',I',V',c']
   end;
 in [(@{const_syntax specAnno}, spec_tr'),
     (@{const_syntax whileAnnoFix}, whileAnnoFix_tr')]
