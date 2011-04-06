@@ -12,10 +12,10 @@ from configurations import Isabelle as isabelle
 
 def extract_afp_status(logdata):
 
-    status = dict((session, 'ok') for name in re.findall(r'Testing \[([^\]]+)\]', logdata))
+    status = dict((session, 'ok') for session in re.findall(r'Testing \[([^\]]+)\]', logdata))
 
     for match in re.findall(r'The following tests failed:\n([^\n]*)', logdata):
-        for session in match.split(' '):
+        for session in match.strip().split(' '):
             status[session] = 'FAIL'
 
     for match in re.findall(r'The following tests were skipped:\n([^\n]*)', logdata):
