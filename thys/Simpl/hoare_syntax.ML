@@ -706,7 +706,7 @@ fun is_pos t =
 
 
 fun infer_type ctxt t =
-  Syntax.check_term ctxt (Exn.release (#2 (ProofContext.decode_term ctxt ([], Exn.Result t))));
+  Syntax.check_term ctxt (Exn.release (#2 (Syntax_Phases.decode_term ctxt ([], Exn.Result t))));
 
 
 (* NOTE: operations on actual terms *)
