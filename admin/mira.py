@@ -5,6 +5,7 @@
 import os
 from os import path
 from glob import glob
+import re
 
 from configurations import Isabelle as isabelle
 
