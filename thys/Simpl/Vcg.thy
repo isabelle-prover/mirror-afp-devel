@@ -311,7 +311,7 @@ translations
 
 parse_ast_translation {*
 let
-fun tr c asts = Ast.mk_appl (Ast.Constant c) (map Syntax.strip_positions_ast asts)
+fun tr c asts = Ast.mk_appl (Ast.Constant c) (map Ast.strip_positions asts)
 in [(@{syntax_const "_antiquoteCur0"}, tr @{syntax_const "_antiquoteCur"}),
     (@{syntax_const "_antiquoteOld0"}, tr @{syntax_const "_antiquoteOld"})]
 end
