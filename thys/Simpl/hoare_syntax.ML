@@ -1363,7 +1363,7 @@ fun gen_fcall_tr' ctxt init p return result c =
 
     val (v, c') =
       (case c of
-        Abs abs => Syntax.atomic_abs_tr' abs
+        Abs abs => Syntax_Trans.atomic_abs_tr' abs
       | _ => raise Match);
   in
     if Config.get ctxt use_call_tr' then
@@ -1567,7 +1567,7 @@ fun switch_tr' [v, vs] =
 
 fun bind_tr' [e, Abs abs] =
       let
-        val (v, c) = Syntax.atomic_abs_tr' abs;
+        val (v, c) = Syntax_Trans.atomic_abs_tr' abs;
         val e' =
           case e of
             Abs a => e
@@ -1628,9 +1628,9 @@ in
         [] => raise Match
       | ((x, T) :: xs) =>
           let
-            val (x', I') = atomic_abs_tr' (x, T, strip_abs_body I);
-            val (_ , V') = atomic_abs_tr' (x, T, strip_abs_body V);
-            val (_ , c') = atomic_abs_tr' (x, T, strip_abs_body c);
+            val (x', I') = Syntax_Trans.atomic_abs_tr' (x, T, strip_abs_body I);
+            val (_ , V') = Syntax_Trans.atomic_abs_tr' (x, T, strip_abs_body V);
+            val (_ , c') = Syntax_Trans.atomic_abs_tr' (x, T, strip_abs_body c);
           in
             Syntax.const @{syntax_const "_WhileFix_guard_inv_var"} $
               cond_guards_lst_tr' ctxt (dest_list gs) $ b' $ x' $ I' $ V' $
