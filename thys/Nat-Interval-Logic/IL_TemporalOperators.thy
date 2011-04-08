@@ -250,8 +250,8 @@ lemmas iTL_defs =
 (* Like in Set.thy *)
 (* To avoid eta-contraction of body: *)
 print_translation {*
- [Syntax.preserve_binder_abs2_tr' @{const_syntax iAll} @{syntax_const "_iAll"},
-  Syntax.preserve_binder_abs2_tr' @{const_syntax iEx} @{syntax_const "_iEx"}]
+ [Syntax_Trans.preserve_binder_abs2_tr' @{const_syntax iAll} @{syntax_const "_iAll"},
+  Syntax_Trans.preserve_binder_abs2_tr' @{const_syntax iEx} @{syntax_const "_iEx"}]
 *}
 
 (* Test that the syntax translations work properly for Always and Eventually *)
@@ -265,8 +265,8 @@ print_translation {*
 let
   fun btr' syn [i,Abs abs,Abs abs'] =
     let
-      val (t,P) = atomic_abs_tr' abs;
-      val (t',Q) = atomic_abs_tr' abs'
+      val (t,P) = Syntax_Trans.atomic_abs_tr' abs;
+      val (t',Q) = Syntax_Trans.atomic_abs_tr' abs'
     in Syntax.const syn $ P $ t $ t' $ i $ Q end
 in
 [(@{const_syntax "iUntil"}, btr' "_iUntil"), (@{const_syntax "iSince"}, btr' "_iSince")]
@@ -281,8 +281,8 @@ print_translation {*
 let
   fun btr' syn [i,Abs abs,Abs abs'] =
     let
-      val (t,P) = atomic_abs_tr' abs;
-      val (t',Q) = atomic_abs_tr' abs'
+      val (t,P) = Syntax_Trans.atomic_abs_tr' abs;
+      val (t',Q) = Syntax_Trans.atomic_abs_tr' abs'
     in Syntax.const syn $ P $ t $ t' $ i $ Q end
 in
 [(@{const_syntax "iWeakUntil"}, btr' "_iWeakUntil"), (@{const_syntax "iWeakSince"}, btr' "_iWeakSince")]
@@ -297,8 +297,8 @@ print_translation {*
 let
   fun btr' syn [i,Abs abs,Abs abs'] =
     let
-      val (t,P) = atomic_abs_tr' abs;
-      val (t',Q) = atomic_abs_tr' abs'
+      val (t,P) = Syntax_Trans.atomic_abs_tr' abs;
+      val (t',Q) = Syntax_Trans.atomic_abs_tr' abs'
     in Syntax.const syn $ P $ t $ t' $ i $ Q end
 in
 [(@{const_syntax "iRelease"}, btr' "_iRelease"), (@{const_syntax "iTrigger"}, btr' "_iTrigger")]
