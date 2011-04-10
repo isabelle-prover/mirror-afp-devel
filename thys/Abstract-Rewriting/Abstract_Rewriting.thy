@@ -1948,14 +1948,14 @@ subsection {* Relative Rewriting *}
 type_synonym 'a rel_ars = "'a ars \<times> 'a ars"
 
 fun
-  rel_step :: "'a rel_ars \<Rightarrow> 'a ars"
+  relrstep :: "'a rel_ars \<Rightarrow> 'a ars"
 where
-  "rel_step (R, S) = S^* O R O S^*"
+  "relrstep (R, S) = S^* O R O S^*"
 
 definition
   rel_SN :: "'a rel_ars \<Rightarrow> bool"
 where
-  "rel_SN RS \<equiv> SN (rel_step RS)"
+  "rel_SN RS \<equiv> SN (relrstep RS)"
 
 fun
   rel_SN_alt :: "'a rel_ars \<Rightarrow> bool"
@@ -1965,7 +1965,7 @@ where
 
 lemma rel_SN_to_rel_SN_alt: "rel_SN (R, S) \<Longrightarrow> rel_SN_alt (R, S)"
 proof (unfold rel_SN_def)
-  assume SN: "SN (rel_step (R,S))"
+  assume SN: "SN (relrstep (R,S))"
   show ?thesis
   proof (simp only: rel_SN_alt.simps, intro allI impI)
     fix f
@@ -2006,7 +2006,7 @@ proof (unfold rel_SN_def)
         hence "(g i, g (Suc i)) \<in> S^* O R O S^*" using rtrancl_refl unfolding g by auto           
       } 
       hence "\<not> SN (S^* O R O S^*)" unfolding SN_defs by blast
-      with SN show False unfolding rel_step.simps by simp
+      with SN show False unfolding relrstep.simps by simp
     qed
   qed
 qed
@@ -2057,10 +2057,10 @@ where "choice f 0 = (0,0)"
 lemma rel_SN_alt_to_rel_SN : "rel_SN_alt (R,S) \<Longrightarrow> rel_SN (R,S)"
 proof (unfold rel_SN_def)
   assume SN: "rel_SN_alt (R,S)"
-  show "SN (rel_step (R,S))"
+  show "SN (relrstep (R,S))"
   proof
     fix f
-    assume  "\<forall> i. (f i, f (Suc i)) \<in> rel_step (R,S)"
+    assume  "\<forall> i. (f i, f (Suc i)) \<in> relrstep (R,S)"
     hence steps: "\<And> i. (f i, f (Suc i)) \<in> S^* O R O S^*" by auto
     let ?prop = "\<lambda> i ai bi. (f i, bi) \<in> S^* \<and> (bi, ai) \<in> R \<and> (ai, f (Suc (i))) \<in> S^*"
     {
@@ -2170,32 +2170,32 @@ unfolding rel_SN_alt.simps by auto
 lemma rel_SN_alt_s_empty : "rel_SN_alt (R, {}) = SN R"
 unfolding rel_SN_alt.simps SN_defs by auto
 
-lemma rel_step_mono: assumes "R \<subseteq> R'" and "S \<subseteq> S'"
-  shows "rel_step (R,S) \<subseteq> rel_step (R',S')" using assms rtrancl_mono unfolding rel_step.simps by blast
+lemma relrstep_mono: assumes "R \<subseteq> R'" and "S \<subseteq> S'"
+  shows "relrstep (R,S) \<subseteq> relrstep (R',S')" using assms rtrancl_mono unfolding relrstep.simps by blast
 
 lemma rel_SN_mono: assumes R: "R \<subseteq> R'" and S: "S \<subseteq> S'"
   and SN: "rel_SN (R',S')"
   shows "rel_SN (R,S)"
 using SN
-unfolding rel_SN_def using SN_subset[OF _ rel_step_mono[OF R S]]  by blast
+unfolding rel_SN_def using SN_subset[OF _ relrstep_mono[OF R S]]  by blast
 
 lemmas rel_SN_alt_mono = rel_SN_mono[unfolded rel_SN_conv]
 
 declare rel_SN_alt.simps[simp del]
-declare rel_step.simps[simp del]
+declare relrstep.simps[simp del]
 
 lemma rel_SN_imp_SN : assumes "rel_SN (R,S)" shows  "SN R"
 proof
   fix f
   assume "\<forall> i. (f i, f (Suc i)) \<in> R"
-  hence "\<And> i. (f i, f (Suc i)) \<in> rel_step (R, S)" unfolding rel_step.simps by blast  
+  hence "\<And> i. (f i, f (Suc i)) \<in> relrstep (R, S)" unfolding relrstep.simps by blast  
   thus False using assms unfolding rel_SN_def SN_defs by blast
 qed
 
 
-lemma rel_step_trancl_conv : "(rel_step (R,S))^+ = ((R \<union> S))^* O R O ((R \<union> S))^*" (is "_ = ?RS^* O ?R O _")
+lemma relrstep_trancl_conv : "(relrstep (R,S))^+ = ((R \<union> S))^* O R O ((R \<union> S))^*" (is "_ = ?RS^* O ?R O _")
 proof
-  show "?RS^* O ?R O ?RS^* \<subseteq> (rel_step (R,S))^+"
+  show "?RS^* O ?R O ?RS^* \<subseteq> (relrstep (R,S))^+"
   proof(clarify, simp)
     fix x1 x2 x3 x4
     assume x12: "(x1,x2) \<in> ((R \<union> S))^*" and x23: "(x2,x3) \<in> R" and x34: "(x3,x4) \<in> ((R \<union> S))^*"
@@ -2203,7 +2203,7 @@ proof
     {
       fix x y z
       assume "(y,z) \<in> ((R \<union> S))^*"
-      hence "(x,y) \<in> rel_step (R,S) \<longrightarrow> (x,z) \<in> (rel_step (R,S))^+"
+      hence "(x,y) \<in> relrstep (R,S) \<longrightarrow> (x,z) \<in> (relrstep (R,S))^+"
       proof (induct)
         case base
         show ?case by auto
@@ -2211,44 +2211,44 @@ proof
         case (step u z)
         show ?case
         proof
-          assume "(x,y) \<in> rel_step (R,S)"
-          with step have nearly: "(x,u) \<in> (rel_step (R,S))^+" by simp
+          assume "(x,y) \<in> relrstep (R,S)"
+          with step have nearly: "(x,u) \<in> (relrstep (R,S))^+" by simp
           from step(2)
-          show "(x,z) \<in> (rel_step (R,S))^+"
+          show "(x,z) \<in> (relrstep (R,S))^+"
           proof
             assume "(u,z) \<in> R"
-            hence "(u,z) \<in> rel_step (R,S)" unfolding rel_step.simps by auto
+            hence "(u,z) \<in> relrstep (R,S)" unfolding relrstep.simps by auto
             with nearly show ?thesis by auto
           next
             assume uz: "(u,z) \<in> S"
             from nearly[unfolded trancl_unfold_right]
-            obtain v where xv: "(x,v) \<in> (rel_step (R,S))^*" and vu: "(v,u) \<in> rel_step (R,S)" by auto
-            from vu obtain w where vw: "(v,w) \<in> ?S O R" and wu: "(w,u) \<in> ?S" unfolding rel_step.simps by auto
+            obtain v where xv: "(x,v) \<in> (relrstep (R,S))^*" and vu: "(v,u) \<in> relrstep (R,S)" by auto
+            from vu obtain w where vw: "(v,w) \<in> ?S O R" and wu: "(w,u) \<in> ?S" unfolding relrstep.simps by auto
             from wu uz have wz: "(w,z) \<in> ?S" by auto
-            with vw have vz: "(v,z) \<in> rel_step (R,S)" unfolding rel_step.simps by auto
+            with vw have vz: "(v,z) \<in> relrstep (R,S)" unfolding relrstep.simps by auto
             with xv show ?thesis by auto
           qed
         qed
       qed
     } note steps_right = this
-    from x23 have "(x2,x3) \<in> rel_step (R,S)" unfolding rel_step.simps by auto
-    from mp[OF steps_right[OF x34] this] have x24: "(x2,x4) \<in> (rel_step (R,S))^+" .
-    with x12 show "(x1,x4) \<in> (rel_step (R,S))^+" 
+    from x23 have "(x2,x3) \<in> relrstep (R,S)" unfolding relrstep.simps by auto
+    from mp[OF steps_right[OF x34] this] have x24: "(x2,x4) \<in> (relrstep (R,S))^+" .
+    with x12 show "(x1,x4) \<in> (relrstep (R,S))^+" 
     proof (induct arbitrary: x4, simp)
       case (step y z) 
       from step(2)
-      have "(y,x4) \<in> (rel_step (R,S))^+"
+      have "(y,x4) \<in> (relrstep (R,S))^+"
       proof
         assume "(y,z) \<in> R"
-        hence "(y,z) \<in> rel_step (R,S)" unfolding rel_step.simps by auto
+        hence "(y,z) \<in> relrstep (R,S)" unfolding relrstep.simps by auto
         with step(4) show ?thesis by auto
       next
         assume yz: "(y,z) \<in> S"
         from step(4)[unfolded trancl_unfold_left]
-        obtain v where zv: "(z,v) \<in> rel_step (R,S)" and vx4: "(v,x4) \<in> (rel_step (R,S))^*" by auto
-        from zv obtain w where zw: "(z,w) \<in> ?S" and wv: "(w,v) \<in> R O ?S" unfolding rel_step.simps by auto
+        obtain v where zv: "(z,v) \<in> relrstep (R,S)" and vx4: "(v,x4) \<in> (relrstep (R,S))^*" by auto
+        from zv obtain w where zw: "(z,w) \<in> ?S" and wv: "(w,v) \<in> R O ?S" unfolding relrstep.simps by auto
         from yz zw have "(y,w) \<in> ?S" by auto
-        with wv have "(y,v) \<in> rel_step (R,S)" unfolding rel_step.simps by auto
+        with wv have "(y,v) \<in> relrstep (R,S)" unfolding relrstep.simps by auto
         with vx4 show ?thesis by auto
       qed
       from step(3)[OF this] show ?case .
@@ -2257,8 +2257,8 @@ proof
 next
   have S: "S^* \<subseteq> ?RS^*" by (rule rtrancl_mono[of S "R \<union> S", simplified])
   have R: "R \<subseteq> ?RS^*" by auto
-  show "(rel_step (R,S))^+ \<subseteq> ?RS^* O ?R O ?RS^*"
-    unfolding rel_step.simps
+  show "(relrstep (R,S))^+ \<subseteq> ?RS^* O ?R O ?RS^*"
+    unfolding relrstep.simps
   proof
     fix x y
     assume "(x,y) \<in> (S^* O R O S^*)^+"
@@ -2275,12 +2275,12 @@ next
   qed
 qed
 
-lemma rel_step_Id: "rel_step (R,S \<union> Id) = rel_step (R,S)"
-  by (simp add: rel_step.simps)
+lemma relrstep_Id: "relrstep (R,S \<union> Id) = relrstep (R,S)"
+  by (simp add: relrstep.simps)
 
 lemma rel_SN_Id:
   shows "rel_SN (R,S \<union> Id) = rel_SN (R,S)"
-unfolding rel_SN_def by (simp only: rel_step_Id)
+unfolding rel_SN_def by (simp only: relrstep_Id)
 
 
 end
