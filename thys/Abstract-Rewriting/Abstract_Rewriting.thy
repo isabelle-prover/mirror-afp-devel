@@ -597,12 +597,14 @@ declare WN_D[dest]
 declare WN_E'[elim]
 declare WN_E[elim]
 
+text {*Restricting a relation @{term A} to those elements that are
+strongly normalizing with respect to a relation @{term B}.*}
 definition
-  SN_rel :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a ars" 
+  restrict_SN :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a ars" 
 where
-  "SN_rel A B \<equiv> {(a, b) | a b. (a, b) \<in> A \<and> SN_elt B a}"
+  "restrict_SN A B \<equiv> {(a, b) | a b. (a, b) \<in> A \<and> SN_elt B a}"
 
-lemma SN_SN_rel_idemp[simp]: "SN (SN_rel A A)" by (auto simp: SN_rel_def SN_defs)
+lemma SN_restrict_SN_idemp[simp]: "SN (restrict_SN A A)" by (auto simp: restrict_SN_def SN_defs)
 
 lemma step_preserves_SN_elt:
   assumes "(a ,b) \<in> A" and "SN_elt A a" shows "SN_elt A b"
@@ -631,27 +633,27 @@ by (induct rule: rtrancl.induct) (auto simp: step_preserves_SN_elt)
 (* belongs somewhere else *)
 lemma subsetI2[Pure.intro]: "(\<And>x y. (x,y) \<in> A \<Longrightarrow> (x,y) \<in> B) \<Longrightarrow> A \<subseteq> B" by auto
 
-lemma SN_rel_trancl_simp[simp]: "(SN_rel A A)^+ = SN_rel (A^+) A" (is "?lhs = ?rhs")
+lemma restrict_SN_trancl_simp[simp]: "(restrict_SN A A)^+ = restrict_SN (A^+) A" (is "?lhs = ?rhs")
 proof
   show "?lhs \<subseteq> ?rhs"
   proof
     fix a b assume "(a, b) \<in> ?lhs" thus "(a, b) \<in> ?rhs"
-      unfolding SN_rel_def by (induct rule: trancl.induct) auto
+      unfolding restrict_SN_def by (induct rule: trancl.induct) auto
   qed
 next
   show "?rhs \<subseteq> ?lhs"
   proof
     fix a b assume "(a, b) \<in> ?rhs"
-    hence "(a, b) \<in> A^+" and "SN_elt A a" unfolding SN_rel_def by auto
+    hence "(a, b) \<in> A^+" and "SN_elt A a" unfolding restrict_SN_def by auto
     thus "(a, b) \<in> ?lhs"
     proof (induct rule: trancl.induct)
-      case (r_into_trancl x y) thus ?case unfolding SN_rel_def by auto
+      case (r_into_trancl x y) thus ?case unfolding restrict_SN_def by auto
     next
       case (trancl_into_trancl a b c)
       hence IH: "(a, b) \<in> ?lhs" by auto
       from trancl_into_trancl have "(a, b) \<in> A^*" by auto
       from this and `SN_elt A a` have "SN_elt A b" by (rule steps_preserve_SN_elt)
-      with `(b, c) \<in> A` have "(b, c) \<in> ?lhs" unfolding SN_rel_def by auto
+      with `(b, c) \<in> A` have "(b, c) \<in> ?lhs" unfolding restrict_SN_def by auto
       with IH show ?case by simp
     qed
   qed
@@ -1049,10 +1051,10 @@ lemma SN_elt_induct[consumes 1, case_names IH]:
   assumes SN: "SN_elt R s" and imp: "\<And>t. (\<And>u. (t, u) \<in> R \<Longrightarrow> P u) \<Longrightarrow> P t"
   shows "P s"
 proof -
-  let ?R = "SN_rel R R"
+  let ?R = "restrict_SN R R"
   let ?P = "\<lambda> t. SN_elt R t \<longrightarrow> P t"
   have "SN_elt R s \<longrightarrow> P s"
-  proof (rule SN_induct[OF SN_SN_rel_idemp[of R], of ?P])
+  proof (rule SN_induct[OF SN_restrict_SN_idemp[of R], of ?P])
     fix a
     assume ind: "\<And> b. (a,b) \<in> ?R \<Longrightarrow> SN_elt R b \<longrightarrow> P b"
     show "SN_elt R a \<longrightarrow> P a"
@@ -1063,7 +1065,7 @@ proof -
         fix b
         assume "(a,b) \<in> R"
         with SN step_preserves_SN_elt[OF this SN]
-        show "P b" using ind[of b] unfolding SN_rel_def by auto
+        show "P b" using ind[of b] unfolding restrict_SN_def by auto
       qed
     qed
   qed
@@ -1282,11 +1284,11 @@ lemma SN_pow: "SN R \<longleftrightarrow> SN(R ^^ Suc n)"
 
 lemma SN_elt_imp_SN_elt_trancl: assumes "SN_elt A t" shows "SN_elt (A^+) t"
 using assms proof (rule contrapos_pp)
-  let ?A = "SN_rel A A"
+  let ?A = "restrict_SN A A"
   assume "\<not> SN_elt (A^+) t"
   then obtain S where "S 0 = t" and S: "\<forall>i. (S i, S(Suc i)) \<in> A^+"
     unfolding SN_elt_def by auto
-  have "SN ?A" by (rule SN_SN_rel_idemp)
+  have "SN ?A" by (rule SN_restrict_SN_idemp)
   hence "SN (?A^+)" by (rule SN_imp_SN_trancl)
   have "\<forall>i. (t, S i) \<in> A^*"
   proof
@@ -1302,7 +1304,7 @@ using assms proof (rule contrapos_pp)
   with assms have "\<forall>i. SN_elt A (S i)"
     using steps_preserve_SN_elt[of t _ A] by auto
   with S have "\<forall>i. (S i, S (Suc i)) \<in> ?A^+"
-    unfolding SN_rel_trancl_simp unfolding SN_rel_def by auto
+    unfolding restrict_SN_trancl_simp unfolding restrict_SN_def by auto
   hence "\<not> SN_elt (?A^+) t" unfolding `S 0 = t`[symmetric] unfolding SN_defs by auto
   with `SN (?A^+)` have "False" unfolding SN_defs by simp
   thus "\<not> SN_elt A t" by simp
@@ -1708,9 +1710,9 @@ proof (rule subsetI2)
   qed
 qed
 
-lemma SN_rel_subset: "SN_rel R S \<subseteq> R"
+lemma restrict_SN_subset: "restrict_SN R S \<subseteq> R"
 proof (rule subsetI2)
-  fix a b assume "(a,b) \<in> SN_rel R S" thus "(a,b) \<in> R" unfolding SN_rel_def by simp
+  fix a b assume "(a,b) \<in> restrict_SN R S" thus "(a,b) \<in> R" unfolding restrict_SN_def by simp
 qed
 
 lemma union_iseq_SN_elt_imp_first_step:
