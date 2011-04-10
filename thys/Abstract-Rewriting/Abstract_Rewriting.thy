@@ -630,7 +630,7 @@ qed
 lemma steps_preserve_SN_elt: "(a, b) \<in> A^* \<Longrightarrow> SN_elt A a \<Longrightarrow> SN_elt A b"
 by (induct rule: rtrancl.induct) (auto simp: step_preserves_SN_elt)
 
-(* belongs somewhere else *)
+(* FIXME: move somewhere else *)
 lemma subsetI2[Pure.intro]: "(\<And>x y. (x,y) \<in> A \<Longrightarrow> (x,y) \<in> B) \<Longrightarrow> A \<subseteq> B" by auto
 
 lemma restrict_SN_trancl_simp[simp]: "(restrict_SN A A)^+ = restrict_SN (A^+) A" (is "?lhs = ?rhs")
@@ -1454,7 +1454,7 @@ lemma CR_iff_self_commute: "CR r = commute r r"
   unfolding commute_def CR_iff_meet_subset_join meet_def join_def
   by simp
 
-(* --> belongs somewhere else *)
+(* FIXME: move somewhere else *)
 lemma rtrancl_imp_rtrancl_UN: 
   assumes "(x,y) \<in> r^*" and "r \<in> I"
   shows "(x,y) \<in> (\<Union>r\<in>I. r)^*" (is "(x,y) \<in> ?r^*")
