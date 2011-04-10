@@ -34,43 +34,34 @@ lemma trancl_mono_set: "r \<subseteq> s \<Longrightarrow> r^+ \<subseteq> s^+"
   by (blast intro: trancl_mono)
 
 text {*
-An abstract rewrite system (ARS) is a binary endorelation, i.e.,
-a binary relation where domain and codomain coincide.
+  An abstract rewrite system (ARS) is a binary endorelation, i.e., a binary
+  relation where domain and codomain coincide.
 *}
-type_synonym
-  'a ars = "('a \<times> 'a) set"
+type_synonym 'a ars = "('a \<times> 'a) set"
 
 subsection {* Definitions *}
 
 text {*
-Two elements are \emph{joinable} (and hence in the joinability relation)
-w.r.t.\ @{term "A"}, iff they have a common reduct.
+  Two elements are \emph{joinable} (and hence in the joinability relation)
+  w.r.t.\ @{term "A"}, iff they have a common reduct.
 *}
-definition
-  join :: "'a ars \<Rightarrow> 'a ars"
-where
+definition join :: "'a ars \<Rightarrow> 'a ars" where
   "join A \<equiv> A^* O (A\<inverse>)^*"
 
 text {*
-Two elements are \emph{meetable} (and hence in the meetability relation)
-w.r.t.\ @{term "A"}, iff they have a common ancestor.
+  Two elements are \emph{meetable} (and hence in the meetability relation)
+  w.r.t.\ @{term "A"}, iff they have a common ancestor.
 *}
-definition
-  meet :: "'a ars \<Rightarrow> 'a ars"
-where
+definition meet :: "'a ars \<Rightarrow> 'a ars" where
   "meet A \<equiv> (A^-1)^* O A^*"
 
-text {*
-The \emph{symmetric closure} of a relation allows steps in both directions.
-*}
-abbreviation
-  symcl :: "'a ars \<Rightarrow> 'a ars" ("(_^<->)" [1000] 999)
-where
+text {*The \emph{symmetric closure} of a relation allows steps in both directions.*}
+abbreviation symcl :: "'a ars \<Rightarrow> 'a ars" ("(_^<->)" [1000] 999) where
   "A^<-> \<equiv> A \<union> A^-1"
 
 text {*
-A \emph{conversion} is a (possibly empty) sequence of steps in the
-symmetric closure.
+  A \emph{conversion} is a (possibly empty) sequence of steps in the symmetric
+  closure.
 *}
 definition
   conversion :: "'a ars \<Rightarrow> 'a ars" ("(_^<->*)" [1000] 999)
@@ -78,12 +69,10 @@ where
   "A^<->* \<equiv> (A^<->)^*"
 
 text {*
-The set of \emph{normal forms} of an ARS constitutes all the elements
-that do not have any successors.
+  The set of \emph{normal forms} of an ARS constitutes all the elements that do
+  not have any successors.
 *}
-definition
-  NF :: "'a ars \<Rightarrow> 'a set"
-where
+definition NF :: "'a ars \<Rightarrow> 'a set" where
   "NF A \<equiv> {a. A `` {a} = {}}"
 
 definition
@@ -98,34 +87,42 @@ notation (xsymbols)
   conversion ("(_\<^bsup>\<leftrightarrow>*\<^esup>)" [1000] 999) and
   normalizability ("(_\<^sup>!)" [1000] 999)
 
-
-lemma no_step: assumes "A `` {a} = {}" shows "a \<in> NF A" using assms by (auto simp: NF_def)
+lemma no_step: assumes "A `` {a} = {}" shows "a \<in> NF A"
+  using assms by (auto simp: NF_def)
 
 lemma join_I: "(a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>"
-by (auto simp: join_def rtrancl_converse)
+  by (auto simp: join_def rtrancl_converse)
 
-lemma join_I_left: "(a, b) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>" by (auto simp: join_def)
+lemma join_I_left: "(a, b) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>"
+  by (auto simp: join_def)
 
-lemma join_I_right: "(b, a) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>" by (rule join_I) auto
+lemma join_I_right: "(b, a) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>"
+  by (rule join_I) auto
 
 lemma join_E:
-  assumes "(a, b) \<in> A\<^sup>\<down>" obtains c where "(a, c) \<in> A^*" and "(b, c) \<in> A^*"
-using assms by (auto simp: join_def rtrancl_converse)
+  assumes "(a, b) \<in> A\<^sup>\<down>"
+  obtains c where "(a, c) \<in> A^*" and "(b, c) \<in> A^*"
+  using assms by (auto simp: join_def rtrancl_converse)
 
-lemma join_D: "(a, b) \<in> A\<^sup>\<down> \<Longrightarrow> \<exists>c. (a, c) \<in> A^* \<and> (b, c) \<in> A^*" by (blast elim: join_E)
+lemma join_D: "(a, b) \<in> A\<^sup>\<down> \<Longrightarrow> \<exists>c. (a, c) \<in> A^* \<and> (b, c) \<in> A^*"
+  by (blast elim: join_E)
 
 lemma meet_I: "(a, b) \<in> A^* \<Longrightarrow> (a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A\<^sup>\<up>"
 by (auto simp: meet_def rtrancl_converse)
 
 lemma meet_E:
-  assumes "(b, c) \<in> A\<^sup>\<up>" obtains a where "(a, b) \<in> A^*" and "(a, c) \<in> A^*"
-using assms by (auto simp: meet_def rtrancl_converse)
+  assumes "(b, c) \<in> A\<^sup>\<up>"
+  obtains a where "(a, b) \<in> A^*" and "(a, c) \<in> A^*"
+  using assms by (auto simp: meet_def rtrancl_converse)
 
-lemma meet_D: "(b, c) \<in> A\<^sup>\<up> \<Longrightarrow> \<exists>a. (a, b) \<in> A^* \<and> (a, c) \<in> A^*" by (blast elim: meet_E)
+lemma meet_D: "(b, c) \<in> A\<^sup>\<up> \<Longrightarrow> \<exists>a. (a, b) \<in> A^* \<and> (a, c) \<in> A^*"
+  by (blast elim: meet_E)
 
-lemma conversion_I: "(a, b) \<in> (A\<^sup>\<leftrightarrow>)^* \<Longrightarrow> (a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>" by (simp add: conversion_def)
+lemma conversion_I: "(a, b) \<in> (A\<^sup>\<leftrightarrow>)^* \<Longrightarrow> (a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>"
+  by (simp add: conversion_def)
 
-lemma conversion_refl[simp]: "(a, a) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>" by (simp add: conversion_def)
+lemma conversion_refl[simp]: "(a, a) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>"
+  by (simp add: conversion_def)
 
 lemma conversion_I': assumes "(a, b) \<in> A^*" shows "(a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>"
 using assms proof (induct)
@@ -142,9 +139,8 @@ lemma conversion_E: "(a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup> \<Longrigh
 by (simp add: conversion_def)
 
 text {*
-Later declarations are tried first for 'proof' and 'rule,' hence
-the ``main'' introduction\,/\.elimination rules for constants should be
-declared last.
+  Later declarations are tried first for `proof' and `rule,' hence the ``main''
+  introduction\,/\,elimination rules for constants should be declared last.
 *}
 declare join_I_left[intro]
 declare join_I_right[intro]
@@ -159,7 +155,6 @@ declare meet_E[elim]
 declare conversion_I'[intro]
 declare conversion_I[intro]
 declare conversion_E[elim]
-
 
 lemma conversion_trans: "trans (A\<^bsup>\<leftrightarrow>*\<^esup>)"
 unfolding trans_def proof (intro allI impI)
