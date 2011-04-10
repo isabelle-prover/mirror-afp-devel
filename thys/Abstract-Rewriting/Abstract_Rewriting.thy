@@ -29,8 +29,9 @@ theory Abstract_Rewriting
 imports Main Util
 begin
 
+(*FIXME: move*)
 lemma trancl_mono_set: "r \<subseteq> s \<Longrightarrow> r^+ \<subseteq> s^+"
-  using trancl_mono by auto
+  by (blast intro: trancl_mono)
 
 text {*
 An abstract rewrite system (ARS) is a binary endorelation, i.e.,
