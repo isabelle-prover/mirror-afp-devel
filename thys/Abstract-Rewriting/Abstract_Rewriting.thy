@@ -1953,21 +1953,21 @@ where
   "relstep (R, S) = S^* O R O S^*"
 
 definition
-  rel_SN :: "'a rel_ars \<Rightarrow> bool"
+  SN_rel :: "'a rel_ars \<Rightarrow> bool"
 where
-  "rel_SN RS \<equiv> SN (relstep RS)"
+  "SN_rel RS \<equiv> SN (relstep RS)"
 
 fun
-  rel_SN_alt :: "'a rel_ars \<Rightarrow> bool"
+  SN_rel_alt :: "'a rel_ars \<Rightarrow> bool"
 where
-  "rel_SN_alt (R, S) = (\<forall>(f::nat \<Rightarrow> 'a).
+  "SN_rel_alt (R, S) = (\<forall>(f::nat \<Rightarrow> 'a).
     (\<forall>i. (f i, f (Suc i)) \<in> R \<union> S) \<longrightarrow> (\<exists>i. \<forall>j \<ge> i. (f j, f (Suc j)) \<notin> R))"
 
-lemma rel_SN_to_rel_SN_alt: "rel_SN (R, S) \<Longrightarrow> rel_SN_alt (R, S)"
-proof (unfold rel_SN_def)
+lemma SN_rel_to_SN_rel_alt: "SN_rel (R, S) \<Longrightarrow> SN_rel_alt (R, S)"
+proof (unfold SN_rel_def)
   assume SN: "SN (relstep (R,S))"
   show ?thesis
-  proof (simp only: rel_SN_alt.simps, intro allI impI)
+  proof (simp only: SN_rel_alt.simps, intro allI impI)
     fix f
     assume steps: "\<forall> i. (f i, f (Suc i)) \<in> R \<union> S"
     obtain r where  r: "\<And> j. r j \<equiv>  (f j, f (Suc j)) \<in> R" by auto
@@ -2054,9 +2054,9 @@ where "choice f 0 = (0,0)"
                then (i,Suc j)
                else (Suc i, 0))"
         
-lemma rel_SN_alt_to_rel_SN : "rel_SN_alt (R,S) \<Longrightarrow> rel_SN (R,S)"
-proof (unfold rel_SN_def)
-  assume SN: "rel_SN_alt (R,S)"
+lemma SN_rel_alt_to_SN_rel : "SN_rel_alt (R,S) \<Longrightarrow> SN_rel (R,S)"
+proof (unfold SN_rel_def)
+  assume SN: "SN_rel_alt (R,S)"
   show "SN (relstep (R,S))"
   proof
     fix f
@@ -2161,35 +2161,35 @@ qed
 
 hide_const choice
 
-lemma rel_SN_conv : "rel_SN = rel_SN_alt"
-  by (intro ext, clarify, intro iffI, rule rel_SN_to_rel_SN_alt, simp, rule rel_SN_alt_to_rel_SN, simp)
+lemma SN_rel_conv : "SN_rel = SN_rel_alt"
+  by (intro ext, clarify, intro iffI, rule SN_rel_to_SN_rel_alt, simp, rule SN_rel_alt_to_SN_rel, simp)
 
-lemma rel_SN_alt_r_empty : "rel_SN_alt ({}, S)"
-unfolding rel_SN_alt.simps by auto
+lemma SN_rel_alt_r_empty : "SN_rel_alt ({}, S)"
+unfolding SN_rel_alt.simps by auto
 
-lemma rel_SN_alt_s_empty : "rel_SN_alt (R, {}) = SN R"
-unfolding rel_SN_alt.simps SN_defs by auto
+lemma SN_rel_alt_s_empty : "SN_rel_alt (R, {}) = SN R"
+unfolding SN_rel_alt.simps SN_defs by auto
 
 lemma relstep_mono: assumes "R \<subseteq> R'" and "S \<subseteq> S'"
   shows "relstep (R,S) \<subseteq> relstep (R',S')" using assms rtrancl_mono unfolding relstep.simps by blast
 
-lemma rel_SN_mono: assumes R: "R \<subseteq> R'" and S: "S \<subseteq> S'"
-  and SN: "rel_SN (R',S')"
-  shows "rel_SN (R,S)"
+lemma SN_rel_mono: assumes R: "R \<subseteq> R'" and S: "S \<subseteq> S'"
+  and SN: "SN_rel (R',S')"
+  shows "SN_rel (R,S)"
 using SN
-unfolding rel_SN_def using SN_subset[OF _ relstep_mono[OF R S]]  by blast
+unfolding SN_rel_def using SN_subset[OF _ relstep_mono[OF R S]]  by blast
 
-lemmas rel_SN_alt_mono = rel_SN_mono[unfolded rel_SN_conv]
+lemmas SN_rel_alt_mono = SN_rel_mono[unfolded SN_rel_conv]
 
-declare rel_SN_alt.simps[simp del]
+declare SN_rel_alt.simps[simp del]
 declare relstep.simps[simp del]
 
-lemma rel_SN_imp_SN : assumes "rel_SN (R,S)" shows  "SN R"
+lemma SN_rel_imp_SN : assumes "SN_rel (R,S)" shows  "SN R"
 proof
   fix f
   assume "\<forall> i. (f i, f (Suc i)) \<in> R"
   hence "\<And> i. (f i, f (Suc i)) \<in> relstep (R, S)" unfolding relstep.simps by blast  
-  thus False using assms unfolding rel_SN_def SN_defs by blast
+  thus False using assms unfolding SN_rel_def SN_defs by blast
 qed
 
 
@@ -2278,9 +2278,9 @@ qed
 lemma relstep_Id: "relstep (R,S \<union> Id) = relstep (R,S)"
   by (simp add: relstep.simps)
 
-lemma rel_SN_Id:
-  shows "rel_SN (R,S \<union> Id) = rel_SN (R,S)"
-unfolding rel_SN_def by (simp only: relstep_Id)
+lemma SN_rel_Id:
+  shows "SN_rel (R,S \<union> Id) = SN_rel (R,S)"
+unfolding SN_rel_def by (simp only: relstep_Id)
 
 
 end
