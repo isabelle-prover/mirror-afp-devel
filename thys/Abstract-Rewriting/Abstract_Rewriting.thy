@@ -90,41 +90,41 @@ notation (xsymbols)
 lemma no_step: assumes "A `` {a} = {}" shows "a \<in> NF A"
   using assms by (auto simp: NF_def)
 
-lemma join_I: "(a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>"
+lemma joinI: "(a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>"
   by (auto simp: join_def rtrancl_converse)
 
-lemma join_I_left: "(a, b) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>"
+lemma joinI_left: "(a, b) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>"
   by (auto simp: join_def)
 
-lemma join_I_right: "(b, a) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>"
-  by (rule join_I) auto
+lemma joinI_right: "(b, a) \<in> A^* \<Longrightarrow> (a, b) \<in> A\<^sup>\<down>"
+  by (rule joinI) auto
 
-lemma join_E:
+lemma joinE:
   assumes "(a, b) \<in> A\<^sup>\<down>"
   obtains c where "(a, c) \<in> A^*" and "(b, c) \<in> A^*"
   using assms by (auto simp: join_def rtrancl_converse)
 
-lemma join_D: "(a, b) \<in> A\<^sup>\<down> \<Longrightarrow> \<exists>c. (a, c) \<in> A^* \<and> (b, c) \<in> A^*"
-  by (blast elim: join_E)
+lemma joinD: "(a, b) \<in> A\<^sup>\<down> \<Longrightarrow> \<exists>c. (a, c) \<in> A^* \<and> (b, c) \<in> A^*"
+  by (blast elim: joinE)
 
-lemma meet_I: "(a, b) \<in> A^* \<Longrightarrow> (a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A\<^sup>\<up>"
+lemma meetI: "(a, b) \<in> A^* \<Longrightarrow> (a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A\<^sup>\<up>"
 by (auto simp: meet_def rtrancl_converse)
 
-lemma meet_E:
+lemma meetE:
   assumes "(b, c) \<in> A\<^sup>\<up>"
   obtains a where "(a, b) \<in> A^*" and "(a, c) \<in> A^*"
   using assms by (auto simp: meet_def rtrancl_converse)
 
-lemma meet_D: "(b, c) \<in> A\<^sup>\<up> \<Longrightarrow> \<exists>a. (a, b) \<in> A^* \<and> (a, c) \<in> A^*"
-  by (blast elim: meet_E)
+lemma meetD: "(b, c) \<in> A\<^sup>\<up> \<Longrightarrow> \<exists>a. (a, b) \<in> A^* \<and> (a, c) \<in> A^*"
+  by (blast elim: meetE)
 
-lemma conversion_I: "(a, b) \<in> (A\<^sup>\<leftrightarrow>)^* \<Longrightarrow> (a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>"
+lemma conversionI: "(a, b) \<in> (A\<^sup>\<leftrightarrow>)^* \<Longrightarrow> (a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>"
   by (simp add: conversion_def)
 
 lemma conversion_refl[simp]: "(a, a) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>"
   by (simp add: conversion_def)
 
-lemma conversion_I': assumes "(a, b) \<in> A^*" shows "(a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>"
+lemma conversionI': assumes "(a, b) \<in> A^*" shows "(a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>"
 using assms proof (induct)
   case base thus ?case by simp
 next
@@ -135,26 +135,26 @@ qed
 
 lemma trancl_o_refl_is_trancl: "r^+ O r^= = r^+" by (auto)
 
-lemma conversion_E: "(a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup> \<Longrightarrow> ((a, b) \<in> (A\<^sup>\<leftrightarrow>)^* \<Longrightarrow> P) \<Longrightarrow> P"
+lemma conversionE: "(a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup> \<Longrightarrow> ((a, b) \<in> (A\<^sup>\<leftrightarrow>)^* \<Longrightarrow> P) \<Longrightarrow> P"
 by (simp add: conversion_def)
 
 text {*
   Later declarations are tried first for `proof' and `rule,' hence the ``main''
   introduction\,/\,elimination rules for constants should be declared last.
 *}
-declare join_I_left[intro]
-declare join_I_right[intro]
-declare join_I[intro]
-declare join_D[dest]
-declare join_E[elim]
+declare joinI_left[intro]
+declare joinI_right[intro]
+declare joinI[intro]
+declare joinD[dest]
+declare joinE[elim]
 
-declare meet_I[intro]
-declare meet_D[dest]
-declare meet_E[elim]
+declare meetI[intro]
+declare meetD[dest]
+declare meetE[elim]
 
-declare conversion_I'[intro]
-declare conversion_I[intro]
-declare conversion_E[elim]
+declare conversionI'[intro]
+declare conversionI[intro]
+declare conversionE[elim]
 
 lemma conversion_trans: "trans (A\<^bsup>\<leftrightarrow>*\<^esup>)"
 unfolding trans_def proof (intro allI impI)
@@ -242,91 +242,59 @@ declare normalizability_E[elim]
 subsection {* Properties of ARSs *}
 
 text {*
-The following properties on (elements of) ARSs are defined: completeness,
-Church-Rosser property, semi-completeness, strong normalization, unique normal forms,
-Weak Church-Rosser property, and weak normalization. 
+  The following properties on (elements of) ARSs are defined: completeness,
+  Church-Rosser property, semi-completeness, strong normalization, unique normal
+  forms, Weak Church-Rosser property, and weak normalization. 
 *}
 
-definition
-  CR_elt :: "'a ars \<Rightarrow> 'a \<Rightarrow> bool"
-where
-  "CR_elt A a \<equiv> \<forall>b c. (a, b) \<in> A^* \<and> (a, c) \<in> A^* \<longrightarrow> (b, c) \<in> A\<^sup>\<down>"
+definition CR_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "CR_on r A \<equiv> \<forall>a\<in>A. \<forall>b c. (a, b) \<in> r^* \<and> (a, c) \<in> r^* \<longrightarrow> (b, c) \<in> join r"
 
-definition
-  CR :: "'a ars \<Rightarrow> bool"
-where
-  "CR A \<equiv> \<forall>a. CR_elt A a"
+abbreviation CR :: "'a ars \<Rightarrow> bool" where
+  "CR r \<equiv> CR_on r UNIV"
 
-definition
-  SN_elt :: "'a ars \<Rightarrow> 'a \<Rightarrow> bool"
-where
-  "SN_elt A a \<equiv> \<not> (\<exists>S. S 0 = a \<and> (\<forall>i. (S i, S (Suc i)) \<in> A))"
+definition SN_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "SN_on r A \<equiv> \<not> (\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> r))"
 
-definition
-  SN :: "'a ars \<Rightarrow> bool"
-where
-  "SN A \<equiv> \<forall>a. SN_elt A a"
+abbreviation SN :: "'a ars \<Rightarrow> bool" where
+  "SN r \<equiv> SN_on r UNIV"
 
-definition
-  UNF_elt :: "'a ars \<Rightarrow> 'a \<Rightarrow> bool"
-where
-  "UNF_elt A a \<equiv> \<forall>b c. (a, b) \<in> A^! \<and> (a, c) \<in> A^! \<longrightarrow> b = c"
+definition UNF_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "UNF_on r A \<equiv> \<forall>a\<in>A. \<forall>b c. (a, b) \<in> r^! \<and> (a, c) \<in> r^! \<longrightarrow> b = c"
 
-definition
-  UNF :: "'a ars \<Rightarrow> bool"
-where
-  "UNF A \<equiv> \<forall>a. UNF_elt A a"
+abbreviation UNF :: "'a ars \<Rightarrow> bool" where "UNF r \<equiv> UNF_on r UNIV"
 
-definition
-  WCR_elt :: "'a ars \<Rightarrow> 'a \<Rightarrow> bool"
-where
-  "WCR_elt A a \<equiv> \<forall>b c. (a, b) \<in> A \<and> (a, c) \<in> A \<longrightarrow> (b, c) \<in> A\<^sup>\<down>"
+definition WCR_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "WCR_on r A \<equiv> \<forall>a\<in>A. \<forall>b c. (a, b) \<in> r \<and> (a, c) \<in> r \<longrightarrow> (b, c) \<in> join r"
 
-definition
-  WCR :: "'a ars \<Rightarrow> bool"
-where
-  "WCR A \<equiv> \<forall>a. WCR_elt A a"
+abbreviation WCR :: "'a ars \<Rightarrow> bool" where "WCR r \<equiv> WCR_on r UNIV"
 
-definition
-  WN_elt :: "'a ars \<Rightarrow> 'a \<Rightarrow> bool"
-where
-  "WN_elt A a \<equiv> \<exists>b. (a, b) \<in> A^!"
+definition WN_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "WN_on r A \<equiv> \<forall>a\<in>A. \<exists>b. (a, b) \<in> r^!"
 
-definition
-  WN :: "'a ars \<Rightarrow> bool"
-where
-  "WN A \<equiv> \<forall>a. WN_elt A a"
+abbreviation WN :: "'a ars \<Rightarrow> bool" where
+  "WN r \<equiv> WN_on r UNIV"
 
-lemmas CR_defs = CR_def CR_elt_def
-lemmas SN_defs = SN_def SN_elt_def
-lemmas UNF_defs = UNF_def UNF_elt_def
-lemmas WCR_defs = WCR_def WCR_elt_def
-lemmas WN_defs = WN_def WN_elt_def
+lemmas CR_defs = CR_on_def
+lemmas SN_defs = SN_on_def
+lemmas UNF_defs = UNF_on_def
+lemmas WCR_defs = WCR_on_def
+lemmas WN_defs = WN_on_def
 
-lemma SN_def': "SN A \<equiv> \<not> (\<exists>S. \<forall>i. (S i, S (Suc i)) \<in> A)" by (simp add: SN_defs)
+definition complete_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "complete_on r A \<equiv> SN_on r A \<and> CR_on r A"
 
-definition
-  complete_elt :: "'a ars \<Rightarrow> 'a \<Rightarrow> bool"
-where
-  "complete_elt A a \<equiv> SN_elt A a \<and> CR_elt A a"
+abbreviation complete :: "'a ars \<Rightarrow> bool" where
+  "complete r \<equiv> complete_on r UNIV"
 
-definition
-  complete :: "'a ars \<Rightarrow> bool"
-where
-  "complete A \<equiv> \<forall>a. complete_elt A a"
+definition semi_complete_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "semi_complete_on r A \<equiv>  WN_on r A \<and> CR_on r A"
 
-definition
-  semi_complete_elt :: "'a ars \<Rightarrow> 'a \<Rightarrow> bool"
-where
-  "semi_complete_elt A a \<equiv>  WN_elt A a \<and> CR_elt A a"
+abbreviation semi_complete :: "'a ars \<Rightarrow> bool" where
+  "semi_complete r \<equiv> semi_complete_on r UNIV"
 
-definition
-  semi_complete :: "'a ars \<Rightarrow> bool"
-where
-  "semi_complete A \<equiv> \<forall>a. semi_complete_elt A a"
-
-lemmas complete_defs = complete_def complete_elt_def
-lemmas semi_complete_defs = semi_complete_def semi_complete_elt_def
+lemmas complete_defs = complete_on_def
+lemmas semi_complete_defs = semi_complete_on_def
 
 text {* Unique normal forms with respect to conversion. *}
 definition
@@ -334,297 +302,266 @@ definition
 where
   "UNC A \<equiv> \<forall>a b. a \<in> NF A \<and> b \<in> NF A \<and> (a, b) \<in> A^<->* \<longrightarrow> a = b"
 
-lemma complete_elt_I:
-  "SN_elt A a \<Longrightarrow> CR_elt A a \<Longrightarrow> complete_elt A a"
-by (simp add: complete_defs)
+lemma complete_onI:
+  "SN_on r A \<Longrightarrow> CR_on r A \<Longrightarrow> complete_on r A"
+  by (simp add: complete_defs)
 
-lemma complete_elt_E:
-  "complete_elt A a \<Longrightarrow> (SN_elt A a \<Longrightarrow> CR_elt A a \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: complete_defs)
+lemma complete_onE:
+  "complete_on r A \<Longrightarrow> (SN_on r A \<Longrightarrow> CR_on r A \<Longrightarrow> P) \<Longrightarrow> P"
+  by (simp add: complete_defs)
 
-lemma complete_I: "(\<And>a. SN_elt A a) \<Longrightarrow> (\<And>a. CR_elt A a) \<Longrightarrow> complete A"
-by (simp add: complete_defs)
+lemma CR_onI:
+  "(\<And>a b c. a \<in> A \<Longrightarrow> (a, b) \<in> r^* \<Longrightarrow> (a, c) \<in> r^* \<Longrightarrow> (b, c) \<in> join r) \<Longrightarrow> CR_on r A"
+  by (simp add: CR_defs)
 
-lemma complete_I': "(\<And>a. complete_elt A a) \<Longrightarrow> complete A"
-by (simp add: complete_defs)
+lemma CR_on_singletonI:
+  "(\<And>b c. (a, b) \<in> r^* \<Longrightarrow> (a, c) \<in> r^* \<Longrightarrow> (b, c) \<in> join r) \<Longrightarrow> CR_on r {a}"
+  by (simp add: CR_defs)
 
-lemma complete_E: "complete A \<Longrightarrow> (SN A \<Longrightarrow> CR A \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: complete_defs SN_defs CR_defs)
+lemma CR_onE:
+  "CR_on r A \<Longrightarrow> a \<in> A \<Longrightarrow> ((b, c) \<in> join r \<Longrightarrow> P) \<Longrightarrow> ((a, b) \<notin> r^* \<Longrightarrow> P) \<Longrightarrow> ((a, c) \<notin> r^* \<Longrightarrow> P) \<Longrightarrow> P"
+  unfolding CR_defs by blast
 
-lemma complete_E': "complete A \<Longrightarrow> (complete_elt A a \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: complete_defs)
+lemma CR_onD:
+  "CR_on r A \<Longrightarrow> a \<in> A \<Longrightarrow> (a, b) \<in> r^* \<Longrightarrow> (a, c) \<in> r^* \<Longrightarrow> (b, c) \<in> join r"
+  by (blast elim: CR_onE)
 
-lemma complete_E'': "complete A \<Longrightarrow> (SN_elt A a \<Longrightarrow> CR_elt A a \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: complete_defs)
+lemma semi_complete_onI: "WN_on r A \<Longrightarrow> CR_on r A \<Longrightarrow> semi_complete_on r A"
+  by (simp add: semi_complete_defs)
 
-lemma CR_elt_I:
-  "(\<And>b c. (a, b) \<in> A^* \<Longrightarrow> (a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A\<^sup>\<down>) \<Longrightarrow> CR_elt A a"
-by (simp add: CR_defs)
+lemma semi_complete_onE:
+  "semi_complete_on r A \<Longrightarrow> (WN_on r A \<Longrightarrow> CR_on r A \<Longrightarrow> P) \<Longrightarrow> P"
+  by (simp add: semi_complete_defs)
 
-lemma CR_elt_E:
-  "CR_elt A a \<Longrightarrow> ((b, c) \<in> A\<^sup>\<down> \<Longrightarrow> P) \<Longrightarrow> ((a, b) \<notin> A^* \<Longrightarrow> P) \<Longrightarrow> ((a, c) \<notin> A^* \<Longrightarrow> P) \<Longrightarrow> P"
-unfolding CR_defs by blast
+declare semi_complete_onI[intro]
+declare semi_complete_onE[elim]
 
-lemma CR_elt_D:
-  "CR_elt A a \<Longrightarrow> (a, b) \<in> A^* \<Longrightarrow> (a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A\<^sup>\<down>"
-by (blast elim: CR_elt_E)
+declare complete_onI[intro]
+declare complete_onE[elim]
 
-lemma CR_I: "(\<And>a. CR_elt A a) \<Longrightarrow> CR A" by (simp add: CR_defs)
+declare CR_onI[intro]
+declare CR_on_singletonI[intro]
 
-lemma CR_I': "(\<And>a b c. (a, b) \<in> A^* \<Longrightarrow> (a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A\<^sup>\<down>) \<Longrightarrow> CR A"
-by (auto simp: CR_defs)
-
-lemma CR_E: "CR A \<Longrightarrow> (CR_elt A a \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: CR_defs)
-
-lemma CR_E':
-  "CR A \<Longrightarrow> ((b, c) \<in> A\<^sup>\<down> \<Longrightarrow> P) \<Longrightarrow> ((a, b) \<notin> A^* \<Longrightarrow> P) \<Longrightarrow> ((a, c) \<notin> A^* \<Longrightarrow> P) \<Longrightarrow> P"
-by (auto simp: CR_defs)
-
-lemma CR_D: "CR A \<Longrightarrow> (a, b) \<in> A^* \<Longrightarrow> (a, c) \<in> A^* \<Longrightarrow> (b, c) \<in> A\<^sup>\<down>"
-by (blast elim: CR_E')
-
-lemma semi_complete_elt_I[intro]: "WN_elt A a \<Longrightarrow> CR_elt A a \<Longrightarrow> semi_complete_elt A a"
-by (simp add: semi_complete_defs)
-
-lemma semi_complete_elt_E[elim]:
-  "semi_complete_elt A a \<Longrightarrow> (WN_elt A a \<Longrightarrow> CR_elt A a \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: semi_complete_defs)
-
-lemma semi_complete_I: "(\<And>a. semi_complete_elt A a) \<Longrightarrow> semi_complete A"
-by (simp add: semi_complete_defs)
-
-lemma semi_complete_I': "(\<And>a. WN_elt A a) \<Longrightarrow> (\<And>a. CR_elt A a) \<Longrightarrow> semi_complete A"
-by (simp add: semi_complete_defs)
-
-lemma semi_complete_E:
-  "semi_complete A \<Longrightarrow> (semi_complete_elt A a \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: semi_complete_defs)
-
-lemma semi_complete_E':
-  "semi_complete A \<Longrightarrow> (WN_elt A a \<Longrightarrow> CR_elt A a \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: semi_complete_defs)
-
-lemma semi_complete_E'':
-  "semi_complete A \<Longrightarrow> (WN A \<Longrightarrow> CR A \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: semi_complete_defs WN_defs CR_defs)
-
-declare complete_elt_I[intro]
-declare complete_elt_E[elim]
-declare complete_I'[intro]
-declare complete_I[intro]
-declare complete_E''[elim]
-declare complete_E'[elim]
-declare complete_E[elim]
-
-declare CR_elt_I[intro]
-declare CR_elt_D[dest]
-declare CR_elt_E[elim]
-declare CR_I'[intro]
-declare CR_I[intro]
-declare CR_D[dest]
-declare CR_E'[elim]
-declare CR_E[elim]
-
-declare semi_complete_I'[intro]
-declare semi_complete_I[intro]
-declare semi_complete_E''[elim]
-declare semi_complete_E'[elim]
-declare semi_complete_E[elim]
+declare CR_onD[dest]
+declare CR_onE[elim]
 
 lemma UNC_I:
   "(\<And>a b. a \<in> NF A \<Longrightarrow> b \<in> NF A \<Longrightarrow> (a, b) \<in> A^<->* \<Longrightarrow> a = b) \<Longrightarrow> UNC A"
-by (simp add: UNC_def)
+  by (simp add: UNC_def)
 
 lemma UNC_E:
   "\<lbrakk>UNC A; a = b \<Longrightarrow> P; a \<notin> NF A \<Longrightarrow> P; b \<notin> NF A \<Longrightarrow> P; (a, b) \<notin> A^<->* \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-unfolding UNC_def by blast
+  unfolding UNC_def by blast
 
-lemma UNF_elt_I: "(\<And>b c. (a, b) \<in> A^! \<Longrightarrow> (a, c) \<in> A^! \<Longrightarrow> b = c) \<Longrightarrow> UNF_elt A a"
-by (simp add: UNF_defs)
+lemma UNF_onI: "(\<And>a b c. a \<in> A \<Longrightarrow> (a, b) \<in> r^! \<Longrightarrow> (a, c) \<in> r^! \<Longrightarrow> b = c) \<Longrightarrow> UNF_on r A"
+  by (simp add: UNF_defs)
 
-lemma UNF_elt_E:
-  "UNF_elt A a \<Longrightarrow> (b = c \<Longrightarrow> P) \<Longrightarrow> ((a, b) \<notin> A^! \<Longrightarrow> P) \<Longrightarrow> ((a, c) \<notin> A^! \<Longrightarrow> P) \<Longrightarrow> P"
-unfolding UNF_elt_def by blast
+lemma UNF_onE:
+  "UNF_on r A \<Longrightarrow> a \<in> A \<Longrightarrow> (b = c \<Longrightarrow> P) \<Longrightarrow> ((a, b) \<notin> r^! \<Longrightarrow> P) \<Longrightarrow> ((a, c) \<notin> r^! \<Longrightarrow> P) \<Longrightarrow> P"
+  unfolding UNF_on_def by blast
 
-lemma UNF_elt_D:
-  "UNF_elt A a \<Longrightarrow> (a, b) \<in> A^! \<Longrightarrow> (a, c) \<in> A^! \<Longrightarrow> b = c"
-by (blast elim: UNF_elt_E)
+lemma UNF_onD:
+  "UNF_on r A \<Longrightarrow> a \<in> A \<Longrightarrow> (a, b) \<in> r^! \<Longrightarrow> (a, c) \<in> r^! \<Longrightarrow> b = c"
+  by (blast elim: UNF_onE)
 
-lemma UNF_I:
-  "(\<And>a b c. (a, b) \<in> A^! \<Longrightarrow> (a, c) \<in> A^! \<Longrightarrow> b = c) \<Longrightarrow> UNF A"
-by (auto simp: UNF_defs)
+declare UNF_onI[intro]
+declare UNF_onD[dest]
+declare UNF_onE[elim]
 
-lemma UNF_I': "(\<And>a. UNF_elt A a) \<Longrightarrow> UNF A" by (simp add: UNF_defs)
+lemma SN_onI:
+  assumes "\<And>f. \<lbrakk>f 0 \<in> A; \<forall>i. (f i, f (Suc i)) \<in> r\<rbrakk> \<Longrightarrow> False"
+  shows "SN_on r A"
+  using assms unfolding SN_defs by blast
 
-lemma UNF_E: "UNF A \<Longrightarrow> (UNF_elt A a \<Longrightarrow> P) \<Longrightarrow> P" unfolding UNF_def by blast
-
-lemma UNF_E': "\<lbrakk>UNF A; b = c \<Longrightarrow> P; (a, b) \<notin> A^! \<Longrightarrow> P; (a, c) \<notin> A^! \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-unfolding UNF_defs by blast
-
-lemma UNF_D: "UNF A \<Longrightarrow> (a, b) \<in> A^! \<Longrightarrow> (a, c) \<in> A^! \<Longrightarrow> b = c"
-by (blast elim: UNF_E')
-
-declare UNC_I[intro]
-declare UNC_E[elim]
-
-declare UNF_elt_I[intro]
-declare UNF_elt_D[dest]
-declare UNF_elt_E[elim]
-
-declare UNF_I'[intro]
-declare UNF_I[intro]
-declare UNF_D[dest]
-declare UNF_E'[elim]
-declare UNF_E[elim]
-
-lemma SN_elt_I:
-  assumes "\<And>S. \<lbrakk>S 0 = a; \<forall>i. (S i, S (Suc i)) \<in> A\<rbrakk> \<Longrightarrow> False" shows "SN_elt A a"
-using assms unfolding SN_defs by blast
-
-lemma SN_elt_E:
-  assumes "SN_elt A a" and "\<not> (\<exists>S. S 0 = a \<and> (\<forall>i. (S i, S (Suc i)) \<in> A)) \<Longrightarrow> P"
+lemma SN_onE:
+  assumes "SN_on r A"
+    and "\<not> (\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> r)) \<Longrightarrow> P"
   shows "P"
-using assms unfolding SN_defs by simp
+  using assms unfolding SN_defs by simp
 
-lemma not_SN_elt_E:
-  assumes "\<not> SN_elt A a" and "\<And>S. \<lbrakk>S 0 = a; \<forall>i. (S i, S (Suc i)) \<in> A\<rbrakk> \<Longrightarrow> P"
+lemma not_SN_onE:
+  assumes "\<not> SN_on r A"
+    and "\<And>f. \<lbrakk>f 0 \<in> A; \<forall>i. (f i, f (Suc i)) \<in> r\<rbrakk> \<Longrightarrow> P"
   shows "P"
-using assms unfolding SN_defs by blast
+  using assms unfolding SN_defs by blast
 
-(* Used by automatic methods like: auto, blast, ... *)
-lemma SN_I: "(\<And>a. SN_elt A a) \<Longrightarrow> SN A" by (simp add: SN_defs)
+declare SN_onI[intro]
+declare SN_onE[elim]
+declare not_SN_onE[Pure.elim, elim]
 
-(* This is used by single steps like: proof, rule, ... *)
-lemma SN_I':
-  assumes "\<And>S. \<forall>i. (S i, S (Suc i)) \<in> A \<Longrightarrow> False" shows "SN A"
-using assms unfolding SN_defs by blast
-
-lemma SN_E:
-  assumes "SN A" and "SN_elt A a \<Longrightarrow> P" shows "P"
-using assms unfolding SN_defs by simp
-
-lemma SN_E':
-  assumes "SN A" and "\<not> (\<exists>S. \<forall>i. (S i, S (Suc i)) \<in> A) \<Longrightarrow> P" shows "P"
-using assms unfolding SN_defs by simp
-
-lemma not_SN_E:
-  assumes "\<not> SN A" and "\<And>S. \<forall>i. (S i, S (Suc i)) \<in> A \<Longrightarrow> P"
-  shows "P"
-using assms unfolding SN_defs by blast
-
-declare SN_elt_I[intro]
-declare SN_elt_E[elim]
-declare not_SN_elt_E[Pure.elim, elim]
-declare SN_I[intro]
-declare SN_I'[Pure.intro, intro]
-declare SN_E[elim]
-declare SN_E'[elim]
-declare not_SN_E[Pure.elim, elim]
-
-lemma SN_imp_irreflexive: assumes "SN r" shows "(l,l) \<notin> r"
-proof
-  assume in_gr: "(l,l) \<in> r"
-  with `SN r` show False unfolding SN_defs by auto
+lemma SN_on_irrefl:
+  assumes "SN_on r A"
+  shows "\<forall>a\<in>A. (a, a) \<notin> r"
+proof (intro ballI notI)
+  fix a assume "a \<in> A" and "(a, a) \<in> r"
+  with assms show False unfolding SN_defs by auto
 qed
 
+lemma WCR_onI: "(\<And>a b c. a \<in> A \<Longrightarrow> (a, b) \<in> r \<Longrightarrow> (a, c) \<in> r \<Longrightarrow> (b, c) \<in> join r) \<Longrightarrow> WCR_on r A"
+  by (simp add: WCR_defs)
 
-lemma WCR_elt_I: "(\<And>b c. (a, b) \<in> A \<Longrightarrow> (a,c) \<in> A \<Longrightarrow> (b, c) \<in> A\<^sup>\<down>) \<Longrightarrow> WCR_elt A a"
-by (simp add: WCR_defs)
+lemma WCR_onE:
+  "WCR_on r A \<Longrightarrow> a \<in> A \<Longrightarrow> ((b, c) \<in> join r \<Longrightarrow> P) \<Longrightarrow> ((a, b) \<notin> r \<Longrightarrow> P) \<Longrightarrow> ((a, c) \<notin> r \<Longrightarrow> P) \<Longrightarrow> P"
+  unfolding WCR_on_def by blast
 
-lemma WCR_elt_E:
-  "WCR_elt A a \<Longrightarrow> ((b, c) \<in> A\<^sup>\<down> \<Longrightarrow> P) \<Longrightarrow> ((a, b) \<notin> A \<Longrightarrow> P) \<Longrightarrow> ((a, c) \<notin> A \<Longrightarrow> P) \<Longrightarrow> P"
-unfolding WCR_elt_def by blast
+lemma WCR_onD:
+  "WCR_on r A \<Longrightarrow> a \<in> A \<Longrightarrow> (a, b) \<in> r \<Longrightarrow> (a, c) \<in> r \<Longrightarrow> (b, c) \<in> join r"
+  by (blast elim: WCR_onE)
 
-lemma WCR_elt_D:
-  "WCR_elt A a \<Longrightarrow> (a, b) \<in> A \<Longrightarrow> (a, c) \<in> A \<Longrightarrow> (b, c) \<in> A\<^sup>\<down>"
-by (blast elim: WCR_elt_E)
+lemma WN_onI: "(\<And>a. a \<in> A \<Longrightarrow> \<exists>b. (a, b) \<in> r^!) \<Longrightarrow> WN_on r A"
+  by (auto simp: WN_defs)
 
-lemma WCR_I: "(\<And>a. WCR_elt A a) \<Longrightarrow> WCR A" by (simp add: WCR_defs)
+lemma WN_onE: "WN_on r A \<Longrightarrow> a \<in> A \<Longrightarrow> (\<And>b. (a, b) \<in> r^! \<Longrightarrow> P) \<Longrightarrow> P"
+ unfolding WN_defs by blast
 
-lemma WCR_I': "(\<And>a b c. (a, b) \<in> A \<Longrightarrow> (a, c) \<in> A \<Longrightarrow> (b, c) \<in> A\<^sup>\<down>) \<Longrightarrow> WCR A"
-by (auto simp: WCR_defs)
+lemma WN_onD: "WN_on r A \<Longrightarrow> a \<in> A \<Longrightarrow> \<exists>b. (a, b) \<in> r^!"
+  by (blast elim: WN_onE)
 
-lemma WCR_E: "WCR A \<Longrightarrow> (WCR_elt A a \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: WCR_defs)
+declare WCR_onI[intro]
+declare WCR_onD[dest]
+declare WCR_onE[elim]
 
-lemma WCR_E':
-  "WCR A \<Longrightarrow> ((b, c) \<in> A\<^sup>\<down> \<Longrightarrow> P) \<Longrightarrow> ((a, b) \<notin> A \<Longrightarrow> P) \<Longrightarrow> ((a, c) \<notin> A \<Longrightarrow> P) \<Longrightarrow> P"
-unfolding WCR_defs by blast
+declare WN_onI[intro]
+declare WN_onD[dest]
+declare WN_onE[elim]
 
-lemma WCR_D:
-  "WCR A \<Longrightarrow> (a, b) \<in> A \<Longrightarrow> (a, c) \<in> A \<Longrightarrow> (b, c) \<in> A\<^sup>\<down>"
-by (blast elim: WCR_E')
-
-
-lemma WN_elt_I: "(a, b) \<in> A^! \<Longrightarrow> WN_elt A a" by (auto simp: WN_defs)
-
-lemma WN_elt_E: "WN_elt A a \<Longrightarrow> (\<And>b. (a, b) \<in> A^! \<Longrightarrow> P) \<Longrightarrow> P"
-unfolding WN_defs by blast
-
-lemma WN_elt_D: "WN_elt A a \<Longrightarrow> \<exists>b. (a, b) \<in> A^!"
-by (blast elim: WN_elt_E)
-
-lemma WN_I: "(\<And>a. WN_elt A a) \<Longrightarrow> WN A" by (simp add: WN_defs)
-
-lemma WN_E: "WN A \<Longrightarrow> (WN_elt A a \<Longrightarrow> P) \<Longrightarrow> P"
-by (simp add: WN_defs)
-
-lemma WN_E': "WN A \<Longrightarrow> (\<And>b. (a, b) \<in> A^! \<Longrightarrow> P) \<Longrightarrow> P"
-unfolding WN_defs by blast
-
-lemma WN_D: "WN A \<Longrightarrow> \<exists>b. (a, b) \<in> A^!" by (blast elim: WN_E')
-
-declare WCR_elt_I[intro]
-declare WCR_elt_D[dest]
-declare WCR_elt_E[elim]
-
-declare WCR_I'[intro]
-declare WCR_I[intro]
-declare WCR_D[dest]
-declare WCR_E'[elim]
-declare WCR_E[elim]
-
-declare WN_elt_I[intro]
-declare WN_elt_D[dest]
-declare WN_elt_E[elim]
-declare WN_I[intro]
-declare WN_D[dest]
-declare WN_E'[elim]
-declare WN_E[elim]
-
-text {*Restricting a relation @{term A} to those elements that are
-strongly normalizing with respect to a relation @{term B}.*}
+text {*
+  Restricting a relation @{term r} to those elements that are strongly
+  normalizing with respect to a relation @{term s}.
+*}
 definition
   restrict_SN :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a ars" 
 where
-  "restrict_SN A B \<equiv> {(a, b) | a b. (a, b) \<in> A \<and> SN_elt B a}"
+  "restrict_SN r s \<equiv> {(a, b) | a b. (a, b) \<in> r \<and> SN_on s {a}}"
 
-lemma SN_restrict_SN_idemp[simp]: "SN (restrict_SN A A)" by (auto simp: restrict_SN_def SN_defs)
+lemma SN_restrict_SN_idemp[simp]: "SN (restrict_SN A A)"
+  by (auto simp: restrict_SN_def SN_defs)
 
-lemma step_preserves_SN_elt:
-  assumes "(a ,b) \<in> A" and "SN_elt A a" shows "SN_elt A b"
+lemma SN_on_Image:
+  assumes "SN_on r A"
+  shows "SN_on r (r `` A)"
 proof
-  fix S assume "S 0 = b" and seq: "\<forall>i. (S i, S (Suc i)) \<in> A"
-  let ?T = "\<lambda>i. case i of 0 \<Rightarrow> a | Suc i \<Rightarrow> S i"
-  have "\<forall>i. (?T i, ?T (Suc i)) \<in> A"
+  fix f
+  assume 1: "f 0 \<in> r `` A" and seq: "\<forall>i. (f i, f (Suc i)) \<in> r"
+  then obtain a where "a \<in> A" and "(a, f 0) \<in> r" by auto
+  let ?g = "\<lambda>i. case i of 0 \<Rightarrow> a | Suc i \<Rightarrow> f i"
+  have "\<forall>i. (?g i, ?g (Suc i)) \<in> r"
   proof
-    fix i show "(?T i, ?T (Suc i)) \<in> A"
+    fix i show "(?g i, ?g (Suc i)) \<in> r"
     proof (cases i)
-      case 0 from `(a, b) \<in> A` show ?thesis by (simp add: `S 0 = b` 0)
+      case 0
+      from `(a, f 0) \<in> r` and 1 show ?thesis by (simp add: 0)
     next
       case (Suc j)
-      from seq have "(S j, S (Suc j)) \<in> A" ..
+      from seq have "(f j, f (Suc j)) \<in> r" ..
       thus ?thesis by (simp add: Suc)
     qed
   qed
-  moreover have "?T 0 = a" by simp
-  ultimately have "\<not> SN_elt A a" unfolding SN_defs by best
+  moreover have "?g 0 \<in> A" by (simp add: `a \<in> A`)
+  ultimately have "\<not> SN_on r A" unfolding SN_defs by best
   with assms show False by simp
 qed
 
-lemma steps_preserve_SN_elt: "(a, b) \<in> A^* \<Longrightarrow> SN_elt A a \<Longrightarrow> SN_elt A b"
-by (induct rule: rtrancl.induct) (auto simp: step_preserves_SN_elt)
+lemma SN_on_subset2:
+  assumes "A \<subseteq> B" and "SN_on r B"
+  shows "SN_on r A"
+  using assms unfolding SN_on_def by blast
+
+lemma step_preserves_SN_on:
+  assumes 1: "(a, b) \<in> r"
+    and 2: "SN_on r {a}"
+  shows "SN_on r {b}"
+  using 1 and SN_on_Image[OF 2] and SN_on_subset2[of "{b}" "r `` {a}"] by auto
+
+lemma steps_preserve_SN_on: "(a, b) \<in> A^* \<Longrightarrow> SN_on A {a} \<Longrightarrow> SN_on A {b}"
+  by (induct rule: rtrancl.induct) (auto simp: step_preserves_SN_on)
+
+
+(*FIXME: move*)
+lemma relpow_seq:
+  assumes "(x, y) \<in> r^^n"
+  shows "\<exists>f. f 0 = x \<and> f n = y \<and> (\<forall>i<n. (f i, f (Suc i)) \<in> r)"
+using assms
+proof (induct n arbitrary: y)
+  case 0 thus ?case by auto
+next
+  case (Suc n)
+  then obtain z where "(x, z) \<in> r^^n" and "(z, y) \<in> r" by auto
+  from Suc(1)[OF `(x, z) \<in> r^^n`]
+    obtain f where "f 0 = x" and "f n = z" and seq: "\<forall>i<n. (f i, f (Suc i)) \<in> r" by auto
+  let ?n = "Suc n"
+  let ?f = "\<lambda>i. if i = ?n then y else f i"
+  have "?f ?n = y" by simp
+  from `f 0 = x` have "?f 0 = x" by simp
+  from seq have seq': "\<forall>i<n. (?f i, ?f (Suc i)) \<in> r" by auto
+  with `f n = z` and `(z, y) \<in> r` have "\<forall>i<?n. (?f i, ?f (Suc i)) \<in> r" by auto
+  with `?f 0 = x` and `?f ?n = y` show ?case by best
+qed
+
+lemma rtrancl_imp_seq:
+  assumes "(x, y) \<in> r^*"
+  shows "\<exists>f n. f 0 = x \<and> f n = y \<and> (\<forall>i<n. (f i, f (Suc i)) \<in> r)"
+  using assms[unfolded rtrancl_power] and relpow_seq[of x y _ r] by blast
+
+lemma SN_on_Image_rtrancl:
+  assumes "SN_on r A"
+  shows "SN_on r (r^* `` A)"
+proof
+  fix f
+  assume f0: "f 0 \<in> r^* `` A" and fseq: "\<forall>i. (f i, f (Suc i)) \<in> r"
+  then obtain a where a: "a \<in> A" and "(a, f 0) \<in> r^*" by auto
+  then obtain n where "(a, f 0) \<in> r^^n" unfolding rtrancl_power by auto
+  show False
+  proof (cases n)
+    case 0
+    with `(a, f 0) \<in> r^^n` have "f 0 = a" by simp
+    hence "f 0 \<in> A" by (simp add: a)
+    with fseq have "\<not> SN_on r A" by auto
+    with assms show False by simp
+  next
+    case (Suc m)
+    from relpow_seq[OF `(a, f 0) \<in> r^^n`]
+      obtain g where g0: "g 0 = a" and "g n = f 0"
+      and gseq: "\<forall>i<n. (g i, g (Suc i)) \<in> r" by auto
+    let ?f = "\<lambda>i. if i < n then g i else f (i - n)"
+    have "\<forall>i. (?f i, ?f (Suc i)) \<in> r"
+    proof
+      fix i
+      {
+        assume "Suc i < n"
+        hence "(?f i, ?f (Suc i)) \<in> r" by (simp add: gseq)
+      }
+      moreover
+      {
+        assume "Suc i > n"
+        hence eq: "Suc (i - n) = Suc i - n" by arith
+        from fseq have "(f (i - n), f (Suc (i - n))) \<in> r" by simp
+        hence "(f (i - n), f (Suc i - n)) \<in> r" by (simp add: eq)
+        with `Suc i > n` have "(?f i, ?f (Suc i)) \<in> r" by simp
+      }
+      moreover
+      {
+        assume "Suc i = n"
+        hence eq: "f (Suc i - n) = g n" by (simp add: `g n = f 0`)
+        from `Suc i = n` have eq': "i = n - 1" by arith
+        from gseq have "(g i, f (Suc i - n)) \<in> r" unfolding eq by (simp add: Suc eq')
+        hence "(?f i, ?f (Suc i)) \<in> r" using `Suc i = n` by simp
+      }
+      ultimately show "(?f i, ?f (Suc i)) \<in> r" by simp
+    qed
+    moreover have "?f 0 \<in> A"
+    proof (cases n)
+      case 0
+      with `(a, f 0) \<in> r^^n` have eq: "a = f 0" by simp
+      from a show ?thesis by (simp add: eq 0)
+    next
+      case (Suc m)
+      thus ?thesis by (simp add: a g0)
+    qed
+    ultimately have "\<not> SN_on r A" unfolding SN_defs by best
+    with assms show False by simp
+  qed
+qed
 
 (* FIXME: move somewhere else *)
 lemma subsetI2[Pure.intro]: "(\<And>x y. (x,y) \<in> A \<Longrightarrow> (x,y) \<in> B) \<Longrightarrow> A \<subseteq> B" by auto
@@ -640,7 +577,7 @@ next
   show "?rhs \<subseteq> ?lhs"
   proof
     fix a b assume "(a, b) \<in> ?rhs"
-    hence "(a, b) \<in> A^+" and "SN_elt A a" unfolding restrict_SN_def by auto
+    hence "(a, b) \<in> A^+" and "SN_on A {a}" unfolding restrict_SN_def by auto
     thus "(a, b) \<in> ?lhs"
     proof (induct rule: trancl.induct)
       case (r_into_trancl x y) thus ?case unfolding restrict_SN_def by auto
@@ -648,19 +585,12 @@ next
       case (trancl_into_trancl a b c)
       hence IH: "(a, b) \<in> ?lhs" by auto
       from trancl_into_trancl have "(a, b) \<in> A^*" by auto
-      from this and `SN_elt A a` have "SN_elt A b" by (rule steps_preserve_SN_elt)
+      from this and `SN_on A {a}` have "SN_on A {b}" by (rule steps_preserve_SN_on)
       with `(b, c) \<in> A` have "(b, c) \<in> ?lhs" unfolding restrict_SN_def by auto
       with IH show ?case by simp
     qed
   qed
 qed
-
-text {*
-Infinite sequences over elements of type @{typ "'a"} are represented by functions
-of type @{typ "nat \<Rightarrow> 'a"}.
-*}
-type_synonym
-  'a iseq = "nat \<Rightarrow> 'a"
 
 lemma SN_imp_WN: assumes "SN A" shows "WN A"
 proof -
@@ -668,21 +598,21 @@ proof -
   show "WN A"
   proof
     fix a
-    show "WN_elt A a" unfolding WN_defs normalizability_def NF_def Image_def
+    show "\<exists>b. (a, b) \<in> A^!" unfolding normalizability_def NF_def Image_def
       by (rule wfE_min[OF `wf (A^-1)`, of a "A^* `` {a}", simplified])
-        (auto intro: rtrancl_into_rtrancl)
+         (auto intro: rtrancl_into_rtrancl)
   qed
 qed
 
 lemma UNC_imp_UNF:
  assumes "UNC r" shows "UNF r"
 proof - {
- fix x y z assume "(x,y) \<in> r^!" and "(x,z) \<in> r^!"
- hence "(x,y) \<in> r^*" and "(x,z) \<in> r^*" and "y \<in> NF r" and "z \<in> NF r" by auto
- hence "(x,y) \<in> r^<->*" and "(x,z) \<in> r^<->*" by (auto intro: conversion_I')
- hence "(z,x) \<in> r^<->*" using conversion_sym unfolding sym_def by best
- with `(x,y) \<in> r^<->*` have "(z,y) \<in> r^<->*" using conversion_trans unfolding trans_def by best
- with `z \<in> NF r` and `y \<in> NF r` have "z = y" using assms by auto
+  fix x y z assume "(x,y) \<in> r^!" and "(x,z) \<in> r^!"
+  hence "(x,y) \<in> r^*" and "(x,z) \<in> r^*" and "y \<in> NF r" and "z \<in> NF r" by auto
+  hence "(x,y) \<in> r^<->*" and "(x,z) \<in> r^<->*" by (auto intro: conversionI')
+  hence "(z,x) \<in> r^<->*" using conversion_sym unfolding sym_def by best
+  with `(x,y) \<in> r^<->*` have "(z,y) \<in> r^<->*" using conversion_trans unfolding trans_def by best
+  from assms and this and `z \<in> NF r` and `y \<in> NF r` have "z = y" unfolding UNC_def by auto
 } thus ?thesis by auto
 qed
 
@@ -690,13 +620,13 @@ lemma join_NF_imp_eq:
  assumes "(x,y) \<in> r\<^sup>\<down>" and "x \<in> NF r" and "y \<in> NF r"
  shows "x = y"
 proof -
- from `(x,y) \<in> r\<^sup>\<down>` obtain z where "(x,z)\<in>r^*" and "(z,y)\<in>(r\<inverse>)^*" unfolding join_def by auto
- hence "(y,z) \<in> r^*" unfolding rtrancl_converse by simp
- from `x \<in> NF r` have "(x,z) \<notin> r^+" using NF_no_trancl_step by best
- hence "x = z" using rtranclD[OF `(x,z) \<in> r^*`] by auto
- from `y \<in> NF r` have "(y,z) \<notin> r^+" using NF_no_trancl_step by best
- hence "y = z" using rtranclD[OF `(y,z) \<in> r^*`] by auto
- with `x = z` show ?thesis by simp
+  from `(x,y) \<in> r\<^sup>\<down>` obtain z where "(x,z)\<in>r^*" and "(z,y)\<in>(r\<inverse>)^*" unfolding join_def by auto
+  hence "(y,z) \<in> r^*" unfolding rtrancl_converse by simp
+  from `x \<in> NF r` have "(x,z) \<notin> r^+" using NF_no_trancl_step by best
+  hence "x = z" using rtranclD[OF `(x,z) \<in> r^*`] by auto
+  from `y \<in> NF r` have "(y,z) \<notin> r^+" using NF_no_trancl_step by best
+  hence "y = z" using rtranclD[OF `(y,z) \<in> r^*`] by auto
+  with `x = z` show ?thesis by simp
 qed
 
 lemma CR_iff_meet_subset_join: "CR r = (r\<^sup>\<up> \<subseteq> r\<^sup>\<down>)"
@@ -704,7 +634,7 @@ proof
  assume "CR r" show "r\<^sup>\<up> \<subseteq> r\<^sup>\<down>"
  proof (rule subsetI2)
   fix x y assume "(x,y) \<in> r\<^sup>\<up>"
-  then obtain z where "(z,x) \<in> r^*" and "(z,y) \<in> r^*" using meet_D by best
+  then obtain z where "(z,x) \<in> r^*" and "(z,y) \<in> r^*" using meetD by best
   with `CR r` show "(x,y) \<in> r\<^sup>\<down>" by (auto simp: CR_defs)
  qed
 next
@@ -724,7 +654,7 @@ lemma join_imp_conversion: "r\<^sup>\<down> \<subseteq> r^<->*"
 proof
   fix x z assume "(x,z) \<in> r\<^sup>\<down>"
   then obtain y where "(x,y) \<in> r^*" and "(z,y) \<in> r^*" by auto
-  hence "(x,y) \<in> r^<->*" and "(z,y) \<in> r^<->*" by (auto intro: conversion_I')
+  hence "(x,y) \<in> r^<->*" and "(z,y) \<in> r^<->*" by (auto intro: conversionI')
   from `(z,y) \<in> r^<->*` have "(y,z) \<in> r^<->*" using conversion_sym unfolding sym_def by best
   with `(x,y) \<in> r^<->*` show "(x,z) \<in> r^<->*" using conversion_trans unfolding trans_def by best
 qed
@@ -733,7 +663,7 @@ lemma meet_imp_conversion: "r\<^sup>\<up> \<subseteq> r^<->*"
 proof (rule subsetI2)
   fix y z assume "(y,z) \<in> r\<^sup>\<up>"
   then obtain x where "(x,y) \<in> r^*" and "(x,z) \<in> r^*" by auto
-  hence "(x,y) \<in> r^<->*" and "(x,z) \<in> r^<->*" by (auto intro: conversion_I')
+  hence "(x,y) \<in> r^<->*" and "(x,z) \<in> r^<->*" by (auto intro: conversionI')
   from `(x,y) \<in> r^<->*` have "(y,x) \<in> r^<->*" using conversion_sym unfolding sym_def by best
   with `(x,z) \<in> r^<->*` show "(y,z) \<in> r^<->*" using conversion_trans unfolding trans_def by best
 qed
@@ -781,14 +711,14 @@ next
     using meet_imp_conversion by auto
 qed
 
-lemma CR_imp_conversion_iff_join: assumes "CR r" shows "r^<->* = r\<^sup>\<down>"
+lemma CR_imp_conversionIff_join: assumes "CR r" shows "r^<->* = r\<^sup>\<down>"
 proof
   show "r^<->* \<subseteq> r\<^sup>\<down>" using CR_iff_conversion_imp_join assms by auto
 next
   show "r\<^sup>\<down> \<subseteq> r^<->*" by (rule join_imp_conversion)
 qed
 
-lemma join_sym: "sym (A\<^sup>\<down>)" unfolding sym_def by auto
+lemma join_sym: "sym (join r)" unfolding sym_def by auto
 
 lemma CR_join_left_I:
   assumes "CR r" and "(x,y) \<in> r^*" and "(x,z) \<in> r\<^sup>\<down>" shows "(y,z) \<in> r\<^sup>\<down>"
@@ -796,7 +726,7 @@ proof -
   from `(x,z) \<in> r\<^sup>\<down>` obtain x' where "(x,x') \<in> r^*" and "(z,x') \<in> r\<^sup>\<down>" by auto
   from `CR r` and `(x,x') \<in> r^*` and `(x,y) \<in> r^*` have "(x,y) \<in> r\<^sup>\<down>" by auto
   hence "(y,x) \<in> r\<^sup>\<down>" using join_sym unfolding sym_def by best
-  from `CR r` have "r^<->* = r\<^sup>\<down>" by (rule CR_imp_conversion_iff_join)
+  from `CR r` have "r^<->* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join)
   from `(y,x) \<in> r\<^sup>\<down>` and `(x,z) \<in> r\<^sup>\<down>` show ?thesis using conversion_trans
     unfolding trans_def `r^<->* = r\<^sup>\<down>`[symmetric] by best
 qed
@@ -804,8 +734,8 @@ qed
 lemma CR_join_right_I:
  assumes "CR r" and "(x,y) \<in> r\<^sup>\<down>" and "(y,z) \<in> r^*" shows "(x,z) \<in> r\<^sup>\<down>"
 proof -
-  have "r^<->* = r\<^sup>\<down>" by (rule CR_imp_conversion_iff_join[OF `CR r`])
-  from `(y,z) \<in> r^*` have "(y,z) \<in> r^<->*" by (auto intro: conversion_I')
+  have "r^<->* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join[OF `CR r`])
+  from `(y,z) \<in> r^*` have "(y,z) \<in> r^<->*" by (auto intro: conversionI')
   with `(x,y) \<in> r\<^sup>\<down>` show ?thesis unfolding `r^<->* = r\<^sup>\<down>`[symmetric] using conversion_trans
     unfolding trans_def by fast
 qed
@@ -817,12 +747,12 @@ proof -
   from `(x,y) \<in> r^*` show ?thesis unfolding Not_Domain_rtrancl[OF `x \<notin> Domain r`] by simp
 qed
 
-lemma semi_complete_imp_conversion_iff_same_NF:
+lemma semi_complete_imp_conversionIff_same_NF:
   assumes "semi_complete r"
   shows "((x,y) \<in> r^<->*) = (\<forall>u v. (x,u) \<in> r^! \<and> (y,v) \<in> r^! \<longrightarrow> u = v)"
 proof -
   from assms have "WN r" and "CR r" unfolding semi_complete_defs by auto
-  hence "r^<->* = r\<^sup>\<down>" using CR_imp_conversion_iff_join by auto
+  hence "r^<->* = r\<^sup>\<down>" using CR_imp_conversionIff_join by auto
   show ?thesis
   proof
     assume "(x,y) \<in> r^<->*"
@@ -848,12 +778,12 @@ proof -
     qed
   next
     assume equal_NF:"\<forall>u v. (x,u) \<in> r^! \<and> (y,v) \<in> r^! \<longrightarrow> u = v"
-    from `WN r` obtain u where "(x,u) \<in> r^!" by best
-    from `WN r` obtain v where "(y,v) \<in> r^!" by best
+    from `WN r` obtain u where "(x,u) \<in> r^!" by auto
+    from `WN r` obtain v where "(y,v) \<in> r^!" by auto
     from `(x,u) \<in> r^!` and `(y,v) \<in> r^!` have "u = v" using equal_NF by simp
     from `(x,u) \<in> r^!` and `(y,v) \<in> r^!` have "(x,v) \<in> r^*" and "(y,v) \<in> r^*"
       unfolding `u = v` by auto
-    hence "(x,v) \<in> r^<->*" and "(y,v) \<in> r^<->*" by (auto intro: conversion_I')
+    hence "(x,v) \<in> r^<->*" and "(y,v) \<in> r^<->*" by (auto intro: conversionI')
     from `(y,v) \<in> r^<->*` have "(v,y) \<in> r^<->*" using conversion_sym unfolding sym_def by best
     with `(x,v) \<in> r^<->*` show "(x,y) \<in> r^<->*" using conversion_trans unfolding trans_def by best
   qed
@@ -862,13 +792,13 @@ qed
 lemma CR_imp_UNC: assumes "CR r" shows "UNC r"
 proof - {
   fix x y assume "x \<in> NF r" and "y \<in> NF r" and "(x,y) \<in> r^<->*"
-  have "r^<->* = r\<^sup>\<down>" by (rule CR_imp_conversion_iff_join[OF assms])
+  have "r^<->* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join[OF assms])
   from `(x,y) \<in> r^<->*` have "(x,y) \<in> r\<^sup>\<down>" unfolding `r^<->* = r\<^sup>\<down>` by simp
   then obtain x' where "(x,x') \<in> r^*" and "(y,x') \<in> r^*" by best
   from `(x,x') \<in> r^*` and `x \<in> NF r` have "x = x'" by (rule NF_not_suc)
   from `(y,x') \<in> r^*` and `y \<in> NF r` have "y = x'" by (rule NF_not_suc)
   hence "x = y" unfolding `x = x'` by simp
-} thus ?thesis by auto
+} thus ?thesis by (auto simp: UNC_def)
 qed
 
 lemma WN_UNF_imp_CR: assumes "WN r" and "UNF r" shows "CR r"
@@ -880,7 +810,7 @@ proof - {
   with `(x,z) \<in> r^*` have "(x,z') \<in> r^!" by (auto intro: normalizability_I')
   with `(x,y') \<in> r^!` have "y' = z'" using `UNF r` unfolding UNF_defs by auto
   from `(y,y') \<in> r^!` and `(z,z') \<in> r^!` have "(y,z) \<in> r\<^sup>\<down>" unfolding `y' = z'` by auto
-} thus ?thesis by (auto intro: CR_I')
+} thus ?thesis by (auto intro: CR_onI)
 qed
 
 definition diamond :: "'a ars \<Rightarrow> bool" ("\<diamond>") where "\<diamond> r \<equiv> (r\<inverse> O r) \<subseteq> (r O r\<inverse>)"
@@ -929,7 +859,7 @@ proof - {
     from `(y,y') \<in> r^*` and `(y',u) \<in> r^*` have "(y,u) \<in> r^*" by auto
     with `(z,u) \<in> r^*` show ?case by best
   qed
-} thus ?thesis by (auto intro: CR_I')
+} thus ?thesis by (auto intro: CR_onI)
 qed
  
 lemma diamond_imp_CR: assumes "\<diamond> r" shows "CR r"
@@ -970,9 +900,9 @@ proof (rule ccontr)
   with assms show False by auto
 qed
 
-lemma SN_elt_imp_elt_minimal:
-  assumes "SN_elt r x"
-  shows "\<forall>Q. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z,y) \<in> r \<longrightarrow> y \<notin> Q)"
+lemma SN_on_imp_on_minimal:
+  assumes "SN_on r {x}"
+  shows "\<forall>Q. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> Q)"
 proof (rule ccontr)
   assume "\<not>(\<forall>Q. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z,y) \<in> r \<longrightarrow> y \<notin> Q))"
   then obtain Q where "x \<in> Q" and "\<forall>z\<in>Q. \<exists>y. (z,y) \<in> r \<and> y \<in> Q" by auto
@@ -1025,15 +955,15 @@ proof - {
       with `\<forall>i. (S i, S (Suc i)) \<in> A` show False by auto
     qed
   qed
-  hence "SN_elt A a" unfolding SN_defs .
-} thus ?thesis by auto
+  hence "SN_on A {a}" unfolding SN_defs by auto
+} thus ?thesis by best
 qed
 
 lemma SN_iff_wf: "SN A = wf (A\<inverse>)" by (auto simp: SN_imp_wf wf_imp_SN)
 
 lemma SN_induct:
-assumes sn: "SN A" and step: "\<And>a. (\<And>b. (a,b) \<in> A \<Longrightarrow> P b) \<Longrightarrow> P a"
-shows "P a"
+  assumes sn: "SN r" and step: "\<And>a. (\<And>b. (a, b) \<in> r \<Longrightarrow> P b) \<Longrightarrow> P a"
+  shows "P a"
 using sn unfolding SN_iff_wf proof induct
   case (less a)
   with step show ?case by best
@@ -1042,90 +972,109 @@ qed
 (* The same as well-founded induction, but in the 'correct' direction. *)
 lemmas SN_induct_rule = SN_induct[consumes 1, case_names IH, induct pred: SN]
 
-(* and now SN_elt induction *)
-lemma SN_elt_induct[consumes 1, case_names IH]:
-  assumes SN: "SN_elt R s" and imp: "\<And>t. (\<And>u. (t, u) \<in> R \<Longrightarrow> P u) \<Longrightarrow> P t"
+lemma SN_on_induct[consumes 2, case_names IH, induct pred: SN_on]:
+  assumes SN: "SN_on R A"
+    and "s \<in> A"
+    and imp: "\<And>t. (\<And>u. (t, u) \<in> R \<Longrightarrow> P u) \<Longrightarrow> P t"
   shows "P s"
 proof -
   let ?R = "restrict_SN R R"
-  let ?P = "\<lambda> t. SN_elt R t \<longrightarrow> P t"
-  have "SN_elt R s \<longrightarrow> P s"
+  let ?P = "\<lambda>t. SN_on R {t} \<longrightarrow> P t"
+  have "SN_on R {s} \<longrightarrow> P s"
   proof (rule SN_induct[OF SN_restrict_SN_idemp[of R], of ?P])
     fix a
-    assume ind: "\<And> b. (a,b) \<in> ?R \<Longrightarrow> SN_elt R b \<longrightarrow> P b"
-    show "SN_elt R a \<longrightarrow> P a"
+    assume ind: "\<And>b. (a, b) \<in> ?R \<Longrightarrow> SN_on R {b} \<longrightarrow> P b"
+    show "SN_on R {a} \<longrightarrow> P a"
     proof
-      assume SN: "SN_elt R a"
+      assume SN: "SN_on R {a}"
       show "P a"
       proof (rule imp)
         fix b
-        assume "(a,b) \<in> R"
-        with SN step_preserves_SN_elt[OF this SN]
+        assume "(a, b) \<in> R"
+        with SN step_preserves_SN_on[OF this SN]
         show "P b" using ind[of b] unfolding restrict_SN_def by auto
       qed
     qed
   qed
-  with SN show ?thesis by simp
+  with SN show "P s" using `s \<in> A` unfolding SN_on_def by blast
 qed
 
-(* link SN_elt to acc / accp *)
-lemma accp_imp_SN_elt: assumes "accp g x" shows "SN_elt {(y,z). g z y} x"
-using assms
-proof (induct rule: accp.induct)
-  case (accI x)
-  show ?case
-  proof
-    fix f
-    assume x: "f 0 = x" and steps: "\<forall> i. (f i, f (Suc i)) \<in> {a. (\<lambda>(y,z). g z y) a}"
-    hence "g (f 1) x" by auto
-    from accI(2)[OF this] steps x show False unfolding SN_elt_def by auto
+(* link SN_on to acc / accp *)
+lemma accp_imp_SN_on:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> accp g x"
+  shows "SN_on {(y, z). g z y} A"
+proof - {
+  fix x assume "x \<in> A"
+  from assms[OF this]
+  have "SN_on {(y, z). g z y} {x}"
+  proof (induct rule: accp.induct)
+    case (accI x)
+    show ?case
+    proof
+      fix f
+      assume x: "f 0 \<in> {x}" and steps: "\<forall> i. (f i, f (Suc i)) \<in> {a. (\<lambda>(y,z). g z y) a}"
+      hence "g (f 1) x" by auto
+      from accI(2)[OF this] steps x show False unfolding SN_on_def by auto
+    qed
+  qed
+  }
+  thus ?thesis unfolding SN_on_def by blast
+qed
+
+lemma SN_on_imp_accp:
+  assumes "SN_on {(y,z). g z y} A"
+  shows "\<forall>x\<in>A. accp g x"
+proof
+  fix x assume "x \<in> A"
+  with assms show "accp g x"
+  proof (induct rule: SN_on_induct)
+    case (IH x)
+    show ?case
+    proof
+      fix y
+      assume "g y x"
+      with IH show "accp g y" by simp
+    qed
   qed
 qed
 
-lemma SN_elt_imp_accp: assumes "SN_elt {(y,z). g z y} x" shows "accp g x"
-using assms
-proof (induct rule: SN_elt_induct) 
-  case (IH x)
-  show ?case
-  proof
-    fix y
-    assume "g y x"
-    with IH show "accp g y" by simp
-  qed
-qed
+lemma SN_on_conv_accp:
+  "SN_on {(y,z). g z y} {x} = accp g x"
+  using SN_on_imp_accp[of g "{x}"]
+        accp_imp_SN_on[of "{x}" g]
+  by auto
 
-lemma SN_elt_conv_accp: "SN_elt {(y,z). g z y} = accp g"
-  by (intro ext iffI, rule SN_elt_imp_accp, simp, rule accp_imp_SN_elt, simp)
+lemma SN_on_conv_acc: "SN_on {(y,z). (z,y) \<in> r} {x} = acc r x"
+  unfolding SN_on_conv_accp using accp_acc_eq 
+  by (force simp: mem_def)
 
-lemma SN_elt_conv_acc: "SN_elt {(y,z). (z,y) \<in> r} = acc r"
-  unfolding SN_elt_conv_accp using accp_acc_eq 
-  by (intro set_eqI, force simp: mem_def)
-
-lemma acc_imp_SN_elt: assumes "x \<in> acc r" shows "SN_elt {(y,z). (z,y) \<in> r} x"
+lemma acc_imp_SN_on:
+  assumes "x \<in> acc r" shows "SN_on {(y,z). (z,y) \<in> r} {x}"
   using assms
-  unfolding SN_elt_conv_acc
+  unfolding SN_on_conv_acc
   by (simp add: mem_def)
 
-lemma SN_elt_imp_acc: assumes "SN_elt {(y,z). (z,y) \<in> r} x" shows "x \<in> acc r"
+lemma SN_on_imp_acc: assumes "SN_on {(y,z). (z,y) \<in> r} {x}" shows "x \<in> acc r"
   using assms
-  unfolding SN_elt_conv_acc
+  unfolding SN_on_conv_acc
   by (simp add: mem_def)
 
 
 subsection {* Newman's Lemma *}
 
-
-lemma rtrancl_len_E[elim]: assumes "(x,y) \<in> r^*" obtains n where "(x,y) \<in> r^^n"
+lemma rtrancl_len_E[elim]: assumes "(x, y) \<in> r^*" obtains n where "(x, y) \<in> r^^n"
 using rtrancl_imp_UN_rel_pow[OF assms] by best
 
 lemma rel_pow_Suc_E2'[elim]:
-assumes "(x,z) \<in> A^^Suc n" obtains y where "(x,y) \<in> A" and "(y,z) \<in> A^*"
+  assumes "(x, z) \<in> A^^Suc n" obtains y where "(x, y) \<in> A" and "(y, z) \<in> A^*"
 proof -
   assume assm: "\<And>y. (x,y) \<in> A \<Longrightarrow> (y,z) \<in> A^* \<Longrightarrow> thesis"
   from rel_pow_Suc_E2[OF assms] obtain y where "(x,y) \<in> A" and "(y,z) \<in> A^^n" by auto
   hence "(y,z) \<in> A^*" using rel_pow_imp_rtrancl by auto
   from assm[OF `(x,y) \<in> A` this] show thesis .
 qed
+
+lemmas SN_on_induct'[consumes 1, case_names IH] = SN_on_induct[OF _ singletonI]
 
 (*
 The proof proceeds according to the following diagram:
@@ -1136,11 +1085,13 @@ t -->* u  -->* v
 |*     IH      |*
 z ---------->* w
 *)
-lemma Newman: assumes "SN r" and "WCR r" shows "CR r"
-proof
+lemma Newman:
+  assumes "SN r" and "WCR r"
+  shows "CR r"
+proof - {
   fix x
-  from `SN r` show "CR_elt r x"
-  proof induct
+  from `SN r` have "CR_on r {x}"
+  proof (induct)
     case (IH x) show ?case
     proof
       fix y z assume "(x,y) \<in> r^*" and "(x,z) \<in> r^*"
@@ -1164,10 +1115,10 @@ proof
           from `(x,y) \<in> r^^m`[unfolded Suc] obtain s where "(x,s) \<in> r" and "(s,y) \<in> r^*" ..
           from `WCR r` and `(x,s) \<in> r` and `(x,t) \<in> r` have "(s,t) \<in> r\<^sup>\<down>" by auto
           then obtain u where "(s,u) \<in> r^*" and "(t,u) \<in> r^*" ..
-          from IH[OF `(x,s) \<in> r`] have "CR_elt r s" .
+          from IH[OF `(x,s) \<in> r`] have "CR_on r {s}" .
           from this and `(s,u) \<in> r^*` and `(s,y) \<in> r^*` have "(u,y) \<in> r\<^sup>\<down>" by auto
           then obtain v where "(u,v) \<in> r^*" and "(y,v) \<in> r^*" ..
-          from IH[OF `(x,t) \<in> r`] have "CR_elt r t" .
+          from IH[OF `(x,t) \<in> r`] have "CR_on r {t}" .
           moreover from `(t,u) \<in> r^*` and `(u,v) \<in> r^*` have "(t,v) \<in> r^*" by auto
           ultimately have "(z,v) \<in> r\<^sup>\<down>" using `(t,z) \<in> r^*` by auto
           then obtain w where "(z,w) \<in> r^*" and "(v,w) \<in> r^*" ..
@@ -1177,37 +1128,41 @@ proof
       qed
     qed
   qed
+  }
+  thus ?thesis by (auto simp: CR_defs)
 qed
   
-lemma all_reducts_SN_elt_imp_SN_elt:
-  assumes "(\<And>b. (a, b) \<in> A \<Longrightarrow> SN_elt A b)"
-  shows "SN_elt A a"
+lemma Image_SN_on:
+  assumes "SN_on r (r `` A)"
+  shows "SN_on r A"
 proof
-  fix S assume "S 0 = a" and seq: "\<forall>i. (S i, S (Suc i)) \<in> A"
-  hence "(S 0, S (Suc 0)) \<in> A" by auto
-  with assms have "SN_elt A (S (Suc 0))" by (simp add: `S 0 = a`)
-  moreover have "\<not> SN_elt A (S (Suc 0))"
+  fix f
+  assume "f 0 \<in> A" and seq: "\<forall>i. (f i, f (Suc i)) \<in> r"
+  hence "f (Suc 0) \<in> r `` A" by auto
+  with assms have "SN_on r {f (Suc 0)}" by (auto simp add: `f 0 \<in> A` SN_defs)
+  moreover have "\<not> SN_on r {f (Suc 0)}"
   proof -
-    have "S (Suc 0) = S (Suc 0)" ..
-    moreover from seq have "\<forall>i. (S (Suc i), S (Suc (Suc i))) \<in> A" by simp
+    have "f (Suc 0) \<in> {f (Suc 0)}" by simp
+    moreover from seq have "\<forall>i. (f (Suc i), f (Suc (Suc i))) \<in> r" by simp
     ultimately show ?thesis by auto
   qed
   ultimately show False by simp
 qed
 
-lemma SN_elt_iff_all_reducts_SN_elt:
-  "SN_elt R a = (\<forall> b. (a,b) \<in> R \<longrightarrow> SN_elt R b)" (is "?l = ?r")
-proof
-  assume ?l
-  from step_preserves_SN_elt[OF _ this] show ?r by simp
-next
-  assume ?r
-  thus ?l using all_reducts_SN_elt_imp_SN_elt by blast
-qed
+lemma SN_on_Image_conv: "SN_on r (r `` A) = SN_on r A"
+  using SN_on_Image and Image_SN_on by blast
 
+lemma all_reducts_SN_on_imp_SN_on:
+  assumes "(\<And>b. (a, b) \<in> r \<Longrightarrow> SN_on r {b})"
+  shows "SN_on r {a}"
+  using assms and Image_SN_on[of r "{a}"] by (auto simp: SN_defs)
+
+lemma SN_on_all_reducts_SN_on_conv:
+  "SN_on r {a} = (\<forall>b. (a, b) \<in> r \<longrightarrow> SN_on r {b})"
+  using SN_on_Image_conv[of r "{a}"] by (auto simp: SN_defs)
 
 lemma SN_imp_SN_trancl: "SN R \<Longrightarrow> SN (R^+)"
-unfolding SN_iff_wf by (rule wf_converse_trancl)
+  unfolding SN_iff_wf by (rule wf_converse_trancl)
 
 lemma SN_trancl_imp_SN: assumes "SN (R^+)" shows "SN R"
 proof (rule ccontr)
@@ -1218,11 +1173,11 @@ proof (rule ccontr)
   with assms show False by simp
 qed
 
-lemma SN_trancl_SN_conv: "SN(R^+) = SN R"
+lemma SN_trancl_SN_conv: "SN (R^+) = SN R"
   using SN_trancl_imp_SN[of R] SN_imp_SN_trancl[of R] by blast
 
 
-(* --> HOL/Relation.thy (in Isabelle) *)
+(*FIXME: move to HOL/Relation.thy (in Isabelle)*)
 lemma converse_inv_image[simp]: "(inv_image R f)^-1 = inv_image (R^-1) f"
   unfolding inv_image_def converse_def by auto
 
@@ -1271,58 +1226,58 @@ qed
 lemma pow_Suc_subset_trancl: "R^^(Suc n) \<subseteq> R^+"
 using trancl_power[of _ R] by blast
 
-lemma SN_imp_SN_pow: assumes "SN R" shows "SN(R^^Suc n)"
+lemma SN_imp_SN_pow: assumes "SN R" shows "SN (R^^Suc n)"
   using SN_subset[where R="R^+",OF SN_imp_SN_trancl[OF assms] pow_Suc_subset_trancl] by simp
   
-(* needed in HOL/Wellfounded.thy *)
-lemma SN_pow: "SN R \<longleftrightarrow> SN(R ^^ Suc n)"
+(*FIXME: needed in HOL/Wellfounded.thy*)
+lemma SN_pow: "SN R \<longleftrightarrow> SN (R ^^ Suc n)"
   by (rule iffI,rule SN_imp_SN_pow,assumption,rule SN_pow_imp_SN,assumption)
 
-lemma SN_elt_imp_SN_elt_trancl: assumes "SN_elt A t" shows "SN_elt (A^+) t"
-using assms proof (rule contrapos_pp)
-  let ?A = "restrict_SN A A"
-  assume "\<not> SN_elt (A^+) t"
-  then obtain S where "S 0 = t" and S: "\<forall>i. (S i, S(Suc i)) \<in> A^+"
-    unfolding SN_elt_def by auto
-  have "SN ?A" by (rule SN_restrict_SN_idemp)
-  hence "SN (?A^+)" by (rule SN_imp_SN_trancl)
-  have "\<forall>i. (t, S i) \<in> A^*"
+lemma SN_on_trancl:
+  assumes "SN_on r A" shows "SN_on (r^+) A"
+using assms
+proof (rule contrapos_pp)
+  let ?r = "restrict_SN r r"
+  assume "\<not> SN_on (r^+) A"
+  then obtain f where "f 0 \<in> A" and seq: "\<forall>i. (f i, f (Suc i)) \<in> r^+" by auto
+  have "SN ?r" by (rule SN_restrict_SN_idemp)
+  hence "SN (?r^+)" by (rule SN_imp_SN_trancl)
+  have "\<forall>i. (f 0, f i) \<in> r^*"
   proof
-    fix i show "(t, S i) \<in> A^*"
+    fix i show "(f 0, f i) \<in> r^*"
     proof (induct i)
-      case 0 show ?case unfolding `S 0 = t` by simp
+      case 0 show ?case ..
     next
       case (Suc i)
-      from S have "(S i, S(Suc i)) \<in> A^+" by simp
+      from seq have "(f i, f (Suc i)) \<in> r^+" ..
       with Suc show ?case by auto
     qed
   qed
-  with assms have "\<forall>i. SN_elt A (S i)"
-    using steps_preserve_SN_elt[of t _ A] by auto
-  with S have "\<forall>i. (S i, S (Suc i)) \<in> ?A^+"
-    unfolding restrict_SN_trancl_simp unfolding restrict_SN_def by auto
-  hence "\<not> SN_elt (?A^+) t" unfolding `S 0 = t`[symmetric] unfolding SN_defs by auto
-  with `SN (?A^+)` have "False" unfolding SN_defs by simp
-  thus "\<not> SN_elt A t" by simp
+  with assms have "\<forall>i. SN_on r {f i}"
+    using steps_preserve_SN_on[of "f 0" _ r]
+    and `f 0 \<in> A`
+    and SN_on_subset2[of "{f 0}" "A"] by auto
+  with seq have "\<forall>i. (f i, f (Suc i)) \<in> ?r^+"
+    unfolding restrict_SN_trancl_simp
+    unfolding restrict_SN_def by auto
+  hence "\<not> SN_on (?r^+) {f 0}" by auto
+  with `SN (?r^+)` have False by (simp add: SN_defs)
+  thus "\<not> SN_on r A" by simp
 qed
-
+  
 text {* Restrict an ARS to elements of a given set. *}
-definition
-  "restrict" :: "'a ars \<Rightarrow> 'a set \<Rightarrow> 'a ars"
-where
+definition "restrict" :: "'a ars \<Rightarrow> 'a set \<Rightarrow> 'a ars" where
   "restrict r S \<equiv> {(x, y). x \<in> S \<and> y \<in> S \<and> (x, y) \<in> r}"
 
-lemma SN_elt_restrict:
-  assumes "SN_elt r x" shows "SN_elt (restrict r S) x" (is "SN_elt ?r x")
+lemma SN_on_restrict:
+  assumes "SN_on r A"
+  shows "SN_on (restrict r S) A" (is "SN_on ?r A")
 proof (rule ccontr)
-  assume "\<not> SN_elt ?r x"
-  hence "\<exists>S. S 0 = x \<and> (\<forall>i. (S i,S(Suc i)) \<in> ?r)" by auto
-  hence "\<exists>S. S 0 = x \<and> (\<forall>i. (S i,S(Suc i)) \<in> r)" unfolding restrict_def by auto
-  with `SN_elt r x` show False by auto
+  assume "\<not> SN_on ?r A"
+  hence "\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> ?r)" by auto
+  hence "\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> r)" unfolding restrict_def by auto
+  with `SN_on r A` show False by auto
 qed
-
-lemma SN_restrict: "SN r \<Longrightarrow> SN(restrict r S)"
-using SN_elt_restrict unfolding SN_def by best
 
 lemma restrict_rtrancl: "(restrict r S)^* \<subseteq> r^*" (is "?r^* \<subseteq> r^*")
 proof - {
@@ -1330,24 +1285,35 @@ proof - {
 } thus ?thesis by auto
 qed
 
-lemma WCR_SN_elt_imp_CR_elt: assumes "WCR r" and "SN_elt r x" shows "CR_elt r x"
+lemma rtrancl_Image_step:
+  assumes "a \<in> r^* `` A"
+    and "(a, b) \<in> r^*"
+  shows "b \<in> r^* `` A"
 proof -
-  let ?S = "{y. (x,y) \<in> r^*}"
+  from assms(1) obtain c where "c \<in> A" and "(c, a) \<in> r^*" by auto
+  with assms have "(c, b) \<in> r^*" by auto
+  with `c \<in> A` show ?thesis by auto
+qed
+
+lemma WCR_SN_on_imp_CR_on: assumes "WCR r" and "SN_on r A" shows "CR_on r A"
+proof -
+  let ?S = "r^* `` A"
   let ?r = "restrict r ?S"
-  have "\<forall>x. SN_elt ?r x"
+  have "\<forall>x. SN_on ?r {x}"
   proof
-    fix y have "y \<notin> ?S \<or> y \<in> ?S" by simp 
-    thus "SN_elt ?r y"
+    fix y have "y \<notin> ?S \<or> y \<in> ?S" by simp
+    thus "SN_on ?r {y}"
     proof
       assume "y \<notin> ?S" thus ?thesis unfolding restrict_def by auto
     next
       assume "y \<in> ?S"
-      hence "(x,y) \<in> r^*" by simp
-      hence "SN_elt r y" using `SN_elt r x` by (rule steps_preserve_SN_elt)
-      thus ?thesis by (rule SN_elt_restrict)
+      hence "y \<in> r^* `` A" by simp
+      with SN_on_Image_rtrancl[OF `SN_on r A`]
+        have "SN_on r {y}" using SN_on_subset2[of "{y}" "r^* `` A"] by blast
+      thus ?thesis by (rule SN_on_restrict)
     qed
   qed
-  hence "SN ?r" by auto
+  hence "SN ?r" unfolding SN_defs by auto
   {
     fix x y assume "(x,y) \<in> r^*" and "x \<in> ?S" and "y \<in> ?S"
     then obtain n where "(x,y) \<in> r^^n" and "x \<in> ?S" and "y \<in> ?S"
@@ -1360,7 +1326,7 @@ proof -
       from `(x,y) \<in> r^^Suc n` obtain x' where "(x,x') \<in> r" and "(x',y) \<in> r^^n"
         using rel_pow_Suc_D2 by best
       hence "(x,x') \<in> r^*" by simp
-      with `x \<in> ?S` have "x' \<in> ?S" by auto
+      with `x \<in> ?S` have "x' \<in> ?S" by (rule rtrancl_Image_step)
       with Suc and `(x',y) \<in> r^^n` have "(x',y) \<in> ?r^*" by simp
       from `(x,x') \<in> r` and `x \<in> ?S` and `x' \<in> ?S` have "(x,x') \<in> ?r"
         unfolding restrict_def by simp
@@ -1374,21 +1340,21 @@ proof -
       unfolding restrict_def by auto
     with `WCR r` have "(y,z) \<in> r\<^sup>\<down>" by auto
     then obtain u where "(y,u) \<in> r^*" and "(z,u) \<in> r^*" by auto
-    from `x' \<in> ?S` have "(x,x') \<in> r^*" by simp
+    from `x' \<in> ?S` obtain x where "x \<in> A" and "(x,x') \<in> r^*" by auto
     from `(x',y) \<in> r` have "(x',y) \<in> r^*" by auto
     with `(y,u) \<in> r^*` have "(x',u) \<in> r^*" by auto
     with `(x,x') \<in> r^*` have "(x,u) \<in> r^*" by simp
-    hence "u \<in> ?S" by simp
+    hence "u \<in> ?S" using `x \<in> A` by auto
     from `y \<in> ?S` and `u \<in> ?S` and `(y,u) \<in> r^*` have "(y,u) \<in> ?r^*" using a by auto
     from `z \<in> ?S` and `u \<in> ?S` and `(z,u) \<in> r^*` have "(z,u) \<in> ?r^*" using a by auto
     with `(y,u) \<in> ?r^*` have "(y,z) \<in> ?r\<^sup>\<down>" by auto
   }
-  hence "WCR ?r" by (auto intro: WCR_I')
+  hence "WCR ?r" by auto
   have "CR ?r" using Newman[OF `SN ?r` `WCR ?r`] by simp
   {
-    fix y z assume "(x,y) \<in> r^*" and "(x,z) \<in> r^*"
+    fix x y z assume "x \<in> A" and "(x,y) \<in> r^*" and "(x,z) \<in> r^*"
     hence "y \<in> ?S" and "z \<in> ?S" by auto
-    have "x \<in> ?S" by simp
+    have "x \<in> ?S" using `x \<in> A` by auto
     from a and `(x,y) \<in> r^*` and `x \<in> ?S` and `y \<in> ?S` have "(x,y) \<in> ?r^*" by simp
     from a and `(x,z) \<in> r^*` and `x \<in> ?S` and `z \<in> ?S` have "(x,z) \<in> ?r^*" by simp
     with `CR ?r` and `(x,y) \<in> ?r^*` have "(y,z) \<in> ?r\<^sup>\<down>" by auto
@@ -1399,46 +1365,40 @@ proof -
   thus ?thesis by auto
 qed
 
-lemma rtrancl_imp_seq:
-  assumes "(x,y) \<in> r^*"
-  shows "\<exists>S n. S 0 = x \<and> S n = y \<and> (\<forall>i<n. (S i,S(Suc i)) \<in> r)"
-using assms proof (induct)
-   case base thus ?case by auto
-next
-  case (step y z)
-  then obtain S n where "S 0 = x" and "S n = y" and seq: "\<forall>i<n. (S i,S(Suc i)) \<in> r" by auto
-  let ?m = "Suc n"
-  let ?S = "\<lambda>i. if i = ?m then z else S i"
-  have "?S ?m = z" by simp
-  from `S 0 = x` have "?S 0 = x" by simp
-  from seq have seq': "\<forall>i<n. (?S i,?S(Suc i)) \<in> r" by auto
-  with `S n = y` and `(y,z) \<in> r` have "\<forall>i<?m. (?S i,?S(Suc i)) \<in> r" by auto
-  with `?S 0 = x` and `?S ?m = z` show ?case by best
+lemma SN_on_Image_normalizable:
+  assumes "SN_on r A"
+  shows "\<forall>a\<in>A. \<exists>b. b \<in> r^! `` A"
+proof
+  fix a assume a: "a \<in> A"
+  show "\<exists>b. b \<in> r^! `` A"
+  proof (rule ccontr)
+    assume "\<not> (\<exists>b. b \<in> r^! `` A)"
+    hence A: "\<forall>b. (a, b) \<in> r^* \<longrightarrow> b \<notin> NF r" using a by auto
+    hence "a \<notin> NF r" by auto
+    let ?Q = "{c. (a, c) \<in> r^* \<and> c \<notin> NF r}"
+    have "a \<in> ?Q" using `a \<notin> NF r` by simp
+    have "\<forall>c\<in>?Q. \<exists>b. (c, b) \<in> r \<and> b \<in> ?Q"
+    proof
+      fix c
+      assume "c \<in> ?Q"
+      hence "(a, c) \<in> r^*" and "c \<notin> NF r" by auto
+      then obtain d where "(c, d) \<in> r" by auto
+      with `(a, c) \<in> r^*` have "(a, d) \<in> r^*" by simp
+      with A have "d \<notin> NF r" by simp
+      with `(c, d) \<in> r` and `(a, c) \<in> r^*`
+        show "\<exists>b. (c, b) \<in> r \<and> b \<in> ?Q" by auto
+    qed
+    with `a \<in> ?Q` have "a \<in> ?Q \<and> (\<forall>c\<in>?Q. \<exists>b. (c, b) \<in> r \<and> b \<in> ?Q)" by auto
+    hence "\<exists>Q. a \<in> Q \<and> (\<forall>c\<in>Q. \<exists>b. (c, b) \<in> r \<and> b \<in> Q)" by (rule exI[of _ "?Q"])
+    hence "\<not> (\<forall>Q. a \<in> Q \<longrightarrow> (\<exists>c\<in>Q. \<forall>b. (c, b) \<in> r \<longrightarrow> b \<notin> Q))" by simp
+    with SN_on_imp_on_minimal[of r a] have "\<not> SN_on r {a}" by blast
+    with assms and `a \<in> A` and SN_on_subset2[of "{a}" A r] show False by simp
+  qed
 qed
 
-lemma SN_elt_imp_normalizability: assumes "SN_elt r x" shows "\<exists>y. (x,y) \<in> r^!"
-proof (rule ccontr)
-  assume "\<not>(\<exists>y. (x,y) \<in> r^!)"
-  hence A: "\<forall>y. (x,y) \<in> r^* \<longrightarrow> y \<notin> NF r" by auto
-  hence "x \<notin> NF r" by auto
-  let ?Q = "{z. (x,z) \<in> r^* \<and> z \<notin> NF r}"
-  have "x \<in> ?Q" using `x \<notin> NF r` by simp
-  have "\<forall>z\<in>?Q. \<exists>y. (z,y) \<in> r \<and> y \<in> ?Q"
-  proof
-    fix z assume "z \<in> ?Q"
-    hence "(x,z) \<in> r^*" and "z \<notin> NF r" by auto
-    then obtain u where "(z,u) \<in> r" by auto
-    with `(x,z) \<in> r^*` have "(x,u) \<in> r^*" by simp
-    with A have "u \<notin> NF r" by simp
-    with `(z,u) \<in> r` and `(x,u) \<in> r^*`
-    show "\<exists>y. (z,y) \<in> r \<and> y \<in> ?Q" by auto
-  qed
-  with `x \<in> ?Q` have "x \<in> ?Q \<and> (\<forall>z\<in>?Q. \<exists>y. (z,y) \<in> r \<and> y \<in> ?Q)" by auto
-  hence "\<exists>Q. x \<in> Q \<and> (\<forall>z\<in>Q. \<exists>y. (z,y) \<in> r \<and> y \<in> Q)" by (rule exI[where x = "?Q"])
-  hence "\<not>(\<forall>Q. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z,y) \<in> r \<longrightarrow> y \<notin> Q))" by simp
-  with SN_elt_imp_elt_minimal[of r x] have "\<not> SN_elt r x" by auto
-  with assms show False by simp
-qed
+lemma SN_on_imp_normalizability:
+  assumes "SN_on r {a}" shows "\<exists>b. (a, b) \<in> r^!"
+  using SN_on_Image_normalizable[OF assms] by auto
 
 
 subsection {* Commutation *}
@@ -1529,20 +1489,24 @@ unfolding quasi_commute_def proof (rule subsetI2)
   qed
 qed
 
-lemma steps_reflect_SN_elt:
-  assumes "\<not> SN_elt A b" and "(a, b) \<in> A^*"
-  shows "\<not> SN_elt A a"
-using steps_preserve_SN_elt[of a b A] and assms by auto
+lemmas rev_SN_on_Image_rtrancl = SN_on_Image_rtrancl[COMP rev_contrapos]
 
-lemma iseq_not_SN_elt:
-   assumes "\<forall>i. (S i, S (Suc i)) \<in> r" shows "\<not> SN_elt r (S i)"
+lemma steps_reflect_SN_on:
+  assumes "\<not> SN_on r {b}" and "(a, b) \<in> r^*"
+  shows "\<not> SN_on r {a}"
+  using rev_SN_on_Image_rtrancl[of r "{a}"]
+  and assms and SN_on_subset2[of "{b}" "r^* `` {a}" r] by blast
+
+lemma iseq_not_SN_on:
+   assumes "\<forall>i. (f i, f (Suc i)) \<in> r"
+   shows "\<not> SN_on r {f i}"
 proof -
-  let ?S = "\<lambda>j. S (i + j)"
-  have "?S 0 = S i" by simp
-  have "\<forall>i. (?S i, ?S (Suc i)) \<in> r" using assms by auto
-  with `?S 0 = S i` have "?S 0 = S i \<and> (\<forall>i. (?S i,?S(Suc i)) \<in> r)" by auto
-  hence "\<exists>T. T 0 = S i \<and> (\<forall>i. (T i,T(Suc i)) \<in> r)" by best
-  thus "\<not> SN_elt r (S i)" unfolding SN_elt_def by auto
+  let ?f = "\<lambda>j. f (i + j)"
+  have "?f 0 \<in> {f i}" by simp
+  moreover have "\<forall>i. (?f i, ?f (Suc i)) \<in> r" using assms by auto
+  ultimately have "?f 0 \<in> {f i} \<and> (\<forall>i. (?f i, ?f (Suc i)) \<in> r)" by blast
+  hence "\<exists>g. g 0 \<in> {f i} \<and> (\<forall>i. (g i, g (Suc i)) \<in> r)" by (rule exI[of _ "?f"])
+  thus ?thesis unfolding SN_defs by auto
 qed
 
 lemma quasi_commute_imp_SN:
@@ -1550,7 +1514,7 @@ lemma quasi_commute_imp_SN:
   shows "SN (r \<union> s)"
 proof -
   have "quasi_commute r (s^+)" by (rule qc_imp_qc_trancl[OF `quasi_commute r s`])
-  let ?B = "{a. \<not> SN_elt (r \<union> s) a}"
+  let ?B = "{a. \<not> SN_on (r \<union> s) {a}}"
   {
     assume "\<not> SN(r \<union> s)"
     then obtain a where "a \<in> ?B" unfolding SN_defs by best
@@ -1559,18 +1523,18 @@ proof -
     hence "\<forall>x. x \<in> ?B \<longrightarrow> (\<exists>z\<in>?B. \<forall>y. (z,y) \<in> r \<longrightarrow> y \<notin> ?B)" by (rule spec[where x = ?B])
     with `a \<in> ?B` obtain b where "b \<in> ?B" and min: "\<forall>y. (b,y) \<in> r \<longrightarrow> y \<notin> ?B" by auto
     from `b \<in> ?B` obtain S where "S 0 = b" and
-      seq: "\<forall>i. (S i,S(Suc i)) \<in> r \<union> s" unfolding SN_elt_def by auto
+      seq: "\<forall>i. (S i,S(Suc i)) \<in> r \<union> s" unfolding SN_on_def by auto
     let ?S = "\<lambda>i. S(Suc i)"
     have "?S 0 = S 1" by simp
     from seq have "\<forall>i. (?S i,?S(Suc i)) \<in> r \<union> s" by auto
-    with `?S 0 = S 1` have "\<not> SN_elt (r \<union> s) (S 1)" unfolding SN_elt_def by auto
+    with `?S 0 = S 1` have "\<not> SN_on (r \<union> s) {S 1}" unfolding SN_on_def by auto
     from `S 0 = b` and seq have "(b,S 1) \<in> r \<union> s" by auto
-    with min and `\<not> SN_elt (r \<union> s) (S 1)` have "(b,S 1) \<in> s" by auto
+    with min and `\<not> SN_on (r \<union> s) {S 1}` have "(b,S 1) \<in> s" by auto
     let ?i = "LEAST i. (S i,S(Suc i)) \<notin> s"
     {
       assume "\<forall>i. (S i,S(Suc i)) \<in> s"
-      with `S 0 = b` have "\<not> SN_elt s b" unfolding SN_elt_def by auto
-      with `SN s` have False unfolding SN_def by auto
+      with `S 0 = b` have "\<not> SN_on s {b}" unfolding SN_on_def by auto
+      with `SN s` have False unfolding SN_defs by auto
     }
     hence ex: "\<exists>i. (S i,S(Suc i)) \<notin> s" by auto
     hence "(S ?i,S(Suc ?i)) \<notin> s" by (rule LeastI_ex)
@@ -1604,12 +1568,12 @@ proof -
       unfolding quasi_commute_def by auto
     then obtain c where "(b,c) \<in> r" and "(c,S(Suc ?i)) \<in> (r \<union> s^+)^*" by best
     from `(b,c) \<in> r` have "(b,c) \<in> (r \<union> s)^*" by auto
-    from iseq_not_SN_elt[where r = "r \<union> s" and S = S]
-      and seq have "\<not> SN_elt (r \<union> s) (S(Suc ?i))" by auto
+    from iseq_not_SN_on[of S "r \<union> s"]
+      and seq have "\<not> SN_on (r \<union> s) {S (Suc ?i)}" by auto
     from `(c,S(Suc ?i)) \<in> (r \<union> s^+)^*` have "(c,S(Suc ?i)) \<in> (r \<union> s)^*"
       unfolding rtrancl_union_subset_rtrancl_union_trancl by auto
-    with steps_reflect_SN_elt[of "r \<union> s"]
-      and `\<not> SN_elt (r \<union> s) (S(Suc ?i))` have "\<not> SN_elt (r \<union> s) c" by auto
+    with steps_reflect_SN_on[of "r \<union> s"]
+      and `\<not> SN_on (r \<union> s) {S(Suc ?i)}` have "\<not> SN_on (r \<union> s) {c}" by auto
     hence "c \<in> ?B" by simp
     with `(b,c) \<in> r` and min have False by auto
   }
@@ -1711,11 +1675,11 @@ proof (rule subsetI2)
   fix a b assume "(a,b) \<in> restrict_SN R S" thus "(a,b) \<in> R" unfolding restrict_SN_def by simp
 qed
 
-lemma union_iseq_SN_elt_imp_first_step:
-  assumes "\<forall>i. (t i, t (Suc i)) \<in> (R \<union> S)" and "SN_elt S (t 0)"
+lemma union_iseq_SN_on_imp_first_step:
+  assumes "\<forall>i. (t i, t (Suc i)) \<in> (R \<union> S)" and "SN_on S {t 0}"
   shows "\<exists>i. (t i, t (Suc i)) \<in> R \<and> (\<forall>j<i. (t j, t (Suc j)) \<in> S \<and> (t j, t (Suc j)) \<notin> R)"
 proof -
-  from `SN_elt S (t 0)` obtain i where "(t i, t (Suc i)) \<notin> S" by blast
+  from `SN_on S {t 0}` obtain i where "(t i, t (Suc i)) \<notin> S" by blast
   with assms have "(t i, t (Suc i)) \<in> R" (is "?P i") by auto
   let ?i = "Least ?P"
   from `?P i` have "?P ?i" by (rule LeastI)
@@ -1728,7 +1692,7 @@ qed
 lemma non_strict_ending:
   assumes seq: "\<forall>i. (t i,t(Suc i)) \<in> R \<union> S"
     and comp: "R O S \<subseteq> S"
-    and SN: "SN_elt S (t 0)"
+    and SN: "SN_on S {t 0}"
   shows "\<exists>j. \<forall>i\<ge>j. (t i,t(Suc i)) \<in> R - S" (is ?thesis)
 proof (rule ccontr)
   assume "\<not> ?thesis"
@@ -1744,26 +1708,16 @@ proof (rule ccontr)
     from comp_rtrancl_trancl[OF comp this] show "(t i,t(Suc(f i))) \<in> S^+" .
   qed
   hence "\<forall>i. (?t i,?t(Suc i)) \<in> S^+" by simp
-  moreover have "SN_elt (S^+) (?t 0)" using SN_elt_imp_SN_elt_trancl[OF SN] by simp
+  moreover have "SN_on (S^+) {?t 0}" using SN_on_trancl[OF SN] by simp
   ultimately show False unfolding SN_defs by best
 qed
 
-lemma SN_elt_subset:
-  assumes "SN_elt R' x" and "rR' \<subseteq> R'" shows "SN_elt rR' x" unfolding SN_elt_def
-proof-
-  from assms have noS: "\<not>(\<exists>S. S 0 = x \<and> (\<forall>i. (S i, S (Suc i)) \<in> R'))" unfolding SN_elt_def
-    by simp
-  show " \<not> (\<exists>S. S 0 = x \<and> (\<forall>i. (S i, S (Suc i)) \<in> rR'))"
-  proof(rule notI)
-    assume "\<exists>S. S 0 = x \<and> (\<forall>i. (S i, S (Suc i)) \<in> rR')"
-    then obtain S where "S 0 = x" and "\<forall>i. (S i, S (Suc i)) \<in> rR'" by auto
-    with `rR' \<subseteq> R'` have "\<forall>i. (S i, S (Suc i)) \<in> R'" by auto
-    with `S 0 = x` have "\<exists> S. (S 0 = x) \<and> (\<forall>i. (S i, S (Suc i)) \<in> R')" by auto
-    with noS show False ..
-  qed
-qed
+lemma SN_on_subset1:
+  assumes "SN_on r A" and "s \<subseteq> r"
+  shows "SN_on s A"
+  using assms unfolding SN_defs by blast
 
-lemmas SN_elt_mono = SN_elt_subset
+lemmas SN_on_mono = SN_on_subset1
 
 lemma rtrancl_imp_rel_pow': "(x,y) \<in> R^* \<Longrightarrow> \<exists>n. (x,y) \<in> ((R::'a ars) ^^ n)"
 proof (induct rule: rtrancl_induct)
@@ -1824,7 +1778,7 @@ proof
   hence "\<exists> x. ((f 0) = x) \<and> (\<forall>i. (f i, f (Suc i)) \<in> S^+)" by auto
   then obtain x where "((f 0) = x) \<and> (\<forall>i. (f i, f (Suc i)) \<in> S^+)" by auto
   hence "\<exists> f. ((f 0) = x) \<and> (\<forall>i. (f i, f (Suc i)) \<in> S^+)" by auto
-  hence "\<not> SN_elt (S^+) x" by auto
+  hence "\<not> SN_on (S^+) {x}" by auto
   hence "\<not> SN (S^+)" unfolding SN_defs by auto
   hence wfSconv:"\<not> wf ((S^+)\<inverse>)" using SN_iff_wf by auto
   from SN have "wf (S\<inverse>)" using SN_imp_wf[where?r=S] by simp

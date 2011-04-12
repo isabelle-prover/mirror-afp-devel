@@ -264,7 +264,7 @@ proof
   fix f
   assume "\<forall>i. (f i, f (Suc i)) \<in> R"
   hence "\<And>i. (f i, f (Suc i)) \<in> relto R S" by blast
-  thus False using assms unfolding SN_defs by blast
+  thus False using assms unfolding SN_defs by force
 qed
 
 lemma relto_trancl_conv: "(relto R S)^+ = ((R \<union> S))^* O R O ((R \<union> S))^*" (is "_ = ?RS^* O ?R O _")
