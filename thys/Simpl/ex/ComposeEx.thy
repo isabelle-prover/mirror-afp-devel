@@ -74,7 +74,7 @@ apply  fastsimp
 apply clarsimp
 done
 
-ML "unique_names := false"
+declare [[unique_names = false]]
 
 record globals = 
   strnext_'   :: "ref \<Rightarrow> ref"
