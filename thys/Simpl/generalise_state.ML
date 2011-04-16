@@ -124,7 +124,7 @@ fun spec' cv thm =
 
 fun split_thm qnt ctxt s T t = 
   let
-    val thy = ProofContext.theory_of ctxt;
+    val thy = Proof_Context.theory_of ctxt;
     val (t',vars) = SplitState.split_state ctxt s T t;
     val vs = map (SplitState.abs_var ctxt) vars;
 
@@ -168,7 +168,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
       ([t,t'],snd (Drule.strip_comb ct), fn [thm,thm'] => genConj SIMPLE_OF [thm,thm'])
   | decomp ctxt ((allc as Const (@{const_name "All"},aT)) $ f, ct) = 
        let 
-         val thy = ProofContext.theory_of ctxt;
+         val thy = Proof_Context.theory_of ctxt;
          val cf = snd (Thm.dest_comb ct);
          val (abst as (x,T,_),(cx',cb)) = split_abs cf;    
          val Free (x',_) = term_of cx';
@@ -191,7 +191,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
        end
   | decomp ctxt ((exc as Const (@{const_name "Ex"},_)) $ f, ct) =
        let
-         val thy = ProofContext.theory_of ctxt;
+         val thy = Proof_Context.theory_of ctxt;
          val cf = snd (Thm.dest_comb ct);
          val (abst as (x,T,_),(cx',cb)) = split_abs cf;    
          val Free (x',_) = term_of cx';
@@ -210,7 +210,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
          val [cP,cQ] = (snd (Drule.strip_comb ct));
        in ([Q],[cQ],fn [thm] =>
              let
-               val thy = ProofContext.theory_of ctxt; 
+               val thy = Proof_Context.theory_of ctxt; 
                val X = genImp |> concl_of |> dest_prop |> Logic.dest_implies |> #1 
                        |> dest_prop |> HOLogic.dest_Trueprop |> HOLogic.dest_imp |> #1 
                        |> cterm_of thy;
@@ -222,7 +222,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
          val [cP,cQ] = (snd (Drule.strip_comb ct));
        in ([Q],[cQ],fn [thm] =>
              let
-               val thy = ProofContext.theory_of ctxt; 
+               val thy = Proof_Context.theory_of ctxt; 
                val X = genImpl |> concl_of |> dest_prop |> Logic.dest_implies |> #1 
                        |> dest_prop  |> Logic.dest_implies |> #1 
                        |> cterm_of thy;
@@ -231,7 +231,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
        end
   | decomp ctxt ((allc as Const ("all",_)) $ f, ct) =
        let 
-         val thy = ProofContext.theory_of ctxt;
+         val thy = Proof_Context.theory_of ctxt;
          val cf = snd (Thm.dest_comb ct);
          val (abst as (x,T,_),(cx',cb)) = split_abs cf;    
          val Free (x',_) = term_of cx';
@@ -254,7 +254,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
        end
   | decomp ctxt (Const (@{const_name "Trueprop"},_)$P, ct) = ([P],snd (Drule.strip_comb ct),fn [thm] => thm)
   | decomp ctxt (t, ct) = ([],[], fn [] => 
-                         let val thy = ProofContext.theory_of ctxt;
+                         let val thy = Proof_Context.theory_of ctxt;
                              val rP = cterm_of thy 
                                        (HOLogic.dest_Trueprop (dest_prop (conc_of genRefl)));
                          in  Thm.instantiate ([],[(rP,ct)]) genRefl end)

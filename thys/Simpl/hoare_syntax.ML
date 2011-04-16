@@ -154,8 +154,8 @@ val antiquoteOld = @{syntax_const "_antiquoteOld"};
 
 fun is_global ctxt name =
   let
-    val thy = ProofContext.theory_of ctxt;
-    val consts = ProofContext.consts_of ctxt;
+    val thy = Proof_Context.theory_of ctxt;
+    val consts = Proof_Context.consts_of ctxt;
   in
     (case Sign.const_type thy (Consts.intern_syntax consts name) of
       NONE => is_global_comp ctxt name
@@ -192,7 +192,7 @@ fun statespace_update_tr ctxt ps id n v s =
 
 local
   fun is_record_sel ctxt =
-    let val consts = ProofContext.consts_of ctxt;
+    let val consts = Proof_Context.consts_of ctxt;
     in can (Consts.the_type consts) o Consts.intern_syntax consts end;
 in
 
