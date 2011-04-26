@@ -61,7 +61,7 @@ lemma in_set_replicate:
   shows "x = y"
 (*<*)
 proof -
-  note prems 
+  note assms
   also have "set (replicate n y) \<subseteq> {y}" ..
   finally show ?thesis by simp
 qed

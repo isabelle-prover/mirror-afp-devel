@@ -407,7 +407,7 @@ lemma D_compE1':
   shows "\<D> (compE1 (V#Vs) e) \<lfloor>{..length Vs}\<rfloor>"
 proof -
   have "{..size Vs} = {..<size(V#Vs)}" by auto
-  thus ?thesis using prems by (simp only:)(rule D_compE1)
+  thus ?thesis using assms by (simp only:)(rule D_compE1)
 qed
 
 lemma compP1_pres_wf: "wf_J_prog P \<Longrightarrow> wf_J1_prog (compP1 P)"

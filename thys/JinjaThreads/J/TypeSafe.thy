@@ -300,13 +300,13 @@ next
     from wta' have ?case
     proof(cases U')
       case Void
-      from prems show ?thesis by simp
+      with UsubT show ?thesis by simp
     next
       case Boolean
-      from prems show ?thesis by simp
+      with UsubT show ?thesis by simp
     next
       case Integer
-      from prems show ?thesis by simp
+      with UsubT show ?thesis by simp
     next
       case NT
       assume UNT: "U' = NT"
@@ -316,7 +316,7 @@ next
 	by(fastsimp elim: WTrtAAssNT)
     next
       case (Class C)
-      from prems show ?thesis by(simp add: widen_Array)
+      with UsubT show ?thesis by(simp add: widen_Array)
     next
       case (Array A)
       have UA: "U' = A\<lfloor>\<rceil>" by fact
@@ -444,16 +444,16 @@ next
     with UsubC have ?case
     proof(cases U)
       case Void
-      from prems show ?thesis by simp
+      with UsubC show ?thesis by simp
     next
       case Boolean
-      from prems show ?thesis by simp
+      with UsubC show ?thesis by simp
     next
       case Integer
-      from prems show ?thesis by simp
+      with UsubC show ?thesis by simp
     next
       case NT
-      from prems show ?thesis using wte'
+      with UsubC show ?thesis using wte'
 	by(blast intro:WTrtFAccNT widen_refl) 
     next
       case (Class C')

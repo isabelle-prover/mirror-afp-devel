@@ -206,10 +206,10 @@ next
     thus ?thesis
     proof (rule finalE)
       fix v
-      assume [simp]: "e = Val v"
+      assume e [simp]: "e = Val v"
       with ei have "typeof\<^bsub>h\<^esub> v = Some Integer" by fastsimp
       hence exei: "\<exists>i. v = Intg i" by fastsimp
-      then obtain i where "v = Intg i" by blast
+      then obtain i where v: "v = Intg i" by blast
       thus ?thesis
       proof (cases "0 <=s i")
 	case True
@@ -220,16 +220,16 @@ next
       next
 	assume "\<not> 0 <=s i"
 	hence "i <s 0" by simp
-	with prems have "extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Val(Intg i)\<rceil>,(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize,(h, l)\<rangle>"
+	then have "extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Val(Intg i)\<rceil>,(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize,(h, l)\<rangle>"
 	  by - (rule RedNewArrayNegative, auto)
-	with prems show ?thesis by blast
+	with e v show ?thesis by blast
       qed
     next
       fix exa
-      assume "e = Throw exa"
-      with prems have "extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Throw exa\<rceil>,(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw exa,(h, l)\<rangle>"
+      assume e: "e = Throw exa"
+      then have "extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Throw exa\<rceil>,(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw exa,(h, l)\<rangle>"
 	by - (rule NewArrayThrow)
-      with prems show ?thesis by blast
+      with e show ?thesis by blast
     qed
   next
     assume "\<not> final e"
@@ -252,16 +252,16 @@ next
     proof (rule finalE)
       fix v
       assume ev: "e = Val v"
-      with prems obtain V where thvU: "typeof\<^bsub>h\<^esub> v = \<lfloor>V\<rfloor>" by fastsimp
+      with WTrtCast obtain V where thvU: "typeof\<^bsub>h\<^esub> v = \<lfloor>V\<rfloor>" by fastsimp
       thus ?thesis
       proof (cases "P \<turnstile> V \<le> U")
 	assume "P \<turnstile> V \<le> U"
-	with prems have "extTA,P,t \<turnstile> \<langle>Cast U (Val v),(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v,(h,l)\<rangle>"
+	with thvU have "extTA,P,t \<turnstile> \<langle>Cast U (Val v),(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v,(h,l)\<rangle>"
 	  by - (rule RedCast, auto)
 	with ev show ?thesis by blast
       next
 	assume "\<not> P \<turnstile> V \<le> U"
-	with prems have "extTA,P,t \<turnstile> \<langle>Cast U (Val v),(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ClassCast,(h,l)\<rangle>"
+	with thvU have "extTA,P,t \<turnstile> \<langle>Cast U (Val v),(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ClassCast,(h,l)\<rangle>"
 	  by - (rule RedCastFail, auto)
 	with ev show ?thesis by blast
       qed
@@ -288,7 +288,7 @@ next
     proof (rule finalE)
       fix v
       assume ev: "e = Val v"
-      with prems obtain V where thvU: "typeof\<^bsub>h\<^esub> v = \<lfloor>V\<rfloor>" by fastsimp
+      with WTrtInstanceOf obtain V where thvU: "typeof\<^bsub>h\<^esub> v = \<lfloor>V\<rfloor>" by fastsimp
       hence "extTA,P,t \<turnstile> \<langle>(Val v) instanceof U,(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (Bool (v \<noteq> Null \<and> P \<turnstile> V \<le> U)),(h,l)\<rangle>"
         by -(rule RedInstanceOf, auto)
       with ev show ?thesis by blast
@@ -328,7 +328,7 @@ next
 	  thus ?thesis by(fastsimp intro:BinOpThrow2)
 	qed
       next
-	assume "\<not> final e2" from prems show ?thesis
+	assume "\<not> final e2" with WTrtBinOp show ?thesis
 	  by simp (fast intro!:BinOpRed2)
       qed
     next
@@ -336,17 +336,17 @@ next
       thus ?thesis by simp (fast intro:BinOpThrow1)
     qed
   next
-    assume "\<not> final e1" from prems show ?thesis
+    assume "\<not> final e1" with WTrtBinOp show ?thesis
       by simp (fast intro:BinOpRed1)
   qed
 next
   case (WTrtLAss E V T e T')
   show ?case
   proof cases
-    assume "final e" from prems show ?thesis
+    assume "final e" with WTrtLAss show ?thesis
       by(fastsimp simp:final_iff intro!:RedLAss LAssThrow)
   next
-    assume "\<not> final e" from prems show ?thesis
+    assume "\<not> final e" with WTrtLAss show ?thesis
       by simp (fast intro:LAssRed)
   qed
 next
@@ -404,7 +404,7 @@ next
 	  thus ?thesis
 	  proof (cases "i <s 0 \<or> sint i \<ge> int (array_length h ad)")
             case True
-	    from prems show ?thesis by (fastsimp intro: RedAAccBounds)
+	    with WTrtAAcc Array show ?thesis by (fastsimp intro: RedAAccBounds)
           next
             case False
             hence "nat (sint i) < array_length h ad"
@@ -417,20 +417,20 @@ next
 	next
 	  fix ex
 	  assume "i = Throw ex"
-	  with prems show ?thesis by (fastsimp intro: AAccThrow2)
+	  with WTrtAAcc Array show ?thesis by (fastsimp intro: AAccThrow2)
 	qed
       next
 	assume "\<not> final i"
-	with prems show ?thesis by (fastsimp intro: AAccRed2)
+	with WTrtAAcc Array show ?thesis by (fastsimp intro: AAccRed2)
       qed
     next
       fix ex
       assume "a = Throw ex"
-      with prems show ?thesis by (fastsimp intro: AAccThrow1)
+      with WTrtAAcc show ?thesis by (fastsimp intro: AAccThrow1)
     qed simp
   next
     assume "\<not> final a"
-    with prems Da show ?thesis by (fastsimp intro: AAccRed1)
+    with WTrtAAcc show ?thesis by (fastsimp intro: AAccRed1)
   qed
 next
   case (WTrtAAccNT E a i T l)
@@ -441,7 +441,7 @@ next
    and IHi: "\<And>l. \<lbrakk>\<D> i \<lfloor>dom l\<rfloor>; \<not> final i\<rbrakk>
                  \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>i,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact+
   have ref: "is_refT NT" by simp
-  with prems have Da: "\<D> a \<lfloor>dom l\<rfloor>" by simp
+  with WTrtAAccNT have Da: "\<D> a \<lfloor>dom l\<rfloor>" by simp
   thus ?case
   proof (cases "final a")
     case True
@@ -454,20 +454,20 @@ next
 	thus ?thesis
 	proof (rule finalE)
 	  fix v
-	  assume "i = Val v"
+	  assume i: "i = Val v"
 	  have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Val v\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h,l)\<rangle>"
 	    by (rule RedAAccNull)
-	  with prems show ?thesis by blast
+	  with WTrtAAccNT `final a` null `final i` i show ?thesis by blast
 	next
 	  fix ex
-	  assume "i = Throw ex"
+	  assume i: "i = Throw ex"
 	  have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Throw ex\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw ex, (h,l)\<rangle>"
 	    by(rule AAccThrow2)
-	  with prems show ?thesis by blast
+	  with WTrtAAccNT `final a` null `final i` i show ?thesis by blast
 	qed
       next
 	assume "\<not> final i"
-	from prems show ?thesis
+	with WTrtAAccNT null show ?thesis
 	  by(fastsimp intro: AAccRed2)
       qed
     next
@@ -475,7 +475,7 @@ next
     qed simp_all
   next
     case False
-    with prems Da show ?thesis by (fastsimp intro:AAccRed1)
+    with WTrtAAccNT Da show ?thesis by (fastsimp intro:AAccRed1)
   qed
 next
   case (WTrtAAss E a T i e T' l)
@@ -499,10 +499,9 @@ next
 	thus ?thesis
 	proof (rule finalE)
 	  fix v
-	  assume "i = Val v"
+	  assume i: "i = Val v"
 	  with wti have "typeof\<^bsub>h\<^esub> v = Some Integer" by fastsimp
-	  hence "\<exists>idx. v = Intg idx" by fastsimp
-	  then obtain idx where "v = Intg idx" by blast
+	  then obtain idx where "v = Intg idx" by fastsimp
 	  thus ?thesis
 	  proof (cases "final e")
 	    assume "final e"
@@ -510,24 +509,24 @@ next
 	    proof (rule finalE)
 	      fix w
 	      assume "e = Val w"
-	      with prems show ?thesis by (fastsimp intro: RedAAssNull)
+	      with WTrtAAss null show ?thesis by (fastsimp intro: RedAAssNull)
 	    next
 	      fix ex
 	      assume "e = Throw ex"
-	      with prems show ?thesis by (fastsimp intro: AAssThrow3)
+	      with WTrtAAss null show ?thesis by (fastsimp intro: AAssThrow3)
 	    qed
 	  next
 	    assume "\<not> final e"
-	    with prems show ?thesis by (fastsimp intro: AAssRed3)
+	    with WTrtAAss null show ?thesis by (fastsimp intro: AAssRed3)
 	  qed
 	next
 	  fix ex
 	  assume "i = Throw ex"
-	  with prems show ?thesis by (fastsimp intro: AAssThrow2)
+	  with WTrtAAss null show ?thesis by (fastsimp intro: AAssThrow2)
 	qed
       next
 	assume "\<not> final i"
-	with prems show ?thesis by (fastsimp intro: AAssRed2)
+	with WTrtAAss null show ?thesis by (fastsimp intro: AAssRed2)
       qed
     next
       case (Array ad U)
@@ -540,8 +539,7 @@ next
 	  fix v
 	  assume ivalv: "i = Val v"
 	  with wti have "typeof\<^bsub>h\<^esub> v = Some Integer" by fastsimp
-	  hence "\<exists>idx. v = Intg idx" by fastsimp
-	  then obtain idx where vidx: "v = Intg idx" by blast
+	  then obtain idx where vidx: "v = Intg idx" by fastsimp
 	  thus ?thesis
 	  proof (cases "final e")
 	    assume fe: "final e"
@@ -577,29 +575,29 @@ next
 	    next
 	      fix ex
 	      assume "e = Throw ex"
-	      with prems show ?thesis by (fastsimp intro: AAssThrow3)
+	      with Array ivalv show ?thesis by (fastsimp intro: AAssThrow3)
 	    qed
 	  next
 	    assume "\<not> final e"
-	    from prems show ?thesis by (fastsimp intro: AAssRed3)
+	    with WTrtAAss Array fi ivalv vidx show ?thesis by (fastsimp intro: AAssRed3)
 	  qed
 	next
 	  fix ex
 	  assume "i = Throw ex"
-	  from prems show ?thesis by (fastsimp intro: AAssThrow2)
+	  with WTrtAAss Array show ?thesis by (fastsimp intro: AAssThrow2)
 	qed
       next
 	assume "\<not> final i"
-	from prems show ?thesis by (fastsimp intro: AAssRed2)
+	with WTrtAAss Array show ?thesis by (fastsimp intro: AAssRed2)
       qed
     next
       fix ex
       assume "a = Throw ex"
-      from prems show ?thesis by (fastsimp intro:AAssThrow1)
+      with WTrtAAss show ?thesis by (fastsimp intro:AAssThrow1)
     qed simp_all
   next
     assume "\<not> final a"
-    from prems show ?thesis by (fastsimp intro: AAssRed1)
+    with WTrtAAss show ?thesis by (fastsimp intro: AAssRed1)
   qed
 next
   case (WTrtAAssNT E a i e T' l)
@@ -620,19 +618,21 @@ next
       show ?case
       proof (cases "final e")
 	assume fe: "final e"
-	from prems show ?thesis
-	  by(fastsimp simp:final_iff intro: RedAAssNull AAssThrow1 AAssThrow2 AAssThrow3)
+	with WTrtAAssNT fa fi show ?thesis
+	  by (fastsimp simp:final_iff intro: RedAAssNull AAssThrow1 AAssThrow2 AAssThrow3)
       next
 	assume "\<not> final e"
-	from prems show ?thesis by (fastsimp simp: final_iff intro!:AAssRed3 AAssThrow1 AAssThrow2)
+	with WTrtAAssNT fa fi show ?thesis
+          by (fastsimp simp: final_iff intro!:AAssRed3 AAssThrow1 AAssThrow2)
       qed
     next
       assume "\<not> final i"
-      from prems show ?thesis by (fastsimp simp: final_iff intro!:AAssRed2 AAssThrow1)
+      with WTrtAAssNT fa show ?thesis
+        by (fastsimp simp: final_iff intro!:AAssRed2 AAssThrow1)
     qed
   next
     assume "\<not> final a"
-    from prems show ?thesis by (fastsimp simp: final_iff intro!:AAssRed1)
+    with WTrtAAssNT show ?thesis by (fastsimp simp: final_iff intro!:AAssRed1)
   qed
 next
   case (WTrtALength E a T l)
@@ -706,7 +706,7 @@ next
       thus ?thesis by(fastsimp intro:FAccThrow)
     qed
   next
-    assume "\<not> final e" from prems show ?thesis
+    assume "\<not> final e" with WTrtFAcc show ?thesis
       by(fastsimp intro!:FAccRed)
   qed
 next
@@ -714,11 +714,11 @@ next
   show ?case
   proof cases
     assume "final e"  --"@{term e} is @{term null} or @{term throw}"
-    from prems show ?thesis
+    with WTrtFAccNT show ?thesis
       by(fastsimp simp:final_iff intro: RedFAccNull FAccThrow)
   next
     assume "\<not> final e" --"@{term e} reduces by IH"
-    from prems show ?thesis by simp (fast intro:FAccRed)
+    with WTrtFAccNT show ?thesis by simp (fast intro:FAccRed)
   qed
 next
   case (WTrtFAss E e1 C F T fm D e2 T2 l)
@@ -749,7 +749,7 @@ next
 	  thus ?thesis using e1 by(fastsimp intro:FAssThrow2)
 	qed
       next
-	assume "\<not> final e2" from prems show ?thesis
+	assume "\<not> final e2" with WTrtFAss `final e1` e1 show ?thesis
 	  by simp (fast intro!:FAssRed2)
       qed
     next
@@ -757,7 +757,7 @@ next
       thus ?thesis by(fastsimp intro:FAssThrow1)
     qed
   next
-    assume "\<not> final e1" from prems show ?thesis
+    assume "\<not> final e1" with WTrtFAss show ?thesis
       by simp (blast intro!:FAssRed1)
   qed
 next
@@ -768,16 +768,16 @@ next
     show ?thesis
     proof cases
       assume "final e\<^isub>2"  --"@{term e\<^isub>2} is @{term Val} or @{term throw}"
-      from prems show ?thesis
+      with WTrtFAssNT `final e\<^isub>1` show ?thesis
 	by(fastsimp simp:final_iff intro: RedFAssNull FAssThrow1 FAssThrow2)
     next
-      assume  "\<not> final e\<^isub>2" --"@{term e\<^isub>2} reduces by IH"
-      from prems show ?thesis
+      assume "\<not> final e\<^isub>2" --"@{term e\<^isub>2} reduces by IH"
+      with WTrtFAssNT `final e\<^isub>1` show ?thesis
 	by (fastsimp  simp:final_iff intro!:FAssRed2 FAssThrow1)
     qed
   next
     assume "\<not> final e\<^isub>1" --"@{term e\<^isub>1} reduces by IH"
-    from prems show ?thesis by (fastsimp intro:FAssRed1)
+    with WTrtFAssNT show ?thesis by (fastsimp intro:FAssRed1)
   qed
 next
   case (WTrtCall E e C M Ts T pns body D es Ts' l)
@@ -843,7 +843,7 @@ next
     qed
   next
     assume "\<not> final e"
-    with prems show ?thesis by simp (blast intro!:CallObj)
+    with WTrtCall show ?thesis by simp (blast intro!:CallObj)
   qed
 next
   case (WTrtCallNT E e es Ts M T l)
@@ -858,29 +858,29 @@ next
     assume "final e"
     moreover
     { fix v assume "e = Val v"
-      hence "e = null" using prems by simp
+      hence "e = null" using WTrtCallNT by simp
       have ?case
       proof cases
 	assume "finals es"
 	moreover
 	{ fix vs assume "es = map Val vs"
-	  from prems have ?thesis by(fastsimp intro: RedCallNull) }
+	  with WTrtCallNT `e = null` `finals es` have ?thesis by(fastsimp intro: RedCallNull) }
 	moreover
 	{ fix vs a es' assume "es = map Val vs @ Throw a # es'"
-	  from prems have ?thesis by(fastsimp intro: CallThrowParams) }
+	  with WTrtCallNT `e = null` `finals es` have ?thesis by(fastsimp intro: CallThrowParams) }
 	ultimately show ?thesis by(fastsimp simp:finals_def)
       next
 	assume "\<not> finals es" --"@{term es} reduces by IH"
-	from prems show ?thesis by(fastsimp intro: CallParams)
+	with WTrtCallNT `e = null` show ?thesis by(fastsimp intro: CallParams)
       qed
     }
     moreover
     { fix a assume "e = Throw a"
-      from prems have ?case by(fastsimp intro: CallThrowObj) }
+      with WTrtCallNT have ?case by(fastsimp intro: CallThrowObj) }
     ultimately show ?thesis by(fastsimp simp:final_iff)
   next
     assume "\<not> final e" --"@{term e} reduces by IH"
-    from prems show ?thesis by (fastsimp intro:CallObj)
+    with WTrtCallNT show ?thesis by (fastsimp intro:CallObj)
   qed
 next
   case (WTrtCallExternal E e T es Ts M Ts' U l)
@@ -1034,7 +1034,7 @@ next
     thus ?thesis
       by(fast elim:finalE intro:intro:RedSeq SeqThrow)
   next
-    assume "\<not> final e1" from prems show ?thesis
+    assume "\<not> final e1" with WTrtSeq show ?thesis
       by simp (blast intro:SeqRed)
   qed
 next
@@ -1058,7 +1058,7 @@ next
       thus ?thesis by(fast intro:CondThrow)
     qed
   next
-    assume "\<not> final e" from prems show ?thesis
+    assume "\<not> final e" with WTrtCond show ?thesis
       by simp (fast intro:CondRed)
   qed
 next
@@ -1080,7 +1080,7 @@ next
     qed
   next
     assume "\<not> final e" -- {*Then @{term e} must reduce*}
-    from prems show ?thesis by simp (blast intro:ThrowRed)
+    with WTrtThrow show ?thesis by simp (blast intro:ThrowRed)
   qed
 next
   case (WTrtTry E e1 T1 V C e2 T2 l)
@@ -1102,7 +1102,7 @@ next
     qed
   next
     assume "\<not> final e1"
-    show ?thesis using prems by simp (fast intro:TryRed)
+    with WTrtTry show ?thesis by simp (fast intro:TryRed)
   qed
 next
   case WTrtNil thus ?case by simp
