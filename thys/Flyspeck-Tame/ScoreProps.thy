@@ -377,7 +377,7 @@ next
   from 2 have hyp1: "?T (deleteAround g a ps) \<Longrightarrow>
     ?P (deleteAround g a ps)" by blast
   from 2 have hyp2:  "?T ps \<Longrightarrow> ?P ps" by blast
-  from prems have "?T ps" by simp
+  from 2 have "?T ps" by simp
   then have H1: "?P (deleteAround g a ps)"
    by (rule_tac hyp1) (rule distinct_deleteAround [simplified])
   from prem have H2: "?P ps"
