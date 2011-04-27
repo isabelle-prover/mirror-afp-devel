@@ -852,15 +852,10 @@ val get_data = Hoare_Data.get o Context.Proof;
 
 (* access 'params' *)
 
-fun lookupI eq xs n =
-  (case AList.lookup eq xs n of
-     SOME v => v
-   | NONE => n);
-
 fun mk_free ctxt name =
   let
     val ctxt' = Context.proof_of ctxt;
-    val n' = lookupI (op =) (Variable.fixes_of ctxt') name
+    val n' = lookupI (op =) (Variable.intern_fixed ctxt') name
     val T' = Proof_Context.infer_type ctxt' (n', dummyT) handle ERROR _ => dummyT
   in (Free (n',T')) end;
 
