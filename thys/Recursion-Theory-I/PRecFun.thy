@@ -453,7 +453,7 @@ fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
       let
         val comp = get_comp_by_indexes (n1, n2)
       in
-        res_inst_tac ctxt [(("f", 0), Proof_Context.revert_skolem ctxt name)] comp i
+        res_inst_tac ctxt [(("f", 0), Variable.revert_fixed ctxt name)] comp i
       end
   end
   handle BadArgument => no_tac)
