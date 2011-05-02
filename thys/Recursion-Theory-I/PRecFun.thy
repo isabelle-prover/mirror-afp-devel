@@ -437,7 +437,7 @@ fun get_if_by_index 1 = @{thm if_eq_is_pr}
 
 fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
   let
-    val t = extract_trueprop_arg (extract_right_expr t)
+    val t = extract_trueprop_arg (Logic.strip_imp_concl t)
     val (t1, t2) = extract_set_args t
     val n2 =
       let

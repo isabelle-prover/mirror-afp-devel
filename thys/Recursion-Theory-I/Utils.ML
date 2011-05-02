@@ -43,22 +43,12 @@ fun get_comp_by_indexes (1, 1) = @{thm pr_comp1_1}
   | get_comp_by_indexes (3, 3) = @{thm pr_comp3_3}
   | get_comp_by_indexes _ = raise BadArgument
 
-(* t = [Cons ("==>", tp)...] $ ... *)
-fun is_impl_first (Const("==>",_) $ _) = true
-  | is_impl_first _ = false
-
-(* Result = Cons("Trueprop", tp) $ ... *)
-fun extract_right_expr (t:term) =
-  case t of
-      t1 $ t2 => (if (is_impl_first t1) then (extract_right_expr t2) else t)
-    | _ => t
-
 
 (************ Tactic. ***************)
 
 fun pr_comp_tac ctxt = SUBGOAL (fn (t, i) =>
   let
-    val t = extract_trueprop_arg (extract_right_expr t)
+    val t = extract_trueprop_arg (Logic.strip_imp_concl t)
     val (t1, t2) = extract_set_args t
     val n2 =
       let
