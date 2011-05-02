@@ -78,8 +78,8 @@ end;
 structure Hoare_Syntax: HOARE_SYNTAX =
 struct
 
-val (use_call_tr', setup_use_call_tr') = Attrib.config_bool "hoare_use_call_tr'" (K true);
-val (hide_guards, setup_hide_guards) = Attrib.config_bool "hoare_hide_guards" (K false);
+val use_call_tr' = Attrib.setup_config_bool @{binding hoare_use_call_tr'} (K true);
+val hide_guards = Attrib.setup_config_bool @{binding hoare_hide_guards} (K false);
 
 val globalsN = "globals";
 val localsN = "locals";
@@ -777,7 +777,6 @@ end;
 (* FIXME: make guard function a parameter of all parse-translations that need it.*)
 
 val setup =
-  setup_use_call_tr' #> setup_hide_guards #>
   Context.theory_map (Hoare.install_generate_guard mk_guard);
 
 
