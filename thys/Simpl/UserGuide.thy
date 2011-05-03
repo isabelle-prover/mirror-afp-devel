@@ -363,9 +363,9 @@ term "\<acute>R :== \<acute>N * \<acute>N"
      single rule, but additionally does some ``obvious'' steps:
      It solves the canonical side-conditions of various Hoare-rules and it 
      automatically expands the
-     procedure body: With @{thm [source] Square_impl}:  @{thm [short_names]Square_impl [no_vars]} we
+     procedure body: With @{thm [source] Square_impl}:  @{thm [names_short] Square_impl [no_vars]} we
      get the procedure body out of the procedure context @{term "\<Gamma>"}; 
-     with @{thm [source] Square_body_def}: @{thm [short_names] Square_body_def [no_vars]} we
+     with @{thm [source] Square_body_def}: @{thm [names_short] Square_body_def [no_vars]} we
      can unfold the definition of the body.
 
      The proof is finished by the vcg and simp.

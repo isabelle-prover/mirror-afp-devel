@@ -368,7 +368,7 @@ text_raw {*\label{sec:userguide.ext}*}
     then the implemented function's arguments.
 
     Consider, for example, the generic algorithm to convert a list to a set\footnote{To keep the presentation simple, 
-    we use a non-tail-recursive version here}. This function requires implementations of the {\em empty} and {\em ins} functions\footnote{Due to name-clashes with @{const [long_names] Map.empty} we have to
+    we use a non-tail-recursive version here}. This function requires implementations of the {\em empty} and {\em ins} functions\footnote{Due to name-clashes with @{const [names_long] Map.empty} we have to
       use slightly different parameter names here}:
     *}
 
