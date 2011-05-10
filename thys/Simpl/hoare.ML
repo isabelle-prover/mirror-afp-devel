@@ -70,12 +70,11 @@ struct
 
 (* Misc *)
 
-val (use_generalise, setup_use_generalise) = Attrib.config_bool "hoare_use_generalise" (K false);
-val (sort_variables, setup_sort_variables) = Attrib.config_bool "hoare_sort_variables" (K true);
-val (use_cond_inv_modifies, setup_use_cond_inv_modifies) =
-  Attrib.config_bool "hoare_use_cond_inv_modifies" (K true);
+val use_generalise = Attrib.setup_config_bool @{binding hoare_use_generalise} (K false);
+val sort_variables = Attrib.setup_config_bool @{binding hoare_sort_variables} (K true);
+val use_cond_inv_modifies = Attrib.setup_config_bool @{binding hoare_use_cond_inv_modifies} (K true);
 
-val (hoare_trace, setup_hoare_trace) = Attrib.config_bool "hoare_trace" (K false);
+val hoare_trace = Attrib.setup_config_bool @{binding hoare_trace} (K false);
 
 val call_prfx = "_Call_";
 val call_ass_prfx = "_CallAss_";
@@ -852,15 +851,10 @@ val get_data = Hoare_Data.get o Context.Proof;
 
 (* access 'params' *)
 
-fun lookupI eq xs n =
-  (case AList.lookup eq xs n of
-     SOME v => v
-   | NONE => n);
-
 fun mk_free ctxt name =
   let
     val ctxt' = Context.proof_of ctxt;
-    val n' = lookupI (op =) (Variable.fixes_of ctxt') name
+    val n' = Variable.intern_fixed ctxt' name;
     val T' = Proof_Context.infer_type ctxt' (n', dummyT) handle ERROR _ => dummyT
   in (Free (n',T')) end;
 
@@ -1457,9 +1451,6 @@ fun procedures_definition locname procs thy =
 (*********************  theory extender interface ********************************)
 
 (** package setup **)
-
-
-
 
 (* outer syntax *)
 
@@ -3728,8 +3719,6 @@ val vcg_step = gen_simp_method hoare_step_tac;
 (* setup theory *)
 
 val setup =
-  setup_use_generalise #> setup_sort_variables #> setup_use_cond_inv_modifies #>
-  setup_hoare_trace #>
   Attrib.setup @{binding vcg_simp} (Attrib.add_del vcg_simp_add vcg_simp_del)
     "declaration of Simplifier rule for vcg"
  (*#> add_wp_tacs initial_wp_tacs*)

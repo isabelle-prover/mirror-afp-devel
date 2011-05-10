@@ -437,7 +437,7 @@ fun get_if_by_index 1 = @{thm if_eq_is_pr}
 
 fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
   let
-    val t = extract_trueprop_arg (extract_right_expr t)
+    val t = extract_trueprop_arg (Logic.strip_imp_concl t)
     val (t1, t2) = extract_set_args t
     val n2 =
       let
@@ -453,7 +453,7 @@ fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
       let
         val comp = get_comp_by_indexes (n1, n2)
       in
-        res_inst_tac ctxt [(("f", 0), Proof_Context.revert_skolem ctxt name)] comp i
+        res_inst_tac ctxt [(("f", 0), Variable.revert_fixed ctxt name)] comp i
       end
   end
   handle BadArgument => no_tac)
