@@ -18,7 +18,7 @@ locale Universe =
   and     Uim     : "\<lbrakk>Elem I U ; Elem u (Fun I U) \<rbrakk> \<Longrightarrow> Elem (Sum (Range u)) U"
   and     Unat    : "Elem Nat U"
 (*
-axioms 
+axiomatization where
   Grothendieck: "\<forall> x . \<exists> uni . (Universe uni) \<and> Elem x uni"
 *)
 lemma ElemLambdaFun : "(\<And> x .Elem x u \<Longrightarrow> Elem (f x) U) \<Longrightarrow> Elem (Lambda u f) (Fun u U)"

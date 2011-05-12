@@ -5,7 +5,7 @@
 
 header {* \isaheader{Example Jinja Program} *}
 
-theory Example imports SystemClasses JWellForm begin
+theory Example imports "../Common/SystemClasses" JWellForm begin
 
 text {* 
 The following example Jinja program includes:
@@ -39,18 +39,18 @@ class Example {
 datatype cnam' = Base' | Ext'
 datatype vnam' = vee' | x' | e'
 
-consts
-  cnam' :: "cnam' => cname"
+axiomatization
+  cnam' :: "cnam' => cname" and
   vnam' :: "vnam' => vnam"
 
 -- "@{text cnam'} and @{text vnam'} are intended to be isomorphic 
     to @{text cnam} and @{text vnam}"
-axioms 
-  inj_cnam':  "(cnam' x = cnam' y) = (x = y)"
-  inj_vnam':  "(vnam' x = vnam' y) = (x = y)"
+where
+  inj_cnam': "\<And>x y. (cnam' x = cnam' y) = (x = y)" and
+  inj_vnam': "\<And>x y. (vnam' x = vnam' y) = (x = y)" and
 
-  surj_cnam': "\<exists>m. n = cnam' m"
-  surj_vnam': "\<exists>m. n = vnam' m"
+  surj_cnam': "\<And>n. \<exists>m. n = cnam' m"
+  surj_vnam': "\<And>n. \<exists>m. n = vnam' m"
 
 declare inj_cnam' [simp] inj_vnam' [simp]
 
@@ -60,12 +60,12 @@ abbreviation "vee == VName (vnam' vee')"
 abbreviation "x == VName (vnam' x')"
 abbreviation "e == VName (vnam' e')"
 
-axioms
-  Base_not_Object: "Base \<noteq> Object"
-  Ext_not_Object:  "Ext  \<noteq> Object"
-  Base_not_Xcpt:   "Base \<noteq> Xcpt z"
-  Ext_not_Xcpt:    "Ext  \<noteq> Xcpt z"
-  e_not_This:      "e \<noteq> This"  
+axiomatization where
+  Base_not_Object: "Base \<noteq> Object" and
+  Ext_not_Object:  "Ext  \<noteq> Object" and
+  Base_not_Xcpt:   "Base \<noteq> Xcpt z" and
+  Ext_not_Xcpt:    "Ext  \<noteq> Xcpt z" and
+  e_not_This:      "e \<noteq> This"
 
 declare Base_not_Object [simp] Ext_not_Object [simp]
 declare Base_not_Xcpt [simp] Ext_not_Xcpt [simp]
