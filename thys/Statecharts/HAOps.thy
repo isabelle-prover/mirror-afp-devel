@@ -1167,7 +1167,7 @@ fun wellformed_tac ctxt L i =
         CHANGED (simp_tac (HOL_basic_ss addsimps
            [PseudoHA_HARoot, PseudoHA_CompFun, PseudoHA_CompFun_ran,PseudoHA_Events,PseudoHA_SAs,insert_union,
             PseudoHA_HAInitValue,Un_empty_right]@ L) i),
-        fast_tac (claset_of ctxt) i,
+        fast_tac ctxt i,
         CHANGED (simp_tac (simpset_of ctxt) i)
 ];
 

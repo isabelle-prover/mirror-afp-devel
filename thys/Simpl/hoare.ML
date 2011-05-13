@@ -2518,11 +2518,12 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
 
           fun solve_modifies_tac i =
                 (clarsimp_tac
-                  (global_claset_of @{theory Set},
-                     (Simplifier.context ctxt (global_simpset_of @{theory Set}))
-                     addsimps ([mex_def,meq_def,upd_globals_def]@K_convs)
-                     addsimprocs (state_upd_simproc Record::(state_simprocs state_kind))
-                     addcongs K_congs) i)
+                  (put_claset (global_claset_of @{theory Set}) ctxt
+                    |> map_simpset (fn _ =>
+                       (Simplifier.context ctxt (global_simpset_of @{theory Set}))
+                       addsimps ([mex_def,meq_def,upd_globals_def]@K_convs)
+                       addsimprocs (state_upd_simproc Record::(state_simprocs state_kind))
+                       addcongs K_congs)) i)
                 THEN_MAYBE
                 EVERY [trace_tac ctxt "modify_tac: splitting record",
                        state_split_simp_tac [] state_space i];
@@ -3495,11 +3496,12 @@ fun solve_modifies_tac ctxt state_kind state_space i =
                      (REPEAT_ALL_NEW (resolve_tac [conjI,impI,refl]) k))) i
   in
     (trace_tac ctxt "solve_modifies_tac" THEN
-     clarsimp_tac (global_claset_of @{theory HOL},
-                        (Simplifier.context ctxt (global_simpset_of @{theory Set}))
-                         addsimps ([mex_def,meq_def]@K_convs)
-                         addsimprocs (state_upd_simproc Record::(state_simprocs Record))
-                         addcongs K_congs) i)
+     clarsimp_tac (put_claset (global_claset_of @{theory HOL}) ctxt
+        |> map_simpset (fn _ =>
+            (Simplifier.context ctxt (global_simpset_of @{theory Set}))
+             addsimps ([mex_def,meq_def]@K_convs)
+             addsimprocs (state_upd_simproc Record::(state_simprocs Record))
+             addcongs K_congs)) i)
     THEN_MAYBE
      try_solve state_kind i
   end;
