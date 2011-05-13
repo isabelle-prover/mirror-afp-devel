@@ -816,7 +816,7 @@ lemma is_write_seenI:
                       P,E \<turnstile> a' \<le>so a \<rbrakk> \<Longrightarrow> a' = ws a \<rbrakk>
   \<Longrightarrow> is_write_seen P E ws"
 unfolding is_write_seen_def
-by(tactic {* Blast.depth_tac @{claset} 30 1 *})
+by(blast 30)
 
 lemma is_write_seenD:
   "\<lbrakk> is_write_seen P E ws; a \<in> read_actions E; action_obs E a = NormalAction (ReadMem ad al v) \<rbrakk>
