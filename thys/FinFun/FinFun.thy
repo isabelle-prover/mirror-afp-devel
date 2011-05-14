@@ -359,12 +359,17 @@ declare finfun_simp [simp] finfun_iff [iff] finfun_intro [intro]
 
 interpretation finfun_update: fun_left_comm "\<lambda>a f. f(\<^sup>f a :: 'a := b')"
 proof
-  fix a' a :: 'a
-  fix b
-  have "(Rep_finfun b)(a := b', a' := b') = (Rep_finfun b)(a' := b', a := b')"
-    by(cases "a = a'")(auto simp add: fun_upd_twist)
-  thus "b(\<^sup>f a := b')(\<^sup>f a' := b') = b(\<^sup>f a' := b')(\<^sup>f a := b')"
-    by(auto simp add: finfun_update_def fun_upd_twist)
+  fix a a' :: 'a
+  show "(\<lambda>f. f(\<^sup>f a := b')) \<circ> (\<lambda>f. f(\<^sup>f a' := b')) = (\<lambda>f. f(\<^sup>f a' := b')) \<circ> (\<lambda>f. f(\<^sup>f a := b'))"
+  proof
+    fix b
+    have "(Rep_finfun b)(a := b', a' := b') = (Rep_finfun b)(a' := b', a := b')"
+      by(cases "a = a'")(auto simp add: fun_upd_twist)
+    then have "b(\<^sup>f a := b')(\<^sup>f a' := b') = b(\<^sup>f a' := b')(\<^sup>f a := b')"
+      by(auto simp add: finfun_update_def fun_upd_twist)
+    then show "((\<lambda>f. f(\<^sup>f a := b')) \<circ> (\<lambda>f. f(\<^sup>f a' := b'))) b = ((\<lambda>f. f(\<^sup>f a' := b')) \<circ> (\<lambda>f. f(\<^sup>f a := b'))) b"
+      by (simp add: fun_eq_iff)
+  qed
 qed
 
 lemma fold_finfun_update_finite_univ:
@@ -495,7 +500,7 @@ begin
 
 
 lemma upd_left_comm: "fun_left_comm (\<lambda>a. upd a (f a))"
-by(unfold_locales)(auto intro: upd_commute)
+by(unfold_locales)(auto intro: upd_commute simp add: fun_eq_iff)
 
 lemma upd_upd_twice: "upd a b'' (upd a b' (cnst b)) = upd a b'' (cnst b)"
 by(cases "b \<noteq> b'")(auto simp add: fun_upd_def upd_const_same upd_idemp)
