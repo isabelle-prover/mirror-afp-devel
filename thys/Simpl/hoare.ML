@@ -3695,7 +3695,7 @@ fun hoare_rule_tac ctxt thms i st =
 
 (*** Methods ***)
 
-val hoare_rule = RuleInsts.method HoareRuleTac hoare_rule_tac;
+val hoare_rule = Rule_Insts.method HoareRuleTac hoare_rule_tac;
 
 val argP = Args.name --| P.$$$ "=" -- Args.name
 val argsP = Scan.repeat argP
