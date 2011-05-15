@@ -43,8 +43,7 @@ in
         (K (Conv.concl_conv (~1) regexp_conv)) ctxt)
       THEN' rtac TrueI)))
 end
-*}
-"Decides relation equalities via regular expressions"
+*} "decide relation equalities via regular expressions"
 
 text {* Example: *}
 

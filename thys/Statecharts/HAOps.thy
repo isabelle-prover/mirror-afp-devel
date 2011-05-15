@@ -1176,7 +1176,5 @@ fun wellformed_tac ctxt L i =
 
 method_setup wellformed  = {* Attrib.thms >> (fn thms => fn ctxt => (METHOD (fn facts => 
                                        (HEADGOAL (wellformed_tac ctxt (facts @ thms)))))) *}
-                           "Wellformedness-Tactic for Statecharts"
-
 
 end
