@@ -30,7 +30,7 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, select):
     (loc_afp, loc_isabelle) = paths
     (dep_isabelle,) = dep_paths
     isabelle.prepare_isabelle_repository(loc_isabelle, env.settings.contrib, dep_isabelle,
-      parallelism = False) # FIXME -- parallelism off is only due to lxlabbroy machines
+      usedir_options=isabelle.default_usedir_options + '-M 1 -q 0') # FIXME: lxlabbroy machines have only 2GB
     os.chdir(loc_afp)
 
     os.chdir('thys')
@@ -53,18 +53,18 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, select):
       data, {'log': log}, None)
 
 
-@configuration(repos = [AFP, Isabelle], deps = [(isabelle.AFP_images, [1])])
+@configuration(repos = [AFP, Isabelle], deps = [(isabelle.Isabelle_makeall, [1])])
 def AFP_small_sessions(env, case, paths, dep_paths, playground):
     """Small AFP sessions"""
     skip_sessions = ('Flyspeck-Tame', 'JinjaThreads') # FIXME
     return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session not in skip_sessions)
 
-@configuration(repos = [AFP, Isabelle], deps = [(isabelle.HOL_Word, [1])])
+@configuration(repos = [AFP, Isabelle], deps = [(isabelle.Isabelle_makeall, [1])])
 def AFP_JinjaThreads(env, case, paths, dep_paths, playground):
     """AFP JinjaThreads session"""
     return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session == 'JinjaThreads')
 
-@configuration(repos = [AFP, Isabelle], deps = [(isabelle.HOL, [1])])
+@configuration(repos = [AFP, Isabelle], deps = [(isabelle.Isabelle_makeall, [1])])
 def AFP_Verified_Prover(env, case, paths, dep_paths, playground):
     """AFP Verified-Prover session"""
     return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session == 'Verified-Prover')
