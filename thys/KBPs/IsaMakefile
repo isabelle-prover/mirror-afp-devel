@@ -1,0 +1,31 @@
+
+## targets
+
+default: itp2011
+images: itp2011
+test: 
+
+all: images test
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf -D generated
+
+
+## itp2011
+
+itp2011: $(OUT)/itp2011 document/root.*
+
+$(OUT)/itp2011: ROOT.ML document/root.tex document/root.bib *.thy
+#	@$(USEDIR) -b HOL itp2011
+	@$(USEDIR) -b HOL itp2011
+
+
+## clean
+
+clean:
+	@rm -f $(OUT)/itp2011
