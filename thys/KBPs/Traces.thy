@@ -1,16 +1,16 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
+header "Traces"
+
 theory Traces
 imports Main
 begin
-(*>*)
 
-subsection{* Traces *}
 
 text{* A \emph{trace} is a non-empty sequence of states. By using this
 custom type rather than the standard HOL list type, we ease some later
@@ -28,10 +28,10 @@ fun tLast :: "'s Trace \<Rightarrow> 's" where
     "tLast (tInit s) = s"
   | "tLast (t \<leadsto> s) = s"
 
-(*<*)
+
 lemma tLast_tInit_comp[simp]: "tLast \<circ> tInit = id"
   by (rule ext) simp
-(*>*)
+
 
 text{* Our later ease hinges on taking the length of a trace to be
 zero-based. *}
@@ -40,7 +40,7 @@ fun tLength :: "'s Trace \<Rightarrow> nat" where
     "tLength (tInit s) = 0"
   | "tLength (t \<leadsto> s) = 1 + tLength t"
 
-(*<*)
+
 lemma tLength_0_conv:
   "(tLength t = 0) \<longleftrightarrow> (\<exists>s. t = tInit s)"
   by (cases t) simp_all
@@ -65,13 +65,13 @@ proof (induct t arbitrary: t')
 next
   case (tStep t s t') with tS show ?case by (cases t') simp_all
 qed
-(*>*)
+
 
 fun tMap where
   "tMap f (tInit x) = tInit (f x)"
 | "tMap f (xs \<leadsto> x) = tMap f xs \<leadsto> f x"
 
-(*<*)
+
 lemma tLength_tMap[iff]: "tLength (tMap f t) = tLength t"
   by (induct t) simp_all
 
@@ -123,8 +123,8 @@ proof -
   from M have L: "tLength t = tLength t'" by (rule tMap_eq_imp_tLength_eq)
   from L M show ?thesis by (induct rule: trace_induct2, simp_all)
 qed
-(*>*)
 
-(*<*)
+
+
 end
-(*>*)
+

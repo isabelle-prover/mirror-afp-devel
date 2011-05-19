@@ -1,53 +1,24 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
+
+header {*Perfect Recall in Broadcast Environments with Deterministic Protocols*}
+
 theory SPRViewDet
 imports
   KBPsAlg List_local ODList
   Mapping AssocList Trie
 begin
-(*>*)
 
-section{*Perfect Recall in Broadcast Environments with Deterministic Protocols*}
 
-text{*
-
-\label{sec:kbps-det-broadcast-envs}
-\label{sec:spr-broadcast}
-
-We now consider a more involved multi-agent case, where deterministic
-JKBPs operate in non-deterministic environments and communicate via
-\emph{broadcast}. It is well known \cite[Chapter~6]{FHMV:1995} that
-simultaneous broadcast has the effect of making information
-\emph{common knowledge}; roughly put, the agents all learn the same
-things at the same time as the system evolves, so the relation
-amongst the agents' states of knowledge never becomes more complex
-than it is in the initial state.
-
-The broadcast is modelled as a \emph{common observation} of the
-environment's state that is included in all agents' observations. We
-also allow the agents to maintain entirely disjoint private states of
-type @{typ "'as"}. This is expressed in the locale in
-Figure~\ref{fig:DetBroadcastEnvironment}, where the constraints on
-@{term "envTrans"} and @{term "envObs"} enforce the disjointness.
-
-Similarly to \S\ref{sec:kbps-spr-single-agent}, we seek a suitable
-simulation space by considering what determines an agent's
-knowledge. Intuitively any set of traces that is relevant to the
-agents' states of knowledge with respect to @{term "t \<in> jkbpC"} need
-include only those with the same common observation as @{term "t"}:
-*}text_raw{*
-\begin{figure}[t]
-\begin{isabellebody}%
-*}
 record ('a, 'es, 'as) BEState =
   es :: "'es"
   ps :: "('a \<times> 'as) odlist" -- {* Associates an agent with her private state. *}
 
-(*<*)
+
 instantiation BEState_ext :: (linorder, linorder, linorder, linorder) linorder
 begin
 
@@ -76,7 +47,7 @@ proof
    by (auto simp add: Set.image_def)
  show "finite ?U" by (simp add: U)
 qed
-(*>*)
+
 
 locale DetBroadcastEnvironment =
   Environment jkbp envInit envAction envTrans envVal envObs
@@ -97,12 +68,7 @@ locale DetBroadcastEnvironment =
                \<longrightarrow> ODList.lookup (ps (envTrans eact aact s)) a
                  = ODList.lookup (ps (envTrans eact' aact' s')) a"
       and jkbpDet: "\<forall>a. \<forall>t \<in> jkbpC. length (jAction mkMC t a) \<le> 1"
-text_raw{*
-  \end{isabellebody}%
-  \caption{The @{text "DetBroadcastEnvironment"} locale.}
-  \label{fig:DetBroadcastEnvironment}
-\end{figure}
-*}(*<*)
+
 context DetBroadcastEnvironment begin
 
 lemma envObs_def_raw:
@@ -111,23 +77,13 @@ lemma envObs_def_raw:
   apply (simp add: envObs_def)
   done
 
-(*>*)definition tObsC :: "('a, 'es, 'as) BEState Trace \<Rightarrow> 'cobs Trace" where
+definition tObsC :: "('a, 'es, 'as) BEState Trace \<Rightarrow> 'cobs Trace" where
   "tObsC \<equiv> tMap (envObsC \<circ> es)"
 
-text{*
 
-Unlike the single-agent case of \S\ref{sec:kbps-spr-single-agent}, it
-is not sufficient for a simulation to record only the final states; we
-need to relate the initial private states of the agents with the final
-states they consider possible, as the initial states may contain
-information that is not common knowledge. This motivates the following
-abstraction:
-
-*}
-
-definition(*<*)tObsC_abs :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) BEState Relation" where(*>*)
+definition tObsC_abs :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) BEState Relation" where
   "tObsC_abs t \<equiv> {(tFirst t', tLast t') |t'. t' \<in> jkbpC \<and> tObsC t' = tObsC t}"
-(*<*)
+
 
 lemma spr_jview_tObsC:
   assumes "spr_jview a t = spr_jview a t'"
@@ -214,7 +170,7 @@ lemma tObsC_abs_tInit[iff]:
   done
 
 end (* context *)
-(*>*)
+
 text{*
 
 We can predict an agent's final private state on @{term "t' \<in> jkbpC"}
@@ -231,9 +187,9 @@ record ('a, 'es, 'as) SPRstate =
   sprLst :: "('a, 'es, 'as) BEState"
   sprCRel :: "(('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState) set"
 
-definition(*<*)(in DetBroadcastEnvironment)(*>*) spr_sim :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) SPRstate" where
+definition(in DetBroadcastEnvironment) spr_sim :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) SPRstate" where
   "spr_sim t \<equiv> \<lparr> sprFst = tFirst t, sprLst = tLast t, sprCRel = tObsC_abs t \<rparr>"
-(*<*)
+
 
 instance SPRstate_ext :: ("{finite, linorder}", finite, "{finite, linorder}", finite) finite
 proof
@@ -444,37 +400,6 @@ lemma spr_sim[intro, simp]:
   unfolding sim_def
   by blast
 
-(*>*)
-text{*
-
-We build a Kripke structure @{term "mkMCS"} of simulated traces by
-relating worlds @{term "U"} and @{term "V"} for agent @{term "a"}
-where @{term "envObs a (sprFst U) = envObs a (sprFst V)"} and @{term
-"envObs a (sprLst U) = envObs a (sprLst V)"}, and @{text "sprCRel U =
-sprCRel V"}. Propositions are evaluated by @{thm (rhs)
-"spr_sim_val_def"}. We have:
-\begin{theorem}
-  @{term "mkMCS"} simulates @{term "mkMC"}.
-\end{theorem}
-Establishing this is routine, where the final simulation property
-follows from our ability to predict agents' private states on
-canonical traces as mentioned above.
-
-As in \S\ref{sec:kbps-spr-single-agent}, we can factor out the common
-parts of these equivalence classes to yield a denser representation
-that uses a pair of relations and thus a four-level trie. We omit the
-tedious details of placating the @{term "SimEnvironment"} locale.
-
-van der Meyden \cite[\S7]{Ron:1996} used this simulation to obtain
-finite-state implementations for non-deterministic KBPs under the
-extra assumptions that the parts of the agents' actions that influence
-@{term "envAction"} are broadcast and recorded in the system states,
-and that @{term "envAction"} be oblivious to the agents' private
-states. Therefore those results do not subsume the ones presented
-here, just as those of this section do not subsume those of
-\S\ref{sec:kbps-spr-single-agent}.
-
-*}(*<*)
 
 end
 
@@ -1962,4 +1887,4 @@ proof -
 qed
 
 end
-(*>*)
+

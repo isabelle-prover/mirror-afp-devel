@@ -3,13 +3,15 @@
    Author: Peter Gammie (gross simplification), 2010
 *)
 
-(*<*)
+
+header "Trie"
+
 theory Trie imports
   Main
   MapOps
   ODList
 begin
-(*>*)
+
 
 (* From AssocList2 *)
 
@@ -133,6 +135,6 @@ lemma trie_odlist_MapOps[intro, simp]:
   apply (auto dest: inj_onD simp add: trie_lookup_trie_update)
   done
 
-(*<*)
+
 end
-(*>*)
+

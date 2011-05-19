@@ -1,4 +1,4 @@
-(*<*)
+
 theory Extra
 imports Main Equiv_Relations Option_ord
 begin
@@ -58,4 +58,4 @@ lemma map_prod_eq:
   using assms by (induct rule: list_induct2[OF map_eq_imp_length_eq[OF f]]) (simp_all add: prod_eqI)
 
 end
-(*>*)
+

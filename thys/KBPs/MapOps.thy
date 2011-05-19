@@ -2,23 +2,21 @@
    Author: Peter Gammie < peteg42 at gmail dot com >
 *)
 
-(*<*)
+header "Map operations"
+
 theory MapOps
 imports Main
 begin
-(*>*)
-
-section{* Map operations *}
 
 text{*
 
-FIXME we need concrete algorithms to maintain the various maps. Here
+We need concrete algorithms to maintain the various maps. Here
 we abstract their API a little bit. Framed this way as the code
 generator does not understand locales.
 
-FIXME have a domain of definition to ease the data refinement.
-
 *}
+
+(* FIXME: have a domain of definition to ease the data refinement. *)
 
 record ('m, 'k, 'e) MapOps =
   empty :: "'m"
@@ -34,7 +32,7 @@ where
         \<longrightarrow> lookup ops (update ops k e M) k'
           = (if \<alpha> k' = \<alpha> k then Some e else lookup ops M k'))"
 
-(*<*)
+
 
 lemma MapOpsI[intro]:
   "\<lbrakk> \<And>k. \<alpha> k \<in> d \<Longrightarrow> lookup ops (empty ops) k = None;
@@ -52,14 +50,14 @@ lemma MapOps_lookup_updateD:
   "\<lbrakk> \<alpha> k \<in> d; \<alpha> k' \<in> d; MapOps \<alpha> d ops \<rbrakk> \<Longrightarrow> lookup ops (update ops k e M) k' = (if \<alpha> k' = \<alpha> k then Some e else lookup ops M k')"
   unfolding MapOps_def by simp
 
-(*>*)
+
 
 text{* Useful for fudging a set-membership operation. *}
 
 definition
   "isSome opt \<equiv> case opt of None \<Rightarrow> False | Some _ \<Rightarrow> True"
 
-(*<*)
+
 lemma isSome_simps[simp]:
   "\<And>x. isSome (Some x)"
   "\<And>x. \<not> isSome x \<longleftrightarrow> x = None"
@@ -72,8 +70,8 @@ lemma isSome_eq:
 lemma isSomeE: "\<lbrakk> isSome x; \<And>s. x = Some s \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   unfolding isSome_def by (cases x) auto
 
-(*>*)
 
-(*<*)
+
+
 end
-(*>*)
+

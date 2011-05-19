@@ -1,6 +1,0 @@
-#!/bin/sh
-
-D=$(dirname $0)
-
-$D/funs $1 > tmp
-mv tmp $1

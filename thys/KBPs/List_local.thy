@@ -1,4 +1,4 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
@@ -8,7 +8,7 @@
 theory List_local
 imports Extra While_Combinator
 begin
-(*>*)
+
 
 lemma map_id[simp]: "map id = id"
   apply (rule ext)
@@ -380,6 +380,6 @@ lemma sort_sorted_distinct[simp]:
   using sorted_distinct_set_unique[where xs="sort (remdups xs)" and ys=xs]
   by simp
 
-(*<*)
+
 end
-(*>*)
+

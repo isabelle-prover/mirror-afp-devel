@@ -1,8 +1,3 @@
-(* For quick turnarounds. *)
-(*
-Toplevel.skip_proofs := true;
-quick_and_dirty := true;
-*)
 short_names := true;
 show_question_marks_default := false;
 
@@ -15,18 +10,18 @@ no_document use_thys
 no_document use_thys
  [
   "AssocList",
-  "DFS",
   "Extra",
-  "Kripke",
   "List_local",
-  "Mapping",
-  "MapOps",
-  "Traces",
-  "Trie"
+  "Mapping"
 ];
 
 use_thys
  [
+  "DFS",
+  "Kripke",
+  "MapOps",
+  "Traces",
+  "Trie",
   "KBPs",
   "KBPsAuto",
   "KBPsAlg",

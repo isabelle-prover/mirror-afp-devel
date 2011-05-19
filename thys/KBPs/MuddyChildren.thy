@@ -1,83 +1,15 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
+header {* The Muddy Children *}
+
 theory MuddyChildren
 imports SPRViewDet
 begin
-(*>*)
-
-subsection{* The Muddy Children *}
-
-text{*
-
-\label{sec:mc}
-
-The classic muddy children puzzle \cite[\S1.1,
-Example~7.2.5]{FHMV:1995} is an example of a multi-agent broadcast
-scenario that exemplifies non-obvious reasoning about mutual states of
-knowledge. Briefly, there are $N > 2$ children playing together, some
-of whom get mud on their foreheads. Each can see the others' foreheads
-but not their own. A mother observes the situation and either says
-that everyone is clean, or says that someone is dirty. She then asks
-``Do any of you know whether you have mud on your own forehead?''
-over and over. Assuming the children are perceptive, intelligent,
-truthful and they answer simultaneously, what will happen?
-
-Each agent $\mbox{child}_i$ reasons with the following KBP:
-\begin{center}
-  \begin{tabular}{lll}
-    $\mathbf{do}$\\
-     & $\gcalt\ \hat{\mathbf{K}}_{\mbox{child}_i} \mbox{muddy}_i$ & $@{text "\<rightarrow>"}$ Say ``I know if my forehead is muddy''\\
-     & $\gcalt\ @{text "\<not>"}\hat{\mathbf{K}}_{\mbox{child}_i} \mbox{muddy}_i$ & $@{text "\<rightarrow>"}$ Say nothing\\
-    $\mathbf{od}$\\
-  \end{tabular}
-\end{center}
-where $\hat{\mathbf{K}}_a @{text "\<phi>"}$ abbreviates $\mathbf{K}_a
-@{text "\<phi>"}\ @{text "\<or>"}\ \mathbf{K}_a @{text "\<not>\<phi>"}$.  As the mother
-has complete knowledge of the situation, we integrate her behaviour
-into the environment.
-
-In general the determinism of a KBP is a function of the environment,
-and may be difficult to establish. In this case and many others,
-however, determinism is syntactically manifest as the guards are
-logically disjoint, independently of the knowledge subformulas.
-
-The model records a child's initial observation of the mother's
-pronouncement and the muddiness of the other children in her initial
-private state, and these states are preserved by @{term "envTrans"}.
-The recurring common observation is all of the children's public
-responses to the mother's questions. Being able to distinguish these
-types of observations is crucial to making this a broadcast scenario.
-
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \vspace{-20pt}
-  \includegraphics[width=0.48\textwidth]{MC}
-  \vspace{-10pt}
-  \caption{The protocol of $\mbox{child}_0$.}
-  \label{fig:mc}
-\end{wrapfigure}
-
-Running the algorithm for three children and minimising yields the
-automaton in Figure~\ref{fig:mc} for $\mbox{child}_0$. The initial
-transitions are labelled with the initial observation, i.e., the
-cleanliness ``C'' or muddiness ``M'' of the other two children. The
-dashed initial transition covers the case where everyone is clean; in
-the others the mother has announced that someone is dirty. Later
-transitions simply record the actions performed by each of the agents,
-where ``K'' is the first action in the above KBP, and ``N'' the
-second. Double-circled states are those in which $\mbox{child}_0$
-knows whether she is muddy, and single-circled where she does not.
-
-To the best of our knowledge this is the first time that an
-implementation of the muddy children has been automatically
-synthesised.
-
-*}
-(*<*)
 
 datatype Agent = Child0 | Child1 | Child2
 datatype Proposition = Dirty Agent
@@ -287,4 +219,4 @@ export_code "mcDFS" "mcAlg" in Haskell file "/tmp/" (string_classes)
 *)
 
 end
-(*>*)
+

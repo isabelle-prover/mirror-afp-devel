@@ -1,41 +1,20 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
+header {* Automata for KBPs *}
+
 theory KBPsAuto
 imports Main Extra KBPs
 begin
 
-(*>*)
-section{* Automata for KBPs *}
-
-text{*
-
-\label{sec:kbps-automata-synthesis}
-
-We now shift our attention to the problem of synthesising standard
-finite-state automata that \emph{implement} @{term "jkbp"}. This
-section summarises the work of van der Meyden \cite{Ron:1996}. In
-\S\ref{sec:kbps-alg} we will see how these are computed.
-
-\label{sec:kbps-automata-defs}
-
-The essence of these constructions is to represent an agent's state of
-knowledge by the state of an automaton (of type @{typ "'ps"}), also
-termed a \emph{protocol}. This state evolves in response to the
-agent's observations of the system using @{term "envObs"}, and is
-deterministic as it must encompass the maximal uncertainty she has
-about the system. Our implementations take the form of Moore machines,
-which we represent using a record:
-
-*}
 
 record ('obs, 'aAct, 'ps) Protocol =
   pInit :: "'obs \<Rightarrow> 'ps"     pTrans :: "'obs \<Rightarrow> 'ps \<Rightarrow> 'ps"     pAct :: "'ps \<Rightarrow> 'aAct list"
-(*<*)
+
 
 context Environment begin
 
@@ -261,33 +240,6 @@ lemma  behaviourally_equiv_implements:
   shows "implements jp \<longleftrightarrow> implements jp'"
   using assms unfolding behaviourally_equiv_def implements_def by simp
 
-(*>*)
-text{*
-
-Transitions are labelled by observations, and states with the set of
-actions enabled by @{term "jkbp"}. The initialising function @{term
-"pInit"} maps an initial observation to an initial protocol state. A
-joint protocol @{term "jp"} is a mapping from agents to protocols. The
-term @{term "runJP jp t"} runs @{term "jp"} on a trace @{term "t"} in
-the standard manner, yielding a function from agents to protocol
-states. Similarly @{term "actJP jp t"} denotes the joint action of
-@{term "jp"} on trace @{term "t"}, i.e., @{text "\<lambda>a. pAct (jp a)
-(runJP jp t a)"}.
-
-\label{sec:kbps-implementation}
-\label{sec:automata-ec}
-\label{sec:kbps-incremental-views}
-\label{def:choice}
-
-That a joint protocol @{term "jp"} \emph{implements} @{term "jkbp"} is
-to say that @{term "jp"} and @{term "jkbp"} yield identical joint
-actions when run on any canonical trace @{term "t \<in> jkbpC"}. To garner
-some intuition about the structure of such implementations, our first
-automata construction explicitly represents the partition of @{term
-"jkbpC"} induced by @{term "spr_jview"}, yielding an infinite-state
-joint protocol:
-
-*}
 
 definition mkAuto :: "'a \<Rightarrow> ('obs, 'aAct, 's Trace set) Protocol" where
   "mkAuto a \<equiv> \<lparr> pInit = \<lambda>obs. { t \<in> jkbpC . spr_jview a t = tInit obs },
@@ -296,7 +248,7 @@ definition mkAuto :: "'a \<Rightarrow> ('obs, 'aAct, 's Trace set) Protocol" whe
                      pAct = \<lambda>ps. jAction mkMC (SOME t. t \<in> ps) a \<rparr>"
 
 abbreviation "equiv_class a tobs \<equiv> { t \<in> jkbpC . spr_jview a t = tobs }"
-(*<*)
+
 
 lemma mkAuto_ec:
   assumes "t \<in> jkbpC"
@@ -318,30 +270,11 @@ lemma mkAuto_implements: "implements mkAuto"
     apply auto
    done
 
-end (* FIXME context *)
-(*>*)
-text (in Environment) {*
+end (* context *)
 
-The function @{text "SOME"} is Hilbert's indefinite description
-operator @{term "\<epsilon>"}, used here to choose an arbitrary trace from the
-protocol state.
-
-Running @{term "mkAuto"} on a trace @{term "t \<in> jkbpC"} yields the
-equivalence class of @{term "t"} for agent @{term "a"}, @{term
-"equiv_class a (spr_jview a t)"}, and as @{term "pAct"} clearly
-prescribes the expected actions for subjective formulas, we have:
-\begin{theorem}
-  @{term "mkAuto"} implements @{term "jkbp"} in the given environment.
-\end{theorem}
-
-*}
 
 subsection{* A sufficient condition for finite-state implementations *}
 
-text_raw{*
-\begin{figure}
-\begin{isabellebody}%
-*}
 locale SimEnvironment =
         Environment jkbp envInit envAction envTrans envVal envObs
     for jkbp :: "'a \<Rightarrow> ('a, 'p, 'aAct) KBP"
@@ -380,67 +313,9 @@ locale SimEnvironment =
                    \<longrightarrow> simAbs ` set (simTrans a ec)
                      = { simf ` equiv_class a (spr_jview a (t' \<leadsto> s)) |t' s.
                            t' \<leadsto> s \<in> jkbpC \<and> spr_jview a t' = spr_jview a t}"
-text_raw{*
-\end{isabellebody}%
-\begin{isamarkuptext}%
-\caption{The @{text "SimEnvironment"} locale extends the @{term
-"Environment"} locale with simulation and algorithmic operations. The
-backtick @{text "`"} is Isabelle/HOL's image-of-a-set-under-a-function
-operator. The function @{term "mkKripke"} constructs a Kripke
-structure from its three components. By @{term "sim M M' f"} we assert
-that @{term "f"} is a simulation from @{term "M"} to @{term "M'"}.}
-\label{fig:SimEnvironment}
-\end{isamarkuptext}%
-\end{figure}
-*}text (in Environment) {*
 
-\label{sec:kripke-simulations}
 
-van der Meyden showed that the existence of a \emph{simulation} from
-@{term "mkMC"} to a finite structure is sufficient for there to be a
-finite-state implementation of @{term "jkbp"}
-\cite[Theorem~2]{Ron:1996}. We say that a function @{term "f"},
-mapping the worlds of Kripke structure @{term "M"} to those of @{term
-"M'"} is a simulation if it has the following properties:
-\begin{itemize}
-
-\item Propositions evaluate identically at @{term "u \<in> worlds
-M"} and @{term "f u \<in> worlds M'"};
-
-\item If two worlds @{term "u"} and @{term "v"} are related in @{term
-"M"} for agent @{term "a"}, then @{term "f u"} and @{term "f v"} are
-also related in @{term "M'"} for agent @{term "a"}; and
-
-\item If two worlds @{term "f u"} and @{term "v'"} are related in
-@{term "M'"} for agent @{term "a"}, then there exists a world @{term
-"v \<in> worlds M"} such that @{term "f v = v'"} and @{term "u"} and
-@{term "v"} are related in @{term "M"} for @{term "a"}.
-
-\end{itemize}
-From these we have @{term "M, u \<Turnstile> \<phi>"} iff @{term "M', f u \<Turnstile> \<phi>"} by
-straightforward structural induction on @{term "\<phi>"} \cite[\S3.4,
-Ex. 3.60]{Chellas:1980}. This result lifts through @{term "jAction"}
-and hence @{term "jkbpC\<^bsub>n\<^esub>"}. The promised finite-state protocol
-simulates the states of @{term "mkAuto"}.
-
-*}
-
-section{* An effective construction *}
-
-text (in Environment) {*
-
-\label{sec:kbps-alg}
-
-The remaining algorithmic obstruction in @{term "mkAuto"} is the
-appeal to the infinite set of canonical traces @{term "jkbpC"}. While
-we could incrementally maintain the temporal slices of traces @{term
-"jkbpC\<^bsub>n\<^esub>"}, ideally the simulated equivalence classes would directly
-support the necessary operations. We therefore optimistically extend
-van der Meyden's construction by axiomatising these functions in the
-@{text "SimEnvironment"} locale of Figure~\ref{fig:SimEnvironment},
-and making the following definition:
-
-*}(*<*)
+subsection{* An effective construction *}
 
 context SimEnvironment begin
 
@@ -569,13 +444,13 @@ lemma FIXME_simTrans_simAbs_cong:
   shows "simAbs ` set (simTrans a ec) = simAbs ` set (simTrans a ec')"
   using assms simTrans[rule_format, where a=a and t=t] by simp
 
-(*>*)
+
 definition mkAutoSim :: "'a \<Rightarrow> ('obs, 'aAct, 'rep) Protocol" where
   "mkAutoSim a \<equiv>
      \<lparr> pInit = simInit a,
         pTrans = \<lambda>obs ec. (SOME ec'. ec' \<in> set (simTrans a ec) \<and> simObs a ec' = obs),
         pAct = \<lambda>ec. simAction ec a \<rparr>"
-(*<*)
+
 
 lemma mkAutoSim_simps[simp]:
   "pInit (mkAutoSim a) = simInit a"
@@ -650,41 +525,8 @@ lemma mkAutoSim_implements:
   apply rule
   apply (auto dest: jkbpCn_jkbpC_inc iff: mkAutoSim_ec simAction)
   done
-(*>*)
-text{*
 
-The specification of these functions is complicated by the use of
-@{term "simAbs"} to incorporate some data refinement \cite{EdR:cup98},
-which allows the type @{typ "'rep"} of representations of simulated
-equivalence classes (with type @{typ "'ss set"}) to depend on the
-entire context. This is necessary because finite-state implementations
-do not always exist with respect to the SPR view
-\cite[Theorem~5]{Ron:1996}, and so we must treat special cases that
-may use quite different representations. If we want a
-once-and-for-all-time proof of correctness for the algorithm, we need
-to make this allowance here.
-
-A routine induction on @{term "t \<in> jkbpC"} shows that @{term
-"mkAutoSim"} faithfully maintains a representation of the simulated
-equivalence class of @{term "t"}, which in combination with the locale
-assumption @{term "simAction"} gives us:
-\begin{theorem}
-  @{term "mkAutoSim"} implements @{term "jkbp"} in the given
-  environment.
-\end{theorem}
-
-Note that we are effectively asking @{term "simTrans"} to compute the
-actions of @{term "jkbp"} for all agents using only a representation
-of a simulated equivalence class for the particular agent @{term
-"a"}. This contrasts with our initial automata construction @{term
-"mkAuto"} (\S\ref{sec:automata-ec}) that appealed to @{term "jkbpC"}
-for this purpose. We will see in \S\ref{sec:kbps-spr-single-agent} and
-\S\ref{sec:kbps-det-broadcast-envs} that our concrete simulations
-do retain sufficient information.
-
-*}
-(*<*)
-end (* FIXME context *)
+end (* context *)
 
 end
-(*>*)
+

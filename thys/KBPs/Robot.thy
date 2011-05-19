@@ -1,45 +1,15 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
+header "The Robot"
+
 theory Robot
 imports SPRViewSingle
 begin
-
-(*>*)
-subsection{* The Robot *}
-
-text{*
-\label{sec:robot}
-
-We now feed the algorithm, the simulated operations of the previous
-section and a model of the autonomous robot of
-\S\ref{sec:introduction} to the Isabelle/HOL code generator. To obtain
-a finite environment we truncate the number line at 5. This is
-intuitively sound for the purposes of determinining the robot's
-behaviour due to the synchronous view and the observation that if it
-reaches this rightmost position then it can never satisfy its
-objective.  Running the resulting Haskell code yields this automaton,
-which we have minimised using Hopcroft's algorithm
-\cite{DBLP:journals/acta/Gries73}:
-\begin{center}
- \includegraphics[width=\textwidth]{robot_spr}
-\end{center}
-The inessential labels on the states indicate the robot's
-knowledge about its position, and those on the transitions are the
-observations yielded by the sensor. Double-circled states are those in
-which the robot performs the Halt action, the others Nothing. We can
-see that if the robot learns that it is in the goal region then it
-halts for all time, and that it never overshoots the goal region. We
-can also see that traditional minimisation does not yield the smallest
-automaton we could hope for. This is because the algorithm does not
-specify what happens on invalid observations, which are modelled as
-errors instead of don't-cares.
-
-*}(*<*)
 
 (*
 
@@ -246,4 +216,4 @@ export_code "robotDFS" "robotAlg" in Haskell file "/tmp/" (string_classes)
 *)
 
 end
-(*>*)
+

@@ -1,23 +1,26 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
+header "Ordered Distinct Lists"
+
 theory ODList
 imports Main List_local
 begin
-(*>*)
+
 
 text{*
-
 Define a type of ordered distinct lists, intended to represent sets.
 
 The advantage of this representation is that it is isomorphic to the
 set of finite sets. Conversely it requires the carrier type to be a
 linear order.
+*}
 
+(*    
 FIXME provide a bunch of invariant-preserving list operations too.
 
 FIXME note this representation does not arise from a quotient on
@@ -27,15 +30,13 @@ representations.
 
 FIXME Based on Florian Haftmann's DList.thy and Nipkow's mergesort
 proofs.
-
-*}
+*)
 
 context linorder
 begin
 
 text{* "Absorbing" mergesort, a variant of Tobias Nipkow's proof from
-1992. FIXME this is a tad pointless, but we can aim to make it
-efficient...*}
+1992. *}
 
 fun
   merge :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
@@ -47,7 +48,7 @@ where
              else if x < y then x # merge xs (y#ys)
                            else y # merge (x#xs) ys)"
 
-(*<*)
+
 lemma set_merge[simp]:
   "set (merge xs ys) = set (xs @ ys)"
   by (induct xs ys rule: merge.induct) auto
@@ -56,17 +57,17 @@ lemma distinct_sorted_merge[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> distinct (merge xs ys) \<and> sorted (merge xs ys)"
   by (induct xs ys rule: merge.induct) (auto iff: sorted_Cons)
-(*>*)
 
-text{* Deal a list into two sublists.
 
+text{* Deal a list into two sublists. *}
+
+(*
 FIXME what is the most efficient thing to do here? This does a lot
 more allocation than one might like.
 
 Probably best is to @{term "map (op # [])"} and merge pairs of
 sublists until there is only one left.
-
-*}
+*)
 
 definition
   deal_body :: "'a \<Rightarrow> bool \<times> ('a list \<times> 'a list) \<Rightarrow> bool \<times> ('a list \<times> 'a list)"
@@ -78,7 +79,7 @@ definition
 where
   [code]: "deal xs \<equiv> snd (foldr deal_body xs (False, [], []))"
 
-(*<*)
+
 lemma length_deal_aux:
   "foldr deal_body zs (b, ([], [])) = (b', xs, ys)
      \<Longrightarrow> length xs < Suc (length zs)
@@ -170,7 +171,7 @@ lemma distinct_deal[simp]:
   apply simp
   done
 
-(*>*)
+
 
 text{* The "absorbing" sort itself. *}
 
@@ -183,7 +184,7 @@ where
      (let (xs, ys) = deal zs
        in merge (mergesort (x # xs)) (mergesort (y # ys)))"
 
-(*<*)
+
 
 declare mergesort.simps [code]
 
@@ -219,11 +220,10 @@ lemma mergesort_idle[simp]:
   apply auto
   done
 
-(*>*)
+end (*  context *)
 
-end (* FIXME context *)
 
-section {* The @{term "odlist"} type *}
+subsection {* The @{term "odlist"} type *}
 
 typedef (open) ('a :: linorder) odlist = "{ x::'a list . sorted x \<and> distinct x }"
   morphisms toList odlist_Abs
@@ -237,7 +237,7 @@ lemma distinct_toList[simp]: "distinct (toList xs)"
 lemma sorted_toList[simp]: "sorted (toList xs)"
   using toList by auto
 
-text{* FIXME code generator voodoo: this is the constructor for the
+text{* Code generator voodoo: this is the constructor for the
 abstract type. *}
 
 definition
@@ -271,12 +271,12 @@ lemma toList_fromList[code abstract]:
 
 subsection{* Basic properties: equality, finiteness *}
 
-(*<*)
+
 declare toList_inject[iff]
-(*>*)
+
 
 instantiation odlist :: (linorder) equal
-(*<*)
+
 begin
 
 definition [code]:
@@ -286,10 +286,10 @@ instance proof
 qed (simp add: equal_odlist_def)
 
 end
-(*>*)
+
 
 instance odlist :: ("{finite, linorder}") finite
-(*<*)
+
 proof
   let ?ol = "UNIV :: 'a odlist set"
   let ?s = "UNIV :: 'a set set"
@@ -306,7 +306,7 @@ proof
     done
   ultimately show "finite ?ol" by (blast intro: finite_surj)
 qed
-(*>*)
+
 
 subsection{* Constants *}
 
@@ -321,7 +321,7 @@ lemma toList_empty[simp, code abstract]:
 
 subsection{* Operations *}
 
-text{* FIXME we need to hoist all list operations we want to use and
+text{* We need to hoist all list operations we want to use and
 show they preserve the invariant. We cannot generate code for toList,
 so there's no getting around this. *}
 
@@ -458,7 +458,7 @@ subsubsection{* Case distinctions *}
 
 text{*
 
-FIXME we construct ODLists out of lists, so talk in terms of those,
+We construct ODLists out of lists, so talk in terms of those,
 not a one-step constructor we don't use.
 
 *}
@@ -520,12 +520,6 @@ qed
 
 subsubsection{* Relations *}
 
-text{*
-
-FIXME
-
-*}
-
 type_synonym 'a ODRelation = "('a \<times> 'a) odlist"
 
 subsubsection{* Image *}
@@ -549,7 +543,7 @@ lemma toSet_image[simp]:
 
 subsubsection{* Linear order *}
 
-text{* FIXME Lexicographic ordering on lists. Executable, unlike in
+text{* Lexicographic ordering on lists. Executable, unlike in
 List.thy. *}
 
 instantiation odlist :: (linorder) linorder
@@ -636,7 +630,7 @@ subsubsection{* Finite maps *}
 
 text{*
 
-FIXME A few operations on finite maps.
+A few operations on finite maps.
 
 Unlike the AssocList theory, ODLists give us canonical
 representations, so we can order them. Our tabulate has the wrong type
@@ -741,6 +735,6 @@ next
   finally show ?case .
 qed
 
-(*<*)
+
 end
-(*>*)
+

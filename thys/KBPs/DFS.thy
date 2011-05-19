@@ -4,15 +4,14 @@
     Author:     Peter Gammie (data refinement futz), 2010
 *)
 
-(*<*)
+header "Generic DFS"
+
 theory DFS
 imports Main
 begin
-(*>*)
+
 
 (*
-
-section{* Generic DFS *}
 
 We use a generic DFS to construct the transitions and action function
 of the implementation of the JKBP. This theory is largely due to
@@ -24,10 +23,10 @@ space is inessential to the JKBP synthesis algorithm.
 
 *)
 
-(*<*)
+
 definition
   "succsr succs \<equiv> {(x, y). y \<in> set (succs x)}"
-(*>*)
+
 
 partial_function (tailrec)
   gen_dfs
@@ -73,7 +72,7 @@ locale DFS =
   and graph_finite: "finite (node_abs ` is_node)"
 begin
 
-(*<*)
+
 definition rel where
   "rel = inv_image finite_psubset (\<lambda>S. node_abs ` {n \<in> is_node. \<not> memb n S})"
 
@@ -322,18 +321,10 @@ proof(induct ys xs rule: dfs_induct)
        apply auto[1]
       apply (auto iff: ins_eq)
       done
-(* by (auto simp add: reachable_def ins_eq set_of_def cong: conj_cong) *)
   qed
 qed (simp add: reachable_def)
-(*>*)
 
-text{*
 
-FIXME Reachability.
-
-FIXME this pair could probably be reduced to one.
-
-*}
 
 theorem dfs_imp_reachable:
   assumes y: "is_node y"
@@ -361,7 +352,7 @@ theorem reachable_imp_dfs:
   apply auto
   done
 
-(*<*)
+
 theorem dfs_invariant [consumes 2, case_names base step]:
   assumes S: "invariant S"
   and xs: "list_all is_node xs"
@@ -388,19 +379,13 @@ proof -
   qed simp
   then show ?thesis ..
 qed
-(*>*)
 
-text{*
-
-FIXME Invariant.
-
-*}
 
 theorem dfs_invariant': "invariant S \<Longrightarrow> list_all is_node xs \<Longrightarrow> invariant (dfs S xs)"
   by (induct S xs rule: dfs_induct) auto
 
-end (* FIXME context *)
-
-(*<*)
 end
-(*>*)
+
+
+end
+

@@ -1,4 +1,4 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
@@ -9,7 +9,7 @@ theory KBPsAlg
 imports Main Extra KBPsAuto DFS MapOps
         "~~/src/HOL/Library/LaTeXsugar"
 begin
-(*>*)
+
 
 subsection{* A synthesis algorithm *}
 
@@ -18,8 +18,7 @@ text (in Environment) {*
 We now show how automata that implement @{term "jkbp"} can be
 constructed using the operations specified in @{text
 "SimEnvironment"}. Taking care with the definitions allows us to
-extract an executable version via Isabelle/HOL's code generator
-\cite{Haftmann-Nipkow:2010:code}.
+extract an executable version via Isabelle/HOL's code generator.
 
 We represent the automaton under construction by a pair of maps, one
 for actions, mapping representations to lists of agent actions, and
@@ -33,14 +32,14 @@ they respect @{term "simAbs"} on the domains of interest.
 
 *}
 
-abbreviation(*<*)(in SimEnvironment)(*>*) "jkbpSEC \<equiv> \<Union>a. { simf ` equiv_class a (spr_jview a t) |t. t \<in> jkbpC }"
+abbreviation(in SimEnvironment) "jkbpSEC \<equiv> \<Union>a. { simf ` equiv_class a (spr_jview a t) |t. t \<in> jkbpC }"
 
 locale Algorithm =
   SimEnvironment jkbp envInit envAction envTrans envVal envObs
                  simf simRels simVal simAbs simObs simInit simTrans simAction
     for jkbp :: "'a \<Rightarrow> ('a, 'p, 'aAct) KBP"
 
-(*<*)
+
     and envInit :: "('s :: finite) list"
     and envAction :: "'s \<Rightarrow> 'eAct list"
     and envTrans :: "'eAct \<Rightarrow> ('a \<Rightarrow> 'aAct) \<Rightarrow> 's \<Rightarrow> 's"
@@ -58,7 +57,7 @@ locale Algorithm =
     and simInit :: "'a \<Rightarrow> 'obs \<Rightarrow> 'rep"
     and simTrans :: "'a \<Rightarrow> 'rep \<Rightarrow> 'rep list"
     and simAction :: "'rep \<Rightarrow> 'a \<Rightarrow> 'aAct list"
-(*>*)
+
 -- {*... as for @{term "SimEnvironment"} ...*}
 
 + fixes aOps :: "('ma, 'rep, 'aAct list) MapOps"
@@ -75,8 +74,7 @@ agent, we introduce another locale:
 
 *}
 
-locale AlgorithmForAgent = Algorithm -- {* ... *}
-(*<*)
+locale AlgorithmForAgent = Algorithm
             jkbp envInit envAction envTrans envVal envObs simf simRels
             simVal simAbs simObs simInit simTrans simAction aOps tOps
     for jkbp :: "'a \<Rightarrow> ('a, 'p, 'aAct) KBP"
@@ -100,8 +98,8 @@ locale AlgorithmForAgent = Algorithm -- {* ... *}
 
     and aOps :: "('ma, 'rep, 'aAct list) MapOps"
     and tOps :: "('mt, 'rep \<times> 'obs, 'rep) MapOps"
-(*>*)+ fixes a :: "'a"
-(*<*)
++ fixes a :: "'a"
+
 begin
 
 definition
@@ -426,37 +424,6 @@ lemma k_frontier_init_is_node[intro, simp]:
   apply (auto simp: spr_jview_def)
   done
 
-(*>*)
-text{*
-The algorithm traverses the representations of simulated
-equivalence classes of @{term "jkbpC"} reachable via @{term
-"simTrans"}. We use the executable depth-first search (DFS) theory due
-to Berghofer and Krauss \cite{Berghofer-Reiter-AFP09}, mildly
-generalised to support data refinement. The @{term "DFS"} locale
-requires the following definitions, shown in Figure~\ref{fig:alg}:
-\begin{itemize}
-
-\item an initial automaton @{term "k_empt"};
-
-\item the initial frontier @{term "frontier_init"} is the partition of
-  the set of initial states under @{term "envObs a"};
-
-\item the successor function @{term "k_succs"} is exactly @{text
-  "simTrans a"};
-
-\item for each reachable state the action and transition maps are
-updated with @{term "k_ins"}; and
-
-\item the visited predicate @{term "k_memb"} uses the domain of the
-  @{term "aOps"} map.
-
-\end{itemize}
-Instantiating the @{term "DFS"} locale is straightforward:
-*}
-text_raw{*
-\begin{figure}[t]
-\begin{isabellebody}%
-*}
 
 (* FIXME I want the definition in the doc but want to use
    DFS.gen_dfs. For some reason this works without further ado: I
@@ -470,11 +437,11 @@ partial_function (tailrec) gen_dfs where
    | (x\<cdot>xs) \<Rightarrow> if memb x S then gen_dfs succs ins memb S xs
                                 else gen_dfs succs ins memb (ins x S) (succs x @ xs))"
 
-definition(*<*) (in -)
+definition (in -)
  alg_dfs :: "('ma, 'rep, 'aAct list) MapOps \<Rightarrow> ('mt, 'rep \<times> 'obs, 'rep) MapOps
             \<Rightarrow> 'rep list \<Rightarrow> ('rep \<Rightarrow> 'obs) \<Rightarrow> ('rep \<Rightarrow> 'rep list) \<Rightarrow> ('rep \<Rightarrow> 'aAct list)
             \<Rightarrow> 'ma \<times> 'mt"
-where(*>*) "alg_dfs aOps tOps frontier_init simObs simTrans simAction \<equiv>
+where "alg_dfs aOps tOps frontier_init simObs simTrans simAction \<equiv>
     let k_empt = (empty aOps, empty tOps);
         k_memb = (\<lambda>s A. isSome (lookup aOps (fst A) s));
         k_succs = simTrans;
@@ -482,13 +449,7 @@ where(*>*) "alg_dfs aOps tOps frontier_init simObs simTrans simAction \<equiv>
         trans_update = (\<lambda>ec ec' at. update tOps (ec, simObs ec') ec' at);
         k_ins = (\<lambda>ec A. (acts_update ec A, foldr (trans_update ec) (k_succs ec) (snd A)))
      in gen_dfs k_succs k_ins k_memb k_empt frontier_init"
-text_raw{*
-  \end{isabellebody}%
-  \caption{The algorithm. The symbol @{text "@"} denotes list
-  concatenation.}
-  \label{fig:alg}
-\end{figure}
-*}(*<*)
+
 
 definition (in -)
   alg_mk_auto :: "('ma, 'rep, 'aAct list) MapOps
@@ -532,10 +493,10 @@ abbreviation
 
 end (* context *)
 
-(*>*)
+
 sublocale AlgorithmForAgent
         < KBPAlg!: DFS k_succs k_is_node k_invariant k_ins k_memb k_empt simAbs
-(*<*)
+
   apply (unfold_locales)
   apply simp_all
 
@@ -548,32 +509,7 @@ sublocale AlgorithmForAgent
   apply (erule FIXME_simTrans_simAbs_cong)
   apply auto
   done
-(*>*)
 
-text{*
-
-This \emph{conditional interpretation} is a common pattern in these
-proofs: it says that we can discharge the requirements of the @{term
-"DFS"} locale while appealing to the @{term "AlgorithmForAgent"}
-context, i.e., the constraints in the @{term "SimEnvironment"} locale
-and those for our two maps. The resulting definitions and lemmas
-appear in the @{term "AlgorithmForAgent"} context with prefix @{text
-"KBPAlg"}.
-
-Our invariant over the reachable state space is that the automaton
-under construction is well-defined with respect to the @{term
-"simAction"} and @{term "simTrans"} functions. The @{term "DFS"}
-theory shows that the traversal visits all states reachable from the
-initial frontier, and we show that the set of reachable equivalence
-classes coincides with the partition of @{term "jkbpC"} under @{term
-"spr_jview a"}, modulo simulation and representation. Thus the
-algorithm produces an implementation of @{term "jkbp"} for agent
-@{text "a"}.
-
-We trivially generalise the fixed-agent lemmas to the multi-agent
-locale:
-
-*}(*<*)
 
 context AlgorithmForAgent begin
 
@@ -732,11 +668,10 @@ qed
 
 end (* context *)
 
-(*>*)
-sublocale Algorithm < KBP!: AlgorithmForAgent -- {*...*}(*<*)
+
+sublocale Algorithm < KBP!: AlgorithmForAgent
   jkbp envInit envAction envTrans envVal envObs simf simRels simVal
-  simAbs simObs simInit simTrans simAction aOps tOps(*>*)a for a
-(*<*)
+  simAbs simObs simInit simTrans simAction aOps tOps a for a
   by unfold_locales
 
 abbreviation (in Algorithm)
@@ -832,31 +767,8 @@ theorem (in Algorithm) k_mkAutoAlg_implements: "implements k_mkAutoAlg"
         mkAutoSim_implements
   by simp
 
-end (* FIXME context *)
-(*>*)
-text{*
+end (* context *)
 
-The output of the DFS is converted into a protocol using @{text
-"simInit"} and @{term "lookup"} on the maps; call this @{term
-"mkAutoAlg"}. We show in the @{term "Algorithm"} context that @{term
-"mkAutoAlg"} prescribes the same actions as @{term "mkAutoSim"} for
-all @{term "t \<in> jkbpC"}, and therefore:
 
-\begin{theorem}
-  @{term "mkAutoAlg"} is a finite-state implementation of @{term
-  "jkbp"} in the given environment.
-\end{theorem}
-
-The following sections show that this theory is sound and effective by
-fulfilling the promises made in the @{term "SimEnvironment"} locale of
-Figure~\ref{fig:SimEnvironment}: \S\ref{sec:kbps-spr-single-agent}
-demonstrates a simulation and representation for the single-agent
-case, which suffices for finding an implementation of the robot's KBP
-from \S\ref{sec:robot-example}; \S\ref{sec:kbps-det-broadcast-envs}
-treats a multi-agent scenario general enough to handle the classic
-muddy children puzzle.
-
-*}
-(*<*)
 end
-(*>*)
+

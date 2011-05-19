@@ -1,9 +1,11 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
+
+header "Kripke Structures"
 
 theory Kripke
 imports Main
@@ -531,4 +533,4 @@ qed (insert s,
      auto simp add: sim_range_def sim_def sim_val_def)
 
 end
-(*>*)
+

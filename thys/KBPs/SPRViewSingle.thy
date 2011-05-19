@@ -1,4 +1,4 @@
-(*<*)
+
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
@@ -8,11 +8,11 @@
 theory SPRViewSingle
 imports KBPsAlg List_local ODList Mapping AssocList Trie
 begin
-(*>*)
+
 
 section{*Perfect Recall for a Single Agent*}
 
-(*<*)
+
 locale SingleAgentEnvironment =
   Environment jkbp envInit envAction envTrans envVal envObs
     for jkbp :: "'a \<Rightarrow> ('a, 'p, 'pAct) KBP"
@@ -28,36 +28,13 @@ locale SingleAgentEnvironment =
   assumes envSingleAgent: "a = agent"
 begin
 
-(*>*)
-text{*
-
-\label{sec:kbps-spr-single-agent}
-
-Our first simulation treats the simple case of a single agent
-executing an arbitrary KBP in an arbitrary environment, such as the
-robot of \S\ref{sec:robot-example}. We work in the @{term
-"SingleAgentEnvironment"} locale, which is the @{term "Environment"}
-locale augmented with a variable @{term "agent"} denoting the element
-of the @{typ "'a"} type. We seek a finite space that simulates @{term
-"mkMC"}; as we later show, satisfaction at @{term "t \<in> jkbpC"} is a
-function of the set of final states of the traces that @{term "agent"}
-considers possible, i.e., of:
-
-*}
-
 definition spr_jview_abs :: "'s Trace \<Rightarrow> 's set" where
   "spr_jview_abs t \<equiv> tLast ` equiv_class agent (spr_jview agent t)"
 
-text{*
-
-To evaluate propositions we include the final state of @{term "t"} in
-our simulation:
-
-*}
 
 definition spr_sim_single :: "'s Trace \<Rightarrow> 's set \<times> 's" where
   "spr_sim_single t \<equiv> (spr_jview_abs t, tLast t)"
-(*<*)
+
 
 type_synonym (in -) 's SPRsimState = "'s set \<times> 's"
 
@@ -156,49 +133,6 @@ abbreviation
 abbreviation
   "mkMCS \<equiv> mkKripke jkbpCS spr_sim_single_rels spr_sim_single_val"
 
-(*>*)text{*
-
-In the structure @{term "mkMCS"}, @{text "(U, u) \<sim>\<^sub>a (V, v)"} iff
-@{term "U = V"} and @{term "envObs agent u = envObs agent v"}, and
-propositions are evaluated with @{thm (rhs)
-"spr_sim_single_val_def"}. Then:
-\begin{theorem}
-  @{term "mkMCS"} simulates @{term "mkMC"}.
-\end{theorem}
-An optimisation is to identify related worlds, recognising that the
-agent behaves the same at all of these. This quotient is isomorphic to
-@{term "spr_jview_abs ` jkbpC"}, and so the algorithm effectively
-simplifies to the familiar subset construction for determinising
-finite-state automata.
-
-\label{sec:kbps-spr-single-agent-rep}
-\label{sec:sprsingle-eval}
-
-We now address algorithmic issues. As the representations of
-equivalence classes are used as map keys, it is easiest to represent
-them canonically. A simple approach is to use \emph{ordered distinct
-lists} of type @{typ "'a odlist"} for the sets and \emph{tries} for
-the maps. Therefore environment states @{typ "'s"} must belong to the
-class @{text "linorder"} of linearly-ordered types.
-
-For a set of states @{term "X"}, we define a function @{term "eval X
-\<phi>"} that computes the subset of @{term "X"} where @{term "\<phi>"}
-holds. The only interesting case is that for knowledge: @{text "eval X
-(\<^bold>K\<^sub>a \<psi>)"} evaluates to @{term "X"} if @{term "eval X \<psi> = X"}, and
-@{term "{}"} otherwise. This corresponds to standard satisfaction when
-@{term "X"} represents @{term "spr_jview_abs t"} for some @{term "t \<in>
-jkbpC"}. The requisite @{term "simObs"}, @{term "simInit"}, @{term
-"simAction"} and @{term "simTrans"} functions are routine, as is
-instantiating the @{term "Algorithm"} locale. Thus we have an
-algorithm for all single-agent scenarios that satisfy the @{term
-"Environment"} locale.
-
-A similar simulation can be used to show that there always exist
-implementations with respect to the multi-agent \emph{clock view}
-\cite[Theorem~4]{Ron:1996}, the weakest synchronous view that
-considers only the time and most-recent observation.
-
-*}(*<*)
 
 type_synonym (in -) 's SPRsimState_rep = "'s odlist"
 
@@ -936,4 +870,4 @@ lemma (in SingleAgentEnvironment) mkSPRSingleAuto_implements:
   done
 
 end
-(*>*)
+
