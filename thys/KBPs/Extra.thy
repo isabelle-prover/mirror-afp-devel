@@ -1,6 +1,6 @@
 
 theory Extra
-imports Main Equiv_Relations Option_ord
+imports Main Equiv_Relations "~~/src/HOL/Library/Option_ord"
 begin
 
 (* Extra lemmas that are not noteworthy. *)

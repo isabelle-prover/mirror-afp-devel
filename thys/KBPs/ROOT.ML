@@ -1,18 +1,14 @@
-short_names := true;
-show_question_marks_default := false;
+Name_Space.names_short_default := true;
+Printer.show_question_marks_default := false;
 
 no_document use_thys
  [
    "~~/src/HOL/Library/LaTeXsugar",
-   "~~/src/HOL/Library/OptionalSugar"
- ];
-
-no_document use_thys
- [
-  "AssocList",
+   "~~/src/HOL/Library/OptionalSugar",
+  "~~/src/HOL/Library/AssocList",
   "Extra",
   "List_local",
-  "Mapping"
+  "~~/src/HOL/Library/Mapping"
 ];
 
 use_thys

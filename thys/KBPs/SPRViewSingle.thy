@@ -6,7 +6,8 @@
  *)
 
 theory SPRViewSingle
-imports KBPsAlg List_local ODList Mapping AssocList Trie
+imports KBPsAlg List_local ODList
+  "~~/src/HOL/Library/Mapping" "~~/src/HOL/Library/AssocList" Trie
 begin
 
 

@@ -6,7 +6,7 @@
  *)
 
 theory List_local
-imports Extra While_Combinator
+imports Extra "~~/src/HOL/Library/While_Combinator"
 begin
 
 
