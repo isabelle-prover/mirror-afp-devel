@@ -1,0 +1,59 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also isabellesym.sty)
+% use only when needed
+\usepackage{amssymb}                   % for \<leadsto>, \<box>, \<diamond>,
+                                       % \<sqsupset>, \<mho>, \<Join>, 
+                                       % \<lhd>, \<lesssim>, \<greatersim>,
+                                       % \<lessapprox>, \<greaterapprox>,
+                                       % \<triangleq>, \<yen>, \<lozenge>
+%\usepackage[greek,english]{babel}     % greek for \<euro>,
+                                       % english for \<guillemotleft>, 
+                                       %             \<guillemotright>
+                                       % default language = last
+%\usepackage[latin1]{inputenc}         % for \<onesuperior>, \<onequarter>,
+                                       % \<twosuperior>, \<onehalf>,
+                                       % \<threesuperior>, \<threequarters>,
+                                       % \<degree>
+%\usepackage[only,bigsqcap]{stmaryrd}  % for \<Sqinter>
+%\usepackage{eufrak}                   % for \<AA> ... \<ZZ>, \<aa> ... \<zz>
+                                       % (only needed if amssymb not used)
+%\usepackage{textcomp}                 % for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Knowledge-based programs}
+\author{Peter Gammie}
+\maketitle
+
+\begin{abstract}
+ Knowledge-based programs (KBPs) are a formalism for directly
+ relating agents' knowledge and behaviour. Here we present a
+ general scheme for compiling KBPs to executable automata with a
+ proof of correctness in Isabelle/HOL. We develop the algorithm
+ top-down, using Isabelle's locale mechanism to structure these
+ proofs, and show that two classic examples can be synthesised using
+ Isabelle's code generator.
+
+ More information on this formalisation is available in a separate
+ paper~\cite{ITP11}.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
