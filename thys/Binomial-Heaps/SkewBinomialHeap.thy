@@ -1644,7 +1644,7 @@ text {* Multiset Union *}
 (*MOVE*)
 definition "mset_Union M = fold_mset op + {#} M"
 
-interpretation mplus_left_comm: fun_left_comm 
+interpretation mplus_left_comm: comp_fun_commute 
   "op + :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset"
   by unfold_locales
      (auto simp add: union_ac)

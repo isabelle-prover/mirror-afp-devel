@@ -353,11 +353,11 @@ no_notation fcomp (infixl "o>" 60)
 no_notation scomp (infixl "o\<rightarrow>" 60)
 
 
-subsection {* @{text "finfun_update"} as instance of @{text "fun_left_comm"} *}
+subsection {* @{text "finfun_update"} as instance of @{text "comp_fun_commute"} *}
 
 declare finfun_simp [simp] finfun_iff [iff] finfun_intro [intro]
 
-interpretation finfun_update: fun_left_comm "\<lambda>a f. f(\<^sup>f a :: 'a := b')"
+interpretation finfun_update: comp_fun_commute "\<lambda>a f. f(\<^sup>f a :: 'a := b')"
 proof
   fix a a' :: 'a
   show "(\<lambda>f. f(\<^sup>f a := b')) \<circ> (\<lambda>f. f(\<^sup>f a' := b')) = (\<lambda>f. f(\<^sup>f a' := b')) \<circ> (\<lambda>f. f(\<^sup>f a := b'))"
@@ -499,7 +499,7 @@ locale finfun_rec_wf_aux =
 begin
 
 
-lemma upd_left_comm: "fun_left_comm (\<lambda>a. upd a (f a))"
+lemma upd_left_comm: "comp_fun_commute (\<lambda>a. upd a (f a))"
 by(unfold_locales)(auto intro: upd_commute simp add: fun_eq_iff)
 
 lemma upd_upd_twice: "upd a b'' (upd a b' (cnst b)) = upd a b'' (cnst b)"
@@ -516,7 +516,7 @@ lemma map_default_update_const:
 proof -
   let ?upd = "\<lambda>a. upd a (map_default d g a)"
   let ?fr = "\<lambda>A. fold ?upd (cnst d) A"
-  interpret gwf: fun_left_comm "?upd" by(rule upd_left_comm)
+  interpret gwf: comp_fun_commute "?upd" by(rule upd_left_comm)
   
   from fin anf fg show ?thesis
   proof(induct "dom f" arbitrary: f)
@@ -554,7 +554,7 @@ lemma map_default_update_twice:
 proof -
   let ?upd = "\<lambda>a. upd a (map_default d g a)"
   let ?fr = "\<lambda>A. fold ?upd (cnst d) A"
-  interpret gwf: fun_left_comm "?upd" by(rule upd_left_comm)
+  interpret gwf: comp_fun_commute "?upd" by(rule upd_left_comm)
   
   from fin anf fg show ?thesis
   proof(induct "dom f" arbitrary: f)
@@ -590,13 +590,13 @@ lemma map_default_eq_id [simp]: "map_default d ((\<lambda>a. Some (f a)) |` {a. 
 by(auto simp add: map_default_def restrict_map_def intro: ext)
 
 lemma finite_rec_cong1:
-  assumes f: "fun_left_comm f" and g: "fun_left_comm g"
+  assumes f: "comp_fun_commute f" and g: "comp_fun_commute g"
   and fin: "finite A"
   and eq: "\<And>a. a \<in> A \<Longrightarrow> f a = g a"
   shows "fold f z A = fold g z A"
 proof -
-  interpret f: fun_left_comm f by(rule f)
-  interpret g: fun_left_comm g by(rule g)
+  interpret f: comp_fun_commute f by(rule f)
+  interpret g: comp_fun_commute g by(rule g)
   { fix B
     assume BsubA: "B \<subseteq> A"
     with fin have "finite B" by(blast intro: finite_subset)
@@ -659,7 +659,7 @@ proof -
     from upd_left_comm upd_left_comm fing'
     have "fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g') = fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g')"
       by(rule finite_rec_cong1)(auto simp add: restrict_map_def b'b b map_default_def)
-    also interpret gwf: fun_left_comm "\<lambda>a. upd a (?b a)" by(rule upd_left_comm)
+    also interpret gwf: comp_fun_commute "\<lambda>a. upd a (?b a)" by(rule upd_left_comm)
     have "fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g') = upd a' b' (fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g))"
     proof(cases "y a' = b")
       case True
@@ -732,7 +732,7 @@ proof -
       from f y b'b True have yff: "y = map_default b (?g' |` dom ?g)"
         by(auto simp add: restrict_map_def map_default_def intro!: ext)
       hence f': "f = Abs_finfun (map_default b (?g' |` dom ?g))" using f by simp
-      interpret g'wf: fun_left_comm "\<lambda>a. upd a (?b' a)" by(rule upd_left_comm)
+      interpret g'wf: comp_fun_commute "\<lambda>a. upd a (?b' a)" by(rule upd_left_comm)
       from upd_left_comm upd_left_comm fing
       have "fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g) = fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g)"
         by(rule finite_rec_cong1)(auto simp add: restrict_map_def b'b True map_default_def)
@@ -749,8 +749,8 @@ proof -
         from False have a'ndomg'': "a' \<notin> dom ?g''" by auto
         have fing'': "finite (dom ?g'')" by(rule finite_subset[OF _ fing]) auto
         have bnrang'': "b \<notin> ran ?g''" by(auto simp add: ran_def restrict_map_def)
-        interpret gwf: fun_left_comm "\<lambda>a. upd a (?b a)" by(rule upd_left_comm)
-        interpret g'wf: fun_left_comm "\<lambda>a. upd a (?b' a)" by(rule upd_left_comm)
+        interpret gwf: comp_fun_commute "\<lambda>a. upd a (?b a)" by(rule upd_left_comm)
+        interpret g'wf: comp_fun_commute "\<lambda>a. upd a (?b' a)" by(rule upd_left_comm)
         have "upd a' b' (fold (\<lambda>a. upd a (?b a)) (cnst b) (insert a' (dom ?g''))) =
               upd a' b' (upd a' (?b a') (fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g'')))"
           unfolding gwf.fold_insert[OF fing'' a'ndomg''] f ..
@@ -921,7 +921,7 @@ proof(unfold_locales)
   fix b' b :: 'a
   assume fin: "finite (UNIV :: 'b set)"
   { fix A :: "'b set"
-    interpret fun_left_comm "\<lambda>a'. If (a = a') b'" by(rule finfun_apply_aux.upd_left_comm)
+    interpret comp_fun_commute "\<lambda>a'. If (a = a') b'" by(rule finfun_apply_aux.upd_left_comm)
     from fin have "finite A" by(auto intro: finite_subset)
     hence "fold (\<lambda>a'. If (a = a') b') b A = (if a \<in> A then b' else b)"
       by induct auto }
@@ -1116,7 +1116,7 @@ proof
   fix b' b :: 'a
   assume fin: "finite (UNIV :: 'c set)"
   { fix A :: "'c set"
-    interpret fun_left_comm "\<lambda>a c. c(\<^sup>f a := (b', g\<^sub>f a))" by(rule finfun_Diag_aux.upd_left_comm)
+    interpret comp_fun_commute "\<lambda>a c. c(\<^sup>f a := (b', g\<^sub>f a))" by(rule finfun_Diag_aux.upd_left_comm)
     from fin have "finite A" by(auto intro: finite_subset)
     hence "fold (\<lambda>a c. c(\<^sup>f a := (b', g\<^sub>f a))) (Pair b \<circ>\<^isub>f g) A =
       Abs_finfun (\<lambda>a. (if a \<in> A then b' else b, g\<^sub>f a))"
@@ -1253,7 +1253,7 @@ proof(unfold_locales)
     by(fastsimp dest: finite_cartesian_productD1 finite_cartesian_productD2)+
   note [simp] = Abs_finfun_inverse_finite[OF fin] Abs_finfun_inverse_finite[OF fin1] Abs_finfun_inverse_finite[OF fin2]
   { fix A :: "('c \<times> 'a) set"
-    interpret fun_left_comm "\<lambda>a :: 'c \<times> 'a. (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c))) a b'"
+    interpret comp_fun_commute "\<lambda>a :: 'c \<times> 'a. (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c))) a b'"
       by(rule finfun_curry_aux.upd_left_comm)
     from fin have "finite A" by(auto intro: finite_subset)
     hence "fold (\<lambda>a :: 'c \<times> 'a. (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c))) a b') ((finfun_const \<circ> finfun_const) b) A = Abs_finfun (\<lambda>a. Abs_finfun (\<lambda>b''. if (a, b'') \<in> A then b' else b))"

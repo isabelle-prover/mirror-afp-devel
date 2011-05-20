@@ -1139,7 +1139,7 @@ lemma foldr_length_aux: "foldr (\<lambda>x i. Suc i) l a = a + length l"
 
 lemmas foldr_length[simp] = foldr_length_aux[where a=0, simplified]
 
-context fun_left_comm begin
+context comp_fun_commute begin
 
 lemma foldl_f_commute: "f a (foldl (\<lambda>a b. f b a) b xs) = foldl (\<lambda>a b. f b a) (f a b) xs"
 by(induct xs arbitrary: b)(simp_all add: fun_left_comm)

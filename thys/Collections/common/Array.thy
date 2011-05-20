@@ -247,8 +247,8 @@ lemma prod_array_foldl_conv:
 by(cases a)(simp add: array_foldl_def foldl_map prod_foldl_conv split_def)
 
 lemma array_foldl_array_foldr_comm:
-  "fun_left_comm (\<lambda>(h, v) b. f h b v) \<Longrightarrow> array_foldl f b a = array_foldr (\<lambda>h v b. f h b v) a b"
-by(cases a)(simp add: array_foldl_def array_foldr_def split_def fun_left_comm.foldr_conv_foldl)
+  "comp_fun_commute (\<lambda>(h, v) b. f h b v) \<Longrightarrow> array_foldl f b a = array_foldr (\<lambda>h v b. f h b v) a b"
+by(cases a)(simp add: array_foldl_def array_foldr_def split_def comp_fun_commute.foldr_conv_foldl)
 
 lemma array_map_conv_array_foldl:
   "array_map f a = array_foldl (\<lambda>h a v. array_set a h (f h v)) a a"

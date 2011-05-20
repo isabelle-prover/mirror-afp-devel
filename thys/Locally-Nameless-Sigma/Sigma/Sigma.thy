@@ -2601,8 +2601,8 @@ where
 | ssize_Some : "ssize_option (Some y) = ssize y + Suc 0"
 
 (* We need this locale, as all the handy functions are there now *)
-interpretation fun_left_comm "(\<lambda>x y::nat. y + (f x))"
-  by (unfold fun_left_comm_def, force)
+interpretation comp_fun_commute "(\<lambda>x y::nat. y + (f x))"
+  by (unfold comp_fun_commute_def, force)
 
 lemma SizeOfObjectPos: "ssize (Obj (f::Label -~> sterm) T) > 0"
 proof (simp)

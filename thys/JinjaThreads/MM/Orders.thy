@@ -656,10 +656,10 @@ proof -
   qed
 qed
 
-lemma fun_left_comm_max_torder:
+lemma comp_fun_commute_max_torder:
   assumes tot: "torder_on A r"
-  shows "fun_left_comm (max_torder r)"
-by(rule ab_semigroup_mult.fun_left_comm)(rule ab_semigroup_mult_max_torder[OF tot])
+  shows "comp_fun_commute (max_torder r)"
+by(rule ab_semigroup_mult.comp_fun_commute)(rule ab_semigroup_mult_max_torder[OF tot])
 
 lemma max_torder_ge_conv_disj:
   assumes tot: "torder_on A r" and x: "x \<in> A" and y: "y \<in> A"
