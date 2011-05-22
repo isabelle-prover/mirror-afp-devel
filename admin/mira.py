@@ -53,18 +53,18 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, select):
       data, {'log': log}, None)
 
 
-@configuration(repos = [AFP, Isabelle], deps = [(isabelle.Isabelle_makeall, [1])])
+@configuration(repos = [AFP, Isabelle], deps = [(isabelle.AFP_images, [1])])
 def AFP_small_sessions(env, case, paths, dep_paths, playground):
     """Small AFP sessions"""
     skip_sessions = ('Flyspeck-Tame', 'JinjaThreads') # FIXME
     return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session not in skip_sessions)
 
-@configuration(repos = [AFP, Isabelle], deps = [(isabelle.Isabelle_makeall, [1])])
+@configuration(repos = [AFP, Isabelle], deps = [(isabelle.HOL_Word, [1])])
 def AFP_JinjaThreads(env, case, paths, dep_paths, playground):
     """AFP JinjaThreads session"""
     return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session == 'JinjaThreads')
 
-@configuration(repos = [AFP, Isabelle], deps = [(isabelle.Isabelle_makeall, [1])])
+@configuration(repos = [AFP, Isabelle], deps = [(isabelle.HOL, [1])])
 def AFP_Verified_Prover(env, case, paths, dep_paths, playground):
     """AFP Verified-Prover session"""
     return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session == 'Verified-Prover')
