@@ -30,7 +30,7 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, select):
     (loc_afp, loc_isabelle) = paths
     (dep_isabelle,) = dep_paths
     isabelle.prepare_isabelle_repository(loc_isabelle, env.settings.contrib, dep_isabelle,
-      usedir_options=isabelle.default_usedir_options + '-M 1 -q 0') # FIXME: lxlabbroy machines have only 2GB
+      usedir_options=isabelle.default_usedir_options + ' -M 1 -q 0') # FIXME: lxlabbroy machines have only 2GB
     os.chdir(loc_afp)
 
     os.chdir('thys')
