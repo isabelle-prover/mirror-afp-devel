@@ -4,7 +4,7 @@
 *)
 header {* \isaheader{Additions to RB-Trees} *}
 theory RBT_add
-imports "~~/src/HOL/Library/RBT"
+imports "~~/src/HOL/Library/RBT_Mapping"
 begin
 text_raw {*\label{thy:RBT_add}*}
 
