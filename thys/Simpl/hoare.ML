@@ -1699,7 +1699,7 @@ fun split_pair_apps thm =
                 val idxs = (len - 1) downto 0;
                 val (argTs, bdyTs) = chop len (binder_types vT);
                 val bdyT = bdyTs ---> body_type vT;
-                val z = Name.variant (fold Term.add_free_names args []) "z";
+                val (z, _) = Name.variant "z" (fold Term.declare_term_frees args Name.context);
                 val frees = map (apfst (fn i => z^string_of_int i))
                                 (0 upto (len - 1) ~~ argTs);
                 fun splitT (Type (@{type_name Product_Type.prod}, [T1, T2])) = T1::splitT T2
@@ -1746,17 +1746,17 @@ fun mk_split_thms ctxt (vars as _::_)  =
     val types = map snd vars;
     val free_vars = map Free vars;
     val pT = foldr1 HOLogic.mk_prodT types;
-    val x = (Name.variant names "x",pT);
+    val x = (singleton (Name.variant_list names) "x", pT);
     val xp = foldr1 HOLogic.mk_prod free_vars;
     val tfree_names = Library.foldr OldTerm.add_term_tfree_names (free_vars,[]);
-    val zeta = TFree (Name.variant tfree_names "z", Sign.defaultS thy);
+    val zeta = TFree (singleton (Name.variant_list tfree_names) "z", Sign.defaultS thy);
 
     val split_meta_prop =
-      let val P = Free (Name.variant names "P",pT --> Term.propT)
+      let val P = Free (singleton (Name.variant_list names) "P", pT --> Term.propT)
       in Logic.mk_equals (All [x] (P $ Free x), All vars (P $ xp))
       end;
 
-    val P = Free (Name.variant names "P",pT --> HOLogic.boolT);
+    val P = Free (singleton (Name.variant_list names) "P", pT --> HOLogic.boolT);
 
     val split_object_prop =
       let fun ALL vs t = Library.foldr (fn ((v,T),t) => HOLogic.mk_all (v,T,t)) (vs,t)
@@ -1769,7 +1769,7 @@ fun mk_split_thms ctxt (vars as _::_)  =
       end;
 
     val split_UN_prop =
-      let val P = Free (Name.variant names "P",pT --> HOLogic.mk_setT zeta);
+      let val P = Free (singleton (Name.variant_list names) "P", pT --> HOLogic.mk_setT zeta);
           fun UN vs t = Library.foldr (fn ((v,T),t) => mk_UN (v,T,t)) (vs,t)
       in (UN [x] (P $ Free x)) === (UN vars (P $ xp))
       end;
