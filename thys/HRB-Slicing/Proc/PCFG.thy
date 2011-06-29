@@ -1034,8 +1034,8 @@ subsubsection {* Statements containing calls *}
 text {* A procedure is a tuple composed of its name, its input and output variables
   and its method body *}
 
-types proc = "(pname \<times> vname list \<times> vname list \<times> cmd)"
-types procs = "proc list"
+type_synonym proc = "(pname \<times> vname list \<times> vname list \<times> cmd)"
+type_synonym procs = "proc list"
 
 
 text {* @{text "containsCall"} guarantees that a call to procedure p is in
@@ -1224,8 +1224,8 @@ qed
 
 subsubsection{* The edges of the combined CFG *}
 
-types node = "(pname \<times> label)"
-types edge = "(node \<times> (vname,val,node,pname) edge_kind \<times> node)"
+type_synonym node = "(pname \<times> label)"
+type_synonym edge = "(node \<times> (vname,val,node,pname) edge_kind \<times> node)"
 
 fun get_proc :: "node \<Rightarrow> pname"
   where "get_proc (p,l) = p"

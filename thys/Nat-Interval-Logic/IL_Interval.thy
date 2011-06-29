@@ -15,11 +15,10 @@ subsection {* Time intervals -- definitions and basic lemmata *}
 
 subsubsection {* Definitions *}
 
-types Time = nat
+type_synonym Time = nat
 
 (* Time interval *)
-types iT = "Time set"
-typ iT
+type_synonym iT = "Time set"
 
 text {* Infinite interval starting at some natural @{term "n"}. *}
 definition 

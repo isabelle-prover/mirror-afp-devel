@@ -21,7 +21,7 @@ text {*
 
 subsubsection {* Appending a functions to a list *}
 
-types 'a ilist = "nat \<Rightarrow> 'a"
+type_synonym 'a ilist = "nat \<Rightarrow> 'a"
 
 definition
   i_append :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> 'a ilist" (infixr "\<frown>" 65)
