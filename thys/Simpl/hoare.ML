@@ -2778,7 +2778,7 @@ fun gen_Anno_tac dest rules tac cont_tac ctxt state_kind (t,i) st =
   in EVERY [resolve_tac rules' i,
             tac,
             simp_tac (HOL_basic_ss' addsimps ([@{thm split_conv}, refl, triv_All_eq]@anno_defs)
-                      addsimprocs [split_beta_proc]) (i+2),
+                      addsimprocs [@{simproc split_beta}]) (i+2),
             simp_tac (HOL_basic_ss' addsimps [@{thm split_conv}]) (i+1),
             simp_tac (HOL_basic_ss' addsimps [@{thm split_conv}]) i,
             REPEAT (rtac allI (i+1)),
@@ -3535,7 +3535,7 @@ fun HoareRuleTac ctxt insts st =
   let
     val HOL_basic_ss' = Simplifier.context ctxt HOL_basic_ss
     val annotate_simp_tac = simp_tac (HOL_basic_ss' addsimps (anno_defs@normalize_simps)
-                                                   addsimprocs [split_beta_proc]);
+                                                   addsimprocs [@{simproc split_beta}]);
     fun is_com_eq (Const (@{const_name Trueprop},_)$(Const (@{const_name HOL.eq},T)$_$_)) =
           (case (binder_types T) of
              (Type (@{type_name Language.com},_)::_) => true
