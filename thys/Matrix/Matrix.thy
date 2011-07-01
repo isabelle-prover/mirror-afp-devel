@@ -1687,7 +1687,7 @@ abbreviation mat_s :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
  where "m1 \<succ>m n sd m2 \<equiv> (mat n n m1 \<and> mat n n m2 \<and> mat_ge m2 (mat0 n n) \<and> mat_gt sd m1 m2)"
 
 lemma mat_sn: assumes sd_n: "sd \<le> n" shows "SN {(m1,m2) . m1 \<succ>m n sd m2}"
-unfolding SN_defs 
+unfolding SN_defs
 proof clarify
   fix e f 
   assume ass: "\<forall> i. (f i, f (Suc i)) \<in> {(m1,m2). m1 \<succ>m n sd m2}"
@@ -1727,7 +1727,7 @@ proof clarify
   let ?h = "\<lambda> k. (f k i)"
   let ?nRel = "{(x,y) | x y :: 'a. x \<ge> y}"
   from all i have all: "\<forall> k. (?h k, ?h (Suc k)) \<in> ?nRel \<union> ?rel" by auto
-  from SN have SNe: "SN_elt ?rel (?h 0)" unfolding SN_defs by auto
+  from SN have SNe: "SN_on ?rel {?h 0}" unfolding SN_defs by auto
   have comp: "?nRel O ?rel \<subseteq> ?rel" using compat by auto
   from non_strict_ending[OF all comp] SNe
   obtain j where "\<forall> k \<ge> j. (?h k, ?h (Suc k)) \<in> ?nRel - ?rel" by auto
