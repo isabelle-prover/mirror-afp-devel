@@ -246,7 +246,7 @@ fun widen_tac ss =
 *}
 
 declaration {* fn _ =>
-  Simplifier.map_ss (fn ss => ss addSolver (mk_solver' "widen" widen_tac))
+  Simplifier.map_ss (fn ss => ss addSolver (mk_solver "widen" widen_tac))
 *}
 
 
