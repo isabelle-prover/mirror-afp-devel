@@ -25,26 +25,23 @@ def extract_afp_status(logdata):
     return status
 
 
-def run_afp_sessions(env, case, paths, dep_paths, playground, select):
+def run_afp_sessions(env, case, paths, dep_paths, playground, fast=False):
 
-    (loc_afp, loc_isabelle) = paths
+    (afp_home, isabelle_home) = paths
     (dep_isabelle,) = dep_paths
-    isabelle.prepare_isabelle_repository(loc_isabelle, env.settings.contrib, dep_isabelle,
-      usedir_options=isabelle.default_usedir_options + ' -M 1 -q 0') # FIXME: lxlabbroy machines have only 2GB
-    os.chdir(loc_afp)
+    isabelle.prepare_isabelle_repository(isabelle_home, env.settings.contrib, dep_isabelle,
+      usedir_options=isabelle.default_usedir_options + extra_options)
+    os.chdir(afp_home)
 
-    os.chdir('thys')
-    sessions = sorted( name for name in os.listdir('.') if select(name) and path.isdir(name) )
-    os.chdir(os.pardir)
-
+    # FIXME: guess missing ML_IDENTIFIER for ISABELLE_IMAGE_PATH
     loc_images = glob(dep_isabelle + '/*')
     if len(loc_images) != 1:
         raise Exception('Bad Isabelle image path: %s' % loc_images)
-    loc_image = loc_images[0] + '/'
+    isabelle_image_path = loc_images[0] + '/'
 
     (return_code, log) = env.run_process('admin/testall', '-t',
-        path.join(loc_isabelle, 'bin', 'isabelle'), *sessions,
-        ISABELLE_IMAGE_PATH = loc_image)
+        path.join(isabelle_home, 'bin', 'isabelle'),
+        ISABELLE_IMAGE_PATH = isabelle_image_path)
 
     data = {'status': extract_afp_status(log),
       'timing': isabelle.extract_isabelle_run_timing(log) }
@@ -54,28 +51,14 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, select):
 
 
 @configuration(repos = [AFP, Isabelle], deps = [(isabelle.AFP_images, [1])])
-def AFP_small_sessions(env, case, paths, dep_paths, playground):
-    """Small AFP sessions"""
-    skip_sessions = ('Flyspeck-Tame', 'JinjaThreads') # FIXME
-    return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session not in skip_sessions)
+def AFP_complete(env, case, paths, dep_paths, playground):
+    """Full AFP test"""
+    return run_afp_sessions(env, case, paths, dep_paths, playground)
 
-@configuration(repos = [AFP, Isabelle], deps = [(isabelle.HOL_Word, [1])])
-def AFP_JinjaThreads(env, case, paths, dep_paths, playground):
-    """AFP JinjaThreads session"""
-    return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session == 'JinjaThreads')
-
-@configuration(repos = [AFP, Isabelle], deps = [(isabelle.HOL, [1])])
-def AFP_Verified_Prover(env, case, paths, dep_paths, playground):
-    """AFP Verified-Prover session"""
-    return run_afp_sessions(env, case, paths, dep_paths, playground, lambda session: session == 'Verified-Prover')
-
-@configuration(repos = [AFP, Isabelle], deps = [
-    (AFP_small_sessions, [0, 1]),
-    (AFP_JinjaThreads, [0, 1])
-  ])
-def AFP_almost_all(*args):
-    """All AFP sessions except Flyspeck-Tame"""
-    return (True, 'ok', {}, {}, None)
+@configuration(repos = [AFP, Isabelle], deps = [(isabelle.AFP_images, [1])])
+def AFP_fast(env, case, paths, dep_paths, playground):
+    """Full AFP test"""
+    return run_afp_sessions(env, case, paths, dep_paths, playground, fast=True)
 
 
 # AFP-based Judgement Day configurations
