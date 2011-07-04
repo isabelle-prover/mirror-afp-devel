@@ -39,8 +39,9 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, fast=False):
         raise Exception('Bad Isabelle image path: %s' % loc_images)
     isabelle_image_path = loc_images[0] + '/'
 
+    fast_flag = ['-f'] if fast else []
     (return_code, log) = env.run_process('admin/testall', '-t',
-        path.join(isabelle_home, 'bin', 'isabelle'),
+        path.join(isabelle_home, 'bin', 'isabelle'), *fast_flag,
         ISABELLE_IMAGE_PATH = isabelle_image_path)
 
     data = {'status': extract_afp_status(log),
