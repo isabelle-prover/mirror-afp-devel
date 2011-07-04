@@ -30,7 +30,7 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, fast=False):
     (afp_home, isabelle_home) = paths
     (dep_isabelle,) = dep_paths
     isabelle.prepare_isabelle_repository(isabelle_home, env.settings.contrib, dep_isabelle,
-      usedir_options=isabelle.default_usedir_options + extra_options)
+      usedir_options=isabelle.default_usedir_options)
     os.chdir(afp_home)
 
     # FIXME: guess missing ML_IDENTIFIER for ISABELLE_IMAGE_PATH
