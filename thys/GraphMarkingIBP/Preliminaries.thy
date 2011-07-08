@@ -8,7 +8,7 @@ subsection {*Simplification Lemmas*}
 
 
 theorem update_simp [simp]:
-  "f x = y \<Longrightarrow> f(x := y) = f";
+  "f x = y \<Longrightarrow> f(x := y) = f
   by auto;
 
 lemma simp_set_function:

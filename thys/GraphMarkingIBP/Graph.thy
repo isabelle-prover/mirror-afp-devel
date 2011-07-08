@@ -32,7 +32,7 @@ tail of the list when applied to a non-empty list, and
 it returns the empty list otherwise.
 *}
   definition
-    "head S \<equiv> (if S = [] then nil else (hd S))";
+    "head S \<equiv> (if S = [] then nil else (hd S))"
     
   definition
     "tail (S::'a list) \<equiv> (if S = [] then [] else (tl S))";
