@@ -368,13 +368,13 @@ proof -
     proof (cases "memb x S")
       case False
       then show ?thesis
-	apply simp
-	apply (rule step)
-	apply assumption
-	apply (rule I)
-	apply assumption
-	apply (rule step)+
-	done
+        apply simp
+        apply (rule step)
+        apply assumption
+        apply (rule I)
+        apply assumption
+        apply (rule step)+
+        done
     qed (simp add: step)
   qed simp
   then show ?thesis ..
