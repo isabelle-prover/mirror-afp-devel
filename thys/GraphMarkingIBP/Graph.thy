@@ -35,27 +35,27 @@ it returns the empty list otherwise.
     "head S \<equiv> (if S = [] then nil else (hd S))"
     
   definition
-    "tail (S::'a list) \<equiv> (if S = [] then [] else (tl S))";
+    "tail (S::'a list) \<equiv> (if S = [] then [] else (tl S))"
 
-  lemma [simp]: "((nil, x) \<in> next) = False";
-    by (simp add: next_not_nil_left);
+  lemma [simp]: "((nil, x) \<in> next) = False"
+    by (simp add: next_not_nil_left)
   
-  lemma [simp]: "((x, nil) \<in> next) = False";
-    by (simp add: next_not_nil_right);
+  lemma [simp]: "((x, nil) \<in> next) = False"
+    by (simp add: next_not_nil_right)
 
 
   theorem head_not_nil [simp]:
-    "(head S \<noteq> nil) = (head S = hd S \<and> tail S = tl S \<and> hd S \<noteq> nil \<and> S \<noteq> [])";
-    by (simp add: head_def tail_def);
+    "(head S \<noteq> nil) = (head S = hd S \<and> tail S = tl S \<and> hd S \<noteq> nil \<and> S \<noteq> [])"
+    by (simp add: head_def tail_def)
   
   theorem nonempty_head [simp]:
-    "head (x # S) = x";
-    by (simp add: head_def);
+    "head (x # S) = x"
+    by (simp add: head_def)
 
   theorem nonempty_tail [simp]:
-    "tail (x # S) = S";
-    by (simp add: tail_def);
+    "tail (x # S) = S"
+    by (simp add: tail_def)
 
-  end;
+  end
   
 end
