@@ -56,11 +56,8 @@ done
 
 subsection {*Complete Lattice Results*}
 
-syntax
-  "_SUP1"     :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b"           ("(SUP _)" [1000] 1000)
-
-translations
-  "SUP P" == "CONST SUPR CONST UNIV P"
+abbreviation SUP1_syntax  ("(SUP _)" [1000] 1000)
+  where "SUP P == SUPR UNIV P"
 
 theorem SUP_upper:
   "P w \<le> SUP P"
