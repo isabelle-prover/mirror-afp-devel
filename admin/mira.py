@@ -34,7 +34,6 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, fast=False):
     more_settings = '''
 ML_SYSTEM="polyml-5.4.0"
 ML_PLATFORM="x86_64-linux"
-ML_HOME="$POLYML_HOME/$ML_PLATFORM"
 ML_OPTIONS="-H 2000 --gcthreads 4"
 
 JINJATHREADS_OPTIONS="-M 1 -q 0 -p 0"
