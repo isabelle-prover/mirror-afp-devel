@@ -8,4 +8,4 @@ NOTIFY="andreas.lochbihler@kit.edu"
 
 # Participate in frequent (nightly) build (only for small submissions)
 # values: "yes" "no"
-FREQUENT="yes"
+FREQUENT="no"
