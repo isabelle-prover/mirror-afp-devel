@@ -142,12 +142,12 @@ proof -
       using tls1 by simp
   next
     fix n
-    assume "Fin n < llength tls1"
+    assume "enat n < llength tls1"
     thus "lnth tls1 n \<sim> lnth (lmap (fst \<circ> snd) (tl1_to_tl2 s2 stls1)) n"
       using red1' bisim unfolding tls1
     proof(induct n arbitrary: s1 s2 stls1 rule: nat_less_induct)
       case (1 n)
-      hence IH: "\<And>m s1 s2 stls1. \<lbrakk> m < n; Fin m < llength (lmap (fst \<circ> snd) stls1);
+      hence IH: "\<And>m s1 s2 stls1. \<lbrakk> m < n; enat m < llength (lmap (fst \<circ> snd) stls1);
                                    s1 -1-stls1\<rightarrow>*t \<infinity>; s1 \<approx> s2 \<rbrakk>
 	         \<Longrightarrow> lnth (lmap (fst \<circ> snd) stls1) m \<sim> lnth (lmap (fst \<circ> snd) (tl1_to_tl2 s2 stls1)) m"
 	by blast
@@ -170,8 +170,8 @@ proof -
 	next
 	  case (Suc m)
 	  hence "m < n" by simp
-	  moreover have "Fin m < llength (lmap (fst \<circ> snd) stls1')"
-	    using stls1 `Fin n < llength (lmap (fst \<circ> snd) stls1)` Suc by(simp add: Suc_ile_eq)
+	  moreover have "enat m < llength (lmap (fst \<circ> snd) stls1')"
+	    using stls1 `enat n < llength (lmap (fst \<circ> snd) stls1)` Suc by(simp add: Suc_ile_eq)
 	  ultimately have "lnth (lmap (fst \<circ> snd) stls1') m \<sim> lnth (lmap (fst \<circ> snd) (tl1_to_tl2 ?s2' stls1')) m"
 	    using reds bisim' by(rule IH)
 	  with Suc stls1 show ?thesis by(simp del: o_apply)
@@ -489,12 +489,12 @@ proof -
       using tls1 by simp
   next
     fix n
-    assume "Fin n < llength tls1"
+    assume "enat n < llength tls1"
     thus "lnth tls1 n \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)) n"
       using \<tau>inf1' bisim unfolding tls1
     proof(induct n arbitrary: s1 s2 sstls1 rule: less_induct)
       case (less n)
-      note IH = `\<And>m s1 s2 sstls1. \<lbrakk> m < n; Fin m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1);
+      note IH = `\<And>m s1 s2 sstls1. \<lbrakk> m < n; enat m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1);
                                    s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>; s1 \<approx> s2 \<rbrakk>
 	         \<Longrightarrow> lnth (lmap (fst \<circ> snd \<circ> snd) sstls1) m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)) m`
       from `s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>` show ?case
@@ -521,15 +521,15 @@ proof -
 	next
 	  case (Suc m)
 	  hence "m < n" by simp
-	  moreover have "Fin m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1')"
-	    using sstls1 `Fin n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` Suc by(simp add: Suc_ile_eq)
+	  moreover have "enat m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1')"
+	    using sstls1 `enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` Suc by(simp add: Suc_ile_eq)
 	  ultimately have "lnth (lmap (fst \<circ> snd \<circ> snd) sstls1') m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 ?s2'' sstls1')) m"
 	    using reds `s1'' \<approx> ?s2''` by(rule IH)
 	  with Suc sstls1 show ?thesis by(simp del: o_apply)
 	qed
       next
 	case \<tau>inf_step_table_Nil
-	with `Fin n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` have False by simp
+	with `enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` have False by simp
 	thus ?thesis ..
       qed
     qed

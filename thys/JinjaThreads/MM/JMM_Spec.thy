@@ -16,7 +16,7 @@ types JMM_action = nat
 types execution = "(thread_id \<times> obs_event action) llist"
 
 definition "actions" :: "execution \<Rightarrow> JMM_action set"
-where "actions E = {n. Fin n < llength E}"
+where "actions E = {n. enat n < llength E}"
 
 definition action_tid :: "execution \<Rightarrow> JMM_action \<Rightarrow> thread_id"
 where "action_tid E a = fst (lnth E a)"
@@ -320,16 +320,16 @@ by(blast elim: is_new_action.cases)
 
 lemmas saction_iff = saction.simps
 
-lemma actionsD: "a \<in> actions E \<Longrightarrow> Fin a < llength E"
+lemma actionsD: "a \<in> actions E \<Longrightarrow> enat a < llength E"
 unfolding actions_def by blast
 
 lemma actionsE: 
   assumes "a \<in> actions E"
-  obtains "Fin a < llength E"
+  obtains "enat a < llength E"
 using assms unfolding actions_def by blast
 
 lemma actions_lappend:
-  "llength xs = Fin n \<Longrightarrow> actions (lappend xs ys) = actions xs \<union> (op + n) ` actions ys"
+  "llength xs = enat n \<Longrightarrow> actions (lappend xs ys) = actions xs \<union> (op + n) ` actions ys"
 unfolding actions_def
 apply safe
   apply(erule contrapos_np)
@@ -958,12 +958,12 @@ by(auto simp add: llist_all2_conv_all_lnth split_beta intro: sim_action_sym)
 lemma sim_actions_action_obsD:
   "E [\<approx>] E' \<Longrightarrow> action_obs E a \<approx> action_obs E' a"
 unfolding sim_actions_def action_obs_def
-by(cases "Fin a < llength E")(auto dest: llist_all2_lnthD llist_all2_llengthD simp add: split_beta lnth_beyond split: enat.split)
+by(cases "enat a < llength E")(auto dest: llist_all2_lnthD llist_all2_llengthD simp add: split_beta lnth_beyond split: enat.split)
 
 lemma sim_actions_action_tidD:
   "E [\<approx>] E' \<Longrightarrow> action_tid E a = action_tid E' a"
 unfolding sim_actions_def action_tid_def
-by(cases "Fin a < llength E")(auto dest: llist_all2_lnthD llist_all2_llengthD simp add: lnth_beyond split: enat.split)
+by(cases "enat a < llength E")(auto dest: llist_all2_lnthD llist_all2_llengthD simp add: lnth_beyond split: enat.split)
 
 lemma eq_into_sim_actions: 
   assumes "E = E'"
@@ -985,7 +985,7 @@ locale executions =
   "\<lbrakk> E \<in> \<E>; a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
   and \<E>_sequential_completion:
   "\<lbrakk> E \<in> \<E>; P \<turnstile> (E, ws) \<surd>; \<And>a. \<lbrakk> a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a \<rbrakk>
-  \<Longrightarrow> \<exists>E' \<in> \<E>. \<exists>ws'. P \<turnstile> (E', ws') \<surd> \<and> ltake (Fin r) E = ltake (Fin r) E' \<and> sequentially_consistent P (E', ws') \<and>
+  \<Longrightarrow> \<exists>E' \<in> \<E>. \<exists>ws'. P \<turnstile> (E', ws') \<surd> \<and> ltake (enat r) E = ltake (enat r) E' \<and> sequentially_consistent P (E', ws') \<and>
                  action_tid E r = action_tid E' r \<and> action_obs E r \<approx> action_obs E' r \<and>
                  (r \<in> actions E \<longrightarrow> r \<in> actions E')"
 
@@ -1228,14 +1228,14 @@ section {* Executions with common prefix *}
 lemma actions_change_prefix:
   assumes read: "a \<in> actions E"
   and prefix: "ltake n E [\<approx>] ltake n E'"
-  and rn: "Fin a < n"
+  and rn: "enat a < n"
   shows "a \<in> actions E'"
 using llist_all2_llengthD[OF prefix[unfolded sim_actions_def]] read rn
 by(simp add: actions_def min_def split: split_if_asm)
 
 lemma action_obs_change_prefix:
   assumes prefix: "ltake n E [\<approx>] ltake n E'"
-  and rn: "Fin a < n"
+  and rn: "enat a < n"
   shows "action_obs E a \<approx> action_obs E' a"
 proof -
   from rn have "action_obs E a = action_obs (ltake n E) a"
@@ -1249,7 +1249,7 @@ qed
 
 lemma action_obs_change_prefix_eq:
   assumes prefix: "ltake n E = ltake n E'"
-  and rn: "Fin a < n"
+  and rn: "enat a < n"
   shows "action_obs E a = action_obs E' a"
 proof -
   from rn have "action_obs E a = action_obs (ltake n E) a"
@@ -1263,7 +1263,7 @@ qed
 
 lemma read_actions_change_prefix:
   assumes read: "r \<in> read_actions E"
-  and prefix: "ltake n E [\<approx>] ltake n E'" "Fin r < n"
+  and prefix: "ltake n E [\<approx>] ltake n E'" "enat r < n"
   shows "r \<in> read_actions E'"
 using read action_obs_change_prefix[OF prefix] actions_change_prefix[OF _ prefix]
 by(cases)(auto intro: read_actions.intros)
@@ -1275,13 +1275,13 @@ using assms by cases simp_all
 
 lemma write_actions_change_prefix:
   assumes "write": "w \<in> write_actions E"
-  and prefix: "ltake n E [\<approx>] ltake n E'" "Fin w < n"
+  and prefix: "ltake n E [\<approx>] ltake n E'" "enat w < n"
   shows "w \<in> write_actions E'"
 using "write" action_obs_change_prefix[OF prefix] actions_change_prefix[OF _ prefix]
 by(cases)(auto intro: write_actions.intros dest: sim_action_is_write_action_eq)
 
 lemma action_loc_change_prefix:
-  assumes "ltake n E [\<approx>] ltake n E'" "Fin a < n"
+  assumes "ltake n E [\<approx>] ltake n E'" "enat a < n"
   shows "action_loc P E a = action_loc P E' a"
 using action_obs_change_prefix[OF assms]
 by(fastsimp elim!: action_loc_aux_cases intro: action_loc_aux_intros)
@@ -1294,8 +1294,8 @@ using assms by cases auto
 lemma action_order_change_prefix:
   assumes ao: "E \<turnstile> a \<le>a a'"
   and prefix: "ltake n E [\<approx>] ltake n E'" 
-  and an: "Fin a < n"
-  and a'n: "Fin a' < n"
+  and an: "enat a < n"
+  and a'n: "enat a' < n"
   shows "E' \<turnstile> a \<le>a a'"
 using ao actions_change_prefix[OF _ prefix an] actions_change_prefix[OF _ prefix a'n] action_obs_change_prefix[OF prefix an] action_obs_change_prefix[OF prefix a'n]
 by(auto simp add: action_order_def split: split_if_asm dest: sim_action_is_new_action_eq)
@@ -1303,14 +1303,14 @@ by(auto simp add: action_order_def split: split_if_asm dest: sim_action_is_new_a
 
 lemma value_written_change_prefix:
   assumes eq: "ltake n E = ltake n E'"
-  and an: "Fin a < n"
+  and an: "enat a < n"
   shows "value_written P E a = value_written P E' a"
 using action_obs_change_prefix_eq[OF eq an]
 by(simp add: value_written_def fun_eq_iff)
 
 lemma action_tid_change_prefix:
   assumes prefix: "ltake n E [\<approx>] ltake n E'" 
-  and an: "Fin a < n"
+  and an: "enat a < n"
   shows "action_tid E a = action_tid E' a"
 proof -
   from an have "action_tid E a = action_tid (ltake n E) a"
@@ -1325,8 +1325,8 @@ qed
 lemma program_order_change_prefix:
   assumes po: "E \<turnstile> a \<le>po a'"
   and prefix: "ltake n E [\<approx>] ltake n E'"
-  and an: "Fin a < n"
-  and a'n: "Fin a' < n"
+  and an: "enat a < n"
+  and a'n: "enat a' < n"
   shows "E' \<turnstile> a \<le>po a'"
 using po action_order_change_prefix[OF _ prefix an a'n]
   action_tid_change_prefix[OF prefix an] action_tid_change_prefix[OF prefix a'n]
@@ -1340,7 +1340,7 @@ using assms by cases simp_all
 lemma sactions_change_prefix:
   assumes sync: "a \<in> sactions P E"
   and prefix: "ltake n E [\<approx>] ltake n E'"
-  and rn: "Fin a < n"
+  and rn: "enat a < n"
   shows "a \<in> sactions P E'"
 using sync action_obs_change_prefix[OF prefix rn] actions_change_prefix[OF _ prefix rn]
 unfolding sactions_def by(simp add: sim_action_sactionD)
@@ -1348,8 +1348,8 @@ unfolding sactions_def by(simp add: sim_action_sactionD)
 lemma sync_order_change_prefix:
   assumes so: "P,E \<turnstile> a \<le>so a'"
   and prefix: "ltake n E [\<approx>] ltake n E'"
-  and an: "Fin a < n"
-  and a'n: "Fin a' < n"
+  and an: "enat a < n"
+  and a'n: "enat a' < n"
   shows "P,E' \<turnstile> a \<le>so a'"
 using so action_order_change_prefix[OF _ prefix an a'n] sactions_change_prefix[OF _ prefix an, of P] sactions_change_prefix[OF _ prefix a'n, of P]
 by(simp add: sync_order_def)
@@ -1363,8 +1363,8 @@ by(auto elim!: sim_action.cases synchronizes_with.cases intro: synchronizes_with
 lemma sync_with_change_prefix:
   assumes sw: "P,E \<turnstile> a \<le>sw a'"
   and prefix: "ltake n E [\<approx>] ltake n E'"
-  and an: "Fin a < n"
-  and a'n: "Fin a' < n"
+  and an: "enat a < n"
+  and a'n: "enat a' < n"
   shows "P,E' \<turnstile> a \<le>sw a'"
 using sw sync_order_change_prefix[OF _ prefix an a'n, of P] 
   action_tid_change_prefix[OF prefix an] action_tid_change_prefix[OF prefix a'n]
@@ -1375,8 +1375,8 @@ by(auto simp add: sync_with_def dest: sim_action_synchronizes_withD)
 lemma po_sw_change_prefix:
   assumes posw: "po_sw P E a a'"
   and prefix: "ltake n E [\<approx>] ltake n E'"
-  and an: "Fin a < n"
-  and a'n: "Fin a' < n"
+  and an: "enat a < n"
+  and a'n: "enat a' < n"
   shows "po_sw P E' a a'"
 using posw sync_with_change_prefix[OF _ prefix an a'n, of P] program_order_change_prefix[OF _ prefix an a'n]
 by(auto simp add: po_sw_def)
@@ -1395,7 +1395,7 @@ proof -
     and obs_i: "action_obs E i = InitialThreadAction" 
     and "action_tid E i = action_tid E a'" by auto
   from `i \<le> a'` a' have "i \<in> actions E"
-    by(auto simp add: actions_def le_less_trans[where y="Fin a'"])
+    by(auto simp add: actions_def le_less_trans[where y="enat a'"])
   with `i \<le> a'` obs_i a' new_a' have "E \<turnstile> i \<le>a a'" by(simp add: action_order_def)
   hence "E \<turnstile> i \<le>po a'" using `action_tid E i = action_tid E a'`
     by(rule program_orderI)
@@ -1416,8 +1416,8 @@ lemma happens_before_change_prefix:
   assumes hb: "P,E \<turnstile> a \<le>hb a'"
   and tsa_ok: "thread_start_actions_ok E'"
   and prefix: "ltake n E [\<approx>] ltake n E'"
-  and an: "Fin a < n"
-  and a'n: "Fin a' < n"
+  and an: "enat a < n"
+  and a'n: "enat a' < n"
   shows "P,E' \<turnstile> a \<le>hb a'"
 using hb an a'n
 proof induct
@@ -1429,10 +1429,10 @@ next
   proof(cases "is_new_action (action_obs E a') \<and> \<not> is_new_action (action_obs E a'')")
     case False
     from `po_sw P E a' a''` have "E \<turnstile> a' \<le>a a''" by(rule po_sw_into_action_order)
-    with `Fin a'' < n` False have "Fin a' < n"
+    with `enat a'' < n` False have "enat a' < n"
       by(safe elim!: action_orderE)(metis Suc_leI Suc_n_not_le_n enat_ord_simps(2) le_trans nat_neq_iff xtrans(10))+
-    with `Fin a < n` have "P,E' \<turnstile> a \<le>hb a'" by(rule step)
-    moreover from `po_sw P E a' a''` prefix `Fin a' < n` `Fin a'' < n`
+    with `enat a < n` have "P,E' \<turnstile> a \<le>hb a'" by(rule step)
+    moreover from `po_sw P E a' a''` prefix `enat a' < n` `enat a'' < n`
     have "po_sw P E' a' a''" by(rule po_sw_change_prefix)
     ultimately show ?thesis ..
   next
@@ -1452,12 +1452,12 @@ next
     from `po_sw P E a' a''` refl_on_program_order[of E] refl_on_sync_order[of P E]
     have "a'' \<in> actions E"
       unfolding po_sw_def by(auto dest: refl_onPD2 elim!: sync_withE)
-    hence "a'' \<in> actions E'" using `Fin a'' < n` by(rule actions_change_prefix[OF _ prefix])
+    hence "a'' \<in> actions E'" using `enat a'' < n` by(rule actions_change_prefix[OF _ prefix])
     moreover
     from new_a action_obs_change_prefix[OF prefix an] 
     have "is_new_action (action_obs E' a)" by(cases) auto
     moreover
-    from `\<not> is_new_action (action_obs E a'')` action_obs_change_prefix[OF prefix `Fin a'' < n`]
+    from `\<not> is_new_action (action_obs E a'')` action_obs_change_prefix[OF prefix `enat a'' < n`]
     have "\<not> is_new_action (action_obs E' a'')" by(auto elim: is_new_action.cases)
     ultimately show "P,E' \<turnstile> a \<le>hb a''" by(rule happens_before_new_not_new)
   qed

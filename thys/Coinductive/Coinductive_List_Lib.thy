@@ -63,7 +63,7 @@ declare ldropn.simps(2) [simp del]
 
 primrec ldrop :: "enat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
-  "ldrop (Fin n) xs = ldropn n xs"
+  "ldrop (enat n) xs = ldropn n xs"
 | "ldrop \<infinity> xs = LNil"
 
 definition ltakeWhile :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
@@ -91,7 +91,7 @@ where [code del]:
                                         | LCons y ys \<Rightarrow> Some ((x, y), (xs, ys)))"
 
 definition lset :: "'a llist \<Rightarrow> 'a set"
-where [code del]: "lset xs = lnth xs ` {n. Fin n < llength xs}"
+where [code del]: "lset xs = lnth xs ` {n. enat n < llength xs}"
 
 definition llist_all2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'b llist \<Rightarrow> bool"
 where [code del]:
@@ -105,7 +105,7 @@ where [code del]: "ltl xs = (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<
 
 definition llast :: "'a llist \<Rightarrow> 'a"
 where [nitpick_simp]:
-  "llast xs = (case llength xs of Fin n \<Rightarrow> case n of 0 \<Rightarrow> undefined | Suc n' \<Rightarrow> lnth xs n' | \<infinity> \<Rightarrow> undefined)"
+  "llast xs = (case llength xs of enat n \<Rightarrow> case n of 0 \<Rightarrow> undefined | Suc n' \<Rightarrow> lnth xs n' | \<infinity> \<Rightarrow> undefined)"
 
 coinductive ldistinct :: "'a llist \<Rightarrow> bool"
 where 
@@ -448,15 +448,15 @@ proof -
   qed
 qed
 
-lemma llength_iterates [simp]: "llength (iterates f x) = Infty"
+lemma llength_iterates [simp]: "llength (iterates f x) = \<infinity>"
 proof -
-  def Infty' \<equiv> Infty
-  hence "(llength (iterates f x), Infty) \<in>
+  def Infty' \<equiv> "\<infinity>::enat"
+  hence "(llength (iterates f x), \<infinity>) \<in>
          {(llength (iterates f x), Infty')|x. True}" by blast
   thus ?thesis
   proof(coinduct rule: enat_equalityI)
     case (Eqenat m n)
-    then obtain x where m: "m = llength (iterates f x)" and n: "n = Infty"
+    then obtain x where m: "m = llength (iterates f x)" and n: "n = \<infinity>"
       unfolding Infty'_def by blast
     have "iterates f x = LCons x (iterates f (f x))" by(rule iterates)
     with m have "m = iSuc (llength (iterates f (f x)))" by simp
@@ -467,66 +467,66 @@ proof -
 qed
 
 lemma llength_llist_of [simp]:
-  "llength (llist_of xs) = Fin (length xs)"
+  "llength (llist_of xs) = enat (length xs)"
 by(induct xs)(simp_all add: zero_enat_def iSuc_def)
 
 lemma length_list_of:
-  "lfinite xs \<Longrightarrow> Fin (length (list_of xs)) = llength xs"
+  "lfinite xs \<Longrightarrow> enat (length (list_of xs)) = llength xs"
 apply(rule sym)
-by(induct rule: lfinite.induct)(auto simp add: iSuc_Fin zero_enat_def)
+by(induct rule: lfinite.induct)(auto simp add: iSuc_enat zero_enat_def)
 
-lemma length_list_of_conv_the_Fin:
-  "lfinite xs \<Longrightarrow> length (list_of xs) = the_Fin (llength xs)"
+lemma length_list_of_conv_the_enat:
+  "lfinite xs \<Longrightarrow> length (list_of xs) = the_enat (llength xs)"
 unfolding lfinite_eq_range_llist_of by auto
 
-lemma llength_eq_Fin_lfiniteD: "llength xs = Fin n \<Longrightarrow> lfinite xs"
+lemma llength_eq_enat_lfiniteD: "llength xs = enat n \<Longrightarrow> lfinite xs"
 proof(induct n arbitrary: xs)
   case 0[folded zero_enat_def]
   thus ?case by simp
 next
   case (Suc n)
-  note len = `llength xs = Fin (Suc n)`
+  note len = `llength xs = enat (Suc n)`
   then obtain x xs' where "xs = LCons x xs'"
     by(cases xs)(auto simp add: zero_enat_def)
-  moreover with len have "llength xs' = Fin n"
+  moreover with len have "llength xs' = enat n"
     by(simp add: iSuc_def split: enat.split_asm)
   hence "lfinite xs'" by(rule Suc)
   ultimately show ?case by simp
 qed
 
-lemma lfinite_llength_Fin:
+lemma lfinite_llength_enat:
   assumes "lfinite xs"
-  shows "\<exists>n. llength xs = Fin n"
+  shows "\<exists>n. llength xs = enat n"
 using assms
 by induct(auto simp add: iSuc_def zero_enat_def)
 
-lemma lfinite_conv_llength_Fin:
-  "lfinite xs \<longleftrightarrow> (\<exists>n. llength xs = Fin n)"
-by(blast dest: llength_eq_Fin_lfiniteD lfinite_llength_Fin)
+lemma lfinite_conv_llength_enat:
+  "lfinite xs \<longleftrightarrow> (\<exists>n. llength xs = enat n)"
+by(blast dest: llength_eq_enat_lfiniteD lfinite_llength_enat)
 
 lemma not_lfinite_llength:
   fixes xs :: "'a llist"
   assumes nfin: "\<not> lfinite xs"
-  shows "llength xs = Infty"
+  shows "llength xs = \<infinity>"
 proof -
-  from nfin have "(llength xs, Infty) \<in>
-                 {(llength xs, Infty)|xs :: 'a llist. \<not> lfinite xs}" by blast
+  from nfin have "(llength xs, \<infinity>) \<in>
+                 {(llength xs, \<infinity>)|xs :: 'a llist. \<not> lfinite xs}" by blast
   thus ?thesis
   proof(coinduct rule: enat_equalityI)
     case (Eqenat m n)
     then obtain xs :: "'a llist"
-      where "m = llength xs" "n = Infty" "\<not> lfinite xs" by blast
+      where "m = llength xs" "n = \<infinity>" "\<not> lfinite xs" by blast
     hence ?iSuc by(cases xs)(auto intro: sym iSuc_Infty)
     thus ?case ..
   qed
 qed
 
-lemma lfinite_finite_index: "lfinite xs \<Longrightarrow> finite {n. Fin n < llength xs}"
+lemma lfinite_finite_index: "lfinite xs \<Longrightarrow> finite {n. enat n < llength xs}"
 proof(induct rule: lfinite.induct)
   case lfinite_LNil thus ?case by simp
 next
   case (lfinite_LConsI xs x)
-  have "{i. Fin i \<le> llength xs} = insert 0 {Suc i|i. Fin i < llength xs}"
+  have "{i. enat i \<le> llength xs} = insert 0 {Suc i|i. enat i < llength xs}"
     by(auto simp add: zero_enat_def[symmetric] Suc_ile_eq gr0_conv_Suc)
   with lfinite_LConsI show ?case by(auto)
 qed
@@ -642,20 +642,20 @@ proof -
 qed
 
 lemma ltake_llist_of [simp]:
-  "ltake (Fin n) (llist_of xs) = llist_of (take n xs)"
+  "ltake (enat n) (llist_of xs) = llist_of (take n xs)"
 proof(induct n arbitrary: xs)
   case 0
   thus ?case unfolding zero_enat_def[symmetric]
     by(cases xs) simp_all
 next
   case (Suc n)
-  thus ?case unfolding iSuc_Fin[symmetric]
+  thus ?case unfolding iSuc_enat[symmetric]
     by(cases xs) simp_all
 qed
 
 
 lemma lfinite_ltake [simp]:
-  "lfinite (ltake n xs) \<longleftrightarrow> lfinite xs \<or> n < Infty"
+  "lfinite (ltake n xs) \<longleftrightarrow> lfinite xs \<or> n < \<infinity>"
   (is "?lhs \<longleftrightarrow> ?rhs")
 proof
   assume ?lhs
@@ -683,10 +683,10 @@ next
     qed simp
   next
     assume ?n
-    then obtain n' where "n = Fin n'" by(cases n) auto
-    moreover have "lfinite (ltake (Fin n') xs)"
+    then obtain n' where "n = enat n'" by(cases n) auto
+    moreover have "lfinite (ltake (enat n') xs)"
       by(induct n' arbitrary: xs)
-        (auto simp add: zero_enat_def[symmetric] iSuc_Fin[symmetric] ltake_iSuc
+        (auto simp add: zero_enat_def[symmetric] iSuc_enat[symmetric] ltake_iSuc
               split: llist_split)
     ultimately show ?thesis by simp
   qed
@@ -741,28 +741,28 @@ proof -
 qed
 
 lemma ltake_lappend:
-  "ltake (Fin n) (lappend xs ys) = lappend (ltake (Fin n) xs) (ltake (Fin n - llength xs) ys)"
+  "ltake (enat n) (lappend xs ys) = lappend (ltake (enat n) xs) (ltake (enat n - llength xs) ys)"
 proof -
-  have "(ltake (Fin n) (lappend xs ys), lappend (ltake (Fin n) xs) (ltake (Fin n - llength xs) ys)) \<in>
-       {(ltake (Fin n) (lappend xs ys), lappend (ltake (Fin n) xs) (ltake (Fin n - llength xs) ys))|n xs ys. True}"
+  have "(ltake (enat n) (lappend xs ys), lappend (ltake (enat n) xs) (ltake (enat n - llength xs) ys)) \<in>
+       {(ltake (enat n) (lappend xs ys), lappend (ltake (enat n) xs) (ltake (enat n - llength xs) ys))|n xs ys. True}"
     by blast
   thus ?thesis
   proof(coinduct rule: llist_equalityI)
     case (Eqllist q)
     then obtain n xs ys
-      where "q = (ltake (Fin n) (lappend xs ys), lappend (ltake (Fin n) xs) (ltake (Fin n - llength xs) ys))"
+      where "q = (ltake (enat n) (lappend xs ys), lappend (ltake (enat n) xs) (ltake (enat n - llength xs) ys))"
       by blast
     thus ?case
-      by(cases xs)(case_tac [!] ys, case_tac [!] n, auto simp add: zero_enat_def[symmetric] iSuc_Fin[symmetric])
+      by(cases xs)(case_tac [!] ys, case_tac [!] n, auto simp add: zero_enat_def[symmetric] iSuc_enat[symmetric])
   qed
 qed
 
 lemma take_list_of:
   assumes "lfinite xs"
-  shows "take n (list_of xs) = list_of (ltake (Fin n) xs)"
+  shows "take n (list_of xs) = list_of (ltake (enat n) xs)"
 using assms
 by(induct arbitrary: n)
-  (simp_all add: take_Cons zero_enat_def[symmetric] iSuc_Fin[symmetric] split: nat.split)
+  (simp_all add: take_Cons zero_enat_def[symmetric] iSuc_enat[symmetric] split: nat.split)
 
 lemma ldropn_LNil [simp]: "ldropn n LNil = LNil"
 by(cases n)(simp_all add: ldropn.simps)
@@ -795,7 +795,7 @@ lemma lfinite_ldropn [simp]: "lfinite (ldropn n xs) = lfinite xs"
 by(induct n arbitrary: xs)(simp_all add: ldropn.simps split: llist_split)
 
 lemma lfinite_ldrop [simp]:
-  "lfinite (ldrop n xs) \<longleftrightarrow> lfinite xs \<or> n = Infty"
+  "lfinite (ldrop n xs) \<longleftrightarrow> lfinite xs \<or> n = \<infinity>"
 by(cases n) simp_all
 
 lemma lappend_ltake_ldrop:
@@ -821,14 +821,14 @@ proof -
 qed
 
 lemma ldropn_lappend2:
-  "llength xs \<le> Fin n \<Longrightarrow> ldropn n (lappend xs ys) = ldropn (n - the_Fin (llength xs)) ys"
+  "llength xs \<le> enat n \<Longrightarrow> ldropn n (lappend xs ys) = ldropn (n - the_enat (llength xs)) ys"
 apply(induct n arbitrary: xs)
  apply(simp add: zero_enat_def[symmetric])
 apply(case_tac xs)
  apply(simp add: zero_enat_def)
-apply(simp add: iSuc_Fin[symmetric])
+apply(simp add: iSuc_enat[symmetric])
 apply(case_tac "llength l'")
- apply(simp add: iSuc_Fin)
+ apply(simp add: iSuc_enat)
 apply simp
 done
 
@@ -836,7 +836,7 @@ lemma ltake_eq_ltake_antimono:
   "\<lbrakk> ltake n xs = ltake n ys; m \<le> n \<rbrakk> \<Longrightarrow> ltake m xs = ltake m ys"
 by (metis ltake_ltake min_max.inf_absorb1)
 
-lemma lappend_ltake_Fin_ldropn [simp]: "lappend (ltake (Fin n) xs) (ldropn n xs) = xs"
+lemma lappend_ltake_enat_ldropn [simp]: "lappend (ltake (enat n) xs) (ldropn n xs) = xs"
 by(fold ldrop.simps)(rule lappend_ltake_ldrop)
 
 lemma ltake_is_lprefix [simp, intro]:
@@ -867,10 +867,10 @@ proof -
 qed
 
 lemma ldropn_all:
-  "llength xs \<le> Fin m \<Longrightarrow> ldropn m xs = LNil"
+  "llength xs \<le> enat m \<Longrightarrow> ldropn m xs = LNil"
 proof(induct m arbitrary: xs)
   case (Suc m) thus ?case
-    by(cases xs)(simp_all add: iSuc_Fin[symmetric])
+    by(cases xs)(simp_all add: iSuc_enat[symmetric])
 qed(simp add: zero_enat_def[symmetric])
 
 lemma ldrop_all:
@@ -891,7 +891,7 @@ lemma ldrop_ldrop [simp]:
   "ldrop n (ldrop m xs) = ldrop (n + m) xs"
 by(cases n,cases m) simp_all
 
-lemma ldropn_eq_LNil: "(ldropn n xs = LNil) = (llength xs \<le> Fin n)"
+lemma ldropn_eq_LNil: "(ldropn n xs = LNil) = (llength xs \<le> enat n)"
 proof(induct n arbitrary: xs)
   case 0 thus ?case 
     by(cases xs)(simp_all add: iSuc_def split: enat.split)
@@ -903,15 +903,15 @@ qed
 lemma ldrop_eq_LNil: "ldrop n xs = LNil \<longleftrightarrow> llength xs \<le> n"
 by(cases n)(simp_all add: ldropn_eq_LNil)
 
-lemma llength_ldropn [simp]: "llength (ldropn n xs) = llength xs - Fin n"
+lemma llength_ldropn [simp]: "llength (ldropn n xs) = llength xs - enat n"
 proof(induct n arbitrary: xs)
   case 0 thus ?case by(simp add: zero_enat_def[symmetric])
 next
-  case (Suc n) thus ?case by(cases xs)(simp_all add: iSuc_Fin[symmetric])
+  case (Suc n) thus ?case by(cases xs)(simp_all add: iSuc_enat[symmetric])
 qed
 
-lemma Fin_llength_ldropn:
-  "Fin n \<le> llength xs \<Longrightarrow> Fin (n - m) \<le> llength (ldropn m xs)"
+lemma enat_llength_ldropn:
+  "enat n \<le> llength xs \<Longrightarrow> enat (n - m) \<le> llength (ldropn m xs)"
 by(cases "llength xs") simp_all
 
 lemma ldropn_iterates: "ldropn n (iterates f x) = iterates f ((f ^^ n) x)"
@@ -931,7 +931,7 @@ proof(induct n arbitrary: xs)
   case Suc thus ?case by(cases xs) simp_all
 qed simp
 
-lemma ldrop_llist_of: "ldrop (Fin n) (llist_of xs) = llist_of (drop n xs)"
+lemma ldrop_llist_of: "ldrop (enat n) (llist_of xs) = llist_of (drop n xs)"
 by simp
 
 subsection {* Taking the $n$-th element of a lazy list: @{term "lnth" } *}
@@ -953,35 +953,35 @@ lemma lnth_LCons:
 by(cases n) simp_all
 
 lemma lnth_beyond:
-  "llength xs \<le> Fin n \<Longrightarrow> lnth xs n = undefined (n - (case llength xs of Fin m \<Rightarrow> m))"
+  "llength xs \<le> enat n \<Longrightarrow> lnth xs n = undefined (n - (case llength xs of enat m \<Rightarrow> m))"
 proof(induct n arbitrary: xs)
   case 0 thus ?case by(simp add: zero_enat_def[symmetric] lnth_def)
 next
   case Suc thus ?case
-    by(cases xs)(simp_all add: zero_enat_def lnth_def iSuc_Fin[symmetric] split: enat.split, auto simp add: iSuc_Fin)
+    by(cases xs)(simp_all add: zero_enat_def lnth_def iSuc_enat[symmetric] split: enat.split, auto simp add: iSuc_enat)
 qed
 
 lemma lnth_lmap [simp]: 
-  "Fin n < llength xs \<Longrightarrow> lnth (lmap f xs) n = f (lnth xs n)"
+  "enat n < llength xs \<Longrightarrow> lnth (lmap f xs) n = f (lnth xs n)"
 proof(induct n arbitrary: xs)
   case 0 thus ?case by(cases xs) simp_all
 next
   case (Suc n)
-  from `Fin (Suc n) < llength xs` obtain x xs'
-    where xs: "xs = LCons x xs'" and len: "Fin n < llength xs'"
+  from `enat (Suc n) < llength xs` obtain x xs'
+    where xs: "xs = LCons x xs'" and len: "enat n < llength xs'"
     by(cases xs)(auto simp add: Suc_ile_eq)
   from len have "lnth (lmap f xs') n = f (lnth xs' n)" by(rule Suc)
   with xs show ?case by simp
 qed
 
 lemma lnth_ldropn [simp]:
-  "Fin (n + m) < llength xs \<Longrightarrow> lnth (ldropn n xs) m = lnth xs (m + n)"
+  "enat (n + m) < llength xs \<Longrightarrow> lnth (ldropn n xs) m = lnth xs (m + n)"
 proof(induct n arbitrary: xs)
   case (Suc n)
-  from `Fin (Suc n + m) < llength xs`
+  from `enat (Suc n + m) < llength xs`
   obtain x xs' where "xs = LCons x xs'" by(cases xs) auto
-  moreover with `Fin (Suc n + m) < llength xs`
-  have "Fin (n + m) < llength xs'" by(simp add: Suc_ile_eq)
+  moreover with `enat (Suc n + m) < llength xs`
+  have "enat (n + m) < llength xs'" by(simp add: Suc_ile_eq)
   hence "lnth (ldropn n xs') m = lnth xs' (m + n)" by(rule Suc)
   ultimately show ?case by simp
 qed simp
@@ -1014,13 +1014,13 @@ using assms
 by induct(auto intro: ext simp add: nth_def lnth_LNil nth_Cons split: nat.split)
 
 lemma lnth_lappend1:
-  "Fin n < llength xs \<Longrightarrow> lnth (lappend xs ys) n = lnth xs n"
+  "enat n < llength xs \<Longrightarrow> lnth (lappend xs ys) n = lnth xs n"
 proof(induct n arbitrary: xs)
   case 0 thus ?case by(auto simp add: zero_enat_def[symmetric] neq_LNil_conv)
 next
   case (Suc n)
-  from `Fin (Suc n) < llength xs` obtain x xs'
-    where [simp]: "xs = LCons x xs'" and len: "Fin n < llength xs'"
+  from `enat (Suc n) < llength xs` obtain x xs'
+    where [simp]: "xs = LCons x xs'" and len: "enat n < llength xs'"
     by(cases xs)(auto simp add: Suc_ile_eq)
   from len have "lnth (lappend xs' ys) n = lnth xs' n" by(rule Suc)
   thus ?case by simp
@@ -1034,7 +1034,7 @@ proof(induct xs arbitrary: n)
 qed simp
 
 lemma lnth_lappend2:
-  "\<lbrakk> llength xs = Fin k; k \<le> n \<rbrakk> \<Longrightarrow> lnth (lappend xs ys) n = lnth ys (n - k)"
+  "\<lbrakk> llength xs = enat k; k \<le> n \<rbrakk> \<Longrightarrow> lnth (lappend xs ys) n = lnth ys (n - k)"
 proof(induct n arbitrary: xs k)
   case 0 thus ?case by(simp add: zero_enat_def[symmetric])
 next
@@ -1043,35 +1043,35 @@ next
 qed
 
 lemma lnth_ltake:
-  "Fin m < n \<Longrightarrow> lnth (ltake n xs) m = lnth xs m"
+  "enat m < n \<Longrightarrow> lnth (ltake n xs) m = lnth xs m"
 proof(induct m arbitrary: xs n)
   case 0 thus ?case
     by(cases n rule: enat_coexhaust)(auto, cases xs, auto)
 next
   case (Suc m)
-  from `Fin (Suc m) < n` obtain n' where "n = iSuc n'"
+  from `enat (Suc m) < n` obtain n' where "n = iSuc n'"
     by(cases n rule: enat_coexhaust) auto
-  with `Fin (Suc m) < n` have "Fin m < n'" by(simp add: iSuc_Fin[symmetric])
+  with `enat (Suc m) < n` have "enat m < n'" by(simp add: iSuc_enat[symmetric])
   with Suc `n = iSuc n'` show ?case by(cases xs) auto
 qed
 
 lemma ldropn_Suc_conv_ldropn:
-  "Fin n < llength xs \<Longrightarrow> LCons (lnth xs n) (ldropn (Suc n) xs) = ldropn n xs"
+  "enat n < llength xs \<Longrightarrow> LCons (lnth xs n) (ldropn (Suc n) xs) = ldropn n xs"
 proof(induct n arbitrary: xs)
   case 0 thus ?case by(cases xs) auto
 next
   case (Suc n)
-  from `Fin (Suc n) < llength xs` obtain x xs'
+  from `enat (Suc n) < llength xs` obtain x xs'
     where [simp]: "xs = LCons x xs'" by(cases xs) auto
-  from `Fin (Suc n) < llength xs`
-  have "Fin n < llength xs'" by(simp add: Suc_ile_eq)
+  from `enat (Suc n) < llength xs`
+  have "enat n < llength xs'" by(simp add: Suc_ile_eq)
   hence "LCons (lnth xs' n) (ldropn (Suc n) xs') = ldropn n xs'" by(rule Suc)
   thus ?case by simp
 qed
 
 lemma ltake_Suc_conv_snoc_lnth:
-  "Fin m < llength xs \<Longrightarrow> ltake (Fin (Suc m)) xs = lappend (ltake (Fin m) xs) (LCons (lnth xs m) LNil)"
-by(metis iSuc_Fin iSuc_plus_1 ltake_plus_conv_lappend ldrop.simps(1) ldropn_Suc_conv_ldropn ltake_0 ltake_iSuc_LCons one_iSuc)
+  "enat m < llength xs \<Longrightarrow> ltake (enat (Suc m)) xs = lappend (ltake (enat m) xs) (LCons (lnth xs m) LNil)"
+by(metis iSuc_enat iSuc_plus_1 ltake_plus_conv_lappend ldrop.simps(1) ldropn_Suc_conv_ldropn ltake_0 ltake_iSuc_LCons one_iSuc)
 
 lemma lappend_eq_lappend_conv:
   assumes len: "llength xs = llength us"
@@ -1124,7 +1124,7 @@ next
             by(auto simp add: lappend_llist_of_LCons)
           hence "llength (llist_of xs') = llength (lappend (llist_of (xs' @ [v])) vs')"
             by simp
-          hence "Fin (length xs') = Fin (Suc (length xs')) + llength vs'"
+          hence "enat (length xs') = enat (Suc (length xs')) + llength vs'"
             by simp
           hence False by(metis Suc_n_not_le_n enat_le_plus_same(1) enat_ord_code(1))
           thus ?thesis ..
@@ -1142,7 +1142,7 @@ next
             by(auto simp add: lappend_llist_of_LCons)
           hence "llength (llist_of xs') = llength (lappend (llist_of (xs' @ [y])) ys')"
             by simp
-          hence "Fin (length xs') = Fin (Suc (length xs')) + llength ys'" by simp
+          hence "enat (length xs') = enat (Suc (length xs')) + llength ys'" by simp
           hence False by(metis Suc_n_not_le_n enat_le_plus_same(1) enat_ord_code(1))
           thus ?thesis ..
         next
@@ -1300,7 +1300,7 @@ proof -
       moreover with `lprefix xs ys` obtain ys'
         where "ys = LCons x ys'" "lprefix xs' ys'"
         by(auto simp add: LCons_lprefix_conv)
-      moreover hence "n = llength ys' + Fin 1" using mn
+      moreover hence "n = llength ys' + enat 1" using mn
         unfolding one_enat_def[symmetric] by(simp add: plus_1_iSuc)
       ultimately have ?iSuc using mn by auto
       thus ?thesis ..
@@ -1369,7 +1369,7 @@ proof -
 qed
 
 lemma lprefix_llist_implies_ltake_lprefix:
-  "(xs, ys) \<in> lprefix_llist \<Longrightarrow> lprefix (ltake (Fin n) xs) (ltake (Fin n) ys)"
+  "(xs, ys) \<in> lprefix_llist \<Longrightarrow> lprefix (ltake (enat n) xs) (ltake (enat n) ys)"
 proof(induct n arbitrary: xs ys)
   case 0 show ?case by(simp add: zero_enat_def[symmetric])
 next
@@ -1380,22 +1380,22 @@ next
   next
     case (Le_LCons xs' ys' x)
     from `(xs', ys') \<in> lprefix_llist`
-    have "lprefix (ltake (Fin n) xs') (ltake (Fin n) ys')" by(rule Suc)
-    with Le_LCons show ?thesis by(simp add: iSuc_Fin[symmetric])
+    have "lprefix (ltake (enat n) xs') (ltake (enat n) ys')" by(rule Suc)
+    with Le_LCons show ?thesis by(simp add: iSuc_enat[symmetric])
   qed
 qed
 
-lemma ltake_Fin_eq_imp_eq:
-  assumes "\<And>n. ltake (Fin n) xs = ltake (Fin n) ys"
+lemma ltake_enat_eq_imp_eq:
+  assumes "\<And>n. ltake (enat n) xs = ltake (enat n) ys"
   shows "xs = ys"
 proof -
-  have "(xs, ys) \<in> {(xs, ys)|xs ys. \<forall>n. ltake (Fin n) xs = ltake (Fin n) ys}"
+  have "(xs, ys) \<in> {(xs, ys)|xs ys. \<forall>n. ltake (enat n) xs = ltake (enat n) ys}"
     using assms by blast
   thus ?thesis
   proof(coinduct rule: llist_equalityI)
     case (Eqllist q)
     then obtain xs ys where q: "q = (xs, ys)"
-      and eq: "\<And>n. ltake (Fin n) xs = ltake (Fin n) ys" by blast
+      and eq: "\<And>n. ltake (enat n) xs = ltake (enat n) ys" by blast
     show ?case
     proof(cases xs)
       case LNil
@@ -1407,11 +1407,11 @@ proof -
       case (LCons x xs')
       moreover with eq[of 1] obtain ys' where ys: "ys = LCons x ys'"
         unfolding one_enat_def[symmetric] one_iSuc by(cases ys) auto
-      moreover have "\<forall>n. ltake (Fin n) xs' = ltake (Fin n) ys'"
+      moreover have "\<forall>n. ltake (enat n) xs' = ltake (enat n) ys'"
       proof
         fix n from eq[of "Suc n"] ys LCons
-        show "ltake (Fin n) xs' = ltake (Fin n) ys'"
-          unfolding iSuc_Fin[symmetric] by simp
+        show "ltake (enat n) xs' = ltake (enat n) ys'"
+          unfolding iSuc_enat[symmetric] by simp
       qed
       ultimately have ?EqLCons using q by auto
       thus ?thesis ..
@@ -1419,36 +1419,36 @@ proof -
   qed
 qed
 
-lemma ltake_Fin_lprefix_imp_lprefix:
-  assumes le: "\<And>n. lprefix (ltake (Fin n) xs) (ltake (Fin n) ys)"
+lemma ltake_enat_lprefix_imp_lprefix:
+  assumes le: "\<And>n. lprefix (ltake (enat n) xs) (ltake (enat n) ys)"
   shows "lprefix xs ys"
 proof(cases "lfinite xs")
   case True
-  then obtain n where n: "llength xs = Fin n" by(auto dest: lfinite_llength_Fin)
-  have "xs = ltake (Fin n) xs" unfolding n[symmetric] by(simp add: ltake_all)
-  also have "lprefix \<dots> (ltake (Fin n) ys)" by(rule le)
+  then obtain n where n: "llength xs = enat n" by(auto dest: lfinite_llength_enat)
+  have "xs = ltake (enat n) xs" unfolding n[symmetric] by(simp add: ltake_all)
+  also have "lprefix \<dots> (ltake (enat n) ys)" by(rule le)
   also have "lprefix \<dots> ys" ..
   finally show ?thesis .
 next
   case False
   hence [simp]: "llength xs = \<infinity>" by(rule not_lfinite_llength)
   { fix n
-    from le[of n] obtain zs where "lappend (ltake (Fin n) xs) zs = ltake (Fin n) ys"
+    from le[of n] obtain zs where "lappend (ltake (enat n) xs) zs = ltake (enat n) ys"
       unfolding lprefix_def by blast
-    hence "llength (lappend (ltake (Fin n) xs) zs) = llength (ltake (Fin n) ys)"
+    hence "llength (lappend (ltake (enat n) xs) zs) = llength (ltake (enat n) ys)"
       by simp
-    hence n: "Fin n \<le> llength ys"
+    hence n: "enat n \<le> llength ys"
       by(cases "llength zs", cases "llength ys")
         (simp_all add: min_def split: split_if_asm)
-    from le have "ltake (Fin n) xs = ltake (Fin n) ys"
+    from le have "ltake (enat n) xs = ltake (enat n) ys"
       by(rule lprefix_llength_eq_imp_eq)(simp add: n min_def) }
-  hence "xs = ys" by(rule ltake_Fin_eq_imp_eq)
+  hence "xs = ys" by(rule ltake_enat_eq_imp_eq)
   thus ?thesis by simp
 qed
 
 lemma lprefix_llist_imp_lprefix:
   "(xs, ys) \<in> lprefix_llist \<Longrightarrow> lprefix xs ys"
-by(rule ltake_Fin_lprefix_imp_lprefix)(rule lprefix_llist_implies_ltake_lprefix)
+by(rule ltake_enat_lprefix_imp_lprefix)(rule lprefix_llist_implies_ltake_lprefix)
 
 lemma lprefix_llist_eq_lprefix:
   "(xs, ys) \<in> lprefix_llist \<longleftrightarrow> lprefix xs ys"
@@ -1571,7 +1571,7 @@ lemma lmap_lstrict_prefix:
 by (metis llength_lmap lmap_lprefix lprefix_llength_eq_imp_eq lstrict_prefix_def)
 
 lemma lprefix_lnthD:
-  assumes "lprefix xs ys" and "Fin n < llength xs"
+  assumes "lprefix xs ys" and "enat n < llength xs"
   shows "lnth xs n = lnth ys n"
 using assms by (metis lnth_lappend1 lprefix_def)
 
@@ -1728,7 +1728,7 @@ proof(induct xs arbitrary: ys)
 qed simp
 
 lemma lnth_lzip:
-  "\<lbrakk> Fin n < llength xs; Fin n < llength ys \<rbrakk>
+  "\<lbrakk> enat n < llength xs; enat n < llength ys \<rbrakk>
   \<Longrightarrow> lnth (lzip xs ys) n = (lnth xs n, lnth ys n)"
 proof(induct n arbitrary: xs ys)
   case 0
@@ -1738,13 +1738,13 @@ proof(induct n arbitrary: xs ys)
   thus ?case by simp
 next
   case (Suc n)
-  from `Fin (Suc n) < llength xs` obtain x xs'
+  from `enat (Suc n) < llength xs` obtain x xs'
     where xs: "xs = LCons x xs'" by(cases xs) auto
-  moreover from `Fin (Suc n) < llength ys` obtain y ys'
+  moreover from `enat (Suc n) < llength ys` obtain y ys'
     where ys: "ys = LCons y ys'" by(cases ys) auto
-  moreover from `Fin (Suc n) < llength xs` `Fin (Suc n) < llength ys` xs ys
-  have "Fin n < llength xs'" "Fin n < llength ys'"
-    by(auto simp add: iSuc_Fin[symmetric])
+  moreover from `enat (Suc n) < llength xs` `enat (Suc n) < llength ys` xs ys
+  have "enat n < llength xs'" "enat n < llength ys'"
+    by(auto simp add: iSuc_enat[symmetric])
   hence "lnth (lzip xs' ys') n = (lnth xs' n, lnth ys' n)" by(rule Suc)
   ultimately show ?case by simp
 qed
@@ -1822,16 +1822,16 @@ proof -
     let ?xs'' = "lmap fst vs"
     let ?ys'' = "lmap snd vs"
     from False have "lappend us vs = us" by(simp add: lappend_inf)
-    moreover from False have "llength us = Infty"
+    moreover from False have "llength us = \<infinity>"
       by(rule not_lfinite_llength)
     moreover with len
-    have "llength xs = Infty" "llength ys = Infty" by auto
-    moreover with `llength us = Infty`
+    have "llength xs = \<infinity>" "llength ys = \<infinity>" by auto
+    moreover with `llength us = \<infinity>`
     have "xs = ?xs'" "ys = ?ys'" by(simp_all add: ltake_all)
-    from `llength us = Infty` len 
+    from `llength us = \<infinity>` len 
     have "\<not> lfinite ?xs'" "\<not> lfinite ?ys'"
       by(auto simp del: llength_ltake lfinite_ltake 
-             simp add: ltake_all dest: lfinite_llength_Fin)
+             simp add: ltake_all dest: lfinite_llength_enat)
     with `xs = ?xs'` `ys = ?ys'`
     have "xs = lappend ?xs' ?xs''" "ys = lappend ?ys' ?ys''"
       by(simp_all add: lappend_inf)
@@ -1928,7 +1928,7 @@ by(simp add: lset_def)
 lemma lset_LCons [simp]:
   "lset (LCons x xs) = insert x (lset xs)"
 proof -
-  have "x \<in> lnth (LCons x xs) ` {n. Fin n \<le> llength xs}"
+  have "x \<in> lnth (LCons x xs) ` {n. enat n \<le> llength xs}"
     by(rule image_eqI[where x=0])(simp_all add: zero_enat_def[symmetric])
   thus ?thesis
     by(auto simp add: lset_def Suc_ile_eq lnth_LCons split: nat.split)
@@ -1951,7 +1951,7 @@ lemma lset_induct [consumes 1, case_names find step, induct set: lset]:
   and step: "\<And>x' xs. \<lbrakk> x \<in> lset xs; x \<noteq> x'; P xs \<rbrakk> \<Longrightarrow> P (LCons x' xs)"
   shows "P xs"
 proof -
-  from major obtain n where "Fin n < llength xs" "lnth xs n = x"
+  from major obtain n where "enat n < llength xs" "lnth xs n = x"
     unfolding lset_def by auto
   thus ?thesis
   proof(induct n arbitrary: xs)
@@ -1960,7 +1960,7 @@ proof -
     thus ?case by(simp add: find)
   next
     case (Suc n)
-    from `Fin (Suc n) < llength xs` obtain x' xs' 
+    from `enat (Suc n) < llength xs` obtain x' xs' 
       where xs: "xs = LCons x' xs'" by(cases xs) auto
     show ?case
     proof(cases "x = x'")
@@ -2040,7 +2040,7 @@ by(rule subsetI)(erule lset_induct, simp_all)
 
 lemma lset_lzip: 
   "lset (lzip xs ys) =
-   {(lnth xs n, lnth ys n)|n. Fin n < min (llength xs) (llength ys)}"
+   {(lnth xs n, lnth ys n)|n. enat n < min (llength xs) (llength ys)}"
 by(auto simp add: lset_def llength_lzip lnth_lzip intro: rev_image_eqI)
 
 lemma lset_iterates:
@@ -2139,7 +2139,7 @@ qed
 
 lemmas ldropWhile_eq_ldrop = ldropWhile_def
 
-lemma ltakeWhile_nth: "Fin i < llength (ltakeWhile P xs) \<Longrightarrow> lnth (ltakeWhile P xs) i = lnth xs i"
+lemma ltakeWhile_nth: "enat i < llength (ltakeWhile P xs) \<Longrightarrow> lnth (ltakeWhile P xs) i = lnth xs i"
 by(rule lprefix_lnthD[OF lprefix_ltakeWhile])
 
 lemma ltakeWhile_all: 
@@ -2299,22 +2299,22 @@ by(simp add: llist_all2_def)
 
 lemma llist_all2_all_lnthI:
   "\<lbrakk> llength xs = llength ys;
-     \<And>n. Fin n < llength xs \<Longrightarrow> P (lnth xs n) (lnth ys n) \<rbrakk>
+     \<And>n. enat n < llength xs \<Longrightarrow> P (lnth xs n) (lnth ys n) \<rbrakk>
   \<Longrightarrow> llist_all2 P xs ys"
 by(auto simp add: llist_all2_def lset_lzip)
 
 lemma llist_all2_lnthD:
-  "\<lbrakk> llist_all2 P xs ys; Fin n < llength xs \<rbrakk> \<Longrightarrow> P (lnth xs n) (lnth ys n)"
+  "\<lbrakk> llist_all2 P xs ys; enat n < llength xs \<rbrakk> \<Longrightarrow> P (lnth xs n) (lnth ys n)"
 by(fastsimp simp add: llist_all2_def lset_lzip)
 
 lemma llist_all2_lnthD2:
-  "\<lbrakk> llist_all2 P xs ys; Fin n < llength ys \<rbrakk> \<Longrightarrow> P (lnth xs n) (lnth ys n)"
+  "\<lbrakk> llist_all2 P xs ys; enat n < llength ys \<rbrakk> \<Longrightarrow> P (lnth xs n) (lnth ys n)"
 by(fastsimp simp add: llist_all2_def lset_lzip)
 
 lemma llist_all2_conv_all_lnth:
   "llist_all2 P xs ys \<longleftrightarrow> 
    llength xs = llength ys \<and> 
-   (\<forall>n. Fin n < llength ys \<longrightarrow> P (lnth xs n) (lnth ys n))"
+   (\<forall>n. enat n < llength ys \<longrightarrow> P (lnth xs n) (lnth ys n))"
 by(auto dest: llist_all2_llengthD llist_all2_lnthD2 intro: llist_all2_all_lnthI)
 
 lemma llist_all2_reflI:
@@ -2331,7 +2331,7 @@ by(auto simp add: llist_all2_conv_all_lnth)
 
 lemma llist_all2_lfiniteD: 
   "llist_all2 P xs ys \<Longrightarrow> lfinite xs \<longleftrightarrow> lfinite ys"
-by(drule llist_all2_llengthD)(simp add: lfinite_conv_llength_Fin)
+by(drule llist_all2_llengthD)(simp add: lfinite_conv_llength_enat)
 
 lemma llist_all2_coinduct[consumes 1, case_names llist_all2, case_conclusion llist_all2 LNil LCons, coinduct pred]:
   assumes major: "X xs ys"
@@ -2351,7 +2351,7 @@ proof(rule llist_all2_all_lnthI)
   qed
 
   fix n
-  assume "Fin n < llength xs"
+  assume "enat n < llength xs"
   thus "P (lnth xs n) (lnth ys n)"
     using major `llength xs = llength ys`
   proof(induct n arbitrary: xs ys)
@@ -2361,7 +2361,7 @@ proof(rule llist_all2_all_lnthI)
     from step[OF `X xs ys`] show ?case
     proof
       assume "xs = LNil \<and> ys = LNil"
-      with `Fin (Suc n) < llength xs` have False by simp
+      with `enat (Suc n) < llength xs` have False by simp
       thus ?thesis ..
     next
       assume "\<exists>x y xs' ys'. xs = LCons x xs' \<and> ys = LCons y ys' \<and> P x y \<and> (X xs' ys' \<or> llist_all2 P xs' ys')"
@@ -2369,7 +2369,7 @@ proof(rule llist_all2_all_lnthI)
         where "xs = LCons x xs'" "ys = LCons y ys'" "P x y" 
         and "X xs' ys' \<or> llist_all2 P xs' ys'" by blast
       thus ?thesis
-        using Suc.hyps[of xs' ys'] `Fin (Suc n) < llength xs` `llength xs = llength ys`
+        using Suc.hyps[of xs' ys'] `enat (Suc n) < llength xs` `llength xs = llength ys`
         by(auto simp add: Suc_ile_eq dest: llist_all2_lnthD2)
     qed
   qed
@@ -2397,22 +2397,22 @@ proof(rule llist_all2_all_lnthI)
     by(simp add: llist_all2_llengthD)
 
   fix n
-  assume "Fin n < llength (lappend xs xs')"
+  assume "enat n < llength (lappend xs xs')"
   show "P (lnth (lappend xs xs') n) (lnth (lappend ys ys') n)"
-  proof(cases "Fin n < llength xs")
+  proof(cases "enat n < llength xs")
     case True
     with llist_all2_lnthD[OF 1 this] llist_all2_llengthD[OF 1]
     show ?thesis by(simp add: lnth_lappend1)
   next
     case False
-    then obtain n' where len: "llength xs = Fin n'"
+    then obtain n' where len: "llength xs = enat n'"
       by(cases "llength xs") simp_all
-    with `Fin n < llength (lappend xs xs')` False 
-    have "Fin (n - n') < llength xs'"
+    with `enat n < llength (lappend xs xs')` False 
+    have "enat (n - n') < llength xs'"
       by(cases "llength xs'") auto
     with False lnth_lappend2[OF len, of "n" xs'] len
       lnth_lappend2[OF len[unfolded llist_all2_llengthD[OF 1]], of "n" ys']
-      llist_all2_lnthD[OF 2, of "n - n'"] `Fin n < llength (lappend xs xs')`
+      llist_all2_lnthD[OF 2, of "n - n'"] `enat n < llength (lappend xs xs')`
     show ?thesis by simp
   qed
 qed
@@ -2432,7 +2432,7 @@ proof -
       using len_xs by(simp add: min_def)
   next
     fix n
-    assume n: "Fin n < llength xs"
+    assume n: "enat n < llength xs"
     also have "\<dots> \<le> llength (lappend xs xs')" by(simp add: enat_le_plus_same)
     finally have "P (lnth (lappend xs xs') n) (lnth ys n)"
       using all by -(rule llist_all2_lnthD)
@@ -2442,7 +2442,7 @@ proof -
   qed
 
   assume fin: "lfinite xs"
-  then obtain n where n: "llength xs = Fin n" unfolding lfinite_conv_llength_Fin by blast
+  then obtain n where n: "llength xs = enat n" unfolding lfinite_conv_llength_enat by blast
 
   show "llist_all2 P xs' (ldrop (llength xs) ys)"
   proof(rule llist_all2_all_lnthI)
@@ -2450,8 +2450,8 @@ proof -
       using n len by(cases "llength xs'")(cases "llength ys", simp_all)
   next
     fix n'
-    assume "Fin n' < llength xs'"
-    hence nn': "Fin (n + n') < llength (lappend xs xs')" using n
+    assume "enat n' < llength xs'"
+    hence nn': "enat (n + n') < llength (lappend xs xs')" using n
       by(cases "llength xs'")simp_all
     hence "P (lnth (lappend xs xs') (n + n')) (lnth ys (n + n'))"
       using all by -(rule llist_all2_lnthD)
@@ -2473,7 +2473,7 @@ proof
   finally show ?rhs
   proof(rule llist_all2_all_lnthI)
     fix n
-    assume n: "Fin n < llength xs"
+    assume n: "enat n < llength xs"
     with `llength xs = llength ys` 
     have "lnth (lmap f xs) n = f (lnth xs n)" 
       and "lnth (lmap g ys) n = g (lnth ys n)" by simp_all
@@ -2521,15 +2521,15 @@ lemma lhd_llist_of [simp]: "lhd (llist_of xs) = hd xs"
 by(cases xs)(simp_all add: hd_def lhd_def)
 
 lemma lhd_ldropn:
-  "Fin n < llength xs \<Longrightarrow> lhd (ldropn n xs) = lnth xs n"
+  "enat n < llength xs \<Longrightarrow> lhd (ldropn n xs) = lnth xs n"
 proof(induct n arbitrary: xs)
   case 0 thus ?case by(cases xs) auto
 next
   case (Suc n)
-  from `Fin (Suc n) < llength xs` obtain x xs'
+  from `enat (Suc n) < llength xs` obtain x xs'
     where [simp]: "xs = LCons x xs'" by(cases xs) auto
-  from `Fin (Suc n) < llength xs`
-  have "Fin n < llength xs'" by(simp add: Suc_ile_eq)
+  from `enat (Suc n) < llength xs`
+  have "enat n < llength xs'" by(simp add: Suc_ile_eq)
   hence "lhd (ldropn n xs') = lnth xs' n" by(rule Suc)
   thus ?case by simp
 qed
@@ -2583,7 +2583,7 @@ lemma llast_LCons: "llast (LCons x xs) = (if xs = LNil then x else llast xs)"
 by(cases "llength xs")(auto simp add: llast_def iSuc_def zero_enat_def neq_LNil_conv split: enat.splits)
 
 lemma llast_linfinite: "\<not> lfinite xs \<Longrightarrow> llast xs = undefined"
-by(simp add: llast_def lfinite_conv_llength_Fin)
+by(simp add: llast_def lfinite_conv_llength_enat)
 
 lemma [simp]:
   shows llast_singleton: "llast (LCons x LNil) = x"
@@ -2605,7 +2605,7 @@ lemma llast_lappend_LCons [simp]:
   "lfinite xs \<Longrightarrow> llast (lappend xs (LCons y ys)) = llast (LCons y ys)"
 by(simp add: llast_lappend)
 
-lemma llast_ldropn: "Fin n < llength xs \<Longrightarrow> llast (ldropn n xs) = llast xs"
+lemma llast_ldropn: "enat n < llength xs \<Longrightarrow> llast (ldropn n xs) = llast xs"
 proof(induct n arbitrary: xs)
   case 0 thus ?case by simp
 next
@@ -2618,8 +2618,8 @@ by(cases n)(simp_all add: llast_ldropn)
 lemma llast_llist_of [simp]: "llast (llist_of xs) = last xs"
 by(induct xs)(auto simp add: last_def zero_enat_def llast_LCons llast_LNil neq_Nil_conv)
 
-lemma llast_conv_lnth: "llength xs = iSuc (Fin n) \<Longrightarrow> llast xs = lnth xs n"
-by(clarsimp simp add: llast_def zero_enat_def[symmetric] iSuc_Fin split: nat.split)
+lemma llast_conv_lnth: "llength xs = iSuc (enat n) \<Longrightarrow> llast xs = lnth xs n"
+by(clarsimp simp add: llast_def zero_enat_def[symmetric] iSuc_enat split: nat.split)
 
 lemma llast_lmap: 
   assumes "lfinite xs" "xs \<noteq> LNil"
@@ -2673,7 +2673,7 @@ lemma ldistinct_ldrop:
 by(cases n)(simp_all add: ldistinct_ldropn)
 
 lemma ldistinct_conv_lnth:
-  "ldistinct xs \<longleftrightarrow> (\<forall>i j. Fin i < llength xs \<longrightarrow> Fin j < llength xs \<longrightarrow> i \<noteq> j \<longrightarrow> lnth xs i \<noteq> lnth xs j)"
+  "ldistinct xs \<longleftrightarrow> (\<forall>i j. enat i < llength xs \<longrightarrow> enat j < llength xs \<longrightarrow> i \<noteq> j \<longrightarrow> lnth xs i \<noteq> lnth xs j)"
   (is "?lhs \<longleftrightarrow> ?rhs")
 proof(intro iffI strip)
   assume "?rhs"
@@ -2688,16 +2688,16 @@ proof(intro iffI strip)
       have "x \<notin> lset xs'"
       proof
         assume "x \<in> lset xs'"
-        then obtain j where "Fin j < llength xs'" "lnth xs' j = x"
+        then obtain j where "enat j < llength xs'" "lnth xs' j = x"
           unfolding lset_def by auto
-        hence "Fin 0 < llength xs" "Fin (Suc j) < llength xs" "lnth xs (Suc j) = x" "lnth xs 0 = x" 
+        hence "enat 0 < llength xs" "enat (Suc j) < llength xs" "lnth xs (Suc j) = x" "lnth xs 0 = x" 
           by(simp_all add: LCons Suc_ile_eq zero_enat_def[symmetric])
         thus False by(auto dest: ldistinct[rule_format])
       qed
       moreover {
         fix i j
-        assume "Fin i < llength xs'" "Fin j < llength xs'" "i \<noteq> j"
-        hence "Fin (Suc i) < llength xs" "Fin (Suc j) < llength xs"
+        assume "enat i < llength xs'" "enat j < llength xs'" "i \<noteq> j"
+        hence "enat (Suc i) < llength xs" "enat (Suc j) < llength xs"
           by(simp_all add: LCons Suc_ile_eq)
         with `i \<noteq> j` have "lnth xs (Suc i) \<noteq> lnth xs (Suc j)"
           by(auto dest: ldistinct[rule_format])
@@ -2709,7 +2709,7 @@ proof(intro iffI strip)
 next
   assume "?lhs"
   fix i j
-  assume "Fin i < llength xs" "Fin j < llength xs" "i \<noteq> j"
+  assume "enat i < llength xs" "enat j < llength xs" "i \<noteq> j"
   thus "lnth xs i \<noteq> lnth xs j"
   proof(induct i j rule: wlog_linorder_le)
     case symmetry thus ?case by simp
@@ -2720,7 +2720,7 @@ next
     also from le have "i < j" by simp
     hence "lnth xs j \<in> lset (ldropn (Suc i) xs)" using le unfolding lset_def
       by(cases "llength xs")(auto intro!: image_eqI[where x="j - Suc i"])
-    ultimately show ?case using `Fin i < llength xs` by auto
+    ultimately show ?case using `enat i < llength xs` by auto
   qed
 qed
 
@@ -2735,7 +2735,7 @@ proof(intro iffI conjI)
     fix x y
     assume "x \<in> lset xs" and "y \<in> lset xs" and "f x = f y"
     then obtain i j
-      where "Fin i < llength xs" "x = lnth xs i" "Fin j < llength xs" "y = lnth xs j"
+      where "enat i < llength xs" "x = lnth xs i" "enat j < llength xs" "y = lnth xs j"
       unfolding lset_def by blast
     with dist `f x = f y` show "x = y"
       unfolding ldistinct_conv_lnth by auto
@@ -3097,8 +3097,8 @@ qed
 lemma llexord_conv_ltake_index:
   "llexord r xs ys \<longleftrightarrow>
    (llength xs \<le> llength ys \<and> ltake (llength xs) ys = xs) \<or>
-   (\<exists>n. Fin n < min (llength xs) (llength ys) \<and> 
-        ltake (Fin n) xs = ltake (Fin n) ys \<and> r (lnth xs n) (lnth ys n))"
+   (\<exists>n. enat n < min (llength xs) (llength ys) \<and> 
+        ltake (enat n) xs = ltake (enat n) ys \<and> r (lnth xs n) (lnth ys n))"
   (is "?lhs \<longleftrightarrow> ?rhs")
 proof(rule iffI)
   assume ?lhs
@@ -3123,9 +3123,9 @@ proof(rule iffI)
       with `xs' = LNil \<or> r (lhd xs') y` have "r (lhd xs') y" by simp
       from `lfinite zs` obtain zs' where [simp]: "zs = llist_of zs'"
         unfolding lfinite_eq_range_llist_of by blast
-      with LCons have "Fin (length zs') < min (llength xs) (llength ys)"
+      with LCons have "enat (length zs') < min (llength xs) (llength ys)"
         by(auto simp add: less_enat_def iSuc_def split: enat.split)
-      moreover have "ltake (Fin (length zs')) xs = ltake (Fin (length zs')) ys"
+      moreover have "ltake (enat (length zs')) xs = ltake (enat (length zs')) ys"
         by(simp add: ltake_lappend1)
       moreover have "r (lnth xs (length zs')) (lnth ys (length zs'))"
         using LCons `r (lhd xs') y`
@@ -3145,18 +3145,18 @@ next
     qed
   next
     assume "?B"
-    then obtain n where len: "Fin n < min (llength xs) (llength ys)"
-      and takexs: "ltake (Fin n) xs = ltake (Fin n) ys"
+    then obtain n where len: "enat n < min (llength xs) (llength ys)"
+      and takexs: "ltake (enat n) xs = ltake (enat n) ys"
       and r: "r (lnth xs n) (lnth ys n)" by blast
-    have "xs = lappend (ltake (Fin n) xs) (ldrop (Fin n) xs)"
+    have "xs = lappend (ltake (enat n) xs) (ldrop (enat n) xs)"
       by(simp only: lappend_ltake_ldrop)
     moreover from takexs len
-    have "ys = lappend (ltake (Fin n) xs) (LCons (lnth ys n) (ldrop (Fin (Suc n)) ys))"
+    have "ys = lappend (ltake (enat n) xs) (LCons (lnth ys n) (ldrop (enat (Suc n)) ys))"
       by(simp add: ldropn_Suc_conv_ldropn)
     moreover from r len
-    have "r (lhd (ldrop (Fin n) xs)) (lnth ys n)"
+    have "r (lhd (ldrop (enat n) xs)) (lnth ys n)"
       by(simp add: lhd_ldropn)
-    moreover have "lfinite (ltake (Fin n) xs)" by simp
+    moreover have "lfinite (ltake (enat n) xs)" by simp
     ultimately show ?thesis unfolding llexord_conv by blast
   qed
 qed
@@ -3659,9 +3659,9 @@ proof -
         and "lfilter P ys' = lfilter P vs" "P y" "lfinite us"
         and "\<And>u. u \<in> lset us \<Longrightarrow> \<not> P u" by blast
       ultimately have "m = iSuc (llength (lfilter P vs))" using m by simp
-      moreover from `lfinite us` obtain k where "llength us = Fin k"
-        by(auto dest: lfinite_llength_Fin)
-      with xs n have "n = llength vs + Fin (Suc k)"
+      moreover from `lfinite us` obtain k where "llength us = enat k"
+        by(auto dest: lfinite_llength_enat)
+      with xs n have "n = llength vs + enat (Suc k)"
         by(auto simp add: iSuc_def add_ac one_enat_def split: enat.split)
       ultimately have ?iSuc by auto
       thus ?thesis ..
@@ -3671,17 +3671,17 @@ qed
 
 lemma lfinite_lfilter:
   "lfinite (lfilter P xs) \<longleftrightarrow> 
-   lfinite xs \<or> finite {n. Fin n < llength xs \<and> P (lnth xs n)}"
+   lfinite xs \<or> finite {n. enat n < llength xs \<and> P (lnth xs n)}"
 proof
   assume "lfinite (lfilter P xs)"
   { assume "\<not> lfinite xs"
     with `lfinite (lfilter P xs)`
-    have "finite {n. Fin n < llength xs \<and> P (lnth xs n)}"
+    have "finite {n. enat n < llength xs \<and> P (lnth xs n)}"
     proof(induct ys\<equiv>"lfilter P xs" arbitrary: xs)
       case lfinite_LNil
       from `LNil = lfilter P xs`[symmetric] `\<not> lfinite xs`
       have "\<forall>x\<in>lset xs. \<not> P x" by(auto simp add: lfilter_empty_conv)
-      hence eq: "{n. Fin n < llength xs \<and> P (lnth xs n)} = {}" 
+      hence eq: "{n. enat n < llength xs \<and> P (lnth xs n)} = {}" 
         by(auto simp add: lset_def)
       show ?case unfolding eq ..
     next
@@ -3695,37 +3695,37 @@ proof
       from `\<not> lfinite xs` `xs = lappend us (LCons x vs)` `lfinite us`
       have "\<not> lfinite vs" by simp
       with `ys = lfilter P vs`
-      have "finite {n. Fin n < llength vs \<and> P (lnth vs n)}"
+      have "finite {n. enat n < llength vs \<and> P (lnth vs n)}"
         by(rule lfinite_LConsI)
-      hence "finite ((\<lambda>m. Suc (m + k)) ` {n. Fin n < llength vs \<and> P (lnth vs n)})"
+      hence "finite ((\<lambda>m. Suc (m + k)) ` {n. enat n < llength vs \<and> P (lnth vs n)})"
         by(rule finite_imageI)
       moreover {
         have "{n. n \<le> k \<and> P (lnth xs n)} \<subseteq> {n. n \<le> k}" by auto
         moreover have "finite {n. n \<le> k}" by auto
         ultimately have "finite {n. n \<le> k \<and> P (lnth xs n)}" by(rule finite_subset) }
-      ultimately have "finite ((\<lambda>m. Suc (m + k)) ` {n. Fin n < llength vs \<and> P (lnth vs n)} \<union>
+      ultimately have "finite ((\<lambda>m. Suc (m + k)) ` {n. enat n < llength vs \<and> P (lnth vs n)} \<union>
                             {n. n \<le> k \<and> P (lnth xs n)})"
         by simp
       moreover
-      have "(\<lambda>m. Suc (m + k)) ` {n. Fin n < llength vs \<and> P (lnth vs n)} \<union> 
+      have "(\<lambda>m. Suc (m + k)) ` {n. enat n < llength vs \<and> P (lnth vs n)} \<union> 
             {n. n \<le> k \<and> P (lnth xs n)} =
-            {n. Fin n < llength xs \<and> P (lnth xs n)}"
+            {n. enat n < llength xs \<and> P (lnth xs n)}"
         unfolding k_def using `xs = lappend us (LCons x vs)` `us = llist_of us'`
         by(auto simp add: lnth_lappend_llist_of iSuc_def lnth_LCons split: enat.split)
           (force split: nat.splits)+
       ultimately show ?case by(simp)
     qed }
-  thus "lfinite xs \<or> finite {n. Fin n < llength xs \<and> P (lnth xs n)}" by blast
+  thus "lfinite xs \<or> finite {n. enat n < llength xs \<and> P (lnth xs n)}" by blast
 next
-  assume "lfinite xs \<or> finite {n. Fin n < llength xs \<and> P (lnth xs n)}"
+  assume "lfinite xs \<or> finite {n. enat n < llength xs \<and> P (lnth xs n)}"
   moreover {
     assume "lfinite xs"
     with llength_lfilter_ile[of P xs] have "lfinite (lfilter P xs)"
       by(auto simp add: lfinite_eq_range_llist_of)
   } moreover {
     assume nfin: "\<not> lfinite xs"
-    hence len: "llength xs = Infty" by(rule not_lfinite_llength)
-    assume fin: "finite {n. Fin n < llength xs \<and> P (lnth xs n)}"
+    hence len: "llength xs = \<infinity>" by(rule not_lfinite_llength)
+    assume fin: "finite {n. enat n < llength xs \<and> P (lnth xs n)}"
     have "lfinite (lfilter P xs)"
     proof(cases "P = (\<lambda>x. True)")
       case True with fin len have False by simp
@@ -3735,7 +3735,7 @@ next
       hence "\<not> All P" unfolding All_def .
       then obtain a where "\<not> P a" by auto
       from fin len show ?thesis
-      proof(induct A\<equiv>"{n. Fin n < llength xs \<and> P (lnth xs n)}"
+      proof(induct A\<equiv>"{n. enat n < llength xs \<and> P (lnth xs n)}"
                   arbitrary: xs rule: finite_induct)
         case empty
         hence "lfilter P xs = LNil"
@@ -3744,13 +3744,13 @@ next
       next
         case (insert n A)
         note [simp] = `llength xs = \<infinity>`
-        from `insert n A = {n. Fin n < llength xs \<and> P (lnth xs n)}` `n \<notin> A`
-        have A: "A = {m. m \<noteq> n \<and> Fin m < llength xs \<and> P (lnth xs m)}" by auto
-        let ?xs = "lappend (ltake (Fin n) xs) (LCons a (ldropn (Suc n) xs))"
-        have xs: "xs = lappend (ltake (Fin n) xs) (ldrop (Fin n) xs)"
+        from `insert n A = {n. enat n < llength xs \<and> P (lnth xs n)}` `n \<notin> A`
+        have A: "A = {m. m \<noteq> n \<and> enat m < llength xs \<and> P (lnth xs m)}" by auto
+        let ?xs = "lappend (ltake (enat n) xs) (LCons a (ldropn (Suc n) xs))"
+        have xs: "xs = lappend (ltake (enat n) xs) (ldrop (enat n) xs)"
           by(simp only: lappend_ltake_ldrop)
         from `llength xs = \<infinity>` have "\<not> lfinite xs"
-          by(auto dest: lfinite_llength_Fin)
+          by(auto dest: lfinite_llength_enat)
         hence "\<not> lfinite (ldropn n xs)" by(subst xs) simp
         then obtain X XS where "ldropn n xs = LCons X XS"
           by(cases "ldropn n xs") auto
@@ -3759,7 +3759,7 @@ next
         moreover have "ltl (ldropn n xs) = ldropn (Suc n) xs"
           by(cases xs)(simp_all add: ltl_ldropn del: ldropn_LCons)
         ultimately have "ldropn n xs = LCons (lnth xs n) (ldropn (Suc n) xs)" by simp
-        hence xs: "xs = lappend (ltake (Fin n) xs) (LCons (lnth xs n) (ldropn (Suc n) xs))"
+        hence xs: "xs = lappend (ltake (enat n) xs) (LCons (lnth xs n) (ldropn (Suc n) xs))"
           using xs by simp
         have "llength (ldropn (Suc n) xs) = \<infinity>"
           by(rule not_lfinite_llength)(simp add: `\<not> lfinite xs`)
@@ -3777,13 +3777,13 @@ next
               moreover hence "Suc (k + n) = m" by auto
               ultimately show ?thesis by(auto simp add: lnth_lappend2)
             qed }
-          moreover from `insert n A = {n. Fin n < llength xs \<and> P (lnth xs n)}`
+          moreover from `insert n A = {n. enat n < llength xs \<and> P (lnth xs n)}`
           have "P (lnth xs n)" by auto
           ultimately have "P (lnth xs m) \<longleftrightarrow> P (lnth ?xs m) \<or> m = n"
             by(cases "m = n") simp_all }
-        hence "A = {n. Fin n < llength xs \<and> P (lnth ?xs n)}"
+        hence "A = {n. enat n < llength xs \<and> P (lnth ?xs n)}"
           unfolding A using `\<not> P a` by(auto simp add: lnth_lappend2)
-        hence "A = {n. Fin n < llength ?xs \<and> P (lnth ?xs n)}"
+        hence "A = {n. enat n < llength ?xs \<and> P (lnth ?xs n)}"
           unfolding `llength ?xs = \<infinity>` `llength xs = \<infinity>` . 
         then have "lfinite (lfilter P ?xs)" using `llength ?xs = \<infinity>` by(rule insert)
         thus ?case by(subst xs)(simp split: split_if_asm)
@@ -3821,7 +3821,7 @@ next
 qed
 
 lemma ldistinct_lfilterD:
-  "\<lbrakk> ldistinct (lfilter P xs); Fin n < llength xs; Fin m < llength xs; P a; lnth xs n = a; lnth xs m = a \<rbrakk> \<Longrightarrow> m = n"
+  "\<lbrakk> ldistinct (lfilter P xs); enat n < llength xs; enat m < llength xs; P a; lnth xs n = a; lnth xs m = a \<rbrakk> \<Longrightarrow> m = n"
 proof(induct n m rule: wlog_linorder_le)
   case symmetry thus ?case by simp
 next
@@ -3840,11 +3840,11 @@ next
     case (Suc n)
     from `Suc n \<le> m` obtain m' where m [simp]: "m = Suc m'" by(cases m) simp
     with `Suc n \<le> m` have "n \<le> m'" by simp
-    moreover from `Fin (Suc n) < llength xs`
+    moreover from `enat (Suc n) < llength xs`
     obtain x xs' where xs [simp]: "xs = LCons x xs'" by(cases xs) simp
     from `ldistinct (lfilter P xs)` have "ldistinct (lfilter P xs')" by(simp split: split_if_asm)
-    moreover from `Fin (Suc n) < llength xs` `Fin m < llength xs`
-    have "Fin n < llength xs'" "Fin m' < llength xs'" by(simp_all add: Suc_ile_eq)
+    moreover from `enat (Suc n) < llength xs` `enat m < llength xs`
+    have "enat n < llength xs'" "enat m' < llength xs'" by(simp_all add: Suc_ile_eq)
     moreover note `P a`
     moreover have "lnth xs' n = a" "lnth xs' m' = a"
       using `lnth xs (Suc n) = a` `lnth xs m = a` by simp_all
@@ -4005,17 +4005,17 @@ qed
 
 lemma llength_lconcat_lfinite_conv_sum:
   assumes "lfinite xss"
-  shows "llength (lconcat xss) = (\<Sum>i | Fin i < llength xss. llength (lnth xss i))"
+  shows "llength (lconcat xss) = (\<Sum>i | enat i < llength xss. llength (lnth xss i))"
 using assms
 proof(induct)
   case lfinite_LNil thus ?case by simp
 next
   case (lfinite_LConsI xss xs)
-  have "{i. Fin i \<le> llength xss} = insert 0 {Suc i|i. Fin i < llength xss}"
+  have "{i. enat i \<le> llength xss} = insert 0 {Suc i|i. enat i < llength xss}"
     by(auto simp add: zero_enat_def[symmetric] Suc_ile_eq gr0_conv_Suc)
-  also have "\<dots> = insert 0 (Suc ` {i. Fin i < llength xss})" by auto
-  also have "0 \<notin> Suc ` {i. Fin i < llength xss}" by auto
-  moreover from `lfinite xss` have "finite {i. Fin i < llength xss}"
+  also have "\<dots> = insert 0 (Suc ` {i. enat i < llength xss})" by auto
+  also have "0 \<notin> Suc ` {i. enat i < llength xss}" by auto
+  moreover from `lfinite xss` have "finite {i. enat i < llength xss}"
     by(rule lfinite_finite_index)
   ultimately show ?case using lfinite_LConsI
     by(simp add: setsum.reindex)
@@ -4043,11 +4043,11 @@ proof -
       proof
         fix ys
         assume "ys \<in> lset yss"
-        then obtain i where "Fin i < llength yss" "lnth yss i = ys"
+        then obtain i where "enat i < llength yss" "lnth yss i = ys"
           unfolding lset_def by blast
         moreover from len_eq have "llength xss = llength yss"
           by(rule llist_all2_llengthD)
-        moreover with `Fin i < llength yss` have "lnth xss i \<in> lset xss"
+        moreover with `enat i < llength yss` have "lnth xss i \<in> lset xss"
           unfolding lset_def by auto
         with `lset xss \<subseteq> {LNil}` have "lnth xss i = LNil" by auto
         ultimately show "ys \<in> {LNil}" using len_eq by(auto dest: llist_all2_lnthD2)
@@ -4061,7 +4061,7 @@ proof -
         and "XSS = lappend xs' (lconcat xss'')" "set xss' \<subseteq> {LNil}" 
         unfolding lconcat_eq_LCons_conv by blast
       from xss len_eq 
-      have xss'_eq: "llist_all2 ?P (llist_of xss') (ltake (Fin (length xss')) yss)"
+      have xss'_eq: "llist_all2 ?P (llist_of xss') (ltake (enat (length xss')) yss)"
         and rest_eq: "llist_all2 ?P (LCons (LCons x xs') xss'') (ldropn (length xss') yss)"
         by(auto dest: llist_all2_lappend1D)
 
@@ -4072,11 +4072,11 @@ proof -
       from len_ys obtain y ys' where ys: "ys = LCons y ys'" by(cases ys) auto
       have "yss = lappend (ltake (llength (llist_of xss')) yss) (ldrop (llength (llist_of xss')) yss)" by simp
       also note llength_llist_of also note ldrop.simps(1) also note ys_yss' also note ys
-      also have "lconcat (ltake (Fin (length xss')) yss) = LNil" unfolding lconcat_eq_LNil
+      also have "lconcat (ltake (enat (length xss')) yss) = LNil" unfolding lconcat_eq_LNil
       proof
         fix ys
-        assume "ys \<in> lset (ltake (Fin (length xss')) yss)"
-        then obtain n where "lnth (ltake (Fin (length xss')) yss) n = ys" "n < length xss'"
+        assume "ys \<in> lset (ltake (enat (length xss')) yss)"
+        then obtain n where "lnth (ltake (enat (length xss')) yss) n = ys" "n < length xss'"
           unfolding lset_def by auto
         with xss'_eq have "llength (lnth (llist_of xss') n) = llength ys"
           by(auto dest: llist_all2_lnthD)
@@ -4135,7 +4135,7 @@ next
 qed
 
 lemma lconcat_ltake:
-  "lconcat (ltake (Fin n) xss) = ltake (\<Sum>i<n. llength (lnth xss i)) (lconcat xss)"
+  "lconcat (ltake (enat n) xss) = ltake (\<Sum>i<n. llength (lnth xss i)) (lconcat xss)"
 proof(induct n arbitrary: xss)
   case 0 thus ?case by(simp add: zero_enat_def[symmetric])
 next
@@ -4145,11 +4145,11 @@ next
     case LNil thus ?thesis by simp
   next
     case (LCons xs xss')
-    hence "lconcat (ltake (Fin (Suc n)) xss) = lappend xs (lconcat (ltake (Fin n) xss'))"
-      by(simp add: iSuc_Fin[symmetric])
-    also have "lconcat (ltake (Fin n) xss') = ltake (\<Sum>i<n. llength (lnth xss' i)) (lconcat xss')" by(rule Suc)
+    hence "lconcat (ltake (enat (Suc n)) xss) = lappend xs (lconcat (ltake (enat n) xss'))"
+      by(simp add: iSuc_enat[symmetric])
+    also have "lconcat (ltake (enat n) xss') = ltake (\<Sum>i<n. llength (lnth xss' i)) (lconcat xss')" by(rule Suc)
     also have "lappend xs \<dots> = ltake (llength xs + (\<Sum>i<n. llength (lnth xss' i))) (lappend xs (lconcat xss'))"
-      by(cases "llength xs")(simp_all add: ltake_plus_conv_lappend ltake_lappend1 ltake_all ldropn_lappend2 lappend_inf lfinite_conv_llength_Fin)
+      by(cases "llength xs")(simp_all add: ltake_plus_conv_lappend ltake_lappend1 ltake_all ldropn_lappend2 lappend_inf lfinite_conv_llength_enat)
     also have "(\<Sum>i<n. llength (lnth xss' i)) = (\<Sum>i=1..<Suc n. llength (lnth xss i))"
       by(rule setsum_reindex_cong[symmetric, where f=Suc])(auto simp add: LCons image_iff less_Suc_eq_0_disj)
     also have "llength xs + \<dots> = (\<Sum>i<Suc n. llength (lnth xss i))"
@@ -4161,9 +4161,9 @@ qed
 
 
 lemma lnth_lconcat_conv:
-  assumes "Fin n < llength (lconcat xss)"
-  shows "\<exists>m n'. lnth (lconcat xss) n = lnth (lnth xss m) n' \<and> Fin n' < llength (lnth xss m) \<and> 
-                Fin m < llength xss \<and> Fin n = (\<Sum>i<m . llength (lnth xss i)) + Fin n'" 
+  assumes "enat n < llength (lconcat xss)"
+  shows "\<exists>m n'. lnth (lconcat xss) n = lnth (lnth xss m) n' \<and> enat n' < llength (lnth xss m) \<and> 
+                enat m < llength xss \<and> enat n = (\<Sum>i<m . llength (lnth xss i)) + enat n'" 
 using assms
 proof(induct n arbitrary: xss)
   case 0
@@ -4179,9 +4179,9 @@ proof(induct n arbitrary: xss)
     by(simp add: lnth_lappend2)
   ultimately have "lnth (lconcat xss) 0 = lnth (lnth xss (length xss')) 0" 
     using concat_xss xss by(simp)
-  moreover have "Fin 0 < llength (lnth xss (length xss'))"
+  moreover have "enat 0 < llength (lnth xss (length xss'))"
     by(simp add: zero_enat_def[symmetric])
-  moreover have "Fin (length xss') < llength xss" unfolding xss 
+  moreover have "enat (length xss') < llength xss" unfolding xss 
     by simp (metis add_commute iSuc_plus iless_Suc_eq enat_le_plus_same(2))
   moreover have "(\<Sum>i < length xss'. llength (lnth xss i)) = (\<Sum>i < length xss'. 0)"
   proof(rule setsum_cong)
@@ -4195,12 +4195,12 @@ proof(induct n arbitrary: xss)
       unfolding xss by(simp add: lnth_lappend1 lnth_llist_of)
     ultimately show "llength (lnth xss i) = 0" by simp
   qed
-  hence "Fin 0 = (\<Sum>i<length xss'. llength (lnth xss i)) + Fin 0"
+  hence "enat 0 = (\<Sum>i<length xss'. llength (lnth xss i)) + enat 0"
     by(simp add: zero_enat_def[symmetric])
   ultimately show ?case by blast
 next
   case (Suc n)
-  from `Fin (Suc n) < llength (lconcat xss)`
+  from `enat (Suc n) < llength (lconcat xss)`
   have "lconcat xss \<noteq> LNil" by(cases "lconcat xss") auto
   then obtain x xs where concat_xss: "lconcat xss = LCons x xs" by(auto simp add: neq_LNil_conv)
   then obtain xs' xss' xss'' where xss: "xss = lappend (llist_of xss') (LCons (LCons x xs') xss'')"
@@ -4210,16 +4210,16 @@ next
   from LNil have concat_xss': "lconcat (llist_of xss') = LNil"
     unfolding lconcat_eq_LNil by simp
   from xs have "xs = lconcat (LCons xs' xss'')" by simp
-  with concat_xss `Fin (Suc n) < llength (lconcat xss)`
-  have "Fin n < llength (lconcat (LCons xs' xss''))"
+  with concat_xss `enat (Suc n) < llength (lconcat xss)`
+  have "enat n < llength (lconcat (LCons xs' xss''))"
     by(simp add: Suc_ile_eq)
   from Suc.hyps[OF this] obtain m n'
     where nth_n: "lnth (lconcat (LCons xs' xss'')) n = lnth (lnth (LCons xs' xss'') m) n'"
-    and n': "Fin n' < llength (lnth (LCons xs' xss'') m)"
-    and m': "Fin m < llength (LCons xs' xss'')"
-    and n_eq: "Fin n = (\<Sum>i < m. llength (lnth (LCons xs' xss'') i)) + Fin n'"
+    and n': "enat n' < llength (lnth (LCons xs' xss'') m)"
+    and m': "enat m < llength (LCons xs' xss'')"
+    and n_eq: "enat n = (\<Sum>i < m. llength (lnth (LCons xs' xss'') i)) + enat n'"
     by blast
-  from n_eq obtain N where N: "(\<Sum>i < m. llength (lnth (LCons xs' xss'') i)) = Fin N"
+  from n_eq obtain N where N: "(\<Sum>i < m. llength (lnth (LCons xs' xss'') i)) = enat N"
     and n: "n = N + n'"
     by(cases "\<Sum>i < m. llength (lnth (LCons xs' xss'') i)") simp_all
 
@@ -4237,20 +4237,20 @@ next
     then obtain m' where [simp]: "m = Suc m'" by(cases m) auto
     have "lnth (lconcat xss) (Suc n) = lnth (lnth xss (m + length xss')) n'"
       using concat_xss' nth_n unfolding xss by(simp add: lnth_lappend2)
-    moreover have "Fin n' < llength (lnth xss (m + length xss'))"
+    moreover have "enat n' < llength (lnth xss (m + length xss'))"
       using concat_xss' n' unfolding xss by(simp add: lnth_lappend2)
-    moreover have "Fin (m + length xss') < llength xss"
+    moreover have "enat (m + length xss') < llength xss"
       using concat_xss' m' unfolding xss apply(simp add: Suc_ile_eq)
-      apply(simp add: iSuc_Fin[symmetric] plus_enat_simps(1)[symmetric] del: plus_enat_simps(1))
+      apply(simp add: iSuc_enat[symmetric] plus_enat_simps(1)[symmetric] del: plus_enat_simps(1))
       apply(simp add: iSuc_plus_1 one_enat_def del: plus_enat_simps(1))
-      apply(metis add_commute add_assoc Fin_add_mono)
+      apply(metis add_commute add_assoc enat_add_mono)
       done
-    moreover have "Fin (m + length xss') < llength xss"
+    moreover have "enat (m + length xss') < llength xss"
       using m' unfolding xss
       apply(simp add: Suc_ile_eq)
-      apply(simp add: iSuc_Fin[symmetric] plus_enat_simps(1)[symmetric] del: plus_enat_simps(1))
+      apply(simp add: iSuc_enat[symmetric] plus_enat_simps(1)[symmetric] del: plus_enat_simps(1))
       apply(simp add: iSuc_plus_1 one_enat_def del: plus_enat_simps(1))
-      apply(metis add_commute add_assoc Fin_add_mono)
+      apply(metis add_commute add_assoc enat_add_mono)
       done
     moreover
     { have "(\<Sum>i < m + length xss'. llength (lnth xss i)) =
@@ -4277,8 +4277,8 @@ next
       also have "iSuc (llength xs') + \<dots> = 1 + (llength (lnth (LCons xs' xss'') 0) + \<dots>)"
         by(simp add: iSuc_plus_1 add_ac)
       also note setsum_head_upt_Suc[symmetric, OF `0 < m`]
-      finally have "Fin (Suc n) = (\<Sum>i<m + length xss'. llength (lnth xss i)) + Fin n'"
-        unfolding iSuc_Fin[symmetric] n_eq by(simp add: iSuc_plus_1 add_ac atLeast0LessThan) }
+      finally have "enat (Suc n) = (\<Sum>i<m + length xss'. llength (lnth xss i)) + enat n'"
+        unfolding iSuc_enat[symmetric] n_eq by(simp add: iSuc_plus_1 add_ac atLeast0LessThan) }
     ultimately show ?thesis by blast
   next
     case False
@@ -4286,12 +4286,12 @@ next
     have "lnth (lconcat xss) (Suc n) = lnth (lnth xss (length xss')) (Suc n')"
       using concat_xss n_eq xs n'
       unfolding xss by(simp add: lnth_lappend1 lnth_lappend2)
-    moreover have "Fin (Suc n') < llength (lnth xss (length xss'))"
+    moreover have "enat (Suc n') < llength (lnth xss (length xss'))"
       using concat_xss n' unfolding xss by(simp add: lnth_lappend2 Suc_ile_eq)
-    moreover have "Fin (length xss') < llength xss" unfolding xss 
+    moreover have "enat (length xss') < llength xss" unfolding xss 
       by simp (metis add_ac(1) iless_Suc_eq enat_le_plus_same(1) plus_1_iSuc(2))
     moreover from lnth_prefix have "(\<Sum>i<length xss'. llength (lnth xss i)) = 0" by simp
-    hence "Fin (Suc n) = (\<Sum>i<length xss'. llength (lnth xss i)) + Fin (Suc n')"
+    hence "enat (Suc n) = (\<Sum>i<length xss'. llength (lnth xss i)) + enat (Suc n')"
       using n_eq by simp
     ultimately show ?thesis by blast
   qed
@@ -4307,8 +4307,8 @@ next
 qed
 
 lemma lnth_lconcat_ltake:
-  assumes "Fin w < llength (lconcat (ltake (Fin n) xss))"
-  shows "lnth (lconcat (ltake (Fin n) xss)) w = lnth (lconcat xss) w"
+  assumes "enat w < llength (lconcat (ltake (enat n) xss))"
+  shows "lnth (lconcat (ltake (enat n) xss)) w = lnth (lconcat xss) w"
 using assms by(auto intro: lprefix_lnthD lprefix_lconcatI)
 
 
@@ -4409,7 +4409,7 @@ proof -
 qed
 
 lemma lset_lsublist:
-  "lset (lsublist xs I) = {lnth xs i|i. Fin i<llength xs \<and> i \<in> I}"
+  "lset (lsublist xs I) = {lnth xs i|i. enat i<llength xs \<and> i \<in> I}"
 apply(auto simp add: lsublist_def lset_lzip)
 apply(rule_tac x="(lnth xs i, i)" in image_eqI)
 apply auto
@@ -4423,14 +4423,14 @@ lemma lsublist_singleton [simp]:
 by (simp add: lsublist_LCons)
 
 lemma lsublist_upt_eq_ltake [simp]:
-  "lsublist xs {..<n} = ltake (Fin n) xs"
+  "lsublist xs {..<n} = ltake (enat n) xs"
 apply(rule sym)
 proof(induct n arbitrary: xs)
   case 0 thus ?case by(simp add: zero_enat_def[symmetric])
 next
   case (Suc n)
   thus ?case 
-    by(cases xs)(simp_all add: iSuc_Fin[symmetric] lsublist_LCons lessThan_def)
+    by(cases xs)(simp_all add: iSuc_enat[symmetric] lsublist_LCons lessThan_def)
 qed
 
 lemma lsublist_llist_of [simp]:
@@ -4452,15 +4452,15 @@ by(simp add: lsublist_def lzip_lmap1 lmap_compose[symmetric]
         del: lmap_compose)
 
 lemma lfilter_conv_lsublist: 
-  "lfilter P xs = lsublist xs {n. Fin n < llength xs \<and> P (lnth xs n)}"
+  "lfilter P xs = lsublist xs {n. enat n < llength xs \<and> P (lnth xs n)}"
 proof -
-  have "lsublist xs {n. Fin n < llength xs \<and> P (lnth xs n)} =
-        lmap fst (lfilter (\<lambda>(x, y). Fin y < llength xs \<and> P (lnth xs y)) 
+  have "lsublist xs {n. enat n < llength xs \<and> P (lnth xs n)} =
+        lmap fst (lfilter (\<lambda>(x, y). enat y < llength xs \<and> P (lnth xs y)) 
                           (lzip xs (iterates Suc 0)))"
     by(simp add: lsublist_def)
-  also have "\<forall>(x, y)\<in>lset (lzip xs (iterates Suc 0)). Fin y < llength xs \<and> x = lnth xs y"
+  also have "\<forall>(x, y)\<in>lset (lzip xs (iterates Suc 0)). enat y < llength xs \<and> x = lnth xs y"
     by(auto simp add: lset_lzip)
-  hence "lfilter (\<lambda>(x, y). Fin y < llength xs \<and> P (lnth xs y)) (lzip xs (iterates Suc 0)) =
+  hence "lfilter (\<lambda>(x, y). enat y < llength xs \<and> P (lnth xs y)) (lzip xs (iterates Suc 0)) =
          lfilter (P \<circ> fst) (lzip xs (iterates Suc 0))"
     by -(rule lfilter_cong[OF refl], auto)
   also have "lmap fst (lfilter (P \<circ> fst) (lzip xs (iterates Suc 0))) =
@@ -4472,14 +4472,14 @@ proof -
 qed
 
 lemma ltake_iterates_Suc:
-  "ltake (Fin n) (iterates Suc m) = llist_of [m..<n + m]"
+  "ltake (enat n) (iterates Suc m) = llist_of [m..<n + m]"
 proof(induct n arbitrary: m)
   case 0 thus ?case by(simp add: zero_enat_def[symmetric])
 next
   case (Suc n)
-  have "ltake (Fin (Suc n)) (iterates Suc m) = 
-        LCons m (ltake (Fin n) (iterates Suc (Suc m)))"
-    by(subst iterates)(simp add: iSuc_Fin[symmetric])
+  have "ltake (enat (Suc n)) (iterates Suc m) = 
+        LCons m (ltake (enat n) (iterates Suc (Suc m)))"
+    by(subst iterates)(simp add: iSuc_enat[symmetric])
   also note Suc
   also have "LCons m (llist_of [Suc m..<n + Suc m]) = llist_of [m..<Suc n+m]"
     unfolding llist_of.simps[symmetric]
@@ -4488,24 +4488,24 @@ next
 qed
 
 lemma lsublist_lappend_lfinite: 
-  assumes len: "llength xs = Fin k"
+  assumes len: "llength xs = enat k"
   shows "lsublist (lappend xs ys) A = 
          lappend (lsublist xs A) (lsublist ys {n. n + k \<in> A})"
 proof -
   let ?it = "iterates Suc"
-  from assms have fin: "lfinite xs" by(rule llength_eq_Fin_lfiniteD)
+  from assms have fin: "lfinite xs" by(rule llength_eq_enat_lfiniteD)
   have "lsublist (lappend xs ys) A = 
     lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip (lappend xs ys) (?it 0)))"
     by(simp add: lsublist_def)
-  also have "?it 0 = lappend (ltake (Fin k) (?it 0)) (ldrop (Fin k) (?it 0))"
+  also have "?it 0 = lappend (ltake (enat k) (?it 0)) (ldrop (enat k) (?it 0))"
     by(simp only: lappend_ltake_ldrop)
   also note lzip_lappend
   also note lfilter_lappend_lfinite
   also note lmap_lappend_distrib
-  also have "lzip xs (ltake (Fin k) (?it 0)) = lzip xs (?it 0)"
+  also have "lzip xs (ltake (enat k) (?it 0)) = lzip xs (?it 0)"
     using len by(subst (1 2) lzip_conv_lzip_ltake_min_llength) simp
   also note lsublist_def[symmetric]
-  also have "ldrop (Fin k) (?it 0) = ?it k"
+  also have "ldrop (enat k) (?it 0) = ?it k"
     by(simp add: ldropn_iterates)
   also { fix n m
     have "(?it (n + m), lmap (\<lambda>n. n + m) (?it n)) \<in>
@@ -4532,22 +4532,22 @@ qed
 
 lemma lsublist_split:
   "lsublist xs A = 
-   lappend (lsublist (ltake (Fin n) xs) A) (lsublist (ldropn n xs) {m. n + m \<in> A})"
-proof(cases "Fin n \<le> llength xs")
+   lappend (lsublist (ltake (enat n) xs) A) (lsublist (ldropn n xs) {m. n + m \<in> A})"
+proof(cases "enat n \<le> llength xs")
   case False thus ?thesis by(auto simp add: ltake_all ldropn_all)
 next
   case True
-  have "xs = lappend (ltake (Fin n) xs) (ldrop (Fin n) xs)"
+  have "xs = lappend (ltake (enat n) xs) (ldrop (enat n) xs)"
     by(simp only: lappend_ltake_ldrop)
-  hence "xs = lappend (ltake (Fin n) xs) (ldropn n xs)" by simp
-  hence "lsublist xs A = lsublist (lappend (ltake (Fin n) xs) (ldropn n xs)) A"
+  hence "xs = lappend (ltake (enat n) xs) (ldropn n xs)" by simp
+  hence "lsublist xs A = lsublist (lappend (ltake (enat n) xs) (ldropn n xs)) A"
     by(simp)
   also note lsublist_lappend_lfinite[where k=n]
   finally show ?thesis using True by(simp add: min_def add_ac)
 qed
 
 lemma lsublist_cong:
-  assumes xs: "xs = ys" and A: "\<And>n. Fin n < llength ys \<Longrightarrow> n \<in> A \<longleftrightarrow> n \<in> B"
+  assumes xs: "xs = ys" and A: "\<And>n. enat n < llength ys \<Longrightarrow> n \<in> A \<longleftrightarrow> n \<in> B"
   shows "lsublist xs A = lsublist ys B"
 proof -
   have "lfilter (\<lambda>(x, y). y \<in> A) (lzip ys (iterates Suc 0)) = 
@@ -4557,17 +4557,17 @@ proof -
 qed
 
 lemma lsublist_insert:
-  assumes n: "Fin n < llength xs"
+  assumes n: "enat n < llength xs"
   shows "lsublist xs (insert n A) = 
-         lappend (lsublist (ltake (Fin n) xs) A) (LCons (lnth xs n) 
+         lappend (lsublist (ltake (enat n) xs) A) (LCons (lnth xs n) 
                  (lsublist (ldropn (Suc n) xs) {m. Suc (n + m) \<in> A}))"
 proof -
   have "lsublist xs (insert n A) = 
-        lappend (lsublist (ltake (Fin n) xs) (insert n A)) 
+        lappend (lsublist (ltake (enat n) xs) (insert n A)) 
                 (lsublist (ldropn n xs) {m. n + m \<in> (insert n A)})"
     by(rule lsublist_split)
-  also have "lsublist (ltake (Fin n) xs) (insert n A) = 
-            lsublist (ltake (Fin n) xs) A"
+  also have "lsublist (ltake (enat n) xs) (insert n A) = 
+            lsublist (ltake (enat n) xs) A"
     by(rule lsublist_cong[OF refl]) simp
   also { from n obtain X XS where "ldropn n xs = LCons X XS"
       by(cases "ldropn n xs")(auto simp add: ldropn_eq_LNil)
@@ -4587,17 +4587,17 @@ lemma lfinite_lsublist [simp]:
 proof
   assume "lfinite (lsublist xs A)"
   hence "lfinite xs \<or> 
-         finite {n. Fin n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)}"
+         finite {n. enat n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)}"
     by(simp add: lsublist_def llength_lzip lfinite_lfilter)
-  also have "{n. Fin n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)} =
-            {n. Fin n < llength xs \<and> n \<in> A}" by(auto simp add: lnth_lzip)
+  also have "{n. enat n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)} =
+            {n. enat n < llength xs \<and> n \<in> A}" by(auto simp add: lnth_lzip)
   finally show "lfinite xs \<or> finite A"
     by(auto simp add: not_lfinite_llength elim: contrapos_np)
 next
   assume "lfinite xs \<or> finite A"
   moreover
-  have "{n. Fin n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)} =
-        {n. Fin n < llength xs \<and> n \<in> A}" by(auto simp add: lnth_lzip)
+  have "{n. enat n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)} =
+        {n. enat n < llength xs \<and> n \<in> A}" by(auto simp add: lnth_lzip)
   ultimately show "lfinite (lsublist xs A)"
     by(auto simp add: lsublist_def llength_lzip lfinite_lfilter)
 qed
@@ -4684,7 +4684,7 @@ qed
 subsection {* The infinite list constructor @{term "inf_llist"} *}
 
 lemma llength_inf_llist [simp]:
-  "llength (inf_llist f) = Infty"
+  "llength (inf_llist f) = \<infinity>"
 by(rule not_lfinite_llength) auto
 
 lemma lappend_inf_llist [simp]: "lappend (inf_llist f) xs = inf_llist f"
@@ -4704,15 +4704,15 @@ proof -
   qed
 qed
 
-lemma ltake_Fin_inf_llist [simp]:
-  "ltake (Fin n) (inf_llist f) = llist_of (map f [0..<n])"
+lemma ltake_enat_inf_llist [simp]:
+  "ltake (enat n) (inf_llist f) = llist_of (map f [0..<n])"
 proof(induct n arbitrary: f)
   case 0 thus ?case by(simp add: zero_enat_def[symmetric])
 next
   case (Suc n)
-  have "ltake (Fin (Suc n)) (inf_llist f) =
-        LCons (f 0) (ltake (Fin n) (inf_llist (\<lambda>n. f (Suc n))))"
-    by(subst inf_llist_rec)(simp add: iSuc_Fin[symmetric])
+  have "ltake (enat (Suc n)) (inf_llist f) =
+        LCons (f 0) (ltake (enat n) (inf_llist (\<lambda>n. f (Suc n))))"
+    by(subst inf_llist_rec)(simp add: iSuc_enat[symmetric])
   also note Suc[of "\<lambda>n. f (Suc n)"]
   also have "map (\<lambda>a. f (Suc a)) [0..<n] = map f [1..<Suc n]" by(induct n) auto
   also note llist_of.simps(2)[symmetric]
@@ -4730,8 +4730,8 @@ next
     by(subst inf_llist_rec) simp
 qed
 
-lemma ldrop_Fin_inf_llist:
-  "ldrop (Fin n) (inf_llist f) = inf_llist (\<lambda>m. f (m + n))"
+lemma ldrop_enat_inf_llist:
+  "ldrop (enat n) (inf_llist f) = inf_llist (\<lambda>m. f (m + n))"
 by simp
 
 lemma lzip_inf_llist_inf_llist [simp]:

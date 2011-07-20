@@ -235,7 +235,7 @@ where
         xs = llist_corec a f'
     in (xs, 
         if lfinite xs
-        then THE c. (g ^^ (Suc (THE n. llength xs = Fin n))) (Inl a) = Inr c
+        then THE c. (g ^^ (Suc (THE n. llength xs = enat n))) (Inl a) = Inr c
         else undefined))"
 
 lemma tllist_corec_aux:
@@ -261,7 +261,7 @@ next
     from xs have "tllist_corec_aux a' f = sum_case (prod_case (\<lambda>b a'. TCONS b (tllist_corec_aux a' f))) TNIL (f a')"
       by(rule lfinite_LConsI)
     thus ?case using `lfinite xs` a' xs
-      by(auto simp add: tllist_corec_aux_def TCONS_def TNIL_def Let_def iSuc_Fin funpow_Suc_tail_rec llist_corec dest!: lfinite_llength_Fin simp del: funpow.simps)
+      by(auto simp add: tllist_corec_aux_def TCONS_def TNIL_def Let_def iSuc_enat funpow_Suc_tail_rec llist_corec dest!: lfinite_llength_enat simp del: funpow.simps)
   qed
 qed
 
@@ -617,7 +617,7 @@ proof descending
       case (lfinite_LConsI xs x)
       with step[OF `X (LCons x xs, b) (ys, b')`]
       show ?thesis 
-        by(clarsimp simp add: TNIL_def TCONS_def)(auto simp add: lfinite_conv_llength_Fin)
+        by(clarsimp simp add: TNIL_def TCONS_def)(auto simp add: lfinite_conv_llength_enat)
     qed
   }
   ultimately show "TLLIST_ALL2 P R xsb ysb" by simp
@@ -752,7 +752,7 @@ lemma tdropn_Suc [nitpick_simp]: "tdropn (Suc n) xs = (case xs of TNil b \<Right
 by(cases xs) simp_all -- "FIXME: Ask Cezary/Christian why descending / lifting raises a type error here"
 
 lemma lappendt_ltake_tdropn:
-  "lappendt (ltake (Fin n) (llist_of_tllist xs)) (tdropn n xs) = xs"
+  "lappendt (ltake (enat n) (llist_of_tllist xs)) (tdropn n xs) = xs"
 by descending (auto)
 
 lemma llist_of_tllist_tdropn [simp]:
@@ -760,13 +760,13 @@ lemma llist_of_tllist_tdropn [simp]:
 by descending auto
 
 lemma tdropn_Suc_conv_tdropn:
-  "Fin n < tlength xs \<Longrightarrow> TCons (tnth xs n) (tdropn (Suc n) xs) = tdropn n xs" 
+  "enat n < tlength xs \<Longrightarrow> TCons (tnth xs n) (tdropn (Suc n) xs) = tdropn n xs" 
 by descending(auto simp add: TCONS_def ldropn_Suc_conv_ldropn)
 
-lemma tlength_tdropn [simp]: "tlength (tdropn n xs) = tlength xs - Fin n"
+lemma tlength_tdropn [simp]: "tlength (tdropn n xs) = tlength xs - enat n"
 by descending auto
 
-lemma tnth_tdropn [simp]: "Fin (n + m) < tlength xs \<Longrightarrow> tnth (tdropn n xs) m = tnth xs (m + n)"
+lemma tnth_tdropn [simp]: "enat (n + m) < tlength xs \<Longrightarrow> tnth (tdropn n xs) m = tnth xs (m + n)"
 by descending auto
 
 subsection {* @{term "tset"} *}

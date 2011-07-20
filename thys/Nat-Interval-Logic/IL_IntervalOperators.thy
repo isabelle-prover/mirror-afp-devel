@@ -2704,14 +2704,14 @@ apply simp
 done
 
 thm iT_Div_0_card_if
-lemma iT_Div_0_icard_if: "icard (I \<oslash> 0) = Fin (if I = {} then 0 else Suc 0)"
+lemma iT_Div_0_icard_if: "icard (I \<oslash> 0) = enat (if I = {} then 0 else Suc 0)"
 thm iT_Div_0_finite
 by (simp add: icard_finite iT_Div_0_finite iT_Div_0_card_if)
 
 thm iT_Div_mod_partition_card
 lemma iT_Div_mod_partition_icard: "
   icard (I \<inter> [n * d\<dots>,d - Suc 0] \<oslash> d) =
-  Fin (if I \<inter> [n * d\<dots>,d - Suc 0] = {} then 0 else Suc 0)"
+  enat (if I \<inter> [n * d\<dots>,d - Suc 0] = {} then 0 else Suc 0)"
 apply (subgoal_tac "finite (I \<inter> [n * d\<dots>,d - Suc 0] \<oslash> d)")
  prefer 2
  apply (case_tac "d = 0", simp add: iT_Div_0_finite)
@@ -2723,13 +2723,13 @@ thm iT_Div_card
 lemma iT_Div_icard: "
   \<lbrakk> 0 < d; finite I \<Longrightarrow> Max I div d \<le> n\<rbrakk> \<Longrightarrow>
   icard (I \<oslash> d) = 
-  (if finite I then Fin (\<Sum>k\<le>n. if I \<inter> [k * d\<dots>,d - Suc 0] = {} then 0 else Suc 0) else \<infinity>)"
+  (if finite I then enat (\<Sum>k\<le>n. if I \<inter> [k * d\<dots>,d - Suc 0] = {} then 0 else Suc 0) else \<infinity>)"
 by (simp add: icard_finite iT_Div_finite_iff iT_Div_card)
 
 thm iT_Div_Max_card
 corollary iT_Div_Max_icard: "0 < d \<Longrightarrow> 
   icard (I \<oslash> d) = (if finite I 
-    then Fin (\<Sum>k\<le>Max I div d. if I \<inter> [k * d\<dots>,d - Suc 0] = {} then 0 else Suc 0) else \<infinity>)"
+    then enat (\<Sum>k\<le>Max I div d. if I \<inter> [k * d\<dots>,d - Suc 0] = {} then 0 else Suc 0) else \<infinity>)"
 by (simp add: iT_Div_icard)
 
 thm iT_Div_card_le
@@ -2744,7 +2744,7 @@ lemma iT_Div_icard_inj_on: "inj_on (\<lambda>n. n div k) I \<Longrightarrow> ica
 by (simp add: iT_Div_def icard_image)
 
 thm iT_Div_card_ge
-lemma iT_Div_icard_ge: "icard I div (Fin d) + Fin (if icard I mod (Fin d) = 0 then 0 else Suc 0) \<le> icard (I \<oslash> d)"
+lemma iT_Div_icard_ge: "icard I div (enat d) + enat (if icard I mod (enat d) = 0 then 0 else Suc 0) \<le> icard (I \<oslash> d)"
 apply (case_tac "d = 0")
  apply (simp add: icard_finite iT_Div_0_finite)
  apply (case_tac "icard I")
@@ -2756,17 +2756,17 @@ apply (simp add: iT_Div_finite_iff)
 done
 
 thm iT_Div_card_ge_div
-corollary iT_Div_icard_ge_div: "icard I div (Fin d) \<le> icard (I \<oslash> d)"
+corollary iT_Div_icard_ge_div: "icard I div (enat d) \<le> icard (I \<oslash> d)"
 by (rule iT_Div_icard_ge[THEN iadd_ileD1])
 
 
 thm iT_Div_card_ge__is_maximal_lower_bound
 lemma iT_Div_icard_ge__is_maximal_lower_bound: "
-  \<forall>I d. icard I div (Fin d) + Fin (if icard I mod (Fin d) = 0 then 0 else Suc 0) 
+  \<forall>I d. icard I div (enat d) + enat (if icard I mod (enat d) = 0 then 0 else Suc 0) 
         \<le> f (icard I) d \<and> 
         f (icard I) d \<le> icard (I \<oslash> d) \<Longrightarrow> 
   f (icard (I::nat set)) d = 
-  icard I div (Fin d) + Fin (if icard I mod (Fin d) = 0 then 0 else Suc 0)"
+  icard I div (enat d) + enat (if icard I mod (enat d) = 0 then 0 else Suc 0)"
 apply (case_tac "d = 0")
  apply (drule_tac x=I in spec, drule_tac x=d in spec, erule conjE)
  apply (simp add: iT_Div_0_icard_if icard_0_eq[unfolded zero_enat_def])
@@ -2778,7 +2778,7 @@ apply (case_tac "finite I")
 apply simp
 apply (frule_tac iT_Div_finite_iff[THEN iffD2], assumption)
 thm iT_Div_card_ge__is_maximal_lower_bound
-apply (cut_tac f="\<lambda>c d. the_Fin (f (Fin c) d)" and I=I and d=d in iT_Div_card_ge__is_maximal_lower_bound)
+apply (cut_tac f="\<lambda>c d. the_enat (f (enat c) d)" and I=I and d=d in iT_Div_card_ge__is_maximal_lower_bound)
  apply (intro allI, rename_tac I' d')
  apply (subgoal_tac "\<And>k. f 0 k = 0")
   prefer 2
@@ -2795,9 +2795,9 @@ apply (cut_tac f="\<lambda>c d. the_Fin (f (Fin c) d)" and I=I and d=d in iT_Div
  apply (case_tac "finite I'")
   apply (frule_tac I=I' and k=d' in iT_Div_finite_iff[THEN iffD2, rule_format], assumption)
   apply (simp add: icard_finite)
-  apply (subgoal_tac "\<exists>n. f (Fin (card I')) d' = Fin n")
+  apply (subgoal_tac "\<exists>n. f (enat (card I')) d' = enat n")
    prefer 2
-   apply (rule Fin_ile, assumption)
+   apply (rule enat_ile, assumption)
   apply clarsimp
  apply (subgoal_tac "infinite (I' \<oslash> d')")
   prefer 2
@@ -2805,9 +2805,9 @@ apply (cut_tac f="\<lambda>c d. the_Fin (f (Fin c) d)" and I=I and d=d in iT_Div
  apply simp
 apply (drule_tac x=I in spec, drule_tac x=d in spec, erule conjE)
 apply (simp add: icard_finite)
-apply (subgoal_tac "\<exists>n. f (Fin (card I)) d = Fin n")
+apply (subgoal_tac "\<exists>n. f (enat (card I)) d = enat n")
  prefer 2
- apply (rule Fin_ile, assumption)
+ apply (rule enat_ile, assumption)
 apply clarsimp
 done
 

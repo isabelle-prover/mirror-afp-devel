@@ -117,14 +117,15 @@ using assms lsc_at_open[of x0 f] by blast
 
 
 lemma lsc_at_MInfty:
-assumes "f x0 = -\<infinity>"
-shows "lsc_at x0 f"
+  fixes f :: "'a::topological_space => ereal"
+  assumes "f x0 = -\<infinity>"
+  shows "lsc_at x0 f"
 unfolding lsc_at_def using assms by auto
 
 
 lemma lsc_at_PInfty:
 fixes f :: "'a::metric_space => ereal"
-assumes "f x0 = PInfty"
+assumes "f x0 = \<infinity>"
 shows "lsc_at x0 f <-> continuous (at x0) f"
 unfolding lsc_at_open continuous_at_open using assms by auto
 
@@ -172,7 +173,7 @@ shows "lsc_at x0 f <-> (ALL C<f(x0). EX T. open T & x0 : T & (!y : T. f y > C))"
 proof-
 { assume "f x0 = -\<infinity>" hence ?thesis using lsc_at_MInfty by auto }
 moreover
-{ assume pinf: "f x0 = PInfty"
+{ assume pinf: "f x0 = \<infinity>"
   { assume lsc: "lsc_at x0 f"
     { fix C assume "C<f x0"
       hence "open {C<..} & f x0 : {C<..}" by auto
@@ -184,15 +185,15 @@ moreover
   moreover
   { assume "?rhs"
     { fix S assume S_def: "open S & f x0 : S"
-      from this obtain C where C_def: "C < f x0 & {C<..} <= S" using pinf open_PInfty by auto
-      from this obtain T where T_def: "open T & x0 : T & (!y : T. f y : S)"
-        using `?rhs`[rule_format, of C] by auto
+      then obtain C where C_def: "ereal C < f x0 & {ereal C<..} <= S" using pinf open_PInfty by auto
+      then obtain T where T_def: "open T & x0 : T & (!y : T. f y : S)"
+        using `?rhs`[rule_format, of "ereal C"] by auto
       hence "EX T. open T & x0 : T & (ALL y:T. (f y <= f x0 --> f y : S))" using T_def by auto
     } hence "lsc_at x0 f" using lsc_at_open by auto
   } ultimately have ?thesis by blast
 }
 moreover
-{ assume fin: "f x0 ~= -\<infinity>" "f x0 ~= PInfty"
+{ assume fin: "f x0 ~= -\<infinity>" "f x0 ~= \<infinity>"
   { assume lsc: "lsc_at x0 f"
     { fix C assume "C<f x0"
       hence "f x0-C>0" using fin ereal_less_minus_iff by auto
@@ -326,7 +327,7 @@ shows "lsc_at x0 f <-> (ALL x c. x ----> x0 & (ALL n. f(x n)<=c) --> f(x0)<=c)"
 proof-
 { assume "?rhs"
   { fix x l assume "x ----> x0" "(f o x) ----> l"
-    { assume "l = PInfty" hence "f x0 <= l" by auto }
+    { assume "l = \<infinity>" hence "f x0 <= l" by auto }
     moreover
     { assume "l = -\<infinity>"
       { fix B :: real obtain N where N_def: "ALL n>=N. f(x n) <= ereal B"
@@ -529,9 +530,9 @@ shows "(ALL y. closed {x. f(x)<=y}) <-> (ALL r. closed {x. f(x)<=ereal r})"
 proof-
 { assume "?rhs"
   { fix y :: ereal
-    { assume "y ~= PInfty & y ~= -\<infinity>" hence "closed {x. f(x)<=y}" using `?rhs` by (cases y) auto }
+    { assume "y ~= \<infinity> & y ~= -\<infinity>" hence "closed {x. f(x)<=y}" using `?rhs` by (cases y) auto }
     moreover
-    { assume "y=PInfty" hence  "closed {x. f(x)<=y}" by auto }
+    { assume "y=\<infinity>" hence  "closed {x. f(x)<=y}" by auto }
     moreover
     { assume "y=-\<infinity>"
       hence "{x. f(x)<=y} = Inter {{x. f(x)<=ereal r} |r. r : UNIV}" using ereal_bot by auto
@@ -577,7 +578,7 @@ moreover
 { assume a: "ALL y. closed {x. f(x)<= y}"
   { fix x0
     { fix x l assume "x ----> x0" "(f o x) ----> l"
-      { assume "l = PInfty" hence "f x0 <= l" by auto }
+      { assume "l = \<infinity>" hence "f x0 <= l" by auto }
       moreover
       { assume mi: "l = -\<infinity>"
         { fix B :: real
@@ -962,7 +963,7 @@ lemma convex_on_ereal_univ: "convex_on UNIV f <-> (ALL S. convex_on S f)"
 
 lemma ereal_pos_setsum_right_distrib:
   fixes f :: "'a => ereal"
-  assumes "r>=0" "r ~= PInfty"
+  assumes "r>=0" "r ~= \<infinity>"
   shows "r * setsum f A = setsum (%n. r * f n) A"
 proof (cases "finite A")
   case True
@@ -1125,7 +1126,7 @@ next
     hence i0: "1 - a i > 0" by auto
     hence i1: "1 - ereal (a i) > 0" using ereal_minus(1)[of 1 "a i"]
       by (simp add: zero_ereal_def[symmetric] one_ereal_def[symmetric])
-    have i2: "1 - ereal (a i) ~= PInfty" using ereal_minus(1)[of 1]
+    have i2: "1 - ereal (a i) ~= \<infinity>" using ereal_minus(1)[of 1]
       by (simp add: zero_ereal_def[symmetric] one_ereal_def[symmetric])
     let "?a j" = "a j / (1 - a i)"
     { fix j assume "j : s"
@@ -1221,9 +1222,9 @@ proof-
     proof-
       { assume "u=0 | v=0" hence ?thesis using uv by (auto simp: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
       moreover
-      { assume "f x = PInfty | f y = PInfty" hence ?thesis using uv by (auto simp: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
+      { assume "f x = \<infinity> | f y = \<infinity>" hence ?thesis using uv by (auto simp: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
       moreover
-      { assume a: "f x = -\<infinity> & (f y ~= PInfty) & ~(u=0)"
+      { assume a: "f x = -\<infinity> & (f y ~= \<infinity>) & ~(u=0)"
         from this obtain z where "f y <= ereal z" apply (cases "f y") by auto
         hence yz: "(y,z) : Epigraph S f" unfolding Epigraph_def using xy by auto
         { fix C::real
@@ -1234,7 +1235,7 @@ proof-
         } hence "f (u *\<^sub>R x + v *\<^sub>R y) = -\<infinity>" using ereal_bot by auto
         hence ?thesis by auto }
       moreover
-      { assume a: "(f x ~= PInfty) & f y = -\<infinity> & ~(v=0)"
+      { assume a: "(f x ~= \<infinity>) & f y = -\<infinity> & ~(v=0)"
         from this obtain z where "f x <= ereal z" apply (cases "f x") by auto
         hence xz: "(x,z) : Epigraph S f" unfolding Epigraph_def using xy by auto
         { fix C::real
@@ -1245,7 +1246,7 @@ proof-
         } hence "f (u *\<^sub>R x + v *\<^sub>R y) = -\<infinity>" using ereal_bot by auto
         hence ?thesis by auto }
       moreover
-      { assume a: "f x ~= PInfty & f x ~= -\<infinity> & f y ~= PInfty & f y ~= -\<infinity>"
+      { assume a: "f x ~= \<infinity> & f x ~= -\<infinity> & f y ~= \<infinity> & f y ~= -\<infinity>"
         from this obtain fx fy where fxy: "f x = ereal fx & f y = ereal fy"
            apply (cases "f x", cases "f y") by auto
         hence "(x, fx) : Epigraph S f & (y, fy) : Epigraph S f" unfolding Epigraph_def using xy by auto
@@ -1288,18 +1289,18 @@ definition
 
 definition
   finite_on :: "'a::real_vector set => ('a => ereal) => bool" where
-  "finite_on S f <-> (ALL x:S. (f x ~= PInfty & f x ~= -\<infinity>))"
+  "finite_on S f <-> (ALL x:S. (f x ~= \<infinity> & f x ~= -\<infinity>))"
 
 definition
   affine_on :: "'a::real_vector set => ('a => ereal) => bool" where
   "affine_on S f <-> (convex_on S f & concave_on S f & finite_on S f)"
 
 definition
-  "domain (f::_ => ereal) = {x. f x < PInfty}"
+  "domain (f::_ => ereal) = {x. f x < \<infinity>}"
 
 
 lemma domain_Epigraph_aux:
-  assumes "x ~= PInfty"
+  assumes "x ~= \<infinity>"
   shows "EX r. x<=ereal r"
 using assms by (cases x) auto
 
@@ -1328,9 +1329,9 @@ proof-
     fix u v ::real assume uv: "0 <= u" "0 <= v" "u + v = 1"
     have "f (u *\<^sub>R x + v *\<^sub>R y) <= ereal u * f x + ereal v * f y"
     proof-
-      { assume "f x = PInfty | f y = PInfty" hence ?thesis using uv by (auto simp: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
+      { assume "f x = \<infinity> | f y = \<infinity>" hence ?thesis using uv by (auto simp: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
       moreover
-      { assume "~ (f x = PInfty | f y = PInfty)"
+      { assume "~ (f x = \<infinity> | f y = \<infinity>)"
         hence "x : domain f & y : domain f" unfolding domain_def by auto
         hence ?thesis using lhs unfolding convex_on_def using uv by auto
       } ultimately show ?thesis by blast
@@ -1358,7 +1359,7 @@ qed
 
 lemma infinite_convex_domain_iff:
   fixes f :: "'a::euclidean_space => ereal"
-  assumes "ALL x. (f x = PInfty | f x = -\<infinity>)"
+  assumes "ALL x. (f x = \<infinity> | f x = -\<infinity>)"
   shows "convex_on UNIV f <-> convex (domain f)"
 proof-
 { assume dom: "convex (domain f)"
@@ -1377,12 +1378,12 @@ qed
 lemma convex_PInfty_outside:
   fixes f :: "'a::euclidean_space => ereal"
   assumes "convex_on UNIV f" "convex S"
-  shows "convex_on UNIV (%x. if x:S then (f x) else PInfty)"
+  shows "convex_on UNIV (%x. if x:S then (f x) else \<infinity>)"
 proof-
-  def g == "(%x. if x:S then -\<infinity> else PInfty)"
+  def g == "(%x. if x:S then -\<infinity> else \<infinity>::ereal)"
   hence "convex_on UNIV g" apply (subst infinite_convex_domain_iff)
     using assms unfolding domain_def by auto
-  moreover have "(%x. if x:S then (f x) else PInfty) = (%x. max (f x) (g x))"
+  moreover have "(%x. if x:S then (f x) else \<infinity>) = (%x. max (f x) (g x))"
     apply (subst fun_eq_iff) unfolding g_def apply auto
     apply (metis ereal_less_eq(2) min_max.sup_absorb1)
     by (metis ereal_less_eq(1) min_max.sup_absorb2)
@@ -1393,7 +1394,7 @@ qed
 
 definition
   proper_on :: "'a::real_vector set => ('a => ereal) => bool" where
-  "proper_on S f <-> ((ALL x:S. f x ~= -\<infinity>) & (EX x:S. f x ~= PInfty))"
+  "proper_on S f <-> ((ALL x:S. f x ~= -\<infinity>) & (EX x:S. f x ~= \<infinity>))"
 
 definition
   proper :: "('a::real_vector => ereal) => bool" where
@@ -1401,15 +1402,15 @@ definition
 
 
 lemma proper_iff:
-  "proper f <-> ((ALL x. f x ~= -\<infinity>) & (EX x. f x ~= PInfty))"
+  "proper f <-> ((ALL x. f x ~= -\<infinity>) & (EX x. f x ~= \<infinity>))"
 unfolding proper_def proper_on_def by auto
 
 
 lemma improper_iff:
-  "~(proper f) <-> ((EX x. f x = -\<infinity>) | (ALL x. f x = PInfty))"
+  "~(proper f) <-> ((EX x. f x = -\<infinity>) | (ALL x. f x = \<infinity>))"
 using proper_iff by auto
 
-lemma ereal_MInf_plus[simp]: "-\<infinity> + x = (if x = \<infinity> then \<infinity> else -\<infinity>)"
+lemma ereal_MInf_plus[simp]: "-\<infinity> + x = (if x = \<infinity> then \<infinity> else -\<infinity>::ereal)"
   by (cases x) auto
 
 lemma convex_improper:
@@ -1446,9 +1447,9 @@ lemma convex_improper2:
   fixes f :: "'a::euclidean_space => ereal"
   assumes "convex_on UNIV f"
   assumes "~(proper f)"
-  shows "f x = PInfty | f x = -\<infinity> | x : rel_frontier (domain f)"
+  shows "f x = \<infinity> | f x = -\<infinity> | x : rel_frontier (domain f)"
 proof-
-{ assume a: "~(f x = PInfty | f x = -\<infinity>)"
+{ assume a: "~(f x = \<infinity> | f x = -\<infinity>)"
   hence "x: domain f" unfolding domain_def by auto
   hence "x : closure (domain f)" using closure_subset by auto
   moreover have "x ~: rel_interior (domain f)" using assms convex_improper a by auto
@@ -1462,11 +1463,11 @@ lemma convex_lsc_improper:
   assumes "convex_on UNIV f"
   assumes "~(proper f)"
   assumes "lsc f"
-  shows "f x = PInfty | f x = -\<infinity>"
+  shows "f x = \<infinity> | f x = -\<infinity>"
 proof-
-{ fix x assume "f x ~= PInfty"
+{ fix x assume "f x ~= \<infinity>"
   hence "lsc_at x f" using assms unfolding lsc_def by auto
-  have "x: domain f" unfolding domain_def using `f x ~= PInfty` by auto
+  have "x: domain f" unfolding domain_def using `f x ~= \<infinity>` by auto
   hence "x : closure (domain f)" using closure_subset by auto
   hence x_def: "x : closure (rel_interior (domain f))"
     by (metis assms(1) convex_closure_rel_interior convex_domain mem_def)
@@ -1499,11 +1500,11 @@ lemma improper_lsc_hull:
   assumes "~(proper f)"
   shows "~(proper (lsc_hull f))"
 proof-
-{ assume "ALL x. f x = PInfty"
-  moreover hence "lsc f" using continuous_at_const[of f PInfty]
+{ assume "ALL x. f x = \<infinity>"
+  moreover hence "lsc f" using continuous_at_const[of f \<infinity>]
      by (metis continuous_iff_lsc_usc lsc_def)
-  ultimately have "ALL x. (lsc_hull f) x = PInfty" by (metis lsc_hull_lsc)
-} hence "(ALL x. f x = \<infinity>) <-> (ALL x. (lsc_hull f) x = PInfty)"
+  ultimately have "ALL x. (lsc_hull f) x = \<infinity>" by (metis lsc_hull_lsc)
+} hence "(ALL x. f x = \<infinity>) <-> (ALL x. (lsc_hull f) x = \<infinity>)"
      by (metis ereal_infty_less_eq(1) lsc_hull_le)
 moreover have "(EX x. f x = -\<infinity>) --> (EX x. (lsc_hull f) x = -\<infinity>)"
   by (metis ereal_infty_less_eq2(2) lsc_hull_le)
@@ -1523,13 +1524,13 @@ lemma convex_with_rel_open_domain:
   fixes f :: "'a::euclidean_space => ereal"
   assumes "convex_on UNIV f"
   assumes "rel_open (domain f)"
-  shows "(ALL x. f x > -\<infinity>) | (ALL x. (f x = PInfty | f x = -\<infinity>))"
+  shows "(ALL x. f x > -\<infinity>) | (ALL x. (f x = \<infinity> | f x = -\<infinity>))"
 proof-
 { assume "~(ALL x. f x > -\<infinity>)"
   hence "~(proper f)" using proper_iff by auto
   hence "ALL x:rel_interior(domain f). f x = -\<infinity>" by (metis assms(1) convex_improper)
   hence "ALL x:domain f. f x = -\<infinity>" by (metis assms(2) rel_open_def)
-  hence "ALL x. (f x = PInfty | f x = -\<infinity>)" unfolding domain_def by auto
+  hence "ALL x. (f x = \<infinity> | f x = -\<infinity>)" unfolding domain_def by auto
 } thus ?thesis by auto
 qed
 
@@ -1607,7 +1608,7 @@ lemma convex_less_in_riS:
   assumes "EX x:closure S. f x < a"
   shows "EX x:rel_interior S. f x < a"
 proof-
-  def g == "(%x. if x:closure S then (f x) else PInfty)"
+  def g == "(%x. if x:closure S then (f x) else \<infinity>)"
   hence "EX x. g x < a" using assms by auto
   have convg: "convex_on UNIV g" unfolding g_def apply (subst convex_PInfty_outside)
     using assms convex_closure by auto
@@ -1671,8 +1672,8 @@ proof-
   hence "x:domain (lsc_hull f)" unfolding domain_def using lsc_hull_le[of f x] by auto
 } moreover
 { fix x assume "x:domain (lsc_hull f)"
-  hence "min (f x) (Liminf (at x) f) < PInfty" unfolding domain_def using lsc_hull_liminf_at[of f] by auto
-  then obtain z where z_def: "min (f x) (Liminf (at x) f) < z & z < PInfty" by (metis ereal_dense)
+  hence "min (f x) (Liminf (at x) f) < \<infinity>" unfolding domain_def using lsc_hull_liminf_at[of f] by auto
+  then obtain z where z_def: "min (f x) (Liminf (at x) f) < z & z < \<infinity>" by (metis ereal_dense)
   { fix e::real assume "e>0"
     hence "INFI (ball x e) f <= min (f x) (Liminf (at x) f)"
       unfolding min_Liminf_at apply (subst le_SUPI) by auto
@@ -1713,7 +1714,7 @@ lemma lsc_hull_of_convex_agrees_onRI:
 proof-
 have cEpi: "convex (Epigraph UNIV f)" by (metis assms convex_EpigraphI convex_UNIV)
 { fix x assume x_def: "x : rel_interior (domain f)"
-  hence "f x < PInfty" unfolding domain_def using rel_interior_subset by auto
+  hence "f x < \<infinity>" unfolding domain_def using rel_interior_subset by auto
   then obtain r where r_def: "(x,r):rel_interior (Epigraph UNIV f)"
     using assms x_def rel_interior_Epigraph[of f x]  by (metis ereal_dense2)
   def M == "{(x,m::real)|m. m:UNIV}"
@@ -1743,7 +1744,7 @@ lemma lsc_hull_of_convex_agrees_outside:
 proof-
 { fix x assume "x ~: closure (domain f)"
   hence "x ~: domain (lsc_hull f)" using domain_lsc_hull_between by auto
-  hence "(lsc_hull f) x = PInfty" unfolding domain_def by auto
+  hence "(lsc_hull f) x = \<infinity>" unfolding domain_def by auto
   hence "f x = (lsc_hull f) x" using lsc_hull_le[of f x] by auto
 } thus ?thesis by auto
 qed
@@ -1761,12 +1762,12 @@ lemma lsc_hull_of_proper_convex_proper:
   assumes "convex_on UNIV f" "proper f"
   shows "proper (lsc_hull f)"
 proof-
-  obtain x where x_def: "x:rel_interior (domain f) & f x < PInfty"
+  obtain x where x_def: "x:rel_interior (domain f) & f x < \<infinity>"
      by (metis assms convex_less_ri_domain ereal_less_PInfty proper_iff)
   hence "f x = (lsc_hull f) x" using lsc_hull_of_convex_agrees[of f] assms
      unfolding rel_frontier_def by auto
   moreover have "f x > -\<infinity>" using assms proper_iff by auto
-  ultimately have "(lsc_hull f) x < PInfty & (lsc_hull f) x > -\<infinity>" using x_def by auto
+  ultimately have "(lsc_hull f) x < \<infinity> & (lsc_hull f) x > -\<infinity>" using x_def by auto
   thus ?thesis using convex_lsc_improper[of "lsc_hull f" x]
     lsc_lsc_hull[of f] assms convex_lsc_hull[of f] by auto
 qed
@@ -1819,7 +1820,7 @@ lemma always_eventually_within:
 lemma ereal_divide_pos:
   assumes "(a::ereal)>0" "b>0"
   shows "a/(ereal b)>0"
-  by (metis assms ereal.simps(2) ereal_less(2) ereal_less_divide_pos ereal_mult_zero)
+  by (metis PInfty_eq_infinity assms ereal.simps(2) ereal_less(2) ereal_less_divide_pos ereal_mult_zero)
 
 lemma lsc_hull_of_convex_aux:
   "Limsup (at 1 within {0..<1}) (%m. ereal ((1-m)*a+m*b)) <= ereal b"
@@ -1827,7 +1828,7 @@ proof-
 { fix y assume "ereal b<y"
   hence y_def:"0 <(y - ereal b)" using ereal_less_minus_iff by auto
   have "EX d>0. ALL z:{0..<1}. 0 < dist z 1 & dist z 1 < d --> ereal ((1 - z) * a + z * b) < y"
-  proof(cases "y=PInfty")
+  proof(cases "y=\<infinity>")
     case True thus ?thesis apply(rule_tac x="1" in exI) by auto
     next
     case False
@@ -1902,7 +1903,7 @@ moreover
   { fix b assume "ereal b>=(lsc_hull f) y"
     hence yb: "(y,b):closure(Epigraph UNIV f)" by (metis epigraph_lsc_hull mem_Epigraph mem_def top1I)
     have "x : domain f" by (metis assms(2) rel_interior_subset set_rev_mp)
-    hence "f x<PInfty" unfolding domain_def by auto
+    hence "f x<\<infinity>" unfolding domain_def by auto
     then obtain a where"ereal a>f x" by (metis ereal_dense2)
       hence xa: "(x,a):rel_interior(Epigraph UNIV f)" by (metis assms rel_interior_Epigraph)
       { fix m :: real assume "0 <= m & m < 1"

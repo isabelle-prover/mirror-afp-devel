@@ -429,18 +429,18 @@ proof -
 qed
 
 lemma ta_seq_consist_nthI:
-  assumes "\<And>i ad al v. \<lbrakk> Fin i < llength obs; lnth obs i = NormalAction (ReadMem ad al v) \<rbrakk> 
-          \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (Fin i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>"
+  assumes "\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v) \<rbrakk> 
+          \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>"
   shows "ta_seq_consist P vs obs"
 proof -
   from assms 
-  have "\<forall>i ad al v. Fin i < llength obs \<longrightarrow> lnth obs i = NormalAction (ReadMem ad al v) \<longrightarrow>
-        (\<exists>b. mrw_values P vs (list_of (ltake (Fin i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>)" by blast
+  have "\<forall>i ad al v. enat i < llength obs \<longrightarrow> lnth obs i = NormalAction (ReadMem ad al v) \<longrightarrow>
+        (\<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>)" by blast
   thus ?thesis
   proof(coinduct rule: ta_seq_consist.coinduct)
     case (ta_seq_consist vs obs)
-    hence nth: "\<And>i ad al v. \<lbrakk> Fin i < llength obs; lnth obs i = NormalAction (ReadMem ad al v) \<rbrakk> 
-               \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (Fin i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>" by blast
+    hence nth: "\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v) \<rbrakk> 
+               \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>" by blast
     show ?case
     proof(cases obs)
       case LNil thus ?thesis by simp
@@ -453,10 +453,10 @@ proof -
           by(simp add: zero_enat_def[symmetric]) }
       moreover { 
         fix i ad al v
-        assume "Fin i < llength obs'" "lnth obs' i = NormalAction (ReadMem ad al v)"
+        assume "enat i < llength obs'" "lnth obs' i = NormalAction (ReadMem ad al v)"
         with LCons nth[of "Suc i" ad al v]
-        have "\<exists>b. mrw_values P (mrw_value P vs ob) (list_of (ltake (Fin i) obs')) (ad, al) = \<lfloor>(v, b)\<rfloor>"
-          by(simp add: iSuc_Fin[symmetric]) }
+        have "\<exists>b. mrw_values P (mrw_value P vs ob) (list_of (ltake (enat i) obs')) (ad, al) = \<lfloor>(v, b)\<rfloor>"
+          by(simp add: iSuc_enat[symmetric]) }
       ultimately have ?LCons using LCons by(simp split: action.split obs_event.split)
       thus ?thesis ..
     qed
@@ -601,8 +601,8 @@ proof(intro exI conjI)
         and "\<not> P,E \<turnstile> a \<le>hb ws a"
         by(fastsimp elim!: most_recent_write_for.cases dest: happens_before_into_action_order antisymPD[OF antisym_action_order] read_actions_not_write_actions)+
 
-      let ?between = "ltake (Fin (a - Suc w)) (ldropn (Suc w) E)"
-      let ?prefix = "ltake (Fin w) E"
+      let ?between = "ltake (enat (a - Suc w)) (ldropn (Suc w) E)"
+      let ?prefix = "ltake (enat w) E"
       let ?vs_prefix = "mrw_values P empty (map snd (list_of ?prefix))"
 
       from E mrw have "w < a" by(rule mrw_before)
@@ -616,17 +616,17 @@ proof(intro exI conjI)
           and adal': "(ad, al) \<in> action_loc_aux P wa"
           and new_wa: "\<not> is_new_action wa" by blast
         from split have "length (map snd (list_of ?prefix)) = Suc (length obs' + length obs'')" by simp
-        hence len_prefix: "llength ?prefix = Fin \<dots>" by(simp add: length_list_of_conv_the_Fin min_Fin1_conv_Fin)
+        hence len_prefix: "llength ?prefix = enat \<dots>" by(simp add: length_list_of_conv_the_enat min_enat1_conv_enat)
         with split have "nth (map snd (list_of ?prefix)) (length obs') = wa"
-          and "Fin (length obs') < llength ?prefix" by simp_all
+          and "enat (length obs') < llength ?prefix" by simp_all
         hence "snd (lnth ?prefix (length obs')) = wa" by(simp add: list_of_lmap[symmetric] del: list_of_lmap)
-        hence wa': "action_obs E (length obs') = wa" and "Fin (length obs') < llength E"
-          using `Fin (length obs') < llength ?prefix` by(auto simp add: action_obs_def lnth_ltake)
+        hence wa': "action_obs E (length obs') = wa" and "enat (length obs') < llength E"
+          using `enat (length obs') < llength ?prefix` by(auto simp add: action_obs_def lnth_ltake)
         with wa have "length obs' \<in> write_actions E" by(auto intro: write_actions.intros simp add: actions_def)
         from most_recent_write_recent[OF mrw _ this, of "(ad, al)"] adal adal' wa'
         have "E \<turnstile> length obs' \<le>a w \<or> E \<turnstile> a \<le>a length obs'" by simp
         hence False using new_wa new wa' adal len_prefix `w < a`
-          by(auto elim!: action_orderE simp add: min_Fin1_conv_Fin split: enat.split_asm) 
+          by(auto elim!: action_orderE simp add: min_enat1_conv_enat split: enat.split_asm) 
       }
       hence mrw_value_w: "mrw_value P ?vs_prefix (snd (lnth E w)) (ad, al) =
                           \<lfloor>(value_written P E w (ad, al), \<not> is_new_action (action_obs E w))\<rfloor>"
@@ -640,9 +640,9 @@ proof(intro exI conjI)
           and adal_wa: "(ad, al) \<in> action_loc_aux P wa"
         hence wa: "wa \<in> lset (lmap snd ?between)" by simp
         from wa obtain i_wa where "wa = lnth (lmap snd ?between) i_wa"
-          and i_wa: "Fin i_wa < llength (lmap snd ?between)"
+          and i_wa: "enat i_wa < llength (lmap snd ?between)"
           unfolding lset_def by blast
-        moreover hence i_wa_len: "Fin (Suc (w + i_wa)) < llength E" by(cases "llength E") auto
+        moreover hence i_wa_len: "enat (Suc (w + i_wa)) < llength E" by(cases "llength E") auto
         ultimately have wa': "wa = action_obs E (Suc (w + i_wa))"
           by(simp_all add: lnth_ltake action_obs_def add_ac)
         with write_wa i_wa_len have "Suc (w + i_wa) \<in> write_actions E"
@@ -658,17 +658,17 @@ proof(intro exI conjI)
       moreover
 
       from a have "a \<in> actions E" by simp
-      hence "Fin a < llength E" by(rule actionsE)
-      with `w < a` have "Fin (a - Suc w) < llength E - Fin (Suc w)"
+      hence "enat a < llength E" by(rule actionsE)
+      with `w < a` have "enat (a - Suc w) < llength E - enat (Suc w)"
         by(cases "llength E") simp_all
       hence "E = lappend (lappend ?prefix (LCons (lnth E w) ?between)) (LCons (lnth (ldropn (Suc w) E) (a - Suc w)) (ldropn (Suc (a - Suc w)) (ldropn (Suc w) E)))"
-        using `w < a` `Fin a < llength E` unfolding lappend_assoc lappend_LCons
+        using `w < a` `enat a < llength E` unfolding lappend_assoc lappend_LCons
         apply(subst ldropn_Suc_conv_ldropn, simp)
-        apply(subst lappend_ltake_Fin_ldropn)
-        apply(subst ldropn_Suc_conv_ldropn, simp add: less_trans[where y="Fin a"])
+        apply(subst lappend_ltake_enat_ldropn)
+        apply(subst ldropn_Suc_conv_ldropn, simp add: less_trans[where y="enat a"])
         by simp
       hence E': "E = lappend (lappend ?prefix (LCons (lnth E w) ?between)) (LCons (lnth E a) (ldropn (Suc a) E))"
-        using `w < a` `Fin a < llength E` by simp
+        using `w < a` `enat a < llength E` by simp
       
       from seq have "ta_seq_consist P (mrw_values P empty (list_of (lappend (lmap snd ?prefix) (LCons (snd (lnth E w)) (lmap snd ?between))))) (lmap snd (LCons (lnth E a) (ldropn (Suc a) E)))"
         by(subst (asm) E')(simp add: lmap_lappend_distrib ta_seq_consist_lappend)
@@ -769,13 +769,13 @@ context executions_sc begin
 lemma ta_seq_consist_mrwI:
   assumes E: "E \<in> \<E>"
   and wf: "P \<turnstile> (E, ws) \<surd>"
-  and mrw: "\<And>a. \<lbrakk> Fin a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
+  and mrw: "\<And>a. \<lbrakk> enat a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
   shows "ta_seq_consist P empty (lmap snd (ltake r E))"
 proof(rule ta_seq_consist_nthI)
   fix i ad al v
-  assume i_len: "Fin i < llength (lmap snd (ltake r E))"
+  assume i_len: "enat i < llength (lmap snd (ltake r E))"
     and E_i: "lnth (lmap snd (ltake r E)) i = NormalAction (ReadMem ad al v)"
-  from i_len have "Fin i < r" by simp
+  from i_len have "enat i < r" by simp
   from i_len have "i \<in> actions E" by(simp add: actions_def)
   moreover from E_i i_len have obs_i: "action_obs E i = NormalAction (ReadMem ad al v)"
     by(simp add: action_obs_def lnth_ltake)
@@ -791,37 +791,37 @@ proof(rule ta_seq_consist_nthI)
   from is_write_seenD[OF this read obs_i]
   have vw_v: "value_written P E (ws i) (ad, al) = v" by simp
 
-  let ?vs = "mrw_values P empty (map snd (list_of (ltake (Fin (ws i)) E)))"
+  let ?vs = "mrw_values P empty (map snd (list_of (ltake (enat (ws i)) E)))"
 
-  from `ws i < i` i_len have "Fin (ws i) < llength (ltake (Fin i) E)"
-    by(simp add: less_trans[where y="Fin i"])
-  hence "ltake (Fin i) E = lappend (ltake (Fin (ws i)) (ltake (Fin i) E)) (LCons (lnth (ltake (Fin i) E) (ws i)) (ldropn (Suc (ws i)) (ltake (Fin i) E)))"
-    by(simp only: ldropn_Suc_conv_ldropn lappend_ltake_Fin_ldropn)
-  also have "\<dots> = lappend (ltake (Fin (ws i)) E) (LCons (lnth E (ws i)) (ldropn (Suc (ws i)) (ltake (Fin i) E)))"
-    using `ws i < i` i_len `Fin (ws i) < llength (ltake (Fin i) E)` 
+  from `ws i < i` i_len have "enat (ws i) < llength (ltake (enat i) E)"
+    by(simp add: less_trans[where y="enat i"])
+  hence "ltake (enat i) E = lappend (ltake (enat (ws i)) (ltake (enat i) E)) (LCons (lnth (ltake (enat i) E) (ws i)) (ldropn (Suc (ws i)) (ltake (enat i) E)))"
+    by(simp only: ldropn_Suc_conv_ldropn lappend_ltake_enat_ldropn)
+  also have "\<dots> = lappend (ltake (enat (ws i)) E) (LCons (lnth E (ws i)) (ldropn (Suc (ws i)) (ltake (enat i) E)))"
+    using `ws i < i` i_len `enat (ws i) < llength (ltake (enat i) E)` 
     by(simp add: lnth_ltake)(simp add: min_def)
-  finally have r_E: "ltake (Fin i) E = \<dots>" .
+  finally have r_E: "ltake (enat i) E = \<dots>" .
 
-  have "mrw_values P empty (list_of (ltake (Fin i) (lmap snd (ltake r E)))) (ad, al)
-    = mrw_values P empty (map snd (list_of (ltake (Fin i) E))) (ad, al)"
-    using `Fin i < r` by(auto simp add: min_def)
-  also have "\<dots> = mrw_values P (mrw_value P ?vs (snd (lnth E (ws i)))) (map snd (list_of (ldropn (Suc (ws i)) (ltake (Fin i) E)))) (ad, al)"
+  have "mrw_values P empty (list_of (ltake (enat i) (lmap snd (ltake r E)))) (ad, al)
+    = mrw_values P empty (map snd (list_of (ltake (enat i) E))) (ad, al)"
+    using `enat i < r` by(auto simp add: min_def)
+  also have "\<dots> = mrw_values P (mrw_value P ?vs (snd (lnth E (ws i)))) (map snd (list_of (ldropn (Suc (ws i)) (ltake (enat i) E)))) (ad, al)"
     by(subst r_E)(simp add: list_of_lappend)
   also have "\<dots> = mrw_value P ?vs (snd (lnth E (ws i))) (ad, al)"
   proof(rule mrw_values_no_write_unchanged)
     fix wa
-    assume wa: "wa \<in> set (map snd (list_of (ldropn (Suc (ws i)) (ltake (Fin i) E))))"
+    assume wa: "wa \<in> set (map snd (list_of (ldropn (Suc (ws i)) (ltake (enat i) E))))"
       and "is_write_action wa" "(ad, al) \<in> action_loc_aux P wa"
 
-    from wa obtain w where "w < length (map snd (list_of (ldropn (Suc (ws i)) (ltake (Fin i) E))))"
-      and "map snd (list_of (ldropn (Suc (ws i)) (ltake (Fin i) E))) ! w = wa"
+    from wa obtain w where "w < length (map snd (list_of (ldropn (Suc (ws i)) (ltake (enat i) E))))"
+      and "map snd (list_of (ldropn (Suc (ws i)) (ltake (enat i) E))) ! w = wa"
       unfolding in_set_conv_nth by blast
     moreover hence "Suc (ws i + w) < i" (is "?w < _") using i_len 
-      by(cases "llength E")(simp_all add: length_list_of_conv_the_Fin)
+      by(cases "llength E")(simp_all add: length_list_of_conv_the_enat)
     ultimately have obs_w': "action_obs E ?w = wa" using i_len
-      by(simp add: action_obs_def lnth_ltake less_trans[where y="Fin i"] add_ac)
+      by(simp add: action_obs_def lnth_ltake less_trans[where y="enat i"] add_ac)
     from `?w < i` i_len have "?w \<in> actions E"
-      by(simp add: actions_def less_trans[where y="Fin i"])
+      by(simp add: actions_def less_trans[where y="enat i"])
     with `is_write_action wa` obs_w' `(ad, al) \<in> action_loc_aux P wa`
     have write': "?w \<in> write_actions E" 
       and adal': "(ad, al) \<in> action_loc P E ?w"
@@ -860,15 +860,15 @@ proof(rule ta_seq_consist_nthI)
       and "is_new_action (action_obs E (ws i))"
     
     from mrw_values_eq_SomeD[OF this(1)]
-    obtain wa where "wa \<in> set (map snd (list_of (ltake (Fin (ws i)) E)))"
+    obtain wa where "wa \<in> set (map snd (list_of (ltake (enat (ws i)) E)))"
       and "is_write_action wa"
       and "(ad, al) \<in> action_loc_aux P wa"
       and "\<not> is_new_action wa" by(fastsimp simp del: set_map)
     moreover then obtain w where w: "w < ws i"  and wa: "wa = snd (lnth E w)"
-      unfolding in_set_conv_nth by(cases "llength E")(auto simp add: lnth_ltake length_list_of_conv_the_Fin)
+      unfolding in_set_conv_nth by(cases "llength E")(auto simp add: lnth_ltake length_list_of_conv_the_enat)
     ultimately have "w \<in> write_actions E" "action_obs E w = wa" "(ad, al) \<in> action_loc P E w"
       using `ws i \<in> write_actions E`
-      by(auto intro!: write_actions.intros simp add: actions_def less_trans[where y="Fin (ws i)"] action_obs_def elim!: write_actions.cases)
+      by(auto intro!: write_actions.intros simp add: actions_def less_trans[where y="enat (ws i)"] action_obs_def elim!: write_actions.cases)
     with mrw_i adal_r have "E \<turnstile> w \<le>a ws i \<or> E \<turnstile> i \<le>a w" by -(rule most_recent_write_recent)
     hence False
     proof
@@ -891,7 +891,7 @@ proof(rule ta_seq_consist_nthI)
     apply auto
     apply blast+
     done
-  finally show "\<exists>b. mrw_values P empty (list_of (ltake (Fin i) (lmap snd (ltake r E)))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
+  finally show "\<exists>b. mrw_values P empty (list_of (ltake (enat i) (lmap snd (ltake r E)))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
     by blast
 qed
 

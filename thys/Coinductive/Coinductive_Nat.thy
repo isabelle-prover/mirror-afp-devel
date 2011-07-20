@@ -19,20 +19,20 @@ lemmas iSuc_plus = iadd_Suc
 
 lemmas plus_enat_eq_0_conv = iadd_is_0
 
-coinductive_set enat :: "enat \<Rightarrow> bool"
-where "0 \<in> enat"
-  | "n \<in> enat \<Longrightarrow> (iSuc n) \<in> enat"
+coinductive_set enat_set :: "enat \<Rightarrow> bool"
+where "0 \<in> enat_set"
+  | "n \<in> enat_set \<Longrightarrow> (iSuc n) \<in> enat_set"
 
-lemma enat_eq_UNIV [simp]: "enat = UNIV"
+lemma enat_set_eq_UNIV [simp]: "enat_set = UNIV"
 proof
-  show "enat \<subseteq> UNIV" by blast
-  show "UNIV \<subseteq> enat"
+  show "enat_set \<subseteq> UNIV" by blast
+  show "UNIV \<subseteq> enat_set"
   proof
     fix x :: enat
     assume "x \<in> UNIV"
-    thus "x \<in> enat"
+    thus "x \<in> enat_set"
     proof coinduct
-      case (enat x)
+      case (enat_set x)
       show ?case
       proof(cases "x = 0")
         case True thus ?thesis by simp
@@ -53,14 +53,14 @@ lemma enat_coexhaust:
   obtains (0) "n = 0"
      | (iSuc) n' where "n = iSuc n'"
 proof -
-  have "n \<in> enat" by auto
+  have "n \<in> enat_set" by auto
   thus thesis by cases (erule that)+
 qed
 
 definition enat_cocase :: "'a \<Rightarrow> (enat \<Rightarrow> 'a) \<Rightarrow> enat \<Rightarrow> 'a"
 where [nitpick_simp]:
   "enat_cocase z s n = 
-   (case n of Fin n' \<Rightarrow> (case n' of 0 \<Rightarrow> z | Suc n'' \<Rightarrow> s (Fin n'')) | Infty \<Rightarrow> s Infty)"
+   (case n of enat n' \<Rightarrow> (case n' of 0 \<Rightarrow> z | Suc n'' \<Rightarrow> s (enat n'')) | \<infinity> \<Rightarrow> s \<infinity>)"
 
 lemma enat_cocase_0 [simp]:
   "enat_cocase z s 0 = z"
@@ -98,8 +98,8 @@ definition enat_corec :: "'a \<Rightarrow> ('a \<Rightarrow> 'a option) \<Righta
 where [code del]:
   "enat_corec a f = 
   (if \<exists>n. ((map_comp f) ^^ n) f a = None
-   then Fin (LEAST n. ((map_comp f) ^^ n) f a = None) 
-   else Infty)"
+   then enat (LEAST n. ((map_comp f) ^^ n) f a = None) 
+   else \<infinity>)"
 
 lemma funpow_Suc_tail_rec: 
   "(f ^^ (Suc n)) a = (f ^^ n) (f a)"
@@ -130,14 +130,14 @@ proof(cases "\<exists>n. ((map_comp f) ^^ n) f a = None")
   proof(cases "f a")
     case None
     hence "((map_comp f) ^^ 0) f a = None" by simp
-    hence "enat_corec a f = Fin ?m"
+    hence "enat_corec a f = enat ?m"
       unfolding enat_corec_def by(auto simp del: funpow.simps)
     also have "?m = 0"
       by(rule Least_equality, simp_all add: None)
     finally show ?thesis using None by(simp add: zero_enat_def)
   next
     case (Some a')
-    from n have "enat_corec a f = Fin ?m" unfolding enat_corec_def by auto
+    from n have "enat_corec a f = enat ?m" unfolding enat_corec_def by auto
     also from n have "?m = Suc (LEAST n. ((map_comp f) ^^ (Suc n)) f a = None)"
       by(rule Least_Suc)(simp add: Some)
     also from Some have "(f \<circ>\<^sub>m f) a = f a'" by(simp add: map_comp_def)
@@ -145,19 +145,19 @@ proof(cases "\<exists>n. ((map_comp f) ^^ n) f a = None")
       by(rule funpow_map_comp_lem)
     hence "Suc (LEAST n. ((map_comp f) ^^ (Suc n)) f a = None) =
       Suc (LEAST n. ((map_comp f) ^^ n) f a' = None)" by simp
-    also note iSuc_Fin[symmetric]
+    also note iSuc_enat[symmetric]
     also from Some n have "n \<noteq> 0" by -(rule notI, simp)
     then obtain n' where n': "n = Suc n'" by(auto simp add: gr0_conv_Suc)
     with Suc_n_a_n_a'[of n'] n have "((map_comp f) ^^ n') f a' = None"
       by(simp only:)
-    hence "Fin (LEAST n. ((op \<circ>\<^sub>m f) ^^ n) f a' = None) = enat_corec a' f"
+    hence "enat (LEAST n. ((op \<circ>\<^sub>m f) ^^ n) f a' = None) = enat_corec a' f"
       unfolding enat_corec_def by auto
     finally show ?thesis using Some by simp
   qed
 next
   case False
   hence fp: "!!n. (map_comp f ^^ n) f a \<noteq> None" by auto
-  from False have "enat_corec a f = Infty" unfolding enat_corec_def by auto
+  from False have "enat_corec a f = \<infinity>" unfolding enat_corec_def by auto
   moreover from fp[of 0] obtain a' where Some: "f a = Some a'" by auto
   moreover
   { fix n
@@ -165,7 +165,7 @@ next
     hence "(op \<circ>\<^sub>m f ^^ (Suc n)) f a = (op \<circ>\<^sub>m f ^^ n) f a'"
       by(rule funpow_map_comp_lem)
     with fp[of "Suc n"] have "(map_comp f ^^ n) f a' \<noteq> None" by simp }
-  hence "enat_corec a' f = Infty" by(simp add: enat_corec_def)
+  hence "enat_corec a' f = \<infinity>" by(simp add: enat_corec_def)
   ultimately show ?thesis by simp
 qed
 
@@ -201,8 +201,8 @@ proof -
   qed
 qed
 
-lemma Le_enat_imp_ile_Fin_k:
-  "(m, n) \<in> Le_enat \<Longrightarrow> n < Fin l \<Longrightarrow> m < Fin l"
+lemma Le_enat_imp_ile_enat_k:
+  "(m, n) \<in> Le_enat \<Longrightarrow> n < enat l \<Longrightarrow> m < enat l"
 proof(induct l arbitrary: m n)
   case 0
   thus ?case by(simp add: zero_enat_def[symmetric])
@@ -211,27 +211,27 @@ next
   from `(m, n) \<in> Le_enat` show ?case
   proof cases
     case Le_enat_zero
-    with `n < Fin (Suc l)` show ?thesis by auto
+    with `n < enat (Suc l)` show ?thesis by auto
   next
     case (Le_enat_add M N K)
-    from `n = N + K` `n < Fin (Suc l)` `K \<noteq> 0`
-    have "N < Fin l" by(cases N)(cases K, auto simp add: zero_enat_def)
-    with `(M, N) \<in> Le_enat` have "M < Fin l" by(rule Suc)
-    with `m = iSuc M` show ?thesis by(simp add: iSuc_Fin[symmetric])
+    from `n = N + K` `n < enat (Suc l)` `K \<noteq> 0`
+    have "N < enat l" by(cases N)(cases K, auto simp add: zero_enat_def)
+    with `(M, N) \<in> Le_enat` have "M < enat l" by(rule Suc)
+    with `m = iSuc M` show ?thesis by(simp add: iSuc_enat[symmetric])
   qed
 qed
 
 lemma enat_less_imp_le:
-  assumes k: "!!k. n < Fin k \<Longrightarrow> m < Fin k"
+  assumes k: "!!k. n < enat k \<Longrightarrow> m < enat k"
   shows "m \<le> n"
 proof(cases n)
-  case (Fin n')
+  case (enat n')
   with k[of "Suc n'"] show ?thesis by(cases m) simp_all
 qed simp
 
 lemma Le_enat_imp_ile:
   "(m, n) \<in> Le_enat \<Longrightarrow> m \<le> n"
-by(rule enat_less_imp_le)(erule Le_enat_imp_ile_Fin_k)
+by(rule enat_less_imp_le)(erule Le_enat_imp_ile_enat_k)
 
 lemma Le_enat_eq_ile:
   "(m, n) \<in> Le_enat \<longleftrightarrow> m \<le> n"
@@ -241,7 +241,7 @@ lemma enat_leI [consumes 1, case_names Leenat, case_conclusion Leenat zero iSuc]
   assumes major [simplified mem_def]: "(m, n) \<in> X"
   and step [simplified mem_def]:
     "\<And>m n. (m, n) \<in> X 
-     \<Longrightarrow> m = 0 \<or> (\<exists>m' n' k. m = iSuc m' \<and> n = n' + Fin k \<and> k \<noteq> 0 \<and>
+     \<Longrightarrow> m = 0 \<or> (\<exists>m' n' k. m = iSuc m' \<and> n = n' + enat k \<and> k \<noteq> 0 \<and>
                            ((m', n') \<in> X \<or> m' = n'))"
   shows "m \<le> n"
 apply(rule Le_enat.coinduct[unfolded Le_enat_eq_ile, where X="curry X"])
@@ -260,7 +260,7 @@ lemma enat_equalityI [consumes 1, case_names Eqenat,
 proof(rule antisym)
   from major show "m \<le> n"
     by(coinduct rule: enat_leI)
-      (drule step, auto simp add: iSuc_plus_1 Fin_1[symmetric])
+      (drule step, auto simp add: iSuc_plus_1 enat_1[symmetric])
 
   from major have "(n, m) \<in> (\<lambda>(n, m). (m, n) \<in> X)"
     by(simp add: mem_def)
@@ -269,7 +269,7 @@ proof(rule antisym)
     case (Leenat n m)
     hence "(m, n) \<in> X" by(simp add: mem_def)
     from step[OF this] show ?case
-      by(auto simp add: mem_def iSuc_plus_1 Fin_1[symmetric])
+      by(auto simp add: mem_def iSuc_plus_1 enat_1[symmetric])
   qed
 qed
 
@@ -317,29 +317,29 @@ lemma iSuc_minus_iSuc [simp]: "iSuc n - iSuc m = n - m"
 by(simp add: iSuc_def split: enat.split)
 
 lemma iSuc_minus_1 [simp]: "iSuc n - 1 = n"
-by(simp add: one_enat_def iSuc_Fin[symmetric] zero_enat_def[symmetric])
+by(simp add: one_enat_def iSuc_enat[symmetric] zero_enat_def[symmetric])
 
 subsection {* Misc. *}
 
-lemma Fin_add_mono [simp]:
-  "Fin x + y < Fin x + z \<longleftrightarrow> y < z"
+lemma enat_add_mono [simp]:
+  "enat x + y < enat x + z \<longleftrightarrow> y < z"
 by(cases y)(case_tac [!] z, simp_all)
 
-lemma Fin_add1_eq [simp]: "Fin x + y = Fin x + z \<longleftrightarrow> y = z"
-by (metis Fin_add_mono add_commute neq_iff)
+lemma enat_add1_eq [simp]: "enat x + y = enat x + z \<longleftrightarrow> y = z"
+by (metis enat_add_mono add_commute neq_iff)
 
-lemma Fin_add2_eq [simp]: "y + Fin x = z + Fin x \<longleftrightarrow> y = z"
-by (metis Fin_add1_eq add_commute)
+lemma enat_add2_eq [simp]: "y + enat x = z + enat x \<longleftrightarrow> y = z"
+by (metis enat_add1_eq add_commute)
 
-lemma Fin_less_Fin_plusI: "x < y \<Longrightarrow> Fin x < Fin y + z"
+lemma enat_less_enat_plusI: "x < y \<Longrightarrow> enat x < enat y + z"
 by(cases z) simp_all
 
-lemma Fin_less_Fin_plusI2:
-  "Fin y < z \<Longrightarrow> Fin (x + y) < Fin x + z"
-by (metis Fin_add_mono plus_enat_simps(1))
+lemma enat_less_enat_plusI2:
+  "enat y < z \<Longrightarrow> enat (x + y) < enat x + z"
+by (metis enat_add_mono plus_enat_simps(1))
 
-lemma min_Fin1_conv_Fin: "\<And>a b. min (Fin a) b = Fin (case b of Fin b' \<Rightarrow> min a b' | \<infinity> \<Rightarrow> a)"
-  and min_Fin2_conv_Fin: "\<And>a b. min a (Fin b) = Fin (case a of Fin a' \<Rightarrow> min a' b | \<infinity> \<Rightarrow> b)"
+lemma min_enat1_conv_enat: "\<And>a b. min (enat a) b = enat (case b of enat b' \<Rightarrow> min a b' | \<infinity> \<Rightarrow> a)"
+  and min_enat2_conv_enat: "\<And>a b. min a (enat b) = enat (case a of enat a' \<Rightarrow> min a' b | \<infinity> \<Rightarrow> b)"
 by(simp_all split: enat.split)
 
 end

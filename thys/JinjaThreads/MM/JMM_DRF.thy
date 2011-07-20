@@ -72,7 +72,7 @@ proof(rule ccontr)
 
   from \<E>_sequential_completion[OF E wf this, of r'] r'
   obtain E' ws' where "E' \<in> \<E>" "P \<turnstile> (E', ws') \<surd>"
-    and eq: "ltake (Fin r') E = ltake (Fin r') E'"
+    and eq: "ltake (enat r') E = ltake (enat r') E'"
     and sc': "sequentially_consistent P (E', ws')" 
     and r'': "action_tid E r' = action_tid E' r'" "action_obs E r' \<approx> action_obs E' r'"
     and "r' \<in> actions E'"
@@ -81,9 +81,9 @@ proof(rule ccontr)
   from `P \<turnstile> (E', ws') \<surd>` have tsa_ok': "thread_start_actions_ok E'"
     by(rule wf_exec_thread_start_actions_okD)
 
-  from `r' \<in> read_actions E` have "Fin r' < llength E" by(auto elim: read_actions.cases actionsE)
-  moreover from `r' \<in> actions E'` have "Fin r' < llength E'" by(auto elim: actionsE)
-  ultimately have eq': "ltake (Fin (Suc r')) E [\<approx>] ltake (Fin (Suc r')) E'"
+  from `r' \<in> read_actions E` have "enat r' < llength E" by(auto elim: read_actions.cases actionsE)
+  moreover from `r' \<in> actions E'` have "enat r' < llength E'" by(auto elim: actionsE)
+  ultimately have eq': "ltake (enat (Suc r')) E [\<approx>] ltake (enat (Suc r')) E'"
     using eq[THEN eq_into_sim_actions] r''
     by(auto simp add: ltake_Suc_conv_snoc_lnth sim_actions_def split_beta action_tid_def action_obs_def intro!: llist_all2_lappendI)
   from r' have r'': "r' \<in> read_actions E'"

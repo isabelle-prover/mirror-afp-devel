@@ -402,10 +402,10 @@ lemmas iT_Max =
 thm iT_Max
 
 lemma
-  iTILL_iMax: "iMax [\<dots>n] = Fin n" and
-  iIN_iMax: "iMax [n\<dots>,d] = Fin (n+d)" and
-  iMODb_iMax: "iMax [r, mod m, c] = Fin (r + m * c)" and
-  iMOD_0_iMax: "iMax [r, mod 0] = Fin r" and
+  iTILL_iMax: "iMax [\<dots>n] = enat n" and
+  iIN_iMax: "iMax [n\<dots>,d] = enat (n+d)" and
+  iMODb_iMax: "iMax [r, mod m, c] = enat (r + m * c)" and
+  iMOD_0_iMax: "iMax [r, mod 0] = enat r" and
   iFROM_iMax: "iMax [n\<dots>] = \<infinity>" and
   iMOD_iMax: "0 < m \<Longrightarrow> iMax [r, mod m] = \<infinity>"
 by (simp add: iMax_def iT_finite iT_infinite iT_Max)+
@@ -2212,21 +2212,21 @@ text {* Cardinality with @{text icard} *}
 
 lemma iFROM_icard: "icard [n\<dots>] = \<infinity>"
 by (simp add: iFROM_infinite)
-lemma iTILL_icard: "icard [\<dots>n] = Fin (Suc n)"
+lemma iTILL_icard: "icard [\<dots>n] = enat (Suc n)"
 by (simp add: icard_finite iT_finite iT_card)
-lemma iIN_icard: "icard [n\<dots>,d] = Fin (Suc d)"
+lemma iIN_icard: "icard [n\<dots>,d] = enat (Suc d)"
 by (simp add: icard_finite iT_finite iT_card)
 lemma iMOD_0_icard: "icard [r, mod 0] = iSuc 0"
-by (simp add: icard_finite iT_finite iT_card iSuc_Fin)
+by (simp add: icard_finite iT_finite iT_card iSuc_enat)
 lemma iMOD_icard: "0 < m \<Longrightarrow> icard [r, mod m] = \<infinity>"
 by (simp add: iMOD_infinite)
 lemma iMOD_icard_if: "icard [r, mod m] = (if m = 0 then iSuc 0 else \<infinity>)"
-by (simp add: icard_finite iT_finite iT_infinite iSuc_Fin iT_card)
+by (simp add: icard_finite iT_finite iT_infinite iSuc_enat iT_card)
 lemma iMODb_mod_0_icard: "icard [r, mod 0, c] = iSuc 0"
-by (simp add: icard_finite iT_finite iSuc_Fin iT_card)
-lemma iMODb_icard: "0 < m \<Longrightarrow> icard [r, mod m, c] = Fin (Suc c)"
+by (simp add: icard_finite iT_finite iSuc_enat iT_card)
+lemma iMODb_icard: "0 < m \<Longrightarrow> icard [r, mod m, c] = enat (Suc c)"
 by (simp add: icard_finite iT_finite iMODb_card)
-lemma iMODb_icard_if: "icard [r, mod m, c] = Fin (if m = 0 then Suc 0 else Suc c)"
+lemma iMODb_icard_if: "icard [r, mod m, c] = enat (if m = 0 then Suc 0 else Suc c)"
 by (simp add: icard_finite iT_finite iMODb_card_if)
 
 lemmas iT_icard =
