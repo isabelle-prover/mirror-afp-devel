@@ -22,10 +22,10 @@ definition llist_corec2 :: "'a \<Rightarrow> ('a \<Rightarrow> (('b \<times> 'a)
 where
   "llist_corec2 a f = 
    llist_corec (Inl a)
-     (\<lambda>a. case a of Inl a' \<Rightarrow> case f a' of Inl opt \<Rightarrow> (case opt of None \<Rightarrow> None 
+     (\<lambda>a. case a of Inl a' \<Rightarrow> (case f a' of Inl opt \<Rightarrow> (case opt of None \<Rightarrow> None 
                                                        | Some (b, a'') \<Rightarrow> Some (b, Inl a''))
                                           | Inr xs \<Rightarrow> (case xs of LNil \<Rightarrow> None |
-                                                           LCons b xs' \<Rightarrow> Some (b, Inr xs'))
+                                                           LCons b xs' \<Rightarrow> Some (b, Inr xs')))
                   | Inr xs \<Rightarrow> (case xs of LNil \<Rightarrow> None 
                                 | LCons a xs' \<Rightarrow> Some (a, Inr xs')))"
 
@@ -87,8 +87,8 @@ where [code del]:
   "lzip xs ys =
    llist_corec (xs, ys)
       (\<lambda>(xs, ys). case xs of LNil \<Rightarrow> None 
-                     | LCons x xs \<Rightarrow> case ys of LNil \<Rightarrow> None
-                                        | LCons y ys \<Rightarrow> Some ((x, y), (xs, ys)))"
+                     | LCons x xs \<Rightarrow> (case ys of LNil \<Rightarrow> None
+                                         | LCons y ys \<Rightarrow> Some ((x, y), (xs, ys))))"
 
 definition lset :: "'a llist \<Rightarrow> 'a set"
 where [code del]: "lset xs = lnth xs ` {n. enat n < llength xs}"
@@ -105,7 +105,7 @@ where [code del]: "ltl xs = (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<
 
 definition llast :: "'a llist \<Rightarrow> 'a"
 where [nitpick_simp]:
-  "llast xs = (case llength xs of enat n \<Rightarrow> case n of 0 \<Rightarrow> undefined | Suc n' \<Rightarrow> lnth xs n' | \<infinity> \<Rightarrow> undefined)"
+  "llast xs = (case llength xs of enat n \<Rightarrow> (case n of 0 \<Rightarrow> undefined | Suc n' \<Rightarrow> lnth xs n') | \<infinity> \<Rightarrow> undefined)"
 
 coinductive ldistinct :: "'a llist \<Rightarrow> bool"
 where 
