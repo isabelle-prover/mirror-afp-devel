@@ -2769,7 +2769,7 @@ lemma iT_Div_icard_ge__is_maximal_lower_bound: "
   icard I div (Fin d) + Fin (if icard I mod (Fin d) = 0 then 0 else Suc 0)"
 apply (case_tac "d = 0")
  apply (drule_tac x=I in spec, drule_tac x=d in spec, erule conjE)
- apply (simp add: iT_Div_0_icard_if icard_0_eq[unfolded zero_inat_def])
+ apply (simp add: iT_Div_0_icard_if icard_0_eq[unfolded zero_enat_def])
 thm iT_Div_card_ge__is_maximal_lower_bound
 apply (case_tac "finite I")
  prefer 2

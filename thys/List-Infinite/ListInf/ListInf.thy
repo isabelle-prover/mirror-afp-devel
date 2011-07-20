@@ -946,7 +946,7 @@ thm list.simps
 term nth
 
 definition
-  glength :: "'a glist \<Rightarrow> inat"
+  glength :: "'a glist \<Rightarrow> enat"
 where
   "glength a \<equiv> case a of
     FL xs \<Rightarrow> Fin (length xs) |
@@ -970,7 +970,7 @@ where
     FL xs \<Rightarrow> FL (map f xs) |
     IL g  \<Rightarrow> IL (f \<circ> g)"
 definition
-  gtake   :: "inat \<Rightarrow> 'a glist \<Rightarrow> 'a glist"
+  gtake   :: "enat \<Rightarrow> 'a glist \<Rightarrow> 'a glist"
 where
   "gtake n a \<equiv> case n of
     Fin m \<Rightarrow> FL (case a of 
@@ -978,7 +978,7 @@ where
       IL f  \<Rightarrow> f \<Down> m) |
     \<infinity> \<Rightarrow> a"
 definition
-  gdrop   :: "inat \<Rightarrow> 'a glist \<Rightarrow> 'a glist"
+  gdrop   :: "enat \<Rightarrow> 'a glist \<Rightarrow> 'a glist"
 where
   "gdrop n a \<equiv> case n of
     Fin m \<Rightarrow> (case a of 
@@ -999,16 +999,16 @@ where
     IL f  \<Rightarrow> f n"
 
 abbreviation (xsymbols)
-  "g_take'" :: "'a glist \<Rightarrow> inat \<Rightarrow> 'a glist" (infixl "\<down>\<^sub>g" 100)
+  "g_take'" :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist" (infixl "\<down>\<^sub>g" 100)
 where 
   "a \<down>\<^sub>g n \<equiv> gtake n a"
 abbreviation (xsymbols)
-  "g_drop'" :: "'a glist \<Rightarrow> inat \<Rightarrow> 'a glist" (infixl "\<up>\<^sub>g" 100)
+  "g_drop'" :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist" (infixl "\<up>\<^sub>g" 100)
 where
   "a \<up>\<^sub>g n \<equiv> gdrop n a"
 syntax (HTML output)
-  "g_take'" :: "'a glist \<Rightarrow> inat \<Rightarrow> 'a glist"   (infixl "\<down>\<^sub>g" 100)
-  "g_drop'" :: "'a glist \<Rightarrow> inat \<Rightarrow> 'a glist"   (infixl "\<up>\<^sub>g" 100)
+  "g_take'" :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist"   (infixl "\<down>\<^sub>g" 100)
+  "g_drop'" :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist"   (infixl "\<up>\<^sub>g" 100)
 
 
 

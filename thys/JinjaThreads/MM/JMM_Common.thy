@@ -62,7 +62,7 @@ proof -
             setsum (Fin \<circ> (\<lambda>i. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)) {..<m}"
     using m by(simp add: less_trans[where y="Fin m"] split_beta)
   also have "\<dots> = Fin (\<Sum>i<m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-    by(subst setsum_hom)(simp_all add: zero_inat_def)
+    by(subst setsum_hom)(simp_all add: zero_enat_def)
   finally have a: "a = (\<Sum>i<m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + n" by simp
   with E_a n m show thesis using `tnth E' m = (t, ta)` by(rule that)
 qed
@@ -1341,7 +1341,7 @@ proof(rule thread_start_actions_okI)
             (\<Sum>i<k. (Fin \<circ> (\<lambda>i. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)) i)"
         by(rule setsum_cong)(simp_all add: less_trans[where y="Fin k"] split_beta k)
       also have "\<dots> = Fin (\<Sum>i<k. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-        by(rule setsum_hom)(simp_all add: zero_inat_def)
+        by(rule setsum_hom)(simp_all add: zero_enat_def)
       finally have i_conv: "?i' = (\<Sum>i<k. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + l" using i_conv by simp
 
       have [simp]: "i = k"
@@ -1498,11 +1498,11 @@ proof -
 
       note this(2) also from r_m
       have r_m_sum_len_eq: "(\<Sum>i<r_m. llength (lnth (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')) i)) = Fin (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-        by(subst setsum_hom[symmetric, where f=Fin])(auto simp add: zero_inat_def split_def less_trans[where y="Fin r_m"] intro: setsum_cong)
+        by(subst setsum_hom[symmetric, where f=Fin])(auto simp add: zero_enat_def split_def less_trans[where y="Fin r_m"] intro: setsum_cong)
       hence "ltake (Fin (?r - ?n)) E'' = 
             lappend (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?r_m_E')) 
                     (ltake (Fin r_n) (ldrop (Fin (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)) E''))"
-        unfolding ltake_lmap[symmetric] lconcat_ltake r_conv plus_inat_simps(1)[symmetric] ltake_plus_conv_lappend
+        unfolding ltake_lmap[symmetric] lconcat_ltake r_conv plus_enat_simps(1)[symmetric] ltake_plus_conv_lappend
         unfolding E' by simp
       finally have "ta_seq_consist P ?vs (lmap snd (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?r_m_E')))"
         and sc_ta_r: "ta_seq_consist P (mrw_values P ?vs (map snd (list_of (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?r_m_E'))))) (lmap snd (ltake (Fin r_n) (ldropn (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) E'')))"
@@ -1541,11 +1541,11 @@ proof -
         and "P \<turnstile> (?E_sc, ws_sc) \<surd>" unfolding start_heap_obs_def[symmetric] by blast
       moreover {
         have Fin_sum_r_m_eq: "Fin (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) = llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?r_m_E'))"
-          by(auto intro: setsum_cong simp add: less_trans[OF _ r_m] lnth_ltake llength_lconcat_lfinite_conv_sum setsum_hom[symmetric, where f=Fin] zero_inat_def[symmetric] split_beta)
+          by(auto intro: setsum_cong simp add: less_trans[OF _ r_m] lnth_ltake llength_lconcat_lfinite_conv_sum setsum_hom[symmetric, where f=Fin] zero_enat_def[symmetric] split_beta)
         also have "\<dots> \<le> llength E''" unfolding E'
           by(blast intro: lprefix_llength_le lprefix_lconcatI lmap_lprefix)
         finally have r_m_E: "ltake (Fin (?n + (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>))) E = ltake (Fin (?n + (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>))) ?E_sc"
-          by(simp add: ltake_lappend lappend_eq_lappend_conv lmap_lappend_distrib r_m_sum_len_eq ltake_lmap[symmetric] min_def zero_inat_def[symmetric] E E' lconcat_ltake ltake_all del: ltake_lmap)
+          by(simp add: ltake_lappend lappend_eq_lappend_conv lmap_lappend_distrib r_m_sum_len_eq ltake_lmap[symmetric] min_def zero_enat_def[symmetric] E E' lconcat_ltake ltake_all del: ltake_lmap)
 
         have drop_r_m_E: "ldropn (?n + (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)) E = lappend (llist_of (map (Pair t_r) \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>)) (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (ldropn (Suc r_m) (llist_of_tllist E'))))"
           (is "_ = ?drop_r_m_E") using E'_r_m unfolding E E'
@@ -1560,7 +1560,7 @@ proof -
         from drop_r_m_E have "ldropn (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) E'' = ?drop_r_m_E"
           unfolding E by(simp add: ldropn_lappend2)
         also have "lmap snd (ltake (Fin r_n) \<dots>) = llist_of (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>)" using r_n
-          by(simp add: ltake_lappend lmap_lappend_distrib ltake_lmap[symmetric] take_map o_def zero_inat_def[symmetric] del: ltake_lmap)
+          by(simp add: ltake_lappend lmap_lappend_distrib ltake_lmap[symmetric] take_map o_def zero_enat_def[symmetric] del: ltake_lmap)
         finally have sc_ta_r: "ta_seq_consist P ?vs_r_m (llist_of (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>))" .
         note eq_ta
         also have "\<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> = take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> @ drop r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>" by simp
@@ -1574,7 +1574,7 @@ proof -
         from r_conv `?n \<le> ?r` have r_conv': "?r = (?n + (\<Sum>i<r_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)) + r_n" by simp
         from r_n' r_n take_r_n_eq r_m_E drop_r_m_E drop_r_m_E_sc
         have take_r'_eq: "ltake (Fin ?r) E = ltake (Fin ?r) ?E_sc" unfolding r_conv'
-          apply(subst (1 2) plus_inat_simps(1)[symmetric])
+          apply(subst (1 2) plus_enat_simps(1)[symmetric])
           apply(subst (1 2) ltake_plus_conv_lappend)
           apply(simp add: lappend_eq_lappend_conv ltake_lappend1 take_map)
           done
@@ -2219,9 +2219,9 @@ proof -
             (\<Sum>i | i < Suc wa_m \<and> Fin i < tlength E'. (Fin \<circ> (\<lambda>i. length \<lbrace>snd (lnth (ltake (Fin (Suc wa_m)) (llist_of_tllist E')) i)\<rbrace>\<^bsub>o\<^esub>)) i)"
         by(subst llength_lconcat_lfinite_conv_sum)(simp_all add: split_beta)
       also have "\<dots> = Fin (\<Sum>i | i < Suc wa_m \<and> Fin i < tlength E'. length \<lbrace>snd (lnth (ltake (Fin (Suc wa_m)) (llist_of_tllist E')) i)\<rbrace>\<^bsub>o\<^esub>)"
-        by(rule setsum_hom)(simp_all add: zero_inat_def)
+        by(rule setsum_hom)(simp_all add: zero_enat_def)
       also have "\<dots> = Fin (\<Sum>i<Suc wa_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-        unfolding inat.inject by(rule setsum_cong)(auto intro: le_less_trans[OF _ wa_m_len] simp add: lnth_ltake)
+        unfolding enat.inject by(rule setsum_cong)(auto intro: le_less_trans[OF _ wa_m_len] simp add: lnth_ltake)
       finally have "Fin ((\<Sum>i<wa_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + wa_n) < 
             llength (lconcat (ltake (Fin (Suc wa_m)) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
                                                            (llist_of_tllist E'))))"
@@ -2245,7 +2245,7 @@ proof -
             (\<Sum>i<wa_m'. (Fin \<circ> (\<lambda>i. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)) i)"
         by(rule setsum_cong)(simp_all add: less_trans[where y="Fin wa_m'"] split_beta wa_m')
       also have "\<dots> = Fin (\<Sum>i<wa_m'. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-        by(rule setsum_hom)(simp_all add: zero_inat_def)
+        by(rule setsum_hom)(simp_all add: zero_enat_def)
       finally have wa': "(\<Sum>i<wa_m. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + wa_n = (\<Sum>i<wa_m'. length \<lbrace>snd (tnth E' i)\<rbrace>\<^bsub>o\<^esub>) + wa_n'"
         using wa' by simp
       moreover have [simp]: "wa_m' = wa_m"

@@ -1,5 +1,5 @@
 no_document use_thys [
-  "~~/src/HOL/Library/Nat_Infinity", 
+  "~~/src/HOL/Library/Extended_Nat", 
   "~~/src/HOL/Library/List_Prefix", 
   "~~/src/HOL/Library/Quotient_Syntax",
   "~~/src/HOL/Library/Quotient_Product",

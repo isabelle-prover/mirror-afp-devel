@@ -450,7 +450,7 @@ proof -
         assume "ob = NormalAction (ReadMem ad al v)"
         with nth[of 0 ad al v] LCons
         have "\<exists>b. vs (ad, al) = \<lfloor>(v, b)\<rfloor>"
-          by(simp add: zero_inat_def[symmetric]) }
+          by(simp add: zero_enat_def[symmetric]) }
       moreover { 
         fix i ad al v
         assume "Fin i < llength obs'" "lnth obs' i = NormalAction (ReadMem ad al v)"
@@ -626,7 +626,7 @@ proof(intro exI conjI)
         from most_recent_write_recent[OF mrw _ this, of "(ad, al)"] adal adal' wa'
         have "E \<turnstile> length obs' \<le>a w \<or> E \<turnstile> a \<le>a length obs'" by simp
         hence False using new_wa new wa' adal len_prefix `w < a`
-          by(auto elim!: action_orderE simp add: min_Fin1_conv_Fin split: inat.split_asm) 
+          by(auto elim!: action_orderE simp add: min_Fin1_conv_Fin split: enat.split_asm) 
       }
       hence mrw_value_w: "mrw_value P ?vs_prefix (snd (lnth E w)) (ad, al) =
                           \<lfloor>(value_written P E w (ad, al), \<not> is_new_action (action_obs E w))\<rfloor>"

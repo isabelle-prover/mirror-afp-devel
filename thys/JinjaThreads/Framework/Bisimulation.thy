@@ -103,8 +103,8 @@ proof -
   have "(llength (tl1_to_tl2 s2 stls1), llength stls1) \<in>
        {(llength (tl1_to_tl2 s2 stls1), llength stls1)|s2 stls1. True}" by blast
   hence [simp]: "llength (tl1_to_tl2 s2 stls1) = llength stls1"
-  proof(coinduct rule: inat_equalityI)
-    case (Eqinat m n)
+  proof(coinduct rule: enat_equalityI)
+    case (Eqenat m n)
     then obtain s2 stls1 where m: "m = llength (tl1_to_tl2 s2 stls1)"
       and n: "n = llength stls1" by blast
     thus ?case by(cases "stls1") fastsimp+
@@ -440,8 +440,8 @@ proof -
   have "(llength (tl1_to_tl2 s2 sstls1), llength sstls1) \<in>
        {(llength (tl1_to_tl2 s2 sstls1), llength sstls1)|s2 sstls1. True}" by blast
   hence [simp]: "llength (tl1_to_tl2 s2 sstls1) = llength sstls1"
-  proof(coinduct rule: inat_equalityI)
-    case (Eqinat m n)
+  proof(coinduct rule: enat_equalityI)
+    case (Eqenat m n)
     then obtain s2 sstls1 where m: "m = llength (tl1_to_tl2 s2 sstls1)"
       and n: "n = llength sstls1" by blast
     thus ?case by(cases "sstls1") fastsimp+

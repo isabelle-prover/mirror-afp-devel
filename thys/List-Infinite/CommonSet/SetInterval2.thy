@@ -236,25 +236,25 @@ thm
   nat_induct'[where ?n0.0=0, simplified]
   nat_induct
 
-lemma inat_induct: "
+lemma enat_induct: "
   \<lbrakk> P 0; P \<infinity>; \<And>n. P n \<Longrightarrow> P (iSuc n)\<rbrakk> \<Longrightarrow> P n"
 apply (case_tac n)
  prefer 2 
  apply simp
-apply (simp only: inat_defs)
+apply (simp only: enat_defs)
 apply (rename_tac n1)
 apply (induct_tac n1)
-apply (simp add: inat.splits)+
+apply (simp add: enat.splits)+
 done
 
 
 
 lemma iSuc_imp_Suc_aux_0:
   "\<lbrakk> \<And>n. P n \<Longrightarrow> P (iSuc n); n0' \<le> n'; P (Fin n')\<rbrakk> \<Longrightarrow> P (Fin (Suc n'))"
-by (simp only: inat_defs inat.splits)
+by (simp only: enat_defs enat.splits)
 lemma iSuc_imp_Suc_aux_n0:
   "\<lbrakk> \<And>n. \<lbrakk>Fin n0' \<le> n; P n\<rbrakk> \<Longrightarrow> P (iSuc n); n0' \<le> n'; P (Fin n')\<rbrakk> \<Longrightarrow> P (Fin (Suc n'))"
-thm inat_defs
+thm enat_defs
 proof -
   assume IA: "\<And>n. \<lbrakk>Fin n0' \<le> n; P n\<rbrakk> \<Longrightarrow> P (iSuc n)"
     and n0_n: "n0' \<le> n'"
@@ -266,12 +266,12 @@ proof -
   thus "P (Fin (Suc n'))" by (simp only: iSuc_Fin)
 qed
 
-lemma inat_induct': "
-  \<lbrakk> P (n0::inat); P \<infinity>; \<And>n. \<lbrakk> n0 \<le> n;  P n \<rbrakk> \<Longrightarrow> P (iSuc n); n0 \<le> n \<rbrakk> \<Longrightarrow> P n"
+lemma enat_induct': "
+  \<lbrakk> P (n0::enat); P \<infinity>; \<And>n. \<lbrakk> n0 \<le> n;  P n \<rbrakk> \<Longrightarrow> P (iSuc n); n0 \<le> n \<rbrakk> \<Longrightarrow> P n"
 apply (case_tac n)
  prefer 2 apply simp
 apply (case_tac n0)
- prefer 2 apply (simp add: inat_defs)
+ prefer 2 apply (simp add: enat_defs)
 apply (rename_tac n' n0', simp)
 
 thm nat_induct'[where ?n0.0="n0'" and n=n' and P="\<lambda>n. P (Fin n)"]
@@ -282,17 +282,17 @@ apply simp
 done
 
 thm 
-  inat_induct'
-  inat_induct'[where ?n0.0=0, simplified]
-  inat_induct
-thm inat_induct'
+  enat_induct'
+  enat_induct'[where ?n0.0=0, simplified]
+  enat_induct
+thm enat_induct'
 
 thm 
   nat_induct
   nat_induct'
 thm
-  inat_induct
-  inat_induct'
+  enat_induct
+  enat_induct'
 
 
 thm wellorder_class.intro
@@ -874,10 +874,10 @@ by (rule ssubst[OF iMin_Min_conv], assumption+, rule Min_le_Max)
 
 
 
-subsubsection {* @{text Max} for sets over @{text inat} *}
+subsubsection {* @{text Max} for sets over @{text enat} *}
 
 definition
-  iMax :: "nat set \<Rightarrow> inat"
+  iMax :: "nat set \<Rightarrow> enat"
 where
   "iMax i \<equiv> if (finite i) then (Fin (Max i)) else \<infinity>"
 

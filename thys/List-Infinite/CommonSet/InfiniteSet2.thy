@@ -3,18 +3,18 @@
     Author:     David Trachtenherz
 *)
 
-header {* Set operations with results of type inat *}
+header {* Set operations with results of type enat *}
 
 theory InfiniteSet2
 imports SetInterval2
 begin
 
-subsection {* Set operations with @{typ inat} *} 
+subsection {* Set operations with @{typ enat} *} 
 
 subsubsection {* Basic definitions *}
 
 definition
-  icard :: "'a set \<Rightarrow> inat"
+  icard :: "'a set \<Rightarrow> enat"
 where
   "icard A \<equiv> if finite A then Fin (card A) else \<infinity>"
 
@@ -55,21 +55,21 @@ done
 lemma icard_empty[simp]: "icard {} = 0"
 by (simp add: icard_finite[OF finite.emptyI])
 lemma icard_empty_iff: "(icard A = 0) = (A = {})"
-apply (unfold zero_inat_def)
+apply (unfold zero_enat_def)
 apply (rule iffI)
  apply (frule icard_eq_Fin_imp)
  apply (simp add: icard_finite)
 apply simp
 done
-lemmas icard_empty_iff_Fin = icard_empty_iff[unfolded zero_inat_def]
+lemmas icard_empty_iff_Fin = icard_empty_iff[unfolded zero_enat_def]
 
 lemma icard_not_empty_iff: "(0 < icard A) = (A \<noteq> {})"
 by (simp add: icard_empty_iff[symmetric])
-lemmas icard_not_empty_iff_Fin = icard_not_empty_iff[unfolded zero_inat_def]
+lemmas icard_not_empty_iff_Fin = icard_not_empty_iff[unfolded zero_enat_def]
 
 lemma icard_singleton: "icard {a} = iSuc 0"
 by (simp add: icard_finite iSuc_Fin)
-lemmas icard_singleton_Fin[simp] = icard_singleton[unfolded zero_inat_def]
+lemmas icard_singleton_Fin[simp] = icard_singleton[unfolded zero_enat_def]
 lemma icard_1_imp_singleton: "icard A = iSuc 0 \<Longrightarrow> \<exists>a. A = {a}"
 apply (simp add: iSuc_Fin)
 apply (frule icard_eq_Fin_imp)

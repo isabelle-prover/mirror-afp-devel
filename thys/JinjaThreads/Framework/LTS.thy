@@ -20,7 +20,7 @@ lemma nth_concat_conv:
              m < length xss \<and> n = (\<Sum>i<m. length (xss ! i)) + n'"
 using lnth_lconcat_conv[of n "llist_of (map llist_of xss)"]
   setsum_hom[where f = Fin and h = "\<lambda>i. length (xss ! i)"]
-by(clarsimp simp add: lconcat_llist_of zero_inat_def[symmetric]) blast
+by(clarsimp simp add: lconcat_llist_of zero_enat_def[symmetric]) blast
 
 
 definition flip :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> 'c"

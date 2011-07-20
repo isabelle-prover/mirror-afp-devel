@@ -958,12 +958,12 @@ by(auto simp add: llist_all2_conv_all_lnth split_beta intro: sim_action_sym)
 lemma sim_actions_action_obsD:
   "E [\<approx>] E' \<Longrightarrow> action_obs E a \<approx> action_obs E' a"
 unfolding sim_actions_def action_obs_def
-by(cases "Fin a < llength E")(auto dest: llist_all2_lnthD llist_all2_llengthD simp add: split_beta lnth_beyond split: inat.split)
+by(cases "Fin a < llength E")(auto dest: llist_all2_lnthD llist_all2_llengthD simp add: split_beta lnth_beyond split: enat.split)
 
 lemma sim_actions_action_tidD:
   "E [\<approx>] E' \<Longrightarrow> action_tid E a = action_tid E' a"
 unfolding sim_actions_def action_tid_def
-by(cases "Fin a < llength E")(auto dest: llist_all2_lnthD llist_all2_llengthD simp add: lnth_beyond split: inat.split)
+by(cases "Fin a < llength E")(auto dest: llist_all2_lnthD llist_all2_llengthD simp add: lnth_beyond split: enat.split)
 
 lemma eq_into_sim_actions: 
   assumes "E = E'"
@@ -1430,7 +1430,7 @@ next
     case False
     from `po_sw P E a' a''` have "E \<turnstile> a' \<le>a a''" by(rule po_sw_into_action_order)
     with `Fin a'' < n` False have "Fin a' < n"
-      by(safe elim!: action_orderE)(metis Suc_leI Suc_n_not_le_n inat_ord_simps(2) le_trans nat_neq_iff xtrans(10))+
+      by(safe elim!: action_orderE)(metis Suc_leI Suc_n_not_le_n enat_ord_simps(2) le_trans nat_neq_iff xtrans(10))+
     with `Fin a < n` have "P,E' \<turnstile> a \<le>hb a'" by(rule step)
     moreover from `po_sw P E a' a''` prefix `Fin a' < n` `Fin a'' < n`
     have "po_sw P E' a' a''" by(rule po_sw_change_prefix)

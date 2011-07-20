@@ -251,7 +251,7 @@ next
   proof(induct xs\<equiv>"llist_corec a (\<lambda>a. case f a of Inl ba \<Rightarrow> Some ba | Inr c \<Rightarrow> None)" arbitrary: a)
     case lfinite_LNil[symmetric]
     thus ?case
-      by(simp add: llist_corec tllist_corec_aux_def zero_inat_def TNIL_def split: sum.split_asm prod.split_asm)
+      by(simp add: llist_corec tllist_corec_aux_def zero_enat_def TNIL_def split: sum.split_asm prod.split_asm)
   next
     case (lfinite_LConsI xs x)
     from `LCons x xs = llist_corec a (\<lambda>a. case f a of Inl ba \<Rightarrow> Some ba | Inr c \<Rightarrow> None)`
@@ -340,10 +340,10 @@ where "TNTH (xs, b) = lnth xs"
 quotient_definition "tnth :: ('a, 'b) tllist \<Rightarrow> nat \<Rightarrow> 'a"
 is "TNTH"
 
-primrec TLENGTH :: "('a llist \<times> 'b) \<Rightarrow> inat"
+primrec TLENGTH :: "('a llist \<times> 'b) \<Rightarrow> enat"
 where "TLENGTH (xs, b) = llength xs"
 
-quotient_definition "tlength :: ('a, 'b) tllist \<Rightarrow> inat"
+quotient_definition "tlength :: ('a, 'b) tllist \<Rightarrow> enat"
 is "TLENGTH"
 
 primrec TDROPn :: "nat \<Rightarrow> ('a llist \<times> 'b) \<Rightarrow> ('a llist \<times> 'b)"
