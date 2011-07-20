@@ -7,6 +7,18 @@ theory Lazy_TLList imports
   Lazy_LList
 begin
 
+code_modulename SML
+  Lazy_TLList TLList
+
+code_modulename OCaml
+  Lazy_TLList TLList
+
+code_modulename Haskell
+  Lazy_TLList TLList
+
+code_modulename Scala
+  Lazy_TLList TLList
+
 definition Lazy_tllist :: "(unit \<Rightarrow> 'a \<times> ('a, 'b) tllist + 'b) \<Rightarrow> ('a, 'b) tllist"
 where [code del]:
   "Lazy_tllist xs = (case xs () of Inl (x, ys) \<Rightarrow> TCons x ys | Inr b \<Rightarrow> TNil b)"
@@ -79,20 +91,19 @@ lemma lappendt_Lazy_llist [code]:
   Lazy_tllist (\<lambda>_. case xs () of None \<Rightarrow> force ys | Some (x, xs') \<Rightarrow> Inl (x, lappendt xs' ys))"
 by(auto simp add: Lazy_llist_def split: option.split tllist_split)
 
-declare tfilter_TNil [code del] tfilter_TCons [code del]
+declare tfilter'_code [code del]
 
-lemma tfilter_Lazy_tllist [code]:
-  "tfilter b P (Lazy_tllist xs) =
-   Lazy_tllist (\<lambda>_. case xs () of Inl (x, xs') \<Rightarrow> if P x then Inl (x, tfilter b P xs') else force (tfilter b P xs') | Inr b' \<Rightarrow> Inr b')"
+lemma tfilter'_Lazy_tllist [code]:
+  "TLList.tfilter' b P (Lazy_tllist xs) =
+   Lazy_tllist (\<lambda>_. case xs () of Inl (x, xs') \<Rightarrow> if P x then Inl (x, TLList.tfilter' b P xs') else force (TLList.tfilter' b P xs') | Inr b' \<Rightarrow> Inr b')"
 by(simp split: tllist_split)
 
-declare tconcat_TNil [code del] tconcat_TCons [code del]
+declare tconcat'_code [code del]
 
 lemma tconcat_Lazy_tllist [code]:
-  "tconcat b (Lazy_tllist xss) =
-  Lazy_tllist (\<lambda>_. case xss () of Inr b' \<Rightarrow> Inr b' | Inl (xs, xss') \<Rightarrow> force (lappendt xs (tconcat b xss')))"
+  "TLList.tconcat' b (Lazy_tllist xss) =
+  Lazy_tllist (\<lambda>_. case xss () of Inr b' \<Rightarrow> Inr b' | Inl (xs, xss') \<Rightarrow> force (lappendt xs (TLList.tconcat' b xss')))"
 by(simp split: tllist_split)
-
 
 declare tllist_all2_code [code del]
 
@@ -135,8 +146,5 @@ declare Lazy_tllist_def [simp del]
 declare sum.splits [split del]
 
 hide_const (open) force
-
-code_modulename SML
-  Lazy_TLList TLList
 
 end

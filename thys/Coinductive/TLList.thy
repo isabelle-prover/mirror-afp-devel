@@ -525,11 +525,11 @@ by(induct) simp_all
 
 subsection {* Filtering terminated lazy lists @{term tfilter} *}
 
-lemma tfilter_TNil [code, simp]:
+lemma tfilter_TNil [simp]:
   "tfilter b' P (TNil b) = TNil b"
 by(descending)(simp add: TNIL_def)
 
-lemma tfilter_TCons [code, simp]:
+lemma tfilter_TCons [simp]:
   "tfilter b P (TCons a tr) = (if P a then TCons a (tfilter b P tr) else tfilter b P tr)"
 by(descending)(auto simp add: TCONS_def)
 
@@ -545,14 +545,44 @@ lemma tfilter_eq_TConsD:
    \<exists>us vs. ys = lappendt us (TCons x vs) \<and> lfinite us \<and> (\<forall>u\<in>lset us. \<not> P u) \<and> P x \<and> xs = tfilter a P vs"
 by(descending)(fastsimp simp add: TCONS_def apfst_def map_pair_def split_def split_paired_Ex dest: lfilter_eq_LConsD)
 
+text {* Use a version of @{term "tfilter"} for code generation that does not evaluate the first argument *}
+
+definition tfilter' :: "(unit \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
+where [simp, code del]: "tfilter' b = tfilter (b ())"
+
+lemma tfilter_code [code, code_inline]:
+  "tfilter = (\<lambda>b. tfilter' (\<lambda>_. b))" 
+by simp
+
+lemma tfilter'_code [code]:
+  "tfilter' b' P (TNil b) = TNil b"
+  "tfilter' b' P (TCons a tr) = (if P a then TCons a (tfilter' b' P tr) else tfilter' b' P tr)"
+by simp_all
+
+hide_const (open) tfilter'
 
 subsection {* Concatenating a terminated lazy list of lazy lists @{term tconcat} *}
 
-lemma tconcat_TNil [code, simp]: "tconcat b (TNil b') = TNil b'"
+lemma tconcat_TNil [simp]: "tconcat b (TNil b') = TNil b'"
 by(descending)(simp add: TNIL_def)
 
-lemma tconcat_TCons [code, simp]: "tconcat b (TCons a tr) = lappendt a (tconcat b tr)"
+lemma tconcat_TCons [simp]: "tconcat b (TCons a tr) = lappendt a (tconcat b tr)"
 by(descending)(clarsimp simp add: TCONS_def)
+
+text {* Use a version of @{term "tconcat"} for code generation that does not evaluate the first argument *}
+
+definition tconcat' :: "(unit \<Rightarrow> 'b) \<Rightarrow> ('a llist, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
+where [simp, code del]: "tconcat' b = tconcat (b ())"
+
+lemma tconcat_code [code, code_inline]: "tconcat = (\<lambda>b. tconcat' (\<lambda>_. b))"
+by simp
+
+lemma tconcat'_code [code]:
+  "tconcat' b (TNil b') = TNil b'"
+  "tconcat' b (TCons a tr) = lappendt a (tconcat' b tr)"
+by simp_all
+
+hide_const (open) tconcat'
 
 subsection {* @{term tllist_all2} *}
 

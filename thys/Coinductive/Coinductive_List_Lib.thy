@@ -10,9 +10,21 @@ theory Coinductive_List_Lib imports
   Coinductive_Nat
 begin
 
-text {* Move functions define in this theory to same namespace as @{theory Coinductive_List} *}
+text {* Move functions defined in this theory to same namespace as @{theory Coinductive_List} *}
 
 code_modulename SML
+  Coinductive_List Coinductive_List
+  Coinductive_List_Lib Coinductive_List
+
+code_modulename OCaml
+  Coinductive_List Coinductive_List
+  Coinductive_List_Lib Coinductive_List
+
+code_modulename Haskell
+  Coinductive_List Coinductive_List
+  Coinductive_List_Lib Coinductive_List
+
+code_modulename Scala
   Coinductive_List Coinductive_List
   Coinductive_List_Lib Coinductive_List
 
@@ -160,6 +172,12 @@ where [code del]:
 
 definition lsublist :: "'a llist \<Rightarrow> nat set \<Rightarrow> 'a llist"
 where "lsublist xs A = lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (iterates Suc 0)))"
+
+definition (in monoid_add) llistsum :: "'a llist \<Rightarrow> 'a"
+where "llistsum xs = (if lfinite xs then listsum (list_of xs) else 0)"
+
+
+
 
 subsection {* Auxiliary lemmata *}
 
@@ -934,6 +952,10 @@ qed simp
 lemma ldrop_llist_of: "ldrop (enat n) (llist_of xs) = llist_of (drop n xs)"
 by simp
 
+lemma drop_list_of:
+  "lfinite xs \<Longrightarrow> drop n (list_of xs) = list_of (ldropn n xs)"
+by (metis ldropn_llist_of list_of_llist_of llist_of_list_of)
+
 subsection {* Taking the $n$-th element of a lazy list: @{term "lnth" } *}
 
 lemma lnth_LNil:
@@ -1553,6 +1575,10 @@ proof -
     by(auto simp add: lstrict_prefix_def lprefix_lappend lappend_inf 
             elim: contrapos_np)
 qed
+
+lemma lprefix_llist_ofI:
+  "\<exists>zs. ys = xs @ zs \<Longrightarrow> lprefix (llist_of xs) (llist_of ys)"
+by(clarsimp simp add: lappend_llist_of_llist_of[symmetric] lprefix_lappend simp del: lappend_llist_of_llist_of)
 
 lemma llimit_induct [case_names LNil LCons limit]:
   assumes LNil: "P LNil"
@@ -3853,6 +3879,10 @@ next
   qed
 qed
 
+lemma distinct_filterD:
+  "\<lbrakk> distinct (filter P xs); n < length xs; m < length xs; P x; xs ! n = x; xs ! m = x \<rbrakk> \<Longrightarrow> m = n"
+using ldistinct_lfilterD[of P "llist_of xs" n m x] by simp
+
 lemma lprefix_lfilterI:
   "lprefix xs ys \<Longrightarrow> lprefix (lfilter P xs) (lfilter P ys)"
 unfolding lprefix_def
@@ -4602,6 +4632,36 @@ next
     by(auto simp add: lsublist_def llength_lzip lfinite_lfilter)
 qed
 
+subsection {* @{term "llist_sum"} *}
+
+context monoid_add begin
+
+lemma llistsum_0 [simp]: "llistsum (lmap (\<lambda>_. 0) xs) = 0"
+by(simp add: llistsum_def)
+
+lemma llistsum_llist_of [simp]: "llistsum (llist_of xs) = listsum xs"
+by(simp add: llistsum_def)
+
+lemma llistsum_lappend: "\<lbrakk> lfinite xs; lfinite ys \<rbrakk> \<Longrightarrow> llistsum (lappend xs ys) = llistsum xs + llistsum ys"
+by(simp add: llistsum_def list_of_lappend)
+
+lemma llistsum_LNil [simp]: "llistsum LNil = 0"
+by(simp add: llistsum_def)
+
+lemma llistsum_LCons [simp]: "lfinite xs \<Longrightarrow> llistsum (LCons x xs) = x + llistsum xs"
+by(simp add: llistsum_def)
+
+lemma llistsum_inf [simp]: "\<not> lfinite xs \<Longrightarrow> llistsum xs = 0"
+by(simp add: llistsum_def)
+
+end
+
+lemma llistsum_mono:
+  fixes f :: "'a \<Rightarrow> 'b :: {monoid_add, ordered_ab_semigroup_add}"
+  assumes "\<And>x. x \<in> lset xs \<Longrightarrow> f x \<le> g x"
+  shows "llistsum (lmap f xs) \<le> llistsum (lmap g xs)"
+using assms
+by(auto simp add: llistsum_def intro: listsum_mono)
 
 
 subsection {* 
@@ -4805,6 +4865,7 @@ by(subst inf_llist_rec) simp
 lemma ltl_inf_llist [simp]: "ltl (inf_llist f) = inf_llist (\<lambda>n. f (Suc n))"
 by(subst inf_llist_rec)(simp)
 
-
+lemma (in monoid_add) llistsum_infllist: "llistsum (inf_llist f) = 0"
+by simp
 
 end

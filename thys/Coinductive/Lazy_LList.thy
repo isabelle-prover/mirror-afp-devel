@@ -10,6 +10,15 @@ begin
 code_modulename SML
   Lazy_LList Coinductive_List
 
+code_modulename OCaml
+  Lazy_LList Coinductive_List
+
+code_modulename Haskell
+  Lazy_LList Coinductive_List
+
+code_modulename Scala
+  Lazy_LList Coinductive_List
+
 definition Lazy_llist :: "(unit \<Rightarrow> ('a \<times> 'a llist) option) \<Rightarrow> 'a llist"
 where [simp]:
   "Lazy_llist xs = (case xs () of None \<Rightarrow> LNil | Some (x, ys) \<Rightarrow> LCons x ys)"
