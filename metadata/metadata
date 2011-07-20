@@ -312,7 +312,7 @@ title = Coinductive
 topic = Computer Science/Functional Programming
 author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
 date = 2010-02-12
-abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, and a library of operations on coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome. 
+abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, resumptions, and a library of operations on coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome. 
 extra-history =
   Change history:
   [2010-06-10]:
