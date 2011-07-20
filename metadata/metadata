@@ -330,7 +330,10 @@ extra-history =
         (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f81ce373fa96">f81ce373fa96</a>)<br>
   [2011-02-01]:
         lazy implementation of coinductive (terminated) lists for the code generator
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6034973dce83">6034973dce83</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6034973dce83">6034973dce83</a>)<br>
+  [2011-07-20]:
+        new codatatype resumption
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/811364c776c7">811364c776c7</a>)<br>
 
 [Stream-Fusion]
 title = Stream Fusion
