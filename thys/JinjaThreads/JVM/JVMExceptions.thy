@@ -6,6 +6,9 @@ header {* \isaheader{Exception handling in the JVM} *}
 
 theory JVMExceptions imports JVMInstructions begin
 
+abbreviation Any :: "'addr :: addr option"
+where "Any \<equiv> None"
+
 definition matches_ex_entry :: "'m prog \<Rightarrow> cname \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool"
 where
  "matches_ex_entry P C pc xcp \<equiv>
@@ -21,7 +24,7 @@ where
                                    then Some (snd(snd(snd e)))
                                    else match_ex_table P C pc es)"
 
-abbreviation ex_table_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table"
+abbreviation ex_table_of :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table"
 where "ex_table_of P C M == snd (snd (snd (snd (snd (snd(method P C M))))))"
 
 lemma match_ex_table_SomeD:

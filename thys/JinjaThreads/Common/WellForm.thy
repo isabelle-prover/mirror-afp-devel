@@ -23,12 +23,14 @@ of the overriding method becomes more specific, the argument types
 become more general.
 *}
 
-types 'm wf_mdecl_test = "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
+type_synonym 'm wf_mdecl_test = "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
 
-definition wf_extCall :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> bool"
+fun wf_native :: "'m wf_mdecl_test"
 where
-  "wf_extCall P C M Ts T \<longleftrightarrow>
-  (\<forall>U Ts' T'. U\<bullet>M(Ts') :: T' \<longrightarrow> (P \<turnstile> Class C \<le> U \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T') \<and> \<not> P \<turnstile> U \<le> Class C)"
+  "wf_native P C (M, Ts, T, m) \<longleftrightarrow>
+  (\<forall>U Ts' T'. U\<bullet>M(Ts') :: T' \<longrightarrow> 
+    (P \<turnstile> Class C \<le> U \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T') \<and> 
+    (P \<turnstile> U \<le> Class C \<longrightarrow> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T' \<le> T))"
 
 definition wf_fdecl :: "'m prog \<Rightarrow> fdecl \<Rightarrow> bool"
 where "wf_fdecl P \<equiv> \<lambda>(F,T,fm). is_type P T"
@@ -36,32 +38,34 @@ where "wf_fdecl P \<equiv> \<lambda>(F,T,fm). is_type P T"
 definition wf_mdecl :: "'m wf_mdecl_test \<Rightarrow> 'm wf_mdecl_test"
 where "wf_mdecl wf_md P C \<equiv> \<lambda>(M,Ts,T,mb). (\<forall>T\<in>set Ts. is_type P T) \<and> is_type P T \<and> wf_md P C (M,Ts,T,mb)"
 
+fun wf_overriding :: "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
+where
+  "wf_overriding P D (M,Ts,T,m) =
+  (\<forall>D' Ts' T' m'. P \<turnstile> D sees M:Ts' \<rightarrow> T' = m' in D' \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T')"
+
 definition wf_cdecl :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> 'm cdecl \<Rightarrow> bool"
 where
   "wf_cdecl wf_md P  \<equiv>  \<lambda>(C,(D,fs,ms)).
   (\<forall>f\<in>set fs. wf_fdecl P f) \<and> distinct_fst fs \<and>
-  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m) \<and>  distinct_fst ms \<and>
+  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m \<and> wf_native P C m) \<and>
+  distinct_fst ms \<and>
   (C \<noteq> Object \<longrightarrow>
    is_class P D \<and> \<not> P \<turnstile> D \<preceq>\<^sup>* C \<and>
-   (\<forall>(M,Ts,T,m)\<in>set ms. wf_extCall P C M Ts T \<and>
-      (\<forall>D' Ts' T' m'. P \<turnstile> D sees M:Ts' \<rightarrow> T' = m' in D' \<longrightarrow>
-                       P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T'))) \<and>
-  (C = Object \<longrightarrow> (fs = []) \<and> (ms = [])) \<and> (* require object to implement no fields/methods because of array subtype of Object *)
-
-  (C = Thread \<longrightarrow> (\<exists>m. (run, [], Void, m) \<in> set ms) \<and> (interrupted_flag, Boolean, \<lparr>volatile=True\<rparr>) \<in> set fs)"
-
-definition wf_syscls :: "'m prog \<Rightarrow> bool"
-where "wf_syscls P \<equiv> (\<forall>C \<in> {Object, Throwable, Thread, String} \<union> sys_xcpts. is_class P C) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
+   (\<forall>m\<in>set ms. wf_overriding P D m)) \<and>
+  (C = Thread \<longrightarrow> (\<exists>m. (run, [], Void, m) \<in> set ms))"
 
 definition wf_prog :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> bool"
 where 
-  "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> (\<forall>c \<in> set (the_Program P). wf_cdecl wf_md P c) \<and> distinct_fst (the_Program P)"
+  "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> (\<forall>c \<in> set (classes P). wf_cdecl wf_md P c) \<and> distinct_fst (classes P)"
 
 lemma wf_prog_def2:
-  "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> (\<forall>C rest. class P C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf_md P (C, rest)) \<and> distinct_fst (the_Program P)"
+  "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> (\<forall>C rest. class P C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf_md P (C, rest)) \<and> distinct_fst (classes P)"
 by(cases P)(auto simp add: wf_prog_def dest: map_of_SomeD map_of_SomeI)
 
 subsection{* Well-formedness lemmas *}
+
+lemma wf_prog_wf_syscls: "wf_prog wf_md P \<Longrightarrow> wf_syscls P"
+by(simp add: wf_prog_def)
 
 lemma class_wf: 
   "\<lbrakk>class P C = Some c; wf_prog wf_md P\<rbrakk> \<Longrightarrow> wf_cdecl wf_md P (C,c)"
@@ -71,32 +75,30 @@ lemma [simp]:
   assumes "wf_prog wf_md P"
   shows class_Object: "\<exists>C fs ms. class P Object = Some (C,fs,ms)"
   and class_Thread:  "\<exists>C fs ms. class P Thread = Some (C,fs,ms)"
-  and class_String: "\<exists>C fs ms. class P String = Some (C,fs,ms)"
-using assms
-by(case_tac [!] P) (auto simp: map_of_SomeI wf_syscls_def wf_prog_def is_class_def)
+using wf_prog_wf_syscls[OF assms]
+by(rule wf_syscls_class_Object wf_syscls_class_Thread)+
 
 lemma [simp]:
   assumes "wf_prog wf_md P"
   shows is_class_Object: "is_class P Object"
   and is_class_Thread: "is_class P Thread"
-  and is_class_String: "is_class P String"
-using assms by(simp_all add: is_class_def)
-
-lemma is_class_xcpt:
-  "\<lbrakk> C \<in> sys_xcpts; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_class P C"
-by(cases P)(simp add: wf_syscls_def is_class_def class_def wf_prog_def)
+using wf_prog_wf_syscls[OF assms] by simp_all
 
 lemma xcpt_subcls_Throwable:
   "\<lbrakk> C \<in> sys_xcpts; wf_prog wf_md P \<rbrakk> \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* Throwable"
-by(cases P)(simp add: wf_prog_def wf_syscls_def is_class_def class_def)
+by(simp add: wf_prog_wf_syscls wf_syscls_xcpt_subcls_Throwable)
 
 lemma is_class_Throwable:
   "wf_prog wf_md P \<Longrightarrow> is_class P Throwable"
-by(cases P)(auto simp add: wf_prog_def wf_syscls_def is_class_def class_def map_of_SomeI)
+by(rule wf_prog_wf_syscls wf_syscls_is_class_Throwable)+
 
 lemma is_class_sub_Throwable:
   "\<lbrakk> wf_prog wf_md P; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk> \<Longrightarrow> is_class P C"
-by(erule subcls_is_class1)(erule is_class_Throwable)
+by(rule wf_syscls_is_class_sub_Throwable[OF wf_prog_wf_syscls])
+
+lemma is_class_xcpt:
+  "\<lbrakk> C \<in> sys_xcpts; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_class P C"
+by(rule wf_syscls_is_class_xcpt[OF _ wf_prog_wf_syscls])
 
 context heap_base begin
 lemma wf_preallocatedE:
@@ -387,7 +389,7 @@ apply(drule visible_method_exists)
 apply(clarify)
 apply(drule class_wf, assumption)
 apply(drule map_of_SomeD)
-apply(simp add: wf_cdecl_def)
+apply(auto simp add: wf_cdecl_def)
 done
 (*>*)
 
@@ -427,10 +429,13 @@ apply( frule map_of_SomeD)
 apply(clarsimp)
 apply(drule (1) bspec)+
 apply clarsimp
-apply( erule_tac x=D in allE, erule_tac x=Ts in allE, erule_tac x=T in allE, fastsimp simp:map_add_def split:option.split)
+apply(erule_tac x=D in allE)
+apply(erule_tac x=Ts in allE)
+apply(rotate_tac -1)
+apply(erule_tac x=T in allE)
+apply(fastsimp simp:map_add_def Method_def split:option.split)
 done
 (*>*)
-
 
 lemma sees_method_mono2:
   "\<lbrakk> P \<turnstile> C' \<preceq>\<^sup>* C; wf_prog wf_md P;
@@ -468,8 +473,8 @@ proof -
     by(bestsimp simp:Method_def dest:mdecls_visible)
 qed
 
-lemma sees_wf_extCall:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T=meth in D \<rbrakk> \<Longrightarrow> wf_extCall P D M Ts T"
+lemma sees_wf_native:
+  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T=meth in D \<rbrakk> \<Longrightarrow> wf_native P D (M,Ts,T,meth)"
 apply(drule visible_method_exists)
 apply clarify
 apply(drule (1) class_wf)
@@ -477,27 +482,92 @@ apply(drule map_of_SomeD)
 apply(auto simp add: wf_cdecl_def)
 done
 
-lemma external_WT_widen_sees_method_contravariant:
+lemma is_native_sees_method_overriding:
   assumes wf: "wf_prog wf_md P"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = m in D"
-  and CsubC': "P \<turnstile> C \<preceq>\<^sup>* C'"
-  and extC: "P \<turnstile> Class C'\<bullet>M(Ts') :: T'"
-  shows "P \<turnstile> Ts' [\<le>] Ts" "P \<turnstile> T \<le> T'"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>Tr = body in D"
+  and "is_native P T M"
+  and icto: "is_class_type_of T C"
+  shows "\<exists>Ts' Tr'. P \<turnstile> T\<bullet>M(Ts') :: Tr' \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> Tr' \<le> Tr"
 proof -
-  from wf sees have "wf_extCall P D M Ts T" by(rule sees_wf_extCall)
-  from extC obtain U where C'subU: "P \<turnstile> Class C' \<le> U"
-    and "\<not> P \<turnstile> C' has M" and wtExt: "U\<bullet>M(Ts') :: T'"
-    by(auto elim!: external_WT.cases simp add: is_external_call_def)
-  from C'subU obtain C'' where U: "U = Class C''" by(auto dest: Class_widen)
-  have "P \<turnstile> D \<preceq>\<^sup>* C'' \<Longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T'" "\<not> P \<turnstile> C'' \<preceq>\<^sup>* D"
-    using U wtExt `wf_extCall P D M Ts T` unfolding wf_extCall_def by auto
-  moreover from sees have "P \<turnstile> C \<preceq>\<^sup>* D" by(rule sees_method_decl_above)
-  ultimately show "P \<turnstile> Ts' [\<le>] Ts" "P \<turnstile> T \<le> T'"
-    using `\<not> P \<turnstile> C'' \<preceq>\<^sup>* D` CsubC' C'subU U
-      single_valued_confluent[OF single_valued_subcls1[OF wf], of C D C'']
-    by(auto simp add: rtrancl_def intro: rtranclp_trans)
+  from `is_native P T M` obtain Ts' Tr' T'
+    where native: "P \<turnstile> T native M:Ts' \<rightarrow> Tr' in T'" unfolding is_native_def2 by blast
+  hence "P \<turnstile> T\<bullet>M(Ts') :: Tr'" ..
+  moreover {
+    from native sees icto have "P \<turnstile> T' \<le> Class D" by(rule native_call_sees_method)
+    moreover from native have "T'\<bullet>M(Ts') :: Tr'" unfolding native_call_def by simp
+    moreover from wf sees have "wf_native P D (M,Ts,Tr,body)" by(rule sees_wf_native)
+    ultimately have "P \<turnstile> Ts [\<le>] Ts'" "P \<turnstile> Tr' \<le> Tr" by auto }
+  ultimately show ?thesis by blast
 qed
-  
+
+lemma native_not_native_overriding:
+  assumes wf: "wf_prog wf_md P"
+  and native: "P \<turnstile> T native M:Ts\<rightarrow>Tr in T'"
+  and "\<not> is_native P U M"
+  and "P \<turnstile> U \<le> T" "U \<noteq> NT"
+  shows "\<exists>C Ts' Tr' body D. is_class_type_of U C \<and> P \<turnstile> C sees M:Ts'\<rightarrow>Tr' = body in D \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> Tr' \<le> Tr \<and> P \<turnstile> Class C \<le> T'"
+using `\<not> is_native P U M`
+proof(rule contrapos_np)
+  assume not_sees: "\<not> ?thesis"
+  { fix C Ts' Tr' body D
+    assume icto: "is_class_type_of U C"
+      and sees: "P \<turnstile> C sees M: Ts'\<rightarrow>Tr' = body in D"
+    from icto have "P \<turnstile> T' \<le> Class D \<and> T' \<noteq> Class D"
+    proof cases
+      case (is_class_type_of_Array U')[simp]
+      hence [simp]: "D = Object" using sees by(auto dest: sees_method_decl_above)
+      from native have "P \<turnstile> T \<le> T'" unfolding native_call_def ..
+      with `P \<turnstile> U \<le> T` have "P \<turnstile> T' \<le> Class D"
+        by(auto intro: widen_array_object dest: Array_widen dest: Class_widen)
+      moreover from native sees `P \<turnstile> U \<le> T` have "T' \<noteq> Class D"
+        by(fastsimp simp add: native_call_def dest: Array_widen)
+      ultimately show ?thesis ..
+    next
+      case is_class_type_of_Class[simp]
+      from native have "P \<turnstile> T \<le> T'" by(simp add: native_call_def)
+      with `P \<turnstile> U \<le> T` have "P \<turnstile> U \<le> T'" by(rule widen_trans)
+      then obtain C' where [simp]: "T' = Class C'" by(auto dest: Class_widen)
+      with `P \<turnstile> U \<le> T'` have "P \<turnstile> C \<preceq>\<^sup>* C'" by simp
+      moreover from sees have "P \<turnstile> C \<preceq>\<^sup>* D" by(rule sees_method_decl_above)
+      ultimately have "P \<turnstile> C' \<preceq>\<^sup>* D \<or> P \<turnstile> D \<preceq>\<^sup>* C'"
+        using single_valued_confluent[OF single_valued_subcls1[OF wf], of C C' D]
+        by(simp add: rtrancl_def)
+      hence "P \<turnstile> C' \<preceq>\<^sup>* D"
+      proof
+        assume "P \<turnstile> D \<preceq>\<^sup>* C'"
+        moreover
+        from wf sees have "wf_native P D (M,Ts',Tr',body)" by(rule sees_wf_native)
+        moreover from native have "Class C'\<bullet>M(Ts) :: Tr" unfolding native_call_def by simp
+        ultimately have "P \<turnstile> Ts [\<le>] Ts'" "P \<turnstile> Tr' \<le> Tr" by auto
+        with sees not_sees `P \<turnstile> C \<preceq>\<^sup>* C'` have False by auto
+        thus ?thesis ..
+      qed
+      moreover
+      from `U \<noteq> NT` `P \<turnstile> U \<le> T` have "T \<noteq> NT" by auto
+      then obtain D' where "is_class_type_of T D'" and "P \<turnstile> D' \<preceq>\<^sup>* C'"
+        by(auto intro: widen_is_class_type_of[OF _ `P \<turnstile> T \<le> T'`, of C'])
+      from `P \<turnstile> D' \<preceq>\<^sup>* C'` `P \<turnstile> C' \<preceq>\<^sup>* D` have "P \<turnstile> D' \<preceq>\<^sup>* D" by simp
+      with sees_method_idemp[OF sees] obtain Ts'' Tr'' body' D'' 
+        where sees': "P \<turnstile> D' sees M:Ts'' \<rightarrow> Tr'' = body' in D''"
+        by(auto dest: sees_method_mono[OF _ wf])
+      with `is_class_type_of T D'` native
+      have "P \<turnstile> C' \<preceq>\<^sup>* D''" "C' \<noteq> D''" by(auto simp add: native_call_def)
+      from `P \<turnstile> D' \<preceq>\<^sup>* D` sees_method_idemp[OF sees] sees'
+      have "P \<turnstile> D'' \<preceq>\<^sup>* D" by(rule sees_method_decl_mono)
+      have "C' \<noteq> D"
+      proof
+        assume "C' = D"
+        with `P \<turnstile> C' \<preceq>\<^sup>* D''` `P \<turnstile> D'' \<preceq>\<^sup>* D`
+        have "C' = D''" using subcls_antisym[OF wf, of C' D''] by simp
+        with `C' \<noteq> D''` show False by contradiction
+      qed
+      ultimately show ?thesis by simp
+    qed }
+  hence "P \<turnstile> U native M:Ts\<rightarrow>Tr in T'" using `U \<noteq> NT` `P \<turnstile> U \<le> T` `P \<turnstile> T native M:Ts\<rightarrow>Tr in T'`
+    unfolding native_call_def by(auto intro: widen_trans)
+  thus "is_native P U M" ..
+qed
+
 lemma Call_lemma:
   "\<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = m in D; P \<turnstile> C' \<preceq>\<^sup>* C; wf_prog wf_md P \<rbrakk>
   \<Longrightarrow> \<exists>D' Ts' T' m'.
@@ -530,20 +600,6 @@ proof -
   with ThreadMmT have Tseesrun: "P \<turnstile> Thread sees run: []\<rightarrow>Void = mthd in Thread"
     by(auto simp add: Method_def)
   from sees_method_mono[OF PCThread wf Tseesrun] show ?thesis by auto
-qed
-
-lemma wf_Object_method_empty:
-  assumes wf: "wf_prog wf_md P"
-  and sees: "P \<turnstile> Object sees M: Ts\<rightarrow>T = m in D"
-  shows False
-proof -
-  from wf obtain O' fs ms
-    where classO: "class P Object = \<lfloor>(O', fs, ms)\<rfloor>" 
-    by(fastsimp dest!: class_Object)
-  from wf classO have "ms = []"
-    by(auto dest: class_wf simp add: wf_cdecl_def)
-  with classO sees show False
-    by(auto elim: Methods.cases simp: Method_def)
 qed
 
 lemma wf_prog_lift:
@@ -600,48 +656,8 @@ done
 
 lemma sees_field_is_type:
   "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_type P T"
-(*<*)
 by(fastsimp simp: sees_field_def
             elim: has_fields_types map_of_SomeD[OF map_of_remap_SomeD])
-(*>*)
-
-lemma wf_Object_field_empty:
-  assumes wf: "wf_prog wf_md P"
-  shows "P \<turnstile> Object has_fields []"
-proof -
-  from wf obtain O' fs ms where classO: "class P Object = \<lfloor>(O', fs, ms)\<rfloor>"
-    by -(drule is_class_Object,auto simp add: is_class_def)
-  from wf classO have "fs = []"
-    by(auto dest: class_wf simp add: wf_cdecl_def)
-  with classO show ?thesis
-    by(auto intro: has_fields_Object)
-qed
-
-lemma wf_Object_not_has_field [dest]:
-  "\<lbrakk> P \<turnstile> Object has F:T (fm) in D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> False"
-by(auto dest: wf_Object_field_empty has_fields_fun simp add: has_field_def)
-
-lemma wf_Thread_has_interrupted_flag:
-  assumes wf: "wf_prog wf_md P"
-  shows "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-proof -
-  from wf have "is_class P Thread" by(rule is_class_Thread)
-  from wf_Fields_Ex[OF wf this] obtain FDTs where "P \<turnstile> Thread has_fields FDTs" ..
-  moreover from `is_class P Thread` obtain D fs ms
-    where "class P Thread = \<lfloor>(D, fs, ms)\<rfloor>" by(auto simp add: is_class_def)
-  moreover hence "wf_cdecl wf_md P (Thread, D, fs, ms)"
-    using wf by(rule class_wf)
-  hence "(interrupted_flag, Boolean, \<lparr>volatile=True\<rparr>) \<in> set fs" "distinct_fst fs"
-    by(simp_all add: wf_cdecl_def)
-  ultimately have "map_of FDTs (interrupted_flag, Thread) = \<lfloor>(Boolean, \<lparr>volatile=True\<rparr>)\<rfloor>"
-    by cases(fastsimp intro: map_add_find_right map_of_mapk_SomeI injI map_of_SomeI)+
-  with `P \<turnstile> Thread has_fields FDTs` show ?thesis
-    unfolding has_field_def by blast
-qed
-
-lemma wf_sub_Thread_has_interrupted_flag [intro]:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-by(blast intro: has_field_mono wf_Thread_has_interrupted_flag)
 
 lemma wf_has_field_mono2:
   assumes wf: "wf_prog wf_md P"
@@ -757,36 +773,55 @@ qed
 subsection {* Code generation *}
 
 code_pred
-  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
-  [inductify] wf_extCall .
-
-definition contravariant_overriding :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> bool"
-where
-  "contravariant_overriding P D M Ts T =
-  (\<forall>D' Ts' T' m'. P \<turnstile> D sees M:Ts' \<rightarrow> T' = m' in D' \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T')"
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  [inductify] wf_native .
 
 code_pred
-  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
   [inductify]
-  contravariant_overriding 
+  wf_overriding 
 .
 
-lemma wf_cdecl_code [code]:
-  "wf_cdecl wf_md P = (\<lambda>(C,(D,fs,ms)).
+text {* 
+  Separate subclass acycilicity from class declaration check.
+  Otherwise, cyclic class hierarchies might lead to non-termination
+  as @{term "Methods"} recurses over the class hierarchy.
+*}
+
+definition acyclic_class_hierarchy :: "'m prog \<Rightarrow> bool"
+where
+  "acyclic_class_hierarchy P \<longleftrightarrow> 
+  (\<forall>(C, D, fs, ml) \<in> set (classes P). C \<noteq> Object \<longrightarrow> \<not> P \<turnstile> D \<preceq>\<^sup>* C)"
+
+definition wf_cdecl' :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> 'm cdecl \<Rightarrow> bool"
+where
+  "wf_cdecl' wf_md P = (\<lambda>(C,(D,fs,ms)).
+  (\<forall>f\<in>set fs. wf_fdecl P f) \<and> distinct_fst fs \<and>
+  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m \<and> wf_native P C m) \<and>
+  distinct_fst ms \<and>
+  (C \<noteq> Object \<longrightarrow> is_class P D \<and> (\<forall>m\<in>set ms. wf_overriding P D m)) \<and>
+  (C = Thread \<longrightarrow> (\<exists>m. (run, [], Void, m) \<in> set ms)))"
+
+lemma acyclic_class_hierarchy_code [code]:
+  "acyclic_class_hierarchy P \<longleftrightarrow> (\<forall>(C, D, fs, ml) \<in> set (classes P). C \<noteq> Object \<longrightarrow> \<not> subcls' P D C)"
+by(simp add: acyclic_class_hierarchy_def subcls'_def)
+
+lemma wf_cdecl'_code [code]:
+  "wf_cdecl' wf_md P = (\<lambda>(C,(D,fs,ms)).
   (\<forall>f\<in>set fs. wf_fdecl P f) \<and>  distinct_fst fs \<and>
-  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m) \<and>  distinct_fst ms \<and>
-  (C \<noteq> Object \<longrightarrow>
-   is_class P D \<and> \<not> subcls' P D C \<and>
-   (\<forall>(M,Ts,T,m)\<in>set ms. wf_extCall P C M Ts T \<and> contravariant_overriding P D M Ts T)) \<and>
-  (C = Object \<longrightarrow> (fs = []) \<and> (ms = [])) \<and> 
-  (C = Thread \<longrightarrow> ((run, [], Void) \<in> set (map (\<lambda>(M, Ts, T, b). (M, Ts, T)) ms)) \<and> (interrupted_flag, Boolean, \<lparr>volatile=True\<rparr>) \<in> set fs))"
-by(auto simp add: wf_cdecl_def contravariant_overriding_def subcls'_def intro!: ext intro: rev_image_eqI)
+  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m \<and> wf_native P C m) \<and>
+  distinct_fst ms \<and>
+  (C \<noteq> Object \<longrightarrow> is_class P D \<and> (\<forall>m\<in>set ms. wf_overriding P D m)) \<and>
+  (C = Thread \<longrightarrow> ((run, [], Void) \<in> set (map (\<lambda>(M, Ts, T, b). (M, Ts, T)) ms))))"
+by(auto simp add: wf_cdecl'_def intro!: ext intro: rev_image_eqI)
 
 declare set_append [symmetric, code_unfold]
 
-lemma wf_syscls_code [code]:
-  "wf_syscls P \<longleftrightarrow>
-   (\<forall>C \<in> set [Object, Throwable, Thread, String] \<union> sys_xcpts. is_class P C) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
-by(simp add: wf_syscls_def)
+lemma wf_prog_code [code]:
+  "wf_prog wf_md P \<longleftrightarrow>
+   acyclic_class_hierarchy P \<and>
+   wf_syscls P \<and> (\<forall>c \<in> set (classes P). wf_cdecl' wf_md P c) \<and> distinct_fst (classes P)"
+unfolding wf_prog_def wf_cdecl_def wf_cdecl'_def acyclic_class_hierarchy_def split_def
+by blast
 
 end

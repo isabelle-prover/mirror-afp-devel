@@ -78,7 +78,7 @@ qed
 
 subsection {* Labelled transition systems *}
 
-types ('a, 'b) trsys = "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
+type_synonym ('a, 'b) trsys = "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
 
 locale trsys = 
   fixes trsys :: "('s, 'tl) trsys" ("_/ -_\<rightarrow>/ _" [50, 0, 50] 60)
@@ -276,6 +276,39 @@ proof -
   qed
   ultimately show ?thesis unfolding stlss'_def by(rule that)
 qed
+
+lemma Runs_lappendE:
+  assumes "Runs \<sigma> (lappend tls tls')"
+  and "lfinite tls"
+  obtains \<sigma>' where "\<sigma> -list_of tls\<rightarrow>* \<sigma>'"
+  and "Runs \<sigma>' tls'"
+proof(atomize_elim)
+  from `lfinite tls` `Runs \<sigma> (lappend tls tls')`
+  show "\<exists>\<sigma>'. \<sigma> -list_of tls\<rightarrow>* \<sigma>' \<and> Runs \<sigma>' tls'"
+  proof(induct arbitrary: \<sigma>)
+    case lfinite_LNil thus ?case by(auto)
+  next
+    case (lfinite_LConsI tls tl)
+    from `Runs \<sigma> (lappend (LCons tl tls) tls')`
+    show ?case unfolding lappend_LCons
+    proof(cases)
+      case (Step \<sigma>')
+      from `Runs \<sigma>' (lappend tls tls') \<Longrightarrow> \<exists>\<sigma>''. \<sigma>' -list_of tls\<rightarrow>* \<sigma>'' \<and> Runs \<sigma>'' tls'` `Runs \<sigma>' (lappend tls tls')`
+      obtain \<sigma>'' where "\<sigma>' -list_of tls\<rightarrow>* \<sigma>''" "Runs \<sigma>'' tls'" by blast
+      from `\<sigma> -tl\<rightarrow> \<sigma>'` `\<sigma>' -list_of tls\<rightarrow>* \<sigma>''`
+      have "\<sigma> -tl # list_of tls\<rightarrow>* \<sigma>''" by(rule rtrancl3p_step_converse)
+      with `lfinite tls` have "\<sigma> -list_of (LCons tl tls)\<rightarrow>* \<sigma>''" by(simp)
+      with `Runs \<sigma>'' tls'` show ?thesis by blast
+    qed
+  qed
+qed
+
+lemma Trsys_into_Runs:
+  assumes "s -tls\<rightarrow>* s'"
+  and "Runs s' tls'"
+  shows "Runs s (lappend (llist_of tls) tls')"
+using assms
+by(induct rule: rtrancl3p_converse_induct)(auto intro: Runs.Step)
 
 end
 

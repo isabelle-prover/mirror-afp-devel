@@ -43,25 +43,24 @@ where [code_inline]: "ArrayStoreC \<equiv> (ArrayStore, (Throwable, [], []))"
 definition NegativeArraySizeC :: "'m cdecl"
 where [code_inline]: "NegativeArraySizeC \<equiv> (NegativeArraySize, (Throwable,[],[]))"
 
+definition ArithmeticExceptionC :: "'m cdecl"
+where [code_inline]: "ArithmeticExceptionC \<equiv> (ArithmeticException, (Throwable,[],[]))"
+
 definition IllegalMonitorStateC :: "'m cdecl"
 where [code_inline]: "IllegalMonitorStateC \<equiv> (IllegalMonitorState, (Throwable,[],[]))"
 
 definition IllegalThreadStateC :: "'m cdecl"
 where [code_inline]: "IllegalThreadStateC \<equiv> (IllegalThreadState, (Throwable,[],[]))"
 
-definition CloneNotSupportedC :: "'m cdecl"
-where [code_inline]: "CloneNotSupportedC \<equiv> (CloneNotSupported, (Throwable,[],[]))"
-
 definition InterruptedExceptionC :: "'m cdecl"
 where [code_inline]: "InterruptedExceptionC \<equiv> (InterruptedException, (Throwable,[],[]))"
 
-definition StringC :: "'m cdecl"
-where [code_inline]: "StringC \<equiv> (String, (Object, [], []))"
-
 definition SystemClasses :: "'m cdecl list"
 where [code_inline]: 
-  "SystemClasses \<equiv> [ObjectC, ThrowableC, NullPointerC, ClassCastC, OutOfMemoryC,
-                    ArrayIndexOutOfBoundsC, ArrayStoreC, NegativeArraySizeC,
-                    IllegalMonitorStateC, IllegalThreadStateC, CloneNotSupportedC, InterruptedExceptionC, StringC]"
+  "SystemClasses \<equiv> 
+  [ObjectC, ThrowableC, NullPointerC, ClassCastC, OutOfMemoryC,
+   ArrayIndexOutOfBoundsC, ArrayStoreC, NegativeArraySizeC,
+   ArithmeticExceptionC,
+   IllegalMonitorStateC, IllegalThreadStateC, InterruptedExceptionC]"
 
 end

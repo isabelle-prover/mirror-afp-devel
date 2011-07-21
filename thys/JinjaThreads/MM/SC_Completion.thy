@@ -11,7 +11,9 @@ begin
 
 section {* Most recently written values *}
 
-fun mrw_value :: "'m prog \<Rightarrow> ((addr \<times> addr_loc) \<rightharpoonup> (val \<times> bool)) \<Rightarrow> obs_event action \<Rightarrow> ((addr \<times> addr_loc) \<rightharpoonup> (val \<times> bool))"
+fun mrw_value :: 
+  "'m prog \<Rightarrow> (('addr \<times> addr_loc) \<rightharpoonup> ('addr val \<times> bool)) \<Rightarrow> ('addr, 'thread_id) obs_event action
+  \<Rightarrow> (('addr \<times> addr_loc) \<rightharpoonup> ('addr val \<times> bool))"
 where
   "mrw_value P vs (NormalAction (WriteMem ad al v)) = vs((ad, al) \<mapsto> (v, True))"
 | "mrw_value P vs (NormalAction (NewObj ad C)) =
@@ -34,11 +36,15 @@ lemma mrw_value_cases:
   | t where "x = NormalAction (ThreadJoin t)"
   | ad where "x = NormalAction (SyncLock ad)"
   | ad where "x = NormalAction (SyncUnlock ad)"
+  | t where "x = NormalAction (ObsInterrupt t)"
+  | t where "x = NormalAction (ObsInterrupted t)"
   | "x = InitialThreadAction"
   | "x = ThreadFinishAction"
 by pat_completeness
 
-abbreviation mrw_values :: "'m prog \<Rightarrow> ((addr \<times> addr_loc) \<rightharpoonup> (val \<times> bool)) \<Rightarrow> obs_event action list \<Rightarrow> ((addr \<times> addr_loc) \<rightharpoonup> (val \<times> bool))"
+abbreviation mrw_values ::
+  "'m prog \<Rightarrow> (('addr \<times> addr_loc) \<rightharpoonup> ('addr val \<times> bool)) \<Rightarrow> ('addr, 'thread_id) obs_event action list
+  \<Rightarrow> (('addr \<times> addr_loc) \<rightharpoonup> ('addr val \<times> bool))"
 where "mrw_values P \<equiv> foldl (mrw_value P)"
 
 lemma mrw_values_eq_SomeD:
@@ -236,7 +242,8 @@ qed
 
 section {* Coinductive version of sequentially consistent prefixes *}
 
-coinductive ta_seq_consist :: "'m prog \<Rightarrow> (addr \<times> addr_loc \<rightharpoonup> val \<times> bool) \<Rightarrow> obs_event action llist \<Rightarrow> bool"
+coinductive ta_seq_consist :: 
+  "'m prog \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> ('addr, 'thread_id) obs_event action llist \<Rightarrow> bool"
 for P :: "'m prog" 
 where
   LNil: "ta_seq_consist P vs LNil"
@@ -261,6 +268,18 @@ next
   case (lfinite_LConsI obs ob)
   have "?concl (mrw_value P vs ob) obs" by fact
   thus ?case using `lfinite obs` by(simp split: action.split add: list_of_LCons)
+qed
+
+lemma
+  assumes "ta_seq_consist P vs obs"
+  shows ta_seq_consist_ltake: "ta_seq_consist P vs (ltake n obs)" (is ?thesis1)
+  and ta_seq_consist_ldrop: "ta_seq_consist P (mrw_values P vs (list_of (ltake n obs))) (ldrop n obs)" (is ?thesis2)
+proof -
+  note assms
+  also have "obs = lappend (ltake n obs) (ldrop n obs)" by(simp add: lappend_ltake_ldrop)
+  finally have "?thesis1 \<and> ?thesis2"
+    by(cases n)(simp_all add: ta_seq_consist_lappend del: lappend_ltake_enat_ldropn)
+  thus ?thesis1 ?thesis2 by blast+
 qed
 
 lemma ta_seq_consist_coinduct_append [consumes 1, case_names ta_seq_consist, case_conclusion ta_seq_consist LNil lappend]:
@@ -429,18 +448,24 @@ proof -
 qed
 
 lemma ta_seq_consist_nthI:
-  assumes "\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v) \<rbrakk> 
-          \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>"
+  assumes
+  "\<And>i ad al v. 
+  \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v);
+    ta_seq_consist P vs (ltake (enat i) obs) \<rbrakk> 
+  \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>"
   shows "ta_seq_consist P vs obs"
 proof -
-  from assms 
+  from assms
   have "\<forall>i ad al v. enat i < llength obs \<longrightarrow> lnth obs i = NormalAction (ReadMem ad al v) \<longrightarrow>
+        ta_seq_consist P vs (ltake (enat i) obs) \<longrightarrow>
         (\<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>)" by blast
   thus ?thesis
   proof(coinduct rule: ta_seq_consist.coinduct)
     case (ta_seq_consist vs obs)
-    hence nth: "\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v) \<rbrakk> 
-               \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>" by blast
+    hence nth:
+      "\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v); 
+                     ta_seq_consist P vs (ltake (enat i) obs) \<rbrakk> 
+      \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>" by blast
     show ?case
     proof(cases obs)
       case LNil thus ?thesis by simp
@@ -451,12 +476,14 @@ proof -
         with nth[of 0 ad al v] LCons
         have "\<exists>b. vs (ad, al) = \<lfloor>(v, b)\<rfloor>"
           by(simp add: zero_enat_def[symmetric]) }
+      note base = this
       moreover { 
         fix i ad al v
         assume "enat i < llength obs'" "lnth obs' i = NormalAction (ReadMem ad al v)"
-        with LCons nth[of "Suc i" ad al v]
+          and "ta_seq_consist P (mrw_value P vs ob) (ltake (enat i) obs')"
+        with LCons nth[of "Suc i" ad al v] base
         have "\<exists>b. mrw_values P (mrw_value P vs ob) (list_of (ltake (enat i) obs')) (ad, al) = \<lfloor>(v, b)\<rfloor>"
-          by(simp add: iSuc_enat[symmetric]) }
+          by(clarsimp simp add: iSuc_enat[symmetric] split: obs_event.split action.split) }
       ultimately have ?LCons using LCons by(simp split: action.split obs_event.split)
       thus ?thesis ..
     qed
@@ -465,12 +492,12 @@ qed
 
 locale executions_sc =
   executions_base \<E> P
-  for \<E> :: "execution set"
+  for \<E> :: "('addr, 'thread_id) execution set"
   and P :: "'m prog" +
   assumes \<E>_new_actions_for_fun:
   "\<lbrakk> E \<in> \<E>; a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
   and \<E>_ex_new_action:
-  "\<lbrakk> E \<in> \<E>; ra \<in> read_actions E; adal \<in> action_loc P E ra \<rbrakk>
+  "\<lbrakk> E \<in> \<E>; ra \<in> read_actions E; adal \<in> action_loc P E ra; ta_seq_consist P empty (ltake (enat ra) (lmap snd E)) \<rbrakk>
   \<Longrightarrow> \<exists>wa. wa \<in> new_actions_for P E adal \<and> wa < ra"
 begin
 
@@ -484,13 +511,15 @@ lemma new_action_before_read:
   and ra: "ra \<in> read_actions E"
   and adal: "adal \<in> action_loc P E ra"
   and new: "wa \<in> new_actions_for P E adal"
+  and sc: "ta_seq_consist P empty (ltake (enat ra) (lmap snd E))"
   shows "wa < ra"
-using \<E>_new_same_addr_singleton[OF E, of adal] \<E>_ex_new_action[OF E ra adal] new
+using \<E>_new_same_addr_singleton[OF E, of adal] \<E>_ex_new_action[OF E ra adal sc] new
 by auto
 
 lemma most_recent_write_exists:
   assumes E: "E \<in> \<E>"
   and ra: "ra \<in> read_actions E"
+  and sc: "ta_seq_consist P empty (ltake (enat ra) (lmap snd E))"
   shows "\<exists>wa. P,E \<turnstile> ra \<leadsto>mrw wa"
 proof -
   from ra obtain ad al where
@@ -509,7 +538,7 @@ proof -
   ultimately have finQ: "finite Q" 
     by(blast intro: finite_subset)
 
-  from \<E>_ex_new_action[OF E ra adal] ra obtain wa 
+  from \<E>_ex_new_action[OF E ra adal sc] ra obtain wa 
     where wa: "wa \<in> Q" unfolding Q_def
     by(fastsimp elim!: new_actionsE is_new_action.cases read_actions.cases intro: write_actionsI action_orderI)
    
@@ -545,34 +574,32 @@ qed
 lemma mrw_before:
   assumes E: "E \<in> \<E>"
   and mrw: "P,E \<turnstile> r \<leadsto>mrw w"
+  and sc: "ta_seq_consist P empty (ltake (enat r) (lmap snd E))"
   shows "w < r"
 using mrw read_actions_not_write_actions[of r E]
 apply cases
 apply(erule action_orderE)
  apply(erule (1) new_action_before_read[OF E])
- apply(simp add: new_actions_for_def)
+  apply(simp add: new_actions_for_def)
+ apply(rule sc)
 apply(cases "w = r")
 apply auto
 done
 
-lemma action_order_write_readD:
-  "\<lbrakk> E \<in> \<E>; E \<turnstile> w \<le>a r; r \<in> read_actions E; w \<in> write_actions E; adal \<in> action_loc P E r; adal \<in> action_loc P E w \<rbrakk>
-  \<Longrightarrow> w < r"
-apply(erule action_orderE)
- apply(frule (2) new_actionsI)
- apply(frule \<E>_new_same_addr_singleton[where adal=adal])
- apply(frule (2) \<E>_ex_new_action)
- apply blast
-apply(cases "w=r")
- apply clarify
- apply(blast dest: read_actions_not_write_actions)
-apply simp
-done
-
-
 lemma sequentially_consistent_most_recent_write_for:
-  "E \<in> \<E> \<Longrightarrow> sequentially_consistent P (E, \<lambda>r. THE w. P,E \<turnstile> r \<leadsto>mrw w)"
-by(rule sequentially_consistentI)(auto dest: most_recent_write_exists simp add: THE_most_recent_writeI)
+  assumes E: "E \<in> \<E>"
+  and sc: "ta_seq_consist P empty (lmap snd E)"
+  shows "sequentially_consistent P (E, \<lambda>r. THE w. P,E \<turnstile> r \<leadsto>mrw w)"
+proof(rule sequentially_consistentI)
+  fix r
+  assume r: "r \<in> read_actions E"
+  from sc have sc': "ta_seq_consist P empty (ltake (enat r) (lmap snd E))"
+    by(rule ta_seq_consist_ltake)
+  from most_recent_write_exists[OF E r this]
+  obtain w where "P,E \<turnstile> r \<leadsto>mrw w" ..
+  thus "P,E \<turnstile> r \<leadsto>mrw THE w. P,E \<turnstile> r \<leadsto>mrw w"
+    by(simp add: THE_most_recent_writeI)
+qed
 
 lemma ta_seq_consist_imp_sequentially_consistent:
   assumes E: "E \<in> \<E>"
@@ -581,9 +608,9 @@ lemma ta_seq_consist_imp_sequentially_consistent:
   shows "\<exists>ws. sequentially_consistent P (E, ws) \<and> P \<turnstile> (E, ws) \<surd>"
 proof(intro exI conjI)
   def ws == "\<lambda>i. THE w. P,E \<turnstile> i \<leadsto>mrw w"
-  from E show "sequentially_consistent P (E, ws)"
+  from E seq show "sequentially_consistent P (E, ws)"
     unfolding ws_def by(rule sequentially_consistent_most_recent_write_for)
-    
+
   show "P \<turnstile> (E, ws) \<surd>"
   proof(rule wf_execI)
     show "is_write_seen P E ws"
@@ -591,7 +618,8 @@ proof(intro exI conjI)
       fix a ad al v
       assume a: "a \<in> read_actions E"
         and adal: "action_obs E a = NormalAction (ReadMem ad al v)"
-      from most_recent_write_exists[OF E a]
+      from seq have seq': "ta_seq_consist P empty (ltake (enat a) (lmap snd E))" by(rule ta_seq_consist_ltake)
+      from most_recent_write_exists[OF E a seq']
       obtain w where mrw: "P,E \<turnstile> a \<leadsto>mrw w" ..
       hence w: "ws a = w" by(simp add: ws_def THE_most_recent_writeI)
       with mrw adal
@@ -605,7 +633,7 @@ proof(intro exI conjI)
       let ?prefix = "ltake (enat w) E"
       let ?vs_prefix = "mrw_values P empty (map snd (list_of ?prefix))"
 
-      from E mrw have "w < a" by(rule mrw_before)
+      from E mrw seq' have "w < a" by(rule mrw_before)
 
       { fix v'
         assume new: "is_new_action (action_obs E w)"
@@ -720,7 +748,8 @@ inductive_simps foldl_list_all2_Cons2:
   "foldl_list_all2 f P Q xs (y # ys) s"
 
 definition eq_upto_seq_inconsist ::
-  "'m prog \<Rightarrow> obs_event action list \<Rightarrow> obs_event action list \<Rightarrow> (addr \<times> addr_loc \<rightharpoonup> val \<times> bool) \<Rightarrow> bool"
+  "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action list \<Rightarrow> ('addr, 'thread_id) obs_event action list
+  \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> bool"
 where
   "eq_upto_seq_inconsist P =
    foldl_list_all2 (\<lambda>ob ob' vs. mrw_value P vs ob) 
@@ -764,6 +793,23 @@ apply(induct obs arbitrary: vs)
 apply(auto simp add: eq_upto_seq_inconsist_simps split: action.split obs_event.split)
 done
 
+declare split_paired_Ex [simp del]
+declare eq_upto_seq_inconsist_simps [simp]
+
+lemma eq_upto_seq_inconsist_appendI:
+  "\<lbrakk> eq_upto_seq_inconsist P obs OBS vs;
+     \<lbrakk> ta_seq_consist P vs (llist_of obs) \<rbrakk> \<Longrightarrow> eq_upto_seq_inconsist P obs' OBS' (mrw_values P vs OBS) \<rbrakk>
+  \<Longrightarrow> eq_upto_seq_inconsist P (obs @ obs') (OBS @ OBS') vs"
+apply(induct obs arbitrary: vs OBS)
+ apply simp
+apply(auto simp add: eq_upto_seq_inconsist_Cons1)
+apply(simp split: action.split obs_event.split)
+apply auto
+done
+
+declare split_paired_Ex [simp]
+declare eq_upto_seq_inconsist_simps [simp del]
+
 context executions_sc begin
 
 lemma ta_seq_consist_mrwI:
@@ -775,13 +821,16 @@ proof(rule ta_seq_consist_nthI)
   fix i ad al v
   assume i_len: "enat i < llength (lmap snd (ltake r E))"
     and E_i: "lnth (lmap snd (ltake r E)) i = NormalAction (ReadMem ad al v)"
+    and sc: "ta_seq_consist P empty (ltake (enat i) (lmap snd (ltake r E)))"
   from i_len have "enat i < r" by simp
+  with sc have sc': "ta_seq_consist P empty (ltake (enat i) (lmap snd E))"
+    by(simp add: min_def split: split_if_asm)
   from i_len have "i \<in> actions E" by(simp add: actions_def)
   moreover from E_i i_len have obs_i: "action_obs E i = NormalAction (ReadMem ad al v)"
     by(simp add: action_obs_def lnth_ltake)
   ultimately have read: "i \<in> read_actions E" ..
   with i_len have mrw_i: "P,E \<turnstile> i \<leadsto>mrw ws i" by(auto intro: mrw)
-  with E have "ws i < i" by(rule mrw_before)
+  with E have "ws i < i" using sc' by(rule mrw_before)
 
   from mrw_i obs_i obtain adal_w: "(ad, al) \<in> action_loc P E (ws i)"
     and adal_r: "(ad, al) \<in> action_loc P E i"
@@ -897,181 +946,143 @@ qed
 
 end
 
-locale jmm_\<tau>multithreaded = \<tau>multithreaded +
+locale jmm_multithreaded = multithreaded_base +
   constrains final :: "'x \<Rightarrow> bool" 
-  and r :: "('l, 't, 'x, 'm, 'w, obs_event action) semantics" 
-  and convert_RA :: "'l released_locks \<Rightarrow> obs_event action list" 
-  and \<tau>move :: "('l, 't, 'x, 'm, 'w, obs_event action) \<tau>moves" 
+  and r :: "('l, 't, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) semantics" 
+  and convert_RA :: "'l released_locks \<Rightarrow> ('addr, 'thread_id) obs_event action list" 
   fixes P :: "'md prog"
 begin
 
-primrec complete_sc_aux :: "(('l,'t,'x,'m,'w) state \<times> (addr \<times> addr_loc \<rightharpoonup> val \<times> bool)) \<Rightarrow> 
-  ((('t \<times> ('l, 't, 'x, 'm, 'w, obs_event action list) thread_action) \<times> 
-    ('l,'t,'x,'m,'w) state \<times> (addr \<times> addr_loc \<rightharpoonup> val \<times> bool)) + 
-   ('l, 't, 'x, 'm, 'w) state option)"
+primrec complete_sc_aux :: 
+  "(('l,'t,'x,'m,'w) state \<times> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool)) 
+  \<Rightarrow> (('t \<times> ('l, 't, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) 
+      \<times> (('l,'t,'x,'m,'w) state \<times> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool))) option"
 where
   "complete_sc_aux (s, vs) =
-   (if (\<exists>s'. \<tau>mredT^** s s' \<and> (\<forall>tta s''. \<not> redT s' tta s''))
-    then Inr (Some (SOME s'. \<tau>mredT^** s s' \<and> (\<forall>tta s''. \<not> redT s' tta s'')))
-    else if mthr.\<tau>diverge s then Inr None
-    else let ((t, ta), s'') = 
-             SOME ((t, ta), s''). \<exists>s'. \<tau>mredT^** s s' \<and> redT s' (t, ta) s'' \<and> \<not> m\<tau>move s' (t, ta) s'' \<and> 
-                                       ta_seq_consist P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)
-         in Inl ((t, ta), (s'', mrw_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+   (if \<exists>t ta s'. s -t\<triangleright>ta\<rightarrow> s'
+    then let ((t, ta), s') = 
+             SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_seq_consist P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)
+         in Some ((t, ta), (s', mrw_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
+    else None)"
 
 declare complete_sc_aux.simps [simp del]
 
-definition complete_sc :: "('l,'t,'x,'m,'w) state \<Rightarrow> (addr \<times> addr_loc \<rightharpoonup> val \<times> bool) \<Rightarrow> 
-  ('t \<times> ('l, 't, 'x, 'm, 'w, obs_event action list) thread_action, ('l, 't, 'x, 'm, 'w) state option) tllist"
-where "complete_sc s vs = tllist_corec (s, vs) complete_sc_aux"
+definition complete_sc :: "('l,'t,'x,'m,'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> 
+  ('t \<times> ('l, 't, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) llist"
+where "complete_sc s vs = llist_corec (s, vs) complete_sc_aux"
 
-definition sc_completion :: "('l, 't, 'x, 'm, 'w) state \<Rightarrow> (addr \<times> addr_loc \<rightharpoonup> val \<times> bool) \<Rightarrow> bool"
+definition sc_completion :: "('l, 't, 'x, 'm, 'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> bool"
 where
   "sc_completion s vs \<longleftrightarrow>
    (\<forall>ttas s' t x ta x' m'.
-       mthr.\<tau>rtrancl3p s ttas s' \<longrightarrow> ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) \<longrightarrow>
+       s -\<triangleright>ttas\<rightarrow>* s' \<longrightarrow> ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) \<longrightarrow>
        thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor> \<longrightarrow> t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m') \<longrightarrow> actions_ok s' t ta \<longrightarrow>
-       \<not> \<tau>move (x, shr s') ta (x', m') \<longrightarrow>
-       (\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and> \<not> \<tau>move (x, shr s') ta' (x'', m'') \<and>
+       (\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and>
                       ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)))"
 
 lemma sc_completionD:
-  "\<lbrakk> sc_completion s vs; mthr.\<tau>rtrancl3p s ttas s'; ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))); 
-     thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m'); actions_ok s' t ta; \<not> \<tau>move (x, shr s') ta (x', m') \<rbrakk>
-  \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and> \<not> \<tau>move (x, shr s') ta' (x'', m'') \<and>
+  "\<lbrakk> sc_completion s vs; s -\<triangleright>ttas\<rightarrow>* s'; ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))); 
+     thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m'); actions_ok s' t ta \<rbrakk>
+  \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and>
                    ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
 unfolding sc_completion_def by blast
 
 lemma sc_completionI:
   "(\<And>ttas s' t x ta x' m'. 
-     \<lbrakk> mthr.\<tau>rtrancl3p s ttas s'; ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))); 
-       thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m'); actions_ok s' t ta; \<not> \<tau>move (x, shr s') ta (x', m') \<rbrakk>
-     \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and> \<not> \<tau>move (x, shr s') ta' (x'', m'') \<and>
+     \<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))); 
+       thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m'); actions_ok s' t ta \<rbrakk>
+     \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and>
                    ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))
   \<Longrightarrow> sc_completion s vs"
 unfolding sc_completion_def by blast
 
 lemma sc_completion_shift:
   assumes sc_c: "sc_completion s vs"
-  and \<tau>Red: "\<tau>trsys.\<tau>rtrancl3p redT m\<tau>move s ttas s'"
+  and \<tau>Red: "s -\<triangleright>ttas\<rightarrow>* s'"
   and sc: "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of ttas)))"
   shows "sc_completion s' (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
 proof(rule sc_completionI)
   fix ttas' s'' t x ta x' m'
-  assume \<tau>Red': "mthr.\<tau>rtrancl3p s' ttas' s''"
+  assume \<tau>Red': "s' -\<triangleright>ttas'\<rightarrow>* s''"
     and sc': "ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')))"
     and red: "thr s'' t = \<lfloor>(x, no_wait_locks)\<rfloor>" "t \<turnstile> \<langle>x, shr s''\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>" "actions_ok s'' t ta" 
-      "\<not> \<tau>move (x, shr s'') ta (x', m')"
-  from \<tau>Red \<tau>Red' have "mthr.\<tau>rtrancl3p s (ttas @ ttas') s''" by(rule mthr.\<tau>rtrancl3p_trans)
+  from \<tau>Red \<tau>Red' have "s -\<triangleright>ttas @ ttas'\<rightarrow>* s''" unfolding RedT_def by(rule rtrancl3p_trans)
   moreover from sc sc' have "ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ ttas'))))"
     apply(simp add: lappend_llist_of_llist_of[symmetric] ta_seq_consist_lappend del: lappend_llist_of_llist_of)
     apply(simp add: lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric] o_def split_def del: lmap_llist_of lmap_compose)
     done
   ultimately
-  show "\<exists>ta' x'' m''. t \<turnstile> \<langle>x, shr s''\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle> \<and> actions_ok s'' t ta' \<and> \<not> \<tau>move (x, shr s'') ta' (x'', m'') \<and>
+  show "\<exists>ta' x'' m''. t \<turnstile> \<langle>x, shr s''\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle> \<and> actions_ok s'' t ta' \<and>
          ta_seq_consist P (mrw_values P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
     using red unfolding foldl_append[symmetric] concat_append[symmetric] map_append[symmetric]
     by(rule sc_completionD[OF sc_c])
 qed
 
-lemma complete_sc_in_\<tau>Runs:
+lemma complete_sc_in_Runs:
   assumes cau: "sc_completion s vs"
   and ta_seq_consist_convert_RA: "\<And>vs ln. ta_seq_consist P vs (llist_of (convert_RA ln))"
-  shows "mthr.\<tau>Runs s (complete_sc s vs)"
+  shows "mthr.Runs s (complete_sc s vs)"
 proof -
   def s' \<equiv> s and vs' \<equiv> vs
   def ttas \<equiv> "complete_sc s' vs'"
-  let ?ttas' = "\<lambda>ttas' :: ('t \<times> ('l,'t,'x,'m,'w,obs_event action list) thread_action) list.
+  let ?ttas' = "\<lambda>ttas' :: ('t \<times> ('l,'t,'x,'m,'w, ('addr, 'thread_id) obs_event action) thread_action) list.
                concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')"
   let "?vs ttas'" = "mrw_values P vs (?ttas' ttas')"
   from s'_def vs'_def
-  have "mthr.\<tau>rtrancl3p s [] s'" "ta_seq_consist P vs (llist_of (?ttas' []))" "vs' = ?vs []"
-    by(auto simp add: mthr.\<tau>rtrancl3p_Nil_eq_\<tau>moves)
-  hence "\<exists>ttas'. ttas = complete_sc s' (?vs ttas') \<and> mthr.\<tau>rtrancl3p s ttas' s' \<and> ta_seq_consist P vs (llist_of (?ttas' ttas'))"
+  have "s -\<triangleright>[]\<rightarrow>* s'" "ta_seq_consist P vs (llist_of (?ttas' []))" "vs' = ?vs []" by auto
+  hence "\<exists>ttas'. ttas = complete_sc s' (?vs ttas') \<and> s -\<triangleright>ttas'\<rightarrow>* s' \<and> ta_seq_consist P vs (llist_of (?ttas' ttas'))"
     unfolding ttas_def by blast
-  thus "mthr.\<tau>Runs s' ttas"
-  proof(coinduct s' ttas rule: mthr.\<tau>Runs.coinduct)
-    case (\<tau>Runs s' ttas)
+  thus "mthr.Runs s' ttas"
+  proof(coinduct s' ttas rule: mthr.Runs.coinduct)
+    case (Runs s' ttas)
     then obtain ttas' where ttas: "ttas = complete_sc s' (?vs ttas')"
-      and Red: "mthr.\<tau>rtrancl3p s ttas' s'"
+      and Red: "s -\<triangleright>ttas'\<rightarrow>* s'"
       and sc: "ta_seq_consist P vs (llist_of (?ttas' ttas'))" by blast
-    let "?halt s''" = "\<tau>mredT^** s' s'' \<and> (\<forall>tta s'''. \<not> redT s'' tta s''')"
-    let "?diverge" = "mthr.\<tau>diverge s'"
-    let "?proceed" = "\<lambda>(s'', (t', ta'), s'''). \<tau>mredT^** s' s'' \<and> redT s'' (t', ta') s''' \<and> \<not> m\<tau>move s'' (t', ta') s'''"
-
     show ?case
-    proof(cases "\<exists>s''. ?halt s''")
-      case True
-      then obtain s'' where "?halt s''" ..
-      hence "?halt (Eps ?halt)" by(rule someI)
-      moreover from True have "ttas = TNil \<lfloor>Eps ?halt\<rfloor>" unfolding ttas complete_sc_def
-        by(subst tllist_corec) (simp add: complete_sc_aux.simps)
-      ultimately have ?Terminate by simp
-      thus ?thesis by simp
-    next
+    proof(cases "\<exists>t' ta' s''. s' -t'\<triangleright>ta'\<rightarrow> s''")
       case False
-      note no_halt = this
-      show ?thesis
-      proof(cases "?diverge")
-        case True
-        with no_halt have "ttas = TNil None" unfolding ttas complete_sc_def
-          by(subst tllist_corec)(simp add: complete_sc_aux.simps)
-        thus ?thesis using True by simp
+      hence "ttas = LNil" unfolding ttas complete_sc_def
+        by(subst llist_corec)(simp add: complete_sc_aux.simps)
+      hence ?Stuck using False by simp
+      thus ?thesis ..
+    next
+      case True
+      let ?proceed = "\<lambda>((t', ta'), s''). s' -t'\<triangleright>ta'\<rightarrow> s'' \<and> ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
+      from True obtain t' ta' s'' where red: "s' -t'\<triangleright>ta'\<rightarrow> s''" by(auto)
+      then obtain ta'' s''' where "s' -t'\<triangleright>ta''\<rightarrow> s'''"
+        and "ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)"
+      proof(cases)
+        case (redT_normal x x' m')
+        note red = `t' \<turnstile> \<langle>x, shr s'\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>`
+          and ts''t' = `thr s' t' = \<lfloor>(x, no_wait_locks)\<rfloor>`
+          and aok = `actions_ok s' t' ta'`
+          and s'' = `redT_upd s' t' ta' x' m' s''`
+        from sc_completionD[OF cau Red sc ts''t' red aok]
+        obtain ta'' x'' m'' where red': "t' \<turnstile> \<langle>x, shr s'\<rangle> -ta''\<rightarrow> \<langle>x'', m''\<rangle>"
+          and aok': "actions_ok s' t' ta''"
+          and sc': "ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)" by blast
+        from redT_updWs_total obtain ws' where "redT_updWs t' (wset s') \<lbrace>ta''\<rbrace>\<^bsub>w\<^esub> ws'" ..
+        then obtain s''' where "redT_upd s' t' ta'' x'' m'' s'''" by fastsimp
+        with red' ts''t' aok' have "s' -t'\<triangleright>ta''\<rightarrow> s'''" ..
+        thus thesis using sc' by(rule that)
       next
-        case False
-
-        let ?proceed' = "\<lambda>((t', ta'), s'''). \<exists>s''. \<tau>mredT^** s' s'' \<and> redT s'' (t', ta') s''' \<and> \<not> m\<tau>move s'' (t', ta') s''' \<and> 
-                        ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
-
-        from mthr.not_\<tau>diverge_to_no_\<tau>move[OF False]
-        obtain s'' where s'_s'': "\<tau>mredT^** s' s''"
-          and no_\<tau>: "\<And>s'''. \<not> \<tau>mredT s'' s'''" by blast
-        from s'_s'' no_halt obtain t' ta' s''' where red: "s'' -t'\<triangleright>ta'\<rightarrow> s'''"
-          by(auto simp del: split_paired_Ex split_paired_All)
-        with no_\<tau>[of s'''] have "\<not> m\<tau>move s'' (t', ta') s'''" by auto
-        from mthr.\<tau>rtrancl3p_trans[OF Red mthr.\<tau>rtrancl3p_Nil_eq_\<tau>moves[THEN iffD2, OF s'_s'']]
-        have s_s'': "mthr.\<tau>rtrancl3p s ttas' s''" by simp
-
-        from red obtain ta'' s'''' where "s'' -t'\<triangleright>ta''\<rightarrow> s''''"
-          and "ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)"
-        proof(cases)
-          case (redT_normal x x' m')
-          note red = `t' \<turnstile> \<langle>x, shr s''\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>`
-            and ts''t' = `thr s'' t' = \<lfloor>(x, no_wait_locks)\<rfloor>`
-            and aok = `actions_ok s'' t' ta'`
-            and s''' = `redT_upd s'' t' ta' x' m' s'''`
-          with `\<not> m\<tau>move s'' (t', ta') s'''`
-          have "\<not> \<tau>move (x, shr s'') ta' (x', m')"
-            by(auto intro: m\<tau>move.intros)
-          from sc_completionD[OF cau s_s'' sc ts''t' red aok this] False
-          obtain ta'' x'' m'' where red': "t' \<turnstile> \<langle>x, shr s''\<rangle> -ta''\<rightarrow> \<langle>x'', m''\<rangle>"
-            and aok': "actions_ok s'' t' ta''"
-            and sc': "ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)" by blast
-          from redT_updWs_total obtain ws' where "redT_updWs t' (wset s'') \<lbrace>ta''\<rbrace>\<^bsub>w\<^esub> ws'" ..
-          then obtain s'''' where "redT_upd s'' t' ta'' x'' m'' s''''" by fastsimp
-          with red' ts''t' aok' have "s'' -t'\<triangleright>ta''\<rightarrow> s''''" ..
-          thus thesis using sc' by(rule that)
-        next
-          case redT_acquire
-          thus thesis by(simp add: that[OF red] ta_seq_consist_convert_RA)
-        qed
-        moreover with no_\<tau>[of s''''] have "\<not> m\<tau>move s'' (t', ta'') s''''" by auto
-        ultimately have "?proceed' ((t', ta''), s'''')"
-          using s'_s'' by(auto simp del: split_paired_Ex)
-        hence "?proceed' (Eps ?proceed')" by(rule someI)
-        moreover with Red have "mthr.\<tau>rtrancl3p s (ttas' @ [fst (Eps ?proceed')]) (snd (Eps ?proceed'))"
-          by(fastsimp simp add: split_beta elim: mthr.\<tau>rtrancl3p_snocI)
-        moreover from no_halt False
-        have "ttas = TCons (fst (Eps ?proceed')) (complete_sc (snd (Eps ?proceed')) (?vs (ttas' @ [fst (Eps ?proceed')])))"
-          unfolding ttas complete_sc_def by(subst tllist_corec)(simp add: complete_sc_aux.simps split_beta)
-        moreover from sc `?proceed' (Eps ?proceed')`
-        have "ta_seq_consist P vs (llist_of (?ttas' (ttas' @ [fst (Eps ?proceed')])))"
-          unfolding map_append concat_append lappend_llist_of_llist_of[symmetric] 
-          by(subst ta_seq_consist_lappend)(auto simp add: split_def)
-        ultimately have ?Proceed
-          by(fastsimp intro: exI[where x="ttas' @ [fst (Eps ?proceed')]"] simp del: split_paired_Ex)
-        thus ?thesis by simp
+        case redT_acquire
+        thus thesis by(simp add: that[OF red] ta_seq_consist_convert_RA)
       qed
+      hence "?proceed ((t', ta''), s''')" using Red by(auto)
+      hence "?proceed (Eps ?proceed)" by(rule someI)
+      moreover with Red have "s -\<triangleright>ttas' @ [fst (Eps ?proceed)]\<rightarrow>* snd (Eps ?proceed)"
+        by(auto simp add: split_beta RedT_def intro: rtrancl3p_step)
+      moreover from True
+      have "ttas = LCons (fst (Eps ?proceed)) (complete_sc (snd (Eps ?proceed)) (?vs (ttas' @ [fst (Eps ?proceed)])))"
+        unfolding ttas complete_sc_def by(subst llist_corec)(simp add: complete_sc_aux.simps split_beta)
+      moreover from sc `?proceed (Eps ?proceed)`
+      have "ta_seq_consist P vs (llist_of (?ttas' (ttas' @ [fst (Eps ?proceed)])))"
+        unfolding map_append concat_append lappend_llist_of_llist_of[symmetric] 
+        by(subst ta_seq_consist_lappend)(auto simp add: split_def)
+      ultimately have ?Step
+        by(fastsimp intro: exI[where x="ttas' @ [fst (Eps ?proceed)]"] simp del: split_paired_Ex)
+      thus ?thesis by simp
     qed
   qed
 qed
@@ -1079,21 +1090,20 @@ qed
 lemma complete_sc_ta_seq_consist:
   assumes cau: "sc_completion s vs"
   and ta_seq_consist_convert_RA: "\<And>vs ln. ta_seq_consist P vs (llist_of (convert_RA ln))"
-  shows "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of_tllist (complete_sc s vs))))"
+  shows "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (complete_sc s vs)))"
 proof -
   def vs' \<equiv> vs
-  let ?obs = "\<lambda>ttas. lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of_tllist ttas))"
+  let ?obs = "\<lambda>ttas. lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)"
   def obs \<equiv> "?obs (complete_sc s vs)"
-  def a \<equiv> "llist_of_tllist (complete_sc s vs')"
-  let ?ttas' = "\<lambda>ttas' :: ('t \<times> ('l,'t,'x,'m,'w,obs_event action list) thread_action) list.
+  def a \<equiv> "complete_sc s vs'"
+  let ?ttas' = "\<lambda>ttas' :: ('t \<times> ('l,'t,'x,'m,'w,('addr, 'thread_id) obs_event action) thread_action) list.
                concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')"
   let "?vs ttas'" = "mrw_values P vs (?ttas' ttas')"
   from vs'_def obs_def
-  have "mthr.\<tau>rtrancl3p s [] s" "ta_seq_consist P vs (llist_of (?ttas' []))" "vs' = ?vs []"
-    by(auto simp add: mthr.\<tau>rtrancl3p_Nil_eq_\<tau>moves)
-  hence "\<exists>s' ttas'. obs = ?obs (complete_sc s' vs') \<and> mthr.\<tau>rtrancl3p s ttas' s' \<and> 
+  have "s -\<triangleright>[]\<rightarrow>* s" "ta_seq_consist P vs (llist_of (?ttas' []))" "vs' = ?vs []" by(auto)
+  hence "\<exists>s' ttas'. obs = ?obs (complete_sc s' vs') \<and> s -\<triangleright>ttas'\<rightarrow>* s' \<and> 
                     ta_seq_consist P vs (llist_of (?ttas' ttas')) \<and> vs' = ?vs ttas' \<and> 
-                    a = llist_of_tllist (complete_sc s' vs')"
+                    a = complete_sc s' vs'"
     unfolding obs_def vs'_def a_def by metis
   moreover have "wf (inv_image {(m, n). m < n} (llength \<circ> ltakeWhile (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = [])))"
     (is "wf ?R") by(rule wf_inv_image)(rule wellorder_class.wf)
@@ -1101,100 +1111,77 @@ proof -
   proof(coinduct vs' obs a rule: ta_seq_consist_coinduct_append_wf)
     case (ta_seq_consist vs' obs a)
     then obtain s' ttas' where obs_def: "obs = ?obs (complete_sc s' (?vs ttas'))"
-      and Red: "mthr.\<tau>rtrancl3p s ttas' s'"
+      and Red: "s -\<triangleright>ttas'\<rightarrow>* s'"
       and sc: "ta_seq_consist P vs (llist_of (?ttas' ttas'))"
       and vs'_def: "vs' = ?vs ttas'" 
-      and a_def: "a = llist_of_tllist (complete_sc s' vs')" by blast
- 
-    let "?halt s''" = "\<tau>mredT^** s' s'' \<and> (\<forall>tta s'''. \<not> redT s'' tta s''')"
-    let "?diverge" = "mthr.\<tau>diverge s'"
-    let "?proceed" = "\<lambda>(s'', (t', ta'), s'''). \<tau>mredT^** s' s'' \<and> redT s'' (t', ta') s''' \<and> \<not> m\<tau>move s'' (t', ta') s'''"
+      and a_def: "a = complete_sc s' vs'" by blast
+
     show ?case
-    proof(cases "(\<exists>s''. ?halt s'') \<or> ?diverge \<or> obs = LNil")
-      case True
-      hence "llist_of_tllist (complete_sc s' (?vs ttas')) = LNil \<or> obs = LNil"
-        unfolding complete_sc_def obs_def
-        by(subst tllist_corec)(auto simp add: complete_sc_aux.simps simp del: split_paired_Ex, blast)
+    proof(cases "\<exists>t' ta' s''. s' -t'\<triangleright>ta'\<rightarrow> s''")
+      case False
+      hence "obs = LNil" unfolding obs_def complete_sc_def
+        by(subst llist_corec)(simp add: complete_sc_aux.simps)
       hence ?LNil unfolding obs_def by auto
       thus ?thesis ..
     next
-      case False
-      
-      let ?proceed' = "\<lambda>((t', ta'), s'''). \<exists>s''. \<tau>mredT^** s' s'' \<and> redT s'' (t', ta') s''' \<and> \<not> m\<tau>move s'' (t', ta') s''' \<and> 
-                                          ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
-      let ?tta = "fst (Eps ?proceed')"
-      let ?s' = "snd (Eps ?proceed')"
-      
-      from False have no_halt: "\<not> (\<exists>s''. ?halt s'')" and no_diverge: "\<not> ?diverge" and "obs \<noteq> LNil" by blast+
-      from mthr.not_\<tau>diverge_to_no_\<tau>move[OF no_diverge]
-      obtain s'' where s'_s'': "\<tau>mredT^** s' s''"
-        and no_\<tau>: "\<And>s'''. \<not> \<tau>mredT s'' s'''" by blast
-      from s'_s'' no_halt obtain t' ta' s''' where red: "s'' -t'\<triangleright>ta'\<rightarrow> s'''"
-        by(auto simp del: split_paired_Ex split_paired_All)
-      with no_\<tau>[of s'''] have "\<not> m\<tau>move s'' (t', ta') s'''" by auto
-      from mthr.\<tau>rtrancl3p_trans[OF Red mthr.\<tau>rtrancl3p_Nil_eq_\<tau>moves[THEN iffD2, OF s'_s'']]
-      have s_s'': "mthr.\<tau>rtrancl3p s ttas' s''" by simp
+      case True
+      let ?proceed = "\<lambda>((t', ta'), s''). s' -t'\<triangleright>ta'\<rightarrow> s'' \<and> ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
+      let ?tta = "fst (Eps ?proceed)"
+      let ?s' = "snd (Eps ?proceed)"
 
-      from red obtain ta'' s''''
-        where "s'' -t'\<triangleright>ta''\<rightarrow> s''''"
+      from True obtain t' ta' s'' where red: "s' -t'\<triangleright>ta'\<rightarrow> s''" by blast
+      then obtain ta'' s''' where "s' -t'\<triangleright>ta''\<rightarrow> s'''"
         and "ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)"
       proof(cases)
         case (redT_normal x x' m')
-        note red = `t' \<turnstile> \<langle>x, shr s''\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>`
-          and ts''t' = `thr s'' t' = \<lfloor>(x, no_wait_locks)\<rfloor>`
-          and aok = `actions_ok s'' t' ta'`
-          and s''' = `redT_upd s'' t' ta' x' m' s'''`
-        with `\<not> m\<tau>move s'' (t', ta') s'''`
-        have "\<not> \<tau>move (x, shr s'') ta' (x', m')"
-          by(auto intro: m\<tau>move.intros)
-        from sc_completionD[OF cau s_s'' sc ts''t' red aok this]
-        obtain ta'' x'' m'' where red': "t' \<turnstile> \<langle>x, shr s''\<rangle> -ta''\<rightarrow> \<langle>x'', m''\<rangle>"
-          and aok': "actions_ok s'' t' ta''"
+        note red = `t' \<turnstile> \<langle>x, shr s'\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>`
+          and ts''t' = `thr s' t' = \<lfloor>(x, no_wait_locks)\<rfloor>`
+          and aok = `actions_ok s' t' ta'`
+          and s''' = `redT_upd s' t' ta' x' m' s''`
+        from sc_completionD[OF cau Red sc ts''t' red aok]
+        obtain ta'' x'' m'' where red': "t' \<turnstile> \<langle>x, shr s'\<rangle> -ta''\<rightarrow> \<langle>x'', m''\<rangle>"
+          and aok': "actions_ok s' t' ta''"
           and sc': "ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)" by blast
-        from redT_updWs_total obtain ws' where "redT_updWs t' (wset s'') \<lbrace>ta''\<rbrace>\<^bsub>w\<^esub> ws'" ..
-        then obtain s'''' where "redT_upd s'' t' ta'' x'' m'' s''''" by fastsimp
-        with red' ts''t' aok' have "s'' -t'\<triangleright>ta''\<rightarrow> s''''" ..
+        from redT_updWs_total obtain ws' where "redT_updWs t' (wset s') \<lbrace>ta''\<rbrace>\<^bsub>w\<^esub> ws'" ..
+        then obtain s''' where "redT_upd s' t' ta'' x'' m'' s'''" by fastsimp
+        with red' ts''t' aok' have "s' -t'\<triangleright>ta''\<rightarrow> s'''" ..
         thus thesis using sc' by(rule that)
       next
         case redT_acquire
         thus thesis by(simp add: that[OF red] ta_seq_consist_convert_RA)
       qed
-      moreover with no_\<tau>[of s''''] have "\<not> m\<tau>move s'' (t', ta'') s''''" by auto
-      ultimately have "?proceed' ((t', ta''), s'''')"
-        using s'_s'' by(auto simp del: split_paired_Ex)
-      hence "?proceed' (Eps ?proceed')" by(rule someI)
+      hence "?proceed ((t', ta''), s''')" by auto
+      hence "?proceed (Eps ?proceed)" by(rule someI)
       show ?thesis
       proof(cases "obs = LNil")
         case True thus ?thesis ..
       next
         case False
-        from no_halt no_diverge
-        have csc_unfold: "complete_sc s' (?vs ttas') = TCons ?tta (complete_sc ?s' (?vs (ttas' @ [?tta])))"
-          unfolding complete_sc_def by(subst tllist_corec)(simp add: complete_sc_aux.simps split_beta)
+        from True
+        have csc_unfold: "complete_sc s' (?vs ttas') = LCons ?tta (complete_sc ?s' (?vs (ttas' @ [?tta])))"
+          unfolding complete_sc_def by(subst llist_corec)(simp add: complete_sc_aux.simps split_beta)
         hence "obs = lappend (llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub>) (?obs (complete_sc ?s' (?vs (ttas' @ [?tta]))))"
           using obs_def by(simp add: split_beta)
         moreover have "ta_seq_consist P vs' (llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub>)"
-          using `?proceed' (Eps ?proceed')` vs'_def by(clarsimp simp add: split_beta)
+          using `?proceed (Eps ?proceed)` vs'_def by(clarsimp simp add: split_beta)
         moreover {
           assume "llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub> = LNil"
           moreover from obs_def `obs \<noteq> LNil`
-          have "lfinite (ltakeWhile (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []) (llist_of_tllist (complete_sc s' (?vs ttas'))))"
+          have "lfinite (ltakeWhile (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []) (complete_sc s' (?vs ttas')))"
             unfolding lfinite_ltakeWhile by(fastsimp simp add: split_def lconcat_eq_LNil)
-          ultimately have "(llist_of_tllist (complete_sc ?s' (?vs (ttas' @ [?tta]))), a) \<in> ?R"
+          ultimately have "(complete_sc ?s' (?vs (ttas' @ [?tta])), a) \<in> ?R"
             unfolding a_def vs'_def csc_unfold
             by(clarsimp simp add: split_def)(auto simp add: lfinite_eq_range_llist_of) }
         moreover have "?obs (complete_sc ?s' (?vs (ttas' @ [?tta]))) = ?obs (complete_sc ?s' (mrw_values P vs' (list_of (llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub>))))"
           unfolding vs'_def by(simp add: split_def)
-        moreover from `?proceed' (Eps ?proceed')`
-        have "mthr.\<tau>rtrancl3p s (ttas' @ [?tta]) ?s'"
-          by(auto simp add: split_def intro: mthr.\<tau>rtrancl3p_snocI[OF Red])
-        moreover from sc `?proceed' (Eps ?proceed')`
+        moreover from `?proceed (Eps ?proceed)` Red
+        have "s -\<triangleright>ttas' @ [?tta]\<rightarrow>* ?s'" by(auto simp add: RedT_def split_def intro: rtrancl3p_step)
+        moreover from sc `?proceed (Eps ?proceed)`
         have "ta_seq_consist P vs (llist_of (?ttas' (ttas' @ [?tta])))"
           by(clarsimp simp add: split_def ta_seq_consist_lappend lappend_llist_of_llist_of[symmetric] simp del: lappend_llist_of_llist_of)
         moreover have "mrw_values P vs' (list_of (llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub>)) = ?vs (ttas' @ [?tta])" 
           unfolding vs'_def by(simp add: split_def)
-        moreover have "llist_of_tllist (complete_sc ?s' (?vs (ttas' @ [?tta]))) =
-          llist_of_tllist (complete_sc ?s' (mrw_values P vs' (list_of (llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub>))))"
+        moreover have "complete_sc ?s' (?vs (ttas' @ [?tta])) = complete_sc ?s' (mrw_values P vs' (list_of (llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub>)))"
           unfolding vs'_def by(simp add: split_def)
         ultimately have "?lappend" by blast
         thus ?thesis ..
@@ -1203,40 +1190,38 @@ proof -
   qed
 qed
 
-lemma sequential_completion_\<tau>Runs:
+lemma sequential_completion_Runs:
   assumes "sc_completion s vs"
   and "\<And>vs ln. ta_seq_consist P vs (llist_of (convert_RA ln))"
-  shows "\<exists>ttas. mthr.\<tau>Runs s ttas \<and> ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of_tllist ttas)))"
-using complete_sc_ta_seq_consist[OF assms] complete_sc_in_\<tau>Runs[OF assms]
+  shows "\<exists>ttas. mthr.Runs s ttas \<and> ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))"
+using complete_sc_ta_seq_consist[OF assms] complete_sc_in_Runs[OF assms]
 by blast
 
 
-definition cut_and_update :: "('l, 't, 'x, 'm, 'w) state \<Rightarrow> (addr \<times> addr_loc \<rightharpoonup> val \<times> bool) \<Rightarrow> bool"
+definition cut_and_update :: "('l, 't, 'x, 'm, 'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> bool"
 where
   "cut_and_update s vs \<longleftrightarrow>
    (\<forall>ttas s' t x ta x' m'.
-      mthr.\<tau>rtrancl3p s ttas s' \<longrightarrow> ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) \<longrightarrow>
+      s -\<triangleright>ttas\<rightarrow>* s' \<longrightarrow> ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) \<longrightarrow>
       thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor> \<longrightarrow> t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m') \<longrightarrow> actions_ok s' t ta \<longrightarrow> 
-      \<not> \<tau>move (x, shr s') ta (x', m') \<longrightarrow> 
-   (\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and> \<not> \<tau>move (x, shr s') ta' (x'', m'') \<and>
+   (\<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and>
                    ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) \<and>
                    eq_upto_seq_inconsist P \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))))"
 
 lemma cut_and_updateI[intro?]:
   "(\<And>ttas s' t x ta x' m'. 
-     \<lbrakk> mthr.\<tau>rtrancl3p s ttas s'; ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)));
-       thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m'); actions_ok s' t ta;
-       \<not> \<tau>move (x, shr s') ta (x', m') \<rbrakk>
-      \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and> \<not> \<tau>move (x, shr s') ta' (x'', m'') \<and>
+     \<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)));
+       thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m'); actions_ok s' t ta \<rbrakk>
+      \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and> 
                        ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) \<and>
                        eq_upto_seq_inconsist P \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))))
     \<Longrightarrow> cut_and_update s vs"
 unfolding cut_and_update_def by blast
 
 lemma cut_and_updateD:
-  "\<lbrakk> cut_and_update s vs; mthr.\<tau>rtrancl3p s ttas s'; ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)));
-     thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m'); actions_ok s' t ta; \<not> \<tau>move (x, shr s') ta (x', m') \<rbrakk>
-  \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and> \<not> \<tau>move (x, shr s') ta' (x'', m'') \<and>
+  "\<lbrakk> cut_and_update s vs; s -\<triangleright>ttas\<rightarrow>* s'; ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)));
+     thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> (x, shr s') -ta\<rightarrow> (x', m'); actions_ok s' t ta \<rbrakk>
+  \<Longrightarrow> \<exists>ta' x'' m''. t \<turnstile> (x, shr s') -ta'\<rightarrow> (x'', m'') \<and> actions_ok s' t ta' \<and> 
                    ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) \<and>
                    eq_upto_seq_inconsist P \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
 unfolding cut_and_update_def by blast
@@ -1244,25 +1229,23 @@ unfolding cut_and_update_def by blast
 lemma cut_and_update_imp_sc_completion:
   "cut_and_update s vs \<Longrightarrow> sc_completion s vs"
 apply(rule sc_completionI)
-apply(drule (6) cut_and_updateD)
+apply(drule (5) cut_and_updateD)
 apply blast
 done
 
 lemma sequential_completion:
   assumes cut_and_update: "cut_and_update s vs"
   and ta_seq_consist_convert_RA: "\<And>vs ln. ta_seq_consist P vs (llist_of (convert_RA ln))"
-  and \<tau>Red: "mthr.\<tau>rtrancl3p s ttas s'"
+  and Red: "s -\<triangleright>ttas\<rightarrow>* s'"
   and sc: "ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-  and red: "redT s' (t, ta) s''"
-  and \<tau>: "\<not> m\<tau>move s' (t, ta) s''"
+  and red: "s' -t\<triangleright>ta\<rightarrow> s''"
   shows
-  "\<exists>ta' ttas'. mthr.\<tau>Runs s' (TCons (t, ta') ttas') \<and> 
-     ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of ttas) (LCons (t, ta') (llist_of_tllist ttas'))))) \<and> 
+  "\<exists>ta' ttas'. mthr.Runs s' (LCons (t, ta') ttas') \<and> 
+     ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of ttas) (LCons (t, ta') ttas')))) \<and> 
      eq_upto_seq_inconsist P \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
 proof -
   from red obtain ta' s''' 
     where red': "redT s' (t, ta') s'''"
-    and \<tau>': "\<not> m\<tau>move s' (t, ta') s'''"
     and sc': "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of ttas) (LCons (t, ta') LNil))))"
     and eq: "eq_upto_seq_inconsist P \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
   proof cases
@@ -1271,18 +1254,15 @@ proof -
       and red = `t \<turnstile> \<langle>x, shr s'\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>`
       and aok = `actions_ok s' t ta`
       and s'' = `redT_upd s' t ta x' m' s''`
-    with \<tau> have "\<not> \<tau>move (x, shr s') ta (x', m')" by(auto intro: m\<tau>move.intros)
-    from cut_and_updateD[OF cut_and_update, OF \<tau>Red sc ts't red aok this]
+    from cut_and_updateD[OF cut_and_update, OF Red sc ts't red aok]
     obtain ta' x'' m'' where red: "t \<turnstile> \<langle>x, shr s'\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle>"
       and sc': "ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, y). \<lbrace>y\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
       and eq: "eq_upto_seq_inconsist P \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-      and aok: "actions_ok s' t ta'" 
-      and \<tau>': "\<not> \<tau>move (x, shr s') ta' (x'', m'')" by blast
+      and aok: "actions_ok s' t ta'" by blast
     obtain ws''' where "redT_updWs t (wset s') \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> ws'''"
       using redT_updWs_total ..
     then obtain s''' where s''': "redT_upd s' t ta' x'' m'' s'''" by fastsimp
     with red `thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>` aok have "s' -t\<triangleright>ta'\<rightarrow> s'''" by(rule redT.redT_normal)
-    moreover from \<tau>' ts't red s''' have "\<not> m\<tau>move s' (t, ta') s'''" by(auto elim: m\<tau>move.cases)
     moreover from sc sc'
     have "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of ttas) (LCons (t, ta') LNil))))"
       by(auto simp add: lmap_lappend_distrib ta_seq_consist_lappend split_def lconcat_llist_of[symmetric] o_def list_of_lconcat)
@@ -1293,29 +1273,27 @@ proof -
       and "eq_upto_seq_inconsist P \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
       using sc
       by(simp_all add: lmap_lappend_distrib ta_seq_consist_lappend split_def lconcat_llist_of[symmetric] o_def list_of_lconcat ta_seq_consist_convert_RA ta_seq_consist_imp_eq_upto_seq_inconsist_refl)
-    with red \<tau> show thesis by(rule that)
+    with red show thesis by(rule that)
   qed
 
   txt {* Now, find a sequentially consistent completion from @{term "s'''"} onwards. *}
-  from red' \<tau>' have \<tau>Red'': "mthr.\<tau>rtrancl3p s' [(t, ta')] s'''"
-    by(rule mthr.\<tau>rtrancl3p_step)(rule mthr.\<tau>rtrancl3p_refl)
-  with \<tau>Red have \<tau>Red': "mthr.\<tau>rtrancl3p s (ttas @ [(t, ta')]) s'''" by(rule mthr.\<tau>rtrancl3p_trans)
+  from Red red' have Red': "s -\<triangleright>ttas @ [(t, ta')]\<rightarrow>* s'''"
+    unfolding RedT_def by(auto intro: rtrancl3p_step)
 
   from sc sc'
   have "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of (ttas @ [(t, ta')]))))"
     by(simp add: o_def split_def lappend_llist_of_llist_of[symmetric])
-  with cut_and_update_imp_sc_completion[OF cut_and_update] \<tau>Red'
+  with cut_and_update_imp_sc_completion[OF cut_and_update] Red'
   have "sc_completion s''' (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ [(t, ta')]))))"
     by(rule sc_completion_shift)
-  from sequential_completion_\<tau>Runs[OF this ta_seq_consist_convert_RA]
-  obtain ttas' where \<tau>Runs: "\<tau>trsys.\<tau>Runs redT m\<tau>move s''' ttas'"
+  from sequential_completion_Runs[OF this ta_seq_consist_convert_RA]
+  obtain ttas' where \<tau>Runs: "mthr.Runs s''' ttas'"
     and sc'': "ta_seq_consist P (mrw_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ [(t, ta')])))) 
-                                (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of_tllist ttas')))"
+                                (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'))"
     by blast
-  from mthr.\<tau>rtrancl3p_into_\<tau>Runs[OF \<tau>Red'' \<tau>Runs]
-  have "mthr.\<tau>Runs s' (TCons (t, ta') ttas')" by simp
+  from red' \<tau>Runs have "mthr.Runs s' (LCons (t, ta') ttas')" ..
   moreover from sc sc' sc''
-  have "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of ttas) (LCons (t, ta') (llist_of_tllist ttas')))))"
+  have "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of ttas) (LCons (t, ta') ttas'))))"
     unfolding lmap_lappend_distrib lconcat_lappend by(simp add: o_def ta_seq_consist_lappend split_def list_of_lconcat)
   ultimately show ?thesis using eq by blast
 qed

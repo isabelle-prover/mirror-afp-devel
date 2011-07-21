@@ -12,16 +12,16 @@ begin
 
 context J_heap_base begin
 
-inductive WTrt :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"
-  and WTrts :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool"
-  for P :: "J_prog" and h :: "'heap"
+inductive WTrt :: "'addr J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool"
+  and WTrts :: "'addr J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> ty list \<Rightarrow> bool"
+  for P :: "'addr J_prog" and h :: "'heap"
   where
 
   WTrtNew:
     "is_class P C  \<Longrightarrow> WTrt P h E (new C) (Class C)"
 
 | WTrtNewArray:
-    "\<lbrakk> WTrt P h E e Integer; is_type P T \<rbrakk>
+    "\<lbrakk> WTrt P h E e Integer; is_type P (T\<lfloor>\<rceil>) \<rbrakk>
     \<Longrightarrow> WTrt P h E (newA T\<lfloor>e\<rceil>) (T\<lfloor>\<rceil>)"
 
 | WTrtCast:
@@ -67,14 +67,14 @@ inductive WTrt :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> ex
   "WTrt P h E a NT \<Longrightarrow> WTrt P h E (a\<bullet>length) T"
 
 | WTrtFAcc:
-    "\<lbrakk> WTrt P h E e (Class C); P \<turnstile> C has F:T (fm) in D \<rbrakk> \<Longrightarrow>
+    "\<lbrakk> WTrt P h E e U; is_class_type_of U C; P \<turnstile> C has F:T (fm) in D \<rbrakk> \<Longrightarrow>
     WTrt P h E (e\<bullet>F{D}) T"
 
 | WTrtFAccNT:
     "WTrt P h E e NT \<Longrightarrow> WTrt P h E (e\<bullet>F{D}) T"
 
 | WTrtFAss:
-    "\<lbrakk> WTrt P h E e1 (Class C);  P \<turnstile> C has F:T (fm) in D; WTrt P h E e2 T2;  P \<turnstile> T2 \<le> T \<rbrakk>
+    "\<lbrakk> WTrt P h E e1 U; is_class_type_of U C;  P \<turnstile> C has F:T (fm) in D; WTrt P h E e2 T2;  P \<turnstile> T2 \<le> T \<rbrakk>
     \<Longrightarrow> WTrt P h E (e1\<bullet>F{D}:=e2) Void"
 
 | WTrtFAssNT:
@@ -82,7 +82,7 @@ inductive WTrt :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> ex
     \<Longrightarrow> WTrt P h E (e1\<bullet>F{D}:=e2) Void"
 
 | WTrtCall:
-    "\<lbrakk> WTrt P h E e (Class C); \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
+    "\<lbrakk> WTrt P h E e U; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
        WTrts P h E es Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
     \<Longrightarrow> WTrt P h E (e\<bullet>M(es)) T"
 
@@ -131,12 +131,12 @@ inductive WTrt :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> ex
 | WTrtCons: "\<lbrakk> WTrt P h E e T; WTrts P h E es Ts \<rbrakk> \<Longrightarrow> WTrts P h E (e # es) (T # Ts)"
 
 abbreviation
-  WTrt_syntax :: "J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile> _ : _"   [51,51,51]50)
+  WTrt_syntax :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile> _ : _"   [51,51,51]50)
 where
   "P,E,h \<turnstile> e : T \<equiv> WTrt P h E e T"
 
 abbreviation
-  WTrts_syntax :: "J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_,_ \<turnstile> _ [:] _"   [51,51,51]50)
+  WTrts_syntax :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> 'addr expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_,_ \<turnstile> _ [:] _"   [51,51,51]50)
 where
   "P,E,h \<turnstile> es [:] Ts \<equiv> WTrts P h E es Ts"
 

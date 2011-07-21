@@ -26,7 +26,7 @@ lemma assumes ha: "typeof_addr h a = \<lfloor>Class D\<rfloor>"
      n + max_varss es' \<le> length xs \<rbrakk>
   \<Longrightarrow> \<exists>vs es''. \<tau>reds1r P t h (es', xs) (map Val vs @ Throw a # es'', loc) \<and>
                P,es,n,h \<turnstile> (map Val vs @ Throw a # es'', loc) [\<leftrightarrow>] (stk, loc, pc, \<lfloor>a\<rfloor>)"
-proof(induct e n e' xs stk loc pc xcp\<equiv>"\<lfloor>a::addr\<rfloor>" and es n es' xs stk loc pc xcp\<equiv>"\<lfloor>a::addr\<rfloor>"
+proof(induct e n e' xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>" and es n es' xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>"
       rule: bisim1_bisims1.inducts[split_format (complete)])
   case bisim1NewThrow thus ?case
     by(fastsimp intro: bisim1_bisims1.intros)
@@ -73,6 +73,9 @@ next
   hence "xs = loc" by(auto dest: bisim1_ThrowD)
   with bisim `bsok e1 n` show ?case
     by(auto intro: bisim1_bisims1.bisim1BinOpThrow2)
+next
+  case bisim1BinOpThrow thus ?case
+    by(fastsimp intro: bisim1_bisims1.intros)
 next
   case bisim1LAss1 thus ?case
     by(fastsimp intro: rtranclp.rtrancl_into_rtrancl LAss1Throw bisim1_bisims1.intros dest: bisim1_ThrowD elim!: LAss_\<tau>red1r)
@@ -358,7 +361,7 @@ next
   ultimately show ?case by fastsimp
 qed
 
-primrec conf_xcp' :: "'m prog \<Rightarrow> 'heap \<Rightarrow> addr option \<Rightarrow> bool" where
+primrec conf_xcp' :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr option \<Rightarrow> bool" where
   "conf_xcp' P h None = True"
 | "conf_xcp' P h \<lfloor>a\<rfloor> = (\<exists>D. typeof_addr h a = \<lfloor>Class D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* Throwable)"
 
@@ -732,16 +735,33 @@ next
       and stk: "stk = [v2]" and xcp: "xcp = None" and call: "call1 e2' = None"
       by(auto dest: bisim1_pc_length_compE2D)
     with bisim2 pc len have red: "\<tau>red1r P t h (e2', xs) (Val v2, loc)" by(auto intro: bisim1_Val_\<tau>red1r)
-    hence "\<tau>red1r P t h (Val v1 \<guillemotleft>bop\<guillemotright> e2', xs) (Val v1 \<guillemotleft>bop\<guillemotright> Val v2, loc)" by(rule BinOp_\<tau>red1r_xt2)
-    also from exec xcp ST stk
-    have "\<tau>red1r P t h (Val v1 \<guillemotleft>bop\<guillemotright> Val v2, loc) (Val (the (binop bop v1 v2)), loc)"
-      by(force simp add: exec_move_def exec_meth_instr list_all2_Cons1 conf_def dest: binop_progress intro: r_into_rtranclp Red1BinOp \<tau>move1BinOp)
-    also have \<tau>: "\<tau>move2 (compP2 P) h [v2, v1] (e1 \<guillemotleft>bop\<guillemotright> e2) (length (compE2 e1) + length (compE2 e2)) None"
-      by(simp add: \<tau>move2_iff split: bop.splits)
-    moreover from bisim1 bisim2 have "bsok (e1 \<guillemotleft>bop\<guillemotright> e2) n" by(auto dest!: bisim1_bsok)
-    hence "P,e1 \<guillemotleft>bop\<guillemotright> e2,n,h \<turnstile> (Val (the (binop bop v1 v2)), loc) \<leftrightarrow> ([the (binop bop v1 v2)], loc, length (compE2 (e1 \<guillemotleft>bop\<guillemotright> e2)), None)"
-      by(rule bisim1Val2) simp_all
-    ultimately show ?thesis using exec xcp stk call by(auto simp add: exec_move_def exec_meth_instr)
+    hence red1: "\<tau>red1r P t h (Val v1 \<guillemotleft>bop\<guillemotright> e2', xs) (Val v1 \<guillemotleft>bop\<guillemotright> Val v2, loc)" by(rule BinOp_\<tau>red1r_xt2)
+    show ?thesis
+    proof(cases "the (binop bop v1 v2)")
+      case (Inl v)
+      note red1
+      also from exec xcp ST stk Inl
+      have "\<tau>red1r P t h (Val v1 \<guillemotleft>bop\<guillemotright> Val v2, loc) (Val v, loc)"
+        by(force simp add: exec_move_def exec_meth_instr list_all2_Cons1 conf_def compP2_def dest: binop_progress intro: r_into_rtranclp Red1BinOp \<tau>move1BinOp)
+      also have \<tau>: "\<tau>move2 (compP2 P) h [v2, v1] (e1 \<guillemotleft>bop\<guillemotright> e2) (length (compE2 e1) + length (compE2 e2)) None"
+        by(simp add: \<tau>move2_iff)
+      moreover from bisim1 bisim2 have "bsok (e1 \<guillemotleft>bop\<guillemotright> e2) n" by(auto dest!: bisim1_bsok)
+      hence "P,e1 \<guillemotleft>bop\<guillemotright> e2,n,h \<turnstile> (Val v, loc) \<leftrightarrow> ([v], loc, length (compE2 (e1 \<guillemotleft>bop\<guillemotright> e2)), None)"
+        by(rule bisim1Val2) simp_all
+      ultimately show ?thesis using exec xcp stk call Inl by(auto simp add: exec_move_def exec_meth_instr)
+    next
+      case (Inr a)
+      note red1
+      also from exec xcp ST stk Inr
+      have "\<tau>red1r P t h (Val v1 \<guillemotleft>bop\<guillemotright> Val v2, loc) (Throw a, loc)"
+        by(force simp add: exec_move_def exec_meth_instr list_all2_Cons1 conf_def compP2_def dest: binop_progress intro: r_into_rtranclp Red1BinOpFail \<tau>move1BinOp)
+      also have \<tau>: "\<tau>move2 (compP2 P) h [v2, v1] (e1 \<guillemotleft>bop\<guillemotright> e2) (length (compE2 e1) + length (compE2 e2)) None"
+        by(simp add: \<tau>move2_iff)
+      moreover from `bsok e1 n` `bsok e2 n`
+      have "P,e1 \<guillemotleft>bop\<guillemotright> e2,n,h \<turnstile> (Throw a, loc) \<leftrightarrow> ([v2, v1], loc, length (compE2 e1) + length (compE2 e2), \<lfloor>a\<rfloor>)"
+        by(rule bisim1BinOpThrow)
+      ultimately show ?thesis using exec xcp stk call Inr by(auto simp add: exec_move_def exec_meth_instr)
+    qed
   qed
 next
   case (bisim1BinOpThrow1 e1 n a xs stk loc pc e2 bop)
@@ -762,6 +782,13 @@ next
     apply(auto elim!: exec_meth.cases simp add: match_ex_table_append_not_pcs exec_move_def)
     apply(auto simp only: compxE2_size_convs compxE2_stack_xlift_convs match_ex_table_stack_xlift_eq_Some_conv)
     done
+  thus ?case ..
+next 
+  case (bisim1BinOpThrow e1 n e2 bop a xs v1 v2)
+  note `?exec (e1 \<guillemotleft>bop\<guillemotright> e2) [v1, v2] xs (length (compE2 e1) + length (compE2 e2)) \<lfloor>a\<rfloor> stk' loc' pc' xcp'`
+  hence False
+    by(auto elim!: exec_meth.cases simp add: match_ex_table_append_not_pcs compxE2_size_convs exec_move_def
+               dest!: match_ex_table_shift_pcD match_ex_table_pc_length_compE2)
   thus ?case ..
 next
   case (bisim1LAss1 e n e' xs stk loc pc xcp V)
@@ -1595,13 +1622,13 @@ next
     next
       case Nil[simp]
       from exec pc stk xcp
-      have "v = Null \<or> (is_Addr v \<and> (\<exists>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<and> is_external_call P T M'))" (is "_ \<or> ?rest")
+      have "v = Null \<or> (is_Addr v \<and> (\<exists>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<and> is_native P T M'))" (is "_ \<or> ?rest")
 	by(auto elim!: exec_meth.cases simp add: is_Ref_def exec_move_def compP2_def split: split_if_asm)
       thus ?thesis
       proof
 	assume [simp]: "v = Null"
-	from bisim1 have "P,obj\<bullet>M'([]),n,h \<turnstile> (THROW NullPointer, loc) \<leftrightarrow> ([] @ [Null], loc, length (compE2 obj) + length (compEs2 []), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
-	  by(safe intro!: bisim1CallThrow elim!: bisim1_bsok) simp_all
+	from bisim1 have "P,obj\<bullet>M'([]),n,h \<turnstile> (THROW NullPointer, loc) \<leftrightarrow> ([] @ [Null], loc, length (compE2 obj) + length (compEs2 ([]  :: 'addr expr1 list)), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
+          by(safe intro!: bisim1CallThrow elim!: bisim1_bsok) simp_all
 	moreover have "P,t \<turnstile>1 \<langle>null\<bullet>M'(map Val []),(h, loc)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer,(h, loc)\<rangle>"
 	  by(rule Red1CallNull)
         moreover have "\<tau>move1 P h (Val v\<bullet>M'([]))" "\<tau>move2 (compP2 P) h [Null] (obj\<bullet>M'(ps)) (length (compE2 obj)) None"
@@ -1612,7 +1639,7 @@ next
 	assume ?rest
 	then obtain a Ta where [simp]: "v = Addr a"
 	  and Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>"
-	  and iec: "is_external_call P Ta M'" by auto
+	  and iec: "is_native P Ta M'" by auto
 	with exec pc stk xcp
 	obtain ta' va h'' U where redex: "(ta', va, h'') \<in> red_external_aggr (compP2 P) t a M' [] h"
 	  and ret: "(xcp', h', [(stk', loc', undefined, undefined, pc')]) = extRet2JVM 0 h'' [Addr a] loc undefined undefined (length (compE2 obj)) [] va"
@@ -1641,7 +1668,7 @@ next
 	  with ret RetVal show ?thesis by simp
 	next
 	  case (RetExc ad)
-	  have "P,obj\<bullet>M'([]),n,h' \<turnstile> (Throw ad, loc) \<leftrightarrow> ([] @ [v], loc, length (compE2 (obj)) + length (compEs2 []), \<lfloor>ad\<rfloor>)"
+	  have "P,obj\<bullet>M'([]),n,h' \<turnstile> (Throw ad, loc) \<leftrightarrow> ([] @ [v], loc, length (compE2 (obj)) + length (compEs2 ([] :: 'addr expr1 list)), \<lfloor>ad\<rfloor>)"
 	    by(rule bisim1CallThrow)(simp_all add: `bsok obj n`)
 	  with ret RetExc show ?thesis by simp
         next
@@ -1651,7 +1678,7 @@ next
           thus ?thesis using ret RetStaySame by simp
 	qed
 	moreover from `preallocated h` red_external_hext[OF redex'] have "preallocated h'" by(rule preallocated_hext) 
-        from wf' redex'' wtext'' `hconf h` have "hconf h'" by(rule external_call_hconf)
+        from redex'' wtext'' `hconf h` have "hconf h'" by(rule external_call_hconf)
         with ta' redex' `preallocated h'`
 	have "ta_bisim wbisim1 (extTA2J1 P ta') ta" by(auto intro: red_external_ta_bisim21[OF wf])
         moreover have "\<tau>move1 P h (Val v\<bullet>M'([])) \<Longrightarrow> ta' = \<epsilon> \<and> h' = h" using redex' Ta iec
@@ -1710,7 +1737,7 @@ next
     with bisim2 len have reds: "\<tau>reds1r P t h (ps', xs) (map Val vs, loc)"
       by(auto intro: bisims1_Val_\<tau>Reds1r)
     from exec T lenvs 
-    have "v = Null \<or> (is_Addr v \<and> (\<exists>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<and> is_external_call P T M'))" (is "_ \<or> ?rest")
+    have "v = Null \<or> (is_Addr v \<and> (\<exists>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<and> is_native P T M'))" (is "_ \<or> ?rest")
       by(auto elim!: exec_meth.cases simp add: is_Ref_def exec_move_def compP2_def split: split_if_asm)
     thus ?thesis
     proof
@@ -1733,7 +1760,7 @@ next
       assume ?rest
       then obtain a Ta where [simp]: "v = Addr a"
 	and Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>"
-	and iec: "is_external_call P Ta M'" by auto
+	and iec: "is_native P Ta M'" by auto
       with exec pc lenvs
       obtain ta' va h'' U Ts Ts' where redex: "(ta', va, h'') \<in> red_external_aggr (compP2 P) t a M' vs h"
 	and ret: "(xcp', h', [(stk', loc', undefined, undefined, pc')]) = extRet2JVM (length vs) h'' (rev vs @ [Addr a]) loc undefined undefined (length (compE2 obj) + length (compEs2 ps)) [] va"
@@ -1777,7 +1804,7 @@ next
         thus ?thesis using ret RetStaySame by simp
       qed
       moreover from `preallocated h` red_external_hext[OF redex'] have "preallocated h'" by(rule preallocated_hext) 
-      from wf' redex'' wtext'' `hconf h` have "hconf h'" by(rule external_call_hconf)
+      from redex'' wtext'' `hconf h` have "hconf h'" by(rule external_call_hconf)
       with ta' redex' `preallocated h'`
       have "ta_bisim wbisim1 (extTA2J1 P ta') ta" by(auto intro: red_external_ta_bisim21[OF wf])
       moreover have "\<tau>move1 P h (Val v\<bullet>M'(map Val vs)) \<Longrightarrow> ta' = \<epsilon> \<and> h' = h"
@@ -1947,14 +1974,14 @@ next
   note len = `V + max_vars (sync\<^bsub>V\<^esub> (Val v) e2) \<le> length xs`
   hence V: "V < length xs" by simp
   have \<tau>: "\<not> \<tau>move2 (compP2 P) h [v] (sync\<^bsub>V\<^esub> (e1) e2) (Suc (Suc (length (compE2 e1)))) None" by(simp add: \<tau>move2_iff)
-  from exec have "(\<exists>a. v = Addr a \<and> stk' = [] \<and> loc' = xs[V := v] \<and> ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a \<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncLock a\<rbrace> \<and> xcp' = None \<and> pc' = Suc (Suc (Suc (length (compE2 e1))))) \<or> (v = Null \<and> stk' = [v] \<and> loc' = xs[V := v] \<and> ta = \<epsilon> \<and> xcp' = \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> \<and> pc' = Suc (Suc (length (compE2 e1))))" (is "?c1 \<or> ?c2")
+  from exec have "(\<exists>a. v = Addr a \<and> stk' = [] \<and> loc' = xs[V := v] \<and> ta = \<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace> \<and> xcp' = None \<and> pc' = Suc (Suc (Suc (length (compE2 e1))))) \<or> (v = Null \<and> stk' = [v] \<and> loc' = xs[V := v] \<and> ta = \<epsilon> \<and> xcp' = \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> \<and> pc' = Suc (Suc (length (compE2 e1))))" (is "?c1 \<or> ?c2")
     by(fastsimp elim!: exec_meth.cases simp add: is_Ref_def expand_finfun_eq fun_eq_iff finfun_upd_apply exec_move_def)
   thus ?case
   proof
     assume ?c1
-    then obtain a where [simp]: "v = Addr a" "stk' = []" "loc' = xs[V := v]" "ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncLock a\<rbrace>"
+    then obtain a where [simp]: "v = Addr a" "stk' = []" "loc' = xs[V := v]" "ta = \<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>"
       "xcp' = None" "pc' = Suc (Suc (Suc (length (compE2 e1))))" by blast
-    have "P,t \<turnstile>1 \<langle>sync\<^bsub>V\<^esub> (addr a) e2, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncLock a\<rbrace>\<rightarrow> \<langle>insync\<^bsub>V\<^esub> (a) e2,(h, xs[V := Addr a])\<rangle>"
+    have "P,t \<turnstile>1 \<langle>sync\<^bsub>V\<^esub> (addr a) e2, (h, xs)\<rangle> -\<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>\<rightarrow> \<langle>insync\<^bsub>V\<^esub> (a) e2,(h, xs[V := Addr a])\<rangle>"
       using V by(rule Lock1Synchronized)
     moreover from bisim2 bisim1_bsok[OF bisim] have "P,sync\<^bsub>V\<^esub> (e1) e2,V,h \<turnstile> (insync\<^bsub>V\<^esub> (a) e2, xs[V := Addr a]) \<leftrightarrow> ([], xs[V := Addr a], Suc (Suc (Suc (length (compE2 e1)))), None)"
       by(auto intro: bisim1Sync4[where pc = 0, simplified])
@@ -2072,9 +2099,9 @@ next
     have "P,sync\<^bsub>V\<^esub> (e1) e2,V,h \<turnstile> (Val v, xs) \<leftrightarrow> ([v], xs, 5 + length (compE2 e1) + length (compE2 e2), None)"
       "P,sync\<^bsub>V\<^esub> (e1) e2,V,h \<turnstile> (THROW IllegalMonitorState,xs) \<leftrightarrow> ([Addr a', v],xs,4 + length (compE2 e1) + length (compE2 e2),\<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
       by(rule bisim1Sync6, rule bisim1Sync13)
-    moreover from xsV V have "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Val v, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a' \<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncUnlock a'\<rbrace>\<rightarrow> \<langle>Val v,(h, xs)\<rangle>"
+    moreover from xsV V have "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Val v, (h, xs)\<rangle> -\<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>\<rightarrow> \<langle>Val v,(h, xs)\<rangle>"
       by(rule Unlock1Synchronized)
-    moreover from xsV V have "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Val v, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a' \<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState,(h, xs)\<rangle>"
+    moreover from xsV V have "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Val v, (h, xs)\<rangle> -\<lbrace>UnlockFail\<rightarrow>a'\<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState,(h, xs)\<rangle>"
       by(rule Unlock1SynchronizedFail)
     ultimately show ?case using \<tau> \<tau>' exec
       by(fastsimp elim!: exec_meth.cases simp add: is_Ref_def ta_bisim_def add_ac exec_move_def ta_upd_simps)
@@ -2128,8 +2155,8 @@ next
   moreover {
     fix A
     assume "xs ! V = Addr A"
-    hence "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw a',(h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>A\<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncUnlock A\<rbrace>\<rightarrow> \<langle>Throw a', (h, xs)\<rangle>"
-      "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw a',(h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>A\<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, (h, xs)\<rangle>"
+    hence "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw a',(h, xs)\<rangle> -\<lbrace>Unlock\<rightarrow>A, SyncUnlock A\<rbrace>\<rightarrow> \<langle>Throw a', (h, xs)\<rangle>"
+      "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw a',(h, xs)\<rangle> -\<lbrace>UnlockFail\<rightarrow>A\<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, (h, xs)\<rangle>"
       using V by(rule Synchronized1Throw2 Synchronized1Throw2Fail)+ }
   moreover {
     assume "xs ! V = Null"
@@ -2844,7 +2871,9 @@ next
     moreover have "no_calls2 es 0 \<Longrightarrow> no_calls2 (e # es) (length (compE2 e))"
       by(simp add: no_calls2_def)
     ultimately show ?thesis using red' xcp stk stk' call v
-      by(auto simp add: split_paired_Ex)(blast intro: rtranclp_trans rtranclp_tranclp_tranclp \<tau>reds1r_cons_\<tau>reds1r List1Red2 \<tau>reds1t_cons_\<tau>reds1t dest: \<tau>)+
+      apply(auto simp add: split_paired_Ex)
+      apply(blast 25 intro: rtranclp_trans rtranclp_tranclp_tranclp \<tau>reds1r_cons_\<tau>reds1r List1Red2 \<tau>reds1t_cons_\<tau>reds1t dest: \<tau>)+
+      done
   qed
 next
   case (bisims1List2 es n es' xs stk loc pc xcp e v)
@@ -2882,14 +2911,13 @@ qed
 
 end
 
-
-inductive sim21_size_aux :: "nat \<Rightarrow> (pc \<times> addr option) \<Rightarrow> (pc \<times> addr option) \<Rightarrow> bool"
+inductive sim21_size_aux :: "nat \<Rightarrow> (pc \<times> 'addr option) \<Rightarrow> (pc \<times> 'addr option) \<Rightarrow> bool"
 for len :: nat
 where
   "\<lbrakk> pc1 \<le> len; pc2 \<le> len; xcp1 \<noteq> None \<and> xcp2 = None \<and> pc1 = pc2 \<or> xcp1 = None \<and> pc1 > pc2 \<rbrakk>
   \<Longrightarrow> sim21_size_aux len (pc1, xcp1) (pc2, xcp2)"
 
-definition sim21_size :: "jvm_prog \<Rightarrow> jvm_thread_state \<Rightarrow> jvm_thread_state \<Rightarrow> bool"
+definition sim21_size :: "'addr jvm_prog \<Rightarrow> 'addr jvm_thread_state \<Rightarrow> 'addr jvm_thread_state \<Rightarrow> bool"
 where
   "sim21_size P xcpfrs xcpfrs' \<longleftrightarrow>
    (xcpfrs, xcpfrs') \<in> 
@@ -2933,8 +2961,8 @@ lemma bisim1_Invoke_\<tau>Red:
     compEs2 Es ! pc = Invoke M (length vs); n + max_varss es \<le> length xs \<rbrakk>
   \<Longrightarrow> \<exists>es' xs'. \<tau>reds1r P t h (es, xs) (es', xs') \<and> P,Es,n,h \<turnstile> (es', xs') [\<leftrightarrow>] (rev vs @ Addr a # stk', loc, pc, None) \<and> calls1 es' = \<lfloor>(a, M, vs)\<rfloor>"
   (is "\<lbrakk> _; _; _; _ \<rbrakk> \<Longrightarrow> ?concls es xs Es n pc stk' loc")
-proof(induct E n e xs stk\<equiv>"rev vs @ Addr a # stk'" loc pc xcp\<equiv>"None::addr option"
-  and Es n es xs stk\<equiv>"rev vs @ Addr a # stk'" loc pc xcp\<equiv>"None::addr option"
+proof(induct E n e xs stk\<equiv>"rev vs @ Addr a # stk'" loc pc xcp\<equiv>"None::'addr option"
+  and Es n es xs stk\<equiv>"rev vs @ Addr a # stk'" loc pc xcp\<equiv>"None::'addr option"
   arbitrary: stk' and stk' rule: bisim1_bisims1_inducts_split)
   case bisim1Val2 thus ?case by simp
 next
@@ -3385,7 +3413,7 @@ proof(cases)
 	with execi sees True compE2_not_Return[of body]
 	have "(\<exists>M n. compE2 body ! pc = Invoke M n)"
 	  apply(cases "compE2 body ! pc")
-	  apply(auto split: split_if_asm simp add: split_beta compP2_def compMb2_def)
+	  apply(auto split: split_if_asm sum.split_asm simp add: split_beta compP2_def compMb2_def)
 	  apply(metis in_set_conv_nth)+
 	  done
         then obtain MM n where ins: "compE2 body ! pc = Invoke MM n" by blast
@@ -3404,8 +3432,9 @@ proof(cases)
 	from red have Red: "\<tau>Red1r P t h ((e, xs), exs) ((e', xs'), exs)"
 	  by(rule \<tau>red1r_into_\<tau>Red1r)
 	
-	from False execi True check ins sees' obtain C' Ts' T' meth D'
-	  where ha': "typeof_addr h a' = \<lfloor>Class C'\<rfloor>"
+	from False execi True check ins sees' obtain U' C' Ts' T' meth D'
+	  where ha': "typeof_addr h a' = \<lfloor>U'\<rfloor>"
+          and icto: "class_type_of U' = \<lfloor>C'\<rfloor>"
 	  and Sees': "compP2 P \<turnstile> C' sees MM:Ts' \<rightarrow> T' = meth in D'"
 	  by(auto simp add: check_def has_method_def split: split_if_asm)(auto split: extCallRet.split_asm)
 	from sees_method_compPD[OF Sees'[unfolded compP2_def]] obtain body'
@@ -3414,12 +3443,12 @@ proof(cases)
 	  by(auto simp add: compMb2_def)
 	
 	let ?e = "blocks1 0 (Class D'#Ts') body'"
-	let ?xs = "Addr a' # rev vs' @ replicate (max_vars body') undefined"
+	let ?xs = "Addr a' # rev vs' @ replicate (max_vars body') undefined_value"
 	let ?e'xs' = "(e', xs')"
 	let ?f = "(stk, loc, C, M, pc)"
-	let ?f' = "([],Addr a' # rev vs' @ replicate (max_vars body') undefined, D', MM, 0)"
+	let ?f' = "([],Addr a' # rev vs' @ replicate (max_vars body') undefined_value, D', MM, 0)"
 	
-	from execi pc ins False ha' Sees' sees'
+	from execi pc ins False ha' icto Sees' sees'
 	have [simp]: "xcp' = None" "ta = \<epsilon>" "frs' = ?f' # ?f # FRS" "h' = h"
 	  by(auto split: split_if_asm simp add: split_beta)(auto split: extCallRet.split_asm)
 	
@@ -3428,28 +3457,27 @@ proof(cases)
 	have "n = length vs'" by simp
 	from conf' Sees' ins sees' True have "n = length Ts'"
 	  apply(auto simp add: correct_state_def)
- 	   apply(drule (1) sees_method_fun)+
-	   apply(auto dest: sees_method_idemp sees_method_fun)
-	  apply(drule (1) sees_method_fun)+
+          apply(drule (1) sees_method_fun)+
 	  apply(auto dest: sees_method_idemp sees_method_fun)
 	  done
 	with `n = length vs'` have vs'Ts': "length (rev vs') = length Ts'" by simp
 	
-	from Sees have iec: "\<not> is_external_call P (Class C') MM"
-	  by(auto dest: external_call_not_sees_method)
-	with call' ha'
+	from sees' execi ins ha' have iec: "\<not> is_native P U' MM"
+          by(auto split: split_if_asm simp add: compP2_def)(simp split: extCallRet.split_asm)
+
+	with call' ha' icto  
 	have "P,t \<turnstile>1 \<langle>(e', xs')/exs,h\<rangle> -\<epsilon>\<rightarrow> \<langle>(?e, ?xs)/ (e', xs') # exs, h\<rangle>"
-	  using Sees vs'Ts' by(rule red1Call)
+	  using Sees vs'Ts' unfolding is_class_type_of_conv_class_type_of_Some[symmetric] by(rule red1Call)
 	hence "P,t \<turnstile>1 \<langle>(e', xs')/exs,h\<rangle> -\<epsilon>\<rightarrow> \<langle>(?e, ?xs)/ ?e'xs' # exs, h\<rangle>" by(simp)
-	moreover from call' Sees ha' have "\<tau>Move1 P h ((e', xs'), exs)"
-          by(auto simp add: synthesized_call_def dest: external_call_not_sees_method dest!: \<tau>move1_not_call1[where P=P and h=h])
+	moreover from call' Sees ha' icto iec have "\<tau>Move1 P h ((e', xs'), exs)"
+          by(auto simp add: synthesized_call_def is_class_type_of_conv_class_type_of_Some dest!: \<tau>move1_not_call1[where P=P and h=h])
         ultimately have "\<tau>Red1t P t h ((e', xs'), exs) ((?e, ?xs), ?e'xs' # exs)" by auto
 	moreover have "bisim1_list1 t h (?e, ?xs) (?e'xs' # exs) None (?f' # ?f # FRS)"
 	proof
 	  from conf' show "compTP P \<turnstile> t:(None, h, ?f' # ?f # FRS) \<surd>" by simp
 	  from Sees show "P \<turnstile> D' sees MM: Ts'\<rightarrow>T' = body' in D'" by(rule sees_method_idemp)
 	  from sees_wf_mdecl[OF wf Sees]
-	  show "P,blocks1 0 (Class D'#Ts') body',0,h \<turnstile> (blocks1 0 (Class D'#Ts') body', ?xs) \<leftrightarrow> ([], Addr a' # rev vs' @ replicate (max_vars body') undefined, 0, None)"
+	  show "P,blocks1 0 (Class D'#Ts') body',0,h \<turnstile> (blocks1 0 (Class D'#Ts') body', ?xs) \<leftrightarrow> ([], Addr a' # rev vs' @ replicate (max_vars body') undefined_value, 0, None)"
 	    by -(rule bisim1_refl,auto simp add: bsok_def wf_mdecl_def intro: WT1_expr_locks)
 	  show "max_vars (blocks1 0 (Class D'#Ts') body') \<le> length ?xs" using vs'Ts' by(simp add: blocks1_max_vars)
 	  from sees have "bisim1_fr P h ?e'xs' ?f"
@@ -3468,17 +3496,17 @@ proof(cases)
         case True
         note pc = `pc < length (compE2 body)`
         with execi True have "\<exists>stk' loc' pc'. frs' = (stk', loc', C, M, pc') # FRS"
-          by(cases "(compE2 body @ [Return]) ! pc")(auto split: split_if_asm simp: split_beta, auto split: extCallRet.splits)
+          by(cases "(compE2 body @ [Return]) ! pc")(auto split: split_if_asm sum.split_asm simp: split_beta, auto split: extCallRet.splits)
         then obtain stk' loc' pc' where [simp]: "frs' = (stk', loc', C, M, pc') # FRS" by blast
         from conf obtain ST where "compP2 P,h \<turnstile> stk [:\<le>] ST" by(auto simp add: correct_state_def conf_f_def2)
         hence ST: "P,h \<turnstile> stk [:\<le>] ST" by(rule list_all2_mono)(simp add: compP2_def)
         from execi sees pc check
         have exec': "exec_move_d P t (blocks1 0 (Class D#Ts) body) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-	  apply(auto simp add: compP2_def compMb2_def exec_move_def check_def exec_meth_instr split: split_if_asm)
+	  apply(auto simp add: compP2_def compMb2_def exec_move_def check_def exec_meth_instr split: split_if_asm sum.split_asm)
 	  apply(cases "compE2 body ! pc")
-	  apply(auto simp add: neq_Nil_conv split_beta split: split_if_asm)
+	  apply(auto simp add: neq_Nil_conv split_beta split: split_if_asm sum.split_asm)
 	  apply(force split: extCallRet.split_asm)
-	  apply(cases "compE2 body ! pc", auto simp add: split_beta neq_Nil_conv split: split_if_asm)
+	  apply(cases "compE2 body ! pc", auto simp add: split_beta neq_Nil_conv split: split_if_asm sum.split_asm)
 	  done
         from red1_simulates_exec_instr[OF wf hconf tconf bisim this _ ST] lenxs \<tau>i obtain e'' xs''
 	  where bisim': "P,blocks1 0 (Class D#Ts) body,0,h' \<turnstile> (e'', xs'') \<leftrightarrow> (stk', loc', pc', xcp')"
@@ -3587,9 +3615,8 @@ proof(cases)
     qed
   next
     case (Some a')[simp]
-    from exec have execs: "(ta, xcp', h', frs') = exception_step (compP2 P) (\<epsilon>, \<lfloor>a'\<rfloor>, h, frs)"
-      by(simp add: exec_1_iff)
-    hence [simp]: "ta = \<epsilon>" by auto
+    from exec have execs: "(xcp', h', frs') = exception_step (compP2 P) a' h (stk, loc, C, M, pc) FRS"
+      and [simp]: "ta = \<epsilon>" by(auto simp add: exec_1_iff)
     from conf have confxcp': "conf_xcp' P h xcp" 
       unfolding correct_state_def by(auto simp add: compP2_def)
     then obtain D' where ha': "typeof_addr h a' = \<lfloor>Class D'\<rfloor>" and subclsD': "P \<turnstile> D' \<preceq>\<^sup>* Throwable" by auto
@@ -3600,9 +3627,7 @@ proof(cases)
       from bisim have pc: "pc < length (compE2 body)" by(auto dest: bisim1_xcp_pcD)
       with sees' None have match: "match_ex_table (compP2 P) (cname_of h a') pc (compxE2 body 0 0) = None"
 	by(auto)
-      with exec sees' have xcp_step: "exception_step (compP2 P) (\<epsilon>, \<lfloor>a'\<rfloor>, h, (stk, loc, C, M, pc) # FRS) = (ta, xcp', h', frs')"
-	by(auto simp add: exec_1_iff)
-      hence [simp]: "ta = \<epsilon>" "xcp' = \<lfloor>a'\<rfloor>" "h' = h" "frs' = FRS" using match sees' by auto
+      with execs sees' have [simp]: "ta = \<epsilon>" "xcp' = \<lfloor>a'\<rfloor>" "h' = h" "frs' = FRS" using match sees' by auto
       from conf obtain CCC where ha: "typeof_addr h a' = \<lfloor>Class CCC\<rfloor>" and subcls: "P \<turnstile> CCC \<preceq>\<^sup>* Throwable"
         unfolding correct_state_def by(auto simp add: conf_f_def2 compP2_def)
       from bisim1_xcp_\<tau>Red[OF ha subcls bisim[unfolded Some], of "\<lambda>C M Ts T. compMb2"] match lenxs
@@ -3765,17 +3790,17 @@ proof cases
         by(simp)
       from \<tau> sees' True pc have \<tau>i: "\<not> \<tau>move2 (compP2 P) h stk body pc None" by(simp add: \<tau>move2_iff)
       from execi True sees' pc have "\<exists>stk' loc' pc'. frs' = (stk', loc', C, M, pc') # FRS"
-	by(cases "(compE2 body @ [Return]) ! pc")(auto split: split_if_asm simp add: split_beta, auto split: extCallRet.splits)
+	by(cases "(compE2 body @ [Return]) ! pc")(auto split: split_if_asm sum.split_asm simp add: split_beta, auto split: extCallRet.splits)
       then obtain stk' loc' pc' where [simp]: "frs' = (stk', loc', C, M, pc') # FRS" by blast
       from conf obtain ST where "compP2 P,h \<turnstile> stk [:\<le>] ST" by(auto simp add: correct_state_def conf_f_def2)
       hence ST: "P,h \<turnstile> stk [:\<le>] ST" by(rule list_all2_mono)(simp add: compP2_def)
       from execi sees True check pc
       have exec': "exec_move_d P t (blocks1 0 (Class D#Ts) body) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-	apply(auto simp add: compP2_def compMb2_def exec_move_def check_def exec_meth_instr split: split_if_asm)
+	apply(auto simp add: compP2_def compMb2_def exec_move_def check_def exec_meth_instr split: split_if_asm sum.split_asm)
 	apply(cases "compE2 body ! pc")
-	apply(auto simp add: neq_Nil_conv split_beta split: split_if_asm)
+	apply(auto simp add: neq_Nil_conv split_beta split: split_if_asm sum.split_asm)
 	apply(force split: extCallRet.split_asm)
-	apply(cases "compE2 body ! pc", auto simp add: split_beta neq_Nil_conv split: split_if_asm)
+	apply(cases "compE2 body ! pc", auto simp add: split_beta neq_Nil_conv split: split_if_asm sum.split_asm)
 	done
       from red1_simulates_exec_instr[OF wf hconf tconf bisim this _ ST] lenxs \<tau>i obtain e'' xs'' ta' e' xs'
 	where bisim': "P,blocks1 0 (Class D#Ts) body,0,h' \<turnstile> (e'', xs'') \<leftrightarrow> (stk', loc', pc', xcp')"
@@ -3810,7 +3835,7 @@ proof cases
       with execi sees pc compE2_not_Return[of body]
       have "(pc = length (compE2 body) \<or> (\<exists>M n. compE2 body ! pc = Invoke M n)) \<and> xcp' = None"
 	apply(cases "compE2 body ! pc")
-	apply(auto split: split_if_asm simp add: split_beta compP2_def compMb2_def)
+	apply(auto split: split_if_asm sum.split_asm simp add: split_beta compP2_def compMb2_def)
         apply(auto split: extCallRet.splits)
 	apply(metis in_set_conv_nth)+
 	done

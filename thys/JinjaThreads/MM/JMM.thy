@@ -4,8 +4,10 @@
 
 theory JMM imports
   JMM_DRF
-  JMM_J
-  JMM_JVM
+  DRF_J
+  DRF_JVM
+  JMM_Type
+  JMM_Type2
 begin
 
 end

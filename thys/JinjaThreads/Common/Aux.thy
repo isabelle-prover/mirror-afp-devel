@@ -16,8 +16,8 @@ imports
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Monad_Syntax"
+  "Cset_Monad"
 begin
-
 
 (* FIXME move and possibly turn into a general simproc *)
 lemma nat_add_max_le[simp]:
@@ -36,6 +36,8 @@ declare
  Let_def[simp]
  subset_insertI2 [simp]
 (*>*)
+
+declare not_Cons_self [no_atp] 
 
 lemma Option_bind_eq_None_conv:
   "x \<guillemotright>= y = None \<longleftrightarrow> x = None \<or> (\<exists>x'. x = Some x' \<and> y x' = None)"
@@ -187,7 +189,6 @@ lemmas zip_same_conv = zip_same_conv_map
 lemma nth_Cons_subtract: "0 < n \<Longrightarrow> (x # xs) ! n = xs ! (n - 1)"
 by(auto simp add: nth_Cons split: nat.split)
 
-
 lemma f_nth_set:
   "\<lbrakk> f (xs ! n) = v; n < length xs \<rbrakk> \<Longrightarrow> v \<in> f ` set xs"
 unfolding set_conv_nth by auto
@@ -252,6 +253,7 @@ apply(fastsimp simp add: nth_Cons Suc_length_conv split: nat.splits)+
 done
 
 
+
 lemma take_eq_take_le_eq:
   "\<lbrakk> take n xs = take n ys; m \<le> n \<rbrakk> \<Longrightarrow> take m xs = take m ys"
 by(metis min_max.le_iff_inf take_take)
@@ -259,6 +261,16 @@ by(metis min_max.le_iff_inf take_take)
 lemma take_list_update_beyond:
   "n \<le> m \<Longrightarrow> take n (xs[m := x]) = take n xs"
 by(cases "n \<le> length xs")(rule nth_take_lemma, simp_all)
+
+lemma hd_drop_conv_nth:
+  "n < length xs \<Longrightarrow> hd (drop n xs) = xs ! n"
+by(rule hd_drop_conv_nth) (metis list.size(3) not_less0)
+
+lemma set_tl_subset: "set (tl xs) \<subseteq> set xs"
+by(cases xs) auto
+
+lemma tl_conv_drop: "tl xs = drop 1 xs"
+by(cases xs) simp_all
 
 lemma takeWhile_eq_Nil_dropWhile_eq_Nil_imp_Nil:
   "\<lbrakk> takeWhile P xs = []; dropWhile P xs = [] \<rbrakk> \<Longrightarrow> xs = []"
@@ -308,7 +320,7 @@ lemma is_emptyD:
   assumes "Predicate.is_empty P"
   shows "Predicate.eval P x \<Longrightarrow> False"
 using assms
-by(simp add: Predicate.is_empty_def bot_pred_def empty_def[unfolded Collect_def])
+by(simp add: Predicate.is_empty_def bot_pred_def Set.empty_def[unfolded Collect_def])
 
 lemma eval_bind_conv:
   "Predicate.eval (P \<guillemotright>= R) y = (\<exists>x. Predicate.eval P x \<and> Predicate.eval (R x) y)"
@@ -346,6 +358,23 @@ apply(rule equal_intr_rule)
 apply(hypsubst)
 apply assumption
 done
+
+lemma disj_split:
+  "P (a \<or> b) \<longleftrightarrow> (a \<longrightarrow> P True) \<and> (b \<longrightarrow> P True) \<and> (\<not> a \<and> \<not> b \<longrightarrow> P False)"
+apply(cases a)
+apply(case_tac [!] b)
+apply auto
+done
+
+lemma disj_split_asm:
+  "P (a \<or> b) \<longleftrightarrow> \<not> (a \<and> \<not> P True \<or> b \<and> \<not> P True \<or> \<not> a \<and> \<not> b \<and> \<not> P False)"
+apply(auto simp add: disj_split[of P])
+done
+
+lemma option_case_conv_if:
+  "(case v of None \<Rightarrow> f | Some x \<Rightarrow> g x) = (if \<exists>a. v = Some a then g (the v) else f)"
+by(simp)
+
 
 (* rearrange parameters and premises to allow application of one-point-rules *)
 (* adapted from Tools/induct.ML and Isabelle Developer Workshop 2010 *)
@@ -502,12 +531,17 @@ apply(auto)
 apply(auto simp add: neq_Nil_conv)
 done
 
-
+lemma subset_Un1: "A \<subseteq> B \<Longrightarrow> A \<subseteq> B \<union> C" by blast
+lemma subset_Un2: "A \<subseteq> C \<Longrightarrow> A \<subseteq> B \<union> C" by blast
+lemma subset_insert: "A \<subseteq> B \<Longrightarrow> A \<subseteq> insert a B" by blast
+lemma UNION_subsetD: "\<lbrakk> (\<Union>x\<in>A. f x) \<subseteq> B; a \<in> A \<rbrakk> \<Longrightarrow> f a \<subseteq> B" by blast
 
 lemma Collect_eq_singleton_conv:
   "{a. P a} = {a} \<longleftrightarrow> P a \<and> (\<forall>a'. P a' \<longrightarrow> a = a')"
 by(auto)
 
+lemma Collect_conv_UN_singleton: "{f x|x. x \<in> P} = (\<Union>x\<in>P. {f x})"
+by blast
 
 lemma if_else_if_else_eq_if_else [simp]:
   "(if b then x else if b then y else z) = (if b then x else z)"
@@ -724,6 +758,41 @@ lemma r_into_rtrancl3p:
   "r a b a' \<Longrightarrow> rtrancl3p r a [b] a'"
 by(rule rtrancl3p_step_converse) auto
 
+lemma rtrancl3p_appendE:
+  assumes "rtrancl3p r a (bs @ bs') a''"
+  obtains a' where "rtrancl3p r a bs a'" "rtrancl3p r a' bs' a''"
+using assms
+apply(induct a "bs @ bs'" arbitrary: bs rule: rtrancl3p_converse_induct')
+apply(fastsimp intro: rtrancl3p_step_converse simp add: Cons_eq_append_conv)+
+done
+
+definition invariant3p :: "('a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool"
+where "invariant3p r I \<longleftrightarrow> (\<forall>s tl s'. s \<in> I \<longrightarrow> r s tl s' \<longrightarrow> s' \<in> I)"
+
+lemma invariant3pI: "(\<And>s tl s'. \<lbrakk> s \<in> I; r s tl s' \<rbrakk> \<Longrightarrow> s' \<in> I) \<Longrightarrow> invariant3p r I"
+unfolding invariant3p_def by blast
+
+lemma invariant3pD: "\<And>tl. \<lbrakk> invariant3p r I; r s tl s'; s \<in> I \<rbrakk> \<Longrightarrow> s' \<in> I"
+unfolding invariant3p_def by(blast)
+
+lemma invariant3p_rtrancl3p: 
+  assumes inv: "invariant3p r I"
+  and rtrancl: "rtrancl3p r a bs a'"
+  and start: "a \<in> I"
+  shows "a' \<in> I"
+using rtrancl start by(induct)(auto dest: invariant3pD[OF inv])
+
+lemma invariant3p_UNIV [simp, intro!]:
+  "invariant3p r UNIV"
+by(blast intro: invariant3pI)
+
+lemma invarinat3p_empty [simp, intro!]:
+  "invariant3p r {}"
+by(blast intro: invariant3pI)
+
+lemma invariant3p_IntI [simp, intro]:
+  "\<lbrakk> invariant3p r I; invariant3p r J \<rbrakk> \<Longrightarrow> invariant3p r (I \<inter> J)"
+by(blast dest: invariant3pD intro: invariant3pI)
 
 subsection {* Concatenation for @{typ String.literal} *}
 

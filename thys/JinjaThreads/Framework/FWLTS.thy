@@ -15,7 +15,7 @@ sublocale multithreaded_base < mthr!: trsys redT .
 
 -- "Move to FWSemantics?"
 definition redT_upd_\<epsilon> :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> ('l,'t,'x,'m,'w) state"
-where [simp]: "redT_upd_\<epsilon> s t x' m' = (locks s, ((thr s)(t \<mapsto> (x', snd (the (thr s t)))), m'), wset s)"
+where [simp]: "redT_upd_\<epsilon> s t x' m' = (locks s, ((thr s)(t \<mapsto> (x', snd (the (thr s t)))), m'), wset s, interrupts s)"
 
 lemma redT_upd_\<epsilon>_redT_upd:
   "redT_upd s t \<epsilon> x' m' (redT_upd_\<epsilon> s t x' m')"
@@ -24,9 +24,9 @@ by(auto simp add: redT_updLns_def redT_updWs_def)
 
 subsection {* The multithreaded semantics with internal actions *}
 
-types
+type_synonym
   ('l,'t,'x,'m,'w,'o) \<tau>moves =
-    "'x \<times> 'm \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 'x \<times> 'm \<Rightarrow> bool"
+    "'x \<times> 'm \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'x \<times> 'm \<Rightarrow> bool"
 
 text {* pretty printing for @{text "\<tau>moves"} *}
 print_translation {*
@@ -42,11 +42,13 @@ print_translation {*
                      (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "conditional_action"}, _) $ t2)) $
                      (Const (@{type_syntax "prod"}, _) $ 
                        (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "wait_set_action"}, _) $ t3 $ w)) $
-                       (Const (@{type_syntax "list"}, _) $ o1))))) $
+                       (Const (@{type_syntax prod}, _) $ 
+                         (Const (@{type_syntax list}, _) $ (Const (@{type_syntax "interrupt_action"}, _) $ t4)) $
+                         (Const (@{type_syntax "list"}, _) $ o1)))))) $
                (Const (@{type_syntax "fun"}, _) $ 
                  (Const (@{type_syntax "prod"}, _) $ x3 $ m3) $
                  (Const (@{type_syntax "bool"}, _))))] =
-      if x1 = x2 andalso x1 = x3 andalso m1 = m2 andalso m1 = m3 andalso t1 = t2 andalso t2 = t3
+      if x1 = x2 andalso x1 = x3 andalso m1 = m2 andalso m1 = m3 andalso t1 = t2 andalso t2 = t3 andalso t3 = t4
       then Syntax.const (@{type_syntax "\<tau>moves"}) $ l $ t1 $ x1 $ m1 $ w $ o1
       else raise Match;
   in [(@{type_syntax "fun"},tr')]
@@ -64,7 +66,7 @@ sublocale \<tau>multithreaded < \<tau>trsys "r t" \<tau>move for t .
 
 context \<tau>multithreaded begin
 
-inductive m\<tau>move :: "(('l,'t,'x,'m,'w) state, 't \<times> ('l,'t,'x,'m,'w,'o list) thread_action) trsys"
+inductive m\<tau>move :: "(('l,'t,'x,'m,'w) state, 't \<times> ('l,'t,'x,'m,'w,'o) thread_action) trsys"
 where
   "\<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; thr s' t = \<lfloor>(x', ln')\<rfloor>; \<tau>move (x, shr s) ta (x', shr s') \<rbrakk>
   \<Longrightarrow> m\<tau>move s (t, ta) s'"
@@ -101,13 +103,13 @@ declare split_paired_Ex [simp del]
 
 locale \<tau>multithreaded_wf =
   \<tau>multithreaded _ _ _ \<tau>move +
-  final_thread_wf final r convert_RA
+  multithreaded final r convert_RA
   for \<tau>move :: "('l,'t,'x,'m,'w,'o) \<tau>moves" +
   assumes \<tau>move_heap: "\<lbrakk> t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); \<tau>move (x, m) ta (x', m') \<rbrakk> \<Longrightarrow> m = m'"
   assumes silent_tl: "\<tau>move s ta s' \<Longrightarrow> ta = \<epsilon>"
 begin
 
-lemma m\<tau>move_silentD: "m\<tau>move s (t, ta) s' \<Longrightarrow> ta = (\<lambda>\<^isup>f [], [], [], [], [])"
+lemma m\<tau>move_silentD: "m\<tau>move s (t, ta) s' \<Longrightarrow> ta = (\<lambda>\<^isup>f [], [], [], [], [], [])"
 by(auto elim!: m\<tau>move.cases dest: silent_tl)
 
 lemma m\<tau>move_heap: 
@@ -131,41 +133,41 @@ by(induct rule: tranclp.induct)(auto dest: \<tau>mredT_thread_preserved[where t=
 
 lemma \<tau>mredT_add_thread_inv:
   assumes \<tau>red: "\<tau>mredT s s'" and tst: "thr s t = None"
-  shows "\<tau>mredT (locks s, ((thr s)(t \<mapsto> xln), shr s), wset s) (locks s', ((thr s')(t \<mapsto> xln), shr s'), wset s')"
+  shows "\<tau>mredT (locks s, ((thr s)(t \<mapsto> xln), shr s), wset s, interrupts s) (locks s', ((thr s')(t \<mapsto> xln), shr s'), wset s', interrupts s')"
 proof -
-  obtain ls ts m ws where s: "s = (ls, (ts, m), ws)" by(cases s) auto
-  obtain ls' ts' m' ws' where s': "s' = (ls', (ts', m'), ws')" by(cases s') auto
-  from \<tau>red s s' obtain t' where red: "(ls, (ts, m), ws) -t'\<triangleright>(\<lambda>\<^isup>f [], [], [], [], [])\<rightarrow> (ls', (ts', m'), ws')"
-    and \<tau>: "m\<tau>move (ls, (ts, m), ws) (t', \<lambda>\<^isup>f [], [], [], [], []) (ls', (ts', m'), ws')"
+  obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastsimp
+  obtain ls' ts' m' ws' is' where s': "s' = (ls', (ts', m'), ws', is')" by(cases s') fastsimp
+  from \<tau>red s s' obtain t' where red: "(ls, (ts, m), ws, is) -t'\<triangleright>\<epsilon>\<rightarrow> (ls', (ts', m'), ws', is')"
+    and \<tau>: "m\<tau>move (ls, (ts, m), ws, is) (t', \<epsilon>) (ls', (ts', m'), ws', is')"
     by(auto simp add: mthr.silent_move_iff dest: m\<tau>move_silentD)
-  from red have "(ls, (ts(t \<mapsto> xln), m), ws) -t'\<triangleright>\<epsilon>\<rightarrow> (ls', (ts'(t \<mapsto> xln), m'), ws')"
+  from red have "(ls, (ts(t \<mapsto> xln), m), ws, is) -t'\<triangleright>\<epsilon>\<rightarrow> (ls', (ts'(t \<mapsto> xln), m'), ws', is')"
   proof(cases rule: redT_elims)
     case (normal x x' m') with tst s show ?thesis
       by-(rule redT_normal, auto simp add: fun_upd_twist elim!: rtrancl3p_cases)
   next
     case (acquire x ln n)
     with tst s show ?thesis
-      unfolding `\<epsilon> = (\<lambda>\<^isup>f [], [], [], [], convert_RA ln)`
+      unfolding `\<epsilon> = (\<lambda>\<^isup>f [], [], [], [], [], convert_RA ln)`
       by -(rule redT_acquire, auto intro: fun_upd_twist)
   qed
   moreover from red tst s have tt': "t \<noteq> t'" by(cases) auto
   have "(\<lambda>t''. (ts(t \<mapsto> xln)) t'' \<noteq> None \<and> (ts(t \<mapsto> xln)) t'' \<noteq> (ts'(t \<mapsto> xln)) t'') =
         (\<lambda>t''. ts t'' \<noteq> None \<and> ts t'' \<noteq> ts' t'')" using tst s by(auto simp add: fun_eq_iff)
-  with \<tau> tst tt' have "m\<tau>move (ls, (ts(t \<mapsto> xln), m), ws) (t', \<epsilon>) (ls', (ts'(t \<mapsto> xln), m'), ws')"
+  with \<tau> tst tt' have "m\<tau>move (ls, (ts(t \<mapsto> xln), m), ws, is) (t', \<epsilon>) (ls', (ts'(t \<mapsto> xln), m'), ws', is')"
     by cases(rule m\<tau>move.intros, auto)
   ultimately show ?thesis unfolding s s' by auto
 qed
 
 lemma \<tau>mRedT_add_thread_inv:
   "\<lbrakk> \<tau>mredT^** s s'; thr s t = None \<rbrakk>
-  \<Longrightarrow> \<tau>mredT^** (locks s, ((thr s)(t \<mapsto> xln), shr s), wset s) (locks s', ((thr s')(t \<mapsto> xln), shr s'), wset s')"
+  \<Longrightarrow> \<tau>mredT^** (locks s, ((thr s)(t \<mapsto> xln), shr s), wset s, interrupts s) (locks s', ((thr s')(t \<mapsto> xln), shr s'), wset s', interrupts s')"
 apply(induct rule: rtranclp_induct)
 apply(blast dest: \<tau>mRedT_thread_preserved[where t=t] \<tau>mredT_add_thread_inv[where xln=xln] intro: rtranclp.rtrancl_into_rtrancl)+
 done
 
 lemma \<tau>mtRed_add_thread_inv:
   "\<lbrakk> \<tau>mredT^++ s s'; thr s t = None \<rbrakk>
-  \<Longrightarrow> \<tau>mredT^++ (locks s, ((thr s)(t \<mapsto> xln), shr s), wset s) (locks s', ((thr s')(t \<mapsto> xln), shr s'), wset s')"
+  \<Longrightarrow> \<tau>mredT^++ (locks s, ((thr s)(t \<mapsto> xln), shr s), wset s, interrupts s) (locks s', ((thr s')(t \<mapsto> xln), shr s'), wset s', interrupts s')"
 apply(induct rule: tranclp_induct)
 apply(blast dest: \<tau>mtRedT_thread_preserved[where t=t] \<tau>mredT_add_thread_inv[where xln=xln] intro: tranclp.trancl_into_trancl)+
 done
@@ -277,7 +279,7 @@ next
              \<Longrightarrow> \<exists>t x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wset s t = None \<and> \<tau>diverge t (x, shr s)`
   from `insert t A = dom (thr s)`
   obtain x ln where tst: "thr s t = \<lfloor>(x, ln)\<rfloor>" by(fastsimp simp add: dom_def)
-  def s' == "(locks s, ((thr s)(t := None), shr s), wset s)"
+  def s' == "(locks s, ((thr s)(t := None), shr s), wset s, interrupts s)"
   show ?case
   proof(cases "ln = no_wait_locks \<and> \<tau>diverge t (x, shr s) \<and> wset s t = None")
     case True
@@ -291,7 +293,7 @@ next
     moreover { 
       from xm'_def tst `mthr.\<tau>diverge s` False
       have "\<exists>s x. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> (ln \<noteq> no_wait_locks \<or> wset s t \<noteq> None \<or> \<not> \<tau>diverge t xm') \<and>
-                  s' = (locks s, ((thr s)(t := None), shr s), wset s) \<and> xm = (x, shr s) \<and> 
+                  s' = (locks s, ((thr s)(t := None), shr s), wset s, interrupts s) \<and> xm = (x, shr s) \<and> 
                   mthr.\<tau>diverge s \<and> silent_moves t xm' xm"
         unfolding s'_def xm_def by blast
       moreover
@@ -302,7 +304,7 @@ next
         case (\<tau>diverge s' xm)
         then obtain s x where tst: "thr s t = \<lfloor>(x, ln)\<rfloor>"
 	  and blocked: "ln \<noteq> no_wait_locks \<or> wset s t \<noteq> None \<or> \<not> \<tau>diverge t xm'"
-	  and s'_def: "s' = (locks s, ((thr s)(t := None), shr s), wset s)"
+	  and s'_def: "s' = (locks s, ((thr s)(t := None), shr s), wset s, interrupts s)"
 	  and xm_def: "xm = (x, shr s)"
 	  and xmxm': "silent_moves t xm' (x, shr s)"
 	  and "mthr.\<tau>diverge s" by blast
@@ -338,7 +340,7 @@ next
 	  hence "shr s = shr s''" using s'' by(auto)
 	  have "ln \<noteq> no_wait_locks \<or> wset s'' t \<noteq> None \<or> \<not> \<tau>diverge t xm'"
 	    using blocked s'' by(auto simp add: redT_updWs_def elim!: rtrancl3p_cases)
-	  moreover have "redT_upd_\<epsilon> s' t' x'' m'' = (locks s'', ((thr s'')(t := None), shr s''), wset s'')"
+	  moreover have "redT_upd_\<epsilon> s' t' x'' m'' = (locks s'', ((thr s'')(t := None), shr s''), wset s'', interrupts s'')"
 	    unfolding s'_def using tst s'' `t' \<noteq> t`
             by(auto intro: ext elim!: rtrancl3p_cases simp add: redT_updLns_def redT_updWs_def)
 	  ultimately show ?thesis using `mthr.\<tau>diverge s''` xmxm'
@@ -358,7 +360,7 @@ next
 	  moreover from `\<tau>move (x', shr s) \<epsilon> (x'', m'')` red
 	  have [simp]: "m'' = shr s" by(auto dest: \<tau>move_heap)
 	  hence "shr s = shr s''" using s'' by auto
-	  have "s' = (locks s'', ((thr s'')(t := None), shr s''), wset s'')"
+	  have "s' = (locks s'', ((thr s'')(t := None), shr s''), wset s'', interrupts s'')"
 	    using True s'' unfolding s'_def 
             by(auto intro: ext elim!: rtrancl3p_cases simp add: redT_updLns_def redT_updWs_def)
 	  moreover have "(x'', m'') = (x'', shr s'')" using s'' by auto

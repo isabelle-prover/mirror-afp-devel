@@ -8,7 +8,7 @@ header {*
 
 theory SemiType imports
   "WellForm" 
-  "../../Jinja/DFA/Semilattices"
+  "../DFA/Semilattices"
 begin
 
 inductive_set
@@ -36,9 +36,6 @@ where
 | widen1_Array_Array:
   "\<lbrakk> P \<turnstile> T <\<^sup>1 U; \<not> is_NT_Array T \<rbrakk> \<Longrightarrow> P \<turnstile> Array T <\<^sup>1 Array U"
 
-| widen1_NT_Object:
-  "is_NT_Array T \<Longrightarrow> P \<turnstile> Array T <\<^sup>1 Class Object"
-
 abbreviation widen1_trancl :: "'a prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ <\<^sup>+ _" [71,71,71] 70) where
   "P \<turnstile> T <\<^sup>+ U \<equiv> (T, U) \<in> trancl (widen1 P)"
 
@@ -64,25 +61,15 @@ by(auto elim: widen1.cases)
 lemma is_type_widen1: 
   assumes icO: "is_class P Object"
   shows "P \<turnstile> T <\<^sup>1 U \<Longrightarrow> is_type P T"
-apply(induct rule: widen1.induct)
-apply(auto intro: subcls_is_class NT_Array_is_type icO)
-done
-
+by(induct rule: widen1.induct)(auto intro: subcls_is_class icO split: ty.split dest: is_type_ground_type)
 
 lemma widen1_NT_Array:
   assumes NT: "is_NT_Array T"
-  shows "P \<turnstile> T\<lfloor>\<rceil> <\<^sup>1 U \<longleftrightarrow> U = Class Object"
-proof(rule iffI)
+  shows "\<not> P \<turnstile> T\<lfloor>\<rceil> <\<^sup>1 U"
+proof
   assume "P \<turnstile> T\<lfloor>\<rceil> <\<^sup>1 U"
-  moreover
-  { fix T'
-    have "\<lbrakk> P \<turnstile> T' <\<^sup>1 U; T' = T\<lfloor>\<rceil>; is_NT_Array T' \<rbrakk> \<Longrightarrow> U = Class Object"
-      by(induct arbitrary: T rule: widen1.induct, auto) }
-  ultimately show "U = Class Object" using NT by auto
-next
-  assume "U = Class Object"
-  with NT show "P \<turnstile> T\<lfloor>\<rceil> <\<^sup>1 U"
-    by(auto intro: widen1_NT_Object)
+  thus False using NT
+    by(induct "T\<lfloor>\<rceil>" U arbitrary: T rule: widen1.induct) auto
 qed
 
 lemma widen1_is_type:
@@ -96,7 +83,10 @@ proof(induct rule: widen1.induct)
   with CD have "is_class P D"
     by(auto intro: converse_subcls_is_class[OF wfP])
   thus ?case by simp
-qed(insert wfP, auto intro: NT_Array_is_type)
+next
+  case (widen1_Array_Array T U)
+  thus ?case by(cases U)(auto elim: widen1.cases)
+qed(insert wfP, auto)
 
 lemma widen1_trancl_is_type:
   assumes wfP: "wf_prog wfmd P"
@@ -181,7 +171,7 @@ qed
 
 fun wf_measure_widen1 :: "'a prog \<Rightarrow> ty \<Rightarrow> nat" where
   "wf_measure_widen1 P (Class C) = class_numbering P C"
-| "wf_measure_widen1 P (Array T) = length (the_Program P) + wf_measure_widen1 P T"
+| "wf_measure_widen1 P (Array T) = length (classes P) + wf_measure_widen1 P T"
 | "wf_measure_widen1 P T = 0"
 
 lemma wf_converse_widen1:
@@ -191,7 +181,7 @@ proof(rule wf_subset)
   show "wf (measure (wf_measure_widen1 P))"
     by auto
 next
-  from wfP have lengthP: "length (the_Program P) > 0"
+  from wfP have lengthP: "length (classes P) > 0"
     by(cases P)(auto simp add: wf_prog_def wf_syscls_def is_class_def)
   { fix x y
     have "P \<turnstile> x <\<^sup>1 y \<Longrightarrow> wf_measure_widen1 P y < wf_measure_widen1 P x"
@@ -217,8 +207,7 @@ where
 | "super P (Array Boolean) = Class Object"
 | "super P (Array Void) = Class Object"
 | "super P (Array (Class C)) = (if C = Object then Class Object else Array (super P (Class C)))"
-| "super P (Array NT) = Class Object"
-| "super P (Array (Array T)) = (if is_NT_Array T then Class Object else Array (super P (Array T)))"
+| "super P (Array (Array T)) = Array (super P (Array T))"
 | "super P (Class C) = Class (fst (the (class P C)))"
 
 lemma superI:
@@ -226,9 +215,6 @@ lemma superI:
 proof(induct rule: widen1.induct)
   case (widen1_Array_Array T U)
   thus ?case by(cases T, auto elim: widen1.cases)
-next
-  case (widen1_NT_Object T)
-  thus ?case by(cases T, auto)
 qed(auto dest: subcls1D)
 
 lemma super_widen1:
@@ -260,18 +246,17 @@ proof(induct T arbitrary: U)
   thus ?case by simp
 next
   case (Array T' U')
-  have "P \<turnstile> T'\<lfloor>\<rceil> <\<^sup>1 U' = (is_type P T' \<and> U' = super P (T'\<lfloor>\<rceil>))"
+  note IH = this
+  have "P \<turnstile> T'\<lfloor>\<rceil> <\<^sup>1 U' = (is_type P (T'\<lfloor>\<rceil>) \<and> U' = super P (T'\<lfloor>\<rceil>))"
   proof(rule iffI)
     assume wd: "P \<turnstile> T'\<lfloor>\<rceil> <\<^sup>1 U'"
-    hence "is_type P T'" using icO
-      by(auto dest: is_type_widen1)
+    with icO have "is_type P (T'\<lfloor>\<rceil>)" by(rule is_type_widen1)
     moreover from wd have "super P (T'\<lfloor>\<rceil>) = U'" by(rule superI)
-    ultimately show "is_type P T' \<and> U' = super P (T'\<lfloor>\<rceil>)" by simp
+    ultimately show "is_type P (T'\<lfloor>\<rceil>) \<and> U' = super P (T'\<lfloor>\<rceil>)" by simp
   next
-    assume "is_type P T' \<and> U' = super P (T'\<lfloor>\<rceil>)"
-    then obtain "is_type P T'"
-      and U': "U' = super P (T'\<lfloor>\<rceil>)" by blast
-    from U' show "P \<turnstile> T'\<lfloor>\<rceil> <\<^sup>1 U'"
+    assume "is_type P (T'\<lfloor>\<rceil>) \<and> U' = super P (T'\<lfloor>\<rceil>)"
+    then obtain "is_type P (T'\<lfloor>\<rceil>)" and U': "U' = super P (T'\<lfloor>\<rceil>)" ..
+    thus "P \<turnstile> T'\<lfloor>\<rceil> <\<^sup>1 U'"
     proof(cases T')
       case (Class D)
       show ?thesis
@@ -282,7 +267,7 @@ next
       next
 	case False
 	with Class U' obtain D' where "U' = (Class D')\<lfloor>\<rceil>" by auto
-	with U' Class False `is_type P T'` have "P \<turnstile> D \<prec>\<^sup>1 D'"
+	with U' Class False `is_type P (T'\<lfloor>\<rceil>)` have "P \<turnstile> D \<prec>\<^sup>1 D'"
 	  by(auto simp add: is_class_def intro: subcls1.intros)
 	hence "P \<turnstile> Class D <\<^sup>1 Class D'" by(rule widen1_Class)
 	with `U' = (Class D')\<lfloor>\<rceil>` Class show ?thesis
@@ -290,26 +275,16 @@ next
       qed
     next
       case (Array V)
-      show ?thesis
-      proof(cases "is_NT_Array V")
-	case True
-	with Array U' have "U' = Class Object" by(simp)
-	with True Array show ?thesis by(auto intro: widen1_NT_Object)
-      next
-	case False
-	with Array U' obtain V' where "U' = V'\<lfloor>\<rceil>" by(auto)
-	with Array `is_type P T'` U' False 
-	have "P \<turnstile> T' <\<^sup>1 V'"
-	  unfolding `\<And>U. P \<turnstile> T' <\<^sup>1 U = (is_type P T' \<and> (case T' of Class C \<Rightarrow> C \<noteq> Object \<and> U = super P T' | T\<lfloor>\<rceil> \<Rightarrow> U = super P T' | _ \<Rightarrow> False))`
-	  by(simp)
-	with `U' = V'\<lfloor>\<rceil>` False Array show ?thesis 
-	  by(auto intro: widen1_Array_Array)
-      qed
+      with `is_type P (T'\<lfloor>\<rceil>)` have NT: "\<not> is_NT_Array V" by(simp split: ty.split_asm)
+      with Array U' obtain V' where "U' = V'\<lfloor>\<rceil>" by(auto)
+      with Array `is_type P (T'\<lfloor>\<rceil>)` U' NT  
+      have "P \<turnstile> T' <\<^sup>1 V'" unfolding IH by(simp)
+      with `U' = V'\<lfloor>\<rceil>` NT Array show ?thesis 
+	by(auto intro: widen1_Array_Array)
     qed(auto intro: widen1.intros)
   qed    
   thus ?case by(simp)
 qed(simp_all)
-
 
 definition sup :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty err" where
   "sup P T U \<equiv>
@@ -387,44 +362,38 @@ by(rule rtrancl_into_trancl1)
 
 lemma Array_Object_widen1_trancl:
   assumes wf: "wf_prog wmdc P"
-  and itA: "is_type P A"
+  and itA: "is_type P (A\<lfloor>\<rceil>)"
   shows "(A\<lfloor>\<rceil>, Class Object) \<in> (widen1 P)\<^sup>+"
-proof(cases "is_NT_Array A")
-  case True thus ?thesis
-    by(auto intro: r_into_trancl widen1_NT_Object)
+using itA
+proof(induct A)
+  case (Class C)
+  from `is_type P (Class C\<lfloor>\<rceil>)`
+  have "is_class P C" by simp
+  hence "P \<turnstile> C \<preceq>\<^sup>* Object"
+    by(rule subcls_C_Object[OF _ wf])
+  hence "(Class C, Class Object) \<in> (widen1 P)\<^sup>*"
+    by(rule subcls_into_widen1_rtrancl)
+  hence "(Class C\<lfloor>\<rceil>, Class Object\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>*"
+    by(auto intro: widen1_rtrancl_into_Array_widen1_rtrancl)
+  with widen1_Array_Object[where P=P] is_class_Object[OF wf] 
+  show ?case by(blast intro: rtrancl_into_trancl1)
 next
-  case False
-  show ?thesis using itA False
-  proof(induct A)
-    case (Class C)
-    from `is_type P (Class C)`
-    have "is_class P C" by simp
-    hence "P \<turnstile> C \<preceq>\<^sup>* Object"
-      by(rule subcls_C_Object[OF _ wf])
-    hence "(Class C, Class Object) \<in> (widen1 P)\<^sup>*"
-      by(rule subcls_into_widen1_rtrancl)
-    hence "(Class C\<lfloor>\<rceil>, Class Object\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>*"
-      by(auto intro: widen1_rtrancl_into_Array_widen1_rtrancl)
-    with widen1_Array_Object[where P=P] is_class_Object[OF wf] 
-    show ?case by(blast intro: rtrancl_into_trancl1)
-  next
-    case (Array A)
-    note IH = `\<lbrakk> is_type P A; \<not> is_NT_Array A \<rbrakk> \<Longrightarrow> (A\<lfloor>\<rceil>, Class Object) \<in> (widen1 P)\<^sup>+`
-    from `is_type P (A\<lfloor>\<rceil>)` `\<not> is_NT_Array (A\<lfloor>\<rceil>)`
-    have "(A\<lfloor>\<rceil>, Class Object) \<in> (widen1 P)\<^sup>+"
-      by(auto intro: IH)
-    hence "(A\<lfloor>\<rceil>, Class Object) \<in> (widen1 P)\<^sup>*"
-      by(rule trancl_into_rtrancl)
-    hence "(A\<lfloor>\<rceil>\<lfloor>\<rceil>, Class Object\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>*" using `\<not> is_NT_Array (A\<lfloor>\<rceil>)`
-      by(rule widen1_rtrancl_into_Array_widen1_rtrancl)
-    with widen1_Array_Object[where P=P] is_class_Object[OF wf]
-    show ?case by (blast intro: rtrancl_into_trancl1)
-  qed(auto intro: widen1.intros)
-qed
+  case (Array A)
+  note IH = `is_type P (A\<lfloor>\<rceil>) \<Longrightarrow> (A\<lfloor>\<rceil>, Class Object) \<in> (widen1 P)\<^sup>+`
+  from `is_type P (A\<lfloor>\<rceil>\<lfloor>\<rceil>)` have "is_type P (A\<lfloor>\<rceil>)" by(rule is_type_ArrayD)
+  hence "(A\<lfloor>\<rceil>, Class Object) \<in> (widen1 P)\<^sup>+" by(rule IH)
+  hence "(A\<lfloor>\<rceil>, Class Object) \<in> (widen1 P)\<^sup>*"
+    by(rule trancl_into_rtrancl)
+  moreover from `is_type P (A\<lfloor>\<rceil>\<lfloor>\<rceil>)` have "\<not> is_NT_Array (A\<lfloor>\<rceil>)" by auto
+  ultimately have "(A\<lfloor>\<rceil>\<lfloor>\<rceil>, Class Object\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>*"
+    by(rule widen1_rtrancl_into_Array_widen1_rtrancl)
+  with widen1_Array_Object[where P=P] is_class_Object[OF wf]
+  show ?case by (blast intro: rtrancl_into_trancl1)
+qed(auto intro: widen1.intros)
 
 lemma widen_into_widen1_trancl:
   assumes wf: "wf_prog wfmd P"
-  shows "\<lbrakk> P \<turnstile> A \<le> B; A \<noteq> B; A \<noteq> NT \<rbrakk> \<Longrightarrow> (A, B) \<in> (widen1 P)^+"
+  shows "\<lbrakk> P \<turnstile> A \<le> B; A \<noteq> B; A \<noteq> NT; is_type P A \<rbrakk> \<Longrightarrow> (A, B) \<in> (widen1 P)^+"
 proof(induct rule: widen.induct)
   case (widen_subcls C D)
   from `Class C \<noteq> Class D` `P \<turnstile> C \<preceq>\<^sup>* D`
@@ -433,64 +402,86 @@ proof(induct rule: widen.induct)
   thus ?case
     by(rule subcls1_trancl_widen1_trancl)
 next
-  case (widen_array_object A)
-  thus ?case
-    by - (rule Array_Object_widen1_trancl[OF wf])
+  case widen_array_object thus ?case by(auto intro: Array_Object_widen1_trancl[OF wf])
 next
   case (widen_array_array A B)
   hence "(A, B) \<in> (widen1 P)\<^sup>+" by(cases A, auto)
-  with `\<not> is_NT_Array A` show "(A\<lfloor>\<rceil>, B\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>+"
-    by -(rule widen1_trancl_into_Array_widen1_trancl)
+  moreover from `is_type P (A\<lfloor>\<rceil>)` have "\<not> is_NT_Array A" by auto
+  ultimately show "(A\<lfloor>\<rceil>, B\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>+"
+    by(rule widen1_trancl_into_Array_widen1_trancl)
 qed(fastsimp)+
-
 
 lemma wf_prog_impl_acc_widen:
   assumes wfP: "wf_prog wfmd P"
-  shows "acc (widen P)"
+  shows "acc (types P) (widen P)"
 proof -
   from wf_converse_widen1[OF wfP]
-  have "wf (((widen1 P)^-1)^+)"
-    by(rule wf_trancl)
+  have "wf (((widen1 P)^-1)^+)" by(rule wf_trancl)
+
   hence wfw1t: "\<And>M T. T \<in> M \<Longrightarrow> (\<exists>z\<in>M. \<forall>y. (y, z) \<in> ((widen1 P)\<inverse>)\<^sup>+ \<longrightarrow> y \<notin> M)"
     by(auto simp only: wf_eq_minimal)
-  { fix M T
-    assume TM: "(T :: ty) \<in> M"
-    have "\<exists>z\<in>M. \<forall>y. (y, z) \<in> {(y, T). widen P T y \<and> T \<noteq> y} \<longrightarrow> y \<notin> M"
-    proof(cases "(\<exists>C. Class C \<in> M) \<or> (\<exists>U. U\<lfloor>\<rceil> \<in> M)")
-      case False
-      thus ?thesis
-	by -(rule bexI[OF _ TM], cases T, auto simp: NT_widen Class_widen2 dest: Array_widen)
-    next
+  have "wf {(y, x). is_type P x \<and> is_type P y \<and> widen P x y \<and> x \<noteq> y}"
+    unfolding wf_eq_minimal
+  proof(intro strip)
+    fix M and T :: ty
+    assume TM: "T \<in> M"
+    show "\<exists>z\<in>M. \<forall>y. (y, z) \<in> {(y, T). is_type P T \<and> is_type P y \<and> widen P T y \<and> T \<noteq> y} \<longrightarrow> y \<notin> M"
+    proof(cases "(\<exists>C. Class C \<in> M \<and> is_class P C) \<or> (\<exists>U. U\<lfloor>\<rceil> \<in> M \<and> is_type P (U\<lfloor>\<rceil>))")
       case True
-      have BNTthesis: "\<And>B. B \<in> M - {NT} \<Longrightarrow> ?thesis"
+      have BNTthesis: "\<And>B. \<lbrakk> B \<in> (M \<inter> types P) - {NT} \<rbrakk> \<Longrightarrow> ?thesis"
       proof -
 	fix B
-	assume BM: "B \<in> M - {NT}"
+	assume BM: "B \<in> M \<inter> types P - {NT}"
 	from wfw1t[OF BM] obtain z
 	  where zM: "z \<in> M"
 	  and znnt: "z \<noteq> NT"
-	  and y: "\<And>y. (y, z) \<in> ((widen1 P)\<inverse>)\<^sup>+ \<Longrightarrow> y \<notin> M - {NT}" by blast
+          and itz: "is_type P z"
+	  and y: "\<And>y. (y, z) \<in> ((widen1 P)\<inverse>)\<^sup>+ \<Longrightarrow> y \<notin> M \<inter> types P - {NT}" by blast
 	show "?thesis B"
 	proof(rule bexI[OF _ zM], rule allI, rule impI)
 	  fix y
-	  assume "(y, z) \<in> {(y, T). widen P T y \<and> T \<noteq> y}"
-	  hence Pzy: "P \<turnstile> z \<le> y" and zy: "z \<noteq> y" by auto
-	  hence "(z, y) \<in> (widen1 P)^+" using znnt
-	    by(rule widen_into_widen1_trancl[OF wfP])
-	  hence ynM: "y \<notin> M - {NT}"
+	  assume "(y, z) \<in> {(y, T). is_type P T \<and> is_type P y \<and> widen P T y \<and> T \<noteq> y}"
+	  hence Pzy: "P \<turnstile> z \<le> y" and zy: "z \<noteq> y" and "is_type P y" by auto
+	  hence "(z, y) \<in> (widen1 P)^+" using znnt itz
+	    by -(rule widen_into_widen1_trancl[OF wfP])
+	  hence ynM: "y \<notin> M \<inter> types P - {NT}"
 	    by -(rule y, simp add: trancl_converse)
-	  with Pzy znnt show "y \<notin> M" by(auto)
+          thus "y \<notin> M" using Pzy znnt `is_type P y` by auto
 	qed
       qed
-      from True show ?thesis
-	by -(erule disjE, (erule exE, rule BNTthesis, fastsimp)+)
-    qed }
-  hence "wf {(y, x). widen P x y \<and> x \<noteq> y}"
-    by(clarsimp simp only: wf_eq_minimal)
-  thus ?thesis
-    by(unfold Semilat.acc_def lesssub_def lesub_def)
-qed
+      from True show ?thesis by(fastsimp intro: BNTthesis)
+    next
+      case False
+      
+      hence not_is_class: "\<And>C. Class C \<in> M \<Longrightarrow> \<not> is_class P C"
+        and not_is_array: "\<And>U. U\<lfloor>\<rceil> \<in> M \<Longrightarrow> \<not> is_type P (U\<lfloor>\<rceil>)" by simp_all
 
+      show ?thesis
+      proof(cases "\<exists>C. Class C \<in> M")
+        case True
+        then obtain C where "Class C \<in> M" ..
+        with not_is_class[of C] show ?thesis
+          by(blast dest: rtranclpD subcls_is_class Class_widen)
+      next
+        case False
+        show ?thesis
+        proof(cases "\<exists>T. Array T \<in> M")
+          case True
+          then obtain U where U: "Array U \<in> M" ..
+          hence "\<not> is_type P (U\<lfloor>\<rceil>)" by(rule not_is_array)
+          thus ?thesis using U by(auto simp del: is_type.simps)
+        next
+          case False
+          with `\<not> (\<exists>C. Class C \<in> M)` TM
+          have "\<forall>y. P \<turnstile> T \<le> y \<and> T \<noteq> y \<longrightarrow> y \<notin> M"
+            by(cases T)(fastsimp simp add: NT_widen)+
+          thus ?thesis using TM by blast
+        qed
+      qed
+    qed
+  qed
+  thus ?thesis by(simp add: Semilat.acc_def lesssub_def lesub_def)
+qed
 
 lemmas wf_widen_acc = wf_prog_impl_acc_widen
 declare wf_widen_acc [intro, simp]
@@ -499,13 +490,12 @@ lemma acyclic_widen1:
   "wf_prog wfmc P \<Longrightarrow> acyclic (widen1 P)"
 by(auto dest: wf_converse_widen1 wf_acyclic simp add: acyclic_converse)
 
-
 lemma widen1_into_widen:
   assumes wf: "wf_prog wf_mb P"
   shows "(A, B) \<in> widen1 P \<Longrightarrow> P \<turnstile> A \<le> B"
 apply(induct rule: widen1.induct)
 apply(insert is_class_Object[OF wf])
-apply(auto intro: widen.intros NT_Array_is_type elim: widen1.cases)
+apply(auto intro: widen.intros elim: widen1.cases)
 done
 
 lemma widen1_rtrancl_into_widen:
@@ -516,7 +506,7 @@ apply(insert wf)
 by(auto dest!: widen1_into_widen elim: widen_trans)
 
 lemma widen_eq_widen1_trancl:
-  "\<lbrakk> wf_prog wf_md P; T \<noteq> NT; T \<noteq> U \<rbrakk> \<Longrightarrow> P \<turnstile> T \<le> U \<longleftrightarrow> P \<turnstile> T <\<^sup>+ U"
+  "\<lbrakk> wf_prog wf_md P; T \<noteq> NT; T \<noteq> U; is_type P T \<rbrakk> \<Longrightarrow> P \<turnstile> T \<le> U \<longleftrightarrow> P \<turnstile> T <\<^sup>+ U"
 apply(rule iffI)
  apply(rule widen_into_widen1_trancl, assumption+)
 apply(erule widen1_rtrancl_into_widen)
@@ -544,7 +534,7 @@ proof -
       proof(rule disjE)
 	assume A: "A = Class Object"
 	moreover
-	from BObject BNT
+	from BObject BNT itB
 	have "(B, Class Object) \<in> (widen1 P)\<^sup>*"
 	  by(cases "B = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wf])
 	hence "is_ub ((widen1 P)\<^sup>*) (Class Object) B (Class Object)"
@@ -558,7 +548,7 @@ proof -
       next
 	assume B: "B = Class Object"
 	moreover
-	from AObject ANT
+	from AObject ANT itA
 	have "(A, Class Object) \<in> (widen1 P)\<^sup>*"
 	  by(cases "A = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wf])
 	hence "is_ub ((widen1 P)\<^sup>*) (Class Object) A (Class Object)"
@@ -575,15 +565,14 @@ proof -
       case False
       hence AnObject: "A \<noteq> Class Object"
 	and BnObject: "B \<noteq> Class Object" by auto
-      from widen_into_widen1_trancl[OF wf AObject AnObject ANT]
+      from widen_into_widen1_trancl[OF wf AObject AnObject ANT itA]
       have "(A, Class Object) \<in> (widen1 P)\<^sup>*"
 	by(rule trancl_into_rtrancl)
-      moreover from widen_into_widen1_trancl[OF wf BObject BnObject BNT]
+      moreover from widen_into_widen1_trancl[OF wf BObject BnObject BNT itB]
       have "(B, Class Object) \<in> (widen1 P)\<^sup>*"
 	by(rule trancl_into_rtrancl)
       ultimately have "is_lub ((widen1 P)\<^sup>*) A B (exec_lub (widen1 P) (super P) A B)"
-	apply(rule is_lub_exec_lub[OF single_valued_widen1[OF wf] acyclic_widen1[OF wf]])
-	by(auto intro: superI)
+	by(rule is_lub_exec_lub[OF single_valued_widen1[OF wf] acyclic_widen1[OF wf]])(auto intro: superI)
       hence Aew1: "(A, exec_lub (widen1 P) (super P) A B) \<in> (widen1 P)\<^sup>*"
 	by(auto simp add: is_lub_def dest!: is_ubD)
       thus ?thesis
@@ -600,7 +589,7 @@ proof -
     by(cases "A = B")(auto split: split_if_asm simp add: mem_def exec_lub_refl)
 qed
 
-lemma closed_err_types: -- "Replace in SemiType"
+lemma closed_err_types:
   assumes wfP: "wf_prog wf_mb P"
   shows "closed (err (types P)) (lift2 (sup P))"
 proof -
@@ -616,7 +605,7 @@ proof -
 qed
 
 lemma widen_into_widen1_rtrancl:
-  "\<lbrakk>wf_prog wfmd P; widen P A B; A \<noteq> NT\<rbrakk> \<Longrightarrow> (A, B) \<in> (widen1 P)\<^sup>*"
+  "\<lbrakk>wf_prog wfmd P; widen P A B; A \<noteq> NT; is_type P A \<rbrakk> \<Longrightarrow> (A, B) \<in> (widen1 P)\<^sup>*"
 apply(cases "A = B", auto intro: trancl_into_rtrancl widen_into_widen1_trancl)
 done
 
@@ -638,7 +627,8 @@ proof -
       and t2NT: "t2 \<noteq> NT"
     with it1 it2 wfP have "P \<turnstile> t1 \<le> Class Object" "P \<turnstile> t2 \<le> Class Object"
       by(auto intro: is_refType_widen_Object)
-    with t1NT t2NT have "(t1, Class Object) \<in> (widen1 P)^*" "(t2, Class Object) \<in> (widen1 P)^*"
+    with t1NT t2NT it1 it2
+    have "(t1, Class Object) \<in> (widen1 P)^*" "(t2, Class Object) \<in> (widen1 P)^*"
       by(auto intro: widen_into_widen1_rtrancl[OF wfP])
     with single_valued_widen1[OF wfP]
     obtain u where
@@ -674,7 +664,8 @@ proof -
       and W: "exec_lub (widen1 P) (super P) T U = W"
     from itU itT rT rU UNT TNT have "P \<turnstile> T \<le> Class Object" "P \<turnstile> U \<le> Class Object"
       by(auto intro:is_refType_widen_Object[OF wfP])
-    with UNT TNT have "(T, Class Object) \<in> (widen1 P)^*" "(U, Class Object) \<in> (widen1 P)^*"
+    with UNT TNT itT itU
+    have "(T, Class Object) \<in> (widen1 P)^*" "(U, Class Object) \<in> (widen1 P)^*"
       by(auto intro: widen_into_widen1_rtrancl[OF wfP])
     with single_valued_widen1[OF wfP]
     obtain X where
@@ -684,7 +675,7 @@ proof -
     have "exec_lub (widen1 P) (super P) T U = X"
       by (blast intro: superI exec_lub_conv)
     moreover
-    from TwV TNT UwV UNT have "(T, V) \<in> (widen1 P)^*" "(U, V) \<in> (widen1 P)^*"
+    from TwV TNT UwV UNT itT itU have "(T, V) \<in> (widen1 P)^*" "(U, V) \<in> (widen1 P)^*"
       by(auto intro: widen_into_widen1_rtrancl[OF wfP])
     with lub have "(X, V) \<in> (widen1 P)^*" 
       by (clarsimp simp add: is_lub_def is_ub_def)

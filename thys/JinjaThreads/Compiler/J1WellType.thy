@@ -14,12 +14,12 @@ declare Listn.lesub_list_impl_same_size[simp del] listE_length [simp del]
 
 subsection "Well-Typedness"
 
-types 
+type_synonym
   env1  = "ty list"   --"type environment indexed by variable number"
 
-inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> ty \<Rightarrow> bool" ("_,_ \<turnstile>1 _ :: _"   [51,0,0,51] 50)
-  and WTs1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile>1 _ [::] _"   [51,0,0,51]50)
-  for P :: J1_prog
+inductive WT1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 \<Rightarrow> ty \<Rightarrow> bool" ("_,_ \<turnstile>1 _ :: _"   [51,0,0,51] 50)
+  and WTs1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile>1 _ [::] _"   [51,0,0,51]50)
+  for P :: "'addr J1_prog"
   where
 
   WT1New:
@@ -27,7 +27,7 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
   P,E \<turnstile>1 new C :: Class C"
 
 | WT1NewArray:
-  "\<lbrakk> P,E \<turnstile>1 e :: Integer; is_type P T \<rbrakk> \<Longrightarrow>
+  "\<lbrakk> P,E \<turnstile>1 e :: Integer; is_type P (T\<lfloor>\<rceil>) \<rbrakk> \<Longrightarrow>
   P,E \<turnstile>1 newA T\<lfloor>e\<rceil> :: T\<lfloor>\<rceil>"
 
 | WT1Cast:
@@ -35,7 +35,7 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
   \<Longrightarrow> P,E \<turnstile>1 Cast U e :: U"
 
 | WT1InstanceOf:
-  "\<lbrakk> P,E \<turnstile>1 e :: T; P \<turnstile> U \<le> T \<or> P \<turnstile> T \<le> U; is_type P U; is_refT T; is_refT U \<rbrakk>
+  "\<lbrakk> P,E \<turnstile>1 e :: T; P \<turnstile> U \<le> T \<or> P \<turnstile> T \<le> U; is_type P U; is_refT U \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e instanceof U :: Boolean"
 
 | WT1Val:
@@ -66,15 +66,15 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
   "P,E \<turnstile>1 a :: T\<lfloor>\<rceil> \<Longrightarrow> P,E \<turnstile>1 a\<bullet>length :: Integer"
 
 | WTFAcc1:
-  "\<lbrakk> P,E \<turnstile>1 e :: Class C;  P \<turnstile> C sees F:T (fm) in D \<rbrakk>
+  "\<lbrakk> P,E \<turnstile>1 e :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e\<bullet>F{D} :: T"
 
 | WTFAss1:
-  "\<lbrakk> P,E \<turnstile>1 e1 :: Class C;  P \<turnstile> C sees F:T (fm) in D;  P,E \<turnstile>1 e2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
+  "\<lbrakk> P,E \<turnstile>1 e1 :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D;  P,E \<turnstile>1 e2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e1\<bullet>F{D} := e2 :: Void"
 
 | WT1Call:
-  "\<lbrakk> P,E \<turnstile>1 e :: Class C; \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts \<rightarrow> T = m in D;
+  "\<lbrakk> P,E \<turnstile>1 e :: U; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M:Ts \<rightarrow> T = m in D;
      P,E \<turnstile>1 es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e\<bullet>M(es) :: T"
 
@@ -190,13 +190,14 @@ apply blast
 apply blast
 apply blast
 apply (blast dest:sees_field_idemp sees_field_fun)
-apply blast
+apply (blast dest: sees_field_fun)
 
 apply(erule WT1_WTs1_cases)
+ apply(simp add: is_class_type_of_conv_class_type_of_Some)
  apply (blast dest:sees_method_idemp sees_method_fun)
-apply(fastsimp dest: external_WT_is_external_call list_all2_lengthD WTs1_same_size)
+apply(fastsimp dest: external_WT_is_native list_all2_lengthD WTs1_same_size)
 
-apply(fastsimp dest: external_WT_is_external_call list_all2_lengthD WTs1_same_size external_WT_determ)
+apply(fastsimp dest: external_WT_is_native list_all2_lengthD WTs1_same_size external_WT_determ)
 apply blast
 apply blast
 apply blast
@@ -220,13 +221,13 @@ apply (simp add:typeof_lit_is_type)
 apply (fastsimp intro:nth_mem)
 apply(simp add: WT_binop_is_type)
 apply(simp)
-apply(simp)
+apply(simp del: is_type_array add: is_type_ArrayD)
 apply(simp)
 apply(simp)
 apply (simp add:sees_field_is_type[OF _ wf])
 apply simp
 apply(fastsimp dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
-apply(fastsimp dest: WT_external_is_type[OF wf])
+apply(fastsimp dest: external_WT_is_type[OF wf])
 apply(simp)
 apply(simp add: is_class_Object[OF wf])
 apply simp

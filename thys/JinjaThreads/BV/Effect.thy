@@ -8,23 +8,19 @@ theory Effect
 imports JVM_SemiType "../JVM/JVMExceptions"
 begin
 
--- FIXME
-locale prog =
-  fixes P :: "'a prog"
-
 locale jvm_method = prog +
   fixes mxs :: nat  
   fixes mxl\<^isub>0 :: nat   
   fixes Ts :: "ty list" 
   fixes T\<^isub>r :: ty
-  fixes "is" :: "instr list" 
+  fixes "is" :: "'addr instr list" 
   fixes xt :: ex_table
 
   fixes mxl :: nat
   defines mxl_def: "mxl \<equiv> 1+size Ts+mxl\<^isub>0"
 
 text {* Program counter of successor instructions: *}
-primrec succs :: "instr \<Rightarrow> ty\<^isub>i \<Rightarrow> pc \<Rightarrow> pc list"
+primrec succs :: "'addr instr \<Rightarrow> ty\<^isub>i \<Rightarrow> pc \<Rightarrow> pc list"
 where
   "succs (Load idx) \<tau> pc     = [pc+1]"
 | "succs (Store idx) \<tau> pc    = [pc+1]"
@@ -57,7 +53,7 @@ where
 
 text "Effect of instruction on the state type:"
 
-fun eff\<^isub>i :: "instr \<times> 'm prog \<times> ty\<^isub>i \<Rightarrow> ty\<^isub>i"
+fun eff\<^isub>i :: "'addr instr \<times> 'm prog \<times> ty\<^isub>i \<Rightarrow> ty\<^isub>i"
 where
   eff\<^isub>i_Load:
   "eff\<^isub>i (Load n,  P, (ST, LT))          = (ok_val (LT ! n) # ST, LT)"
@@ -113,11 +109,9 @@ where
 | eff\<^isub>i_Invoke:
   "eff\<^isub>i (Invoke M n, P, (ST,LT))          =
   (let T = ST ! n;
-       C = the_Class T;
-       Ts = rev(take n ST);
-       U = if is_external_call P T M 
-           then (THE U. \<exists>Ts'. P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T\<bullet>M(Ts') :: U) 
-           else fst (snd (snd (method P C M)))
+       U = if is_native P T M 
+           then snd (snd (native_method P T M))
+           else fst (snd (snd (method P (the (class_type_of T)) M)))
    in (U # drop (n+1) ST, LT))"
 
 | eff\<^isub>i_Goto:
@@ -130,7 +124,7 @@ where
   "eff\<^isub>i (MExit, P, (T1#ST,LT))            = (ST,LT)"
 
 
-fun is_relevant_class :: "instr \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> bool" 
+fun is_relevant_class :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> bool" 
 where
   rel_Getfield:
   "is_relevant_class (Getfield F D) = (\<lambda>P C. P \<turnstile> NullPointer \<preceq>\<^sup>* C)" 
@@ -156,28 +150,30 @@ where
   "is_relevant_class MEnter         = (\<lambda>P C. P \<turnstile> IllegalMonitorState \<preceq>\<^sup>* C \<or> P \<turnstile> NullPointer \<preceq>\<^sup>* C)"
 | rel_MExit:
   "is_relevant_class MExit          = (\<lambda>P C. P \<turnstile> IllegalMonitorState \<preceq>\<^sup>* C \<or> P \<turnstile> NullPointer \<preceq>\<^sup>* C)"
+| rel_BinOp:
+  "is_relevant_class (BinOpInstr bop) = binop_relevant_class bop"
 | rel_default:
   "is_relevant_class i              = (\<lambda>P C. False)"
 
-definition is_relevant_entry :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool" 
+definition is_relevant_entry :: "'m prog \<Rightarrow> 'addr instr \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool" 
 where
   "is_relevant_entry P i pc e \<equiv> 
    let (f,t,C,h,d) = e 
    in (case C of None \<Rightarrow> True | \<lfloor>C'\<rfloor> \<Rightarrow> is_relevant_class i P C') \<and> pc \<in> {f..<t}"
 
-definition relevant_entries :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ex_table" 
+definition relevant_entries :: "'m prog \<Rightarrow> 'addr instr \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ex_table" 
 where
   "relevant_entries P i pc \<equiv> filter (is_relevant_entry P i pc)"
 
-definition xcpt_eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ty\<^isub>i \<Rightarrow> ex_table \<Rightarrow> (pc \<times> ty\<^isub>i') list"
+definition xcpt_eff :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ty\<^isub>i \<Rightarrow> ex_table \<Rightarrow> (pc \<times> ty\<^isub>i') list"
 where
   "xcpt_eff i P pc \<tau> et \<equiv> let (ST,LT) = \<tau> in 
   map (\<lambda>(f,t,C,h,d). (h, Some ((case C of None \<Rightarrow> Class Throwable | Some C' \<Rightarrow> Class C')#drop (size ST - d) ST, LT))) (relevant_entries P i pc et)"
 
-definition norm_eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>i \<Rightarrow> (pc \<times> ty\<^isub>i') list"
+definition norm_eff :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>i \<Rightarrow> (pc \<times> ty\<^isub>i') list"
 where "norm_eff i P pc \<tau> \<equiv> map (\<lambda>pc'. (pc',Some (eff\<^isub>i (i,P,\<tau>)))) (succs i \<tau> pc)"
 
-definition eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' \<Rightarrow> (pc \<times> ty\<^isub>i') list"
+definition eff :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' \<Rightarrow> (pc \<times> ty\<^isub>i') list"
 where
   "eff i P pc et t \<equiv>
   case t of           
@@ -197,7 +193,7 @@ by (simp add: eff_def)
 
 text "Conditions under which eff is applicable:"
 
-fun app\<^isub>i :: "instr \<times> 'm prog \<times> pc \<times> nat \<times> ty \<times> ty\<^isub>i \<Rightarrow> bool"
+fun app\<^isub>i :: "'addr instr \<times> 'm prog \<times> pc \<times> nat \<times> ty \<times> ty\<^isub>i \<Rightarrow> bool"
 where
   app\<^isub>i_Load:
   "app\<^isub>i (Load n, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
@@ -219,7 +215,7 @@ where
     (is_class P C \<and> length ST < mxs)"
 | app\<^isub>i_NewArray:
   "app\<^isub>i (NewArray Ty, P, pc, mxs, T\<^isub>r, (Integer#ST,LT)) = 
-    is_type P Ty"
+    is_type P (Ty\<lfloor>\<rceil>)"
 |  app\<^isub>i_ALoad:
   "app\<^isub>i (ALoad, P, pc, mxs, T\<^isub>r, (T1#T2#ST,LT)) = 
     (T1 = Integer \<and> (T2 \<noteq> NT \<longrightarrow> (\<exists>Ty. T2 = Ty\<lfloor>\<rceil>)))"
@@ -231,7 +227,7 @@ where
     (T1 = NT \<or> (\<exists>Ty. T1 = Ty\<lfloor>\<rceil>))"
 | app\<^isub>i_Checkcast:
   "app\<^isub>i (Checkcast Ty, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
-    (is_type P Ty (* \<and> is_refT T *) )"
+    (is_type P Ty)"
 | app\<^isub>i_Instanceof:
   "app\<^isub>i (Instanceof Ty, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
     (is_type P Ty \<and> is_refT T)"
@@ -259,8 +255,8 @@ where
   "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
     (n < length ST \<and> 
     (ST!n \<noteq> NT \<longrightarrow>
-      (if is_external_call P (ST ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M(Ts) :: U
-       else \<exists>C D Ts T m. ST!n = Class C \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and> P \<turnstile> rev (take n ST) [\<le>] Ts)))"
+      (if is_native P (ST ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M(Ts) :: U
+       else \<exists>C D Ts T m. class_type_of (ST ! n) = \<lfloor>C\<rfloor> \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and> P \<turnstile> rev (take n ST) [\<le>] Ts)))"
 | app\<^isub>i_MEnter:
   "app\<^isub>i (MEnter,P, pc,mxs,T\<^isub>r,(T#ST,LT)) = (is_refT T)"
 | app\<^isub>i_MExit:
@@ -269,11 +265,11 @@ where
   "app\<^isub>i (i,P, pc,mxs,T\<^isub>r,s) = False"
 
 
-definition xcpt_app :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i \<Rightarrow> bool"
+definition xcpt_app :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i \<Rightarrow> bool"
 where
   "xcpt_app i P pc mxs xt \<tau> \<equiv> \<forall>(f,t,C,h,d) \<in> set (relevant_entries P i pc xt). (case C of None \<Rightarrow> True | Some C' \<Rightarrow> is_class P C') \<and> d \<le> size (fst \<tau>) \<and> d < mxs"
 
-definition app :: "instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' \<Rightarrow> bool"
+definition app :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' \<Rightarrow> bool"
 where
   "app i P mxs T\<^isub>r pc mpc xt t \<equiv> case t of None \<Rightarrow> True | Some \<tau> \<Rightarrow> 
   app\<^isub>i (i,P,pc,mxs,T\<^isub>r,\<tau>) \<and> xcpt_app i P pc mxs xt \<tau> \<and> 
@@ -405,7 +401,7 @@ lemma appNew[simp]:
 
 lemma appNewArray[simp]:
   "app\<^isub>i (NewArray Ty,P,pc,mxs,T\<^isub>r,s) = 
-  (\<exists>ST LT. s=(Integer#ST,LT) \<and> is_type P Ty)"
+  (\<exists>ST LT. s=(Integer#ST,LT) \<and> is_type P (Ty\<lfloor>\<rceil>))"
   by (cases s, simp, cases "fst s", simp)(cases "hd (fst s)", auto)
 
 lemma appALoad[simp]:
@@ -451,7 +447,7 @@ lemma appALength[simp]:
 
 lemma appCheckcast[simp]: 
   "app\<^isub>i (Checkcast Ty,P,pc,mxs,T\<^isub>r,s) =  
-  (\<exists>T ST LT. s = (T#ST,LT) \<and> is_type P Ty (* \<and> is_refT T *))"
+  (\<exists>T ST LT. s = (T#ST,LT) \<and> is_type P Ty)"
   by (cases s, cases "fst s", simp add: app_def) (cases "hd (fst s)", auto)
 
 lemma appInstanceof[simp]: 
@@ -545,26 +541,10 @@ lemma eff\<^isub>i_BinOpInstr_code:
   "eff\<^isub>i (BinOpInstr bop, P, (T2#T1#ST,LT)) = (Predicate.the (WTrt_binop_i_i_i_i_o P T1 bop T2) # ST, LT)"
 by(simp add: the_WTrt_binop_code)
 
-lemma eff\<^isub>i_Invoke_code:
-  "eff\<^isub>i (Invoke M n, P, (ST,LT)) =
-  (let T = ST ! n;
-       C = the_Class T;
-       Ts = rev(take n ST);
-       U = if is_external_call P T M 
-           then Predicate.the (Predicate.bind (external_WT_i_i_i_o_o P T M)
-                                              (\<lambda>(Ts', U). if P \<turnstile> Ts [\<le>] Ts' then Predicate.single U else bot))
-           else fst (snd (snd (method P C M)))
-   in (U # drop (n+1) ST, LT))"
-apply (clarsimp simp add: Predicate.the_def Predicate.bind_def Predicate.single_def SUPR_def Sup_fun_def Sup_bool_def eval_external_WT_i_i_i_o_o_conv)
-apply (rule arg_cong[where f=The])
-apply (rule ext)
-apply blast
-done
-
 lemmas eff\<^isub>i_code[code] =
   eff\<^isub>i_Load eff\<^isub>i_Store eff\<^isub>i_Push eff\<^isub>i_Getfield eff\<^isub>i_Putfield eff\<^isub>i_New eff\<^isub>i_NewArray eff\<^isub>i_ALoad
   eff\<^isub>i_AStore eff\<^isub>i_ALength eff\<^isub>i_Checkcast eff\<^isub>i_Instanceof eff\<^isub>i_Pop eff\<^isub>i_Dup eff\<^isub>i_Swap eff\<^isub>i_BinOpInstr_code
-  eff\<^isub>i_IfFalse eff\<^isub>i_Invoke_code eff\<^isub>i_Goto eff\<^isub>i_MEnter eff\<^isub>i_MExit
+  eff\<^isub>i_IfFalse eff\<^isub>i_Invoke eff\<^isub>i_Goto eff\<^isub>i_MEnter eff\<^isub>i_MExit
 
 lemma app\<^isub>i_Getfield_code:
   "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) \<longleftrightarrow>
@@ -601,10 +581,10 @@ lemma app\<^isub>i_Invoke_code:
   "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
   (n < length ST \<and> 
   (ST!n \<noteq> NT \<longrightarrow>
-    (if is_external_call P (ST ! n) M 
+    (if is_native P (ST ! n) M 
      then Predicate.holds (Predicate.bind (external_WT_i_i_i_o_o P (ST ! n) M) 
                                           (\<lambda>(Ts, U). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
-     else (case ST ! n of Class C \<Rightarrow> 
+     else (case class_type_of (ST ! n) of Some C \<Rightarrow> 
                Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P C M) 
                                                (\<lambda>(Ts, _). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
                               | _ \<Rightarrow> False))))"

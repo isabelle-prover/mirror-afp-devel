@@ -140,7 +140,7 @@ lemma [simp]: "subcls1(compP f P) = subcls1 P"
 by(fastsimp simp add: is_class_def compC_def intro:subcls1I order_antisym dest:subcls1D)
 
 lemma [simp]: "is_type (compP f P) T = is_type P T"
-by(induct T, auto)
+by(induct T)(auto cong: ty.case_cong)
 
 lemma is_type_compP [simp]: "is_type (compP f P) = is_type P"
 by(auto simp add: mem_def)
@@ -209,7 +209,7 @@ lemma [simp]: "field (compP f P) F D = field P F D"
 
 section{*Invariance of @{term wf_prog} under compilation *}
 
-lemma [iff]: "distinct_fst (the_Program (compP f P)) = distinct_fst (the_Program P)"
+lemma [iff]: "distinct_fst (classes (compP f P)) = distinct_fst (classes P)"
 (*<*)
 apply(cases P)
 apply(simp add:distinct_fst_def compP_def compC_def)
@@ -229,7 +229,7 @@ done
 
 
 lemma [iff]: "wf_syscls (compP f P) = wf_syscls P"
-by(auto simp add:wf_syscls_def)
+unfolding wf_syscls_def by auto
 
 lemma [iff]: "wf_fdecl (compP f P) = wf_fdecl P"
 (*<*)by(simp add:wf_fdecl_def)(*>*)
@@ -244,8 +244,11 @@ lemma compP_has_method: "compP f P \<turnstile> C has M \<longleftrightarrow> P 
 unfolding has_method_def
 by(fastsimp dest: sees_method_compPD intro: sees_method_compP)
 
-lemma is_external_call_compP [simp]: "is_external_call (compP f P) = is_external_call P"
-by(auto simp add: fun_eq_iff is_external_call_def compP_has_method split: ty.splits)
+lemma native_call_compP [simp]: "native_call (compP f P) = native_call P"
+by(rule ext)+(fastsimp simp add: native_call_def intro: sees_method_compP[where f=f] dest: sees_method_compPD[where f=f])
+
+lemma is_native_compP [simp]: "is_native (compP f P) = is_native P"
+by(auto simp add: fun_eq_iff is_native_def2)
 
 lemma external_WT_compP [simp]:
   "compP f P \<turnstile> T\<bullet>M(vs) :: U \<longleftrightarrow> P \<turnstile> T\<bullet>M(vs) :: U"
@@ -257,6 +260,9 @@ by(auto simp add: fun_eq_iff)
 lemma \<tau>external_compP [simp]:
   "\<tau>external (compP f P) = \<tau>external P"
 by(auto intro!: ext simp add: \<tau>external_def)
+
+lemma native_method_compP: "native_method (compP f P) = native_method P"
+by(auto intro!: ext simp add: native_method_def)
 
 context heap_base begin
 
@@ -274,8 +280,12 @@ by(simp add: \<tau>external'_def_raw)
 
 end
 
-lemma wf_extCall_compP [simp]: "wf_extCall (compP f P) C M = wf_extCall P C M"
-unfolding wf_extCall_def_raw by auto
+lemma wf_native_compP [simp]: "wf_native (compP f P) C (compM (f C) m) = wf_native P C m"
+by(cases m)(auto simp add: compM_def)
+
+lemma wf_overriding_compP [simp]: "wf_overriding (compP f P) D (compM (f C) m) = wf_overriding P D m"
+by(cases m)(fastsimp intro: sees_method_compP[where f=f] dest: sees_method_compPD[where f=f] simp add: compM_def)
+
 
 lemma wf_cdecl_compPI:
   assumes wf1_imp_wf2: 
@@ -299,15 +309,19 @@ proof -
   { fix m
     assume mset': "m \<in> set ms'"
     then obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m, auto)
-    with mset' ms' obtain body where mf: "m = (M, Ts', T', f C M Ts' T' body)"
-      and mset: "(M, Ts', T', body) \<in> set ms"
+    with ms' obtain body where mf: "body' = f C M Ts' T' body"
+      and mset: "(M, Ts', T', body) \<in> set ms" using mset'
       by(clarsimp simp add: image_iff compM_def)
     moreover from mset xsrc wfcP1 have "wf_mdecl wf\<^isub>1 P C (M,Ts',T',body)"
       by(fastsimp simp add: wf_cdecl_def)
     moreover from wf xsrc mset x have "P \<turnstile> C sees M:Ts'\<rightarrow>T' = body in C"
       by(auto intro: mdecl_visible)
-    ultimately have "wf_mdecl wf\<^isub>2 (compP f P) C m"
-      by(auto intro: wf1_imp_wf2) }
+    ultimately have "wf_mdecl wf\<^isub>2 (compP f P) C m" using m
+      by(auto intro: wf1_imp_wf2)
+    moreover from mset xsrc wfcP1 have "wf_native P C (M, Ts', T', body)"
+      by(fastsimp simp add: wf_cdecl_def)
+    hence "wf_native (compP f P) C m" using m by simp
+    moreover note calculation }
   moreover from wf1 have "distinct_fst ms" by(simp add: wf_cdecl_def)
   with ms' have "distinct_fst ms'" by(auto)
   moreover
@@ -315,42 +329,23 @@ proof -
     with xsrc wfcP1
     have part1: "is_class (compP f P) D" "\<not> compP f P \<turnstile> D \<preceq>\<^sup>* C"
       by(auto simp add: wf_cdecl_def)
-    { fix m'
-      assume mset': "m' \<in> set ms'"
-      then obtain M Ts T body' where m: "m' = (M, Ts, T, body')" by(cases m', auto)
-      with mset' ms' obtain body where mf: "m' = (M, Ts, T, f C M Ts T body)"
+    { fix m
+      assume mset': "m \<in> set ms'"
+      obtain M Ts T body' where m: "m = (M, Ts, T, body')" by(cases m)
+      with mset' ms' obtain body where mf: "body' = f C M Ts T body"
 	and mset: "(M, Ts, T, body) \<in> set ms"
 	by(clarsimp simp add: image_iff compM_def)
-      from wf1 CObj
-      have wfms: "\<forall>x\<in>set ms. (\<lambda>(M, Ts, T, m). wf_extCall P C M Ts T \<and> (\<forall>D' Ts' T'. (\<exists>m'. P \<turnstile> D sees M: Ts'\<rightarrow>T' = m' in D') \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T')) x"
-	by(clarsimp simp add: wf_cdecl_def)
-      hence "wf_extCall P C M Ts T" using m mset by auto
-      hence "wf_extCall (compP f P) C M Ts T" by(simp)
-      moreover {
-	fix D' Ts' T' body''
-	assume "compP f P \<turnstile> D sees M: Ts'\<rightarrow>T' = body'' in D'"
-	then obtain body''' where "P \<turnstile> D sees M: Ts'\<rightarrow>T' = body''' in D'"
-	  by(auto dest: sees_method_compPD)
-	with wfms have "compP f P \<turnstile> Ts' [\<le>] Ts" "compP f P \<turnstile> T \<le> T'" using mset
-	  by(fastsimp)+ }
-      ultimately have "wf_extCall (compP f P) C (fst m') (fst (snd m')) (fst (snd (snd m'))) \<and> 
-                    (\<forall>D' Ts' T' body'. compP f P \<turnstile> D sees fst m': Ts'\<rightarrow>T' = body' in D' \<longrightarrow>
-                                       compP f P \<turnstile> Ts' [\<le>] fst (snd m') \<and>
-                                       compP f P \<turnstile> fst (snd (snd m')) \<le> T')"
-	using m by(clarsimp) }
+      from wf1 CObj mset
+      have "wf_overriding P D (M, Ts, T, body)" by(auto simp add: wf_cdecl_def simp del: wf_overriding.simps)
+      hence "wf_overriding (compP f P) D m" unfolding m mf
+        by(subst (asm) wf_overriding_compP[symmetric, where f=f and C=C])(simp del: wf_overriding.simps wf_overriding_compP add: compM_def) }
     note this part1 }
   moreover
-  { assume CObj: "C = Object"
-    with wf1 ms' have "fs = []" "ms' = []"
-      by(auto simp add: wf_cdecl_def) }
-  moreover
   { assume "C = Thread"
-    with wf1 ms' have "\<exists>m. (run, [], Void, m) \<in> set ms'" "(interrupted_flag, Boolean, \<lparr>volatile=True\<rparr>) \<in> set fs"
+    with wf1 ms' have "\<exists>m. (run, [], Void, m) \<in> set ms'"
       by(fastsimp simp add: wf_cdecl_def image_iff compM_def)+ }
-  ultimately show ?thesis unfolding x wf_cdecl_def split_beta fst_conv snd_conv Ball_def
-    by(blast)
+  ultimately show ?thesis unfolding x wf_cdecl_def by blast
 qed
-
 
 lemma wf_prog_compPI:
 assumes lift: 
@@ -385,52 +380,35 @@ proof -
   moreover
   { fix m
     assume mset': "m \<in> set ms'"
-    then obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m, auto)
-    with mset' have mset: "(M, Ts', T', f C M Ts' T' body') \<in> set (map (compM (f C)) ms')"
+    then obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m)
+    hence mset: "(M, Ts', T', f C M Ts' T' body') \<in> set (map (compM (f C)) ms')" using mset'
       by(auto simp add: image_iff compM_def intro: rev_bexI)
     moreover from wf xsrc mset x have "compP f P \<turnstile> C sees M:Ts'\<rightarrow>T' = f C M Ts' T' body' in C"
       by(auto intro: mdecl_visible)
-    moreover from mset xsrc wfcP1 have "wf_mdecl wf\<^isub>1 (compP f P) C (M,Ts',T',f C M Ts' T' body')"
+    moreover from mset wfcP1[rule_format, OF xsrc]
+    have "wf_mdecl wf\<^isub>1 (compP f P) C (M,Ts',T',f C M Ts' T' body')"
       by(auto simp add: wf_cdecl_def)
-    ultimately have "wf_mdecl wf\<^isub>2 P C m" unfolding m by(auto intro: wf1_imp_wf2) }
+    ultimately have "wf_mdecl wf\<^isub>2 P C m" using m by(auto intro: wf1_imp_wf2)
+    moreover from mset wfcP1[rule_format, OF xsrc] have "wf_native P C m" unfolding m
+      by(auto simp add: wf_cdecl_def compM_def)
+    moreover note calculation }
   moreover from wf1 have "distinct_fst ms'" by(simp add: wf_cdecl_def)
   moreover
   { assume CObj: "C \<noteq> Object"
     with xsrc wfcP1
     have part1: "is_class P D" "\<not> P \<turnstile> D \<preceq>\<^sup>* C"
       by(auto simp add: wf_cdecl_def)
-    { fix m'
-      assume mset': "m' \<in> set ms'"
-      then obtain M Ts T body' where m: "m' = (M, Ts, T, body')" by(cases m', auto)
-      with mset' have mset: "(M, Ts, T, f C M Ts T body') \<in> set (map (compM (f C)) ms')"
-	by(auto simp add: image_iff compM_def intro: rev_bexI)
-      from wf1 CObj
-      have wfms: "\<forall>x\<in>set ms'. (\<lambda>(M, Ts, T, m). wf_extCall P C M Ts T \<and> (\<forall>D' Ts' T'. (\<exists>m'. compP f P \<turnstile> D sees M: Ts'\<rightarrow>T' = m' in D') \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T')) (compM (f C) x)"
-	by(clarsimp simp add: wf_cdecl_def)
-      hence "wf_extCall P C M Ts T" using m mset by auto
-      moreover {
-	fix D' Ts' T' body''
-	assume "P \<turnstile> D sees M: Ts'\<rightarrow>T' = body'' in D'"
-        hence "compP f P \<turnstile> D sees M: Ts'\<rightarrow>T' = f D' M Ts' T' body'' in D'"
-	  by(auto intro: sees_method_compP)
-	with wfms have "P \<turnstile> Ts' [\<le>] Ts" "P \<turnstile> T \<le> T'" using mset
-	  by(fastsimp)+ }
-      ultimately have "wf_extCall P C (fst m') (fst (snd m')) (fst (snd (snd m'))) \<and> 
-                    (\<forall>D' Ts' T' body'. P \<turnstile> D sees fst m': Ts'\<rightarrow>T' = body' in D' \<longrightarrow>
-                                       P \<turnstile> Ts' [\<le>] fst (snd m') \<and>
-                                       P \<turnstile> fst (snd (snd m')) \<le> T')"
-	using m by(clarsimp) }
+    { fix m
+      assume mset': "m \<in> set ms'"
+      with wf1 CObj have "wf_overriding (compP f P) D (compM (f C) m)"
+        by(simp add: wf_cdecl_def del: wf_overriding_compP)
+      hence "wf_overriding P D m" by simp }
     note this part1 }
   moreover
-  { assume CObj: "C = Object"
-    with wf1 have "fs = []" "ms' = []"
-      by(auto simp add: wf_cdecl_def) }
-  moreover
   { assume "C = Thread"
-    with wf1 have "\<exists>m. (run, [], Void, m) \<in> set ms'" "(interrupted_flag, Boolean, \<lparr>volatile=True\<rparr>) \<in> set fs"
+    with wf1 have "\<exists>m. (run, [], Void, m) \<in> set ms'"
       by(fastsimp simp add: wf_cdecl_def image_iff compM_def)+ }
-  ultimately show ?thesis unfolding x wf_cdecl_def split_beta fst_conv snd_conv Ball_def
-    by blast
+  ultimately show ?thesis unfolding x wf_cdecl_def by blast
 qed
 
 lemma wf_prog_compPD:
@@ -447,10 +425,13 @@ apply(auto intro: wf)
 done
 
 lemma WT_binop_compP [simp]: "compP f P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<longleftrightarrow> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T"
-by(fastsimp)
+by(cases bop)(fastsimp)+
 
 lemma WTrt_binop_compP [simp]: "compP f P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T \<longleftrightarrow> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T"
-by(fastsimp)
+by(cases bop)(fastsimp)+
+
+lemma binop_relevant_class_compP [simp]: "binop_relevant_class bop (compP f P) = binop_relevant_class bop P"
+by(cases bop) simp_all
 
 lemma is_class_compP [simp]:
   "is_class (compP f P) = is_class P"
@@ -481,16 +462,27 @@ by(auto simp add: tconf_def)
 
 end
 
+lemma compP_addr_conv:
+  "addr_conv addr2thread_id thread_id2addr typeof_addr (compP f P) = addr_conv addr2thread_id thread_id2addr typeof_addr P"
+unfolding addr_conv_def
+by simp
+
+lemma compP_heap:
+  "heap addr2thead_id thread_id2addr new_obj new_arr typeof_addr array_length heap_write (compP f P) =
+  heap addr2thead_id thread_id2addr new_obj new_arr typeof_addr array_length heap_write P"
+unfolding heap_def compP_addr_conv heap_axioms_def
+by auto
+
 lemma compP_heap_conf:
-  "heap_conf empty_heap new_obj new_arr typeof_addr array_length heap_write hconf (compP f P) =
-   heap_conf empty_heap new_obj new_arr typeof_addr array_length heap_write hconf P"
-unfolding heap_conf_def heap_conf_axioms_def
+  "heap_conf addr2thead_id thread_id2addr empty_heap new_obj new_arr typeof_addr array_length heap_write hconf (compP f P) =
+   heap_conf addr2thead_id thread_id2addr empty_heap new_obj new_arr typeof_addr array_length heap_write hconf P"
+unfolding heap_conf_def heap_conf_axioms_def compP_heap
 unfolding heap_base.compP_conf heap_base.compP_addr_loc_type is_type_compP is_class_compP
 by(rule refl)
 
 lemma compP_heap_conf_read:
-  "heap_conf_read empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf (compP f P) =
-   heap_conf_read empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf P"
+  "heap_conf_read addr2thead_id thread_id2addr empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf (compP f P) =
+   heap_conf_read addr2thead_id thread_id2addr empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf P"
 unfolding heap_conf_read_def heap_conf_read_axioms_def
 unfolding compP_heap_conf heap_base.compP_conf heap_base.compP_addr_loc_type 
 by(rule refl)

@@ -8,8 +8,8 @@ theory Compiler2
 imports PCompiler J1State "../JVM/JVMInstructions"
 begin
 
-primrec compE2  :: "expr1      \<Rightarrow> instr list"
-  and compEs2 :: "expr1 list \<Rightarrow> instr list"
+primrec compE2  :: "'addr expr1      \<Rightarrow> 'addr instr list"
+  and compEs2 :: "'addr expr1 list \<Rightarrow> 'addr instr list"
 where
   "compE2 (new C) = [New C]"
 | "compE2 (newA T\<lfloor>e\<rceil>) = compE2 e @ [NewArray T]"
@@ -56,8 +56,8 @@ text{* Compilation of exception table. Is given start address of code
 to compute absolute addresses necessary in exception table. *}
 
 
-fun compxE2  :: "expr1      \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
-and compxEs2 :: "expr1 list \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
+fun compxE2  :: "'addr expr1      \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
+and compxEs2 :: "'addr expr1 list \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
 where
   "compxE2 (new C) pc d = []"
 | "compxE2 (newA T\<lfloor>e\<rceil>) pc d = compxE2 e pc d"
@@ -142,12 +142,13 @@ lemma compxE2_blocks1 [simp]:
   "compxE2 (blocks1 n Ts body) = compxE2 body"
 by(induct n Ts body rule: blocks1.induct)(auto intro!: ext)
 
-lemma compE2_not_Return: "Return \<notin> set (compE2 e)"
+lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
+  shows compE2_not_Return: "Return \<notin> set (compE2 e)"
   and compEs2_not_Return: "Return \<notin> set (compEs2 es)"
 by(induct e and es)(auto)
 
-primrec max_stack :: "expr1 \<Rightarrow> nat"
-  and max_stacks :: "expr1 list \<Rightarrow> nat"
+primrec max_stack :: "'addr expr1 \<Rightarrow> nat"
+  and max_stacks :: "'addr expr1 list \<Rightarrow> nat"
 where
   "max_stack (new C) = 1"
 | "max_stack (newA T\<lfloor>e\<rceil>) = max_stack e"
@@ -187,14 +188,14 @@ lemma max_stack_blocks1 [simp]:
   "max_stack (blocks1 n Ts body) = max_stack body"
 by(induct n Ts body rule: blocks1.induct) auto
 
-definition compMb2 :: "expr1 \<Rightarrow> jvm_method"
+definition compMb2 :: "'addr expr1 \<Rightarrow> 'addr jvm_method"
 where
   "compMb2  \<equiv>  \<lambda>body.
   let ins = compE2 body @ [Return];
       xt = compxE2 body 0 0
   in (max_stack body, max_vars body, ins, xt)"
 
-definition compP2 :: "J1_prog \<Rightarrow> jvm_prog"
+definition compP2 :: "'addr J1_prog \<Rightarrow> 'addr jvm_prog"
 where "compP2  \<equiv>  compP (\<lambda>C M Ts T. compMb2)"
 
 lemma compMb2:

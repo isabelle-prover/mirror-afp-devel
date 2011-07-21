@@ -89,7 +89,7 @@ by(cases ta, auto split: if_splits)
 primrec thread_ok :: "('l,'t,'x) thread_info \<Rightarrow> ('t,'x','m) new_thread_action \<Rightarrow> bool"
 where
   "thread_ok ts (NewThread t x m) = free_thread_id ts t"
-| "thread_ok ts (ThreadExists t) = (\<not> free_thread_id ts t)"
+| "thread_ok ts (ThreadExists t b) = (b \<noteq> free_thread_id ts t)"
 
 primrec thread_oks :: "('l,'t,'x) thread_info \<Rightarrow> ('t,'x','m) new_thread_action list \<Rightarrow> bool"
 where
@@ -418,5 +418,15 @@ next
     by(rule thread_oks_ts_change)(rule redT_updT'_convert_new_thread_action_eq_None)
   finally show ?case by auto
 qed
+
+lemma map_redT_updT:
+  "Option.map (map_pair f id) (redT_updT ts ta t) = 
+  redT_updT (\<lambda>t. Option.map (map_pair f id) (ts t)) (convert_new_thread_action f ta) t"
+by(cases ta) auto
+
+lemma map_redT_updTs:
+  "Option.map (map_pair f id) (redT_updTs ts tas t) = 
+  redT_updTs (\<lambda>t. Option.map (map_pair f id) (ts t)) (map (convert_new_thread_action f) tas) t"
+by(induct tas arbitrary: ts)(auto simp add: map_redT_updT)
 
 end

@@ -11,8 +11,8 @@ theory Progress imports
   WWellForm
 begin
 
-lemma (in J_heap_base) final_addrE [consumes 2, case_names addr Throw]:
-  "\<lbrakk> P,E,h \<turnstile> e : Class C; final e;
+lemma (in J_heap_base) final_addrE [consumes 3, case_names addr Throw]:
+  "\<lbrakk> P,E,h \<turnstile> e : T; is_class_type_of T U; final e;
     \<And>a. e = addr a \<Longrightarrow> R;
     \<And>a. e = Throw a \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
 apply(auto elim!: final.cases)
@@ -31,165 +31,11 @@ apply(case_tac v)
 apply(auto elim!: is_refT.cases dest: typeof_addr_eq_Some_conv)
 done
 
-context J_heap_base begin
-
-inductive WTrt' :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"
-  and WTrts' :: "J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool"
-  for P :: "J_prog" and h :: "'heap" where
-  "is_class P C  \<Longrightarrow> WTrt' P h E (new C) (Class C)"
-
-| "\<lbrakk> WTrt' P h E e Integer; is_type P T \<rbrakk> \<Longrightarrow> WTrt' P h E (newA T\<lfloor>e\<rceil>) (T\<lfloor>\<rceil>)"
-
-| "\<lbrakk> WTrt' P h E e T; is_type P U \<rbrakk> \<Longrightarrow> WTrt' P h E (Cast U e) U"
-
-| "\<lbrakk> WTrt' P h E e T; is_type P U \<rbrakk> \<Longrightarrow> WTrt' P h E (e instanceof U) Boolean"
-
-| "typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow> WTrt' P h E (Val v) T"
-
-| "E V = Some T  \<Longrightarrow> WTrt' P h E (Var V) T"
-
-| "\<lbrakk> WTrt' P h E e1 T1; WTrt' P h E e2 T2; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T \<rbrakk> \<Longrightarrow> WTrt' P h E (e1\<guillemotleft>bop\<guillemotright>e2) T"
-
-| "\<lbrakk> WTrt' P h E (Var V) T; WTrt' P h E e T'; P \<turnstile> T' \<le> T \<rbrakk> \<Longrightarrow> WTrt' P h E (V:=e) Void"
-
-| "\<lbrakk> WTrt' P h E a (T\<lfloor>\<rceil>); WTrt' P h E i Integer \<rbrakk> \<Longrightarrow> WTrt' P h E (a\<lfloor>i\<rceil>) T"
-
-| "\<lbrakk> WTrt' P h E a NT; WTrt' P h E i Integer \<rbrakk> \<Longrightarrow> WTrt' P h E (a\<lfloor>i\<rceil>) T"
-
-| "\<lbrakk> WTrt' P h E a (T\<lfloor>\<rceil>); WTrt' P h E i Integer; WTrt' P h E e T' \<rbrakk> \<Longrightarrow> WTrt' P h E (a\<lfloor>i\<rceil> := e) Void"
-
-| "\<lbrakk> WTrt' P h E a NT; WTrt' P h E i Integer; WTrt' P h E e T' \<rbrakk> \<Longrightarrow> WTrt' P h E (a\<lfloor>i\<rceil> := e) Void"
-
-| "WTrt' P h E a (T\<lfloor>\<rceil>) \<Longrightarrow> WTrt' P h E (a\<bullet>length) Integer"
-
-| "WTrt' P h E a NT \<Longrightarrow> WTrt' P h E (a\<bullet>length) T"
-
-| "\<lbrakk> WTrt' P h E e (Class C); P \<turnstile> C has F:T (fm) in D \<rbrakk> \<Longrightarrow> WTrt' P h E (e\<bullet>F{D}) T"
-
-| "WTrt' P h E e NT \<Longrightarrow> WTrt' P h E (e\<bullet>F{D}) T"
-
-| "\<lbrakk> WTrt' P h E e1 (Class C); P \<turnstile> C has F:T (fm) in D; WTrt' P h E e2 T2; P \<turnstile> T2 \<le> T \<rbrakk> \<Longrightarrow> WTrt' P h E (e1\<bullet>F{D}:=e2) Void"
-
-| "\<lbrakk> WTrt' P h E e1 NT; WTrt' P h E e2 T2 \<rbrakk> \<Longrightarrow> WTrt' P h E (e1\<bullet>F{D}:=e2) Void"
-
-| "\<lbrakk> WTrt' P h E e (Class C); \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
-     WTrts' P h E es Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk> \<Longrightarrow> WTrt' P h E (e\<bullet>M(es)) T"
-
-| "\<lbrakk> WTrt' P h E e NT; WTrts' P h E es Ts \<rbrakk> \<Longrightarrow> WTrt' P h E (e\<bullet>M(es)) T"
-
-| "\<lbrakk> WTrt' P h E e T; WTrts' P h E es Ts; P \<turnstile> T\<bullet>M(Ts') :: U; P \<turnstile> Ts [\<le>] Ts' \<rbrakk> \<Longrightarrow> WTrt' P h E (e\<bullet>M(es)) U"
-
-| "\<lbrakk> typeof\<^bsub>h\<^esub> v = Some T1; P \<turnstile> T1 \<le> T; WTrt' P h (E(V\<mapsto>T)) e2 T2 \<rbrakk> \<Longrightarrow> WTrt' P h E {V:T=\<lfloor>v\<rfloor>; e2} T2"
-
-| "\<lbrakk> WTrt' P h (E(V\<mapsto>T)) e T' \<rbrakk> \<Longrightarrow> WTrt' P h E {V:T=None; e} T'"
-
-| "\<lbrakk> WTrt' P h E o' T; is_refT T; WTrt' P h E e T' \<rbrakk> \<Longrightarrow> WTrt' P h E (sync(o') e) T'"
-
-| "\<lbrakk> WTrt' P h E (addr a) T; WTrt' P h E e T' \<rbrakk> \<Longrightarrow> WTrt' P h E (insync(a) e) T'"
-
-| "\<lbrakk> WTrt' P h E e1 T1; WTrt' P h E e2 T2 \<rbrakk> \<Longrightarrow> WTrt' P h E (e1;;e2) T2"
-
-| "\<lbrakk> WTrt' P h E e Boolean; WTrt' P h E e1 T1; WTrt' P h E e2 T2; P \<turnstile> lub(T1, T2) = T \<rbrakk>
-    \<Longrightarrow> WTrt' P h E (if (e) e1 else e2) T"
-
-| "\<lbrakk> WTrt' P h E e Boolean; WTrt' P h E c T \<rbrakk> \<Longrightarrow> WTrt' P h E (while(e) c) Void"
-
-| "\<lbrakk> WTrt' P h E e T; P \<turnstile> T \<le> Class Throwable \<rbrakk> \<Longrightarrow> WTrt' P h E (throw e) T'"
-
-| "\<lbrakk> WTrt' P h E e1 T1; WTrt' P h (E(V \<mapsto> Class C)) e2 T2; P \<turnstile> T1 \<le> T2 \<rbrakk> \<Longrightarrow> WTrt' P h E (try e1 catch(C V) e2) T2"
-
-| "WTrts' P h E [] []"
-
-| "\<lbrakk> WTrt' P h E e T; WTrts' P h E es Ts \<rbrakk> \<Longrightarrow> WTrts' P h E (e # es) (T # Ts)"
-
-abbreviation
-  WTrt'_syntax :: "J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile> _ :' _"   [51,51,51]50)
-where
-  "P,E,h \<turnstile> e :' T \<equiv> WTrt' P h E e T"
-
-abbreviation
-  WTrts'_syntax :: "J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_,_ \<turnstile> _ [:''] _"   [51,51,51]50)
-where
-  "P,E,h \<turnstile> e [:'] T \<equiv> WTrts' P h E e T"
-
-inductive_cases WTrt'_elim_cases[elim!]:
-  "P,E,h \<turnstile> V :=e :' T"
-
-lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 :' T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:' T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:' T\<^isub>2)"
-by (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
-
-lemma [iff]: "P,E,h \<turnstile> Val v :' T = (typeof\<^bsub>h\<^esub> v = Some T)"
-by (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
-
-lemma [iff]: "P,E,h \<turnstile> Var v :' T = (E v = Some T)"
-by (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
-
-
-lemma wt_wt': "P,E,h \<turnstile> e : T \<Longrightarrow> P,E,h \<turnstile> e :' T"
-  and wts_wts': "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> P,E,h \<turnstile> es [:'] Ts"
-apply (induct rule:WTrt_WTrts.inducts)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)
-apply(clarsimp split: option.split_asm simp del: fun_upd_apply)
- apply(erule WTrt'_WTrts'.intros)
-apply(blast intro:WTrt'_WTrts'.intros)+
-done
-
-
-
-lemma wt'_wt: "P,E,h \<turnstile> e :' T \<Longrightarrow> P,E,h \<turnstile> e : T"
-  and wts'_wts: "P,E,h \<turnstile> es [:'] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
-apply (induct rule:WTrt'_WTrts'.inducts)
-apply(blast intro:WTrt_WTrts.intros)+
-apply(erule WTrt_WTrts.intros, simp)
-apply(erule WTrt_WTrts.intros, simp)
-apply(erule WTrt_WTrts.intros, assumption+)
-apply(blast intro: WTrt_WTrts.intros)+
-done
-
-
-corollary wt'_iff_wt: "(P,E,h \<turnstile> e :' T) = (P,E,h \<turnstile> e : T)"
-  and  wts'_iff_wts: "(P,E,h \<turnstile> es [:'] Ts) = (P,E,h \<turnstile> es [:] Ts)"
-by(blast intro:wt_wt' wt'_wt wts_wts' wts'_wts)+
-
-
-(*<*)
-lemmas WTrt_induct2 = WTrt'_WTrts'.inducts[unfolded wt'_iff_wt wts'_iff_wts,
- case_names WTrtNew WTrtNewArray WTrtCast WTrtInstanceOf WTrtVal WTrtVar WTrtBinOp WTrtLAss
- WTrtAAcc WTrtAAccNT WTrtAAss WTrtAAssNT WTrtALength WTrtALengthNT WTrtFAcc WTrtFAccNT WTrtFAss
- WTrtFAssNT WTrtCall WTrtCallNT WTrtCallExternal
- WTrtInitBlock WTrtBlock WTrtSynchronized WTrtInSynchronized WTrtSeq WTrtCond
- WTrtWhile WTrtThrow WTrtTry WTrtNil WTrtCons, consumes 1]
-(*>*)
-
-end
-
-context J_progress begin 
-
-theorem red_progress:
+theorem (in J_progress) red_progress:
   assumes wf: "wwf_J_prog P" and hconf: "hconf h"
   shows progress: "\<lbrakk> P,E,h \<turnstile> e : T; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk> \<Longrightarrow> \<exists>e' s' ta. extTA,P,t \<turnstile> \<langle>e,(h,l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>"
   and progresss: "\<lbrakk> P,E,h \<turnstile> es [:] Ts; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es \<rbrakk> \<Longrightarrow> \<exists>es' s' ta. extTA,P,t \<turnstile> \<langle>es,(h,l)\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>"
-proof (induct arbitrary: l and l rule:WTrt_induct2)
+proof (induct arbitrary: l and l rule:WTrt_WTrts.inducts)
   case (WTrtNew C)
   obtain h' ao where h': "new_obj h C = (h', ao)" by(cases "new_obj h C")
   thus ?case using WTrtNew
@@ -319,10 +165,10 @@ next
 	thus ?thesis
 	proof (rule finalE)
 	  fix v2 assume [simp]: "e2 = Val v2"
-	  with WTrtBinOp have "typeof\<^bsub>h\<^esub> v1 = \<lfloor>T1\<rfloor>" "typeof\<^bsub>h\<^esub> v2 = \<lfloor>T2\<rfloor>" by auto
-	  from binop_progress[OF this `P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T`] obtain v
-	    where "binop bop v1 v2 = \<lfloor>v\<rfloor>" by blast
-	  thus ?thesis by(fastsimp intro: RedBinOp)
+	  with WTrtBinOp have type: "typeof\<^bsub>h\<^esub> v1 = \<lfloor>T1\<rfloor>" "typeof\<^bsub>h\<^esub> v2 = \<lfloor>T2\<rfloor>" by auto
+	  from binop_progress[OF this `P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T`] obtain va
+	    where "binop bop v1 v2 = \<lfloor>va\<rfloor>" by blast
+	  thus ?thesis by(cases va)(fastsimp intro: RedBinOp RedBinOpFail)+
 	next
 	  fix a assume "e2 = Throw a"
 	  thus ?thesis by(fastsimp intro:BinOpThrow2)
@@ -687,17 +533,18 @@ next
     thus ?thesis by(blast intro: ALengthRed)
   qed
 next
-  case (WTrtFAcc E e C F T fm D l)
-  have wte: "P,E,h \<turnstile> e : Class C"
+  case (WTrtFAcc E e U C F T fm D l)
+  have wte: "P,E,h \<turnstile> e : U"
+    and icto: "is_class_type_of U C"
    and field: "P \<turnstile> C has F:T (fm) in D" by fact+
   show ?case
   proof cases
     assume "final e"
-    with wte show ?thesis
+    with wte icto show ?thesis
     proof (cases rule: final_addrE)
       case (addr a)
-      with wte have ty: "typeof_addr h a = \<lfloor>Class C\<rfloor>" by auto
-      with field have "P,h \<turnstile> a@CField D F : T" by(auto intro: addr_loc_type.intros)
+      with wte have ty: "typeof_addr h a = \<lfloor>U\<rfloor>" by auto
+      with icto field have "P,h \<turnstile> a@CField D F : T" by(auto intro: addr_loc_type.intros)
       from heap_read_total[OF hconf this]
       obtain v where "heap_read h a (CField D F) v" by blast
       with addr ty show ?thesis by(fastsimp intro: RedFAcc)
@@ -721,13 +568,14 @@ next
     with WTrtFAccNT show ?thesis by simp (fast intro:FAccRed)
   qed
 next
-  case (WTrtFAss E e1 C F T fm D e2 T2 l)
-  have wte1: "P,E,h \<turnstile> e1 : Class C"
+  case (WTrtFAss E e1 U C F T fm D e2 T2 l)
+  have wte1: "P,E,h \<turnstile> e1 : U"
+    and icto: "is_class_type_of U C"
     and field: "P \<turnstile> C has F:T (fm) in D" by fact+
   show ?case
   proof cases
     assume "final e1"
-    with wte1 show ?thesis
+    with wte1 icto show ?thesis
     proof (rule final_addrE)
       fix a assume e1: "e1 = addr a"
       show ?thesis
@@ -736,7 +584,7 @@ next
 	thus ?thesis
 	proof (rule finalE)
 	  fix v assume e2: "e2 = Val v"
-          from wte1 field e1 have adal: "P,h \<turnstile> a@CField D F : T"
+          from wte1 field icto e1 have adal: "P,h \<turnstile> a@CField D F : T"
             by(auto intro: addr_loc_type.intros)
           from e2 `P \<turnstile> T2 \<le> T` `P,E,h \<turnstile> e2 : T2`
           have "P,h \<turnstile> v :\<le> T" by(auto simp add: conf_def)
@@ -758,7 +606,7 @@ next
     qed
   next
     assume "\<not> final e1" with WTrtFAss show ?thesis
-      by simp (blast intro!:FAssRed1)
+      by(simp del: split_paired_Ex)(blast intro!:FAssRed1)
   qed
 next
   case (WTrtFAssNT E e\<^isub>1 e\<^isub>2 T\<^isub>2 F D l)
@@ -780,12 +628,13 @@ next
     with WTrtFAssNT show ?thesis by (fastsimp intro:FAssRed1)
   qed
 next
-  case (WTrtCall E e C M Ts T pns body D es Ts' l)
-  have wte: "P,E,h \<turnstile> e : Class C" by fact
+  case (WTrtCall E e U C M Ts T pns body D es Ts' l)
+  have wte: "P,E,h \<turnstile> e : U" 
+    and icto: "is_class_type_of U C" by fact+
   have IHe: "\<And>l. \<lbrakk> \<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk>
              \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
   have sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by fact
-  have nexc: "\<not> is_external_call P (Class C) M" by fact
+  have nexc: "\<not> is_native P U M" by fact
   have wtes: "P,E,h \<turnstile> es [:] Ts'" by fact
   have IHes: "\<And>l. \<lbrakk>\<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk> \<Longrightarrow> \<exists>es' s' ta. extTA,P,t \<turnstile> \<langle>es,(h, l)\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>" by fact
   have subtype: "P \<turnstile> Ts' [\<le>] Ts" by fact
@@ -793,17 +642,17 @@ next
   show ?case
   proof(cases "final e")
     assume fine: "final e"
-    with wte show ?thesis
+    with wte icto show ?thesis
     proof (rule final_addrE)
       fix a assume e_addr: "e = addr a"
       show ?thesis
       proof(cases "\<exists>vs. es = map Val vs")
 	assume es: "\<exists>vs. es = map Val vs"
-	from wte e_addr have ha: "typeof_addr h a = \<lfloor>Class C\<rfloor>"  by(auto)
+	from wte e_addr have ha: "typeof_addr h a = \<lfloor>U\<rfloor>"  by(auto)
 	have "length es = length Ts'" using wtes by(auto simp add: WTrts_conv_list_all2 dest: list_all2_lengthD)
 	moreover from subtype have "length Ts' = length Ts" by(auto dest: list_all2_lengthD)
 	ultimately have esTs: "length es = length Ts" by(auto)
-	thus ?thesis using e_addr ha sees subtype es sees_wf_mdecl[OF wf sees] nexc
+	thus ?thesis using e_addr ha sees subtype es sees_wf_mdecl[OF wf sees] nexc icto
 	  by (fastsimp intro!: RedCall simp:list_all2_def wf_mdecl_def)
       next
 	assume "\<not>(\<exists>vs. es = map Val vs)"
@@ -843,7 +692,7 @@ next
     qed
   next
     assume "\<not> final e"
-    with WTrtCall show ?thesis by simp (blast intro!:CallObj)
+    with WTrtCall show ?thesis by(simp del: split_paired_Ex)(blast intro!:CallObj)
   qed
 next
   case (WTrtCallNT E e es Ts M T l)
@@ -895,7 +744,7 @@ next
   proof(cases "final e")
     assume fine: "final e"
     from wtext have "T \<noteq> NT" by(rule external_WT_not_NT)
-    with is_external_call_is_refT[OF external_WT_is_external_call[OF wtext]] fine wte
+    with is_native_is_refT[OF external_WT_is_native[OF wtext]] fine wte
     obtain a where e: "e = addr a \<or> e = Throw a" 
       by -(rule finalRefE, auto)
     thus ?thesis
@@ -912,9 +761,9 @@ next
 	  then obtain vs where es: "es = map Val vs" ..
 	  with wtes have tyes: "map typeof\<^bsub>h\<^esub> vs = map Some Ts" by simp
 	  with tya have "P,h \<turnstile> a\<bullet>M(vs) : U" using wtext `P \<turnstile> Ts [\<le>] Ts'` by(rule external_WT'.intros)
-          from external_call_progress[OF wf this hconf] obtain ta va h'
+          from external_call_progress[OF wf this hconf, of t] obtain ta va h'
 	    where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>" by blast
-	  thus ?thesis using tya external_WT_is_external_call[OF wtext] e es
+	  thus ?thesis using tya external_WT_is_native[OF wtext] e es
 	    by(fastsimp intro: RedCallExternal simp del: split_paired_Ex)
 	next
 	  assume "\<exists>vs a es'. es = map Val vs @ Throw a # es'"
@@ -933,34 +782,10 @@ next
     with dae IHe[OF _ False, of l] show ?thesis by(fastsimp intro: CallObj)
   qed
 next
-  case (WTrtInitBlock v T1 T E V e2 T2 l)
-  have IH2: "\<And>l.  \<lbrakk>\<D> e2 \<lfloor>dom l\<rfloor>; \<not> final e2\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e2,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
-   and D: "\<D> {V:T=\<lfloor>v\<rfloor>; e2} \<lfloor>dom l\<rfloor>" by fact+
-  show ?case
-  proof cases
-    assume "final e2"
-    thus ?thesis
-    proof (rule finalE)
-      fix v\<^isub>2 assume "e2 = Val v\<^isub>2"
-      thus ?thesis by(fast intro:RedBlock)
-    next
-      fix a assume "e2 = Throw a"
-      thus ?thesis by(fast intro:BlockThrow)
-    qed
-  next
-    assume not_fin2: "\<not> final e2"
-    from D have D2: "\<D> e2 \<lfloor>dom(l(V\<mapsto>v))\<rfloor>" by (auto simp:hyperset_defs)
-    from IH2[OF D2 not_fin2]
-    obtain h' l' e' tas where red2: "extTA,P,t \<turnstile> \<langle>e2,(h, l(V\<mapsto>v))\<rangle> -tas\<rightarrow> \<langle>e',(h', l')\<rangle>"
-      by fast
-    from red_lcl_incr[OF red2] have "V \<in> dom l'" by auto
-    with red2 show ?thesis by(fastsimp intro:BlockRed)
-  qed
-next
-  case (WTrtBlock E V T e T' l)
+  case (WTrtBlock E V T e T' vo l)
   have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                  \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
-   and D: "\<D> {V:T=None; e} \<lfloor>dom l\<rfloor>" by fact+
+   and D: "\<D> {V:T=vo; e} \<lfloor>dom l\<rfloor>" by fact+
   show ?case
   proof cases
     assume "final e"
@@ -973,9 +798,9 @@ next
     qed
   next
     assume not_fin: "\<not> final e"
-    from D have De: "\<D> e \<lfloor>dom(l(V:=None))\<rfloor>" by(simp add:hyperset_defs)
+    from D have De: "\<D> e \<lfloor>dom(l(V:=vo))\<rfloor>" by(auto simp add:hyperset_defs)
     from IH[OF De not_fin]
-    obtain h' l' e' tas where red: "extTA,P,t \<turnstile> \<langle>e,(h,l(V:=None))\<rangle> -tas\<rightarrow> \<langle>e',(h',l')\<rangle>"
+    obtain h' l' e' tas where red: "extTA,P,t \<turnstile> \<langle>e,(h,l(V:=vo))\<rangle> -tas\<rightarrow> \<langle>e',(h',l')\<rangle>"
       by auto
     thus ?thesis by(blast intro: BlockRed)
   qed
@@ -1035,7 +860,7 @@ next
       by(fast elim:finalE intro:intro:RedSeq SeqThrow)
   next
     assume "\<not> final e1" with WTrtSeq show ?thesis
-      by simp (blast intro:SeqRed)
+      by(simp del: split_paired_Ex)(blast intro!:SeqRed)
   qed
 next
   case (WTrtCond E e e1 T1 e2 T2 T l)
@@ -1135,7 +960,5 @@ next
     with IHe[OF De] show ?thesis by(fast intro!:ListRed1)
   qed
 qed
-
-end
 
 end

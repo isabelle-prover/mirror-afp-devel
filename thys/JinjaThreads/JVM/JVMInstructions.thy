@@ -6,93 +6,97 @@ header {* \isaheader{Instructions of the JVM} *}
 
 theory JVMInstructions imports JVMState "../Common/BinOp" begin
 
-datatype 
-  instr = Load nat                  -- "load from local variable"
-        | Store nat                 -- "store into local variable"
-        | Push val                  -- "push a value (constant)"
-        | New cname                 -- "create object"
-        | NewArray ty               -- "create array for elements of given type"
-        | ALoad                     -- "Load array element from heap to stack"
-        | AStore                    -- "Set element in array"
-        | ALength                   -- "Return the length of the array"
-        | Getfield vname cname      -- "Fetch field from object"
-        | Putfield vname cname      -- "Set field in object    "
-        | Checkcast ty              -- "Check whether object is of given type"
-        | Instanceof ty             -- "instanceof test"
-        | Invoke mname nat          -- "inv. instance meth of an object"
-        | Return                    -- "return from method"
-        | Pop                       -- "pop top element from opstack"
-        | Dup                       -- "duplicate top stack element"
-        | Swap                      -- "swap top stack elements"
-        | BinOpInstr bop            -- "binary operator instruction"
-        | Goto int                  -- "goto relative address"
-        | IfFalse int               -- "branch if top of stack false"
-        | ThrowExc                  -- "throw top of stack as exception"
-        | MEnter                    -- "enter the monitor of object on top of the stack"
-        | MExit                     -- "exit the monitor of object on top of the stack"
+datatype 'addr instr 
+  = Load nat                  -- "load from local variable"
+  | Store nat                 -- "store into local variable"
+  | Push "'addr val"          -- "push a value (constant)"
+  | New cname                 -- "create object"
+  | NewArray ty               -- "create array for elements of given type"
+  | ALoad                     -- "Load array element from heap to stack"
+  | AStore                    -- "Set element in array"
+  | ALength                   -- "Return the length of the array"
+  | Getfield vname cname      -- "Fetch field from object"
+  | Putfield vname cname      -- "Set field in object    "
+  | Checkcast ty              -- "Check whether object is of given type"
+  | Instanceof ty             -- "instanceof test"
+  | Invoke mname nat          -- "inv. instance meth of an object"
+  | Return                    -- "return from method"
+  | Pop                       -- "pop top element from opstack"
+  | Dup                       -- "duplicate top stack element"
+  | Swap                      -- "swap top stack elements"
+  | BinOpInstr bop            -- "binary operator instruction"
+  | Goto int                  -- "goto relative address"
+  | IfFalse int               -- "branch if top of stack false"
+  | ThrowExc                  -- "throw top of stack as exception"
+  | MEnter                    -- "enter the monitor of object on top of the stack"
+  | MExit                     -- "exit the monitor of object on top of the stack"
 
-abbreviation CmpEq :: instr
+abbreviation CmpEq :: "'addr instr"
 where "CmpEq \<equiv> BinOpInstr Eq"
 
-abbreviation CmpLeq :: instr
+abbreviation CmpLeq :: "'addr instr"
 where "CmpLeq \<equiv> BinOpInstr LessOrEqual"
 
-abbreviation CmpGeq :: instr
+abbreviation CmpGeq :: "'addr instr"
 where "CmpGeq \<equiv> BinOpInstr GreaterOrEqual"
 
-abbreviation CmpLt :: instr
+abbreviation CmpLt :: "'addr instr"
 where "CmpLt \<equiv> BinOpInstr LessThan"
 
-abbreviation CmpGt :: instr
+abbreviation CmpGt :: "'addr instr"
 where "CmpGt \<equiv> BinOpInstr GreaterThan"
 
-abbreviation IAdd :: instr
+abbreviation IAdd :: "'addr instr"
 where "IAdd \<equiv> BinOpInstr Add"
 
-abbreviation ISub :: instr
+abbreviation ISub :: "'addr instr"
 where "ISub \<equiv> BinOpInstr Subtract"
 
-abbreviation IMult :: instr
+abbreviation IMult :: "'addr instr"
 where "IMult \<equiv> BinOpInstr Mult"
 
-abbreviation IDiv :: instr
+abbreviation IDiv :: "'addr instr"
 where "IDiv \<equiv> BinOpInstr Div"
 
-abbreviation IMod :: instr
+abbreviation IMod :: "'addr instr"
 where "IMod \<equiv> BinOpInstr Mod"
 
-abbreviation IShl :: instr
+abbreviation IShl :: "'addr instr"
 where "IShl \<equiv> BinOpInstr ShiftLeft"
 
-abbreviation IShr :: instr
+abbreviation IShr :: "'addr instr"
 where "IShr \<equiv> BinOpInstr ShiftRightSigned"
 
-abbreviation IUShr :: instr
+abbreviation IUShr :: "'addr instr"
 where "IUShr \<equiv> BinOpInstr ShiftRightZeros"
 
-abbreviation IAnd :: instr
+abbreviation IAnd :: "'addr instr"
 where "IAnd \<equiv> BinOpInstr BinAnd"
 
-abbreviation IOr :: instr
+abbreviation IOr :: "'addr instr"
 where "IOr \<equiv> BinOpInstr BinOr"
 
-abbreviation IXor :: instr
+abbreviation IXor :: "'addr instr"
 where "IXor \<equiv> BinOpInstr BinXor"
 
-types
-  bytecode = "instr list"
+type_synonym
+  'addr bytecode = "'addr instr list"
 
+type_synonym
   ex_entry = "pc \<times> pc \<times> cname option \<times> pc \<times> nat" 
   -- "start-pc, end-pc, exception type (None = Any), handler-pc, remaining stack depth"
 
+type_synonym
   ex_table = "ex_entry list"
 
-  jvm_method = "nat \<times> nat \<times> bytecode \<times> ex_table"
+type_synonym
+  'addr jvm_method = "nat \<times> nat \<times> 'addr bytecode \<times> ex_table"
    -- "max stacksize"
    -- "number of local variables. Add 1 + no. of parameters to get no. of registers"
    -- "instruction sequence"
    -- "exception handler table"
 
-  jvm_prog = "jvm_method prog" 
+type_synonym
+  'addr jvm_prog = "'addr jvm_method prog" 
 
 end

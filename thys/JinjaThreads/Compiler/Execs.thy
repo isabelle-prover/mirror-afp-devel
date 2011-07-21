@@ -12,9 +12,11 @@ declare match_ex_table_app [simp del]
   compxE2_stack_xlift_convs [simp del]
   compxEs2_stack_xlift_convs [simp del]
 
-types 'heap check_instr' = "instr \<Rightarrow> jvm_prog \<Rightarrow> 'heap \<Rightarrow> val list \<Rightarrow> val list \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> pc \<Rightarrow> frame list \<Rightarrow> bool"
+type_synonym
+  ('addr, 'heap) check_instr' = 
+  "'addr instr \<Rightarrow> 'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> 'addr val list \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> pc \<Rightarrow> 'addr frame list \<Rightarrow> bool"
 
-primrec check_instr' :: "'heap check_instr'"
+primrec check_instr' :: "('addr, 'heap) check_instr'"
 where 
 check_instr'_Load:
   "check_instr' (Load n) P h stk loc C M\<^isub>0 pc frs =
@@ -108,7 +110,7 @@ check_instr'_Load:
   "check_instr' MExit P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
    (0 < length stk)"
 
-definition ci_stk_offer :: "'heap check_instr' \<Rightarrow> bool"
+definition ci_stk_offer :: "('addr, 'heap) check_instr' \<Rightarrow> bool"
 where
   "ci_stk_offer ci =
   (\<forall>ins P h stk stk' loc C M pc frs. ci ins P h stk loc C M pc frs \<longrightarrow> ci ins P h (stk @ stk') loc C M pc frs)"
@@ -149,7 +151,7 @@ qed
 end
 
 (* TODO: Combine ins_jump_ok and jump_ok *)
-primrec jump_ok :: "instr list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
+primrec jump_ok :: "'addr instr list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
 where "jump_ok [] n n' = True"
 | "jump_ok (x # xs) n n' = (jump_ok xs (Suc n) n' \<and> 
                            (case x of IfFalse m \<Rightarrow> - int n \<le> m \<and> m \<le> int (n' + length xs)
@@ -181,26 +183,28 @@ apply(case_tac pc)
 apply(fastsimp)+
 done
 
-lemma compE2_jump_ok [intro!]: "jump_ok (compE2 e) n (Suc n')"
+lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
+  shows compE2_jump_ok [intro!]: "jump_ok (compE2 e) n (Suc n')"
   and compEs2_jump_ok [intro!]: "jump_ok (compEs2 es) n (Suc n')"
 apply(induct e and es arbitrary: n n' and n n')
 apply(auto split: bop.split)
 done
 
-lemma compE1_Goto_not_same: "\<lbrakk> compE2 e ! pc = Goto i; pc < length (compE2 e) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
+lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
+  shows compE1_Goto_not_same: "\<lbrakk> compE2 e ! pc = Goto i; pc < length (compE2 e) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
   and compEs2_Goto_not_same: "\<lbrakk> compEs2 es ! pc = Goto i; pc < length (compEs2 es) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
 apply(induct e and es arbitrary: pc i and pc i)
 apply(auto simp add: nth_Cons nth_append split: split_if_asm bop.split_asm nat.splits)
 apply fastsimp+
 done
 
-fun ins_jump_ok :: "instr \<Rightarrow> nat \<Rightarrow> bool"
+fun ins_jump_ok :: "'addr instr \<Rightarrow> nat \<Rightarrow> bool"
 where
   "ins_jump_ok (Goto m) l = (- (int l) \<le> m)"
 | "ins_jump_ok (IfFalse m) l = (- (int l) \<le> m)"
 | "ins_jump_ok _ _ = True"
 
-definition wf_ci :: "'heap check_instr' \<Rightarrow> bool"
+definition wf_ci :: "('addr, 'heap) check_instr' \<Rightarrow> bool"
 where
   "wf_ci ci \<longleftrightarrow>
    ci_stk_offer ci \<and> ci \<le> check_instr' \<and>
@@ -276,8 +280,8 @@ apply(frule (2) wf_ci_ins_jump_ok)
 apply(erule (2) wf_ciD3)
 done
 
-typedef (open) 'heap check_instr = "(wf_ci :: 'heap check_instr' \<Rightarrow> bool)"
-morphisms ci_app Abs_check_instr
+typedef (open) ('addr, 'heap) check_instr = "(wf_ci :: ('addr, 'heap) check_instr' \<Rightarrow> bool)"
+  morphisms ci_app Abs_check_instr
 by(auto simp add: mem_def)
 
 lemma ci_app_check_instr' [simp]: "ci_app (Abs_check_instr check_instr') = check_instr'"
@@ -313,9 +317,13 @@ done
 
 context JVM_heap_base begin
 
-inductive exec_meth :: "'heap check_instr \<Rightarrow> jvm_prog \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> 'heap jvm_thread_action \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-  for ci :: "'heap check_instr" and P :: "jvm_prog" and ins :: "instr list" and xt :: "ex_table" and t :: thread_id
-  where
+inductive exec_meth ::
+  "('addr, 'heap) check_instr \<Rightarrow> 'addr jvm_prog \<Rightarrow> 'addr instr list \<Rightarrow> ex_table \<Rightarrow> 'thread_id
+  \<Rightarrow> 'heap \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action
+  \<Rightarrow> 'heap \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+for ci :: "('addr, 'heap) check_instr" and P :: "'addr jvm_prog" 
+and ins :: "'addr instr list" and xt :: "ex_table" and t :: 'thread_id
+where
   exec_instr: 
   "\<lbrakk> (ta, xcp, h', [(stk', loc', undefined, undefined, pc')]) \<in> exec_instr (ins ! pc) P t h stk loc undefined undefined pc [];
      pc < length ins;
@@ -363,7 +371,7 @@ proof(cases "ins ! pc")
   case (Invoke M n)
   thus ?thesis using exec check
     by(auto split: split_if_asm extCallRet.splits split del: split_if simp add: split_beta nth_append min_def extRet2JVM_def)
-qed(force simp add: nth_append is_Ref_def has_method_def nth_Cons split_beta hd_append tl_append neq_Nil_conv split: list.split split_if_asm nat.splits)+
+qed(force simp add: nth_append is_Ref_def has_method_def nth_Cons split_beta hd_append tl_append neq_Nil_conv split: list.split split_if_asm nat.splits sum.split_asm)+
 
 lemma exec_meth_stk_offer:
   assumes exec: "exec_meth ci P ins xt t h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
@@ -441,7 +449,7 @@ next
     case (Invoke M n)
     with exec show ?thesis 
       by(auto split: split_if_asm extCallRet.splits split del: split_if simp add: split_beta nth_append min_def extRet2JVM_def)
-  qed(auto simp add: split_beta split: split_if_asm)
+  qed(auto simp add: split_beta split: split_if_asm sum.split_asm)
   moreover from `ci_app ci (ins ! pc) P h stk loc undefined undefined pc []`
   have "ci_app ci (ins ! pc) P h stk loc undefined undefined (length ins' + pc) []"
     by(rule wf_ciD3'_ci_app) simp
@@ -491,7 +499,7 @@ proof(cases rule: exec_meth.cases)
   moreover with `(ta, xcp', h', [(stk', loc', undefined, undefined, pc')]) \<in> exec_instr ((ins @ ins') ! ?PC) P t h stk loc undefined undefined ?PC []`
   have "(ta, xcp', h', [(stk', loc', undefined, undefined, pc' - length ins)]) \<in> exec_instr (ins' ! pc) P t h stk loc undefined undefined pc []"
     apply(cases "ins' ! pc")
-    apply(simp_all add: split_beta split: split_if_asm split del: split_if)
+    apply(simp_all add: split_beta split: split_if_asm sum.split_asm split del: split_if)
     apply(force split: extCallRet.splits simp add: min_def extRet2JVM_def)+
     done
   moreover from `ci_app ci ((ins @ ins') ! ?PC) P h stk loc undefined undefined ?PC []` jump pc
@@ -526,7 +534,7 @@ proof(cases rule: exec_meth.cases)
   case exec_instr thus ?thesis using jump pc
     apply(cases "ins' ! (pc - length ins)")
     apply(safe)
-    apply(simp_all add: split_beta nth_append split: split_if_asm)
+    apply(simp_all add: split_beta nth_append split: split_if_asm sum.split_asm)
     apply(force split: extCallRet.splits simp add: min_def extRet2JVM_def dest: jump_ok_GotoD jump_ok_IfFalseD)+
     done
 next
@@ -536,10 +544,18 @@ qed
 
 lemmas exec_meth_drop_pc = exec_meth_drop_xt_pc[where xt="[]", simplified, standard]
 
-definition exec_move :: "'heap check_instr \<Rightarrow> J1_prog \<Rightarrow> thread_id \<Rightarrow> expr1 \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> 'heap jvm_thread_action \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+definition exec_move ::
+  "('addr, 'heap) check_instr \<Rightarrow> 'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr1
+  \<Rightarrow> 'heap  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option)
+  \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action
+  \<Rightarrow> 'heap \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
 where "exec_move ci P t e \<equiv> exec_meth ci (compP2 P) (compE2 e) (compxE2 e 0 0) t"
 
-definition exec_moves :: "'heap check_instr \<Rightarrow> J1_prog \<Rightarrow> thread_id \<Rightarrow> expr1 list \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> 'heap jvm_thread_action \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+definition exec_moves :: 
+  "('addr, 'heap) check_instr \<Rightarrow> 'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr1 list
+  \<Rightarrow> 'heap \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option)
+  \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action
+  \<Rightarrow> 'heap \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
 where "exec_moves ci P t es \<equiv> exec_meth ci (compP2 P) (compEs2 es) (compxEs2 es 0 0) t"
 
 abbreviation exec_move_a
@@ -994,13 +1010,18 @@ qed(rule exec_move_TryI2)
 lemma exec_move_raise_xcp_pcD:
   "exec_move ci P t E h (stk, loc, pc, None) ta h' (stk', loc', pc', Some a) \<Longrightarrow> pc' = pc"
 apply(cases "compE2 E ! pc")
-apply(auto simp add: exec_move_def elim!: exec_meth.cases split: split_if_asm)
+apply(auto simp add: exec_move_def elim!: exec_meth.cases split: split_if_asm sum.split_asm)
 apply(auto split: extCallRet.split_asm simp add: split_beta)
 done
 
 
-definition \<tau>exec_meth :: "'heap check_instr \<Rightarrow> jvm_prog \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-where "\<tau>exec_meth ci P ins xt t h s s' \<longleftrightarrow> exec_meth ci P ins xt t h s \<epsilon> h s' \<and> (snd (snd (snd s)) = None \<longrightarrow> \<tau>instr P h (fst s) (ins ! fst (snd (snd s))))"
+definition \<tau>exec_meth :: 
+  "('addr, 'heap) check_instr \<Rightarrow> 'addr jvm_prog \<Rightarrow> 'addr instr list \<Rightarrow> ex_table \<Rightarrow> 'thread_id \<Rightarrow> 'heap
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+where
+  "\<tau>exec_meth ci P ins xt t h s s' \<longleftrightarrow> 
+  exec_meth ci P ins xt t h s \<epsilon> h s' \<and> (snd (snd (snd s)) = None \<longrightarrow> \<tau>instr P h (fst s) (ins ! fst (snd (snd s))))"
 
 abbreviation \<tau>exec_meth_a
 where "\<tau>exec_meth_a \<equiv> \<tau>exec_meth (Abs_check_instr check_instr')"
@@ -1022,11 +1043,17 @@ lemma \<tau>exec_methE [elim]:
 using assms
 by(cases s)(auto simp add: \<tau>exec_meth_def)
 
-abbreviation \<tau>Exec_methr :: "'heap check_instr \<Rightarrow> jvm_prog \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+abbreviation \<tau>Exec_methr :: 
+  "('addr, 'heap) check_instr \<Rightarrow> 'addr jvm_prog \<Rightarrow> 'addr instr list \<Rightarrow> ex_table \<Rightarrow> 'thread_id \<Rightarrow> 'heap 
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
 where
   "\<tau>Exec_methr ci P ins xt t h == (\<tau>exec_meth ci P ins xt t h)^**"
 
-abbreviation \<tau>Exec_metht :: "'heap check_instr \<Rightarrow> jvm_prog \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+abbreviation \<tau>Exec_metht :: 
+  "('addr, 'heap) check_instr \<Rightarrow> 'addr jvm_prog \<Rightarrow> 'addr instr list \<Rightarrow> ex_table \<Rightarrow> 'thread_id \<Rightarrow> 'heap
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
 where
   "\<tau>Exec_metht ci P ins xt t h == (\<tau>exec_meth ci P ins xt t h)^++"
 
@@ -1097,11 +1124,21 @@ lemma \<tau>Exec_methr_converse_cases [consumes 1, case_names refl step]:
 using assms
 by(erule converse_rtranclpE)(blast elim: \<tau>exec_methE)
 
-definition \<tau>exec_move :: "'heap check_instr \<Rightarrow> J1_prog \<Rightarrow> thread_id \<Rightarrow> expr1 \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-where "\<tau>exec_move ci P t e h = (\<lambda>(stk, loc, pc, xcp) s'. exec_move ci P t e h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>move2 P h stk e pc xcp)"
+definition \<tau>exec_move :: 
+  "('addr, 'heap) check_instr \<Rightarrow> 'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr1 \<Rightarrow> 'heap
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+where
+  "\<tau>exec_move ci P t e h =
+  (\<lambda>(stk, loc, pc, xcp) s'. exec_move ci P t e h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>move2 P h stk e pc xcp)"
 
-definition \<tau>exec_moves :: "'heap check_instr \<Rightarrow> J1_prog \<Rightarrow> thread_id \<Rightarrow> expr1 list \<Rightarrow> 'heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-where "\<tau>exec_moves ci P t es h = (\<lambda>(stk, loc, pc, xcp) s'. exec_moves ci P t es h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>moves2 P h stk es pc xcp)"
+definition \<tau>exec_moves :: 
+  "('addr, 'heap) check_instr \<Rightarrow> 'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr1 list \<Rightarrow> 'heap
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+where
+  "\<tau>exec_moves ci P t es h =
+   (\<lambda>(stk, loc, pc, xcp) s'. exec_moves ci P t es h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>moves2 P h stk es pc xcp)"
 
 lemma \<tau>exec_moveI:
   "\<lbrakk> exec_move ci P t e h (stk, loc, pc, xcp) \<epsilon> h s'; \<tau>move2 P h stk e pc xcp \<rbrakk> 
@@ -1804,7 +1841,7 @@ lemma \<tau>Exec_movet_blocks1 [simp]:
 by(simp add: \<tau>exec_move_conv_\<tau>exec_meth)
 
 
-definition \<tau>exec_1 :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state \<Rightarrow> 'heap jvm_state \<Rightarrow> bool"
+definition \<tau>exec_1 :: "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
   where "\<tau>exec_1 P t \<sigma> \<sigma>' \<longleftrightarrow> exec_1 P t \<sigma> \<epsilon> \<sigma>' \<and> \<tau>Move2 P \<sigma>"
 
 lemma \<tau>exec_1I [intro]:
@@ -1816,13 +1853,13 @@ lemma \<tau>exec_1E [elim]:
   obtains "exec_1 P t \<sigma> \<epsilon> \<sigma>'" "\<tau>Move2 P \<sigma>"
 using assms by(auto simp add: \<tau>exec_1_def)
 
-abbreviation \<tau>Exec_1r :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state \<Rightarrow> 'heap jvm_state \<Rightarrow> bool"
+abbreviation \<tau>Exec_1r :: "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
 where "\<tau>Exec_1r P t == (\<tau>exec_1 P t)^**"
 
-abbreviation \<tau>Exec_1t :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state \<Rightarrow> 'heap jvm_state \<Rightarrow> bool"
+abbreviation \<tau>Exec_1t :: "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
 where "\<tau>Exec_1t P t == (\<tau>exec_1 P t)^++"
 
-definition \<tau>exec_1_d :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state \<Rightarrow> 'heap jvm_state \<Rightarrow> bool"
+definition \<tau>exec_1_d :: "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
 where "\<tau>exec_1_d P t \<sigma> \<sigma>' \<longleftrightarrow> exec_1 P t \<sigma> \<epsilon> \<sigma>' \<and> \<tau>Move2 P \<sigma> \<and> check P \<sigma>"
 
 lemma \<tau>exec_1_dI [intro]:
@@ -1834,10 +1871,10 @@ lemma \<tau>exec_1_dE [elim]:
   obtains "exec_1 P t \<sigma> \<epsilon> \<sigma>'" "check P \<sigma>" "\<tau>Move2 P \<sigma>"
 using assms by(auto simp add: \<tau>exec_1_d_def)
 
-abbreviation \<tau>Exec_1_dr :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state \<Rightarrow> 'heap jvm_state \<Rightarrow> bool"
+abbreviation \<tau>Exec_1_dr :: "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
 where "\<tau>Exec_1_dr P t == (\<tau>exec_1_d P t)^**"
 
-abbreviation \<tau>Exec_1_dt :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state \<Rightarrow> 'heap jvm_state \<Rightarrow> bool"
+abbreviation \<tau>Exec_1_dt :: "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
 where "\<tau>Exec_1_dt P t == (\<tau>exec_1_d P t)^++"
 
 declare compxE2_size_convs[simp del] compxEs2_size_convs[simp del]
@@ -1847,7 +1884,7 @@ lemma exec_instr_frs_offer:
   "(ta, xcp', h', (stk', loc', C, M, pc') # frs) \<in> exec_instr ins P t h stk loc C M pc frs
   \<Longrightarrow> (ta, xcp', h', (stk', loc', C, M, pc') # frs @ frs') \<in> exec_instr ins P t h stk loc C M pc (frs @ frs')"
 apply(cases ins)
-apply(simp_all add: nth_append split_beta split: split_if_asm)
+apply(simp_all add: nth_append split_beta split: split_if_asm sum.split_asm)
 apply(force split: extCallRet.split_asm simp add: extRet2JVM_def)+
 done
 
@@ -1860,7 +1897,7 @@ lemma exec_instr_CM_change:
   "(ta, xcp', h', (stk', loc', C, M, pc') # frs) \<in> exec_instr ins P t h stk loc C M pc frs
   \<Longrightarrow> (ta, xcp', h', (stk', loc', C', M', pc') # frs) \<in> exec_instr ins P t h stk loc C' M' pc frs"
 apply(cases ins)
-apply(simp_all add: nth_append split_beta neq_Nil_conv split: split_if_asm)
+apply(simp_all add: nth_append split_beta neq_Nil_conv split: split_if_asm sum.split_asm)
 apply(force split: extCallRet.split_asm simp add: extRet2JVM_def)+
 done
 
@@ -1931,12 +1968,12 @@ by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl \<ta
 lemma exec_meth_\<tau>_heap_unchanged:
   "\<lbrakk> \<tau>move2 P h stk e pc None; (ta, xcp', h', frs') \<in> exec_instr (compE2 e ! pc) P t h stk loc C M pc' frs \<rbrakk> \<Longrightarrow> h' = h"
 apply(cases "compE2 e ! pc")
-apply(auto simp add: \<tau>move2_iff split_beta \<tau>moves2_iff split: split_if_asm dest: \<tau>external_red_external_aggr_heap_unchanged)
+apply(auto simp add: \<tau>move2_iff split_beta \<tau>moves2_iff split: split_if_asm sum.split_asm dest: \<tau>external_red_external_aggr_heap_unchanged)
 done
 
 lemma exec_meth_\<tau>s_heap_unchanged:
   "\<lbrakk> \<tau>moves2 P h stk es pc None; (ta, xcp', h', frs') \<in> exec_instr (compEs2 es ! pc) P t h stk loc C M pc' frs \<rbrakk> \<Longrightarrow> h' = h"
-by(cases "compEs2 es ! pc")(auto simp add: \<tau>move2_iff \<tau>moves2_iff split_beta split: split_if_asm dest: \<tau>external_red_external_aggr_heap_unchanged)
+by(cases "compEs2 es ! pc")(auto simp add: \<tau>move2_iff \<tau>moves2_iff split_beta split: split_if_asm sum.split_asm dest: \<tau>external_red_external_aggr_heap_unchanged)
 
 lemma \<tau>Exec_1r_rtranclpD:
   "\<tau>Exec_1r P t (xcp, h, frs) (xcp', h', frs')

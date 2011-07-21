@@ -8,19 +8,15 @@ header {* \isaheader{Class Declarations and Programs} *}
 
 theory Decl imports Type begin
 
-types volatile = bool
+type_synonym volatile = bool
 
 record fmod =
   volatile :: volatile
 
-types 
-  fdecl    = "vname \<times> ty \<times> fmod"        -- "field declaration"
-
-  'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg. types, return type, body"
-
-  'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
-
-  'm cdecl = "cname \<times> 'm class"  -- "class declaration"
+type_synonym fdecl    = "vname \<times> ty \<times> fmod"        -- "field declaration"
+type_synonym 'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg. types, return type, body"
+type_synonym 'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
+type_synonym 'm cdecl = "cname \<times> 'm class"  -- "class declaration"
 
 datatype
   'm prog = Program "'m cdecl list" 
@@ -31,13 +27,16 @@ translations
   (type) "'c class" <= (type) "String.literal \<times> fdecl list \<times> ('c mdecl) list"
   (type) "'c cdecl" <= (type) "String.literal \<times> ('c class)"
 
-primrec the_Program :: "'m prog \<Rightarrow> 'm cdecl list"
+primrec "classes" :: "'m prog \<Rightarrow> 'm cdecl list"
 where
-  "the_Program (Program P) = P"
+  "classes (Program P) = P"
 
 primrec "class" :: "'m prog \<Rightarrow> cname \<rightharpoonup> 'm class"
 where
   "class (Program p) = map_of p"
+
+locale prog =
+  fixes P :: "'m prog"
 
 definition is_class :: "'m prog \<Rightarrow> cname \<Rightarrow> bool"
 where
@@ -52,7 +51,6 @@ apply(simp add: finite_dom_map_of)
 done
 (*>*)
 
-
 primrec is_type :: "'m prog \<Rightarrow> ty \<Rightarrow> bool"
 where
   is_type_void:   "is_type P Void = True"
@@ -60,10 +58,14 @@ where
 | is_type_int:    "is_type P Integer = True"
 | is_type_nt:     "is_type P NT = True"
 | is_type_class:  "is_type P (Class C) = is_class P C"
-| is_type_array:  "is_type P (A\<lfloor>\<rceil>) = is_type P A"
+| is_type_array:  "is_type P (A\<lfloor>\<rceil>) = (case ground_type A of NT \<Rightarrow> False | Class C \<Rightarrow> is_class P C | _ \<Rightarrow> True)"
 
-lemma NT_Array_is_type: "is_NT_Array A \<Longrightarrow> is_type P A"
-by(induct A, auto)
+lemma is_type_ArrayD: "is_type P (T\<lfloor>\<rceil>) \<Longrightarrow> is_type P T"
+by(induct T) auto
+
+lemma is_type_ground_type:
+  "is_type P T \<Longrightarrow> is_type P (ground_type T)"
+by(induct T)(auto, metis is_type_ArrayD is_type_array)
 
 abbreviation "types" :: "'m prog \<Rightarrow> ty set"
 where "types P \<equiv> {T. is_type P T}"
@@ -80,14 +82,5 @@ code_pred
 unfolding is_class_def by simp
 
 declare is_class_def[code]
-
-code_pred
-  (modes: i \<Rightarrow> i \<Rightarrow> bool)
-  [inductify]
-  is_type
-.
-
-declare is_type.equation(2)[code del]
-declare is_type.simps [code]
 
 end

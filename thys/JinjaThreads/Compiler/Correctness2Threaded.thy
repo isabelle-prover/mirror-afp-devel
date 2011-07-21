@@ -8,7 +8,6 @@ theory Correctness2Threaded
 imports
   J1JVM
   JVMJ1
-  "../JVM/JVMThreaded"
   "../BV/BVProgressThreaded"
 begin
 
@@ -225,8 +224,12 @@ qed
 
 end
 
-definition bisim_wait1JVM :: "jvm_prog \<Rightarrow> (expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list \<Rightarrow> jvm_thread_state \<Rightarrow> bool"
-where "bisim_wait1JVM P \<equiv> \<lambda>((e1, xs1), exs1) (xcp, frs). call1 e1 \<noteq> None \<and> (case frs of Nil \<Rightarrow> False | (stk, loc, C, M, pc) # frs' \<Rightarrow> \<exists>M' n. instrs_of P C M ! pc = Invoke M' n)"
+definition bisim_wait1JVM :: 
+  "'addr jvm_prog \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list \<Rightarrow> 'addr jvm_thread_state \<Rightarrow> bool"
+where
+  "bisim_wait1JVM P \<equiv> 
+  \<lambda>((e1, xs1), exs1) (xcp, frs). call1 e1 \<noteq> None \<and> 
+     (case frs of Nil \<Rightarrow> False | (stk, loc, C, M, pc) # frs' \<Rightarrow> \<exists>M' n. instrs_of P C M ! pc = Invoke M' n)"
 
 sublocale J1_JVM_heap_conf_base < Red1_execd!:
   FWbisimulation_base 
@@ -339,10 +342,14 @@ proof -
           from bisim1_xcp_Some_not_caught[OF bisim', of "\<lambda>C M Ts T. compMb2" 0 0]
           have "match_ex_table (compP2 P) (cname_of m1 a) pc' (compxE2 body 0 0) = None" by(simp add: compP2_def)
           moreover from bisim' have "pc' < length (compE2 body)" by(auto dest: bisim1_ThrowD)
-          moreover from bisim' have "length stk' \<le> max_stack body" by(auto dest: bisim1_max_stack)
-          ultimately have "\<tau>exec_1_d (compP2 P) t (\<lfloor>a\<rfloor>, m1, [(stk', loc', C, M, pc')]) (\<lfloor>a\<rfloor>, m1, [])"
+          ultimately have "\<tau>exec_1 (compP2 P) t (\<lfloor>a\<rfloor>, m1, [(stk', loc', C, M, pc')]) (\<lfloor>a\<rfloor>, m1, [])"
             using sees_method_compP[OF sees, of "\<lambda>C M Ts T. compMb2"] sees
-            by(auto simp add: \<tau>exec_1_d_def compP2_def compMb2_def check_def has_methodI intro: exec_1I) }
+            by(auto simp add: \<tau>exec_1_def compP2_def compMb2_def has_methodI intro: exec_1I)
+          moreover from wt_compTP_compP2[OF wf] execd conf
+          have "compTP P \<turnstile> t:(\<lfloor>a\<rfloor>, m1, [(stk', loc', C, M, pc')]) \<surd>" by(rule \<tau>Exec_1_dr_preserves_correct_state)
+          ultimately have "\<tau>exec_1_d (compP2 P) t (\<lfloor>a\<rfloor>, m1, [(stk', loc', C, M, pc')]) (\<lfloor>a\<rfloor>, m1, [])"
+            using wt_compTP_compP2[OF wf]
+            by(auto simp add: \<tau>exec_1_def \<tau>exec_1_d_def welltyped_commute[symmetric] elim: jvmd_NormalE) }
         finally have "?\<tau>exec t s2 ((\<lfloor>a\<rfloor>, []), m1)"
           unfolding \<tau>Exec_1_dr_conv_rtranclp by simp
         moreover have "JVM_final (\<lfloor>a\<rfloor>, [])" by simp
@@ -419,7 +426,7 @@ proof -
     assume "wbisim1 t (x1, m1) (x2, m2)"
       and "bisim_wait1JVM (compP2 P) x1 x2"
       and "mred1 P t (x1, m1) ta1 (x1', m1')"
-      and wakeup: "Notified \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub>"
+      and wakeup: "Notified \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub> \<or> WokenUp \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub>"
     moreover obtain e1 xs1 exs1 where [simp]: "x1 = ((e1, xs1), exs1)" by(cases x1) auto
     moreover obtain xcp frs where [simp]: "x2 = (xcp, frs)" by(cases x2)
     moreover obtain e1' xs1' exs1' where [simp]: "x1' = ((e1', xs1'), exs1')" by(cases x1') auto
@@ -439,7 +446,7 @@ proof -
     assume "wbisim1 t (x1, m1) (x2, m2)"
       and "bisim_wait1JVM (compP2 P) x1 x2"
       and "mexecd (compP2 P) t (x2, m2) ta2 (x2', m2')"
-      and wakeup: "Notified \<in> set \<lbrace>ta2\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta2\<rbrace>\<^bsub>w\<^esub>"
+      and wakeup: "Notified \<in> set \<lbrace>ta2\<rbrace>\<^bsub>w\<^esub> \<or> WokenUp \<in> set \<lbrace>ta2\<rbrace>\<^bsub>w\<^esub>"
     moreover obtain e1 xs1 exs1 where [simp]: "x1 = ((e1, xs1), exs1)" by(cases x1) auto
     moreover obtain xcp frs where [simp]: "x2 = (xcp, frs)" by(cases x2)
     moreover obtain xcp' frs' where [simp]: "x2' = (xcp', frs')" by(cases x2')
@@ -454,6 +461,9 @@ proof -
     from \<tau>Red1_simulates_exec_1_not_\<tau>[OF wf exec bisim this] call
     show "\<exists>ta1 x1' m1'. mred1 P t (x1, m1) ta1 (x1', m1') \<and> wbisim1 t (x1', m1') (x2', m2') \<and> ta_bisim wbisim1 ta1 ta2"
       by(auto simp del: not_None_eq simp add: split_paired_Ex ta_bisim_def ta_upd_simps split: list.split_asm)
+  next
+    show "(\<exists>x. final_expr1 x) \<longleftrightarrow> (\<exists>x. JVM_final x)"
+      by(auto simp add: split_paired_Ex final_iff)
   qed
 qed
 
@@ -480,7 +490,7 @@ lemma bisim_J1_JVM_start:
   shows "Red1_execd.mbisim (J1_start_state P C M vs) (JVM_start_state (compP2 P) C M vs)"
 proof -
   let ?e = "blocks1 0 (Class D#Ts) body"
-  let ?xs = "Null # vs @ replicate (max_vars body) undefined"
+  let ?xs = "Null # vs @ replicate (max_vars body) undefined_value"
 
   from sees_wf_mdecl[OF wf sees] obtain T'
     where B: "\<B> body (Suc (length Ts))"

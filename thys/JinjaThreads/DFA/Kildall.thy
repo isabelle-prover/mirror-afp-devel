@@ -2,14 +2,13 @@
     Author:     Tobias Nipkow, Gerwin Klein, Andreas Lochbihler
     Copyright   2000 TUM, 2010 KIT
 
-Kildall's algorithm
+Kildall's algorithm.
 *)
 
 header {* \isaheader{Kildall's Algorithm}\label{sec:Kildall} *}
 
-theory Kildall imports
-  "../../Jinja/DFA/SemilatAlg" 
-  "../Common/Aux"
+theory Kildall
+imports SemilatAlg "../Common/Aux"
 begin
 
 locale Kildall_base =
@@ -404,7 +403,7 @@ context Kildall begin
 subsection {* @{term iter} *}
 
 lemma iter_properties[rule_format]: assumes "Semilat A r f"
-shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
+shows "\<lbrakk> acc A r; pres_type step n A; mono r step n A;
      bounded step n; \<forall>p\<in>s_\<alpha> w0. p < n; ss0 \<in> list n A;
      \<forall>p<n. p \<notin> s_\<alpha> w0 \<longrightarrow> stable r step ss0 p \<rbrakk> \<Longrightarrow>
    t_\<alpha> (iter f step ss0 w0) = (ss',w')
@@ -418,12 +417,11 @@ proof -
   apply(insert semilat)
   apply (unfold iter_def stables_def)
   apply(unfold is_empty_spec)
-  thm while_rule
   apply (rule_tac P = "\<lambda>(ss,w).
    ss \<in> list n A \<and> (\<forall>p<n. p \<notin> s_\<alpha> w \<longrightarrow> stable r step ss p) \<and> ss0 [\<sqsubseteq>\<^sub>r] ss \<and>
    (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts) \<and>
    (\<forall>p\<in> s_\<alpha> w. p < n)" and
-   r = "{(ss',ss) . ss [\<sqsubset>\<^sub>r] ss'} <*lex*> s_finite_psubset"
+   r = "{(ss',ss) . ss \<in> list n A \<and> ss' \<in> list n A \<and> ss [\<sqsubset>\<^sub>r] ss'} <*lex*> s_finite_psubset"
 	 in while_rule)
 
   -- "Invariant holds initially:"
@@ -510,18 +508,18 @@ proof -
   apply(subgoal_tac "(t_\<alpha> (propa f (step (s_choose w) (ss ! s_choose w)) ss
             (s_remove (s_choose w) w)),
            ss, s_\<alpha> w)
-          \<in> {(ss', ss). ss [\<sqsubset>\<^bsub>r\<^esub>] ss'} <*lex*> finite_psubset")
+          \<in> {(ss', ss). ss \<in> list n A \<and> ss' \<in> list n A \<and> ss [\<sqsubset>\<^bsub>r\<^esub>] ss'} <*lex*> finite_psubset")
    prefer 2
    apply (subst decomp_propa)
     apply blast
    apply clarify
    apply (simp del: listE_length
                add: lex_prod_def finite_psubset_def bounded_nat_set_is_finite)
-   apply (rule termination_lemma)
-   apply (rule assms)
-   apply assumption+
-   prefer 2
-   apply assumption
+   apply(subgoal_tac "merges f (step (s_choose w) (ss ! s_choose w)) ss \<in> list n A")
+    apply simp
+    apply (rule termination_lemma)
+    apply (rule assms)
+    apply assumption+
    apply clarsimp
   apply(case_tac "propa f (step (s_choose w) (ss ! s_choose w)) ss
                (s_remove (s_choose w) w)")
@@ -531,7 +529,7 @@ qed
 (*>*)
 
 lemma kildall_properties: assumes "Semilat A r f"
-shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
+shows "\<lbrakk> acc A r; pres_type step n A; mono r step n A;
      bounded step n; ss0 \<in> list n A \<rbrakk> \<Longrightarrow>
   kildall r f step ss0 \<in> list n A \<and>
   stables r step (kildall r f step ss0) \<and>
@@ -552,7 +550,7 @@ proof -
 qed
 
 lemma is_bcv_kildall: assumes "Semilat A r f"
-shows "\<lbrakk> acc r; top r T; pres_type step n A; bounded step n; mono r step n A \<rbrakk>
+shows "\<lbrakk> acc A r; top r T; pres_type step n A; bounded step n; mono r step n A \<rbrakk>
   \<Longrightarrow> is_bcv r T step n A (kildall r f step)" (is "PROP ?P")
 proof -
   interpret Semilat A r f by fact

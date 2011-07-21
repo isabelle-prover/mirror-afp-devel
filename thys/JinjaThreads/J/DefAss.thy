@@ -10,7 +10,7 @@ begin
 
 subsection "Hypersets"
 
-types 'a hyperset = "'a set option"
+type_synonym 'a hyperset = "'a set option"
 
 definition hyperUn :: "'a hyperset \<Rightarrow> 'a hyperset \<Rightarrow> 'a hyperset"   (infixl "\<squnion>" 65)
 where
@@ -122,8 +122,8 @@ by(auto simp add: hyperset_defs)
 
 subsection "Definite assignment"
 
-primrec \<A>  :: "('a,'b) exp \<Rightarrow> 'a hyperset"
-  and \<A>s :: "('a,'b) exp list \<Rightarrow> 'a hyperset"
+primrec \<A>  :: "('a,'b,'addr) exp \<Rightarrow> 'a hyperset"
+  and \<A>s :: "('a,'b,'addr) exp list \<Rightarrow> 'a hyperset"
 where
   "\<A> (new C) = \<lfloor>{}\<rfloor>"
 | "\<A> (newA T\<lfloor>e\<rceil>) = \<A> e"
@@ -151,8 +151,8 @@ where
 | "\<A>s ([]) = \<lfloor>{}\<rfloor>"
 | "\<A>s (e#es) = \<A> e \<squnion> \<A>s es"
 
-primrec \<D>  :: "('a,'b) exp \<Rightarrow> 'a hyperset \<Rightarrow> bool"
-  and \<D>s :: "('a,'b) exp list \<Rightarrow> 'a hyperset \<Rightarrow> bool"
+primrec \<D>  :: "('a,'b,'addr) exp \<Rightarrow> 'a hyperset \<Rightarrow> bool"
+  and \<D>s :: "('a,'b,'addr) exp list \<Rightarrow> 'a hyperset \<Rightarrow> bool"
 where
   "\<D> (new C) A = True"
 | "\<D> (newA T\<lfloor>e\<rceil>) A = \<D> e A"
@@ -193,7 +193,7 @@ lemma D_append[iff]: "\<And>A. \<D>s (es @ es') A = (\<D>s es A \<and> \<D>s es'
 (*<*)by (induct es type:list) (auto simp:hyperUn_assoc)(*>*)
 
 
-lemma fixes e :: "('a,'b) exp" and es :: "('a,'b) exp list"
+lemma fixes e :: "('a,'b,'addr) exp" and es :: "('a,'b,'addr) exp list"
   shows A_fv: "\<And>A. \<A> e = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fv e"
   and  "\<And>A. \<A>s es = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fvs es"
 apply(induct e and es)
@@ -209,8 +209,9 @@ lemma diff_lem: "A \<sqsubseteq> A' \<Longrightarrow> A \<ominus> b \<sqsubseteq
 (*<*)by(simp add:hyperset_defs) blast(*>*)
 
 (* This order of the premises avoids looping of the simplifier *)
-lemma D_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D> e A \<Longrightarrow> \<D> (e::('a,'b) exp) A'"
-  and Ds_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D>s es A \<Longrightarrow> \<D>s (es::('a,'b) exp list) A'"
+lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
+  shows D_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D> e A \<Longrightarrow> \<D> e A'"
+  and Ds_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D>s es A \<Longrightarrow> \<D>s es A'"
 (*<*)
 apply(induct e and es)
 apply simp
@@ -248,8 +249,8 @@ and Ds_mono': "\<D>s es A \<Longrightarrow> A \<sqsubseteq> A' \<Longrightarrow>
 declare hyperUn_comm [simp]
 declare hyperUn_leftComm [simp]
 
-lemma fixes e :: "('a,'b) exp"
-  and es :: "('a,'b) exp list"
+lemma fixes e :: "('a,'b,'addr) exp"
+  and es :: "('a,'b,'addr) exp list"
   shows D_fv: "\<D> e A \<Longrightarrow> \<D> e (A \<exclamdown> (fv e))"
   and Ds_fvs: "\<D>s es A \<Longrightarrow> \<D>s es (A \<exclamdown> (fvs es))"
 proof(induct e and es arbitrary: A and A)

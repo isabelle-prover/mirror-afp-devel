@@ -17,57 +17,32 @@ section {* Concrete schedulers *}
 
 subsection {* Round-robin schedulers *}
 
-types 'queue round_robin = "'queue \<times> nat"
+type_synonym 'queue round_robin = "'queue \<times> nat"
   -- "Waiting queue of threads and remaining number of steps of the first thread until it has to return resources"
-
 
 primrec enqueue_new_thread :: "'t list \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> 't list"
 where 
   "enqueue_new_thread queue (NewThread t x m) = queue @ [t]"
-| "enqueue_new_thread queue (ThreadExists t) = queue"
+| "enqueue_new_thread queue (ThreadExists t b) = queue"
 
 definition enqueue_new_threads :: "'t list \<Rightarrow> ('t,'x,'m) new_thread_action list \<Rightarrow> 't list"
 where
   "enqueue_new_threads = foldl enqueue_new_thread"
 
-primrec round_robin_update_state :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 't list round_robin"
+primrec round_robin_update_state :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 't list round_robin"
 where 
   "round_robin_update_state n0 (queue, n) t ta =
    (let queue' = enqueue_new_threads queue \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>
-    in if n = 0 then (rotate1 queue', n0) else (queue', n - 1))"
+    in if n = 0 \<or> Yield \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> then (rotate1 queue', n0) else (queue', n - 1))"
 
 context multithreaded_base begin
 
-abbreviation round_robin_step :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
+abbreviation round_robin_step :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
 where
   "round_robin_step n0 \<sigma> s t \<equiv> step_thread (round_robin_update_state n0 \<sigma> t) s t"
 
-(*
-primrec round_robin_step :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
-where
-  "round_robin_step n0 (queue, n) s t =
-   (case thr s t of
-      \<lfloor>(x, ln)\<rfloor> \<Rightarrow>
-      if ln = no_wait_locks then
-        if \<exists>ta x' m'. t \<turnstile> (x, shr s) -ta\<rightarrow> (x', m') \<and> actions_ok s t ta then
-          let
-            (ta, x', m') = THE (ta, x', m'). t \<turnstile> (x, shr s) -ta\<rightarrow> (x', m') \<and> actions_ok s t ta;
-            queue' = enqueue_new_threads queue \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>;
-            queuen' = if n = 0 then (rotate1 queue', n0) else (queue', n - 1)
-          in
-            \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, queuen')\<rfloor>
-        else
-          None
-      else if may_acquire_all (locks s) t ln \<and> \<not> waiting (wset s t) then 
-        \<lfloor>(t, None, if n = 0 then (rotate1 queue, n0) else (queue, n - 1))\<rfloor>
-      else
-        None
-    | None \<Rightarrow> None)"
-*)
-
-
 partial_function (option) round_robin_reschedule :: "'t \<Rightarrow> 
-    't list \<Rightarrow> nat \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
+    't list \<Rightarrow> nat \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
 where
   "round_robin_reschedule t0 queue n0 s =
    (let
@@ -81,7 +56,7 @@ where
           None \<Rightarrow> round_robin_reschedule t0 (queue' @ [t]) n0 s
         | \<lfloor>ttaxm\<sigma>\<rfloor> \<Rightarrow> \<lfloor>ttaxm\<sigma>\<rfloor>)"
 
-fun round_robin :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
+fun round_robin :: "nat \<Rightarrow> 't list round_robin \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) option \<times> 't list round_robin) option"
 where 
   "round_robin n0 ([], n) s = None"
 | "round_robin n0 (t # queue, n) s =
@@ -105,11 +80,11 @@ apply(auto simp add: enqueue_new_threads_def set_enqueue_new_thread)
 done
 
 lemma enqueue_new_thread_eq_Nil [simp]:
-  "enqueue_new_thread queue nta = [] \<longleftrightarrow> queue = [] \<and> (\<exists>t. nta = ThreadExists t)"
+  "enqueue_new_thread queue nta = [] \<longleftrightarrow> queue = [] \<and> (\<exists>t b. nta = ThreadExists t b)"
 by(cases nta) simp_all
 
 lemma enqueue_new_threads_eq_Nil [simp]:
-  "enqueue_new_threads queue ntas = [] \<longleftrightarrow> queue = [] \<and> set ntas \<subseteq> range ThreadExists"
+  "enqueue_new_threads queue ntas = [] \<longleftrightarrow> queue = [] \<and> set ntas \<subseteq> {ThreadExists t b|t b. True}"
 apply(induct ntas arbitrary: queue)
 apply(auto simp add: enqueue_new_threads_def)
 done
@@ -160,44 +135,8 @@ qed
 
 context multithreaded_base begin
 
-(*
-lemma round_robin_step_NoneD:
-  "round_robin_step n0 \<sigma> s t = None \<Longrightarrow> t \<notin> active_threads s"
-apply(cases \<sigma>)
-apply(fastsimp simp add: split_beta elim!: active_threads.cases split: split_if_asm)
-done
-
-lemma inactive_round_robin_step_eq_NoneI:
-  "t \<notin> active_threads s \<Longrightarrow> round_robin_step n0 \<sigma> s t = None"
-apply(cases \<sigma>)
-apply(fastsimp simp add: split_beta split: split_if_asm intro: active_threads.intros)
-done
-
-lemma round_robin_step_eq_None_conv:
-  "round_robin_step n0 \<sigma> s t = None \<longleftrightarrow> t \<notin> active_threads s"
-by(blast dest: round_robin_step_NoneD intro: inactive_round_robin_step_eq_NoneI)
-
-lemma round_robin_step_eq_Some_activeD:
-  "round_robin_step n0 \<sigma> s t = \<lfloor>(t', taxm, \<sigma>')\<rfloor> 
-  \<Longrightarrow> t' = t \<and> t \<in> active_threads s"
-apply(cases \<sigma>)
-apply(fastsimp split: split_if_asm simp add: split_beta actions_ok_iff intro: active_threads.intros)
-done
-*)
-
 declare actions_ok_iff [simp del]
 declare actions_ok.cases [rule del]
-(*
-lemma round_robin_step_Some_NoneD:
-  "round_robin_step n0 \<sigma> s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>
-  \<Longrightarrow> \<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln"
-by(cases \<sigma>)(auto split: split_if_asm simp add: split_beta elim!: neq_no_wait_locksE)
-
-lemma round_robin_step_Some_SomeD:
-  "\<lbrakk> deterministic; round_robin_step n0 \<sigma> s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor> \<rbrakk>
-  \<Longrightarrow> \<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> actions_ok s t ta"
-by(cases \<sigma>)(clarsimp simp add: split_beta deterministic_THE split: split_if_asm)
-*)
 
 lemma round_robin_step_invar_None:
   "\<lbrakk> round_robin_step n0 \<sigma> s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>; round_robin_invar \<sigma> (dom (thr s)) \<rbrakk>
@@ -205,7 +144,7 @@ lemma round_robin_step_invar_None:
 by(cases \<sigma>)(auto dest: step_thread_Some_NoneD simp add: set_enqueue_new_threads distinct_enqueue_new_threads)
 
 lemma round_robin_step_invar_Some:
-  "\<lbrakk> deterministic; round_robin_step n0 \<sigma> s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>; round_robin_invar \<sigma> (dom (thr s)) \<rbrakk>
+  "\<lbrakk> deterministic I; round_robin_step n0 \<sigma> s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>; round_robin_invar \<sigma> (dom (thr s)); s \<in> I \<rbrakk>
   \<Longrightarrow> round_robin_invar \<sigma>' (dom (thr s) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})"
 apply(cases \<sigma>)
 apply clarsimp
@@ -213,10 +152,6 @@ apply(frule (1) step_thread_Some_SomeD)
 apply(auto split: split_if_asm simp add: split_beta set_enqueue_new_threads deterministic_THE)
 apply(auto simp add: actions_ok_iff distinct_enqueue_new_threads)
 done
-
-(*
-declare round_robin_step.simps [simp del]
-*)
 
 lemma round_robin_reschedule_Cons:
   "round_robin_reschedule t0 (t0 # queue) n0 s = None"
@@ -275,9 +210,10 @@ next
 qed
 
 lemma round_robin_reschedule_Some_SomeD:
-  assumes "deterministic"
+  assumes "deterministic I"
   and rrr: "round_robin_reschedule t0 queue n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
   and t0: "t0 \<in> set queue"
+  and I: "s \<in> I"
   shows "\<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> actions_ok s t ta"
 using t0 rrr
 proof(induct queue rule: round_robin_reschedule_induct)
@@ -296,7 +232,7 @@ next
     with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>` `t' \<noteq> t0`
     have "round_robin_step n0 (t' # queue, n0) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
-    thus ?thesis by(blast dest: step_thread_Some_SomeD[OF `deterministic`])
+    thus ?thesis using I by(blast dest: step_thread_Some_SomeD[OF `deterministic I`])
   qed
 qed
 
@@ -330,10 +266,11 @@ next
 qed
 
 lemma round_robin_reschedule_invar_Some:
-  assumes deterministic
+  assumes "deterministic I"
   and rrr: "round_robin_reschedule t0 queue n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
   and invar: "round_robin_invar (queue, n0) (dom (thr s))"
   and t0: "t0 \<in> set queue"
+  and "s \<in> I"
   shows "round_robin_invar \<sigma>' (dom (thr s) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})"
 using t0 rrr invar
 proof(induct queue rule: round_robin_reschedule_induct)
@@ -354,8 +291,8 @@ next
     with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>` `t' \<noteq> t0`
     have "round_robin_step n0 (t' # queue, n0) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
-    thus ?thesis using `round_robin_invar (t' # queue, n0) (dom (thr s))`
-      by(rule round_robin_step_invar_Some[OF `deterministic`])
+    thus ?thesis using `round_robin_invar (t' # queue, n0) (dom (thr s))` `s \<in> I`
+      by(rule round_robin_step_invar_Some[OF `deterministic I`])
   qed
 qed
 
@@ -408,8 +345,9 @@ proof -
 qed
 
 lemma round_robin_Some_SomeD:
-  assumes "deterministic"
+  assumes "deterministic I"
   and rr: "round_robin n0 \<sigma> s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
+  and "s \<in> I"
   shows "\<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> actions_ok s t ta"
 proof -
   obtain queue n where \<sigma>: "\<sigma> = (queue, n)" by(cases \<sigma>)
@@ -420,11 +358,11 @@ proof -
   proof(cases "round_robin_step n0 (t' # queue', n) s t'")
     case (Some a)
     with rr queue \<sigma> have "round_robin_step n0 (t' # queue', n) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
-    thus ?thesis by(blast dest: step_thread_Some_SomeD[OF `deterministic`])
+    thus ?thesis using `s \<in> I` by(blast dest: step_thread_Some_SomeD[OF `deterministic I`])
   next
     case None
     with rr queue \<sigma> have "round_robin_reschedule t' (queue' @ [t']) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
-    thus ?thesis by(rule round_robin_reschedule_Some_SomeD[OF `deterministic`])simp
+    thus ?thesis by(rule round_robin_reschedule_Some_SomeD[OF `deterministic I`])(simp_all add: `s \<in> I`)
   qed
 qed
 
@@ -451,9 +389,9 @@ proof -
 qed
 
 lemma round_robin_invar_Some:
-  assumes deterministic
+  assumes "deterministic I"
   and rr: "round_robin n0 \<sigma> s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
-  and invar: "round_robin_invar \<sigma> (dom (thr s))"
+  and invar: "round_robin_invar \<sigma> (dom (thr s))" "s \<in> I"
   shows "round_robin_invar \<sigma>' (dom (thr s) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})"
 proof -
   obtain queue n where \<sigma>: "\<sigma> = (queue, n)" by(cases \<sigma>)
@@ -464,13 +402,13 @@ proof -
   proof(cases "round_robin_step n0 (t' # queue', n) s t'")
     case (Some a)
     with rr queue \<sigma> have "round_robin_step n0 (t' # queue', n) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
-    thus ?thesis using invar unfolding \<sigma> queue by(rule round_robin_step_invar_Some[OF `deterministic`])
+    thus ?thesis using invar unfolding \<sigma> queue by(rule round_robin_step_invar_Some[OF `deterministic I`])
   next
     case None
     with rr queue \<sigma> have "round_robin_reschedule t' (queue' @ [t']) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
     moreover from invar queue \<sigma>
     have "round_robin_invar (queue' @ [t'], n0) (dom (thr s))" by simp
-    ultimately show ?thesis by(rule round_robin_reschedule_invar_Some[OF `deterministic`]) simp
+    ultimately show ?thesis by(rule round_robin_reschedule_invar_Some[OF `deterministic I`])(simp_all add: `s \<in> I`)
   qed
 qed
 
@@ -479,25 +417,29 @@ end
 locale round_robin_base =
   scheduler_base_aux
     final r convert_RA
-    thr_\<alpha> thr_invar thr_empty thr_lookup thr_update
-    ws_\<alpha> ws_invar ws_empty ws_lookup
+    thr_\<alpha> thr_invar thr_lookup thr_update
+    ws_\<alpha> ws_invar ws_lookup
+    is_\<alpha> is_invar is_memb is_ins is_delete
   for final :: "'x \<Rightarrow> bool"
-  and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) Predicate.pred"
+  and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
-  and "output" :: "'queue round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 'q option"
+  and "output" :: "'queue round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'q option"
   and thr_\<alpha> :: "'m_t \<Rightarrow> ('l,'t,'x) thread_info"
   and thr_invar :: "'m_t \<Rightarrow> bool"
-  and thr_empty :: "'m_t"
   and thr_lookup :: "'t \<Rightarrow> 'm_t \<rightharpoonup> ('x \<times> 'l released_locks)"
   and thr_update :: "'t \<Rightarrow> 'x \<times> 'l released_locks \<Rightarrow> 'm_t \<Rightarrow> 'm_t"
   and ws_\<alpha> :: "'m_w \<Rightarrow> ('w,'t) wait_sets"
   and ws_invar :: "'m_w \<Rightarrow> bool"
-  and ws_empty :: "'m_w"
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
   and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
+  and is_invar :: "'s_i \<Rightarrow> bool"
+  and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
+  and is_ins :: "'t \<Rightarrow> 's_i \<Rightarrow> 's_i"
+  and is_delete :: "'t \<Rightarrow> 's_i \<Rightarrow> 's_i"
   +
   fixes queue_\<alpha> :: "'queue \<Rightarrow> 't list"
   and queue_invar :: "'queue \<Rightarrow> bool"
@@ -514,53 +456,27 @@ where "queue_rotate1 = split queue_enqueue \<circ> queue_dequeue"
 primrec enqueue_new_thread :: "'queue \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> 'queue"
 where 
   "enqueue_new_thread ts (NewThread t x m) = queue_enqueue t ts"
-| "enqueue_new_thread ts (ThreadExists t) = ts"
+| "enqueue_new_thread ts (ThreadExists t b) = ts"
 
 definition enqueue_new_threads :: "'queue \<Rightarrow> ('t,'x,'m) new_thread_action list \<Rightarrow> 'queue"
 where
   "enqueue_new_threads = foldl enqueue_new_thread"
 
-primrec round_robin_update_state :: "nat \<Rightarrow> 'queue round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 'queue round_robin"
+primrec round_robin_update_state :: "nat \<Rightarrow> 'queue round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'queue round_robin"
 where 
   "round_robin_update_state n0 (queue, n) t ta =
    (let queue' = enqueue_new_threads queue \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>
-    in if n = 0 then (queue_rotate1 queue', n0) else (queue', n - 1))"
+    in if n = 0 \<or> Yield \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> then (queue_rotate1 queue', n0) else (queue', n - 1))"
 
-abbreviation round_robin_step :: "nat \<Rightarrow> 'queue round_robin \<Rightarrow> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 'queue round_robin) option"
+abbreviation round_robin_step ::
+  "nat \<Rightarrow> 'queue round_robin \<Rightarrow> ('l,'t,'m,'m_t,'m_w,'s_i) state_refine \<Rightarrow> 't 
+  \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) option \<times> 'queue round_robin) option"
 where
   "round_robin_step n0 \<sigma> s t \<equiv> step_thread (round_robin_update_state n0 \<sigma> t) s t"
 
-(*
-primrec round_robin_step :: "nat \<Rightarrow> 'queue round_robin \<Rightarrow> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> 't \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 'queue round_robin) option"
-where
-  "round_robin_step n0 (queue, n) s t =
-   (case thr_lookup t (thr s) of
-      \<lfloor>(x, ln)\<rfloor> \<Rightarrow>
-      if ln = no_wait_locks then
-        let
-          reds = do {
-            (ta, x', m') \<leftarrow> r t (x, shr s);
-            if actions_ok s t ta then Predicate.single (ta, x', m') else bot
-          }
-        in
-          if Predicate.holds (reds \<guillemotright>= (\<lambda>_. Predicate.single ())) then
-            let
-              (ta, x', m') = Predicate.the reds;
-              queue' = enqueue_new_threads queue \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>;
-              queuen' = if n = 0 then (queue_rotate1 queue', n0) else (queue', n - 1)
-            in 
-              \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, queuen')\<rfloor>
-          else
-            None
-      else if may_acquire_all (locks s) t ln \<and> \<not> waiting (ws_lookup t (wset s)) then 
-        \<lfloor>(t, None, if n = 0 then (queue_rotate1 queue, n0) else (queue, n - 1))\<rfloor>
-      else
-        None
-    | None \<Rightarrow> None)"
-*)
-
 partial_function (option) round_robin_reschedule ::
-  "'t \<Rightarrow> 'queue \<Rightarrow> nat \<Rightarrow> ('l,'t,'m,'m_t,'m_w) state_refine \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) option \<times> 'queue round_robin) option"
+  "'t \<Rightarrow> 'queue \<Rightarrow> nat \<Rightarrow> ('l,'t,'m,'m_t,'m_w,'s_i) state_refine 
+  \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) option \<times> 'queue round_robin) option"
 where
   "round_robin_reschedule t0 queue n0 s =
    (let
@@ -573,7 +489,7 @@ where
           None \<Rightarrow> round_robin_reschedule t0 (queue_enqueue t queue') n0 s
         | \<lfloor>ttaxm\<sigma>\<rfloor> \<Rightarrow> \<lfloor>ttaxm\<sigma>\<rfloor>)"
 
-primrec round_robin :: "nat \<Rightarrow> ('l,'t,'x,'m,'w,'o,'m_t,'m_w,'queue round_robin) scheduler"
+primrec round_robin :: "nat \<Rightarrow> ('l,'t,'x,'m,'w,'o,'m_t,'m_w,'s_i,'queue round_robin) scheduler"
 where 
   "round_robin n0 (queue, n) s = 
    (if queue_isEmpty queue then None
@@ -603,14 +519,16 @@ end
 locale round_robin =
   round_robin_base
     final r convert_RA "output"
-    thr_\<alpha> thr_invar thr_empty thr_lookup thr_update
-    ws_\<alpha> ws_invar ws_empty ws_lookup ws_update ws_delete ws_iterate ws_sel
+    thr_\<alpha> thr_invar thr_lookup thr_update
+    ws_\<alpha> ws_invar ws_lookup ws_update ws_delete ws_iterate ws_sel
+    is_\<alpha> is_invar is_memb is_ins is_delete
     queue_\<alpha> queue_invar queue_empty queue_isEmpty queue_enqueue queue_dequeue queue_push
   +
   scheduler_aux
     final r convert_RA
-    thr_\<alpha> thr_invar thr_empty thr_lookup thr_update
-    ws_\<alpha> ws_invar ws_empty ws_lookup
+    thr_\<alpha> thr_invar thr_lookup thr_update
+    ws_\<alpha> ws_invar ws_lookup
+    is_\<alpha> is_invar is_memb is_ins is_delete
   +
   ws!: map_update ws_\<alpha> ws_invar ws_update +
   ws!: map_delete ws_\<alpha> ws_invar ws_delete +
@@ -623,22 +541,25 @@ locale round_robin =
   queue!: list_dequeue queue_\<alpha> queue_invar queue_dequeue +
   queue!: list_push queue_\<alpha> queue_invar queue_push
   for final :: "'x \<Rightarrow> bool"
-  and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o list) thread_action \<times> 'x \<times> 'm) Predicate.pred"
+  and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
-  and "output" :: "'queue round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 'q option"
+  and "output" :: "'queue round_robin \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'q option"
   and thr_\<alpha> :: "'m_t \<Rightarrow> ('l,'t,'x) thread_info"
   and thr_invar :: "'m_t \<Rightarrow> bool"
-  and thr_empty :: "'m_t"
   and thr_lookup :: "'t \<Rightarrow> 'm_t \<rightharpoonup> ('x \<times> 'l released_locks)"
   and thr_update :: "'t \<Rightarrow> 'x \<times> 'l released_locks \<Rightarrow> 'm_t \<Rightarrow> 'm_t"
   and ws_\<alpha> :: "'m_w \<Rightarrow> ('w,'t) wait_sets"
   and ws_invar :: "'m_w \<Rightarrow> bool"
-  and ws_empty :: "'m_w"
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
   and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
+  and is_invar :: "'s_i \<Rightarrow> bool"
+  and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
+  and is_ins :: "'t \<Rightarrow> 's_i \<Rightarrow> 's_i"
+  and is_delete :: "'t \<Rightarrow> 's_i \<Rightarrow> 's_i"
   and queue_\<alpha> :: "'queue \<Rightarrow> 't list"
   and queue_invar :: "'queue \<Rightarrow> bool"
   and queue_empty :: "'queue"
@@ -647,25 +568,6 @@ locale round_robin =
   and queue_dequeue :: "'queue \<Rightarrow> 't \<times> 'queue"
   and queue_push :: "'t \<Rightarrow> 'queue \<Rightarrow> 'queue"
 begin
-
-(*
-lemma deterministic_THE2:
-  assumes "\<alpha>.deterministic"
-  and tst: "thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor>"
-  and red: "Predicate.eval (r t (x, shr s)) (ta, x', m')"
-  and aok: "\<alpha>.actions_ok (state_\<alpha> s) t ta"
-  shows "Predicate.the (r t (x, shr s) \<guillemotright>= (\<lambda>(ta, x', m'). if \<alpha>.actions_ok (state_\<alpha> s) t ta then Predicate.single (ta, x', m') else bot)) = (ta, x', m')"
-unfolding the_def
-apply(rule the_equality)
- apply(rule bindI[OF red])
- apply(simp add: aok singleI)
-apply(erule bindE)
-apply(clarsimp split: split_if_asm)
- apply(drule (1) \<alpha>.deterministicD[OF `\<alpha>.deterministic`, where s="state_\<alpha> s", simplified, OF red _ tst aok])
- apply simp
-apply(erule bot1E)
-done
-*)
 
 lemma queue_rotate1_correct:
   assumes "queue_invar queue" "queue_\<alpha> queue \<noteq> []"
@@ -695,14 +597,14 @@ lemma round_robin_update_thread_correct:
   shows "round_robin_\<alpha> (round_robin_update_state n0 \<sigma> t ta) = Round_Robin.round_robin_update_state n0 (round_robin_\<alpha> \<sigma>) t ta"
 using assms
 apply(cases \<sigma>)
-apply(auto simp add: round_robin_\<alpha>_def queue_rotate1_correct enqueue_threads_correct)
-apply(subst queue_rotate1_correct)
+apply(auto simp add: round_robin_\<alpha>_def queue_rotate1_correct enqueue_threads_correct del: conjI)
+apply(subst (1 2) queue_rotate1_correct)
 apply(auto simp add: enqueue_threads_correct)
 done
 
 lemma round_robin_step_correct:
-  assumes det: "\<alpha>.deterministic"
-  and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s"
+  assumes det: "\<alpha>.deterministic I"
+  and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
   shows
   "Option.map (apsnd (apsnd round_robin_\<alpha>)) (round_robin_step n0 \<sigma> s t) = 
    \<alpha>.round_robin_step n0 (round_robin_\<alpha> \<sigma>) (state_\<alpha> s) t" (is ?thesis1)
@@ -721,11 +623,11 @@ proof -
     case False
     then obtain t' where t': "t' \<in> dom (thr_\<alpha> (thr s))" by blast
     hence ?thesis1
-      using step_thread_correct(1)[of round_robin_invar \<sigma> s round_robin_\<alpha> "round_robin_update_state n0 \<sigma> t" t, OF det invar]
+      using step_thread_correct(1)[of I round_robin_invar \<sigma> s round_robin_\<alpha> "round_robin_update_state n0 \<sigma> t" t, OF det invar]
       unfolding o_def using invar
       by(subst (asm) round_robin_update_thread_correct) auto
     moreover
-    { fix ta :: "('l, 't, 'x, 'm, 'w, 'o list) thread_action"
+    { fix ta :: "('l, 't, 'x, 'm, 'w, 'o) thread_action"
       assume "FWThread.thread_oks (thr_\<alpha> (thr s)) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
       moreover from t' invar have "queue_\<alpha> (fst \<sigma>) \<noteq> []" by(cases \<sigma>) auto
       ultimately have "round_robin_invar (round_robin_update_state n0 \<sigma> t ta) (dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})"
@@ -738,8 +640,8 @@ proof -
 qed
 
 lemma round_robin_reschedule_correct:
-  assumes det: "\<alpha>.deterministic"
-  and invar: "round_robin_invar (queue, n) (dom (thr_\<alpha> (thr s)))" "state_invar s"
+  assumes det: "\<alpha>.deterministic I"
+  and invar: "round_robin_invar (queue, n) (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
   and t0: "t0 \<in> set (queue_\<alpha> queue)"
   shows "Option.map (apsnd (apsnd round_robin_\<alpha>)) (round_robin_reschedule t0 queue n0 s) =
      \<alpha>.round_robin_reschedule t0 (queue_\<alpha> queue) n0 (state_\<alpha> s)"
@@ -763,12 +665,12 @@ next
     show ?case
     proof(cases "round_robin_step n0 (queue_push t queue', n0) s t")
       case Some thus ?thesis
-        using queue' `t \<noteq> t0` round_robin_step_correct[OF det invar' `state_invar s`, of n0 t] invar'
+        using queue' `t \<noteq> t0` round_robin_step_correct[OF det invar' `state_invar s`, of n0 t] invar' `state_\<alpha> s \<in> I`
         by(subst round_robin_reschedule.simps)(subst \<alpha>.round_robin_reschedule.simps, auto simp add: round_robin_\<alpha>_def queue.push_correct)
     next
       case None
       hence \<alpha>None: "\<alpha>.round_robin_step n0 (queue_\<alpha> (queue_push t queue'), n0) (state_\<alpha> s) t = None"
-        using round_robin_step_correct[OF det invar' `state_invar s`, of n0 t] invar'
+        using round_robin_step_correct[OF det invar' `state_invar s`, of n0 t] invar' `state_\<alpha> s \<in> I`
         by(auto simp add: queue.push_correct round_robin_\<alpha>_def)
       have "\<alpha>queue' @ [t] = queue_\<alpha> (queue_enqueue t queue')" by(simp add: queue.enqueue_correct)
       moreover from invar'
@@ -777,7 +679,7 @@ next
       ultimately 
       have "Option.map (apsnd (apsnd round_robin_\<alpha>)) (round_robin_reschedule t0 (queue_enqueue t queue') n0 s) =
             \<alpha>.round_robin_reschedule t0 (queue_\<alpha> (queue_enqueue t queue')) n0 (state_\<alpha> s)"
-        using `state_invar s` by(rule rotate.hyps)
+        using `state_invar s` `state_\<alpha> s \<in> I` by(rule rotate.hyps)
       thus ?thesis using None \<alpha>None `t \<noteq> t0` invar' queue'
         by(subst round_robin_reschedule.simps)(subst \<alpha>.round_robin_reschedule.simps, auto simp add: queue.enqueue_correct queue.push_correct)
     qed
@@ -789,7 +691,7 @@ next
     show ?case
     proof(cases "round_robin_step n0 (queue_push t queue', n0) s t")
       case Some thus ?thesis
-        using queue' `t \<noteq> t0` round_robin_step_correct[OF det invar' `state_invar s`, of n0 t] invar'
+        using queue' `t \<noteq> t0` round_robin_step_correct[OF det invar' `state_invar s`, of n0 t] invar' `state_\<alpha> s \<in> I`
         by(subst round_robin_reschedule.simps)(auto simp add: round_robin_\<alpha>_def queue.push_correct)
     next
       case None
@@ -799,7 +701,7 @@ next
         by(auto simp add: queue.enqueue_correct queue.push_correct)
       ultimately 
       have "option_case True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (option_case (dom (thr_\<alpha> (thr s))) (\<lambda>(ta, x', m'). dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>}) taxm)) (round_robin_reschedule t0 (queue_enqueue t queue') n0 s)"
-        using `state_invar s` by(rule rotate.hyps)
+        using `state_invar s` `state_\<alpha> s \<in> I` by(rule rotate.hyps)
       thus ?thesis using None `t \<noteq> t0` invar' queue'
         by(subst round_robin_reschedule.simps)(auto simp add: queue.enqueue_correct queue.push_correct)
     qed
@@ -807,8 +709,8 @@ next
 qed
 
 lemma round_robin_correct:
-  assumes det: "\<alpha>.deterministic"
-  and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s"
+  assumes det: "\<alpha>.deterministic I"
+  and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
   shows "Option.map (apsnd (apsnd round_robin_\<alpha>)) (round_robin n0 \<sigma> s) =
          \<alpha>.round_robin n0 (round_robin_\<alpha> \<sigma>) (state_\<alpha> s)"
     (is ?thesis1)
@@ -839,7 +741,7 @@ proof -
       case None
       from invar \<sigma> Cons have "t \<in> set (queue_\<alpha> (queue_enqueue t queue'))"
         by(auto simp add: queue.enqueue_correct)      
-      from round_robin_reschedule_correct[OF det invar'' `state_invar s` this, of n0] None \<sigma> Cons invar
+      from round_robin_reschedule_correct[OF det invar'' `state_invar s`, OF `state_\<alpha> s \<in> I` this, of n0] None \<sigma> Cons invar
         round_robin_step_correct[OF det invar' `state_invar s`, of n0 t]
       show ?thesis by(auto simp add: queue.isEmpty_correct queue.push_correct round_robin_\<alpha>_def queue.enqueue_correct)
     qed
@@ -848,13 +750,13 @@ proof -
 qed
 
 lemma round_robin_scheduler_spec:
-  assumes det: "\<alpha>.deterministic"
-  shows "scheduler_spec final r (round_robin n0) round_robin_invar thr_\<alpha> thr_invar ws_\<alpha> ws_invar"
+  assumes det: "\<alpha>.deterministic I"
+  shows "scheduler_spec final r (round_robin n0) round_robin_invar thr_\<alpha> thr_invar ws_\<alpha> ws_invar is_\<alpha> is_invar I"
 proof
   fix \<sigma> s
   assume rr: "round_robin n0 \<sigma> s = None"
-    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s"
-  from round_robin_correct[OF det invar, of n0] rr
+    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
+  from round_robin_correct[OF det, OF invar, of n0] rr
   have "\<alpha>.round_robin n0 (round_robin_\<alpha> \<sigma>) (state_\<alpha> s) = None" by simp
   moreover from invar have "Round_Robin.round_robin_invar (round_robin_\<alpha> \<sigma>) (dom (thr (state_\<alpha> s)))"
     by(simp add: round_robin_invar_correct)
@@ -862,30 +764,30 @@ proof
 next
   fix \<sigma> s t \<sigma>'
   assume rr: "round_robin n0 \<sigma> s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
-    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s"
-  from round_robin_correct[OF det invar, of n0] rr
+    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
+  from round_robin_correct[OF det, OF invar, of n0] rr
   have rr': "\<alpha>.round_robin n0 (round_robin_\<alpha> \<sigma>) (state_\<alpha> s) = \<lfloor>(t, None, round_robin_\<alpha> \<sigma>')\<rfloor>" by simp
   then show "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> 0 < ln\<^sub>f n \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln"
     by(rule \<alpha>.round_robin_Some_NoneD[where s="state_\<alpha> s", unfolded state_\<alpha>_conv])
 next
   fix \<sigma> s t ta x' m' \<sigma>'
   assume rr: "round_robin n0 \<sigma> s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
-    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s"
-  from round_robin_correct[OF det invar, of n0] rr
+    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
+  from round_robin_correct[OF det, OF invar, of n0] rr
   have rr': "\<alpha>.round_robin n0 (round_robin_\<alpha> \<sigma>) (state_\<alpha> s) = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, round_robin_\<alpha> \<sigma>')\<rfloor>" by simp
   thus "\<exists>x. thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> Predicate.eval (r t (x, shr s)) (ta, x', m') \<and> \<alpha>.actions_ok (state_\<alpha> s) t ta"
-    by(rule \<alpha>.round_robin_Some_SomeD[OF det, where s="state_\<alpha> s", unfolded state_\<alpha>_conv])
+    using `state_\<alpha> s \<in> I` by(rule \<alpha>.round_robin_Some_SomeD[OF det, where s="state_\<alpha> s", unfolded state_\<alpha>_conv])
 next
   fix \<sigma> s t \<sigma>'
   assume rr: "round_robin n0 \<sigma> s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
-    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s"
-  from round_robin_correct[OF det invar, of n0] rr
+    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
+  from round_robin_correct[OF det, OF invar, of n0] rr
   show "round_robin_invar \<sigma>' (dom (thr_\<alpha> (thr s)))" by simp
 next
   fix \<sigma> s t ta x' m' \<sigma>'
   assume rr: "round_robin n0 \<sigma> s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
-    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s"
-  from round_robin_correct[OF det invar, of n0] rr
+    and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
+  from round_robin_correct[OF det, OF invar, of n0] rr
   show "round_robin_invar \<sigma>' (dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})" by simp
 qed
 
@@ -899,8 +801,9 @@ sublocale round_robin_base <
   scheduler_base
     final r convert_RA
     "round_robin n0" "output" "pick_wakeup_via_sel ws_sel" round_robin_invar
-    thr_\<alpha> thr_invar thr_empty thr_lookup thr_update
-    ws_\<alpha> ws_invar ws_empty ws_lookup ws_update ws_delete ws_iterate
+    thr_\<alpha> thr_invar thr_lookup thr_update
+    ws_\<alpha> ws_invar ws_lookup ws_update ws_delete ws_iterate
+    is_\<alpha> is_invar is_memb is_ins is_delete
   for n0 .
 
 sublocale round_robin <
@@ -909,27 +812,32 @@ sublocale round_robin <
     "pick_wakeup_via_sel ws_sel" round_robin_invar
     thr_\<alpha> thr_invar
     ws_\<alpha> ws_invar
+    is_\<alpha> is_invar
 by(rule pick_wakeup_spec_via_sel)(unfold_locales)
 
 context round_robin begin
 
 lemma round_robin_scheduler:
-  assumes det: "\<alpha>.deterministic"
+  assumes det: "\<alpha>.deterministic I"
   shows 
   "scheduler
-     final r
+     final r convert_RA
      (round_robin n0) (pick_wakeup_via_sel ws_sel) round_robin_invar 
-     thr_\<alpha> thr_invar thr_empty thr_lookup thr_update 
-     ws_\<alpha> ws_invar ws_empty ws_lookup ws_update ws_delete ws_iterate"
+     thr_\<alpha> thr_invar thr_lookup thr_update 
+     ws_\<alpha> ws_invar ws_lookup ws_update ws_delete ws_iterate
+     is_\<alpha> is_invar is_memb is_ins is_delete
+     I"
 proof -
   interpret scheduler_spec
       final r convert_RA
       "round_robin n0" round_robin_invar
       thr_\<alpha> thr_invar
       ws_\<alpha> ws_invar
+      is_\<alpha> is_invar
+      I
     using det by(rule round_robin_scheduler_spec)
 
-  show ?thesis by(unfold_locales)
+  show ?thesis by(unfold_locales)(rule \<alpha>.deterministic_invariant3p[OF det])
 qed
 
 end

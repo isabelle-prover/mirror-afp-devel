@@ -87,6 +87,16 @@ lemma ts_inv_okD2:
   "ts_inv_ok ts I \<Longrightarrow> (\<exists>v. ts t = \<lfloor>v\<rfloor>) \<longleftrightarrow> (\<exists>v. I t = \<lfloor>v\<rfloor>)"
 by(erule ts_inv_okE2, blast)
 
+lemma ts_inv_ok_conv_dom_eq:
+  "ts_inv_ok ts I \<longleftrightarrow> (dom ts = dom I)"
+proof -
+  have "ts_inv_ok ts I \<longleftrightarrow> (\<forall>t. ts t = None \<longleftrightarrow> I t = None)"
+    unfolding ts_inv_ok_def by blast
+  also have "\<dots> \<longleftrightarrow> (\<forall>t. t \<in> - dom ts \<longleftrightarrow> t \<in> - dom I)" by(force)
+  also have "\<dots> \<longleftrightarrow> dom ts = dom I" by auto
+  finally show ?thesis .
+qed
+
 lemma ts_inv_ok_upd_ts:
   "\<lbrakk> ts t = \<lfloor>x\<rfloor>; ts_inv_ok ts I \<rbrakk> \<Longrightarrow> ts_inv_ok (ts(t \<mapsto> x')) I"
 by(auto dest!: ts_inv_okD intro!: ts_inv_okI split: if_splits)
@@ -218,8 +228,6 @@ next
   finally show ?case by simp
 qed
 
-
-
 lemma SOME_new_thread_upd_invs:
   assumes Qsome: "Q (SOME i. Q i t x m) t x m"
   and nt: "NewThread t x m \<in> set tas"
@@ -252,5 +260,30 @@ proof(rule exI[where x="SOME i. Q i t x m"])
   with Qsome show "upd_invs I Q tas t = \<lfloor>SOME i. Q i t x m\<rfloor> \<and> Q (SOME i. Q i t x m) t x m"
     by(simp)
 qed
+
+lemma ts_ok_into_ts_inv_const:
+  assumes "ts_ok P ts m"
+  obtains I where "ts_inv (\<lambda>_. P) I ts m"
+proof -
+  from assms have "ts_inv (\<lambda>_. P) (\<lambda>t. if t \<in> dom ts then Some undefined else None) ts m"
+    by(auto intro!: ts_invI dest: ts_okD)
+  thus thesis by(rule that)
+qed
+
+lemma ts_inv_const_into_ts_ok:
+  "ts_inv (\<lambda>_. P) I ts m \<Longrightarrow> ts_ok P ts m"
+by(auto intro!: ts_okI dest: ts_invD)
+
+lemma ts_inv_into_ts_ok_Ex:
+  "ts_inv Q I ts m \<Longrightarrow> ts_ok (\<lambda>t x m. \<exists>i. Q i t x m) ts m"
+by(rule ts_okI)(blast dest: ts_invD)
+
+lemma ts_ok_Ex_into_ts_inv:
+  "ts_ok (\<lambda>t x m. \<exists>i. Q i t x m) ts m \<Longrightarrow> \<exists>I. ts_inv Q I ts m"
+by(rule exI[where x="\<lambda>t. \<lfloor>SOME i. Q i t (fst (the (ts t))) m\<rfloor>"])(auto 4 4 dest: ts_okD intro: someI intro: ts_invI)
+
+lemma Ex_ts_inv_conv_ts_ok:
+  "(\<exists>I. ts_inv Q I ts m) \<longleftrightarrow> (ts_ok (\<lambda>t x m. \<exists>i. Q i t x m) ts m)"
+by(auto dest: ts_inv_into_ts_ok_Ex ts_ok_Ex_into_ts_inv)
 
 end

@@ -3,17 +3,21 @@ theory SC_Collections imports
   "../../Collections/RBTMapImpl"
   "../../Collections/TrieMapImpl"
   "../../Collections/ListMapImpl"
+  "MM"
 begin
+
+hide_const (open) new_Addr
+hide_fact (open) new_Addr_SomeD new_Addr_SomeI
 
 subsection{* Objects and Arrays *}
 
-types 
-  fields = "(char, (cname, val) lm) tm"       -- "field name, defining class, value"
-  array_cells = "(nat, val) rbt"
+type_synonym fields = "(char, (cname, addr val) lm) tm"
+type_synonym array_cells = "(nat, addr val) rbt"
+type_synonym array_fields = "(vname, addr val) lm"
 
 datatype heapobj
   = Obj cname fields                    -- "class instance with class name and fields"
-  | Arr ty nat array_cells                 -- "element type, size and cell contents"
+  | Arr ty nat array_fields array_cells                 -- "element type, size, fields and cell contents"
 
 lemma heapobj_rec [simp]: "heapobj_rec = heapobj_case"
 by(auto intro!: ext split: heapobj.split)
@@ -21,18 +25,18 @@ by(auto intro!: ext split: heapobj.split)
 primrec obj_ty  :: "heapobj \<Rightarrow> ty"
 where
   "obj_ty (Obj c f)   = Class c"
-| "obj_ty (Arr t si e) = Array t"
+| "obj_ty (Arr t f si e) = Array t"
 
 fun is_Arr :: "heapobj \<Rightarrow> bool" where
-  "is_Arr (Obj C fs)    = False"
-| "is_Arr (Arr T si el) = True"
+  "is_Arr (Obj C fs)      = False"
+| "is_Arr (Arr T f si el) = True"
 
 lemma is_Arr_conv:
-  "is_Arr arrobj = (\<exists>T si el. arrobj = Arr T si el)"
+  "is_Arr arrobj = (\<exists>T si f el. arrobj = Arr T si f el)"
 by(cases arrobj, auto)
 
 lemma is_ArrE:
-  "\<lbrakk> is_Arr arrobj; \<And>T si el. arrobj = Arr T si el \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
+  "\<lbrakk> is_Arr arrobj; \<And>T si f el. arrobj = Arr T si f el \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
   "\<lbrakk> \<not> is_Arr arrobj; \<And>C fs. arrobj = Obj C fs \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
 by(cases arrobj, auto)+
 
@@ -45,11 +49,24 @@ where
                                       (case tm_lookup F' fields of None \<Rightarrow> lm_empty | Some lm \<Rightarrow> lm)) fields)
         FDTs tm_empty"
 
+definition init_fields_array :: "(vname \<times> ty) list \<Rightarrow> array_fields"
+where
+  "init_fields_array \<equiv> list_to_lm \<circ> map (\<lambda>(F, T). (F, default_val T))"
+
+definition init_cells :: "ty \<Rightarrow> nat \<Rightarrow> array_cells"
+where "init_cells T n = foldl (\<lambda>cells i. rm_update i (default_val T) cells) rm_empty [0..<n]"
+
 definition
   -- "a new, blank object with default values in all fields:"
   blank :: "'m prog \<Rightarrow> cname \<Rightarrow> heapobj"
 where
   "blank P C  \<equiv>  Obj C (init_fields (map (\<lambda>(FD, (T, fm)). (FD, T)) (TypeRel.fields P C)))"
+
+definition
+  blank_arr :: "'m prog \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> heapobj"
+where
+  "blank_arr P T n \<equiv>
+   Arr T n (init_fields_array (map (\<lambda>((F, D), (T, fm)). (F, T)) (TypeRel.fields P Object))) (init_cells T n)"
 
 lemma blank_obj: "\<exists>c f. blank P C = Obj c f"
 by(simp add: blank_def)
@@ -57,9 +74,12 @@ by(simp add: blank_def)
 lemma obj_ty_blank [iff]: "obj_ty (blank P C) = Class C"
   by (simp add: blank_def)
 
+lemma obj_typ_blank_arr [iff]: "obj_ty (blank_arr P T n) = Array T"
+by(simp add: blank_arr_def)
+
 subsection{* Heap *}
 
-types heap = "(addr, heapobj) rbt"
+type_synonym heap = "(addr, heapobj) rbt"
 
 translations
   (type) "heap" <= (type) "(nat, heapobj) rbt"
@@ -70,8 +90,8 @@ where "sc_empty \<equiv> rm_empty"
 fun the_obj :: "heapobj \<Rightarrow> cname \<times> fields" where
   "the_obj (Obj C fs) = (C, fs)"
 
-fun the_arr :: "heapobj \<Rightarrow> ty \<times> nat \<times> array_cells" where
-  "the_arr (Arr T si el) = (T, si, el)"
+fun the_arr :: "heapobj \<Rightarrow> ty \<times> nat \<times> array_fields \<times> array_cells" where
+  "the_arr (Arr T si f el) = (T, si, f, el)"
 
 abbreviation
   cname_of :: "heap \<Rightarrow> addr \<Rightarrow> cname" where
@@ -86,31 +106,32 @@ where
    (case new_Addr h of None \<Rightarrow> (h, None)
                    | Some a \<Rightarrow> (rm_update a (blank P C) h, Some a))"
 
-definition sc_new_arr :: "heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> (heap \<times> addr option)"
+definition sc_new_arr :: "'m prog \<Rightarrow> heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> (heap \<times> addr option)"
 where
-  "sc_new_arr h T n =
+  "sc_new_arr P h T n =
   (case new_Addr h of None \<Rightarrow> (h, None)
-                  | Some a \<Rightarrow> (rm_update a (Arr T n (foldl (\<lambda>cells i. rm_update i (default_val T) cells) rm_empty [0..<n])) h, Some a))"
+                  | Some a \<Rightarrow> (rm_update a (blank_arr P T n) h, Some a))"
 
 definition sc_typeof_addr :: "heap \<Rightarrow> addr \<Rightarrow> ty option"
 where "sc_typeof_addr h a = Option.map obj_ty (rm_lookup a h)"
 
 definition sc_array_length :: "heap \<Rightarrow> addr \<Rightarrow> nat"
-where "sc_array_length h a = (case the (rm_lookup a h) of Arr T si el \<Rightarrow> si | _ \<Rightarrow> undefined)"
+where "sc_array_length h a = (case the (rm_lookup a h) of Arr T si f el \<Rightarrow> si | _ \<Rightarrow> undefined)"
 
-inductive sc_heap_read :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
+inductive sc_heap_read :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> bool"
 for h :: heap and a :: addr
 where
   Obj: "\<lbrakk> rm_lookup a h = \<lfloor>Obj C fs\<rfloor>; tm_lookup (explode F) fs = \<lfloor>fs'\<rfloor>; lm_lookup D fs' = \<lfloor>v\<rfloor> \<rbrakk> \<Longrightarrow> sc_heap_read h a (CField D F) v"
-| Arr: "\<lbrakk> rm_lookup a h = \<lfloor>Arr T si el\<rfloor>; n < si \<rbrakk> \<Longrightarrow> sc_heap_read h a (ACell n) (the (rm_lookup n el))"
+| Arr: "\<lbrakk> rm_lookup a h = \<lfloor>Arr T si f el\<rfloor>; n < si \<rbrakk> \<Longrightarrow> sc_heap_read h a (ACell n) (the (rm_lookup n el))"
+| ArrObj: "\<lbrakk> rm_lookup a h = \<lfloor>Arr T si f el\<rfloor>; lm_lookup F f = \<lfloor>v\<rfloor> \<rbrakk> \<Longrightarrow> sc_heap_read h a (CField Object F) v"
 
-hide_fact (open) Obj Arr
+hide_fact (open) Obj Arr ArrObj
 
 inductive_cases sc_heap_read_cases [elim!]:
   "sc_heap_read h a (CField C F) v"
   "sc_heap_read h a (ACell n) v"
 
-inductive sc_heap_write :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> heap \<Rightarrow> bool"
+inductive sc_heap_write :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> heap \<Rightarrow> bool"
 for h :: heap and a :: addr
 where
   Obj:
@@ -119,10 +140,14 @@ where
   \<Longrightarrow> sc_heap_write h a (CField D F) v h'"
 
 | Arr:
-  "\<lbrakk> rm_lookup a h = \<lfloor>Arr T si el\<rfloor>; h' = rm_update a (Arr T si (rm_update n v el)) h \<rbrakk>
+  "\<lbrakk> rm_lookup a h = \<lfloor>Arr T si f el\<rfloor>; h' = rm_update a (Arr T si f (rm_update n v el)) h \<rbrakk>
   \<Longrightarrow> sc_heap_write h a (ACell n) v h'"
 
-hide_fact (open) Obj Arr
+| ArrObj:
+  "\<lbrakk> rm_lookup a h = \<lfloor>Arr T si f el\<rfloor>; h' = rm_update a (Arr T si (lm_update F v f) el) h \<rbrakk>
+  \<Longrightarrow> sc_heap_write h a (CField Object F) v h'"
+
+hide_fact (open) Obj Arr ArrObj
 
 inductive_cases sc_heap_write_cases [elim!]:
   "sc_heap_write h a (CField C F) v h'"
@@ -143,14 +168,16 @@ done
 
 interpretation sc!: 
   heap_base
+    "addr2thread_id"
+    "thread_id2addr"
     "sc_empty"
     "sc_new_obj P"
-    "sc_new_arr" 
+    "sc_new_arr P" 
     "sc_typeof_addr"
     "sc_array_length"
     "sc_heap_read"
     "sc_heap_write"
-  for P .
+  for P . 
 
 text {* Translate notation from @{text heap_base} *}
 
@@ -160,17 +187,34 @@ where "sc_preallocated == sc.preallocated TYPE('m)"
 abbreviation sc_start_tid :: "'md prog \<Rightarrow> thread_id"
 where "sc_start_tid \<equiv> sc.start_tid TYPE('md)"
 
+abbreviation sc_start_heap_ok :: "'m prog \<Rightarrow> bool"
+where "sc_start_heap_ok \<equiv> sc.start_heap_ok TYPE('m)"
+
+abbreviation sc_start_heap :: "'m prog \<Rightarrow> heap"
+where "sc_start_heap \<equiv> sc.start_heap TYPE('m)"
+
+abbreviation sc_start_state :: 
+  "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> addr val list \<Rightarrow> 'x)
+  \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> (addr, thread_id, 'x, heap, addr) state"
+where
+  "sc_start_state f P \<equiv> sc.start_state TYPE('m) P f P"
+
 notation sc.conf ("_,_ \<turnstile>sc _ :\<le> _"  [51,51,51,51] 50)
+notation sc.confs ("_,_ \<turnstile>sc _ [:\<le>] _" [51,51,51,51] 50)
 notation sc.hext ("_ \<unlhd>sc _" [51,51] 50)
 
-lemma sc_heap: "heap sc_empty (sc_new_obj P) sc_new_arr sc_typeof_addr sc_array_length sc_heap_write"
+lemma new_Addr_SomeI: "\<exists>a. new_Addr h = Some a"
+by(simp add: new_Addr_def)
+
+lemma sc_start_heap_ok: "sc_start_heap_ok P"
+by(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_new_obj_def option_case_conv_if new_Addr_SomeI sys_xcpts_list_def split del: option.split split_if)
+
+lemma sc_heap:
+  "heap addr2thread_id thread_id2addr (sc_new_obj P) (sc_new_arr P) sc_typeof_addr sc_array_length sc_heap_write P"
 proof
-  show "sc_typeof_addr sc_empty = empty"
-    by(auto simp add: sc_typeof_addr_def rm.lookup_correct rm.empty_correct intro!: ext)
-next
   fix h C h' a
   assume "sc_new_obj P h C = (h', \<lfloor>a\<rfloor>)"
-  thus "sc_typeof_addr h a = None \<and> sc_typeof_addr h' a = \<lfloor>Class C\<rfloor>"
+  thus "sc_typeof_addr h' a = \<lfloor>Class C\<rfloor>"
     by(auto simp add: sc_new_obj_def sc_typeof_addr_def rm.lookup_correct rm.update_correct dest: new_Addr_SomeD split: split_if_asm)
 next
   fix h C h' a
@@ -179,12 +223,12 @@ next
     by(force simp add: sc_new_obj_def sc_typeof_addr_def sc_array_length_def rm.lookup_correct rm.update_correct intro!: sc.hextI dest: new_Addr_SomeD[OF sym] split: heapobj.split split_if_asm)
 next
   fix h T n h' a
-  assume "sc_new_arr h T n = (h', \<lfloor>a\<rfloor>)"
-  thus "sc_typeof_addr h a = None \<and> sc_typeof_addr h' a = \<lfloor>T\<lfloor>\<rceil>\<rfloor> \<and> sc_array_length h' a = n"
-    by(auto simp add: sc_new_arr_def sc_typeof_addr_def sc_array_length_def rm.lookup_correct rm.update_correct dest: new_Addr_SomeD split: split_if_asm)
+  assume "sc_new_arr P h T n = (h', \<lfloor>a\<rfloor>)"
+  thus "sc_typeof_addr h' a = \<lfloor>T\<lfloor>\<rceil>\<rfloor> \<and> sc_array_length h' a = n"
+    by(auto simp add: sc_new_arr_def sc_typeof_addr_def sc_array_length_def rm.lookup_correct rm.update_correct blank_arr_def dest: new_Addr_SomeD split: split_if_asm)
 next
   fix h T n h' a
-  assume "sc_new_arr h T n = (h', a)"
+  assume "sc_new_arr P h T n = (h', a)"
   thus "h \<unlhd>sc h'"
     by(force intro!: sc.hextI simp add: sc_typeof_addr_def sc_new_arr_def sc_array_length_def rm.lookup_correct rm.update_correct dest: new_Addr_SomeD[OF sym] split: split_if_asm)
 next
@@ -199,18 +243,23 @@ next
   assume "sc_heap_write h a al v h'"
   thus "h \<unlhd>sc h'"
     by(cases al)(auto intro!: sc.hextI simp add: sc_typeof_addr_def sc_array_length_def rm.lookup_correct rm.update_correct)
-qed
+qed simp
 
 interpretation sc!: 
   heap 
+    "addr2thread_id"
+    "thread_id2addr"
     "sc_empty"
     "sc_new_obj P"
-    "sc_new_arr" 
+    "sc_new_arr P" 
     "sc_typeof_addr"
     "sc_array_length"
     "sc_heap_read"
     "sc_heap_write"
+    P
   for P by(rule sc_heap)
+
+declare sc.typeof_addr_thread_id2_addr_addr2thread_id [simp del]
 
 lemma sc_hext_new:
   "rm_lookup a h = None \<Longrightarrow> h \<unlhd>sc rm_update a arrobj h"
@@ -219,7 +268,7 @@ by(rule sc.hextI)(auto simp add: sc_typeof_addr_def sc_array_length_def rm.looku
 lemma sc_hext_upd_obj: "rm_lookup a h = Some (Obj C fs) \<Longrightarrow> h \<unlhd>sc rm_update a (Obj C fs') h"
 by(rule sc.hextI)(auto simp:fun_upd_apply sc_typeof_addr_def sc_array_length_def rm.lookup_correct rm.update_correct)
 
-lemma sc_hext_upd_arr: "\<lbrakk> rm_lookup a h = Some (Arr T si e) \<rbrakk> \<Longrightarrow> h \<unlhd>sc rm_update a (Arr T si e') h"
+lemma sc_hext_upd_arr: "\<lbrakk> rm_lookup a h = Some (Arr T si f e) \<rbrakk> \<Longrightarrow> h \<unlhd>sc rm_update a (Arr T si f' e') h"
 by(rule sc.hextI)(auto simp:fun_upd_apply sc_typeof_addr_def sc_array_length_def rm.lookup_correct rm.update_correct)
 
 subsection {* Conformance *}
@@ -227,23 +276,33 @@ subsection {* Conformance *}
 definition sc_oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> heapobj \<Rightarrow> bool"   ("_,_ \<turnstile>sc _ \<surd>" [51,51,51] 50)
 where
   "P,h \<turnstile>sc obj \<surd>  \<equiv>
-   (case obj of Obj C fs \<Rightarrow> is_class P C \<and> (\<forall>F D T fm. P \<turnstile> C has F:T (fm) in D \<longrightarrow> (\<exists>fs' v. tm_\<alpha> fs (explode F) = Some fs' \<and> lm_\<alpha> fs' D = Some v \<and> P,h \<turnstile>sc v :\<le> T))
-              | Arr T si el \<Rightarrow> is_type P T \<and> (\<forall>n. n < si \<longrightarrow> (\<exists>v. rm_\<alpha> el n = Some v \<and> P,h \<turnstile>sc v :\<le> T)))"
+   (case obj of 
+     Obj C fs \<Rightarrow> 
+        is_class P C \<and> 
+        (\<forall>F D T fm. P \<turnstile> C has F:T (fm) in D \<longrightarrow> 
+           (\<exists>fs' v. tm_\<alpha> fs (explode F) = Some fs' \<and> lm_\<alpha> fs' D = Some v \<and> P,h \<turnstile>sc v :\<le> T))
+   | Arr T si f el \<Rightarrow> 
+      is_type P (T\<lfloor>\<rceil>) \<and> (\<forall>n. n < si \<longrightarrow> (\<exists>v. rm_\<alpha> el n = Some v \<and> P,h \<turnstile>sc v :\<le> T)) \<and>
+      (\<forall>F T fm. P \<turnstile> Object has F:T (fm) in Object \<longrightarrow> (\<exists>v. lm_lookup F f = Some v \<and> P,h \<turnstile>sc v :\<le> T)))"
 
 definition sc_hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile>sc _ \<surd>" [51,51] 50)
 where "P \<turnstile>sc h \<surd> \<longleftrightarrow> (\<forall>a obj. rm_\<alpha> h a = Some obj \<longrightarrow> P,h \<turnstile>sc obj \<surd>)"
 
-interpretation sc!: heap_conf_base  
-  "sc_empty"
-  "sc_new_obj P"
-  "sc_new_arr" 
-  "sc_typeof_addr"
-  "sc_array_length"
-  "sc_heap_read"
-  "sc_heap_write"
-  "sc_hconf P"
-  "P"
-for P .
+interpretation sc!: 
+  heap_conf_base  
+    "addr2thread_id"
+    "thread_id2addr"
+    "sc_empty"
+    "sc_new_obj P"
+    "sc_new_arr P" 
+    "sc_typeof_addr"
+    "sc_array_length"
+    "sc_heap_read"
+    "sc_heap_write"
+    "sc_hconf P"
+    "P"
+  for P 
+.
 
 lemma sc_conf_upd_obj: "rm_lookup a h = Some(Obj C fs) \<Longrightarrow> (P,rm_update a (Obj C fs') h \<turnstile>sc x :\<le> T) = (P,h \<turnstile>sc x :\<le> T)"
 apply (unfold sc.conf_def)
@@ -252,7 +311,8 @@ apply (auto simp:fun_upd_apply)
 apply (auto simp add: sc_typeof_addr_def rm.lookup_correct rm.update_correct split: split_if_asm)
 done
 
-lemma sc_conf_upd_arr: "rm_lookup a h = Some(Arr T si el) \<Longrightarrow> (P,rm_update a (Arr T si el') h \<turnstile>sc x :\<le> T') = (P,h \<turnstile>sc x :\<le> T')"
+lemma sc_conf_upd_arr:
+  "rm_lookup a h = Some(Arr T si f el) \<Longrightarrow> (P,rm_update a (Arr T si f' el') h \<turnstile>sc x :\<le> T') = (P,h \<turnstile>sc x :\<le> T')"
 apply(unfold sc.conf_def)
 apply (rule val.induct)
 apply (auto simp:fun_upd_apply)
@@ -276,20 +336,34 @@ using assms has_fields_is_class[OF assms] map_of_fields_init_fields[of FDTs]
 by(fastsimp simp add: has_field_def sc_oconf_def dest: has_fields_fun)
 
 lemma sc_oconf_init_arr:
-  assumes type: "is_type P U"
-  shows "P,h \<turnstile>sc (Arr U n (foldl (\<lambda>cells i. rm_update i (default_val U) cells) rm_empty [0..<n])) \<surd>"
+  assumes type: "is_type P (T\<lfloor>\<rceil>)"
+  shows "P,h \<turnstile>sc Arr T n (init_fields_array (map (\<lambda>((F, D), (T, fm)). (F, T)) (TypeRel.fields P Object))) (init_cells T n) \<surd>"
 proof -
   { fix n'
     assume "n' < n"
     { fix rm and k :: nat
-      assume "\<forall>i<k. \<exists>v. rm_\<alpha> rm i = \<lfloor>v\<rfloor> \<and> sc.conf P h v U"
-      with `n' < n` have "\<exists>v. rm_\<alpha> (foldl (\<lambda>cells i. rm_update i (default_val U) cells) rm [k..<n]) n' = \<lfloor>v\<rfloor> \<and> sc.conf P h v U"
+      assume "\<forall>i<k. \<exists>v. rm_\<alpha> rm i = \<lfloor>v\<rfloor> \<and> sc.conf P h v T"
+      with `n' < n` have "\<exists>v. rm_\<alpha> (foldl (\<lambda>cells i. rm_update i (default_val T) cells) rm [k..<n]) n' = \<lfloor>v\<rfloor> \<and> sc.conf P h v T"
         by(induct m\<equiv>"n-k" arbitrary: n k rm)(auto simp add: rm.update_correct upt_conv_Cons type)
     }
     from this[of 0 rm_empty]
-    have "\<exists>v. rm_\<alpha> (foldl (\<lambda>cells i. rm_update i (default_val U) cells) rm_empty [0..<n]) n' = \<lfloor>v\<rfloor> \<and> sc.conf P h v U" by simp
+    have "\<exists>v. rm_\<alpha> (foldl (\<lambda>cells i. rm_update i (default_val T) cells) rm_empty [0..<n]) n' = \<lfloor>v\<rfloor> \<and> sc.conf P h v T" by simp
   }
-  thus ?thesis using type by(simp add: sc_oconf_def)
+  moreover
+  { fix F T fm
+    assume "P \<turnstile> Object has F:T (fm) in Object"
+    then obtain FDTs where has: "P \<turnstile> Object has_fields FDTs"
+      and FDTs: "map_of FDTs (F, Object) = \<lfloor>(T, fm)\<rfloor>"
+      by(auto simp add: has_field_def)
+    from has have "snd ` fst ` set FDTs \<subseteq> {Object}" by(rule Object_has_fields_Object)
+    with FDTs have "map_of (map ((\<lambda>(F, T). (F, default_val T)) \<circ> (\<lambda>((F, D), T, fm). (F, T))) FDTs) F = \<lfloor>default_val T\<rfloor>"
+      by(induct FDTs) auto
+    with has FDTs
+    have "\<exists>v. lm_lookup F (init_fields_array (map (\<lambda>((F, D), T, fm). (F, T)) (TypeRel.fields P Object))) = \<lfloor>v\<rfloor> \<and>
+              sc.conf P h v T"
+      by(auto simp add: init_fields_array_def lm_correct has_field_def)
+  }
+  ultimately show ?thesis using type by(auto simp add: sc_oconf_def init_cells_def)
 qed
 
 lemma sc_oconf_fupd [intro?]:
@@ -303,10 +377,15 @@ apply(drule (1) has_fields_fun, fastsimp)
 done
 
 lemma sc_oconf_fupd_arr [intro?]:
-  "\<lbrakk> P,h \<turnstile>sc v :\<le> T; P,h \<turnstile>sc (Arr T si el) \<surd> \<rbrakk>
-  \<Longrightarrow> P,h \<turnstile>sc (Arr T si (rm_update i v el)) \<surd>"
+  "\<lbrakk> P,h \<turnstile>sc v :\<le> T; P,h \<turnstile>sc (Arr T si f el) \<surd> \<rbrakk>
+  \<Longrightarrow> P,h \<turnstile>sc (Arr T si f (rm_update i v el)) \<surd>"
 unfolding sc_oconf_def
 by(auto simp add: rm.update_correct)
+
+lemma sc_oconf_fupd_arr_fields:
+  "\<lbrakk> P \<turnstile> Object has F:T (fm) in Object; P,h \<turnstile>sc v :\<le> T; P,h \<turnstile>sc (Arr T' si f el) \<surd> \<rbrakk>
+  \<Longrightarrow> P,h \<turnstile>sc (Arr T' si (lm_update F v f) el) \<surd>"
+unfolding sc_oconf_def by(auto dest: has_field_fun simp add: lm_correct)
 
 lemma sc_oconf_new: "\<lbrakk> P,h \<turnstile>sc obj \<surd>; rm_lookup a h = None \<rbrakk> \<Longrightarrow> P,rm_update a arrobj h \<turnstile>sc obj \<surd>"
 by(erule sc_oconf_hext)(rule sc_hext_new)
@@ -317,8 +396,11 @@ by(auto dest: map_of_fields_init_fields simp add: blank_def has_field_def sc_oco
 lemmas sc_oconf_upd_obj = sc_oconf_hext [OF _ sc_hext_upd_obj]
 
 lemma sc_oconf_upd_arr:
-  "\<lbrakk> P,h \<turnstile>sc obj \<surd>; rm_lookup a h = \<lfloor>Arr T si el\<rfloor> \<rbrakk> \<Longrightarrow> P,rm_update a (Arr T si el') h \<turnstile>sc obj \<surd>"
-by(fastsimp simp add: sc_oconf_def sc_conf_upd_arr split: heapobj.split)
+  assumes "P,h \<turnstile>sc obj \<surd>"
+  and ha: "rm_lookup a h = \<lfloor>Arr T si f el\<rfloor>"
+  shows "P,rm_update a (Arr T si f' el') h \<turnstile>sc obj \<surd>"
+using assms
+by(fastsimp simp add: sc_oconf_def sc_conf_upd_arr[OF ha] split: heapobj.split)
 
 lemma sc_hconfD: "\<lbrakk> P \<turnstile>sc h \<surd>; rm_lookup a h = Some obj \<rbrakk> \<Longrightarrow> P,h \<turnstile>sc obj \<surd>"
 unfolding sc_hconf_def by(auto simp add: rm.lookup_correct)
@@ -335,12 +417,12 @@ lemma sc_hconf_upd_obj: "\<lbrakk> P \<turnstile>sc h \<surd>; rm_lookup a h = S
 unfolding sc_hconf_def
 by(auto intro: sc_oconf_upd_obj simp add: rm.lookup_correct rm.update_correct)
 
-lemma sc_hconf_upd_arr: "\<lbrakk> P \<turnstile>sc h \<surd>; rm_lookup a h = Some(Arr T si el); P,h \<turnstile>sc (Arr T si el') \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile>sc rm_update a (Arr T si el') h \<surd>"
+lemma sc_hconf_upd_arr: "\<lbrakk> P \<turnstile>sc h \<surd>; rm_lookup a h = Some(Arr T si f el); P,h \<turnstile>sc (Arr T si f' el') \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile>sc rm_update a (Arr T si f' el') h \<surd>"
 unfolding sc_hconf_def
 by(auto intro: sc_oconf_upd_arr simp add: rm.lookup_correct rm.update_correct)
 
 lemma sc_heap_conf: 
-  "heap_conf sc_empty (sc_new_obj P) sc_new_arr sc_typeof_addr sc_array_length sc_heap_write (sc_hconf P) P"
+  "heap_conf addr2thread_id thread_id2addr sc_empty (sc_new_obj P) (sc_new_arr P) sc_typeof_addr sc_array_length sc_heap_write (sc_hconf P) P"
 proof
   show "P \<turnstile>sc sc_empty \<surd>" by(simp add: sc_hconf_def rm.empty_correct)
 next
@@ -355,9 +437,9 @@ next
     by(auto simp add: sc_new_obj_def dest!: new_Addr_SomeD[OF sym] intro: sc_hconf_new sc_oconf_blank split: split_if_asm)
 next
   fix h T n h' a
-  assume "P \<turnstile>sc h \<surd>" "sc_new_arr h T n = (h', a)" "is_type P T"
+  assume "P \<turnstile>sc h \<surd>" "sc_new_arr P h T n = (h', a)" "is_type P (T\<lfloor>\<rceil>)"
   thus "P \<turnstile>sc h' \<surd>"
-    by(auto simp add: sc_new_arr_def dest!: new_Addr_SomeD[OF sym] intro: sc_hconf_new sc_oconf_init_arr split: split_if_asm)
+    by(auto simp add: sc_new_arr_def blank_arr_def dest!: new_Addr_SomeD[OF sym] intro: sc_hconf_new sc_oconf_init_arr split: split_if_asm simp del: is_type_array)
 next
   fix h a al T v h'
   assume "P \<turnstile>sc h \<surd>"
@@ -365,52 +447,70 @@ next
     and "P,h \<turnstile>sc v :\<le> T"
     and "sc_heap_write h a al v h'"
   thus "P \<turnstile>sc h' \<surd>"
-    by(cases al)(fastsimp elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def intro: sc_hconf_upd_obj sc_oconf_fupd sc_hconfD sc_hconf_upd_arr sc_oconf_fupd_arr)+
+    by(cases al)(fastsimp elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def intro: sc_hconf_upd_obj sc_oconf_fupd sc_hconfD sc_hconf_upd_arr sc_oconf_fupd_arr sc_oconf_fupd_arr_fields)+
 qed
 
-interpretation sc!: heap_conf
-  "sc_empty"
-  "sc_new_obj P"
-  "sc_new_arr" 
-  "sc_typeof_addr"
-  "sc_array_length"
-  "sc_heap_read"
-  "sc_heap_write"
-  "sc_hconf P"
-  "P"
-for P 
+interpretation sc!: 
+  heap_conf
+    "addr2thread_id"
+    "thread_id2addr"
+    "sc_empty"
+    "sc_new_obj P"
+    "sc_new_arr P" 
+    "sc_typeof_addr"
+    "sc_array_length"
+    "sc_heap_read"
+    "sc_heap_write"
+    "sc_hconf P"
+    "P"
+  for P 
 by(rule sc_heap_conf)
 
 lemma sc_heap_progress:
-  "heap_progress sc_empty (sc_new_obj P) sc_new_arr sc_typeof_addr sc_array_length sc_heap_read sc_heap_write (sc_hconf P) P"
+  "heap_progress addr2thread_id thread_id2addr sc_empty (sc_new_obj P) (sc_new_arr P) sc_typeof_addr sc_array_length sc_heap_read sc_heap_write (sc_hconf P) P"
 proof
   fix h a al T
   assume hconf: "P \<turnstile>sc h \<surd>"
     and alt: "sc.addr_loc_type P h a al T"
   from alt obtain arrobj where arrobj: "rm_lookup a h = \<lfloor>arrobj\<rfloor>"
     by(auto elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def)
-  show "\<exists>v. sc_heap_read h a al v \<and> P,h \<turnstile>sc v :\<le> T"
-  proof(cases arrobj)
-    case (Obj C fs)
-    with alt arrobj obtain D F fm
-      where [simp]: "al = CField D F"
-      and "P \<turnstile> C has F:T (fm) in D"
-      by(fastsimp elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def)
-    from hconf arrobj Obj have "P,h \<turnstile>sc Obj C fs \<surd>" by(auto dest: sc_hconfD)
-    with `P \<turnstile> C has F:T (fm) in D` obtain fs' v 
+  from alt show "\<exists>v. sc_heap_read h a al v \<and> P,h \<turnstile>sc v :\<le> T"
+  proof(cases)
+    case (addr_loc_type_field U C F fm D) 
+    note [simp] = `al = CField D F`
+    show ?thesis
+    proof(cases "arrobj")
+      case (Obj C' fs)
+      with `sc_typeof_addr h a = \<lfloor>U\<rfloor>` `is_class_type_of U C` arrobj
+      have [simp]: "C' = C" by(auto simp add: sc_typeof_addr_def)
+      from hconf arrobj Obj have "P,h \<turnstile>sc Obj C fs \<surd>" by(auto dest: sc_hconfD)
+      with `P \<turnstile> C has F:T (fm) in D` obtain fs' v 
       where "tm_lookup (explode F) fs = \<lfloor>fs'\<rfloor>" "lm_lookup D fs' = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T"
       by(fastsimp simp add: sc_oconf_def tm.lookup_correct lm.lookup_correct)
-    thus ?thesis using Obj arrobj by(auto intro: sc_heap_read.intros)
+      thus ?thesis using Obj arrobj by(auto intro: sc_heap_read.intros)
+    next
+      case (Arr T' si f el)
+      with `sc_typeof_addr h a = \<lfloor>U\<rfloor>` `is_class_type_of U C` arrobj
+      have [simp]: "U = Array T'" "C = Object" by(auto simp add: sc_typeof_addr_def)
+      from hconf arrobj Arr have "P,h \<turnstile>sc Arr T' si f el \<surd>" by(auto dest: sc_hconfD)
+      from `P \<turnstile> C has F:T (fm) in D` have [simp]: "D = Object"
+        by(auto dest: has_field_decl_above)
+      with `P,h \<turnstile>sc Arr T' si f el \<surd>` `P \<turnstile> C has F:T (fm) in D`
+      obtain v where "lm_lookup F f = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T"
+        by(fastsimp simp add: sc_oconf_def)
+      thus ?thesis using Arr arrobj by(auto intro: sc_heap_read.intros)
+    qed
   next
-    case (Arr T' si el)
-    with alt arrobj obtain n 
-      where [simp]: "al = ACell n" "T' = T"
-      and n: "n < si"
-      by(auto elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def sc_array_length_def)
-    from hconf arrobj Arr have "P,h \<turnstile>sc Arr T' si el \<surd>" by(auto dest: sc_hconfD)
+    case (addr_loc_type_cell n)
+    with arrobj obtain si f el
+      where [simp]: "arrobj = Arr T si f el"
+      by(cases arrobj)(auto simp add: sc_typeof_addr_def)
+    from addr_loc_type_cell arrobj
+    have [simp]: "al = ACell n" and n: "n < si" by(auto simp add: sc_array_length_def)
+    from hconf arrobj have "P,h \<turnstile>sc Arr T si f el \<surd>" by(auto dest: sc_hconfD)
     with n obtain v where "rm_lookup n el = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T"
-      by(auto simp add: sc_oconf_def rm.lookup_correct)
-    thus ?thesis using Arr arrobj n by(auto intro: sc_heap_read.intros)
+      by(fastsimp simp add: sc_oconf_def rm.lookup_correct)
+    thus ?thesis using arrobj n by(fastsimp intro: sc_heap_read.intros)
   qed
 next
   fix h a al T v
@@ -418,24 +518,27 @@ next
   from alt obtain arrobj where arrobj: "rm_lookup a h = \<lfloor>arrobj\<rfloor>"
     by(auto elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def)
   thus "\<exists>h'. sc_heap_write h a al v h'" using alt
-    by(cases arrobj)(auto intro: sc_heap_write.intros elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def)
+    by(cases arrobj)(fastsimp intro: sc_heap_write.intros elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def dest: has_field_decl_above)+
 qed
 
-interpretation sc!: heap_progress
-  "sc_empty"
-  "sc_new_obj P"
-  "sc_new_arr" 
-  "sc_typeof_addr"
-  "sc_array_length"
-  "sc_heap_read"
-  "sc_heap_write"
-  "sc_hconf P"
-  "P"
-for P
+interpretation sc!: 
+  heap_progress
+    "addr2thread_id"
+    "thread_id2addr"
+    "sc_empty"
+    "sc_new_obj P"
+    "sc_new_arr P" 
+    "sc_typeof_addr"
+    "sc_array_length"
+    "sc_heap_read"
+    "sc_heap_write"
+    "sc_hconf P"
+    "P"
+  for P
 by(rule sc_heap_progress)
 
 lemma sc_heap_conf_read:
-  "heap_conf_read sc_empty (sc_new_obj P) sc_new_arr sc_typeof_addr sc_array_length sc_heap_read sc_heap_write (sc_hconf P) P"
+  "heap_conf_read addr2thread_id thread_id2addr sc_empty (sc_new_obj P) (sc_new_arr P) sc_typeof_addr sc_array_length sc_heap_read sc_heap_write (sc_hconf P) P"
 proof
   fix h a al v T
   assume read: "sc_heap_read h a al v"
@@ -447,17 +550,20 @@ proof
     done
 qed
 
-interpretation sc!: heap_conf_read
-  "sc_empty"
-  "sc_new_obj P"
-  "sc_new_arr" 
-  "sc_typeof_addr"
-  "sc_array_length"
-  "sc_heap_read"
-  "sc_heap_write"
-  "sc_hconf P"
-  "P"
-for P
+interpretation sc!: 
+  heap_conf_read
+    "addr2thread_id"
+    "thread_id2addr"
+    "sc_empty"
+    "sc_new_obj P"
+    "sc_new_arr P" 
+    "sc_typeof_addr"
+    "sc_array_length"
+    "sc_heap_read"
+    "sc_heap_write"
+    "sc_hconf P"
+    "P"
+  for P
 by(rule sc_heap_conf_read)
 
 lemma sc_deterministic_heap_ops: sc.deterministic_heap_ops
@@ -472,5 +578,13 @@ code_pred
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
   sc_heap_write .
+
+lemma eval_sc_heap_read_i_i_i_o:
+  "Predicate.eval (sc_heap_read_i_i_i_o h ad al) = sc_heap_read h ad al"
+by(auto elim: sc_heap_read_i_i_i_oE intro: sc_heap_read_i_i_i_oI intro!: ext)
+
+lemma eval_sc_heap_write_i_i_i_i_o:
+  "Predicate.eval (sc_heap_write_i_i_i_i_o h ad al v) = sc_heap_write h ad al v"
+by(auto elim: sc_heap_write_i_i_i_i_oE intro: sc_heap_write_i_i_i_i_oI intro!: ext)
 
 end

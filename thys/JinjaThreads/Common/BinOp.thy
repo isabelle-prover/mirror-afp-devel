@@ -4,7 +4,7 @@
 
 header{* \isaheader{ Binary Operators } *}
 
-theory BinOp imports Conform begin
+theory BinOp imports WellForm begin
 
 datatype bop =  -- "names of binary operations"
     Eq
@@ -27,88 +27,167 @@ datatype bop =  -- "names of binary operations"
 
 section{* The semantics of binary operators *}
 
-fun binop_LessThan :: "val \<Rightarrow> val \<Rightarrow> val option"
+type_synonym 'addr binop_ret = "'addr val + 'addr" -- "a value or the address of an exception"
+
+fun binop_LessThan :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_LessThan (Intg i1) (Intg i2) = Some (Bool (i1 <s i2))"
+  "binop_LessThan (Intg i1) (Intg i2) = Some (Inl (Bool (i1 <s i2)))"
 | "binop_LessThan v1 v2 = None"
 
-fun binop_LessOrEqual :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_LessOrEqual :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_LessOrEqual (Intg i1) (Intg i2) = Some (Bool (i1 <=s i2))"
+  "binop_LessOrEqual (Intg i1) (Intg i2) = Some (Inl (Bool (i1 <=s i2)))"
 | "binop_LessOrEqual v1 v2 = None"
 
-fun binop_GreaterThan :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_GreaterThan :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_GreaterThan (Intg i1) (Intg i2) = Some (Bool (i2 <s i1))"
+  "binop_GreaterThan (Intg i1) (Intg i2) = Some (Inl (Bool (i2 <s i1)))"
 | "binop_GreaterThan v1 v2 = None"
 
-fun binop_GreaterOrEqual :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_GreaterOrEqual :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_GreaterOrEqual (Intg i1) (Intg i2) = Some (Bool (i2 <=s i1))"
+  "binop_GreaterOrEqual (Intg i1) (Intg i2) = Some (Inl (Bool (i2 <=s i1)))"
 | "binop_GreaterOrEqual v1 v2 = None"
 
-fun binop_Add :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_Add :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_Add (Intg i1) (Intg i2) = Some (Intg (i1 + i2))"
+  "binop_Add (Intg i1) (Intg i2) = Some (Inl (Intg (i1 + i2)))"
 | "binop_Add v1 v2 = None"
 
-fun binop_Subtract :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_Subtract :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_Subtract (Intg i1) (Intg i2) = Some (Intg (i1 - i2))"
+  "binop_Subtract (Intg i1) (Intg i2) = Some (Inl (Intg (i1 - i2)))"
 | "binop_Subtract v1 v2 = None"
 
-fun binop_Mult :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_Mult :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_Mult (Intg i1) (Intg i2) = Some (Intg (i1 * i2))"
+  "binop_Mult (Intg i1) (Intg i2) = Some (Inl (Intg (i1 * i2)))"
 | "binop_Mult v1 v2 = None"
 
-fun binop_Mod :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_BinAnd :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_Mod (Intg i1) (Intg i2) = Some (Intg (i1 mod i2))"
-| "binop_Mod v1 v2 = None"
-
-fun binop_Div :: "val \<Rightarrow> val \<Rightarrow> val option"
-where
-  "binop_Div (Intg i1) (Intg i2) = Some (Intg (i1 div i2))"
-| "binop_Div v1 v2 = None"
-
-fun binop_BinAnd :: "val \<Rightarrow> val \<Rightarrow> val option"
-where
-  "binop_BinAnd (Intg i1) (Intg i2) = Some (Intg (i1 AND i2))"
-| "binop_BinAnd (Bool b1) (Bool b2) = Some (Bool (b1 \<and> b2))"
+  "binop_BinAnd (Intg i1) (Intg i2) = Some (Inl (Intg (i1 AND i2)))"
+| "binop_BinAnd (Bool b1) (Bool b2) = Some (Inl (Bool (b1 \<and> b2)))"
 | "binop_BinAnd v1 v2 = None"
 
-fun binop_BinOr :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_BinOr :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_BinOr (Intg i1) (Intg i2) = Some (Intg (i1 OR i2))"
-| "binop_BinOr (Bool b1) (Bool b2) = Some (Bool (b1 \<or> b2))"
+  "binop_BinOr (Intg i1) (Intg i2) = Some (Inl (Intg (i1 OR i2)))"
+| "binop_BinOr (Bool b1) (Bool b2) = Some (Inl (Bool (b1 \<or> b2)))"
 | "binop_BinOr v1 v2 = None"
 
-fun binop_BinXor :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_BinXor :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_BinXor (Intg i1) (Intg i2) = Some (Intg (i1 XOR i2))"
-| "binop_BinXor (Bool b1) (Bool b2) = Some (Bool (b1 \<noteq> b2))"
+  "binop_BinXor (Intg i1) (Intg i2) = Some (Inl (Intg (i1 XOR i2)))"
+| "binop_BinXor (Bool b1) (Bool b2) = Some (Inl (Bool (b1 \<noteq> b2)))"
 | "binop_BinXor v1 v2 = None"
 
-fun binop_ShiftLeft :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_ShiftLeft :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_ShiftLeft (Intg i1) (Intg i2) = Some (Intg (i1 << unat (i2 AND 0x1f)))"
+  "binop_ShiftLeft (Intg i1) (Intg i2) = Some (Inl (Intg (i1 << unat (i2 AND 0x1f))))"
 | "binop_ShiftLeft v1 v2 = None"
 
-fun binop_ShiftRightZeros :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_ShiftRightZeros :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_ShiftRightZeros (Intg i1) (Intg i2) = Some (Intg (i1 >> unat (i2 AND 0x1f)))"
+  "binop_ShiftRightZeros (Intg i1) (Intg i2) = Some (Inl (Intg (i1 >> unat (i2 AND 0x1f))))"
 | "binop_ShiftRightZeros v1 v2 = None"
 
-fun binop_ShiftRightSigned :: "val \<Rightarrow> val \<Rightarrow> val option"
+fun binop_ShiftRightSigned :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop_ShiftRightSigned (Intg i1) (Intg i2) = Some (Intg (i1 >>> unat (i2 AND 0x1f)))"
+  "binop_ShiftRightSigned (Intg i1) (Intg i2) = Some (Inl (Intg (i1 >>> unat (i2 AND 0x1f))))"
 | "binop_ShiftRightSigned v1 v2 = None"
 
-primrec binop :: "bop \<Rightarrow> val \<Rightarrow> val \<Rightarrow> val option"
+text {*
+  Division on @{typ "'a word"} is unsigned, but JLS specifies signed division.
+*}
+definition word_sdiv :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "sdiv" 70)
+where [code]:
+  "x sdiv y =
+   (let x' = sint x; y' = sint y;
+        negative = (x' < 0) \<noteq> (y' < 0);
+        result = abs x' div abs y'
+    in word_of_int (if negative then -result else result))"
+
+definition word_smod :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "smod" 70)
+where [code]:
+  "x smod y =
+   (let x' = sint x; y' = sint y;
+        negative = (x' < 0);
+        result = abs x' mod abs y'
+    in word_of_int (if negative then -result else result))"
+
+declare word_sdiv_def [simp] word_smod_def [simp]
+
+lemma sdiv_smod_id: "(a sdiv b) * b + (a smod b) = a"
+proof -
+  have F5: "\<forall>u\<Colon>'a word. - (- u) = u" by (metis word_sint.Rep_inverse' zminus_zminus wi_hom_neg)
+  have F7: "\<forall>v u\<Colon>'a word. u + v = v + u" by(metis word_add_left_commute word_add_0_right)
+  have F8: "\<forall>(w\<Colon>'a word) (v\<Colon>int) u\<Colon>int. word_of_int u + word_of_int v * w = word_of_int (u + v * sint w)"
+    by (metis wi_hom_syms(1) wi_hom_syms(2) word_sint.Rep_inverse')
+  have "\<exists>u. u = - sint b \<and> word_of_int (sint a mod u + - (- u * (sint a div u))) = a"
+    using F5 by (metis minus_minus word_sint.Rep_inverse' zmult_zminus zadd_commute zmod_zdiv_equality)
+  hence "word_of_int (sint a mod - sint b + - (sint b * (sint a div - sint b))) = a" by (metis equation_minus_iff)
+  hence "word_of_int (sint a mod - sint b) + word_of_int (- (sint a div - sint b)) * b = a"
+    using F8 by(metis zmult_commute zmult_zminus)
+  hence eq: "word_of_int (- (sint a div - sint b)) * b + word_of_int (sint a mod - sint b) = a" using F7 by metis
+
+  show ?thesis
+  proof(cases "sint a < 0")
+    case True note a = this
+    show ?thesis
+    proof(cases "sint b < 0")
+      case True
+      with a show ?thesis
+        by simp (metis wi_hom_syms(1) wi_hom_syms(2) word_add_commute word_mult_commute word_sint.Rep_inverse zmod_zdiv_equality)
+    next
+      case False
+      from eq have "word_of_int (- (- sint a div sint b)) * b + word_of_int (- (- sint a mod sint b)) = a"
+        by (metis zdiv_zminus2 zmod_zminus2)
+      with a False show ?thesis by simp
+    qed
+  next
+    case False note a = this
+    show ?thesis
+    proof(cases "sint b < 0")
+      case True
+      with a eq show ?thesis by simp
+    next
+      case False with a show ?thesis
+        by simp (metis wi_hom_add wi_hom_mult word_add_commute word_mult_commute word_sint.Rep_inverse zadd_commute zmod_zdiv_equality)
+    qed
+  qed
+qed
+
+lemma
+  "  5  sdiv ( 3 :: word32) =  1"
+  "  5  smod ( 3 :: word32) =  2"
+  "  5  sdiv (-3 :: word32) = -1"
+  "  5  smod (-3 :: word32) =  2"
+  "(-5) sdiv ( 3 :: word32) = -1"
+  "(-5) smod ( 3 :: word32) = -2"
+  "(-5) sdiv (-3 :: word32) =  1"
+  "(-5) smod (-3 :: word32) = -2"
+  "-2147483648 sdiv 1 = (-2147483648 :: word32)"
+by eval+
+
+context heap_base begin
+
+fun binop_Mod :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
 where
-  "binop Eq v1 v2 =  Some (Bool (v1 = v2))"
-| "binop NotEq v1 v2 = Some (Bool (v1 \<noteq> v2))"
+  "binop_Mod (Intg i1) (Intg i2) = 
+   Some (if i2 = 0 then Inr (addr_of_sys_xcpt ArithmeticException) else Inl (Intg (i1 smod i2)))"
+| "binop_Mod v1 v2 = None"
+
+fun binop_Div :: "'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
+where
+  "binop_Div (Intg i1) (Intg i2) = 
+   Some (if i2 = 0 then Inr (addr_of_sys_xcpt ArithmeticException) else Inl (Intg (i1 sdiv i2)))"
+| "binop_Div v1 v2 = None"
+
+primrec binop :: "bop \<Rightarrow> 'addr val \<Rightarrow> 'addr val \<Rightarrow> 'addr binop_ret option"
+where
+  "binop Eq v1 v2 =  Some (Inl (Bool (v1 = v2)))"
+| "binop NotEq v1 v2 = Some (Inl (Bool (v1 \<noteq> v2)))"
 | "binop LessThan = binop_LessThan"
 | "binop LessOrEqual = binop_LessOrEqual"
 | "binop GreaterThan = binop_GreaterThan"
@@ -125,85 +204,91 @@ where
 | "binop ShiftRightZeros = binop_ShiftRightZeros"
 | "binop ShiftRightSigned = binop_ShiftRightSigned"
 
-lemma [simp]:
-  "(binop_LessThan v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Bool (i1 <s i2))"
-by(cases v1, simp_all)(cases v2, auto)
+end
 
 lemma [simp]:
-  "(binop_LessOrEqual v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Bool (i1 <=s i2))"
-by(cases v1, simp_all)(cases v2, auto)
+  "(binop_LessThan v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Bool (i1 <s i2)))"
+by(cases "(v1, v2)" rule: binop_LessThan.cases) auto
 
 lemma [simp]:
-  "(binop_GreaterThan v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Bool (i2 <s i1))"
-by(cases v1, simp_all)(cases v2, auto)
+  "(binop_LessOrEqual v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Bool (i1 <=s i2)))"
+by(cases "(v1, v2)" rule: binop_LessOrEqual.cases) auto
 
 lemma [simp]:
-  "(binop_GreaterOrEqual v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Bool (i2 <=s i1))"
-by(cases v1, simp_all)(cases v2, auto)
+  "(binop_GreaterThan v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Bool (i2 <s i1)))"
+by(cases "(v1, v2)" rule: binop_GreaterThan.cases) auto
 
 lemma [simp]:
-  "(binop_Add v\<^isub>1 v\<^isub>2  = Some v) = (\<exists>i\<^isub>1 i\<^isub>2. v\<^isub>1 = Intg i\<^isub>1 \<and> v\<^isub>2 = Intg i\<^isub>2 \<and> v = Intg(i\<^isub>1+i\<^isub>2))"
-(*<*)
-apply(cases v\<^isub>1)
-apply auto
-apply(cases v\<^isub>2)
-apply auto
-done
-(*>*)
+  "(binop_GreaterOrEqual v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Bool (i2 <=s i1)))"
+by(cases "(v1, v2)" rule: binop_GreaterOrEqual.cases) auto
 
 lemma [simp]:
-  "(binop_Subtract v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg(i1 - i2))"
-apply(cases v1, auto)
-apply(cases v2, auto)
-done
+  "(binop_Add v\<^isub>1 v\<^isub>2  = Some va) \<longleftrightarrow>
+   (\<exists>i\<^isub>1 i\<^isub>2. v\<^isub>1 = Intg i\<^isub>1 \<and> v\<^isub>2 = Intg i\<^isub>2 \<and> va = Inl (Intg (i\<^isub>1+i\<^isub>2)))"
+by(cases "(v\<^isub>1, v\<^isub>2)" rule: binop_Add.cases) auto
 
 lemma [simp]:
-  "(binop_Mult v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg(i1 * i2))"
-apply(cases v1, auto)
-apply(cases v2, auto)
-done
+  "(binop_Subtract v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Intg (i1 - i2)))"
+by(cases "(v1, v2)" rule: binop_Subtract.cases) auto
+
+lemma [simp]: 
+  "(binop_Mult v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Intg (i1 * i2)))"
+by(cases "(v1, v2)" rule: binop_Mult.cases) auto
 
 lemma [simp]:
-  "(binop_Mod v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg(i1 mod i2))"
-apply(cases v1, auto)
-apply(cases v2, auto)
-done
+  "(binop_BinAnd v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>b1 b2. v1 = Bool b1 \<and> v2 = Bool b2 \<and> va = Inl (Bool (b1 \<and> b2))) \<or> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Intg (i1 AND i2)))"
+by(cases "(v1, v2)" rule: binop_BinAnd.cases) auto
 
 lemma [simp]:
-  "(binop_Div v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg(i1 div i2))"
-apply(cases v1, auto)
-apply(cases v2, auto)
-done
+  "(binop_BinOr v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>b1 b2. v1 = Bool b1 \<and> v2 = Bool b2 \<and> va = Inl (Bool (b1 \<or> b2))) \<or>
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Intg (i1 OR i2)))"
+by(cases "(v1, v2)" rule: binop_BinOr.cases) auto
 
 lemma [simp]:
-  "(binop_BinAnd v1 v2 = Some v) \<longleftrightarrow> 
-   (\<exists>b1 b2. v1 = Bool b1 \<and> v2 = Bool b2 \<and> v = Bool (b1 \<and> b2)) \<or> 
-   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg (i1 AND i2))"
-by(cases v1, simp_all)(case_tac [!] v2, auto)
+  "(binop_BinXor v1 v2 = Some va) \<longleftrightarrow>
+   (\<exists>b1 b2. v1 = Bool b1 \<and> v2 = Bool b2 \<and> va = Inl (Bool (b1 \<noteq> b2))) \<or>
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Intg (i1 XOR i2)))"
+by(cases "(v1, v2)" rule: binop_BinXor.cases) auto
 
 lemma [simp]:
-  "(binop_BinOr v1 v2 = Some v) \<longleftrightarrow> 
-   (\<exists>b1 b2. v1 = Bool b1 \<and> v2 = Bool b2 \<and> v = Bool (b1 \<or> b2)) \<or>
-   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg (i1 OR i2))"
-by(cases v1, simp_all)(case_tac [!] v2, auto)
+  "(binop_ShiftLeft v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Intg (i1 << unat (i2 AND 0x1f))))"
+by(cases "(v1, v2)" rule: binop_ShiftLeft.cases) auto
 
 lemma [simp]:
-  "(binop_BinXor v1 v2 = Some v) \<longleftrightarrow>
-   (\<exists>b1 b2. v1 = Bool b1 \<and> v2 = Bool b2 \<and> v = Bool (b1 \<noteq> b2)) \<or>
-   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg (i1 XOR i2))"
-by(cases v1, simp_all)(case_tac [!] v2, auto)
+  "(binop_ShiftRightZeros v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Intg (i1 >> unat (i2 AND 0x1f))))"
+by(cases "(v1, v2)" rule: binop_ShiftRightZeros.cases) auto
 
 lemma [simp]:
-  "(binop_ShiftLeft v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg (i1 << unat (i2 AND 0x1f)))"
-by(cases v1, auto)(cases v2, auto)
+  "(binop_ShiftRightSigned v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> va = Inl (Intg (i1 >>> unat (i2 AND 0x1f))))"
+by(cases "(v1, v2)" rule: binop_ShiftRightSigned.cases) auto
+
+context heap_base begin
 
 lemma [simp]:
-  "(binop_ShiftRightZeros v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg (i1 >> unat (i2 AND 0x1f)))"
-by(cases v1, auto)(cases v2, auto)
+  "(binop_Mod v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> 
+      va = (if i2 = 0 then Inr (addr_of_sys_xcpt ArithmeticException) else Inl (Intg(i1 smod i2))))"
+by(cases "(v1, v2)" rule: binop_Mod.cases) auto
 
 lemma [simp]:
-  "(binop_ShiftRightSigned v1 v2 = Some v) \<longleftrightarrow> (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> v = Intg (i1 >>> unat (i2 AND 0x1f)))"
-by(cases v1, auto)(cases v2, auto)
+  "(binop_Div v1 v2 = Some va) \<longleftrightarrow> 
+   (\<exists>i1 i2. v1 = Intg i1 \<and> v2 = Intg i2 \<and> 
+      va = (if i2 = 0 then Inr (addr_of_sys_xcpt ArithmeticException) else Inl (Intg(i1 sdiv i2))))"
+by(cases "(v1, v2)" rule: binop_Div.cases) auto
+
+end
 
 section {* Typing for binary operators *}
 
@@ -293,7 +378,7 @@ inductive_cases [elim]:
   "P \<turnstile> T1\<guillemotleft>Mod\<guillemotright>T2 :: T"
   "P \<turnstile> T1\<guillemotleft>BinAnd\<guillemotright>T2 :: T"
   "P \<turnstile> T1\<guillemotleft>BinOr\<guillemotright>T2 :: T"
-  "P \<turnstile> T1\<guillemotleft>BinXOr\<guillemotright>T2 :: T"
+  "P \<turnstile> T1\<guillemotleft>BinXor\<guillemotright>T2 :: T"
   "P \<turnstile> T1\<guillemotleft>ShiftLeft\<guillemotright>T2 :: T"
   "P \<turnstile> T1\<guillemotleft>ShiftRightZeros\<guillemotright>T2 :: T"
   "P \<turnstile> T1\<guillemotleft>ShiftRightSigned\<guillemotright>T2 :: T"
@@ -391,19 +476,68 @@ inductive_cases WTrt_binop_cases [elim]:
   "P \<turnstile> T1\<guillemotleft>Mod\<guillemotright>T2 : T"
   "P \<turnstile> T1\<guillemotleft>BinAnd\<guillemotright>T2 : T"
   "P \<turnstile> T1\<guillemotleft>BinOr\<guillemotright>T2 : T"
-  "P \<turnstile> T1\<guillemotleft>BinXOr\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>BinXor\<guillemotright>T2 : T"
   "P \<turnstile> T1\<guillemotleft>ShiftLeft\<guillemotright>T2 : T"
   "P \<turnstile> T1\<guillemotleft>ShiftRightZeros\<guillemotright>T2 : T"
   "P \<turnstile> T1\<guillemotleft>ShiftRightSigned\<guillemotright>T2 : T"
+
+inductive_simps WTrt_binop_simps [simp]:
+  "P \<turnstile> T1\<guillemotleft>Eq\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>NotEq\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>LessThan\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>LessOrEqual\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>GreaterThan\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>GreaterOrEqual\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>Add\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>Subtract\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>Mult\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>Div\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>Mod\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>BinAnd\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>BinOr\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>BinXor\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>ShiftLeft\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>ShiftRightZeros\<guillemotright>T2 : T"
+  "P \<turnstile> T1\<guillemotleft>ShiftRightSigned\<guillemotright>T2 : T"
+
+fun binop_relevant_class :: "bop \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> bool"
+where
+  "binop_relevant_class Div = (\<lambda>P C. P \<turnstile> ArithmeticException \<preceq>\<^sup>* C )"
+| "binop_relevant_class Mod = (\<lambda>P C. P \<turnstile> ArithmeticException \<preceq>\<^sup>* C )"
+| "binop_relevant_class _ = (\<lambda>P C. False)"
 
 lemma WT_binop_WTrt_binop:
   "P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<Longrightarrow> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T"
 by(auto elim: WT_binop.cases)
 
-lemma (in heap) binop_progress:
+context heap begin
+
+lemma binop_progress:
   "\<lbrakk> typeof\<^bsub>h\<^esub> v1 = \<lfloor>T1\<rfloor>; typeof\<^bsub>h\<^esub> v2 = \<lfloor>T2\<rfloor>; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T \<rbrakk>
-  \<Longrightarrow> \<exists>v. binop bop v1 v2 = \<lfloor>v\<rfloor> \<and> P,h \<turnstile> v :\<le> T"
-by(cases bop)(auto elim!: WTrt_binop_cases)
+  \<Longrightarrow> \<exists>va. binop bop v1 v2 = \<lfloor>va\<rfloor>"
+by(cases bop)(auto del: disjCI split del: split_if)
+
+lemma binop_type:
+  assumes wf: "wf_prog wf_md P"
+  and pre: "preallocated h"
+  and type: "typeof\<^bsub>h\<^esub> v1 = \<lfloor>T1\<rfloor>" "typeof\<^bsub>h\<^esub> v2 = \<lfloor>T2\<rfloor>" "P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T"
+  shows "binop bop v1 v2 = \<lfloor>Inl v\<rfloor> \<Longrightarrow> P,h \<turnstile> v :\<le> T"
+  and "binop bop v1 v2 = \<lfloor>Inr a\<rfloor> \<Longrightarrow> P,h \<turnstile> Addr a :\<le> Class Throwable"
+using type
+apply(case_tac [!] bop)
+apply(auto split: split_if_asm simp add: conf_def wf_preallocatedD[OF wf pre])
+done
+
+lemma binop_relevant_class:
+  assumes wf: "wf_prog wf_md P"
+  and pre: "preallocated h"
+  and bop: "binop bop v1 v2 = \<lfloor>Inr a\<rfloor>"
+  and sup: "P \<turnstile> cname_of h a \<preceq>\<^sup>* C"
+  shows "binop_relevant_class bop P C"
+using assms
+by(cases bop)(auto split: split_if_asm)
+
+end
 
 lemma WTrt_binop_fun: "\<lbrakk> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T' \<rbrakk> \<Longrightarrow> T = T'"
 by(cases bop)(auto)
@@ -421,14 +555,19 @@ by(cases bop) auto
 
 subsection {* Code generator setup *}
 
+lemmas [code] =
+  heap_base.binop_Div.simps
+  heap_base.binop_Mod.simps
+  heap_base.binop.simps
+
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
-  WT_binop 
+  WT_binop
 .
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
-  WTrt_binop 
+  WTrt_binop
 .
 
 lemma eval_WTrt_binop_i_i_i_i_o:

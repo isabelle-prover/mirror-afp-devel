@@ -6,23 +6,35 @@ header{* \isaheader{ Properties of external calls in well-formed programs } *}
 
 theory ExternalCallWF imports WellForm "../Framework/FWSemantics" begin
 
-lemma WT_external_is_type:
-  assumes "wf_prog wf_md P" "P \<turnstile> T\<bullet>M(TS) :: U" "is_type P T"
-  shows "is_type P U" "set TS \<subseteq> is_type P"
+lemma external_WT_defs_is_type:
+  assumes "wf_prog wf_md P" and "T\<bullet>M(Ts) :: U"
+  shows "is_type P T" and "is_type P U" "set Ts \<subseteq> types P"
+using assms by(auto elim: external_WT_defs.cases)
+
+lemma native_call_is_type:
+  assumes "wf_prog wf_md P"
+  and "P \<turnstile> T native M:Ts\<rightarrow>Tr in T'" 
+  shows "is_type P Tr" "is_type P T'" "set Ts \<subseteq> types P"
 using assms
-apply(auto elim!: external_WT_defs.cases external_WT.cases)
-apply(simp add: mem_def)
-done
+by(auto simp add: native_call_def dest: external_WT_defs_is_type)
+
+lemma external_WT_is_type:
+  assumes "wf_prog wf_md P" and "P \<turnstile> T\<bullet>M(Ts) :: U" and "is_type P T"
+  shows "is_type P U" "set Ts \<subseteq> types P"
+using assms
+by(auto elim!: external_WT.cases dest: native_call_is_type)
 
 context heap_base begin
 
 lemma WT_red_external_aggr_imp_red_external:
   "\<lbrakk> wf_prog wf_md P; (ta, va, h') \<in> red_external_aggr P t a M vs h; P,h \<turnstile> a\<bullet>M(vs) : U; P,h \<turnstile> t \<surd>t \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
-apply(auto elim!: external_WT.cases external_WT_defs_cases external_WT'.cases simp add: red_external_aggr_def widen_Class split_beta intro: red_external.intros[simplified] split: split_if_asm dest!: tconfD)
-apply(fastsimp simp add: list_all2_Cons2 intro: red_external.intros[simplified])
-apply(fastsimp simp add: list_all2_Cons2 intro: red_external.intros[simplified])
-apply(fastsimp elim: external_WT_defs.cases simp add: widen_Class)+
+apply(drule tconfD)
+apply(erule external_WT'.cases)
+apply(erule external_WT.cases)
+apply(clarsimp simp add: native_call_def)
+apply(erule external_WT_defs.cases)
+apply(auto simp add: red_external_aggr_def widen_Class intro: red_external.intros split: split_if_asm)
 done
 
 lemma WT_red_external_list_conv:
@@ -34,6 +46,148 @@ lemma red_external_new_thread_sees:
   "\<lbrakk> wf_prog wf_md P; P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class C\<rfloor> \<and> (\<exists>T meth D. P \<turnstile> C sees M':[]\<rightarrow>T = meth in D)"
 by(fastsimp elim!: red_external.cases simp add: widen_Class ta_upd_simps dest: sub_Thread_sees_run)
+
+end
+
+subsection {* Preservation of heap conformance *}
+
+context heap_conf_read begin
+
+lemma hconf_heap_copy_loc_mono:
+  assumes "heap_copy_loc a a' al h obs h'"
+  and "hconf h"
+  and "P,h \<turnstile> a@al : T" "P,h \<turnstile> a'@al : T"
+  shows "hconf h'"
+proof -
+  from `heap_copy_loc a a' al h obs h'` obtain v 
+    where read: "heap_read h a al v" 
+    and "write": "heap_write h a' al v h'" by cases auto
+  from read `P,h \<turnstile> a@al : T` `hconf h` have "P,h \<turnstile> v :\<le> T"
+    by(rule heap_read_conf)
+  with "write" `hconf h` `P,h \<turnstile> a'@al : T` show ?thesis
+    by(rule hconf_heap_write_mono)
+qed
+
+lemma hconf_heap_copies_mono:
+  assumes "heap_copies a a' als h obs h'"
+  and "hconf h"
+  and "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts"
+  and "list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) als Ts"
+  shows "hconf h'"
+using assms
+proof(induct arbitrary: Ts)
+  case Nil thus ?case by simp
+next
+  case (Cons al h ob h' als obs h'')
+  note step = `heap_copy_loc a a' al h ob h'`
+  from `list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) (al # als) Ts`
+  obtain T Ts' where [simp]: "Ts = T # Ts'"
+    and "P,h \<turnstile> a@al : T" "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts'"
+    by(auto simp add: list_all2_Cons1)
+  from `list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) (al # als) Ts`
+  have "P,h \<turnstile> a'@al : T" "list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) als Ts'" by simp_all
+  from step `hconf h` `P,h \<turnstile> a@al : T` `P,h \<turnstile> a'@al : T`
+  have "hconf h'" by(rule hconf_heap_copy_loc_mono)
+  moreover from step have "h \<unlhd> h'" by(rule hext_heap_copy_loc)
+  from `list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts'`
+  have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) als Ts'"
+    by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`])
+  moreover from `list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) als Ts'`
+  have "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) als Ts'"
+    by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`])
+  ultimately show ?case by(rule Cons)
+qed
+
+lemma hconf_heap_clone_mono:
+  assumes "heap_clone P h a h' res"
+  and "hconf h"
+  shows "hconf h'"
+using `heap_clone P h a h' res`
+proof cases
+  case ObjFail thus ?thesis using `hconf h`
+    by(fastsimp intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
+next
+  case ArrFail thus ?thesis using `hconf h`
+    by(fastsimp intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
+next
+  case (ObjClone C h'' a' FDTs obs)
+  note FDTs = `P \<turnstile> C has_fields FDTs`
+  let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
+  let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
+  note `heap_copies a a' ?als h'' obs h'` 
+  moreover from `typeof_addr h a = \<lfloor>Class C\<rfloor>` `hconf h` have "is_class P C"
+    by(auto dest: typeof_addr_is_type)
+  from `new_obj h C = (h'', \<lfloor>a'\<rfloor>)` have "h \<unlhd> h''" "hconf h''"
+    by(rule hext_heap_ops hconf_new_obj_mono[OF _ `hconf h` `is_class P C`])+
+  note `hconf h''` 
+  moreover
+  from `typeof_addr h a = \<lfloor>Class C\<rfloor>` FDTs
+  have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
+    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+  hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
+    by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h''`])
+  moreover from `new_obj h C = (h'', \<lfloor>a'\<rfloor>)` `is_class P C`
+  have "typeof_addr h'' a' = \<lfloor>Class C\<rfloor>" by(auto dest: new_obj_SomeD)
+  with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
+    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+  ultimately have "hconf h'" by(rule hconf_heap_copies_mono)
+  thus ?thesis using ObjClone by simp
+next
+  case (ArrClone T n h'' a' FDTs obs)
+  note [simp] = `n = array_length h a`
+  let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]"
+  let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate n T"
+  note `heap_copies a a' ?als h'' obs h'`
+  moreover from `typeof_addr h a = \<lfloor>T\<lfloor>\<rceil>\<rfloor>` `hconf h` have "is_type P (T\<lfloor>\<rceil>)"
+    by(auto dest: typeof_addr_is_type)
+  from `new_arr h T n = (h'', \<lfloor>a'\<rfloor>)` have "h \<unlhd> h''" "hconf h''"
+    by(rule hext_heap_ops hconf_new_arr_mono[OF _ `hconf h` `is_type P (T\<lfloor>\<rceil>)`])+
+  note `hconf h''`
+  moreover from `h \<unlhd> h''` `typeof_addr h a = \<lfloor>Array T\<rfloor>`
+  have type'a: "typeof_addr h'' a = \<lfloor>Array T\<rfloor>"
+    and [simp]: "array_length h'' a = array_length h a" by(auto intro: hext_arrD)
+  note FDTs = `P \<turnstile> Object has_fields FDTs`
+  from type'a FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
+    by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+  moreover from `new_arr h T n = (h'', \<lfloor>a'\<rfloor>)` `is_type P (T\<lfloor>\<rceil>)`
+  have "typeof_addr h'' a' = \<lfloor>Array T\<rfloor>" "array_length h'' a' = array_length h a"
+    by(auto dest: new_arr_SomeD)
+  hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts" using FDTs
+    by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+  ultimately have "hconf h'" by(rule hconf_heap_copies_mono)
+  thus ?thesis using ArrClone by simp
+qed
+
+theorem external_call_hconf:
+  assumes major: "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
+  and minor: "P,h \<turnstile> a\<bullet>M(vs) : U" "hconf h"
+  shows "hconf h'"
+using major minor
+by cases(fastsimp intro: hconf_heap_clone_mono)+
+
+end
+
+context heap_base begin
+
+primrec conf_extRet :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr extCallRet \<Rightarrow> ty \<Rightarrow> bool" where
+  "conf_extRet P h (RetVal v) T = (P,h \<turnstile> v :\<le> T)"
+| "conf_extRet P h (RetExc a) T = (P,h \<turnstile> Addr a :\<le> Class Throwable)"
+| "conf_extRet P h RetStaySame T = True"
+
+end
+
+context heap_conf begin
+
+lemma red_external_conf_extRet:
+  "\<lbrakk> wf_prog wf_md P; P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; P,h \<turnstile> a\<bullet>M(vs) : U; hconf h; preallocated h; P,h \<turnstile> t \<surd>t \<rbrakk>
+  \<Longrightarrow> conf_extRet P h' va U"
+apply(frule red_external_hext)
+apply(drule (1) preallocated_hext)
+apply(auto elim!: red_external.cases external_WT.cases external_WT'.cases external_WT_defs_cases simp add: native_call_def)
+apply(auto simp add: conf_def tconf_def intro: xcpt_subcls_Throwable dest!: hext_heap_write dest: typeof_addr_heap_clone)
+done
 
 end
 
@@ -99,7 +253,7 @@ lemma heap_clone_progress:
   assumes wf: "wf_prog wf_md P"
   and typea: "typeof_addr h a = \<lfloor>T\<rfloor>"
   and hconf: "hconf h"
-  shows "\<exists>h' res. heap_clone P h a h' res \<and> hconf h'"
+  shows "\<exists>h' res. heap_clone P h a h' res"
 proof -
   from typea hconf have "is_type P T" by(rule typeof_addr_is_type)
   from typea have "(\<exists>C. T = Class C) \<or> (\<exists>U. T = Array U)"
@@ -116,26 +270,24 @@ proof -
     proof(cases res)
       case None
       with typea new ObjFail[of h a C h' P]
-      show ?thesis using `hconf h'` by auto
+      show ?thesis by auto
     next
       case (Some a')
       from `is_type P T` have "is_class P C" by simp
       from wf_Fields_Ex[OF wf this]
       obtain FDTs where FDTs: "P \<turnstile> C has_fields FDTs" ..
       let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
-      let ?Ts = "map (fst o snd) FDTs"
-      from wf FDTs have "distinct (map fst FDTs)" by(rule has_fields_distinct)
-      with typea FDTs have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
+      let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
+      from typea FDTs have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
         unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-        by(fastsimp intro!: addr_loc_type.intros map_of_SomeI simp add: has_field_def distinct_fst_def)
+        by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
       hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
         by(rule list_all2_mono)(simp add: addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`] split_def)
-      moreover from new Some
+      moreover from new Some `is_class P C`
       have "typeof_addr h' a' = \<lfloor>Class C\<rfloor>" by(auto dest: new_obj_SomeD)
-      with FDTs `distinct (map fst FDTs)`
-      have "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts"
+      with FDTs have "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts"
         unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-        by(fastsimp intro!: addr_loc_type.intros map_of_SomeI simp add: has_field_def distinct_fst_def)
+        by(fastsimp intro: addr_loc_type.intros map_of_SomeI simp add: has_field_def dest: weak_map_of_SomeI)
       ultimately obtain obs h'' where "heap_copies a a' ?als h' obs h''" "hconf h''"
         by(blast dest: heap_copies_progress[OF `hconf h'`])
       with typea new Some FDTs ObjClone[of h a C h' a' P FDTs obs h'']
@@ -147,29 +299,33 @@ proof -
     obtain h' res where new: "new_arr h U (array_length h a) = (h', res)"
       by(cases "new_arr h U (array_length h a)")
     hence "h \<unlhd> h'" by(rule hext_new_arr)
-    from new hconf `is_type P T` have "hconf h'" by simp(rule hconf_new_arr_mono)
+    from new hconf `is_type P T` have "hconf h'"
+      by(simp del: is_type.simps)(rule hconf_new_arr_mono)
     show ?thesis
     proof(cases res)
       case None
       with typea new ArrFail[of h a U h' P]
-      show ?thesis using `hconf h'` by auto
+      show ?thesis by auto
     next
       case (Some a')
+      from wf
+      obtain FDTs where FDTs: "P \<turnstile> Object has_fields FDTs"
+        by(blast dest: wf_Fields_Ex is_class_Object)
       let ?n = "array_length h a"
-      let ?als = "map ACell [0..<?n]"
-      let ?Ts = "replicate ?n U"
+      let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<?n]"
+      let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate ?n U"
       from `h \<unlhd> h'` typea have type'a: "typeof_addr h' a = \<lfloor>Array U\<rfloor>"
         and [simp]: "array_length h' a = array_length h a" by(auto intro: hext_arrD)
-      from type'a have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
-        by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros)
-      moreover from new Some
+      from type'a FDTs have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
+        by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+      moreover from new Some `is_type P T`
       have "typeof_addr h' a' = \<lfloor>Array U\<rfloor>" "array_length h' a' = array_length h a"
         by(auto dest: new_arr_SomeD)
-      hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts"
-        by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros)
+      hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts" using FDTs
+        by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
       ultimately obtain obs h'' where "heap_copies a a' ?als h' obs h''" "hconf h''"
         by(blast dest: heap_copies_progress[OF `hconf h'`])
-      with typea new Some ArrClone[of h a U "?n" h' a' obs h'' P]
+      with typea new Some FDTs ArrClone[of h a U "?n" h' a' P FDTs obs h'']
       show ?thesis by auto
     qed
   qed
@@ -186,121 +342,24 @@ proof -
     where T: "typeof_addr h a = \<lfloor>T\<rfloor>" and Ts: "map typeof\<^bsub>h\<^esub> vs = map Some Ts"
     and "P \<turnstile> T\<bullet>M(Ts') :: U" and subTs: "P \<turnstile> Ts [\<le>] Ts'"
     unfolding external_WT'_iff by blast
-  from `P \<turnstile> T\<bullet>M(Ts') :: U` obtain T' where "T'\<bullet>M(Ts') :: U"
-    and subT': "P \<turnstile> T \<le> T'" and ext: "is_external_call P T M"
-    by(rule external_WT.cases) clarsimp
-  from `T'\<bullet>M(Ts') :: U` subT' ext T Ts subTs show ?thesis
+  from `P \<turnstile> T\<bullet>M(Ts') :: U` obtain T' where native: "P \<turnstile> T native M:Ts' \<rightarrow> U in T'" by cases
+  hence "T'\<bullet>M(Ts') :: U" and subT': "P \<turnstile> T \<le> T'"
+    by(auto simp add: is_native_def2 native_call_def)
+  from `T'\<bullet>M(Ts') :: U` subT' native T Ts subTs show ?thesis
   proof cases
-    assume [simp]: "T' = Class Thread" "M = interrupt" "Ts' = []" "U = Void"
-    from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-      by(rule wf_Thread_has_interrupted_flag)
-    moreover from subT' typeof_addr_eq_Some_conv[OF T]
-    obtain C where [simp]: "T = Class C" and "P \<turnstile> C \<preceq>\<^sup>* Thread" by(auto simp add: widen_Class)
-    ultimately have "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread" by(blast intro: has_field_mono)
-    with T have "P,h \<turnstile> a@interrupted_flag_loc : Boolean"
-      by(auto intro: addr_loc_type.intros)
-    then obtain h' where "heap_write h a interrupted_flag_loc (Bool True) h'"
-      by(auto dest: heap_write_total[where v="Bool True"])
-    with subT' ext T Ts subTs `P \<turnstile> C \<preceq>\<^sup>* Thread` show ?thesis by(auto intro: red_external.intros)
-  next
     assume [simp]: "T' = Class Object" "M = clone" "Ts' = []" "U = Class Object"
     from heap_clone_progress[OF wf T hconf] obtain h' res where "heap_clone P h a h' res" by blast
     thus ?thesis using subTs Ts by(cases res)(auto intro: red_external.intros)
-  next
-    assume [simp]: "T' = Class Object" "M = equals" "Ts' = [Class Object]" "U = Boolean"
-    from subTs Ts obtain v where [simp]: "vs = [v]"
-      by(auto simp add: map_eq_map_conv list_all2_Cons2)
-    thus ?thesis by(fastsimp intro: red_external.intros)
-  qed(fastsimp simp add: widen_Class is_external_call_def intro: red_external.intros)+
+  qed(fastsimp simp add: widen_Class intro: red_external.intros dest: native_call_not_NT)+
 qed
 
 end
 
 subsection {* Lemmas for preservation of deadlocked threads *}
 
-lemma (in heap_progress) red_external_Lock_hext:
-  assumes wf: "wf_prog wf_md P"
-  and red: "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
-  and Lock: "Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)"
-  and hext: "h \<unlhd> h''"
-  and hconf: "hconf h''"
-  shows "\<exists>va' ta' h'''. P,t \<turnstile> \<langle>a\<bullet>M(vs), h''\<rangle> -ta'\<rightarrow>ext \<langle>va', h'''\<rangle> \<and> 
-                        collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<and> {t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>} = {t. Join t \<in> set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>}"
-using red Lock
-proof cases
-  case (RedWait C)
-  from `h \<unlhd> h''` `typeof_addr h t = \<lfloor>Class C\<rfloor>`
-  have type: "typeof_addr h'' t = \<lfloor>Class C\<rfloor>" by(rule typeof_addr_hext_mono)
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
-  with type have "P,h'' \<turnstile> t@interrupted_flag_loc : Boolean"
-    by(rule addr_loc_type.intros)
-  from heap_read_total[OF hconf this]
-  obtain v where read: "heap_read h'' t interrupted_flag_loc v"
-    and "P,h'' \<turnstile> v :\<le> Boolean" by blast
-  from `P,h'' \<turnstile> v :\<le> Boolean` obtain b
-    where [simp]: "v = Bool b" by(auto simp add: conf_def)
-  show ?thesis
-  proof(cases b)
-    case True
-    let ?ta = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), 
-                                    WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
-    from heap_write_total[OF `P,h'' \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
-    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" by auto
-    from read RedWaitInterrupt[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread` _ this, of a] True
-    have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -?ta\<rightarrow>ext \<langle>RetEXC InterruptedException, h'''\<rangle>" by simp
-    with RedWait show ?thesis
-      by(auto simp add: collect_locks_def ta_upd_simps finfun_upd_apply intro!: exI split: split_if_asm)
-  next
-    case False
-    from read red_external.RedWait[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread`, of a] RedWait False
-    have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -ta\<rightarrow>ext \<langle>va, h''\<rangle>" by simp
-    thus ?thesis using RedWait by fastsimp
-  qed
-next
-  case (RedWaitInterrupt C)
-  from `h \<unlhd> h''` `typeof_addr h t = \<lfloor>Class C\<rfloor>`
-  have type: "typeof_addr h'' t = \<lfloor>Class C\<rfloor>" by(rule typeof_addr_hext_mono)
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
-  with type have "P,h'' \<turnstile> t@interrupted_flag_loc : Boolean"
-    by(rule addr_loc_type.intros)
-  from heap_read_total[OF hconf this]
-  obtain v where read: "heap_read h'' t interrupted_flag_loc v"
-    and "P,h'' \<turnstile> v :\<le> Boolean" by blast
-  from `P,h'' \<turnstile> v :\<le> Boolean` obtain b
-    where [simp]: "v = Bool b" by(auto simp add: conf_def)
-  show ?thesis
-  proof(cases b)
-    case True
-    let ?ta = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), 
-                                    WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
-    from heap_write_total[OF `P,h'' \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
-    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" by auto
-    from read red_external.RedWaitInterrupt[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread` _ this, of a] True
-    have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -?ta\<rightarrow>ext \<langle>RetEXC InterruptedException, h'''\<rangle>" by simp
-    with RedWaitInterrupt show ?thesis
-      by(auto simp add: collect_locks_def ta_upd_simps finfun_upd_apply intro!: exI split: split_if_asm)
-  next
-    case False
-    let ?ta = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>"
-    from read red_external.RedWait[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread`, of a] False
-    have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> - ?ta\<rightarrow>ext \<langle>RetStaySame, h''\<rangle>" by simp
-    thus ?thesis using RedWaitInterrupt 
-      by(auto simp add: collect_locks_def ta_upd_simps finfun_upd_apply intro!: exI split: split_if_asm)
-  qed
-qed(fastsimp simp add: finfun_upd_apply split_beta ta_upd_simps intro: red_external.intros[simplified])+
+context heap_progress begin
 
-lemma (in heap) red_external_Join_hext:
-  "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; Join t' \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>; h \<unlhd> h'' \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>M(vs), h''\<rangle> -ta\<rightarrow>ext \<langle>va, h''\<rangle>"
-by(auto simp add: ta_upd_simps elim!: red_external.cases intro!: RedJoin[simplified] intro: typeof_addr_hext_mono)
-
-lemma (in heap_progress) red_external_wt_hconf_hext:
+lemma red_external_wt_hconf_hext:
   assumes wf: "wf_prog wf_md P"
   and red: "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>"
   and hext: "h'' \<unlhd> h"
@@ -308,98 +367,17 @@ lemma (in heap_progress) red_external_wt_hconf_hext:
   and tconf: "P,h'' \<turnstile> t \<surd>t"
   and hconf: "hconf h''" 
   shows "\<exists>ta' va' h'''. P,t \<turnstile> \<langle>a\<bullet>M(vs),h''\<rangle> -ta'\<rightarrow>ext \<langle>va', h'''\<rangle> \<and> 
-                        collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<and> {t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>} = {t. Join t \<in> set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>}"
+                        collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<and> 
+                        collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<and>
+                        collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub> = collect_interrupts \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub>"
 using red wt hext
 proof cases
-  case (RedWait C)
-  from tconf `typeof_addr h t = \<lfloor>Class C\<rfloor>` 
-  have type: "typeof_addr h'' t = \<lfloor>Class C\<rfloor>"
-    by(fastsimp dest: tconfD typeof_addr_hext_mono[OF hext])
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
-  with type have "P,h'' \<turnstile> t@interrupted_flag_loc : Boolean"
-    by(rule addr_loc_type.intros)
-  from heap_read_total[OF hconf this]
-  obtain v where read: "heap_read h'' t interrupted_flag_loc v"
-    and "P,h'' \<turnstile> v :\<le> Boolean" by blast
-  from `P,h'' \<turnstile> v :\<le> Boolean` obtain b
-    where [simp]: "v = Bool b" by(auto simp add: conf_def)
-  show ?thesis
-  proof(cases b)
-    case True
-    let ?ta = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), 
-                                    WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
-    from heap_write_total[OF `P,h'' \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
-    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" by auto
-    from read RedWaitInterrupt[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread` _ this, of a] True
-    have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -?ta\<rightarrow>ext \<langle>RetEXC InterruptedException, h'''\<rangle>" by simp
-    with RedWait show ?thesis
-      by(auto simp add: collect_locks_def ta_upd_simps finfun_upd_apply intro!: exI split: split_if_asm)
-  next
-    case False
-    from read red_external.RedWait[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread`, of a] RedWait False
-    have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -ta\<rightarrow>ext \<langle>va, h''\<rangle>" by simp
-    thus ?thesis using RedWait by fastsimp
-  qed
-next
-  case (RedWaitInterrupt C)
-  from tconf `typeof_addr h t = \<lfloor>Class C\<rfloor>` 
-  have type: "typeof_addr h'' t = \<lfloor>Class C\<rfloor>"
-    by(fastsimp dest: tconfD typeof_addr_hext_mono[OF hext])
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
-  with type have "P,h'' \<turnstile> t@interrupted_flag_loc : Boolean"
-    by(rule addr_loc_type.intros)
-  from heap_read_total[OF hconf this]
-  obtain v where read: "heap_read h'' t interrupted_flag_loc v"
-    and "P,h'' \<turnstile> v :\<le> Boolean" by blast
-  from `P,h'' \<turnstile> v :\<le> Boolean` obtain b
-    where [simp]: "v = Bool b" by(auto simp add: conf_def)
-  show ?thesis
-  proof(cases b)
-    case True
-    let ?ta = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), 
-                                    WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
-    from heap_write_total[OF `P,h'' \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
-    obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" by auto
-    from read red_external.RedWaitInterrupt[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread` _ this, of a] True
-    have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -?ta\<rightarrow>ext \<langle>RetEXC InterruptedException, h'''\<rangle>" by simp
-    with RedWaitInterrupt show ?thesis
-      by(auto simp add: collect_locks_def finfun_upd_apply ta_upd_simps intro!: exI split: split_if_asm)
-  next
-    case False
-    let ?ta = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>"
-    from read red_external.RedWait[OF type `P \<turnstile> C \<preceq>\<^sup>* Thread`, of a] False
-    have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> - ?ta\<rightarrow>ext \<langle>RetStaySame, h''\<rangle>" by simp
-    thus ?thesis using RedWaitInterrupt 
-      by(auto simp add: collect_locks_def finfun_upd_apply ta_upd_simps intro!: exI split: split_if_asm)
-  qed
-next
-  case (RedInterrupt C)
-  from `typeof_addr h a = \<lfloor>Class C\<rfloor>` wt `h'' \<unlhd> h`
-  have type: "typeof_addr h'' a = \<lfloor>Class C\<rfloor>"
-    by(auto elim!: external_WT'.cases dest: typeof_addr_hext_mono)
-  from wf have "P \<turnstile> Thread has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    by(rule wf_Thread_has_interrupted_flag)
-  hence "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread"
-    using `P \<turnstile> C \<preceq>\<^sup>* Thread` by(rule has_field_mono)
-  with type have "P,h'' \<turnstile> a@interrupted_flag_loc : Boolean"
-    by(rule addr_loc_type.intros)
-  from heap_write_total[OF this, of "Bool True"] obtain h''' 
-    where "heap_write h'' a interrupted_flag_loc (Bool True) h'''" by auto
-  with type RedInterrupt show ?thesis
-    by(fastsimp intro: red_external.RedInterrupt)
-next
   case (RedClone obs a')
   from wt obtain T Ts Ts'
     where T: "typeof_addr h'' a = \<lfloor>T\<rfloor>" and "P \<turnstile> T\<bullet>M(Ts') :: U"
     unfolding external_WT'_iff by blast
-  from `P \<turnstile> T\<bullet>M(Ts') :: U` obtain T' where "T'\<bullet>M(Ts') :: U"
-    and subT': "P \<turnstile> T \<le> T'" by(rule external_WT.cases) clarsimp
+  from `P \<turnstile> T\<bullet>M(Ts') :: U` obtain T' where "P \<turnstile> T native M:Ts' \<rightarrow> U in T'" by cases
+  hence "T'\<bullet>M(Ts') :: U" and subT': "P \<turnstile> T \<le> T'" by(simp_all add: native_call_def)
   from `M = clone` `T'\<bullet>M(Ts') :: U` have [simp]: "T' = Class Object"
     by(auto elim!: external_WT_defs.cases)
   from heap_clone_progress[OF wf T hconf]
@@ -411,8 +389,8 @@ next
   from wt obtain T Ts Ts'
     where T: "typeof_addr h'' a = \<lfloor>T\<rfloor>" and "P \<turnstile> T\<bullet>M(Ts') :: U"
     unfolding external_WT'_iff by blast
-  from `P \<turnstile> T\<bullet>M(Ts') :: U` obtain T' where "T'\<bullet>M(Ts') :: U"
-    and subT': "P \<turnstile> T \<le> T'" by(rule external_WT.cases) clarsimp
+  from `P \<turnstile> T\<bullet>M(Ts') :: U` obtain T' where "P \<turnstile> T native M:Ts' \<rightarrow> U in T'" by cases
+  hence "T'\<bullet>M(Ts') :: U" and subT': "P \<turnstile> T \<le> T'" by(simp_all add: native_call_def)
   from `M = clone` `T'\<bullet>M(Ts') :: U` have [simp]: "T' = Class Object"
     by(auto elim!: external_WT_defs.cases)
   from heap_clone_progress[OF wf T hconf]
@@ -421,212 +399,23 @@ next
     by(cases res)(fastsimp intro: red_external.intros)+
 qed(fastsimp simp add: ta_upd_simps elim!: external_WT'.cases intro: red_external.intros[simplified] dest: typeof_addr_hext_mono)+
 
-subsection {* Preservation of heap conformance *}
-
-context heap_conf_read begin
-
-lemma hconf_heap_copy_loc_mono:
-  assumes "heap_copy_loc a a' al h obs h'"
-  and "hconf h"
-  and "P,h \<turnstile> a@al : T" "P,h \<turnstile> a'@al : T"
-  shows "hconf h'"
-proof -
-  from `heap_copy_loc a a' al h obs h'` obtain v 
-    where read: "heap_read h a al v" 
-    and "write": "heap_write h a' al v h'" by cases auto
-  from read `P,h \<turnstile> a@al : T` `hconf h` have "P,h \<turnstile> v :\<le> T"
-    by(rule heap_read_conf)
-  with "write" `hconf h` `P,h \<turnstile> a'@al : T` show ?thesis
-    by(rule hconf_heap_write_mono)
-qed
-
-lemma hconf_heap_copies_mono:
-  assumes "heap_copies a a' als h obs h'"
-  and "hconf h"
-  and "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts"
-  and "list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) als Ts"
-  shows "hconf h'"
-using assms
-proof(induct arbitrary: Ts)
-  case Nil thus ?case by simp
-next
-  case (Cons al h ob h' als obs h'')
-  note step = `heap_copy_loc a a' al h ob h'`
-  from `list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) (al # als) Ts`
-  obtain T Ts' where [simp]: "Ts = T # Ts'"
-    and "P,h \<turnstile> a@al : T" "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts'"
-    by(auto simp add: list_all2_Cons1)
-  from `list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) (al # als) Ts`
-  have "P,h \<turnstile> a'@al : T" "list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) als Ts'" by simp_all
-  from step `hconf h` `P,h \<turnstile> a@al : T` `P,h \<turnstile> a'@al : T`
-  have "hconf h'" by(rule hconf_heap_copy_loc_mono)
-  moreover from step have "h \<unlhd> h'" by(rule hext_heap_copy_loc)
-  from `list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts'`
-  have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) als Ts'"
-    by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`])
-  moreover from `list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) als Ts'`
-  have "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) als Ts'"
-    by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`])
-  ultimately show ?case by(rule Cons)
-qed
-
-lemma hconf_heap_clone_mono:
-  assumes wf: "wf_prog wf_md P"
-  and "heap_clone P h a h' res"
-  and "hconf h"
-  shows "hconf h'"
-using `heap_clone P h a h' res`
-proof cases
-  case ObjFail thus ?thesis using `hconf h`
-    by(fastsimp intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
-next
-  case ArrFail thus ?thesis using `hconf h`
-    by(fastsimp intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
-next
-  case (ObjClone C h'' a' FDTs obs)
-  note FDTs = `P \<turnstile> C has_fields FDTs`
-  let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
-  let ?Ts = "map (fst \<circ> snd) FDTs"
-  note `heap_copies a a' ?als h'' obs h'` 
-  moreover from `typeof_addr h a = \<lfloor>Class C\<rfloor>` `hconf h` have "is_class P C"
-    by(auto dest: typeof_addr_is_type)
-  from `new_obj h C = (h'', \<lfloor>a'\<rfloor>)` have "h \<unlhd> h''" "hconf h''"
-    by(rule hext_heap_ops hconf_new_obj_mono[OF _ `hconf h` `is_class P C`])+
-  note `hconf h''` 
-  moreover from wf FDTs have "distinct (map fst FDTs)"
-    by(rule has_fields_distinct)
-  with `typeof_addr h a = \<lfloor>Class C\<rfloor>` FDTs
-  have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-    by(fastsimp intro!: addr_loc_type.intros map_of_SomeI simp add: has_field_def distinct_fst_def)
-  hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
-    by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h''`])
-  moreover from `new_obj h C = (h'', \<lfloor>a'\<rfloor>)`
-  have "typeof_addr h'' a' = \<lfloor>Class C\<rfloor>" by(auto dest: new_obj_SomeD)
-  with FDTs `distinct (map fst FDTs)`
-  have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-    by(fastsimp intro!: addr_loc_type.intros map_of_SomeI simp add: has_field_def distinct_fst_def)
-  ultimately have "hconf h'" by(rule hconf_heap_copies_mono)
-  thus ?thesis using ObjClone by simp
-next
-  case (ArrClone T n h'' a' obs)
-  note [simp] = `n = array_length h a`
-  let ?als = "map ACell [0..<n]"
-  let ?Ts = "replicate n T"
-  note `heap_copies a a' (map ACell [0..<n]) h'' obs h'`
-  moreover from `typeof_addr h a = \<lfloor>T\<lfloor>\<rceil>\<rfloor>` `hconf h` have "is_type P T"
-    by(auto dest: typeof_addr_is_type)
-  from `new_arr h T n = (h'', \<lfloor>a'\<rfloor>)` have "h \<unlhd> h''" "hconf h''"
-    by(rule hext_heap_ops hconf_new_arr_mono[OF _ `hconf h` `is_type P T`])+
-  note `hconf h''`
-  moreover from `h \<unlhd> h''` `typeof_addr h a = \<lfloor>Array T\<rfloor>`
-  have type'a: "typeof_addr h'' a = \<lfloor>Array T\<rfloor>"
-    and [simp]: "array_length h'' a = array_length h a" by(auto intro: hext_arrD)
-  from type'a have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
-    by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros)
-  moreover from `new_arr h T n = (h'', \<lfloor>a'\<rfloor>)`
-  have "typeof_addr h'' a' = \<lfloor>Array T\<rfloor>" "array_length h'' a' = array_length h a"
-    by(auto dest: new_arr_SomeD)
-  hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
-    by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros)
-  ultimately have "hconf h'" by(rule hconf_heap_copies_mono)
-  thus ?thesis using ArrClone by simp
-qed
-
-theorem external_call_hconf:
-  assumes wf: "wf_prog wf_md P"
-  and major: "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
-  and minor: "P,h \<turnstile> a\<bullet>M(vs) : U" "hconf h"
-  shows "hconf h'"
-using major wf minor
-proof cases
-  case (RedInterrupt C)
-  from `typeof_addr h a = \<lfloor>Class C\<rfloor>` `P \<turnstile> C \<preceq>\<^sup>* Thread`
-  have "P,h \<turnstile> a@interrupted_flag_loc : Boolean"
-    by(auto intro!: addr_loc_type.intros wf_sub_Thread_has_interrupted_flag[OF wf])
-  thus ?thesis using minor RedInterrupt by(force intro: hconf_heap_write_mono)
-next
-  case (RedWaitInterrupt C)
-  from `typeof_addr h t = \<lfloor>Class C\<rfloor>` `P \<turnstile> C \<preceq>\<^sup>* Thread`
-  have "P,h \<turnstile> t@interrupted_flag_loc : Boolean"
-    by(auto intro!: addr_loc_type.intros wf_sub_Thread_has_interrupted_flag[OF wf])
-  thus ?thesis using minor RedWaitInterrupt by(force intro: hconf_heap_write_mono)
-next
-  case (RedWaitInterrupted C)
-  from `typeof_addr h t = \<lfloor>Class C\<rfloor>` `P \<turnstile> C \<preceq>\<^sup>* Thread`
-  have "P,h \<turnstile> t@interrupted_flag_loc : Boolean"
-    by(auto intro!: addr_loc_type.intros wf_sub_Thread_has_interrupted_flag[OF wf])
-  thus ?thesis using minor RedWaitInterrupted by(force intro: hconf_heap_write_mono)
-qed(fastsimp intro: hconf_heap_clone_mono[OF wf])+
-
-end
-
-context heap_base begin
-
-primrec conf_extRet :: "'m prog \<Rightarrow> 'heap \<Rightarrow> extCallRet \<Rightarrow> ty \<Rightarrow> bool" where
-  "conf_extRet P h (RetVal v) T = (P,h \<turnstile> v :\<le> T)"
-| "conf_extRet P h (RetExc a) T = (P,h \<turnstile> Addr a :\<le> Class Throwable)"
-| "conf_extRet P h RetStaySame T = True"
-
-end
-
-context heap begin
-
-lemma red_external_conf_extRet:
-  "\<lbrakk> wf_prog wf_md P; P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; P,h \<turnstile> a\<bullet>M(vs) : U; preallocated h \<rbrakk>
-  \<Longrightarrow> conf_extRet P h' va U"
-apply(frule red_external_hext)
-apply(drule (1) preallocated_hext)
-apply(auto elim!: red_external.cases external_WT.cases external_WT'.cases external_WT_defs_cases)
-apply(auto simp add: conf_def intro: xcpt_subcls_Throwable dest!: hext_heap_write typeof_addr_heap_clone)
-done
-
-lemma red_external_aggr_conf_extRet:
-  "\<lbrakk> wf_prog wf_md P; (ta, va, h') \<in> red_external_aggr P t a M vs h; P,h \<turnstile> a\<bullet>M(vs) : U; preallocated h \<rbrakk>
-  \<Longrightarrow> conf_extRet P h' va U"
-apply(frule (1) red_external_aggr_hext)
-apply(frule (1) preallocated_hext)
-apply(auto simp add: red_external_aggr_def split_beta split: split_if_asm)
-apply(auto elim!: external_WT.cases external_WT'.cases external_WT_defs_cases)
-apply(auto simp add: conf_def xcpt_subcls_Throwable)
-apply(drule typeof_addr_heap_clone, simp)
-apply(auto dest: typeof_InterruptedException simp add: xcpt_subcls_Throwable elim: external_WT_defs.cases)
-done
-
-end
-
-context heap_progress begin
-
 lemma red_external_wf_red:
   assumes wf: "wf_prog wf_md P"
   and red: "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
   and tconf: "P,h \<turnstile> t \<surd>t"
   and hconf: "hconf h"
-  and wst: "wset s t = None \<or> (M = wait \<and> (\<exists>w. wset s t = \<lfloor>WokenUp w\<rfloor>))"
+  and wst: "wset s t = None \<or> (M = wait \<and> (\<exists>w. wset s t = \<lfloor>PostWS w\<rfloor>))"
   obtains ta' va' h''
   where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta'\<rightarrow>ext \<langle>va', h''\<rangle>" 
-  and "final_thread.actions_ok' s t ta'"
-  and "final_thread.actions_subset ta' ta"
+  and "final_thread.actions_ok final s t ta' \<or> final_thread.actions_ok' s t ta' \<and> final_thread.actions_subset ta' ta"
 proof(atomize_elim)
-  from tconf obtain C where ht: "typeof_addr h t = \<lfloor>Class C\<rfloor>" 
+  let ?a_t = "thread_id2addr t"
+  let ?t_a = "addr2thread_id a"
+
+  from tconf obtain C where ht: "typeof_addr h ?a_t = \<lfloor>Class C\<rfloor>" 
     and sub: "P \<turnstile> C \<preceq>\<^sup>* Thread" by(fastsimp dest: tconfD)
-  from wf sub have "P \<turnstile> C has interrupted_flag:Boolean (\<lparr>volatile=True\<rparr>) in Thread" 
-    by(rule wf_sub_Thread_has_interrupted_flag)
-  with ht have "P,h \<turnstile> t@interrupted_flag_loc : Boolean"
-    by(rule addr_loc_type.intros)
-  from heap_read_total[OF hconf this]
-  obtain v where read: "heap_read h t interrupted_flag_loc v"
-    and "P,h \<turnstile> v :\<le> Boolean" by blast
-  from `P,h \<turnstile> v :\<le> Boolean` obtain b
-    where [simp]: "v = Bool b" by(auto simp add: conf_def)
 
-  from heap_write_total[OF `P,h \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool False"]
-    heap_write_total[OF `P,h \<turnstile> t@interrupted_flag_loc : Boolean`, of "Bool True"]
-  obtain hT hF where writeT: "heap_write h t interrupted_flag_loc (Bool True) hT" 
-    and writeF: "heap_write h t interrupted_flag_loc (Bool False) hF" by auto
-
-  show "\<exists>ta' va' h'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta'\<rightarrow>ext \<langle>va', h'\<rangle> \<and> final_thread.actions_ok' s t ta' \<and> final_thread.actions_subset ta' ta"
+  show "\<exists>ta' va' h'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta'\<rightarrow>ext \<langle>va', h'\<rangle> \<and> (final_thread.actions_ok final s t ta' \<or> final_thread.actions_ok' s t ta' \<and> final_thread.actions_subset ta' ta)"
   proof(cases "final_thread.actions_ok' s t ta")
     case True
     have "final_thread.actions_subset ta ta" by(rule final_thread.actions_subset_refl)
@@ -634,32 +423,32 @@ proof(atomize_elim)
   next
     case False
     note [simp] = final_thread.actions_ok'_iff lock_ok_las'_def final_thread.cond_action_oks'_subset_Join
-      final_thread.actions_subset_iff ta_upd_simps
+      final_thread.actions_subset_iff ta_upd_simps collect_cond_actions_def collect_interrupts_def
     note [rule del] = subsetI
     note [intro] = collect_locks'_subset_collect_locks red_external.intros[simplified]
 
     show ?thesis
     proof(cases "wset s t")
       case (Some w)[simp]
-      with wst obtain w' where [simp]: "w = WokenUp w'" "M = wait" by auto
+      with wst obtain w' where [simp]: "w = PostWS w'" "M = wait" by auto
       from red have [simp]: "vs = []" by(auto elim: red_external.cases)
       show ?thesis
       proof(cases w')
-        case WSInterrupted[simp]
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool b), WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
+        case WSWokenUp[simp]
+        let ?ta' = "\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>"
         have "final_thread.actions_ok' s t ?ta'" by(simp add: wset_actions_ok_def)
         moreover have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
-        moreover from RedWaitInterrupted ht sub read writeF 
+	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+        moreover from RedWaitInterrupted
         have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
         ultimately show ?thesis by blast
       next
         case WSNotified[simp]
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notified \<rbrace>"
+        let ?ta' = "\<lbrace>Notified\<rbrace>"
         have "final_thread.actions_ok' s t ?ta'" by(simp add: wset_actions_ok_def)
         moreover have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
-        moreover from RedWaitNotified ht sub
+	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+        moreover from RedWaitNotified
         have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
         ultimately show ?thesis by blast
       qed
@@ -669,114 +458,167 @@ proof(atomize_elim)
       from red False show ?thesis
       proof cases
         case (RedNewThread C)
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a (C, run, a) h\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>`
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>"
+        note ta = `ta = \<lbrace>NewThread ?t_a (C, run, a) h, ThreadStart ?t_a\<rbrace>`
+        let ?ta' = "\<lbrace>ThreadExists ?t_a True\<rbrace>"
         from ta False None have "final_thread.actions_ok' s t ?ta'" by(auto)
         moreover from ta have "final_thread.actions_subset ?ta' ta" by(auto)
         ultimately show ?thesis using RedNewThread by(fastsimp)
       next
         case RedNewThreadFail
-        then obtain va' h' x where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>\<rightarrow>ext \<langle>va', h'\<rangle>" by(fastsimp)
-        moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>` False None
-        have "final_thread.actions_ok' s t \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>" by(auto)
-        moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>`
-        have "final_thread.actions_subset \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace> ta" by(auto)
+        then obtain va' h' x where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -\<lbrace>NewThread ?t_a x h', ThreadStart ?t_a\<rbrace>\<rightarrow>ext \<langle>va', h'\<rangle>"
+          by(fastsimp)
+        moreover from `ta = \<lbrace>ThreadExists ?t_a True\<rbrace>` False None
+        have "final_thread.actions_ok' s t \<lbrace>NewThread ?t_a x h', ThreadStart ?t_a\<rbrace>" by(auto)
+        moreover from `ta = \<lbrace>ThreadExists ?t_a True\<rbrace>`
+        have "final_thread.actions_subset \<lbrace>NewThread ?t_a x h', ThreadStart ?t_a\<rbrace> ta" by(auto)
         ultimately show ?thesis by blast
       next
-        case RedJoin thus ?thesis using None by fastsimp
+        case RedJoin
+        let ?ta = "\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>"
+        from `ta = \<lbrace>Join (addr2thread_id a), IsInterrupted t False, ThreadJoin (addr2thread_id a)\<rbrace>` None False
+        have "t \<in> interrupts s" by(auto simp add: interrupt_actions_ok'_def)
+        hence "final_thread.actions_ok final s t ?ta"
+          using None by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps)
+        moreover obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta\<rightarrow>ext \<langle>va,h'\<rangle>" using RedJoinInterrupt RedJoin by auto
+        ultimately show ?thesis by blast
       next
-        case RedInterrupt thus ?thesis using None
-          by(fastsimp simp del: split_paired_Ex simp add: wset_actions_ok_def)
+        case RedJoinInterrupt
+        hence False using False None by(auto)
+        thus ?thesis ..
+      next
+        case RedInterrupt
+        let ?ta = "\<lbrace>ThreadExists (addr2thread_id a) False\<rbrace>"
+        from RedInterrupt None False
+        have "free_thread_id (thr s) (addr2thread_id a)" by(auto simp add: wset_actions_ok_def)
+        hence "final_thread.actions_ok final s t ?ta" using None 
+          by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps)
+        moreover obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta\<rightarrow>ext \<langle>va,h'\<rangle>" using RedInterruptInexist RedInterrupt by auto
+        ultimately show ?thesis by blast
+      next
+        case RedInterruptInexist
+        let ?ta = "\<lbrace>ThreadExists (addr2thread_id a) True, WakeUp (addr2thread_id a), Interrupt (addr2thread_id a), ObsInterrupt (addr2thread_id a)\<rbrace>"
+        from RedInterruptInexist None False
+        have "\<not> free_thread_id (thr s) (addr2thread_id a)" by(auto simp add: wset_actions_ok_def)
+        hence "final_thread.actions_ok final s t ?ta" using None 
+          by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps wset_actions_ok_def)
+        moreover obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta\<rightarrow>ext \<langle>va,h'\<rangle>" using RedInterruptInexist RedInterrupt by auto
+        ultimately show ?thesis by blast
+      next
+        case (RedIsInterruptedTrue C)
+        let ?ta' = "\<lbrace>IsInterrupted ?t_a False\<rbrace>"
+        from RedIsInterruptedTrue False None have "?t_a \<notin> interrupts s" by(auto)
+        hence "final_thread.actions_ok' s t ?ta'" using None by auto
+        moreover from RedIsInterruptedTrue have "final_thread.actions_subset ?ta' ta" by auto
+        moreover from RedIsInterruptedTrue RedIsInterruptedFalse obtain va h'
+          where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
+        ultimately show ?thesis by blast
+      next
+        case (RedIsInterruptedFalse C)
+        let ?ta' = "\<lbrace>IsInterrupted ?t_a True, ObsInterrupted ?t_a\<rbrace>"
+        from RedIsInterruptedFalse have "?t_a \<in> interrupts s"
+          using False None by(auto simp add: interrupt_actions_ok'_def)
+        hence "final_thread.actions_ok final s t ?ta'"
+          using None by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps)
+        moreover obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>"
+          using RedIsInterruptedFalse RedIsInterruptedTrue by auto
+        ultimately show ?thesis by blast
       next
         case RedWaitInterrupt
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), WriteMem t interrupted_flag_loc (Bool False)\<rbrace>`
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-        from ta False None have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
-	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
-        hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
-        hence "final_thread.actions_ok' s t ?ta'" using None
-          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
-        moreover from ta have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply)
-        moreover from RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
-        ultimately show ?thesis by blast
+        note ta = `ta = \<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>`
+        from ta False None have hli: "\<not> has_lock ((locks s)\<^sub>f a) t \<or> t \<notin> interrupts s"
+          by(fastsimp simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
+        show ?thesis
+        proof(cases "has_lock ((locks s)\<^sub>f a) t")
+          case True
+          let ?ta' = "\<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a \<rbrace>"
+          from True hli have "t \<notin> interrupts s" by simp
+          with True False have "final_thread.actions_ok' s t ?ta'" using None
+            by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv)
+          moreover from ta have "final_thread.actions_subset ?ta' ta"
+	    by(auto simp add: collect_locks'_def finfun_upd_apply)
+          moreover from RedWait RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
+          ultimately show ?thesis by blast
+        next
+          case False
+          let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
+          from False have "final_thread.actions_ok' s t ?ta'" using None
+            by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
+          moreover from ta have "final_thread.actions_subset ?ta' ta"
+	    by(auto simp add: collect_locks'_def finfun_upd_apply)
+          moreover from RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+          ultimately show ?thesis by blast
+        qed
       next
         case RedWait
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>`
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-        from ta False None have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
-	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
-        hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
-        hence "final_thread.actions_ok' s t ?ta'" using None
-          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
-        moreover from ta have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply)
-        moreover from RedWait obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
-        ultimately show ?thesis by blast
+        note ta = `ta = \<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>`
+
+        from ta False None have hli: "\<not> has_lock ((locks s)\<^sub>f a) t \<or> t \<in> interrupts s"
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
+        show ?thesis
+        proof(cases "has_lock ((locks s)\<^sub>f a) t")
+          case True
+          let ?ta' = "\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>"
+          from True hli have "t \<in> interrupts s" by simp
+          with True False have "final_thread.actions_ok final s t ?ta'" using None
+            by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps lock_ok_las_def finfun_upd_apply has_lock_may_lock)
+          moreover from RedWait RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
+          ultimately show ?thesis by blast
+        next
+          case False
+          let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
+          from False have "final_thread.actions_ok' s t ?ta'" using None
+            by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
+          moreover from ta have "final_thread.actions_subset ?ta' ta"
+	    by(auto simp add: collect_locks'_def finfun_upd_apply)
+          moreover from RedWait RedWaitFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+          ultimately show ?thesis by blast
+        qed
       next
         case RedWaitFail
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
-        let ?ta' = "if b
-                   then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
-                         \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
-                            WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
-                   else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
-                         \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>"
+        note ta = `ta = \<lbrace>UnlockFail\<rightarrow>a\<rbrace>`
+        let ?ta' = "if t \<in> interrupts s
+                   then \<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>
+                   else \<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a \<rbrace>"
         from ta False None have "has_lock ((locks s)\<^sub>f a) t"
           by(auto simp add: finfun_upd_apply split: split_if_asm)
-        hence "final_thread.actions_ok' s t ?ta'" using None
-          by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
-        moreover from ta have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply)
-        moreover from RedWaitFail ht sub read writeF
-        obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(cases b)(auto)
+        hence "final_thread.actions_ok final s t ?ta'" using None
+          by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps lock_ok_las_def finfun_upd_apply has_lock_may_lock wset_actions_ok_def)
+        moreover from RedWaitFail RedWait RedWaitInterrupt
+        obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>"
+          by(cases "t \<in> interrupts s") (auto)
         ultimately show ?thesis by blast
       next
         case RedWaitNotified
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Notified\<rbrace>`
+        note ta = `ta = \<lbrace>Notified\<rbrace>`
         let ?ta' = "if has_lock ((locks s)\<^sub>f a) t
-                   then (if b 
-                         then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
-                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
-                                  WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
-                         else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
-                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>)
-                   else \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-        have "final_thread.actions_ok' s t ?ta'"
-          using None by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
-        moreover from ta have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
-        moreover from RedWaitNotified ht sub read writeF 
-          RedWait[of h t C P a] RedWaitInterrupt[of h t C P hF a] RedWaitFail[of P t h a]
-        have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by fastsimp
+                   then (if t \<in> interrupts s 
+                         then \<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>
+                         else \<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a \<rbrace>)
+                   else \<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
+        have "final_thread.actions_ok final s t ?ta'" using None
+          by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps lock_ok_las_def finfun_upd_apply has_lock_may_lock wset_actions_ok_def)
+        moreover from RedWaitNotified RedWait RedWaitInterrupt RedWaitFail
+        have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
         ultimately show ?thesis by blast
       next
-        case (RedWaitInterrupted C b')
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Interrupted\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool b'),
-                                         WriteMem t interrupted_flag_loc (Bool False)\<rbrace>`
+        case RedWaitInterrupted
+        note ta = `ta = \<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>`
         let ?ta' = "if has_lock ((locks s)\<^sub>f a) t
-                   then (if b 
-                         then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
-                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
-                                  WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
-                         else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
-                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool False), SyncUnlock a\<rbrace>)
-                   else \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-        have "final_thread.actions_ok' s t ?ta'" using None
-          by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
-        moreover from ta have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
-        moreover from RedWaitInterrupted ht sub read writeF
-          RedWait[of h t C P a] RedWaitInterrupt[of h t C P hF a] RedWaitFail[of P t h a]
-        have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by fastsimp
+                   then (if t \<in> interrupts s 
+                         then \<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>
+                         else \<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a \<rbrace>)
+                   else \<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
+        have "final_thread.actions_ok final s t ?ta'" using None
+          by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps lock_ok_las_def finfun_upd_apply has_lock_may_lock wset_actions_ok_def)
+        moreover from RedWaitInterrupted RedWait RedWaitInterrupt RedWaitFail
+        have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
         ultimately show ?thesis by blast
       next
         case RedNotify
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-        from ta False None have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
-	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
-        hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
+        note ta = `ta = \<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
+        let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
+        from ta False None have "\<not> has_lock ((locks s)\<^sub>f a) t"
+	  by(fastsimp simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t has_lock_may_lock)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
@@ -785,8 +627,8 @@ proof(atomize_elim)
         ultimately show ?thesis by blast
       next
         case RedNotifyFail
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
+        note ta = `ta = \<lbrace>UnlockFail\<rightarrow>a\<rbrace>`
+        let ?ta' = "\<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
         from ta False None have "has_lock ((locks s)\<^sub>f a) t"
           by(auto simp add: finfun_upd_apply split: split_if_asm)
         hence "final_thread.actions_ok' s t ?ta'" using None
@@ -797,11 +639,10 @@ proof(atomize_elim)
         ultimately show ?thesis by blast
       next
         case RedNotifyAll
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-        from ta False None have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
-	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
-        hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
+        note ta = `ta = \<lbrace>NotifyAll a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
+        let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
+        from ta False None have "\<not> has_lock ((locks s)\<^sub>f a) t"
+	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
@@ -810,8 +651,8 @@ proof(atomize_elim)
         ultimately show ?thesis by blast
       next
         case RedNotifyAllFail
-        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
-        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
+        note ta = `ta = \<lbrace>UnlockFail\<rightarrow>a\<rbrace>`
+        let ?ta' = "\<lbrace>NotifyAll a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
         from ta False None have "has_lock ((locks s)\<^sub>f a) t"
           by(auto simp add: finfun_upd_apply split: split_if_asm)
         hence "final_thread.actions_ok' s t ?ta'" using None
@@ -820,9 +661,62 @@ proof(atomize_elim)
 	  by(auto simp add: collect_locks'_def finfun_upd_apply)
         moreover from RedNotifyAllFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
         ultimately show ?thesis by blast
+      next
+        case RedInterruptedTrue
+        let ?ta' = "\<lbrace>IsInterrupted t False\<rbrace>"
+        from RedInterruptedTrue have "final_thread.actions_ok final s t ?ta'"
+          using None False by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps)
+        moreover obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>"
+          using RedInterruptedFalse RedInterruptedTrue by auto
+        ultimately show ?thesis by blast
+      next
+        case RedInterruptedFalse
+        let ?ta' = "\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>"
+        from RedInterruptedFalse have "final_thread.actions_ok final s t ?ta'"
+          using None False
+          by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps interrupt_actions_ok'_def)
+        moreover obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>"
+          using RedInterruptedFalse RedInterruptedTrue by auto
+        ultimately show ?thesis by blast
       qed(auto simp add: None)
     qed
   qed
+qed
+
+end
+
+context heap_base begin
+
+lemma red_external_ta_satisfiable:
+  fixes final
+  assumes "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
+  shows "\<exists>s. final_thread.actions_ok final s t ta"
+proof -
+  note [simp] = 
+    final_thread.actions_ok_iff final_thread.cond_action_oks.simps final_thread.cond_action_ok.simps
+    lock_ok_las_def finfun_upd_apply wset_actions_ok_def has_lock_may_lock
+    and [intro] =
+    free_thread_id.intros
+    and [cong] = conj_cong
+  
+  from assms show ?thesis by cases(fastsimp intro: exI[where x="(\<lambda>\<^isup>f None)(\<^sup>f a := \<lfloor>(t, 0)\<rfloor>)"] exI[where x="(\<lambda>\<^isup>f None)"])+
+qed
+
+lemma red_external_aggr_ta_satisfiable:
+  fixes final
+  assumes red: "(ta, va, h') \<in> red_external_aggr P t a M vs h"
+  and native: "is_native P (the (typeof_addr h a)) M"
+  shows "\<exists>s. final_thread.actions_ok final s t ta"
+proof -
+  note [simp] = 
+    final_thread.actions_ok_iff final_thread.cond_action_oks.simps final_thread.cond_action_ok.simps
+    lock_ok_las_def finfun_upd_apply wset_actions_ok_def has_lock_may_lock
+    and [intro] =
+    free_thread_id.intros
+    and [cong] = conj_cong
+  
+  from red native show ?thesis
+    by(fastsimp simp add: red_external_aggr_def is_native_def2 native_call_def split_beta ta_upd_simps elim!: external_WT_defs_cases elim: external_WT_defs.cases split: split_if_asm intro: exI[where x="(\<lambda>\<^isup>f None)(\<^sup>f a := \<lfloor>(t, 0)\<rfloor>)"] exI[where x="(\<lambda>\<^isup>f None)"])
 qed
 
 end
@@ -871,7 +765,7 @@ apply(simp add: final_thread.actions_ok_iff lock_ok_las_def)
 apply(erule red_external.cases)
 apply(erule_tac [!] red_external.cases)
 apply simp_all
-apply(auto simp add: finfun_upd_apply wset_actions_ok_def dest: deterministic_heap_ops_writeD[OF det] deterministic_heap_ops_readD[OF det] heap_clone_deterministic[OF det] split: split_if_asm)
+apply(auto simp add: finfun_upd_apply wset_actions_ok_def dest: heap_clone_deterministic[OF det] split: split_if_asm)
 done
 
 end

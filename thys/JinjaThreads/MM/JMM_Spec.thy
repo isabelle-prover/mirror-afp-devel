@@ -12,27 +12,27 @@ begin
 
 section {* Definitions *}
 
-types JMM_action = nat
-types execution = "(thread_id \<times> obs_event action) llist"
+type_synonym JMM_action = nat
+type_synonym ('addr, 'thread_id) execution = "('thread_id \<times> ('addr, 'thread_id) obs_event action) llist"
 
-definition "actions" :: "execution \<Rightarrow> JMM_action set"
+definition "actions" :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action set"
 where "actions E = {n. enat n < llength E}"
 
-definition action_tid :: "execution \<Rightarrow> JMM_action \<Rightarrow> thread_id"
+definition action_tid :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> 'thread_id"
 where "action_tid E a = fst (lnth E a)"
 
-definition action_obs :: "execution \<Rightarrow> JMM_action \<Rightarrow> obs_event action"
+definition action_obs :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> ('addr, 'thread_id) obs_event action"
 where "action_obs E a = snd (lnth E a)"
 
-definition tactions :: "execution \<Rightarrow> thread_id \<Rightarrow> JMM_action set"
+definition tactions :: "('addr, 'thread_id) execution \<Rightarrow> 'thread_id \<Rightarrow> JMM_action set"
 where "tactions E t = {a. a \<in> actions E \<and> action_tid E a = t}"
 
-inductive is_new_action :: "obs_event action \<Rightarrow> bool"
+inductive is_new_action :: "('addr, 'thread_id) obs_event action \<Rightarrow> bool"
 where
   NewObj: "is_new_action (NormalAction (NewObj C a))"
 | NewArr: "is_new_action (NormalAction (NewArr T n a))"
 
-inductive is_write_action :: "obs_event action \<Rightarrow> bool"
+inductive is_write_action :: "('addr, 'thread_id) obs_event action \<Rightarrow> bool"
 where
   NewObj: "is_write_action (NormalAction (NewObj ad C))"
 | NewArr: "is_write_action (NormalAction (NewArr ad T n))"
@@ -73,7 +73,7 @@ r1 = x | r2 = x
   actions to \emph{all} thread start actions.
 *}
 
-inductive saction :: "'m prog \<Rightarrow> obs_event action \<Rightarrow> bool"
+inductive saction :: "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> bool"
 for P :: "'m prog"
 where
   NewObj: "saction P (NormalAction (NewObj a C))"
@@ -84,14 +84,17 @@ where
 | ThreadJoin: "saction P (NormalAction (ThreadJoin t))"
 | SyncLock: "saction P (NormalAction (SyncLock a))"
 | SyncUnlock: "saction P (NormalAction (SyncUnlock a))"
+| ObsInterrupt: "saction P (NormalAction (ObsInterrupt t))"
+| ObsInterrupted: "saction P (NormalAction (ObsInterrupted t))"
 | InitialThreadAction: "saction P InitialThreadAction"
 | ThreadFinishAction: "saction P ThreadFinishAction"
 
-definition sactions :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action set"
+
+definition sactions :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action set"
 where "sactions P E = {a. a \<in> actions E \<and> saction P (action_obs E a)}"
 
-inductive_set write_actions :: "execution \<Rightarrow> JMM_action set"
-for E :: execution
+inductive_set write_actions :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action set"
+for E :: "('addr, 'thread_id) execution"
 where 
   write_actionsI: "\<lbrakk> a \<in> actions E; is_write_action (action_obs E a) \<rbrakk> \<Longrightarrow> a \<in> write_actions E"
 
@@ -105,41 +108,44 @@ text {*
 primrec addr_locs :: "'m prog \<Rightarrow> htype \<Rightarrow> addr_loc set"
 where 
   "addr_locs P (Class_type C) = {CField D F|D F. \<exists>fm T. P \<turnstile> C has F:T (fm) in D}"
-| "addr_locs P (Array_type T n) = {ACell n'|n'. n' < n}"
+| "addr_locs P (Array_type T n) = ({ACell n'|n'. n' < n} \<union> {CField Object F|F. \<exists>fm T. P \<turnstile> Object has F:T (fm) in Object})"
 
-inductive action_loc_aux :: "'m prog \<Rightarrow> obs_event action \<Rightarrow> (addr \<times> addr_loc) set"
+inductive action_loc_aux :: "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> ('addr \<times> addr_loc) set"
 for P :: "'m prog"
 where
   NewObj: "P \<turnstile> C has F:T (fm) in D \<Longrightarrow> action_loc_aux P (NormalAction (NewObj ad C)) (ad, CField D F)"
 | NewArr: "n < n' \<Longrightarrow> action_loc_aux P (NormalAction (NewArr ad T n')) (ad, ACell n)"
+| NewArrObj: "P \<turnstile> Object has F:T' (fm) in Object \<Longrightarrow> action_loc_aux P (NormalAction (NewArr ad T n')) (ad, CField Object F)"
 | WriteMem: "action_loc_aux P (NormalAction (WriteMem ad al v)) (ad, al)"
 | ReadMem: "action_loc_aux P (NormalAction (ReadMem ad al v)) (ad, al)"
 
-abbreviation action_loc :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action \<Rightarrow> (addr \<times> addr_loc) set"
+abbreviation action_loc :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> ('addr \<times> addr_loc) set"
 where "action_loc P E a \<equiv> action_loc_aux P (action_obs E a)"
 
-inductive_set read_actions :: "execution \<Rightarrow> JMM_action set"
-for E :: execution
+inductive_set read_actions :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action set"
+for E :: "('addr, 'thread_id) execution"
 where 
   ReadMem: "\<lbrakk> a \<in> actions E; action_obs E a = NormalAction (ReadMem ad al v) \<rbrakk> \<Longrightarrow> a \<in> read_actions E"
 
-fun addr_loc_default :: "'m prog \<Rightarrow> htype \<Rightarrow> addr_loc \<Rightarrow> val"
+fun addr_loc_default :: "'m prog \<Rightarrow> htype \<Rightarrow> addr_loc \<Rightarrow> 'addr val"
 where
   "addr_loc_default P (Class_type C) (CField D F) = default_val (fst (the (map_of (fields P C) (F, D))))"
 | "addr_loc_default P (Array_type T n) (ACell n') = default_val T"
+| addr_loc_default_Array_CField: 
+  "addr_loc_default P (Array_type T n) (CField D F) = default_val (fst (the (map_of (fields P Object) (F, Object))))"
 
-definition new_actions_for :: "'m prog \<Rightarrow> execution \<Rightarrow> (addr \<times> addr_loc) \<Rightarrow> JMM_action set"
+definition new_actions_for :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> ('addr \<times> addr_loc) \<Rightarrow> JMM_action set"
 where 
   "new_actions_for P E adal =
    {a. a \<in> actions E \<and> adal \<in> action_loc P E a \<and> is_new_action (action_obs E a)}"
 
-inductive_set external_actions :: "execution \<Rightarrow> JMM_action set"
-for E :: "execution"
+inductive_set external_actions :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action set"
+for E :: "('addr, 'thread_id) execution"
 where
   "\<lbrakk> a \<in> actions E; action_obs E a = NormalAction (ExternalCall ad M vs v) \<rbrakk> 
   \<Longrightarrow> a \<in> external_actions E"
 
-fun value_written_aux :: "'m prog \<Rightarrow> obs_event action \<Rightarrow> addr_loc \<Rightarrow> val"
+fun value_written_aux :: "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> addr_loc \<Rightarrow> 'addr val"
 where
   "value_written_aux P (NormalAction (NewObj ad' C)) al = addr_loc_default P (Class_type C) al"
 | "value_written_aux P (NormalAction (NewArr ad' T n)) al = addr_loc_default P (Array_type T n) al"
@@ -148,10 +154,10 @@ where
 | value_written_aux_undefined:
   "value_written_aux P _ al = undefined"
 
-primrec value_written :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action \<Rightarrow> (addr \<times> addr_loc) \<Rightarrow> val"
+primrec value_written :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> ('addr \<times> addr_loc) \<Rightarrow> 'addr val"
 where "value_written P E a (ad, al) = value_written_aux P (action_obs E a) al"
 
-definition value_read :: "execution \<Rightarrow> JMM_action \<Rightarrow> val"
+definition value_read :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> 'addr val"
 where
   "value_read E a = 
   (case action_obs E a of
@@ -161,7 +167,7 @@ where
          | _ \<Rightarrow> undefined)
    | _ \<Rightarrow> undefined)"
 
-definition action_order :: "execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_ \<turnstile> _ \<le>a _" [51,0,50] 50)
+definition action_order :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_ \<turnstile> _ \<le>a _" [51,0,50] 50)
 where
   "E \<turnstile> a \<le>a a' \<longleftrightarrow>
    a \<in> actions E \<and> a' \<in> actions E \<and> 
@@ -169,12 +175,13 @@ where
     then is_new_action (action_obs E a') \<longrightarrow> a \<le> a'
     else \<not> is_new_action (action_obs E a') \<and> a \<le> a')"
 
-definition program_order :: "execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_ \<turnstile> _ \<le>po _" [51,0,50] 50)
+definition program_order :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_ \<turnstile> _ \<le>po _" [51,0,50] 50)
 where
   "E \<turnstile> a \<le>po a' \<longleftrightarrow> E \<turnstile> a \<le>a a' \<and> action_tid E a = action_tid E a'"
 
-inductive synchronizes_with :: "(thread_id \<times> obs_event action) \<Rightarrow> (thread_id \<times> obs_event action) \<Rightarrow> bool" 
-                             ("_ \<leadsto>sw _" [51, 51] 50)
+inductive synchronizes_with :: 
+  "('thread_id \<times> ('addr, 'thread_id) obs_event action) \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id) obs_event action) \<Rightarrow> bool" 
+  ("_ \<leadsto>sw _" [51, 51] 50)
 where
   ThreadStart: "(t, NormalAction (ThreadStart t')) \<leadsto>sw (t', InitialThreadAction)"
 | ThreadFinish: "(t, ThreadFinishAction) \<leadsto>sw (t', NormalAction (ThreadJoin t))"
@@ -187,24 +194,31 @@ where
 | VolatileNew: "(t, NormalAction (NewObj a C)) \<leadsto>sw (t', NormalAction (ReadMem a al v))"
 | NewObj: "(t, NormalAction (NewObj a C)) \<leadsto>sw (t', InitialThreadAction)"
 | NewArr: "(t, NormalAction (NewArr a T n)) \<leadsto>sw (t', InitialThreadAction)"
+| Interrupt: "(t, NormalAction (ObsInterrupt t')) \<leadsto>sw (t'', NormalAction (ObsInterrupted t'))"
 
-definition sync_order :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_,_ \<turnstile> _ \<le>so _" [51,0,0,50] 50)
+definition sync_order :: 
+  "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
+  ("_,_ \<turnstile> _ \<le>so _" [51,0,0,50] 50)
 where
   "P,E \<turnstile> a \<le>so a' \<longleftrightarrow> a \<in> sactions P E \<and> a' \<in> sactions P E \<and> E \<turnstile> a \<le>a a'"
 
-definition sync_with :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_,_ \<turnstile> _ \<le>sw _" [51, 0, 0, 50] 50)
+definition sync_with :: 
+  "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
+  ("_,_ \<turnstile> _ \<le>sw _" [51, 0, 0, 50] 50)
 where
   "P,E \<turnstile> a \<le>sw a' \<longleftrightarrow> P,E \<turnstile> a \<le>so a' \<and> (action_tid E a, action_obs E a) \<leadsto>sw (action_tid E a', action_obs E a')"
 
-definition po_sw :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
+definition po_sw :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
 where "po_sw P E a a' \<longleftrightarrow> E \<turnstile> a \<le>po a' \<or> P,E \<turnstile> a \<le>sw a'"
 
-abbreviation happens_before :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_,_ \<turnstile> _ \<le>hb _" [51, 0, 0, 50] 50)
+abbreviation happens_before :: 
+  "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
+  ("_,_ \<turnstile> _ \<le>hb _" [51, 0, 0, 50] 50)
 where "happens_before P E \<equiv> (po_sw P E)^++"
 
-types write_seen = "JMM_action \<Rightarrow> JMM_action"
+type_synonym write_seen = "JMM_action \<Rightarrow> JMM_action"
 
-definition is_write_seen :: "'m prog \<Rightarrow> execution \<Rightarrow> write_seen \<Rightarrow> bool"
+definition is_write_seen :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> write_seen \<Rightarrow> bool"
 where 
   "is_write_seen P E ws \<longleftrightarrow>
    (\<forall>a \<in> read_actions E. \<forall>ad al v. action_obs E a = NormalAction (ReadMem ad al v) \<longrightarrow> 
@@ -213,18 +227,18 @@ where
        (is_volatile P al \<longrightarrow> \<not> P,E \<turnstile> a \<le>so ws a) \<and>
        (\<forall>w' \<in> write_actions E. (ad, al) \<in> action_loc P E w' \<longrightarrow> (P,E \<turnstile> ws a \<le>hb w' \<and> P,E \<turnstile> w' \<le>hb a \<or> is_volatile P al \<and> P,E \<turnstile> ws a \<le>so w' \<and> P,E \<turnstile> w' \<le>so a) \<longrightarrow> w' = ws a))"
 
-definition thread_start_actions_ok :: "execution \<Rightarrow> bool"
+definition thread_start_actions_ok :: "('addr, 'thread_id) execution \<Rightarrow> bool"
 where
   "thread_start_actions_ok E \<longleftrightarrow> 
   (\<forall>a \<in> actions E. \<not> is_new_action (action_obs E a) \<longrightarrow> 
      (\<exists>i. i \<le> a \<and> action_obs E i = InitialThreadAction \<and> action_tid E i = action_tid E a))"
 
-primrec wf_exec :: "'m prog \<Rightarrow> execution \<times> write_seen \<Rightarrow> bool" ("_ \<turnstile> _ \<surd>" [51, 50] 51)
+primrec wf_exec :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> bool" ("_ \<turnstile> _ \<surd>" [51, 50] 51)
 where "P \<turnstile> (E, ws) \<surd> \<longleftrightarrow> is_write_seen P E ws \<and> thread_start_actions_ok E"
 
-inductive most_recent_write_for :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
+inductive most_recent_write_for :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
   ("_,_ \<turnstile> _ \<leadsto>mrw _" [50, 0, 51] 51)
-for P :: "'m prog" and E :: execution and ra :: JMM_action and wa :: JMM_action
+for P :: "'m prog" and E :: "('addr, 'thread_id) execution" and ra :: JMM_action and wa :: JMM_action
 where
   "\<lbrakk> ra \<in> read_actions E; adal \<in> action_loc P E ra; E \<turnstile> wa \<le>a ra;
      wa \<in> write_actions E; adal \<in> action_loc P E wa;
@@ -232,7 +246,7 @@ where
      \<Longrightarrow> E \<turnstile> wa' \<le>a wa \<or> E \<turnstile> ra \<le>a wa' \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> ra \<leadsto>mrw wa"
 
-primrec sequentially_consistent :: "'m prog \<Rightarrow> (execution \<times> write_seen) \<Rightarrow> bool"
+primrec sequentially_consistent :: "'m prog \<Rightarrow> (('addr, 'thread_id) execution \<times> write_seen) \<Rightarrow> bool"
 where 
   "sequentially_consistent P (E, ws) \<longleftrightarrow> (\<forall>r \<in> read_actions E. P,E \<turnstile> r \<leadsto>mrw ws r)"
 
@@ -249,6 +263,8 @@ inductive_cases is_new_action_cases [elim!]:
   "is_new_action (NormalAction (ThreadJoin t))"
   "is_new_action (NormalAction (SyncLock a))"
   "is_new_action (NormalAction (SyncUnlock a))"
+  "is_new_action (NormalAction (ObsInterrupt t))"
+  "is_new_action (NormalAction (ObsInterrupted t))"
   "is_new_action InitialThreadAction"
   "is_new_action ThreadFinishAction"
 
@@ -258,11 +274,12 @@ inductive_simps is_new_action_simps [simp]:
   "is_new_action (NormalAction (ExternalCall a M vs v))"
   "is_new_action (NormalAction (ReadMem a al v))"
   "is_new_action (NormalAction (WriteMem a al v))"
-  "is_new_action (NormalAction (WriteMem a al v))"
   "is_new_action (NormalAction (ThreadStart t))"
   "is_new_action (NormalAction (ThreadJoin t))"
   "is_new_action (NormalAction (SyncLock a))"
   "is_new_action (NormalAction (SyncUnlock a))"
+  "is_new_action (NormalAction (ObsInterrupt t))"
+  "is_new_action (NormalAction (ObsInterrupted t))"
   "is_new_action InitialThreadAction"
   "is_new_action ThreadFinishAction"
 
@@ -283,6 +300,8 @@ inductive_simps is_write_action_simps [simp]:
   "is_write_action (NormalAction (ThreadJoin t))"
   "is_write_action (NormalAction (SyncLock a))"
   "is_write_action (NormalAction (SyncUnlock a))"
+  "is_write_action (NormalAction (ObsInterrupt t))"
+  "is_write_action (NormalAction (ObsInterrupted t))"
 
 lemma is_write_action_NewHeapElem [simp]: "is_write_action (NormalAction (NewHeapElem a CTn))"
 by(cases CTn) simp_all
@@ -299,6 +318,8 @@ inductive_cases saction_cases [elim!]:
   "saction P (NormalAction (ThreadJoin t))"
   "saction P (NormalAction (SyncLock a))"
   "saction P (NormalAction (SyncUnlock a))"
+  "saction P (NormalAction (ObsInterrupt t))"
+  "saction P (NormalAction (ObsInterrupted t))"
   "saction P InitialThreadAction"
   "saction P ThreadFinishAction"
 
@@ -312,6 +333,8 @@ inductive_simps saction_simps [simp]:
   "saction P (NormalAction (ThreadJoin t))"
   "saction P (NormalAction (SyncLock a))"
   "saction P (NormalAction (SyncUnlock a))"
+  "saction P (NormalAction (ObsInterrupt t))"
+  "saction P (NormalAction (ObsInterrupted t))"
   "saction P InitialThreadAction"
   "saction P ThreadFinishAction"
 
@@ -361,6 +384,7 @@ by(rule sactionsE)
 lemma action_loc_aux_intros [intro?]:
   "P \<turnstile> C has F:T (fm) in D \<Longrightarrow> (ad, CField D F) \<in> action_loc_aux P (NormalAction (NewObj ad C))"
   "n < n' \<Longrightarrow> (ad, ACell n) \<in> action_loc_aux P (NormalAction (NewArr ad T n'))"
+  "P \<turnstile> Object has F:T' (fm) in Object \<Longrightarrow> (ad, CField Object F) \<in> action_loc_aux P (NormalAction (NewArr ad T n))"
   "(ad, al) \<in> action_loc_aux P (NormalAction (WriteMem ad al v))"
   "(ad, al) \<in> action_loc_aux P (NormalAction (ReadMem ad al v))"
 unfolding mem_def by(blast intro: action_loc_aux.intros)+
@@ -369,6 +393,7 @@ lemma action_loc_aux_cases [elim?, cases set: action_loc_aux]:
   assumes "adal \<in> action_loc_aux P obs"
   obtains (NewObj) C F T fm D ad where "obs = NormalAction (NewObj ad C)" "adal = (ad, CField D F)" "P \<turnstile> C has F:T (fm) in D"
   | (NewArr) n n' ad T where "obs = NormalAction (NewArr ad T n')" "adal = (ad, ACell n)" "n < n'"
+  | (NewArrField) n ad T F T' fm where "obs = NormalAction (NewArr ad T n)" "adal = (ad, CField Object F)" "P \<turnstile> Object has F:T' (fm) in Object"
   | (WriteMem) ad al v where "obs = NormalAction (WriteMem ad al v)" "adal = (ad, al)"
   | (ReadMem) ad al v where "obs = NormalAction (ReadMem ad al v)" "adal = (ad, al)"
 using assms unfolding mem_def
@@ -380,10 +405,12 @@ declare action_loc_aux.cases [Pure.rule del]
 lemma action_loc_aux_simps [simp]:
   "(ad', al') \<in> action_loc_aux P (NormalAction (NewObj ad C)) \<longleftrightarrow> 
    (\<exists>D F T fm. ad = ad' \<and> al' = CField D F \<and> P \<turnstile> C has F:T (fm) in D)"
-  "(ad', al') \<in> action_loc_aux P (NormalAction (NewArr ad T n)) \<longleftrightarrow> (\<exists>n'. ad = ad' \<and> al' = ACell n' \<and> n' < n)"
+  "(ad', al') \<in> action_loc_aux P (NormalAction (NewArr ad T n)) \<longleftrightarrow>
+   (\<exists>n'. ad = ad' \<and> al' = ACell n' \<and> n' < n) \<or> 
+   (\<exists>F T fm. ad = ad' \<and> al' = CField Object F \<and> P \<turnstile> Object has F:T (fm) in Object)"
   "(ad', al') \<in> action_loc_aux P (NormalAction (NewHeapElem ad CTn)) \<longleftrightarrow> 
    (\<exists>C. CTn = Class_type C \<and> ad' = ad \<and> (\<exists>F T D fm. al' = CField D F \<and> P \<turnstile> C has F:T (fm) in D)) \<or>
-   (\<exists>n n'. (\<exists>T. CTn = Array_type T n') \<and> ad' = ad \<and> al' = ACell n \<and> n < n')"
+   (\<exists>n n'. (\<exists>T. CTn = Array_type T n') \<and> ad' = ad \<and> (al' = ACell n \<and> n < n' \<or> (\<exists>F T fm. al' = CField Object F \<and> P \<turnstile> Object has F:T (fm) in Object)))"
   "(ad', al') \<in> action_loc_aux P (NormalAction (WriteMem ad al v)) \<longleftrightarrow> ad = ad' \<and> al = al'"
   "(ad', al') \<in> action_loc_aux P (NormalAction (ReadMem ad al v)) \<longleftrightarrow> ad = ad' \<and> al = al'"
   "(ad', al') \<notin> action_loc_aux P InitialThreadAction"
@@ -393,8 +420,9 @@ lemma action_loc_aux_simps [simp]:
   "(ad', al') \<notin> action_loc_aux P (NormalAction (ThreadJoin t))"
   "(ad', al') \<notin> action_loc_aux P (NormalAction (SyncLock a))"
   "(ad', al') \<notin> action_loc_aux P (NormalAction (SyncUnlock a))"
+  "(ad', al') \<notin> action_loc_aux P (NormalAction (ObsInterrupt t))"
+  "(ad', al') \<notin> action_loc_aux P (NormalAction (ObsInterrupted t))"
 by(auto elim!: action_loc_aux_cases intro: action_loc_aux_intros)
-
 
 lemma value_written_aux_WriteMem [simp]:
   "value_written_aux P (NormalAction (WriteMem ad al v)) al = v"
@@ -796,7 +824,6 @@ apply(drule (1) action_loc_read_action_singleton)
 apply clarsimp
 done
 
-
 lemma is_write_seenI:
   "\<lbrakk> \<And>a ad al v. \<lbrakk> a \<in> read_actions E; action_obs E a = NormalAction (ReadMem ad al v) \<rbrakk>
      \<Longrightarrow> ws a \<in> write_actions E;
@@ -861,12 +888,13 @@ using assms by simp
 
 declare sequentially_consistent.simps [simp del]
 
-
 section {* Similar actions *}
 
 text {* Similar actions differ only in the values written/read *}
 
-inductive sim_action :: "obs_event action \<Rightarrow> obs_event action \<Rightarrow> bool" ("_ \<approx> _" [50, 50] 51)
+inductive sim_action :: 
+  "('addr, 'thread_id) obs_event action \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> bool" 
+  ("_ \<approx> _" [50, 50] 51)
 where
   InitialThreadAction: "InitialThreadAction \<approx> InitialThreadAction"
 | ThreadFinishAction: "ThreadFinishAction \<approx> ThreadFinishAction"
@@ -879,8 +907,10 @@ where
 | SyncLock: "NormalAction (SyncLock a) \<approx> NormalAction (SyncLock a)"
 | SyncUnlock: "NormalAction (SyncUnlock a) \<approx> NormalAction (SyncUnlock a)"
 | ExternalCall: "NormalAction (ExternalCall a M vs v) \<approx> NormalAction (ExternalCall a M vs v)"
+| ObsInterrupt: "NormalAction (ObsInterrupt t) \<approx> NormalAction (ObsInterrupt t)"
+| ObsInterrupted: "NormalAction (ObsInterrupted t) \<approx> NormalAction (ObsInterrupted t)"
 
-definition sim_actions :: "execution \<Rightarrow> execution \<Rightarrow> bool" ("_ [\<approx>] _" [51, 50] 51)
+definition sim_actions :: "('addr, 'thread_id) execution \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> bool" ("_ [\<approx>] _" [51, 50] 51)
 where "sim_actions = llist_all2 (\<lambda>(t, a) (t', a'). t = t' \<and> a \<approx> a')"
 
 lemma sim_action_refl [intro!, simp]:
@@ -902,6 +932,8 @@ inductive_cases sim_action_cases [elim!]:
   "NormalAction (ThreadJoin t) \<approx> obs"
   "NormalAction (SyncLock a) \<approx> obs"
   "NormalAction (SyncUnlock a) \<approx> obs"
+  "NormalAction (ObsInterrupt t) \<approx> obs"
+  "NormalAction (ObsInterrupted t) \<approx> obs"
   "NormalAction (ExternalCall a M vs v) \<approx> obs"
 
   "obs \<approx> InitialThreadAction"
@@ -914,6 +946,8 @@ inductive_cases sim_action_cases [elim!]:
   "obs \<approx> NormalAction (ThreadJoin t)"
   "obs \<approx> NormalAction (SyncLock a)"
   "obs \<approx> NormalAction (SyncUnlock a)"
+  "obs \<approx> NormalAction (ObsInterrupt t)"
+  "obs \<approx> NormalAction (ObsInterrupted t)"
   "obs \<approx> NormalAction (ExternalCall a M vs v)"
 
 inductive_simps sim_action_simps [simp]:
@@ -927,6 +961,8 @@ inductive_simps sim_action_simps [simp]:
   "NormalAction (ThreadJoin t) \<approx> obs"
   "NormalAction (SyncLock a) \<approx> obs"
   "NormalAction (SyncUnlock a) \<approx> obs"
+  "NormalAction (ObsInterrupt t) \<approx> obs"
+  "NormalAction (ObsInterrupted t) \<approx> obs"
   "NormalAction (ExternalCall a M vs v) \<approx> obs"
 
   "obs \<approx> InitialThreadAction"
@@ -939,6 +975,8 @@ inductive_simps sim_action_simps [simp]:
   "obs \<approx> NormalAction (ThreadJoin t)"
   "obs \<approx> NormalAction (SyncLock a)"
   "obs \<approx> NormalAction (SyncUnlock a)"
+  "obs \<approx> NormalAction (ObsInterrupt t)"
+  "obs \<approx> NormalAction (ObsInterrupted t)"
   "obs \<approx> NormalAction (ExternalCall a M vs v)"
 
 lemma sim_action_trans [trans]:
@@ -974,12 +1012,12 @@ by(rule llist_all2_reflI)(auto)
 section {* Well-formedness conditions for execution sets *}
 
 locale executions_base =
-  fixes \<E> :: "execution set"
+  fixes \<E> :: "('addr, 'thread_id) execution set"
   and P :: "'m prog"
 
 locale executions =
   executions_base \<E> P
-  for \<E> :: "execution set"
+  for \<E> :: "('addr, 'thread_id) execution set"
   and P :: "'m prog" +
   assumes \<E>_new_actions_for_fun:
   "\<lbrakk> E \<in> \<E>; a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
@@ -991,22 +1029,24 @@ locale executions =
 
 section {* Legal executions *}
 
-types justifying_execution = "JMM_action set \<times> execution \<times> write_seen \<times> (JMM_action \<Rightarrow> JMM_action)"
-types justification = "nat \<Rightarrow> justifying_execution"
+type_synonym ('addr, 'thread_id) justifying_execution = 
+  "JMM_action set \<times> ('addr, 'thread_id) execution \<times> write_seen \<times> (JMM_action \<Rightarrow> JMM_action)"
+type_synonym ('addr, 'thread_id) justification = "nat \<Rightarrow> ('addr, 'thread_id) justifying_execution"
 
-definition committed :: "justifying_execution \<Rightarrow> JMM_action set"
+definition committed :: "('addr, 'thread_id) justifying_execution \<Rightarrow> JMM_action set"
 where "committed = fst"
 
-definition justifying_exec :: "justifying_execution \<Rightarrow> execution"
+definition justifying_exec :: "('addr, 'thread_id) justifying_execution \<Rightarrow> ('addr, 'thread_id) execution"
 where "justifying_exec = fst o snd"
 
-definition justifying_ws :: "justifying_execution \<Rightarrow> write_seen"
+definition justifying_ws :: "('addr, 'thread_id) justifying_execution \<Rightarrow> write_seen"
 where "justifying_ws = fst o snd o snd"
 
-definition action_translation :: "justifying_execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action"
+definition action_translation :: "('addr, 'thread_id) justifying_execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action"
 where "action_translation = snd o snd o snd"
 
-definition wf_action_translation_on :: "execution \<Rightarrow> execution \<Rightarrow> JMM_action set \<Rightarrow> (JMM_action \<Rightarrow> JMM_action) \<Rightarrow> bool"
+definition wf_action_translation_on :: 
+  "('addr, 'thread_id) execution \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action set \<Rightarrow> (JMM_action \<Rightarrow> JMM_action) \<Rightarrow> bool"
 where
   "wf_action_translation_on E E' A f \<longleftrightarrow>
    A \<subseteq> actions E \<and> f ` A \<subseteq> actions E' \<and> inj_on f (actions E) \<and> 
@@ -1020,7 +1060,8 @@ text {*
   Hence, @{text "is_justified_by"} omits this constraint.
 *}
 
-primrec is_justified_by :: "'m prog \<Rightarrow> execution \<times> write_seen \<Rightarrow> justification \<Rightarrow> bool" 
+primrec is_justified_by ::
+  "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> ('addr, 'thread_id) justification \<Rightarrow> bool" 
   ("_ \<turnstile> _ justified'_by _" [51, 50, 50] 50)
 where
   "P \<turnstile> (E, ws) justified_by J \<longleftrightarrow>
@@ -1077,7 +1118,9 @@ where
 
 declare is_justified_by.simps [simp del]
 
-definition conflict :: "'m prog \<Rightarrow> execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_,_ \<turnstile>/(_)\<dagger>(_)" [51,50,50,50] 51)
+definition conflict ::
+  "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" 
+  ("_,_ \<turnstile>/(_)\<dagger>(_)" [51,50,50,50] 51)
 where 
   "P,E \<turnstile> a \<dagger> a' \<longleftrightarrow>
    (a \<in> read_actions E \<and> a' \<in> write_actions E \<or>
@@ -1085,13 +1128,14 @@ where
     a \<in> write_actions E \<and> a' \<in> write_actions E) \<and>
    (action_loc P E a \<inter> action_loc P E a' \<noteq> {})"
 
-definition correctly_synchronized :: "'m prog \<Rightarrow> execution set \<Rightarrow> bool"
+definition correctly_synchronized :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution set \<Rightarrow> bool"
 where
   "correctly_synchronized P \<E> \<longleftrightarrow>
   (\<forall>E \<in> \<E>. \<forall>ws. P \<turnstile> (E, ws) \<surd> \<longrightarrow> sequentially_consistent P (E, ws) \<longrightarrow> 
                    (\<forall>a \<in> actions E. \<forall>a' \<in> actions E. P,E \<turnstile> a \<dagger> a' \<longrightarrow> P,E \<turnstile> a \<le>hb a' \<or> P,E \<turnstile> a' \<le>hb a))"
 
-definition legal_execution :: "'m prog \<Rightarrow> execution set \<Rightarrow> execution \<times> write_seen \<Rightarrow> bool"
+definition legal_execution :: 
+  "'m prog \<Rightarrow> ('addr, 'thread_id) execution set \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> bool"
 where
   "legal_execution P \<E> Ews \<longleftrightarrow>
    P \<turnstile> Ews \<surd> \<and>

@@ -13,49 +13,63 @@ imports
   Correctness1Threaded
   Correctness1 
   JJ1WellForm
+  Compiler
 begin
 
 locale J_JVM_heap_conf_base = 
-  J0_J1_heap_base       empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write +
-  J1_JVM_heap_conf_base empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf "compP1 P"
-  for empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
-  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
-  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+  J0_J1_heap_base
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+  +
+  J1_JVM_heap_conf_base 
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    hconf "compP1 P"
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and hconf :: "'heap \<Rightarrow> bool"
-  and P :: "J_prog"
+  and P :: "'addr J_prog"
 begin
 
-definition bisimJ2JVM :: "((addr,addr,expr\<times>locals,'heap,addr) state, (addr,addr,addr option \<times> frame list,'heap,addr) state) bisim"
+definition bisimJ2JVM :: 
+  "(('addr,'thread_id,'addr expr\<times>'addr locals,'heap,'addr) state, 
+    ('addr,'thread_id,'addr option \<times> 'addr frame list,'heap,'addr) state) bisim"
 where "bisimJ2JVM = red_red0.mbisim \<circ>\<^isub>B red0_Red1'.mbisim \<circ>\<^isub>B mbisim_Red1'_Red1 \<circ>\<^isub>B Red1_execd.mbisim"
 
-definition tlsimJ2JVM :: "(thread_id \<times> 'heap J_thread_action,
-                        thread_id \<times> 'heap jvm_thread_action) bisim"
+definition tlsimJ2JVM ::
+  "('thread_id \<times> ('addr, 'thread_id, 'heap) J_thread_action,
+    'thread_id \<times> ('addr, 'thread_id, 'heap) jvm_thread_action) bisim"
 where "tlsimJ2JVM = red_red0.mta_bisim \<circ>\<^isub>B red0_Red1'.mta_bisim \<circ>\<^isub>B op = \<circ>\<^isub>B Red1_execd.mta_bisim"
 
 end
-
-definition J2JVM :: "J_prog \<Rightarrow> jvm_prog"
-where "J2JVM \<equiv> compP2 \<circ> compP1"
 
 lemma compP2_has_method [simp]: "compP2 P \<turnstile> C has M \<longleftrightarrow> P \<turnstile> C has M"
 by(auto simp add: compP2_def compP_has_method)
 
 
 locale J_JVM_conf_read = 
-  J1_JVM_conf_read empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf "compP1 P"
-  for empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
-  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
-  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+  J1_JVM_conf_read
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    hconf "compP1 P"
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and hconf :: "'heap \<Rightarrow> bool"
-  and P :: "J_prog"
+  and P :: "'addr J_prog"
 
 sublocale J_JVM_conf_read < J_JVM_heap_conf_base
 by(unfold_locales)
@@ -162,12 +176,15 @@ done
 
 end
 
-fun exception :: "expr \<times> locals \<Rightarrow> addr option \<times> frame list"
+fun exception :: "'addr expr \<times> 'addr locals \<Rightarrow> 'addr option \<times> 'addr frame list"
 where "exception (Throw a, xs) = (\<lfloor>a\<rfloor>, [])"
 | "exception _ = (None, [])"
 
-definition mexception :: "(addr,addr,expr\<times>locals,'heap,addr) state \<Rightarrow> (addr,addr,addr option\<times>frame list,'heap,addr) state"
-where "mexception s \<equiv> (locks s, (\<lambda>t. case thr s t of \<lfloor>(e, ln)\<rfloor> \<Rightarrow> \<lfloor>(exception e, ln)\<rfloor> | None \<Rightarrow> None, shr s), wset s)"
+definition mexception :: 
+  "('addr,'thread_id,'addr expr\<times>'addr locals,'heap,'addr) state \<Rightarrow> 
+   ('addr,'thread_id,'addr option\<times>'addr frame list,'heap,'addr) state"
+where
+  "mexception s \<equiv> (locks s, (\<lambda>t. case thr s t of \<lfloor>(e, ln)\<rfloor> \<Rightarrow> \<lfloor>(exception e, ln)\<rfloor> | None \<Rightarrow> None, shr s), wset s, interrupts s)"
 
 declare compP1_def [simp del]
 
@@ -180,21 +197,21 @@ lemma bisimJ2JVM_mfinal_mexception:
   and tsNotEmpty: "thr s t \<noteq> None"
   shows "s' = mexception s"
 proof -
-  obtain ls ts m ws where s: "s = (ls, (ts, m), ws)" by(cases s) auto
+  obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastsimp
   from bisim obtain s0 s1 where bisimJ0: "red_red0.mbisim s s0"
     and bisim01: "red0_Red1'.mbisim s0 s1"
     and bisim1JVM: "Red1_execd.mbisim s1 s'"
     unfolding bisimJ2JVM_def by(fastsimp simp add: mbisim_Red1'_Red1_def)
-  from bisimJ0 s have [simp]: "locks s0 = ls" "wset s0 = ws"
+  from bisimJ0 s have [simp]: "locks s0 = ls" "wset s0 = ws" "interrupts s0 = is"
     and tbisimJ0: "\<And>t. red_red0.tbisim (ws t = None) t (ts t) m (thr s0 t) (shr s0)"
     by(auto simp add: red_red0.mbisim_def)
-  from bisim01 have [simp]: "locks s1 = ls" "wset s1 = ws"
+  from bisim01 have [simp]: "locks s1 = ls" "wset s1 = ws" "interrupts s1 = is"
     and tbisim01: "\<And>t. red0_Red1'.tbisim (ws t = None) t (thr s0 t) (shr s0) (thr s1 t) (shr s1)"
     by(auto simp add: red0_Red1'.mbisim_def)
-  from bisim1JVM have "locks s' = ls" "wset s' = ws"
+  from bisim1JVM have "locks s' = ls" "wset s' = ws" "interrupts s' = is"
     and tbisim1JVM: "\<And>t. Red1_execd.tbisim (ws t = None) t (thr s1 t) (shr s1) (thr s' t) (shr s')"
     by(auto simp add: Red1_execd.mbisim_def)
-  then obtain ts' m' where s': "s' = (ls, (ts', m'), ws)" by(cases s') fastsimp
+  then obtain ts' m' where s': "s' = (ls, (ts', m'), ws, is)" by(cases s') fastsimp
   { fix t e x ln
     assume tst: "ts t = \<lfloor>((e, x), ln)\<rfloor>"
     from tbisimJ0[of t] tst obtain e' exs' where ts0t: "thr s0 t = \<lfloor>((e', exs'), ln)\<rfloor>"

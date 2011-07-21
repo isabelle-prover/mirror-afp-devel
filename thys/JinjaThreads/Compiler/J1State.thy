@@ -9,34 +9,81 @@ theory J1State imports
   "CallExpr"
 begin
 
-types
-  expr1 = "(nat,nat) exp"
-  J1_prog = "expr1 prog"
-  locals1 = "val list"
+type_synonym
+  'addr expr1 = "(nat, nat, 'addr) exp"
+
+type_synonym
+  'addr J1_prog = "'addr expr1 prog"
+
+type_synonym
+  'addr locals1 = "'addr val list"
 
 translations
-  (type) "expr1" <= (type) "(nat, nat) exp"
-  (type) "J1_prog" <= (type) "expr1 prog"
+  (type) "'addr expr1" <= (type) "(nat, nat, 'addr) exp"
+  (type) "'addr J1_prog" <= (type) "'addr expr1 prog"
 
-types
-  J1state = "(expr1 \<times> locals1) list"
+type_synonym
+  'addr J1state = "('addr expr1 \<times> 'addr locals1) list"
 
-types
-  'heap J1_thread_action = "((expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list,'heap) Jinja_thread_action"
-  'heap J1_state = "(addr,thread_id,(expr1 \<times> val list) \<times> (expr1 \<times> val list) list,'heap,addr) state"
+type_synonym
+  ('addr, 'thread_id, 'heap) J1_thread_action = 
+  "('addr, 'thread_id, ('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list,'heap) Jinja_thread_action"
 
-translations
-  (type) "'heap J1_thread_action" <= (type) "((expr1 \<times> val list) \<times> (expr1 \<times> val list) list,'heap) Jinja_thread_action"
-  (type) "'heap J1_state" <= (type) "(nat,nat,(expr1 \<times> val list) \<times> (expr1 \<times> val list) list,'heap,nat) state"
+type_synonym
+  ('addr, 'thread_id, 'heap) J1_state = 
+  "('addr,'thread_id,('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list,'heap,'addr) state"
 
+(* pretty printing for J1_thread_action type *)
+print_translation {*
+  let
+    fun tr'
+       [a1, t
+       , Const (@{type_syntax "prod"}, _) $ 
+           (Const (@{type_syntax "prod"}, _) $
+              (Const (@{type_syntax "exp"}, _) $ Const (@{type_syntax "nat"}, _) $ Const (@{type_syntax "nat"}, _) $ a2) $
+              (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "val"}, _) $ a3))) $
+           (Const (@{type_syntax "list"}, _) $
+              (Const (@{type_syntax "prod"}, _) $
+                (Const (@{type_syntax "exp"}, _) $ Const (@{type_syntax "nat"}, _) $ Const (@{type_syntax "nat"}, _) $ a4) $
+                (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "val"}, _) $ a5))))
+       , h] =
+      if a1 = a2 andalso a2 = a3 andalso a3 = a4 andalso a4 = a5 
+      then Syntax.const @{type_syntax "J1_thread_action"} $ a1 $ t $ h
+      else raise Match;
+    in [(@{type_syntax "Jinja_thread_action"}, tr')]
+  end
+*}
+typ "('addr,'thread_id,'heap) J1_thread_action"
 
-fun blocks1 :: "nat \<Rightarrow> ty list \<Rightarrow> (nat,'b) exp \<Rightarrow> (nat,'b) exp"
+(* pretty printing for J1_state type *)
+print_translation {*
+  let
+    fun tr'
+       [a1, t
+       , Const (@{type_syntax "prod"}, _) $ 
+           (Const (@{type_syntax "prod"}, _) $
+              (Const (@{type_syntax "exp"}, _) $ Const (@{type_syntax "nat"}, _) $ Const (@{type_syntax "nat"}, _) $ a2) $
+              (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "val"}, _) $ a3))) $
+           (Const (@{type_syntax "list"}, _) $
+              (Const (@{type_syntax "prod"}, _) $
+                (Const (@{type_syntax "exp"}, _) $ Const (@{type_syntax "nat"}, _) $ Const (@{type_syntax "nat"}, _) $ a4) $
+                (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "val"}, _) $ a5))))
+       , h, a6] =
+      if a1 = a2 andalso a2 = a3 andalso a3 = a4 andalso a4 = a5 andalso a5 = a6
+      then Syntax.const @{type_syntax "J1_state"} $ a1 $ t $ h
+      else raise Match;
+    in [(@{type_syntax "state"}, tr')]
+  end
+*}
+typ "('addr, 'thread_id, 'heap) J1_state"
+
+fun blocks1 :: "nat \<Rightarrow> ty list \<Rightarrow> (nat,'b,'addr) exp \<Rightarrow> (nat,'b,'addr) exp"
 where 
   "blocks1 n [] e = e"
 | "blocks1 n (T#Ts) e = {n:T=None; blocks1 (Suc n) Ts e}"
 
-primrec max_vars:: "('a,'b) exp \<Rightarrow> nat"
-  and max_varss:: "('a,'b) exp list \<Rightarrow> nat"
+primrec max_vars:: "('a,'b,'addr) exp \<Rightarrow> nat"
+  and max_varss:: "('a,'b,'addr) exp list \<Rightarrow> nat"
 where
   "max_vars (new C) = 0"
 | "max_vars (newA T\<lfloor>e\<rceil>) = max_vars e"
@@ -68,8 +115,8 @@ where
 
 --"Indices in blocks increase by 1"
 
-primrec \<B> :: "expr1 \<Rightarrow> nat \<Rightarrow> bool"
-  and \<B>s :: "expr1 list \<Rightarrow> nat \<Rightarrow> bool"
+primrec \<B> :: "'addr expr1 \<Rightarrow> nat \<Rightarrow> bool"
+  and \<B>s :: "'addr expr1 list \<Rightarrow> nat \<Rightarrow> bool"
 where
   "\<B> (new C) i = True"
 | "\<B> (newA T\<lfloor>e\<rceil>) i = \<B> e i"
@@ -101,8 +148,8 @@ text {*
   Variables for monitor addresses do not occur freely in synchonization blocks
 *}
 
-primrec syncvars :: "('a, 'a) exp \<Rightarrow> bool"
-  and syncvarss :: "('a, 'a) exp list \<Rightarrow> bool"
+primrec syncvars :: "('a, 'a, 'addr) exp \<Rightarrow> bool"
+  and syncvarss :: "('a, 'a, 'addr) exp list \<Rightarrow> bool"
 where
   "syncvars (new C) = True"
 | "syncvars (newA T\<lfloor>e\<rceil>) = syncvars e"
@@ -130,14 +177,14 @@ where
 | "syncvarss [] = True"
 | "syncvarss (e#es) = (syncvars e \<and> syncvarss es)"
 
-definition bsok :: "expr1 \<Rightarrow> nat \<Rightarrow> bool"
+definition bsok :: "'addr expr1 \<Rightarrow> nat \<Rightarrow> bool"
 where "bsok e n \<equiv> \<B> e n \<and> expr_locks e = (\<lambda>ad. 0)"
 
-definition bsoks :: "expr1 list \<Rightarrow> nat \<Rightarrow> bool"
+definition bsoks :: "'addr expr1 list \<Rightarrow> nat \<Rightarrow> bool"
 where "bsoks es n \<equiv> \<B>s es n \<and> expr_lockss es = (\<lambda>ad. 0)"
 
-primrec call1 :: "('a, 'b) exp \<Rightarrow> (addr \<times> mname \<times> val list) option"
-  and calls1 :: "('a, 'b) exp list \<Rightarrow> (addr \<times> mname \<times> val list) option"
+primrec call1 :: "('a, 'b, 'addr) exp \<Rightarrow> ('addr \<times> mname \<times> 'addr val list) option"
+  and calls1 :: "('a, 'b, 'addr) exp list \<Rightarrow> ('addr \<times> mname \<times> 'addr val list) option"
 where
   "call1 (new C) = None"
 | "call1 (newA T\<lfloor>e\<rceil>) = call1 e"
@@ -253,7 +300,7 @@ lemma calls1_map_Val [simp]:
   "calls1 (map Val vs) = None"
 by(induct vs) simp_all
 
-lemma fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows call1_imp_call: "call1 e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> call e = \<lfloor>aMvs\<rfloor>"
   and calls1_imp_calls: "calls1 es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> calls es = \<lfloor>aMvs\<rfloor>"
 by(induct e and es) auto

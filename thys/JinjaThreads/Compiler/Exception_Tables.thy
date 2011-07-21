@@ -14,8 +14,9 @@ definition pcs :: "ex_table \<Rightarrow> nat set"
 where "pcs xt  \<equiv>  \<Union>(f,t,C,h,d) \<in> set xt. {f ..< t}"
 
 lemma pcs_subset:
-shows "pcs(compxE2 e pc d) \<subseteq> {pc..<pc+size(compE2 e)}"
-  "pcs(compxEs2 es pc d) \<subseteq> {pc..<pc+size(compEs2 es)}" 
+  fixes e :: "'addr expr1" and es :: "'addr expr1 list"
+  shows "pcs(compxE2 e pc d) \<subseteq> {pc..<pc+size(compE2 e)}"
+  and "pcs(compxEs2 es pc d) \<subseteq> {pc..<pc+size(compEs2 es)}" 
 apply(induct e pc d and es pc d rule: compxE2_compxEs2_induct)
 apply (simp_all add:pcs_def)
 apply (fastsimp)+
@@ -51,9 +52,9 @@ lemma outside_pcs_not_matches_entry [simp]:
 by(auto simp:matches_ex_entry_def pcs_def)
 
 lemma outside_pcs_compxE2_not_matches_entry [simp]:
-assumes xe: "xe \<in> set(compxE2 e pc d)" and outside: "pc' < pc \<or> pc+size(compE2 e) \<le> pc'"
-shows "\<not> matches_ex_entry P C pc' xe"
-
+  assumes xe: "xe \<in> set(compxE2 e pc d)"
+  and outside: "pc' < pc \<or> pc+size(compE2 e) \<le> pc'"
+  shows "\<not> matches_ex_entry P C pc' xe"
 proof
   assume "matches_ex_entry P C pc' xe"
   with xe have "pc' \<in> pcs(compxE2 e pc d)"
@@ -62,9 +63,9 @@ proof
 qed
 
 lemma outside_pcs_compxEs2_not_matches_entry [simp]:
-assumes xe: "xe \<in> set(compxEs2 es pc d)" and outside: "pc' < pc \<or> pc+size(compEs2 es) \<le> pc'"
-shows "\<not> matches_ex_entry P C pc' xe"
-
+  assumes xe: "xe \<in> set(compxEs2 es pc d)" 
+  and outside: "pc' < pc \<or> pc+size(compEs2 es) \<le> pc'"
+  shows "\<not> matches_ex_entry P C pc' xe"
 proof
   assume "matches_ex_entry P C pc' xe"
   with xe have "pc' \<in> pcs(compxEs2 es pc d)"
@@ -120,8 +121,9 @@ by(simp add:shift_def)
 lemma shift_shift [simp]: "shift m (shift n xt) = shift (m+n) xt"
 by(simp add: shift_def split_def)
 
-lemma shift_compxE2: "shift pc (compxE2 e pc' d) = compxE2 e (pc' + pc) d"
- and  shift_compxEs2: "shift pc (compxEs2 es pc' d) = compxEs2 es (pc' + pc) d"
+lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
+  shows shift_compxE2: "shift pc (compxE2 e pc' d) = compxE2 e (pc' + pc) d"
+  and  shift_compxEs2: "shift pc (compxEs2 es pc' d) = compxEs2 es (pc' + pc) d"
 by(induct e and es arbitrary: pc pc' d and pc pc' d)(auto simp:shift_def add_ac)
 
 lemma compxE2_size_convs [simp]: "n \<noteq> 0 \<Longrightarrow> compxE2 e n d = shift n (compxE2 e 0 d)"
@@ -187,7 +189,8 @@ by(simp add: stack_xlift_def)
 lemma stack_xlift_stack_xlift [simp]: "stack_xlift n (stack_xlift m xt) = stack_xlift (n + m) xt"
 by(simp add: stack_xlift_def split_def)
 
-lemma stack_xlift_compxE2: "stack_xlift n (compxE2 e pc d) = compxE2 e pc (n + d)"
+lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
+  shows stack_xlift_compxE2: "stack_xlift n (compxE2 e pc d) = compxE2 e pc (n + d)"
   and stack_xlift_compxEs2: "stack_xlift n (compxEs2 es pc d) = compxEs2 es pc (n + d)"
 by(induct e and es arbitrary: d pc and d pc)
   (auto simp add: shift_compxE2 simp del: compxE2_size_convs)
@@ -258,7 +261,8 @@ lemma match_ex_table_compxEs2_stack_conv:
   "d > 0 \<Longrightarrow> match_ex_table P C pc (compxEs2 es 0 d) = \<lfloor>(pc', d')\<rfloor> \<longleftrightarrow> d' \<ge> d \<and> match_ex_table P C pc (compxEs2 es 0 0) = \<lfloor>(pc', d' - d)\<rfloor>"
 by(simp add: compxEs2_stack_xlift_convs)
 
-lemma match_ex_table_compxE2_not_same: "match_ex_table P C pc (compxE2 e n d) = \<lfloor>(pc', d')\<rfloor> \<Longrightarrow> pc \<noteq> pc'"
+lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
+  shows match_ex_table_compxE2_not_same: "match_ex_table P C pc (compxE2 e n d) = \<lfloor>(pc', d')\<rfloor> \<Longrightarrow> pc \<noteq> pc'"
   and match_ex_table_compxEs2_not_same:"match_ex_table P C pc (compxEs2 es n d) = \<lfloor>(pc', d')\<rfloor> \<Longrightarrow> pc \<noteq> pc'"
 apply(induct e n d and es n d rule: compxE2_compxEs2_induct)
 apply(auto simp add: match_ex_table_append match_ex_entry simp del: compxE2_size_convs compxEs2_size_convs compxE2_stack_xlift_convs compxEs2_stack_xlift_convs split: split_if_asm)

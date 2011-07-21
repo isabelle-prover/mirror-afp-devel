@@ -7,11 +7,11 @@ header {* \isaheader{Well-formedness Constraints} *}
 theory JWellForm
 imports
   WWellForm
-  WellType_Exec
+  WellType
   DefAss
 begin
 
-definition wf_J_mdecl :: "J_prog \<Rightarrow> cname \<Rightarrow> J_mb mdecl \<Rightarrow> bool"
+definition wf_J_mdecl :: "'addr J_prog \<Rightarrow> cname \<Rightarrow> 'addr J_mb mdecl \<Rightarrow> bool"
 where
   "wf_J_mdecl P C  \<equiv>  \<lambda>(M,Ts,T,(pns,body)).
   length Ts = length pns \<and>
@@ -30,7 +30,7 @@ lemma wf_J_mdecl[simp]:
 (*<*)by(simp add:wf_J_mdecl_def)(*>*)
 
 
-abbreviation wf_J_prog :: "J_prog \<Rightarrow> bool"
+abbreviation wf_J_prog :: "'addr J_prog \<Rightarrow> bool"
 where "wf_J_prog == wf_prog wf_J_mdecl"
 
 lemma wf_J_prog_wf_J_mdecl:
@@ -66,6 +66,7 @@ apply(clarsimp simp add:wf_prog_def wf_cdecl_def)
 apply(drule bspec, assumption)
 apply(clarsimp)
 apply(drule bspec, assumption)
+apply(clarify)
 apply(erule wf_mdecl_mono)
 apply(erule wf_mdecl_wwf_mdecl)
 done
@@ -73,10 +74,10 @@ done
 
 subsection {* Code generation *}
 
-definition typeable_with :: "J_prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"
+definition typeable_with :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool"
 where [simp]: "typeable_with P E e T \<longleftrightarrow> (\<exists>T'. P,E \<turnstile> e ::' T' \<and> P \<turnstile> T' \<le> T)"
 
-definition wf_J_mdecl' :: "J_prog \<Rightarrow> cname \<Rightarrow> J_mb mdecl \<Rightarrow> bool"
+definition wf_J_mdecl' :: "'addr J_prog \<Rightarrow> cname \<Rightarrow> 'addr J_mb mdecl \<Rightarrow> bool"
 where
   "wf_J_mdecl' P C  \<equiv>  \<lambda>(M,Ts,T,(pns,body)).
   length Ts = length pns \<and>
@@ -85,7 +86,7 @@ where
   typeable_with P [this\<mapsto>Class C,pns[\<mapsto>]Ts] body T \<and>
   \<D> body \<lfloor>{this} \<union> set pns\<rfloor>"
 
-definition wf_J_prog' :: "J_prog \<Rightarrow> bool"
+definition wf_J_prog' :: "'addr J_prog \<Rightarrow> bool"
 where "wf_J_prog' = wf_prog wf_J_mdecl'"
 
 lemma wf_J_prog_wf_J_prog':
@@ -115,11 +116,6 @@ code_pred
   [inductify]
   typeable_with 
 .
-
-lemma [code_inline]: "Predicate.bind (eq_i_o x) f = f x"
-by(blast elim: bindE eq_i_oE eq.cases intro: bindI eq_i_oI eq.intros pred_eqI)
-
-lemmas [code_inline] = single_bind split
 
 declare set.equation(3) [code del]
 declare set.simps[code]

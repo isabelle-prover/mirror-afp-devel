@@ -58,8 +58,8 @@ qed
 
 end
 
-primrec sim12_size :: "('a, 'b) exp \<Rightarrow> nat"
-  and sim12_sizes :: "('a, 'b) exp list \<Rightarrow> nat"
+primrec sim12_size :: "('a, 'b, 'addr) exp \<Rightarrow> nat"
+  and sim12_sizes :: "('a, 'b, 'addr) exp list \<Rightarrow> nat"
 where
   "sim12_size (new C) = 0"
 | "sim12_size (newA T\<lfloor>e\<rceil>) = Suc (sim12_size e)"
@@ -271,7 +271,7 @@ proof(induct arbitrary: e' h' xs' Env T Env' T' and es' h' xs' Env Ts Env' Ts' r
     hence [simp]: "obj' = addr a" "ps = map Val vs"
       "e' = extRet2J (addr a\<bullet>M'(map Val vs)) va" "H' = h'" "xs' = xs"
       and Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>"
-      and iec: "is_external_call P Ta M'"
+      and iec: "is_native P Ta M'"
       and redex: "P,t \<turnstile> \<langle>a\<bullet>M'(vs),h\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
     from bisim1 have [simp]: "xs = loc" by(auto dest: bisim_Val_loc_eq_xcp_None)
     have \<tau>: "\<tau>move1 P h (addr a\<bullet>M'(map Val vs)) \<longleftrightarrow>  \<tau>move2 (compP2 P) h (rev vs @ [Addr a]) (obj\<bullet>M'(ps)) (length (compE2 obj) + length (compEs2 ps)) None" using Ta iec
@@ -325,7 +325,7 @@ proof(induct arbitrary: e' h' xs' Env T Env' T' and es' h' xs' Env Ts Env' Ts' r
     have "\<tau>move1 P h (addr a\<bullet>M'(map Val vs)) \<Longrightarrow> ta = \<epsilon> \<and> h' = h"
       by(auto simp add: \<tau>move1_\<tau>moves1.simps map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_heap_unchanged \<tau>external'_red_external_TA_empty)
     ultimately show ?thesis using \<tau>
-      apply(cases "\<tau>move1 P h (addr a\<bullet>M'(map Val vs) :: expr1)")
+      apply(cases "\<tau>move1 P h (addr a\<bullet>M'(map Val vs) :: 'addr expr1)")
       apply(auto simp del: split_paired_Ex simp add: compP2_def)
       apply(blast intro: rtranclp.rtrancl_into_rtrancl rtranclp_into_tranclp1 \<tau>exec_moveI)+
       done
@@ -368,8 +368,8 @@ next
   from `P,t \<turnstile>1 \<langle>new C',(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
   proof cases
     case (Red1New a)
-    hence "exec_meth_a (compP2 P) [New C'] [] t h ([], xs, 0, None) \<epsilon>\<lbrace>\<^bsub>o\<^esub>NewObj a C'\<rbrace> h' ([Addr a], xs, Suc 0, None)"
-      and [simp]: "e' = addr a" "xs' = xs" "ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>NewObj a C'\<rbrace>"
+    hence "exec_meth_a (compP2 P) [New C'] [] t h ([], xs, 0, None) \<lbrace>NewObj a C'\<rbrace> h' ([Addr a], xs, Suc 0, None)"
+      and [simp]: "e' = addr a" "xs' = xs" "ta = \<lbrace>NewObj a C'\<rbrace>"
       by(auto intro!: exec_instr simp add: compP2_def simp del: fun_upd_apply)
     moreover have "P, new C', n, h' \<turnstile> (addr a, xs) \<leftrightarrow> ([Addr a], xs, length (compE2 (new C')), None)"
       by(rule bisim1Val2)(auto)
@@ -415,7 +415,7 @@ next
       by(auto simp del: call1_calls1.simps split: split_if_asm split del: split_if)(blast intro: NewArray_\<tau>ExecrI NewArray_\<tau>ExectI exec_move_newArrayI)+
   next
     case (Red1NewArray i a)
-    note [simp] = `e = Val (Intg i)` `ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>NewArr a U (nat (sint i))\<rbrace>` `e' = addr a` `xs' = xs`
+    note [simp] = `e = Val (Intg i)` `ta = \<lbrace>NewArr a U (nat (sint i))\<rbrace>` `e' = addr a` `xs' = xs`
       and new = `new_arr h U (nat (sint i)) = (h', \<lfloor>a\<rfloor>)`
     from bisim have s: "xcp = None" "xs = loc" by(auto dest: bisim_Val_loc_eq_xcp_None)
     from bisim have "\<tau>Exec_mover_a P t E h (stk, loc, pc, xcp) ([Intg i], loc, length (compE2 E), None)"
@@ -423,7 +423,7 @@ next
     hence "\<tau>Exec_mover_a P t (newA U\<lfloor>E\<rceil>) h (stk, loc, pc, xcp) ([Intg i], loc, length (compE2 E), None)"
       by(rule NewArray_\<tau>ExecrI)
     moreover from new `0 <=s i`
-    have "exec_move_a P t (newA U\<lfloor>E\<rceil>) h ([Intg i], loc, length (compE2 E), None) \<epsilon>\<lbrace>\<^bsub>o\<^esub>NewArr a U (nat (sint i))\<rbrace> h' ([Addr a], loc, Suc (length (compE2 E)), None)"
+    have "exec_move_a P t (newA U\<lfloor>E\<rceil>) h ([Intg i], loc, length (compE2 E), None) \<lbrace>NewArr a U (nat (sint i))\<rbrace> h' ([Addr a], loc, Suc (length (compE2 E)), None)"
       by(auto intro!: exec_instr simp add: compP2_def exec_move_def)
     moreover have "\<tau>move2 (compP2 P) h [Intg i] (newA U\<lfloor>E\<rceil>) (length (compE2 E)) None \<Longrightarrow> False" by(simp add: \<tau>move2_iff)
     moreover have "\<not> \<tau>move1 P h (newA U\<lfloor>Val (Intg i)\<rceil>)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
@@ -754,7 +754,7 @@ next
   next
     case (Red1BinOp v1 v2 v)
     note [simp] = `e1' = Val v1` `e2 = Val v2` `ta = \<epsilon>` `e' = Val v` `h' = h` `xs' = xs`
-      and binop = `binop bop v1 v2 = \<lfloor>v\<rfloor>`
+      and binop = `binop bop v1 v2 = \<lfloor>Inl v\<rfloor>`
     have \<tau>: "\<tau>move1 P h (Val v1 \<guillemotleft>bop\<guillemotright> Val v2)" by(rule \<tau>move1BinOp)
     from bisim1 have s: "xcp = None" "xs = loc"
       and "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, xcp) ([v1], loc, length (compE2 e1), None)"
@@ -764,7 +764,7 @@ next
     also have "\<tau>move2 (compP2 P) h [v1] (e1 \<guillemotleft>bop\<guillemotright> Val v2) (length (compE2 e1) + 0) None"
       by(rule \<tau>move2BinOp2)(rule \<tau>move2Val)
     with binop have "\<tau>Exec_mover_a P t (e1\<guillemotleft>bop\<guillemotright>Val v2) h ([v1], loc, length (compE2 e1), None) ([v2, v1], loc, Suc (length (compE2 e1)), None)"
-      by-(rule \<tau>Execr1step, auto intro!: exec_instr simp add: exec_move_def compP2_def split: bop.split)
+      by-(rule \<tau>Execr1step, auto intro!: exec_instr simp add: exec_move_def compP2_def)
     also (rtranclp_trans) from binop
     have "exec_meth_a (compP2 P) (compE2 (e1\<guillemotleft>bop\<guillemotright>Val v2)) (compxE2 (e1\<guillemotleft>bop\<guillemotright>Val v2) 0 0) t
                                h ([v2, v1], loc, Suc (length (compE2 e1)), None) \<epsilon>
@@ -776,6 +776,32 @@ next
     moreover from `bsok e1 n`
     have "P, e1 \<guillemotleft>bop\<guillemotright> Val v2, n, h \<turnstile> (Val v, loc) \<leftrightarrow> ([v], loc, length (compE2 (e1 \<guillemotleft>bop\<guillemotright> Val v2)), None)"
       by-(rule bisim1Val2,auto)
+    ultimately show ?thesis using s \<tau> by auto
+  next
+    case (Red1BinOpFail v1 v2 a)
+    note [simp] = `e1' = Val v1` `e2 = Val v2` `ta = \<epsilon>` `e' = Throw a` `h' = h` `xs' = xs`
+      and binop = `binop bop v1 v2 = \<lfloor>Inr a\<rfloor>`
+    have \<tau>: "\<tau>move1 P h (Val v1 \<guillemotleft>bop\<guillemotright> Val v2)" by(rule \<tau>move1BinOp)
+    from bisim1 have s: "xcp = None" "xs = loc"
+      and "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, xcp) ([v1], loc, length (compE2 e1), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<guillemotleft>bop\<guillemotright>Val v2) h (stk, loc, pc, xcp) ([v1], loc, length (compE2 e1), None)"
+      by-(rule BinOp_\<tau>ExecrI1)
+    also have "\<tau>move2 (compP2 P) h [v1] (e1 \<guillemotleft>bop\<guillemotright> Val v2) (length (compE2 e1) + 0) None"
+      by(rule \<tau>move2BinOp2)(rule \<tau>move2Val)
+    with binop have "\<tau>Exec_mover_a P t (e1\<guillemotleft>bop\<guillemotright>Val v2) h ([v1], loc, length (compE2 e1), None) ([v2, v1], loc, Suc (length (compE2 e1)), None)"
+      by-(rule \<tau>Execr1step, auto intro!: exec_instr simp add: exec_move_def compP2_def)
+    also (rtranclp_trans) from binop
+    have "exec_meth_a (compP2 P) (compE2 (e1\<guillemotleft>bop\<guillemotright>Val v2)) (compxE2 (e1\<guillemotleft>bop\<guillemotright>Val v2) 0 0) t
+                               h ([v2, v1], loc, Suc (length (compE2 e1)), None) \<epsilon>
+                               h ([v2, v1], loc, Suc (length (compE2 e1)), \<lfloor>a\<rfloor>)"
+      by-(rule exec_instr, auto)
+    moreover have "\<tau>move2 (compP2 P) h [v2, v1] (e1\<guillemotleft>bop\<guillemotright>Val v2) (Suc (length (compE2 e1))) None" by(simp add: \<tau>move2_iff) 
+    ultimately have "\<tau>Exec_movet_a P t (e1 \<guillemotleft>bop\<guillemotright> Val v2) h (stk, loc, pc, xcp) ([v2, v1], loc, Suc (length (compE2 e1)), \<lfloor>a\<rfloor>)"
+      by(fastsimp intro: rtranclp_into_tranclp1 \<tau>exec_moveI simp add: exec_move_def compP2_def)
+    moreover from `bsok e1 n`
+    have "P, e1 \<guillemotleft>bop\<guillemotright> Val v2, n, h \<turnstile> (Throw a, loc) \<leftrightarrow> ([v2, v1], loc, length (compE2 e1) + length (compE2 (Val v2)), \<lfloor>a\<rfloor>)"
+      by(rule bisim1BinOpThrow) simp
     ultimately show ?thesis using s \<tau> by auto
   next
     case (Bin1OpThrow1 a)
@@ -856,7 +882,7 @@ next
   next
     case (Red1BinOp v2 v)
     note [simp] = `e2' = Val v2` `ta = \<epsilon>` `e' = Val v` `h' = h` `xs' = xs`
-      and binop = `binop bop v1 v2 = \<lfloor>v\<rfloor>`
+      and binop = `binop bop v1 v2 = \<lfloor>Inl v\<rfloor>`
     have \<tau>: "\<tau>move1 P h (Val v1 \<guillemotleft>bop\<guillemotright> Val v2)" by(rule \<tau>move1BinOp)
     from bisim2 have s: "xcp = None" "xs = loc" 
       and "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) ([v2], loc, length (compE2 e2), None)"
@@ -866,7 +892,7 @@ next
     moreover from binop
     have "exec_move_a P t (e1\<guillemotleft>bop\<guillemotright>e2) h ([v2, v1], loc, length (compE2 e1) + length (compE2 e2), None) \<epsilon>
                                   h ([v], loc, Suc (length (compE2 e1) + length (compE2 e2)), None)"
-      unfolding exec_move_def by-(rule exec_instr, auto simp add: nth_append split: bop.split)
+      unfolding exec_move_def by-(rule exec_instr, auto)
     moreover have "\<tau>move2 (compP2 P) h [v2, v1] (e1\<guillemotleft>bop\<guillemotright>e2) (length (compE2 e1) + length (compE2 e2)) None"
       by(simp add: \<tau>move2_iff)
     ultimately have "\<tau>Exec_mover_a P t (e1 \<guillemotleft>bop\<guillemotright> e2) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ([v], loc, Suc (length (compE2 e1) + length (compE2 e2)), None)"
@@ -874,6 +900,28 @@ next
     moreover from bisim1_bsok[OF bisim1] `bsok e2 n`
     have "P, e1 \<guillemotleft>bop\<guillemotright> e2, n, h \<turnstile> (Val v, loc) \<leftrightarrow> ([v], loc, length (compE2 (e1 \<guillemotleft>bop\<guillemotright> e2)), None)"
       by-(rule bisim1Val2, auto)
+    ultimately show ?thesis using s \<tau> by(auto)
+  next
+    case (Red1BinOpFail v2 a)
+    note [simp] = `e2' = Val v2` `ta = \<epsilon>` `e' = Throw a` `h' = h` `xs' = xs`
+      and binop = `binop bop v1 v2 = \<lfloor>Inr a\<rfloor>`
+    have \<tau>: "\<tau>move1 P h (Val v1 \<guillemotleft>bop\<guillemotright> Val v2)" by(rule \<tau>move1BinOp)
+    from bisim2 have s: "xcp = None" "xs = loc" 
+      and "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) ([v2], loc, length (compE2 e2), None)"
+      by(auto dest: bisim1Val2D1)
+    hence "\<tau>Exec_mover_a P t (e1\<guillemotleft>bop\<guillemotright>e2) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ([v2] @ [v1], loc, length (compE2 e1) + length (compE2 e2), None)"
+      by-(rule BinOp_\<tau>ExecrI2)
+    moreover from binop
+    have "exec_move_a P t (e1\<guillemotleft>bop\<guillemotright>e2) h ([v2, v1], loc, length (compE2 e1) + length (compE2 e2), None) \<epsilon>
+                                  h ([v2, v1], loc, length (compE2 e1) + length (compE2 e2), \<lfloor>a\<rfloor>)"
+      unfolding exec_move_def by-(rule exec_instr, auto)
+    moreover have "\<tau>move2 (compP2 P) h [v2, v1] (e1\<guillemotleft>bop\<guillemotright>e2) (length (compE2 e1) + length (compE2 e2)) None"
+      by(simp add: \<tau>move2_iff)
+    ultimately have "\<tau>Exec_movet_a P t (e1 \<guillemotleft>bop\<guillemotright> e2) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ([v2, v1], loc, length (compE2 e1) + length (compE2 e2), \<lfloor>a\<rfloor>)"
+      by(auto intro: rtranclp_into_tranclp1 \<tau>exec_moveI simp add: compP2_def)
+    moreover from `bsok e1 n` `bsok e2 n`
+    have "P, e1 \<guillemotleft>bop\<guillemotright> e2, n, h \<turnstile> (Throw a, loc) \<leftrightarrow> ([v2, v1], loc, length (compE2 e1) + length (compE2 e2), \<lfloor>a\<rfloor>)"
+      by(rule bisim1BinOpThrow)
     ultimately show ?thesis using s \<tau> by(auto)
   next
     case (Bin1OpThrow2 a)
@@ -905,6 +953,8 @@ next
   case bisim1BinOpThrow1 thus ?case by fastsimp
 next
   case bisim1BinOpThrow2 thus ?case by fastsimp
+next
+  case bisim1BinOpThrow thus ?case by fastsimp
 next
   case (bisim1LAss1 E n e xs stk loc pc xcp V)
   note IH = `\<And>e' h' xs' Env T Env' T'. P,t \<turnstile>1 \<langle>e,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>
@@ -1055,7 +1105,7 @@ next
   next
     case (Red1AAcc A U I v)
     hence [simp]: "a' = addr A" "e' = Val v" "i = Val (Intg I)" "h' = h" "xs' = xs"
-                  "ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem A (ACell (nat (sint I))) v\<rbrace>" "h' = h" "xs' = xs"
+                  "ta = \<lbrace>ReadMem A (ACell (nat (sint I))) v\<rbrace>" "h' = h" "xs' = xs"
       and hA: "typeof_addr h A = \<lfloor>Array U\<rfloor>" and I: "0 <=s I" "sint I < int (array_length h A)"
       and read: "heap_read h A (ACell (nat (sint I))) v" by auto
     have \<tau>: "\<not> \<tau>move1 P h (addr A\<lfloor>Val (Intg I)\<rceil>)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
@@ -1070,7 +1120,7 @@ next
       by-(rule \<tau>Execr1step, auto intro!: exec_instr simp add: exec_move_def compP2_def)
     also (rtranclp_trans) from hA I read
     have "exec_move_a P t (a\<lfloor>Val (Intg I)\<rceil>) h ([Intg I, Addr A], loc, Suc (length (compE2 a)), None) 
-                                           \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem A (ACell (nat (sint I))) v\<rbrace>
+                                           \<lbrace>ReadMem A (ACell (nat (sint I))) v\<rbrace>
                                            h ([v], loc, Suc (Suc (length (compE2 a))), None)"
       unfolding exec_move_def by-(rule exec_instr, auto simp add: is_Ref_def)
     moreover have "\<tau>move2 (compP2 P) h [Intg I, Addr A] (a\<lfloor>Val (Intg I)\<rceil>) (Suc (length (compE2 a))) None \<Longrightarrow> False"
@@ -1206,7 +1256,7 @@ next
   next
     case (Red1AAcc A U I v)
     hence [simp]: "v1 = Addr A" "e' = Val v" "i' = Val (Intg I)"
-      "ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem A (ACell (nat (sint I))) v\<rbrace>" "h' = h" "xs' = xs"
+      "ta = \<lbrace>ReadMem A (ACell (nat (sint I))) v\<rbrace>" "h' = h" "xs' = xs"
       and hA: "typeof_addr h A = \<lfloor>Array U\<rfloor>" and I: "0 <=s I" "sint I < int (array_length h A)"
       and read: "heap_read h A (ACell (nat (sint I))) v" by auto
     have \<tau>: "\<not> \<tau>move1 P h (addr A\<lfloor>Val (Intg I)\<rceil>)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
@@ -1217,7 +1267,7 @@ next
       by-(rule AAcc_\<tau>ExecrI2)
     moreover from hA I read
     have "exec_move_a P t (a\<lfloor>i\<rceil>) h ([Intg I, Addr A], loc, length (compE2 a) + length (compE2 i), None)
-                              \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem A (ACell (nat (sint I))) v\<rbrace>
+                              \<lbrace>ReadMem A (ACell (nat (sint I))) v\<rbrace>
                               h ([v], loc, Suc (length (compE2 a) + length (compE2 i)), None)"
       unfolding exec_move_def by-(rule exec_instr, auto simp add: is_Ref_def)
     moreover have "\<tau>move2 (compP2 P) h [Intg I, Addr A] (a\<lfloor>i\<rceil>) (length (compE2 a) + length (compE2 i)) None \<Longrightarrow> False"
@@ -1434,7 +1484,7 @@ next
   next
     case (Red1AAss A U I v U')
     hence [simp]: "a' = addr A" "e' = unit" "i = Val (Intg I)"
-      "ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) v\<rbrace>" "xs' = xs" "e = Val v"
+      "ta = \<lbrace>WriteMem A (ACell (nat (sint I))) v\<rbrace>" "xs' = xs" "e = Val v"
       and hA: "typeof_addr h A = \<lfloor>Array U\<rfloor>" and I: "0 <=s I" "sint I < int (array_length h A)" 
       and v: "typeof\<^bsub>h\<^esub> v = \<lfloor>U'\<rfloor>" "P \<turnstile> U' \<le> U"
       and h': "heap_write h A (ACell (nat (sint I))) v h'" by auto
@@ -1457,7 +1507,7 @@ next
       by(rule AAss_\<tau>ExecrI3)
     also (rtranclp_trans) from hA I v h'
     have "exec_move_a P t (a\<lfloor>i\<rceil> := e) h ([v, Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None)
-                                 \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) v\<rbrace>
+                                 \<lbrace>WriteMem A (ACell (nat (sint I))) v\<rbrace>
                                  h' ([], loc, Suc (length (compE2 a) + length (compE2 i) + length (compE2 e)), None)"
       unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
     moreover have "\<tau>move2 (compP2 P) h [v, Intg I, Addr A] (a\<lfloor>i\<rceil> := e) (length (compE2 a) + length (compE2 i) + length (compE2 e)) None \<Longrightarrow> False"
@@ -1724,7 +1774,7 @@ next
   next
     case (Red1AAss A U I v U')
     hence [simp]: "v1 = Addr A" "e' = unit" "i' = Val (Intg I)"
-      "ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) v\<rbrace>" "xs' = xs" "e = Val v"
+      "ta = \<lbrace>WriteMem A (ACell (nat (sint I))) v\<rbrace>" "xs' = xs" "e = Val v"
       and hA: "typeof_addr h A = \<lfloor>Array U\<rfloor>" and I: "0 <=s I" "sint I < int (array_length h A)"
       and v: "typeof\<^bsub>h\<^esub> v = \<lfloor>U'\<rfloor>" "P \<turnstile> U' \<le> U"
       and h': "heap_write h A (ACell (nat (sint I))) v h'" by auto
@@ -1741,7 +1791,7 @@ next
       by(rule AAss_\<tau>ExecrI3)
     also (rtranclp_trans) from hA I v h'
     have "exec_move_a P t (a\<lfloor>i\<rceil> := e) h ([v, Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None)
-                                 \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) v\<rbrace>
+                                 \<lbrace>WriteMem A (ACell (nat (sint I))) v\<rbrace>
                                  h' ([], loc, Suc (length (compE2 a) + length (compE2 i) + length (compE2 e)), None)"
       unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
     moreover have "\<tau>move2 (compP2 P) h [v, Intg I, Addr A] (a\<lfloor>i\<rceil> := e) (length (compE2 a) + length (compE2 i) + length (compE2 e)) None \<Longrightarrow> False"
@@ -1904,7 +1954,7 @@ next
   next
     case (Red1AAss A U I V U')
     hence [simp]: "v = Addr A" "e' = unit" "v' = Intg I" "xs' = xs" "ee = Val V"
-      "ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) V\<rbrace>"
+      "ta = \<lbrace>WriteMem A (ACell (nat (sint I))) V\<rbrace>"
       and hA: "typeof_addr h A = \<lfloor>Array U\<rfloor>" and I: "0 <=s I" "sint I < int (array_length h A)" 
       and v: "typeof\<^bsub>h\<^esub> V = \<lfloor>U'\<rfloor>" "P \<turnstile> U' \<le> U"
       and h': "heap_write h A (ACell (nat (sint I))) V h'" by auto
@@ -1916,7 +1966,7 @@ next
       by-(rule AAss_\<tau>ExecrI3)
     moreover from hA I v h'
     have "exec_move_a P t (a\<lfloor>i\<rceil> := e) h ([V, Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None) 
-                                 \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem A (ACell (nat (sint I))) V\<rbrace>
+                                 \<lbrace>WriteMem A (ACell (nat (sint I))) V\<rbrace>
                                  h' ([], loc, Suc (length (compE2 a) + length (compE2 i) + length (compE2 e)), None)"
      unfolding exec_move_def by-(rule exec_instr, auto simp add: compP2_def is_Ref_def)
     moreover have "\<tau>move2 (compP2 P) h [V, Intg I, Addr A] (a\<lfloor>i\<rceil> := e) (length (compE2 a) + length (compE2 i) + length (compE2 e)) None \<Longrightarrow> False"
@@ -2140,7 +2190,7 @@ next
       by(auto simp del: call1_calls1.simps split: split_if_asm split del: split_if)(blast intro: FAcc_\<tau>ExecrI FAcc_\<tau>ExectI exec_move_FAccI)+
   next
     case (Red1FAcc a v)
-    hence [simp]: "e = addr a" "ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem a (CField D F) v\<rbrace>" "e' = Val v" "h' = h" "xs' = xs"
+    hence [simp]: "e = addr a" "ta = \<lbrace>ReadMem a (CField D F) v\<rbrace>" "e' = Val v" "h' = h" "xs' = xs"
       and read: "heap_read h a (CField D F) v" by auto
     from bisim have s: "xcp = None" "xs = loc" by(auto dest: bisim_Val_loc_eq_xcp_None)
     from bisim have "\<tau>Exec_mover_a P t E h (stk, loc, pc, xcp) ([Addr a], loc, length (compE2 E), None)"
@@ -2149,7 +2199,7 @@ next
       by(rule FAcc_\<tau>ExecrI)
     moreover from read 
     have "exec_move_a P t (E\<bullet>F{D}) h ([Addr a], loc, length (compE2 E), None) 
-                     \<epsilon>\<lbrace>\<^bsub>o\<^esub>ReadMem a (CField D F) v\<rbrace> h' ([v], loc, Suc (length (compE2 E)), None)"
+                     \<lbrace>ReadMem a (CField D F) v\<rbrace> h' ([v], loc, Suc (length (compE2 E)), None)"
       unfolding exec_move_def by(auto intro!: exec_instr)
     moreover have "\<tau>move2 (compP2 P) h [Addr a] (E\<bullet>F{D}) (length (compE2 E)) None \<Longrightarrow> False" by(simp add: \<tau>move2_iff)
     moreover have "\<not> \<tau>move1 P h (addr a\<bullet>F{D})" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
@@ -2282,7 +2332,7 @@ next
       done
   next
     case (Red1FAss a v)
-    note [simp] = `e1' = addr a` `e2 = Val v` `ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem a (CField D F) v\<rbrace>` `e' = unit` `xs' = xs`
+    note [simp] = `e1' = addr a` `e2 = Val v` `ta = \<lbrace>WriteMem a (CField D F) v\<rbrace>` `e' = unit` `xs' = xs`
       and "write" = `heap_write h a (CField D F) v h'`
     have \<tau>: "\<not> \<tau>move1 P h (e1'\<bullet>F{D} := e2)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
     from bisim1 have s: "xcp = None" "xs = loc"
@@ -2294,7 +2344,7 @@ next
     hence "\<tau>Exec_mover_a P t (e1\<bullet>F{D} := e2) h ([Addr a], loc, length (compE2 e1), None) ([v, Addr a], loc, Suc (length (compE2 e1)), None)"
       by-(rule \<tau>Execr1step, auto intro!: exec_instr simp add: exec_move_def compP2_def)
     also (rtranclp_trans) from "write"
-    have "exec_move_a P t (e1\<bullet>F{D} := e2) h ([v, Addr a], loc, Suc (length (compE2 e1)), None) \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem a (CField D F) v\<rbrace>
+    have "exec_move_a P t (e1\<bullet>F{D} := e2) h ([v, Addr a], loc, Suc (length (compE2 e1)), None) \<lbrace>WriteMem a (CField D F) v\<rbrace>
                                       h' ([], loc, Suc (Suc (length (compE2 e1))), None)"
       unfolding exec_move_def by(auto intro!: exec_instr)
     moreover have "\<tau>move2 (compP2 P) h [v, Addr a] (e1\<bullet>F{D} := e2) (Suc (length (compE2 e1))) None \<Longrightarrow> False"
@@ -2403,7 +2453,7 @@ next
     ultimately show ?thesis using \<tau> by auto blast+
   next
     case (Red1FAss a v)
-    note [simp] = `v1 = Addr a` `e2' = Val v` `ta = \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem a (CField D F) v\<rbrace>` `e' = unit` `xs' = xs`
+    note [simp] = `v1 = Addr a` `e2' = Val v` `ta = \<lbrace>WriteMem a (CField D F) v\<rbrace>` `e' = unit` `xs' = xs`
       and ha = `heap_write h a (CField D F) v h'`
     have \<tau>: "\<not> \<tau>move1 P h (addr a\<bullet>F{D} := e2')" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
     from bisim2 have s: "xcp = None" "xs = loc" 
@@ -2412,7 +2462,7 @@ next
     hence "\<tau>Exec_mover_a P t (e1\<bullet>F{D} := e2) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ([v] @ [v1], loc, length (compE2 e1) + length (compE2 e2), None)"
       by-(rule FAss_\<tau>ExecrI2)
     moreover from ha
-    have "exec_move_a P t (e1\<bullet>F{D} := e2) h ([v, Addr a], loc, length (compE2 e1) + length (compE2 e2), None) \<epsilon>\<lbrace>\<^bsub>o\<^esub>WriteMem a (CField D F) v\<rbrace>
+    have "exec_move_a P t (e1\<bullet>F{D} := e2) h ([v, Addr a], loc, length (compE2 e1) + length (compE2 e2), None) \<lbrace>WriteMem a (CField D F) v\<rbrace>
                                       h' ([], loc, Suc (length (compE2 e1) + length (compE2 e2)), None)"
       by(auto intro!: exec_instr simp add: exec_move_def)
     moreover have "\<tau>move2 (compP2 P) h [v, Addr a] (e1\<bullet>F{D} := e2) (length (compE2 e1) + length (compE2 e2)) None \<Longrightarrow> False"
@@ -2577,12 +2627,12 @@ next
     case (Red1CallExternal a Ta vs va H')
     hence [simp]: "v = Addr a" "ps' = map Val vs" "e' = extRet2J (addr a\<bullet>M'(map Val vs)) va" "H' = h'" "xs' = xs"
       and Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>"
-      and iec: "is_external_call P Ta M'"
+      and iec: "is_native P Ta M'"
       and redex: "P,t \<turnstile> \<langle>a\<bullet>M'(vs),h\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
     from bisim2 have [simp]: "xs = loc" by(auto dest: bisims_Val_loc_eq_xcp_None)
     moreover from bisim2 have "length ps = length ps'"
       by(rule bisims1_lengthD)
-    hence \<tau>: "\<tau>move1 P h (addr a\<bullet>M'(map Val vs) :: expr1) = \<tau>move2 (compP2 P) h (rev vs @ [Addr a]) (obj\<bullet>M'(ps)) (length (compE2 obj) + length (compEs2 ps)) None"
+    hence \<tau>: "\<tau>move1 P h (addr a\<bullet>M'(map Val vs) :: 'addr expr1) = \<tau>move2 (compP2 P) h (rev vs @ [Addr a]) (obj\<bullet>M'(ps)) (length (compE2 obj) + length (compEs2 ps)) None"
       using Ta iec by(auto simp add: \<tau>move1_\<tau>moves1.simps map_eq_append_conv \<tau>move2_iff compP2_def)
     obtain s: "xcp = None" "xs = loc"
       and "\<tau>Exec_movesr_a P t ps h (stk, loc, pc, xcp) (rev vs, loc, length (compEs2 ps), None)"
@@ -2634,10 +2684,10 @@ next
       thus ?thesis using RetStaySame by simp
     qed
     moreover from redex Ta iec
-    have "\<tau>move1 P h (addr a\<bullet>M'(map Val vs) :: expr1) \<Longrightarrow> ta = \<epsilon> \<and> h' = h"
+    have "\<tau>move1 P h (addr a\<bullet>M'(map Val vs) :: 'addr expr1) \<Longrightarrow> ta = \<epsilon> \<and> h' = h"
       by(auto simp add: \<tau>move1_\<tau>moves1.simps map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_TA_empty \<tau>external'_red_external_heap_unchanged)
     ultimately show ?thesis using \<tau>
-      apply(cases "\<tau>move1 P h (addr a\<bullet>M'(map Val vs) :: expr1)")
+      apply(cases "\<tau>move1 P h (addr a\<bullet>M'(map Val vs) :: 'addr expr1)")
       apply(auto simp del: split_paired_Ex simp add: compP2_def)
       apply(blast intro: rtranclp.rtrancl_into_rtrancl rtranclp_into_tranclp1 \<tau>exec_moveI)+
       done
@@ -2843,7 +2893,7 @@ next
     ultimately show ?thesis by auto blast
   next
     case (Lock1Synchronized a)
-    note [simp] = `e1' = addr a` `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncLock a\<rbrace>` `e' = insync\<^bsub>V\<^esub> (a) e2` `h' = h` `xs' = xs[V := Addr a]` 
+    note [simp] = `e1' = addr a` `ta = \<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>` `e' = insync\<^bsub>V\<^esub> (a) e2` `h' = h` `xs' = xs[V := Addr a]` 
       and V = `V < length xs`
     from bisim1 have [simp]: "xcp = None" "xs = loc"
       and exec: "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, xcp) ([Addr a], loc, length (compE2 e1), None)"
@@ -2855,7 +2905,7 @@ next
       by -(rule \<tau>Execr2step,auto intro: exec_instr \<tau>move2_\<tau>moves2.intros simp add: exec_move_def)
     also (rtranclp_trans)
     have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a], loc[V := Addr a], Suc (Suc (length (compE2 e1))), None)
-                        (\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncLock a\<rbrace>)
+                        (\<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>)
                         h ([], loc[V := Addr a], Suc (Suc (Suc (length (compE2 e1)))), None)"
       unfolding exec_move_def by -(rule exec_instr, auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a] (sync\<^bsub>V\<^esub> (e1) e2) (Suc (Suc (length (compE2 e1)))) None"
@@ -2898,7 +2948,7 @@ next
   from `P,t \<turnstile>1 \<langle>sync\<^bsub>V\<^esub> (Val v) e2,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
   proof cases
     case (Lock1Synchronized a)
-    note [simp] = `v = Addr a` `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncLock a\<rbrace>` `e' = insync\<^bsub>V\<^esub> (a) e2`
+    note [simp] = `v = Addr a` `ta = \<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>` `e' = insync\<^bsub>V\<^esub> (a) e2`
       `h' = h` `xs' = xs[V := Addr a]` 
       and V = `V < length xs`
     from V
@@ -2906,7 +2956,7 @@ next
       by -(rule \<tau>Execr1step,auto intro: exec_instr simp add: \<tau>move2_iff exec_move_def)
     moreover
     have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a], xs[V := Addr a], Suc (Suc (length (compE2 e1))), None)
-                        (\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncLock a\<rbrace>)
+                        (\<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>)
                         h ([], xs[V := Addr a], Suc (Suc (Suc (length (compE2 e1)))), None)"
       unfolding exec_move_def by -(rule exec_instr, auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a] (sync\<^bsub>V\<^esub> (e1) e2) (Suc (Suc (length (compE2 e1)))) None"
@@ -2941,10 +2991,10 @@ next
   from `P,t \<turnstile>1 \<langle>sync\<^bsub>V\<^esub> (Val v) e2,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
   proof cases
     case (Lock1Synchronized a)
-    note [simp] = `v = Addr a` `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncLock a\<rbrace>` `e' = insync\<^bsub>V\<^esub> (a) e2` `h' = h` `xs' = xs[V := Addr a]` 
+    note [simp] = `v = Addr a` `ta = \<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>` `e' = insync\<^bsub>V\<^esub> (a) e2` `h' = h` `xs' = xs[V := Addr a]` 
       and V = `V < length xs`
     have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a], xs[V := Addr a], Suc (Suc (length (compE2 e1))), None)
-                        (\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncLock a\<rbrace>)
+                        (\<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>)
                         h ([], xs[V := Addr a], Suc (Suc (Suc (length (compE2 e1)))), None)"
       unfolding exec_move_def by -(rule exec_instr, auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a] (sync\<^bsub>V\<^esub> (e1) e2) (Suc (Suc (length (compE2 e1)))) None"
@@ -2997,7 +3047,7 @@ next
     ultimately show ?thesis using \<tau> by auto blast+
   next
     case (Unlock1Synchronized a' v)
-    note [simp] = `e2' = Val v` `e' = Val v` `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>` `h' = h` `xs' = xs`
+    note [simp] = `e2' = Val v` `e' = Val v` `ta = \<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>` `h' = h` `xs' = xs`
       and V = `V < length xs` and xsV = `xs ! V = Addr a'`
     from bisim2 have [simp]: "xcp = None" "xs = loc"
       and exec: "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) ([v], loc, length (compE2 e2), None)"
@@ -3007,7 +3057,7 @@ next
     also from V xsV have "\<tau>Exec_mover_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([v], loc, ?pc1, None) ([Addr a', v], loc, Suc ?pc1, None)"
       by -(rule \<tau>Execr1step,auto simp add: exec_move_def intro: exec_instr \<tau>move2_\<tau>moves2.intros)
     also (rtranclp_trans)
-    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', v], loc, Suc ?pc1, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>) h ([v], loc, Suc (Suc ?pc1), None)"
+    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', v], loc, Suc ?pc1, None) (\<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>) h ([v], loc, Suc (Suc ?pc1), None)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', v] (sync\<^bsub>V\<^esub> (e1) e2) (Suc ?pc1) None" by(simp add: \<tau>move2_iff)
     moreover from bisim2 bisim1 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -3039,7 +3089,7 @@ next
     ultimately show ?thesis by auto blast
   next
     case (Unlock1SynchronizedFail a' v)
-    note [simp] = `e2' = Val v` `e' = THROW IllegalMonitorState` `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a'\<rbrace>` `xs' = xs` `h' = h`
+    note [simp] = `e2' = Val v` `e' = THROW IllegalMonitorState` `ta = \<lbrace>UnlockFail\<rightarrow>a'\<rbrace>` `xs' = xs` `h' = h`
       and V = `V < length xs` and xsV = `xs ! V = Addr a'`
     from bisim2 have [simp]: "xcp = None" "xs = loc"
       and exec: "\<tau>Exec_mover_a P t e2 h (stk, loc, pc, xcp) ([v], loc, length (compE2 e2), None)"
@@ -3049,7 +3099,7 @@ next
     also from V xsV have "\<tau>Exec_mover_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([v], loc, ?pc1, None) ([Addr a', v], loc, Suc ?pc1, None)"
       by -(rule \<tau>Execr1step,auto intro: exec_instr \<tau>move2_\<tau>moves2.intros simp add: exec_move_def)
     also (rtranclp_trans)
-    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', v], loc, Suc ?pc1, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a'\<rbrace>) h ([Addr a', v], loc, Suc ?pc1, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
+    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', v], loc, Suc ?pc1, None) \<lbrace>UnlockFail\<rightarrow>a'\<rbrace> h ([Addr a', v], loc, Suc ?pc1, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', v] (sync\<^bsub>V\<^esub> (e1) e2) (Suc ?pc1) None" by(simp add: \<tau>move2_iff)
     moreover from bisim2 bisim1 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -3060,7 +3110,7 @@ next
     ultimately show ?thesis by(auto simp add: ta_upd_simps) blast
   next
     case (Synchronized1Throw2 a' ad)
-    note [simp] = `e2' = Throw ad` `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>` `e' = Throw ad`
+    note [simp] = `e2' = Throw ad` `ta = \<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>` `e' = Throw ad`
       `h' = h` `xs' = xs` and xsV = `xs ! V = Addr a'` and V = `V < length xs`
     let ?pc = "6 + length (compE2 e1) + length (compE2 e2)"
     let ?stk = "Addr ad # drop (size stk - 0) stk"
@@ -3072,7 +3122,7 @@ next
     have "\<tau>Exec_movet_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr ad], loc, ?pc, None) ([Addr a', Addr ad], loc, Suc ?pc, None)"
       by -(rule \<tau>Exect1step,auto intro: exec_instr \<tau>move2Sync7 simp add: exec_move_def)
     also (tranclp_trans)
-    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], loc, Suc ?pc, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>) h ([Addr ad], loc, Suc (Suc ?pc), None)"
+    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], loc, Suc ?pc, None) (\<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>) h ([Addr ad], loc, Suc (Suc ?pc), None)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', Addr ad] (sync\<^bsub>V\<^esub> (e1) e2) (Suc ?pc) None" by(simp add: \<tau>move2_iff)
     moreover from bisim1 bisim2 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -3082,7 +3132,7 @@ next
     ultimately show ?thesis by(auto simp add: add_assoc ta_upd_simps)(blast intro: tranclp_into_rtranclp)
   next
     case (Synchronized1Throw2Fail a' ad)
-    note [simp] = `e2' = Throw ad` `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a'\<rbrace>` `e' = THROW IllegalMonitorState` `h' = h` `xs' = xs`
+    note [simp] = `e2' = Throw ad` `ta = \<lbrace>UnlockFail\<rightarrow>a'\<rbrace>` `e' = THROW IllegalMonitorState` `h' = h` `xs' = xs`
       and xsV = `xs ! V = Addr a'` and V = `V < length xs`
     let ?pc = "6 + length (compE2 e1) + length (compE2 e2)"
     let ?stk = "Addr ad # drop (size stk - 0) stk"
@@ -3094,7 +3144,7 @@ next
     have "\<tau>Exec_movet_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr ad], loc, ?pc, None) ([Addr a', Addr ad], loc, Suc ?pc, None)"
       by -(rule \<tau>Exect1step,auto intro: exec_instr \<tau>move2Sync7 simp add: exec_move_def)
     also (tranclp_trans)
-    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], loc, Suc ?pc, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a'\<rbrace>) h ([Addr a', Addr ad], loc, Suc ?pc, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
+    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], loc, Suc ?pc, None) \<lbrace>UnlockFail\<rightarrow>a'\<rbrace> h ([Addr a', Addr ad], loc, Suc ?pc, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', Addr ad] (sync\<^bsub>V\<^esub> (e1) e2) (Suc ?pc) None" by(simp add: \<tau>move2_iff)
     moreover from bisim1 bisim2 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -3132,10 +3182,10 @@ next
   from `P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Val v,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
   proof cases
     case (Unlock1Synchronized a')
-    note [simp] = `e' = Val v` `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>` `h' = h` `xs' = xs`
+    note [simp] = `e' = Val v` `ta = \<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>` `h' = h` `xs' = xs`
       and V = `V < length xs` and xsV = `xs ! V = Addr a'`
     let ?pc1 = "4 + length (compE2 e1) + length (compE2 e2)"
-    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', v], xs, ?pc1, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>) h ([v], xs, Suc ?pc1, None)"
+    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', v], xs, ?pc1, None) \<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace> h ([v], xs, Suc ?pc1, None)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', v] (sync\<^bsub>V\<^esub> (e1) e2) ?pc1 None" by(simp add: \<tau>move2_iff)
     moreover from bisim2 bisim1 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -3160,10 +3210,10 @@ next
     ultimately show ?thesis using xsV by(auto simp add: eval_nat_numeral) blast
   next
     case (Unlock1SynchronizedFail a')
-    note [simp] = `e' = THROW IllegalMonitorState` `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a'\<rbrace>` `xs' = xs` `h' = h`
+    note [simp] = `e' = THROW IllegalMonitorState` `ta = \<lbrace>UnlockFail\<rightarrow>a'\<rbrace>` `xs' = xs` `h' = h`
       and V = `V < length xs` and xsV = `xs ! V = Addr a'`
     let ?pc1 = "4 + length (compE2 e1) + length (compE2 e2)"
-    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', v], xs, ?pc1, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a'\<rbrace>) h ([Addr a', v], xs, ?pc1, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
+    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', v], xs, ?pc1, None) \<lbrace>UnlockFail\<rightarrow>a'\<rbrace> h ([Addr a', v], xs, ?pc1, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', v] (sync\<^bsub>V\<^esub> (e1) e2) ?pc1 None" by(simp add: \<tau>move2_iff)
     moreover from bisim2 bisim1 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -3182,13 +3232,13 @@ next
   from `P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw ad,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
   proof cases
     case (Synchronized1Throw2 a')
-    note [simp] = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>` `e' = Throw ad` `h' = h` `xs' = xs`
+    note [simp] = `ta = \<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>` `e' = Throw ad` `h' = h` `xs' = xs`
       and xsV = `xs ! V = Addr a'` and V = `V < length xs`
     let ?pc = "6 + length (compE2 e1) + length (compE2 e2)"
     from xsV V
     have "\<tau>Exec_mover_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr ad], xs, ?pc, None) ([Addr a', Addr ad], xs, Suc ?pc, None)"
       by -(rule \<tau>Execr1step,auto intro: exec_instr simp add: exec_move_def \<tau>move2_iff)
-    moreover have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], xs, Suc ?pc, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>) h ([Addr ad], xs, Suc (Suc ?pc), None)"
+    moreover have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], xs, Suc ?pc, None) \<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace> h ([Addr ad], xs, Suc (Suc ?pc), None)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', Addr ad] (sync\<^bsub>V\<^esub> (e1) e2) (Suc ?pc) None" by(simp add: \<tau>move2_iff)
     moreover from bisim1 bisim2 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -3198,13 +3248,13 @@ next
     ultimately show ?thesis by(auto simp add: add_assoc eval_nat_numeral ta_upd_simps) blast
   next
     case (Synchronized1Throw2Fail a')
-    note [simp] = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a'\<rbrace>` `e' = THROW IllegalMonitorState` `h' = h` `xs' = xs`
+    note [simp] = `ta = \<lbrace>UnlockFail\<rightarrow>a'\<rbrace>` `e' = THROW IllegalMonitorState` `h' = h` `xs' = xs`
       and xsV = `xs ! V = Addr a'` and V = `V < length xs`
     let ?pc = "6 + length (compE2 e1) + length (compE2 e2)"
     from xsV V
     have "\<tau>Exec_mover_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr ad], xs, ?pc, None) ([Addr a', Addr ad], xs, Suc ?pc, None)"
       by -(rule \<tau>Execr1step,auto intro: exec_instr simp add: exec_move_def \<tau>move2_iff)
-    moreover have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], xs, Suc ?pc, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a'\<rbrace>) h ([Addr a', Addr ad], xs, Suc ?pc, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
+    moreover have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], xs, Suc ?pc, None) \<lbrace>UnlockFail\<rightarrow>a'\<rbrace> h ([Addr a', Addr ad], xs, Suc ?pc, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', Addr ad] (sync\<^bsub>V\<^esub> (e1) e2) (Suc ?pc) None" by(simp add: \<tau>move2_iff)
     moreover from bisim1 bisim2 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -3236,10 +3286,10 @@ next
   from `P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw ad,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
   proof cases
     case (Synchronized1Throw2 a')
-    note [simp] = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>` `e' = Throw ad` `h' = h` `xs' = xs`
+    note [simp] = `ta = \<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>` `e' = Throw ad` `h' = h` `xs' = xs`
       and xsV = `xs ! V = Addr a'` and V = `V < length xs`
     let ?pc = "7 + length (compE2 e1) + length (compE2 e2)"
-    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], xs, ?pc, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>) h ([Addr ad], xs, Suc ?pc, None)"
+    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], xs, ?pc, None) \<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace> h ([Addr ad], xs, Suc ?pc, None)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', Addr ad] (sync\<^bsub>V\<^esub> (e1) e2) ?pc None" by(simp add: \<tau>move2_iff)
     moreover from bisim1 bisim2 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -3249,10 +3299,10 @@ next
     ultimately show ?thesis using xsV by(auto simp add: add_assoc eval_nat_numeral ta_upd_simps) blast
   next
     case (Synchronized1Throw2Fail a')
-    note [simp] = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a'\<rbrace>` `e' = THROW IllegalMonitorState` `h' = h` `xs' = xs` 
+    note [simp] = `ta = \<lbrace>UnlockFail\<rightarrow>a'\<rbrace>` `e' = THROW IllegalMonitorState` `h' = h` `xs' = xs` 
       and xsV = `xs ! V = Addr a'` and V = `V < length xs`
     let ?pc = "7 + length (compE2 e1) + length (compE2 e2)"
-    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], xs, ?pc, None) (\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a'\<rbrace>) h ([Addr a', Addr ad], xs, ?pc, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
+    have "exec_move_a P t (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a', Addr ad], xs, ?pc, None) \<lbrace>UnlockFail\<rightarrow>a'\<rbrace> h ([Addr a', Addr ad], xs, ?pc, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
       unfolding exec_move_def by(rule exec_instr)(auto simp add: is_Ref_def)
     moreover have "\<not> \<tau>move2 (compP2 P) h [Addr a', Addr ad] (sync\<^bsub>V\<^esub> (e1) e2) ?pc None" by(simp add: \<tau>move2_iff)
     moreover from bisim1 bisim2 have "bsok e1 V" "bsok e2 (Suc V)" by(auto dest: bisim1_bsok)
@@ -4234,17 +4284,18 @@ proof -
       ultimately show ?thesis by blast
     qed(insert red, auto elim: red1_cases)
   next
-    case (red1Call a' M' vs' C' Ts' T' body' D')
+    case (red1Call a' M' vs' U' C' Ts' T' body' D')
     hence [simp]: "ta = \<epsilon>"
       and exs' [simp]: "exs' = (e, xs) # exs"
       and e': "e' = blocks1 0 (Class D'#Ts') body'"
-      and xs': "xs' = Addr a' # vs' @ replicate (max_vars body') undefined"
-      and ha': "typeof_addr h a' = \<lfloor>Class C'\<rfloor>"
+      and xs': "xs' = Addr a' # vs' @ replicate (max_vars body') undefined_value"
+      and ha': "typeof_addr h a' = \<lfloor>U'\<rfloor>"
+      and icto: "is_class_type_of U' C'"
       and call: "call1 e = \<lfloor>(a', M', vs')\<rfloor>" by auto
     note sees' = `P \<turnstile> C' sees M': Ts'\<rightarrow>T' = body' in D'`
     note lenvs'Ts' = `length vs' = length Ts'`
     from ha' sees_method_decl_above[OF sees'] 
-    have conf: "P,h \<turnstile> Addr a' :\<le> Class D'" by(auto simp add: conf_def)
+    have conf: "P,h \<turnstile> Addr a' :\<le> U'" by(auto simp add: conf_def)
     note wt = wt_compTP_compP2[OF wf]
     from bisim show ?thesis
     proof(cases)
@@ -4274,23 +4325,24 @@ proof -
         by(simp)(rule \<tau>Exec_1r_\<tau>Exec_1_dr)
       also with wt have conf': "compTP P \<turnstile> t: (None, h, ?f  # FRS) \<surd>" using conf
         by simp (rule \<tau>Exec_1_dr_preserves_correct_state)
-      let ?f' = "([], Addr a' # vs' @ (replicate (max_vars body') undefined), D', M', 0)"
-      from pc' ins sees sees' ha'
+      let ?f' = "([], Addr a' # vs' @ (replicate (max_vars body') undefined_value), D', M', 0)"
+      from pc' ins sees sees' ha' icto `\<not> is_native P U' M'`
       have "(\<epsilon>, None, h, ?f' # ?f # FRS) \<in> exec_instr (instrs_of (compP2 P) C M ! pc') (compP2 P) t h (rev vs' @ Addr a' # stk') loc' C M pc' FRS"
-        by(auto simp add: compP2_def compMb2_def nth_append split_beta dest: external_call_not_sees_method)
+        by(auto simp add: compP2_def compMb2_def nth_append split_beta simp add: is_class_type_of_conv_class_type_of_Some)
       hence "exec_1 (compP2 P) t (None, h, ?f # FRS) \<epsilon> (None, h, ?f' # ?f # FRS)"
         using exec sees by(simp add: exec_1_iff)
       with conf' have execd: "compP2 P,t \<turnstile> Normal (None, h, ?f # FRS) -\<epsilon>-jvmd\<rightarrow> Normal (None, h, ?f' # ?f # FRS)"
         by(simp add: welltyped_commute[OF wt])
       hence check: "check (compP2 P) (None, h, ?f # FRS)" by(rule jvmd_NormalE)
-      have "\<tau>move2 (compP2 P) h (rev vs' @ Addr a' # stk') body pc' None" using pc' ins ha' sees'
-        by(auto simp add: \<tau>move2_iff compP2_def dest: external_call_not_sees_method)
+      have "\<tau>move2 (compP2 P) h (rev vs' @ Addr a' # stk') body pc' None" using pc' ins ha' sees' icto `\<not> is_native P U' M'`
+        by(auto simp add: \<tau>move2_iff compP2_def is_class_type_of_conv_class_type_of_Some)
       with sees pc' ins have "\<tau>Move2 (compP2 P) (None, h, (rev vs' @ Addr a' # stk', loc', C, M, pc') # FRS)"
         unfolding \<tau>Move2_compP2[OF sees] by(auto simp add: compP2_def compMb2_def)
       with `exec_1 (compP2 P) t (None, h, ?f # FRS) \<epsilon> (None, h, ?f' # ?f # FRS)` check
       have "\<tau>Exec_1_dt (compP2 P) t (None, h, ?f # FRS) (None, h, ?f' # ?f # FRS)" by fastsimp
-      also from execd sees'' sees' ins ha' pc' have "compP2 P,h \<turnstile> vs' [:\<le>] Ts'" 
-        by(auto simp add: check_def compP2_def split: split_if_asm dest: external_call_not_sees_method elim!: jvmd_NormalE)
+      also from execd sees'' sees' ins ha' pc' icto `\<not> is_native P U' M'`
+      have "compP2 P,h \<turnstile> vs' [:\<le>] Ts'" 
+        by(auto simp add: check_def compP2_def is_class_type_of_conv_class_type_of_Some split: split_if_asm elim!: jvmd_NormalE)
       hence lenvs: "length vs' = length Ts'" by(rule list_all2_lengthD)
       from wt execd conf' have "compTP P \<turnstile> t:(None, h, ?f' # ?f # FRS) \<surd>"
         by(rule BV_correct_d_1)
@@ -4301,7 +4353,7 @@ proof -
 	  by(auto simp add: wf_mdecl_def bsok_def intro: WT1_expr_locks)
         hence "bsok (blocks1 0 (Class D'#Ts') body') 0" by(auto simp add: bsok_def)
         thus "P,blocks1 0 (Class D'#Ts') body',0,h \<turnstile> (blocks1 0 (Class D'#Ts') body', xs') \<leftrightarrow>
-             ([], Addr a' # vs' @ replicate (max_vars body') undefined, 0, None)"
+             ([], Addr a' # vs' @ replicate (max_vars body') undefined_value, 0, None)"
 	  unfolding xs' by(rule bisim1_refl)
         show "max_vars (blocks1 0 (Class D' # Ts') body') \<le> length xs'"
 	  unfolding xs' using lenvs by(simp add: blocks1_max_vars)

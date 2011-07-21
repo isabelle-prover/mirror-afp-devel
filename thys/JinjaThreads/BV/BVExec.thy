@@ -10,15 +10,15 @@ theory BVExec
 imports "../DFA/Abstract_BV" TF_JVM
 begin
 
-definition kiljvm :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> 
-                    instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> ty\<^isub>i' err list"
+definition kiljvm :: "'addr jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> 
+                    'addr instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> ty\<^isub>i' err list"
 where
   "kiljvm P mxs mxl T\<^isub>r is xt \<equiv>
   kildall (JVM_SemiType.le P mxs mxl) (JVM_SemiType.sup P mxs mxl) 
           (exec P mxs T\<^isub>r xt is)"
 
-definition  wt_kildall :: "jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
-                         instr list \<Rightarrow> ex_table \<Rightarrow> bool"
+definition  wt_kildall :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
+                         'addr instr list \<Rightarrow> ex_table \<Rightarrow> bool"
 where
   "wt_kildall P C' Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<equiv>
    0 < size is \<and> 
@@ -27,7 +27,7 @@ where
         result = kiljvm P mxs (1+size Ts+mxl\<^isub>0) T\<^isub>r is xt  start
     in \<forall>n < size is. result!n \<noteq> Err)"
 
-definition wf_jvm_prog\<^isub>k :: "jvm_prog \<Rightarrow> bool"
+definition wf_jvm_prog\<^isub>k :: "'addr jvm_prog \<Rightarrow> bool"
 where
   "wf_jvm_prog\<^isub>k P \<equiv>
   wf_prog (\<lambda>P C' (M,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,is,xt)). wt_kildall P C' Ts T\<^isub>r mxs mxl\<^isub>0 is xt) P"

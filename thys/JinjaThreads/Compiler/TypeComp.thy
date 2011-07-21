@@ -17,10 +17,10 @@ declare nth_append[simp]
 (*>*)
 
 locale TC0 =
-  fixes P :: J1_prog and mxl :: nat
+  fixes P :: "'addr J1_prog" and mxl :: nat
 begin
 
-definition ty :: "ty list \<Rightarrow> expr1 \<Rightarrow> ty"
+definition ty :: "ty list \<Rightarrow> 'addr expr1 \<Rightarrow> ty"
 where "ty E e \<equiv> THE T. P,E \<turnstile>1 e :: T"
 
 definition ty\<^isub>l :: "ty list \<Rightarrow> nat set \<Rightarrow> ty\<^isub>l"
@@ -29,7 +29,7 @@ where "ty\<^isub>l E A' \<equiv> map (\<lambda>i. if i \<in> A' \<and> i < size 
 definition ty\<^isub>i' :: "ty list \<Rightarrow> ty list \<Rightarrow> nat set option \<Rightarrow> ty\<^isub>i'"
 where "ty\<^isub>i' ST E A \<equiv> case A of None \<Rightarrow> None | \<lfloor>A'\<rfloor> \<Rightarrow> Some(ST, ty\<^isub>l E A')"
 
-definition after :: "ty list \<Rightarrow> nat set option \<Rightarrow> ty list \<Rightarrow> expr1 \<Rightarrow> ty\<^isub>i'"
+definition after :: "ty list \<Rightarrow> nat set option \<Rightarrow> ty list \<Rightarrow> 'addr expr1 \<Rightarrow> ty\<^isub>i'"
   where "after E A ST e \<equiv> ty\<^isub>i' (ty E e # ST) E (A \<squnion> \<A> e)"
 
 end
@@ -93,8 +93,8 @@ lemma ty\<^isub>l_in_types:
 by(auto simp add:ty\<^isub>l_def intro!:listI dest!: nth_mem)
 
 
-function compT :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr1 \<Rightarrow> ty\<^isub>i' list"
-  and compTs :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr1 list \<Rightarrow> ty\<^isub>i' list"
+function compT :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> 'addr expr1 \<Rightarrow> ty\<^isub>i' list"
+  and compTs :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> 'addr expr1 list \<Rightarrow> ty\<^isub>i' list"
 where
   "compT E A ST (new C) = []"
 | "compT E A ST (newA T\<lfloor>e\<rceil>) = compT E A ST e @ [after E A ST e]"
@@ -177,7 +177,7 @@ lemmas compT_compTs_induct =
       Synchronized InSynchronized Seq Cond While throw TryCatch
       Nil Cons]
 
-definition compTa :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr1 \<Rightarrow> ty\<^isub>i' list"
+definition compTa :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> 'addr expr1 \<Rightarrow> ty\<^isub>i' list"
 where "compTa E A ST e \<equiv> compT E A ST e @ [after E A ST e]"
 
 lemmas compE2_not_Nil = compE2_neq_Nil
@@ -389,7 +389,7 @@ locale TC2 = TC0 +
 begin
   
 definition
-  wt_instrs :: "instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' list \<Rightarrow> bool" ("(\<turnstile> _, _ /[::]/ _)" [0,0,51] 50)
+  wt_instrs :: "'addr instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' list \<Rightarrow> bool" ("(\<turnstile> _, _ /[::]/ _)" [0,0,51] 50)
 where
   "\<turnstile> is,xt [::] \<tau>s \<equiv> size is < size \<tau>s \<and> pcs xt \<subseteq> {0..<size is} \<and> (\<forall>pc< size is. P,T\<^isub>r,mxs,size \<tau>s,xt \<turnstile> is!pc,pc :: \<tau>s)"
 
@@ -591,16 +591,16 @@ done
 
 
 corollary wt_instrs_app2:
-  "\<lbrakk> \<turnstile> is\<^isub>2,xt\<^isub>2 [::] \<tau>'#\<tau>s\<^isub>2;  \<turnstile> is\<^isub>1,xt\<^isub>1 [::] \<tau>#\<tau>s\<^isub>1@[\<tau>'];
+  "\<lbrakk> \<turnstile> (is\<^isub>2 :: 'b instr list),xt\<^isub>2 [::] \<tau>'#\<tau>s\<^isub>2;  \<turnstile> is\<^isub>1,xt\<^isub>1 [::] \<tau>#\<tau>s\<^isub>1@[\<tau>'];
      xt' = xt\<^isub>1 @ shift (size is\<^isub>1) xt\<^isub>2;  size \<tau>s\<^isub>1+1 = size is\<^isub>1 \<rbrakk>
   \<Longrightarrow> \<turnstile> is\<^isub>1@is\<^isub>2,xt' [::] \<tau>#\<tau>s\<^isub>1@\<tau>'#\<tau>s\<^isub>2"
-using wt_instrs_app[where ?\<tau>s\<^isub>1.0 = "\<tau> # \<tau>s\<^isub>1"] by simp
+using wt_instrs_app[where ?\<tau>s\<^isub>1.0 = "\<tau> # \<tau>s\<^isub>1" and ?'b = "'b"] by simp
 
 
 corollary wt_instrs_app2_simp[trans,simp]:
-  "\<lbrakk> \<turnstile> is\<^isub>2,xt\<^isub>2 [::] \<tau>'#\<tau>s\<^isub>2;  \<turnstile> is\<^isub>1,xt\<^isub>1 [::] \<tau>#\<tau>s\<^isub>1@[\<tau>']; size \<tau>s\<^isub>1+1 = size is\<^isub>1 \<rbrakk>
+  "\<lbrakk> \<turnstile> (is\<^isub>2 :: 'b instr list),xt\<^isub>2 [::] \<tau>'#\<tau>s\<^isub>2;  \<turnstile> is\<^isub>1,xt\<^isub>1 [::] \<tau>#\<tau>s\<^isub>1@[\<tau>']; size \<tau>s\<^isub>1+1 = size is\<^isub>1 \<rbrakk>
   \<Longrightarrow> \<turnstile> is\<^isub>1@is\<^isub>2, xt\<^isub>1@shift (size is\<^isub>1) xt\<^isub>2 [::] \<tau>#\<tau>s\<^isub>1@\<tau>'#\<tau>s\<^isub>2"
-using wt_instrs_app[where ?\<tau>s\<^isub>1.0 = "\<tau> # \<tau>s\<^isub>1"] by simp
+using wt_instrs_app[where ?\<tau>s\<^isub>1.0 = "\<tau> # \<tau>s\<^isub>1" and ?'b = "'b"] by simp
 
 
 corollary wt_instrs_Cons[simp]:
@@ -697,16 +697,14 @@ by(auto simp:hyperset_defs nth_list_update ty\<^isub>i'_def wt_defs ty\<^isub>l_
 
 
 lemma wt_Get:
- "\<lbrakk> P \<turnstile> C sees F:T (fm) in D \<rbrakk> \<Longrightarrow>
-  \<turnstile> [Getfield F D],[] [::] [ty\<^isub>i' (Class C # ST) E A, ty\<^isub>i' (T # ST) E A]"
-by(auto simp: ty\<^isub>i'_def wt_defs dest: sees_field_idemp sees_field_decl_above intro: widens_refl)
-
+ "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; is_class_type_of U C \<rbrakk> \<Longrightarrow>
+  \<turnstile> [Getfield F D],[] [::] [ty\<^isub>i' (U # ST) E A, ty\<^isub>i' (T # ST) E A]"
+by(auto simp: ty\<^isub>i'_def wt_defs dest: sees_field_idemp sees_field_decl_above is_class_type_of_widenD intro: widens_refl widen_trans)
 
 lemma wt_Put:
-  "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; P \<turnstile> T' \<le> T \<rbrakk> \<Longrightarrow>
-  \<turnstile> [Putfield F D],[] [::] [ty\<^isub>i' (T' # Class C # ST) E A, ty\<^isub>i' ST E A]"
-by(auto intro: sees_field_idemp sees_field_decl_above simp: ty\<^isub>i'_def wt_defs)
-
+  "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; is_class_type_of U C; P \<turnstile> T' \<le> T \<rbrakk> \<Longrightarrow>
+  \<turnstile> [Putfield F D],[] [::] [ty\<^isub>i' (T' # U # ST) E A, ty\<^isub>i' ST E A]"
+by(auto intro: sees_field_idemp widen_trans dest: sees_field_decl_above is_class_type_of_widenD simp: ty\<^isub>i'_def wt_defs)
 
 lemma wt_Throw:
   "P \<turnstile> C \<preceq>\<^sup>* Throwable \<Longrightarrow> \<turnstile> [ThrowExc],[] [::] [ty\<^isub>i' (Class C # ST) E A, \<tau>']"
@@ -730,10 +728,12 @@ end
 context TC3 begin
 
 lemma wt_Invoke:
-  "\<lbrakk> size es = size Ts'; P \<turnstile> C sees M: Ts\<rightarrow>T = m in D; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
-  \<Longrightarrow> \<turnstile> [Invoke M (size es)],[] [::] [ty\<^isub>i' (rev Ts' @ Class C # ST) E A, ty\<^isub>i' (T#ST) E A]"
+  "\<lbrakk> size es = size Ts'; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M: Ts\<rightarrow>T = m in D; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+  \<Longrightarrow> \<turnstile> [Invoke M (size es)],[] [::] [ty\<^isub>i' (rev Ts' @ U # ST) E A, ty\<^isub>i' (T#ST) E A]"
 apply(clarsimp simp add: ty\<^isub>i'_def wt_defs)
-apply(fastsimp dest: external_call_not_sees_method intro: widens_refl)
+apply safe
+apply(simp_all (no_asm_use))
+apply(auto simp add: is_class_type_of_conv_class_type_of_Some intro: widens_refl)
 done
 
 end
@@ -744,9 +744,9 @@ declare [[simproc del: list_to_set_comprehension]]
 context TC2 begin
 
 corollary wt_instrs_app3[simp]:
-  "\<lbrakk> \<turnstile> is\<^isub>2,[] [::] (\<tau>' # \<tau>s\<^isub>2);  \<turnstile> is\<^isub>1,xt\<^isub>1 [::] \<tau> # \<tau>s\<^isub>1 @ [\<tau>']; size \<tau>s\<^isub>1+1 = size is\<^isub>1\<rbrakk>
+  "\<lbrakk> \<turnstile> (is\<^isub>2 :: 'b instr list),[] [::] (\<tau>' # \<tau>s\<^isub>2);  \<turnstile> is\<^isub>1,xt\<^isub>1 [::] \<tau> # \<tau>s\<^isub>1 @ [\<tau>']; size \<tau>s\<^isub>1+1 = size is\<^isub>1\<rbrakk>
   \<Longrightarrow> \<turnstile> (is\<^isub>1 @ is\<^isub>2),xt\<^isub>1 [::] \<tau> # \<tau>s\<^isub>1 @ \<tau>' # \<tau>s\<^isub>2"
-using wt_instrs_app2[where ?xt\<^isub>2.0 = "[]"] by (simp add:shift_def)
+using wt_instrs_app2[where ?xt\<^isub>2.0 = "[]" and ?'b = "'b"] by (simp add:shift_def)
 
 
 corollary wt_instrs_Cons3[simp]:
@@ -1089,15 +1089,15 @@ next
 next
   case (FAss E A ST e\<^isub>1 F D e\<^isub>2)
   hence Void: "P,E \<turnstile>1 e\<^isub>1\<bullet>F{D} := e\<^isub>2 :: Void" by auto
-  then obtain C T T' fm where    
-    C: "P,E \<turnstile>1 e\<^isub>1 :: Class C" and sees: "P \<turnstile> C sees F:T (fm) in D" and
+  then obtain U C T T' fm where    
+    C: "P,E \<turnstile>1 e\<^isub>1 :: U" and U: "is_class_type_of U C" and sees: "P \<turnstile> C sees F:T (fm) in D" and
     T': "P,E \<turnstile>1 e\<^isub>2 :: T'" and T'_T: "P \<turnstile> T' \<le> T" by auto
   let ?A\<^isub>1 = "A \<squnion> \<A> e\<^isub>1" let ?A\<^isub>2 = "?A\<^isub>1 \<squnion> \<A> e\<^isub>2"  
   let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s\<^isub>1 = "compT E A ST e\<^isub>1"
-  let ?\<tau>\<^isub>1 = "ty\<^isub>i' (Class C#ST) E ?A\<^isub>1" let ?\<tau>s\<^isub>2 = "compT E ?A\<^isub>1 (Class C#ST) e\<^isub>2"
-  let ?\<tau>\<^isub>2 = "ty\<^isub>i' (T'#Class C#ST) E ?A\<^isub>2" let ?\<tau>\<^isub>3 = "ty\<^isub>i' ST E ?A\<^isub>2"
+  let ?\<tau>\<^isub>1 = "ty\<^isub>i' (U#ST) E ?A\<^isub>1" let ?\<tau>s\<^isub>2 = "compT E ?A\<^isub>1 (U#ST) e\<^isub>2"
+  let ?\<tau>\<^isub>2 = "ty\<^isub>i' (T'#U#ST) E ?A\<^isub>2" let ?\<tau>\<^isub>3 = "ty\<^isub>i' ST E ?A\<^isub>2"
   let ?\<tau>' = "ty\<^isub>i' (Void#ST) E ?A\<^isub>2"
-  from FAss.prems sees T'_T 
+  from FAss.prems sees T'_T U
   have "\<turnstile> [Putfield F D,Push Unit],[] [::] [?\<tau>\<^isub>2,?\<tau>\<^isub>3,?\<tau>']"
     by (fastsimp simp add: wt_Push wt_Put)
   also from FAss.hyps(2)[of T'] FAss.prems T' C
@@ -1111,7 +1111,8 @@ next
 next
   case (Cast T exp) thus ?case by (auto simp:after_def wt_Cast)
 next
-  case InstanceOf thus ?case by (auto simp:after_def wt_Instanceof)
+  case (InstanceOf E A ST e) thus ?case
+    by(auto simp:after_def intro!: wt_Instanceof wt_instrs_app3 intro: widen_refT refT_widen)
 next
   case (BlockNone E A ST i Ti e)
   from `P,E \<turnstile>1 {i:Ti=None; e} :: T` have wte: "P,E@[Ti] \<turnstile>1 e :: T"
@@ -1159,7 +1160,7 @@ next
     moreover have "ty\<^isub>i' (Tv # ST) (E @ [Ti]) (A \<ominus> length E) = ty\<^isub>i' (Tv # ST) E A" by(simp add: ty\<^isub>i'_def)
     moreover have "\<lfloor>{length E}\<rfloor> \<squnion> (A \<ominus> length E) = A \<squnion> \<lfloor>{length E}\<rfloor>" by(simp add: hyperset_defs)
     ultimately have "\<turnstile> [Push v, Store (length E)], [] [::] [ty\<^isub>i' ST E A, ty\<^isub>i' (Tv # ST) E A, ty\<^isub>i' ST (E @ [Ti]) (A \<squnion> \<lfloor>{length E}\<rfloor>)]"
-      using Tv by(simp)
+      using Tv by(auto intro: wt_instrs_Cons3)
   }
   finally show ?case using Tv `P,E \<turnstile>1 {i:Ti=\<lfloor>v\<rfloor>; e} :: T` wte by(simp add: after_def)
 next
@@ -1259,20 +1260,21 @@ next
   case (Call E A ST e M es)
   from `P,E \<turnstile>1 e\<bullet>M(es) :: T` show ?case apply -
   proof(ind_cases "P,E \<turnstile>1 e\<bullet>M(es) :: T")
-    fix C D Ts m Ts'
-    assume C: "P,E \<turnstile>1 e :: Class C"
+    fix U C D Ts m Ts'
+    assume C: "P,E \<turnstile>1 e :: U"
+      and icto: "is_class_type_of U C"
       and method: "P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
-      and iec: "\<not> is_external_call P (Class C) M"
+      and iec: "\<not> is_native P U M"
       and wtes: "P,E \<turnstile>1 es [::] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
     from wtes have same_size: "size es = size Ts'" by(rule WTs1_same_size)
     let ?A\<^isub>0 = "A \<squnion> \<A> e" let ?A\<^isub>1 = "?A\<^isub>0 \<squnion> \<A>s es"
     let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s\<^isub>e = "compT E A ST e"
-    let ?\<tau>\<^isub>e = "ty\<^isub>i' (Class C # ST) E ?A\<^isub>0"
-    let ?\<tau>s\<^isub>e\<^isub>s = "compTs E ?A\<^isub>0 (Class C # ST) es"
-    let ?\<tau>\<^isub>1 = "ty\<^isub>i' (rev Ts' @ Class C # ST) E ?A\<^isub>1"
+    let ?\<tau>\<^isub>e = "ty\<^isub>i' (U # ST) E ?A\<^isub>0"
+    let ?\<tau>s\<^isub>e\<^isub>s = "compTs E ?A\<^isub>0 (U # ST) es"
+    let ?\<tau>\<^isub>1 = "ty\<^isub>i' (rev Ts' @ U # ST) E ?A\<^isub>1"
     let ?\<tau>' = "ty\<^isub>i' (T # ST) E ?A\<^isub>1"
     have "\<turnstile> [Invoke M (size es)],[] [::] [?\<tau>\<^isub>1,?\<tau>']"
-      by(rule wt_Invoke[OF same_size method subs])
+      by(rule wt_Invoke[OF same_size icto iec method subs])
     also
     from Call.hyps(2)[of Ts'] Call.prems wtes C
     have "\<turnstile> compEs2 es,compxEs2 es 0 (size ST+1) [::] ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s"
@@ -1294,9 +1296,9 @@ next
     let ?\<tau>s\<^isub>e\<^isub>s = "compTs E ?A\<^isub>0 (Te # ST) es"
     let ?\<tau>\<^isub>1 = "ty\<^isub>i' (rev Ts @ Te # ST) E ?A\<^isub>1"
     let ?\<tau>' = "ty\<^isub>i' (T # ST) E ?A\<^isub>1"
-    from wte wtext same_size external_WT_is_external_call[OF wtext] sub
+    from wte wtext same_size external_WT_is_native[OF wtext] sub
     have "\<turnstile> [Invoke M (size es)],[] [::] [?\<tau>\<^isub>1,?\<tau>']"
-      by(fastsimp simp add: ty\<^isub>i'_def wt_defs external_WT_The_Ex_conv2)
+      by(auto simp add: ty\<^isub>i'_def wt_defs is_native_def2 external_WT.simps) blast
     also
     from Call.hyps(2)[of Ts] wtes wte Call.prems
     have "\<turnstile> compEs2 es,compxEs2 es 0 (size ST+1) [::] ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s"
@@ -1318,13 +1320,13 @@ next
   from `P,E \<turnstile>1 newA Ta\<lfloor>e\<rceil> :: T`
   have "\<turnstile> [NewArray Ta], [] [::] [ty\<^isub>i' (Integer # ST) E (A \<squnion> \<A> e), ty\<^isub>i' (Ta\<lfloor>\<rceil> # ST) E (A \<squnion> \<A> e)]"
     by(auto simp:hyperset_defs ty\<^isub>i'_def wt_defs ty\<^isub>l_def)
-  with NewArray show ?case by(auto simp: after_def)
+  with NewArray show ?case by(auto simp: after_def intro: wt_instrs_app3)
 next
   case (ALen E A ST exp)
   { fix T
     have "\<turnstile> [ALength], [] [::] [ty\<^isub>i' (T\<lfloor>\<rceil> # ST) E (A \<squnion> \<A> exp), ty\<^isub>i' (Integer # ST) E (A \<squnion> \<A> exp)]"
       by(auto simp:hyperset_defs ty\<^isub>i'_def wt_defs ty\<^isub>l_def) }
-  with ALen show ?case by(auto simp add: after_def)
+  with ALen show ?case by(auto simp add: after_def)(rule wt_instrs_app2, auto)
 next
   case (AAcc E A ST a i)
   from `P,E \<turnstile>1 a\<lfloor>i\<rceil> :: T` have wta: "P,E \<turnstile>1 a :: T\<lfloor>\<rceil>" and wti: "P,E \<turnstile>1 i :: Integer" by auto
@@ -1404,7 +1406,7 @@ lemma [simp]: "app i (compP f P) mpc T pc mxl xt \<tau> = app i P mpc T pc mxl x
 lemma [simp]: "app i P mpc T pc mxl xt \<tau> \<Longrightarrow> eff i (compP f P) pc xt \<tau> = eff i P pc xt \<tau>"
   apply (clarsimp simp add: eff_def norm_eff_def xcpt_eff_def app_def)
   apply (cases i)
-  apply auto
+  apply(auto simp add: native_method_compP)
   done
 
 lemma [simp]: "widen (compP f P) = widen P"
@@ -1465,7 +1467,7 @@ done
 (*>*)
 
 
-definition compTP :: "J1_prog \<Rightarrow> ty\<^isub>P"
+definition compTP :: "'addr J1_prog \<Rightarrow> ty\<^isub>P"
 where
   "compTP P C M  \<equiv>
   let (D,Ts,T,e) = method P C M;

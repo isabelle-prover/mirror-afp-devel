@@ -6,12 +6,34 @@ header {* \chapter{Memory Models} *}
 
 theory MM imports "../Common/Heap" begin
 
+type_synonym addr = nat
+type_synonym thread_id = addr
+
+abbreviation (input) 
+  addr2thread_id :: "addr \<Rightarrow> thread_id"
+where "addr2thread_id \<equiv> \<lambda>x. x"
+
+abbreviation (input)
+  thread_id2addr :: "thread_id \<Rightarrow> addr"
+where "thread_id2addr \<equiv> \<lambda>x. x"
+
+instantiation nat :: addr begin
+definition "hash_addr \<equiv> int"
+definition "monitor_finfun_to_list \<equiv> (finfun_to_list :: nat \<Rightarrow>\<^isub>f nat \<Rightarrow> nat list)"
+instance
+by(intro_classes)(simp add: monitor_finfun_to_list_nat_def)
+end
+
 definition new_Addr :: "(addr \<rightharpoonup> 'b) \<Rightarrow> addr option"
 where "new_Addr h \<equiv> if \<exists>a. h a = None then Some(LEAST a. h a = None) else None"
 
 lemma new_Addr_SomeD:
   "new_Addr h = Some a \<Longrightarrow> h a = None"
 by(auto simp add:new_Addr_def split:if_splits intro: LeastI)
+
+lemma new_Addr_SomeI:
+  "finite (dom h) \<Longrightarrow> \<exists>a. new_Addr h = Some a"
+by(simp add: new_Addr_def) (metis finite_map_freshness nat_infinite)
 
 subsection {* Code generation *}
 

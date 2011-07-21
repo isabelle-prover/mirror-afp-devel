@@ -10,21 +10,21 @@ theory LBVJVM
 imports "../DFA/Abstract_BV" TF_JVM
 begin
 
-types prog_cert = "cname \<Rightarrow> mname \<Rightarrow> ty\<^isub>i' err list"
+type_synonym prog_cert = "cname \<Rightarrow> mname \<Rightarrow> ty\<^isub>i' err list"
 
-definition check_cert :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> bool"
+definition check_cert :: "'addr jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> bool"
 where
   "check_cert P mxs mxl n cert \<equiv> check_types P mxs mxl cert \<and> size cert = n+1 \<and>
                                  (\<forall>i<n. cert!i \<noteq> Err) \<and> cert!n = OK None"
 
-definition lbvjvm :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> 
-             ty\<^isub>i' err list \<Rightarrow> instr list \<Rightarrow> ty\<^isub>i' err \<Rightarrow> ty\<^isub>i' err"
+definition lbvjvm :: "'addr jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> 
+             ty\<^isub>i' err list \<Rightarrow> 'addr instr list \<Rightarrow> ty\<^isub>i' err \<Rightarrow> ty\<^isub>i' err"
 where
   "lbvjvm P mxs maxr T\<^isub>r et cert bs \<equiv>
   wtl_inst_list bs cert (JVM_SemiType.sup P mxs maxr) (JVM_SemiType.le P mxs maxr) Err (OK None) (exec P mxs T\<^isub>r et bs) 0"
 
-definition wt_lbv :: "jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
-             ex_table \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> instr list \<Rightarrow> bool"
+definition wt_lbv :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
+             ex_table \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> 'addr instr list \<Rightarrow> bool"
 where
   "wt_lbv P C Ts T\<^isub>r mxs mxl\<^isub>0 et cert ins \<equiv>
    check_cert P mxs (1+size Ts+mxl\<^isub>0) (size ins) cert \<and>
@@ -33,17 +33,17 @@ where
         result = lbvjvm P mxs (1+size Ts+mxl\<^isub>0) T\<^isub>r et cert ins (OK start)
     in result \<noteq> Err)"
 
-definition wt_jvm_prog_lbv :: "jvm_prog \<Rightarrow> prog_cert \<Rightarrow> bool"
+definition wt_jvm_prog_lbv :: "'addr jvm_prog \<Rightarrow> prog_cert \<Rightarrow> bool"
 where
   "wt_jvm_prog_lbv P cert \<equiv>
   wf_prog (\<lambda>P C (mn,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,b,et)). wt_lbv P C Ts T\<^isub>r mxs mxl\<^isub>0 et (cert C mn) b) P"
 
-definition mk_cert :: "jvm_prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> instr list 
+definition mk_cert :: "'addr jvm_prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> 'addr instr list 
               \<Rightarrow> ty\<^isub>m \<Rightarrow> ty\<^isub>i' err list"
 where
   "mk_cert P mxs T\<^isub>r et bs phi \<equiv> make_cert (exec P mxs T\<^isub>r et bs) (map OK phi) (OK None)"
 
-definition prg_cert :: "jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> prog_cert"
+definition prg_cert :: "'addr jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> prog_cert"
 where
   "prg_cert P phi C mn \<equiv> let (C,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,ins,et)) = method P C mn
                          in  mk_cert P mxs T\<^isub>r et ins (phi C mn)"

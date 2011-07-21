@@ -8,7 +8,7 @@ theory Bisimulation imports
   "LTS"
 begin
 
-types ('a, 'b) bisim = "'a \<Rightarrow> 'b \<Rightarrow> bool"
+type_synonym ('a, 'b) bisim = "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
 subsection {* Strong bisimulation *}
 

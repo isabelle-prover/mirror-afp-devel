@@ -10,42 +10,40 @@ theory JVMExec imports
   "../Common/StartConfig"
 begin
 
-abbreviation instrs_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> instr list"
+abbreviation instrs_of :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr instr list"
 where "instrs_of P C M == fst(snd(snd(snd(snd(snd(method P C M))))))"
 
 section "single step execution"
 
 context JVM_heap_base begin
 
-fun exception_step :: "jvm_prog \<Rightarrow> 'heap jvm_ta_state \<Rightarrow> 'heap jvm_ta_state"
+fun exception_step :: "'addr jvm_prog \<Rightarrow> 'addr \<Rightarrow> 'heap \<Rightarrow> 'addr frame \<Rightarrow> 'addr frame list \<Rightarrow> ('addr, 'heap) jvm_state"
 where
-  "exception_step P (ta, \<lfloor>a\<rfloor>, h, (stk, loc, C, M, pc) # frs) = 
+  "exception_step P a h (stk, loc, C, M, pc) frs = 
    (case match_ex_table P (cname_of h a) pc (ex_table_of P C M) of
-          None \<Rightarrow> (ta, \<lfloor>a\<rfloor>, h, frs)
-        | Some (pc', d) \<Rightarrow> (ta, None, h, (Addr a # drop (size stk - d) stk, loc, C, M, pc') # frs))"
-| "exception_step P \<sigma> = \<sigma>"
+          None \<Rightarrow> (\<lfloor>a\<rfloor>, h, frs)
+        | Some (pc', d) \<Rightarrow> (None, h, (Addr a # drop (size stk - d) stk, loc, C, M, pc') # frs))"
 
 lemma exception_step_def_raw:
   "exception_step = 
-   (\<lambda>P (ta, xcp, h, frs).
-    case frs of [] \<Rightarrow> (ta, xcp, h, [])
-    | ((stk, loc, C, M, pc) # frs') \<Rightarrow> (case xcp of None \<Rightarrow> (ta, xcp, h, frs)
-                                                   | \<lfloor>a\<rfloor> \<Rightarrow> (case match_ex_table P (cname_of h a) pc (ex_table_of P C M) of
-                                                                 None \<Rightarrow> (ta, \<lfloor>a\<rfloor>, h, frs')
-                                                      | Some (pc', d) \<Rightarrow> (ta, None, h, (Addr a # drop (size stk - d) stk, loc, C, M, pc') # frs'))))"
-by(auto simp add: fun_eq_iff split: list.split)
+   (\<lambda>P a h (stk, loc, C, M, pc) frs.
+    case match_ex_table P (cname_of h a) pc (ex_table_of P C M) of
+      None \<Rightarrow> (\<lfloor>a\<rfloor>, h, frs)
+    | Some (pc', d) \<Rightarrow> (None, h, (Addr a # drop (size stk - d) stk, loc, C, M, pc') # frs))"
+by(intro ext) auto
 
-fun exec :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state \<Rightarrow> 'heap jvm_ta_state set" where
+fun exec :: "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_ta_state set" where
   "exec P t (xcp, h, []) = {}"
 | "exec P t (None, h, (stk, loc, C, M, pc) # frs) = exec_instr (instrs_of P C M ! pc) P t h stk loc C M pc frs"
-| "exec P t (\<lfloor>a\<rfloor>, h, fr # frs) = {exception_step P (\<epsilon>, \<lfloor>a\<rfloor>, h, fr # frs)}"
-
+| "exec P t (\<lfloor>a\<rfloor>, h, fr # frs) = {(\<epsilon>, exception_step P a h fr frs)}"
 
 section "relational view"
 
-inductive
-  exec_1 :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state \<Rightarrow> 'heap jvm_thread_action \<Rightarrow> 'heap jvm_state \<Rightarrow> bool" ("_,_ \<turnstile>/ _ -_-jvm\<rightarrow>/ _" [61,0,61,0,61] 60)
-  for P :: jvm_prog and t :: thread_id
+inductive exec_1 :: 
+  "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state
+  \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
+  ("_,_ \<turnstile>/ _ -_-jvm\<rightarrow>/ _" [61,0,61,0,61] 60)
+  for P :: "'addr jvm_prog" and t :: 'thread_id
 where
   exec_1I:
   "(ta, \<sigma>') \<in> exec P t \<sigma> \<Longrightarrow> P,t \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>'"
@@ -61,16 +59,17 @@ text {*
   a static method invokation.
 *}
 
-abbreviation JVM_start_state :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> (addr,thread_id,jvm_thread_state,'heap,addr) state"
+abbreviation JVM_start_state :: 
+  "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state"
 where
   "JVM_start_state \<equiv>
-   start_state (\<lambda>C M Ts T (mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined, C, M, 0)]))"
+   start_state (\<lambda>C M Ts T (mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, C, M, 0)]))"
 
-definition JVM_start_state' :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> 'heap jvm_state"
+definition JVM_start_state' :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr, 'heap) jvm_state"
 where
   "JVM_start_state' P C M vs \<equiv>
    let (D, Ts, T, mxs, mxl0, b) = method P C M
-   in (None, start_heap, [([], Null # vs @ replicate mxl0 undefined, D, M, 0)])"
+   in (None, start_heap, [([], Null # vs @ replicate mxl0 undefined_value, D, M, 0)])"
 
 end
 

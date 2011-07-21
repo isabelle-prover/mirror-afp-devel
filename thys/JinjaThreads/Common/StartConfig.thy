@@ -16,7 +16,7 @@ where
 
 context heap_base begin
 
-definition create_initial_object :: "'heap \<times> addr list \<times> bool \<Rightarrow> cname \<Rightarrow> 'heap \<times> addr list \<times> bool"
+definition create_initial_object :: "'heap \<times> 'addr list \<times> bool \<Rightarrow> cname \<Rightarrow> 'heap \<times> 'addr list \<times> bool"
 where
   "create_initial_object = 
   (\<lambda>(h, ads, b) C. 
@@ -26,7 +26,7 @@ where
              | Some a'' \<Rightarrow> (h', ads @ [a''], True)
      else (h, ads, False))"
 
-definition start_heap_data :: "'heap \<times> addr list \<times> bool"
+definition start_heap_data :: "'heap \<times> 'addr list \<times> bool"
 where
   "start_heap_data = foldl create_initial_object (empty_heap, [], True) initialization_list"
 
@@ -36,25 +36,25 @@ where "start_heap = fst start_heap_data"
 definition start_heap_ok :: bool
 where "start_heap_ok = snd (snd (start_heap_data))"
 
-definition start_heap_obs :: "obs_event list"
+definition start_heap_obs :: "('addr, 'thread_id) obs_event list"
 where
   "start_heap_obs =
   map (\<lambda>(C, a). NewObj a C) (zip initialization_list (fst (snd start_heap_data)))"
 
-definition start_addrs :: "addr list"
+definition start_addrs :: "'addr list"
 where "start_addrs = fst (snd start_heap_data)"
 
-definition addr_of_sys_xcpt :: "cname \<Rightarrow> addr"
+definition addr_of_sys_xcpt :: "cname \<Rightarrow> 'addr"
 where "addr_of_sys_xcpt C = the (map_of (zip initialization_list start_addrs) C)"
 
-definition start_tid :: addr
-where "start_tid = addr_of_sys_xcpt Thread"
+definition start_tid :: 'thread_id
+where "start_tid = addr2thread_id (addr_of_sys_xcpt Thread)"
 
-definition start_state :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> val list \<Rightarrow> 'x) \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> (addr,thread_id,'x,'heap,addr) state"
+definition start_state :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> 'addr val list \<Rightarrow> 'x) \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr,'thread_id,'x,'heap,'addr) state"
 where
   "start_state f P C M vs \<equiv>
    let (D, Ts, T, m) = method P C M
-   in (\<lambda>\<^isup>f None, ([start_tid \<mapsto> (f D M Ts T m vs, no_wait_locks)], start_heap), empty)"
+   in (\<lambda>\<^isup>f None, ([start_tid \<mapsto> (f D M Ts T m vs, no_wait_locks)], start_heap), empty, {})"
 
 lemma create_initial_object_simps:
   "create_initial_object (h, ads, b) C = 
@@ -81,10 +81,6 @@ by(auto dest: set_zip_rightD)
 lemma shr_start_state: "shr (start_state f P C M vs) = start_heap"
 by(simp add: start_state_def split_beta)
 
-lemma distinct_initialization_list:
-  "distinct initialization_list"
-by(simp add: initialization_list_def sys_xcpts_list_def sys_xcpts_neqs Thread_neq_sys_xcpts)
-
 lemma start_heap_obs_not_Read: 
   "ReadMem ad al v \<notin> set start_heap_obs"
 unfolding start_heap_obs_def by auto
@@ -104,6 +100,14 @@ proof -
   from this[of empty_heap "[]" initialization_list]
   show ?thesis unfolding start_heap_def start_addrs_def start_heap_data_def by simp
 qed
+
+lemma distinct_initialization_list:
+  "distinct initialization_list"
+by(simp add: initialization_list_def sys_xcpts_list_def sys_xcpts_neqs Thread_neq_sys_xcpts)
+
+lemma wf_syscls_initialization_list_is_class:
+  "\<lbrakk> wf_syscls P; C \<in> set initialization_list \<rbrakk> \<Longrightarrow> is_class P C"
+by(auto simp add: initialization_list_def sys_xcpts_list_def wf_syscls_is_class_xcpt)
 
 lemma start_addrs_NewHeapElem_start_heap_obsD:
   "a \<in> set start_addrs \<Longrightarrow> \<exists>CTn. NewHeapElem a CTn \<in> set start_heap_obs"
@@ -129,6 +133,15 @@ lemma typeof_sys_xcp:
   "\<lbrakk> preallocated h; C \<in> sys_xcpts \<rbrakk> \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr (addr_of_sys_xcpt C)) = \<lfloor>Class C\<rfloor>"
 by(simp add: typeof_addr_sys_xcp)
 
+lemma addr_of_sys_xcpt_start_addr:
+  "\<lbrakk> start_heap_ok; C \<in> sys_xcpts \<rbrakk> \<Longrightarrow> addr_of_sys_xcpt C \<in> set start_addrs"
+unfolding start_heap_ok_def start_heap_data_def initialization_list_def sys_xcpts_list_def 
+  preallocated_def start_heap_def start_addrs_def
+apply(simp split: prod.split_asm add: create_initial_object_simps)
+apply(erule sys_xcpts_cases)
+apply(simp_all add: addr_of_sys_xcpt_def start_addrs_def start_heap_data_def initialization_list_def sys_xcpts_list_def create_initial_object_simps)
+done
+
 lemma [simp]:
   assumes "preallocated h"
   shows typeof_ClassCast: "typeof_addr h (addr_of_sys_xcpt ClassCast) = Some(Class ClassCast)"
@@ -138,9 +151,9 @@ lemma [simp]:
   "typeof_addr h (addr_of_sys_xcpt ArrayIndexOutOfBounds) = Some(Class ArrayIndexOutOfBounds)" 
   and typeof_ArrayStore: "typeof_addr h (addr_of_sys_xcpt ArrayStore) = Some(Class ArrayStore)" 
   and typeof_NegativeArraySize: "typeof_addr h (addr_of_sys_xcpt NegativeArraySize) = Some(Class NegativeArraySize)" 
+  and typeof_ArithmeticException: "typeof_addr h (addr_of_sys_xcpt ArithmeticException) = Some(Class ArithmeticException)" 
   and typeof_IllegalMonitorState: "typeof_addr h (addr_of_sys_xcpt IllegalMonitorState) = Some(Class IllegalMonitorState)"
   and typeof_IllegalThreadState: "typeof_addr h (addr_of_sys_xcpt IllegalThreadState) = Some(Class IllegalThreadState)" 
-  and typeof_CloneNotSupported: "typeof_addr h (addr_of_sys_xcpt CloneNotSupported) = Some(Class CloneNotSupported)" 
   and typeof_InterruptedException: "typeof_addr h (addr_of_sys_xcpt InterruptedException) = Some(Class InterruptedException)"
 using assms
 by(simp_all add: typeof_addr_sys_xcp)
@@ -152,7 +165,6 @@ by(drule (1) typeof_addr_sys_xcp)(simp add: cname_of_def)
 lemma preallocated_hext:
   "\<lbrakk> preallocated h; h \<unlhd> h' \<rbrakk> \<Longrightarrow> preallocated h'"
 by (simp add: preallocated_def hext_def)
-
 
 end
 
@@ -167,78 +179,113 @@ using preallocated_hext[OF assms, of h']
 by(blast intro: hext_heap_ops)+
 
 lemma preallocated_start_heap:
-  "start_heap_ok \<Longrightarrow> preallocated start_heap"
+  "\<lbrakk> start_heap_ok; wf_syscls P \<rbrakk> \<Longrightarrow> preallocated start_heap"
 unfolding start_heap_ok_def start_heap_data_def initialization_list_def sys_xcpts_list_def 
   preallocated_def start_heap_def start_addrs_def
 apply(clarsimp split: prod.split_asm simp add: create_initial_object_simps)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
-apply(frule new_obj_SomeD, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
+apply(frule new_obj_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_new_obj, rotate_tac 1)
 apply(clarsimp)
 apply(erule sys_xcpts_cases)
 apply(simp_all add: addr_of_sys_xcpt_def sys_xcpts_neqs Thread_neq_sys_xcpts initialization_list_def sys_xcpts_list_def start_heap_data_def start_addrs_def create_initial_object_simps)
 apply(assumption|erule typeof_addr_hext_mono)+
 done
 
+lemma start_tid_start_addrs:
+  "\<lbrakk> wf_syscls P; start_heap_ok \<rbrakk> \<Longrightarrow> thread_id2addr start_tid \<in> set start_addrs"
+unfolding start_heap_ok_def start_heap_data_def initialization_list_def sys_xcpts_list_def 
+  preallocated_def start_heap_def start_addrs_def
+apply(simp split: prod.split_asm add: create_initial_object_simps addr_of_sys_xcpt_def start_addrs_def start_tid_def start_heap_data_def initialization_list_def sys_xcpts_list_def)
+apply(drule (1) new_obj_SomeD[OF _ wf_syscls_is_class_Thread])
+apply(auto intro: addr2thread_id_inverse)
+done
+
 lemma
+  assumes "wf_syscls P"
   shows dom_typeof_addr_start_heap: "set start_addrs \<subseteq> dom (typeof_addr start_heap)"
   and distinct_start_addrs: "distinct start_addrs"
-  and dom_typeof_addr_start_heap_eq_start_addrs:
-  "heap_ops_typeof_minimal \<Longrightarrow> dom (typeof_addr start_heap) = set start_addrs"
 proof -
-  { fix h ads b xs
-    assume "set ads \<subseteq> dom (typeof_addr h)"
-    hence "set (fst (snd (foldl create_initial_object (h, ads, b) xs))) \<subseteq> dom (typeof_addr (fst (foldl create_initial_object (h, ads, b) xs))) \<and> 
-           (distinct ads \<longrightarrow> distinct (fst (snd (foldl create_initial_object (h, ads, b) xs)))) \<and>
-           (dom (typeof_addr h) \<subseteq> set ads \<longrightarrow> heap_ops_typeof_minimal \<longrightarrow> 
-            dom (typeof_addr (fst (foldl create_initial_object (h, ads, b) xs))) \<subseteq> set (fst (snd (foldl create_initial_object (h, ads, b) xs))))"
-      (is "?concl xs h ads b")
-    proof(induct xs arbitrary: h ads b)
-      case Nil thus ?case by simp
+  { fix h ads b and Cs xs :: "cname list"
+    assume "set ads \<subseteq> dom (typeof_addr h)" and "distinct (Cs @ xs)" and "length Cs = length ads"
+      and "\<And>C a. (C, a) \<in> set (zip Cs ads) \<Longrightarrow> typeof_addr h a = \<lfloor>Class C\<rfloor>"
+      and "\<And>C. C \<in> set xs \<Longrightarrow> is_class P C"
+    hence "set (fst (snd (foldl create_initial_object (h, ads, b) xs))) \<subseteq>
+             dom (typeof_addr (fst (foldl create_initial_object (h, ads, b) xs))) \<and> 
+           (distinct ads \<longrightarrow> distinct (fst (snd (foldl create_initial_object (h, ads, b) xs))))"
+      (is "?concl xs h ads b Cs")
+    proof(induct xs arbitrary: h ads b Cs)
+      case Nil thus ?case by auto
     next
       case (Cons x xs)
       note ads = `set ads \<subseteq> dom (typeof_addr h)`
+      note dist = `distinct (Cs @ x # xs)`
+      note len = `length Cs = length ads`
+      note type = `\<And>C a. (C, a) \<in> set (zip Cs ads) \<Longrightarrow> typeof_addr h a = \<lfloor>Class C\<rfloor>`
+      note is_class = `\<And>C. C \<in> set (x # xs) \<Longrightarrow> is_class P C`
       show ?case
       proof(cases b)
         case False thus ?thesis
-          using ads by(simp add: create_initial_object_simps)
+          using ads len by(auto simp add: create_initial_object_simps zip_append1)
       next
         case True[simp]
         obtain h' ao where new_obj: "new_obj h x = (h', ao)" by(cases "new_obj h x")
-        with ads have ads': "set ads \<subseteq> dom (typeof_addr h')"
+        hence hext: "h \<unlhd> h'" by(rule hext_new_obj)
+        with ads new_obj have ads': "set ads \<subseteq> dom (typeof_addr h')"
           by(auto dest: typeof_addr_hext_mono[OF hext_new_obj])
         moreover {
-          fix a
-          assume ao: "ao = Some a"
-          with new_obj ads' have "set (ads @ [a]) \<subseteq> dom (typeof_addr h')"
+          fix a'
+          assume ao: "ao = Some a'"
+          with new_obj ads' is_class[of x]
+          have "set (ads @ [a']) \<subseteq> dom (typeof_addr h')"
             by(auto dest: new_obj_SomeD)
-          hence "?concl xs h' (ads @ [a]) True" by(rule Cons)
-          moreover have "a \<notin> set ads" 
-            using new_obj ads ao by(auto dest: new_obj_SomeD)
+          moreover from dist have "distinct ((Cs @ [x]) @ xs)" by simp
+          moreover have "length (Cs @ [x]) = length (ads @ [a'])" using len by simp
           moreover {
-            assume "dom (typeof_addr h) \<subseteq> set ads" "heap_ops_typeof_minimal"
-            with new_obj ao have "dom (typeof_addr h') \<subseteq> insert a (set ads)"
-              by(auto dest: heap_ops_typeof_minimalD del: subsetI) }
+            fix C a
+            assume "(C, a) \<in> set (zip (Cs @ [x]) (ads @ [a']))"
+            hence "typeof_addr h' a = \<lfloor>Class C\<rfloor>"
+              using hext new_obj type[of C a] len ao is_class
+              by(auto dest: new_obj_SomeD hext_objD) }
+          note type' = this
+          moreover have is_class': "\<And>C. C \<in> set xs \<Longrightarrow> is_class P C" using is_class by simp
+          ultimately have "?concl xs h' (ads @ [a']) True (Cs @ [x])" by(rule Cons)
+          moreover have "a' \<notin> set ads"
+          proof
+            assume a': "a' \<in> set ads"
+            then obtain C where "(C, a') \<in> set (zip Cs ads)" "C \<in> set Cs"
+              using len unfolding set_zip in_set_conv_nth by auto
+            hence "typeof_addr h a' = \<lfloor>Class C\<rfloor>" by-(rule type)
+            with hext have "typeof_addr h' a' = \<lfloor>Class C\<rfloor>" by(rule typeof_addr_hext_mono)
+            moreover from new_obj ao is_class
+            have "typeof_addr h' a' = \<lfloor>Class x\<rfloor>" by(auto dest: new_obj_SomeD)
+            ultimately have "C = x" by simp
+            with dist `C \<in> set Cs` show False by simp
+          qed
           moreover note calculation }
         moreover {
-          assume "ao = None" "heap_ops_typeof_minimal"
-          hence "dom (typeof_addr h') = dom (typeof_addr h)"
-            using new_obj by(auto dest: heap_ops_typeof_minimalD del: equalityI) }
+          assume "ao = None" 
+            and "(C, a) \<in> set (zip (Cs @ x # xs) (fst (snd (foldl create_initial_object (h, ads, b) (x # xs)))))"
+            and "\<forall>(C, a) \<in> set (zip Cs ads). typeof_addr h a = \<lfloor>Class C\<rfloor>"
+          with `ao = None` have "typeof_addr h' a = \<lfloor>Class C\<rfloor>"
+            using len hext new_obj
+            by(auto simp add: create_initial_object_simps zip_append1 dest: typeof_addr_hext_mono) }
         ultimately show ?thesis by(simp add: create_initial_object_simps new_obj)
       qed
     qed }
-  from this[of "[]" empty_heap True initialization_list]
+  from this[of "[]" empty_heap "[]" initialization_list True]
+    distinct_initialization_list wf_syscls_initialization_list_is_class[OF assms]
   show "set start_addrs \<subseteq> dom (typeof_addr start_heap)"
     and "distinct start_addrs"
-    and "heap_ops_typeof_minimal \<Longrightarrow> dom (typeof_addr start_heap) = set start_addrs"
     unfolding start_heap_def start_addrs_def start_heap_data_def by auto
 qed
 
@@ -251,13 +298,15 @@ unfolding start_heap_obs_def start_heap_def
 by clarsimp+
 
 lemma NewObj_start_heap_obsD:
-  assumes "NewObj a C \<in> set start_heap_obs"
+  assumes "wf_syscls P"
+  and "NewObj a C \<in> set start_heap_obs"
   shows "typeof_addr start_heap a = \<lfloor>Class C\<rfloor>"
 proof -
   { fix h ads b xs Cs
     assume "(C, a) \<in> set (zip (Cs @ xs) (fst (snd (foldl create_initial_object (h, ads, b) xs))))"
       and "\<forall>(C, a) \<in> set (zip Cs ads). typeof_addr h a = \<lfloor>Class C\<rfloor>"
       and "length Cs = length ads"
+      and "\<forall>C \<in> set xs. is_class P C"
     hence "typeof_addr (fst (foldl create_initial_object (h, ads, b) xs)) a = \<lfloor>Class C\<rfloor>"
     proof(induct xs arbitrary: h ads b Cs)
       case Nil thus ?case by auto
@@ -266,6 +315,7 @@ proof -
       note inv = `\<forall>(C, a) \<in> set (zip Cs ads). typeof_addr h a = \<lfloor>Class C\<rfloor>`
         and Ca = `(C, a) \<in> set (zip (Cs @ x # xs) (fst (snd (foldl create_initial_object (h, ads, b) (x # xs)))))`
         and len = `length Cs = length ads`
+        and is_class = `\<forall>C \<in> set (x # xs). is_class P C`
       show ?case
       proof(cases b)
         case False thus ?thesis
@@ -288,19 +338,22 @@ proof -
             fix C a
             assume "(C, a) \<in> set (zip (Cs @ [x]) (ads @ [a']))"
             thus "typeof_addr h' a = \<lfloor>Class C\<rfloor>"
-              using inv len hext new_obj ao by(auto dest: new_obj_SomeD typeof_addr_hext_mono)
+              using inv len hext new_obj ao is_class by(auto dest: new_obj_SomeD typeof_addr_hext_mono)
           qed
           moreover have "length (Cs @ [x]) = length (ads @ [a'])" using len by simp
+          moreover have "\<forall>C \<in> set xs. is_class P C" using is_class by simp
           ultimately have "typeof_addr (fst (foldl create_initial_object (h', ads @ [a'], True) xs)) a = \<lfloor>Class C\<rfloor>"
             by(rule Cons) }
         ultimately show ?thesis using new_obj by(simp add: create_initial_object_simps)
       qed
     qed }
-  from this[of "[]" initialization_list empty_heap "[]" True] assms
+  from this[of "[]" initialization_list empty_heap "[]" True] assms wf_syscls_initialization_list_is_class[of P]
   show ?thesis by(auto simp add: start_heap_obs_def start_heap_data_def start_heap_def)
 qed
 
+
 end
+
 
 subsection {* Code generation *}
 

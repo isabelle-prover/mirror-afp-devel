@@ -15,14 +15,14 @@ begin
 
 context JVM_heap_base begin
 
-definition confT :: "'c prog \<Rightarrow> 'heap \<Rightarrow> val \<Rightarrow> ty err \<Rightarrow> bool" ("_,_ |- _ :<=T _" [51,51,51,51] 50)
+definition confT :: "'c prog \<Rightarrow> 'heap \<Rightarrow> 'addr val \<Rightarrow> ty err \<Rightarrow> bool" ("_,_ |- _ :<=T _" [51,51,51,51] 50)
 where
   "P,h |- v :<=T E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
 
 notation (xsymbols) 
   confT ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
 
-abbreviation confTs :: "'c prog \<Rightarrow> 'heap \<Rightarrow> val list \<Rightarrow> ty\<^isub>l \<Rightarrow> bool"
+abbreviation confTs :: "'c prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> ty\<^isub>l \<Rightarrow> bool"
             ("_,_ |- _ [:<=T] _" [51,51,51,51] 50)
 where
   "P,h |- vs [:<=T] Ts \<equiv> list_all2 (confT P h) vs Ts"
@@ -30,11 +30,11 @@ where
 notation (xsymbols)
   confTs ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
 
-definition conf_f :: "jvm_prog \<Rightarrow> 'heap \<Rightarrow> ty\<^isub>i \<Rightarrow> bytecode \<Rightarrow> frame \<Rightarrow> bool"
+definition conf_f :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> ty\<^isub>i \<Rightarrow> 'addr bytecode \<Rightarrow> 'addr frame \<Rightarrow> bool"
 where
   "conf_f P h \<equiv> \<lambda>(ST,LT) is (stk,loc,C,M,pc). P,h \<turnstile> stk [:\<le>] ST \<and> P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT \<and> pc < size is"
 
-primrec conf_fs :: "[jvm_prog,'heap,ty\<^isub>P,mname,nat,ty,frame list] \<Rightarrow> bool"
+primrec conf_fs :: "['addr jvm_prog,'heap,ty\<^isub>P,mname,nat,ty,'addr frame list] \<Rightarrow> bool"
 where
   "conf_fs P h \<Phi> M\<^isub>0 n\<^isub>0 T\<^isub>0 [] = True"
 
@@ -43,12 +43,14 @@ where
   (\<exists>ST LT Ts T mxs mxl\<^isub>0 is xt.
     \<Phi> C M ! pc = Some (ST,LT) \<and> 
     (P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^isub>0,is,xt) in C) \<and>
-    (\<exists>D Ts' T' m D'.  
-       is!pc = (Invoke M\<^isub>0 n\<^isub>0) \<and> (ST!n\<^isub>0 = Class D \<and> P \<turnstile> D sees M\<^isub>0:Ts' \<rightarrow> T' = m in D' \<or> P \<turnstile> ST!n\<^isub>0\<bullet>M\<^isub>0(Ts') :: T') \<and> 
+    (\<exists>Ts' T'.  
+       is!pc = (Invoke M\<^isub>0 n\<^isub>0) \<and> 
+       (if is_native P (ST!n\<^isub>0) M\<^isub>0 then P \<turnstile> ST!n\<^isub>0\<bullet>M\<^isub>0(Ts') :: T' 
+        else \<exists>D m D'. class_type_of (ST!n\<^isub>0) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M\<^isub>0:Ts' \<rightarrow> T' = m in D') \<and> 
        P \<turnstile> T\<^isub>0 \<le> T') \<and>
     conf_f P h (ST, LT) is f \<and> conf_fs P h \<Phi> M (size Ts) T frs))"
 
-primrec conf_xcp :: "jvm_prog \<Rightarrow> 'heap \<Rightarrow> addr option \<Rightarrow> instr \<Rightarrow> bool" where
+primrec conf_xcp :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> 'addr option \<Rightarrow> 'addr instr \<Rightarrow> bool" where
   "conf_xcp P h None i = True"
 | "conf_xcp P h \<lfloor>a\<rfloor>   i = (\<exists>D. typeof_addr h a = \<lfloor>Class D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* Throwable \<and>
                                (\<forall>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<longrightarrow> is_relevant_class i P D'))"
@@ -57,7 +59,7 @@ end
 
 context JVM_heap_conf_base begin
 
-definition correct_state :: "[ty\<^isub>P,thread_id,'heap jvm_state] \<Rightarrow> bool"
+definition correct_state :: "[ty\<^isub>P,'thread_id,('addr, 'heap) jvm_state] \<Rightarrow> bool"
                   ("_ |- _:_ [ok]"  [61,0,0] 61)
 where
   "correct_state \<Phi> t \<equiv> \<lambda>(xp,h,frs).
@@ -167,12 +169,15 @@ apply clarify
 apply (simp (no_asm_use))
 apply clarify
 apply (unfold conf_f_def)
-apply (simp (no_asm_use))
-apply clarify
-apply (fast elim!: confs_hext confTs_hext)
+apply (simp (no_asm_use) split: split_if_asm)
+apply (fast elim!: confs_hext confTs_hext)+
 done
 
 declare fun_upd_apply[simp]
+
+lemma conf_xcp_hext:
+  "\<lbrakk> conf_xcp P h xcp i; h \<unlhd> h' \<rbrakk> \<Longrightarrow> conf_xcp P h' xcp i"
+by(cases xcp)(auto elim: typeof_addr_hext_mono)
 
 end
 
@@ -184,6 +189,15 @@ lemma correct_state_impl_Some_method:
   "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd> 
   \<Longrightarrow> \<exists>m Ts T. P \<turnstile> C sees M:Ts\<rightarrow>T = m in C"
   by(fastsimp simp add: defs1)
+
+end
+
+context JVM_heap_conf_base' begin
+
+lemma correct_state_hext_mono:
+  "\<lbrakk> \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>; h \<unlhd> h'; hconf h' \<rbrakk> \<Longrightarrow> \<Phi> \<turnstile> t: (xcp, h', frs) \<surd>"
+unfolding correct_state_def
+by(fastsimp elim: tconf_hext_mono preallocated_hext conf_f_hext conf_fs_hext conf_xcp_hext split: list.split)
 
 end
 

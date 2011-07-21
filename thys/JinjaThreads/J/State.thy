@@ -12,9 +12,10 @@ theory State imports
 begin
 
 
-types
-  locals = "vname \<rightharpoonup> val"      -- "local vars, incl. params and ``this''"
-  'heap Jstate = "'heap \<times> locals"     -- "the heap and the local vars"
+type_synonym
+  'addr locals = "vname \<rightharpoonup> 'addr val"      -- "local vars, incl. params and ``this''"
+type_synonym
+  ('addr, 'heap) Jstate = "'heap \<times> 'addr locals"     -- "the heap and the local vars"
 
 definition hp :: "'heap \<times> 'x \<Rightarrow> 'heap" where "hp \<equiv> fst"
 

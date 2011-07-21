@@ -13,33 +13,75 @@ begin
 
 section {* Frame Stack *}
 
-types 
+type_synonym 
   pc = nat
 
-  frame = "val list \<times> val list \<times> cname \<times> mname \<times> pc"
+type_synonym
+  'addr frame = "'addr val list \<times> 'addr val list \<times> cname \<times> mname \<times> pc"
   -- "operand stack" 
   -- "registers (including this pointer, method parameters, and local variables)"
   -- "name of class where current method is defined"
   -- "parameter types"
   -- "program counter within frame"
 
-translations
-  (type) "frame" <= (type) "val list \<times> val list \<times> String.literal \<times> String.literal \<times> nat"
+(* pretty printing for frame type *)
+print_translation {*
+  let
+    fun tr'
+       [Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "val"}, _) $ a1),
+        Const (@{type_syntax "prod"}, _) $
+          (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "val"}, _) $ a2)) $
+          (Const (@{type_syntax "prod"}, _) $
+             Const (@{type_syntax "String.literal"}, _) $
+             (Const (@{type_syntax "prod"}, _) $
+                Const (@{type_syntax "String.literal"}, _) $
+                Const (@{type_syntax "nat"}, _)))] =
+      if a1 = a2 then Syntax.const @{type_syntax "frame"} $ a1
+      else raise Match;
+    in [(@{type_syntax "prod"}, tr')]
+  end
+*}
+typ "'addr frame"
 
 section {* Runtime State *}
-types
-  'heap jvm_state = "addr option \<times> 'heap \<times> frame list"  
+type_synonym
+  ('addr, 'heap) jvm_state = "'addr option \<times> 'heap \<times> 'addr frame list"  
   -- "exception flag, heap, frames"
 
-types
-  jvm_thread_state = "addr option \<times> frame list"
+type_synonym
+  'addr jvm_thread_state = "'addr option \<times> 'addr frame list"
   -- "exception flag, frames, thread lock state"
 
-types
-  'heap jvm_thread_action = "(jvm_thread_state,'heap) Jinja_thread_action"
-  'heap jvm_ta_state = "'heap jvm_thread_action \<times> 'heap jvm_state"
+type_synonym
+  ('addr, 'thread_id, 'heap) jvm_thread_action = "('addr, 'thread_id, 'addr jvm_thread_state,'heap) Jinja_thread_action"
 
-translations
-  (type) "'heap jvm_thread_action" <= (type) "((nat option \<times> frame list), 'heap) Jinja_thread_action"
+type_synonym
+  ('addr, 'thread_id, 'heap) jvm_ta_state = "('addr, 'thread_id, 'heap) jvm_thread_action \<times> ('addr, 'heap) jvm_state"
+
+(* pretty printing for jvm_thread_action type *)
+print_translation {*
+  let
+    fun tr'
+       [a1, t
+       , Const (@{type_syntax "prod"}, _) $ 
+           (Const (@{type_syntax "option"}, _) $ a2) $
+           (Const (@{type_syntax "list"}, _) $ 
+             (Const (@{type_syntax "prod"}, _) $
+               (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "val"}, _) $ a3)) $
+               (* Next bit: same syntax translation as for frame *)
+               (Const (@{type_syntax "prod"}, _) $
+                 (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "val"}, _) $ a4)) $
+                 (Const (@{type_syntax "prod"}, _) $
+                   Const (@{type_syntax "String.literal"}, _) $
+                   (Const (@{type_syntax "prod"}, _) $
+                      Const (@{type_syntax "String.literal"}, _) $
+                      Const (@{type_syntax "nat"}, _))))))
+       , h] =
+      if a1 = a2 andalso a2 = a3 andalso a3 = a4 then Syntax.const @{type_syntax "jvm_thread_action"} $ a1 $ t $ h
+      else raise Match;
+    in [(@{type_syntax "Jinja_thread_action"}, tr')]
+  end
+*}
+typ "('addr, 'thread_id, 'heap) jvm_thread_action"
 
 end

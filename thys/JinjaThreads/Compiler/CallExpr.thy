@@ -11,8 +11,8 @@ theory CallExpr imports
   "../J/Expr"
 begin
 
-primrec inline_call :: "('a,'b) exp \<Rightarrow> ('a,'b) exp \<Rightarrow> ('a,'b) exp"
-  and inline_calls :: "('a,'b) exp \<Rightarrow> ('a,'b) exp list \<Rightarrow> ('a,'b) exp list"
+primrec inline_call :: "('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp"
+  and inline_calls :: "('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp list \<Rightarrow> ('a,'b,'addr) exp list"
 where
   "inline_call f (new C) = new C"
 | "inline_call f (newA T\<lfloor>e\<rceil>) = newA T\<lfloor>inline_call f e\<rceil>"
@@ -43,14 +43,14 @@ where
 | "inline_calls f [] = []"
 | "inline_calls f (e#es) = (if is_val e then e # inline_calls f es else inline_call f e # es)"
 
-primrec fold_es :: "expr \<Rightarrow> expr list \<Rightarrow> expr" where
+primrec fold_es :: "'addr expr \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr" where
   "fold_es e [] = e"
 | "fold_es e (e' # es) = fold_es (inline_call e e') es"
 
-definition is_call :: "('a, 'b) exp \<Rightarrow> bool"
+definition is_call :: "('a, 'b, 'addr) exp \<Rightarrow> bool"
 where "is_call e = (call e \<noteq> None)"
 
-definition is_calls :: "('a, 'b) exp list \<Rightarrow> bool"
+definition is_calls :: "('a, 'b, 'addr) exp list \<Rightarrow> bool"
 where "is_calls es = (calls es \<noteq> None)"
 
 
@@ -71,7 +71,7 @@ by(cases es, auto)
 lemma inline_calls_map_Val [simp]: "inline_calls e (map Val vs) = map Val vs"
 by(induct vs) auto
 
-lemma  fixes E :: "('a,'b) exp" and Es :: "('a,'b) exp list"
+lemma  fixes E :: "('a,'b, 'addr) exp" and Es :: "('a,'b, 'addr) exp list"
   shows inline_call_eq_Throw [dest]: "inline_call e E = Throw a \<Longrightarrow> call E = \<lfloor>aMvs\<rfloor> \<Longrightarrow> e = Throw a \<or> e = addr a"
   and True
 by(induct E and Es)(fastsimp split:split_if_asm)+
@@ -172,11 +172,11 @@ by(induct es arbitrary: e)(auto dest: final_inline_callD)
 
 context heap_base begin
 
-definition synthesized_call :: "'m prog \<Rightarrow> 'heap \<Rightarrow> (addr \<times> mname \<times> val list) \<Rightarrow> bool"
-where "synthesized_call P h = (\<lambda>(a, M, vs). \<exists>T. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_external_call P T M)"
+definition synthesized_call :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('addr \<times> mname \<times> 'addr val list) \<Rightarrow> bool"
+where "synthesized_call P h = (\<lambda>(a, M, vs). \<exists>T. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_native P T M)"
 
 lemma synthesized_call_conv:
-  "synthesized_call P h (a, M, vs) = (\<exists>T. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_external_call P T M)"
+  "synthesized_call P h (a, M, vs) = (\<exists>T. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_native P T M)"
 by(simp add: synthesized_call_def)
 
 end

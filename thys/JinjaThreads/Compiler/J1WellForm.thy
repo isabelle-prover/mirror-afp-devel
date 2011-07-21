@@ -11,7 +11,7 @@ begin
 
 subsection{* Well-formedness*}
 
-definition wf_J1_mdecl :: "J1_prog \<Rightarrow> cname \<Rightarrow> expr1 mdecl \<Rightarrow> bool"
+definition wf_J1_mdecl :: "'addr J1_prog \<Rightarrow> cname \<Rightarrow> 'addr expr1 mdecl \<Rightarrow> bool"
 where
   "wf_J1_mdecl P C  \<equiv>  \<lambda>(M,Ts,T,body).
     (\<exists>T'. P,Class C#Ts \<turnstile>1 body :: T' \<and> P \<turnstile> T' \<le> T) \<and>
@@ -23,7 +23,7 @@ lemma wf_J1_mdecl[simp]:
      \<D> body \<lfloor>{..size Ts}\<rfloor> \<and> \<B> body (size Ts + 1)) \<and> syncvars body"
 by (simp add:wf_J1_mdecl_def)
 
-abbreviation wf_J1_prog :: "J1_prog \<Rightarrow> bool"
+abbreviation wf_J1_prog :: "'addr J1_prog \<Rightarrow> bool"
 where "wf_J1_prog == wf_prog wf_J1_mdecl"
 
 end

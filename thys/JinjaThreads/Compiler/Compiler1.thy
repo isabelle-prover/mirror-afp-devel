@@ -24,8 +24,8 @@ qed
 
 text{* Replacing variable names by indices. *}
 
-function compE1  :: "vname list \<Rightarrow> expr      \<Rightarrow> expr1"
-  and compEs1 :: "vname list \<Rightarrow> expr list \<Rightarrow> expr1 list"
+function compE1  :: "vname list \<Rightarrow> 'addr expr      \<Rightarrow> 'addr expr1"
+  and compEs1 :: "vname list \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr1 list"
 where
   "compE1 Vs (new C) = new C"
 | "compE1 Vs (newA T\<lfloor>e\<rceil>) = newA T\<lfloor>compE1 Vs e\<rceil>"
@@ -91,27 +91,32 @@ lemma length_compEs2 [simp]:
   "length (compEs1 Vs es) = length es"
 by(simp add: compEs1_conv_map)
 
-lemma expr_locks_compE1 [simp]: "expr_locks (compE1 Vs e) = expr_locks e"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows expr_locks_compE1 [simp]: "expr_locks (compE1 Vs e) = expr_locks e"
   and expr_lockss_compEs1 [simp]: "expr_lockss (compEs1 Vs es) = expr_lockss es"
 by(induct Vs e and Vs es rule: compE1_compEs1.induct)(auto intro: ext)
 
-lemma contains_insync_compE1 [simp]: "contains_insync (compE1 Vs e) = contains_insync e"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows contains_insync_compE1 [simp]: "contains_insync (compE1 Vs e) = contains_insync e"
   and contains_insyncs_compEs1 [simp]: "contains_insyncs (compEs1 Vs es) = contains_insyncs es"
 by(induct Vs e and Vs es rule: compE1_compEs1.induct)simp_all
 
-lemma max_vars_compE1: "max_vars (compE1 Vs e) = max_vars e"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows max_vars_compE1: "max_vars (compE1 Vs e) = max_vars e"
   and max_varss_compEs1: "max_varss (compEs1 Vs es) = max_varss es"
 apply(induct Vs e and Vs es rule: compE1_compEs1.induct)
 apply(auto)
 done
 
-lemma \<B>: "size Vs = n \<Longrightarrow> \<B> (compE1 Vs e) n"
-and \<B>s: "size Vs = n \<Longrightarrow> \<B>s (compEs1 Vs es) n"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows \<B>: "size Vs = n \<Longrightarrow> \<B> (compE1 Vs e) n"
+  and \<B>s: "size Vs = n \<Longrightarrow> \<B>s (compEs1 Vs es) n"
 apply(induct Vs e and Vs es arbitrary: n and n rule: compE1_compEs1.induct)
 apply auto
 done
 
-lemma fv_compE1: "fv e \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs e) = (index Vs) ` (fv e)"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows fv_compE1: "fv e \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs e) = (index Vs) ` (fv e)"
   and fvs_compEs1: "fvs es \<subseteq> set Vs \<Longrightarrow> fvs (compEs1 Vs es) = (index Vs) ` (fvs es)"
 proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
   case (Block Vs V ty vo exp)
@@ -270,7 +275,8 @@ next
   with IH1[OF fv1] IH2[OF fv2] show ?case by auto
 qed(auto)
 
-lemma syncvars_compE1: "fv e \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs e)"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows syncvars_compE1: "fv e \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs e)"
   and syncvarss_compEs1: "fvs es \<subseteq> set Vs \<Longrightarrow> syncvarss (compEs1 Vs es)"
 proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
   case (Block Vs V ty vo exp)
@@ -327,7 +333,7 @@ lemma (in heap_base) synthesized_call_compP [simp]:
 by(simp add: synthesized_call_def)
 
 
-primrec fin1 :: "expr \<Rightarrow> expr1"
+primrec fin1 :: "'addr expr \<Rightarrow> 'addr expr1"
 where
   "fin1 (Val v) = Val v"
 | "fin1 (throw e) = throw (fin1 e)"
@@ -335,13 +341,14 @@ where
 lemma comp_final: "final e \<Longrightarrow> compE1 Vs e = fin1 e"
 by(erule finalE, simp_all)
 
-lemma [simp]: "max_vars (compE1 Vs e) = max_vars e"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows [simp]: "max_vars (compE1 Vs e) = max_vars e"
   and "max_varss (compEs1 Vs es) = max_varss es"
 by (induct Vs e and Vs es rule: compE1_compEs1_induct)(simp_all)
 
 text{* Compiling programs: *}
 
-definition compP1 :: "J_prog \<Rightarrow> J1_prog"
+definition compP1 :: "'addr J_prog \<Rightarrow> 'addr J1_prog"
 where
   "compP1  \<equiv>  compP (\<lambda>C M Ts T (pns,body). compE1 (this#pns) body)"
 

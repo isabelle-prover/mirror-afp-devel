@@ -6,74 +6,122 @@
 
 header {* \isaheader{Conformance Relations for Type Soundness Proofs} *}
 
-theory Conform
-imports
+theory Conform imports
   StartConfig
 begin
 
 context heap_base begin
 
-definition conf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50)
+definition conf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50)
 where "P,h \<turnstile> v :\<le> T  \<equiv> \<exists>T'. typeof\<^bsub>h\<^esub> v = Some T' \<and> P \<turnstile> T' \<le> T"
 
-definition lconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> (vname \<rightharpoonup> val) \<Rightarrow> (vname \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50)
+definition lconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> (vname \<rightharpoonup> 'addr val) \<Rightarrow> (vname \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50)
 where "P,h \<turnstile> l (:\<le>) E  \<equiv> \<forall>V v. l V = Some v \<longrightarrow> (\<exists>T. E V = Some T \<and> P,h \<turnstile> v :\<le> T)"
 
-abbreviation confs :: "'m prog \<Rightarrow> 'heap \<Rightarrow> val list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
+abbreviation confs :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
 where "P,h \<turnstile> vs [:\<le>] Ts  ==  list_all2 (conf P h) vs Ts"
 
-definition tconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> thread_id \<Rightarrow> bool" ("_,_ \<turnstile> _ \<surd>t" [51,51,51] 50)
-where "P,h \<turnstile> t \<surd>t \<equiv> \<exists>C. typeof_addr h t = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+definition tconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'thread_id \<Rightarrow> bool" ("_,_ \<turnstile> _ \<surd>t" [51,51,51] 50)
+where "P,h \<turnstile> t \<surd>t \<equiv> \<exists>C. typeof_addr h (thread_id2addr t) = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 
 end
 
 locale heap_conf_base =
   heap_base +
-  constrains empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
-  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
-  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+  constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   fixes hconf :: "'heap \<Rightarrow> bool"
   and P :: "'m prog"
 
-locale heap_conf = heap _ _ _ _ _ _ heap_write +
-  heap_conf_base empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf P
-  for heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+sublocale heap_conf_base < prog P .
+
+locale heap_conf = 
+  heap
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    P
+  +
+  heap_conf_base
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    hconf P
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and hconf :: "'heap \<Rightarrow> bool" 
-  and P :: "'m prog" +
+  and P :: "'m prog" 
+  +
   assumes hconf_empty [iff]: "hconf empty_heap"
   and typeof_addr_is_type: "\<lbrakk> typeof_addr h a = \<lfloor>T\<rfloor>; hconf h \<rbrakk> \<Longrightarrow> is_type P T"
   and hconf_new_obj_mono: "\<And>a. \<lbrakk> new_obj h C = (h', a); hconf h; is_class P C \<rbrakk> \<Longrightarrow> hconf h'"
-  and hconf_new_arr_mono: "\<And>a. \<lbrakk> new_arr h T n  = (h', a); hconf h; is_type P T \<rbrakk> \<Longrightarrow> hconf h'"
+  and hconf_new_arr_mono: "\<And>a. \<lbrakk> new_arr h T n  = (h', a); hconf h; is_type P (T\<lfloor>\<rceil>) \<rbrakk> \<Longrightarrow> hconf h'"
   and hconf_heap_write_mono:
   "\<lbrakk> heap_write h a al v h'; hconf h; P,h \<turnstile> a@al : T; P,h \<turnstile> v :\<le> T \<rbrakk> \<Longrightarrow> hconf h'"
 
 locale heap_progress =
-  heap_conf _ _ _ _ _ _ _ hconf P 
-  for hconf :: "'heap \<Rightarrow> bool"
-  and P :: "'m prog" +
+  heap_conf
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write
+    hconf P
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
+  and hconf :: "'heap \<Rightarrow> bool" 
+  and P :: "'m prog" 
+  +
   assumes heap_read_total: "\<lbrakk> hconf h; P,h \<turnstile> a@al : T \<rbrakk> \<Longrightarrow> \<exists>v. heap_read h a al v \<and> P,h \<turnstile> v :\<le> T"
   and heap_write_total: "\<lbrakk> P,h \<turnstile> a@al : T; P,h \<turnstile> v :\<le> T \<rbrakk> \<Longrightarrow> \<exists>h'. heap_write h a al v h'"
 
 locale heap_conf_read =
-  heap_conf _ _ _ _ _ _ _ hconf P 
-  for hconf :: "'heap \<Rightarrow> bool"
-  and P :: "'m prog" +
+  heap_conf
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write
+    hconf P
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
+  and hconf :: "'heap \<Rightarrow> bool" 
+  and P :: "'m prog" 
+  +
   assumes heap_read_conf: "\<lbrakk> heap_read h a al v; P,h \<turnstile> a@al : T; hconf h \<rbrakk> \<Longrightarrow> P,h \<turnstile> v :\<le> T"
 
 locale heap_typesafe =
   heap_conf_read +
   heap_progress +
-  constrains empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
-  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
-  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+  constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and hconf :: "'heap \<Rightarrow> bool"
   and P :: "'m prog"
 
@@ -143,6 +191,11 @@ lemma non_npD:
   \<Longrightarrow> \<exists>a C'. v = Addr a \<and> typeof_addr h a = \<lfloor>Class C'\<rfloor> \<and> P \<turnstile> C' \<preceq>\<^sup>* C"
 by(cases v)(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
 
+lemma non_npD2:
+  "\<lbrakk>v \<noteq> Null; P,h \<turnstile> v :\<le> Class C \<rbrakk>
+  \<Longrightarrow> \<exists>a T C'. v = Addr a \<and> typeof_addr h a = \<lfloor>T\<rfloor> \<and> class_type_of T = \<lfloor>C'\<rfloor> \<and> P \<turnstile> C' \<preceq>\<^sup>* C"
+by(cases v)(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
+
 end
 
 section{* Value list conformance @{text"[:\<le>]"} *}
@@ -204,10 +257,10 @@ section {* Thread object conformance *}
 
 context heap_base begin
 
-lemma tconfI: "\<lbrakk> typeof_addr h t = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> P,h \<turnstile> t \<surd>t"
+lemma tconfI: "\<lbrakk> typeof_addr h (thread_id2addr t) = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> P,h \<turnstile> t \<surd>t"
 by(simp add: tconf_def)
 
-lemma tconfD: "P,h \<turnstile> t \<surd>t \<Longrightarrow> \<exists>C. typeof_addr h t = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+lemma tconfD: "P,h \<turnstile> t \<surd>t \<Longrightarrow> \<exists>C. typeof_addr h (thread_id2addr t) = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 by(auto simp add: tconf_def)
 
 end
@@ -226,13 +279,14 @@ using tconf_hext_mono[OF assms, of h']
 by(blast intro: hext_heap_ops)+
 
 lemma tconf_start_heap_start_tid:
-  "start_heap_ok \<Longrightarrow> P,start_heap \<turnstile> start_tid \<surd>t"
+  "\<lbrakk> start_heap_ok; wf_syscls P \<rbrakk> \<Longrightarrow> P,start_heap \<turnstile> start_tid \<surd>t"
 unfolding start_tid_def start_heap_def start_heap_ok_def start_heap_data_def initialization_list_def addr_of_sys_xcpt_def start_addrs_def sys_xcpts_list_def 
 apply(clarsimp split: prod.split_asm simp add: create_initial_object_simps)
 apply(drule new_obj_SomeD[where C=Thread])
+ apply(erule wf_syscls_is_class_Thread)
 apply(rule tconfI)
  apply(erule typeof_addr_hext_mono[OF hext_new_obj])+
- apply(blast)
+ apply simp
 apply blast
 done
 

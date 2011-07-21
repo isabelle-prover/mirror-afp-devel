@@ -15,18 +15,57 @@ begin
 
 declare widen_refT [elim]
 
-abbreviation final_expr0 :: "expr \<times> expr list \<Rightarrow> bool" where
+abbreviation final_expr0 :: "'addr expr \<times> 'addr expr list \<Rightarrow> bool" where
   "final_expr0 \<equiv> \<lambda>(e, es). final e \<and> es = []"
 
-types
-  'heap J0_thread_action = "(expr \<times> expr list,'heap) Jinja_thread_action"
-  'heap J0_state = "(addr,thread_id,expr \<times> expr list,'heap,addr) state"
+type_synonym
+  ('addr, 'thread_id, 'heap) J0_thread_action = 
+  "('addr, 'thread_id, 'addr expr \<times> 'addr expr list,'heap) Jinja_thread_action"
 
-translations
-  (type) "'heap J0_thread_action" <= (type) "(nat,nat,expr \<times> expr list,'heap,nat,obs_event option) thread_action"
-  (type) "'heap J0_state" <= (type) "(nat,nat,expr \<times> expr list,'heap,nat) state"
+type_synonym
+  ('addr, 'thread_id, 'heap) J0_state = "('addr,'thread_id,'addr expr \<times> 'addr expr list,'heap,'addr) state"
 
-definition extNTA2J0 :: "J_prog \<Rightarrow> (cname \<times> mname \<times> addr) \<Rightarrow> (expr \<times> expr list)"
+(* pretty printing for J_thread_action type *)
+print_translation {*
+  let
+    fun tr'
+       [a1, t
+       , Const (@{type_syntax "prod"}, _) $ 
+           (Const (@{type_syntax "exp"}, _) $
+              Const (@{type_syntax "String.literal"}, _) $ Const (@{type_syntax "unit"}, _) $ a2) $
+           (Const (@{type_syntax "list"}, _) $
+              (Const (@{type_syntax "exp"}, _) $
+                 Const (@{type_syntax "String.literal"}, _) $
+                 Const (@{type_syntax "unit"}, _) $ a3))
+       , h] =
+      if a1 = a2 andalso a2 = a3 then Syntax.const @{type_syntax "J0_thread_action"} $ a1 $ t $ h
+      else raise Match;
+    in [(@{type_syntax "Jinja_thread_action"}, tr')]
+  end
+*}
+typ "('addr,'thread_id,'heap) J0_thread_action"
+
+(* pretty printing for J0_state type *)
+print_translation {*
+  let
+    fun tr'
+       [a1, t
+       , Const (@{type_syntax "prod"}, _) $ 
+           (Const (@{type_syntax "exp"}, _) $
+              Const (@{type_syntax "String.literal"}, _) $ Const (@{type_syntax "unit"}, _) $ a2) $
+           (Const (@{type_syntax "list"}, _) $
+              (Const (@{type_syntax "exp"}, _) $
+                 Const (@{type_syntax "String.literal"}, _) $
+                 Const (@{type_syntax "unit"}, _) $ a3))
+       , h, a4] =
+      if a1 = a2 andalso a2 = a3 then Syntax.const @{type_syntax "J0_state"} $ a1 $ t $ h
+      else raise Match;
+    in [(@{type_syntax "state"}, tr')]
+  end
+*}
+typ "('addr, 'thread_id, 'heap) J0_state"
+
+definition extNTA2J0 :: "'addr J_prog \<Rightarrow> (cname \<times> mname \<times> 'addr) \<Rightarrow> ('addr expr \<times> 'addr expr list)"
 where
   "extNTA2J0 P = (\<lambda>(C, M, a). let (D, _, _, _, body) = method P C M
                                in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, []))"
@@ -36,7 +75,8 @@ lemma extNTA2J0_iff [simp]:
    ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (snd (snd (snd (method P C M))))}, [])"
 by(simp add: extNTA2J0_def split_def)
 
-abbreviation extTA2J0 :: "J_prog \<Rightarrow> 'heap external_thread_action \<Rightarrow> 'heap J0_thread_action"
+abbreviation extTA2J0 :: 
+  "'addr J_prog \<Rightarrow> ('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'heap) J0_thread_action"
 where "extTA2J0 P \<equiv> convert_extTA (extNTA2J0 P)"
 
 lemma obs_a_extTA2J_eq_obs_a_extTA2J0 [simp]: "\<lbrace>extTA2J P ta\<rbrace>\<^bsub>o\<^esub> = \<lbrace>extTA2J0 P ta\<rbrace>\<^bsub>o\<^esub>"
@@ -47,16 +87,17 @@ by(simp)
 
 context J_heap_base begin
 
-definition no_call :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b) exp \<Rightarrow> bool"
+definition no_call :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b, 'addr) exp \<Rightarrow> bool"
 where "no_call P h e = (\<forall>aMvs. call e = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h aMvs)"
 
-definition no_calls :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b) exp list \<Rightarrow> bool"
+definition no_calls :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b, 'addr) exp list \<Rightarrow> bool"
 where "no_calls P h es = (\<forall>aMvs. calls es = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h aMvs)"
 
-inductive red0 :: "J_prog \<Rightarrow> thread_id \<Rightarrow> expr \<Rightarrow> expr list \<Rightarrow> 'heap \<Rightarrow>
-                           'heap J0_thread_action \<Rightarrow> expr \<Rightarrow> expr list \<Rightarrow> 'heap \<Rightarrow> bool"
-                ("_,_ \<turnstile>0 ((1\<langle>_'/_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_'/_,/_\<rangle>))" [51,0,0,0,0,0,0,0,0] 81)
-for P ::J_prog and t :: thread_id
+inductive red0 :: 
+  "'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr list \<Rightarrow> 'heap
+  \<Rightarrow> ('addr, 'thread_id, 'heap) J0_thread_action \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr list \<Rightarrow> 'heap \<Rightarrow> bool"
+  ("_,_ \<turnstile>0 ((1\<langle>_'/_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_'/_,/_\<rangle>))" [51,0,0,0,0,0,0,0,0] 81)
+for P :: "'addr J_prog" and t :: 'thread_id
 where
 
   red0Red:
@@ -65,20 +106,21 @@ where
   \<Longrightarrow> P,t \<turnstile>0 \<langle>e/es, h\<rangle> -ta\<rightarrow> \<langle>e'/es, h'\<rangle>"
 
 | red0Call:
-  "\<lbrakk> call e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr h a = \<lfloor>Class C\<rfloor>;
-     \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D; 
+  "\<lbrakk> call e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr h a = \<lfloor>U\<rfloor>; is_class_type_of U C;
+     \<not> is_native P U M; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D; 
      size vs = size pns; size Ts = size pns \<rbrakk>
   \<Longrightarrow> P,t \<turnstile>0 \<langle>e/es, h\<rangle> -\<epsilon>\<rightarrow> \<langle>blocks (this # pns) (Class D # Ts) (Addr a # vs) body/e#es, h\<rangle>"
 
 | red0Return:
   "final e' \<Longrightarrow> P,t \<turnstile>0 \<langle>e'/e#es, h\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e' e/es, h\<rangle>"
 
-abbreviation J0_start_state :: "J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> 'heap J0_state"
+abbreviation J0_start_state :: "'addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr, 'thread_id, 'heap) J0_state"
 where
   "J0_start_state \<equiv> 
    start_state (\<lambda>C M Ts T (pns, body) vs. (blocks (this # pns) (Class C # Ts) (Null # vs) body, []))"
 
-abbreviation mred0 :: "J_prog \<Rightarrow> (addr,addr,expr \<times> expr list,'heap,addr,obs_event) semantics"
+abbreviation mred0 ::
+  "'addr J_prog \<Rightarrow> ('addr,'thread_id,'addr expr \<times> 'addr expr list,'heap,'addr,('addr, 'thread_id) obs_event) semantics"
 where "mred0 P \<equiv> (\<lambda>t ((e, es), h) ta ((e', es'), h'). red0 P t e es h ta e' es' h')"
 
 end
@@ -91,7 +133,7 @@ lemma assumes wf: "wwf_J_prog P"
   shows red_fv_subset: "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> fv e' \<subseteq> fv e"
   and reds_fvs_subset: "extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> fvs es' \<subseteq> fvs es"
 proof(induct rule: red_reds.inducts)
-  case (RedCall s a C M Ts T pns body D vs)
+  case (RedCall s a U C M Ts T pns body D vs)
   hence "fv body \<subseteq> {this} \<union> set pns"
     using wf by(fastsimp dest!:sees_wf_mdecl simp:wf_mdecl_def)
   with RedCall show ?case by fastsimp
@@ -109,7 +151,7 @@ lemma assumes wwf: "wwf_J_prog P"
   shows red_fv_ok: "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; fv e \<subseteq> dom (lcl s) \<rbrakk> \<Longrightarrow> fv e' \<subseteq> dom (lcl s')"
   and reds_fvs_ok: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; fvs es \<subseteq> dom (lcl s) \<rbrakk> \<Longrightarrow> fvs es' \<subseteq> dom (lcl s')"
 proof(induct rule: red_reds.inducts)
-  case (RedCall s a C M Ts T pns body D vs)
+  case (RedCall s a U C M Ts T pns body D vs)
   from `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D` have "wwf_J_mdecl P D (M,Ts,T,pns,body)"
     by(auto dest!: sees_wf_mdecl[OF wwf] simp add: wf_mdecl_def)
   with RedCall show ?case by(auto)
@@ -139,16 +181,14 @@ apply(fastsimp split: split_if_asm simp add: synthesized_call_def)+
 done
 
 lemma called_methodD:
-        "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call e = \<lfloor>(a, M, vs)\<rfloor>; \<not> synthesized_call P (hp s) (a, M, vs) \<rbrakk> 
-         \<Longrightarrow> \<exists>C D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C sees M: Us\<rightarrow>U = (pns, body) in D \<and>
-                                   length vs = length pns \<and> length Us = length pns"
-        (is "\<lbrakk> _; _; _ \<rbrakk> \<Longrightarrow>  ?concl")
+  "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call e = \<lfloor>(a, M, vs)\<rfloor>; \<not> synthesized_call P (hp s) (a, M, vs) \<rbrakk> 
+  \<Longrightarrow> \<exists>T C D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and>
+                           P \<turnstile> C sees M: Us\<rightarrow>U = (pns, body) in D \<and> length vs = length pns \<and> length Us = length pns"
 
   and called_methodsD:
-        "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; calls es = \<lfloor>(a, M, vs)\<rfloor>; \<not> synthesized_call P (hp s) (a, M, vs) \<rbrakk> 
-         \<Longrightarrow> \<exists>C fs D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C sees M: Us\<rightarrow>U = (pns, body) in D \<and>
-                                   length vs = length pns \<and> length Us = length pns"
-        (is "\<lbrakk> _; _; _ \<rbrakk> \<Longrightarrow>  ?concl")
+  "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; calls es = \<lfloor>(a, M, vs)\<rfloor>; \<not> synthesized_call P (hp s) (a, M, vs) \<rbrakk> 
+  \<Longrightarrow> \<exists>T C fs D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and>
+                              P \<turnstile> C sees M: Us\<rightarrow>U = (pns, body) in D \<and> length vs = length pns \<and> length Us = length pns"
 apply(induct rule: red_reds.inducts)
 apply(auto split: split_if_asm simp add: synthesized_call_def)
 apply(fastsimp)
@@ -156,8 +196,8 @@ done
 
 section {* Silent moves *}
 
-primrec  \<tau>move0 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b) exp \<Rightarrow> bool"
-  and \<tau>moves0 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b) exp list \<Rightarrow> bool"
+primrec  \<tau>move0 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b, 'addr) exp \<Rightarrow> bool"
+  and \<tau>moves0 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b, 'addr) exp list \<Rightarrow> bool"
 where
   "\<tau>move0 P h (new C) \<longleftrightarrow> False"
 | "\<tau>move0 P h (newA T\<lfloor>e\<rceil>) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a)"
@@ -176,7 +216,7 @@ where
 | "\<tau>move0 P h (FAss e F D e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> (\<tau>move0 P h e' \<or> (\<exists>a. e' = Throw a)))"
 | "\<tau>move0 P h (e\<bullet>M(es)) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and>
    ((\<tau>moves0 P h es \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')) \<or> 
-    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> is_external_call P T M \<longrightarrow> \<tau>external P T M)))))"
+    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> is_native P T M \<longrightarrow> \<tau>external P T M)))))"
 | "\<tau>move0 P h ({V:T=vo; e}) \<longleftrightarrow> \<tau>move0 P h e \<or> ((\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v))"
 | "\<tau>move0 P h (sync\<^bsub>V'\<^esub>(e) e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a)"
 | "\<tau>move0 P h (insync\<^bsub>V'\<^esub>(ad) e) \<longleftrightarrow> \<tau>move0 P h e"
@@ -189,56 +229,65 @@ where
 | "\<tau>moves0 P h [] \<longleftrightarrow> False"
 | "\<tau>moves0 P h (e # es) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>v. e = Val v \<and> \<tau>moves0 P h es)"
 
-abbreviation \<tau>MOVE :: "'m prog \<Rightarrow> ((expr \<times> locals) \<times> 'heap, 'heap J_thread_action) trsys"
+abbreviation \<tau>MOVE :: "'m prog \<Rightarrow> (('addr expr \<times> 'addr locals) \<times> 'heap, ('addr, 'thread_id, 'heap) J_thread_action) trsys"
 where "\<tau>MOVE \<equiv> \<lambda>P ((e, x), h) ta s'. \<tau>move0 P h e \<and> ta = \<epsilon>"
 
-primrec \<tau>Move0 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> (expr \<times> expr list) \<Rightarrow> bool"
+primrec \<tau>Move0 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('addr expr \<times> 'addr expr list) \<Rightarrow> bool"
 where
   "\<tau>Move0 P h (e, exs) = (\<tau>move0 P h e \<or> final e)"
   
-abbreviation \<tau>MOVE0 :: "'m prog \<Rightarrow> ((expr \<times> expr list) \<times> 'heap, 'heap J0_thread_action) trsys"
+abbreviation \<tau>MOVE0 :: "'m prog \<Rightarrow> (('addr expr \<times> 'addr expr list) \<times> 'heap, ('addr, 'thread_id, 'heap) J0_thread_action) trsys"
 where "\<tau>MOVE0 \<equiv> \<lambda>P (es, h) ta s. \<tau>Move0 P h es \<and> ta = \<epsilon>"
 
-definition \<tau>red0 :: "('heap external_thread_action \<Rightarrow> ('x,'heap) Jinja_thread_action) \<Rightarrow>
-  J_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr \<times> locals) \<Rightarrow> (expr \<times> locals) \<Rightarrow> bool"
+definition \<tau>red0 ::
+  "(('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'x,'heap) Jinja_thread_action)
+  \<Rightarrow> 'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr \<times> 'addr locals) \<Rightarrow> ('addr expr \<times> 'addr locals) \<Rightarrow> bool"
 where
   "\<tau>red0 extTA P t h exs e'xs' =
    (extTA,P,t \<turnstile> \<langle>fst exs, (h, snd exs)\<rangle> -\<epsilon>\<rightarrow> \<langle>fst e'xs', (h, snd e'xs')\<rangle> \<and> \<tau>move0 P h (fst exs) \<and> no_call P h (fst exs))"
 
-definition \<tau>reds0 :: "('heap external_thread_action \<Rightarrow> ('x,'heap) Jinja_thread_action) \<Rightarrow>
-  J_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr list \<times> locals) \<Rightarrow> (expr list \<times> locals) \<Rightarrow> bool"
+definition \<tau>reds0 :: 
+  "(('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'x,'heap) Jinja_thread_action) 
+  \<Rightarrow> 'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr list \<times> 'addr locals) \<Rightarrow> ('addr expr list \<times> 'addr locals) \<Rightarrow> bool"
 where 
   "\<tau>reds0 extTA P t h esxs es'xs' = 
    (extTA,P,t \<turnstile> \<langle>fst esxs, (h, snd esxs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>fst es'xs', (h, snd es'xs')\<rangle> \<and> \<tau>moves0 P h (fst esxs) \<and>
     no_calls P h (fst esxs))"
 
-abbreviation \<tau>red0t :: "('heap external_thread_action \<Rightarrow> ('x,'heap) Jinja_thread_action) \<Rightarrow> 
-  J_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr \<times> locals) \<Rightarrow> (expr \<times> locals) \<Rightarrow> bool"
+abbreviation \<tau>red0t ::
+  "(('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'x,'heap) Jinja_thread_action) 
+  \<Rightarrow> 'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr \<times> 'addr locals) \<Rightarrow> ('addr expr \<times> 'addr locals) \<Rightarrow> bool"
 where "\<tau>red0t extTA P t h \<equiv> (\<tau>red0 extTA P t h)^++"
 
-abbreviation \<tau>reds0t :: "('heap external_thread_action \<Rightarrow> ('x,'heap) Jinja_thread_action) \<Rightarrow>
-  J_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr list \<times> locals) \<Rightarrow> (expr list \<times> locals) \<Rightarrow> bool"
+abbreviation \<tau>reds0t ::
+  "(('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'x,'heap) Jinja_thread_action) 
+  \<Rightarrow> 'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr list \<times> 'addr locals) \<Rightarrow> ('addr expr list \<times> 'addr locals) \<Rightarrow> bool"
 where "\<tau>reds0t extTA P t h \<equiv> (\<tau>reds0 extTA P t h)^++"
 
-abbreviation \<tau>red0r :: "('heap external_thread_action \<Rightarrow> ('x,'heap) Jinja_thread_action) \<Rightarrow> 
-  J_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr \<times> locals) \<Rightarrow> (expr \<times> locals) \<Rightarrow> bool"
+abbreviation \<tau>red0r :: 
+  "(('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'x,'heap) Jinja_thread_action) 
+  \<Rightarrow> 'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr \<times> 'addr locals) \<Rightarrow> ('addr expr \<times> 'addr locals) \<Rightarrow> bool"
 where "\<tau>red0r extTA P t h \<equiv> (\<tau>red0 extTA P t h)^**"
 
-abbreviation \<tau>reds0r :: "('heap external_thread_action \<Rightarrow> ('x,'heap) Jinja_thread_action) \<Rightarrow>
-  J_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr list \<times> locals) \<Rightarrow> (expr list \<times> locals) \<Rightarrow> bool"
+abbreviation \<tau>reds0r :: 
+  "(('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'x,'heap) Jinja_thread_action)
+  \<Rightarrow> 'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr list \<times> 'addr locals) \<Rightarrow> ('addr expr list \<times> 'addr locals) \<Rightarrow> bool"
 where "\<tau>reds0r extTA P t h \<equiv> (\<tau>reds0 extTA P t h)^**"
 
-definition \<tau>Red0 :: "J_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr \<times> expr list) \<Rightarrow> (expr \<times> expr list) \<Rightarrow> bool"
+definition \<tau>Red0 :: 
+  "'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr \<times> 'addr expr list) \<Rightarrow> ('addr expr \<times> 'addr expr list) \<Rightarrow> bool"
 where "\<tau>Red0 P t h ees e'es' = (P,t \<turnstile>0 \<langle>fst ees/snd ees, h\<rangle> -\<epsilon>\<rightarrow> \<langle>fst e'es'/snd e'es', h\<rangle> \<and> \<tau>Move0 P h ees)"
 
-abbreviation \<tau>Red0r :: "J_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr \<times> expr list) \<Rightarrow> (expr \<times> expr list) \<Rightarrow> bool"
+abbreviation \<tau>Red0r ::
+  "'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr \<times> 'addr expr list) \<Rightarrow> ('addr expr \<times> 'addr expr list) \<Rightarrow> bool"
 where "\<tau>Red0r P t h \<equiv> (\<tau>Red0 P t h)^**"
 
-abbreviation \<tau>Red0t :: "J_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr \<times> expr list) \<Rightarrow> (expr \<times> expr list) \<Rightarrow> bool"
+abbreviation \<tau>Red0t ::
+  "'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr \<times> 'addr expr list) \<Rightarrow> ('addr expr \<times> 'addr expr list) \<Rightarrow> bool"
 where "\<tau>Red0t P t h \<equiv> (\<tau>Red0 P t h)^++"
 
 lemma \<tau>move0_\<tau>moves0_intros:
-  fixes e e1 e2 e' :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+  fixes e e1 e2 e' :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move0NewArray: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (newA T\<lfloor>e\<rceil>)"
   and \<tau>move0Cast: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (Cast U e)"
   and \<tau>move0CastRed: "\<tau>move0 P h (Cast U (Val v))"
@@ -261,7 +310,7 @@ lemma \<tau>move0_\<tau>moves0_intros:
   and \<tau>move0FAss2: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>F{D} := e)"
   and \<tau>move0CallObj: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (e\<bullet>M(es))"
   and \<tau>move0CallParams: "\<tau>moves0 P h es \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(es))"
-  and \<tau>move0Call: "(\<And>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<Longrightarrow> is_external_call P T M \<Longrightarrow> \<tau>external P T M) \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(map Val vs))"
+  and \<tau>move0Call: "(\<And>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<Longrightarrow> is_native P T M \<Longrightarrow> \<tau>external P T M) \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(map Val vs))"
   and \<tau>move0Block: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h {V:T=vo; e}"
   and \<tau>move0BlockRed: "\<tau>move0 P h {V:T=vo; Val v}"
   and \<tau>move0Sync: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (sync\<^bsub>V'\<^esub> (e) e')"
@@ -729,20 +778,19 @@ lemma \<tau>red0t_fv_subset:
 by(rule \<tau>red0r_fv_subset[OF wwf])(rule tranclp_into_rtranclp)
 
 
-lemma fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
-  shows \<tau>move0_not_call: "\<lbrakk> \<tau>move0 P h e; call e = \<lfloor>(a, M, vs)\<rfloor>; synthesized_call P h (a, M, vs) \<rbrakk> \<Longrightarrow> \<tau>external' P h a M"
-  and \<tau>moves0_not_calls: "\<lbrakk> \<tau>moves0 P h es; calls es = \<lfloor>(a, M, vs)\<rfloor>; synthesized_call P h (a, M, vs) \<rbrakk> \<Longrightarrow> \<tau>external' P h a M"
-apply(induct e and es)
-apply(auto simp add: is_vals_conv append_eq_map_conv map_eq_append_conv split: split_if_asm)
-apply(auto simp add: synthesized_call_def \<tau>external'_def)
-done
-
-lemma fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move0_callD: "call e = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>move0 P h e \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
   and \<tau>moves0_callsD: "calls es = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>moves0 P h es \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
 apply(induct e and es)
 apply(auto split: split_if_asm simp add: is_vals_conv)
 apply(auto simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def)
+done
+
+lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
+  shows \<tau>move0_not_call: "\<lbrakk> \<tau>move0 P h e; call e = \<lfloor>(a, M, vs)\<rfloor>; synthesized_call P h (a, M, vs) \<rbrakk> \<Longrightarrow> \<tau>external' P h a M"
+  and \<tau>moves0_not_calls: "\<lbrakk> \<tau>moves0 P h es; calls es = \<lfloor>(a, M, vs)\<rfloor>; synthesized_call P h (a, M, vs) \<rbrakk> \<Longrightarrow> \<tau>external' P h a M"
+apply(drule \<tau>move0_callD[where P=P and h=h], simp)
+apply(drule \<tau>moves0_callsD[where P=P and h=h], simp)
 done
 
 lemma \<tau>red0_into_\<tau>Red0:
@@ -761,7 +809,7 @@ lemma \<tau>red0r_into_\<tau>Red0r:
   shows
   "\<lbrakk> \<tau>red0r (extTA2J0 P) P t h (e, empty) (e'', empty); fv e = {} \<rbrakk>
   \<Longrightarrow> \<tau>Red0r P t h (e, es) (e'', es)"
-proof(induct e xs\<equiv>"empty :: locals" rule: converse_rtranclp_induct2)
+proof(induct e xs\<equiv>"empty :: 'addr locals" rule: converse_rtranclp_induct2)
   case refl show ?case by blast
 next
   case (step e e' xs')
@@ -786,7 +834,7 @@ lemma \<tau>red0t_into_\<tau>Red0t:
   shows
   "\<lbrakk> \<tau>red0t (extTA2J0 P) P t h (e, empty) (e'', empty); fv e = {} \<rbrakk>
   \<Longrightarrow> \<tau>Red0t P t h (e, es) (e'', es)"
-proof(induct e xs\<equiv>"empty :: locals" rule: converse_tranclp_induct2)
+proof(induct e xs\<equiv>"empty :: 'addr locals" rule: converse_tranclp_induct2)
   case base thus ?case
     by(blast intro!: tranclp.r_into_trancl \<tau>red0_into_\<tau>Red0)
 next
@@ -837,20 +885,12 @@ lemma Red_Suspend_is_call:
 by(auto elim!: red0.cases dest: red_Suspend_is_call simp add: is_call_def)
 
 
-lemma red0_mthr: "multithreaded (mred0 P)"
-by(unfold_locales)(auto elim!: red0.cases dest: red_new_thread_heap red_ta_Wakeup_no_Join_no_Lock)
-
-lemma red0_final_thread_wf: "final_thread_wf final_expr0 (mred0 P)"
-proof -
-  interpret multithreaded final_expr0 "mred0 P"
-    by(rule red0_mthr)
-  thus ?thesis
-    by(unfold_locales)(auto elim!: red0.cases simp add: split_def)
-qed
+lemma red0_mthr: "multithreaded final_expr0 (mred0 P)"
+by(unfold_locales)(auto elim!: red0.cases dest: red_new_thread_heap)
 
 lemma red0_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr0 (mred0 P) (\<tau>MOVE0 P)"
 proof -
-  interpret final_thread_wf final_expr0 "mred0 P" by(rule red0_final_thread_wf)
+  interpret multithreaded final_expr0 "mred0 P" by(rule red0_mthr)
   show ?thesis
   proof
     fix x1 m1 t ta1 x1' m1'

@@ -53,7 +53,8 @@ proof -
       meth:   "P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl, ins, xt) in C" and
       \<Phi>:      "\<Phi> C M ! pc = Some (ST,LT)" and
       frame:  "conf_f P h (ST,LT) ins (stk,reg,C,M,pc)" and
-      frames: "conf_fs P h \<Phi> M (size Ts) T frs'"
+      frames: "conf_fs P h \<Phi> M (size Ts) T frs'" and
+      confxcp: "conf_xcp P h xcp (ins ! pc)"
       by (fastsimp simp add: correct_state_def dest: sees_method_fun)
 
     from frame obtain
@@ -132,8 +133,7 @@ proof -
           with ref refN is_Ref wf
 	  have "\<exists>T. typeof_addr h (the_Addr ref) = \<lfloor>Array T\<rfloor>"
 	    by(cases ref)(auto simp add:conf_def widen_Array dest: typeof_addr_eq_Some_conv) }
-	ultimately show ?thesis using AStore stk'
-	  by(auto)
+	ultimately show ?thesis using AStore stk' e by(auto simp add: conf_def)
       next
 	case ALength
 	with app stk reg \<Phi> obtain T ST' where
@@ -163,14 +163,12 @@ proof -
           stk:   "stk = v # stk'" and
           conf:  "P,h \<turnstile> v :\<le> Class C"
           by(fastsimp simp add: list_all2_Cons2)
-	from field wf have CObject: "C \<noteq> Object"
-	  by(auto dest: wf_Object_field_empty has_fields_fun simp add: sees_field_def)
 	from conf have is_Ref: "is_Ref v" by(cases v)(auto simp add: is_Ref_def conf_def)
 	moreover {
           assume "v \<noteq> Null" 
-          with conf field is_Ref wf CObject
-          have "\<exists>D. typeof_addr h (the_Addr v) = Some (Class D) \<and> P \<turnstile> D \<preceq>\<^sup>* C"
-	    by (auto dest!: non_npD)
+          with conf field is_Ref wf 
+          have "\<exists>U D. typeof_addr h (the_Addr v) = Some U \<and> class_type_of U = \<lfloor>D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C"
+            by (auto dest!: non_npD2)
 	}
 	ultimately show ?thesis using Getfield field stk by auto
       next
@@ -181,17 +179,15 @@ proof -
           confv: "P,h \<turnstile> v :\<le> vT" and
           confr: "P,h \<turnstile> ref :\<le> Class C"
           by(fastsimp simp add: list_all2_Cons2)
-	from field wf have CObject: "C \<noteq> Object"
-	  by(auto dest: wf_Object_field_empty has_fields_fun simp add: sees_field_def)
 	from confr have is_Ref: "is_Ref ref"
           by(cases ref)(auto simp add: is_Ref_def conf_def)
 	moreover {
           assume "ref \<noteq> Null" 
-          with confr field is_Ref wf CObject
-          have "\<exists>D. typeof_addr h (the_Addr ref) = Some (Class D) \<and> P \<turnstile> D \<preceq>\<^sup>* C"
-            by (auto dest: non_npD)
+          with confr field is_Ref wf
+          have "\<exists>U D. typeof_addr h (the_Addr ref) = Some U \<and> class_type_of U = Some D \<and> P \<turnstile> D \<preceq>\<^sup>* C"
+            by (auto dest: non_npD2)
 	}
-	ultimately show ?thesis using Putfield field stk confv by fastsimp
+	ultimately show ?thesis using Putfield field stk confv by auto
       next
 	case (Invoke M' n)
 	with app have n: "n < size ST" by simp
@@ -208,41 +204,60 @@ proof -
           assume Null: "stk!n \<noteq> Null" and NT: "ST!n \<noteq> NT"
 	  
 	  from NT app Invoke
-	  have "if is_external_call P (ST ! n) M' then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M'(Ts) :: U
-	        else \<exists>D D' Ts T m. ST!n = Class D \<and> P \<turnstile> D sees M': Ts\<rightarrow>T = m in D' \<and> P \<turnstile> rev (take n ST) [\<le>] Ts"
+	  have "if is_native P (ST ! n) M' then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M'(Ts) :: U
+	        else \<exists>D D' Ts T m. class_type_of (ST!n) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M': Ts\<rightarrow>T = m in D' \<and> P \<turnstile> rev (take n ST) [\<le>] Ts"
 	    by auto
  	  moreover
 	  { fix D D' Ts T m
-	    assume D: "ST!n = Class D"
+	    assume D: "class_type_of (ST!n) = \<lfloor>D\<rfloor>"
 	      and M': "P \<turnstile> D sees M': Ts\<rightarrow>T = m in D'"
 	      and Ts: "P \<turnstile> rev (take n ST) [\<le>] Ts"
-	      and nec: "\<not> is_external_call P (ST ! n) M'"
-            from M' wf have DObject: "D \<noteq> Object"
-	      by(auto dest: wf_Object_method_empty)
-            from D stk n have "P,h \<turnstile> stk!n :\<le> Class D" 
+	      and nec: "\<not> is_native P (ST ! n) M'"
+            from stk n have "P,h \<turnstile> stk!n :\<le> ST!n" 
               by (auto simp: list_all2_conv_all_nth)
-            with Null DObject obtain a C' where 
-              [simp]: "stk!n = Addr a" "typeof_addr h a = Some (Class C')" and
-		"P \<turnstile> C' \<preceq>\<^sup>* D"
+            with Null D obtain a U where 
+              [simp]: "stk!n = Addr a" "typeof_addr h a = Some U" and UsubSTn: "P \<turnstile> U \<le> ST!n"
+              and UnNT: "U \<noteq> NT"
               by(cases "stk ! n")(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
-	    with `P \<turnstile> C' \<preceq>\<^sup>* D` wf M' obtain m' Ts' T' D'' where 
+            from D UsubSTn UnNT obtain C'
+              where U: "class_type_of U = \<lfloor>C'\<rfloor>" and "P \<turnstile> C' \<preceq>\<^sup>* D"
+              unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
+              by(rule widen_is_class_type_of)
+
+	    from `P \<turnstile> C' \<preceq>\<^sup>* D` wf M' obtain m' Ts' T' D'' where 
               C': "P \<turnstile> C' sees M': Ts'\<rightarrow>T' = m' in D''" and
               Ts': "P \<turnstile> Ts [\<le>] Ts'"
 	      by (auto dest!: sees_method_mono)
+
+            have ?thesis
+            proof(cases "is_native P U M'")
+              case False
 	    
-            from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" ..
-            hence "P,h \<turnstile> rev (take n stk) [:\<le>] rev (take n ST)" ..
-            also note Ts also note Ts'
-            finally have "P,h \<turnstile> rev (take n stk) [:\<le>] Ts'" .
-	    moreover from C' have "\<not> is_external_call P (Class C') M'"
-	      by(auto dest: external_call_not_sees_method)
-	    ultimately have ?thesis using Invoke Null n C' nec
-	      by (auto simp add: is_Ref_def2 has_methodI) }
+              from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" ..
+              hence "P,h \<turnstile> rev (take n stk) [:\<le>] rev (take n ST)" ..
+              also note Ts also note Ts'
+              finally have "P,h \<turnstile> rev (take n stk) [:\<le>] Ts'" .
+              thus ?thesis using False Invoke Null n C' nec U
+	        by (auto simp add: is_Ref_def2 has_methodI)
+            next
+              case True
+              from is_native_sees_method_overriding[OF wf C' True] U
+              obtain Ts'' Tr' where "P \<turnstile> U\<bullet>M'(Ts'') :: Tr'" "P \<turnstile> Ts' [\<le>] Ts''" "P \<turnstile> Tr' \<le> T'"
+                unfolding is_class_type_of_conv_class_type_of_Some by blast
+              moreover from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
+	      then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
+	        by(auto simp add: confs_conv_map)
+	      moreover with Ts `P \<turnstile> Ts' [\<le>] Ts''` Ts' have "P \<turnstile> rev Us [\<le>] Ts''" by(auto intro: widens_trans)
+	      moreover note Invoke Null n `stk ! n = Addr a` `typeof_addr h a = \<lfloor>U\<rfloor>` U True
+	      ultimately show ?thesis
+                by(force simp add: is_Ref_def2 rev_map[symmetric] intro!: external_WT'.intros)
+            qed }
 	  moreover
 	  { fix U Ts'
-	    assume iec: "is_external_call P (ST ! n) M'"
+	    assume iec: "is_native P (ST ! n) M'"
 	      and wtext: "P \<turnstile> ST ! n\<bullet>M'(Ts') :: U" and sub: "P \<turnstile> rev (take n ST) [\<le>] Ts'"
-	    from iec have "is_refT (ST ! n)" by(rule is_external_call_is_refT)
+            from wtext obtain Ti' where native: "P \<turnstile> ST ! n native M': Ts' \<rightarrow> U in Ti'" by cases
+	    from iec have "is_refT (ST ! n)" by(rule is_native_is_refT)
 	    moreover from stk n have "P,h \<turnstile> stk ! n :\<le> ST ! n" by(rule list_all2_nthD2)
 	    ultimately obtain a where a: "stk ! n = Addr a" "typeof_addr h a \<noteq> None"
 	      using Null
@@ -251,41 +266,34 @@ proof -
 	      where Ta: "P \<turnstile> Ta \<le> ST ! n" "typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>" "Ta \<noteq> NT"
 	      by(auto simp add: conf_def dest: typeof_addr_eq_Some_conv)
             have ?thesis
-            proof(cases "is_external_call P Ta M'")
+            proof(cases "is_native P Ta M'")
               case True
-              moreover
-	      with wtext `P,h \<turnstile> stk ! n :\<le> ST ! n` Ta
-              obtain U' where "P \<turnstile> Ta\<bullet>M'(Ts') :: U'" "P \<turnstile> U' \<le> U"
-	        by(auto dest: external_WT_widen_mono split: ty.splits simp add: is_external_call_def)
-              moreover from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
+
+              from True obtain TS' U' Ti where native': "P \<turnstile> Ta native M':TS' \<rightarrow> U' in Ti" by cases
+              with native have "P \<turnstile> Ts' [\<le>] TS'" "P \<turnstile> U' \<le> U" using Ta(1) by(rule native_native_overriding)+
+              
+              from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
 	      then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
 	        by(auto simp add: confs_conv_map)
-	      moreover with sub have "P \<turnstile> rev Us [\<le>] Ts'" by(auto intro: widens_trans)
-	      moreover note Invoke Null n `stk ! n = Addr a` `typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>`
+	      moreover with sub `P \<turnstile> Ts' [\<le>] TS'` have "P \<turnstile> rev Us [\<le>] TS'" by(auto intro: widens_trans)
+	      moreover note Invoke Null n `stk ! n = Addr a` `typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>` True
+              moreover from native' have "P \<turnstile> Ta\<bullet>M'(TS') :: U'" ..
 	      ultimately show ?thesis
-	        by(force simp add: is_Ref_def rev_map[symmetric] intro!: external_WT'.intros)
+	        by(force simp add: is_Ref_def2 rev_map[symmetric] intro!: external_WT'.intros)
             next
               case False
-              then obtain C' where C': "Ta = Class C'" and "P \<turnstile> C' has M'"
-                using wtext sub Ta
-                apply(auto simp add: is_external_call_def split: ty.splits)
-                apply(auto elim!: external_WT.cases)
-                apply(erule allE, erule (2) impE[OF _ widen_trans], fastsimp)+
-                done
-              then obtain Ts'' T'' meth D''
-                where sees'': "P \<turnstile> C' sees M':Ts'' \<rightarrow> T''=meth in D''"
-                unfolding has_method_def by auto
-              moreover 
-              from C' Ta obtain C'' where C'': "ST ! n = Class C''" by(auto dest: Class_widen)
-              with C' Ta have "P \<turnstile> C' \<preceq>\<^sup>* C''" by simp
-              from external_WT_widen_sees_method_contravariant[OF wf sees'' this, of Ts' U] wtext C''
-              have "P \<turnstile> Ts' [\<le>] Ts''" by simp
-              from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" ..
-              hence "P,h \<turnstile> rev (take n stk) [:\<le>] rev (take n ST)" by simp
-              with sub `P \<turnstile> Ts' [\<le>] Ts''`
-              have "P,h \<turnstile> rev (take n stk) [:\<le>] Ts''" by(auto intro: widens_trans)
-              ultimately show ?thesis using Invoke Null n `stk ! n = Addr a` Ta False C'
-                by(simp add: is_Ref_def has_methodI)
+              from native_not_native_overriding[OF wf native False Ta(1) Ta(3)]
+              obtain C' Ts'' Tr' mxs mxl ins xt D'
+                where "is_class_type_of Ta C'"
+                and "P \<turnstile> C' sees M': Ts''\<rightarrow>Tr' = (mxs, mxl, ins, xt) in D'"
+                and "P \<turnstile> Ts' [\<le>] Ts''" "P \<turnstile> Tr' \<le> U" "P \<turnstile> Class C' \<le> Ti'" by auto
+              moreover {
+                from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
+                hence "P,h \<turnstile> rev (take n stk) [:\<le>] rev (take n ST)" by simp
+                also note sub also note `P \<turnstile> Ts' [\<le>] Ts''` finally
+                have "P,h \<turnstile> rev (take n stk) [:\<le>] Ts''" . }
+              ultimately show ?thesis using Invoke Null n `stk ! n = Addr a` Ta False
+                by(fastsimp simp add: is_Ref_def2 is_class_type_of_conv_class_type_of_Some has_method_def)
             qed }
 	  ultimately have ?thesis by(auto split: split_if_asm) }
 	ultimately show ?thesis by blast      
@@ -293,9 +301,8 @@ proof -
 	case Return with stk app \<Phi> meth frames 
 	show ?thesis by (fastsimp simp add: has_methodI list_all2_Cons2)
       next
-	case ThrowExc with stk app \<Phi> meth frames
-	show ?thesis
-	  by(fastsimp simp add: xcpt_app_def conf_def list_all2_Cons2 intro: widen_trans[OF _ widen_subcls])
+	case ThrowExc with stk app \<Phi> meth frames show ?thesis
+          by(auto 4 3 simp add: xcpt_app_def conf_def list_all2_Cons2 intro!: is_RefI intro: widen_trans[OF _ widen_subcls])
       next
 	case (BinOpInstr bop) with stk app \<Phi> meth frames
 	show ?thesis by(auto simp add: conf_def list_all2_Cons2)(force dest: WTrt_binop_widen_mono)
@@ -303,7 +310,12 @@ proof -
       thus "check P \<sigma>" using meth pc mxs by (simp add: check_def has_methodI)
     next
       case (Some a)
-      with meth pc mxs show ?thesis by(simp add: check_def has_methodI)
+      with confxcp obtain D where "typeof_addr h a = \<lfloor>Class D\<rfloor>"
+        by(auto simp add: check_xcpt_def)
+      moreover from stk have "length stk = length ST" by(rule list_all2_lengthD)
+      ultimately show ?thesis using meth pc mxs Some confxcp app
+        using match_is_relevant[of P D ins pc pc xt]
+        by(auto simp add: check_def has_methodI check_xcpt_def xcpt_app_def dest: bspec)
     qed
   qed
   thus "exec_d P t \<sigma> \<noteq> TypeError" ..

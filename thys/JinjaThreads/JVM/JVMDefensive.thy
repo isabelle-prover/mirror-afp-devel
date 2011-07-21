@@ -13,33 +13,17 @@ text {*
   other abnormal termination) *}
 datatype 'a type_error = TypeError | Normal 'a
 
-fun is_Array :: "ty \<Rightarrow> bool"
-where
-  "is_Array (Array T) = True"
-| "is_Array _ = False"
-
-lemma is_Array_conv [simp]: "is_Array T \<longleftrightarrow> (\<exists>U. T = Array U)"
-by(cases T) simp_all
-
-fun is_Class :: "ty \<Rightarrow> bool"
-where
-  "is_Class (Class C) = True"
-| "is_Class _ = False"
-
-lemma is_Class_conv [simp]: "is_Class T \<longleftrightarrow> (\<exists>C. T = Class C)"
-by(cases T) simp_all
-
 context JVM_heap_base begin
 
-definition is_Array_ref :: "val \<Rightarrow> 'heap \<Rightarrow> bool" where
+definition is_Array_ref :: "'addr val \<Rightarrow> 'heap \<Rightarrow> bool" where
   "is_Array_ref v h \<equiv> 
   is_Ref v \<and> 
   (v \<noteq> Null \<longrightarrow> typeof_addr h (the_Addr v) \<noteq> None \<and> is_Array (the (typeof_addr h (the_Addr v))))"
 
 declare is_Array_ref_def[simp]
 
-primrec check_instr :: "[instr, jvm_prog, 'heap, val list, val list, 
-                        cname, mname, pc, frame list] \<Rightarrow> bool"
+primrec check_instr :: "['addr instr, 'addr jvm_prog, 'heap, 'addr val list, 'addr val list, 
+                        cname, mname, pc, 'addr frame list] \<Rightarrow> bool"
 where
   check_instr_Load:
   "check_instr (Load n) P h stk loc C M\<^isub>0 pc frs = 
@@ -59,7 +43,7 @@ where
 
 | check_instr_NewArray:
   "check_instr (NewArray T) P h stk loc C0 M0 pc frs =
-  (is_type P T \<and> 0 < length stk \<and> is_Intg (hd stk))"
+  (is_type P (T\<lfloor>\<rceil>) \<and> 0 < length stk \<and> is_Intg (hd stk))"
 
 | check_instr_ALoad:
   "check_instr ALoad P h stk loc C0 M0 pc frs =
@@ -67,7 +51,7 @@ where
 
 | check_instr_AStore:
   "check_instr AStore P h stk loc C0 M0 pc frs =
-  (2 < length stk \<and> is_Intg (hd (tl stk)) \<and> is_Array_ref (hd (tl (tl stk))) h)"
+  (2 < length stk \<and> is_Intg (hd (tl stk)) \<and> is_Array_ref (hd (tl (tl stk))) h \<and> typeof\<^bsub>h\<^esub> (hd stk) \<noteq> None)"
 
 | check_instr_ALength:
   "check_instr ALength P h stk loc C0 M0 pc frs =
@@ -76,16 +60,16 @@ where
 | check_instr_Getfield:
   "check_instr (Getfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
   (0 < length stk \<and> (\<exists>C' T fm. P \<turnstile> C sees F:T (fm) in C') \<and> 
-  (let (C', T) = field P C F; ref = hd stk in 
+  (let (C', T, fm) = field P C F; ref = hd stk in 
     C' = C \<and> is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
-      (\<exists>D. typeof_addr h (the_Addr ref) = \<lfloor>Class D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C))))"
+      (\<exists>T D. typeof_addr h (the_Addr ref) = \<lfloor>T\<rfloor> \<and> class_type_of T = \<lfloor>D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C))))"
 
 | check_instr_Putfield:
   "check_instr (Putfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
   (1 < length stk \<and> (\<exists>C' T fm. P \<turnstile> C sees F:T (fm) in C') \<and>
-  (let (C', T) = field P C F; v = hd stk; ref = hd (tl stk) in 
+  (let (C', T, fm) = field P C F; v = hd stk; ref = hd (tl stk) in 
     C' = C \<and> is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
-      (\<exists>D. typeof_addr h (the_Addr ref) = \<lfloor>Class D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C))))"
+      (\<exists>T' D. typeof_addr h (the_Addr ref) = \<lfloor>T'\<rfloor> \<and> class_type_of T' = \<lfloor>D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C \<and> P,h \<turnstile> v :\<le> T))))"
 
 | check_instr_Checkcast:
   "check_instr (Checkcast T) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
@@ -101,11 +85,11 @@ where
   (stk!n \<noteq> Null \<longrightarrow> 
     (let a = the_Addr (stk!n); 
          T = the (typeof_addr h a);
-         C = the_Class T;
+         C = the (class_type_of T);
          Ts = fst (snd (method P C M))
     in typeof_addr h a \<noteq> None \<and>
-       (if is_external_call P T M then \<exists>U. P,h \<turnstile> a\<bullet>M(rev (take n stk)) : U 
-        else is_Class T \<and> P \<turnstile> C has M \<and> P,h \<turnstile> rev (take n stk) [:\<le>] Ts))))"
+       (if is_native P T M then \<exists>U. P,h \<turnstile> a\<bullet>M(rev (take n stk)) : U 
+        else class_type_of T \<noteq> None \<and> P \<turnstile> C has M \<and> P,h \<turnstile> rev (take n stk) [:\<le>] Ts))))"
 
 | check_instr_Return:
   "check_instr Return P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
@@ -129,7 +113,7 @@ where
 
 | check_instr_BinOpInstr:
   "check_instr (BinOpInstr bop) P h stk loc C0 M0 pc frs =
-  (1 < length stk \<and> (let T2 = the (typeof\<^bsub>h\<^esub> (hd stk)); T1 = the (typeof\<^bsub>h\<^esub> (hd (tl stk))) in \<exists>T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T))"
+  (1 < length stk \<and> (\<exists>T1 T2 T. typeof\<^bsub>h\<^esub> (hd stk) = \<lfloor>T2\<rfloor> \<and> typeof\<^bsub>h\<^esub> (hd (tl stk)) = \<lfloor>T1\<rfloor> \<and> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T))"
 
 | check_instr_IfFalse:
   "check_instr (IfFalse b) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
@@ -141,7 +125,7 @@ where
 
 | check_instr_Throw:
   "check_instr ThrowExc P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
-  (0 < length stk \<and> P \<turnstile> the (typeof\<^bsub>h\<^esub> (hd stk)) \<le> Class Throwable)"
+  (0 < length stk \<and> is_Ref (hd stk) \<and> P \<turnstile> the (typeof\<^bsub>h\<^esub> (hd stk)) \<le> Class Throwable)"
 
 | check_instr_MEnter:
   "check_instr MEnter P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
@@ -151,24 +135,34 @@ where
   "check_instr MExit P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
    (0 < length stk \<and> is_Ref (hd stk))"
 
-definition check :: "jvm_prog \<Rightarrow> 'heap jvm_state \<Rightarrow> bool"
+definition check_xcpt :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> nat \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> 'addr \<Rightarrow> bool"
+where
+  "check_xcpt P h n pc xt a \<longleftrightarrow>
+  (\<exists>C. typeof_addr h a = \<lfloor>Class C\<rfloor> \<and> 
+  (case match_ex_table P C pc xt of None \<Rightarrow> True | Some (pc', d') \<Rightarrow> d' \<le> n))"
+
+definition check :: "'addr jvm_prog \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
 where
   "check P \<sigma> \<equiv> let (xcpt, h, frs) = \<sigma> in
                (case frs of [] \<Rightarrow> True | (stk,loc,C,M,pc)#frs' \<Rightarrow> 
                 P \<turnstile> C has M \<and>
                 (let (C',Ts,T,mxs,mxl\<^isub>0,ins,xt) = method P C M; i = ins!pc in
                  pc < size ins \<and> size stk \<le> mxs \<and>
-                 (xcpt = None \<longrightarrow> check_instr i P h stk loc C M pc frs')))"
+                 (case xcpt of None \<Rightarrow> check_instr i P h stk loc C M pc frs'
+                           | Some a \<Rightarrow> check_xcpt P h (length stk) pc xt a)))"
 
 
-definition exec_d :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state \<Rightarrow> 'heap jvm_ta_state set type_error"
+definition exec_d ::
+  "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_ta_state set type_error"
 where
   "exec_d P t \<sigma> \<equiv> if check P \<sigma> then Normal (exec P t \<sigma>) else TypeError"
 
 inductive
-  exec_1_d :: "jvm_prog \<Rightarrow> thread_id \<Rightarrow> 'heap jvm_state type_error \<Rightarrow> 'heap jvm_thread_action \<Rightarrow> 'heap jvm_state type_error \<Rightarrow> bool" 
-       ("_,_ \<turnstile> _ -_-jvmd\<rightarrow> _" [61,0,61,0,61] 60)
-  for P :: jvm_prog and t :: thread_id
+  exec_1_d :: 
+  "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state type_error
+  \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action \<Rightarrow> ('addr, 'heap) jvm_state type_error \<Rightarrow> bool" 
+  ("_,_ \<turnstile> _ -_-jvmd\<rightarrow> _" [61,0,61,0,61] 60)
+  for P :: "'addr jvm_prog" and t :: 'thread_id
 where
   exec_1_d_ErrorI: "exec_d P t \<sigma> = TypeError \<Longrightarrow> P,t \<turnstile> Normal \<sigma> -\<epsilon>-jvmd\<rightarrow> TypeError"
 | exec_1_d_NormalI: "\<lbrakk> exec_d P t \<sigma> = Normal \<Sigma>; (tas, \<sigma>') \<in> \<Sigma> \<rbrakk>  \<Longrightarrow> P,t \<turnstile> Normal \<sigma> -tas-jvmd\<rightarrow> Normal \<sigma>'"
@@ -267,6 +261,9 @@ proof -
         apply(case_tac va)
         apply(auto intro: red_external_aggr_hext)
         done
+    next
+      case (BinOpInstr bop)
+      with xexec check_ins show ?thesis by(auto split: sum.split_asm)
     qed(auto simp add: split_beta split: split_if_asm)
   next
     case (Some a)

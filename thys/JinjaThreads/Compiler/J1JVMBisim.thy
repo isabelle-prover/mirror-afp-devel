@@ -65,19 +65,34 @@ end
 locale J1_JVM_heap_base =
   J1_heap_base +
   JVM_heap_base +
-  constrains empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
-  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
-  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+  constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
 begin
 
-inductive bisim1 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> expr1 \<Rightarrow> nat \<Rightarrow> (expr1 \<times> val list) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-  and bisims1 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> expr1 list \<Rightarrow> nat \<Rightarrow> (expr1 list \<times> val list) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-  and bisim1_syntax :: "'m prog \<Rightarrow> expr1 \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> val list) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool" ("_,_,_,_ \<turnstile> _ \<leftrightarrow> _" [50, 0, 0, 0, 0, 50] 100)
-  and bisims1_syntax :: "'m prog \<Rightarrow> expr1 list \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> (expr1 list \<times> val list) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool" ("_,_,_,_ \<turnstile> _ [\<leftrightarrow>] _" [50, 0, 0, 0, 0, 50] 100)
+inductive bisim1 ::
+  "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr expr1 \<Rightarrow> nat \<Rightarrow> ('addr expr1 \<times> 'addr locals1)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+
+  and bisims1 :: 
+  "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr expr1 list \<Rightarrow> nat \<Rightarrow> ('addr expr1 list \<times> 'addr locals1)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+  
+  and bisim1_syntax :: 
+  "'m prog \<Rightarrow> 'addr expr1 \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+  ("_,_,_,_ \<turnstile> _ \<leftrightarrow> _" [50, 0, 0, 0, 0, 50] 100)
+
+  and bisims1_syntax :: 
+  "'m prog \<Rightarrow> 'addr expr1 list \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr locals1)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+  ("_,_,_,_ \<turnstile> _ [\<leftrightarrow>] _" [50, 0, 0, 0, 0, 50] 100)
   for P :: "'m prog" and  h :: 'heap
 where
   "P, e, n, h \<turnstile> exs \<leftrightarrow> s \<equiv> bisim1 P h e n exs s"
@@ -144,6 +159,9 @@ where
   "\<lbrakk> P, e2, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>); bsok e1 n \<rbrakk>
   \<Longrightarrow> P, e1\<guillemotleft>bop\<guillemotright>e2, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk @ [v1], loc, length (compE2 e1) + pc, \<lfloor>a\<rfloor>)"
 
+| bisim1BinOpThrow:
+  "\<lbrakk> bsok e1 n; bsok e2 n \<rbrakk>
+  \<Longrightarrow> P, e1\<guillemotleft>bop\<guillemotright>e2, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> ([v1, v2], xs, length (compE2 e1) + length (compE2 e2), \<lfloor>a\<rfloor>)"
 
 | bisim1LAss1:
   "P, e, n, h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp) \<Longrightarrow> P, V:=e, n, h \<turnstile> (V:=e', xs) \<leftrightarrow> (stk, loc, pc, xcp)"
@@ -517,10 +535,23 @@ apply(induct es arbitrary: es' s)
 apply(auto elim: bisims1.cases)
 done
 
-inductive bisim1' :: "'m prog \<Rightarrow> 'heap \<Rightarrow> expr1 \<Rightarrow> nat \<Rightarrow> (expr1 \<times> val list) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-  and bisims1' :: "'m prog \<Rightarrow> 'heap \<Rightarrow> expr1 list \<Rightarrow> nat \<Rightarrow> (expr1 list \<times> val list) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-  and bisim1'_syntax :: "'m prog \<Rightarrow> expr1 \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> val list) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool" ("_,_,_,_ \<turnstile>' _ \<leftrightarrow> _" [50, 0, 0, 0, 0, 50] 100)
-  and bisims1'_syntax :: "'m prog \<Rightarrow> expr1 list \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> (expr1 list \<times> val list) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool" ("_,_,_,_ \<turnstile>' _ [\<leftrightarrow>] _" [50, 0, 0, 0, 0, 50] 100)
+inductive bisim1' :: 
+  "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr expr1 \<Rightarrow> nat \<Rightarrow> ('addr expr1 \<times> 'addr locals1) 
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+
+  and bisims1' :: 
+  "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr expr1 list \<Rightarrow> nat \<Rightarrow> ('addr expr1 list \<times> 'addr locals1)
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+
+  and bisim1'_syntax :: 
+  "'m prog \<Rightarrow> 'addr expr1 \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) 
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+  ("_,_,_,_ \<turnstile>' _ \<leftrightarrow> _" [50, 0, 0, 0, 0, 50] 100)
+
+  and bisims1'_syntax :: 
+  "'m prog \<Rightarrow> 'addr expr1 list \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr val list) 
+  \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
+  ("_,_,_,_ \<turnstile>' _ [\<leftrightarrow>] _" [50, 0, 0, 0, 0, 50] 100)
   for P :: "'m prog" and  h :: 'heap
 where
   "P, e, n, h \<turnstile>' exs \<leftrightarrow> s \<equiv> bisim1' P h e n exs s"
@@ -600,6 +631,10 @@ where
      bsok e1 n; bsok e2 n; \<And>xs. P, e1, n, h \<turnstile>' (e1, xs) \<leftrightarrow> ([], xs, 0, None) \<rbrakk>
   \<Longrightarrow> P, e1\<guillemotleft>bop\<guillemotright>e2, n, h \<turnstile>' (Throw a, xs) \<leftrightarrow> (stk @ [v1], loc, length (compE2 e1) + pc, \<lfloor>a\<rfloor>)"
 
+| bisim1BinOpThrow':
+  "\<lbrakk> \<And>xs. P, e1, n, h \<turnstile>' (e1, xs) \<leftrightarrow> ([], xs, 0, None); bsok e1 n;
+     \<And>xs. P, e2, n, h \<turnstile>' (e2, xs) \<leftrightarrow> ([], xs, 0, None); bsok e2 n \<rbrakk>
+  \<Longrightarrow> P, e1\<guillemotleft>bop\<guillemotright>e2, n, h \<turnstile>' (Throw a, xs) \<leftrightarrow> ([v1, v2], xs, length (compE2 e1) + length (compE2 e2), \<lfloor>a\<rfloor>)"
 
 | bisim1LAss1':
   "\<lbrakk> P, e, n, h \<turnstile>' (e', xs) \<leftrightarrow> (stk, loc, pc, xcp); bsok e n \<rbrakk>
@@ -1075,7 +1110,7 @@ lemmas bisim1_bisims1_inducts =
   case_names bisim1Val2 bisim1New bisim1NewThrow
   bisim1NewArray bisim1NewArrayThrow bisim1NewArrayNegative bisim1NewArrayFail bisim1Cast bisim1CastThrow bisim1CastFail
   bisim1InstanceOf bisim1InstanceOfThrow
-  bisim1Val bisim1Var bisim1BinOp1 bisim1BinOp2 bisim1BinOpThrow1 bisim1BinOpThrow2
+  bisim1Val bisim1Var bisim1BinOp1 bisim1BinOp2 bisim1BinOpThrow1 bisim1BinOpThrow2 bisim1BinOpThrow
   bisim1LAss1 bisim1LAss2 bisim1LAssThrow
   bisim1AAcc1 bisim1AAcc2 bisim1AAccThrow1 bisim1AAccThrow2 bisim1AAccNull bisim1AAccBounds
   bisim1AAss1 bisim1AAss2 bisim1AAss3 bisim1AAssThrow1 bisim1AAssThrow2
@@ -1163,8 +1198,8 @@ by(auto dest: bisim1_pc_length_compE2D bisims1_pc_length_compEs2D)
 
 lemma bisim_Val_loc_eq_xcp_None: "P, e, n, h \<turnstile> (Val v,xs) \<leftrightarrow> (stk,loc,pc,xcp) \<Longrightarrow> xs = loc \<and> xcp = None"
   and bisims_Val_loc_eq_xcp_None: "P, es, n, h \<turnstile> (map Val vs,xs) [\<leftrightarrow>] (stk,loc,pc,xcp) \<Longrightarrow> xs = loc \<and> xcp = None"
-apply(induct e n e'\<equiv>"Val v::expr1" xs stk loc pc xcp
-         and es n es'\<equiv>"map Val vs::expr1 list" xs stk loc pc xcp
+apply(induct e n e'\<equiv>"Val v::'addr expr1" xs stk loc pc xcp
+         and es n es'\<equiv>"map Val vs::'addr expr1 list" xs stk loc pc xcp
         arbitrary: v and vs rule: bisim1_bisims1_inducts_split)
 apply(auto)
 done
@@ -1174,15 +1209,15 @@ lemma bisim_Val_pc_not_Invoke:
 
   and bisims_Val_pc_not_Invoke: 
   "\<lbrakk> P,es,n,h \<turnstile> (map Val vs,xs) [\<leftrightarrow>] (stk,loc,pc,xcp); pc < length (compEs2 es) \<rbrakk> \<Longrightarrow> compEs2 es ! pc \<noteq> Invoke M n'"
-apply(induct e n e'\<equiv>"Val v::expr1" xs stk loc pc xcp
-         and es n es'\<equiv>"map Val vs::expr1 list" xs stk loc pc xcp
+apply(induct e n e'\<equiv>"Val v::'addr expr1" xs stk loc pc xcp
+         and es n es'\<equiv>"map Val vs::'addr expr1 list" xs stk loc pc xcp
   arbitrary: v and vs rule: bisim1_bisims1_inducts_split)
 apply(auto simp add: nth_append compEs2_map_Val nth_Cons_subtract dest: bisim1_pc_length_compE2)
 done
 
 lemma bisim1_VarD: "P, E, n, h \<turnstile> (Var V,xs) \<leftrightarrow> (stk,loc,pc,xcp) \<Longrightarrow> xs = loc"
   and "P, es, n, h \<turnstile> (es', xs) [\<leftrightarrow>] (stk, loc, pc, xcp) \<Longrightarrow> True"
-by(induct E n e\<equiv>"(Var V :: expr1)" xs stk loc pc xcp and rule: bisim1_bisims1_inducts_split)(auto)
+by(induct E n e\<equiv>"(Var V :: 'addr expr1)" xs stk loc pc xcp and rule: bisim1_bisims1_inducts_split)(auto)
 
 
 lemma bisim1_ThrowD:
@@ -1192,14 +1227,14 @@ lemma bisim1_ThrowD:
   and bisims1_ThrowD:
   "P, es, n, h \<turnstile> (map Val vs @ Throw a # es', xs) [\<leftrightarrow>] (stk, loc, pc, xcp)
   \<Longrightarrow> pc < length (compEs2 es) \<and> (xcp = \<lfloor>a\<rfloor> \<or> xcp = None) \<and> xs = loc"
-apply(induct e n e'\<equiv>"Throw a::expr1" xs stk loc pc xcp
-         and es n es''\<equiv>"map Val vs @ Throw a # es'::expr1 list" xs stk loc pc xcp
+apply(induct e n e'\<equiv>"Throw a::'addr expr1" xs stk loc pc xcp
+         and es n es''\<equiv>"map Val vs @ Throw a # es'::'addr expr1 list" xs stk loc pc xcp
          arbitrary: and vs es' rule: bisim1_bisims1_inducts_split)
 apply(fastsimp dest: bisim1_pc_length_compE2 bisim_Val_loc_eq_xcp_None simp add: Cons_eq_append_conv)+
 done
 
 
-lemma fixes P :: J1_prog
+lemma fixes P :: "'addr J1_prog"
   shows bisim1_Invoke_stkD:
   "\<lbrakk> P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk,loc,pc,None); pc < length (compE2 e); compE2 e ! pc = Invoke M n' \<rbrakk> 
   \<Longrightarrow> \<exists>vs v stk'. stk = vs @ v # stk' \<and> length vs = n'"
@@ -1207,8 +1242,8 @@ lemma fixes P :: J1_prog
   and bisims1_Invoke_stkD: 
   "\<lbrakk> P,es,n,h \<turnstile> (es', xs) [\<leftrightarrow>] (stk,loc,pc,None); pc < length (compEs2 es); compEs2 es ! pc = Invoke M n' \<rbrakk>
   \<Longrightarrow> \<exists>vs v stk'. stk = vs @ v # stk' \<and> length vs = n'"
-proof(induct e n e' xs stk loc pc xcp\<equiv>"None::addr option"
-         and es n es' xs stk loc pc xcp\<equiv>"None::addr option" rule: bisim1_bisims1_inducts_split)
+proof(induct e n e' xs stk loc pc xcp\<equiv>"None::'addr option"
+         and es n es' xs stk loc pc xcp\<equiv>"None::'addr option" rule: bisim1_bisims1_inducts_split)
   case bisim1Call1
   thus ?case
     apply(clarsimp simp add: nth_append append_eq_append_conv2 neq_Nil_conv split: split_if_asm)
@@ -1225,10 +1260,10 @@ next
     done
 qed(fastsimp simp add: nth_append append_eq_append_conv2 neq_Nil_conv nth_Cons_subtract split: split_if_asm bop.split_asm dest: bisim1_pc_length_compE2 bisims1_pc_length_compEs2)+
 
-lemma fixes P :: J1_prog
+lemma fixes P :: "'addr J1_prog"
   shows bisim1_call_xcpNone: "P,e,n,h \<turnstile> (e',xs) \<leftrightarrow> (stk,loc,pc,\<lfloor>a\<rfloor>) \<Longrightarrow> call1 e' = None"
   and bisims1_calls_xcpNone: "P,es,n,h \<turnstile> (es',xs) [\<leftrightarrow>] (stk,loc,pc,\<lfloor>a\<rfloor>) \<Longrightarrow> calls1 es' = None"
-apply(induct e n e' xs stk loc pc xcp\<equiv>"\<lfloor>a::addr\<rfloor>" and es n es' xs stk loc pc xcp\<equiv>"\<lfloor>a::addr\<rfloor>" rule: bisim1_bisims1_inducts_split)
+apply(induct e n e' xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>" and es n es' xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>" rule: bisim1_bisims1_inducts_split)
 apply(auto dest: bisim_Val_loc_eq_xcp_None bisims_Val_loc_eq_xcp_None simp add: is_vals_conv)
 done
 
@@ -1278,8 +1313,8 @@ lemma bisim1_xcp_Some_not_caught:
   and bisims1_xcp_Some_not_caught:
   "P, es, n, h \<turnstile> (map Val vs @ Throw a # es', xs) [\<leftrightarrow>] (stk, loc, pc, \<lfloor>a\<rfloor>)
   \<Longrightarrow> match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxEs2 es pc' d) = None"
-proof(induct e n e'\<equiv>"Throw a::expr1" xs stk loc pc xcp\<equiv>"\<lfloor>a\<rfloor>::addr option"
-         and es n es''\<equiv>"map Val vs @ Throw a # es'::expr1 list" xs stk loc pc xcp\<equiv>"\<lfloor>a\<rfloor>::addr option"
+proof(induct e n e'\<equiv>"Throw a::'addr expr1" xs stk loc pc xcp\<equiv>"\<lfloor>a\<rfloor>::'addr option"
+         and es n es''\<equiv>"map Val vs @ Throw a # es'::'addr expr1 list" xs stk loc pc xcp\<equiv>"\<lfloor>a\<rfloor>::'addr option"
       arbitrary: pc' d and vs es' pc' d rule: bisim1_bisims1_inducts_split)
   case bisim1Sync10
   thus ?case by(simp add: matches_ex_entry_def)
@@ -1362,7 +1397,7 @@ declare match_ex_table_append_not_pcs [simp del]
 
 lemma bisim1_xcp_pcD: "P,e,n,h \<turnstile> (e', xs ) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>) \<Longrightarrow> pc < length (compE2 e)"
   and bisims1_xcp_pcD: "P,es,n,h \<turnstile> (es', xs ) [\<leftrightarrow>] (stk, loc, pc, \<lfloor>a\<rfloor>) \<Longrightarrow> pc < length (compEs2 es)"
-by(induct e n e' xs stk loc pc xcp\<equiv>"\<lfloor>a::addr\<rfloor>" and es n es' xs stk loc pc xcp\<equiv>"\<lfloor>a::addr\<rfloor>"
+by(induct e n e' xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>" and es n es' xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>"
     rule: bisim1_bisims1_inducts_split) auto
 
 declare nth_Cons_subtract[simp]
@@ -1377,8 +1412,8 @@ lemma bisim1_Val_\<tau>Exec_move:
   "\<lbrakk> P, Es, n, h \<turnstile> (map Val vs, xs) [\<leftrightarrow>] (stk, loc, pc, xcp); pc < length (compEs2 Es) \<rbrakk> 
   \<Longrightarrow> xs = loc \<and> xcp = None \<and>
     \<tau>Exec_movesr_a P t Es h (stk, xs, pc, None) (rev vs, xs, length (compEs2 Es), None)"
-proof(induct E n e\<equiv>"(Val v::expr1)" xs stk loc pc xcp
-         and Es n es\<equiv>"map Val vs::expr1 list" xs stk loc pc xcp 
+proof(induct E n e\<equiv>"(Val v::'addr expr1)" xs stk loc pc xcp
+         and Es n es\<equiv>"map Val vs::'addr expr1 list" xs stk loc pc xcp 
   arbitrary: v Env Typ and vs Env Typs rule: bisim1_bisims1_inducts_split)
   case bisim1Val thus ?case by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2Val simp add: exec_move_def)
 next
@@ -1549,8 +1584,8 @@ lemma bisim1_Throw_\<tau>Exec_movet:
   "\<lbrakk> P, es, n, h \<turnstile>  (map Val vs @ Throw a # es',xs) [\<leftrightarrow>] (stk,loc,pc,None) \<rbrakk>
   \<Longrightarrow> \<exists>pc'. \<tau>Exec_movest_a P t es h (stk, loc, pc, None) (Addr a # rev vs, loc, pc', \<lfloor>a\<rfloor>) \<and>
       P, es, n, h \<turnstile> (map Val vs @ Throw a # es',xs) [\<leftrightarrow>] (Addr a # rev vs, loc, pc', \<lfloor>a\<rfloor>) \<and> xs = loc"
-proof(induct e n e'\<equiv>"Throw a::expr1" xs stk loc pc xcp\<equiv>"None::addr option"
-         and es n es''\<equiv>"map Val vs @ Throw a # es'::expr1 list" xs stk loc pc xcp\<equiv>"None::addr option"
+proof(induct e n e'\<equiv>"Throw a::'addr expr1" xs stk loc pc xcp\<equiv>"None::'addr option"
+         and es n es''\<equiv>"map Val vs @ Throw a # es'::'addr expr1 list" xs stk loc pc xcp\<equiv>"None::'addr option"
          arbitrary: Env T and vs Env Ts rule: bisim1_bisims1_inducts_split)
   case (bisim1Sync9 e1 V e2 xs)
   let ?pc = "8 + length (compE2 e1) + length (compE2 e2)"
@@ -1681,8 +1716,8 @@ lemma bisim1_inline_call_Throw:
      compEs2 es ! pc = Invoke M n0; pc < length (compEs2 es) \<rbrakk>
   \<Longrightarrow> n0 = length vs \<and> P,es,n,h \<turnstile> (inline_calls (Throw A) es', xs) [\<leftrightarrow>] (stk, loc, pc, \<lfloor>A\<rfloor>)"
   (is "\<lbrakk> _; _; _; _ \<rbrakk> \<Longrightarrow> ?concls es n es' xs pc stk loc")
-proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: addr option"
-        and es n es' xs stk loc pc xcp\<equiv>"None :: addr option"
+proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: 'addr option"
+        and es n es' xs stk loc pc xcp\<equiv>"None :: 'addr option"
       rule: bisim1_bisims1_inducts_split)
   case (bisim1BinOp1 e1 n e' xs stk loc pc e2 bop)
   note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e1 ! pc = Invoke M n0; pc < length (compE2 e1) \<rbrakk>
@@ -1926,8 +1961,8 @@ apply(auto simp add: max_stack1[simplified] max_def max_stacks_ge_length)
 apply(drule sym, simp add: max_stacks_ge_length, drule sym, simp, rule le_trans[OF max_stacks_ge_length], simp)
 done
 
-inductive bisim1_fr :: "J1_prog \<Rightarrow> 'heap \<Rightarrow> expr1 \<times> locals1 \<Rightarrow> frame \<Rightarrow> bool"
-for P :: J1_prog and h :: 'heap
+inductive bisim1_fr :: "'addr J1_prog \<Rightarrow> 'heap \<Rightarrow> 'addr expr1 \<times> 'addr locals1 \<Rightarrow> 'addr frame \<Rightarrow> bool"
+for P :: "'addr J1_prog" and h :: 'heap
 where
   "\<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = body in D;
      P,blocks1 0 (Class D#Ts) body, 0, h \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, None);
@@ -1962,7 +1997,7 @@ lemma bisim1_call_\<tau>Exec_move:
                      pc' < length (compEs2 es) \<and> compEs2 es ! pc' = Invoke M' (length vs) \<and>
                      P,es,n,h \<turnstile> (es', xs) [\<leftrightarrow>] (rev vs @ Addr a # stk', loc', pc', None)"
   (is "\<lbrakk>_; _; _ \<rbrakk> \<Longrightarrow> ?concls es n es' xs pc stk loc")
-proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: addr option" and es n es' xs stk loc pc xcp\<equiv>"None :: addr option"
+proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: 'addr option" and es n es' xs stk loc pc xcp\<equiv>"None :: 'addr option"
             rule: bisim1_bisims1_inducts_split)
   case bisim1Val2 thus ?case by auto
 next
@@ -2472,7 +2507,7 @@ next
   ultimately show ?case using pc' by fastsimp
 qed
 
-lemma fixes P :: J1_prog
+lemma fixes P :: "'addr J1_prog"
   shows bisim1_inline_call_Val:
   "\<lbrakk> P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None); call1 e' = \<lfloor>(a, M, vs)\<rfloor>;
      compE2 e ! pc = Invoke M n0 \<rbrakk>
@@ -2486,8 +2521,8 @@ lemma fixes P :: J1_prog
     \<Longrightarrow> length stk \<ge> Suc (length vs) \<and> n0 = length vs \<and>
        P,es,n,h \<turnstile> (inline_calls (Val v) es', xs) [\<leftrightarrow>] (v # drop (Suc (length vs)) stk,loc,Suc pc,None)"
   (is "\<lbrakk> _; _; _ \<rbrakk> \<Longrightarrow> ?concls es n es' xs pc stk loc")
-proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: addr option"
-        and es n es' xs stk loc pc xcp\<equiv>"None :: addr option"
+proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: 'addr option"
+        and es n es' xs stk loc pc xcp\<equiv>"None :: 'addr option"
      rule: bisim1_bisims1_inducts_split)
   case bisim1Val2 thus ?case by simp
 next
@@ -2870,8 +2905,8 @@ lemma bisim1_Val_\<tau>red1r:
  and bisims1_Val_\<tau>Reds1r:
   "\<lbrakk> P, Es, n, h \<turnstile> (es, xs) [\<leftrightarrow>] (rev vs, loc, length (compEs2 Es), None); n + max_varss es \<le> length xs \<rbrakk>
    \<Longrightarrow> \<tau>reds1r P t h (es, xs) (map Val vs, loc)"
-proof(induct E n e xs stk\<equiv>"[v]" loc pc\<equiv>"length (compE2 E)" xcp\<equiv>"None::addr option"
-         and Es n es xs stk\<equiv>"rev vs" loc pc\<equiv>"length (compEs2 Es)" xcp\<equiv>"None::addr option"
+proof(induct E n e xs stk\<equiv>"[v]" loc pc\<equiv>"length (compE2 E)" xcp\<equiv>"None::'addr option"
+         and Es n es xs stk\<equiv>"rev vs" loc pc\<equiv>"length (compEs2 Es)" xcp\<equiv>"None::'addr option"
       arbitrary: v and vs rule: bisim1_bisims1_inducts_split)
   case bisim1BlockSome2 thus ?case by(simp (no_asm_use))
 next
@@ -3143,8 +3178,8 @@ next
     with pc have pc: "pc = length (compE2 e2)" by simp
     with bisim2 obtain v2 where [simp]: "stk = [v2]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
-    with exec pc show ?thesis apply(simp)
-      by(erule exec_meth.cases)(auto split: bop.splits intro!: exec_meth.intros)
+    with exec pc show ?thesis 
+      by(fastsimp elim: exec_meth.cases split: sum.split_asm intro!: exec_meth.intros)
   qed
 next
   case (bisim1BinOpThrow1 e1 n a xs stk loc pc e2 bop)
@@ -3195,6 +3230,9 @@ next
   moreover from exec' have pc': "pc' \<ge> length (compE2 e1)"
     by(rule exec_meth_drop_xt_pc)(auto simp add: stack_xlift_compxE2)
   ultimately show ?case using stk' by(auto simp add: stack_xlift_compxE2 shift_compxE2)
+next
+  case bisim1BinOpThrow thus ?case
+    by(auto elim!: exec_meth.cases dest: match_ex_table_pcsD simp add: stack_xlift_compxEs2 stack_xlift_compxE2)
 next
   case (bisim1LAss1 e n e' xs stk loc pc xcp V)
   note bisim = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
@@ -4835,7 +4873,7 @@ qed(fastsimp split: split_if_asm dest: bisim1_pc_length_compE2 bisims1_pc_length
 
 lemma bisim1_xcpD: "P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>) \<Longrightarrow> pc < length (compE2 e)"
   and bisims1_xcpD: "P,es,n,h \<turnstile> (es', xs) [\<leftrightarrow>] (stk, loc, pc, \<lfloor>a\<rfloor>) \<Longrightarrow> pc < length (compEs2 es)"
-apply(induct e n e' xs stk loc pc xcp\<equiv>"\<lfloor>a::addr\<rfloor>" and es n es' xs stk loc pc xcp\<equiv>"\<lfloor>a:: addr\<rfloor>" rule: bisim1_bisims1_inducts_split)
+apply(induct e n e' xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>" and es n es' xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>" rule: bisim1_bisims1_inducts_split)
 apply(simp_all)
 done
 
@@ -4848,7 +4886,7 @@ lemma bisim1_match_Some_stk_length:
   "\<lbrakk> P,Es,n,h \<turnstile> (es, xs) [\<leftrightarrow>] (stk, loc, pc, \<lfloor>a\<rfloor>);
      match_ex_table (compP2 P) (cname_of h a) pc (compxEs2 Es 0 0) = \<lfloor>(pc', d)\<rfloor> \<rbrakk>
   \<Longrightarrow> d \<le> length stk"
-proof(induct E n e xs stk loc pc xcp\<equiv>"\<lfloor>a::addr\<rfloor>" and Es n es xs stk loc pc xcp\<equiv>"\<lfloor>a::addr\<rfloor>"
+proof(induct E n e xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>" and Es n es xs stk loc pc xcp\<equiv>"\<lfloor>a::'addr\<rfloor>"
       arbitrary: pc' d and pc' d rule: bisim1_bisims1_inducts_split)
   case bisim1Call1 thus ?case
     by(fastsimp dest: bisim1_xcpD simp add: match_ex_table_append match_ex_table_not_pcs_None)
@@ -4884,22 +4922,36 @@ qed(fastsimp simp add: match_ex_table_not_pcs_None match_ex_table_append match_e
 end
 
 locale J1_JVM_heap_conf_base =
-  J1_JVM_heap_base   empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write +
-  J1_heap_conf_base  empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf P +
-  JVM_heap_conf_base empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf "compP2 P"
-  for empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
-  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
-  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+  J1_JVM_heap_base
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+  +
+  J1_heap_conf_base
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    hconf P 
+  +
+  JVM_heap_conf_base
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    hconf "compP2 P"
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and hconf :: "'heap \<Rightarrow> bool"
-  and P :: "J1_prog"
+  and P :: "'addr J1_prog"
 begin
 
-inductive bisim1_list1 :: "thread_id \<Rightarrow> 'heap \<Rightarrow> expr1 \<times> locals1 \<Rightarrow> (expr1 \<times> locals1) list \<Rightarrow> addr option \<Rightarrow> frame list \<Rightarrow> bool"
-for t :: thread_id and h :: 'heap
+inductive bisim1_list1 :: 
+  "'thread_id \<Rightarrow> 'heap \<Rightarrow> 'addr expr1 \<times> 'addr locals1 \<Rightarrow> ('addr expr1 \<times> 'addr locals1) list
+  \<Rightarrow> 'addr option \<Rightarrow> 'addr frame list \<Rightarrow> bool"
+for t :: 'thread_id and h :: 'heap
 where
   bl1_Normal:
   "\<lbrakk> compTP P \<turnstile> t:(xcp, h, (stk, loc, C, M, pc) # frs) \<surd>;
@@ -4914,27 +4966,30 @@ where
 | bl1_finalThrow:
   "\<lbrakk> hconf h; preallocated h \<rbrakk> \<Longrightarrow> bisim1_list1 t h (Throw a, xs) [] \<lfloor>a\<rfloor> []"
 
-fun wbisim1 :: "thread_id \<Rightarrow> (((expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list) \<times> 'heap, (addr option \<times> frame list) \<times> 'heap) bisim"
+fun wbisim1 :: 
+  "'thread_id
+  \<Rightarrow> ((('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list) \<times> 'heap, 
+      ('addr option \<times> 'addr frame list) \<times> 'heap) bisim"
 where "wbisim1 t ((ex, exs), h) ((xcp, frs), h') \<longleftrightarrow> h = h' \<and> bisim1_list1 t h ex exs xcp frs"
 
 lemma new_thread_conf_compTP:
   assumes hconf: "hconf h" "preallocated h"
   and ha: "typeof_addr h a = \<lfloor>Class C\<rfloor>"
-  and sub: "typeof_addr h t = \<lfloor>Class C'\<rfloor>" "P \<turnstile> C' \<preceq>\<^sup>* Thread"
+  and sub: "typeof_addr h (thread_id2addr t) = \<lfloor>Class C'\<rfloor>" "P \<turnstile> C' \<preceq>\<^sup>* Thread"
   and sees: "P \<turnstile> C sees M: []\<rightarrow>T = meth in D"
-  shows "compTP P \<turnstile> t:(None, h, [([], Addr a # replicate (max_vars meth) undefined, D, M, 0)]) \<surd>"
+  shows "compTP P \<turnstile> t:(None, h, [([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)]) \<surd>"
 proof -
   from ha sees_method_decl_above[OF sees]
   have "P,h \<turnstile> Addr a :\<le> Class D" by(simp add: conf_def)
   moreover
   hence "compP2 P,h \<turnstile> Addr a :\<le> Class D" by(simp add: compP2_def)
-  hence "compP2 P,h \<turnstile> Addr a # replicate (max_vars meth) undefined [:\<le>\<^sub>\<top>] map (\<lambda>i. if i = 0 then OK ([Class D] ! i) else Err) [0..<max_vars meth] @ [Err]"
+  hence "compP2 P,h \<turnstile> Addr a # replicate (max_vars meth) undefined_value [:\<le>\<^sub>\<top>] map (\<lambda>i. if i = 0 then OK ([Class D] ! i) else Err) [0..<max_vars meth] @ [Err]"
     by -(rule list_all2_all_nthI, simp_all)
   hence "conf_f (compP2 P) h ([], map (\<lambda>i. if i = 0 then OK ([Class D] ! i) else Err) [0..<max_vars meth] @ [Err])
-                (compE2 meth @ [Return]) ([], Addr a # replicate (max_vars meth) undefined, D, M, 0)"
+                (compE2 meth @ [Return]) ([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)"
     unfolding conf_f_def2 by(simp add: compP2_def)
   ultimately have "conf_f (compP2 P) h ([], TC0.ty\<^isub>l (Suc (max_vars meth)) [Class D] {0}) (compE2 meth @ [Return])
-                       ([], Addr a # replicate (max_vars meth) undefined, D, M, 0)"
+                       ([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)"
     by(simp add: TC0.ty\<^isub>l_def conf_f_def2 compP2_def)
   with hconf ha sub sees_method_compP[OF sees, where f="\<lambda>C M Ts T. compMb2"] sees_method_idemp[OF sees]
   show ?thesis
@@ -4944,7 +4999,7 @@ qed
 lemma ta_bisim12_extTA2J1_extTA2JVM:
   assumes wf: "wf_J1_prog P"
   and nt: "\<And>n T C M a h. \<lbrakk> n < length \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> ! n = NewThread T (C, M, a) h \<rbrakk> 
-           \<Longrightarrow> typeof_addr h a = \<lfloor>Class C\<rfloor> \<and> (\<exists>C'. typeof_addr h T = \<lfloor>Class C'\<rfloor> \<and> P \<turnstile> C' \<preceq>\<^sup>* Thread) \<and>
+           \<Longrightarrow> typeof_addr h a = \<lfloor>Class C\<rfloor> \<and> (\<exists>C'. typeof_addr h (thread_id2addr T) = \<lfloor>Class C'\<rfloor> \<and> P \<turnstile> C' \<preceq>\<^sup>* Thread) \<and>
               (\<exists>T meth D. P \<turnstile> C sees M:[]\<rightarrow>T =meth in D) \<and> hconf h \<and> preallocated h"
   shows "ta_bisim wbisim1 (extTA2J1 P ta) (extTA2JVM (compP2 P) ta)"
 proof -
@@ -4953,31 +5008,84 @@ proof -
     from nt[OF this] obtain T meth D C'
       where ma: "typeof_addr m a = \<lfloor>Class C\<rfloor>"
       and sees: "P \<turnstile> C sees M: []\<rightarrow>T = meth in D"
-      and sub: "typeof_addr m t = \<lfloor>Class C'\<rfloor>" "P \<turnstile> C' \<preceq>\<^sup>* Thread"
+      and sub: "typeof_addr m (thread_id2addr t) = \<lfloor>Class C'\<rfloor>" "P \<turnstile> C' \<preceq>\<^sup>* Thread"
       and mconf: "hconf m" "preallocated m" by fastsimp
     from sees_method_compP[OF sees, where f="\<lambda>C M Ts T. compMb2"]
     have sees': "compP2 P \<turnstile> C sees M: []\<rightarrow>T = (max_stack meth, max_vars meth, compE2 meth @ [Return], compxE2 meth 0 0) in D"
       by(simp add: compMb2_def compP2_def)
-    have "bisim1_list1 t m ({0:Class D=None; meth}, Addr a # replicate (max_vars meth) undefined) ([]) None [([], Addr a # replicate (max_vars meth) undefined, D, M, 0)]"
+    have "bisim1_list1 t m ({0:Class D=None; meth}, Addr a # replicate (max_vars meth) undefined_value) ([]) None [([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)]"
     proof
       from mconf ma sub sees
-      show "compTP P \<turnstile> t:(None, m, [([], Addr a # replicate (max_vars meth) undefined, D, M, 0)]) \<surd>"
+      show "compTP P \<turnstile> t:(None, m, [([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)]) \<surd>"
 	by(rule new_thread_conf_compTP)
 
       from sees show "P \<turnstile> D sees M: []\<rightarrow>T = meth in D" by(rule sees_method_idemp)
       show "list_all2 (bisim1_fr P m) [] []" by simp
       from sees_wf_mdecl[OF wf sees] have "bsok meth (Suc 0)"
 	by(auto simp add: wf_mdecl_def bsok_def intro: WT1_expr_locks)
-      thus "P,blocks1 0 [Class D] meth,0,m \<turnstile> ({0:Class D=None; meth}, Addr a # replicate (max_vars meth) undefined) \<leftrightarrow>
-                                                ([], Addr a # replicate (max_vars meth) undefined, 0, None)"
+      thus "P,blocks1 0 [Class D] meth,0,m \<turnstile> ({0:Class D=None; meth}, Addr a # replicate (max_vars meth) undefined_value) \<leftrightarrow>
+                                                ([], Addr a # replicate (max_vars meth) undefined_value, 0, None)"
 	by simp(rule bisim1_refl, simp)
     qed simp
-    with sees sees' have "bisim1_list1 t m ({0:Class (fst (method P C M))=None; snd (snd (snd (method P C M)))}, Addr a # replicate (max_vars (snd (snd (snd (method P C M))))) undefined) [] None [([], Addr a # replicate (fst (snd (snd (snd (snd (method (compP2 P) C M)))))) undefined, fst (method (compP2 P) C M), M, 0)]" by simp }
+    with sees sees' have "bisim1_list1 t m ({0:Class (fst (method P C M))=None; snd (snd (snd (method P C M)))}, Addr a # replicate (max_vars (snd (snd (snd (method P C M))))) undefined_value) [] None [([], Addr a # replicate (fst (snd (snd (snd (snd (method (compP2 P) C M)))))) undefined_value, fst (method (compP2 P) C M), M, 0)]" by simp }
   thus ?thesis
     apply(auto simp add: ta_bisim_def intro!: list_all2_all_nthI)
     apply(case_tac "\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> ! n", auto simp add: extNTA2JVM_def)
     done
 qed
+
+end
+
+definition no_call2 :: "'addr expr1 \<Rightarrow> pc \<Rightarrow> bool"
+where "no_call2 e pc \<longleftrightarrow> (pc \<le> length (compE2 e)) \<and> (pc < length (compE2 e) \<longrightarrow> (\<forall>M n. compE2 e ! pc \<noteq> Invoke M n))"
+
+definition no_calls2 :: "'addr expr1 list \<Rightarrow> pc \<Rightarrow> bool"
+where "no_calls2 es pc \<longleftrightarrow> (pc \<le> length (compEs2 es)) \<and> (pc < length (compEs2 es) \<longrightarrow> (\<forall>M n. compEs2 es ! pc \<noteq> Invoke M n))"
+
+locale J1_JVM_conf_read =
+  J1_JVM_heap_conf_base
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write
+    hconf P 
+  +
+  JVM_conf_read
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    hconf "compP2 P"
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
+  and hconf :: "'heap \<Rightarrow> bool"
+  and P :: "'addr J1_prog"
+
+locale J1_JVM_heap_conf =
+  J1_JVM_heap_conf_base
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    hconf P 
+  +
+  JVM_heap_conf
+    addr2thread_id thread_id2addr
+    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    hconf "compP2 P"
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
+  and hconf :: "'heap \<Rightarrow> bool"
+  and P :: "'addr J1_prog"
+begin
 
 lemma red_external_ta_bisim21: 
   "\<lbrakk> wf_J1_prog P; P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; hconf h'; preallocated h' \<rbrakk>
@@ -4987,7 +5095,7 @@ apply(frule (1) red_external_new_thread_sees)
  apply(fastsimp simp add: in_set_conv_nth)
 apply(frule red_ext_new_thread_heap)
  apply(fastsimp simp add: in_set_conv_nth)
-apply(frule red_external_new_thread_exists_thread_object)
+apply(frule red_external_new_thread_exists_thread_object[unfolded compP2_def, simplified])
  apply(fastsimp simp add: in_set_conv_nth)
 apply simp
 done
@@ -5003,7 +5111,7 @@ proof -
     hence nt: "NewThread t (C, M, a) H \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" unfolding set_conv_nth by(auto intro!: exI)
     from red1_new_threadD[OF red nt] obtain ad M' vs va T
       where rede: "P,t' \<turnstile> \<langle>ad\<bullet>M'(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,hp s'\<rangle>"
-      and ad: "typeof_addr (hp s) ad = \<lfloor>T\<rfloor>" and iec: "is_external_call P T M'"
+      and ad: "typeof_addr (hp s) ad = \<lfloor>T\<rfloor>" and iec: "is_native P T M'"
       by(fastsimp simp add: set_conv_nth)
     from red_ext_new_thread_heap[OF rede nt] have [simp]: "hp s' = H" by simp
     from red_external_new_thread_sees[OF wf rede nt] 
@@ -5011,23 +5119,23 @@ proof -
       and sees: "P \<turnstile> C sees M:[]\<rightarrow>T=body in D" by auto
     have sees': "compP2 P \<turnstile> C sees M:[]\<rightarrow>T=(max_stack body, max_vars body, compE2 body @ [Return], compxE2 body 0 0) in D"
       using sees unfolding compP2_def compMb2_def Let_def by(rule sees_method_compP)
-    from red_external_new_thread_exists_thread_object[OF rede nt] hconf Ha sees
-    have "compTP P \<turnstile> t:(None, H, [([], Addr a # replicate (max_vars body) undefined, D, M, 0)]) \<surd>"
+    from red_external_new_thread_exists_thread_object[unfolded compP2_def, simplified, OF rede nt] hconf Ha sees
+    have "compTP P \<turnstile> t:(None, H, [([], Addr a # replicate (max_vars body) undefined_value, D, M, 0)]) \<surd>"
       by(auto intro: new_thread_conf_compTP)
-    hence "bisim1_list1 t H ({0:Class D=None; body}, Addr a # replicate (max_vars body) undefined) [] None [([], Addr a # replicate (max_vars body) undefined, D, M, 0)]"
+    hence "bisim1_list1 t H ({0:Class D=None; body}, Addr a # replicate (max_vars body) undefined_value) [] None [([], Addr a # replicate (max_vars body) undefined_value, D, M, 0)]"
     proof
       from sees show "P \<turnstile> D sees M:[]\<rightarrow>T=body in D" by(rule sees_method_idemp)
 
       from sees_wf_mdecl[OF wf sees] have "bsok body (Suc 0)"
 	by(auto simp add: wf_mdecl_def bsok_def intro: WT1_expr_locks)
-      thus "P,blocks1 0 [Class D] body,0,H \<turnstile> ({0:Class D=None; body}, Addr a # replicate (max_vars body) undefined) \<leftrightarrow>
-                                                ([], Addr a # replicate (max_vars body) undefined, 0, None)"
+      thus "P,blocks1 0 [Class D] body,0,H \<turnstile> ({0:Class D=None; body}, Addr a # replicate (max_vars body) undefined_value) \<leftrightarrow>
+                                                ([], Addr a # replicate (max_vars body) undefined_value, 0, None)"
 	by(auto intro: bisim1_refl)
     qed simp_all
     hence "bisim1_list1 t H ({0:Class (fst (method P C M))=None; snd (snd (snd (method P C M)))},
-                               Addr a # replicate (max_vars (snd (snd (snd (method P C M))))) undefined)
+                               Addr a # replicate (max_vars (snd (snd (snd (method P C M))))) undefined_value)
                               []
-                              None [([], Addr a # replicate (fst (snd (snd (snd (snd (method (compP2 P) C M)))))) undefined,
+                              None [([], Addr a # replicate (fst (snd (snd (snd (snd (method (compP2 P) C M)))))) undefined_value,
                                     fst (method (compP2 P) C M), M, 0)]"
       using sees sees' by simp }
   thus ?thesis
@@ -5039,41 +5147,13 @@ qed
 
 end
 
-definition no_call2 :: "expr1 \<Rightarrow> pc \<Rightarrow> bool"
-where "no_call2 e pc \<longleftrightarrow> (pc \<le> length (compE2 e)) \<and> (pc < length (compE2 e) \<longrightarrow> (\<forall>M n. compE2 e ! pc \<noteq> Invoke M n))"
-
-definition no_calls2 :: "expr1 list \<Rightarrow> pc \<Rightarrow> bool"
-where "no_calls2 es pc \<longleftrightarrow> (pc \<le> length (compEs2 es)) \<and> (pc < length (compEs2 es) \<longrightarrow> (\<forall>M n. compEs2 es ! pc \<noteq> Invoke M n))"
-
-locale J1_JVM_conf_read =
-  J1_JVM_heap_conf_base empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf P +
-  JVM_conf_read         empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf "compP2 P"
-  for empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
-  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
-  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
-  and hconf :: "'heap \<Rightarrow> bool"
-  and P :: "J1_prog"
-
-locale J1_JVM_heap_conf =
-  J1_JVM_heap_conf_base empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf P +
-  JVM_heap_conf         empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf "compP2 P"
-  for empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
-  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
-  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
-  and hconf :: "'heap \<Rightarrow> bool"
-  and P :: "J1_prog"
-
 sublocale J1_JVM_conf_read < J1_JVM_heap_conf
 by(unfold_locales)
 
-sublocale J1_JVM_conf_read < J1_heap by(unfold_locales)
+sublocale J1_JVM_conf_read < J1_heap
+apply(rule J1_heap.intro)
+apply(subst compP_heap[symmetric, where f="\<lambda>_ _ _ _. compMb2", folded compP2_def])
+apply(unfold_locales)
+done
 
 end

@@ -36,7 +36,7 @@ $(SESSION-NAME): HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 HOL-Word: 
 	cd $(ISABELLE_HOME)/src/HOL; $(ISABELLE_TOOL) make HOL-Word
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Common/*.thy J/*.thy Framework/*.thy document/*.tex BV/*.thy JVM/*.thy Compiler/*.thy MM/*.thy DFA/*.thy ../Jinja/DFA/*.thy ../Coinductive/*.thy ../FinFun/*.thy
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Common/*.thy J/*.thy Framework/*.thy document/*.tex BV/*.thy JVM/*.thy Compiler/*.thy MM/*.thy DFA/*.thy ../Coinductive/*.thy ../FinFun/*.thy
 	cd ..; $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 ## clean

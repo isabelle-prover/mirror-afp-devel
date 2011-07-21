@@ -16,8 +16,8 @@ begin
 
 section{*Correctness of program compilation *}
 
-primrec unmod :: "expr1 \<Rightarrow> nat \<Rightarrow> bool"
-  and unmods :: "expr1 list \<Rightarrow> nat \<Rightarrow> bool"
+primrec unmod :: "'addr expr1 \<Rightarrow> nat \<Rightarrow> bool"
+  and unmods :: "'addr expr1 list \<Rightarrow> nat \<Rightarrow> bool"
 where
   "unmod (new C) i = True"
 | "unmod (newA T\<lfloor>e\<rceil>) i = unmod e i"
@@ -48,7 +48,8 @@ where
 lemma unmods_map_Val [simp]: "unmods (map Val vs) V"
 by(induct vs) simp_all
 
-lemma hidden_unmod: "hidden Vs i \<Longrightarrow> unmod (compE1 Vs e) i"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows hidden_unmod: "hidden Vs i \<Longrightarrow> unmod (compE1 Vs e) i"
   and hidden_unmods: "hidden Vs i \<Longrightarrow> unmods (compEs1 Vs es) i"
 apply(induct Vs e and Vs es rule: compE1_compEs1_induct)
 apply (simp_all add:hidden_inacc)
@@ -64,7 +65,8 @@ done
 
 declare max_dest [dest!]
 
-lemma fv_unmod_compE1: "\<lbrakk> i < length Vs; Vs ! i \<notin> fv e \<rbrakk> \<Longrightarrow> unmod (compE1 Vs e) i"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows fv_unmod_compE1: "\<lbrakk> i < length Vs; Vs ! i \<notin> fv e \<rbrakk> \<Longrightarrow> unmod (compE1 Vs e) i"
   and fvs_unmods_compEs1: "\<lbrakk> i < length Vs; Vs ! i \<notin> fvs es \<rbrakk> \<Longrightarrow> unmods (compEs1 Vs es) i"
 proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
   case (Block Vs V ty vo exp)
@@ -105,7 +107,8 @@ qed(auto dest: index_le_lengthD simp add: nth_append)
 lemma hidden_lengthD: "hidden Vs i \<Longrightarrow> i < length Vs"
 by(simp add: hidden_def)
 
-lemma fv_B_unmod: "\<lbrakk> V \<notin> fv e; \<B> e n; V < n \<rbrakk> \<Longrightarrow> unmod e V"
+lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
+  shows fv_B_unmod: "\<lbrakk> V \<notin> fv e; \<B> e n; V < n \<rbrakk> \<Longrightarrow> unmod e V"
   and fvs_Bs_unmods: "\<lbrakk> V \<notin> fvs es; \<B>s es n; V < n \<rbrakk> \<Longrightarrow> unmods es V"
 by(induct e and es arbitrary: n and n) auto
 
@@ -117,13 +120,12 @@ apply(insert fin)
 apply(auto simp add: is_vals_conv)
 done
 
-
 section {* The delay bisimulation relation *}
 
 text {* Delay bisimulation for expressions *}
 
-inductive bisim :: "vname list \<Rightarrow> expr \<Rightarrow> expr1 \<Rightarrow> val list \<Rightarrow> bool"
-  and bisims :: "vname list \<Rightarrow> expr list \<Rightarrow> expr1 list \<Rightarrow> val list \<Rightarrow> bool"
+inductive bisim :: "vname list \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr1 \<Rightarrow> 'addr val list \<Rightarrow> bool"
+  and bisims :: "vname list \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr1 list \<Rightarrow> 'addr val list \<Rightarrow> bool"
 where
   bisimNew: "bisim Vs (new C) (new C) xs"
 | bisimNewArray: "bisim Vs e e' xs \<Longrightarrow> bisim Vs (newA T\<lfloor>e\<rceil>) (newA T\<lfloor>e'\<rceil>) xs"
@@ -246,12 +248,12 @@ inductive_cases bisims_cases [elim]:
 
 text {* Delay bisimulation for call stacks *}
 
-inductive bisim01 :: "expr \<Rightarrow> expr1 \<times> locals1 \<Rightarrow> bool"
+inductive bisim01 :: "'addr expr \<Rightarrow> 'addr expr1 \<times> 'addr locals1 \<Rightarrow> bool"
 where
   "\<lbrakk> bisim [] e e' xs; fv e = {}; \<D> e \<lfloor>{}\<rfloor>; max_vars e' \<le> length xs; call e = \<lfloor>aMvs\<rfloor>; call1 e' = \<lfloor>aMvs\<rfloor> \<rbrakk>
   \<Longrightarrow> bisim01 e (e', xs)"
 
-inductive bisim_list :: "expr list \<Rightarrow> (expr1 \<times> locals1) list \<Rightarrow> bool"
+inductive bisim_list :: "'addr expr list \<Rightarrow> ('addr expr1 \<times> 'addr locals1) list \<Rightarrow> bool"
 where
   bisim_listNil: "bisim_list [] []"
 | bisim_listCons: 
@@ -266,19 +268,25 @@ inductive_cases bisim_list_cases [elim!]:
  "bisim_list (ex # exs) exs'"
  "bisim_list exs (ex' # exs')"
 
-fun bisim_list1 :: "expr \<times> expr list \<Rightarrow> (expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list \<Rightarrow> bool"
+fun bisim_list1 :: 
+  "'addr expr \<times> 'addr expr list \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list \<Rightarrow> bool"
 where
-  "bisim_list1 (e, es) ((e1, xs1), exs1) \<longleftrightarrow> bisim_list es exs1 \<and> bisim [] e e1 xs1 \<and> fv e = {} \<and> \<D> e \<lfloor>{}\<rfloor> \<and> max_vars e1 \<le> length xs1"
+  "bisim_list1 (e, es) ((e1, xs1), exs1) \<longleftrightarrow> 
+   bisim_list es exs1 \<and> bisim [] e e1 xs1 \<and> fv e = {} \<and> \<D> e \<lfloor>{}\<rfloor> \<and> max_vars e1 \<le> length xs1"
 
-definition bisim_red0_Red1 :: "((expr \<times> expr list) \<times> 'heap) \<Rightarrow> (((expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list) \<times> 'heap) \<Rightarrow> bool"
+definition bisim_red0_Red1 :: 
+  "(('addr expr \<times> 'addr expr list) \<times> 'heap)
+  \<Rightarrow> ((('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list) \<times> 'heap) \<Rightarrow> bool"
 where "bisim_red0_Red1 \<equiv> (\<lambda>(es, h) (exs, h'). bisim_list1 es exs \<and> h = h')"
 
-abbreviation ta_bisim01 :: "'heap J0_thread_action \<Rightarrow> 'heap J1_thread_action \<Rightarrow> bool" where
+abbreviation ta_bisim01 ::
+  "('addr, 'thread_id, 'heap) J0_thread_action \<Rightarrow> ('addr, 'thread_id, 'heap) J1_thread_action \<Rightarrow> bool" 
+where
   "ta_bisim01 \<equiv> ta_bisim (\<lambda>t. bisim_red0_Red1)"
 
-definition bisim_wait01 :: "(expr \<times> expr list) \<Rightarrow> (expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list \<Rightarrow> bool"
+definition bisim_wait01 ::
+  "('addr expr \<times> 'addr expr list) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list \<Rightarrow> bool"
 where "bisim_wait01 \<equiv> \<lambda>(e0, es0) ((e1, xs1), exs1). call e0 \<noteq> None \<and> call1 e1 \<noteq> None"
-
 
 lemma bisim_list1I[intro?]:
   "\<lbrakk> bisim_list es exs1; bisim [] e e1 xs1; fv e = {};
@@ -439,7 +447,7 @@ lemma bisim_list_extTA2J0_extTA2J1:
 proof -
   obtain pns body where "meth = (pns, body)" by(cases meth)
   with sees have sees: "P \<turnstile> C sees M:[]\<rightarrow>T = (pns, body) in D" by simp
-  moreover let ?xs = "Addr a # replicate (max_vars body) undefined"
+  moreover let ?xs = "Addr a # replicate (max_vars body) undefined_value"
   let ?e' = "{0:Class D=None; compE1 (this # pns) body}"
   have "bisim_list1 ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, []) ((?e', ?xs), [])"
   proof
@@ -508,7 +516,7 @@ proof(induct pns Ts vs e arbitrary: e' Vs rule: blocks.induct)
   thus ?case by simp
 qed(auto)
 
-lemma fixes e :: "('a,'b) exp" and es :: "('a,'b) exp list"
+lemma fixes e :: "('a,'b,'addr) exp" and es :: "('a,'b,'addr) exp list"
   shows inline_call_max_vars: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> max_vars (inline_call e' e) \<le> max_vars e + max_vars e'"
   and inline_calls_max_varss: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> max_varss (inline_calls e' es) \<le> max_varss es + max_vars e'"
 by(induct e and es)(auto)
@@ -706,7 +714,7 @@ done
 context J1_heap_base begin
 
 lemma [simp]:
-  fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+  fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move1_compP: "\<tau>move1 (compP f P) h e = \<tau>move1 P h e"
   and \<tau>moves1_compP: "\<tau>moves1 (compP f P) h es = \<tau>moves1 P h es"
 by(induct e and es) auto
@@ -764,7 +772,7 @@ end
 context J_heap_base begin
 
 lemma [simp]:
-  fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+  fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move0_compP: "\<tau>move0 (compP f P) h e = \<tau>move0 P h e"
   and \<tau>moves0_compP: "\<tau>moves0 (compP f P) h es = \<tau>moves0 P h es"
 by(induct e and es) auto

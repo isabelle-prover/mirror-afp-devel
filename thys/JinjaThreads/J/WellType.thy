@@ -7,160 +7,175 @@ header {* \isaheader{Well-typedness of Jinja expressions} *}
 theory WellType imports
   Expr
   State
-  "../Common/ExternalCall"
+  "../Common/ExternalCallWF"
   "../Common/WellForm"
+  "../Common/SemiType"
 begin
 
-types 
+declare Listn.lesub_list_impl_same_size[simp del]
+declare listE_length [simp del]
+
+type_synonym 
   env  = "vname \<rightharpoonup> ty"
 
-inductive WT :: "J_prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_ \<turnstile> _ :: _"   [51,51,51]50)
-  and WTs :: "J_prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [::] _"   [51,51,51]50)
-  for P :: "J_prog"
-  where
+inductive
+  WT :: "(ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool) \<Rightarrow> 'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile> _ :: _"   [51,51,51,51]50)
+  and WTs :: "(ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool) \<Rightarrow> 'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> ty list \<Rightarrow> bool" 
+    ("_,_,_ \<turnstile> _ [::] _"   [51,51,51,51]50)
+  for is_lub :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("\<turnstile> lub'((_,/ _)') = _" [51,51,51] 50)
+  and P :: "'addr J_prog"
+where
 
   WTNew:
   "is_class P C  \<Longrightarrow>
-  P,E \<turnstile> new C :: Class C"
+  is_lub,P,E \<turnstile> new C :: Class C"
 
 | WTNewArray:
-  "\<lbrakk> P,E \<turnstile> e :: Integer; is_type P T \<rbrakk> \<Longrightarrow>
-  P,E \<turnstile> newA T\<lfloor>e\<rceil> :: T\<lfloor>\<rceil>"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: Integer; is_type P (T\<lfloor>\<rceil>) \<rbrakk> \<Longrightarrow>
+  is_lub,P,E \<turnstile> newA T\<lfloor>e\<rceil> :: T\<lfloor>\<rceil>"
 
 | WTCast:
-  "\<lbrakk> P,E \<turnstile> e :: T; P \<turnstile> U \<le> T \<or> P \<turnstile> T \<le> U; is_type P U \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> Cast U e :: U"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: T; P \<turnstile> U \<le> T \<or> P \<turnstile> T \<le> U; is_type P U \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> Cast U e :: U"
 
 | WTInstanceOf:
-  "\<lbrakk> P,E \<turnstile> e :: T; P \<turnstile> U \<le> T \<or> P \<turnstile> T \<le> U; is_type P U; is_refT T; is_refT U \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e instanceof U :: Boolean"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: T; P \<turnstile> U \<le> T \<or> P \<turnstile> T \<le> U; is_type P U; is_refT U \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> e instanceof U :: Boolean"
 
 | WTVal:
   "typeof v = Some T \<Longrightarrow>
-  P,E \<turnstile> Val v :: T"
+  is_lub,P,E \<turnstile> Val v :: T"
 
 | WTVar:
   "E V = Some T \<Longrightarrow>
-  P,E \<turnstile> Var V :: T"
+  is_lub,P,E \<turnstile> Var V :: T"
 
 | WTBinOp:
-  "\<lbrakk> P,E \<turnstile> e1 :: T1; P,E \<turnstile> e2 :: T2; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e1\<guillemotleft>bop\<guillemotright>e2 :: T"
+  "\<lbrakk> is_lub,P,E \<turnstile> e1 :: T1; is_lub,P,E \<turnstile> e2 :: T2; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> e1\<guillemotleft>bop\<guillemotright>e2 :: T"
 
 | WTLAss:
-  "\<lbrakk> E V = Some T;  P,E \<turnstile> e :: T';  P \<turnstile> T' \<le> T;  V \<noteq> this \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> V:=e :: Void"
+  "\<lbrakk> E V = Some T;  is_lub,P,E \<turnstile> e :: T';  P \<turnstile> T' \<le> T;  V \<noteq> this \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> V:=e :: Void"
 
 | WTAAcc:
-  "\<lbrakk> P,E \<turnstile> a :: T\<lfloor>\<rceil>; P,E \<turnstile> i :: Integer \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> a\<lfloor>i\<rceil> :: T"
+  "\<lbrakk> is_lub,P,E \<turnstile> a :: T\<lfloor>\<rceil>; is_lub,P,E \<turnstile> i :: Integer \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> a\<lfloor>i\<rceil> :: T"
 
 | WTAAss:
-  "\<lbrakk> P,E \<turnstile> a :: T\<lfloor>\<rceil>; P,E \<turnstile> i :: Integer; P,E \<turnstile> e :: T'; P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> a\<lfloor>i\<rceil> := e :: Void"
+  "\<lbrakk> is_lub,P,E \<turnstile> a :: T\<lfloor>\<rceil>; is_lub,P,E \<turnstile> i :: Integer; is_lub,P,E \<turnstile> e :: T'; P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> a\<lfloor>i\<rceil> := e :: Void"
 
 | WTALength:
-  "P,E \<turnstile> a :: T\<lfloor>\<rceil> \<Longrightarrow> P,E \<turnstile> a\<bullet>length :: Integer"
+  "is_lub,P,E \<turnstile> a :: T\<lfloor>\<rceil> \<Longrightarrow> is_lub,P,E \<turnstile> a\<bullet>length :: Integer"
 
 | WTFAcc:
-  "\<lbrakk> P,E \<turnstile> e :: Class C;  P \<turnstile> C sees F:T (fm) in D \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<bullet>F{D} :: T"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>F{D} :: T"
 
 | WTFAss:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Class C;  P \<turnstile> C sees F:T (fm) in D;  P,E \<turnstile> e\<^isub>2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :: Void"
+  "\<lbrakk> is_lub,P,E \<turnstile> e\<^isub>1 :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D; is_lub,P,E \<turnstile> e\<^isub>2 :: T'; P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :: Void"
 
 | WTCall:
-  "\<lbrakk> P,E \<turnstile> e :: Class C; \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
-     P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<bullet>M(es) :: T"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: U; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
+     is_lub,P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>M(es) :: T"
 
 | WTExternal:
-  "\<lbrakk> P,E \<turnstile> e :: T; P,E \<turnstile> es [::] Ts; P \<turnstile> T\<bullet>M(Ts') :: U; P \<turnstile> Ts [\<le>] Ts' \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<bullet>M(es) :: U"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: T; is_lub,P,E \<turnstile> es [::] Ts; P \<turnstile> T\<bullet>M(Ts') :: U; P \<turnstile> Ts [\<le>] Ts' \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>M(es) :: U"
 
 | WTBlock:
-  "\<lbrakk> is_type P T;  P,E(V \<mapsto> T) \<turnstile> e :: T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow>  P,E \<turnstile> {V:T=vo; e} :: T'"
+  "\<lbrakk> is_type P T;  is_lub,P,E(V \<mapsto> T) \<turnstile> e :: T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow>  is_lub,P,E \<turnstile> {V:T=vo; e} :: T'"
 
 | WTSynchronized:
-  "\<lbrakk> P,E \<turnstile> o' :: T; is_refT T; T \<noteq> NT; P,E \<turnstile> e :: T' \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> sync(o') e :: T'"
+  "\<lbrakk> is_lub,P,E \<turnstile> o' :: T; is_refT T; T \<noteq> NT; is_lub,P,E \<turnstile> e :: T' \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> sync(o') e :: T'"
 
 -- "Note that insync is not statically typable."
 
 | WTSeq:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1::T\<^isub>1;  P,E \<turnstile> e\<^isub>2::T\<^isub>2 \<rbrakk>
-  \<Longrightarrow>  P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
+  "\<lbrakk> is_lub,P,E \<turnstile> e\<^isub>1::T\<^isub>1;  is_lub,P,E \<turnstile> e\<^isub>2::T\<^isub>2 \<rbrakk>
+  \<Longrightarrow>  is_lub,P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
 | WTCond:
-  "\<lbrakk> P,E \<turnstile> e :: Boolean;  P,E \<turnstile> e\<^isub>1::T\<^isub>1;  P,E \<turnstile> e\<^isub>2::T\<^isub>2; P \<turnstile> lub(T\<^isub>1, T\<^isub>2) = T \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: Boolean;  is_lub,P,E \<turnstile> e\<^isub>1::T\<^isub>1;  is_lub,P,E \<turnstile> e\<^isub>2::T\<^isub>2; \<turnstile> lub(T\<^isub>1, T\<^isub>2) = T \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
 
 | WTWhile:
-  "\<lbrakk> P,E \<turnstile> e :: Boolean;  P,E \<turnstile> c::T \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> while (e) c :: Void"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: Boolean;  is_lub,P,E \<turnstile> c::T \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> while (e) c :: Void"
 
 | WTThrow:
-  "\<lbrakk> P,E \<turnstile> e :: Class C; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk> \<Longrightarrow> 
-  P,E \<turnstile> throw e :: Void"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: Class C; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk> \<Longrightarrow> 
+  is_lub,P,E \<turnstile> throw e :: Void"
 
 | WTTry:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: T;  P,E(V \<mapsto> Class C) \<turnstile> e\<^isub>2 :: T; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
+  "\<lbrakk> is_lub,P,E \<turnstile> e\<^isub>1 :: T;  is_lub,P,E(V \<mapsto> Class C) \<turnstile> e\<^isub>2 :: T; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
 
-| WTNil: "P,E \<turnstile> [] [::] []"
+| WTNil: "is_lub,P,E \<turnstile> [] [::] []"
 
-| WTCons: "\<lbrakk> P,E \<turnstile> e :: T; P,E \<turnstile> es [::] Ts \<rbrakk> \<Longrightarrow> P,E \<turnstile> e#es [::] T#Ts"
+| WTCons: "\<lbrakk> is_lub,P,E \<turnstile> e :: T; is_lub,P,E \<turnstile> es [::] Ts \<rbrakk> \<Longrightarrow> is_lub,P,E \<turnstile> e#es [::] T#Ts"
 
+abbreviation WT' :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_ \<turnstile> _ :: _" [51,51,51] 50)
+where "WT' P \<equiv> WT (TypeRel.is_lub P) P"
+
+abbreviation WTs' :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [::] _" [51,51,51] 50)
+where "WTs' P \<equiv> WTs (TypeRel.is_lub P) P"
 
 declare WT_WTs.intros[intro!]
 declare WTCall[rule del, intro] WTExternal[rule del, intro]
 
 inductive_simps WTs_iffs [iff]:
-  "P,E \<turnstile> [] [::] Ts"
-  "P,E \<turnstile> e#es [::] T#Ts"
-  "P,E \<turnstile> e#es [::] Ts"
+  "is_lub',P,E \<turnstile> [] [::] Ts"
+  "is_lub',P,E \<turnstile> e#es [::] T#Ts"
+  "is_lub',P,E \<turnstile> e#es [::] Ts"
 
-lemma WTs_conv_list_all2: "P,E \<turnstile> es [::] Ts = list_all2 (WT P E) es Ts"
+lemma WTs_conv_list_all2: 
+  fixes is_lub 
+  shows "is_lub,P,E \<turnstile> es [::] Ts = list_all2 (WT is_lub P E) es Ts"
 by(induct es arbitrary: Ts)(auto simp add: list_all2_Cons1 elim: WTs.cases)
 
-lemma WTs_append [iff]: "\<And>Ts. (P,E \<turnstile> es\<^isub>1 @ es\<^isub>2 [::] Ts) =
-  (\<exists>Ts\<^isub>1 Ts\<^isub>2. Ts = Ts\<^isub>1 @ Ts\<^isub>2 \<and> P,E \<turnstile> es\<^isub>1 [::] Ts\<^isub>1 \<and> P,E \<turnstile> es\<^isub>2[::]Ts\<^isub>2)"
+lemma WTs_append [iff]: "\<And>is_lub Ts. (is_lub,P,E \<turnstile> es\<^isub>1 @ es\<^isub>2 [::] Ts) =
+  (\<exists>Ts\<^isub>1 Ts\<^isub>2. Ts = Ts\<^isub>1 @ Ts\<^isub>2 \<and> is_lub,P,E \<turnstile> es\<^isub>1 [::] Ts\<^isub>1 \<and> is_lub,P,E \<turnstile> es\<^isub>2[::]Ts\<^isub>2)"
 by(auto simp add: WTs_conv_list_all2 list_all2_append1 dest: list_all2_lengthD[symmetric])
 
 inductive_simps WT_iffs [iff]:
-  "P,E \<turnstile> Val v :: T"
-  "P,E \<turnstile> Var V :: T"
-  "P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
-  "P,E \<turnstile> {V:T=vo; e} :: T'"
+  "is_lub',P,E \<turnstile> Val v :: T"
+  "is_lub',P,E \<turnstile> Var V :: T"
+  "is_lub',P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
+  "is_lub',P,E \<turnstile> {V:T=vo; e} :: T'"
 
 inductive_cases WT_elim_cases[elim!]:
-  "P,E \<turnstile> V :=e :: T"
-  "P,E \<turnstile> sync(o') e :: T"
-  "P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
-  "P,E \<turnstile> while (e) c :: T"
-  "P,E \<turnstile> throw e :: T"
-  "P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
-  "P,E \<turnstile> Cast D e :: T"
-  "P,E \<turnstile> e instanceof U :: T"
-  "P,E \<turnstile> a\<bullet>F{D} :: T"
-  "P,E \<turnstile> a\<bullet>F{D} := v :: T"
-  "P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T"
-  "P,E \<turnstile> new C :: T"
-  "P,E \<turnstile> newA T\<lfloor>e\<rceil> :: T'"
-  "P,E \<turnstile> a\<lfloor>i\<rceil> := e :: T"
-  "P,E \<turnstile> a\<lfloor>i\<rceil> :: T"
-  "P,E \<turnstile> a\<bullet>length :: T"
-  "P,E \<turnstile> e\<bullet>M(ps) :: T"
-  "P,E \<turnstile> sync(o') e :: T"
-  "P,E \<turnstile> insync(a) e :: T"
+  "is_lub',P,E \<turnstile> V :=e :: T"
+  "is_lub',P,E \<turnstile> sync(o') e :: T"
+  "is_lub',P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
+  "is_lub',P,E \<turnstile> while (e) c :: T"
+  "is_lub',P,E \<turnstile> throw e :: T"
+  "is_lub',P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
+  "is_lub',P,E \<turnstile> Cast D e :: T"
+  "is_lub',P,E \<turnstile> e instanceof U :: T"
+  "is_lub',P,E \<turnstile> a\<bullet>F{D} :: T"
+  "is_lub',P,E \<turnstile> a\<bullet>F{D} := v :: T"
+  "is_lub',P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T"
+  "is_lub',P,E \<turnstile> new C :: T"
+  "is_lub',P,E \<turnstile> newA T\<lfloor>e\<rceil> :: T'"
+  "is_lub',P,E \<turnstile> a\<lfloor>i\<rceil> := e :: T"
+  "is_lub',P,E \<turnstile> a\<lfloor>i\<rceil> :: T"
+  "is_lub',P,E \<turnstile> a\<bullet>length :: T"
+  "is_lub',P,E \<turnstile> e\<bullet>M(ps) :: T"
+  "is_lub',P,E \<turnstile> sync(o') e :: T"
+  "is_lub',P,E \<turnstile> insync(a) e :: T"
 
 inductive_cases WT_callE:
-  "P,E \<turnstile> e\<bullet>M(es) :: T"
+  "is_lub',P,E \<turnstile> e\<bullet>M(es) :: T"
 
-lemma assumes wf: "wf_prog wfmd P"
-  shows WT_unique: "\<lbrakk> P,E \<turnstile> e :: T; P,E \<turnstile> e :: T' \<rbrakk> \<Longrightarrow> T = T'"
-  and WTs_unique: "\<lbrakk> P,E \<turnstile> es [::] Ts; P,E \<turnstile> es [::] Ts' \<rbrakk> \<Longrightarrow> Ts = Ts'"
+lemma fixes is_lub :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("\<turnstile> lub'((_,/ _)') = _" [51,51,51] 50)
+  assumes is_lub_unique: "\<And>T1 T2 T3 T4. \<lbrakk> \<turnstile> lub(T1, T2) = T3; \<turnstile> lub(T1, T2) = T4 \<rbrakk> \<Longrightarrow> T3 = T4"
+  shows WT_unique: "\<lbrakk> is_lub,P,E \<turnstile> e :: T; is_lub,P,E \<turnstile> e :: T' \<rbrakk> \<Longrightarrow> T = T'"
+  and WTs_unique: "\<lbrakk> is_lub,P,E \<turnstile> es [::] Ts; is_lub,P,E \<turnstile> es [::] Ts' \<rbrakk> \<Longrightarrow> Ts = Ts'"
 apply(induct arbitrary: T' and Ts' rule: WT_WTs.inducts)
 apply blast
 apply blast
@@ -173,18 +188,18 @@ apply fastsimp
 apply fastsimp
 apply fastsimp
 apply fastsimp
-apply(fastsimp dest: sees_field_fun)
-apply(fastsimp dest: sees_field_fun)
+apply(fastsimp dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
+apply(fastsimp dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
 apply(erule WT_callE)
- apply(fastsimp dest: sees_method_fun)
-apply(fastsimp dest: external_WT_is_external_call)
+ apply(fastsimp dest: sees_method_fun simp add: is_class_type_of_conv_class_type_of_Some)
+apply(fastsimp dest: external_WT_is_native)
 apply(erule WT_callE)
- apply(fastsimp dest: external_WT_is_external_call)
+ apply(fastsimp dest: external_WT_is_native)
 apply(fastsimp dest: external_WT_determ)
 apply fastsimp
 apply fastsimp
 apply fastsimp
-apply(blast dest: is_lub_unique[OF wf])
+apply(blast dest: is_lub_unique)
 apply fastsimp
 apply fastsimp
 apply blast
@@ -192,8 +207,9 @@ apply fastsimp
 apply fastsimp
 done
 
-lemma wt_env_mono: "P,E \<turnstile> e :: T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E' \<turnstile> e :: T)"
-  and wts_env_mono: "P,E \<turnstile> es [::] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E' \<turnstile> es [::] Ts)"
+lemma fixes is_lub
+  shows wt_env_mono: "is_lub,P,E \<turnstile> e :: T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> is_lub,P,E' \<turnstile> e :: T)"
+  and wts_env_mono: "is_lub,P,E \<turnstile> es [::] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> is_lub,P,E' \<turnstile> es [::] Ts)"
 apply(induct rule: WT_WTs.inducts)
 apply(simp add: WTNew)
 apply(simp add: WTNewArray)
@@ -220,17 +236,191 @@ apply(fastsimp simp: WTTry map_le_def dom_def)
 apply(fastsimp)+
 done
 
-
-lemma WT_fv: "P,E \<turnstile> e :: T \<Longrightarrow> fv e \<subseteq> dom E"
-  and WT_fvs: "P,E \<turnstile> es [::] Ts \<Longrightarrow> fvs es \<subseteq> dom E"
+lemma fixes is_lub
+  shows WT_fv: "is_lub,P,E \<turnstile> e :: T \<Longrightarrow> fv e \<subseteq> dom E"
+  and WT_fvs: "is_lub,P,E \<turnstile> es [::] Ts \<Longrightarrow> fvs es \<subseteq> dom E"
 apply(induct rule:WT_WTs.inducts)
 apply(simp_all del: fun_upd_apply)
 apply fast+
 done
 
-lemma WT_expr_locks: "P,E \<turnstile> e :: T \<Longrightarrow> expr_locks e = (\<lambda>ad. 0)"
-  and WTs_expr_lockss: "P,E \<turnstile> es [::] Ts \<Longrightarrow> expr_lockss es = (\<lambda>ad. 0)"
+lemma fixes is_lub
+  shows WT_expr_locks: "is_lub,P,E \<turnstile> e :: T \<Longrightarrow> expr_locks e = (\<lambda>ad. 0)"
+  and WTs_expr_lockss: "is_lub,P,E \<turnstile> es [::] Ts \<Longrightarrow> expr_lockss es = (\<lambda>ad. 0)"
 by(induct rule: WT_WTs.inducts)(auto)
 
+lemma
+  fixes is_lub :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("\<turnstile> lub'((_,/ _)') = _" [51,51,51] 50)
+  assumes is_lub_is_type: "\<And>T1 T2 T3. \<lbrakk> \<turnstile> lub(T1, T2) = T3; is_type P T1; is_type P T2 \<rbrakk> \<Longrightarrow> is_type P T3"
+  and wf: "wf_prog wf_md P"
+  shows WT_is_type: "\<lbrakk> is_lub,P,E \<turnstile> e :: T; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> is_type P T"
+  and WTs_is_type: "\<lbrakk> is_lub,P,E \<turnstile> es [::] Ts; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> set Ts \<subseteq> types P"
+apply(induct rule: WT_WTs.inducts)
+apply simp
+apply simp
+apply simp
+apply simp
+apply (simp add:typeof_lit_is_type)
+apply (fastsimp intro:nth_mem simp add: ran_def)
+apply(simp add: WT_binop_is_type)
+apply(simp)
+apply(simp del: is_type_array add: is_type_ArrayD)
+apply(simp)
+apply(simp)
+apply(simp add:sees_field_is_type[OF _ wf])
+apply(simp)
+apply(fastsimp dest: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
+apply(fastsimp dest: external_WT_is_type[OF wf])
+apply(fastsimp simp add: ran_def split: split_if_asm)
+apply(simp add: is_class_Object[OF wf])
+apply(simp)
+apply(simp)
+apply(fastsimp intro: is_lub_is_type)
+apply(simp)
+apply(simp)
+apply simp
+apply simp
+apply simp
+done
+
+lemma
+  fixes is_lub1 :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("\<turnstile>1 lub'((_,/ _)') = _" [51,51,51] 50)
+  and is_lub2 :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("\<turnstile>2 lub'((_,/ _)') = _" [51,51,51] 50)
+  assumes wf: "wf_prog wf_md P"
+  and is_lub1_into_is_lub2: "\<And>T1 T2 T3. \<lbrakk> \<turnstile>1 lub(T1, T2) = T3; is_type P T1; is_type P T2 \<rbrakk> \<Longrightarrow> \<turnstile>2 lub(T1, T2) = T3"
+  and is_lub2_is_type: "\<And>T1 T2 T3. \<lbrakk> \<turnstile>2 lub(T1, T2) = T3; is_type P T1; is_type P T2 \<rbrakk> \<Longrightarrow> is_type P T3"
+  shows WT_change_is_lub: "\<lbrakk> is_lub1,P,E \<turnstile> e :: T; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> is_lub2,P,E \<turnstile> e :: T"
+  and WTs_change_is_lub: "\<lbrakk> is_lub1,P,E \<turnstile> es [::] Ts; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> is_lub2,P,E \<turnstile> es [::] Ts"
+proof(induct rule: WT_WTs.inducts)
+  case (WTBlock U E V e' T vo)
+  from `is_type P U` `ran E \<subseteq> types P`
+  have "ran (E(V \<mapsto> U)) \<subseteq> types P" by(auto simp add: ran_def)
+  hence "is_lub2,P,E(V \<mapsto> U) \<turnstile> e' :: T" by(rule WTBlock)
+  with `is_type P U` show ?case
+    using `case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> U` by auto
+next
+  case (WTCond E e e1 T1 e2 T2 T)
+  from `ran E \<subseteq> types P` have "is_lub2,P,E \<turnstile> e :: Boolean" "is_lub2,P,E \<turnstile> e1 :: T1" "is_lub2,P,E \<turnstile> e2 :: T2"
+    by(rule WTCond)+
+  moreover from is_lub2_is_type wf `is_lub2,P,E \<turnstile> e1 :: T1` `ran E \<subseteq> types P`
+  have "is_type P T1" by(rule WT_is_type)
+  from is_lub2_is_type wf `is_lub2,P,E \<turnstile> e2 :: T2` `ran E \<subseteq> types P`
+  have "is_type P T2" by(rule WT_is_type)
+  with `\<turnstile>1 lub(T1, T2) = T` `is_type P T1`
+  have "\<turnstile>2 lub(T1, T2) = T" by(rule is_lub1_into_is_lub2)
+  ultimately show ?case ..
+next
+  case (WTTry E e1 T V C e2)
+  from `ran E \<subseteq> types P` have "is_lub2,P,E \<turnstile> e1 :: T" by(rule WTTry)
+  moreover from `P \<turnstile> C \<preceq>\<^sup>* Throwable` have "is_class P C"
+    by(rule is_class_sub_Throwable[OF wf])
+  with `ran E \<subseteq> types P` have "ran (E(V \<mapsto> Class C)) \<subseteq> types P"
+    by(auto simp add: ran_def)
+  hence "is_lub2,P,E(V \<mapsto> Class C) \<turnstile> e2 :: T" by(rule WTTry)
+  ultimately show ?case using `P \<turnstile> C \<preceq>\<^sup>* Throwable` ..
+qed auto
+
+subsection {* Code generator setup *}
+
+lemma WTBlock_code:
+  "\<And>is_lub. \<lbrakk> is_type P T; is_lub,P,E(V \<mapsto> T) \<turnstile> e :: T'; 
+     case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> case typeof v of None \<Rightarrow> False | Some T' \<Rightarrow> P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow>  is_lub,P,E \<turnstile> {V:T=vo; e} :: T'"
+by(auto)
+
+lemmas [code_pred_intro] =
+  WTNew WTNewArray WTCast WTInstanceOf WTVal WTVar WTBinOp WTLAss WTAAcc WTAAss WTALength WTFAcc WTFAss WTCall 
+declare 
+  WTExternal [code_pred_intro WTExternal']
+  WTBlock_code [code_pred_intro WTBlock']
+lemmas [code_pred_intro] =
+  WTSynchronized WTSeq WTCond WTWhile WTThrow WTTry
+  WTNil WTCons
+
+code_pred
+  (modes:
+    (i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, 
+    (i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  [detect_switches, skip_proof]
+  WT
+proof -
+  case WT
+  from WT.prems show thesis
+  proof cases
+    case WTExternal thus ?thesis by(rule WTExternal'[OF refl refl refl _ refl])
+  next
+    case (WTBlock T V e vo)
+    thus thesis using WTBlock'[OF refl refl refl, of V T vo e] by(auto)
+  qed(assumption|erule that[OF refl refl refl]|rule refl)+
+next
+  case WTs
+  from WTs.prems that show thesis by cases blast+
+qed
+
+inductive is_lub_sup :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool"
+for P T1 T2 T3
+where
+  "sup P T1 T2 = OK T3 \<Longrightarrow> is_lub_sup P T1 T2 T3"
+
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  is_lub_sup
+.
+
+definition WT_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_ \<turnstile> _ ::' _" [51,51,51] 50)
+where "WT_code P \<equiv> WT (is_lub_sup P) P"
+
+definition WTs_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [::''] _" [51,51,51] 50)
+where "WTs_code P \<equiv> WTs (is_lub_sup P) P"
+
+lemma assumes wf: "wf_prog wf_md P"
+  shows WT_code_into_WT: 
+  "\<lbrakk> P,E \<turnstile> e ::' T; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> e :: T"
+
+  and WTs_code_into_WTs:
+  "\<lbrakk> P,E \<turnstile> es [::'] Ts; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> es [::] Ts"
+proof -
+  assume ran: "ran E \<subseteq> types P"
+  { assume wt: "P,E \<turnstile> e ::' T"
+    show "P,E \<turnstile> e :: T"
+      by(rule WT_change_is_lub[OF wf _ _ wt[unfolded WT_code_def] ran])(blast elim!: is_lub_sup.cases intro: sup_is_lubI[OF wf] is_lub_is_type[OF wf])+ }
+  { assume wts: "P,E \<turnstile> es [::'] Ts"
+    show "P,E \<turnstile> es [::] Ts"
+      by(rule WTs_change_is_lub[OF wf _ _ wts[unfolded WTs_code_def] ran])(blast elim!: is_lub_sup.cases intro: sup_is_lubI[OF wf] is_lub_is_type[OF wf])+ }
+qed
+
+lemma assumes wf: "wf_prog wf_md P"
+  shows WT_into_WT_code: 
+  "\<lbrakk> P,E \<turnstile> e :: T; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> e ::' T"
+
+  and WT_into_WTs_code_OK:
+  "\<lbrakk> P,E \<turnstile> es [::] Ts; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> P,E \<turnstile> es [::'] Ts"
+proof -
+  assume ran: "ran E \<subseteq> types P"
+  { assume wt: "P,E \<turnstile> e :: T"
+    show "P,E \<turnstile> e ::' T" unfolding WT_code_def
+      by(rule WT_change_is_lub[OF wf _ _ wt ran])(blast intro!: is_lub_sup.intros intro: is_lub_subD[OF wf] sup_is_type[OF wf] elim!: is_lub_sup.cases)+ }
+  { assume wts: "P,E \<turnstile> es [::] Ts"
+    show "P,E \<turnstile> es [::'] Ts" unfolding WTs_code_def
+      by(rule WTs_change_is_lub[OF wf _ _ wts ran])(blast intro!: is_lub_sup.intros intro: is_lub_subD[OF wf] sup_is_type[OF wf] elim!: is_lub_sup.cases)+ }
+qed
+
+theorem WT_eq_WT_code:
+  assumes "wf_prog wf_md P"
+  and "ran E \<subseteq> types P"
+  shows "P,E \<turnstile> e :: T \<longleftrightarrow> P,E \<turnstile> e ::' T"
+using assms by(blast intro: WT_code_into_WT WT_into_WT_code)
+
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  [inductify]
+  WT_code 
+.
+
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  [inductify]
+  WTs_code 
+.
 
 end

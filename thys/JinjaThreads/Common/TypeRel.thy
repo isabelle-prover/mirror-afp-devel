@@ -75,8 +75,8 @@ where
 | widen_subcls: "P \<turnstile> C \<preceq>\<^sup>* D  \<Longrightarrow>  P \<turnstile> Class C \<le> Class D"
 | widen_null[iff]: "P \<turnstile> NT \<le> Class C"
 | widen_null_array[iff]: "P \<turnstile> NT \<le> Array A"
-| widen_array_object: "is_type P A \<Longrightarrow> P \<turnstile> Array A \<le> Class Object"
-| widen_array_array: "\<lbrakk> P \<turnstile> A \<le> B; \<not> is_NT_Array A \<rbrakk> \<Longrightarrow> P \<turnstile> Array A \<le> Array B"
+| widen_array_object: "P \<turnstile> Array A \<le> Class Object"
+| widen_array_array: "P \<turnstile> A \<le> B \<Longrightarrow> P \<turnstile> Array A \<le> Array B"
 
 abbreviation
   widens :: "'m prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool" ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70)
@@ -101,62 +101,17 @@ lemma [iff]: "(P \<turnstile> Boolean \<le> T) = (T = Boolean)"
 lemma [iff]: "(P \<turnstile> Integer \<le> T) = (T = Integer)"
 (*<*)by (auto elim: widen.cases)(*>*)
 
-lemma widen_is_type: "\<lbrakk> P \<turnstile> A \<le> B; A \<noteq> B \<rbrakk> \<Longrightarrow> is_type P A"
-proof(induct rule: widen.induct)
-  case (widen_subcls C D)
-  hence "(subcls1 P)\<^sup>+\<^sup>+ C D"
-    by(auto elim: rtranclp.cases dest: rtranclp_into_tranclp1)
-  thus ?case by(auto intro: subcls_is_class)
-qed(simp_all)
-
 lemma Class_widen: "P \<turnstile> Class C \<le> T  \<Longrightarrow>  \<exists>D. T = Class D"
 by(erule widen.cases, auto)
 
 lemma Array_Array_widen:
-  "P \<turnstile> Array T \<le> Array U \<Longrightarrow> P \<turnstile> T \<le> U \<and> (is_NT_Array T \<or> is_NT_Array U \<longrightarrow> T = U)"
-proof -
-  { fix A B
-    have "\<lbrakk> P \<turnstile> A \<le> B; A = Array T; B = Array U \<rbrakk> \<Longrightarrow> P \<turnstile> T \<le> U \<and> (is_NT_Array T \<or> is_NT_Array U \<longrightarrow> T = U)"
-    proof(induct arbitrary: T U rule: widen.induct)
-      case (widen_array_array A B T U)
-      note IH = `\<And>T U. \<lbrakk>A = T\<lfloor>\<rceil>; B = U\<lfloor>\<rceil>\<rbrakk> \<Longrightarrow> P \<turnstile> T \<le> U \<and> (is_NT_Array T \<or> is_NT_Array U \<longrightarrow> T = U)`
-      from `A\<lfloor>\<rceil> = T\<lfloor>\<rceil>` `B\<lfloor>\<rceil> = U\<lfloor>\<rceil>` have AT: "A = T" and BU: "B = U" by auto
-      with `\<not> is_NT_Array A` have nt: "\<not> is_NT_Array T" by simp
-      from AT BU `P \<turnstile> A \<le> B` have sub: "P \<turnstile> T \<le> U" by simp
-      hence "is_NT_Array U \<Longrightarrow> T = U"
-      proof(rule widen.cases)
-	fix A' B'
-	assume ntU: "is_NT_Array U"
-	  and T: "T = A'\<lfloor>\<rceil>"
-	  and U: "U = B'\<lfloor>\<rceil>"
-	from T U AT BU have "P \<turnstile> A' \<le> B' \<and> (is_NT_Array A' \<or> is_NT_Array B'  \<longrightarrow> A' = B')"
-	  by -(rule IH, auto)
-	with ntU T U show "T = U" by auto
-      qed(insert nt, auto)
-      with nt AT BU sub show ?case by(clarsimp)
-    qed(auto) }
-  thus "P \<turnstile> Array T \<le> Array U \<Longrightarrow> P \<turnstile> T \<le> U \<and> (is_NT_Array T \<or> is_NT_Array U \<longrightarrow> T = U)" by blast
-qed
+  "P \<turnstile> Array T \<le> Array U \<Longrightarrow> P \<turnstile> T \<le> U"
+by(auto elim: widen.cases)
 
-lemma widen_Array: "(P \<turnstile> T \<le> U\<lfloor>\<rceil>) \<longleftrightarrow> (T = NT \<or> (\<exists>V. T = V\<lfloor>\<rceil> \<and> P \<turnstile> V \<le> U \<and> (is_NT_Array V \<longrightarrow> V = U)))"
-proof (induct T)
-  case (Class C)
-  thus ?case by(auto elim: widen.cases)
-next
-  case (Array T)
-  { assume "P \<turnstile> T\<lfloor>\<rceil> \<le> U\<lfloor>\<rceil>"
-    hence "P \<turnstile> T \<le> U" "is_NT_Array T \<Longrightarrow> U = T"
-      by(auto elim: widen.cases) }
-  moreover
-  { assume "P \<turnstile> T \<le> U" "is_NT_Array T \<Longrightarrow> U = T"
-    hence "P \<turnstile> T\<lfloor>\<rceil> \<le> U\<lfloor>\<rceil>"
-      by(cases "is_NT_Array T", auto intro!: widen.intros) }
-  ultimately have "(P \<turnstile> T\<lfloor>\<rceil> \<le> U\<lfloor>\<rceil>) = (P \<turnstile> T \<le> U \<and> (is_NT_Array T \<longrightarrow> T = U))"
-    by(blast)
-  thus ?case by auto
-qed(simp_all)
+lemma widen_Array: "(P \<turnstile> T \<le> U\<lfloor>\<rceil>) \<longleftrightarrow> (T = NT \<or> (\<exists>V. T = V\<lfloor>\<rceil> \<and> P \<turnstile> V \<le> U))"
+by(induct T)(auto dest: Array_Array_widen elim: widen.cases intro: widen_array_array)
 
-lemma Array_widen: "P \<turnstile> Array A \<le> T \<Longrightarrow> (\<exists>B. T = Array B \<and> (is_NT_Array A \<longrightarrow> A = B)) \<or> T = Class Object"
+lemma Array_widen: "P \<turnstile> Array A \<le> T \<Longrightarrow> (\<exists>B. T = Array B \<and> P \<turnstile> A \<le> B) \<or> T = Class Object"
 by(auto elim: widen.cases)
 
 lemma [iff]: "(P \<turnstile> T \<le> NT) = (T = NT)"
@@ -165,22 +120,6 @@ apply(induct T)
 apply(auto dest:Class_widen Array_widen)
 done
 (*>*)
-
-lemma widen_NT_Array:
-  assumes NT: "is_NT_Array T"
-  shows "P \<turnstile> T\<lfloor>\<rceil> \<le> U \<longleftrightarrow> (U = T\<lfloor>\<rceil>) \<or> (U = Class Object)"
-proof(rule iffI)
-  assume "P \<turnstile> T\<lfloor>\<rceil> \<le> U"
-  moreover
-  { fix T'
-    have "\<lbrakk> P \<turnstile> T' \<le> U; T' = T\<lfloor>\<rceil>; is_NT_Array T' \<rbrakk> \<Longrightarrow> U = T' \<or> U = Class Object"
-      by(induct rule: widen.induct, auto) }
-  ultimately show "(U = T\<lfloor>\<rceil>) \<or> (U = Class Object)" using NT by auto
-next
-  assume "U = T\<lfloor>\<rceil> \<or> U = Class Object"
-  thus "P \<turnstile> T\<lfloor>\<rceil> \<le> U" using NT
-    by(auto intro!: widen_array_object NT_Array_is_type)
-qed
 
 lemma Class_widen_Class [iff]: "(P \<turnstile> Class C \<le> Class D) = (P \<turnstile> C \<preceq>\<^sup>* D)"
 (*<*)
@@ -191,24 +130,8 @@ done
 (*>*)
 
 
-lemma widen_Class: "(P \<turnstile> T \<le> Class C) = (T = NT \<or> (\<exists>D. T = Class D \<and> P \<turnstile> D \<preceq>\<^sup>* C) \<or> (C = Object \<and> (\<exists>A. T = Array A \<and> is_type P A)))"
-proof(induct T)
-  case (Array T)
-  have "P \<turnstile> T\<lfloor>\<rceil> \<le> Class C = (C = Object \<and> is_type P T)" 
-  proof(rule iffI)
-    assume widen: "P \<turnstile> T\<lfloor>\<rceil> \<le> Class C"
-    hence "C = Object"
-      by(auto dest!: Array_widen)
-    moreover from widen have "is_type P T" by(auto dest: widen_is_type)
-    ultimately show "C = Object \<and> is_type P T" ..
-  next
-    assume C: "C = Object \<and> is_type P T"
-    hence "P \<turnstile> T\<lfloor>\<rceil> \<le> Class Object"
-      by(auto intro: widen.intros)
-    with C show "P \<turnstile> T\<lfloor>\<rceil> \<le> Class C" by simp
-  qed
-  thus ?case by simp
-qed(fastsimp)+
+lemma widen_Class: "(P \<turnstile> T \<le> Class C) = (T = NT \<or> (\<exists>D. T = Class D \<and> P \<turnstile> D \<preceq>\<^sup>* C) \<or> (C = Object \<and> (\<exists>A. T = Array A)))"
+by(induct T)(auto dest: Array_widen intro: widen_array_object)
 
 lemma NT_widen:
   "P \<turnstile> NT \<le> T = (T = NT \<or> (\<exists>C. T = Class C) \<or> (\<exists>U. T = U\<lfloor>\<rceil>))"
@@ -218,115 +141,65 @@ lemma Class_widen2: "P \<turnstile> Class C \<le> T = (\<exists>D. T = Class D \
 by (cases T, auto elim: widen.cases)
 
 lemma Object_widen: "P \<turnstile> Class Object \<le> T \<Longrightarrow> T = Class Object"
-by(case_tac T, auto elim: widen.cases)
+by(cases T, auto elim: widen.cases)
 
 lemma NT_Array_widen_Object:
-  "\<lbrakk> is_type P T; is_NT_Array T\<rbrakk> \<Longrightarrow>  P \<turnstile> T \<le> Class Object"
+  "is_NT_Array T \<Longrightarrow>  P \<turnstile> T \<le> Class Object"
 by(induct T, auto intro: widen_array_object)
 
-lemma widen_trans[trans]: "\<lbrakk>P \<turnstile> S \<le> U; P \<turnstile> U \<le> T\<rbrakk> \<Longrightarrow> P \<turnstile> S \<le> T"
-proof - 
-  assume "P \<turnstile> S \<le> U" thus "\<And>T. P \<turnstile> U \<le> T \<Longrightarrow> P \<turnstile> S \<le> T"
-  proof induct
-    case (widen_refl T T') thus "P \<turnstile> T \<le> T'" .
-  next
-    case (widen_subcls C D T)
-    then obtain E where "T = Class E" by (blast dest: Class_widen)
-    with widen_subcls show "P \<turnstile> Class C \<le> T" by (auto elim: rtrancl_trans)
-  next
-    case (widen_null C RT)
-    then obtain D where "RT = Class D" by (blast dest: Class_widen)
-    thus "P \<turnstile> NT \<le> RT" by auto
-  next
-    case (widen_null_array A T)
-    hence "(\<exists>B. T = B\<lfloor>\<rceil>) \<or> T = Class Object"
-      by(auto dest: Array_widen)
-    moreover
-    { assume "\<exists>B. T = B\<lfloor>\<rceil>"
-      then obtain B where "T = B\<lfloor>\<rceil>" by blast
-      hence "P \<turnstile> NT \<le> T" by simp }
-    moreover
-    { assume "T = Class Object"
-      hence "P \<turnstile> NT \<le> T" by simp }
-    ultimately show "P \<turnstile> NT \<le> T" by (auto)
-  next
-    case (widen_array_object A T)
-    hence "T = Class Object" by -(rule Object_widen)
-    with widen_array_object show "P \<turnstile> A\<lfloor>\<rceil> \<le> T"
-      by(auto intro: widen.widen_array_object)
-  next
-    case (widen_array_array A B T)
-    note AsB = `P \<turnstile> A \<le> B`
-    note bta = `\<And>T. P \<turnstile> B \<le> T \<Longrightarrow> P \<turnstile> A \<le> T`
-    note ANT = `\<not> is_NT_Array A`
-    note Bt = `P \<turnstile> B\<lfloor>\<rceil> \<le> T`
-    thus ?case
-    proof(rule disjE[OF Array_widen])
-      assume "\<exists>U. T = U\<lfloor>\<rceil> \<and> (is_NT_Array B \<longrightarrow> B = U)"
-      then obtain U
-	where U: "T = U\<lfloor>\<rceil>"
-	and ntu: "is_NT_Array B \<Longrightarrow> B = U" by blast
-      with Bt have "P \<turnstile> B \<le> U"
-	by(auto dest: Array_Array_widen)
-      with bta have "P \<turnstile> A \<le> U" by blast
-      with ANT U ntu show ?thesis
-	by(auto intro: widen.widen_array_array)
-    next
-      assume T: "T = Class Object"
-      show ?thesis
-      proof(cases "A = B")
-	case True
-	with Bt show ?thesis by simp
-      next
-	case False
-	with AsB have "is_type P A" by(rule widen_is_type)
-	with T show ?thesis
-	  by(auto intro!: widen_array_object)
-      qed
-    qed
-  qed
+lemma widen_trans[trans]: 
+  assumes "P \<turnstile> S \<le> U" "P \<turnstile> U \<le> T"
+  shows "P \<turnstile> S \<le> T"
+using assms
+proof(induct arbitrary: T)
+  case (widen_refl T T') thus "P \<turnstile> T \<le> T'" .
+next
+  case (widen_subcls C D T)
+  then obtain E where "T = Class E" by (blast dest: Class_widen)
+  with widen_subcls show "P \<turnstile> Class C \<le> T" by (auto elim: rtrancl_trans)
+next
+  case (widen_null C RT)
+  then obtain D where "RT = Class D" by (blast dest: Class_widen)
+  thus "P \<turnstile> NT \<le> RT" by auto
+next
+  case widen_null_array thus ?case by(auto dest: Array_widen)
+next
+  case (widen_array_object A T)
+  hence "T = Class Object" by(rule Object_widen)
+  with widen_array_object show "P \<turnstile> A\<lfloor>\<rceil> \<le> T"
+    by(auto intro: widen.widen_array_object)
+next
+  case widen_array_array thus ?case
+    by(auto dest!: Array_widen intro: widen.widen_array_array widen_array_object)
 qed
-(*>*)
+
+lemma is_class_type_of_widenD:
+  "is_class_type_of T C \<Longrightarrow> P \<turnstile> T \<le> Class C"
+by(cases T)(auto intro: widen_array_object)
+
+lemma widen_is_class_type_of:
+  assumes "is_class_type_of T C" "P \<turnstile> T' \<le> T" "T' \<noteq> NT"
+  obtains C' where "is_class_type_of T' C'" "P \<turnstile> C' \<preceq>\<^sup>* C"
+using assms by(auto elim!: is_class_type_of.cases simp add: widen_Class widen_Array)
 
 lemma widens_trans: "\<lbrakk>P \<turnstile> Ss [\<le>] Ts; P \<turnstile> Ts [\<le>] Us\<rbrakk> \<Longrightarrow> P \<turnstile> Ss [\<le>] Us"
 by (rule list_all2_trans, rule widen_trans)
 
 
-(*<*)
 lemma widens_refl: "P \<turnstile> Ts [\<le>] Ts"
 by(rule list_all2_refl[OF widen_refl])
 
-lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
-(*>*)
-
 lemma widen_append1:
-  "P \<turnstile> (xs @ ys) [\<le>] Ts = (\<exists>Ts1 Ts2. Ts = Ts1 @ Ts2 \<and> length xs = length Ts1 \<and> length ys = length Ts2 \<and> P \<turnstile> xs [\<le>] Ts1 \<and> P \<turnstile> ys [\<le>] Ts2)" 
-apply(induct xs arbitrary: Ts)
- apply(simp)
- apply(induct ys arbitrary: Ts)
-  apply(simp)
- apply(fastsimp)
-apply(clarsimp)
-apply(rule iffI)
- apply(clarify)
- apply(rule_tac x="z#Ts1" in exI)
- apply(rule_tac x="Ts2" in exI)
- apply(simp)
-apply(clarify)
-apply(rule_tac x="z" in exI)
-apply(rule_tac x="zs @ Ts2" in exI)
-apply(simp)
-apply(rule_tac x="zs" in exI)
-apply(rule_tac x="Ts2" in exI)
-apply(simp)
-done
+  "P \<turnstile> (xs @ ys) [\<le>] Ts = (\<exists>Ts1 Ts2. Ts = Ts1 @ Ts2 \<and> length xs = length Ts1 \<and> length ys = length Ts2 \<and> P \<turnstile> xs [\<le>] Ts1 \<and> P \<turnstile> ys [\<le>] Ts2)"
+unfolding list_all2_append1 by fastsimp
+
+lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
 
 lemma widens_lengthD:
   "P \<turnstile> xs [\<le>] ys \<Longrightarrow> length xs = length ys"
 apply(induct xs arbitrary: ys)
 apply(auto)
 done
-
 
 lemma widen_refT: "\<lbrakk> is_refT T; P \<turnstile> U \<le> T \<rbrakk> \<Longrightarrow> is_refT U"
 apply(erule refTE)
@@ -639,6 +512,11 @@ lemma has_fields_is_class:
   "P \<turnstile> C has_fields FDTs \<Longrightarrow> is_class P C"
 (*<*)by (auto simp add: is_class_def elim: Fields.induct)(*>*)
 
+lemma Object_has_fields_Object:
+  assumes "P \<turnstile> Object has_fields FDTs"
+  shows "snd ` fst ` set FDTs \<subseteq> {Object}"
+using assms
+by(induct "Object" FDTs) auto
 
 (* FIXME why is Field not displayed correctly? TypeRel qualifier seems to confuse printer*)
 definition
@@ -748,6 +626,10 @@ lemma has_fields_b_fields:
 unfolding fields_def
 by (blast intro: the_equality has_fields_fun)
 
+lemma has_field_map_of_fields [simp]:
+  "P \<turnstile> C has F:T (fm) in D \<Longrightarrow> map_of (fields P C) (F, D) = \<lfloor>(T, fm)\<rfloor>"
+by(auto simp add: has_field_def)
+
 subsection {* Code generation *}
 
 text {* New introduction rules for subcls1 *}
@@ -781,7 +663,7 @@ text {*
 *}
 
 lemma widen_array_object_code:
-  "\<lbrakk> C = Object; is_type P A \<rbrakk> \<Longrightarrow> P \<turnstile> Array A \<le> Class C"
+  "C = Object \<Longrightarrow> P \<turnstile> Array A \<le> Class C"
 by(auto intro: widen.intros)
 
 lemmas [code_pred_intro] =
@@ -790,6 +672,25 @@ code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
   widen 
 by(erule widen.cases) auto
+
+text {* 
+  Readjust the code equations for @{term widen} such that @{term widen_i_i_i} is guaranteed to
+  contain @{term "()"} at most once (even in the code representation!). This is important
+  for the scheduler and the small-step semantics because of the weaker code equations
+  for @{term "the"}.
+
+  A similar problem cannot hit the subclass relation because, for acyclic subclass hierarchies, 
+  the paths in the hieararchy are unique and cycle-free.
+*}
+
+definition widen_i_i_i' where "widen_i_i_i' = widen_i_i_i"
+
+declare widen.equation [code del]
+lemmas widen_i_i_i'_equation [code] = widen.equation[folded widen_i_i_i'_def]
+
+lemma widen_i_i_i_code [code]:
+  "widen_i_i_i P T T' = (if P \<turnstile> T \<le> T' then Predicate.single () else bot)"
+by(auto intro!: pred_eqI intro: widen_i_i_iI elim: widen_i_i_iE)
 
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
@@ -865,5 +766,17 @@ by(auto intro: Fields_i_i_oI elim: Fields_i_i_oE intro!: ext)
 lemma fields_code [code]:
   "fields P C = Predicate.the (Fields_i_i_o P C)"
 by(simp add: fields_def Predicate.the_def eval_Fields_conv)
+
+code_modulename SML
+  TypeRel TypeRel
+  Decl TypeRel
+
+code_modulename Haskell
+  TypeRel TypeRel
+  Decl TypeRel
+
+code_modulename OCaml
+  TypeRel TypeRel
+  Decl TypeRel
 
 end

@@ -5,73 +5,150 @@
 header {* \isaheader{Expressions} *}
 
 theory Expr imports
-  "../Common/Exceptions"
   "../Common/BinOp"
-  "../Common/ExternalCall"
 begin
 
-datatype ('a,'b) exp
+datatype ('a,'b,'addr) exp
   = new cname      -- "class instance creation"
-  | newArray ty "('a,'b) exp" ("newA _\<lfloor>_\<rceil>" [99,0] 90)    -- "array instance creation: type, size in outermost dimension"
-  | Cast ty "('a,'b) exp"      -- "type cast"
-  | InstanceOf "('a, 'b) exp" ty ("_ instanceof _" [99, 99] 90) -- "instance of"
-  | Val val      -- "value"
-  | BinOp "('a,'b) exp" bop "('a,'b) exp"     ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)      -- "binary operation"
+  | newArray ty "('a,'b,'addr) exp" ("newA _\<lfloor>_\<rceil>" [99,0] 90)    -- "array instance creation: type, size in outermost dimension"
+  | Cast ty "('a,'b,'addr) exp"      -- "type cast"
+  | InstanceOf "('a,'b,'addr) exp" ty ("_ instanceof _" [99, 99] 90) -- "instance of"
+  | Val "'addr val"      -- "value"
+  | BinOp "('a,'b,'addr) exp" bop "('a,'b,'addr) exp"     ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)      -- "binary operation"
   | Var 'a                                               -- "local variable (incl. parameter)"
-  | LAss 'a "('a,'b) exp"            ("_:=_" [90,90]90)                    -- "local assignment"
-  | AAcc "('a,'b) exp" "('a,'b) exp"            ("_\<lfloor>_\<rceil>" [99,0] 90)          -- "array cell read"
-  | AAss "('a,'b) exp" "('a,'b) exp" "('a,'b) exp" ("_\<lfloor>_\<rceil> := _" [10,99,90] 90)    -- "array cell assignment"
-  | ALen "('a,'b) exp"                 ("_\<bullet>length" [10] 90)          -- "array length"
-  | FAcc "('a,'b) exp" vname cname     ("_\<bullet>_{_}" [10,90,99]90)       -- "field access"
-  | FAss "('a,'b) exp" vname cname "('a,'b) exp"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      -- "field assignment"
-  | Call "('a,'b) exp" mname "('a,'b) exp list"     ("_\<bullet>_'(_')" [90,99,0] 90)            -- "method call"
-  | Block 'a ty "val option" "('a,'b) exp"    ("'{_:_=_; _}")
-  | Synchronized 'b "('a,'b) exp" "('a,'b) exp" ("sync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
-  | InSynchronized 'b addr "('a,'b) exp" ("insync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
-  | Seq "('a,'b) exp" "('a,'b) exp"     ("_;;/ _"             [61,60]60)
-  | Cond "('a,'b) exp" "('a,'b) exp" "('a,'b) exp"     ("if '(_') _/ else _" [80,79,79]70)
-  | While "('a,'b) exp" "('a,'b) exp"     ("while '(_') _"     [80,79]70)
-  | throw "('a,'b) exp"
-  | TryCatch "('a,'b) exp" cname 'a "('a,'b) exp"     ("try _/ catch'(_ _') _"  [0,99,80,79] 70)
+  | LAss 'a "('a,'b,'addr) exp"            ("_:=_" [90,90]90)                    -- "local assignment"
+  | AAcc "('a,'b,'addr) exp" "('a,'b,'addr) exp"            ("_\<lfloor>_\<rceil>" [99,0] 90)          -- "array cell read"
+  | AAss "('a,'b,'addr) exp" "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("_\<lfloor>_\<rceil> := _" [10,99,90] 90)    -- "array cell assignment"
+  | ALen "('a,'b,'addr) exp"                 ("_\<bullet>length" [10] 90)          -- "array length"
+  | FAcc "('a,'b,'addr) exp" vname cname     ("_\<bullet>_{_}" [10,90,99]90)       -- "field access"
+  | FAss "('a,'b,'addr) exp" vname cname "('a,'b,'addr) exp"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      -- "field assignment"
+  | Call "('a,'b,'addr) exp" mname "('a,'b,'addr) exp list"     ("_\<bullet>_'(_')" [90,99,0] 90)            -- "method call"
+  | Block 'a ty "'addr val option" "('a,'b,'addr) exp"    ("'{_:_=_; _}")
+  | Synchronized 'b "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("sync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
+  | InSynchronized 'b 'addr "('a,'b,'addr) exp" ("insync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
+  | Seq "('a,'b,'addr) exp" "('a,'b,'addr) exp"     ("_;;/ _"             [61,60]60)
+  | Cond "('a,'b,'addr) exp" "('a,'b,'addr) exp" "('a,'b,'addr) exp"     ("if '(_') _/ else _" [80,79,79]70)
+  | While "('a,'b,'addr) exp" "('a,'b,'addr) exp"     ("while '(_') _"     [80,79]70)
+  | throw "('a,'b,'addr) exp"
+  | TryCatch "('a,'b,'addr) exp" cname 'a "('a,'b,'addr) exp"     ("try _/ catch'(_ _') _"  [0,99,80,79] 70)
 
-types
-  expr = "(vname, unit) exp"    -- "Jinja expression"
-  J_mb = "vname list \<times> expr"    -- "Jinja method body: parameter names and expression"
-  J_prog = "J_mb prog"          -- "Jinja program"
+type_synonym
+  'addr expr = "(vname, unit, 'addr) exp"    -- "Jinja expression"
+type_synonym
+  'addr J_mb = "vname list \<times> 'addr expr"    -- "Jinja method body: parameter names and expression"
+type_synonym
+  'addr J_prog = "'addr J_mb prog"          -- "Jinja program"
 
 translations
-  (type) "expr" <= (type) "(String.literal, unit) exp"
-  (type) "J_prog" <= (type) "(String.literal list \<times> expr) prog"
-
+  (type) "'addr expr" <= (type) "(String.literal, unit, 'addr) exp"
+  (type) "'addr J_prog" <= (type) "(String.literal list \<times> 'addr expr) prog"
 
 subsection "Syntactic sugar"
 
-abbreviation unit :: "('a,'b) exp"
+abbreviation unit :: "('a,'b,'addr) exp"
 where "unit \<equiv> Val Unit"
 
-abbreviation null :: "('a,'b) exp"
+abbreviation null :: "('a,'b,'addr) exp"
 where "null \<equiv> Val Null"
 
-abbreviation addr :: "addr \<Rightarrow> ('a,'b) exp"
+abbreviation addr :: "'addr \<Rightarrow> ('a,'b,'addr) exp"
 where "addr a == Val (Addr a)"
 
-abbreviation true :: "('a,'b) exp"
+abbreviation true :: "('a,'b,'addr) exp"
 where "true == Val (Bool True)"
 
-abbreviation false :: "('a,'b) exp"
+abbreviation false :: "('a,'b,'addr) exp"
 where "false == Val (Bool False)"
 
-abbreviation Throw :: "addr \<Rightarrow> ('a,'b) exp"
+abbreviation Throw :: "'addr \<Rightarrow> ('a,'b,'addr) exp"
 where "Throw a == throw (Val (Addr a))"
 
-abbreviation (in heap_base) THROW :: "cname \<Rightarrow> ('a,'b) exp"
+abbreviation (in heap_base) THROW :: "cname \<Rightarrow> ('a,'b,'addr) exp"
 where "THROW xc == Throw (addr_of_sys_xcpt xc)"
 
-abbreviation sync_unit_syntax :: "('a,unit) exp \<Rightarrow> ('a,unit) exp \<Rightarrow> ('a,unit) exp" ("sync'(_') _" [99,90] 90)
+abbreviation sync_unit_syntax :: "('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp" ("sync'(_') _" [99,90] 90)
 where "sync(e1) e2 \<equiv> sync\<^bsub>()\<^esub> (e1) e2"
 
-abbreviation insync_unit_syntax :: "addr \<Rightarrow> ('a,unit) exp \<Rightarrow> ('a,unit) exp" ("insync'(_') _" [99,90] 90)
+abbreviation insync_unit_syntax :: "'addr \<Rightarrow> ('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp" ("insync'(_') _" [99,90] 90)
 where "insync(a) e2 \<equiv> insync\<^bsub>()\<^esub> (a) e2"
+
+text {* Java syntax for binary operators *}
+
+abbreviation BinOp_Eq :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+  ("_ \<guillemotleft>==\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>==\<guillemotright> e' \<equiv> e \<guillemotleft>Eq\<guillemotright> e'"
+
+abbreviation BinOp_NotEq :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>!=\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>!=\<guillemotright> e' \<equiv> e \<guillemotleft>NotEq\<guillemotright> e'"
+
+abbreviation BinOp_LessThan :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft><\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft><\<guillemotright> e' \<equiv> e \<guillemotleft>LessThan\<guillemotright> e'"
+
+abbreviation BinOp_LessOrEqual :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft><=\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft><=\<guillemotright> e' \<equiv> e \<guillemotleft>LessOrEqual\<guillemotright> e'"
+
+abbreviation BinOp_GreaterThan :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>>\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>>\<guillemotright> e' \<equiv> e \<guillemotleft>GreaterThan\<guillemotright> e'"
+
+abbreviation BinOp_GreaterOrEqual :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>>=\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>>=\<guillemotright> e' \<equiv> e \<guillemotleft>GreaterOrEqual\<guillemotright> e'"
+
+abbreviation BinOp_Add :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>+\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>+\<guillemotright> e' \<equiv> e \<guillemotleft>Add\<guillemotright> e'"
+
+abbreviation BinOp_Subtract :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>-\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>-\<guillemotright> e' \<equiv> e \<guillemotleft>Subtract\<guillemotright> e'"
+
+abbreviation BinOp_Mult :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>*\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>*\<guillemotright> e' \<equiv> e \<guillemotleft>Mult\<guillemotright> e'"
+
+abbreviation BinOp_Div :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>'/\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>/\<guillemotright> e' \<equiv> e \<guillemotleft>Div\<guillemotright> e'"
+
+abbreviation BinOp_Mod :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>%\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>%\<guillemotright> e' \<equiv> e \<guillemotleft>Mod\<guillemotright> e'"
+
+abbreviation BinOp_BinAnd :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>&\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>&\<guillemotright> e' \<equiv> e \<guillemotleft>BinAnd\<guillemotright> e'"
+
+abbreviation BinOp_BinOr :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>|\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>|\<guillemotright> e' \<equiv> e \<guillemotleft>BinOr\<guillemotright> e'"
+
+abbreviation BinOp_BinXor :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>^\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>^\<guillemotright> e' \<equiv> e \<guillemotleft>BinXor\<guillemotright> e'"
+
+abbreviation BinOp_ShiftLeft :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft><<\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft><<\<guillemotright> e' \<equiv> e \<guillemotleft>ShiftLeft\<guillemotright> e'"
+
+abbreviation BinOp_ShiftRightZeros :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>>>>\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>>>>\<guillemotright> e' \<equiv> e \<guillemotleft>ShiftRightZeros\<guillemotright> e'"
+
+abbreviation BinOp_ShiftRightSigned :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>>>\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>>>\<guillemotright> e' \<equiv> e \<guillemotleft>ShiftRightSigned\<guillemotright> e'"
+
+abbreviation BinOp_CondAnd :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>&&\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>&&\<guillemotright> e' \<equiv> if (e) e' else false"
+
+abbreviation BinOp_CondOr :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
+   ("_ \<guillemotleft>||\<guillemotright> _" [80,81] 80)
+where "e \<guillemotleft>||\<guillemotright> e' \<equiv> if (e) true else e'"
 
 lemma inj_Val [simp]: "inj Val"
 by(rule inj_onI)(simp)
@@ -81,8 +158,8 @@ by(induct e) auto
 
 subsection{*Free Variables*}
 
-primrec fv  :: "('a,'b) exp      \<Rightarrow> 'a set"
-  and fvs :: "('a,'b) exp list \<Rightarrow> 'a set"
+primrec fv  :: "('a,'b,'addr) exp      \<Rightarrow> 'a set"
+  and fvs :: "('a,'b,'addr) exp list \<Rightarrow> 'a set"
 where
   "fv(new C) = {}"
 | "fv(newA T\<lfloor>e\<rceil>) = fv e"
@@ -118,8 +195,8 @@ by (induct vs) auto
 
 subsection{*Locks and addresses*}
 
-primrec expr_locks :: "('a,'b) exp \<Rightarrow> addr \<Rightarrow> nat"
-  and expr_lockss :: "('a,'b) exp list \<Rightarrow> addr \<Rightarrow> nat"
+primrec expr_locks :: "('a,'b,'addr) exp \<Rightarrow> 'addr \<Rightarrow> nat"
+  and expr_lockss :: "('a,'b,'addr) exp list \<Rightarrow> 'addr \<Rightarrow> nat"
 where
   "expr_locks (new C) = (\<lambda>ad. 0)"
 | "expr_locks (newA T\<lfloor>e\<rceil>) = expr_locks e"
@@ -158,8 +235,8 @@ apply(induct vs)
 apply(auto)
 done
 
-primrec contains_insync :: "('a,'b) exp \<Rightarrow> bool"
-  and contains_insyncs :: "('a,'b) exp list \<Rightarrow> bool"
+primrec contains_insync :: "('a,'b,'addr) exp \<Rightarrow> bool"
+  and contains_insyncs :: "('a,'b,'addr) exp list \<Rightarrow> bool"
 where
   "contains_insync (new C) = False"
 | "contains_insync (newA T\<lfloor>i\<rceil>) = contains_insync i"
@@ -191,8 +268,8 @@ lemma contains_insyncs_append [simp]:
   "contains_insyncs (es @ es') \<longleftrightarrow> contains_insyncs es \<or> contains_insyncs es'"
 by(induct es, auto)
 
-lemma fixes e :: "('a, 'b) exp"
-  and es :: "('a, 'b) exp list"
+lemma fixes e :: "('a, 'b, 'addr) exp"
+  and es :: "('a, 'b, 'addr) exp list"
   shows contains_insync_conv: "(contains_insync e \<longleftrightarrow> (\<exists>ad. expr_locks e ad > 0))"
     and contains_insyncs_conv: "(contains_insyncs es \<longleftrightarrow> (\<exists>ad. expr_lockss es ad > 0))"
 by(induct e and es)(auto)
@@ -200,7 +277,7 @@ by(induct e and es)(auto)
 lemma contains_insyncs_map_Val [simp]: "\<not> contains_insyncs (map Val vs)"
 by(induct vs) auto
 
-lemma fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows contains_insync_expr_locks_conv: "contains_insync e \<longleftrightarrow> (\<exists>l. expr_locks e l > 0)"
   and contains_insyncs_expr_lockss_conv: "contains_insyncs es \<longleftrightarrow> (\<exists>l. expr_lockss es l > 0)"
 apply(induct e and es)
@@ -210,7 +287,7 @@ done
 
 subsection {* Value expressions *}
 
-inductive is_val :: "('a,'b) exp \<Rightarrow> bool" where
+inductive is_val :: "('a,'b,'addr) exp \<Rightarrow> bool" where
   "is_val (Val v)"
 
 declare is_val.intros [simp]
@@ -221,7 +298,7 @@ by(auto)
 
 code_pred is_val .
 
-fun is_vals :: "('a,'b) exp list \<Rightarrow> bool" where
+fun is_vals :: "('a,'b,'addr) exp list \<Rightarrow> bool" where
   "is_vals [] = True"
 | "is_vals (e#es) = (is_val e \<and> is_vals es)"
 
@@ -237,7 +314,7 @@ lemma is_vals_map_Vals [simp]: "is_vals (map Val vs) = True"
 unfolding is_vals_conv by auto
 
 
-inductive is_addr :: "('a,'b) exp \<Rightarrow> bool"
+inductive is_addr :: "('a,'b,'addr) exp \<Rightarrow> bool"
 where "is_addr (addr a)"
 
 declare is_addr.intros[intro!]
@@ -246,11 +323,11 @@ declare is_addr.cases[elim!]
 lemma [simp]: "(is_addr e) \<longleftrightarrow> (\<exists>a. e = addr a)"
 by auto
 
-primrec the_Val :: "('a, 'b) exp \<Rightarrow> val"
+primrec the_Val :: "('a, 'b, 'addr) exp \<Rightarrow> 'addr val"
 where
   "the_Val (Val v) = v"
 
-inductive is_Throws :: "('a, 'b) exp list \<Rightarrow> bool"
+inductive is_Throws :: "('a, 'b, 'addr) exp list \<Rightarrow> bool"
 where
   "is_Throws (Throw a # es)"
 | "is_Throws es \<Longrightarrow> is_Throws (Val v # es)"
@@ -278,7 +355,7 @@ done
 
 subsection {* @{text "blocks"} *}
 
-fun blocks :: "'a list \<Rightarrow> ty list \<Rightarrow> val list \<Rightarrow> ('a,'b) exp \<Rightarrow> ('a,'b) exp"
+fun blocks :: "'a list \<Rightarrow> ty list \<Rightarrow> 'addr val list \<Rightarrow> ('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp"
 where
   "blocks (V # Vs) (T # Ts) (v # vs) e = {V:T=\<lfloor>v\<rfloor>; blocks Vs Ts vs e}"
 | "blocks []       []       []       e = e"
@@ -297,7 +374,7 @@ by(induct pns Ts vs e rule: blocks.induct)(auto)
 
 subsection {* Final expressions *}
 
-inductive final :: "('a,'b) exp \<Rightarrow> bool" where
+inductive final :: "('a,'b,'addr) exp \<Rightarrow> bool" where
   "final (Val v)"
 | "final (Throw a)"
 
@@ -312,7 +389,7 @@ by(auto)
 lemma final_locks: "final e \<Longrightarrow> expr_locks e l = 0"
 by(auto elim: finalE)
 
-definition finals:: "('a,'b) exp list \<Rightarrow> bool"
+definition finals:: "('a,'b,'addr) exp list \<Rightarrow> bool"
 where "finals es  \<equiv>  (\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
 
 lemma [iff]: "finals []"
@@ -377,7 +454,7 @@ code_pred final .
 
 subsection {* converting results from external calls *}
 
-primrec extRet2J :: "('a, 'b) exp \<Rightarrow> extCallRet \<Rightarrow> ('a, 'b) exp"
+primrec extRet2J :: "('a, 'b, 'addr) exp \<Rightarrow> 'addr extCallRet \<Rightarrow> ('a, 'b, 'addr) exp"
 where
   "extRet2J e (RetVal v) = Val v"
 | "extRet2J e (RetExc a) = Throw a"
@@ -388,8 +465,8 @@ by(cases va) simp_all
 
 subsection {* expressions at a call *}
 
-primrec call :: "('a,'b) exp \<Rightarrow> (addr \<times> mname \<times> val list) option"
-  and calls :: "('a,'b) exp list \<Rightarrow> (addr \<times> mname \<times> val list) option"
+primrec call :: "('a,'b,'addr) exp \<Rightarrow> ('addr \<times> mname \<times> 'addr val list) option"
+  and calls :: "('a,'b,'addr) exp list \<Rightarrow> ('addr \<times> mname \<times> 'addr val list) option"
 where
   "call (new C) = None"
 | "call (newA T\<lfloor>e\<rceil>) = call e"

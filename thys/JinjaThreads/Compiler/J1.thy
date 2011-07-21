@@ -10,22 +10,24 @@ theory J1 imports
   "../Framework/FWBisimulation"
 begin
 
-abbreviation final_expr1 :: "(expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list \<Rightarrow> bool" where
+abbreviation final_expr1 :: "('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list \<Rightarrow> bool" where
   "final_expr1 \<equiv> \<lambda>(ex, exs). final (fst ex) \<and> exs = []"
 
-definition extNTA2J1 :: "J1_prog \<Rightarrow> (cname \<times> mname \<times> addr) \<Rightarrow> ((expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list)"
+definition extNTA2J1 :: 
+  "'addr J1_prog \<Rightarrow> (cname \<times> mname \<times> 'addr) \<Rightarrow> (('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list)"
 where
   "extNTA2J1 P = (\<lambda>(C, M, a). let (D, _, _, body) = method P C M
-                              in (({0:Class D=None; body}, Addr a # replicate (max_vars body) undefined), []))"
+                              in (({0:Class D=None; body}, Addr a # replicate (max_vars body) undefined_value), []))"
 
 lemma extNTA2J1_iff [simp]:
-  "extNTA2J1 P (C, M, a) = (({0:Class (fst (method P C M))=None; snd (snd (snd (method P C M)))}, Addr a # replicate (max_vars (snd (snd (snd (method P C M))))) undefined), [])"
+  "extNTA2J1 P (C, M, a) = (({0:Class (fst (method P C M))=None; snd (snd (snd (method P C M)))}, Addr a # replicate (max_vars (snd (snd (snd (method P C M))))) undefined_value), [])"
 by(simp add: extNTA2J1_def split_beta)
 
-abbreviation extTA2J1 :: "J1_prog \<Rightarrow> 'heap external_thread_action \<Rightarrow> 'heap J1_thread_action"
+abbreviation extTA2J1 :: 
+  "'addr J1_prog \<Rightarrow> ('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'heap) J1_thread_action"
 where "extTA2J1 P \<equiv> convert_extTA (extNTA2J1 P)"
 
-abbreviation (input) extRet2J1 :: "expr1 \<Rightarrow> extCallRet \<Rightarrow> expr1"
+abbreviation (input) extRet2J1 :: "'addr expr1 \<Rightarrow> 'addr extCallRet \<Rightarrow> 'addr expr1"
 where "extRet2J1 \<equiv> extRet2J"
 
 lemma max_vars_extRet2J1 [simp]: 
@@ -34,20 +36,24 @@ by(cases va) simp_all
 
 context J1_heap_base begin
 
-abbreviation J1_start_state :: "J1_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> val list \<Rightarrow> 'heap J1_state"
+abbreviation J1_start_state :: "'addr J1_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr, 'thread_id, 'heap) J1_state"
 where
   "J1_start_state \<equiv> 
-   start_state (\<lambda>C M Ts T body vs. ((blocks1 0 (Class C # Ts) body, Null # vs @ replicate (max_vars body) undefined), []))"
+   start_state (\<lambda>C M Ts T body vs. ((blocks1 0 (Class C # Ts) body, Null # vs @ replicate (max_vars body) undefined_value), []))"
 
-inductive red1 :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> expr1 \<Rightarrow> 'heap \<times> locals1 \<Rightarrow> 'heap external_thread_action \<Rightarrow> expr1 \<Rightarrow> 'heap \<times> locals1 \<Rightarrow> bool"
-                 ("_,_ \<turnstile>1 ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
-  and reds1 :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> expr1 list \<Rightarrow> 'heap \<times> locals1 \<Rightarrow> 'heap external_thread_action \<Rightarrow> expr1 list \<Rightarrow> 'heap \<times> locals1 \<Rightarrow> bool"
-                 ("_,_ \<turnstile>1 ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
-for P :: J1_prog and t :: thread_id
+inductive red1 :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr1 \<Rightarrow> 'heap \<times> 'addr locals1 
+  \<Rightarrow> ('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> 'addr expr1 \<Rightarrow> 'heap \<times> 'addr locals1 \<Rightarrow> bool"
+  ("_,_ \<turnstile>1 ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
+  and reds1 ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr1 list \<Rightarrow> 'heap \<times> 'addr locals1
+  \<Rightarrow> ('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> 'addr expr1 list \<Rightarrow> 'heap \<times> 'addr locals1 \<Rightarrow> bool"
+  ("_,_ \<turnstile>1 ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
+for P :: "'addr J1_prog" and t :: 'thread_id
 where
   Red1New:
   "new_obj h C = (h', \<lfloor>a\<rfloor>)
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>new C, (h, l)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> NewObj a C \<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>new C, (h, l)\<rangle> -\<lbrace>NewObj a C\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
 
 | Red1NewFail:
   "new_obj h C = (h', None)
@@ -59,7 +65,7 @@ where
 
 | Red1NewArray:
   "\<lbrakk> 0 <=s i; new_arr h T (nat (sint i)) = (h', \<lfloor>a\<rfloor>) \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> NewArr a T (nat (sint i))\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<lbrace>NewArr a T (nat (sint i))\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
 
 | Red1NewArrayNegative:
   "i <s 0 \<Longrightarrow> P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize, s\<rangle>"
@@ -94,8 +100,12 @@ where
   "P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P,t \<turnstile>1 \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e, s\<rangle> -ta\<rightarrow> \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e', s'\<rangle>"
 
 | Red1BinOp:
-  "binop bop v1 v2 = Some v \<Longrightarrow>
+  "binop bop v1 v2 = Some (Inl v) \<Longrightarrow>
   P,t \<turnstile>1 \<langle>(Val v1) \<guillemotleft>bop\<guillemotright> (Val v2), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
+
+| Red1BinOpFail:
+  "binop bop v1 v2 = Some (Inr a) \<Longrightarrow>
+  P,t \<turnstile>1 \<langle>(Val v1) \<guillemotleft>bop\<guillemotright> (Val v2), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 
 | Red1Var:
   "\<lbrakk> (lcl s)!V = v; V < size (lcl s) \<rbrakk>
@@ -125,7 +135,7 @@ where
 | Red1AAcc:
   "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a);
      heap_read h a (ACell (nat (sint i))) v \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (ACell (nat (sint i))) v \<rbrace>\<rightarrow> \<langle>Val v, (h, xs)\<rangle>"
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, (h, xs)\<rangle> -\<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>\<rightarrow> \<langle>Val v, (h, xs)\<rangle>"
 
 | AAss1Red1:
   "P,t \<turnstile>1 \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> P,t \<turnstile>1 \<langle>a\<lfloor>i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>a'\<lfloor>i\<rceil> := e, s'\<rangle>"
@@ -151,7 +161,7 @@ where
 | Red1AAss:
   "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a); typeof\<^bsub>h\<^esub> w = Some U; P \<turnstile> U \<le> T;
      heap_write h a (ACell (nat (sint i))) w h' \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>AAss (addr a) (Val (Intg i)) (Val w), (h, l)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> WriteMem a (ACell (nat (sint i))) w \<rbrace>\<rightarrow> \<langle>unit, (h', l)\<rangle>"
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>AAss (addr a) (Val (Intg i)) (Val w), (h, l)\<rangle> -\<lbrace>WriteMem a (ACell (nat (sint i))) w\<rbrace>\<rightarrow> \<langle>unit, (h', l)\<rangle>"
 
 | ALength1Red:
   "P,t \<turnstile>1 \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> P,t \<turnstile>1 \<langle>a\<bullet>length, s\<rangle> -ta\<rightarrow> \<langle>a'\<bullet>length, s'\<rangle>"
@@ -167,7 +177,7 @@ where
 
 | Red1FAcc:
   "heap_read h a (CField D F) v
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<bullet>F{D}, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> ReadMem a (CField D F) v\<rbrace>\<rightarrow> \<langle>Val v, (h, xs)\<rangle>"
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<bullet>F{D}, (h, xs)\<rangle> -\<lbrace>ReadMem a (CField D F) v\<rbrace>\<rightarrow> \<langle>Val v, (h, xs)\<rangle>"
 
 | Red1FAccNull:
   "P,t \<turnstile>1 \<langle>null\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
@@ -180,7 +190,7 @@ where
 
 | Red1FAss:
   "heap_write h a (CField D F) v h' \<Longrightarrow>
-  P,t \<turnstile>1 \<langle>FAss (addr a) F D (Val v), (h, l)\<rangle> -\<epsilon>\<lbrace>\<^bsub>o\<^esub> WriteMem a (CField D F) v \<rbrace>\<rightarrow> \<langle>unit, (h', l)\<rangle>"
+  P,t \<turnstile>1 \<langle>FAss (addr a) F D (Val v), (h, l)\<rangle> -\<lbrace>WriteMem a (CField D F) v\<rbrace>\<rightarrow> \<langle>unit, (h', l)\<rangle>"
 
 | Red1FAssNull:
   "P,t \<turnstile>1 \<langle>FAss null F D (Val v), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
@@ -193,7 +203,7 @@ where
   P,t \<turnstile>1 \<langle>(Val v)\<bullet>M(es),s\<rangle> -ta\<rightarrow> \<langle>(Val v)\<bullet>M(es'),s'\<rangle>"
 
 | Red1CallExternal:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>T\<rfloor>; is_external_call P T M; P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>;
+  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>T\<rfloor>; is_native P T M; P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>;
      e' = extRet2J1 ((addr a)\<bullet>M(map Val vs)) va; s' = (h', lcl s) \<rbrakk>
   \<Longrightarrow> P,t \<turnstile>1 \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 
@@ -217,20 +227,20 @@ where
   "V < length xs \<Longrightarrow> P,t \<turnstile>1 \<langle>sync\<^bsub>V\<^esub> (null) e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h, xs[V := Null])\<rangle>"
 
 | Lock1Synchronized:
-  "V < length xs \<Longrightarrow> P,t \<turnstile>1 \<langle>sync\<^bsub>V\<^esub> (addr a) e, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a \<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncLock a\<rbrace>\<rightarrow> \<langle>insync\<^bsub>V\<^esub> (a) e, (h, xs[V := Addr a])\<rangle>"
+  "V < length xs \<Longrightarrow> P,t \<turnstile>1 \<langle>sync\<^bsub>V\<^esub> (addr a) e, (h, xs)\<rangle> -\<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>\<rightarrow> \<langle>insync\<^bsub>V\<^esub> (a) e, (h, xs[V := Addr a])\<rangle>"
 
 | Synchronized1Red2:
   "P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) e, s\<rangle> -ta\<rightarrow> \<langle>insync\<^bsub>V\<^esub> (a) e', s'\<rangle>"
 
 | Unlock1Synchronized:
-  "\<lbrakk> xs ! V = Addr a'; V < length xs \<rbrakk> \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) (Val v), (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a' \<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncUnlock a'\<rbrace>\<rightarrow> \<langle>Val v, (h, xs)\<rangle>"
+  "\<lbrakk> xs ! V = Addr a'; V < length xs \<rbrakk> \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) (Val v), (h, xs)\<rangle> -\<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>\<rightarrow> \<langle>Val v, (h, xs)\<rangle>"
 
 | Unlock1SynchronizedNull:
   "\<lbrakk> xs ! V = Null; V < length xs \<rbrakk> \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) (Val v), (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h, xs)\<rangle>"
 
 | Unlock1SynchronizedFail:
   "\<lbrakk> xs ! V = Addr a'; V < length xs \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) (Val v), (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a' \<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, (h, xs)\<rangle>"
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) (Val v), (h, xs)\<rangle> -\<lbrace>UnlockFail\<rightarrow>a'\<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, (h, xs)\<rangle>"
 
 | Seq1Red:
   "P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P,t \<turnstile>1 \<langle>e;;e2, s\<rangle> -ta\<rightarrow> \<langle>e';;e2, s'\<rangle>"
@@ -299,10 +309,10 @@ where
 | Synchronized1Throw1: "P,t \<turnstile>1 \<langle>sync\<^bsub>V\<^esub> (Throw a) e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | Synchronized1Throw2:
   "\<lbrakk> xs ! V = Addr a'; V < length xs \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw ad, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a' \<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncUnlock a'\<rbrace>\<rightarrow> \<langle>Throw ad, (h, xs)\<rangle>"
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw ad, (h, xs)\<rangle> -\<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>\<rightarrow> \<langle>Throw ad, (h, xs)\<rangle>"
 | Synchronized1Throw2Fail:
   "\<lbrakk> xs ! V = Addr a'; V < length xs \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw ad, (h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a' \<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, (h, xs)\<rangle>"
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw ad, (h, xs)\<rangle> -\<lbrace>UnlockFail\<rightarrow>a'\<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, (h, xs)\<rangle>"
 | Synchronized1Throw2Null:
   "\<lbrakk> xs ! V = Null; V < length xs \<rbrakk>
   \<Longrightarrow> P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw ad, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h, xs)\<rangle>"
@@ -329,11 +339,12 @@ inductive_cases red1_cases:
   "P,t \<turnstile>1 \<langle>throw e, s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "P,t \<turnstile>1 \<langle>try e catch(C V) e'', s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 
-
-inductive Red1 :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> (expr1 \<times> locals1) list \<Rightarrow> 'heap \<Rightarrow> 'heap J1_thread_action \<Rightarrow>
-                           (expr1 \<times> locals1) \<Rightarrow> (expr1 \<times> locals1) list \<Rightarrow> 'heap \<Rightarrow> bool"
-                ("_,_ \<turnstile>1 ((1\<langle>_'/_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_'/_,/_\<rangle>))" [51,0,0,0,0,0,0,0,0] 81)
-for P ::J1_prog and t :: thread_id
+inductive Red1 ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) list \<Rightarrow> 'heap
+  \<Rightarrow> ('addr, 'thread_id, 'heap) J1_thread_action
+  \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) list \<Rightarrow> 'heap \<Rightarrow> bool"
+  ("_,_ \<turnstile>1 ((1\<langle>_'/_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_'/_,/_\<rangle>))" [51,0,0,0,0,0,0,0,0] 81)
+for P :: "'addr J1_prog" and t :: 'thread_id
 where
 
   red1Red:
@@ -341,9 +352,10 @@ where
   \<Longrightarrow> P,t \<turnstile>1 \<langle>(e, x)/exs, h\<rangle> -extTA2J1 P ta\<rightarrow> \<langle>(e', x')/exs, h'\<rangle>"
 
 | red1Call:
-  "\<lbrakk> call1 e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr h a = \<lfloor>Class C\<rfloor>; \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts\<rightarrow>T = body in D; 
+  "\<lbrakk> call1 e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr h a = \<lfloor>U\<rfloor>; is_class_type_of U C; 
+     \<not> is_native P U M; P \<turnstile> C sees M:Ts\<rightarrow>T = body in D; 
      size vs = size Ts \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile>1 \<langle>(e, x)/exs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>(blocks1 0 (Class D#Ts) body, Addr a # vs @ replicate (max_vars body) undefined)/(e, x)#exs, h\<rangle>"
+  \<Longrightarrow> P,t \<turnstile>1 \<langle>(e, x)/exs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>(blocks1 0 (Class D#Ts) body, Addr a # vs @ replicate (max_vars body) undefined_value)/(e, x)#exs, h\<rangle>"
 
 | red1Return:
   "final e' \<Longrightarrow> P,t \<turnstile>1 \<langle>(e', x')/(e, x)#exs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>(inline_call e' e, x)/exs, h\<rangle>"
@@ -352,10 +364,10 @@ text {*
   @{text IUF} must be in @{text "heap_base"}, because it relies on @{term THROW} which depends on @{term addr_of_sys_xcpt}.
 *}
 
-inductive IUF :: "('a, 'b) exp \<Rightarrow> ('l,'t,'m,'x,'w,'o list) thread_action \<Rightarrow> ('a, 'b) exp \<Rightarrow> bool"
-  and IUFs :: "('a, 'b) exp list \<Rightarrow> ('l,'t,'m,'x,'w,'o list) thread_action \<Rightarrow> ('a, 'b) exp list \<Rightarrow> bool"
+inductive IUF :: "('a, 'b, 'addr) exp \<Rightarrow> ('l,'t,'m,'x,'w,'o :: obs_action) thread_action \<Rightarrow> ('a, 'b, 'addr) exp \<Rightarrow> bool"
+  and IUFs :: "('a, 'b, 'addr) exp list \<Rightarrow> ('l,'t,'m,'x,'w,'o) thread_action \<Rightarrow> ('a, 'b, 'addr) exp list \<Rightarrow> bool"
 where
-  IUFFail: "final e \<Longrightarrow> IUF (insync\<^bsub>v\<^esub>(a) e) (\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>l\<rbrace>) (THROW IllegalMonitorState)"
+  IUFFail: "final e \<Longrightarrow> IUF (insync\<^bsub>v\<^esub>(a) e) (\<lbrace>UnlockFail\<rightarrow>l\<rbrace>) (THROW IllegalMonitorState)"
 | IUFNewArray: "IUF e ta e' \<Longrightarrow> IUF (newA T\<lfloor>e\<rceil>) ta (newA T\<lfloor>e'\<rceil>)"
 | IUFCast: "IUF e ta e' \<Longrightarrow> IUF (Cast T e) ta (Cast T e')"
 | IUFInstanceOf: "IUF e ta e' \<Longrightarrow> IUF (e instanceof T) ta (e' instanceof T)"
@@ -383,13 +395,15 @@ where
 | IUFList1: "IUF e ta e' \<Longrightarrow> IUFs (e # es) ta (e' # es)"
 | IUFList2: "IUFs es ta es' \<Longrightarrow> IUFs (e # es) ta (e # es')"
 
-definition IUFL :: "(('a, 'b) exp \<times> 'c) \<Rightarrow> 'd \<Rightarrow> ('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> (('a, 'b) exp \<times> 'c) \<Rightarrow> 'd \<Rightarrow> bool"
+definition IUFL :: "(('a, 'b, 'addr) exp \<times> 'c) \<Rightarrow> 'd \<Rightarrow> ('l,'t,'x,'m,'w,'o :: obs_action) thread_action \<Rightarrow> (('a, 'b, 'addr) exp \<times> 'c) \<Rightarrow> 'd \<Rightarrow> bool"
 where "IUFL ex exs ta ex' exs' \<longleftrightarrow> exs = exs' \<and> IUF (fst ex) ta (fst ex')"
 
-abbreviation mred1' :: "J1_prog \<Rightarrow> (addr,addr,(expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list,'heap,addr,obs_event) semantics"
+abbreviation mred1' :: 
+  "'addr J1_prog \<Rightarrow> ('addr,'thread_id,('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list,'heap,'addr,('addr, 'thread_id) obs_event) semantics"
 where "mred1' P \<equiv> \<lambda>t ((ex, exs), h) ta ((ex', exs'), h'). P,t \<turnstile>1 \<langle>ex/exs, h\<rangle> -ta\<rightarrow> \<langle>ex'/exs', h'\<rangle> \<and> \<not> IUFL ex exs ta ex' exs'"
 
-abbreviation mred1 :: "J1_prog \<Rightarrow> (addr,addr,(expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list,'heap,addr,obs_event) semantics"
+abbreviation mred1 :: 
+  "'addr J1_prog \<Rightarrow> ('addr,'thread_id,('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list,'heap,'addr,('addr, 'thread_id) obs_event) semantics"
 where "mred1 P \<equiv> \<lambda>t ((ex, exs), h) ta ((ex', exs'), h'). P,t \<turnstile>1 \<langle>ex/exs, h\<rangle> -ta\<rightarrow> \<langle>ex'/exs', h'\<rangle>"
 
 inductive_cases IUF_cases [elim!]:
@@ -476,7 +490,7 @@ lemma IUF_simps [simp]:
 by auto
 
 lemma IUF_same_False [iff]:
-  fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+  fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows "IUF e ta e = False" and "IUFs es ta es = False"
 proof -
   have "IUF e ta e \<Longrightarrow> False" and "IUFs es ta es \<Longrightarrow> False"
@@ -485,13 +499,13 @@ proof -
 qed
 
 lemma IUF_taD:
-  fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
-  shows "IUF e ta e' \<Longrightarrow> \<exists>l. ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>l\<rbrace>"
-    and "IUFs es ta es' \<Longrightarrow> \<exists>l. ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>l\<rbrace>"
+  fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
+  shows "IUF e ta e' \<Longrightarrow> \<exists>l. ta = \<lbrace>UnlockFail\<rightarrow>l\<rbrace>"
+    and "IUFs es ta es' \<Longrightarrow> \<exists>l. ta = \<lbrace>UnlockFail\<rightarrow>l\<rbrace>"
 by(induct rule: IUF_IUFs.inducts) auto
 
 lemma [simp]:
-  fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+  fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows IUF_extTA2J1: "IUF e (convert_extTA f ta) e' \<longleftrightarrow> IUF e ta e'"
   and IUFs_extTA2J1: "IUFs es (convert_extTA f ta) es' \<longleftrightarrow> IUFs es ta es'"
 proof -
@@ -499,7 +513,7 @@ proof -
     and "IUFs es (convert_extTA f ta) es' \<Longrightarrow> IUFs es ta es'"
   proof(induct e ta'\<equiv>"convert_extTA f ta" e' and es ta'\<equiv>"convert_extTA f ta" es' rule: IUF_IUFs.inducts)
     case (IUFFail e v a l)
-    from `\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>l\<rbrace> = convert_extTA f ta` have "ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>l\<rbrace>"
+    from `\<lbrace>UnlockFail\<rightarrow>l\<rbrace> = convert_extTA f ta` have "ta = \<lbrace>UnlockFail\<rightarrow>l\<rbrace>"
       by(cases ta)(auto simp add: ta_upd_simps)
     with `final e` show ?case by(clarify)
   qed auto
@@ -508,7 +522,7 @@ proof -
     and "IUFs es ta es' \<Longrightarrow> IUFs es (convert_extTA f ta) es'"
   proof(induct rule: IUF_IUFs.inducts)
     case (IUFFail e v a l)
-    have eq: "convert_extTA f \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>l\<rbrace> = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>l\<rbrace>" by(simp add: ta_upd_simps)
+    have eq: "convert_extTA f \<lbrace>UnlockFail\<rightarrow>l\<rbrace> = \<lbrace>UnlockFail\<rightarrow>l\<rbrace>" by(simp add: ta_upd_simps)
     from IUFFail show ?case by(subst eq) clarify
   qed auto
   ultimately show "IUF e (convert_extTA f ta) e' \<longleftrightarrow> IUF e ta e'"
@@ -552,10 +566,10 @@ done
 
 lemma red1_new_threadD:
   "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t' x H \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>a M vs va T. P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, hp s'\<rangle> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_external_call P T M"
+  \<Longrightarrow> \<exists>a M vs va T. P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, hp s'\<rangle> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_native P T M"
   and reds1_new_threadD:
   "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t' x H \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>a M vs va T. P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, hp s'\<rangle> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_external_call P T M"
+  \<Longrightarrow> \<exists>a M vs va T. P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, hp s'\<rangle> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_native P T M"
 by(induct rule: red1_reds1.inducts)(fastsimp simp add: ta_upd_simps)+
 
 lemma red1_call_synthesized: "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call1 e = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> synthesized_call P (hp s) aMvs"
@@ -585,8 +599,8 @@ section {* Silent moves *}
 
 context J1_heap_base begin 
 
-primrec \<tau>move1 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b) exp \<Rightarrow> bool"
-  and \<tau>moves1 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b) exp list \<Rightarrow> bool"
+primrec \<tau>move1 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b, 'addr) exp \<Rightarrow> bool"
+  and \<tau>moves1 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b, 'addr) exp list \<Rightarrow> bool"
 where
   "\<tau>move1 P h (new C) \<longleftrightarrow> False"
 | "\<tau>move1 P h (newA T\<lfloor>e\<rceil>) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a)"
@@ -603,7 +617,7 @@ where
 | "\<tau>move1 P h (FAss e F D e') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> (\<tau>move1 P h e' \<or> (\<exists>a. e' = Throw a)))"
 | "\<tau>move1 P h (e\<bullet>M(es)) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> 
    (\<tau>moves1 P h es \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es') \<or> 
-    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> is_external_call P T M \<longrightarrow> \<tau>external P T M)))))"
+    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> is_native P T M \<longrightarrow> \<tau>external P T M)))))"
 | "\<tau>move1 P h ({V:T=vo; e}) \<longleftrightarrow> (\<tau>move1 P h e \<and> vo = None) \<or> (((\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)) \<and> vo = None) \<or> vo \<noteq> None"
 | "\<tau>move1 P h (sync\<^bsub>V'\<^esub>(e) e') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a)"
 | "\<tau>move1 P h (insync\<^bsub>V'\<^esub>(ad) e) \<longleftrightarrow> \<tau>move1 P h e"
@@ -616,85 +630,105 @@ where
 | "\<tau>moves1 P h [] \<longleftrightarrow> False"
 | "\<tau>moves1 P h (e # es) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>v. e = Val v \<and> \<tau>moves1 P h es)"
 
-fun \<tau>Move1 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> (('a, 'b) exp \<times> 'c) \<times> (('a, 'b) exp \<times> 'd) list \<Rightarrow> bool"
+fun \<tau>Move1 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> (('a, 'b, 'addr) exp \<times> 'c) \<times> (('a, 'b, 'addr) exp \<times> 'd) list \<Rightarrow> bool"
 where
   "\<tau>Move1 P h ((e, x), exs) = (\<tau>move1 P h e \<or> final e)"
 
-definition \<tau>red1 :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> bool"
+definition \<tau>red1 :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> bool"
 where "\<tau>red1 P t h exs e'xs' = (P,t \<turnstile>1 \<langle>fst exs, (h, snd exs)\<rangle> -\<epsilon>\<rightarrow> \<langle>fst e'xs', (h, snd e'xs')\<rangle> \<and> \<tau>move1 P h (fst exs))"
 
-definition \<tau>reds1 :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> bool"
+definition \<tau>reds1 :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> bool"
 where
   "\<tau>reds1 P t h esxs es'xs' =
    (P,t \<turnstile>1 \<langle>fst esxs, (h, snd esxs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>fst es'xs', (h, snd es'xs')\<rangle> \<and> \<tau>moves1 P h (fst esxs))"
 
-abbreviation \<tau>red1t :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> bool"
+abbreviation \<tau>red1t :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> bool"
 where "\<tau>red1t P t h \<equiv> (\<tau>red1 P t h)^++"
 
-abbreviation \<tau>reds1t :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> bool"
+abbreviation \<tau>reds1t ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> bool"
 where "\<tau>reds1t P t h \<equiv> (\<tau>reds1 P t h)^++"
 
-abbreviation \<tau>red1r :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> bool"
+abbreviation \<tau>red1r ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> bool"
 where "\<tau>red1r P t h \<equiv> (\<tau>red1 P t h)^**"
 
-abbreviation \<tau>reds1r :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> bool"
+abbreviation \<tau>reds1r ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> bool"
 where "\<tau>reds1r P t h \<equiv> (\<tau>reds1 P t h)^**"
 
-definition \<tau>Red1 :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow>
-                            (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow> bool"
+definition \<tau>Red1 ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list)
+  \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) \<Rightarrow> bool"
 where "\<tau>Red1 P t h exexs ex'exs' = (P,t \<turnstile>1 \<langle>fst exexs/snd exexs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>fst ex'exs'/snd ex'exs', h\<rangle> \<and> \<tau>Move1 P h exexs)"
 
-abbreviation \<tau>Red1t :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow>
-                                        (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow> bool"
+abbreviation \<tau>Red1t ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) 
+  \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) \<Rightarrow> bool"
 where "\<tau>Red1t P t h \<equiv> (\<tau>Red1 P t h)^++"
 
-abbreviation \<tau>Red1r :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow>
-                                        (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow> bool"
+abbreviation \<tau>Red1r :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) 
+  \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) \<Rightarrow> bool"
 where "\<tau>Red1r P t h \<equiv> (\<tau>Red1 P t h)^**"
 
-definition \<tau>red1' :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> bool"
+definition \<tau>red1' :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> bool"
 where
   "\<tau>red1' P t h exs e'xs' =
-  (P,t \<turnstile>1 \<langle>fst exs, (h, snd exs)\<rangle> -\<epsilon>\<rightarrow> \<langle>fst e'xs', (h, snd e'xs')\<rangle> \<and> \<tau>move1 P h (fst exs) \<and> \<not> IUF (fst exs) (\<epsilon> :: 'heap J1_thread_action) (fst e'xs'))"
+  (P,t \<turnstile>1 \<langle>fst exs, (h, snd exs)\<rangle> -\<epsilon>\<rightarrow> \<langle>fst e'xs', (h, snd e'xs')\<rangle> \<and> \<tau>move1 P h (fst exs) \<and>
+   \<not> IUF (fst exs) (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) (fst e'xs'))"
 
-definition \<tau>reds1' :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> bool"
+definition \<tau>reds1' :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> bool"
 where
   "\<tau>reds1' P t h esxs es'xs' =
-  (P,t \<turnstile>1 \<langle>fst esxs, (h, snd esxs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>fst es'xs', (h, snd es'xs')\<rangle> \<and> \<tau>moves1 P h (fst esxs) \<and> \<not> IUFs (fst esxs) (\<epsilon>:: 'heap J1_thread_action) (fst es'xs'))"
+  (P,t \<turnstile>1 \<langle>fst esxs, (h, snd esxs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>fst es'xs', (h, snd es'xs')\<rangle> \<and> \<tau>moves1 P h (fst esxs) \<and> 
+   \<not> IUFs (fst esxs) (\<epsilon>:: ('addr, 'thread_id, 'heap) J1_thread_action) (fst es'xs'))"
 
-abbreviation \<tau>red1't :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> bool"
+abbreviation \<tau>red1't ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> bool"
 where "\<tau>red1't P t h \<equiv> (\<tau>red1' P t h)^++"
 
-abbreviation \<tau>reds1't :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> bool"
+abbreviation \<tau>reds1't :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> bool"
 where "\<tau>reds1't P t h \<equiv> (\<tau>reds1' P t h)^++"
 
-abbreviation \<tau>red1'r :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> (expr1 \<times> locals1) \<Rightarrow> bool"
+abbreviation \<tau>red1'r ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> bool"
 where "\<tau>red1'r P t h \<equiv> (\<tau>red1' P t h)^**"
 
-abbreviation \<tau>reds1'r :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> (expr1 list \<times> locals1) \<Rightarrow> bool"
+abbreviation \<tau>reds1'r :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> ('addr expr1 list \<times> 'addr locals1) \<Rightarrow> bool"
 where "\<tau>reds1'r P t h \<equiv> (\<tau>reds1' P t h)^**"
 
-definition \<tau>Red1' :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow>
-                            (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow> bool"
+definition \<tau>Red1' ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) 
+  \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) \<Rightarrow> bool"
 where
   "\<tau>Red1' P t h exexs ex'exs' =
-  (P,t \<turnstile>1 \<langle>fst exexs/snd exexs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>fst ex'exs'/snd ex'exs', h\<rangle> \<and> \<tau>Move1 P h exexs \<and> \<not> IUFL (fst exexs) (snd exexs) (\<epsilon> :: 'heap J1_thread_action) (fst ex'exs') (snd ex'exs'))"
+  (P,t \<turnstile>1 \<langle>fst exexs/snd exexs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>fst ex'exs'/snd ex'exs', h\<rangle> \<and> \<tau>Move1 P h exexs \<and> 
+   \<not> IUFL (fst exexs) (snd exexs) (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) (fst ex'exs') (snd ex'exs'))"
 
-abbreviation \<tau>Red1't :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow>
-                                        (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow> bool"
+abbreviation \<tau>Red1't ::
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) 
+  \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) \<Rightarrow> bool"
 where "\<tau>Red1't P t h \<equiv> (\<tau>Red1' P t h)^++"
 
-abbreviation \<tau>Red1'r :: "J1_prog \<Rightarrow> thread_id \<Rightarrow> 'heap \<Rightarrow> (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow>
-                                        (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow> bool"
+abbreviation \<tau>Red1'r :: 
+  "'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) 
+  \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<times> (('addr expr1 \<times> 'addr locals1) list) \<Rightarrow> bool"
 where "\<tau>Red1'r P t h \<equiv> (\<tau>Red1' P t h)^**"
 
-abbreviation \<tau>MOVE1 :: "'m prog \<Rightarrow> (((expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list) \<times> 'heap,
-                       'heap J1_thread_action) trsys"
+abbreviation \<tau>MOVE1 :: 
+  "'m prog \<Rightarrow> ((('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list) \<times> 'heap, ('addr, 'thread_id, 'heap) J1_thread_action) trsys"
 where "\<tau>MOVE1 P \<equiv> \<lambda>(exexs, h) ta s. \<tau>Move1 P h exexs \<and> ta = \<epsilon>"
 
-
 lemma \<tau>move1_\<tau>moves1_intros:
-  fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+  fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move1NewArray: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (newA T\<lfloor>e\<rceil>)"
   and \<tau>move1Cast: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (Cast U e)"
   and \<tau>move1CastRed: "\<tau>move1 P h (Cast U (Val v))"
@@ -717,7 +751,7 @@ lemma \<tau>move1_\<tau>moves1_intros:
   and \<tau>move1FAss2: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (FAss (Val v) F D e)"
   and \<tau>move1CallObj: "\<tau>move1 P h obj \<Longrightarrow> \<tau>move1 P h (obj\<bullet>M(ps))"
   and \<tau>move1CallParams: "\<tau>moves1 P h ps \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>M(ps))"
-  and \<tau>move1Call: "(\<And>T. \<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>; is_external_call P T M \<rbrakk> \<Longrightarrow> \<tau>external P T M) \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>M(map Val vs))"
+  and \<tau>move1Call: "(\<And>T. \<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>; is_native P T M \<rbrakk> \<Longrightarrow> \<tau>external P T M) \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>M(map Val vs))"
   and \<tau>move1BlockSome: "\<tau>move1 P h {V:T=\<lfloor>v\<rfloor>; e}"
   and \<tau>move1Block: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h {V:T=None; e}"
   and \<tau>move1BlockRed: "\<tau>move1 P h {V:T=None; Val v}"
@@ -767,7 +801,7 @@ by(induct es)(auto)
 lemma \<tau>moves1_map_Val_ThrowD [simp]: "\<tau>moves1 P h (map Val vs @ Throw a # es) = False"
 by(induct vs)(fastsimp)+
 
-lemma fixes e :: "('a, 'b) exp" and es :: "('a, 'b) exp list"
+lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move1_not_call1:
   "call1 e = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>move1 P h e \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
   and \<tau>moves1_not_calls1:
@@ -1126,85 +1160,85 @@ by(induct rule: tranclp_induct2)(auto dest: red1_max_vars)
 lemma \<tau>red1r_max_vars: "\<tau>red1r P t h (e, xs) (e', xs') \<Longrightarrow> max_vars e' \<le> max_vars e"
 by(induct rule: rtranclp_induct2)(auto dest: red1_max_vars)
 
-
-
 lemma \<tau>red1'_iff [iff]:
-  "\<tau>red1' P t h (e, xs) (e', xs') = (P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle> \<and> \<tau>move1 P h e \<and> \<not> IUF e (\<epsilon> :: 'heap J1_thread_action) e')"
+  "\<tau>red1' P t h (e, xs) (e', xs') = 
+  (P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle> \<and> \<tau>move1 P h e \<and> \<not> IUF e (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e')"
 by(simp add: \<tau>red1'_def)
 
 lemma \<tau>reds1'_iff [iff]:
-  "\<tau>reds1' P t h (es, xs) (es', xs') = (P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle> \<and> \<tau>moves1 P h es \<and> \<not>  IUFs es (\<epsilon> :: 'heap J1_thread_action) es')"
+  "\<tau>reds1' P t h (es, xs) (es', xs') = 
+  (P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle> \<and> \<tau>moves1 P h es \<and> \<not> IUFs es (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es')"
 by(simp add: \<tau>reds1'_def)
 
 lemma \<tau>red1't_1step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: 'heap J1_thread_action) e' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e' \<rbrakk>
   \<Longrightarrow> \<tau>red1't P t h (e, xs) (e', xs')"
 by(blast intro: tranclp.r_into_trancl)
 
 lemma \<tau>red1't_2step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: 'heap J1_thread_action) e';
-     P,t \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>; \<tau>move1 P h e'; \<not> IUF e' (\<epsilon> :: 'heap J1_thread_action) e'' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e';
+     P,t \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>; \<tau>move1 P h e'; \<not> IUF e' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e'' \<rbrakk>
   \<Longrightarrow> \<tau>red1't P t h (e, xs) (e'', xs'')"
 by(blast intro: tranclp.trancl_into_trancl[OF \<tau>red1't_1step])
 
 lemma \<tau>red1't_3step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: 'heap J1_thread_action) e';
-     P,t \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>; \<tau>move1 P h e'; \<not> IUF e' (\<epsilon> :: 'heap J1_thread_action) e'';
-     P,t \<turnstile>1 \<langle>e'', (h, xs'')\<rangle> -\<epsilon>\<rightarrow> \<langle>e''', (h, xs''')\<rangle>; \<tau>move1 P h e''; \<not> IUF e'' (\<epsilon> :: 'heap J1_thread_action) e''' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e';
+     P,t \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>; \<tau>move1 P h e'; \<not> IUF e' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e'';
+     P,t \<turnstile>1 \<langle>e'', (h, xs'')\<rangle> -\<epsilon>\<rightarrow> \<langle>e''', (h, xs''')\<rangle>; \<tau>move1 P h e''; \<not> IUF e'' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e''' \<rbrakk>
   \<Longrightarrow> \<tau>red1't P t h (e, xs) (e''', xs''')"
 by(blast intro: tranclp.trancl_into_trancl[OF \<tau>red1't_2step])
 
 lemma \<tau>reds1't_1step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: 'heap J1_thread_action) es' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es' \<rbrakk>
   \<Longrightarrow> \<tau>reds1't P t h (es, xs) (es', xs')"
 by(blast intro: tranclp.r_into_trancl)
 
 lemma \<tau>reds1't_2step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: 'heap J1_thread_action) es';
-     P,t \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>; \<tau>moves1 P h es'; \<not> IUFs es' (\<epsilon> :: 'heap J1_thread_action) es'' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es';
+     P,t \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>; \<tau>moves1 P h es'; \<not> IUFs es' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es'' \<rbrakk>
   \<Longrightarrow> \<tau>reds1't P t h (es, xs) (es'', xs'')"
 by(blast intro: tranclp.trancl_into_trancl[OF \<tau>reds1't_1step])
 
 lemma \<tau>reds1't_3step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: 'heap J1_thread_action) es';
-     P,t \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>; \<tau>moves1 P h es'; \<not> IUFs es' (\<epsilon> :: 'heap J1_thread_action) es'';
-     P,t \<turnstile>1 \<langle>es'', (h, xs'')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es''', (h, xs''')\<rangle>; \<tau>moves1 P h es''; \<not> IUFs es'' (\<epsilon> :: 'heap J1_thread_action) es''' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es';
+     P,t \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>; \<tau>moves1 P h es'; \<not> IUFs es' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es'';
+     P,t \<turnstile>1 \<langle>es'', (h, xs'')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es''', (h, xs''')\<rangle>; \<tau>moves1 P h es''; \<not> IUFs es'' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es''' \<rbrakk>
   \<Longrightarrow> \<tau>reds1't P t h (es, xs) (es''', xs''')"
 by(blast intro: tranclp.trancl_into_trancl[OF \<tau>reds1't_2step])
 
 lemma \<tau>red1'r_1step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: 'heap J1_thread_action) e' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e' \<rbrakk>
   \<Longrightarrow> \<tau>red1'r P t h (e, xs) (e', xs')"
 by(blast intro: r_into_rtranclp)
 
 lemma \<tau>red1'r_2step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: 'heap J1_thread_action) e';
-     P,t \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>; \<tau>move1 P h e'; \<not> IUF e' (\<epsilon> :: 'heap J1_thread_action) e'' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e';
+     P,t \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>; \<tau>move1 P h e'; \<not> IUF e' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e'' \<rbrakk>
   \<Longrightarrow> \<tau>red1'r P t h (e, xs) (e'', xs'')"
 by(blast intro: rtranclp.rtrancl_into_rtrancl[OF \<tau>red1'r_1step])
 
 lemma \<tau>red1'r_3step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: 'heap J1_thread_action) e';
-     P,t \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>; \<tau>move1 P h e'; \<not> IUF e' (\<epsilon> :: 'heap J1_thread_action) e'';
-     P,t \<turnstile>1 \<langle>e'', (h, xs'')\<rangle> -\<epsilon>\<rightarrow> \<langle>e''', (h, xs''')\<rangle>; \<tau>move1 P h e''; \<not> IUF e'' (\<epsilon> :: 'heap J1_thread_action) e''' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 P h e; \<not> IUF e (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e';
+     P,t \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>; \<tau>move1 P h e'; \<not> IUF e' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e'';
+     P,t \<turnstile>1 \<langle>e'', (h, xs'')\<rangle> -\<epsilon>\<rightarrow> \<langle>e''', (h, xs''')\<rangle>; \<tau>move1 P h e''; \<not> IUF e'' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) e''' \<rbrakk>
   \<Longrightarrow> \<tau>red1'r P t h (e, xs) (e''', xs''')"
 by(blast intro: rtranclp.rtrancl_into_rtrancl[OF \<tau>red1'r_2step])
 
 lemma \<tau>reds1'r_1step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: 'heap J1_thread_action) es' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es' \<rbrakk>
   \<Longrightarrow> \<tau>reds1'r P t h (es, xs) (es', xs')"
 by(blast intro: r_into_rtranclp)
 
 lemma \<tau>reds1'r_2step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: 'heap J1_thread_action) es';
-     P,t \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>; \<tau>moves1 P h es'; \<not> IUFs es' (\<epsilon> :: 'heap J1_thread_action) es'' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es';
+     P,t \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>; \<tau>moves1 P h es'; \<not> IUFs es' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es'' \<rbrakk>
   \<Longrightarrow> \<tau>reds1'r P t h (es, xs) (es'', xs'')"
 by(blast intro: rtranclp.rtrancl_into_rtrancl[OF \<tau>reds1'r_1step])
 
 lemma \<tau>reds1'r_3step:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: 'heap J1_thread_action) es';
-     P,t \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>; \<tau>moves1 P h es'; \<not> IUFs es' (\<epsilon> :: 'heap J1_thread_action) es'';
-     P,t \<turnstile>1 \<langle>es'', (h, xs'')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es''', (h, xs''')\<rangle>; \<tau>moves1 P h es''; \<not> IUFs es'' (\<epsilon> :: 'heap J1_thread_action) es''' \<rbrakk>
+  "\<lbrakk> P,t \<turnstile>1 \<langle>es, (h, xs)\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es', (h, xs')\<rangle>; \<tau>moves1 P h es; \<not> IUFs es (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es';
+     P,t \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>; \<tau>moves1 P h es'; \<not> IUFs es' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es'';
+     P,t \<turnstile>1 \<langle>es'', (h, xs'')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es''', (h, xs''')\<rangle>; \<tau>moves1 P h es''; \<not> IUFs es'' (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) es''' \<rbrakk>
   \<Longrightarrow> \<tau>reds1'r P t h (es, xs) (es''', xs''')"
 by(blast intro: rtranclp.rtrancl_into_rtrancl[OF \<tau>reds1'r_2step])
 
@@ -1436,7 +1470,7 @@ lemma \<tau>red1'r_ThrowD [dest]: "\<tau>red1'r P t h (Throw a, xs) (e'', xs'') 
 by(induct rule: rtranclp_induct2)(auto)
 
 lemma \<tau>Red1'_conv [iff]:
-  "\<tau>Red1' P t h (ex, exs) (ex', exs') = (P,t \<turnstile>1 \<langle>ex/exs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>ex'/exs', h\<rangle> \<and> \<tau>Move1 P h (ex, exs) \<and> \<not> IUFL ex exs (\<epsilon> :: 'heap J1_thread_action) ex' exs')"
+  "\<tau>Red1' P t h (ex, exs) (ex', exs') = (P,t \<turnstile>1 \<langle>ex/exs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>ex'/exs', h\<rangle> \<and> \<tau>Move1 P h (ex, exs) \<and> \<not> IUFL ex exs (\<epsilon> :: ('addr, 'thread_id, 'heap) J1_thread_action) ex' exs')"
 by(simp add: \<tau>Red1'_def)
 
 lemma \<tau>red1't_into_\<tau>Red1't:
@@ -1481,16 +1515,6 @@ proof
   thus "False" by induct auto
 qed auto
 
-lemma red1_ta_Wakeup_no_Join_no_Lock:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
-  \<Longrightarrow> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
-  and reds1_ta_Wakeup_no_Join_no_Lock:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
-  \<Longrightarrow> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
-apply(induct rule: red1_reds1.inducts)
-apply(auto simp add: ta_upd_simps dest: red_external_Wakeup_no_Join_no_Lock)
-done
-
 lemma red1_Suspend_is_call:
   "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> call1 e' \<noteq> None"
   and reds_Suspend_is_calls:
@@ -1501,17 +1525,12 @@ lemma Red1_Suspend_is_call:
   "\<lbrakk> P,t \<turnstile>1 \<langle>(e, xs)/exs, h\<rangle> -ta\<rightarrow> \<langle>(e', xs')/exs', h'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> call1 e' \<noteq> None"
 by(auto elim!: Red1.cases dest: red1_Suspend_is_call)
 
-lemma Red1_ta_Wakeup_no_Join_no_Lock:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>(e, xs)/exs, h\<rangle> -ta\<rightarrow> \<langle>(e', xs')/exs', h'\<rangle>; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
-  \<Longrightarrow> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
-by(auto elim!: Red1.cases dest: red1_ta_Wakeup_no_Join_no_Lock)
+lemma Red1'_mthr: "multithreaded final_expr1 (mred1' P)"
+by(unfold_locales)(fastsimp elim!: Red1.cases dest: red1_new_thread_heap)+
 
-lemma Red1'_mthr: "multithreaded (mred1' P)"
-by(unfold_locales)(fastsimp elim!: Red1.cases dest: red1_new_thread_heap red1_ta_Wakeup_no_Join_no_Lock)+
-
-lemma Red1_mthr: "multithreaded (mred1 P)"
+lemma Red1_mthr: "multithreaded final_expr1 (mred1 P)"
 apply(unfold_locales)
-apply(fastsimp elim!: Red1.cases dest: red1_new_thread_heap red1_ta_Wakeup_no_Join_no_Lock)+
+apply(fastsimp elim!: Red1.cases dest: red1_new_thread_heap)+
 done
 
 lemma red1_\<tau>move1_heap_unchanged: "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move1 P (hp s) e \<rbrakk> \<Longrightarrow> hp s' = hp s"
@@ -1520,26 +1539,10 @@ apply(induct rule: red1_reds1.inducts)
 apply(fastsimp simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_heap_unchanged)+
 done
 
-lemma Red1_final_thread_wf: "final_thread_wf final_expr1 (mred1 P)"
+lemma Red1_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1 P) (\<tau>MOVE1 P)"
 proof -
   interpret multithreaded final_expr1 "mred1 P" convert_RA
     by(rule Red1_mthr)
-  thus ?thesis
-    by(unfold_locales)(auto elim!: Red1.cases simp add: final_iff)
-qed
-
-lemma Red1'_final_thread_wf: "final_thread_wf final_expr1 (mred1' P)"
-proof -
-  interpret multithreaded final_expr1 "mred1' P" convert_RA
-    by(rule Red1'_mthr)
-  show ?thesis
-    by(unfold_locales)(auto elim!: Red1.cases simp add: final_iff)
-qed
-
-lemma Red1_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1 P) (\<tau>MOVE1 P)"
-proof -
-  interpret final_thread_wf final_expr1 "mred1 P" convert_RA
-    by(rule Red1_final_thread_wf)
   show ?thesis
   proof
     fix x1 m1 t ta1 x1' m1'
@@ -1554,8 +1557,8 @@ qed
 
 lemma Red1'_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1' P) (\<tau>MOVE1 P)"
 proof -
-  interpret final_thread_wf final_expr1 "mred1' P" convert_RA
-    by(rule Red1'_final_thread_wf)
+  interpret multithreaded final_expr1 "mred1' P" convert_RA
+    by(rule Red1'_mthr)
   show ?thesis
   proof
     fix x1 m1 t ta1 x1' m1'

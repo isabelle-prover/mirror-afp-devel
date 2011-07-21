@@ -14,7 +14,6 @@ lemma app\<^isub>i_mono:
   assumes wf: "wf_prog p P"
   assumes less: "P \<turnstile> \<tau> \<le>\<^sub>i \<tau>'"
   shows "app\<^isub>i (i,P,mxs,mpc,rT,\<tau>') \<Longrightarrow> app\<^isub>i (i,P,mxs,mpc,rT,\<tau>)"
-(*<*)
 proof -
   assume app: "app\<^isub>i (i,P,mxs,mpc,rT,\<tau>')"
   
@@ -47,89 +46,102 @@ proof -
       assume ST: "ST!n \<noteq> NT" and ST': "ST'!n \<noteq> NT" 
 
       from ST' app Invoke
-      have "if is_external_call P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
-	    else \<exists>D Ts T m C'. ST' ! n = Class D \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
+      have "if is_native P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
+	    else \<exists>D Ts T m C'. class_type_of (ST' ! n) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
 	by fastsimp
       moreover
       from less have "P \<turnstile> ST!n \<le> ST'!n"
 	by(auto dest: list_all2_nthD2[OF _ n])
       { fix D Ts T m C'
-	assume D: "ST' ! n = Class D"
+	assume D: "class_type_of (ST' ! n) = \<lfloor>D\<rfloor>"
 	  and Ts: "P \<turnstile> rev (take n ST') [\<le>] Ts"
 	  and D_M: "P \<turnstile> D sees M: Ts\<rightarrow>T = m in C'"
-	  and nec: "\<not> is_external_call P (ST' ! n) M"
-	from D_M wf_Object_method_empty[OF wf]
-	have "D \<noteq> Object" by(auto)
-	with `P \<turnstile> ST!n \<le> ST'!n`
-	obtain D' where
-          D': "ST!n = Class D'" and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
-	  using D ST by auto
-
+	  and nec: "\<not> is_native P (ST' ! n) M"
+        
+        from D `P \<turnstile> ST!n \<le> ST'!n` ST
+        obtain D' where D': "class_type_of (ST ! n) = \<lfloor>D'\<rfloor>" 
+          and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
+          unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
+          by(rule widen_is_class_type_of)
 	from wf D_M DsubC obtain Ts' T' m' C'' where
           D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
           Ts': "P \<turnstile> Ts [\<le>] Ts'"
           by (blast dest: sees_method_mono) 
 	
-	from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
-	also note Ts also note Ts' 
-	finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
-	with D'_M D' app less Invoke D nec have ?thesis
-	  by(auto dest: external_call_not_sees_method) }
-      moreover {
-	fix Ts U
-	assume exc: "is_external_call P (ST' ! n) M"
-	  and wtext: "P \<turnstile> ST' ! n\<bullet>M(Ts) :: U"
-          and sub: "P \<turnstile> rev (take n ST') [\<le>] Ts"
         have ?thesis
-        proof(cases "\<exists>C. ST ! n = Class C \<and> P \<turnstile> C has M")
+        proof(cases "is_native P (ST ! n) M")
           case False
-          with exc have "is_external_call P (ST ! n) M"
-	    using `P \<turnstile> ST!n \<le> ST'!n` ST
-            by(auto intro: is_external_call_widen_mono split: ty.splits)
-	  moreover from wtext `P \<turnstile> ST!n \<le> ST'!n` ST False
-          obtain U' where "P \<turnstile> ST!n\<bullet>M(Ts) :: U'" "P \<turnstile> U' \<le> U"
-            by(auto dest: external_WT_widen_mono split: ty.splits)
-          moreover from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
-          with sub have "P \<turnstile> rev (take n ST) [\<le>] Ts" by-(rule widens_trans)
-	  ultimately show ?thesis using app Invoke by auto
+	  from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
+	  also note Ts also note Ts' 
+	  finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
+	  with False D'_M D' app less Invoke D show ?thesis by(auto)
         next
           case True
-          then obtain C Ts' T' meth D where "ST ! n = Class C"
-            and sees: "P \<turnstile> C sees M:Ts'\<rightarrow>T'=meth in D"
-            unfolding has_method_def by auto
-          moreover
-          from `ST ! n = Class C` `P \<turnstile> ST!n \<le> ST'!n`
-          obtain C' where "ST' ! n = Class C'" by(auto dest: Class_widen)
-          with `P \<turnstile> ST!n \<le> ST'!n` `ST ! n = Class C` have "P \<turnstile> C \<preceq>\<^sup>* C'" by simp
-          with wtext external_WT_widen_sees_method_contravariant[OF wf sees this, of Ts U] `ST' ! n = Class C'`
-          have "P \<turnstile> Ts [\<le>] Ts'" "P \<turnstile> T' \<le> U" by auto
-          from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
-          with `P \<turnstile> Ts [\<le>] Ts'` sub have "P \<turnstile> rev (take n ST) [\<le>] Ts'" by(auto intro: widens_trans)
-          ultimately show ?thesis using app Invoke `P \<turnstile> T' \<le> U` by(auto dest: external_call_not_sees_method)
+          with D' D'_M obtain Ts'' Tr''
+            where wtext: "P \<turnstile> ST ! n\<bullet>M(Ts'') :: Tr''" 
+            and "P \<turnstile> Ts' [\<le>] Ts''" "P \<turnstile> Tr'' \<le> T'"
+            unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
+            by(auto dest: is_native_sees_method_overriding[OF wf])
+          from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
+          also note Ts also note Ts' also note `P \<turnstile> Ts' [\<le>] Ts''`
+          finally have "P \<turnstile> rev (take n ST) [\<le>] Ts''" .
+          with D'_M D' app less Invoke D Ts' D' nec ST wtext `P \<turnstile> Tr'' \<le> T'` True
+          show ?thesis by(auto)
+        qed
+      } moreover {
+	fix Ts U
+	assume exc: "is_native P (ST' ! n) M"
+	  and wtext: "P \<turnstile> ST' ! n\<bullet>M(Ts) :: U"
+          and sub: "P \<turnstile> rev (take n ST') [\<le>] Ts"
+        from wtext obtain T' where native': "P \<turnstile> ST' ! n native M:Ts\<rightarrow>U in T'"
+          unfolding is_native_def2 by(auto simp add: external_WT.simps)
+        have ?thesis
+        proof(cases "is_native P (ST ! n) M")
+          case True
+          then obtain Ts' Tr' T'
+            where native: "P \<turnstile> ST ! n native M:Ts'\<rightarrow>Tr' in T'"
+            unfolding is_native_def2 by blast
+          moreover {
+            from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
+            also note sub also from native' native `P \<turnstile> ST!n \<le> ST'!n`
+            have "P \<turnstile> Ts [\<le>] Ts'" by(rule native_native_overriding)
+            finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" . }
+          ultimately show ?thesis using app Invoke ST' exc True wtext
+            by(auto simp add: external_WT.simps)
+        next
+          case False
+          with native_not_native_overriding[OF wf native' this `P \<turnstile> ST ! n \<le> ST' ! n` ST]
+          obtain C Ts' Tr' body D where "is_class_type_of (ST ! n) C"
+            and "P \<turnstile> C sees M: Ts'\<rightarrow>Tr' = body in D"
+            and "P \<turnstile> Ts [\<le>] Ts'" and "P \<turnstile> Tr' \<le> U" " P \<turnstile> Class C \<le> T'"
+            by blast
+          moreover {
+            from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
+            also note sub also note `P \<turnstile> Ts [\<le>] Ts'`
+            finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
+          }
+          ultimately show ?thesis using app Invoke False 
+            by(auto simp add: is_class_type_of_conv_class_type_of_Some)
         qed }
       ultimately have ?thesis by(auto split: split_if_asm) }
     ultimately show ?thesis by blast
   next 
-    case (Getfield F C)
-    with app less wf_Object_field_empty[OF wf] show ?thesis
-      by(fastsimp simp add: sees_field_def dest: has_fields_fun)
+    case Getfield
+    with app less show ?thesis
+      by(fastsimp simp add: sees_field_def widen_Array dest: has_fields_fun)
   next
-    case (Putfield F C)
-    with app less wf_Object_field_empty[OF wf] show ?thesis
-      by (fastsimp intro: widen_trans rtrancl_trans simp add: sees_field_def dest: has_fields_fun)
+    case Putfield
+    with app less show ?thesis
+      by (fastsimp intro: widen_trans rtrancl_trans simp add: sees_field_def widen_Array dest: has_fields_fun)
   next
     case Return
     with app less show ?thesis by (fastsimp intro: widen_trans)
   next
     case ALoad
-    with app less show ?thesis
-      apply(clarsimp)
-      by(case_tac "T = NT", auto simp add: widen_Array)
+    with app less show ?thesis by(auto simp add: widen_Array)
   next
     case AStore
-    with app less show ?thesis
-      apply(clarsimp)
-      by(case_tac "U = NT", auto simp add: widen_Array)
+    with app less show ?thesis by(auto simp add: widen_Array)
   next
     case ALength
     with app less show ?thesis by(auto simp add: widen_Array)
@@ -166,12 +178,10 @@ proof -
       by(auto dest: list_all2_lengthD)
   qed (auto elim!: refTE not_refTE)
 qed
-(*>*)
 
 lemma succs_mono:
   assumes wf: "wf_prog p P" and app\<^isub>i: "app\<^isub>i (i,P,mxs,mpc,rT,\<tau>')"
   shows "P \<turnstile> \<tau> \<le>\<^sub>i \<tau>' \<Longrightarrow> set (succs i \<tau> pc) \<subseteq> set (succs i \<tau>' pc)"
-(*<*)
 proof (cases i)
   case (Invoke M n)
   obtain ST LT ST' LT' where 
@@ -233,14 +243,11 @@ next
   have "P \<turnstile> ST!0 \<le> ST'!0" by (auto simp add: fun_of_def dest: list_all2_nthD)
   with MExit show ?thesis by auto
 qed auto
-(*>*)
-  
 
 lemma app_mono: 
   assumes wf: "wf_prog p P"
   assumes less': "P \<turnstile> \<tau> \<le>' \<tau>'"
   shows "app i P m rT pc mpc xt \<tau>' \<Longrightarrow> app i P m rT pc mpc xt \<tau>"
-(*<*)
 proof (cases \<tau>)
   case None thus ?thesis by simp
 next
@@ -271,7 +278,6 @@ next
   ultimately
   show ?thesis using Some by (simp add: app_def)
 qed
-(*>*)
 
 lemma eff\<^isub>i_mono:
   assumes wf: "wf_prog p P"
@@ -279,7 +285,6 @@ lemma eff\<^isub>i_mono:
   assumes app\<^isub>i: "app i P m rT pc mpc xt (Some \<tau>')"
   assumes succs: "succs i \<tau> pc \<noteq> []"  "succs i \<tau>' pc \<noteq> []"
   shows "P \<turnstile> eff\<^isub>i (i,P,\<tau>) \<le>\<^sub>i eff\<^isub>i (i,P,\<tau>')"
-(*<*)
 proof -
   obtain ST LT ST' LT' where
     [simp]: "\<tau> = (ST,LT)" and
@@ -323,66 +328,81 @@ proof -
       by (auto)
     
     from ST' app\<^isub>i Invoke
-    have "if is_external_call P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
-          else \<exists>D Ts T m C'. ST' ! n = Class D \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
+    have "if is_native P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
+          else \<exists>D Ts T m C'. class_type_of (ST' ! n) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
       by fastsimp
     moreover
     from less have "P \<turnstile> ST!n \<le> ST'!n"
       by(auto dest: list_all2_nthD2[OF _ n])
     { fix D Ts T m C'
-      assume D: "ST' ! n = Class D"
+      assume D: "class_type_of (ST' ! n) = \<lfloor>D\<rfloor>"
+        and Ts: "P \<turnstile> rev (take n ST') [\<le>] Ts"
 	and D_M: "P \<turnstile> D sees M: Ts\<rightarrow>T = m in C'"
-	and nec: "\<not> is_external_call P (ST' ! n) M"
-      from D_M wf_Object_method_empty[OF wf]
-      have "D \<noteq> Object" by(auto)
-      with `P \<turnstile> ST!n \<le> ST'!n` obtain D' where
-	D': "ST!n = Class D'" and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
-	using D ST by(auto simp: widen_Class)
+	and nec: "\<not> is_native P (ST' ! n) M"
+
+        from D `P \<turnstile> ST!n \<le> ST'!n` ST
+        obtain D' where D': "class_type_of (ST ! n) = \<lfloor>D'\<rfloor>" 
+          and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
+          unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
+          by(rule widen_is_class_type_of)
+
       from wf D_M DsubC obtain Ts' T' m' C'' where
 	D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
-	Ts': "P \<turnstile> T' \<le> T" by (blast dest: sees_method_mono)
-      moreover
-      with D_M `P \<turnstile> ST!n \<le> ST'!n` D ST D'
-      have "\<not> is_external_call P (ST ! n) M"
-        by(auto dest: external_call_not_sees_method)
-      ultimately have ?thesis using Invoke n D D' D_M less nec
-        by(auto intro: list_all2_dropI) }
-    moreover
-    { fix Ts U
-      assume nexc': "is_external_call P (ST' ! n) M"
-	and wtext: "P \<turnstile> ST' ! n\<bullet>M(Ts) :: U"
-        and sub: "P \<turnstile> rev (take n ST') [\<le>] Ts"
+	Ts': "P \<turnstile> Ts [\<le>] Ts'" and "P \<turnstile> T' \<le> T" by (blast dest: sees_method_mono)
+
+
       have ?thesis
-      proof(cases "\<exists>C. ST ! n = Class C \<and> P \<turnstile> C has M")
+      proof(cases "is_native P (ST ! n) M")
         case False
-        with `P \<turnstile> ST!n \<le> ST'!n` ST nexc'
-        have "is_external_call P (ST ! n) M"
-          by(auto intro: is_external_call_widen_mono split: ty.splits)
-        moreover from wtext `P \<turnstile> ST!n \<le> ST'!n` ST False obtain U' 
-          where "P \<turnstile> ST ! n\<bullet>M(Ts) :: U'" and "P \<turnstile> U' \<le> U"
-          by(auto dest: external_WT_widen_mono split: ty.splits)
-        moreover from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
-        with sub have "P \<turnstile> rev (take n ST) [\<le>] Ts" by(auto intro: widens_trans)
-        moreover hence "(THE U. \<exists>Ts'. P \<turnstile> rev (take n ST) [\<le>] Ts' \<and> P \<turnstile> ST ! n\<bullet>M(Ts') :: U) = U'"
-          using `P \<turnstile> ST ! n\<bullet>M(Ts) :: U'` by(auto dest: external_WT_determ)
-        moreover have "(THE U. \<exists>Ts'. P \<turnstile> rev (take n ST') [\<le>] Ts' \<and> P \<turnstile> ST' ! n\<bullet>M(Ts') :: U) = U"
-          using wtext sub by(auto dest: external_WT_determ)
-        ultimately show ?thesis using Invoke ST less nexc' wtext by(simp)
+        thus ?thesis using Invoke n D D' D_M less nec D'_M Ts' `P \<turnstile> T' \<le> T`
+          by(auto intro: list_all2_dropI)
       next
         case True
-        then obtain C Ts' T' meth D where C: "ST ! n = Class C"
-          and sees: "P \<turnstile> C sees M:Ts'\<rightarrow>T'=meth in D"
-          unfolding has_method_def by auto
-        moreover hence "\<not> is_external_call P (Class C) M"
-          by(auto dest: external_call_not_sees_method)
-        moreover from C `P \<turnstile> ST!n \<le> ST'!n` obtain C'
-          where C': "ST' ! n = Class C'" by(auto dest: Class_widen)
-        with C `P \<turnstile> ST!n \<le> ST'!n` have "P \<turnstile> C \<preceq>\<^sup>* C'" by simp
-        from wtext external_WT_widen_sees_method_contravariant[OF wf sees this, of Ts U] C'
-        have "P \<turnstile> Ts [\<le>] Ts'" "P \<turnstile> T' \<le> U" by simp_all
-        moreover have "(THE U. \<exists>Ts'. P \<turnstile> rev (take n ST') [\<le>] Ts' \<and> P \<turnstile> ST' ! n\<bullet>M(Ts') :: U) = U"
-          using sub wtext by(auto dest: external_WT_determ)
-        ultimately show ?thesis using Invoke ST nexc' less by simp
+        with D' D'_M obtain Ts'' Tr''
+          where wtext: "P \<turnstile> ST ! n\<bullet>M(Ts'') :: Tr''" 
+          and "P \<turnstile> Ts' [\<le>] Ts''" "P \<turnstile> Tr'' \<le> T'"
+          unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
+          by(auto dest: is_native_sees_method_overriding[OF wf])
+        from `P \<turnstile> Tr'' \<le> T'` `P \<turnstile> T' \<le> T` have "P \<turnstile> Tr'' \<le> T" by(rule widen_trans)
+        from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
+        also note Ts also note Ts' also note `P \<turnstile> Ts' [\<le>] Ts''`
+        finally have "P \<turnstile> rev (take n ST) [\<le>] Ts''" .
+        thus ?thesis using Invoke n D D' D_M less nec D'_M Ts' wtext `P \<turnstile> Tr'' \<le> T` `P \<turnstile> T' \<le> T`
+          by(auto simp add: is_native_def2 elim!: external_WT.cases dest: native_call_fun)
+      qed }
+    moreover
+    { fix Ts U
+      assume nexc': "is_native P (ST' ! n) M"
+	and wtext: "P \<turnstile> ST' ! n\<bullet>M(Ts) :: U"
+        and sub: "P \<turnstile> rev (take n ST') [\<le>] Ts"
+
+      from wtext obtain T' where native': "P \<turnstile> ST' ! n native M:Ts\<rightarrow>U in T'"
+        unfolding is_native_def2 by(auto simp add: external_WT.simps)
+      have ?thesis
+      proof(cases "is_native P (ST ! n) M")
+        case True
+        then obtain Ts' Tr' T'
+          where native: "P \<turnstile> ST ! n native M:Ts'\<rightarrow>Tr' in T'"
+          unfolding is_native_def2 by blast
+        hence "P \<turnstile> ST ! n\<bullet>M(Ts') :: Tr'" ..
+        
+        from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
+        also note sub 
+        also from native' native `P \<turnstile> ST!n \<le> ST'!n`
+        have "P \<turnstile> Ts [\<le>] Ts'" by(rule native_native_overriding)
+        finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
+        moreover from native' native `P \<turnstile> ST!n \<le> ST'!n`
+        have "P \<turnstile> Tr' \<le> U" by(rule native_native_overriding)
+        ultimately show ?thesis using Invoke ST less nexc' wtext True native
+          by(auto elim: external_WT.cases)
+      next
+        case False
+        from native_not_native_overriding[OF wf native' this `P \<turnstile> ST ! n \<le> ST' ! n` ST]
+        obtain C Ts' Tr' body D where "is_class_type_of (ST ! n) C"
+          and "P \<turnstile> C sees M: Ts'\<rightarrow>Tr' = body in D"
+          and "P \<turnstile> Ts [\<le>] Ts'" and "P \<turnstile> Tr' \<le> U" " P \<turnstile> Class C \<le> T'" by blast
+        thus ?thesis using Invoke ST less nexc' False wtext
+          by(auto simp add: is_class_type_of_conv_class_type_of_Some elim: external_WT.cases)
       qed }
     ultimately show ?thesis by(auto split: split_if_asm)
   next
@@ -397,6 +417,5 @@ proof -
       by auto(force dest: WTrt_binop_widen_mono WTrt_binop_fun)
   qed auto
 qed
-(*>*)
 
 end

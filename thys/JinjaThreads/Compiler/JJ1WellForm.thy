@@ -68,13 +68,15 @@ text{*\noindent and the correct block numbering: *}
 text{* The main complication is preservation of definite assignment
 @{term"\<D>"}. *}
 
-lemma A_compE1_None[simp]: "\<A> e = None \<Longrightarrow> \<A> (compE1 Vs e) = None"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows A_compE1_None[simp]: "\<A> e = None \<Longrightarrow> \<A> (compE1 Vs e) = None"
   and As_compEs1_None: "\<A>s es = None \<Longrightarrow> \<A>s (compEs1 Vs es) = None"
 apply(induct Vs e and Vs es rule: compE1_compEs1_induct)
 apply(auto simp:hyperset_defs)
 done
 
-lemma A_compE1: "\<lbrakk> \<A> e = \<lfloor>A\<rfloor>; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A> (compE1 Vs e) = \<lfloor>index Vs ` A\<rfloor>"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows A_compE1: "\<lbrakk> \<A> e = \<lfloor>A\<rfloor>; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A> (compE1 Vs e) = \<lfloor>index Vs ` A\<rfloor>"
   and As_compEs1: "\<lbrakk> \<A>s es = \<lfloor>A\<rfloor>; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A>s (compEs1 Vs es) = \<lfloor>index Vs ` A\<rfloor>"
 proof(induct Vs e and Vs es arbitrary: A and A rule: compE1_compEs1_induct)
   case (Block Vs V' T vo e)
@@ -154,14 +156,15 @@ next
   ultimately show ?case by fastsimp
 qed (auto simp add:hyperset_defs)
 
-lemma  fixes e :: "('a,'b) exp" and es :: "('a,'b) exp list"
+lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows D_None [iff]: "\<D> e None"
   and Ds_None [iff]: "\<D>s es None"
 by(induct e and es)(simp_all)
 
 declare Un_ac [simp]
 
-lemma D_index_compE1: "\<lbrakk> A \<subseteq> set Vs; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<D> e \<lfloor>A\<rfloor> \<Longrightarrow> \<D> (compE1 Vs e) \<lfloor>index Vs ` A\<rfloor>"
+lemma fixes e :: "'addr expr" and es :: "'addr expr list"
+  shows D_index_compE1: "\<lbrakk> A \<subseteq> set Vs; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<D> e \<lfloor>A\<rfloor> \<Longrightarrow> \<D> (compE1 Vs e) \<lfloor>index Vs ` A\<rfloor>"
   and Ds_index_compEs1: "\<lbrakk> A \<subseteq> set Vs; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<D>s es \<lfloor>A\<rfloor> \<Longrightarrow> \<D>s (compEs1 Vs es) \<lfloor>index Vs ` A\<rfloor>"
 proof(induct e and es arbitrary: A Vs and A Vs)
   case (BinOp e1 bop e2)

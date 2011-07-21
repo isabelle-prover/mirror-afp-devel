@@ -21,7 +21,7 @@ declare match_ex_table_append_not_pcs[simp del]
 
 context JVM_heap_base begin
 
-primrec \<tau>instr :: "'m prog \<Rightarrow> 'heap \<Rightarrow> val list \<Rightarrow> instr \<Rightarrow> bool"
+primrec \<tau>instr :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> 'addr instr \<Rightarrow> bool"
 where
   "\<tau>instr P h stk (Load n) = True"
 | "\<tau>instr P h stk (Store n) = True"
@@ -35,7 +35,10 @@ where
 | "\<tau>instr P h stk (Putfield F D) = False"
 | "\<tau>instr P h stk (Checkcast T) = True"
 | "\<tau>instr P h stk (Instanceof T) = True"
-| "\<tau>instr P h stk (Invoke M n) = (n < length stk \<and> (stk ! n = Null \<or> (let T = the (typeof_addr h (the_Addr (stk ! n))) in is_external_call P T M \<longrightarrow> \<tau>external P T M)))"
+| "\<tau>instr P h stk (Invoke M n) = 
+   (n < length stk \<and> 
+    (stk ! n = Null \<or> 
+     (let T = the (typeof_addr h (the_Addr (stk ! n))) in is_native P T M \<longrightarrow> \<tau>external P T M)))"
 | "\<tau>instr P h stk Return = True"
 | "\<tau>instr P h stk Pop = True"
 | "\<tau>instr P h stk Dup = True"
@@ -47,9 +50,9 @@ where
 | "\<tau>instr P h stk MEnter = False"
 | "\<tau>instr P h stk MExit = False"
 
-inductive \<tau>move2 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> val list \<Rightarrow> expr1 \<Rightarrow> nat \<Rightarrow> addr option \<Rightarrow> bool"
-  and \<tau>moves2 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> val list \<Rightarrow> expr1 list \<Rightarrow> nat \<Rightarrow> addr option \<Rightarrow> bool"
-for P :: "'m prog" and h :: 'heap and stk :: "val list"
+inductive \<tau>move2 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> 'addr expr1 \<Rightarrow> nat \<Rightarrow> 'addr option \<Rightarrow> bool"
+  and \<tau>moves2 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> 'addr expr1 list \<Rightarrow> nat \<Rightarrow> 'addr option \<Rightarrow> bool"
+for P :: "'m prog" and h :: 'heap and stk :: "'addr val list"
 where
   \<tau>move2xcp: "pc < length (compE2 e) \<Longrightarrow> \<tau>move2 P h stk e pc \<lfloor>xcp\<rfloor>"
 
@@ -101,7 +104,7 @@ where
   "\<tau>moves2 P h stk ps pc xcp \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) (length (compE2 obj) + pc) xcp"
 | \<tau>move2Call:
   "\<lbrakk> length ps < length stk;
-     stk ! length ps = Null \<or> (is_external_call P (the (typeof_addr h (the_Addr (stk ! length ps)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! length ps)))) M) \<rbrakk>
+     stk ! length ps = Null \<or> (is_native P (the (typeof_addr h (the_Addr (stk ! length ps)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! length ps)))) M) \<rbrakk>
   \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) (length (compE2 obj) + length (compEs2 ps)) None"
 
 | \<tau>move2BlockSome1:
@@ -245,7 +248,7 @@ lemma \<tau>move2_intros':
   and \<tau>move2FAssRed': "pc = Suc (length (compE2 e) + length (compE2 e')) \<Longrightarrow> \<tau>move2 P h stk (e\<bullet>F{D} := e') pc None"
   and \<tau>move2CallParams': "\<lbrakk> \<tau>moves2 P h stk ps pc xcp; pc' = length (compE2 obj) + pc \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) pc' xcp"
   and \<tau>move2Call': "\<lbrakk> pc = length (compE2 obj) + length (compEs2 ps); length ps < length stk; 
-                     stk ! length ps = Null \<or> (is_external_call P (the (typeof_addr h (the_Addr (stk ! length ps)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! length ps)))) M) \<rbrakk>
+                     stk ! length ps = Null \<or> (is_native P (the (typeof_addr h (the_Addr (stk ! length ps)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! length ps)))) M) \<rbrakk>
                    \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) pc None"
   and \<tau>move2BlockSome2: "pc = Suc 0 \<Longrightarrow> \<tau>move2 P h stk {V:T=\<lfloor>v\<rfloor>; e} pc None"
   and \<tau>move2BlockSome': "\<lbrakk> \<tau>move2 P h stk e pc xcp; pc' = Suc (Suc pc) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk {V:T=\<lfloor>v\<rfloor>; e} pc' xcp"
@@ -354,11 +357,11 @@ done
 
 lemma \<tau>move2_Invoke:
   "\<lbrakk>\<tau>move2 P h stk e pc None; compE2 e ! pc = Invoke M n \<rbrakk>
-  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (is_external_call P (the (typeof_addr h (the_Addr (stk ! n)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! n)))) M))"
+  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (is_native P (the (typeof_addr h (the_Addr (stk ! n)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! n)))) M))"
 
   and \<tau>moves2_Invoke: 
   "\<lbrakk>\<tau>moves2 P h stk es pc None; compEs2 es ! pc = Invoke M n \<rbrakk> 
-  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (is_external_call P (the (typeof_addr h (the_Addr (stk ! n)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! n)))) M))"
+  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (is_native P (the (typeof_addr h (the_Addr (stk ! n)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! n)))) M))"
 by(simp_all add: \<tau>move2_iff \<tau>moves2_iff)
 
 lemmas \<tau>move2_compE2_not_Invoke = \<tau>move2_Invoke
@@ -380,7 +383,7 @@ lemma \<tau>moves2_stk_append:
   "\<tau>moves2 P h stk es pc xcp \<Longrightarrow> \<tau>moves2 P h (stk @ vs) es pc xcp"
 by(simp add: \<tau>moves2_iff \<tau>instr_stk_append)
 
-fun \<tau>Move2 :: "jvm_prog \<Rightarrow> 'heap jvm_state \<Rightarrow> bool"
+fun \<tau>Move2 :: "'addr jvm_prog \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
 where 
   "\<tau>Move2 P (xcp, h, []) = False"
 | "\<tau>Move2 P (xcp, h, (stk, loc, C, M, pc) # frs) =
@@ -398,7 +401,7 @@ by(cases \<sigma>)(clarsimp split: list.splits simp add: fun_eq_iff split_beta)
 lemma \<tau>instr_compP [simp]: "\<tau>instr (compP f P) h stk i \<longleftrightarrow> \<tau>instr P h stk i"
 by(cases i) auto
 
-lemma [simp]: fixes e :: "expr1" and es :: "expr1 list"
+lemma [simp]: fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows \<tau>move2_compP: "\<tau>move2 (compP f P) h stk e = \<tau>move2 P h stk e"
   and \<tau>moves2_compP: "\<tau>moves2 (compP f P) h stk es = \<tau>moves2 P h stk es"
 by(auto simp add: \<tau>move2_iff \<tau>moves2_iff fun_eq_iff)
@@ -409,7 +412,8 @@ lemma \<tau>Move2_compP2:
    (case xcp of None \<Rightarrow> \<tau>move2 P h stk body pc xcp \<or> pc = length (compE2 body) | Some a \<Rightarrow> pc < Suc (length (compE2 body)))"
 by(clarsimp simp add: \<tau>move2_iff compP2_def compMb2_def nth_append nth_Cons' split: option.splits split_if_asm)
 
-abbreviation \<tau>MOVE2 :: "jvm_prog \<Rightarrow> ((addr option \<times> frame list) \<times> 'heap, 'heap jvm_thread_action) trsys"
+abbreviation \<tau>MOVE2 ::
+  "'addr jvm_prog \<Rightarrow> (('addr option \<times> 'addr frame list) \<times> 'heap, ('addr, 'thread_id, 'heap) jvm_thread_action) trsys"
 where "\<tau>MOVE2 P \<equiv> \<lambda>((xcp, frs), h) ta s. \<tau>Move2 P (xcp, h, frs) \<and> ta = \<epsilon>"
 
 lemma \<tau>jvmd_heap_unchanged: 
@@ -420,6 +424,9 @@ apply(clarsimp)
 apply(cases xcp)
  apply(rename_tac stk loc C M pc FRS M' Ts T mxs mxl ins xt)
  apply(case_tac "ins ! pc")
+ prefer 18 -- BinOpInstr
+ apply(rename_tac bop)
+ apply(case_tac "the (binop bop (hd (tl stk)) (hd stk))")
  apply(auto simp add: split_beta split: split_if_asm dest: \<tau>external_red_external_aggr_heap_unchanged)
 done
 
