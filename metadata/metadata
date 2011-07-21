@@ -402,6 +402,13 @@ extra-history =
         simplified code generator setup
         new random scheduler
         (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/3059dafd013f">3059dafd013f</a>)
+  [2011-07-21]:
+        new interruption model,
+        generalized JMM proof of DRF guarantee,
+        allow class Object to declare methods and fields,
+        simplified subtyping relation, 
+        corrected division and modulo implementation
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/46e4181ed142">46e4181ed142</a>)
 
 [Locally-Nameless-Sigma]
 title = Locally Nameless Sigma Calculus
