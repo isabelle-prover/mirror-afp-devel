@@ -8,41 +8,6 @@ theory SC_Schedulers imports
   "../../Collections/ListSetImpl_Invar"
 begin
 
-text {*
-  Adapt Cset code setup such that @{term "Cset.insert"}, @{term "sup :: 'a Cset.set \<Rightarrow> 'a Cset.set \<Rightarrow> 'a Cset.set"}
-  and @{term "cset_of_pred"} do not generate sort constraint @{text equal}.
-*}
-
-context Cset begin
-
-definition insert' :: "'a \<Rightarrow> 'a Cset.set \<Rightarrow> 'a Cset.set"
-where "insert' = Cset.insert"
-
-definition union' :: "'a Cset.set \<Rightarrow> 'a Cset.set \<Rightarrow> 'a Cset.set"
-where "union' A B = semilattice_sup_class.sup A B"
-
-end
-
-declare
-  Cset.insert'_def[symmetric, code_inline]
-  Cset.union'_def[symmetric, code_inline]
-
-context List_Cset begin
-
-lemma insert'_code:
-  "Cset.insert' x (List_Cset.set xs) = List_Cset.set (x # xs)"
-by(rule Cset.set_eqI)(simp add: Cset.insert'_def)
-
-lemma union'_code:
-  "Cset.union' (List_Cset.set xs) (List_Cset.set ys) = List_Cset.set (xs @ ys)"
-by(rule Cset.set_eqI)(simp add: Cset.union'_def)
-
-end
-
-declare
-  List_Cset.insert'_code [code]
-  List_Cset.union'_code [code]
-
 abbreviation sc_start_state_refine ::
   "'m_t \<Rightarrow> (thread_id \<Rightarrow> ('x \<times> addr released_locks) \<Rightarrow> 'm_t \<Rightarrow> 'm_t) \<Rightarrow> 'm_w \<Rightarrow> 's_i
   \<Rightarrow> (cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'md \<Rightarrow> addr val list \<Rightarrow> 'x) \<Rightarrow> 'md prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list

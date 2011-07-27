@@ -15,8 +15,7 @@ imports
   "~~/src/HOL/Library/Transitive_Closure_Table"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
-  "~~/src/HOL/Library/Monad_Syntax"
-  "Cset_Monad"
+  "~~/src/HOL/Library/Cset_Monad"
 begin
 
 (* FIXME move and possibly turn into a general simproc *)
@@ -601,6 +600,21 @@ proof -
       by(rule converse_rtranclp_into_rtranclp)
     ultimately have "\<not> P y" by blast }
   ultimately show thesis ..
+qed
+
+lemma coinduct_set_wf [consumes 3, case_names coinduct, case_conclusion coinduct wait step]: 
+  assumes "mono f" "wf r" "(a, b) \<in> X"
+  and step: "\<And>x b. (x, b) \<in> X \<Longrightarrow> (\<exists>b'. (b', b) \<in> r \<and> (x, b') \<in> X) \<or> (x \<in> f (fst ` X \<union> gfp f))"
+  shows "a \<in> gfp f"
+proof -
+  from `(a, b) \<in> X` have "a \<in> fst ` X" by(auto intro: rev_image_eqI)
+  moreover
+  { fix a b
+    assume "(a, b) \<in> X"
+    with `wf r` have "a \<in> f (fst ` X \<union> gfp f)"
+      by(induct)(blast dest: step) }
+  hence "fst ` X \<subseteq> f (fst ` X \<union> gfp f)" by(auto)
+  ultimately show ?thesis by(rule coinduct_set[OF `mono f`])
 qed
 
 subsection {* reflexive transitive closure for label relations *}

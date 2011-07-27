@@ -1,9 +1,31 @@
 theory ExternalCall_Execute imports
   "../Common/ExternalCall"
+  "Cset_without_equal"
 begin
 
 abbreviation (input) cset_sup :: "'a Cset.set \<Rightarrow> 'a Cset.set \<Rightarrow> 'a Cset.set"
 where "cset_sup \<equiv> semilattice_sup_class.sup"
+
+(* Use locale context to obtain a Cset. prefix: should use proper name spaces instead *)
+locale Cset begin
+
+definition undefined :: "'a Cset.set"
+where [simp]: "undefined = Cset.Set HOL.undefined"
+
+definition Undefined :: "unit \<Rightarrow> 'a Cset.set"
+where [code]: "Undefined _ = Cset.Set HOL.undefined"
+
+lemma undefined_code:
+  "undefined = Undefined ()"
+by(simp add: Undefined_def)
+
+end
+
+declare
+  Cset.undefined_def [simp]
+  Cset.undefined_code [code_inline]
+
+code_abort Cset.Undefined
 
 section {* Translated versions of external calls for the JVM *}
 

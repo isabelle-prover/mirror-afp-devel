@@ -439,7 +439,7 @@ using assms
 apply(cases s)
 apply(rename_tac xcp h frs)
 apply(case_tac frs)
- apply(simp add: Cset.empty_def)
+ apply(simp)
 apply(case_tac xcp)
  prefer 2
  apply(simp add: Cset.single_def jvm_thread_action'_of_jvm_thread_action_def exception_step_ok)
