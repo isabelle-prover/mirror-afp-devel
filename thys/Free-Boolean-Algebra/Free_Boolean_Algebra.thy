@@ -5,10 +5,16 @@
 header {* Free Boolean algebras *}
 
 theory Free_Boolean_Algebra
-imports Main "~~/src/HOL/Library/Lattice_Syntax"
+imports Main
 begin
 
 (*<*)
+notation
+  bot ("\<bottom>") and
+  top ("\<top>") and
+  inf  (infixl "\<sqinter>" 70) and
+  sup  (infixl "\<squnion>" 65)
+
 lemma sup_conv_inf:
   fixes x y :: "'a::boolean_algebra"
   shows "x \<squnion> y = - (- x \<sqinter> - y)"
@@ -744,8 +750,6 @@ no_notation
   top ("\<top>") and
   bot ("\<bottom>") and
   inf  (infixl "\<sqinter>" 70) and
-  sup  (infixl "\<squnion>" 65) and
-  Inf  ("\<Sqinter>_" [900] 900) and
-  Sup  ("\<Squnion>_" [900] 900)
+  sup  (infixl "\<squnion>" 65)
 
 end
