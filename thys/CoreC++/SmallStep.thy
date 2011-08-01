@@ -13,16 +13,24 @@ theory SmallStep imports Syntax State begin
 
 section {* Some pre-definitions *}
 
-consts blocks :: "vname list \<times> ty list \<times> val list \<times> expr \<Rightarrow> expr"
-recdef blocks "measure(\<lambda>(Vs,Ts,vs,e). size Vs)"
- blocks_Cons:"blocks(V#Vs, T#Ts, v#vs, e) = {V:T := Val v; blocks(Vs,Ts,vs,e)}"
+fun blocks :: "vname list \<times> ty list \<times> val list \<times> expr \<Rightarrow> expr"
+where
+ blocks_Cons:"blocks(V#Vs, T#Ts, v#vs, e) = {V:T := Val v; blocks(Vs,Ts,vs,e)}" |
  blocks_Nil: "blocks([],[],[],e) = e"
 
+lemma blocks_old_induct:
+fixes P :: "vname list \<Rightarrow> ty list \<Rightarrow> val list \<Rightarrow> expr \<Rightarrow> bool"
+shows
+  "\<lbrakk>\<And>aj ak al. P [] [] (aj # ak) al; \<And>ad ae a b. P [] (ad # ae) a b;
+  \<And>V Vs a b. P (V # Vs) [] a b; \<And>V Vs T Ts aw. P (V # Vs) (T # Ts) [] aw;
+  \<And>V Vs T Ts v vs e. P Vs Ts vs e \<Longrightarrow> P (V # Vs) (T # Ts) (v # vs) e; \<And>e. P [] [] [] e\<rbrakk>
+  \<Longrightarrow> P u v w x"
+by (induction_schema) (pat_completeness, lexicographic_order)
 
 lemma [simp]:
   "\<lbrakk> size vs = size Vs; size Ts = size Vs \<rbrakk> \<Longrightarrow> fv(blocks(Vs,Ts,vs,e)) = fv e - set Vs"
 
-apply(induct rule:blocks.induct)
+apply(induct rule:blocks_old_induct)
 apply simp_all
 apply blast
 done

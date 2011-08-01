@@ -222,7 +222,7 @@ few lemmas first. *}
 lemma [iff]: "\<And>A. \<lbrakk> length Vs = length Ts; length vs = length Ts\<rbrakk> \<Longrightarrow>
  \<D> (blocks (Vs,Ts,vs,e)) A = \<D> e (A \<squnion> \<lfloor>set Vs\<rfloor>)"
 
-apply(induct Vs Ts vs e rule:blocks.induct)
+apply(induct Vs Ts vs e rule:blocks_old_induct)
 apply(simp_all add:hyperset_defs)
 done
 
@@ -323,7 +323,7 @@ lemma wt_blocks:
   (P,E(Vs[\<mapsto>]Ts),h \<turnstile> e:T \<and> 
   (\<exists>Ts'. map (P \<turnstile> typeof\<^bsub>h\<^esub>) vs = map Some Ts' \<and> P \<turnstile> Ts' [\<le>] Ts))"
 
-proof(induct Vs Ts vs e rule:blocks.induct)
+proof(induct Vs Ts vs e rule:blocks_old_induct)
   case (5 V Vs T' Ts v vs e)
   have length:"length (V#Vs) = length (T'#Ts)" "length (v#vs) = length (T'#Ts)"
     and type:"\<forall>S \<in> set (T'#Ts). is_type P S"

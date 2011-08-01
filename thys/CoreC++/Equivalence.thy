@@ -1049,7 +1049,7 @@ lemma assumes wf:"wf_prog wf_md P"
                    \<langle>blocks(Vs,Ts,vs'',e'), (h\<^isub>1,override_on l\<^isub>1 l\<^isub>0 (set Vs))\<rangle> \<and> 
              (\<exists>ws. P \<turnstile> Ts Casts vs'' to ws) \<and> length vs = length vs''"
 
-proof(induct Vs Ts vs e rule:blocks.induct)
+proof(induct Vs Ts vs e rule:blocks_old_induct)
   case (5 V Vs T Ts v vs e)
   have length1:"length (V#Vs) = length (T#Ts)"
     and length2:"length (v#vs) = length (T#Ts)"
@@ -1106,7 +1106,7 @@ lemma assumes wf:"wf_prog wf_md P"
            (*\<forall>T\<in>set Ts. is_type P T;*) final e; P \<turnstile> Ts Casts vs to vs' \<rbrakk> \<Longrightarrow>
        P,E \<turnstile> \<langle>blocks(Vs,Ts,vs,e), (h,l)\<rangle> \<rightarrow>* \<langle>e, (h,l)\<rangle>"
 
-proof(induct Vs Ts vs e rule:blocks.induct)
+proof(induct Vs Ts vs e rule:blocks_old_induct)
   case (5 V Vs T Ts v vs e)
   have length1:"length (V # Vs) = length (T # Ts)"
     and length2:"length (v # vs) = length (T # Ts)"
