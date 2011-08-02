@@ -7,7 +7,7 @@
 header {* Recursive Definitions *}
 
 theory OrdinalRec
-imports OrdinalCont
+imports OrdinalCont "~~/src/HOL/Library/Wfrec"
 begin
 
 definition
@@ -38,7 +38,7 @@ done
 lemma ordinal_rec0_oSuc:
 "ordinal_rec0 z s l (oSuc x) = s x (ordinal_rec0 z s l x)"
  apply (rule trans[OF def_wfrec[OF ordinal_rec0_def wf]])
- apply (simp add: tfl_cut_apply)
+ apply (simp add: cut_apply)
 done
 
 lemma limit_ordinal_not_0: "limit_ordinal x \<Longrightarrow> x \<noteq> 0"
@@ -56,8 +56,8 @@ lemma ordinal_rec0_limit_ordinal:
  apply (rule_tac f=The in arg_cong, rule ext)
  apply (rule_tac f=All in arg_cong, rule ext)
  apply safe
-  apply (simp add: tfl_cut_apply)
- apply (simp add: tfl_cut_apply)
+  apply (simp add: cut_apply)
+ apply (simp add: cut_apply)
 done
 
 
