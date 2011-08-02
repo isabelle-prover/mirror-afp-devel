@@ -12,16 +12,16 @@ begin
 text {*
   Coinductive natural numbers are isomorphic to natural numbers with infinity:
   View Nat\_Infinity @{typ "enat"} as codatatype
-  with constructors @{term "0 :: enat"} and @{term "iSuc"}.
+  with constructors @{term "0 :: enat"} and @{term "eSuc"}.
 *}
 
-lemmas iSuc_plus = iadd_Suc
+lemmas eSuc_plus = iadd_Suc
 
 lemmas plus_enat_eq_0_conv = iadd_is_0
 
 coinductive_set enat_set :: "enat \<Rightarrow> bool"
 where "0 \<in> enat_set"
-  | "n \<in> enat_set \<Longrightarrow> (iSuc n) \<in> enat_set"
+  | "n \<in> enat_set \<Longrightarrow> (eSuc n) \<in> enat_set"
 
 lemma enat_set_eq_UNIV [simp]: "enat_set = UNIV"
 proof
@@ -38,8 +38,8 @@ proof
         case True thus ?thesis by simp
       next
         case False
-        then obtain n where "x = iSuc n"
-          by(cases x)(fastsimp simp add: iSuc_def zero_enat_def gr0_conv_Suc
+        then obtain n where "x = eSuc n"
+          by(cases x)(fastsimp simp add: eSuc_def zero_enat_def gr0_conv_Suc
                                split: enat.splits)+
         thus ?thesis by auto
       qed
@@ -51,7 +51,7 @@ subsection {* Case operator *}
 
 lemma enat_coexhaust:
   obtains (0) "n = 0"
-     | (iSuc) n' where "n = iSuc n'"
+     | (eSuc) n' where "n = eSuc n'"
 proof -
   have "n \<in> enat_set" by auto
   thus thesis by cases (erule that)+
@@ -66,30 +66,30 @@ lemma enat_cocase_0 [simp]:
   "enat_cocase z s 0 = z"
 by(simp add: enat_cocase_def zero_enat_def)
 
-lemma enat_cocase_iSuc [simp]:
-  "enat_cocase z s (iSuc n) = s n"
-by(simp add: enat_cocase_def iSuc_def split: enat.splits)
+lemma enat_cocase_eSuc [simp]:
+  "enat_cocase z s (eSuc n) = s n"
+by(simp add: enat_cocase_def eSuc_def split: enat.splits)
 
-lemma neq_zero_conv_iSuc:
-  "n \<noteq> 0 \<longleftrightarrow> (\<exists>n'. n = iSuc n')"
+lemma neq_zero_conv_eSuc:
+  "n \<noteq> 0 \<longleftrightarrow> (\<exists>n'. n = eSuc n')"
 by(cases n rule: enat_coexhaust) simp_all
 
 syntax
-  iSuc :: logic
+  eSuc :: logic
 translations
-  "case p of 0 \<Rightarrow> a | iSuc n \<Rightarrow> b" \<rightleftharpoons> "CONST enat_cocase a (\<lambda>n. b) p"
+  "case p of 0 \<Rightarrow> a | eSuc n \<Rightarrow> b" \<rightleftharpoons> "CONST enat_cocase a (\<lambda>n. b) p"
 
 lemma enat_cocase_cert:
   assumes "CASE \<equiv> enat_cocase c d"
-  shows "(CASE 0 \<equiv> c) &&& (CASE (iSuc n) \<equiv> d n)"
+  shows "(CASE 0 \<equiv> c) &&& (CASE (eSuc n) \<equiv> d n)"
   using assms by simp_all
 
 lemma enat_cosplit_asm: 
-  "P (enat_cocase c d n) = (\<not> (n = 0 \<and> \<not> P c \<or> (\<exists>m. n = iSuc m \<and> \<not> P (d m))))"
+  "P (enat_cocase c d n) = (\<not> (n = 0 \<and> \<not> P c \<or> (\<exists>m. n = eSuc m \<and> \<not> P (d m))))"
 by(cases n rule: enat_coexhaust) simp_all
 
 lemma enat_cosplit:
-  "P (enat_cocase c d n) = ((n = 0 \<longrightarrow> P c) \<and> (\<forall>m. n = iSuc m \<longrightarrow> P (d m)))"
+  "P (enat_cocase c d n) = ((n = 0 \<longrightarrow> P c) \<and> (\<forall>m. n = eSuc m \<longrightarrow> P (d m)))"
 by(cases n rule: enat_coexhaust) simp_all
 
 subsection {* Corecursion for @{typ enat} *}
@@ -120,7 +120,7 @@ next
 qed
 
 lemma enat_corec [code, nitpick_simp]:
-  "enat_corec a f = (case f a of None \<Rightarrow> 0 | Some a \<Rightarrow> iSuc (enat_corec a f))"
+  "enat_corec a f = (case f a of None \<Rightarrow> 0 | Some a \<Rightarrow> eSuc (enat_corec a f))"
 proof(cases "\<exists>n. ((map_comp f) ^^ n) f a = None")
   case True
   let ?m = "LEAST n. ((map_comp f) ^^ n) f a = None"
@@ -145,7 +145,7 @@ proof(cases "\<exists>n. ((map_comp f) ^^ n) f a = None")
       by(rule funpow_map_comp_lem)
     hence "Suc (LEAST n. ((map_comp f) ^^ (Suc n)) f a = None) =
       Suc (LEAST n. ((map_comp f) ^^ n) f a' = None)" by simp
-    also note iSuc_enat[symmetric]
+    also note eSuc_enat[symmetric]
     also from Some n have "n \<noteq> 0" by -(rule notI, simp)
     then obtain n' where n': "n = Suc n'" by(auto simp add: gr0_conv_Suc)
     with Suc_n_a_n_a'[of n'] n have "((map_comp f) ^^ n') f a' = None"
@@ -174,7 +174,7 @@ subsection {* Less as greatest fixpoint *}
 coinductive_set Le_enat :: "(enat \<times> enat) set"
 where
   Le_enat_zero: "(0, n) \<in> Le_enat"
-| Le_enat_add: "\<lbrakk> (m, n) \<in> Le_enat; k \<noteq> 0 \<rbrakk> \<Longrightarrow> (iSuc m, n + k) \<in> Le_enat"
+| Le_enat_add: "\<lbrakk> (m, n) \<in> Le_enat; k \<noteq> 0 \<rbrakk> \<Longrightarrow> (eSuc m, n + k) \<in> Le_enat"
 
 lemma ile_into_Le_enat:
   "m \<le> n \<Longrightarrow> (m, n) \<in> Le_enat"
@@ -192,9 +192,9 @@ proof -
       thus ?thesis ..
     next
       case False
-      with `m \<le> n` obtain m' n' where "m = iSuc m'" "n = n' + 1" "m' \<le> n'"
+      with `m \<le> n` obtain m' n' where "m = eSuc m'" "n = n' + 1" "m' \<le> n'"
         by(cases m rule: enat_coexhaust, simp)
-          (cases n rule: enat_coexhaust, auto simp add: iSuc_plus_1[symmetric])
+          (cases n rule: enat_coexhaust, auto simp add: eSuc_plus_1[symmetric])
       hence ?Le_enat_add by fastsimp
       thus ?thesis ..
     qed
@@ -217,7 +217,7 @@ next
     from `n = N + K` `n < enat (Suc l)` `K \<noteq> 0`
     have "N < enat l" by(cases N)(cases K, auto simp add: zero_enat_def)
     with `(M, N) \<in> Le_enat` have "M < enat l" by(rule Suc)
-    with `m = iSuc M` show ?thesis by(simp add: iSuc_enat[symmetric])
+    with `m = eSuc M` show ?thesis by(simp add: eSuc_enat[symmetric])
   qed
 qed
 
@@ -237,11 +237,11 @@ lemma Le_enat_eq_ile:
   "(m, n) \<in> Le_enat \<longleftrightarrow> m \<le> n"
 by(blast intro: Le_enat_imp_ile ile_into_Le_enat)
 
-lemma enat_leI [consumes 1, case_names Leenat, case_conclusion Leenat zero iSuc]:
+lemma enat_leI [consumes 1, case_names Leenat, case_conclusion Leenat zero eSuc]:
   assumes major [simplified mem_def]: "(m, n) \<in> X"
   and step [simplified mem_def]:
     "\<And>m n. (m, n) \<in> X 
-     \<Longrightarrow> m = 0 \<or> (\<exists>m' n' k. m = iSuc m' \<and> n = n' + enat k \<and> k \<noteq> 0 \<and>
+     \<Longrightarrow> m = 0 \<or> (\<exists>m' n' k. m = eSuc m' \<and> n = n' + enat k \<and> k \<noteq> 0 \<and>
                            ((m', n') \<in> X \<or> m' = n'))"
   shows "m \<le> n"
 apply(rule Le_enat.coinduct[unfolded Le_enat_eq_ile, where X="curry X"])
@@ -251,16 +251,16 @@ done
 subsection {* Equality as greatest fixpoint *}
 
 lemma enat_equalityI [consumes 1, case_names Eqenat,
-                                  case_conclusion Eqenat zero iSuc]:
+                                  case_conclusion Eqenat zero eSuc]:
   assumes major: "(m, n) \<in> X"
   and step:
     "\<And>m n. (m, n) \<in> X
-     \<Longrightarrow> m = 0 \<and> n = 0 \<or> (\<exists>m' n'. m = iSuc m' \<and> n = iSuc n' \<and> ((m', n') \<in> X \<or> m' = n'))"
+     \<Longrightarrow> m = 0 \<and> n = 0 \<or> (\<exists>m' n'. m = eSuc m' \<and> n = eSuc n' \<and> ((m', n') \<in> X \<or> m' = n'))"
   shows "m = n"
 proof(rule antisym)
   from major show "m \<le> n"
     by(coinduct rule: enat_leI)
-      (drule step, auto simp add: iSuc_plus_1 enat_1[symmetric])
+      (drule step, auto simp add: eSuc_plus_1 enat_1[symmetric])
 
   from major have "(n, m) \<in> (\<lambda>(n, m). (m, n) \<in> X)"
     by(simp add: mem_def)
@@ -269,15 +269,15 @@ proof(rule antisym)
     case (Leenat n m)
     hence "(m, n) \<in> X" by(simp add: mem_def)
     from step[OF this] show ?case
-      by(auto simp add: mem_def iSuc_plus_1 enat_1[symmetric])
+      by(auto simp add: mem_def eSuc_plus_1 enat_1[symmetric])
   qed
 qed
 
-lemma enat_equality_funI [consumes 1, case_names zero iSuc,
-                                      case_conclusion iSuc Eqzero EqiSuc]:
+lemma enat_equality_funI [consumes 1, case_names zero eSuc,
+                                      case_conclusion eSuc Eqzero EqeSuc]:
   assumes fun_0: "f 0 = g 0"
-  and fun_iSuc: "!!n. f (iSuc n) = 0 \<and> g (iSuc n) = 0 \<or>
-                    (\<exists>n1 n2. f (iSuc n) = iSuc n1 \<and> g (iSuc n) = iSuc n2 \<and>
+  and fun_eSuc: "!!n. f (eSuc n) = 0 \<and> g (eSuc n) = 0 \<or>
+                    (\<exists>n1 n2. f (eSuc n) = eSuc n1 \<and> g (eSuc n) = eSuc n2 \<and>
                              ((\<exists>m. n1 = f m \<and> n2 = g m) \<or> n1 = n2))"
   shows "f n = g n"
 proof -
@@ -291,8 +291,8 @@ proof -
       case 0 with fun_0 have "f n = g n" by simp
       thus ?thesis using n by(cases "g n" rule: enat_coexhaust) simp_all
     next
-      case (iSuc n')
-      with n fun_iSuc[of n'] show ?thesis by simp
+      case (eSuc n')
+      with n fun_eSuc[of n'] show ?thesis by simp
     qed
   qed
 qed
@@ -300,7 +300,7 @@ qed
 subsection {* Uniqueness of corecursion *}
 
 lemma enat_corec_unique:
-  assumes h: "!!x. h x = (case f x of None \<Rightarrow> 0 | Some x' \<Rightarrow> iSuc (h x'))"
+  assumes h: "!!x. h x = (case f x of None \<Rightarrow> 0 | Some x' \<Rightarrow> eSuc (h x'))"
   shows "h x = enat_corec x f"
 proof -
   have "(h x, enat_corec x f) \<in> {(h x, enat_corec x f)|x. True}" by blast
@@ -313,11 +313,11 @@ proof -
   qed
 qed
 
-lemma iSuc_minus_iSuc [simp]: "iSuc n - iSuc m = n - m"
-by(simp add: iSuc_def split: enat.split)
+lemma eSuc_minus_eSuc [simp]: "eSuc n - eSuc m = n - m"
+by(simp add: eSuc_def split: enat.split)
 
-lemma iSuc_minus_1 [simp]: "iSuc n - 1 = n"
-by(simp add: one_enat_def iSuc_enat[symmetric] zero_enat_def[symmetric])
+lemma eSuc_minus_1 [simp]: "eSuc n - 1 = n"
+by(simp add: one_enat_def eSuc_enat[symmetric] zero_enat_def[symmetric])
 
 subsection {* Misc. *}
 

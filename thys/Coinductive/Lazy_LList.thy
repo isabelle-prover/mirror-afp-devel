@@ -80,7 +80,7 @@ by simp
 declare llength_LNil [code del] llength_LCons [code del]
 
 lemma llength_Lazy_llist [code]:
-  "llength (Lazy_llist xs) = (case xs () of None \<Rightarrow> 0 | Some (_, ys) \<Rightarrow> iSuc (llength ys))"
+  "llength (Lazy_llist xs) = (case xs () of None \<Rightarrow> 0 | Some (_, ys) \<Rightarrow> eSuc (llength ys))"
 by simp
 
 declare ltake_LNil [code del] ltake_LCons [code del]
@@ -155,7 +155,7 @@ lemma llast_Lazy_llist [code]:
     None \<Rightarrow> undefined 
   | Some (x, xs') \<Rightarrow> 
     case force xs' of None \<Rightarrow> x | Some (x', xs'') \<Rightarrow> llast (LCons x' xs''))"
-by(auto simp add: llast_def zero_enat_def iSuc_def split: enat.split llist_splits)
+by(auto simp add: llast_def zero_enat_def eSuc_def split: enat.split llist_splits)
 
 declare ldistinct_LNil_code [code del] ldistinct_LCons [code del]
 
@@ -219,8 +219,8 @@ ML {*
   val lhd = @{code lhd} zeros;
   val ltl = @{code ltl} zeros;
   
-  val ltake = @{code ltake} (@{code iSuc} @{code "0::enat"}) zeros;
-  val ldrop = @{code ldrop} (@{code iSuc} @{code "0::enat"}) zeros;
+  val ltake = @{code ltake} (@{code eSuc} @{code "0::enat"}) zeros;
+  val ldrop = @{code ldrop} (@{code eSuc} @{code "0::enat"}) zeros;
   
   val ltakeWhile = @{code ltakeWhile} (fn _ => true) zeros;
   val ldropWhile = @{code ldropWhile} (fn _ => false) zeros;

@@ -2216,14 +2216,14 @@ lemma iTILL_icard: "icard [\<dots>n] = enat (Suc n)"
 by (simp add: icard_finite iT_finite iT_card)
 lemma iIN_icard: "icard [n\<dots>,d] = enat (Suc d)"
 by (simp add: icard_finite iT_finite iT_card)
-lemma iMOD_0_icard: "icard [r, mod 0] = iSuc 0"
-by (simp add: icard_finite iT_finite iT_card iSuc_enat)
+lemma iMOD_0_icard: "icard [r, mod 0] = eSuc 0"
+by (simp add: icard_finite iT_finite iT_card eSuc_enat)
 lemma iMOD_icard: "0 < m \<Longrightarrow> icard [r, mod m] = \<infinity>"
 by (simp add: iMOD_infinite)
-lemma iMOD_icard_if: "icard [r, mod m] = (if m = 0 then iSuc 0 else \<infinity>)"
-by (simp add: icard_finite iT_finite iT_infinite iSuc_enat iT_card)
-lemma iMODb_mod_0_icard: "icard [r, mod 0, c] = iSuc 0"
-by (simp add: icard_finite iT_finite iSuc_enat iT_card)
+lemma iMOD_icard_if: "icard [r, mod m] = (if m = 0 then eSuc 0 else \<infinity>)"
+by (simp add: icard_finite iT_finite iT_infinite eSuc_enat iT_card)
+lemma iMODb_mod_0_icard: "icard [r, mod 0, c] = eSuc 0"
+by (simp add: icard_finite iT_finite eSuc_enat iT_card)
 lemma iMODb_icard: "0 < m \<Longrightarrow> icard [r, mod m, c] = enat (Suc c)"
 by (simp add: icard_finite iT_finite iMODb_card)
 lemma iMODb_icard_if: "icard [r, mod m, c] = enat (if m = 0 then Suc 0 else Suc c)"

@@ -42,7 +42,7 @@ declare zero_enat_def[simp]
 
 lemmas ineq0_conv_enat[simp] = i0_less[symmetric, unfolded zero_enat_def]
 
-lemmas iless_iSuc0_enat[simp] = iless_iSuc0[unfolded zero_enat_def]
+lemmas iless_eSuc0_enat[simp] = iless_eSuc0[unfolded zero_enat_def]
 
 
 subsubsection {* Addition, difference, order *}
@@ -59,11 +59,11 @@ lemma less_eq_idiff_eq_sum: "y \<le> (x::enat) \<Longrightarrow> (z \<le> x - y)
 by (case_tac x, case_tac y, case_tac z, fastsimp+)
 
 
-lemma iSuc_pred: "0 < n \<Longrightarrow> iSuc (n - iSuc 0) = n"
+lemma eSuc_pred: "0 < n \<Longrightarrow> eSuc (n - eSuc 0) = n"
 apply (case_tac n)
-apply (simp add: iSuc_enat)+
+apply (simp add: eSuc_enat)+
 done
-lemmas iSuc_pred_enat = iSuc_pred[unfolded zero_enat_def]
+lemmas eSuc_pred_enat = eSuc_pred[unfolded zero_enat_def]
 lemmas iadd_0_enat[simp] = add_0_left[where 'a = enat, unfolded zero_enat_def]
 lemmas iadd_0_right_enat[simp] = add_0_right[where 'a=enat, unfolded zero_enat_def]
 
@@ -109,26 +109,26 @@ by (case_tac m, case_tac n, case_tac l, simp_all, case_tac l, simp_all)
 
 subsubsection {* Multiplication and division *}
 
-lemmas imult_Infty_enat[simp] = imult_Infty[unfolded zero_enat_def]
-lemmas imult_Infty_right_enat[simp] = imult_Infty_right[unfolded zero_enat_def]
+lemmas imult_infinity_enat[simp] = imult_infinity[unfolded zero_enat_def]
+lemmas imult_infinity_right_enat[simp] = imult_infinity_right[unfolded zero_enat_def]
 
 lemma idiv_enat_enat[simp, code]: "enat a div enat b = enat (a div b)"
 unfolding div_enat_def by simp
-lemma idiv_Infty: "0 < n \<Longrightarrow> (\<infinity>::enat) div n = \<infinity>"
+lemma idiv_infinity: "0 < n \<Longrightarrow> (\<infinity>::enat) div n = \<infinity>"
 unfolding div_enat_def
 apply (case_tac n, simp_all)
 apply (rename_tac n1, case_tac n1, simp_all)
 done
-lemmas idiv_Infty_enat[simp] = idiv_Infty[unfolded zero_enat_def]
+lemmas idiv_infinity_enat[simp] = idiv_infinity[unfolded zero_enat_def]
 
-lemma idiv_Infty_right[simp]: "n \<noteq> \<infinity> \<Longrightarrow> n div (\<infinity>::enat) = 0"
+lemma idiv_infinity_right[simp]: "n \<noteq> \<infinity> \<Longrightarrow> n div (\<infinity>::enat) = 0"
 unfolding div_enat_def by (case_tac n, simp_all)
 
-lemma idiv_Infty_if: "n div \<infinity> = (if n = \<infinity> then \<infinity> else 0::enat)"
+lemma idiv_infinity_if: "n div \<infinity> = (if n = \<infinity> then \<infinity> else 0::enat)"
 unfolding div_enat_def
 by (case_tac n, simp_all)
 
-lemmas idiv_Infty_if_enat = idiv_Infty_if[unfolded zero_enat_def]
+lemmas idiv_infinity_if_enat = idiv_infinity_if[unfolded zero_enat_def]
 
 lemmas imult_0_enat[simp] = mult_zero_left[where 'a=enat,unfolded zero_enat_def]
 lemmas imult_0_right_enat[simp] = mult_zero_right[where 'a=enat,unfolded zero_enat_def]
@@ -136,14 +136,14 @@ lemmas imult_0_right_enat[simp] = mult_zero_right[where 'a=enat,unfolded zero_en
 lemmas imult_is_0_enat = imult_is_0[unfolded zero_enat_def]
 lemmas enat_0_less_mult_iff_enat = enat_0_less_mult_iff[unfolded zero_enat_def]
 
-lemma imult_Infty_if: "\<infinity> * n = (if n = 0 then 0 else \<infinity>::enat)"
+lemma imult_infinity_if: "\<infinity> * n = (if n = 0 then 0 else \<infinity>::enat)"
 by (case_tac n, simp_all)
-lemma imult_Infty_right_if: "n * \<infinity> = (if n = 0 then 0 else \<infinity>::enat)"
+lemma imult_infinity_right_if: "n * \<infinity> = (if n = 0 then 0 else \<infinity>::enat)"
 by (case_tac n, simp_all)
-lemmas imult_Infty_if_enat = imult_Infty_if[unfolded zero_enat_def]
-lemmas imult_Infty_right_if_enat = imult_Infty_right_if[unfolded zero_enat_def]
+lemmas imult_infinity_if_enat = imult_infinity_if[unfolded zero_enat_def]
+lemmas imult_infinity_right_if_enat = imult_infinity_right_if[unfolded zero_enat_def]
 
-lemmas imult_is_Infty_enat = imult_is_Infty[unfolded zero_enat_def]
+lemmas imult_is_infinity_enat = imult_is_infinity[unfolded zero_enat_def]
 
 lemma idiv_by_0: "(a::enat) div 0 = 0"
 unfolding div_enat_def by (case_tac a, simp_all)
@@ -164,19 +164,19 @@ lemmas imod_0_enat[simp, code] = imod_0[unfolded zero_enat_def]
 
 lemma imod_enat_enat[simp, code]: "enat a mod enat b = enat (a mod b)"
 unfolding mod_enat_def by simp
-lemma imod_Infty[simp, code]: "\<infinity> mod n = (\<infinity>::enat)"
+lemma imod_infinity[simp, code]: "\<infinity> mod n = (\<infinity>::enat)"
 unfolding mod_enat_def by simp
-lemma imod_Infty_right[simp, code]: "n mod (\<infinity>::enat) = n"
+lemma imod_infinity_right[simp, code]: "n mod (\<infinity>::enat) = n"
 unfolding mod_enat_def by (case_tac n) simp_all
 
 (*<*)
 thm mult_Suc
-(*lemma imult_Suc: "iSuc m * n = n + m * n"*)
-(*lemmas imult_Suc = mult_iSuc*)
+(*lemma imult_Suc: "eSuc m * n = n + m * n"*)
+(*lemmas imult_Suc = mult_eSuc*)
 
 thm mult_Suc_right
-(*lemma imult_Suc_right: "m * iSuc n = m + m * n"*)
-(*lemmas imult_Suc_right mult_iSuc_right*)
+(*lemma imult_Suc_right: "m * eSuc n = m + m * n"*)
+(*lemmas imult_Suc_right mult_eSuc_right*)
 (*>*)
 
 lemma idiv_self: "\<lbrakk> 0 < (n::enat); n \<noteq> \<infinity> \<rbrakk> \<Longrightarrow> n div n = 1"
@@ -199,13 +199,13 @@ by (case_tac m, simp_all) (case_tac n, simp_all)
 thm div_mult2_eq
 lemma idiv_imult2_eq: "(a::enat) div (b * c) = a div b div c"
 apply (case_tac a, case_tac b, case_tac c, simp add: div_mult2_eq)
-apply (simp add: imult_Infty_right_if idiv_Infty_right)
-apply (simp add: imult_Infty_if idiv_Infty_right idiv_0[unfolded zero_enat_def])
+apply (simp add: imult_infinity_right_if idiv_infinity_right)
+apply (simp add: imult_infinity_if idiv_infinity_right idiv_0[unfolded zero_enat_def])
 apply (case_tac "b = 0", simp)
 apply (case_tac "c = 0", simp)
-thm idiv_Infty
-thm idiv_Infty[OF enat_0_less_mult_iff[THEN iffD2]]
-apply (simp add: idiv_Infty[OF enat_0_less_mult_iff[THEN iffD2]])
+thm idiv_infinity
+thm idiv_infinity[OF enat_0_less_mult_iff[THEN iffD2]]
+apply (simp add: idiv_infinity[OF enat_0_less_mult_iff[THEN iffD2]])
 done
 
 
@@ -227,8 +227,8 @@ by (case_tac i, case_tac j, case_tac k, simp_all)
 lemma imult_iless_mono2: "\<lbrakk> (i::enat) < j; 0 < k; k \<noteq> \<infinity> \<rbrakk> \<Longrightarrow> k * i \<le> k * j"
 by (simp only: mult_commute[of k], rule imult_iless_mono1)
 
-lemma imod_1: "(enat m) mod iSuc 0 = 0"
-by (simp add: iSuc_enat)
+lemma imod_1: "(enat m) mod eSuc 0 = 0"
+by (simp add: eSuc_enat)
 lemmas imod_1_enat[simp, code] = imod_1[unfolded zero_enat_def]
 
 lemma imod_iadd_self2: "(m + enat n) mod (enat n) = m mod (enat n)"
@@ -247,7 +247,7 @@ apply (case_tac "k = 0", simp)
 apply (case_tac m, case_tac k, simp_all)
 apply (case_tac n)
  apply (simp add: div_le_mono)
-apply (simp add: idiv_Infty)
+apply (simp add: idiv_infinity)
 apply (simp add: i0_lb[unfolded zero_enat_def])
 done
 lemma idiv_ile_mono2: "\<lbrakk> 0 < m; m \<le> (n::enat) \<rbrakk> \<Longrightarrow> k div n \<le> k div m"

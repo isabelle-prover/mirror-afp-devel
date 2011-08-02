@@ -67,15 +67,15 @@ lemma icard_not_empty_iff: "(0 < icard A) = (A \<noteq> {})"
 by (simp add: icard_empty_iff[symmetric])
 lemmas icard_not_empty_iff_enat = icard_not_empty_iff[unfolded zero_enat_def]
 
-lemma icard_singleton: "icard {a} = iSuc 0"
-by (simp add: icard_finite iSuc_enat)
+lemma icard_singleton: "icard {a} = eSuc 0"
+by (simp add: icard_finite eSuc_enat)
 lemmas icard_singleton_enat[simp] = icard_singleton[unfolded zero_enat_def]
-lemma icard_1_imp_singleton: "icard A = iSuc 0 \<Longrightarrow> \<exists>a. A = {a}"
-apply (simp add: iSuc_enat)
+lemma icard_1_imp_singleton: "icard A = eSuc 0 \<Longrightarrow> \<exists>a. A = {a}"
+apply (simp add: eSuc_enat)
 apply (frule icard_eq_enat_imp)
 apply (simp add: icard_finite card_1_imp_singleton)
 done
-lemma icard_1_singleton_conv: "(icard A = iSuc 0) = (\<exists>a. A = {a})"
+lemma icard_1_singleton_conv: "(icard A = eSuc 0) = (\<exists>a. A = {a})"
 apply (rule iffI)
  apply (simp add: icard_1_imp_singleton)
 apply fastsimp
@@ -84,13 +84,13 @@ done
 
 
 thm Finite_Set.card_insert_disjoint
-lemma icard_insert_disjoint: "x \<notin> A \<Longrightarrow> icard (insert x A) = iSuc (icard A)"
+lemma icard_insert_disjoint: "x \<notin> A \<Longrightarrow> icard (insert x A) = eSuc (icard A)"
 apply (case_tac "finite A")
- apply (simp add: icard_finite iSuc_enat card_insert_disjoint)
+ apply (simp add: icard_finite eSuc_enat card_insert_disjoint)
 apply (simp add: infinite_insert)
 done
 thm Finite_Set.card_insert_if
-lemma icard_insert_if: "icard (insert x A) = (if x \<in> A then icard A else iSuc (icard A))"
+lemma icard_insert_if: "icard (insert x A) = (if x \<in> A then icard A else eSuc (icard A))"
 apply (case_tac "x \<in> A")
  apply (simp add: insert_absorb)
 apply (simp add: icard_insert_disjoint)
@@ -99,17 +99,17 @@ thm Finite_Set.card_0_eq
 lemmas icard_0_eq = icard_empty_iff
 
 thm Finite_Set.card_Suc_Diff1
-lemma icard_Suc_Diff1: "x \<in> A \<Longrightarrow> iSuc (icard (A - {x})) = icard A"
+lemma icard_Suc_Diff1: "x \<in> A \<Longrightarrow> eSuc (icard (A - {x})) = icard A"
 apply (case_tac "finite A")
- apply (simp add: icard_finite iSuc_enat in_imp_not_empty not_empty_card_gr0_conv[THEN iffD1])
+ apply (simp add: icard_finite eSuc_enat in_imp_not_empty not_empty_card_gr0_conv[THEN iffD1])
 apply (simp add: Diff_infinite_finite[OF singleton_finite])
 done
 
 thm Finite_Set.card_Diff_singleton
 lemma icard_Diff_singleton: "x \<in> A \<Longrightarrow> icard (A - {x}) = icard A - 1"
-apply (rule iSuc_inject[THEN iffD1])
+apply (rule eSuc_inject[THEN iffD1])
 apply (frule in_imp_not_empty, drule icard_not_empty_iff[THEN iffD2])
-apply (simp add: icard_Suc_Diff1 iSuc_pred_enat one_iSuc)
+apply (simp add: icard_Suc_Diff1 eSuc_pred_enat one_eSuc)
 done
 
 thm Finite_Set.card_Diff_singleton_if
@@ -117,7 +117,7 @@ lemma icard_Diff_singleton_if: "icard (A - {x}) = (if x \<in> A then icard A - 1
 by (simp add: icard_Diff_singleton)
 
 thm Finite_Set.card_insert
-lemma icard_insert: "icard (insert x A) = iSuc (icard (A - {x}))"
+lemma icard_insert: "icard (insert x A) = eSuc (icard (A - {x}))"
 by (metis icard_Diff_singleton_if icard_Suc_Diff1 icard_insert_disjoint insert_absorb)
 
 thm Finite_Set.card_insert_le
@@ -162,7 +162,7 @@ thm Finite_Set.card_Diff_subset
 lemma not_icard_Diff_subset: "\<exists>(A::nat set) B. B \<subseteq> A \<and> \<not> icard (A - B) = icard A - icard B"
 apply (rule_tac x="{0..}" in exI)
 apply (rule_tac x="{1..}" in exI)
-apply (simp add: set_diff_eq linorder_not_le icard_UNIV_nat iSuc_enat)
+apply (simp add: set_diff_eq linorder_not_le icard_UNIV_nat eSuc_enat)
 done
 
 
@@ -297,11 +297,11 @@ done
 
 thm card_cartesian_product_singleton
 lemma icard_cartesian_product_singleton: "icard ({x} \<times> A) = icard A"
-by (simp add: icard_cartesian_product mult_iSuc)
+by (simp add: icard_cartesian_product mult_eSuc)
 
 thm card_cartesian_product_singleton_right
 lemma icard_cartesian_product_singleton_right: "icard (A \<times> {x}) = icard A"
-by (simp add: icard_cartesian_product mult_iSuc_right)
+by (simp add: icard_cartesian_product mult_eSuc_right)
 
 
 

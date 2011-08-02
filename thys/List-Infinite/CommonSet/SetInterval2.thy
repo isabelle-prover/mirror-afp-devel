@@ -237,7 +237,7 @@ thm
   nat_induct
 
 lemma enat_induct: "
-  \<lbrakk> P 0; P \<infinity>; \<And>n. P n \<Longrightarrow> P (iSuc n)\<rbrakk> \<Longrightarrow> P n"
+  \<lbrakk> P 0; P \<infinity>; \<And>n. P n \<Longrightarrow> P (eSuc n)\<rbrakk> \<Longrightarrow> P n"
 apply (case_tac n)
  prefer 2 
  apply simp
@@ -249,25 +249,25 @@ done
 
 
 
-lemma iSuc_imp_Suc_aux_0:
-  "\<lbrakk> \<And>n. P n \<Longrightarrow> P (iSuc n); n0' \<le> n'; P (enat n')\<rbrakk> \<Longrightarrow> P (enat (Suc n'))"
+lemma eSuc_imp_Suc_aux_0:
+  "\<lbrakk> \<And>n. P n \<Longrightarrow> P (eSuc n); n0' \<le> n'; P (enat n')\<rbrakk> \<Longrightarrow> P (enat (Suc n'))"
 by (simp only: enat_defs enat.splits)
-lemma iSuc_imp_Suc_aux_n0:
-  "\<lbrakk> \<And>n. \<lbrakk>enat n0' \<le> n; P n\<rbrakk> \<Longrightarrow> P (iSuc n); n0' \<le> n'; P (enat n')\<rbrakk> \<Longrightarrow> P (enat (Suc n'))"
+lemma eSuc_imp_Suc_aux_n0:
+  "\<lbrakk> \<And>n. \<lbrakk>enat n0' \<le> n; P n\<rbrakk> \<Longrightarrow> P (eSuc n); n0' \<le> n'; P (enat n')\<rbrakk> \<Longrightarrow> P (enat (Suc n'))"
 thm enat_defs
 proof -
-  assume IA: "\<And>n. \<lbrakk>enat n0' \<le> n; P n\<rbrakk> \<Longrightarrow> P (iSuc n)"
+  assume IA: "\<And>n. \<lbrakk>enat n0' \<le> n; P n\<rbrakk> \<Longrightarrow> P (eSuc n)"
     and n0_n: "n0' \<le> n'"
     and Pn: "P (enat n')"
   from n0_n
   have "(enat n0' \<le> enat n')" by simp
   with Pn IA
-  have "P (iSuc (enat n'))" by blast
-  thus "P (enat (Suc n'))" by (simp only: iSuc_enat)
+  have "P (eSuc (enat n'))" by blast
+  thus "P (enat (Suc n'))" by (simp only: eSuc_enat)
 qed
 
 lemma enat_induct': "
-  \<lbrakk> P (n0::enat); P \<infinity>; \<And>n. \<lbrakk> n0 \<le> n;  P n \<rbrakk> \<Longrightarrow> P (iSuc n); n0 \<le> n \<rbrakk> \<Longrightarrow> P n"
+  \<lbrakk> P (n0::enat); P \<infinity>; \<And>n. \<lbrakk> n0 \<le> n;  P n \<rbrakk> \<Longrightarrow> P (eSuc n); n0 \<le> n \<rbrakk> \<Longrightarrow> P n"
 apply (case_tac n)
  prefer 2 apply simp
 apply (case_tac n0)
@@ -277,7 +277,7 @@ apply (rename_tac n' n0', simp)
 thm nat_induct'[where ?n0.0="n0'" and n=n' and P="\<lambda>n. P (enat n)"]
 apply (rule_tac ?n0.0="n0'" and n=n' and P="\<lambda>n. P (enat n)" in nat_induct')
   apply simp
- apply (simp add: iSuc_enat[symmetric])
+ apply (simp add: eSuc_enat[symmetric])
 apply simp
 done
 

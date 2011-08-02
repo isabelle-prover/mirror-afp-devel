@@ -483,7 +483,7 @@ proof -
           and "ta_seq_consist P (mrw_value P vs ob) (ltake (enat i) obs')"
         with LCons nth[of "Suc i" ad al v] base
         have "\<exists>b. mrw_values P (mrw_value P vs ob) (list_of (ltake (enat i) obs')) (ad, al) = \<lfloor>(v, b)\<rfloor>"
-          by(clarsimp simp add: iSuc_enat[symmetric] split: obs_event.split action.split) }
+          by(clarsimp simp add: eSuc_enat[symmetric] split: obs_event.split action.split) }
       ultimately have ?LCons using LCons by(simp split: action.split obs_event.split)
       thus ?thesis ..
     qed

@@ -132,7 +132,7 @@ declare tlength_TNil [code del] tlength_TCons [code del]
 
 lemma tlength_Lazy_tllist [code]:
   "tlength (Lazy_tllist xs) =
-  (case xs () of Inr b \<Rightarrow> 0 | Inl (_, xs') \<Rightarrow> iSuc (tlength xs'))"
+  (case xs () of Inr b \<Rightarrow> 0 | Inl (_, xs') \<Rightarrow> eSuc (tlength xs'))"
 by simp
 
 declare tdropn_0 [code del] tdropn_TNil [code del] tdropn_Suc_TCons [code del]

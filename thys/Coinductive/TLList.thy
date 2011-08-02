@@ -261,7 +261,7 @@ next
     from xs have "tllist_corec_aux a' f = sum_case (prod_case (\<lambda>b a'. TCONS b (tllist_corec_aux a' f))) TNIL (f a')"
       by(rule lfinite_LConsI)
     thus ?case using `lfinite xs` a' xs
-      by(auto simp add: tllist_corec_aux_def TCONS_def TNIL_def Let_def iSuc_enat funpow_Suc_tail_rec llist_corec dest!: lfinite_llength_enat simp del: funpow.simps)
+      by(auto simp add: tllist_corec_aux_def TCONS_def TNIL_def Let_def eSuc_enat funpow_Suc_tail_rec llist_corec dest!: lfinite_llength_enat simp del: funpow.simps)
   qed
 qed
 
@@ -759,7 +759,7 @@ subsection {* The length of a terminated lazy list @{term "tlength"} *}
 
 lemma [simp, code, nitpick_simp]:
   shows tlength_TNil: "tlength (TNil b) = 0"
-  and tlength_TCons: "tlength (TCons x xs) = iSuc (tlength xs)"
+  and tlength_TCons: "tlength (TCons x xs) = eSuc (tlength xs)"
  apply(descending, simp add: TNIL_def)
 apply(descending, auto simp add: TCONS_def)
 done
