@@ -12,7 +12,7 @@ Safety and liveness.
 header{* More on llists *}
 
 theory LList2
-imports "../Coinductive/Coinductive_List"
+imports "../Coinductive/Coinductive_List" "~~/src/HOL/Library/Wfrec"
 begin
 
 section{*Preliminaries*}
