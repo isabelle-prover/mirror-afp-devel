@@ -2,7 +2,7 @@ header {* Basics on order-like relations *}
 
 (* author: Andrei Popescu *)
 
-theory Order_Relation2 imports Order_Relation
+theory Order_Relation2 imports "~~/src/HOL/Library/Order_Relation"
 begin
 
 

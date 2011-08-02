@@ -2,7 +2,8 @@ header {* More on well-founded relations *}
 
 (* author: Andrei Popescu *)
 
-theory Wellfounded2 imports Wellfounded Order_Relation2
+theory Wellfounded2
+imports Wellfounded Order_Relation2 "~~/src/HOL/Library/Wfrec"
 begin
 
 
