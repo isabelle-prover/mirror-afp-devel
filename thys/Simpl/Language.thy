@@ -28,7 +28,7 @@ USA
 
 header {* The Simpl Syntax *}
 
-theory Language imports Main begin
+theory Language imports "~~/src/HOL/Library/Old_Recdef" begin
 
 subsection {* The Core Language *}
 
