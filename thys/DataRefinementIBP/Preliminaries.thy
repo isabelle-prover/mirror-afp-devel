@@ -62,17 +62,17 @@ abbreviation
 
 theorem SUP_upper:
   "P w \<le> SUP P"
-  by (simp add: SUPR_def Sup_upper)
+  by (simp add: le_SUPI)
 
 
 theorem SUP_least:
   "(!! w . P w \<le> Q) \<Longrightarrow> SUP P \<le> Q"
-  by (simp add: SUPR_def, rule Sup_least, auto)
+  by (simp add: SUP_leI)
 
 
 lemma SUP_fun_eq:
   "SUP A i = SUP (\<lambda> w . A w i)"
-  by (simp add: SUPR_def Sup_fun_def image_image)
+  by (rule SUP_apply)
 
 text {*Monotonic applications which map monotonic to monotonic have monotonic fixpoints*}
 
@@ -99,27 +99,13 @@ lemma inf_bot_bot[simp]:
 
 theorem Sup_bottom:
   "(Sup X = (bot::'a::complete_lattice)) = (\<forall> x \<in> X . x = bot)"
-  apply safe
-  apply (rule_tac antisym)
-  apply auto
-  apply (drule Sup_upper)
-  apply auto
-  apply (rule_tac antisym)
-  apply (rule Sup_least)
-  by auto
+  by (fact Sup_bot_conv)
 
 theorem Inf_top:
   "(Inf X = (\<top>::'a::complete_lattice)) = (\<forall> x \<in> X . x = \<top>)"
-  apply safe
-  apply (rule_tac antisym)
-  apply auto
-  apply (drule Inf_lower)
-  apply auto
-  apply (rule_tac antisym)
-  apply simp
-  apply (rule Inf_greatest)
-  by auto
+  by (fact Inf_top_conv)
 
+(* FIXME: this class is in the standard library now *)
 class distributive_complete_lattice = complete_lattice +
   assumes inf_sup_distributivity: "(x \<sqinter> (Sup Y)) = (SUP y: Y . (x \<sqinter> y))"
   and sup_inf_distributivity: "(x \<squnion> (Inf Y)) = (INF y: Y . (x \<squnion> y))"

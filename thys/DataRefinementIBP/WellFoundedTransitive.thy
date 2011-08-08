@@ -35,16 +35,15 @@ definition
 
 lemma SUP_L_upper:
   "v < w \<Longrightarrow> P v \<le> SUP_L P w"
-  by (simp add: SUP_L_def SUPR_def Sup_upper)
-
+  by (simp add: SUP_L_def le_SUPI2)
 
 lemma SUP_L_least:
   "(!! v . v < w \<Longrightarrow> P v \<le> Q) \<Longrightarrow> SUP_L P w \<le> Q"
-  by (simp add: SUP_L_def SUPR_def, rule Sup_least, auto)
+  by (auto simp add: SUP_L_def intro: SUP_leI)
 
 lemma SUP_L_fun_eq:
   "((SUP_L P w) i) = (SUP_L (\<lambda> v . P v i)) w"
-  by (simp add: SUP_L_def SUPR_def Sup_fun_def image_image)
+  by (simp add: SUP_L_def SUP_apply)
 
 end
 
