@@ -111,14 +111,9 @@ lemma alpha_mono [simp]: "mono (\<alpha> x y)"
 lemma alpha_continous: 
   "\<alpha> (Sup X) y = Sup ((\<lambda> x . \<alpha> x y) ` X)"
   apply (rule antisym)
-  apply (simp_all add: le_fun_def)
-  apply auto
-  apply (simp_all add: alpha_def)
-  apply auto
-  apply (simp_all add: Sup_fun_def)
-  apply (simp_all add: alpha_def)
-  apply (rule Sup_least)
-  by auto
+  apply (auto simp add: le_fun_def alpha_def Sup_fun_def SUP_def image_image
+    intro: Sup_least)
+  done
 
 lemma alpha_continous1: 
   "\<alpha> (SUP X) y = SUP ((\<lambda> x . \<alpha> x y) o X)"
@@ -148,8 +143,8 @@ theorem hoare_refinement_alpha:
 lemma alpha_continous2:
  "SUP_L ((\<lambda>x. \<alpha> x y) \<circ> p) w =  \<alpha> (SUP_L p w) y"
   apply (simp add: SUP_L_def SUPR_def alpha_continous)
-  apply (case_tac "((\<lambda> x. \<alpha> x y) \<circ> p) ` {v . v < w} = ((\<lambda>x . \<alpha> x y) ` p ` {v. v < w})")
-  by auto
+  apply (simp add: o_def image_image)
+  done
 
 text {*
 Next theorem gives a Hoare rule for recursive programs. If we can prove correct the unfolding 

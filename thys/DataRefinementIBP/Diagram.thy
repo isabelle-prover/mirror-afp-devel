@@ -292,8 +292,7 @@ theorem dangelic_udisjunctive:
 
 theorem dangelic_udisjunctive1:
   "dangelic R ((Sup P)::('b\<Rightarrow>('a::distributive_complete_lattice))) = (SUP p:P . dangelic R p)"
-  apply (simp add: fun_eq_iff SUPR_def Sup_fun_def dangelic_def angelic_udisjunctive1 Sup_bool_def)
-  by auto
+  by (simp add: fun_eq_iff SUPR_def Sup_fun_def dangelic_def angelic_udisjunctive1 Sup_bool_def)
 
 theorem (in DiagramTermination) dangelic_udisjunctive2:
   "SUP_L_P (\<lambda>w. (dangelic R) ((P w)::('b \<Rightarrow> ('u::distributive_complete_lattice))) )(pair u i) = dangelic R (SUP_L_P P (pair u i))"

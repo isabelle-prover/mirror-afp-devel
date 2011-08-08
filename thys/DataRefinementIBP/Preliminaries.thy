@@ -72,10 +72,7 @@ theorem SUP_least:
 
 lemma SUP_fun_eq:
   "SUP A i = SUP (\<lambda> w . A w i)"
-  apply (unfold SUPR_def)
-  apply (simp add: Sup_fun_def)
-  apply (case_tac "{y . \<exists>f . y = A f i} = (range (\<lambda> w . A w i))")
-  by auto
+  by (simp add: SUPR_def Sup_fun_def image_image)
 
 text {*Monotonic applications which map monotonic to monotonic have monotonic fixpoints*}
 
@@ -90,12 +87,8 @@ theorem lfp_mono [simp]:
   apply (simp add: mono_def)
   apply auto
   apply (simp_all add: Sup_fun_def)
-  apply (rule Sup_least)
-  apply safe
-  apply (rule_tac y = "f y" in order_trans)
-  apply auto
-  apply (rule Sup_upper)
-  by auto
+  apply (fast intro: SUP_leI le_SUPI2)
+  done
 
 text {*Some lattice simplification rules*}
 
@@ -172,17 +165,11 @@ begin
   instance proof
   fix x::"('a \<Rightarrow> 'b)" fix Y
     show  "x \<sqinter> \<Squnion>Y = (SUP y:Y. x \<sqinter> y)"
-    apply (simp_all add: fun_eq_iff inf_fun_def SUPR_def Sup_fun_def inf_sup_distributivity)
-    apply auto
-    apply (case_tac "(op \<sqinter> (x xa) ` {y. \<exists>f\<in>Y. y = f xa}) = {y. \<exists>f\<in>Y. y = x xa \<sqinter> f xa}")
-    by auto
+    by (simp add: fun_eq_iff inf_fun_def SUPR_def Sup_fun_def image_image inf_sup_distributivity)
   next
   fix x::"('a \<Rightarrow> 'b)" fix Y
     show  "x \<squnion> \<Sqinter> Y = (INF y:Y. x \<squnion> y)"
-    apply (simp_all add: fun_eq_iff sup_fun_def INFI_def Inf_fun_def sup_inf_distributivity)
-    apply auto
-    apply (case_tac "(op \<squnion> (x xa) ` {y. \<exists>f\<in>Y. y = f xa}) = {y. \<exists>f\<in>Y. y = x xa \<squnion> f xa}")
-    by auto
+    by (simp add: fun_eq_iff sup_fun_def INFI_def Inf_fun_def image_image sup_inf_distributivity)
   qed
 
 end
@@ -201,8 +188,6 @@ begin
 end
 
 class complete_boolean_algebra = distributive_complete_lattice + boolean_algebra
-begin
-end
 
 
 lemma compl_Sup:
@@ -275,15 +260,8 @@ lemma compl_Inf:
   apply (rule Sup_upper)
   by (simp add: image_def)
 
-instantiation "fun" :: (type, complete_boolean_algebra) complete_boolean_algebra
-begin
-  instance proof qed
-end
+instance "fun" :: (type, complete_boolean_algebra) complete_boolean_algebra ..
 
-instantiation "bool" :: complete_boolean_algebra
-begin
-  instance proof
-    qed
-end
+instance "bool" :: complete_boolean_algebra ..
 
 end
