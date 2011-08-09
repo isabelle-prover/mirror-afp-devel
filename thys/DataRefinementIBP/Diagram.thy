@@ -299,9 +299,8 @@ theorem (in DiagramTermination) dangelic_udisjunctive2:
   apply (simp add: fun_eq_iff)
   apply (simp add: dangelic_def)
   apply (simp add: SUP_L_P_def)
-  apply (unfold SUPR_def)
-  apply (unfold Union_def)
   apply (simp add: dangelic_def)
+  apply (unfold SUP_def)
   apply (unfold angelic_udisjunctive1)
   by auto
 
@@ -309,10 +308,10 @@ lemma  grd_dgr:
   "((grd (step D) i)::('a::complete_boolean_algebra)) = \<Squnion> {P . \<exists> j . P = grd (D(i,j))}"
   apply (simp add: grd_def step_def)
   apply (simp add: neg_fun_pred)
-  apply (unfold  step_def)
-  apply (unfold INFI_def)
+  apply (unfold step_def)
+  apply (unfold INF_def)
   apply (unfold compl_Inf)
-  apply (unfold SUPR_def)
+  apply (unfold SUP_def)
   apply (simp_all add: bot_fun_def)
   apply (case_tac "(uminus ` range (\<lambda>j\<Colon>'b. D (i, j) \<bottom>)) = {P\<Colon>'a. \<exists>j\<Colon>'b. P = - D (i, j) \<bottom>}")
   by auto
