@@ -1,10 +1,10 @@
 (*  Title:      statecharts/DataSpace/Contrib.thy
-    ID:         $Id: Contrib.thy,v 1.3 2010/07/23 15:34:04 helke Exp $
     Author:     Steffen Helke and Florian Kammüller, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)
 
 header {* Contributions to the Standard Library of HOL *}
+
 theory Contrib
 imports Main
 begin
@@ -34,7 +34,7 @@ definition chg_map :: "('b => 'b) => 'a => ('a ~=> 'b) => ('a ~=> 'b)" where
  "chg_map f a m = (case m a of None => m | Some b => m(a|->f b))"
 
 lemma map_some_list [simp]:
-   "map the (map Some L) = L";
+   "map the (map Some L) = L"
 apply (induct_tac L)
 apply auto
 done
@@ -51,9 +51,9 @@ by (unfold dom_def, auto)
 
 lemma ran_dom_the:
   "\<lbrakk> y \<notin> Union (ran G); x \<in> dom G \<rbrakk> \<Longrightarrow> y \<notin> the (G x)"
-by (unfold Union_def ran_def dom_def, auto)
+by (unfold ran_def dom_def, auto)
 
-lemma dom_map_upd: "dom(m(a|->b)) = insert a (dom m)";
+lemma dom_map_upd: "dom(m(a|->b)) = insert a (dom m)"
 apply auto
 done
 
@@ -176,7 +176,7 @@ done
 lemma Union_ran_override [simp]:
   "S \<in> dom G \<Longrightarrow> \<Union> (ran (G ++ empty(S \<mapsto> insert SA (the(G S))))) = 
    (insert SA (Union (ran G)))"
-apply (unfold Union_def dom_def ran_def)
+apply (unfold dom_def ran_def)
 apply auto
 apply (rename_tac T)
 apply (case_tac "T = S")
@@ -185,7 +185,7 @@ done
 
 lemma Union_ran_override2 [simp]:
   "S \<in> dom G \<Longrightarrow> \<Union> (ran (G(S \<mapsto> insert SA (the(G S))))) = (insert SA (Union (ran G)))"
-apply (unfold Union_def dom_def ran_def)
+apply (unfold dom_def ran_def)
 apply auto
 apply (rename_tac T)
 apply (case_tac "T = S")

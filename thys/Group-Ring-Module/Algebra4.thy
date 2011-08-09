@@ -2284,7 +2284,7 @@ apply (simp add:ring_times_0_x)
 done 
 
 lemma (in Ring) rMulZeroDiv:
-     "\<lbrakk> x \<in> carrier R; y \<in> carrier R; x = \<zero> \<or> y = \<zero> \<rbrakk> \<Longrightarrow> x  \<cdot>\<^sub>r  y = \<zero>";
+     "\<lbrakk> x \<in> carrier R; y \<in> carrier R; x = \<zero> \<or> y = \<zero> \<rbrakk> \<Longrightarrow> x  \<cdot>\<^sub>r  y = \<zero>"
 apply (erule disjE, simp)
 apply (rule ring_times_0_x, assumption+)
 apply (simp, rule ring_times_x_0, assumption+)
@@ -2568,7 +2568,7 @@ lemma (in Ring) nsZero:
    apply (cut_tac ring_zero, simp add:aGroup.ag_l_zero)
   done
 
-lemma (in Ring) nsZeroI: "\<And> n.  x = \<zero>  \<Longrightarrow> nscal R x n = \<zero>";
+lemma (in Ring) nsZeroI: "\<And> n.  x = \<zero>  \<Longrightarrow> nscal R x n = \<zero>"
   by (simp only:nsZero)
 
 lemma (in Ring) nsEqElm:  "\<lbrakk> x \<in> carrier R; y \<in> carrier R; x = y \<rbrakk>
@@ -2609,7 +2609,7 @@ lemma (in Ring) nsDistrL:  "\<lbrakk>x \<in> carrier R; y \<in> carrier R \<rbra
 done
  
 lemma (in Ring) nsMulDistrL:"\<lbrakk> x \<in> carrier R; y \<in> carrier R \<rbrakk>
-        \<Longrightarrow> x \<cdot>\<^sub>r (nscal R y n) = nscal R (x \<cdot>\<^sub>r y) n";
+        \<Longrightarrow> x \<cdot>\<^sub>r (nscal R y n) = nscal R (x \<cdot>\<^sub>r y) n"
   apply (induct_tac n)
   apply simp
   apply (simp add:ring_times_x_0)
@@ -2660,7 +2660,7 @@ done
 
 lemma (in Ring) npGTPowZero_sub:
   " \<And> n. \<lbrakk> x \<in> carrier R; npow R x m = \<zero> \<rbrakk>
-        \<Longrightarrow>(m \<le> n) \<longrightarrow> (npow R x n = \<zero> )";
+        \<Longrightarrow>(m \<le> n) \<longrightarrow> (npow R x n = \<zero> )"
   apply (rule impI)
   apply (subgoal_tac "npow R x n = (npow R x (n-m)) \<cdot>\<^sub>r (npow R x m)")
   apply simp
@@ -2979,21 +2979,21 @@ lemma (in Ring) npeSum2_sub_muly:
 done
   
 (********)(********)(********)(********)
-lemma binomial_n0: "(Suc n choose 0) = (n choose 0)";
+lemma binomial_n0: "(Suc n choose 0) = (n choose 0)"
   by simp
 
 lemma binomial_ngt_diff:
-  "(n choose Suc n) = (Suc n choose Suc n) - (n choose n)";
+  "(n choose Suc n) = (Suc n choose Suc n) - (n choose n)"
   by (subst binomial_Suc_Suc, arith)
 
 
-lemma binomial_ngt_0: "(n choose Suc n) = 0";
+lemma binomial_ngt_0: "(n choose Suc n) = 0"
   apply (subst binomial_ngt_diff, 
          (subst binomial_n_n)+)
   apply simp
   done
 
-lemma diffLessSuc: "m \<le> n \<Longrightarrow> Suc (n-m) = Suc n - m";
+lemma diffLessSuc: "m \<le> n \<Longrightarrow> Suc (n-m) = Suc n - m"
   by arith
 
 lemma (in Ring) npow_suc_i:
@@ -3160,7 +3160,7 @@ thm binomial_Suc_Suc
   done
 
 lemma (in aGroup) nsum_zeroTr:
-  "\<And> n. (\<forall> i. i \<le> n \<longrightarrow>  f i = \<zero>) \<longrightarrow> (nsum A f n = \<zero>)";
+  "\<And> n. (\<forall> i. i \<le> n \<longrightarrow>  f i = \<zero>) \<longrightarrow> (nsum A f n = \<zero>)"
   apply (induct_tac "n")
   apply simp
 
@@ -6583,7 +6583,7 @@ apply (rule ballI, rule subsetI, simp add:CollectI)
 apply (rule contrapos_pp, simp+)
  apply (frule_tac A = S and B = "\<Union> c" in nonempty_int)
  apply (erule exE)
- apply (simp add:Inter_def, erule conjE, erule bexE) 
+ apply (simp, erule conjE, erule bexE) 
  apply (simp add:chain_def, erule conjE)
  apply (frule_tac c = X and A = c and B = "{I. ideal R I \<and> S \<inter> I = {}}" in
         subsetD, assumption+,

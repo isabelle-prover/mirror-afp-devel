@@ -1,5 +1,4 @@
 (*  Title:      statecharts/HA/HAOps.thy
-    ID:         $Id: HAOps.thy,v 1.1 2010/07/27 14:04:46 helke Exp $
     Author:     Steffen Helke, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)
@@ -24,7 +23,7 @@ lemma EmptyMap_ran [simp]:
 by (unfold ran_def EmptyMap_def, auto)
 
 lemma EmptyMap_the [simp]:
-   "x \<in> S \<Longrightarrow> the ((EmptyMap S) x) = {}";
+   "x \<in> S \<Longrightarrow> the ((EmptyMap S) x) = {}"
 by (unfold ran_def EmptyMap_def, auto)
 
 lemma EmptyMap_ran_override:
@@ -47,7 +46,7 @@ lemma EmptyMap_Union_ran_override2:
  "\<lbrakk> S \<noteq> {}; S \<inter> dom G1 = {}; 
     dom G1 \<inter> dom G2 = {} \<rbrakk> \<Longrightarrow> 
    \<Union> (ran (G1 ++ EmptyMap S ++ G2)) = (\<Union> (ran G1 \<union> ran G2))"
-apply (unfold Union_def UNION_def EmptyMap_def Int_def ran_def)
+apply (unfold Union_eq UNION_eq EmptyMap_def Int_def ran_def)
 apply (simp add: map_add_Some_iff)
 apply (unfold dom_def)
 apply simp

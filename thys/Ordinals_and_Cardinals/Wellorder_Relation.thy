@@ -981,9 +981,7 @@ qed
 
 lemma ofilter_under_Union:
 "ofilter A \<Longrightarrow> A = Union {under a| a. a \<in> A}"
-using ofilter_under_UNION[of A]
-by(unfold Union_def, auto)
-
+using ofilter_under_UNION[of A] by auto
 
 
 subsubsection{* Other properties  *}
