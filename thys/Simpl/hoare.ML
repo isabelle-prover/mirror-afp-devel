@@ -1748,7 +1748,7 @@ fun mk_split_thms ctxt (vars as _::_)  =
     val pT = foldr1 HOLogic.mk_prodT types;
     val x = (singleton (Name.variant_list names) "x", pT);
     val xp = foldr1 HOLogic.mk_prod free_vars;
-    val tfree_names = Library.foldr OldTerm.add_term_tfree_names (free_vars,[]);
+    val tfree_names = fold Term.add_tfree_names free_vars [];
     val zeta = TFree (singleton (Name.variant_list tfree_names) "z", Sign.defaultS thy);
 
     val split_meta_prop =
@@ -1830,7 +1830,7 @@ fun gen_call_rec_rule specs_name n rule =
   let
     val thy = theory_of_thm rule;
     val maxidx = #maxidx (rep_cterm (cprop_of rule));
-    val vars = map (dest_Var) (OldTerm.term_vars (prop_of rule));
+    val vars = Term.add_vars (prop_of rule) [];
     fun get_type n = the (AList.lookup (op =) vars (n, 0));
     val specsT as (Type ("fun", [Type (_,[assT,Type (_,[pT,_])]), Type (@{type_name bool}, [])])) =
       get_type specs_name;
