@@ -1,0 +1,109 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p> </p>
+
+<h1><font class="first">M</font>aximum
+<font class="first">C</font>ardinality
+<font class="first">M</font>atching
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Maximum Cardinality Matching</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Christine Rizkallah</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2011-21-07</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
+edges of <i>G</i> such that no two share an endpoint. A matching has maximum
+cardinality if its cardinality is at least as large as that of any other
+matching. An <em>odd-set cover</em> <i>OSC</i> of a graph <i>G</i> is a
+labeling of the nodes of <i>G</i> with integers such that every edge of
+<i>G</i> is either incident to a node labeled 1 or connects two nodes
+labeled with the same number <i>i &ge; 2</i>.
+This article proves Edmonds theorem:
+Let <i>M</i> be a matching in a graph <i>G</i> and let <i>OSC</i> be an
+odd-set cover of <i>G</i>.
+For any <i>i &ge; 0</i>, let <var>n(i)</var> be the number of nodes
+labeled <i>i</i>. If <i>|M| = n(1) +
+&sum;<sub>i &ge; 2</sub>(n(i) div 2)</i>,
+then <i>M</i> is a maximum cardinality matching.
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Max-Card-Matching" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
