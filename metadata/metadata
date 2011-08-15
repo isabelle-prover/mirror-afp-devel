@@ -797,7 +797,7 @@ depends-on = Lazy-Lists-II
 
 [Max-Card-Matching]
 title = Maximum Cardinality Matching
-author = Christine Rizkallah
+author = Christine Rizkallah <http://www.mpi-inf.mpg.de/homepage/crizkall/>
 date = 2011-21-07
 topic = Mathematics/Graph Theory
 abstract = A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
