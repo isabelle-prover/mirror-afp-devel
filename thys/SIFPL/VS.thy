@@ -188,9 +188,9 @@ yields a fixed point.*}
 
 lemma Fix_lemma:"Monotone \<phi> \<Longrightarrow> \<phi> (FIX \<phi>) = FIX \<phi>"
 (*<*)
-apply rule
-apply clarsimp  apply (simp add: mem_def) apply (erule Fix2) apply assumption 
-apply clarsimp  apply (simp add: mem_def) apply (erule Fix1) apply assumption 
+apply (rule ext, rule iffI)
+apply clarsimp  apply (erule Fix2) apply assumption
+apply clarsimp  apply (erule Fix1) apply assumption
 done
 (*>*)
 
@@ -332,11 +332,9 @@ apply (erule varFIX)
 done
 
 lemma FIXvarFIX_: "(PhiWhile b \<Phi>) = (\<lambda> (s,t) . (b,\<Phi>,s,t):var)"
-apply rule
-apply rule
-apply (case_tac x, clarsimp) apply (simp add: mem_def) apply (drule FIXvar) apply (simp add: mem_def) 
-apply rule
-apply (case_tac x, clarsimp) apply (simp add: mem_def) apply (simp add: varFIXvar) apply (simp add: mem_def) 
+apply (rule ext, rule iffI)
+apply (case_tac x, clarsimp) apply (erule FIXvar)
+apply (case_tac x, clarsimp) apply (simp add: varFIXvar)
 done
 (*>*)
 
@@ -693,17 +691,18 @@ apply (simp_all add: DProp_def)
   apply clarsimp?
     apply (rule_tac x="\<lambda> \<Phi>. \<lambda> (s,t) . s \<approx> t" in exI)
     apply (subgoal_tac "Monotone (\<lambda> \<Phi>. \<lambda> (s,t) . s \<approx> t)", simp) 
-      apply (drule Fix_lemma) apply (erule thin_rl) apply rule
-      apply rule apply rule apply (simp add: twiddle_def Sec_def mem_def) 
-                 apply rule
-      apply (simp add: Sec_def mem_def) apply (simp only: twiddle_def) apply fast
+      apply (drule Fix_lemma) apply (erule thin_rl)
+      apply (rule ext, rule ext, rule iffI)
+      apply (simp add: twiddle_def Sec_def)
+      apply (simp add: Sec_def) apply (simp only: twiddle_def) apply fast
     apply (simp add: Monotone_def)
   apply clarsimp?
     apply (rule_tac x="\<lambda> \<Phi>. \<lambda> (s,t) . s \<approx> t" in exI)
     apply (subgoal_tac "Monotone (\<lambda> \<Phi>. \<lambda> (s,t) . s \<approx> t)", simp) 
-      apply (drule Fix_lemma) apply (erule thin_rl) apply rule
-      apply rule apply rule apply (simp add: twiddle_def Sec_def mem_def)
-                 apply rule apply (simp add:  Sec_def mem_def) apply (simp only: twiddle_def) apply fast
+      apply (drule Fix_lemma) apply (erule thin_rl)
+      apply (rule ext, rule ext, rule iffI)
+      apply (simp add: twiddle_def Sec_def)
+      apply (simp add: Sec_def) apply (simp only: twiddle_def) apply fast
     apply (simp add: Monotone_def)
 done
 (*>*)

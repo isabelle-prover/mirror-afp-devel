@@ -525,9 +525,9 @@ done
 (*>*)
 lemma Fix_lemma:"Monotone \<phi> \<Longrightarrow> \<phi> (FIX \<phi>) = FIX \<phi>"
 (*<*)
-apply rule
-apply clarsimp  apply (simp add: mem_def) apply (erule Fix2) apply assumption 
-apply clarsimp  apply (simp add: mem_def) apply (erule Fix1) apply assumption 
+apply (rule ext, rule iffI)
+apply clarsimp apply (erule Fix2) apply assumption
+apply clarsimp apply (erule Fix1) apply assumption
 done
 (*>*)
 
@@ -696,11 +696,9 @@ done
 (*>*)
 (*<*)
 lemma FIXvarFIX_: "(PhiWhileP A b \<Phi>) = (\<lambda> (s,t) . (b,A,\<Phi>,s,t):var)"
-apply rule
-apply rule
-apply (case_tac x, clarsimp) apply (simp add: mem_def) apply (drule FIXvar) apply (simp add: mem_def) 
-apply rule
-apply (case_tac x, clarsimp) apply (simp add: mem_def) apply (simp add: varFIXvar) apply (simp add: mem_def) 
+apply (rule ext, rule iffI)
+apply (case_tac x, clarsimp) apply (erule FIXvar)
+apply (case_tac x, clarsimp) apply (simp add: varFIXvar)
 done
 (*>*)
 lemma FIXvarFIX: 
@@ -1224,5 +1222,3 @@ done
 (*>*)
 text{*End of theory HuntSands*}
 end
-
-
