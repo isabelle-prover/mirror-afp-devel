@@ -1843,8 +1843,6 @@ sublocale prod_DFS < DFS "prod_succs A B" "prod_is_node A B" "prod_invariant A B
   apply (drule subsetD [OF set_update_subset_insert])
   apply auto
   apply (simp add: prod_is_node_def dfa_is_node_def)
-  apply (subgoal_tac "(\<lambda>(i, j). i < length (fst A) \<and> j < length (fst B)) = {..<length (fst A)} <*> {..<length (fst B)}")
-  apply (auto simp add: mem_def)
   done
 
 context prod_DFS
@@ -2544,7 +2542,7 @@ sublocale subset_DFS < DFS "subset_succs A" "nfa_is_node A" "subset_invariant A"
   apply (auto simp: bddh_bddinsert)
 
   apply (simp add: nfa_is_node_def)
-  apply (rule finite_list [unfolded Collect_def])
+  apply (rule finite_list)
   done
 
 context subset_DFS
@@ -3276,7 +3274,7 @@ proof (insert well_formed, unfold_locales)
     by (cases "x=y") (simp add: dfa_is_node_def rquot_invariant_def rquot_memb_def rquot_ins_def)+
 qed (simp add: dfa_is_node_def rquot_memb_def rquot_empt_def
      rquot_succs_def rquot_invariant_def rquot_ins_def
-     Collect_def mem_def bounded_nat_set_is_finite[of _ "length (fst A)"]
+     bounded_nat_set_is_finite[of _ "length (fst A)"]
      dfa_trans_is_node[unfolded dfa_trans_def dfa_is_node_def is_alph_def])+
 
 context rquot_DFS
@@ -3700,7 +3698,7 @@ next
   then show ?case
     apply (rule bounded_int_set_is_finite [of _ "max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + 1"])
     apply (rule ballI)
-    apply (simp add: dioph_is_node_def mem_def)
+    apply (simp add: dioph_is_node_def)
     done
 qed
 
@@ -4098,7 +4096,7 @@ next
   then show ?case
     apply (rule bounded_int_set_is_finite [of _ "max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + 1"])
     apply (rule ballI)
-    apply (simp add: dioph_is_node_def mem_def)
+    apply (simp add: dioph_is_node_def)
     done
 qed
 

@@ -41,13 +41,13 @@ locale DFS =
   and succs_is_node: "\<And>x. is_node x \<Longrightarrow> list_all is_node (succs x)"
   and empt_invariant: "invariant empt"
   and ins_invariant: "\<And>x S. is_node x \<Longrightarrow> invariant S \<Longrightarrow> \<not> memb x S \<Longrightarrow> invariant (ins x S)"
-  and graph_finite: "finite is_node"
+  and graph_finite: "finite {x. is_node x}"
 
 context DFS
 begin
 
 definition rel where
-  "rel = inv_image finite_psubset (\<lambda>S. {n \<in> is_node. \<not> memb n S})"
+  "rel = inv_image finite_psubset (\<lambda>S. {n. is_node n \<and> \<not> memb n S})"
 
 abbreviation
   "dfs \<equiv> gen_dfs succs ins memb"
@@ -73,8 +73,9 @@ lemma dfs_induct[consumes 2, case_names base step]:
   apply (rule disjI1)
   apply (simp add: rel_def finite_psubset_def)
   apply (rule conjI)
-  apply (auto simp add: ins_eq mem_def cong: conj_cong)
-  apply (rule finite_Int [unfolded Int_def [unfolded mem_def]])
+  apply (auto simp add: ins_eq cong: conj_cong)
+  apply (subst Collect_conj_eq)
+  apply (rule finite_Int)
   apply (rule disjI1)
   apply (rule graph_finite)
   done
