@@ -133,7 +133,7 @@ fun UN_const (dT as (Type ("fun", [dT', @{typ bool}]))) rT =
       Const (@{const_name Complete_Lattice.SUPR}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name Orderings.top}, dT)
   | UN_const _ _ = raise Match;
 
-fun mk_UN (x, T, P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x, T, P);
+fun mk_UN (x, T, P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x, T) P;
 
 fun dest_UN (Const (@{const_name Complete_Lattice.SUPR}, _) $ Const (@{const_name Orderings.top}, _) $ Abs (x, T, t)) =
       let val (vars, body) = dest_UN t
@@ -1723,7 +1723,7 @@ fun split_pair_apps thm =
 
                 val args' = maps split (frees ~~ args);
                 val argTs' = maps splitT argTs;
-                val inst = list_abs_free (frees, list_comb (Var (v,argTs' ---> bdyT),args'))
+                val inst = fold_rev absfree frees (list_comb (Var (v,argTs' ---> bdyT), args'))
               in subst@[(var,inst)]
               end
              else subst)
