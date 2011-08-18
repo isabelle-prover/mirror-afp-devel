@@ -29,7 +29,7 @@ proof -
     by (auto simp only:divisors_def dvd_imp_le)
   hence "divisors n <= {m . m<=n}" by auto
   thus "finite (divisors n)"
-    by (metis Collect_def finite_Collect_le_nat finite_subset) 
+    by (metis finite_Collect_le_nat finite_subset) 
 qed
 
 lemma divs_of_zero_UNIV[simp]: "divisors(0) = UNIV"
