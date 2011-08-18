@@ -4114,7 +4114,7 @@ done
 
 lemma Nset2finite_inj:"\<lbrakk>finite A; card A = Suc n; surj_to f {i. i \<le> n} A \<rbrakk> \<Longrightarrow> 
         inj_on f {i. i \<le> n}"
-by (metis Collect_def card_Collect_le_nat eq_card_imp_inj_on finite_Collect_le_nat surj_to_def)
+by (metis card_Collect_le_nat eq_card_imp_inj_on finite_Collect_le_nat surj_to_def)
 
 definition
   zmax :: "[int, int] \<Rightarrow> int" where
