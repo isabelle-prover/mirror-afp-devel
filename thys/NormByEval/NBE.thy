@@ -2000,10 +2000,10 @@ apply (simp_all del: map_map)
   apply(drule (2) C_Red_term_ML)
   apply clarsimp
  apply clarsimp
- apply (metis List.set.simps(2) insert_code mem_def predicate1D set_update_subset_insert)
+ apply (metis insert_iff subsetD set_update_subset_insert)
 apply clarsimp
 apply(rule)
- apply (metis List.set.simps(2) insert_code mem_def predicate1D set_update_subset_insert)
+ apply (metis insert_iff subsetD set_update_subset_insert)
 apply rule
  apply clarify
  apply(drule bspec, assumption)
