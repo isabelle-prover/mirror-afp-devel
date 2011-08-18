@@ -1099,19 +1099,16 @@ qed
 lemma SN_elt_conv_accp: "SN_elt {(y,z). g z y} = accp g"
   by (intro ext iffI, rule SN_elt_imp_accp, simp, rule accp_imp_SN_elt, simp)
 
-lemma SN_elt_conv_acc: "SN_elt {(y,z). (z,y) \<in> r} = acc r"
-  unfolding SN_elt_conv_accp using accp_acc_eq 
-  by (intro set_eqI, force simp: mem_def)
+lemma SN_elt_conv_acc: "SN_elt {(y,z). (z,y) \<in> r} = (\<lambda>x. x \<in> acc r)"
+  unfolding SN_elt_conv_accp using accp_acc_eq .
 
 lemma acc_imp_SN_elt: assumes "x \<in> acc r" shows "SN_elt {(y,z). (z,y) \<in> r} x"
   using assms
-  unfolding SN_elt_conv_acc
-  by (simp add: mem_def)
+  unfolding SN_elt_conv_acc .
 
 lemma SN_elt_imp_acc: assumes "SN_elt {(y,z). (z,y) \<in> r} x" shows "x \<in> acc r"
   using assms
-  unfolding SN_elt_conv_acc
-  by (simp add: mem_def)
+  unfolding SN_elt_conv_acc .
 
 
 subsection {* Newman's Lemma *}
