@@ -1136,7 +1136,7 @@ next
     have "(SUM j : insert i s. a j) = 1" using insert by auto
     hence "(SUM j : s. a j) = 1 - a i" using setsum.insert insert by fastsimp
     hence "(SUM j : s. a j) / (1 - a i) = 1" using i0 by auto
-    hence a1: "(SUM j : s. ?a j) = 1" unfolding divide.setsum by simp
+    hence a1: "(SUM j : s. ?a j) = 1" unfolding setsum_divide_distrib by simp
     have asum: "(SUM j : s. ?a j *\<^sub>R y j) : C"
       using insert convex_setsum[OF `finite s`
         `convex C` a1 a_nonneg] by auto
