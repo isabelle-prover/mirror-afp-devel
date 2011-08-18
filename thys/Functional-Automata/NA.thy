@@ -43,4 +43,8 @@ lemma accepts_conv_steps:
  "accepts A w = (? q. (start A,q) : steps A w & fin A q)";
 by(simp add: delta_conv_steps accepts_def)
 
+abbreviation
+  Cons_syn :: "'a => 'a list set => 'a list set" (infixr "##" 65) where
+  "x ## S == Cons x ` S"
+
 end

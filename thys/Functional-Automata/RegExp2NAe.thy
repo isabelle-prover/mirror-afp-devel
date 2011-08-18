@@ -10,10 +10,6 @@ begin
 
 type_synonym 'a bitsNAe = "('a,bool list)nae"
 
-abbreviation
-  Cons_syn :: "'a => 'a list set => 'a list set" (infixr "##" 65) where
-  "x ## S == Cons x ` S"
-
 definition
  epsilon :: "'a bitsNAe" where
 "epsilon = ([],%a s. {}, %s. s=[])"

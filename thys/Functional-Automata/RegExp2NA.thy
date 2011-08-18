@@ -10,10 +10,6 @@ begin
 
 type_synonym 'a bitsNA = "('a,bool list)na"
 
-abbreviation
-  Cons_syn :: "'a => 'a list set => 'a list set" (infixr "##" 65) where
-  "x ## S == Cons x ` S"
-
 definition
 "atom"  :: "'a => 'a bitsNA" where
 "atom a = ([True],
