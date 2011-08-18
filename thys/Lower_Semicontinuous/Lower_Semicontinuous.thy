@@ -32,7 +32,7 @@ qed auto
 lemma ereal_semiline_unique:
   fixes a b :: ereal
   shows "{y. a \<le> ereal y} = {y. b \<le> ereal y} \<longleftrightarrow> a = b"
-by (metis Collect_def ereal_le_real order_antisym)
+by (metis mem_Collect_eq ereal_le_real order_antisym)
 
 subsection {* Lower semicontinuity *}
 
@@ -1470,7 +1470,7 @@ proof-
   have "x: domain f" unfolding domain_def using `f x ~= \<infinity>` by auto
   hence "x : closure (domain f)" using closure_subset by auto
   hence x_def: "x : closure (rel_interior (domain f))"
-    by (metis assms(1) convex_closure_rel_interior convex_domain mem_def)
+    by (metis assms(1) convex_closure_rel_interior convex_domain)
   { fix C assume "C<f x"
     from this obtain d where d_def: "d>0 & (ALL y. dist x y < d --> C < f y)"
        using lst_at_delta[of x f] `lsc_at x f` by auto
@@ -1540,7 +1540,7 @@ lemma convex_with_UNIV_domain:
   assumes "convex_on UNIV f"
   assumes "domain f = UNIV"
   shows "(ALL x. f x > -\<infinity>) | (ALL x. f x = -\<infinity>)"
-by (metis assms convex_improper ereal_MInfty_lessI mem_def proper_iff rel_interior_univ2 top1I)
+by (metis assms convex_improper ereal_MInfty_lessI proper_iff rel_interior_univ2 UNIV_I)
 
 
 lemma rel_interior_Epigraph:
@@ -1901,7 +1901,7 @@ moreover
      unfolding ball_def dist_norm by (auto simp add: aux `y~=x` less_divide_eq)
   finally have *: "(lsc_hull f) y <= Liminf (at 1 within {0..<1}) ?g" by auto
   { fix b assume "ereal b>=(lsc_hull f) y"
-    hence yb: "(y,b):closure(Epigraph UNIV f)" by (metis epigraph_lsc_hull mem_Epigraph mem_def top1I)
+    hence yb: "(y,b):closure(Epigraph UNIV f)" by (metis epigraph_lsc_hull mem_Epigraph UNIV_I)
     have "x : domain f" by (metis assms(2) rel_interior_subset set_rev_mp)
     hence "f x<\<infinity>" unfolding domain_def by auto
     then obtain a where"ereal a>f x" by (metis ereal_dense2)
