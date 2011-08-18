@@ -74,10 +74,10 @@ lemma qfree_lift_dnf_qe: "(\<And>as. (\<forall>a\<in>set as. depends\<^isub>0 a)
  \<Longrightarrow> qfree(lift_dnf_qe qe \<phi>)"
 by (induct \<phi>) (simp_all add:qelim_def)
 
-lemma qfree_lift_dnf_qe2: "qe : lists depends\<^isub>0 \<rightarrow> qfree
+lemma qfree_lift_dnf_qe2: "qe : lists (Collect depends\<^isub>0) \<rightarrow> Collect qfree
  \<Longrightarrow> qfree(lift_dnf_qe qe \<phi>)"
 using in_lists_conv_set[where ?'a = 'a]
-by (simp add:Pi_def qfree_lift_dnf_qe mem_def Collect_def)
+by (simp add:Pi_def qfree_lift_dnf_qe)
 
 lemma lem: "\<forall>P A. (\<exists>x\<in>A. \<exists>y. P x y) = (\<exists>y. \<exists>x\<in>A. P x y)" by blast
 
@@ -92,11 +92,11 @@ proof(induct \<phi> arbitrary:xs)
 qed simp_all
 
 lemma I_lift_dnf_qe2:
-assumes  "qe : lists depends\<^isub>0 \<rightarrow> qfree"
-and "\<forall>as \<in> lists depends\<^isub>0. is_dnf_qe qe as"
+assumes  "qe : lists (Collect depends\<^isub>0) \<rightarrow> Collect qfree"
+and "\<forall>as \<in> lists (Collect depends\<^isub>0). is_dnf_qe qe as"
 shows "I (lift_dnf_qe qe \<phi>) xs = I \<phi> xs"
 using assms in_lists_conv_set[where ?'a = 'a]
-by(simp add:Pi_def I_lift_dnf_qe mem_def Collect_def)
+by(simp add:Pi_def I_lift_dnf_qe)
 
 text{*\noindent Quantifier elimination with invariant (needed for Presburger): *}
 
@@ -165,12 +165,12 @@ qed (simp_all add:normal_def)
 declare [[simp_depth_limit = 50]]
 
 lemma I_lift_dnf_qe_anormal2:
-assumes "qe : lists depends\<^isub>0 \<rightarrow> qfree"
-and "qe : lists(depends\<^isub>0 \<inter> anormal) \<rightarrow> normal"
-and "\<forall>as \<in> lists(depends\<^isub>0 \<inter> anormal). is_dnf_qe qe as"
+assumes "qe : lists (Collect depends\<^isub>0) \<rightarrow> Collect qfree"
+and "qe : lists(Collect depends\<^isub>0 \<inter> Collect anormal) \<rightarrow> Collect normal"
+and "\<forall>as \<in> lists(Collect depends\<^isub>0 \<inter> Collect anormal). is_dnf_qe qe as"
 shows "normal f \<Longrightarrow> I (lift_dnf_qe qe f) xs = I f xs"
 using assms in_lists_conv_set[where ?'a = 'a]
-by(simp add:Pi_def mem_def I_lift_dnf_qe_anormal Int_def Collect_def)
+by(simp add:Pi_def I_lift_dnf_qe_anormal Int_def)
 
 
 subsubsection{*NNF-based*}
@@ -187,8 +187,8 @@ lemma qfree_lift_nnf_qe: "(\<And>\<phi>. nqfree \<phi> \<Longrightarrow> qfree(q
 by (induct \<phi>) (simp_all add:nqfree_nnf)
 
 lemma qfree_lift_nnf_qe2:
-  "qe : nqfree \<rightarrow> qfree \<Longrightarrow> qfree(lift_nnf_qe qe \<phi>)"
-by(simp add:Pi_def qfree_lift_nnf_qe mem_def Collect_def)
+  "qe : Collect nqfree \<rightarrow> Collect qfree \<Longrightarrow> qfree(lift_nnf_qe qe \<phi>)"
+by(simp add:Pi_def qfree_lift_nnf_qe)
 
 lemma I_lift_nnf_qe:
 assumes  "\<And>\<phi>. nqfree \<phi> \<Longrightarrow> qfree(qe \<phi>)"
@@ -200,10 +200,10 @@ proof(induct "\<phi>" arbitrary:xs)
 qed simp_all
 
 lemma I_lift_nnf_qe2:
-assumes  "qe : nqfree \<rightarrow> qfree"
-and "ALL \<phi> : nqfree. ALL xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
+assumes  "qe : Collect nqfree \<rightarrow> Collect qfree"
+and "ALL \<phi> : Collect nqfree. ALL xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
 shows "I (lift_nnf_qe qe \<phi>) xs = I \<phi> xs"
-using assms by(simp add:Pi_def I_lift_nnf_qe mem_def Collect_def)
+using assms by(simp add:Pi_def I_lift_nnf_qe)
 
 lemma normal_lift_nnf_qe:
 assumes "\<And>\<phi>. nqfree \<phi> \<Longrightarrow> qfree(qe \<phi>)"
@@ -225,11 +225,11 @@ proof(induct "\<phi>" arbitrary:xs)
 qed auto
 
 lemma I_lift_nnf_qe_normal2:
-assumes  "qe : nqfree \<rightarrow> qfree"
-and "qe : nqfree \<inter> normal \<rightarrow> normal"
-and "ALL \<phi> : normal Int nqfree. ALL xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
+assumes  "qe : Collect nqfree \<rightarrow> Collect qfree"
+and "qe : Collect nqfree \<inter> Collect normal \<rightarrow> Collect normal"
+and "ALL \<phi> : Collect normal Int Collect nqfree. ALL xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
 shows "normal \<phi> \<Longrightarrow> I (lift_nnf_qe qe \<phi>) xs = I \<phi> xs"
-using assms by(simp add:Pi_def I_lift_nnf_qe_normal mem_def Int_def Collect_def)
+using assms by(simp add:Pi_def I_lift_nnf_qe_normal Int_def)
 
 end
 
@@ -291,7 +291,7 @@ proof -
       apply (metis subst\<^isub>0)
       done
   qed
-qed;
+qed
 
 definition "lift_dnfeq_qe = lift_dnf_qe \<circ> lift_eq_qe"
 
@@ -311,11 +311,11 @@ lemma I_lift_dnfeq_qe:
 by(simp add:lift_dnfeq_qe_def I_lift_dnf_qe qfree_lift_eq_qe I_lift_eq_qe)
 
 lemma I_lift_dnfeq_qe2:
-  "qe : lists depends\<^isub>0 \<rightarrow> qfree \<Longrightarrow>
-   (\<forall>as \<in> lists(depends\<^isub>0 \<inter> -solvable\<^isub>0). is_dnf_qe qe as) \<Longrightarrow>
+  "qe : lists (Collect depends\<^isub>0) \<rightarrow> Collect qfree \<Longrightarrow>
+   (\<forall>as \<in> lists(Collect depends\<^isub>0 \<inter> - Collect solvable\<^isub>0). is_dnf_qe qe as) \<Longrightarrow>
    I (lift_dnfeq_qe qe \<phi>) xs = I \<phi> xs"
 using in_lists_conv_set[where ?'a = 'a]
-by(simp add:Pi_def I_lift_dnfeq_qe mem_def Int_def Compl_eq Collect_def)
+by(simp add:Pi_def I_lift_dnfeq_qe Int_def Compl_eq)
 
 end
 

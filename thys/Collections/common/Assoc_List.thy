@@ -3,7 +3,7 @@ theory Assoc_List imports "~~/src/HOL/Library/AssocList" begin
 
 subsection {* Additional operations for associative lists *}
 
-fun iteratei_aux :: "'s set \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> 's \<Rightarrow> 's"
+fun iteratei_aux :: "('s \<Rightarrow> bool) \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> 's \<Rightarrow> 's"
 where
   "iteratei_aux c f [] \<sigma> = \<sigma>"
 | "iteratei_aux c f ((k, v) # l) \<sigma> = 
@@ -181,7 +181,7 @@ where [code del]: "update_with v k f al = Assoc_List (update_with_aux v k f (imp
 definition delete :: "'k \<Rightarrow> ('k, 'v) assoc_list \<Rightarrow> ('k, 'v) assoc_list"
 where [code del]: "delete k al = Assoc_List (delete_aux k (impl_of al))"
 
-definition iteratei :: "'s set \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('k, 'v) assoc_list \<Rightarrow> 's \<Rightarrow> 's" 
+definition iteratei :: "('s \<Rightarrow> bool) \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('k, 'v) assoc_list \<Rightarrow> 's \<Rightarrow> 's" 
 where [code]: "iteratei c f al = iteratei_aux c f (impl_of al)"
 
 lemma impl_of_empty [code abstract]: "impl_of empty = []"

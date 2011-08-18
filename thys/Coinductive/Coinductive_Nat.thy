@@ -19,7 +19,7 @@ lemmas eSuc_plus = iadd_Suc
 
 lemmas plus_enat_eq_0_conv = iadd_is_0
 
-coinductive_set enat_set :: "enat \<Rightarrow> bool"
+coinductive_set enat_set :: "enat set"
 where "0 \<in> enat_set"
   | "n \<in> enat_set \<Longrightarrow> (eSuc n) \<in> enat_set"
 
@@ -238,14 +238,14 @@ lemma Le_enat_eq_ile:
 by(blast intro: Le_enat_imp_ile ile_into_Le_enat)
 
 lemma enat_leI [consumes 1, case_names Leenat, case_conclusion Leenat zero eSuc]:
-  assumes major [simplified mem_def]: "(m, n) \<in> X"
-  and step [simplified mem_def]:
+  assumes major: "(m, n) \<in> X"
+  and step:
     "\<And>m n. (m, n) \<in> X 
      \<Longrightarrow> m = 0 \<or> (\<exists>m' n' k. m = eSuc m' \<and> n = n' + enat k \<and> k \<noteq> 0 \<and>
                            ((m', n') \<in> X \<or> m' = n'))"
   shows "m \<le> n"
-apply(rule Le_enat.coinduct[unfolded Le_enat_eq_ile, where X="curry X"])
-apply(fastsimp simp add: mem_def zero_enat_def dest: step intro: major)+
+apply(rule Le_enat.coinduct[unfolded Le_enat_eq_ile, where X="\<lambda>m n. (m, n) \<in> X"])
+apply(fastsimp simp add: zero_enat_def dest: step intro: major)+
 done
 
 subsection {* Equality as greatest fixpoint *}
@@ -262,14 +262,14 @@ proof(rule antisym)
     by(coinduct rule: enat_leI)
       (drule step, auto simp add: eSuc_plus_1 enat_1[symmetric])
 
-  from major have "(n, m) \<in> (\<lambda>(n, m). (m, n) \<in> X)"
-    by(simp add: mem_def)
+  from major have "(n, m) \<in> {(n, m). (m, n) \<in> X}"
+    by simp
   thus "n \<le> m"
   proof(coinduct rule: enat_leI)
     case (Leenat n m)
-    hence "(m, n) \<in> X" by(simp add: mem_def)
+    hence "(m, n) \<in> X" by simp
     from step[OF this] show ?case
-      by(auto simp add: mem_def eSuc_plus_1 enat_1[symmetric])
+      by(auto simp add: eSuc_plus_1 enat_1[symmetric])
   qed
 qed
 

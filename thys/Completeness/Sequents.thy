@@ -85,7 +85,6 @@ inductive_set
                 conc' : deductions(rules)
              |] ==> conc : deductions(rules)"
 *)
-  monos Pow_mono
 
 lemma mono_deductions: "[| A <= B |] ==> deductions(A) <= deductions(B)"
   apply(best intro: deductions.inferI elim: deductions.induct) done

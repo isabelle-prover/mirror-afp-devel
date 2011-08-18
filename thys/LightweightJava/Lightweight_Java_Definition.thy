@@ -152,7 +152,7 @@ where
 method_nameI: "method_name ((meth_def_def (meth_sig_def cl meth vds) meth_body)) (meth)"
 
 (*defns distinct_names_def *)
-inductive distinct_names :: "P set"
+inductive distinct_names :: "P \<Rightarrow> bool"
 where
 (* defn distinct_names *)
 
@@ -203,7 +203,7 @@ path_length (P) (ctx') (cl) (nn)\<rbrakk> \<Longrightarrow>
 path_length (P) (ctx) ((cl_fqn fqn)) ( ( nn +  1  ) )"
 
 (*defns acyclic_clds_def *)
-inductive acyclic_clds :: "P set"
+inductive acyclic_clds :: "P \<Rightarrow> bool"
 where
 (* defn acyclic_clds *)
 
@@ -432,7 +432,7 @@ inductive wf_object :: "P \<Rightarrow> H \<Rightarrow> v_opt \<Rightarrow> ty_o
  and wf_meth :: "P \<Rightarrow> ty \<Rightarrow> meth_def \<Rightarrow> bool"
  and wf_class_common :: "P \<Rightarrow> ctx \<Rightarrow> dcl \<Rightarrow> cl \<Rightarrow> fds \<Rightarrow> meth_defs \<Rightarrow> bool"
  and wf_class :: "P \<Rightarrow> cld \<Rightarrow> bool"
- and wf_program :: "P set"
+ and wf_program :: "P \<Rightarrow> bool"
 where
 (* defn object *)
 
