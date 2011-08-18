@@ -99,7 +99,7 @@ proof
   qed
 qed
 
-declare alllsts_mono [mono_set]
+lemmas alllstsp_mono [mono] = alllsts_mono [to_pred pred_subset_eq]
 
 lemma LConsE [iff]: "x##xs \<in> A\<^sup>\<infinity> = (x\<in>A \<and> xs \<in> A\<^sup>\<infinity>)"
   by (auto elim: alllsts.cases)
@@ -134,7 +134,7 @@ lemma finlsts_mono:
 "A\<subseteq>B \<Longrightarrow> A\<^sup>\<star> \<subseteq> B\<^sup>\<star>"
   by (auto, erule finlsts.induct) auto
 
-declare finlsts_mono [mono_set]
+lemmas finlstsp_mono [mono] = finlsts_mono [to_pred pred_subset_eq]
 
 lemma finlsts_induct
   [case_names LNil_fin LCons_fin, induct set: finlsts, consumes 1]:
