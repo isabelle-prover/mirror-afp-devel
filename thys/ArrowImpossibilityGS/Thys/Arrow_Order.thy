@@ -264,9 +264,8 @@ proof -
     have "F(%i. Lba):Lin" using `F:SWF` `Lba:Lin` by(simp add:Prof_def Pi_def)
     hence 1: "(a,b) \<notin> F(?Pi 0)" using u `(a,b) \<notin> Lba` `Lba:Lin` `Lba:Lin` `a\<noteq>b`
       by(simp add:unanimity_def notin_Lin_iff const_Lin_Prof)
-    have "?Pi N = (%p. Lab)" using surjh
-      by(auto simp:image_def fun_eq_iff Bex_def Collect_def
-        atLeastLessThan_def lessThan_def)
+    have "?Pi N = (%p. Lab)" using surjh [THEN equalityD1]
+      by(auto simp: subset_eq)
     moreover
     have "F(%i. Lab):Lin" using `F:SWF` `Lab:Lin` by(simp add:Prof_def Pi_def)
     ultimately have 2: "(a,b) \<in> F(?Pi N)" using u `(a,b) : Lab` `Lab:Lin`
