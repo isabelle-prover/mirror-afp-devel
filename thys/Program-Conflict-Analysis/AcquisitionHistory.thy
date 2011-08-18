@@ -67,10 +67,10 @@ text {* Note that the Isabelle standard library automatically lifts the subset o
   
 -- {* The ordering is compatible with interleavability, i.e.\ smaller acquisition histories are more likely to be interleavable. *}
 lemma ah_leq_il: "\<lbrakk> h1 [*] h2; h1' \<le> h1; h2' \<le> h2 \<rbrakk> \<Longrightarrow> h1' [*] h2'"
-  by (unfold ah_il_def le_fun_def [where 'b="'a \<Rightarrow> bool"]) blast+
+  by (unfold ah_il_def le_fun_def [where 'b="'a set"]) blast+
 lemma ah_leq_il_left: "\<lbrakk> h1 [*] h2; h1' \<le> h1 \<rbrakk> \<Longrightarrow> h1' [*] h2" and 
       ah_leq_il_right: "\<lbrakk> h1 [*] h2; h2' \<le> h2 \<rbrakk> \<Longrightarrow> h1 [*] h2'"
-  by (unfold ah_il_def le_fun_def [where 'b="'a \<Rightarrow> bool"]) blast+
+  by (unfold ah_il_def le_fun_def [where 'b="'a set"]) blast+
 
 subsection "Acquisition histories of executions"
 text {* Next we define a function that abstracts from executions (lists of enter/use pairs) to acquisition histories *}
@@ -111,25 +111,25 @@ lemma mon_ah_subset: "mon_ah (\<alpha>ah w) \<subseteq> mon_pl w"
 -- {* Subwords generate smaller acquisition histories *}
 lemma \<alpha>ah_ileq: "w1\<preceq>w2 \<Longrightarrow> \<alpha>ah w1 \<le> \<alpha>ah w2" 
 proof (induct rule: less_eq_list.induct)
-  case empty thus ?case by (unfold le_fun_def [where 'b="'a \<Rightarrow> bool"], simp)
+  case empty thus ?case by (unfold le_fun_def [where 'b="'a set"], simp)
 next
   case (drop l' l a) show ?case
-  proof (unfold le_fun_def  [where 'b="'a \<Rightarrow> bool"], intro allI subsetI)
+  proof (unfold le_fun_def  [where 'b="'a set"], intro allI subsetI)
     fix m x
     assume A: "x \<in> \<alpha>ah l' m"
-    with drop(2) have "x\<in>\<alpha>ah l m" by (unfold le_fun_def  [where 'b="'a \<Rightarrow> bool"], auto)
+    with drop(2) have "x\<in>\<alpha>ah l m" by (unfold le_fun_def  [where 'b="'a set"], auto)
     moreover hence "x\<in>mon_pl l" using mon_ah_subset[unfolded mon_ah_def] by fast
     ultimately show "x\<in>\<alpha>ah (a # l) m" by auto
   qed
 next
   case (take l' l a) show ?case
-  proof (unfold le_fun_def [where 'b="'a \<Rightarrow> bool"], intro allI subsetI)
+  proof (unfold le_fun_def [where 'b="'a set"], intro allI subsetI)
     fix m x
     assume A: "x\<in>\<alpha>ah (a#l') m"
     thus "x \<in> \<alpha>ah (a # l) m" proof (cases rule: \<alpha>ah_cons_cases)
       case hd with mon_pl_ileq[OF take.hyps(1)] show ?thesis by auto
     next
-      case tl with take.hyps(2)[unfolded le_fun_def [where 'b="'a \<Rightarrow> bool"]] show ?thesis by auto
+      case tl with take.hyps(2)[unfolded le_fun_def [where 'b="'a set"]] show ?thesis by auto
     qed
   qed
 qed
@@ -266,9 +266,9 @@ text {* The backward-update function is monotonic in the first and third argumen
   Note that it is, in general, not monotonic in the entered monitors of the second argument. *}
 lemma ah_update_mono: "\<lbrakk>h \<le> h'; F=F'; M\<subseteq>M'\<rbrakk> 
   \<Longrightarrow> ah_update h F M \<le> ah_update h' F' M'"
-  by (auto simp add: ah_update_def le_fun_def [where 'b="'a \<Rightarrow> bool"])
+  by (auto simp add: ah_update_def le_fun_def [where 'b="'a set"])
 lemma ah_update_mono2: "\<lbrakk>h \<le> h'; U\<subseteq>U'; M\<subseteq>M'\<rbrakk> 
   \<Longrightarrow> ah_update h (E,U) M \<le> ah_update h' (E,U') M'"
-  by (auto simp add: ah_update_def le_fun_def [where 'b="'a \<Rightarrow> bool"])
+  by (auto simp add: ah_update_def le_fun_def [where 'b="'a set"])
 
 end
