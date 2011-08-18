@@ -2076,7 +2076,7 @@ apply (subst iMOD_iTILL_iMODb_conv)
  apply (drule_tac x=t in le_imp_less_or_eq, erule disjE)
  thm mod_cut_greater_aux_le_x
  apply (rule mod_cut_greater_aux_le_x, simp+)
-apply (rule arg_cong)
+apply (rule arg_cong [where y="c - (t + m - Suc r) div m"])
 apply (drule_tac x=t in le_imp_less_or_eq, erule disjE)
  prefer 2
  apply simp
