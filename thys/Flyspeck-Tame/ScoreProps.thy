@@ -602,7 +602,7 @@ assumes pl: "inv g"
 and pS: "separated g (set V)" and dist: "distinct V"
 and V_subset: "set V \<subseteq> set (vertices g)"
 and noex: "ALL f:P. |vertices f| <= 4"
-shows "(\<Sum>\<^bsub>v \<in> V\<^esub> \<Sum>\<^bsub>f \<in> filter (\<lambda>x. x \<in> P) (facesAt g v)\<^esub> (w::face \<Rightarrow> nat) f)
+shows "(\<Sum>\<^bsub>v \<in> V\<^esub> \<Sum>\<^bsub>f \<in> filter P (facesAt g v)\<^esub> (w::face \<Rightarrow> nat) f)
        = \<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v) Int P]\<^esub> w f"
 proof -
   have s: "separating (set V) (\<lambda>v. set (facesAt g v) Int P)"
@@ -611,7 +611,7 @@ proof -
   moreover from pl V_subset
   have "\<And>v. v \<in> set V \<Longrightarrow> distinct (facesAt g v)"
     by(blast intro:mgp_dist_facesAt[OF inv_mgp])
-  hence v: "\<And>v. v \<in> set V \<Longrightarrow> distinct (filter (\<lambda>x. x \<in> P) (facesAt g v))"
+  hence v: "\<And>v. v \<in> set V \<Longrightarrow> distinct (filter P (facesAt g v))"
     by simp
   moreover
   have "distinct [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v) Int P]"
@@ -619,8 +619,8 @@ proof -
   moreover from pl have "{x. x \<in> \<F> g \<and> (\<exists>v \<in> set V. x \<in> set (facesAt g v) \<and> x:P)} =
       (\<Union>v\<in>set V. set (facesAt g v) Int P)" using V_subset
     by (blast intro:minGraphProps inv_mgp)
-  moreover from v have "(\<Sum>v\<in>set V. ListSum (filter (\<lambda>x. x \<in> P) (facesAt g v)) w) = (\<Sum>v\<in>set V. setsum w (set(facesAt g v) Int P))"
-    by (auto simp add: ListSum_conv_setsum Int_def)
+  moreover from v have "(\<Sum>v\<in>set V. ListSum (filter P (facesAt g v)) w) = (\<Sum>v\<in>set V. setsum w (set(facesAt g v) Int P))"
+    by (auto simp add: ListSum_conv_setsum Collect_def Int_def mem_def)
   ultimately show ?thesis
     by (simp add: ListSum_conv_setsum setsum_disj_Union)
 qed
@@ -639,7 +639,7 @@ proof -
       intro: minGraphProps5[OF inv_mgp[OF pl]] not_exceptional[OF pl fin])
   thus ?thesis
     using ListSum_V_F_eq_ListSum_F[where P = ?P, OF pl pS dist V_subset]
-    by (simp add: Int_def cong: conj_cong)
+    by (simp add: Collect_def mem_def Int_def cong: conj_cong)
 qed
 
 lemma squanderFace_distr2: "inv g \<Longrightarrow> final g \<Longrightarrow> noExceptionals g (set V) \<Longrightarrow>

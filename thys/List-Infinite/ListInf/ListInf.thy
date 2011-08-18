@@ -32,11 +32,11 @@ syntax (HTML output)
   "i_append" :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> 'a ilist" (infixr "\<frown>" 65)
 
 text {* 
-  Synonym for the lemma @{text fun_eq_iff} 
+  Synonym for the lemma @{text Fun.fun_eq_iff} 
   from the HOL library to unify lemma names for finite and infinite lists,
   providing @{text list_eq_iff} for finite and
   @{text ilist_eq_iff} for infinite lists. *}
-lemmas expand_ilist_eq = fun_eq_iff
+lemmas expand_ilist_eq = Fun.fun_eq_iff
 lemmas ilist_eq_iff = expand_ilist_eq
 
 lemma i_append_nth: "(xs \<frown> f) n = (if n < length xs then xs ! n else f (n - length xs))"

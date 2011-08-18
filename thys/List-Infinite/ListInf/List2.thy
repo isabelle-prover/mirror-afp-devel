@@ -142,7 +142,7 @@ by (simp add: nth_append)
 lemma list_all_conv: "list_all P xs = (\<forall>i<length xs. P (xs ! i))"
 by (rule list_all_length)
 
-thm fun_eq_iff
+thm Fun.fun_eq_iff
 lemma expand_list_eq: "
   \<And>ys. (xs = ys) = (length xs = length ys \<and> (\<forall>i<length xs. xs ! i = ys ! i))"
 by (rule list_eq_iff_nth_eq)

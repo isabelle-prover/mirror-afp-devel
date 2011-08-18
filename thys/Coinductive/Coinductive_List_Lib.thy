@@ -1479,14 +1479,14 @@ by(blast intro: lprefix_llist_imp_lprefix lprefix_into_lprefix_llist)
 lemma lprefixI [consumes 1, case_names lprefix, 
                 case_conclusion lprefix LeLNil LeLCons]:
   assumes major: "(xs, ys) \<in> X"
-  and step:
+  and step [simplified mem_def]:
       "\<And>xs ys. (xs, ys) \<in> X 
        \<Longrightarrow> xs = LNil \<or> (\<exists>x xs' ys'. xs = LCons x xs' \<and> ys = LCons x ys' \<and> 
                                    ((xs', ys') \<in> X \<or> lprefix xs' ys'))"
   shows "lprefix xs ys"
 proof -
-  from major
-  show ?thesis
+  from major have "curry X xs ys" by(auto simp add: mem_def)
+  thus ?thesis
     by(rule lprefix_llist.coinduct[unfolded lprefix_llist_eq_lprefix])
       (auto dest: step)
 qed
@@ -2010,7 +2010,7 @@ using assms by(rule lset_induct)
 
 text {* Alternative definition of @{term lset} for nitpick *}
 
-inductive lsetp :: "'a llist \<Rightarrow> 'a \<Rightarrow> bool"
+inductive lsetp :: "'a llist \<Rightarrow> 'a set"
 where
   "lsetp (LCons x xs) x"
 | "lsetp xs x \<Longrightarrow> lsetp (LCons x' xs) x"
