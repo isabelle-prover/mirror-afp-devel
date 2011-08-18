@@ -69,12 +69,12 @@ locale DFS =
   and succs_is_node: "\<And>x. is_node x \<Longrightarrow> list_all is_node (succs x)"
   and empt_invariant: "invariant empt"
   and ins_invariant: "\<And>x S. is_node x \<Longrightarrow> invariant S \<Longrightarrow> \<not> memb x S \<Longrightarrow> invariant (ins x S)"
-  and graph_finite: "finite (node_abs ` is_node)"
+  and graph_finite: "finite (node_abs ` {x. is_node x})"
 begin
 
 
 definition rel where
-  "rel = inv_image finite_psubset (\<lambda>S. node_abs ` {n \<in> is_node. \<not> memb n S})"
+  "rel = inv_image finite_psubset (\<lambda>S. node_abs ` {n. is_node n \<and> \<not> memb n S})"
 
 abbreviation
   "dfs \<equiv> gen_dfs succs ins memb"
@@ -82,10 +82,10 @@ abbreviation
 (* Yuck, something to do with Skolems broke. *)
 lemma FIXME_grot:
   "\<lbrakk>invariant S; is_node x; list_all is_node xs; \<not>memb x S\<rbrakk>
-     \<Longrightarrow> node_abs ` {n \<in> is_node. \<not> memb n (ins x S)}
-       \<subset> node_abs ` {n \<in> is_node. \<not> memb n S}"
+     \<Longrightarrow> node_abs ` {n. is_node n \<and> \<not> memb n (ins x S)}
+       \<subset> node_abs ` {n. is_node n \<and> \<not> memb n S}"
   apply rule
-   apply (auto simp add: ins_eq mem_def cong: conj_cong)
+   apply (auto simp add: ins_eq cong: conj_cong)
   apply (subgoal_tac "node_abs x \<in> node_abs ` {n. is_node n \<and> \<not> memb n S}")
    apply (subgoal_tac "node_abs x \<notin> node_abs ` {n. is_node n \<and> node_abs n \<noteq> node_abs x \<and> \<not> memb n S}")
     apply blast
@@ -212,7 +212,7 @@ qed
 
 lemma succss_closed:
   assumes inc: "node_abs ` succss X \<subseteq> node_abs ` X"
-      and X: "X \<subseteq> is_node"
+      and X: "X \<subseteq> {x. is_node x}"
   shows "node_abs ` reachable X = node_abs ` X"
 proof
   show "node_abs ` X \<subseteq> node_abs ` reachable X"
@@ -232,7 +232,7 @@ next
         using succsr_is_node[where x=y and y=r]
         unfolding succsr_def
         apply -
-        apply (auto iff: mem_def)
+        apply auto
         done
       with inc step show ?case
         apply clarsimp
@@ -244,7 +244,7 @@ next
          unfolding succss_def
          apply auto
          using X
-         apply (auto iff: mem_def)
+         apply auto
          done
      qed
    qed
@@ -253,13 +253,12 @@ qed
 lemma dfs_is_node:
   assumes S: "invariant S"
       and xs: "list_all is_node xs"
-  shows "set_of (dfs S xs) \<subseteq> is_node"
+  shows "set_of (dfs S xs) \<subseteq> {x. is_node x}"
   using assms
   apply (induct S xs rule: dfs_induct)
   apply auto
   unfolding set_of_def
   apply auto
-  apply (auto iff: mem_def)
   done
 
 lemma reachable_closed_dfs:
@@ -388,4 +387,3 @@ end
 
 
 end
-

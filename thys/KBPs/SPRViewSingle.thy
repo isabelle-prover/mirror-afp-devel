@@ -336,7 +336,7 @@ lemma spr_sim_singleObs:
   using spr_sim_singleObs' by blast
 
 definition
-  spr_rep_rels :: "'a \<Rightarrow> 's \<times> 's \<Rightarrow> bool"
+  spr_rep_rels :: "'a \<Rightarrow> ('s \<times> 's) set"
 where
   "spr_rep_rels \<equiv> \<lambda>a. { (s, s'). envObs a s' = envObs a s }"
 

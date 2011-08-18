@@ -21,13 +21,13 @@ text{* Partition a list with respect to an equivalence relation. *}
 text{* First up: split a list according to a relation. *}
 
 definition
-  partition_split_body :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list \<times> 'a list \<Rightarrow> 'a list \<times> 'a list"
+  partition_split_body :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list \<times> 'a list \<Rightarrow> 'a list \<times> 'a list"
 where
   [code]: "partition_split_body r x \<equiv> \<lambda>y (X', xc).
             if (x, y) \<in> r then (X', List.insert y xc) else (List.insert y X', xc)"
 
 definition
-  partition_split :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list"
+  partition_split :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list"
 where
   [code]: "partition_split r x xs \<equiv> foldr (partition_split_body r x) xs ([], [])"
 
@@ -78,7 +78,7 @@ text{* Next, split an list on each of its members. For this to be
 unambiguous @{term "r"} must be an equivalence relation. *}
 
 definition
-  partition_aux_body :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<times> 'a list list \<Rightarrow> 'a list \<times> 'a list list"
+  partition_aux_body :: "('a \<times> 'a) set \<Rightarrow> 'a list \<times> 'a list list \<Rightarrow> 'a list \<times> 'a list list"
 where
   "partition_aux_body \<equiv> \<lambda>r (xxs, ecs). case xxs of [] \<Rightarrow> ([], []) | x # xs \<Rightarrow>
                            let (xxs', xec) = partition_split r x xs
@@ -86,7 +86,7 @@ where
 
 
 definition
-  partition_aux :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list list"
+  partition_aux :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list list"
 where
   [code]: "partition_aux r xs \<equiv>
              while (Not \<circ> List.null \<circ> fst) (partition_aux_body r) (xs, [])"
@@ -279,7 +279,7 @@ proof -
 qed
 
 definition
-  partition :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list list"
+  partition :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a list list"
 where
   [code]: "partition r xs \<equiv> snd (partition_aux r xs)"
 
