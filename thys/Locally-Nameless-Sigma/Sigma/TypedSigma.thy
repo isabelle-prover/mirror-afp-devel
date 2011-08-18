@@ -133,7 +133,7 @@ qed
 (* TODO: delete after refactoring of subject_reduction *)
 lemma ball_ex_finite:
   fixes 
-  S :: "'a \<Rightarrow> bool" and F :: "'b \<Rightarrow> bool" and x :: 'a and 
+  S :: "'a set" and F :: "'b set" and x :: 'a and 
   P :: "'a \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
   assumes 
   "finite S" and "finite F" and

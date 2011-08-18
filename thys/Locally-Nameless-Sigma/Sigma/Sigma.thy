@@ -62,7 +62,7 @@ proof
 qed
 
 lemma Ltake_eq_dom: 
-  fixes L :: "Label \<Rightarrow> bool" and f :: "Label -~> 'a"
+  fixes L :: "Label set" and f :: "Label -~> 'a"
   assumes "L \<subseteq> dom f" and "card L = card (dom f)"
   shows "L = (dom f)"
 proof (auto)
@@ -230,7 +230,7 @@ lemma FV_and_cofinite: "\<lbrakk> \<forall>x. x \<notin> L \<longrightarrow> P x
   by (rule_tac x = "L \<union> FV t" in exI, auto)
 
 lemma exFresh_s_p_cof: 
-  fixes L :: "fVariable \<Rightarrow> bool"
+  fixes L :: "fVariable set"
   assumes "finite L"
   shows "\<exists>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p"
 proof -
@@ -2113,7 +2113,7 @@ lemma beta_binder[rule_format]:
                             \<longrightarrow> (\<exists>t''. (\<sigma>[s,p] t)\<^bsup>[Fvar sa,Fvar pa]\<^esup> \<rightarrow>\<^sub>\<beta> t'' 
                                      \<and> \<sigma>[s,p] t' = \<sigma>[sa,pa] t'')))"
 proof (intro strip)
-  fix L :: "fVariable \<Rightarrow> bool" and s :: fVariable and p :: fVariable
+  fix L :: "fVariable set" and s :: fVariable and p :: fVariable
   assume "s \<noteq> p"
   have 
     "\<forall>sa pa. sa \<notin> L \<union> FV t \<union> {s} \<union> {p} \<and> pa \<notin> L \<union> FV t \<union> {s} \<union> {p} \<and> sa \<noteq> pa
@@ -2380,7 +2380,7 @@ proof
       have "\<forall>obi. obi \<in> set ob' \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f"
         unfolding ob'_def
       proof (intro strip)
-        fix obi :: "(Label -~> sterm) \<times> (Label \<Rightarrow> bool)"
+        fix obi :: "(Label -~> sterm) \<times> (Label set)"
         assume "obi \<in> set (ob @ [(fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd (ob!k)))])"
         note mem_append_lem'[OF this]
         thus "dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f"
@@ -2545,7 +2545,7 @@ proof (cases "f = empty")
   from `f = empty` empty_dom[OF this] show ?thesis by simp
 next
   from rtrancl_beta_obj_lem00[OF assms]
-  obtain ob :: "((Label -~> sterm) \<times> (Label \<Rightarrow> bool)) list" 
+  obtain ob :: "((Label -~> sterm) \<times> (Label set)) list" 
     where 
     "length ob = card(dom f) + 1" and
     "\<forall>obi. obi \<in> set ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f" and

@@ -334,7 +334,7 @@ theorem fmap_induct[rule_format, case_names empty insert]:
   shows "P F'"
 proof -
   {
-    fix F :: "'a \<times> 'b \<Rightarrow> bool" assume "finite F"
+    fix F :: "('a \<times> 'b) set" assume "finite F"
     hence "\<forall>F'. F = set_fmap F' \<longrightarrow> pred_set_fmap P (set_fmap F')"
     proof (induct F)
       case empty thus ?case

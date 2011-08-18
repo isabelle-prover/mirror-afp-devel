@@ -218,7 +218,7 @@ lemma par_beta_body[simp]:
       \<longrightarrow> (\<exists>t''. t\<^bsup>[Fvar s,Fvar p]\<^esup> \<Rightarrow>\<^sub>\<beta> t'' \<and> t' = \<sigma>[s,p] t'') \<rbrakk>
   \<Longrightarrow> body t \<and> body t'"
 proof (intro conjI)
-  fix L :: "fVariable \<Rightarrow> bool" and t :: sterm and t' :: sterm
+  fix L :: "fVariable set" and t :: sterm and t' :: sterm
   assume "finite L" hence "finite (L \<union> FV t)" by simp
   from exFresh_s_p_cof[OF this] 
   obtain s p where sp: "s \<notin> L \<union> FV t \<and> p \<notin> L \<union> FV t \<and> s \<noteq> p" by auto
@@ -890,10 +890,10 @@ proof (induct rule: fmap_induct3)
 next 
   case (insert x a b c F1 F2 F3) thus ?case
   proof (intro strip)
-    fix L1 :: "fVariable \<Rightarrow> bool" and L2 :: "fVariable \<Rightarrow> bool"
+    fix L1 :: "fVariable set" and L2 :: "fVariable set"
     {
       fix 
-        L :: "fVariable \<Rightarrow> bool" and
+        L :: "fVariable set" and
         t :: sterm and F :: "Label -~> sterm" and
         P :: "sterm \<Rightarrow> sterm \<Rightarrow> fVariable \<Rightarrow> fVariable \<Rightarrow> bool"
       assume 
