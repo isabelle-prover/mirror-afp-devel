@@ -46,6 +46,7 @@
 <a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
 <a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
 <a href="entries/FFT.shtml">FFT</a> &nbsp;
+<a href="entries/Gauss-Jordan-Elim-Fun.shtml">Gauss-Jordan-Elim-Fun</a> &nbsp;
 <a href="entries/GraphMarkingIBP.shtml">GraphMarkingIBP</a> &nbsp;
 <a href="entries/SATSolverVerification.shtml">SATSolverVerification</a> &nbsp;
 <a href="entries/Transitive-Closure.shtml">Transitive-Closure</a> &nbsp;
@@ -158,6 +159,7 @@
 <h3>Algebra</h3>
 
 <div class="list">
+<a href="entries/Gauss-Jordan-Elim-Fun.shtml">Gauss-Jordan-Elim-Fun</a> &nbsp;
 <a href="entries/Free-Groups.shtml">Free-Groups</a> &nbsp;
 <a href="entries/CofGroups.shtml">CofGroups</a> &nbsp;
 <a href="entries/Group-Ring-Module.shtml">Group-Ring-Module</a> &nbsp;
