@@ -805,7 +805,7 @@ depends-on = Lazy-Lists-II
 [Max-Card-Matching]
 title = Maximum Cardinality Matching
 author = Christine Rizkallah <http://www.mpi-inf.mpg.de/homepage/crizkall/>
-date = 2011-21-07
+date = 2011-07-21
 topic = Mathematics/Graph Theory
 abstract = A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
  edges of <i>G</i> such that no two share an endpoint. A matching has maximum
