@@ -107,6 +107,13 @@ date = 2005-10-12
 topic = Computer Science/Algorithms
 abstract = We formalise a functional implementation of the FFT algorithm over the complex numbers, and its inverse. Both are shown equivalent to the usual definitions of these operations through Vandermonde matrices. They are also shown to be inverse to each other, more precisely, that composition of the inverse and the transformation yield the identity up to a scalar.
 
+[Gauss-Jordan-Elim-Fun]
+title = Gauss-Jordan Elimination for Matrices Represented as Functions
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2011-08-19
+topic = Computer Science/Algorithms, Mathematics/Algebra
+abstract = This theory provides a compact formulation of Gauss-Jordan elimination for matrices represented as functions. Its distinctive feature is succinctness. It is not meant for large computations.
+
 [GraphMarkingIBP]
 title = Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement
 author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <http://users.abo.fi/Ralph-Johan.Back/>
@@ -808,7 +815,7 @@ depends-on = Lazy-Lists-II
 [Max-Card-Matching]
 title = Maximum Cardinality Matching
 author = Christine Rizkallah <http://www.mpi-inf.mpg.de/homepage/crizkall/>
-date = 2011-21-07
+date = 2011-07-21
 topic = Mathematics/Graph Theory
 abstract = A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
  edges of <i>G</i> such that no two share an endpoint. A matching has maximum

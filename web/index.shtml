@@ -60,7 +60,14 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
-2011-21-07:
+2011-08-19:
+<a href="entries/Gauss-Jordan-Elim-Fun.shtml">Gauss-Jordan Elimination for Matrices Represented as Functions</a>
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
+2011-07-21:
 <a href="entries/Max-Card-Matching.shtml">Maximum Cardinality Matching</a>
 <br>Author:
 <a href="http://www.mpi-inf.mpg.de/homepage/crizkall/">Christine Rizkallah</a>
