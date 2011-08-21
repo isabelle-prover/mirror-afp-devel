@@ -16,7 +16,7 @@ datatype 'a rexp =
   Times "('a rexp)" "('a rexp)" |
   Star "('a rexp)"
 
-primrec lang :: "'a rexp => 'a list set" where
+primrec lang :: "'a rexp => 'a lang" where
 "lang Zero = {}" |
 "lang One = {[]}" |
 "lang (Atom a) = {[a]}" |
