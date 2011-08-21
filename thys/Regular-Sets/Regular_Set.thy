@@ -21,15 +21,6 @@ end
 definition star :: "'a lang \<Rightarrow> 'a lang" where
 "star A = (\<Union>n. A ^^ n)"
 
-definition deriv :: "'a \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
-where "deriv x L = { xs. x#xs \<in> L }"
-
-
-coinductive bisimilar :: "'a list set \<Rightarrow> 'a list set \<Rightarrow> bool" where
-"([] \<in> K \<longleftrightarrow> [] \<in> L) 
- \<Longrightarrow> (\<And>x. bisimilar (deriv x K) (deriv x L))
- \<Longrightarrow> bisimilar K L"
-
 
 subsection{* @{term "op @@"} *}
 
@@ -75,6 +66,9 @@ by (induct n) auto
 lemma lang_pow_empty_Suc[simp]: "({}::'a lang) ^^ Suc n = {}"
 by (simp add: lang_pow_empty)
 
+lemma conc_pow_comm:
+  shows "A @@ (A ^^ n) = (A ^^ n) @@ A"
+by (induct n) (simp_all add: conc_assoc[symmetric])
 
 lemma length_lang_pow_ub:
   "ALL w : A. length w \<le> k \<Longrightarrow> w : A^^n \<Longrightarrow> length w \<le> k*n"
@@ -112,6 +106,11 @@ qed
 
 lemma conc_star_star: "star A @@ star A = star A"
 by (auto simp: conc_def)
+
+lemma conc_star_comm:
+  shows "A @@ star A = star A @@ A"
+unfolding star_def conc_pow_comm conc_UNION_distrib
+by simp
 
 lemma star_induct[consumes 1, case_names Nil append, induct set: star]:
 assumes "w : star A"
@@ -176,29 +175,36 @@ proof-
   } thus ?thesis by (auto simp: star_conv_concat)
 qed
 
+lemma star_decom: 
+  assumes a: "x \<in> star A" "x \<noteq> []"
+  shows "\<exists>a b. x = a @ b \<and> a \<noteq> [] \<and> a \<in> A \<and> b \<in> star A"
+using a by (induct rule: star_induct) (blast)+
+
+subsection {* Arden's Lemma *}
+
+lemma arden_helper:
+  assumes eq: "X = A @@ X \<union> B"
+  shows "X = (A ^^ Suc n) @@ X \<union> (\<Union>m\<le>n. (A ^^ m) @@ B)"
+proof (induct n)
+  case 0 
+  show "X = (A ^^ Suc 0) @@ X \<union> (\<Union>m\<le>0. (A ^^ m) @@ B)"
+    using eq by simp
+next
+  case (Suc n)
+  have ih: "X = (A ^^ Suc n) @@ X \<union> (\<Union>m\<le>n. (A ^^ m) @@ B)" by fact
+  also have "\<dots> = (A ^^ Suc n) @@ (A @@ X \<union> B) \<union> (\<Union>m\<le>n. (A ^^ m) @@ B)" using eq by simp
+  also have "\<dots> = (A ^^ Suc (Suc n)) @@ X \<union> ((A ^^ Suc n) @@ B) \<union> (\<Union>m\<le>n. (A ^^ m) @@ B)"
+    by (simp add: conc_Un_distrib conc_assoc[symmetric] conc_pow_comm)
+  also have "\<dots> = (A ^^ Suc (Suc n)) @@ X \<union> (\<Union>m\<le>Suc n. (A ^^ m) @@ B)"
+    by (auto simp add: le_Suc_eq)
+  finally show "X = (A ^^ Suc (Suc n)) @@ X \<union> (\<Union>m\<le>Suc n. (A ^^ m) @@ B)" .
+qed
+
 lemma Arden:
-assumes "[] \<notin> A" and "X = A @@ X \<union> B"
-shows "X = star A @@ B"
-proof -
-  { fix n have "X = A^^(n+1)@@X \<union> (\<Union>i\<le>n. A^^i@@B)"
-    proof(induct n)
-      case 0 show ?case using `X = A @@ X \<union> B` by simp
-    next
-      case (Suc n)
-      have "X = A@@X Un B" by(rule assms(2))
-      also have "\<dots> = A@@(A^^(n+1)@@X \<union> (\<Union>i\<le>n. A^^i@@B)) Un B"
-        by(subst Suc)(rule refl)
-      also have "\<dots> =  A^^(n+2)@@X \<union> (\<Union>i\<le>n. A^^(i+1)@@B) Un B"
-        by(simp add:conc_UNION_distrib conc_assoc conc_Un_distrib)
-      also have "\<dots> =  A^^(n+2)@@X \<union> (UN i : {1..n+1}. A^^i@@B) \<union> B"
-        by(subst UN_le_add_shift)(rule refl)
-      also have "\<dots> =  A^^(n+2)@@X \<union> (UN i : {1..n+1}. A^^i@@B) \<union> A^^0@@B"
-        by(simp)
-      also have "\<dots> =  A^^(n+2)@@X \<union> (\<Union>i\<le>n+1. A^^i@@B)"
-        by(auto simp: UN_le_eq_Un0)
-      finally show ?case by simp
-    qed
-  } note 1 = this
+  assumes "[] \<notin> A" 
+  shows "X = A @@ X \<union> B \<longleftrightarrow> X = star A @@ B"
+proof
+  assume eq: "X = A @@ X \<union> B"
   { fix w assume "w : X"
     let ?n = "size w"
     from `[] \<notin> A` have "ALL u : A. length u \<ge> 1"
@@ -208,139 +214,81 @@ proof -
     hence "ALL u : A^^(?n+1)@@X. length u \<ge> ?n+1"
       by(auto simp only: conc_def length_append)
     hence "w \<notin> A^^(?n+1)@@X" by auto
-    hence "w : star A @@ B" using `w : X` 1[of ?n]
-      by(auto simp add: star_def conc_UNION_distrib)
+    hence "w : star A @@ B" using `w : X` using arden_helper[OF eq, where n="?n"]
+      by (auto simp add: star_def conc_UNION_distrib)
   } moreover
   { fix w assume "w : star A @@ B"
     hence "EX n. w : A^^n @@ B" by(auto simp: conc_def star_def)
-    hence "w : X" using 1 by blast
-  } ultimately show ?thesis by blast
+    hence "w : X" using arden_helper[OF eq] by blast
+  } ultimately show "X = star A @@ B" by blast 
+next
+  assume eq: "X = star A @@ B"
+  have "star A = A @@ star A \<union> {[]}"
+    by (rule star_unfold_left)
+  then have "star A @@ B = (A @@ star A \<union> {[]}) @@ B"
+    by metis
+  also have "\<dots> = (A @@ star A) @@ B \<union> B"
+    unfolding conc_Un_distrib by simp
+  also have "\<dots> = A @@ (star A @@ B) \<union> B" 
+    by (simp only: conc_assoc)
+  finally show "X = A @@ X \<union> B" 
+    using eq by blast 
 qed
 
-subsection{* @{const deriv} *}
 
-lemma deriv_empty[simp]: "deriv a {} = {}"
-and deriv_epsilon[simp]: "deriv a {[]} = {}"
-and deriv_char[simp]: "deriv a {[b]} = (if a = b then {[]} else {})"
-and deriv_union[simp]: "deriv a (A \<union> B) = deriv a A \<union> deriv a B"
-by (auto simp: deriv_def)
-
-lemma deriv_conc_subset:
-"deriv a A @@ B \<subseteq> deriv a (A @@ B)" (is "?L \<subseteq> ?R")
-proof 
-  fix w assume "w \<in> ?L"
-  then obtain u v where "w = u @ v" "a # u \<in> A" "v \<in> B"
-    by (auto simp: deriv_def)
-  then have "a # w \<in> A @@ B"
-    by (auto intro: concI[of "a # u", simplified])
-  thus "w \<in> ?R" by (auto simp: deriv_def)
+lemma reversed_arden_helper:
+  assumes eq: "X = X @@ A \<union> B"
+  shows "X = X @@ (A ^^ Suc n) \<union> (\<Union>m\<le>n. B @@ (A ^^ m))"
+proof (induct n)
+  case 0 
+  show "X = X @@ (A ^^ Suc 0) \<union> (\<Union>m\<le>0. B @@ (A ^^ m))"
+    using eq by simp
+next
+  case (Suc n)
+  have ih: "X = X @@ (A ^^ Suc n) \<union> (\<Union>m\<le>n. B @@ (A ^^ m))" by fact
+  also have "\<dots> = (X @@ A \<union> B) @@ (A ^^ Suc n) \<union> (\<Union>m\<le>n. B @@ (A ^^ m))" using eq by simp
+  also have "\<dots> = X @@ (A ^^ Suc (Suc n)) \<union> (B @@ (A ^^ Suc n)) \<union> (\<Union>m\<le>n. B @@ (A ^^ m))"
+    by (simp add: conc_Un_distrib conc_assoc)
+  also have "\<dots> = X @@ (A ^^ Suc (Suc n)) \<union> (\<Union>m\<le>Suc n. B @@ (A ^^ m))"
+    by (auto simp add: le_Suc_eq)
+  finally show "X = X @@ (A ^^ Suc (Suc n)) \<union> (\<Union>m\<le>Suc n. B @@ (A ^^ m))" .
 qed
 
-lemma deriv_conc1:
-assumes "[] \<notin> A"
-shows "deriv a (A @@ B) = deriv a A @@ B" (is "?L = ?R")
+theorem reversed_Arden:
+  assumes nemp: "[] \<notin> A"
+  shows "X = X @@ A \<union> B \<longleftrightarrow> X = B @@ star A"
 proof
-  show "?L \<subseteq> ?R"
-  proof
-    fix w assume "w \<in> ?L"
-    then have "a # w \<in> A @@ B" by (simp add: deriv_def)
-    then obtain x y 
-      where aw: "a # w = x @ y" "x \<in> A" "y \<in> B" by auto
-    with `[] \<notin> A` obtain x' where "x = a # x'"
-      by (cases x) auto
-    with aw have "w = x' @ y" "x' \<in> deriv a A"
-      by (auto simp: deriv_def)
-    with `y \<in> B` show "w \<in> ?R" by simp
-  qed
-  show "?R \<subseteq> ?L" by (fact deriv_conc_subset)
+ assume eq: "X = X @@ A \<union> B"
+  { fix w assume "w : X"
+    let ?n = "size w"
+    from `[] \<notin> A` have "ALL u : A. length u \<ge> 1"
+      by (metis Suc_eq_plus1 add_leD2 le_0_eq length_0_conv not_less_eq_eq)
+    hence "ALL u : A^^(?n+1). length u \<ge> ?n+1"
+      by (metis length_lang_pow_lb nat_mult_1)
+    hence "ALL u : X @@ A^^(?n+1). length u \<ge> ?n+1"
+      by(auto simp only: conc_def length_append)
+    hence "w \<notin> X @@ A^^(?n+1)" by auto
+    hence "w : B @@ star A" using `w : X` using reversed_arden_helper[OF eq, where n="?n"]
+      by (auto simp add: star_def conc_UNION_distrib)
+  } moreover
+  { fix w assume "w : B @@ star A"
+    hence "EX n. w : B @@ A^^n" by (auto simp: conc_def star_def)
+    hence "w : X" using reversed_arden_helper[OF eq] by blast
+  } ultimately show "X = B @@ star A" by blast 
+next 
+  assume eq: "X = B @@ star A"
+  have "star A = {[]} \<union> star A @@ A" 
+    unfolding conc_star_comm[symmetric]
+    by(metis Un_commute star_unfold_left)
+  then have "B @@ star A = B @@ ({[]} \<union> star A @@ A)"
+    by metis
+  also have "\<dots> = B \<union> B @@ (star A @@ A)"
+    unfolding conc_Un_distrib by simp
+  also have "\<dots> = B \<union> (B @@ star A) @@ A" 
+    by (simp only: conc_assoc)
+  finally show "X = X @@ A \<union> B" 
+    using eq by blast 
 qed
 
-lemma deriv_conc2:
-assumes "[] \<in> A"
-shows "deriv a (A @@ B) = deriv a A @@ B \<union> deriv a B"
-(is "?L = ?R")
-proof
-  show "?L \<subseteq> ?R"
-  proof
-    fix w assume "w \<in> ?L"
-    then have "a # w \<in> A @@ B" by (simp add: deriv_def)
-    then obtain x y 
-      where aw: "a # w = x @ y" "x \<in> A" "y \<in> B" by auto
-    show "w \<in> ?R"
-    proof (cases x)
-      case Nil
-      with aw have "w \<in> deriv a B" by (auto simp: deriv_def)
-      thus ?thesis ..
-    next
-      case (Cons b x')
-      with aw have "w = x' @ y" "x' \<in> deriv a A"
-        by (auto simp: deriv_def)
-      with `y \<in> B` show "w \<in> ?R" by simp
-    qed
-  qed
-
-  from concI[OF `[] \<in> A`, simplified]
-  have "B \<subseteq> A @@ B" ..
-  then have "deriv a B \<subseteq> deriv a (A @@ B)" by (auto simp: deriv_def)
-  with deriv_conc_subset[of a A B]
-  show "?R \<subseteq> ?L" by auto
-qed
-
-lemma wlog_no_eps: 
-assumes PB: "\<And>B. [] \<notin> B \<Longrightarrow> P B"
-assumes preserved: "\<And>A. P A \<Longrightarrow> P (insert [] A)"
-shows "P A"
-proof -
-  let ?B = "A - {[]}"
-  have "P ?B" by (rule PB) auto
-  thus "P A"
-  proof cases
-    assume "[] \<in> A"
-    then have "(insert [] ?B) = A" by auto
-    with preserved[OF `P ?B`]
-    show ?thesis by simp
-  qed auto
-qed
-
-lemma deriv_insert_eps[simp]: 
-"deriv a (insert [] A) = deriv a A"
-by (auto simp: deriv_def)
-
-lemma deriv_star[simp]: "deriv a (star A) = deriv a A @@ star A"
-proof (induct A rule: wlog_no_eps)
-  fix B :: "'a list set" assume "[] \<notin> B"
-  thus "deriv a (star B) = deriv a B @@ star B" 
-    by (subst star_unfold_left) (simp add: deriv_conc1)
-qed auto
-
-
-subsection{* @{const bisimilar} *}
-
-lemma equal_if_bisimilar:
-assumes "bisimilar K L" shows "K = L"
-proof (rule set_eqI)
-  fix w
-  from `bisimilar K L` show "w \<in> K \<longleftrightarrow> w \<in> L"
-  proof (induct w arbitrary: K L)
-    case Nil thus ?case by (auto elim: bisimilar.cases)
-  next
-    case (Cons a w K L)
-    from `bisimilar K L` have "bisimilar (deriv a K) (deriv a L)"
-      by (auto elim: bisimilar.cases)
-    then have "w \<in> deriv a K \<longleftrightarrow> w \<in> deriv a L" by (rule Cons(1))
-    thus ?case by (auto simp: deriv_def)
-  qed
-qed
-
-lemma language_coinduct:
-fixes R (infixl "\<sim>" 50)
-assumes "K \<sim> L"
-assumes "\<And>K L. K \<sim> L \<Longrightarrow> ([] \<in> K \<longleftrightarrow> [] \<in> L)"
-assumes "\<And>K L x. K \<sim> L \<Longrightarrow> deriv x K \<sim> deriv x L"
-shows "K = L"
-apply (rule equal_if_bisimilar)
-apply (rule bisimilar.coinduct[of R, OF `K \<sim> L`])
-apply (auto simp: assms)
-done
 
 end

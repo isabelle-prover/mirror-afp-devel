@@ -1,10 +1,8 @@
 header {* Deciding Regular Expression Equivalence *}
 
 theory Equivalence_Checking
-imports Regular_Exp "~~/src/HOL/Library/While_Combinator"
+imports Derivatives "~~/src/HOL/Library/While_Combinator"
 begin
-
-text{* This theory is based on work by Jan Rutten \cite{Rutten98}. *}
 
 subsection {* Term ordering *}
 
@@ -100,8 +98,8 @@ where
      in if final r then nPlus r's (ederiv a s) else r's)"
 | "ederiv a (Star r) = nTimes (ederiv a r) (Star r)"
 
-lemma lang_ederiv: "lang (ederiv a r) = deriv a (lang r)"
-by (induct r) (auto simp: Let_def deriv_conc1 deriv_conc2 lang_final)
+lemma lang_ederiv: "lang (ederiv a r) = Deriv a (lang r)"
+by (induct r) (auto simp: Let_def lang_final)
 
 lemma deriv_no_occurrence: 
   "x \<notin> atoms r \<Longrightarrow> ederiv x r = Zero"
@@ -120,7 +118,39 @@ lemma atoms_ederiv: "atoms (ederiv a r) \<subseteq> atoms r"
 by (induct r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
 
 
-subsection {* Bisimulation between regular expressions *}
+subsection {* Bisimulation between languages and regular expressions *}
+
+coinductive bisimilar :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> bool" where
+"([] \<in> K \<longleftrightarrow> [] \<in> L) 
+ \<Longrightarrow> (\<And>x. bisimilar (Deriv x K) (Deriv x L))
+ \<Longrightarrow> bisimilar K L"
+
+lemma equal_if_bisimilar:
+assumes "bisimilar K L" shows "K = L"
+proof (rule set_eqI)
+  fix w
+  from `bisimilar K L` show "w \<in> K \<longleftrightarrow> w \<in> L"
+  proof (induct w arbitrary: K L)
+    case Nil thus ?case by (auto elim: bisimilar.cases)
+  next
+    case (Cons a w K L)
+    from `bisimilar K L` have "bisimilar (Deriv a K) (Deriv a L)"
+      by (auto elim: bisimilar.cases)
+    then have "w \<in> Deriv a K \<longleftrightarrow> w \<in> Deriv a L" by (rule Cons(1))
+    thus ?case by (auto simp: Deriv_def)
+  qed
+qed
+
+lemma language_coinduct:
+fixes R (infixl "\<sim>" 50)
+assumes "K \<sim> L"
+assumes "\<And>K L. K \<sim> L \<Longrightarrow> ([] \<in> K \<longleftrightarrow> [] \<in> L)"
+assumes "\<And>K L x. K \<sim> L \<Longrightarrow> Deriv x K \<sim> Deriv x L"
+shows "K = L"
+apply (rule equal_if_bisimilar)
+apply (rule bisimilar.coinduct[of R, OF `K \<sim> L`])
+apply (auto simp: assms)
+done
 
 type_synonym rexp_pair = "nat rexp * nat rexp"
 type_synonym rexp_pairs = "rexp_pair list"
@@ -155,7 +185,7 @@ proof -
       by (auto simp: is_bisimulation_def)
     thus "[] \<in> K \<longleftrightarrow> [] \<in> L" by (auto simp: lang_final KL)
     fix a
-    show "?R (deriv a K) (deriv a L)"
+    show "?R (Deriv a K) (Deriv a L)"
     proof cases
       assume "a \<in> set as"
       with rs bisim'
@@ -168,8 +198,8 @@ proof -
       have "a \<notin> atoms r" "a \<notin> atoms s" by (auto simp: is_bisimulation_def)
       then have "ederiv a r = Zero" "ederiv a s = Zero"
         by (auto intro: deriv_no_occurrence)
-      then have "deriv a K = lang Zero" 
-        "deriv a L = lang Zero" 
+      then have "Deriv a K = lang Zero" 
+        "Deriv a L = lang Zero" 
         unfolding KL lang_ederiv[symmetric] by auto
       thus ?thesis by (auto simp: ps'_def)
     qed
