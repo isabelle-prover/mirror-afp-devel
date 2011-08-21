@@ -1539,7 +1539,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
       also have "0 \<le> (2::real)^n" 
         by simp
       ultimately have "0 \<le> real i/(2::real)^n" 
-        by (simp add: real_0_le_divide_iff)
+        by (simp add: zero_le_divide_iff)
     } hence "nonnegative (\<lambda>i::nat. real i/(2::real)^n)" 
       by (simp add: nonnegative_def)
    (*   This is a little stronger than it has to be, btw.. x i must only be nn for i in S *)
@@ -1729,7 +1729,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
             also have "\<dots> = real i / (2::real)^n + real (1::nat) / (2 * (2::real)^n)"
               by (simp add: add_divide_distrib)
             finally show ?thesis using un
-              by (simp add: real_0_le_divide_iff)
+              by (simp add: zero_le_divide_iff)
           qed
           note this lef fless
         }
@@ -1766,7 +1766,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           { fix m
             { fix i assume "i \<in> {..<(m*2^m)}-{0}"
               hence  "0 \<le> real i / (2::real)^m * \<chi> (A m i) t"
-                by (simp add: characteristic_function_def real_0_le_divide_iff)
+                by (simp add: characteristic_function_def zero_le_divide_iff)
             } hence "\<forall>i\<in>{..<(m*2^m)}-{0}. 0 \<le> real i / (2::real)^m * \<chi> (A m i) t"
               by fast
             hence "0 \<le> u m t"  by (simp add: u_def setsum_nonneg)
