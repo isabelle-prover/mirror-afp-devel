@@ -46,7 +46,7 @@ proof-
   have 11: "set_dom (F\<^sub>\<a> g) = F\<^sub>\<o> A"
     by (simp add: preserves_dom_def BB_Set Set_def) auto
   from F_preserves_comp and 7 and 8 and 9
-  have "F\<^sub>\<a> (f \<bullet> g) = (F\<^sub>\<a> f) \<bullet>\<^sub>2 (F\<^sub>\<a> g)"
+  have "F\<^sub>\<a> (f \<bullet> g) = (F\<^sub>\<a> f) \<bullet>\<^bsub>BB\<^esub> (F\<^sub>\<a> g)"
     by (simp add: preserves_comp_def)
   hence "set_func (F\<^sub>\<a> (f \<bullet> g))  = set_func ((F\<^sub>\<a> f) \<odot> (F\<^sub>\<a> g))"
     by (simp add: BB_Set Set_def)
@@ -75,7 +75,7 @@ proof (rule funcsetI)
       proof (rule funcsetI, simp)
         fix f
         assume f: "f \<in> Hom A B"
-        with A B have "F\<^sub>\<a> f \<in> Hom\<^sub>2 (F\<^sub>\<o> A) (F\<^sub>\<o> B)"
+        with A B have "F\<^sub>\<a> f \<in> Hom\<^bsub>BB\<^esub> (F\<^sub>\<o> A) (F\<^sub>\<o> B)"
           by (rule functors_preserve_homsets)
         hence "F\<^sub>\<a> f \<in> ar Set" 
           and "set_dom (F\<^sub>\<a> f) = (F\<^sub>\<o> A)"
@@ -121,7 +121,7 @@ proof-
   finally have set_dom_eq: 
     "set_dom ((F \<^sub>\<a> f) \<odot> (\<sigma>(A,a) B)) 
     = set_dom ((\<sigma>(A,a) C) \<odot> (Hom(A,_) \<^sub>\<a> f))" .
-  from BOb COb fBC have "(F\<^sub>\<a> f) \<in> Hom\<^sub>2 (F\<^sub>\<o> B) (F\<^sub>\<o> C)" 
+  from BOb COb fBC have "(F\<^sub>\<a> f) \<in> Hom\<^bsub>BB\<^esub> (F\<^sub>\<o> B) (F\<^sub>\<o> C)" 
     by (rule functors_preserve_homsets)
   hence "set_cod ((F \<^sub>\<a> f) \<odot> (\<sigma>(A,a) B)) = F\<^sub>\<o> C"
     by (simp add: set_comp_def BB_Set Set_def set_cat_def hom_def)
@@ -205,7 +205,7 @@ proof-
   have 4: "F\<^sub>\<a> (Id A) = id Set (F\<^sub>\<o> A)"
     by (simp add: preserves_id_def BB_Set)
   from F_preserves_objects and 1 
-  have "F\<^sub>\<o> A \<in> Ob\<^sub>2" 
+  have "F\<^sub>\<o> A \<in> Ob\<^bsub>BB\<^esub>" 
     by (rule funcset_mem)
   hence "F\<^sub>\<o> A \<subseteq> U"
     by (simp add: BB_Set Set_def set_cat_def)
@@ -249,7 +249,7 @@ proof (rule extensionalityI)
       rule restrict_extensional, rule restrict_extensional,
       simp add: set_comp_def compose_def applicable)
   from 2
-  have "(\<forall>X\<in>Ob. \<forall>Y\<in>Ob. \<forall>f\<in>Hom X Y. (F\<^sub>\<a> f) \<bullet>\<^sub>2 (u X) = (u Y) \<bullet>\<^sub>2 (Hom(A,_)\<^sub>\<a> f))"
+  have "(\<forall>X\<in>Ob. \<forall>Y\<in>Ob. \<forall>f\<in>Hom X Y. (F\<^sub>\<a> f) \<bullet>\<^bsub>BB\<^esub> (u X) = (u Y) \<bullet>\<^bsub>BB\<^esub> (Hom(A,_)\<^sub>\<a> f))"
     by (simp add: natural_transformation_def natural_transformation_axioms_def BB_Set)
   with 1 and 3 
   have three: "(\<lambda>f\<in>Hom A B. (set_func ((F\<^sub>\<a> f) \<odot> (u A)) (Id A))) 

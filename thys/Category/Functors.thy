@@ -33,19 +33,19 @@ locale two_cats = AA: category AA + BB: category BB
   and  preserves_cod  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
   and  preserves_id  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
   and  preserves_comp  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
-  defines "preserves_dom G \<equiv> 
-  \<forall>f\<in>Ar\<^sub>1. G\<^sub>\<o> (Dom\<^sub>1 f) = Dom\<^sub>2 (G\<^sub>\<a> f)"
-  and "preserves_cod G \<equiv> 
-  \<forall>f\<in>Ar\<^sub>1. G\<^sub>\<o> (Cod\<^sub>1 f) = Cod\<^sub>2 (G\<^sub>\<a> f)"
-  and "preserves_id G \<equiv> 
-  \<forall>A\<in>Ob\<^sub>1. G\<^sub>\<a> (Id\<^sub>1 A) = Id\<^sub>2 (G\<^sub>\<o> A)"
-  and "preserves_comp G \<equiv> 
-  \<forall>f\<in>Ar\<^sub>1. \<forall>g\<in>Ar\<^sub>1. Cod\<^sub>1 f = Dom\<^sub>1 g \<longrightarrow> G\<^sub>\<a> (g \<bullet>\<^sub>1 f) = (G\<^sub>\<a> g) \<bullet>\<^sub>2 (G\<^sub>\<a> f)"
+  defines "preserves_dom G \<equiv>
+  \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^sub>\<o> (Dom\<^bsub>AA\<^esub> f) = Dom\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
+  and "preserves_cod G \<equiv>
+  \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^sub>\<o> (Cod\<^bsub>AA\<^esub> f) = Cod\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
+  and "preserves_id G \<equiv>
+  \<forall>A\<in>Ob\<^bsub>AA\<^esub>. G\<^sub>\<a> (Id\<^bsub>AA\<^esub> A) = Id\<^bsub>BB\<^esub> (G\<^sub>\<o> A)"
+  and "preserves_comp G \<equiv>
+  \<forall>f\<in>Ar\<^bsub>AA\<^esub>. \<forall>g\<in>Ar\<^bsub>AA\<^esub>. Cod\<^bsub>AA\<^esub> f = Dom\<^bsub>AA\<^esub> g \<longrightarrow> G\<^sub>\<a> (g \<bullet>\<^bsub>AA\<^esub> f) = (G\<^sub>\<a> g) \<bullet>\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
 
 locale functor = two_cats +
   fixes F (structure)
-  assumes F_preserves_arrows: "F\<^sub>\<a> : Ar\<^sub>1 \<rightarrow> Ar\<^sub>2"
-  and F_preserves_objects: "F\<^sub>\<o> : Ob\<^sub>1 \<rightarrow> Ob\<^sub>2"
+  assumes F_preserves_arrows: "F\<^sub>\<a> : Ar\<^bsub>AA\<^esub> \<rightarrow> Ar\<^bsub>BB\<^esub>"
+  and F_preserves_objects: "F\<^sub>\<o> : Ob\<^bsub>AA\<^esub> \<rightarrow> Ob\<^bsub>BB\<^esub>"
   and F_preserves_dom: "preserves_dom F"
   and F_preserves_cod: "preserves_cod F"
   and F_preserves_id: "preserves_id F"
@@ -87,29 +87,29 @@ qed
 
 
 lemma (in functor) functors_preserve_homsets:
-  assumes 1: "A \<in> Ob\<^sub>1"
-  and 2: "B \<in> Ob\<^sub>1"
-  and 3: "f \<in> Hom\<^sub>1 A B"
-  shows "F\<^sub>\<a> f \<in> Hom\<^sub>2 (F\<^sub>\<o> A) (F\<^sub>\<o> B)"
+  assumes 1: "A \<in> Ob\<^bsub>AA\<^esub>"
+  and 2: "B \<in> Ob\<^bsub>AA\<^esub>"
+  and 3: "f \<in> Hom\<^bsub>AA\<^esub> A B"
+  shows "F\<^sub>\<a> f \<in> Hom\<^bsub>BB\<^esub> (F\<^sub>\<o> A) (F\<^sub>\<o> B)"
 proof-
   from 3 
   have 4: "f \<in> Ar" 
     by (simp add: hom_def)
   with F_preserves_arrows 
-  have 5: "F\<^sub>\<a> f \<in> Ar\<^sub>2" 
+  have 5: "F\<^sub>\<a> f \<in> Ar\<^bsub>BB\<^esub>" 
     by (rule funcset_mem)
   from 4 and F_preserves_dom 
-  have "Dom\<^sub>2 (F\<^sub>\<a> f) = F\<^sub>\<o> (Dom\<^sub>1 f)"
+  have "Dom\<^bsub>BB\<^esub> (F\<^sub>\<a> f) = F\<^sub>\<o> (Dom\<^bsub>AA\<^esub> f)"
     by (simp add: preserves_dom_def)
   also from 3 have "\<dots> = F\<^sub>\<o> A"
     by (simp add: hom_def)
-  finally have 6: "Dom\<^sub>2 (F\<^sub>\<a> f) = F\<^sub>\<o> A" .
+  finally have 6: "Dom\<^bsub>BB\<^esub> (F\<^sub>\<a> f) = F\<^sub>\<o> A" .
   from 4 and F_preserves_cod 
-  have "Cod\<^sub>2 (F\<^sub>\<a> f) = F\<^sub>\<o> (Cod\<^sub>1 f)"
+  have "Cod\<^bsub>BB\<^esub> (F\<^sub>\<a> f) = F\<^sub>\<o> (Cod\<^bsub>AA\<^esub> f)"
     by (simp add: preserves_cod_def)
   also from 3 have "\<dots> = F\<^sub>\<o> B"
     by (simp add: hom_def)
-  finally have 7: "Cod\<^sub>2 (F\<^sub>\<a> f) = F\<^sub>\<o> B" .
+  finally have 7: "Cod\<^bsub>BB\<^esub> (F\<^sub>\<a> f) = F\<^sub>\<o> B" .
   from 5 and 6 and 7
   show ?thesis
     by (simp add: hom_def)

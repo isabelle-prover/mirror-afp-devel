@@ -18,8 +18,8 @@ locale natural_transformation = two_cats +
   and "Functor G : AA \<longrightarrow> BB"
   and "u : ob AA \<rightarrow> ar BB"
   and "u \<in> extensional (ob AA)"
-  and "\<forall>A\<in>Ob. u A \<in> Hom\<^sub>2 (F\<^sub>\<o> A) (G\<^sub>\<o> A)" 
-  and "\<forall>A\<in>Ob. \<forall>B\<in>Ob. \<forall>f\<in>Hom A B. (G\<^sub>\<a> f) \<bullet>\<^sub>2 (u A) = (u B) \<bullet>\<^sub>2 (F\<^sub>\<a> f)"
+  and "\<forall>A\<in>Ob. u A \<in> Hom\<^bsub>BB\<^esub> (F\<^sub>\<o> A) (G\<^sub>\<o> A)" 
+  and "\<forall>A\<in>Ob. \<forall>B\<in>Ob. \<forall>f\<in>Hom A B. (G\<^sub>\<a> f) \<bullet>\<^bsub>BB\<^esub> (u A) = (u B) \<bullet>\<^bsub>BB\<^esub> (F\<^sub>\<a> f)"
 
 abbreviation
   nt_syn  ("_ : _ \<Rightarrow> _ in Func '(_ , _ ')" [81]) where

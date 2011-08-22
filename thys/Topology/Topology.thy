@@ -95,8 +95,8 @@ lemma (in carrier) subM:
 
 lemma (in carrier) topeqI [intro!]:
   fixes S (structure)
-  shows "\<lbrakk> \<And>m. m open\<^sub>1 \<Longrightarrow> m open\<^sub>2;
-           \<And>m. m open\<^sub>2 \<Longrightarrow> m open\<^sub>1 \<rbrakk>
+  shows "\<lbrakk> \<And>m. m open\<^bsub>T\<^esub> \<Longrightarrow> m open\<^bsub>S\<^esub>;
+           \<And>m. m open\<^bsub>S\<^esub> \<Longrightarrow> m open\<^bsub>T\<^esub> \<rbrakk>
          \<Longrightarrow> T = S"
 by (auto simp: is_open_def)
 
@@ -204,7 +204,7 @@ qed
 lemma topo_open_imp:
   fixes A and S (structure) defines "S \<equiv> topo A"
   fixes B and T (structure) defines "T \<equiv> topo B"
-  shows "\<lbrakk> A \<subseteq> B; x open\<^sub>1 \<rbrakk> \<Longrightarrow> x open\<^sub>2" (is "PROP ?P")
+  shows "\<lbrakk> A \<subseteq> B; x open\<^bsub>S\<^esub> \<rbrakk> \<Longrightarrow> x open\<^bsub>T\<^esub>" (is "PROP ?P")
 proof -
   interpret A_S: topobase A S by fact
   interpret topobase B T by fact
@@ -226,35 +226,35 @@ text{* Topological subspace *}
 
 
 locale subtopology = carrier S + carrier T for S (structure) and T (structure) +
-  assumes subtop[iff]: "s open = (\<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier)"
+  assumes subtop[iff]: "s open = (\<exists>t. t open\<^bsub>T\<^esub> \<and> s = t \<inter> carrier)"
 
 lemma subtopologyI:
   fixes S (structure)
   fixes T (structure)
-  assumes H1: "\<And>s. s open \<Longrightarrow> \<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier"
-  and     H2: "\<And>t. t open\<^sub>2 \<Longrightarrow> t \<inter> carrier open"
+  assumes H1: "\<And>s. s open \<Longrightarrow> \<exists>t. t open\<^bsub>T\<^esub> \<and> s = t \<inter> carrier"
+  and     H2: "\<And>t. t open\<^bsub>T\<^esub> \<Longrightarrow> t \<inter> carrier open"
   shows "subtopology S T"
 by (auto simp: subtopology_def intro: assms)
 
 lemma (in subtopology) subtopologyE [elim]:
   assumes major: "s open"
-  and     minor: "\<And>t. \<lbrakk> t open\<^sub>2; s = t \<inter> carrier \<rbrakk> \<Longrightarrow> R"
+  and     minor: "\<And>t. \<lbrakk> t open\<^bsub>T\<^esub>; s = t \<inter> carrier \<rbrakk> \<Longrightarrow> R"
   shows "R"
   using assms by auto
   
 lemma (in subtopology) subtopI [intro]:
-  "t open\<^sub>2 \<Longrightarrow> t \<inter> carrier open"
+  "t open\<^bsub>T\<^esub> \<Longrightarrow> t \<inter> carrier open"
   by auto
 
 lemma (in subtopology) carrier_subset:
-  "carrier\<^sub>1 \<subseteq> carrier\<^sub>2"
+  "carrier\<^bsub>S\<^esub> \<subseteq> carrier\<^bsub>T\<^esub>"
   by auto
 
 lemma (in subtopology) subtop_sub:
   assumes "topology T"
-  assumes carrSopen: "carrier\<^sub>1 open\<^sub>2"
-  and s_open: "s open\<^sub>1"
-  shows "s open\<^sub>2"
+  assumes carrSopen: "carrier\<^bsub>S\<^esub> open\<^bsub>T\<^esub>"
+  and s_open: "s open\<^bsub>S\<^esub>"
+  shows "s open\<^bsub>T\<^esub>"
 proof -
   interpret topology T by fact
   show ?thesis using assms by auto
@@ -270,8 +270,8 @@ proof -
     thus "u \<inter> v open"  by (auto simp add: Int_ac)
   next
     fix M assume msub: "\<forall>m\<in>M. m open"
-    let ?N = "{x. x open\<^sub>2 \<and> x \<inter> carrier \<in> M}"
-    have "\<Union>?N open\<^sub>2" by auto
+    let ?N = "{x. x open\<^bsub>T\<^esub> \<and> x \<inter> carrier \<in> M}"
+    have "\<Union>?N open\<^bsub>T\<^esub>" by auto
     hence "\<Union>?N \<inter> carrier open" ..
     moreover have "\<Union>?N  \<inter> carrier = \<Union>M"
     proof
@@ -282,7 +282,7 @@ proof -
           by auto
         from msub sinM have s_open: "s open" ..
         then obtain t
-          where t_open: "t open\<^sub>2" and s_inter: "s = t \<inter> carrier" by auto
+          where t_open: "t open\<^bsub>T\<^esub>" and s_inter: "s = t \<inter> carrier" by auto
         with xins have xint: "x\<in>t" and xpoint: "x \<in> carrier" by auto
         moreover
         from t_open s_inter sinM have "t \<in> ?N" by auto
@@ -303,20 +303,20 @@ proof -
   interpret A_S: topobase A S by fact
   interpret topobase B T by fact
   show ?thesis proof (rule subtopologyI)
-    fix s assume "s open\<^sub>1"
-    thus "\<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier"
+    fix s assume "s open\<^bsub>S\<^esub>"
+    thus "\<exists>t. t open\<^bsub>T\<^esub> \<and> s = t \<inter> carrier"
     proof induct
       case (basic s) with Asub
       obtain t where tB: "t \<in> B" and stA: "s = t \<inter> \<Union>A" by blast
       thus ?case by (auto simp: A_S.carrier_topo)
     next case (inter s t) thus ?case by auto
     next case (union M)
-      let ?N = "\<Union>{u. u open\<^sub>2 \<and> (\<exists>m\<in>M. m = u \<inter> carrier)}"
-      have "?N open\<^sub>2" and "\<Union>M = ?N \<inter> carrier" using union by auto
+      let ?N = "\<Union>{u. u open\<^bsub>T\<^esub> \<and> (\<exists>m\<in>M. m = u \<inter> carrier)}"
+      have "?N open\<^bsub>T\<^esub>" and "\<Union>M = ?N \<inter> carrier" using union by auto
       thus ?case by auto
     qed
   next
-    fix t assume "t open\<^sub>2"
+    fix t assume "t open\<^bsub>T\<^esub>"
     thus "t \<inter> carrier open"
     proof induct
       case (basic u) with Asub show ?case
@@ -1060,7 +1060,7 @@ lemma funcset_vimage_diff:
 
 locale func = S: carrier S + T: carrier T
   for f and S (structure) and T (structure) and fimage +
-  assumes func [iff]: "f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2"
+  assumes func [iff]: "f : carrier\<^bsub>S\<^esub> \<rightarrow> carrier\<^bsub>T\<^esub>"
   defines "fimage \<equiv> fimg T f"
   notes func_mem [simp, intro] = funcset_mem [OF func]
   and   domain_subset_vimage [iff] = domain_subset_vimage [OF func]
@@ -1068,11 +1068,11 @@ locale func = S: carrier S + T: carrier T
   and   vimage_diff          [simp] = funcset_vimage_diff [OF func]
 
 lemma (in func) fimageI [intro!]:
-  shows "\<lbrakk> v \<subseteq> carrier\<^sub>2; u \<in> F; f`u \<subseteq> v\<rbrakk> \<Longrightarrow> v \<in> fimage F"
+  shows "\<lbrakk> v \<subseteq> carrier\<^bsub>T\<^esub>; u \<in> F; f`u \<subseteq> v\<rbrakk> \<Longrightarrow> v \<in> fimage F"
   by (auto simp: fimg_def fimage_def)
 
 lemma (in func) fimageE [elim!]:
-  "\<lbrakk> v \<in> fimage F; \<And>u. \<lbrakk> v \<subseteq> carrier\<^sub>2 ; u\<in>F; f`u \<subseteq> v\<rbrakk> \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
+  "\<lbrakk> v \<in> fimage F; \<And>u. \<lbrakk> v \<subseteq> carrier\<^bsub>T\<^esub> ; u\<in>F; f`u \<subseteq> v\<rbrakk> \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
   by (auto simp: fimage_def fimg_def)
 
 lemma cntI:
@@ -1110,13 +1110,13 @@ lemma cntD2:
 
 locale continuous = func +
   assumes continuous [dest, simp]:
-  "m open\<^sub>2 \<Longrightarrow> carrier \<inter> (f -` m) open"
+  "m open\<^bsub>T\<^esub> \<Longrightarrow> carrier \<inter> (f -` m) open"
 
 lemma continuousI:
   fixes S (structure)
   fixes T (structure)
-  assumes  "f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2"
-           "\<And>m. m open\<^sub>2 \<Longrightarrow> carrier \<inter> (f -` m) open"
+  assumes  "f : carrier\<^bsub>S\<^esub> \<rightarrow> carrier\<^bsub>T\<^esub>"
+           "\<And>m. m open\<^bsub>T\<^esub> \<Longrightarrow> carrier \<inter> (f -` m) open"
   shows "continuous f S T"
 using assms by (auto simp: continuous_def func_def continuous_axioms_def)
 
@@ -1125,8 +1125,8 @@ lemma continuousE:
   fixes T (structure)
   shows
   "\<lbrakk> continuous f S T;
-     \<lbrakk> f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2;
-      \<forall>m. m open\<^sub>2 \<longrightarrow> carrier\<^sub>1 \<inter> (f -` m) open \<rbrakk> \<Longrightarrow> P
+     \<lbrakk> f : carrier\<^bsub>S\<^esub> \<rightarrow> carrier\<^bsub>T\<^esub>;
+      \<forall>m. m open\<^bsub>T\<^esub> \<longrightarrow> carrier\<^bsub>S\<^esub> \<inter> (f -` m) open \<rbrakk> \<Longrightarrow> P
    \<rbrakk> \<Longrightarrow> P"
   by (auto simp: continuous_def func_def continuous_axioms_def)
 
@@ -1135,18 +1135,18 @@ lemma continuousCE:
   fixes T (structure)
   shows
   "\<lbrakk> continuous f S T;
-     \<lbrakk> \<not> m open\<^sub>2; f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2 \<rbrakk> \<Longrightarrow> P;
-     \<lbrakk> carrier\<^sub>1 \<inter> (f -` m) open\<^sub>1; f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2 \<rbrakk>  \<Longrightarrow> P
+     \<lbrakk> \<not> m open\<^bsub>T\<^esub>; f : carrier\<^bsub>S\<^esub> \<rightarrow> carrier\<^bsub>T\<^esub> \<rbrakk> \<Longrightarrow> P;
+     \<lbrakk> carrier\<^bsub>S\<^esub> \<inter> (f -` m) open\<^bsub>S\<^esub>; f : carrier\<^bsub>S\<^esub> \<rightarrow> carrier\<^bsub>T\<^esub> \<rbrakk>  \<Longrightarrow> P
    \<rbrakk> \<Longrightarrow> P"
   by (auto simp: continuous_def func_def continuous_axioms_def)
 
 lemma (in continuous) closed_vimage [intro, simp]:
-  assumes csubset: "c \<subseteq> carrier\<^sub>2 "
-  and cclosed: "c closed\<^sub>2"
+  assumes csubset: "c \<subseteq> carrier\<^bsub>T\<^esub>"
+  and cclosed: "c closed\<^bsub>T\<^esub>"
   shows "f -` c closed"
 proof-
-  from cclosed have  "carrier\<^sub>2 - c open\<^sub>2"  by (rule closedE)
-  hence "carrier \<inter> f -` (carrier\<^sub>2 - c) open" by auto
+  from cclosed have  "carrier\<^bsub>T\<^esub> - c open\<^bsub>T\<^esub>"  by (rule closedE)
+  hence "carrier \<inter> f -` (carrier\<^bsub>T\<^esub> - c) open" by auto
   hence "carrier - f -` c open" by (auto simp: diffsimps)
   thus "f -` c closed" by (rule S.closedI)
 qed
@@ -1154,8 +1154,8 @@ qed
 lemma continuousI2:
   fixes S (structure)
   fixes T (structure)
-  assumes func: "f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2"
-  assumes R: "\<And>c. \<lbrakk> c \<subseteq> carrier\<^sub>2; c closed\<^sub>2 \<rbrakk> \<Longrightarrow> f -` c closed"
+  assumes func: "f : carrier\<^bsub>S\<^esub> \<rightarrow> carrier\<^bsub>T\<^esub>"
+  assumes R: "\<And>c. \<lbrakk> c \<subseteq> carrier\<^bsub>T\<^esub>; c closed\<^bsub>T\<^esub> \<rbrakk> \<Longrightarrow> f -` c closed"
   shows "continuous f S T"
 proof (rule continuous.intro)
   from func show "func f S T" by (auto simp: func_def)
@@ -1164,8 +1164,8 @@ next
   interpret T: carrier T .
   show "continuous_axioms f S T"
   proof (rule continuous_axioms.intro)
-    fix m let ?c = "carrier\<^sub>2 - m" assume "m open\<^sub>2"
-    hence csubset: "?c \<subseteq> carrier\<^sub>2" and cclosed: "?c closed\<^sub>2"
+    fix m let ?c = "carrier\<^bsub>T\<^esub> - m" assume "m open\<^bsub>T\<^esub>"
+    hence csubset: "?c \<subseteq> carrier\<^bsub>T\<^esub>" and cclosed: "?c closed\<^bsub>T\<^esub>"
       by auto
     hence "f -` ?c closed" by (rule R)
     hence  "carrier - f -` ?c open"
@@ -1338,17 +1338,17 @@ lemma fimage_filter:
   fixes f and S (structure) and T (structure) and fimage
   assumes "func f S T" defines "fimage \<equiv> fimg T f"
   fixes F assumes "filter F S"
-  shows "fimage F \<in> Filters\<^sub>2"
+  shows "fimage F \<in> Filters\<^bsub>T\<^esub>"
 proof -
   interpret func f S T fimage by fact fact
   interpret filter F S by fact
   show ?thesis proof
     fix A B assume "A \<in> fimage F" "B \<in> fimage F"
     then obtain a b where
-      AY: "A\<subseteq>carrier\<^sub>2" and aF: "a\<in>F" and fa: "f ` a \<subseteq> A" and
-      BY: "B\<subseteq>carrier\<^sub>2" and bF: "b\<in>F" and fb: "f ` b \<subseteq> B"
+      AY: "A\<subseteq>carrier\<^bsub>T\<^esub>" and aF: "a\<in>F" and fa: "f ` a \<subseteq> A" and
+      BY: "B\<subseteq>carrier\<^bsub>T\<^esub>" and bF: "b\<in>F" and fb: "f ` b \<subseteq> B"
       by (auto)
-    from AY BY have "A\<inter>B \<subseteq> carrier\<^sub>2" by auto
+    from AY BY have "A\<inter>B \<subseteq> carrier\<^bsub>T\<^esub>" by auto
     moreover from aF bF have "a \<inter> b \<in> F" by auto
     moreover from aF bF fa fb have "f`(a \<inter> b) \<subseteq> A \<inter> B" by auto
     ultimately show "A\<inter>B \<in> fimage F" by auto
@@ -1570,12 +1570,12 @@ lemma (in carrier) convergentE [elim]:
 
 lemma (in continuous) fimage_converges:
   assumes   xpoint: "x \<in> carrier"
-  and       conv:   "F -\<longrightarrow>\<^sub>1 x"
-  shows    "fimage F -\<longrightarrow>\<^sub>2 (f x)"
+  and       conv:   "F -\<longrightarrow>\<^bsub>S\<^esub> x"
+  shows    "fimage F -\<longrightarrow>\<^bsub>T\<^esub> (f x)"
 proof (rule, rule)
-  fix v assume vnhd: "v \<in> nhds\<^sub>2 (f x)"
-  then obtain m where v_subset_carrier: "v \<subseteq> carrier\<^sub>2"
-    and m_open: "m open\<^sub>2"
+  fix v assume vnhd: "v \<in> nhds\<^bsub>T\<^esub> (f x)"
+  then obtain m where v_subset_carrier: "v \<subseteq> carrier\<^bsub>T\<^esub>"
+    and m_open: "m open\<^bsub>T\<^esub>"
     and m_subset_v: "m \<subseteq> v"
     and fx_in_m: "f x \<in> m" ..
   let ?m' = "carrier \<inter> f-`m"
@@ -1587,7 +1587,7 @@ proof (rule, rule)
 qed
 
 corollary (in continuous) fimage_convergent [intro!]:
-  "F convergent\<^sub>1 \<Longrightarrow> fimage F convergent\<^sub>2"
+  "F convergent\<^bsub>S\<^esub> \<Longrightarrow> fimage F convergent\<^bsub>T\<^esub>"
   by (blast intro: convergentI fimage_converges)
 
 lemma (in topology) closure_convergent_filter:
@@ -1956,7 +1956,7 @@ lemma image_lim_subset_lim_fimage:
   fixes f and S (structure) and T (structure) and fimage
   defines "fimage \<equiv> fimg T f"
   assumes "continuous f S T"
-  shows "F \<in> Filters\<^sub>1 \<Longrightarrow> f`(lims F) \<subseteq> lims\<^sub>2 (fimage F)"
+  shows "F \<in> Filters\<^bsub>S\<^esub> \<Longrightarrow> f`(lims F) \<subseteq> lims\<^bsub>T\<^esub> (fimage F)"
 proof -
   interpret continuous f S T fimage by fact fact
   show ?thesis by (auto simp: limites_def intro: fimage_converges)
