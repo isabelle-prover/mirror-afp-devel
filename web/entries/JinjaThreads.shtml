@@ -75,6 +75,13 @@ executable scheduler for source code semantics
 simplified code generator setup
 new random scheduler
 (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/3059dafd013f">3059dafd013f</a>)
+[2011-07-21]:
+new interruption model,
+generalized JMM proof of DRF guarantee,
+allow class Object to declare methods and fields,
+simplified subtyping relation,
+corrected division and modulo implementation
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/46e4181ed142">46e4181ed142</a>)
         </td></tr>
 
     <tr><td class="datahead">License:</td>
@@ -82,7 +89,7 @@ new random scheduler
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Jinja.shtml">Jinja</a>, <a href="Collections.shtml">Collections</a></td></tr>
+        <td class="data"><a href="Collections.shtml">Collections</a>, <a href="Coinductive.shtml">Coinductive</a>, <a href="FinFun.shtml">FinFun</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
