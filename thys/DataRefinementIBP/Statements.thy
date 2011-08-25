@@ -87,11 +87,11 @@ theorem demonic_bottom:
 
 theorem demonic_bottom_top [simp]:
   "demonic \<bottom>  = \<top>"
-  by (simp add: fun_eq_iff inf_fun_def sup_fun_def demonic_def simp_set_function inf_bool_def top_fun_def bot_fun_def)
+  by (simp add: fun_eq_iff inf_fun_def sup_fun_def demonic_def top_fun_def bot_fun_def)
 
 theorem demonic_sup_inf:
   "demonic (Q \<squnion> Q') = demonic Q \<sqinter> demonic Q'"
-  by (simp add: fun_eq_iff inf_fun_def sup_fun_def demonic_def simp_set_function inf_bool_def)
+  by (simp add: fun_eq_iff sup_fun_def inf_fun_def demonic_def Collect_def)
 
 
 
@@ -129,7 +129,7 @@ theorem angelic_bottom [simp]:
 
 theorem angelic_disjunctive:
   "angelic R ((p::'a::boolean_algebra) \<squnion> q) = angelic R p \<squnion> angelic R q"
-by (simp add: fun_eq_iff inf_fun_def sup_fun_def angelic_def simp_set_function inf_bool_def sup_bool_def inf_sup_distrib1)
+by (simp add: fun_eq_iff inf_fun_def sup_fun_def angelic_def inf_sup_distrib1 Collect_def)
 
 theorem angelic_udisjunctive1:
   "angelic R ((Sup P)::'a::complete_distrib_lattice) = (SUP p:P . (angelic R p))"

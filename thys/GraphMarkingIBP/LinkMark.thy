@@ -285,8 +285,9 @@ theorem LinkMark_DataRefinement [simp]:
   apply (rule_tac P = "StackMarkInv" in DgrDataRefinement_mono)
   apply (simp add: le_fun_def dangelic_def SetMarkInv_def angelic_def R1_def R2_def Init'_def Final'_def mem_def le_bool_def)
   apply auto
-  apply (unfold simp_set_function)
+  apply (unfold Collect_def)
   apply auto
+  apply (metis mem_def)
   apply (simp add: DgrDataRefinement_def dgr_demonic_def LinkMark_rel_def StackMark_rel_def demonic_sup_inf data_refinement_choice2)
   apply (rule data_refinement_choice2)
   apply auto

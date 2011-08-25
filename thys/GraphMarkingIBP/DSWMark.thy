@@ -199,9 +199,9 @@ subsection {* Diagram data refinement *}
 theorem ClassicMark_DataRefinement [simp]:
  "DgrDataRefinement (dangelic R' (dangelic R SetMarkInv)) LinkMark_rel R'' (dgr_demonic ClassicMark_rel)"
   apply (rule_tac P = "LinkMarkInv" in DgrDataRefinement_mono)
-  apply (simp add: le_fun_def dangelic_def SetMarkInv_def angelic_def R1'_def R2'_def Init''_def Loop''_def Final''_def mem_def le_bool_def)
+  apply (simp add: le_fun_def dangelic_def SetMarkInv_def angelic_def R1'_def R2'_def Init''_def Loop''_def Final''_def mem_def)
   apply auto
-  apply (unfold simp_set_function)
+  apply (unfold cong[OF Collect_def refl])
   apply auto
   apply (simp add: DgrDataRefinement_def dgr_demonic_def ClassicMark_rel_def LinkMark_rel_def demonic_sup_inf data_refinement_choice2)
   apply (rule data_refinement_choice2)
@@ -256,8 +256,8 @@ theorem [simp]:
   apply (simp add: ClassicInit_def angelic_def RR_def R1'_def R1_def Init_def Init''_def)
   apply (simp add: mem_def simp_eq_emptyset inf_fun_def inf_bool_def) 
   apply clarify
-  apply (simp add: simp_set_function)
-  apply (simp_all add: fun_eq_iff link0_def label0_def simp_set_function)
+  apply (simp add: cong[OF Collect_def refl])
+  apply (simp_all add: fun_eq_iff link0_def label0_def cong[OF Collect_def refl])
   done
 
 theorem [simp]:
@@ -269,9 +269,9 @@ theorem [simp]:
   apply (simp add: SetMarkInv_def)
   apply (simp add: ClassicFinal_def angelic_def RR_def R1'_def R1_def Final_def Final''_def Init''_def label0_def link0_def)
   apply (simp add: mem_def simp_eq_emptyset inf_fun_def inf_bool_def)
-  apply (simp_all add: simp_set_function link0_def)
+  apply (simp_all add: cong[OF Collect_def refl] link0_def)
   apply safe
-  apply (simp_all add: simp_set_function)
+  apply (simp_all add: cong[OF Collect_def refl])
   apply (simp_all add: link0_def)
   by auto
 
@@ -325,7 +325,7 @@ lemma [simp]:
   apply (rule_tac x = loop in exI)
   apply auto
   apply (simp add: QQ1_def QQ2_def sup_fun_def sup_bool_def)
-  by (simp add: mem_def simp_set_function exists_or)
+  by (simp add: mem_def cong[OF Collect_def refl] exists_or)
 
 lemma [simp]:
   "(- grd (step (dgr_demonic ClassicMark_rel))) loop = {}"
@@ -340,7 +340,7 @@ lemma [simp]:
   apply auto
   apply (simp add: bot_fun_def bot_bool_def)
   apply (simp add: QQ3_def QQ4_def QQ5_def QQ6_def QQ7_def QQ8_def sup_fun_def sup_bool_def)
-  apply (simp add: mem_def simp_set_function)
+  apply (simp add: mem_def cong[OF Collect_def refl])
   apply (case_tac "a \<noteq> nil")
   apply auto
   apply (rule_tac x = loop in exI)

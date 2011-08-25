@@ -20,7 +20,7 @@ theorem datarefinement1:
   "mono S \<Longrightarrow> ((angelic R) o (assert p) o (demonic Q) \<le> S) = (\<forall> s . \<Turnstile> {s' . R s' s \<and> p s} {| S |} (Q s))"
   apply (simp add: le_fun_def assert_def angelic_def demonic_def Hoare_def le_bool_def)
   apply safe
-  apply (simp_all add: simp_set_function)
+  apply (simp_all add: Collect_def)
   apply auto
   apply (drule_tac x = "Q s" in spec)
   apply (drule_tac x = "x" in spec)

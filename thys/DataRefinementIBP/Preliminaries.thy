@@ -6,14 +6,7 @@ begin
 
 subsection {*Simplification Lemmas*}
 
-
-theorem update_simp [simp]:
-  "f x = y \<Longrightarrow> f(x := y) = f"
-  by auto
-
-lemma simp_set_function:
-  "{s . p s} x = p x"
-  by (simp add: Collect_def)
+declare fun_upd_idem[simp]
 
 lemma simp_eq_emptyset:
   "(X = {}) = (\<forall> x. x \<notin> X)"
