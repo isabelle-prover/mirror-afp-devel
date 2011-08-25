@@ -165,11 +165,11 @@ begin
   instance proof
   fix x::bool fix Y
     show  "x \<sqinter> \<Squnion>Y = (SUP y:Y. x \<sqinter> y)"
-    by (simp_all add: inf_bool_def SUPR_def Sup_bool_def)
+    by auto
   next
   fix x::bool fix Y
     show  "x \<squnion> \<Sqinter> Y = (INF y:Y. x \<squnion> y)"
-    by (simp_all add: sup_bool_def INFI_def Inf_bool_def)
+    by (metis sup_Inf)
   qed
 end
 
