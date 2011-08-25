@@ -16,16 +16,6 @@ lemma mono_comp: "mono f \<Longrightarrow> mono g \<Longrightarrow> mono (f o g)
   by (unfold mono_def) auto
 
 
-subsection {*  Finite sets and cardinal properties  *}
-
-lemma marked_finite [simp]: "finite (-X) \<Longrightarrow> finite (-insert x X)"
-  apply (case_tac "(-insert x X) \<subseteq> -X")
-  by (rule finite_subset, auto)
-
-lemma card_insert [simp]: "(-insert x X) = (-X) - {x}"
-by auto
-
-
 subsection {*Complete Lattice Results*}
 
 abbreviation

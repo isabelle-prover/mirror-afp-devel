@@ -84,7 +84,7 @@ lemma (in graph) trascl_less: "x \<noteq> y \<Longrightarrow> (a, x) \<in> R\<^s
     b = x and a = a and r = R and 
     P = "\<lambda> x. (x \<noteq> y \<longrightarrow>((a,x) \<in> (R \<inter> (-{y})\<times>(-{y}))\<^sup>* \<or> (y,x) \<in> R O (R \<inter> (-{y})\<times>(-{y}))\<^sup>* ))"
     in rtrancl_induct)
-  apply auto
+  apply (auto simp: Compl_insert)
   apply (case_tac "ya = y")
   apply auto
   apply (rule_tac a = a and b = ya and c = z and r = "R \<inter> ((UNIV - {y}) \<times> (UNIV - {y}))" in rtrancl_trans)
@@ -138,7 +138,7 @@ lemma (in graph) init_set [simp]: "x \<in> reach root \<Longrightarrow> x \<note
   apply (simp add: reach_def path_def)
   apply (case_tac "root \<noteq> x")
   apply (drule_tac a = root and x = x and y = root and R = "next" in trascl_less)
-  apply simp_all
+  apply (simp_all add: Compl_insert)
   apply safe
   apply (drule_tac a = root and b = x and R = "(next \<inter> (UNIV - {root}) \<times> (UNIV - {root}))" in rtranclD)
   apply safe
@@ -262,7 +262,7 @@ lemma  (in graph) init_loop_2[simp]: "\<Turnstile> Init {| demonic Q2 |} Loop"
   apply (simp_all)
   apply (simp_all add: reach_def subset_eq)
   apply safe
-  apply simp_all
+  apply (simp_all add: Compl_insert)
   apply (rule rtrancl_into_rtrancl)
   apply (simp_all add: Int_def)
   apply (rule add_set2)
