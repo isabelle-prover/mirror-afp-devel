@@ -132,20 +132,20 @@ theorem angelic_disjunctive:
 by (simp add: fun_eq_iff inf_fun_def sup_fun_def angelic_def simp_set_function inf_bool_def sup_bool_def inf_sup_distrib1)
 
 theorem angelic_udisjunctive1:
-  "angelic R ((Sup P)::'a::distributive_complete_lattice) = (SUP p:P . (angelic R p))"
+  "angelic R ((Sup P)::'a::complete_distrib_lattice) = (SUP p:P . (angelic R p))"
   apply (simp add: angelic_def)
   apply (unfold SUPR_def)
-  apply (simp add: inf_sup_distributivity)
+  apply (simp add: inf_Sup)
   apply (unfold SUPR_def)
   apply auto
   apply (unfold Sup_bottom)
   by auto
 
 theorem angelic_udisjunctive:
-  "angelic R ((SUP P)::'a::distributive_complete_lattice) = SUP (\<lambda> w . angelic R (P w))"
+  "angelic R ((SUP P)::'a::complete_distrib_lattice) = SUP (\<lambda> w . angelic R (P w))"
   apply (simp add: angelic_def)
   apply (unfold SUPR_def)
-  apply (simp add: inf_sup_distributivity)
+  apply (simp add: inf_Sup)
   apply (unfold SUPR_def)
   apply auto
   apply (unfold Sup_bottom)

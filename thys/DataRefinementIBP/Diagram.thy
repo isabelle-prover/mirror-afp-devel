@@ -287,15 +287,15 @@ definition
   "dangelic R Q i = angelic (R i) (Q i)"
 
 theorem dangelic_udisjunctive:
-  "dangelic R ((SUP P)::('b\<Rightarrow>('a::distributive_complete_lattice))) = SUP (\<lambda> w . dangelic R (P w))"
+  "dangelic R ((SUP P)::('b\<Rightarrow>('a::complete_distrib_lattice))) = SUP (\<lambda> w . dangelic R (P w))"
   by (simp add: fun_eq_iff SUP_fun_eq dangelic_def angelic_udisjunctive)
 
 theorem dangelic_udisjunctive1:
-  "dangelic R ((Sup P)::('b\<Rightarrow>('a::distributive_complete_lattice))) = (SUP p:P . dangelic R p)"
+  "dangelic R ((Sup P)::('b\<Rightarrow>('a::complete_distrib_lattice))) = (SUP p:P . dangelic R p)"
   by (simp add: fun_eq_iff SUPR_def Sup_fun_def dangelic_def angelic_udisjunctive1 Sup_bool_def)
 
 theorem (in DiagramTermination) dangelic_udisjunctive2:
-  "SUP_L_P (\<lambda>w. (dangelic R) ((P w)::('b \<Rightarrow> ('u::distributive_complete_lattice))) )(pair u i) = dangelic R (SUP_L_P P (pair u i))"
+  "SUP_L_P (\<lambda>w. (dangelic R) ((P w)::('b \<Rightarrow> ('u::complete_distrib_lattice))) )(pair u i) = dangelic R (SUP_L_P P (pair u i))"
   apply (simp add: fun_eq_iff)
   apply (simp add: dangelic_def)
   apply (simp add: SUP_L_P_def)
@@ -308,10 +308,7 @@ lemma  grd_dgr:
   "((grd (step D) i)::('a::complete_boolean_algebra)) = \<Squnion> {P . \<exists> j . P = grd (D(i,j))}"
   apply (simp add: grd_def step_def)
   apply (simp add: neg_fun_pred)
-  apply (unfold step_def)
-  apply (unfold INF_def)
-  apply (unfold compl_Inf)
-  apply (unfold SUP_def)
+  apply (unfold step_def INF_def uminus_Inf)
   apply (simp_all add: bot_fun_def)
   apply (case_tac "(uminus ` range (\<lambda>j\<Colon>'b. D (i, j) \<bottom>)) = {P\<Colon>'a. \<exists>j\<Colon>'b. P = - D (i, j) \<bottom>}")
   by auto

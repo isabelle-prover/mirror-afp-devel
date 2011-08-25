@@ -24,9 +24,6 @@ lemma mono_comp[simp]:
   apply (unfold mono_def)
   by auto
 
-lemma univ_in[simp]: "(x \<in> UNIV) = True"
-  by auto
-
 lemma neg_fun_pred: "(- A) x = - (A x)"
   by (simp add: fun_Compl_def)
 
@@ -38,9 +35,6 @@ subsection {*  Finite sets and cardinal properties  *}
 lemma marked_finite [simp]: "finite (-X) \<Longrightarrow> finite (-insert x X)"
   apply (case_tac "(-insert x X) \<subseteq> -X")
   by (rule finite_subset, auto)
-
-lemma finite_insert [simp]: "finite X \<Longrightarrow> finite (insert x X)"
-  by auto
 
 lemma card_insert [simp]: "(-insert x X) = (-X) - {x}"
 by auto
@@ -104,150 +98,5 @@ theorem Sup_bottom:
 theorem Inf_top:
   "(Inf X = (\<top>::'a::complete_lattice)) = (\<forall> x \<in> X . x = \<top>)"
   by (fact Inf_top_conv)
-
-(* FIXME: this class is in the standard library now *)
-class distributive_complete_lattice = complete_lattice +
-  assumes inf_sup_distributivity: "(x \<sqinter> (Sup Y)) = (SUP y: Y . (x \<sqinter> y))"
-  and sup_inf_distributivity: "(x \<squnion> (Inf Y)) = (INF y: Y . (x \<squnion> y))"
-
-begin
-
-lemma inf_sup_right_distrib: "((Sup Y) \<sqinter> x) = (SUP y: Y . (y \<sqinter> x))"
-  apply (unfold inf_commute)
-  apply (unfold inf_sup_distributivity)
-  apply (unfold eq_iff)
-  apply safe
-  apply (unfold SUPR_def)
-  apply (rule Sup_least)
-  apply safe
-  apply (rule Sup_upper)
-  apply (unfold inf_commute)
-  apply auto
-  apply (rule Sup_least)
-  apply safe
-  apply (rule Sup_upper)
-  apply (unfold image_def)
-  apply (unfold inf_commute)
-  by auto
-
-lemma sup_inf_right_distrib: "((Inf Y) \<squnion> x) = (INF y: Y . (y \<squnion> x))"
-  apply (unfold sup_commute)
-  apply (unfold sup_inf_distributivity)
-  apply (unfold eq_iff)
-  apply safe
-  apply (unfold INFI_def)
-  apply (rule Inf_greatest)
-  apply safe
-  apply (rule Inf_lower)
-  apply (unfold image_def)
-  apply (unfold sup_commute)
-  by auto
-
-
-end
-
-instantiation "fun" :: (type, distributive_complete_lattice) distributive_complete_lattice
-begin
-  instance proof
-  fix x::"('a \<Rightarrow> 'b)" fix Y
-    show  "x \<sqinter> \<Squnion>Y = (SUP y:Y. x \<sqinter> y)"
-    by (simp add: fun_eq_iff inf_fun_def SUPR_def Sup_fun_def image_image inf_sup_distributivity)
-  next
-  fix x::"('a \<Rightarrow> 'b)" fix Y
-    show  "x \<squnion> \<Sqinter> Y = (INF y:Y. x \<squnion> y)"
-    by (simp add: fun_eq_iff sup_fun_def INFI_def Inf_fun_def image_image sup_inf_distributivity)
-  qed
-
-end
-
-instantiation "bool" :: distributive_complete_lattice
-begin
-  instance proof
-  fix x::bool fix Y
-    show  "x \<sqinter> \<Squnion>Y = (SUP y:Y. x \<sqinter> y)"
-    by auto
-  next
-  fix x::bool fix Y
-    show  "x \<squnion> \<Sqinter> Y = (INF y:Y. x \<squnion> y)"
-    by (metis sup_Inf)
-  qed
-end
-
-class complete_boolean_algebra = distributive_complete_lattice + boolean_algebra
-
-
-lemma compl_Sup:
-  "- (\<Squnion> X) = (INF (x::('a::complete_boolean_algebra)): X . -x)"
-  apply (rule compl_unique)
-  apply (unfold inf_sup_right_distrib)
-  apply (unfold SUPR_def)
-  apply (simp add: Sup_bottom)
-  apply (unfold eq_iff) [1]
-  apply simp
-  apply safe
-  apply (rule_tac y = "x \<sqinter> -x"  in order_trans)
-  apply (rule_tac inf_greatest)
-  apply auto
-  apply (rule_tac y = "INFI X uminus"  in order_trans)
-  apply auto
-  apply (simp add: INFI_def)
-  apply (rule Inf_lower)
-  apply auto
-  apply (unfold inf_compl_bot)
-  apply simp
-  apply (simp add: INFI_def)
-  apply (unfold sup_inf_distributivity)
-  apply (simp add: INFI_def)
-  apply (simp add: Inf_top)
-  apply (unfold eq_iff)
-  apply simp
-  apply safe
-  apply (rule_tac y = "x \<squnion> -x"  in order_trans)
-  apply (simp add: sup_compl_top)
-  apply (rule_tac sup_least)
-  apply auto
-  apply (rule_tac y = "\<Squnion> X"  in order_trans)
-  apply auto
-  apply (rule Sup_upper)
-  by assumption
-
-lemma compl_Inf:
-  "- (\<Sqinter> X) = (SUP (x::('a::complete_boolean_algebra)): X . -x)"
-  apply (rule compl_unique)
-  apply (simp add: SUPR_def)
-  apply (unfold inf_sup_distributivity)
-  apply (simp add: SUPR_def)
-  apply (simp add: Sup_bottom)
-  apply safe
-  apply (unfold eq_iff) [1]
-  apply simp
-  apply (rule_tac y = "x \<sqinter> -x"  in order_trans)
-  apply (rule_tac inf_greatest)
-  apply auto
-  apply (rule_tac y = " \<Sqinter>X"  in order_trans)
-  apply auto
-  apply (rule Inf_lower)
-  apply auto
-  apply (unfold inf_compl_bot)
-  apply simp
-  apply (unfold sup_inf_right_distrib)
-  apply (simp add: INFI_def)
-  apply (simp add: Inf_top)
-  apply safe
-  apply (unfold eq_iff)
-  apply simp
-  apply (rule_tac y = "x \<squnion> -x"  in order_trans)
-  apply (simp add: sup_compl_top)
-  apply (rule_tac sup_least)
-  apply auto
-  apply (rule_tac y = "SUPR X uminus"  in order_trans)
-  apply auto
-  apply (simp add: SUPR_def)
-  apply (rule Sup_upper)
-  by (simp add: image_def)
-
-instance "fun" :: (type, complete_boolean_algebra) complete_boolean_algebra ..
-
-instance "bool" :: complete_boolean_algebra ..
 
 end
