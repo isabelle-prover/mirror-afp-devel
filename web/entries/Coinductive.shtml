@@ -39,7 +39,7 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, and a library of operations on coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
+This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of K&ouml;nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
         </td></tr>
 
     <tr><td class="datahead" valign="top">Change history:</td>
@@ -60,7 +60,10 @@ Koenig's lemma as an example application for coinductive lists
 (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f81ce373fa96">f81ce373fa96</a>)<br>
 [2011-02-01]:
 lazy implementation of coinductive (terminated) lists for the code generator
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6034973dce83">6034973dce83</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6034973dce83">6034973dce83</a>)<br>
+[2011-07-20]:
+new codatatype resumption
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/811364c776c7">811364c776c7</a>)<br>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
