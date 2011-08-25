@@ -34,7 +34,7 @@ theorem datarefinement1:
 
 theorem datarefinement2:
   "mono S \<Longrightarrow> ((angelic R) o (assert p) o (demonic Q) \<le> (S o (angelic R'))) = DataRefinement p Q R R' S"
-  apply (simp_all add: datarefinement1)
+  apply (simp_all add: datarefinement1 mono_comp)
   by (simp_all add: DataRefinement_def Hoare_def subset_eq mem_def)
 
 text{*

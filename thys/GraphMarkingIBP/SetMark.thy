@@ -325,7 +325,7 @@ proof (rule_tac X = "SetMarkInvTerm" in hoare_diagram3)
     apply (simp_all add: SetMarkInv_def)
     done
   show "SUP SetMarkInvTerm \<sqinter> - grd (step SetMark) \<le> SetMarkInvFinal"
-    apply (auto simp add: SetMark_def SetMarkInvFinal_def neg_fun_pred simp del: bool_Compl_def)
+    apply (auto simp add: SetMark_def SetMarkInvFinal_def uminus_apply simp del: bool_Compl_def)
     apply (drule_tac x="I.loop" in spec)
     apply (simp add: Q1_def Q2_def)
     apply auto
@@ -343,7 +343,7 @@ theorem (in graph) SetMark_correct1 [simp]:
   apply simp
   apply safe
   apply (simp_all add: SetMark_def SUP_L_P_def
-       less_pair_def less_I_def not_grd_dgr hoare_choice SetMarkInv_def SetMarkInvFinal_def neg_fun_pred SetMark_def)
+       less_pair_def less_I_def not_grd_dgr hoare_choice SetMarkInv_def SetMarkInvFinal_def uminus_apply SetMark_def)
 
   apply (simp_all add: fun_eq_iff)
   apply safe

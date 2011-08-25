@@ -12,16 +12,9 @@ lemma simp_eq_emptyset:
   "(X = {}) = (\<forall> x. x \<notin> X)"
   by blast
 
-lemma mono_comp[simp]:
-  "mono f \<Longrightarrow> mono g \<Longrightarrow> mono (f o g)" 
-  apply (unfold mono_def)
-  by auto
+lemma mono_comp: "mono f \<Longrightarrow> mono g \<Longrightarrow> mono (f o g)" 
+  by (unfold mono_def) auto
 
-lemma neg_fun_pred: "(- A) x = - (A x)"
-  by (simp add: fun_Compl_def)
-
-lemma bot_fun_pred: "bot i = {}"
-  by (simp add: bot_fun_def)
 
 subsection {*  Finite sets and cardinal properties  *}
 
@@ -32,14 +25,6 @@ lemma marked_finite [simp]: "finite (-X) \<Longrightarrow> finite (-insert x X)"
 lemma card_insert [simp]: "(-insert x X) = (-X) - {x}"
 by auto
 
-lemma card_remove [simp]: "finite X \<Longrightarrow> x \<in> X \<Longrightarrow> card (X - {x}) = card(X) - 1"
-apply(rule_tac t = X in insert_Diff [THEN subst], assumption)
-apply(simp del:insert_Diff_single)
-done
-
-lemma nonempty_card [simp]: "finite X \<Longrightarrow> x \<in> X \<Longrightarrow> card(X) \<noteq>  0"
-apply auto
-done
 
 subsection {*Complete Lattice Results*}
 
@@ -79,17 +64,9 @@ theorem lfp_mono [simp]:
 
 text {*Some lattice simplification rules*}
 
-lemma inf_bot_bot[simp]:
+lemma inf_bot_bot: (* FIXME *)
   "x \<sqinter> \<bottom> = \<bottom>"
   apply (rule antisym)
   by auto
-
-theorem Sup_bottom:
-  "(Sup X = (bot::'a::complete_lattice)) = (\<forall> x \<in> X . x = bot)"
-  by (fact Sup_bot_conv)
-
-theorem Inf_top:
-  "(Inf X = (\<top>::'a::complete_lattice)) = (\<forall> x \<in> X . x = \<top>)"
-  by (fact Inf_top_conv)
 
 end

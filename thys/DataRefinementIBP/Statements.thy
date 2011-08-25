@@ -125,7 +125,8 @@ lemma mono_angelic[simp]:
 
 theorem angelic_bottom [simp]:
   "angelic R \<bottom>  = {}"
-  by (simp add: angelic_def)
+  by (simp add: angelic_def inf_bot_bot)
+
 
 theorem angelic_disjunctive:
   "angelic R ((p::'a::boolean_algebra) \<squnion> q) = angelic R p \<squnion> angelic R q"
@@ -138,7 +139,7 @@ theorem angelic_udisjunctive1:
   apply (simp add: inf_Sup)
   apply (unfold SUPR_def)
   apply auto
-  apply (unfold Sup_bottom)
+  apply (unfold Sup_bot_conv)
   by auto
 
 theorem angelic_udisjunctive:
@@ -148,7 +149,7 @@ theorem angelic_udisjunctive:
   apply (simp add: inf_Sup)
   apply (unfold SUPR_def)
   apply auto
-  apply (unfold Sup_bottom)
+  apply (unfold Sup_bot_conv)
   by auto
 
 

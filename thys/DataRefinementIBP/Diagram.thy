@@ -307,7 +307,7 @@ theorem (in DiagramTermination) dangelic_udisjunctive2:
 lemma  grd_dgr:
   "((grd (step D) i)::('a::complete_boolean_algebra)) = \<Squnion> {P . \<exists> j . P = grd (D(i,j))}"
   apply (simp add: grd_def step_def)
-  apply (simp add: neg_fun_pred)
+  apply (simp add: uminus_apply)
   apply (unfold step_def INF_def uminus_Inf)
   apply (simp_all add: bot_fun_def)
   apply (case_tac "(uminus ` range (\<lambda>j\<Colon>'b. D (i, j) \<bottom>)) = {P\<Colon>'a. \<exists>j\<Colon>'b. P = - D (i, j) \<bottom>}")
