@@ -94,10 +94,10 @@ proof -
       by (cases fs) (auto intro: valuep.intros)
   next
     case Abs
-    from this Abs' show thesis by auto
+    with Abs' show thesis .
   next
     case TAbs
-    from this TAbs' show thesis by auto
+    with TAbs' show thesis .
   qed
 qed
 

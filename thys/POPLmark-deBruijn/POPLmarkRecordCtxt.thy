@@ -354,7 +354,7 @@ lemma ctxt_imp_eval:
 
 lemma eval_evalc_eq: "(t \<longmapsto> t') = (t \<longmapsto>\<^sub>c t')"
 proof
-  fix ts
+  fix ts ts'
   have r: "t \<longmapsto> t' \<Longrightarrow> t \<longmapsto>\<^sub>c t'" and
     "ts [\<longmapsto>] ts' \<Longrightarrow> \<exists>E t t'. E \<in> rctxt \<and> ts = E t \<and> ts' = E t' \<and> t \<longmapsto>\<^sub>c t'"
     by (induct rule: eval_evals.inducts) (iprover intro: ctxt_rctxt.intros eval.intros)+
