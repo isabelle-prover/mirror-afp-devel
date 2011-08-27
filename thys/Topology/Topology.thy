@@ -376,7 +376,7 @@ lemma empty_carrier_implies_trivial:
 proof -
   interpret topology S by fact
   interpret trivial T by fact
-  show "PROP ?P" by (auto intro!: topeqI)
+  show "PROP ?P" by auto
 qed
 
 locale discrete = carrier T for X and T (structure) +
@@ -490,7 +490,7 @@ qed
 
 lemma (in carrier) sub_nhd:
   "U \<in> nhds x \<Longrightarrow> \<exists>V \<in> nhds x. V \<subseteq> U \<and> (\<forall> z \<in> V. U \<in> nhds z)"
-  by (auto elim!: nhdE intro: nhdI)
+  by (auto elim!: nhdE)
 
 lemma (in ordertop1) l1:
   assumes mopen: "m open"
@@ -1625,7 +1625,7 @@ proof-
   moreover have "?F -\<longrightarrow> x"
     by auto
   moreover from asub xpoint have "A \<in> ?F"
-    by (blast intro: carrier_nhd)
+    by blast
   ultimately show ?thesis
     by (rule H)
 qed
