@@ -1,3 +1,4 @@
+(* Author: Xingyuan Zhang, Chunhan Wu, Christian Urban *)
 theory Myhill_2
   imports Myhill_1 "~~/src/HOL/Library/List_Prefix"
 begin

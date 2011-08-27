@@ -1,3 +1,4 @@
+(* Author: Xingyuan Zhang, Chunhan Wu, Christian Urban *)
 theory Folds
 imports "../Regular-Sets/Regular_Exp"
 begin

@@ -1,3 +1,5 @@
+(* Author: Xingyuan Zhang, Chunhan Wu, Christian Urban *)
+
 theory Myhill
   imports Myhill_2 "../Regular-Sets/Derivatives"
 begin

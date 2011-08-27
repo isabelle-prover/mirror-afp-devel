@@ -1,3 +1,4 @@
+(* Author: Xingyuan Zhang, Chunhan Wu, Christian Urban *)
 theory Myhill_1
 imports "Folds"
         "~~/src/HOL/Library/While_Combinator" 
