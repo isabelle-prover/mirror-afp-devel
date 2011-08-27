@@ -56,9 +56,6 @@ lemma bexpE: "\<exists>(x, y) \<in> A. P x y \<Longrightarrow>
 lemma ball_eq_sym: "\<forall>(x, y) \<in> S. f x y = g x y \<Longrightarrow> \<forall>(x, y) \<in> S. g x y = f x y"
   by auto
 
-lemma measure_eq [simp]: "(x, y) \<in> measure f = (f x < f y)"
-  by (simp add: measure_def inv_image_def)
-
 lemma wf_measure_size: "wf (measure size)" by simp
 
 notation
