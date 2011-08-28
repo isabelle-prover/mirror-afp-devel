@@ -145,7 +145,7 @@ theorem real_mon_conv_times:
   from assms have "\<And>n. z*x n \<le> z*x (Suc n)"
     by (simp add: real_mon_conv mult_left_mono)
   also from xy have "(\<lambda>m. z*x m)---->(z*y)"
-    by (simp add: real_mon_conv LIMSEQ_const LIMSEQ_mult)
+    by (simp add: real_mon_conv tendsto_const tendsto_mult)
   ultimately show ?thesis by (simp add: real_mon_conv)
 qed(*>*)
 
@@ -170,7 +170,7 @@ theorem real_mon_conv_add:
     hence "x n + a n \<le> x (Suc n) + a (Suc n)"
       by simp
   }
-  also from assms have "(\<lambda>m. x m + a m)---->(y + b)" by (simp add: real_mon_conv LIMSEQ_add)
+  also from assms have "(\<lambda>m. x m + a m)---->(y + b)" by (simp add: real_mon_conv tendsto_add)
   ultimately show ?thesis by (simp add: real_mon_conv)
 qed(*>*)
 
@@ -209,7 +209,7 @@ proof -
     and gm: "g ----> m" 
     by fast             
   from gm g_def have "m=x" 
-    by (simp add: LIMSEQ_const LIMSEQ_unique)
+    by (simp add: tendsto_const LIMSEQ_unique)
   with lm conv m2 show ?thesis 
     by (auto simp add: real_mon_conv) 
 qed

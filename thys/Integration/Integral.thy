@@ -1028,14 +1028,14 @@ proof cases
         by (rule measure_mon_conv)
       
       hence "(\<lambda>n. a j * measure M (A j \<inter> B n)) ----> a j * measure M (A j)" 
-        by (simp add: LIMSEQ_const LIMSEQ_mult)
+        by (simp add: tendsto_const tendsto_mult)
     }
     hence "(\<lambda>n. \<Sum>j\<in>S. a j * measure M (A j \<inter> B n)) 
       ----> (\<Sum>j\<in>S. a j * measure M (A j))" 
-      by (rule LIMSEQ_setsum)
+      by (rule tendsto_setsum)
     hence "(\<lambda>n. z* (\<Sum>j\<in>S. a j * measure M (A j \<inter> B n)))
       ----> z*(\<Sum>j\<in>S. a j * measure M (A j))" 
-      by (simp add: LIMSEQ_const LIMSEQ_mult)
+      by (simp add: tendsto_const tendsto_mult)
     
     with 1 xy base have "z*r \<le> y" 
       by (auto simp add: LIMSEQ_le real_mon_conv) 
@@ -1063,11 +1063,11 @@ lemma sfis_nnfis:
   shows "a \<in> nnfis f M"
 (*<*)proof -
   { fix t
-    have "(\<lambda>n. f t)\<up>f t" by (simp add: real_mon_conv LIMSEQ_const)
+    have "(\<lambda>n. f t)\<up>f t" by (simp add: real_mon_conv tendsto_const)
   } hence "(\<lambda>n. f)\<up>f" by (simp add: realfun_mon_conv_iff)
   also 
   from s have "\<And>n. a \<in> sfis f M" .
-  moreover have "(\<lambda>n. a)\<up>a" by (simp add: real_mon_conv LIMSEQ_const)
+  moreover have "(\<lambda>n. a)\<up>a" by (simp add: real_mon_conv tendsto_const)
   
   ultimately show ?thesis by (rule nnfis.base)
 qed(*>*)
@@ -1825,7 +1825,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
       hence "(\<lambda>n. inverse ((2::real)^n)) ----> 0"
         by (rule LIMSEQ_inverse_zero)
       with lim have "(\<lambda>n. u n t + inverse ((2::real)^n)) ----> c+0"
-        by (rule LIMSEQ_add)
+        by (rule tendsto_add)
       hence "(\<lambda>n. u n t + 1/(2::real)^n) ----> c"
         by (simp add: real_divide_def)
       hence "(\<lambda>n. u (n+n0) t + 1/(2::real)^(n+n0)) ----> c"
