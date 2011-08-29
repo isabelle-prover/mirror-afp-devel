@@ -5,7 +5,10 @@
 
 header {* \isaheader{Relations between Jinja Types} *}
 
-theory TypeRel imports Decl begin
+theory TypeRel imports 
+  "~~/src/HOL/Library/Transitive_Closure_Table"
+  Decl 
+begin
 
 subsection{* The subclass relations *}
 
@@ -515,6 +518,113 @@ lemma field_def2 [simp]: "P \<turnstile> C sees F:T in D \<Longrightarrow> field
 
 lemma method_def2 [simp]: "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<Longrightarrow> method P C M = (D,Ts,T,m)"
 (*<*)by (unfold method_def) (auto dest: sees_method_fun)(*>*)
+
+subsection "Code generator setup"
+
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  subcls1p 
+.
+declare subcls1_def[unfolded Collect_def, code_pred_def]
+code_pred 
+  (modes: i \<Rightarrow> i \<times> o \<Rightarrow> bool, i \<Rightarrow> i \<times> i \<Rightarrow> bool)
+  [inductify]
+  subcls1 
+.
+definition subcls' where "subcls' G = (subcls1p G)^**"
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  [inductify]
+  subcls'
+.
+lemma subcls_conv_subcls' [code_inline]:
+  "(subcls1 G)^* = (\<lambda>(C, D). subcls' G C D)"
+by(simp add: subcls'_def subcls1_def rtrancl_def)(simp add: Collect_def)
+
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  widen 
+.
+
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  Fields
+.
+
+lemma has_field_code [code_pred_intro]:
+  "\<lbrakk> P \<turnstile> C has_fields FDTs; map_of FDTs (F, D) = \<lfloor>T\<rfloor> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> C has F:T in D"
+by(auto simp add: has_field_def)
+
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  has_field
+by(auto simp add: has_field_def)
+
+lemma sees_field_code [code_pred_intro]:
+  "\<lbrakk> P \<turnstile> C has_fields FDTs; map_of (map (\<lambda>((F, D), T). (F, D, T)) FDTs) F = \<lfloor>(D, T)\<rfloor> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> C sees F:T in D"
+by(auto simp add: sees_field_def)
+
+code_pred 
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool, 
+          i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  sees_field
+by(auto simp add: sees_field_def)
+
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
+  Methods 
+.
+
+lemma Method_code [code_pred_intro]:
+  "\<lbrakk> P \<turnstile> C sees_methods Mm; Mm M = \<lfloor>((Ts, T, m), D)\<rfloor> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> C sees M: Ts\<rightarrow>T = m in D"
+by(auto simp add: Method_def)
+
+code_pred
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool,
+          i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
+  Method
+by(auto simp add: Method_def)
+
+lemma eval_Method_i_i_i_o_o_o_o_conv:
+  "Predicate.eval (Method_i_i_i_o_o_o_o P C M) = (\<lambda>(Ts, T, m, D). P \<turnstile> C sees M:Ts\<rightarrow>T=m in D)"
+by(auto intro: Method_i_i_i_o_o_o_oI elim: Method_i_i_i_o_o_o_oE intro!: ext)
+
+lemma method_code [code]:
+  "method P C M = 
+  Predicate.the (Predicate.bind (Method_i_i_i_o_o_o_o P C M) (\<lambda>(Ts, T, m, D). Predicate.single (D, Ts, T, m)))"
+apply (rule sym, rule the_eqI)
+apply (simp add: method_def eval_Method_i_i_i_o_o_o_o_conv)
+apply (rule arg_cong [where f=The])
+apply (auto simp add: SUPR_def Sup_fun_def Sup_bool_def fun_eq_iff)
+done
+
+lemma eval_Fields_conv:
+  "Predicate.eval (Fields_i_i_o P C) = (\<lambda>FDTs. P \<turnstile> C has_fields FDTs)"
+by(auto intro: Fields_i_i_oI elim: Fields_i_i_oE intro!: ext)
+
+lemma fields_code [code]:
+  "fields P C = Predicate.the (Fields_i_i_o P C)"
+by(simp add: fields_def Predicate.the_def eval_Fields_conv)
+
+lemma eval_sees_field_i_i_i_o_o_conv:
+  "Predicate.eval (sees_field_i_i_i_o_o P C F) = (\<lambda>(T, D). P \<turnstile> C sees F:T in D)"
+by(auto intro!: ext intro: sees_field_i_i_i_o_oI elim: sees_field_i_i_i_o_oE)
+
+lemma eval_sees_field_i_i_i_o_i_conv:
+  "Predicate.eval (sees_field_i_i_i_o_i P C F D) = (\<lambda>T. P \<turnstile> C sees F:T in D)"
+by(auto intro!: ext intro: sees_field_i_i_i_o_iI elim: sees_field_i_i_i_o_iE)
+
+lemma field_code [code]:
+  "field P C F = Predicate.the (Predicate.bind (sees_field_i_i_i_o_o P C F) (\<lambda>(T, D). Predicate.single (D, T)))"
+apply (rule sym, rule the_eqI)
+apply (simp add: field_def eval_sees_field_i_i_i_o_o_conv)
+apply (rule arg_cong [where f=The])
+apply (auto simp add: SUPR_def Sup_fun_def Sup_bool_def fun_eq_iff)
+done
+
 (*<*)
 end
 (*>*)

@@ -365,7 +365,7 @@ and evals_hext:  "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<la
 (*<*)
 proof (induct rule: eval_evals_inducts)
   case New thus ?case
-    by(fastsimp intro!: hext_new intro:someI simp:new_Addr_def
+    by(fastsimp intro!: hext_new intro:LeastI simp:new_Addr_def
                 split:split_if_asm simp del:fun_upd_apply)
 next
   case BinOp thus ?case by (fast elim!:hext_trans)

@@ -98,96 +98,89 @@ definition E :: jvm_prog
 where
   "E == SystemClasses @ [(list_name, list_class), (test_name, test_class)]"
 
+definition undefined_cname :: cname 
+  where [code del]: "undefined_cname = undefined"
+declare undefined_cname_def[symmetric, code_inline]
+code_const undefined_cname
+  (SML "object")
 
-consts_code
-  "new_Addr"
-   ("\<module>new'_addr {* 0::nat *} {* Suc *}
-               {* %x. case x of None => True | Some y => False *} {* Some *}")
-attach {*
-fun new_addr z s alloc some hp =
-  let fun nr i = if alloc (hp i) then some i else nr (s i);
-  in nr z end;
-*}
+definition undefined_val :: val
+  where [code del]: "undefined_val = undefined"
+declare undefined_val_def[symmetric, code_inline]
+code_const undefined_val
+  (SML "Unit")
 
-  "undefined" ("(error \"undefined\")")
-  "undefined :: val" ("{* Unit *}")
-  "undefined :: cname" ("Object")
-
-declare method_def2 [unfolded Method_def, OF exI, OF conjI, code_ind]
-declare fields_def2 [code_ind]
 lemmas [code_unfold] = SystemClasses_def [unfolded ObjectC_def NullPointerC_def ClassCastC_def OutOfMemoryC_def]
 
-subsection {* Single step execution *}
+definition "test = exec (E, start_state E test_name makelist_name)"
+ML {* 
+  @{code test};
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
+  @{code exec} (@{code E}, @{code the} it);
 
-code_module JVM
-contains
-  test = "exec (E, start_state E test_name makelist_name)"
-
-ML {* JVM.test *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* JVM.exec (JVM.E, JVM.the it) *}
-ML {* val JVM.Some (_, (f, _)) = it *}
-ML {* if snd (JVM.the (f 3)) (JVM.val_name, JVM.list_name) = JVM.Some (JVM.Intg 1) then () else error "wrong result" *}
-ML {* if snd (JVM.the (f 3)) (JVM.next_name, JVM.list_name) = JVM.Some (JVM.Addr 4) then () else error "wrong result" *}
-ML {* if snd (JVM.the (f 4)) (JVM.val_name, JVM.list_name) = JVM.Some (JVM.Intg 2) then () else error "wrong result" *}
-ML {* if snd (JVM.the (f 4)) (JVM.next_name, JVM.list_name) = JVM.Some (JVM.Addr 5) then () else error "wrong result" *}
-ML {* if snd (JVM.the (f 5)) (JVM.val_name, JVM.list_name) = JVM.Some (JVM.Intg 3) then () else error "wrong result" *}
-ML {* if snd (JVM.the (f 5)) (JVM.next_name, JVM.list_name) = JVM.Some JVM.Null then () else error "wrong result" *}
+  val SOME (_, (h, _)) = it;
+  if snd (@{code the} (h 3)) (@{code val_name}, @{code list_name}) = SOME (@{code Intg} 1) then () else error "wrong result";
+  if snd (@{code the} (h 3)) (@{code next_name}, @{code list_name}) = SOME (@{code Addr} 4) then () else error "wrong result";
+  if snd (@{code the} (h 4)) (@{code val_name}, @{code list_name}) = SOME (@{code Intg} 2) then () else error "wrong result";
+  if snd (@{code the} (h 4)) (@{code next_name}, @{code list_name}) = SOME (@{code Addr} 5) then () else error "wrong result";
+  if snd (@{code the} (h 5)) (@{code val_name}, @{code list_name}) = SOME (@{code Intg} 3) then () else error "wrong result";
+  if snd (@{code the} (h 5)) (@{code next_name}, @{code list_name}) = SOME @{code Null} then () else error "wrong result";
+*}
 
 end

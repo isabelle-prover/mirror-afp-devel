@@ -475,46 +475,48 @@ where
         start  = OK first#(replicate (size instr - 1) (OK None))
     in  kiljvm G mxs (1+size pTs+mxl) rT instr et start)"
 
+
 lemma [code]:
-  "unstables r step ss = (UN p:{..<size ss}. if \<not>stable r step ss p then {p} else {})"
-(*<*)
-  apply (unfold unstables_def)
-  apply (rule equalityI)
-  apply (rule subsetI)
-  apply (erule CollectE)
-  apply (erule conjE)
-  apply (rule UN_I)
-  apply simp
-  apply simp
-  apply (rule subsetI)
-  apply (erule UN_E)
-  apply (case_tac "\<not> stable r step ss p")
-  apply simp+
-  done
-(*>*)
-
-definition some_elem :: "'a set \<Rightarrow> 'a" where
-  "some_elem = (%S. SOME x. x : S)"
-
-consts_code
-  "some_elem" ("(case/ _ of/ {*Set*}/ xs/ =>/ hd/ xs)")
-
-(*<*)
-text {* This code setup is just a demonstration and \emph{not} sound! *}
-
-lemma False
+  "unstables r step ss = 
+   foldr (\<lambda>p A. if \<not>stable r step ss p then insert p A else A) [0..<size ss] {}"
 proof -
-  have "some_elem (set [False, True]) = False"
-    by evaluation
-  moreover have "some_elem (set [True, False]) = True"
-    by evaluation
-  ultimately show False
-    by (simp add: some_elem_def)
+  have "unstables r step ss = (UN p:{..<size ss}. if \<not>stable r step ss p then {p} else {})"
+    apply (unfold unstables_def)
+    apply (rule equalityI)
+    apply (rule subsetI)
+    apply (erule CollectE)
+    apply (erule conjE)
+    apply (rule UN_I)
+    apply simp
+    apply simp
+    apply (rule subsetI)
+    apply (erule UN_E)
+    apply (case_tac "\<not> stable r step ss p")
+    apply simp+
+    done
+  also have "\<And>f. (UN p:{..<size ss}. f p) = Union (set (map f [0..<size ss]))" by auto
+  also note Sup_set_foldr also note foldr_map
+  also have "op \<union> \<circ> (\<lambda>p. if \<not> stable r step ss p then {p} else {}) = 
+            (\<lambda>p A. if \<not>stable r step ss p then insert p A else A)"
+    by(auto simp add: fun_eq_iff)
+  finally show ?thesis .
 qed
-(*>*)
+
+definition some_elem :: "'a set \<Rightarrow> 'a" where [code del]:
+  "some_elem = (%S. SOME x. x : S)"
+code_const some_elem
+  (SML "(case/ _ of/ Set/ xs/ =>/ hd/ xs)")
+setup {* Code.add_signature_cmd ("some_elem", "'a set \<Rightarrow> 'a") *}
+
+text {* This code setup is just a demonstration and \emph{not} sound! *}
+notepad begin
+  have "some_elem (set [False, True]) = False" by eval
+  moreover have "some_elem (set [True, False]) = True" by eval
+  ultimately have False by (simp add: some_elem_def)
+end
 
 lemma [code]:
-  "iter f step ss w = while (\<lambda>(ss, w). \<not> (is_empty w))
+  "iter f step ss w = while (\<lambda>(ss, w). \<not> is_empty w)
     (\<lambda>(ss, w).
         let p = some_elem w in propa f (step p (ss ! p)) ss (w - {p}))
     (ss, w)"
@@ -523,62 +525,69 @@ lemma [code]:
 lemma JVM_sup_unfold [code]:
  "JVM_SemiType.sup S m n = lift2 (Opt.sup
        (Product.sup (Listn.sup (SemiType.sup S))
-         (\<lambda>x y. OK (map2 (lift2 (SemiType.sup S)) x y))))"
-(*<*) 
-apply (unfold JVM_SemiType.sup_def JVM_SemiType.sl_def Opt.esl_def Err.sl_def
+         (\<lambda>x y. OK (map2 (lift2 (SemiType.sup S)) x y))))" 
+  apply (unfold JVM_SemiType.sup_def JVM_SemiType.sl_def Opt.esl_def Err.sl_def
          stk_esl_def loc_sl_def Product.esl_def  
          Listn.sl_def upto_esl_def SemiType.esl_def Err.esl_def)
   by simp
 
 lemmas [code] = SemiType.sup_def [unfolded exec_lub_def] JVM_le_unfold
-(*>*)
 
-lemmas [code_ind_set] = rtrancl_refl converse_rtrancl_into_rtrancl
+lemmas [code] = lesub_def plussub_def
+
+setup {*
+  Code.add_signature_cmd ("More_Set.is_empty", "'a set \<Rightarrow> bool")
+  #> Code.add_signature_cmd ("propa", "('s \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> (nat \<times> 's) list \<Rightarrow> 's list \<Rightarrow> nat set \<Rightarrow> 's list * nat set") 
+  #> Code.add_signature_cmd 
+     ("iter", "('s \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> (nat \<times> 's) list) \<Rightarrow> 's list \<Rightarrow> nat set \<Rightarrow> 's list * nat set")
+  #> Code.add_signature_cmd ("unstables", "('s \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> (nat \<times> 's) list) \<Rightarrow> 's list \<Rightarrow> nat set") 
+*}
 
 lemma [code]:
   "is_refT T = (case T of NT \<Rightarrow> True | Class C \<Rightarrow> True | _ \<Rightarrow> False)"
   by (simp add: is_refT_def split add: ty.split)
 
-lemma [code_ind params: 1]: "P \<turnstile> C has_fields FDTs  \<Longrightarrow>
-  map_of (map (\<lambda>((F, D), T). (F, D, T)) FDTs) F = \<lfloor>(D, T)\<rfloor> \<Longrightarrow> P \<turnstile> C sees F:T in D"
-  by (auto simp add: sees_field_def)
-
-lemma [code_ind params: 1]: "P \<turnstile> C sees_methods Mm \<Longrightarrow>
-  Mm M = \<lfloor>((Ts, T, m), D)\<rfloor> \<Longrightarrow> P \<turnstile> C sees M: Ts\<rightarrow>T = m in D"
-  by (auto simp add: Method_def)
-
 declare app\<^isub>i.simps [code]
 
 lemma [code]:
   "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
-    (\<exists>T\<^isub>f\<in>{T\<^isub>f. sees_field P C F T\<^isub>f C}. P \<turnstile> T \<le> Class C)"
-  by auto
+    Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T\<^isub>f. if P \<turnstile> T \<le> Class C then Predicate.single () else bot))"
+by(auto simp add: Predicate.holds_eq intro: sees_field_i_i_i_o_iI elim: sees_field_i_i_i_o_iE)
 
 lemma [code]:
   "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) = 
-    (\<exists>T\<^isub>f\<in>{T\<^isub>f. sees_field P C F T\<^isub>f C}. P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f)" 
-  by auto
+     Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T\<^isub>f. if P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f then Predicate.single () else bot))"
+by(auto simp add: Predicate.holds_eq simp del: eval_bind split: split_if_asm elim!: sees_field_i_i_i_o_iE Predicate.bindE intro: Predicate.bindI sees_field_i_i_i_o_iI)
 
 lemma [code]:
   "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
     (n < length ST \<and> 
     (ST!n \<noteq> NT \<longrightarrow>
       (case ST!n of
-         Class C \<Rightarrow> (\<exists>(Ts, T, m, D)\<in>{(Ts, T, m, D). Method P C M Ts T m D}. P \<turnstile> rev (take n ST) [\<le>] Ts)
+         Class C \<Rightarrow> Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P C M) (\<lambda>(Ts, T, m, D). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
        | _ \<Rightarrow> False)))"
-  by (fastsimp split add: ty.split_asm)
+by(fastsimp simp add: Predicate.holds_eq simp del: eval_bind split: ty.split_asm split_if_asm intro: bindI Method_i_i_i_o_o_o_oI elim!: bindE Method_i_i_i_o_o_o_oE)
 
-declare field_def2 [code_ind]
+definition [code del]: "mem2 = op :"
+lemma [code]: "mem2 x A = A x"
+  by(simp add: mem2_def mem_def)
 
-code_module BV
-contains
-  test1 = "test_kil E list_name [Class list_name] Void 3 0
+lemmas [folded mem2_def, code] =
+  SemiType.sup_def[unfolded exec_lub_def]
+  widen.equation
+  is_relevant_class.simps
+
+definition test1 where
+  "test1 = test_kil E list_name [Class list_name] Void 3 0
     [(Suc 0, 2, NullPointer, 7, 0)] append_ins"
-  test2 = "test_kil E test_name [] Void 3 2 [] make_list_ins"
-  test3 = "\<phi>\<^sub>a"
-  test4 = "\<phi>\<^sub>m"
+definition test2 where
+  "test2 = test_kil E test_name [] Void 3 2 [] make_list_ins"
+definition test3 where "test3 = \<phi>\<^sub>a"
+definition test4 where "test4 = \<phi>\<^sub>m"
 
-ML {* if BV.test1 = map BV.OK BV.test3 then () else error "wrong result" *}
-ML {* if BV.test2 = map BV.OK BV.test4 then () else error "wrong result" *}
+ML {* 
+  if @{code test1} = @{code map} @{code OK} @{code test3} then () else error "wrong result";
+  if @{code test2} = @{code map} @{code OK} @{code test4} then () else error "wrong result" 
+*}
 
 end
