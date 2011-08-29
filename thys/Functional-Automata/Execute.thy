@@ -26,7 +26,7 @@ lemma [simp]:
   "NA_Rep (NA_Abs x) = x"
 unfolding NA_Rep_def NA_Abs_def
 apply (auto simp add: fun_eq_iff split: prod.split)
-apply (metis member_Set)+
+apply (metis member_set_of set_of_Set)+
 done
 
 definition DA_Abs :: "('a, 's => bool) da => ('a, 's Cset.set) da"
@@ -86,7 +86,10 @@ unfolding next_def NA_Rep_def by (auto split: prod.split)
 lemma [code]:
   "delta' A []    p = Cset.insert p bot"
   "delta' A (a#w) p = Cset.bind (next A a p) (delta' A w)"
-unfolding delta.simps Cset.bind_def delta'_def by auto
+unfolding delta.simps Cset.bind_def delta'_def
+apply (metis Cset.empty_simp Cset.insert_def member_set_of)
+unfolding delta'_def_raw delta.simps member_set_of
+unfolding SUP_def Cset.Sup_set_def by simp
 
 lemma [code]:
   "atom' a = ([True], %b s. if s = [True] & b = a then Cset.insert [False] bot else bot, %s. s = [False])"
@@ -98,7 +101,8 @@ lemma [code]:
               (%left s. if left then Cset.map (Cons True) (dl a s) else Cset.map (Cons False) (dr a s)),
      list_case (fl ql | fr qr) (%left s. if left then fl s else fr s)))"
 unfolding or'_def RegExp2NA.or_def
-by (auto simp add: fun_eq_iff NA_Abs_def NA_Rep_def split: list.split)
+apply (auto simp add: fun_eq_iff NA_Abs_def NA_Rep_def split: list.split)
+unfolding member_set_of by auto
 
 lemma [code]:
   "conc' = (%(ql, dl, fl) (qr, dr, fr).
@@ -108,7 +112,8 @@ lemma [code]:
               if left then sup (Cset.map (Cons True) (dl a s)) (if fl s then Cset.map (Cons False) (dr a qr) else bot) else Cset.map (Cons False) (dr a s)),
      list_case False (%left s. left & fl s & fr qr | ~ left & fr s)))"
 unfolding conc'_def RegExp2NA.conc_def
-by (auto simp add: fun_eq_iff NA_Abs_def NA_Rep_def split: list.split)
+apply (auto simp add: fun_eq_iff NA_Abs_def NA_Rep_def split: list.split)
+unfolding member_set_of by auto
 
 lemma [code]: "epsilon' = ([], %a s. bot, %s. s = [])"
 unfolding epsilon'_def RegExp2NA.epsilon_def
@@ -116,7 +121,9 @@ by (auto simp add: NA_Abs_def NA_Rep_def)
 
 lemma [code]:
   "plus' = (%(q, d, f). (q, %a s. sup (d a s) (if f s then d a q else bot), f))"
-unfolding plus'_def RegExp2NA.plus_def by (auto simp add: fun_eq_iff NA_Abs_def NA_Rep_def)
+unfolding plus'_def RegExp2NA.plus_def
+apply (auto simp add: fun_eq_iff NA_Abs_def NA_Rep_def)
+unfolding member_set_of by auto
  
 lemma [code]:
   "star' A = or' epsilon' (plus' A)"
@@ -143,7 +150,8 @@ by (auto split: prod.split)
 lemma [code]:
   "na2da' A = (Cset.insert (start A) bot, %a Q. Cset.bind Q (next A a), Cset.exists (fin A))"
 unfolding na2da'_def DA_Abs_def NA_Rep_def na2da_def Cset.bind_def
-by (auto simp add: fun_eq_iff split: prod.split)
+apply (auto simp add: fun_eq_iff split: prod.split)
+unfolding member_set_of SUPR_def Cset.Sup_set_def by auto
 
 lemma [code_unfold]:
   "NA.accepts (rexp2na r) w = accepts' (rexp2na' r) w"
@@ -151,7 +159,11 @@ unfolding accepts'_def rexp2na'_def by simp
 
 lemma next_Abs:
   "next (DA_Abs A) a (Set aa) = Set (next A a aa)"
-unfolding next_def DA_Abs_def by (cases A) simp
+unfolding next_def DA_Abs_def
+apply (cases A)
+apply simp
+apply (rule fun_cong)
+by (simp add: mem_def)
 
 lemma start_Abs:
   "start (DA_Abs A) = Set (start A)"
@@ -164,7 +176,7 @@ unfolding DA_Abs_def by (cases A) simp
 lemma delta_Abs:
   "member (DA.delta (DA_Abs A) w (Set a)) = DA.delta A w a"
 unfolding DA.delta_def
-by (induct w arbitrary: a) (auto simp add: next_Abs)
+by (induct w arbitrary: a) (auto simp add: next_Abs mem_def)
 
 lemma [simp]:
   "DA.accepts (DA_Abs A) w = DA.accepts A w"
