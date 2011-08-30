@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#
+# DESCRIPTION: run afp sessions
+
+"$AFP_BASE/admin/testall" -t "$ISABELLE_TOOL" "$@"
