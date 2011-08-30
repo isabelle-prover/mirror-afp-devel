@@ -124,7 +124,6 @@ for DIR in $DIRS; do
         cd $DIR
         echo "Testing [$DIR]"
         FREQUENT="$(unset FREQUENT; . ./config; echo "$FREQUENT")"
-        echo $FREQUENT $INCLUDE_FREQUENT $INCLUDE_INFREQUENT
         if [ "$FREQUENT" == "yes" -a "$INCLUDE_FREQUENT" == "yes" \
           -o "$FREQUENT" == "no" -a "$INCLUDE_INFREQUENT" == "yes" ]; then
             if [ "$OPTS" == "" ]; then
