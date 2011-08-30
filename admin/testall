@@ -19,7 +19,8 @@ function usage()
   echo "-c                     include target clean (rebuild session)"
   echo "-d <path>              use specified path as base for archive entries"
   echo "-r                     use env variable ISABELLE_RELEASES to find isabelle"
-  echo "-f                     only test entries marked as frequent"
+  echo "-f                     skip entries not marked as frequent"
+  echo "-F                     skip entries marked as frequent"
   echo 
   echo "Examples:"
   echo
@@ -64,9 +65,11 @@ THYS="$(dirname "$0")/../thys"
 [ "$1" = "-?" ] && usage
 
 ISABELLE_TOOL=isabelle
-FRQONLY="no"
+INCLUDE_INFREQUENT="yes"
+INCLUDE_FREQUENT="yes"
 
-while getopts "t:cfr:d:" OPT
+
+while getopts "t:cfFr:d:" OPT
 do
     case "$OPT" in
       r)
@@ -85,7 +88,10 @@ do
         check_isabelle
         ;;
       f) 
-        FRQONLY="yes"
+        INCLUDE_INFREQUENT="no"
+        ;;
+      F) 
+        INCLUDE_FREQUENT="no"
         ;;
     esac
 done
@@ -117,7 +123,10 @@ for DIR in $DIRS; do
     if [ -d $DIR ]; then
         cd $DIR
         echo "Testing [$DIR]"
-        if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
+        FREQUENT="$(unset FREQUENT; . ./config; echo "$FREQUENT")"
+        echo $FREQUENT $INCLUDE_FREQUENT $INCLUDE_INFREQUENT
+        if [ "$FREQUENT" == "yes" -a "$INCLUDE_FREQUENT" == "yes" \
+          -o "$FREQUENT" == "no" -a "$INCLUDE_INFREQUENT" == "yes" ]; then
             if [ "$OPTS" == "" ]; then
                 "$ISABELLE_TOOL" make $CLEAN all || FAIL="${FAIL}${DIR} "
             else
