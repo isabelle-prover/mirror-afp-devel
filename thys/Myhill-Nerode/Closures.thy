@@ -199,7 +199,7 @@ next
 qed
 
 lemma cofinite_regular:
-  fixes A::"('a::finite list) set"
+  fixes A::"'a::finite lang"
   assumes "finite (- A)"
   shows "regular A"
 proof -
@@ -212,7 +212,7 @@ qed
 subsection {* Non-regularity for languages *}
 
 lemma continuation_lemma:
-  fixes A B::"('a::finite list) set"
+  fixes A B::"'a::finite lang"
   assumes reg: "regular A"
   and     inf: "infinite B"
   shows "\<exists>x \<in> B. \<exists>y \<in> B. x \<noteq> y \<and> x \<approx>A y"
@@ -240,6 +240,58 @@ proof -
   then obtain b where "b \<in> B" "b \<noteq> a" "b \<approx>A a" by blast
   with in_a show "\<exists>x \<in> B. \<exists>y \<in> B. x \<noteq> y \<and> x \<approx>A y"
     by blast
+qed
+
+
+subsubsection {* The language @{text "a ^ n b ^ n"} is not regular *}
+
+abbreviation
+  replicate_rev ("_ ^^^ _" [100, 100] 100)
+where
+  "a ^^^ n \<equiv> replicate n a"
+
+definition
+  "length_test s a b \<equiv> length (filter (op= a) s) = length (filter (op= b) s)"
+
+lemma [simp]:
+  assumes "i \<noteq> j" "a \<noteq> b"
+  shows "length_test ((a ^^^ i) @ (b ^^^ j)) a b \<noteq> length_test ((a ^^^ n) @ (b ^^^ n)) a b"
+using assms unfolding length_test_def by auto
+
+lemma [simp]:
+  assumes "a \<noteq> b"
+  shows "filter (op= a) ((a ^^^ i) @ (b ^^^ j)) = a ^^^ i"
+  and   "filter (op= b) ((a ^^^ i) @ (b ^^^ j)) = b ^^^ j"
+using assms by simp_all
+
+lemma length_test:
+  "x = y \<Longrightarrow> length_test x a b = length_test y a b"
+by simp
+
+lemma an_bn_not_regular:
+  shows "\<not> regular (\<Union>n. {CHR ''a'' ^^^ n @ CHR ''b'' ^^^ n})"
+proof
+  def A\<equiv>"\<Union>n. {CHR ''a'' ^^^ n @ CHR ''b'' ^^^ n}"
+  def B\<equiv>"\<Union>n. {CHR ''a'' ^^^ n}"
+
+  assume as: "regular A"
+  def B\<equiv>"\<Union>n. {CHR ''a'' ^^^ n}"
+  have b: "infinite B"
+    unfolding infinite_iff_countable_subset
+    unfolding inj_on_def B_def
+    by (rule_tac x="\<lambda>n. CHR ''a'' ^^^ n" in exI) (auto)
+  moreover
+  have "\<forall>x \<in> B. \<forall>y \<in> B. x \<noteq> y \<longrightarrow> \<not> (x \<approx>A y)" 
+    apply(auto simp add: B_def A_def)
+    apply(auto simp add: str_eq_def)
+    apply(drule_tac x="CHR ''b'' ^^^ aa" in spec)
+    (*apply(auto simp add: f_def dest: l3)*)
+    apply(auto)
+    apply(drule_tac a="CHR ''a''" and b="CHR ''b''" in length_test)
+    apply(simp add: length_test_def)
+    done
+  ultimately 
+  show "False" using continuation_lemma[OF as] by blast
 qed
 
 
