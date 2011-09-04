@@ -1479,14 +1479,13 @@ by(blast intro: lprefix_llist_imp_lprefix lprefix_into_lprefix_llist)
 lemma lprefixI [consumes 1, case_names lprefix, 
                 case_conclusion lprefix LeLNil LeLCons]:
   assumes major: "(xs, ys) \<in> X"
-  and step [simplified mem_def]:
+  and step:
       "\<And>xs ys. (xs, ys) \<in> X 
        \<Longrightarrow> xs = LNil \<or> (\<exists>x xs' ys'. xs = LCons x xs' \<and> ys = LCons x ys' \<and> 
                                    ((xs', ys') \<in> X \<or> lprefix xs' ys'))"
   shows "lprefix xs ys"
 proof -
-  from major have "curry X xs ys" by(auto simp add: mem_def)
-  thus ?thesis
+  from major show ?thesis
     by(rule lprefix_llist.coinduct[unfolded lprefix_llist_eq_lprefix])
       (auto dest: step)
 qed
@@ -1947,11 +1946,11 @@ qed
 
 subsection {* The set of elements in a lazy list: @{term "lset"} *}
 
-lemma lset_LNil [simp]:
+lemma lset_LNil [simp, code]:
   "lset LNil = {}"
 by(simp add: lset_def)
 
-lemma lset_LCons [simp]:
+lemma lset_LCons [simp, code]:
   "lset (LCons x xs) = insert x (lset xs)"
 proof -
   have "x \<in> lnth (LCons x xs) ` {n. enat n \<le> llength xs}"
@@ -2010,7 +2009,7 @@ using assms by(rule lset_induct)
 
 text {* Alternative definition of @{term lset} for nitpick *}
 
-inductive lsetp :: "'a llist \<Rightarrow> 'a set"
+inductive lsetp :: "'a llist \<Rightarrow> 'a \<Rightarrow> bool"
 where
   "lsetp (LCons x xs) x"
 | "lsetp xs x \<Longrightarrow> lsetp (LCons x' xs) x"
@@ -2024,8 +2023,8 @@ lemma lsetp_into_lset:
 by(induct rule: lsetp.induct)(blast intro: lset_intros)+
 
 lemma lset_eq_lsetp [nitpick_unfold]:
-  "lset = lsetp"
-by(auto intro: lset_into_lsetp dest: lsetp_into_lset simp: mem_def intro!: ext)
+  "lset xs = {x. lsetp xs x}"
+by(auto intro: lset_into_lsetp dest: lsetp_into_lset)
 
 hide_const (open) lsetp
 hide_fact (open) lsetp.intros lsetp_def lsetp.cases lsetp.induct lset_into_lsetp lset_eq_lsetp
@@ -2098,14 +2097,6 @@ lemma lfinite_imp_finite_lset:
   assumes "lfinite xs"
   shows "finite (lset xs)"
 using assms by induct auto
-
-lemma lset_code [code]:
-  "lset LNil y \<longleftrightarrow> False"
-  "lset (LCons x xs) y \<longleftrightarrow> (x = y \<or> lset xs y)"
-apply(simp_all)
- apply(simp only: empty_def Collect_def)
-apply(auto simp only: insert_def Collect_def Un_def mem_def)
-done
 
 lemma lmap_cong:
   assumes eq: "xs = ys"
@@ -2217,7 +2208,7 @@ lemma lset_ltakeWhile_subset:
 by(auto dest: lset_ltakeWhileD)
 
 lemma ltakeWhile_all_conv: "ltakeWhile P xs = xs \<longleftrightarrow> lset xs \<subseteq> {x. P x}"
-by (metis Collect_def Collect_mem_eq lset_ltakeWhileD ltakeWhile_all subsetD subsetI)
+by (metis Int_Collect Int_absorb2 le_infE lset_ltakeWhile_subset ltakeWhile_all)
 
 lemma lzip_ltakeWhile_fst: "lzip (ltakeWhile P xs) ys = ltakeWhile (P \<circ> fst) (lzip xs ys)"
 proof -
@@ -3197,7 +3188,7 @@ by(cases xs) auto
 
 lemma llexord_llist_of:
   "llexord r (llist_of xs) (llist_of ys) \<longleftrightarrow> 
-   xs = ys \<or> (xs, ys) \<in> lexord (\<lambda>(x, y). r x y)"
+   xs = ys \<or> (xs, ys) \<in> lexord {(x, y). r x y}"
   (is "?lhs \<longleftrightarrow> ?rhs")
 proof
   assume ?lhs
@@ -3231,9 +3222,9 @@ proof
       thus ?thesis ..
     qed
     hence "(xs, ys) \<in> {(x, y). \<exists>a v. y = x @ a # v \<or>
-                                    (\<exists>u a b v w. (a, b) \<in> (\<lambda>(x, y). r x y) \<and> 
+                                    (\<exists>u a b v w. (a, b) \<in> {(x, y). r x y} \<and> 
                                                  x = u @ a # v \<and> y = u @ b # w)}"
-      by(simp add: split_def)(simp add: mem_def) }
+      by auto }
   with `?lhs` show ?rhs
     unfolding lexord_def llexord_conv llist_of_inj by blast
 next
@@ -3242,19 +3233,19 @@ next
   proof
     assume "xs = ys" thus ?thesis by simp
   next
-    assume "(xs, ys) \<in> lexord (\<lambda>(x, y). r x y)"
+    assume "(xs, ys) \<in> lexord {(x, y). r x y}"
     moreover def xs' == "llist_of xs"
     moreover def ys' == "llist_of ys"
     ultimately have "(xs', ys') \<in> 
                   {(llist_of xs, llist_of ys)
-                   |xs ys. (xs, ys) \<in> lexord (\<lambda>(x, y). r x y)}"
+                   |xs ys. (xs, ys) \<in> lexord {(x, y). r x y}}"
       by blast
     thus "llexord r xs' ys'"
     proof(coinduct)
       case (llexord xs' ys')
       then obtain xs ys where [simp]: "xs' = llist_of xs" "ys' = llist_of ys"
-        and "(xs, ys) \<in> lexord (\<lambda>(x, y). r x y)" by blast
-      thus ?case by(cases xs, simp)(cases ys, auto, simp_all add: mem_def)
+        and "(xs, ys) \<in> lexord {(x, y). r x y}" by blast
+      thus ?case by(cases xs, simp)(cases ys, auto)
     qed
   qed
 qed

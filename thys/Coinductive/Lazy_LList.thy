@@ -119,11 +119,11 @@ lemma lzip_Lazy_llist [code]:
   Lazy_llist (\<lambda>_. Option.bind (xs ()) (\<lambda>(x, xs'). Option.map (\<lambda>(y, ys'). ((x, y), lzip xs' ys')) (ys ())))"
 by auto
 
-declare lset_code [code del]
+declare lset_LNil[code del] lset_LCons[code del]
 
 lemma lset_Lazy_llist [code]:
-  "lset (Lazy_llist xs) x =
-  (case xs () of None \<Rightarrow> False | Some (y, ys) \<Rightarrow> x = y \<or> lset ys x)"
+  "lset (Lazy_llist xs) =
+  (case xs () of None \<Rightarrow> {} | Some (y, ys) \<Rightarrow> insert y (lset ys))"
 by(auto simp add: insert_code)
 
 declare llist_all2_code [code del]
