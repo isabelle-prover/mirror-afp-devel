@@ -1,6 +1,6 @@
-(* Author: Christian Urban *)
-
 header "Derivatives of regular expressions"
+
+(* Author: Christian Urban *)
 
 theory Derivatives
 imports Regular_Exp
@@ -72,6 +72,7 @@ lemma Derivs_simps [simp]:
   and   "Derivs (c # s) A = Derivs s (Deriv c A)"
   and   "Derivs (s1 @ s2) A = Derivs s2 (Derivs s1 A)"
 unfolding Derivs_def Deriv_def by auto
+
 
 subsection {* Brozowsky's derivatives of regular expressions *}
 
@@ -377,5 +378,19 @@ by (simp add: finite_pderivs_lang_UNIV1)
 lemma finite_pderivs_lang:
   shows "finite (pderivs_lang A r)"
 by (metis finite_pderivs_lang_UNIV pderivs_lang_subset rev_finite_subset subset_UNIV)
+
+
+subsection {* A regular expression matcher based on Brozowski's derivatives *}
+
+fun
+  matcher :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> bool"
+where
+  "matcher r s = nullable (derivs s r)"
+
+lemma matcher_correctness:
+  shows "matcher r s \<longleftrightarrow> s \<in> lang r"
+by (induct s arbitrary: r)
+   (simp_all add: nullable_iff Deriv_deriv[symmetric] Deriv_def)
+
 
 end
