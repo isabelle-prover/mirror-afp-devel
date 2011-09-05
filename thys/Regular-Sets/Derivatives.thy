@@ -6,8 +6,6 @@ theory Derivatives
 imports Regular_Exp
 begin
 
-section {* Leftquotients, Derivatives and Partial Derivatives *}
-
 text{* This theory is based on work by Brozowski \cite{Brzozowski64} and Antimirov \cite{Antimirov95}. *}
 
 subsection {* Left-Quotients of languages *}
@@ -74,7 +72,7 @@ lemma Derivs_simps [simp]:
 unfolding Derivs_def Deriv_def by auto
 
 
-subsection {* Brozowsky's derivatives of regular expressions *}
+subsection {* Brozowski's derivatives of regular expressions *}
 
 fun
   nullable :: "'a rexp \<Rightarrow> bool"
