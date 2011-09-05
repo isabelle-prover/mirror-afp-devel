@@ -209,7 +209,7 @@ proof -
 qed
 
 
-subsection {* Non-regularity for languages *}
+subsection {* Continuation lemma for showing non-regularity of languages *}
 
 lemma continuation_lemma:
   fixes A B::"'a::finite lang"
@@ -243,7 +243,7 @@ proof -
 qed
 
 
-subsubsection {* The language @{text "a ^ n b ^ n"} is not regular *}
+subsection {* The language @{text "a\<^sup>n b\<^sup>n"} is not regular *}
 
 abbreviation
   replicate_rev ("_ ^^^ _" [100, 100] 100)
