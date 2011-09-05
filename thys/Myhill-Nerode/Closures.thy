@@ -253,17 +253,6 @@ where
 definition
   "length_test s a b \<equiv> length (filter (op= a) s) = length (filter (op= b) s)"
 
-lemma [simp]:
-  assumes "i \<noteq> j" "a \<noteq> b"
-  shows "length_test ((a ^^^ i) @ (b ^^^ j)) a b \<noteq> length_test ((a ^^^ n) @ (b ^^^ n)) a b"
-using assms unfolding length_test_def by auto
-
-lemma [simp]:
-  assumes "a \<noteq> b"
-  shows "filter (op= a) ((a ^^^ i) @ (b ^^^ j)) = a ^^^ i"
-  and   "filter (op= b) ((a ^^^ i) @ (b ^^^ j)) = b ^^^ j"
-using assms by simp_all
-
 lemma length_test:
   "x = y \<Longrightarrow> length_test x a b = length_test y a b"
 by simp
@@ -285,7 +274,6 @@ proof
     apply(auto simp add: B_def A_def)
     apply(auto simp add: str_eq_def)
     apply(drule_tac x="CHR ''b'' ^^^ aa" in spec)
-    (*apply(auto simp add: f_def dest: l3)*)
     apply(auto)
     apply(drule_tac a="CHR ''a''" and b="CHR ''b''" in length_test)
     apply(simp add: length_test_def)
