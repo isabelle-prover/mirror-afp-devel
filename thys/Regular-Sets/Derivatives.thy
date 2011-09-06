@@ -115,7 +115,7 @@ lemma Derivs_derivs:
 by (induct s arbitrary: r) (simp_all add: Deriv_deriv)
 
 
-subsection {* Antimirov's partial derivivatives *}
+subsection {* Antimirov's partial derivatives *}
 
 abbreviation
   "Timess rs r \<equiv> {Times r' r | r'. r' \<in> rs}"
@@ -165,7 +165,7 @@ lemma pderivs_Atom:
   shows "pderivs s (Atom c) \<subseteq> {Atom c, One}"
 by (induct s) (simp_all)
 
-subsection {* Relating left-quotients and partial derivivatives *}
+subsection {* Relating left-quotients and partial derivatives *}
 
 lemma Deriv_pderiv:
   shows "Deriv c (lang r) = \<Union> lang ` (pderiv c r)"
@@ -186,7 +186,7 @@ proof (induct s arbitrary: r)
   finally show "Derivs (c # s) (lang r) = \<Union> lang ` pderivs (c # s) r" .
 qed (simp add: Derivs_def)
 
-subsection {* Relating derivivatives and partial derivivatives *}
+subsection {* Relating derivatives and partial derivatives *}
 
 lemma deriv_pderiv:
   shows "(\<Union> lang ` (pderiv c r)) = lang (deriv c r)"
@@ -197,7 +197,7 @@ lemma derivs_pderivs:
 unfolding Derivs_derivs[symmetric] Derivs_pderivs by simp
 
 
-subsection {* Finiteness property of partial derivivatives *}
+subsection {* Finiteness property of partial derivatives *}
 
 definition
   pderivs_lang :: "'a lang \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp set"
@@ -244,7 +244,7 @@ lemma pderivs_lang_Plus [simp]:
 unfolding UNIV1_def pderivs_lang_def by auto
 
 
-text {* Non-empty suffixes of a string (needed for teh cases of @{const Times} and @{const Star} *}
+text {* Non-empty suffixes of a string (needed for the cases of @{const Times} and @{const Star} below) *}
 
 definition
   "PSuf s \<equiv> {v. v \<noteq> [] \<and> (\<exists>u. u @ v = s)}"
