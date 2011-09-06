@@ -422,10 +422,3 @@ lemma all_imp_eq_triv: "(\<forall>x. x = k \<longrightarrow> Q) = Q"
   by auto
   
 end
-
-
-
-
-
-
- 
