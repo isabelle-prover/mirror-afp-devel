@@ -27,7 +27,7 @@ USA
 *)
 
 header {* Proof of Procedure Levellist *}
-theory LevellistProof imports ProcedureSpecs "../HeapList"  begin
+theory LevellistProof imports ProcedureSpecs HeapList begin
 
 hide_const (open) DistinctTreeProver.set_of tree.Node tree.Tip
 

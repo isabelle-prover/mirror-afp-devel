@@ -29,7 +29,7 @@ USA
 header "Experiments on State Composition"
 
 
-theory Compose imports HoareTotalProps begin
+theory Compose imports "../HoareTotalProps" begin
 
 text {*
 We develop some theory to support state-space modular development of programs.
