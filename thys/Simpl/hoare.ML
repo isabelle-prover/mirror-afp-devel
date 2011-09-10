@@ -130,17 +130,17 @@ fun dest_Un (Const (@{const_name Lattices.sup}, _) $ t1 $ t2) = dest_Un t1 @ des
   | dest_Un t = [t]
 
 fun UN_const (dT as (Type ("fun", [dT', @{typ bool}]))) rT =
-      Const (@{const_name Complete_Lattice.SUPR}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name Orderings.top}, dT)
+      Const (@{const_name Complete_Lattices.SUPR}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name Orderings.top}, dT)
   | UN_const _ _ = raise Match;
 
 fun mk_UN (x, T, P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x, T) P;
 
-fun dest_UN (Const (@{const_name Complete_Lattice.SUPR}, _) $ Const (@{const_name Orderings.top}, _) $ Abs (x, T, t)) =
+fun dest_UN (Const (@{const_name Complete_Lattices.SUPR}, _) $ Const (@{const_name Orderings.top}, _) $ Abs (x, T, t)) =
       let val (vars, body) = dest_UN t
       in ((x, T) :: vars, body) end
   | dest_UN t = ([], t);
 
-fun tap_UN (Const (@{const_name Complete_Lattice.SUPR}, _) $ Const (@{const_name Orderings.top}, _) $ t) = SOME t
+fun tap_UN (Const (@{const_name Complete_Lattices.SUPR}, _) $ Const (@{const_name Orderings.top}, _) $ t) = SOME t
   | tap_UN _ = NONE;
 
 

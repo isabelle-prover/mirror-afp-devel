@@ -1906,7 +1906,7 @@ proof -
         with red wfx have a: "typeof_addr h' a = \<lfloor>Class C\<rfloor>" by(rule red_NewObjD)
         have "mrw_addrs ?vs' \<subseteq> mrw_addrs ?vs" unfolding ob
           by(auto simp add: mrw_addrs_def ran_def default_val_not_Addr Addr_not_default_val image_Collect split_paired_Ex split del: option.splits split: split_if_asm)
-        note Complete_Lattice.UN_mono[OF Un_mono[OF subset_refl this] subset_refl]
+        note Complete_Lattices.UN_mono[OF Un_mono[OF subset_refl this] subset_refl]
         also note dom_vs
         also have "dom ?vs \<subseteq> dom ?vs'" by(simp)(rule mrw_value_dom_mono)
         also from a ob have "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> dom ?vs'" by(fastsimp elim!: addr_loc_type.cases)
@@ -1924,7 +1924,7 @@ proof -
         with red wfx have a: "typeof_addr h' a = \<lfloor>Array T\<rfloor>" "array_length h' a = n" by(blast dest: red_NewArrD)+
         have "mrw_addrs ?vs' \<subseteq> mrw_addrs ?vs" unfolding ob
           by(auto simp add: mrw_addrs_def ran_def default_val_not_Addr Addr_not_default_val image_Collect split_paired_Ex split del: option.splits)
-        note Complete_Lattice.UN_mono[OF Un_mono[OF subset_refl this] subset_refl]
+        note Complete_Lattices.UN_mono[OF Un_mono[OF subset_refl this] subset_refl]
         also note dom_vs
         also have "dom ?vs \<subseteq> dom ?vs'" by(simp)(rule mrw_value_dom_mono)
         also from a ob have "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> dom ?vs'"
@@ -2001,7 +2001,7 @@ proof -
     from tst have kasub: "known_addrs_if t x \<subseteq> if.known_addrs_state s" by(auto intro: if.known_addrs_stateI)
     note Un_mono[OF this]
     hence "(\<Union>a\<in>known_addrs_if t x \<union> mrw_addrs vs. {(a, al) |al. \<exists>T. P,shr s \<turnstile> a@al : T}) \<subseteq> (\<Union>a \<in> if.known_addrs_state s \<union> mrw_addrs vs. {(a, al)|al. \<exists>T. P,shr s \<turnstile> a@al : T})"
-      by(rule Complete_Lattice.UN_mono) simp_all
+      by(rule Complete_Lattices.UN_mono) simp_all
     also note dom_vs
     finally have dom_vs': "(\<Union>a\<in>known_addrs_if t x \<union> mrw_addrs vs. {(a, al) |al. \<exists>T. P,shr s \<turnstile> a@al : T}) \<subseteq> dom vs" .
     
@@ -2016,7 +2016,7 @@ proof -
 
     have "(\<Union>a\<in>if.known_addrs_state s' \<union> mrw_addrs (mrw_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>). {(a, al) |al. \<exists>T. P,shr s' \<turnstile> a@al : T}) \<subseteq> (\<Union>a\<in>known_addrs_if t x' \<union> mrw_addrs (mrw_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) \<union> if.known_addrs_state s. {(a, al) |al. \<exists>T. P,m' \<turnstile> a@al : T})"
       using init_fin_redT_known_addrs_subset[OF redT] s'
-      by-(rule Complete_Lattice.UN_mono, auto)
+      by-(rule Complete_Lattices.UN_mono, auto)
     also note UN_Un
     also note Un_mono[OF dom_vs'' subset_refl]
     also have "(\<Union>a\<in>if.known_addrs_state s. {(a, al) |al. \<exists>T. P,m' \<turnstile> a@al : T}) \<subseteq> dom (mrw_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)" 
