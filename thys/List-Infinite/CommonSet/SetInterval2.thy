@@ -946,10 +946,6 @@ apply (rule class.distrib_lattice_axioms.intro)
 apply (rule min_max.sup_inf_distrib1)
 done
 
-lemma "class.distrib_lattice (op \<ge>) (op >) (max::('a::linorder \<Rightarrow> 'a \<Rightarrow> 'a)) min"
-thm linorder_class.min_max.dual_distrib_lattice
-by (rule linorder_class.min_max.dual_distrib_lattice)
-
 print_locale Lattices.distrib_lattice
 
 thm Big_Operators.distrib_lattice.sup_Inf1_distrib
