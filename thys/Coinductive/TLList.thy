@@ -9,6 +9,7 @@ theory TLList imports
   Quotient_Coinductive_List
   "~~/src/HOL/Library/Quotient_Product"
   "~~/src/HOL/Library/Quotient_Sum"
+  "~~/src/HOL/Library/Quotient_Set"
 begin
 
 text {*
@@ -23,16 +24,6 @@ text {*
 *}
 
 subsection {* Auxiliary lemmas *}
-
-lemma mem_preserve [quot_preserve]: 
-  assumes "Quotient R Abs Rep"
-  shows "(Rep ---> (Abs ---> id) ---> id) (op \<in>) = op \<in>"
-using Quotient_abs_rep[OF assms]
-by(simp add: fun_eq_iff mem_def)
-
-lemma mem_respect [quot_respect]:
-  "(R ===> (R ===> op =) ===> op =) (op \<in>) (op \<in>)"
-  by (auto simp add: fun_eq_iff mem_def intro!: fun_relI elim: fun_relE)
 
 lemma sum_case_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
