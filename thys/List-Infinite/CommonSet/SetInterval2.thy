@@ -908,11 +908,11 @@ print_locale! distrib_lattice
 (*print_interps distrib_lattice*)
 thm distrib_lattice_class.axioms
 interpretation min_max2:
-  distrib_lattice "op \<le> :: 'a::linorder \<Rightarrow> 'a \<Rightarrow> bool" "op <" min max
+  distrib_lattice min "op \<le> :: 'a::linorder \<Rightarrow> 'a \<Rightarrow> bool" "op <" max
 ..
 print_theorems
 term distrib_lattice_class
-lemma "class.distrib_lattice (op \<le> ) (op <) (min::('a::linorder \<Rightarrow> 'a \<Rightarrow> 'a)) max"
+lemma "class.distrib_lattice (min::('a::linorder \<Rightarrow> 'a \<Rightarrow> 'a)) (op \<le>) (op <) max"
 print_locale distrib_lattice
 thm distrib_lattice_class.intro
 apply (subgoal_tac "class.order (op \<le>) (op <)")

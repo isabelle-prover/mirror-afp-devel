@@ -55,7 +55,7 @@ theorem lfp_mono [simp]:
 text {*Some lattice simplification rules*}
 
 lemma inf_bot_bot: (* FIXME *)
-  "x \<sqinter> \<bottom> = \<bottom>"
+  "(x::'a::{semilattice_inf,bot}) \<sqinter> \<bottom> = \<bottom>"
   apply (rule antisym)
   by auto
 

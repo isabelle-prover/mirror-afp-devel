@@ -446,9 +446,9 @@ by (rule le_inf_prefix_iff[THEN iffD2], simp)
 
 interpretation prefix:
   semilattice_inf
+    "op \<sqinter> :: 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
     "op \<le> :: 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
     "op < :: 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
-    "op \<sqinter> :: 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
 apply intro_locales
 apply (rule class.semilattice_inf_axioms.intro)
 apply (rule inf_prefix_le1)

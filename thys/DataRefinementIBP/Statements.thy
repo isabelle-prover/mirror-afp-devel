@@ -104,8 +104,10 @@ is correct. If there is no state $s'$
 such that $Q\ s \ s'$, then the angelic update of $Q$ fails in $s$.
 *}
 
-definition
+definition angelic :: "('a \<Rightarrow> 'b :: {semilattice_inf,bot}) \<Rightarrow> 'b \<Rightarrow> 'a set"
+where
   "angelic Q p = {s . (Q s) \<sqinter> p \<noteq> \<bottom>}"
+
 
 lemma mono_angelic[simp]:
   "mono (angelic R)" 

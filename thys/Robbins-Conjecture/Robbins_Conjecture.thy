@@ -101,7 +101,7 @@ text {* The following provides the canonical definitions for order and
 context boolean_algebra_II begin
 
 lemma boolean_II_is_boolean:
-   "class.boolean_algebra minus uminus (op \<sqsubseteq>) (op \<sqsubset>) (op \<sqinter>) (op \<squnion>) \<bottom> \<top>"
+   "class.boolean_algebra minus uminus (op \<sqinter>) (op \<sqsubseteq>) (op \<sqsubset>) (op \<squnion>) \<bottom> \<top>"
 apply unfold_locales
 apply (metis inf_absorb inf_assoc inf_comm inf_compl
              less_def less_eq_def minus_def 
@@ -152,7 +152,7 @@ lemma boolean_II_is_huntington:
   "class.huntington_algebra uminus (op \<sqinter>) (op \<squnion>) \<bottom> \<top>"
 proof -
   interpret boolean: 
-    boolean_algebra minus uminus "op \<sqsubseteq>" "op \<sqsubset>" "op \<sqinter>" "op \<squnion>" \<bottom> \<top>
+    boolean_algebra minus uminus "op \<sqinter>" "op \<sqsubseteq>" "op \<sqsubset>" "op \<squnion>" \<bottom> \<top>
       by (fact boolean_II_is_boolean)
    thus ?thesis by (simp add: boolean.boolean_is_huntington)
 qed
@@ -364,7 +364,7 @@ apply (metis inf_comm inf_assoc sup_absorb
 done
 
 lemma huntington_is_boolean:
-   "class.boolean_algebra minus uminus (op \<sqsubseteq>) (op \<sqsubset>) (op \<sqinter>) (op \<squnion>) \<bottom> \<top>"
+   "class.boolean_algebra minus uminus (op \<sqinter>) (op \<sqsubseteq>) (op \<sqsubset>) (op \<squnion>) \<bottom> \<top>"
 proof -
   interpret boolean_II: 
     boolean_algebra_II uminus "op \<sqinter>" "op \<squnion>" \<bottom> \<top>
@@ -389,7 +389,7 @@ lemma boolean_II_is_robbins:
   "class.robbins_algebra uminus inf sup bot top"
 proof -
   interpret boolean: 
-    boolean_algebra minus uminus "op \<sqsubseteq>" "op \<sqsubset>" "op \<sqinter>" "op \<squnion>" \<bottom> \<top>
+    boolean_algebra minus uminus "op \<sqinter>" "op \<sqsubseteq>" "op \<sqsubset>" "op \<squnion>" \<bottom> \<top>
       by (fact boolean_II_is_boolean)
    thus ?thesis by (simp add: boolean.boolean_is_robbins)
 qed
@@ -400,7 +400,7 @@ lemma huntington_is_robbins:
   "class.robbins_algebra uminus inf sup bot top"
 proof -
   interpret boolean: 
-    boolean_algebra minus uminus "op \<sqsubseteq>" "op \<sqsubset>" "op \<sqinter>" "op \<squnion>" \<bottom> \<top>
+    boolean_algebra minus uminus "op \<sqinter>" "op \<sqsubseteq>" "op \<sqsubset>" "op \<squnion>" \<bottom> \<top>
       by (fact huntington_is_boolean)
    thus ?thesis by (simp add: boolean.boolean_is_robbins)
 qed
@@ -954,7 +954,7 @@ proof -
 qed
 
 theorem robbins_is_boolean:
-  "class.boolean_algebra minus uminus (op \<sqsubseteq>) (op \<sqsubset>) (op \<sqinter>) (op \<squnion>) \<bottom> \<top>"
+  "class.boolean_algebra minus uminus (op \<sqinter>) (op \<sqsubseteq>) (op \<sqsubset>) (op \<squnion>) \<bottom> \<top>"
 proof -
   interpret huntington: 
     huntington_algebra uminus "op \<sqinter>" "op \<squnion>" \<bottom> \<top>
