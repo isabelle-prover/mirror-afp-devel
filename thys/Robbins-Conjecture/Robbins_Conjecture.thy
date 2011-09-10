@@ -887,7 +887,7 @@ proof -
   have I: "\<rho> = -(-\<rho> \<squnion> \<bottom>\<bottom>)"
     by (metis fake_bot_def inf_eq robbins sup_comm sup_idem)
 
-  { fix x; have "x = -(-(x \<squnion> -\<rho> \<squnion> \<bottom>\<bottom>) \<squnion> -(x \<squnion> \<rho>))"
+  { fix x have "x = -(-(x \<squnion> -\<rho> \<squnion> \<bottom>\<bottom>) \<squnion> -(x \<squnion> \<rho>))"
     by (metis I robbins sup_assoc) }
   note II = this
 
@@ -921,15 +921,15 @@ qed
 
 lemma dbl_neg: "- (-x) = x"
 proof -
-  { fix x ; have "\<bottom>\<bottom> = -(-x \<squnion> -(-x))"
+  { fix x have "\<bottom>\<bottom> = -(-x \<squnion> -(-x))"
       by (metis robbins sup_comm sup_ident) 
   } note I = this
 
-  { fix x ; have "-x = -(-(-x \<squnion> -(-(-x))))"
+  { fix x have "-x = -(-(-x \<squnion> -(-(-x))))"
     by (metis I robbins sup_comm sup_ident)
   } note II = this
 
-  { fix x ; have "-(-(-x)) = -(-(-x \<squnion> -(-(-x))))"
+  { fix x have "-(-(-x)) = -(-(-x \<squnion> -(-(-x))))"
     by (metis I II robbins sup_assoc sup_comm sup_ident) 
   } note III = this
 
