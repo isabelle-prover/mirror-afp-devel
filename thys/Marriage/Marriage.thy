@@ -8,16 +8,16 @@ theorem marriage_necessary:
   fixes A :: "'a \<Rightarrow> 'b set" and I :: "'a set"
   assumes "finite I" and "\<forall> i\<in>I. finite (A i)"
   and "\<exists>R. (\<forall>i\<in>I. R i \<in> A i) \<and> inj_on R I" (is "\<exists>R. ?R R A & ?inj R A")
-  shows "\<forall>J\<subseteq>I. card J \<le> card (\<Union> i\<in>J. A i)"
+  shows "\<forall>J\<subseteq>I. card J \<le> card (UNION J A)"
 proof clarify
   fix J
   assume "J \<subseteq> I"
-  show "card J \<le> card (\<Union>i\<in>J. A i)"
+  show "card J \<le> card (UNION J A)"
   proof-
     from assms(3) obtain R where "?R R A" and "?inj R A" by auto
     have "inj_on R J" by(rule subset_inj_on[OF `?inj R A` `J\<subseteq>I`])
-    moreover have "(R ` J) \<subseteq> (\<Union>i\<in>J. A i)" using `J\<subseteq>I` `?R R A` by auto
-    moreover have "finite (\<Union>i\<in>J. A i)" using `J\<subseteq>I` assms
+    moreover have "(R ` J) \<subseteq> (UNION J A)" using `J\<subseteq>I` `?R R A` by auto
+    moreover have "finite (UNION J A)" using `J\<subseteq>I` assms
       by (metis finite_UN_I finite_subset set_mp)
     ultimately show ?thesis by (rule card_inj_on_le)
   qed
@@ -27,7 +27,7 @@ text{* The proof by Halmos and Vaughan: *}
 theorem marriage_HV:
   fixes A :: "'a \<Rightarrow> 'b set" and I :: "'a set"
   assumes "finite I" and "\<forall> i\<in>I. finite (A i)"
-  and "\<forall>J\<subseteq>I. card J \<le> card (\<Union> i\<in>J. A i)" (is "?M A I")
+  and "\<forall>J\<subseteq>I. card J \<le> card (UNION J A)" (is "?M A I")
   shows "\<exists>R. (\<forall>i\<in>I. R i \<in> A i) \<and> inj_on R I"
        (is "?SDR A I" is "\<exists>R. ?R R A I & ?inj R A I")
 proof-
@@ -50,7 +50,7 @@ proof-
         qed
         show ?thesis
         proof cases
-          assume case1: "\<forall>K\<subset>I. K\<noteq>{} \<longrightarrow> card (\<Union>i\<in>K. A i) \<ge> card K + 1"
+          assume case1: "\<forall>K\<subset>I. K\<noteq>{} \<longrightarrow> card (UNION K A) \<ge> card K + 1"
           show ?thesis
           proof-
             from `I\<noteq>{}` obtain n where "n\<in>I" by auto
@@ -65,23 +65,23 @@ proof-
               fix J
               assume "J \<subseteq> ?I'"
               hence "J \<subset> I" by (metis `I - {n} \<subset> I` subset_psubset_trans)
-              show "card J \<le> card (\<Union>i\<in>J. ?A' i)"
+              show "card J \<le> card (UNION J ?A')"
               proof cases
                 assume "J = {}" thus ?thesis by auto
               next
                 assume "J \<noteq> {}"
-                hence "card J + 1 \<le> card(\<Union>i\<in>J. A i)" using case1 `J\<subset>I` by blast
+                hence "card J + 1 \<le> card(UNION J A)" using case1 `J\<subset>I` by blast
                 moreover
-                have "card(\<Union>i\<in>J. A i) - 1 \<le> card(\<Union>i\<in>J. ?A' i)" (is "?l \<le> ?r")
+                have "card(UNION J A) - 1 \<le> card(UNION J ?A')" (is "?l \<le> ?r")
                 proof-
                   have "finite J" using `J \<subset> I` psubset(1)
                     by (metis psubset_imp_subset finite_subset)
-                  hence 1: "finite(\<Union>i\<in>J. A i)"
+                  hence 1: "finite(UNION J A)"
                     using `\<forall>i\<in>I. finite(A i)` `J\<subset>I` by force
-                  have "?l = card(\<Union>i\<in>J. A i) - card{x}" by simp
-                  also have "\<dots> \<le> card((\<Union>i\<in>J. A i) - {x})" using 1
+                  have "?l = card(UNION J A) - card{x}" by simp
+                  also have "\<dots> \<le> card(UNION J A - {x})" using 1
                     by (metis diff_card_le_card_Diff finite.intros)
-                  also have "(\<Union>i\<in>J. A i) - {x} = (\<Union>i\<in>J. ?A' i)" by blast
+                  also have "UNION J A - {x} = UNION J ?A'" by blast
                   finally show ?thesis .
                 qed
                 ultimately show ?thesis by arith
@@ -97,55 +97,55 @@ proof-
             with `?R ?Rx A I` show ?thesis by auto
           qed
         next
-          assume "\<not> (\<forall>K\<subset>I. K\<noteq>{} \<longrightarrow> card (\<Union>i\<in>K. A i) \<ge> card K + 1)"
+          assume "\<not> (\<forall>K\<subset>I. K\<noteq>{} \<longrightarrow> card (UNION K A) \<ge> card K + 1)"
           then obtain K where
-            "K\<subset>I" "K\<noteq>{}" and c1: "\<not>(card (\<Union>i\<in>K. A i) \<ge> card K + 1)" by auto
-          with psubset.prems(2) have "card (\<Union>i\<in>K. A i) \<ge> card K" by auto
-          with c1 have case2: "card (\<Union>i\<in>K. A i)= card K" by auto
+            "K\<subset>I" "K\<noteq>{}" and c1: "\<not>(card (UNION K A) \<ge> card K + 1)" by auto
+          with psubset.prems(2) have "card (UNION K A) \<ge> card K" by auto
+          with c1 have case2: "card (UNION K A)= card K" by auto
           from `K\<subset>I` `finite I` have "finite K" by (auto intro:finite_subset)
           from psubset.prems `K\<subset>I`
-          have "\<forall>i\<in>K. finite (A i)" "\<forall>J\<subseteq>K. card J \<le> card(\<Union>i\<in>J. A i)" by auto
+          have "\<forall>i\<in>K. finite (A i)" "\<forall>J\<subseteq>K. card J \<le> card(UNION J A)" by auto
           from psubset(2)[OF `K\<subset>I` this]
           obtain R1 where "?R R1 A K" "?inj R1 A K" by auto
-          let ?AK = "\<lambda>i. A i - (\<Union>i\<in>K. A i)" let ?IK = "I - K"
+          let ?AK = "\<lambda>i. A i - UNION K A" let ?IK = "I - K"
           from `K\<noteq>{}` `K\<subset>I` have "?IK\<subset>I" by auto
           have "\<forall>i\<in>?IK. finite (?AK i)" using psubset.prems(1) by auto
           have "?M ?AK ?IK"
           proof clarify
             fix J assume "J \<subseteq> ?IK"
             with `finite I` have "finite J" by(auto intro: finite_subset)
-            show "card J \<le> card (\<Union>i\<in>J. ?AK i)"
+            show "card J \<le> card (UNION J ?AK)"
             proof-
               from `J\<subseteq>?IK` have "J \<inter> K = {}" by auto
               have "card J = card(J\<union>K) - card K"
                 using `finite J` `finite K` `J\<inter>K={}`
                 by (auto simp: card_Un_disjoint)
-              also have "card(J\<union>K) \<le> card(\<Union>i\<in>J\<union>K. A i)"
+              also have "card(J\<union>K) \<le> card(UNION (J\<union>K) A)"
               proof -
                 from `J\<subseteq>?IK` `K\<subset>I` have "J \<union> K \<subseteq> I" by auto
                 with psubset.prems(2) show ?thesis by blast
               qed
-              also have "\<dots> - card K = card((\<Union>i\<in>J. ?AK i) \<union> (\<Union>i\<in>K. A i)) - card K"
+              also have "\<dots> - card K = card(UNION J ?AK \<union> UNION K A) - card K"
               proof-
-                have "(\<Union>i\<in>J\<union>K. A i) = (\<Union>i\<in>J. ?AK i) \<union> (\<Union>i\<in>K. A i)"
+                have "UNION (J\<union>K) A = UNION J ?AK \<union> UNION K A"
                   using `J\<subseteq>?IK` by auto
                 thus ?thesis by simp
               qed
-              also have "\<dots> = card(\<Union>i\<in>J. ?AK i) + card(\<Union>i\<in>K. A i) - card K"
+              also have "\<dots> = card(UNION J ?AK) + card(UNION K A) - card K"
               proof-
-                have "finite (\<Union>i\<in>J. ?AK i)" using `finite J` `J\<subseteq>?IK` psubset(3)
+                have "finite (UNION J ?AK)" using `finite J` `J\<subseteq>?IK` psubset(3)
                   by(blast intro: finite_UN_I finite_Diff)
-                moreover have "finite (\<Union>i\<in>K. A i)"
+                moreover have "finite (UNION K A)"
                   using `finite K` `\<forall>i\<in>K. finite (A i)` by auto
-                moreover have "(\<Union>i\<in>J. ?AK i) \<inter> (\<Union>i\<in>K. A i) = {}" by auto
+                moreover have "UNION J ?AK \<inter> UNION K A = {}" by auto
                 ultimately show ?thesis
                   by (simp add: card_Un_disjoint del:Un_Diff_cancel2)
               qed
-              also have "\<dots> = card(\<Union>i\<in>J. ?AK i)" using case2 by simp
+              also have "\<dots> = card(UNION J ?AK)" using case2 by simp
               finally show ?thesis by simp
             qed
           qed
-          from psubset(2)[OF `?IK\<subset>I` `\<forall>i\<in>?IK. finite (?AK i)` `\<forall>J\<subseteq>?IK. card J\<le>card(\<Union>i\<in>J. ?AK i)`]
+          from psubset(2)[OF `?IK\<subset>I` `\<forall>i\<in>?IK. finite (?AK i)` `\<forall>J\<subseteq>?IK. card J\<le>card(UNION J ?AK)`]
           obtain R2 where "?R R2 ?AK ?IK" "?inj R2 ?AK ?IK" by auto
           let ?R12 = "\<lambda>i. if i\<in>K then R1 i else R2 i"
           have "\<forall>i\<in>I. ?R12 i \<in> A i" using `?R R1 A K``?R R2 ?AK ?IK` by auto
@@ -177,7 +177,7 @@ text{* The proof by Rado: *}
 theorem marriage_Rado:
   fixes A :: "'a \<Rightarrow> 'b set" and I :: "'a set"
   assumes "finite I" and "\<forall> i\<in>I. finite (A i)"
-  and "\<forall>J\<subseteq>I. card J \<le> card (\<Union> i\<in>J. A i)" (is "?M A")
+  and "\<forall>J\<subseteq>I. card J \<le> card (UNION J A)" (is "?M A")
   shows "\<exists>R. (\<forall>i\<in>I. R i \<in> A i) \<and> inj_on R I"
        (is "?SDR A" is "\<exists>R. ?R R A & ?inj R A")
 proof-
