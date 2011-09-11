@@ -41,7 +41,13 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-A proof of Hall's Marriage Theorem due to Halmos and Vaughan.
+Two proofs of Hall's Marriage Theorem: one due to Halmos and Vaughan, one due to Rado.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2011-09-09]: Added Rado's proof
         </td></tr>
 
     <tr><td class="datahead">License:</td>

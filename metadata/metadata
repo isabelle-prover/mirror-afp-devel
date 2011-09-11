@@ -856,7 +856,10 @@ title = Hall's Marriage Theorem
 author = Dongchen Jiang <mailto:dongchenjiang@googlemail.com>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2010-12-17
 topic = Mathematics/Combinatorics
-abstract = A proof of Hall's Marriage Theorem due to Halmos and Vaughan.
+abstract = Two proofs of Hall's Marriage Theorem: one due to Halmos and Vaughan, one due to Rado.
+extra-history =
+  Change history:
+  [2011-09-09]: Added Rado's proof
 
 [Ramsey-Infinite]
 title = Ramsey's theorem, infinitary version
