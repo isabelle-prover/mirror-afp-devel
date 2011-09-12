@@ -646,7 +646,7 @@ lemma mset_map_le: "!!B. A \<le> B \<Longrightarrow> f `# A \<le> f `# B" proof 
   case empty thus ?case by simp
 next
   case (add A x B)
-  hence "A\<le>B-{#x#}" and SM: "{#x#}\<le>B" using mset_le_subtract_right by (fastsimp+)
+  hence "A\<le>B-{#x#}" and SM: "{#x#}\<le>B" using mset_le_subtract_right by (fastforce+)
   with "add.hyps" have "f `# A \<le> f `# (B-{#x#})" by blast
   hence "f `# (A+{#x#}) \<le> f `# (B-{#x#}) + {#f x#}" by auto
   also have "\<dots> = f `# (B-{#x#}+{#x#})" by simp
@@ -659,8 +659,8 @@ lemma mset_map_set_of: "set_of (f `# A) = f ` set_of A"
 
 lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>P=P1+P2; f `# P1 = M1; f `# P2 = M2\<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   apply (induct P)
-  apply fastsimp
-  apply (fastsimp elim!: mset_un_single_un_cases simp add: union_ac) (* TODO: This proof need's quite long. Try to write a faster one. *)
+  apply fastforce
+  apply (fastforce elim!: mset_un_single_un_cases simp add: union_ac) (* TODO: This proof need's quite long. Try to write a faster one. *)
   done
 
 lemma mset_map_id: "\<lbrakk>!!x. f (g x) = x\<rbrakk> \<Longrightarrow> f `# g `# X = X"

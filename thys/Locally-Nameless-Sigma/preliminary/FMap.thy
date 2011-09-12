@@ -202,7 +202,7 @@ next
       next
         case False thus ?thesis using z by auto
       qed
-      thus "z \<in> insert x {(x, y). x \<in> dom F \<and> F x = Some y}" by fastsimp
+      thus "z \<in> insert x {(x, y). x \<in> dom F \<and> F x = Some y}" by fastforce
     qed
   thus 
     "{(xa, y). xa \<in> dom (F(fst x \<mapsto> snd x)) \<and> (F(fst x \<mapsto> snd x)) xa = Some y} \<subseteq> 
@@ -287,7 +287,7 @@ proof -
   have "finite (dom F \<times> ran F)" .
   moreover
   have "set_fmap F \<subseteq> dom F \<times> ran F"
-    unfolding set_fmap_def dom_def ran_def by fastsimp
+    unfolding set_fmap_def dom_def ran_def by fastforce
   ultimately
   show ?thesis using finite_subset by auto
 qed

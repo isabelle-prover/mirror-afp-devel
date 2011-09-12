@@ -23,7 +23,7 @@ proof -
   { fix a' C Cs S'
     assume leq:"P \<turnstile> Class (last Cs) \<le> T" and subo:"Subobjs P C Cs"
       and casts':"P \<turnstile> T casts Ref (a',Cs) to v'" and h:"h a' = Some(C,S')"
-    from subo wf have "is_class P (last Cs)" by(fastsimp intro:Subobj_last_isClass)
+    from subo wf have "is_class P (last Cs)" by(fastforce intro:Subobj_last_isClass)
     with leq wf obtain C' where T:"T = Class C'"
       and path_unique:"P \<turnstile> Path (last Cs) to C' unique"
       by(auto dest:Class_widen)
@@ -57,7 +57,7 @@ proof (induct rule:red_reds_inducts)
   with wf have oconf:"P,h \<turnstile> (C, Collect (init_obj P C)) \<surd>"
     apply (auto simp:oconf_def)
     apply (rule_tac x="init_class_fieldmap P (last Cs)" in exI)
-    by (fastsimp intro:init_obj.intros fconf_init_fields 
+    by (fastforce intro:init_obj.intros fconf_init_fields 
                  elim: init_obj.cases dest!:Subobj_last_isClass simp:is_class_def)+
   thus ?case using h' None by(fast intro: hconf_new[OF hconf])
 next
@@ -73,15 +73,15 @@ next
   with field have eq:"T = T'" by (rule sees_field_fun)
   with casts wte wf have conf:"P,h \<turnstile> v' :\<le> T'"
     by(auto intro:casts_conf)
-  from hconf ha have oconf:"P,h \<turnstile> (D,S) \<surd>" by (fastsimp simp:hconf_def)
-  with S have suboD:"Subobjs P D Ds" by (fastsimp simp:oconf_def)
+  from hconf ha have oconf:"P,h \<turnstile> (D,S) \<surd>" by (fastforce simp:hconf_def)
+  with S have suboD:"Subobjs P D Ds" by (fastforce simp:oconf_def)
   from field obtain Bs fs ms
     where subo:"Subobjs P (last Cs') Cs"
     and "class": "class P (last Cs) = Some(Bs,fs,ms)"
     and map:"map_of fs F = Some T"
     by (auto simp:LeastFieldDecl_def FieldDecls_def)
   from Ds subo have last:"last Cs = last Ds"
-    by(fastsimp dest:Subobjs_nonempty intro:appendPath_last simp:appendPath_last)
+    by(fastforce dest:Subobjs_nonempty intro:appendPath_last simp:appendPath_last)
   with "class" have classDs:"class P (last Ds) = Some(Bs,fs,ms)" by simp
   with S suboD oconf have "P,h \<turnstile> fs' (:\<le>) map_of fs"
     apply (auto simp:oconf_def)
@@ -160,7 +160,7 @@ next
     by (simp add:lconf_def fun_upd_apply)
   from IH[OF wte' this envconf'] have "P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V\<mapsto>T)" .
   with lconf' show ?case
-    by (fastsimp simp:lconf_def fun_upd_apply split:split_if_asm)
+    by (fastforce simp:lconf_def fun_upd_apply split:split_if_asm)
 next
   case (BlockRedSome E V T e h l e' h' l' v T')
   have red:"P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -179,7 +179,7 @@ next
     by (simp add:lconf_def fun_upd_apply)
   from IH[OF wte' this envconf'] have "P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V\<mapsto>T)" .
   with lconf' show ?case
-    by (fastsimp simp:lconf_def fun_upd_apply split:split_if_asm)
+    by (fastforce simp:lconf_def fun_upd_apply split:split_if_asm)
 next
   case (InitBlockRed E V T e h l v' e' h' l' v'' v T')
   have red: "P,E(V \<mapsto> T) \<turnstile> \<langle>e, (h, l(V\<mapsto>v'))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -204,7 +204,7 @@ next
     by -(rule lconf_upd2)
   from IH[OF wte' this envconf'] have "P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V \<mapsto> T)" .
   with lconf' show ?case
-    by (fastsimp simp:lconf_def fun_upd_apply split:split_if_asm)
+    by (fastforce simp:lconf_def fun_upd_apply split:split_if_asm)
 next
   case (CallObj E e h l e' h' l' Copt M es) thus ?case by (cases Copt) auto
 next
@@ -299,7 +299,7 @@ lemma red_preserves_sconf:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd>; wwf_prog P\<rbrakk> 
 \<Longrightarrow> P,E \<turnstile> s' \<surd>"
 
-by(fastsimp intro:red_preserves_hconf red_preserves_lconf
+by(fastforce intro:red_preserves_hconf red_preserves_lconf
             simp add:sconf_def)
 
 
@@ -307,7 +307,7 @@ lemma reds_preserves_sconf:
   "\<lbrakk> P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>; P,E,hp s \<turnstile> es [:] Ts; P,E \<turnstile> s \<surd>; wwf_prog P\<rbrakk> 
 \<Longrightarrow> P,E \<turnstile> s' \<surd>"
 
-by(fastsimp intro:reds_preserves_hconf reds_preserves_lconf
+by(fastforce intro:reds_preserves_hconf reds_preserves_lconf
             simp add:sconf_def)
 
 
@@ -391,11 +391,11 @@ next
   case (RedNewFail h E C l)
   have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P OutOfMemory" 
-    by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
+    by (fastforce intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt OutOfMemory,[OutOfMemory])) = Some(Class OutOfMemory)"
     by (auto elim: preallocatedE dest!:preallocatedD Subobjs_Base)
   with sconf have "P,E,h \<turnstile> THROW OutOfMemory : T" by(auto simp:sconf_def hconf_def)
-  thus ?case by (fastsimp intro:wt_same_type_typeconf)
+  thus ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case (StaticCastRed E e h l e' h' l' C)
   have wt:"P,E,h \<turnstile> \<lparr>C\<rparr>e : T"
@@ -413,7 +413,7 @@ next
     fix D assume "T' = Class D"
     with IH[OF sconf wte] isref "class" show ?thesis by auto
   qed
-  with T show ?case by (fastsimp intro:wt_same_type_typeconf)
+  with T show ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case RedStaticCastNull
   thus ?case by (auto elim:WTrt.cases)
@@ -431,7 +431,7 @@ next
     by(auto intro!:Subobjs_appendPath appendPath_last[THEN sym] Subobjs_nonempty
             simp:path_via_def)
   with h have "P,E,h \<turnstile> ref (a,Ds) : Class C" by auto
-  with T show ?case by (fastsimp intro:wt_same_type_typeconf)
+  with T show ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case (RedStaticDownCast E C a Cs Cs' h l)
   have "P,E,h \<turnstile> \<lparr>C\<rparr>ref (a,Cs@[C]@Cs') : T" by fact
@@ -441,18 +441,18 @@ next
   from typeof obtain D S where h:"h a = Some(D,S)" 
     and subo:"Subobjs P D (Cs@[C]@Cs')"
     by (auto dest:typeof_Class_Subo split:split_if_asm)
-  from subo have "Subobjs P D (Cs@[C])" by(fastsimp intro:appendSubobj)
+  from subo have "Subobjs P D (Cs@[C])" by(fastforce intro:appendSubobj)
   with h have "P,E,h \<turnstile> ref (a,Cs@[C]) : Class C" by auto
-  with T show ?case by (fastsimp intro:wt_same_type_typeconf)
+  with T show ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case (RedStaticCastFail C Cs E a h l)
   have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P ClassCast" 
-    by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
+    by (fastforce intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt ClassCast,[ClassCast])) = Some(Class ClassCast)"
     by (auto elim: preallocatedE dest!:preallocatedD Subobjs_Base)
   with sconf have "P,E,h \<turnstile> THROW ClassCast : T" by(auto simp:sconf_def hconf_def)
-  thus ?case by (fastsimp intro:wt_same_type_typeconf)
+  thus ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case (DynCastRed E e h l e' h' l' C)
   have wt:"P,E,h \<turnstile> Cast C e : T"
@@ -470,7 +470,7 @@ next
     fix D assume "T' = Class D"
     with IH[OF sconf wte] isref "class" show ?thesis by auto
   qed
-  with T show ?case by (fastsimp intro:wt_same_type_typeconf)
+  with T show ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case RedDynCastNull
   thus ?case by (auto elim:WTrt.cases)
@@ -487,7 +487,7 @@ next
   from path_via subo have "Subobjs P D Cs'" 
     and last:"last Cs' = C" by (auto simp:path_via_def)
   with hp have "P,E,h \<turnstile> ref (a,Cs') : Class C" by auto
-  with T show ?case by (fastsimp intro:wt_same_type_typeconf)
+  with T show ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case (RedStaticUpDynCast Cs C Cs' Ds E a h l)
   have wt:"P,E,h \<turnstile> Cast C (ref (a,Cs)) : T"
@@ -502,7 +502,7 @@ next
     by(auto intro!:Subobjs_appendPath appendPath_last[THEN sym] Subobjs_nonempty
             simp:path_via_def)
   with h have "P,E,h \<turnstile> ref (a,Ds) : Class C" by auto
-  with T show ?case by (fastsimp intro:wt_same_type_typeconf)
+  with T show ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case (RedStaticDownDynCast E C a Cs Cs' h l)
   have "P,E,h \<turnstile> Cast C (ref (a,Cs@[C]@Cs')) : T" by fact
@@ -512,11 +512,11 @@ next
   from typeof obtain D S where h:"h a = Some(D,S)" 
     and subo:"Subobjs P D (Cs@[C]@Cs')"
     by (auto dest:typeof_Class_Subo split:split_if_asm)
-  from subo have "Subobjs P D (Cs@[C])" by(fastsimp intro:appendSubobj)
+  from subo have "Subobjs P D (Cs@[C])" by(fastforce intro:appendSubobj)
   with h have "P,E,h \<turnstile> ref (a,Cs@[C]) : Class C" by auto
-  with T show ?case by (fastsimp intro:wt_same_type_typeconf)
+  with T show ?case by (fastforce intro:wt_same_type_typeconf)
 next
-  case RedDynCastFail thus ?case by fastsimp
+  case RedDynCastFail thus ?case by fastforce
 next
   case (BinOpRed1 E e h l e' h' l' bop e\<^isub>2)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -615,17 +615,17 @@ next
     hence "P,E,h' \<turnstile> V:=e' : T"
     proof(rule disjE)
       assume "P,E,h' \<turnstile> e' : Class C"
-      with env T' sub show ?thesis by (fastsimp intro:WTrtLAss)
+      with env T' sub show ?thesis by (fastforce intro:WTrtLAss)
     next
       assume "P,E,h' \<turnstile> e' : NT"
-      with env T show ?thesis by (fastsimp intro:WTrtLAss)
+      with env T show ?thesis by (fastforce intro:WTrtLAss)
     qed
     with T show ?thesis by(cases T) auto
   next
     fix C
     assume T':"T' = NT" and T:"T = Class C"
     with IH[OF sconf wte] have "P,E,h' \<turnstile> e' : NT" by simp
-    with env T show ?thesis by (fastsimp intro:WTrtLAss)
+    with env T show ?thesis by (fastforce intro:WTrtLAss)
   qed
 next
   case (RedLAss E V T v v' h l T')
@@ -657,12 +657,12 @@ next
       and field:"P \<turnstile> C has least F:T via Cs"
       and notemptyCs:"Cs \<noteq> []"
     from field have "class": "is_class P C"
-      by (fastsimp intro:Subobjs_isClass simp add:LeastFieldDecl_def FieldDecls_def)
+      by (fastforce intro:Subobjs_isClass simp add:LeastFieldDecl_def FieldDecls_def)
     from IH[OF sconf wte] have "P,E,h' \<turnstile> e' : NT \<or> P,E,h' \<turnstile> e' : Class C" by auto
     thus ?thesis
     proof(rule disjE)
       assume "P,E,h' \<turnstile> e' : NT"
-      thus ?thesis by (fastsimp intro!:WTrtFAccNT)
+      thus ?thesis by (fastforce intro!:WTrtFAccNT)
     next
       assume wte':"P,E,h' \<turnstile> e' : Class C"
       from wte' notemptyCs field show ?thesis by(rule WTrtFAcc)
@@ -686,22 +686,22 @@ next
     and fconf:"P,h \<turnstile> fs' (:\<le>) map_of fs"
     by (simp add:sconf_def hconf_def oconf_def) blast
   from field Ds have "last Cs = last Ds"
-    by (fastsimp intro!:appendPath_last Subobjs_nonempty 
+    by (fastforce intro!:appendPath_last Subobjs_nonempty 
                    simp:LeastFieldDecl_def FieldDecls_def)
   with field classDs have map:"map_of fs F =  Some T"
     by (simp add:LeastFieldDecl_def FieldDecls_def)
   with fconf fs' have conf:"P,h \<turnstile> v :\<le> T"
-    by (simp add:fconf_def,erule_tac x="F" in allE,fastsimp)
+    by (simp add:fconf_def,erule_tac x="F" in allE,fastforce)
   thus ?case by (cases T) auto
 next
   case (RedFAccNull E F Cs h l)
   have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P NullPointer" 
-    by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
+    by (fastforce intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt NullPointer,[NullPointer])) = Some(Class NullPointer)"
     by (auto elim: preallocatedE dest!:preallocatedD Subobjs_Base)
   with sconf have "P,E,h \<turnstile> THROW NullPointer : T" by(auto simp:sconf_def hconf_def)
-  thus ?case by (fastsimp intro:wt_same_type_typeconf wf_prog_wwf_prog)
+  thus ?case by (fastforce intro:wt_same_type_typeconf wf_prog_wwf_prog)
 next
   case (FAssRed1 E e h l e' h' l' F Cs e\<^isub>2)
   have red:"P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
@@ -769,17 +769,17 @@ next
       proof(rule disjE)
         assume wte':"P,E,h' \<turnstile> e' : Class C'"
         from wtval' notemptyCs field wte' sub T' show ?thesis 
-          by (fastsimp intro: WTrtFAss)
+          by (fastforce intro: WTrtFAss)
       next
         assume wte':"P,E,h' \<turnstile> e' : NT"
         from wtval' notemptyCs field wte' sub T show ?thesis
-          by (fastsimp intro: WTrtFAss)
+          by (fastforce intro: WTrtFAss)
       qed
     next
       fix C' assume T':"T' = NT" and T:"T = Class C'"
       from IH[OF sconf wte] T' have wte':"P,E,h' \<turnstile> e' : NT" by simp
       from wtval' notemptyCs field wte' sub T show ?thesis
-        by (fastsimp intro: WTrtFAss)
+        by (fastforce intro: WTrtFAss)
     qed
   next
     fix T' assume wtval:"P,E,h \<turnstile> Val v : NT"
@@ -844,11 +844,11 @@ next
   case (RedFAssNull E F Cs v h l)
   have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P NullPointer"
-    by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
+    by (fastforce intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt NullPointer,[NullPointer])) = Some(Class NullPointer)"
     by (auto elim: preallocatedE dest!:preallocatedD Subobjs_Base)
   with sconf have "P,E,h \<turnstile> THROW NullPointer : T" by(auto simp:sconf_def hconf_def)
-  thus ?case by (fastsimp intro:wt_same_type_typeconf wf_prog_wwf_prog)
+  thus ?case by (fastforce intro:wt_same_type_typeconf wf_prog_wwf_prog)
 next
   case (CallObj E e h l e' h' l' Copt M es)
   have red: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
@@ -1031,7 +1031,7 @@ next
   hence wtbody:"P,E(this#pns [\<mapsto>] Class (last Cs')#Ts),h \<turnstile> body : T"
     by(rule WTrt_env_mono) simp
   from wtes have "length vs = length Ts''"
-    by (fastsimp dest:WTrts_same_length)
+    by (fastforce dest:WTrts_same_length)
   with eqs subs
   have length_vs:"length (Ref(a,Cs')#vs) = length (Class(last Cs')#Ts)"
     by (simp add:list_all2_def)
@@ -1054,7 +1054,7 @@ next
     with blocks T' body_case bs "class" sub show ?thesis
       by(cases T',auto,cases T,auto)
   qed
-  with eq show ?case by(fastsimp intro:wt_same_type_typeconf)
+  with eq show ?case by(fastforce intro:wt_same_type_typeconf)
 next
   case (RedStaticCall Cs C Cs'' M Ts T pns body Cs' Ds vs E a h l T')
   have method:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs'"
@@ -1076,9 +1076,9 @@ next
   from length2 have length_pns:"length (this#pns) = length (Class (last Ds)#Ts)"
     by simp
   from method have "Cs' \<noteq> []" 
-    by (fastsimp intro!:Subobjs_nonempty simp add:LeastMethodDef_def MethodDefs_def)
+    by (fastforce intro!:Subobjs_nonempty simp add:LeastMethodDef_def MethodDefs_def)
   with Ds have last:"last Cs' = last Ds"
-    by (fastsimp dest:appendPath_last)
+    by (fastforce dest:appendPath_last)
   with method have "is_class P (last Ds)"
     by(auto simp:LeastMethodDef_def MethodDefs_def is_class_def)
   with last has_least_wf_mdecl[OF wf method]
@@ -1089,13 +1089,13 @@ next
     and lastCs'':"last Cs'' = C" 
     by (auto simp add:path_via_def)
   with subo wf have subo':"Subobjs P D (Cs@\<^sub>pCs'')"
-     by(fastsimp intro: Subobjs_appendPath)
+     by(fastforce intro: Subobjs_appendPath)
    from lastCs'' suboCs'' have lastC:"C = last(Cs@\<^sub>pCs'')"
-     by (fastsimp dest:Subobjs_nonempty intro:appendPath_last)
+     by (fastforce dest:Subobjs_nonempty intro:appendPath_last)
   from method have "Subobjs P C Cs'"
     by (auto simp:LeastMethodDef_def MethodDefs_def)
   with subo' wf lastC have "Subobjs P D ((Cs @\<^sub>p Cs'') @\<^sub>p Cs')"
-    by (fastsimp intro:Subobjs_appendPath)
+    by (fastforce intro:Subobjs_appendPath)
   with Ds have suboDs:"Subobjs P D Ds" by simp
   from wtabody have "P,empty(this#pns [\<mapsto>] Class (last Ds)#Ts),h \<turnstile> body : T"
     by(rule WT_implies_WTrt)
@@ -1104,16 +1104,16 @@ next
   hence "P,E,h \<turnstile> blocks(this#pns, Class (last Ds)#Ts, Ref(a,Ds)#vs, body) : T"
     using wtes subs wt_blocks[OF length_pns length_vs type] hp suboDs
     by(auto simp add:rel_list_all2_Cons2)
-  with TeqT' show ?case by(fastsimp intro:wt_same_type_typeconf)
+  with TeqT' show ?case by(fastforce intro:wt_same_type_typeconf)
 next
   case (RedCallNull E Copt M vs h l)
   have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P NullPointer" 
-    by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
+    by (fastforce intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt NullPointer,[NullPointer])) = Some(Class NullPointer)"
     by (auto elim: preallocatedE dest!:preallocatedD Subobjs_Base)
   with sconf have "P,E,h \<turnstile> THROW NullPointer : T" by(auto simp:sconf_def hconf_def)
-  thus ?case by (fastsimp intro:wt_same_type_typeconf)
+  thus ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case (BlockRedNone E V T e h l e' h' l' T')
   have IH:"\<And>T'. \<lbrakk>P,E(V \<mapsto> T) \<turnstile> (h, l(V := None)) \<surd>; P,E(V \<mapsto> T),h \<turnstile> e : T'\<rbrakk>
@@ -1165,9 +1165,9 @@ next
     and type:"is_type P T"
     by auto
   from wf casts wtval have "P,h \<turnstile> v' :\<le> T"
-    by(fastsimp intro!:casts_conf wf_prog_wwf_prog)
+    by(fastforce intro!:casts_conf wf_prog_wwf_prog)
   with sconf have lconf:"P,h \<turnstile> l(V \<mapsto> v') (:\<le>)\<^sub>w E(V \<mapsto> T)"
-    by (fastsimp intro!:lconf_upd2 simp:sconf_def)
+    by (fastforce intro!:lconf_upd2 simp:sconf_def)
   from sconf type have "envconf P (E(V \<mapsto> T))" by(simp add:sconf_def envconf_def)
   from red_preserves_lconf[OF wf_prog_wwf_prog[OF wf] red wte lconf this]
   have "P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V \<mapsto> T)" .
@@ -1179,9 +1179,9 @@ next
     by(auto simp:sconf_def envconf_def)
   from IH[OF this wte] wtval' type show ?case by(cases T') auto
 next
-  case RedBlock thus ?case by (fastsimp intro:wt_same_type_typeconf)
+  case RedBlock thus ?case by (fastforce intro:wt_same_type_typeconf)
 next
-  case RedInitBlock thus ?case by (fastsimp intro:wt_same_type_typeconf)
+  case RedInitBlock thus ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case (SeqRed E e h l e' h' l' e\<^isub>2 T)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -1193,7 +1193,7 @@ next
   with wte2' have "P,E,h' \<turnstile> e';; e\<^isub>2 : T" by auto
   thus ?case by(rule wt_same_type_typeconf)
 next
-  case RedSeq thus ?case by (fastsimp intro:wt_same_type_typeconf)
+  case RedSeq thus ?case by (fastforce intro:wt_same_type_typeconf)
 next
   case (CondRed E e h l e' h' l' e\<^isub>1 e\<^isub>2)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -1210,11 +1210,11 @@ next
     by (rule WTrtCond)
   thus ?case by(rule wt_same_type_typeconf)
 next
-  case RedCondT thus ?case by (fastsimp intro: wt_same_type_typeconf)
+  case RedCondT thus ?case by (fastforce intro: wt_same_type_typeconf)
 next
-  case RedCondF thus ?case by (fastsimp intro: wt_same_type_typeconf)
+  case RedCondF thus ?case by (fastforce intro: wt_same_type_typeconf)
 next
-  case RedWhile thus ?case by (fastsimp intro: wt_same_type_typeconf)
+  case RedWhile thus ?case by (fastforce intro: wt_same_type_typeconf)
 next
   case (ThrowRed E e h l e' h' l' T)
   have IH:"\<And>T. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T"
@@ -1248,11 +1248,11 @@ next
   case (RedThrowNull E h l)
   have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P NullPointer"
-    by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
+    by (fastforce intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt NullPointer,[NullPointer])) = Some(Class NullPointer)"
     by (auto elim: preallocatedE dest!:preallocatedD Subobjs_Base)
   with sconf have "P,E,h \<turnstile> THROW NullPointer : T" by(auto simp:sconf_def hconf_def)
-  thus ?case by (fastsimp intro:wt_same_type_typeconf wf_prog_wwf_prog)
+  thus ?case by (fastforce intro:wt_same_type_typeconf wf_prog_wwf_prog)
 next
   case (ListRed1 E e h l e' h' l' es Ts)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -1264,7 +1264,7 @@ next
   have wtes':"P,E,h' \<turnstile> es [:] Us" .
   hence "length es = length Us" by (rule WTrts_same_length)
   with wtes' have "types_conf P E h' es Us"
-    by (fastsimp intro:wts_same_types_typesconf)
+    by (fastforce intro:wts_same_types_typesconf)
   with IH[OF sconf wte] Ts show ?case by simp
 next
   case (ListRed2 E es h l es' h' l' v Ts)
@@ -1283,19 +1283,19 @@ next
 next
   case (CallThrowParams es vs h l es' E v Copt M h' l')
   thus ?case by(cases Copt)(auto intro:wt_same_type_typeconf)
-qed (fastsimp intro:wt_same_type_typeconf)+
+qed (fastforce intro:wt_same_type_typeconf)+
 
 
 
 corollary subject_reduction:
   "\<lbrakk> wf_C_prog P; P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e:T \<rbrakk>
   \<Longrightarrow> P,E,(hp s') \<turnstile> e' :\<^bsub>NT\<^esub> T"
-by(cases s, cases s', fastsimp dest:subject_reduction2)
+by(cases s, cases s', fastforce dest:subject_reduction2)
 
 corollary subjects_reduction:
   "\<lbrakk> wf_C_prog P; P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> es[:]Ts \<rbrakk>
   \<Longrightarrow> types_conf P E (hp s') es' Ts"
-by(cases s, cases s', fastsimp dest:subjects_reduction2)
+by(cases s, cases s', fastforce dest:subjects_reduction2)
 
 
 section {* Lifting to @{text"\<rightarrow>*"} *}
@@ -1340,7 +1340,7 @@ next
   from subjects_reduction[OF wf this sconf wtes] 
   have type:"types_conf P E (hp s'') es'' Ts" .
   from reds1 wtes sconf wf have sconf':"P,E \<turnstile> s'' \<surd>" 
-    by(fastsimp intro:wf_prog_wwf_prog reds_preserves_sconf)
+    by(fastforce intro:wf_prog_wwf_prog reds_preserves_sconf)
   from type have "\<exists>Ts'. P,E,hp s'' \<turnstile> es'' [:] Ts'"
   proof (induct Ts arbitrary: es'')
     fix esi
@@ -1405,7 +1405,7 @@ next
     apply (frule subject_reduction[OF wf])
     apply (auto dest!:red_preserves_sconf intro:wf_prog_wwf_prog)
     apply(cases T)
-    apply fastsimp+
+    apply fastforce+
     done
 qed
 
@@ -1482,14 +1482,14 @@ next
   from Reds have step:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
   with wtes sconf wf have sconf':"P,E \<turnstile> s'' \<surd>"
     by(auto intro:reds_preserves_sconf wf_prog_wwf_prog)
-  from wtes have "length es = length Ts" by(fastsimp dest:WTrts_same_length)
+  from wtes have "length es = length Ts" by(fastforce dest:WTrts_same_length)
   from step sconf wtes
   have type': "types_conf P E (hp s'') es'' Ts"
     by (rule subjects_reduction[OF wf])
   then obtain Ts' where wtes'':"P,E,hp s'' \<turnstile> es'' [:] Ts'" 
     and conf:"conformable Ts' Ts" by (auto dest:types_conf_Wtrt_conf)
   from IH[OF sconf' wtes''] have "types_conf P E (hp s') es' Ts'" .
-  with conf show ?case by(fastsimp intro:types_conf_conf_types_conf)
+  with conf show ?case by(fastforce intro:types_conf_conf_types_conf)
 qed
   
 
@@ -1553,7 +1553,7 @@ shows "\<And>T. P,E,s \<turnstile> e : T \<surd> \<Longrightarrow> P,E,(hp s') \
 using reds
 proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case
-    by (fastsimp intro:wt_same_type_typeconf simp:wf_config_def)
+    by (fastforce intro:wt_same_type_typeconf simp:wf_config_def)
 next
   case (step e s e'' s'' T)
   have Red:"((e, s), e'', s'') \<in> Red P E"
@@ -1561,7 +1561,7 @@ next
     and wte:"P,E,s \<turnstile> e : T \<surd>" by fact+
   from Red have red:"P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e'',s''\<rangle>" by simp
   from red_preserves_sconf[OF red] wte wf have sconf:"P,E \<turnstile> s'' \<surd>"
-    by(fastsimp dest:wf_prog_wwf_prog simp:wf_config_def)
+    by(fastforce dest:wf_prog_wwf_prog simp:wf_config_def)
   from wf red wte have type_conf:"P,E,(hp s'') \<turnstile> e'' :\<^bsub>NT\<^esub> T"
     by(rule Subject_reduction)
   show ?case
@@ -1620,7 +1620,7 @@ shows "(\<exists>v. e' = Val v \<and> P,hp s' \<turnstile> v :\<le> T) \<or>
       (\<exists>r. e' = Throw r \<and> the_addr (Ref r) \<in> dom(hp s'))"
 proof -
   from sconf wte wf have wf_config:"P,E,s \<turnstile> e : T \<surd>"
-    by(fastsimp intro:WT_implies_WTrt simp:wf_config_def)
+    by(fastforce intro:WT_implies_WTrt simp:wf_config_def)
   with wf step have type_conf:"P,E,(hp s') \<turnstile> e' :\<^bsub>NT\<^esub> T"
     by(rule Subject_reductions)
   from step_preserves_sconf[OF wf step wte[THEN WT_implies_WTrt] sconf] wf

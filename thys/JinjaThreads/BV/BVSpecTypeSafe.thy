@@ -47,7 +47,7 @@ lemma match_is_relevant:
   assumes match: "match_ex_table P D pc xt = Some (pc',d')"
   shows "\<exists>(f,t,D',h,d) \<in> set (relevant_entries P (ins ! i) pc xt). (case D' of None \<Rightarrow> True | Some D'' \<Rightarrow> P \<turnstile> D \<preceq>\<^sup>* D'') \<and> pc \<in> {f..<t} \<and> pc' = h \<and> d' = d"
 using rv match
-by(fastsimp simp add: relevant_entries_def is_relevant_entry_def matches_ex_entry_def dest: match_ex_table_SomeD)
+by(fastforce simp add: relevant_entries_def is_relevant_entry_def matches_ex_entry_def dest: match_ex_table_SomeD)
 
 
 context JVM_heap_conf_base begin
@@ -66,7 +66,7 @@ proof -
   from correct meth fr obtain D 
     where hxcp: "typeof_addr h xcp = \<lfloor>Class D\<rfloor>" and DsubThrowable: "P \<turnstile> D \<preceq>\<^sup>* Throwable"
     and rv: "\<And>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<Longrightarrow> is_relevant_class (instrs_of P C M ! pc) P D'"
-    by(fastsimp simp add: correct_state_def dest: sees_method_fun)
+    by(fastforce simp add: correct_state_def dest: sees_method_fun)
   
   from meth have [simp]: "ex_table_of P C M = xt" by simp
 
@@ -76,7 +76,7 @@ proof -
   proof(cases "match_ex_table P D pc xt")
     case None
     with correct fr meth hxcp show ?thesis
-      by(fastsimp simp add: correct_state_def cname_of_def split: list.split)
+      by(fastforce simp add: correct_state_def cname_of_def split: list.split)
   next
     case (Some pc_d)
     then obtain pc' d' where pcd: "pc_d = (pc', d')"
@@ -122,11 +122,11 @@ proof -
     proof(cases D')
       case Some
       thus ?thesis using eff rv DsubD' conf that
-	by(fastsimp simp add: xcpt_eff_def sup_state_opt_any_Some intro: widen_trans[OF widen_subcls])
+	by(fastforce simp add: xcpt_eff_def sup_state_opt_any_Some intro: widen_trans[OF widen_subcls])
     next
       case None
       with that eff rv conf DsubThrowable show ?thesis
-	by(fastsimp simp add: xcpt_eff_def sup_state_opt_any_Some intro: widen_trans[OF widen_subcls])
+	by(fastforce simp add: xcpt_eff_def sup_state_opt_any_Some intro: widen_trans[OF widen_subcls])
     qed
 
     with conf loc stk hxcp have "conf_f P h (ST',LT') ins ?f" 
@@ -134,7 +134,7 @@ proof -
 
     with meth h_ok frames \<Phi>_pc' fr match hxcp tconf preh
     show ?thesis unfolding correct_state_def
-      by(fastsimp dest: sees_method_fun simp add: cname_of_def)
+      by(fastforce dest: sees_method_fun simp add: cname_of_def)
   qed
 qed
 
@@ -175,7 +175,7 @@ proof -
     frame:   "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
     frames:  "conf_fs P h \<Phi> M (size Ts) T frs" and
     preh:    "preallocated h"
-    by (fastsimp dest: sees_method_fun)
+    by (fastforce dest: sees_method_fun)
 
   from ins wti \<Phi>_pc
   have n: "n < size ST" by simp
@@ -184,7 +184,7 @@ proof -
   proof(cases "stk!n = Null")
     case True
     with ins heap_ok \<Phi>_pc frame frames exec meth_C tconf preh show ?thesis
-      by(fastsimp elim: wf_preallocatedE[OF wfprog, where C=NullPointer])
+      by(fastforce elim: wf_preallocatedE[OF wfprog, where C=NullPointer])
   next
     case False
     note Null = this
@@ -211,7 +211,7 @@ proof -
     with NT ins wti \<Phi>_pc
     have "if is_native P (ST ! n) M' then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M'(Ts) :: U
           else \<exists>D D' Ts T m. class_type_of (ST!n) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M': Ts\<rightarrow>T = m in D' \<and> P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> (T # drop (n+1) ST) [\<le>] ST'"
-      by(fastsimp split: split_if_asm simp add: split_beta)
+      by(fastforce split: split_if_asm simp add: split_beta)
     moreover
     { fix U TS
       assume iec: "is_native P (ST ! n) M'"
@@ -260,11 +260,11 @@ proof -
           case (RetExc a')
           from frame hext have "conf_f P h' (ST, LT) ins (stk, loc, C, M, pc)" by(rule conf_f_hext)
           with \<sigma> tconf' heap_ok' meth_C \<Phi>_pc frames' RetExc red_external_conf_extRet[OF wfprog va' wtext' heap_ok preh tconf] ins preh'
-          show ?thesis by(fastsimp simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
+          show ?thesis by(fastforce simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
         next
           case RetStaySame
           from frame hext have "conf_f P h' (ST, LT) ins (stk, loc, C, M, pc)" by(rule conf_f_hext)
-          with \<sigma> heap_ok' meth_C \<Phi>_pc RetStaySame frames' tconf' preh' show ?thesis by fastsimp
+          with \<sigma> heap_ok' meth_C \<Phi>_pc RetStaySame frames' tconf' preh' show ?thesis by fastforce
         next
           case (RetVal v)
           with \<sigma> have \<sigma>: "\<sigma> = (None, h', (v # drop (n+1) stk, loc, C, M, pc+1) # frs)" by simp
@@ -279,7 +279,7 @@ proof -
             by(auto elim: external_WT.cases)
           also from loc hext have "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT" by(rule confTs_hext)
           hence "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" using LT' by(rule confTs_widen)
-          ultimately show ?thesis using `hconf h'` \<sigma> meth_C \<Phi>' pc' frames' tconf' preh' by fastsimp
+          ultimately show ?thesis using `hconf h'` \<sigma> meth_C \<Phi>' pc' frames' tconf' preh' by fastforce
         qed
       next
         case False
@@ -333,7 +333,7 @@ proof -
         qed
         ultimately show ?thesis
           using s' \<Phi>_pc approx ins sees sees' meth_C wtext \<Phi>' pc' preh wtext `P \<turnstile> T' \<le> U` iec
-	  by (fastsimp dest: sees_method_fun [of _ C])
+	  by (fastforce dest: sees_method_fun [of _ C])
       qed }
     moreover
     { fix D D' TTs TT m
@@ -418,7 +418,7 @@ proof -
         qed
         ultimately
         show ?thesis using s' \<Phi>_pc approx meth_C m_D T' ins D tconf C' mD'' nec
-	  by (fastsimp dest: sees_method_fun [of _ C])
+	  by (fastforce dest: sees_method_fun [of _ C])
       next
         case True
         from is_native_sees_method_overriding[OF wfprog m_C' True C'[folded is_class_type_of_conv_class_type_of_Some]]
@@ -455,11 +455,11 @@ proof -
           case (RetExc a')
           from frame hext have "conf_f P h' (ST, LT) ins (stk, loc, C, M, pc)" by(rule conf_f_hext)
           with \<sigma> tconf' heap_ok' meth_C \<Phi>_pc frames' RetExc red_external_conf_extRet[OF wfprog va' wtext' heap_ok preh tconf] ins preh'
-          show ?thesis by(fastsimp simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
+          show ?thesis by(fastforce simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
         next
           case RetStaySame
           from frame hext have "conf_f P h' (ST, LT) ins (stk, loc, C, M, pc)" by(rule conf_f_hext)
-          with \<sigma> heap_ok' meth_C \<Phi>_pc RetStaySame frames' tconf' preh' show ?thesis by fastsimp
+          with \<sigma> heap_ok' meth_C \<Phi>_pc RetStaySame frames' tconf' preh' show ?thesis by fastforce
         next
           case (RetVal v)
           with \<sigma> have \<sigma>: "\<sigma> = (None, h', (v # drop (n+1) stk, loc, C, M, pc+1) # frs)" by simp
@@ -476,7 +476,7 @@ proof -
             by(auto dest: sees_method_fun intro: widen_trans)
           also from loc hext have "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT" by(rule confTs_hext)
           hence "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" using LT' by(rule confTs_widen)
-          ultimately show ?thesis using `hconf h'` \<sigma> meth_C \<Phi>' pc' frames' tconf' preh' by fastsimp
+          ultimately show ?thesis using `hconf h'` \<sigma> meth_C \<Phi>' pc' frames' tconf' preh' by fastforce
         qed
       qed }
     ultimately show ?thesis
@@ -556,12 +556,12 @@ proof -
       case True
       thus ?thesis using that ins' \<Phi>' D T' wti frame'
         apply(clarsimp simp add: sup_state_opt_any_Some split: split_if_asm)
-        apply(fastsimp simp add: external_WT.simps is_native_def2 dest: native_call_fun)
+        apply(fastforce simp add: external_WT.simps is_native_def2 dest: native_call_fun)
         done
     next
       case False
       thus ?thesis using that ins' \<Phi>' D T' wti
-        by(fastsimp simp add: sup_state_opt_any_Some split: split_if_asm)
+        by(fastforce simp add: sup_state_opt_any_Some split: split_if_asm)
     qed
 
     from hd_stk T' have hd_stk': "P,h \<turnstile> hd stk :\<le> T'"  ..
@@ -581,7 +581,7 @@ proof -
     qed
 
     with \<sigma>' frs' f meth h_ok hd_stk \<Phi>_suc frames meth_C' \<Phi>'  tconf preh
-    have ?thesis by (fastsimp dest: sees_method_fun [of _ C'])
+    have ?thesis by (fastforce dest: sees_method_fun [of _ C'])
   }
   ultimately
   show ?thesis by (cases frs) blast+
@@ -598,7 +598,7 @@ lemma Load_correct:
     \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd> ;
     (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>' \<surd>"
-  by (fastsimp dest: sees_method_fun [of _ C] elim!: confTs_confT_sup)
+  by (fastforce dest: sees_method_fun [of _ C] elim!: confTs_confT_sup)
 
 declare [[simproc del: list_to_set_comprehension]]
 
@@ -643,9 +643,9 @@ lemma Checkcast_correct:
 using wf_preallocatedD[of "\<lambda>P C (M, Ts, T\<^isub>r, mxs, mxl\<^isub>0, is, xt). wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (\<Phi> C M)" P h ClassCast]
 apply (clarsimp simp add: wf_jvm_prog_phi_def split: split_if_asm)
  apply(drule (1) sees_method_fun)
- apply(fastsimp simp add: conf_def intro: widen_trans)
+ apply(fastforce simp add: conf_def intro: widen_trans)
 apply (drule (1) sees_method_fun)
-apply(fastsimp simp add: conf_def intro: widen_trans)
+apply(fastforce simp add: conf_def intro: widen_trans)
 done
 
 lemma Instanceof_correct:
@@ -658,7 +658,7 @@ lemma Instanceof_correct:
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma> \<surd>"
   apply (clarsimp simp add: wf_jvm_prog_phi_def split: split_if_asm)
   apply (drule (1) sees_method_fun)
-  apply fastsimp
+  apply fastforce
   done
 
 declare split_paired_All [simp del]
@@ -694,7 +694,7 @@ proof -
     pc: "pc < size ins" and 
     fs: "conf_fs P h \<Phi> M (size Ts) T frs" and
     preh: "preallocated h"
-    by (fastsimp dest: sees_method_fun)
+    by (fastforce dest: sees_method_fun)
        
   from i \<Phi> wt obtain oT ST'' vT ST' LT' vT' fm where 
     oT: "P \<turnstile> oT \<le> Class D" and
@@ -704,7 +704,7 @@ proof -
     \<Phi>': "\<Phi> C M ! (pc+1) = Some (vT'#ST', LT')" and
     ST': "P \<turnstile> ST'' [\<le>] ST'" and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'" and  
     vT': "P \<turnstile> vT \<le> vT'"
-    by fastsimp                       
+    by fastforce                       
 
   from stk ST obtain ref stk' where 
     stk': "stk = ref#stk'" and
@@ -717,7 +717,7 @@ proof -
     case True
     with tconf "h\<surd>" i xc stk' mC fs \<Phi> ST'' ref ST loc pc' 
       wf_preallocatedD[OF wf, of h NullPointer] preh
-    show ?thesis by(fastsimp)
+    show ?thesis by(fastforce)
   next
     case False
     from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
@@ -742,7 +742,7 @@ proof -
       from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
       moreover
       note "h\<surd>" mC \<Phi>' pc' v fs tconf preh
-      ultimately have "\<Phi> \<turnstile> t:(None, h, (v#stk',loc,C,M,pc+1)#frs) \<surd>" by fastsimp }
+      ultimately have "\<Phi> \<turnstile> t:(None, h, (v#stk',loc,C,M,pc+1)#frs) \<surd>" by fastforce }
     with a h i mC stk' xc
     show ?thesis by auto
   qed
@@ -765,7 +765,7 @@ proof -
     pc: "pc < size ins" and 
     fs: "conf_fs P h \<Phi> M (size Ts) T frs" and
     preh: "preallocated h"
-    by (fastsimp dest: sees_method_fun)
+    by (fastforce dest: sees_method_fun)
   
   from i \<Phi> wt obtain vT vT' oT ST'' ST' LT' fm where 
     ST: "ST = vT # oT # ST''" and
@@ -788,7 +788,7 @@ proof -
     case True
     with tconf "h\<surd>" i xc stk' mC fs \<Phi> ST'' ref ST loc pc' v
       wf_preallocatedD[OF wf, of h NullPointer] preh
-    show ?thesis by(fastsimp)
+    show ?thesis by(fastforce)
   next
     case False
     from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
@@ -824,7 +824,7 @@ proof -
       note mC \<Phi>' pc' 
       moreover
       from tconf hext have "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
-      ultimately have "\<Phi> \<turnstile> t:(None, h', ?f'#frs) \<surd>" by fastsimp }
+      ultimately have "\<Phi> \<turnstile> t:(None, h', ?f'#frs) \<surd>" by fastforce }
     with a h i mC stk' xc show ?thesis by(auto simp del: correct_state_def)
   qed
 qed
@@ -867,7 +867,7 @@ proof -
     with frame frames tconf suc_pc no_x ins meth \<Phi>_pc new hext
       wf_preallocatedD[OF wf, of h' OutOfMemory] preh' is_class_X heap_ok'
     show ?thesis
-      by(fastsimp intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext)
+      by(fastforce intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext)
   next
     case (Some oref)
     with new is_class_X have h': "typeof_addr h' oref = \<lfloor>Class X\<rfloor>" by(auto dest: new_obj_SomeD)
@@ -887,7 +887,7 @@ proof -
     from frames hext have "conf_fs P h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)
     moreover from tconf hext have "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
     ultimately
-    show ?thesis using meth \<Phi>_suc preh' by fastsimp
+    show ?thesis using meth \<Phi>_suc preh' by fastforce
   qed
 qed
 
@@ -901,7 +901,7 @@ lemma Goto_correct:
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>' \<surd>"
 apply clarsimp 
 apply (drule (1) sees_method_fun)
-apply fastsimp
+apply fastforce
 done
 
 declare [[simproc del: list_to_set_comprehension]]
@@ -916,7 +916,7 @@ lemma IfFalse_correct:
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
 apply clarsimp
 apply (drule (1) sees_method_fun)
-apply fastsimp
+apply fastforce
 done
 
 declare [[simproc add: list_to_set_comprehension]]
@@ -937,12 +937,12 @@ apply clarsimp
 apply(frule (2) binop_progress)
 apply(clarsimp split: sum.split_asm)
  apply(frule (5) binop_type)
- apply(fastsimp intro: widen_trans simp add: conf_def)
+ apply(fastforce intro: widen_trans simp add: conf_def)
 apply(frule (5) binop_type)
 apply(clarsimp simp add: conf_def)
 apply(clarsimp simp add: widen_Class)
 apply(frule typeof_addr_eq_Some_conv)
-apply(fastsimp intro: widen_trans dest: binop_relevant_class simp add: cname_of_def conf_def)
+apply(fastforce intro: widen_trans dest: binop_relevant_class simp add: cname_of_def conf_def)
 done
 
 lemma Pop_correct:
@@ -955,7 +955,7 @@ lemma Pop_correct:
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
 apply clarsimp
 apply (drule (1) sees_method_fun)
-apply fastsimp
+apply fastforce
 done
 
 lemma Dup_correct:
@@ -968,7 +968,7 @@ lemma Dup_correct:
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
 apply clarsimp
 apply (drule (1) sees_method_fun)
-apply fastsimp
+apply fastforce
 done
 
 lemma Swap_correct:
@@ -981,7 +981,7 @@ lemma Swap_correct:
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
 apply clarsimp
 apply (drule (1) sees_method_fun)
-apply fastsimp
+apply fastforce
 done
 
 declare [[simproc del: list_to_set_comprehension]]
@@ -998,10 +998,10 @@ using wf_preallocatedD[of wt P h NullPointer]
 apply(clarsimp)
 apply(drule (1) sees_method_fun)
 apply(auto)
-  apply fastsimp
- apply fastsimp
+  apply fastforce
+ apply fastforce
 apply(drule (1) non_npD)
-apply fastsimp+
+apply fastforce+
 done
 
 declare [[simproc add: list_to_set_comprehension]]
@@ -1035,7 +1035,7 @@ proof -
     XX': "P \<turnstile> X\<lfloor>\<rceil> \<le> X'" and
     suc_pc:     "pc+1 < size ins" and
     is_type_X: "is_type P (X\<lfloor>\<rceil>)"
-    by(fastsimp dest: Array_widen)
+    by(fastforce dest: Array_widen)
 
   from stk ST obtain si stk' where si: "stk = Intg si # stk'"
     by(auto simp add: conf_def)
@@ -1051,7 +1051,7 @@ proof -
     with frame frames tconf heap_ok heap_ok' suc_pc no_x ins meth \<Phi>_pc si new preh' preh hext
       wf_preallocatedD[OF wf, of h' OutOfMemory] wf_preallocatedD[OF wf, of h NegativeArraySize]
     show ?thesis
-      by(fastsimp intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext split: split_if_asm)+
+      by(fastforce intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext split: split_if_asm)+
   next
     case False
     then obtain oref where new_Addr: "ao = Some oref" 
@@ -1073,7 +1073,7 @@ proof -
     from frames hext have "conf_fs P h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)
     moreover from tconf hext have "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
     ultimately
-    show ?thesis using meth \<Phi>' preh' by fastsimp
+    show ?thesis using meth \<Phi>' preh' by fastforce
   qed 
 qed
 
@@ -1104,7 +1104,7 @@ proof -
   proof(cases "hd (tl stk) = Null")
     case True
     with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
-    show ?thesis by(fastsimp)
+    show ?thesis by(fastforce)
   next
     case False
     note stkNN = this
@@ -1127,7 +1127,7 @@ proof -
       ST': "P \<turnstile> ST'' [\<le>] ST'" and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'" and
       XX': "P \<turnstile> X \<le> X'" and
       suc_pc:     "pc+1 < size ins"
-      by(fastsimp)
+      by(fastforce)
 
     from stk ST obtain ref idx stk' where 
       stk': "stk = idx#ref#stk'" and
@@ -1163,14 +1163,14 @@ proof -
         have "conf_f P h (X' # ST', LT') ins ?f"
           by(auto intro: widen_trans simp add: conf_def)
         hence "\<Phi> \<turnstile> t:(None, h, ?f # frs) \<surd>"
-          using meth \<Phi>' heap_ok \<Phi>_pc frames tconf preh by fastsimp }
+          using meth \<Phi>' heap_ok \<Phi>_pc frames tconf preh by fastforce }
       with ins meth si' stk' a ha no_x idxI idx 
       show ?thesis by(auto simp del: correct_state_def split: split_if_asm)
     next
       case False
       with stk' idxI ins no_x heap_ok tconf meth a ha Xel \<Phi>_pc frame frames
         wf_preallocatedD[OF wf, of h ArrayIndexOutOfBounds] preh
-      show ?thesis by(fastsimp split: split_if_asm)
+      show ?thesis by(fastforce split: split_if_asm)
     qed
   qed
 qed
@@ -1203,7 +1203,7 @@ proof -
   proof(cases "hd (tl (tl stk)) = Null")
     case True
     with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
-    show ?thesis by(fastsimp)
+    show ?thesis by(fastforce)
   next
     case False
     note stkNN = this
@@ -1225,7 +1225,7 @@ proof -
       \<Phi>': "\<Phi> C M ! (pc+1) = Some (ST', LT')" and
       ST': "P \<turnstile> ST'' [\<le>] ST'" and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'" and
       suc_pc:     "pc+1 < size ins"
-      by(fastsimp)
+      by(fastforce)
 
     from stk ST obtain ref e idx stk' where 
       stk': "stk = e#idx#ref#stk'" and
@@ -1285,7 +1285,7 @@ proof -
           with frames hext have "conf_fs P h' \<Phi> M (size Ts) T frs" by- (rule conf_fs_hext)
           moreover from tconf hext have "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
           ultimately have "\<Phi> \<turnstile> t:(None, h', ?f # frs) \<surd>" using meth \<Phi>' \<Phi>_pc suc_pc preh'
-            by(fastsimp) }
+            by(fastforce) }
         with True si' ins meth stk' a ha no_x idxI idx Te
         show ?thesis
           by(auto split: split_if_asm simp del: correct_state_def intro: widen_trans)
@@ -1293,13 +1293,13 @@ proof -
         case False
         with stk' idxI ins no_x heap_ok tconf meth a ha Xel Te \<Phi>_pc frame frames si' preh
           wf_preallocatedD[OF wf, of h ArrayStore]
-        show ?thesis by(fastsimp split: split_if_asm)
+        show ?thesis by(fastforce split: split_if_asm)
       qed
     next
       case False
       with stk' idxI ins no_x heap_ok tconf meth a ha Xel \<Phi>_pc frame frames preh
         wf_preallocatedD[OF wf, of h ArrayIndexOutOfBounds]
-      show ?thesis by(fastsimp split: split_if_asm)
+      show ?thesis by(fastforce split: split_if_asm)
     qed
   qed
 qed
@@ -1331,7 +1331,7 @@ proof -
   proof(cases "hd stk = Null")
     case True
     with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
-    show ?thesis by(fastsimp)
+    show ?thesis by(fastforce)
   next
     case False
     note stkNN = this
@@ -1353,7 +1353,7 @@ proof -
       \<Phi>': "\<Phi> C M ! (pc+1) = Some (ST', LT')" and
       ST': "P \<turnstile> (Integer # ST'') [\<le>] ST'" and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'" and
       suc_pc:     "pc+1 < size ins"
-      by(fastsimp)
+      by(fastforce)
 
     from stk ST obtain ref stk' where 
       stk': "stk = ref#stk'" and
@@ -1376,8 +1376,8 @@ proof -
     from ST stk stk' ST' have "P,h \<turnstile> Intg si # stk' [:\<le>] ST'" by(auto)
     with frame ST' ST LT' suc_pc wf
     have "conf_f P h (ST', LT') ins ?f"
-      by(fastsimp intro: widen_trans)
-    ultimately show ?thesis using meth \<Phi>' heap_ok \<Phi>_pc frames tconf preh by fastsimp
+      by(fastforce intro: widen_trans)
+    ultimately show ?thesis using meth \<Phi>' heap_ok \<Phi>_pc frames tconf preh by fastforce
   qed
 qed
 
@@ -1409,7 +1409,7 @@ proof -
   proof(cases "hd stk = Null")
     case True
     with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
-    show ?thesis by(fastsimp)
+    show ?thesis by(fastforce)
   next
     case False
     note stkNN = this
@@ -1432,7 +1432,7 @@ proof -
       \<Phi>': "\<Phi> C M ! (pc+1) = Some (ST', LT')" and
       ST': "P \<turnstile> ST'' [\<le>] ST'" and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'" and
       suc_pc:     "pc+1 < size ins"
-      by(fastsimp)
+      by(fastforce)
 
     from stk ST obtain ref stk' where 
       stk': "stk = ref#stk'" and
@@ -1446,7 +1446,7 @@ proof -
     from ST stk stk' ST'
     have "P,h \<turnstile> stk' [:\<le>] ST'" by(auto)
     ultimately show ?thesis using meth \<Phi>' heap_ok \<Phi>_pc suc_pc frames loc LT' no_x ins stk' ST' tconf preh
-      by(fastsimp)
+      by(fastforce)
   qed
 qed
 
@@ -1477,7 +1477,7 @@ proof -
   proof(cases "hd stk = Null")
     case True
     with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
-    show ?thesis by(fastsimp)
+    show ?thesis by(fastforce)
   next
     case False
     note stkNN = this
@@ -1500,7 +1500,7 @@ proof -
       \<Phi>': "\<Phi> C M ! (pc+1) = Some (ST', LT')" and
       ST': "P \<turnstile> ST'' [\<le>] ST'" and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'" and
       suc_pc:     "pc+1 < size ins"
-      by(fastsimp)
+      by(fastforce)
 
     from stk ST obtain ref stk' where 
       stk': "stk = ref#stk'" and
@@ -1516,7 +1516,7 @@ proof -
     ultimately 
     show ?thesis using meth \<Phi>' heap_ok \<Phi>_pc suc_pc frames loc LT' no_x ins stk' ST' tconf frame preh
       wf_preallocatedD[OF wf, of h IllegalMonitorState]
-      by(fastsimp)
+      by(fastforce)
   qed
 qed
 
@@ -1542,29 +1542,29 @@ apply (subgoal_tac "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M")
 apply(unfold exec.simps Let_def set_map)
 apply (frule wt_jvm_progD, erule exE)
 apply (cases "ins ! pc")
-apply (rule Load_correct, assumption+, fastsimp)
-apply (rule Store_correct, assumption+, fastsimp)
-apply (rule Push_correct, assumption+, fastsimp)
-apply (rule New_correct, assumption+, fastsimp)
-apply (rule NewArray_correct, assumption+, fastsimp)
-apply (rule ALoad_correct, assumption+, fastsimp)
-apply (rule AStore_correct, assumption+, fastsimp)
-apply (rule ALength_correct, assumption+, fastsimp)
-apply (rule Getfield_correct, assumption+, fastsimp)
-apply (rule Putfield_correct, assumption+, fastsimp)
-apply (rule Checkcast_correct, assumption+, fastsimp)
-apply (rule Instanceof_correct, assumption+, fastsimp)
-apply (rule Invoke_correct, assumption+, fastsimp)
-apply (rule Return_correct, assumption+, fastsimp simp add: split_beta)
-apply (rule Pop_correct, assumption+, fastsimp)
-apply (rule Dup_correct, assumption+, fastsimp)
-apply (rule Swap_correct, assumption+, fastsimp)
-apply (rule BinOp_correct, assumption+, fastsimp)
-apply (rule Goto_correct, assumption+, fastsimp)
-apply (rule IfFalse_correct, assumption+, fastsimp)
-apply (rule Throw_correct, assumption+, fastsimp)
-apply (rule MEnter_correct, assumption+, fastsimp)
-apply (rule MExit_correct, assumption+, fastsimp)
+apply (rule Load_correct, assumption+, fastforce)
+apply (rule Store_correct, assumption+, fastforce)
+apply (rule Push_correct, assumption+, fastforce)
+apply (rule New_correct, assumption+, fastforce)
+apply (rule NewArray_correct, assumption+, fastforce)
+apply (rule ALoad_correct, assumption+, fastforce)
+apply (rule AStore_correct, assumption+, fastforce)
+apply (rule ALength_correct, assumption+, fastforce)
+apply (rule Getfield_correct, assumption+, fastforce)
+apply (rule Putfield_correct, assumption+, fastforce)
+apply (rule Checkcast_correct, assumption+, fastforce)
+apply (rule Instanceof_correct, assumption+, fastforce)
+apply (rule Invoke_correct, assumption+, fastforce)
+apply (rule Return_correct, assumption+, fastforce simp add: split_beta)
+apply (rule Pop_correct, assumption+, fastforce)
+apply (rule Dup_correct, assumption+, fastforce)
+apply (rule Swap_correct, assumption+, fastforce)
+apply (rule BinOp_correct, assumption+, fastforce)
+apply (rule Goto_correct, assumption+, fastforce)
+apply (rule IfFalse_correct, assumption+, fastforce)
+apply (rule Throw_correct, assumption+, fastforce)
+apply (rule MEnter_correct, assumption+, fastforce)
+apply (rule MExit_correct, assumption+, fastforce)
 done
 
 declare defs1 [simp del]
@@ -1672,7 +1672,7 @@ proof -
       
       show ?thesis
       proof(cases "hd (tl (tl stk)) = Null")
-        case True thus ?thesis by(fastsimp)
+        case True thus ?thesis by(fastforce)
       next
         case False
         note stkNN = this
@@ -1687,7 +1687,7 @@ proof -
         qed
 
         with stkNN \<Phi>_pc wt obtain ST'' Y X
-          where "ST = Y # Integer # X\<lfloor>\<rceil> # ST''" by(fastsimp)
+          where "ST = Y # Integer # X\<lfloor>\<rceil> # ST''" by(fastforce)
 
         with ST obtain ref e idx stk' where stk': "stk = e#idx#ref#stk'" 
           and idx: "P,h \<turnstile> idx :\<le> Integer" and ref:  "P,h \<turnstile> ref :\<le> X\<lfloor>\<rceil>" 
@@ -1728,7 +1728,7 @@ proof -
 
       from \<Phi>_pc wt obtain oT ST'' vT fm where oT: "P \<turnstile> oT \<le> Class D" 
         and "ST = oT # ST''" and F: "P \<turnstile> D sees F:vT (fm) in D" 
-        by fastsimp
+        by fastforce
 
       with ST obtain ref stk' where stk': "stk = ref#stk'" 
         and ref:  "P,h \<turnstile> ref :\<le> oT" by auto
@@ -1757,7 +1757,7 @@ proof -
       from \<Phi>_pc wt obtain vT vT' oT ST'' fm where "ST = vT # oT # ST''" 
         and field: "P \<turnstile> D sees F:vT' (fm) in D"
         and oT: "P \<turnstile> oT \<le> Class D"
-        and vT': "P \<turnstile> vT \<le> vT'" by fastsimp
+        and vT': "P \<turnstile> vT \<le> vT'" by fastforce
       with ST obtain v ref stk' where stk': "stk = v#ref#stk'" 
         and ref:  "P,h \<turnstile> ref :\<le> oT" 
         and v: "P,h \<turnstile> v :\<le> vT" by auto
@@ -1802,7 +1802,7 @@ proof -
         from NT wt \<Phi>_pc
         have iec: "if is_native P (ST ! n) M' then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M'(Ts) :: U
           else \<exists>D D' Ts T m. class_type_of (ST!n) = Some D \<and> P \<turnstile> D sees M': Ts\<rightarrow>T = m in D' \<and> P \<turnstile> rev (take n ST) [\<le>] Ts"
-          by(fastsimp split: split_if_asm simp add: split_beta)
+          by(fastforce split: split_if_asm simp add: split_beta)
         show ?thesis
         proof(cases "is_native P (ST ! n) M'")
           case False

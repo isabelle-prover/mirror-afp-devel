@@ -627,7 +627,7 @@ lemma wf_equallength:
   shows "map is_TVarB \<Gamma>' = map is_TVarB \<Gamma> \<Longrightarrow> \<Gamma>' \<turnstile>\<^bsub>wf\<^esub> T" using H
   apply (induct arbitrary: \<Gamma>')
   apply (auto intro: well_formed.intros dest: map_is_TVarb)+
-  apply (fastsimp intro: well_formed.intros)
+  apply (fastforce intro: well_formed.intros)
   done
 
 lemma wfE_replace:
@@ -932,7 +932,7 @@ next
     with SA_Rcd obtain S where
       lS: "(l, S) \<in> set fs"
       and ST: "\<up>\<^isub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> S <: \<up>\<^isub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> (T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>)"
-      by fastsimp
+      by fastforce
     with T have "\<up>\<^isub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> S <: \<up>\<^isub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T'"
       by simp
     moreover from lS have "(l, \<up>\<^isub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> S) \<in> set (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs)"
@@ -1462,7 +1462,7 @@ lemma typings_setD:
   assumes H: "\<Gamma> \<turnstile> fs [:] fTs"
   shows "(l, T) \<in> set fTs \<Longrightarrow> \<exists>t. fs\<langle>l\<rangle>\<^isub>? = \<lfloor>t\<rfloor> \<and> \<Gamma> \<turnstile> t : T"
   using H
-  by (induct arbitrary: l T rule: typings_induct) fastsimp+
+  by (induct arbitrary: l T rule: typings_induct) fastforce+
 
 lemma subtype_refl':
   assumes t: "\<Gamma> \<turnstile> t : T"
@@ -2194,7 +2194,7 @@ next
     with T_Proj have "\<Gamma> \<turnstile> Rcd fs : RcdT fTs" by simp
     hence "\<forall>(l, U)\<in>set fTs. \<exists>u. fs\<langle>l\<rangle>\<^isub>? = \<lfloor>u\<rfloor> \<and> \<Gamma> \<turnstile> u : U"
       by (rule Rcd_type1')
-    with E_ProjRcd T_Proj show ?thesis by (fastsimp dest: assoc_set)
+    with E_ProjRcd T_Proj show ?thesis by (fastforce dest: assoc_set)
   next
     case (E_Proj t'')
     from `t \<longmapsto> t''`
@@ -2378,7 +2378,7 @@ next
   then obtain us where "\<turnstile> fps [\<rhd>] map (\<lambda>(l, T). (l, the (fs\<langle>l\<rangle>\<^isub>?))) fTs \<Rightarrow> us" ..
   with P_Rcd(1) assoc have "\<turnstile> fps [\<rhd>] fs \<Rightarrow> us" by (rule matchs_reorder')
   hence "\<turnstile> PRcd fps \<rhd> Rcd fs \<Rightarrow> us" by (rule M_Rcd)
-  with t show ?case by fastsimp
+  with t show ?case by fastforce
 next
   case (P_Nil fs)
   show ?case by (iprover intro: M_Nil)

@@ -90,9 +90,9 @@ proof(induct f)
     qed
   qed
 next
-  case (And f1 f2) thus ?case by (fastsimp)
+  case (And f1 f2) thus ?case by (fastforce)
 next
-  case (Or f1 f2) thus ?case by (fastsimp)
+  case (Or f1 f2) thus ?case by (fastforce)
 qed simp+
 
 definition "EQ2 = EQ"
@@ -142,7 +142,7 @@ next
     } ultimately show ?thesis by force
   next
     case 2 thus ?thesis using Atom
-      by(fastsimp simp:nolb_def EQ2_def depends\<^isub>R_def field_simps split:split_if_asm)
+      by(fastforce simp:nolb_def EQ2_def depends\<^isub>R_def field_simps split:split_if_asm)
   qed (insert Atom, auto)
 next
   case Or thus ?case by(simp add:Ball_def)(metis order_refl innermost_intvl2)
@@ -239,10 +239,10 @@ proof
   { assume "\<forall>x \<in> EQ f xs. \<not>R.I f (x#xs)"
            "\<not> R.I (inf\<^isub>- f) xs"
     with `?QE` `nqfree f` obtain r cs where "R.I (subst\<^isub>+ f (r,cs)) xs"
-      by(fastsimp simp:qe_eps\<^isub>1_def set_ebounds diff_divide_distrib eval_def
+      by(fastforce simp:qe_eps\<^isub>1_def set_ebounds diff_divide_distrib eval_def
         diff_minus[symmetric] I_subst `nqfree f`)
     then obtain leps where "R.I f (leps#xs)"
-      using I_subst_peps[OF `nqfree f`] by fastsimp
+      using I_subst_peps[OF `nqfree f`] by fastforce
     hence ?EX .. }
   ultimately show ?EX by blast
 next
@@ -259,7 +259,7 @@ next
     hence noE: "\<forall>e \<in> EQ f xs. \<not> R.I f (e#xs)" using `nqfree f`
       by (force simp:set_ebounds I_subst diff_divide_distrib eval_def
         diff_minus[symmetric] split:split_if_asm)
-    hence "x \<notin> EQ f xs" using x by fastsimp
+    hence "x \<notin> EQ f xs" using x by fastforce
     obtain l where "l \<in> LB f xs" "l < x"
       using LBex[OF `nqfree f` x `\<not> R.I(inf\<^isub>- f) xs` `x \<notin> EQ f xs`] ..
     have "\<exists>l\<in>LB f xs. l<x \<and> nolb f xs l x \<and>

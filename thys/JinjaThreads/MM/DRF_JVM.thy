@@ -60,7 +60,7 @@ proof -
     next
       case False[simp]
       with check Invoke obtain a where stkn: "stk ! n = Addr a" "n < length stk" by auto
-      hence a: "a \<in> (\<Union>v \<in> set stk. ka_Val v)" by(fastsimp dest: nth_mem)
+      hence a: "a \<in> (\<Union>v \<in> set stk. ka_Val v)" by(fastforce dest: nth_mem)
       show ?thesis
       proof(cases "is_native P (the (typeof_addr h (the_Addr (stk ! n)))) M'")
         case True
@@ -102,8 +102,8 @@ apply(cases xcpfrs')
 apply(simp add: split_beta)
 apply(erule jvmd_NormalE)
 apply(cases "fst xcpfrs")
- apply(fastsimp simp add: check_def split_beta del: subsetI dest!: exec_instr_known_addrs[OF ok])
-apply(fastsimp simp add: jvm_known_addrs_def split_beta dest!: in_set_dropD)
+ apply(fastforce simp add: check_def split_beta del: subsetI dest!: exec_instr_known_addrs[OF ok])
+apply(fastforce simp add: jvm_known_addrs_def split_beta dest!: in_set_dropD)
 done
 
 lemma exec_instr_known_addrs_ReadMem:
@@ -377,7 +377,7 @@ using exec check read
 proof(cases i)
   case ALoad
   with assms show ?thesis
-    by(fastsimp simp add: split_beta is_Ref_def nat_less_iff word_sless_alt intro: addr_loc_type.intros split: split_if_asm)
+    by(fastforce simp add: split_beta is_Ref_def nat_less_iff word_sless_alt intro: addr_loc_type.intros split: split_if_asm)
 next
   case (Getfield F D)
   with assms show ?thesis
@@ -467,7 +467,7 @@ proof -
       by(auto 4 3 intro!: heap_read_typedI dest: vs_confD addr_loc_type_fun)
   next
     case Invoke with assms show ?thesis
-      by(fastsimp dest: red_external_aggr_ta_seq_consist_typeable)
+      by(fastforce dest: red_external_aggr_ta_seq_consist_typeable)
   next
     case AStore
     { 
@@ -670,7 +670,7 @@ lemma exec_instr_cut_and_update:
 using exec_i aok
 proof(cases i)
   case MExit thus ?thesis using exec_i aok
-    by(simp add: split_beta split: split_if_asm)(safe, fastsimp, fastsimp intro!: disjI2 del: disjCI)
+    by(simp add: split_beta split: split_if_asm)(safe, fastforce, fastforce intro!: disjI2 del: disjCI)
 next
   case ALoad[simp]
   let ?a = "the_Addr (hd (tl stk))"
@@ -693,11 +693,11 @@ next
     moreover from a have "a \<in> jvm_known_addrs t (None, (stk, loc, C, M, pc) # frs)"
       by(cases stk)(auto simp add: jvm_known_addrs_def neq_Nil_conv)
     ultimately obtain b v' where bv': "vs (?a, ACell (nat (sint ?i))) = \<lfloor>(v', b)\<rfloor>"
-      using subsetD[OF dom_vs, where c="(?a, ACell (nat (sint ?i)))"] a by fastsimp
+      using subsetD[OF dom_vs, where c="(?a, ACell (nat (sint ?i)))"] a by fastforce
     with adal vs have "P,shr s \<turnstile> v' :\<le> T" by(auto dest: vs_confD addr_loc_type_fun)
     with hrt adal have "heap_read (shr s) ?a (ACell (nat (sint ?i))) v'"
       using hconf by(rule heap_read_typeableD)
-    with bv' type bounds Null aok exec_i show ?thesis by fastsimp
+    with bv' type bounds Null aok exec_i show ?thesis by fastforce
   qed
 next
   case (Getfield F D)[simp]
@@ -722,7 +722,7 @@ next
     moreover from a have "a \<in> jvm_known_addrs t (None, (stk, loc, C, M, pc) # frs)"
       by(auto simp add: jvm_known_addrs_def neq_Nil_conv)
     ultimately obtain b v' where bv': "vs (?a, CField D F) = \<lfloor>(v', b)\<rfloor>"
-      using subsetD[OF dom_vs, where c="(?a, CField D F)"] a by fastsimp
+      using subsetD[OF dom_vs, where c="(?a, CField D F)"] a by fastforce
     with adal vs have "P,shr s \<turnstile> v' :\<le> T" by(auto dest: vs_confD addr_loc_type_fun)
     with hrt adal have "heap_read (shr s) ?a (CField D F) v'"
       using hconf by(rule heap_read_typeableD)
@@ -745,7 +745,7 @@ next
       and extwt: "P,shr s \<turnstile> ?a\<bullet>M(?vs) : U" by(auto simp add: is_Ref_def)
     from Null iec type exec_i obtain ta' va
       where red: "(ta', va, h') \<in> red_external_aggr P t ?a M ?vs (shr s)"
-      and ta: "ta = extTA2JVM P ta'" by(fastsimp)
+      and ta: "ta = extTA2JVM P ta'" by(fastforce)
     from aok ta have aok': "execd_mthr.if.actions_ok s t ta'" by simp
     from dom_vs a have "{(a, al) |al. \<exists>T. P,shr s \<turnstile> a@al : T} \<subseteq> dom vs"
       by(auto simp add: jvm_known_addrs_def in_set_conv_nth iff del: domIff del: subsetI dest!: UNION_subsetD[where a="Addr a" and A="set stk"])
@@ -776,7 +776,7 @@ apply(erule jvmd_NormalE)
 apply(cases "(P, t, xcp, shr s, frs)" rule: exec.cases)
   apply simp
  prefer 2
- apply(fastsimp simp add: exec_1_d.simps exec_d_def split_beta)
+ apply(fastforce simp add: exec_1_d.simps exec_d_def split_beta)
 apply clarsimp
 apply(drule (4) exec_instr_cut_and_update)
   apply(clarsimp simp add: check_def has_method_def)
@@ -895,7 +895,7 @@ proof(rule execd_mthr.if.cut_and_updateI)
       where x: "x = (Running, xcp, frs)" and x': "x' = (Running, xcp', frs')"
       and ta: "ta = convert_TA_initial (convert_obs_initial ta')"
       and red': "P,t \<turnstile> Normal (xcp, shr s', frs) -ta'-jvmd\<rightarrow> Normal (xcp', m', frs')"
-      by cases fastsimp+
+      by cases fastforce+
 
     from ts't wt' x have hconf: "hconf (shr s')" by(auto dest!: ts_okD simp add: correct_state_def)
 

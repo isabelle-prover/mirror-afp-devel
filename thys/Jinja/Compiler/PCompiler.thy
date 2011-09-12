@@ -33,7 +33,7 @@ lemma map_of_map4:
 apply(induct ts)
  apply simp
 apply(rule ext)
-apply fastsimp
+apply fastforce
 done
 (*>*)
 
@@ -73,7 +73,7 @@ apply(erule Methods.induct)
  apply(simp add:compM_def map_of_map4 option_map_comp)
  apply(case_tac "map_of ms x")
   apply simp
- apply fastsimp
+ apply fastforce
 apply(rule sees_methods_rec)
    apply(erule class_compP)
   apply assumption
@@ -87,7 +87,7 @@ done
 lemma sees_method_compP:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<Longrightarrow>
   compP f P \<turnstile> C sees M: Ts\<rightarrow>T = (f m) in D"
-(*<*)by(fastsimp elim:sees_methods_compP simp add:Method_def)(*>*)
+(*<*)by(fastforce elim:sees_methods_compP simp add:Method_def)(*>*)
 
 
 lemma [simp]:
@@ -98,7 +98,7 @@ apply(drule sees_method_compP)
 apply(simp add:method_def)
 apply(rule the_equality)
  apply simp
-apply(fastsimp dest:sees_method_fun)
+apply(fastforce dest:sees_method_fun)
 done
 (*>*)
 
@@ -117,7 +117,7 @@ apply(erule Methods.induct)
  apply(simp add:compM_def map_of_map4 option_map_comp)
  apply(case_tac "map_of b x")
   apply simp
- apply fastsimp
+ apply fastforce
 apply(clarsimp simp:compC_def)
 apply(rule exI, rule conjI)
 apply(erule (2) sees_methods_rec)
@@ -143,7 +143,7 @@ done
 
 lemma [simp]: "subcls1(compP f P) = subcls1 P"
 (*<*)
-by(fastsimp simp add: is_class_def compC_def intro:subcls1I order_antisym dest:subcls1D)
+by(fastforce simp add: is_class_def compC_def intro:subcls1I order_antisym dest:subcls1D)
 (*>*)
 
 
@@ -238,7 +238,7 @@ lemma [iff]: "wf_fdecl (compP f P) = wf_fdecl P"
 lemma set_compP:
  "((C,D,fs,ms') \<in> set(compP f P)) =
   (\<exists>ms. (C,D,fs,ms) \<in> set P \<and> ms' = map (compM f) ms)"
-(*<*)by(fastsimp simp add:compP_def compC_def image_iff Bex_def)(*>*)
+(*<*)by(fastforce simp add:compP_def compC_def image_iff Bex_def)(*>*)
 
 
 lemma wf_cdecl_compPI:
@@ -257,7 +257,7 @@ apply(rule conjI)
 apply(clarify)
 apply(drule sees_method_compPD[where f = f])
 apply clarsimp 
-apply(fastsimp simp:image_iff compM_def)
+apply(fastforce simp:image_iff compM_def)
 done
 (*>*)
 

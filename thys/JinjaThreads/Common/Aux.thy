@@ -214,7 +214,7 @@ next
 	by -(rule IH[THEN iffD1])
       then obtain m where "m \<le> n" and XS: "XS = replicate m x" and ys: "ys = replicate (n - m) x" by blast
       with x Cons show ?thesis
-	by(fastsimp)
+	by(fastforce)
     qed
   next
     assume "\<exists>m\<le>Suc n. xs = replicate m x \<and> ys = replicate (Suc n - m) x"
@@ -248,7 +248,7 @@ done
 lemma map_eq_all_nth_conv:
   "map f xs = ys \<longleftrightarrow> length xs = length ys \<and> (\<forall>n < length xs. f (xs ! n) = ys ! n)"
 apply(induct xs arbitrary: ys)
-apply(fastsimp simp add: nth_Cons Suc_length_conv split: nat.splits)+
+apply(fastforce simp add: nth_Cons Suc_length_conv split: nat.splits)+
 done
 
 
@@ -313,7 +313,7 @@ lemma not_is_emptyE:
   assumes "\<not> Predicate.is_empty P"
   obtains x where "Predicate.eval P x"
 using assms
-by(fastsimp simp add: Predicate.is_empty_def bot_pred_def intro!: pred_iffI)
+by(fastforce simp add: Predicate.is_empty_def bot_pred_def intro!: pred_iffI)
 
 lemma is_emptyD:
   assumes "Predicate.is_empty P"
@@ -707,12 +707,12 @@ apply(induct bs arbitrary: a'' rule: rev_induct)
 apply(erule rtrancl3p.cases)
  apply(clarsimp)
 apply(clarsimp)
-by(fastsimp intro: rtrancl3p_step)
+by(fastforce intro: rtrancl3p_step)
 
 lemma converse_rtrancl3pD:
   "rtrancl3p (converse3p r) a' bs a \<Longrightarrow> rtrancl3p r a (rev bs) a'"
 apply(induct rule: rtrancl3p.induct)
- apply(fastsimp intro: rtrancl3p.intros)
+ apply(fastforce intro: rtrancl3p.intros)
 apply(auto dest: converse3pD intro: rtrancl3p_step_converse)
 done
 
@@ -777,7 +777,7 @@ lemma rtrancl3p_appendE:
   obtains a' where "rtrancl3p r a bs a'" "rtrancl3p r a' bs' a''"
 using assms
 apply(induct a "bs @ bs'" arbitrary: bs rule: rtrancl3p_converse_induct')
-apply(fastsimp intro: rtrancl3p_step_converse simp add: Cons_eq_append_conv)+
+apply(fastforce intro: rtrancl3p_step_converse simp add: Cons_eq_append_conv)+
 done
 
 definition invariant3p :: "('a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool"

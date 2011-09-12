@@ -45,7 +45,7 @@ by(blast intro: WT_red_external_aggr_imp_red_external red_external_imp_red_exter
 lemma red_external_new_thread_sees:
   "\<lbrakk> wf_prog wf_md P; P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class C\<rfloor> \<and> (\<exists>T meth D. P \<turnstile> C sees M':[]\<rightarrow>T = meth in D)"
-by(fastsimp elim!: red_external.cases simp add: widen_Class ta_upd_simps dest: sub_Thread_sees_run)
+by(fastforce elim!: red_external.cases simp add: widen_Class ta_upd_simps dest: sub_Thread_sees_run)
 
 end
 
@@ -105,10 +105,10 @@ lemma hconf_heap_clone_mono:
 using `heap_clone P h a h' res`
 proof cases
   case ObjFail thus ?thesis using `hconf h`
-    by(fastsimp intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
+    by(fastforce intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
 next
   case ArrFail thus ?thesis using `hconf h`
-    by(fastsimp intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
+    by(fastforce intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
 next
   case (ObjClone C h'' a' FDTs obs)
   note FDTs = `P \<turnstile> C has_fields FDTs`
@@ -124,14 +124,14 @@ next
   from `typeof_addr h a = \<lfloor>Class C\<rfloor>` FDTs
   have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-    by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+    by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
     by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h''`])
   moreover from `new_obj h C = (h'', \<lfloor>a'\<rfloor>)` `is_class P C`
   have "typeof_addr h'' a' = \<lfloor>Class C\<rfloor>" by(auto dest: new_obj_SomeD)
   with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-    by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+    by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   ultimately have "hconf h'" by(rule hconf_heap_copies_mono)
   thus ?thesis using ObjClone by simp
 next
@@ -150,12 +150,12 @@ next
     and [simp]: "array_length h'' a = array_length h a" by(auto intro: hext_arrD)
   note FDTs = `P \<turnstile> Object has_fields FDTs`
   from type'a FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
-    by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
   moreover from `new_arr h T n = (h'', \<lfloor>a'\<rfloor>)` `is_type P (T\<lfloor>\<rceil>)`
   have "typeof_addr h'' a' = \<lfloor>Array T\<rfloor>" "array_length h'' a' = array_length h a"
     by(auto dest: new_arr_SomeD)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts" using FDTs
-    by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
   ultimately have "hconf h'" by(rule hconf_heap_copies_mono)
   thus ?thesis using ArrClone by simp
 qed
@@ -165,7 +165,7 @@ theorem external_call_hconf:
   and minor: "P,h \<turnstile> a\<bullet>M(vs) : U" "hconf h"
   shows "hconf h'"
 using major minor
-by cases(fastsimp intro: hconf_heap_clone_mono)+
+by cases(fastforce intro: hconf_heap_clone_mono)+
 
 end
 
@@ -226,7 +226,7 @@ next
   have "P,h \<turnstile> a'@al : T'" and "list_all2 (\<lambda>al T. P,h \<turnstile> a'@al : T) als Ts'" by simp_all
   from `hconf h` `P,h \<turnstile> a@al : T'` `P,h \<turnstile> a'@al : T'`
   obtain v h' where "heap_copy_loc a a' al h [ReadMem a al v, WriteMem a' al v] h'"
-    and "hconf h'" by(fastsimp dest: heap_copy_loc_progress)
+    and "hconf h'" by(fastforce dest: heap_copy_loc_progress)
   moreover hence "h \<unlhd> h'" by-(rule hext_heap_copy_loc)
   {
     note `hconf h'`
@@ -280,14 +280,14 @@ proof -
       let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
       from typea FDTs have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
         unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-        by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+        by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
       hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
         by(rule list_all2_mono)(simp add: addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`] split_def)
       moreover from new Some `is_class P C`
       have "typeof_addr h' a' = \<lfloor>Class C\<rfloor>" by(auto dest: new_obj_SomeD)
       with FDTs have "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts"
         unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-        by(fastsimp intro: addr_loc_type.intros map_of_SomeI simp add: has_field_def dest: weak_map_of_SomeI)
+        by(fastforce intro: addr_loc_type.intros map_of_SomeI simp add: has_field_def dest: weak_map_of_SomeI)
       ultimately obtain obs h'' where "heap_copies a a' ?als h' obs h''" "hconf h''"
         by(blast dest: heap_copies_progress[OF `hconf h'`])
       with typea new Some FDTs ObjClone[of h a C h' a' P FDTs obs h'']
@@ -317,12 +317,12 @@ proof -
       from `h \<unlhd> h'` typea have type'a: "typeof_addr h' a = \<lfloor>Array U\<rfloor>"
         and [simp]: "array_length h' a = array_length h a" by(auto intro: hext_arrD)
       from type'a FDTs have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
-        by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+        by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
       moreover from new Some `is_type P T`
       have "typeof_addr h' a' = \<lfloor>Array U\<rfloor>" "array_length h' a' = array_length h a"
         by(auto dest: new_arr_SomeD)
       hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts" using FDTs
-        by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+        by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
       ultimately obtain obs h'' where "heap_copies a a' ?als h' obs h''" "hconf h''"
         by(blast dest: heap_copies_progress[OF `hconf h'`])
       with typea new Some FDTs ArrClone[of h a U "?n" h' a' P FDTs obs h'']
@@ -350,7 +350,7 @@ proof -
     assume [simp]: "T' = Class Object" "M = clone" "Ts' = []" "U = Class Object"
     from heap_clone_progress[OF wf T hconf] obtain h' res where "heap_clone P h a h' res" by blast
     thus ?thesis using subTs Ts by(cases res)(auto intro: red_external.intros)
-  qed(fastsimp simp add: widen_Class intro: red_external.intros dest: native_call_not_NT)+
+  qed(fastforce simp add: widen_Class intro: red_external.intros dest: native_call_not_NT)+
 qed
 
 end
@@ -383,7 +383,7 @@ proof cases
   from heap_clone_progress[OF wf T hconf]
   obtain h''' res where "heap_clone P h'' a h''' res" by blast
   thus ?thesis using RedClone
-    by(cases res)(fastsimp intro: red_external.intros)+
+    by(cases res)(fastforce intro: red_external.intros)+
 next
   case RedCloneFail
   from wt obtain T Ts Ts'
@@ -396,8 +396,8 @@ next
   from heap_clone_progress[OF wf T hconf]
   obtain h''' res where "heap_clone P h'' a h''' res" by blast
   thus ?thesis using RedCloneFail
-    by(cases res)(fastsimp intro: red_external.intros)+
-qed(fastsimp simp add: ta_upd_simps elim!: external_WT'.cases intro: red_external.intros[simplified] dest: typeof_addr_hext_mono)+
+    by(cases res)(fastforce intro: red_external.intros)+
+qed(fastforce simp add: ta_upd_simps elim!: external_WT'.cases intro: red_external.intros[simplified] dest: typeof_addr_hext_mono)+
 
 lemma red_external_wf_red:
   assumes wf: "wf_prog wf_md P"
@@ -413,7 +413,7 @@ proof(atomize_elim)
   let ?t_a = "addr2thread_id a"
 
   from tconf obtain C where ht: "typeof_addr h ?a_t = \<lfloor>Class C\<rfloor>" 
-    and sub: "P \<turnstile> C \<preceq>\<^sup>* Thread" by(fastsimp dest: tconfD)
+    and sub: "P \<turnstile> C \<preceq>\<^sup>* Thread" by(fastforce dest: tconfD)
 
   show "\<exists>ta' va' h'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta'\<rightarrow>ext \<langle>va', h'\<rangle> \<and> (final_thread.actions_ok final s t ta' \<or> final_thread.actions_ok' s t ta' \<and> final_thread.actions_subset ta' ta)"
   proof(cases "final_thread.actions_ok' s t ta")
@@ -462,11 +462,11 @@ proof(atomize_elim)
         let ?ta' = "\<lbrace>ThreadExists ?t_a True\<rbrace>"
         from ta False None have "final_thread.actions_ok' s t ?ta'" by(auto)
         moreover from ta have "final_thread.actions_subset ?ta' ta" by(auto)
-        ultimately show ?thesis using RedNewThread by(fastsimp)
+        ultimately show ?thesis using RedNewThread by(fastforce)
       next
         case RedNewThreadFail
         then obtain va' h' x where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -\<lbrace>NewThread ?t_a x h', ThreadStart ?t_a\<rbrace>\<rightarrow>ext \<langle>va', h'\<rangle>"
-          by(fastsimp)
+          by(fastforce)
         moreover from `ta = \<lbrace>ThreadExists ?t_a True\<rbrace>` False None
         have "final_thread.actions_ok' s t \<lbrace>NewThread ?t_a x h', ThreadStart ?t_a\<rbrace>" by(auto)
         moreover from `ta = \<lbrace>ThreadExists ?t_a True\<rbrace>`
@@ -526,7 +526,7 @@ proof(atomize_elim)
         case RedWaitInterrupt
         note ta = `ta = \<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>`
         from ta False None have hli: "\<not> has_lock ((locks s)\<^sub>f a) t \<or> t \<notin> interrupts s"
-          by(fastsimp simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
+          by(fastforce simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
         show ?thesis
         proof(cases "has_lock ((locks s)\<^sub>f a) t")
           case True
@@ -545,7 +545,7 @@ proof(atomize_elim)
             by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
           moreover from ta have "final_thread.actions_subset ?ta' ta"
 	    by(auto simp add: collect_locks'_def finfun_upd_apply)
-          moreover from RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+          moreover from RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
           ultimately show ?thesis by blast
         qed
       next
@@ -570,7 +570,7 @@ proof(atomize_elim)
             by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
           moreover from ta have "final_thread.actions_subset ?ta' ta"
 	    by(auto simp add: collect_locks'_def finfun_upd_apply)
-          moreover from RedWait RedWaitFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+          moreover from RedWait RedWaitFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
           ultimately show ?thesis by blast
         qed
       next
@@ -618,12 +618,12 @@ proof(atomize_elim)
         note ta = `ta = \<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
         let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
         from ta False None have "\<not> has_lock ((locks s)\<^sub>f a) t"
-	  by(fastsimp simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t has_lock_may_lock)
+	  by(fastforce simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t has_lock_may_lock)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
 	  by(auto simp add: collect_locks'_def finfun_upd_apply)
-        moreover from RedNotify obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        moreover from RedNotify obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
         ultimately show ?thesis by blast
       next
         case RedNotifyFail
@@ -635,7 +635,7 @@ proof(atomize_elim)
           by(auto simp add: finfun_upd_apply simp add: wset_actions_ok_def intro: has_lock_may_lock)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
 	  by(auto simp add: collect_locks'_def finfun_upd_apply)
-        moreover from RedNotifyFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        moreover from RedNotifyFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
         ultimately show ?thesis by blast
       next
         case RedNotifyAll
@@ -647,7 +647,7 @@ proof(atomize_elim)
           by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
 	  by(auto simp add: collect_locks'_def finfun_upd_apply)
-        moreover from RedNotifyAll obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        moreover from RedNotifyAll obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
         ultimately show ?thesis by blast
       next
         case RedNotifyAllFail
@@ -659,7 +659,7 @@ proof(atomize_elim)
           by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
 	  by(auto simp add: collect_locks'_def finfun_upd_apply)
-        moreover from RedNotifyAllFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        moreover from RedNotifyAllFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
         ultimately show ?thesis by blast
       next
         case RedInterruptedTrue
@@ -699,7 +699,7 @@ proof -
     free_thread_id.intros
     and [cong] = conj_cong
   
-  from assms show ?thesis by cases(fastsimp intro: exI[where x="(\<lambda>\<^isup>f None)(\<^sup>f a := \<lfloor>(t, 0)\<rfloor>)"] exI[where x="(\<lambda>\<^isup>f None)"])+
+  from assms show ?thesis by cases(fastforce intro: exI[where x="(\<lambda>\<^isup>f None)(\<^sup>f a := \<lfloor>(t, 0)\<rfloor>)"] exI[where x="(\<lambda>\<^isup>f None)"])+
 qed
 
 lemma red_external_aggr_ta_satisfiable:
@@ -716,7 +716,7 @@ proof -
     and [cong] = conj_cong
   
   from red native show ?thesis
-    by(fastsimp simp add: red_external_aggr_def is_native_def2 native_call_def split_beta ta_upd_simps elim!: external_WT_defs_cases elim: external_WT_defs.cases split: split_if_asm intro: exI[where x="(\<lambda>\<^isup>f None)(\<^sup>f a := \<lfloor>(t, 0)\<rfloor>)"] exI[where x="(\<lambda>\<^isup>f None)"])
+    by(fastforce simp add: red_external_aggr_def is_native_def2 native_call_def split_beta ta_upd_simps elim!: external_WT_defs_cases elim: external_WT_defs.cases split: split_if_asm intro: exI[where x="(\<lambda>\<^isup>f None)(\<^sup>f a := \<lfloor>(t, 0)\<rfloor>)"] exI[where x="(\<lambda>\<^isup>f None)"])
 qed
 
 end
@@ -738,7 +738,7 @@ lemma heap_copies_deterministic:
   shows "ops = ops' \<and> h' = h''"
 using copy
 apply(induct arbitrary: ops' h'')
- apply(fastsimp elim!: heap_copies_cases)
+ apply(fastforce elim!: heap_copies_cases)
 apply(erule heap_copies_cases)
 apply clarify
 apply(drule (1) heap_copy_loc_deterministic[OF det])
@@ -752,7 +752,7 @@ lemma heap_clone_deterministic:
   and clone: "heap_clone P h a h' obs" "heap_clone P h a h'' obs'"
   shows "h' = h'' \<and> obs = obs'"
 using clone
-by(fastsimp elim!: heap_clone.cases dest: heap_copies_deterministic[OF det] has_fields_fun)
+by(fastforce elim!: heap_clone.cases dest: heap_copies_deterministic[OF det] has_fields_fun)
 
 lemma red_external_deterministic:
   fixes final

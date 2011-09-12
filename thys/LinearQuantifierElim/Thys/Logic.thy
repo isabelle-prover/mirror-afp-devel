@@ -99,7 +99,7 @@ proof -
   { fix fs \<phi>
     have "\<lbrakk> \<forall>\<phi> \<in> set fs. qfree \<phi>; qfree \<phi> \<rbrakk> \<Longrightarrow> qfree(foldr and fs \<phi>)"
       by (induct fs) auto
-  } thus ?thesis using assms by (fastsimp simp add:list_conj_def)
+  } thus ?thesis using assms by (fastforce simp add:list_conj_def)
 qed
 
 lemma qfree_list_disj[simp]:
@@ -108,7 +108,7 @@ proof -
   { fix fs \<phi>
     have "\<lbrakk> \<forall>\<phi> \<in> set fs. qfree \<phi>; qfree \<phi> \<rbrakk> \<Longrightarrow> qfree(foldr or fs \<phi>)"
       by (induct fs) auto
-  } thus ?thesis using assms by (fastsimp simp add:list_disj_def)
+  } thus ?thesis using assms by (fastforce simp add:list_disj_def)
 qed
 
 lemma qfree_map_fm: "qfree (map\<^bsub>fm\<^esub> f \<phi>) = qfree \<phi>"
@@ -243,7 +243,7 @@ by(induct rule:nnf.induct)(simp_all add: I\<^isub>a_aneg)
 
 lemma I_dnf:
 "nqfree \<phi> \<Longrightarrow> (\<exists>as\<in>set (dnf \<phi>). \<forall>a\<in>set as. I\<^isub>a a xs) = I \<phi> xs"
-by (induct \<phi>) (fastsimp)+
+by (induct \<phi>) (fastforce)+
 
 definition "normal \<phi> = (\<forall>a \<in> atoms \<phi>. anormal a)"
 
@@ -302,7 +302,7 @@ apply(induct \<phi> arbitrary: a as rule:nnf.induct)
     apply (metis UnE set_append)
    apply metis
   apply metis
- apply fastsimp
+ apply fastforce
 apply (metis anormal_aneg atoms_dnf nqfree_aneg)
 done
 

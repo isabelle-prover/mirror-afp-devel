@@ -241,13 +241,13 @@ apply clarsimp apply (erule Sem_eval_cases) apply (erule Sem_eval_cases) apply c
            apply (erule_tac x=nb in allE, clarsimp)
            apply (erule_tac x=CtxtProg1 in allE)
            apply (erule_tac x="Fill CtxtProg1 c" in allE, clarsimp)
-           apply fastsimp
+           apply fastforce
   apply (simp add: LOW_def) 
            apply (erule_tac x=ma in allE, clarsimp)
            apply (erule_tac x=mb in allE, clarsimp)
            apply (erule_tac x=CtxtProg2 in allE)
            apply (erule_tac x="Fill CtxtProg2 c" in allE, clarsimp)
-           apply fastsimp
+           apply fastforce
 (*Ctxt_If*)
 apply clarsimp 
   apply (subgoal_tac "evalB BExpr s = evalB BExpr ss")
@@ -262,14 +262,14 @@ apply clarsimp
            apply (erule_tac x=nb in allE, clarsimp)
            apply (erule_tac x=CtxtProg1 in allE)
            apply (erule_tac x="Fill CtxtProg1 c" in allE, clarsimp)
-           apply fastsimp
+           apply fastforce
   apply (erule Sem_eval_cases) apply clarsimp
   apply (simp add: LOW_def) 
            apply (erule_tac x=na in allE, clarsimp)
            apply (erule_tac x=nb in allE, clarsimp)
            apply (erule_tac x=CtxtProg2 in allE)
            apply (erule_tac x="Fill CtxtProg2 c" in allE, clarsimp)
-           apply fastsimp
+           apply fastforce
 (*Ctxt_While*)
 apply clarsimp 
   apply (subgoal_tac "evalB BExpr s = evalB BExpr ss")
@@ -286,7 +286,7 @@ apply clarsimp
            apply (erule_tac x=nb in allE, clarsimp)
            apply (erule_tac x=CtxtProg in allE)
            apply (erule_tac x="Fill CtxtProg c" in allE, clarsimp)
-           apply fastsimp
+           apply fastforce
   apply (erule_tac x=ma in allE, clarsimp)
            apply (erule_tac x=mb in allE, clarsimp)
            apply (erule_tac x="Ctxt_While BExpr CtxtProg" in allE)
@@ -324,7 +324,7 @@ prefer 3 apply assumption
 apply (subgoal_tac "n \<le> n+na", assumption)
 apply (erule thin_rl, simp)
 apply (erule thin_rl, simp)
-apply (erule thin_rl,fastsimp)
+apply (erule thin_rl,fastforce)
 apply assumption
 apply assumption
 apply assumption

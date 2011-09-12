@@ -315,7 +315,7 @@ apply(rename_tac f fs)
 apply(case_tac "final f")
  apply simp
 apply(frule mgp_vertices_nonempty[OF inv_mgp])
- apply fastsimp
+ apply fastforce
 apply(clarsimp simp:neq_Nil_conv)
 apply(rename_tac v vs)
 apply(subgoal_tac "v \<in> \<V> f")
@@ -1289,7 +1289,7 @@ apply (rule equalityI)
          apply (case_tac "x = f'") apply (simp add: vert_f21) apply(simp)
          apply (case_tac "x = f21") apply (simp add: vert_f21) apply (simp)
          apply (rule conjI)
-          apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
+          apply (rule minGraphProps5) apply assumption apply assumption apply (fastforce simp: facesAt_def)
          apply (rule minGraphProps6) apply assumption apply assumption apply (simp add: facesAt_def)
         apply (rule minGraphProps11') apply simp
        apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
@@ -1303,8 +1303,8 @@ apply (rule equalityI)
          apply (case_tac "x = f'") apply (simp add: vert_f21) apply simp
          apply (case_tac "x = f21") apply (simp add: vert_f21) apply simp
          apply (rule conjI)
-          apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
-         apply (rule minGraphProps6) apply assumption apply assumption apply(fastsimp simp: facesAt_def)
+          apply (rule minGraphProps5) apply assumption apply assumption apply (fastforce simp: facesAt_def)
+         apply (rule minGraphProps6) apply assumption apply assumption apply(fastforce simp: facesAt_def)
         apply (rule minGraphProps11') apply simp
        apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
        apply (rule normFaces_distinct) apply (rule minGraphProps8) apply simp apply simp apply simp
@@ -1318,8 +1318,8 @@ apply (rule equalityI)
           apply (case_tac "x = f'") apply (simp add: vert_f21) apply simp
           apply (rule conjI)
            apply (rule disjI2)
-           apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
-          apply (rule minGraphProps6) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
+           apply (rule minGraphProps5) apply assumption apply assumption apply (fastforce simp: facesAt_def)
+          apply (rule minGraphProps6) apply assumption apply assumption apply (fastforce simp: facesAt_def)
          apply (rule minGraphProps11') apply simp
         apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
         apply (rule normFaces_distinct) apply (rule minGraphProps8) apply assumption apply assumption
@@ -1333,8 +1333,8 @@ apply (rule equalityI)
          apply (case_tac "x = f'") apply (simp add: vert_f21) apply simp
          apply (rule conjI)
           apply (rule disjI2)
-          apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
-         apply (rule minGraphProps6) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
+          apply (rule minGraphProps5) apply assumption apply assumption apply (fastforce simp: facesAt_def)
+         apply (rule minGraphProps6) apply assumption apply assumption apply (fastforce simp: facesAt_def)
         apply (rule minGraphProps11') apply simp
        apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
        apply (rule normFaces_distinct) apply (rule minGraphProps8) apply assumption apply assumption
@@ -1350,8 +1350,8 @@ apply (rule equalityI)
         apply simp
         apply (rule conjI)
          apply (rule disjI2) apply (rule disjI2)
-         apply (rule minGraphProps5) apply assumption apply assumption apply (fastsimp simp: facesAt_def)
-        apply (rule minGraphProps6) apply assumption apply assumption apply(fastsimp simp: facesAt_def)
+         apply (rule minGraphProps5) apply assumption apply assumption apply (fastforce simp: facesAt_def)
+        apply (rule minGraphProps6) apply assumption apply assumption apply(fastforce simp: facesAt_def)
        apply (rule minGraphProps11') apply assumption
       apply (subgoal_tac "distinct (facesAt g' va)") apply (simp add: facesAt_def)
       apply (rule normFaces_distinct) apply (rule minGraphProps8) apply assumption apply assumption apply simp
@@ -1743,7 +1743,7 @@ proof -
       have f12: "vs \<noteq> [] \<Longrightarrow> \<E> f\<^isub>1 \<union> \<E> f\<^isub>2 \<subseteq>
             \<E> f \<union> UNIV \<times> set vs \<union> set vs \<times> UNIV"
 	using split_face_edges_f12_f21[OF pre_split_face split_face]
-	by simp (fastsimp dest:in_Edges_in_set)
+	by simp (fastforce dest:in_Edges_in_set)
       have "!!x y. (y,x) \<in> \<E> f' \<Longrightarrow> x \<notin> set vs \<and> y \<notin> set vs"
 	using f' gvs by(blast dest:in_edges_in_vertices)
       then show ?thesis using f f' f12 disj vs
@@ -1870,18 +1870,18 @@ proof -
   proof cases
     assume 2: "|faces g| = 2"
     with fg obtain f' where Fg: "\<F> g = {f,f'}"
-      by(fastsimp simp: eval_nat_numeral length_Suc_conv)
+      by(fastforce simp: eval_nat_numeral length_Suc_conv)
     moreover hence "f \<noteq> f'" using 2 distinct_card[OF distF] by auto
     ultimately have Fg': "\<F> g' = {f\<^isub>1,f\<^isub>2,f'}"
       using set_faces_splitFace[OF mgp fg pre fdg] by blast
     show ?thesis using Fg' C12 Cg12 Fg
-      by(fastsimp simp:face_face_op_def)
+      by(fastforce simp:face_face_op_def)
   next
     assume "|faces g| \<noteq> 2"
     hence E: "!!f f'. f\<in>\<F> g \<Longrightarrow> f'\<in>\<F> g \<Longrightarrow> f \<noteq> f' \<Longrightarrow> \<E> f \<noteq> (\<E> f')\<inverse>"
       using mgp by(simp add:minGraphProps_def face_face_op_def)
     thus ?thesis using set_faces_splitFace[OF mgp fg pre fdg] C12 Cg12
-      by(fastsimp simp:face_face_op_def)
+      by(fastforce simp:face_face_op_def)
   qed
 qed
 
@@ -1943,8 +1943,8 @@ apply (subgoal_tac "v \<in> \<V> g")
       apply (erule (1) minGraphProps6) apply (simp add: facesAt_def)
      apply simp
      apply (rule conjI) apply (rule disjI2)
-      apply (erule (1) minGraphProps5) apply (fastsimp simp: facesAt_def)
-     apply (erule (1) minGraphProps6) apply (fastsimp simp: facesAt_def)
+      apply (erule (1) minGraphProps5) apply (fastforce simp: facesAt_def)
+     apply (erule (1) minGraphProps6) apply (fastforce simp: facesAt_def)
     apply (rule minGraphProps11') apply simp
    apply (rule normFaces_distinct) apply (rule minGraphProps8a) apply simp apply simp
   apply (simp add: vertices_graph minGraphProps4)
@@ -2037,8 +2037,8 @@ apply(frule minGraphProps11')
 apply (clarsimp simp: edges_disj_def makeFaceFinal_def edges_graph_def
                       makeFaceFinalFaceList_def replace6)
 apply(case_tac "f = f'")
- apply (fastsimp dest:mgp_edges_disj)
-apply (fastsimp dest:mgp_edges_disj)
+ apply (fastforce dest:mgp_edges_disj)
+apply (fastforce dest:mgp_edges_disj)
 done
 
 
@@ -2335,7 +2335,7 @@ apply(drule_tac x = f' in bspec)
 apply simp
 apply(drule_tac x = "(a,b)" in bspec)
  apply simp
-apply(fastsimp simp add: replace6)
+apply(fastforce simp add: replace6)
 done
 
 
@@ -2379,7 +2379,7 @@ next
 	   prefer 2
 	   using pre vf apply(simp add:pre_subdivFace'_def pre_between_def)
 	  apply(simp add:between_nextElem vw[symmetric])
-	  apply(fastsimp simp add:Edges_Cons Edges_append)
+	  apply(fastforce simp add:Edges_Cons Edges_append)
 	  done
       have pre': "pre_subdivFace' g f u w 0 ovs"
 	using pre Some n using [[simp_depth_limit = 5]] by (simp add: pre_subdivFace'_Some2)
@@ -2404,7 +2404,7 @@ next
       have 2: "one_final_but(snd(snd ?fdg)) ?Ew"
 	using uw apply simp
 	apply(rule FaceDivsionGraph_one_final_but[OF mgp pre_fdg _ uw bet uf 1])
-	apply(fastsimp intro!:prod_eqI)
+	apply(fastforce intro!:prod_eqI)
 	done
       note mgp' = splitFace_holds_minGraphProps[OF pre_fdg mgp]
       have pre2': "pre_subdivFace' (snd (snd ?fdg)) (fst (snd ?fdg)) u w 0 ovs"
@@ -2516,7 +2516,7 @@ by (simp add: Seed_def graph_def edges_sym_def edges_graph_def)
 
 lemma Seed_holds_edges_disj: "edges_disj (Seed p)"
 using is_nextElem_circ[of "[0..<(p+3)]"]
-by (fastsimp simp add: Seed_def graph_def edges_disj_def edges_graph_def)
+by (fastforce simp add: Seed_def graph_def edges_disj_def edges_graph_def)
 
 
 lemma Seed_holds_faces_distinct: "faces_distinct (Seed p)"
@@ -2697,7 +2697,7 @@ proof -
     by (simp add: pre_subdivFace_def pre_subdivFace_face_def)
   with pre_add v is_eq
   have "pre_subdivFace' g f v v 0 (tl is)"
-    by(fastsimp simp add:neq_Nil_conv elim:pre_subdivFace_pre_subdivFace')
+    by(fastforce simp add:neq_Nil_conv elim:pre_subdivFace_pre_subdivFace')
   from P[OF mgp this fg] g' show ?thesis by simp
 qed
 
@@ -2797,7 +2797,7 @@ proof(unfold inv_def)
     by (simp add: pre_subdivFace_def pre_subdivFace_face_def)
   with pre_add v i_nz is_eq
   have pre_addSnd: "pre_subdivFace' g f v v 0 (tl is)"
-    by(fastsimp simp add:neq_Nil_conv elim:pre_subdivFace_pre_subdivFace')
+    by(fastforce simp add:neq_Nil_conv elim:pre_subdivFace_pre_subdivFace')
   note 2 = one_final_antimono[OF 1]
   show "minGraphProps g' \<and> one_final g' \<and> |faces g'| \<ge> 2"
   proof auto

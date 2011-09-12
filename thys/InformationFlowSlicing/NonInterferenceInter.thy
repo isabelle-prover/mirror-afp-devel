@@ -72,16 +72,16 @@ begin
 lemma Low_neq_Exit: assumes "L \<noteq> {}" shows "(_Low_) \<noteq> (_Exit_)"
 proof
   assume "(_Low_) = (_Exit_)"
-  have "Use (_Exit_) = {}" by fastsimp
+  have "Use (_Exit_) = {}" by fastforce
   with UseLow `L \<noteq> {}` `(_Low_) = (_Exit_)` show False by simp
 qed
 
 
 lemma valid_node_High [simp]:"valid_node (_High_)"
-  using High_target_Entry_edge by fastsimp
+  using High_target_Entry_edge by fastforce
 
 lemma valid_node_Low [simp]:"valid_node (_Low_)"
-  using Low_source_Exit_edge by fastsimp
+  using Low_source_Exit_edge by fastforce
 
 
 lemma get_proc_Low:
@@ -89,7 +89,7 @@ lemma get_proc_Low:
 proof -
   from Low_source_Exit_edge obtain a where "valid_edge a"
     and "sourcenode a = (_Low_)" and "targetnode a = (_Exit_)"
-    and "intra_kind (kind a)" by(fastsimp simp:intra_kind_def)
+    and "intra_kind (kind a)" by(fastforce simp:intra_kind_def)
   from `valid_edge a` `intra_kind (kind a)`
   have "get_proc (sourcenode a) = get_proc (targetnode a)" by(rule get_proc_intra)
   with `sourcenode a = (_Low_)` `targetnode a = (_Exit_)` get_proc_Exit
@@ -101,7 +101,7 @@ lemma get_proc_High:
 proof -
   from High_target_Entry_edge obtain a where "valid_edge a"
     and "sourcenode a = (_Entry_)" and "targetnode a = (_High_)"
-    and "intra_kind (kind a)" by(fastsimp simp:intra_kind_def)
+    and "intra_kind (kind a)" by(fastforce simp:intra_kind_def)
   from `valid_edge a` `intra_kind (kind a)`
   have "get_proc (sourcenode a) = get_proc (targetnode a)" by(rule get_proc_intra)
   with `sourcenode a = (_Entry_)` `targetnode a = (_High_)` get_proc_Entry
@@ -120,7 +120,7 @@ proof(atomize_elim)
   proof(induct n'\<equiv>"(_Entry_)" as n rule:path.induct)
     case (Cons_path n'' as n' a)
     from `n'' -as\<rightarrow>* n'` `inner_node n'` have "n'' \<noteq> (_Exit_)" 
-      by(fastsimp simp:inner_node_def)
+      by(fastforce simp:inner_node_def)
     with `valid_edge a` `sourcenode a = (_Entry_)` `targetnode a = n''`
     have "n'' = (_High_)" by -(drule Entry_edge_Exit_or_High,auto)
     from High_target_Entry_edge
@@ -131,7 +131,7 @@ proof(atomize_elim)
       `n'' = (_High_)`
     have "a = a'" by(auto dest:edge_det)
     with `n'' -as\<rightarrow>* n'` `n'' = (_High_)` `kind a' = (\<lambda>s. True)\<^isub>\<surd>` show ?case by blast
-  qed fastsimp
+  qed fastforce
 qed
 
 
@@ -144,7 +144,7 @@ proof(atomize_elim)
   show "\<exists>as' a'. as = as'@[a'] \<and> n -as'\<rightarrow>* (_Low_) \<and> kind a' = (\<lambda>s. True)\<^isub>\<surd>"
   proof(induct as rule:rev_induct)
     case Nil
-    with `inner_node n` show ?case by fastsimp
+    with `inner_node n` show ?case by fastforce
   next
     case (snoc a' as')
     from `n -as'@[a']\<rightarrow>* (_Exit_)`
@@ -161,7 +161,7 @@ proof(atomize_elim)
       and "targetnode ax = (_Exit_)" and "kind ax = (\<lambda>s. True)\<^isub>\<surd>"
       by blast
     with `valid_edge a'` `targetnode a' = (_Exit_)` `sourcenode a' = (_Low_)`
-    have "a' = ax" by(fastsimp intro:edge_det)
+    have "a' = ax" by(fastforce intro:edge_det)
     with `n -as'\<rightarrow>* sourcenode a'` `sourcenode a' = (_Low_)` `kind ax = (\<lambda>s. True)\<^isub>\<surd>`
     show ?case by blast
   qed
@@ -170,11 +170,11 @@ qed
 
 lemma not_Low_High: "V \<notin> L \<Longrightarrow> V \<in> H"
   using HighLowUNIV
-  by fastsimp
+  by fastforce
 
 lemma not_High_Low: "V \<notin> H \<Longrightarrow> V \<in> L"
   using HighLowUNIV
-  by fastsimp
+  by fastforce
 
 
 section {* Low Equivalence *}
@@ -202,9 +202,9 @@ proof -
     where "(_Entry_) -as\<rightarrow>\<^isub>\<iota>* parent_node n'" 
     and "n' \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> n'"
     and "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
-          \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastsimp elim:rvE)
+          \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastforce elim:rvE)
   from `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* parent_node n'` have "valid_node (parent_node n')"
-    by(fastsimp intro:path_valid_node simp:intra_path_def)
+    by(fastforce intro:path_valid_node simp:intra_path_def)
   thus ?thesis
   proof(cases "parent_node n'" rule:valid_node_cases)
     case Entry
@@ -220,25 +220,25 @@ proof -
     case inner
     with `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* parent_node n'` obtain a' as' where "as = a'#as'"
       and "(_High_) -as'\<rightarrow>\<^isub>\<iota>* parent_node n'"
-      by(fastsimp elim:Entry_path_High_path simp:intra_path_def)
+      by(fastforce elim:Entry_path_High_path simp:intra_path_def)
     from `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* parent_node n'` `as = a'#as'`
-    have "sourcenode a' = (_Entry_)" by(fastsimp elim:path.cases simp:intra_path_def)
+    have "sourcenode a' = (_Entry_)" by(fastforce elim:path.cases simp:intra_path_def)
     show ?thesis
     proof(cases "as' = []")
       case True
       with `(_High_) -as'\<rightarrow>\<^isub>\<iota>* parent_node n'` have "parent_node n' = (_High_)"
-        by(fastsimp simp:intra_path_def)
+        by(fastforce simp:intra_path_def)
       with `n' \<in> HRB_slice S` `(_High_) \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       have False 
-        by(fastsimp dest:valid_SDG_node_in_slice_parent_node_in_slice 
+        by(fastforce dest:valid_SDG_node_in_slice_parent_node_in_slice 
                     simp:SDG_to_CFG_set_def)
       thus ?thesis by simp
     next
       case False
       with `(_High_) -as'\<rightarrow>\<^isub>\<iota>* parent_node n'` have "hd (sourcenodes as') = (_High_)"
-        by(fastsimp intro:path_sourcenode simp:intra_path_def)
+        by(fastforce intro:path_sourcenode simp:intra_path_def)
       from False have "hd (sourcenodes as') \<in> set (sourcenodes as')"
-        by(fastsimp intro:hd_in_set simp:sourcenodes_def)
+        by(fastforce intro:hd_in_set simp:sourcenodes_def)
       with `as = a'#as'` have "hd (sourcenodes as') \<in> set (sourcenodes as)"
         by(simp add:sourcenodes_def)
       from `hd (sourcenodes as') = (_High_)`
@@ -249,7 +249,7 @@ proof -
         `\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
         \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''`
       have "V \<notin> Def (_High_)"
-        by(fastsimp dest:CFG_Def_SDG_Def[OF `valid_node (hd (sourcenodes as'))`])
+        by(fastforce dest:CFG_Def_SDG_Def[OF `valid_node (hd (sourcenodes as'))`])
       hence "V \<notin> H" by(simp add:DefHigh)
       thus ?thesis by(rule not_High_Low)
     qed
@@ -295,17 +295,17 @@ lemma slpa_rv_Low_Use_Low:
                       state_val (transfers(slice_kinds S as') s') V"
 proof(induct arbitrary:m as' s s' rule:slpa_induct)
   case (slpa_empty cs)
-  from `m -[]\<rightarrow>* (_Low_)` have "m = (_Low_)" by fastsimp
+  from `m -[]\<rightarrow>* (_Low_)` have "m = (_Low_)" by fastforce
   from `m -[]\<rightarrow>* (_Low_)` have "valid_node m"
     by(rule path_valid_node)+
   { fix V assume "V \<in> Use (_Low_)"
     moreover
     from `valid_node m` `m = (_Low_)` have "(_Low_) -[]\<rightarrow>\<^isub>\<iota>* (_Low_)"
-      by(fastsimp intro:empty_path simp:intra_path_def)
+      by(fastforce intro:empty_path simp:intra_path_def)
     moreover
     from `valid_node m` `m = (_Low_)` `CFG_node (_Low_) \<in> S`
     have "CFG_node (_Low_) \<in> HRB_slice S"
-      by(fastsimp intro:HRB_slice_refl)
+      by(fastforce intro:HRB_slice_refl)
     ultimately have "V \<in> rv S (CFG_node m)" 
       using `m = (_Low_)`
       by(auto intro!:rvI CFG_Use_SDG_Use simp:sourcenodes_def) }
@@ -353,7 +353,7 @@ next
     show ?thesis
     proof(cases as')
       case Nil
-      with `m -as'\<rightarrow>* (_Low_)` have "m = (_Low_)" by fastsimp
+      with `m -as'\<rightarrow>* (_Low_)` have "m = (_Low_)" by fastforce
       with `valid_edge a` `sourcenode a = m` have "targetnode a = (_Exit_)"
         by -(rule Exit_successor_of_Low,simp+)
       from Low_source_Exit_edge obtain a' where "valid_edge a'"
@@ -362,7 +362,7 @@ next
       from `valid_edge a` `sourcenode a = m` `m = (_Low_)` 
         `targetnode a = (_Exit_)` `valid_edge a'` `sourcenode a' = (_Low_)` 
         `targetnode a' = (_Exit_)`
-      have "a = a'" by(fastsimp dest:edge_det)
+      have "a = a'" by(fastforce dest:edge_det)
       with `kind a' = (\<lambda>s. True)\<^isub>\<surd>` have "kind a = (\<lambda>s. True)\<^isub>\<surd>" by simp
       with `targetnode a = (_Exit_)` `targetnode a -as\<rightarrow>* (_Low_)`
       have "(_Low_) = (_Exit_)" by -(drule path_Exit_source,auto)
@@ -389,13 +389,13 @@ next
           have unique:"\<exists>!a'. valid_edge a' \<and> sourcenode a' = sourcenode ax \<and> 
             intra_kind(kind a')" by(rule call_only_one_intra_edge)
           from `valid_edge ax` `kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain x 
-            where "x \<in> get_return_edges ax" by(fastsimp dest:get_return_edge_call)
+            where "x \<in> get_return_edges ax" by(fastforce dest:get_return_edge_call)
           with `valid_edge ax` obtain a' where "valid_edge a'" 
             and "sourcenode a' = sourcenode ax" and "kind a' = (\<lambda>cf. False)\<^isub>\<surd>"
-            by(fastsimp dest:call_return_node_edge)
+            by(fastforce dest:call_return_node_edge)
           with `valid_edge a` `sourcenode a = m` `sourcenode ax = m`
             `intra_kind (kind a)` unique
-          have "a' = a" by(fastsimp simp:intra_kind_def)
+          have "a' = a" by(fastforce simp:intra_kind_def)
           with `kind a' = (\<lambda>cf. False)\<^isub>\<surd>` `slice_kind S a = kind a`
             `preds (slice_kinds S (a#as)) s`
           have False by(cases s)(auto simp:slice_kinds_def)
@@ -404,7 +404,7 @@ next
           case False
           with `kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `sourcenode a = m` `sourcenode ax = m`
           have "slice_kind S ax = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>fs"
-            by(fastsimp intro:slice_kind_Call)
+            by(fastforce intro:slice_kind_Call)
           with `as' = ax # asx` `preds (slice_kinds S as') s'`
           have False by(cases s')(auto simp:slice_kinds_def)
           thus ?thesis by simp
@@ -418,12 +418,12 @@ next
         thus ?thesis by simp
       qed simp
       with `same_level_path_aux cs as'` `as' = ax#asx`
-      have "same_level_path_aux cs asx" by(fastsimp simp:intra_kind_def)
+      have "same_level_path_aux cs asx" by(fastforce simp:intra_kind_def)
       show ?thesis
       proof(cases "targetnode a = targetnode ax")
         case True
         with `valid_edge a` `valid_edge ax` `sourcenode a = m` `sourcenode ax = m`
-        have "a = ax" by(fastsimp intro:edge_det)
+        have "a = ax" by(fastforce intro:edge_det)
         with `valid_edge a` `intra_kind (kind a)` `sourcenode a = m`
           `\<forall>V\<in>rv S (CFG_node m). state_val s V = state_val s' V`
           `preds (slice_kinds S (a # as)) s`
@@ -433,7 +433,7 @@ next
           state_val (transfer (slice_kind S a) s') V"
           by -(rule rv_edge_slice_kinds,auto)
         from `upd_cs cs (a # as) = []` `intra_kind (kind a)`
-        have "upd_cs cs as = []" by(fastsimp simp:intra_kind_def)
+        have "upd_cs cs as = []" by(fastforce simp:intra_kind_def)
         from `targetnode ax -asx\<rightarrow>* (_Low_)` `a = ax`
         have "targetnode a -asx\<rightarrow>* (_Low_)" by simp
         from `valid_edge a` `intra_kind (kind a)`
@@ -441,7 +441,7 @@ next
           where cfx:"transfer (slice_kind S a) s = cfx#cfs \<and> snd cfx = snd cf"
           apply(cases cf)
           apply(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>") apply auto
-          apply(fastsimp dest:slice_intra_kind_in_slice simp:intra_kind_def)
+          apply(fastforce dest:slice_intra_kind_in_slice simp:intra_kind_def)
           apply(auto simp:intra_kind_def)
           apply(drule slice_kind_Upd) apply auto 
           by(erule kind_Predicate_notin_slice_slice_kind_Predicate) auto
@@ -450,7 +450,7 @@ next
           where cfx':"transfer (slice_kind S a) s' = cfx'#cfs' \<and> snd cfx' = snd cf'"
           apply(cases cf')
           apply(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>") apply auto
-          apply(fastsimp dest:slice_intra_kind_in_slice simp:intra_kind_def)
+          apply(fastforce dest:slice_intra_kind_in_slice simp:intra_kind_def)
           apply(auto simp:intra_kind_def)
           apply(drule slice_kind_Upd) apply auto 
           by(erule kind_Predicate_notin_slice_slice_kind_Predicate) auto
@@ -463,7 +463,7 @@ next
           \<forall>V\<in>rv S (CFG_node (sourcenode (cs ! i))).
           fst (transfer (slice_kind S a) s ! Suc i) V =
           fst (transfer (slice_kind S a) s' ! Suc i) V"
-          by fastsimp
+          by fastforce
         from `preds (slice_kinds S (a # as)) s`
         have "preds (slice_kinds S as) 
           (transfer (slice_kind S a) s)" by(simp add:slice_kinds_def)
@@ -498,7 +498,7 @@ next
       next
         case False
         from `\<forall>i < Suc(length cs). snd (s!i) = snd (s'!i)`
-        have "snd (hd s) = snd (hd s')" by(erule_tac x="0" in allE) fastsimp
+        have "snd (hd s) = snd (hd s')" by(erule_tac x="0" in allE) fastforce
         with `valid_edge a` `valid_edge ax` `sourcenode a = m`
           `sourcenode ax = m` `as' = ax # asx` False
           `intra_kind (kind a)` `intra_kind (kind ax)`
@@ -506,7 +506,7 @@ next
           `preds (slice_kinds S as') s'`
           `\<forall>V\<in>rv S (CFG_node m). state_val s V = state_val s' V`
           `length s = Suc (length cs)` `length s' = Suc (length cs)`
-        have False by(fastsimp intro!:rv_branching_edges_slice_kinds_False[of a ax])
+        have False by(fastforce intro!:rv_branching_edges_slice_kinds_False[of a ax])
         thus ?thesis by simp
       qed
     qed
@@ -538,7 +538,7 @@ next
     show ?thesis
     proof(cases as')
       case Nil
-      with `m -as'\<rightarrow>* (_Low_)` have "m = (_Low_)" by fastsimp
+      with `m -as'\<rightarrow>* (_Low_)` have "m = (_Low_)" by fastforce
       with `valid_edge a` `sourcenode a = m` have "targetnode a = (_Exit_)"
         by -(rule Exit_successor_of_Low,simp+)
       from Low_source_Exit_edge obtain a' where "valid_edge a'"
@@ -547,7 +547,7 @@ next
       from `valid_edge a` `sourcenode a = m` `m = (_Low_)` 
         `targetnode a = (_Exit_)` `valid_edge a'` `sourcenode a' = (_Low_)` 
         `targetnode a' = (_Exit_)`
-      have "a = a'" by(fastsimp dest:edge_det)
+      have "a = a'" by(fastforce dest:edge_det)
       with `kind a' = (\<lambda>s. True)\<^isub>\<surd>` have "kind a = (\<lambda>s. True)\<^isub>\<surd>" by simp
       with `targetnode a = (_Exit_)` `targetnode a -as\<rightarrow>* (_Low_)`
       have "(_Low_) = (_Exit_)" by -(drule path_Exit_source,auto)
@@ -575,13 +575,13 @@ next
           have unique:"\<exists>!a'. valid_edge a' \<and> sourcenode a' = sourcenode a \<and> 
             intra_kind(kind a')" by(rule call_only_one_intra_edge)
           from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain x 
-            where "x \<in> get_return_edges a" by(fastsimp dest:get_return_edge_call)
+            where "x \<in> get_return_edges a" by(fastforce dest:get_return_edge_call)
           with `valid_edge a` obtain a' where "valid_edge a'" 
             and "sourcenode a' = sourcenode a" and "kind a' = (\<lambda>cf. False)\<^isub>\<surd>"
-            by(fastsimp dest:call_return_node_edge)
+            by(fastforce dest:call_return_node_edge)
           with `valid_edge ax` `sourcenode ax = m` `sourcenode a = m`
             `intra_kind (kind ax)` unique
-          have "a' = ax" by(fastsimp simp:intra_kind_def)
+          have "a' = ax" by(fastforce simp:intra_kind_def)
           with `kind a' = (\<lambda>cf. False)\<^isub>\<surd>` 
             `slice_kind S ax = kind ax` `as' = ax # asx`
             `preds (slice_kinds S as') s'`
@@ -591,7 +591,7 @@ next
           case False
           with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `sourcenode ax = m` `sourcenode a = m`
           have "slice_kind S a = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>fs"
-            by(fastsimp intro:slice_kind_Call)
+            by(fastforce intro:slice_kind_Call)
           with `preds (slice_kinds S (a # as)) s`
           have False by(simp add:slice_kinds_def)
           thus ?thesis by simp
@@ -615,17 +615,17 @@ next
       qed
       with `preds (slice_kinds S (a # as)) s` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "pred (kind a) s" 
-        by(fastsimp dest:slice_kind_Call_in_slice simp:slice_kinds_def)
+        by(fastforce dest:slice_kind_Call_in_slice simp:slice_kinds_def)
       from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
         `sourcenode a = m` `sourcenode ax = m`
       have "sourcenode ax \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
       with `as' = ax # asx` `preds (slice_kinds S as') s'` 
         `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "pred (kind ax) s'"
-        by(fastsimp dest:slice_kind_Call_in_slice simp:slice_kinds_def)
+        by(fastforce dest:slice_kind_Call_in_slice simp:slice_kinds_def)
       { fix V assume "V \<in> Use (sourcenode a)"
         from `valid_edge a` have "sourcenode a -[]\<rightarrow>\<^isub>\<iota>* sourcenode a"
-          by(fastsimp intro:empty_path simp:intra_path_def)
+          by(fastforce intro:empty_path simp:intra_path_def)
         with `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `valid_edge a` `V \<in> Use (sourcenode a)`
         have "V \<in> rv S (CFG_node (sourcenode a))"
@@ -634,12 +634,12 @@ next
         `sourcenode a = m`
       have Use:"\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V" by simp
       from `\<forall>i<Suc (length cs). snd (s ! i) = snd (s' ! i)`
-      have "snd (hd s) = snd (hd s')"  by fastsimp
+      have "snd (hd s) = snd (hd s')"  by fastforce
       with `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `valid_edge ax`
         `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `sourcenode a = m` `sourcenode ax = m`
         `pred (kind a) s` `pred (kind ax) s'` Use `length s = Suc (length cs)`
         `length s' = Suc (length cs)`
-      have [simp]:"ax = a" by(fastsimp intro!:CFG_equal_Use_equal_call)
+      have [simp]:"ax = a" by(fastforce intro!:CFG_equal_Use_equal_call)
       from `same_level_path_aux cs as'` `as' = ax#asx` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
         `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "same_level_path_aux (a # cs) asx" by simp
@@ -656,21 +656,21 @@ next
         snd (transfer (slice_kind S a) s' ! i)"
         by auto(case_tac i,auto)
       from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain ins outs 
-        where "(p,ins,outs) \<in> set procs" by(fastsimp dest!:callee_in_procs)
+        where "(p,ins,outs) \<in> set procs" by(fastforce dest!:callee_in_procs)
       with `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "length (ParamUses (sourcenode a)) = length ins"
-        by(fastsimp intro:ParamUses_call_source_length)
+        by(fastforce intro:ParamUses_call_source_length)
       with `valid_edge a`
       have "\<forall>i < length ins. \<forall>V \<in> (ParamUses (sourcenode a))!i. V \<in> Use (sourcenode a)"
-        by(fastsimp intro:ParamUses_in_Use)
+        by(fastforce intro:ParamUses_in_Use)
       with `\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V`
       have "\<forall>i < length ins. \<forall>V \<in> (ParamUses (sourcenode a))!i. 
         state_val s V = state_val s' V"
-        by fastsimp
+        by fastforce
       with `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p,ins,outs) \<in> set procs`
         `pred (kind a) s` `pred (kind ax) s'`
       have "\<forall>i < length ins. (params fs (fst (hd s)))!i = (params fs (fst (hd s')))!i"
-        by(fastsimp intro!:CFG_call_edge_params)
+        by(fastforce intro!:CFG_call_edge_params)
       from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p,ins,outs) \<in> set procs`
       have "length fs = length ins" by(rule CFG_call_edge_length)
       { fix i assume "i < length fs"
@@ -711,13 +711,13 @@ next
         hence "(params (cspp (targetnode a) (HRB_slice S) fs)
           (fst cf))!i =
           ((cspp (targetnode a) (HRB_slice S) fs)!i)(fst cf)"
-          by(fastsimp intro:params_nth)
+          by(fastforce intro:params_nth)
         moreover
         from `i < length fs`
         have "(params (cspp (targetnode a) (HRB_slice S) fs)
           (fst cf'))!i =
           ((cspp (targetnode a) (HRB_slice S) fs)!i)(fst cf')"
-          by(fastsimp intro:params_nth)
+          by(fastforce intro:params_nth)
         ultimately 
         have "(params (cspp (targetnode a) (HRB_slice S) fs)
           (fst cf))!i =
@@ -789,7 +789,7 @@ next
     show ?thesis
     proof(cases as')
       case Nil
-      with `m -as'\<rightarrow>* (_Low_)` have "m = (_Low_)" by fastsimp
+      with `m -as'\<rightarrow>* (_Low_)` have "m = (_Low_)" by fastforce
       with `valid_edge a` `sourcenode a = m` have "targetnode a = (_Exit_)"
         by -(rule Exit_successor_of_Low,simp+)
       from Low_source_Exit_edge obtain a' where "valid_edge a'"
@@ -798,7 +798,7 @@ next
       from `valid_edge a` `sourcenode a = m` `m = (_Low_)` 
         `targetnode a = (_Exit_)` `valid_edge a'` `sourcenode a' = (_Low_)` 
         `targetnode a' = (_Exit_)`
-      have "a = a'" by(fastsimp dest:edge_det)
+      have "a = a'" by(fastforce dest:edge_det)
       with `kind a' = (\<lambda>s. True)\<^isub>\<surd>` have "kind a = (\<lambda>s. True)\<^isub>\<surd>" by simp
       with `targetnode a = (_Exit_)` `targetnode a -as\<rightarrow>* (_Low_)`
       have "(_Low_) = (_Exit_)" by -(drule path_Exit_source,auto)
@@ -821,10 +821,10 @@ next
       have "upd_cs cs' as = []" by simp
       from `length s = Suc (length cs)` `cs = c' # cs'`
       obtain cf cfx cfs where "s = cf#cfx#cfs"
-        by(cases s,auto,case_tac list,fastsimp+)
+        by(cases s,auto,case_tac list,fastforce+)
       from `length s' = Suc (length cs)` `cs = c' # cs'`
       obtain cf' cfx' cfs' where "s' = cf'#cfx'#cfs'"
-        by(cases s',auto,case_tac list,fastsimp+)
+        by(cases s',auto,case_tac list,fastforce+)
       from rvs `cs = c' # cs'` `s = cf#cfx#cfs` `s' = cf'#cfx'#cfs'`
       have rvs1:"\<forall>i<length cs'. 
         \<forall>V\<in>rv S (CFG_node (sourcenode (cs' ! i))).
@@ -834,7 +834,7 @@ next
         by auto
       from `valid_edge c'` `a \<in> get_return_edges c'`
       obtain Qx rx px fsx where "kind c' = Qx:rx\<hookrightarrow>\<^bsub>px\<^esub>fsx"
-        by(fastsimp dest!:only_call_get_return_edges)
+        by(fastforce dest!:only_call_get_return_edges)
       have "\<forall>V \<in> rv S (CFG_node (targetnode a)).
         V \<in> rv S (CFG_node (sourcenode c'))"
       proof
@@ -847,21 +847,21 @@ next
         obtain as n' where "targetnode a -as\<rightarrow>\<^isub>\<iota>* parent_node n'"
           and "n' \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> n'"
           and all:"\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
-          \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastsimp elim:rvE)
+          \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastforce elim:rvE)
         from `targetnode a -as\<rightarrow>\<^isub>\<iota>* parent_node n'` edge
         have "sourcenode c' -a'#as\<rightarrow>\<^isub>\<iota>* parent_node n'"
-          by(fastsimp intro:Cons_path simp:intra_path_def)
+          by(fastforce intro:Cons_path simp:intra_path_def)
         from `valid_edge c'` `kind c' = Qx:rx\<hookrightarrow>\<^bsub>px\<^esub>fsx` have "Def (sourcenode c') = {}"
           by(rule call_source_Def_empty)
         hence "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' = sourcenode c'
-          \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastsimp dest:SDG_Def_parent_Def)
+          \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastforce dest:SDG_Def_parent_Def)
         with all `sourcenode a' = sourcenode c'`
         have "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes (a'#as)) 
-          \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastsimp simp:sourcenodes_def)
+          \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastforce simp:sourcenodes_def)
         with `sourcenode c' -a'#as\<rightarrow>\<^isub>\<iota>* parent_node n'` 
           `n' \<in> HRB_slice S` `V \<in> Use\<^bsub>SDG\<^esub> n'`
         show "V \<in> rv S (CFG_node (sourcenode c'))"
-          by(fastsimp intro:rvI)
+          by(fastforce intro:rvI)
       qed
       show ?thesis
       proof(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
@@ -879,7 +879,7 @@ next
         ultimately have [simp]:"px = p" by simp
         from `valid_edge c'` `kind c' = Qx:rx\<hookrightarrow>\<^bsub>px\<^esub>fsx`
         obtain ins outs where "(p,ins,outs) \<in> set procs"
-          by(fastsimp dest!:callee_in_procs)
+          by(fastforce dest!:callee_in_procs)
         with `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
         have slice_kind:"slice_kind S a = 
@@ -897,7 +897,7 @@ next
           \<forall>V\<in>rv S (CFG_node (sourcenode (cs' ! i))).
           fst ((transfer (slice_kind S a) s) ! Suc i) V = 
           fst ((transfer (slice_kind S a) s') ! Suc i) V"
-          by fastsimp
+          by fastforce
         from slice_kind `\<forall>i<Suc (length cs). snd (s ! i) = snd (s' ! i)` `cs = c' # cs'`
           `s = cf#cfx#cfs` `s' = cf'#cfx'#cfs'`
         have snds:"\<forall>i<Suc (length cs').
@@ -920,10 +920,10 @@ next
             case True
             then obtain i where "i < length (ParamDefs (targetnode a))"
               and "(ParamDefs (targetnode a))!i = V"
-              by(fastsimp simp:in_set_conv_nth)
+              by(fastforce simp:in_set_conv_nth)
             from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs`
             have "length(ParamDefs (targetnode a)) = length outs"
-              by(fastsimp intro:ParamDefs_return_target_length)
+              by(fastforce intro:ParamDefs_return_target_length)
             show ?thesis
             proof(cases "Actual_out(targetnode a,i) \<in> HRB_slice S")
               case True
@@ -938,13 +938,13 @@ next
                 (fst cf')(outs!i)"
                 by(auto intro:rspp_Actual_out_in_slice)
               from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs`
-              have "\<forall>V \<in> set outs. V \<in> Use (sourcenode a)" by(fastsimp dest:outs_in_Use)
+              have "\<forall>V \<in> set outs. V \<in> Use (sourcenode a)" by(fastforce dest:outs_in_Use)
               have "\<forall>V \<in> Use (sourcenode a). V \<in> rv S (CFG_node m)"
               proof
                 fix V assume "V \<in> Use (sourcenode a)"
                 from `valid_edge a` `sourcenode a = m`
                 have "parent_node (CFG_node m) -[]\<rightarrow>\<^isub>\<iota>* parent_node (CFG_node m)"
-                  by(fastsimp intro:empty_path simp:intra_path_def)
+                  by(fastforce intro:empty_path simp:intra_path_def)
                 with `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
                   `V \<in> Use (sourcenode a)` `sourcenode a = m` `valid_edge a`
                 show "V \<in> rv S (CFG_node m)"
@@ -958,7 +958,7 @@ next
               have "\<forall>V \<in> set outs. (fst cf) V = (fst cf') V" by simp
               with `i < length (ParamDefs (targetnode a))`
                 `length(ParamDefs (targetnode a)) = length outs`
-              have "(fst cf)(outs!i) = (fst cf')(outs!i)" by fastsimp
+              have "(fst cf)(outs!i) = (fst cf')(outs!i)" by fastforce
               with rspp_eq show ?thesis by simp
             next
               case False
@@ -979,8 +979,8 @@ next
                 V \<in> rv S (CFG_node (sourcenode c'))`
                 `(ParamDefs (targetnode a))!i = V`[THEN sym]
               have "(fst cfx) (ParamDefs (targetnode a) ! i) =
-                (fst cfx') (ParamDefs (targetnode a) ! i)" by fastsimp
-              with rspp_eq show ?thesis by fastsimp
+                (fst cfx') (ParamDefs (targetnode a) ! i)" by fastforce
+              with rspp_eq show ?thesis by fastforce
             qed
           next
             case False
@@ -989,14 +989,14 @@ next
               `V \<in> rv S (CFG_node (targetnode a))`
               `\<forall>V \<in> rv S (CFG_node (targetnode a)).
               V \<in> rv S (CFG_node (sourcenode c'))`
-            show ?thesis by(fastsimp simp:rspp_def map_merge_def)
+            show ?thesis by(fastforce simp:rspp_def map_merge_def)
           qed
         qed
         with sx sx'
         have rv':"\<forall>V\<in>rv S (CFG_node (targetnode a)).
           state_val (transfer (slice_kind S a) s) V =
           state_val (transfer (slice_kind S a) s') V"
-          by fastsimp
+          by fastforce
         from `preds (slice_kinds S (a # as)) s`
         have "preds (slice_kinds S as) 
           (transfer (slice_kind S a) s)"
@@ -1031,12 +1031,12 @@ next
           `cs = c' # cs'` `s = cf#cfx#cfs` `s' = cf'#cfx'#cfs'`
         have snds:"\<forall>i<Suc (length cs').
           snd (transfer (slice_kind S a) s ! i) =
-          snd (transfer (slice_kind S a) s' ! i)" by fastsimp
+          snd (transfer (slice_kind S a) s' ! i)" by fastforce
         from rvs1 have rvs':"\<forall>i<length cs'. 
           \<forall>V\<in>rv S (CFG_node (sourcenode (cs' ! i))).
           fst ((transfer (slice_kind S a) s) ! Suc i) V = 
           fst ((transfer (slice_kind S a) s') ! Suc i) V"
-          by fastsimp
+          by fastforce
         from `\<forall>V \<in> rv S (CFG_node (targetnode a)).
           V \<in> rv S (CFG_node (sourcenode c'))`
           `\<forall>V\<in>rv S (CFG_node (sourcenode c')). 
@@ -1088,11 +1088,11 @@ proof(cases as)
   { fix V assume "V \<in> Use (_Low_)"
     moreover
     from `valid_node m` `m = (_Low_)` have "(_Low_) -[]\<rightarrow>\<^isub>\<iota>* (_Low_)"
-      by(fastsimp intro:empty_path simp:intra_path_def)
+      by(fastforce intro:empty_path simp:intra_path_def)
     moreover
     from `valid_node m` `m = (_Low_)` `CFG_node (_Low_) \<in> S`
     have "CFG_node (_Low_) \<in> HRB_slice S"
-      by(fastsimp intro:HRB_slice_refl)
+      by(fastforce intro:HRB_slice_refl)
     ultimately have "V \<in> rv S (CFG_node m)" using `m = (_Low_)`
       by(auto intro!:rvI CFG_Use_SDG_Use simp:sourcenodes_def) }
   hence "\<forall>V \<in> Use (_Low_). V \<in> rv S (CFG_node m)" by simp
@@ -1114,7 +1114,7 @@ proof(cases as)
     qed simp
     with Nil `\<forall>V \<in> rv S (CFG_node m). cf V = cf' V`
       `\<forall>V \<in> Use (_Low_). V \<in> rv S (CFG_node m)`
-    show ?thesis by(fastsimp simp:slice_kinds_def)
+    show ?thesis by(fastforce simp:slice_kinds_def)
   qed
 next
   case (Cons ax asx)
@@ -1129,7 +1129,7 @@ next
     show ?thesis
     proof(cases as')
       case Nil
-      with `m -as'\<rightarrow>\<^isub>\<surd>* (_Low_)` have "m = (_Low_)" by(fastsimp simp:vp_def)
+      with `m -as'\<rightarrow>\<^isub>\<surd>* (_Low_)` have "m = (_Low_)" by(fastforce simp:vp_def)
       with `valid_edge ax` `sourcenode ax = m` have "targetnode ax = (_Exit_)"
         by -(rule Exit_successor_of_Low,simp+)
       from Low_source_Exit_edge obtain a' where "valid_edge a'"
@@ -1138,7 +1138,7 @@ next
       from `valid_edge ax` `sourcenode ax = m` `m = (_Low_)` 
         `targetnode ax = (_Exit_)` `valid_edge a'` `sourcenode a' = (_Low_)` 
         `targetnode a' = (_Exit_)`
-      have "ax = a'" by(fastsimp dest:edge_det)
+      have "ax = a'" by(fastforce dest:edge_det)
       with `kind a' = (\<lambda>s. True)\<^isub>\<surd>` have "kind ax = (\<lambda>s. True)\<^isub>\<surd>" by simp
       with `targetnode ax = (_Exit_)` `targetnode ax -asx\<rightarrow>* (_Low_)`
       have "(_Low_) = (_Exit_)" by -(drule path_Exit_source,auto)
@@ -1151,14 +1151,14 @@ next
       from this `as = ax#asx` `get_proc m = Main`
       have "same_level_path_aux [] as \<and> upd_cs [] as = []"
         by -(rule vpa_Main_slpa[of _ _ m "(_Low_)"],
-        (fastsimp intro!:get_proc_Low simp:valid_call_list_def)+)
+        (fastforce intro!:get_proc_Low simp:valid_call_list_def)+)
       hence "same_level_path_aux [] as" and "upd_cs [] as = []" by simp_all
       from `m -as'\<rightarrow>\<^isub>\<surd>* (_Low_)` have "valid_path_aux [] as'" and "m -as'\<rightarrow>* (_Low_)"
         by(simp_all add:vp_def valid_path_def)
       from this `as' = ax'#asx'` `get_proc m = Main`
       have "same_level_path_aux [] as' \<and> upd_cs [] as' = []"
         by -(rule vpa_Main_slpa[of _ _ m "(_Low_)"],
-        (fastsimp intro!:get_proc_Low simp:valid_call_list_def)+)
+        (fastforce intro!:get_proc_Low simp:valid_call_list_def)+)
       hence "same_level_path_aux [] as'" by simp
       from `same_level_path_aux [] as` `upd_cs [] as = []`
         `same_level_path_aux [] as'` `m -as\<rightarrow>* (_Low_)` `m -as'\<rightarrow>* (_Low_)`
@@ -1203,7 +1203,7 @@ proof -
     by(erule fundamental_property_of_static_slicing)
   from `[cf] \<approx>\<^isub>L [cf']` `(_High_) \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
   have "\<forall>V \<in> rv S (CFG_node (_Entry_)). cf V = cf' V" 
-    by(fastsimp dest:lowEquivalence_relevant_nodes_Entry)
+    by(fastforce dest:lowEquivalence_relevant_nodes_Entry)
   with `(_Entry_) -asx \<rightarrow>\<^isub>\<surd>*(_Low_)` `(_Entry_) -asx'\<rightarrow>\<^isub>\<surd>* (_Low_)`
     `CFG_node (_Low_) \<in> S` `preds (slice_kinds S asx) [(cf,undefined)]`
     `preds (slice_kinds S asx') [(cf',undefined)]`
@@ -1219,7 +1219,7 @@ proof -
     state_val (transfers(kinds as') [(cf',undefined)]) V`
     `transfers (kinds as) [(cf,undefined)] \<noteq> []` 
     `transfers (kinds as') [(cf',undefined)] \<noteq> []`
-  show ?thesis by(fastsimp simp:lowEquivalence_def UseLow neq_Nil_conv)
+  show ?thesis by(fastforce simp:lowEquivalence_def UseLow neq_Nil_conv)
 qed
 
 
@@ -1236,7 +1236,7 @@ proof -
     and "targetnode x -xs\<rightarrow>* (_Exit_)"
     apply(cases "as = []")
      apply(clarsimp simp:vp_def,drule empty_path_nodes,drule Entry_noteq_Exit,simp)
-    by(fastsimp elim:path_split_Cons simp:vp_def)
+    by(fastforce elim:path_split_Cons simp:vp_def)
   from `(_Entry_) -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` have "valid_path as" by(simp add:vp_def)
   from `valid_edge x` have "valid_node (targetnode x)" by simp
   hence "inner_node (targetnode x)"
@@ -1253,7 +1253,7 @@ proof -
       and "kind z = (\<lambda>s. False)\<^isub>\<surd>" by blast
     from `valid_edge x` `valid_edge z` `(_Entry_) = sourcenode x` 
       `sourcenode z = (_Entry_)` Exit `targetnode z = (_Exit_)`
-    have "x = z" by(fastsimp intro:edge_det)
+    have "x = z" by(fastforce intro:edge_det)
     with `preds (kinds as) [(cf,undefined)]` `as = x#xs` `xs = []`
       `kind z = (\<lambda>s. False)\<^isub>\<surd>` 
     have False by(simp add:kinds_def)
@@ -1261,9 +1261,9 @@ proof -
   qed simp
   with `targetnode x -xs\<rightarrow>* (_Exit_)` obtain x' xs' where "xs = xs'@[x']"
     and "targetnode x -xs'\<rightarrow>* (_Low_)" and "kind x' = (\<lambda>s. True)\<^isub>\<surd>"
-    by(fastsimp elim:Exit_path_Low_path)
+    by(fastforce elim:Exit_path_Low_path)
   with `(_Entry_) = sourcenode x` `valid_edge x`
-  have "(_Entry_) -x#xs'\<rightarrow>* (_Low_)" by(fastsimp intro:Cons_path)
+  have "(_Entry_) -x#xs'\<rightarrow>* (_Low_)" by(fastforce intro:Cons_path)
   from `valid_path as` `as = x#xs` `xs = xs'@[x']`
   have "valid_path (x#xs')"
     by(simp add:valid_path_def del:valid_path_aux.simps)
@@ -1279,7 +1279,7 @@ proof -
     and "targetnode y -ys\<rightarrow>* (_Exit_)"
     apply(cases "as' = []")
      apply(clarsimp simp:vp_def,drule empty_path_nodes,drule Entry_noteq_Exit,simp)
-    by(fastsimp elim:path_split_Cons simp:vp_def)
+    by(fastforce elim:path_split_Cons simp:vp_def)
   from `(_Entry_) -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)` have "valid_path as'" by(simp add:vp_def)
   from `valid_edge y` have "valid_node (targetnode y)" by simp
   hence "inner_node (targetnode y)"
@@ -1296,7 +1296,7 @@ proof -
       and "kind z = (\<lambda>s. False)\<^isub>\<surd>" by blast
     from `valid_edge y` `valid_edge z` `(_Entry_) = sourcenode y` 
       `sourcenode z = (_Entry_)` Exit `targetnode z = (_Exit_)`
-    have "y = z" by(fastsimp intro:edge_det)
+    have "y = z" by(fastforce intro:edge_det)
     with `preds (kinds as') [(cf',undefined)]` `as' = y#ys` `ys = []`
       `kind z = (\<lambda>s. False)\<^isub>\<surd>` 
     have False by(simp add:kinds_def)
@@ -1304,9 +1304,9 @@ proof -
   qed simp
   with `targetnode y -ys\<rightarrow>* (_Exit_)` obtain y' ys' where "ys = ys'@[y']"
     and "targetnode y -ys'\<rightarrow>* (_Low_)" and "kind y' = (\<lambda>s. True)\<^isub>\<surd>"
-    by(fastsimp elim:Exit_path_Low_path)
+    by(fastforce elim:Exit_path_Low_path)
   with `(_Entry_) = sourcenode y` `valid_edge y`
-  have "(_Entry_) -y#ys'\<rightarrow>* (_Low_)" by(fastsimp intro:Cons_path)
+  have "(_Entry_) -y#ys'\<rightarrow>* (_Low_)" by(fastforce intro:Cons_path)
   from `valid_path as'` `as' = y#ys` `ys = ys'@[y']`
   have "valid_path (y#ys')"
     by(simp add:valid_path_def del:valid_path_aux.simps)
@@ -1391,23 +1391,23 @@ proof -
   obtain n\<^isub>1 as\<^isub>1 cfs\<^isub>1 where "n -as\<^isub>1\<rightarrow>\<^isub>\<surd>* n\<^isub>1" and "n\<^isub>1 \<triangleq> c'"
     and "preds (kinds as\<^isub>1) [(cf\<^isub>1,undefined)]" 
     and "transfers (kinds as\<^isub>1) [(cf\<^isub>1,undefined)] = cfs\<^isub>1" and "map fst cfs\<^isub>1 = s\<^isub>1"
-    by(fastsimp dest:fundamental_property)
+    by(fastforce dest:fundamental_property)
   from `n -as\<^isub>1\<rightarrow>\<^isub>\<surd>* n\<^isub>1` `valid_edge a` `sourcenode a = (_High_)` `targetnode a = n`
     `kind a = (\<lambda>s. True)\<^isub>\<surd>`
-  have "(_High_) -a#as\<^isub>1\<rightarrow>\<^isub>\<surd>* n\<^isub>1" by(fastsimp intro:Cons_path simp:vp_def valid_path_def)
+  have "(_High_) -a#as\<^isub>1\<rightarrow>\<^isub>\<surd>* n\<^isub>1" by(fastforce intro:Cons_path simp:vp_def valid_path_def)
   from `final c'` `n\<^isub>1 \<triangleq> c'`
   obtain a\<^isub>1 where "valid_edge a\<^isub>1" and "sourcenode a\<^isub>1 = n\<^isub>1" 
-    and "targetnode a\<^isub>1 = (_Low_)" and "kind a\<^isub>1 = \<Up>id" by(fastsimp dest:final_edge_Low)
-  hence "n\<^isub>1 -[a\<^isub>1]\<rightarrow>* (_Low_)" by(fastsimp intro:path_edge)
+    and "targetnode a\<^isub>1 = (_Low_)" and "kind a\<^isub>1 = \<Up>id" by(fastforce dest:final_edge_Low)
+  hence "n\<^isub>1 -[a\<^isub>1]\<rightarrow>* (_Low_)" by(fastforce intro:path_edge)
   with `(_High_) -a#as\<^isub>1\<rightarrow>\<^isub>\<surd>* n\<^isub>1` have "(_High_) -(a#as\<^isub>1)@[a\<^isub>1]\<rightarrow>* (_Low_)"
-    by(fastsimp intro!:path_Append simp:vp_def)
+    by(fastforce intro!:path_Append simp:vp_def)
   with `valid_edge ax` `sourcenode ax = (_Entry_)` `targetnode ax = (_High_)`
   have "(_Entry_) -ax#((a#as\<^isub>1)@[a\<^isub>1])\<rightarrow>* (_Low_)" by -(rule Cons_path)
   moreover
   from `(_High_) -a#as\<^isub>1\<rightarrow>\<^isub>\<surd>* n\<^isub>1` have "valid_path_aux [] (a#as\<^isub>1)"
     by(simp add:vp_def valid_path_def)
   with `kind a\<^isub>1 = \<Up>id` have "valid_path_aux [] ((a#as\<^isub>1)@[a\<^isub>1])"
-    by(fastsimp intro:valid_path_aux_Append)
+    by(fastforce intro:valid_path_aux_Append)
   with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` have "valid_path_aux [] (ax#((a#as\<^isub>1)@[a\<^isub>1]))"
     by simp
   ultimately have "(_Entry_) -ax#((a#as\<^isub>1)@[a\<^isub>1])\<rightarrow>\<^isub>\<surd>* (_Low_)"
@@ -1415,11 +1415,11 @@ proof -
   from `valid_edge a` `kind a = (\<lambda>s. True)\<^isub>\<surd>` `sourcenode a = (_High_)`
     `targetnode a = n`
   have "get_proc n = get_proc (_High_)"
-    by(fastsimp dest:get_proc_intra simp:intra_kind_def)
+    by(fastforce dest:get_proc_intra simp:intra_kind_def)
   with get_proc_High have "get_proc n = Main" by simp
   from `valid_edge a\<^isub>1` `sourcenode a\<^isub>1 = n\<^isub>1` `targetnode a\<^isub>1 = (_Low_)` `kind a\<^isub>1 = \<Up>id`
   have "get_proc n\<^isub>1 = get_proc (_Low_)"
-    by(fastsimp dest:get_proc_intra simp:intra_kind_def)
+    by(fastforce dest:get_proc_intra simp:intra_kind_def)
   with get_proc_Low have "get_proc n\<^isub>1 = Main" by simp
   from `n -as\<^isub>1\<rightarrow>\<^isub>\<surd>* n\<^isub>1` have "n -as\<^isub>1\<rightarrow>\<^bsub>sl\<^esub>* n\<^isub>1"
     by(cases as\<^isub>1)
@@ -1427,7 +1427,7 @@ proof -
              simp:vp_def valid_path_def valid_call_list_def slp_def 
                   same_level_path_def simp del:valid_path_aux.simps)
   then obtain cfx r where cfx:"transfers (map kind as\<^isub>1) [(cf\<^isub>1,undefined)] = [(cfx,r)]"
-    by(fastsimp elim:slp_callstack_length_equal simp:kinds_def)
+    by(fastforce elim:slp_callstack_length_equal simp:kinds_def)
   from `kind ax = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (\<lambda>s. True)\<^isub>\<surd>` 
     `preds (kinds as\<^isub>1) [(cf\<^isub>1,undefined)]` `kind a\<^isub>1 = \<Up>id` cfx 
   have "preds (kinds (ax#((a#as\<^isub>1)@[a\<^isub>1]))) [(cf\<^isub>1,undefined)]"
@@ -1436,23 +1436,23 @@ proof -
   obtain n\<^isub>2 as\<^isub>2 cfs\<^isub>2 where "n -as\<^isub>2\<rightarrow>\<^isub>\<surd>* n\<^isub>2" and "n\<^isub>2 \<triangleq> c'"
     and "preds (kinds as\<^isub>2) [(cf\<^isub>2,undefined)]" 
     and "transfers (kinds as\<^isub>2) [(cf\<^isub>2,undefined)] = cfs\<^isub>2" and "map fst cfs\<^isub>2 = s\<^isub>2"
-    by(fastsimp dest:fundamental_property)
+    by(fastforce dest:fundamental_property)
   from `n -as\<^isub>2\<rightarrow>\<^isub>\<surd>* n\<^isub>2` `valid_edge a` `sourcenode a = (_High_)` `targetnode a = n`
     `kind a = (\<lambda>s. True)\<^isub>\<surd>`
-  have "(_High_) -a#as\<^isub>2\<rightarrow>\<^isub>\<surd>* n\<^isub>2" by(fastsimp intro:Cons_path simp:vp_def valid_path_def)
+  have "(_High_) -a#as\<^isub>2\<rightarrow>\<^isub>\<surd>* n\<^isub>2" by(fastforce intro:Cons_path simp:vp_def valid_path_def)
   from `final c'` `n\<^isub>2 \<triangleq> c'`
   obtain a\<^isub>2 where "valid_edge a\<^isub>2" and "sourcenode a\<^isub>2 = n\<^isub>2" 
-    and "targetnode a\<^isub>2 = (_Low_)" and "kind a\<^isub>2 = \<Up>id" by(fastsimp dest:final_edge_Low)
-  hence "n\<^isub>2 -[a\<^isub>2]\<rightarrow>* (_Low_)" by(fastsimp intro:path_edge)
+    and "targetnode a\<^isub>2 = (_Low_)" and "kind a\<^isub>2 = \<Up>id" by(fastforce dest:final_edge_Low)
+  hence "n\<^isub>2 -[a\<^isub>2]\<rightarrow>* (_Low_)" by(fastforce intro:path_edge)
   with `(_High_) -a#as\<^isub>2\<rightarrow>\<^isub>\<surd>* n\<^isub>2` have "(_High_) -(a#as\<^isub>2)@[a\<^isub>2]\<rightarrow>* (_Low_)"
-    by(fastsimp intro!:path_Append simp:vp_def)
+    by(fastforce intro!:path_Append simp:vp_def)
   with `valid_edge ax` `sourcenode ax = (_Entry_)` `targetnode ax = (_High_)`
   have "(_Entry_) -ax#((a#as\<^isub>2)@[a\<^isub>2])\<rightarrow>* (_Low_)" by -(rule Cons_path)
   moreover
   from `(_High_) -a#as\<^isub>2\<rightarrow>\<^isub>\<surd>* n\<^isub>2` have "valid_path_aux [] (a#as\<^isub>2)"
     by(simp add:vp_def valid_path_def)
   with `kind a\<^isub>2 = \<Up>id` have "valid_path_aux [] ((a#as\<^isub>2)@[a\<^isub>2])"
-    by(fastsimp intro:valid_path_aux_Append)
+    by(fastforce intro:valid_path_aux_Append)
   with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` have "valid_path_aux [] (ax#((a#as\<^isub>2)@[a\<^isub>2]))"
     by simp
   ultimately have "(_Entry_) -ax#((a#as\<^isub>2)@[a\<^isub>2])\<rightarrow>\<^isub>\<surd>* (_Low_)"
@@ -1460,11 +1460,11 @@ proof -
   from `valid_edge a` `kind a = (\<lambda>s. True)\<^isub>\<surd>` `sourcenode a = (_High_)`
     `targetnode a = n`
   have "get_proc n = get_proc (_High_)"
-    by(fastsimp dest:get_proc_intra simp:intra_kind_def)
+    by(fastforce dest:get_proc_intra simp:intra_kind_def)
   with get_proc_High have "get_proc n = Main" by simp
   from `valid_edge a\<^isub>2` `sourcenode a\<^isub>2 = n\<^isub>2` `targetnode a\<^isub>2 = (_Low_)` `kind a\<^isub>2 = \<Up>id`
   have "get_proc n\<^isub>2 = get_proc (_Low_)"
-    by(fastsimp dest:get_proc_intra simp:intra_kind_def)
+    by(fastforce dest:get_proc_intra simp:intra_kind_def)
   with get_proc_Low have "get_proc n\<^isub>2 = Main" by simp
   from `n -as\<^isub>2\<rightarrow>\<^isub>\<surd>* n\<^isub>2` have "n -as\<^isub>2\<rightarrow>\<^bsub>sl\<^esub>* n\<^isub>2"
     by(cases as\<^isub>2)
@@ -1473,7 +1473,7 @@ proof -
                   same_level_path_def simp del:valid_path_aux.simps)
   then obtain cfx' r' 
     where cfx':"transfers (map kind as\<^isub>2) [(cf\<^isub>2,undefined)] = [(cfx',r')]"
-    by(fastsimp elim:slp_callstack_length_equal simp:kinds_def)
+    by(fastforce elim:slp_callstack_length_equal simp:kinds_def)
   from `kind ax = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (\<lambda>s. True)\<^isub>\<surd>` 
     `preds (kinds as\<^isub>2) [(cf\<^isub>2,undefined)]` `kind a\<^isub>2 = \<Up>id` cfx' 
   have "preds (kinds (ax#((a#as\<^isub>2)@[a\<^isub>2]))) [(cf\<^isub>2,undefined)]"
@@ -1489,7 +1489,7 @@ proof -
   with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (\<lambda>s. True)\<^isub>\<surd>` `kind a\<^isub>1 = \<Up>id` `kind a\<^isub>2 = \<Up>id`
     `transfers (kinds as\<^isub>1) [(cf\<^isub>1,undefined)] = cfs\<^isub>1` `map fst cfs\<^isub>1 = s\<^isub>1`
     `transfers (kinds as\<^isub>2) [(cf\<^isub>2,undefined)] = cfs\<^isub>2` `map fst cfs\<^isub>2 = s\<^isub>2`
-  show ?thesis by(cases s\<^isub>1)(cases s\<^isub>2,(fastsimp simp:kinds_def transfers_split)+)+
+  show ?thesis by(cases s\<^isub>1)(cases s\<^isub>2,(fastforce simp:kinds_def transfers_split)+)+
 qed
 
 

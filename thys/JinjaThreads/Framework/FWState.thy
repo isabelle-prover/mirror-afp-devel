@@ -387,7 +387,7 @@ lemma convert_new_thread_action_eqI:
      \<And>t b. nta = ThreadExists t b \<Longrightarrow> nta' = ThreadExists t b \<rbrakk>
   \<Longrightarrow> convert_new_thread_action f nta = nta'"
 apply(cases nta)
-apply fastsimp+
+apply fastforce+
 done
 
 lemma convert_new_thread_action_compose [simp]:

@@ -149,7 +149,7 @@ lemma At_eq_foldl_At[simp]:
   "r \<bullet> s = t \<bullet>\<bullet> ts \<longleftrightarrow>
   (if ts=[] then t = r \<bullet> s else s = last ts \<and> r = t \<bullet>\<bullet> butlast ts)"
 apply (induct ts arbitrary:t)
- apply fastsimp
+ apply fastforce
 apply rule
  apply clarsimp
  apply rule
@@ -546,7 +546,7 @@ by(metis pattern_At'D12)
 lemma pattern_At_vecD: "pattern(s \<bullet>\<bullet> ts) \<Longrightarrow> patterns ts"
 apply(induct ts rule:rev_induct)
  apply simp
-apply (fastsimp dest!:pattern_AtD12)
+apply (fastforce dest!:pattern_AtD12)
 done
 
 lemma pattern_At_decomp: "pattern(s \<bullet> t) \<Longrightarrow> \<exists>nm ss. s = C nm \<bullet>\<bullet> ss"
@@ -1159,7 +1159,7 @@ done
 
 lemma fv_compR:
   "(nm,vs,v) : compR \<Longrightarrow> x \<in> fv\<^bsub>ML\<^esub> v \<Longrightarrow> \<exists>u\<in>set vs. x \<in> fv\<^bsub>ML\<^esub> u"
-by(fastsimp simp add:compR_def image_def dest: fv_compR_aux)
+by(fastforce simp add:compR_def image_def dest: fv_compR_aux)
 
 lemma lift_compile:
   "pure t \<Longrightarrow> \<forall>\<sigma> k. lift k (compile t \<sigma>) = compile t (lift k \<circ> \<sigma>)"
@@ -1413,14 +1413,14 @@ proof(induct ps ts rule:no_match.induct)
   thus ?case
     apply auto
     apply(subst (asm) no_match.simps[of ps])
-    apply fastsimp
+    apply fastforce
     done
 qed
 
 lemma no_match_take: "no_match ps ts \<Longrightarrow> no_match ps (take (size ps) ts)"
 apply(subst (asm) no_match.simps)
 apply(subst no_match.simps)
-apply fastsimp
+apply fastforce
 done
 
 fun dterm_ML :: "ml \<Rightarrow> tm" ("dterm\<^bsub>ML\<^esub>") where
@@ -1591,7 +1591,7 @@ apply (simp add: rev_nth nth_list_update)
 apply (simp add: rev_nth)
 apply(erule Red_ml.cases)
 apply simp_all
-apply(fastsimp intro: 1(1) simp add:rev_nth)
+apply(fastforce intro: 1(1) simp add:rev_nth)
 done
 qed
 
@@ -1630,13 +1630,13 @@ apply rule
  apply(rule_tac x=i in exI)
  apply (simp add:rev_nth)
  apply(drule lift_is_CUD)
- apply fastsimp
+ apply fastforce
 apply clarsimp
 apply(rule_tac x=i in exI)
 apply simp
 apply(rule_tac x=nm' in exI)
 apply(rule_tac x="map (lift\<^bsub>ML\<^esub> k) vs'" in exI)
-apply (fastsimp simp:rev_nth)
+apply (fastforce simp:rev_nth)
 done
 
 lemma C_normal_ML_lift_ML: "C_normal\<^bsub>ML\<^esub>(lift\<^bsub>ML\<^esub> k v) = C_normal\<^bsub>ML\<^esub> v"
@@ -1770,17 +1770,17 @@ done
 
 
 lemma [simp]: "C_normal(term v \<bullet>\<bullet> ts) \<longleftrightarrow> C_normal\<^bsub>ML\<^esub> v \<and> ts = []"
-by(fastsimp elim: C_normal.cases)
+by(fastforce elim: C_normal.cases)
 
 lemma [simp]: "C_normal(\<Lambda> t \<bullet>\<bullet> ts) \<longleftrightarrow> C_normal t \<and> ts = []"
-by(fastsimp elim: C_normal.cases)
+by(fastforce elim: C_normal.cases)
 
 lemma [simp]: "C_normal(C nm \<bullet>\<bullet> ts) \<longleftrightarrow>
   (\<forall>t\<in>set ts. C_normal t) \<and> no_match_R nm (map dterm ts)"
-by(fastsimp elim: C_normal.cases)
+by(fastforce elim: C_normal.cases)
 
 lemma [simp]: "C_normal(V x \<bullet>\<bullet> ts) \<longleftrightarrow> (\<forall>t \<in> set ts. C_normal t)"
-by(fastsimp elim: C_normal.cases)
+by(fastforce elim: C_normal.cases)
 
 lemma no_match_ML_lift:
   "no_match\<^bsub>ML\<^esub> ps vs \<longrightarrow> no_match\<^bsub>ML\<^esub> ps (map (lift k) vs)"
@@ -1792,12 +1792,12 @@ apply(rule_tac x=i in exI)
 apply simp
 apply(rule_tac x=nm' in exI)
 apply(rule_tac x="map (lift k) vs'" in exI)
-apply (fastsimp simp:rev_nth)
+apply (fastforce simp:rev_nth)
 done
 
 lemma no_match_compR_lift:
   "no_match_compR nm vs \<Longrightarrow> no_match_compR nm (map (lift k) vs)"
-by (fastsimp simp: no_match_ML_lift)
+by (fastforce simp: no_match_ML_lift)
 
 lemma [simp]: "C_normal\<^bsub>ML\<^esub> v \<Longrightarrow> C_normal\<^bsub>ML\<^esub>(lift k v)"
 apply(induct v arbitrary:k rule:lift_ml.induct)
@@ -1815,7 +1815,7 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
   obtain j nm nm' rs rs' where ob: "j < size ts" "j < size ps"
     "ps!j = C nm \<bullet>\<bullet> rs" "dterm (ts!j) = C nm' \<bullet>\<bullet> rs'"
     "nm = nm' \<longrightarrow> no_match rs rs'"
-    by (subst (asm) no_match.simps) fastsimp
+    by (subst (asm) no_match.simps) fastforce
   show ?case
   proof (subst no_match.simps)
     show "\<exists>k<min (length (map dterm (ts[i := t']))) (length ps).
@@ -1836,7 +1836,7 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
             using `v\<Rightarrow>v'` by(rule Red_ml.cases) auto
           obtain v' k where [arith]: "k<size vs" and "vs!k \<Rightarrow> v'"
             and [simp]: "vs' = vs[k := v']"
-            using Red_ml_list_nth[OF `vs\<Rightarrow>vs'`] by fastsimp
+            using Red_ml_list_nth[OF `vs\<Rightarrow>vs'`] by fastforce
           show ?thesis (is "\<exists>rs'. ?P rs' \<and> ?Q rs'")
           proof
             let ?rs' = "map dterm ((map term (rev vs) @ ts'')[(size vs - k - 1):=term v'])"
@@ -2066,7 +2066,7 @@ proof(induct ps os arbitrary: ts ts' rule: no_match.induct)
   case (1 ps os)
   obtain i nm nm' ps' os' where a: "ps!i = C nm  \<bullet>\<bullet> ps'" "i < size ps"
       "i < size os" "os!i = C nm' \<bullet>\<bullet> os'" "nm=nm' \<longrightarrow> no_match ps' os'"
-    using 1(4) no_match.simps[of ps os] by fastsimp
+    using 1(4) no_match.simps[of ps os] by fastforce
   note 1(5)[simp]
   have "C_normal (ts ! i)" using 1(2) `i < size os` by auto
   have "ts!i \<Rightarrow>* ts'!i" using 1(3) `i < size os` by auto
@@ -2078,7 +2078,7 @@ proof(induct ps os arbitrary: ts ts' rule: no_match.induct)
   obtain ss' rs rs' :: "tm list" where b: "\<forall>t\<in>set rs. C_normal t"
     "dterm (ts' ! i) = C nm' \<bullet>\<bullet> ss'" "length rs = length rs'"
     "\<forall>i<length rs. rs ! i \<Rightarrow>* rs' ! i" "ss' = map dterm rs'" "os' = map dterm rs"
-    by fastsimp
+    by fastforce
   show ?case
     apply(subst no_match.simps)
     apply(rule_tac x=i in exI)
@@ -2118,7 +2118,7 @@ next
     by (metis rel_pow_Suc_D2)
   from r' have "\<exists>k<size rs. \<exists>s. rs!k \<Rightarrow> s \<and> r' = V x \<bullet>\<bullet> rs[k:=s]"
   proof(induct rs arbitrary: r' rule:rev_induct)
-    case Nil thus ?case by(fastsimp elim: Red_term.cases)
+    case Nil thus ?case by(fastforce elim: Red_term.cases)
   next
     case (snoc r rs)
     hence "(V x \<bullet>\<bullet> rs) \<bullet> r \<Rightarrow> r'" by simp
@@ -2173,7 +2173,7 @@ next
     by (metis rel_pow_Suc_D2)
   from r' have "\<exists>k<size rs. \<exists>s. rs!k \<Rightarrow> s \<and> r' = C nm \<bullet>\<bullet> rs[k:=s]"
   proof(induct rs arbitrary: r' rule:rev_induct)
-    case Nil thus ?case by(fastsimp elim: Red_term.cases)
+    case Nil thus ?case by(fastforce elim: Red_term.cases)
   next
     case (snoc r rs)
     hence "(C nm \<bullet>\<bullet> rs) \<bullet> r \<Rightarrow> r'" by simp
@@ -2211,7 +2211,7 @@ qed
 
 
 lemma pure_At[simp]: "pure(s \<bullet> t) \<longleftrightarrow> pure s \<and> pure t"
-by(fastsimp elim: pure.cases)
+by(fastforce elim: pure.cases)
 
 lemma pure_foldl_At[simp]: "pure(s \<bullet>\<bullet> ts) \<longleftrightarrow> pure s \<and> (\<forall>t\<in>set ts. pure t)"
 by(induct ts arbitrary: s) auto
@@ -2251,7 +2251,7 @@ proof -
             apply -
             apply(rule less(1))
             prefer 5 apply assumption
-            using sz Suc apply fastsimp
+            using sz Suc apply fastforce
             apply(rule refl)
             using less term_C
             apply(auto)
@@ -2285,11 +2285,11 @@ proof -
         then show "normal t'"
           apply(simp)
           apply(rule normal.intros(3))
-          using 2 sz apply(fastsimp simp:set_conv_nth)
+          using 2 sz apply(fastforce simp:set_conv_nth)
           apply auto
           apply(subgoal_tac "no_match aa (take (size aa) ts)")
           apply (metis no_match)
-          apply(fastsimp intro:no_match_take)
+          apply(fastforce intro:no_match_take)
           done
       next
         case (term_V x vs)
@@ -2423,7 +2423,7 @@ lemma no_match_ML_swap_rev:
   "length ps = length vs \<Longrightarrow> no_match\<^bsub>ML\<^esub> ps (rev vs) \<Longrightarrow> no_match\<^bsub>ML\<^esub> (rev ps) vs"
 apply(clarsimp simp: no_match_ML.simps[of ps] no_match_ML.simps[of _ vs])
 apply(rule_tac x="size ps - i - 1" in exI)
-apply (fastsimp simp:rev_nth)
+apply (fastforce simp:rev_nth)
 done
 
 lemma no_match_ML_aux:
@@ -2461,10 +2461,10 @@ apply rule
  apply simp
 apply(subgoal_tac "~(EX x. ts!i = V x)")
  prefer 2
- apply fastsimp
+ apply fastforce
 apply(subgoal_tac "EX nm ts'. ts!i = C nm \<bullet>\<bullet> ts' & size ts' = arity nm & linpats ts'")
  prefer 2
- apply fastsimp
+ apply fastforce
 apply clarsimp
 apply(rule_tac x=nm in exI)
 apply(subgoal_tac "EX nm' vs'. cvs!i = C\<^isub>U nm' vs' & size vs' = arity nm' & (ALL v' : set vs'. C\<^isub>Us v')")

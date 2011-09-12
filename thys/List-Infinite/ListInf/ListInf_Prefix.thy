@@ -20,7 +20,7 @@ apply (rule_tac x="ys \<up> n" in exI, simp)
 done
 
 lemma prefix_take_eq_prefix_take_ex: "(ys \<down> (length xs) = xs) = (\<exists>n. ys \<down> n = xs)"
-by (fastsimp simp: min_def)
+by (fastforce simp: min_def)
 
 lemma prefix_eq_prefix_take: "(xs \<le> ys) = (ys \<down> (length xs) = xs)"
 by (simp only: prefix_eq_prefix_take_ex prefix_take_eq_prefix_take_ex)
@@ -44,7 +44,7 @@ lemma eq_imp_prefix: "xs = (ys::'a list) \<Longrightarrow> xs \<le> ys"
 by simp
 
 lemma le_take_imp_prefix: "a \<le> b \<Longrightarrow> xs \<down> a \<le> xs \<down> b"
-by (fastsimp simp: prefix_eq_prefix_take_ex min_def)
+by (fastforce simp: prefix_eq_prefix_take_ex min_def)
 
 lemma take_prefix_imp_le: "
   \<lbrakk> a \<le> length xs; xs \<down> a \<le> xs \<down> b \<rbrakk> \<Longrightarrow> a \<le> b"
@@ -73,11 +73,11 @@ done
 
 lemma take_length_prefix_conv: "
   length xs \<le> length ys \<Longrightarrow> (ys \<down> length xs \<le> xs) = (xs \<le> ys)"
-by (fastsimp simp: prefix_eq_prefix_take)
+by (fastforce simp: prefix_eq_prefix_take)
 
 lemma append_eq_imp_take: "
   \<lbrakk> k \<le> length xs; length r1 = k; r1 @ r2 = xs \<rbrakk> \<Longrightarrow> r1 = xs \<down> k"
-by fastsimp
+by fastforce
 
 lemma take_the_conv: "
   xs \<down> k = (if length xs \<le> k then xs else (THE r. length r = k \<and> (\<exists>r2. r @ r2 = xs)))"
@@ -88,8 +88,8 @@ apply (rule the1I2)
  apply (intro conjI)
    apply (simp add: min_eqR)
   apply (rule_tac x="xs \<up> k" in exI, simp)
- apply fastsimp
-apply fastsimp
+ apply fastforce
+apply fastforce
 done
 
 
@@ -124,7 +124,7 @@ where
   "equal_pair p \<equiv> (fst p = snd p)"
 
 lemma mirror_pair_equal: "equal_pair (mirror_pair p) = (equal_pair p)"
-by (fastsimp simp: mirror_pair_def equal_pair_def)
+by (fastforce simp: mirror_pair_def equal_pair_def)
 
 primrec
   equal_pair_count :: "('a \<times> 'a) list \<Rightarrow> nat"
@@ -153,7 +153,7 @@ lemma equal_pair_count_eq_pairwise[rule_format]: "
   \<Longrightarrow> equal_pair_count ps1 = equal_pair_count ps2"
 apply (induct rule: list_induct2)
  apply simp
-apply (fastsimp simp add: equal_pair_def)
+apply (fastforce simp add: equal_pair_def)
 done
 
 lemma equal_pair_count_mirror_pairwise[rule_format]: "
@@ -495,7 +495,7 @@ by (simp add: iprefix_eq_iprefix_take)
 
 thm take_prefix_le_conv
 lemma i_take_prefix_le_conv: "(f \<Down> a \<le> f \<Down> b) = (a \<le> b)"
-by (fastsimp simp: prefix_eq_prefix_take list_eq_iff)
+by (fastforce simp: prefix_eq_prefix_take list_eq_iff)
 
 thm append_imp_prefix
 lemma i_append_imp_iprefix[simp,intro]: "xs \<sqsubseteq> xs \<frown> f"
@@ -510,7 +510,7 @@ thm prefix_refl
 thm prefix_trans
 thm prefix_antisym
 lemma prefix_iprefix_trans: "\<lbrakk> xs \<le> ys; ys \<sqsubseteq> f \<rbrakk> \<Longrightarrow> xs \<sqsubseteq> f"
-by (fastsimp simp: iprefix_eq_iprefix_take_ex prefix_eq_prefix_take_ex)
+by (fastforce simp: iprefix_eq_iprefix_take_ex prefix_eq_prefix_take_ex)
 
 thm take_length_prefix_conv
 lemma i_take_length_prefix_conv: "(f \<Down> length xs \<le> xs) = (xs \<sqsubseteq> f)"
@@ -554,7 +554,7 @@ apply (rule iffI)
  apply (rule disjI2)
  apply (rule_tac x="f \<Down> (length xs - length ys)" in exI)
  apply (simp add: iprefix_eq_iprefix_take)
-apply fastsimp
+apply fastforce
 done
 
 lemma i_append_one_iprefix: "
@@ -574,6 +574,6 @@ done
 
 thm List_Prefix.set_mono_prefix
 lemma set_mono_iprefix: "xs \<sqsubseteq> f \<Longrightarrow> set xs \<subseteq> range f"
-by (unfold iprefix_def, fastsimp)
+by (unfold iprefix_def, fastforce)
 
 end

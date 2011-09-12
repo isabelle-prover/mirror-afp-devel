@@ -30,9 +30,9 @@ proof(atomize_elim)
   then obtain ns ns' where "sourcenodes as = ns@n'#ns'" by(auto dest:split_list)
   then obtain as' a as'' where "sourcenodes as' = ns" 
     and "sourcenode a = n'" and "as = as'@a#as''"
-    by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
+    by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
   from `n -as\<rightarrow>* (_Exit_)` `as = as'@a#as''` have "n -as'\<rightarrow>* sourcenode a"
-    by(fastsimp dest:path_split)
+    by(fastforce dest:path_split)
   with `sourcenode a = n'` show "\<exists>as. n -as\<rightarrow>* n'" by blast
 qed
 
@@ -49,9 +49,9 @@ proof(induct rule:valid_node_cases)
       apply - apply(erule path.cases)
       by (drule sym,simp,drule Exit_noteq_Entry,auto)
     with path have "hd (sourcenodes as) = (_Entry_)" 
-      by(fastsimp intro:path_sourcenode)
+      by(fastforce intro:path_sourcenode)
     with notempty have "(_Entry_) \<in> set (sourcenodes as)"
-      by(fastsimp intro:hd_in_set simp:sourcenodes_def) }
+      by(fastforce intro:hd_in_set simp:sourcenodes_def) }
   with Entry show ?thesis by(simp add:postdominate_def)
 next
   case Exit
@@ -91,10 +91,10 @@ proof -
     then obtain as' as'' a
       where as'':"sourcenodes as'' = ns''" and as:"as=as'@a#as''"
       and source:"sourcenode a = n''"
-      by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
+      by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
     from as path have "n -as'@a#as''\<rightarrow>* (_Exit_)" by simp
     with source have path':"n'' -a#as''\<rightarrow>* (_Exit_)"
-      by(fastsimp dest:path_split_second)
+      by(fastforce dest:path_split_second)
     with pd2 have "n' \<in> set(sourcenodes (a#as''))"
       by(auto simp:postdominate_def)
     with as have "n' \<in> set(sourcenodes as)" by(auto simp:sourcenodes_def) }
@@ -108,18 +108,18 @@ lemma postdominate_antisym:
 proof -
   from pd1 have valid:"valid_node n" and valid':"valid_node n'" 
     by(auto simp:postdominate_def)
-  from valid obtain as where path1:"n -as\<rightarrow>* (_Exit_)" by(fastsimp dest:Exit_path)
-  from valid' obtain as' where path2:"n' -as'\<rightarrow>* (_Exit_)" by(fastsimp dest:Exit_path)
+  from valid obtain as where path1:"n -as\<rightarrow>* (_Exit_)" by(fastforce dest:Exit_path)
+  from valid' obtain as' where path2:"n' -as'\<rightarrow>* (_Exit_)" by(fastforce dest:Exit_path)
   from pd1 path1 have "\<exists>nx \<in> set(sourcenodes as). nx = n'"
     by(simp add:postdominate_def)
   then obtain ns ns' where sources:"sourcenodes as = ns@n'#ns'"
     and all:"\<forall>nx \<in> set ns'. nx \<noteq> n'"
-    by(fastsimp elim!: rightmost_element_property)
+    by(fastforce elim!: rightmost_element_property)
   from sources obtain asx a asx' where ns':"ns' = sourcenodes asx'"
     and as:"as = asx@a#asx'" and source:"sourcenode a = n'"
-    by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
+    by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
   from path1 as have "n -asx@a#asx'\<rightarrow>* (_Exit_)" by simp
-  with source have "n' -a#asx'\<rightarrow>* (_Exit_)" by(fastsimp dest:path_split_second)
+  with source have "n' -a#asx'\<rightarrow>* (_Exit_)" by(fastforce dest:path_split_second)
   with pd2 have "n \<in> set(sourcenodes (a#asx'))" by(simp add:postdominate_def)
   with source have "n = n' \<or> n \<in> set(sourcenodes asx')" by(simp add:sourcenodes_def)
   thus ?thesis
@@ -131,9 +131,9 @@ proof -
       by(auto dest:split_list)
     then obtain asi asi' a' where asx':"asx' = asi@a'#asi'"
       and source':"sourcenode a' = n"
-      by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
+      by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
     with path1 as have "n -(asx@a#asi)@a'#asi'\<rightarrow>* (_Exit_)" by simp
-    with source' have "n -a'#asi'\<rightarrow>* (_Exit_)" by(fastsimp dest:path_split_second)
+    with source' have "n -a'#asi'\<rightarrow>* (_Exit_)" by(fastforce dest:path_split_second)
     with pd1 have "n' \<in> set(sourcenodes (a'#asi'))" by(auto simp:postdominate_def)
     with source' have "n' = n \<or> n' \<in> set(sourcenodes asi')"
       by(simp add:sourcenodes_def)
@@ -180,7 +180,7 @@ qed
 
 lemma Exit_no_postdominator:
   "(_Exit_) postdominates n \<Longrightarrow> False"
-by(fastsimp dest:Exit_path simp:postdominate_def)
+by(fastforce dest:Exit_path simp:postdominate_def)
 
 
 lemma postdominate_path_targetnode:
@@ -190,7 +190,7 @@ proof -
   from `n' postdominates n` have "valid_node n" and "valid_node n'"
     and all:"\<forall>as''. n -as''\<rightarrow>* (_Exit_) \<longrightarrow> n' \<in> set(sourcenodes as'')"
     by(simp_all add:postdominate_def)
-  from `n -as\<rightarrow>* n''` have "valid_node n''" by(fastsimp dest:path_valid_node)
+  from `n -as\<rightarrow>* n''` have "valid_node n''" by(fastforce dest:path_valid_node)
   have "\<forall>as''. n'' -as''\<rightarrow>* (_Exit_) \<longrightarrow> n' \<in> set(sourcenodes as'')"
   proof(rule ccontr)
     assume "\<not> (\<forall>as''. n'' -as''\<rightarrow>* (_Exit_) \<longrightarrow> n' \<in> set (sourcenodes as''))"
@@ -226,14 +226,14 @@ proof(atomize_elim)
       apply simp
       apply(drule Exit_source)
       apply simp_all
-      by fastsimp
+      by fastforce
     with `sourcenode a -asx\<rightarrow>* (_Exit_)` have "sourcenode a -[]@ax#asx'\<rightarrow>* (_Exit_)"
       by simp
     hence "valid_edge ax" and "sourcenode a = sourcenode ax"
       and "targetnode ax -asx'\<rightarrow>* (_Exit_)"
-      by(fastsimp dest:path_split)+
+      by(fastforce dest:path_split)+
     with `n \<notin> set(sourcenodes asx)` have "\<not> n postdominates targetnode ax"
-      by(fastsimp simp:postdominate_def sourcenodes_def)
+      by(fastforce simp:postdominate_def sourcenodes_def)
     with `sourcenode a = sourcenode ax` `valid_edge ax` show ?thesis by blast
   qed
 qed
@@ -245,12 +245,12 @@ lemma inner_node_Entry_edge:
   and "sourcenode a = (_Entry_)"
 proof(atomize_elim)
   from `inner_node n` have "valid_node n" by(rule inner_is_valid)
-  then obtain as where "(_Entry_) -as\<rightarrow>* n" by(fastsimp dest:Entry_path)
+  then obtain as where "(_Entry_) -as\<rightarrow>* n" by(fastforce dest:Entry_path)
   show "\<exists>a. valid_edge a \<and> inner_node (targetnode a) \<and> sourcenode a = (_Entry_)"
   proof(cases "as = []")
     case True
     with `inner_node n` `(_Entry_) -as\<rightarrow>* n` have False 
-      by(fastsimp simp:inner_node_def)
+      by(fastforce simp:inner_node_def)
     thus ?thesis by simp
   next
     case False
@@ -283,11 +283,11 @@ lemma inner_node_Exit_edge:
   and "targetnode a = (_Exit_)"
 proof(atomize_elim)
   from `inner_node n` have "valid_node n" by(rule inner_is_valid)
-  then obtain as where "n -as\<rightarrow>* (_Exit_)" by(fastsimp dest:Exit_path)
+  then obtain as where "n -as\<rightarrow>* (_Exit_)" by(fastforce dest:Exit_path)
   show "\<exists>a. valid_edge a \<and> inner_node (sourcenode a) \<and> targetnode a = (_Exit_)"
   proof(cases "as = []")
     case True
-    with `inner_node n` `n -as\<rightarrow>* (_Exit_)` have False by fastsimp
+    with `inner_node n` `n -as\<rightarrow>* (_Exit_)` have False by fastforce
     thus ?thesis by simp
   next
     case False
@@ -349,22 +349,22 @@ proof(atomize_elim)
     assume "\<not> (\<exists>as' as''. n -as'\<rightarrow>* n' \<and> length as' < k \<and> n' -as''\<rightarrow>* n'' \<and> 
                           as = as'@as'')"
     hence all':"\<forall>as' as''. n -as'\<rightarrow>* n' \<and> n' -as''\<rightarrow>* n'' \<and> as = as'@as'' 
-      \<longrightarrow> length as' \<ge> k" by fastsimp
+      \<longrightarrow> length as' \<ge> k" by fastforce
     from all `n -as\<rightarrow>* n''` `length as \<ge> k` have "\<exists>nx \<in> set(sourcenodes as). nx = n'"
-      by fastsimp
+      by fastforce
     then obtain ns ns' where "sourcenodes as = ns@n'#ns'"
       and "\<forall>nx \<in> set ns. nx \<noteq> n'"
-      by(fastsimp elim!:split_list_first_propE)
+      by(fastforce elim!:split_list_first_propE)
     then obtain asx a asx' where [simp]:"ns = sourcenodes asx"
       and [simp]:"as = asx@a#asx'" and "sourcenode a = n'"
-      by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
+      by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
     from `n -as\<rightarrow>* n''` have "n -asx@a#asx'\<rightarrow>* n''" by simp
     with `sourcenode a = n'` have "n -asx\<rightarrow>* n'" and "valid_edge a"
-      and "targetnode a -asx'\<rightarrow>* n''" by(fastsimp dest:path_split)+
-    with `sourcenode a = n'` have "n' -a#asx'\<rightarrow>* n''" by(fastsimp intro:Cons_path)
+      and "targetnode a -asx'\<rightarrow>* n''" by(fastforce dest:path_split)+
+    with `sourcenode a = n'` have "n' -a#asx'\<rightarrow>* n''" by(fastforce intro:Cons_path)
     with `n -asx\<rightarrow>* n'` all' have "length asx \<ge> k" by simp
-    with `n -asx\<rightarrow>* n'` all have "n' \<in> set(sourcenodes asx)" by fastsimp
-    with `\<forall>nx \<in> set ns. nx \<noteq> n'` show False by fastsimp
+    with `n -asx\<rightarrow>* n'` all have "n' \<in> set(sourcenodes asx)" by fastforce
+    with `\<forall>nx \<in> set ns. nx \<noteq> n'` show False by fastforce
   qed
 qed
 
@@ -378,7 +378,7 @@ proof -
   { fix as nx assume "n -as\<rightarrow>* nx" and "length as \<ge> 1"
     then obtain a' as' where [simp]:"as = a'#as'" by(cases as) auto
     with `n -as\<rightarrow>* nx` have "n -[]@a'#as'\<rightarrow>* nx" by simp
-    hence "n = sourcenode a'" by(fastsimp dest:path_split)
+    hence "n = sourcenode a'" by(fastforce dest:path_split)
     hence "n \<in> set(sourcenodes as)" by(simp add:sourcenodes_def) }
   hence "\<forall>as nx. n -as\<rightarrow>* nx \<and> length as \<ge> 1 \<longrightarrow> n \<in> set(sourcenodes as)"
     by auto
@@ -409,12 +409,12 @@ proof -
   from `n'' postdominates n` `n' postdominates n''` 
   have "n' postdominates n" by(rule postdominate_trans)
   { fix as nx assume "n -as\<rightarrow>* nx" and "length as \<ge> k1 + k2"
-    hence "length as \<ge> k1" by fastsimp
+    hence "length as \<ge> k1" by fastforce
     with `n -as\<rightarrow>* nx` all1 obtain asx asx' where "n -asx\<rightarrow>* n''"
       and "length asx < k1" and "n'' -asx'\<rightarrow>* nx"
       and [simp]:"as = asx@asx'" by -(erule strong_postdominate_prop_smaller_path)
-    with `length as \<ge> k1 + k2` have "length asx' \<ge> k2" by fastsimp
-    with `n'' -asx'\<rightarrow>* nx` all2 have "n' \<in> set(sourcenodes asx')" by fastsimp
+    with `length as \<ge> k1 + k2` have "length asx' \<ge> k2" by fastforce
+    with `n'' -asx'\<rightarrow>* nx` all2 have "n' \<in> set(sourcenodes asx')" by fastforce
     hence "n' \<in> set(sourcenodes as)" by(simp add:sourcenodes_def) }
   with `k1 \<ge> 1` `k2 \<ge> 1` have "\<exists>k \<ge> 1. \<forall>as nx. n -as\<rightarrow>* nx \<and> length as \<ge> k 
              \<longrightarrow> n' \<in> set(sourcenodes as)"
@@ -425,7 +425,7 @@ qed
 
 lemma strong_postdominate_antisym:
   "\<lbrakk>n' strongly-postdominates n; n strongly-postdominates n'\<rbrakk> \<Longrightarrow> n = n'"
-by(fastsimp intro:postdominate_antisym simp:strong_postdominate_def)
+by(fastforce intro:postdominate_antisym simp:strong_postdominate_def)
 
 
 lemma strong_postdominate_path_branch:
@@ -462,7 +462,7 @@ qed
 
 lemma Exit_no_strong_postdominator:
   "\<lbrakk>(_Exit_) strongly-postdominates n; n -as\<rightarrow>* (_Exit_)\<rbrakk> \<Longrightarrow> False"
-by(fastsimp intro:Exit_no_postdominator path_valid_node simp:strong_postdominate_def)
+by(fastforce intro:Exit_no_postdominator path_valid_node simp:strong_postdominate_def)
 
 
 lemma strong_postdominate_path_targetnode:
@@ -483,9 +483,9 @@ proof -
   { fix as' nx assume "n'' -as'\<rightarrow>* nx" and "length as' \<ge> k"
     with `n -as\<rightarrow>* n''` have "n -as@as'\<rightarrow>* nx" and "length (as@as') \<ge> k"
       by(auto intro:path_Append)
-    with paths have "n' \<in> set(sourcenodes (as@as'))" by fastsimp
+    with paths have "n' \<in> set(sourcenodes (as@as'))" by fastforce
     with `n' \<notin> set(sourcenodes as)` have "n' \<in> set(sourcenodes as')"
-      by(fastsimp simp:sourcenodes_def) }
+      by(fastforce simp:sourcenodes_def) }
   with `k \<ge> 1` have "\<exists>k \<ge> 1. \<forall>as' nx. n'' -as'\<rightarrow>* nx \<and> length as' \<ge> k 
              \<longrightarrow> n' \<in> set(sourcenodes as')" by auto
   with `n' postdominates n''` show ?thesis by(simp add:strong_postdominate_def)
@@ -521,11 +521,11 @@ proof(atomize_elim)
     obtain k where [simp]:"k = Max ?N'" by simp
     have eq:"{x \<in> ?M. (\<lambda>n'. n strongly-postdominates n') x} = ?M'" by auto
     from `valid_edge a` have "finite ?M" by(simp add:successor_set_finite)
-    hence "finite {x \<in> ?M. (\<lambda>n'. n strongly-postdominates n') x}" by fastsimp
+    hence "finite {x \<in> ?M. (\<lambda>n'. n strongly-postdominates n') x}" by fastforce
     with eq have "finite ?M'" by simp
     from all have "N \<subseteq> ?M'" by auto
     with `finite ?M'` have "finite N" by(auto intro:finite_subset)
-    hence "finite ?N'" by fastsimp
+    hence "finite ?N'" by fastforce
     show ?thesis
     proof(rule ccontr)
       assume "\<not> (\<exists>a'. valid_edge a' \<and> sourcenode a' = sourcenode a \<and> 
@@ -541,7 +541,7 @@ proof(atomize_elim)
       then obtain ax as' where [simp]:"as = ax#as'" and "valid_edge ax"
         and "sourcenode ax = sourcenode a" and "targetnode ax -as'\<rightarrow>* nx"
         by -(erule path.cases,auto)
-      with allImp have "targetnode ax \<in> N" by fastsimp
+      with allImp have "targetnode ax \<in> N" by fastforce
       with all have "n strongly-postdominates (targetnode ax)"
         by auto
       then obtain k' where k':"k' = (SOME i. i \<ge> 1 \<and>
@@ -558,11 +558,11 @@ proof(atomize_elim)
       from `targetnode ax \<in> N` k' have "k' \<in> ?N'" by blast
       moreover
       from this `targetnode ax \<in> N` have "?N' \<noteq> {}" by auto
-      ultimately have "k' \<le> Max ?N'" using `finite ?N'` by(fastsimp intro:Max_ge)
+      ultimately have "k' \<le> Max ?N'" using `finite ?N'` by(fastforce intro:Max_ge)
       hence "k' \<le> k" by simp
       with `targetnode ax -as'\<rightarrow>* nx` `length as \<ge> k + 1` spdAll 
       have "n \<in> set(sourcenodes as')"
-        by fastsimp
+        by fastforce
       with `n \<notin> set(sourcenodes as)` show False by(simp add:sourcenodes_def)
     qed
   qed

@@ -266,7 +266,7 @@ next
             case (Normal s'')
             with exec_c P True valid_c ctxt
             have s': "s' \<in> Normal ` ({s'. (s', s) \<in> r} \<inter> P)"
-              by (fastsimp simp add: cvalidt_def validt_def valid_def)
+              by (fastforce simp add: cvalidt_def validt_def valid_def)
             then show ?thesis
               by (blast intro: hyp)
           qed auto
@@ -396,7 +396,7 @@ next
               by (auto simp add: validt_def)
             with valid_body q 
             show "\<Gamma>\<turnstile>Call q\<down> Normal s"
-              by (fastsimp intro: terminates.Call)
+              by (fastforce intro: terminates.Call)
           qed
         }
         hence "\<forall>(P, p, Q, A)\<in>Specs_wf p \<tau>. \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P Call p Q,A"
@@ -451,7 +451,7 @@ next
         have "\<Gamma>\<turnstile>(the (\<Gamma> p)) \<down> Normal s"
           by (auto simp add: cvalidt_def validt_def)
         with valid_body p show ?thesis
-          by (fastsimp intro: terminates.Call)
+          by (fastforce intro: terminates.Call)
       qed
     qed
   qed
@@ -517,7 +517,7 @@ next
         by auto
       with cvalidt_postD [OF valid_c2 ctxt] exec_c2 t_notin_F
       show ?thesis
-        by fastsimp
+        by fastforce
     next
       assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> t" 
       assume notAbr: "\<not> isAbr t"
@@ -783,7 +783,7 @@ next
                 {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t},
                 {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"  
     by (rule ConseqMGT)
-       (fastsimp simp add: final_notin_def intro: exec.CondTrue 
+       (fastforce simp add: final_notin_def intro: exec.CondTrue 
                  elim: terminates_Normal_elim_cases)
   moreover
   have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>c2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
@@ -798,7 +798,7 @@ next
                 {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t},
                 {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t}" 
     by (rule ConseqMGT)
-       (fastsimp simp add: final_notin_def intro: exec.CondFalse 
+       (fastforce simp add: final_notin_def intro: exec.CondFalse 
                  elim: terminates_Normal_elim_cases)
   ultimately
   show "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
@@ -1019,7 +1019,7 @@ next
   have "\<forall>s \<in> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and>
                          \<Gamma>\<turnstile>Call p\<down> Normal s}.
           p \<in> dom \<Gamma>"
-    by (fastsimp simp add: final_notin_def)
+    by (fastforce simp add: final_notin_def)
   then show ?case
   proof (rule conseq_extract_state_indep_prop)
     assume p_defined: "p \<in> dom \<Gamma>"
@@ -1045,7 +1045,7 @@ next
          (c Z)
         {t. \<Gamma>\<turnstile>\<langle>DynCom c,Normal Z\<rangle> \<Rightarrow> Normal t},{t. \<Gamma>\<turnstile>\<langle>DynCom c,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
     by (rule ConseqMGT [OF hyp]) 
-       (fastsimp simp add: final_notin_def intro: exec.intros 
+       (fastforce simp add: final_notin_def intro: exec.intros 
           elim: terminates_Normal_elim_cases)
   show "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F \<^esub>{s. s=Z \<and> \<Gamma>\<turnstile>\<langle>DynCom c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                  \<Gamma>\<turnstile>DynCom c\<down>Normal s}
@@ -1132,7 +1132,7 @@ next
                {t. \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal Z\<rangle> \<Rightarrow> Abrupt t \<and> \<Gamma>\<turnstile>c\<^isub>2 \<down> Normal t \<and>
                    \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal t\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))}"
     by (rule ConseqMGT)
-       (fastsimp intro: exec.intros terminates.intros 
+       (fastforce intro: exec.intros terminates.intros 
                  elim: terminates_Normal_elim_cases
                  simp add: final_notin_def)
   moreover
@@ -1148,7 +1148,7 @@ next
                {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
                {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
       by (rule ConseqMGT)
-         (fastsimp intro: exec.intros terminates.intros 
+         (fastforce intro: exec.intros terminates.intros 
                    simp add: noFault_def')
   ultimately
   show "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
@@ -1698,7 +1698,7 @@ next
               (\<exists>c'. \<Gamma>\<turnstile>(Call p,Normal \<sigma>) \<rightarrow>\<^sup>+ (c',Normal s) \<and> Call q \<in> redexes c')}"
   from noStuck_Call
   have "\<forall>s \<in> ?P. q \<in> dom \<Gamma>"
-    by (fastsimp simp add: final_notin_def)
+    by (fastforce simp add: final_notin_def)
   then show ?case
   proof (rule conseq_extract_state_indep_prop)
     assume q_defined: "q \<in> dom \<Gamma>"
@@ -1767,7 +1767,7 @@ next
   proof (rule ConseqMGT [OF hyp],safe)
     assume "\<Gamma>\<turnstile>\<langle>DynCom c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
     then show "\<Gamma>\<turnstile>\<langle>c Z,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-      by (fastsimp simp add: final_notin_def intro: exec.intros)
+      by (fastforce simp add: final_notin_def intro: exec.intros)
   next
     fix c'
     assume steps: "\<Gamma>\<turnstile> (Call p, Normal \<sigma>) \<rightarrow>\<^sup>+ (c', Normal Z)" 
@@ -1945,7 +1945,7 @@ next
   proof (rule ConseqMGT [OF hyp_c1],clarify,safe) 
     assume "\<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
     thus "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-      by (fastsimp simp add: final_notin_def intro: exec.intros)
+      by (fastforce simp add: final_notin_def intro: exec.intros)
   next
     fix c'
     assume steps: "\<Gamma>\<turnstile> (Call p, Normal \<sigma>) \<rightarrow>\<^sup>+ (c', Normal Z)" 
@@ -2003,7 +2003,7 @@ next
                c\<^isub>2
               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
-    by (rule ConseqMGT [OF hyp_c2]) (fastsimp intro: exec.intros)
+    by (rule ConseqMGT [OF hyp_c2]) (fastforce intro: exec.intros)
   ultimately show ?case
     by (rule hoaret.Catch)
 qed
@@ -2032,7 +2032,7 @@ lemma Call_lemma:
 apply (rule conseqPre)
 apply (rule Call_lemma' [OF A])
 using pdef
-apply (fastsimp intro: terminates.intros tranclp.r_into_trancl [of "(step \<Gamma>)", OF step.Call] root_in_redexes)
+apply (fastforce intro: terminates.intros tranclp.r_into_trancl [of "(step \<Gamma>)", OF step.Call] root_in_redexes)
 done
 
 lemma Call_lemma_switch_Call_body:
@@ -2055,7 +2055,7 @@ apply (rule conseqPre)
 apply (rule Call_lemma')
 apply (rule call)
 using p_defined
-apply (fastsimp intro: terminates.intros tranclp.r_into_trancl [of "(step \<Gamma>)", OF step.Call] 
+apply (fastforce intro: terminates.intros tranclp.r_into_trancl [of "(step \<Gamma>)", OF step.Call] 
 root_in_redexes)
 done
 
@@ -2081,7 +2081,7 @@ apply (intro ballI allI)
 apply simp
 apply (rule Call_lemma_switch_Call_body [rule_format, simplified])
 apply  (rule hoaret.Asm)
-apply  fastsimp
+apply  fastforce
 apply assumption
 done
 
@@ -2150,10 +2150,10 @@ proof -
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Normal t},
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Abrupt t})})", 
              OF _ wf_termi_call_steps [of \<Gamma>] refl])
-    apply fastsimp
+    apply fastforce
     apply clarify
     apply (rule conjI)
-    apply  fastsimp
+    apply  fastforce
     apply (rule allI)
     apply (simp (no_asm_use) only : Un_empty_left)
     apply (rule bdy)
@@ -3194,7 +3194,7 @@ proof (rule cvalidtI)
     case True
     with exec_to_exec_mark_guards_Fault exec
     obtain f' where "\<Gamma>\<turnstile>\<langle>mark_guards f c,Normal s\<rangle> \<Rightarrow> Fault f'"
-      by (fastsimp elim: isFaultE)
+      by (fastforce elim: isFaultE)
     from cvalidt_postD [OF valid [rule_format] ctxt this P]
     have False
       by auto
@@ -3476,7 +3476,7 @@ lemma SplitTotalPartial:
 proof -
   from hoaret_sound [OF termi] hoare_sound [OF part]
   have "\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A"
-    by (fastsimp simp add: cvalidt_def validt_def cvalid_def valid_def)
+    by (fastforce simp add: cvalidt_def validt_def cvalid_def valid_def)
   thus ?thesis
     by (rule hoaret_complete')
 qed
@@ -3488,7 +3488,7 @@ lemma SplitTotalPartial':
 proof -
   from hoaret_sound [OF termi] hoare_sound [OF part]
   have "\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A"
-    by (fastsimp simp add: cvalidt_def validt_def cvalid_def valid_def)
+    by (fastforce simp add: cvalidt_def validt_def cvalid_def valid_def)
   thus ?thesis
     by (rule hoaret_complete')
 qed

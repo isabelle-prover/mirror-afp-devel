@@ -112,7 +112,7 @@ lemma set_delete_aux: "distinct (map fst xs) \<Longrightarrow> set (delete_aux k
 apply(induct xs)
 apply simp_all
 apply clarsimp
-apply(fastsimp intro: rev_image_eqI)
+apply(fastforce intro: rev_image_eqI)
 done
 
 lemma dom_delete_aux: "distinct (map fst ps) \<Longrightarrow> fst ` set (delete_aux k ps) = fst ` set ps - {k}"
@@ -140,7 +140,7 @@ qed
 
 lemma map_of_delete_aux':
   "distinct (map fst xs) \<Longrightarrow> map_of (delete_aux k xs) = (map_of xs)(k := None)"
-by(induct xs)(fastsimp intro: ext simp add: map_of_eq_None_iff fun_upd_twist)+
+by(induct xs)(fastforce intro: ext simp add: map_of_eq_None_iff fun_upd_twist)+
 
 lemma map_of_delete_aux:
   "distinct (map fst xs) \<Longrightarrow> map_of (delete_aux k xs) k' = ((map_of xs)(k := None)) k'"

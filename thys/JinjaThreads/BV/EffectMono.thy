@@ -48,7 +48,7 @@ proof -
       from ST' app Invoke
       have "if is_native P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
 	    else \<exists>D Ts T m C'. class_type_of (ST' ! n) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
-	by fastsimp
+	by fastforce
       moreover
       from less have "P \<turnstile> ST!n \<le> ST'!n"
 	by(auto dest: list_all2_nthD2[OF _ n])
@@ -128,14 +128,14 @@ proof -
   next 
     case Getfield
     with app less show ?thesis
-      by(fastsimp simp add: sees_field_def widen_Array dest: has_fields_fun)
+      by(fastforce simp add: sees_field_def widen_Array dest: has_fields_fun)
   next
     case Putfield
     with app less show ?thesis
-      by (fastsimp intro: widen_trans rtrancl_trans simp add: sees_field_def widen_Array dest: has_fields_fun)
+      by (fastforce intro: widen_trans rtrancl_trans simp add: sees_field_def widen_Array dest: has_fields_fun)
   next
     case Return
-    with app less show ?thesis by (fastsimp intro: widen_trans)
+    with app less show ?thesis by (fastforce intro: widen_trans)
   next
     case ALoad
     with app less show ?thesis by(auto simp add: widen_Array)
@@ -330,7 +330,7 @@ proof -
     from ST' app\<^isub>i Invoke
     have "if is_native P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
           else \<exists>D Ts T m C'. class_type_of (ST' ! n) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
-      by fastsimp
+      by fastforce
     moreover
     from less have "P \<turnstile> ST!n \<le> ST'!n"
       by(auto dest: list_all2_nthD2[OF _ n])

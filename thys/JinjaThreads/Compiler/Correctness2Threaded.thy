@@ -32,7 +32,7 @@ end
 context J1_JVM_heap_conf_base begin
 
 lemma bisim1_list1_has_methodD: "bisim1_list1 t h ex exs xcp ((stk, loc, C, M, pc) # frs) \<Longrightarrow> P \<turnstile> C has M"
-by(fastsimp elim!: bisim1_list1.cases intro: has_methodI)
+by(fastforce elim!: bisim1_list1.cases intro: has_methodI)
 
 
 end
@@ -155,7 +155,7 @@ next
   moreover obtain xcp frs h2 where s2: "s2 = ((xcp, frs), h2)" by(cases s2) auto
   ultimately have [simp]: "h2 = h"  and red: "P,t \<turnstile>1 \<langle>(e, xs)/exs,h\<rangle> -tl1\<rightarrow> \<langle>(e', xs')/exs',h1'\<rangle>"
     and \<tau>: "\<not> \<tau>Move1 P h ((e, xs), exs)" and bisim: "bisim1_list1 t h (e, xs) exs xcp frs"
-    by(fastsimp elim!: Red1.cases dest: red1_\<tau>_taD)+
+    by(fastforce elim!: Red1.cases dest: red1_\<tau>_taD)+
   from exec_1_simulates_Red1_not_\<tau>[OF wf red bisim \<tau>] obtain ta' xcp' frs' xcp'' frs''
     where exec1: "\<tau>Exec_1_dr (compP2 P) t (xcp, h, frs) (xcp', h, frs')"
     and exec2: "exec_1_d (compP2 P) t (Normal (xcp', h, frs')) ta' (Normal (xcp'', h1', frs''))"
@@ -324,7 +324,7 @@ proof -
         proof(cases xcp)
           case None
           with bisim show ?thesis
-            by(fastsimp dest!: bisim1_Throw_\<tau>Exec_movet simp del: blocks1.simps intro: tranclp_into_rtranclp)
+            by(fastforce dest!: bisim1_Throw_\<tau>Exec_movet simp del: blocks1.simps intro: tranclp_into_rtranclp)
         next
           case (Some a')
           with bisim have "a = a'" by(auto dest: bisim1_ThrowD)

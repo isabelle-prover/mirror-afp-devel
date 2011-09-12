@@ -73,7 +73,7 @@ lemma (in append_impl) append_spec:
             \<lbrace>List \<acute>p \<acute>next (Ps@Qs) \<and> (\<forall>x. x\<notin>set Ps \<longrightarrow> \<acute>next x = \<^bsup>\<sigma>\<^esup>next x)\<rbrace>"
   apply (hoare_rule HoarePartial.ProcRec1)
   apply vcg
-  apply fastsimp
+  apply fastforce
   done
 
 primrec sorted:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list  \<Rightarrow> bool"
@@ -218,7 +218,7 @@ apply (hoare_rule anno =
        \<acute>p :== \<acute>le
   FI" in HoarePartial.annotateI)
 apply vcg
-apply   fastsimp
+apply   fastforce
 apply  clarsimp
 apply  (rule conjI)
 apply   clarify
@@ -261,18 +261,18 @@ apply  (erule_tac x=x in allE) back back
 apply  (fast dest!: perm_set_eq)
 apply (rule_tac x="p#sortedPsa" in exI)
 apply (rule conjI)
-apply  (fastsimp dest!: perm_set_eq)
+apply  (fastforce dest!: perm_set_eq)
 apply (rule conjI)
 apply  (force dest!: perm_set_eq)
 apply clarsimp
 apply (rule conjI)
-apply  (fastsimp dest!: perm_set_eq)
+apply  (fastforce dest!: perm_set_eq)
 apply (rule conjI)
-apply  (fastsimp dest!: perm_set_eq)
+apply  (fastforce dest!: perm_set_eq)
 apply (rule conjI)
 apply  (erule perm.trans)
 apply  (simp add:  perm_app_Cons_simps list_all_iff)
-apply  (fastsimp intro!: perm_append_blocks)
+apply  (fastforce intro!: perm_append_blocks)
 apply clarsimp
 apply (erule_tac x=x in allE)+
 apply (force dest!: perm_set_eq)

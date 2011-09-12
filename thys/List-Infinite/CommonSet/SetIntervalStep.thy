@@ -32,12 +32,12 @@ text {* @{text inext} and @{text iprev} can be viewed as generalisations of @{te
 lemma inext_UNIV: "inext n UNIV = Suc n"
 apply (simp add: inext_def cut_greater_def, safe)
 apply (rule iMin_equality)
-apply fastsimp+
+apply fastforce+
 done
 lemma iprev_UNIV: "iprev n UNIV = n - Suc 0"
 apply (simp add: iprev_def cut_less_def, safe)
 apply (rule Max_equality)
-apply fastsimp+
+apply fastforce+
 done
 
 lemma inext_empty: "inext n {} = n"
@@ -61,21 +61,21 @@ lemma iprev_all_ge_fix: "\<forall>x\<in>I. n \<le> x \<Longrightarrow> iprev n I
 unfolding iprev_def by force
 
 lemma inext_Max: "finite I \<Longrightarrow> inext (Max I) I = Max I"
-unfolding inext_def cut_greater_def by (fastsimp dest: Max_ge)
+unfolding inext_def cut_greater_def by (fastforce dest: Max_ge)
 lemma iprev_iMin: "iprev (iMin I) I = iMin I"
-unfolding iprev_def cut_less_def by fastsimp
+unfolding iprev_def cut_less_def by fastforce
 
 lemma inext_ge_Max: "\<lbrakk> finite I; Max I \<le> n \<rbrakk> \<Longrightarrow> inext n I = n"
-unfolding inext_def cut_greater_def by (fastsimp dest: Max_ge)
+unfolding inext_def cut_greater_def by (fastforce dest: Max_ge)
 thm iprev_iMin
 lemma iprev_le_iMin: "n \<le> iMin I \<Longrightarrow> iprev n I = n"
-unfolding iprev_def cut_less_def by fastsimp
+unfolding iprev_def cut_less_def by fastforce
 
 lemma inext_singleton: "inext n {a} = n"
-unfolding inext_def by fastsimp
+unfolding inext_def by fastforce
 
 lemma iprev_singleton: "iprev n {a} = n"
-unfolding iprev_def by fastsimp
+unfolding iprev_def by fastforce
 
 lemma inext_closed: "n \<in> I \<Longrightarrow> inext n I \<in> I"
 apply (clarsimp simp: inext_def)
@@ -87,7 +87,7 @@ done
 lemma iprev_closed: "n \<in> I \<Longrightarrow> iprev n I \<in> I"
 apply (clarsimp simp: iprev_def)
 thm subsetD[of "I \<down>< n" I]
-apply (rule subsetD[of "I \<down>< n"], fastsimp)
+apply (rule subsetD[of "I \<down>< n"], fastforce)
 thm Max_in[OF nat_cut_less_finite]
 by (rule Max_in[OF nat_cut_less_finite])
 
@@ -106,12 +106,12 @@ done
 
 lemma subset_inext_closed: "\<lbrakk> n \<in> B; A \<subseteq> B \<rbrakk> \<Longrightarrow> inext n A \<in> B"
 apply (case_tac "n \<in> A")
- apply (fastsimp simp: inext_closed)
+ apply (fastforce simp: inext_closed)
 apply (simp add: not_in_inext_fix)
 done
 lemma subset_inext_in_imp_in: "\<lbrakk> inext n A \<in> B; A \<subseteq> B \<rbrakk> \<Longrightarrow> n \<in> B"
 apply (case_tac "n \<in> A")
- apply fastsimp
+ apply fastforce
 apply (simp add: not_in_inext_fix)
 done
 lemma subset_inext_in_iff: "A \<subseteq> B \<Longrightarrow> (inext n A \<in> B) = (n \<in> B)"
@@ -135,12 +135,12 @@ done
 
 lemma subset_iprev_closed: "\<lbrakk> n \<in> B; A \<subseteq> B \<rbrakk> \<Longrightarrow> iprev n A \<in> B"
 apply (case_tac "n \<in> A")
- apply (fastsimp simp: iprev_closed)
+ apply (fastforce simp: iprev_closed)
 apply (simp add: not_in_iprev_fix)
 done
 lemma subset_iprev_in_imp_in: "\<lbrakk> iprev n A \<in> B; A \<subseteq> B \<rbrakk> \<Longrightarrow> n \<in> B"
 apply (case_tac "n \<in> A")
- apply fastsimp
+ apply fastforce
 apply (simp add: not_in_iprev_fix)
 done
 lemma subset_iprev_in_iff: "A \<subseteq> B \<Longrightarrow> (iprev n A \<in> B) = (n \<in> B)"
@@ -157,11 +157,11 @@ corollary inext_neq_imp_less: "n \<noteq> inext n I \<Longrightarrow> n < inext 
 by (insert inext_mono[of n I], simp)
 
 lemma inext_mono2: "\<lbrakk> n \<in> I; \<exists>x\<in>I. n < x \<rbrakk> \<Longrightarrow> n < inext n I"
-by (fastsimp simp add: inext_def i_cut_defs iMin_gr_iff)
+by (fastforce simp add: inext_def i_cut_defs iMin_gr_iff)
 
 lemma inext_mono2_infin: "\<lbrakk> n \<in> I; infinite I \<rbrakk> \<Longrightarrow> n < inext n I"
 apply (simp add: inext_def i_cut_defs iMin_gr_iff)
-apply (fastsimp simp: infinite_nat_iff_unbounded)
+apply (fastforce simp: infinite_nat_iff_unbounded)
 done
 
 lemma inext_mono2_fin: "\<lbrakk> n \<in> I; finite I; n \<noteq> Max I \<rbrakk> \<Longrightarrow> n < inext n I"
@@ -409,7 +409,7 @@ apply (unfold iprev_def i_cut_defs, simp)
 apply (split split_if_asm)
 thm Max_ge[of "{x \<in> I. x < n}" k]
 apply (cut_tac Max_ge[of "{x \<in> I. x < n}" k])
-apply fastsimp+
+apply fastforce+
 done
 
 corollary iprev_min_step2: "\<not>(\<exists>x\<in>I. iprev n I < x \<and> x < n)"
@@ -965,7 +965,7 @@ apply (frule iMin_neq_imp_greater, simp+)
 apply (unfold iprev_def)
 apply (rule set_eqI, safe)
  apply (simp add: i_cut_defs linorder_not_less)
- apply (drule iMinI, fastsimp)
+ apply (drule iMinI, fastforce)
 apply (split split_if_asm)
  apply (rule ccontr)
  apply (simp add: nat_cut_less_finite linorder_not_le)
@@ -1024,7 +1024,7 @@ apply simp
 apply (subgoal_tac "A \<down>> n = {}")
  prefer 2
  apply (simp add: cut_greater_empty_iff)
- apply fastsimp 
+ apply fastforce 
 apply (simp add: inext_def cut_greater_Un)
 done
 corollary inext_append_eq1: "
@@ -1056,7 +1056,7 @@ apply (drule Un_iff[THEN iffD1], elim disjE)
  apply (subgoal_tac "B \<down>< n = {}")
   prefer 2
   apply (simp add: cut_less_empty_iff)
-  apply fastsimp 
+  apply fastforce 
  apply (simp add: iprev_def cut_less_Un)
 apply (drule disjoint_iff_in_not_in2[THEN iffD1])
 apply simp
@@ -1067,7 +1067,7 @@ apply (simp add: iprev_def cut_less_Un)
 apply (subgoal_tac "A \<down>< n = A")
  prefer 2
  apply (simp add: cut_less_all_iff)
- apply fastsimp
+ apply fastforce
 apply (subgoal_tac "B \<down>< n \<noteq> {}")
  prefer 2
  apply (simp add: cut_less_not_empty_iff)
@@ -1199,7 +1199,7 @@ done
 corollary nat_pred_predicate_change_exists: "
   \<lbrakk> a \<le> b; \<not> P b; P a \<rbrakk> \<Longrightarrow> \<exists>n\<le>b. a < n \<and> \<not> P n \<and> P (n - Suc 0)"
 apply (drule iprev_predicate_change_exists[OF _ UNIV_I UNIV_I], assumption+)
-apply (fastsimp simp add: iprev_UNIV)
+apply (fastforce simp add: iprev_UNIV)
 done
 
 
@@ -1259,7 +1259,7 @@ corollary inext_predicate_change_exists2: "
 thm inext_predicate_change_exists2_all[of a b "I \<down>\<le> b"]
 apply (frule inext_predicate_change_exists2_all[of a b "I \<down>\<le> b"])
  apply (simp add: i_cut_mem_iff)+
- apply fastsimp
+ apply fastforce
 apply blast
 done
 
@@ -1325,7 +1325,7 @@ corollary iprev_predicate_change_exists2: "
 thm iprev_predicate_change_exists2_all[of a b "I \<down>\<ge> a"]
 apply (frule iprev_predicate_change_exists2_all[of a b "I \<down>\<ge> a"])
  apply (simp add: i_cut_mem_iff)+
- apply fastsimp
+ apply fastforce
 apply blast
 done
 
@@ -1825,7 +1825,7 @@ apply (induct n)
  apply (simp add: card_eq_0_iff nat_cut_less_finite cut_less_Min_empty)
 apply (subgoal_tac "n < card I \<or> infinite I")
  prefer 2
- apply fastsimp
+ apply fastforce
 apply simp
 apply (subgoal_tac "I \<rightarrow> n \<noteq> Max I \<or> infinite I")
  prefer 2

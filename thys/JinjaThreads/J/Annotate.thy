@@ -194,7 +194,7 @@ proof(induct arbitrary: e'' and es'' rule: Anno_Annos.inducts)
     thus ?thesis ..
   qed
 next
-  case AnnoFAccALength thus ?case by(fastsimp intro: WT_unique[OF is_lub_unique])
+  case AnnoFAccALength thus ?case by(fastforce intro: WT_unique[OF is_lub_unique])
 next
   case (AnnoFAss E e1 e1' e2 e2' U C F T fm D)
   from `is_lub,P,E \<turnstile> e1\<bullet>F{STR []} := e2 \<leadsto> e''` 
@@ -225,7 +225,7 @@ next
     with `is_lub,P,E \<turnstile> e1 \<leadsto> e1'` have False by(auto elim: Anno_cases)
     thus ?thesis ..
   qed
-qed(fastsimp dest: sees_field_fun)+
+qed(fastforce dest: sees_field_fun)+
 
 subsection {* Code generation *}
 

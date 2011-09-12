@@ -510,13 +510,13 @@ proof -
   from this obtain k' l' where A: "Suc(k') = k"
                            and B: "Suc(l') = l" by fast+
   from this have A1: "k \<times> x = k' \<otimes> x"
-             and B1: "l \<times> x = l' \<otimes> x" by fastsimp+
+             and B1: "l \<times> x = l' \<otimes> x" by fastforce+
   from A B have "k + l = Suc(k' + l' + 1)" by arith
   hence "(k + l) \<times> x = (k' + l' + 1) \<otimes> x" by simp
   also from copyp_arith have  
         "\<dots> = k' \<otimes> x \<squnion> l' \<otimes> x" by fast
   also from A1 B1 have
-        "\<dots> = k \<times> x \<squnion> l \<times> x" by fastsimp
+        "\<dots> = k \<times> x \<squnion> l \<times> x" by fastforce
   finally show ?thesis by simp
 qed
 
@@ -804,7 +804,7 @@ proof -
   moreover 
   from sup_comm sup_assoc A B
        copyp2[where x="x \<squnion> x" and y="y" and k="0"] 
-  have "-(y \<squnion> x \<squnion> x \<squnion> -(x \<squnion> x \<squnion> -y)) = -y" by fastsimp
+  have "-(y \<squnion> x \<squnion> x \<squnion> -(x \<squnion> x \<squnion> -y)) = -y" by fastforce
   with sup_comm sup_assoc 
   have "-(x \<squnion> x \<squnion> y \<squnion> -(x \<squnion> (x \<squnion> -y))) = -y" by metis
   ultimately have 
@@ -852,7 +852,7 @@ proof -
               sup_assoc have 
     "\<dots> = \<beta> \<squnion> 3 \<times> (\<alpha> \<squnion> -(\<alpha> \<squnion> -\<beta>))" by metis
     also from winker sup_comm two_three[where x="\<alpha>" and y="\<beta>"] have 
-    "\<dots> = \<beta> \<squnion> 2 \<times> (\<alpha> \<squnion> -(\<alpha> \<squnion> -\<beta>))" by fastsimp
+    "\<dots> = \<beta> \<squnion> 2 \<times> (\<alpha> \<squnion> -(\<alpha> \<squnion> -\<beta>))" by fastforce
     also from copy_distrib[where k="2"] 
               multi_winker[where k="2"] 
               sup_assoc two secret_object4_def have 
@@ -869,9 +869,9 @@ proof -
     finally have "-(-(\<delta> \<squnion> -\<delta>) \<squnion> -\<delta>) = \<delta>" by simp
     with two_three[where x="\<delta>" and y="\<delta>"] 
          secret_object5_def sup_comm
-    have "3 \<times> \<gamma> \<squnion> \<delta> = 2 \<times> \<gamma> \<squnion> \<delta>" by fastsimp
+    have "3 \<times> \<gamma> \<squnion> \<delta> = 2 \<times> \<gamma> \<squnion> \<delta>" by fastforce
     with secret_object5_def sup_assoc sup_comm have  
-         "3 \<times> \<gamma> \<squnion> \<gamma> = 2 \<times> \<gamma> \<squnion> \<gamma>" by fastsimp
+         "3 \<times> \<gamma> \<squnion> \<gamma> = 2 \<times> \<gamma> \<squnion> \<gamma>" by fastforce
     with two three four five six have
          "6 \<times> \<gamma> = 3 \<times> \<gamma>" by simp
     moreover have "3 + 3 = (6::nat)" and "3 \<noteq> (0::nat)" by arith+

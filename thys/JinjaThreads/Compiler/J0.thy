@@ -135,11 +135,11 @@ lemma assumes wf: "wwf_J_prog P"
 proof(induct rule: red_reds.inducts)
   case (RedCall s a U C M Ts T pns body D vs)
   hence "fv body \<subseteq> {this} \<union> set pns"
-    using wf by(fastsimp dest!:sees_wf_mdecl simp:wf_mdecl_def)
-  with RedCall show ?case by fastsimp
+    using wf by(fastforce dest!:sees_wf_mdecl simp:wf_mdecl_def)
+  with RedCall show ?case by fastforce
 next
   case RedCallExternal thus ?case by(auto simp add: extRet2J_def split: extCallRet.split_asm)
-qed(fastsimp)+
+qed(fastforce)+
 
 end
 
@@ -169,7 +169,7 @@ next
   ultimately have "fv e' - {V} \<subseteq> dom x' - {V}"
     by(auto split: split_if_asm)
   thus ?case by(auto simp del: fun_upd_apply)
-qed(fastsimp dest: red_lcl_incr del: subsetI)+
+qed(fastforce dest: red_lcl_incr del: subsetI)+
 
 lemma is_call_red_state_unchanged: 
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call e = \<lfloor>aMvs\<rfloor>; \<not> synthesized_call P (hp s) aMvs \<rbrakk> \<Longrightarrow> s' = s \<and> ta = \<epsilon>"
@@ -177,7 +177,7 @@ lemma is_call_red_state_unchanged:
   and is_calls_reds_state_unchanged:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; calls es = \<lfloor>aMvs\<rfloor>; \<not> synthesized_call P (hp s) aMvs \<rbrakk> \<Longrightarrow> s' = s \<and> ta = \<epsilon>"
 apply(induct rule: red_reds.inducts)
-apply(fastsimp split: split_if_asm simp add: synthesized_call_def)+
+apply(fastforce split: split_if_asm simp add: synthesized_call_def)+
 done
 
 lemma called_methodD:
@@ -191,7 +191,7 @@ lemma called_methodD:
                               P \<turnstile> C sees M: Us\<rightarrow>U = (pns, body) in D \<and> length vs = length pns \<and> length Us = length pns"
 apply(induct rule: red_reds.inducts)
 apply(auto split: split_if_asm simp add: synthesized_call_def)
-apply(fastsimp)
+apply(fastforce)
 done
 
 section {* Silent moves *}
@@ -368,14 +368,14 @@ lemma assumes [simp]: "extTA \<epsilon> = \<epsilon>"
   shows red_\<tau>_taD: "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move0 P (hp s) e \<rbrakk> \<Longrightarrow> ta = \<epsilon>"
   and reds_\<tau>_taD: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; \<tau>moves0 P (hp s) es \<rbrakk> \<Longrightarrow> ta = \<epsilon>"
 apply(induct rule: red_reds.inducts)
-apply(fastsimp simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_TA_empty)+
+apply(fastforce simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_TA_empty)+
 done
 
 lemma \<tau>move0_heap_unchanged: "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move0 P (hp s) e \<rbrakk> \<Longrightarrow> hp s' = hp s"
   and \<tau>moves0_heap_unchanged: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; \<tau>moves0 P (hp s) es \<rbrakk> \<Longrightarrow> hp s' = hp s"
 apply(induct rule: red_reds.inducts)
 apply(auto)
-apply(fastsimp simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_heap_unchanged)+
+apply(fastforce simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_heap_unchanged)+
 done
 
 lemma \<tau>Move0_iff:
@@ -593,7 +593,7 @@ by(induct rule: tranclp_induct2)(auto intro: tranclp.trancl_into_trancl CallObj)
 
 lemma Call_\<tau>red0t_param:
   "\<tau>reds0t extTA P t h (es, xs) (es', xs') \<Longrightarrow> \<tau>red0t extTA P t h (Val v\<bullet>M(es), xs) (Val v\<bullet>M(es'), xs')"
-by(induct rule: tranclp_induct2)(fastsimp intro: tranclp.trancl_into_trancl CallParams)+
+by(induct rule: tranclp_induct2)(fastforce intro: tranclp.trancl_into_trancl CallParams)+
 
 lemma Block_\<tau>red0t_xt:
   "\<tau>red0t extTA P t h (e, xs(V := vo)) (e', xs') \<Longrightarrow> \<tau>red0t extTA P t h ({V:T=vo; e}, xs) ({V:T=xs' V; e'}, xs'(V := xs V))"
@@ -699,7 +699,7 @@ by(induct rule: rtranclp_induct2)(auto intro: rtranclp.rtrancl_into_rtrancl Call
 
 lemma Call_\<tau>red0r_param:
   "\<tau>reds0r extTA P t h (es, xs) (es', xs') \<Longrightarrow> \<tau>red0r extTA P t h (Val v\<bullet>M(es), xs) (Val v\<bullet>M(es'), xs')"
-by(induct rule: rtranclp_induct2)(fastsimp intro: rtranclp.rtrancl_into_rtrancl CallParams)+
+by(induct rule: rtranclp_induct2)(fastforce intro: rtranclp.rtrancl_into_rtrancl CallParams)+
 
 lemma Block_\<tau>red0r_xt:
   "\<tau>red0r extTA P t h (e, xs(V := vo)) (e', xs') \<Longrightarrow> \<tau>red0r extTA P t h ({V:T=vo; e}, xs) ({V:T=xs' V; e'}, xs'(V := xs V))"
@@ -895,7 +895,7 @@ proof -
   proof
     fix x1 m1 t ta1 x1' m1'
     assume "mred0 P t (x1, m1) ta1 (x1', m1')" "\<tau>MOVE0 P (x1, m1) ta1 (x1', m1')"
-    thus "m1 = m1'" by(cases x1)(fastsimp elim!: red0.cases dest: \<tau>move0_heap_unchanged)
+    thus "m1 = m1'" by(cases x1)(fastforce elim!: red0.cases dest: \<tau>move0_heap_unchanged)
   qed(simp add: split_beta)
 qed
 
@@ -939,7 +939,7 @@ done
 lemma \<tau>Red0t_into_red0_\<tau>mthr_silent_movet:
   "\<tau>Red0t P t h (e, es) (e'', es'') \<Longrightarrow> red0_mthr.silent_movet P t ((e, es), h) ((e'', es''), h)"
 apply(induct rule: tranclp_induct2)
-apply(fastsimp simp add: red0_mthr.silent_move_iff elim: tranclp.trancl_into_trancl)+
+apply(fastforce simp add: red0_mthr.silent_move_iff elim: tranclp.trancl_into_trancl)+
 done
 
 end

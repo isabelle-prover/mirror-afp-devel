@@ -332,7 +332,7 @@ by(induct Ls arbitrary: l, auto)
 
 lemma lock_actions_ok_Lock_may_lock:
   "\<lbrakk> lock_actions_ok l t Ls; Lock \<in> set Ls \<rbrakk> \<Longrightarrow> may_lock l t"
-by(induct Ls arbitrary: l, fastsimp+)
+by(induct Ls arbitrary: l, fastforce+)
 
 lemma has_locks_lock_lock_conv' [simp]:
   "\<lbrakk> may_lock l t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_locks (lock_lock l t') t = has_locks l t"

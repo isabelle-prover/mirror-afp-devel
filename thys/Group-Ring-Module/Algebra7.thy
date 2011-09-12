@@ -4365,7 +4365,7 @@ apply (induct_tac n)
  apply (simp)
  apply (frule_tac f = f and A = "{0}" and B= H in func_to_img,
         frule_tac f = f and A = "{0}" and B= H in surj_to_image,
-        fastsimp simp add:image_def)
+        fastforce simp add:image_def)
 
 apply ((rule allI)+, rule impI, erule conjE)
  apply (frule func_pre [of _ _ "A"], frule func_pre [of _ _ "H"])

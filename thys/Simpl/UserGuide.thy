@@ -628,7 +628,7 @@ derive the overall postcondition from the postcondition of the recursive call. T
 state components that have changed by the recursive call are the ones with the suffix
 @{text a}, like @{text nexta} and @{text pa}.
 *}
-apply fastsimp
+apply fastforce
 done
 
 
@@ -823,7 +823,7 @@ decreases in every recursive call.
 *}
 txt {* @{subgoals [margin=80,display]} *}
 apply vcg
-apply (fastsimp simp add: List_list)
+apply (fastforce simp add: List_list)
 done
 
 text {*
@@ -1021,9 +1021,9 @@ lemma (in insert_impl) insert_spec:
   apply (hoare_rule HoarePartial.ProcRec1)
   apply vcg
   apply (intro conjI impI)
-  apply    fastsimp
-  apply   fastsimp
-  apply  fastsimp
+  apply    fastforce
+  apply   fastforce
+  apply  fastforce
   apply (clarsimp) 
   apply force
   done
@@ -1122,9 +1122,9 @@ apply vcg
 txt {* @{text "\<dots>"} *}
 (*<*)
   
-  apply   fastsimp
+  apply   fastforce
   prefer 2
-  apply  fastsimp
+  apply  fastforce
   apply (clarsimp)
   apply (rule_tac x=ps in exI)
   apply (intro conjI)
@@ -1547,7 +1547,7 @@ lemma (in append'_impl) append'_spec:
             \<lbrace>List \<acute>p \<acute>next (Ps@Qs) \<and> (\<forall>x. x\<notin>set Ps \<longrightarrow> \<acute>next x = \<^bsup>\<sigma>\<^esup>next x)\<rbrace>"
   apply (hoare_rule HoarePartial.ProcRec1)
   apply vcg
-  apply fastsimp
+  apply fastforce
   done
 
 

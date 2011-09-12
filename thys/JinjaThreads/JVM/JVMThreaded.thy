@@ -65,7 +65,7 @@ by(cases x)(auto simp add: exec_1_iff)
 
 lemma exec_mthr: "multithreaded JVM_final (mexec P)"
 apply(unfold_locales)
-apply(clarsimp, drule NewThread_memory_exec, fastsimp, simp)
+apply(clarsimp, drule NewThread_memory_exec, fastforce, simp)
 apply(erule (1) mexec_final)
 done
 
@@ -116,7 +116,7 @@ where
 
 lemma execd_mthr: "multithreaded JVM_final (mexecd P)"
 apply(unfold_locales)
- apply(fastsimp dest: defensive_imp_aggressive_1 NewThread_memory_exec)
+ apply(fastforce dest: defensive_imp_aggressive_1 NewThread_memory_exec)
 apply(auto elim: jvmd_NormalE)
 done
 
@@ -180,7 +180,7 @@ lemma exec_instr_New_Thread_exists_thread_object:
      NewThread t' x h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 apply(cases ins)
-apply(fastsimp simp add: split_beta ta_upd_simps split: split_if_asm intro: red_external_aggr_new_thread_exists_thread_object)+
+apply(fastforce simp add: split_beta ta_upd_simps split: split_if_asm intro: red_external_aggr_new_thread_exists_thread_object)+
 done
 
 lemma exec_New_Thread_exists_thread_object:

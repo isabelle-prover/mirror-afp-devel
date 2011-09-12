@@ -180,12 +180,12 @@ proof(induct f)
   qed simp_all
 next
   case (And f1 f2)
-  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastsimp+
+  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastforce+
   hence "?P (And f1 f2) (min x1 x2)" by(force simp:and_def)
   thus ?case ..
 next
   case (Or f1 f2)
-  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastsimp+
+  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastforce+
   hence "?P (Or f1 f2) (min x1 x2)" by(force simp:or_def)
   thus ?case ..
 qed simp_all
@@ -217,12 +217,12 @@ proof (induct f)
   qed simp_all
 next
   case (And f1 f2)
-  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastsimp+
+  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastforce+
   hence "?P (And f1 f2) (max x1 x2)" by(force simp:and_def)
   thus ?case ..
 next
   case (Or f1 f2)
-  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastsimp+
+  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastforce+
   hence "?P (Or f1 f2) (max x1 x2)" by(force simp:or_def)
   thus ?case ..
 qed simp_all

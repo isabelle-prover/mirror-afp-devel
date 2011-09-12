@@ -81,7 +81,7 @@ lemma trie_lookup_trie_update_with:
  = (if ks = ks' then Some (f (case trie_lookup t ks of None \<Rightarrow> v | Some v' \<Rightarrow> v')) else trie_lookup t ks')"
 proof(induct ks v f t arbitrary: ks' rule: trie_update_with.induct)
   case (1 v f vo ts ks')
-  show ?case by (fastsimp simp add: neq_Nil_conv dest: not_sym)
+  show ?case by (fastforce simp add: neq_Nil_conv dest: not_sym)
 next
   case (2 k ks v f vo ts ks')
   note IH = `\<And>t ks'. trie_lookup (trie_update_with ks v f t) ks' = (if ks = ks' then Some (f (case trie_lookup t ks of None \<Rightarrow> v | Some v' \<Rightarrow> v')) else trie_lookup t ks')`

@@ -111,7 +111,7 @@ lemma safe_Enter[simp]: "hotel (Enter g r (k,k') # t) \<Longrightarrow>
  apply simp
  apply blast
   apply(erule disjE)
-   prefer 2 apply fastsimp
+   prefer 2 apply fastforce
   apply (erule conjE)+
   apply(drule ownsD)
   apply(clarsimp simp add:Trace.safe_def)
@@ -150,7 +150,7 @@ apply (simp add: fun_eq_iff)
 
 apply(drule_tac g = guest and r = room in enter_room) apply simp apply simp
 apply(erule reach_cong)
-apply (fastsimp simp add: fun_eq_iff)
+apply (fastforce simp add: fun_eq_iff)
 done
 
 lemma reach_hotel: "s : reach \<Longrightarrow>
@@ -163,7 +163,7 @@ lemma reach_hotel: "s : reach \<Longrightarrow>
  state.safe s = (\<lambda>r. safe t r \<or> owns t r = None)"
 apply(erule reach.induct)
  apply(rule_tac x = "[]" in exI)
- apply fastsimp
+ apply fastforce
 apply clarsimp
 apply(rule_tac x = "Check_in g r (currk t r,k) # t" in exI)
 apply (simp add: fun_eq_iff [where 'a=room] fun_eq_iff [where 'a=guest])

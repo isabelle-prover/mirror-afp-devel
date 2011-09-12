@@ -33,7 +33,7 @@ apply(auto)
 
 apply(simp add: tabulate_subcls_def cong: if_cong)
 
-apply(fastsimp simp add: tabulate_sees_field_def intro!: ext)
+apply(fastforce simp add: tabulate_sees_field_def intro!: ext)
 done
 
 declare compP.simps [simp] compP.simps[symmetric, simp del]

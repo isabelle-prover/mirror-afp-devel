@@ -25,10 +25,10 @@ abbreviation
   where "P \<turnstile> C  \<preceq>\<^sup>*  D \<equiv> (C,D) \<in> (subcls1 P)\<^sup>*"
 
 lemma subcls1D: "P \<turnstile> C \<prec>\<^sup>1 D \<Longrightarrow> C \<noteq> Object \<and> (\<exists>fs ms. class P C = Some (D,fs,ms))"
-(*<*)by(erule subcls1.induct)(fastsimp simp add:is_class_def)(*>*)
+(*<*)by(erule subcls1.induct)(fastforce simp add:is_class_def)(*>*)
 
 lemma [iff]: "\<not> P \<turnstile> Object \<prec>\<^sup>1 C"
-(*<*)by(fastsimp dest:subcls1D)(*>*)
+(*<*)by(fastforce dest:subcls1D)(*>*)
 
 lemma [iff]: "(P \<turnstile> Object \<preceq>\<^sup>* C) = (C = Object)"
 (*<*)
@@ -42,7 +42,7 @@ lemma subcls1_def2:
   "subcls1 P =
      (SIGMA C:{C. is_class P C}. {D. C\<noteq>Object \<and> fst (the (class P C))=D})"
 (*<*)
-  by (fastsimp simp:is_class_def dest: subcls1D elim: subcls1I)
+  by (fastforce simp:is_class_def dest: subcls1D elim: subcls1I)
 (*>*)
 
 lemma finite_subcls1: "finite (subcls1 P)"
@@ -208,7 +208,7 @@ proof induct
   case sees_methods_Object thus ?case by auto
 next
   case sees_methods_rec thus ?case
-    by(fastsimp simp:Option.map_def split:option.splits
+    by(fastforce simp:Option.map_def split:option.splits
                 elim:converse_rtrancl_into_rtrancl[OF subcls1I])
 qed
 (*>*)
@@ -221,10 +221,10 @@ shows "\<And>m D. Mm M = Some(m,D) \<Longrightarrow>
 using Cmethods
 proof induct
   case sees_methods_Object thus ?case
-    by(fastsimp dest: Methods.sees_methods_Object)
+    by(fastforce dest: Methods.sees_methods_Object)
 next
   case sees_methods_rec thus ?case
-    by(fastsimp split:option.splits dest: Methods.sees_methods_rec)
+    by(fastforce split:option.splits dest: Methods.sees_methods_rec)
 qed
 (*>*)
 
@@ -279,7 +279,7 @@ where
 lemma sees_method_fun:
   "\<lbrakk>P \<turnstile> C sees M:TS\<rightarrow>T = m in D; P \<turnstile> C sees M:TS'\<rightarrow>T' = m' in D' \<rbrakk>
    \<Longrightarrow> TS' = TS \<and> T' = T \<and> m' = m \<and> D' = D"
- (*<*)by(fastsimp dest: sees_methods_fun simp:Method_def)(*>*)
+ (*<*)by(fastforce dest: sees_methods_fun simp:Method_def)(*>*)
 
 lemma sees_method_decl_above:
   "P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
@@ -288,12 +288,12 @@ lemma sees_method_decl_above:
 lemma visible_method_exists:
   "P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<Longrightarrow>
   \<exists>D' fs ms. class P D = Some(D',fs,ms) \<and> map_of ms M = Some(Ts,T,m)"
-(*<*)by(fastsimp simp:Method_def dest!: visible_methods_exist)(*>*)
+(*<*)by(fastforce simp:Method_def dest!: visible_methods_exist)(*>*)
 
 
 lemma sees_method_idemp:
   "P \<turnstile> C sees M:Ts\<rightarrow>T=m in D \<Longrightarrow> P \<turnstile> D sees M:Ts\<rightarrow>T=m in D"
- (*<*)by(fastsimp simp: Method_def intro:sees_methods_idemp)(*>*)
+ (*<*)by(fastforce simp: Method_def intro:sees_methods_idemp)(*>*)
 
 lemma sees_method_decl_mono:
   "\<lbrakk> P \<turnstile> C' \<preceq>\<^sup>* C; P \<turnstile> C sees M:Ts\<rightarrow>T = m in D;
@@ -362,7 +362,7 @@ using sub apply(induct)
  apply(erule converse_rtranclE)
   apply(force)
  apply(drule subcls1D)
- apply fastsimp
+ apply fastforce
 apply(force simp:image_def)
 done
 (*>*)
@@ -373,7 +373,7 @@ assumes fields: "P \<turnstile> C has_fields FDTs"
 shows "((F,D),T) \<in> set FDTs \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
 (*<*)
 using fields apply(induct)
- prefer 2 apply fastsimp
+ prefer 2 apply fastforce
 apply clarsimp
 apply(erule disjE)
  apply(clarsimp simp add:image_def)
@@ -388,14 +388,14 @@ assumes fields: "P \<turnstile> C has_fields FDTs"
 shows "((F,D),T) \<in> set FDTs \<Longrightarrow> (D,C) \<notin> (subcls1 P)\<^sup>+"
 (*<*)
 using fields apply(induct)
- prefer 2 apply(fastsimp dest: tranclD)
+ prefer 2 apply(fastforce dest: tranclD)
 apply clarsimp
 apply(erule disjE)
  apply(clarsimp simp add:image_def)
  apply(drule tranclD)
  apply clarify
  apply(frule subcls1D)
- apply(fastsimp dest:all_fields_in_has_fields)
+ apply(fastforce dest:all_fields_in_has_fields)
 apply simp
 apply(blast dest:subcls1I trancl_into_trancl)
 done
@@ -439,7 +439,7 @@ lemma has_field_mono:
 (*<*)
 apply(clarsimp simp:has_field_def)
 apply(drule (1) has_fields_mono_lem)
-apply(fastsimp simp: map_add_def split:option.splits)
+apply(fastforce simp: map_add_def split:option.splits)
 done
 (*>*)
 
@@ -463,7 +463,7 @@ lemma has_visible_field:
 
 lemma sees_field_fun:
   "\<lbrakk>P \<turnstile> C sees F:T in D; P \<turnstile> C sees F:T' in D'\<rbrakk> \<Longrightarrow> T' = T \<and> D' = D"
-(*<*)by(fastsimp simp:sees_field_def dest:has_fields_fun)(*>*)
+(*<*)by(fastforce simp:sees_field_def dest:has_fields_fun)(*>*)
 
 
 lemma sees_field_decl_above:
@@ -488,11 +488,11 @@ lemma sees_field_idemp:
    apply clarsimp
    apply (frule map_of_SomeD)
    apply clarsimp
-   apply (fastsimp intro: has_fields_rec)
+   apply (fastforce intro: has_fields_rec)
   apply clarsimp
   apply (frule map_of_SomeD)
   apply clarsimp
-  apply (fastsimp intro: has_fields_Object)
+  apply (fastforce intro: has_fields_Object)
   done
 (*>*)
 

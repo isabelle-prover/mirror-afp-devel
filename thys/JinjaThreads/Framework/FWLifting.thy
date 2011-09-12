@@ -106,7 +106,7 @@ lemma ts_inv_upd_option_map:
   and "\<And>x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> P (the (I t)) t (fst (f (x, ln))) m"
   shows "ts_inv P I (ts(t := (Option.map f (ts t)))) m"
 using assms
-by(fastsimp intro!: ts_invI split: split_if_asm dest: ts_invD)
+by(fastforce intro!: ts_invI split: split_if_asm dest: ts_invD)
 
 fun upd_inv :: "('t \<rightharpoonup> 'i) \<Rightarrow> ('i \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> ('t \<rightharpoonup> 'i)"
 where

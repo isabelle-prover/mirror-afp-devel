@@ -146,7 +146,7 @@ text{*An induction on $c$ shows that no derivations of height
 $0$ exist.*}
 
 lemma Sem_no_zero_height_derivs: "(s, c \<rightarrow>\<^sub>0 t) ==> False"
-(*<*)by (insert Sem_no_zero_height_derivsAux, fastsimp)(*>*)
+(*<*)by (insert Sem_no_zero_height_derivsAux, fastforce)(*>*)
 
 (*<*)
 lemma SemnDeterm[rule_format]:

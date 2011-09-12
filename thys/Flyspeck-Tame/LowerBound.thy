@@ -186,7 +186,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
       by (simp add: ListSum_add add_ac) (*>*) (* FIXME  also takes too long *)
     also from pl final tame have "\<dots> = \<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v)"
       by (rule_tac ListSum_eq)
-         (fastsimp simp add: V1_def V_subset[THEN subsetD] intro: excess_eq1)
+         (fastforce simp add: V1_def V_subset[THEN subsetD] intro: excess_eq1)
     finally show ?thesis .
   qed
 

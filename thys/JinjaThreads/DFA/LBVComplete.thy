@@ -96,7 +96,7 @@ proof-
       from x map1 have "\<forall>x \<in> set (?map ss\<^isub>1). x \<sqsubseteq>\<^sub>r ?sum ss\<^isub>1" by clarify (rule pp_ub1)
       with sum have "\<forall>x \<in> set (?map ss\<^isub>1). x \<sqsubseteq>\<^sub>r ?s\<^isub>1" by simp
       with less have "\<forall>x \<in> set (?map ss\<^isub>2). x \<sqsubseteq>\<^sub>r ?s\<^isub>1"
-        by (fastsimp dest!: mapD lesub_step_typeD intro: trans_r)
+        by (fastforce dest!: mapD lesub_step_typeD intro: trans_r)
       moreover from map1 x have "x \<sqsubseteq>\<^sub>r (?sum ss\<^isub>1)" by (rule pp_ub2)
       with sum have "x \<sqsubseteq>\<^sub>r ?s\<^isub>1" by simp
       moreover from ss\<^isub>2 have "set (?map ss\<^isub>2) \<subseteq> A" by auto

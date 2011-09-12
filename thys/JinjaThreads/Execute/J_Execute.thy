@@ -51,7 +51,7 @@ where
 lemma eval_sc_red_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o:
   "(\<lambda>t xm ta x'm'. Predicate.eval (sc_red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P t xm) (ta, x'm')) = 
   (\<lambda>t ((e, xs), h) ta ((e', xs'), h'). extTA2J P,P,t \<turnstile>sc \<langle>e, (h, xs)\<rangle> -ta\<rightarrow> \<langle>e', (h', xs')\<rangle>)"
-by(fastsimp elim!: red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oE intro!: red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oI ext SUP1_I simp add: eval_sc_heap_write_i_i_i_i_o eval_sc_heap_read_i_i_i_o)
+by(fastforce elim!: red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oE intro!: red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oI ext SUP1_I simp add: eval_sc_heap_write_i_i_i_i_o eval_sc_heap_read_i_i_i_o)
 
 lemma sc_J_start_state_invar: "(\<lambda>_. True) (sc_state_\<alpha> (sc_J_start_state_refine P C M vs))"
 by simp

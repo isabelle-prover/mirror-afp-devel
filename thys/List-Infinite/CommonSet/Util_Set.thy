@@ -42,7 +42,7 @@ subsection {* Some auxiliary lemmata for quantifiers *}
 subsubsection {* Auxiliary results for universal and existential quantifiers *}
 
 lemma ball_cong2: "
-  \<lbrakk> I \<subseteq> A; \<forall>x\<in>A. f x = g x \<rbrakk> \<Longrightarrow> (\<forall>x\<in>I. P (f x)) = (\<forall>x\<in>I. P (g x))" by fastsimp
+  \<lbrakk> I \<subseteq> A; \<forall>x\<in>A. f x = g x \<rbrakk> \<Longrightarrow> (\<forall>x\<in>I. P (f x)) = (\<forall>x\<in>I. P (g x))" by fastforce
 lemma bex_cong2: "
   \<lbrakk> I \<subseteq> A; \<forall>x\<in>I. f x = g x \<rbrakk> \<Longrightarrow> (\<exists>x\<in>I. P (f x)) = (\<exists>x\<in>I. P (g x))" by simp
 lemma ball_all_cong: "

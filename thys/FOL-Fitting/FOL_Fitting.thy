@@ -1478,7 +1478,7 @@ definition
   "is_chain f = (\<forall>n. f n \<subseteq> f (Suc n))"
 
 theorem is_chainD: "is_chain f \<Longrightarrow> x \<in> f m \<Longrightarrow> x \<in> f (m + n)"
-  by (induct n) (fastsimp simp add: is_chain_def)+
+  by (induct n) (fastforce simp add: is_chain_def)+
 
 theorem is_chainD': "is_chain f \<Longrightarrow> x \<in> f m \<Longrightarrow> m \<le> k \<Longrightarrow> x \<in> f k"
   apply (subgoal_tac "\<exists>n. k = m + n")
@@ -1809,7 +1809,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
     drule conjunct2, drule conjunct1,
     erule allE, erule allE,
     erule impE, assumption)
-  apply fastsimp
+  apply fastforce
   apply hypsubst
   apply (rule conjI impI)+
   apply (drule conjunct2, drule conjunct2,
@@ -1817,7 +1817,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
     drule conjunct2, drule conjunct2,
     drule conjunct1, erule allE, erule allE,
     erule impE, assumption)
-  apply fastsimp
+  apply fastforce
   apply (rule impI)+
   apply (drule conjunct2,
     drule conjunct2, drule conjunct2,
@@ -1833,7 +1833,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
     drule conjunct2, drule conjunct2,
     drule conjunct1, erule allE, erule allE,
     erule impE, assumption)
-  apply fastsimp
+  apply fastforce
   apply (rule impI)+
   apply (drule conjunct2, drule conjunct2,
     drule conjunct2, drule conjunct2,
@@ -1873,7 +1873,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
     drule conjunct2)
   apply (erule allE, erule impE, assumption, erule exE)
   apply (erule_tac x="subst form t 0" in allE)
-  apply fastsimp
+  apply fastforce
   apply hypsubst
   apply (simp (no_asm))
   apply (rule conjI impI allI)+
@@ -1886,7 +1886,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
     drule conjunct1)
   apply (erule allE, erule impE, assumption, erule exE)
   apply (erule_tac x="subst form t 0" in allE)
-  apply fastsimp
+  apply fastforce
   apply (rule impI allI)+
   apply (drule conjunct2, drule conjunct2,
     drule conjunct2, drule conjunct2,
@@ -2302,15 +2302,15 @@ theorem sat_consistency: "consistency {S. \<not> finite (- (\<Union>p\<in>S. par
   apply assumption
   apply simp
   apply (rule conjI)
-  apply fastsimp
+  apply fastforce
   apply (rule conjI)
-  apply fastsimp
+  apply fastforce
   apply (rule conjI)
-  apply fastsimp
+  apply fastforce
   apply (rule conjI)
-  apply fastsimp
+  apply fastforce
   apply (rule conjI)
-  apply fastsimp
+  apply fastforce
   apply (rule conjI)
   apply (rule allI impI)+
   apply (erule exE)+
@@ -2364,11 +2364,11 @@ theorem sat_consistency: "consistency {S. \<not> finite (- (\<Union>p\<in>S. par
   apply assumption
   apply assumption
   apply (rule conjI)
-  apply fastsimp
+  apply fastforce
   apply (rule conjI)
-  apply fastsimp
+  apply fastforce
   apply (rule conjI)
-  apply fastsimp
+  apply fastforce
   apply (rule conjI)
   apply (rule allI impI)+
   apply (erule exE)+

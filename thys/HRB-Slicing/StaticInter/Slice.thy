@@ -59,10 +59,10 @@ proof -
     `distinct(ParamDefs (targetnode a))`
   have "(empty(ParamDefs (targetnode a) [:=] map g xs))
     ((ParamDefs (targetnode a))!x) = (map g xs)!x"
-    by(fastsimp intro:fun_upds_nth)
+    by(fastforce intro:fun_upds_nth)
   with `Actual_out(targetnode a,x) \<in> S` `x < length (ParamDefs (targetnode a))`
     `length (ParamDefs (targetnode a)) = length xs` show ?thesis
-    by(fastsimp simp:rspp_def map_merge_def)
+    by(fastforce simp:rspp_def map_merge_def)
 qed
 
 lemma rspp_Actual_out_notin_slice:
@@ -79,10 +79,10 @@ proof -
     `distinct(ParamDefs (targetnode a))`
   have "(empty(ParamDefs (targetnode a) [:=] map g xs))
     ((ParamDefs (targetnode a))!x) = (map g xs)!x"
-    by(fastsimp intro:fun_upds_nth)
+    by(fastforce intro:fun_upds_nth)
   with `Actual_out((targetnode a),x) \<notin> S` `distinct(ParamDefs (targetnode a))` 
     `x < length (ParamDefs (targetnode a))`
-  show ?thesis by(fastsimp simp:rspp_def map_merge_def nth_eq_iff_index_eq)
+  show ?thesis by(fastforce simp:rspp_def map_merge_def nth_eq_iff_index_eq)
 qed
 
 
@@ -128,7 +128,7 @@ definition slice_kinds :: "'node SDG_node set \<Rightarrow> 'edge list \<Rightar
 lemma slice_intra_kind_in_slice:
   "\<lbrakk>sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>; intra_kind (kind a)\<rbrakk> 
   \<Longrightarrow> slice_kind S a = kind a"
-by(fastsimp simp:intra_kind_def slice_kind_def)
+by(fastforce simp:intra_kind_def slice_kind_def)
 
 
 lemma slice_kind_Upd:
@@ -163,7 +163,7 @@ proof -
                                      distance (targetnode a') mex x \<and>
                                      valid_edge a' \<and> intra_kind(kind a') \<and>
                                      targetnode a' = n')`
-  show ?thesis by fastsimp
+  show ?thesis by fastforce
 qed
 
 
@@ -211,7 +211,7 @@ proof -
   moreover
   from dist have "\<not> (\<exists>x. distance (targetnode a) mex x \<and> 
                             distance (sourcenode a) mex (x + 1))"
-    by(fastsimp dest:distance_det)
+    by(fastforce dest:distance_det)
   ultimately show ?thesis using assms by(auto simp:slice_kind_def Let_def)
 qed
 
@@ -261,7 +261,7 @@ proof -
     by(rule obs_intra_the_element[THEN sym])
   from dist have "\<not> (\<exists>x. distance (targetnode a) m x \<and> 
                             distance (sourcenode a) m (x + 1))"
-    by(fastsimp dest:distance_det)
+    by(fastforce dest:distance_det)
   with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>` in_obs the show ?thesis
     by(auto simp:slice_kind_def Let_def)
 qed
@@ -275,7 +275,7 @@ proof(atomize_elim)
   proof(cases "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}")
     case True
     from `valid_edge a` have "valid_node (sourcenode a)" by simp
-    then obtain as where "sourcenode a -as\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(fastsimp dest:Exit_path)
+    then obtain as where "sourcenode a -as\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(fastforce dest:Exit_path)
     then obtain as' mex where "sourcenode a -as'\<rightarrow>\<^isub>\<iota>* mex" and "method_exit mex" 
       by -(erule valid_Exit_path_intra_path)
     from `sourcenode a -as'\<rightarrow>\<^isub>\<iota>* mex` have "get_proc (sourcenode a) = get_proc mex"
@@ -387,7 +387,7 @@ proof -
     by(simp add:slice_kind_def)
   from `\<forall>x < length fs. Formal_in(targetnode a,x) \<notin> HRB_slice S`
   have "cspp (targetnode a) (HRB_slice S) fs = replicate (length fs) empty"
-    by(fastsimp intro:nth_equalityI csppa_Formal_in_notin_slice simp:cspp_def)
+    by(fastforce intro:nth_equalityI csppa_Formal_in_notin_slice simp:cspp_def)
   with `slice_kind S a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice S) fs)`
   show ?thesis by simp
 qed
@@ -403,7 +403,7 @@ proof -
     by(simp add:slice_kind_def)
   from `\<forall>x < length fs. Formal_in(targetnode a,x) \<in> HRB_slice S`
   have "cspp (targetnode a) (HRB_slice S) fs = fs"
-    by(fastsimp intro:nth_equalityI csppa_Formal_in_in_slice simp:cspp_def)
+    by(fastforce intro:nth_equalityI csppa_Formal_in_in_slice simp:cspp_def)
   with `slice_kind S a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice S) fs)`
   show ?thesis by simp
 qed
@@ -417,25 +417,25 @@ lemma slice_kind_Call_intra_notin_slice:
 proof -
   from `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain a'' 
     where "a'' \<in> get_return_edges a'"
-    by(fastsimp dest:get_return_edge_call)
+    by(fastforce dest:get_return_edge_call)
   with `valid_edge a'` obtain ax where "valid_edge ax" 
     and "sourcenode ax = sourcenode a'" and " targetnode ax = targetnode a''"
     and "kind ax = (\<lambda>cf. False)\<^isub>\<surd>"
-    by(fastsimp dest:call_return_node_edge)
+    by(fastforce dest:call_return_node_edge)
   from `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
   have "\<exists>!a''. valid_edge a'' \<and> sourcenode a'' = sourcenode a' \<and> 
     intra_kind(kind a'')"
     by(rule call_only_one_intra_edge)
   with `valid_edge a` `sourcenode a' = sourcenode a` `intra_kind (kind a)`
   have all:"\<forall>a''. valid_edge a'' \<and> sourcenode a'' = sourcenode a' \<and> 
-    intra_kind(kind a'') \<longrightarrow> a'' = a" by fastsimp
+    intra_kind(kind a'') \<longrightarrow> a'' = a" by fastforce
   with `valid_edge ax` `sourcenode ax = sourcenode a'` `kind ax = (\<lambda>cf. False)\<^isub>\<surd>`
-  have [simp]:"ax = a" by(fastsimp simp:intra_kind_def)
+  have [simp]:"ax = a" by(fastforce simp:intra_kind_def)
   show ?thesis
   proof(cases "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}")
     case True
     from `valid_edge a` have "valid_node (sourcenode a)" by simp
-    then obtain asx where "sourcenode a -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(fastsimp dest:Exit_path)
+    then obtain asx where "sourcenode a -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(fastforce dest:Exit_path)
     then obtain as pex where "sourcenode a-as\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
       by -(erule valid_Exit_path_intra_path)
     from `sourcenode a-as\<rightarrow>\<^isub>\<iota>* pex` have "get_proc (sourcenode a) = get_proc pex"
@@ -457,13 +457,13 @@ proof -
       hence "\<forall>a'. valid_edge a' \<and> sourcenode a' = sourcenode ax \<longrightarrow> 
         (\<exists>Qx' fx'. kind a' = Qx'\<hookleftarrow>\<^bsub>px\<^esub>fx')" by -(rule return_edges_only)
       with `valid_edge a` `intra_kind (kind a)` `pex = sourcenode ax`
-      show ?thesis by(fastsimp simp:intra_kind_def)
+      show ?thesis by(fastforce simp:intra_kind_def)
     qed
     have "x \<noteq> 0"
     proof
       assume "x = 0"
       with `distance (sourcenode a) pex x` have "sourcenode a = pex"
-        by(fastsimp elim:distance.cases simp:intra_path_def)
+        by(fastforce elim:distance.cases simp:intra_path_def)
       with `sourcenode a \<noteq> pex` show False by simp
     qed
     with `distance (sourcenode a) pex x` obtain ax' where "valid_edge ax'"
@@ -476,25 +476,25 @@ proof -
       by(erule distance_successor_distance)
     from `valid_edge ax'` `sourcenode a = sourcenode ax'` `intra_kind(kind ax')`
       `sourcenode a' = sourcenode a` all
-    have [simp]:"ax' = a" by fastsimp
+    have [simp]:"ax' = a" by fastforce
     from `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind ax = (\<lambda>cf. False)\<^isub>\<surd>`
       True `method_exit pex` `get_proc (sourcenode a) = get_proc pex` `x \<noteq> 0`
       `distance (targetnode ax') pex (x - 1)` `distance (sourcenode a) pex x` Some
-    show ?thesis by(fastsimp elim:slice_kind_Pred_empty_obs_nearer_SOME)
+    show ?thesis by(fastforce elim:slice_kind_Pred_empty_obs_nearer_SOME)
   next
     case False
-    then obtain m where "m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastsimp
+    then obtain m where "m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
     then obtain as where "sourcenode a-as\<rightarrow>\<^isub>\<iota>* m" and "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
       by -(erule obs_intraE)
     from `sourcenode a-as\<rightarrow>\<^isub>\<iota>* m` obtain x where "distance (sourcenode a) m x"
       and "x \<le> length as" by(erule every_path_distance)
     from `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    have "sourcenode a \<noteq> m" by fastsimp
+    have "sourcenode a \<noteq> m" by fastforce
     have "x \<noteq> 0"
     proof
       assume "x = 0"
       with `distance (sourcenode a) m x` have "sourcenode a = m"
-        by(fastsimp elim:distance.cases simp:intra_path_def)
+        by(fastforce elim:distance.cases simp:intra_path_def)
       with `sourcenode a \<noteq> m` show False by simp
     qed
     with `distance (sourcenode a) m x` obtain ax' where "valid_edge ax'"
@@ -507,11 +507,11 @@ proof -
       by(erule distance_successor_distance)
     from `valid_edge ax'` `sourcenode a = sourcenode ax'` `intra_kind(kind ax')`
       `sourcenode a' = sourcenode a` all
-    have [simp]:"ax' = a" by fastsimp
+    have [simp]:"ax' = a" by fastforce
     from `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind ax = (\<lambda>cf. False)\<^isub>\<surd>`
       `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `x \<noteq> 0`
       `distance (targetnode ax') m (x - 1)` `distance (sourcenode a) m x` Some
-    show ?thesis by(fastsimp elim:slice_kind_Pred_obs_nearer_SOME)
+    show ?thesis by(fastforce elim:slice_kind_Pred_obs_nearer_SOME)
   qed
 qed
 
@@ -567,7 +567,7 @@ next
       where "valid_edge a'" and "kind a' = Q':r\<hookrightarrow>\<^bsub>p\<^esub>fs"
       by -(drule return_needs_call,auto)
     then obtain ins outs where "(p,ins,outs) \<in> set procs"
-      by(fastsimp dest!:callee_in_procs)
+      by(fastforce dest!:callee_in_procs)
     with True `valid_edge a` Return assms show ?thesis
       by(cases s\<^isub>1)(cases s\<^isub>2,auto dest:slice_kind_Return_in_slice split:list.split)+
   next    
@@ -628,7 +628,7 @@ next
                                    distance (targetnode a') mex x \<and>
                                    valid_edge a' \<and> intra_kind(kind a') \<and>
                                    targetnode a' = n')"
-  thus "a' = ax" by(fastsimp intro!:edge_det)
+  thus "a' = ax" by(fastforce intro!:edge_det)
 qed
 
 
@@ -689,7 +689,7 @@ proof -
           by simp
         with ex1 target `sourcenode a = sourcenode a'` `valid_edge a` `valid_edge a'`
           `intra_kind(kind a)` `intra_kind(kind a')` `distance (targetnode a) mex x`
-        have "a = a'" by fastsimp
+        have "a = a'" by fastforce
         with `targetnode a \<noteq> targetnode a'` show False by simp
       qed
       with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` True `kind a' = (Q')\<^isub>\<surd>`
@@ -719,7 +719,7 @@ proof -
           `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
           `sourcenode a = sourcenode a'` show ?thesis
-          by(fastsimp intro:slice_kind_Pred_obs_not_nearer)
+          by(fastforce intro:slice_kind_Pred_obs_not_nearer)
       next
         case True
         from `valid_edge a` `intra_kind(kind a)` `distance (targetnode a) m x`
@@ -755,7 +755,7 @@ proof -
           `kind a' = (Q')\<^isub>\<surd>` `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
           True `sourcenode a = sourcenode a'` show ?thesis
-          by(fastsimp intro:slice_kind_Pred_obs_nearer_not_SOME)
+          by(fastforce intro:slice_kind_Pred_obs_nearer_not_SOME)
       qed
     qed
   qed

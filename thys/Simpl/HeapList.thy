@@ -43,15 +43,15 @@ where
 
 lemma Path_Null_iff [iff]: "Path Null h y xs  = (xs = [] \<and> y = Null)"
 apply(case_tac xs)
-apply fastsimp
-apply fastsimp
+apply fastforce
+apply fastforce
 done
 
 lemma Path_not_Null_iff [simp]: "p\<noteq>Null \<Longrightarrow> 
   Path p h q as = (as = [] \<and> q = p  \<or>  (\<exists>ps. as = p#ps \<and> Path (h p) h q ps ))"
 apply(case_tac as)
-apply fastsimp
-apply fastsimp
+apply fastforce
+apply fastforce
 done
 
 lemma Path_append [simp]: 
@@ -78,7 +78,7 @@ by simp
 
 lemma Path_update_new [simp]: "\<lbrakk>set ps \<subseteq> set alloc\<rbrakk>
      \<Longrightarrow> Path p (f(new (set alloc) := x)) q ps  = Path p f q ps "
-  by (rule notin_Path_update) fastsimp
+  by (rule notin_Path_update) fastforce
 
 lemma Null_notin_Path [simp,intro]:
 "\<And>p. Path p f q ps \<Longrightarrow> Null \<notin> set ps"
@@ -142,7 +142,7 @@ text {* @{thm[source] List_upd_same} prevents
 
 lemma  List_update_new [simp]: "\<lbrakk>set ps \<subseteq> set alloc\<rbrakk>
      \<Longrightarrow> List p (h(new (set alloc) := x)) ps = List p h ps"
-by (rule notin_List_update) fastsimp
+by (rule notin_List_update) fastforce
 
 lemma List_updateI [intro]:
  "\<lbrakk>List p h ps; q \<notin> set ps\<rbrakk> \<Longrightarrow> List p (h(q := y)) ps"
@@ -160,12 +160,12 @@ by(induct as, simp, clarsimp)
 lemma List_hd_not_in_tl[simp]: "List (h p) h ps \<Longrightarrow> p \<notin> set ps"
 apply (clarsimp simp add:in_set_conv_decomp)
 apply(frule List_app[THEN iffD1])
-apply(fastsimp dest: List_unique)
+apply(fastforce dest: List_unique)
 done
 
 lemma List_distinct[simp]: "\<And>p. List p h ps \<Longrightarrow> distinct ps"
 apply(induct ps, simp)
-apply(fastsimp dest:List_hd_not_in_tl)
+apply(fastforce dest:List_hd_not_in_tl)
 done
 
 lemma heap_eq_List_eq: 
@@ -260,7 +260,7 @@ by(simp add:list_def)
 lemma list_Ref_conv[simp]:
  "\<lbrakk>islist (h p) h; p\<noteq>Null \<rbrakk> \<Longrightarrow> list p h = p # list (h p) h"
 apply(insert List_not_Null[of _ h])
-apply(fastsimp simp:List_conv_islist_list)
+apply(fastforce simp:List_conv_islist_list)
 done
 
 lemma [simp]: "islist (h p) h \<Longrightarrow> p \<notin> set(list (h p) h)"

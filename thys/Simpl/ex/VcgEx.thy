@@ -846,7 +846,7 @@ lemma (in append_impl) append_spec:
             \<lbrace>List \<acute>p \<acute>next (Ps@Qs) \<and> (\<forall>x. x\<notin>set Ps \<longrightarrow> \<acute>next x = \<^bsup>\<sigma>\<^esup>next x)\<rbrace>"
   apply (hoare_rule HoarePartial.ProcRec1)
   apply vcg
-  apply fastsimp
+  apply fastforce
   done
 
 
@@ -991,9 +991,9 @@ lemma (in insert_impl) insert_spec:
 apply (hoare_rule HoarePartial.ProcRec1)
 apply vcg
 apply (intro conjI impI)
-apply    fastsimp
-apply   fastsimp
-apply  fastsimp
+apply    fastforce
+apply   fastforce
+apply  fastforce
 apply (clarsimp) 
 apply force
 done
@@ -1044,9 +1044,9 @@ lemma (in insertSort_impl) insertSort_body_spec:
           DO \<acute>q :== \<acute>p;; \<acute>p :== \<acute>p\<rightarrow>\<acute>next;; \<acute>r :== CALL insert(\<acute>q,\<acute>r) OD;;
           \<acute>p :== \<acute>r" in HoarePartial.annotateI)
   apply vcg
-  apply   fastsimp
+  apply   fastforce
   prefer 2
-  apply  fastsimp
+  apply  fastforce
   apply (clarsimp)
   apply (rule_tac x=ps in exI)
   apply (intro conjI)
@@ -1102,10 +1102,10 @@ apply   clarsimp
 apply   (rule_tac x="new (set alloc)#Ps" in exI)
 apply   clarsimp
 apply   (rule conjI)
-apply    fastsimp
+apply    fastforce
 apply   (simp add: sz_def)
 apply  (simp add: sz_def)
-apply fastsimp
+apply fastforce
 done
 
 
@@ -1130,10 +1130,10 @@ apply   clarsimp
 apply   (rule_tac x="new (set alloc)#Ps" in exI)
 apply   clarsimp
 apply   (rule conjI)
-apply    fastsimp
+apply    fastforce
 apply   (simp add: sz_def)
 apply  (simp add: sz_def)
-apply fastsimp
+apply fastforce
 done
 
 subsection {* Fault Avoiding Semantics *}
@@ -1170,7 +1170,7 @@ lemma (in hoare_ex) rev_strip:
      \<acute>q :== \<acute>r OD
   \<lbrace>List \<acute>q \<acute>next (rev Ps @ Qs) \<and> set Ps\<subseteq> set \<acute>alloc \<and> set Qs \<subseteq> set \<acute>alloc\<rbrace>"
 apply (vcg)
-apply fastsimp+
+apply fastforce+
 done
 
 text {* If we want to ensure that we do not dereference @{term "Null"} or
@@ -1194,7 +1194,7 @@ lemma
      \<acute>q :== \<acute>r OD
  \<lbrace>List \<acute>q \<acute>next (rev Ps @ Qs) \<and> set Ps \<subseteq> set \<acute>alloc \<and> set Qs \<subseteq> set \<acute>alloc\<rbrace>"
 apply (vcg)
-apply fastsimp+
+apply fastforce+
 done
 
 
@@ -1214,7 +1214,7 @@ lemma (in hoare_ex_guard) rev_noFault:
      \<acute>q :== \<acute>r OD
   UNIV,UNIV"
 apply (vcg)
-apply fastsimp+
+apply fastforce+
 done
 
 lemma (in hoare_ex_guard) rev_moduloGuards: 
@@ -1230,7 +1230,7 @@ lemma (in hoare_ex_guard) rev_moduloGuards:
      \<acute>q :== \<acute>r OD
  \<lbrace>List \<acute>q \<acute>next (rev Ps @ Qs) \<and> set Ps \<subseteq> set \<acute>alloc \<and> set Qs \<subseteq> set \<acute>alloc\<rbrace>"
 apply vcg
-apply fastsimp+
+apply fastforce+
 done
 
 
@@ -1322,12 +1322,12 @@ lemma circular_list_rev_I:
 apply (simp only:distPath_def)
 apply vcg
 apply   (rule_tac x="[]" in exI)
-apply   fastsimp
+apply   fastforce
 apply  clarsimp
 apply  (drule (2) neq_dP)
 apply  (rule_tac x="q # ps" in exI)
 apply  clarsimp
-apply fastsimp
+apply fastforce
 done
 
 
@@ -1364,12 +1364,12 @@ apply vcg
 apply   clarsimp
 apply  clarsimp
 apply  (case_tac "(q = Null)")
-apply   (fastsimp intro: path_is_list)
+apply   (fastforce intro: path_is_list)
 apply  clarify
 apply  (rule_tac x="psa" in exI)
 apply  (rule_tac x=" p # qs" in exI) 
 apply  force
-apply fastsimp
+apply fastforce
 done
 
 text{* Although the above algorithm is more succinct, its invariant

@@ -56,7 +56,7 @@ by (case_tac x, case_tac y, case_tac z, auto, case_tac z, auto)
 lemmas idiff_eq_conv_enat = idiff_eq_conv[unfolded zero_enat_def]
 
 lemma less_eq_idiff_eq_sum: "y \<le> (x::enat) \<Longrightarrow> (z \<le> x - y) = (z + y \<le> x)"
-by (case_tac x, case_tac y, case_tac z, fastsimp+)
+by (case_tac x, case_tac y, case_tac z, fastforce+)
 
 
 lemma eSuc_pred: "0 < n \<Longrightarrow> eSuc (n - eSuc 0) = n"

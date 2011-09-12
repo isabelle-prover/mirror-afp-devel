@@ -141,7 +141,7 @@ theorem combine_evals_filter:
   \<Longrightarrow> fgraph ` TameEnum\<^bsub>p\<^esub> \<subseteq>\<^isub>\<simeq> set arch"
 apply(subgoal_tac "\<exists>t. tameEnumFilter p = Some t \<and> Tries.set_of t \<subseteq>\<^isub>\<simeq> set arch")
  apply(metis TameEnum_tameEnumFilter qle_gr.seteq_qle_def qle_gr.subseteq_qle_trans)
-apply(fastsimp intro!: samet_imp_iso_subseteq
+apply(fastforce intro!: samet_imp_iso_subseteq
   dest: inv_tries_tameEnumFilter tameEnumFilter_subseteq_TameEnum mgp_TameEnum mgp_pre_iso_test)
 done
 

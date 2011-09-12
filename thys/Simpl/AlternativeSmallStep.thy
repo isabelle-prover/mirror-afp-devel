@@ -265,7 +265,7 @@ lemma step_Nil':
              Abrupt s' \<Rightarrow> cs'=snd (hd ass) \<and> t=Normal s'
            |  _ \<Rightarrow> cs'=fst (hd ass) \<and> t=s)"
 using step
-by (induct) (fastsimp simp add: neq_Nil_conv)+
+by (induct) (fastforce simp add: neq_Nil_conv)+
 
 lemma step_Nil:  
   assumes step: "\<Gamma>\<turnstile>([],ass@css,s) \<rightarrow> (cs',css',t)"
@@ -291,7 +291,7 @@ shows "\<And>css css' xs. \<lbrakk>cssxs = css@xs; css'xs=css'@xs\<rbrakk>
      \<Longrightarrow> \<Gamma>\<turnstile>(cs,css,s) \<rightarrow> (cs',css',t)"
 using step
 apply induct
-apply (fastsimp intro: step.intros)+
+apply (fastforce intro: step.intros)+
 done
 
 lemma drop_suffix_css_step:
@@ -327,7 +327,7 @@ lemma drop_suffix':
          \<Longrightarrow> \<Gamma>\<turnstile>(cs,css,s) \<rightarrow> (cs',css,t)"
 using step
 apply induct
-apply (fastsimp intro: step.intros simp add: neq_Nil_conv)+
+apply (fastforce intro: step.intros simp add: neq_Nil_conv)+
 done
 
 lemma drop_suffix: 
@@ -874,7 +874,7 @@ next
   from Call obtain 
     term_body: "\<Gamma>\<turnstile>bdy \<down> Normal s" and
     term_rest: "\<forall>t. \<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow> t \<longrightarrow> \<Gamma>\<turnstile>cs,css\<Down>t"
-    by (fastsimp elim!: terminatess_elim_cases terminates_Normal_elim_cases)
+    by (fastforce elim!: terminatess_elim_cases terminates_Normal_elim_cases)
   show "\<Gamma>\<turnstile>[bdy],(cs,Throw # cs)#css\<Down>Normal s"
   proof (rule terminatess.Cons [OF term_body],clarsimp)
     fix t
@@ -898,7 +898,7 @@ next
       with term_rest have "\<Gamma>\<turnstile>cs,css\<Down>Abrupt t'"
         by iprover
       with Abrupt show ?thesis
-        by (fastsimp intro: terminatess.intros terminates.intros
+        by (fastforce intro: terminatess.intros terminates.intros
                      elim: exec_Normal_elim_cases)
     next
       case Fault
@@ -1057,13 +1057,13 @@ proof (induct css)
     moreover
     from enum_step have "\<Gamma>\<turnstile>f k \<rightarrow> f (Suc k)"..
     ultimately show "False"
-      by (fastsimp elim: step_elim_cases)
+      by (fastforce elim: step_elim_cases)
   next
     case (Cons c cs)
     have fk: "f k = (c # cs, [], Fault m)" by fact
     from enum_step have "\<Gamma>\<turnstile>f k \<rightarrow> f (Suc k)"..
     with fk have "f (Suc k) = (cs,[],Fault m)"
-      by (fastsimp elim: step_elim_cases)
+      by (fastforce elim: step_elim_cases)
     with enum_step Cons.hyps
     show False
       by blast
@@ -1079,7 +1079,7 @@ next
     have fk: "f k = ([], (nrms, abrs) # css, Fault m)" by fact
     from enum_step have "\<Gamma>\<turnstile>f k \<rightarrow> f (Suc k)"..
     with fk have "f (Suc k) = (nrms,css,Fault m)"
-      by (fastsimp elim: step_elim_cases)
+      by (fastforce elim: step_elim_cases)
     thus ?case
       by (rule hyp)
   next
@@ -1088,7 +1088,7 @@ next
     have hyp1: "\<And>k. f k = (cs, (nrms, abrs) # css, Fault m) \<Longrightarrow> False" by fact
     from enum_step have "\<Gamma>\<turnstile>f k \<rightarrow> f (Suc k)"..
     with fk have "f (Suc k) = (cs,(nrms,abrs)#css,Fault m)"
-      by (fastsimp elim: step_elim_cases)
+      by (fastforce elim: step_elim_cases)
     thus ?case
       by (rule hyp1)
   qed
@@ -1114,13 +1114,13 @@ proof (induct css)
     moreover
     from enum_step have "\<Gamma>\<turnstile>f k \<rightarrow> f (Suc k)"..
     ultimately show "False"
-      by (fastsimp elim: step_elim_cases)
+      by (fastforce elim: step_elim_cases)
   next
     case (Cons c cs)
     have fk: "f k = (c # cs, [], Stuck)" by fact
     from enum_step have "\<Gamma>\<turnstile>f k \<rightarrow> f (Suc k)"..
     with fk have "f (Suc k) = (cs,[],Stuck)"
-      by (fastsimp elim: step_elim_cases)
+      by (fastforce elim: step_elim_cases)
     with enum_step Cons.hyps
     show False
       by blast
@@ -1136,7 +1136,7 @@ next
     have fk: "f k = ([], (nrms, abrs) # css, Stuck)" by fact
     from enum_step have "\<Gamma>\<turnstile>f k \<rightarrow> f (Suc k)"..
     with fk have "f (Suc k) = (nrms,css,Stuck)"
-      by (fastsimp elim: step_elim_cases)
+      by (fastforce elim: step_elim_cases)
     thus ?case
       by (rule hyp)
   next
@@ -1145,7 +1145,7 @@ next
     have hyp1: "\<And>k. f k = (cs, (nrms, abrs) # css, Stuck) \<Longrightarrow> False" by fact
     from enum_step have "\<Gamma>\<turnstile>f k \<rightarrow> f (Suc k)"..
     with fk have "f (Suc k) = (cs,(nrms,abrs)#css,Stuck)"
-      by (fastsimp elim: step_elim_cases)
+      by (fastforce elim: step_elim_cases)
     thus ?case
       by (rule hyp1)
   qed
@@ -2404,7 +2404,7 @@ proof (induct)
     moreover
     assume "f 0 = ([], [], s)"
     ultimately show False
-      by (fastsimp elim: step.cases)
+      by (fastforce elim: step.cases)
   qed
 next
   case (ExitBlockNormal nrms css s abrs)
@@ -2657,7 +2657,7 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
       from inf' [rule_format, of i] obtain css where
          css: "\<Gamma>\<turnstile>([the (\<Gamma> (p i))],[],Normal (s i)) \<rightarrow>\<^sup>+ 
                 ([the (\<Gamma> (p (i+1)))],css,Normal (s (i+1)))"
-        by fastsimp
+        by fastforce
       hence "\<Gamma>\<turnstile>([the (\<Gamma> (p i))], seq CSS i, Normal (s i)) \<rightarrow>\<^sup>+ 
                   ([the (\<Gamma> (p (i+1)))], CSS i @ seq CSS i, Normal (s (i+1)))"
         apply -
@@ -2667,7 +2667,7 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
                     \<Gamma>\<turnstile>([the (\<Gamma> (p i))],[],Normal (s i))\<rightarrow>\<^sup>+
                          ([the (\<Gamma> (p (i+1)))],css, Normal (s (i+1)))"])
         apply (rule css)
-        apply (fastsimp dest: app_css_steps)
+        apply (fastforce dest: app_css_steps)
         done
       thus "\<Gamma>\<turnstile> (f i) \<rightarrow>\<^sup>+ (f (i+1))"
         by (simp add: f_def)
@@ -2766,13 +2766,13 @@ proof (induct c1, simp)
         with Normal show ?thesis
           apply simp
           apply (rule terminatess.Cons)
-          apply  (fastsimp intro: terminates.intros)
+          apply  (fastforce intro: terminates.intros)
           apply (clarify)
           apply (erule exec_Normal_elim_cases)
           apply  clarsimp
           apply  (rule hyp)
-          apply  (fastsimp intro: step.intros simp add: Cons Spec Normal )
-          apply (fastsimp intro: terminatess_Stuck)
+          apply  (fastforce intro: step.intros simp add: Cons Spec Normal )
+          apply (fastforce intro: terminatess_Stuck)
           done
       next
         case (Seq c\<^isub>1 c\<^isub>2)
@@ -2781,7 +2781,7 @@ proof (induct c1, simp)
         from hyp [simplified Cons Seq Normal, OF this]
         have "\<Gamma>\<turnstile>c\<^isub>1 # c\<^isub>2 # cs1',css1\<Down>Normal s1'".
         with Normal Seq show ?thesis
-          by (fastsimp intro: terminatess.intros terminates.intros
+          by (fastforce intro: terminatess.intros terminates.intros
                    elim: terminatess_elim_cases exec_Normal_elim_cases)
       next
         case (Cond b c\<^isub>1 c\<^isub>2)
@@ -2793,7 +2793,7 @@ proof (induct c1, simp)
           from hyp [simplified Cons Cond Normal, OF this]
           have "\<Gamma>\<turnstile>c\<^isub>1 # cs1',css1\<Down>Normal s1'".
           with Normal Cond True show ?thesis
-            by (fastsimp intro: terminatess.intros terminates.intros
+            by (fastforce intro: terminatess.intros terminates.intros
               elim: terminatess_elim_cases exec_Normal_elim_cases)
         next
           case False
@@ -2802,7 +2802,7 @@ proof (induct c1, simp)
           from hyp [simplified Cons Cond Normal, OF this]
           have "\<Gamma>\<turnstile>c\<^isub>2 # cs1',css1\<Down>Normal s1'".
           with Normal Cond False show ?thesis
-            by (fastsimp intro: terminatess.intros terminates.intros
+            by (fastforce intro: terminatess.intros terminates.intros
               elim: terminatess_elim_cases exec_Normal_elim_cases)
         qed
       next
@@ -2817,7 +2817,7 @@ proof (induct c1, simp)
           have "\<Gamma>\<turnstile>c' # While b c' # cs1',css1\<Down>Normal s1'".
           with Cons While True Normal
           show ?thesis
-            by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+            by (fastforce intro: terminatess.intros terminates.intros exec.intros 
                     elim: terminatess_elim_cases exec_Normal_elim_cases)
         next
           case False
@@ -2828,7 +2828,7 @@ proof (induct c1, simp)
           have "\<Gamma>\<turnstile>cs1',css1\<Down>Normal s1'".
           with Cons While False Normal
           show ?thesis
-            by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+            by (fastforce intro: terminatess.intros terminates.intros exec.intros 
                     elim: terminatess_elim_cases exec_Normal_elim_cases)
         qed
       next
@@ -2837,7 +2837,7 @@ proof (induct c1, simp)
         proof (cases "\<Gamma> p")
           case None
           with Call Normal show ?thesis
-            by (fastsimp intro: terminatess.intros terminates.intros terminatess_Stuck
+            by (fastforce intro: terminatess.intros terminates.intros terminatess_Stuck
                  elim: exec_Normal_elim_cases)
         next
           case (Some bdy)
@@ -2869,7 +2869,7 @@ proof (induct c1, simp)
         from hyp [simplified Cons DynCom Normal, OF this]
         have "\<Gamma>\<turnstile>c' s1'#cs1',css1\<Down>Normal s1'".
         with Normal DynCom show ?thesis
-          by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+          by (fastforce intro: terminatess.intros terminates.intros exec.intros 
                     elim: terminatess_elim_cases exec_Normal_elim_cases)
       next
         case (Guard f g c')
@@ -2881,12 +2881,12 @@ proof (induct c1, simp)
           from hyp [simplified Cons Guard Normal, OF this]
           have "\<Gamma>\<turnstile>c'#cs1',css1\<Down>Normal s1'".
           with Normal Guard True show ?thesis
-            by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+            by (fastforce intro: terminatess.intros terminates.intros exec.intros 
                     elim: terminatess_elim_cases exec_Normal_elim_cases)
         next
           case False
           with Guard Normal show ?thesis
-            by (fastsimp intro: terminatess.intros terminatess_Fault 
+            by (fastforce intro: terminatess.intros terminatess_Fault 
                                 terminates.intros  
                  elim:  exec_Normal_elim_cases)
         qed
@@ -2907,7 +2907,7 @@ proof (induct c1, simp)
         from hyp [simplified Cons Catch Normal, OF this]
         have "\<Gamma>\<turnstile>[c\<^isub>1],(cs1', c\<^isub>2 # cs1') # css1\<Down>Normal s1'".
         with Normal Catch show ?thesis
-          by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+          by (fastforce intro: terminatess.intros terminates.intros exec.intros 
                     elim: terminatess_elim_cases exec_Normal_elim_cases)
       qed       
       with Cons Normal show ?thesis
@@ -2945,7 +2945,7 @@ proof (induct c1, simp)
         have "\<Gamma>\<turnstile>cs1',css1\<Down>Abrupt s1'".
         with Cons Abrupt
         show ?thesis
-          by (fastsimp intro: terminatess.intros terminates.intros exec.intros 
+          by (fastforce intro: terminatess.intros terminates.intros exec.intros 
                     elim: terminatess_elim_cases exec_Normal_elim_cases)
       qed
       with Cons Abrupt show ?thesis by simp
@@ -3463,7 +3463,7 @@ next
                   (Call q # cs,css,Normal s))}"
   from noStuck_Call
   have "\<forall>s \<in> ?P. q \<in> dom \<Gamma>"
-    by (fastsimp simp add: final_notin_def)
+    by (fastforce simp add: final_notin_def)
   then show ?case
   proof (rule conseq_extract_state_indep_prop)
     assume q_defined: "q \<in> dom \<Gamma>"
@@ -3533,7 +3533,7 @@ next
   proof (rule ConseqMGT [OF hyp],safe)
     assume "\<Gamma>\<turnstile>\<langle>DynCom c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
     then show "\<Gamma>\<turnstile>\<langle>c Z,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-      by (fastsimp simp add: final_notin_def intro: exec.intros)
+      by (fastforce simp add: final_notin_def intro: exec.intros)
   next
     fix cs css
     assume "\<Gamma>\<turnstile>([the (\<Gamma> p)], [], Normal \<sigma>) \<rightarrow>\<^sup>* (DynCom c # cs, css, Normal Z)"
@@ -3695,7 +3695,7 @@ next
   proof (rule ConseqMGT [OF hyp_c1],clarify,safe) 
     assume "\<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
     thus "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-      by (fastsimp simp add: final_notin_def intro: exec.intros)
+      by (fastforce simp add: final_notin_def intro: exec.intros)
   next
     fix cs css
     assume "\<Gamma>\<turnstile>([the (\<Gamma> p)], [], Normal \<sigma>) \<rightarrow>\<^sup>* (Catch c\<^isub>1 c\<^isub>2 # cs, css, Normal Z)"
@@ -3741,7 +3741,7 @@ next
                c\<^isub>2
               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
-    by (rule ConseqMGT [OF hyp_c2]) (fastsimp intro: exec.intros)
+    by (rule ConseqMGT [OF hyp_c2]) (fastforce intro: exec.intros)
   ultimately show ?case
     by (rule hoaret.Catch)
 qed
@@ -3816,7 +3816,7 @@ apply (intro ballI allI)
 apply simp
 apply (rule Call_lemma_switch_Call_body [rule_format, simplified])
 apply  (rule hoaret.Asm)
-apply  fastsimp
+apply  fastforce
 apply assumption
 done
 
@@ -3885,10 +3885,10 @@ proof -
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Normal t},
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Abrupt t})})", 
              OF _ wf_termi_call_steps [of \<Gamma>] refl])
-    apply fastsimp
+    apply fastforce
     apply clarify
     apply (rule conjI)
-    apply  fastsimp
+    apply  fastforce
     apply (rule allI)
     apply (simp (no_asm_use) only : Un_empty_left)
     apply (rule bdy)

@@ -166,7 +166,7 @@ apply (erule_tac x=ba in allE)
 apply (erule_tac x=ac in allE)
 apply (erule_tac x=ad in allE)
 apply (erule_tac x=bb in allE, erule impE) apply fast
-apply fastsimp
+apply fastforce
 done
 (*>*)
 
@@ -387,9 +387,9 @@ apply rule
   apply (rule, rule, rule)
    apply (erule eval_cases) apply clarsimp apply (simp add: INVS_SC_def mbody_is_def) apply clarsimp
    apply (erule_tac x=t in allE, erule impE)
-     apply (frule InvokeElim)  apply (simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastsimp
+     apply (frule InvokeElim)  apply (simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastforce
      apply (simp add: MS_def, erule exE, rule) apply clarsimp apply (erule MultiApp) apply assumption
-   apply (erule impE, drule InvokeElim, simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastsimp
+   apply (erule impE, drule InvokeElim, simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastforce
      apply clarsimp apply (simp add: INVS_SC_def mbody_is_def SINV_pre_def) apply clarsimp apply (rule, rule)
         apply (rule, rule, rule, assumption) apply (rule, rule) prefer 2 apply (rule, assumption) apply simp
         apply (simp add: MST_validn_def) apply (erule_tac x=D in allE, erule_tac x=m' in allE)
@@ -407,10 +407,10 @@ apply rule
           apply (erule_tac x=hh in allE, erule_tac x=va in allE, simp add: mkState_def)
         apply (erule_tac x=ma in allE, erule impE) apply (simp add: max_def) apply (case_tac "n \<le> ma") apply clarsimp apply clarsimp
          apply (erule conjE) apply (erule_tac x=h in allE, erule_tac x=v in allE, erule impE)
-         apply (drule InvokeElim) apply (simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastsimp
+         apply (drule InvokeElim) apply (simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastforce
            apply clarsimp 
          apply (simp add: SINV_post_def) apply (simp add: INVS_SC_def mbody_is_def, clarsimp)
-           apply (drule InvokeElim, clarsimp) apply fastsimp apply clarsimp
+           apply (drule InvokeElim, clarsimp) apply fastforce apply clarsimp
            apply (simp add: mbody_is_def, clarsimp)
            apply (erule_tac x=ac in allE, erule_tac x=ops in allE, rotate_tac -1)
            apply (erule_tac x=ad in allE, erule_tac x=R in allE, rotate_tac -1, erule impE, assumption) 
@@ -435,7 +435,7 @@ apply (rule, rule)
    apply (case_tac k, clarsimp) apply (drule ZeroHeightMultiElim, clarsimp) apply (simp add: INVS_SC_def) apply clarsimp
    apply clarsimp
    apply (frule MultiSplit) apply clarsimp apply clarsimp 
-     apply (frule InvokeElim)  apply (simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastsimp
+     apply (frule InvokeElim)  apply (simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastforce
      apply clarsimp
      apply (erule_tac x="v # ops" in allE, erule_tac x=ad in allE, erule_tac x=b in allE, erule impE)
      apply (simp add: MS_def, erule exE, rule)  apply (erule MultiApp) apply assumption
@@ -466,7 +466,7 @@ apply rule
   apply (drule ReachableSplit) apply simp apply clarsimp
   apply (erule disjE)
     apply clarsimp 
-         apply (frule InvokeElim) apply (simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastsimp
+         apply (frule InvokeElim) apply (simp add: INVS_SC_def mbody_is_def) apply clarsimp apply fastforce
            apply clarsimp 
            apply (erule_tac x="v#ops" in allE, erule_tac x=ad in allE, erule_tac x=b in allE, erule impE)
            apply (simp add: MS_def, clarsimp, rule) apply (erule MultiApp) apply assumption
@@ -714,7 +714,7 @@ apply rule
           apply (erule MultiApp)
             apply (erule IfT, simp) 
       apply (erule impE, simp add: SP_pre_def) apply (rule, rule, rule, rule) prefer 2 
-            apply (rule, rule, erule IfT, simp) apply fastsimp
+            apply (rule, rule, erule IfT, simp) apply fastforce
             apply clarsimp
          apply (erule_tac x=ma in allE, clarsimp)
            apply (erule_tac x=h in allE, erule_tac x=v in allE, clarsimp)
@@ -734,7 +734,7 @@ apply rule
           apply (erule MultiApp)
             apply (rule IfF) apply (simp, assumption, simp) apply simp
       apply (erule impE, simp add: SP_pre_def) apply (rule, rule, rule, rule) prefer 2 
-            apply (rule, rule, rule IfF) apply (simp, assumption) apply fastsimp
+            apply (rule, rule, rule IfF) apply (simp, assumption) apply fastforce
             apply simp
             apply clarsimp
          apply (erule_tac x=ma in allE, clarsimp)
@@ -742,7 +742,7 @@ apply rule
            apply (simp add: SP_post_def)
            apply (rotate_tac -1)
            apply (erule_tac x="va # a" in allE, erule_tac x=af in allE, erule_tac x=bc in allE, erule impE)
-             apply (rule, rule, rule IfF) apply (simp, assumption) apply fastsimp apply simp
+             apply (rule, rule, rule IfF) apply (simp, assumption) apply fastforce apply simp
            apply clarsimp
 apply clarsimp
 apply rule
@@ -762,9 +762,9 @@ apply rule
         apply (erule_tac x=bc in allE, erule impE)
           apply rule
             apply (erule MultiApp)
-              apply (rule IfT) apply (simp, fastsimp) 
+              apply (rule IfT) apply (simp, fastforce) 
         apply (erule impE, simp add: SP_pre_def) apply (rule, rule, rule,rule) prefer 2 
-           apply (rule, rule, rule IfT) apply simp apply fastsimp
+           apply (rule, rule, rule IfT) apply simp apply fastforce
            apply clarsimp
         apply (erule_tac x=ma in allE, clarsimp)
         apply (erule_tac x=ll in allE, rotate_tac -1)
@@ -782,7 +782,7 @@ apply rule
             apply (erule MultiApp)
               apply (rule IfF) apply (simp, assumption, simp) apply simp
         apply (erule impE, simp add: SP_pre_def) apply (rule, rule, rule, rule) prefer 2 
-           apply (rule, rule, rule IfF) apply (simp, assumption) apply fastsimp apply simp 
+           apply (rule, rule, rule IfF) apply (simp, assumption) apply fastforce apply simp 
            apply clarsimp
         apply (erule_tac x=ma in allE, clarsimp)
         apply (erule_tac x=ll in allE, rotate_tac -1)
@@ -805,9 +805,9 @@ apply rule
         apply (erule_tac x=bc in allE, erule impE)
           apply rule
             apply (erule MultiApp)
-              apply (rule IfT) apply (simp, fastsimp) 
+              apply (rule IfT) apply (simp, fastforce) 
         apply (erule impE, simp add: SP_pre_def) apply (rule, rule, rule, rule) prefer 2 
-           apply (rule, rule, rule IfT) apply simp apply fastsimp
+           apply (rule, rule, rule IfT) apply simp apply fastforce
            apply clarsimp
         apply (erule_tac x=ma in allE, clarsimp)
          apply (rotate_tac -1, erule_tac x=ll in allE)
@@ -833,7 +833,7 @@ apply rule
             apply (erule MultiApp)
               apply (erule IfF) apply (assumption, simp, simp) 
         apply (erule impE, simp add: SP_pre_def) apply (rule, rule, rule, rule) prefer 2 
-           apply (rule, rule, erule IfF) apply (assumption, fastsimp,simp) 
+           apply (rule, rule, erule IfF) apply (assumption, fastforce,simp) 
            apply clarsimp
         apply (erule_tac x=ma in allE, clarsimp)
          apply (rotate_tac -1, erule_tac x=ll in allE)

@@ -133,7 +133,7 @@ by (simp add: Pbij_extends_def)
 lemma Pbij_inverse_extends_twice_Aux:
 "\<lbrakk> \<delta> = Pbij_inverse \<epsilon>; Pbij_extends \<epsilon> \<gamma>; \<gamma> = Pbij_inverse  \<beta>\<rbrakk>
  \<Longrightarrow> Pbij_extends \<delta> \<beta>"
-by (simp add: Pbij_extends_def Pbij_inverse_def, fastsimp) 
+by (simp add: Pbij_extends_def Pbij_inverse_def, fastforce) 
 (*>*)
 
 lemma Pbij_inverse_extends_twice:

@@ -119,14 +119,14 @@ apply fast
 apply (erule CONSEQ)
 apply (simp add: SP_pre_def) 
 apply clarsimp apply (simp add: SP_post_def) apply clarsimp
-  apply (drule NewElim1, fastsimp) apply clarsimp
+  apply (drule NewElim1, fastforce) apply clarsimp
   apply (subgoal_tac "ba\<down>(nextLoc ba) = None")
     apply (simp add: AL_Size_UpdateSuc) 
   apply (rule nextLoc_fresh)
 apply clarsimp
   apply (simp add: SP_inv_def)
   apply clarsimp
-  apply (drule NewElim1, fastsimp) apply clarsimp
+  apply (drule NewElim1, fastforce) apply clarsimp
   apply (subgoal_tac "ba\<down>(nextLoc ba) = None")
     apply (simp add: AL_Size_UpdateSuc) 
   apply (rule nextLoc_fresh)
@@ -148,33 +148,33 @@ apply (erule CONSEQ)
 apply (simp add: SP_pre_def) 
 apply (simp add: SP_post_def) apply clarsimp 
 apply safe
-apply (drule ConstElim1, fastsimp) apply clarsimp
-apply (drule DupElim1, fastsimp) apply clarsimp
-apply (drule PopElim1, fastsimp) apply clarsimp
-apply (drule SwapElim1, fastsimp) apply clarsimp
-apply (drule LoadElim1, fastsimp) apply clarsimp
-apply (drule StoreElim1, fastsimp) apply clarsimp
-apply (drule BinopElim1, fastsimp) apply clarsimp
-apply (drule UnopElim1, fastsimp) apply clarsimp
-apply (drule GetElim1, fastsimp) apply clarsimp
-apply (drule PutElim1, fastsimp) apply clarsimp
+apply (drule ConstElim1, fastforce) apply clarsimp
+apply (drule DupElim1, fastforce) apply clarsimp
+apply (drule PopElim1, fastforce) apply clarsimp
+apply (drule SwapElim1, fastforce) apply clarsimp
+apply (drule LoadElim1, fastforce) apply clarsimp
+apply (drule StoreElim1, fastforce) apply clarsimp
+apply (drule BinopElim1, fastforce) apply clarsimp
+apply (drule UnopElim1, fastforce) apply clarsimp
+apply (drule GetElim1, fastforce) apply clarsimp
+apply (drule PutElim1, fastforce) apply clarsimp
   apply (simp add: updSize) 
-apply (drule CastElim1, fastsimp) apply clarsimp
+apply (drule CastElim1, fastforce) apply clarsimp
 
 apply (simp_all add: SP_inv_def)
 apply safe
-apply (drule ConstElim1, fastsimp) apply clarsimp
-apply (drule DupElim1, fastsimp) apply clarsimp
-apply (drule PopElim1, fastsimp) apply clarsimp
-apply (drule SwapElim1, fastsimp) apply clarsimp
-apply (drule LoadElim1, fastsimp) apply clarsimp
-apply (drule StoreElim1, fastsimp) apply clarsimp
-apply (drule BinopElim1, fastsimp) apply clarsimp
-apply (drule UnopElim1, fastsimp) apply clarsimp
-apply (drule GetElim1, fastsimp) apply clarsimp
-apply (drule PutElim1, fastsimp) apply clarsimp
+apply (drule ConstElim1, fastforce) apply clarsimp
+apply (drule DupElim1, fastforce) apply clarsimp
+apply (drule PopElim1, fastforce) apply clarsimp
+apply (drule SwapElim1, fastforce) apply clarsimp
+apply (drule LoadElim1, fastforce) apply clarsimp
+apply (drule StoreElim1, fastforce) apply clarsimp
+apply (drule BinopElim1, fastforce) apply clarsimp
+apply (drule UnopElim1, fastforce) apply clarsimp
+apply (drule GetElim1, fastforce) apply clarsimp
+apply (drule PutElim1, fastforce) apply clarsimp
   apply (simp add: updSize) 
-apply (drule CastElim1, fastsimp) apply clarsimp
+apply (drule CastElim1, fastforce) apply clarsimp
 done
 (*>*)
 
@@ -198,9 +198,9 @@ apply (simp add: ins_is_def Cachera_def deriv_def derivAssum_def, clarsimp)
 apply (rule GOTO) apply assumption+ apply simp apply (simp add: heap_def)
 apply (erule CONSEQ)
 apply (simp add: SP_pre_def) 
-apply (simp add: SP_post_def) apply clarsimp apply (drule GotoElim1, fastsimp)
+apply (simp add: SP_post_def) apply clarsimp apply (drule GotoElim1, fastforce)
 apply clarsimp
-apply (simp add: SP_inv_def) apply clarsimp apply (drule GotoElim1, fastsimp)
+apply (simp add: SP_inv_def) apply clarsimp apply (drule GotoElim1, fastforce)
 apply clarsimp
 done
 (*>*)
@@ -215,13 +215,13 @@ apply (simp add: ins_is_def Cachera_def deriv_def derivAssum_def, clarsimp)
 apply (rule IF) apply assumption+ apply (simp, simp add: heap_def)
 apply (erule CONSEQ)
 apply (simp add: SP_pre_def)
-apply (simp add: SP_post_def) apply clarsimp apply (drule IfElim1, fastsimp) apply clarsimp
-apply (simp add: SP_inv_def) apply clarsimp  apply (drule IfElim1, fastsimp) apply clarsimp
+apply (simp add: SP_post_def) apply clarsimp apply (drule IfElim1, fastforce) apply clarsimp
+apply (simp add: SP_inv_def) apply clarsimp  apply (drule IfElim1, fastforce) apply clarsimp
 apply clarsimp
 apply (erule CONSEQ)
 apply (simp add: SP_pre_def)
-apply (simp add: SP_post_def) apply clarsimp apply (drule IfElim1, fastsimp) apply clarsimp
-apply (simp add: SP_inv_def) apply clarsimp  apply (drule IfElim1, fastsimp) apply clarsimp
+apply (simp add: SP_post_def) apply clarsimp apply (drule IfElim1, fastforce) apply clarsimp
+apply (simp add: SP_inv_def) apply clarsimp  apply (drule IfElim1, fastforce) apply clarsimp
 done
 (*>*)
 
@@ -235,7 +235,7 @@ lemma CACH_INVS:
 apply (simp add: ins_is_def Cachera_def deriv_def derivAssum_def, clarsimp)
 
 apply (rule INVS) apply assumption+ 
-apply (simp add: mkSPEC_def) apply fastsimp apply assumption apply simp apply (simp add: heap_def)
+apply (simp add: mkSPEC_def) apply fastforce apply assumption apply simp apply (simp add: heap_def)
 apply (simp add: mkState_def)
 apply (erule CONSEQ)
 apply clarsimp
@@ -676,7 +676,7 @@ apply clarsimp
   apply (erule_tac x=G in allE, rotate_tac -1)
   apply (erule_tac x=C in allE, rotate_tac -1)
   apply (erule_tac x=m in allE, clarsimp)
-  apply (frule compilePrim_Prop1) apply fastsimp apply clarsimp 
+  apply (frule compilePrim_Prop1) apply fastforce apply clarsimp 
   apply (erule impE, erule Segment_A) apply simp apply simp 
     apply (drule Segment_triv) apply assumption apply (subgoal_tac "la \<le> la", assumption, simp) apply clarsimp 
   apply (erule conjE)+ apply (erule exE)+ apply (erule conjE)+
@@ -908,7 +908,7 @@ lemma compileExpr_Prop1[rule_format]:
 (*<*)
 apply (erule compileExpr.induct)
 (*PRIM*)
-apply clarsimp apply (drule compilePrim_Prop1) apply fastsimp  apply clarsimp
+apply clarsimp apply (drule compilePrim_Prop1) apply fastforce  apply clarsimp
   apply rule apply clarsimp apply (erule_tac x=ll in allE, clarsimp)
     apply (erule AL_update5) apply simp 
   apply clarsimp apply (case_tac "ll < l1", clarsimp) 
@@ -917,7 +917,7 @@ apply clarsimp apply (drule compilePrim_Prop1) apply fastsimp  apply clarsimp
   apply (subgoal_tac "ll= l1", clarsimp) apply (rule, simp add: AL_update1) apply simp
 (*LET*)
 apply clarsimp
-  apply (drule compilePrim_Prop1) apply fastsimp apply clarsimp
+  apply (drule compilePrim_Prop1) apply fastforce apply clarsimp
   apply rule apply clarsimp
     apply (rule AL_update5) apply simp apply simp
   apply clarsimp apply (erule_tac x=ll in allE)+ apply clarsimp 
@@ -1056,7 +1056,7 @@ apply clarsimp
      prefer 2 apply simp
   apply (simp add: Segment_def)
      apply (erule_tac x=l1a in allE, simp) apply (erule impE)
-       apply (drule compilePrim_Prop1) apply fastsimp   apply simp
+       apply (drule compilePrim_Prop1) apply fastforce   apply simp
      apply clarsimp  
      apply (simp add: AL_update1, clarsimp)
      apply (rule CACH_INJECT)
@@ -1068,8 +1068,8 @@ apply clarsimp
   prefer 2 apply simp
   prefer 2 apply simp
   apply clarsimp
-  apply (frule compilePrim_Prop1) apply fastsimp
-  apply (frule compileExpr_Prop1) apply fastsimp apply clarsimp 
+  apply (frule compilePrim_Prop1) apply fastforce
+  apply (frule compileExpr_Prop1) apply fastforce apply clarsimp 
   apply (erule_tac x="l1a+1" in allE, erule_tac x="code1a[l1a\<mapsto>store xa]" in allE, 
          erule_tac x=a in allE, rotate_tac -1)
   apply (erule_tac x=b in allE, clarsimp)
@@ -1103,8 +1103,8 @@ apply clarsimp
   apply (erule_tac x= XXX in allE, clarsimp)
   apply (erule_tac x=G in allE, rotate_tac -1, erule_tac x=C in allE,
          erule_tac x=m in allE, clarsimp)
-  apply (drule compileExpr_Prop1) apply fastsimp apply clarsimp 
-  apply (drule compileExpr_Prop1) apply fastsimp apply clarsimp 
+  apply (drule compileExpr_Prop1) apply fastforce apply clarsimp 
+  apply (drule compileExpr_Prop1) apply fastforce apply clarsimp 
   apply (erule impE) apply (rotate_tac 5, erule thin_rl, simp add: Segment_def,clarsimp)
     apply (rotate_tac -3, erule_tac x=ll in allE, clarsimp)
     apply (drule AL_update3, simp)
@@ -1154,8 +1154,8 @@ apply clarsimp
   apply (erule_tac x=lNil in allE, clarsimp)
   apply (erule_tac x=G in allE, rotate_tac -1, erule_tac x=C in allE,
          erule_tac x=m in allE, clarsimp)
-  apply (drule compileExpr_Prop1) apply fastsimp apply clarsimp 
-  apply (drule compileExpr_Prop1) apply fastsimp apply clarsimp 
+  apply (drule compileExpr_Prop1) apply fastforce apply clarsimp 
+  apply (drule compileExpr_Prop1) apply fastforce apply clarsimp 
   apply (erule impE) apply (rotate_tac 5, erule thin_rl)
     apply (simp add: Segment_def, clarsimp)
     apply (erule_tac x=ll in allE, clarsimp)
@@ -1389,11 +1389,11 @@ prefer 2 apply (simp add: TP_MST_def)
 apply (rule_tac x=y in exI, simp)
 apply (rule TP_epxr_Sound) apply assumption 
   apply (erule translation_good) apply assumption+
-  apply (simp add: mkSPEC_def Cachera_def) apply fastsimp
+  apply (simp add: mkSPEC_def Cachera_def) apply fastforce
 
-apply (drule compileExpr_Prop1) apply fastsimp apply clarsimp
+apply (drule compileExpr_Prop1) apply fastforce apply clarsimp
 apply (simp add: Segment_def) 
-apply (rule, rule, rule, rule, simp add: mkSPEC_def Cachera_def) apply fastsimp
+apply (rule, rule, rule, rule, simp add: mkSPEC_def Cachera_def) apply fastforce
 apply clarsimp apply (rule, rule AL_emp1) 
 apply (erule_tac x=ll in allE)+ 
 apply clarsimp 

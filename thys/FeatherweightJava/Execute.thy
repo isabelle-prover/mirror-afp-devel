@@ -40,36 +40,36 @@ code_pred (modes: i => i => i => bool, i => i => o => bool as reduce) reduction
 proof -
   case append
   from this show thesis
-    unfolding append_def by (cases xa) fastsimp+
+    unfolding append_def by (cases xa) fastforce+
 next
   case reduction
   from reduction.prems show thesis
   proof (cases rule: reduction.cases)
     case r_field
-    with reduction(1) show thesis by fastsimp
+    with reduction(1) show thesis by fastforce
   next
     case r_invk
-    with reduction(2) show thesis by fastsimp
+    with reduction(2) show thesis by fastforce
   next
     case r_cast
-    with reduction(3) show thesis by fastsimp
+    with reduction(3) show thesis by fastforce
   next
     case rc_field
-    with reduction(4) show thesis by fastsimp
+    with reduction(4) show thesis by fastforce
   next
     case rc_invk_recv
-    with reduction(5) show thesis by fastsimp
+    with reduction(5) show thesis by fastforce
   next
     case rc_invk_arg
     with reduction(6) show thesis
-      unfolding append_def by fastsimp
+      unfolding append_def by fastforce
   next
     case rc_new_arg
     with reduction(7) show thesis
-      unfolding append_def by fastsimp
+      unfolding append_def by fastforce
   next
     case rc_cast
-    with reduction(8) show thesis by fastsimp
+    with reduction(8) show thesis by fastforce
   qed
 qed
 
@@ -106,11 +106,11 @@ code_pred (modes: i => i => bool) class_typing
 proof -
   case class_typing
   from class_typing.cases[OF class_typing.prems, of thesis] this(1) show thesis
-    unfolding append_def by fastsimp
+    unfolding append_def by fastforce
 next
   case method_typing
   from method_typing.cases[OF method_typing.prems, of thesis] this(1) show thesis
-    unfolding append_def method_typing_aux_def by fastsimp
+    unfolding append_def method_typing_aux_def by fastforce
 next
   case method_typing_aux
   from this show thesis

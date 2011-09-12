@@ -197,11 +197,11 @@ lemma bisimJ2JVM_mfinal_mexception:
   and tsNotEmpty: "thr s t \<noteq> None"
   shows "s' = mexception s"
 proof -
-  obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastsimp
+  obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastforce
   from bisim obtain s0 s1 where bisimJ0: "red_red0.mbisim s s0"
     and bisim01: "red0_Red1'.mbisim s0 s1"
     and bisim1JVM: "Red1_execd.mbisim s1 s'"
-    unfolding bisimJ2JVM_def by(fastsimp simp add: mbisim_Red1'_Red1_def)
+    unfolding bisimJ2JVM_def by(fastforce simp add: mbisim_Red1'_Red1_def)
   from bisimJ0 s have [simp]: "locks s0 = ls" "wset s0 = ws" "interrupts s0 = is"
     and tbisimJ0: "\<And>t. red_red0.tbisim (ws t = None) t (ts t) m (thr s0 t) (shr s0)"
     by(auto simp add: red_red0.mbisim_def)
@@ -211,7 +211,7 @@ proof -
   from bisim1JVM have "locks s' = ls" "wset s' = ws" "interrupts s' = is"
     and tbisim1JVM: "\<And>t. Red1_execd.tbisim (ws t = None) t (thr s1 t) (shr s1) (thr s' t) (shr s')"
     by(auto simp add: Red1_execd.mbisim_def)
-  then obtain ts' m' where s': "s' = (ls, (ts', m'), ws, is)" by(cases s') fastsimp
+  then obtain ts' m' where s': "s' = (ls, (ts', m'), ws, is)" by(cases s') fastforce
   { fix t e x ln
     assume tst: "ts t = \<lfloor>((e, x), ln)\<rfloor>"
     from tbisimJ0[of t] tst obtain e' exs' where ts0t: "thr s0 t = \<lfloor>((e', exs'), ln)\<rfloor>"
@@ -224,7 +224,7 @@ proof -
     from tbisim1JVM[of t] ts1t s' obtain xcp frs
       where ts't: "ts' t = \<lfloor>((xcp, frs), ln)\<rfloor>" and [simp]: "m' = shr s1"
       and bisimt1JVM: "bisim1_list1 t m' (e'', xs'') exs'' xcp frs"
-      by(fastsimp simp add: Red1_execd.tbisim_def)
+      by(fastforce simp add: Red1_execd.tbisim_def)
 
     from fin ts't s s' have [simp]: "frs = []" by(auto dest: exec_mthr.mfinalD)
     from bisimt1JVM have [simp]: "exs'' = []" by(auto elim: bisim1_list1.cases)

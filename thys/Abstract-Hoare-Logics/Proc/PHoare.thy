@@ -199,7 +199,7 @@ apply(induct_tac c)
  apply(erule converse_rtrancl_induct)
   apply simp
  apply(fast elim:exec.WhileTrue)
-apply(fastsimp intro: hoare.Local elim!: hoare.Conseq)
+apply(fastforce intro: hoare.Local elim!: hoare.Conseq)
 done
 
 text{*\noindent The proof is by induction on @{term c}. In the @{term

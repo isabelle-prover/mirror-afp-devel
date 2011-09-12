@@ -5420,7 +5420,7 @@ apply (subgoal_tac "f ` {i. i \<le> (Suc (Suc n))} = f ` {i. i \<le> (Suc n)}")
 apply (subgoal_tac "{i. i \<le> (Suc n) \<and> Qw_cmpser G f i \<cong> E} =
               insert (Suc n) {i. i \<le> n \<and> Qw_cmpser G f i \<cong> E}")
  apply simp
-apply fastsimp
+apply fastforce
 done
 
 lemma length_wcmpser0_6:"\<lbrakk>Group G; w_cmpser G (Suc (Suc n)) f\<rbrakk> \<Longrightarrow> 

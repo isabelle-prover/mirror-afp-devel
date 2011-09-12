@@ -569,7 +569,7 @@ apply (simp add: replicate_add[symmetric] diff_mult_distrib)
 done
 
 lemma i_expand_assoc: "f \<odot>\<^sub>i a \<odot>\<^sub>i b = f \<odot>\<^sub>i (a * b)"
-by (fastsimp simp: i_expand_def ilist_eq_iff)
+by (fastforce simp: i_expand_def ilist_eq_iff)
 
 lemma f_expand_commute: "xs \<odot>\<^sub>f a \<odot>\<^sub>f b = xs \<odot>\<^sub>f b \<odot>\<^sub>f a"
 by (simp add: f_expand_assoc mult_commute[of b])
@@ -612,12 +612,12 @@ lemma f_expand_eq_conv': "
   (xs' \<odot>\<^sub>f k = xs) = 
   (length xs' * k = length xs \<and>
   (\<forall>i<length xs. xs ! i = (if i mod k = 0 then xs' ! (i div k) else \<NoMsg>)))"
-by (fastsimp simp: list_eq_iff f_expand_nth_if)
+by (fastforce simp: list_eq_iff f_expand_nth_if)
 
 lemma i_expand_eq_conv': "
   0 < k \<Longrightarrow> (f' \<odot>\<^sub>i k = f) = 
   (\<forall>i. f i = (if i mod k = 0 then f' (i div k) else \<NoMsg>))"
-by (fastsimp simp: ilist_eq_iff i_expand_nth_if)
+by (fastforce simp: ilist_eq_iff i_expand_nth_if)
 
 
 
@@ -1156,7 +1156,7 @@ lemma f_shrink_eq_conv: "
 apply (case_tac "k1 = 0")
  apply (simp add: eq_commute[of "[]"] length_0_conv[symmetric] f_shrink_length del: length_0_conv)
 apply (case_tac "k2 = 0")
- apply (fastsimp simp: f_shrink_empty_conv div_eq_0_conv')
+ apply (fastforce simp: f_shrink_empty_conv div_eq_0_conv')
 apply (simp add: list_eq_iff f_shrink_length)
 apply (rule conj_cong, simp)
 apply (rule all_imp_eqI, simp)
@@ -1171,7 +1171,7 @@ lemma f_shrink_eq_conv': "
       if xs ! i = \<NoMsg> then (\<forall>j<k. xs' ! (i * k + j) = \<NoMsg>)
       else (\<exists>n<k. xs' ! (i * k + n) = xs ! i \<and> 
                   (\<forall>j<k. n < j \<longrightarrow> xs' ! (i * k + j) = \<NoMsg>))))"
-apply (case_tac "k = 0", fastsimp)
+apply (case_tac "k = 0", fastforce)
 apply (simp add: list_eq_iff f_shrink_length split del: split_if)
 apply (rule conj_cong, simp)
 apply (rule all_imp_eqI, simp)
@@ -1248,7 +1248,7 @@ lemma i_shrink_eq_conv': "
        else \<exists>n<k. f' (i * k + n) = f i \<and> 
                     (\<forall>j<k. n < j \<longrightarrow> f' (i * k + j) = \<NoMsg>))"
 apply (simp add: ilist_eq_iff)
-apply (case_tac "k = 0", fastsimp)
+apply (case_tac "k = 0", fastforce)
 apply (rule all_eqI, rename_tac i)
 apply (simp add: i_shrink_nth)
 apply (case_tac "f i = NoMsg")

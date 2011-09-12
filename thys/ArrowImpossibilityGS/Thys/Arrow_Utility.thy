@@ -85,12 +85,12 @@ by(unfold bot_def, simp add:alt2)
 
 lemma [simp]: "extreme p b \<Longrightarrow> (\<not> p <\<cdot> b) = (b \<cdot>< p)"
 apply(unfold extreme_def)
-apply(fastsimp dest:top_impl_not_bot)
+apply(fastforce dest:top_impl_not_bot)
 done
 
 lemma [simp]: "extreme p b \<Longrightarrow> (\<not> b \<cdot>< p) = (p <\<cdot> b)"
 apply(unfold extreme_def)
-apply(fastsimp dest:top_impl_not_bot)
+apply(fastforce dest:top_impl_not_bot)
 done
 
 text{* Auxiliary construction to hide details of preference model. *}
@@ -173,7 +173,7 @@ lemma not_extreme:
   shows "\<exists>a c. distinct[a,b,c] \<and> \<not> p a < p b \<and> \<not> p b < p c"
 proof -
   obtain a c where abc: "a \<noteq> b \<and> \<not> p a < p b" "b \<noteq> c \<and> \<not> p b < p c"
-    using nex by (unfold extreme_def top_def bot_def) fastsimp
+    using nex by (unfold extreme_def top_def bot_def) fastforce
   show ?thesis
   proof (cases "a = c")
     assume "a \<noteq> c" thus ?thesis using abc by simp blast

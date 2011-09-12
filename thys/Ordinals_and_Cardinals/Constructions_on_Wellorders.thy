@@ -152,7 +152,7 @@ using assms wo_rel_def
 proof(auto simp add: wo_rel.ofilter_def rel.under_def)
   fix b assume *: "a \<in> A" and "(b,a) \<in> r"
   hence "b \<in> under r a \<and> a \<in> Field r" 
-  unfolding rel.under_def using Field_def by fastsimp
+  unfolding rel.under_def using Field_def by fastforce
   thus "b \<in> A" using * assms by (auto simp add: wo_rel_def wo_rel.ofilter_def)
 qed
 
@@ -662,7 +662,7 @@ next
    with * have False by blast
   }
   ultimately show "(r,r') \<in> ordLess" 
-  unfolding ordLess_def using * by (fastsimp simp add: embedS_def)
+  unfolding ordLess_def using * by (fastforce simp add: embedS_def)
 qed
 
 
@@ -941,7 +941,7 @@ proof
   have "ofilter r (underS r a)" using 0 
   by (auto simp add: wo_rel_def wo_rel.underS_ofilter)
   hence "Field ?p = underS r a" using 0 Field_Restr_ofilter by blast
-  hence "Field ?p < Field r" using rel.underS_Field2 1 by fastsimp
+  hence "Field ?p < Field r" using rel.underS_Field2 1 by fastforce
   moreover have "?p <o r" using underS_Restr_ordLess[of r a] 0 1 by blast
   ultimately 
   show "\<exists>p. Field p < Field r \<and> r' =o p \<and> p <o r" using 2 by blast
@@ -1163,7 +1163,7 @@ proof-
    assume "(a',b') \<in> dir_image r f"
    then obtain a b where 1: "a' = f a \<and> b' = f b \<and> (a,b) \<in> r" 
    unfolding dir_image_def by blast
-   hence "a \<in> Field r \<and> b \<in> Field r" using Field_def by fastsimp
+   hence "a \<in> Field r \<and> b \<in> Field r" using Field_def by fastforce
    hence "(a,a) \<in> r \<and> (b,b) \<in> r" using assms by (auto simp add: refl_on_def)
    with 1 have "(a',a') \<in> dir_image r f \<and> (b',b') \<in> dir_image r f" 
    unfolding dir_image_def by auto
@@ -2136,7 +2136,7 @@ proof(simp add: bsqr_Linear_order Linear_order_Well_order_iff, intro allI impI)
   have "M \<noteq> {}" using 1 M_def ** by auto
   moreover 
   have "M \<le> Field r" unfolding M_def 
-  using 1 assms wo_rel_def[of r] wo_rel.max2_among[of r] by fastsimp
+  using 1 assms wo_rel_def[of r] wo_rel.max2_among[of r] by fastforce
   ultimately obtain m where m_min: "m \<in> M \<and> (\<forall>a \<in> M. (m,a) \<in> r)" 
   using 0 by blast
   (*  *)
@@ -2183,7 +2183,7 @@ proof(simp add: bsqr_Linear_order Linear_order_Well_order_iff, intro allI impI)
    qed
   }
   (*  *)
-  ultimately show "\<exists>d \<in> D. \<forall>d' \<in> D. (d,d') \<in> bsqr r" by fastsimp
+  ultimately show "\<exists>d \<in> D. \<forall>d' \<in> D. (d,d') \<in> bsqr r" by fastforce
 qed
 
 
@@ -2195,7 +2195,7 @@ proof-
   using LEQ unfolding Field_def by auto
   hence "{a1,a2,b1,b2} \<le> Field r" unfolding Field_bsqr by auto
   hence "{max2 r a1 a2, max2 r b1 b2} \<le> Field r"
-  using WELL wo_rel_def[of r] wo_rel.max2_among[of r] by fastsimp
+  using WELL wo_rel_def[of r] wo_rel.max2_among[of r] by fastforce
   moreover have "(max2 r a1 a2, max2 r b1 b2) \<in> r \<or> max2 r a1 a2 = max2 r b1 b2" 
   using LEQ unfolding bsqr_def by auto
   ultimately show ?thesis using WELL unfolding order_on_defs refl_on_def by auto

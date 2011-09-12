@@ -63,7 +63,7 @@ locale if_multithreaded = multithreaded +
 begin
 
 lemma multithreaded_init_fin: "multithreaded init_fin_final init_fin"
-by(unfold_locales)(fastsimp simp add: init_fin.simps convert_obs_initial_def ta_upd_simps dest: new_thread_memory)+
+by(unfold_locales)(fastforce simp add: init_fin.simps convert_obs_initial_def ta_upd_simps dest: new_thread_memory)+
 
 end
 
@@ -157,7 +157,7 @@ begin
 lemma lifting_inv_init_fin_lift_inv:
   "lifting_inv init_fin_final init_fin (init_fin_lift_inv P)"
 apply(unfold_locales)
-apply(fastsimp elim!: init_fin.cases dest: invariant_red invariant_NewThread invariant_other)+
+apply(fastforce elim!: init_fin.cases dest: invariant_red invariant_NewThread invariant_other)+
 done
 
 end
@@ -184,7 +184,7 @@ begin
 lemma lifting_wf_init_fin_lift:
   "lifting_wf init_fin_final init_fin (init_fin_lift P)"
 apply(unfold_locales)
-apply(fastsimp elim!: init_fin.cases dest: dest: preserves_red preserves_other preserves_NewThread)+
+apply(fastforce elim!: init_fin.cases dest: dest: preserves_red preserves_other preserves_NewThread)+
 done
 
 end

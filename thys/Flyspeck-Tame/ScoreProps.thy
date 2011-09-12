@@ -18,7 +18,7 @@ lemma deleteAroundCons:
              \<or> length (vertices f) \<noteq>  4 \<and> v = f \<bullet> a}
      then deleteAround g a ps
      else p#deleteAround g a ps)"
-by (fastsimp simp: nextV2 deleteAround_def)
+by (fastforce simp: nextV2 deleteAround_def)
 
 lemma deleteAround_subset: "set (deleteAround g a ps) \<subseteq> set ps"
 by (simp add: deleteAround_def)
@@ -314,7 +314,7 @@ proof -
                 set (map fst (deleteAround g a ps))"
             by(rule ExcessNotAtRecList_subset[simplified concat_map_singleton])
           also have "\<dots> <= set (map fst ps)"
-            using deleteAround_subset by fastsimp
+            using deleteAround_subset by fastforce
           finally show ?thesis using prem by(auto simp: isTable_def)
         qed
 	from H1

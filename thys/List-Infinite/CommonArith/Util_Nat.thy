@@ -22,14 +22,14 @@ apply (simp only: zero_less_diff)
 done
 
 lemma nat_grSuc0_conv: "(Suc 0 < n) = (n \<noteq> 0 \<and> n \<noteq> Suc 0)"
-by fastsimp
+by fastforce
 lemma nat_geSucSuc0_conv: "(Suc (Suc 0) \<le> n) = (n \<noteq> 0 \<and> n \<noteq> Suc 0)"
-by fastsimp
+by fastforce
 
 lemma nat_lessSucSuc0_conv: "(n < Suc (Suc 0)) = (n = 0 \<or> n = Suc 0)"
-by fastsimp
+by fastforce
 lemma nat_leSuc0_conv: "(n \<le> Suc 0) = (n = 0 \<or> n = Suc 0)"
-by fastsimp
+by fastforce
 
 
 
@@ -136,9 +136,9 @@ text {* Lemmas for @term{sgn} function *}
 lemma sgn_abs:"(x::'a::linordered_idom) \<noteq> 0 \<Longrightarrow> \<bar>sgn x\<bar> = 1"
 by (case_tac "x < 0", simp+)
 lemma sgn_mult_abs:"\<bar>x\<bar> * \<bar>sgn (a::'a::linordered_idom)\<bar> = \<bar>x * sgn a\<bar>"
-by (fastsimp simp add: sgn_if abs_if)
+by (fastforce simp add: sgn_if abs_if)
 lemma abs_imp_sgn_abs: "\<bar>a\<bar> = \<bar>b\<bar> \<Longrightarrow> \<bar>sgn (a::'a::linordered_idom)\<bar> = \<bar>sgn b\<bar>"
-by (fastsimp simp add: abs_if)
+by (fastforce simp add: abs_if)
 lemma sgn_mono: "a \<le> b \<Longrightarrow> sgn (a::'a::{linordered_idom,linordered_semidom}) \<le> sgn b"
 by (simp add: sgn_if, safe, simp_all)
 

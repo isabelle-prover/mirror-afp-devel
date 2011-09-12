@@ -99,7 +99,7 @@ proof(induct t)
     apply(erule meta_allE)+
     apply(erule meta_impE)
     apply(rule disjI1)
-    apply(fastsimp intro: exI[where x="a # b", standard])+
+    apply(fastforce intro: exI[where x="a # b", standard])+
     done
 qed
 
@@ -109,7 +109,7 @@ lemma lookup_update:
   "lookup (update t ks v) ks' = (if ks = ks' then Some v else lookup t ks')"
 proof(induct t ks v arbitrary: ks' rule: update.induct)
   case (1 vo ts v)
-  show ?case by(fastsimp simp add: neq_Nil_conv dest: not_sym)
+  show ?case by(fastforce simp add: neq_Nil_conv dest: not_sym)
 next
   case (2 vo ts k ks v)
   note IH = `\<And>t ks'. lookup (update t ks v) ks' = (if ks = ks' then Some v else lookup t ks')`
@@ -166,7 +166,7 @@ lemma lookup_delete:
   "trie_invar t \<Longrightarrow> lookup (delete t ks) ks' = (if ks = ks' then None else lookup t ks')"
 proof(induct t ks arbitrary: ks' rule: delete.induct)
   case (1 vo ts)
-  show ?case by(fastsimp dest: not_sym simp add: neq_Nil_conv)
+  show ?case by(fastforce dest: not_sym simp add: neq_Nil_conv)
 next
   case (2 vo ts k ks)
   note IH = `\<And>t ks'. \<lbrakk> map_of ts k = Some t; trie_invar t \<rbrakk>
@@ -415,7 +415,7 @@ proof -
           proof(cases vo)
             case None[simp]
             from I c\<sigma> it_subset it_supset show ?thesis
-              by(fastsimp simp add: it_def \<sigma>_def intro!: that)
+              by(fastforce simp add: it_def \<sigma>_def intro!: that)
           next
             case (Some v)
             with True have "c \<sigma>" by(simp add: \<sigma>_def)
@@ -472,7 +472,7 @@ proof -
               qed
               moreover have "?it'' it' \<subseteq> d" using `it \<subseteq> d` by auto
               moreover from it_supset have "(\<lambda>ks. rev ks @ k # ks0) ` dom (lookup t) \<subseteq> ?it'' it'"
-                using kt `k \<in> it'` by(fastsimp intro!: rev_image_eqI simp add: dom_lookup)
+                using kt `k \<in> it'` by(fastforce intro!: rev_image_eqI simp add: dom_lookup)
               ultimately 
               have "I (?it'' it' - (\<lambda>ks. rev ks @ k # ks0) ` dom (lookup t)) (iteratei_postfixed c f t \<sigma>' (k # ks0)) \<or>
                     (\<exists>it''\<subseteq> d. it'' \<noteq> {} \<and> \<not> c (iteratei_postfixed c f t \<sigma>' (k # ks0)) \<and>
@@ -491,7 +491,7 @@ proof -
                   fix x
                   assume "x \<in> ?rhs"
                   thus "x \<in> ?lhs" using kt
-                    by auto(fastsimp intro: image_eqI[where x="Cons a b", standard, where a=k])
+                    by auto(fastforce intro: image_eqI[where x="Cons a b", standard, where a=k])
                 qed
                 finally show ?thesis ..
               next
@@ -513,14 +513,14 @@ proof -
             proof
               assume "I (?it'' it') ?\<sigma>'"
               moreover from `it' \<noteq> {}` `it' \<subseteq> dom (map_of ts)`
-              obtain k' t' where "k' \<in> it'" "map_of ts k' = Some t'" by(fastsimp)
+              obtain k' t' where "k' \<in> it'" "map_of ts k' = Some t'" by(fastforce)
               with invar have "\<not> isEmpty t'" "trie_invar t'" by auto
               from `\<not> isEmpty t'` have "dom (lookup t') \<noteq> {}"
                 unfolding dom_lookup_empty_conv[OF `trie_invar t'`] .
               then obtain ks' where "ks' \<in> dom (lookup t')" by(auto simp del: dom_eq_empty_conv)
               with `k' \<in> it'` `map_of ts k' = Some t'` `it' \<subseteq> dom (map_of ts)` it_supset
               have "?it'' it' \<noteq> {}"
-                by(fastsimp simp add: dom_lookup dest: subsetD[where c="rev (k' # ks') @ ks0"] intro: image_eqI[where x="k' # ks'"] bexI[where x=k'])
+                by(fastforce simp add: dom_lookup dest: subsetD[where c="rev (k' # ks') @ ks0"] intro: image_eqI[where x="k' # ks'"] bexI[where x=k'])
               moreover from `it \<subseteq> d` have "?it'' it' \<subseteq> d" by auto
               ultimately show ?thesis using `\<not> c ?\<sigma>'` by(blast)
             qed

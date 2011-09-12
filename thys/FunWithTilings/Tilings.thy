@@ -177,7 +177,7 @@ definition Ls :: "(nat * nat) set set" where
       { L2 x y | x y. True} \<union> { L3 x y | x y. True}"
 
 lemma LinLs: "L0 i j : Ls & L1 i j : Ls & L2 i j : Ls & L3 i j : Ls"
-by(fastsimp simp:Ls_def)
+by(fastforce simp:Ls_def)
 
 
 text{* Square $2^n \times 2^n$ grid, shifted by $i$ and $j$: *}
@@ -247,7 +247,7 @@ next
     have "square2 (n+1) i j - {(a,b)} - L0 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
       using  a b `?A`
       by (clarsimp simp: square2_Suc L0_def Un_Diff Diff_insert_if)
-         (fastsimp intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
+         (fastforce intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
                    simp:Int_Un_distrib2)
   } moreover
   { assume "?B"
@@ -262,7 +262,7 @@ next
     have "square2 (n+1) i j - {(a,b)} - L1 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
       using  a b `?B`
       by (simp add: square2_Suc L1_def Un_Diff Diff_insert_if le_diff_conv2)
-         (fastsimp intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
+         (fastforce intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
                    simp:Int_Un_distrib2)
   } moreover
   { assume "?C"
@@ -277,7 +277,7 @@ next
     have "square2 (n+1) i j - {(a,b)} - L3 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
       using  a b `?C`
       by (simp add: square2_Suc L3_def Un_Diff Diff_insert_if le_diff_conv2)
-         (fastsimp intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
+         (fastforce intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
                    simp:Int_Un_distrib2)
   } moreover
   { assume "?D"
@@ -292,7 +292,7 @@ next
     have "square2 (n+1) i j - {(a,b)} - L2 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
       using  a b `?D`
       by (simp add: square2_Suc L2_def Un_Diff Diff_insert_if le_diff_conv2)
-         (fastsimp intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
+         (fastforce intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
                    simp:Int_Un_distrib2)
   } moreover
   have "?A \<Longrightarrow> L0 (2^n + i - 1) (2^n + j - 1) \<subseteq> square2 (n+1) i j - {(a, b)}"

@@ -193,7 +193,7 @@ proof-
   using WELL by (auto simp add: wo_rel_def)
   hence 1: "Refl r"
   by (auto simp add: wo_rel.REFL)
-  hence "a \<in> under r a" using IN rel.Refl_under_in by fastsimp
+  hence "a \<in> under r a" using IN rel.Refl_under_in by fastforce
   hence "f a \<in> under r' (f a)"
   using EMB IN by (auto simp add: embed_def bij_betw_def)
   thus ?thesis unfolding Field_def 
@@ -386,7 +386,7 @@ proof(auto simp add: embed_compat embed_inj_on embed_Field_ofilter,
   have "f a \<in> f`(Field r)" 
   using **** by auto
   hence 2: "under r' (f a) \<le> f`(Field r)" 
-  using Well' *** wo_rel.ofilter_def[of r' "f`(Field r)"] by fastsimp
+  using Well' *** wo_rel.ofilter_def[of r' "f`(Field r)"] by fastforce
   (* Main proof *)
   show "bij_betw f (under r a) (under r' (f a))"
   proof(unfold bij_betw_def, auto)
@@ -420,7 +420,7 @@ proof(auto simp add: embed_compat embed_inj_on embed_Field_ofilter,
        by (auto simp add: refl_on_def)
       }
       ultimately 
-      show ?thesis using Total **** 3 by (fastsimp simp add: total_on_def)      
+      show ?thesis using Total **** 3 by (fastforce simp add: total_on_def)      
     qed
     with 4 show  "b' \<in> f`(under r a)"
     unfolding rel.under_def by auto
@@ -625,7 +625,7 @@ proof-
     have "f`(underS r a) = (\<Union>  b \<in> underS r a. (under r' (f b)))" .
     thus ?thesis 
     using Well' bFact 
-          wo_rel.ofilter_UNION[of r' "underS r a" "\<lambda> b. under r' (f b)"] by fastsimp 
+          wo_rel.ofilter_UNION[of r' "underS r a" "\<lambda> b. under r' (f b)"] by fastforce 
   qed
   (*  *)
   have "f`(underS r a) \<union> AboveS r' (f`(underS r a)) = Field r'"
@@ -722,7 +722,7 @@ proof-
     by (auto simp add: rel.underS_def)
     hence "b \<in> Field r" unfolding Field_def by auto
     with 31 have "b \<in> ?A" by auto
-    hence "(?a,b) \<in> r" using wo_rel.minim_least 2 Well by fastsimp
+    hence "(?a,b) \<in> r" using wo_rel.minim_least 2 Well by fastforce
     (* again: why worked without type annotations? *)
     with 32 Antisym show False 
     by (auto simp add: antisym_def)
@@ -869,10 +869,10 @@ qed
 corollary one_set_greater: 
 "(\<exists>f::'a \<Rightarrow> 'a'. f ` A \<le> A' \<and> inj_on f A) \<or> (\<exists>g::'a' \<Rightarrow> 'a. g ` A' \<le> A \<and> inj_on g A')"
 proof-
-  obtain r where "well_order_on A r" by (fastsimp simp add: well_order_on)
+  obtain r where "well_order_on A r" by (fastforce simp add: well_order_on)
   hence 1: "A = Field r \<and> Well_order r" 
   using rel.well_order_on_Well_order by auto
-  obtain r' where 2: "well_order_on A' r'" by (fastsimp simp add: well_order_on)
+  obtain r' where 2: "well_order_on A' r'" by (fastforce simp add: well_order_on)
   hence 2: "A' = Field r' \<and> Well_order r'" 
   using rel.well_order_on_Well_order by auto
   hence "(\<exists>f. embed r r' f) \<or> (\<exists>g. embed r' r g)"
@@ -1145,7 +1145,7 @@ next
   fix a b assume *: "a \<in> Field r" "b \<in> Field r" and **: "(f a,f b) \<in> r'"
   hence "?f'(f a) = a \<and> ?f'(f b) = b" using 1
   by (auto simp add: bij_betw_inv_into_left)
-  thus "(a,b) \<in> r" using ** 2 compat_def[of r' r ?f'] by fastsimp
+  thus "(a,b) \<in> r" using ** 2 compat_def[of r' r ?f'] by fastforce
 next
   assume *: "bij_betw f (Field r) (Field r')" and 
          **: "\<forall>a\<in>Field r. \<forall>b\<in>Field r. ((a, b) \<in> r) = ((f a, f b) \<in> r')"

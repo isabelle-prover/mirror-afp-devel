@@ -114,7 +114,7 @@ and evals\<^isub>1_evals: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarr
   (is "_ \<Longrightarrow> (\<And>Vs ls. PROP ?Ps es h l es' h' l' Vs ls)"
    is "_ \<Longrightarrow> (\<And>Vs ls. \<lbrakk> _; _; _\<rbrakk> \<Longrightarrow> \<exists>ls'. ?Posts es h l es' h' l' Vs ls ls')")
 proof (induct rule:eval_evals_inducts)
-  case Nil thus ?case by(fastsimp intro!:Nil\<^isub>1)
+  case Nil thus ?case by(fastforce intro!:Nil\<^isub>1)
 next
   case (Cons e h l v h' l' es es' h\<^isub>2 l\<^isub>2)
   have "PROP ?P e h l (Val v) h' l' Vs ls" by fact
@@ -127,7 +127,7 @@ next
   from 1 2 Cons show ?case by(auto intro!:Cons\<^isub>1)
 next
   case ConsThrow thus ?case
-    by(fastsimp intro!:ConsThrow\<^isub>1 dest: eval_final)
+    by(fastforce intro!:ConsThrow\<^isub>1 dest: eval_final)
 next
   case (Block e h l V e' h' l' T)
   let ?Vs = "Vs @ [V]"
@@ -194,7 +194,7 @@ next
   moreover have "length Vs + max_vars e\<^isub>1 \<le> length ls" using len by(auto)
   ultimately obtain ls\<^isub>1 where
     1: "compP\<^isub>1 P \<turnstile>\<^sub>1 \<langle>compE\<^isub>1 Vs e\<^isub>1,(h,ls)\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^isub>1,ls\<^isub>1)\<rangle>"
-    and rel\<^isub>1: "l\<^isub>1 \<subseteq>\<^sub>m [Vs [\<mapsto>] ls\<^isub>1]" using IH\<^isub>1 rel by fastsimp
+    and rel\<^isub>1: "l\<^isub>1 \<subseteq>\<^sub>m [Vs [\<mapsto>] ls\<^isub>1]" using IH\<^isub>1 rel by fastforce
   from 1 have [simp]: "size ls = size ls\<^isub>1" by(rule eval\<^isub>1_preserves_len)
   let ?Vs = "Vs @ [V]" let ?ls = "(ls\<^isub>1[size Vs:=Addr a])"
   have IH\<^isub>2: "\<lbrakk>fv e\<^isub>2 \<subseteq> set ?Vs; l\<^isub>1(V \<mapsto> Addr a) \<subseteq>\<^sub>m [?Vs [\<mapsto>] ?ls];
@@ -209,7 +209,7 @@ next
     2: "compP\<^isub>1 P \<turnstile>\<^sub>1 \<langle>compE\<^isub>1 ?Vs e\<^isub>2,(h\<^isub>1,?ls)\<rangle> \<Rightarrow> \<langle>fin\<^isub>1 e',(h\<^isub>2, ls\<^isub>2)\<rangle>"
     and rel\<^isub>2: "l\<^isub>2 \<subseteq>\<^sub>m [?Vs [\<mapsto>] ls\<^isub>2]"  using IH\<^isub>2 by blast
   from 2 have [simp]: "size ls\<^isub>1 = size ls\<^isub>2"
-    by(fastsimp dest: eval\<^isub>1_preserves_len)
+    by(fastforce dest: eval\<^isub>1_preserves_len)
   show "\<exists>ls\<^isub>2. compP\<^isub>1 P \<turnstile>\<^sub>1 \<langle>compE\<^isub>1 Vs ?e,(h,ls)\<rangle> \<Rightarrow> \<langle>fin\<^isub>1 e',(h\<^isub>2,ls\<^isub>2)\<rangle> \<and>
               l\<^isub>2(V := l\<^isub>1 V) \<subseteq>\<^sub>m [Vs [\<mapsto>] ls\<^isub>2]"  (is "\<exists>ls\<^isub>2. ?R ls\<^isub>2")
   proof
@@ -242,13 +242,13 @@ next
     qed
   qed
 next
-  case Try thus ?case by(fastsimp intro!:Try\<^isub>1)
+  case Try thus ?case by(fastforce intro!:Try\<^isub>1)
 next
-  case Throw thus ?case by(fastsimp intro!:Throw\<^isub>1)
+  case Throw thus ?case by(fastforce intro!:Throw\<^isub>1)
 next
-  case ThrowNull thus ?case by(fastsimp intro!:ThrowNull\<^isub>1)
+  case ThrowNull thus ?case by(fastforce intro!:ThrowNull\<^isub>1)
 next
-  case ThrowThrow thus ?case  by(fastsimp intro!:ThrowThrow\<^isub>1)
+  case ThrowThrow thus ?case  by(fastforce intro!:ThrowThrow\<^isub>1)
 next
   case (CondT e h l h\<^isub>1 l\<^isub>1 e\<^isub>1 e' h\<^isub>2 l\<^isub>2 e\<^isub>2)
   have "PROP ?P e h l true h\<^isub>1 l\<^isub>1 Vs ls" by fact
@@ -270,7 +270,7 @@ next
   obtain ls\<^isub>2 where 2: "?Post e\<^isub>2 h\<^isub>1 l\<^isub>1 e' h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2"  by(auto)
   from 1 2 show ?case by(auto intro!:CondF\<^isub>1)
 next
-  case CondThrow thus ?case by(fastsimp intro!:CondThrow\<^isub>1)
+  case CondThrow thus ?case by(fastforce intro!:CondThrow\<^isub>1)
 next
   case (Seq e h l v h\<^isub>1 l\<^isub>1 e\<^isub>1 e' h\<^isub>2 l\<^isub>2)
   have "PROP ?P e h l (Val v) h\<^isub>1 l\<^isub>1 Vs ls" by fact
@@ -282,9 +282,9 @@ next
   obtain ls\<^isub>2 where 2: "?Post e\<^isub>1 h\<^isub>1 l\<^isub>1 e' h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2"  by(auto)
   from 1 2 Seq show ?case by(auto intro!:Seq\<^isub>1)
 next
-  case SeqThrow thus ?case by(fastsimp intro!:SeqThrow\<^isub>1)
+  case SeqThrow thus ?case by(fastforce intro!:SeqThrow\<^isub>1)
 next
-  case WhileF thus ?case by(fastsimp intro!:eval\<^isub>1_evals\<^isub>1.intros)
+  case WhileF thus ?case by(fastforce intro!:eval\<^isub>1_evals\<^isub>1.intros)
 next
   case (WhileT e h l h\<^isub>1 l\<^isub>1 c v h\<^isub>2 l\<^isub>2 e' h\<^isub>3 l\<^isub>3)
   have "PROP ?P e h l true h\<^isub>1 l\<^isub>1 Vs ls" by fact
@@ -310,17 +310,17 @@ next
   obtain ls\<^isub>2 where 2: "?Post c h\<^isub>1 l\<^isub>1 (throw e') h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2" by auto
   from 1 2 show ?case by(auto intro!:WhileBodyThrow\<^isub>1)
 next
-  case WhileCondThrow thus ?case by(fastsimp intro!:WhileCondThrow\<^isub>1)
+  case WhileCondThrow thus ?case by(fastforce intro!:WhileCondThrow\<^isub>1)
 next
-  case New thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case New thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case NewFail thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case NewFail thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case Cast thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case Cast thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case CastNull thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case CastNull thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case CastThrow thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case CastThrow thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
   case (CastFail e h l a h\<^isub>1 l\<^isub>1 D fs C)
   have "PROP ?P e h l (addr a) h\<^isub>1 l\<^isub>1 Vs ls" by fact
@@ -329,7 +329,7 @@ next
   show ?case using 1 CastFail.hyps
     by(auto intro!:CastFail\<^isub>1[where D=D])
 next
-  case Val thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case Val thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
   case (BinOp e h l v\<^isub>1 h\<^isub>1 l\<^isub>1 e\<^isub>1 v\<^isub>2 h\<^isub>2 l\<^isub>2 bop v)
   have "PROP ?P e h l (Val v\<^isub>1) h\<^isub>1 l\<^isub>1 Vs ls" by fact
@@ -351,22 +351,22 @@ next
   obtain ls\<^isub>2 where 2: "?Post e\<^isub>1 h\<^isub>1 l\<^isub>1 (throw e) h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2"  by(auto)
   from 1 2 BinOpThrow2 show ?case by(auto intro!:BinOpThrow\<^isub>2\<^isub>1)
 next
-  case BinOpThrow1 thus ?case  by(fastsimp intro!:eval\<^isub>1_evals\<^isub>1.intros)
+  case BinOpThrow1 thus ?case  by(fastforce intro!:eval\<^isub>1_evals\<^isub>1.intros)
 next
   case Var thus ?case
     by(force intro!:Var\<^isub>1 simp add: map_le_def fun_upds_apply)
 next
   case LAss thus ?case
-    by(fastsimp simp add: LAss_lem intro:eval\<^isub>1_evals\<^isub>1.intros
+    by(fastforce simp add: LAss_lem intro:eval\<^isub>1_evals\<^isub>1.intros
                 dest:eval\<^isub>1_preserves_len)
 next
-  case LAssThrow thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case LAssThrow thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case FAcc thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case FAcc thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case FAccNull thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case FAccNull thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case FAccThrow thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case FAccThrow thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
   case (FAss e\<^isub>1 h l a h\<^isub>1 l\<^isub>1 e\<^isub>2 v h\<^isub>2 l\<^isub>2 C fs fs' F D h\<^isub>2')
   have "PROP ?P e\<^isub>1 h l (addr a) h\<^isub>1 l\<^isub>1 Vs ls" by fact
@@ -388,7 +388,7 @@ next
   obtain ls\<^isub>2 where 2: "?Post e\<^isub>2 h\<^isub>1 l\<^isub>1 (Val v) h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2" by(auto)
   from 1 2 FAssNull show ?case by(auto intro!:FAssNull\<^isub>1)
 next
-  case FAssThrow1 thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case FAssThrow1 thus ?case by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
   case (FAssThrow2 e\<^isub>1 h l v h\<^isub>1 l\<^isub>1 e\<^isub>2 e h\<^isub>2 l\<^isub>2 F D)
   have "PROP ?P e\<^isub>1 h l (Val v) h\<^isub>1 l\<^isub>1 Vs ls" by fact
@@ -411,7 +411,7 @@ next
   from 1 2 CallNull show ?case
     by (auto simp add: comp_def elim!: CallNull\<^isub>1)
 next
-  case CallObjThrow thus ?case  by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
+  case CallObjThrow thus ?case  by(fastforce intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
   case (CallParamsThrow e h l v h\<^isub>1 l\<^isub>1 es vs ex es' h\<^isub>2 l\<^isub>2 M)
   have "PROP ?P e h l (Val v) h\<^isub>1 l\<^isub>1 Vs ls" by fact
@@ -449,7 +449,7 @@ next
   obtain ls\<^isub>3 where 3: "?Post body h\<^isub>2 l\<^isub>2' b' h\<^isub>3 l\<^isub>3 ?Vs ?ls ls\<^isub>3"  by(auto)
   have hp: "h\<^isub>2 a = Some (C, fs)" by fact
   from 1 2 3 hp mdecl\<^isub>1 wf_size Call_size show ?case
-    by(fastsimp simp add: comp_def
+    by(fastforce simp add: comp_def
                 intro!: Call\<^isub>1 dest!:evals_final)
 qed
 (*>*)
@@ -470,22 +470,22 @@ and  "\<And>Vs Ts Us.
 (*<*)
 apply(induct e and es)
 apply clarsimp
-apply(fastsimp)
+apply(fastforce)
 apply clarsimp
-apply(fastsimp split:bop.splits)
-apply (fastsimp simp:map_upds_apply_eq_Some split:split_if_asm)
-apply (fastsimp simp:map_upds_apply_eq_Some split:split_if_asm)
-apply (fastsimp)
-apply (fastsimp)
-apply (fastsimp dest!: sees_method_compP[where f = f])
-apply (fastsimp simp:nth_append)
-apply (fastsimp)
-apply (fastsimp)
-apply (fastsimp)
-apply (fastsimp)
-apply (fastsimp simp:nth_append)
+apply(fastforce split:bop.splits)
+apply (fastforce simp:map_upds_apply_eq_Some split:split_if_asm)
+apply (fastforce simp:map_upds_apply_eq_Some split:split_if_asm)
+apply (fastforce)
+apply (fastforce)
+apply (fastforce dest!: sees_method_compP[where f = f])
+apply (fastforce simp:nth_append)
+apply (fastforce)
+apply (fastforce)
+apply (fastforce)
+apply (fastforce)
+apply (fastforce simp:nth_append)
 apply simp
-apply (fastsimp)
+apply (fastforce)
 done
 (*>*)
 
@@ -517,7 +517,7 @@ and "\<And>A Vs. \<lbrakk> \<A>s es = \<lfloor>A\<rfloor>; fvs es \<subseteq> se
 (*<*)
 proof(induct e and es)
   case (Block V' T e)
-  hence "fv e \<subseteq> set (Vs@[V'])" by fastsimp
+  hence "fv e \<subseteq> set (Vs@[V'])" by fastforce
   moreover obtain B where "\<A> e = \<lfloor>B\<rfloor>"
     using Block.prems by(simp add: hyperset_defs)
   moreover from calculation have "B \<subseteq> set (Vs@[V'])" by(auto dest!:A_fv)
@@ -546,7 +546,7 @@ next
       moreover
       have "A\<^isub>2 \<subseteq> set (Vs@[V'])" using TryCatch.prems A_fv[OF A\<^isub>2] by simp blast
       ultimately show ?thesis using TryCatch A\<^isub>1 A\<^isub>2
-        by(fastsimp simp add: hyperset_defs image_last_index last_index_size_conv
+        by(fastforce simp add: hyperset_defs image_last_index last_index_size_conv
           Diff_subset_conv inj_on_image_Int[OF inj_on_last_index])
     qed
   qed
@@ -566,7 +566,7 @@ next
       by(auto simp add:hyperset_defs image_Un
           inj_on_image_Int[OF inj_on_last_index])
   }
-  ultimately show ?case by fastsimp
+  ultimately show ?case by fastforce
 qed (auto simp add:hyperset_defs)
 (*>*)
 
@@ -726,7 +726,7 @@ lemma last_index_image_set: "distinct xs \<Longrightarrow> last_index xs ` set x
 
 lemma D_compE\<^isub>1:
   "\<lbrakk> \<D> e \<lfloor>set Vs\<rfloor>; fv e \<subseteq> set Vs; distinct Vs \<rbrakk> \<Longrightarrow> \<D> (compE\<^isub>1 Vs e) \<lfloor>{..<length Vs}\<rfloor>"
-(*<*)by(fastsimp dest!: D_last_index_compE\<^isub>1[OF subset_refl] simp add:last_index_image_set)(*>*)
+(*<*)by(fastforce dest!: D_last_index_compE\<^isub>1[OF subset_refl] simp add:last_index_image_set)(*>*)
 
 
 lemma D_compE\<^isub>1':
@@ -749,7 +749,7 @@ apply(case_tac m)
 apply(simp add:wf_mdecl_def wf_J\<^isub>1_mdecl_def wf_J_mdecl)
 apply(clarify)
 apply(frule WT_fv)
-apply(fastsimp intro!: compE\<^isub>1_pres_wt D_compE\<^isub>1' \<B>)
+apply(fastforce intro!: compE\<^isub>1_pres_wt D_compE\<^isub>1' \<B>)
 done
 (*>*)
 

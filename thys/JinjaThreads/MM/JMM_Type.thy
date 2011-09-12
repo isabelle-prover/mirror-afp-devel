@@ -104,7 +104,7 @@ next
   fix h C and h' :: "('addr :: addr) JMM_heap" and a
   assume "jmm_new_obj h C = (h', a)"
   thus "h \<unlhd>jmm h'"
-    by(fastsimp simp add: jmm_heap_ops_defs intro: jmm.hextI dest: new_Addr_SomeD[OF sym])
+    by(fastforce simp add: jmm_heap_ops_defs intro: jmm.hextI dest: new_Addr_SomeD[OF sym])
 next
   fix h T n h' a
   assume "jmm_new_arr h T n = (h', \<lfloor>a\<rfloor>)"
@@ -114,7 +114,7 @@ next
   fix h T n and h' :: "('addr :: addr) JMM_heap" and a
   assume "jmm_new_arr h T n = (h', a)"
   thus "h \<unlhd>jmm h'"
-    by(fastsimp simp add: jmm_heap_ops_defs intro: jmm.hextI dest: new_Addr_SomeD[OF sym])
+    by(fastforce simp add: jmm_heap_ops_defs intro: jmm.hextI dest: new_Addr_SomeD[OF sym])
 next
   fix h
   show "ran (jmm_typeof_addr h) \<subseteq> range Class \<union> range Array" using range_ty_of_htype
@@ -187,12 +187,12 @@ next
   fix h C h' a
   assume "jmm_new_obj h C = (h', a)" "P \<turnstile>jmm h \<surd>" "is_class P C"
   thus "P \<turnstile>jmm h' \<surd>"
-    by(fastsimp simp add: jmm_hconf_def jmm_heap_ops_defs ran_def split: split_if_asm)
+    by(fastforce simp add: jmm_hconf_def jmm_heap_ops_defs ran_def split: split_if_asm)
 next
   fix h T n h' a
   assume "jmm_new_arr h T n = (h', a)" "P \<turnstile>jmm h \<surd>" "is_type P (T\<lfloor>\<rceil>)"
   thus "P \<turnstile>jmm h' \<surd>"
-    by(fastsimp simp add: jmm_hconf_def jmm_heap_ops_defs ran_def split: split_if_asm)
+    by(fastforce simp add: jmm_hconf_def jmm_heap_ops_defs ran_def split: split_if_asm)
 next
   fix h a al v h' T
   assume "jmm_heap_write h a al v h'" "P \<turnstile>jmm h \<surd>"

@@ -56,7 +56,7 @@ section "@{term preallocated}"
 
 lemma preallocated_dom [simp]: 
   "\<lbrakk> preallocated h; C \<in> sys_xcpts \<rbrakk> \<Longrightarrow> addr_of_sys_xcpt C \<in> dom h"
-(*<*)by (fastsimp simp:preallocated_def dom_def)(*>*)
+(*<*)by (fastforce simp:preallocated_def dom_def)(*>*)
 
 
 lemma preallocatedD:

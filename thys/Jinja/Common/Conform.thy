@@ -153,13 +153,13 @@ section "Object conformance"
 lemma oconf_hext: "P,h \<turnstile> obj \<surd> \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,h' \<turnstile> obj \<surd>"
 (*<*)
 apply (unfold oconf_def)
-apply (fastsimp elim:conf_hext)
+apply (fastforce elim:conf_hext)
 done
 (*>*)
 
 lemma oconf_init_fields:
  "P \<turnstile> C has_fields FDTs \<Longrightarrow> P,h \<turnstile> (C, init_fields FDTs) \<surd>"
-by(fastsimp simp add: has_field_def oconf_def init_fields_def map_of_map
+by(fastforce simp add: has_field_def oconf_def init_fields_def map_of_map
             dest: has_fields_fun)
 
 lemma oconf_fupd [intro?]:

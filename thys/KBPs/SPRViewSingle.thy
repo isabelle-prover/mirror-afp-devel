@@ -521,7 +521,7 @@ next
     where st': "s = spr_sim_single t'"
       and t'C: "t' \<in> jkbpC"
       and t'O: "spr_jview agent t = spr_jview agent t'"
-    by fastsimp
+    by fastforce
   { fix t''
     assume tt': "(t', t'') \<in> (\<Union>a. relations mkMC a)\<^sup>*"
     from t'C tt' have t''C: "t'' \<in> jkbpC"

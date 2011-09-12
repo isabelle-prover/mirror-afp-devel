@@ -98,55 +98,55 @@ theorem (in start_context) exec_pres_type:
   -- Load
   apply clarsimp
   apply (frule listE_nth_in, assumption)
-  apply fastsimp
+  apply fastforce
 
   -- Store
-  apply fastsimp
+  apply fastforce
 
   -- Push
-  apply (fastsimp simp add: typeof_lit_is_type)
+  apply (fastforce simp add: typeof_lit_is_type)
 
   -- New
-  apply fastsimp
+  apply fastforce
 
   -- Getfield
-  apply (fastsimp dest: sees_field_is_type)
+  apply (fastforce dest: sees_field_is_type)
 
   -- Putfield
-  apply fastsimp
+  apply fastforce
 
   -- Checkcast
-  apply fastsimp
+  apply fastforce
 
   defer 
   
   -- Return
-  apply fastsimp
+  apply fastforce
 
   -- Pop
-  apply fastsimp
+  apply fastforce
 
   -- IAdd
-  apply fastsimp
+  apply fastforce
   
   -- Goto
-  apply fastsimp
+  apply fastforce
 
   -- CmpEq
-  apply fastsimp
+  apply fastforce
 
   -- IfFalse
-  apply fastsimp
+  apply fastforce
 
   -- Throw
-  apply fastsimp
+  apply fastforce
 
   -- Invoke
   apply (clarsimp split: split_if_asm)
-   apply fastsimp
+   apply fastforce
   apply (erule disjE)
    prefer 2
-   apply fastsimp
+   apply fastforce
   apply clarsimp
   apply (rule conjI)
    apply (drule (1) sees_wf_mdecl)

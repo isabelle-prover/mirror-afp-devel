@@ -44,10 +44,10 @@ proof -
     by(auto elim:path_split_Cons)
   from `n influences V in n' via a#as` `n = sourcenode a` 
   have "sourcenode a \<notin> set (sourcenodes as)"
-    by(fastsimp intro!:dyn_influence_source_notin_tl_edges)
+    by(fastforce intro!:dyn_influence_source_notin_tl_edges)
   { fix n'' assume "n'' \<in> set (sourcenodes as)"
     with `sourcenode a \<notin> set (sourcenodes as)` `n = sourcenode a` 
-    have "n'' \<noteq> n" by(fastsimp simp:sourcenodes_def)
+    have "n'' \<noteq> n" by(fastforce simp:sourcenodes_def)
     with `\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''` `n'' \<in> set (sourcenodes as)`
     have "V \<notin> Def n''" by(auto simp:sourcenodes_def) }
   hence "\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''" by simp

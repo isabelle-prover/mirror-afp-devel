@@ -61,7 +61,7 @@ proof -
     hence "typeof_addr start_heap ad = \<lfloor>Class C\<rfloor>"
       by(rule NewObj_start_heap_obsD[OF wf_prog_wf_syscls[OF wf]])
     thus ?thesis using adal vwa NewObj
-      by(fastsimp simp add: has_field_def intro: addr_loc_type.intros)
+      by(fastforce simp add: has_field_def intro: addr_loc_type.intros)
   next
     case (NewArr ad' T n)
     with vwa adal eq have "NewArr ad T n \<in> set start_heap_obs"
@@ -69,7 +69,7 @@ proof -
     hence "typeof_addr start_heap ad = \<lfloor>Array T\<rfloor>"
       and "array_length start_heap ad = n" by(rule NewArr_start_heap_obsD)+
     thus ?thesis using adal vwa NewArr
-      by(fastsimp intro: addr_loc_type.intros simp add: has_field_def)
+      by(fastforce intro: addr_loc_type.intros simp add: has_field_def)
   qed
 qed
 
@@ -193,7 +193,7 @@ proof(intro equalityI subsetI)
         hence "\<forall>(tls, s', (t, ta), s'') \<in> lset (llist_of_tllist E''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []"
           using q by(auto simp add: lfilter_empty_conv)
         hence "\<forall>(t, ta) \<in> lset (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []"
-          by(cases "lfinite (llist_of_tllist E'')")(fastsimp simp add: lset_lappend_lfinite split_beta lset_lconcat_lfinite lappend_inf mthr.silent_move2_def dest: mthr.\<tau>Runs_table2_silentsD[OF \<tau>Runs'] mthr.\<tau>Runs_table2_terminal_silentsD[OF \<tau>Runs'] mthr.\<tau>Runs_table2_terminal_inf_stepD[OF \<tau>Runs'] m\<tau>move_silentD inf_step_silentD silent_moves2_silentD split: sum.split_asm)+
+          by(cases "lfinite (llist_of_tllist E'')")(fastforce simp add: lset_lappend_lfinite split_beta lset_lconcat_lfinite lappend_inf mthr.silent_move2_def dest: mthr.\<tau>Runs_table2_silentsD[OF \<tau>Runs'] mthr.\<tau>Runs_table2_terminal_silentsD[OF \<tau>Runs'] mthr.\<tau>Runs_table2_terminal_inf_stepD[OF \<tau>Runs'] m\<tau>move_silentD inf_step_silentD silent_moves2_silentD split: sum.split_asm)+
         hence "lfilter (\<lambda>(t, ta). obs_a ta \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))) = LNil"
           by(simp add: lfilter_empty_conv split_beta)
         thus ?thesis using LNil q by simp
@@ -201,7 +201,7 @@ proof(intro equalityI subsetI)
         case (LCons tl tls')
         then obtain tls s' s'' tlsstlss' where tls': "tls' = lmap (\<lambda>(tls, s', tta, s''). tta) tlsstlss'"
           and filter: "lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) (llist_of_tllist E'') = LCons (tls, s', tl, s'') tlsstlss'"
-          using q by(fastsimp simp add: lmap_eq_LCons_conv)
+          using q by(fastforce simp add: lmap_eq_LCons_conv)
         from lfilter_eq_LConsD[OF filter]
         obtain us vs where eq: "llist_of_tllist E'' = lappend us (LCons (tls, s', tl, s'') vs)"
           and fin: "lfinite us"
@@ -219,16 +219,16 @@ proof(intro equalityI subsetI)
           using eq' by cases auto
         moreover from \<tau>Runs' E'' fin
         have "\<forall>(tls, s, tl, s')\<in>lset us. \<forall>(t, ta)\<in>set tls. ta = \<epsilon>"
-          by(fastsimp dest: mthr.\<tau>Runs_table2_silentsD m\<tau>move_silentD simp add: mthr.silent_move2_def)
+          by(fastforce dest: mthr.\<tau>Runs_table2_silentsD m\<tau>move_silentD simp add: mthr.silent_move2_def)
         hence "lfilter (\<lambda>(t, ta). obs_a ta \<noteq> []) (lconcat (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) us)) = LNil"
           using empty by(auto simp add: lfilter_empty_conv lset_lconcat_lfinite split_beta)
         moreover from \<tau>Runs'' eq' have "snd ` set tls \<subseteq> {\<epsilon>}"
-          by(cases)(fastsimp dest: silent_moves2_silentD)+
+          by(cases)(fastforce dest: silent_moves2_silentD)+
         hence "[(t, ta)\<leftarrow>tls . obs_a ta \<noteq> []] = []"
           by(auto simp add: filter_empty_conv split_beta)
         ultimately have ?EqLCons
           using LCons q E'' fin tls' tlsstlss' filter eq' neq_empty
-          by(fastsimp simp add: lmap_lappend_distrib lappend_assoc lfilter_lappend_lfinite split_beta simp del: split_paired_Ex)
+          by(fastforce simp add: lmap_lappend_distrib lappend_assoc lfilter_lappend_lfinite split_beta simp del: split_paired_Ex)
         thus ?thesis ..
       qed
     qed
@@ -312,7 +312,7 @@ next
     proof(cases "thr s t'")
       case None
       with redT_normal tst' show ?thesis
-        by(fastsimp elim!: init_fin.cases dest: redT_updTs_new_thread simp add: final_thread.actions_ok_iff split: split_if_asm)
+        by(fastforce elim!: init_fin.cases dest: redT_updTs_new_thread simp add: final_thread.actions_ok_iff split: split_if_asm)
     next
       case (Some sxln)
       obtain status'' x'' ln'' 
@@ -347,13 +347,13 @@ next
   proof(cases "thr s t")
     case None
     with redT_normal running not_running show ?thesis
-      by(fastsimp simp add: final_thread.actions_ok_iff elim: init_fin.cases dest: redT_updTs_new_thread split: split_if_asm)
+      by(fastforce simp add: final_thread.actions_ok_iff elim: init_fin.cases dest: redT_updTs_new_thread split: split_if_asm)
   next
     case (Some a)
     with redT_normal running not_running show ?thesis
       apply(cases a)
       apply(auto simp add: final_thread.actions_ok_iff split: split_if_asm elim: init_fin.cases)
-      apply((drule (1) redT_updTs_Some)?, fastsimp)+
+      apply((drule (1) redT_updTs_Some)?, fastforce)+
       done
   qed
 qed
@@ -376,10 +376,10 @@ lemma init_fin_Trsys_Running_InitialThreadAction:
   shows "(t, \<lbrace>InitialThreadAction\<rbrace>) \<in> set ttas"
 using redT not_running running
 proof(induct arbitrary: x' ln')
-  case rtrancl3p_refl thus ?case by(fastsimp)
+  case rtrancl3p_refl thus ?case by(fastforce)
 next
   case (rtrancl3p_step s ttas s' tta s'') thus ?case
-    by(cases "\<exists>x ln. thr s' t = \<lfloor>((Running, x), ln)\<rfloor>")(fastsimp dest: init_fin_Running_InitialThreadAction)+
+    by(cases "\<exists>x ln. thr s' t = \<lfloor>((Running, x), ln)\<rfloor>")(fastforce dest: init_fin_Running_InitialThreadAction)+
 qed
 
 end
@@ -510,7 +510,7 @@ proof(rule thread_start_actions_okI)
         and l: "l < length \<lbrace>snd (lnth E' k)\<rbrace>\<^bsub>o\<^esub>"
         and k: "enat k < llength E'"
         and i_conv: "enat ?i' = (\<Sum>i<k. llength (lnth (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E') i)) + enat l"
-        by(fastsimp simp add: split_beta)
+        by(fastforce simp add: split_beta)
 
       have "(\<Sum>i<k. llength (lnth (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E') i)) =
             (\<Sum>i<k. (enat \<circ> (\<lambda>i. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)) i)"
@@ -684,7 +684,7 @@ proof(induct rule: mthr.if.RedT_induct')
   case refl thus ?case by simp
 next
   case (step ttas s' t ta s'') thus ?case
-    by(cases "ad \<in> allocated (shr s')")(fastsimp simp del: split_paired_Ex dest: init_fin_redT_allocated_NewHeapElemD)+
+    by(cases "ad \<in> allocated (shr s')")(fastforce simp del: split_paired_Ex dest: init_fin_redT_allocated_NewHeapElemD)+
 qed
 
 lemma \<E>_new_actions_for_unique:
@@ -707,26 +707,26 @@ next
 
   have distinct: "distinct (filter (\<lambda>obs. \<exists>a CTn. obs = NormalAction (NewHeapElem a CTn)) (map snd ?init_obs))"
     unfolding start_heap_obs_def
-    by(fastsimp intro: inj_onI intro!: distinct_filter simp add: distinct_map distinct_zipI1 distinct_initialization_list)
+    by(fastforce intro: inj_onI intro!: distinct_filter simp add: distinct_map distinct_zipI1 distinct_initialization_list)
 
   from start_addrs_allocated
   have dom_start_state: "{a. \<exists>CTn. NormalAction (NewHeapElem a CTn) \<in> snd ` set ?init_obs} \<subseteq> allocated (shr ?start_state)"
-    by(fastsimp simp add: init_fin_lift_state_conv_simps shr_start_state dest: NewHeapElem_start_heap_obs_start_addrsD subsetD)
+    by(fastforce simp add: init_fin_lift_state_conv_simps shr_start_state dest: NewHeapElem_start_heap_obs_start_addrsD subsetD)
   
   show ?case
   proof(cases "a' < length ?init_obs")
     case True
     with a' adal E obtain t_a' CTn_a'
       where CTn_a': "?init_obs ! a' = (t_a', NormalAction (NewHeapElem ad CTn_a'))"
-      by(cases "?init_obs ! a'")(fastsimp elim!: is_new_action.cases action_loc_aux_cases simp add: action_obs_def lnth_lappend1 new_actions_for_def )+
+      by(cases "?init_obs ! a'")(fastforce elim!: is_new_action.cases action_loc_aux_cases simp add: action_obs_def lnth_lappend1 new_actions_for_def )+
     from True a_a' have len_a: "a < length ?init_obs" by simp
     with a adal E obtain t_a CTn_a
       where CTn_a: "?init_obs ! a = (t_a, NormalAction (NewHeapElem ad CTn_a))"
-      by(cases "?init_obs ! a")(fastsimp elim!: is_new_action.cases action_loc_aux_cases simp add: action_obs_def lnth_lappend1 new_actions_for_def )+
+      by(cases "?init_obs ! a")(fastforce elim!: is_new_action.cases action_loc_aux_cases simp add: action_obs_def lnth_lappend1 new_actions_for_def )+
     from CTn_a CTn_a' True len_a
     have "NormalAction (NewHeapElem ad CTn_a') \<in> snd ` set ?init_obs"
       and "NormalAction (NewHeapElem ad CTn_a) \<in> snd ` set ?init_obs" unfolding set_conv_nth
-      by(fastsimp intro: rev_image_eqI)+
+      by(fastforce intro: rev_image_eqI)+
     hence [simp]: "CTn_a' = CTn_a" using distinct_start_addrs'
       by(auto simp add: in_set_conv_nth distinct_conv_nth start_heap_obs_def start_addrs_def) blast
     from distinct_filterD[OF distinct, of a' a "NormalAction (NewHeapElem ad CTn_a)"] len_a True CTn_a CTn_a'
@@ -758,7 +758,7 @@ next
       unfolding adal by(auto elim: new_actionsE)
     then obtain CTn'
       where "action_obs E'' (a' - n) = NormalAction (NewHeapElem ad CTn')"
-      by cases(fastsimp)+
+      by cases(fastforce)+
     hence New_ta_a': "\<lbrace>ta_a'\<rbrace>\<^bsub>o\<^esub> ! a'_n = NormalAction (NewHeapElem ad CTn')"
       using E_a' a'_n unfolding action_obs_def by simp
 
@@ -766,11 +766,11 @@ next
     proof(cases "a < n")
       case True
       with a adal E n obtain t_a CTn_a where "?init_obs ! a = (t_a, NormalAction (NewHeapElem ad CTn_a))"
-        by(cases "?init_obs ! a")(fastsimp elim!: is_new_action.cases simp add: action_obs_def lnth_lappend1 new_actions_for_def)+
+        by(cases "?init_obs ! a")(fastforce elim!: is_new_action.cases simp add: action_obs_def lnth_lappend1 new_actions_for_def)+
 
       with subsetD[OF dom_start_state, of ad] n True
       have a_shr_\<sigma>: "ad \<in> allocated (shr ?start_state)"
-        by(fastsimp simp add: set_conv_nth intro: rev_image_eqI)
+        by(fastforce simp add: set_conv_nth intro: rev_image_eqI)
       
       have E'_unfold': "E' = lappend (ltake (enat a'_m) E') (LCons (lnth E' a'_m) (ldropn (Suc a'_m) E'))"
         unfolding ldropn_Suc_conv_ldropn[OF a'_m] by simp
@@ -798,7 +798,7 @@ next
         and x'_a': "x'_a' = (Running, X'_a')"
         and ta_a': "ta_a' = convert_TA_initial (convert_obs_initial ta'_a')"
         and red''_a': "t_a' \<turnstile> \<langle>X_a', shr \<sigma>'\<rangle> -ta'_a'\<rightarrow> \<langle>X'_a', m'_a'\<rangle>"
-        by cases fastsimp+
+        by cases fastforce+
       
       from ta_a' New_ta_a' a'_n have New_ta'_a': "\<lbrace>ta'_a'\<rbrace>\<^bsub>o\<^esub> ! a'_n = NewHeapElem ad CTn'"
         and a'_n': "a'_n < length \<lbrace>ta'_a'\<rbrace>\<^bsub>o\<^esub>" by auto
@@ -831,7 +831,7 @@ next
         and "(ad, al) \<in> action_loc P E'' (a - n)" 
         unfolding adal by(auto elim: new_actionsE)
       then obtain CTn where "action_obs E'' (a - n) = NormalAction (NewHeapElem ad CTn)"
-        by cases(fastsimp)+
+        by cases(fastforce)+
       hence New_ta_a: " \<lbrace>ta_a\<rbrace>\<^bsub>o\<^esub> ! a_n = NormalAction (NewHeapElem ad CTn)"
         using E_a a_n unfolding action_obs_def by simp
       
@@ -861,7 +861,7 @@ next
         and x'_a: "x'_a = (Running, X'_a)"
         and ta_a: "ta_a = convert_TA_initial (convert_obs_initial ta'_a)"
         and red''_a: "t_a \<turnstile> (X_a, shr \<sigma>') -ta'_a\<rightarrow> (X'_a, m'_a)"
-        by cases fastsimp+
+        by cases fastforce+
       from ta_a New_ta_a a_n have New_ta'_a: "\<lbrace>ta'_a\<rbrace>\<^bsub>o\<^esub> ! a_n = NewHeapElem ad CTn"
         and a_n': "a_n < length \<lbrace>ta'_a\<rbrace>\<^bsub>o\<^esub>" by auto
       hence "NewHeapElem ad CTn \<in> set \<lbrace>ta'_a\<rbrace>\<^bsub>o\<^esub>" unfolding in_set_conv_nth by blast
@@ -921,7 +921,7 @@ next
           and x'_a': "x'_a' = (Running, X'_a')"
           and ta_a': "ta_a' = convert_TA_initial (convert_obs_initial ta'_a')"
           and red''_a': "t_a' \<turnstile> (X_a', shr \<sigma>''') -ta'_a'\<rightarrow> (X'_a', m'_a')"
-          by cases fastsimp+
+          by cases fastforce+
         from ta_a' New_ta_a' a'_n have New_ta'_a': "\<lbrace>ta'_a'\<rbrace>\<^bsub>o\<^esub> ! a'_n = NewHeapElem ad CTn'"
           and a'_n': "a'_n < length \<lbrace>ta'_a'\<rbrace>\<^bsub>o\<^esub>" by auto
         hence "NewHeapElem ad CTn' \<in> set \<lbrace>ta'_a'\<rbrace>\<^bsub>o\<^esub>" unfolding in_set_conv_nth by blast
@@ -1030,7 +1030,7 @@ by(auto simp add: known_addrs_thr_def ran_def)
 
 lemma known_addrs_stateI:
   "\<lbrakk> ad \<in> known_addrs t x; thr s t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> ad \<in> known_addrs_state s"
-by(fastsimp simp add: known_addrs_state_def known_addrs_thr_def intro: rev_bexI)
+by(fastforce simp add: known_addrs_state_def known_addrs_thr_def intro: rev_bexI)
 
 fun known_addrs_if :: "'t \<Rightarrow> status \<times> 'x \<Rightarrow> 'addr set"
 where "known_addrs_if t (s, x) = known_addrs t x"
@@ -1102,13 +1102,13 @@ lemma if_red_known_addrs_new_thread:
   assumes "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')" "NewThread t' x'' m'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
   shows "known_addrs_if t' x'' \<subseteq> known_addrs_if t x"
 using assms
-by cases(fastsimp dest: red_known_addrs_new_thread)+
+by cases(fastforce dest: red_known_addrs_new_thread)+
 
 lemma if_red_read_knows_addr:
   assumes "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')" "NormalAction (ReadMem ad al v) \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
   shows "ad \<in> known_addrs_if t x"
 using assms
-by cases(fastsimp dest: red_read_knows_addr)+
+by cases(fastforce dest: red_read_knows_addr)+
 
 lemma if_red_write_knows_addr:
   assumes "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')"
@@ -1123,7 +1123,7 @@ lemma if_redT_known_addrs_new:
 using redT
 proof(cases)
   case redT_acquire thus ?thesis
-    by(cases s)(fastsimp simp add: if.known_addrs_thr_def split: split_if_asm intro: rev_bexI)
+    by(cases s)(fastforce simp add: if.known_addrs_thr_def split: split_if_asm intro: rev_bexI)
 next
   case (redT_normal x x' m)
   note red = `t \<turnstile> (x, shr s) -ta\<rightarrow>i (x', m)`
@@ -1140,7 +1140,7 @@ next
       case None
       with redT_normal `thr s' t' = \<lfloor>(x'', ln'')\<rfloor>`
       obtain m'' where "NewThread t' x'' m'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
-        by(fastsimp dest: redT_updTs_new_thread split: split_if_asm)
+        by(fastforce dest: redT_updTs_new_thread split: split_if_asm)
       with red have "known_addrs_if t' x'' \<subseteq> known_addrs_if t x" by(rule if_red_known_addrs_new_thread)
       also have "\<dots> \<subseteq> known_addrs_if t x \<union> new_obs_addrs_if \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" by simp
       finally have "ad \<in> known_addrs_if t x \<union> new_obs_addrs_if \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" using ad by blast
@@ -1156,7 +1156,7 @@ next
       next
         case False
         with ts't' redT_normal ad Some show ?thesis
-          by(fastsimp dest: redT_updTs_Some[where ts="thr s" and t=t'] intro: if.known_addrs_stateI)
+          by(fastforce dest: redT_updTs_Some[where ts="thr s" and t=t'] intro: if.known_addrs_stateI)
       qed
     qed
   qed
@@ -1318,7 +1318,7 @@ proof -
             with tasc ob obtain b where mrw: "mrw_values P vs obs (ad, al) = \<lfloor>(Addr ad', b)\<rfloor>"
               by(auto simp add: lappend_llist_of_llist_of[symmetric] ta_seq_consist_lappend simp del: lappend_llist_of_llist_of)
             hence "ad' \<in> mrw_addrs (mrw_values P vs obs)"
-              by(fastsimp simp add: mrw_addrs_def ran_def intro: rev_image_eqI)
+              by(fastforce simp add: mrw_addrs_def ran_def intro: rev_image_eqI)
             with IH have "ad' \<in> allocated (shr s')" by blast }
           with ob IH show ?thesis by(cases v)(simp_all add: new_obs_addrs_if_def)
         qed(simp_all add: new_obs_addrs_if_def)
@@ -1568,7 +1568,7 @@ next
   moreover obtain ad al where adal: "adal = (ad, al)" by(cases adal)
   ultimately obtain v where ra: "action_obs E ra = NormalAction (ReadMem ad al v)"
     and ra_len: "enat ra < llength E"
-    by(cases "lnth E ra")(fastsimp elim!: read_actions.cases actionsE)
+    by(cases "lnth E ra")(fastforce elim!: read_actions.cases actionsE)
 
   from E obtain E'' where E: "E = lappend (llist_of ?obs_prefix) E''"
     and E'': "E'' \<in> mthr.if.\<E> ?start_state" by auto
@@ -1623,7 +1623,7 @@ next
     and x'_ra: "x'_ra = (Running, X'_ra)"
     and ta_ra: "ta_ra = convert_TA_initial (convert_obs_initial ta'_ra)"
     and red''_ra: "t_ra \<turnstile> (X_ra, shr \<sigma>') -ta'_ra\<rightarrow> (X'_ra, m'_ra)"
-    by cases fastsimp+
+    by cases fastforce+
 
   from `NormalAction (ReadMem ad al v) \<in> set \<lbrace>ta_ra\<rbrace>\<^bsub>o\<^esub>` ta_ra 
   have "ReadMem ad al v \<in> set \<lbrace>ta'_ra\<rbrace>\<^bsub>o\<^esub>" by auto
@@ -1726,7 +1726,7 @@ next
     from `mthr.if.redT s'' (t', ta') s'''` `NormalAction (NewHeapElem ad CTn) \<in> set \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>`
     obtain x_wa x_wa' where ts''t': "thr s'' t' = \<lfloor>(x_wa, no_wait_locks)\<rfloor>"
       and red_wa: "mthr.init_fin t' (x_wa, shr s'') ta' (x_wa', shr s''')"
-      by(cases) fastsimp+
+      by(cases) fastforce+
 
     from sc'
     have "ta_seq_consist P (mrw_values P empty (map snd ?obs_prefix)) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')))"
@@ -1804,7 +1804,7 @@ proof -
     with dom_typeof_addr obtain T where "typeof_addr h a = \<lfloor>T\<rfloor>" by blast
     moreover note typeof_addr_eq_Some_conv[OF this]
     ultimately have "{(a, al)|al. \<exists>T. P,h' \<turnstile> a@al : T} = {(a, al)|al. \<exists>T. P,h \<turnstile> a@al : T}" using hext
-      by(fastsimp elim!: addr_loc_type.cases intro: addr_loc_type.intros dest: hext_arrD hext_objD)
+      by(fastforce elim!: addr_loc_type.cases intro: addr_loc_type.intros dest: hext_arrD hext_objD)
     also from dom_vs a have "\<dots> \<subseteq> dom vs" by blast
     finally show "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> dom vs" .
   qed
@@ -1891,7 +1891,7 @@ proof -
           case (Addr a)
           from sc ta ob obtain b where "?vs (ad, al) = \<lfloor>(v, b)\<rfloor>"
             by(auto simp add: lappend_llist_of_llist_of[symmetric] ta_seq_consist_lappend simp del: lappend_llist_of_llist_of)
-          with Addr have a: "a \<in> mrw_addrs ?vs" by(fastsimp simp add: mrw_addrs_def ran_def intro: rev_image_eqI)
+          with Addr have a: "a \<in> mrw_addrs ?vs" by(fastforce simp add: mrw_addrs_def ran_def intro: rev_image_eqI)
           hence "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> dom ?vs" using dom_vs by blast
           also have "\<dots> \<subseteq> dom ?vs'" by(simp)(rule mrw_value_dom_mono)
           finally have "?concl1 (obs @ [ob])" using ob Addr dom_vs by(simp add: new_obs_addrs_def)
@@ -1909,7 +1909,7 @@ proof -
         note Complete_Lattices.UN_mono[OF Un_mono[OF subset_refl this] subset_refl]
         also note dom_vs
         also have "dom ?vs \<subseteq> dom ?vs'" by(simp)(rule mrw_value_dom_mono)
-        also from a ob have "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> dom ?vs'" by(fastsimp elim!: addr_loc_type.cases)
+        also from a ob have "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> dom ?vs'" by(fastforce elim!: addr_loc_type.cases)
         ultimately have "?concl1 (obs @ [ob])" using ob by(simp add: new_obs_addrs_def del: fun_upd_apply)
         moreover {
           note `mrw_addrs ?vs' \<subseteq> mrw_addrs ?vs`
@@ -1928,7 +1928,7 @@ proof -
         also note dom_vs
         also have "dom ?vs \<subseteq> dom ?vs'" by(simp)(rule mrw_value_dom_mono)
         also from a ob have "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> dom ?vs'"
-          by(auto elim!: addr_loc_type.cases)(frule has_field_decl_above, fastsimp)+
+          by(auto elim!: addr_loc_type.cases)(frule has_field_decl_above, fastforce)+
         ultimately have "?concl1 (obs @ [ob])" using ob by(simp add: new_obs_addrs_def del: fun_upd_apply)
         moreover {
           note `mrw_addrs ?vs' \<subseteq> mrw_addrs ?vs`
@@ -2026,7 +2026,7 @@ proof -
       with dom_typeof_addr obtain T where "typeof_addr (shr s) a = \<lfloor>T\<rfloor>" by(auto iff: domIff)
       moreover note typeof_addr_eq_Some_conv[OF this]
       ultimately have "{(a, al)|al. \<exists>T. P,m' \<turnstile> a@al : T} = {(a, al)|al. \<exists>T. P,shr s \<turnstile> a@al : T}" using hext
-        by(fastsimp elim!: addr_loc_type.cases intro: addr_loc_type.intros dest: hext_arrD hext_objD)
+        by(fastforce elim!: addr_loc_type.cases intro: addr_loc_type.intros dest: hext_arrD hext_objD)
       also from dom_vs a have "\<dots> \<subseteq> dom vs" by blast
       also have "dom vs \<subseteq> dom (mrw_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)" by(rule mrw_values_dom_mono)
       finally show "{(a, al) |al. \<exists>T. P,m' \<turnstile> a@al : T} \<subseteq> dom (mrw_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)" .
@@ -2169,13 +2169,13 @@ proof -
         assume "\<not> ?thesis"
         hence "?r < length ?start_heap_obs" by simp
         moreover with r E obtain t ad al v where "?start_heap_obs ! ?r = (t, NormalAction (ReadMem ad al v))"
-          by(cases "?start_heap_obs ! ?r")(fastsimp elim!: read_actions.cases simp add: actions_def action_obs_def lnth_lappend1)
+          by(cases "?start_heap_obs ! ?r")(fastforce elim!: read_actions.cases simp add: actions_def action_obs_def lnth_lappend1)
         ultimately have "(t, NormalAction (ReadMem ad al v)) \<in> set ?start_heap_obs" unfolding in_set_conv_nth by blast
         thus False by(auto simp add: start_heap_obs_not_Read)
       qed
       let ?n = "length ?start_heap_obs"
       from r r_len E have r: "?r - ?n \<in> read_actions E''"
-        by(fastsimp elim!: read_actions.cases simp add: actions_lappend action_obs_def lnth_lappend2 elim: actionsE intro: read_actions.intros)
+        by(fastforce elim!: read_actions.cases simp add: actions_lappend action_obs_def lnth_lappend2 elim: actionsE intro: read_actions.intros)
       
       from r have "?r - ?n \<in> actions E''" by(auto)
       hence "enat (?r - ?n) < llength E''" by(rule actionsE)

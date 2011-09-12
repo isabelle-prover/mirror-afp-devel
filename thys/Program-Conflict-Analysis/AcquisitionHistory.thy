@@ -83,7 +83,7 @@ lemma \<alpha>ah_ah: "\<alpha>ah w \<in> ah"
   apply (induct w)
   apply (unfold ah_def)
   apply simp
-  apply (fastsimp split: split_if_asm)
+  apply (fastforce split: split_if_asm)
   done
 
 lemma \<alpha>ah_hd: "\<lbrakk>m\<in>fst e; x\<in>fst e \<union> snd e \<union> mon_pl w\<rbrakk> \<Longrightarrow> x\<in>\<alpha>ah (e#w) m"

@@ -369,7 +369,7 @@ lemma (in flowgraph) trss_c'_split_s: "\<lbrakk>
   \<rbrakk> \<Longrightarrow> P" 
   apply (erule trss_c_cases_s)
   apply (subgoal_tac "c'={#}+c")
-  apply (fastsimp)
+  apply (fastforce)
   apply auto
   done
 
@@ -514,7 +514,7 @@ lemma trss_find_return: "\<lbrakk>
   \<rbrakk> \<Longrightarrow> P"
   -- {* If @{term "s=[]"}, the proposition follows trivially *}
   apply (cases "s=[]")
-  apply fastsimp
+  apply fastforce
 proof -
   -- {* For @{term "s\<noteq>[]"}, we use induction by @{term w} *}
   have IM: "!!s c. \<lbrakk> ((s@r,c),w,(r,c'))\<in>trcl (trss fg); s\<noteq>[] \<rbrakk> \<Longrightarrow> \<exists>wa wb ch. w=wa@wb \<and> ((s,c),wa,([],ch))\<in>trcl (trss fg) \<and> ((r,ch),wb,(r,c'))\<in>trcl (trss fg)"
@@ -641,7 +641,7 @@ next
   moreover have "(\<exists>u. rh=u#r') \<or> ?case"
   proof (rule trss.cases[OF SPLIT2], simp_all) -- "Cases for base- and spawn edge are discharged automatically"
       -- "Case: call-edge"
-    case (goal1 ca p r u vv) with SPLIT1 SPLIT2 show ?case by fastsimp 
+    case (goal1 ca p r u vv) with SPLIT1 SPLIT2 show ?case by fastforce 
   next
       -- "Case: return edge"
     case (goal2 q r ca) note CC=this

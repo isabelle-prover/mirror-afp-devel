@@ -24,28 +24,28 @@ proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   case (RedNew h C h' a l)
   obtain H' ao where "new_obj H C = (H', ao)" by(cases "new_obj H C")
   with RedNew show ?case
-    by(cases ao)(fastsimp simp add: ta_upd_simps intro: RedNewFail red_reds.RedNew)+
+    by(cases ao)(fastforce simp add: ta_upd_simps intro: RedNewFail red_reds.RedNew)+
 next
   case (RedNewFail h C h' l)
   obtain H' ao where "new_obj H C = (H', ao)" by(cases "new_obj H C")
   with RedNewFail show ?case
-    by(cases ao)(fastsimp simp add: ta_upd_simps intro: red_reds.RedNewFail RedNew)+
+    by(cases ao)(fastforce simp add: ta_upd_simps intro: red_reds.RedNewFail RedNew)+
 next 
-  case NewArrayRed thus ?case by(fastsimp intro: red_reds.intros)
+  case NewArrayRed thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedNewArray i h T h' a l E T')
   obtain H' ao where "new_arr H T (nat (sint i)) = (H', ao)" by(cases "new_arr H T (nat (sint i))")
   with RedNewArray show ?case
-    by(cases ao)(fastsimp simp add: ta_upd_simps intro: red_reds.RedNewArray RedNewArrayFail)+
+    by(cases ao)(fastforce simp add: ta_upd_simps intro: red_reds.RedNewArray RedNewArrayFail)+
 next
-  case RedNewArrayNegative thus ?case by(fastsimp intro: red_reds.intros)
+  case RedNewArrayNegative thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedNewArrayFail i h T h' l E T')
   obtain H' ao where "new_arr H T (nat (sint i)) = (H', ao)" by(cases "new_arr H T (nat (sint i))")
   with RedNewArrayFail show ?case
-    by(cases ao)(fastsimp simp add: ta_upd_simps intro: RedNewArray red_reds.RedNewArrayFail)+
+    by(cases ao)(fastforce simp add: ta_upd_simps intro: RedNewArray red_reds.RedNewArrayFail)+
 next
-  case CastRed thus ?case by(fastsimp intro: red_reds.intros)
+  case CastRed thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedCast s v U T E T')
   from `P,E,H \<turnstile> Cast T (Val v) : T'` show ?case
@@ -53,38 +53,38 @@ next
     fix T''
     assume wt: "P,E,H \<turnstile> Val v : T''" "T = T'"
     thus ?thesis
-      by(cases "P \<turnstile> T'' \<le> T")(fastsimp intro: red_reds.RedCast red_reds.RedCastFail)+
+      by(cases "P \<turnstile> T'' \<le> T")(fastforce intro: red_reds.RedCast red_reds.RedCastFail)+
   qed
 next 
   case (RedCastFail s v U T E T')
   from `P,E,H \<turnstile> Cast T (Val v) : T'` 
   obtain T'' where "P,E,H \<turnstile> Val v : T''" "T = T'" by auto
   thus ?case
-    by(cases "P \<turnstile> T'' \<le> T")(fastsimp intro: red_reds.RedCast red_reds.RedCastFail)+
+    by(cases "P \<turnstile> T'' \<le> T")(fastforce intro: red_reds.RedCast red_reds.RedCastFail)+
 next
-  case InstanceOfRed thus ?case by(fastsimp intro: red_reds.intros)
+  case InstanceOfRed thus ?case by(fastforce intro: red_reds.intros)
 next
   case RedInstanceOf thus ?case by auto((rule exI conjI red_reds.RedInstanceOf)+, auto)
 next
-  case BinOpRed1 thus ?case by(fastsimp intro: red_reds.intros)
+  case BinOpRed1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case BinOpRed2 thus ?case by(fastsimp intro: red_reds.intros)
+  case BinOpRed2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedBinOp thus ?case by(fastsimp intro: red_reds.intros)
+  case RedBinOp thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedBinOpFail thus ?case by(fastsimp intro: red_reds.intros)
+  case RedBinOpFail thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedVar thus ?case by(fastsimp intro: red_reds.intros)
+  case RedVar thus ?case by(fastforce intro: red_reds.intros)
 next
-  case LAssRed thus ?case by(fastsimp intro: red_reds.intros)
+  case LAssRed thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedLAss thus ?case by(fastsimp intro: red_reds.intros)
+  case RedLAss thus ?case by(fastforce intro: red_reds.intros)
 next
-  case AAccRed1 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAccRed1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case AAccRed2 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAccRed2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedAAccNull thus ?case by(fastsimp intro: red_reds.intros)
+  case RedAAccNull thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedAAccBounds s a T i E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'` 
@@ -95,7 +95,7 @@ next
   have si': "array_length H a = array_length (hp s) a"
     by(auto dest: hext_arrD)
   with Ha `i <s 0 \<or> int (array_length (hp s) a) \<le> sint i` show ?case
-    by(fastsimp intro: red_reds.RedAAccBounds)
+    by(fastforce intro: red_reds.RedAAccBounds)
 next 
   case (RedAAcc h a T i v l E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'` 
@@ -113,15 +113,15 @@ next
   from heap_read_total[OF hconf this]
   obtain v where "heap_read H a (ACell (nat (sint i))) v" by blast
   with si' Ha `0 <=s i` `sint i < int (array_length h a)` show ?case
-    by(fastsimp intro: red_reds.RedAAcc simp add: ta_upd_simps)
+    by(fastforce intro: red_reds.RedAAcc simp add: ta_upd_simps)
 next
-  case AAssRed1 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAssRed1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case AAssRed2 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAssRed2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case AAssRed3 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAssRed3 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedAAssNull thus ?case by(fastsimp intro: red_reds.intros)
+  case RedAAssNull thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedAAssBounds s a T i e E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val e : T'` 
@@ -132,7 +132,7 @@ next
   have si': "array_length H a = array_length (hp s) a" and [simp]: "T'' = T"
     by(auto dest: hext_arrD)
   with `i <s 0 \<or> int (array_length (hp s) a) \<le> sint i` Ha show ?case
-    by(fastsimp intro: red_reds.RedAAssBounds)
+    by(fastforce intro: red_reds.RedAAssBounds)
 next
   case (RedAAssStore s a T i w U E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'` 
@@ -146,7 +146,7 @@ next
   from `typeof\<^bsub>hp s\<^esub> w = \<lfloor>U\<rfloor>` wtw `H \<unlhd> hp s` have "typeof\<^bsub>H\<^esub> w = \<lfloor>U\<rfloor>" 
     by(auto dest: type_of_hext_type_of)
   with Ha `0 <=s i` `sint i < int (array_length (hp s) a)` `\<not> P \<turnstile> U \<le> T` T'' si' show ?case
-    by(fastsimp intro: red_reds.RedAAssStore)
+    by(fastforce intro: red_reds.RedAAssStore)
 next
   case (RedAAss h a T i w U h' l E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'`
@@ -170,9 +170,9 @@ next
   from heap_write_total[OF this conf]
   obtain H' where "heap_write H a (ACell (nat (sint i))) w H'" ..
   ultimately show ?case using `0 <=s i` `sint i < int (array_length h a)` Ha T'' `P \<turnstile> U \<le> T` si'
-    by(fastsimp simp del: split_paired_Ex intro: red_reds.RedAAss)
+    by(fastforce simp del: split_paired_Ex intro: red_reds.RedAAss)
 next
-  case ALengthRed thus ?case by(fastsimp intro: red_reds.intros)
+  case ALengthRed thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedALength h a T l E T')
   from `P,E,H \<turnstile> addr a\<bullet>length : T'`
@@ -180,11 +180,11 @@ next
       and wta: "P,E,H \<turnstile> addr a : T''\<lfloor>\<rceil>"
     by(auto dest: typeof_addr_eq_Some_conv)
   hence "typeof_addr H a = \<lfloor>Array T''\<rfloor>" by(auto)
-  thus ?case by(fastsimp intro: red_reds.RedALength)
+  thus ?case by(fastforce intro: red_reds.RedALength)
 next
-  case RedALengthNull show ?case by(fastsimp intro: red_reds.RedALengthNull)
+  case RedALengthNull show ?case by(fastforce intro: red_reds.RedALengthNull)
 next
-  case FAccRed thus ?case by(fastsimp intro: red_reds.intros)
+  case FAccRed thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedFAcc h a D F v l E T)
   from `P,E,H \<turnstile> addr a\<bullet>F{D} : T` obtain U C' fm
@@ -197,15 +197,15 @@ next
     by(auto intro: addr_loc_type.intros)
   from heap_read_total[OF hconf this]
   obtain v where "heap_read H a (CField D F) v" by blast
-  thus ?case by(fastsimp intro: red_reds.RedFAcc simp add: ta_upd_simps)
+  thus ?case by(fastforce intro: red_reds.RedFAcc simp add: ta_upd_simps)
 next
-  case RedFAccNull thus ?case by(fastsimp intro: red_reds.intros)
+  case RedFAccNull thus ?case by(fastforce intro: red_reds.intros)
 next
-  case FAssRed1 thus ?case by(fastsimp intro: red_reds.intros)
+  case FAssRed1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case FAssRed2 thus ?case by(fastsimp intro: red_reds.intros)
+  case FAssRed2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedFAssNull thus ?case by(fastsimp intro: red_reds.intros)
+  case RedFAssNull thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedFAss h a D F v h' l E T)
   from `P,E,H \<turnstile> addr a\<bullet>F{D} := Val v : T` obtain U C' T' T2 fm
@@ -220,11 +220,11 @@ next
   from wtv T2T have "P,H \<turnstile> v :\<le> T'" by(auto simp add: conf_def)
   from heap_write_total[OF adal this]
   obtain h' where "heap_write H a (CField D F) v h'" ..
-  thus ?case by(fastsimp intro: red_reds.RedFAss)
+  thus ?case by(fastforce intro: red_reds.RedFAss)
 next
-  case CallObj thus ?case by(fastsimp intro: red_reds.intros)
+  case CallObj thus ?case by(fastforce intro: red_reds.intros)
 next
-  case CallParams thus ?case by(fastsimp intro: red_reds.intros)
+  case CallParams thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedCall s a U C M Ts T pns body D vs E T')
   from `P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T'` show ?case
@@ -248,7 +248,7 @@ next
     moreover from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `H \<unlhd> hp s` Ha
     have "U = U'" by(auto dest: typeof_addr_hext_mono)
     ultimately show ?thesis using sees nexc icto
-      by(fastsimp intro: red_reds.RedCall)
+      by(fastforce intro: red_reds.RedCall)
   next
     fix Ts
     assume "P,E,H \<turnstile> addr a : NT"
@@ -283,47 +283,47 @@ next
     hence "P,H \<turnstile> a\<bullet>M(vs) : T" using wtext `P,E,H \<turnstile> map Val vs [:] Ts` by(auto intro: external_WT'.intros)
     from red_external_wt_hconf_hext[OF wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `H \<unlhd> hp s` this tconf hconf]
       wta `is_native P U M` `ta' = convert_extTA extNTA ta` `e' = extRet2J (addr a\<bullet>M(map Val vs)) va` `s' = (h', lcl s)`
-    show ?thesis by(fastsimp intro: red_reds.RedCallExternal simp del: split_paired_Ex)
+    show ?thesis by(fastforce intro: red_reds.RedCallExternal simp del: split_paired_Ex)
   qed
 next
-  case RedCallNull thus ?case by(fastsimp intro: red_reds.intros)
+  case RedCallNull thus ?case by(fastforce intro: red_reds.intros)
 next
   case (BlockRed e h l V vo ta e' h' l' T E T')
   note IH = BlockRed.hyps(2)
   from IH[of "E(V \<mapsto> T)" T'] `P,E,H \<turnstile> {V:T=vo; e} : T'` `hext H (hp (h, l))`
-  show ?case by(fastsimp dest: red_reds.BlockRed)
+  show ?case by(fastforce dest: red_reds.BlockRed)
 next
-  case RedBlock thus ?case by(fastsimp intro: red_reds.intros)
+  case RedBlock thus ?case by(fastforce intro: red_reds.intros)
 next
-  case SynchronizedRed1 thus ?case by(fastsimp intro: red_reds.intros)
+  case SynchronizedRed1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case SynchronizedNull thus ?case by(fastsimp intro: red_reds.intros)
+  case SynchronizedNull thus ?case by(fastforce intro: red_reds.intros)
 next
-  case LockSynchronized thus ?case by(fastsimp intro: red_reds.intros)
+  case LockSynchronized thus ?case by(fastforce intro: red_reds.intros)
 next
-  case SynchronizedRed2 thus ?case by(fastsimp intro: red_reds.intros)
+  case SynchronizedRed2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case UnlockSynchronized thus ?case by(fastsimp intro: red_reds.intros)
+  case UnlockSynchronized thus ?case by(fastforce intro: red_reds.intros)
 next
-  case SeqRed thus ?case by(fastsimp intro: red_reds.intros)
+  case SeqRed thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedSeq thus ?case by(fastsimp intro: red_reds.intros)
+  case RedSeq thus ?case by(fastforce intro: red_reds.intros)
 next
-  case CondRed thus ?case by(fastsimp intro: red_reds.intros)
+  case CondRed thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedCondT thus ?case by(fastsimp intro: red_reds.intros)
+  case RedCondT thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedCondF thus ?case by(fastsimp intro: red_reds.intros)
+  case RedCondF thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedWhile thus ?case by(fastsimp intro: red_reds.intros)
+  case RedWhile thus ?case by(fastforce intro: red_reds.intros)
 next
-  case ThrowRed thus ?case by(fastsimp intro: red_reds.intros)
+  case ThrowRed thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedThrowNull thus ?case by(fastsimp intro: red_reds.intros)
+  case RedThrowNull thus ?case by(fastforce intro: red_reds.intros)
 next
-  case TryRed thus ?case by(fastsimp intro: red_reds.intros)
+  case TryRed thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedTry thus ?case by(fastsimp intro: red_reds.intros)
+  case RedTry thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedTryCatch s a D C V e2 E T)
   from `P,E,H \<turnstile> try Throw a catch(C V) e2 : T`
@@ -332,7 +332,7 @@ next
   have Ha: "typeof_addr H a = \<lfloor>Class D\<rfloor>"
     by(auto dest: typeof_addr_hext_mono)
   with `P \<turnstile> D \<preceq>\<^sup>* C` show ?case
-    by(fastsimp intro: red_reds.RedTryCatch)
+    by(fastforce intro: red_reds.RedTryCatch)
 next
   case (RedTryFail s a D C V e2 E T)
   from `P,E,H \<turnstile> try Throw a catch(C V) e2 : T`
@@ -341,57 +341,57 @@ next
   have Ha: "typeof_addr H a = \<lfloor>Class D\<rfloor>" 
     by(auto dest: typeof_addr_hext_mono)
   with `\<not> P \<turnstile> D \<preceq>\<^sup>* C` show ?case
-    by(fastsimp intro: red_reds.RedTryFail)
+    by(fastforce intro: red_reds.RedTryFail)
 next
-  case ListRed1 thus ?case by(fastsimp intro: red_reds.intros)
+  case ListRed1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case ListRed2 thus ?case by(fastsimp intro: red_reds.intros)
+  case ListRed2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case NewArrayThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case NewArrayThrow thus ?case by(fastforce intro: red_reds.intros)
 next
-  case CastThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case CastThrow thus ?case by(fastforce intro: red_reds.intros)
 next
-  case InstanceOfThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case InstanceOfThrow thus ?case by(fastforce intro: red_reds.intros)
 next
-  case BinOpThrow1 thus ?case by(fastsimp intro: red_reds.intros)
+  case BinOpThrow1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case BinOpThrow2 thus ?case by(fastsimp intro: red_reds.intros)
+  case BinOpThrow2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case LAssThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case LAssThrow thus ?case by(fastforce intro: red_reds.intros)
 next
-  case AAccThrow1 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAccThrow1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case AAccThrow2 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAccThrow2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case AAssThrow1 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAssThrow1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case AAssThrow2 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAssThrow2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case AAssThrow3 thus ?case by(fastsimp intro: red_reds.intros)
+  case AAssThrow3 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case ALengthThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case ALengthThrow thus ?case by(fastforce intro: red_reds.intros)
 next
-  case FAccThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case FAccThrow thus ?case by(fastforce intro: red_reds.intros)
 next
-  case FAssThrow1 thus ?case by(fastsimp intro: red_reds.intros)
+  case FAssThrow1 thus ?case by(fastforce intro: red_reds.intros)
 next 
-  case FAssThrow2 thus ?case by(fastsimp intro: red_reds.intros)
+  case FAssThrow2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case CallThrowObj thus ?case by(fastsimp intro: red_reds.intros)
+  case CallThrowObj thus ?case by(fastforce intro: red_reds.intros)
 next
-  case CallThrowParams thus ?case by(fastsimp intro: red_reds.intros)
+  case CallThrowParams thus ?case by(fastforce intro: red_reds.intros)
 next
-  case BlockThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case BlockThrow thus ?case by(fastforce intro: red_reds.intros)
 next
-  case SynchronizedThrow1 thus ?case by(fastsimp intro: red_reds.intros)
+  case SynchronizedThrow1 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case SynchronizedThrow2 thus ?case by(fastsimp intro: red_reds.intros)
+  case SynchronizedThrow2 thus ?case by(fastforce intro: red_reds.intros)
 next
-  case SeqThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case SeqThrow thus ?case by(fastforce intro: red_reds.intros)
 next
-  case CondThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case CondThrow thus ?case by(fastforce intro: red_reds.intros)
 next
-  case ThrowThrow thus ?case by(fastsimp intro: red_reds.intros)
+  case ThrowThrow thus ?case by(fastforce intro: red_reds.intros)
 qed
 
 lemma can_lock_devreserp:
@@ -401,7 +401,7 @@ apply(erule red_mthr.can_syncE)
 apply(clarsimp)
 apply(drule red_wt_hconf_hext, assumption+)
  apply(simp)
-apply(fastsimp intro!: red_mthr.can_syncI)
+apply(fastforce intro!: red_mthr.can_syncI)
 done
 
 end
@@ -443,7 +443,7 @@ proof(unfold_locales)
     obtain e' h x' ta where "P,t \<turnstile> \<langle>fst x,(shr s', snd x)\<rangle> -ta\<rightarrow> \<langle>e', (h, x')\<rangle>" by auto
     with red_ta_satisfiable[OF this]
     show "red_mthr.must_sync P t x (shr s')"
-      by-(rule red_mthr.must_syncI, fastsimp simp add: split_beta)
+      by-(rule red_mthr.must_syncI, fastforce simp add: split_beta)
   next
     fix LT
     assume "red_mthr.can_sync P t x (shr s') LT"

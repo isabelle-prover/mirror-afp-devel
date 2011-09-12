@@ -115,7 +115,7 @@ apply fast
 
 apply fast
 
-apply fastsimp
+apply fastforce
 done
 
 definition MGT :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
@@ -167,7 +167,7 @@ apply(erule converse_rtrancl_induct)
  apply(blast intro:exec.intros)
 apply(fast elim:exec.WhileTrue)
 
-apply(fastsimp intro: hoare.Local elim!: hoare.Conseq)
+apply(fastforce intro: hoare.Local elim!: hoare.Conseq)
 done
 
 lemma MGT_body: "(P, CALL p, Q) = MGT (CALL pa) \<Longrightarrow> C \<tturnstile> {MGT (body p)} \<Longrightarrow> C \<turnstile> {P} body p {Q}"
@@ -178,7 +178,7 @@ declare MGT_def[simp del]
 
 lemma MGT_CALL: "{} \<tturnstile> {mgt. \<exists>p. mgt = MGT(CALL p)}"
 apply (rule hoare.Call)
- apply(fastsimp simp add:MGT_def)
+ apply(fastforce simp add:MGT_def)
 apply(rule hoare.ConjI)
 apply clarsimp
 apply (erule MGT_body)

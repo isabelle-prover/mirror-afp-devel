@@ -49,7 +49,7 @@ lemma assumes wf: "wf_J_prog P"
 proof(induct rule: red_reds.inducts)
   case (RedCallExternal s a T M vs ta va h' ta' e' s')
   then obtain C fs a where subThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" and ext: "extNTA2J P (C, run, a) = (e'', x'')"
-    by(fastsimp dest: red_external_new_thread_sub_thread)
+    by(fastforce dest: red_external_new_thread_sub_thread)
   from sub_Thread_sees_run[OF wf subThread] obtain D pns body
     where sees: "P \<turnstile> C sees run: []\<rightarrow>Void = (pns, body) in D" by auto
   from sees_wf_mdecl[OF wf this] have "\<D> body \<lfloor>{this}\<rfloor>"
@@ -97,7 +97,7 @@ proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   case (RedCallExternal s a U M vs ta va h' ta' e' s')
   from `NewThread t'' (e'', x'') (hp s') \<in> set \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>` `ta' = extTA2J P ta`
   obtain C' M' a' where nt: "NewThread t'' (C', M', a') (hp s') \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
-    and "extNTA2J P (C', M', a') = (e'', x'')" by fastsimp
+    and "extNTA2J P (C', M', a') = (e'', x'')" by fastforce
   from red_external_new_thread_sees[OF wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` nt] `typeof_addr (hp s) a = \<lfloor>U\<rfloor>`
   obtain T pns body D where h'a': "typeof_addr h' a' = \<lfloor>Class C'\<rfloor>"
     and sees: " P \<turnstile> C' sees M': []\<rightarrow>T = (pns, body) in D" by auto
@@ -107,8 +107,8 @@ proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   moreover from sees have "P \<turnstile> C' \<preceq>\<^sup>* D" by(rule sees_method_decl_above)
   with h'a' have "P,h' \<turnstile> [this \<mapsto> Addr a'] (:\<le>) [this \<mapsto> Class D]" by(auto simp add: lconf_def conf_def)
   ultimately show ?case using h'a' sees `s' = (h', lcl s)`
-    `extNTA2J P (C', M', a') = (e'', x'')` by(fastsimp intro: sees_method_decl_above)
-qed(fastsimp simp add: ta_upd_simps)+
+    `extNTA2J P (C', M', a') = (e'', x'')` by(fastforce intro: sees_method_decl_above)
+qed(fastforce simp add: ta_upd_simps)+
 
 end
 
@@ -231,7 +231,7 @@ next
     by(auto simp add: sconf_type_ok_def)
   then obtain T' where "P,E,m \<turnstile> e : T'" "P \<turnstile> T' \<le> T" by(auto simp add: type_ok_def)
   from nt `P,E,m \<turnstile> e : T'` red have "\<exists>E T. P,E,m' \<turnstile> e'' : T \<and> P,m' \<turnstile> l'' (:\<le>) E"
-    by(fastsimp dest: red_type_newthread[OF wf])
+    by(fastforce dest: red_type_newthread[OF wf])
   then obtain E'' T'' where "P,E'',m' \<turnstile> e'' : T''" "P,m' \<turnstile> l'' (:\<le>) E''" by blast
   moreover
   from sconf red `P,E,m \<turnstile> e : T'` tconf have "E \<turnstile> (m', l') \<surd>"
@@ -335,7 +335,7 @@ proof -
     have "\<forall>l. expr_locks e l \<le> has_locks (ls\<^sub>f l) t" by(force split: split_if_asm)
     moreover from `?wakeup (insync(a) e) s` have "?wakeup e s" by auto
     ultimately have "?concl e s ta" by(rule IH)
-    thus ?case by(fastsimp intro: red_reds.SynchronizedRed2)
+    thus ?case by(fastforce intro: red_reds.SynchronizedRed2)
   next
     case RedCall
     thus ?case
@@ -355,7 +355,7 @@ proof -
       by(auto simp add: red_mthr.actions_ok'_convert_extTA red_mthr.actions_ok_iff elim: final_thread.actions_subset.cases del: subsetI)
     moreover from red' `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `is_native P T M`
     obtain s'' e'' where "P,t \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J P ta''\<rightarrow> \<langle>e'',s''\<rangle>"
-      by(fastsimp intro: red_reds.RedCallExternal)
+      by(fastforce intro: red_reds.RedCallExternal)
     ultimately show ?case by blast
   next
     case LockSynchronized
@@ -390,7 +390,7 @@ lemma shows red_ta_satisfiable:
   and reds_ta_satisfiable:
   "P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> \<exists>s. red_mthr.actions_ok s t ta"
 apply(induct rule: red_reds.inducts)
-apply(fastsimp simp add: lock_ok_las_def finfun_upd_apply intro: exI[where x="\<lambda>\<^isup>f None"] exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] may_lock.intros dest: red_external_ta_satisfiable[where final="final_expr :: ('addr expr \<times> 'addr locals) \<Rightarrow> bool"])+
+apply(fastforce simp add: lock_ok_las_def finfun_upd_apply intro: exI[where x="\<lambda>\<^isup>f None"] exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] may_lock.intros dest: red_external_ta_satisfiable[where final="final_expr :: ('addr expr \<times> 'addr locals) \<Rightarrow> bool"])+
 done
 
 end
@@ -444,7 +444,7 @@ next
     and "thr s t = \<lfloor>(ex, no_wait_locks)\<rfloor>"
     and "mred P t (ex, shr s) ta (e'x', m')"
     and wait: "\<not> waiting (wset s t)"
-  moreover obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastsimp
+  moreover obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastforce
   moreover obtain e x where ex: "ex = (e, x)" by(cases ex)
   moreover obtain e' x' where e'x': "e'x' = (e', x')" by(cases e'x')
   ultimately have tst: "ts t = \<lfloor>(ex, no_wait_locks)\<rfloor>" 
@@ -455,7 +455,7 @@ next
     and "sconf_type_ts_ok Es ts m"
     by(auto dest: red_mthr.wset_Suspend_okD1)
   with tst ex obtain E T where sconf: "sconf_type_ok (E, T) t (e, x) m"
-    and aoe: "sync_ok e" by(fastsimp dest: ts_okD ts_invD)
+    and aoe: "sync_ok e" by(fastforce dest: ts_okD ts_invD)
   then obtain T' where "hconf m" "P,E,m \<turnstile> e : T'" "preallocated m"
     by(auto simp add: sconf_type_ok_def sconf_def type_ok_def)
   from `sconf_type_ts_ok Es ts m` s have "thread_conf P (thr s) (shr s)"
@@ -495,7 +495,7 @@ next
       ultimately show ?thesis using call iec s by auto
     qed
     from red_wf_red_aux[OF wf red False[unfolded s] aoe _ _ locks, OF _ _ this] `hconf m` `P,shr s \<turnstile> t \<surd>t` ex s
-    show ?thesis by fastsimp
+    show ?thesis by fastforce
   qed
 next
   fix s t x
@@ -511,7 +511,7 @@ next
   then obtain T' where "hconf (shr s)" "P,E,shr s \<turnstile> e : T'"
     by(auto simp add: sconf_type_ok_def sconf_def type_ok_def)
   from red_progress(1)[OF wf_prog_wwf_prog[OF wf] this DA, where extTA="extTA2J P" and t=t] nfin x
-  show "\<exists>ta x' m'. mred P t (x, shr s) ta (x', m')" by fastsimp
+  show "\<exists>ta x' m'. mred P t (x, shr s) ta (x', m')" by fastforce
 next
   fix s t x xm ta xm'
   assume "s \<in> ?wf_state"
@@ -526,7 +526,7 @@ next
     and "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
     and "mred P t (x, shr s) ta (x', m')"
   thus "\<exists>s'. red_mthr.actions_ok s' t ta"
-    by(fastsimp simp add: split_beta dest!: red_ta_satisfiable)
+    by(fastforce simp add: split_beta dest!: red_ta_satisfiable)
 qed
 
 lemma redT_progress_deadlock:
@@ -596,19 +596,19 @@ next
     unfolding Es'_def Es_def by(rule red_mthr.RedT_upd_inv_ext)
 next
   assume "thr s' t = \<lfloor>((e', x'), ln')\<rfloor>"
-  moreover obtain ls' ts' m' ws' is' where s' [simp]: "s' = (ls', (ts', m'), ws', is')" by(cases s') fastsimp
+  moreover obtain ls' ts' m' ws' is' where s' [simp]: "s' = (ls', (ts', m'), ws', is')" by(cases s') fastforce
   ultimately have es't: "ts' t = \<lfloor>((e', x'), ln')\<rfloor>" by simp
   from wf have wwf: "wwf_J_prog P" by(rule wf_prog_wwf_prog)
   from conf have len: "length vs = length Ts" by(rule list_all2_lengthD)
   from RedT def_ass_ts_ok_J_start_state[OF wf sees len] have defass': "def_ass_ts_ok ts' m'"
-    by(fastsimp dest: lifting_wf.RedT_preserves[OF lifting_wf_def_ass, OF wf])
+    by(fastforce dest: lifting_wf.RedT_preserves[OF lifting_wf_def_ass, OF wf])
   from RedT sync_es_ok_J_start_state[OF wf sees len[symmetric]] lock_ok_J_start_state[OF wf sees len[symmetric]]
-  have lock': "lock_ok ls' ts'" by (fastsimp dest: RedT_preserves_lock_ok[OF wf])
+  have lock': "lock_ok ls' ts'" by (fastforce dest: RedT_preserves_lock_ok[OF wf])
   from RedT sync_es_ok_J_start_state[OF wf sees len[symmetric]] have addr': "sync_es_ok ts' m'"
-    by(fastsimp dest: RedT_preserves_sync_ok[OF wf])
+    by(fastforce dest: RedT_preserves_sync_ok[OF wf])
   from RedT sconf_type_ts_ok_J_start_state[OF wf start_heap sees conf] start_heap
   have sconf_subject': "sconf_type_ts_ok Es' ts' m'" unfolding Es'_def Es_def
-    by(fastsimp dest: lifting_inv.RedT_invariant[OF lifting_inv_sconf_subject_ok, OF wf] intro: thread_conf_start_state[OF _ wf_prog_wf_syscls[OF wf]])
+    by(fastforce dest: lifting_inv.RedT_invariant[OF lifting_inv_sconf_subject_ok, OF wf] intro: thread_conf_start_state[OF _ wf_prog_wf_syscls[OF wf]])
   with es't obtain E T where ET: "Es' t = \<lfloor>(E, T)\<rfloor>" 
     and "sconf_type_ok (E, T) t (e', x') m'" by(auto dest!: ts_invD)
   { assume "final e'"

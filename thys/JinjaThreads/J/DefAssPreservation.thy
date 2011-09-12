@@ -102,7 +102,7 @@ next
   case CondRed thus ?case by (auto elim!: D_mono[OF red_lA_incr])
 next
   case TryRed thus ?case
-    by (fastsimp dest:red_lcl_incr intro:D_mono' simp:hyperset_defs)
+    by (fastforce dest:red_lcl_incr intro:D_mono' simp:hyperset_defs)
 next
   case RedWhile thus ?case by(auto simp:hyperset_defs elim!:D_mono')
 next

@@ -39,7 +39,7 @@ proof
       next
         case False
         then obtain n where "x = eSuc n"
-          by(cases x)(fastsimp simp add: eSuc_def zero_enat_def gr0_conv_Suc
+          by(cases x)(fastforce simp add: eSuc_def zero_enat_def gr0_conv_Suc
                                split: enat.splits)+
         thus ?thesis by auto
       qed
@@ -195,7 +195,7 @@ proof -
       with `m \<le> n` obtain m' n' where "m = eSuc m'" "n = n' + 1" "m' \<le> n'"
         by(cases m rule: enat_coexhaust, simp)
           (cases n rule: enat_coexhaust, auto simp add: eSuc_plus_1[symmetric])
-      hence ?Le_enat_add by fastsimp
+      hence ?Le_enat_add by fastforce
       thus ?thesis ..
     qed
   qed
@@ -245,7 +245,7 @@ lemma enat_leI [consumes 1, case_names Leenat, case_conclusion Leenat zero eSuc]
                            ((m', n') \<in> X \<or> m' = n'))"
   shows "m \<le> n"
 apply(rule Le_enat.coinduct[unfolded Le_enat_eq_ile, where X="\<lambda>x y. (x, y) \<in> X"])
-apply(fastsimp simp add: zero_enat_def dest: step intro: major)+
+apply(fastforce simp add: zero_enat_def dest: step intro: major)+
 done
 
 subsection {* Equality as greatest fixpoint *}

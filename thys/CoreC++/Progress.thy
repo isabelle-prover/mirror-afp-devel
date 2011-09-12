@@ -33,7 +33,7 @@ apply (simp add:is_refT_def)+
  apply (erule disjE)
   apply clarsimp
  apply (erule exE)+
-apply fastsimp
+apply fastforce
 apply (auto simp:final_def is_refT_def)
 apply (case_tac v)
 apply auto
@@ -64,7 +64,7 @@ next
   from wf show "wf_prog wf_md P" .
 next
   assume "T' = T" and "\<forall>C. T' \<noteq> Class C"
-  thus "\<exists>v'. P \<turnstile> T casts v to v'" by(fastsimp intro:casts_prim)
+  thus "\<exists>v'. P \<turnstile> T casts v to v'" by(fastforce intro:casts_prim)
 next
   fix C D
   assume T':"T' = Class C" and T:"T = Class D"
@@ -80,7 +80,7 @@ next
   fix C
   assume "T' = NT" and T:"T = Class C"
   with typeof have "v = Null" by simp
-  with T show "\<exists>v'. P \<turnstile> T casts v to v'" by(fastsimp intro:casts_null)
+  with T show "\<exists>v'. P \<turnstile> T casts v to v'" by(fastforce intro:casts_null)
 qed
 
 
@@ -187,7 +187,7 @@ lemma wt'_wt: "P,E,h \<turnstile> e :' T \<Longrightarrow> P,E,h \<turnstile> e 
 and wts'_wts: "P,E,h \<turnstile> es [:'] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
 
 apply (induct rule:WTrt'_inducts)
-apply (fastsimp intro: WTrt_WTrts.intros)+
+apply (fastforce intro: WTrt_WTrts.intros)+
 done
 
 
@@ -238,7 +238,7 @@ proof -
   proof(cases "tl Ds = []")
     case True
     assume last:"last Cs = hd Ds"
-    with True notempty have "Ds = [last Cs]" by (fastsimp dest:hd_Cons_tl)
+    with True notempty have "Ds = [last Cs]" by (fastforce dest:hd_Cons_tl)
     hence "last Ds = last Cs" by simp
     with True show ?thesis by simp
   next
@@ -265,11 +265,11 @@ proof (induct rule:WTrt_inducts2)
   proof cases
     assume "\<exists>a. h a = None"
     with WTrtNew show ?thesis
-      by (fastsimp del:exE intro!:RedNew simp:new_Addr_def)
+      by (fastforce del:exE intro!:RedNew simp:new_Addr_def)
   next
     assume "\<not>(\<exists>a. h a = None)"
     with WTrtNew show ?thesis
-      by(fastsimp intro:RedNewFail simp add:new_Addr_def)
+      by(fastforce intro:RedNewFail simp add:new_Addr_def)
   qed
 next
   case (WTrtDynCast C E h e T)
@@ -284,7 +284,7 @@ next
     assume "final e"
     with wte refT show ?thesis
     proof (rule finalRefE)
-      assume "e = null" thus ?case by(fastsimp intro:RedDynCastNull)
+      assume "e = null" thus ?case by(fastforce intro:RedDynCastNull)
     next
       fix r assume "e = ref r"
       then obtain a Cs where ref:"e = ref(a,Cs)" by (cases r) auto
@@ -293,9 +293,9 @@ next
       proof (cases "P \<turnstile> Path D to C unique")
         case True
         then obtain Cs' where path:"P \<turnstile> Path D to C via Cs'"
-          by (fastsimp simp:path_via_def path_unique_def)
+          by (fastforce simp:path_via_def path_unique_def)
         then obtain Ds where "Ds = appendPath Cs Cs'" by simp
-        with h path True ref show ?thesis by (fastsimp intro:RedDynCast)
+        with h path True ref show ?thesis by (fastforce intro:RedDynCast)
       next
         case False
         hence path_not_unique:"\<not> P \<turnstile> Path D to C unique" .
@@ -304,7 +304,7 @@ next
           case True
           then obtain Cs' where "P \<turnstile> Path last Cs to C via Cs'"
             by(auto simp:path_via_def path_unique_def)
-          with True ref show ?thesis by(fastsimp intro:RedStaticUpDynCast)
+          with True ref show ?thesis by(fastforce intro:RedStaticUpDynCast)
         next
           case False
           hence path_not_unique':"\<not> P \<turnstile> Path last Cs to C unique" .
@@ -313,11 +313,11 @@ next
             case False
             then obtain Ds Ds' where "Cs = Ds@[C]@Ds'"
               by (auto simp:in_set_conv_decomp)
-            with ref show ?thesis by(fastsimp intro:RedStaticDownDynCast)
+            with ref show ?thesis by(fastforce intro:RedStaticDownDynCast)
           next
             case True
             with path_not_unique path_not_unique' h ref 
-            show ?thesis by (fastsimp intro:RedDynCastFail)
+            show ?thesis by (fastforce intro:RedDynCastFail)
           qed
         qed
       qed
@@ -342,7 +342,7 @@ next
     assume "final e"
     with wte refT show ?thesis
     proof (rule finalRefE)
-      assume "e = null" with "class" show ?case by(fastsimp intro:RedStaticCastNull)
+      assume "e = null" with "class" show ?case by(fastforce intro:RedStaticCastNull)
     next
       fix r assume "e = ref r"
       then obtain a Cs where ref:"e = ref(a,Cs)" by (cases r) auto
@@ -352,8 +352,8 @@ next
       proof(cases "P \<turnstile> (last Cs) \<preceq>\<^sup>* C")
         case True
         with "class" wf obtain Cs'  where "P \<turnstile> Path last Cs to C via Cs'"
-          by(fastsimp dest:leq_implies_path)
-        with True ref show ?thesis by(fastsimp intro:RedStaticUpCast)
+          by(fastforce dest:leq_implies_path)
+        with True ref show ?thesis by(fastforce intro:RedStaticUpCast)
       next
         case False
         have notleq:"\<not> P \<turnstile> last Cs \<preceq>\<^sup>* C" by fact
@@ -363,10 +363,10 @@ next
           then obtain Ds Ds' where "Cs = Ds@[C]@Ds'"
             by (auto simp:in_set_conv_decomp)
           with ref show ?thesis
-            by(fastsimp intro:RedStaticDownCast)
+            by(fastforce intro:RedStaticDownCast)
         next
           case True
-          with ref notleq show ?thesis by (fastsimp intro:RedStaticCastFail)
+          with ref notleq show ?thesis by (fastforce intro:RedStaticCastFail)
         qed
       qed
     next
@@ -380,7 +380,7 @@ next
 next
   case WTrtVal thus ?case by(simp add:final_def)
 next
-  case WTrtVar thus ?case by(fastsimp intro:RedVar simp:hyper_isin_def)
+  case WTrtVar thus ?case by(fastforce intro:RedVar simp:hyper_isin_def)
 next
   case (WTrtBinOp E h e1 T1 e2 T2 T' bop)
   have bop:"case bop of Eq \<Rightarrow> T' = Boolean
@@ -401,14 +401,14 @@ next
           show ?thesis
           proof (cases bop)
             assume "bop = Eq"
-            thus ?thesis using WTrtBinOp by(fastsimp intro:RedBinOp)
+            thus ?thesis using WTrtBinOp by(fastforce intro:RedBinOp)
           next
             assume Add:"bop = Add"
             with e1 e2 wte1 wte2 bop obtain i1 i2 
               where "v1 = Intg i1" and "v2 = Intg i2"
               by (auto dest!:typeof_Integer)
             with Add obtain v where "binop(bop,v1,v2) = Some v" by simp
-            with e1 e2 show ?thesis by (fastsimp intro:RedBinOp)
+            with e1 e2 show ?thesis by (fastforce intro:RedBinOp)
           qed
         next
           fix a assume "e2 = Throw a"
@@ -456,7 +456,7 @@ next
         from path_unique obtain Cs' where path_via:"P \<turnstile> Path C to D via Cs'"
           by(auto simp:path_unique_def path_via_def)
         with last have "P \<turnstile> Class D casts Ref(a,Cs) to Ref(a,Cs@\<^sub>pCs')"
-          by (fastsimp intro:casts_ref simp:path_via_def)
+          by (fastforce intro:casts_ref simp:path_via_def)
         with wte wtvar T ref show ?thesis
           by(auto intro!:RedLAss)
       next
@@ -470,7 +470,7 @@ next
       qed
     next
       fix r assume "e = Throw r"
-      thus ?thesis by(fastsimp intro:red_reds.LAssThrow)
+      thus ?thesis by(fastforce intro:red_reds.LAssThrow)
     qed
   next
     assume "\<not> final e" with WTrtLAss show ?thesis
@@ -491,16 +491,16 @@ next
       then obtain a Cs' where ref:"e = ref(a,Cs')" by (cases r) auto
       with wte obtain D S where h:"h a = Some(D,S)" and suboD:"Subobjs P D Cs'"
         and last:"last Cs' = C"
-        by (fastsimp split:split_if_asm)
+        by (fastforce split:split_if_asm)
       from field obtain Bs fs ms
         where "class": "class P (last Cs) = Some(Bs,fs,ms)"
         and fs:"map_of fs F = Some T"
-        by (fastsimp simp:LeastFieldDecl_def FieldDecls_def)
+        by (fastforce simp:LeastFieldDecl_def FieldDecls_def)
       obtain Ds where Ds:"Ds = Cs'@\<^sub>pCs" by simp
       with notemptyCs "class" have class':"class P (last Ds) = Some(Bs,fs,ms)"
         by (drule_tac Cs'="Cs'" in appendPath_last) simp
       from field suboD last Ds wf have subo:"Subobjs P D Ds"
-        by(fastsimp intro:Subobjs_appendPath simp:LeastFieldDecl_def FieldDecls_def)
+        by(fastforce intro:Subobjs_appendPath simp:LeastFieldDecl_def FieldDecls_def)
       with hconf h have "P,h \<turnstile> (D,S) \<surd>" by (auto simp:hconf_def)
       with class' subo obtain fs' where S:"(Ds,fs') \<in> S"
         and "P,h \<turnstile> fs' (:\<le>) map_of fs"
@@ -512,18 +512,18 @@ next
         apply auto
         done
       with fs obtain v where "fs' F = Some v"
-        by (fastsimp simp:fconf_def)
+        by (fastforce simp:fconf_def)
       with h last Ds S
       have "P,E \<turnstile> \<langle>(ref (a,Cs'))\<bullet>F{Cs}, (h,l)\<rangle> \<rightarrow> \<langle>Val v,(h,l)\<rangle>"
-        by (fastsimp intro:RedFAcc)
+        by (fastforce intro:RedFAcc)
       with ref show ?thesis by blast
     next
       fix r assume "e = Throw r"
-      thus ?thesis by(fastsimp intro:red_reds.FAccThrow)
+      thus ?thesis by(fastforce intro:red_reds.FAccThrow)
     qed
   next
     assume "\<not> final e" with WTrtFAcc show ?thesis
-      by(fastsimp intro!:FAccRed)
+      by(fastforce intro!:FAccRed)
   qed
 next
   case (WTrtFAccNT E h e F Cs T)
@@ -531,7 +531,7 @@ next
   proof cases
     assume "final e"  --"@{term e} is @{term null} or @{term throw}"
     with WTrtFAccNT show ?thesis
-      by(fastsimp simp:final_def intro: RedFAccNull red_reds.FAccThrow 
+      by(fastforce simp:final_def intro: RedFAccNull red_reds.FAccThrow 
                   dest!:typeof_NT)
   next
     assume "\<not> final e" --"@{term e} reduces by IH"
@@ -561,16 +561,16 @@ next
           from e1 obtain a Cs' where ref:"e\<^isub>1 = ref(a,Cs')" by (cases r) auto
           with wte1 obtain D S where h:"h a = Some(D,S)" 
             and suboD:"Subobjs P D Cs'" and last:"last Cs' = C"
-            by (fastsimp split:split_if_asm)
+            by (fastforce split:split_if_asm)
           from field obtain Bs fs ms
             where "class": "class P (last Cs) = Some(Bs,fs,ms)"
             and fs:"map_of fs F = Some T"
-            by (fastsimp simp:LeastFieldDecl_def FieldDecls_def)
+            by (fastforce simp:LeastFieldDecl_def FieldDecls_def)
           obtain Ds where Ds:"Ds = Cs'@\<^sub>pCs" by simp
           with notemptyCs "class" have class':"class P (last Ds) = Some(Bs,fs,ms)"
             by (drule_tac Cs'="Cs'" in appendPath_last) simp
           from field suboD last Ds wf have subo:"Subobjs P D Ds"
-            by(fastsimp intro:Subobjs_appendPath 
+            by(fastforce intro:Subobjs_appendPath 
               simp:LeastFieldDecl_def FieldDecls_def)
           with hconf h have "P,h \<turnstile> (D,S) \<surd>" by (auto simp:hconf_def)
           with class' subo obtain fs' where S:"(Ds,fs') \<in> S"
@@ -583,7 +583,7 @@ next
             with h last field Ds notemptyCs S eq
             have "P,E \<turnstile> \<langle>(ref (a,Cs'))\<bullet>F{Cs}:=(Val v), (h,l)\<rangle> \<rightarrow> 
               \<langle>Val v, (h(a \<mapsto> (D,insert (Ds,fs'(F\<mapsto>v)) (S -  {(Ds,fs')}))),l)\<rangle>"
-              by (fastsimp intro:RedFAss)
+              by (fastforce intro:RedFAss)
             with ref e2 show ?thesis by blast
           next
             fix C' D'
@@ -596,12 +596,12 @@ next
               by(auto simp:path_via_def path_unique_def)
             with last' 
             have casts:"P \<turnstile> Class D' casts Ref(a',Cs'') to Ref(a',Cs''@\<^sub>pDs')"
-              by (fastsimp intro:casts_ref simp:path_via_def)
+              by (fastforce intro:casts_ref simp:path_via_def)
             obtain v' where "v' = Ref(a',Cs''@\<^sub>pDs')" by simp
             with h last field Ds notemptyCs S ref e2 ref2 T casts
             have "P,E \<turnstile> \<langle>(ref (a,Cs'))\<bullet>F{Cs}:=(Val v), (h,l)\<rangle> \<rightarrow> 
                         \<langle>Val v',(h(a \<mapsto> (D,insert (Ds,fs'(F\<mapsto>v'))(S-{(Ds,fs')}))),l)\<rangle>"
-              by (fastsimp intro:RedFAss)
+              by (fastforce intro:RedFAss)
             with ref e2 show ?thesis by blast
           next
             fix C'
@@ -613,12 +613,12 @@ next
             with h last field Ds notemptyCs S ref e2 null T casts
             have "P,E \<turnstile> \<langle>(ref (a,Cs'))\<bullet>F{Cs}:=(Val v), (h,l)\<rangle> \<rightarrow> 
                   \<langle>Val v', (h(a \<mapsto> (D,insert (Ds,fs'(F\<mapsto>v')) (S -  {(Ds,fs')}))),l)\<rangle>"
-              by (fastsimp intro:RedFAss)
+              by (fastforce intro:RedFAss)
             with ref e2 show ?thesis by blast
           qed
         next
           fix r assume "e\<^isub>2 = Throw r"
-          thus ?thesis using e1 by(fastsimp intro:red_reds.FAssThrow2)
+          thus ?thesis using e1 by(fastforce intro:red_reds.FAssThrow2)
         qed
       next
         assume "\<not> final e\<^isub>2" with WTrtFAss e1 show ?thesis
@@ -626,7 +626,7 @@ next
       qed
     next
       fix r assume "e\<^isub>1 = Throw r"
-      thus ?thesis by(fastsimp intro:red_reds.FAssThrow1)
+      thus ?thesis by(fastforce intro:red_reds.FAssThrow1)
     qed
   next
     assume "\<not> final e\<^isub>1" with WTrtFAss show ?thesis
@@ -641,16 +641,16 @@ next
     proof cases
       assume "final e\<^isub>2"  --"@{term e\<^isub>2} is @{term Val} or @{term throw}"
       with WTrtFAssNT e1 show ?thesis
-        by(fastsimp simp:final_def intro:RedFAssNull red_reds.FAssThrow1 
+        by(fastforce simp:final_def intro:RedFAssNull red_reds.FAssThrow1 
                                          red_reds.FAssThrow2 dest!:typeof_NT)
     next
       assume  "\<not> final e\<^isub>2" --"@{term e\<^isub>2} reduces by IH"
       with WTrtFAssNT e1 show ?thesis
-        by (fastsimp simp:final_def intro!:red_reds.FAssRed2 red_reds.FAssThrow1)
+        by (fastforce simp:final_def intro!:red_reds.FAssRed2 red_reds.FAssThrow1)
     qed
   next
     assume "\<not> final e\<^isub>1" --"@{term e\<^isub>1} reduces by IH"
-    with WTrtFAssNT show ?thesis by (fastsimp intro:FAssRed1)
+    with WTrtFAssNT show ?thesis by (fastforce intro:FAssRed1)
   qed
 next
   case (WTrtCall E h e C M Ts T pns body Cs es Ts')
@@ -673,7 +673,7 @@ next
         from ref obtain a Cs' where ref:"e = ref(a,Cs')" by (cases r) auto
         with wte obtain D S where h:"h a = Some(D,S)" and suboD:"Subobjs P D Cs'"
           and last:"last Cs' = C"
-          by (fastsimp split:split_if_asm)
+          by (fastforce split:split_if_asm)
         from wte ref h have subcls:"P \<turnstile> D \<preceq>\<^sup>* C" by -(drule mdc_leq_dyn_type,auto)
         from method have has:"P \<turnstile> C has M = (Ts,T,pns,body) via Cs"
             by(rule has_least_method_has_method)
@@ -705,7 +705,7 @@ next
           from suboD last have path:"P \<turnstile> Path D to C via Cs'" 
             by(simp add:path_via_def)
           from method have notempty:"Cs \<noteq> []" 
-            by(fastsimp intro!:Subobjs_nonempty 
+            by(fastforce intro!:Subobjs_nonempty 
                         simp:LeastMethodDef_def MethodDefs_def)
           from suboD have "class": "is_class P D" by(rule Subobjs_isClass)
           from suboD last have path:"P \<turnstile> Path D to C via Cs'"
@@ -758,7 +758,7 @@ next
         let ?ex = "hd ?rest" let ?rst = "tl ?rest"
         from not_all_Val have nonempty: "?rest \<noteq> []" by auto
         hence es: "es = ?ves @ ?ex # ?rst" by simp
-        have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastsimp dest:set_takeWhileD)
+        have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastforce dest:set_takeWhileD)
         then obtain vs where ves: "?ves = map Val vs"
           using ex_map_conv by blast
         show ?thesis
@@ -770,7 +770,7 @@ next
           ultimately obtain r' where ex_Throw: "?ex = Throw r'"
             by(fast elim!:finalE)
           show ?thesis using ref es ex_Throw ves
-            by(fastsimp intro:red_reds.CallThrowParams)
+            by(fastforce intro:red_reds.CallThrowParams)
         next
           assume not_fin: "\<not> final ?ex"
           have "finals es = finals(?ves @ ?ex # ?rst)" using es
@@ -779,7 +779,7 @@ next
           finally have "finals es = finals(?ex # ?rst)" .
           hence "\<not> finals es" using not_finals_ConsI[OF not_fin] by blast
           thus ?thesis using ref D IHes[OF hconf envconf]
-            by(fastsimp intro!:CallParams)
+            by(fastforce intro!:CallParams)
         qed
       qed
     next
@@ -812,7 +812,7 @@ next
         assume es: "\<exists>vs. es = map Val vs"
         from ref obtain a Cs' where ref:"e = ref(a,Cs')" by (cases r) auto
         with wte have last:"last Cs' = C'"
-          by (fastsimp split:split_if_asm)
+          by (fastforce split:split_if_asm)
         with path_unique obtain Cs''
           where path_via:"P \<turnstile> Path (last Cs') to C via Cs''"
           by (auto simp add:path_via_def path_unique_def)
@@ -834,7 +834,7 @@ next
         let ?ex = "hd ?rest" let ?rst = "tl ?rest"
         from not_all_Val have nonempty: "?rest \<noteq> []" by auto
         hence es: "es = ?ves @ ?ex # ?rst" by simp
-        have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastsimp dest:set_takeWhileD)
+        have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastforce dest:set_takeWhileD)
         then obtain vs where ves: "?ves = map Val vs"
           using ex_map_conv by blast
         show ?thesis
@@ -846,7 +846,7 @@ next
           ultimately obtain r' where ex_Throw: "?ex = Throw r'"
             by(fast elim!:finalE)
           show ?thesis using ref es ex_Throw ves
-            by(fastsimp intro:red_reds.CallThrowParams)
+            by(fastforce intro:red_reds.CallThrowParams)
         next
           assume not_fin: "\<not> final ?ex"
           have "finals es = finals(?ves @ ?ex # ?rst)" using es
@@ -855,7 +855,7 @@ next
           finally have "finals es = finals(?ex # ?rst)" .
           hence "\<not> finals es" using not_finals_ConsI[OF not_fin] by blast
           thus ?thesis using ref D IHes[OF hconf envconf]
-            by(fastsimp intro!:CallParams)
+            by(fastforce intro!:CallParams)
         qed
       qed
     next
@@ -879,23 +879,23 @@ next
         assume "finals es"
         moreover
         { fix vs assume "es = map Val vs"
-          with WTrtCallNT e have ?thesis by(fastsimp intro: RedCallNull dest!:typeof_NT) }
+          with WTrtCallNT e have ?thesis by(fastforce intro: RedCallNull dest!:typeof_NT) }
         moreover
         { fix vs a es' assume "es = map Val vs @ Throw a # es'"
-          with WTrtCallNT e have ?thesis by(fastsimp intro: CallThrowParams) }
-        ultimately show ?thesis by(fastsimp simp:finals_def)
+          with WTrtCallNT e have ?thesis by(fastforce intro: CallThrowParams) }
+        ultimately show ?thesis by(fastforce simp:finals_def)
       next
         assume "\<not> finals es" --"@{term es} reduces by IH"
-        with WTrtCallNT e show ?thesis by(fastsimp intro: CallParams)
+        with WTrtCallNT e show ?thesis by(fastforce intro: CallParams)
       qed
     }
     moreover
     { fix r assume "e = Throw r"
-      with WTrtCallNT have ?case by(fastsimp intro: CallThrowObj) }
-    ultimately show ?thesis by(fastsimp simp:final_def)
+      with WTrtCallNT have ?case by(fastforce intro: CallThrowObj) }
+    ultimately show ?thesis by(fastforce simp:final_def)
   next
     assume "\<not> final e" --"@{term e} reduces by IH"
-    with WTrtCallNT show ?thesis by (fastsimp intro:CallObj)
+    with WTrtCallNT show ?thesis by (fastforce intro:CallObj)
   qed
 next
   case (WTrtInitBlock h v T' E V T e\<^isub>2 T\<^isub>2)
@@ -911,7 +911,7 @@ next
   proof cases
     assume fin:"final e\<^isub>2"
     with casts show ?thesis
-      by(fastsimp elim:finalE intro:RedInitBlock red_reds.InitBlockThrow)
+      by(fastforce elim:finalE intro:RedInitBlock red_reds.InitBlockThrow)
   next
     assume not_fin2: "\<not> final e\<^isub>2"
     from D have D2: "\<D> e\<^isub>2 \<lfloor>dom(l(V\<mapsto>v'))\<rfloor>" by (auto simp:hyperset_defs)
@@ -920,7 +920,7 @@ next
     obtain h' l' e' where red2: "P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>2,(h, l(V\<mapsto>v'))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
       by auto
     from red_lcl_incr[OF red2] have "V \<in> dom l'" by auto
-    with red2 casts show ?thesis by(fastsimp intro:InitBlockRed)
+    with red2 casts show ?thesis by(fastforce intro:InitBlockRed)
   qed
 next
   case (WTrtBlock E V T h e T')
@@ -975,7 +975,7 @@ next
     thus ?thesis
     proof (rule finalE)
       fix v assume val: "e = Val v"
-      then obtain b where v: "v = Bool b" using wt by (fastsimp dest:typeof_Boolean)
+      then obtain b where v: "v = Bool b" using wt by (fastforce dest:typeof_Boolean)
       show ?thesis
       proof (cases b)
         case True with val v show ?thesis by(auto intro:RedCondT)
@@ -998,7 +998,7 @@ next
   proof cases
     assume "final e" -- {*Then @{term e} must be @{term throw} or @{term null}*}
     with WTrtThrow show ?thesis
-      by(fastsimp simp:final_def is_refT_def
+      by(fastforce simp:final_def is_refT_def
                   intro:red_reds.ThrowThrow red_reds.RedThrowNull
                   dest!:typeof_NT typeof_Class_Subo)
   next

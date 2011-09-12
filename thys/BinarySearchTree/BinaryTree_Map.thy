@@ -93,7 +93,7 @@ proof
       "sortedTree fst t & (tlookup fst i t = None) --> (ALL x:setOf t. fst x ~= i)"
       by (insert tlookup_none [of "fst" "t" "i"], assumption)
       from v lnone tlookup_none_inst have "ALL x : setOf t. fst x ~= i" by simp
-      from this iain have "fst (i,a) ~= i" by fastsimp
+      from this iain have "fst (i,a) ~= i" by fastforce
       from this show False by simp
     qed
   qed
@@ -128,7 +128,7 @@ proof
   from v o1 this show "(i,a) : setOf t" by simp
   -- {* <== *}
   next assume iain: "(i,a) : setOf t"
-  from v iain tlookup_finds have "tlookup fst (fst (i,a)) t = Some (i,a)" by fastsimp
+  from v iain tlookup_finds have "tlookup fst (fst (i,a)) t = Some (i,a)" by fastforce
   from this have "tlookup fst i t = Some (i,a)" by simp
   from this show "mapOf t i = Some a" by (simp add: mapOf_def)
 qed
@@ -158,8 +158,8 @@ proof
   let ?tr = "binsert fst (i,a) t"
   have upres: "mupdate i a t = ?tr" by (simp add: mupdate_def)
   from v binsert_set 
-  have setSpec: "setOf ?tr = setOf t - eqs fst (i,a) Un {(i,a)}" by fastsimp
-  from v binsert_sorted have vr: "valid_tmap ?tr" by fastsimp
+  have setSpec: "setOf ?tr = setOf t - eqs fst (i,a) Un {(i,a)}" by fastforce
+  from v binsert_sorted have vr: "valid_tmap ?tr" by fastforce
   show "mapOf (mupdate i a t) i2 = ((mapOf t)(i |-> a)) i2"
   proof (cases "i = i2")
   case True note i2ei = this
@@ -186,24 +186,24 @@ proof
     have lhs_res: "mapOf (mupdate i a t) i2 = mapOf t i2"
     proof (cases "mapOf t i2")
     case None from this have mapNone: "mapOf t i2 = None" by simp
-      from v mapNone mapset_none have i2nin: "ALL a. (i2,a) ~: setOf t" by fastsimp
+      from v mapNone mapset_none have i2nin: "ALL a. (i2,a) ~: setOf t" by fastforce
       have noneIn: "ALL b. (i2,b) ~: setOf ?tr"
       proof 
         fix b 
         from v binsert_set 
         have "setOf ?tr = setOf t - eqs fst (i,a) Un {(i,a)}"
-        by fastsimp
-        from this i2nei i2nin show "(i2,b) ~: setOf ?tr" by fastsimp
+        by fastforce
+        from this i2nei i2nin show "(i2,b) ~: setOf ?tr" by fastforce
       qed
       have mapset_none_inst: 
       "valid_tmap ?tr --> (mapOf ?tr i2 = None) = (ALL a. (i2, a) ~: setOf ?tr)" 
       by (insert mapset_none [of "?tr" i2], simp)
-      from vr noneIn mapset_none_inst have "mapOf ?tr i2 = None" by fastsimp
+      from vr noneIn mapset_none_inst have "mapOf ?tr i2 = None" by fastforce
       from this upres mapNone show ?thesis by simp
     next case (Some z) from this have mapSome: "mapOf t i2 = Some z" by simp
-      from v mapSome mapset_some have "(i2,z) : setOf t" by fastsimp
+      from v mapSome mapset_some have "(i2,z) : setOf t" by fastforce
       from this setSpec i2nei have "(i2,z) : setOf ?tr" by (simp add: eqs_def)
-      from this vr mapset_some have "mapOf ?tr i2 = Some z" by fastsimp
+      from this vr mapset_some have "mapOf ?tr i2 = Some z" by fastforce
       from this upres mapSome show ?thesis by simp
     qed
     from lhs_res rhs_res show ?thesis by simp
@@ -215,7 +215,7 @@ lemma assumes v: "valid_tmap t"
 proof -
   let ?tr = "binsert fst (i,a) t"
   have upres: "mupdate i a t = ?tr" by (simp add: mupdate_def)
-  from v binsert_sorted have vr: "valid_tmap ?tr" by fastsimp
+  from v binsert_sorted have vr: "valid_tmap ?tr" by fastforce
   from vr upres show ?thesis by simp
 qed
 
@@ -230,7 +230,7 @@ lemma assumes v: "valid_tmap t"
       shows mremove_valid: "valid_tmap (mremove i t)"
 proof (simp add: mremove_def)
   from v remove_sort 
-  show "sortedTree fst (remove fst (i, undefined) t)" by fastsimp
+  show "sortedTree fst (remove fst (i, undefined) t)" by fastforce
 qed
 
 lemma assumes v: "valid_tmap t"
@@ -241,17 +241,17 @@ proof (simp add: mremove_def)
   proof -
     from v remove_spec 
     have remSet: "setOf ?tr = setOf t - eqs fst (i, undefined)"
-    by fastsimp
+    by fastforce
     have noneIn: "ALL a. (i,a) ~: setOf ?tr"
     proof 
       fix a
       from remSet show "(i,a) ~: setOf ?tr" by (simp add: eqs_def)
     qed
-    from v remove_sort have vr: "valid_tmap ?tr" by fastsimp
+    from v remove_sort have vr: "valid_tmap ?tr" by fastforce
     have mapset_none_inst: "valid_tmap ?tr ==>
     (mapOf ?tr i = None) = (ALL a. (i,a) ~: setOf ?tr)"
     by (insert mapset_none [of "?tr" "i"], simp)
-    from vr this have "(mapOf ?tr i = None) = (ALL a. (i,a) ~: setOf ?tr)" by fastsimp
+    from vr this have "(mapOf ?tr i = None) = (ALL a. (i,a) ~: setOf ?tr)" by fastforce
     from this noneIn show "mapOf ?tr i = None" by simp    
   qed
 qed

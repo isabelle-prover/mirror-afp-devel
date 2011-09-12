@@ -79,10 +79,10 @@ lemma Casts_aux_eq:
 apply(rule iffI)
  apply(induct rule:Casts_to.induct)
   apply(rule Casts_aux.intros)
- apply(fastsimp intro:Casts_aux.intros simp:casts_aux_eq)
+ apply(fastforce intro:Casts_aux.intros simp:casts_aux_eq)
 apply(induct rule:Casts_aux.induct)
  apply(rule Casts_Nil)
-apply(fastsimp intro:Casts_Cons simp:casts_aux_eq)
+apply(fastforce intro:Casts_Cons simp:casts_aux_eq)
 done
 
 
@@ -205,7 +205,7 @@ lemma StaticUpCast_new1:
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),(h,l)\<rangle>"
 apply(rule StaticUpCast)
   apply assumption
- apply(fastsimp simp:path_via_def)
+ apply(fastforce simp:path_via_def)
 apply(simp add:appendPath_def)
 done
 
@@ -216,7 +216,7 @@ lemma StaticUpCast_new2:
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),(h,l)\<rangle>"
 apply(rule StaticUpCast)
   apply assumption
- apply(fastsimp simp:path_via_def)
+ apply(fastforce simp:path_via_def)
 apply(simp add:appendPath_def)
 done
 
@@ -230,7 +230,7 @@ done
 lemma StaticCastFail_new:
 "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;  \<not> P \<turnstile> (last Cs) \<preceq>\<^sup>* C; C \<notin> set Cs\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW ClassCast,(h,l)\<rangle>"
-by (fastsimp intro:StaticCastFail)
+by (fastforce intro:StaticCastFail)
 
 lemma StaticUpDynCast_new1:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;
@@ -292,8 +292,8 @@ lemma DynCastFail_new:
 apply(rule DynCastFail)
     apply assumption
    apply assumption
-  apply (fastsimp simp:path_unique_def)
- apply (fastsimp simp:path_unique_def)
+  apply (fastforce simp:path_unique_def)
+ apply (fastforce simp:path_unique_def)
 apply assumption
 done
 
@@ -491,13 +491,13 @@ proof -
   have "last(Cs@tl Cs'') = hd Cs'"
   proof(cases "tl Cs'' = []")
     case True 
-    with notempty have Cs'':"Cs'' = [hd Cs'']" by(fastsimp dest:hd_Cons_tl)
+    with notempty have Cs'':"Cs'' = [hd Cs'']" by(fastforce dest:hd_Cons_tl)
     hence "last Cs'' = hd Cs''" by(cases Cs'') auto
     with eq1 eq2 True show ?thesis by simp
   next
     case False
     from notempty eq2 have "last(hd Cs''#tl Cs'') = hd Cs'"
-      by(fastsimp dest:hd_Cons_tl)
+      by(fastforce dest:hd_Cons_tl)
     with False show ?thesis by(simp add:last_append)
   qed
   with eq1 eq2 append have Ds:"Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs'"
@@ -529,13 +529,13 @@ proof -
   have "last(Cs@tl Cs'') \<noteq> hd Cs'"
   proof(cases "tl Cs'' = []")
     case True 
-    with notempty have Cs'':"Cs'' = [hd Cs'']" by(fastsimp dest:hd_Cons_tl)
+    with notempty have Cs'':"Cs'' = [hd Cs'']" by(fastforce dest:hd_Cons_tl)
     hence "last Cs'' = hd Cs''" by(cases Cs'') auto
     with eq1 eq2 True show ?thesis by simp
   next
     case False
     from notempty eq2 have "last(hd Cs''#tl Cs'') \<noteq> hd Cs'"
-      by(fastsimp dest:hd_Cons_tl)
+      by(fastforce dest:hd_Cons_tl)
     with False show ?thesis by(simp add:last_append)
   qed
   with eq1 eq2 append have Ds:"Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs'"

@@ -214,7 +214,7 @@ proof -
         from `i < length [x\<leftarrow>xs . x \<noteq> []]`
         have "[x\<leftarrow>xs . x \<noteq> []] ! i \<in> set [x\<leftarrow>xs . x \<noteq> []]" by(rule nth_mem)
         with ith have "xs ! i' \<noteq> []" by simp
-        then obtain kv where "kv \<in> set (xs ! i')" by(fastsimp simp add: neq_Nil_conv)
+        then obtain kv where "kv \<in> set (xs ! i')" by(fastforce simp add: neq_Nil_conv)
         with no_junk[OF `i' < length xs`] have "bounded_hashcode (length xs) (fst kv) = i'"
           by(simp add: bucket_ok_def)
         moreover from eq `kv \<in> set (xs ! i')` have "kv \<in> set (xs ! j')" by simp
@@ -231,12 +231,12 @@ proof -
       fix x y
       assume "x \<in> {x \<in> set xs. x \<noteq> []}" "y \<in> {x \<in> set xs. x \<noteq> []}" "map fst x = map fst y"
       hence "x \<in> set xs" "y \<in> set xs" "x \<noteq> []" "y \<noteq> []" by auto
-      from `x \<in> set xs` obtain i where "xs ! i = x" "i < length xs" unfolding set_conv_nth by fastsimp
-      from `y \<in> set xs` obtain j where "xs ! j = y" "j < length xs" unfolding set_conv_nth by fastsimp
+      from `x \<in> set xs` obtain i where "xs ! i = x" "i < length xs" unfolding set_conv_nth by fastforce
+      from `y \<in> set xs` obtain j where "xs ! j = y" "j < length xs" unfolding set_conv_nth by fastforce
       from `x \<noteq> []` obtain k v x' where "x = (k, v) # x'" by(cases x) auto
       with no_junk[OF `i < length xs`] `xs ! i = x`
       have "bounded_hashcode (length xs) k = i" by(auto simp add: bucket_ok_def)
-      moreover from `map fst x = map fst y` `x = (k, v) # x'` obtain v' where "(k, v') \<in> set y" by fastsimp
+      moreover from `map fst x = map fst y` `x = (k, v) # x'` obtain v' where "(k, v') \<in> set y" by fastforce
       with no_junk[OF `j < length xs`] `xs ! j = y`
       have "bounded_hashcode (length xs) k = j" by(auto simp add: bucket_ok_def)
       ultimately have "i = j" by simp
@@ -258,10 +258,10 @@ proof -
       fix k
       assume "k \<in> fst ` set ys' \<inter> fst ` set zs'"
       then obtain v v' where "(k, v) \<in> set ys'" "(k, v') \<in> set zs'" by(auto)
-      from `ys' \<in> set xs` obtain i where "xs ! i = ys'" "i < length xs" unfolding set_conv_nth by fastsimp
+      from `ys' \<in> set xs` obtain i where "xs ! i = ys'" "i < length xs" unfolding set_conv_nth by fastforce
       with `(k, v) \<in> set ys'` have "bounded_hashcode (length xs) k = i" by(auto dest: no_junk bucket_okD)
       moreover
-      from `zs' \<in> set xs` obtain j where "xs ! j = zs'" "j < length xs" unfolding set_conv_nth by fastsimp
+      from `zs' \<in> set xs` obtain j where "xs ! j = zs'" "j < length xs" unfolding set_conv_nth by fastforce
       with `(k, v') \<in> set zs'` have "bounded_hashcode (length xs) k = j" by(auto dest: no_junk bucket_okD)
       ultimately have "i = j" by simp
       with `xs ! i = ys'` `xs ! j = zs'` have "ys' = zs'" by simp
@@ -632,7 +632,7 @@ proof -
     thus "bucket_ok (array_length ?a') h (array_get ?a' h)"
       using `h < array_length a`
       apply(cases "h = bounded_hashcode (array_length a) k")
-      apply(fastsimp intro!: bucket_okI simp add: dom_update array_get_array_set_other dest: bucket_okD del: imageE elim: imageE)+
+      apply(fastforce intro!: bucket_okI simp add: dom_update array_get_array_set_other dest: bucket_okD del: imageE elim: imageE)+
       done
     from `h < array_length a` inv have "distinct (map fst (array_get a h))"
       by(auto elim: ahm_invar_auxE)

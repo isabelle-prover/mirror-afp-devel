@@ -230,7 +230,7 @@ lemma CollectInt_iff: "{s. P s} \<inter> {s. Q s} = {s. P s \<and> Q s}"
   by auto
 
 lemma Compl_Collect:"-(Collect b) = {x. \<not>(b x)}";
-  by fastsimp
+  by fastforce
 
 lemma Collect_False: "{s. False} = {}"
   by simp

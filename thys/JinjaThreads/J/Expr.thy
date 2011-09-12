@@ -399,12 +399,12 @@ lemma [iff]: "finals (Val v # es) = finals es"
 apply(clarsimp simp add: finals_def)
 apply(rule iffI)
  apply(erule disjE)
-  apply fastsimp
+  apply fastforce
  apply(rule disjI2)
  apply clarsimp
  apply(case_tac vs)
   apply simp
- apply fastsimp
+ apply fastforce
 apply(erule disjE)
  apply clarsimp
  apply(rule_tac x="v#vs" in exI)
@@ -426,16 +426,16 @@ lemma [iff]: "finals (throw e # es) = (\<exists>a. e = addr a)"
 apply(simp add:finals_def)
 apply(rule iffI)
  apply(erule disjE)
-  apply(fastsimp)
+  apply(fastforce)
  apply clarsimp
  apply(case_tac vs)
   apply simp
- apply fastsimp
+ apply fastforce
 apply clarsimp
 apply(rule_tac x = "[]" in exI)
 apply simp
 apply(erule_tac x="[]" in allE)
-apply(fastsimp)
+apply(fastforce)
 done
 (*>*)
 
@@ -443,7 +443,7 @@ lemma not_finals_ConsI: "\<not> final e \<Longrightarrow> \<not> finals(e#es)"
  (*<*)
 apply(clarsimp simp add:finals_def final_iff)
 apply(rule conjI)
- apply(fastsimp)
+ apply(fastforce)
 apply(clarsimp)
 apply(case_tac vs)
 apply auto

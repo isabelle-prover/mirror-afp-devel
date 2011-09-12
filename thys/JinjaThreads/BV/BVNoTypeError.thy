@@ -45,7 +45,7 @@ proof -
   next
     case (Cons f frs')
     then obtain stk reg C M pc where frs [simp]: "frs = (stk,reg,C,M,pc)#frs'"
-      and f: "f = (stk,reg,C,M,pc)" by(cases f) fastsimp
+      and f: "f = (stk,reg,C,M,pc)" by(cases f) fastforce
 
     from conforms obtain  ST LT Ts T mxs mxl ins xt where
       hconf:  "hconf h" and
@@ -55,7 +55,7 @@ proof -
       frame:  "conf_f P h (ST,LT) ins (stk,reg,C,M,pc)" and
       frames: "conf_fs P h \<Phi> M (size Ts) T frs'" and
       confxcp: "conf_xcp P h xcp (ins ! pc)"
-      by (fastsimp simp add: correct_state_def dest: sees_method_fun)
+      by (fastforce simp add: correct_state_def dest: sees_method_fun)
 
     from frame obtain
       stk: "P,h \<turnstile> stk [:\<le>] ST" and
@@ -122,7 +122,7 @@ proof -
 	  stk': "stk = e # Intg i # ref # stk'" and
 	  ref: "P,h \<turnstile> ref :\<le> U" and
 	  e: "P,h \<turnstile> e :\<le> T"
-	  by(fastsimp simp add: conf_def list_all2_Cons2)
+	  by(fastforce simp add: conf_def list_all2_Cons2)
 	
 	from ref TNT have is_Ref: "is_Ref ref"
 	  by(cases ref)(auto simp add: is_Ref_def conf_def)
@@ -162,7 +162,7 @@ proof -
           field: "P \<turnstile> C sees F:vT (fm) in C" and
           stk:   "stk = v # stk'" and
           conf:  "P,h \<turnstile> v :\<le> Class C"
-          by(fastsimp simp add: list_all2_Cons2)
+          by(fastforce simp add: list_all2_Cons2)
 	from conf have is_Ref: "is_Ref v" by(cases v)(auto simp add: is_Ref_def conf_def)
 	moreover {
           assume "v \<noteq> Null" 
@@ -178,7 +178,7 @@ proof -
           stk:   "stk = v # ref # stk'" and
           confv: "P,h \<turnstile> v :\<le> vT" and
           confr: "P,h \<turnstile> ref :\<le> Class C"
-          by(fastsimp simp add: list_all2_Cons2)
+          by(fastforce simp add: list_all2_Cons2)
 	from confr have is_Ref: "is_Ref ref"
           by(cases ref)(auto simp add: is_Ref_def conf_def)
 	moreover {
@@ -293,13 +293,13 @@ proof -
                 also note sub also note `P \<turnstile> Ts' [\<le>] Ts''` finally
                 have "P,h \<turnstile> rev (take n stk) [:\<le>] Ts''" . }
               ultimately show ?thesis using Invoke Null n `stk ! n = Addr a` Ta False
-                by(fastsimp simp add: is_Ref_def2 is_class_type_of_conv_class_type_of_Some has_method_def)
+                by(fastforce simp add: is_Ref_def2 is_class_type_of_conv_class_type_of_Some has_method_def)
             qed }
 	  ultimately have ?thesis by(auto split: split_if_asm) }
 	ultimately show ?thesis by blast      
       next
 	case Return with stk app \<Phi> meth frames 
-	show ?thesis by (fastsimp simp add: has_methodI list_all2_Cons2)
+	show ?thesis by (fastforce simp add: has_methodI list_all2_Cons2)
       next
 	case ThrowExc with stk app \<Phi> meth frames show ?thesis
           by(auto 4 3 simp add: xcpt_app_def conf_def list_all2_Cons2 intro!: is_RefI intro: widen_trans[OF _ widen_subcls])
@@ -324,7 +324,7 @@ qed
 lemma welltyped_commute:
   "\<lbrakk>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; \<Phi> \<turnstile> t:\<sigma> \<surd>\<rbrakk> \<Longrightarrow> P,t \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>' = P,t \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>'"
 apply(rule iffI)
- apply(erule exec_1_d.cases, simp, fastsimp simp add: exec_d_def exec_1_iff split: split_if_asm)
+ apply(erule exec_1_d.cases, simp, fastforce simp add: exec_d_def exec_1_iff split: split_if_asm)
 by(auto dest!: no_type_error intro!: exec_1_d.intros simp add: exec_d_def exec_1_iff split: split_if_asm)
 
 end

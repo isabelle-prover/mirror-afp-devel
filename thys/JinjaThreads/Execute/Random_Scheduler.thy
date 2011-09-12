@@ -140,7 +140,7 @@ next
   assume rr: "random_scheduler \<sigma> s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
     and invar: "random_scheduler_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
   thus "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> 0 < ln\<^sub>f n \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln"
-    by(fastsimp simp add: random_scheduler_def Option_bind_eq_Some_conv dest: step_thread_Some_NoneD[OF det])
+    by(fastforce simp add: random_scheduler_def Option_bind_eq_Some_conv dest: step_thread_Some_NoneD[OF det])
 next
   fix \<sigma> s t ta x' m' \<sigma>'
   assume rr: "random_scheduler \<sigma> s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"

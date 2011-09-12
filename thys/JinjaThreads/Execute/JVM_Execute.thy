@@ -62,7 +62,7 @@ where "sc_jvm_state_invar P \<Phi> \<equiv> {s. sc_execute.correct_state_ts P \<
 lemma eval_sc_mexec:
   "(\<lambda>t xm ta x'm'. Predicate.eval (sc_mexec P t xm) (ta, x'm')) = 
   (\<lambda>t ((xcp, frs), h) ta ((xcp', frs'), h'). sc.execute.exec_1 (TYPE(addr jvm_method)) P P t (xcp, h, frs) ta (xcp', h', frs'))"
-by(rule ext)+(fastsimp intro!: SUP1_I simp add: sc.exec_1_eq')
+by(rule ext)+(fastforce intro!: SUP1_I simp add: sc.exec_1_eq')
 
 lemma sc_jvm_start_state_invar: 
   assumes "wf_jvm_prog\<^sub>\<Phi> P"

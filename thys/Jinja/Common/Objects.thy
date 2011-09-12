@@ -61,7 +61,7 @@ where
 
 lemma new_Addr_SomeD:
   "new_Addr h = Some a \<Longrightarrow> h a = None"
- (*<*)by(fastsimp simp add:new_Addr_def split:if_splits intro:LeastI)(*>*)
+ (*<*)by(fastforce simp add:new_Addr_def split:if_splits intro:LeastI)(*>*)
 
 lemma [simp]: "(typeof\<^bsub>h\<^esub> v = Some Boolean) = (\<exists>b. v = Bool b)"
  (*<*)by(induct v) auto(*>*)
@@ -145,7 +145,7 @@ apply(cases v)
    apply simp
   apply simp
  apply simp
-apply(fastsimp simp:hext_def)
+apply(fastforce simp:hext_def)
 done
 (*>*)
 
@@ -164,7 +164,7 @@ apply(simp add: gen_new_Addr_def)
 apply(rule impI)
 apply(rule conjI)
  apply safe[1]
-  apply(fastsimp intro: Least_equality)
+  apply(fastforce intro: Least_equality)
  apply(rule arg_cong[where f=Least])
  apply(rule ext)
  apply(case_tac "n = ac")

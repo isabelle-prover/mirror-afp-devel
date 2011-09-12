@@ -183,28 +183,28 @@ lemma exec_block:
   \<Longrightarrow> 
   \<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> \<Rightarrow>  u"
 apply (unfold block_def)
-by (fastsimp intro: exec.intros)
+by (fastforce intro: exec.intros)
 
 lemma exec_blockAbrupt: 
      "\<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Abrupt t\<rbrakk>
        \<Longrightarrow> 
        \<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> \<Rightarrow>  Abrupt (return s t)"
 apply (unfold block_def)
-by (fastsimp intro: exec.intros)
+by (fastforce intro: exec.intros)
 
 lemma exec_blockFault: 
   "\<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Fault f\<rbrakk>
    \<Longrightarrow> 
   \<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> \<Rightarrow>  Fault f"
 apply (unfold block_def)
-by (fastsimp intro: exec.intros)
+by (fastforce intro: exec.intros)
 
 lemma exec_blockStuck:
   "\<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Stuck\<rbrakk>
   \<Longrightarrow> 
   \<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> \<Rightarrow>  Stuck"
 apply (unfold block_def)
-by (fastsimp intro: exec.intros)
+by (fastforce intro: exec.intros)
 
 lemma exec_call:   
  "\<lbrakk>\<Gamma> p=Some bdy;\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Normal t; \<Gamma>\<turnstile>\<langle>c s t,Normal (return s t)\<rangle> \<Rightarrow>  u\<rbrakk> 
@@ -270,7 +270,7 @@ lemma exec_Call_body_aux:
   "\<Gamma> p=Some bdy \<Longrightarrow> 
    \<Gamma>\<turnstile>\<langle>Call p,s\<rangle> \<Rightarrow> t = \<Gamma>\<turnstile>\<langle>bdy,s\<rangle> \<Rightarrow> t"
 apply (rule)
-apply (fastsimp elim: exec_elim_cases )
+apply (fastforce elim: exec_elim_cases )
 apply (cases s)
 apply   (cases t)
 apply (auto intro: exec.intros dest: Fault_end Stuck_end Abrupt_end)
@@ -422,20 +422,20 @@ lemma exec_Call_body:
   "\<Gamma> p=Some bdy \<Longrightarrow> 
    \<Gamma>\<turnstile>\<langle>Call p,s\<rangle> \<Rightarrow>  t = \<Gamma>\<turnstile>\<langle>the (\<Gamma> p),s\<rangle> \<Rightarrow>  t"
 apply (rule)
-apply (fastsimp elim: exec_elim_cases )
+apply (fastforce elim: exec_elim_cases )
 apply (cases s)
 apply   (cases t)
-apply (fastsimp intro: exec.intros dest: Fault_end Abrupt_end Stuck_end)+
+apply (fastforce intro: exec.intros dest: Fault_end Abrupt_end Stuck_end)+
 done
 
 lemma exec_Seq': "\<lbrakk>\<Gamma>\<turnstile>\<langle>c1,s\<rangle> \<Rightarrow>  s'; \<Gamma>\<turnstile>\<langle>c2,s'\<rangle> \<Rightarrow>  s''\<rbrakk>
              \<Longrightarrow>
              \<Gamma>\<turnstile>\<langle>Seq c1 c2,s\<rangle> \<Rightarrow>  s''" 
   apply (cases s)
-  apply    (fastsimp intro: exec.intros)
-  apply   (fastsimp dest: Abrupt_end)
-  apply  (fastsimp dest: Fault_end)
-  apply (fastsimp dest: Stuck_end)
+  apply    (fastforce intro: exec.intros)
+  apply   (fastforce dest: Abrupt_end)
+  apply  (fastforce dest: Fault_end)
+  apply (fastforce dest: Stuck_end)
   done
 
 
@@ -569,28 +569,28 @@ lemma execn_block:
   \<Longrightarrow> 
   \<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> =n\<Rightarrow>  u"
 apply (unfold block_def)
-by (fastsimp intro: execn.intros)
+by (fastforce intro: execn.intros)
 
 lemma execn_blockAbrupt: 
      "\<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =n\<Rightarrow>  Abrupt t\<rbrakk>
        \<Longrightarrow> 
        \<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> =n\<Rightarrow>  Abrupt (return s t)"
 apply (unfold block_def)
-by (fastsimp intro: execn.intros)
+by (fastforce intro: execn.intros)
 
 lemma execn_blockFault: 
   "\<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =n\<Rightarrow>  Fault f\<rbrakk>
    \<Longrightarrow> 
   \<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> =n\<Rightarrow>  Fault f"
 apply (unfold block_def)
-by (fastsimp intro: execn.intros)
+by (fastforce intro: execn.intros)
 
 lemma execn_blockStuck:
   "\<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =n\<Rightarrow>  Stuck\<rbrakk>
   \<Longrightarrow> 
   \<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> =n\<Rightarrow>  Stuck"
 apply (unfold block_def)
-by (fastsimp intro: execn.intros)
+by (fastforce intro: execn.intros)
 
 
 lemma execn_call:   
@@ -723,7 +723,7 @@ shows "P"
   apply (unfold call_def)
   apply (cases n)
   apply  (simp only: block_def)
-  apply  (fastsimp elim: execn_Normal_elim_cases)
+  apply  (fastforce elim: execn_Normal_elim_cases)
   apply (cases "\<Gamma> p")
   apply  (erule execn_block_Normal_elim)
   apply      (elim execn_Normal_elim_cases)
@@ -785,10 +785,10 @@ lemma  execn_Seq':
         \<Longrightarrow>
         \<Gamma>\<turnstile>\<langle>Seq c1 c2,s\<rangle> =n\<Rightarrow>  s''"
   apply (cases s)
-  apply    (fastsimp intro: execn.intros)
-  apply   (fastsimp dest: execn_Abrupt_end)
-  apply  (fastsimp dest: execn_Fault_end)
-  apply (fastsimp dest: execn_Stuck_end)
+  apply    (fastforce intro: execn.intros)
+  apply   (fastforce dest: execn_Abrupt_end)
+  apply  (fastforce dest: execn_Fault_end)
+  apply (fastforce dest: execn_Stuck_end)
   done
 
 lemma execn_mono:
@@ -982,8 +982,8 @@ lemma noFaultnI':
 
 lemma noFaultn_def': "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow>\<notin>{Fault f} = (\<not>\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> Fault f)"
   apply rule
-  apply  (fastsimp simp add: nfinal_notin_def)
-  apply (fastsimp intro: noFaultnI')
+  apply  (fastforce simp add: nfinal_notin_def)
+  apply (fastforce intro: noFaultnI')
   done
 
 lemma noStucknI: "\<lbrakk>\<And>t. \<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow>t \<Longrightarrow> t\<noteq>Stuck\<rbrakk> \<Longrightarrow>  \<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow>\<notin>{Stuck}" 
@@ -1000,8 +1000,8 @@ lemma noStucknI':
 
 lemma noStuckn_def': "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow>\<notin>{Stuck} = (\<not>\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> Stuck)"
   apply rule
-  apply  (fastsimp simp add: nfinal_notin_def)
-  apply (fastsimp intro: noStucknI')
+  apply  (fastforce simp add: nfinal_notin_def)
+  apply (fastforce intro: noStucknI')
   done
 
 
@@ -1023,8 +1023,8 @@ lemma noFaultE:
  
 lemma noFault_def': "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow>\<notin>{Fault f} = (\<not>\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> Fault f)"
   apply rule
-  apply  (fastsimp simp add: final_notin_def)
-  apply (fastsimp intro: noFaultI')
+  apply  (fastforce simp add: final_notin_def)
+  apply (fastforce intro: noFaultI')
   done
 
 
@@ -1046,8 +1046,8 @@ lemma noStuckE:
  
 lemma noStuck_def': "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow>\<notin>{Stuck} = (\<not>\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> Stuck)"
   apply rule
-  apply  (fastsimp simp add: final_notin_def)
-  apply (fastsimp intro: noStuckI')
+  apply  (fastforce simp add: final_notin_def)
+  apply (fastforce intro: noStuckI')
   done
 
 
@@ -1352,7 +1352,7 @@ proof (induct c)
       by (auto elim: execn_sequence_appE)
     with Seq.hyps Normal
     show ?thesis
-      by (fastsimp intro: execn.intros)
+      by (fastforce intro: execn.intros)
   next
     case Abrupt 
     with exec_seq 
@@ -1392,7 +1392,7 @@ next
     from execn_sequence_flatten_to_execn [OF exec_norm_c1]
       execn_sequence_flatten_to_execn [OF exec_norm_c2] Seq.hyps Normal
     show ?thesis
-      by (fastsimp intro: execn.intros)
+      by (fastforce intro: execn.intros)
   next
     case (Abrupt s')
     with exec_norm_seq have "t=Abrupt s'"
@@ -1453,7 +1453,7 @@ next
 next
   case Throw thus ?case by simp
 next
-  case Catch thus ?case by (fastsimp intro: execn.intros elim!: execn_elim_cases)
+  case Catch thus ?case by (fastforce intro: execn.intros elim!: execn_elim_cases)
 qed
 
 lemma execn_normalize_iff_execn:
@@ -1555,15 +1555,15 @@ lemma execn_to_execn_subseteq_guards: "\<And>c s t n. \<lbrakk>c \<subseteq>\<^s
             (isFault t \<longrightarrow> isFault t') \<and> (\<not> isFault t' \<longrightarrow> t'=t)"
 proof (induct c')
   case Skip thus ?case 
-    by (fastsimp dest: subseteq_guardsD intro: execn.intros 
+    by (fastforce dest: subseteq_guardsD intro: execn.intros 
          elim: execn_elim_cases)
 next
   case Basic thus ?case 
-    by (fastsimp dest: subseteq_guardsD intro: execn.intros 
+    by (fastforce dest: subseteq_guardsD intro: execn.intros 
          elim: execn_elim_cases)
 next
   case Spec thus ?case 
-    by (fastsimp dest: subseteq_guardsD intro: execn.intros 
+    by (fastforce dest: subseteq_guardsD intro: execn.intros 
          elim: execn_elim_cases)
 next
   case (Seq c1' c2')
@@ -1615,7 +1615,7 @@ next
         by (auto dest: execn_Fault_end)
       ultimately show ?thesis
         using Normal w_Fault exec_c1'
-        by (fastsimp intro: execn.intros elim: isFaultE)      
+        by (fastforce intro: execn.intros elim: isFaultE)      
     next
       case False
       note noFault_w = this
@@ -1639,7 +1639,7 @@ next
           by blast
         with Normal exec_c1' w'
         show ?thesis
-          by (fastsimp intro: execn.intros)
+          by (fastforce intro: execn.intros)
       qed
     qed
   qed
@@ -1685,7 +1685,7 @@ next
         "\<not> isFault t' \<longrightarrow> t' = t"
         by blast
       with s'_in_b Normal show ?thesis
-        by (fastsimp intro: execn.intros)
+        by (fastforce intro: execn.intros)
     next
       assume s'_notin_b: "s' \<notin> b" 
       assume "\<Gamma>\<turnstile>\<langle>c2,Normal s'\<rangle> =n\<Rightarrow> t"
@@ -1695,7 +1695,7 @@ next
         "\<not> isFault t' \<longrightarrow> t' = t"
         by blast
       with s'_notin_b Normal show ?thesis
-        by (fastsimp intro: execn.intros)
+        by (fastforce intro: execn.intros)
     qed
   qed
 next
@@ -1734,22 +1734,22 @@ next
         case True
         with exec_c' r_in_b
         show ?thesis
-          by (fastsimp intro: execn.intros elim: isFaultE)
+          by (fastforce intro: execn.intros elim: isFaultE)
       next
         case False
         with exec_c' r_in_b u'_noFault exec_w w_Fault w'_noFault
         show ?thesis
-          by (fastsimp intro: execn.intros)
+          by (fastforce intro: execn.intros)
       qed
     next
-      case WhileFalse thus ?case by (fastsimp intro: execn.intros)
+      case WhileFalse thus ?case by (fastforce intro: execn.intros)
     qed auto
   }
   from this [OF exec c]
   show ?case .
 next
   case Call thus ?case 
-    by (fastsimp dest: subseteq_guardsD intro: execn.intros 
+    by (fastforce dest: subseteq_guardsD intro: execn.intros 
          elim: execn_elim_cases)
 next
   case (DynCom C') 
@@ -1789,7 +1789,7 @@ next
       "\<not> isFault t' \<longrightarrow> t' = t"
       by blast
     with Normal show ?thesis
-      by (fastsimp intro: execn.intros)
+      by (fastforce intro: execn.intros)
   qed
 next
   case (Guard f' g' c')
@@ -1828,7 +1828,7 @@ next
         by blast
       with Normal
       show ?thesis
-        by (cases "s' \<in> g'") (fastsimp intro: execn.intros)+
+        by (cases "s' \<in> g'") (fastforce intro: execn.intros)+
     next
       assume "\<exists>c''. c = Guard f' g' c'' \<and> (c'' \<subseteq>\<^sub>g c')"
       then obtain c'' where
@@ -1849,17 +1849,17 @@ next
           by blast
         with Normal s'_in_g'
         show ?thesis
-          by (fastsimp intro: execn.intros)
+          by (fastforce intro: execn.intros)
       next
         assume "s' \<notin> g'" "t=Fault f'"
         with Normal show ?thesis
-          by (fastsimp intro: execn.intros)
+          by (fastforce intro: execn.intros)
       qed
     qed
   qed
 next
   case Throw thus ?case 
-    by (fastsimp dest: subseteq_guardsD intro: execn.intros 
+    by (fastforce dest: subseteq_guardsD intro: execn.intros 
          elim: execn_elim_cases)
 next
   case (Catch c1' c2')
@@ -1906,7 +1906,7 @@ next
       proof (cases "isFault w'")
         case True
         with exec_c1' Normal show ?thesis
-          by (fastsimp intro: execn.intros elim: isFaultE)
+          by (fastforce intro: execn.intros elim: isFaultE)
       next
         case False
         with w'_noFault have w': "w'=Abrupt w" by simp
@@ -1917,7 +1917,7 @@ next
           by blast
         with exec_c1' w' Normal
         show ?thesis
-          by (fastsimp intro: execn.intros )
+          by (fastforce intro: execn.intros )
       qed
     next
       assume exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s'\<rangle> =n\<Rightarrow> t" 
@@ -1931,12 +1931,12 @@ next
       proof (cases "isFault t'")
         case True
         with exec_c1' Normal show ?thesis
-          by (fastsimp intro: execn.intros elim: isFaultE)
+          by (fastforce intro: execn.intros elim: isFaultE)
       next
         case False
         with exec_c1' Normal t_Fault t'_noFault t
         show ?thesis
-          by (fastsimp intro: execn.intros)
+          by (fastforce intro: execn.intros)
       qed
     qed
   qed
@@ -1988,7 +1988,7 @@ proof (induct)
     next
       case True
       from exec_merge_c s_in_g merge_guards_c True show ?thesis 
-        by (fastsimp intro: execn.intros elim: execn.cases)
+        by (fastforce intro: execn.intros elim: execn.cases)
     qed
   qed
 next
@@ -2013,10 +2013,10 @@ next
     next
       case True
       from  s_notin_g merge_guards_c True show ?thesis 
-        by (fastsimp intro: execn.intros)
+        by (fastforce intro: execn.intros)
     qed
   qed
-qed (fastsimp intro: execn.intros)+
+qed (fastforce intro: execn.intros)+
 
 lemma execn_merge_guards_to_execn_Normal:
   "\<And>s n t. \<Gamma>\<turnstile>\<langle>merge_guards c,Normal s\<rangle> =n\<Rightarrow> t \<Longrightarrow> \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t" 
@@ -2070,7 +2070,7 @@ next
   qed
 next
   case Cond thus ?case
-    by (fastsimp intro: execn.intros elim: execn_Normal_elim_cases)
+    by (fastforce intro: execn.intros elim: execn_Normal_elim_cases)
 next
   case (While b c)
   {
@@ -2102,7 +2102,7 @@ next
   case Call thus ?case by simp
 next
   case DynCom thus ?case
-    by (fastsimp intro: execn.intros elim: execn_Normal_elim_cases)
+    by (fastforce intro: execn.intros elim: execn_Normal_elim_cases)
 next
   case (Guard f g c)
   have exec_merge: "\<Gamma>\<turnstile>\<langle>merge_guards (Guard f g c),Normal s\<rangle> =n\<Rightarrow> t" by fact
@@ -2189,10 +2189,10 @@ qed
 theorem execn_merge_guards_to_execn:
   "\<Gamma>\<turnstile>\<langle>merge_guards c,s\<rangle> =n\<Rightarrow> t \<Longrightarrow> \<Gamma>\<turnstile>\<langle>c, s\<rangle> =n\<Rightarrow> t" 
 apply (cases s)
-apply    (fastsimp intro: execn_merge_guards_to_execn_Normal)
-apply   (fastsimp dest: execn_Abrupt_end)
-apply  (fastsimp dest: execn_Fault_end)
-apply (fastsimp dest: execn_Stuck_end)
+apply    (fastforce intro: execn_merge_guards_to_execn_Normal)
+apply   (fastforce dest: execn_Abrupt_end)
+apply  (fastforce dest: execn_Fault_end)
+apply (fastforce dest: execn_Stuck_end)
 done
 
 corollary execn_iff_execn_merge_guards:
@@ -2231,9 +2231,9 @@ using exec_c
 proof (induct)
   case Skip thus ?case by auto
 next
-  case Guard thus ?case by (fastsimp intro: execn.intros)
+  case Guard thus ?case by (fastforce intro: execn.intros)
 next
-  case GuardFault thus ?case by (fastsimp intro: execn.intros)
+  case GuardFault thus ?case by (fastforce intro: execn.intros)
 next
   case FaultProp thus ?case by auto
 next
@@ -2286,9 +2286,9 @@ next
     with t show ?thesis by simp
   qed
 next
-  case CondTrue thus ?case by (fastsimp intro: execn.intros)
+  case CondTrue thus ?case by (fastforce intro: execn.intros)
 next
-  case CondFalse thus ?case by (fastsimp intro: execn.intros)
+  case CondFalse thus ?case by (fastforce intro: execn.intros)
 next
   case (WhileTrue s b c n w t) 
   have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> w" by fact
@@ -2334,15 +2334,15 @@ next
     with t show ?thesis by simp
   qed
 next
-  case WhileFalse thus ?case by (fastsimp intro: execn.intros)
+  case WhileFalse thus ?case by (fastforce intro: execn.intros)
 next
-  case Call thus ?case by (fastsimp intro: execn.intros)
+  case Call thus ?case by (fastforce intro: execn.intros)
 next
   case CallUndefined thus ?case by simp
 next
   case StuckProp thus ?case by simp
 next
-  case DynCom thus ?case by (fastsimp intro: execn.intros)
+  case DynCom thus ?case by (fastforce intro: execn.intros)
 next
   case Throw thus ?case by simp
 next
@@ -2361,7 +2361,7 @@ next
   with exec_mark_c1 show ?case
     by (auto intro: execn.intros)
 next
-  case CatchMiss thus ?case by (fastsimp intro: execn.intros)
+  case CatchMiss thus ?case by (fastforce intro: execn.intros)
 qed
 
 lemma execn_mark_guards_to_execn:
@@ -2422,7 +2422,7 @@ next
         by (auto dest: execn_Fault_end)
       ultimately show ?thesis
         using Normal w_Fault w'_Fault_f exec_c1
-        by (fastsimp intro: execn.intros elim: isFaultE)      
+        by (fastforce intro: execn.intros elim: isFaultE)      
     next
       case False
       note noFault_w = this
@@ -2456,7 +2456,7 @@ next
           by blast
         with Normal exec_c1 w'
         show ?thesis
-          by (fastsimp intro: execn.intros)
+          by (fastforce intro: execn.intros)
       qed
     qed
   qed
@@ -2676,7 +2676,7 @@ next
   case Call thus ?case by auto
 next
   case DynCom thus ?case 
-    by (fastsimp elim!: execn_elim_cases intro: execn.intros)
+    by (fastforce elim!: execn_elim_cases intro: execn.intros)
 next
   case (Guard f' g c s n t)
   have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (Guard f' g c),s\<rangle> =n\<Rightarrow> t" by fact
@@ -2767,7 +2767,7 @@ next
         w'_Fault_f: "w' = Fault f \<longrightarrow> w'=Abrupt w" and
         w'_Fault: "isFault w' \<longrightarrow> isFault (Abrupt w)" and
         w'_noFault: "\<not> isFault w' \<longrightarrow> w'=Abrupt w"
-        by fastsimp
+        by fastforce
       show ?thesis
       proof (cases "w'")
         case (Fault f')
@@ -2885,9 +2885,9 @@ using exec_c
 proof (induct)
   case Skip thus ?case by auto
 next
-  case Guard thus ?case by (fastsimp intro: execn.intros)
+  case Guard thus ?case by (fastforce intro: execn.intros)
 next
-  case GuardFault thus ?case by (fastsimp intro: execn.intros)
+  case GuardFault thus ?case by (fastforce intro: execn.intros)
 next
   case FaultProp thus ?case by auto
 next
@@ -2941,9 +2941,9 @@ next
     with t show ?thesis by simp
   qed
 next
-  case CondTrue thus ?case by (fastsimp intro: execn.intros)
+  case CondTrue thus ?case by (fastforce intro: execn.intros)
 next
-  case CondFalse thus ?case by (fastsimp intro: execn.intros)
+  case CondFalse thus ?case by (fastforce intro: execn.intros)
 next
   case (WhileTrue s b c n w t) 
   have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> w" by fact
@@ -2990,15 +2990,15 @@ next
     with t show ?thesis by simp
   qed
 next
-  case WhileFalse thus ?case by (fastsimp intro: execn.intros)
+  case WhileFalse thus ?case by (fastforce intro: execn.intros)
 next
-  case Call thus ?case by (fastsimp intro: execn.intros)
+  case Call thus ?case by (fastforce intro: execn.intros)
 next
   case CallUndefined thus ?case by simp
 next
   case StuckProp thus ?case by simp
 next
-  case DynCom thus ?case by (fastsimp intro: execn.intros)
+  case DynCom thus ?case by (fastforce intro: execn.intros)
 next
   case Throw thus ?case by simp
 next
@@ -3018,7 +3018,7 @@ next
   with exec_strip_c1 show ?case
     by (auto intro: execn.intros)
 next
-  case CatchMiss thus ?case by (fastsimp intro: execn.intros)
+  case CatchMiss thus ?case by (fastforce intro: execn.intros)
 qed
 
 lemma execn_to_execn_strip_guards':
@@ -3087,7 +3087,7 @@ next
         by (auto dest: execn_Fault_end)
       ultimately show ?thesis
         using Normal w_Fault w'_Fault exec_c1
-        by (fastsimp intro: execn.intros elim: isFaultE)      
+        by (fastforce intro: execn.intros elim: isFaultE)      
     next
       case False
       note noFault_w = this
@@ -3116,7 +3116,7 @@ next
           by blast
         with Normal exec_c1 w'
         show ?thesis
-          by (fastsimp intro: execn.intros)
+          by (fastforce intro: execn.intros)
       qed
     qed
   qed
@@ -3346,7 +3346,7 @@ next
   case Call thus ?case by auto
 next
   case DynCom thus ?case 
-    by (fastsimp elim!: execn_elim_cases intro: execn.intros)
+    by (fastforce elim!: execn_elim_cases intro: execn.intros)
 next
   case (Guard f g c s n t)
   have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (Guard f g c),s\<rangle> =n\<Rightarrow> t" by fact
@@ -3385,7 +3385,7 @@ next
         by blast
       with Normal True 
       show ?thesis
-        by (cases "s'\<in> g") (fastsimp intro: execn.intros)+
+        by (cases "s'\<in> g") (fastforce intro: execn.intros)+
     next
       case False
       note f_notin_F = this
@@ -3586,7 +3586,7 @@ next
       by (blast intro: execn.intros)
   qed
 next  
-  case CatchMiss thus ?case by (fastsimp intro: execn.intros elim: isFaultE)
+  case CatchMiss thus ?case by (fastforce intro: execn.intros elim: isFaultE)
 qed
 
 lemma exec_strip_guards_to_exec: 
@@ -4014,11 +4014,11 @@ next
   qed
 next
   case Guard thus ?case 
-    by (fastsimp elim: execn_Normal_elim_cases intro: execn.intros 
+    by (fastforce elim: execn_Normal_elim_cases intro: execn.intros 
         simp add: inter_guards_Guard)
 next
   case Throw thus ?case
-    by (fastsimp elim: execn_Normal_elim_cases intro: execn.intros 
+    by (fastforce elim: execn_Normal_elim_cases intro: execn.intros 
         simp add: inter_guards_Throw)
 next
   case (Catch a1 a2)
@@ -4108,11 +4108,11 @@ lemma inter_guards_execn_Normal_Fault:
   "\<And>c c2 s n. \<lbrakk>(c1 \<inter>\<^sub>g c2) = Some c; \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f\<rbrakk>
         \<Longrightarrow> (\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> Fault f \<or> \<Gamma>\<turnstile>\<langle>c2,Normal s\<rangle> =n\<Rightarrow> Fault f)"
 proof (induct c1)
-  case Skip thus ?case by (fastsimp simp add: inter_guards_Skip)
+  case Skip thus ?case by (fastforce simp add: inter_guards_Skip)
 next
-  case (Basic f) thus ?case by (fastsimp simp add: inter_guards_Basic)
+  case (Basic f) thus ?case by (fastforce simp add: inter_guards_Basic)
 next
-  case (Spec r) thus ?case by (fastsimp simp add: inter_guards_Spec)
+  case (Spec r) thus ?case by (fastforce simp add: inter_guards_Spec)
 next
   case (Seq a1 a2)
   have "(Seq a1 a2 \<inter>\<^sub>g c2) = Some c" by fact
@@ -4181,13 +4181,13 @@ next
     moreover assume "\<Gamma>\<turnstile>\<langle>t,Normal s\<rangle> =n\<Rightarrow> Fault f"
     with t have "\<Gamma>\<turnstile>\<langle>t1,Normal s\<rangle> =n\<Rightarrow> Fault f \<or> \<Gamma>\<turnstile>\<langle>t2,Normal s\<rangle> =n\<Rightarrow> Fault f"
       by (auto dest: Cond.hyps)
-    ultimately show ?thesis using c2 c by (fastsimp intro: execn.intros)
+    ultimately show ?thesis using c2 c by (fastforce intro: execn.intros)
   next
     assume "s \<notin> b"
     moreover assume "\<Gamma>\<turnstile>\<langle>e,Normal s\<rangle> =n\<Rightarrow> Fault f"
     with e have "\<Gamma>\<turnstile>\<langle>e1,Normal s\<rangle> =n\<Rightarrow> Fault f \<or> \<Gamma>\<turnstile>\<langle>e2,Normal s\<rangle> =n\<Rightarrow> Fault f"
       by (auto dest: Cond.hyps)
-    ultimately show ?thesis using c2 c by (fastsimp intro: execn.intros)
+    ultimately show ?thesis using c2 c by (fastforce intro: execn.intros)
   qed
 next
   case (While b bdy1)
@@ -4224,7 +4224,7 @@ next
         have "\<Gamma>\<turnstile>\<langle>bdy1,Normal s\<rangle> =n\<Rightarrow> Fault f \<or> \<Gamma>\<turnstile>\<langle>bdy2,Normal s\<rangle> =n\<Rightarrow> Fault f"
           by auto
         with s_in_b show ?thesis
-          by (fastsimp intro: execn.intros)
+          by (fastforce intro: execn.intros)
       next
         case (Normal s''')
         with inter_guards_execn_noFault [OF bdy exec_bdy]
@@ -4237,13 +4237,13 @@ next
               \<Gamma>\<turnstile>\<langle>While b bdy2,Normal s'''\<rangle> =n\<Rightarrow> Fault f"
           by simp
         ultimately show ?thesis
-          using s_in_b by (fastsimp intro: execn.intros)
+          using s_in_b by (fastforce intro: execn.intros)
       next
         case (Abrupt s''')
-        with exec_w Fault_s'' show ?thesis by (fastsimp dest: execn_Abrupt_end)
+        with exec_w Fault_s'' show ?thesis by (fastforce dest: execn_Abrupt_end)
       next
         case Stuck
-        with exec_w Fault_s'' show ?thesis by (fastsimp dest: execn_Stuck_end)
+        with exec_w Fault_s'' show ?thesis by (fastforce dest: execn_Stuck_end)
       qed
     next
       case WhileFalse thus ?case by (auto intro: execn.intros)
@@ -4253,7 +4253,7 @@ next
   show ?case
     by auto
 next
-  case Call thus ?case by (fastsimp simp add: inter_guards_Call)
+  case Call thus ?case by (fastforce simp add: inter_guards_Call)
 next
   case (DynCom f1)
   have "(DynCom f1 \<inter>\<^sub>g c2) = Some c" by fact
@@ -4271,7 +4271,7 @@ next
       by auto
     with DynCom.hyps [OF this] exec_F c2 
     show ?thesis
-      by (fastsimp intro: execn.intros)
+      by (fastforce intro: execn.intros)
   qed
 next
   case (Guard m g1 bdy1)
@@ -4303,7 +4303,7 @@ next
       by (auto intro: execn.intros)
   qed
 next
-  case Throw thus ?case by (fastsimp simp add: inter_guards_Throw)
+  case Throw thus ?case by (fastforce simp add: inter_guards_Throw)
 next
   case (Catch a1 a2)
   have "(Catch a1 a2 \<inter>\<^sub>g c2) = Some c" by fact
@@ -4327,13 +4327,13 @@ next
     have "\<Gamma>\<turnstile>\<langle>a2,Normal s'\<rangle> =n\<Rightarrow> Fault f \<or> \<Gamma>\<turnstile>\<langle>b2,Normal s'\<rangle> =n\<Rightarrow> Fault f" 
       by (auto dest: Catch.hyps)
     ultimately show ?thesis
-      using c2 by (fastsimp intro: execn.intros)
+      using c2 by (fastforce intro: execn.intros)
   next
     assume "\<Gamma>\<turnstile>\<langle>d1,Normal s\<rangle> =n\<Rightarrow> Fault f" 
     with d1 have "\<Gamma>\<turnstile>\<langle>a1,Normal s\<rangle> =n\<Rightarrow> Fault f \<or> \<Gamma>\<turnstile>\<langle>b1,Normal s\<rangle> =n\<Rightarrow> Fault f" 
       by (auto dest: Catch.hyps)
     with c2 show ?thesis
-      by (fastsimp intro: execn.intros)
+      by (fastforce intro: execn.intros)
   qed
 qed
 
@@ -4349,11 +4349,11 @@ proof (cases s)
 next
   case (Abrupt s')
   with exec_c show ?thesis 
-    by (fastsimp dest: execn_Abrupt_end)
+    by (fastforce dest: execn_Abrupt_end)
 next
   case Stuck
   with exec_c show ?thesis 
-    by (fastsimp dest: execn_Stuck_end)
+    by (fastforce dest: execn_Stuck_end)
 next
   case (Normal s')
   with exec_c inter_guards_execn_Normal_Fault [OF c]
@@ -4519,7 +4519,7 @@ next
       by simp
     with exec_c1' Normal w_Stuck w_Fault w'_noStuck
     show ?thesis
-      by (fastsimp intro: execn.CatchMiss)
+      by (fastforce intro: execn.CatchMiss)
   next
     case (Abrupt s')
     with w'_noStuck have "w'=w"
@@ -4531,12 +4531,12 @@ next
       by simp
     with exec_c1' Fault w_Stuck w_Fault w'_noStuck
     show ?thesis
-      by (fastsimp intro: execn.CatchMiss)
+      by (fastforce intro: execn.CatchMiss)
   next
     case Stuck
     with exec_c1' w_Stuck w_Fault w'_noStuck
     show ?thesis
-      by (fastsimp intro: execn.CatchMiss)
+      by (fastforce intro: execn.CatchMiss)
   qed
 qed
 

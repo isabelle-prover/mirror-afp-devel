@@ -304,14 +304,14 @@ lemma bisim_list1_elim:
   obtains e es e1 xs1 exs1
   where "es' = (e, es)" "exs = ((e1, xs1), exs1)"
   and "bisim_list es exs1" "bisim [] e e1 xs1" "fv e = {}" "\<D> e \<lfloor>{}\<rfloor>" "max_vars e1 \<le> length xs1"
-using assms by(cases es')(cases exs, fastsimp)
+using assms by(cases es')(cases exs, fastforce)
 
 declare bisim_list1.simps [simp del]
 
 
 lemma bisims_map_Val_conv [simp]: "bisims Vs (map Val vs) es xs = (es = map Val vs)"
 apply(induct vs arbitrary: es)
- apply(fastsimp)
+ apply(fastforce)
 apply(simp)
 apply(rule iffI)
 apply(erule bisims_cases, auto)
@@ -327,8 +327,8 @@ lemma bisims_map_Val_Throw:
   "bisims Vs (map Val vs @ Throw a # es) es' xs \<longleftrightarrow> es' = map Val vs @ Throw a # compEs1 Vs es \<and> \<not> contains_insyncs es"
 apply(induct vs arbitrary: es')
  apply(simp)
- apply(fastsimp simp add: compEs1_conv_map)
-apply(fastsimp elim!: bisims_cases intro: bisimsCons2)
+ apply(fastforce simp add: compEs1_conv_map)
+apply(fastforce elim!: bisims_cases intro: bisimsCons2)
 done
 
 lemma compE1_bisim [intro]: "\<lbrakk> fv e \<subseteq> set Vs; \<not> contains_insync e \<rbrakk> \<Longrightarrow> bisim Vs e (compE1 Vs e) xs"
@@ -341,7 +341,7 @@ next
   thus ?case by(cases "is_val exp1")(auto)
 next
   case (AAss Vs exp1 exp2 exp3 x)
-  thus ?case by(cases "is_val exp1", cases "is_val exp2", fastsimp+)
+  thus ?case by(cases "is_val exp1", cases "is_val exp2", fastforce+)
 next
   case (FAss Vs exp1 F D exp2 x)
   thus ?case by(cases "is_val exp1", auto)
@@ -402,14 +402,14 @@ next
     case False
     with bisimBlockSomeNone show ?thesis by(auto simp add: nth_append)
   qed
-qed(fastsimp dest: fv_unmod_compE1 fvs_unmods_compEs1 index_le_lengthD simp add: nth_append)+
+qed(fastforce dest: fv_unmod_compE1 fvs_unmods_compEs1 index_le_lengthD simp add: nth_append)+
 
 lemma bisim_extRet2J [intro!]: "bisim Vs e e' xs \<Longrightarrow> bisim Vs (extRet2J e va) (extRet2J1 e' va) xs"
 by(cases va) auto
 
 lemma bisims_map_Val_conv2 [simp]: "bisims Vs es (map Val vs) xs = (es = map Val vs)"
 apply(induct vs arbitrary: es)
-apply(fastsimp elim!: bisims_cases)+
+apply(fastforce elim!: bisims_cases)+
 done
 
 lemma bisims_map_Val_Throw2: 
@@ -417,8 +417,8 @@ lemma bisims_map_Val_Throw2:
    (\<exists>es''. es' = map Val vs @ Throw a # es'' \<and> es = compEs1 Vs es'' \<and> \<not> contains_insyncs es'')"
 apply(induct vs arbitrary: es')
  apply(simp)
- apply(fastsimp simp add: compEs1_conv_map)
-apply(fastsimp elim!: bisims_cases)
+ apply(fastforce simp add: compEs1_conv_map)
+apply(fastforce elim!: bisims_cases)
 done
 
 lemma hidden_bisim_unmod: "\<lbrakk> bisim Vs e e' xs; hidden Vs i \<rbrakk> \<Longrightarrow> unmod e' i"
@@ -556,19 +556,19 @@ lemma assumes bisim: "bisim VS E E' XS"
   \<Longrightarrow> bisims Vs (inline_calls E es) (inline_calls E' es') xs"
 proof(induct rule: bisim_bisims.inducts)
   case (bisimBinOp1 Vs e e' xs bop e'')
-  thus ?case by(cases "is_val (inline_call E e)")(fastsimp)+
+  thus ?case by(cases "is_val (inline_call E e)")(fastforce)+
 next
   case (bisimAAcc1 Vs a a' xs i)
-  thus ?case by(cases "is_val (inline_call E a)")(fastsimp)+
+  thus ?case by(cases "is_val (inline_call E a)")(fastforce)+
 next
   case (bisimAAss1 Vs a a' xs i e)
-  thus ?case by(cases "is_val (inline_call E a)", cases "is_val i")(fastsimp)+
+  thus ?case by(cases "is_val (inline_call E a)", cases "is_val i")(fastforce)+
 next
   case (bisimAAss2 Vs i i' xs a e)
-  thus ?case by(cases "is_val (inline_call E i)")(fastsimp)+
+  thus ?case by(cases "is_val (inline_call E i)")(fastforce)+
 next
   case (bisimFAss1 Vs e e' xs F D e'')
-  thus ?case by(cases "is_val (inline_call E e)")(fastsimp)+
+  thus ?case by(cases "is_val (inline_call E e)")(fastforce)+
 next
   case (bisimCallObj Vs e e' xs es M)
   obtain a M' vs where "aMvs = (a, M', vs)" by(cases aMvs, auto)
@@ -580,7 +580,7 @@ next
       `\<lbrakk>call e = \<lfloor>aMvs\<rfloor>; fv e \<subseteq> set Vs\<rbrakk> \<Longrightarrow> bisim Vs (inline_call E e) (inline_call E' e') xs`
     have IH': "bisim Vs (inline_call E e) (inline_call E' e') xs" by(auto)
     with `bisim Vs e e' xs` `fv (e\<bullet>M(es)) \<subseteq> set Vs` CallObj `\<not> contains_insyncs es` show ?thesis
-      by(cases "is_val (inline_call E e)")(fastsimp)+
+      by(cases "is_val (inline_call E e)")(fastforce)+
   next
     case (CallParams v)
     hence "inline_calls E' (compEs1 Vs es) = compEs1 Vs (inline_calls E es)"
@@ -611,8 +611,8 @@ next
   qed
 next
   case (bisimsCons1 Vs e e' xs es)
-  thus ?case by(cases "is_val (inline_call E e)")(fastsimp)+
-qed(fastsimp)+
+  thus ?case by(cases "is_val (inline_call E e)")(fastforce)+
+qed(fastforce)+
 
 declare hyperUn_ac [simp del]
 
@@ -642,12 +642,12 @@ proof(induct e and es)
     thus ?case by(auto simp add: hyperset_defs)
   qed
 next
-  case Block thus ?case by(fastsimp intro: diff_lem)
+  case Block thus ?case by(fastforce intro: diff_lem)
 next
   case throw thus ?case by(simp add: hyperset_defs)
 next
   case TryCatch thus ?case by(auto intro: sqInt_lem)
-qed(fastsimp intro: sqUn_lem sqUn_lem2)+
+qed(fastforce intro: sqUn_lem sqUn_lem2)+
 
 lemma assumes "final e'"
   shows defass_inline_call: "\<lbrakk> call e = \<lfloor>aMvs\<rfloor>; \<D> e A \<rbrakk> \<Longrightarrow> \<D> (inline_call e' e) A"
@@ -694,7 +694,7 @@ next
       by(auto intro: Ds_mono')
     ultimately show ?thesis using False by(auto)
   qed
-qed(fastsimp split: split_if_asm elim: D_mono' intro: sqUn_lem2 sqUn_lem A_inline_call)+
+qed(fastforce split: split_if_asm elim: D_mono' intro: sqUn_lem2 sqUn_lem A_inline_call)+
 
 lemma bisim_B: "bisim Vs e E xs \<Longrightarrow> \<B> E (length Vs)"
   and bisims_Bs: "bisims Vs es Es xs \<Longrightarrow> \<B>s Es (length Vs)"

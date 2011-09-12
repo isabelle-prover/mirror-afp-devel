@@ -31,16 +31,16 @@ where
 
 
 lemma init_obj_nonempty: "init_obj P C (Cs,fs) \<Longrightarrow> Cs \<noteq> []"
-by (fastsimp elim:init_obj.cases dest:Subobjs_nonempty)
+by (fastforce elim:init_obj.cases dest:Subobjs_nonempty)
 
 lemma init_obj_no_Ref: 
 "\<lbrakk>init_obj P C (Cs,fs);  fs F = Some(Ref(a',Cs'))\<rbrakk> \<Longrightarrow> False"
-by (fastsimp elim:init_obj.cases default_val_no_Ref 
+by (fastforce elim:init_obj.cases default_val_no_Ref 
                   simp:init_class_fieldmap_def map_of_map)
 
 lemma SubobjsSet_init_objSet:
   "{Cs. Subobjs P C Cs} = {Cs. \<exists>vmap. init_obj P C (Cs,vmap)}"
-by ( fastsimp intro:init_obj.intros elim:init_obj.cases)
+by ( fastforce intro:init_obj.intros elim:init_obj.cases)
 
 
 definition obj_ty :: "obj \<Rightarrow> ty" where
@@ -68,7 +68,7 @@ definition new_Addr :: "heap \<Rightarrow> addr option" where
 
 lemma new_Addr_SomeD:
   "new_Addr h = Some a \<Longrightarrow> h a = None"
- by(fastsimp simp add:new_Addr_def split:if_splits intro:someI)
+ by(fastforce simp add:new_Addr_def split:if_splits intro:someI)
 
 
 end

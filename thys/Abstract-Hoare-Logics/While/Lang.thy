@@ -92,7 +92,7 @@ apply(blast elim: exec.cases intro:exec.intros)+
 done
 
 lemma [iff]: "(s -LOCAL f; c; g\<rightarrow> u) = (\<exists>t. f s -c\<rightarrow> t \<and> u = g s t)"
-by(fastsimp elim: exec.cases intro:exec.intros)
+by(fastforce elim: exec.cases intro:exec.intros)
 
 lemma unfold_while:
  "(s -WHILE b DO c\<rightarrow> u) =

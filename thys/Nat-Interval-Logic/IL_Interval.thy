@@ -144,10 +144,10 @@ done
 
 lemma iIN_Suc_insert_conv: "
   insert (Suc (n + d)) [n\<dots>,d] = [n\<dots>,Suc d]"
-by (fastsimp simp: iIN_iff)
+by (fastforce simp: iIN_iff)
 
 lemma iTILL_Suc_insert_conv: "insert (Suc n) [\<dots>n] = [\<dots>Suc n]"
-by (fastsimp simp: iIN_Suc_insert_conv[of 0 n])
+by (fastforce simp: iIN_Suc_insert_conv[of 0 n])
 
 lemma iMODb_Suc_insert_conv: "
   insert (r + m * Suc c) [r, mod m, c] = [r, mod m, Suc c]"
@@ -156,7 +156,7 @@ apply (simp add: iMODb_iff add_commute[of _ r])
 apply (simp add: add_commute[of m])
 apply (simp add: add_assoc[symmetric])
 apply (rule iffI)
- apply fastsimp
+ apply fastforce
 apply (elim conjE)
 apply (drule_tac x=x in order_le_less[THEN iffD1, rule_format])
 apply (erule disjE)
@@ -169,11 +169,11 @@ apply simp
 done
 
 lemma iFROM_pred_insert_conv: "insert (n - Suc 0) [n\<dots>] = [n - Suc 0\<dots>]"
-by (fastsimp simp: iFROM_iff)
+by (fastforce simp: iFROM_iff)
 
 lemma iIN_pred_insert_conv: "
   0 < n \<Longrightarrow> insert (n - Suc 0) [n\<dots>,d] = [n - Suc 0\<dots>,Suc d]"
-by (fastsimp simp: iIN_iff)
+by (fastforce simp: iIN_iff)
 
 lemma iMOD_pred_insert_conv: "
   m \<le> r \<Longrightarrow> insert (r - m) [r, mod m] = [r - m, mod m]"
@@ -241,7 +241,7 @@ subsubsection {* Interval conversions *}
 lemma iIN_0_iTILL_conv:"[0\<dots>,n] = [\<dots>n]"
 by (simp add: iTILL_def iIN_def atMost_atLeastAtMost_0_conv)
 lemma iIN_iTILL_iTILL_conv: "0 < n \<Longrightarrow> [n\<dots>,d] = [\<dots>n+d] - [\<dots>n - Suc 0]"
-by (fastsimp simp: iTILL_iff iIN_iff)
+by (fastforce simp: iTILL_iff iIN_iff)
 lemma iIN_iFROM_iTILL_conv: "[n\<dots>,d] = [n\<dots>] \<inter> [\<dots>n+d]"
 by (simp add: iT_defs atLeastAtMost_def)
 lemma iMODb_iMOD_iTILL_conv: "[r, mod m, c] = [r, mod m] \<inter> [\<dots>r+m*c]"
@@ -260,7 +260,7 @@ apply (rule iffI)
  thm le_imp_sub_mod_le
  apply (frule_tac x=x and y=n and m=m in le_imp_sub_mod_le)
  apply (simp add: mod_diff_right_eq)
-apply fastsimp
+apply fastforce
 done
 lemma iMOD_iIN_iMODb_conv: "
   [r, mod m] \<inter> [r\<dots>,d] = [r, mod m, d div m]"
@@ -275,7 +275,7 @@ apply (rule subst[of "{}" _ "\<lambda>t. \<forall>x.(x - t) = x", THEN spec])
  apply simp
 apply (rule sym)
 thm disjoint_iff_not_equal
-apply (fastsimp simp: disjoint_iff_not_equal iMOD_iff iTILL_iff)
+apply (fastforce simp: disjoint_iff_not_equal iMOD_iff iTILL_iff)
 done
 
 
@@ -289,11 +289,11 @@ by (simp add: iTILL_def)
 lemma iIN_0: "[n\<dots>,0] = {n}"
 by (simp add: iIN_def)
 lemma iMOD_0: "[r, mod 0] = [r\<dots>,0]"
-by (fastsimp simp: iIN_0 iMOD_def)
+by (fastforce simp: iIN_0 iMOD_def)
 lemma iMODb_mod_0: "[r, mod 0, c] = [r\<dots>,0]"
-by (fastsimp simp: iMODb_def iIN_0)
+by (fastforce simp: iMODb_def iIN_0)
 lemma iMODb_0: "[r, mod m, 0] = [r\<dots>,0]"
-by (fastsimp simp: iMODb_def iIN_0 set_eq_iff)
+by (fastforce simp: iMODb_def iIN_0 set_eq_iff)
 lemmas iT_0 =
   iFROM_0
   iTILL_0
@@ -304,9 +304,9 @@ lemmas iT_0 =
 thm iT_0
 
 lemma iMOD_1: "[r, mod Suc 0] = [r\<dots>]"
-by (fastsimp simp: iFROM_iff)
+by (fastforce simp: iFROM_iff)
 lemma iMODb_mod_1: "[r, mod Suc 0, c] = [r\<dots>,c]"
-by (fastsimp simp: iT_iff)
+by (fastforce simp: iT_iff)
 
 
 
@@ -319,7 +319,7 @@ lemma
   iIN_not_empty: "[n\<dots>,d] \<noteq> {}" and
   iMOD_not_empty: "[r, mod m] \<noteq> {}" and
   iMODb_not_empty: "[r, mod m, c] \<noteq> {}"
-by (fastsimp simp: iT_iff)+
+by (fastforce simp: iT_iff)+
 
 
 lemmas iT_not_empty = 
@@ -438,13 +438,13 @@ lemma
 by (simp add: iTILL_iff)+
 
 lemma iIN_plus: "\<lbrakk> x \<in> [n\<dots>,d]; k \<le> n + d - x \<rbrakk> \<Longrightarrow> x + k \<in> [n\<dots>,d]"
-by (fastsimp simp: iIN_iff)
+by (fastforce simp: iIN_iff)
 lemma iIN_Suc: "\<lbrakk> x \<in> [n\<dots>,d]; x < n + d \<rbrakk> \<Longrightarrow> Suc x \<in> [n\<dots>,d]"
 by (simp add: iIN_iff)
 lemma iIN_minus: "\<lbrakk> x \<in> [n\<dots>,d]; k \<le> x - n \<rbrakk> \<Longrightarrow> x - k \<in> [n\<dots>,d]"
-by (fastsimp simp: iIN_iff)
+by (fastforce simp: iIN_iff)
 lemma iIN_pred: "\<lbrakk> x \<in> [n\<dots>,d]; n < x \<rbrakk> \<Longrightarrow> x - Suc 0 \<in> [n\<dots>,d]"
-by (fastsimp simp: iIN_iff)
+by (fastforce simp: iIN_iff)
 
 lemma iMOD_plus_divisor_mult: "x \<in> [r, mod m] \<Longrightarrow> x + k * m \<in> [r, mod m]"
 by (simp add: iMOD_def)
@@ -453,7 +453,7 @@ by (simp add: iMOD_def)
 lemma iMOD_minus_divisor_mult: "
   \<lbrakk> x \<in> [r, mod m]; k * m \<le> x - r \<rbrakk> \<Longrightarrow> x - k * m \<in> [r, mod m]"
 thm mod_diff_mult_self1
-by (fastsimp simp: iMOD_def mod_diff_mult_self1)
+by (fastforce simp: iMOD_def mod_diff_mult_self1)
 corollary iMOD_minus_divisor_mult2: "
   \<lbrakk> x \<in> [r, mod m]; k \<le> (x - r) div m \<rbrakk> \<Longrightarrow> x - k * m \<in> [r, mod m]"
 apply (rule iMOD_minus_divisor_mult, assumption)
@@ -502,7 +502,7 @@ done
 
 lemma iMODb_plus_divisor_mult: "
   \<lbrakk> x \<in> [r, mod m, c]; k * m \<le> r + m * c - x \<rbrakk> \<Longrightarrow> x + k * m \<in> [r, mod m, c]"
-by (fastsimp simp: iMODb_def)
+by (fastforce simp: iMODb_def)
 lemma iMODb_plus_divisor_mult2: "
   \<lbrakk> x \<in> [r, mod m, c]; k \<le> c - (x - r) div m \<rbrakk> \<Longrightarrow> 
   x + k * m \<in> [r, mod m, c]"
@@ -520,7 +520,7 @@ by (simp add: iMODb_iff less_mod_eq_imp_add_divisor_le)
 lemma iMODb_minus_divisor_mult: "
   \<lbrakk> x \<in> [r, mod m, c]; r + k * m \<le> x \<rbrakk>  \<Longrightarrow> x - k * m \<in> [r, mod m, c]"
 thm mod_diff_mult_self1
-by (fastsimp simp: iMODb_def mod_diff_mult_self1)
+by (fastforce simp: iMODb_def mod_diff_mult_self1)
 
 lemma iMODb_plus: "
   \<lbrakk> x \<in> [r, mod m, c]; k \<le> r + m * c - x \<rbrakk> \<Longrightarrow> 
@@ -529,7 +529,7 @@ apply safe
  thm mod_add_eq_imp_mod_0[THEN iffD1]
  apply (rule mod_add_eq_imp_mod_0[of x, THEN iffD1])
  apply (simp add: iT_iff)
-apply fastsimp
+apply fastforce
 done
 corollary iMODb_Suc: "
   \<lbrakk> x \<in> [r, mod m, c]; x < r + m * c \<rbrakk> \<Longrightarrow> 
@@ -554,7 +554,7 @@ apply (rule iffI)
   prefer 2
   apply (simp add: iT_iff)
  apply (clarsimp simp: iMOD_pred)
-apply (fastsimp simp add: iMODb_iff)
+apply (fastforce simp add: iMODb_iff)
 done
 
 lemmas iFROM_plus_minus =
@@ -629,7 +629,7 @@ lemma "n \<in> [15, mod 10] \<Longrightarrow> n \<in> [5, mod 10]"
 by (simp add: iT_iff)
 
 lemma "[15, mod 10] \<subseteq> [5, mod 10]"
-by (fastsimp simp: iMOD_def)
+by (fastforce simp: iMOD_def)
 
 lemma "n \<le> i \<Longrightarrow> n \<in> [\<dots>i]"
 by (simp add: iT_iff)
@@ -732,7 +732,7 @@ apply (rule iffI)
  apply (simp add: set_eq_iff iT_iff)
  apply (frule_tac x=r in spec, drule_tac x="r+m" in spec)
  apply clarsimp
-apply (fastsimp simp: iMODb_0 iMODb_mod_0 iIN_0)
+apply (fastforce simp: iMODb_0 iMODb_mod_0 iIN_0)
 done
 lemma iMODb_singleton_eq_conv: "
   ([r, mod m, c] = {a}) = (r = a \<and> (m = 0 \<or> c = 0))"
@@ -809,10 +809,10 @@ apply (simp add: subset_iff iIN_iff)
 done
 
 lemma iIN_iFROM_subset_conv: "([n'\<dots>,d'] \<subseteq> [n\<dots>]) = (n \<le> n')"
-by (fastsimp simp: subset_iff iFROM_iff iIN_iff)
+by (fastforce simp: subset_iff iFROM_iff iIN_iff)
 
 lemma iIN_iTILL_subset_conv: "([n'\<dots>,d'] \<subseteq> [\<dots>n]) = (n' + d' \<le> n)"
-by (fastsimp simp: subset_iff iT_iff)
+by (fastforce simp: subset_iff iT_iff)
 
 lemma iIN_iMOD_subset_conv: "
   0 < d' \<Longrightarrow> ([n'\<dots>,d'] \<subseteq> [r, mod m]) = (r \<le> n' \<and> m = Suc 0)"
@@ -867,18 +867,18 @@ apply (simp add: iIN_0_iTILL_conv)
 done
 
 lemma iMOD_iFROM_subset_conv: "([r', mod m']) \<subseteq> [n\<dots>] = (n \<le> r')"
-by (fastsimp simp: subset_iff iT_iff)
+by (fastforce simp: subset_iff iT_iff)
 lemma iMODb_iFROM_subset_conv: "([r', mod m', c'] \<subseteq> [n\<dots>]) = (n \<le> r')"
-by (fastsimp simp: subset_iff iT_iff)
+by (fastforce simp: subset_iff iT_iff)
 lemma iMODb_iIN_subset_conv: "
   ([r', mod m', c'] \<subseteq> [n\<dots>,d]) = (n \<le> r' \<and> r' + m' * c' \<le> n + d)"
-by (fastsimp simp: subset_iff iT_iff)
+by (fastforce simp: subset_iff iT_iff)
 lemma iMODb_iTILL_subset_conv: "
   ([r', mod m', c'] \<subseteq> [\<dots>n]) = (r' + m' * c' \<le> n)"
-by (fastsimp simp: subset_iff iT_iff)
+by (fastforce simp: subset_iff iT_iff)
 
 lemma iMOD_0_subset_conv: "([r', mod 0] \<subseteq> [r, mod m]) = (r' mod m = r mod m  \<and>  r \<le> r')"
-by (fastsimp simp: iMOD_0 iIN_0 singleton_subset_conv iMOD_iff)
+by (fastforce simp: iMOD_0 iIN_0 singleton_subset_conv iMOD_iff)
 
 lemma iMOD_subset_conv: "0 < m \<Longrightarrow> 
   ([r', mod m'] \<subseteq> [r, mod m]) = 
@@ -1096,14 +1096,14 @@ by (rule subsetD[OF iTILL_subset[OF iTILL_D]])
 thm iIN_subset
 lemma iIN_trans: "
   \<lbrakk> y \<in> [x\<dots>,d]; z \<in> [y\<dots>,d']; d' \<le> x + d - y \<rbrakk> \<Longrightarrow> z \<in> [x\<dots>,d]"
-by fastsimp
+by fastforce
 lemma iMOD_trans: "
   \<lbrakk> y \<in> [x, mod m]; z \<in> [y, mod m] \<rbrakk> \<Longrightarrow> z \<in> [x, mod m]"
 by (rule subsetD[OF iMOD_subset[OF iMOD_geD iMOD_modD mod_self]])
 lemma iMODb_trans: "
   \<lbrakk> y \<in> [x, mod m, c]; z \<in> [y, mod m, c']; m * c' \<le> x + m * c - y \<rbrakk> \<Longrightarrow> 
   z \<in> [x, mod m, c]"
-by fastsimp
+by fastforce
 lemma iMODb_trans': "
   \<lbrakk> y \<in> [x, mod m, c]; z \<in> [y, mod m, c']; c' \<le> x div m + c - y div m \<rbrakk> \<Longrightarrow> 
   z \<in> [x, mod m, c]"
@@ -1148,7 +1148,7 @@ lemma iMOD_eq_conv: "0 < m \<Longrightarrow> ([r, mod m] = [r', mod m']) = (r = 
 apply (case_tac "m' = 0")
  apply (simp add: eq_sym_conv[of "[r, mod m]"] iMOD_0_eq_conv)
 apply (rule iffI)
- apply (fastsimp simp add: set_eq_subset iMOD_subset_conv)
+ apply (fastforce simp add: set_eq_subset iMOD_subset_conv)
 apply simp
 done
 
@@ -1156,12 +1156,12 @@ thm iMODb_singleton_eq_conv
 lemma iMODb_mod_0_eq_conv: "
   ([r, mod 0, c] = [r', mod m', c']) = (r = r' \<and> (m' = 0 \<or> c' = 0))"
 apply (simp add: iMODb_mod_0 iIN_0)
-apply (fastsimp simp: iMODb_singleton_eq_conv eq_sym_conv[of "{r}"])
+apply (fastforce simp: iMODb_singleton_eq_conv eq_sym_conv[of "{r}"])
 done
 lemma iMODb_0_eq_conv: "
   ([r, mod m, 0] = [r', mod m', c']) = (r = r' \<and> (m' = 0 \<or> c' = 0))"
 apply (simp add: iMODb_0 iIN_0)
-apply (fastsimp simp: iMODb_singleton_eq_conv eq_sym_conv[of "{r}"])
+apply (fastforce simp: iMODb_singleton_eq_conv eq_sym_conv[of "{r}"])
 done
 
 lemma iMODb_eq_conv: "\<lbrakk> 0 < m; 0 < c \<rbrakk> \<Longrightarrow> 
@@ -1169,19 +1169,19 @@ lemma iMODb_eq_conv: "\<lbrakk> 0 < m; 0 < c \<rbrakk> \<Longrightarrow>
 apply (case_tac "c' = 0")
  apply (simp add: iMODb_0 iIN_0 iMODb_singleton_eq_conv)
 apply (rule iffI)
- apply (fastsimp simp: set_eq_subset iMODb_subset_conv')
+ apply (fastforce simp: set_eq_subset iMODb_subset_conv')
 apply simp
 done
 
 lemma iMOD_iFROM_eq_conv: "([n\<dots>] = [r, mod m]) = (n = r \<and> m = Suc 0)"
-by (fastsimp simp: iMOD_1[symmetric] iMOD_eq_conv)
+by (fastforce simp: iMOD_1[symmetric] iMOD_eq_conv)
 thm iMODb_singleton_eq_conv
 lemma iMODb_iIN_0_eq_conv: "
   ([n\<dots>,0] = [r, mod m, c]) = (n = r \<and> (m = 0 \<or> c = 0))"
 by (simp add: iIN_0 eq_commute[of "{n}"] eq_commute[of n] iMODb_singleton_eq_conv)
 lemma iMODb_iIN_eq_conv: "
   0 < d \<Longrightarrow> ([n\<dots>,d] = [r, mod m, c]) = (n = r \<and> m = Suc 0 \<and> c = d)"
-by (fastsimp simp: iMODb_mod_1[symmetric] iMODb_eq_conv)
+by (fastforce simp: iMODb_mod_1[symmetric] iMODb_eq_conv)
 
 
 
@@ -1227,7 +1227,7 @@ apply (simp add: iIN_iMODb_neq2)
 done
 
 lemma iTILL_iIN_neq: "0 < n \<Longrightarrow> [\<dots>n'] \<noteq> [n\<dots>,d]"
-by (fastsimp simp: set_eq_iff iT_iff)
+by (fastforce simp: set_eq_iff iT_iff)
 corollary iTILL_iMOD_neq: "0 < m \<Longrightarrow> [\<dots>n] \<noteq> [r, mod m]"
 by (simp add: iIN_0_iTILL_conv[symmetric] iIN_iMOD_neq)
 corollary iTILL_iMODb_neq: "
@@ -1254,25 +1254,25 @@ subsection {* Union and intersection of intervals *}
 
 
 lemma iFROM_union': "[n\<dots>] \<union> [n'\<dots>] = [min n n'\<dots>]"
-by (fastsimp simp: iFROM_iff)
+by (fastforce simp: iFROM_iff)
 corollary iFROM_union: "n \<le> n' \<Longrightarrow> [n\<dots>] \<union> [n'\<dots>] = [n\<dots>]"
 by (simp add: iFROM_union' min_eqL)
 
 lemma iFROM_inter': "[n\<dots>] \<inter> [n'\<dots>] = [max n n'\<dots>]"
-by (fastsimp simp: iFROM_iff)
+by (fastforce simp: iFROM_iff)
 corollary iFROM_inter: "n' \<le> n \<Longrightarrow> [n\<dots>] \<inter> [n'\<dots>] = [n\<dots>]"
 by (simp add: iFROM_inter' max_eqL)
 
 lemma iTILL_union': "[\<dots>n] \<union> [\<dots>n'] = [\<dots>max n n']"
-by (fastsimp simp: iTILL_iff)
+by (fastforce simp: iTILL_iff)
 corollary iTILL_union: "n' \<le> n \<Longrightarrow> [\<dots>n] \<union> [\<dots>n'] = [\<dots>n]"
 by (simp add: iTILL_union' max_eqL)
 
 lemma iTILL_iFROM_union: "n \<le> n' \<Longrightarrow> [\<dots>n'] \<union> [n\<dots>] = UNIV"
-by (fastsimp simp: iT_iff)
+by (fastforce simp: iT_iff)
 
 lemma iTILL_inter': "[\<dots>n] \<inter> [\<dots>n'] = [\<dots>min n n']"
-by (fastsimp simp: iT_iff)
+by (fastforce simp: iT_iff)
 corollary iTILL_inter: "n \<le> n' \<Longrightarrow> [\<dots>n] \<inter> [\<dots>n'] = [\<dots>n]"
 by (simp add: iTILL_inter' min_eqL)
 
@@ -1287,7 +1287,7 @@ text {*
 lemma iIN_union: "
   \<lbrakk> n \<le> n'; n' \<le> Suc (n + d); n + d \<le> n' + d' \<rbrakk> \<Longrightarrow> 
   [n\<dots>,d] \<union> [n'\<dots>,d'] = [n\<dots>,n' - n + d'] "
-by (fastsimp simp add: iIN_iff)
+by (fastforce simp add: iIN_iff)
 (* The case of the second interval starting directly after the first one *)
 lemma iIN_append_union: "
   [n\<dots>,d] \<union> [n + d\<dots>,d'] = [n\<dots>,d + d']"
@@ -1301,7 +1301,7 @@ by (simp add: iIN_union)
 
 lemma iIN_iFROM_union: "
   n' \<le> Suc (n + d) \<Longrightarrow> [n\<dots>,d] \<union> [n'\<dots>] = [min n n'\<dots>]"
-by (fastsimp simp: iIN_iff)
+by (fastforce simp: iIN_iff)
 
 lemma iIN_iFROM_append_union: "
   [n\<dots>,d] \<union> [n + d\<dots>] = [n\<dots>]"
@@ -1318,28 +1318,28 @@ by (simp add: iIN_iFROM_union min_eqL)
 lemma iIN_inter: "
   \<lbrakk> n \<le> n'; n' \<le> n + d; n + d \<le> n' + d' \<rbrakk> \<Longrightarrow>
   [n\<dots>,d] \<inter> [n'\<dots>,d'] = [n'\<dots>,n + d - n']"
-by (fastsimp simp: iIN_iff)
+by (fastforce simp: iIN_iff)
 
 lemma iMOD_union: "
   \<lbrakk> r \<le> r'; r mod m = r' mod m \<rbrakk> \<Longrightarrow>
   [r, mod m] \<union> [r', mod m] = [r, mod m]"
-by (fastsimp simp: iT_iff)
+by (fastforce simp: iT_iff)
 lemma iMOD_union': "
   r mod m = r' mod m \<Longrightarrow>
   [r, mod m] \<union> [r', mod m] = [min r r', mod m]"
 apply (case_tac "r \<le> r'")
-apply (fastsimp simp: iMOD_union min_eq)+
+apply (fastforce simp: iMOD_union min_eq)+
 done
 
 lemma iMOD_inter: "
   \<lbrakk> r \<le> r'; r mod m = r' mod m \<rbrakk> \<Longrightarrow>
   [r, mod m] \<inter> [r', mod m] = [r', mod m]"
-by (fastsimp simp: iT_iff)
+by (fastforce simp: iT_iff)
 lemma iMOD_inter': "
   r mod m = r' mod m \<Longrightarrow> 
   [r, mod m] \<inter> [r', mod m] = [max r r', mod m]"
 apply (case_tac "r \<le> r'")
-apply (fastsimp simp: iMOD_inter max_eq)+
+apply (fastforce simp: iMOD_inter max_eq)+
 done
 
 lemma iMODb_union: "
@@ -1348,7 +1348,7 @@ lemma iMODb_union: "
 apply (rule set_eqI)
 apply (simp add: iMODb_iff)
 apply (drule sym[of "r mod m"], simp)
-apply (fastsimp simp: add_mult_distrib2 diff_mult_distrib2 mult_div_cancel)
+apply (fastforce simp: add_mult_distrib2 diff_mult_distrib2 mult_div_cancel)
 done
 thm iMODb_iMOD_subset_same
 thm Un_absorb1[OF iMODb_iMOD_subset_same]
@@ -1374,7 +1374,7 @@ apply (rule set_eqI)
 apply (simp add: iT_iff)
 apply (drule sym[of "r mod m"], simp)
 apply (rule iffI)
- apply fastsimp
+ apply fastforce
 apply (clarsimp simp: linorder_not_le)
 apply (case_tac "r \<le> r'")
 apply (simp add: min_eqL)
@@ -1415,7 +1415,7 @@ apply (simp add: mult_commute[of _ "(r' - r) div m"])
 thm mod_0_div_mult_cancel[THEN iffD1, OF mod_eq_imp_diff_mod_0]
 apply (simp add: mod_0_div_mult_cancel[THEN iffD1, OF mod_eq_imp_diff_mod_0])
 apply (simp add: add_commute[of _ r])
-apply fastsimp
+apply fastforce
 done
 
 
@@ -1543,7 +1543,7 @@ thm
 lemma "[10\<dots>,5] \<down>< 12 = [10\<dots>,1]"
 apply (simp add: iT_iff cut_less_def)
 apply (simp add: iT_defs set_interval_defs Collect_conj_eq[symmetric])
-apply fastsimp
+apply fastforce
 done
 *)
 
@@ -1667,7 +1667,7 @@ apply (case_tac "n < t")
  apply (simp add: cut_less_Max_all iT_Max iT_finite)
 apply (case_tac "t = 0")
  apply (simp add: cut_less_0_empty)
-apply (fastsimp simp: nat_cut_less_le_conv iTILL_cut_le)
+apply (fastforce simp: nat_cut_less_le_conv iTILL_cut_le)
 done
 
 lemma iTILL_cut_less1: "
@@ -1682,7 +1682,7 @@ lemma iFROM_cut_less: "
     else [n\<dots>,t - Suc n])"
 apply (case_tac "t \<le> n")
  apply (simp add: cut_less_Min_empty iT_Min)
-apply (fastsimp simp: nat_cut_less_le_conv iFROM_cut_le)
+apply (fastforce simp: nat_cut_less_le_conv iFROM_cut_le)
 done
 
 lemma iFROM_cut_less1: "
@@ -1699,7 +1699,7 @@ apply (case_tac "t \<le> n")
  apply (simp add: cut_less_Min_empty iT_Min )
 apply (case_tac "n + d < t")
  apply (simp add: cut_less_Max_all iT_Max iT_finite)
-apply (fastsimp simp: nat_cut_less_le_conv iIN_cut_le)
+apply (fastforce simp: nat_cut_less_le_conv iIN_cut_le)
 done
 
 
@@ -1721,7 +1721,7 @@ thm iMOD_cut_le
 apply (case_tac "t = 0")
  apply (simp add: cut_less_0_empty)
 apply (simp add: nat_cut_less_le_conv iMOD_cut_le)
-apply fastsimp
+apply fastforce
 done
 
 lemma iMOD_cut_less1: "
@@ -1743,7 +1743,7 @@ thm iMODb_cut_le
 apply (case_tac "t = 0")
  apply (simp add: cut_less_0_empty)
 apply (simp add: nat_cut_less_le_conv iMODb_cut_le)
-apply fastsimp
+apply fastforce
 done
 
 lemma iMODb_cut_less1: "\<lbrakk> t \<in> [r, mod m, c]; r < t \<rbrakk> \<Longrightarrow> 
@@ -2017,7 +2017,7 @@ done
 lemma iMOD_cut_ge1: "
   t \<in> [r, mod m] \<Longrightarrow> 
   [r, mod m] \<down>\<ge> t = [t, mod m]"
-by (fastsimp simp: iMOD_cut_ge)
+by (fastforce simp: iMOD_cut_ge)
 
 (*
 lemma "let m=5 in let r = 12 in let t = 21 in let c=5 in
@@ -2287,7 +2287,7 @@ apply (rule le_antisym)
 thm Max_le_iff
 thm iffD2[OF Max_le_iff]
 apply (rule iffD2[OF Max_le_iff])
-apply fastsimp+
+apply fastforce+
 done
 *)
 
@@ -2394,14 +2394,14 @@ lemma iTILL_inext_if: "
 by (simp add: iTILL_inext iT_finite iT_Max inext_ge_Max)
 lemma iIN_inext_if: "
   inext t [n\<dots>,d] = (if n \<le> t \<and> t < n + d then Suc t else t)"
-by (fastsimp simp: iIN_inext iT_iff not_in_inext_fix iT_finite iT_Max inext_ge_Max)
+by (fastforce simp: iIN_inext iT_iff not_in_inext_fix iT_finite iT_Max inext_ge_Max)
 lemma iMOD_inext_if: "
   inext t [r, mod m] = (if t \<in> [r, mod m] then t + m else t)"
 by (simp add: iMOD_inext not_in_inext_fix)
 lemma iMODb_inext_if: "
   inext t [r, mod m, c] = 
   (if t \<in> [r, mod m, c] \<and> t < r + m * c then t + m else t)"
-by (fastsimp simp: iMODb_inext iT_iff not_in_inext_fix iT_finite iT_Max inext_ge_Max)
+by (fastforce simp: iMODb_inext iT_iff not_in_inext_fix iT_finite iT_Max inext_ge_Max)
 
 lemmas iT_inext_if =
   iFROM_inext_if
@@ -2419,15 +2419,15 @@ lemma iTILL_iprev_if: "
 by (simp add: iTILL_iprev not_in_iprev_fix)
 lemma iIN_iprev_if: "
   iprev t [n\<dots>,d] = (if n < t \<and> t \<le> n + d  then t - Suc 0 else t)"
-by (fastsimp simp: iIN_iprev iT_iff not_in_iprev_fix iT_Min iprev_le_iMin)
+by (fastforce simp: iIN_iprev iT_iff not_in_iprev_fix iT_Min iprev_le_iMin)
 lemma iMOD_iprev_if: "
   iprev t [r, mod m] = 
   (if t \<in> [r, mod m] \<and> r < t then t - m else t)"
-by (fastsimp simp add: iMOD_iprev iT_iff not_in_iprev_fix iT_Min iprev_le_iMin)
+by (fastforce simp add: iMOD_iprev iT_iff not_in_iprev_fix iT_Min iprev_le_iMin)
 lemma iMODb_iprev_if: "
   iprev t [r, mod m, c] = 
   (if t \<in> [r, mod m, c] \<and> r < t then t - m else t)"
-by (fastsimp simp add: iMODb_iprev iT_iff not_in_iprev_fix iT_Min iprev_le_iMin)
+by (fastforce simp add: iMODb_iprev iT_iff not_in_iprev_fix iT_Min iprev_le_iMin)
 
 lemmas iT_iprev_if =
   iFROM_iprev_if
@@ -2723,7 +2723,7 @@ done
 lemma iTILL_rev_induct: "
   \<lbrakk> P n; \<And>k. \<lbrakk> k \<in> [\<dots>n]; 0 < k; P k \<rbrakk> \<Longrightarrow> P (k - Suc 0); a \<in> [\<dots>n] \<rbrakk> \<Longrightarrow> P a"
 apply (rule iprev_induct[of _ "[\<dots>n]"])
-apply (fastsimp simp: iT_Max iT_finite iT_iprev_if)+
+apply (fastforce simp: iT_Max iT_finite iT_iprev_if)+
 done
 
 lemma iMODb_rev_induct: "

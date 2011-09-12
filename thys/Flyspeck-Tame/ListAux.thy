@@ -294,7 +294,7 @@ lemma length_filter_replace1:
   length(filter P xs) + length(filter P ys)"
 apply(induct xs)
  apply simp
-apply fastsimp
+apply fastforce
 done
 
 lemma length_filter_replace2:

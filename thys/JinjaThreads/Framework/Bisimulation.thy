@@ -107,7 +107,7 @@ proof -
     case (Eqenat m n)
     then obtain s2 stls1 where m: "m = llength (tl1_to_tl2 s2 stls1)"
       and n: "n = llength stls1" by blast
-    thus ?case by(cases "stls1") fastsimp+
+    thus ?case by(cases "stls1") fastforce+
   qed
 
   def stls2: stls2 \<equiv> "tl1_to_tl2 s2 stls1"
@@ -130,7 +130,7 @@ proof -
       hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) (tl2, s2')" by simp
       hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) ?tl2s2'" by(rule someI)
       hence "s2 -2-?tl2\<rightarrow> ?s2'" "s1' \<approx> ?s2'" "tl1 \<sim> ?tl2" by(simp_all add: split_beta)
-      ultimately show ?thesis using reds1 by(fastsimp intro: prod_eqI)
+      ultimately show ?thesis using reds1 by(fastforce intro: prod_eqI)
     qed
   qed
   hence "s2 -2-tl1_to_tl2 s2 stls1\<rightarrow>*t \<infinity>" unfolding stls2 .
@@ -396,7 +396,7 @@ next
   obtain tls2 s2''' where IH: "s2'' -\<tau>2-tls2\<rightarrow>* s2'''" "s1'' \<approx> s2'''" "tls1 [\<sim>] tls2" by blast
   from \<tau>red have "s2 -\<tau>2-[]\<rightarrow>* s2'" by(rule trsys2.silent_moves_into_\<tau>rtrancl3p)
   also from red n\<tau> IH(1) have "s2' -\<tau>2-tl2 # tls2\<rightarrow>* s2'''" by(rule \<tau>rtrancl3p.\<tau>rtrancl3p_step)
-  finally show ?case using IH tlsim by fastsimp
+  finally show ?case using IH tlsim by fastforce
 next
   case (\<tau>rtrancl3p_\<tau>step s1 s1' tls1 s1'' tl1)
   from `s1 -1-tl1\<rightarrow> s1'` `\<tau>move1 s1 tl1 s1'` have "s1 -\<tau>1\<rightarrow> s1'" .. 
@@ -444,7 +444,7 @@ proof -
     case (Eqenat m n)
     then obtain s2 sstls1 where m: "m = llength (tl1_to_tl2 s2 sstls1)"
       and n: "n = llength sstls1" by blast
-    thus ?case by(cases "sstls1") fastsimp+
+    thus ?case by(cases "sstls1") fastforce+
   qed
 
   def sstls2: sstls2 \<equiv> "tl1_to_tl2 s2 sstls1"
@@ -472,7 +472,7 @@ proof -
       from `s2 -\<tau>2\<rightarrow>* s2'` `s2' -\<tau>2\<rightarrow>* s2''` have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
       with rest have "?P (s2'', tl2, s2''')" by simp
       hence "?P ?s2tl2s2'" by(rule someI)
-      ultimately show ?thesis using reds1 by fastsimp
+      ultimately show ?thesis using reds1 by fastforce
     next
       case \<tau>inf_step_table_Nil
       hence [simp]: "sstls1 = LNil" and "s1 -\<tau>1\<rightarrow> \<infinity>" by simp_all
@@ -585,7 +585,7 @@ proof -
     with no_\<tau>moves2[of s2''] have "\<not> \<tau>move2 s2' tl2 s2''" by(auto)
     from simulation2[OF `s1 \<approx> s2'` `s2' -2-tl2\<rightarrow> s2''` this]
     obtain s1' s1'' tl1 where "s1 -\<tau>1\<rightarrow>* s1'" and "s1' -1-tl1\<rightarrow> s1''" by blast
-    with no_moves1 show False by(fastsimp elim: converse_rtranclpE)
+    with no_moves1 show False by(fastforce elim: converse_rtranclpE)
   qed
   ultimately show ?thesis by blast
 qed
@@ -733,7 +733,7 @@ proof -
     by(rule \<tau>Runs_table_into_\<tau>Runs)
   moreover have "tllist_all2 tlsim (option_rel bisim) tls1 (tmap (fst \<circ> snd \<circ> snd) (Option.map snd) stlsss2)"
     using tlsim unfolding tls1
-    by(fastsimp simp add: tllist_all2_tmap1 tllist_all2_tmap2 option_rel_map1 option_rel_map2 split_def elim: tllist_all2_mono option_rel_mono)
+    by(fastforce simp add: tllist_all2_tmap1 tllist_all2_tmap2 option_rel_map1 option_rel_map2 split_def elim: tllist_all2_mono option_rel_mono)
   ultimately show ?thesis by blast
 qed
 
@@ -894,7 +894,7 @@ proof -
     case (\<tau>diverge s2 s1)
     hence "s1 -\<tau>1\<rightarrow> \<infinity>" "s1 \<approx> s2" by simp_all
     then obtain s1' where "trsys1.silent_move s1 s1'" "s1' -\<tau>1\<rightarrow> \<infinity>"
-      by(fastsimp elim: trsys1.\<tau>diverge.cases)
+      by(fastforce elim: trsys1.\<tau>diverge.cases)
     from simulation_silent1[OF `s1 \<approx> s2` `trsys1.silent_move s1 s1'`] `s1' -\<tau>1\<rightarrow> \<infinity>`
     show ?case by auto
   qed
@@ -1073,7 +1073,7 @@ lemma delay_bisimulation_conv_bisimulation:
 proof
   assume ?lhs
   then interpret delay_bisimulation_diverge trsys1 trsys2 bisim tlsim "\<lambda>s tl s'. False" "\<lambda>s tl s'. False" .
-  show ?rhs by(unfold_locales)(fastsimp simp add: \<tau>moves_False dest: simulation1 simulation2)+
+  show ?rhs by(unfold_locales)(fastforce simp add: \<tau>moves_False dest: simulation1 simulation2)+
 next
   assume ?rhs
   then interpret bisimulation trsys1 trsys2 bisim tlsim .

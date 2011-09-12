@@ -219,7 +219,7 @@ proof -
     proof
       assume "c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s''"
       hence "c\<^isub>1 = Skip" and "c'' = c\<^isub>2" and "s = s''" by simp_all
-      from `c\<^isub>1 = Skip` have "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>\<^bsup>0\<^esup> \<langle>Skip,s\<rangle>" by(fastsimp intro:red_n_Base)
+      from `c\<^isub>1 = Skip` have "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>\<^bsup>0\<^esup> \<langle>Skip,s\<rangle>" by(fastforce intro:red_n_Base)
       with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>` `c'' = c\<^isub>2` `s = s''`
       show ?thesis by(rule_tac x="0" in exI) auto
     next
@@ -255,15 +255,15 @@ proof(induct "while (b) cx" s n "Skip" s' arbitrary:c rule:red_n.induct)
     hence "\<lbrakk>b\<rbrakk> s = Some false" and "c'' = Skip" and "s'' = s" by simp_all
     with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>` have "s = s'" and "n = 0"
       by(induct _ _ Skip _ rule:red_n.induct,auto elim:red.cases)
-    with `\<lbrakk>b\<rbrakk> s = Some false` show ?thesis by fastsimp
+    with `\<lbrakk>b\<rbrakk> s = Some false` show ?thesis by fastforce
   next
     assume "\<lbrakk>b\<rbrakk> s = Some true \<and> c'' = cx;;while (b) cx \<and> s'' = s"
     hence "\<lbrakk>b\<rbrakk> s = Some true" and "c'' = cx;;while (b) cx" 
       and "s'' = s" by simp_all
     with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>`
     obtain i j sx where "\<langle>cx,s\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>" and "\<langle>while (b) cx,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>"
-      and "n = i + j + 1" by(fastsimp elim:Seq_red_nE)
-    with `\<lbrakk>b\<rbrakk> s = Some true` show ?thesis by fastsimp
+      and "n = i + j + 1" by(fastforce elim:Seq_red_nE)
+    with `\<lbrakk>b\<rbrakk> s = Some true` show ?thesis by fastforce
   qed
 qed
 
@@ -328,11 +328,11 @@ proof(induct arbitrary:c\<^isub>2 rule:red_induct)
   case (SeqRed c\<^isub>1 s c\<^isub>1' s' c\<^isub>2')
   note IH = `\<And>c\<^isub>2. \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>2,s\<^isub>2\<rangle> \<Longrightarrow> c\<^isub>1' = c\<^isub>2 \<and> s' = s\<^isub>2`
   from `\<langle>c\<^isub>1;;c\<^isub>2',s\<rangle> \<rightarrow> \<langle>c\<^isub>2,s\<^isub>2\<rangle>` have "c\<^isub>1 = Skip \<or> (\<exists>cx. c\<^isub>2 = cx;;c\<^isub>2' \<and> \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^isub>2\<rangle>)"
-    by(fastsimp elim:red.cases)
+    by(fastforce elim:red.cases)
   thus ?case
   proof
     assume "c\<^isub>1 = Skip"
-    with `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s'\<rangle>` have False by(fastsimp elim:red.cases)
+    with `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s'\<rangle>` have False by(fastforce elim:red.cases)
     thus ?thesis by simp
   next
     assume "\<exists>cx. c\<^isub>2 = cx;;c\<^isub>2' \<and> \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^isub>2\<rangle>"
@@ -340,7 +340,7 @@ proof(induct arbitrary:c\<^isub>2 rule:red_induct)
     from IH[OF `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^isub>2\<rangle>`] have "c\<^isub>1' = cx \<and> s' = s\<^isub>2" .
     with `c\<^isub>2 = cx;;c\<^isub>2'` show ?thesis by simp
   qed
-qed (fastsimp elim:red.cases)+
+qed (fastforce elim:red.cases)+
 
 
 theorem reds_det:

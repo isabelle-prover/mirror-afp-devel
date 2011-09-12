@@ -49,7 +49,7 @@ done
 
 
 lemma wf_mdecl_wwf_mdecl: "wf_C_mdecl P C Md \<Longrightarrow> wwf_mdecl P C Md"
-by(fastsimp simp:wwf_mdecl_def dest!:WT_fv)
+by(fastforce simp:wwf_mdecl_def dest!:WT_fv)
 
 
 lemma wf_prog_wwf_prog: "wf_C_prog P \<Longrightarrow> wwf_prog P"

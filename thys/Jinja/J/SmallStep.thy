@@ -254,7 +254,7 @@ proof -
       thus ?case by(blast intro:red\<^isub>1)
     qed
     }
-  with assms show ?thesis by fastsimp
+  with assms show ?thesis by fastforce
 qed
 (*>*)
 
@@ -265,10 +265,10 @@ lemma [iff]: "\<not> P \<turnstile> \<langle>[],s\<rangle> [\<rightarrow>] \<lan
 (*<*)by(blast elim: reds.cases)(*>*)
 
 lemma [iff]: "\<not> P \<turnstile> \<langle>Val v,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-(*<*)by(fastsimp elim: red.cases)(*>*)
+(*<*)by(fastforce elim: red.cases)(*>*)
 
 lemma [iff]: "\<not> P \<turnstile> \<langle>Throw a,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-(*<*)by(fastsimp elim: red.cases)(*>*)
+(*<*)by(fastforce elim: red.cases)(*>*)
 
 
 lemma red_hext_incr: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>  \<Longrightarrow> h \<unlhd> h'"
@@ -276,7 +276,7 @@ lemma red_hext_incr: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<l
 (*<*)
 proof(induct rule:red_reds_inducts)
   case RedNew thus ?case
-    by(fastsimp dest:new_Addr_SomeD simp:hext_def split:if_splits)
+    by(fastforce dest:new_Addr_SomeD simp:hext_def split:if_splits)
 next
   case RedFAss thus ?case by(simp add:hext_def split:if_splits)
 qed simp_all
@@ -292,13 +292,13 @@ lemma red_lcl_add: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<lan
 and "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>l\<^isub>0. P \<turnstile> \<langle>es,(h,l\<^isub>0++l)\<rangle> [\<rightarrow>] \<langle>es',(h',l\<^isub>0++l')\<rangle>)"
 (*<*)
 proof (induct rule:red_reds_inducts)
-  case RedCast thus ?case by(fastsimp intro:red_reds.intros)
+  case RedCast thus ?case by(fastforce intro:red_reds.intros)
 next
   case RedCastFail thus ?case by(force intro:red_reds.intros)
 next
-  case RedFAcc thus ?case by(fastsimp intro:red_reds.intros)
+  case RedFAcc thus ?case by(fastforce intro:red_reds.intros)
 next
-  case RedCall thus ?case by(fastsimp intro:red_reds.intros)
+  case RedCall thus ?case by(fastforce intro:red_reds.intros)
 next
   case (InitBlockRed e h l V v e' h' l' v' T l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V \<mapsto> v))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
@@ -333,7 +333,7 @@ next
   with red_reds.BlockRedSome[OF IH' _ unass] l'V show ?case
     by(simp add:map_add_def)
 next
-  case RedTryCatch thus ?case by(fastsimp intro:red_reds.intros)
+  case RedTryCatch thus ?case by(fastforce intro:red_reds.intros)
 next
   case RedTryFail thus ?case by(force intro!:red_reds.intros)
 qed (simp_all add:red_reds.intros)

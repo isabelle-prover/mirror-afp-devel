@@ -650,7 +650,7 @@ lemma execT_None:
   and exec: "execT \<sigma> s = None"
   shows "\<alpha>.active_threads (state_\<alpha> s) = {}"
 using assms
-by(cases "schedule \<sigma> s")(fastsimp simp add: execT_def thr.lookup_correct dest: schedule_Some_NoneD schedule_NoneD)+
+by(cases "schedule \<sigma> s")(fastforce simp add: execT_def thr.lookup_correct dest: schedule_Some_NoneD schedule_NoneD)+
 
 lemma execT_Some:
   assumes invar: "state_invar s" "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_\<alpha> s \<in> invariant"
@@ -682,13 +682,13 @@ proof -
     with exec invar obtain x' m' 
       where schedule: "schedule \<sigma> s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
       and s': "s' = exec_upd \<sigma> s t ta x' m'"
-      by(cases taxm)(fastsimp simp add: execT_def Option_bind_eq_Some_conv split del: option.split_asm)
+      by(cases taxm)(fastforce simp add: execT_def Option_bind_eq_Some_conv split del: option.split_asm)
     from schedule_Some_SomeD[OF schedule invar]
     obtain x where t: "thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor>" 
       and "Predicate.eval (r t (x, shr s)) (ta, x', m')" 
       and aok: "\<alpha>.actions_ok (state_\<alpha> s) t ta" by blast
     with s' have ?thesis1 using invar wstok
-      by(fastsimp intro: \<alpha>.redT.intros exec_upd_correct)
+      by(fastforce intro: \<alpha>.redT.intros exec_upd_correct)
     moreover from invar s' t wstok have ?thesis2 by(auto intro: exec_upd_correct)
     moreover {
       from schedule invar
@@ -696,7 +696,7 @@ proof -
         by(rule schedule_invar_Some)
       also have "dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>} = dom (thr_\<alpha> (thr s'))"
         using invar s' aok t
-        by(auto simp add: exec_upd_def thr.lookup_correct thr.update_correct simp del: split_paired_Ex)(fastsimp dest: redT_updTs_new_thread intro: redT_updTs_Some1 redT_updTs_new_thread_ts simp del: split_paired_Ex)+
+        by(auto simp add: exec_upd_def thr.lookup_correct thr.update_correct simp del: split_paired_Ex)(fastforce dest: redT_updTs_new_thread intro: redT_updTs_Some1 redT_updTs_new_thread_ts simp del: split_paired_Ex)+
       finally have "\<sigma>_invar \<sigma>' (dom (thr_\<alpha> (thr s')))" . }
     ultimately show ?thesis by simp
   qed
@@ -763,7 +763,7 @@ proof -
         where [simp]: "\<sigma>tta = (\<sigma>'', t, ta)"
         and [simp]: "ttls' = exec_aux (\<sigma>', s')"
         and step: "exec_step (\<sigma>, s) = Inl ((\<sigma>'', t, ta), \<sigma>', s')"
-        unfolding exec_aux_def by(subst (asm) (2) tllist_corec)(fastsimp split: sum.split_asm)
+        unfolding exec_aux_def by(subst (asm) (2) tllist_corec)(fastforce split: sum.split_asm)
       from invar wstok step
       have redT: "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')"
         and [simp]: "\<sigma>'' = \<sigma>"
@@ -788,7 +788,7 @@ next
       where [simp]: "\<sigma>tta = (\<sigma>'', t, ta)"
       and ttls: "ttls = exec_aux (\<sigma>', s')"
       and step: "exec_step (\<sigma>, s) = Inl ((\<sigma>'', t, ta), \<sigma>', s')"
-      unfolding exec_aux_def by(subst (asm) (2) tllist_corec)(fastsimp split: sum.split_asm)
+      unfolding exec_aux_def by(subst (asm) (2) tllist_corec)(fastforce split: sum.split_asm)
     note ttls moreover
     from `state_invar s` `\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))` `state_\<alpha> s \<in> invariant` `wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))` step
     have [simp]: "\<sigma>'' = \<sigma>"
@@ -855,7 +855,7 @@ lemma active_threads_correct [simp]:
   shows "thr'_\<alpha> (active_threads s) = \<alpha>.active_threads (state_\<alpha> s)" (is "?thesis1")
   and "thr'_invar (active_threads s)" (is "?thesis2")
 proof -
-  obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastsimp
+  obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastforce
   let ?f = "\<lambda>t (x, ln) TS. if ln = no_wait_locks
            then if Predicate.holds (do { (ta, _) \<leftarrow> r t (x, m); Predicate.if_pred (actions_ok (ls, (ts, m), ws, is) t ta) })
                 then thr'_ins_dj t TS else TS
@@ -892,11 +892,11 @@ proof -
         proof
           assume ?lhs
           with True xln invar tst `state_invar s` t show ?rhs
-            by(fastsimp simp add: holds_eq thr'.ins_dj_correct s split_beta ws.lookup_correct split: split_if_asm elim!: bindE if_predE intro: \<alpha>.active_threads.intros)
+            by(fastforce simp add: holds_eq thr'.ins_dj_correct s split_beta ws.lookup_correct split: split_if_asm elim!: bindE if_predE intro: \<alpha>.active_threads.intros)
         next
           assume ?rhs
           with True xln invar tst `state_invar s` t show ?lhs
-            by(fastsimp elim!: \<alpha>.active_threads.cases simp add: holds_eq s thr'.ins_dj_correct ws.lookup_correct elim!: bindE if_predE intro: bindI if_predI)
+            by(fastforce elim!: \<alpha>.active_threads.cases simp add: holds_eq s thr'.ins_dj_correct ws.lookup_correct elim!: bindE if_predE intro: bindI if_predI)
         qed
       next
         case False
@@ -1019,12 +1019,12 @@ where
 lemma step_thread_NoneD:
   "step_thread update_state s t = None \<Longrightarrow> t \<notin> active_threads s"
 unfolding step_thread_def 
-by(fastsimp simp add: split_beta elim!: active_threads.cases split: split_if_asm)
+by(fastforce simp add: split_beta elim!: active_threads.cases split: split_if_asm)
 
 lemma inactive_step_thread_eq_NoneI:
   "t \<notin> active_threads s \<Longrightarrow> step_thread update_state s t = None"
 unfolding step_thread_def
-by(fastsimp simp add: split_beta split: split_if_asm intro: active_threads.intros)
+by(fastforce simp add: split_beta split: split_if_asm intro: active_threads.intros)
 
 lemma step_thread_eq_None_conv:
   "step_thread update_state s t = None \<longleftrightarrow> t \<notin> active_threads s"
@@ -1034,7 +1034,7 @@ lemma step_thread_eq_Some_activeD:
   "step_thread update_state s t = \<lfloor>(t', taxm\<sigma>')\<rfloor> 
   \<Longrightarrow> t' = t \<and> t \<in> active_threads s"
 unfolding step_thread_def 
-by(fastsimp split: split_if_asm simp add: split_beta intro: active_threads.intros)
+by(fastforce split: split_if_asm simp add: split_beta intro: active_threads.intros)
 
 declare actions_ok_iff [simp del]
 declare actions_ok.cases [rule del]
@@ -1120,7 +1120,7 @@ proof -
   proof(cases "step_thread update_state s t")
     case None
     with invar show ?thesis
-      by(fastsimp simp add: thr.lookup_correct \<alpha>.step_thread_def step_thread_def ws.lookup_correct split_beta holds_eq split: split_if_asm)
+      by(fastforce simp add: thr.lookup_correct \<alpha>.step_thread_def step_thread_def ws.lookup_correct split_beta holds_eq split: split_if_asm)
   next
     case (Some a)
     then obtain t' taxm \<sigma>' 
@@ -1140,7 +1140,7 @@ proof -
       case (Some a)
       with rrs obtain ta x' m'
         where rrs: "step_thread update_state s t =  \<lfloor>(t', \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
-        by(cases a) fastsimp
+        by(cases a) fastforce
       with invar have ?thesis1 
         by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta \<alpha>.deterministic_THE[OF det, where s="state_\<alpha> s", simplified] deterministic_THE2[OF det] holds_eq split: split_if_asm) blast+
       moreover {
@@ -1167,7 +1167,7 @@ lemma step_thread_Some_NoneD:
   and invar: "state_invar s" "state_\<alpha> s \<in> I"
   shows "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln \<and> \<sigma>' = update_state ((\<lambda>\<^isup>f []), [], [], [], [], convert_RA ln)"
 using assms step_thread_correct(1)[OF det _ invar(1), of "\<lambda>_ _. True", of id update_state t']
-by(fastsimp simp add: option_map_id dest: \<alpha>.step_thread_Some_NoneD[OF sym])
+by(fastforce simp add: option_map_id dest: \<alpha>.step_thread_Some_NoneD[OF sym])
 
 lemma step_thread_Some_SomeD:
   assumes det: "\<alpha>.deterministic I"

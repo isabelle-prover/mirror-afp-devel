@@ -463,8 +463,8 @@ apply rotate_tac
 apply induction_schema
        apply atomize_elim
        apply (case_tac t)
-        apply fastsimp
-       apply fastsimp
+        apply fastforce
+       apply fastforce
 by lexicographic_order
 
 text {*
@@ -582,7 +582,7 @@ next
   note t = InnerNode
   from exists_in_alphabet obtain b where b: "b \<in> alphabet t\<^isub>1" ..
   from exists_in_alphabet obtain c where c: "c \<in> alphabet t\<^isub>2" ..
-  from b c have bc: "b \<noteq> c" using t `consistent t` by fastsimp
+  from b c have bc: "b \<noteq> c" using t `consistent t` by fastforce
   show ?thesis
   proof (cases u)
     case Leaf thus ?thesis using b c bc t assms by auto
@@ -1137,7 +1137,7 @@ apply induction_schema
     apply simp
     apply (case_tac t\<^isub>1)
      apply (case_tac t\<^isub>2)
-      apply fastsimp
+      apply fastforce
      apply simp+
    apply (auto intro: in_alphabet_imp_sibling_in_alphabet)[1]
 by lexicographic_order
@@ -2073,8 +2073,8 @@ proof (unfold optimum_def, clarify)
     case False
     hence h\<^isub>u: "height u > 0" using a\<^isub>u assms
       by (auto intro: height_gt_0_alphabet_eq_imp_height_gt_0)
-    have a\<^isub>a: "a \<in> alphabet u" using a\<^isub>u assms by fastsimp
-    have a\<^isub>b: "b \<in> alphabet u" using a\<^isub>u assms by fastsimp
+    have a\<^isub>a: "a \<in> alphabet u" using a\<^isub>u assms by fastforce
+    have a\<^isub>b: "b \<in> alphabet u" using a\<^isub>u assms by fastforce
     have ab: "a \<noteq> b" using assms by blast
     from exists_at_height [OF c\<^isub>u]
     obtain c where a\<^isub>c: "c \<in> alphabet u" and d\<^isub>c: "depth u c = height u" ..

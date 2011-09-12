@@ -56,10 +56,10 @@ by simp
 subsubsection {* Additional lemmata about list emptiness *}
 
 lemma length_greater_imp_not_empty:"n < length xs \<Longrightarrow> xs \<noteq> []"
-by fastsimp
+by fastforce
 
 lemma length_ge_Suc_imp_not_empty:"Suc n \<le> length xs \<Longrightarrow> xs \<noteq> []"
-by fastsimp
+by fastforce
 thm length_take
 
 lemma length_take_le: "length (xs \<down> n) \<le> length xs"
@@ -69,7 +69,7 @@ lemma take_not_empty_conv:"(xs \<down> n \<noteq> []) = (0 < n \<and> xs \<noteq
 by simp
 
 lemma drop_not_empty_conv:"(xs \<up> n \<noteq> []) = (n < length xs)"
-by fastsimp
+by fastforce
 
 lemma zip_eq_Nil: "(zip xs ys = []) = (xs = [] \<or> ys = [])"
 by (force simp: length_0_conv[symmetric] min_def simp del: length_0_conv)
@@ -292,8 +292,8 @@ apply (case_tac "xs = []")
    s = "\<lambda>k i. i = 0 \<and> P x" 
    in subst)
   apply (simp add: fun_eq_iff)
-  apply fastsimp
- apply (fastsimp simp: Least_def)
+  apply fastforce
+ apply (fastforce simp: Least_def)
 apply (rule_tac 
   t = "\<lambda>k. card {i. i \<le> k \<and> i < Suc (length xs) \<and> P ((xs @ [x]) ! i)}" and
   s = "\<lambda>k. (card {i. i \<le> k \<and> i < length xs \<and> P (xs ! i)} + 
@@ -310,14 +310,14 @@ apply (rule_tac
    s = "\<lambda>i. i < length xs \<and> P (xs ! i)" 
    in subst)
   apply (rule fun_eq_iff[THEN iffD2])
-  apply (fastsimp simp: nth_append1)
+  apply (fastforce simp: nth_append1)
  apply (rule nat_add_left_cancel[THEN iffD2])
  apply (rule_tac 
    t = "\<lambda>i. i = length xs \<and> i \<le> k \<and> P ((xs @ [x]) ! i)" and 
    s = "\<lambda>i. i = length xs \<and> i \<le> k \<and> P x" 
    in subst)
   apply (rule fun_eq_iff[THEN iffD2])
-  apply fastsimp
+  apply fastforce
  apply (case_tac "length xs \<le> k")
   apply clarsimp
   apply (rule_tac 
@@ -325,7 +325,7 @@ apply (rule_tac
     s = "\<lambda>i. i = length xs" 
     in subst)
    apply (rule fun_eq_iff[THEN iffD2])
-   apply fastsimp
+   apply fastforce
   apply simp
  apply simp
 apply (simp split del: split_if add: less_Suc_eq conj_disj_distribL conj_disj_distribR)
@@ -380,7 +380,7 @@ apply (rule_tac
  apply (rule fun_eq_iff[THEN iffD2], rule allI, rename_tac k)
  apply (simp add: linorder_not_less)
  apply (rule card_mono)
-  apply fastsimp
+  apply fastforce
  apply blast
 apply simp
 apply (rule_tac 
@@ -392,8 +392,8 @@ apply (rule_tac
   apply simp
   apply (rule le_imp_less_Suc)
   apply (rule card_mono)
-   apply fastsimp
-  apply fastsimp
+   apply fastforce
+  apply fastforce
  apply simp
 apply simp
 done
@@ -435,13 +435,13 @@ lemma list_ord_append: "\<And>ys.
   list_ord ord (xs @ ys) = 
   (list_ord ord xs \<and>
   (ys = [] \<or> (list_ord ord ys \<and> (xs = [] \<or> ord (last xs) (hd ys)))))"
-apply (induct xs, fastsimp)
-apply (case_tac xs, case_tac ys, fastsimp+)
+apply (induct xs, fastforce)
+apply (case_tac xs, case_tac ys, fastforce+)
 done
 lemma list_ord_snoc: "
   list_ord ord (xs @ [x]) = 
   (xs = [] \<or> (ord (last xs) x \<and> list_ord ord xs))"
-by (fastsimp simp: list_ord_append)
+by (fastforce simp: list_ord_append)
 
 lemma list_ord_all_conv: "
   (list_ord ord xs) = (\<forall>n < length xs - 1. ord (xs ! n) (xs ! Suc n))"
@@ -469,7 +469,7 @@ lemma list_ord_imp: "
   list_ord ord' xs"
 apply (induct xs, simp)
 apply (simp add: list_ord_Cons)
-apply fastsimp
+apply fastforce
 done
 corollary list_strict_asc_imp_list_asc: "
   list_strict_asc (xs::'a::preorder list) \<Longrightarrow> list_asc xs"
@@ -586,7 +586,7 @@ apply (rename_tac i2)
 apply simp
 apply (fold list_asc_def)
 thm list_asc_trans
-apply (fastsimp simp: list_asc_trans)
+apply (fastforce simp: list_asc_trans)
 done
 corollary list_asc_upto: "list_asc [m..n]"
 by (simp add: list_ord_le_sorted_eq)
@@ -747,7 +747,7 @@ thm take_drop_eq_sublist_list
 by (simp add: sublist_list_if_sublist_list_filter_conv take_drop_eq_sublist_list)
 
 lemma sublist_empty_conv: "(sublist xs I = []) = (\<forall>i\<in>I. length xs \<le> i)"
-by (fastsimp simp: set_empty[symmetric] set_sublist linorder_not_le[symmetric])
+by (fastforce simp: set_empty[symmetric] set_sublist linorder_not_le[symmetric])
 
 thm sublist_singleton
 lemma sublist_singleton2: "sublist xs {y} = (if y < length xs then [xs ! y] else [])"
@@ -784,14 +784,14 @@ apply (case_tac "n < length xs")
  apply (clarsimp, rename_tac a b)
  thm set_zip_rightD
  apply (drule set_zip_rightD)
- apply fastsimp
+ apply fastforce
 apply (rule_tac 
   t = "sublist xs I" and 
   s = "sublist (xs \<down> n @ xs \<up> n) I"
   in subst)
  apply simp
 apply (subst sublist_append)
-apply (fastsimp simp: sublist_empty_conv min_eqR)
+apply (fastforce simp: sublist_empty_conv min_eqR)
 done
 
 lemma sublist_cut_less_eq: "
@@ -865,7 +865,7 @@ apply (subst sublist_disjoint_Un[OF finite_lessThan])
    apply blast
   apply blast
  apply (blast intro: less_le_trans)
-apply (fastsimp simp: sublist_empty_conv)
+apply (fastforce simp: sublist_empty_conv)
 done
 corollary sublist_UNIV: "sublist xs UNIV = xs"
 by (rule sublist_all[OF subset_UNIV])
@@ -1002,7 +1002,7 @@ by blast
 
 
 lemma f_image_eq_set: "\<forall>n<length xs. n \<in> A \<Longrightarrow> xs `\<^sup>f A = set xs"
-by (fastsimp simp: in_set_conv_nth)
+by (fastforce simp: in_set_conv_nth)
 lemma f_range_eq_set: "f_range xs = set xs"
 by (simp add: f_image_eq_set)
 

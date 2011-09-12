@@ -175,7 +175,7 @@ next
   from acquire[OF `thr s T = \<lfloor>(X, LN)\<rfloor>` wset, OF `0 < LN\<^sub>f l'`]
   obtain l' where "0 < LN\<^sub>f l'" "\<not> may_lock ((locks s)\<^sub>f l') T" by blast
   then obtain t' where "T \<noteq> t'" "has_lock ((locks s)\<^sub>f l') t'"
-    unfolding not_may_lock_conv by fastsimp
+    unfolding not_may_lock_conv by fastforce
   moreover with `lock_thread_ok (locks s) (thr s)`
   have "thr s t' \<noteq> None" by(auto dest: lock_thread_okD)
   ultimately show "\<exists>l t'. 0 < LN\<^sub>f l \<and> T \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s)\<^sub>f l) t'"
@@ -361,7 +361,7 @@ proof -
       with dead `thr s t = \<lfloor>(x, ln)\<rfloor>` `0 < ln\<^sub>f n`
       obtain l t' where "0 < ln\<^sub>f l" "t \<noteq> t'"
 	and "has_lock ((locks s)\<^sub>f l) t'"
-        by(cases)(fastsimp simp add: waiting_def)+
+        by(cases)(fastforce simp add: waiting_def)+
       hence "\<not> may_acquire_all (locks s) t ln"
 	by(auto elim: may_acquire_allE dest: has_lock_may_lock_t_eq)
       with `may_acquire_all (locks s) t ln` show ?thesis by contradiction
@@ -396,7 +396,7 @@ proof -
   proof(coinduct)
     case (deadlocked z)
     hence "not_final_thread s z" by simp
-    then obtain x' ln' where "thr s z = \<lfloor>(x', ln')\<rfloor>" by(fastsimp elim!: not_final_thread_existsE)
+    then obtain x' ln' where "thr s z = \<lfloor>(x', ln')\<rfloor>" by(fastforce elim!: not_final_thread_existsE)
     {
       assume "wset s z = None" "\<not> final x'"
         and [simp]: "ln' = no_wait_locks"
@@ -780,7 +780,7 @@ proof
       and s' = `redT_upd s t ta x' m' s'`
     from red have "\<not> final x" by(auto dest: final_no_red)
     with tndead tst have nafe: "\<not> all_final_except s (deadlocked s)"
-      by(fastsimp simp add: all_final_except_def not_final_thread_iff)
+      by(fastforce simp add: all_final_except_def not_final_thread_iff)
     from t'dead show ?thesis
     proof(coinduct)
       case (deadlocked t'')
@@ -844,7 +844,7 @@ proof
 	    next
 	      case (wait x'' ln'')
 	      from `\<not> final x` tst `all_final_except s (deadlocked s)`
-	      have "t \<in> deadlocked s" by(fastsimp dest: all_final_exceptD simp add: not_final_thread_iff)
+	      have "t \<in> deadlocked s" by(fastforce dest: all_final_exceptD simp add: not_final_thread_iff)
 	      with Red have False by(auto dest: red_no_deadlock)
 	      thus ?thesis ..
 	    next
@@ -976,7 +976,7 @@ proof
 	  qed
           with lt have "\<exists>lt\<in>LT. must_wait s' t'' lt (deadlocked s \<union> deadlocked s' \<union> final_threads s')" by blast }
 	moreover from `wset s t'' = None` s' have "wset s' t'' = None" by simp
-	ultimately show ?thesis using `thr s t'' = \<lfloor>(X, no_wait_locks)\<rfloor>` `t'' \<turnstile> \<langle>X, shr s\<rangle> \<wrong>` s' by fastsimp
+	ultimately show ?thesis using `thr s t'' = \<lfloor>(X, no_wait_locks)\<rfloor>` `t'' \<turnstile> \<langle>X, shr s\<rangle> \<wrong>` s' by fastforce
       next
 	case (wait X LN)
 	have "all_final_except s' (deadlocked s)"

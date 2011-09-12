@@ -290,7 +290,7 @@ apply(rule iffI)
  apply clarsimp
  apply(case_tac vs)
   apply simp
- apply fastsimp
+ apply fastforce
 apply(erule disjE)
  apply (rule disjI1)
  apply clarsimp
@@ -314,8 +314,8 @@ apply(rule iffI)
  apply clarsimp
  apply(case_tac vs)
   apply simp
- apply fastsimp
-apply fastsimp
+ apply fastforce
+apply fastforce
 done
 
 
@@ -341,7 +341,7 @@ text{* Only used later, in the small to big translation, but is already a
 good sanity check: *}
 
 lemma eval_finalId:  "final e \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e,s\<rangle>"
-by (erule finalE) (fastsimp intro: eval_evals.intros)+
+by (erule finalE) (fastforce intro: eval_evals.intros)+
 
 
 lemma eval_finalsId:
@@ -384,6 +384,6 @@ eval_preserves_obj:"P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<l
   \<Longrightarrow> \<exists>S'. h' a = Some(D,S'))"
 and evals_preserves_obj:"P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',l')\<rangle> 
 \<Longrightarrow> (\<And>S. h a = Some(D,S) \<Longrightarrow> \<exists>S'. h' a = Some(D,S'))"
-by(induct rule:eval_evals_inducts)(fastsimp dest:new_Addr_SomeD)+
+by(induct rule:eval_evals_inducts)(fastforce dest:new_Addr_SomeD)+
 
 end

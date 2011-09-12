@@ -316,18 +316,18 @@ next
       intro: exec.GuardFault)
 next
   case FaultProp thus ?case
-    by (fastsimp simp add: project\<^isub>x_def)
+    by (fastforce simp add: project\<^isub>x_def)
 next
   case Basic
   thus ?case
-    by (fastsimp simp add: project\<^isub>x_def lift\<^isub>c_Basic lift\<^isub>f_def Compose.lift\<^isub>f_def 
+    by (fastforce simp add: project\<^isub>x_def lift\<^isub>c_Basic lift\<^isub>f_def Compose.lift\<^isub>f_def 
       lift\<^isub>c_def
         proj_inj_commute
         intro: exec.Basic)
 next
   case Spec
   thus ?case
-    by (fastsimp simp add: project\<^isub>x_def lift\<^isub>c_Spec lift\<^isub>f_def Compose.lift\<^isub>f_def  
+    by (fastforce simp add: project\<^isub>x_def lift\<^isub>c_Spec lift\<^isub>f_def Compose.lift\<^isub>f_def  
         lift\<^isub>r_def Compose.lift\<^isub>r_def lift\<^isub>c_def
         proj_inj_commute
         intro: exec.Spec)
@@ -346,7 +346,7 @@ next
 next
   case Seq 
   thus ?case
-    by (fastsimp simp add: project\<^isub>x_def lift\<^isub>c_Seq lift\<^isub>c_def intro: exec.intros)
+    by (fastforce simp add: project\<^isub>x_def lift\<^isub>c_Seq lift\<^isub>c_def intro: exec.intros)
 next
   case CondTrue
   thus ?case
@@ -360,53 +360,53 @@ next
 next
   case WhileTrue
   thus ?case
-     by (fastsimp simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def 
+     by (fastforce simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def 
          lift\<^isub>c_While lift\<^isub>c_def
          intro: exec.WhileTrue)
 next
   case WhileFalse
   thus ?case
-     by (fastsimp simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def 
+     by (fastforce simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def 
          lift\<^isub>c_While lift\<^isub>c_def
          intro: exec.WhileFalse)
 next
   case Call 
   thus ?case
-    by (fastsimp simp add: 
+    by (fastforce simp add: 
                project\<^isub>x_def lift\<^isub>c_Call lift\<^isub>f_def Compose.lift\<^isub>f_def lift\<^isub>c_def
                lift\<^isub>e_def
           intro: exec.Call)
 next
   case CallUndefined
   thus ?case
-    by (fastsimp simp add: 
+    by (fastforce simp add: 
                project\<^isub>x_def lift\<^isub>c_Call lift\<^isub>f_def Compose.lift\<^isub>f_def lift\<^isub>c_def
                lift\<^isub>e_def
           intro: exec.CallUndefined)
 next
   case StuckProp thus ?case
-    by (fastsimp simp add: project\<^isub>x_def)
+    by (fastforce simp add: project\<^isub>x_def)
 next
   case DynCom
   thus ?case
-    by (fastsimp simp add: 
+    by (fastforce simp add: 
                project\<^isub>x_def lift\<^isub>c_DynCom lift\<^isub>f_def Compose.lift\<^isub>f_def lift\<^isub>c_def
           intro: exec.DynCom)
 next
   case Throw thus ?case
-    by (fastsimp simp add: project\<^isub>x_def lift\<^isub>c_Throw lift\<^isub>c_def intro: exec.Throw)
+    by (fastforce simp add: project\<^isub>x_def lift\<^isub>c_Throw lift\<^isub>c_def intro: exec.Throw)
 next
   case AbruptProp thus ?case
-    by (fastsimp simp add: project\<^isub>x_def)
+    by (fastforce simp add: project\<^isub>x_def)
 next
   case CatchMatch 
   thus ?case
-    by (fastsimp simp add: project\<^isub>x_def lift\<^isub>c_Catch lift\<^isub>c_def intro: exec.CatchMatch)
+    by (fastforce simp add: project\<^isub>x_def lift\<^isub>c_Catch lift\<^isub>c_def intro: exec.CatchMatch)
 next
   case (CatchMiss c\<^isub>1 s t c\<^isub>2 c) 
   thus ?case
     by (cases t)
-       (fastsimp simp add: project\<^isub>x_def lift\<^isub>c_Catch lift\<^isub>c_def intro: exec.CatchMiss)+
+       (fastforce simp add: project\<^isub>x_def lift\<^isub>c_Catch lift\<^isub>c_def intro: exec.CatchMiss)+
 qed
 
 lemma (in lift_state_space) lift_exec': 
@@ -479,10 +479,10 @@ proof (induct)
     by (clarsimp simp add: terminates.Skip project\<^isub>x_def xstate_map_convs)
 next
   case Basic thus ?case
-    by (fastsimp simp add: project\<^isub>x_def xstate_map_convs intro: terminates.intros) 
+    by (fastforce simp add: project\<^isub>x_def xstate_map_convs intro: terminates.intros) 
 next
   case Spec thus ?case
-    by (fastsimp simp add: project\<^isub>x_def xstate_map_convs intro: terminates.intros) 
+    by (fastforce simp add: project\<^isub>x_def xstate_map_convs intro: terminates.intros) 
 next
   case Guard thus ?case
     by (auto simp add: project\<^isub>x_def xstate_map_convs intro: terminates.intros) 
@@ -519,11 +519,11 @@ next
     by (auto intro: terminates.intros)
 next
   case CondTrue thus ?case
-    by (fastsimp simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def xstate_map_convs 
+    by (fastforce simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def xstate_map_convs 
       intro: terminates.intros) 
 next
   case CondFalse thus ?case
-    by (fastsimp simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def xstate_map_convs 
+    by (fastforce simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def xstate_map_convs 
       intro: terminates.intros) 
 next
   case (WhileTrue s b c)
@@ -552,30 +552,30 @@ next
     by (auto intro: terminates.intros)      
 next
   case WhileFalse thus ?case
-    by (fastsimp simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def xstate_map_convs 
+    by (fastforce simp add: project\<^isub>x_def lift\<^isub>s_def Compose.lift\<^isub>s_def xstate_map_convs 
       intro: terminates.intros) 
 next
   case Call thus ?case
-    by (fastsimp simp add: project\<^isub>x_def xstate_map_convs lift\<^isub>e_def
+    by (fastforce simp add: project\<^isub>x_def xstate_map_convs lift\<^isub>e_def
       intro: terminates.intros) 
 next
   case CallUndefined thus ?case
-    by (fastsimp simp add: project\<^isub>x_def xstate_map_convs lift\<^isub>e_def
+    by (fastforce simp add: project\<^isub>x_def xstate_map_convs lift\<^isub>e_def
       intro: terminates.intros) 
 next
   case Stuck thus ?case
-    by (fastsimp simp add: project\<^isub>x_def xstate_map_convs)
+    by (fastforce simp add: project\<^isub>x_def xstate_map_convs)
 next
   case DynCom thus ?case
-    by (fastsimp simp add: project\<^isub>x_def xstate_map_convs 
+    by (fastforce simp add: project\<^isub>x_def xstate_map_convs 
       intro: terminates.intros)
 next
   case Throw thus ?case
-    by (fastsimp simp add: project\<^isub>x_def xstate_map_convs 
+    by (fastforce simp add: project\<^isub>x_def xstate_map_convs 
       intro: terminates.intros)
 next
   case Abrupt thus ?case
-    by (fastsimp simp add: project\<^isub>x_def xstate_map_convs 
+    by (fastforce simp add: project\<^isub>x_def xstate_map_convs 
       intro: terminates.intros)
 next
   case (Catch c1 s c2) 
@@ -995,29 +995,29 @@ lemma exec_rename_to_exec:
   shows "\<And>c. rename h c = rc\<Longrightarrow>  \<exists>t'. \<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> t' \<and> (t'=Stuck \<or> t'=t)"
 using exec
 proof (induct)
-  case Skip thus ?case by (fastsimp intro: exec.intros simp add: rename_Skip)
+  case Skip thus ?case by (fastforce intro: exec.intros simp add: rename_Skip)
 next
-  case Guard thus ?case by (fastsimp intro: exec.intros simp add: rename_Guard)
+  case Guard thus ?case by (fastforce intro: exec.intros simp add: rename_Guard)
 next
-  case GuardFault thus ?case by (fastsimp intro: exec.intros simp add: rename_Guard)
+  case GuardFault thus ?case by (fastforce intro: exec.intros simp add: rename_Guard)
 next
-  case FaultProp thus ?case by (fastsimp intro: exec.intros)
+  case FaultProp thus ?case by (fastforce intro: exec.intros)
 next
-  case Basic thus ?case by (fastsimp intro: exec.intros simp add: rename_Basic)
+  case Basic thus ?case by (fastforce intro: exec.intros simp add: rename_Basic)
 next
-  case Spec thus ?case by (fastsimp intro: exec.intros simp add: rename_Spec)
+  case Spec thus ?case by (fastforce intro: exec.intros simp add: rename_Spec)
 next
-  case SpecStuck thus ?case by (fastsimp intro: exec.intros simp add: rename_Spec)
+  case SpecStuck thus ?case by (fastforce intro: exec.intros simp add: rename_Spec)
 next
-  case Seq thus ?case by (fastsimp intro: exec.intros simp add: rename_Seq)
+  case Seq thus ?case by (fastforce intro: exec.intros simp add: rename_Seq)
 next
-  case CondTrue thus ?case by (fastsimp intro: exec.intros simp add: rename_Cond)
+  case CondTrue thus ?case by (fastforce intro: exec.intros simp add: rename_Cond)
 next
-  case CondFalse thus ?case by (fastsimp intro: exec.intros simp add: rename_Cond)
+  case CondFalse thus ?case by (fastforce intro: exec.intros simp add: rename_Cond)
 next
-  case WhileTrue thus ?case by (fastsimp intro: exec.intros simp add: rename_While)
+  case WhileTrue thus ?case by (fastforce intro: exec.intros simp add: rename_While)
 next
-  case WhileFalse thus ?case by (fastsimp intro: exec.intros simp add: rename_While)
+  case WhileFalse thus ?case by (fastforce intro: exec.intros simp add: rename_While)
 next
   case (Call p rbdy s t)
   have rbdy: "\<Gamma>' p = Some rbdy" by fact
@@ -1034,7 +1034,7 @@ next
     have "rename h bdy = rbdy" by simp
     with Call.hyps c Some
     show ?thesis
-      by (fastsimp intro: exec.intros)
+      by (fastforce intro: exec.intros)
   qed
 next
   case (CallUndefined p s)
@@ -1047,17 +1047,17 @@ next
   with p c show ?case
     by (auto intro: exec.intros)
 next
-  case StuckProp thus ?case by (fastsimp intro: exec.intros)
+  case StuckProp thus ?case by (fastforce intro: exec.intros)
 next
-  case DynCom thus ?case by (fastsimp intro: exec.intros simp add: rename_DynCom)
+  case DynCom thus ?case by (fastforce intro: exec.intros simp add: rename_DynCom)
 next
-  case Throw thus ?case by (fastsimp intro: exec.intros simp add: rename_Throw)
+  case Throw thus ?case by (fastforce intro: exec.intros simp add: rename_Throw)
 next
-  case AbruptProp thus ?case by (fastsimp intro: exec.intros)
+  case AbruptProp thus ?case by (fastforce intro: exec.intros)
 next
-  case CatchMatch thus ?case by (fastsimp intro: exec.intros simp add: rename_Catch)
+  case CatchMatch thus ?case by (fastforce intro: exec.intros simp add: rename_Catch)
 next
-  case CatchMiss thus ?case by (fastsimp intro: exec.intros simp add: rename_Catch)
+  case CatchMiss thus ?case by (fastforce intro: exec.intros simp add: rename_Catch)
 qed
 
 
@@ -1118,28 +1118,28 @@ lemma terminates_to_terminates_rename:
   shows "\<Gamma>'\<turnstile> rename N c \<down> s"
 using termi noStuck
 proof (induct)
-  case Skip thus ?case by (fastsimp intro: terminates.intros)
+  case Skip thus ?case by (fastforce intro: terminates.intros)
 next
-  case Basic thus ?case by (fastsimp intro: terminates.intros)
+  case Basic thus ?case by (fastforce intro: terminates.intros)
 next
-  case Spec thus ?case by (fastsimp intro: terminates.intros)
+  case Spec thus ?case by (fastforce intro: terminates.intros)
 next
-  case Guard thus ?case by (fastsimp intro: terminates.intros 
+  case Guard thus ?case by (fastforce intro: terminates.intros 
     simp add: final_notin_def exec.intros)
 next
-  case GuardFault thus ?case by (fastsimp intro: terminates.intros)
+  case GuardFault thus ?case by (fastforce intro: terminates.intros)
 next
-  case Fault thus ?case by (fastsimp intro: terminates.intros)
+  case Fault thus ?case by (fastforce intro: terminates.intros)
 next
   case Seq
   thus ?case
     by (force intro!: terminates.intros exec.intros dest: exec_rename_to_exec [OF \<Gamma>]
          simp add: final_notin_def)
 next
-  case CondTrue thus ?case by (fastsimp intro: terminates.intros 
+  case CondTrue thus ?case by (fastforce intro: terminates.intros 
     simp add: final_notin_def exec.intros)
 next
-  case CondFalse thus ?case by (fastsimp intro: terminates.intros 
+  case CondFalse thus ?case by (fastforce intro: terminates.intros 
     simp add: final_notin_def exec.intros)
 next
   case (WhileTrue s b c)
@@ -1169,7 +1169,7 @@ next
     using s_in_b
     by (auto intro: terminates.intros)
 next
-  case WhileFalse thus ?case by (fastsimp intro: terminates.intros)
+  case WhileFalse thus ?case by (fastforce intro: terminates.intros)
 next
   case (Call p bdy s)
   have "\<Gamma> p = Some bdy" by fact
@@ -1186,19 +1186,19 @@ next
   hence False by (auto simp add: final_notin_def intro: exec.intros)
   thus ?case ..
 next
-  case Stuck thus ?case by (fastsimp intro: terminates.intros)
+  case Stuck thus ?case by (fastforce intro: terminates.intros)
 next
-  case DynCom thus ?case by (fastsimp intro: terminates.intros 
+  case DynCom thus ?case by (fastforce intro: terminates.intros 
     simp add: final_notin_def exec.intros)
 next
-  case Throw thus ?case by (fastsimp intro: terminates.intros)
+  case Throw thus ?case by (fastforce intro: terminates.intros)
 next
-  case Abrupt thus ?case by (fastsimp intro: terminates.intros)
+  case Abrupt thus ?case by (fastforce intro: terminates.intros)
 next
   case (Catch c1 s c2)
   have noStuck: "\<Gamma>\<turnstile> \<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}" by fact
   hence "\<Gamma>\<turnstile> \<langle>c1,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}"
-    by (fastsimp simp add: final_notin_def intro: exec.intros)
+    by (fastforce simp add: final_notin_def intro: exec.intros)
   with Catch.hyps have "\<Gamma>'\<turnstile>rename N c1 \<down> Normal s"
     by auto
   moreover
@@ -1211,7 +1211,7 @@ next
         where exec_c: "\<Gamma>\<turnstile> \<langle>c1,Normal s\<rangle> \<Rightarrow> t'" and "(t' = Stuck \<or> t' = Abrupt t)"
         by auto
       with noStuck have t': "t'=Abrupt t" 
-        by (fastsimp simp add: final_notin_def intro: exec.intros)
+        by (fastforce simp add: final_notin_def intro: exec.intros)
       with exec_c noStuck have "\<Gamma>\<turnstile> \<langle>c2,Normal t\<rangle> \<Rightarrow>\<notin>{Stuck}"
         by (auto simp add: final_notin_def intro: exec.intros)
       with exec_c t' Catch.hyps

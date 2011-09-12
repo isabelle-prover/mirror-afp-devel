@@ -70,7 +70,7 @@ proof -
       apply assumption
       apply (unfold r_match_alt)
       apply simp
-      apply fastsimp
+      apply fastforce
       apply simp
       apply (erule accs.cases)
       apply auto
@@ -294,8 +294,8 @@ lemma br_invar_initial[simp]: "finite \<delta> \<Longrightarrow> (br_initial \<d
   apply (auto simp add: br_initial_def br_invar_def br_iq_def)
     
   apply (case_tac r)
-  apply (fastsimp intro: b_accessible.intros)
-  apply (fastsimp elim!: bacc_step.cases)
+  apply (fastforce intro: b_accessible.intros)
+  apply (fastforce elim!: bacc_step.cases)
   done
 
 lemma br_invar_step: 

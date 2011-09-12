@@ -31,8 +31,8 @@ next
     by -(drule_tac Cs' = "Cs" in appendPath_last,simp)
   hence Ds':"Ds = Ds @\<^sub>p [C]" by(simp add:appendPath_def)
   from last "class" have "P \<turnstile> Path last Ds to C via [C]"
-    by(fastsimp intro:Subobjs_Base simp:path_via_def)
-  with Ds' show ?case by(fastsimp intro:casts_to.casts_ref)
+    by(fastforce intro:Subobjs_Base simp:path_via_def)
+  with Ds' show ?case by(fastforce intro:casts_to.casts_ref)
 qed
 
 
@@ -80,10 +80,10 @@ proof(induct rule:red_reds_inducts)
     case True
     with lupd have v':"v' = w'" by simp
     from True env env' have "T = T'" by simp
-    with v' casts wf show ?thesis by(fastsimp intro:casts_casts)
+    with v' casts wf show ?thesis by(fastforce intro:casts_casts)
   next
     case False
-    with lupd have "l V' = Some v'" by(fastsimp split:split_if_asm)
+    with lupd have "l V' = Some v'" by(fastforce split:split_if_asm)
     with l show ?thesis by simp
   qed
 next
@@ -96,12 +96,12 @@ next
   show ?case
   proof(cases "V = V'")
     case True 
-    with l'upd l show ?thesis by fastsimp
+    with l'upd l show ?thesis by fastforce
   next
     case False
     with l  l'upd have lnew:"(l(V := None)) V' = None"
       and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
-    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastsimp
+    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' l'new] show ?thesis .
   qed
 next
@@ -114,12 +114,12 @@ next
   show ?case
   proof(cases "V = V'")
     case True
-    with l l'upd show ?thesis by fastsimp
+    with l l'upd show ?thesis by fastforce
   next
     case False
     with l  l'upd have lnew:"(l(V := None)) V' = None"
       and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
-    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastsimp
+    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' l'new] show ?thesis .
   qed
 next
@@ -132,12 +132,12 @@ next
   show ?case
   proof(cases "V = V'")
     case True
-    with l l'upd show ?thesis by fastsimp
+    with l l'upd show ?thesis by fastforce
   next
     case False
     with l  l'upd have lnew:"(l(V \<mapsto> w')) V' = None"
       and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
-    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastsimp
+    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' l'new] show ?thesis .
   qed
 qed (auto intro:casts_casts wf)
@@ -160,7 +160,7 @@ proof(induct rule:red_reds_inducts)
   have l1:"l V = Some v" and l2:"l V = Some v'"
     and casts:"P \<turnstile> T casts v'' to v " by fact+
   from l1 l2 have eq:"v = v'" by simp
-  with casts wf show ?case by(fastsimp intro:casts_casts)
+  with casts wf show ?case by(fastforce intro:casts_casts)
 next
   case (RedLAss E V T' w w' h l V')
   have l:"l V' = Some v" and lupd:"(l(V \<mapsto> w')) V' = Some v'"
@@ -172,11 +172,11 @@ next
     case True
     with lupd have v':"v' = w'" by simp
     from True env env' have "T = T'" by simp
-    with T'casts v' wf show ?thesis by(fastsimp intro:casts_casts)
+    with T'casts v' wf show ?thesis by(fastforce intro:casts_casts)
   next
     case False
     with l lupd have "v = v'" by (auto split:split_if_asm)
-    with casts wf show ?thesis by(fastsimp intro:casts_casts)
+    with casts wf show ?thesis by(fastforce intro:casts_casts)
   qed
 next
   case (RedFAss h a D S Cs' F T' Cs w w' Ds fs E l V)
@@ -185,7 +185,7 @@ next
     and T'casts:"P \<turnstile> T' casts w to w'"
     and casts:"P \<turnstile> T casts v'' to v" by fact+
   from l1 l2 have eq:"v = v'" by simp
-  with casts wf show ?case by(fastsimp intro:casts_casts)
+  with casts wf show ?case by(fastforce intro:casts_casts)
 next
   case (BlockRedNone E V T' e h l e' h' l' V')
   have l':"l' V = None" and l:"l V' = Some v"
@@ -199,12 +199,12 @@ next
     case True
     with l' l'upd have "l V = Some v'" by auto
     with True l have eq:"v = v'" by simp
-    with casts wf show ?thesis by(fastsimp intro:casts_casts)
+    with casts wf show ?thesis by(fastforce intro:casts_casts)
   next
     case False
     with l  l'upd have lnew:"(l(V := None)) V' = Some v"
       and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
-    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastsimp
+    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' casts l'new] show ?thesis .
   qed
 next
@@ -220,12 +220,12 @@ next
     case True
     with l' l'upd have "l V = Some v'" by auto
     with True l have eq:"v = v'" by simp
-    with casts wf show ?thesis by(fastsimp intro:casts_casts)
+    with casts wf show ?thesis by(fastforce intro:casts_casts)
   next
     case False
     with l  l'upd have lnew:"(l(V := None)) V' = Some v"
       and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
-    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastsimp
+    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' casts l'new] show ?thesis .
   qed
 next
@@ -241,12 +241,12 @@ next
     case True
     with l' l'upd have "l V = Some v'" by auto
     with True l have eq:"v = v'" by simp
-    with casts wf show ?thesis by(fastsimp intro:casts_casts)
+    with casts wf show ?thesis by(fastforce intro:casts_casts)
   next
     case False
     with l  l'upd have lnew:"(l(V \<mapsto> w')) V' = Some v"
       and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
-    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastsimp
+    from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' casts l'new] show ?thesis .
   qed
 qed (auto intro:casts_casts wf)
@@ -283,7 +283,7 @@ lemma StaticUpCastReds:
 
 apply(rule rtrancl_into_rtrancl)
  apply(erule StaticCastReds)
-apply(fastsimp intro:RedStaticUpCast)
+apply(fastforce intro:RedStaticUpCast)
 done
 
 
@@ -306,7 +306,7 @@ lemma StaticCastRedsFail:
 
 apply(rule rtrancl_into_rtrancl)
  apply(erule StaticCastReds)
-apply(fastsimp intro:RedStaticCastFail)
+apply(fastforce intro:RedStaticCastFail)
 done
 
 
@@ -345,7 +345,7 @@ lemma DynCastRedsRef:
 
 apply(rule rtrancl_into_rtrancl)
  apply(erule DynCastReds)
-apply(fastsimp intro:RedDynCast)
+apply(fastforce intro:RedDynCast)
 done
 
 
@@ -356,7 +356,7 @@ lemma StaticUpDynCastReds:
 
 apply(rule rtrancl_into_rtrancl)
  apply(erule DynCastReds)
-apply(fastsimp intro:RedStaticUpDynCast)
+apply(fastforce intro:RedStaticUpDynCast)
 done
 
 
@@ -380,7 +380,7 @@ lemma DynCastRedsFail:
 
 apply(rule rtrancl_into_rtrancl)
  apply(erule DynCastReds)
-apply(fastsimp intro:RedDynCastFail)
+apply(fastforce intro:RedDynCastFail)
 done
 
 
@@ -499,7 +499,7 @@ lemma FAccRedsVal:
 
 apply(rule rtrancl_into_rtrancl)
  apply(erule FAccReds)
-apply (fastsimp intro:RedFAcc)
+apply (fastforce intro:RedFAcc)
 done
 
 
@@ -554,7 +554,7 @@ apply(rule rtrancl_trans)
  apply(erule FAssReds1)
 apply(rule rtrancl_into_rtrancl)
  apply(erule FAssReds2)
-apply(fastsimp intro:RedFAss)
+apply(fastforce intro:RedFAss)
 done
 
 
@@ -774,7 +774,7 @@ proof (erule converse_rtrancl_induct2)
     hence h:"h = h'" and l':"l' = l(V \<mapsto> v')" by simp_all
     hence "P,E \<turnstile> \<langle>{V:T; V:=Val v;; e'},(h, l)\<rangle> \<rightarrow>*
                  \<langle>{V:T; V:=Val v;; e'},(h', l'(V := l V))\<rangle>"
-      by(fastsimp simp: fun_upd_same simp del:fun_upd_apply) }
+      by(fastforce simp: fun_upd_same simp del:fun_upd_apply) }
   hence "\<forall>h l h' l' v v'.
          s' = (h, l(V \<mapsto> v')) \<longrightarrow>
            P \<turnstile> T casts v to v'  \<longrightarrow>
@@ -806,14 +806,14 @@ next
     assume s:"s = (h, l(V \<mapsto> v'))" and s':"s' = (h', l')"
       and casts:"P \<turnstile> T casts v to v'"
     obtain h'' l'' where s'':"s'' = (h'',l'')" by (cases s'') auto
-    with Red s have "V \<in> dom l''" by (fastsimp dest:red_lcl_incr)
+    with Red s have "V \<in> dom l''" by (fastforce dest:red_lcl_incr)
     then obtain v'' where l'':"l'' V = Some v''" by auto
     with Red s s'' casts
     have step:"P,E \<turnstile> \<langle>{V:T := Val v; e},(h, l)\<rangle> \<rightarrow>  
               \<langle>{V:T := Val v''; e''}, (h'',l''(V := l V))\<rangle>"
-      by(fastsimp intro:InitBlockRed)
+      by(fastforce intro:InitBlockRed)
     from Red s s'' l'' casts wf
-    have casts':"P \<turnstile> T casts v'' to v''" by(fastsimp intro:Some_lcl_casts_values)
+    have casts':"P \<turnstile> T casts v'' to v''" by(fastforce intro:Some_lcl_casts_values)
     with IH s'' s' l'' obtain v''' w
       where "P,E \<turnstile> \<langle>{V:T := Val v''; e''}, (h'',l''(V := l V))\<rangle> \<rightarrow>*
                    \<langle>{V:T := Val v'''; e'},(h', l'(V := l V))\<rangle> \<and>
@@ -866,7 +866,7 @@ proof -
                     \<langle>e',(h',l'(V := l V))\<rangle>"
     by(auto elim!:finalE intro:RedInitBlock InitBlockThrow)
   from step steps show ?thesis
-    by(fastsimp intro:rtrancl_into_rtrancl)
+    by(fastforce intro:rtrancl_into_rtrancl)
 qed
 
 
@@ -881,7 +881,7 @@ shows "\<And>h\<^isub>0 l\<^isub>0. s\<^isub>0 = (h\<^isub>0,l\<^isub>0(V:=None)
 using reds
 proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case
-    by(fastsimp intro:finalE[OF fin] RedBlock BlockThrow
+    by(fastforce intro:finalE[OF fin] RedBlock BlockThrow
                 simp del:fun_upd_apply)
 next
   case (step e\<^isub>0 s\<^isub>0 e\<^isub>1 s\<^isub>1)
@@ -890,7 +890,7 @@ next
    and IH: "\<And>h l. s\<^isub>1 = (h,l(V := None))
                 \<Longrightarrow> P,E \<turnstile> \<langle>{V:T; e\<^isub>1},(h,l)\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2, l\<^isub>2(V := l V))\<rangle>"
    and s\<^isub>0: "s\<^isub>0 = (h\<^isub>0, l\<^isub>0(V := None))" by fact+
-  obtain h\<^isub>1 l\<^isub>1 where s\<^isub>1: "s\<^isub>1 = (h\<^isub>1,l\<^isub>1)" by fastsimp
+  obtain h\<^isub>1 l\<^isub>1 where s\<^isub>1: "s\<^isub>1 = (h\<^isub>1,l\<^isub>1)" by fastforce
   show ?case
   proof cases
     assume "assigned V e\<^isub>0"
@@ -905,7 +905,7 @@ next
       using converse_rtranclE2[OF reds] by simp blast
     from red1 e\<^isub>1 have es': "e' = e" "s' = s\<^isub>1" by auto
     show ?thesis using e\<^isub>0 s\<^isub>1 es' reds'
-        by(fastsimp intro!: InitBlockRedsFinal[OF _ fin casts wf] 
+        by(fastforce intro!: InitBlockRedsFinal[OF _ fin casts wf] 
                     simp del:fun_upd_apply)
   next
     assume unass: "\<not> assigned V e\<^isub>0"
@@ -923,7 +923,7 @@ next
       fix v assume Some: "l\<^isub>1 V = Some v"
       with Red Some s\<^isub>0 s\<^isub>1 wf
       have casts:"P \<turnstile> T casts v to v"
-        by(fastsimp intro:None_lcl_casts_values)
+        by(fastforce intro:None_lcl_casts_values)
       from Some
       have "P,E \<turnstile> \<langle>{V:T;e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>{V:T := Val v; e\<^isub>1},(h\<^isub>1,l\<^isub>1(V := l\<^isub>0 V))\<rangle>"
         using s\<^isub>0 s\<^isub>1 Red by(simp add: BlockRedSome[OF _ _ unass])
@@ -985,13 +985,13 @@ shows Red_fv: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle
 proof (induct rule:red_reds_inducts)
   case (RedCall h l a C S Cs M Ts' T' pns' body' Ds Ts T pns body Cs' vs bs new_body E)
   hence "fv body \<subseteq> {this} \<union> set pns"
-    using assms by(fastsimp dest!:select_method_wf_mdecl simp:wf_mdecl_def)
+    using assms by(fastforce dest!:select_method_wf_mdecl simp:wf_mdecl_def)
   with RedCall.hyps show ?case
     by(cases T') auto
 next
   case (RedStaticCall Cs C Cs'' M Ts T pns body Cs' Ds vs E a a' b)
   hence "fv body \<subseteq> {this} \<union> set pns"
-    using assms by(fastsimp dest!:has_least_wf_mdecl simp:wf_mdecl_def)
+    using assms by(fastforce dest!:has_least_wf_mdecl simp:wf_mdecl_def)
   with RedStaticCall.hyps show ?case
     by auto
 qed auto
@@ -1007,11 +1007,11 @@ proof (induct rule:red_reds_inducts)
 next
   case CallParams thus ?case by(force split:if_splits)
 next
-  case BlockRedNone thus ?case by clarsimp (fastsimp split:if_splits)
+  case BlockRedNone thus ?case by clarsimp (fastforce split:if_splits)
 next
-  case BlockRedSome thus ?case by clarsimp (fastsimp split:if_splits)
+  case BlockRedSome thus ?case by clarsimp (fastforce split:if_splits)
 next
-  case InitBlockRed thus ?case by clarsimp (fastsimp split:if_splits)
+  case InitBlockRed thus ?case by clarsimp (fastforce split:if_splits)
 qed auto
 
 
@@ -1093,7 +1093,7 @@ next
   case (6 e)
   have casts:"P \<turnstile> [] Casts [] to vs'" 
     and step:"P,E([] [\<mapsto>] []) \<turnstile> \<langle>e,(h\<^isub>0, l\<^isub>0([] [\<mapsto>] vs'))\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>1, l\<^isub>1)\<rangle>" by fact+
-  from casts have "vs' = []" by(fastsimp dest:length_Casts_vs')
+  from casts have "vs' = []" by(fastforce dest:length_Casts_vs')
   with step have "P,E \<turnstile> \<langle>e,(h\<^isub>0, l\<^isub>0)\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>1, l\<^isub>1)\<rangle>" by simp
   with casts show ?case by auto
 qed simp_all
@@ -1264,7 +1264,7 @@ next
     with red final have final':"final ex"
       by(auto elim:red.cases simp:final_def)
     from step e'' have "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ex,s''\<rangle>"
-      by(fastsimp intro:Cast_red)
+      by(fastforce intro:Cast_red)
     with e'' red final' show ?thesis by blast
   qed
 qed
@@ -1324,12 +1324,12 @@ shows "P,E \<turnstile> \<langle>e\<bullet>M(es), s\<^isub>0\<rangle> \<rightarr
 proof -
   have wf: "size Ts = size pns \<and> distinct pns \<and> this \<notin> set pns"
     and wt: "fv body \<subseteq> {this} \<union> set pns"
-    using assms by(fastsimp dest!:select_method_wf_mdecl simp:wf_mdecl_def)+
+    using assms by(fastforce dest!:select_method_wf_mdecl simp:wf_mdecl_def)+
   have "dom l\<^isub>3 \<subseteq> {this} \<union> set pns"
     using Reds_dom_lcl[OF wwf body] wt l\<^isub>2' set_take_subset body_case
     by (cases T') force+
   hence eql\<^isub>2: "override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns) = l\<^isub>2"
-    by(fastsimp simp add:map_add_def override_on_def fun_eq_iff)
+    by(fastforce simp add:map_add_def override_on_def fun_eq_iff)
   from wwf select have "is_class P (last Cs')"
     by (auto elim!:SelectMethodDef.cases intro:Subobj_last_isClass 
              simp:LeastMethodDef_def FinalOverriderMethodDef_def 
@@ -1393,7 +1393,7 @@ proof -
     have "P,E \<turnstile> \<langle>\<lparr>D\<rparr>e',(h\<^isub>3,override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns))\<rangle> \<rightarrow> 
                 \<langle>ef,(h\<^isub>3,override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns))\<rangle>"
       using eq cast final final'
-      by(fastsimp intro:Cast_final_eq)
+      by(fastforce intro:Cast_final_eq)
     ultimately
     have "P,E \<turnstile> \<langle>\<lparr>D\<rparr>(blocks(this#pns, Class (last Cs')#Ts, Ref(a,Cs')#vs,body)), 
                   (h\<^isub>2,l\<^isub>2)\<rangle> \<rightarrow>* \<langle>ef,(h\<^isub>3,override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns))\<rangle>"
@@ -1423,15 +1423,15 @@ proof -
   have wf: "size Ts = size pns \<and> distinct pns \<and> this \<notin> set pns \<and> 
             (\<forall>T\<in>set Ts. is_type P T)"
     and wt: "fv body \<subseteq> {this} \<union> set pns"
-    using assms by(fastsimp dest!:has_least_wf_mdecl simp:wf_mdecl_def)+
+    using assms by(fastforce dest!:has_least_wf_mdecl simp:wf_mdecl_def)+
   have "dom l\<^isub>3 \<subseteq> {this} \<union> set pns"
     using Reds_dom_lcl[OF wwf body] wt l\<^isub>2' set_take_subset
     by force
   hence eql\<^isub>2: "override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns) = l\<^isub>2"
-    by(fastsimp simp add:map_add_def override_on_def fun_eq_iff)
+    by(fastforce simp add:map_add_def override_on_def fun_eq_iff)
   from wwf least have "Cs' \<noteq> []"
     by (auto elim!:Subobjs_nonempty simp:LeastMethodDef_def MethodDefs_def)
-  with Ds have "last Cs' = last Ds" by(fastsimp intro:appendPath_last)
+  with Ds have "last Cs' = last Ds" by(fastforce intro:appendPath_last)
   with wwf least have "is_class P (last Ds)"
     by(auto dest:Subobj_last_isClass simp:LeastMethodDef_def MethodDefs_def)
   hence "P \<turnstile> Class (last Ds) casts Ref(a,Ds) to Ref(a,Ds)"
@@ -1527,48 +1527,48 @@ next
 next
   case StaticDownDynCast thus ?case by(simp add:StaticDownDynCastReds)
 next
-  case DynCast thus ?case by(fastsimp intro:DynCastRedsRef)
+  case DynCast thus ?case by(fastforce intro:DynCastRedsRef)
 next
   case DynCastNull thus ?case by(simp add:DynCastRedsNull)
 next
-  case DynCastFail thus ?case by(fastsimp intro!:DynCastRedsFail)
+  case DynCastFail thus ?case by(fastforce intro!:DynCastRedsFail)
 next
   case DynCastThrow thus ?case by(auto dest!:eval_final simp:DynCastRedsThrow)
 next
   case Val thus ?case by simp
 next
-  case BinOp thus ?case by(fastsimp simp:BinOpRedsVal)
+  case BinOp thus ?case by(fastforce simp:BinOpRedsVal)
 next
-  case BinOpThrow1 thus ?case by(fastsimp dest!:eval_final simp: BinOpRedsThrow1)
+  case BinOpThrow1 thus ?case by(fastforce dest!:eval_final simp: BinOpRedsThrow1)
 next
-  case BinOpThrow2 thus ?case by(fastsimp dest!:eval_final simp: BinOpRedsThrow2)
+  case BinOpThrow2 thus ?case by(fastforce dest!:eval_final simp: BinOpRedsThrow2)
 next
-  case Var thus ?case by (fastsimp simp:RedVar)
+  case Var thus ?case by (fastforce simp:RedVar)
 next
-  case LAss thus ?case by(fastsimp simp: LAssRedsVal)
+  case LAss thus ?case by(fastforce simp: LAssRedsVal)
 next
-  case LAssThrow thus ?case by(fastsimp dest!:eval_final simp: LAssRedsThrow)
+  case LAssThrow thus ?case by(fastforce dest!:eval_final simp: LAssRedsThrow)
 next
-  case FAcc thus ?case by(fastsimp intro:FAccRedsVal)
+  case FAcc thus ?case by(fastforce intro:FAccRedsVal)
 next
   case FAccNull thus ?case by(simp add:FAccRedsNull)
 next
-  case FAccThrow thus ?case by(fastsimp dest!:eval_final simp:FAccRedsThrow)
+  case FAccThrow thus ?case by(fastforce dest!:eval_final simp:FAccRedsThrow)
 next
-  case FAss thus ?case by(fastsimp simp:FAssRedsVal)
+  case FAss thus ?case by(fastforce simp:FAssRedsVal)
 next
-  case FAssNull thus ?case by(fastsimp simp:FAssRedsNull)
+  case FAssNull thus ?case by(fastforce simp:FAssRedsNull)
 next
-  case FAssThrow1 thus ?case by(fastsimp dest!:eval_final simp:FAssRedsThrow1)
+  case FAssThrow1 thus ?case by(fastforce dest!:eval_final simp:FAssRedsThrow1)
 next
-  case FAssThrow2 thus ?case by(fastsimp dest!:eval_final simp:FAssRedsThrow2)
+  case FAssThrow2 thus ?case by(fastforce dest!:eval_final simp:FAssRedsThrow2)
 next
-  case CallObjThrow thus ?case by(fastsimp dest!:eval_final simp:CallRedsThrowObj)
+  case CallObjThrow thus ?case by(fastforce dest!:eval_final simp:CallRedsThrowObj)
 next
   case CallNull thus ?case thm CallRedsNull by(simp add:CallRedsNull)
 next
   case CallParamsThrow thus ?case
-    by(fastsimp dest!:evals_final simp:CallRedsThrowParams)
+    by(fastforce dest!:evals_final simp:CallRedsThrowParams)
 next
   case (Call E e s\<^isub>0 a Cs s\<^isub>1 ps vs h\<^isub>2 l\<^isub>2 C S M Ts' T' pns' body' Ds Ts T pns
              body Cs' vs' l\<^isub>2' new_body e' h\<^isub>3 l\<^isub>3)
@@ -1586,11 +1586,11 @@ next
     and IHbody: "P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> 
                       \<langle>new_body,(h\<^isub>2, l\<^isub>2')\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>3, l\<^isub>3)\<rangle>" by fact+
   from wwf select same_length have lengthTs:"length Ts = length vs"
-    by (fastsimp dest!:select_method_wf_mdecl simp:wf_mdecl_def)
+    by (fastforce dest!:select_method_wf_mdecl simp:wf_mdecl_def)
   show "P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>3, l\<^isub>2)\<rangle>"
     using method select same_length l\<^isub>2' h\<^isub>2a casts body_case
       IHbody eval_final[OF eval_body]
-    by(fastsimp intro!:CallRedsFinal[OF wwf IHe IHes])
+    by(fastforce intro!:CallRedsFinal[OF wwf IHe IHes])
 next
   case (StaticCall E e s\<^isub>0 a Cs s\<^isub>1 ps vs h\<^isub>2 l\<^isub>2 C Cs'' M Ts T pns body Cs'
                    Ds vs' l\<^isub>2' e' h\<^isub>3 l\<^isub>3)
@@ -1608,44 +1608,44 @@ next
    and IHbody: "P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> 
                       \<langle>body,(h\<^isub>2, l\<^isub>2')\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>3, l\<^isub>3)\<rangle>" by fact+
  from wwf least same_length have lengthTs:"length Ts = length vs"
-    by (fastsimp dest!:has_least_wf_mdecl simp:wf_mdecl_def)
+    by (fastforce dest!:has_least_wf_mdecl simp:wf_mdecl_def)
   show "P,E \<turnstile> \<langle>e\<bullet>(C::)M(ps),s\<^isub>0\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>3, l\<^isub>2)\<rangle>"
     using path_unique path_via least Ds same_length l\<^isub>2' casts
       IHbody eval_final[OF eval_body]
-    by(fastsimp intro!:StaticCallRedsFinal[OF wwf IHe IHes])
+    by(fastforce intro!:StaticCallRedsFinal[OF wwf IHe IHes])
 next
-  case Block with wwf show ?case by(fastsimp simp: BlockRedsFinal dest:eval_final)
+  case Block with wwf show ?case by(fastforce simp: BlockRedsFinal dest:eval_final)
 next
-  case Seq thus ?case by(fastsimp simp:SeqReds2)
+  case Seq thus ?case by(fastforce simp:SeqReds2)
 next
-  case SeqThrow thus ?case by(fastsimp dest!:eval_final simp: SeqRedsThrow)
+  case SeqThrow thus ?case by(fastforce dest!:eval_final simp: SeqRedsThrow)
 next
-  case CondT thus ?case by(fastsimp simp:CondReds2T)
+  case CondT thus ?case by(fastforce simp:CondReds2T)
 next
-  case CondF thus ?case by(fastsimp simp:CondReds2F)
+  case CondF thus ?case by(fastforce simp:CondReds2F)
 next
-  case CondThrow thus ?case by(fastsimp dest!:eval_final simp:CondRedsThrow)
+  case CondThrow thus ?case by(fastforce dest!:eval_final simp:CondRedsThrow)
 next
-  case WhileF thus ?case by(fastsimp simp:WhileFReds)
+  case WhileF thus ?case by(fastforce simp:WhileFReds)
 next
-  case WhileT thus ?case by(fastsimp simp: WhileTReds)
+  case WhileT thus ?case by(fastforce simp: WhileTReds)
 next
-  case WhileCondThrow thus ?case by(fastsimp dest!:eval_final simp: WhileRedsThrow)
+  case WhileCondThrow thus ?case by(fastforce dest!:eval_final simp: WhileRedsThrow)
 next
-  case WhileBodyThrow thus ?case by(fastsimp dest!:eval_final simp: WhileTRedsThrow)
+  case WhileBodyThrow thus ?case by(fastforce dest!:eval_final simp: WhileTRedsThrow)
 next
-  case Throw thus ?case by(fastsimp simp:ThrowReds)
+  case Throw thus ?case by(fastforce simp:ThrowReds)
 next
-  case ThrowNull thus ?case by(fastsimp simp:ThrowRedsNull)
+  case ThrowNull thus ?case by(fastforce simp:ThrowRedsNull)
 next
-  case ThrowThrow thus ?case by(fastsimp dest!:eval_final simp:ThrowRedsThrow)
+  case ThrowThrow thus ?case by(fastforce dest!:eval_final simp:ThrowRedsThrow)
 next
   case Nil thus ?case by simp
 next
   case Cons thus ?case
-    by(fastsimp intro!:Cons_eq_appendI[OF refl refl] ListRedsVal)
+    by(fastforce intro!:Cons_eq_appendI[OF refl refl] ListRedsVal)
 next
-  case ConsThrow thus ?case by(fastsimp elim: ListReds1)
+  case ConsThrow thus ?case by(fastforce elim: ListReds1)
 qed
 
 
@@ -1661,7 +1661,7 @@ lemma unfold_while:
 proof
   assume "P,E \<turnstile> \<langle>while (b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
   thus "P,E \<turnstile> \<langle>if (b) (c;; while (b) c) else unit,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
-    by cases (fastsimp intro: eval_evals.intros)+
+    by cases (fastforce intro: eval_evals.intros)+
 next
   assume "P,E \<turnstile> \<langle>if (b) (c;; while (b) c) else unit,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
   thus "P,E \<turnstile> \<langle>while (b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -1706,7 +1706,7 @@ lemma blocksEval:
                    P \<turnstile> Ts Casts vs to vs' \<and> length vs' = length vs"
 
 proof (induct ps)
-  case Nil then show ?case by(fastsimp intro:Casts_Nil)
+  case Nil then show ?case by(fastforce intro:Casts_Nil)
 next
   case (Cons p ps')
   have length_eqs: "length (p # ps') = length Ts" 
@@ -1747,7 +1747,7 @@ lemma CastblocksEval:
                    P \<turnstile> Ts Casts vs to vs' \<and> length vs' = length vs"
 
 proof (induct ps)
-  case Nil then show ?case by(fastsimp intro:Casts_Nil)
+  case Nil then show ?case by(fastforce intro:Casts_Nil)
 next
   case (Cons p ps')
   have length_eqs: "length (p # ps') = length Ts" 
@@ -1831,7 +1831,7 @@ next
       by(auto intro:eval_evals.StaticCastThrow)
     with e' casts length have ?case by simp blast }
   ultimately show ?case
-    by -(erule eval_cases,fastsimp+)
+    by -(erule eval_cases,fastforce+)
 qed
 
 
@@ -1852,8 +1852,8 @@ proof(induct rule:eval_evals_inducts)
   hence "fv e\<^isub>0 \<subseteq> insert V W" by fast
   with IH[OF this]
   have "P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0, (l\<^isub>0|`W)(V := None))\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1, l\<^isub>1|`insert V W)\<rangle>"
-    by fastsimp
-  from eval_evals.Block[OF this] show ?case by fastsimp
+    by fastforce
+  from eval_evals.Block[OF this] show ?case by fastforce
 next
   case Seq thus ?case by simp (blast intro:eval_evals.Seq)
 next
@@ -1910,15 +1910,15 @@ next
   have "fv (V:=e) \<subseteq> W" by fact
   hence fv: "fv e \<subseteq> W" and VinW: "V \<in> W" by auto
   from eval_evals.LAss[OF IH[OF fv] _ casts] env VinW
-  show ?case by fastsimp
+  show ?case by fastforce
 next
-  case LAssThrow thus ?case by(fastsimp intro: eval_evals.LAssThrow)
+  case LAssThrow thus ?case by(fastforce intro: eval_evals.LAssThrow)
 next
   case FAcc thus ?case by simp (blast intro: eval_evals.FAcc)
 next
-  case FAccNull thus ?case by(fastsimp intro: eval_evals.FAccNull)
+  case FAccNull thus ?case by(fastforce intro: eval_evals.FAccNull)
 next
-  case FAccThrow thus ?case by(fastsimp intro: eval_evals.FAccThrow)
+  case FAccThrow thus ?case by(fastforce intro: eval_evals.FAccThrow)
 next
   case (FAss E e\<^isub>1 h l a Cs' h' l' e\<^isub>2 v h\<^isub>2 l\<^isub>2 D S F T Cs v' Ds fs fs' S' h\<^isub>2' W)
   have IH1: "\<And>W. fv e\<^isub>1 \<subseteq> W \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1,(h, l|`W)\<rangle> \<Rightarrow> \<langle>ref (a, Cs'),(h', l'|`W)\<rangle>"
@@ -1964,7 +1964,7 @@ next
   hence fve: "fv e \<subseteq> W" and fvps: "fvs(ps) \<subseteq> W" by auto
   have wfmethod: "size Ts = size pns \<and> this \<notin> set pns" and
        fvbd: "fv body \<subseteq> {this} \<union> set pns"
-    using select wf by(fastsimp dest!:select_method_wf_mdecl simp:wf_mdecl_def)+
+    using select wf by(fastforce dest!:select_method_wf_mdecl simp:wf_mdecl_def)+
   from fvbd body_case have fvbd':"fv new_body \<subseteq> {this} \<union> set pns"
     by(cases T') auto
   from l\<^isub>2' have "l\<^isub>2' |` ({this} \<union> set pns) = [this \<mapsto> Ref (a, Cs'), pns [\<mapsto>] vs']"
@@ -1990,7 +1990,7 @@ next
   hence fve: "fv e \<subseteq> W" and fvps: "fvs(ps) \<subseteq> W" by auto
   have wfmethod: "size Ts = size pns \<and> this \<notin> set pns" and
        fvbd: "fv body \<subseteq> {this} \<union> set pns"
-    using least wf by(fastsimp dest!:has_least_wf_mdecl simp:wf_mdecl_def)+
+    using least wf by(fastforce dest!:has_least_wf_mdecl simp:wf_mdecl_def)+
   from fvbd have fvbd':"fv body \<subseteq> {this} \<union> set pns"
     by auto
   from l\<^isub>2' have "l\<^isub>2' |` ({this} \<union> set pns) = [this \<mapsto> Ref(a,Ds), pns [\<mapsto>] vs']"
@@ -2039,7 +2039,7 @@ proof(induct rule:eval_evals_inducts)
   case LAss thus ?case by(simp add:fun_upd_apply)
 next
   case Block thus ?case
-    by (simp only:fun_upd_apply split:if_splits) fastsimp
+    by (simp only:fun_upd_apply split:if_splits) fastforce
 qed simp_all
 
 
@@ -2129,7 +2129,7 @@ and extend_1_evals:
 proof (induct rule: red_reds.inducts)
  case RedNew thus ?case by (iprover elim: eval_cases intro: eval_evals.intros)
 next
-  case RedNewFail thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case RedNewFail thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case (StaticCastRed E e s e'' s'' C s' e') thus ?case
     by -(erule eval_cases,auto intro:eval_evals.intros,
@@ -2137,22 +2137,22 @@ next
          rule_tac Cs'="Cs'" in StaticDownCast,auto)
 next
   case RedStaticCastNull thus ?case
-    by (fastsimp elim: eval_cases intro: eval_evals.intros)
+    by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case RedStaticUpCast thus ?case
-    by (fastsimp elim: eval_cases intro: eval_evals.intros)
+    by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case RedStaticDownCast thus ?case
-    by (fastsimp elim: eval_cases intro: eval_evals.intros)
+    by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case RedStaticCastFail thus ?case
-    by (fastsimp elim: eval_cases intro: eval_evals.intros)
+    by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case RedStaticUpDynCast thus ?case
-    by (fastsimp elim: eval_cases intro: eval_evals.intros)
+    by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case RedStaticDownDynCast thus ?case
-    by (fastsimp elim: eval_cases intro: eval_evals.intros)
+    by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case (DynCastRed E e s e'' s'' C s' e')
   have eval:"P,E \<turnstile> \<langle>Cast C e'',s''\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -2175,24 +2175,24 @@ next
   case BinOpRed1 thus ?case by -(erule eval_cases,auto intro: eval_evals.intros)
 next
   case BinOpRed2 
-  thus ?case by (fastsimp elim!:eval_cases intro:eval_evals.intros eval_finalId)
+  thus ?case by (fastforce elim!:eval_cases intro:eval_evals.intros eval_finalId)
 next
   case RedBinOp thus ?case by (iprover elim:eval_cases intro:eval_evals.intros)
 next
   case (RedVar s V v E s' e')
-  thus ?case by (cases s)(fastsimp elim:eval_cases intro:eval_evals.intros)
+  thus ?case by (cases s)(fastforce elim:eval_cases intro:eval_evals.intros)
 next
   case LAssRed thus ?case by -(erule eval_cases,auto intro:eval_evals.intros)
 next
   case RedLAss
-  thus ?case by (fastsimp elim:eval_cases intro:eval_evals.intros)
+  thus ?case by (fastforce elim:eval_cases intro:eval_evals.intros)
 next
   case FAccRed thus ?case by -(erule eval_cases,auto intro:eval_evals.intros)
 next
   case (RedFAcc s a D S Ds Cs' Cs fs F v E s' e')
-  thus ?case by (cases s)(fastsimp elim:eval_cases intro:eval_evals.intros)
+  thus ?case by (cases s)(fastforce elim:eval_cases intro:eval_evals.intros)
 next
-  case RedFAccNull thus ?case by (fastsimp elim!:eval_cases intro:eval_evals.intros)
+  case RedFAccNull thus ?case by (fastforce elim!:eval_cases intro:eval_evals.intros)
 next
   case (FAssRed1 E e\<^isub>1 s e\<^isub>1' s'' F Cs e\<^isub>2 s' e')
   have eval:"P,E \<turnstile> \<langle>e\<^isub>1'\<bullet>F{Cs} := e\<^isub>2,s''\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -2238,7 +2238,7 @@ next
                "P \<turnstile> T casts v' to v''" "(Cs'@\<^sub>pCs,fs) \<in> S"
     from val1 have s'':"s\<^isub>1 = s''" by -(erule eval_cases)
     with val1 have "P,E \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),s\<rangle>"
-      by(fastsimp elim:eval_cases intro:eval_finalId)
+      by(fastforce elim:eval_cases intro:eval_finalId)
     also from IH[OF val2[simplified s'']] have "P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>Val v',(h\<^isub>2, l\<^isub>2)\<rangle>" .
     ultimately have "P,E \<turnstile> \<langle>Val v\<bullet>F{Cs} := e\<^isub>2,s\<rangle> \<Rightarrow>
            \<langle>Val v'',(h\<^isub>2(a\<mapsto>(D,insert(Cs'@\<^sub>pCs,fs(F \<mapsto> v''))(S - {(Cs'@\<^sub>pCs,fs)}))),l\<^isub>2)\<rangle>"
@@ -2249,7 +2249,7 @@ next
       and val2:"P,E \<turnstile> \<langle>e\<^isub>2',s\<^isub>1\<rangle> \<Rightarrow> \<langle>Val v',s'\<rangle>"
     from val1 have s'':"s\<^isub>1 = s''" by -(erule eval_cases)
     with val1 have "P,E \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
-      by(fastsimp elim:eval_cases intro:eval_finalId)
+      by(fastforce elim:eval_cases intro:eval_finalId)
     also from IH[OF val2[simplified s'']] have "P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>Val v',s'\<rangle>" .
     ultimately have "P,E \<turnstile> \<langle>Val v\<bullet>F{Cs} := e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s'\<rangle>"
       by -(rule FAssNull,simp_all) }
@@ -2264,7 +2264,7 @@ next
       and val2:"P,E \<turnstile> \<langle>e\<^isub>2',s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw r,s'\<rangle>"
     from val1 have s'':"s\<^isub>1 = s''" by -(erule eval_cases)
     with val1 have "P,E \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>Val v',s\<rangle>"
-      by(fastsimp elim:eval_cases intro:eval_finalId)
+      by(fastforce elim:eval_cases intro:eval_finalId)
     also from IH[OF val2[simplified s'']] have "P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw r,s'\<rangle>" .
     ultimately have "P,E \<turnstile> \<langle>Val v\<bullet>F{Cs} := e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw r,s'\<rangle>" 
       by -(rule eval_evals.FAssThrow2,simp_all) }
@@ -2282,7 +2282,7 @@ next
     by(rule FAss,simp_all)(rule eval_finalId,simp)+
 next
   case RedFAssNull
-  thus ?case by (fastsimp elim!: eval_cases intro: eval_evals.intros)
+  thus ?case by (fastforce elim!: eval_cases intro: eval_evals.intros)
 next
   case (CallObj E e s e' s' Copt M es s'' e'')
   thus ?case
@@ -2300,7 +2300,7 @@ next
     proof(rule eval_cases)
       fix r assume "P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>throw r,s'\<rangle>" "e' = throw r"
       with None show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
-        by(fastsimp elim:eval_cases)
+        by(fastforce elim:eval_cases)
     next
       fix es'' r sx v' vs
       assume val:"P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>Val v',sx\<rangle>"
@@ -2312,7 +2312,7 @@ next
         by simp
       with eq CallParamsThrow[OF val'] e' None
       show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
-        by fastsimp
+        by fastforce
     next
       fix C Cs Cs' Ds S T T' Ts Ts' a body body' h\<^isub>2 h\<^isub>3 l\<^isub>2 l\<^isub>3 pns pns' s\<^isub>1 vs vs'
       assume val:"P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>ref(a,Cs),s\<^isub>1\<rangle>"
@@ -2337,7 +2337,7 @@ next
       from eq IH evals have "P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>" by simp
       with eq Call[OF val' _ _ method select length casts _ body_case] 
            hp body' s' None
-      show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fastsimp
+      show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fastforce
     next
       fix s\<^isub>1 vs
       assume val:"P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>"
@@ -2348,7 +2348,7 @@ next
         by(auto elim:eval_cases intro:Val)
       from eq IH evals have "P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,s'\<rangle>" by simp
       with eq CallNull[OF val'] e' None
-      show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fastsimp
+      show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fastforce
     qed
   next
     case (Some C) with call have eval:"P,E \<turnstile> \<langle>Val v\<bullet>(C::)M(es'),s''\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -2357,7 +2357,7 @@ next
     proof(rule eval_cases)
       fix r assume "P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>throw r,s'\<rangle>" "e' = throw r"
       with Some show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
-        by(fastsimp elim:eval_cases)
+        by(fastforce elim:eval_cases)
     next
       fix es'' r sx v' vs
       assume val:"P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>Val v',sx\<rangle>"
@@ -2369,7 +2369,7 @@ next
         by simp
       with eq CallParamsThrow[OF val'] e' Some
       show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
-        by fastsimp
+        by fastforce
     next
       fix Cs Cs' Cs'' T Ts a body h\<^isub>2 h\<^isub>3 l\<^isub>2 l\<^isub>3 pns s\<^isub>1 vs vs'
       assume val:"P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>"
@@ -2388,7 +2388,7 @@ next
       from eq IH evals have "P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>" by simp
       with eq StaticCall[OF val' _ path_unique path_via least _ _ casts _ body] 
            length s' Some
-      show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fastsimp
+      show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fastforce
     next
       fix s\<^isub>1 vs
       assume val:"P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>"
@@ -2400,7 +2400,7 @@ next
       from eq IH evals have "P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,s'\<rangle>" by simp
       with eq CallNull[OF val'] e' Some
       show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
-        by fastsimp
+        by fastforce
     qed
   qed
 next
@@ -2420,7 +2420,7 @@ next
   moreover have body_case:"new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>bs | _ \<Rightarrow> bs)" by fact
   moreover have same_len\<^isub>1: "length Ts = length pns"
    and this_distinct: "this \<notin> set pns" and fv: "fv body \<subseteq> {this} \<union> set pns"
-    using select wf by (fastsimp dest!:select_method_wf_mdecl simp:wf_mdecl_def)+
+    using select wf by (fastforce dest!:select_method_wf_mdecl simp:wf_mdecl_def)+
   have same_len: "length vs = length pns" by fact
   moreover
   obtain h\<^isub>3 l\<^isub>3 where s': "s' = (h\<^isub>3,l\<^isub>3)" by (cases s')
@@ -2510,7 +2510,7 @@ next
   moreover have least:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs'" by fact
   moreover have same_len\<^isub>1: "length Ts = length pns"
    and this_distinct: "this \<notin> set pns" and fv: "fv body \<subseteq> {this} \<union> set pns"
-    using least wf by (fastsimp dest!:has_least_wf_mdecl simp:wf_mdecl_def)+
+    using least wf by (fastforce dest!:has_least_wf_mdecl simp:wf_mdecl_def)+
   moreover have same_len:"length vs = length pns" by fact
   moreover have Ds:"Ds = (Cs @\<^sub>p Cs'') @\<^sub>p Cs'" by fact
   moreover
@@ -2557,11 +2557,11 @@ next
 next
   case RedCallNull
   thus ?case
-    by (fastsimp elim: eval_cases intro: eval_evals.intros eval_finalsId)
+    by (fastforce elim: eval_cases intro: eval_evals.intros eval_finalsId)
 next
   case BlockRedNone
   thus ?case
-    by (fastsimp elim!: eval_cases intro: eval_evals.intros 
+    by (fastforce elim!: eval_cases intro: eval_evals.intros 
                  simp add: fun_upd_same fun_upd_idem)
 next
   case (BlockRedSome E V T e h l e'' h' l' v s' e')
@@ -2578,7 +2578,7 @@ next
   from eval obtain h'' l''
   where "P,E(V \<mapsto> T) \<turnstile> \<langle>V:=Val v;; e'',(h',l'(V:=None))\<rangle> \<Rightarrow> \<langle>e',(h'',l'')\<rangle> \<and> 
     s' = (h'',l''(V:=l V))"
-    by (fastsimp elim:eval_cases simp:fun_upd_same fun_upd_idem)
+    by (fastforce elim:eval_cases simp:fun_upd_same fun_upd_idem)
   moreover
   { fix T' h\<^isub>0 l\<^isub>0 v' v''
     assume eval':"P,E(V \<mapsto> T) \<turnstile> \<langle>e'',(h\<^isub>0,l\<^isub>0(V \<mapsto> v''))\<rangle> \<Rightarrow> \<langle>e',(h'', l'')\<rangle>"
@@ -2603,7 +2603,7 @@ next
   with l'upd have eval'':"P,E(V \<mapsto> T) \<turnstile> \<langle>e'',(h',l')\<rangle> \<Rightarrow> \<langle>e',(h'',l'')\<rangle>"
     by simp
   from IH[OF eval''] have "P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<Rightarrow> \<langle>e',(h'', l'')\<rangle>" .
-  with s' show ?case by(fastsimp intro:Block)
+  with s' show ?case by(fastforce intro:Block)
 next
   case (InitBlockRed E V T e h l v' e'' h' l' v'' v s' e')
   have eval:" P,E \<turnstile> \<langle>{V:T:=Val v''; e''},(h', l'(V := l V))\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -2620,7 +2620,7 @@ next
   from eval obtain h'' l''
   where "P,E(V \<mapsto> T) \<turnstile> \<langle>V:=Val v'';; e'',(h',l'(V:=None))\<rangle> \<Rightarrow> \<langle>e',(h'',l'')\<rangle> \<and> 
     s' = (h'',l''(V:=l V))"
-    by (fastsimp elim:eval_cases simp:fun_upd_same fun_upd_idem)
+    by (fastforce elim:eval_cases simp:fun_upd_same fun_upd_idem)
   moreover
   { fix T' v'''
     assume eval':"P,E(V \<mapsto> T) \<turnstile> \<langle>e'',(h',l'(V \<mapsto> v'''))\<rangle> \<Rightarrow> \<langle>e',(h'', l'')\<rangle>"
@@ -2639,7 +2639,7 @@ next
   have "P,E(V \<mapsto> T) \<turnstile> \<langle>V:=Val v,(h,l(V:=None))\<rangle> \<Rightarrow> \<langle>Val v',(h,l(V \<mapsto> v'))\<rangle>"
     by -(rule_tac l="l(V:=None)" in LAss,
          auto intro:eval_evals.intros simp:fun_upd_same)
-  with evale s' show ?case by(fastsimp intro:Block Seq)
+  with evale s' show ?case by(fastforce intro:Block Seq)
 next
   case (RedBlock E V T v s s' e')
   have "P,E \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fact
@@ -2664,52 +2664,52 @@ next
   have "P,E(V \<mapsto> T) \<turnstile> \<langle>V:=Val v,(h,l(V:=None))\<rangle> \<Rightarrow> \<langle>Val v',(h,l(V \<mapsto> v'))\<rangle>"
     by -(rule_tac l="l(V:=None)" in LAss,auto simp:fun_upd_same)
   hence "P,E \<turnstile> \<langle>{V:T :=Val v; Val u},(h,l)\<rangle> \<Rightarrow> \<langle>Val u,(h, (l(V\<mapsto>v'))(V:=l V))\<rangle>"
-    by (fastsimp intro!: eval_evals.intros)
+    by (fastforce intro!: eval_evals.intros)
   thus ?case using s s' e' by simp
 next
-  case SeqRed thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case SeqRed thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case RedSeq thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case RedSeq thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case CondRed thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case CondRed thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case RedCondT thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case RedCondT thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case RedCondF thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case RedCondF thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case RedWhile
   thus ?case by (auto simp add: unfold_while intro:eval_evals.intros elim:eval_cases)
 next
-  case ThrowRed thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case ThrowRed thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case RedThrowNull
   thus ?case by -(auto elim!:eval_cases intro!:eval_evals.ThrowNull eval_finalId)
 next
-  case ListRed1 thus ?case by (fastsimp elim: evals_cases intro: eval_evals.intros)
+  case ListRed1 thus ?case by (fastforce elim: evals_cases intro: eval_evals.intros)
 next
   case ListRed2
-  thus ?case by (fastsimp elim!: evals_cases eval_cases 
+  thus ?case by (fastforce elim!: evals_cases eval_cases 
                           intro: eval_evals.intros eval_finalId)
 next
   case StaticCastThrow
-  thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case DynCastThrow
-  thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case BinOpThrow1 thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case BinOpThrow1 thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case BinOpThrow2 thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case BinOpThrow2 thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case LAssThrow thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case LAssThrow thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case FAccThrow thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case FAccThrow thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case FAssThrow1 thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case FAssThrow1 thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case FAssThrow2 thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case FAssThrow2 thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case CallThrowObj thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case CallThrowObj thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
   case (CallThrowParams es vs r es' E v Copt M s s' e')
   have "P,E \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>Val v,s\<rangle>" by (rule eval_evals.intros)
@@ -2746,14 +2746,14 @@ next
   have "P,E(V \<mapsto> T) \<turnstile> \<langle>V:=Val v,(h,l(V := None))\<rangle> \<Rightarrow> \<langle>Val v',(h,l(V \<mapsto> v'))\<rangle>"
     by -(rule_tac l="l(V:=None)" in LAss,auto simp:fun_upd_same)
   hence "P,E \<turnstile> \<langle>{V:T := Val v; Throw r},(h,l)\<rangle> \<Rightarrow> \<langle>Throw r, (h, (l(V\<mapsto>v'))(V:=l V))\<rangle>"
-    by(fastsimp intro:eval_evals.intros)
+    by(fastforce intro:eval_evals.intros)
   thus "P,E \<turnstile> \<langle>{V:T := Val v; Throw r},s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" using s s' e' by simp
 next
-  case SeqThrow thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case SeqThrow thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case CondThrow thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case CondThrow thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case ThrowThrow thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
+  case ThrowThrow thus ?case by (fastforce elim: eval_cases intro: eval_evals.intros)
 qed
 
 

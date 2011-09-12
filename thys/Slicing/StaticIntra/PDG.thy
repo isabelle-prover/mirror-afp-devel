@@ -92,14 +92,14 @@ proof(atomize_elim)
   next
     case (PDG_path_Append_cdep n n'' n')
     from `n'' \<longrightarrow>\<^bsub>cd\<^esub> n'` obtain as where "n'' -as\<rightarrow>* n'"
-      by(fastsimp elim:PDG_cdep_edge_CFG_path)
+      by(fastforce elim:PDG_cdep_edge_CFG_path)
     with `\<exists>as. n -as\<rightarrow>* n''` obtain as' where "n -as'@as\<rightarrow>* n'"
       by(auto dest:path_Append)
     thus ?case by blast
   next
     case (PDG_path_Append_ddep n n'' V n')
     from `n'' -V\<rightarrow>\<^bsub>dd\<^esub> n'` obtain as where "n'' -as\<rightarrow>* n'"
-      by(fastsimp elim:PDG_ddep_edge_CFG_path)
+      by(fastforce elim:PDG_ddep_edge_CFG_path)
     with `\<exists>as. n -as\<rightarrow>* n''` obtain as' where "n -as'@as\<rightarrow>* n'"
       by(auto dest:path_Append)
     thus ?case by blast
@@ -123,9 +123,9 @@ next
   from `n'' \<longrightarrow>\<^bsub>cd\<^esub> n'` `\<not> inner_node n'` have False
     apply -
     apply(erule PDG_edge.cases) apply(auto simp:inner_node_def)
-      apply(fastsimp dest:control_dependence_path path_valid_node)
-     apply(fastsimp dest:control_dependence_path path_valid_node)
-    by(fastsimp dest:Exit_not_control_dependent)
+      apply(fastforce dest:control_dependence_path path_valid_node)
+     apply(fastforce dest:control_dependence_path path_valid_node)
+    by(fastforce dest:Exit_not_control_dependent)
   thus ?case by simp
 next
   case (PDG_path_Append_ddep n n'' V n')
@@ -151,7 +151,7 @@ lemma PDG_BS_valid_node:"n \<in> PDG_BS S \<Longrightarrow> valid_node n"
           split:split_if_asm)
 
 lemma Exit_PDG_BS:"n \<in> PDG_BS {(_Exit_)} \<Longrightarrow> n = (_Exit_)"
-  by(fastsimp dest:PDG_path_Exit simp:PDG_BS_def)
+  by(fastforce dest:PDG_path_Exit simp:PDG_BS_def)
 
 
 end
@@ -181,12 +181,12 @@ proof(unfold_locales)
   proof
     assume "n' = (_Exit_)"
     with `n controls\<^isub>s n'` show False
-      by(fastsimp intro:Exit_not_standard_control_dependent)
+      by(fastforce intro:Exit_not_standard_control_dependent)
   qed
 next
   fix n n' assume "n controls\<^isub>s n'"
   thus "\<exists>as. n -as\<rightarrow>* n' \<and> as \<noteq> []"
-    by(fastsimp simp:standard_control_dependence_def)
+    by(fastforce simp:standard_control_dependence_def)
 qed
 
 
@@ -238,12 +238,12 @@ proof(unfold_locales)
   proof
     assume "n' = (_Exit_)"
     with `n weakly controls n'` show False
-      by(fastsimp intro:Exit_not_weak_control_dependent)
+      by(fastforce intro:Exit_not_weak_control_dependent)
   qed
 next
   fix n n' assume "n weakly controls n'"
   thus "\<exists>as. n -as\<rightarrow>* n' \<and> as \<noteq> []"
-    by(fastsimp simp:weak_control_dependence_def)
+    by(fastforce simp:weak_control_dependence_def)
 qed
 
 (*<*)

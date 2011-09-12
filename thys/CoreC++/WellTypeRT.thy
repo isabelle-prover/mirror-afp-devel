@@ -192,7 +192,7 @@ apply (rule iffI)
  apply(rule conjI)
   prefer 2 apply blast
  apply simp
-apply fastsimp
+apply fastforce
 done
 
 
@@ -247,7 +247,7 @@ lemma WTrts_Val[simp]:
  "\<And>Ts. (P,E,h \<turnstile> map Val vs [:] Ts) = (map (\<lambda>v. (P \<turnstile> typeof\<^bsub>h\<^esub>) v) vs = map Some Ts)"
 
 apply(induct vs)
- apply fastsimp
+ apply fastforce
 apply(case_tac Ts)
  apply simp
 apply simp
@@ -265,24 +265,24 @@ lemma WTrt_env_mono:
 
 apply(induct rule: WTrt_inducts)
 apply(simp add: WTrtNew)
-apply(fastsimp simp: WTrtDynCast)
-apply(fastsimp simp: WTrtStaticCast)
-apply(fastsimp simp: WTrtVal)
+apply(fastforce simp: WTrtDynCast)
+apply(fastforce simp: WTrtStaticCast)
+apply(fastforce simp: WTrtVal)
 apply(simp add: WTrtVar map_le_def dom_def)
-apply(fastsimp simp add: WTrtBinOp)
+apply(fastforce simp add: WTrtBinOp)
 apply (force simp:map_le_def)
-apply(fastsimp simp: WTrtFAcc)
+apply(fastforce simp: WTrtFAcc)
 apply(simp add: WTrtFAccNT)
-apply(fastsimp simp: WTrtFAss)
-apply(fastsimp simp: WTrtFAssNT)
-apply(fastsimp simp: WTrtCall)
-apply(fastsimp simp: WTrtStaticCall)
-apply(fastsimp simp: WTrtCallNT)
-apply(fastsimp simp: map_le_def)
-apply(fastsimp)
-apply(fastsimp simp: WTrtCond)
-apply(fastsimp simp: WTrtWhile)
-apply(fastsimp simp: WTrtThrow)
+apply(fastforce simp: WTrtFAss)
+apply(fastforce simp: WTrtFAssNT)
+apply(fastforce simp: WTrtCall)
+apply(fastforce simp: WTrtStaticCall)
+apply(fastforce simp: WTrtCallNT)
+apply(fastforce simp: map_le_def)
+apply(fastforce)
+apply(fastforce simp: WTrtCond)
+apply(fastforce simp: WTrtWhile)
+apply(fastforce simp: WTrtThrow)
 apply(simp add: WTrtNil)
 apply(simp add: WTrtCons)
 done
@@ -292,19 +292,19 @@ lemma WT_implies_WTrt: "P,E \<turnstile> e :: T \<Longrightarrow> P,E,h \<turnst
 and WTs_implies_WTrts: "P,E \<turnstile> es [::] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
 
 proof(induct rule: WT_WTs_inducts)
-  case WTVal thus ?case by (fastsimp dest:type_eq_type)
+  case WTVal thus ?case by (fastforce dest:type_eq_type)
 next
-  case WTBinOp thus ?case by (fastsimp split:bop.splits)
+  case WTBinOp thus ?case by (fastforce split:bop.splits)
 next
   case WTFAcc thus ?case
-    by(fastsimp intro!:WTrtFAcc dest:Subobjs_nonempty 
+    by(fastforce intro!:WTrtFAcc dest:Subobjs_nonempty 
                   simp:LeastFieldDecl_def FieldDecls_def)
 next
   case WTFAss thus ?case
-    by(fastsimp intro!:WTrtFAss dest:Subobjs_nonempty
+    by(fastforce intro!:WTrtFAss dest:Subobjs_nonempty
                   simp:LeastFieldDecl_def FieldDecls_def)
 next
-  case WTCall thus ?case by (fastsimp intro:WTrtCall)
+  case WTCall thus ?case by (fastforce intro:WTrtCall)
 qed (auto simp del:fun_upd_apply)
 
 

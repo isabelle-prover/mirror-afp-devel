@@ -1268,7 +1268,7 @@ apply (rename_tac Y)
 apply (erule_tac x=Y in allE)
 apply simp
 apply (fast intro: ChiRel_ChiPlus_trans)
-apply fastsimp
+apply fastforce
 apply simp
 apply (erule_tac x=W in allE)
 apply simp

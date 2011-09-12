@@ -254,25 +254,25 @@ next
       proof (induct n)
         case 0
         show "\<forall>(P,p,Q,A) \<in>Specs. \<Gamma>\<Turnstile>0:\<^bsub>/F\<^esub> P (Call p) Q,A"
-          by (fastsimp elim!: execn_elim_cases simp add: nvalid_def)
+          by (fastforce elim!: execn_elim_cases simp add: nvalid_def)
       next
         case (Suc m)
         have hyp: "\<forall>(P, p, Q, A)\<in>\<Theta>. \<Gamma> \<Turnstile>m:\<^bsub>/F\<^esub> P (Call p) Q,A
               \<Longrightarrow> \<forall>(P,p,Q,A) \<in>Specs. \<Gamma>\<Turnstile>m:\<^bsub>/F\<^esub> P (Call p) Q,A" by fact
         have "\<forall>(P, p, Q, A)\<in>\<Theta>. \<Gamma> \<Turnstile>Suc m:\<^bsub>/F\<^esub> P (Call p) Q,A" by fact
         hence ctxt_m: "\<forall>(P, p, Q, A)\<in>\<Theta>. \<Gamma> \<Turnstile>m:\<^bsub>/F\<^esub> P (Call p) Q,A"
-          by (fastsimp simp add: nvalid_def intro: execn_Suc)
+          by (fastforce simp add: nvalid_def intro: execn_Suc)
         hence valid_Proc:
           "\<forall>(P,p,Q,A) \<in>Specs. \<Gamma>\<Turnstile>m:\<^bsub>/F\<^esub> P (Call p) Q,A"
           by (rule hyp)
         let ?\<Theta>'= "\<Theta> \<union> Specs"
         from valid_Proc ctxt_m
         have "\<forall>(P, p, Q, A)\<in>?\<Theta>'. \<Gamma> \<Turnstile>m:\<^bsub>/F\<^esub> P (Call p) Q,A"
-          by fastsimp
+          by fastforce
         with valid_body
         have valid_body_m: 
           "\<forall>(P,p,Q,A) \<in>Specs. \<forall>n. \<Gamma> \<Turnstile>m:\<^bsub>/F\<^esub> P (the (\<Gamma> p)) Q,A"
-          by (fastsimp simp add: cnvalid_def)
+          by (fastforce simp add: cnvalid_def)
         show "\<forall>(P,p,Q,A) \<in>Specs. \<Gamma> \<Turnstile>Suc m:\<^bsub>/F\<^esub> P (Call p) Q,A"
         proof (clarify)
           fix P p Q A assume p: "(P,p,Q,A) \<in> Specs"
@@ -292,7 +292,7 @@ next
               assume exec_body: "\<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> =m'\<Rightarrow> t"
               from Pre valid_body_m exec_body bdy m p t_notin_F
               show ?thesis
-                by (fastsimp simp add: nvalid_def)
+                by (fastforce simp add: nvalid_def)
             next
               assume "\<Gamma> p = None"
               with valid_body p have False by auto
@@ -303,7 +303,7 @@ next
       qed
     }
     with p show ?thesis
-      by (fastsimp simp add: cnvalid_def)
+      by (fastforce simp add: cnvalid_def)
   qed
 next
   case (DynCom P \<Theta> F c Q A)
@@ -352,7 +352,7 @@ next
         by auto
       with cnvalidD [OF valid_c2 ctxt _ _ t_notin_Fault] exec_c2
       show ?thesis
-        by fastsimp
+        by fastforce
     next
       assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow> t" 
       assume notAbr: "\<not> isAbr t"
@@ -507,9 +507,9 @@ lemma MGT_implies_complete':
   using MGT [rule_format, of Z]
   apply (rule conseqPrePost)
   apply (insert valid)
-  apply   (fastsimp simp add: valid_def final_notin_def)
-  apply  (fastsimp simp add: valid_def)
-  apply (fastsimp simp add: valid_def)
+  apply   (fastforce simp add: valid_def final_notin_def)
+  apply  (fastforce simp add: valid_def)
+  apply (fastforce simp add: valid_def)
   done
 
 text {* Semantic equivalence of both kind of formulations *}
@@ -523,7 +523,7 @@ lemma valid_involved_to_valid:
   apply (erule_tac x="x" in allE)
   apply (erule_tac x="Normal x" in allE)
   apply (erule_tac x=t in allE)
-  apply fastsimp
+  apply fastforce
   done
 
 text {* The sophisticated consequence rule allow us to do this 
@@ -646,7 +646,7 @@ next
                 {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t},
                 {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t}" 
     by (rule ConseqMGT)
-       (fastsimp intro: exec.CondTrue simp add: final_notin_def)
+       (fastforce intro: exec.CondTrue simp add: final_notin_def)
   moreover
   have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>c2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} c2 
                     {t. \<Gamma>\<turnstile>\<langle>c2,Normal Z\<rangle> \<Rightarrow> Normal t},
@@ -657,7 +657,7 @@ next
                 {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t},
                 {t. \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t}" 
     by (rule ConseqMGT)
-       (fastsimp intro: exec.CondFalse simp add: final_notin_def)
+       (fastforce intro: exec.CondFalse simp add: final_notin_def)
   ultimately
   show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>Cond b c1 c2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} 
                  Cond b c1 c2
@@ -850,7 +850,7 @@ next
   case (Call p)
   let ?P = "{s. s=Z \<and> \<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))}"
   from noStuck_Call have "\<forall>s \<in> ?P. p \<in> dom \<Gamma>"
-    by (fastsimp simp add: final_notin_def )
+    by (fastforce simp add: final_notin_def )
   then show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> ?P (Call p)
                {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Normal t},
                {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
@@ -874,7 +874,7 @@ next
   "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub>{s. s = Z \<and> \<Gamma>\<turnstile>\<langle>DynCom c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} c Z
         {t. \<Gamma>\<turnstile>\<langle>DynCom c,Normal Z\<rangle> \<Rightarrow> Normal t},{t. \<Gamma>\<turnstile>\<langle>DynCom c,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
     by (rule ConseqMGT [OF hyp])
-       (fastsimp simp add: final_notin_def intro: exec.intros)
+       (fastforce simp add: final_notin_def intro: exec.intros)
   show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub>{s. s = Z \<and> \<Gamma>\<turnstile>\<langle>DynCom c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} 
                DynCom c
              {t. \<Gamma>\<turnstile>\<langle>DynCom c,Normal Z\<rangle> \<Rightarrow> Normal t},
@@ -942,7 +942,7 @@ next
                {t. \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal Z\<rangle> \<Rightarrow> Abrupt t \<and> 
                    \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))}"
     by (rule ConseqMGT)
-       (fastsimp intro: exec.intros simp add: final_notin_def)
+       (fastforce intro: exec.intros simp add: final_notin_def)
   moreover
   have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} c\<^isub>2
                   {t. \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
@@ -954,7 +954,7 @@ next
                {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
                {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
     by (rule ConseqMGT)
-       (fastsimp intro: exec.intros  simp add: final_notin_def)
+       (fastforce intro: exec.intros  simp add: final_notin_def)
   ultimately
   show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} 
                    Catch c\<^isub>1 c\<^isub>2
@@ -1004,7 +1004,7 @@ proof -
       proof -
         assume "\<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
         with defined show "\<Gamma>\<turnstile>\<langle>the (\<Gamma> p),Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))" 
-          by (fastsimp simp add: final_notin_def 
+          by (fastforce simp add: final_notin_def 
                 intro: exec.intros)
       next
         fix t
@@ -1235,11 +1235,11 @@ lemma exec_noSpec_no_Stuck:
     case (Call p bdy s t) with noSpec_\<Gamma> procs_subset_\<Gamma> show ?case 
       apply -
       apply (drule bspec [where x=p])
-      apply  fastsimp
+      apply  fastforce
       apply (drule bspec [where x=p])
       apply (auto)
       done
-  qed fastsimp+
+  qed fastforce+
 
 lemma execn_noSpec_no_Stuck:
  assumes exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t"
@@ -1254,11 +1254,11 @@ lemma execn_noSpec_no_Stuck:
      case (Call p bdy n s t) with noSpec_\<Gamma> procs_subset_\<Gamma> show ?case 
       apply -
       apply (drule bspec [where x=p])
-      apply  fastsimp
+      apply  fastforce
       apply (drule bspec [where x=p])
       apply (auto)
       done
-  qed fastsimp+
+  qed fastforce+
 
 
 
@@ -2179,7 +2179,7 @@ proof (rule cnvalidI)
     case True
     with execn_to_execn_mark_guards_Fault [OF exec ]
     obtain f' where "\<Gamma>\<turnstile>\<langle>mark_guards f c,Normal s\<rangle> =n\<Rightarrow> Fault f'"
-      by (fastsimp elim: isFaultE)
+      by (fastforce elim: isFaultE)
     from cnvalidD [OF valid [rule_format] ctxt this P]
     have False
       by auto

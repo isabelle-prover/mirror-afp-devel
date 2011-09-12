@@ -214,7 +214,7 @@ lemma Sem_no_zero_height_derivsAux: "\<forall> s t. ((s, c \<rightarrow>\<^sub>0
 by (induct_tac c, auto elim: Sem_eval_cases)
 (*>*)
 lemma Sem_no_zero_height_derivs: "(s, c \<rightarrow>\<^sub>0 t) \<Longrightarrow> False"
-(*<*)by (insert Sem_no_zero_height_derivsAux, fastsimp)(*>*)
+(*<*)by (insert Sem_no_zero_height_derivsAux, fastforce)(*>*)
 
 text{* Determinism does not hold as allocation is nondeterministic.*}
 

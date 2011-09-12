@@ -174,7 +174,7 @@ lemma red_external_aggr_code:
                        (\<lbrace>IsInterrupted t_a True, ObsInterrupted t_a\<rbrace>, RetVal (Bool True), h)]
          else Cset.undefined
     else Cset.undefined)"
-by(fastsimp simp add: execute.red_external_aggr_def Cset.set_eq_iff split_beta Collect_conv_UN_singleton split: val.split)
+by(fastforce simp add: execute.red_external_aggr_def Cset.set_eq_iff split_beta Collect_conv_UN_singleton split: val.split)
 
 end
 

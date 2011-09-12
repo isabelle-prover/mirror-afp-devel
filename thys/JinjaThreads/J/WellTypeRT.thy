@@ -199,35 +199,35 @@ lemma WTrt_env_mono: "P,E,h \<turnstile> e : T \<Longrightarrow> (\<And>E'. E \<
   and WTrts_env_mono: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> es [:] Ts)"
 apply(induct rule: WTrt_WTrts.inducts)
 apply(simp add: WTrtNew)
-apply(fastsimp simp: WTrtNewArray)
-apply(fastsimp simp: WTrtCast)
-apply(fastsimp simp: WTrtInstanceOf)
-apply(fastsimp simp: WTrtVal)
+apply(fastforce simp: WTrtNewArray)
+apply(fastforce simp: WTrtCast)
+apply(fastforce simp: WTrtInstanceOf)
+apply(fastforce simp: WTrtVal)
 apply(simp add: WTrtVar map_le_def dom_def)
-apply(fastsimp simp add: WTrtBinOp)
+apply(fastforce simp add: WTrtBinOp)
 apply(force simp: map_le_def)
 apply(force simp: WTrtAAcc)
 apply(force simp: WTrtAAccNT)
-apply(rule WTrtAAss, fastsimp, blast, blast)
-apply(fastsimp)
+apply(rule WTrtAAss, fastforce, blast, blast)
+apply(fastforce)
 apply(rule WTrtALength, blast)
 apply(blast)
-apply(fastsimp simp: WTrtFAcc)
+apply(fastforce simp: WTrtFAcc)
 apply(simp add: WTrtFAccNT)
-apply(fastsimp simp: WTrtFAss)
-apply(fastsimp simp: WTrtFAssNT)
-apply(fastsimp simp: WTrtCall)
-apply(fastsimp simp: WTrtCallNT)
-apply(fastsimp intro: WTrtCallExternal)
-apply(fastsimp simp: map_le_def)
-apply(fastsimp)
-apply(fastsimp)
-apply(fastsimp)
-apply(fastsimp)
-apply(fastsimp simp: WTrtSeq)
-apply(fastsimp simp: WTrtCond)
-apply(fastsimp simp: WTrtWhile)
-apply(fastsimp simp: WTrtThrow)
+apply(fastforce simp: WTrtFAss)
+apply(fastforce simp: WTrtFAssNT)
+apply(fastforce simp: WTrtCall)
+apply(fastforce simp: WTrtCallNT)
+apply(fastforce intro: WTrtCallExternal)
+apply(fastforce simp: map_le_def)
+apply(fastforce)
+apply(fastforce)
+apply(fastforce)
+apply(fastforce)
+apply(fastforce simp: WTrtSeq)
+apply(fastforce simp: WTrtCond)
+apply(fastforce simp: WTrtWhile)
+apply(fastforce simp: WTrtThrow)
 apply(auto simp: WTrtTry map_le_def dom_def)
 done
 
@@ -238,21 +238,21 @@ apply fast
 apply fast
 apply fast
 apply fast
-apply(fastsimp dest:typeof_lit_typeof)
+apply(fastforce dest:typeof_lit_typeof)
 apply(simp)
-apply(fastsimp intro: WT_binop_WTrt_binop)
-apply(fastsimp)
+apply(fastforce intro: WT_binop_WTrt_binop)
+apply(fastforce)
 apply(erule WTrtAAcc)
 apply(assumption)
 apply(erule WTrtAAss)
 apply(assumption)+
 apply(erule WTrtALength)
-apply(fastsimp intro: WTrtFAcc has_visible_field)
-apply(fastsimp simp: WTrtFAss dest: has_visible_field)
-apply(fastsimp simp: WTrtCall)
-apply(fastsimp intro: WTrtCallExternal)
+apply(fastforce intro: WTrtFAcc has_visible_field)
+apply(fastforce simp: WTrtFAss dest: has_visible_field)
+apply(fastforce simp: WTrtCall)
+apply(fastforce intro: WTrtCallExternal)
 apply(clarsimp simp del: fun_upd_apply, blast intro: typeof_lit_typeof)
-apply(fastsimp)+
+apply(fastforce)+
 done
 
 lemma wt_blocks:
@@ -272,28 +272,28 @@ lemma WTrt_hext_mono: "P,E,h \<turnstile> e : T \<Longrightarrow> h \<unlhd> h' 
   and WTrts_hext_mono: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> es [:] Ts"
 apply(induct rule: WTrt_WTrts.inducts)
 apply(simp add: WTrtNew)
-apply(fastsimp simp: WTrtNewArray)
-apply(fastsimp simp: WTrtCast)
-apply(fastsimp simp: WTrtInstanceOf)
-apply(fastsimp simp: WTrtVal dest:hext_typeof_mono)
+apply(fastforce simp: WTrtNewArray)
+apply(fastforce simp: WTrtCast)
+apply(fastforce simp: WTrtInstanceOf)
+apply(fastforce simp: WTrtVal dest:hext_typeof_mono)
 apply(simp add: WTrtVar)
-apply(fastsimp simp add: WTrtBinOp)
-apply(fastsimp simp add: WTrtLAss)
-apply fastsimp
-apply fastsimp
-apply fastsimp
-apply fastsimp
-apply fastsimp
-apply fastsimp
+apply(fastforce simp add: WTrtBinOp)
+apply(fastforce simp add: WTrtLAss)
+apply fastforce
+apply fastforce
+apply fastforce
+apply fastforce
+apply fastforce
+apply fastforce
 apply(fast intro: WTrtFAcc)
 apply(simp add: WTrtFAccNT)
-apply(fastsimp simp: WTrtFAss del:WTrt_WTrts.intros WTrt_elim_cases)
-apply(fastsimp simp: WTrtFAssNT)
-apply(fastsimp simp: WTrtCall)
-apply(fastsimp simp: WTrtCallNT)
-apply(fastsimp intro: WTrtCallExternal)
-apply(fastsimp intro: hext_typeof_mono)
-apply fastsimp+
+apply(fastforce simp: WTrtFAss del:WTrt_WTrts.intros WTrt_elim_cases)
+apply(fastforce simp: WTrtFAssNT)
+apply(fastforce simp: WTrtCall)
+apply(fastforce simp: WTrtCallNT)
+apply(fastforce intro: WTrtCallExternal)
+apply(fastforce intro: hext_typeof_mono)
+apply fastforce+
 done
 
 end

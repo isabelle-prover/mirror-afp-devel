@@ -56,7 +56,7 @@ next
     from IH[OF this `length xs' = length ys'` `distinct xs'`]
     have "f(xs' [:=] ys') (xs'!j) = ys'!j" .
     with `x' \<notin> set xs'` `j < length xs'`
-    have "f((x'#xs') [:=] ys) ((x'#xs')!(Suc j)) = ys!(Suc j)" by fastsimp
+    have "f((x'#xs') [:=] ys) ((x'#xs')!(Suc j)) = ys!(Suc j)" by fastforce
     with Suc show ?thesis by simp
   qed
 qed
@@ -67,7 +67,7 @@ lemma fun_upds_eq:
   shows "f(xs [:=] ys) V = f'(xs [:=] ys) V"
 proof -
   from `V \<in> set xs` obtain i where "i < length xs" and "xs!i = V"
-    by(fastsimp simp:in_set_conv_nth)
+    by(fastforce simp:in_set_conv_nth)
   with `length xs = length ys` `distinct xs`
   have "f(xs [:=] ys)(xs!i) = (ys!i)" by -(rule fun_upds_nth)
   moreover

@@ -305,7 +305,7 @@ proof -
   show ?thesis
   proof(cases queue)
     case Nil
-    thus ?thesis using invar \<sigma> by(fastsimp elim: active_threads.cases)
+    thus ?thesis using invar \<sigma> by(fastforce elim: active_threads.cases)
   next
     case (Cons t queue')
     with rr \<sigma> have "round_robin_step n0 (t # queue', n) s t = None"
@@ -617,7 +617,7 @@ proof -
     thus ?thesis using invar
       apply(cases \<sigma>)
       apply(auto dest: step_thread_Some_NoneD[OF det] step_thread_Some_SomeD[OF det])
-      apply(fastsimp simp add: \<alpha>.step_thread_eq_None_conv elim: \<alpha>.active_threads.cases intro: sym)
+      apply(fastforce simp add: \<alpha>.step_thread_eq_None_conv elim: \<alpha>.active_threads.cases intro: sym)
       done
   next
     case False

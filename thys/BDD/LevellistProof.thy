@@ -216,8 +216,8 @@ qed
         obtain "n \<in> set (ll' ! i)" "length ll = length ll'"
           apply (clarsimp simp add: wf_levellist_def Node)
           apply (case_tac "i \<le> var p")
-          apply  fastsimp
-          apply fastsimp
+          apply  fastforce
+          apply fastforce
           done
         with i_bound have "n \<in> set (concat ll')"
           by auto
@@ -543,11 +543,11 @@ proof -
             apply  (rule conjI)
             apply   (erule_tac x="q" in allE)  
             apply   (case_tac "var p = var q")
-            apply    fastsimp
-            apply   fastsimp
+            apply    fastforce
+            apply   fastforce
             apply  (case_tac "var p = var q")
-            apply   fastsimp
-            apply  fastsimp
+            apply   fastforce
+            apply  fastforce
             apply (rule allI)
             apply (rotate_tac 4)
             apply (erule_tac x="i" in allE)
@@ -563,8 +563,8 @@ proof -
             apply clarify
             apply (rotate_tac 15)
             apply (erule_tac x="pt" in ballE)
-            apply  fastsimp
-            apply fastsimp
+            apply  fastforce
+            apply fastforce
             done
         qed
       qed
@@ -692,12 +692,12 @@ proof -
             from rt n_in_rt have nnN: "n \<noteq> Null"
               apply -
               apply (rule set_of_nn [rule_format])
-              apply fastsimp
+              apply fastforce
               apply assumption
               done
             from marked_child_ll n_in_rt marka_eq_mark nnN n_marked 
             have n_in_ll: "n \<in> set (ll ! var n)"
-              by fastsimp
+              by fastforce
             from marked_child_ll n_in_rt marka_eq_mark nnN n_marked lt rt 
             have nt_mark: "\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m"
               by simp
@@ -706,19 +706,19 @@ proof -
             proof (cases "var (low p) < (var n)")
               case True
               with lla_nc have "(lla ! var n) = (ll ! var n)"
-                by fastsimp
+                by fastforce
               with n_in_ll show ?thesis
-                by fastsimp
+                by fastforce
             next
               assume varnslp: " \<not> var (low p) < var n"
               with lla_st 
               have ll_in_lla: "\<exists>prx. lla ! (var n) = prx @ ll ! (var n)"
                 apply -
                 apply (erule_tac x="var n" in allE)
-                apply fastsimp
+                apply fastforce
                 done
               with n_in_ll show ?thesis
-                by fastsimp
+                by fastforce
             qed
             {
               fix nt pt
@@ -728,20 +728,20 @@ proof -
               proof (cases "pt \<in> set_of lt")
                 case True
                 with mit_marked show ?thesis
-                  by fastsimp
+                  by fastforce
               next
                 assume pt_notin_lt: " pt \<notin> set_of lt"
                 with mot_nc have "mark pt = marka pt"
-                  by fastsimp
+                  by fastforce
                 with nt_mark nt_Dag pt_in_nt show ?thesis
-                  by fastsimp
+                  by fastforce
               qed
             }
             then have nt_marka: 
               "\<forall>nt pt. Dag n low high nt \<and> pt \<in> set_of nt \<longrightarrow> marka pt = m"
-              by fastsimp
+              by fastforce
             with n_in_lla nt_marka True show ?thesis
-              by fastsimp
+              by fastforce
           next
             case False
             note n_not_marka = this
@@ -819,11 +819,11 @@ proof -
             apply  (rule conjI)
             apply   (erule_tac x="q" in allE)  
             apply   (case_tac "var p = var q")
-            apply    fastsimp
-            apply   fastsimp
+            apply    fastforce
+            apply   fastforce
             apply  (case_tac "var p = var q")
-            apply   fastsimp
-            apply  fastsimp
+            apply   fastforce
+            apply  fastforce
             apply (rule allI)
             apply (rotate_tac 4)
             apply (erule_tac x="i" in allE)
@@ -839,8 +839,8 @@ proof -
             apply clarify
             apply (rotate_tac 15)
             apply (erule_tac x="pt" in ballE)
-            apply  fastsimp
-            apply fastsimp
+            apply  fastforce
+            apply fastforce
             done
         next
           case (Node lrt r rrt)
@@ -927,25 +927,25 @@ proof -
                 proof (cases "q \<in> set_of rt")
                   case True
                   with nodes_in_llb have q_in_llb: "q \<in> set (llb ! (var q))"
-                    by fastsimp
+                    by fastforce
                   from orderedt rt_Node lt_Node lt rt 
                   have ordered_rt: "ordered rt var"
-                    by fastsimp
+                    by fastforce
                   from True rt ordered_rt rt_Node lt lt_Node have "var q \<le> var r"
                     apply -                
                     apply (drule subnodes_ordered)
-                    apply fastsimp
-                    apply fastsimp
-                    apply fastsimp
+                    apply fastforce
+                    apply fastforce
+                    apply fastforce
                     done
                   with orderedt rt lt rt_Node lt_Node have "var q < var p"
-                    by fastsimp
+                    by fastforce
                   then have 
                     "llb[var p :=p#llb ! var p] ! var q = 
                      llb ! var q"
-                    by fastsimp
+                    by fastforce
                   with q_in_llb show ?thesis
-                    by fastsimp
+                    by fastforce
                 next
                   assume q_notin_rt: "q \<notin> set_of rt"
                   show "q \<in> set (llb[var p :=p # llb ! var p] ! var q)"
@@ -953,53 +953,53 @@ proof -
                     case True
                     assume q_in_lt: "q \<in> set_of lt"
                     with nodes_in_lla have q_in_lla: "q \<in> set (lla ! (var q))"
-                      by fastsimp
+                      by fastforce
                     from orderedt rt_Node lt_Node lt rt 
                     have ordered_lt: "ordered lt var"
-                      by fastsimp
+                      by fastforce
                     from q_in_lt lt ordered_lt rt_Node rt lt_Node 
                     have "var q \<le> var l"
                       apply -                
                       apply (drule subnodes_ordered)
-                      apply fastsimp
-                      apply fastsimp
-                      apply fastsimp
+                      apply fastforce
+                      apply fastforce
+                      apply fastforce
                       done
                     with orderedt rt lt rt_Node lt_Node have qsp: "var q < var p"
-                      by fastsimp
+                      by fastforce
                     then show ?thesis
                     proof (cases "var q \<le> var (high p)")
                       case True
                       with llb_st 
                       have "\<exists>prx. (llb ! (var q)) = prx@(lla ! (var q))"
-                        by fastsimp
+                        by fastforce
                       with nodes_in_lla q_in_lla 
                       have q_in_llb: "q \<in> set (llb ! (var q))"
-                        by fastsimp
+                        by fastforce
                       from qsp 
                       have "llb[var p :=p#llb ! var p]!var q = 
                                llb ! (var q)"
-                        by fastsimp
+                        by fastforce
                       with q_in_llb show ?thesis
-                        by fastsimp
+                        by fastforce
                     next
                       assume "\<not> var q \<le> var (high p)"
                       with llb_nc have "llb ! (var q) = lla ! (var q)"
-                        by fastsimp
+                        by fastforce
                       with q_in_lla have q_in_llb: "q \<in> set (llb ! (var q))"
-                        by fastsimp
+                        by fastforce
                       from qsp have 
                         "llb[var p :=p # llb ! var p] ! var q = llb ! (var q)"
-                        by fastsimp
+                        by fastforce
                       with q_in_llb show ?thesis
-                        by fastsimp
+                        by fastforce
                     qed
                   next
                     assume q_notin_lt: "q \<notin> set_of lt"
                     with q_notin_rt rt lt rt_Node lt_Node q_in_t have qp: "q = p"
-                      by fastsimp
+                      by fastforce
                     with varsll lla_eq_ll llb_eq_lla have "var p < length llb"
-                      by fastsimp
+                      by fastforce
                     with qp show ?thesis
                       by simp
                   qed
@@ -1020,22 +1020,22 @@ proof -
                   case True
                   with orderedt lt lt_Node rt rt_Node 
                   have lpsp: "var (low p) < var p"
-                    by fastsimp
+                    by fastforce
                   with orderedt lt lt_Node rt rt_Node 
                   have hpsp: "var (high p) < var p"
-                    by fastsimp
+                    by fastforce
                   with lpsp lla_nc 
                   have llall: "lla ! var p = ll ! var p"
-                    by fastsimp
+                    by fastforce
                   with hpsp llb_nc have "llb ! var p = ll ! var p"
-                    by fastsimp
+                    by fastforce
                   with llb_eq_lla lla_eq_ll isep True varsll lt rt show ?thesis
                     apply -
                     apply (rule_tac x="[p]" in exI)
                     apply (rule conjI)
                     apply simp
                     apply (rule ballI)
-                    apply fastsimp
+                    apply fastforce
                     done
                 next
                   assume inp: " i \<noteq> var p"
@@ -1043,25 +1043,25 @@ proof -
                   proof (cases "var (low p) < i")
                     case True
                     with lla_nc have llall: "lla ! i = ll ! i"
-                      by fastsimp
+                      by fastforce
                     assume vpsi: "var (low p) < i"
                     show ?thesis
                     proof (cases "var (high p) < i")
                       case True
                       with llall llb_nc have "llb ! i = ll ! i"
-                        by fastsimp
+                        by fastforce
                       with inp True vpsi varsll lt rt show ?thesis
                         apply -
                         apply (rule_tac x="[]" in exI)
                         apply (rule conjI)
                         apply simp
                         apply (rule ballI)
-                        apply fastsimp
+                        apply fastforce
                         done
                     next
                       assume isehp: " \<not> var (high p) < i"
                       with vpsi lla_nc have lla_ll: "lla ! i = ll ! i"
-                        by fastsimp
+                        by fastforce
                       with isehp llb_st 
                       have prx_lla: "\<exists>prx. llb ! i = prx @ lla ! i \<and> 
                         (\<forall>pt\<in>set prx. pt \<in> set_of rt \<and> var pt = i)"
@@ -1082,7 +1082,7 @@ proof -
                     proof (cases "var (high p) < i")
                       case True
                       with llb_nc have llb_ll: "llb ! i = lla ! i"
-                        by fastsimp
+                        by fastforce
                       with iselp lla_st 
                       have prx_ll: "\<exists>prx. lla ! i = prx @ ll ! i \<and> 
                         (\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)"
@@ -1101,18 +1101,18 @@ proof -
                       from iselp lla_st 
                       have prxl: "\<exists>prx. lla ! i = prx @ ll ! i \<and> 
                         (\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)" 
-                        by fastsimp
+                        by fastforce
                       from isehp llb_st 
                       have prxh: "\<exists>prx. llb ! i = prx @ lla ! i \<and> 
                         (\<forall>pt\<in>set prx. pt \<in> set_of rt \<and> var pt = i)"
-                        by fastsimp
+                        by fastforce
                       with prxl inp lt pnN rt show ?thesis
                         apply -
                         apply (elim exE)
                         apply (rule_tac x="prxa @ prx" in exI)
                         apply simp
                         apply (elim conjE)
-                        apply fastsimp
+                        apply fastforce
                         done
                     qed
                   qed
@@ -1127,23 +1127,23 @@ proof -
                 fix i
                 assume psi: "var p < i"
                 with orderedt lt rt lt_Node rt_Node have lpsi: "var (low p) < i" 
-                  by fastsimp
+                  by fastforce
                 with lla_nc have lla_ll: "lla ! i = ll ! i"
-                  by fastsimp
+                  by fastforce
                 from psi orderedt lt rt lt_Node rt_Node have hpsi: "var (high p) < i" 
-                  by fastsimp
+                  by fastforce
                 with llb_nc have llb_lla: "llb ! i = lla ! i"
-                  by fastsimp
+                  by fastforce
                 from psi 
                 have upllb_llb: "llb[var p :=p#llb!var p]!i = llb!i"
-                  by fastsimp
+                  by fastforce
                 from upllb_llb llb_lla lla_ll 
                 show "llb[var p :=p # llb ! var p] ! i = ll ! i"
-                  by fastsimp
+                  by fastforce
               qed
               from lla_eq_ll llb_eq_lla 
               have length_eq: "length (llb[var p :=p # llb ! var p]) = length ll"
-                by fastsimp
+                by fastforce
               from length_eq big_Nodes_nc prx_ll_st nodes_in_upllb 
               have wf_ll_upllb: 
                 "wf_levellist (Node lt p rt) ll (llb[var p :=p # llb ! var p]) var"
@@ -1157,17 +1157,17 @@ proof -
                 fix n
                 assume nnit: "n \<notin> set_of (Node lt p rt)"
                 with lt rt have nnilt: " n \<notin> set_of lt"
-                  by fastsimp
+                  by fastforce
                 from nnit lt rt have nnirt: " n \<notin> set_of rt"
-                  by fastsimp
+                  by fastforce
                 with nnilt mot_nc mort_nc have mb_eq_m: "markb n = mark n"
-                  by fastsimp
+                  by fastforce
                 from nnit have "n\<noteq>p"
-                  by fastsimp
+                  by fastforce
                 then have upmarkb_markb: "(markb(p :=m)) n = markb n"
-                  by fastsimp
+                  by fastforce
                 with mb_eq_m show "(markb(p :=m)) n = mark n"
-                  by fastsimp
+                  by fastforce
               qed
               have mark_c: "\<forall> n. n \<in> set_of (Node lt p rt) \<longrightarrow> (markb(p :=m)) n = m"
                 apply -
@@ -1180,28 +1180,28 @@ proof -
                 proof (cases "n=p")
                   case True
                   then show ?thesis
-                    by fastsimp
+                    by fastforce
                 next
                   assume nnp: " n \<noteq> p"
                   show ?thesis
                   proof (cases "n \<in> set_of rt")
                     case True
                     with mirt_marked have "markb n = m"
-                      by fastsimp
+                      by fastforce
                     with nnp show ?thesis
-                      by fastsimp
+                      by fastforce
                   next
                     assume nninrt: " n \<notin> set_of rt"
                     with nint nnp have ninlt: "n \<in> set_of lt"
-                      by fastsimp
+                      by fastforce
                     with mit_marked have marka_m: "marka n = m"
-                      by fastsimp
+                      by fastforce
                     from mort_nc nninrt have "marka n = markb n"
-                      by fastsimp
+                      by fastforce
                     with marka_m have "markb n = m"
-                      by fastsimp
+                      by fastforce
                     with nnp show ?thesis
-                      by fastsimp
+                      by fastforce
                   qed
                 qed
               qed
@@ -1209,7 +1209,7 @@ proof -
               have wf_mark: "wf_marking (Node lt p rt) mark (markb(p :=m)) m"
                 by (simp add: wf_marking_def)
               with wf_ll_upllb show ?thesis
-                by fastsimp
+                by fastforce
             qed
           qed
         qed
@@ -1249,7 +1249,7 @@ next
         apply -
         apply (drule_tac x="p" in bspec)
         apply  simp
-        apply fastsimp
+        apply fastforce
         done
       from marked_st marked_child_ll lt rt show ?thesis
         apply -
@@ -1260,7 +1260,7 @@ next
         apply  assumption
         apply (drule_tac x="q" in bspec)
         apply  simp
-        apply fastsimp
+        apply fastforce
         done
     qed
     have levellist_nc: "\<forall> i \<le> var p. (\<exists> prx. ll ! i = prx@(ll ! i) \<and>
@@ -1269,23 +1269,23 @@ next
       apply (rule allI)
       apply (rule impI)
       apply (rule_tac x="[]" in exI)
-      apply fastsimp
+      apply fastforce
       done
     have ll_nc: "\<forall> i. (var p) < i \<longrightarrow> ll ! i = ll ! i"
-      by fastsimp
+      by fastforce
     have length_ll: "length ll = length ll"
-      by fastsimp
+      by fastforce
     with ll_nc levellist_nc nodest_in_ll 
     have wf: "wf_levellist (Node lt p rt) ll ll var"
       by (simp add: wf_levellist_def)
     have m_nc: "\<forall> n. n \<notin> set_of (Node lt p rt) \<longrightarrow> mark n = mark n"
-      by fastsimp
+      by fastforce
     from marked_st have "\<forall> n. n \<in> set_of (Node lt p rt) \<longrightarrow> mark n = mark p"
-      by fastsimp
+      by fastforce
     with m_nc have " wf_marking (Node lt p rt) mark mark (mark p)"
       by (simp add: wf_marking_def)
     with wf show ?thesis
-      by fastsimp
+      by fastforce
   qed
 qed
 
@@ -1339,7 +1339,7 @@ apply    simp
 apply   simp
 apply  (subgoal_tac "length ll'=Suc (var Null)")
 apply   (simp add: Levellist_length)
-apply  fastsimp
+apply  fastforce
 apply (split dag.splits)
 apply  simp
 apply (elim conjE)

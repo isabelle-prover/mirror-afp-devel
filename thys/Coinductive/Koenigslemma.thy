@@ -34,7 +34,7 @@ lemma paths_LConsD:
   assumes "LCons x xs \<in> paths graph"
   shows "xs \<in> paths graph"
 using assms
-by(coinduct)(fastsimp elim: paths.cases del: disjCI)
+by(coinduct)(fastforce elim: paths.cases del: disjCI)
 
 lemma paths_lappendD1:
   assumes "lappend xs ys \<in> paths graph"
@@ -58,7 +58,7 @@ lemma paths_lappendD2:
   and "lappend xs ys \<in> paths graph"
   shows "ys \<in> paths graph"
 using assms
-by induct(fastsimp elim: paths.cases intro: paths.intros)+
+by induct(fastforce elim: paths.cases intro: paths.intros)+
 
 lemma path_avoid_node:
   assumes path: "LCons n xs \<in> paths graph"
@@ -273,7 +273,7 @@ proof(intro bexI conjI)
     hence "n \<notin> lset (llist_corec (?n', ?ns') xs')" 
       using P `finite ns` by(auto dest: lset)
     moreover from `finite ns` P eq
-    have "?X (llist_corec (?n', ?ns') xs')" by(fastsimp intro!: exI refl)
+    have "?X (llist_corec (?n', ?ns') xs')" by(fastforce intro!: exI refl)
     ultimately have ?LCons by simp
     thus ?case by simp
   qed

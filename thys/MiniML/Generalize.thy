@@ -42,7 +42,7 @@ by (induct t) auto
 
 lemma free_tv_gen_cons [simp]: 
   "free_tv (gen ($ S A) t # $ S A) = free_tv ($ S A)"
-  by fastsimp
+  by fastforce
 
 lemma bound_tv_gen [simp]: 
   "bound_tv (gen A t1) = (free_tv t1) - (free_tv A)"
@@ -105,7 +105,7 @@ apply safe
 apply (rename_tac "S")
 apply (rule_tac x = "%b. if b:free_tv A then TVar b else S b" in exI)
 apply (induct_tac "t")
- apply fastsimp
+ apply fastforce
 apply simp
 done
 

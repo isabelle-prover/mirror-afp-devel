@@ -248,7 +248,7 @@ apply(rule iffI)
  apply clarsimp
  apply(case_tac vs)
   apply simp
- apply fastsimp
+ apply fastforce
 apply(erule disjE)
  apply clarsimp
 apply(rule disjI2)
@@ -271,7 +271,7 @@ apply(rule iffI)
  apply clarsimp
  apply(case_tac vs)
   apply simp
- apply fastsimp
+ apply fastforce
 apply clarsimp
 apply(rule_tac x = "[]" in exI)
 apply simp
@@ -365,7 +365,7 @@ and evals_hext:  "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<la
 (*<*)
 proof (induct rule: eval_evals_inducts)
   case New thus ?case
-    by(fastsimp intro!: hext_new intro:LeastI simp:new_Addr_def
+    by(fastforce intro!: hext_new intro:LeastI simp:new_Addr_def
                 split:split_if_asm simp del:fun_upd_apply)
 next
   case BinOp thus ?case by (fast elim!:hext_trans)

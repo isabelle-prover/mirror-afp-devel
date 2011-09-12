@@ -271,7 +271,7 @@ subsection {* Sets *}
   lemmas lists_of_len_fin = lists_of_len_fin1 lists_of_len_fin2
 
 
-  (* Try (simp only: cset_fin_simps, fastsimp intro: cset_fin_intros) when reasoning about finiteness of collected sets *)
+  (* Try (simp only: cset_fin_simps, fastforce intro: cset_fin_intros) when reasoning about finiteness of collected sets *)
   lemmas cset_fin_simps = Ex_prod_contract fs_contract[symmetric] image_Collect[symmetric]
   lemmas cset_fin_intros = finite_imageI finite_Collect inj_onI
 
@@ -895,7 +895,7 @@ lemma mset_map_le: "!!B. A \<le> B \<Longrightarrow> f `# A \<le> f `# B" proof 
   case empty thus ?case by simp
 next
   case (add A x B)
-  hence "A\<le>B-{#x#}" and SM: "{#x#}\<le>B" using mset_le_subtract_right by (fastsimp+)
+  hence "A\<le>B-{#x#}" and SM: "{#x#}\<le>B" using mset_le_subtract_right by (fastforce+)
   with "add.hyps" have "f `# A \<le> f `# (B-{#x#})" by blast
   hence "f `# (A+{#x#}) \<le> f `# (B-{#x#}) + {#f x#}" by auto
   also have "\<dots> = f `# (B-{#x#}+{#x#})" by simp
@@ -908,8 +908,8 @@ lemma mset_map_set_of: "set_of (f `# A) = f ` set_of A"
 
 lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>P=P1+P2; f `# P1 = M1; f `# P2 = M2\<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   apply (induct P)
-  apply fastsimp
-  apply (fastsimp elim!: mset_un_single_un_cases simp add: union_ac) (* TODO: This proof need's quite long. Try to write a faster one. *)
+  apply fastforce
+  apply (fastforce elim!: mset_un_single_un_cases simp add: union_ac) (* TODO: This proof need's quite long. Try to write a faster one. *)
   done
 
 lemma mset_map_id: "\<lbrakk>!!x. f (g x) = x\<rbrakk> \<Longrightarrow> f `# g `# X = X"
@@ -1557,7 +1557,7 @@ subsubsection {* Miscellaneous *}
 
   lemma prop_match: "\<lbrakk> list_all P al; \<not>P e; \<not>P e'; list_all P bl \<rbrakk> \<Longrightarrow> (al@e#bl = al'@e'#bl') \<longleftrightarrow> (al=al' \<and> e=e' \<and> bl=bl')"
     apply (rule iffI, induct al arbitrary: al')
-    apply (case_tac al', fastsimp, fastsimp)+
+    apply (case_tac al', fastforce, fastforce)+
     done
 
   lemmas prop_matchD = rev_iffD1[OF _ prop_match[where P=P], standard]
@@ -1693,7 +1693,7 @@ lemma distinct_map_fst_filterI: "distinct (map fst xs) \<Longrightarrow> distinc
 by(induct xs) auto
 
 lemma distinct_map_fstD: "\<lbrakk> distinct (map fst xs); (x, y) \<in> set xs; (x, z) \<in> set xs \<rbrakk> \<Longrightarrow> y = z"
-by(induct xs)(fastsimp elim: notE rev_image_eqI)+
+by(induct xs)(fastforce elim: notE rev_image_eqI)+
 
 
 lemma drop_eq_ConsD: "drop n xs = x # xs' \<Longrightarrow> drop (Suc n) xs = xs'"
@@ -2087,7 +2087,7 @@ subsection "Maps"
     apply (auto split: option.split)
     done
 
-  lemma ran_add[simp]: "dom f \<inter> dom g = {} \<Longrightarrow> ran (f++g) = ran f \<union> ran g" by (fastsimp simp add: ran_def map_add_def split: option.split_asm option.split)
+  lemma ran_add[simp]: "dom f \<inter> dom g = {} \<Longrightarrow> ran (f++g) = ran f \<union> ran g" by (fastforce simp add: ran_def map_add_def split: option.split_asm option.split)
 
   lemma dom_empty_simp[simp]: "dom l = {} \<longleftrightarrow> l=empty"
     by (auto simp add: dom_def intro: ext)
@@ -2124,13 +2124,13 @@ subsection "Maps"
   lemma map_add_distinct_le: shows "\<lbrakk> m\<le>m'; n\<le>n'; dom m' \<inter> dom n' = {} \<rbrakk> \<Longrightarrow> m++n \<le> m'++n'"
     apply (rule le_funI)
     apply (auto simp add: map_add_def split: option.split)
-    apply (fastsimp elim: le_funE)
+    apply (fastforce elim: le_funE)
     apply (drule le_map_dom_mono)
     apply (drule le_map_dom_mono)
     apply (case_tac "m x")
     apply simp
     apply (force)
-    apply (fastsimp dest!: le_map_dom_mono)
+    apply (fastforce dest!: le_map_dom_mono)
     apply (erule le_funE)
     apply (erule_tac x=x in le_funE)
     apply simp

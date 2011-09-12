@@ -197,7 +197,7 @@ apply(rule_tac P' = "\<lambda>z s. (z,s) \<in> ({(s,t). b s \<and> s -c\<rightar
  apply(rule_tac thoare.While[OF wf_termi])
  apply(rule allI)
  apply(erule thoare.Conseq)
- apply(fastsimp intro:rtrancl_into_rtrancl dest:while_termiE while_termiE2)
+ apply(fastforce intro:rtrancl_into_rtrancl dest:while_termiE while_termiE2)
 apply(rule conjI)
  apply clarsimp
  apply(erule_tac x = s in allE)
@@ -286,8 +286,8 @@ apply(erule converse_rtrancl_induct2)
 apply(erule exec1.cases)
 apply(blast intro:execs.intros)
 apply(blast intro:execs.intros)
-apply(fastsimp intro:execs.intros)
-apply(fastsimp intro:execs.intros)
+apply(fastforce intro:execs.intros)
+apply(fastforce intro:execs.intros)
 apply(blast intro:execs.intros exec.intros)+
 done
 
@@ -625,7 +625,7 @@ apply(erule termi.induct)
      apply clarsimp
     (*While*)
     apply clarsimp
-   apply(fastsimp dest:inf_cases)
+   apply(fastforce dest:inf_cases)
   (*Call*)
   apply blast
  (*Local*)
@@ -681,7 +681,7 @@ prefer 2
  apply clarsimp
  apply(rename_tac q t p s cs)
  apply(erule_tac P = "\<lambda>cs.([body p],s) \<rightarrow>\<^sup>* (CALL q# cs, t)" in someI2)
- apply(fastsimp dest:app_execs)
+ apply(fastforce dest:app_execs)
 apply clarify
 apply(subgoal_tac
  "\<forall>i. ((body(fst(S i))# Cs i,snd(S i)), (body(fst(S(i+1)))# Cs(i+1), snd(S(i+1)))) : exec1^+")
@@ -804,7 +804,7 @@ apply(rule CALL_cor)
 done
 
 lemma MGT_CALL1: "\<forall>p. {} |\<turnstile>\<^sub>t {MGT\<^isub>t(CALL p)}"
-by(fastsimp intro:MGT_CALL[THEN ConjE])
+by(fastforce intro:MGT_CALL[THEN ConjE])
 
 theorem "{} \<Turnstile>\<^sub>t {P}c{Q}  \<Longrightarrow>  {} \<turnstile>\<^sub>t {P}c{Q::state assn}"
 apply(erule MGT_implies_complete[OF MGT_lemma[OF MGT_CALL1]])

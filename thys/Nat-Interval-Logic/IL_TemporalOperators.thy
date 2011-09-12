@@ -47,7 +47,7 @@ done
 instance bool :: wellorder
 apply (rule wf_wellorderI)
  apply (rule_tac t="{(x, y). x < y}" and s="{(False, True)}" in subst)
-  apply (fastsimp simp add: less_bool_def)
+  apply (fastforce simp add: less_bool_def)
  thm wf_def
  apply (unfold wf_def, blast)
 apply intro_classes
@@ -438,11 +438,11 @@ thm iNextWeak_def
 lemma 
   iNext_iff       : "(\<bigcirc> t t0 I. P t) = (\<box> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
   iLast_iff       : "(\<ominus> t t0 I. P t) = (\<box> t [\<dots>0] \<oplus> (iprev t0 I). P t)"
-by (fastsimp simp: iTL_Next_defs iT_add iIN_0)+
+by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 lemma 
   iNext_iEx_iff   : "(\<bigcirc> t t0 I. P t) = (\<diamond> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
   iLast_iEx_iff   : "(\<ominus> t t0 I. P t) = (\<diamond> t [\<dots>0] \<oplus> (iprev t0 I). P t)"
-by (fastsimp simp: iTL_Next_defs iT_add iIN_0)+
+by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 
 
 
@@ -515,13 +515,13 @@ lemmas iTL_Next_iff =
 lemma 
   iNext_iff_singleton       : "(\<bigcirc> t t0 I. P t) = (\<box> t {inext t0 I}. P t)" and
   iLast_iff_singleton       : "(\<ominus> t t0 I. P t) = (\<box> t {iprev t0 I}. P t)"
-by (fastsimp simp: iTL_Next_defs iT_add iIN_0)+
+by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 lemmas iNextLast_iff_singleton = iNext_iff_singleton iLast_iff_singleton
 
 lemma 
   iNext_iEx_iff_singleton   : "(\<bigcirc> t t0 I. P t) = (\<diamond> t {inext t0 I}. P t)" and
   iLast_iEx_iff_singleton   : "(\<ominus> t t0 I. P t) = (\<diamond> t {iprev t0 I}. P t)"
-by (fastsimp simp: iTL_Next_defs iT_add iIN_0)+
+by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 
 
 lemma 
@@ -691,7 +691,7 @@ apply (rule iffI)
  apply simp
 apply (rule disjI2)
 apply (rule_tac x="iMin I" in bexI)
- apply fastsimp
+ apply fastforce
 apply (simp add: iMinI_ex2)
 done
 lemma iRelease_True[simp]: "P t'. t' \<R> t I. True"
@@ -802,7 +802,7 @@ apply (simp add: cut_le_less_conv_if)
 apply blast
 done
 lemma iRelease_iUntil_conv: "(P t'. t' \<R> t I. Q t) = ((\<box> t I. Q t) \<or> (Q t'. t' \<U> t I. (Q t \<and> P t)))"
-by (fastsimp simp: iRelease_iWeakUntil_conv iWeakUntil_iUntil_conv)
+by (fastforce simp: iRelease_iWeakUntil_conv iWeakUntil_iUntil_conv)
 
 lemma iTrigger_iWeakSince_conv: "(P t'. t' \<T> t I. Q t) = (Q t'. t' \<B> t I. (Q t \<and> P t))"
 apply (unfold iTrigger_def iWeakSince_def)
@@ -810,7 +810,7 @@ apply (simp add: cut_ge_greater_conv_if)
 apply blast
 done
 lemma iTrigger_iSince_conv: "(P t'. t' \<T> t I. Q t) = ((\<box> t I. Q t) \<or> (Q t'. t' \<S> t I. (Q t \<and> P t)))"
-by (fastsimp simp: iTrigger_iWeakSince_conv iWeakSince_iSince_conv)
+by (fastforce simp: iTrigger_iWeakSince_conv iWeakSince_iSince_conv)
 
 lemma iRelease_not_iUntil_conv: "(P t'. t' \<R> t I. Q t) = (\<not> (\<not> P t'. t' \<U> t I. \<not> Q t))"
 apply (simp only: iUntil_def iRelease_def not_iAll not_iEx de_Morgan_conj not_not)
@@ -1286,7 +1286,7 @@ apply (rule iffI)
 apply (clarsimp, rename_tac t)
 apply (subgoal_tac "finite {x \<in> I. Q x}")
  prefer 2
- apply fastsimp
+ apply fastforce
 apply (rule_tac t="Max {x \<in> I. Q x}" in iexI)
  apply (rule conjI)
   thm MaxI2
@@ -1304,7 +1304,7 @@ apply (rule_tac t="Max {x \<in> I. Q x}" in iexI)
  thm not_greater_Max
  apply (drule  not_greater_Max[rotated 1], simp+)
 thm subsetD[OF _ MaxI]
-apply (rule subsetD[OF _ MaxI], fastsimp+)
+apply (rule subsetD[OF _ MaxI], fastforce+)
 done
 lemma iWeakSince_conj_not: "finite I \<Longrightarrow>
   ((P t1 \<and> \<not> Q t1). t1 \<B> t2 I. Q t2) = (P t1. t1 \<B> t2 I. Q t2)"
@@ -1714,7 +1714,7 @@ lemma iT_Plus_neg_iTrigger_conv: "(P t1. t1 \<T> t2 (I \<oplus>- k). Q t2) = (P 
 by (simp add: iTrigger_iWeakSince_conv iT_Plus_neg_iWeakSince_conv)
 lemma iT_Minus_iTrigger_conv: "
   (P t1. t1 \<T> t2 (k \<ominus> I). Q t2) = (P (k - t1). t1 \<R> t2 (I \<down>\<le> k). Q (k - t2))"
-by (fastsimp simp add: iTrigger_iWeakSince_conv iT_Minus_iWeakSince_conv iRelease_iUntil_conv iWeakUntil_iUntil_conv)
+by (fastforce simp add: iTrigger_iWeakSince_conv iT_Minus_iWeakSince_conv iRelease_iUntil_conv iWeakUntil_iUntil_conv)
 lemma iT_Div_iTrigger_conv: "
   0 < k \<Longrightarrow> (P t1. t1 \<T> t2 (I \<oslash> k). Q t2) = (P (t1 div k). t1 \<T> t2 I. Q (t2 div k))"
 by (simp add: iTrigger_iWeakSince_conv iT_Div_iWeakSince_conv)

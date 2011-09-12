@@ -21,7 +21,7 @@ proof -
     and pd:"(_Exit_) postdominates (targetnode a)"
     by(auto simp:dyn_weak_control_dependence_def strong_postdominate_def)
   from path as have "n -[]@a#as'\<rightarrow>* (_Exit_)" by simp
-  hence "valid_edge a" by(fastsimp dest:path_split)
+  hence "valid_edge a" by(fastforce dest:path_split)
   with pd show False by -(rule Exit_no_postdominator,auto)
 qed
 

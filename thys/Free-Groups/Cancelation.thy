@@ -37,7 +37,7 @@ by(auto elim: converse_tranclpE)
 
 lemma confluent_unique_normal_form:
   "\<lbrakk> confluent R; R^** a b; R^** a c; \<not> DomainP R b; \<not> DomainP R c  \<rbrakk> \<Longrightarrow> b = c"
-by(fastsimp dest!: confluentD[of R a b c] dest: tranclp_DomainP rtranclpD[where a=b] rtranclpD[where a=c])
+by(fastforce dest!: confluentD[of R a b c] dest: tranclp_DomainP rtranclpD[where a=b] rtranclpD[where a=c])
 
 subsection {* Definition of the @{term "canceling"} relation *}
 

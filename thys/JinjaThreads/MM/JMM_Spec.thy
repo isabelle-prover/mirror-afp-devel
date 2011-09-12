@@ -485,7 +485,7 @@ using assms unfolding new_actions_for_def by blast
 
 lemma action_loc_read_action_singleton:
   "\<lbrakk> r \<in> read_actions E; adal \<in> action_loc P E r; adal' \<in> action_loc P E r \<rbrakk> \<Longrightarrow> adal = adal'"
-by(cases adal, cases adal')(fastsimp elim: read_actions.cases action_loc_aux_cases)
+by(cases adal, cases adal')(fastforce elim: read_actions.cases action_loc_aux_cases)
 
 section {* Orders *}
 subsection {* Action order *}
@@ -638,7 +638,7 @@ using assms unfolding sync_order_def by blast
 
 lemma refl_on_sync_order:
   "refl_onP (sactions P E) (sync_order P E)"
-by(rule refl_onPI)(fastsimp elim: sync_orderE intro: sync_orderI refl_onPD[OF refl_action_order])+
+by(rule refl_onPI)(fastforce elim: sync_orderE intro: sync_orderI refl_onPD[OF refl_action_order])+
 
 lemma antisym_sync_order:
   "antisymP (sync_order P E)"
@@ -803,7 +803,7 @@ apply(erule (1) meta_impE)
 apply(frule (1) action_loc_read_action_singleton)
  apply(rotate_tac 1)
  apply assumption
-apply(fastsimp dest: antisymPD[OF antisym_action_order] elim: write_actions.cases read_actions.cases)
+apply(fastforce dest: antisymPD[OF antisym_action_order] elim: write_actions.cases read_actions.cases)
 done
 
 lemma THE_most_recent_writeI: "P,E \<turnstile> r \<leadsto>mrw w \<Longrightarrow> (THE w. P,E \<turnstile> r \<leadsto>mrw w) = w"
@@ -1328,7 +1328,7 @@ lemma action_loc_change_prefix:
   assumes "ltake n E [\<approx>] ltake n E'" "enat a < n"
   shows "action_loc P E a = action_loc P E' a"
 using action_obs_change_prefix[OF assms]
-by(fastsimp elim!: action_loc_aux_cases intro: action_loc_aux_intros)
+by(fastforce elim!: action_loc_aux_cases intro: action_loc_aux_intros)
 
 lemma sim_action_is_new_action_eq:
   assumes "obs \<approx> obs'"

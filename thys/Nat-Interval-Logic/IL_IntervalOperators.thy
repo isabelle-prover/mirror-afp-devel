@@ -33,7 +33,7 @@ done
 
 lemma "[1\<dots>,2] = {1,2,3}"
 apply (simp add: iIN_def)
-apply fastsimp
+apply fastforce
 done
 
 lemma "[1\<dots>,2]\<otimes>2 = {2,4,6}"
@@ -81,7 +81,7 @@ by (simp add: iT_Mult_def image_mono)
 
 
 lemma iT_Mult_0: "I \<noteq> {} \<Longrightarrow> I \<otimes> 0 = [\<dots>0]"
-by (fastsimp simp add: iTILL_def iT_Mult_def)
+by (fastforce simp add: iTILL_def iT_Mult_def)
 corollary iT_Mult_0_if: "I \<otimes> 0 = (if I = {} then {} else [\<dots>0])"
 by (simp add: iT_Mult_empty iT_Mult_0)
 
@@ -89,7 +89,7 @@ by (simp add: iT_Mult_empty iT_Mult_0)
 lemma iT_Plus_mem_iff: "x \<in> (I \<oplus> k) = (k \<le> x \<and> (x - k) \<in> I)"
 apply (simp add: iT_Plus_def image_iff)
 apply (rule iffI)
- apply fastsimp
+ apply fastforce
 apply (rule_tac x="x - k" in bexI, simp+)
 done
 lemma iT_Plus_mem_iff2: "x + k \<in> (I \<oplus> k) = (x \<in> I)"
@@ -102,7 +102,7 @@ apply (simp add: iT_Mult_0 iT_iff)
 done
 lemma iT_Mult_mem_iff: " 
   0 < k \<Longrightarrow> x \<in> (I \<otimes> k) = (x mod k = 0 \<and> x div k \<in> I)"
-by (fastsimp simp: iT_Mult_def image_iff)
+by (fastforce simp: iT_Mult_def image_iff)
 lemma iT_Mult_mem_iff2: "0 < k \<Longrightarrow> x * k \<in> (I \<otimes> k) = (x \<in> I)"
 by (simp add: iT_Mult_def image_iff)
 
@@ -131,18 +131,18 @@ thm
 
 thm imageI
 lemma iT_Plus_image: "f ` I \<oplus> n = (\<lambda>x. f x + n) ` I"
-by (fastsimp simp: iT_Plus_def)
+by (fastforce simp: iT_Plus_def)
 lemma iT_Mult_image: "f ` I \<otimes> n = (\<lambda>x. f x * n) ` I"
-by (fastsimp simp: iT_Mult_def)
+by (fastforce simp: iT_Mult_def)
 
 lemma iT_Plus_commute: "I \<oplus> a \<oplus> b = I \<oplus> b \<oplus> a"
-by (fastsimp simp: iT_Plus_def)
+by (fastforce simp: iT_Plus_def)
 lemma iT_Mult_commute: "I \<otimes> a \<otimes> b = I \<otimes> b \<otimes> a"
-by (fastsimp simp: iT_Mult_def)
+by (fastforce simp: iT_Mult_def)
 lemma iT_Plus_assoc:"I \<oplus> a \<oplus> b = I \<oplus> (a + b)"
-by (fastsimp simp: iT_Plus_def)
+by (fastforce simp: iT_Plus_def)
 lemma iT_Mult_assoc:"I \<otimes> a \<otimes> b = I \<otimes> (a * b)"
-by (fastsimp simp: iT_Mult_def)
+by (fastforce simp: iT_Mult_def)
 lemma iT_Plus_Mult_distrib: "I \<oplus> n \<otimes> m = I \<otimes> m \<oplus> n * m"
 by (simp add: iT_Plus_def iT_Mult_def image_image add_mult_distrib)
 
@@ -246,7 +246,7 @@ lemma iFROM_add: "[n\<dots>] \<oplus> k = [n+k\<dots>]"
 by (simp add: iFROM_def iT_Plus_def image_add_atLeast)
 
 lemma iIN_add: "[n\<dots>,d] \<oplus> k = [n+k\<dots>,d]"
-by (fastsimp simp add: iIN_def iT_Plus_def image_add_atLeastAtMost)
+by (fastforce simp add: iIN_def iT_Plus_def image_add_atLeastAtMost)
 
 lemma iTILL_add: "[\<dots>i] \<oplus> k = [k\<dots>,i]"
 by (simp add: iIN_0_iTILL_conv[symmetric] iIN_add)
@@ -410,13 +410,13 @@ apply (simp add: iT_defs iT_Mult_def iT_Plus_def atMost_def)
 thm image_Collect
 apply (simp add: image_Collect)
 apply safe
-apply fastsimp+
+apply fastforce+
 done
 
 lemma "[2, mod 10, 4] = {2, 12, 22, 32, 42}"
 apply (simp only: iMODb_conv)
 apply (simp add: iT_defs iT_Plus_def iT_Mult_def)
-apply fastsimp
+apply fastforce
 done
 
 
@@ -482,7 +482,7 @@ lemma iT_Plus_Plus_neg_assoc: "b \<le> a \<Longrightarrow> I \<oplus> a \<oplus>
 apply (simp add: iT_Plus_neg_image_conv)
 apply (clarsimp simp add: set_eq_iff image_iff Bex_def cut_ge_mem_iff iT_Plus_mem_iff)
 apply (rule iffI)
- apply fastsimp
+ apply fastforce
 apply (rule_tac x="x + b" in exI)
 apply (simp add: le_diff_conv)
 done
@@ -490,7 +490,7 @@ lemma iT_Plus_Plus_neg_assoc2: "a \<le> b \<Longrightarrow> I \<oplus> a \<oplus
 apply (simp add: iT_Plus_neg_image_conv)
 apply (clarsimp simp add: set_eq_iff image_iff Bex_def cut_ge_mem_iff iT_Plus_mem_iff)
 apply (rule iffI)
- apply fastsimp
+ apply fastforce
 apply (clarify, rename_tac x')
 apply (rule_tac x="x' + a" in exI)
 apply simp
@@ -506,7 +506,7 @@ apply (rule iffI)
   prefer 2
   apply simp
  apply (simp add: le_imp_diff_le le_add_diff)
-apply fastsimp 
+apply fastforce 
 done
 corollary iT_Plus_neg_Plus_le_Min_eq: "
   \<lbrakk> a \<le> b; a \<le> iMin I \<rbrakk> \<Longrightarrow> (I \<oplus>- a) \<oplus> b = I \<oplus> (b - a)"
@@ -534,7 +534,7 @@ apply (rule iffI)
 apply (clarsimp, rename_tac x')
 apply (rule_tac x="x' - n" in exI)
 apply (simp add: diff_mult_distrib)
-apply fastsimp
+apply fastforce
 done
 
 thm le_add_diff_inverse2
@@ -550,17 +550,17 @@ by (simp add: iT_Plus_Plus_neg_assoc iT_Plus_0)
 
 
 lemma iT_Plus_neg_Un: "(A \<union> B) \<oplus>- k = (A \<oplus>- k) \<union> (B \<oplus>- k)"
-by (fastsimp simp: iT_Plus_neg_def)
+by (fastforce simp: iT_Plus_neg_def)
 
 lemma iT_Plus_neg_Int: "(A \<inter> B) \<oplus>- k = (A \<oplus>- k) \<inter> (B \<oplus>- k)"
-by (fastsimp simp: iT_Plus_neg_def)
+by (fastforce simp: iT_Plus_neg_def)
 
 lemma iT_Plus_neg_Max_singleton: "\<lbrakk> finite I; I \<noteq> {} \<rbrakk> \<Longrightarrow> I \<oplus>- Max I= {0}"
 apply (rule set_eqI)
 apply (simp add: iT_Plus_neg_def)
 apply (case_tac "x = 0")
  apply simp
-apply fastsimp
+apply fastforce
 done
 
 lemma iT_Plus_neg_singleton: "{a} \<oplus>- k = (if k \<le> a then {a - k} else {})"
@@ -598,7 +598,7 @@ done
 text {* Subtractions of constants from intervals *}
 
 lemma iFROM_add_neg: "[n\<dots>] \<oplus>- k = [n - k\<dots>]"
-by (fastsimp simp: set_eq_iff iT_Plus_neg_mem_iff)
+by (fastforce simp: set_eq_iff iT_Plus_neg_mem_iff)
 
 lemma iTILL_add_neg: "[\<dots>n] \<oplus>- k = (if k \<le> n then [\<dots>n - k] else {})"
 by (force simp add: set_eq_iff iT_Plus_neg_mem_iff iT_iff)
@@ -777,16 +777,16 @@ lemma iT_Minus_mono: "A \<subseteq> B \<Longrightarrow> k \<ominus> A \<subseteq
 by (simp add: subset_iff iT_Minus_mem_iff)
 
 lemma iT_Minus_image_conv: "k \<ominus> I = (\<lambda>x. k - x) ` (I \<down>\<le> k)"
-by (fastsimp simp: iT_Minus_def cut_le_def image_iff)
+by (fastforce simp: iT_Minus_def cut_le_def image_iff)
 
 lemma iT_Minus_cut_eq: "k \<le> t \<Longrightarrow> k \<ominus> (I \<down>\<le> t) = k \<ominus> I"
-by (fastsimp simp: set_eq_iff iT_Minus_mem_iff)
+by (fastforce simp: set_eq_iff iT_Minus_mem_iff)
 
 lemma iT_Minus_Minus_cut_eq: "k \<ominus> (k \<ominus> (I \<down>\<le> k)) = I \<down>\<le> k"
-by (fastsimp simp: iT_Minus_def)
+by (fastforce simp: iT_Minus_def)
 
 lemma "10 \<ominus> [\<dots>3] = [7\<dots>,3]"
-by (fastsimp simp: iT_Minus_def)
+by (fastforce simp: iT_Minus_def)
 
 lemma iT_Minus_empty: "k \<ominus> {} = {}"
 by (simp add: iT_Minus_def)
@@ -810,7 +810,7 @@ by (simp add: iT_Minus_image_conv cut_le_Min_empty)
 lemma iT_Minus_Min_singleton: "I \<noteq> {} \<Longrightarrow> (iMin I) \<ominus> I = {0}"
 apply (rule set_eqI)
 apply (simp add: iT_Minus_mem_iff)
-apply (fastsimp intro: iMinI_ex2)
+apply (fastforce intro: iMinI_ex2)
 done
 
 lemma iT_Minus_empty_iff: "(k \<ominus> I = {}) = (I = {} \<or> k < iMin I)"
@@ -871,7 +871,7 @@ thm Max_equality
 apply (rule Max_equality)
   apply (simp add: iT_Minus_mem_iff iMinI_ex2)
  apply (simp add: iT_Minus_finite)
-apply (fastsimp simp: iT_Minus_def)
+apply (fastforce simp: iT_Minus_def)
 done
 
 lemma iT_Minus_Min: "
@@ -909,7 +909,7 @@ done
 lemma iT_Minus_Minus: "a \<ominus> (b \<ominus> I) = (I \<down>\<le> b) \<oplus> a \<oplus>- b"
 apply (rule set_eqI)
 apply (simp add: iT_Minus_image_conv iT_Plus_image_conv iT_Plus_neg_image_conv image_iff Bex_def i_cut_mem_iff)
-apply fastsimp
+apply fastforce
 done
 lemma iT_Minus_Plus_empty: "k < n \<Longrightarrow> k \<ominus> (I \<oplus> n) = {}"
 apply (case_tac "I = {}")
@@ -919,13 +919,13 @@ done
 lemma iT_Minus_Plus_commute: "n \<le> k \<Longrightarrow> k \<ominus> (I \<oplus> n) = (k - n) \<ominus> I"
 apply (rule set_eqI)
 apply (simp add: iT_Minus_image_conv iT_Plus_image_conv image_iff Bex_def i_cut_mem_iff)
-apply fastsimp
+apply fastforce
 done
 
 lemma iT_Minus_Plus_cut_assoc: "(k \<ominus> I) \<oplus> n = (k + n) \<ominus> (I \<down>\<le> k)"
 apply (rule set_eqI)
 apply (simp add: iT_Plus_mem_iff iT_Minus_mem_iff cut_le_mem_iff)
-apply fastsimp
+apply fastforce
 done
 
 lemma iT_Minus_Plus_assoc: "
@@ -945,10 +945,10 @@ done
 
 
 lemma iT_Minus_Un: "k \<ominus> (A \<union> B) = (k \<ominus> A) \<union> (k \<ominus> B)"
-by (fastsimp simp: iT_Minus_def)
+by (fastforce simp: iT_Minus_def)
 
 lemma iT_Minus_Int: "k \<ominus> (A \<inter> B) = (k \<ominus> A) \<inter> (k \<ominus> B)"
-by (fastsimp simp: set_eq_iff iT_Minus_mem_iff)
+by (fastforce simp: set_eq_iff iT_Minus_mem_iff)
 
 lemma iT_Minus_singleton: "k \<ominus> {a} = (if a \<le> k then {k - a} else {})"
 by (simp add: iT_Minus_image_conv cut_le_singleton)
@@ -965,7 +965,7 @@ lemma iMOD_sub: "
 apply (rule set_eqI)
 apply (simp add: iT_Minus_mem_iff iT_iff)
 thm mod_sub_eq_mod_swap[of r k x m, symmetric]
-apply (fastsimp simp add: mod_sub_eq_mod_swap[of r, symmetric])
+apply (fastforce simp add: mod_sub_eq_mod_swap[of r, symmetric])
 done
 
 corollary iMOD_sub1: "
@@ -1016,7 +1016,7 @@ apply (intro conjI impI)
  thm iIN_inter
  apply (subst iIN_inter, simp+)
  apply (rule set_eqI)
- apply (fastsimp simp add: iT_iff mod_diff_mult_self2 diff_diff_left[symmetric] simp del: diff_diff_left)
+ apply (fastforce simp add: iT_iff mod_diff_mult_self2 diff_diff_left[symmetric] simp del: diff_diff_left)
 apply (simp add: Int_absorb2 iMODb_iTILL_subset)
 done
 corollary iMODb_sub1: "
@@ -1195,10 +1195,10 @@ by (simp add: iT_Div_def)
 
 
 lemma iT_Div_Un: "(A \<union> B) \<oslash> k = (A \<oslash> k) \<union> (B \<oslash> k)"
-by (fastsimp simp: iT_Div_def)
+by (fastforce simp: iT_Div_def)
 
 lemma iT_Div_insert: "(insert n I) \<oslash> k = insert (n div k) (I \<oslash> k)"
-by (fastsimp simp: iT_Div_def)
+by (fastforce simp: iT_Div_def)
 
 (* Examples:
   {1,2,3,4} \<oslash> 3 \<inter> {5,6,7} \<oslash> 3 = {0,1} \<inter> {1,2} = {1}
@@ -1373,7 +1373,7 @@ apply (clarsimp simp: infinite_nat_iff_unbounded_le image_iff, rename_tac x1)
 apply (drule_tac x="x1 * k" in spec, clarsimp, rename_tac x2)
 apply (drule div_le_mono[of _ _ k], simp)
 apply (rule_tac x="x2 div k" in exI)
-apply fastsimp
+apply fastforce
 done
 lemma iT_Div_finite_iff: "0 < k \<Longrightarrow> finite (I \<oslash> k) = finite I"
 by (insert iT_Div_infinite_iff, simp)
@@ -1453,7 +1453,7 @@ lemma iMOD_div_ge: "
 apply (frule less_le_trans[of _ _ k], assumption)
 apply (clarsimp simp: set_eq_iff iT_Div_mem_iff Bex_def iT_iff, rename_tac x)
 apply (rule iffI)
- apply (fastsimp simp: div_le_mono)
+ apply (fastforce simp: div_le_mono)
 apply (rule_tac x="
   if x * k < r then r else 
     ((if x * k mod m \<le> r mod m then 0 else m) + r mod m + (x * k - x * k mod m))" 
@@ -1772,7 +1772,7 @@ lemma
   iT_Plus_cut_less2:    "(I \<oplus> k) \<down>< (t + k) = (I \<down>< t) \<oplus> k" and
   iT_Plus_cut_ge2:      "(I \<oplus> k) \<down>\<ge> (t + k) = (I \<down>\<ge> t) \<oplus> k" and
   iT_Plus_cut_greater2: "(I \<oplus> k) \<down>> (t + k) = (I \<down>> t) \<oplus> k"
-unfolding iT_Plus_def by fastsimp+
+unfolding iT_Plus_def by fastforce+
 
 lemma iT_Plus_cut_le: "
   (I \<oplus> k) \<down>\<le> t = (if t < k then {} else I \<down>\<le> (t - k) \<oplus> k)"
@@ -1804,7 +1804,7 @@ lemma
   iT_Mult_cut_less2:    "0 < k \<Longrightarrow> (I \<otimes> k) \<down>< (t * k) = (I \<down>< t) \<otimes> k" and
   iT_Mult_cut_ge2:      "0 < k \<Longrightarrow> (I \<otimes> k) \<down>\<ge> (t * k) = (I \<down>\<ge> t) \<otimes> k" and
   iT_Mult_cut_greater2: "0 < k \<Longrightarrow> (I \<otimes> k) \<down>> (t * k) = (I \<down>> t) \<otimes> k"
-unfolding iT_Mult_def by fastsimp+
+unfolding iT_Mult_def by fastforce+
 
 lemma iT_Mult_cut_le: "
   0 < k \<Longrightarrow> (I \<otimes> k) \<down>\<le> t = (I \<down>\<le> (t div k)) \<otimes> k"
@@ -1827,7 +1827,7 @@ apply (rule iffI)
 apply (rule ccontr, simp add: linorder_not_less)
 apply (drule le_imp_less_or_eq[of t], erule disjE)
  thm less_mod_0_imp_div_less[of t x k]
- apply (fastsimp dest: less_mod_0_imp_div_less[of t _ k])
+ apply (fastforce dest: less_mod_0_imp_div_less[of t _ k])
 apply simp
 done
 lemma iT_Mult_cut_greater: "
@@ -1837,7 +1837,7 @@ apply (rule conj_cong, simp)+
 apply (rule iffI)
  apply (simp add: less_mod_ge_imp_div_less)
 apply (rule ccontr, simp add: linorder_not_less)
-apply (fastsimp dest: div_le_mono[of _ _ k])
+apply (fastforce dest: div_le_mono[of _ _ k])
 done
 lemma iT_Mult_cut_ge: "
   0 < k \<Longrightarrow> (I \<otimes> k) \<down>\<ge> t = 
@@ -1853,7 +1853,7 @@ apply (rule ccontr)
 apply (drule Suc_le_lessD)
 apply (simp add: linorder_not_le)
 thm div_le_mono[OF order_less_imp_le]
-apply (fastsimp dest: div_le_mono[OF order_less_imp_le, of _ t k])
+apply (fastforce dest: div_le_mono[OF order_less_imp_le, of _ t k])
 done
 
 lemma iT_Plus_neg_cut_le2: "k \<le> t \<Longrightarrow> (I \<oplus>- k) \<down>\<le> (t - k) = (I \<down>\<le> t) \<oplus>- k"
@@ -1903,32 +1903,32 @@ by (insert iT_Plus_neg_cut_greater2[of k "t + k" I], simp)
 
 
 lemma iT_Minus_cut_le2: "t \<le> k \<Longrightarrow> (k \<ominus> I) \<down>\<le> (k - t) = k \<ominus> (I \<down>\<ge> t)"
-by (fastsimp simp: i_cut_mem_iff iT_Minus_mem_iff)
+by (fastforce simp: i_cut_mem_iff iT_Minus_mem_iff)
 lemma iT_Minus_cut_less2: "(k \<ominus> I) \<down>< (k - t) = k \<ominus> (I \<down>> t)"
-by (fastsimp simp: i_cut_mem_iff iT_Minus_mem_iff)
+by (fastforce simp: i_cut_mem_iff iT_Minus_mem_iff)
 lemma iT_Minus_cut_ge2: "(k \<ominus> I) \<down>\<ge> (k - t) = k \<ominus> (I \<down>\<le> t)"
-by (fastsimp simp: i_cut_mem_iff iT_Minus_mem_iff)
+by (fastforce simp: i_cut_mem_iff iT_Minus_mem_iff)
 lemma iT_Minus_cut_greater2: "t \<le> k \<Longrightarrow> (k \<ominus> I) \<down>> (k - t) = k \<ominus> (I \<down>< t)"
-by (fastsimp simp: i_cut_mem_iff iT_Minus_mem_iff)
+by (fastforce simp: i_cut_mem_iff iT_Minus_mem_iff)
 
 lemma iT_Minus_cut_le: "(k \<ominus> I) \<down>\<le> t = k \<ominus> (I \<down>\<ge> (k - t))"
-by (fastsimp simp: i_cut_mem_iff iT_Minus_mem_iff)
+by (fastforce simp: i_cut_mem_iff iT_Minus_mem_iff)
 lemma iT_Minus_cut_less: "
   (k \<ominus> I) \<down>< t = (if t \<le> k then k \<ominus> (I \<down>> (k - t)) else k \<ominus> I)"
 apply (case_tac "t \<le> k")
  apply (cut_tac iT_Minus_cut_less2[of k I "k - t"], simp)
-apply (fastsimp simp: i_cut_mem_iff iT_Minus_mem_iff)
+apply (fastforce simp: i_cut_mem_iff iT_Minus_mem_iff)
 done
 lemma iT_Minus_cut_ge: "
   (k \<ominus> I) \<down>\<ge> t = (if t \<le> k then k \<ominus> (I \<down>\<le> (k - t)) else {})"
 apply (case_tac "t \<le> k")
  apply (cut_tac iT_Minus_cut_ge2[of k I "k - t"], simp)
-apply (fastsimp simp: i_cut_mem_iff iT_Minus_mem_iff)
+apply (fastforce simp: i_cut_mem_iff iT_Minus_mem_iff)
 done
 lemma iT_Minus_cut_greater: "(k \<ominus> I) \<down>> t = k \<ominus> (I \<down>< (k - t))"
 apply (case_tac "t \<le> k")
  apply (cut_tac iT_Minus_cut_greater2[of "k - t" k I], simp+)
-apply (fastsimp simp: i_cut_mem_iff iT_Minus_mem_iff)
+apply (fastforce simp: i_cut_mem_iff iT_Minus_mem_iff)
 done
 
 
@@ -1941,7 +1941,7 @@ lemma iT_Div_cut_le: "
   0 < k \<Longrightarrow> (I \<oslash> k) \<down>\<le> t = I \<down>\<le> (t * k + (k - Suc 0)) \<oslash> k"
 apply (simp add: set_eq_iff i_cut_mem_iff iT_Div_mem_iff Bex_def)
 thm div_le_conv
-apply (fastsimp simp: div_le_conv)
+apply (fastforce simp: div_le_conv)
 done
 lemma iT_Div_cut_less: "
   0 < k \<Longrightarrow> (I \<oslash> k) \<down>< t = I \<down>< (t * k) \<oslash> k"
@@ -1953,7 +1953,7 @@ lemma iT_Div_cut_ge: "
   0 < k \<Longrightarrow> (I \<oslash> k) \<down>\<ge> t = I \<down>\<ge> (t * k) \<oslash> k"
 apply (simp add: set_eq_iff i_cut_mem_iff iT_Div_mem_iff Bex_def)
 thm le_div_conv
-apply (fastsimp simp: le_div_conv)
+apply (fastforce simp: le_div_conv)
 done
 lemma iT_Div_cut_greater: "
   0 < k \<Longrightarrow> (I \<oslash> k) \<down>> t = I \<down>> (t * k + (k - Suc 0)) \<oslash> k"
@@ -2301,7 +2301,7 @@ by (subst iT_Minus_card, rule cut_le_card)
 
 lemma iT_Div_0_card_if: "
   card (I \<oslash> 0) = (if I ={} then 0 else Suc 0)"
-by (fastsimp simp: iT_Div_empty iT_Div_0 iTILL_0)
+by (fastforce simp: iT_Div_empty iT_Div_0 iTILL_0)
 
 lemma Int_empty_setsum:"
   (\<Sum>k\<le>(n::nat). if {} \<inter> (I k) = {} then 0 else Suc 0) = 0"
@@ -2365,7 +2365,7 @@ apply (rule set_eqI, rename_tac x)
 apply (simp add: le_less[of _ "Suc n"] less_Suc_eq_le)
 apply (simp add: conj_disj_distribR)
 apply (intro conjI impI)
- apply fastsimp
+ apply fastforce
 apply (rule iffI, clarsimp+)
 done
 
@@ -2381,11 +2381,11 @@ apply (induct n)
  apply (simp add: div_eq_0_conv iIN_0_iTILL_conv)
  apply (subgoal_tac "I \<inter> [\<dots>d - Suc 0] \<noteq> {}")
   prefer 2
-  apply (simp add: ex_in_conv[symmetric], fastsimp)
+  apply (simp add: ex_in_conv[symmetric], fastforce)
  apply (simp add: card_1_singleton_conv)
  apply (rule_tac x=0 in exI)
  apply (rule set_eqI)
- apply (simp add: ex_in_conv[symmetric], fastsimp)
+ apply (simp add: ex_in_conv[symmetric], fastforce)
 apply simp
 thm mod_partition_count_Suc
 apply (simp add: mod_partition_count_Suc)
@@ -2508,8 +2508,8 @@ apply (induct n)
   apply (rule set_eqI)
   apply (simp add: iT_Div_mem_iff)
   apply (rule iffI)
-   apply (fastsimp simp: div_eq_0_conv')
-  apply fastsimp
+   apply (fastforce simp: div_eq_0_conv')
+  apply fastforce
  apply (simp add: iT_Div_singleton card_singleton del: Max_le_iff)
  apply (drule Suc_le_mono[THEN iffD2, of _ "d - Suc 0"])
  thm nat_card_le_Max
@@ -2748,7 +2748,7 @@ lemma iT_Div_icard_ge: "icard I div (enat d) + enat (if icard I mod (enat d) = 0
 apply (case_tac "d = 0")
  apply (simp add: icard_finite iT_Div_0_finite)
  apply (case_tac "icard I")
-  apply (fastsimp simp: iT_Div_0_card_if)
+  apply (fastforce simp: iT_Div_0_card_if)
  apply (simp add: iT_Div_0_card_if icard_infinite_conv infinite_imp_nonempty)
 apply (case_tac "finite I")
  apply (simp add: iT_Div_finite_iff icard_finite iT_Div_card_ge)
@@ -2858,18 +2858,18 @@ lemmas i_UN_set_defs =
   iMOD2_UN_set_def iMODb2_UN_set_def
 
 lemma iFROM_set_UN_set_eq: "iFROM_set = iFROM_UN_set"
-by (fastsimp simp: iFROM_set_def iFROM_UN_set_def)
+by (fastforce simp: iFROM_set_def iFROM_UN_set_def)
 lemma 
   iTILL_set_UN_set_eq: "iTILL_set = iTILL_UN_set" and
   iIN_set_UN_set_eq:   "iIN_set = iIN_UN_set" and
   iMOD_set_UN_set_eq:  "iMOD_set = iMOD_UN_set" and
   iMODb_set_UN_set_eq: "iMODb_set = iMODb_UN_set"
-by (fastsimp simp: i_set_defs i_UN_set_defs)+
+by (fastforce simp: i_set_defs i_UN_set_defs)+
 
 lemma iMOD2_set_UN_set_eq: "iMOD2_set = iMOD2_UN_set"
-by (fastsimp simp: i_set_defs i_UN_set_defs)
+by (fastforce simp: i_set_defs i_UN_set_defs)
 lemma iMODb2_set_UN_set_eq: "iMODb2_set = iMODb2_UN_set"
-by (fastsimp simp: i_set_defs i_UN_set_defs)
+by (fastforce simp: i_set_defs i_UN_set_defs)
 
 lemmas i_set_i_UN_set_sets_eq =
   iFROM_set_UN_set_eq
@@ -2882,9 +2882,9 @@ lemmas i_set_i_UN_set_sets_eq =
 thm i_set_i_UN_set_sets_eq
 
 lemma iMOD2_set_iMOD_set_subset: "iMOD2_set \<subseteq> iMOD_set"
-by (fastsimp simp: i_set_defs)
+by (fastforce simp: i_set_defs)
 lemma iMODb2_set_iMODb_set_subset: "iMODb2_set \<subseteq> iMODb_set"
-by (fastsimp simp: i_set_defs)
+by (fastforce simp: i_set_defs)
 
 definition i_set :: "(nat set) set" where
   "i_set \<equiv> iFROM_set \<union> iTILL_set \<union> iIN_set \<union> iMOD_set \<union> iMODb_set"
@@ -2918,18 +2918,18 @@ apply (rule subsetI)
 apply (simp add: i_set_defs)
 apply (elim disjE)
      apply blast
-    apply (fastsimp simp: iIN_0_iTILL_conv[symmetric])
+    apply (fastforce simp: iIN_0_iTILL_conv[symmetric])
    apply blast
   apply (elim exE)
   apply (case_tac "2 \<le> m", blast)
   apply (simp add: nat_ge2_conv)
-  apply (fastsimp simp: iMOD_0 iMOD_1)
+  apply (fastforce simp: iMOD_0 iMOD_1)
  apply (elim exE)
  apply (case_tac "1 \<le> c")
-  apply (case_tac "2 \<le> m", fastsimp)
+  apply (case_tac "2 \<le> m", fastforce)
   apply (simp add: nat_ge2_conv) 
-  apply (fastsimp simp: iMODb_mod_0 iMODb_mod_1)
- apply (fastsimp simp: linorder_not_le less_Suc_eq_le iMODb_0)
+  apply (fastforce simp: iMODb_mod_0 iMODb_mod_1)
+ apply (fastforce simp: linorder_not_le less_Suc_eq_le iMODb_0)
 thm Un_mono
 apply (rule Un_mono)+
 apply (simp_all add: iMOD2_set_iMOD_set_subset iMODb2_set_iMODb_set_subset)
@@ -3039,15 +3039,15 @@ done
 
 lemma i_set_i_set0_mem_conv: "(I \<in> i_set) = (I \<in> i_set0 \<and> I \<noteq> {})"
 apply (insert i_set_imp_not_empty[of I])
-apply (fastsimp simp: i_set0_i_set_mem_conv)
+apply (fastforce simp: i_set0_i_set_mem_conv)
 done
 
 lemma i_set0_i_set_conv: "i_set0 - {{}} = i_set"
-by (fastsimp simp: i_set_i_set0_mem_conv)
+by (fastforce simp: i_set_i_set0_mem_conv)
 corollary i_set_subset_i_set0: "i_set \<subseteq> i_set0"
 by (simp add: i_set0_i_set_conv[symmetric] Diff_subset)
 lemma i_set_singleton: "{a} \<in> i_set"
-by (fastsimp simp: i_set_def iIN_set_def iIN_0[symmetric])
+by (fastforce simp: i_set_def iIN_set_def iIN_0[symmetric])
 lemma i_set0_singleton: "{a} \<in> i_set0"
 apply (rule subsetD[OF i_set_subset_i_set0])
 apply (simp add: iIN_0[symmetric] i_set_i_set_ind_eq i_set_ind.intros)
@@ -3228,23 +3228,23 @@ lemma i_set_Plus_neg_closed: "
   \<lbrakk> I \<in> i_set; \<exists>x\<in>I. k \<le> x \<rbrakk> \<Longrightarrow> I \<oplus>- k \<in> i_set"
 apply (simp add: i_set_i_set_ind_eq)
 apply (induct rule: i_set_ind.induct)
-apply (fastsimp simp: iT_iff iT_add_neg)+
+apply (fastforce simp: iT_iff iT_add_neg)+
 done
 
 lemma i_set_Minus_closed: "
   \<lbrakk> I \<in> i_set; iMin I \<le> k \<rbrakk> \<Longrightarrow> k \<ominus> I \<in> i_set"
 apply (simp add: i_set_i_set_ind_eq)
 apply (induct rule: i_set_ind.induct)
-apply (fastsimp simp: iT_Min iT_sub)+
+apply (fastforce simp: iT_Min iT_sub)+
 done
 
 
 lemma i_set0_Plus_neg_closed: "I \<in> i_set0 \<Longrightarrow> I \<oplus>- k \<in> i_set0"
 apply (simp add: i_set0_i_set0_ind_eq)
 apply (induct rule: i_set0_ind.induct)
- apply (fastsimp simp: iT_Plus_neg_empty)
+ apply (fastforce simp: iT_Plus_neg_empty)
 apply (induct_tac I rule: i_set_ind.induct)
-apply (fastsimp simp: iT_add_neg)+
+apply (fastforce simp: iT_add_neg)+
 done
 
 lemma i_set0_Minus_closed: "I \<in> i_set0 \<Longrightarrow> k \<ominus> I \<in> i_set0"
@@ -3252,7 +3252,7 @@ apply (simp add: i_set0_i_set0_ind_eq)
 apply (induct rule: i_set0_ind.induct)
  apply (simp add: iT_Minus_empty i_set0_ind_empty)
 apply (induct_tac I rule: i_set_ind.induct)
-apply (fastsimp simp: iT_sub)+
+apply (fastforce simp: iT_sub)+
 done
 
 lemmas i_set_IntOp_closed =
@@ -3282,7 +3282,7 @@ apply (drule i_set_infinite_as_iMOD)
  apply (simp add: iT_Div_finite_iff iMOD_infinite)
 apply (elim exE, rename_tac r' m')
 apply (frule iMOD_div_mod_gr0_not_ex[of k m r], assumption+)
-apply fastsimp
+apply fastforce
 done
 lemma iMODb_div_mod_gr0_not_in_i_set: "
   \<lbrakk> 0 < k; k < m; 0 < m mod k; k \<le> c \<rbrakk> \<Longrightarrow> [r, mod m, c] \<oslash> k \<notin> i_set"
@@ -3291,7 +3291,7 @@ apply (drule i_set_finite_as_iMODb)
  apply (simp add: iT_Div_finite_iff iMODb_finite)
 apply (elim exE, rename_tac r' m' c')
 apply (frule iMODb_div_mod_gr0_not_ex[of k m c r], assumption+)
-apply fastsimp
+apply fastforce
 done
 
 lemma "[0, mod 3] \<oslash> 2 \<notin> i_set"
@@ -3381,7 +3381,7 @@ definition i_set0_cont_min :: "(nat set) set" where
 lemma i_set_cont_min_eq: "i_set_cont = i_set_cont_min"
 apply (rule set_eqI, rule iffI)
  apply (rename_tac x, rule_tac a=x in i_set_cont.cases)
- apply (fastsimp simp: iIN_0_iTILL_conv[symmetric])+
+ apply (fastforce simp: iIN_0_iTILL_conv[symmetric])+
 apply (rename_tac x, rule_tac a=x in i_set_cont_min.cases)
 apply blast+
 done
@@ -3616,7 +3616,7 @@ apply (rule_tac x="[0, mod Suc d * k]" in bexI)
  thm i_set_infinite_as_iMOD
  apply (frule i_set_infinite_as_iMOD)
   apply (simp add: iT_Div_finite_iff iMOD_infinite)
- apply fastsimp
+ apply fastforce
 apply (simp add: i_set_mult.intros del: mult_Suc)
 done
 

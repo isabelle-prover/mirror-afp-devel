@@ -135,8 +135,8 @@ lemma \<tau>mredT_add_thread_inv:
   assumes \<tau>red: "\<tau>mredT s s'" and tst: "thr s t = None"
   shows "\<tau>mredT (locks s, ((thr s)(t \<mapsto> xln), shr s), wset s, interrupts s) (locks s', ((thr s')(t \<mapsto> xln), shr s'), wset s', interrupts s')"
 proof -
-  obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastsimp
-  obtain ls' ts' m' ws' is' where s': "s' = (ls', (ts', m'), ws', is')" by(cases s') fastsimp
+  obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastforce
+  obtain ls' ts' m' ws' is' where s': "s' = (ls', (ts', m'), ws', is')" by(cases s') fastforce
   from \<tau>red s s' obtain t' where red: "(ls, (ts, m), ws, is) -t'\<triangleright>\<epsilon>\<rightarrow> (ls', (ts', m'), ws', is')"
     and \<tau>: "m\<tau>move (ls, (ts, m), ws, is) (t', \<epsilon>) (ls', (ts', m'), ws', is')"
     by(auto simp add: mthr.silent_move_iff dest: m\<tau>move_silentD)
@@ -278,7 +278,7 @@ next
   note IH = `\<And>s. \<lbrakk> A = dom (thr s); mthr.\<tau>diverge s \<rbrakk>
              \<Longrightarrow> \<exists>t x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wset s t = None \<and> \<tau>diverge t (x, shr s)`
   from `insert t A = dom (thr s)`
-  obtain x ln where tst: "thr s t = \<lfloor>(x, ln)\<rfloor>" by(fastsimp simp add: dom_def)
+  obtain x ln where tst: "thr s t = \<lfloor>(x, ln)\<rfloor>" by(fastforce simp add: dom_def)
   def s' == "(locks s, ((thr s)(t := None), shr s), wset s, interrupts s)"
   show ?case
   proof(cases "ln = no_wait_locks \<and> \<tau>diverge t (x, shr s) \<and> wset s t = None")
@@ -314,7 +314,7 @@ next
 	  and tst': "thr s t' = \<lfloor>(x', no_wait_locks)\<rfloor>" 
 	  and aoe: "actions_ok s t' ta"
           and s'': "redT_upd s t' ta x'' m'' s''"
-	  by cases(fastsimp elim: m\<tau>move.cases)+
+	  by cases(fastforce elim: m\<tau>move.cases)+
         from `m\<tau>move s (t', ta) s''` have [simp]: "ta = \<epsilon>"
 	  by(auto elim!: m\<tau>move.cases dest!: silent_tl)
         hence wst': "wset s t' = None" using aoe by auto
@@ -400,7 +400,7 @@ lemma inf_step_silentD:
   and lset: "(t, ta) \<in> lset ttas"
   shows "ta = \<epsilon>"
 using lset step
-by(induct arbitrary: s rule: lset_induct)(fastsimp elim: trsys.inf_step.cases simp add: mthr.silent_move2_def dest: m\<tau>move_silentD)+
+by(induct arbitrary: s rule: lset_induct)(fastforce elim: trsys.inf_step.cases simp add: mthr.silent_move2_def dest: m\<tau>move_silentD)+
 
 end
 

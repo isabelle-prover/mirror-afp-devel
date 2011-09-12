@@ -115,11 +115,11 @@ apply(induct t)
  apply simp
 apply simp
 apply(rule conjI)
- apply fastsimp
+ apply fastforce
 apply(rule impI)
 apply(rule conjI)
- apply fastsimp
-apply(fastsimp simp:set_of_rem)
+ apply fastforce
+apply(fastforce simp:set_of_rem)
 done
 
 theorem remove_sorted: "sorted t ==> sorted(remove x t)"

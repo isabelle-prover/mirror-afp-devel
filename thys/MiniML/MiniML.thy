@@ -193,7 +193,7 @@ declare has_type.intros [intro!]
 lemma has_type_le_env [rule_format (no_asm)]: "A |- e::t ==> !B. A <= B -->  B |- e::t"
 apply (erule has_type.induct)
    apply (simp (no_asm) add: le_env_def)
-   apply (fastsimp elim: bound_typ_instance_trans)
+   apply (fastforce elim: bound_typ_instance_trans)
   apply simp
  apply fast
 apply (slow elim: le_env_free_tv [THEN free_tv_subset_gen_le])

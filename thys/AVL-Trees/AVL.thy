@@ -167,7 +167,7 @@ apply (case_tac "x<n")
   apply (frule_tac n = n in height_l_bal) apply simp apply simp
   apply (simp add: max_def) apply arith
  apply(rule conjI)
-  apply fastsimp
+  apply fastforce
  apply (simp add: max_def) apply arith
 apply (case_tac "height (insrt x t2) = height t1 + 2")
  apply(rule conjI)
@@ -175,7 +175,7 @@ apply (case_tac "height (insrt x t2) = height t1 + 2")
  apply (frule_tac n = n in height_r_bal) apply simp apply simp
  apply (simp add: max_def) apply arith
 apply(rule conjI)
- apply fastsimp
+ apply fastforce
 apply (simp add: max_def) apply arith
 done
 

@@ -60,7 +60,7 @@ done
 lemma congs_sym: assumes A: "(xs::'a list) \<cong> ys" shows "ys \<cong> xs"
 proof (simp add:congs_def)
   let ?l = "length xs"
-  from A obtain n where ys: "ys = rotate n xs" by(fastsimp simp add:congs_def)
+  from A obtain n where ys: "ys = rotate n xs" by(fastforce simp add:congs_def)
   have "xs = rotate ?l xs" by simp
   also have "\<dots> = rotate (?l - n mod ?l + n mod ?l) xs"
   proof (cases)
@@ -75,7 +75,7 @@ proof (simp add:congs_def)
     by(simp add:rotate_rotate)
   also have "rotate (n mod ?l) xs = rotate n xs"
     by(rule rotate_conv_mod[symmetric])
-  finally show "\<exists>m. xs = rotate m ys" by(fastsimp simp add:ys)
+  finally show "\<exists>m. xs = rotate m ys" by(fastforce simp add:ys)
 qed
 
 lemma congs_trans: "(xs::'a list) \<cong> ys \<Longrightarrow> ys \<cong> zs \<Longrightarrow> xs \<cong> zs"
@@ -90,8 +90,8 @@ apply(unfold equiv_def sym_def trans_def refl_on_def)
 apply(rule conjI)
  apply simp
 apply(rule conjI)
- apply(fastsimp intro:congs_sym)
-apply(fastsimp intro:congs_trans)
+ apply(fastforce intro:congs_sym)
+apply(fastforce intro:congs_trans)
 done
 
 lemma congs_distinct:
@@ -116,9 +116,9 @@ apply(rule iffI)
  apply(clarsimp simp: rotate_map)
  apply(drule map_inj_on)
   apply(simp add:Un_commute)
- apply (fastsimp)
+ apply (fastforce)
 apply clarsimp
-apply(fastsimp simp: rotate_map)
+apply(fastforce simp: rotate_map)
 done
 
 
@@ -168,11 +168,11 @@ apply(clarsimp simp:is_pr_Hom_def quotient_def)
 apply auto
 apply(subgoal_tac "EX F' : Fs\<^isub>2. {\<cong>} `` {map \<phi> F} = {\<cong>} `` {F'}")
  prefer 2 apply blast
-apply (fastsimp simp: eq_equiv_class_iff[OF equiv_EqF] dest!:congs_pres_nodes)
+apply (fastforce simp: eq_equiv_class_iff[OF equiv_EqF] dest!:congs_pres_nodes)
 apply(subgoal_tac "EX F' : Fs\<^isub>1. {\<cong>} `` {map \<phi> F'} = {\<cong>} `` {F}")
- apply (fastsimp simp: eq_equiv_class_iff[OF equiv_EqF] dest!:congs_pres_nodes)
+ apply (fastforce simp: eq_equiv_class_iff[OF equiv_EqF] dest!:congs_pres_nodes)
 apply (erule equalityE)
-apply(fastsimp simp:UN_subset_iff)
+apply(fastforce simp:UN_subset_iff)
 done
 
 lemma pr_Hom_pres_nodes:
@@ -237,7 +237,7 @@ lemma is_Hom_distinct:
   \<Longrightarrow> \<forall>F\<in>Fs\<^isub>1. distinct(map \<phi> F)"
 apply(clarsimp simp add:is_pr_Hom_def)
 apply(subgoal_tac "\<exists> F' \<in> Fs\<^isub>2. (map \<phi> F, F') : {\<cong>}")
- apply(fastsimp simp add: congs_def)
+ apply(fastforce simp add: congs_def)
 apply(subgoal_tac "\<exists> F' \<in> Fs\<^isub>2. {map \<phi> F}//{\<cong>} = {F'}//{\<cong>}")
  apply clarify
  apply(rule_tac x = F' in bexI)
@@ -329,11 +329,11 @@ apply(rule conjI)
  apply(subgoal_tac "{\<cong>} `` {F\<^isub>2} = {\<cong>} `` {map \<phi> F\<^isub>1}")
   prefer 2
   apply(rule equiv_class_eq[OF equiv_EqF])
-  apply(fastsimp intro: congs_sym)
+  apply(fastforce intro: congs_sym)
  apply(subgoal_tac "{F\<^isub>2}//{\<cong>} = {map \<phi> F\<^isub>1}//{\<cong>}")
   prefer 2 apply(simp add:singleton_quotient)
  apply(subgoal_tac "\<forall>F\<in>Fs\<^isub>1'. \<not> (map \<phi> F) \<cong> (map \<phi> F\<^isub>1)")
-  apply(fastsimp simp:Iso_def quotient_def Image_Collect_split simp del: Collect_congs_eq_iff
+  apply(fastforce simp:Iso_def quotient_def Image_Collect_split simp del: Collect_congs_eq_iff
                  dest!: eq_equiv_class[OF _ equiv_EqF])
  apply clarify
  apply(subgoal_tac "inj_on \<phi> (set F \<union> set F\<^isub>1)")
@@ -352,11 +352,11 @@ apply(clarsimp intro!:congs_sym)
 apply(clarsimp simp add: is_pr_Iso_def is_pr_Hom_def quotient_diff1)
 apply (simp add:singleton_quotient)
 apply(subgoal_tac "F\<^isub>2 \<cong> (map \<phi> F\<^isub>1)")
- prefer 2 apply(fastsimp simp add:congs_def)
+ prefer 2 apply(fastforce simp add:congs_def)
 apply(subgoal_tac "{\<cong>}``{map \<phi> F\<^isub>1} = {\<cong>}``{F\<^isub>2}")
  prefer 2
  apply(rule equiv_class_eq[OF equiv_EqF])
- apply(fastsimp intro:congs_sym)
+ apply(fastforce intro:congs_sym)
 apply(subgoal_tac "{\<cong>}``{F\<^isub>2} \<in> Fs\<^isub>2 // {\<cong>}")
  prefer 2 apply(erule quotientI)
 apply (simp add:insert_absorb quotient_def)
@@ -406,20 +406,20 @@ primrec pr_iso_test0 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fg
           then pr_iso_test0 (m ++ m') Fs\<^isub>1 (remove1 F\<^isub>2 Fs\<^isub>2) else False))"
 
 lemma map_compatI: "\<lbrakk> f \<subseteq>\<^sub>m Some o h; g \<subseteq>\<^sub>m Some o h \<rbrakk> \<Longrightarrow> f \<subseteq>\<^sub>m f++g"
-by (fastsimp simp add: map_le_def map_add_def dom_def split:option.splits)
+by (fastforce simp add: map_le_def map_add_def dom_def split:option.splits)
 
 lemma inj_on_map_addI1:
  "\<lbrakk> inj_on m A; m \<subseteq>\<^sub>m m++m'; A \<subseteq> dom m \<rbrakk> \<Longrightarrow> inj_on (m++m') A"
 apply (clarsimp simp add: inj_on_def map_add_def map_le_def dom_def
                 split:option.splits)
 apply(rule conjI)
- apply fastsimp
+ apply fastforce
 apply auto
- apply fastsimp
+ apply fastforce
 apply(subgoal_tac "m x = Some a")
- prefer 2 apply (fastsimp)
+ prefer 2 apply (fastforce)
 apply(subgoal_tac "m y = Some a")
- prefer 2 apply (fastsimp)
+ prefer 2 apply (fastforce)
 apply(subgoal_tac "m x = m y")
  prefer 2 apply simp
 apply (blast)
@@ -434,15 +434,15 @@ lemma inj_on_map_add_Un:
   \<Longrightarrow> inj_on (m ++ m') (A \<union> B)"
 apply(simp add:inj_on_Un)
 apply(rule conjI)
- apply(fastsimp intro!: inj_on_map_addI1 map_compatI)
+ apply(fastforce intro!: inj_on_map_addI1 map_compatI)
 apply(clarify)
 apply(subgoal_tac "m ++ m' \<subseteq>\<^sub>m Some \<circ> f")
  prefer 2 apply(fast intro:map_add_le_mapI map_compatI)
 apply(subgoal_tac "dom m' - dom m \<subseteq> dom(m++m')")
- prefer 2 apply(fastsimp)
+ prefer 2 apply(fastforce)
 apply(insert map_image_eq[of "dom m' - dom m" "m++m'" "Some o f"])
 apply(subgoal_tac "dom m - dom m' \<subseteq> dom(m++m')")
- prefer 2 apply(fastsimp)
+ prefer 2 apply(fastforce)
 apply(insert map_image_eq[of "dom m - dom m'" "m++m'" "Some o f"])
 apply (clarsimp simp add:image_compose)
 apply blast
@@ -484,7 +484,7 @@ apply(induct Fs\<^isub>1)
  apply(rule iffI)
   apply (simp add:is_pr_iso_def is_pr_Iso_def is_pr_Hom_def)
   apply(rule_tac x = "the o m" in exI)
-  apply (fastsimp simp: map_le_def)
+  apply (fastforce simp: map_le_def)
  apply (clarsimp simp:is_pr_iso_def is_pr_Iso_def is_pr_Hom_def)
 apply(rename_tac F\<^isub>1 Fs\<^isub>1' m Fs\<^isub>2)
 apply(clarsimp simp:Let_def Ball_def)
@@ -518,7 +518,7 @@ apply clarsimp
 apply(rule_tac x = \<phi> in exI)
 apply simp
 apply(rule conjI)
- apply(fastsimp intro!:map_add_le_mapI simp:map_of_zip_submap)
+ apply(fastforce intro!:map_add_le_mapI simp:map_of_zip_submap)
 apply(simp add:Un_ac)
 apply(rule context_conjI)
 apply(simp add:map_of_zip_submap[symmetric])
@@ -627,7 +627,7 @@ apply(induct xys)
 apply (simp add: notin_range_map_of inj_on_map_upd)
 apply(clarsimp simp add:image_def)
 apply(drule map_of_is_SomeD)
-apply fastsimp
+apply fastforce
 done
 
 lemma lem: "Ball (set xs) P \<Longrightarrow> Ball (set (remove1 x xs)) P = True"
@@ -669,13 +669,13 @@ apply (induct xys)
 apply (simp add:image_map_upd dom_map_of_conv_image_fst)
 apply(erule thin_rl)
 apply (clarsimp simp:image_def Image_def)
-apply((rule conjI, clarify)+, fastsimp)
-apply fastsimp
+apply((rule conjI, clarify)+, fastforce)
+apply fastforce
 apply(clarify)
-apply((rule conjI, clarify)+, fastsimp)
-apply fastsimp
-apply fastsimp
-apply fastsimp
+apply((rule conjI, clarify)+, fastforce)
+apply fastforce
+apply fastforce
+apply fastforce
 done
 
 
@@ -699,13 +699,13 @@ apply(simp add: compat_def Let_def map_le_iff_map_add_commute)
 apply(rule iffI)
  apply(rule context_conjI)
   apply(rule ext)
-  apply (fastsimp simp add:map_add_def split:option.split)
+  apply (fastforce simp add:map_add_def split:option.split)
  apply(simp add:inj_on_Un)
  apply(drule sym)
  apply simp
  apply(simp add: dom_map_of_conv_image_fst image_map_of_conv_Image)
  apply(simp add: image_def Image_def)
- apply fastsimp
+ apply fastforce
 apply clarsimp
 apply(rename_tac a b aa ba)
 apply(rule iffI)
@@ -748,7 +748,7 @@ lemma merge0_correct:
   "\<forall>I I'. oneone I \<longrightarrow> oneone I' \<longrightarrow> compat I' I
   \<longrightarrow> map_of(merge0 I' I) = map_of I ++ map_of I'"
 apply(simp add:compat_def merge0_def help1 fun_eq_iff map_add_def restrict_map_def split:option.split)
-apply fastsimp
+apply fastforce
 done
 
 lemma merge0_inv:

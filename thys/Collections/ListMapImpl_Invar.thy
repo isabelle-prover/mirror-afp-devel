@@ -151,7 +151,7 @@ lemma lmi_add_dj_impl:
   apply (auto simp add: lmi_defs)
   apply (blast intro: map_add_comm)
   apply (simp add: rev_map[symmetric])
-  apply fastsimp
+  apply fastforce
   done
   
 interpretation lmi: map_add_dj lmi_\<alpha> lmi_invar lmi_add_dj using lmi_add_dj_impl .

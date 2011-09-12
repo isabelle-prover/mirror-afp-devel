@@ -68,7 +68,7 @@ next
   assume length_xs_ys: "length xs = length ys"
     and IH: "[xs [\<mapsto>] ys] x = Some Ai \<Longrightarrow> \<exists>i. ?P i xs ys"
     and map_eq_Some: "[xa # xs [\<mapsto>] y # ys] x = Some Ai"
-  then have map_decomp: "[xa#xs [\<mapsto>] y#ys] = [xa\<mapsto>y] ++ [xs[\<mapsto>]ys]" by fastsimp
+  then have map_decomp: "[xa#xs [\<mapsto>] y#ys] = [xa\<mapsto>y] ++ [xs[\<mapsto>]ys]" by fastforce
   show "\<exists>i. ?P i (xa#xs) (y # ys)"
   proof(cases "[xs[\<mapsto>]ys]x")
     case(Some Ai')
@@ -77,7 +77,7 @@ next
     from IH[OF P] obtain i where 
       R1: "ys ! i = Ai" 
       and R2: "i < length ys" 
-      and pre_r3: "\<forall>(Bs::'c list). ?P3 i xs ys Bs" by fastsimp
+      and pre_r3: "\<forall>(Bs::'c list). ?P3 i xs ys Bs" by fastforce
     { fix Bs::"'c list"
       assume length_Bs: "length Bs = length (y#ys)"
       then obtain n where "length (y#ys) = Suc n" by auto
@@ -218,7 +218,7 @@ lemma method_typings_lookup:
   shows "CT \<turnstile> mDef OK IN C"
   using lookup_eq_Some M_ok 
 proof(induct M)
-  case Nil thus ?case by fastsimp
+  case Nil thus ?case by fastforce
 next
   case (Cons h t) thus ?case by(cases "f h", auto elim:method_typings.cases simp add:lookup.simps)
 qed
@@ -252,9 +252,9 @@ next
   case (f_class CT C CDef D Cf Dg DgCf DgCf')
   hence f_class_inv: 
     "(CT C = Some CDef) \<and> (cSuper CDef = D) \<and> (cFields CDef = Cf)" 
-    and "CT OK" by fastsimp+
+    and "CT OK" by fastforce+
   hence c_not_obj:"C \<noteq> Object" by (force elim:ct_typing.cases)
-  from f_class have flds:"fields(CT,C) = DgCf'" by fastsimp
+  from f_class have flds:"fields(CT,C) = DgCf'" by fastforce
   then obtain Dg' where 
     "fields(CT,D) = Dg'"
     and "DgCf' = Dg' @ Cf" 
@@ -349,7 +349,7 @@ next
   then obtain hEs tEs
     where h2:"CT \<turnstile> hDs <: hEs" and t2:"CT \<turnstile>+ tDs <: tEs" and "Es = hEs#tEs" 
     using Cons by (auto elim:subtypings.cases)
-  moreover from subtyping.s_trans[OF h1 h2] have "CT \<turnstile> hCs <: hEs" by fastsimp
+  moreover from subtyping.s_trans[OF h1 h2] have "CT \<turnstile> hCs <: hEs" by fastforce
   moreover with t1 t2 have "CT \<turnstile>+ tCs <: tEs" using Cons by simp_all
   ultimately show ?case by (auto simp add:subtypings.intros)
 qed
@@ -429,7 +429,7 @@ next
   proof(rule ccontr)
     assume "\<not> CT \<turnstile> Da \<not><: D"
     hence da_sub_d:"CT \<turnstile> Da <: D" by auto
-    have d_sub_e:"CT \<turnstile> D <: E" using s_trans by fastsimp
+    have d_sub_e:"CT \<turnstile> D <: E" using s_trans by fastforce
     thus "False" using s_trans by (force simp add:subtyping.s_trans[OF da_sub_d d_sub_e])
   qed 
   have d_nsub_da:"CT \<turnstile> D \<not><: Da" using s_trans by auto

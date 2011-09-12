@@ -114,7 +114,7 @@ next
     apply (intro strip)
     apply (erule_tac x = "Suc n" in allE)
     apply (erule_tac x = " (FVar n) #A" in allE)
-    apply (fastsimp simp add: new_tv_subst new_tv_Suc_list)
+    apply (fastforce simp add: new_tv_subst new_tv_Suc_list)
     done
 next
   case App then show ?case
@@ -251,14 +251,14 @@ proof (induct e)
     apply (drule free_tv_comp_subst [THEN subsetD])
     apply (drule sym [THEN mgu_free])
     apply clarsimp 
-    apply (fastsimp dest: free_tv_comp_subst [THEN subsetD] sym [THEN mgu_free] codD free_tv_app_subst_te [THEN subsetD] free_tv_app_subst_scheme_list [THEN subsetD] less_le_trans less_not_refl2 subsetD)
+    apply (fastforce dest: free_tv_comp_subst [THEN subsetD] sym [THEN mgu_free] codD free_tv_app_subst_te [THEN subsetD] free_tv_app_subst_scheme_list [THEN subsetD] less_le_trans less_not_refl2 subsetD)
     apply simp
     apply (drule sym [THEN W_var_geD])
     apply (drule sym [THEN W_var_geD])
     apply ( (frule less_le_trans) , (assumption))
     apply clarsimp
     apply (drule mgu_free)
-    apply (fastsimp dest: mgu_free codD free_tv_subst_var [THEN subsetD] free_tv_app_subst_te [THEN subsetD] free_tv_app_subst_scheme_list [THEN subsetD] less_le_trans subsetD)
+    apply (fastforce dest: mgu_free codD free_tv_subst_var [THEN subsetD] free_tv_app_subst_te [THEN subsetD] free_tv_app_subst_scheme_list [THEN subsetD] less_le_trans subsetD)
     done
 next
   case LET then show ?case
@@ -480,8 +480,8 @@ apply (frule_tac [3] new_tv_W) prefer 3 apply assumption
 apply (erule_tac [3] conjE)
 apply (drule_tac [3] new_tv_subst_scheme_list)
    prefer 3 apply (fast intro: new_scheme_list_le dest: sym [THEN W_var_geD])
-  prefer 3 apply (fastsimp dest: new_tv_W new_tv_not_free_tv simp add: cod_def free_tv_subst)
- prefer 2 apply (fastsimp simp add: cod_def free_tv_subst)
+  prefer 3 apply (fastforce dest: new_tv_W new_tv_not_free_tv simp add: cod_def free_tv_subst)
+ prefer 2 apply (fastforce simp add: cod_def free_tv_subst)
 prefer 2 apply (simp (no_asm)) prefer 2
 apply (rule_tac [2] eq_free_eq_subst_te)
 prefer 2 apply (intro strip) prefer 2
@@ -506,7 +506,7 @@ apply (drule_tac [2] eq_subst_scheme_list_eq_free)
 apply (simp (no_asm_simp) split add: split_option_bind)
 apply safe
 apply (drule mgu_Some)
- apply fastsimp  
+ apply fastforce  
 (** LEVEL 78 *)
 apply (drule mgu_mg, assumption)
 apply (erule exE)
@@ -539,7 +539,7 @@ apply (case_tac "na: free_tv t - free_tv Sa")
 (* case na : free_tv t - free_tv Sa *)
 apply simp
 apply (drule free_tv_app_subst_scheme_list [THEN subsetD])
- apply (fastsimp dest: codD trans [OF _ subst_comp_scheme_list]
+ apply (fastforce dest: codD trans [OF _ subst_comp_scheme_list]
                        eq_subst_scheme_list_eq_free 
              simp add: free_tv_subst dom_def)
 (* case Let e1 e2 *)

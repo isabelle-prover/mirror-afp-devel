@@ -21,15 +21,15 @@ proof -
   from `n -as\<rightarrow>* n'` `as = a#as'` have "valid_edge a"
     by(auto elim:path.cases)
   from `n controls\<^isub>s n'` have "n' \<noteq> (_Exit_)"
-    by(fastsimp dest:Exit_not_standard_control_dependent)
-  from `n -as\<rightarrow>* n'` have "(_Exit_) \<notin> set (sourcenodes as)" by fastsimp
+    by(fastforce dest:Exit_not_standard_control_dependent)
+  from `n -as\<rightarrow>* n'` have "(_Exit_) \<notin> set (sourcenodes as)" by fastforce
   from `n -as\<rightarrow>* n'` have "valid_node n" and "valid_node n'"
     by(auto dest:path_valid_node)
   with `\<not> n' postdominates (targetnode a')` `valid_edge a'`
   obtain asx where "targetnode a' -asx\<rightarrow>* (_Exit_)" and "n' \<notin> set(sourcenodes asx)"
     by(auto simp:postdominate_def)
   with `valid_edge a'` `sourcenode a' = n` have "n -a'#asx\<rightarrow>* (_Exit_)"
-    by(fastsimp intro:Cons_path)
+    by(fastforce intro:Cons_path)
   with `n \<noteq> n'` `sourcenode a' = n` `n' \<notin> set(sourcenodes asx)`
   have "n' \<notin> set(sourcenodes (a'#asx))" by(simp add:sourcenodes_def)
   from `n' postdominates (targetnode a)` 

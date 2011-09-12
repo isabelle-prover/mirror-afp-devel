@@ -158,7 +158,7 @@ lemma tllist_exhaust_aux:
 apply(cases xsb)
 apply(rename_tac xs b)
 apply(case_tac xs)
-apply(fastsimp simp add: TNIL_def TCONS_def)+
+apply(fastforce simp add: TNIL_def TCONS_def)+
 done
 
 lemma tllist_exhaust [case_names TNil TCons, cases type]:
@@ -430,14 +430,14 @@ proof(descending)
     case (tlist_eq q)
     then obtain tls where "q = (TLLIST_OF_LLIST s tls, tllist_corec_aux tls (llist_case (Inr s) (\<lambda>tl tls'. Inl (tl, tls'))))" by blast
     thus ?case
-      by(cases tls)(fastsimp simp add: tllist_corec_aux TLLIST_OF_LLIST_def TCONS_def TNIL_def apfst_def map_pair_def split_beta)+
+      by(cases tls)(fastforce simp add: tllist_corec_aux TLLIST_OF_LLIST_def TCONS_def TNIL_def apfst_def map_pair_def split_beta)+
   qed
 qed
 
 lemma tllist_of_llist_eq_lappendt_conv:
   "tllist_of_llist a xs = lappendt ys zs \<longleftrightarrow> 
   (\<exists>xs' a'. xs = lappend ys xs' \<and> zs = tllist_of_llist a' xs' \<and> (lfinite ys \<longrightarrow> a = a'))"
-by(descending)(fastsimp simp add: TLLIST_OF_LLIST_def)
+by(descending)(fastforce simp add: TLLIST_OF_LLIST_def)
 
 subsection {* The terminal element @{term "terminal"} *}
 
@@ -534,7 +534,7 @@ done
 lemma tfilter_eq_TConsD:
   "tfilter a P ys = TCons x xs \<Longrightarrow>
    \<exists>us vs. ys = lappendt us (TCons x vs) \<and> lfinite us \<and> (\<forall>u\<in>lset us. \<not> P u) \<and> P x \<and> xs = tfilter a P vs"
-by(descending)(fastsimp simp add: TCONS_def apfst_def map_pair_def split_def split_paired_Ex dest: lfilter_eq_LConsD)
+by(descending)(fastforce simp add: TCONS_def apfst_def map_pair_def split_def split_paired_Ex dest: lfilter_eq_LConsD)
 
 text {* Use a version of @{term "tfilter"} for code generation that does not evaluate the first argument *}
 
@@ -593,11 +593,11 @@ by(descending)(auto simp add: TNIL_def llist_all2_LNil2)
 
 lemma tllist_all2_TCons1: 
   "tllist_all2 P Q (TCons x ts) ts' \<longleftrightarrow> (\<exists>x' ts''. ts' = TCons x' ts'' \<and> P x x' \<and> tllist_all2 P Q ts ts'')"
-by descending(fastsimp simp add: TCONS_def llist_all2_LCons1 dest: llist_all2_lfiniteD)
+by descending(fastforce simp add: TCONS_def llist_all2_LCons1 dest: llist_all2_lfiniteD)
 
 lemma tllist_all2_TCons2: 
   "tllist_all2 P Q ts' (TCons x ts) \<longleftrightarrow> (\<exists>x' ts''. ts' = TCons x' ts'' \<and> P x' x \<and> tllist_all2 P Q ts'' ts)"
-by descending(fastsimp simp add: TCONS_def llist_all2_LCons2 dest: llist_all2_lfiniteD)
+by descending(fastforce simp add: TCONS_def llist_all2_LCons2 dest: llist_all2_lfiniteD)
 
 lemma tllist_all2_coinduct [consumes 1, case_names tllist_all2, case_conclusion tllist_all2 TNil TCons, coinduct pred]:
   assumes "X xs ys"
@@ -651,7 +651,7 @@ lemma tllist_all2_cases[consumes 1, case_names TNil TCons, cases pred]:
     where "xs = TCons x xs'" and "ys = TCons y ys'" 
     and "P x y" and "tllist_all2 P Q xs' ys'"
 using assms
-by(cases xs)(fastsimp simp add: tllist_all2_TCons1 tllist_all2_TNil1)+
+by(cases xs)(fastforce simp add: tllist_all2_TCons1 tllist_all2_TNil1)+
 
 lemma tllist_all2_tmap1:
   "tllist_all2 P Q (tmap f g xs) ys \<longleftrightarrow> tllist_all2 (\<lambda>x. P (f x)) (\<lambda>x. Q (g x)) xs ys"

@@ -107,7 +107,7 @@ proof -
       hence "x \<in> set as" by auto }
     ultimately show ?thesis by blast
   qed
-  have 1: "\<forall>a \<in> ?Ds. hd_coeff a = 1" using hd by(fastsimp split:atom.splits)
+  have 1: "\<forall>a \<in> ?Ds. hd_coeff a = 1" using hd by(fastforce split:atom.splits)
   show ?thesis  (is "?QE = (\<exists>x. ?P x)")
   proof
     assume "?QE"
@@ -133,13 +133,13 @@ proof -
             (is "finite ?B")
             by simp
           also have "?B = ?M" using hd
-            by(fastsimp simp:image_def neq_Nil_conv split:atom.splits list.splits)
+            by(fastforce simp:image_def neq_Nil_conv split:atom.splits list.splits)
           finally show ?thesis by auto
         qed
         have "?M \<noteq> {}"
         proof -
           from `?Us \<noteq> {}` obtain i k ks where "Le i (k#ks) \<in> ?Us \<and> k<0"
-            by (fastsimp split:atom.splits list.splits)
+            by (fastforce split:atom.splits list.splits)
           thus ?thesis by auto
         qed
         let ?k = "(n - ?m) div ?lcm + 1" let ?x = "n - ?k * ?lcm"
@@ -163,9 +163,9 @@ proof -
         proof
           fix a assume "a \<in> ?Us"
           then obtain l ks where [simp]: "a = Le l (-1#ks)" using hd
-            by(fastsimp split:atom.splits list.splits)
+            by(fastforce split:atom.splits list.splits)
           have "?m \<le> \<langle>ks,xs\<rangle> - l"
-            using Min_le_iff[OF `finite ?M` `?M \<noteq> {}`] `a \<in> ?Us` by fastsimp
+            using Min_le_iff[OF `finite ?M` `?M \<noteq> {}`] `a \<in> ?Us` by fastforce
           moreover have "(n - ?m) mod ?lcm < ?lcm"
             by(simp add: pos_mod_bound[OF zlcms_pos] norm)
           ultimately show "I\<^isub>Z a (?x#xs)"
@@ -196,7 +196,7 @@ proof -
       proof
         { fix a assume "a \<in> ?Ds"
           hence "I\<^isub>Z a ((x mod ?lcm) # xs) = I\<^isub>Z a (x # xs)" using 1
-            by (fastsimp del:iffI intro: I_cyclic
+            by (fastforce del:iffI intro: I_cyclic
                 simp: mod_mod_cancel dvd_zlcms) }
         thus "?P(x mod ?lcm)" using x norm by(simp add: zlcms_pos)
       qed
@@ -214,7 +214,7 @@ proof -
         finally show ?thesis by auto
       qed
       moreover have "?L \<noteq> {}" using `?lbs \<noteq> []`
-        by(fastsimp simp:neq_Nil_conv)
+        by(fastforce simp:neq_Nil_conv)
       ultimately have "?lm \<in> ?L" by(rule Max_in)
       then obtain li lks where "(li,lks)\<in> set ?lbs" and lm: "?lm = li-\<langle>lks,xs\<rangle>"
         by blast
@@ -227,15 +227,15 @@ proof -
         proof -
           { assume "a \<in> ?Ls"
             then obtain i ks where [simp]: "a = Le i (1#ks)" using hd
-              by(fastsimp split:atom.splits list.splits)
-            from `a \<in> ?Ls` have "i-\<langle>ks,xs\<rangle> \<in> ?L" by(fastsimp simp:set_lbounds)
+              by(fastforce split:atom.splits list.splits)
+            from `a \<in> ?Ls` have "i-\<langle>ks,xs\<rangle> \<in> ?L" by(fastforce simp:set_lbounds)
             hence "i-\<langle>ks,xs\<rangle> \<le> li - \<langle>lks,xs\<rangle>"
               using lm[symmetric] `finite ?L` `?L \<noteq> {}` by auto
             hence ?thesis using n by simp }
           moreover
           { assume "a \<in> ?Us"
             then obtain i ks where [simp]: "a = Le i (-1#ks)" using hd
-              by(fastsimp split:atom.splits list.splits)
+              by(fastforce split:atom.splits list.splits)
             have "Le li (1#lks) \<in> set as" using `(li,lks) \<in> set ?lbs` hd
               by(auto simp:set_lbounds)
             hence "li - \<langle>lks,xs\<rangle> \<le> x" using x by auto
@@ -248,7 +248,7 @@ proof -
             proof(rule I_cyclic[THEN iffD2, OF _ _ _ `I\<^isub>Z a (x # xs)`])
               show "is_dvd a" using `a \<in> ?Ds` by simp
               show "hd_coeff a = 1" using `a \<in> ?Ds` hd
-                by(fastsimp split:atom.splits list.splits)
+                by(fastforce split:atom.splits list.splits)
               have "li + (x-?lm) mod ?lcm - \<langle>lks,xs\<rangle> = ?lm + (x-?lm) mod ?lcm"
                 using lm by arith
               hence "(li + (x-?lm) mod ?lcm - \<langle>lks,xs\<rangle>) mod divisor a =
@@ -361,21 +361,21 @@ apply(auto simp:qe_pres\<^isub>1_def Z.normal_def
    dest!:atoms_list_disjE atoms_list_conjE)
 
 apply(simp add: hd_coeffs1_def)
- apply(erule disjE) apply fastsimp
+ apply(erule disjE) apply fastforce
 apply (clarsimp)
 apply(case_tac xa)
-  apply(case_tac list) apply fastsimp apply (simp split:split_if_asm)
- apply(case_tac list) apply fastsimp
- apply (simp split:split_if_asm) apply fastsimp
- apply(erule disjE) prefer 2 apply fastsimp
+  apply(case_tac list) apply fastforce apply (simp split:split_if_asm)
+ apply(case_tac list) apply fastforce
+ apply (simp split:split_if_asm) apply fastforce
+ apply(erule disjE) prefer 2 apply fastforce
  apply(simp add:zdiv_eq_0_iff)
  apply(subgoal_tac "a \<in> set(map hd_coeff as)")
   prefer 2 apply force
  apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
   prefer 2 apply simp
  apply (metis elem_le_zlcms linorder_not_le zlcms_pos)
-apply(case_tac list) apply fastsimp
-apply (simp split:split_if_asm) apply fastsimp
+apply(case_tac list) apply fastforce
+apply (simp split:split_if_asm) apply fastforce
 apply(simp add:zdiv_eq_0_iff)
 apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
  prefer 2 apply simp
@@ -385,24 +385,24 @@ apply(erule disjE)
  apply (metis elem_le_zlcms linorder_not_le)
 apply(erule disjE)
  apply (metis linorder_not_le zlcms_pos)
-apply fastsimp
+apply fastforce
 
 apply(simp add: hd_coeffs1_def)
- apply(erule disjE) apply fastsimp
+ apply(erule disjE) apply fastforce
 apply (clarsimp)
 apply(case_tac xa)
-  apply(case_tac list) apply fastsimp apply (simp split:split_if_asm)
- apply(case_tac list) apply fastsimp
- apply (simp split:split_if_asm) apply fastsimp
- apply(erule disjE) prefer 2 apply fastsimp
+  apply(case_tac list) apply fastforce apply (simp split:split_if_asm)
+ apply(case_tac list) apply fastforce
+ apply (simp split:split_if_asm) apply fastforce
+ apply(erule disjE) prefer 2 apply fastforce
  apply(simp add:zdiv_eq_0_iff)
  apply(subgoal_tac "a \<in> set(map hd_coeff as)")
   prefer 2 apply force
  apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
   prefer 2 apply simp
  apply (metis elem_le_zlcms linorder_not_le zlcms_pos)
-apply(case_tac list) apply fastsimp
-apply (simp split:split_if_asm) apply fastsimp
+apply(case_tac list) apply fastforce
+apply (simp split:split_if_asm) apply fastforce
 apply(simp add:zdiv_eq_0_iff)
 apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
  prefer 2 apply simp
@@ -412,7 +412,7 @@ apply(erule disjE)
  apply (metis elem_le_zlcms linorder_not_le)
 apply(erule disjE)
  apply (metis linorder_not_le zlcms_pos)
-apply fastsimp
+apply fastforce
 done
 
 theorem I_pres_qe: "Z.normal \<phi> \<Longrightarrow>  Z.I (qe_pres \<phi>) xs = Z.I \<phi> xs"

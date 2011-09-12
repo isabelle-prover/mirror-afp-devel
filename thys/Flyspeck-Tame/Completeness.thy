@@ -14,7 +14,7 @@ using combine_evals_filter[OF pre_iso_test3 same3]
       combine_evals_filter[OF pre_iso_test4 same4]
       combine_evals_filter[OF pre_iso_test5 same5]
       combine_evals_filter[OF pre_iso_test6 same6]
-by(fastsimp simp:TameEnum_def Archive_def image_def qle_gr.defs
+by(fastforce simp:TameEnum_def Archive_def image_def qle_gr.defs
        eval_nat_numeral le_Suc_eq)
 
 

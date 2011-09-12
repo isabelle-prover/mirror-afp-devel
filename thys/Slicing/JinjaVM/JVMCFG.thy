@@ -779,7 +779,7 @@ proof -
     have "\<lbrakk>prog \<turnstile> n -et\<rightarrow> n'; n = (_Exit_)\<rbrakk> \<Longrightarrow> False"
       by (auto elim!: JVM_CFG.cases)
   }
-  with edge show ?thesis by fastsimp
+  with edge show ?thesis by fastforce
 qed
 
 lemma JVMCFG_Entry_no_targetnode [dest]:
@@ -789,7 +789,7 @@ proof -
   { fix n' have "\<lbrakk>prog \<turnstile> n -et\<rightarrow> n'; n' = (_Entry_)\<rbrakk> \<Longrightarrow> False"
       by (auto elim!: JVM_CFG.cases)
   }
-  with edge show ?thesis by fastsimp
+  with edge show ?thesis by fastforce
 qed
 
 lemma JVMCFG_EntryD:
@@ -803,7 +803,7 @@ declare find_handler_for.simps [simp del]
 (* The following lemma explores many cases, it takes a little to prove *)
 lemma JVMCFG_edge_det:
   "\<lbrakk>prog \<turnstile> n -et\<rightarrow> n'; prog \<turnstile> n -et'\<rightarrow> n'\<rbrakk> \<Longrightarrow> et = et'"
-  by (erule JVM_CFG.cases, (erule JVM_CFG.cases, fastsimp+)+)
+  by (erule JVM_CFG.cases, (erule JVM_CFG.cases, fastforce+)+)
 
 declare split_def [simp del]
 declare find_handler_for.simps [simp add]

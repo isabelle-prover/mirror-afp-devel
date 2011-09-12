@@ -101,9 +101,9 @@ next
   from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` `\<not> inner_node n'` have False
     apply -
     apply(erule DynPDG_edge.cases) apply(auto simp:inner_node_def)
-      apply(fastsimp dest:dyn_control_dependence_path path_valid_node)
-     apply(fastsimp dest:dyn_control_dependence_path path_valid_node)
-    by(fastsimp dest:Exit_not_dyn_control_dependent)
+      apply(fastforce dest:dyn_control_dependence_path path_valid_node)
+     apply(fastforce dest:dyn_control_dependence_path path_valid_node)
+    by(fastforce dest:Exit_not_dyn_control_dependent)
   thus ?case by simp
 next
   case (DynPDG_path_Append_ddep n as n'' V as' n')
@@ -160,7 +160,7 @@ next
   proof
     assume "as = [] \<and> n = n''"
     with `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "valid_node n'"
-      by(fastsimp intro:path_valid_node(2) DynPDG_path_CFG_path 
+      by(fastforce intro:path_valid_node(2) DynPDG_path_CFG_path 
                         DynPDG_path_cdep)
     with `as = [] \<and> n = n''` `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'`
     have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
@@ -176,7 +176,7 @@ next
         and "as = asx@asx'" by auto
       from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "n'' -as'\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_cdep)
       with `nx -asx'\<rightarrow>\<^isub>d* n''` have "nx -asx'@as'\<rightarrow>\<^isub>d* n'"
-        by(fastsimp intro:DynPDG_path_Append)
+        by(fastforce intro:DynPDG_path_Append)
       with `n -asx\<rightarrow>\<^bsub>cd\<^esub> nx` `as = asx@asx'`
       have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
         by auto
@@ -187,7 +187,7 @@ next
         and "as = asx@asx'" by auto
       from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "n'' -as'\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_cdep)
       with `nx -asx'\<rightarrow>\<^isub>d* n''` have "nx -asx'@as'\<rightarrow>\<^isub>d* n'"
-        by(fastsimp intro:DynPDG_path_Append)
+        by(fastforce intro:DynPDG_path_Append)
       with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> nx` `as = asx@asx'`
       have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
         by auto
@@ -203,11 +203,11 @@ next
   proof
     assume "as = [] \<and> n = n''"
     with `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_node n'"
-      by(fastsimp intro:path_valid_node(2) DynPDG_path_CFG_path 
+      by(fastforce intro:path_valid_node(2) DynPDG_path_CFG_path 
                         DynPDG_path_ddep)
     with `as = [] \<and> n = n''` `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'`
     have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
-      by(fastsimp intro:DynPDG_path_Nil)
+      by(fastforce intro:DynPDG_path_Nil)
     thus ?thesis by simp
   next
     assume "(\<exists>nx asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> nx \<and> nx -asx'\<rightarrow>\<^isub>d* n'' \<and> as = asx@asx') \<or>
@@ -219,7 +219,7 @@ next
         and "as = asx@asx'" by auto
       from `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' -as'\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_ddep)
       with `nx -asx'\<rightarrow>\<^isub>d* n''` have "nx -asx'@as'\<rightarrow>\<^isub>d* n'"
-        by(fastsimp intro:DynPDG_path_Append)
+        by(fastforce intro:DynPDG_path_Append)
       with `n -asx\<rightarrow>\<^bsub>cd\<^esub> nx` `as = asx@asx'`
       have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
         by auto
@@ -230,7 +230,7 @@ next
         and "as = asx@asx'" by auto
       from `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' -as'\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_ddep)
       with `nx -asx'\<rightarrow>\<^isub>d* n''` have "nx -asx'@as'\<rightarrow>\<^isub>d* n'"
-        by(fastsimp intro:DynPDG_path_Append)
+        by(fastforce intro:DynPDG_path_Append)
       with `n -{V'}asx\<rightarrow>\<^bsub>dd\<^esub> nx` `as = asx@asx'`
       have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
         by auto
@@ -286,13 +286,13 @@ proof -
     hence "\<exists>nx \<in> set (sourcenodes as). V \<in> Def nx" by auto
     then obtain nx ns' ns'' where nodes:"sourcenodes as = ns'@nx#ns''"
         and Defs':"V \<in> Def nx" and notDef:"\<forall>nx' \<in> set ns''. V \<notin> Def nx'"
-      by(fastsimp elim!:rightmost_element_property)
+      by(fastforce elim!:rightmost_element_property)
     from nodes obtain as' a as''
       where as'':"sourcenodes as'' = ns''" and as:"as=as'@a#as''"
       and source:"sourcenode a = nx"
-      by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
+      by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
     from as path have path':"sourcenode a -a#as''\<rightarrow>* n'"
-      by(fastsimp dest:path_split_second)
+      by(fastforce dest:path_split_second)
     from notDef as'' source
     have "\<forall>n'' \<in> set (sourcenodes as''). V \<notin> Def n''"
       by(auto simp:sourcenodes_def)
@@ -303,10 +303,10 @@ proof -
     with influence source
     have "\<exists>asx a'. sourcenode a' -{V}a'#asx\<rightarrow>\<^bsub>dd\<^esub> n' \<and> sourcenode a' = nx \<and>
           (\<exists>asx'. a#as'' = asx'@a'#asx)"
-      by(fastsimp intro:DynPDG_ddep_edge)
+      by(fastforce intro:DynPDG_ddep_edge)
     with nodes no_dep as have False by(auto simp:sourcenodes_def) }
   hence "\<forall>n \<in> set (sourcenodes as). V \<notin> Def n" by auto
-  with wf path preds show ?thesis by(fastsimp intro:CFG_path_no_Def_equal)
+  with wf path preds show ?thesis by(fastforce intro:CFG_path_no_Def_equal)
 qed
 
 
@@ -408,12 +408,12 @@ proof(unfold_locales)
   proof
     assume "n' = (_Exit_)"
     with `n controls\<^isub>s n' via as` show False
-      by(fastsimp intro:Exit_not_dyn_standard_control_dependent)
+      by(fastforce intro:Exit_not_dyn_standard_control_dependent)
   qed
 next
   fix n n' as assume "n controls\<^isub>s n' via as"
   thus "n -as\<rightarrow>* n' \<and> as \<noteq> []"
-    by(fastsimp simp:dyn_standard_control_dependence_def)
+    by(fastforce simp:dyn_standard_control_dependence_def)
 qed
 
 
@@ -441,12 +441,12 @@ proof(unfold_locales)
   proof
     assume "n' = (_Exit_)"
     with `n weakly controls n' via as` show False
-      by(fastsimp intro:Exit_not_dyn_weak_control_dependent)
+      by(fastforce intro:Exit_not_dyn_weak_control_dependent)
   qed
 next
   fix n n' as assume "n weakly controls n' via as"
   thus "n -as\<rightarrow>* n' \<and> as \<noteq> []"
-    by(fastsimp simp:dyn_weak_control_dependence_def)
+    by(fastforce simp:dyn_weak_control_dependence_def)
 qed
 
 

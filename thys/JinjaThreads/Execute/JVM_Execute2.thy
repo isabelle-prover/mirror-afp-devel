@@ -139,14 +139,14 @@ proof(rule invariant3pI)
       and ok: "jvm_state'_ok P (xcp, shr s, frs)"
       apply -
       apply(case_tac [!] s)
-      apply(fastsimp simp add: sc_jvm_state_invar_def sc.execute.correct_jvm_state_def dest: ts_okD)+
+      apply(fastforce simp add: sc_jvm_state_invar_def sc.execute.correct_jvm_state_def dest: ts_okD)+
       done
     note eq = sc.exec_correct_state(1)[OF assms this]
     with normal x tl
     have "sc_execute_mexec P t (jvm_thread_state_of_jvm_thread_state' x, shr (jvm_mstate_of_jvm_mstate' s)) (jvm_thread_action_of_jvm_thread_action' ta) (jvm_thread_state_of_jvm_thread_state' x', m')" 
       by(auto simp add: sc.exec_1_def eq jvm_thread_action'_of_jvm_thread_action_def sc.execute.exec_1_iff elim!: imageE[OF mem_def[THEN iffD2]])
     with normal tl show ?thesis
-      by(cases s)(fastsimp intro!: multithreaded_base.redT.redT_normal simp add: final_thread.actions_ok_iff fun_eq_iff map_redT_updTs elim: rev_iffD1[OF _ thread_oks_ts_change] cond_action_oks_final_change)
+      by(cases s)(fastforce intro!: multithreaded_base.redT.redT_normal simp add: final_thread.actions_ok_iff fun_eq_iff map_redT_updTs elim: rev_iffD1[OF _ thread_oks_ts_change] cond_action_oks_final_change)
   qed
   moreover from invar
   have "sc.execute.correct_state_ts P \<Phi> (thr (jvm_mstate_of_jvm_mstate' s)) (shr (jvm_mstate_of_jvm_mstate' s))"
@@ -162,7 +162,7 @@ proof(rule invariant3pI)
   moreover from red have "ts_ok (\<lambda>t (xcp, frs) h. \<forall>f\<in>set frs. frame'_ok P f) (thr s') (shr s')" unfolding tl 
   proof(cases rule: multithreaded_base.redT.cases[consumes 1, case_names normal acquire])
     case acquire thus ?thesis using invar
-      by(fastsimp simp add: sc_jvm_state_invar_def intro!: ts_okI dest: ts_okD bspec split: split_if_asm)
+      by(fastforce simp add: sc_jvm_state_invar_def intro!: ts_okI dest: ts_okD bspec split: split_if_asm)
   next
     case (normal t x s ta x' m' s')
     obtain xcp frs where x: "x = (xcp, frs)" by(cases x)
@@ -171,7 +171,7 @@ proof(rule invariant3pI)
       and ok: "jvm_state'_ok P (xcp, shr s, frs)"
       apply -
       apply(case_tac [!] s)
-      apply(fastsimp simp add: sc_jvm_state_invar_def sc.execute.correct_jvm_state_def dest: ts_okD)+
+      apply(fastforce simp add: sc_jvm_state_invar_def sc.execute.correct_jvm_state_def dest: ts_okD)+
       done
     from normal x invar show ?thesis
       apply(auto simp add: sc.exec_1_def final_thread.actions_ok_iff jvm_thread_action'_ok_def sc_jvm_state_invar_def)
@@ -189,7 +189,7 @@ proof(rule invariant3pI)
        apply simp
       apply(erule thin_rl)
       apply(frule (1) redT_updTs_Some)
-      apply(fastsimp dest: ts_okD)
+      apply(fastforce dest: ts_okD)
       done
   qed
   ultimately show "s' \<in> sc_jvm_state_invar P \<Phi>" by(simp add: sc_jvm_state_invar_def)
@@ -215,7 +215,7 @@ proof -
     obtain xcp frs where x: "x = (xcp, frs)" by(cases x)
     from inv tst x have correct: "sc.execute.correct_state P \<Phi> t (jvm_state_of_jvm_state' (xcp, shr s, frs))"
       and ok: "jvm_state'_ok P (xcp, shr s, frs)"
-      by(cases s, fastsimp simp add: sc_jvm_state_invar_def sc.execute.correct_jvm_state_def dest: ts_okD)+
+      by(cases s, fastforce simp add: sc_jvm_state_invar_def sc.execute.correct_jvm_state_def dest: ts_okD)+
     note eq = sc.exec_correct_state(1)[OF assms this]
     
     from exec1 exec2 x
@@ -252,7 +252,7 @@ proof -
       apply(case_tac [!] ta'')
       apply(case_tac [!] x')
       apply(case_tac [!] x'')
-      apply(fastsimp simp add: jvm_thread_action'_of_jvm_thread_action_def jvm_thread_action'_ok_def intro!: map_idI[symmetric] convert_new_thread_action_eqI dest: bspec)+
+      apply(fastforce simp add: jvm_thread_action'_of_jvm_thread_action_def jvm_thread_action'_ok_def intro!: map_idI[symmetric] convert_new_thread_action_eqI dest: bspec)+
       done
     ultimately
     show "ta' = ta'' \<and> x' = x'' \<and> m' = m''" by simp

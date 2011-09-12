@@ -502,7 +502,7 @@ apply clarsimp
     apply rule apply clarsimp apply (erule_tac x=lb in allE, erule_tac x=ll in allE, clarsimp) 
       apply (simp add: twiddleObj_def)
       apply rule apply clarsimp apply (rotate_tac -1, erule thin_rl) apply (simp add: LowDom_def)
-        apply rule apply fastsimp apply fastsimp
+        apply rule apply fastforce apply fastforce
       apply (simp add: LOW_def, clarsimp)
         apply (subgoal_tac "Expr_low Expr") apply (simp add: Expr_low_def)
         apply (erule Expr_lemma1) apply assumption apply fast
@@ -664,7 +664,7 @@ prefer 3 apply assumption
 apply (subgoal_tac "n \<le> n+na", assumption)
 apply (erule thin_rl, simp)
 apply (erule thin_rl, simp)
-apply (erule thin_rl,fastsimp)
+apply (erule thin_rl,fastforce)
 apply assumption
 apply assumption
 apply assumption

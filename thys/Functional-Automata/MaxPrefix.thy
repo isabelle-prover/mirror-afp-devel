@@ -67,7 +67,7 @@ apply (case_tac "EX us. us <= a#qs & P (ps @ us)")
  apply simp
 apply (subgoal_tac "~P(ps)")
 apply (simp (no_asm_simp))
-apply fastsimp
+apply fastforce
 done
 
 declare split_if[split add]
@@ -82,7 +82,7 @@ lemma is_maxsplitter_maxsplit:
  "is_maxsplitter P (%xs. maxsplit P ([],xs) [] xs)"
 apply(unfold is_maxsplitter_def)
 apply (simp add: maxsplit_lemma)
-apply (fastsimp)
+apply (fastforce)
 done
 
 lemmas maxsplit_eq = is_maxsplitter_maxsplit[simplified is_maxsplitter_def]

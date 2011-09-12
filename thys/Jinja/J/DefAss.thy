@@ -137,7 +137,7 @@ apply simp
 apply simp
 apply simp
 apply simp apply (iprover dest:sqUn_lem)
-apply (fastsimp simp add:hyperset_defs)
+apply (fastforce simp add:hyperset_defs)
 apply simp
 apply simp
 apply simp apply (iprover dest:sqUn_lem)
@@ -186,9 +186,9 @@ next
 next
   case CondF thus ?case by simp (blast dest:eval_lcl_incr)
 next
-  case Try thus ?case by(fastsimp dest!: eval_lcl_incr)
+  case Try thus ?case by(fastforce dest!: eval_lcl_incr)
 next
-  case TryCatch thus ?case by(fastsimp dest!: eval_lcl_incr)
+  case TryCatch thus ?case by(fastforce dest!: eval_lcl_incr)
 qed auto
 *)
 end

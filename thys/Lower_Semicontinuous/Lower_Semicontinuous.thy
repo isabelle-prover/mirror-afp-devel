@@ -1114,7 +1114,7 @@ next
     hence "(SUM j : s. a j) = 0"
       using insert by auto
     hence "ALL j. (j : s --> a j = 0)"
-      using setsum_nonneg_0[where 'b=real] insert by fastsimp
+      using setsum_nonneg_0[where 'b=real] insert by fastforce
     hence ?case using insert.hyps(1-3) `a i = 1`
       by (simp add: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
   moreover
@@ -1132,9 +1132,9 @@ next
     { fix j assume "j : s"
       hence "?a j >= 0"
         using i0 insert divide_nonneg_pos
-        by fastsimp } note a_nonneg = this
+        by fastforce } note a_nonneg = this
     have "(SUM j : insert i s. a j) = 1" using insert by auto
-    hence "(SUM j : s. a j) = 1 - a i" using setsum.insert insert by fastsimp
+    hence "(SUM j : s. a j) = 1 - a i" using setsum.insert insert by fastforce
     hence "(SUM j : s. a j) / (1 - a i) = 1" using i0 by auto
     hence a1: "(SUM j : s. ?a j) = 1" unfolding setsum_divide_distrib by simp
     have asum: "(SUM j : s. ?a j *\<^sub>R y j) : C"

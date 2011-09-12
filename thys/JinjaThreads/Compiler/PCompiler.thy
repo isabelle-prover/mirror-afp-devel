@@ -30,7 +30,7 @@ lemma map_of_map4:
 apply(induct ts)
  apply simp
 apply(rule ext)
-apply fastsimp
+apply fastforce
 done
 
 lemma class_compP:
@@ -68,7 +68,7 @@ apply(erule Methods.induct)
  apply(simp add:compM_def map_of_map4 option_map_comp)
  apply(case_tac "map_of ms M")
   apply simp
- apply fastsimp
+ apply fastforce
 apply(rule sees_methods_rec)
    apply(erule class_compP)
   apply assumption
@@ -82,7 +82,7 @@ done
 lemma sees_method_compP:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<Longrightarrow>
   compP f P \<turnstile> C sees M: Ts\<rightarrow>T = (f D M Ts T m) in D"
-(*<*)by(fastsimp elim:sees_methods_compP simp add:Method_def)(*>*)
+(*<*)by(fastforce elim:sees_methods_compP simp add:Method_def)(*>*)
 
 
 lemma [simp]:
@@ -93,7 +93,7 @@ apply(drule sees_method_compP)
 apply(simp add:method_def)
 apply(rule the_equality)
  apply simp
-apply(fastsimp dest:sees_method_fun)
+apply(fastforce dest:sees_method_fun)
 done
 (*>*)
 
@@ -112,7 +112,7 @@ apply(erule Methods.induct)
  apply(simp add:compM_def map_of_map4 option_map_comp)
  apply(case_tac "map_of b M")
   apply simp
- apply fastsimp
+ apply fastforce
 apply(clarsimp simp:compC_def)
 apply(rule exI, rule conjI)
 apply(erule (2) sees_methods_rec)
@@ -137,7 +137,7 @@ done
 
 
 lemma [simp]: "subcls1(compP f P) = subcls1 P"
-by(fastsimp simp add: is_class_def compC_def intro:subcls1I order_antisym dest:subcls1D)
+by(fastforce simp add: is_class_def compC_def intro:subcls1I order_antisym dest:subcls1D)
 
 lemma [simp]: "is_type (compP f P) T = is_type P T"
 by(induct T)(auto cong: ty.case_cong)
@@ -242,10 +242,10 @@ by(cases P)(auto simp add: compC_def image_iff map_of_map4)
 
 lemma compP_has_method: "compP f P \<turnstile> C has M \<longleftrightarrow> P \<turnstile> C has M"
 unfolding has_method_def
-by(fastsimp dest: sees_method_compPD intro: sees_method_compP)
+by(fastforce dest: sees_method_compPD intro: sees_method_compP)
 
 lemma native_call_compP [simp]: "native_call (compP f P) = native_call P"
-by(rule ext)+(fastsimp simp add: native_call_def intro: sees_method_compP[where f=f] dest: sees_method_compPD[where f=f])
+by(rule ext)+(fastforce simp add: native_call_def intro: sees_method_compP[where f=f] dest: sees_method_compPD[where f=f])
 
 lemma is_native_compP [simp]: "is_native (compP f P) = is_native P"
 by(auto simp add: fun_eq_iff is_native_def2)
@@ -284,7 +284,7 @@ lemma wf_native_compP [simp]: "wf_native (compP f P) C (compM (f C) m) = wf_nati
 by(cases m)(auto simp add: compM_def)
 
 lemma wf_overriding_compP [simp]: "wf_overriding (compP f P) D (compM (f C) m) = wf_overriding P D m"
-by(cases m)(fastsimp intro: sees_method_compP[where f=f] dest: sees_method_compPD[where f=f] simp add: compM_def)
+by(cases m)(fastforce intro: sees_method_compP[where f=f] dest: sees_method_compPD[where f=f] simp add: compM_def)
 
 
 lemma wf_cdecl_compPI:
@@ -313,13 +313,13 @@ proof -
       and mset: "(M, Ts', T', body) \<in> set ms" using mset'
       by(clarsimp simp add: image_iff compM_def)
     moreover from mset xsrc wfcP1 have "wf_mdecl wf\<^isub>1 P C (M,Ts',T',body)"
-      by(fastsimp simp add: wf_cdecl_def)
+      by(fastforce simp add: wf_cdecl_def)
     moreover from wf xsrc mset x have "P \<turnstile> C sees M:Ts'\<rightarrow>T' = body in C"
       by(auto intro: mdecl_visible)
     ultimately have "wf_mdecl wf\<^isub>2 (compP f P) C m" using m
       by(auto intro: wf1_imp_wf2)
     moreover from mset xsrc wfcP1 have "wf_native P C (M, Ts', T', body)"
-      by(fastsimp simp add: wf_cdecl_def)
+      by(fastforce simp add: wf_cdecl_def)
     hence "wf_native (compP f P) C m" using m by simp
     moreover note calculation }
   moreover from wf1 have "distinct_fst ms" by(simp add: wf_cdecl_def)
@@ -343,7 +343,7 @@ proof -
   moreover
   { assume "C = Thread"
     with wf1 ms' have "\<exists>m. (run, [], Void, m) \<in> set ms'"
-      by(fastsimp simp add: wf_cdecl_def image_iff compM_def)+ }
+      by(fastforce simp add: wf_cdecl_def image_iff compM_def)+ }
   ultimately show ?thesis unfolding x wf_cdecl_def by blast
 qed
 
@@ -407,7 +407,7 @@ proof -
   moreover
   { assume "C = Thread"
     with wf1 have "\<exists>m. (run, [], Void, m) \<in> set ms'"
-      by(fastsimp simp add: wf_cdecl_def image_iff compM_def)+ }
+      by(fastforce simp add: wf_cdecl_def image_iff compM_def)+ }
   ultimately show ?thesis unfolding x wf_cdecl_def by blast
 qed
 
@@ -425,10 +425,10 @@ apply(auto intro: wf)
 done
 
 lemma WT_binop_compP [simp]: "compP f P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<longleftrightarrow> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T"
-by(cases bop)(fastsimp)+
+by(cases bop)(fastforce)+
 
 lemma WTrt_binop_compP [simp]: "compP f P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T \<longleftrightarrow> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T"
-by(cases bop)(fastsimp)+
+by(cases bop)(fastforce)+
 
 lemma binop_relevant_class_compP [simp]: "binop_relevant_class bop (compP f P) = binop_relevant_class bop P"
 by(cases bop) simp_all

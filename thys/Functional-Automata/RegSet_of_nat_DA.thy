@@ -157,7 +157,7 @@ lemma regset_spec:
         ((!n:set(butlast(trace d i xs)). n < k) & deltas d xs i = j)"
 apply (induct k)
  apply(simp split: list.split)
- apply(fastsimp)
+ apply(fastforce)
 apply (simp add: conc_def)
 apply (rule iffI)
  apply (erule disjE)

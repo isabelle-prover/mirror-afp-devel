@@ -40,7 +40,7 @@ proof
   assume qe1: ?L
   hence 0: "Less 0 0 \<notin> set as" by (auto simp:qe_dlo\<^isub>1_def)
   with qe1 have 1: "\<forall>x\<in>?Ls. \<forall>y\<in>?Us. xs ! x < xs ! y"
-    by (fastsimp simp:qe_dlo\<^isub>1_def)
+    by (fastforce simp:qe_dlo\<^isub>1_def)
   have finite: "finite ?Ls" "finite ?Us" by (rule finite_set)+
   { fix i x
     assume "Less i 0 \<in> set as | Less 0 i \<in> set as"
@@ -82,7 +82,7 @@ next
     ultimately have "xs ! (i - 1) < xs ! (j - 1)" by (simp add: nth_Cons')
   }
   thus ?L using 0 less
-    by (fastsimp simp: qe_dlo\<^isub>1_def is_Less_iff split:atom.splits nat.splits)
+    by (fastforce simp: qe_dlo\<^isub>1_def is_Less_iff split:atom.splits nat.splits)
 qed
 
 lemma I_qe_dlo\<^isub>1_pretty:
@@ -119,10 +119,10 @@ interpretation DLO\<^isub>e!:
           "(\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)"
           "(\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False)" subst\<^isub>0
 apply(unfold_locales)
-apply(fastsimp simp:subst_def nth_Cons' split:atom.splits split_if_asm)
+apply(fastforce simp:subst_def nth_Cons' split:atom.splits split_if_asm)
 apply(simp add:subst_def split:atom.splits)
-apply(fastsimp simp:subst_def nth_Cons' split:atom.splits)
-apply(fastsimp simp add:subst_def split:atom.splits)
+apply(fastforce simp:subst_def nth_Cons' split:atom.splits)
+apply(fastforce simp add:subst_def split:atom.splits)
 done
 
 (*<*)
@@ -142,7 +142,7 @@ by(auto simp:qe_dlo\<^isub>1_def intro!:qfree_list_conj)
 
 theorem I_qe_dlo: "DLO.I (qe_dlo \<phi>) xs = DLO.I \<phi> xs"
 unfolding qe_dlo_def
-by(fastsimp intro!: I_qe_dlo\<^isub>1 qfree_qe_dlo\<^isub>1 DLO\<^isub>e.I_lift_dnfeq_qe
+by(fastforce intro!: I_qe_dlo\<^isub>1 qfree_qe_dlo\<^isub>1 DLO\<^isub>e.I_lift_dnfeq_qe
         simp: is_Less_iff not_is_Eq_iff split:atom.splits cong:conj_cong)
 
 theorem qfree_qe_dlo: "qfree (qe_dlo \<phi>)"

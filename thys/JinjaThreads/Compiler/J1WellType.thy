@@ -195,9 +195,9 @@ apply (blast dest: sees_field_fun)
 apply(erule WT1_WTs1_cases)
  apply(simp add: is_class_type_of_conv_class_type_of_Some)
  apply (blast dest:sees_method_idemp sees_method_fun)
-apply(fastsimp dest: external_WT_is_native list_all2_lengthD WTs1_same_size)
+apply(fastforce dest: external_WT_is_native list_all2_lengthD WTs1_same_size)
 
-apply(fastsimp dest: external_WT_is_native list_all2_lengthD WTs1_same_size external_WT_determ)
+apply(fastforce dest: external_WT_is_native list_all2_lengthD WTs1_same_size external_WT_determ)
 apply blast
 apply blast
 apply blast
@@ -218,7 +218,7 @@ apply simp
 apply simp
 apply simp
 apply (simp add:typeof_lit_is_type)
-apply (fastsimp intro:nth_mem)
+apply (fastforce intro:nth_mem)
 apply(simp add: WT_binop_is_type)
 apply(simp)
 apply(simp del: is_type_array add: is_type_ArrayD)
@@ -226,8 +226,8 @@ apply(simp)
 apply(simp)
 apply (simp add:sees_field_is_type[OF _ wf])
 apply simp
-apply(fastsimp dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
-apply(fastsimp dest: external_WT_is_type[OF wf])
+apply(fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
+apply(fastforce dest: external_WT_is_type[OF wf])
 apply(simp)
 apply(simp add: is_class_Object[OF wf])
 apply simp
@@ -275,6 +275,6 @@ proof(induct rule: WT1_WTs1.inducts)
 next
   case (WT1Cond E e e1 T1 e2 T2 T)
   thus ?case by(auto del: subsetI)
-qed fastsimp+
+qed fastforce+
 
 end

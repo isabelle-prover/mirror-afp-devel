@@ -1073,7 +1073,7 @@ by(simp add: finfun_All_except_const is_list_UNIV_iff)
 
 lemma finfun_All_except_update: 
   "finfun_All_except A f(\<^sup>f a := b) = ((a \<in> set A \<or> b) \<and> finfun_All_except (a # A) f)"
-by(fastsimp simp add: finfun_All_except_def finfun_upd_apply)
+by(fastforce simp add: finfun_All_except_def finfun_upd_apply)
 
 lemma finfun_All_except_update_code [code]:
   fixes a :: "'a :: card_UNIV"
@@ -1250,7 +1250,7 @@ proof(unfold_locales)
   assume fin: "finite (UNIV :: ('c \<times> 'a) set)"
   hence fin1: "finite (UNIV :: 'c set)" and fin2: "finite (UNIV :: 'a set)"
     unfolding UNIV_Times_UNIV[symmetric]
-    by(fastsimp dest: finite_cartesian_productD1 finite_cartesian_productD2)+
+    by(fastforce dest: finite_cartesian_productD1 finite_cartesian_productD2)+
   note [simp] = Abs_finfun_inverse_finite[OF fin] Abs_finfun_inverse_finite[OF fin1] Abs_finfun_inverse_finite[OF fin2]
   { fix A :: "('c \<times> 'a) set"
     interpret comp_fun_commute "\<lambda>a :: 'c \<times> 'a. (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c))) a b'"

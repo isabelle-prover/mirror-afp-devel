@@ -49,21 +49,21 @@ apply clarsimp
 apply safe
 apply    (case_tac bdt1)
 apply      simp
-apply     fastsimp
-apply    fastsimp
+apply     fastforce
+apply    fastforce
 apply   simp
 apply   (case_tac bdt1)
-apply     fastsimp
-apply    fastsimp
-apply   fastsimp
+apply     fastforce
+apply    fastforce
+apply   fastforce
 apply  (case_tac bdt1)
-apply    fastsimp
-apply   fastsimp
-apply  fastsimp
+apply    fastforce
+apply   fastforce
+apply  fastforce
 apply (case_tac bdt1)
-apply   fastsimp
-apply  fastsimp
-apply fastsimp
+apply   fastforce
+apply  fastforce
+apply fastforce
 done
 
 

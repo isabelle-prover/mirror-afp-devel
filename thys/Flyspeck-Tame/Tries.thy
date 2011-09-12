@@ -21,7 +21,7 @@ lemma set_rem_alist:
 apply(induct al)
  apply simp
 apply simp
-apply fastsimp
+apply fastforce
 done
 
 lemma fst_set_rem_alist[simp]:

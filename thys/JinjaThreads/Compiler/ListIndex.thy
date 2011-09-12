@@ -62,7 +62,7 @@ lemma index_less_size[simp]: "x \<in> set xs \<Longrightarrow> index xs x < size
 (*<*)
 apply(induct xs)
  apply simp
-apply(fastsimp)
+apply(fastforce)
 done
 (*>*)
 
@@ -155,10 +155,10 @@ apply(auto simp:image_def)
   apply(rule ccontr)
   apply(erule_tac x=xa in ballE)
    prefer 2 apply blast
-  apply(fastsimp simp add:neq_commute)
+  apply(fastforce simp add:neq_commute)
  apply(subgoal_tac "x \<noteq> xa")
   prefer 2 apply blast
- apply(fastsimp simp add:neq_commute)
+ apply(fastforce simp add:neq_commute)
 apply(subgoal_tac "x \<noteq> xa")
  prefer 2 apply blast
 apply(force)

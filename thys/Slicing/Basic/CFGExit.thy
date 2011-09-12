@@ -29,14 +29,14 @@ lemma [simp]: "valid_node (_Entry_)"
 proof -
   from Entry_Exit_edge obtain a where "sourcenode a = (_Entry_)" 
     and "valid_edge a" by blast
-  thus ?thesis by(fastsimp simp:valid_node_def)
+  thus ?thesis by(fastforce simp:valid_node_def)
 qed
 
 lemma [simp]: "valid_node (_Exit_)"
 proof -
   from Entry_Exit_edge obtain a where "targetnode a = (_Exit_)"
     and "valid_edge a" by blast
-  thus ?thesis by(fastsimp simp:valid_node_def)
+  thus ?thesis by(fastforce simp:valid_node_def)
 qed
 
 
@@ -94,8 +94,8 @@ proof -
     by(auto dest:split_list simp:sourcenodes_def)
   then obtain as' as'' a where "as = as'@a#as''"
     and source:"sourcenode a = (_Exit_)"
-    by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
-  with path have "valid_edge a" by(fastsimp dest:path_split)
+    by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
+  with path have "valid_edge a" by(fastforce dest:path_split)
   with source show ?thesis by -(erule Exit_source)
 qed
 

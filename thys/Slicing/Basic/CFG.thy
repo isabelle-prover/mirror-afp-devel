@@ -22,10 +22,10 @@ definition valid_node :: "'node \<Rightarrow> bool"
   (\<exists>a. valid_edge a \<and> (n = sourcenode a \<or> n = targetnode a))"
 
 lemma [simp]: "valid_edge a \<Longrightarrow> valid_node (sourcenode a)"
-  by(fastsimp simp:valid_node_def)
+  by(fastforce simp:valid_node_def)
 
 lemma [simp]: "valid_edge a \<Longrightarrow> valid_node (targetnode a)"
-  by(fastsimp simp:valid_node_def)
+  by(fastforce simp:valid_node_def)
 
 
 subsection {* CFG paths and lemmas *}
@@ -46,14 +46,14 @@ lemma path_valid_node:
   by(induct rule:path.induct,auto)
 
 lemma empty_path_nodes [dest]:"n -[]\<rightarrow>* n' \<Longrightarrow> n = n'"
-  by(fastsimp elim:path.cases)
+  by(fastforce elim:path.cases)
 
 lemma path_valid_edges:"n -as\<rightarrow>* n' \<Longrightarrow> \<forall>a \<in> set as. valid_edge a"
 by(induct rule:path.induct) auto
 
 
 lemma path_edge:"valid_edge a \<Longrightarrow> sourcenode a -[a]\<rightarrow>* targetnode a"
-  by(fastsimp intro:Cons_path empty_path)
+  by(fastforce intro:Cons_path empty_path)
 
 
 lemma path_Entry_target [dest]:
@@ -85,13 +85,13 @@ lemma path_split:
   using `n -as@a#as'\<rightarrow>* n'`
 proof(induct as arbitrary:n)
   case Nil case 1
-  thus ?case by(fastsimp elim:path.cases intro:empty_path)
+  thus ?case by(fastforce elim:path.cases intro:empty_path)
 next
   case Nil case 2
-  thus ?case by(fastsimp elim:path.cases intro:path_edge)
+  thus ?case by(fastforce elim:path.cases intro:path_edge)
 next
   case Nil case 3
-  thus ?case by(fastsimp elim:path.cases)
+  thus ?case by(fastforce elim:path.cases)
 next
   case (Cons ax asx) 
   note IH1 = `\<And>n. n -asx@a#as'\<rightarrow>* n' \<Longrightarrow> n -asx\<rightarrow>* sourcenode a`
@@ -102,7 +102,7 @@ next
       by(auto elim:path.cases)
     from IH1[OF ` targetnode ax -asx@a#as'\<rightarrow>* n'`] 
     have "targetnode ax -asx\<rightarrow>* sourcenode a" .
-    with `sourcenode ax = n` `valid_edge ax` show ?case by(fastsimp intro:Cons_path)
+    with `sourcenode ax = n` `valid_edge ax` show ?case by(fastforce intro:Cons_path)
   next
     case 2 hence "targetnode ax -asx@a#as'\<rightarrow>* n'" by(auto elim:path.cases)
     from IH2[OF this] show ?case .
@@ -124,7 +124,7 @@ proof -
     by(rule path_split)+
   from `n -[]\<rightarrow>* sourcenode a'` have "n = sourcenode a'" by fast
   with `as = a'#as'` `valid_edge a'` `targetnode a' -as'\<rightarrow>* n'` that show ?thesis 
-    by fastsimp
+    by fastforce
 qed
 
 
@@ -139,7 +139,7 @@ proof -
     by(rule path_split)+
   from `targetnode a' -[]\<rightarrow>* n'` have "n' = targetnode a'" by fast
   with `as = as'@[a']` `valid_edge a'` `n -as'\<rightarrow>* sourcenode a'` that show ?thesis 
-    by fastsimp
+    by fastforce
 qed
 
 
@@ -148,7 +148,7 @@ lemma path_split_second:
 proof -
   from `n -as@a#as'\<rightarrow>* n'` have "valid_edge a" and "targetnode a -as'\<rightarrow>* n'"
     by(auto intro:path_split)
-  thus ?thesis by(fastsimp intro:Cons_path)
+  thus ?thesis by(fastforce intro:Cons_path)
 qed
 
 
@@ -162,7 +162,7 @@ proof -
   with `(_Entry_) -as\<rightarrow>* n'` obtain a' as' where "as = a'#as'" 
     and "(_Entry_) = sourcenode a'" and "valid_edge a'" and "targetnode a' -as'\<rightarrow>* n'"
     by(erule path_split_Cons)
-  with that show ?thesis by fastsimp
+  with that show ?thesis by fastforce
 qed
 
 
@@ -174,9 +174,9 @@ next
   case (Cons a' as')
   note IH = `\<And>n. \<lbrakk>n -as'\<rightarrow>* n'; n -as'\<rightarrow>* n''\<rbrakk> \<Longrightarrow> n' = n''`
   from `n -a'#as'\<rightarrow>* n'` have "targetnode a' -as'\<rightarrow>* n'" 
-    by(fastsimp elim:path_split_Cons)
+    by(fastforce elim:path_split_Cons)
   from `n -a'#as'\<rightarrow>* n''` have "targetnode a' -as'\<rightarrow>* n''" 
-    by(fastsimp elim:path_split_Cons)
+    by(fastforce elim:path_split_Cons)
   from IH[OF `targetnode a' -as'\<rightarrow>* n'` this] show ?thesis .
 qed
 
@@ -196,13 +196,13 @@ definition
 
 lemma path_sourcenode:
   "\<lbrakk>n -as\<rightarrow>* n'; as \<noteq> []\<rbrakk> \<Longrightarrow> hd (sourcenodes as) = n"
-by(fastsimp elim:path_split_Cons simp:sourcenodes_def)
+by(fastforce elim:path_split_Cons simp:sourcenodes_def)
 
 
 
 lemma path_targetnode:
   "\<lbrakk>n -as\<rightarrow>* n'; as \<noteq> []\<rbrakk> \<Longrightarrow> last (targetnodes as) = n'"
-by(fastsimp elim:path_split_snoc simp:targetnodes_def)
+by(fastforce elim:path_split_snoc simp:targetnodes_def)
 
 
 
@@ -281,7 +281,7 @@ next
     from IH1[OF this] have "n'' = (_Entry_)" by simp
     with `targetnode a = n''` `valid_edge a` show False by -(erule Entry_target,simp)
   qed
-  hence "(_Entry_) \<notin> set (sourcenodes(tl(a#as)))" by fastsimp
+  hence "(_Entry_) \<notin> set (sourcenodes(tl(a#as)))" by fastforce
   { case 1
     with `(_Entry_) \<notin> set (sourcenodes(tl(a#as)))` `sourcenode a = n`
     show ?case by(simp add:sourcenodes_def)

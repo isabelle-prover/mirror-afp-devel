@@ -246,12 +246,12 @@ lemma not_BVar_le_Fun [iff]: "~(BVar n <= sch1 =-> sch2)"
 apply (unfold le_type_scheme_def is_bound_typ_instance)
 apply simp
 apply (rule_tac x = "TVar n" in exI)
-apply fastsimp
+apply fastforce
 done
 
 lemma Fun_le_FunD: 
   "(sch1 =-> sch2 <= sch1' =-> sch2') ==> sch1 <= sch1' & sch2 <= sch2'"
-  unfolding le_type_scheme_def is_bound_typ_instance by fastsimp
+  unfolding le_type_scheme_def is_bound_typ_instance by fastforce
 
 lemma scheme_le_Fun: "(sch' <= sch1 =-> sch2) \<Longrightarrow> ? sch'1 sch'2. sch' = sch'1 =-> sch'2"
   by (induct sch') auto

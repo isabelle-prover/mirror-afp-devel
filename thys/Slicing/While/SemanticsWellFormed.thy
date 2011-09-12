@@ -28,7 +28,7 @@ proof(unfold_locales)
     proof(induct rule:converse_rtranclp_induct3)
       case refl
       from `l' < #:prog` have "valid_node prog (_ l' _)"
-        by(fastsimp dest:less_num_nodes_edge simp:valid_node_def valid_edge_def)
+        by(fastforce dest:less_num_nodes_edge simp:valid_node_def valid_edge_def)
       hence "CFG.valid_node sourcenode targetnode (valid_edge prog) (_ l' _)"
         by(simp add:valid_node_def While_CFG.valid_node_def)
       hence "CFG.path sourcenode targetnode (valid_edge prog) (_ l' _) [] (_ l' _)"
@@ -55,7 +55,7 @@ proof(unfold_locales)
         `CFG.path sourcenode targetnode (valid_edge prog) (_ l'' _) as (_ l' _)` 
       have "CFG.path sourcenode targetnode (valid_edge prog)
         (_ l _) (((_ l _),et,(_ l'' _))#as) (_ l' _)"
-        by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
+        by(fastforce intro:While_CFG.Cons_path simp:valid_edge_def)
       moreover
       from `transfers (CFG.kinds kind as) s'' = s'` `transfer et s = s''`
       have "transfers (CFG.kinds kind (((_ l _),et,(_ l'' _))#as)) s = s'"

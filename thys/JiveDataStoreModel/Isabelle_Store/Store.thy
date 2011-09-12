@@ -536,7 +536,7 @@ lemma le_Suc_eq: "(\<forall>a. (a < Suc n) = (a < Suc m)) = (\<forall>a. (a < n)
  (is "(\<forall>a. ?A a) = (\<forall> a. ?B a)")
 proof
   assume "\<forall>a. ?A a" thus "\<forall> a. ?B a"
-    by fastsimp
+    by fastforce
 next
   assume B: "\<forall> a. ?B a"
   show "\<forall>a. ?A a"
@@ -549,7 +549,7 @@ qed
 
 lemma all_le_eq_imp_eq: "\<And> c::nat. (\<forall>a. (a < d) = (a < c)) \<longrightarrow> (d = c)" 
 proof (induct d)
-  case 0 thus ?case by fastsimp
+  case 0 thus ?case by fastforce
 next
   case (Suc n c)
   thus ?case
@@ -680,7 +680,7 @@ proof -
       assume alive_l_s: "alive (ref l) s"
       with new_unalive_old_Store
       have l_not_new: "ref l \<noteq> new s t"
-        by fastsimp
+        by fastforce
       hence "vals (Rep_Store (s\<langle>t\<rangle>)) l = s@@l"
         by (cases t) 
            (auto simp add: alloc_def new_def access_def 

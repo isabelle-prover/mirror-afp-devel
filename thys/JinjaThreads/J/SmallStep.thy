@@ -409,14 +409,14 @@ subsection{*Some easy lemmas*}
 
 lemma [iff]:
   "\<not> extTA,P,t \<turnstile> \<langle>Val v, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-by(fastsimp elim:red.cases)
+by(fastforce elim:red.cases)
 
 lemma red_no_val [dest]:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow> \<langle>e', s'\<rangle>; is_val e \<rbrakk> \<Longrightarrow> False"
 by(auto)
 
 lemma [iff]: "\<not> extTA,P,t \<turnstile> \<langle>Throw a, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-by(fastsimp elim: red_cases)
+by(fastforce elim: red_cases)
 
 lemma reds_map_Val_Throw:
   "extTA,P,t \<turnstile> \<langle>map Val vs @ Throw a # es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<longleftrightarrow> False"
@@ -467,7 +467,7 @@ proof (induct arbitrary: l0 and l0 rule:red_reds.inducts)
 next
   case RedTryFail thus ?case
     by(auto intro: red_reds.RedTryFail)
-qed(fastsimp intro:red_reds.intros simp del: fun_upd_apply)+
+qed(fastforce intro:red_reds.intros simp del: fun_upd_apply)+
 
 lemma red_lcl_add: "extTA,P,t \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle> \<Longrightarrow> extTA,P,t \<turnstile> \<langle>e, (h, l0 ++ l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l0 ++ l')\<rangle>"
   and reds_lcl_add: "extTA,P,t \<turnstile> \<langle>es, (h, l)\<rangle> [-ta\<rightarrow>] \<langle>es', (h', l')\<rangle> \<Longrightarrow> extTA,P,t \<turnstile> \<langle>es, (h, l0 ++ l)\<rangle> [-ta\<rightarrow>] \<langle>es', (h', l0 ++ l')\<rangle>"
@@ -518,19 +518,19 @@ next
   qed
 next
   case RedTryFail thus ?case by(auto intro: red_reds.RedTryFail)
-qed(fastsimp intro: red_reds.intros)+
+qed(fastforce intro: red_reds.intros)+
 
 lemma red_notfree_unchanged: "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; V \<notin> fv e \<rbrakk> \<Longrightarrow> lcl s' V = lcl s V"
   and reds_notfree_unchanged: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; V \<notin> fvs es \<rbrakk> \<Longrightarrow> lcl s' V = lcl s V"
 apply(induct rule: red_reds.inducts)
-apply(fastsimp)+
+apply(fastforce)+
 done
 
 lemma red_dom_lcl: "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> dom (lcl s') \<subseteq> dom (lcl s) \<union> fv e"
   and reds_dom_lcl: "extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> dom (lcl s') \<subseteq> dom (lcl s) \<union> fvs es"
 proof (induct rule:red_reds.inducts)
   case (BlockRed e h x V vo ta e' h' x' T)
-  thus ?case by(clarsimp)(fastsimp split:split_if_asm)
+  thus ?case by(clarsimp)(fastforce split:split_if_asm)
 qed auto
 
 lemma red_Suspend_is_call:

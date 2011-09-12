@@ -235,13 +235,13 @@ lemma new_tv_TVar:
   "new_tv n (TVar m) = (m<n)"
 
 apply (unfold new_tv_def)
-apply (fastsimp)
+apply (fastforce)
 done
 
 lemma new_tv_FVar: 
   "new_tv n (FVar m) = (m<n)"
 apply (unfold new_tv_def)
-apply (fastsimp)
+apply (fastforce)
 done
 
 lemma new_tv_BVar: 
@@ -253,13 +253,13 @@ done
 lemma new_tv_Fun: 
   "new_tv n (t1 -> t2) = (new_tv n t1 & new_tv n t2)"
 apply (unfold new_tv_def)
-apply (fastsimp)
+apply (fastforce)
 done
 
 lemma new_tv_Fun2: 
   "new_tv n (t1 =-> t2) = (new_tv n t1 & new_tv n t2)"
 apply (unfold new_tv_def)
-apply (fastsimp)
+apply (fastforce)
 done
 
 lemma new_tv_Nil: 
@@ -271,7 +271,7 @@ done
 lemma new_tv_Cons: 
   "new_tv n (x#l) = (new_tv n x & new_tv n l)"
 apply (unfold new_tv_def)
-apply (fastsimp)
+apply (fastforce)
 done
 
 lemma new_tv_TVar_subst: "new_tv n TVar"
@@ -357,9 +357,9 @@ done
 lemma eq_free_eq_subst_scheme_list:
   "(!n. n:(free_tv A) --> S1 n = S2 n) \<Longrightarrow> $S1 (A::type_scheme list) = $S2 A"
 proof (induct A)
-  case Nil then show ?case by fastsimp
+  case Nil then show ?case by fastforce
 next
-  case Cons then show ?case by (fastsimp intro: eq_free_eq_subst_type_scheme)
+  case Cons then show ?case by (fastforce intro: eq_free_eq_subst_type_scheme)
 qed
 
 lemma weaken_asm_Un: "((!x:A. (P x)) --> Q) ==> ((!x:A Un B. (P x)) --> Q)"
@@ -396,10 +396,10 @@ lemma eq_subst_scheme_list_eq_free:
   "$S1 (A::type_scheme list) = $S2 A \<Longrightarrow> n:(free_tv A) \<Longrightarrow> S1 n = S2 n"
 proof (induct A)
   case Nil
-  then show ?case by fastsimp
+  then show ?case by fastforce
 next
   case Cons
-  then show ?case by (fastsimp intro: eq_subst_type_scheme_eq_free)
+  then show ?case by (fastforce intro: eq_subst_type_scheme_eq_free)
 qed
 
 lemma codD: "v : cod S ==> v : free_tv S"
@@ -422,15 +422,15 @@ done
 
 lemma free_tv_subst_var: "free_tv (S (v::nat)) <= insert v (cod S)"
 apply (cases "v:dom S")
-apply (fastsimp simp add: cod_def)
-apply (fastsimp simp add: dom_def)
+apply (fastforce simp add: cod_def)
+apply (fastforce simp add: dom_def)
 done
 
 lemma free_tv_app_subst_te: "free_tv ($ S (t::typ)) <= cod S Un free_tv t"
 proof (induct t)
   case (TVar n) then show ?case by (simp add: free_tv_subst_var)
 next
-  case (Fun t1 t2) then show ?case by fastsimp
+  case (Fun t1 t2) then show ?case by fastforce
 qed
 
 lemma free_tv_app_subst_type_scheme:
@@ -443,7 +443,7 @@ next
   then show ?case by simp
 next
   case (SFun t1 t2)
-  then show ?case by fastsimp
+  then show ?case by fastforce
 qed
 
 lemma free_tv_app_subst_scheme_list: "free_tv ($ S (A::type_scheme list)) <= cod S Un free_tv A"
@@ -452,7 +452,7 @@ proof (induct A)
 next
   case (Cons a al)
   with free_tv_app_subst_type_scheme
-  show ?case by fastsimp
+  show ?case by fastforce
 qed
 
 lemma free_tv_comp_subst: 
@@ -514,13 +514,13 @@ lemma new_tv_subst:
 apply (unfold new_tv_def)
 apply (safe)
   (* ==> *)
-  apply (fastsimp dest: leD simp add: free_tv_subst dom_def)
+  apply (fastforce dest: leD simp add: free_tv_subst dom_def)
  apply (subgoal_tac "m:cod S | S l = TVar l")
   apply safe
-   apply (fastsimp dest: UnI2 simp add: free_tv_subst)
+   apply (fastforce dest: UnI2 simp add: free_tv_subst)
   apply (drule_tac P = "%x. m:free_tv x" in subst , assumption)
   apply simp
- apply (fastsimp simp add: free_tv_subst cod_def dom_def)
+ apply (fastforce simp add: free_tv_subst cod_def dom_def)
 (* <== *)
 apply (unfold free_tv_subst cod_def dom_def) 
 apply safe

@@ -348,7 +348,7 @@ apply(induct rule: trancl.induct)
  apply(erule widen1_Array_Array, assumption)
 apply(clarsimp)
 apply(case_tac "is_NT_Array b")
- apply(fastsimp dest: not_widen1_trancl_NT_Array)
+ apply(fastforce dest: not_widen1_trancl_NT_Array)
 apply(auto dest: widen1_Array_Array)
 done
 
@@ -409,7 +409,7 @@ next
   moreover from `is_type P (A\<lfloor>\<rceil>)` have "\<not> is_NT_Array A" by auto
   ultimately show "(A\<lfloor>\<rceil>, B\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>+"
     by(rule widen1_trancl_into_Array_widen1_trancl)
-qed(fastsimp)+
+qed(fastforce)+
 
 lemma wf_prog_impl_acc_widen:
   assumes wfP: "wf_prog wfmd P"
@@ -449,7 +449,7 @@ proof -
           thus "y \<notin> M" using Pzy znnt `is_type P y` by auto
 	qed
       qed
-      from True show ?thesis by(fastsimp intro: BNTthesis)
+      from True show ?thesis by(fastforce intro: BNTthesis)
     next
       case False
       
@@ -474,7 +474,7 @@ proof -
           case False
           with `\<not> (\<exists>C. Class C \<in> M)` TM
           have "\<forall>y. P \<turnstile> T \<le> y \<and> T \<noteq> y \<longrightarrow> y \<notin> M"
-            by(cases T)(fastsimp simp add: NT_widen)+
+            by(cases T)(fastforce simp add: NT_widen)+
           thus ?thesis using TM by blast
         qed
       qed

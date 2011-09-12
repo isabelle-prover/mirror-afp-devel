@@ -148,7 +148,7 @@ proof -
   proof (coinduct rule: llist_equalityI)
     case (Eqllist q)
     then obtain a l where q: "q = (lmap (fst \<circ> snd) (inf_step2inf_step_table a l), l)" by blast
-    thus ?case by(cases l) fastsimp+
+    thus ?case by(cases l) fastforce+
   qed
 qed
 
@@ -654,7 +654,7 @@ proof -
   proof (coinduct rule: llist_equalityI)
     case (Eqllist q)
     then obtain a l where q: "q = (lmap (fst \<circ> snd \<circ> snd) (\<tau>inf_step2\<tau>inf_step_table a l), l)" by blast
-    thus ?case by(cases l) fastsimp+
+    thus ?case by(cases l) fastforce+
   qed
 qed
 
@@ -1007,7 +1007,7 @@ proof
         ultimately have "?proceed \<sigma> (tl, \<sigma>'')" using \<sigma>_\<sigma>' by auto
         hence "?proceed \<sigma> (SOME tl\<sigma>. ?proceed \<sigma> tl\<sigma>)" by(rule someI)
         hence ?Proceed using False \<tau>halt unfolding \<tau>Runs
-          by(subst tllist_corec)(fastsimp simp add: step_def)
+          by(subst tllist_corec)(fastforce simp add: step_def)
         thus ?thesis by simp
       qed
     qed
@@ -1346,7 +1346,7 @@ proof -
         from `silent_moves2 s'' tls'' s'` `\<And>tl s''. \<not> s' -tl\<rightarrow> s''`
         have "\<tau>Runs_table2 s'' (TNil (Inl (tls'', s')))" ..
         with `tls' = tl # tls''` `silent_move2 s tl s''` `tlsstlss = TNil (Inl (tls', s'))` tls
-        have ?Step by(fastsimp simp add: silent_move2_def)
+        have ?Step by(fastforce simp add: silent_move2_def)
         thus ?thesis ..
       qed
     next
@@ -1358,7 +1358,7 @@ proof -
       from `trsys.inf_step silent_move2 s' tls''`
       have "\<tau>Runs_table2 s' (TNil (Inr tls''))" ..
       hence ?Step using `tlsstlss = TNil (Inr tls')` tls `tls' = LCons tl tls''` `silent_move2 s tl s'`
-        by(fastsimp simp add: silent_move2_def)
+        by(fastforce simp add: silent_move2_def)
       thus ?thesis ..
     next
       case (Proceed tls' s' s'' tlsstlss' tl)
@@ -1370,7 +1370,7 @@ proof -
         from `silent_moves2 s''' tls'' s'` `s' -tl\<rightarrow> s''` `\<not> \<tau>move s' tl s''` `\<tau>Runs_table2 s'' tlsstlss'`
         have "\<tau>Runs_table2 s''' (TCons (tls'', s', tl, s'') tlsstlss')" ..
         with `tls' = tl' # tls''` `silent_move2 s tl' s'''` `tlsstlss = TCons (tls', s', tl, s'') tlsstlss'` tls
-        show ?thesis by(fastsimp simp add: silent_move2_def)
+        show ?thesis by(fastforce simp add: silent_move2_def)
       qed
       thus ?thesis ..
     qed

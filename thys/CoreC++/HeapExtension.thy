@@ -85,7 +85,7 @@ lemma red_hext_incr: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \
 
 proof(induct rule:red_reds_inducts)
   case RedNew thus ?case
-    by(fastsimp dest:new_Addr_SomeD simp:hext_def split:if_splits)
+    by(fastforce dest:new_Addr_SomeD simp:hext_def split:if_splits)
 next
   case RedFAss thus ?case by(simp add:hext_def split:if_splits)
 qed simp_all
@@ -127,7 +127,7 @@ and evals_hext:  "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<
 
 proof (induct rule:eval_evals_inducts)
   case New thus ?case
-    by(fastsimp intro!: hext_new intro:someI simp:new_Addr_def
+    by(fastforce intro!: hext_new intro:someI simp:new_Addr_def
                 split:split_if_asm simp del:fun_upd_apply)
 next
   case FAss thus ?case
@@ -164,7 +164,7 @@ apply (auto simp:oconf_def)
 apply (erule allE)
 apply (erule_tac x="Cs" in allE)
 apply (erule_tac x="fs'" in allE)
-apply (fastsimp elim:fconf_hext)
+apply (fastforce elim:fconf_hext)
 done
 
 
@@ -236,7 +236,7 @@ apply(cases v)
    apply simp
   apply simp
  apply simp
-apply(fastsimp simp:hext_def)
+apply(fastforce simp:hext_def)
 done
 
 
@@ -246,24 +246,24 @@ and WTrts_hext_mono: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> (\<And>h'. 
 
 apply(induct rule: WTrt_inducts)
 apply(simp add: WTrtNew)
-apply(fastsimp intro: WTrtDynCast)
-apply(fastsimp intro: WTrtStaticCast)
-apply(fastsimp simp: WTrtVal dest:hext_typeof_mono)
+apply(fastforce intro: WTrtDynCast)
+apply(fastforce intro: WTrtStaticCast)
+apply(fastforce simp: WTrtVal dest:hext_typeof_mono)
 apply(simp add: WTrtVar)
-apply(fastsimp simp add: WTrtBinOp)
-apply(fastsimp simp add: WTrtLAss)
-apply(fastsimp simp: WTrtFAcc del:WTrt_WTrts.intros WTrt_elim_cases)
+apply(fastforce simp add: WTrtBinOp)
+apply(fastforce simp add: WTrtLAss)
+apply(fastforce simp: WTrtFAcc del:WTrt_WTrts.intros WTrt_elim_cases)
 apply(simp add: WTrtFAccNT)
-apply(fastsimp simp: WTrtFAss del:WTrt_WTrts.intros WTrt_elim_cases)
-apply(fastsimp simp: WTrtFAssNT del:WTrt_WTrts.intros WTrt_elim_cases)
-apply(fastsimp simp: WTrtCall del:WTrt_WTrts.intros WTrt_elim_cases)
-apply(fastsimp simp: WTrtStaticCall del:WTrt_WTrts.intros WTrt_elim_cases)
-apply(fastsimp simp: WTrtCallNT del:WTrt_WTrts.intros WTrt_elim_cases)
-apply(fastsimp)
-apply(fastsimp simp add: WTrtSeq)
-apply(fastsimp simp add: WTrtCond)
-apply(fastsimp simp add: WTrtWhile)
-apply(fastsimp simp add: WTrtThrow)
+apply(fastforce simp: WTrtFAss del:WTrt_WTrts.intros WTrt_elim_cases)
+apply(fastforce simp: WTrtFAssNT del:WTrt_WTrts.intros WTrt_elim_cases)
+apply(fastforce simp: WTrtCall del:WTrt_WTrts.intros WTrt_elim_cases)
+apply(fastforce simp: WTrtStaticCall del:WTrt_WTrts.intros WTrt_elim_cases)
+apply(fastforce simp: WTrtCallNT del:WTrt_WTrts.intros WTrt_elim_cases)
+apply(fastforce)
+apply(fastforce simp add: WTrtSeq)
+apply(fastforce simp add: WTrtCond)
+apply(fastforce simp add: WTrtWhile)
+apply(fastforce simp add: WTrtThrow)
 apply(simp add: WTrtNil)
 apply(simp add: WTrtCons)
 done

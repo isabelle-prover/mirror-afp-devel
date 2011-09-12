@@ -50,7 +50,7 @@ by (simp add: i_append_def)
 
 lemma i_append_assoc[simp]: "xs \<frown> (ys \<frown> f) = (xs @ ys) \<frown> f"
 apply (case_tac "ys = []", simp)
-apply (fastsimp simp: expand_ilist_eq i_append_def nth_append)
+apply (fastforce simp: expand_ilist_eq i_append_def nth_append)
 done
 
 thm append_Cons
@@ -89,8 +89,8 @@ apply (clarify, rename_tac i)
 apply (drule_tac x="length xs + i" in spec)
 apply (simp add: i_append_nth)
 apply (case_tac "length xs + i < length ys")
- apply fastsimp
-apply (fastsimp simp: add_commute[of _ "length xs"])
+ apply fastforce
+apply (fastforce simp: add_commute[of _ "length xs"])
 done
 
 lemma i_append_eq_i_append_conv2: "
@@ -103,7 +103,7 @@ apply (rule iffI)
  apply (simp add: linorder_not_le eq_commute[of "xs \<frown> f"], drule less_imp_le)
  apply (frule i_append_eq_i_append_conv2_aux, assumption)
  apply blast
-apply fastsimp
+apply fastforce
 done
 
 thm List.same_append_eq
@@ -176,11 +176,11 @@ by blast
 thm List.ex_map_conv
 lemma ex_o_conv: "(\<exists>h. g = f \<circ> h) = (\<forall>y\<in>range g. \<exists>x. y = f x)"
 apply (rule iffI)
- apply fastsimp
+ apply fastforce
 apply (simp add: expand_ilist_eq)
 apply (rule_tac x="\<lambda>x. (SOME y. g x = f y)" in exI)
 thm someI_ex
-apply (fastsimp intro: someI_ex)
+apply (fastforce intro: someI_ex)
 done
 
 thm List.map_inj_on
@@ -252,13 +252,13 @@ thm
 
 thm List.map_fun_upd
 lemma o_fun_upd[simp]: "y \<notin> range g \<Longrightarrow> f (y := x) \<circ> g = f \<circ> g"
-by (fastsimp simp: expand_ilist_eq)
+by (fastforce simp: expand_ilist_eq)
 
 
 
 thm List.set_append
 lemma range_i_append[simp]: "range (xs \<frown> f) = set xs \<union> range f"
-by (fastsimp simp: in_set_conv_nth i_append_nth)
+by (fastforce simp: in_set_conv_nth i_append_nth)
 
 thm List.set_subset_Cons
 lemma set_subset_i_append: "set xs \<subseteq> range (xs \<frown> f)"
@@ -380,7 +380,7 @@ lemma i_append_update1: "
 by (simp add: expand_ilist_eq i_append_nth)
 lemma i_append_update2: "
   length xs \<le> n \<Longrightarrow> (xs \<frown> f) (n := x) = xs \<frown> (f(n - length xs := x))"
-by (fastsimp simp: expand_ilist_eq i_append_nth)
+by (fastforce simp: expand_ilist_eq i_append_nth)
 
 thm List.list_update_append
 lemma i_append_update: "
@@ -397,16 +397,16 @@ by (simp add: i_append_update2)
 thm List.set_update_subset_insert
 lemma range_update_subset_insert: "
   range (f(n := x)) \<subseteq> insert x (range f)"
-by fastsimp
+by fastforce
 
 thm List.set_update_subsetI
 lemma range_update_subsetI: "
   \<lbrakk> range f \<subseteq> A; x \<in> A \<rbrakk> \<Longrightarrow> range (f(n := x)) \<subseteq> A"
-by fastsimp
+by fastforce
 
 thm List.set_update_memI
 lemma range_update_memI: "x \<in> range (f(n := x))"
-by fastsimp
+by fastforce
 
 
 
@@ -578,7 +578,7 @@ lemma i_take_the_conv: "
 thm the1I2
 apply (rule the1I2)
  apply (rule_tac a="f \<Down> k" in ex1I)
- apply (fastsimp intro: i_append_i_take_i_drop_id)+
+ apply (fastforce intro: i_append_i_take_i_drop_id)+
 done
 
 lemma i_drop_the_conv: "
@@ -671,11 +671,11 @@ by (simp add: expand_ilist_eq)
 
 thm List.set_take_subset
 lemma set_i_take_subset: "set (f \<Down> n) \<subseteq> range f"
-by (fastsimp simp: in_set_conv_nth)
+by (fastforce simp: in_set_conv_nth)
 
 thm List.set_drop_subset
 lemma range_i_drop_subset: "range (f \<Up> n) \<subseteq> range f"
-by fastsimp
+by fastforce
 
 thm List.in_set_takeD
 lemma in_set_i_takeD: "x \<in> set (f \<Down> n) \<Longrightarrow> x \<in> range f"
@@ -776,11 +776,11 @@ done
 corollary o_eq_i_append_conv: "
   (f \<circ> g = ys \<frown> i) =
   (\<exists>xs h. g = xs \<frown> h \<and> map f xs = ys \<and> f \<circ> h = i)"
-by (fastsimp simp: o_eq_i_append_imp)
+by (fastforce simp: o_eq_i_append_imp)
 corollary i_append_eq_o_conv: "
   (ys \<frown> i = f \<circ> g) =
   (\<exists>xs h. g = xs \<frown> h \<and> map f xs = ys \<and> f \<circ> h = i)"
-by (fastsimp simp: o_eq_i_append_imp)
+by (fastforce simp: o_eq_i_append_imp)
 
 
 
@@ -840,7 +840,7 @@ by (simp add: expand_ilist_eq i_zip_nth i_append_nth)
 
 thm List.set_zip
 lemma i_zip_range: "range (i_zip f g) = { (f n, g n)| n. True }"
-by (fastsimp simp: i_zip_nth)
+by (fastforce simp: i_zip_nth)
 
 thm List.zip_update
 lemma i_zip_update: "
@@ -1098,7 +1098,7 @@ apply (case_tac a)
 done
 lemma same_gappend_eq: "
   glength a < \<infinity> \<Longrightarrow> (a @\<^sub>g b = a @\<^sub>g c) = (b = c)"
-by fastsimp
+by fastforce
 
 
 subsubsection {* @{text gmap} *}
@@ -1193,7 +1193,7 @@ by (unfold gmap_def gnth_def, case_tac a, simp+)
 thm in_set_conv_nth
 lemma in_gset_cong_gnth: "(x \<in> gset a) = (\<exists>i. enat i < glength a \<and> a !\<^sub>g i = x)"
 apply (unfold gset_def gnth_def, case_tac a)
-apply (fastsimp simp: in_set_conv_nth)+
+apply (fastforce simp: in_set_conv_nth)+
 done
 
 
@@ -1249,7 +1249,7 @@ apply (unfold gdrop_def gnth_def gCons_def)
 apply (case_tac a, case_tac b)
 apply (simp add: nth_via_drop)+
 apply (case_tac b)
-apply (fastsimp intro: nth_via_i_drop)+
+apply (fastforce intro: nth_via_i_drop)+
 done
 
 

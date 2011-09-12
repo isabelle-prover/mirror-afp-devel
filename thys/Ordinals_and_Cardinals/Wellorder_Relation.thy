@@ -891,7 +891,7 @@ next
       proof(unfold underS_def, auto)
         fix x 
         assume **: "x \<noteq> ?a" and ***: "(x,?a) \<in> r"
-        hence 11: "x \<in> Field r" using Field_def by fastsimp
+        hence 11: "x \<in> Field r" using Field_def by fastforce
          {assume "x \<notin> A" 
           hence "x \<in> ?B" using 11 by auto
           hence "(?a,x) \<in> r" using 3 minim_least[of ?B x] by auto
@@ -1001,7 +1001,7 @@ proof
   fix x assume "x \<in> Under(Under A)"
   with 1 have 1: "(x,minim A) \<in> r" 
   using Under_def by auto
-  with Field_def have "x \<in> Field r" by fastsimp
+  with Field_def have "x \<in> Field r" by fastforce
   moreover
   {fix y assume *: "y \<in> A"
    hence "(x,y) \<in> r"
@@ -1101,7 +1101,7 @@ proof-
     thus "x = suc A" by simp
   next
     fix x assume *: "x \<in> under (suc A)" and **: "x \<notin> A"
-    hence "x \<in> Field r" using under_def Field_def by fastsimp
+    hence "x \<in> Field r" using under_def Field_def by fastforce
     with ** have "x \<in> AboveS A" 
     using ofilter_AboveS_Field[of A] OF by auto
     hence "(suc A,x) \<in> r" 

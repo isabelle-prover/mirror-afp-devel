@@ -703,7 +703,7 @@ apply  (insert body)
 apply  simp
 apply  (rule hoare_augment_context [OF deriv_body])
 apply  blast
-apply fastsimp
+apply fastforce
 done
 
 lemma CallBody:

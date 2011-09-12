@@ -125,7 +125,7 @@ lemma mfinalE:
 using mfinalD[OF assms] by(rule that)
 
 lemma mfinal_def2: "mfinal s \<longleftrightarrow> dom (thr s) \<subseteq> final_threads s"
-by(fastsimp elim: mfinalE final_threadE intro: mfinalI final_threadI)
+by(fastforce elim: mfinalE final_threadE intro: mfinalI final_threadI)
 
 end
 
@@ -194,7 +194,7 @@ proof cases
   thus ?thesis using normal by(cases s')(auto)
 next
   case redT_acquire
-  thus ?thesis by-(rule acquire, fastsimp+)
+  thus ?thesis by-(rule acquire, fastforce+)
 qed
 
 definition
@@ -257,7 +257,7 @@ by(auto simp add: redT_has_locks_inv)
 
 lemma redT_ts_Some_inv:
   "\<lbrakk> \<langle>ls, (ts, m), ws, is\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws', is'\<rangle>; t \<noteq> t'; ts t' = \<lfloor>x\<rfloor> \<rbrakk> \<Longrightarrow> ts' t' = \<lfloor>x\<rfloor>"
-by(fastsimp elim!: redT.cases simp: redT_updTs_upd[THEN sym] intro: redT_updTs_Some)
+by(fastforce elim!: redT.cases simp: redT_updTs_upd[THEN sym] intro: redT_updTs_Some)
 
 lemma redT_thread_not_disappear:
   "\<lbrakk> s -t\<triangleright>ta\<rightarrow> s'; thr s' t' = None\<rbrakk> \<Longrightarrow> thr s t' = None"
@@ -276,7 +276,7 @@ done
 
 lemma redT_preserves_wset_thread_ok:
   "\<lbrakk> s -t\<triangleright>ta\<rightarrow> s'; wset_thread_ok (wset s) (thr s) \<rbrakk> \<Longrightarrow> wset_thread_ok (wset s') (thr s')"
-by(fastsimp elim!: redT.cases intro: wset_thread_ok_upd redT_updTs_preserves_wset_thread_ok redT_updWs_preserve_wset_thread_ok)
+by(fastforce elim!: redT.cases intro: wset_thread_ok_upd redT_updTs_preserves_wset_thread_ok redT_updWs_preserve_wset_thread_ok)
 
 lemma RedT_preserves_wset_thread_ok:
   "\<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; wset_thread_ok (wset s) (thr s) \<rbrakk> \<Longrightarrow> wset_thread_ok (wset s') (thr s')"
@@ -325,13 +325,13 @@ lemma redT_ex_new_thread:
   assumes "s -t'\<triangleright>ta\<rightarrow> s'" "wset_thread_ok (wset s) (thr s)" "thr s' t = \<lfloor>(x, w)\<rfloor>" "thr s t = None"
   shows "\<exists>m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<and> w = no_wait_locks"
 using assms
-by cases (fastsimp split: split_if_asm dest: wset_thread_okD redT_updTs_new_thread)+
+by cases (fastforce split: split_if_asm dest: wset_thread_okD redT_updTs_new_thread)+
 
 lemma redT_ex_new_thread':
   assumes "s -t'\<triangleright>ta\<rightarrow> s'" "thr s' t = \<lfloor>(x, w)\<rfloor>" "thr s t = None"
   shows "\<exists>m x. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
 using assms
-by(cases)(fastsimp split: split_if_asm dest!: redT_updTs_new_thread)+
+by(cases)(fastforce split: split_if_asm dest!: redT_updTs_new_thread)+
 
 definition deterministic :: "(('l,'t,'x,'m,'w) state \<Rightarrow> bool) \<Rightarrow> bool"
 where
@@ -402,7 +402,7 @@ lemma mfinal_no_redT:
   assumes redT: "s -t\<triangleright>ta\<rightarrow> s'" and mfinal: "mfinal s"
   shows False
 using redT mfinalD[OF mfinal, of t]
-by cases(fastsimp dest: final_no_red)+
+by cases(fastforce dest: final_no_red)+
 
 end
 

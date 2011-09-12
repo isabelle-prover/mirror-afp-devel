@@ -140,7 +140,7 @@ lemma (in flowgraph) S_precise: "(v,M,P)\<in>S_cs fg k
         M=mon_w fg w"
 proof (induct rule: S_cs.induct)
   case (S_init p) have "(([entry fg p],{#}),[],([entry fg p],{#}))\<in>trcl (trss fg)" by simp_all
-  thus ?case by fastsimp
+  thus ?case by fastforce
 next
   case (S_base u a v M P) then obtain p c' w where IHAPP: "(([entry fg p], {#}), w, [u], c') \<in> trcl (trss fg)" "size P \<le> k" "(\<lambda>p. [entry fg p]) `# P \<le> c'" "M = mon_w fg w" by blast
   note IHAPP(1)
@@ -236,7 +236,7 @@ lemma (in flowgraph) S_precise_ntrp:
     mon_c fg ch={}"
 proof -
   from P S_precise[OF ENTRY, simplified] trss_bot_proc_const[where s="[]" and s'="[]", simplified] obtain wsl ch where 
-    SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "size P \<le> k" "(\<lambda>p. [entry fg p]) `# P \<le> ch" "M = mon_w fg wsl" by fastsimp
+    SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "size P \<le> k" "(\<lambda>p. [entry fg p]) `# P \<le> ch" "M = mon_w fg wsl" by fastforce
   from mon_n_same_proc[OF trss_bot_proc_const[where s="[]" and s'="[]", simplified, OF SLPATH(1)]] have MON_V: "mon_n fg v = mon fg p" by (simp)
   from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s :# ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
   with c_of_initial_no_mon have CHNOMON: "mon_c fg ch = {}" by blast
@@ -388,7 +388,7 @@ next
     -- "We can cut off the bottom stack symbol from the reaching path (as always possible for normalized paths)"
     from FS_FMT(3) LESPLIT(3) ntrp_stack_decomp[of v "[]" "[u']" "{#}" w1 s' c1' fg, simplified] obtain v' rr where DECOMP: "s'=v'#rr@[u']" "(([v],{#}),w1,(v'#rr,c1'))\<in>trcl (ntrp fg)" by auto
     -- "This does not affect the configuration being at @{term U}"
-    from atU_xchange_stack left DECOMP(1) have ATU: "atU U ({#v'#rr#}+c1')" by fastsimp 
+    from atU_xchange_stack left DECOMP(1) have ATU: "atU U ({#v'#rr#}+c1')" by fastforce 
     -- "Then we can apply the induction hypothesis to get a constraint system entry for the path"
     from Cons.hyps[OF LEN DECOMP(2) ATU] obtain Ml Me h where IHAPP: "(v,Ml,Me,h)\<in>RU_cs fg U" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" by blast 
     -- {* Next, we have to apply the constraint @{thm [source] RU_call} *}
@@ -399,7 +399,7 @@ next
     qed
     from RU_call[OF FS_FMT(2,4) S_ENTRY IHAPP(1) MON_U_ME] have "(u, mon fg p \<union> mon_w fg w \<union> Ml, Me, ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me)) \<in> RU_cs fg U" . 
     -- "Then we assemble the rest of the proposition, that are the monitor restrictions and the acquisition history restriction"
-    moreover have "mon fg p \<union> mon_w fg w \<union> Ml \<subseteq> mon_loc fg (eel#wwl)" using mon_loc_ileq[OF ILEQ] IHAPP(2) FS_FMT(1) by fastsimp
+    moreover have "mon fg p \<union> mon_w fg w \<union> Ml \<subseteq> mon_loc fg (eel#wwl)" using mon_loc_ileq[OF ILEQ] IHAPP(2) FS_FMT(1) by fastforce
     moreover have "Me \<subseteq> mon_env fg (eel#wwl)" using mon_env_ileq[OF ILEQ, of fg] IHAPP(3) by auto
     moreover have "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> \<alpha>ah (map (\<alpha>nl fg) (eel#wwl))" proof (simp add: ah_update_cons)
       show "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> ah_update (\<alpha>ah (map (\<alpha>nl fg) wwl)) (\<alpha>nl fg eel) (mon_pl (map (\<alpha>nl fg) wwl))" proof (rule ah_update_mono)
@@ -431,8 +431,8 @@ next
     -- {* Before we can apply the  @{thm [source] RU_spawn}-constraint, we have to analyze the monitors*}
     have MON_MLE_ENV: "Ml \<union> Me \<subseteq> mon_env fg wwl" proof -
       from IHAPP(2,3) have "Ml \<union> Me \<subseteq> mon_loc fg wwr \<union> mon_env fg wwr" by auto
-      also from mon_ww_of_le_rem[symmetric] RI_NTRP(2) have "\<dots> = mon_ww fg wr" by fastsimp
-      also from mon_env_ileq[OF ILEQ] mon_ww_ileq[OF RI(2)] have "\<dots> \<subseteq> mon_env fg wwl" by fastsimp
+      also from mon_ww_of_le_rem[symmetric] RI_NTRP(2) have "\<dots> = mon_ww fg wr" by fastforce
+      also from mon_env_ileq[OF ILEQ] mon_ww_ileq[OF RI(2)] have "\<dots> \<subseteq> mon_env fg wwl" by fastforce
       finally show ?thesis .
     qed
     have MON_UP_MLE: "(mon_n fg u \<union> mon fg p) \<inter> (Ml \<union> Me) = {}" proof -
@@ -442,7 +442,7 @@ next
     -- {* Finally we can apply the @{thm [source] RU_spawn}-constraint that yields us an entry for the reaching path from @{term u}*}
     from RU_spawn[OF FS_FMT(2,4) S_ENTRY _ IHAPP(1) MON_UP_MLE] have "(u, mon fg p \<union> mon_w fg w, Ml \<union> Me, ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me)) \<in> RU_cs fg U" by simp 
     -- "Next we have to assemble the rest of the proposition"
-    moreover have "mon fg p \<union> mon_w fg w \<subseteq> mon_loc fg (eel#wwl)" using FS_FMT(1) by fastsimp
+    moreover have "mon fg p \<union> mon_w fg w \<subseteq> mon_loc fg (eel#wwl)" using FS_FMT(1) by fastforce
     moreover have "Ml \<union> Me \<subseteq> mon_env fg (eel#wwl)" using MON_MLE_ENV by auto
     moreover have "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> \<alpha>ah (map (\<alpha>nl fg) (eel#wwl))" -- "Only the proposition about the acquisition histories needs some more work"
     proof (simp add: ah_update_cons)
@@ -490,7 +490,7 @@ next
   case (RU_call u p u' v M P Ml Me h) 
   then obtain w s' c' where IHAPP: "(([v], {#}), w, s', c') \<in> trcl (ntrp fg)" "atU U ({#s'#} + c')" "mon_loc fg w = Ml" "mon_env fg w = Me" "\<alpha>ah (map (\<alpha>nl fg) w) = h" by blast
   from RU_call.hyps(2) S_precise[OF RU_call.hyps(3), simplified] trss_bot_proc_const[where s="[]" and s'="[]", simplified] obtain wsl ch where 
-    SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "M = mon_w fg wsl" by fastsimp
+    SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "M = mon_w fg wsl" by fastforce
   from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s :# ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
   with c_of_initial_no_mon have CHNOMON: "mon_c fg ch = {}" by blast
     -- "From the constraints prerequisites, we can construct the first step"
@@ -524,7 +524,7 @@ next
   -- "Spawn constraint"
   case (RU_spawn u p u' v M P q Ml Me h) then obtain w s' c' where IHAPP: "(([entry fg q], {#}), w, s', c') \<in> trcl (ntrp fg)" "atU U ({#s'#} + c')" "mon_loc fg w = Ml" "mon_env fg w = Me" "\<alpha>ah (map (\<alpha>nl fg) w) = h" by blast
   from RU_spawn.hyps(2) S_precise[OF RU_spawn.hyps(3), simplified] trss_bot_proc_const[where s="[]" and s'="[]", simplified] obtain wsl ch where 
-    SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "M = mon_w fg wsl" "size P \<le> 1" "(\<lambda>p. [entry fg p]) `# P \<le> ch" by fastsimp
+    SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "M = mon_w fg wsl" "size P \<le> 1" "(\<lambda>p. [entry fg p]) `# P \<le> ch" by fastforce
   with RU_spawn.hyps(4) obtain che where PFMT: "P={#q#}" "ch = {#[entry fg q]#} + che" by (auto elim!: mset_size_le1_cases mset_le_addE)
   from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s :# ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
   with c_of_initial_no_mon have CHNOMON: "mon_c fg ch = {}" by blast
@@ -646,7 +646,7 @@ next
   thus ?case proof (cases rule: atUV_union_cases)
     case left with DECOMP_LOC(1) have ATUV: "atUV U V ({# v'#rr #}+c1')" by simp
     from Cons.hyps[OF _ DECOMP_LOC(2) ATUV] cil_length[OF LESPLIT(1)] obtain Ml Me where IHAPP: "(v, Ml, Me) \<in> RUV_cs fg U V" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" by auto
-    from RUV_call[OF FS_FMT(2,4) S_ENTRY_PAT[of "{#}", simplified] IHAPP(1)] have "(u, mon fg p \<union> mon_w fg w \<union> Ml, Me) \<in> RUV_cs fg U V" using IHAPP(3) MON_PU MON1_LEQ by fastsimp
+    from RUV_call[OF FS_FMT(2,4) S_ENTRY_PAT[of "{#}", simplified] IHAPP(1)] have "(u, mon fg p \<union> mon_w fg w \<union> Ml, Me) \<in> RUV_cs fg U V" using IHAPP(3) MON_PU MON1_LEQ by fastforce
     moreover have "mon fg p \<union> mon_w fg w \<union> Ml \<subseteq> mon_loc fg (ee#ww)" using FS_FMT(1) IHAPP(2) MON1_LEQ by auto
     moreover have "Me \<subseteq> mon_env fg (ee#ww)" using IHAPP(3) MON1_LEQ by auto
     ultimately show ?thesis by blast

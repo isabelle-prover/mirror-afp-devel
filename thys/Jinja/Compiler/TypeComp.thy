@@ -179,28 +179,28 @@ and
                \<Longrightarrow> P \<turnstile> \<lfloor>(ST,LT)\<rfloor> \<le>' ty\<^isub>i' ST E A"
 (*<*)
 proof(induct e and es)
-  case FAss thus ?case by(fastsimp simp:hyperset_defs elim!:sup_state_opt_trans)
+  case FAss thus ?case by(fastforce simp:hyperset_defs elim!:sup_state_opt_trans)
 next
   case BinOp thus ?case
-    by(fastsimp simp:hyperset_defs elim!:sup_state_opt_trans split:bop.splits)
+    by(fastforce simp:hyperset_defs elim!:sup_state_opt_trans split:bop.splits)
 next
-  case Seq thus ?case by(fastsimp simp:hyperset_defs elim!:sup_state_opt_trans)
+  case Seq thus ?case by(fastforce simp:hyperset_defs elim!:sup_state_opt_trans)
 next
-  case While thus ?case by(fastsimp simp:hyperset_defs elim!:sup_state_opt_trans)
+  case While thus ?case by(fastforce simp:hyperset_defs elim!:sup_state_opt_trans)
 next
-  case Cond thus ?case by(fastsimp simp:hyperset_defs elim!:sup_state_opt_trans)
+  case Cond thus ?case by(fastforce simp:hyperset_defs elim!:sup_state_opt_trans)
 next
   case Block thus ?case
     by(force simp add:hyperset_defs ty\<^isub>i'_def simp del:pair_conv_ty\<^isub>i'
              elim!:sup_state_opt_trans)
 next
-  case Call thus ?case by(fastsimp simp:hyperset_defs elim!:sup_state_opt_trans)
+  case Call thus ?case by(fastforce simp:hyperset_defs elim!:sup_state_opt_trans)
 next
   case Cons_exp thus ?case
-    by(fastsimp simp:hyperset_defs elim!:sup_state_opt_trans)
+    by(fastforce simp:hyperset_defs elim!:sup_state_opt_trans)
 next
   case TryCatch thus ?case
-    by(fastsimp simp:hyperset_defs intro!:(* ty\<^isub>i'_env_antimono *) ty\<^isub>i'_incr
+    by(fastforce simp:hyperset_defs intro!:(* ty\<^isub>i'_env_antimono *) ty\<^isub>i'_incr
                 elim!:sup_state_opt_trans)
 qed (auto simp:hyperset_defs)
 
@@ -382,7 +382,7 @@ lemma wt_instr_appR:
  "\<lbrakk> P,T,m,mpc,xt \<turnstile> is!pc,pc :: \<tau>s;
     pc < size is; size is < size \<tau>s; mpc \<le> size \<tau>s; mpc \<le> mpc' \<rbrakk>
   \<Longrightarrow> P,T,m,mpc',xt \<turnstile> is!pc,pc :: \<tau>s@\<tau>s'"
-(*<*)by (fastsimp simp:wt_instr_def app_def)(*>*)
+(*<*)by (fastforce simp:wt_instr_def app_def)(*>*)
 
 
 lemma relevant_entries_shift [simp]:
@@ -504,10 +504,10 @@ lemma (in TC2) wt_instrs_ext:
   \<Longrightarrow> \<turnstile> is\<^isub>1@is\<^isub>2, xt\<^isub>1 @ shift (size is\<^isub>1) xt\<^isub>2 [::] \<tau>s\<^isub>1@\<tau>s\<^isub>2"
 (*<*)
 apply(clarsimp simp:wt_instrs_def)
-apply(rule conjI, fastsimp)
-apply(rule conjI, fastsimp)
+apply(rule conjI, fastforce)
+apply(rule conjI, fastforce)
 apply clarsimp
-apply(rule conjI, fastsimp simp:wt_instr_appRx)
+apply(rule conjI, fastforce simp:wt_instr_appRx)
 apply clarsimp
 apply(erule_tac x = "pc - size is\<^isub>1" in allE)+
 apply(thin_tac "?P \<longrightarrow> ?Q")
@@ -515,7 +515,7 @@ apply(erule impE, arith)
 apply(drule_tac \<tau>s' = "\<tau>s\<^isub>1" in wt_instr_appL)
   apply arith
  apply simp
-apply(fastsimp simp add:add_commute intro!: wt_instr_appLx)
+apply(fastforce simp add:add_commute intro!: wt_instr_appLx)
 done
 (*>*)
 
@@ -565,8 +565,8 @@ corollary (in TC2) wt_instrs_append_last[trans]:
   \<Longrightarrow> \<turnstile> is@[i],xt [::] \<tau>s"
 (*<*)
 apply(clarsimp simp add:wt_instrs_def)
-apply(rule conjI, fastsimp)
-apply(fastsimp intro!:wt_instr_appLx[where xt = "[]",simplified]
+apply(rule conjI, fastforce)
+apply(fastforce intro!:wt_instr_appLx[where xt = "[]",simplified]
                dest!:less_antisym)
 done
 (*>*)
@@ -603,7 +603,7 @@ corollary (in TC2) wt_instrs_Cons2[trans]:
 proof -
   from \<tau>s have "\<tau>s \<noteq> []" by (auto simp: wt_instrs_def)
   with mpc i have "\<turnstile> [i],[] [::] [\<tau>]@\<tau>s" by (simp add: wt_instrs_def)
-  with \<tau>s show ?thesis by (fastsimp dest: wt_instrs_ext)
+  with \<tau>s show ?thesis by (fastforce dest: wt_instrs_ext)
 qed
 (*>*)
 
@@ -613,7 +613,7 @@ lemma (in TC2) wt_instrs_last_incr[trans]:
 (*<*)
 apply(clarsimp simp add:wt_instrs_def wt_instr_def)
 apply(rule conjI)
-apply(fastsimp)
+apply(fastforce)
 apply(clarsimp)
 apply(rename_tac pc' tau')
 apply(erule allE, erule (1) impE)
@@ -722,7 +722,7 @@ lemma wt_Goto:
 lemma (in TC2) wt_Invoke:
   "\<lbrakk> size es = size Ts'; P \<turnstile> C sees M: Ts\<rightarrow>T = m in D; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> \<turnstile> [Invoke M (size es)],[] [::] [ty\<^isub>i' (rev Ts' @ Class C # ST) E A, ty\<^isub>i' (T#ST) E A]"
-(*<*)by(fastsimp simp add: ty\<^isub>i'_def wt_defs)(*>*)
+(*<*)by(fastforce simp add: ty\<^isub>i'_def wt_defs)(*>*)
 
 
 corollary (in TC2) wt_instrs_app3[simp]:
@@ -764,7 +764,7 @@ apply(rule conjI)
  apply (simp add: nth_append is_relevant_entry_def split: split_if_asm)
   apply (drule_tac x="\<tau>s\<^isub>1!pc" in bspec)
    apply (blast intro: nth_mem) 
-  apply fastsimp   
+  apply fastforce   
 apply (rule conjI)
  apply clarsimp
  apply (erule disjE, blast)
@@ -777,7 +777,7 @@ apply (clarsimp simp add: xcpt_eff_def relevant_entries_def split: split_if_asm)
 apply (simp add: nth_append is_relevant_entry_def split: split_if_asm)
  apply (drule_tac x = "\<tau>s\<^isub>1!pc" in bspec)
   apply (blast intro: nth_mem) 
- apply (fastsimp simp add: ty\<^isub>i'_def)
+ apply (fastforce simp add: ty\<^isub>i'_def)
 done
 
 declare [[simproc add: list_to_set_comprehension]]
@@ -921,7 +921,7 @@ proof(induct e and es)
   hence "\<turnstile> compE\<^isub>2 e\<^isub>2,compxE\<^isub>2 e\<^isub>2 0 (size ST) [::] (?\<tau>\<^isub>3 # ?\<tau>s\<^isub>2) @ [?\<tau>\<^isub>2']"
     using TryCatch.prems by(auto simp:after_def)
   also have "?A\<^isub>i \<squnion> \<A> e\<^isub>2 = (A \<squnion> \<A> e\<^isub>2) \<squnion> \<lfloor>{size E}\<rfloor>"
-    by(fastsimp simp:hyperset_defs)
+    by(fastforce simp:hyperset_defs)
   also have "P \<turnstile> ty\<^isub>i' (T#ST) ?E\<^isub>i \<dots> \<le>' ty\<^isub>i' (T#ST) E (A \<squnion> \<A> e\<^isub>2)"
     by(simp add:hyperset_defs ty\<^isub>l_incr ty\<^isub>i'_def)
   also have "P \<turnstile> \<dots> \<le>' ty\<^isub>i' (T#ST) E (A \<squnion> \<A> e\<^isub>1 \<sqinter> (\<A> e\<^isub>2 \<ominus> i))"
@@ -947,10 +947,10 @@ proof(induct e and es)
   {
     have "?Q (ty\<^isub>i' ST E A)" by (clarsimp simp add: ty\<^isub>i'_def)
     moreover have "?Q (ty\<^isub>i' (T # ST) E ?A\<^isub>1)" 
-      by (fastsimp simp add: ty\<^isub>i'_def hyperset_defs intro!: ty\<^isub>l_antimono)
+      by (fastforce simp add: ty\<^isub>i'_def hyperset_defs intro!: ty\<^isub>l_antimono)
     moreover have "\<And>\<tau>. \<tau> \<in> set (compT E A ST e\<^isub>1) \<Longrightarrow> ?Q \<tau>" using TryCatch.prems
       by clarsimp (frule compT_ST_prefix,
-                   fastsimp dest!: compT_LT_prefix simp add: ty\<^isub>i'_def)
+                   fastforce dest!: compT_LT_prefix simp add: ty\<^isub>i'_def)
     ultimately
     have "\<forall>\<tau>\<in>set (ty\<^isub>i' ST E A # compT E A ST e\<^isub>1 @ [ty\<^isub>i' (T # ST) E ?A\<^isub>1]). ?Q \<tau>" 
       by auto
@@ -1012,7 +1012,7 @@ next
   let ?\<tau>' = "ty\<^isub>i' (Void#ST) E ?A\<^isub>2"
   from FAss.prems sees T'_T 
   have "\<turnstile> [Putfield F D,Push Unit],[] [::] [?\<tau>\<^isub>2,?\<tau>\<^isub>3,?\<tau>']"
-    by (fastsimp simp add: wt_Push wt_Put)
+    by (fastforce simp add: wt_Push wt_Put)
   also have "PROP ?P e\<^isub>2 E T' ?A\<^isub>1 (Class C#ST)" by fact
   with FAss.prems T' 
   have "\<turnstile> compE\<^isub>2 e\<^isub>2, compxE\<^isub>2 e\<^isub>2 0 (size ST+1) [::] ?\<tau>\<^isub>1#?\<tau>s\<^isub>2@[?\<tau>\<^isub>2]"
@@ -1083,7 +1083,7 @@ next
   also have "\<turnstile> [Pop],[] [::] [?\<tau>\<^isub>c, ?\<tau>\<^isub>2]"  by(simp add:wt_Pop)
   also have "(?\<tau> # ?\<tau>s\<^isub>e @ [?\<tau>\<^isub>e,?\<tau>\<^isub>1] @ ?\<tau>s\<^isub>c) @ [?\<tau>\<^isub>c,?\<tau>\<^isub>2,?\<tau>\<^isub>1,?\<tau>'] = ?\<tau>s" by simp
   also let ?go = "Goto (-int(?n\<^isub>c+?n\<^isub>e+2))"
-  have "P \<turnstile> ?\<tau>\<^isub>2 \<le>' ?\<tau>" by(fastsimp intro: ty\<^isub>i'_antimono simp: hyperset_defs)
+  have "P \<turnstile> ?\<tau>\<^isub>2 \<le>' ?\<tau>" by(fastforce intro: ty\<^isub>i'_antimono simp: hyperset_defs)
   hence "P,T\<^isub>r,mxs,size ?\<tau>s,[] \<turnstile> ?go,?n\<^isub>e+?n\<^isub>c+2 :: ?\<tau>s"
     by(simp add: wt_Goto split: nat_diff_split)
   also have "?\<tau>s = (?\<tau> # ?\<tau>s\<^isub>e @ [?\<tau>\<^isub>e,?\<tau>\<^isub>1] @ ?\<tau>s\<^isub>c @ [?\<tau>\<^isub>c, ?\<tau>\<^isub>2]) @ [?\<tau>\<^isub>1, ?\<tau>']"
@@ -1159,7 +1159,7 @@ next
 next
   case Seq thus ?case
     by(auto simp:after_def)
-      (fastsimp simp:wt_Push wt_Pop hyperUn_assoc
+      (fastforce simp:wt_Push wt_Pop hyperUn_assoc
                 intro:wt_instrs_app2 wt_instrs_Cons)
 qed
 (*>*)
@@ -1176,7 +1176,7 @@ lemma [simp]: "app\<^isub>i (i, compP f P, pc, mpc, T, \<tau>) = app\<^isub>i (i
   apply (cases \<tau>)  
   apply (cases i)
   apply auto
-   apply (fastsimp dest!: sees_method_compPD)
+   apply (fastforce dest!: sees_method_compPD)
   apply (force dest: sees_method_compP)
   done
 (*>*)
@@ -1196,7 +1196,7 @@ lemma [simp]: "relevant_entries (compP f P) i pc xt = relevant_entries P i pc xt
 lemma [simp]: "app i (compP f P) mpc T pc mxl xt \<tau> = app i P mpc T pc mxl xt \<tau>"
 (*<*)
   apply (simp add: app_def xcpt_app_def eff_def xcpt_eff_def norm_eff_def)
-  apply (fastsimp simp add: image_def)
+  apply (fastforce simp add: image_def)
   done
 (*>*)
 

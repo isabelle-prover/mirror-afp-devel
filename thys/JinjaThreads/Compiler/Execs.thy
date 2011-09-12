@@ -171,7 +171,7 @@ apply(induct ins arbitrary: n n' pc)
  apply(simp)
 apply(clarsimp)
 apply(case_tac pc)
-apply(fastsimp)+
+apply(fastforce)+
 done
 
 lemma jump_ok_IfFalseD:
@@ -180,7 +180,7 @@ apply(induct ins arbitrary: n n' pc)
  apply(simp)
 apply(clarsimp)
 apply(case_tac pc)
-apply(fastsimp)+
+apply(fastforce)+
 done
 
 lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
@@ -195,7 +195,7 @@ lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   and compEs2_Goto_not_same: "\<lbrakk> compEs2 es ! pc = Goto i; pc < length (compEs2 es) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
 apply(induct e and es arbitrary: pc i and pc i)
 apply(auto simp add: nth_Cons nth_append split: split_if_asm bop.split_asm nat.splits)
-apply fastsimp+
+apply fastforce+
 done
 
 fun ins_jump_ok :: "'addr instr \<Rightarrow> nat \<Rightarrow> bool"
@@ -233,7 +233,7 @@ done
 lemma jump_ok_ins_jump_ok:
   "\<lbrakk> jump_ok ins n n'; pc < length ins \<rbrakk> \<Longrightarrow> ins_jump_ok (ins ! pc) (pc + n)"
 apply(induct ins arbitrary: n n' pc)
-apply(fastsimp simp add: nth_Cons' gr0_conv_Suc split: instr.split_asm)+
+apply(fastforce simp add: nth_Cons' gr0_conv_Suc split: instr.split_asm)+
 done
 
 context JVM_heap_base begin
@@ -504,7 +504,7 @@ proof(cases rule: exec_meth.cases)
     done
   moreover from `ci_app ci ((ins @ ins') ! ?PC) P h stk loc undefined undefined ?PC []` jump pc
   have "ci_app ci (ins' ! pc) P h stk loc undefined undefined pc []"
-    by(fastsimp elim: wf_ciD3_ci_app dest: jump_ok_ins_jump_ok)
+    by(fastforce elim: wf_ciD3_ci_app dest: jump_ok_ins_jump_ok)
   ultimately show ?thesis by(auto intro: exec_meth.intros)
 next
   case (exec_catch XCP D)
@@ -610,7 +610,7 @@ proof -
   from exec have "exec_meth ci (compP2 P) (compE2 e2) (compxE2 e2 0 0) t h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_move_def .
   from exec_meth_stk_offer[OF this, where stk''="[v]"] show ?thesis
-    by(fastsimp split: bop.splits intro: append_exec_meth_xt simp add: exec_move_def compxE2_size_convs compxE2_stack_xlift_convs)
+    by(fastforce split: bop.splits intro: append_exec_meth_xt simp add: exec_move_def compxE2_size_convs compxE2_stack_xlift_convs)
 qed
 
 lemma exec_move_LAssI:
@@ -637,7 +637,7 @@ proof -
   from exec have "exec_meth ci (compP2 P) (compE2 e2) (compxE2 e2 0 0) t h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_move_def .
   from exec_meth_stk_offer[OF this, where stk''="[v]"] show ?thesis
-    by(fastsimp intro: append_exec_meth_xt simp add: exec_move_def compxE2_size_convs compxE2_stack_xlift_convs)
+    by(fastforce intro: append_exec_meth_xt simp add: exec_move_def compxE2_size_convs compxE2_stack_xlift_convs)
 qed
 
 lemma exec_move_AAssI1:
@@ -720,7 +720,7 @@ proof -
   from exec have "exec_meth ci (compP2 P) (compE2 e2) (compxE2 e2 0 0) t h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_move_def .
   from exec_meth_stk_offer[OF this, where stk''="[v]"] show ?thesis
-    by(fastsimp intro: append_exec_meth_xt simp add: exec_move_def compxE2_size_convs compxE2_stack_xlift_convs)
+    by(fastforce intro: append_exec_meth_xt simp add: exec_move_def compxE2_size_convs compxE2_stack_xlift_convs)
 qed
 
 lemma exec_move_CallI1:
@@ -739,7 +739,7 @@ proof -
   from exec have "exec_meth ci (compP2 P) (compEs2 es) (compxEs2 es 0 0) t h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_moves_def .
   from exec_meth_stk_offer[OF this, where stk''="[v]"] show ?thesis
-    by(fastsimp intro: append_exec_meth_xt simp add: exec_move_def compxEs2_size_convs compxEs2_stack_xlift_convs)
+    by(fastforce intro: append_exec_meth_xt simp add: exec_move_def compxEs2_size_convs compxEs2_stack_xlift_convs)
 qed
 
 lemma exec_move_BlockNoneI:
@@ -846,7 +846,7 @@ proof
   assume ?lhs
   hence "exec_meth ci (compP2 P) (?E @ compE2 e) (compxE2 e' 0 0 @ shift (length ?E) (compxE2 e 0 0)) t h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
     by(simp add: exec_move_def shift_compxE2)
-  from exec_meth_drop_xt[OF this] show ?rhs unfolding exec_move_def by fastsimp
+  from exec_meth_drop_xt[OF this] show ?rhs unfolding exec_move_def by fastforce
 qed(rule exec_move_SeqI2)
 
 lemma exec_move_CondI1:
@@ -1000,7 +1000,7 @@ proof
   let ?xt = "[(0, length (compE2 e), \<lfloor>C\<rfloor>, Suc (length (compE2 e)), 0)]"
   assume lhs: ?lhs
   hence pc: "pc < length (compE2 e')"
-    by(fastsimp elim!: exec_meth.cases simp add: exec_move_def match_ex_table_append match_ex_entry dest: match_ex_table_pcsD)
+    by(fastforce elim!: exec_meth.cases simp add: exec_move_def match_ex_table_append match_ex_entry dest: match_ex_table_pcsD)
   from lhs have "exec_meth ci (compP2 P) ((?E @ compE2 e') @ []) ((compxE2 e 0 0 @ shift (length ?E) (compxE2 e' 0 0)) @ ?xt) t h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
     by(simp add: exec_move_def shift_compxE2 add_ac)
   thus ?rhs unfolding exec_move_def using pc
@@ -1948,7 +1948,7 @@ proof(rule \<tau>exec_1I)
       using exec' sees by(auto simp add: exec_move_def elim: exec_meth.cases) }
   with \<tau> sees sees_method_compP[OF sees, of "\<lambda>C M Ts T. compMb2"]
   show "\<tau>Move2 (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs)" 
-    unfolding \<tau>Move2_compP2[OF sees] by(fastsimp simp add: compP2_def compMb2_def)
+    unfolding \<tau>Move2_compP2[OF sees] by(fastforce simp add: compP2_def compMb2_def)
 qed
 
 lemma \<tau>Exec_mover_\<tau>Exec_1r:
@@ -1978,12 +1978,12 @@ by(cases "compEs2 es ! pc")(auto simp add: \<tau>move2_iff \<tau>moves2_iff spli
 lemma \<tau>Exec_1r_rtranclpD:
   "\<tau>Exec_1r P t (xcp, h, frs) (xcp', h', frs')
   \<Longrightarrow> (\<lambda>((xcp, frs), h) ((xcp', frs'), h'). exec_1 P t (xcp, h, frs) \<epsilon> (xcp', h', frs') \<and> \<tau>Move2 P (xcp, h, frs))^** ((xcp, frs), h) ((xcp', frs'), h')"
-by(induct rule: rtranclp_induct3)(fastsimp intro: rtranclp.rtrancl_into_rtrancl)+
+by(induct rule: rtranclp_induct3)(fastforce intro: rtranclp.rtrancl_into_rtrancl)+
 
 lemma \<tau>Exec_1t_rtranclpD:
   "\<tau>Exec_1t P t (xcp, h, frs) (xcp', h', frs')
   \<Longrightarrow> (\<lambda>((xcp, frs), h) ((xcp', frs'), h'). exec_1 P t (xcp, h, frs) \<epsilon> (xcp', h', frs') \<and> \<tau>Move2 P (xcp, h, frs))^++ ((xcp, frs), h) ((xcp', frs'), h')"
-by(induct rule: tranclp_induct3)(fastsimp intro: tranclp.trancl_into_trancl)+
+by(induct rule: tranclp_induct3)(fastforce intro: tranclp.trancl_into_trancl)+
 
 lemma exec_meth_length_compE2_stack_xliftD:
   "exec_meth ci P (compE2 e) (stack_xlift d (compxE2 e 0 0)) t h (stk, loc, pc, xcp) ta h' s'

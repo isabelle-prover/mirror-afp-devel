@@ -138,7 +138,7 @@ proof(atomize_elim)
     case Nil thus ?case by simp
   next
     case (Cons ia ias) thus ?case
-      by(cases "(ia, foldr collect_interrupt ias {})" rule: collect_interrupt.cases) fastsimp+
+      by(cases "(ia, foldr collect_interrupt ias {})" rule: collect_interrupt.cases) fastforce+
   qed
 qed
 

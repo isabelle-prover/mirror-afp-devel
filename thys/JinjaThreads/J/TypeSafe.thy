@@ -37,10 +37,10 @@ next
   have "nat (sint i) < array_length h a"
     by(metis nat_less_iff sint_0 word_sle_def)
   thus ?case using RedAAss
-    by(fastsimp elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def)
+    by(fastforce elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def)
 next
   case RedFAss thus ?case
-    by(fastsimp elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def dest: typeof_addr_eq_Some_conv)
+    by(fastforce elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def dest: typeof_addr_eq_Some_conv)
 next
   case (RedCallExternal s a U M vs ta va h' ta' e' s')
   hence "P,hp s \<turnstile> a\<bullet>M(vs) : T" by(auto intro: external_WT'.intros)
@@ -53,25 +53,25 @@ theorem (in J_heap) red_preserves_lconf:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; P,E,hp s \<turnstile> es[:]Ts; P,hp s \<turnstile> lcl s (:\<le>) E \<rbrakk> \<Longrightarrow> P,hp s' \<turnstile> lcl s' (:\<le>) E"
 proof(induct arbitrary: T E and Ts E rule:red_reds.inducts)
   case RedNew thus ?case
-    by(fastsimp intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
+    by(fastforce intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
 next
   case RedNewFail thus ?case
     by(auto intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
 next
   case RedNewArray thus ?case
-    by(fastsimp intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
+    by(fastforce intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
 next
   case RedNewArrayFail thus ?case
-    by(fastsimp intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
+    by(fastforce intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
 next
   case RedLAss thus ?case 
-    by(fastsimp elim: lconf_upd simp add: conf_def simp del: fun_upd_apply )
+    by(fastforce elim: lconf_upd simp add: conf_def simp del: fun_upd_apply )
 next
   case RedAAss thus ?case
-    by(fastsimp intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
+    by(fastforce intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
 next
   case RedFAss thus ?case
-    by(fastsimp intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
+    by(fastforce intro:lconf_hext hext_heap_ops simp del: fun_upd_apply)
 next
   case (BlockRed e h x V vo ta e' h' x' T T' E)
   note red = `extTA,P,t \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
@@ -105,13 +105,13 @@ context J_conf_read begin
 lemma red_preserves_sconf:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e : T; E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> E \<turnstile> s' \<surd>"
 apply(auto dest: red_preserves_hconf red_preserves_lconf simp add:sconf_def)
-apply(fastsimp dest: red_hext_incr intro: preallocated_hext)
+apply(fastforce dest: red_hext_incr intro: preallocated_hext)
 done
 
 lemma reds_preserves_sconf:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; P,E,hp s \<turnstile> es [:] Ts; E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> E \<turnstile> s' \<surd>"
 apply(auto dest: reds_preserves_hconf reds_preserves_lconf simp add: sconf_def)
-apply(fastsimp dest: reds_hext_incr intro: preallocated_hext)
+apply(fastforce dest: reds_hext_incr intro: preallocated_hext)
 done
 
 end
@@ -134,19 +134,19 @@ proof (induct arbitrary: T E and Ts E rule:red_reds.inducts)
   thus ?case by(auto dest: new_obj_SomeD)
 next
   case RedNewFail thus ?case unfolding sconf_def
-    by(fastsimp intro:typeof_OutOfMemory preallocated_heap_ops simp add: xcpt_subcls_Throwable[OF _ wf]) 
+    by(fastforce intro:typeof_OutOfMemory preallocated_heap_ops simp add: xcpt_subcls_Throwable[OF _ wf]) 
 next
   case NewArrayRed
-  thus ?case by fastsimp
+  thus ?case by fastforce
 next
   case RedNewArray
   thus ?case by(auto dest: new_arr_SomeD)
 next
   case RedNewArrayNegative thus ?case unfolding sconf_def
-    by(fastsimp intro: preallocated_heap_ops simp add: xcpt_subcls_Throwable[OF _ wf]) 
+    by(fastforce intro: preallocated_heap_ops simp add: xcpt_subcls_Throwable[OF _ wf]) 
 next
   case RedNewArrayFail thus ?case unfolding sconf_def
-    by(fastsimp intro:typeof_OutOfMemory preallocated_heap_ops simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce intro:typeof_OutOfMemory preallocated_heap_ops simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (CastRed e s ta e' s' C T E)
   have esse: "extTA,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" 
@@ -167,7 +167,7 @@ next
     by(clarsimp simp add: is_refT_def)
 next
   case RedCastFail thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (InstanceOfRed e s ta e' s' U T E)
   have IH: "\<And>T E. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T; P,hp s \<turnstile> t \<surd>t\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T"
@@ -229,11 +229,11 @@ next
     by(rule binop_type)
   thus ?case by(auto simp add: conf_def)
 next
-  case RedVar thus ?case by (fastsimp simp:sconf_def lconf_def conf_def)
+  case RedVar thus ?case by (fastforce simp:sconf_def lconf_def conf_def)
 next
   case LAssRed thus ?case by(blast intro:widen_trans)
 next
-  case RedLAss thus ?case by fastsimp
+  case RedLAss thus ?case by fastforce
 next
   case (AAccRed1 a s ta a' s' i T E)
   have IH: "\<And>E T. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> a : T; P,hp s \<turnstile> t \<surd>t\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> a' : T' \<and> P \<turnstile> T' \<le> T"
@@ -245,13 +245,13 @@ next
   from wti red_hext_incr[OF assa] have wti': "P,E,hp s' \<turnstile> i : Integer" by - (rule WTrt_hext_mono)
   { assume wta: "P,E,hp s \<turnstile> a : T\<lfloor>\<rceil>"
     from IH[OF hconf wta tconf]
-    obtain U where wta': "P,E,hp s' \<turnstile> a' : U" and UsubT: "P \<turnstile> U \<le> T\<lfloor>\<rceil>" by fastsimp
+    obtain U where wta': "P,E,hp s' \<turnstile> a' : U" and UsubT: "P \<turnstile> U \<le> T\<lfloor>\<rceil>" by fastforce
     with wta' wti' have ?case by(cases U, auto simp add: widen_Array) }
   moreover
   { assume wta: "P,E,hp s \<turnstile> a : NT"
-    from IH[OF hconf wta tconf] have "P,E,hp s' \<turnstile> a' : NT" by fastsimp
+    from IH[OF hconf wta tconf] have "P,E,hp s' \<turnstile> a' : NT" by fastforce
     from this wti' have ?case
-      by(fastsimp intro:WTrtAAccNT) }
+      by(fastforce intro:WTrtAAccNT) }
   ultimately show ?case using wt by auto
 next
   case (AAccRed2 i s ta i' s' a T E)
@@ -266,19 +266,19 @@ next
   proof (rule WTrt_elim_cases)
     assume wta: "P,E,hp s \<turnstile> Val a : T\<lfloor>\<rceil>"
     from wta red_hext_incr[OF issi] have wta': "P,E,hp s' \<turnstile> Val a : T\<lfloor>\<rceil>" by (rule WTrt_hext_mono)
-    from wta' wti' show ?case by(fastsimp)
+    from wta' wti' show ?case by(fastforce)
   next
     assume wta: "P,E,hp s \<turnstile> Val a : NT"
     from wta red_hext_incr[OF issi] have wta': "P,E,hp s' \<turnstile> Val a : NT" by (rule WTrt_hext_mono)
     from wta' wti' show ?case
-      by(fastsimp elim:WTrtAAccNT)
+      by(fastforce elim:WTrtAAccNT)
   qed
 next
   case RedAAccNull thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedAAccBounds thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (RedAAcc h a T i v l T' E)
   from `E \<turnstile> (h, l) \<surd>` have "hconf h" by(clarsimp simp add: sconf_def)
@@ -301,16 +301,16 @@ next
   from wt have wti: "P,E,hp s \<turnstile> i : Integer" by auto
   from wti red_hext_incr[OF assa] have wti': "P,E,hp s' \<turnstile> i : Integer" by - (rule WTrt_hext_mono)
   { assume wta: "P,E,hp s \<turnstile> a : NT"
-    from IH[OF sconf wta tconf] have wta': "P,E,hp s' \<turnstile> a' : NT" by fastsimp
+    from IH[OF sconf wta tconf] have wta': "P,E,hp s' \<turnstile> a' : NT" by fastforce
     from wt wta obtain V where wte: "P,E,hp s \<turnstile> e : V" by(auto)
     from wte red_hext_incr[OF assa] have wte': "P,E,hp s' \<turnstile> e : V" by - (rule WTrt_hext_mono)
     from wta' wti' wte' void have ?case
-      by(fastsimp elim: WTrtAAssNT) }
+      by(fastforce elim: WTrtAAssNT) }
   moreover
   { fix U
     assume wta: "P,E,hp s \<turnstile> a : U\<lfloor>\<rceil>"
     from IH[OF sconf wta tconf]
-    obtain U' where wta': "P,E,hp s' \<turnstile> a' : U'" and UsubT: "P \<turnstile> U' \<le> U\<lfloor>\<rceil>" by fastsimp
+    obtain U' where wta': "P,E,hp s' \<turnstile> a' : U'" and UsubT: "P \<turnstile> U' \<le> U\<lfloor>\<rceil>" by fastforce
     with wta' have ?case
     proof(cases U')
       case NT
@@ -318,7 +318,7 @@ next
       from UNT wt wta obtain V where wte: "P,E,hp s \<turnstile> e : V" by(auto)
       from wte red_hext_incr[OF assa] have wte': "P,E,hp s' \<turnstile> e : V" by - (rule WTrt_hext_mono)
       from wta' UNT wti' wte' void show ?thesis
-	by(fastsimp elim: WTrtAAssNT)
+	by(fastforce elim: WTrtAAssNT)
     next
       case (Array A)
       have UA: "U' = A\<lfloor>\<rceil>" by fact
@@ -335,7 +335,7 @@ next
     and sconf: "E \<turnstile> s \<surd>" and tconf: "P,hp s \<turnstile> t \<surd>t" by fact+
   from wt have void: "T = Void" by blast
   from wt have wti: "P,E,hp s \<turnstile> i : Integer" by auto
-  from IH[OF sconf wti tconf] have wti': "P,E,hp s' \<turnstile> i' : Integer" by fastsimp
+  from IH[OF sconf wti tconf] have wti': "P,E,hp s' \<turnstile> i' : Integer" by fastforce
   from wt show ?case
   proof(rule WTrt_elim_cases)
     fix U T'
@@ -343,14 +343,14 @@ next
       and wte: "P,E,hp s \<turnstile> e : T'"
     from wte red_hext_incr[OF issi] have wte': "P,E,hp s' \<turnstile> e : T'" by - (rule WTrt_hext_mono)
     from wta red_hext_incr[OF issi] have wta': "P,E,hp s' \<turnstile> Val a : U\<lfloor>\<rceil>" by - (rule WTrt_hext_mono)
-    from wta' wti' wte' void show ?case by (fastsimp elim:WTrtAAss)
+    from wta' wti' wte' void show ?case by (fastforce elim:WTrtAAss)
   next
     fix T'
     assume wta: "P,E,hp s \<turnstile> Val a : NT"
       and wte: "P,E,hp s \<turnstile> e : T'"
     from wte red_hext_incr[OF issi] have wte': "P,E,hp s' \<turnstile> e : T'" by - (rule WTrt_hext_mono)
     from wta red_hext_incr[OF issi] have wta': "P,E,hp s' \<turnstile> Val a : NT" by - (rule WTrt_hext_mono)
-    from wta' wti' wte' void show ?case by (fastsimp elim:WTrtAAss)
+    from wta' wti' wte' void show ?case by (fastforce elim:WTrtAAss)
   qed
 next
   case (AAssRed3 e s ta e' s' a i T E)
@@ -368,26 +368,26 @@ next
       and wte: "P,E,hp s \<turnstile> e : T'"
     from wta red_hext_incr[OF issi] have wta': "P,E,hp s' \<turnstile> Val a : U\<lfloor>\<rceil>" by - (rule WTrt_hext_mono)
     from IH[OF sconf wte tconf]
-    obtain V where wte': "P,E,hp s' \<turnstile> e' : V" by fastsimp
-    from wta' wti' wte' void show ?case by (fastsimp elim:WTrtAAss)
+    obtain V where wte': "P,E,hp s' \<turnstile> e' : V" by fastforce
+    from wta' wti' wte' void show ?case by (fastforce elim:WTrtAAss)
   next
     fix T'
     assume wta: "P,E,hp s \<turnstile> Val a : NT"
       and wte: "P,E,hp s \<turnstile> e : T'"
     from wta red_hext_incr[OF issi] have wta': "P,E,hp s' \<turnstile> Val a : NT" by - (rule WTrt_hext_mono)
     from IH[OF sconf wte tconf]
-    obtain V where wte': "P,E,hp s' \<turnstile> e' : V" by fastsimp
-    from wta' wti' wte' void show ?case by (fastsimp elim:WTrtAAss)
+    obtain V where wte': "P,E,hp s' \<turnstile> e' : V" by fastforce
+    from wta' wti' wte' void show ?case by (fastforce elim:WTrtAAss)
   qed
 next
   case RedAAssNull thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedAAssBounds thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedAAssStore thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedAAss thus ?case
     by(auto simp del:fun_upd_apply)
@@ -430,7 +430,7 @@ next
   thus ?case by(auto)
 next
   case RedALengthNull thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (FAccRed e s ta e' s' F D T E)
   have IH: "\<And>E T. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T; P,hp s \<turnstile> t \<surd>t\<rbrakk>
@@ -459,15 +459,15 @@ next
     qed }
   moreover
   { assume "P,E,hp s \<turnstile> e : NT"
-    hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf _ tconf] by fastsimp
-    hence ?case  by(fastsimp intro:WTrtFAccNT widen_refl) }
+    hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf _ tconf] by fastforce
+    hence ?case  by(fastforce intro:WTrtFAccNT widen_refl) }
   ultimately show ?case using wt by blast
 next
   case RedFAcc thus ?case unfolding sconf_def
-    by(fastsimp dest: heap_read_conf typeof_addr_eq_Some_conv intro: addr_loc_type.intros simp add: conf_def)
+    by(fastforce dest: heap_read_conf typeof_addr_eq_Some_conv intro: addr_loc_type.intros simp add: conf_def)
 next
   case RedFAccNull thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (FAssRed1 e s ta e' s' F D e\<^isub>2)
   have red: "extTA,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>"
@@ -478,7 +478,7 @@ next
   from wt have void: "T = Void" by blast
   -- "We distinguish if @{term e} has type @{term NT} or a Class type"
   { assume "P,E,hp s \<turnstile> e : NT"
-    hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf _ tconf] by fastsimp
+    hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf _ tconf] by fastforce
     moreover obtain T\<^isub>2 where "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2" using wt by auto
     from this red_hext_incr[OF red] have  "P,E,hp s' \<turnstile> e\<^isub>2 : T\<^isub>2"
       by(rule WTrt_hext_mono)
@@ -533,13 +533,13 @@ next
     moreover
     obtain T\<^isub>2' where "P,E,hp s' \<turnstile> e\<^isub>2' : T\<^isub>2' \<and> P \<turnstile> T\<^isub>2' \<le> T\<^isub>2"
       using IH[OF conf wt\<^isub>2 tconf] by blast
-    ultimately show ?thesis by(fastsimp intro:WTrtFAssNT)
+    ultimately show ?thesis by(fastforce intro:WTrtFAssNT)
   qed
 next
   case RedFAss thus ?case by(auto simp del:fun_upd_apply)
 next
   case RedFAssNull thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (CallObj e s ta e' s' M es T E)
   have red: "extTA,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>"
@@ -591,7 +591,7 @@ next
   next
     fix Ts
     assume "P,E,hp s \<turnstile> e:NT"
-    hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf _ tconf] by fastsimp
+    hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf _ tconf] by fastforce
     moreover
     fix Ts assume wtes: "P,E,hp s \<turnstile> es [:] Ts"
     have "P,E,hp s' \<turnstile> es [:] Ts"
@@ -649,7 +649,7 @@ next
       by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
     moreover obtain Us' where "P,E,hp s' \<turnstile> es' [:] Us'" "P \<turnstile> Us' [\<le>] Us"
       using IH[OF conf wtes tconf] by blast
-    ultimately show ?thesis using nexc by(fastsimp intro:WTrtCall widens_trans)
+    ultimately show ?thesis using nexc by(fastforce intro:WTrtCall widens_trans)
   next
     fix Us
     assume null: "P,E,hp s \<turnstile> Val v : NT" and wtes: "P,E,hp s \<turnstile> es [:] Us"
@@ -657,7 +657,7 @@ next
     moreover
     obtain Us' where "P,E,hp s' \<turnstile> es' [:] Us' \<and> P \<turnstile> Us' [\<le>] Us"
       using IH[OF conf wtes tconf] by blast
-    ultimately show ?thesis by(fastsimp intro:WTrtCallNT)
+    ultimately show ?thesis by(fastforce intro:WTrtCallNT)
   next
     fix U Ts Ts''
     assume wte: "P,E,hp s \<turnstile> Val v : U" 
@@ -686,7 +686,7 @@ next
   from sees_wf_mdecl[OF wf method] obtain T''
     where wtabody: "P,[this#pns [\<mapsto>] Class D#Ts] \<turnstile> body :: T''"
     and T''subT: "P \<turnstile> T'' \<le> T" and length_pns: "length pns = length Ts"
-    by(fastsimp simp:wf_mdecl_def simp del:map_upds_twist)
+    by(fastforce simp:wf_mdecl_def simp del:map_upds_twist)
   from wtabody have "P,empty(this#pns [\<mapsto>] Class D#Ts),hp s \<turnstile> body : T''"
     by(rule WT_implies_WTrt)
   hence "P,E(this#pns [\<mapsto>] Class D#Ts),hp s \<turnstile> body : T''"
@@ -704,7 +704,7 @@ next
     by(auto intro: red_external_conf_extRet[OF wf] intro!: wt_external_call intro!: external_WT'.intros simp add: sconf_def)
 next
   case RedCallNull thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (BlockRed e h x V vo ta e' h' x' T T' E)
   note IH = `\<And>T E. \<lbrakk>E \<turnstile> (h, x(V := vo)) \<surd>; P,E,hp (h, x(V := vo)) \<turnstile> e : T; P,hp (h, x(V := vo)) \<turnstile> t \<surd>t\<rbrakk>
@@ -719,7 +719,7 @@ next
     assume vo: "x' V = \<lfloor>v\<rfloor>"
     from `(E(V \<mapsto> T)) \<turnstile> (h, x(V := vo)) \<surd>` `extTA,P,t \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>` `P,E(V\<mapsto>T),h \<turnstile> e : T'`
     have "P,h' \<turnstile> x' (:\<le>) (E(V \<mapsto> T))" by(auto simp add: sconf_def dest: red_preserves_lconf)
-    with vo have "\<exists>T'. typeof\<^bsub>h'\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T" by(fastsimp simp add: sconf_def lconf_def conf_def)
+    with vo have "\<exists>T'. typeof\<^bsub>h'\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T" by(fastforce simp add: sconf_def lconf_def conf_def)
     then obtain T' where "typeof\<^bsub>h'\<^esub> v = \<lfloor>T'\<rfloor>" "P \<turnstile> T' \<le> T" by blast
     hence ?case using wt' vo by(auto) }
   moreover
@@ -747,7 +747,7 @@ next
   qed
 next
   case SynchronizedNull thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case LockSynchronized thus ?case by(auto)
 next
@@ -813,7 +813,7 @@ next
   thus ?case by(auto)
 next
   case RedThrowNull thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (TryRed e s ta e' s' C V e2 T E)
   have red: "extTA,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by fact
@@ -833,7 +833,7 @@ next
   qed
 next
   case RedTryFail thus ?case unfolding sconf_def
-    by(fastsimp simp add: xcpt_subcls_Throwable[OF _ wf])
+    by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedSeq thus ?case by auto
 next
@@ -841,11 +841,11 @@ next
 next
   case RedCondF thus ?case by(auto dest: is_lub_upper)
 next
-  case RedWhile thus ?case by(fastsimp) 
+  case RedWhile thus ?case by(fastforce) 
 next
   case RedTry thus ?case by auto
 next
-  case RedTryCatch thus ?case by(fastsimp)
+  case RedTryCatch thus ?case by(fastforce)
 next
   case (ListRed1 e s ta e' s' es Ts E)
   note IH = `\<And>T E. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T; P,hp s \<turnstile> t \<surd>t\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T`
@@ -854,7 +854,7 @@ next
   show ?case using `P,hp s \<turnstile> t \<surd>t` by(auto simp add: list_all2_Cons2 intro: widens_refl)
 next
   case ListRed2 thus ?case
-    by(fastsimp dest: hext_typeof_mono[OF reds_hext_incr])
-qed(fastsimp)+
+    by(fastforce dest: hext_typeof_mono[OF reds_hext_incr])
+qed(fastforce)+
 
 end

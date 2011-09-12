@@ -150,7 +150,7 @@ by(auto simp add: finfun_Ball_except_def is_list_UNIV_iff mem_finfun_apply_conv)
 
 lemma finfun_Ball_except_update: 
   "finfun_Ball_except xs (A(\<^sup>f a := b)) P = ((a \<in> set xs \<or> (b \<longrightarrow> P a)) \<and> finfun_Ball_except (a # xs) A P)"
-by(fastsimp simp add: finfun_Ball_except_def mem_finfun_apply_conv finfun_upd_apply dest: bspec split: split_if_asm)
+by(fastforce simp add: finfun_Ball_except_def mem_finfun_apply_conv finfun_upd_apply dest: bspec split: split_if_asm)
 
 lemma finfun_Ball_except_update_code [code]:
   fixes a :: "'a :: card_UNIV"
@@ -177,7 +177,7 @@ by(auto simp add: finfun_Bex_except_def is_list_UNIV_iff mem_finfun_apply_conv)
 
 lemma finfun_Bex_except_update: 
   "finfun_Bex_except xs (A(\<^sup>f a := b)) P \<longleftrightarrow> (a \<notin> set xs \<and> b \<and> P a) \<or> finfun_Bex_except (a # xs) A P"
-by(fastsimp simp add: finfun_Bex_except_def mem_finfun_apply_conv finfun_upd_apply dest: bspec split: split_if_asm)
+by(fastforce simp add: finfun_Bex_except_def mem_finfun_apply_conv finfun_upd_apply dest: bspec split: split_if_asm)
 
 lemma finfun_Bex_except_update_code [code]:
   fixes a :: "'a :: card_UNIV"

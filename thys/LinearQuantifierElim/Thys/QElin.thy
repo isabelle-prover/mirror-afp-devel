@@ -20,18 +20,18 @@ proof
   have 2: "\<forall>f\<in> set as. \<exists>r c cs. f = Less r (c#cs) \<and>
           (c>0 \<and> (r/c,(-1/c)*\<^sub>s cs) \<in> ?Ls \<or> c<0 \<and> (r/c,(-1/c)*\<^sub>s cs) \<in> ?Us)"
     using dep less
-    by(fastsimp simp:set_lbounds set_ubounds is_Less_iff depends\<^isub>R_def
+    by(fastforce simp:set_lbounds set_ubounds is_Less_iff depends\<^isub>R_def
                 split:list.splits)
   assume ?L
   have 1: "\<forall>x\<in>?lbs. \<forall>y\<in>?ubs. x < y"
   proof (rule ballI)+
     fix x y assume "x\<in>?lbs" "y\<in>?ubs"
     then obtain r cs
-      where "(r,cs) \<in> ?Ls \<and> x = r + \<langle>cs,xs\<rangle>" by fastsimp
+      where "(r,cs) \<in> ?Ls \<and> x = r + \<langle>cs,xs\<rangle>" by fastforce
     moreover from `y\<in>?ubs` obtain s ds
-      where "(s,ds) \<in> ?Us \<and> y = s + \<langle>ds,xs\<rangle>" by fastsimp
+      where "(s,ds) \<in> ?Us \<and> y = s + \<langle>ds,xs\<rangle>" by fastforce
     ultimately show "x<y" using `?L`
-      by(fastsimp simp:qe_FM\<^isub>1_def algebra_simps iprod_left_diff_distrib)
+      by(fastforce simp:qe_FM\<^isub>1_def algebra_simps iprod_left_diff_distrib)
   qed
   { assume nonempty: "?lbs \<noteq> {} \<and> ?ubs \<noteq> {}"
     hence "Max ?lbs < Min ?ubs" using fins 1
@@ -39,7 +39,7 @@ proof
     then obtain m where "Max ?lbs < m \<and> m < Min ?ubs"
       using dense[where 'a = real] by blast
     hence "\<forall>a \<in> set as. I\<^isub>R a (m#xs)" using 2 nonempty
-      by (auto simp:Ball_def Bex_def)(fastsimp simp:field_simps)
+      by (auto simp:Ball_def Bex_def)(fastforce simp:field_simps)
     hence ?R .. }
   moreover
   { assume asm: "?lbs \<noteq> {} \<and> ?ubs = {}"
@@ -48,7 +48,7 @@ proof
       fix a assume "a \<in> set as"
       then obtain r c cs
         where "a = Less r (c#cs)" "c>0" "(r/c,(-1/c)*\<^sub>s cs) \<in> ?Ls"
-        using asm 2 by fastsimp
+        using asm 2 by fastforce
       moreover hence "(r - \<langle>cs,xs\<rangle>)/c \<le> Max ?lbs"
         using asm fins
         by(auto intro!: Max_ge_iff[THEN iffD2])
@@ -63,7 +63,7 @@ proof
       fix a assume "a \<in> set as"
       then obtain r c cs
         where "a = Less r (c#cs)" "c<0" "(r/c,(-1/c)*\<^sub>s cs) \<in> ?Us"
-        using asm 2 by fastsimp
+        using asm 2 by fastforce
       moreover hence "Min ?ubs \<le> (r - \<langle>cs,xs\<rangle>)/c"
         using asm fins
         by(auto intro!: Min_le_iff[THEN iffD2])

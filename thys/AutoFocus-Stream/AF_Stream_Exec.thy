@@ -1510,7 +1510,7 @@ lemma Equiv_Exec_sym[rule_format]: "
     m equiv_states
     localState2 localState1 input_fun2 input_fun1 output_fun2 output_fun1
     trans_fun2 trans_fun1 k2 k1 c2 c1"
-by (fastsimp simp: Equiv_Exec_def)
+by (fastforce simp: Equiv_Exec_def)
 
 lemma Equiv_Exec_sym2: "
   \<lbrakk> equiv_states_sym = (\<lambda>s1 s2. equiv_states s2 s1) \<rbrakk> \<Longrightarrow>
@@ -1522,7 +1522,7 @@ lemma Equiv_Exec_sym2: "
     m equiv_states_sym
     localState2 localState1 input_fun2 input_fun1 output_fun2 output_fun1
     trans_fun2 trans_fun1 k2 k1 c2 c1"
-by (fastsimp simp: Equiv_Exec_def)
+by (fastforce simp: Equiv_Exec_def)
 
 lemma Equiv_Exec_sym2_ex: "
   \<exists>equiv_states_sym. 
@@ -1558,7 +1558,7 @@ lemma Equiv_Exec_trans: "
       m equiv_states13
       localState1 localState3 input_fun1 input_fun3 output_fun1 output_fun3
       trans_fun1 trans_fun3 k1 k3 c1 c3"
-by (fastsimp simp: Equiv_Exec_def)
+by (fastforce simp: Equiv_Exec_def)
 
 lemma Equiv_Exec_trans_ex: "
   \<lbrakk> Equiv_Exec
@@ -1765,7 +1765,7 @@ corollary f_Exec_State_Idle_append_replicate_NoMsg_ge_output: "
       localState (f_Exec_Comp trans_fun (xs @ \<NoMsg>\<^bsup>m\<^esup>) c));
     output_fun (f_Exec_Comp trans_fun (xs @ \<NoMsg>\<^bsup>m\<^esup>) c) = \<NoMsg>; m \<le> n \<rbrakk> \<Longrightarrow>
   output_fun (f_Exec_Comp trans_fun (xs @ \<NoMsg>\<^bsup>n\<^esup>) c) = \<NoMsg>"
-by (fastsimp simp: order_le_less f_Exec_State_Idle_append_replicate_NoMsg_gr_output)
+by (fastforce simp: order_le_less f_Exec_State_Idle_append_replicate_NoMsg_gr_output)
 corollary f_Exec_State_Idle_replicate_NoMsg_gr_output: "
   \<lbrakk> State_Idle localState output_fun trans_fun (
       localState (f_Exec_Comp trans_fun \<NoMsg>\<^bsup>m\<^esup> c));
@@ -1778,7 +1778,7 @@ corollary f_Exec_State_Idle_replicate_NoMsg_ge_output: "
       localState (f_Exec_Comp trans_fun \<NoMsg>\<^bsup>m\<^esup> c));
     output_fun (f_Exec_Comp trans_fun \<NoMsg>\<^bsup>m\<^esup> c) = \<NoMsg>; m \<le> n \<rbrakk> \<Longrightarrow>
   output_fun (f_Exec_Comp trans_fun \<NoMsg>\<^bsup>n\<^esup> c) = \<NoMsg>"
-by (fastsimp simp: order_le_less f_Exec_State_Idle_replicate_NoMsg_gr_output)
+by (fastforce simp: order_le_less f_Exec_State_Idle_replicate_NoMsg_gr_output)
 
 
 lemma State_Idle_append_replicate_NoMsg_output_last_message: "
@@ -2273,7 +2273,7 @@ lemma is_Pointwise_Output_Shrink_list_imp_is_Pointwise_Output_Shrink: "
   \<lbrakk> is_Pointwise_Output_Shrink_list pointwise_shrink fs; output_fun \<in> set fs \<rbrakk> \<Longrightarrow>
   is_Pointwise_Output_Shrink pointwise_shrink output_fun"
 apply (induct fs, simp)
-apply fastsimp
+apply fastforce
 done
 
 lemma is_Pointwise_Output_Shrink_list_eq_is_Pointwise_Output_Shrink_all: "
@@ -2290,7 +2290,7 @@ done
 lemma is_Pointwise_Output_Shrink_subset: "
   \<lbrakk> is_Pointwise_Output_Shrink_list pointwise_shrink fs; set fs' \<subseteq> set fs \<rbrakk> \<Longrightarrow>
   is_Pointwise_Output_Shrink_list pointwise_shrink fs'"
-by (fastsimp simp: is_Pointwise_Output_Shrink_list_eq_is_Pointwise_Output_Shrink_all)
+by (fastforce simp: is_Pointwise_Output_Shrink_list_eq_is_Pointwise_Output_Shrink_all)
 
 thm Acc_Trans_Fun_Step_def
 lemma f_Exec_Stream_Acc_LocalState_eq_Acc_Trans_Fun_Step_LocalState: "\<And>c. 

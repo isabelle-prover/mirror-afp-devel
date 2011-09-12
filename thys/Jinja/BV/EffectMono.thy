@@ -54,7 +54,7 @@ proof -
         by auto
 
       from n D less have "P \<turnstile> ST!n \<le> ST'!n" 
-        by (fastsimp dest: list_all2_nthD2)
+        by (fastforce dest: list_all2_nthD2)
       with D ST obtain D' where
         D': "ST!n = Class D'" and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D" by auto
 
@@ -66,18 +66,18 @@ proof -
       from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
       also note Ts also note Ts' 
       finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
-      with D'_M D' app less Invoke have ?thesis by fastsimp
+      with D'_M D' app less Invoke have ?thesis by fastforce
     }
     ultimately show ?thesis by blast
   next 
     case Getfield
-    with app less show ?thesis by (fastsimp intro: rtrancl_trans)
+    with app less show ?thesis by (fastforce intro: rtrancl_trans)
   next
     case (Putfield F C)
-    with app less show ?thesis by (fastsimp intro: widen_trans rtrancl_trans)
+    with app less show ?thesis by (fastforce intro: widen_trans rtrancl_trans)
   next
     case Return
-    with app less show ?thesis by (fastsimp intro: widen_trans)
+    with app less show ?thesis by (fastforce intro: widen_trans)
   qed (auto elim!: refTE not_refTE)
 qed
 (*>*)
@@ -193,7 +193,7 @@ proof -
       by auto
 
     from n D less have "P \<turnstile> ST!n \<le> ST'!n" 
-      by (fastsimp dest: list_all2_nthD2)
+      by (fastforce dest: list_all2_nthD2)
     with D ST obtain D' where
       D': "ST ! n = Class D'" and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
       by (auto simp: widen_Class)

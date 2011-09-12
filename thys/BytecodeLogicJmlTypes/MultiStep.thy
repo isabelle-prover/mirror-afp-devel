@@ -118,7 +118,7 @@ lemma MStep_Compose:
   "\<lbrakk>(M,l,s,n,l1,r):MStep; (M,l1,r,k,l2,t):MStep; nk=n+k\<rbrakk> 
   \<Longrightarrow> (M,l,s,nk,l2,t):MStep"
 (*<*)
-by (drule MStep_Compose_Aux, fastsimp)
+by (drule MStep_Compose_Aux, fastforce)
 (*>*)
 
 text{*Here are two simple lemmas relating the operational judgements.*}

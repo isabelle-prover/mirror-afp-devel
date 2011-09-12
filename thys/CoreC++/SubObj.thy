@@ -226,7 +226,7 @@ proof -
     by (drule_tac R="(C,Xs@[X])" in isSubobj_isClass, simp add:mdc_def)
   from 1 have "P \<turnstile> C \<preceq>\<^sup>* X" 
     by (drule_tac R="(C,Xs@[X])" in mdc_leq_ldc, simp add:mdc_def ldc_def)
-  with classC 2 show ?thesis by fastsimp
+  with classC 2 show ?thesis by fastforce
 qed
 
 
@@ -349,7 +349,7 @@ where
 
 
 lemma Subobjs_Base:"is_class P C \<Longrightarrow> Subobjs P C [C]"
-by (fastsimp intro:Subobjs_Rep SubobjsR_Base)
+by (fastforce intro:Subobjs_Rep SubobjsR_Base)
 
 lemma SubobjsR_nonempty: "Subobjs\<^isub>R P C Cs \<Longrightarrow> Cs \<noteq> []"
 by (induct rule: Subobjs\<^isub>R.induct, simp_all)
@@ -397,7 +397,7 @@ lemma Subobjs_notSubobjsR:
 \<Longrightarrow> \<exists>C' D. P \<turnstile> C \<preceq>\<^sup>* C' \<and> P \<turnstile> C' \<prec>\<^sub>S D \<and> Subobjs\<^isub>R P D Cs"
 apply (induct rule: Subobjs.induct)
  apply clarsimp
-apply fastsimp
+apply fastforce
 done
 
 
@@ -407,7 +407,7 @@ lemma assumes subo:"Subobjs\<^isub>R P (hd (Cs@ C'#Cs')) (Cs@ C'#Cs')"
   using subo
 proof (induct Cs)
   case Nil
-  thus ?case by -(frule hd_SubobjsR,fastsimp intro:Subobjs_Rep)
+  thus ?case by -(frule hd_SubobjsR,fastforce intro:Subobjs_Rep)
 next
   case (Cons D Ds)
   have subo':"Subobjs\<^isub>R P (hd ((D#Ds) @ C'#Cs')) ((D#Ds) @ C'#Cs')"
@@ -429,11 +429,11 @@ lemma Subobjs_Subobjs:"Subobjs P C (Cs@ C'#Cs') \<Longrightarrow> Subobjs P C' (
   apply (drule Subobjs.cases)
   apply auto
    apply (subgoal_tac "C = hd(Cs @ C' # Cs')")
-    apply (fastsimp intro:SubobjsR_Subobjs)
-   apply (fastsimp dest:hd_SubobjsR)
+    apply (fastforce intro:SubobjsR_Subobjs)
+   apply (fastforce dest:hd_SubobjsR)
   apply (subgoal_tac "D = hd(Cs @ C' # Cs')")
-   apply (fastsimp intro:SubobjsR_Subobjs)
-  apply (fastsimp dest:hd_SubobjsR)
+   apply (fastforce intro:SubobjsR_Subobjs)
+  apply (fastforce dest:hd_SubobjsR)
   done
   
 
@@ -446,7 +446,7 @@ using subo
 proof (induct rule:Subobjs\<^isub>R.induct)
   case SubobjsR_Base thus ?case by assumption
 next
-  case SubobjsR_Rep thus ?case by (fastsimp intro:subclsR_subcls1 subcls1_class)
+  case SubobjsR_Rep thus ?case by (fastforce intro:subclsR_subcls1 subcls1_class)
 qed
 
 
@@ -460,8 +460,8 @@ proof (induct rule:Subobjs.induct)
 next
   case (Subobjs_Sh C C' D Cs)
   have leq:"P \<turnstile> C \<preceq>\<^sup>* C'" and leqS:"P \<turnstile> C' \<prec>\<^sub>S D" by fact+
-  hence "(C,D) \<in> (subcls1 P)\<^sup>+" by (fastsimp intro:rtrancl_into_trancl1 subclsS_subcls1)
-  thus ?case by (induct rule:trancl_induct, fastsimp intro:subcls1_class)
+  hence "(C,D) \<in> (subcls1 P)\<^sup>+" by (fastforce intro:rtrancl_into_trancl1 subclsS_subcls1)
+  thus ?case by (induct rule:trancl_induct, fastforce intro:subcls1_class)
 qed
 
 
@@ -476,7 +476,7 @@ proof -
     by (induct rule:Subobjs.induct,blast+)
   hence "C' = D" by -(drule hd_SubobjsR,simp)
   with subo' have "Subobjs\<^isub>R P D (D#D'#Cs')" by simp
-  thus ?thesis by (fastsimp elim:Subobjs\<^isub>R.cases dest:hd_SubobjsR)
+  thus ?thesis by (fastforce elim:Subobjs\<^isub>R.cases dest:hd_SubobjsR)
 qed
 
 
@@ -507,7 +507,7 @@ next
     from False subo'' have hd:"D' = hd Cs'"
       by (induct Cs',auto dest:hd_SubobjsR)
     with subo'' False IH have "Subobjs\<^isub>R P (hd Cs') Cs'" by simp 
-    with subR hd have "Subobjs\<^isub>R P C' (C'#Cs')" by (fastsimp intro:SubobjsR_Rep)
+    with subR hd have "Subobjs\<^isub>R P C' (C'#Cs')" by (fastforce intro:SubobjsR_Rep)
     thus ?thesis by simp
   qed
 qed
@@ -523,17 +523,17 @@ proof (rule Subobjs.cases,auto)
   from suboR notempty have hd:"C = hd Cs"
     by (induct Cs,auto dest:hd_SubobjsR)
   with suboR notempty have "Subobjs\<^isub>R P (hd Cs) Cs"
-    by(fastsimp intro:butlast_Subobjs_Rep)
-  with hd show "Subobjs P C Cs" by (fastsimp intro:Subobjs_Rep)
+    by(fastforce intro:butlast_Subobjs_Rep)
+  with hd show "Subobjs P C Cs" by (fastforce intro:Subobjs_Rep)
 next
   fix C' D' assume leq:"P \<turnstile> C \<preceq>\<^sup>* C'" and subS:"P \<turnstile> C' \<prec>\<^sub>S D'"
   and suboR:"Subobjs\<^isub>R P D' (Cs@[D])" and "Subobjs P C (Cs@[D])"
   from suboR notempty have hd:"D' = hd Cs"
     by (induct Cs,auto dest:hd_SubobjsR)
   with suboR notempty have "Subobjs\<^isub>R P (hd Cs) Cs"
-    by(fastsimp intro:butlast_Subobjs_Rep)
+    by(fastforce intro:butlast_Subobjs_Rep)
   with hd leq subS show "Subobjs P C Cs"
-    by(fastsimp intro:Subobjs_Sh)
+    by(fastforce intro:Subobjs_Sh)
 qed
 
 
@@ -549,7 +549,7 @@ next
   have subo':"Subobjs P C (Cs@rev(D#Ds))"
     and IH:"Subobjs P C (Cs@rev Ds) \<Longrightarrow> Subobjs P C Cs" by fact+
   from notempty subo' have "Subobjs P C (Cs@rev Ds)"
-    by (fastsimp intro:butlast_Subobjs)
+    by (fastforce intro:butlast_Subobjs)
   with IH show ?case by simp
 qed
 
@@ -751,12 +751,12 @@ where
 
 lemma sees_fields_fun:
   "(Cs,T) \<in> FieldDecls P C F \<Longrightarrow> (Cs,T') \<in> FieldDecls P C F \<Longrightarrow> T = T'"
-by(fastsimp simp:FieldDecls_def)
+by(fastforce simp:FieldDecls_def)
 
 lemma sees_field_fun:
   "\<lbrakk>P \<turnstile> C has least F:T via Cs; P \<turnstile> C has least F:T' via Cs\<rbrakk>
   \<Longrightarrow> T = T'"
-by (fastsimp simp:LeastFieldDecl_def dest:sees_fields_fun)
+by (fastforce simp:LeastFieldDecl_def dest:sees_fields_fun)
 
 
 lemma has_least_method_has_method:
@@ -772,12 +772,12 @@ by(auto simp:MethodDefs_def)
 
 lemma sees_methods_fun:
   "(Cs,mthd) \<in> MethodDefs P C M \<Longrightarrow> (Cs,mthd') \<in> MethodDefs P C M \<Longrightarrow> mthd = mthd'"
-by(fastsimp simp:MethodDefs_def)
+by(fastforce simp:MethodDefs_def)
 
 lemma sees_method_fun:
   "\<lbrakk>P \<turnstile> C has least M = mthd via Cs; P \<turnstile> C has least M = mthd' via Cs\<rbrakk>
   \<Longrightarrow> mthd = mthd'"
-by (fastsimp simp:LeastMethodDef_def dest:sees_methods_fun)
+by (fastforce simp:LeastMethodDef_def dest:sees_methods_fun)
 
 
 lemma overrider_method_fun:
@@ -791,8 +791,8 @@ proof -
     and "card(OverriderMethodDefs P (C,Cs) M) = 1" 
     by(simp_all add:FinalOverriderMethodDef_def)
   hence "\<forall>(Ds,mthd'') \<in> OverriderMethodDefs P (C,Cs) M. (Cs',mthd) = (Ds,mthd'')"
-    by(fastsimp simp:card_Suc_eq)
-  with omd show ?thesis by fastsimp
+    by(fastforce simp:card_Suc_eq)
+  with omd show ?thesis by fastforce
 qed
 
 

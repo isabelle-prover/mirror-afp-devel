@@ -34,7 +34,7 @@ proof -
     "?P\<^isub>1 \<turnstile>\<^sub>1 \<langle>compE\<^isub>1 (this#pns) body, (h, vs@rest)\<rangle> \<Rightarrow> \<langle>fin\<^isub>1 e', (h',ls')\<rangle>"
     using eval\<^isub>1_eval[OF wwf eval fv init] sizes by auto
   ultimately show ?thesis using comp\<^isub>2_correct eval_final[OF eval]
-    by(fastsimp simp add:J2JVM_def final_def)
+    by(fastforce simp add:J2JVM_def final_def)
 qed
 (*>*)
 

@@ -299,7 +299,7 @@ next
   case (ExFalso \<Theta> F P  c Q A \<Theta>')
   have "\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<not> \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<Theta> \<subseteq> \<Theta>'"  by fact+
   then show ?case
-    by (fastsimp intro: hoaret.ExFalso simp add: cvalidt_def)
+    by (fastforce intro: hoaret.ExFalso simp add: cvalidt_def)
 qed (blast intro: hoaret.intros)+
 
 subsection {* Some Derived Rules *}
@@ -343,8 +343,8 @@ lemma Spec_wf_conv:
                 (\<Union>p\<in>Procs. \<Union>Z. {(P p Z, p, Q p Z, A p Z)}) = 
         (\<Union>q\<in>Procs. \<Union>Z. {(P q Z \<inter> {s. ((s, q), \<tau>, p) \<in> r}, q, Q q Z, A q Z)})"
 apply (rule)
-apply  fastsimp
-apply (fastsimp simp add: image_def)
+apply  fastforce
+apply (fastforce simp add: image_def)
 done
 
 lemma CallRec': 
@@ -370,7 +370,7 @@ apply (rename_tac Z \<tau>)
 apply (drule_tac x=p' in bspec, assumption)
 apply (erule_tac x=\<tau> in allE)
 apply (erule_tac x=Z in allE)
-apply (fastsimp simp add: Spec_wf_conv)
+apply (fastforce simp add: Spec_wf_conv)
 done
 
 end

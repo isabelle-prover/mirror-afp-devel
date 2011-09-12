@@ -908,7 +908,7 @@ proof (induct rule: accs.induct[case_names step])
   show ?case proof (rule accs.intros[of q l qs])
     show "(q \<rightarrow> l qs) \<in> reduce_rules \<delta> (f_accessible \<delta> {q})"
       using step(1)
-      by (fastsimp 
+      by (fastforce 
         intro!: reduce_rulesI 
         intro: f_succ.intros 
         simp add: f_accessible_def)
@@ -967,7 +967,7 @@ lemma accs_is_b_accessible: "accs \<delta> t q \<Longrightarrow> q\<in>b_accessi
   apply (induct rule: accs.induct)
   apply (rule b_accessible.intros)
   apply assumption
-  apply (fastsimp simp add: in_set_conv_nth)
+  apply (fastforce simp add: in_set_conv_nth)
   done
 
 lemma b_acc_subset_\<delta>_statesI: "x\<in>b_accessible \<delta> \<Longrightarrow> x\<in>\<delta>_states \<delta>"
@@ -1127,7 +1127,7 @@ proof (induct arbitrary: \<delta>2 q2 rule: accs.induct[case_names step])
     I2: "(q2 \<rightarrow> l qs2)\<in>\<delta>2" 
         "!!i. i<length qs2 \<Longrightarrow> accs \<delta>2 (ts ! i) (qs2 ! i)" and 
     [simp]: "length qs2 = length ts"
-    by (rule_tac accs.cases[OF step.prems]) fastsimp
+    by (rule_tac accs.cases[OF step.prems]) fastforce
   show ?case 
   proof (rule accs.intros)
     from step.hyps(1) I2(1) show 

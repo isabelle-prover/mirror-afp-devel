@@ -561,7 +561,7 @@ by(induct rule: red1_reds1.inducts)(auto)
 lemma red1_new_thread_heap: "\<lbrakk>P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t' ex h \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> h = hp s'"
   and reds1_new_thread_heap: "\<lbrakk>P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t' ex h \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> h = hp s'"
 apply(induct rule: red1_reds1.inducts)
-apply(fastsimp dest: red_ext_new_thread_heap simp add: ta_upd_simps)+
+apply(fastforce dest: red_ext_new_thread_heap simp add: ta_upd_simps)+
 done
 
 lemma red1_new_threadD:
@@ -570,7 +570,7 @@ lemma red1_new_threadD:
   and reds1_new_threadD:
   "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t' x H \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> \<exists>a M vs va T. P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, hp s'\<rangle> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_native P T M"
-by(induct rule: red1_reds1.inducts)(fastsimp simp add: ta_upd_simps)+
+by(induct rule: red1_reds1.inducts)(fastforce simp add: ta_upd_simps)+
 
 lemma red1_call_synthesized: "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call1 e = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> synthesized_call P (hp s) aMvs"
   and reds1_calls_synthesized: "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; calls1 es = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> synthesized_call P (hp s) aMvs"
@@ -792,14 +792,14 @@ lemma \<tau>move1_\<tau>moves1_intros:
 
   and \<tau>moves1Hd: "\<tau>move1 P h e \<Longrightarrow> \<tau>moves1 P h (e # es)"
   and \<tau>moves1Tl: "\<tau>moves1 P h es \<Longrightarrow> \<tau>moves1 P h (Val v # es)"
-by fastsimp+
+by fastforce+
 
 lemma \<tau>moves1_map_Val [dest!]:
   "\<tau>moves1 P h (map Val es) \<Longrightarrow> False"
 by(induct es)(auto)
 
 lemma \<tau>moves1_map_Val_ThrowD [simp]: "\<tau>moves1 P h (map Val vs @ Throw a # es) = False"
-by(induct vs)(fastsimp)+
+by(induct vs)(fastforce)+
 
 lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move1_not_call1:
@@ -814,14 +814,14 @@ done
 lemma red1_\<tau>_taD: "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move1 P (hp s) e \<rbrakk> \<Longrightarrow> ta = \<epsilon>"
   and reds1_\<tau>_taD: "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; \<tau>moves1 P (hp s) es \<rbrakk> \<Longrightarrow> ta = \<epsilon>"
 apply(induct rule: red1_reds1.inducts)
-apply(fastsimp simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_TA_empty)+
+apply(fastforce simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_TA_empty)+
 done
 
 lemma \<tau>move1_heap_unchanged: "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move1 P (hp s) e \<rbrakk> \<Longrightarrow> hp s' = hp s"
   and \<tau>moves1_heap_unchanged: "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; \<tau>moves1 P (hp s) es \<rbrakk> \<Longrightarrow> hp s' = hp s"
 apply(induct rule: red1_reds1.inducts)
 apply(auto)
-apply(fastsimp simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_heap_unchanged)+
+apply(fastforce simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_heap_unchanged)+
 done
 
 
@@ -1144,11 +1144,11 @@ by(simp add: \<tau>Red1_def)
 
 lemma \<tau>red1t_into_\<tau>Red1t:
   "\<tau>red1t P t h (e, xs) (e'', xs'') \<Longrightarrow> \<tau>Red1t P t h ((e, xs), exs) ((e'', xs''), exs)"
-by(induct rule: tranclp_induct2)(fastsimp dest: red1Red intro: \<tau>move1Block tranclp.intros)+
+by(induct rule: tranclp_induct2)(fastforce dest: red1Red intro: \<tau>move1Block tranclp.intros)+
 
 lemma \<tau>red1r_into_\<tau>Red1r:
   "\<tau>red1r P t h (e, xs) (e'', xs'') \<Longrightarrow> \<tau>Red1r P t h ((e, xs), exs) ((e'', xs''), exs)"
-by(induct rule: rtranclp_induct2)(fastsimp dest: red1Red intro: \<tau>move1Block rtranclp.intros)+
+by(induct rule: rtranclp_induct2)(fastforce dest: red1Red intro: \<tau>move1Block rtranclp.intros)+
 
 lemma red1_max_vars: "P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> max_vars e' \<le> max_vars e"
   and reds1_max_varss: "P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> max_varss es' \<le> max_varss es"
@@ -1475,11 +1475,11 @@ by(simp add: \<tau>Red1'_def)
 
 lemma \<tau>red1't_into_\<tau>Red1't:
   "\<tau>red1't P t h (e, xs) (e'', xs'') \<Longrightarrow> \<tau>Red1't P t h ((e, xs), exs) ((e'', xs''), exs)"
-by(induct rule: tranclp_induct2)(fastsimp dest: red1Red intro: \<tau>move1Block tranclp.intros simp add: IUFL_def)+
+by(induct rule: tranclp_induct2)(fastforce dest: red1Red intro: \<tau>move1Block tranclp.intros simp add: IUFL_def)+
 
 lemma \<tau>red1'r_into_\<tau>Red1'r:
   "\<tau>red1'r P t h (e, xs) (e'', xs'') \<Longrightarrow> \<tau>Red1'r P t h ((e, xs), exs) ((e'', xs''), exs)"
-by(induct rule: rtranclp_induct2)(fastsimp dest: red1Red intro: \<tau>move1Block rtranclp.intros simp add: IUFL_def)+
+by(induct rule: rtranclp_induct2)(fastforce dest: red1Red intro: \<tau>move1Block rtranclp.intros simp add: IUFL_def)+
 
 lemma \<tau>red1't_max_vars: "\<tau>red1't P t h (e, xs) (e', xs') \<Longrightarrow> max_vars e' \<le> max_vars e"
 by(induct rule: tranclp_induct2)(auto dest: red1_max_vars)
@@ -1526,17 +1526,17 @@ lemma Red1_Suspend_is_call:
 by(auto elim!: Red1.cases dest: red1_Suspend_is_call)
 
 lemma Red1'_mthr: "multithreaded final_expr1 (mred1' P)"
-by(unfold_locales)(fastsimp elim!: Red1.cases dest: red1_new_thread_heap)+
+by(unfold_locales)(fastforce elim!: Red1.cases dest: red1_new_thread_heap)+
 
 lemma Red1_mthr: "multithreaded final_expr1 (mred1 P)"
 apply(unfold_locales)
-apply(fastsimp elim!: Red1.cases dest: red1_new_thread_heap)+
+apply(fastforce elim!: Red1.cases dest: red1_new_thread_heap)+
 done
 
 lemma red1_\<tau>move1_heap_unchanged: "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move1 P (hp s) e \<rbrakk> \<Longrightarrow> hp s' = hp s"
   and red1_\<tau>moves1_heap_unchanged: "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; \<tau>moves1 P (hp s) es \<rbrakk> \<Longrightarrow> hp s' = hp s"
 apply(induct rule: red1_reds1.inducts)
-apply(fastsimp simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_heap_unchanged)+
+apply(fastforce simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_heap_unchanged)+
 done
 
 lemma Red1_\<tau>mthr_wf: "\<tau>multithreaded_wf final_expr1 (mred1 P) (\<tau>MOVE1 P)"
@@ -1547,7 +1547,7 @@ proof -
   proof
     fix x1 m1 t ta1 x1' m1'
     assume "mred1 P t (x1, m1) ta1 (x1', m1')" "\<tau>MOVE1 P (x1, m1) ta1 (x1', m1')"
-    thus "m1 = m1'" by(cases x1)(fastsimp elim!: Red1.cases dest: red1_\<tau>move1_heap_unchanged)
+    thus "m1 = m1'" by(cases x1)(fastforce elim!: Red1.cases dest: red1_\<tau>move1_heap_unchanged)
   next
     fix s ta s'
     assume "\<tau>MOVE1 P s ta s'"
@@ -1563,7 +1563,7 @@ proof -
   proof
     fix x1 m1 t ta1 x1' m1'
     assume "mred1' P t (x1, m1) ta1 (x1', m1')" "\<tau>MOVE1 P (x1, m1) ta1 (x1', m1')"
-    thus "m1 = m1'" by(cases x1)(fastsimp elim!: Red1.cases dest: red1_\<tau>move1_heap_unchanged)
+    thus "m1 = m1'" by(cases x1)(fastforce elim!: Red1.cases dest: red1_\<tau>move1_heap_unchanged)
   next
     fix s ta s'
     assume "\<tau>MOVE1 P s ta s'"

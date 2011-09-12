@@ -90,7 +90,7 @@ proof -
       apply (auto 
         simp add: map_add_upd[symmetric] restrict_map_upd map_upd_triv 
         simp del: map_add_upd restrict_fun_upd) [1]
-      apply fastsimp
+      apply fastforce
       done
   } thus ?thesis
     by unfold_locales auto

@@ -45,20 +45,20 @@ next
   have "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Val v,(h, xs)\<rangle> -\<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>\<rightarrow> \<langle>Val v,(h, xs)\<rangle>"
     by(rule Unlock1Synchronized)
   thus ?case
-    by(fastsimp simp add: collect_locks_def finfun_upd_apply ta_upd_simps lock_ok_las_def exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] split: split_if_asm)
+    by(fastforce simp add: collect_locks_def finfun_upd_apply ta_upd_simps lock_ok_las_def exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] split: split_if_asm)
 next
   case (Synchronized1Throw2Fail xs V a' a ad h)
   from `xs ! V = Addr a'` `V < length xs`
   have "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw ad, (h, xs)\<rangle> -\<lbrace>Unlock\<rightarrow>a', SyncUnlock a'\<rbrace>\<rightarrow> \<langle>Throw ad, (h, xs)\<rangle>"
     by(rule Synchronized1Throw2)
   thus ?case
-    by(fastsimp simp add: collect_locks_def finfun_upd_apply ta_upd_simps lock_ok_las_def exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] split: split_if_asm)
+    by(fastforce simp add: collect_locks_def finfun_upd_apply ta_upd_simps lock_ok_las_def exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] split: split_if_asm)
 next
   case (Synchronized1Throw2Null xs V a ad h)
   from `IUF (insync\<^bsub>V\<^esub> (a) Throw ad) \<epsilon> (THROW NullPointer)` have False
     by(auto simp add: expand_finfun_eq fun_eq_iff finfun_upd_apply ta_upd_simps split: split_if_asm)
   thus ?case ..
-qed(fastsimp intro: red1_reds1.intros simp add: ta_upd_simps)+
+qed(fastforce intro: red1_reds1.intros simp add: ta_upd_simps)+
 
 lemma
   fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
@@ -92,7 +92,7 @@ next
       apply(clarsimp)
       apply(rule exI conjI)+
        apply(drule red1Red)
-       apply fastsimp
+       apply fastforce
       apply(rule conjI)
        apply(simp add: IUFL_def)
        apply(erule contrapos_nn)
@@ -103,12 +103,12 @@ next
       apply blast
      apply(rule exI conjI)+
       apply(drule red1Red)
-      apply fastsimp
+      apply fastforce
      apply(rule conjI)
       apply(erule contrapos_nn)
       apply(rule IUF_extTA2J1D[where P=P])
       apply(simp add: IUFL_def)
-     apply(fastsimp)
+     apply(fastforce)
    apply(auto intro!: red1Call red1Return exI simp add: IUFL_def)
    done
 qed
@@ -182,7 +182,7 @@ next
 	  and [simp]: "LT = collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
 	  by(rule Red1_mthr.can_syncE)
 	then obtain e xs exs e' xs' exs' where x [simp]: "x = ((e, xs), exs)" "x' = ((e', xs'), exs')"
-	  and red: "P,t \<turnstile>1 \<langle>(e, xs)/exs, shr s\<rangle> -ta\<rightarrow> \<langle>(e', xs')/exs', m'\<rangle>" by(cases x, cases x') fastsimp
+	  and red: "P,t \<turnstile>1 \<langle>(e, xs)/exs, shr s\<rangle> -ta\<rightarrow> \<langle>(e', xs')/exs', m'\<rangle>" by(cases x, cases x') fastforce
 	moreover have "\<not> IUFL (e, xs) exs ta (e', xs') exs'"
 	proof
 	  assume "IUFL (e, xs) exs ta (e', xs') exs'"

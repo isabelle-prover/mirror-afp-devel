@@ -181,30 +181,30 @@ apply blast
 apply blast
 apply blast
 apply blast
-apply fastsimp
-apply fastsimp
-apply(fastsimp dest: WT_binop_fun)
-apply fastsimp
-apply fastsimp
-apply fastsimp
-apply fastsimp
-apply(fastsimp dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
-apply(fastsimp dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
+apply fastforce
+apply fastforce
+apply(fastforce dest: WT_binop_fun)
+apply fastforce
+apply fastforce
+apply fastforce
+apply fastforce
+apply(fastforce dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
+apply(fastforce dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
 apply(erule WT_callE)
- apply(fastsimp dest: sees_method_fun simp add: is_class_type_of_conv_class_type_of_Some)
-apply(fastsimp dest: external_WT_is_native)
+ apply(fastforce dest: sees_method_fun simp add: is_class_type_of_conv_class_type_of_Some)
+apply(fastforce dest: external_WT_is_native)
 apply(erule WT_callE)
- apply(fastsimp dest: external_WT_is_native)
-apply(fastsimp dest: external_WT_determ)
-apply fastsimp
-apply fastsimp
-apply fastsimp
+ apply(fastforce dest: external_WT_is_native)
+apply(fastforce dest: external_WT_determ)
+apply fastforce
+apply fastforce
+apply fastforce
 apply(blast dest: is_lub_unique)
-apply fastsimp
-apply fastsimp
+apply fastforce
+apply fastforce
 apply blast
-apply fastsimp
-apply fastsimp
+apply fastforce
+apply fastforce
 done
 
 lemma fixes is_lub
@@ -213,27 +213,27 @@ lemma fixes is_lub
 apply(induct rule: WT_WTs.inducts)
 apply(simp add: WTNew)
 apply(simp add: WTNewArray)
-apply(fastsimp simp: WTCast)
-apply(fastsimp simp: WTInstanceOf)
-apply(fastsimp simp: WTVal)
+apply(fastforce simp: WTCast)
+apply(fastforce simp: WTInstanceOf)
+apply(fastforce simp: WTVal)
 apply(simp add: WTVar map_le_def dom_def)
-apply(fastsimp simp: WTBinOp)
+apply(fastforce simp: WTBinOp)
 apply(force simp:map_le_def)
 apply(simp add: WTAAcc)
-apply(simp add: WTAAss, fastsimp)
-apply(simp add: WTALength, fastsimp)
-apply(fastsimp simp: WTFAcc)
-apply(fastsimp simp: WTFAss del:WT_WTs.intros WT_elim_cases)
+apply(simp add: WTAAss, fastforce)
+apply(simp add: WTALength, fastforce)
+apply(fastforce simp: WTFAcc)
+apply(fastforce simp: WTFAss del:WT_WTs.intros WT_elim_cases)
 apply(clarsimp, rule WTCall, blast+)[1]
-apply(fastsimp)
-apply(fastsimp simp: map_le_def WTBlock)
-apply(fastsimp simp: WTSynchronized)
-apply(fastsimp simp: WTSeq)
-apply(fastsimp simp: WTCond)
-apply(fastsimp simp: WTWhile)
-apply(fastsimp simp: WTThrow)
-apply(fastsimp simp: WTTry map_le_def dom_def)
-apply(fastsimp)+
+apply(fastforce)
+apply(fastforce simp: map_le_def WTBlock)
+apply(fastforce simp: WTSynchronized)
+apply(fastforce simp: WTSeq)
+apply(fastforce simp: WTCond)
+apply(fastforce simp: WTWhile)
+apply(fastforce simp: WTThrow)
+apply(fastforce simp: WTTry map_le_def dom_def)
+apply(fastforce)+
 done
 
 lemma fixes is_lub
@@ -261,7 +261,7 @@ apply simp
 apply simp
 apply simp
 apply (simp add:typeof_lit_is_type)
-apply (fastsimp intro:nth_mem simp add: ran_def)
+apply (fastforce intro:nth_mem simp add: ran_def)
 apply(simp add: WT_binop_is_type)
 apply(simp)
 apply(simp del: is_type_array add: is_type_ArrayD)
@@ -269,13 +269,13 @@ apply(simp)
 apply(simp)
 apply(simp add:sees_field_is_type[OF _ wf])
 apply(simp)
-apply(fastsimp dest: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
-apply(fastsimp dest: external_WT_is_type[OF wf])
-apply(fastsimp simp add: ran_def split: split_if_asm)
+apply(fastforce dest: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
+apply(fastforce dest: external_WT_is_type[OF wf])
+apply(fastforce simp add: ran_def split: split_if_asm)
 apply(simp add: is_class_Object[OF wf])
 apply(simp)
 apply(simp)
-apply(fastsimp intro: is_lub_is_type)
+apply(fastforce intro: is_lub_is_type)
 apply(simp)
 apply(simp)
 apply simp

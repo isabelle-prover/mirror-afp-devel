@@ -135,7 +135,7 @@ by (rule hextI) blast+
 lemma hext_trans [trans]: "\<lbrakk> h \<unlhd> h'; h' \<unlhd> h'' \<rbrakk> \<Longrightarrow> h \<unlhd> h''"
 apply (rule hextI)
 apply (fast dest: hext_objD)
-apply (fastsimp dest: hext_arrD)
+apply (fastforce dest: hext_arrD)
 done
 
 lemma typeof_lit_typeof:

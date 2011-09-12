@@ -111,10 +111,10 @@ proof(induct f)
     qed
   qed
 next
-  case (And f1 f2) thus ?case by (fastsimp simp:Ball_def)
+  case (And f1 f2) thus ?case by (fastforce simp:Ball_def)
 next
-  case (Or f1 f2) thus ?case by (fastsimp simp:Ball_def)
-qed fastsimp+
+  case (Or f1 f2) thus ?case by (fastforce simp:Ball_def)
+qed fastforce+
 
 theorem I_FR\<^isub>1:
 assumes "nqfree \<phi>" shows "R.I (FR\<^isub>1 \<phi>) xs = (\<exists>x. R.I \<phi> (x#xs))"
@@ -180,7 +180,7 @@ next
       apply (simp add:algebra_simps add_divide_distrib diff_divide_distrib)
       done
     ultimately have ?FR
-      by(fastsimp simp:FR\<^isub>1_def bex_Un set_lbounds set_ubounds set_ebounds I_subst `nqfree \<phi>`)
+      by(fastforce simp:FR\<^isub>1_def bex_Un set_lbounds set_ubounds set_ebounds I_subst `nqfree \<phi>`)
   } ultimately show ?FR by blast
 qed
 

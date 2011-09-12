@@ -49,13 +49,13 @@ proof -
       by blast
     hence "n -as'\<rightarrow>* n'" and all:"\<forall>asx. n -asx\<rightarrow>* n' \<longrightarrow> length as' \<le> length asx"
       by simp_all
-    hence "distance n n' (length as')" by(fastsimp intro:distanceI)
-    from `n -as\<rightarrow>* n'` all have "length as' \<le> length as" by fastsimp
+    hence "distance n n' (length as')" by(fastforce intro:distanceI)
+    from `n -as\<rightarrow>* n'` all have "length as' \<le> length as" by fastforce
     with `distance n n' (length as')` show ?thesis by blast
   next
     case False
     hence all:"\<forall>as'. n -as'\<rightarrow>* n' \<longrightarrow> (\<exists>asx. n -asx\<rightarrow>* n' \<and> length as' > length asx)"
-      by fastsimp
+      by fastforce
     have "wf (measure length)" by simp
     from `n -as\<rightarrow>* n'` have "as \<in> {as. n -as\<rightarrow>* n'}" by simp
     with `wf (measure length)` obtain as' where "as' \<in> {as. n -as\<rightarrow>* n'}" 
@@ -120,7 +120,7 @@ next
     targetnode ax = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and>
                                    distance (targetnode a') n' x \<and> 
                                    valid_edge a' \<and> targetnode a' = nx)"
-  thus "a' = ax" by(fastsimp intro!:edge_det)
+  thus "a' = ax" by(fastforce intro!:edge_det)
 qed
 
 
@@ -186,7 +186,7 @@ proof -
                                               distance (targetnode a') n' y \<and>
                                               valid_edge a' \<and> targetnode a' = nx)"
           by(auto dest:only_one_SOME_dist_edge)
-        with imp `sourcenode a = n` `y = x - 1` show False by fastsimp
+        with imp `sourcenode a = n` `y = x - 1` show False by fastforce
       qed
     qed
   qed

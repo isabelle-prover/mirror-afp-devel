@@ -391,7 +391,7 @@ qed simp
 subsection {* Converting finite lazy lists to ordinary lists: @{term "list_of"} *}
 
 lemma list_of_llist_of [simp]: "list_of (llist_of xs) = xs"
-by(fastsimp simp add: list_of_def intro: inv_f_f inj_onI)
+by(fastforce simp add: list_of_def intro: inv_f_f inj_onI)
 
 lemma llist_of_list_of [simp]: "lfinite xs \<Longrightarrow> llist_of (list_of xs) = xs"
 unfolding lfinite_eq_range_llist_of by auto
@@ -1841,7 +1841,7 @@ proof -
   show ?thesis
   proof(cases "lfinite us")
     case True
-    with leneq xs ys us vs len show ?thesis by fastsimp
+    with leneq xs ys us vs len show ?thesis by fastforce
   next
     case False
     let ?xs'' = "lmap fst vs"
@@ -1862,7 +1862,7 @@ proof -
       by(simp_all add: lappend_inf)
     moreover have "vs = lzip ?xs'' ?ys''" 
       by(coinduct vs rule: llist_fun_equalityI) simp_all
-    ultimately show ?thesis using eq by(fastsimp  simp add: ltake_all)
+    ultimately show ?thesis using eq by(fastforce  simp add: ltake_all)
   qed
 qed
 
@@ -2087,7 +2087,7 @@ using assms
 proof(induct)
   case find thus ?case by(auto intro: exI[where x=LNil])
 next
-  case step thus ?case by(fastsimp intro: exI[where x="LCons a b", standard])
+  case step thus ?case by(fastforce intro: exI[where x="LCons a b", standard])
 qed
 
 lemma split_llist: "x \<in> lset xs \<Longrightarrow> \<exists>ys zs. xs = lappend ys (LCons x zs) \<and> lfinite ys"
@@ -2322,11 +2322,11 @@ by(auto simp add: llist_all2_def lset_lzip)
 
 lemma llist_all2_lnthD:
   "\<lbrakk> llist_all2 P xs ys; enat n < llength xs \<rbrakk> \<Longrightarrow> P (lnth xs n) (lnth ys n)"
-by(fastsimp simp add: llist_all2_def lset_lzip)
+by(fastforce simp add: llist_all2_def lset_lzip)
 
 lemma llist_all2_lnthD2:
   "\<lbrakk> llist_all2 P xs ys; enat n < llength ys \<rbrakk> \<Longrightarrow> P (lnth xs n) (lnth ys n)"
-by(fastsimp simp add: llist_all2_def lset_lzip)
+by(fastforce simp add: llist_all2_def lset_lzip)
 
 lemma llist_all2_conv_all_lnth:
   "llist_all2 P xs ys \<longleftrightarrow> 
@@ -2746,7 +2746,7 @@ lemma ldistinct_lmap [simp]:
 proof(intro iffI conjI)
   assume dist: "ldistinct (lmap f xs)"
   thus "ldistinct xs"
-    by(coinduct)(fastsimp elim: ldistinct.cases dest: lmap_eq_LCons del: disjCI)
+    by(coinduct)(fastforce elim: ldistinct.cases dest: lmap_eq_LCons del: disjCI)
   show "inj_on f (lset xs)"
   proof(rule inj_onI)
     fix x y
@@ -3104,7 +3104,7 @@ next
       next
         case False
         with LCons llexord `ys = LCons y ys'`
-        have "r x y" by(fastsimp elim: lfinite.cases)
+        have "r x y" by(fastforce elim: lfinite.cases)
         with LCons `ys = LCons y ys'` show ?thesis by auto
       qed
     qed
@@ -3218,7 +3218,7 @@ proof
       case (LCons x xs'')
       with `xs' = LNil \<or> r (lhd xs') y`
       have "r (lhd xs') y" by(auto simp add: llist_of_eq_LCons_conv)
-      with LCons have ?B by(auto simp add: llist_of_eq_LCons_conv) fastsimp
+      with LCons have ?B by(auto simp add: llist_of_eq_LCons_conv) fastforce
       thus ?thesis ..
     qed
     hence "(xs, ys) \<in> {(x, y). \<exists>a v. y = x @ a # v \<or>
@@ -3313,7 +3313,7 @@ using assms
 proof induct
   case (found x xs)
   have "LCons x xs = lappend LNil (LCons x xs)" by simp
-  thus ?case by fastsimp
+  thus ?case by fastforce
 next
   case (seek x xs xs')
   from `\<exists>zs. xs = lappend zs xs' \<and> lfinite zs \<and> (\<forall>z\<in>lset zs. \<not> P z)` obtain zs
@@ -3359,7 +3359,7 @@ lemma diverge_find_LNil [simp]: "l ~: Domain(findRel p) ==> find p l = LNil"
 by (unfold find_def, blast)
 
 lemma find_LCons_seek: "~ (p x) ==> find p (LCons x l) = find p l"
-by(cases "LCons x l \<in> Domain (findRel p) ")(fastsimp intro: findRel_imp_find)+
+by(cases "LCons x l \<in> Domain (findRel p) ")(fastforce intro: findRel_imp_find)+
 
 lemma find_LCons [simp]:
      "find p (LCons x l) = (if p x then LCons x l else find p l)"
@@ -3432,7 +3432,7 @@ proof(induct lx\<equiv>"lfilter q l" ly arbitrary: l)
     by(auto dest!: sym[THEN lfilter_eq_LCons] intro: findRel_conj)
 next
   case seek thus ?case
-    by(fastsimp intro: findRel_conj2 dest: sym[THEN lfilter_eq_LCons])
+    by(fastforce intro: findRel_conj2 dest: sym[THEN lfilter_eq_LCons])
 qed
 
 lemma findRel_conj_lfilter [rule_format]:
@@ -3518,7 +3518,7 @@ next
       case True
       then obtain x' l' where l': "(lmap f l, LCons x' l') \<in> (findRel p)"
         and px': "p x'" unfolding Domain_findRel_iff by blast
-      with lmap_LCons_findRel[OF l'] False have ?EqLCons by fastsimp
+      with lmap_LCons_findRel[OF l'] False have ?EqLCons by fastforce
       thus ?thesis ..
     next
       case False
@@ -3643,7 +3643,7 @@ next
   from IH[OF vs] obtain us' vs' where "vs = lappend us' vs'" "lfinite us'"
     and "ys = lfilter P us'" "zs = lfilter P vs'" by blast
   with xs show ?case
-    by(fastsimp simp add: lappend_snocL1_conv_LCons2[symmetric, where ys="lappend us' vs'"]
+    by(fastforce simp add: lappend_snocL1_conv_LCons2[symmetric, where ys="lappend us' vs'"]
                           lappend_assoc[symmetric] lfilter_False)
 qed
 
@@ -3958,7 +3958,7 @@ proof -
         have ?EqLCons
         proof(cases "xs' = LNil")
           case True
-          thus ?thesis using LCons q notLNil xs by fastsimp
+          thus ?thesis using LCons q notLNil xs by fastforce
         next
           case False
           thus ?thesis using LCons q notLNil xs
@@ -4102,7 +4102,7 @@ proof -
         with xss'_eq have "llength (lnth (llist_of xss') n) = llength ys"
           by(auto dest: llist_all2_lnthD)
         also from `n < length xss'` have "lnth (llist_of xss') n = LNil"
-          using `set xss' \<subseteq> {LNil}` by(fastsimp simp add: in_set_conv_nth)
+          using `set xss' \<subseteq> {LNil}` by(fastforce simp add: in_set_conv_nth)
         finally show "ys \<in> {LNil}" by auto
       qed
       moreover from `set xss' \<subseteq> {LNil}` have "lconcat (llist_of xss') = LNil"
@@ -4683,7 +4683,7 @@ qed
 lemma inf_llist_neq_llist_of [simp]:
   "llist_of xs \<noteq> inf_llist f"
    "inf_llist f \<noteq> llist_of xs"
-using lfinite_llist_of[of xs] lfinite_inf_llist[of f] by fastsimp+
+using lfinite_llist_of[of xs] lfinite_inf_llist[of f] by fastforce+
 
 lemma inf_llist_inj [simp]:
   "inf_llist f = inf_llist g \<longleftrightarrow> f = g"

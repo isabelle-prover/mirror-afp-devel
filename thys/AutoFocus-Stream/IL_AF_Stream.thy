@@ -81,7 +81,7 @@ lemma f_join_aux_length: "
   \<And>n. length (f_join_aux xs n I) = card (I \<inter> {n..<n + length xs})"
 apply (induct xs, simp)
 apply (simp add: atLeastLessThan_def)
-apply (rule_tac t="{n..}" and s="insert n {Suc n..}" in subst, fastsimp)
+apply (rule_tac t="{n..}" and s="insert n {Suc n..}" in subst, fastforce)
 apply simp
 done
 
@@ -92,7 +92,7 @@ apply (induct xs, simp)
 apply (clarsimp split del: split_if)
 apply (subgoal_tac "{n..<Suc (n + length xs)} = insert n {Suc n..<Suc (n + length xs)}")
  prefer 2
- apply fastsimp
+ apply fastforce
 apply (frule card_gr0_imp_not_empty[OF gr_implies_gr0])
 apply (case_tac "n \<in> I")
  prefer 2
@@ -169,7 +169,7 @@ by (simp add: length_0_conv[symmetric] f_join_length cut_less_0_empty del: lengt
 lemma f_join_Nil_conv: "(xs \<Join>\<^sub>f I = []) = (I \<down>< length xs = {})"
 by (simp add: length_0_conv[symmetric] f_join_length card_0_eq[OF nat_cut_less_finite] del: length_0_conv)
 lemma f_join_Nil_conv': "(xs \<Join>\<^sub>f I = []) = (\<forall>i<length xs. i \<notin> I)"
-by (fastsimp simp: f_join_Nil_conv)
+by (fastforce simp: f_join_Nil_conv)
 lemma f_join_all_conv: "(xs \<Join>\<^sub>f I = xs) = ({..<length xs} \<subseteq> I)"
 apply (case_tac "length xs = 0", simp add: f_join_Nil)
 apply (rule iffI)
@@ -189,7 +189,7 @@ apply (clarsimp simp: list_eq_iff[of _ xs] f_join_nth)
 apply (rule arg_cong[where f="op ! xs"])
 apply (subgoal_tac "I \<down>< length xs = {..<length xs}")
  prefer 2
- apply fastsimp
+ apply fastforce
 thm inext_nth_cut_less_eq
 apply (subst inext_nth_cut_less_eq[where t="length xs", symmetric], simp)
 apply (simp add: inext_nth_lessThan)
@@ -240,7 +240,7 @@ done
 lemma f_join_insert: "
   n < length xs \<Longrightarrow>
   xs \<Join>\<^sub>f insert n I = xs \<Join>\<^sub>f (I \<down>< n) @ (xs ! n) # (xs \<Join>\<^sub>f (I \<down>> n))"
-apply (rule_tac t="insert n I" and s="(I \<down>< n) \<union> {n} \<union> (I \<down>> n)" in subst, fastsimp)
+apply (rule_tac t="insert n I" and s="(I \<down>< n) \<union> {n} \<union> (I \<down>> n)" in subst, fastforce)
 apply (insert nat_cut_less_finite[of I n])
 apply (case_tac "I \<down>> n = {}")
  apply (simp add: f_join_empty del: Un_insert_right)
@@ -545,7 +545,7 @@ apply (clarsimp simp: ilist_eq_iff)
 apply (simp add: i_join_nth i_append_nth f_join_length)
 apply (subgoal_tac "I \<down>\<ge> length xs \<noteq> {}")
  prefer 2
- apply (fastsimp simp: cut_ge_not_empty_iff infinite_nat_iff_unbounded_le)
+ apply (fastforce simp: cut_ge_not_empty_iff infinite_nat_iff_unbounded_le)
 apply (simp add: inext_nth_less_less_card_conv)
 apply (intro conjI impI)
  apply (simp add: f_join_nth f_join_length)
@@ -1177,7 +1177,7 @@ apply (rule iffI)
  apply (drule_tac t="t * k" in ispec)
   apply (simp add: iT_Mult_mem_iff2)
  apply (simp add: i_expand_nth_mult)
-apply (fastsimp simp: iT_Mult_mem_iff mult_commute[of k] i_expand_nth_mod_eq_0)
+apply (fastforce simp: iT_Mult_mem_iff mult_commute[of k] i_expand_nth_mod_eq_0)
 done
 
 
@@ -1195,7 +1195,7 @@ apply (simp add: i_shrink_eq_NoMsg_iAll_conv iTL_defs Ball_def Bex_def iT_add iT
 apply (rule iffI)
  apply simp
  apply (rule_tac x="t * k + k" in exI)
- apply fastsimp
+ apply fastforce
 apply (clarify, rename_tac x1 x2)
 apply (case_tac "x2 = Suc (t * k)")
  apply (simp add: mod_Suc)
@@ -1489,7 +1489,7 @@ apply (drule_tac y=t1 in order_le_imp_less_or_eq, erule disjE)
  apply simp
  apply (drule_tac x=t3 in order_le_imp_less_or_eq)
  apply (drule_tac x="t * k + k - Suc 0" and y=t2 in order_le_imp_less_or_eq)
- apply (fastsimp simp: numeral_2_eq_2 Suc_diff_Suc)
+ apply (fastforce simp: numeral_2_eq_2 Suc_diff_Suc)
 apply simp
 apply (case_tac "Suc t1 = t2")
  apply (drule_tac t=t2 in sym)

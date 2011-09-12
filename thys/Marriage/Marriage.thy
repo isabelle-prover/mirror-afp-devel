@@ -156,7 +156,7 @@ proof-
             proof-
               { assume "i\<in>K \<and> j\<in>K \<or> i\<notin>K\<and>j\<notin>K"
                 with `?inj R1 A K` `?inj R2 ?AK ?IK` `?R12 i=?R12 j` `i\<noteq>j` `i\<in>I` `j\<in>I`
-                have ?thesis by (fastsimp simp: inj_on_def)
+                have ?thesis by (fastforce simp: inj_on_def)
               } moreover
               { assume "i\<in>K \<and> j\<notin>K \<or> i\<notin>K \<and> j\<in>K"
                 with `?R R1 A K` `?R R2 ?AK ?IK` `?R12 i=?R12 j` `j\<in>I` `i\<in>I`
@@ -206,7 +206,7 @@ proof-
       from Suc.hyps(2)[symmetric, THEN setsum_SucD]
       obtain i where i: "i:I" "2 \<le> card(A i)" by auto
       then obtain x1 x2 where "x1 : A i" "x2 : A i" "x1 \<noteq> x2"
-        using Suc(3) by (fastsimp simp: card_le_Suc_iff eval_nat_numeral)
+        using Suc(3) by (fastforce simp: card_le_Suc_iff eval_nat_numeral)
       let "?Ai x" = "A i - {x}" let "?A x" = "A(i:=?Ai x)"
       let "?U J" = "UNION J A" let "?Ui J x" = "?U J \<union> ?Ai x"
       have n1: "n = (\<Sum>j\<in>I. card (?A x1 j) - 1)"

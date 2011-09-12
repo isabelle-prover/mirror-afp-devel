@@ -166,14 +166,14 @@ proof -
   proof
     fix a assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "trg a = NewEntry"
-    thus False by(fastsimp elim:lift_valid_edge.cases)
+    thus False by(fastforce elim:lift_valid_edge.cases)
   next
     show "lift_get_proc get_proc Main NewEntry = Main" by simp
   next
     fix a Q r p fs
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "knd a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "src a = NewEntry"
-    thus False by(fastsimp elim:lift_valid_edge.cases)
+    thus False by(fastforce elim:lift_valid_edge.cases)
   next
     fix a a' 
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
@@ -187,36 +187,36 @@ proof -
     fix a Q r f
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "knd a = Q:r\<hookrightarrow>\<^bsub>Main\<^esub>f"
-    thus False by(fastsimp elim:lift_valid_edge.cases dest:Main_no_call_target)
+    thus False by(fastforce elim:lift_valid_edge.cases dest:Main_no_call_target)
   next
     fix a Q' f'
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "knd a = Q'\<hookleftarrow>\<^bsub>Main\<^esub>f'"
-    thus False by(fastsimp elim:lift_valid_edge.cases dest:Main_no_return_source)
+    thus False by(fastforce elim:lift_valid_edge.cases dest:Main_no_return_source)
   next
     fix a Q r p fs
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "knd a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
     thus "\<exists>ins outs. (p, ins, outs) \<in> set procs"
-      by(fastsimp elim:lift_valid_edge.cases intro:callee_in_procs)
+      by(fastforce elim:lift_valid_edge.cases intro:callee_in_procs)
   next
     fix a assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "intra_kind (knd a)"
     thus "lift_get_proc get_proc Main (src a) = lift_get_proc get_proc Main (trg a)"
-      by(fastsimp elim:lift_valid_edge.cases intro:get_proc_intra 
+      by(fastforce elim:lift_valid_edge.cases intro:get_proc_intra 
                   simp:get_proc_Entry get_proc_Exit)
   next
     fix a Q r p fs 
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "knd a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
     thus "lift_get_proc get_proc Main (trg a) = p"
-      by(fastsimp elim:lift_valid_edge.cases intro:get_proc_call)
+      by(fastforce elim:lift_valid_edge.cases intro:get_proc_call)
   next
     fix a Q' p f'
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "knd a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     thus "lift_get_proc get_proc Main (src a) = p"
-      by(fastsimp elim:lift_valid_edge.cases intro:get_proc_return)
+      by(fastforce elim:lift_valid_edge.cases intro:get_proc_return)
   next
     fix a Q r p fs
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
@@ -224,7 +224,7 @@ proof -
     then obtain ax where "valid_edge ax" and "kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
       and "sourcenode ax \<noteq> Entry \<or> targetnode ax \<noteq> Exit"
       and "src a = Node (sourcenode ax)" and "trg a = Node (targetnode ax)"
-      by(fastsimp elim:lift_valid_edge.cases)
+      by(fastforce elim:lift_valid_edge.cases)
     from `valid_edge ax` `kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
     have all:"\<forall>a'. valid_edge a' \<and> targetnode a' = targetnode ax \<longrightarrow> 
                (\<exists>Qx rx fsx. kind a' = Qx:rx\<hookrightarrow>\<^bsub>p\<^esub>fsx)"
@@ -267,7 +267,7 @@ proof -
     then obtain ax where "valid_edge ax" and "kind ax = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
       and "sourcenode ax \<noteq> Entry \<or> targetnode ax \<noteq> Exit"
       and "src a = Node (sourcenode ax)" and "trg a = Node (targetnode ax)"
-      by(fastsimp elim:lift_valid_edge.cases)
+      by(fastforce elim:lift_valid_edge.cases)
     from `valid_edge ax` `kind ax = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
     have all:"\<forall>a'. valid_edge a' \<and> sourcenode a' = sourcenode ax \<longrightarrow> 
             (\<exists>Qx fx. kind a' = Qx\<hookleftarrow>\<^bsub>p\<^esub>fx)"
@@ -320,8 +320,8 @@ proof -
       have "(Node (sourcenode ax'),kind ax',Node (targetnode ax')) \<in> 
         lift_get_return_edges get_return_edges valid_edge 
         sourcenode targetnode kind e"
-        by(fastsimp intro:lift_get_return_edgesI)
-      thus ?case by fastsimp
+        by(fastforce intro:lift_get_return_edgesI)
+      thus ?case by fastforce
     qed simp_all
   next
     fix a a'
@@ -334,9 +334,9 @@ proof -
       from `valid_edge ax` `a' \<in> get_return_edges ax` have "valid_edge a'" 
         by(rule get_return_edges_valid)
       from `valid_edge ax` `a' \<in> get_return_edges ax` obtain Q r p fs 
-        where "kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" by(fastsimp dest!:only_call_get_return_edges)
+        where "kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" by(fastforce dest!:only_call_get_return_edges)
       with `valid_edge ax` `a' \<in> get_return_edges ax` obtain Q' f' 
-        where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by(fastsimp dest!:call_return_edges)
+        where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by(fastforce dest!:call_return_edges)
       from `valid_edge a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have "get_proc(sourcenode a') = p"
         by(rule get_proc_return)
       have "sourcenode a' \<noteq> Entry"
@@ -348,7 +348,7 @@ proof -
       qed
       with `e' = (Node (sourcenode a'), kind a', Node (targetnode a'))` 
         `valid_edge a'`
-      show ?case by(fastsimp intro:lve_edge)
+      show ?case by(fastforce intro:lve_edge)
     qed
   next
     fix a a'
@@ -399,7 +399,7 @@ proof -
         and "a \<in> get_return_edges a'"
         and imp:"\<forall>x. valid_edge x \<and> (\<exists>Q r fs. kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and> 
         a \<in> get_return_edges x \<longrightarrow> x = a'"
-        by(fastsimp elim:ex1E)
+        by(fastforce elim:ex1E)
       let ?e' = "(Node (sourcenode a'),kind a',Node (targetnode a'))"
       have "sourcenode a' \<noteq> Entry"
       proof
@@ -409,14 +409,14 @@ proof -
       qed
       with `valid_edge a'`
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e'"
-        by(fastsimp intro:lift_valid_edge.lve_edge)
+        by(fastforce intro:lift_valid_edge.lve_edge)
       moreover
       from `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` have "knd ?e' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" by simp
       moreover
       from `e = (Node (sourcenode a), kind a, Node (targetnode a))` 
         `valid_edge a'` `a \<in> get_return_edges a'`
       have "e \<in> lift_get_return_edges get_return_edges valid_edge
-        sourcenode targetnode kind ?e'" by(fastsimp intro:lift_get_return_edgesI)
+        sourcenode targetnode kind ?e'" by(fastforce intro:lift_get_return_edgesI)
       moreover
       { fix x
         assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit x"
@@ -426,7 +426,7 @@ proof -
         from `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit x`
           `\<exists>Q r fs. knd x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain y where "valid_edge y" 
           and "x = (Node (sourcenode y), kind y, Node (targetnode y))"
-          by(fastsimp elim:lift_valid_edge.cases)
+          by(fastforce elim:lift_valid_edge.cases)
         with `e \<in> lift_get_return_edges get_return_edges valid_edge
           sourcenode targetnode kind x` `valid_edge a`
           `e = (Node (sourcenode a), kind a, Node (targetnode a))`
@@ -443,7 +443,7 @@ proof -
           from `x = (Node (sourcenode ax), kind ax, Node (targetnode ax))`
             `\<exists>Q r fs. knd x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` have "\<exists>Q r fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" by simp
           with `valid_edge ax` `ax' \<in> get_return_edges ax` imp
-          have "ax = a'" by fastsimp
+          have "ax = a'" by fastforce
           with `x = (Node (sourcenode ax), kind ax, Node (targetnode ax))` 
           show ?thesis by simp
         qed }
@@ -461,7 +461,7 @@ proof -
       from `valid_edge ax` `a' \<in> get_return_edges ax`
       obtain ax' where "valid_edge ax'" and "sourcenode ax' = targetnode ax"
         and "targetnode ax' = sourcenode a'" and "kind ax' = (\<lambda>cf. False)\<^isub>\<surd>"
-        by(fastsimp dest:intra_proc_additional_edge)
+        by(fastforce dest:intra_proc_additional_edge)
       let ?ex = "(Node (sourcenode ax'), kind ax', Node (targetnode ax'))"
       have "targetnode ax \<noteq> Entry"
       proof
@@ -471,7 +471,7 @@ proof -
       with `sourcenode ax' = targetnode ax` have "sourcenode ax' \<noteq> Entry" by simp
       with `valid_edge ax'` 
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?ex"
-        by(fastsimp intro:lve_edge)
+        by(fastforce intro:lve_edge)
       with `e' = (Node (sourcenode a'), kind a', Node (targetnode a'))`
         `a = (Node (sourcenode ax), kind ax, Node (targetnode ax))`
         `e' = (Node (sourcenode a'), kind a', Node (targetnode a'))`
@@ -491,11 +491,11 @@ proof -
       from `valid_edge ax` `a' \<in> get_return_edges ax`
       obtain ax' where "valid_edge ax'" and "sourcenode ax' = sourcenode ax"
         and "targetnode ax' = targetnode a'" and "kind ax' = (\<lambda>cf. False)\<^isub>\<surd>"
-        by(fastsimp dest:call_return_node_edge)
+        by(fastforce dest:call_return_node_edge)
       let ?ex = "(Node (sourcenode ax'), kind ax', Node (targetnode ax'))"
       from `valid_edge ax` `a' \<in> get_return_edges ax`
       obtain Q r p fs where "kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" 
-        by(fastsimp dest!:only_call_get_return_edges)
+        by(fastforce dest!:only_call_get_return_edges)
       have "sourcenode ax \<noteq> Entry"
       proof
         assume "sourcenode ax = Entry"
@@ -505,7 +505,7 @@ proof -
       with `sourcenode ax' = sourcenode ax` have "sourcenode ax' \<noteq> Entry" by simp
       with `valid_edge ax'` 
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?ex"
-        by(fastsimp intro:lve_edge)
+        by(fastforce intro:lve_edge)
       with `e' = (Node (sourcenode a'), kind a', Node (targetnode a'))`
         `a = (Node (sourcenode ax), kind ax, Node (targetnode ax))`
         `e' = (Node (sourcenode a'), kind a', Node (targetnode a'))`
@@ -528,7 +528,7 @@ proof -
       then obtain a' where "valid_edge a'" and "sourcenode a' = sourcenode a"
         and "intra_kind(kind a')" 
         and imp:"\<forall>x. valid_edge x \<and> sourcenode x = sourcenode a \<and> intra_kind(kind x)
-        \<longrightarrow> x = a'" by(fastsimp elim:ex1E)
+        \<longrightarrow> x = a'" by(fastforce elim:ex1E)
       let ?e' = "(Node (sourcenode a'), kind a', Node (targetnode a'))"
       have "sourcenode a \<noteq> Entry"
       proof
@@ -539,7 +539,7 @@ proof -
       with `sourcenode a' = sourcenode a` have "sourcenode a' \<noteq> Entry" by simp
       with `valid_edge a'` 
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e'"
-        by(fastsimp intro:lift_valid_edge.lve_edge)
+        by(fastforce intro:lift_valid_edge.lve_edge)
       moreover
       from `e = (Node (sourcenode a), kind a, Node (targetnode a))`
         `sourcenode a' = sourcenode a`
@@ -558,7 +558,7 @@ proof -
             `ex = (Node (sourcenode ax), kind ax, Node (targetnode ax))`
             `e = (Node (sourcenode a), kind a, Node (targetnode a))`
           have "intra_kind (kind ax)" and "sourcenode ax = sourcenode a" by simp_all
-          with `valid_edge ax` imp have "ax = a'" by fastsimp
+          with `valid_edge ax` imp have "ax = a'" by fastforce
           with `x = ex` `ex = (Node (sourcenode ax), kind ax, Node (targetnode ax))`
           show ?case by simp
         next
@@ -598,7 +598,7 @@ proof -
       then obtain a' where "valid_edge a'" and "targetnode a' = targetnode a"
         and "intra_kind(kind a')" 
         and imp:"\<forall>x. valid_edge x \<and> targetnode x = targetnode a \<and> intra_kind(kind x)
-        \<longrightarrow> x = a'" by(fastsimp elim:ex1E)
+        \<longrightarrow> x = a'" by(fastforce elim:ex1E)
       let ?e' = "(Node (sourcenode a'), kind a', Node (targetnode a'))"
       have "targetnode a \<noteq> Exit"
       proof
@@ -609,7 +609,7 @@ proof -
       with `targetnode a' = targetnode a` have "targetnode a' \<noteq> Exit" by simp
       with `valid_edge a'` 
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e'"
-        by(fastsimp intro:lift_valid_edge.lve_edge)
+        by(fastforce intro:lift_valid_edge.lve_edge)
       moreover
       from `e = (Node (sourcenode a), kind a, Node (targetnode a))`
         `targetnode a' = targetnode a`
@@ -628,7 +628,7 @@ proof -
             `ex = (Node (sourcenode ax), kind ax, Node (targetnode ax))`
             `e = (Node (sourcenode a), kind a, Node (targetnode a))`
           have "intra_kind (kind ax)" and "targetnode ax = targetnode a" by simp_all
-          with `valid_edge ax` imp have "ax = a'" by fastsimp
+          with `valid_edge ax` imp have "ax = a'" by fastforce
           with `x = ex` `ex = (Node (sourcenode ax), kind ax, Node (targetnode ax))`
           show ?case by simp
         next
@@ -704,12 +704,12 @@ proof -
     "lift_get_proc get_proc Main" 
     "lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind"
     procs Main
-    by(fastsimp intro:lift_CFG wf pd)
+    by(fastforce intro:lift_CFG wf pd)
   show ?thesis
   proof
     show "lift_Def Def Entry Exit H L NewEntry = {} \<and>
           lift_Use Use Entry Exit H L NewEntry = {}"
-      by(fastsimp elim:lift_Use_set.cases lift_Def_set.cases)
+      by(fastforce elim:lift_Use_set.cases lift_Def_set.cases)
   next
     fix a Q r p fs ins outs
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
@@ -740,8 +740,8 @@ proof -
         assume "ParamDefs Entry \<noteq> []"
         then obtain V Vs where "ParamDefs Entry = V#Vs" 
           by(cases "ParamDefs Entry") auto
-        hence "V \<in> set (ParamDefs Entry)" by fastsimp
-        hence "V \<in> Def Entry" by(fastsimp intro:ParamDefs_in_Def)
+        hence "V \<in> set (ParamDefs Entry)" by fastforce
+        hence "V \<in> Def Entry" by(fastforce intro:ParamDefs_in_Def)
         with Entry_empty show False by simp
       qed
       with `e = (NewEntry, (\<lambda>s. True)\<^isub>\<surd>, Node Entry)` show ?case by simp
@@ -781,7 +781,7 @@ proof -
       from `n = Node m` `V \<in> set (lift_ParamDefs ParamDefs n)`
       have "V \<in> set (ParamDefs m)" by simp
       with `valid_node m` have "V \<in> Def m" by(rule ParamDefs_in_Def)
-      with `n = Node m` show ?thesis by(fastsimp intro:lift_Def_node)
+      with `n = Node m` show ?thesis by(fastforce intro:lift_Def_node)
     qed
   next
     fix a Q r p fs ins outs V
@@ -796,7 +796,7 @@ proof -
       have "V \<in> Def (targetnode a)" by(rule ins_in_Def)
       from `e = (Node (sourcenode a), kind a, Node (targetnode a))`
       have "trg e = Node (targetnode a)" by simp
-      with `V \<in> Def (targetnode a)` show ?case by(fastsimp intro:lift_Def_node)
+      with `V \<in> Def (targetnode a)` show ?case by(fastforce intro:lift_Def_node)
     qed simp_all
   next
     fix a Q r p fs
@@ -823,7 +823,7 @@ proof -
         have "src e = Node (sourcenode a)" by simp
         with `Def (sourcenode a) = {}` `x \<in> lift_Def Def Entry Exit H L (src e)`
           `sourcenode a \<noteq> Entry`
-        show False by(fastsimp elim:lift_Def_set.cases)
+        show False by(fastforce elim:lift_Def_set.cases)
       qed 
     qed simp_all
   next
@@ -846,7 +846,7 @@ proof -
       from `V \<in> \<Union>set (lift_ParamUses ParamUses n)` `n = Node m`
       have "V \<in> \<Union>set (ParamUses m)" by simp
       with `valid_node m` have "V \<in> Use m" by(rule ParamUses_in_Use)
-      with `n = Node m` show ?thesis by(fastsimp intro:lift_Use_node)
+      with `n = Node m` show ?thesis by(fastforce intro:lift_Use_node)
     qed
   next
     fix a Q p f ins outs V
@@ -861,7 +861,7 @@ proof -
       have "V \<in> Use (sourcenode a)" by(rule outs_in_Use)
       from `e = (Node (sourcenode a), kind a, Node (targetnode a))`
       have "src e = Node (sourcenode a)" by simp
-      with `V \<in> Use (sourcenode a)` show ?case by(fastsimp intro:lift_Use_node)
+      with `V \<in> Use (sourcenode a)` show ?case by(fastforce intro:lift_Use_node)
     qed simp_all
   next
     fix a V s
@@ -876,7 +876,7 @@ proof -
       have "intra_kind (kind a)" and "pred (kind a) s" 
         and "knd e = kind a" and "src e = Node (sourcenode a)" by simp_all
       from `V \<notin> lift_Def Def Entry Exit H L (src e)` `src e = Node (sourcenode a)`
-      have "V \<notin> Def (sourcenode a)" by(fastsimp dest:lift_Def_node)
+      have "V \<notin> Def (sourcenode a)" by(fastforce dest:lift_Def_node)
       from `valid_edge a` `V \<notin> Def (sourcenode a)` `intra_kind (kind a)` 
         `pred (kind a) s`
       have "state_val (transfer (kind a) s) V = state_val s V" 
@@ -923,7 +923,7 @@ proof -
             case True
             with `valid_edge a` `valid_edge a'` `sourcenode a = Entry`
               `sourcenode a' = Entry` `targetnode a' = Exit`
-            have "a = a'" by(fastsimp dest:edge_det)
+            have "a = a'" by(fastforce dest:edge_det)
             with `kind a' = (\<lambda>s. False)\<^isub>\<surd>` show ?thesis by simp
           next
             case False
@@ -934,11 +934,11 @@ proof -
           qed
           from True `V \<in> lift_Def Def Entry Exit H L (src e)` Entry_empty
             `e = (Node (sourcenode a), kind a, Node (targetnode a))`
-          have "V \<in> H" by(fastsimp elim:lift_Def_set.cases)
+          have "V \<in> H" by(fastforce elim:lift_Def_set.cases)
           from True `e = (Node (sourcenode a), kind a, Node (targetnode a))`
             `sourcenode a \<noteq> Entry \<or> targetnode a \<noteq> Exit`
           have "\<forall>V\<in>H. V \<in> lift_Use Use Entry Exit H L (src e)"
-            by(fastsimp intro:lift_Use_High)
+            by(fastforce intro:lift_Use_High)
           with `\<forall>V\<in>lift_Use Use Entry Exit H L (src e). 
             state_val s V = state_val s' V` `V \<in> H`
           have "state_val s V = state_val s' V" by simp
@@ -950,12 +950,12 @@ proof -
           { fix V' assume "V' \<in> Use (sourcenode a)"
             with `e = (Node (sourcenode a), kind a, Node (targetnode a))`
             have "V' \<in> lift_Use Use Entry Exit H L (src e)"
-              by(fastsimp intro:lift_Use_node)
+              by(fastforce intro:lift_Use_node)
           }
           with `\<forall>V\<in>lift_Use Use Entry Exit H L (src e). 
             state_val s V = state_val s' V`
           have "\<forall>V\<in>Use (sourcenode a). state_val s V = state_val s' V"
-            by fastsimp
+            by fastforce
           from `valid_edge a` this `pred (knd e) s` `pred (knd e) s'`
             `e = (Node (sourcenode a), kind a, Node (targetnode a))`
             `intra_kind (knd e)`
@@ -964,7 +964,7 @@ proof -
             by -(erule CFG_intra_edge_transfer_uses_only_Use,auto)
           from `V \<in> lift_Def Def Entry Exit H L (src e)` False
             `e = (Node (sourcenode a), kind a, Node (targetnode a))`
-          have "V \<in> Def (sourcenode a)" by(fastsimp elim:lift_Def_set.cases)
+          have "V \<in> Def (sourcenode a)" by(fastforce elim:lift_Def_set.cases)
           with `\<forall>V \<in> Def (sourcenode a). state_val (transfer (kind a) s) V =
             state_val (transfer (kind a) s') V`
             `e = (Node (sourcenode a), kind a, Node (targetnode a))`
@@ -974,14 +974,14 @@ proof -
         case (lve_Entry_edge e)
         from `V \<in> lift_Def Def Entry Exit H L (src e)` 
           `e = (NewEntry, (\<lambda>s. True)\<^isub>\<surd>, Node Entry)`
-        have False by(fastsimp elim:lift_Def_set.cases)
+        have False by(fastforce elim:lift_Def_set.cases)
         thus ?case by simp
       next
         case (lve_Exit_edge e)
         from `V \<in> lift_Def Def Entry Exit H L (src e)` 
           `e = (Node Exit, (\<lambda>s. True)\<^isub>\<surd>, NewExit)`
         have False
-          by(fastsimp elim:lift_Def_set.cases intro!:Entry_noteq_Exit simp:Exit_empty)
+          by(fastforce elim:lift_Def_set.cases intro!:Entry_noteq_Exit simp:Exit_empty)
         thus ?case  by simp
       next
         case (lve_Entry_Exit_edge e)
@@ -1041,13 +1041,13 @@ proof -
     obtain x where a:"a = (Node (sourcenode x),kind x,Node (targetnode x))" 
       and "valid_edge x" and "src a = Node (sourcenode x)" 
       and "kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "pred (kind x) s"
-      by(fastsimp elim:lift_valid_edge.cases)
+      by(fastforce elim:lift_valid_edge.cases)
     from `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a'`
       `knd a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'` `pred (knd a') s`
     obtain x' where a':"a' = (Node (sourcenode x'),kind x',Node (targetnode x'))" 
       and "valid_edge x'" and "src a' = Node (sourcenode x')" 
       and "kind x' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'" and "pred (kind x') s"
-      by(fastsimp elim:lift_valid_edge.cases)
+      by(fastforce elim:lift_valid_edge.cases)
     from `src a = Node (sourcenode x)` `src a' = Node (sourcenode x')` 
       `src a = src a'`
     have "sourcenode x = sourcenode x'" by simp
@@ -1114,7 +1114,7 @@ proof -
         with `valid_edge a` have False by(rule Exit_source)
         thus ?case by simp
       qed auto
-    qed (fastsimp elim:lift_valid_edge.cases)+
+    qed (fastforce elim:lift_valid_edge.cases)+
   qed
 qed
 
@@ -1141,23 +1141,23 @@ proof -
     "lift_get_proc get_proc Main" 
     "lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind"
     procs Main
-    by(fastsimp intro:lift_CFG wf pd)
+    by(fastforce intro:lift_CFG wf pd)
   show ?thesis
   proof
     fix a assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "src a = NewExit"
-    thus False by(fastsimp elim:lift_valid_edge.cases)
+    thus False by(fastforce elim:lift_valid_edge.cases)
   next
     show "lift_get_proc get_proc Main NewExit = Main" by simp
   next
     fix a Q p f
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "knd a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" and "trg a = NewExit"
-    thus False by(fastsimp elim:lift_valid_edge.cases)
+    thus False by(fastforce elim:lift_valid_edge.cases)
   next
     show "\<exists>a. lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a \<and>
       src a = NewEntry \<and> trg a = NewExit \<and> knd a = (\<lambda>s. False)\<^isub>\<surd>"
-      by(fastsimp intro:lve_Entry_Exit_edge)
+      by(fastforce intro:lve_Entry_Exit_edge)
   qed
 qed
 
@@ -1186,18 +1186,18 @@ proof -
     "lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind"
     procs Main "lift_Def Def Entry Exit H L" "lift_Use Use Entry Exit H L"
     "lift_ParamDefs ParamDefs" "lift_ParamUses ParamUses"
-    by(fastsimp intro:lift_CFG_wf wf pd)
+    by(fastforce intro:lift_CFG_wf wf pd)
   interpret CFGExit:CFGExit src trg knd
     "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit" NewEntry
     "lift_get_proc get_proc Main"
     "lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind"
     procs Main NewExit 
-    by(fastsimp intro:lift_CFGExit wf pd)
+    by(fastforce intro:lift_CFGExit wf pd)
   show ?thesis
   proof
     show "lift_Def Def Entry Exit H L NewExit = {} \<and>
       lift_Use Use Entry Exit H L NewExit = {}" 
-      by(fastsimp elim:lift_Def_set.cases lift_Use_set.cases)
+      by(fastforce elim:lift_Def_set.cases lift_Use_set.cases)
   qed
 qed
 
@@ -1229,7 +1229,7 @@ proof -
     "lift_get_proc get_proc Main"
     "lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind"
     procs Main NewExit 
-    by(fastsimp intro:lift_CFGExit wf pd)
+    by(fastforce intro:lift_CFGExit wf pd)
   { fix m assume "valid_node m"
     then obtain a where "valid_edge a" and "m = sourcenode a \<or> m = targetnode a"
       by(auto simp:valid_node_def)
@@ -1242,15 +1242,15 @@ proof -
       proof(cases "m = Entry")
         case True
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-          (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)" by(fastsimp intro:lve_Entry_edge)
-        with `m = Entry` show ?thesis by(fastsimp simp:CFGExit.valid_node_def)
+          (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)" by(fastforce intro:lve_Entry_edge)
+        with `m = Entry` show ?thesis by(fastforce simp:CFGExit.valid_node_def)
       next
         case False
         with `m = sourcenode a` `valid_edge a`
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
           (Node (sourcenode a),kind a,Node(targetnode a))"
-          by(fastsimp intro:lve_edge)
-        with `m = sourcenode a` show ?thesis by(fastsimp simp:CFGExit.valid_node_def)
+          by(fastforce intro:lve_edge)
+        with `m = sourcenode a` show ?thesis by(fastforce simp:CFGExit.valid_node_def)
       qed
     next
       assume "m = targetnode a"
@@ -1258,15 +1258,15 @@ proof -
       proof(cases "m = Exit")
         case True
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-          (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)" by(fastsimp intro:lve_Exit_edge)
-        with `m = Exit` show ?thesis by(fastsimp simp:CFGExit.valid_node_def)
+          (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)" by(fastforce intro:lve_Exit_edge)
+        with `m = Exit` show ?thesis by(fastforce simp:CFGExit.valid_node_def)
       next
         case False
         with `m = targetnode a` `valid_edge a`
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
           (Node (sourcenode a),kind a,Node(targetnode a))"
-          by(fastsimp intro:lve_edge)
-        with `m = targetnode a` show ?thesis by(fastsimp simp:CFGExit.valid_node_def)
+          by(fastforce intro:lve_edge)
+        with `m = targetnode a` show ?thesis by(fastforce simp:CFGExit.valid_node_def)
       qed
     qed }
   note lift_valid_node = this
@@ -1282,7 +1282,7 @@ proof -
       (Node m) es (Node m')"
     proof(induct arbitrary:m rule:vpa_induct)
       case (vpa_empty cs)
-      from `m -[]\<rightarrow>* m'` have [simp]:"m = m'" by fastsimp
+      from `m -[]\<rightarrow>* m'` have [simp]:"m = m'" by fastforce
       from `m -[]\<rightarrow>* m'` have "valid_node m" by(rule path_valid_node)
       obtain cs' where "cs' = 
         map (\<lambda>c. (Node (sourcenode c),kind c,Node (targetnode c))) cs" by simp
@@ -1292,7 +1292,7 @@ proof -
       with `valid_node m` show ?case
         apply(rule_tac x="cs'" in exI)
         apply(rule_tac x="[]" in exI)
-        by(fastsimp intro:CFGExit.empty_path lift_valid_node)
+        by(fastforce intro:CFGExit.empty_path lift_valid_node)
     next
       case (vpa_intra cs a as)
       note IH = `\<And>m. \<lbrakk>m -as\<rightarrow>* m'; \<forall>c\<in>set cs. valid_edge c; m \<noteq> Entry \<or> m' \<noteq> Exit\<rbrakk> \<Longrightarrow>
@@ -1320,7 +1320,7 @@ proof -
         let ?e = "(Node (sourcenode a),kind a,Node (targetnode a))"
         from False `valid_edge a` 
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e"
-          by(fastsimp intro:lve_edge)
+          by(fastforce intro:lve_edge)
         have "targetnode a \<noteq> Entry"
         proof
           assume "targetnode a = Entry"
@@ -1339,13 +1339,13 @@ proof -
           (Node (targetnode a)) es (Node m')" by blast
         from `intra_kind (kind a)` valid_path have "CFG.valid_path_aux knd
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
-          targetnode kind) cs' (?e#es)" by(fastsimp simp:intra_kind_def)
+          targetnode kind) cs' (?e#es)" by(fastforce simp:intra_kind_def)
         moreover
         from path `m = sourcenode a` 
           `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e`
         have "CFG.path src trg
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
-          (Node m) (?e#es) (Node m')" by(fastsimp intro:CFGExit.Cons_path)
+          (Node m) (?e#es) (Node m')" by(fastforce intro:CFGExit.Cons_path)
         ultimately show ?thesis using list by blast
       qed
     next
@@ -1372,7 +1372,7 @@ proof -
       qed
       with `valid_edge a` 
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e"
-        by(fastsimp intro:lve_edge)
+        by(fastforce intro:lve_edge)
       have "targetnode a \<noteq> Entry"
       proof
         assume "targetnode a = Entry"
@@ -1393,7 +1393,7 @@ proof -
         and cx:"cx = (Node (sourcenode a), kind a, Node (targetnode a))"
         and list':"list_all2 
         (\<lambda>c c'. c' = (Node (sourcenode c), kind c, Node (targetnode c))) cs csx"
-        by(fastsimp simp:list_all2_Cons1)
+        by(fastforce simp:list_all2_Cons1)
       from valid_path cx `cs' = cx#csx` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "CFG.valid_path_aux knd
         (lift_get_return_edges get_return_edges valid_edge sourcenode 
@@ -1403,7 +1403,7 @@ proof -
         `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e`
       have "CFG.path src trg
         (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
-        (Node m) (?e#es) (Node m')" by(fastsimp intro:CFGExit.Cons_path)
+        (Node m) (?e#es) (Node m')" by(fastforce intro:CFGExit.Cons_path)
       ultimately show ?case using list' by blast
     next
       case (vpa_ReturnEmpty cs a as Q p f)
@@ -1425,7 +1425,7 @@ proof -
       qed
       with `valid_edge a` 
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e"
-        by(fastsimp intro:lve_edge)
+        by(fastforce intro:lve_edge)
       have "targetnode a \<noteq> Entry"
       proof
         assume "targetnode a = Entry"
@@ -1448,7 +1448,7 @@ proof -
         `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e`
       have "CFG.path src trg
         (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
-        (Node m) (?e#es) (Node m')" by(fastsimp intro:CFGExit.Cons_path)
+        (Node m) (?e#es) (Node m')" by(fastforce intro:CFGExit.Cons_path)
       ultimately show ?case using `cs = []` by blast
     next
       case (vpa_ReturnCons cs a as Q p f c' cs')
@@ -1472,7 +1472,7 @@ proof -
       qed
       with `valid_edge a` 
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e"
-        by(fastsimp intro:lve_edge)
+        by(fastforce intro:lve_edge)
       have "targetnode a \<noteq> Entry"
       proof
         assume "targetnode a = Entry"
@@ -1492,7 +1492,7 @@ proof -
       from `valid_edge c'` `a \<in> get_return_edges c'`
       have "?e \<in> lift_get_return_edges get_return_edges valid_edge sourcenode
         targetnode kind (Node (sourcenode c'),kind c',Node (targetnode c'))"
-        by(fastsimp intro:lift_get_return_edgesI)
+        by(fastforce intro:lift_get_return_edgesI)
       with valid_path `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "CFG.valid_path_aux knd
         (lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind)
@@ -1509,7 +1509,7 @@ proof -
         `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e`
       have "CFG.path src trg
         (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
-        (Node m) (?e#es) (Node m')" by(fastsimp intro:CFGExit.Cons_path)
+        (Node m) (?e#es) (Node m')" by(fastforce intro:CFGExit.Cons_path)
       ultimately show ?case using `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` by blast
     qed }
   hence lift_valid_path:"\<And>m as m'. \<lbrakk>m -as\<rightarrow>\<^isub>\<surd>* m'; m \<noteq> Entry \<or> m' \<noteq> Exit\<rbrakk> 
@@ -1517,7 +1517,7 @@ proof -
     (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
     (lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind)
     (Node m) es (Node m')"
-    by(fastsimp simp:vp_def valid_path_def CFGExit.vp_def CFGExit.valid_path_def)
+    by(fastforce simp:vp_def valid_path_def CFGExit.vp_def CFGExit.valid_path_def)
   show ?thesis
   proof
     fix n assume "CFG.CFG.valid_node src trg
@@ -1534,22 +1534,22 @@ proof -
         (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
         (lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind)
         NewEntry [] n"
-        by(fastsimp intro:CFGExit.empty_path 
+        by(fastforce intro:CFGExit.empty_path 
           simp:CFGExit.vp_def CFGExit.valid_path_def)
       thus ?thesis by blast
     next
       assume "n = NewExit"
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-        (NewEntry,(\<lambda>s. False)\<^isub>\<surd>,NewExit)" by(fastsimp intro:lve_Entry_Exit_edge)
+        (NewEntry,(\<lambda>s. False)\<^isub>\<surd>,NewExit)" by(fastforce intro:lve_Entry_Exit_edge)
       hence "CFG.CFG.path src trg
         (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
         NewEntry [(NewEntry,(\<lambda>s. False)\<^isub>\<surd>,NewExit)] NewExit"
-        by(fastsimp dest:CFGExit.path_edge)
+        by(fastforce dest:CFGExit.path_edge)
       with `n = NewExit` have "CFG.CFG.valid_path' src trg knd
         (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
         (lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind)
         NewEntry [(NewEntry,(\<lambda>s. False)\<^isub>\<surd>,NewExit)] n"
-        by(fastsimp simp:CFGExit.vp_def CFGExit.valid_path_def)
+        by(fastforce simp:CFGExit.vp_def CFGExit.valid_path_def)
       thus ?thesis by blast
     next
       assume "\<exists>m. n = Node m \<and> valid_node m"
@@ -1559,13 +1559,13 @@ proof -
       proof(cases m rule:valid_node_cases)
         case Entry
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-          (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)" by(fastsimp intro:lve_Entry_edge)
+          (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)" by(fastforce intro:lve_Entry_edge)
         with `m = Entry` `n = Node m` have "CFG.CFG.path src trg
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           NewEntry [(NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)] n"
-          by(fastsimp intro:CFGExit.Cons_path CFGExit.empty_path
+          by(fastforce intro:CFGExit.Cons_path CFGExit.empty_path
                        simp:CFGExit.valid_node_def)
-        thus ?thesis by(fastsimp simp:CFGExit.vp_def CFGExit.valid_path_def)
+        thus ?thesis by(fastforce simp:CFGExit.vp_def CFGExit.valid_path_def)
       next
         case Exit
         from inner obtain ax where "valid_edge ax" and "intra_kind (kind ax)"
@@ -1578,7 +1578,7 @@ proof -
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (Node (sourcenode ax)) [(Node (sourcenode ax),kind ax,Node Exit)] 
           (Node Exit)"
-          by(fastsimp intro:CFGExit.Cons_path CFGExit.empty_path
+          by(fastforce intro:CFGExit.Cons_path CFGExit.empty_path
                        simp:CFGExit.valid_node_def)
         with `intra_kind (kind ax)`
         have slp_edge:"CFG.CFG.same_level_path' src trg knd
@@ -1587,7 +1587,7 @@ proof -
           targetnode kind)
           (Node (sourcenode ax)) [(Node (sourcenode ax),kind ax,Node Exit)] 
           (Node Exit)"
-          by(fastsimp simp:CFGExit.slp_def CFGExit.same_level_path_def 
+          by(fastforce simp:CFGExit.slp_def CFGExit.same_level_path_def 
             intra_kind_def)
         have "sourcenode ax \<noteq> Exit"
         proof
@@ -1595,28 +1595,28 @@ proof -
           with `valid_edge ax` show False by(rule Exit_source)
         qed
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-          (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)" by(fastsimp intro:lve_Entry_edge)
+          (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)" by(fastforce intro:lve_Entry_edge)
         hence "CFG.path src trg
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (NewEntry) [(NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)] (Node Entry)"
-          by(fastsimp intro:CFGExit.Cons_path CFGExit.empty_path
+          by(fastforce intro:CFGExit.Cons_path CFGExit.empty_path
                        simp:CFGExit.valid_node_def)
         hence slp_edge':"CFG.CFG.same_level_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
           targetnode kind)
           (NewEntry) [(NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)] (Node Entry)"
-          by(fastsimp simp:CFGExit.slp_def CFGExit.same_level_path_def)
+          by(fastforce simp:CFGExit.slp_def CFGExit.same_level_path_def)
         from `inner_node (sourcenode ax)` have "valid_node (sourcenode ax)"
           by(rule inner_is_valid)
         then obtain asx where "Entry -asx\<rightarrow>\<^isub>\<surd>* sourcenode ax"
-          by(fastsimp dest:Entry_path)
+          by(fastforce dest:Entry_path)
         with `sourcenode ax \<noteq> Exit`
         have "\<exists>es. CFG.CFG.valid_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
           targetnode kind) (Node Entry) es (Node (sourcenode ax))"
-          by(fastsimp intro:lift_valid_path)
+          by(fastforce intro:lift_valid_path)
         then obtain es where "CFG.CFG.valid_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
@@ -1638,26 +1638,26 @@ proof -
       next
         case inner
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-          (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)" by(fastsimp intro:lve_Entry_edge)
+          (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)" by(fastforce intro:lve_Entry_edge)
         hence "CFG.path src trg
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (NewEntry) [(NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)] (Node Entry)"
-          by(fastsimp intro:CFGExit.Cons_path CFGExit.empty_path
+          by(fastforce intro:CFGExit.Cons_path CFGExit.empty_path
                        simp:CFGExit.valid_node_def)
         hence slp_edge:"CFG.CFG.same_level_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
           targetnode kind)
           (NewEntry) [(NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)] (Node Entry)"
-          by(fastsimp simp:CFGExit.slp_def CFGExit.same_level_path_def)
+          by(fastforce simp:CFGExit.slp_def CFGExit.same_level_path_def)
         from `valid_node m` obtain as where "Entry -as\<rightarrow>\<^isub>\<surd>* m"
-          by(fastsimp dest:Entry_path)
+          by(fastforce dest:Entry_path)
         with `inner_node m`
         have "\<exists>es. CFG.CFG.valid_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
           targetnode kind) (Node Entry) es (Node m)"
-          by(fastsimp intro:lift_valid_path simp:inner_node_def)
+          by(fastforce intro:lift_valid_path simp:inner_node_def)
         then obtain es where "CFG.CFG.valid_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
@@ -1682,16 +1682,16 @@ proof -
     proof(erule disjE)+
       assume "n = NewEntry"
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-        (NewEntry,(\<lambda>s. False)\<^isub>\<surd>,NewExit)" by(fastsimp intro:lve_Entry_Exit_edge)
+        (NewEntry,(\<lambda>s. False)\<^isub>\<surd>,NewExit)" by(fastforce intro:lve_Entry_Exit_edge)
       hence "CFG.CFG.path src trg
         (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
         NewEntry [(NewEntry,(\<lambda>s. False)\<^isub>\<surd>,NewExit)] NewExit"
-        by(fastsimp dest:CFGExit.path_edge)
+        by(fastforce dest:CFGExit.path_edge)
       with `n = NewEntry` have "CFG.CFG.valid_path' src trg knd
         (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
         (lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind)
         n [(NewEntry,(\<lambda>s. False)\<^isub>\<surd>,NewExit)] NewExit"
-        by(fastsimp simp:CFGExit.vp_def CFGExit.valid_path_def)
+        by(fastforce simp:CFGExit.vp_def CFGExit.valid_path_def)
       thus ?thesis by blast
     next
       assume "n = NewExit"
@@ -1699,7 +1699,7 @@ proof -
         (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
         (lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind)
         n [] NewExit"
-        by(fastsimp intro:CFGExit.empty_path 
+        by(fastforce intro:CFGExit.empty_path 
           simp:CFGExit.vp_def CFGExit.valid_path_def)
       thus ?thesis by blast
     next
@@ -1719,7 +1719,7 @@ proof -
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (Node Entry) [(Node Entry,kind ax,Node (targetnode ax))] 
           (Node (targetnode ax))"
-          by(fastsimp intro:CFGExit.Cons_path CFGExit.empty_path
+          by(fastforce intro:CFGExit.Cons_path CFGExit.empty_path
                        simp:CFGExit.valid_node_def)
         with `intra_kind (kind ax)`
         have slp_edge:"CFG.CFG.same_level_path' src trg knd
@@ -1728,7 +1728,7 @@ proof -
           targetnode kind)
           (Node Entry) [(Node Entry,kind ax,Node (targetnode ax))] 
           (Node (targetnode ax))"
-          by(fastsimp simp:CFGExit.slp_def CFGExit.same_level_path_def 
+          by(fastforce simp:CFGExit.slp_def CFGExit.same_level_path_def 
             intra_kind_def)
         have "targetnode ax \<noteq> Entry"
         proof
@@ -1736,28 +1736,28 @@ proof -
           with `valid_edge ax` show False by(rule Entry_target)
         qed
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-          (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)" by(fastsimp intro:lve_Exit_edge)
+          (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)" by(fastforce intro:lve_Exit_edge)
         hence "CFG.path src trg
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (Node Exit) [(Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)] NewExit"
-          by(fastsimp intro:CFGExit.Cons_path CFGExit.empty_path
+          by(fastforce intro:CFGExit.Cons_path CFGExit.empty_path
                        simp:CFGExit.valid_node_def)
         hence slp_edge':"CFG.CFG.same_level_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
           targetnode kind)
           (Node Exit) [(Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)] NewExit"
-          by(fastsimp simp:CFGExit.slp_def CFGExit.same_level_path_def)
+          by(fastforce simp:CFGExit.slp_def CFGExit.same_level_path_def)
         from `inner_node (targetnode ax)` have "valid_node (targetnode ax)"
           by(rule inner_is_valid)
         then obtain asx where "targetnode ax -asx\<rightarrow>\<^isub>\<surd>* Exit"
-          by(fastsimp dest:Exit_path)
+          by(fastforce dest:Exit_path)
         with `targetnode ax \<noteq> Entry`
         have "\<exists>es. CFG.CFG.valid_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
           targetnode kind) (Node (targetnode ax)) es (Node Exit)"
-          by(fastsimp intro:lift_valid_path)
+          by(fastforce intro:lift_valid_path)
         then obtain es where "CFG.CFG.valid_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
@@ -1779,36 +1779,36 @@ proof -
       next
         case Exit
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-          (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)" by(fastsimp intro:lve_Exit_edge)
+          (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)" by(fastforce intro:lve_Exit_edge)
         with `m = Exit` `n = Node m` have "CFG.CFG.path src trg
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           n [(Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)] NewExit"
-          by(fastsimp intro:CFGExit.Cons_path CFGExit.empty_path
+          by(fastforce intro:CFGExit.Cons_path CFGExit.empty_path
                        simp:CFGExit.valid_node_def)
-        thus ?thesis by(fastsimp simp:CFGExit.vp_def CFGExit.valid_path_def)
+        thus ?thesis by(fastforce simp:CFGExit.vp_def CFGExit.valid_path_def)
       next
         case inner
         have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit
-          (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)" by(fastsimp intro:lve_Exit_edge)
+          (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)" by(fastforce intro:lve_Exit_edge)
         hence "CFG.path src trg
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (Node Exit) [(Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)] NewExit"
-          by(fastsimp intro:CFGExit.Cons_path CFGExit.empty_path
+          by(fastforce intro:CFGExit.Cons_path CFGExit.empty_path
                        simp:CFGExit.valid_node_def)
         hence slp_edge:"CFG.CFG.same_level_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
           targetnode kind)
           (Node Exit) [(Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)] NewExit"
-          by(fastsimp simp:CFGExit.slp_def CFGExit.same_level_path_def)
+          by(fastforce simp:CFGExit.slp_def CFGExit.same_level_path_def)
         from `valid_node m` obtain as where "m -as\<rightarrow>\<^isub>\<surd>* Exit"
-          by(fastsimp dest:Exit_path)
+          by(fastforce dest:Exit_path)
         with `inner_node m`
         have "\<exists>es. CFG.CFG.valid_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
           targetnode kind) (Node m) es (Node Exit)"
-          by(fastsimp intro:lift_valid_path simp:inner_node_def)
+          by(fastforce intro:lift_valid_path simp:inner_node_def)
         then obtain es where "CFG.CFG.valid_path' src trg knd
           (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
           (lift_get_return_edges get_return_edges valid_edge sourcenode 
@@ -1856,8 +1856,8 @@ proof -
         and "knd a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       then obtain x where "valid_edge x" and "src a = Node (sourcenode x)"
         and "kind x = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
-        by(fastsimp elim:lift_valid_edge.cases)
-      hence "method_exit (sourcenode x)" by(fastsimp simp:method_exit_def)
+        by(fastforce elim:lift_valid_edge.cases)
+      hence "method_exit (sourcenode x)" by(fastforce simp:method_exit_def)
       from method_exit2 show ?thesis
       proof(rule CFGExit.method_exit_cases)
         assume "n' = NewExit"
@@ -1878,11 +1878,11 @@ proof -
           and "knd a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'"
         then obtain x' where "valid_edge x'" and "src a' = Node (sourcenode x')"
           and "kind x' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'"
-          by(fastsimp elim:lift_valid_edge.cases)
-        hence "method_exit (sourcenode x')" by(fastsimp simp:method_exit_def)
+          by(fastforce elim:lift_valid_edge.cases)
+        hence "method_exit (sourcenode x')" by(fastforce simp:method_exit_def)
         with `method_exit (sourcenode x)` lift_eq `n = src a` `n' = src a'`
           `src a = Node (sourcenode x)` `src a' = Node (sourcenode x')`
-        have "sourcenode x = sourcenode x'" by(fastsimp intro:method_exit_unique)
+        have "sourcenode x = sourcenode x'" by(fastforce intro:method_exit_unique)
         with `src a = Node (sourcenode x)` `src a' = Node (sourcenode x')`
           `n = src a` `n' = src a'`
         show ?thesis by simp
@@ -1918,13 +1918,13 @@ proof -
     "lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind"
     procs Main NewExit "lift_Def Def Entry Exit H L" "lift_Use Use Entry Exit H L"
     "lift_ParamDefs ParamDefs" "lift_ParamUses ParamUses"
-    by(fastsimp intro:lift_CFGExit_wf wf pd)
+    by(fastforce intro:lift_CFGExit_wf wf pd)
   interpret pd':Postdomination src trg knd
     "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit" NewEntry
     "lift_get_proc get_proc Main"
     "lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind" 
     procs Main NewExit
-    by(fastsimp intro:lift_Postdomination wf pd inner)
+    by(fastforce intro:lift_Postdomination wf pd inner)
   show ?thesis by(unfold_locales)
 qed
 
@@ -1956,16 +1956,16 @@ proof -
     by(rule SDG)
   interpret SDG':SDG src trg knd lve NewEntry lget_proc lget_return_edges
     procs Main NewExit lDef lUse lParamDefs lParamUses
-    by(fastsimp intro:lift_SDG SDG inner simp:lve lget_proc lget_return_edges lDef
+    by(fastforce intro:lift_SDG SDG inner simp:lve lget_proc lget_return_edges lDef
                       lUse lParamDefs lParamUses)
   show ?thesis
   proof
     fix a assume "lve a" and "src a = NewEntry"
     thus "trg a = NewExit \<or> trg a = Node Entry"
-      by(fastsimp elim:lift_valid_edge.cases simp:lve)
+      by(fastforce elim:lift_valid_edge.cases simp:lve)
   next
     show "\<exists>a. lve a \<and> src a = NewEntry \<and> trg a = Node Entry \<and> knd a = (\<lambda>s. True)\<^isub>\<surd>"
-      by(fastsimp intro:lve_Entry_edge simp:lve)
+      by(fastforce intro:lve_Entry_edge simp:lve)
   next
     fix a assume "lve a" and "trg a = Node Entry"
     from `lve a` 
@@ -1984,10 +1984,10 @@ proof -
   next
     fix a assume "lve a" and "trg a = NewExit"
     thus "src a = NewEntry \<or> src a = Node Exit"
-      by(fastsimp elim:lift_valid_edge.cases simp:lve)
+      by(fastforce elim:lift_valid_edge.cases simp:lve)
   next
     show "\<exists>a. lve a \<and> src a = Node Exit \<and> trg a = NewExit \<and> knd a = (\<lambda>s. True)\<^isub>\<surd>"
-      by(fastsimp intro:lve_Exit_edge simp:lve)
+      by(fastforce intro:lve_Exit_edge simp:lve)
   next
     fix a assume "lve a" and "src a = Node Exit"
     from `lve a` 
@@ -2005,13 +2005,13 @@ proof -
     qed simp_all
   next
     from lDef show "lDef (Node Entry) = H"
-      by(fastsimp elim:lift_Def_set.cases intro:lift_Def_High)
+      by(fastforce elim:lift_Def_set.cases intro:lift_Def_High)
   next
     from Entry_noteq_Exit lUse show "lUse (Node Entry) = H"
-      by(fastsimp elim:lift_Use_set.cases intro:lift_Use_High)
+      by(fastforce elim:lift_Use_set.cases intro:lift_Use_High)
   next
     from Entry_noteq_Exit lUse show "lUse (Node Exit) = L"
-      by(fastsimp elim:lift_Use_set.cases intro:lift_Use_Low)
+      by(fastforce elim:lift_Use_set.cases intro:lift_Use_Low)
   next
     from `H \<inter> L = {}` show "H \<inter> L = {}" .
   next

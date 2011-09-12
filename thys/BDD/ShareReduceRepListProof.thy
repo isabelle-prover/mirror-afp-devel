@@ -272,8 +272,8 @@ proof - (* From invariant to postcondition *)
         apply (simp (no_asm_use) add: repNodes_eq_def)
         apply (rule filter_hd_P_rep_indep)
         apply simp
-        apply fastsimp
-        apply fastsimp
+        apply fastforce
+        apply fastforce
         done
     qed
     with hd_term_in_ns
@@ -1142,7 +1142,7 @@ next
               with nodes_balanced_ordered [rule_format, OF x_in_nodeslist]
               show "\<not> isLeaf_pt x low high"
                 apply (unfold isLeaf_pt_def)
-                apply fastsimp
+                apply fastforce
                 done
             qed
             with x_in_nodeslist have x_nLeaf: "\<not> isLeaf_pt x low high"
@@ -1652,7 +1652,7 @@ next
                   by auto
                 with repa_while_inv have "((repa \<propto> high) no1 = (repa \<propto> high) no 
                   \<and> (repa \<propto> low) no1 = (repa \<propto> low) no) = (repa no = repa no1)"
-                  by fastsimp
+                  by fastforce
                 with no1_props no1_nLeaf no_nLeaf balanced_no lno_notin_nl 
                   hno_notin_nl nodes_notin_nl_neq_nln no_notin_nl 
                   no1_neq_nln repa_repb_nc
@@ -2119,7 +2119,7 @@ next
           with repb_repb_no repb_no_share_def no_in_take_Sucn repbchildren_neq_no
           show ?thesis
             using [[simp_depth_limit=2]]
-            by fastsimp
+            by fastforce
         qed
         with repb_no_nNull show ?thesis
           by simp

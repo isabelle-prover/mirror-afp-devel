@@ -67,12 +67,12 @@ proof(induct f rule: min_inf.induct)
   ultimately show ?case using 3 by auto
 next
   case (1 f1 f2)
-  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastsimp+
+  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastforce+
   hence "?P (And f1 f2) (min x1 x2)" by simp
   thus ?case ..
 next
   case (2 f1 f2)
-  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastsimp+
+  then obtain x1 x2 where "?P f1 x1" "?P f2 x2" by fastforce+
   hence "?P (Or f1 f2) (min x1 x2)" by simp
   thus ?case ..
 qed simp_all
@@ -236,7 +236,7 @@ apply(rule iffI)
 prefer 2
 apply(drule minusinfinity)
 apply assumption+
-apply(fastsimp)
+apply(fastforce)
 apply clarsimp
 apply(subgoal_tac "\<And>k. 0\<le>k \<Longrightarrow> \<forall>x. P x \<longrightarrow> P (x - k*D)")
 apply(frule_tac x = x and z=z in decr_lemma)
@@ -244,7 +244,7 @@ apply(subgoal_tac "P1(x - (\<bar>x - z\<bar> + 1) * D)")
 prefer 2
 apply(subgoal_tac "0 \<le> (\<bar>x - z\<bar> + 1)")
 prefer 2 apply arith
- apply fastsimp
+ apply fastforce
 apply(drule (1)  periodic_finite_ex)
 apply blast
 apply(blast dest:decr_mult_lemma)
@@ -284,7 +284,7 @@ proof -
   let ?as = "Z.atoms\<^isub>0 \<phi>"
   let ?d = "zlcms(map divisor ?as)"
   have "?d > 0" using norm atoms_subset[of \<phi>] `nqfree \<phi>`
-    by(fastsimp intro:zlcms_pos)
+    by(fastforce intro:zlcms_pos)
   have alld: "\<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). divisor a dvd ?d" by(simp add:dvd_zlcms)
   from cp_thm[OF `nqfree \<phi>` hd alld `?d>0`]
   show ?thesis using `nqfree \<phi>`
@@ -306,7 +306,7 @@ apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^isub>0 \<phi>))")
  apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^isub>0 \<phi>)). i \<noteq> 0")
   apply (metis dvd_zlcms mult_eq_0_iff zdvd_mult_div_cancel zlcms0_iff)
  apply (simp add:set_atoms0_iff)
-apply(fastsimp simp:image_def set_atoms0_iff Bex_def)
+apply(fastforce simp:image_def set_atoms0_iff Bex_def)
 
 apply simp
 apply(case_tac list) apply simp
@@ -315,7 +315,7 @@ apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^isub>0 \<phi>))")
  apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^isub>0 \<phi>)). i \<noteq> 0")
   apply (metis dvd_zlcms mult_eq_0_iff zdvd_mult_div_cancel zlcms0_iff)
  apply (simp add:set_atoms0_iff)
-apply(fastsimp simp:image_def set_atoms0_iff Bex_def)
+apply(fastforce simp:image_def set_atoms0_iff Bex_def)
 done
 
 lemma hd_coeff_is1_hd_coeff1:

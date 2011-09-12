@@ -208,7 +208,7 @@ done
 lemma False_steps_conc[iff]:
  "!!p. (False#p,q): steps (conc L R) w = (? r. q=False#r & (p,r): steps R w)"
 apply (induct "w")
- apply fastsimp
+ apply fastforce
 apply force
 done
 

@@ -75,13 +75,13 @@ lemma [iff]: "(s -CALL\<rightarrow> t) = (s -body\<rightarrow> t)"
 by(blast elim: exec.cases intro:exec.intros)
 
 lemma [iff]: "(s -LOCAL f; c; g\<rightarrow> u) = (\<exists>t. f s -c\<rightarrow> t \<and> u = g s t)"
-by(fastsimp elim: exec.cases intro:exec.intros)
+by(fastforce elim: exec.cases intro:exec.intros)
 
 lemma [simp]: "\<not>b s \<Longrightarrow> s -WHILE b DO c\<rightarrow> s"
 by(fast intro:exec.intros)
 
 lemma WhileI: "\<lbrakk>b s; s -c\<rightarrow> t; t -WHILE b DO c\<rightarrow> u\<rbrakk> \<Longrightarrow> s -WHILE b DO c\<rightarrow> u"
-by(fastsimp elim:exec.WhileTrue)
+by(fastforce elim:exec.WhileTrue)
 (*>*)
 
 text{*This semantics turns out not to be fine-grained
@@ -163,21 +163,21 @@ apply(erule exec.induct)
           apply clarify
           apply(rename_tac m n)
           apply(rule_tac x = "max m n" in exI)
-          apply(fastsimp intro:exec.intros exec_mono simp add:max_def)
-         apply fastsimp
-        apply fastsimp
+          apply(fastforce intro:exec.intros exec_mono simp add:max_def)
+         apply fastforce
+        apply fastforce
        apply(blast intro:execn.intros)
       apply clarify
       apply(rename_tac m n)
       apply(rule_tac x = "max m n" in exI)
-      apply(fastsimp elim:execn.WhileTrue exec_mono simp add:max_def)
+      apply(fastforce elim:execn.WhileTrue exec_mono simp add:max_def)
      apply blast
     apply blast
 apply(erule exE, erule execn.induct)
          apply blast
         apply blast
-       apply fastsimp
-      apply fastsimp
+       apply fastforce
+      apply fastforce
      apply(erule exec.WhileFalse)
     apply(blast intro: exec.intros)
    apply blast

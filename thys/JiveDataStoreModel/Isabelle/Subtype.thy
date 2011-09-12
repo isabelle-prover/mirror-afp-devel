@@ -66,7 +66,7 @@ proof (clarsimp simp only: acyclic_def antisym_def)
       by (rule distinct_rtrancl_into_trancl)
     also
     from False y_x have "(y, x) \<in> r\<^sup>+"
-      by (fastsimp intro: distinct_rtrancl_into_trancl)
+      by (fastforce intro: distinct_rtrancl_into_trancl)
     finally have "(x,x) \<in> r\<^sup>+".
     with acyclic show ?thesis by simp
   qed
@@ -136,7 +136,7 @@ This way, these lemmas will be automatically used in subsequent proofs.
 lemma acyclic_direct_subtype: "acyclic direct_subtype"
 proof (clarsimp simp add: acyclic_def)
   fix x show "x \<prec> x \<Longrightarrow> False"
-  by (cases x) (fastsimp elim: tranclE simp add: direct_subtype_def)+
+  by (cases x) (fastforce elim: tranclE simp add: direct_subtype_def)+
      (* takes a very long time to calculate *)
 qed
 
@@ -318,7 +318,7 @@ lemma Object_rootD:
   shows "CClassT Object = c"
   using p
   apply (cases c)
-  apply (fastsimp elim: subtype_wrong_elims simp add: subtype_defs) +
+  apply (fastforce elim: subtype_wrong_elims simp add: subtype_defs) +
   -- {* In this lemma, we only get contradictory cases except for Object itself. *}
 done
 

@@ -193,7 +193,7 @@ proof(induct arbitrary: e' h' xs' Env T Env' T' and es' h' xs' Env Ts Env' Ts' r
       with exec' \<tau> have [simp]: "h = h'"
         and e: "sim_moves ps es P t ps h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
       from e have "sim_move (obj'\<bullet>M'(ps)) (obj'\<bullet>M'(es)) P t (obj\<bullet>M'(ps)) h ([] @ [v], xs, length (compE2 obj) + 0, None) (stk'' @ [v], loc'', length (compE2 obj) + pc'', xcp'')"
-	by(fastsimp dest: Call_\<tau>ExecrI2 Call_\<tau>ExectI2)
+	by(fastforce dest: Call_\<tau>ExecrI2 Call_\<tau>ExectI2)
       with s True show ?thesis by auto
     next
       case False
@@ -206,7 +206,7 @@ proof(induct arbitrary: e' h' xs' Env T Env' T' and es' h' xs' Env Ts Env' Ts' r
       moreover from e' have "exec_move_a P t (obj\<bullet>M'(ps)) h (stk' @ [v], loc', length (compE2 obj) + pc', xcp') (extTA2JVM (compP2 P) ta) h' (stk'' @ [v], loc'', length (compE2 obj) + pc'', xcp'')"
 	by(rule exec_move_CallI2)
       moreover from \<tau>' e' have "\<tau>move2 (compP2 P) h (stk' @ [v]) (obj\<bullet>M'(ps)) (length (compE2 obj) + pc') xcp' \<Longrightarrow> False"
-	by(fastsimp simp add: \<tau>move2_iff \<tau>moves2_iff \<tau>instr_stk_drop_exec_moves split: split_if_asm)
+	by(fastforce simp add: \<tau>move2_iff \<tau>moves2_iff \<tau>instr_stk_drop_exec_moves split: split_if_asm)
       moreover from red have "call1 (obj'\<bullet>M'(ps)) = calls1 ps" by(auto simp add: is_vals_conv)
       moreover have "no_calls2 ps 0 \<Longrightarrow> no_call2 (obj\<bullet>M'(ps)) (length (compE2 obj)) \<or> ps = []" "calls1 [] = None"
         by(auto simp add: no_calls2_def no_call2_def)
@@ -220,7 +220,7 @@ proof(induct arbitrary: e' h' xs' Env T Env' T' and es' h' xs' Env Ts Env' Ts' r
       by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
     ultimately show ?thesis using \<tau> execo
       apply(auto simp del: split_paired_Ex call1_calls1.simps split: split_if_asm split del: split_if)
-      apply(blast intro: \<tau>Exec_mover_trans|fastsimp elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
       done
   next
     case (Call1ThrowObj a)
@@ -233,7 +233,7 @@ proof(induct arbitrary: e' h' xs' Env T Env' T' and es' h' xs' Env Ts Env' Ts' r
       with bisim1 `bsoks ps n`
       have "P, obj\<bullet>M'(ps), n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>)"
 	by(auto intro: bisim1_bisims1.bisim1CallThrowObj)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim1 obtain pc'
@@ -265,7 +265,7 @@ proof(induct arbitrary: e' h' xs' Env T Env' T' and es' h' xs' Env Ts Env' Ts' r
     also from bisim1_bisims1.bisim1CallThrowParams[OF bisim' `bsok obj n`, of M' v] ps
     have bisim'': "P,obj\<bullet>M'(ps),n,h \<turnstile> (Throw a, xs) \<leftrightarrow> (Addr a # rev vs @ [v], xs, length (compE2 obj) + pc', \<lfloor>a\<rfloor>)" by simp
     moreover have "\<tau>move1 P h (obj'\<bullet>M'(ps))" using ps by(auto intro: \<tau>move1CallThrowParams)
-    ultimately show ?thesis by fastsimp
+    ultimately show ?thesis by fastforce
   next
     case (Red1CallExternal a Ta vs va H')
     hence [simp]: "obj' = addr a" "ps = map Val vs"
@@ -361,7 +361,7 @@ proof(induct arbitrary: e' h' xs' Env T Env' T' and es' h' xs' Env Ts Env' Ts' r
     ultimately show ?thesis using s by(auto simp del: split_paired_Ex)
   qed
 next
-  case bisim1Val2 thus ?case by fastsimp
+  case bisim1Val2 thus ?case by fastforce
 next
   case (bisim1New C' n xs)
   have \<tau>: "\<not> \<tau>move1 P h (new C')" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
@@ -375,7 +375,7 @@ next
       by(rule bisim1Val2)(auto)
     moreover have "\<not> \<tau>move2 (compP2 P) h [] (new C') 0 None" by(simp add: \<tau>move2_iff)
     ultimately show ?thesis using \<tau> 
-      by(fastsimp simp add: exec_move_def ta_upd_simps)
+      by(fastforce simp add: exec_move_def ta_upd_simps)
   next
     case Red1NewFail
     hence "exec_meth_a (compP2 P) [New C'] [] t h ([], xs, 0, None) \<epsilon> h' ([], xs, 0, \<lfloor>addr_of_sys_xcpt OutOfMemory\<rfloor>)"
@@ -384,10 +384,10 @@ next
     moreover have "P, new C', n, h' \<turnstile> (THROW OutOfMemory, xs) \<leftrightarrow> ([], xs, 0, \<lfloor>addr_of_sys_xcpt OutOfMemory\<rfloor>)"
       by(rule bisim1NewThrow)
     moreover have "\<not> \<tau>move2 (compP2 P) h [] (new C') 0 None" by(simp add: \<tau>move2_iff)
-    ultimately show ?thesis using \<tau> by(fastsimp simp add: exec_move_def)
+    ultimately show ?thesis using \<tau> by(fastforce simp add: exec_move_def)
   qed
 next
-  case bisim1NewThrow thus ?case by fastsimp
+  case bisim1NewThrow thus ?case by fastforce
 next
   case (bisim1NewArray E n e xs stk loc pc xcp U)
   note IH = `\<And>e' h' xs' Env T Env' T'. \<lbrakk> P,t \<turnstile>1 \<langle>e,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>\<rbrakk>
@@ -473,7 +473,7 @@ next
       assume [simp]: "xcp = \<lfloor>a\<rfloor>"
       with bisim have "P,newA U\<lfloor>E\<rceil>, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1_bisims1.bisim1NewArrayThrow)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim obtain pc'
@@ -532,7 +532,7 @@ next
       by(auto intro!: exec_instr simp add: compP2_def)
     moreover have "\<tau>move2 (compP2 P) h [c] (Cast U E) (length (compE2 E)) None" by(simp add: \<tau>move2_iff)
     ultimately have "\<tau>Exec_mover_a P t (Cast U E) h (stk, loc, pc, xcp) ([c], loc, Suc (length (compE2 E)), None)"
-      by(fastsimp elim: rtranclp.rtrancl_into_rtrancl intro: \<tau>exec_moveI simp add: exec_move_def compP2_def)
+      by(fastforce elim: rtranclp.rtrancl_into_rtrancl intro: \<tau>exec_moveI simp add: exec_move_def compP2_def)
     moreover have "\<tau>move1 P h (Cast U (Val c))" by(rule \<tau>move1CastRed)
     moreover from `bsok E n`
     have "P, Cast U E, n, h' \<turnstile> (Val c, loc) \<leftrightarrow> ([c], loc, length (compE2 (Cast U E)), None)"
@@ -551,7 +551,7 @@ next
       by -(rule exec_instr, auto simp add: compP2_def)
     moreover have "\<tau>move2 (compP2 P) h [v] (Cast U E) (length (compE2 E)) None" by(simp add: \<tau>move2_iff)
     ultimately have "\<tau>Exec_movet_a P t (Cast U E) h (stk, loc, pc, xcp) ([v], loc, length (compE2 E), \<lfloor>addr_of_sys_xcpt ClassCast\<rfloor>)"
-      by(fastsimp simp add: exec_move_def compP2_def intro: rtranclp_into_tranclp1 \<tau>exec_moveI)
+      by(fastforce simp add: exec_move_def compP2_def intro: rtranclp_into_tranclp1 \<tau>exec_moveI)
     moreover have "\<tau>move1 P h (Cast U (Val v))" by(rule \<tau>move1CastRed)
     moreover from `bsok E n`
     have "P,Cast U E,n,h \<turnstile> (THROW ClassCast, loc) \<leftrightarrow> ([v], loc, length (compE2 E), \<lfloor>addr_of_sys_xcpt ClassCast\<rfloor>)"
@@ -566,7 +566,7 @@ next
       assume [simp]: "xcp = \<lfloor>a\<rfloor>"
       with bisim have "P,Cast U E, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1_bisims1.bisim1CastThrow)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim obtain pc'
@@ -624,7 +624,7 @@ next
       by(auto intro!: exec_instr simp add: compP2_def)
     moreover have "\<tau>move2 (compP2 P) h [c] (E instanceof U) (length (compE2 E)) None" by(simp add: \<tau>move2_iff)
     ultimately have "\<tau>Exec_mover_a P t (E instanceof U) h (stk, loc, pc, xcp) ([Bool b], loc, Suc (length (compE2 E)), None)"
-      by(fastsimp elim: rtranclp.rtrancl_into_rtrancl intro: \<tau>exec_moveI simp add: exec_move_def compP2_def)
+      by(fastforce elim: rtranclp.rtrancl_into_rtrancl intro: \<tau>exec_moveI simp add: exec_move_def compP2_def)
     moreover have "\<tau>move1 P h ((Val c) instanceof U)" by(rule \<tau>move1InstanceOfRed)
     moreover from `bsok E n`
     have "P, E instanceof U, n, h' \<turnstile> (Val (Bool b), loc) \<leftrightarrow> ([Bool b], loc, length (compE2 (E instanceof U)), None)"
@@ -640,7 +640,7 @@ next
       assume [simp]: "xcp = \<lfloor>a\<rfloor>"
       with bisim have "P,E instanceof U, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1_bisims1.bisim1InstanceOfThrow)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim obtain pc'
@@ -657,7 +657,7 @@ next
 next
   case bisim1InstanceOfThrow thus ?case by auto
 next
-  case bisim1Val thus ?case by fastsimp
+  case bisim1Val thus ?case by fastforce
 next
   case (bisim1Var V n xs)
   from `P,t \<turnstile>1 \<langle>Var V,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
@@ -672,7 +672,7 @@ next
     moreover have "P, Var V, n, h \<turnstile> (Val v, xs) \<leftrightarrow> ([v], xs, length (compE2 (Var V)), None)"
       by(rule bisim1Val2)(auto)
     moreover have "\<tau>move1 P h (Var V)" by(rule \<tau>move1Var)
-    ultimately show ?thesis by(fastsimp)
+    ultimately show ?thesis by(fastforce)
   qed
 next
   case (bisim1BinOp1 e1 n e1' xs stk loc pc xcp e2 bop)
@@ -721,7 +721,7 @@ next
       case True
       with exec' \<tau> have [simp]: "h = h'" and e: "sim_move e2 E' P t e2 h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
       from e have "sim_move (Val v\<guillemotleft>bop\<guillemotright>e2) (Val v\<guillemotleft>bop\<guillemotright>E') P t (e1 \<guillemotleft>bop\<guillemotright> e2) h ([] @ [v], xs, length (compE2 e1) + 0, None) (stk'' @ [v], loc'', length (compE2 e1) + pc'', xcp'')"
-	by(fastsimp dest: BinOp_\<tau>ExecrI2 BinOp_\<tau>ExectI2)
+	by(fastforce dest: BinOp_\<tau>ExecrI2 BinOp_\<tau>ExectI2)
       with True show ?thesis by auto
     next
       case False
@@ -749,7 +749,7 @@ next
       by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
     ultimately show ?thesis using \<tau> exec1 s
       apply(auto simp del: split_paired_Ex call1_calls1.simps split: split_if_asm split del: split_if)
-      apply(blast intro: \<tau>Exec_mover_trans|fastsimp elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
       done
   next
     case (Red1BinOp v1 v2 v)
@@ -772,7 +772,7 @@ next
       by-(rule exec_instr, auto)
     moreover have "\<tau>move2 (compP2 P) h [v2, v1] (e1\<guillemotleft>bop\<guillemotright>Val v2) (Suc (length (compE2 e1))) None" by(simp add: \<tau>move2_iff) 
     ultimately have "\<tau>Exec_mover_a P t (e1 \<guillemotleft>bop\<guillemotright> Val v2) h (stk, loc, pc, xcp) ([v], loc, Suc (Suc (length (compE2 e1))), None)"
-      by(fastsimp intro: rtranclp.rtrancl_into_rtrancl \<tau>exec_moveI simp add: exec_move_def compP2_def)
+      by(fastforce intro: rtranclp.rtrancl_into_rtrancl \<tau>exec_moveI simp add: exec_move_def compP2_def)
     moreover from `bsok e1 n`
     have "P, e1 \<guillemotleft>bop\<guillemotright> Val v2, n, h \<turnstile> (Val v, loc) \<leftrightarrow> ([v], loc, length (compE2 (e1 \<guillemotleft>bop\<guillemotright> Val v2)), None)"
       by-(rule bisim1Val2,auto)
@@ -798,7 +798,7 @@ next
       by-(rule exec_instr, auto)
     moreover have "\<tau>move2 (compP2 P) h [v2, v1] (e1\<guillemotleft>bop\<guillemotright>Val v2) (Suc (length (compE2 e1))) None" by(simp add: \<tau>move2_iff) 
     ultimately have "\<tau>Exec_movet_a P t (e1 \<guillemotleft>bop\<guillemotright> Val v2) h (stk, loc, pc, xcp) ([v2, v1], loc, Suc (length (compE2 e1)), \<lfloor>a\<rfloor>)"
-      by(fastsimp intro: rtranclp_into_tranclp1 \<tau>exec_moveI simp add: exec_move_def compP2_def)
+      by(fastforce intro: rtranclp_into_tranclp1 \<tau>exec_moveI simp add: exec_move_def compP2_def)
     moreover from `bsok e1 n`
     have "P, e1 \<guillemotleft>bop\<guillemotright> Val v2, n, h \<turnstile> (Throw a, loc) \<leftrightarrow> ([v2, v1], loc, length (compE2 e1) + length (compE2 (Val v2)), \<lfloor>a\<rfloor>)"
       by(rule bisim1BinOpThrow) simp
@@ -814,7 +814,7 @@ next
       with bisim1 bisim1_bsok[OF bisim2]
       have "P, e1\<guillemotleft>bop\<guillemotright>e2, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1_bisims1.intros)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim1 obtain pc' where "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
@@ -869,11 +869,11 @@ next
       apply(blast intro: BinOp_\<tau>ExecrI2 BinOp_\<tau>ExectI2 exec_move_BinOpI2)
       apply(blast intro: BinOp_\<tau>ExecrI2 BinOp_\<tau>ExectI2 exec_move_BinOpI2)
       apply(rule exI conjI BinOp_\<tau>ExecrI2 exec_move_BinOpI2|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
       apply(rule exI conjI BinOp_\<tau>ExecrI2 exec_move_BinOpI2|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
       apply(rule exI conjI BinOp_\<tau>ExecrI2 exec_move_BinOpI2 rtranclp.rtrancl_refl|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)+
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)+
       done
     moreover from bisim' `bsok e1 n`
     have "P,e1\<guillemotleft>bop\<guillemotright>e2,n,h' \<turnstile> (Val v1\<guillemotleft>bop\<guillemotright>E', xs') \<leftrightarrow> (stk''@[v1], loc'', length (compE2 e1) + pc'', xcp'')"
@@ -934,7 +934,7 @@ next
       with bisim2 `bsok e1 n`
       have "P, e1\<guillemotleft>bop\<guillemotright>e2, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk @ [v1], loc, length (compE2 e1) + pc, xcp)"
 	by(auto intro: bisim1BinOpThrow2)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim2 obtain pc'
@@ -950,11 +950,11 @@ next
     qed
   qed auto
 next
-  case bisim1BinOpThrow1 thus ?case by fastsimp
+  case bisim1BinOpThrow1 thus ?case by fastforce
 next
-  case bisim1BinOpThrow2 thus ?case by fastsimp
+  case bisim1BinOpThrow2 thus ?case by fastforce
 next
-  case bisim1BinOpThrow thus ?case by fastsimp
+  case bisim1BinOpThrow thus ?case by fastforce
 next
   case (bisim1LAss1 E n e xs stk loc pc xcp V)
   note IH = `\<And>e' h' xs' Env T Env' T'. P,t \<turnstile>1 \<langle>e,(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>
@@ -1007,7 +1007,7 @@ next
     proof
       assume [simp]: "xcp = \<lfloor>a\<rfloor>"
       with bisim have "P, V:=E, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)" by(auto intro: bisim1LAssThrow)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim obtain pc'
@@ -1022,9 +1022,9 @@ next
     qed
   qed
 next
-  case bisim1LAss2 thus ?case by fastsimp
+  case bisim1LAss2 thus ?case by fastforce
 next
-  case bisim1LAssThrow thus ?case by fastsimp
+  case bisim1LAssThrow thus ?case by fastforce
 next
   case (bisim1AAcc1 a n a' xs stk loc pc xcp i)
   note IH1 = `\<And>e' h' xs' Env T Env' T'. P,t \<turnstile>1 \<langle>a',(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>
@@ -1072,7 +1072,7 @@ next
       case True
       with exec' \<tau> have [simp]: "h = h'" and e: "sim_move i E' P t i h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
       from e have "sim_move (a\<lfloor>i\<rceil>) (a\<lfloor>E'\<rceil>) P t (a\<lfloor>i\<rceil>) h ([] @ [v], xs, length (compE2 a) + 0, None) (stk'' @ [v], loc'', length (compE2 a) + pc'', xcp'')"
-	by(fastsimp dest: AAcc_\<tau>ExecrI2 AAcc_\<tau>ExectI2)
+	by(fastforce dest: AAcc_\<tau>ExecrI2 AAcc_\<tau>ExectI2)
       with True show ?thesis by auto
     next
       case False
@@ -1100,7 +1100,7 @@ next
       by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
     ultimately show ?thesis using \<tau> exec1 s
       apply(auto simp del: split_paired_Ex call1_calls1.simps split: split_if_asm split del: split_if)
-      apply(blast intro: \<tau>Exec_mover_trans|fastsimp elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
       done
   next
     case (Red1AAcc A U I v)
@@ -1188,7 +1188,7 @@ next
       with bisim1 `bsok i n`
       have "P, a\<lfloor>i\<rceil>, n, h \<turnstile> (Throw A, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1_bisims1.intros)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim1 obtain pc' where "\<tau>Exec_mover_a P t a h (stk, loc, pc, None) ([Addr A], loc, pc', \<lfloor>A\<rfloor>)"
@@ -1243,11 +1243,11 @@ next
       apply(blast intro: AAcc_\<tau>ExecrI2 AAcc_\<tau>ExectI2 exec_move_AAccI2)
       apply(blast intro: AAcc_\<tau>ExecrI2 AAcc_\<tau>ExectI2 exec_move_AAccI2)
       apply(rule exI conjI AAcc_\<tau>ExecrI2 exec_move_AAccI2|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
       apply(rule exI conjI AAcc_\<tau>ExecrI2 exec_move_AAccI2|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
       apply(rule exI conjI AAcc_\<tau>ExecrI2 exec_move_AAccI2 rtranclp.rtrancl_refl|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)+
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)+
       done
     moreover from bisim' `bsok a n`
     have "P,a\<lfloor>i\<rceil>,n,h' \<turnstile> (Val v1\<lfloor>E'\<rceil>, xs') \<leftrightarrow> (stk''@[v1], loc'', length (compE2 a) + pc'', xcp'')"
@@ -1398,7 +1398,7 @@ next
       case True
       with exec' \<tau> have [simp]: "h = h'" and e: "sim_move i E' P t i h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
       from e have "sim_move (a\<lfloor>i\<rceil> := e) (a\<lfloor>E'\<rceil> := e) P t (a\<lfloor>i\<rceil> := e) h ([] @ [v], xs, length (compE2 a) + 0, None) (stk'' @ [v], loc'', length (compE2 a) + pc'', xcp'')"
-	by(fastsimp dest: AAss_\<tau>ExecrI2 AAss_\<tau>ExectI2)
+	by(fastforce dest: AAss_\<tau>ExecrI2 AAss_\<tau>ExectI2)
       with True show ?thesis by auto
     next
       case False
@@ -1426,7 +1426,7 @@ next
       by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
     ultimately show ?thesis using \<tau> exec1 s
       apply(auto simp del: split_paired_Ex call1_calls1.simps split: split_if_asm split del: split_if)
-      apply(blast intro: \<tau>Exec_mover_trans|fastsimp elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
       done
   next
     case (AAss1Red3 E' v v')
@@ -1451,7 +1451,7 @@ next
       case True
       with exec' \<tau> have [simp]: "h = h'" and e: "sim_move e E' P t e h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
       from e have "sim_move (Val v\<lfloor>Val v'\<rceil> := e) (Val v\<lfloor>Val v'\<rceil> := E') P t (a\<lfloor>i\<rceil> := e) h ([] @ [v', v], xs, length (compE2 a) + length (compE2 i) + 0, None) (stk'' @ [v', v], loc'', length (compE2 a) + length (compE2 i) + pc'', xcp'')"
-	by(fastsimp dest: AAss_\<tau>ExectI3 AAss_\<tau>ExecrI3 simp del: compE2_compEs2.simps)
+	by(fastforce dest: AAss_\<tau>ExectI3 AAss_\<tau>ExecrI3 simp del: compE2_compEs2.simps)
       with True show ?thesis by auto
     next
       case False
@@ -1479,7 +1479,7 @@ next
       by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
     ultimately show ?thesis using \<tau> exec1 s
       apply(auto simp del: split_paired_Ex call1_calls1.simps split: split_if_asm split del: split_if)
-      apply(blast intro: \<tau>Exec_mover_trans|fastsimp elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
       done
   next
     case (Red1AAss A U I v U')
@@ -1621,7 +1621,7 @@ next
       with bisim1 `bsok i n` `bsok e n`
       have "P, a\<lfloor>i\<rceil> := e, n, h \<turnstile> (Throw A, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1_bisims1.intros)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim1 obtain pc' where "\<tau>Exec_mover_a P t a h (stk, loc, pc, None) ([Addr A], loc, pc', \<lfloor>A\<rfloor>)"
@@ -1696,7 +1696,7 @@ next
       case True
       with exec' \<tau> have [simp]: "h = h'" and e: "sim_move i' E' P t i h (stk, loc, pc, xcp) (stk'', loc'', pc'', xcp'')" by auto
       from e have "sim_move (Val v1\<lfloor>i'\<rceil> := e) (Val v1\<lfloor>E'\<rceil> := e) P t (a\<lfloor>i\<rceil> := e) h (stk @ [v1], loc, length (compE2 a) + pc, xcp) (stk'' @ [v1], loc'', length (compE2 a) + pc'', xcp'')"
-	by(fastsimp dest: AAss_\<tau>ExecrI2 AAss_\<tau>ExectI2 simp del: compE2_compEs2.simps)
+	by(fastforce dest: AAss_\<tau>ExecrI2 AAss_\<tau>ExectI2 simp del: compE2_compEs2.simps)
       with True show ?thesis by auto
     next
       case False
@@ -1743,7 +1743,7 @@ next
       with exec' \<tau> have [simp]: "h = h'"
         and e: "sim_move e E' P t e h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
       from e have "sim_move (Val v1\<lfloor>Val v'\<rceil> := e) (Val v1\<lfloor>Val v'\<rceil> := E') P t (a\<lfloor>i\<rceil> := e) h ([] @ [v', v1], xs, length (compE2 a) + length (compE2 i) + 0, None) (stk'' @ [v', v1], loc'', length (compE2 a) + length (compE2 i) + pc'', xcp'')"
-	by(fastsimp dest: AAss_\<tau>ExectI3 AAss_\<tau>ExecrI3 simp del: compE2_compEs2.simps)
+	by(fastforce dest: AAss_\<tau>ExectI3 AAss_\<tau>ExecrI3 simp del: compE2_compEs2.simps)
       with True show ?thesis by auto
     next
       case False
@@ -1769,7 +1769,7 @@ next
       by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
     ultimately show ?thesis using \<tau> exec1 s
       apply(auto simp del: split_paired_Ex call1_calls1.simps split: split_if_asm split del: split_if)
-      apply(blast intro: \<tau>Exec_mover_trans|fastsimp elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
       done
   next
     case (Red1AAss A U I v U')
@@ -1887,7 +1887,7 @@ next
       with bisim2 `bsok a n` `bsok e n`
       have "P, a\<lfloor>i\<rceil> := e, n, h \<turnstile> (Throw A, xs) \<leftrightarrow> (stk @ [v1], loc, length (compE2 a) + pc, xcp)"
 	by(auto intro: bisim1_bisims1.intros)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim2 obtain pc' where "\<tau>Exec_mover_a P t i h (stk, loc, pc, None) ([Addr A], loc, pc', \<lfloor>A\<rfloor>)"
@@ -1941,11 +1941,11 @@ next
       apply(blast intro: AAss_\<tau>ExecrI3 AAss_\<tau>ExectI3 exec_move_AAssI3)
       apply(blast intro: AAss_\<tau>ExecrI3 AAss_\<tau>ExectI3 exec_move_AAssI3)
       apply(rule exI conjI AAss_\<tau>ExecrI3 exec_move_AAssI3|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
       apply(rule exI conjI AAss_\<tau>ExecrI3 exec_move_AAssI3|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
       apply(rule exI conjI AAss_\<tau>ExecrI3 exec_move_AAssI3 rtranclp.rtrancl_refl|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)+
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)+
       done
     moreover from bisim' `bsok a n` `bsok i n`
     have "P,a\<lfloor>i\<rceil> := e,n,h' \<turnstile> (Val v\<lfloor>Val v'\<rceil> := E', xs') \<leftrightarrow> (stk''@[v',v], loc'', length (compE2 a) + length (compE2 i) + pc'', xcp'')"
@@ -2046,7 +2046,7 @@ next
       with bisim3 `bsok a n` `bsok i n`
       have "P, a\<lfloor>i\<rceil> := e, n, h \<turnstile> (Throw A, xs) \<leftrightarrow> (stk @ [v', v], loc, length (compE2 a) + length (compE2 i) + pc, xcp)"
 	by(auto intro: bisim1_bisims1.intros)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim3 obtain pc' where "\<tau>Exec_mover_a P t e h (stk, loc, pc, None) ([Addr A], loc, pc', \<lfloor>A\<rfloor>)"
@@ -2145,7 +2145,7 @@ next
       assume [simp]: "xcp = \<lfloor>A\<rfloor>"
       with bisim have "P,a\<bullet>length, n, h \<turnstile> (Throw A, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1_bisims1.bisim1ALengthThrow)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim obtain pc'
@@ -2234,7 +2234,7 @@ next
       assume [simp]: "xcp = \<lfloor>a\<rfloor>"
       with bisim have "P,E\<bullet>F{D}, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1_bisims1.bisim1FAccThrow)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim obtain pc'
@@ -2299,7 +2299,7 @@ next
       case True
       with exec' \<tau> have [simp]: "h = h'" and e: "sim_move e2 E' P t e2 h ([], xs, 0, None) (stk'', loc'', pc'', xcp'')" by auto
       from e have "sim_move (Val v\<bullet>F{D} := e2) (Val v\<bullet>F{D} := E') P t (e1\<bullet>F{D} := e2) h ([] @ [v], xs, length (compE2 e1) + 0, None) (stk'' @ [v], loc'', length (compE2 e1) + pc'', xcp'')"
-	by(fastsimp dest: FAss_\<tau>ExecrI2 FAss_\<tau>ExectI2 simp del: compE2_compEs2.simps)
+	by(fastforce dest: FAss_\<tau>ExecrI2 FAss_\<tau>ExectI2 simp del: compE2_compEs2.simps)
       with True show ?thesis by auto
     next
       case False
@@ -2328,7 +2328,7 @@ next
       by(auto simp add: no_call2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
     ultimately show ?thesis using \<tau> exec1 s
       apply(auto simp del: split_paired_Ex call1_calls1.simps split: split_if_asm split del: split_if)
-      apply(blast intro: \<tau>Exec_mover_trans|fastsimp elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
+      apply(blast intro: \<tau>Exec_mover_trans|fastforce elim!: \<tau>Exec_mover_trans simp del: split_paired_Ex call1_calls1.simps)+
       done
   next
     case (Red1FAss a v)
@@ -2386,7 +2386,7 @@ next
       with bisim1 `bsok e2 n`
       have "P, e1\<bullet>F{D} := e2, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1_bisims1.intros)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim1 obtain pc' where "\<tau>Exec_mover_a P t e1 h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
@@ -2441,11 +2441,11 @@ next
       apply(blast intro: FAss_\<tau>ExecrI2 FAss_\<tau>ExectI2 exec_move_FAssI2)
       apply(blast intro: FAss_\<tau>ExecrI2 FAss_\<tau>ExectI2 exec_move_FAssI2)
       apply(rule exI conjI FAss_\<tau>ExecrI2 exec_move_FAssI2|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
       apply(rule exI conjI FAss_\<tau>ExecrI2 exec_move_FAssI2|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)
       apply(rule exI conjI FAss_\<tau>ExecrI2 exec_move_FAssI2 rtranclp.rtrancl_refl|assumption)+
-      apply(fastsimp simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)+
+      apply(fastforce simp add: \<tau>instr_stk_drop_exec_move \<tau>move2_iff split: split_if_asm)+
       done
     moreover from bisim' `bsok e1 n`
     have "P,e1\<bullet>F{D} := e2,n,h' \<turnstile> (Val v1\<bullet>F{D} := E', xs') \<leftrightarrow> (stk''@[v1], loc'', length (compE2 e1) + pc'', xcp'')"
@@ -2500,7 +2500,7 @@ next
       with bisim2 `bsok e1 n`
       have "P, e1\<bullet>F{D} := e2, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk @ [v1], loc, length (compE2 e1) + pc, xcp)"
 	by(auto intro: bisim1FAssThrow2)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim2 obtain pc'
@@ -2516,13 +2516,13 @@ next
     qed
   qed auto
 next
-  case bisim1FAssThrow1 thus ?case by fastsimp
+  case bisim1FAssThrow1 thus ?case by fastforce
 next
-  case bisim1FAssThrow2 thus ?case by fastsimp
+  case bisim1FAssThrow2 thus ?case by fastforce
 next
-  case bisim1FAssNull thus ?case by fastsimp
+  case bisim1FAssNull thus ?case by fastforce
 next
-  case bisim1FAss3 thus ?case by fastsimp
+  case bisim1FAss3 thus ?case by fastforce
 next
   case (bisim1CallParams ps n ps' xs stk loc pc xcp obj M' v)
   note IHparam = `\<And>es' h' xs' Env Ts Env' Ts'. P,t \<turnstile>1 \<langle>ps',(h, xs)\<rangle> [-ta\<rightarrow>] \<langle>es',(h', xs')\<rangle>
@@ -2610,7 +2610,7 @@ next
       with bisim2 bisim1_bsok[OF bisim1]
       have "P,obj\<bullet>M'(ps),n,h \<turnstile> (Throw a, loc) \<leftrightarrow> (stk @ [v], loc, length (compE2 obj) + pc, \<lfloor>a\<rfloor>)"
 	by -(rule bisim1CallThrowParams, auto)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim2 obtain pc'
@@ -2693,11 +2693,11 @@ next
       done
   qed(insert ps', auto)
 next
-  case bisim1CallThrowObj thus ?case by fastsimp
+  case bisim1CallThrowObj thus ?case by fastforce
 next
   case bisim1CallThrowParams thus ?case by auto
 next
-  case bisim1CallThrow thus ?case by fastsimp
+  case bisim1CallThrow thus ?case by fastforce
 next
   case (bisim1BlockSome1 e V Ty v xs e')
   from `P,t \<turnstile>1 \<langle>{V:Ty=\<lfloor>v\<rfloor>; e},(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>` show ?case
@@ -2755,7 +2755,7 @@ next
     moreover from bisim1_bsok[OF bisim]
     have "P,{V:Ty=\<lfloor>v\<rfloor>; E},V,h \<turnstile> (Val u, xs) \<leftrightarrow> ([u], xs, length (compE2 {V:Ty=\<lfloor>v\<rfloor>; E}), None)"
       by-(rule bisim1Val2, simp_all) 
-    ultimately show ?thesis by(fastsimp elim!: Block_\<tau>ExecrI_Some)
+    ultimately show ?thesis by(fastforce elim!: Block_\<tau>ExecrI_Some)
   next
     case (Block1Throw a)
     note [simp] = `e = Throw a` `ta = \<epsilon>` `e' = Throw a` `h' = h` `xs' = xs`
@@ -2766,7 +2766,7 @@ next
       assume [simp]: "xcp = \<lfloor>a\<rfloor>"
       with bisim have "P, {V:Ty=\<lfloor>v\<rfloor>; E}, V, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, Suc (Suc pc), xcp)"
 	by(auto intro: bisim1BlockThrowSome)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim obtain pc'
@@ -2815,7 +2815,7 @@ next
     moreover from bisim1_bsok[OF bisim]
     have "P,{V:Ty=None; E},V,h \<turnstile> (Val u, xs) \<leftrightarrow> ([u], xs, length (compE2 {V:Ty=None; E}), None)"
       by-(rule bisim1Val2, simp_all)
-    ultimately show ?thesis by(fastsimp intro: Block_\<tau>ExecrI_None)
+    ultimately show ?thesis by(fastforce intro: Block_\<tau>ExecrI_None)
   next
     case (Block1Throw a)
     note [simp] = `e = Throw a` `ta = \<epsilon>` `e' = Throw a` `h' = h` `xs' = xs`
@@ -2826,7 +2826,7 @@ next
       assume [simp]: "xcp = \<lfloor>a\<rfloor>"
       with bisim have "P, {V:Ty=None; E}, V, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1BlockThrowNone)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim obtain pc'
@@ -2926,7 +2926,7 @@ next
       with bisim1 bisim1_bsok[OF bisim2]
       have "P, sync\<^bsub>V\<^esub> (e1) e2, V, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>)"
 	by(auto intro: bisim1SyncThrow)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim1 obtain pc'
@@ -2938,7 +2938,7 @@ next
       moreover from bisim' bisim1_bsok[OF bisim2]
       have "P, sync\<^bsub>V\<^esub> (e1) e2, V, h \<turnstile> (Throw a, xs) \<leftrightarrow> ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
 	by -(rule bisim1_bisims1.bisim1SyncThrow, auto)
-      ultimately show ?thesis using \<tau> by fastsimp
+      ultimately show ?thesis using \<tau> by fastforce
     qed
   qed
 next
@@ -3395,7 +3395,7 @@ next
       with bisim1 bisim1_bsok[OF bisim2]
       have "P, e1;; e2, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	by(auto intro: bisim1SeqThrow1)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim1 obtain pc'
@@ -3411,7 +3411,7 @@ next
     qed
   qed
 next
-  case bisim1SeqThrow1 thus ?case by fastsimp
+  case bisim1SeqThrow1 thus ?case by fastforce
 next
   case (bisim1Seq2 e2 n e2' xs stk loc pc xcp e1)
   note IH = `\<And>e' h' xs' Env T Env' T'. P,t \<turnstile>1 \<langle>e2',(h, xs)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>
@@ -3475,7 +3475,7 @@ next
     with bisim1_refl[of e1 n P h loc]
     have "P, if (E) e1 else e2, n, h \<turnstile> (e1, xs) \<leftrightarrow> ([], loc, Suc (length (compE2 E) + 0), None)"
       unfolding s by-(rule bisim1CondThen, auto)
-    ultimately show ?thesis by (fastsimp)
+    ultimately show ?thesis by (fastforce)
   next
     case Red1CondF
     note [simp] = `e = false` `e' = e2` `ta = \<epsilon>` `h' = h` `xs' = xs`
@@ -3506,7 +3506,7 @@ next
       with bisim bisim1_bsok[OF bisim1] bisim1_bsok[OF bisim2]
       have "P, if (E) e1 else e2, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>)"
 	by(auto intro: bisim1_bisims1.bisim1CondThrow)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim obtain pc'
@@ -3621,7 +3621,7 @@ next
     with bisim1_refl[of e n P h loc]
     have "P, while (c) e, n, h \<turnstile> (e;; while (c) e, xs) \<leftrightarrow> ([], loc, Suc (length (compE2 c) + 0), None)"
       unfolding s by-(rule bisim1While4, auto)
-    ultimately show ?thesis by (fastsimp)
+    ultimately show ?thesis by (fastforce)
   next
     case Red1CondF
     note [simp] = `c' = false` `e' = unit` `ta = \<epsilon>` `h' = h` `xs' = xs`
@@ -3651,7 +3651,7 @@ next
       with bisim1 bisim1_bsok[OF bisim2]
       have "P, while (c) e, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>)"
 	by(auto intro: bisim1_bisims1.bisim1WhileThrow1)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim1 obtain pc'
@@ -3685,7 +3685,7 @@ next
     have "?exec ta (while (c) E) (e;;while (c) E) (E';;while (c) E) h stk loc (Suc (length (compE2 c) + pc)) xcp h' (Suc (length (compE2 c) + pc'')) stk'' loc'' xcp''"
     proof(cases "\<tau>move1 P h (e;; while (c) E)")
       case True
-      with exec' show ?thesis using \<tau> by(fastsimp intro: While_\<tau>ExecrI2 While_\<tau>ExectI2)
+      with exec' show ?thesis using \<tau> by(fastforce intro: While_\<tau>ExecrI2 While_\<tau>ExectI2)
     next
       case False
       with exec' \<tau> obtain pc' stk' loc' xcp'
@@ -3735,7 +3735,7 @@ next
       with bisim2 bisim1_bsok[OF bisim1]
       have "P, while (c) E, n, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, Suc (length (compE2 c) + pc), xcp)"
 	by(auto intro: bisim1WhileThrow2)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim2 obtain pc'
@@ -3764,10 +3764,10 @@ next
       by(rule bisim1_bisims1.bisim1While3[OF bisim1_refl])
     moreover have "\<tau>Exec_movet_a P t (while (c) e) h ([], xs, Suc (Suc (length (compE2 c) + length (compE2 e))), None) ([], xs, 0, None)"
       by(rule \<tau>Exect1step)(auto simp add: exec_move_def \<tau>move2_iff intro: exec_instr)
-    ultimately show ?thesis by(fastsimp)
+    ultimately show ?thesis by(fastforce)
   qed
 next
-  case bisim1While7 thus ?case by fastsimp
+  case bisim1While7 thus ?case by fastforce
 next
   case bisim1WhileThrow1 thus ?case by auto
 next
@@ -3820,7 +3820,7 @@ next
     thus ?thesis
     proof
       assume "xcp = \<lfloor>a\<rfloor>"
-      with bisim show ?thesis using \<tau> by(fastsimp intro: bisim1ThrowThrow)
+      with bisim show ?thesis using \<tau> by(fastforce intro: bisim1ThrowThrow)
     next
       assume [simp]: "xcp = None"
       from bisim obtain pc'
@@ -3933,7 +3933,7 @@ next
       with bisim1 ha sub bisim1_bsok[OF bisim2]
       have "P,try E catch(C' V) e2,V,h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>)"
 	by(auto intro: bisim1TryFail)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim1 obtain pc' 
@@ -3973,7 +3973,7 @@ next
     have "?exec ta (try e catch(C' V) e2) {V:Class C'=None; e2} {V:Class C'=None; E'} h [] (xs[V := Addr a]) (Suc (Suc (length (compE2 e))))  None h' (Suc (Suc (length (compE2 e) + pc''))) stk'' loc'' xcp''"
     proof(cases "\<tau>move1 P h {V:Class C'=None; e2}")
       case True with \<tau> exec' show ?thesis
-	by(fastsimp dest: Try_\<tau>ExecrI2 Try_\<tau>ExectI2 simp del: compE2_compEs2.simps)
+	by(fastforce dest: Try_\<tau>ExecrI2 Try_\<tau>ExectI2 simp del: compE2_compEs2.simps)
     next
       case False
       with \<tau> exec' obtain pc' stk' loc' xcp'
@@ -4089,7 +4089,7 @@ next
       with bisim2 bisim1_bsok[OF bisim1]
       have "P, try e catch(C' V) e2, V, h \<turnstile> (Throw a, xs) \<leftrightarrow> (stk, loc, Suc (Suc (length (compE2 e) + pc)), xcp)"
 	by(auto intro: bisim1TryCatchThrow)
-      thus ?thesis using \<tau> by(fastsimp)
+      thus ?thesis using \<tau> by(fastforce)
     next
       assume [simp]: "xcp = None"
       with bisim2 obtain pc' 
@@ -4184,7 +4184,7 @@ next
       by(auto simp add: no_calls2_def dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)
     ultimately show ?thesis using \<tau> exec1 s
       apply(auto simp del: split_paired_Ex call1_calls1.simps split: split_if_asm split del: split_if)
-      apply(blast intro: \<tau>Exec_movesr_trans|fastsimp elim!: \<tau>Exec_movesr_trans simp del: split_paired_Ex call1_calls1.simps)+
+      apply(blast intro: \<tau>Exec_movesr_trans|fastforce elim!: \<tau>Exec_movesr_trans simp del: split_paired_Ex call1_calls1.simps)+
       done
   qed
 next
@@ -4339,7 +4339,7 @@ proof -
       with sees pc' ins have "\<tau>Move2 (compP2 P) (None, h, (rev vs' @ Addr a' # stk', loc', C, M, pc') # FRS)"
         unfolding \<tau>Move2_compP2[OF sees] by(auto simp add: compP2_def compMb2_def)
       with `exec_1 (compP2 P) t (None, h, ?f # FRS) \<epsilon> (None, h, ?f' # ?f # FRS)` check
-      have "\<tau>Exec_1_dt (compP2 P) t (None, h, ?f # FRS) (None, h, ?f' # ?f # FRS)" by fastsimp
+      have "\<tau>Exec_1_dt (compP2 P) t (None, h, ?f # FRS) (None, h, ?f' # ?f # FRS)" by fastforce
       also from execd sees'' sees' ins ha' pc' icto `\<not> is_native P U' M'`
       have "compP2 P,h \<turnstile> vs' [:\<le>] Ts'" 
         by(auto simp add: check_def compP2_def is_class_type_of_conv_class_type_of_Some split: split_if_asm elim!: jvmd_NormalE)
@@ -4389,7 +4389,7 @@ proof -
 	and bisim: "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
 	and bisims: "list_all2 (bisim1_fr P h) ((E, xs') # exs') FRS" 
 	and lenxs: "max_vars e \<le> length xs" by auto
-      from bisims obtain f FRS' where [simp]: "FRS = f # FRS'" by(fastsimp simp add: list_all2_Cons1)
+      from bisims obtain f FRS' where [simp]: "FRS = f # FRS'" by(fastforce simp add: list_all2_Cons1)
       from bisims have "bisim1_fr P h (E, xs') f" by simp
       then obtain C0 M0 Ts0 T0 body0 D0 stk0 loc0 pc0 a' M' vs'
 	where [simp]: "f = (stk0, loc0, C0, M0, pc0)"
@@ -4397,7 +4397,7 @@ proof -
 	and bisim0: "P,blocks1 0 (Class D0#Ts0) body0,0,h \<turnstile> (E, xs') \<leftrightarrow> (stk0, loc0, pc0, None)"
 	and lenxs0: "max_vars E \<le> length xs'"
 	and call0: "call1 E = \<lfloor>(a', M', vs')\<rfloor>"
-        by cases(auto, fastsimp)
+        by cases(auto, fastforce)
       
       let ?ee = "inline_call e E"
 	
@@ -4409,7 +4409,7 @@ proof -
       obtain ST LT where \<Phi>: "compTP P C0 M0 ! pc0 = \<lfloor>(ST, LT)\<rfloor>"
 	and conff: "conf_f (compP (\<lambda>C M Ts T. compMb2) P) h (ST, LT) (compE2 body0 @ [Return]) (stk0, loc0, C0, M0, pc0)"
  	and ins: "(compE2 body0 @ [Return]) ! pc0 = Invoke M (length Ts)"
-	by(simp add: correct_state_def)(fastsimp simp add: compP2_def compMb2_def dest: sees_method_fun)
+	by(simp add: correct_state_def)(fastforce simp add: compP2_def compMb2_def dest: sees_method_fun)
       from bisim1_callD[OF bisim0 call0, of M "length Ts"] ins pc0
       have [simp]: "M' = M" by simp
 	
@@ -4466,7 +4466,7 @@ proof -
 	    where exec: "\<tau>Exec_mover_a P t body h (stk, loc, pc, None) ([Addr ad], loc, pc', \<lfloor>ad\<rfloor>)"
 	    and bisim': "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (Throw ad, xs) \<leftrightarrow> ([Addr ad], loc, pc', \<lfloor>ad\<rfloor>)"
 	    and [simp]: "xs = loc" by(auto simp del: blocks1.simps)
-	  thus ?thesis by fastsimp
+	  thus ?thesis by fastforce
 	next
 	  case (Some a')
 	  with bisim have "a' = ad" "xs = loc" by(auto dest: bisim1_ThrowD)
@@ -4549,7 +4549,7 @@ proof(cases)
       and \<tau>2: "\<not> \<tau>move2 (compP2 P) h stk' body pc' xcp'"
       and b': "P,blocks1 0 (Class D#Ts) body,0, h' \<turnstile> (e', xs') \<leftrightarrow> (stk'', loc'', pc'', xcp'')"
       and call: "call1 e = None \<or> no_call2 (blocks1 0 (Class D # Ts) body) pc \<or> pc' = pc \<and> stk' = stk \<and> loc' = loc \<and> xcp' = xcp"
-      by(fastsimp simp add: exec_move_def simp del: blocks1.simps)
+      by(fastforce simp add: exec_move_def simp del: blocks1.simps)
     from exec2 have pc'body: "pc' < length (compE2 body)" by(auto)
     from exec1 sees have exec1': "\<tau>Exec_1r (compP2 P) t (xcp, h, frs) (xcp', h, (stk', loc', C, M, pc') # FRS)"
       by(auto intro: \<tau>Exec_mover_\<tau>Exec_1r)

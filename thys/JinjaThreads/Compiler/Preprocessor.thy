@@ -54,7 +54,7 @@ proof -
       and "wf_mdecl ?wf_md (compP (annotate_Mb_code P) P) C (M, Ts, T, annotate_Mb_code P C M Ts T m)"
     moreover obtain pns body where "m = (pns, body)" by(cases m)
     ultimately show "wf_mdecl ?wf_md P C (M, Ts, T, m)"
-      by(fastsimp simp add: annotate_Mb_code_def annotate_code_def wf_mdecl_def THE_default_def the_equality Anno_code_def split: split_if_asm dest: Anno_block_types)
+      by(fastforce simp add: annotate_Mb_code_def annotate_code_def wf_mdecl_def THE_default_def the_equality Anno_code_def split: split_if_asm dest: Anno_block_types)
   qed
 
   { fix C D fs ms M Ts T pns body

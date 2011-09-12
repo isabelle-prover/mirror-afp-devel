@@ -184,7 +184,7 @@ lemma HRB_slice_cases[consumes 1,case_names phase1 phase2]:
    \<And>nx n' n'' p n. \<lbrakk>n' \<in> sum_SDG_slice1 nx; n'' s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n'); 
                     n \<in> sum_SDG_slice2 n'; nx \<in> S\<rbrakk> \<Longrightarrow> P n\<rbrakk>
   \<Longrightarrow> P x"
-  by(fastsimp elim:combine_SDG_slices.cases simp:HRB_slice_def)
+  by(fastforce elim:combine_SDG_slices.cases simp:HRB_slice_def)
 
 
 
@@ -192,7 +192,7 @@ lemma HRB_slice_refl:
   assumes "valid_node m" and "CFG_node m \<in> S" shows "CFG_node m \<in> HRB_slice S"
 proof -
   from `valid_node m` have "CFG_node m \<in> sum_SDG_slice1 (CFG_node m)"
-    by(fastsimp intro:refl_slice1)
+    by(fastforce intro:refl_slice1)
   with `CFG_node m \<in> S` show ?thesis
     by(simp add:HRB_slice_def)(blast intro:combSlice_refl)
 qed
@@ -224,7 +224,7 @@ proof -
     assume "CFG_node (parent_node n) \<longrightarrow>\<^bsub>cd\<^esub> n"
     hence "CFG_node (parent_node n) s\<longrightarrow>\<^bsub>cd\<^esub> n" by(rule SDG_edge_sum_SDG_edge)
     with `n \<in> HRB_slice S` show ?thesis
-      by(fastsimp elim:combine_SDG_slices.cases 
+      by(fastforce elim:combine_SDG_slices.cases 
                  intro:combine_SDG_slices.intros cdep_slice1 cdep_slice2 
                   simp:HRB_slice_def)
   qed
@@ -234,7 +234,7 @@ qed
 lemma HRB_slice_is_SDG_path_HRB_slice: 
   "\<lbrakk>n is-ns\<rightarrow>\<^isub>d* n'; n'' \<in> HRB_slice {n}; n' \<in> S\<rbrakk> \<Longrightarrow> n'' \<in> HRB_slice S"
 proof(induct arbitrary:S rule:intra_sum_SDG_path.induct)
-  case (isSp_Nil n) thus ?case by(fastsimp simp:HRB_slice_def)
+  case (isSp_Nil n) thus ?case by(fastforce simp:HRB_slice_def)
 next
   case (isSp_Append_cdep n ns nx n')
   note IH = `\<And>S. \<lbrakk>n'' \<in> HRB_slice {n}; nx \<in> S\<rbrakk> \<Longrightarrow> n'' \<in> HRB_slice S`
@@ -244,16 +244,16 @@ next
     case (phase1 n nx') 
     from `nx' \<in> {nx}` have "nx' = nx" by simp
     with `n \<in> sum_SDG_slice1 nx'` `nx s\<longrightarrow>\<^bsub>cd\<^esub> n'` have "n \<in> sum_SDG_slice1 n'"
-      by(fastsimp intro:slice1_cdep_slice1)
+      by(fastforce intro:slice1_cdep_slice1)
     with `n' \<in> S` show ?case
-      by(fastsimp intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
   next
     case (phase2 nx'' nx' n'' p n)
     from `nx'' \<in> {nx}` have "nx'' = nx" by simp
     with `nx' \<in> sum_SDG_slice1 nx''` `nx s\<longrightarrow>\<^bsub>cd\<^esub> n'` have "nx' \<in> sum_SDG_slice1 n'"
-      by(fastsimp intro:slice1_cdep_slice1)
+      by(fastforce intro:slice1_cdep_slice1)
     with `n'' s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node nx')` `n \<in> sum_SDG_slice2 nx'` `n' \<in> S`
-    show ?case by(fastsimp intro:combine_SDG_slices.combSlice_Return_parent_node 
+    show ?case by(fastforce intro:combine_SDG_slices.combSlice_Return_parent_node 
                             simp:HRB_slice_def)
   qed
 next
@@ -265,16 +265,16 @@ next
     case (phase1 n nx') 
     from `nx' \<in> {nx}` have "nx' = nx" by simp
     with `n \<in> sum_SDG_slice1 nx'` `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` have "n \<in> sum_SDG_slice1 n'"
-      by(fastsimp intro:slice1_ddep_slice1)
+      by(fastforce intro:slice1_ddep_slice1)
     with `n' \<in> S` show ?case
-      by(fastsimp intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
   next
     case (phase2 nx'' nx' n'' p n)
     from `nx'' \<in> {nx}` have "nx'' = nx" by simp
     with `nx' \<in> sum_SDG_slice1 nx''` `nx s-V\<rightarrow>\<^bsub>dd\<^esub> n'` have "nx' \<in> sum_SDG_slice1 n'"
-      by(fastsimp intro:slice1_ddep_slice1)
+      by(fastforce intro:slice1_ddep_slice1)
     with `n'' s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node nx')` `n \<in> sum_SDG_slice2 nx'` `n' \<in> S`
-    show ?case by(fastsimp intro:combine_SDG_slices.combSlice_Return_parent_node 
+    show ?case by(fastforce intro:combine_SDG_slices.combSlice_Return_parent_node 
                             simp:HRB_slice_def)
   qed
 next
@@ -286,16 +286,16 @@ next
     case (phase1 n nx') 
     from `nx' \<in> {nx}` have "nx' = nx" by simp
     with `n \<in> sum_SDG_slice1 nx'` `nx s-p\<rightarrow>\<^bsub>sum\<^esub> n'` have "n \<in> sum_SDG_slice1 n'"
-      by(fastsimp intro:slice1_sum_slice1)
+      by(fastforce intro:slice1_sum_slice1)
     with `n' \<in> S` show ?case
-      by(fastsimp intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
   next
     case (phase2 nx'' nx' n'' p' n)
     from `nx'' \<in> {nx}` have "nx'' = nx" by simp
     with `nx' \<in> sum_SDG_slice1 nx''` `nx s-p\<rightarrow>\<^bsub>sum\<^esub> n'` have "nx' \<in> sum_SDG_slice1 n'"
-      by(fastsimp intro:slice1_sum_slice1)
+      by(fastforce intro:slice1_sum_slice1)
     with `n'' s-p'\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node nx')` `n \<in> sum_SDG_slice2 nx'` `n' \<in> S`
-    show ?case by(fastsimp intro:combine_SDG_slices.combSlice_Return_parent_node 
+    show ?case by(fastforce intro:combine_SDG_slices.combSlice_Return_parent_node 
                             simp:HRB_slice_def)
   qed
 qed
@@ -311,10 +311,10 @@ lemma call_return_nodes_in_slice:
 proof -
   from `valid_edge a'` `kind a' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'` `a \<in> get_return_edges a'`
   have "CFG_node (sourcenode a') s-p\<rightarrow>\<^bsub>sum\<^esub> CFG_node (targetnode a)"
-    by(fastsimp intro:sum_SDG_call_summary_edge)
+    by(fastforce intro:sum_SDG_call_summary_edge)
   with `CFG_node (targetnode a) \<in> HRB_slice S`
   show "CFG_node (sourcenode a') \<in> HRB_slice S"
-    by(fastsimp elim!:combine_SDG_slices.cases 
+    by(fastforce elim!:combine_SDG_slices.cases 
                 intro:combine_SDG_slices.intros sum_slice1 sum_slice2 
                  simp:HRB_slice_def)
   from `CFG_node (targetnode a) \<in> HRB_slice S`
@@ -326,31 +326,31 @@ proof -
     case combSlice_refl
     from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
     have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (targetnode a)"
-      by(fastsimp intro:sum_SDG_return_edge)
+      by(fastforce intro:sum_SDG_return_edge)
     with `valid_edge a` 
     have "CFG_node (sourcenode a) \<in> sum_SDG_slice2 (CFG_node (targetnode a))"
-      by(fastsimp intro:sum_SDG_slice2.intros)
+      by(fastforce intro:sum_SDG_slice2.intros)
     with `CFG_node (targetnode a) \<in> sum_SDG_slice1 n\<^isub>c` `n\<^isub>c \<in> S`
       `CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (targetnode a)`
-    show ?case by(fastsimp intro:combSlice_Return_parent_node simp:HRB_slice_def)
+    show ?case by(fastforce intro:combSlice_Return_parent_node simp:HRB_slice_def)
   next
     case (combSlice_Return_parent_node n' n'' p')
     from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
     have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (targetnode a)"
-      by(fastsimp intro:sum_SDG_return_edge)
+      by(fastforce intro:sum_SDG_return_edge)
     with `CFG_node (targetnode a) \<in> sum_SDG_slice2 n'`
     have "CFG_node (sourcenode a) \<in> sum_SDG_slice2 n'"
-      by(fastsimp intro:sum_SDG_slice2.intros)
+      by(fastforce intro:sum_SDG_slice2.intros)
     with `n' \<in> sum_SDG_slice1 n\<^isub>c` `n'' s-p'\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n')` `n\<^isub>c \<in> S`
-    show ?case by(fastsimp intro:combine_SDG_slices.combSlice_Return_parent_node 
+    show ?case by(fastforce intro:combine_SDG_slices.combSlice_Return_parent_node 
                             simp:HRB_slice_def)
   qed
   from `valid_edge a'` `kind a' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'` `a \<in> get_return_edges a'`
   have "CFG_node (targetnode a') s\<longrightarrow>\<^bsub>cd\<^esub> CFG_node (sourcenode a)"
-    by(fastsimp intro:sum_SDG_proc_entry_exit_cdep)
+    by(fastforce intro:sum_SDG_proc_entry_exit_cdep)
   with `CFG_node (sourcenode a) \<in> HRB_slice S` `n\<^isub>c \<in> S`
   show "CFG_node (targetnode a') \<in> HRB_slice S"
-    by(fastsimp elim!:combine_SDG_slices.cases 
+    by(fastforce elim!:combine_SDG_slices.cases 
                 intro:combine_SDG_slices.intros cdep_slice1 cdep_slice2 
                  simp:HRB_slice_def)
 qed
@@ -373,13 +373,13 @@ next
     assume "n'' \<in> set ns"
     from IH[OF this] have "n'' \<in> sum_SDG_slice2 nx" by simp
     with `nx \<longrightarrow>\<^bsub>cd\<^esub> n'` show ?thesis
-      by(fastsimp intro:slice2_cdep_slice2 SDG_edge_sum_SDG_edge)
+      by(fastforce intro:slice2_cdep_slice2 SDG_edge_sum_SDG_edge)
   next
     assume "n'' = nx"
     from `nx \<longrightarrow>\<^bsub>cd\<^esub> n'` have "valid_SDG_node n'" by(rule SDG_edge_valid_SDG_node)
     hence "n' \<in> sum_SDG_slice2 n'" by(rule refl_slice2)
     with `nx \<longrightarrow>\<^bsub>cd\<^esub> n'` have "nx \<in> sum_SDG_slice2 n'"
-      by(fastsimp intro:cdep_slice2 SDG_edge_sum_SDG_edge)
+      by(fastforce intro:cdep_slice2 SDG_edge_sum_SDG_edge)
     with `n'' = nx` show ?thesis by simp
   qed
 next
@@ -391,13 +391,13 @@ next
     assume "n'' \<in> set ns"
     from IH[OF this] have "n'' \<in> sum_SDG_slice2 nx" by simp
     with `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` show ?thesis
-      by(fastsimp intro:slice2_ddep_slice2 SDG_edge_sum_SDG_edge)
+      by(fastforce intro:slice2_ddep_slice2 SDG_edge_sum_SDG_edge)
   next
     assume "n'' = nx"
     from `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_SDG_node n'" by(rule SDG_edge_valid_SDG_node)
     hence "n' \<in> sum_SDG_slice2 n'" by(rule refl_slice2)
     with `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` have "nx \<in> sum_SDG_slice2 n'"
-      by(fastsimp intro:ddep_slice2 SDG_edge_sum_SDG_edge)
+      by(fastforce intro:ddep_slice2 SDG_edge_sum_SDG_edge)
     with `n'' = nx` show ?thesis by simp
   qed
 qed
@@ -416,7 +416,7 @@ next
     assume "n'' \<in> set ns"
     from IH[OF `n'' \<in> set ns`] have "n'' \<in> HRB_slice {nx}" by simp
     from this `nx \<longrightarrow>\<^bsub>cd\<^esub> n'` `n' \<in> S` show ?case
-      by(fastsimp elim:HRB_slice_cases slice1_cdep_slice1
+      by(fastforce elim:HRB_slice_cases slice1_cdep_slice1
         intro:bexI[where x="n'"] combine_SDG_slices.intros SDG_edge_sum_SDG_edge 
         simp:HRB_slice_def)
   next
@@ -424,9 +424,9 @@ next
     from `nx \<longrightarrow>\<^bsub>cd\<^esub> n'` have "valid_SDG_node n'" by(rule SDG_edge_valid_SDG_node)
     hence "n' \<in> sum_SDG_slice1 n'" by(rule refl_slice1)
     with `nx \<longrightarrow>\<^bsub>cd\<^esub> n'` have "nx \<in> sum_SDG_slice1 n'" 
-      by(fastsimp intro:cdep_slice1 SDG_edge_sum_SDG_edge)
+      by(fastforce intro:cdep_slice1 SDG_edge_sum_SDG_edge)
     with `n'' = nx` `n' \<in> S` show ?case
-      by(fastsimp intro:combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:combSlice_refl simp:HRB_slice_def)
   qed
 next
   case (iSp_Append_ddep n ns nx V n')
@@ -437,7 +437,7 @@ next
     assume "n'' \<in> set ns"
     from IH[OF `n'' \<in> set ns`] have "n'' \<in> HRB_slice {nx}" by simp
     from this `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` `n' \<in> S` show ?case
-      by(fastsimp elim:HRB_slice_cases slice1_ddep_slice1
+      by(fastforce elim:HRB_slice_cases slice1_ddep_slice1
         intro:bexI[where x="n'"] combine_SDG_slices.intros SDG_edge_sum_SDG_edge 
         simp:HRB_slice_def)
   next
@@ -445,9 +445,9 @@ next
     from `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_SDG_node n'" by(rule SDG_edge_valid_SDG_node)
     hence "n' \<in> sum_SDG_slice1 n'" by(rule refl_slice1)
     with `nx -V\<rightarrow>\<^bsub>dd\<^esub> n'` have "nx \<in> sum_SDG_slice1 n'" 
-      by(fastsimp intro:ddep_slice1 SDG_edge_sum_SDG_edge)
+      by(fastforce intro:ddep_slice1 SDG_edge_sum_SDG_edge)
     with `n'' = nx` `n' \<in> S` show ?case 
-      by(fastsimp intro:combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:combSlice_refl simp:HRB_slice_def)
   qed
 qed
 
@@ -465,7 +465,7 @@ next
     assume "n'' \<in> set ns"
     from IH[OF this] have "n'' \<in> sum_SDG_slice2 nx" .
     with `nx i-ns'\<rightarrow>\<^isub>d* n'` show ?thesis
-      by(fastsimp intro:slice2_is_SDG_path_slice2 
+      by(fastforce intro:slice2_is_SDG_path_slice2 
                         intra_SDG_path_is_SDG_path)
   next
     assume "n'' \<in> set ns'"
@@ -480,7 +480,7 @@ next
     `sourcenode a = parent_node n\<^isub>1` `targetnode a = parent_node n\<^isub>2`
     `sourcenode a' = parent_node n\<^isub>3` `targetnode a' = parent_node n\<^isub>4`
   have "matched n\<^isub>1 ([]@n\<^isub>1#ns'@[n\<^isub>3]) n\<^isub>4"
-    by(fastsimp intro:matched.matched_bracket_call matched_Nil 
+    by(fastforce intro:matched.matched_bracket_call matched_Nil 
                  elim:SDG_edge_valid_SDG_node)
   then obtain nsx where "n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4" by(erule matched_is_SDG_path)
   from `n'' \<in> set (ns@n\<^isub>1#ns'@[n\<^isub>3])` 
@@ -494,20 +494,20 @@ next
   next
     assume "n'' = n\<^isub>1"
     from `n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4` have "n\<^isub>1 \<in> sum_SDG_slice2 n\<^isub>4" 
-      by(fastsimp intro:is_SDG_path_slice2 refl_slice2 is_SDG_path_valid_SDG_node)
-    with `n'' = n\<^isub>1` show ?thesis by(fastsimp intro:combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:is_SDG_path_slice2 refl_slice2 is_SDG_path_valid_SDG_node)
+    with `n'' = n\<^isub>1` show ?thesis by(fastforce intro:combSlice_refl simp:HRB_slice_def)
   next
     assume "n'' \<in> set ns'"
     from IH2[OF this] have "n'' \<in> sum_SDG_slice2 n\<^isub>3" .
     with `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` show ?thesis 
-      by(fastsimp intro:slice2_ret_slice2 slice2_param_out_slice2 
+      by(fastforce intro:slice2_ret_slice2 slice2_param_out_slice2 
                         SDG_edge_sum_SDG_edge)
   next
     assume "n'' = n\<^isub>3"
     from `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 s-p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 s-p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4" 
-      by(fastsimp intro:SDG_edge_sum_SDG_edge)
+      by(fastforce intro:SDG_edge_sum_SDG_edge)
     hence "n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4"
-      by(fastsimp intro:return_slice2 param_out_slice2 refl_slice2 
+      by(fastforce intro:return_slice2 param_out_slice2 refl_slice2 
                         sum_SDG_edge_valid_SDG_node)
     with `n'' = n\<^isub>3` show ?thesis by simp
   qed
@@ -520,7 +520,7 @@ next
     `sourcenode a = parent_node n\<^isub>1` `targetnode a = parent_node n\<^isub>2`
     `sourcenode a' = parent_node n\<^isub>3` `targetnode a' = parent_node n\<^isub>4`
   have "matched n\<^isub>1 ([]@n\<^isub>1#ns'@[n\<^isub>3]) n\<^isub>4"
-    by(fastsimp intro:matched.matched_bracket_param matched_Nil 
+    by(fastforce intro:matched.matched_bracket_param matched_Nil 
                  elim:SDG_edge_valid_SDG_node)
   then obtain nsx where "n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4" by(erule matched_is_SDG_path)
   from `n'' \<in> set (ns@n\<^isub>1#ns'@[n\<^isub>3])` 
@@ -534,18 +534,18 @@ next
   next
     assume "n'' = n\<^isub>1"
     from `n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4` have "n\<^isub>1 \<in> sum_SDG_slice2 n\<^isub>4" 
-      by(fastsimp intro:is_SDG_path_slice2 refl_slice2 is_SDG_path_valid_SDG_node)
-    with `n'' = n\<^isub>1` show ?thesis by(fastsimp intro:combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:is_SDG_path_slice2 refl_slice2 is_SDG_path_valid_SDG_node)
+    with `n'' = n\<^isub>1` show ?thesis by(fastforce intro:combSlice_refl simp:HRB_slice_def)
   next
     assume "n'' \<in> set ns'"
     from IH2[OF this] have "n'' \<in> sum_SDG_slice2 n\<^isub>3" .
     with `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` show ?thesis 
-      by(fastsimp intro:slice2_param_out_slice2 SDG_edge_sum_SDG_edge)
+      by(fastforce intro:slice2_param_out_slice2 SDG_edge_sum_SDG_edge)
   next
     assume "n'' = n\<^isub>3"
     from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 s-p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4" by(rule SDG_edge_sum_SDG_edge)
     hence "n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4"
-      by(fastsimp intro:param_out_slice2 refl_slice2 sum_SDG_edge_valid_SDG_node)
+      by(fastforce intro:param_out_slice2 refl_slice2 sum_SDG_edge_valid_SDG_node)
     with `n'' = n\<^isub>3` show ?thesis by simp
   qed
 qed
@@ -564,12 +564,12 @@ next
     assume "n'' \<in> set ns"
     from IH[OF `n'' \<in> set ns`] have "n'' \<in> HRB_slice {nx}" by simp
     with `nx i-ns'\<rightarrow>\<^isub>d* n'` `n' \<in> S` show ?thesis
-      by(fastsimp intro:HRB_slice_is_SDG_path_HRB_slice 
+      by(fastforce intro:HRB_slice_is_SDG_path_HRB_slice 
                         intra_SDG_path_is_SDG_path)
   next
     assume "n'' \<in> set ns'"
     with `nx i-ns'\<rightarrow>\<^isub>d* n'` `n' \<in> S` show ?case 
-      by(fastsimp intro:in_intra_SDG_path_in_HRB_slice simp:HRB_slice_def)
+      by(fastforce intro:in_intra_SDG_path_in_HRB_slice simp:HRB_slice_def)
   qed
 next
   case (matched_bracket_call n\<^isub>0 ns n\<^isub>1 p n\<^isub>2 ns' n\<^isub>3 n\<^isub>4 V a a')
@@ -580,7 +580,7 @@ next
     `sourcenode a = parent_node n\<^isub>1` `targetnode a = parent_node n\<^isub>2`
     `sourcenode a' = parent_node n\<^isub>3` `targetnode a' = parent_node n\<^isub>4`
   have "matched n\<^isub>1 ([]@n\<^isub>1#ns'@[n\<^isub>3]) n\<^isub>4"
-    by(fastsimp intro:matched.matched_bracket_call matched_Nil 
+    by(fastforce intro:matched.matched_bracket_call matched_Nil 
                  elim:SDG_edge_valid_SDG_node)
   then obtain nsx where "n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4" by(erule matched_is_SDG_path)
   from `n'' \<in> set (ns@n\<^isub>1#ns'@[n\<^isub>3])` 
@@ -594,39 +594,39 @@ next
   next
     assume "n'' = n\<^isub>1"
     from `n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4` have "n\<^isub>1 \<in> sum_SDG_slice1 n\<^isub>4" 
-      by(fastsimp intro:is_SDG_path_slice1 refl_slice1 is_SDG_path_valid_SDG_node)
+      by(fastforce intro:is_SDG_path_slice1 refl_slice1 is_SDG_path_valid_SDG_node)
     with `n'' = n\<^isub>1` `n\<^isub>4 \<in> S` show ?thesis
-      by(fastsimp intro:combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:combSlice_refl simp:HRB_slice_def)
   next
     assume "n'' \<in> set ns'"
     with `matched n\<^isub>2 ns' n\<^isub>3` have "n'' \<in> sum_SDG_slice2 n\<^isub>3"
       by(rule in_matched_in_slice2)
     with `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n'' \<in> sum_SDG_slice2 n\<^isub>4"
-      by(fastsimp intro:slice2_ret_slice2 slice2_param_out_slice2 
+      by(fastforce intro:slice2_ret_slice2 slice2_param_out_slice2 
                         SDG_edge_sum_SDG_edge)
     from `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "valid_SDG_node n\<^isub>4"
-      by(fastsimp intro:SDG_edge_valid_SDG_node)
+      by(fastforce intro:SDG_edge_valid_SDG_node)
     hence "n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4" by(rule refl_slice1)
     from `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4`
     have "CFG_node (parent_node n\<^isub>3) -p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n\<^isub>4)"
-      by(fastsimp elim:SDG_edge.cases intro:SDG_return_edge)
+      by(fastforce elim:SDG_edge.cases intro:SDG_return_edge)
     with `n'' \<in> sum_SDG_slice2 n\<^isub>4` `n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4` `n\<^isub>4 \<in> S`
-    show ?case by(fastsimp intro:combSlice_Return_parent_node SDG_edge_sum_SDG_edge 
+    show ?case by(fastforce intro:combSlice_Return_parent_node SDG_edge_sum_SDG_edge 
                             simp:HRB_slice_def)
   next
     assume "n'' = n\<^isub>3"
     from `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4`
     have "CFG_node (parent_node n\<^isub>3) -p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n\<^isub>4)"
-      by(fastsimp elim:SDG_edge.cases intro:SDG_return_edge)
+      by(fastforce elim:SDG_edge.cases intro:SDG_return_edge)
     from `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "valid_SDG_node n\<^isub>4"
-      by(fastsimp intro:SDG_edge_valid_SDG_node)
+      by(fastforce intro:SDG_edge_valid_SDG_node)
     hence "n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4" by(rule refl_slice1)
     from `valid_SDG_node n\<^isub>4` have "n\<^isub>4 \<in> sum_SDG_slice2 n\<^isub>4" by(rule refl_slice2)
     with `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4" 
-      by(fastsimp intro:return_slice2 param_out_slice2 SDG_edge_sum_SDG_edge)
+      by(fastforce intro:return_slice2 param_out_slice2 SDG_edge_sum_SDG_edge)
     with `n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4` 
       `CFG_node (parent_node n\<^isub>3) -p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n\<^isub>4)` `n'' = n\<^isub>3` `n\<^isub>4 \<in> S`
-    show ?case by(fastsimp intro:combSlice_Return_parent_node SDG_edge_sum_SDG_edge
+    show ?case by(fastforce intro:combSlice_Return_parent_node SDG_edge_sum_SDG_edge
                             simp:HRB_slice_def)
   qed
 next
@@ -638,7 +638,7 @@ next
     `sourcenode a = parent_node n\<^isub>1` `targetnode a = parent_node n\<^isub>2`
     `sourcenode a' = parent_node n\<^isub>3` `targetnode a' = parent_node n\<^isub>4`
   have "matched n\<^isub>1 ([]@n\<^isub>1#ns'@[n\<^isub>3]) n\<^isub>4"
-    by(fastsimp intro:matched.matched_bracket_param matched_Nil 
+    by(fastforce intro:matched.matched_bracket_param matched_Nil 
                  elim:SDG_edge_valid_SDG_node)
   then obtain nsx where "n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4" by(erule matched_is_SDG_path)
   from `n'' \<in> set (ns@n\<^isub>1#ns'@[n\<^isub>3])` 
@@ -652,22 +652,22 @@ next
   next
     assume "n'' = n\<^isub>1"
     from `n\<^isub>1 is-nsx\<rightarrow>\<^isub>d* n\<^isub>4` have "n\<^isub>1 \<in> sum_SDG_slice1 n\<^isub>4"
-      by(fastsimp intro:is_SDG_path_slice1 refl_slice1 is_SDG_path_valid_SDG_node)
+      by(fastforce intro:is_SDG_path_slice1 refl_slice1 is_SDG_path_valid_SDG_node)
     with `n'' = n\<^isub>1` `n\<^isub>4 \<in> S` show ?thesis
-      by(fastsimp intro:combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:combSlice_refl simp:HRB_slice_def)
   next
     assume "n'' \<in> set ns'"
     with `matched n\<^isub>2 ns' n\<^isub>3` have "n'' \<in> sum_SDG_slice2 n\<^isub>3"
       by(rule in_matched_in_slice2)
     with `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n'' \<in> sum_SDG_slice2 n\<^isub>4"
-      by(fastsimp intro:slice2_param_out_slice2 SDG_edge_sum_SDG_edge)
+      by(fastforce intro:slice2_param_out_slice2 SDG_edge_sum_SDG_edge)
     from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "valid_SDG_node n\<^isub>4" by(rule SDG_edge_valid_SDG_node)
     hence "n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4" by(rule refl_slice1)
     from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
     have "CFG_node (parent_node n\<^isub>3) -p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n\<^isub>4)"
-      by(fastsimp elim:SDG_edge.cases intro:SDG_return_edge)
+      by(fastforce elim:SDG_edge.cases intro:SDG_return_edge)
     with `n'' \<in> sum_SDG_slice2 n\<^isub>4` `n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4` `n\<^isub>4 \<in> S`
-    show ?case by(fastsimp intro:combSlice_Return_parent_node SDG_edge_sum_SDG_edge 
+    show ?case by(fastforce intro:combSlice_Return_parent_node SDG_edge_sum_SDG_edge 
                             simp:HRB_slice_def)
   next
     assume "n'' = n\<^isub>3"
@@ -678,9 +678,9 @@ next
     with `n\<^isub>3 s-p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4" by(rule param_out_slice2)
     from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
     have "CFG_node (parent_node n\<^isub>3) -p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n\<^isub>4)"
-      by(fastsimp elim:SDG_edge.cases intro:SDG_return_edge)
+      by(fastforce elim:SDG_edge.cases intro:SDG_return_edge)
     with `n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4` `n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4` `n'' = n\<^isub>3` `n\<^isub>4 \<in> S`
-    show ?case by(fastsimp intro:combSlice_Return_parent_node SDG_edge_sum_SDG_edge
+    show ?case by(fastforce intro:combSlice_Return_parent_node SDG_edge_sum_SDG_edge
                             simp:HRB_slice_def)
   qed
 qed
@@ -705,37 +705,37 @@ next
       from `nx \<in> {n\<^isub>1}` have "nx = n\<^isub>1" by simp
       with `n \<in> sum_SDG_slice1 nx` `n\<^isub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^isub>2 \<or> n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2`
       have "n \<in> sum_SDG_slice1 n\<^isub>2" 
-        by(fastsimp intro:slice1_call_slice1 slice1_param_in_slice1 
+        by(fastforce intro:slice1_call_slice1 slice1_param_in_slice1 
                           SDG_edge_sum_SDG_edge)
       thus ?case
-        by(fastsimp intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
+        by(fastforce intro:combine_SDG_slices.combSlice_refl simp:HRB_slice_def)
     next
       case (phase2 nx n' n'' p' n)
       from `nx \<in> {n\<^isub>1}` have "nx = n\<^isub>1" by simp
       with `n' \<in> sum_SDG_slice1 nx` `n\<^isub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^isub>2 \<or> n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2`
       have "n' \<in> sum_SDG_slice1 n\<^isub>2" 
-        by(fastsimp intro:slice1_call_slice1 slice1_param_in_slice1 
+        by(fastforce intro:slice1_call_slice1 slice1_param_in_slice1 
                           SDG_edge_sum_SDG_edge)
       with `n'' s-p'\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n')` `n \<in> sum_SDG_slice2 n'` show ?case
-        by(fastsimp intro:combine_SDG_slices.combSlice_Return_parent_node 
+        by(fastforce intro:combine_SDG_slices.combSlice_Return_parent_node 
                      simp:HRB_slice_def)
     qed
     from `matched n\<^isub>2 ns' n\<^isub>3` obtain nsx where "n\<^isub>2 is-nsx\<rightarrow>\<^isub>d* n\<^isub>3"
       by(erule matched_is_SDG_path)
     with `n'' \<in> HRB_slice {n\<^isub>2}` `n\<^isub>3 \<in> S` show ?thesis
-      by(fastsimp intro:HRB_slice_is_SDG_path_HRB_slice)
+      by(fastforce intro:HRB_slice_is_SDG_path_HRB_slice)
   next
     assume "n'' = n\<^isub>1"
     from `matched n\<^isub>2 ns' n\<^isub>3` obtain nsx where "n\<^isub>2 is-nsx\<rightarrow>\<^isub>d* n\<^isub>3"
       by(erule matched_is_SDG_path)
     hence "n\<^isub>2 \<in> sum_SDG_slice1 n\<^isub>2" 
-      by(fastsimp intro:refl_slice1 is_SDG_path_valid_SDG_node)
+      by(fastforce intro:refl_slice1 is_SDG_path_valid_SDG_node)
     with `n\<^isub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^isub>2 \<or> n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2`
     have "n\<^isub>1 \<in> sum_SDG_slice1 n\<^isub>2"
-      by(fastsimp intro:call_slice1 param_in_slice1 SDG_edge_sum_SDG_edge)
-    hence "n\<^isub>1 \<in> HRB_slice {n\<^isub>2}" by(fastsimp intro:combSlice_refl simp:HRB_slice_def)
+      by(fastforce intro:call_slice1 param_in_slice1 SDG_edge_sum_SDG_edge)
+    hence "n\<^isub>1 \<in> HRB_slice {n\<^isub>2}" by(fastforce intro:combSlice_refl simp:HRB_slice_def)
     with `n\<^isub>2 is-nsx\<rightarrow>\<^isub>d* n\<^isub>3` `n'' = n\<^isub>1` `n\<^isub>3 \<in> S` show ?thesis
-      by(fastsimp intro:HRB_slice_is_SDG_path_HRB_slice)
+      by(fastforce intro:HRB_slice_is_SDG_path_HRB_slice)
   next
     assume "n'' \<in> set ns'"
     from `matched n\<^isub>2 ns' n\<^isub>3` this `n\<^isub>3 \<in> S` show ?thesis
@@ -763,7 +763,7 @@ proof(atomize_elim)
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
         by(rule valid_SDG_node_parent_Exit)
-      with `n'' s\<longrightarrow>\<^bsub>cd\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
+      with `n'' s\<longrightarrow>\<^bsub>cd\<^esub> n` have False by(fastforce intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
@@ -773,14 +773,14 @@ proof(atomize_elim)
         where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
         by(erule Entry_cc_SDG_path_to_inner_node)
       with `n'' s\<longrightarrow>\<^bsub>cd\<^esub> n` have "CFG_node (_Entry_) cc-ns@[n'']\<rightarrow>\<^isub>d* n"
-        by(fastsimp intro:ccSp_Append_cdep sum_SDG_edge_SDG_edge)
+        by(fastforce intro:ccSp_Append_cdep sum_SDG_edge_SDG_edge)
       hence "CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n"
         by(rule cc_SDG_path_ics_SDG_path)
       from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
       show ?thesis
       proof
         assume "n = n'"
-        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastforce
       next
         assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
         then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
@@ -788,7 +788,7 @@ proof(atomize_elim)
         then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
           by -(erule ics_SDG_path_split)
         with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-        show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+        show ?thesis by(fastforce intro:ics_SDG_path_Append)
       qed
     qed
   next
@@ -802,7 +802,7 @@ proof(atomize_elim)
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
         by(rule valid_SDG_node_parent_Exit)
-      with `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
+      with `n'' s-V\<rightarrow>\<^bsub>dd\<^esub> n` have False by(fastforce intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
@@ -823,7 +823,7 @@ proof(atomize_elim)
           with `n'' = n` show ?thesis by simp
         next
           assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
-          with `n'' = n` show ?thesis by fastsimp
+          with `n'' = n` show ?thesis by fastforce
         qed
       next
         case False
@@ -834,7 +834,7 @@ proof(atomize_elim)
         show ?thesis
         proof
           assume "n = n'"
-          with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+          with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastforce
         next
           assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
           then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
@@ -842,7 +842,7 @@ proof(atomize_elim)
           then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
             by -(erule ics_SDG_path_split)
           with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-          show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+          show ?thesis by(fastforce intro:ics_SDG_path_Append)
         qed
       qed
     qed
@@ -858,7 +858,7 @@ proof(atomize_elim)
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
         by(rule valid_SDG_node_parent_Exit)
-      with `n'' s-p\<rightarrow>\<^bsub>call\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
+      with `n'' s-p\<rightarrow>\<^bsub>call\<^esub> n` have False by(fastforce intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
@@ -868,14 +868,14 @@ proof(atomize_elim)
         where "CFG_node (_Entry_) cc-ns\<rightarrow>\<^isub>d* n''"
         by(erule Entry_cc_SDG_path_to_inner_node)
       with `n'' s-p\<rightarrow>\<^bsub>call\<^esub> n` have "CFG_node (_Entry_) cc-ns@[n'']\<rightarrow>\<^isub>d* n"
-        by(fastsimp intro:ccSp_Append_call sum_SDG_edge_SDG_edge)
+        by(fastforce intro:ccSp_Append_call sum_SDG_edge_SDG_edge)
       hence "CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n"
         by(rule cc_SDG_path_ics_SDG_path)
       from `n = n' \<or> (\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns)`
       show ?thesis
       proof
         assume "n = n'"
-        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastforce
       next
         assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
         then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
@@ -883,7 +883,7 @@ proof(atomize_elim)
         then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
           by -(erule ics_SDG_path_split)
         with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-        show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+        show ?thesis by(fastforce intro:ics_SDG_path_Append)
       qed
     qed
   next
@@ -898,7 +898,7 @@ proof(atomize_elim)
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
         by(rule valid_SDG_node_parent_Exit)
-      with `n'' s-p:V\<rightarrow>\<^bsub>in\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
+      with `n'' s-p:V\<rightarrow>\<^bsub>in\<^esub> n` have False by(fastforce intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
@@ -915,7 +915,7 @@ proof(atomize_elim)
       show ?thesis
       proof
         assume "n = n'"
-        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastforce
       next
         assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
         then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
@@ -923,7 +923,7 @@ proof(atomize_elim)
         then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
           by -(erule ics_SDG_path_split)
         with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-        show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+        show ?thesis by(fastforce intro:ics_SDG_path_Append)
       qed
     qed
   next
@@ -938,7 +938,7 @@ proof(atomize_elim)
       case True
       with `valid_SDG_node n''` have "n'' = CFG_node (_Exit_)"
         by(rule valid_SDG_node_parent_Exit)
-      with `n'' s-p\<rightarrow>\<^bsub>sum\<^esub> n` have False by(fastsimp intro:Exit_no_sum_SDG_edge_source)
+      with `n'' s-p\<rightarrow>\<^bsub>sum\<^esub> n` have False by(fastforce intro:Exit_no_sum_SDG_edge_source)
       thus ?thesis by simp
     next
       case False
@@ -955,7 +955,7 @@ proof(atomize_elim)
       show ?thesis
       proof
         assume "n = n'"
-        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastsimp
+        with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n` show ?thesis by fastforce
       next
         assume "\<exists>ns. CFG_node (_Entry_) ics-ns\<rightarrow>\<^isub>d* n' \<and> n \<in> set ns"
         then obtain nsx where "CFG_node (_Entry_) ics-nsx\<rightarrow>\<^isub>d* n'" and "n \<in> set nsx"
@@ -963,7 +963,7 @@ proof(atomize_elim)
         then obtain ns' ns'' where "nsx = ns'@ns''" and "n ics-ns''\<rightarrow>\<^isub>d* n'"
           by -(erule ics_SDG_path_split)
         with `CFG_node (_Entry_) ics-ns@[n'']\<rightarrow>\<^isub>d* n`
-        show ?thesis by(fastsimp intro:ics_SDG_path_Append)
+        show ?thesis by(fastforce intro:ics_SDG_path_Append)
       qed
     qed
   qed
@@ -988,7 +988,7 @@ proof(atomize_elim)
   proof(induct rule:HRB_slice_cases)
     case (phase1 n nx)
     with `n \<notin> S` show ?case
-      by(fastsimp elim:slice1_ics_SDG_path ics_SDG_path_realizable)
+      by(fastforce elim:slice1_ics_SDG_path ics_SDG_path_realizable)
   next
     case (phase2 n' nx n'' p n)
     from `\<forall>n' \<in> S. valid_SDG_node n'` `n' \<in> S` have "valid_SDG_node n'" by simp
@@ -1009,7 +1009,7 @@ proof(atomize_elim)
         case False
         with `nx \<in> sum_SDG_slice1 n'` obtain ns 
           where "realizable (CFG_node (_Entry_)) ns n'" and "nx \<in> set ns"
-          by(fastsimp elim:slice1_ics_SDG_path ics_SDG_path_realizable)
+          by(fastforce elim:slice1_ics_SDG_path ics_SDG_path_realizable)
         with `n = nx` `n' \<in> S` show ?thesis by blast
       qed
     next
@@ -1031,7 +1031,7 @@ proof(atomize_elim)
         with `realizable (CFG_node (_Entry_)) ns nx`
         obtain ns'' where "realizable (CFG_node (_Entry_)) (ns@ns'') n'"
           by(erule realizable_Append_ics_SDG_path)
-        with `n \<in> set ns` `n' \<in> S` show ?thesis by fastsimp
+        with `n \<in> set ns` `n' \<in> S` show ?thesis by fastforce
       qed
     qed
   qed
@@ -1042,7 +1042,7 @@ theorem HRB_slice_precise:
   "\<lbrakk>\<forall>n' \<in> S. valid_SDG_node n'; n \<notin> S\<rbrakk> \<Longrightarrow>
     n \<in> HRB_slice S = 
     (\<exists>n' ns. n' \<in> S \<and> realizable (CFG_node (_Entry_)) ns n' \<and> n \<in> set ns)"
-  by(fastsimp elim:HRB_slice_realizable intro:in_realizable_in_HRB_slice)
+  by(fastforce elim:HRB_slice_realizable intro:in_realizable_in_HRB_slice)
 
 end
 

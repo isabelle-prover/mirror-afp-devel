@@ -226,7 +226,7 @@ lemma Dag_Ref [simp]:
 by (cases t) auto
 
 lemma Null_notin_Dag [simp,intro]: "\<And>p l r. Dag p l r t \<Longrightarrow> Null \<notin> set_of t"
-by (induct t) fastsimp+
+by (induct t) fastforce+
 
 theorem notin_Dag_update_l[simp]:
  "\<And> p. q \<notin> set_of t \<Longrightarrow> Dag p (l(q := y)) r  t = Dag p l r t"  
@@ -272,11 +272,11 @@ done
 
 lemma  Dag_update_l_new [simp]: "\<lbrakk>set_of t \<subseteq> set alloc\<rbrakk>
      \<Longrightarrow> Dag p (l(new (set alloc) := x)) r t = Dag p l r t"
-by (rule notin_Dag_update_l) fastsimp
+by (rule notin_Dag_update_l) fastforce
 
 lemma  Dag_update_r_new [simp]: "\<lbrakk>set_of t \<subseteq> set alloc\<rbrakk>
      \<Longrightarrow> Dag p l (r(new (set alloc) := x)) t = Dag p l r t"
-by (rule notin_Dag_update_r) fastsimp
+by (rule notin_Dag_update_r) fastforce
 
 lemma Dag_update_lI [intro]:
  "\<lbrakk>Dag p l r t; q \<notin> set_of t\<rbrakk> \<Longrightarrow> Dag p (l(q := y)) r t"

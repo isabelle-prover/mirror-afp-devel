@@ -429,7 +429,7 @@ apply (tactic t) -- "Call"
 apply   (tactic t) -- "Var"
 apply     (simp (no_asm))
 apply    (simp (no_asm))
-apply   (fastsimp)
+apply   (fastforce)
 apply  (tactic t) -- "Cons"
 apply   (tactic t) -- "Lit"
 apply   (simp (no_asm))

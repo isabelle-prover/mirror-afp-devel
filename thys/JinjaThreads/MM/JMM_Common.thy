@@ -32,7 +32,7 @@ lemma heap_clone_New_same_addr_same:
   shows "i = j"
 using assms
 apply cases
-apply(fastsimp simp add: nth_Cons' gr0_conv_Suc in_set_conv_nth split: split_if_asm dest: heap_copies_not_New)+
+apply(fastforce simp add: nth_Cons' gr0_conv_Suc in_set_conv_nth split: split_if_asm dest: heap_copies_not_New)+
 done
 
 lemma red_external_New_same_addr_same:
@@ -111,13 +111,13 @@ proof cases
   hence type: "list_all2 (\<lambda>al T. P,H' \<turnstile> a@al : T) ?als ?Ts"
     using `P \<turnstile> C has_fields FDTs`
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-    by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+    by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   ultimately have "ad = a \<and> al \<in> set ?als" by(rule heap_copies_read_typeable)
   hence [simp]: "ad = a" and "al \<in> set ?als" by simp_all
   then obtain F D T where [simp]: "al = CField D F" and "((F, D), T) \<in> set FDTs" by auto
   with type `h \<unlhd> H'` `typeof_addr h a = \<lfloor>Class C\<rfloor>` show ?thesis 
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-    by(fastsimp elim!: ballE[where x="((F, D), T)"] addr_loc_type.cases dest: typeof_addr_hext_mono intro: addr_loc_type.intros)
+    by(fastforce elim!: ballE[where x="((F, D), T)"] addr_loc_type.cases dest: typeof_addr_hext_mono intro: addr_loc_type.intros)
 next
   case (ArrClone T n H' FDTs obs')
   let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]"
@@ -132,7 +132,7 @@ next
   have type': "typeof_addr H' a = \<lfloor>T\<lfloor>\<rceil>\<rfloor>" "array_length H' a = n"
     by(auto dest: typeof_addr_hext_mono hext_arrD)
   hence type: "list_all2 (\<lambda>al T. P,H' \<turnstile> a@al : T) ?als ?Ts" using FDTs
-    by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
   ultimately have "ad = a \<and> al \<in> set ?als" by(rule heap_copies_read_typeable)
   hence [simp]: "ad = a" and "al \<in> set ?als" by simp_all
   hence "al \<in> set (map (\<lambda>((F, D), Tfm). CField D F) FDTs) \<or> al \<in> set (map ACell [0..<n])" by simp
@@ -141,12 +141,12 @@ next
     assume "al \<in> set (map (\<lambda>((F, D), Tfm). CField D F) FDTs)"
     then obtain F D Tfm where [simp]: "al = CField D F" and "((F, D), Tfm) \<in> set FDTs" by auto
     with type type' `h \<unlhd> H'` `typeof_addr h a = \<lfloor>Array T\<rfloor>` show ?thesis 
-      by(fastsimp elim!: ballE[where x="((F, D), Tfm)"] addr_loc_type.cases intro: addr_loc_type.intros simp add: list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv)
+      by(fastforce elim!: ballE[where x="((F, D), Tfm)"] addr_loc_type.cases intro: addr_loc_type.intros simp add: list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv)
   next
     assume "al \<in> set (map ACell [0..<n])"
     then obtain n' where [simp]: "al = ACell n'" and "n' < n" by auto
     with type type' `h \<unlhd> H'` `n = array_length h a` `typeof_addr h a = \<lfloor>Array T\<rfloor>`
-    show ?thesis by(fastsimp dest: list_all2_nthD[where p=n'] elim: addr_loc_type.cases intro: addr_loc_type.intros)
+    show ?thesis by(fastforce dest: list_all2_nthD[where p=n'] elim: addr_loc_type.cases intro: addr_loc_type.intros)
   qed
 qed
 
@@ -155,7 +155,7 @@ lemma red_external_read_mem_typeable:
   and read: "ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
   shows "\<exists>T'. P,h \<turnstile> ad@al : T'"
 using red read
-by cases(fastsimp dest: heap_clone_read_typeable intro: addr_loc_type.intros)+
+by cases(fastforce dest: heap_clone_read_typeable intro: addr_loc_type.intros)+
 
 end
 
@@ -164,7 +164,7 @@ context heap_conf begin
 lemma heap_clone_array_lengthD:
   "\<lbrakk> heap_clone P h a h' \<lfloor>(obs, a')\<rfloor>; NewArr a'' T n \<in> set obs; hconf  h\<rbrakk>
   \<Longrightarrow> array_length h' a'' = n"
-by(fastsimp elim!: heap_clone.cases dest: new_arr_SomeD hext_heap_copies heap_copies_not_New[where x="Array_type T n"] hext_arrD(2) typeof_addr_is_type)
+by(fastforce elim!: heap_clone.cases dest: new_arr_SomeD hext_heap_copies heap_copies_not_New[where x="Array_type T n"] hext_arrD(2) typeof_addr_is_type)
 
 lemma red_external_NewArr_lengthD:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; NewArr a' T n \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; hconf h \<rbrakk>
@@ -183,7 +183,7 @@ lemma heap_clone_typeof_addrD:
   and "hconf h"
   shows "NewHeapElem a'' x \<in> set obs \<Longrightarrow> a'' = a' \<and> typeof_addr h' a' = Some (ty_of_htype x)"
 using assms
-by(fastsimp elim!: heap_clone.cases dest: new_obj_SomeD new_arr_SomeD hext_heap_copies heap_copies_not_New typeof_addr_is_type elim: hext_objD hext_arrD)
+by(fastforce elim!: heap_clone.cases dest: new_obj_SomeD new_arr_SomeD hext_heap_copies heap_copies_not_New typeof_addr_is_type elim: hext_objD hext_arrD)
 
 lemma red_external_New_typeof_addrD:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; NewHeapElem a' x \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; hconf h \<rbrakk>
@@ -305,12 +305,12 @@ proof -
     with `new_obj h C = (h'', \<lfloor>ad'\<rfloor>)` hconf have "hconf h''" by(rule hconf_new_obj_mono)
     moreover from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
       unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-      by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+      by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
     moreover from `new_obj h C = (h'', \<lfloor>ad'\<rfloor>)` `is_class P C`
     have "typeof_addr h'' ad' = \<lfloor>(Class C)\<rfloor>" by(auto dest: new_obj_SomeD)
     with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts"
       unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-      by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+      by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
     ultimately
     have copy: "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h'' obs' h'"
       and vs': "vs_conf P h' (mrw_values P ?vs (map NormalAction obs'))"
@@ -341,12 +341,12 @@ proof -
     moreover from hext `typeof_addr h ad = \<lfloor>T\<lfloor>\<rceil>\<rfloor>`
     have [simp]: "array_length h'' ad = array_length h ad" by(auto intro: hext_arrD)
     from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
-      by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+      by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
     moreover from new `is_type P (T\<lfloor>\<rceil>)`
     have "typeof_addr h'' ad' = \<lfloor>Array T\<rfloor>" "array_length h'' ad' = array_length h ad"
       by(auto dest: new_arr_SomeD)
     hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts" using FDTs
-      by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+      by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
     ultimately have copy: "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h'' obs' h'"
       and vs': "vs_conf P h' (mrw_values P ?vs (map NormalAction obs'))"
       by(rule heap_copies_ta_seq_consist_typeable)+
@@ -517,7 +517,7 @@ proof cases
   moreover {
     have "Pair a ` set ?als \<subseteq> {(a, al) |al. \<exists>T. P,h \<turnstile> a@al : T}"
       using FDTs `typeof_addr h a = \<lfloor>Class C\<rfloor>`
-      by(fastsimp dest: weak_map_of_SomeI intro: addr_loc_type.intros intro: is_class_type_of.intros simp add: has_field_def)
+      by(fastforce dest: weak_map_of_SomeI intro: addr_loc_type.intros intro: is_class_type_of.intros simp add: has_field_def)
     also note dom_vs
     also note mrw_value_dom_mono
     finally have "Pair a ` set ?als \<subseteq> dom ?vs" . }
@@ -525,11 +525,11 @@ proof cases
   have "typeof_addr h'' a = \<lfloor>Class C\<rfloor>" by(rule typeof_addr_hext_mono)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts" using FDTs
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-    by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+    by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   moreover from FDTs type_a'
   have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-    by(fastsimp intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+    by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   moreover from `typeof_addr h a = \<lfloor>Class C\<rfloor>` hconf have "is_class P C"
     by(auto dest: typeof_addr_is_type)
   with `new_obj h C = (h'', \<lfloor>a'\<rfloor>)` hconf have "hconf h''" by(rule hconf_new_obj_mono)
@@ -570,7 +570,7 @@ next
   moreover {
     have "Pair a ` set ?als \<subseteq> {(a, al) |al. \<exists>T. P,h \<turnstile> a@al : T}"
       using FDTs `typeof_addr h a = \<lfloor>Array T\<rfloor>`
-      by(fastsimp dest: weak_map_of_SomeI intro: addr_loc_type.intros intro: is_class_type_of.intros simp add: has_field_def)
+      by(fastforce dest: weak_map_of_SomeI intro: addr_loc_type.intros intro: is_class_type_of.intros simp add: has_field_def)
     also note dom_vs
     also note mrw_value_dom_mono
     finally have "Pair a ` set ?als \<subseteq> dom ?vs" . }
@@ -579,10 +579,10 @@ next
     and [simp]: "array_length h'' a = array_length h a"
     by(auto intro: hext_arrD)
   from type'a FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
-    by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
   moreover from type_a' len FDTs
   have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
-    by(fastsimp intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
   moreover from `new_arr h T n = (h'', \<lfloor>a'\<rfloor>)` hconf `is_type P (T\<lfloor>\<rceil>)` have "hconf h''"
     by(rule hconf_new_arr_mono)
   ultimately 
@@ -619,8 +619,8 @@ proof(cases)
   case (RedClone obs a')[simp]
   from heap_clone_cut_and_update[OF hrt vs dom_vs `heap_clone P (shr s) a h' \<lfloor>(obs, a')\<rfloor>` hconf]
   show ?thesis using aok
-    by(fastsimp intro: red_external.RedClone simp add: final_thread.actions_ok_iff)
-qed(fastsimp intro: red_external.intros simp add: final_thread.actions_ok_iff)+
+    by(fastforce intro: red_external.RedClone simp add: final_thread.actions_ok_iff)
+qed(fastforce intro: red_external.intros simp add: final_thread.actions_ok_iff)+
 
 lemma red_external_aggr_cut_and_update:
   fixes final
@@ -637,7 +637,7 @@ lemma red_external_aggr_cut_and_update:
                          eq_upto_seq_inconsist P (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (map NormalAction \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>) vs"
 using red native aok hconf
 apply(simp add: red_external_aggr_def final_thread.actions_ok_iff ex_disj_distrib conj_disj_distribR split del: split_if split: split_if_asm disj_split_asm)
-   apply(drule (1) heap_clone_cut_and_update[OF hrt vs dom_vs], fastsimp)
+   apply(drule (1) heap_clone_cut_and_update[OF hrt vs dom_vs], fastforce)
   apply blast
  apply(auto simp add: is_native_def2 native_call_def external_WT_defs.simps)
 done

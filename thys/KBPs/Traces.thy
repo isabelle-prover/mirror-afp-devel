@@ -95,7 +95,7 @@ lemma tMap_eq_imp_tLength_eq:
 using assms
 proof (induct t arbitrary: t')
   case (tStep tp s t')
-  then obtain tp' s' where t': "t' = tp' \<leadsto> s'" by fastsimp
+  then obtain tp' s' where t': "t' = tp' \<leadsto> s'" by fastforce
   moreover with tStep have "tLength tp' = tLength tp" by simp
   with t' show ?case by simp
 qed auto

@@ -75,7 +75,7 @@ lemma finite_subcls1: "finite (subcls1 P)"
 apply(subgoal_tac "subcls1 P = (SIGMA C: {C. is_class P C} . 
                      {D. D \<in> baseClasses (fst(the(class P C)))})")
  prefer 2
- apply(fastsimp simp:is_class_def dest: subcls1D elim: subcls1I)
+ apply(fastforce simp:is_class_def dest: subcls1D elim: subcls1I)
 apply simp
 apply(rule finite_SigmaI [OF finite_is_class])
 apply(rule_tac B = "baseClasses (fst (the (class P C)))" in finite_subset)

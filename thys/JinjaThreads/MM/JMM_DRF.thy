@@ -301,7 +301,7 @@ proof(rule drf_lemma)
     from wfaSn `r \<in> ?C (Suc n)`
     have obs_sim: "action_obs (?E (Suc n)) r \<approx> action_obs E (?\<phi> (Suc n) r)" "?\<phi> (Suc n) r \<in> actions E"
       by(blast dest: wf_action_translation_on_actionD)+
-    with obsr have rE: "?\<phi> (Suc n) r \<in> read_actions E" by(fastsimp intro: read_actions.intros)
+    with obsr have rE: "?\<phi> (Suc n) r \<in> read_actions E" by(fastforce intro: read_actions.intros)
     from obs_sim obsr obtain v' 
       where obsrE: "action_obs E (?\<phi> (Suc n) r) = NormalAction (ReadMem ad al v')" by auto
     from wf_exec have "is_write_seen P E ws" by(rule wf_exec_is_write_seenD)
@@ -315,7 +315,7 @@ proof(rule drf_lemma)
     with w_eq have obs_sim_w: "action_obs (?E (Suc n)) ?w \<approx> action_obs E (ws (?\<phi> (Suc n) r))" by simp
     with `ws (?\<phi> (Suc n) r) \<in> write_actions E` `?w \<in> actions (?E (Suc n))`
     have "?w \<in> write_actions (?E (Suc n))"
-      by cases(fastsimp intro: write_actions.intros is_write_action.intros elim!: is_write_action.cases)
+      by cases(fastforce intro: write_actions.intros is_write_action.intros elim!: is_write_action.cases)
     from `(ad, al) \<in> action_loc P E (ws (?\<phi> (Suc n) r))` obs_sim_w 
     have "(ad, al) \<in> action_loc P (?E (Suc n)) ?w" by cases(auto intro: action_loc_aux_intros)
     with r adal_r `?w \<in> write_actions (?E (Suc n))`

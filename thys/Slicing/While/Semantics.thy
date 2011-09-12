@@ -141,9 +141,9 @@ next
   then have "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s'',l''\<rangle>"
     and "\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>" by simp_all
   from `prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s'',l''\<rangle>` have "\<langle>c,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>"
-    by(fastsimp intro:step_red)
+    by(fastforce intro:step_red)
   with `\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>` show ?case
-    by(fastsimp intro:converse_rtranclp_into_rtranclp)
+    by(fastforce intro:converse_rtranclp_into_rtranclp)
 qed
 
 
@@ -161,7 +161,7 @@ proof(induct arbitrary:c' rule:labels.induct)
   proof(induct rule:red_induct)
     case (RedLAss V e s)
     have "V:=e \<turnstile> \<langle>V:=e,s,0\<rangle> \<leadsto> \<langle>Skip,s(V:=(interpret e s)),1\<rangle>" by(rule StepLAss)
-    have "labels (V:=e) 1 Skip" by(fastsimp intro:Labels_LAss)
+    have "labels (V:=e) 1 Skip" by(fastforce intro:Labels_LAss)
     with `V:=e \<turnstile> \<langle>V:=e,s,0\<rangle> \<leadsto> \<langle>Skip,s(V:=(interpret e s)),1\<rangle>` show ?case by blast
   next
     case (SeqRed c\<^isub>1 s c\<^isub>1' s' c\<^isub>2)
@@ -179,7 +179,7 @@ proof(induct arbitrary:c' rule:labels.induct)
     have "labels (Skip;;c\<^isub>2) 0 (Skip;;c\<^isub>2)" by(rule Labels.Labels_Base)
     with `labels (Skip;;c\<^isub>2) (0 + #:Skip) c\<^isub>2`
     have "Skip;;c\<^isub>2 \<turnstile> \<langle>Skip;;c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:Skip\<rangle>"
-      by(fastsimp intro:StepSeq)
+      by(fastforce intro:StepSeq)
     with `labels (Skip;;c\<^isub>2) (0 + #:Skip) c\<^isub>2` show ?case by auto
   next
     case (RedCondTrue b s c\<^isub>1 c\<^isub>2)
@@ -234,10 +234,10 @@ next
     have "labels (c\<^isub>1;;c\<^isub>2) (0 + #:c\<^isub>1) c\<^isub>2"
       by(rule Labels_Seq2,rule Labels_Base)
     from `labels c\<^isub>1 l c` have "labels (c\<^isub>1;; c\<^isub>2) l (Skip;;c\<^isub>2)"
-      by(fastsimp intro:Labels.Labels_Seq1)
+      by(fastforce intro:Labels.Labels_Seq1)
     with `labels (c\<^isub>1;;c\<^isub>2) (0 + #:c\<^isub>1) c\<^isub>2` `l < #:c\<^isub>1` 
     have "c\<^isub>1;; c\<^isub>2 \<turnstile> \<langle>Skip;;c\<^isub>2,s,l\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:c\<^isub>1\<rangle>"
-      by(fastsimp intro:StepSeq)
+      by(fastforce intro:StepSeq)
     with `labels (c\<^isub>1;;c\<^isub>2) (0 + #:c\<^isub>1) c\<^isub>2` show ?case by auto
   next
     assume "\<exists>c''. c' = c'';;c\<^isub>2"
@@ -302,9 +302,9 @@ next
   proof
     assume [simp]:"c = Skip \<and> cx = while (b) c' \<and> s = s'"
     have "labels (while (b) c') 0 (while (b) c')"
-      by(fastsimp intro:Labels_Base)
+      by(fastforce intro:Labels_Base)
     from `labels c' l c` have "labels (while (b) c') (l + 2) (Skip;;while (b) c')"
-      by(fastsimp intro:Labels.Labels_WhileBody simp del:add_2_eq_Suc')
+      by(fastforce intro:Labels.Labels_WhileBody simp del:add_2_eq_Suc')
     hence "while (b) c' \<turnstile> \<langle>Skip;;while (b) c',s,l + 2\<rangle> \<leadsto> \<langle>while (b) c',s,0\<rangle>"
       by(rule StepSeqWhile)
     with `labels (while (b) c') 0 (while (b) c')` show ?case by simp blast
@@ -347,7 +347,7 @@ next
     and "labels prog l' c'" by(auto dest:red_step)
   from `prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto>* \<langle>c'',s'',l''\<rangle>` `prog \<turnstile> \<langle>c'',s'',l''\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>`
   have "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto>* \<langle>c',s',l'\<rangle>"
-    by(fastsimp elim:rtranclp_trans)
+    by(fastforce elim:rtranclp_trans)
   with `labels prog l' c'` show ?case by blast
 qed
 
@@ -356,6 +356,6 @@ subsubsection {* The bisimulation theorem *}
 theorem reds_steps_bisimulation:
   "labels prog l c \<Longrightarrow> (\<langle>c,s\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>) = 
      (\<exists>l'. prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto>* \<langle>c',s',l'\<rangle> \<and> labels prog l' c')"
-  by(fastsimp intro:reds_steps elim:steps_reds)
+  by(fastforce intro:reds_steps elim:steps_reds)
 
 end

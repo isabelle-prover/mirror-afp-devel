@@ -24,7 +24,7 @@ lemma setFinal_notin_finals:
  "\<lbrakk> f \<in> \<F> g; \<not> final f; minGraphProps g \<rbrakk> \<Longrightarrow> setFinal f \<notin> set (finals g)"
 apply(drule minGraphProps11)
 apply(cases f)
-apply(fastsimp simp:finals_def setFinal_def normFaces_def normFace_def
+apply(fastforce simp:finals_def setFinal_def normFaces_def normFace_def
                     verticesFrom_def minVertex_def inj_on_def distinct_map
            split:facetype.splits)
 done
@@ -64,11 +64,11 @@ proof -
     apply (subst card_Un_disjoint)
     apply simp
     apply simp
-    apply fastsimp
+    apply fastforce
     apply (subst card_Un_disjoint)
     apply simp
     apply simp
-    apply fastsimp
+    apply fastforce
     apply simp
     done
   also have "\<dots> = tri g v + quad g v + except g v" using fin
@@ -198,7 +198,7 @@ lemma next_plane0_incr_faceListAt:
 apply(rule next_plane0_incr[where Q = ?Q])
 prefer 4 apply assumption
 prefer 4 apply assumption
-  apply(rule conjI) apply fastsimp
+  apply(rule conjI) apply fastforce
   apply(clarsimp)
   apply(erule allE, erule impE, assumption)
   apply(erule_tac x = v in allE, erule impE) apply force
@@ -510,7 +510,7 @@ lemma between_last: "\<lbrakk> distinct(vertices f); u \<in> \<V> f \<rbrakk> \<
    between (vertices f) u (last (verticesFrom f u)) =
    butlast(tl(verticesFrom f u))"
 apply(drule split_list)
-apply (fastsimp dest: last_in_set
+apply (fastforce dest: last_in_set
   simp: between_def verticesFrom_Def split_def
        last_append butlast_append fst_splitAt_last)
 done

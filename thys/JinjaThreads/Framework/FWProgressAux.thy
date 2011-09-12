@@ -20,15 +20,15 @@ definition must_sync :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool
 
 lemma must_sync_def2:
   "t \<turnstile> \<langle>x, m\<rangle> \<wrong> \<longleftrightarrow> (\<exists>ta x' m' s. t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> actions_ok s t ta)"
-by(fastsimp simp add: must_sync_def intro: cond_action_oks_shr_change)
+by(fastforce simp add: must_sync_def intro: cond_action_oks_shr_change)
 
 lemma must_syncI:
   "\<exists>ta x' m' s. t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> actions_ok s t ta \<Longrightarrow> t \<turnstile> \<langle>x, m\<rangle> \<wrong>"
-by(fastsimp simp add: must_sync_def2)
+by(fastforce simp add: must_sync_def2)
 
 lemma must_syncE:
   "\<lbrakk> t \<turnstile> \<langle>x, m\<rangle> \<wrong>; \<And>ta x' m' s. \<lbrakk> t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>; actions_ok s t ta; m = shr s \<rbrakk> \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
-by(fastsimp simp only: must_sync_def)
+by(fastforce simp only: must_sync_def)
 
 definition can_sync :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> ('l + 't + 't) set \<Rightarrow> bool" ("_ \<turnstile> \<langle>_,/ _\<rangle>/ _/ \<wrong>" [50,0,0,0] 81) where
   "t \<turnstile> \<langle>x, m\<rangle> LT \<wrong> \<equiv> \<exists>ta x' m'. t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> (LT = collect_waits ta)"
@@ -37,7 +37,7 @@ lemma can_syncI:
   "\<lbrakk> t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>;
      LT = collect_waits ta \<rbrakk>
   \<Longrightarrow> t \<turnstile> \<langle>x, m\<rangle> LT \<wrong>"
-by(cases ta)(fastsimp simp add: can_sync_def)
+by(cases ta)(fastforce simp add: can_sync_def)
 
 lemma can_syncE:
   assumes "t \<turnstile> \<langle>x, m\<rangle> LT \<wrong>"
@@ -81,10 +81,10 @@ proof cases
   case (normal x ln ta x'm')
   with redT_updWs_total[of t "wset s" "\<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"]
   show ?thesis
-    by(cases x'm')(fastsimp intro!: redT_normal simp del: split_paired_Ex)
+    by(cases x'm')(fastforce intro!: redT_normal simp del: split_paired_Ex)
 next
   case acquire thus ?thesis
-    by(fastsimp intro: redT_acquire simp del: split_paired_Ex simp add: neq_no_wait_locks_conv)
+    by(fastforce intro: redT_acquire simp del: split_paired_Ex simp add: neq_no_wait_locks_conv)
 qed
 
 end
@@ -157,7 +157,7 @@ context multithreaded begin
 
 lemma red_not_final_thread:
   "s -t\<triangleright>ta\<rightarrow> s' \<Longrightarrow> not_final_thread s t"
-by(fastsimp elim: redT.cases intro: not_final_thread.intros dest: final_no_red)
+by(fastforce elim: redT.cases intro: not_final_thread.intros dest: final_no_red)
 
 lemma redT_preserves_final_thread:
   "\<lbrakk> s -t'\<triangleright>ta\<rightarrow> s'; final_thread s t \<rbrakk> \<Longrightarrow> final_thread s' t"
@@ -270,7 +270,7 @@ proof(rule invariant3pI)
         obtain s0 s1 ttas x0 ta' w' ln' ln''
           where reuse: "s0 \<in> I" "s1 \<in> I" "s0 -t\<triangleright>ta'\<rightarrow> s1" "thr s0 t = \<lfloor>(x0, no_wait_locks)\<rfloor>"
             "t \<turnstile> \<langle>x0, shr s0\<rangle> -ta'\<rightarrow> \<langle>x, shr s1\<rangle>" "Suspend w' \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>" "actions_ok s0 t ta'" "thr s1 t = \<lfloor>(x, ln')\<rfloor>"
-          and step: "s1 -\<triangleright>ttas\<rightarrow>* s" by fastsimp
+          and step: "s1 -\<triangleright>ttas\<rightarrow>* s" by fastforce
         from step red have "s1 -\<triangleright>ttas@[(t', ta)]\<rightarrow>* s'" unfolding RedT_def by(rule rtrancl3p_step)
         moreover from redT_acquire True have "thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>" by simp
         ultimately show ?thesis using reuse by blast

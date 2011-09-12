@@ -146,7 +146,7 @@ proof -
     qed }
   note f_mult = this
   from `r:\<rat>` obtain i::int and n::nat where r: "r = real i/real n" and "n\<noteq>0"
-    by(fastsimp simp:Rats_eq_int_div_nat)
+    by(fastforce simp:Rats_eq_int_div_nat)
   have "real(n)*f(real i/real n) = f(real i + real(n - 1))"
     using `n\<noteq>0` by(simp add:f_mult[symmetric])
   also have "\<dots> = f(real(i + int n - 1))" using `n\<noteq>0`[simplified]

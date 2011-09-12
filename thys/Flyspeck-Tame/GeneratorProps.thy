@@ -73,7 +73,7 @@ proof -
     also have "\<dots> = (\<Sum>f\<in>set(finals g) \<union> {f}. \<d> |vertices f| )"
       using f by simp
     also have "\<dots> \<le> (\<Sum>f\<in>set(finals g'). \<d> |vertices f| )"
-      using f subset by(fastsimp intro!: setsum_mono3)
+      using f subset by(fastforce intro!: setsum_mono3)
     also have "\<dots> = (\<Sum>\<^bsub>f\<in>finals g'\<^esub> \<d> |vertices f| )"
       using dist' by(simp add:finals_def ListSum_conv_setsum)
     finally show "(\<Sum>\<^bsub>f\<in>finals g\<^esub> \<d> |vertices f| ) + \<d> |vertices f|
@@ -178,7 +178,7 @@ next
       fix v f assume a: "v \<in> V" "f \<in> set (facesAt g v)" "f \<bullet> v \<in> V"
       have "v : \<V> g" using a(1) `V <= \<V> g` by blast
       show False using a not_cl mgp_facesAt_no_loop[OF mgp `v : \<V> g` a(2)]
-	by(fastsimp simp: close_def split:split_if_asm)
+	by(fastforce simp: close_def split:split_if_asm)
     qed
     show "separated\<^isub>3 g V"
     proof (clarsimp simp:separated\<^isub>3_def)
@@ -300,9 +300,9 @@ proof(induct ps rule: length_induct)
       using dist Cons
       apply (auto simp:delAround_def)
       apply(rule_tac x=P in exI)
-      apply(fastsimp intro!: setsum_insert[THEN trans,symmetric] elim: finite_subset)
+      apply(fastforce intro!: setsum_insert[THEN trans,symmetric] elim: finite_subset)
       apply(rule_tac x=P in exI)
-      apply(fastsimp intro!: setsum_insert[THEN trans] elim: finite_subset)
+      apply(fastforce intro!: setsum_insert[THEN trans] elim: finite_subset)
       done
     also have "\<dots> = {setsum snd P |P.
             P \<subseteq> insert p (set ?ps) \<and> p \<in> P \<and> separated g (fst ` P)}"
@@ -484,7 +484,7 @@ lemma genPolyTame_notame:
  "\<lbrakk> g' \<in> set (generatePolygon n v f g); g' \<notin> set (generatePolygonTame n v f g);
     inv g; 3 \<le> n \<rbrakk>
   \<Longrightarrow> notame7 g'"
-by(fastsimp simp:generatePolygon_def generatePolygonTame_def enum_enumerator
+by(fastforce simp:generatePolygon_def generatePolygonTame_def enum_enumerator
                  notame_def notame7_def)
 
 declare upt_Suc[simp del] (* FIXME global? *)

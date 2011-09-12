@@ -17,7 +17,7 @@ lemma obs_intraE:
   assumes "n' \<in> obs_intra n S"
   obtains as where "n -as\<rightarrow>\<^isub>\<iota>* n'" and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S" and "n' \<in> S"
   using `n' \<in> obs_intra n S`
-  by(fastsimp elim:obs_intra.cases)
+  by(fastforce elim:obs_intra.cases)
 
 
 lemma n_in_obs_intra:
@@ -26,14 +26,14 @@ proof -
   from `valid_node n` have "n -[]\<rightarrow>* n" by(rule empty_path)
   hence "n -[]\<rightarrow>\<^isub>\<iota>* n" by(simp add:intra_path_def)
   with `n \<in> S` have "n \<in> obs_intra n S" 
-    by(fastsimp elim:obs_intra_elem simp:sourcenodes_def)
+    by(fastforce elim:obs_intra_elem simp:sourcenodes_def)
   { fix n' assume "n' \<in> obs_intra n S"
     have "n' = n"
     proof(rule ccontr)
       assume "n' \<noteq> n"
       from `n' \<in> obs_intra n S` obtain as where "n -as\<rightarrow>\<^isub>\<iota>* n'"
         and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S"
-        and "n' \<in> S" by(fastsimp elim:obs_intra.cases)
+        and "n' \<in> S" by(fastforce elim:obs_intra.cases)
       from `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n -as\<rightarrow>* n'" by(simp add:intra_path_def)
       from this `\<forall>nx \<in> set(sourcenodes as). nx \<notin> S` `n' \<noteq> n` `n \<in> S`
       show False
@@ -44,7 +44,7 @@ proof -
         with `n \<in> S` show False by simp
       qed simp
     qed }
-  with `n \<in> obs_intra n S` show ?thesis by fastsimp
+  with `n \<in> obs_intra n S` show ?thesis by fastforce
 qed
 
 
@@ -62,12 +62,12 @@ proof
   then obtain as where "targetnode a -as\<rightarrow>\<^isub>\<iota>* n" 
     and all:"\<forall>nx \<in> set(sourcenodes as). nx \<notin> S" and "n \<in> S" by(erule obs_intraE)
   from `valid_edge a` `intra_kind (kind a)` `targetnode a -as\<rightarrow>\<^isub>\<iota>* n`
-  have "sourcenode a -[a]@as\<rightarrow>\<^isub>\<iota>* n" by(fastsimp intro:Cons_path simp:intra_path_def)
+  have "sourcenode a -[a]@as\<rightarrow>\<^isub>\<iota>* n" by(fastforce intro:Cons_path simp:intra_path_def)
   moreover
   from all `sourcenode a \<notin> S` have "\<forall>nx \<in> set(sourcenodes (a#as)). nx \<notin> S"
     by(simp add:sourcenodes_def)
   ultimately show "n \<in> obs_intra (sourcenode a) S" using `n \<in> S`
-    by(fastsimp intro:obs_intra_elem)
+    by(fastforce intro:obs_intra_elem)
 qed
 
 
@@ -92,8 +92,8 @@ proof -
     have "obs_intra n' S \<subseteq> obs_intra n'' S" .
     from `valid_edge a` `intra_kind (kind a)` `targetnode a = n''`
       `sourcenode a = n` `sourcenode a \<notin> S`
-    have "obs_intra n'' S \<subseteq> obs_intra n S" by(fastsimp dest:edge_obs_intra_subset)
-    with `obs_intra n' S \<subseteq> obs_intra n'' S` show ?case by fastsimp
+    have "obs_intra n'' S \<subseteq> obs_intra n S" by(fastforce dest:edge_obs_intra_subset)
+    with `obs_intra n' S \<subseteq> obs_intra n'' S` show ?case by fastforce
   qed simp
 qed
 
@@ -106,22 +106,22 @@ proof(atomize_elim)
   proof(cases "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S")
     case True
     with `n -as\<rightarrow>\<^isub>\<iota>* n'` `n' \<in> S` have "n' \<in> obs_intra n S" by -(rule obs_intra_elem)
-    thus ?thesis by fastsimp
+    thus ?thesis by fastforce
   next
     case False
-    hence "\<exists>nx \<in> set(sourcenodes as). nx \<in> S" by fastsimp
+    hence "\<exists>nx \<in> set(sourcenodes as). nx \<in> S" by fastforce
     then obtain nx ns ns' where "sourcenodes as = ns@nx#ns'"
       and "nx \<in> S" and "\<forall>n' \<in> set ns. n' \<notin> S"
-      by(fastsimp elim!:split_list_first_propE)
+      by(fastforce elim!:split_list_first_propE)
     from `sourcenodes as = ns@nx#ns'` obtain as' a as'' 
       where "ns = sourcenodes as'"
       and "as = as'@a#as''" and "sourcenode a = nx"
-      by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
+      by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
     with `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n -as'\<rightarrow>\<^isub>\<iota>* nx"
-      by(fastsimp dest:path_split simp:intra_path_def)
+      by(fastforce dest:path_split simp:intra_path_def)
     with `nx \<in> S` `\<forall>n' \<in> set ns. n' \<notin> S` `ns = sourcenodes as'` 
-    have "nx \<in> obs_intra n S" by(fastsimp intro:obs_intra_elem)
-    thus ?thesis by fastsimp
+    have "nx \<in> obs_intra n S" by(fastforce intro:obs_intra_elem)
+    thus ?thesis by fastforce
   qed
 qed
 
@@ -156,7 +156,7 @@ case (Cons x xs)
     with `x#xs = nsx@n#nsx'` have "n = x" and "xs = nsx'" by simp_all
     with `n' \<in> obs_intra n S`
       `\<forall>nx\<in>set nsx'. \<exists>nx'. call_of_return_node nx nx' \<and> nx' \<in> S`
-    show ?thesis by(fastsimp simp:Let_def)
+    show ?thesis by(fastforce simp:Let_def)
   next
     case (Cons z zs)
     with `x#xs = nsx@n#nsx'` have [simp]:"x = z" "xs = zs@n#nsx'" by simp_all
@@ -178,7 +178,7 @@ case (Cons x xs)
       with False have "\<exists>x''\<in>set (zs @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S"
         by simp
       with `xs = zs@n#nsx'` 
-      have "\<exists>n' \<in> set xs. \<exists>nx. call_of_return_node n' nx \<and> nx \<notin> S" by fastsimp
+      have "\<exists>n' \<in> set xs. \<exists>nx. call_of_return_node n' nx \<and> nx \<notin> S" by fastforce
       with Cons `n'#nsx' \<in> obs xs S` show ?thesis by(simp add:Let_def)
     qed
   qed
@@ -216,7 +216,7 @@ proof(atomize_elim)
       case Nil
       with `ns' \<in> obs (nx#ns'') S` obtain x where "ns' = [x]" and "x \<in> obs_intra nx S"
         by(auto simp:Let_def split:split_if_asm)
-      with Nil show ?thesis by fastsimp
+      with Nil show ?thesis by fastforce
     next
       case Cons
       with `\<forall>n \<in> set ns''. return_node n` have "\<forall>a\<in>set (tl ns''). return_node a"
@@ -235,7 +235,7 @@ proof(atomize_elim)
         from True `ns'' = nsx @ n # nsx'`
           `\<forall>nx\<in>set nsx'. \<exists>nx'. call_of_return_node nx nx' \<and> nx' \<in> S`
         have "(\<exists>nx'. call_of_return_node n nx' \<and> nx' \<notin> S) \<or>
-          (\<exists>n'\<in>set nsx. \<exists>nx'. call_of_return_node n' nx' \<and> nx' \<notin> S)" by fastsimp
+          (\<exists>n'\<in>set nsx. \<exists>nx'. call_of_return_node n' nx' \<and> nx' \<notin> S)" by fastforce
         thus ?thesis
         proof
           assume "\<exists>nx'. call_of_return_node n nx' \<and> nx' \<notin> S"
@@ -272,7 +272,7 @@ proof(atomize_elim)
           with `\<forall>n'\<in>set ns''. \<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S`
             `ns' \<in> obs (nx # ns'') S`
           obtain nx'' where "ns' = nx''#ns''" and "nx'' \<in> obs_intra nx S"
-          by(fastsimp simp:Let_def split:split_if_asm)
+          by(fastforce simp:Let_def split:split_if_asm)
           { fix n' assume "n'\<in>set ns''"
             with `\<forall>n \<in> set ns''. return_node n` have "return_node n'" by simp
             hence "\<exists>!n''. call_of_return_node n' n''" 
@@ -281,8 +281,8 @@ proof(atomize_elim)
               `\<forall>n'\<in>set ns''. \<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S`
             have "\<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S" by simp
             with `\<exists>!n''. call_of_return_node n' n''` 
-            have "\<exists>n''. call_of_return_node n' n'' \<and> n'' \<in> S" by fastsimp }
-          with `ns' = nx''#ns''` `nx'' \<in> obs_intra nx S` show ?thesis by fastsimp
+            have "\<exists>n''. call_of_return_node n' n'' \<and> n'' \<in> S" by fastforce }
+          with `ns' = nx''#ns''` `nx'' \<in> obs_intra nx S` show ?thesis by fastforce
         qed
       qed
     qed
@@ -319,7 +319,7 @@ proof(induct xs arbitrary:ys)
     have "\<exists>z'' \<in> set (zs@[y]). \<exists>ny. call_of_return_node z'' ny \<and> ny \<notin> S"
       by blast
     with `xs' = zs@y#ys'` `\<forall>x' \<in> set xs'. \<exists>x''. call_of_return_node x' x'' \<and> x'' \<in> S`
-    have False by fastsimp
+    have False by fastforce
     thus ?thesis by simp
   qed
 next
@@ -345,7 +345,7 @@ next
     have "\<exists>z''\<in>set (ws @ [x]). \<exists>nx. call_of_return_node z'' nx \<and> nx \<notin> S" by blast
     with `ys' = ws @ x # xs'` 
       `\<forall>y'\<in>set ys'. \<exists>y''. call_of_return_node y' y'' \<and> y'' \<in> S`
-    have False by fastsimp
+    have False by fastforce
     thus ?thesis by simp
   next
     case (Cons w' ws')

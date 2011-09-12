@@ -245,8 +245,8 @@ proof
   assume ve: "valid_edge (P, C0, Main) a"
     and use_eq: "\<forall>V\<in>Use P (sourcenode a). state_val s V = state_val s' V"
     and v_in_def: "V \<in> Def P (sourcenode a)"
-  obtain h stk loc where [simp]: "s = (h,stk,loc)" by (cases s, fastsimp)
-  obtain h' stk' loc' where [simp]: "s' = (h',stk',loc')" by (cases s', fastsimp)
+  obtain h stk loc where [simp]: "s = (h,stk,loc)" by (cases s, fastforce)
+  obtain h' stk' loc' where [simp]: "s' = (h',stk',loc')" by (cases s', fastforce)
   note P_wf = wf_jvmprog_is_wf [of P]
   from ve
   have ex_edge: "(P,C0,Main) \<turnstile> (sourcenode a)-kind a\<rightarrow>(targetnode a)"
@@ -257,7 +257,7 @@ proof
     case (Node cs x) [simp]
     from vn ex_edge have "cs \<noteq> []"
       by (cases x, auto elim: JVM_CFG.cases)
-    then obtain C M pc cs' where [simp]: "cs = (C, M, pc)#cs'" by (cases cs, fastsimp+)
+    then obtain C M pc cs' where [simp]: "cs = (C, M, pc)#cs'" by (cases cs, fastforce+)
     with vn obtain ST LT where wt: "((P\<^bsub>\<Phi>\<^esub>) C M ! pc) = \<lfloor>(ST,LT)\<rfloor>"
       by (cases cs', (cases x, auto)+)
     show ?thesis
@@ -291,14 +291,14 @@ proof
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
         with Store C_sees_M wt `pc < length is`
         show ?thesis
-          by (fastsimp simp: wt_method_def)
+          by (fastforce simp: wt_method_def)
       qed
       then obtain ST1 STr where [simp]: "ST = ST1#STr"
-        by (cases ST, fastsimp+)
+        by (cases ST, fastforce+)
       from wt
         have "Stk (length cs') (length ST - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use_src")
-          by -(rule Use_Store, fastsimp+)
+          by -(rule Use_Store, fastforce+)
       with use_eq have "state_val s ?stk_top = state_val s' ?stk_top"
         by (simp del: state_val.simps)
       with v_in_def ex_edge wt show ?thesis
@@ -323,9 +323,9 @@ proof
       next
         case (Some x')
         then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-          by (cases x', fastsimp)
+          by (cases x', fastforce)
         have "\<not> xf \<longrightarrow> (\<forall>addr. HeapVar addr \<in> Use P (sourcenode a))"
-          by (fastsimp intro: Use_New)
+          by (fastforce intro: Use_New)
         with use_eq
         have "\<not> xf \<longrightarrow> (\<forall>addr. state_val s (HeapVar addr) = state_val s' (HeapVar addr))"
           by (simp del: state_val.simps)
@@ -346,7 +346,7 @@ proof
       next
         case (Some x')
         then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-          by (cases x', fastsimp)
+          by (cases x', fastforce)
         have "ST \<noteq> []"
         proof -
           from vn obtain T Ts mxs mxl "is" xt
@@ -358,9 +358,9 @@ proof
           from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
             by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
           with Getfield sees_M wt `pc < length is` show ?thesis
-            by (fastsimp simp: wt_method_def)
+            by (fastforce simp: wt_method_def)
         qed
-        then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastsimp)
+        then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce)
         from wt
         have "\<not> xf \<longrightarrow> (Stk (length cs') (length ST - 1) \<in> Use P (sourcenode a))"
           (is "?xf \<longrightarrow> ?stk_top \<in> ?Use_src")
@@ -392,7 +392,7 @@ proof
       next
         case (Some x')
         then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>" 
-          by (cases x', fastsimp)
+          by (cases x', fastforce)
         have "length ST > 1"
         proof -
           from vn obtain T Ts mxs mxl "is" xt
@@ -404,27 +404,27 @@ proof
           from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
             by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
           with Putfield sees_M `pc < length is` wt show ?thesis
-            by (fastsimp simp: wt_method_def)
+            by (fastforce simp: wt_method_def)
         qed
         then obtain ST1 STr' where "ST = ST1#STr' \<and> length STr' > 0"
-          by (cases ST, fastsimp+)
+          by (cases ST, fastforce+)
         then obtain ST2 STr where [simp]: "ST = ST1#ST2#STr"
-          by (cases STr', fastsimp+)
+          by (cases STr', fastforce+)
         from wt
         have "\<not> xf \<longrightarrow> (Stk (length cs') (length ST - 1) \<in> Use P (sourcenode a))"
           (is "?xf \<longrightarrow> ?stk_top \<in> ?Use_src")
-          by (fastsimp intro: Use_Putfield_Stk_Update)
+          by (fastforce intro: Use_Putfield_Stk_Update)
         with use_eq have stk_top:"(\<not> xf) \<longrightarrow> state_val s ?stk_top = state_val s' ?stk_top"
           by (simp del: state_val.simps)
         from wt
         have "\<not> xf \<longrightarrow> (Stk (length cs') (length ST - 2) \<in> Use P (sourcenode a))"
           (is "?xf \<longrightarrow> ?stk_nxt \<in> ?Use_src")
-          by (fastsimp intro: Use_Putfield_Stk_Update)
+          by (fastforce intro: Use_Putfield_Stk_Update)
         with use_eq
         have stk_nxt:"(\<not> xf) \<longrightarrow> state_val s ?stk_nxt = state_val s' ?stk_nxt"
           by (simp del: state_val.simps)
         have "\<not> xf \<longrightarrow> (\<forall>addr. HeapVar addr \<in> Use P (sourcenode a))"
-          by (fastsimp intro: Use_Putfield_Heap)
+          by (fastforce intro: Use_Putfield_Heap)
         with use_eq
         have "\<not> xf \<longrightarrow> (\<forall>addr. state_val s (HeapVar addr) = state_val s' (HeapVar addr))"
           by (simp del: state_val.simps)
@@ -463,7 +463,7 @@ proof
       next
         case (Some x')
         then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-          by (cases x', fastsimp)
+          by (cases x', fastforce)
         show ?thesis
         proof (cases xf)
           case True
@@ -483,16 +483,16 @@ proof
             from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
               by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
             with Invoke sees_M `pc < length is` wt show ?thesis
-              by (fastsimp simp: wt_method_def)
+              by (fastforce simp: wt_method_def)
           qed
-          moreover obtain STn where "STn = take n' ST" by fastsimp
-          moreover obtain STs where "STs = ST ! n'" by fastsimp
-          moreover obtain STr where "STr = drop (Suc n') ST" by fastsimp
+          moreover obtain STn where "STn = take n' ST" by fastforce
+          moreover obtain STs where "STs = ST ! n'" by fastforce
+          moreover obtain STr where "STr = drop (Suc n') ST" by fastforce
           ultimately have [simp]:" ST = STn@STs#STr \<and> length STn = n'"
             by (auto simp: id_take_nth_drop)
           from wt
           have "\<forall>i. i \<le> n' \<longrightarrow> Stk (length cs') (length ST - Suc i) \<in> Use P (sourcenode a)"
-            by (fastsimp intro: Use_Invoke_Stk_Update)
+            by (fastforce intro: Use_Invoke_Stk_Update)
           with use_eq
           have
             "\<forall>i. i \<le> n' \<longrightarrow> state_val s (Stk (length cs') (length ST - Suc i)) =
@@ -504,7 +504,7 @@ proof
             by (clarsimp, erule_tac x="n' - i" in allE, auto simp: add_commute)
           from ex_edge obtain C'
             where trg: "targetnode a = (_ (C',M',0)#(C, M, pc)#cs',None _)"
-            by (fastsimp elim: JVM_CFG.cases)
+            by (fastforce elim: JVM_CFG.cases)
           with ex_edge stk_eq v_in_def wt
           show ?thesis
             by (auto elim!: Def.cases) (erule JVM_CFG.cases, auto simp: split_beta add_commute)
@@ -523,10 +523,10 @@ proof
         next
           case (Cons aa list)
           then obtain C' M' pc' cs'' where [simp]: "cs' = (C',M',pc')#cs''"
-            by (cases aa, fastsimp)
+            by (cases aa, fastforce)
           from wt
           have "Stk (length cs') (length ST - 1) \<in> Use P (sourcenode a)"
-            by (fastsimp intro: Use_Return_Stk)
+            by (fastforce intro: Use_Return_Stk)
           with use_eq
           have "state_val s (Stk (length cs') (length ST - 1)) =
                 state_val s' (Stk (length cs') (length ST - 1))"
@@ -638,10 +638,10 @@ proof
       next
         case (Some x')
         then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-          by (cases x', fastsimp)
+          by (cases x', fastforce)
         hence "xf \<longrightarrow> Stk (length cs') (stkLength P C M pc - 1) \<in> Use P (sourcenode a)"
           (is "xf \<longrightarrow> ?stk_top \<in> ?Use")
-          by (fastsimp intro: Use_Throw_Stk)
+          by (fastforce intro: Use_Throw_Stk)
         with use_eq
         have stk_top:"xf \<longrightarrow> state_val s ?stk_top = state_val s' ?stk_top"
           by (simp del: state_val.simps)
@@ -678,7 +678,7 @@ proof -
     case (Node cs x) [simp]
     from ve have "cs \<noteq> []"
       by (cases x, auto elim: JVM_CFG.cases)
-    then obtain C M pc cs' where [simp]: "cs = (C, M, pc)#cs'" by (cases cs, fastsimp+)
+    then obtain C M pc cs' where [simp]: "cs = (C, M, pc)#cs'" by (cases cs, fastforce+)
     from vn obtain ST LT where wt: "((P\<^bsub>\<Phi>\<^esub>) C M ! pc) = \<lfloor>(ST,LT)\<rfloor>"
       by (cases cs', (cases x, auto)+)
     show ?thesis
@@ -725,16 +725,16 @@ proof -
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
         with Getfield wt sees_M `pc < length is` show ?thesis
-          by (fastsimp simp: wt_method_def)
+          by (fastforce simp: wt_method_def)
       qed
-      then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastsimp+)
+      then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases x)
         case None [simp]
         from wt
         have "Stk (length cs') (length ST - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
-          by (fastsimp intro: Use_Getfield_Stk)
+          by (fastforce intro: Use_Getfield_Stk)
         with use_eq have "state_val s ?stk_top = state_val s' ?stk_top"
           by (simp del: state_val.simps)
         with ex_edge pred wt show ?thesis
@@ -757,17 +757,17 @@ proof -
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
         with Putfield wt sees_M `pc < length is` show ?thesis
-          by (fastsimp simp: wt_method_def)
+          by (fastforce simp: wt_method_def)
       qed
-      then obtain ST1 STr' where "ST = ST1#STr' \<and> STr' \<noteq> []" by (cases ST, fastsimp+)
-      then obtain ST2 STr where [simp]: "ST = ST1#ST2#STr" by (cases STr', fastsimp+)
+      then obtain ST1 STr' where "ST = ST1#STr' \<and> STr' \<noteq> []" by (cases ST, fastforce+)
+      then obtain ST2 STr where [simp]: "ST = ST1#ST2#STr" by (cases STr', fastforce+)
       show ?thesis
       proof (cases x)
         case None [simp]
         with wt
         have "Stk (length cs') (length ST - 2) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
-          by (fastsimp intro: Use_Putfield_Stk_Pred)
+          by (fastforce intro: Use_Putfield_Stk_Pred)
         with use_eq have "state_val s ?stk_top = state_val s' ?stk_top"
           by (simp del: state_val.simps)
         with ex_edge pred wt show ?thesis
@@ -790,21 +790,21 @@ proof -
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
         with Checkcast wt sees_M `pc < length is` show ?thesis
-          by (fastsimp simp: wt_method_def)
+          by (fastforce simp: wt_method_def)
       qed
-      then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastsimp+)
+      then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases x)
         case None [simp]
         from wt
         have "Stk (length cs') (stkLength P C M pc - Suc 0) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
-          by (fastsimp intro: Use_Checkcast_Stk)
+          by (fastforce intro: Use_Checkcast_Stk)
         with use_eq
         have stk_top: "state_val s ?stk_top = state_val s' ?stk_top"
           by (simp del: state_val.simps)
         have "\<forall>addr. HeapVar addr \<in> Use P (sourcenode a)"
-          by (fastsimp intro: Use_Checkcast_Heap)
+          by (fastforce intro: Use_Checkcast_Heap)
         with use_eq
         have "\<forall>addr. state_val s (HeapVar addr) = state_val s' (HeapVar addr)"
           by (simp del: state_val.simps)
@@ -830,11 +830,11 @@ proof -
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
         with Invoke wt sees_M `pc < length is` show ?thesis
-          by (fastsimp simp: wt_method_def)
+          by (fastforce simp: wt_method_def)
       qed
-      moreover obtain STn where "STn = take n' ST" by fastsimp
-      moreover obtain STs where "STs = ST ! n'" by fastsimp
-      moreover obtain STr where "STr = drop (Suc n') ST" by fastsimp
+      moreover obtain STn where "STn = take n' ST" by fastforce
+      moreover obtain STs where "STs = ST ! n'" by fastforce
+      moreover obtain STr where "STr = drop (Suc n') ST" by fastforce
       ultimately have [simp]:" ST = STn@STs#STr \<and> length STn = n'"
         by (auto simp: id_take_nth_drop)
       show ?thesis
@@ -843,12 +843,12 @@ proof -
         with wt
         have "Stk (length cs') (stkLength P C M pc - Suc n') \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
-          by (fastsimp intro: Use_Invoke_Stk_Pred)
+          by (fastforce intro: Use_Invoke_Stk_Pred)
         with use_eq
         have stk_top: "state_val s ?stk_top = state_val s' ?stk_top"
           by (simp del: state_val.simps)
         have "\<forall>addr. HeapVar addr \<in> Use P (sourcenode a)"
-          by (fastsimp intro: Use_Invoke_Heap_Pred)
+          by (fastforce intro: Use_Invoke_Heap_Pred)
         with use_eq
         have "\<forall>addr. state_val s (HeapVar addr) = state_val s' (HeapVar addr)"
           by (simp del: state_val.simps)
@@ -880,7 +880,7 @@ proof -
         case None [simp]
         have "Stk (length cs') (stkLength P C M pc - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
-          by (fastsimp intro: Use_IfFalse_Stk)
+          by (fastforce intro: Use_IfFalse_Stk)
         with use_eq
         have "state_val s ?stk_top = state_val s' ?stk_top"
           by (simp del: state_val.simps)
@@ -912,21 +912,21 @@ proof -
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
         with Throw wt sees_M `pc < length is` show ?thesis
-          by (fastsimp simp: wt_method_def)
+          by (fastforce simp: wt_method_def)
       qed
-      then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastsimp+)
+      then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases x)
         case None [simp]
         from wt
         have "Stk (length cs') (stkLength P C M pc - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
-          by (fastsimp intro: Use_Throw_Stk)
+          by (fastforce intro: Use_Throw_Stk)
         with use_eq
         have stk_top: "state_val s ?stk_top = state_val s' ?stk_top"
           by (simp del: state_val.simps)
         have "\<forall>addr. HeapVar addr \<in> Use P (sourcenode a)"
-          by (fastsimp intro: Use_Throw_Heap)
+          by (fastforce intro: Use_Throw_Heap)
         with use_eq
         have "\<forall>addr. state_val s (HeapVar addr) = state_val s' (HeapVar addr)"
           by (simp del: state_val.simps)
@@ -964,7 +964,7 @@ proof -
     case (Node cs x) [simp]
     with ve have "cs \<noteq> []"
       by (cases x, auto elim: JVM_CFG.cases)
-    then obtain C M pc cs' where [simp]: "cs = (C, M, pc)#cs'" by (cases cs, fastsimp+)
+    then obtain C M pc cs' where [simp]: "cs = (C, M, pc)#cs'" by (cases cs, fastforce+)
     with vn obtain ST LT where wt: "((P\<^bsub>\<Phi>\<^esub>) C M ! pc) = \<lfloor>(ST,LT)\<rfloor>"
       by (cases cs', (cases x, auto)+)
     show ?thesis
@@ -1002,7 +1002,7 @@ proof -
       next
         case (Some x')
         then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-          by (cases x', fastsimp)
+          by (cases x', fastforce)
         with ex_edge v_not_def show ?thesis
           apply (auto elim!: JVM_CFG.cases)
             apply (cases V, auto intro!: Def_New_Normal_Stk Def_New_Normal_Heap)
@@ -1018,7 +1018,7 @@ proof -
      next
        case (Some x')
        then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-         by (cases x', fastsimp)
+         by (cases x', fastforce)
        with ex_edge v_not_def show ?thesis
          apply (auto elim!: JVM_CFG.cases simp: split_beta)
            apply (cases V, auto intro!: Def_Getfield_Stk)
@@ -1034,7 +1034,7 @@ proof -
      next
        case (Some x')
        then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-         by (cases x', fastsimp)
+         by (cases x', fastforce)
        with ex_edge v_not_def show ?thesis
          apply (auto elim!: JVM_CFG.cases simp: split_beta)
            apply (cases V, auto intro!: Def_Putfield_Heap)
@@ -1050,7 +1050,7 @@ proof -
      next
        case (Some x')
        then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-         by (cases x', fastsimp)
+         by (cases x', fastforce)
        with ex_edge v_not_def show ?thesis
          apply (auto elim!: JVM_CFG.cases)
           by (cases V, auto intro!: Def_Exc_Stk)+
@@ -1065,7 +1065,7 @@ proof -
      next
        case (Some x')
        then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-         by (cases x', fastsimp)
+         by (cases x', fastforce)
        from ex_edge v_not_def show ?thesis
          apply (auto elim!: JVM_CFG.cases)
            apply (cases V, auto intro!: Def_Invoke_Loc)
@@ -1108,7 +1108,7 @@ proof -
      next
        case (Some x')
        then obtain cs'' xf where [simp]: "x = \<lfloor>(cs'',xf)\<rfloor>"
-         by (cases x', fastsimp)
+         by (cases x', fastforce)
        from ex_edge v_not_def show ?thesis
          apply (auto elim!: JVM_CFG.cases)
           by (cases V, auto intro!: Def_Exc_Stk)+
@@ -1173,7 +1173,7 @@ interpretation JVM_CFGExit_wf: CFGExit_wf
   "Def (fst prog)" "Use (fst prog)" "state_val" "(_Exit_)"
 proof
   show "Def (fst prog) (_Exit_) = {} \<and> Use (fst prog) (_Exit_) = {}"
-    by(fastsimp elim:Def.cases Use.cases)
+    by(fastforce elim:Def.cases Use.cases)
 qed
 
   

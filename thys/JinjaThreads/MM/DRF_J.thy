@@ -294,10 +294,10 @@ lemma red_read_typeable:
   \<Longrightarrow> \<exists>T'. P,hp s \<turnstile> ad@al : T'"
 proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   case RedAAcc thus ?case
-    by(fastsimp intro: addr_loc_type.intros simp add: nat_less_iff word_sle_def)
+    by(fastforce intro: addr_loc_type.intros simp add: nat_less_iff word_sle_def)
 next
   case RedFAcc thus ?case
-    by(fastsimp intro: addr_loc_type.intros dest: typeof_addr_eq_Some_conv)
+    by(fastforce intro: addr_loc_type.intros dest: typeof_addr_eq_Some_conv)
 next
   case RedCallExternal thus ?case
     by(auto intro: red_external_read_mem_typeable)
@@ -545,7 +545,7 @@ proof -
       and "\<exists>ET. sconf_type_ok ET t x m"
       and "ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
     thus "\<exists>T. P,m \<turnstile> ad@al : T"
-      by(fastsimp simp add: sconf_type_ok_def type_ok_def sconf_def split_beta dest: red_read_typeable)
+      by(fastforce simp add: sconf_type_ok_def type_ok_def sconf_def split_beta dest: red_read_typeable)
   next
     fix t x m ta x' m' ad C
     assume "mred P t (x, m) ta (x', m')"
@@ -651,7 +651,7 @@ proof(induct e hxs\<equiv>"(shr s, xs)" ta e' hxs'\<equiv>"(h', xs')"
   with hrt adal have "heap_read (shr s) a (ACell (nat (sint i))) v'" using hconf by(rule heap_read_typeableD)
   with bv' `typeof_addr (shr s) a = \<lfloor>U\<lfloor>\<rceil>\<rfloor>` `0 <=s i` `sint i < int (array_length (shr s) a)` 
     `red_mthr.if.actions_ok s t \<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>`
-  show ?case by(fastsimp intro: red_reds.RedAAcc)
+  show ?case by(fastforce intro: red_reds.RedAAcc)
 next
   case (RedFAcc a D F v)
   then obtain T where "P,E,shr s \<turnstile> addr a\<bullet>F{D} : T" by blast
@@ -662,7 +662,7 @@ next
   with vs adal have "P,shr s \<turnstile> v' :\<le> T" by(auto dest!: vs_confD dest: addr_loc_type_fun)
   with hrt adal have "heap_read (shr s) a (CField D F) v'" using hconf by(rule heap_read_typeableD)
   with bv' `red_mthr.if.actions_ok s t \<lbrace>ReadMem a (CField D F) v\<rbrace>`
-  show ?case by(fastsimp intro: red_reds.RedFAcc)
+  show ?case by(fastforce intro: red_reds.RedFAcc)
 next
   case (RedCallExternal a U M ps ta' va h' ta e')
   from `P,t \<turnstile> \<langle>a\<bullet>M(ps),hp (shr s, xs)\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>`
@@ -671,26 +671,26 @@ next
   from RedCallExternal have "{(a, al) |al. \<exists>T. P,shr s \<turnstile> a@al : T} \<subseteq> dom vs" by auto
   from red_external_cut_and_update[OF hrt vs this red aok hconf]
     `typeof_addr (hp (shr s, xs)) a = \<lfloor>U\<rfloor>` `is_native P U M` `ta = extTA2J P ta'`
-  show ?case by(fastsimp intro: red_reds.RedCallExternal)
+  show ?case by(fastforce intro: red_reds.RedCallExternal)
 next
-  case RedNew thus ?case by(fastsimp intro!: red_reds.RedNew exI)
+  case RedNew thus ?case by(fastforce intro!: red_reds.RedNew exI)
 next
-  case RedNewFail thus ?case by(fastsimp intro!: red_reds.RedNewFail exI)
+  case RedNewFail thus ?case by(fastforce intro!: red_reds.RedNewFail exI)
 next
   case NewArrayRed thus ?case by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.NewArrayRed)
 next 
-  case RedNewArray thus ?case by(fastsimp intro!: red_reds.RedNewArray exI)
+  case RedNewArray thus ?case by(fastforce intro!: red_reds.RedNewArray exI)
 next
-  case RedNewArrayFail thus ?case by(fastsimp intro!: red_reds.RedNewArrayFail exI)
+  case RedNewArrayFail thus ?case by(fastforce intro!: red_reds.RedNewArrayFail exI)
 next
-  case RedNewArrayNegative thus ?case by(fastsimp intro!: red_reds.RedNewArrayNegative exI)
+  case RedNewArrayNegative thus ?case by(fastforce intro!: red_reds.RedNewArrayNegative exI)
 next
   case CastRed thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.CastRed)
 next
-  case RedCast thus ?case by(fastsimp intro!: red_reds.RedCast exI)
+  case RedCast thus ?case by(fastforce intro!: red_reds.RedCast exI)
 next
-  case RedCastFail thus ?case by(fastsimp intro!: red_reds.RedCastFail exI)
+  case RedCastFail thus ?case by(fastforce intro!: red_reds.RedCastFail exI)
 next
   case InstanceOfRed thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.InstanceOfRed)
@@ -704,16 +704,16 @@ next
   case BinOpRed2 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.BinOpRed2)
 next
-  case RedBinOp thus ?case by(fastsimp intro!: red_reds.RedBinOp exI)
+  case RedBinOp thus ?case by(fastforce intro!: red_reds.RedBinOp exI)
 next
-  case RedBinOpFail thus ?case by(fastsimp intro!: red_reds.RedBinOpFail exI)
+  case RedBinOpFail thus ?case by(fastforce intro!: red_reds.RedBinOpFail exI)
 next
-  case RedVar thus ?case by(fastsimp intro!: red_reds.RedVar exI)
+  case RedVar thus ?case by(fastforce intro!: red_reds.RedVar exI)
 next
   case LAssRed thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.LAssRed)
 next
-  case RedLAss thus ?case by(fastsimp intro!: red_reds.RedLAss exI)
+  case RedLAss thus ?case by(fastforce intro!: red_reds.RedLAss exI)
 next
   case AAccRed1 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.AAccRed1)
@@ -721,9 +721,9 @@ next
   case AAccRed2 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.AAccRed2)
 next
-  case RedAAccNull thus ?case by(fastsimp intro!: red_reds.RedAAccNull exI)
+  case RedAAccNull thus ?case by(fastforce intro!: red_reds.RedAAccNull exI)
 next
-  case RedAAccBounds thus ?case by(fastsimp intro!: red_reds.RedAAccBounds exI)
+  case RedAAccBounds thus ?case by(fastforce intro!: red_reds.RedAAccBounds exI)
 next
   case AAssRed1 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.AAssRed1)
@@ -734,26 +734,26 @@ next
   case AAssRed3 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.AAssRed3)+
 next
-  case RedAAss thus ?case by(fastsimp intro!: red_reds.RedAAss exI)
+  case RedAAss thus ?case by(fastforce intro!: red_reds.RedAAss exI)
 next
-  case RedAAssBounds thus ?case by(fastsimp intro!: red_reds.RedAAssBounds exI)
+  case RedAAssBounds thus ?case by(fastforce intro!: red_reds.RedAAssBounds exI)
 next
   case RedAAssStore thus ?case
-    by(clarsimp simp add: ex_WTrt_simps)(fastsimp intro!: red_reds.RedAAssStore exI)
+    by(clarsimp simp add: ex_WTrt_simps)(fastforce intro!: red_reds.RedAAssStore exI)
 next
-  case RedAAssNull thus ?case by(fastsimp intro!: red_reds.RedAAssNull exI)
+  case RedAAssNull thus ?case by(fastforce intro!: red_reds.RedAAssNull exI)
 next
   case ALengthRed thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.ALengthRed)
 next
-  case RedALength thus ?case by(fastsimp intro!: red_reds.RedALength exI)
+  case RedALength thus ?case by(fastforce intro!: red_reds.RedALength exI)
 next
-  case RedALengthNull thus ?case by(fastsimp intro!: red_reds.RedALengthNull exI)
+  case RedALengthNull thus ?case by(fastforce intro!: red_reds.RedALengthNull exI)
 next
   case FAccRed thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.FAccRed)
 next
-  case RedFAccNull thus ?case by(fastsimp intro!: red_reds.RedFAccNull exI)
+  case RedFAccNull thus ?case by(fastforce intro!: red_reds.RedFAccNull exI)
 next
   case FAssRed1 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.FAssRed1)
@@ -761,9 +761,9 @@ next
   case FAssRed2 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.FAssRed2)
 next
-  case RedFAss thus ?case by(fastsimp intro!: red_reds.RedFAss exI)
+  case RedFAss thus ?case by(fastforce intro!: red_reds.RedFAss exI)
 next
-  case RedFAssNull thus ?case by(fastsimp intro!: red_reds.RedFAssNull exI)
+  case RedFAssNull thus ?case by(fastforce intro!: red_reds.RedFAssNull exI)
 next
   case CallObj thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.CallObj)
@@ -771,9 +771,9 @@ next
   case CallParams thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.CallParams)
 next
-  case RedCall thus ?case by(fastsimp intro!: red_reds.RedCall exI)
+  case RedCall thus ?case by(fastforce intro!: red_reds.RedCall exI)
 next
-  case RedCallNull thus ?case by(fastsimp intro!: red_reds.RedCallNull exI)
+  case RedCallNull thus ?case by(fastforce intro!: red_reds.RedCallNull exI)
 next
   case (BlockRed e xs V vo)
   note domIff[iff del]
@@ -795,49 +795,49 @@ next
     apply blast
     done
   with BlockRed show ?case
-    by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(fastsimp intro: red_reds.BlockRed)+
+    by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(fastforce intro: red_reds.BlockRed)+
 next
-  case RedBlock thus ?case by(fastsimp intro!: red_reds.RedBlock exI)
+  case RedBlock thus ?case by(fastforce intro!: red_reds.RedBlock exI)
 next
   case SynchronizedRed1 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.SynchronizedRed1)
 next
-  case SynchronizedNull thus ?case by(fastsimp intro!: red_reds.SynchronizedNull exI)
+  case SynchronizedNull thus ?case by(fastforce intro!: red_reds.SynchronizedNull exI)
 next
-  case LockSynchronized thus ?case by(fastsimp intro!: red_reds.LockSynchronized exI)
+  case LockSynchronized thus ?case by(fastforce intro!: red_reds.LockSynchronized exI)
 next
   case SynchronizedRed2 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.SynchronizedRed2)
 next
-  case UnlockSynchronized thus ?case by(fastsimp intro!: red_reds.UnlockSynchronized exI)
+  case UnlockSynchronized thus ?case by(fastforce intro!: red_reds.UnlockSynchronized exI)
 next
   case SeqRed thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.SeqRed)
 next
-  case RedSeq thus ?case by(fastsimp intro!: red_reds.RedSeq exI)
+  case RedSeq thus ?case by(fastforce intro!: red_reds.RedSeq exI)
 next
   case CondRed thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.CondRed)
 next
-  case RedCondT thus ?case by(fastsimp intro!: red_reds.RedCondT exI)
+  case RedCondT thus ?case by(fastforce intro!: red_reds.RedCondT exI)
 next
-  case RedCondF thus ?case by(fastsimp intro!: red_reds.RedCondF exI)
+  case RedCondF thus ?case by(fastforce intro!: red_reds.RedCondF exI)
 next
-  case RedWhile thus ?case by(fastsimp intro!: red_reds.RedWhile exI)
+  case RedWhile thus ?case by(fastforce intro!: red_reds.RedWhile exI)
 next
   case ThrowRed thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.ThrowRed)
 next
-  case RedThrowNull thus ?case by(fastsimp intro!: red_reds.RedThrowNull exI)
+  case RedThrowNull thus ?case by(fastforce intro!: red_reds.RedThrowNull exI)
 next
   case TryRed thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.TryRed)
 next
-  case RedTry thus ?case by(fastsimp intro!: red_reds.RedTry exI)
+  case RedTry thus ?case by(fastforce intro!: red_reds.RedTry exI)
 next
-  case RedTryFail thus ?case by(fastsimp intro!: red_reds.RedTryFail exI)
+  case RedTryFail thus ?case by(fastforce intro!: red_reds.RedTryFail exI)
 next
-  case RedTryCatch thus ?case by(fastsimp intro!: red_reds.RedTryCatch exI)
+  case RedTryCatch thus ?case by(fastforce intro!: red_reds.RedTryCatch exI)
 next
   case ListRed1 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.ListRed1)
@@ -845,7 +845,7 @@ next
   case ListRed2 thus ?case
     by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.ListRed2)
 next
-  case BlockThrow thus ?case by(fastsimp intro!: red_reds.BlockThrow exI)
+  case BlockThrow thus ?case by(fastforce intro!: red_reds.BlockThrow exI)
 qed(clarsimp simp add: ex_WTrt_simps, force intro: red_reds.intros intro!: exI)+
 
 end
@@ -969,7 +969,7 @@ proof(rule red_mthr.if.cut_and_updateI)
       where x: "x = (Running, e, xs)" and x': "x' = (Running, e', xs')"
       and ta: "ta = convert_TA_initial (convert_obs_initial ta')"
       and red': "P,t \<turnstile> \<langle>e, (shr s', xs)\<rangle> -ta'\<rightarrow> \<langle>e', (m', xs')\<rangle>"
-      by cases fastsimp+
+      by cases fastforce+
 
     from ts't wt' x obtain E T where wte: "P,E,shr s' \<turnstile> e : T"
       and hconf: "hconf (shr s')"

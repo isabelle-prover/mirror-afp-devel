@@ -23,7 +23,7 @@ by(auto simp add: lock_thread_ok_def)
 
 lemma lock_thread_okD:
   "\<lbrakk> lock_thread_ok ls ts; has_lock (ls\<^sub>f l) t \<rbrakk> \<Longrightarrow> \<exists>xw. ts t = \<lfloor>xw\<rfloor>"
-by(fastsimp simp add: lock_thread_ok_def)
+by(fastforce simp add: lock_thread_ok_def)
 
 lemma lock_thread_okD':
   "\<lbrakk> lock_thread_ok ls ts; has_locks (ls\<^sub>f l) t = Suc n \<rbrakk> \<Longrightarrow> \<exists>xw. ts t = \<lfloor>xw\<rfloor>"
@@ -151,7 +151,7 @@ qed
 
 lemma redT_updW_preserve_wset_thread_ok: 
   "\<lbrakk> wset_thread_ok ws ts; redT_updW t ws wa ws'; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok ws' ts"
-by(fastsimp simp add: redT_updW.simps intro: wset_thread_okI wset_thread_ok_NotifyAllI wset_thread_ok_upd_ws dest: wset_thread_okD)
+by(fastforce simp add: redT_updW.simps intro: wset_thread_okI wset_thread_ok_NotifyAllI wset_thread_ok_upd_ws dest: wset_thread_okD)
 
 lemma redT_updWs_preserve_wset_thread_ok:
   "\<lbrakk> wset_thread_ok ws ts; redT_updWs t ws was ws'; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok ws' ts"

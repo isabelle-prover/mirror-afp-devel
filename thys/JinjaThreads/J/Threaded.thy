@@ -42,7 +42,7 @@ lemma red_new_thread_heap:
   and reds_new_thread_heap:
   "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t'' ex'' h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> h'' = hp s'"
 apply(induct rule: red_reds.inducts)
-apply(fastsimp dest: red_ext_new_thread_heap simp add: ta_upd_simps)+
+apply(fastforce dest: red_ext_new_thread_heap simp add: ta_upd_simps)+
 done
 
 lemma red_ta_Wakeup_no_Join_no_Lock_no_Interrupt:
@@ -126,12 +126,12 @@ lemma red_NewThread_Thread_Object:
   "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t' x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> \<exists>C. typeof_addr (hp s') (thread_id2addr t') = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 apply(induct rule: red_reds.inducts)
-apply(fastsimp dest: red_external_new_thread_exists_thread_object simp add: ta_upd_simps)+
+apply(fastforce dest: red_external_new_thread_exists_thread_object simp add: ta_upd_simps)+
 done
 
 lemma lifting_wf_tconf:
   "lifting_wf final_expr (mred P) (\<lambda>t ex h. P,h \<turnstile> t \<surd>t)"
-by(unfold_locales)(fastsimp dest: red_hext_incr red_NewThread_Thread_Object elim!: tconf_hext_mono intro: tconfI)+
+by(unfold_locales)(fastforce dest: red_hext_incr red_NewThread_Thread_Object elim!: tconf_hext_mono intro: tconfI)+
 
 end
 
@@ -211,7 +211,7 @@ proof(induct rule: red_reds.inducts)
   have "expr_locks (blocks pns Ts vs body) = (\<lambda>ad. 0)"
     by(simp add: expr_locks_blocks)
   thus ?case by(auto intro: expr_locks_sync_ok)
-qed(fastsimp intro: not_contains_insync_sync_ok)+
+qed(fastforce intro: not_contains_insync_sync_ok)+
 
 lemma assumes wf: "wf_J_prog P"
   shows expr_locks_new_thread:
@@ -222,7 +222,7 @@ lemma assumes wf: "wf_J_prog P"
 proof(induct rule: red_reds.inducts)
   case (RedCallExternal s a T M vs ta va h' ta' e' s')
   then obtain C fs a where subThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" and ext: "extNTA2J P (C, run, a) = (e'', x'')"
-    by(fastsimp dest: red_external_new_thread_sub_thread)
+    by(fastforce dest: red_external_new_thread_sub_thread)
   from sub_Thread_sees_run[OF wf subThread] obtain D pns body
     where sees: "P \<turnstile> C sees run: []\<rightarrow>Void = (pns, body) in D" by auto
   from sees_wf_mdecl[OF wf this] obtain T where "P,[this \<mapsto> Class D] \<turnstile> body :: T"
@@ -271,7 +271,7 @@ definition lock_ok :: "('addr,'thread_id) locks \<Rightarrow> ('addr,'thread_id,
 
 lemma lock_okI:
   "\<lbrakk> \<And>t l. ts t = None \<Longrightarrow> has_locks (ls\<^sub>f l) t = 0; \<And>t e x ln l. ts t = \<lfloor>((e, x), ln)\<rfloor> \<Longrightarrow> has_locks (ls\<^sub>f l) t + ln\<^sub>f l= expr_locks e l \<rbrakk> \<Longrightarrow> lock_ok ls ts"
-apply(fastsimp simp add: lock_ok_def)
+apply(fastforce simp add: lock_ok_def)
 done
 
 lemma lock_okE:
@@ -279,7 +279,7 @@ lemma lock_okE:
      \<forall>t. ts t = None \<longrightarrow> (\<forall>l. has_locks (ls\<^sub>f l) t = 0) \<Longrightarrow> Q;
      \<forall>t e x ln. ts t = \<lfloor>((e, x), ln)\<rfloor> \<longrightarrow> (\<forall>l. has_locks (ls\<^sub>f l) t + ln\<^sub>f l = expr_locks e l) \<Longrightarrow> Q \<rbrakk>
   \<Longrightarrow> Q"
-by(fastsimp simp add: lock_ok_def)
+by(fastforce simp add: lock_ok_def)
 
 lemma lock_okD1:
   "\<lbrakk> lock_ok ls ts; ts t = None \<rbrakk> \<Longrightarrow> \<forall>l. has_locks (ls\<^sub>f l) t = 0"
@@ -290,7 +290,7 @@ done
 
 lemma lock_okD2:
   "\<lbrakk> lock_ok ls ts; ts t = \<lfloor>((e, x), ln)\<rfloor> \<rbrakk> \<Longrightarrow> \<forall>l. has_locks (ls\<^sub>f l) t + ln\<^sub>f l = expr_locks e l"
-apply(fastsimp simp add: lock_ok_def)
+apply(fastforce simp add: lock_ok_def)
 done
 
 lemma lock_ok_lock_thread_ok:
@@ -388,7 +388,7 @@ proof -
   next
     case RedCallExternal thus ?case
       by(auto simp add: fun_eq_iff contains_insync_conv contains_insyncs_conv finfun_upd_apply ta_upd_simps elim!: red_external.cases)
-  qed(fastsimp simp add: fun_eq_iff contains_insync_conv contains_insyncs_conv finfun_upd_apply ta_upd_simps)+
+  qed(fastforce simp add: fun_eq_iff contains_insync_conv contains_insyncs_conv finfun_upd_apply ta_upd_simps)+
   hence "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk>
         \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0 + (int \<circ> expr_locks e) ad) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_locks e'"
     and "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk>
@@ -507,8 +507,8 @@ lemma redT_preserves_lock_ok:
   and "sync_es_ok (thr s) (shr s)"
   shows "lock_ok (locks s') (thr s')"
 proof -
-  obtain ls ts h ws "is" where s [simp]: "s = (ls, (ts, h), ws, is)" by(cases s) fastsimp
-  obtain ls' ts' h' ws' is' where s' [simp]: "s' = (ls', (ts', h'), ws', is')" by(cases s') fastsimp
+  obtain ls ts h ws "is" where s [simp]: "s = (ls, (ts, h), ws, is)" by(cases s) fastforce
+  obtain ls' ts' h' ws' is' where s' [simp]: "s' = (ls', (ts', h'), ws', is')" by(cases s') fastforce
   from assms have redT: "P \<turnstile> (ls, (ts, h), ws, is) -t\<triangleright>ta\<rightarrow> (ls', (ts', h'), ws', is')"
     and loes: "lock_ok ls ts"
     and aoes: "sync_es_ok ts h" by auto
@@ -732,7 +732,7 @@ next
 next
   case CallThrowParams thus ?case
     by(auto elim!: red_cases dest: sees_method_fun simp add: map_eq_append_conv append_eq_map_conv append_eq_append_conv2 reds_map_Val_Throw Cons_eq_append_conv append_eq_Cons_conv)
-qed(fastsimp elim!: red_cases reds_cases dest: deterministic_heap_ops_readD[OF det] deterministic_heap_ops_writeD[OF det] iff: reds_map_Val_Throw)+
+qed(fastforce elim!: red_cases reds_cases dest: deterministic_heap_ops_readD[OF det] deterministic_heap_ops_writeD[OF det] iff: reds_map_Val_Throw)+
 
 lemma red_mthr_deterministic:
   assumes det: "deterministic_heap_ops"

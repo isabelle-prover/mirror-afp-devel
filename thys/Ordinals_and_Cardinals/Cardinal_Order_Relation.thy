@@ -194,7 +194,7 @@ proof(auto)
    card_of_Well_order[of "B"] Field_card_of[of "B"] Field_card_of[of "A"] 
    embed_Field[of "|B|" "|A|" g] by auto
    obtain h where "bij_betw h A B" 
-   using * ** 1 Cantor_Bernstein[of f] by fastsimp
+   using * ** 1 Cantor_Bernstein[of f] by fastforce
    hence "|A| =o |B|" using card_of_ordIso by blast
    hence "|A| \<le>o |B|" using ordIso_iff_ordLeq by auto
   }
@@ -262,7 +262,7 @@ using card_of_ordIso card_of_unique ordIso_equivalence by blast
 
 lemma card_of_mono1:
 "A \<le> B \<Longrightarrow> |A| \<le>o |B|"
-using inj_on_id[of A] card_of_ordLeq[of A B] by fastsimp
+using inj_on_id[of A] card_of_ordLeq[of A B] by fastforce
 
 
 lemma card_of_mono2: 
@@ -617,7 +617,7 @@ assumes "|A| \<le>o |B|"
 shows "|A <+> C| \<le>o |B <+> C|"
 proof-
   obtain f where 1: "inj_on f A \<and> f ` A \<le> B" 
-  using assms card_of_ordLeq[of A] by fastsimp
+  using assms card_of_ordLeq[of A] by fastforce
   obtain g where g_def: 
   "g = (\<lambda>d. case d of Inl a \<Rightarrow> Inl(f a) | Inr (c::'c) \<Rightarrow> Inr c)" by blast
   have "inj_on g (A <+> C) \<and> g ` (A <+> C) \<le> (B <+> C)"
@@ -713,7 +713,7 @@ using assms card_of_cong[of r r'] card_of_cong[of p p'] card_of_Plus_cong by bla
 
 lemma card_of_Un1:
 shows "|A| \<le>o |A \<union> B| "
-using inj_on_id[of A] card_of_ordLeq[of A _] by fastsimp
+using inj_on_id[of A] card_of_ordLeq[of A _] by fastforce
 
 
 lemma Card_order_Un1:
@@ -723,7 +723,7 @@ using card_of_Un1 card_of_Field_ordIso ordIso_symmetric ordIso_ordLeq_trans by a
 
 lemma card_of_Un2:
 shows "|A| \<le>o |B \<union> A|"
-using inj_on_id[of A] card_of_ordLeq[of A _] by fastsimp
+using inj_on_id[of A] card_of_ordLeq[of A _] by fastforce
 
 
 lemma Card_order_Un2:
@@ -733,7 +733,7 @@ using card_of_Un2 card_of_Field_ordIso ordIso_symmetric ordIso_ordLeq_trans by a
 
 lemma card_of_diff:
 shows "|A - B| \<le>o |A|"
-using inj_on_id[of "A - B"] card_of_ordLeq[of "A - B" _] by fastsimp
+using inj_on_id[of "A - B"] card_of_ordLeq[of "A - B" _] by fastforce
 
 
 lemma Un_Plus_bij_betw:
@@ -884,7 +884,7 @@ assumes "|A| \<le>o |B|"
 shows "|A \<times> C| \<le>o |B \<times> C|"
 proof-
   obtain f where 1: "inj_on f A \<and> f ` A \<le> B" 
-  using assms card_of_ordLeq[of A] by fastsimp
+  using assms card_of_ordLeq[of A] by fastforce
   obtain g where g_def: 
   "g = (\<lambda>(a,c::'c). (f a,c))" by blast
   have "inj_on g (A \<times> C) \<and> g ` (A \<times> C) \<le> (B \<times> C)"
@@ -973,7 +973,7 @@ proof-
   have "\<forall>i. i \<in> I \<longrightarrow> (\<exists>f. inj_on f (A i) \<and> f ` (A i) \<le> B i)"
   using assms by (auto simp add: card_of_ordLeq) 
   with choice[of "\<lambda> i f. i \<in> I \<longrightarrow> inj_on f (A i) \<and> f ` (A i) \<le> B i"]
-  obtain F where 1: "\<forall>i \<in> I. inj_on (F i) (A i) \<and> (F i) ` (A i) \<le> B i" by fastsimp
+  obtain F where 1: "\<forall>i \<in> I. inj_on (F i) (A i) \<and> (F i) ` (A i) \<le> B i" by fastforce
   obtain g where g_def: "g = (\<lambda>(i,a::'b). (i,F i a))" by blast
   have "inj_on g (Sigma I A) \<and> g ` (Sigma I A) \<le> (Sigma I B)"
   using 1 unfolding inj_on_def using g_def by force 
@@ -1002,7 +1002,7 @@ proof-
   have "\<forall>i \<in> I. |A(f i)| \<le>o |B(f i)|" 
   using IM LEQ by blast
   hence "|SIGMA i : I. A (f i)| \<le>o |SIGMA i : I. B (f i)|"
-  using card_of_Sigma_mono1 by fastsimp
+  using card_of_Sigma_mono1 by fastforce
   moreover have "|SIGMA i : I. B (f i)| \<le>o |SIGMA j : J. B j|"
   using INJ IM card_of_Sigma_mono2 by blast
   ultimately show ?thesis using ordLeq_transitive by blast
@@ -1050,7 +1050,7 @@ proof-
   have "\<forall>i \<in> I. |A(f i)| =o |B(f i)|" 
   using ISO BIJ unfolding bij_betw_def by blast
   hence "|SIGMA i : I. A (f i)| =o |SIGMA i : I. B (f i)|"
-  using card_of_Sigma_cong1 by fastsimp
+  using card_of_Sigma_cong1 by fastforce
   moreover have "|SIGMA i : I. B (f i)| =o |SIGMA j : J. B j|"
   using BIJ card_of_Sigma_cong2 by blast
   ultimately show ?thesis using ordIso_transitive by blast
@@ -1182,7 +1182,7 @@ assumes "|A| \<le>o |B|" and "finite B"
 shows "finite A"
 using assms unfolding ordLeq_def
 using embed_inj_on[of "|A|" "|B|"]  embed_Field[of "|A|" "|B|"] 
-      Field_card_of[of "A"] Field_card_of[of "B"] inj_on_finite[of _ "A" "B"] by fastsimp 
+      Field_card_of[of "A"] Field_card_of[of "B"] inj_on_finite[of _ "A" "B"] by fastforce 
 
 
 lemma card_of_ordIso_finite:
@@ -1242,7 +1242,7 @@ proof(auto)
     let ?r' = "Restr r (underS r a)"
     assume Case2: "a \<in> Field r"
     hence 1: "under r a = underS r a \<union> {a} \<and> a \<notin> underS r a"
-    using 0 rel.Refl_under_underS rel.underS_notIn by fastsimp
+    using 0 rel.Refl_under_underS rel.underS_notIn by fastforce
     have 2: "ofilter r (underS r a) \<and> underS r a < Field r"
     using 0 wo_rel.underS_ofilter * 1 Case2 by auto
     hence "?r' <o r" using 0 using ofilter_ordLess by blast
@@ -1345,7 +1345,7 @@ shows "|A \<times> A| =o |A|"
 proof-
   let ?r = "|A|"
   have "Field ?r = A \<and> Card_order ?r" 
-  using Field_card_of card_of_Card_order[of A] by fastsimp
+  using Field_card_of card_of_Card_order[of A] by fastforce
   hence "|A \<times> A| \<le>o |A|" 
   using Card_order_Times_same_infinite[of ?r] assms by auto
   thus ?thesis using card_of_Times3 ordIso_iff_ordLeq by auto
@@ -1466,9 +1466,9 @@ proof(cases "B = {}", simp add: card_of_Plus_empty1 card_of_Plus_empty2 ordIso_s
     thus ?thesis using card_of_ordIso ordIso_symmetric by blast
   next
     assume Case2: "B \<noteq> {b1}"
-    with * 1 obtain b2 where 3: "b1 \<noteq> b2 \<and> {b1,b2} \<le> B" by fastsimp
+    with * 1 obtain b2 where 3: "b1 \<noteq> b2 \<and> {b1,b2} \<le> B" by fastforce
     obtain f where "inj_on f B \<and> f ` B \<le> A" 
-    using LEQ card_of_ordLeq[of B] by fastsimp
+    using LEQ card_of_ordLeq[of B] by fastforce
     with 3 have "f b1 \<noteq> f b2 \<and> {f b1, f b2} \<le> A" 
     unfolding inj_on_def by auto
     with 3 have "|A <+> B| \<le>o |A \<times> B|" 
@@ -1683,7 +1683,7 @@ assumes "infinite B" and "|A| <o |B|"
 shows "|{a} Un A| <o |B|"
 proof-
   have "|{a}| <o |B|" using assms by(auto simp add: finite_ordLess_infinite2) 
-  thus ?thesis using assms card_of_Un_ordLess_infinite[of B] by fastsimp
+  thus ?thesis using assms card_of_Un_ordLess_infinite[of B] by fastforce
 qed
 
 
@@ -1870,7 +1870,7 @@ assumes "infinite A"
 shows "|nList A n| \<le>o |A|"
 proof(induct n)
   show "|nList A 0| \<le>o |A|" 
-  using assms nList_0[of A] card_of_singl_ordLeq[of A] by fastsimp
+  using assms nList_0[of A] card_of_singl_ordLeq[of A] by fastforce
 next
   fix n assume IH: "|nList A n| \<le>o |A|"
   have "|nList A (Suc n)| =o |A \<times> (nList A n)|" 
@@ -2146,14 +2146,14 @@ proof-
   {assume "A \<noteq> UNIV" hence "\<exists>n. n \<notin> A" by blast
    moreover obtain n where n_def: "n = (LEAST n. n \<notin> A)" by blast
    ultimately have 1: "n \<notin> A \<and> (\<forall>m. m < n \<longrightarrow> m \<in> A)" 
-   using LeastI_ex[of "\<lambda> n. n \<notin> A"] n_def Least_le[of "\<lambda> n. n \<notin> A"] by fastsimp
+   using LeastI_ex[of "\<lambda> n. n \<notin> A"] n_def Least_le[of "\<lambda> n. n \<notin> A"] by fastforce
    have "A = {0 ..< n}"
    proof(auto simp add: 1)
      fix m assume *: "m \<in> A"
      {assume "n \<le> m" with assms * have "n \<in> A" by blast
       hence False using 1 by auto
      }
-     thus "m < n" by fastsimp
+     thus "m < n" by fastforce
    qed
    hence "\<exists>n. A = {0 ..< n}" by blast
   } 
@@ -2255,7 +2255,7 @@ proof(rule iffI)
   hence 1: "A \<le> {0..<m}" 
   by (auto simp add: natLeq_on_wo_rel wo_rel.ofilter_def rel.under_def Field_natLeq_on)
   hence "\<forall>n1 n2. n2 \<in> A \<and> n1 \<le> n2 \<longrightarrow> n1 \<in> A"
-  using * by(fastsimp simp add: natLeq_on_wo_rel wo_rel.ofilter_def rel.under_def)
+  using * by(fastforce simp add: natLeq_on_wo_rel wo_rel.ofilter_def rel.under_def)
   hence "A = UNIV \<or> (\<exists>n. A = {0 ..< n})" using closed_nat_set_iff by blast
   thus "\<exists>n \<le> m. A = {0 ..< n}" using 1 atLeastLessThan_less_eq by blast 
 next 
@@ -2359,7 +2359,7 @@ proof
   then obtain f where "inj_on f {0..<m} \<and> f ` {0..<m} \<le> {0..<n}" 
   using Field_natLeq_on[of m] Field_natLeq_on[of n]
   unfolding ordLeq_def using embed_inj_on[of "natLeq_on m"  "natLeq_on n"] 
-  embed_Field[of "natLeq_on m" "natLeq_on n"] using natLeq_on_Well_order[of m] by fastsimp
+  embed_Field[of "natLeq_on m" "natLeq_on n"] using natLeq_on_Well_order[of m] by fastforce
   thus "m \<le> n" using atLeastLessThan_less_eq2 by blast
 next
   assume "m \<le> n"

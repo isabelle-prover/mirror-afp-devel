@@ -40,10 +40,10 @@ lemma dependent_live_vars_Exit_empty [dest]:
 proof(induct rule:dependent_live_vars.induct)
   case (dep_vars_Cons_cdep V a as' n'' as'')
   from `n'' -as''\<rightarrow>\<^isub>d* (_Exit_)` have "n'' = (_Exit_)"
-    by(fastsimp intro:DynPDG_path_Exit)
+    by(fastforce intro:DynPDG_path_Exit)
   with `sourcenode a -a#as'\<rightarrow>\<^bsub>cd\<^esub> n''` have "sourcenode a -a#as'\<rightarrow>\<^isub>d* (_Exit_)"
-    by(fastsimp intro:DynPDG_path_cdep)
-  hence "sourcenode a = (_Exit_)" by(fastsimp intro:DynPDG_path_Exit)
+    by(fastforce intro:DynPDG_path_cdep)
+  hence "sourcenode a = (_Exit_)" by(fastforce intro:DynPDG_path_Exit)
   with `V \<in> Use (sourcenode a)` show False by simp(erule Exit_Use_empty)
 qed auto
 
@@ -61,12 +61,12 @@ proof(induct rule:dependent_live_vars.induct)
     case True
     with `n'' -as''\<rightarrow>* n'` have "n'' = n'" by (auto elim: DynPDG.dependent_live_vars.cases)
     with `sourcenode a -a#as'\<rightarrow>* n''` True
-    show ?thesis by(fastsimp intro:path_targetnode[THEN sym])
+    show ?thesis by(fastforce intro:path_targetnode[THEN sym])
   next
     case False
     with `n'' -as''\<rightarrow>* n'` have "n' = last(targetnodes as'')"
-      by(fastsimp intro:path_targetnode[THEN sym])
-    with False show ?thesis by(fastsimp simp:targetnodes_def)
+      by(fastforce intro:path_targetnode[THEN sym])
+    with False show ?thesis by(fastforce simp:targetnodes_def)
   qed
 qed simp_all
 
@@ -88,7 +88,7 @@ next
   from `sourcenode a -a#as'\<rightarrow>\<^bsub>cd\<^esub> n''` have "sourcenode a -a#as'\<rightarrow>* n''"
     by(rule DynPDG_cdep_edge_CFG_path(1))
   hence "valid_edge a" by(auto elim:path.cases) 
-  hence "sourcenode a -[]\<rightarrow>* sourcenode a" by(fastsimp intro:empty_path)
+  hence "sourcenode a -[]\<rightarrow>* sourcenode a" by(fastforce intro:empty_path)
   from `sourcenode a -a#as'\<rightarrow>\<^bsub>cd\<^esub> n''` have "sourcenode a -a#as'\<rightarrow>\<^isub>d* n''"
     by(rule DynPDG_path_cdep)
   with `n'' -as''\<rightarrow>\<^isub>d* n'` have "sourcenode a -(a#as')@as''\<rightarrow>\<^isub>d* n'"
@@ -103,9 +103,9 @@ next
                    V \<in> Use nx \<and> (\<forall>n''\<in>set (sourcenodes as'). V \<notin> Def n'')`
   from `n -a#as\<rightarrow>* n'` have "n -[]@a#as\<rightarrow>* n'" by simp
   hence "n = sourcenode a" and "targetnode a -as\<rightarrow>* n'" and "valid_edge a"
-    by(fastsimp dest:path_split)+
+    by(fastforce dest:path_split)+
   hence "n -[]\<rightarrow>* n" 
-    by(fastsimp intro:empty_path simp:valid_node_def)
+    by(fastforce intro:empty_path simp:valid_node_def)
   from IH[OF `targetnode a -as\<rightarrow>* n'`]
   have "\<exists>nx as''. as = as'@as'' \<and> targetnode a -as'\<rightarrow>* nx \<and> nx -as''\<rightarrow>\<^isub>d* n' \<and> 
                   V \<in> Use nx \<and> (\<forall>n''\<in>set (sourcenodes as'). V \<notin> Def n'')" .
@@ -122,12 +122,12 @@ next
     hence "last (targetnodes (a#as')) = last (targetnodes as')"
       by(simp add:targetnodes_def)
     from Cons `targetnode a -as'\<rightarrow>* nx''` have "last (targetnodes as') = nx''"
-      by(fastsimp intro:path_targetnode)
+      by(fastforce intro:path_targetnode)
     with `last (targetnodes (a#as')) = last (targetnodes as')` `nx'' -as''\<rightarrow>\<^isub>d* n'`
     show ?thesis by simp
   qed
   with ddep `as = as'@as''` have "sourcenode a -a#as\<rightarrow>\<^isub>d* n'"
-    by(fastsimp dest:DynPDG_path_ddep DynPDG_path_Append)
+    by(fastforce dest:DynPDG_path_ddep DynPDG_path_Append)
   with `V' \<in> Use (sourcenode a)` `n = sourcenode a` `n -[]\<rightarrow>* n`
   show ?case by(auto simp:sourcenodes_def)
 next
@@ -145,8 +145,8 @@ next
     and "\<forall>n''\<in>set (sourcenodes as'). V \<notin> Def n''" and "targetnode a -as'\<rightarrow>* nx''"
     and "nx'' -as''\<rightarrow>\<^isub>d* n'" and "as = as'@as''" by blast
   from `valid_edge a` `targetnode a -as'\<rightarrow>* nx''` have "sourcenode a -a#as'\<rightarrow>* nx''"
-    by(fastsimp intro:Cons_path)
-  hence "last(targetnodes (a#as')) = nx''" by(fastsimp dest:path_targetnode)
+    by(fastforce intro:Cons_path)
+  hence "last(targetnodes (a#as')) = nx''" by(fastforce dest:path_targetnode)
   { assume "V \<in> Def (sourcenode a)"
     with `V \<in> Use nx''` `sourcenode a -a#as'\<rightarrow>* nx''`
       `\<forall>n''\<in>set (sourcenodes as'). V \<notin> Def n''` 
@@ -154,12 +154,12 @@ next
       by(simp add:dyn_data_dependence_def sourcenodes_def)
     with no_dep `last(targetnodes (a#as')) = nx''`
       `\<forall>n''\<in>set (sourcenodes as'). V \<notin> Def n''` `V \<in> Def (sourcenode a)`
-    have False by(fastsimp dest:DynPDG_ddep_edge) }
+    have False by(fastforce dest:DynPDG_ddep_edge) }
   with `\<forall>n''\<in>set (sourcenodes as'). V \<notin> Def n''` 
   have "\<forall>n''\<in>set (sourcenodes (a#as')). V \<notin> Def n''"
-    by(fastsimp simp:sourcenodes_def)
+    by(fastforce simp:sourcenodes_def)
   with `V \<in> Use nx''` `sourcenode a -a#as'\<rightarrow>* nx''` `nx'' -as''\<rightarrow>\<^isub>d* n'`
-    `as = as'@as''` `n = sourcenode a` show ?case by fastsimp
+    `as = as'@as''` `n = sourcenode a` show ?case by fastforce
 qed
 
 
@@ -179,7 +179,7 @@ proof(atomize_elim)
     and "targetnode a -as'\<rightarrow>* nx" and "nx -as''\<rightarrow>\<^isub>d* n'"
     and "as = as'@as''" by blast
   from `targetnode a -as'\<rightarrow>* nx` `valid_edge a` have "sourcenode a -a#as'\<rightarrow>* nx"
-    by(fastsimp intro:Cons_path)
+    by(fastforce intro:Cons_path)
   with `V \<in> Def (sourcenode a)` `V \<in> Use nx` 
     `\<forall>n''\<in> set(sourcenodes as'). V \<notin> Def n''` 
   have "sourcenode a influences V in nx via a#as'"
@@ -187,7 +187,7 @@ proof(atomize_elim)
   hence "sourcenode a -{V}a#as'\<rightarrow>\<^bsub>dd\<^esub> nx" by(rule DynPDG_ddep_edge)
   with `nx -as''\<rightarrow>\<^isub>d* n'` `as = as'@as''` 
   show "\<exists>as'' nx. (as = as'@as'') \<and> (sourcenode a -{V}a#as'\<rightarrow>\<^bsub>dd\<^esub> nx) \<and> 
-    (nx -as''\<rightarrow>\<^isub>d* n')" by fastsimp
+    (nx -as''\<rightarrow>\<^isub>d* n')" by fastforce
 qed
 
 
@@ -217,7 +217,7 @@ next
     from `V \<in> Use n'` have "(V,[],[]) \<in> dependent_live_vars n'" by(rule dep_vars_Use)
     with `\<not> sourcenode ax -{V}ax#asx\<rightarrow>\<^bsub>dd\<^esub> n'` True lastnode
     have "(V,[ax],[ax]) \<in> dependent_live_vars n'"
-      by(fastsimp intro:dep_vars_Cons_keep)
+      by(fastforce intro:dep_vars_Cons_keep)
     with True show ?thesis by simp
   next
     case False
@@ -225,7 +225,7 @@ next
       by(simp add:targetnodes_def)
     from IH[OF all' this] have "(V, asx, asx) \<in> dependent_live_vars n'" .
     with `\<not> sourcenode ax -{V}ax#asx\<rightarrow>\<^bsub>dd\<^esub> n'` lastnode 
-    show ?thesis by(fastsimp intro:dep_vars_Cons_keep)
+    show ?thesis by(fastforce intro:dep_vars_Cons_keep)
   qed
 qed
 
@@ -238,7 +238,7 @@ proof(induct as)
   case Nil
   have "(V,[],[]) \<in> dependent_live_vars n'" by fact
   thus ?case
-    by(fastsimp elim:dependent_live_vars.cases simp:targetnodes_def sourcenodes_def)
+    by(fastforce elim:dependent_live_vars.cases simp:targetnodes_def sourcenodes_def)
 next
   case (Cons ax asx)
   note IH = `\<lbrakk>(V,asx,asx) \<in> dependent_live_vars n'; 
@@ -255,7 +255,7 @@ next
   proof(cases "asx = []")
     case True
     with `(V,asx,asx) \<in> dependent_live_vars n'` have "V \<in> Use n'"
-      by(fastsimp elim:dependent_live_vars.cases)
+      by(fastforce elim:dependent_live_vars.cases)
     from `\<not> sourcenode ax -{V}ax#asx\<rightarrow>\<^bsub>dd\<^esub> last(targetnodes (ax#asx))` 
       True `n' = last (targetnodes (ax#asx))`
     have "\<forall>as' a as''. ax#asx = as'@a#as'' \<longrightarrow> \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'"
@@ -284,7 +284,7 @@ lemma dependent_live_vars_same_paths:
   (V,as,as) \<in> dependent_live_vars n' = 
   (V \<in> Use n' \<and> (\<forall>as' a as''. as = as'@a#as'' \<longrightarrow>
                        \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'))"
-by(fastsimp intro!:dependent_live_vars_same_pathsD dependent_live_vars_same_pathsI)
+by(fastforce intro!:dependent_live_vars_same_pathsD dependent_live_vars_same_pathsI)
 
 
 lemma dependent_live_vars_cdep_empty_fst:
@@ -293,18 +293,18 @@ assumes "n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'" and "V' \<in> Use n''"
 proof(cases as)
   case Nil
   with `n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'` show ?thesis
-    by(fastsimp elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
+    by(fastforce elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
 next
   case (Cons ax asx)
   with `n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'` have "sourcenode ax = n''"
     by(auto dest:DynPDG_cdep_edge_CFG_path elim:path.cases)
   from `n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'` have "valid_node n'"
-    by(fastsimp intro:path_valid_node(2) DynPDG_cdep_edge_CFG_path(1))
+    by(fastforce intro:path_valid_node(2) DynPDG_cdep_edge_CFG_path(1))
   from Cons `n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'` have "last(targetnodes as) = n'"
-    by(fastsimp intro:path_targetnode dest:DynPDG_cdep_edge_CFG_path)
+    by(fastforce intro:path_targetnode dest:DynPDG_cdep_edge_CFG_path)
   with Cons `n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'` `V' \<in> Use n''` `sourcenode ax = n''` `valid_node n'`
   have "(V', [], ax#asx@[]) \<in> dependent_live_vars n'"
-    by(fastsimp intro:dep_vars_Cons_cdep DynPDG_path_Nil)
+    by(fastforce intro:dep_vars_Cons_cdep DynPDG_path_Nil)
   with Cons show ?thesis by simp
 qed
   
@@ -315,27 +315,27 @@ lemma dependent_live_vars_ddep_empty_fst:
 proof(cases as)
   case Nil
   with `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` show ?thesis
-    by(fastsimp elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
+    by(fastforce elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
 next
   case (Cons ax asx)
   with `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` have "sourcenode ax = n''"
     by(auto dest:DynPDG_ddep_edge_CFG_path elim:path.cases)
   from Cons `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` have "last(targetnodes as) = n'"
-    by(fastsimp intro:path_targetnode elim:DynPDG_ddep_edge_CFG_path(1))
+    by(fastforce intro:path_targetnode elim:DynPDG_ddep_edge_CFG_path(1))
   from Cons `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` have all:"\<forall>as' a as''. asx = as'@a#as'' \<longrightarrow>
                              \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'"
-    by(fastsimp dest:DynPDG_ddep_edge_no_shorter_ddep_edge)
+    by(fastforce dest:DynPDG_ddep_edge_no_shorter_ddep_edge)
   from `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` have "V \<in> Use n'" 
     by(auto elim!:DynPDG_edge.cases simp:dyn_data_dependence_def)
   from Cons `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` have "as \<noteq> [] \<longrightarrow> n' = last(targetnodes as)"
-    by(fastsimp dest:DynPDG_ddep_edge_CFG_path path_targetnode)
+    by(fastforce dest:DynPDG_ddep_edge_CFG_path path_targetnode)
   with Cons have "asx \<noteq> [] \<longrightarrow> n' = last(targetnodes asx)"
-    by(fastsimp simp:targetnodes_def)
+    by(fastforce simp:targetnodes_def)
   with all `V \<in> Use n'` have "(V,asx,asx) \<in> dependent_live_vars n'"
     by -(rule dependent_live_vars_same_pathsI)
   with `V' \<in> Use n''` `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` `last(targetnodes as) = n'`
     Cons `sourcenode ax = n''` show ?thesis
-    by(fastsimp intro:dep_vars_Cons_ddep)
+    by(fastforce intro:dep_vars_Cons_ddep)
 qed
 
 
@@ -363,9 +363,9 @@ proof -
     have "(V,asx@as'',asx@as') \<in> dependent_live_vars n'" .
     from `as' \<noteq> []` `(V,as'',as') \<in> dependent_live_vars n'`
     have "n' = last(targetnodes as')" 
-      by(fastsimp intro:dependent_live_vars_lastnode)
+      by(fastforce intro:dependent_live_vars_lastnode)
     with `as' \<noteq> []` have "n' = last(targetnodes (ax#asx@as'))"
-      by(fastsimp simp:targetnodes_def)
+      by(fastforce simp:targetnodes_def)
     have "\<not> sourcenode ax -{V}ax#asx@as''\<rightarrow>\<^bsub>dd\<^esub> last(targetnodes (ax#asx@as''))"
     proof
       assume "sourcenode ax -{V}ax#asx@as''\<rightarrow>\<^bsub>dd\<^esub> last(targetnodes (ax#asx@as''))"
@@ -373,12 +373,12 @@ proof -
         by simp
       with `\<forall>n''\<in>set (sourcenodes (ax#asx)). V \<notin> Def n''`
       show False
-        by(fastsimp elim:DynPDG_edge.cases 
+        by(fastforce elim:DynPDG_edge.cases 
                     simp:dyn_data_dependence_def sourcenodes_def)
     qed
     with `(V,asx@as'',asx@as') \<in> dependent_live_vars n'` 
       `n' = last(targetnodes (ax#asx@as'))`
-    show ?case by(fastsimp intro:dep_vars_Cons_keep)
+    show ?case by(fastforce intro:dep_vars_Cons_keep)
   qed
 qed
 
@@ -389,35 +389,35 @@ lemma dependent_live_vars_cdep_dependent_live_vars:
   shows "(V',as',as@as'') \<in> dependent_live_vars n'"
 proof -
   from `n'' -as''\<rightarrow>\<^bsub>cd\<^esub> n'` have "as'' \<noteq> []"
-    by(fastsimp elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
+    by(fastforce elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
   with `n'' -as''\<rightarrow>\<^bsub>cd\<^esub> n'` have "last(targetnodes as'') = n'"
-    by(fastsimp intro:path_targetnode elim:DynPDG_cdep_edge_CFG_path(1))
+    by(fastforce intro:path_targetnode elim:DynPDG_cdep_edge_CFG_path(1))
   from `(V',as',as) \<in> dependent_live_vars n''` show ?thesis
   proof(induct rule:dependent_live_vars.induct)
     case (dep_vars_Use V')
     from `V' \<in> Use n''` `n'' -as''\<rightarrow>\<^bsub>cd\<^esub> n'` `last(targetnodes as'') = n'` show ?case
-      by(fastsimp intro:dependent_live_vars_cdep_empty_fst simp:targetnodes_def)
+      by(fastforce intro:dependent_live_vars_cdep_empty_fst simp:targetnodes_def)
   next
     case (dep_vars_Cons_cdep V a as' nx asx)
     from `n'' -as''\<rightarrow>\<^bsub>cd\<^esub> n'` have "n'' -as''\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_cdep)
     with `nx -asx\<rightarrow>\<^isub>d* n''` have "nx -asx@as''\<rightarrow>\<^isub>d* n'"
       by -(rule DynPDG_path_Append)
     with `V \<in> Use (sourcenode a)` `(sourcenode a) -a#as'\<rightarrow>\<^bsub>cd\<^esub> nx`
-    show ?case by(fastsimp intro:dependent_live_vars.dep_vars_Cons_cdep)
+    show ?case by(fastforce intro:dependent_live_vars.dep_vars_Cons_cdep)
   next
     case (dep_vars_Cons_ddep V as' as V' a)
     from `as'' \<noteq> []` `last(targetnodes as'') = n'`
     have "n' = last(targetnodes ((a#as)@as''))"
       by(simp add:targetnodes_def)
     with dep_vars_Cons_ddep
-    show ?case by(fastsimp intro:dependent_live_vars.dep_vars_Cons_ddep)
+    show ?case by(fastforce intro:dependent_live_vars.dep_vars_Cons_ddep)
   next
     case (dep_vars_Cons_keep V as' as a)
     from `as'' \<noteq> []` `last(targetnodes as'') = n'`
     have "n' = last(targetnodes ((a#as)@as''))"
       by(simp add:targetnodes_def)
     with dep_vars_Cons_keep
-    show ?case by(fastsimp intro:dependent_live_vars.dep_vars_Cons_keep)
+    show ?case by(fastforce intro:dependent_live_vars.dep_vars_Cons_keep)
   qed
 qed
 
@@ -429,35 +429,35 @@ proof -
   from `n'' -{V}as''\<rightarrow>\<^bsub>dd\<^esub> n'` have "as'' \<noteq> []"
     by(rule DynPDG_ddep_edge_CFG_path(2))
   with `n'' -{V}as''\<rightarrow>\<^bsub>dd\<^esub> n'` have "last(targetnodes as'') = n'"
-    by(fastsimp intro:path_targetnode elim:DynPDG_ddep_edge_CFG_path(1))
+    by(fastforce intro:path_targetnode elim:DynPDG_ddep_edge_CFG_path(1))
   from `n'' -{V}as''\<rightarrow>\<^bsub>dd\<^esub> n'` have notExit:"n' \<noteq> (_Exit_)" 
-    by(fastsimp elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
+    by(fastforce elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
   from `(V',as',as) \<in> dependent_live_vars n''` show ?thesis
   proof(induct rule:dependent_live_vars.induct)
     case (dep_vars_Use V')
     from `V' \<in> Use n''` `n'' -{V}as''\<rightarrow>\<^bsub>dd\<^esub> n'` `last(targetnodes as'') = n'` show ?case
-      by(fastsimp intro:dependent_live_vars_ddep_empty_fst simp:targetnodes_def)
+      by(fastforce intro:dependent_live_vars_ddep_empty_fst simp:targetnodes_def)
   next
     case (dep_vars_Cons_cdep V' a as' nx asx)
     from `n'' -{V}as''\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' -as''\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_ddep)
     with `nx -asx\<rightarrow>\<^isub>d* n''` have "nx -asx@as''\<rightarrow>\<^isub>d* n'"
       by -(rule DynPDG_path_Append)
     with `V' \<in> Use (sourcenode a)` `sourcenode a -a#as'\<rightarrow>\<^bsub>cd\<^esub> nx` notExit
-    show ?case by(fastsimp intro:dependent_live_vars.dep_vars_Cons_cdep)
+    show ?case by(fastforce intro:dependent_live_vars.dep_vars_Cons_cdep)
   next
     case (dep_vars_Cons_ddep V as' as V' a)
     from `as'' \<noteq> []` `last(targetnodes as'') = n'`
     have "n' = last(targetnodes ((a#as)@as''))"
       by(simp add:targetnodes_def)
     with dep_vars_Cons_ddep
-    show ?case by(fastsimp intro:dependent_live_vars.dep_vars_Cons_ddep)
+    show ?case by(fastforce intro:dependent_live_vars.dep_vars_Cons_ddep)
   next
     case (dep_vars_Cons_keep V as' as a)
     from `as'' \<noteq> []` `last(targetnodes as'') = n'`
     have "n' = last(targetnodes ((a#as)@as''))"
       by(simp add:targetnodes_def)
     with dep_vars_Cons_keep
-    show ?case by(fastsimp intro:dependent_live_vars.dep_vars_Cons_keep)
+    show ?case by(fastforce intro:dependent_live_vars.dep_vars_Cons_keep)
   qed
 qed
 

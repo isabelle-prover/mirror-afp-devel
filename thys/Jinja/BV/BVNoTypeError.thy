@@ -91,7 +91,7 @@ proof -
       \<Phi>:      "\<Phi> C M ! pc = Some (ST,LT)" and
       frame:  "conf_f P h (ST,LT) ins (stk,reg,C,M,pc)" and
       frames: "conf_fs P h \<Phi> M (size Ts) T frs'"
-      by (fastsimp simp add: correct_state_def dest: sees_method_fun)
+      by (fastforce simp add: correct_state_def dest: sees_method_fun)
     
     from frame obtain
       stk: "P,h \<turnstile> stk [:\<le>] ST" and
@@ -137,14 +137,14 @@ proof -
       }
       ultimately show ?thesis using Getfield field stk hconf
         apply clarsimp
-        apply (rule conjI, fastsimp)
+        apply (rule conjI, fastforce)
         apply clarsimp
         apply (drule has_visible_field)
         apply (drule (1) has_field_mono)
         apply (drule (1) hconfD)
         apply (unfold oconf_def has_field_def)
         apply clarsimp
-        apply (fastsimp dest: has_fields_fun)
+        apply (fastforce dest: has_fields_fun)
         done                            
     next
       case (Putfield F C)
@@ -153,7 +153,7 @@ proof -
         stk:   "stk = v # ref # stk'" and
         confv: "P,h \<turnstile> v :\<le> vT" and
         confr: "P,h \<turnstile> ref :\<le> Class C"
-        by fastsimp
+        by fastforce
       from confr have is_Ref: "is_Ref ref" by simp
       moreover {
         assume "ref \<noteq> Null" 
@@ -161,7 +161,7 @@ proof -
         have "\<exists>D vs. h (the_Addr ref) = Some (D,vs) \<and> P \<turnstile> D \<preceq>\<^sup>* C"
           by (auto dest: non_npD)
       }
-      ultimately show ?thesis using Putfield field stk confv by fastsimp
+      ultimately show ?thesis using Putfield field stk confv by fastforce
     next      
       case (Invoke M' n)
       with app have n: "n < size ST" by simp
@@ -189,7 +189,7 @@ proof -
         with Null obtain a C' fs where 
           [simp]: "stk!n = Addr a" "h a = Some (C',fs)" and
           "P \<turnstile> C' \<preceq>\<^sup>* D"
-          by (fastsimp dest!: conf_ClassD) 
+          by (fastforce dest!: conf_ClassD) 
 
         with M' wf obtain m' Ts' T' D'' where 
           C': "P \<turnstile> C' sees M': Ts'\<rightarrow>T' = m' in D''" and

@@ -380,7 +380,7 @@ lemma relevant_entries_append [simp]:
 
 lemma xcpt_app_append [iff]:
   "xcpt_app i P pc mxs (xt@xt') \<tau> = (xcpt_app i P pc mxs xt \<tau> \<and> xcpt_app i P pc mxs xt' \<tau>)"
-  by (unfold xcpt_app_def) fastsimp
+  by (unfold xcpt_app_def) fastforce
 
 lemma xcpt_eff_append [simp]:
   "xcpt_eff i P pc \<tau> (xt@xt') = xcpt_eff i P pc \<tau> xt @ xcpt_eff i P pc \<tau> xt'"

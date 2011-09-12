@@ -106,7 +106,7 @@ lemma new_notin [simp,intro]:
  "finite A \<Longrightarrow> new (A) \<notin> A"
   apply (unfold new_def)
   apply (rule someI2_ex)
-  apply (fastsimp intro: ex_new_if_finite)
+  apply (fastforce intro: ex_new_if_finite)
   apply simp
   done
 
@@ -114,7 +114,7 @@ lemma new_not_Null [simp,intro]:
   "finite A \<Longrightarrow> new (A) \<noteq> Null"
   apply (unfold new_def)
   apply (rule someI2_ex)
-  apply (fastsimp intro: ex_new_if_finite)
+  apply (fastforce intro: ex_new_if_finite)
   apply simp
 done
 

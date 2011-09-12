@@ -381,13 +381,13 @@ lemma InvokeElim1: "\<lbrakk>(M, l, (os, S, h), n, ll, t) \<in> Step; get_ins M 
                            mbody_is C m (par,code, l0) \<and> (os,par,R,ops):Frame \<and> 
                            ((par,code,l0), l0, ([], R, h), k, hh, v) \<in> Exec \<and> 
                            n = Suc k \<and> t = (v # ops, S, hh) \<and> ll = l+1"
-by (erule eval_cases, simp_all, fastsimp)
+by (erule eval_cases, simp_all, fastforce)
 lemma InvokeElim: "\<lbrakk>(M, l, s, n, ll, t) \<in> Step; get_ins M l = Some (invokeS C m)\<rbrakk>
                    \<Longrightarrow> \<exists> code l0 v ops hh u k R par. 
                            mbody_is C m (par,code, l0) \<and> (fst s,par,R,ops):Frame \<and> 
                            ((par,code,l0), l0, ([], R, snd(snd s)), k, hh, v) \<in> Exec \<and> 
                            n = Suc k \<and> t = (v # ops, fst (snd s), hh) \<and> ll = l+1"
-by (erule eval_cases, simp_all, fastsimp)
+by (erule eval_cases, simp_all, fastforce)
 
 lemma RetElim1: "\<lbrakk>(M, l, (os, S, h), n, ll, t) \<in> Step; get_ins M l = Some (vreturn)\<rbrakk> \<Longrightarrow> False"
 by (erule eval_cases, simp_all)
@@ -440,13 +440,13 @@ apply (erule Step.cases)
   apply clarsimp apply (drule BinopElim1) apply simp apply clarsimp
   apply clarsimp apply (drule UnopElim1) apply simp apply clarsimp
   apply clarsimp apply (drule NewElim1) apply simp apply clarsimp
-  apply clarsimp apply (drule GetElim1) apply fastsimp apply clarsimp
-  apply clarsimp apply (drule PutElim1) apply fastsimp apply clarsimp
+  apply clarsimp apply (drule GetElim1) apply fastforce apply clarsimp
+  apply clarsimp apply (drule PutElim1) apply fastforce apply clarsimp
   apply clarsimp apply (drule CastElim1) apply simp apply clarsimp
   apply clarsimp apply (drule GotoElim1) apply simp apply clarsimp
   apply clarsimp apply (drule IfElim1) apply simp apply clarsimp
   apply clarsimp apply (drule IfElim1) apply simp apply clarsimp
-  apply clarsimp apply (drule InvokeElim1) apply simp apply fastsimp apply clarsimp
+  apply clarsimp apply (drule InvokeElim1) apply simp apply fastforce apply clarsimp
     apply (erule thin_rl)
     apply (simp add: mbody_is_def, clarsimp)
     apply (drule Frame_deterministic, assumption, clarsimp)

@@ -78,7 +78,7 @@ lemma redT_updWs_Some_otherD:
   \<Longrightarrow> (case w of InWS w' \<Rightarrow> ws t = \<lfloor>InWS w'\<rfloor> | _ \<Rightarrow> ws t = \<lfloor>w\<rfloor> \<or> (\<exists>w'. ws t = \<lfloor>InWS w'\<rfloor>))"
 unfolding redT_updWs_def
 apply(induct arbitrary: w rule: rtrancl3p.induct)
-apply(fastsimp split: wait_set_status.splits dest: redT_updW_Some_otherD)+
+apply(fastforce split: wait_set_status.splits dest: redT_updW_Some_otherD)+
 done
 
 lemma redT_updW_None_SomeD:
@@ -169,7 +169,7 @@ by(induct rule: rtrancl3p_converse_induct)(auto dest: redT_updWs_None_SomeD[unfo
 lemma redT_updW_Woken_Up_same_no_Notified_Interrupted:
   "\<lbrakk> redT_updW t ws wa ws'; ws' t = \<lfloor>PostWS w\<rfloor>; ws t = \<lfloor>PostWS w\<rfloor>; \<And>w. wa \<noteq> Suspend w \<rbrakk>
   \<Longrightarrow> wa \<noteq> Notified \<and> wa \<noteq> WokenUp"
-by(fastsimp)
+by(fastforce)
 
 lemma redT_updWs_Woken_Up_same_no_Notified_Interrupted:
   "\<lbrakk> redT_updWs t ws was ws'; ws' t = \<lfloor>PostWS w\<rfloor>; ws t = \<lfloor>PostWS w\<rfloor>; \<And>w. Suspend w \<notin> set was \<rbrakk>

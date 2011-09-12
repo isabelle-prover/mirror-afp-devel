@@ -36,10 +36,10 @@ lemma label_less_num_inner_nodes:
   "labels c l c' \<Longrightarrow> l < #:c"
 proof(induct c arbitrary:l c')
   case Skip 
-  from `labels Skip l c'` show ?case by(fastsimp elim:labels.cases)
+  from `labels Skip l c'` show ?case by(fastforce elim:labels.cases)
 next
   case (LAss V e) 
-  from `labels (V:=e) l c'` show ?case by(fastsimp elim:labels.cases)
+  from `labels (V:=e) l c'` show ?case by(fastforce elim:labels.cases)
 next
   case (Seq c\<^isub>1 c\<^isub>2)
   note IH1 = `\<And>l c'. labels c\<^isub>1 l c' \<Longrightarrow> l < #:c\<^isub>1`
@@ -56,7 +56,7 @@ next
   case (While b c)
   note IH = `\<And>l c'. labels c l c' \<Longrightarrow> l < #:c`
   from `labels (while (b) c) l c'` IH show ?case
-    by simp(erule labels.cases,fastsimp+)
+    by simp(erule labels.cases,fastforce+)
 qed
 
 
@@ -67,7 +67,7 @@ lemma less_num_inner_nodes_label:
 proof(induct c arbitrary:l)
   case Skip
   from `l < #:Skip` have "l = 0" by simp
-  thus ?case by(fastsimp intro:Labels_Base)
+  thus ?case by(fastforce intro:Labels_Base)
 next
   case (LAss V e)
   from `l < #:(V:=e)` have "l = 0 \<or> l = 1" by auto
@@ -80,7 +80,7 @@ next
   proof(cases "l < #:c\<^isub>1")
     case True
     from IH1[OF this] obtain c' where "labels c\<^isub>1 l c'" by auto
-    hence "labels (c\<^isub>1;;c\<^isub>2) l (c';;c\<^isub>2)" by(fastsimp intro:Labels_Seq1)
+    hence "labels (c\<^isub>1;;c\<^isub>2) l (c';;c\<^isub>2)" by(fastforce intro:Labels_Seq1)
     thus ?thesis by auto
   next
     case False
@@ -88,7 +88,7 @@ next
     then obtain l' where "l = l' + #:c\<^isub>1" and "l' = l - #:c\<^isub>1" by simp
     from `l = l' + #:c\<^isub>1` `l < #:c\<^isub>1;;c\<^isub>2` have "l' < #:c\<^isub>2" by simp
     from IH2[OF this] obtain c' where "labels c\<^isub>2 l' c'" by auto
-    with `l = l' + #:c\<^isub>1` have "labels (c\<^isub>1;;c\<^isub>2) l c'" by(fastsimp intro:Labels_Seq2)
+    with `l = l' + #:c\<^isub>1` have "labels (c\<^isub>1;;c\<^isub>2) l c'" by(fastforce intro:Labels_Seq2)
     thus ?thesis by auto
   qed
 next
@@ -98,7 +98,7 @@ next
   show ?case
   proof(cases "l = 0")
     case True
-    thus ?thesis by(fastsimp intro:Labels_Base)
+    thus ?thesis by(fastforce intro:Labels_Base)
   next
     case False
     hence "0 < l" by simp
@@ -108,7 +108,7 @@ next
       case True
       from IH1[OF this] obtain c' where "labels c\<^isub>1 l' c'" by auto
       with `l = l' + 1` have "labels (if (b) c\<^isub>1 else c\<^isub>2) l c'"
-        by(fastsimp dest:Labels_CondTrue)
+        by(fastforce dest:Labels_CondTrue)
       thus ?thesis by auto
     next
       case False
@@ -118,7 +118,7 @@ next
       have "l'' < #:c\<^isub>2" by simp
       from IH2[OF this] obtain c' where "labels c\<^isub>2 l'' c'" by auto
       with `l' = l'' + #:c\<^isub>1` `l = l' + 1` have "labels (if (b) c\<^isub>1 else c\<^isub>2) l c'"
-        by(fastsimp dest:Labels_CondFalse)
+        by(fastforce dest:Labels_CondFalse)
       thus ?thesis by auto
     qed
   qed
@@ -129,14 +129,14 @@ next
   proof(cases "l < 1")
     case True
     hence "l = 0" by simp
-    thus ?thesis by(fastsimp intro:Labels_Base)
+    thus ?thesis by(fastforce intro:Labels_Base)
   next
     case False
     show ?thesis
     proof(cases "l < 2")
       case True
       with `\<not> l < 1` have "l = 1" by simp
-      thus ?thesis by(fastsimp intro:Labels_WhileExit)
+      thus ?thesis by(fastforce intro:Labels_WhileExit)
     next
       case False
       with `\<not> l < 1` have "2 \<le> l" by simp
@@ -145,7 +145,7 @@ next
       from `l = l' + 2` `l < #:while (b) c'` have "l' < #:c'" by simp
       from IH[OF this] obtain c'' where "labels c' l' c''" by auto
       with `l = l' + 2` have "labels (while (b) c') l (c'';;while (b) c')"
-        by(fastsimp dest:Labels_WhileBody)
+        by(fastforce dest:Labels_WhileBody)
       thus ?thesis by auto
     qed
   qed
@@ -162,9 +162,9 @@ proof(induct rule: labels.induct)
 next
   case (Labels_Seq1 c\<^isub>1 l c c\<^isub>2)
   note IH = `\<And>c''. labels c\<^isub>1 l c'' \<Longrightarrow> c = c''`
-  from `labels c\<^isub>1 l c` have "l < #:c\<^isub>1" by(fastsimp intro:label_less_num_inner_nodes)
+  from `labels c\<^isub>1 l c` have "l < #:c\<^isub>1" by(fastforce intro:label_less_num_inner_nodes)
   with `labels (c\<^isub>1;;c\<^isub>2) l c''` obtain cx where "c'' = cx;;c\<^isub>2 \<and> labels c\<^isub>1 l cx"
-    by(fastsimp elim:labels.cases intro:Labels_Base)
+    by(fastforce elim:labels.cases intro:Labels_Base)
   hence [simp]:"c'' = cx;;c\<^isub>2" and "labels c\<^isub>1 l cx" by simp_all
   from IH[OF `labels c\<^isub>1 l cx`] show ?case by simp
 next
@@ -177,14 +177,14 @@ next
   case (Labels_CondTrue c\<^isub>1 l c b c\<^isub>2)
   note IH = `\<And>c''. labels c\<^isub>1 l c'' \<Longrightarrow>  c = c''`
   from `labels (if (b) c\<^isub>1 else c\<^isub>2) (l + 1) c''` `labels c\<^isub>1 l c` have "labels c\<^isub>1 l c''"
-    by(fastsimp elim:labels.cases dest:label_less_num_inner_nodes)
+    by(fastforce elim:labels.cases dest:label_less_num_inner_nodes)
   from IH[OF this] show ?case .
 next
   case (Labels_CondFalse c\<^isub>2 l c b c\<^isub>1)
   note IH = `\<And>c''. labels c\<^isub>2 l c'' \<Longrightarrow>  c = c''`
   from `labels (if (b) c\<^isub>1 else c\<^isub>2) (l + #:c\<^isub>1 + 1) c''` `labels c\<^isub>2 l c`
   have "labels c\<^isub>2 l c''"
-    by(fastsimp elim:labels.cases dest:label_less_num_inner_nodes)
+    by(fastforce elim:labels.cases dest:label_less_num_inner_nodes)
   from IH[OF this] show ?case .
 next
   case (Labels_WhileBody c' l c b)
@@ -194,7 +194,7 @@ next
     by -(erule labels.cases,auto)
   hence [simp]:"c'' = cx;;while (b) c'" and "labels c' l cx" by simp_all
   from IH[OF `labels c' l cx`] show ?case by simp
-qed (fastsimp elim:labels.cases)+
+qed (fastforce elim:labels.cases)+
 
 
 end

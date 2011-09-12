@@ -90,7 +90,7 @@ next
     and "valid_edge a'" and "targetnode a' -as'\<rightarrow>* n'"
     by(auto elim:path_split_Cons)
   from `n -as\<rightarrow>* n'` `as = a'#as'` have "last(targetnodes as) = n'"
-    by(fastsimp intro:path_targetnode)
+    by(fastforce intro:path_targetnode)
   from `preds es' s'` `es' = ex'#esx'` have "pred ex' s'"
     and "preds esx' (transfer ex' s')" by simp_all
   show ?case
@@ -119,12 +119,12 @@ next
           { fix V' assume "V' \<in> Use n"
             with True `valid_edge a'`
             have "(V',[],a'#[]@[]) \<in> dependent_live_vars n'"
-              by(fastsimp intro:dep_vars_Cons_cdep DynPDG_path_Nil 
+              by(fastforce intro:dep_vars_Cons_cdep DynPDG_path_Nil 
                           simp:targetnodes_def)
             with all `as = a'#as'` have "state_val s V' = state_val s' V'"
-              by fastsimp }
+              by fastforce }
           with `pred ex' s'` `valid_edge a'`
-          show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
+          show ?thesis by(fastforce elim:CFG_edge_Uses_pred_equal)
         next
           case False
           from ex True Predicate have "kind a' = (Q)\<^isub>\<surd>" by(auto split:split_if_asm)
@@ -144,7 +144,7 @@ next
             proof
               assume "asx = [a'] \<and> asx' = []"
               with `n'' -asx'\<rightarrow>\<^bsub>cd\<^esub> nx'` show False
-                by(fastsimp elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
+                by(fastforce elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
             next
               assume "asx = [] \<and> asx' = [a']"
               with `nx -asx\<rightarrow>\<^isub>d* n''` have "nx = n''" and "asx' = [a']"
@@ -162,7 +162,7 @@ next
             proof
               assume "asx = [a'] \<and> asx' = []"
               with `n'' -{V}asx'\<rightarrow>\<^bsub>dd\<^esub> nx'` have False
-                by(fastsimp elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
+                by(fastforce elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
               thus ?thesis by simp
             next
               assume "asx = [] \<and> asx' = [a']"
@@ -171,16 +171,16 @@ next
               { fix V' assume "V' \<in> Use n"
                 from `n'' -{V}asx'\<rightarrow>\<^bsub>dd\<^esub> nx'` `asx = [] \<and> asx' = [a']` `n' = nx'`
                 have "(V,[],[]) \<in> dependent_live_vars n'"
-                  by(fastsimp intro:dep_vars_Use elim:DynPDG_edge.cases
+                  by(fastforce intro:dep_vars_Use elim:DynPDG_edge.cases
                     simp:dyn_data_dependence_def)
                 with `V' \<in> Use n` `n'' -{V}asx'\<rightarrow>\<^bsub>dd\<^esub> nx'` `asx = [] \<and> asx' = [a']`
                   `n = nx` `nx = n''` `n' = nx'`
                 have "(V',[],[a']) \<in> dependent_live_vars n'"
                   by(auto elim:dep_vars_Cons_ddep simp:targetnodes_def)
                 with all `as = a'#as'` have "state_val s V' = state_val s' V'"
-                  by fastsimp }
+                  by fastforce }
               with `pred ex' s'` `valid_edge a'` ex ex' True `x \<longrightarrow> y` show ?thesis
-                by(fastsimp elim:CFG_edge_Uses_pred_equal)
+                by(fastforce elim:CFG_edge_Uses_pred_equal)
             qed
           qed
         qed
@@ -198,7 +198,7 @@ next
             fix V' assume "V' \<in> Use n"
             with `(V,[],[]) \<in> dependent_live_vars n'` True
             have "(V',[],[a']) \<in> dependent_live_vars n'"
-              by(fastsimp intro:dep_vars_Cons_ddep simp:targetnodes_def)
+              by(fastforce intro:dep_vars_Cons_ddep simp:targetnodes_def)
             with all `as = a'#as'` show "state_val s V' = state_val s' V'" by auto
           qed
           with `valid_edge a'` `pred ex' s'` `pred ex s`
@@ -208,13 +208,13 @@ next
           with `V \<in> Def n` have "state_val (transfer (kind a') s) V = 
                          state_val (transfer (kind a') s') V"
             by simp
-          thus ?thesis by fastsimp
+          thus ?thesis by fastforce
         next
           case False
           with `last(targetnodes as) = n'` `as = a'#as'`
             `(V,[],[]) \<in> dependent_live_vars n'`
           have "(V,[a'],[a']) \<in> dependent_live_vars n'"
-            by(fastsimp intro:dep_vars_Cons_keep)
+            by(fastforce intro:dep_vars_Cons_keep)
           from `(V,[a'],[a']) \<in> dependent_live_vars n'` all `as = a'#as'`
           have states_eq:"state_val s V = state_val s' V"
             by auto
@@ -248,11 +248,11 @@ next
             by(rule dep_vars_Use)
           from `slice_path as = x#xs` `as = a'#as'` `\<not> x` 
           have "\<not> n -[a']\<rightarrow>\<^isub>d* n'" by(simp add:targetnodes_def)
-          hence "\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'" by(fastsimp dest:DynPDG_path_ddep)
+          hence "\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'" by(fastforce dest:DynPDG_path_ddep)
           with `last(targetnodes as) = n'` `as = a'#as'`
             `(V,[],[]) \<in> dependent_live_vars n'`
           have "(V,[a'],[a']) \<in> dependent_live_vars n'"
-            by(fastsimp intro:dep_vars_Cons_keep)
+            by(fastforce intro:dep_vars_Cons_keep)
           with all `as = a'#as'` have "state_val s V = state_val s' V" by auto
           from `valid_edge a'` `V \<in> Use n'` `pred ex' s'`
             `\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'` `last(targetnodes as) = n'` `as = a'#as'`
@@ -278,11 +278,11 @@ next
             by(rule dep_vars_Use)
           from `slice_path as = x#xs` `as = a'#as'` `\<not> x` 
           have "\<not> n -[a']\<rightarrow>\<^isub>d* n'" by(simp add:targetnodes_def)
-          hence no_dep:"\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'" by(fastsimp dest:DynPDG_path_ddep)
+          hence no_dep:"\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'" by(fastforce dest:DynPDG_path_ddep)
           with `last(targetnodes as) = n'` `as = a'#as'`
             `(V,[],[]) \<in> dependent_live_vars n'`
           have "(V,[a'],[a']) \<in> dependent_live_vars n'"
-            by(fastsimp intro:dep_vars_Cons_keep)
+            by(fastforce intro:dep_vars_Cons_keep)
           with all `as = a'#as'` have "state_val s V = state_val s' V" by auto }
         with `as = a'#as'` cases_x `es = ex#esx` `es' = ex'#esx'` `pred ex s`
         show ?thesis by(cases "kind a'",auto)
@@ -332,22 +332,22 @@ next
             { fix V assume "V \<in> Use n"
               with cdep `last(targetnodes as) = n'` `as = a'#as'`
               have "(V,[],as) \<in> dependent_live_vars n'"
-                by(fastsimp intro:dep_vars_Cons_cdep)
+                by(fastforce intro:dep_vars_Cons_cdep)
               with all have "state_val s V = state_val s' V" by blast }
             with `valid_edge a'` `pred ex' s'`
-            show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
+            show ?thesis by(fastforce elim:CFG_edge_Uses_pred_equal)
           next
             case (DynPDG_path_ddep_Append V n'' asx asx')
             from `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` obtain ai ais where "asx = ai#ais"
               by(cases asx)(auto dest:DynPDG_ddep_edge_CFG_path)
             with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` have "sourcenode ai = n"
-              by(fastsimp dest:DynPDG_ddep_edge_CFG_path elim:path.cases)
+              by(fastforce dest:DynPDG_ddep_edge_CFG_path elim:path.cases)
             from `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `asx = ai#ais`
             have "last(targetnodes asx) = n''"
-              by(fastsimp intro:path_targetnode dest:DynPDG_ddep_edge_CFG_path)
+              by(fastforce intro:path_targetnode dest:DynPDG_ddep_edge_CFG_path)
             { fix V' assume "V' \<in> Use n"
               from `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` have "(V,[],[]) \<in> dependent_live_vars n''"
-                by(fastsimp elim:DynPDG_edge.cases dep_vars_Use 
+                by(fastforce elim:DynPDG_edge.cases dep_vars_Use 
                             simp:dyn_data_dependence_def)
               with `n'' -asx'\<rightarrow>\<^isub>d* n'` have "(V,[],[]@asx') \<in> dependent_live_vars n'"
                 by(rule dependent_live_vars_dep_dependent_live_vars)
@@ -355,29 +355,29 @@ next
               proof(cases "asx' = []")
                 case True
                 with `n'' -asx'\<rightarrow>\<^isub>d* n'` have "n'' = n'"
-                  by(fastsimp intro:DynPDG_empty_path_eq_nodes)
+                  by(fastforce intro:DynPDG_empty_path_eq_nodes)
                 with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `V' \<in> Use n` True `as = a'#as'`
                   `a'#as' = asx@asx'`
-                show ?thesis by(fastsimp intro:dependent_live_vars_ddep_empty_fst)
+                show ?thesis by(fastforce intro:dependent_live_vars_ddep_empty_fst)
               next
                 case False
                 with `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `asx = ai#ais`
                   `(V,[],[]@asx') \<in> dependent_live_vars n'`
                 have "(V,ais@[],ais@asx') \<in> dependent_live_vars n'"
-                  by(fastsimp intro:ddep_dependent_live_vars_keep_notempty)
+                  by(fastforce intro:ddep_dependent_live_vars_keep_notempty)
                 from `n'' -asx'\<rightarrow>\<^isub>d* n'` False have "last(targetnodes asx') = n'"
                   by -(rule path_targetnode,rule DynPDG_path_CFG_path)
                 with `(V,ais@[],ais@asx') \<in> dependent_live_vars n'`
                   `V' \<in> Use n` `n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n''` `asx = ai#ais`
                   `sourcenode ai = n` `last(targetnodes asx) = n''` False
                 have "(V',[],ai#ais@asx') \<in> dependent_live_vars n'"
-                  by(fastsimp intro:dep_vars_Cons_ddep simp:targetnodes_def)
+                  by(fastforce intro:dep_vars_Cons_ddep simp:targetnodes_def)
                 with `asx = ai#ais` `a'#as' = asx@asx'` `as = a'#as'`
                 show ?thesis by simp
               qed
               with all have "state_val s V' = state_val s' V'" by blast }
             with `pred ex' s'` `valid_edge a'`
-            show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
+            show ?thesis by(fastforce elim:CFG_edge_Uses_pred_equal)
           qed
         qed
       qed simp
@@ -398,11 +398,11 @@ next
           hence "(V,[],[]) \<in> dependent_live_vars (sourcenode a')"
             by(rule dep_vars_Use)
           with `n -a'#as'\<rightarrow>\<^isub>d* n'` have "(V,[],[]@a'#as') \<in> dependent_live_vars n'"
-            by(fastsimp intro:dependent_live_vars_dep_dependent_live_vars)
+            by(fastforce intro:dependent_live_vars_dep_dependent_live_vars)
           with all `as = a'#as'` have "state_val s V = state_val s' V"
-            by fastsimp }
+            by fastforce }
         with `pred ex' s'` `valid_edge a'` have "pred ex s"
-          by(fastsimp intro:CFG_edge_Uses_pred_equal)
+          by(fastforce intro:CFG_edge_Uses_pred_equal)
         show ?thesis
         proof(cases "V' \<in> Def n")
           case True
@@ -423,7 +423,7 @@ next
           with `(V',xs',as') \<in> dependent_live_vars n'` `V'' \<in> Use n`
             `last(targetnodes as) = n'` `as = a'#as'`
           have "(V'',[],as) \<in> dependent_live_vars n'" 
-            by(fastsimp intro:dep_vars_Cons_ddep)
+            by(fastforce intro:dep_vars_Cons_ddep)
           with all have "state_val s V'' = state_val s' V''" by blast
           with `state_val s V'' \<noteq> state_val s' V''` have False by simp
           thus ?thesis by simp
@@ -431,11 +431,11 @@ next
           case False
           with `valid_edge a'` `pred ex s`
           have "state_val (transfer (kind a') s) V' = state_val s V'"
-            by(fastsimp intro:CFG_edge_no_Def_equal)
+            by(fastforce intro:CFG_edge_no_Def_equal)
           moreover
           from False `valid_edge a'` `pred ex' s'`
           have "state_val (transfer (kind a') s') V' = state_val s' V'"
-            by(fastsimp intro:CFG_edge_no_Def_equal)
+            by(fastforce intro:CFG_edge_no_Def_equal)
           ultimately have "state_val s V' \<noteq> state_val s' V'"
             using `state_val (transfer ex s) V' \<noteq> state_val (transfer ex' s') V'`
             by simp
@@ -445,7 +445,7 @@ next
           with `(V',xs',as') \<in> dependent_live_vars n'` `last(targetnodes as) = n'`
             `as = a'#as'`
           have "(V',a'#xs',a'#as') \<in> dependent_live_vars n'"
-            by(fastsimp intro:dep_vars_Cons_keep)
+            by(fastforce intro:dep_vars_Cons_keep)
           with `as = a'#as'` all have "state_val s V' = state_val s' V'" by auto
           with `state_val s V' \<noteq> state_val s' V'` have False by simp
           thus ?thesis by simp
@@ -459,7 +459,7 @@ next
             by -(drule dependent_live_vars_dependent_edge,
               auto dest:DynPDG_path_ddep DynPDG_path_Append)
           with False have "False" by simp }
-        hence "V' \<notin> Def (sourcenode a')" by fastsimp
+        hence "V' \<notin> Def (sourcenode a')" by fastforce
         from False `slice_path as = x#xs` `as = a'#as'`
           `last(targetnodes as) = n'` `as' \<noteq> []`
         have "\<not> x" by(auto simp:targetnodes_def)
@@ -471,7 +471,7 @@ next
           with ex' have [simp]:"ex' = kind a'" by simp
           from `V' \<notin> Def (sourcenode a')` `valid_edge a'` `pred ex' s'`
           have states_eq:"state_val (transfer (kind a') s') V' = state_val s' V'"
-            by(fastsimp intro:CFG_edge_no_Def_equal)
+            by(fastforce intro:CFG_edge_no_Def_equal)
           from cases have "state_val s V' = state_val (transfer ex s) V'"
             by(cases "kind a'") auto
           with states_eq
@@ -493,7 +493,7 @@ next
         with `(V',xs',as') \<in> dependent_live_vars n'` `last(targetnodes as) = n'`
           `as = a'#as'`
         have "(V',a'#xs',a'#as') \<in> dependent_live_vars n'"
-          by(fastsimp intro:dep_vars_Cons_keep)
+          by(fastforce intro:dep_vars_Cons_keep)
         with `as = a'#as'` all have "state_val s V' = state_val s' V'" by auto
         with `state_val s V' \<noteq> state_val s' V'` have False by simp
         thus ?thesis by simp
@@ -557,7 +557,7 @@ proof(atomize_elim)
     and "transfers (kinds as) s = s'"
     and "preds (kinds as) s"
     and "n' \<triangleq> c'"
-    by(fastsimp dest:fundamental_property)
+    by(fastforce dest:fundamental_property)
   with `n -as\<rightarrow>* n'` `preds (kinds as) s` 
   have "\<forall>V \<in> Use n'. state_val (transfers (slice_kinds as) s) V =
     state_val (transfers (kinds as) s) V" and "preds (slice_kinds as) s"

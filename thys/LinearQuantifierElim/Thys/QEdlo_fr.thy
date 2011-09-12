@@ -80,9 +80,9 @@ proof(induct f)
     qed
   qed
 next
-  case (And f1 f2) thus ?case by (fastsimp)
+  case (And f1 f2) thus ?case by (fastforce)
 next
-  case (Or f1 f2) thus ?case by (fastsimp)
+  case (Or f1 f2) thus ?case by (fastforce)
 qed simp+
 
 lemma I_subst\<^isub>22:
@@ -153,7 +153,7 @@ proof
             (\<forall>x\<in>EQ \<phi> xs. \<not>DLO.I \<phi> (x#xs))"
     with `?QE` `nqfree \<phi>` obtain l u
       where "DLO.I (subst\<^isub>2 l u \<phi>) xs" and "xs!l < xs!u"
-      by(fastsimp simp: qe_interior\<^isub>1_def set_lbounds set_ubounds I_subst EQ_conv_set_ebounds)
+      by(fastforce simp: qe_interior\<^isub>1_def set_lbounds set_ubounds I_subst EQ_conv_set_ebounds)
     moreover then obtain x where "xs!l < x \<and> x < xs!u" by(metis dense)
     ultimately have "DLO.I \<phi> (x # xs)"
       using `nqfree \<phi>` I_subst\<^isub>21[OF `nqfree \<phi>` `xs!l < xs!u`] by simp
@@ -172,14 +172,14 @@ next
     and "\<forall>k \<in> ?E. \<not> DLO.I (subst \<phi> k) xs"
     hence noE: "\<forall>e \<in> EQ \<phi> xs. \<not> DLO.I \<phi> (e#xs)"
       using `nqfree \<phi>` by (force simp:set_ebounds EQ_def I_subst)
-    hence "x \<notin> EQ \<phi> xs" using x by fastsimp
+    hence "x \<notin> EQ \<phi> xs" using x by fastforce
     obtain l where "l : LB \<phi> xs" "l < x"
       using LBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^isub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     obtain u where "u : UB \<phi> xs" "x < u"
       using UBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^isub>+ \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     have "\<exists>l\<in>LB \<phi> xs. \<exists>u\<in>UB \<phi> xs. l<x \<and> x<u \<and> nolub \<phi> xs l x u \<and> (\<forall>y. l < y \<and> y < u \<longrightarrow> DLO.I \<phi> (y#xs))"
       using dense_interval[where P = "\<lambda>x. DLO.I \<phi> (x#xs)", OF finite_LB finite_UB `l:LB \<phi> xs` `u:UB \<phi> xs` `l<x` `x<u` x] x innermost_intvl[OF `nqfree \<phi>` _ _ _ `x \<notin> EQ \<phi> xs`]
-      by (simp add:nolub_def) fastsimp
+      by (simp add:nolub_def) fastforce
     then obtain m n where
       "Less (Suc m) 0 : set ?as" "Less 0 (Suc n) : set ?as"
       "xs!m < x \<and> x < xs!n"
@@ -190,7 +190,7 @@ next
     hence "DLO.I (subst\<^isub>2 m n \<phi>) xs" using noE
       by(force intro!: I_subst\<^isub>22[OF `nqfree \<phi>`])
     ultimately have ?QE
-      by(fastsimp simp add:qe_interior\<^isub>1_def bex_Un set_lbounds set_ubounds)
+      by(fastforce simp add:qe_interior\<^isub>1_def bex_Un set_lbounds set_ubounds)
   } ultimately show ?QE by blast
 qed
 

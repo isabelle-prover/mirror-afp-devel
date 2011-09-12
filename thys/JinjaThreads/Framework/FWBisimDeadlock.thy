@@ -23,7 +23,7 @@ proof -
     with cao1 have "r1.cond_action_ok s1 t ct"
       unfolding r1.cond_action_oks_conv_set by auto
     thus "r2.cond_action_ok ?s2 t ct" using ex_final1_conv_ex_final2
-      by(cases ct)(fastsimp intro: someI_ex[where P=final2])+
+      by(cases ct)(fastforce intro: someI_ex[where P=final2])+
   qed
   hence "r2.actions_ok ?s2 t ta2"
     using assms by(auto simp add: ta_bisim_def split del: split_if elim: rev_iffD1[OF _ thread_oks_bisim_inv])
@@ -228,13 +228,13 @@ proof -
   from mfinal1_inv_simulation[OF mbisim]
   obtain ls2 ts2 m2 ws2 is2 where red1: "r2.mthr.silent_moves s2 (ls2, (ts2, m2), ws2, is2)"
     and "s1 \<approx>m (ls2, (ts2, m2), ws2, is2)" and "m2 = shr s2" 
-    and fin: "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread (ls2, (ts2, m2), ws2, is2) t" by fastsimp
+    and fin: "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread (ls2, (ts2, m2), ws2, is2) t" by fastforce
   from no_\<tau>Move1_\<tau>s_to_no_\<tau>Move2[OF `s1 \<approx>m (ls2, (ts2, m2), ws2, is2)`]
   obtain ts2' where red2: "r2.mthr.silent_moves (ls2, (ts2, m2), ws2, is2) (ls2, (ts2', m2), ws2, is2)"
     and no_\<tau>: "\<And>t x1 x2 x2' m2'. \<lbrakk> wset s1 t = None; thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>; ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>;
                            \<And>x' m'. r1.silent_move t (x1, shr s1) (x', m') \<Longrightarrow> False \<rbrakk>
               \<Longrightarrow>  \<not> r2.silent_move t (x2, m2) (x2', m2')"
-    and mbisim: "s1 \<approx>m (ls2, (ts2', m2), ws2, is2)" by fastsimp
+    and mbisim: "s1 \<approx>m (ls2, (ts2', m2), ws2, is2)" by fastforce
   from mbisim have mbisim_eqs: "ls2 = locks s1" "ws2 = wset s1" "is2 = interrupts s1"
     by(simp_all add: mbisim_def)
   let ?s2 = "(ls2, (ts2', m2), ws2, is2)"
@@ -256,7 +256,7 @@ proof -
       note `ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>` moreover
       { from `r1.must_sync t x1 (shr s1)` obtain ta1 x1' m1'
 	  where r1: "t \<turnstile> (x1, shr s1) -1-ta1\<rightarrow> (x1', m1')"
-          and s1': "\<exists>s1'. r1.actions_ok s1' t ta1" by(fastsimp elim: r1.must_syncE)
+          and s1': "\<exists>s1'. r1.actions_ok s1' t ta1" by(fastforce elim: r1.must_syncE)
 	have "\<not> \<tau>move1 (x1, shr s1) ta1 (x1', m1')" (is "\<not> ?\<tau>")
 	proof
 	  assume "?\<tau>"
@@ -479,13 +479,13 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
   from mfinal1_inv_simulation[OF mbisim]
   obtain ls2 ts2 m2 ws2 is2 where red1: "r2.mthr.silent_moves s2 (ls2, (ts2, m2), ws2, is2)"
     and "s1 \<approx>m (ls2, (ts2, m2), ws2, is2)" and "m2 = shr s2" 
-    and fin: "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread (ls2, (ts2, m2), ws2, is2) t" by fastsimp
+    and fin: "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread (ls2, (ts2, m2), ws2, is2) t" by fastforce
   from no_\<tau>Move1_\<tau>s_to_no_\<tau>Move2[OF `s1 \<approx>m (ls2, (ts2, m2), ws2, is2)`]
   obtain ts2' where red2: "r2.mthr.silent_moves (ls2, (ts2, m2), ws2, is2) (ls2, (ts2', m2), ws2, is2)"
     and no_\<tau>: "\<And>t x1 x2 x2' m2'. \<lbrakk> wset s1 t = None; thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>; ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>;
                            \<And>x' m'. r1.silent_move t (x1, shr s1) (x', m') \<Longrightarrow> False \<rbrakk>
               \<Longrightarrow>  \<not> r2.silent_move t (x2, m2) (x2', m2')"
-    and mbisim: "s1 \<approx>m (ls2, (ts2', m2), ws2, is2)" by fastsimp
+    and mbisim: "s1 \<approx>m (ls2, (ts2', m2), ws2, is2)" by fastforce
   from mbisim have mbisim_eqs: "ls2 = locks s1" "ws2 = wset s1" "is2 = interrupts s1"
     by(simp_all add: mbisim_def)
   let ?s2 = "(ls2, (ts2', m2), ws2, is2)"
@@ -512,7 +512,7 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
     {
       from `r1.must_sync t x1 (shr s1)` obtain ta1 x1' m1'
 	where r1: "t \<turnstile> (x1, shr s1) -1-ta1\<rightarrow> (x1', m1')"
-        and s1': "\<exists>s1'. r1.actions_ok s1' t ta1" by(fastsimp elim: r1.must_syncE)
+        and s1': "\<exists>s1'. r1.actions_ok s1' t ta1" by(fastforce elim: r1.must_syncE)
       have "\<not> \<tau>move1 (x1, shr s1) ta1 (x1', m1')" (is "\<not> ?\<tau>")
       proof
 	assume "?\<tau>"
@@ -591,7 +591,7 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
         with interrupt show ?thesis by(auto simp add: mbisim_eqs)
       qed
       with lt have "\<exists>lt\<in>LT. r2.must_wait ?s2 t lt (dom (thr ?s2))" by blast }
-    ultimately show ?case by fastsimp
+    ultimately show ?case by fastforce
   next
     case (goal2 t x2 ln l)
     note dead moreover
@@ -732,7 +732,7 @@ proof -
     and LT: "LT = collect_locks \<lbrace>ta1\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta1\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta1\<rbrace>\<^bsub>i\<^esub>" by(rule r1.can_syncE)
   from bisimulation.simulation1[OF bisimulation_axioms, OF bisim red1] obtain x2' ta2 m2'
     where red2: "t \<turnstile> (x2, m2) -2-ta2\<rightarrow> (x2', m2')" 
-    and tasim: "ta1 \<sim>m ta2" by fastsimp
+    and tasim: "ta1 \<sim>m ta2" by fastforce
   from tasim LT have "LT = collect_locks \<lbrace>ta2\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta2\<rbrace>\<^bsub>i\<^esub>"
     by(auto simp add: ta_bisim_def)
   with red2 show ?thesis by(rule r2.can_syncI)
@@ -752,10 +752,10 @@ lemma bisim_must_sync_preserve1:
   shows "t \<turnstile> \<langle>x2, m2\<rangle> \<wrong>2"
 proof -
   from ms obtain ta1 x1' m1' where red1: "t \<turnstile> (x1, m1) -1-ta1\<rightarrow> (x1', m1')"
-    and s1': "\<exists>s1'. r1.actions_ok s1' t ta1" by(fastsimp elim: r1.must_syncE)
+    and s1': "\<exists>s1'. r1.actions_ok s1' t ta1" by(fastforce elim: r1.must_syncE)
   from bisimulation.simulation1[OF bisimulation_axioms, OF bisim red1] obtain x2' ta2 m2'
     where red2: "t \<turnstile> (x2, m2) -2-ta2\<rightarrow> (x2', m2')" 
-    and tasim: "ta1 \<sim>m ta2" by fastsimp
+    and tasim: "ta1 \<sim>m ta2" by fastforce
   from ex_actions_ok1_conv_ex_actions_ok2[OF tasim, of t] s1' red2
   show ?thesis unfolding r2.must_sync_def2 by blast
 qed

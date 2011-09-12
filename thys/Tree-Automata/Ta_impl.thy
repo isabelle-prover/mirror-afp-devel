@@ -720,7 +720,7 @@ proof -
     -- "Invar"
     apply (simp add: h1.hta_lookup_s_correct)
     -- "Initial"
-    apply (fastsimp simp add: inv_def \<delta>_prod_def h1.hta_lookup_s_correct 
+    apply (fastforce simp add: inv_def \<delta>_prod_def h1.hta_lookup_s_correct 
                               f_succ_alt)
     -- "Step"
     apply (rule_tac 
@@ -760,7 +760,7 @@ proof -
       [simp]: "ls_\<alpha> (hta_\<delta> H2) - (it2 - {r2}) = (ls_\<alpha> (hta_\<delta> H2) - it2) \<union> {r2}"
       by auto
     obtain Qh Wh \<delta>dh Q' W' \<delta>d' where [simp]: "resh=(Qh,Wh,\<delta>dh)" 
-      by (cases resh) fastsimp
+      by (cases resh) fastforce
     from goal1(6) have INVAH[simp]: "hs_invar Qh" "ls_invar \<delta>dh" 
       by (auto simp add: inv_def)
 

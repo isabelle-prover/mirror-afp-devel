@@ -94,7 +94,7 @@ proof-
         with `?M(Suc n) = ?up` Suc have 0: "f ?up \<noteq> f(?M n)" by simp
         from nonmanip[OF MProf P'Lin 0] assms(3) show False
           using N surjh Suc Lin_irrefl[OF P'Lin]
-          by(fastsimp simp: f_inv_into_f)
+          by(fastforce simp: f_inv_into_f)
       qed
     qed
   }
@@ -187,7 +187,7 @@ lemma una_swf: "unanimity(swf f)"
 proof(clarsimp simp:swf_def unanimity_def)
   fix P a b
   assume "P:Prof" and abP: "\<forall>i. (a, b) \<in> P i"
-  hence "a \<noteq> b" by(fastsimp simp:Prof_def Pi_def slo_defs)
+  hence "a \<noteq> b" by(fastforce simp:Prof_def Pi_def slo_defs)
   let ?abP = "Top {a,b} \<circ> P"
   have "?abP : Prof" using `P:Prof` by(simp add:Prof_def Pi_def Top_in_Lin)
   have top: "!!i c. b\<noteq>c \<Longrightarrow> (c,b) : Top {a,b} (P i)"

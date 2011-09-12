@@ -515,7 +515,7 @@ apply (subgoal_tac "t1' = t1")
   thm f_Exec_State_Idle_replicate_NoMsg_gr0_output
   apply (frule_tac c="f_Exec_Comp trans_fun (input \<odot>\<^sub>i k \<Down> Suc n1) c" and n=i
      in f_Exec_State_Idle_replicate_NoMsg_gr0_output)
-  apply (fastsimp dest: linorder_neq_iff[THEN iffD1])+
+  apply (fastforce dest: linorder_neq_iff[THEN iffD1])+
 done
 
 text {* Here the property to be checked uses only unbounded intervals suitable for LTL. *}
@@ -559,7 +559,7 @@ apply (rule iffI)
  apply (drule_tac c="(f_Exec_Comp trans_fun (input \<odot>\<^sub>i k \<Down> Suc t2') c)" and n=i
    in f_Exec_State_Idle_replicate_NoMsg_gr0_output, assumption)
  apply simp
-apply (fastsimp simp: iT_add iT_iff i_Exec_Stream_Acc_LocalState_nth i_Exec_Stream_nth)
+apply (fastforce simp: iT_add iT_iff i_Exec_Stream_Acc_LocalState_nth i_Exec_Stream_nth)
 done
 
 lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_imp2: "
@@ -597,7 +597,7 @@ apply (subst f_Exec_append[symmetric])
 apply (subst i_expand_i_take_mult_Suc[symmetric], assumption)
 apply (case_tac "t2 \<le> t * k + j")
  prefer 2
- apply fastsimp
+ apply fastforce
 apply (drule_tac x=t2 in order_le_less[THEN iffD1, rule_format])
 apply (erule disjE)
  prefer 2
@@ -877,7 +877,7 @@ apply (case_tac "
  apply (rule iffI)
   thm i_Exec_Comp_Stream_Acc_Output__eq_Msg_with_State_Idle_conv2[THEN iffD1, OF Suc_lessD]
   apply (frule i_Exec_Comp_Stream_Acc_Output__eq_Msg_with_State_Idle_conv2[THEN iffD1, OF Suc_lessD], assumption+)
-  apply fastsimp
+  apply fastforce
  apply (elim iexE conjI, rename_tac t2)
  apply (erule disjE)
   thm i_Exec_Comp_Stream_Acc_Output__eq_Msg_with_State_Idle_conv2
@@ -887,7 +887,7 @@ apply (case_tac "
  apply (rule_tac ?t1.0=t2 in i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_imp2, simp+)
 thm i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_conv2[OF _ _ _ refl refl]
 apply (rule ssubst[OF i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_conv2[OF _ _ _ refl refl]], simp+)
-apply fastsimp
+apply fastforce
 done
 lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv2': "
   \<lbrakk> Suc 0 < k;
@@ -976,7 +976,7 @@ apply (unfold iUntil_def, erule disjE)
   apply (drule_tac t="t * k + (k - Suc 0)" in ispec)
    apply (simp add: cut_less_mem_iff iT_add iT_iff)
   apply (simp add: add_commute[of k])
- apply (fastsimp simp: iT_add iT_iff)+
+ apply (fastforce simp: iT_add iT_iff)+
 done
 lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv: "
   \<lbrakk> Suc 0 < k;

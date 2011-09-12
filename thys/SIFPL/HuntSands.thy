@@ -54,7 +54,7 @@ lemma Prop4B : "ARSsecure A R S c \<Longrightarrow>
 apply (simp add: VDM_valid_def Sec_def) 
 apply clarsimp
 apply (unfold ARSsecure_def RSsecure_def VDM_valid_def)
-apply rule apply fastsimp
+apply rule apply fastforce
 apply rule
 apply (rule, rule) apply (rule_tac x=s in exI, rule, assumption+) 
 apply (rule, rule, erule exE, erule conjE) apply fast
@@ -235,9 +235,9 @@ lemma IF_alg_derivable_from_If:
   "\<lbrakk>(G,b,p):HS_B; (p,G,c1,H):HS; (p,G,c2,H):HS\<rbrakk> 
   \<Longrightarrow> (p,G,Iff b c1 c2,H):HS"
 apply (erule HS_If) apply (subgoal_tac "LUB p p = p", clarsimp) 
-  apply (subgoal_tac "p = LUB p p", fastsimp) apply (rule LAT7)
+  apply (subgoal_tac "p = LUB p p", fastforce) apply (rule LAT7)
 apply (subgoal_tac "LUB p p = p", clarsimp) 
-  apply (subgoal_tac "p = LUB p p", fastsimp) apply (rule LAT7)
+  apply (subgoal_tac "p = LUB p p", fastforce) apply (rule LAT7)
 done
 
 text{*An easy induction on typing derivations shows the following property.*}

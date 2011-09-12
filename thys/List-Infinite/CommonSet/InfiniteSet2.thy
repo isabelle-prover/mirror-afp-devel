@@ -78,7 +78,7 @@ done
 lemma icard_1_singleton_conv: "(icard A = eSuc 0) = (\<exists>a. A = {a})"
 apply (rule iffI)
  apply (simp add: icard_1_imp_singleton)
-apply fastsimp
+apply fastforce
 done
 
 
@@ -136,14 +136,14 @@ thm Finite_Set.card_seteq
 lemma not_icard_seteq: "\<exists>(A::nat set) B. (A \<subseteq> B \<and> icard B \<le> icard A \<and> \<not> A = B)"
 apply (rule_tac x="{1..}" in exI)
 apply (rule_tac x="{0..}" in exI)
-apply (fastsimp simp add: infinite_atLeast)
+apply (fastforce simp add: infinite_atLeast)
 done
 
 thm Finite_Set.psubset_card_mono
 lemma not_psubset_icard_mono: "\<exists>(A::nat set) B. A \<subset> B \<and> \<not> icard A < icard B"
 apply (rule_tac x="{1..}" in exI)
 apply (rule_tac x="{0..}" in exI)
-apply (fastsimp simp add: infinite_atLeast)
+apply (fastforce simp add: infinite_atLeast)
 done
 
 thm Finite_Set.card_Un_Int
@@ -285,7 +285,7 @@ thm Big_Operators.card_SigmaI
 
 thm Big_Operators.card_cartesian_product
 lemma icard_cartesian_product: "icard (A \<times> B) = icard A * icard B"
-apply (case_tac "A = {} \<or> B = {}", fastsimp)
+apply (case_tac "A = {} \<or> B = {}", fastforce)
 apply clarsimp
 apply (case_tac "finite A \<and> finite B")
  apply (simp add: icard_finite)

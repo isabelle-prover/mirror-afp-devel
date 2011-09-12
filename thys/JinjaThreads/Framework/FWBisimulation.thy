@@ -36,8 +36,8 @@ by(auto simp add: ta_bisim_def)
 
 lemma ta_bisim_\<epsilon> [simp]:
   "ta_bisim b \<epsilon> ta' \<longleftrightarrow> ta' = \<epsilon>" "ta_bisim b ta \<epsilon> \<longleftrightarrow> ta = \<epsilon>"
-apply(cases ta', fastsimp simp add: ta_bisim_def)
-apply(cases ta, fastsimp simp add: ta_bisim_def)
+apply(cases ta', fastforce simp add: ta_bisim_def)
+apply(cases ta, fastforce simp add: ta_bisim_def)
 done
 
 lemma nta_bisim_mono:
@@ -125,12 +125,12 @@ done
 lemma mbisim_thrD1:
   "\<lbrakk> s1 \<approx>m s2; thr s1 t = \<lfloor>(x, ln)\<rfloor> \<rbrakk>
   \<Longrightarrow> \<exists>x'. thr s2 t = \<lfloor>(x', ln)\<rfloor> \<and> t \<turnstile> (x, shr s1) \<approx> (x', shr s2) \<and> (wset s1 t = None \<or> x \<approx>w x')"
-by(fastsimp simp add: mbisim_def tbisim_def)
+by(fastforce simp add: mbisim_def tbisim_def)
 
 lemma mbisim_thrD2:
   "\<lbrakk> s1 \<approx>m s2; thr s2 t = \<lfloor>(x, ln)\<rfloor> \<rbrakk>
   \<Longrightarrow> \<exists>x'. thr s1 t = \<lfloor>(x', ln)\<rfloor> \<and> t \<turnstile> (x', shr s1) \<approx> (x, shr s2) \<and> (wset s2 t = None \<or> x' \<approx>w x)"
-by(frule mbisim_thrNone_eq[where t=t])(cases "thr s1 t",(fastsimp simp add: mbisim_def tbisim_def)+)
+by(frule mbisim_thrNone_eq[where t=t])(cases "thr s1 t",(fastforce simp add: mbisim_def tbisim_def)+)
 
 lemma mbisim_dom_eq: "s1 \<approx>m s2 \<Longrightarrow> dom (thr s1) = dom (thr s2)"
 apply(clarsimp simp add: dom_def Collect_def fun_eq_iff simp del: not_None_eq)
@@ -155,7 +155,7 @@ lemma mbisimI:
      \<And>t. thr s1 t = None \<Longrightarrow> thr s2 t = None;
      \<And>t x1 ln. thr s1 t = \<lfloor>(x1, ln)\<rfloor> \<Longrightarrow> \<exists>x2. thr s2 t = \<lfloor>(x2, ln)\<rfloor> \<and> t \<turnstile> (x1, shr s1) \<approx> (x2, shr s2) \<and> (wset s2 t = None \<or> x1 \<approx>w x2) \<rbrakk>
   \<Longrightarrow> s1 \<approx>m s2"
-by(fastsimp simp add: mbisim_def tbisim_def)
+by(fastforce simp add: mbisim_def tbisim_def)
 
 lemma mbisimI2:
   "\<lbrakk> finite (dom (thr s2)); locks s1 = locks s2; wset s1 = wset s2; interrupts s1 = interrupts s2;
@@ -168,12 +168,12 @@ apply(auto simp add: mbisim_def tbisim_def)
    apply(rule wset_thread_okI)
    apply(case_tac "thr s2 t")
     apply(auto dest!: wset_thread_okD)[1]
-   apply fastsimp
+   apply fastforce
   apply(erule back_subst[where P=finite])
   apply(clarsimp simp add: dom_def Collect_def fun_eq_iff simp del: not_None_eq)
   apply(rename_tac t)
   apply(case_tac [!] "thr s2 t")
-by fastsimp+
+by fastforce+
 
 lemma mbisim_finite1:
   "s1 \<approx>m s2 \<Longrightarrow> finite (dom (thr s1))"
@@ -269,10 +269,10 @@ lemma mbisim_flip [flip_simps]:
 apply(rule iffI)
  apply(frule FWbisimulation_base.mbisim_dom_eq)
  apply(frule FWbisimulation_base.mbisim_wset_thread_ok2)
- apply(fastsimp simp add: FWbisimulation_base.mbisim_def flip_simps)
+ apply(fastforce simp add: FWbisimulation_base.mbisim_def flip_simps)
 apply(frule FWbisimulation_base.mbisim_dom_eq)
 apply(frule FWbisimulation_base.mbisim_wset_thread_ok2)
-apply(fastsimp simp add: FWbisimulation_base.mbisim_def flip_simps)
+apply(fastforce simp add: FWbisimulation_base.mbisim_def flip_simps)
 done
 
 lemma mta_bisim_flip [flip_simps]:
@@ -396,7 +396,7 @@ lemma bisim_inv_\<tau>s1_inv:
   obtains s2' where "t \<turnstile> s1' \<approx> s2'"
 proof(atomize_elim)
   from red bisim show "\<exists>s2'. t \<turnstile> s1' \<approx> s2'"
-    by(induct rule: rtranclp_induct)(fastsimp elim: bisim_invD1[OF inv])+
+    by(induct rule: rtranclp_induct)(fastforce elim: bisim_invD1[OF inv])+
 qed
 
 lemma bisim_inv_\<tau>s2_inv:
@@ -406,7 +406,7 @@ lemma bisim_inv_\<tau>s2_inv:
   obtains s1' where "t \<turnstile> s1' \<approx> s2'"
 proof(atomize_elim)
   from red bisim show "\<exists>s1'. t \<turnstile> s1' \<approx> s2'"
-    by(induct rule: rtranclp_induct)(fastsimp elim: bisim_invD2[OF inv])+
+    by(induct rule: rtranclp_induct)(fastforce elim: bisim_invD2[OF inv])+
 qed
 
 primrec activate_cond_action1 :: "('l,'t,'x1,'m1,'w) state \<Rightarrow> ('l,'t,'x2,'m2,'w) state \<Rightarrow> 
@@ -578,11 +578,11 @@ proof(cases ct)
   show ?thesis using red ct
   proof(cases "thr s1 t'")
     case None with red ct Join show ?thesis
-      by(fastsimp elim!: r1.mthr.silent_move.cases r1.redT.cases r1.m\<tau>move.cases rtrancl3p_cases 
+      by(fastforce elim!: r1.mthr.silent_move.cases r1.redT.cases r1.m\<tau>move.cases rtrancl3p_cases 
                   dest: r1.silent_tl split: split_if_asm)
   next
     case (Some a) with red ct Join show ?thesis
-      by(fastsimp elim!: r1.mthr.silent_move.cases r1.redT.cases r1.m\<tau>move.cases rtrancl3p_cases
+      by(fastforce elim!: r1.mthr.silent_move.cases r1.redT.cases r1.m\<tau>move.cases rtrancl3p_cases
                   dest: r1.silent_tl r1.final_no_red split: split_if_asm simp add: redT_updWs_def)
   qed
 next
@@ -645,10 +645,10 @@ proof
   assume "s1 \<approx>m s2" "s1' \<approx>m s2'" "tl1 \<sim>T tl2" "r1.redT s1 tl1 s1'" "r2.redT s2 tl2 s2'"
   moreover obtain t ta1 where tl1: "tl1 = (t, ta1)" by(cases tl1)
   moreover obtain t' ta2 where tl2: "tl2 = (t', ta2)" by(cases tl2)
-  moreover obtain ls1 ts1 ws1 m1 is1 where s1: "s1 = (ls1, (ts1, m1), ws1, is1)" by(cases s1) fastsimp
-  moreover obtain ls2 ts2 ws2 m2 is2 where s2: "s2 = (ls2, (ts2, m2), ws2, is2)" by(cases s2) fastsimp
-  moreover obtain ls1' ts1' ws1' m1' is1' where s1': "s1' = (ls1', (ts1', m1'), ws1', is1')" by(cases s1') fastsimp
-  moreover obtain ls2' ts2' ws2' m2' is2' where s2': "s2' = (ls2', (ts2', m2'), ws2', is2')" by(cases s2') fastsimp
+  moreover obtain ls1 ts1 ws1 m1 is1 where s1: "s1 = (ls1, (ts1, m1), ws1, is1)" by(cases s1) fastforce
+  moreover obtain ls2 ts2 ws2 m2 is2 where s2: "s2 = (ls2, (ts2, m2), ws2, is2)" by(cases s2) fastforce
+  moreover obtain ls1' ts1' ws1' m1' is1' where s1': "s1' = (ls1', (ts1', m1'), ws1', is1')" by(cases s1') fastforce
+  moreover obtain ls2' ts2' ws2' m2' is2' where s2': "s2' = (ls2', (ts2', m2'), ws2', is2')" by(cases s2') fastforce
   ultimately have mbisim: "(ls1, (ts1, m1), ws1, is1) \<approx>m (ls2, (ts2, m2), ws2, is2)"
     and mbisim': "(ls1', (ts1', m1'), ws1', is1') \<approx>m (ls2', (ts2', m2'), ws2', is2')"
     and mred1: "(ls1, (ts1, m1), ws1, is1) -1-t\<triangleright>ta1\<rightarrow> (ls1', (ts1', m1'), ws1', is1')"
@@ -661,10 +661,10 @@ proof
   from mred1 r1.redT_thread_not_disappear[OF mred1]
   obtain x1 ln1 x1' ln1' where tst1: "ts1 t = \<lfloor>(x1, ln1)\<rfloor>"
     and tst1': "ts1' t = \<lfloor>(x1', ln1')\<rfloor>"
-    by(fastsimp elim!: r1.redT.cases)
+    by(fastforce elim!: r1.redT.cases)
   from mred2 r2.redT_thread_not_disappear[OF mred2]
   obtain x2 ln2 x2' ln2' where tst2: "ts2 t = \<lfloor>(x2, ln2)\<rfloor>"
-    and tst2': "ts2' t = \<lfloor>(x2', ln2')\<rfloor>" by(fastsimp elim!: r2.redT.cases)
+    and tst2': "ts2' t = \<lfloor>(x2', ln2')\<rfloor>" by(fastforce elim!: r2.redT.cases)
   from tbisim[of t] tst1 tst2 ws have bisim: "t \<turnstile> (x1, m1) \<approx> (x2, m2)"
     and ln: "ln1 = ln2" by(auto simp add: tbisim_def)
   from tbisim'[of t] tst1' tst2' have bisim': "t \<turnstile> (x1', m1') \<approx> (x2', m2')"
@@ -677,26 +677,26 @@ proof
     proof
       assume m\<tau>: ?lhs
       with tst1 tst1' obtain \<tau>1: "\<tau>move1 (x1, m1) ta1 (x1', m1')" 
-	and ln1: "ln1 = no_wait_locks" by(fastsimp elim!: r1.m\<tau>move.cases)
+	and ln1: "ln1 = no_wait_locks" by(fastforce elim!: r1.m\<tau>move.cases)
       from \<tau>1 have "ta1 = \<epsilon>" by(rule r1.silent_tl)
       with mred1 \<tau>1 tst1 tst1' ln1 have red1: "t \<turnstile> (x1, m1) -1-ta1\<rightarrow> (x1', m1')"
 	by(auto elim!: r1.redT.cases rtrancl3p_cases)
       from tasim `ta1 = \<epsilon>` have [simp]: "ta2 = \<epsilon>" by(simp)
       with mred2 ln1 ln tst2 tst2' have red2: "t \<turnstile> (x2, m2) -2-\<epsilon>\<rightarrow> (x2', m2')"
-	by(fastsimp elim!: r2.redT.cases rtrancl3p_cases)
+	by(fastforce elim!: r2.redT.cases rtrancl3p_cases)
       from \<tau>1 \<tau>inv[OF bisim red1 red2] bisim' tasim
       have \<tau>2: "\<tau>move2 (x2, m2) \<epsilon> (x2', m2')" by simp
       with tst2 tst2' ln ln1 show ?rhs by -(rule r2.m\<tau>move.intros, auto)
     next
       assume m\<tau>: ?rhs
       with tst2 tst2' obtain \<tau>2: "\<tau>move2 (x2, m2) ta2 (x2', m2')" 
-	and ln2: "ln2 = no_wait_locks" by(fastsimp elim!: r2.m\<tau>move.cases)
+	and ln2: "ln2 = no_wait_locks" by(fastforce elim!: r2.m\<tau>move.cases)
       from \<tau>2 have "ta2 = \<epsilon>" by(rule r2.silent_tl)
       with mred2 \<tau>2 tst2 tst2' ln2 have red2: "t \<turnstile> (x2, m2) -2-ta2\<rightarrow> (x2', m2')"
 	by(auto elim!: r2.redT.cases rtrancl3p_cases)
       from tasim `ta2 = \<epsilon>` have [simp]: "ta1 = \<epsilon>" by simp
       with mred1 ln2 ln tst1 tst1' have red1: "t \<turnstile> (x1, m1) -1-\<epsilon>\<rightarrow> (x1', m1')"
-	by(fastsimp elim!: r1.redT.cases rtrancl3p_cases)
+	by(fastforce elim!: r1.redT.cases rtrancl3p_cases)
       from \<tau>2 \<tau>inv[OF bisim red1 red2] bisim' tasim
       have \<tau>1: "\<tau>move1 (x1, m1) \<epsilon> (x1', m1')" by auto
       with tst1 tst1' ln ln2 show ?lhs unfolding `ta1 = \<epsilon>`
@@ -959,7 +959,7 @@ proof -
       assume "r1.final_thread s1 t'"
       with fin[of t'] `final2 x2'` tst2 `ln = no_wait_locks` `wset s2 t = None` `s1' \<approx>m s2''` `s1 \<approx>m s2`
       have "r2.final_thread (redT_upd_\<epsilon> ?s2'' t x2' m2') t'" unfolding s1'_def
-	by(fastsimp split: split_if_asm simp add: r2.final_thread_def r1.final_thread_def redT_updLns_def finfun_Diag_const2 o_def mbisim_def)
+	by(fastforce split: split_if_asm simp add: r2.final_thread_def r1.final_thread_def redT_updLns_def finfun_Diag_const2 o_def mbisim_def)
     }
     moreover have "shr (redT_upd_\<epsilon> ?s2'' t x2' m2') = shr s2" using `m2' = shr s2` by simp
     ultimately show ?case by blast
@@ -1097,7 +1097,7 @@ next
   from interrupts show "interrupts s1' = interrupts s2'" .
 next
   from wsts s1' s2' wset show "wset_thread_ok (wset s1') (thr s1')"
-    by(fastsimp intro!: wset_thread_okI split: split_if_asm dest: redT_updTs_None wset_thread_okD redT_updWs_None_implies_None)
+    by(fastforce intro!: wset_thread_okI split: split_if_asm dest: redT_updTs_None wset_thread_okD redT_updWs_None_implies_None)
 next
   fix T
   assume "thr s1' T = None"
@@ -1161,10 +1161,10 @@ theorem mbisim_simulation1:
                         \<not> m\<tau>move2 s2' tl2 s2'' \<and> mbisim s1' s2'' \<and> mta_bisim tl1 tl2"
 proof -
   from assms obtain t ta1 where tl1 [simp]: "tl1 = (t, ta1)" and redT: "s1 -1-t\<triangleright>ta1\<rightarrow> s1'"
-    and m\<tau>: "\<not> m\<tau>move1 s1 (t, ta1) s1'" by(cases tl1) fastsimp
-  obtain ls1 ts1 m1 ws1 is1 where [simp]: "s1 = (ls1, (ts1, m1), ws1, is1)" by(cases s1) fastsimp
-  obtain ls1' ts1' m1' ws1' is1' where [simp]: "s1' = (ls1', (ts1', m1'), ws1', is1')" by(cases s1') fastsimp
-  obtain ls2 ts2 m2 ws2 is2 where [simp]: "s2 = (ls2, (ts2, m2), ws2, is2)" by(cases s2) fastsimp
+    and m\<tau>: "\<not> m\<tau>move1 s1 (t, ta1) s1'" by(cases tl1) fastforce
+  obtain ls1 ts1 m1 ws1 is1 where [simp]: "s1 = (ls1, (ts1, m1), ws1, is1)" by(cases s1) fastforce
+  obtain ls1' ts1' m1' ws1' is1' where [simp]: "s1' = (ls1', (ts1', m1'), ws1', is1')" by(cases s1') fastforce
+  obtain ls2 ts2 m2 ws2 is2 where [simp]: "s2 = (ls2, (ts2, m2), ws2, is2)" by(cases s2) fastforce
   from mbisim have [simp]: "ls2 = ls1" "ws2 = ws1" "is2 = is1" "finite (dom ts1)" by(auto simp add: mbisim_def)
   from redT show ?thesis
   proof cases
@@ -1256,7 +1256,7 @@ proof -
           by simp
         ultimately have "mbisim s1' ?s2''" by(rule mbisim_redT_upd)
         }
-      ultimately show ?thesis using tasim unfolding tl1 s1' by fastsimp
+      ultimately show ?thesis using tasim unfolding tl1 s1' by fastforce
     next
       case (Some w)
       with mbisim tst tst' have "x1 \<approx>w x2"
@@ -1380,7 +1380,7 @@ proof -
     qed
     moreover have "(t, \<lambda>\<^isup>f [], [], [], [], [], convert_RA ln) \<sim>T (t, \<lambda>\<^isup>f [], [], [], [], [], convert_RA ln)"
       by(simp add: ta_bisim_def)
-    ultimately show ?thesis by fastsimp
+    ultimately show ?thesis by fastforce
   qed
 qed
 
@@ -1484,14 +1484,14 @@ lemma mbisim_simulation_silent1:
   shows "\<exists>s2'. r2.mthr.silent_moves s2 s2' \<and> s1' \<approx>m s2'"
 proof -
   from m\<tau>' obtain tl1 where m\<tau>: "m\<tau>move1 s1 tl1 s1'" "r1.redT s1 tl1 s1'" by auto
-  obtain ls1 ts1 m1 ws1 is1 where [simp]: "s1 = (ls1, (ts1, m1), ws1, is1)" by(cases s1) fastsimp
-  obtain ls1' ts1' m1' ws1' is1' where [simp]: "s1' = (ls1', (ts1', m1'), ws1', is1')" by(cases s1') fastsimp
-  obtain ls2 ts2 m2 ws2 is2 where [simp]: "s2 = (ls2, (ts2, m2), ws2, is2)" by(cases s2) fastsimp
+  obtain ls1 ts1 m1 ws1 is1 where [simp]: "s1 = (ls1, (ts1, m1), ws1, is1)" by(cases s1) fastforce
+  obtain ls1' ts1' m1' ws1' is1' where [simp]: "s1' = (ls1', (ts1', m1'), ws1', is1')" by(cases s1') fastforce
+  obtain ls2 ts2 m2 ws2 is2 where [simp]: "s2 = (ls2, (ts2, m2), ws2, is2)" by(cases s2) fastforce
   from m\<tau> obtain t where "tl1 = (t, \<epsilon>)" by(auto elim!: r1.m\<tau>move.cases dest: r1.silent_tl)
   with m\<tau> have m\<tau>: "m\<tau>move1 s1 (t, \<epsilon>) s1'" and redT1: "s1 -1-t\<triangleright>\<epsilon>\<rightarrow> s1'" by simp_all
   from m\<tau> obtain x x' ln' where tst: "ts1 t = \<lfloor>(x, no_wait_locks)\<rfloor>"
     and ts't: "ts1' t = \<lfloor>(x', ln')\<rfloor>" and \<tau>: "\<tau>move1 (x, m1) \<epsilon> (x', m1')"
-    by(fastsimp elim: r1.m\<tau>move.cases)
+    by(fastforce elim: r1.m\<tau>move.cases)
   from mbisim have [simp]: "ls2 = ls1" "ws2 = ws1" "is2 = is1" "finite (dom ts1)" by(auto simp add: mbisim_def)
   from redT1 show ?thesis
   proof cases
@@ -1729,15 +1729,15 @@ lemma mbisim_simulation_silent1_measure:
   shows "s1' \<approx>m s2 \<and> r1.m\<mu>^++ s1' s1 \<or> (\<exists>s2'. r2.mthr.silent_move^++ s2 s2' \<and> s1' \<approx>m s2')"
 proof -
   from assms obtain tl1 where m\<tau>: "m\<tau>move1 s1 tl1 s1'" "r1.redT s1 tl1 s1'" by(auto simp add: r1.mthr.silent_move_iff)
-  obtain ls1 ts1 m1 ws1 is1 where [simp]: "s1 = (ls1, (ts1, m1), ws1, is1)" by(cases s1) fastsimp
-  obtain ls1' ts1' m1' ws1' is1' where [simp]: "s1' = (ls1', (ts1', m1'), ws1', is1')" by(cases s1') fastsimp
-  obtain ls2 ts2 m2 ws2 is2 where [simp]: "s2 = (ls2, (ts2, m2), ws2, is2)" by(cases s2) fastsimp
+  obtain ls1 ts1 m1 ws1 is1 where [simp]: "s1 = (ls1, (ts1, m1), ws1, is1)" by(cases s1) fastforce
+  obtain ls1' ts1' m1' ws1' is1' where [simp]: "s1' = (ls1', (ts1', m1'), ws1', is1')" by(cases s1') fastforce
+  obtain ls2 ts2 m2 ws2 is2 where [simp]: "s2 = (ls2, (ts2, m2), ws2, is2)" by(cases s2) fastforce
   from m\<tau> obtain t where "tl1 = (t, \<epsilon>)" by(auto elim!: r1.m\<tau>move.cases dest: r1.silent_tl)
   with m\<tau> have m\<tau>: "m\<tau>move1 s1 (t, \<epsilon>) s1'" and redT1: "s1 -1-t\<triangleright>\<epsilon>\<rightarrow> s1'"
     by simp_all
   from m\<tau> obtain x x' ln' where tst: "ts1 t = \<lfloor>(x, no_wait_locks)\<rfloor>"
     and ts't: "ts1' t = \<lfloor>(x', ln')\<rfloor>" and \<tau>: "\<tau>move1 (x, m1) \<epsilon> (x', m1')"
-    by(fastsimp elim: r1.m\<tau>move.cases)
+    by(fastforce elim: r1.m\<tau>move.cases)
   from mbisim have [simp]: "ls2 = ls1" "ws2 = ws1" "is2 = is1" "finite (dom ts1)" by(auto simp add: mbisim_def)
   from redT1 show ?thesis
   proof cases
@@ -1921,7 +1921,7 @@ proof -
       by auto
   next
     show "(\<exists>x1. final1 x1) \<longleftrightarrow> (\<exists>x2. final2 x2)" by(rule ex_final1_conv_ex_final2)
-  qed(fastsimp simp add: bisim_final)+
+  qed(fastforce simp add: bisim_final)+
 qed
 
 context FWbisimulation begin

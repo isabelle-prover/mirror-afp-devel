@@ -70,22 +70,22 @@ lemma assumes h:"h a = Some(C,S)"
 proof(cases T)
   case Void
   hence "(P \<turnstile> typeof\<^bsub>h(a\<mapsto>(C,S'))\<^esub> v = Some T) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
-    by(fastsimp intro!:typeof_notclass_heap)
+    by(fastforce intro!:typeof_notclass_heap)
   with Void show ?thesis by simp
 next
   case Boolean
   hence "(P \<turnstile> typeof\<^bsub>h(a\<mapsto>(C,S'))\<^esub> v = Some T) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
-    by(fastsimp intro!:typeof_notclass_heap)
+    by(fastforce intro!:typeof_notclass_heap)
   with Boolean show ?thesis by simp
 next
   case Integer
   hence "(P \<turnstile> typeof\<^bsub>h(a\<mapsto>(C,S'))\<^esub> v = Some T) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
-    by(fastsimp intro!:typeof_notclass_heap)
+    by(fastforce intro!:typeof_notclass_heap)
   with Integer show ?thesis by simp
 next
   case NT
   hence "(P \<turnstile> typeof\<^bsub>h(a\<mapsto>(C,S'))\<^esub> v = Some T) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
-    by(fastsimp intro!:typeof_notclass_heap)
+    by(fastforce intro!:typeof_notclass_heap)
   with NT show ?thesis by simp
 next
   case (Class C')
@@ -97,7 +97,7 @@ next
   { assume type:"P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some NT"
     and typenot:"P \<turnstile> typeof\<^bsub>h\<^esub> v \<noteq> Some NT"
     have "\<forall>C. NT \<noteq> Class C" by simp
-    with type have "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT" by(fastsimp dest:typeof_notclass_heap)
+    with type have "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT" by(fastforce dest:typeof_notclass_heap)
     with typenot have "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')" by simp }
   hence 2:"\<lbrakk>P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some NT; P \<turnstile> typeof\<^bsub>h\<^esub> v \<noteq> Some NT\<rbrakk> \<Longrightarrow>
     P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')" by simp
@@ -110,7 +110,7 @@ next
     and type:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT"
     have "\<forall>C. NT \<noteq> Class C" by simp
     with type have "P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some NT" 
-      by(fastsimp dest:typeof_notclass_heap)
+      by(fastforce dest:typeof_notclass_heap)
     with typenot have "P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')" by simp }
   hence 4:"\<lbrakk>P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v \<noteq> Some NT; P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT\<rbrakk> \<Longrightarrow>
     P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')" by simp
@@ -119,7 +119,7 @@ qed
 
 
 lemma conf_NT [iff]: "P,h \<turnstile> v :\<le> NT = (v = Null)"
-by fastsimp
+by fastforce
 
 
 section{* Value list conformance @{text"[:\<le>]"} *}
@@ -175,7 +175,7 @@ apply (erule_tac x="C" in allE)
 apply (erule_tac x="S" in allE)
 apply clarsimp
 apply (unfold oconf_def)
-apply fastsimp
+apply fastforce
 done
 
 
@@ -239,7 +239,7 @@ next
   from wtes obtain e' es' where es:"es = e'#es'" by(cases es) auto
   with wtes have wte':"P,E,h \<turnstile> e' : T'" and wtes':"P,E,h \<turnstile> es' [:] Ts'"
     by simp_all
-  from IH[OF wtes'] wte' es show ?case by (fastsimp intro:wt_same_type_typeconf)
+  from IH[OF wtes'] wte' es show ?case by (fastforce intro:wt_same_type_typeconf)
 qed
 
 

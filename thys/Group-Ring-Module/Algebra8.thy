@@ -2019,7 +2019,7 @@ apply (frule_tac f = h and A = "{j. j \<le> k}" and B = "H" and x = k in
    subsetD, assumption, simp)
  apply (frule_tac h = h and n = k and m = "h k" in finite_gen_over_ideal [of 
        "A"])
- apply (fastsimp simp add:Pi_def image_def)
+ apply (fastforce simp add:Pi_def image_def)
  apply (simp add:generator_def)
  apply assumption+
  apply (erule bexE)
@@ -2035,7 +2035,7 @@ apply (cut_tac s = s and n = "k - Suc 0" and f = h and H = "h ` {j. j \<le> k}"
 apply (rotate_tac -3, frule sym, 
        thin_tac "h k = l_comb R M (Suc (k - Suc 0)) s h", simp)
 apply (frule_tac h = h and k = k and s = s in NAKTr4[of A])
- apply (fastsimp simp add:Pi_def image_def)
+ apply (fastforce simp add:Pi_def image_def)
  apply(assumption+, rule sym, simp add:l_comb_def)
 apply (cut_tac H = "h ` {j. j \<le> (k - Suc 0)}" and s = s and n = "k - Suc 0" 
        and f = h in l_comb_mem_linear_span[of A], assumption+)

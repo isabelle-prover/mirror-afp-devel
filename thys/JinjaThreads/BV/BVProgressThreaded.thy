@@ -77,7 +77,7 @@ proof -
   moreover from `typeof_addr h (thread_id2addr a) = \<lfloor>Class D\<rfloor>` `P \<turnstile> D \<preceq>\<^sup>* Thread`
   have "P,h \<turnstile> a \<surd>t" by(rule tconfI)
   ultimately show ?thesis using `P \<turnstile> D' sees run:[]\<rightarrow>Void=(mxs', mxl0', ins',xt') in D'`
-    by(fastsimp simp add: correct_state_def)
+    by(fastforce simp add: correct_state_def)
 qed
 
 lemma exec_new_threadE:
@@ -116,7 +116,7 @@ proof -
     and "\<Phi> C M ! pc = \<lfloor>(ST, LT)\<rfloor>"
     and "conf_f P h (ST, LT) ins (stk, loc, C, M, pc)"
     and "conf_fs P h \<Phi> M (length Ts) T Frs"
-    by(fastsimp simp add: correct_state_def)
+    by(fastforce simp add: correct_state_def)
   from check `\<Phi> C M ! pc = \<lfloor>(ST, LT)\<rfloor>` sees
   have checkins: "check_instr (ins ! pc) P h stk loc C M pc Frs"
     by(clarsimp simp add: check_def)
@@ -128,7 +128,7 @@ proof -
   moreover from exec sees `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []` have "stk ! n \<noteq> Null" by auto
   with `is_Ref (stk ! n)` obtain a where "stk ! n = Addr a"
     by(auto simp add: is_Ref_def elim: is_AddrE)
-  moreover with checkins obtain Ta where Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>" by(fastsimp)
+  moreover with checkins obtain Ta where Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>" by(fastforce)
   moreover with checkins exec sees `n < length stk` `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []` `stk ! n = Addr a`
   obtain Us Us' U where "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Us"
     and "P \<turnstile> Ta\<bullet>M'(Us') :: U" "is_native P Ta M'" "P \<turnstile> Us [\<le>] Us'"
@@ -136,7 +136,7 @@ proof -
   moreover with `typeof_addr h a = \<lfloor>Ta\<rfloor>` `n < length stk` exec sees `stk ! n = Addr a`
   obtain ta' va h' where "ta = extTA2JVM P ta'" "\<sigma>' = extRet2JVM n h' stk loc C M pc Frs va"
     "(ta', va, h') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
-    by(fastsimp simp add: min_def)
+    by(fastforce simp add: min_def)
   ultimately show thesis using exec sees by-(rule that, auto)
 qed
 
@@ -213,7 +213,7 @@ proof -
       finally have "P,h' \<turnstile> Addr a' # replicate mxl0' undefined_value [:\<le>\<^sub>\<top>] LT'" .
       with `ins' \<noteq> []` show ?thesis by(simp add: conf_f_def)
     qed
-    ultimately show ?thesis using tconf' by(fastsimp simp add: correct_state_def)
+    ultimately show ?thesis using tconf' by(fastforce simp add: correct_state_def)
   qed
   ultimately show ?thesis by(clarsimp)
 qed
@@ -251,7 +251,7 @@ proof(cases xcp)
       and "\<Phi> C0'' M0'' ! pc'' = \<lfloor>(ST'', LT'')\<rfloor>"
       and "conf_f P h (ST'', LT'') ins'' (stk'', loc'', C0'', M0'', pc'')"
       and "conf_fs P h \<Phi> M0'' (length Ts'') T'' Frs''"
-      by(fastsimp simp add: correct_state_def)
+      by(fastforce simp add: correct_state_def)
     
     show ?thesis using Cons `\<Phi> \<turnstile> t'': (xcp'', h, frs'') \<surd>` `hext h h'` hconf' tconf'
       apply(cases xcp'')
@@ -395,14 +395,14 @@ proof -
     and "\<Phi> C M ! pc = \<lfloor>(ST, LT)\<rfloor>"
     and "conf_f P h (ST, LT) ins (stk, loc, C, M, pc)"
     and "conf_fs P h \<Phi> M (length Ts) T Frs"
-    by(fastsimp simp add: correct_state_def)
+    by(fastforce simp add: correct_state_def)
   from wf red conf nt
   obtain h frs a stk loc C M pc M' n ta' va h'
     where ha: "typeof_addr h a \<noteq> None" and ta: "ta = extTA2JVM P ta'"
     and \<sigma>': "\<sigma>' = extRet2JVM n h' stk loc C M pc frs va"
     and rel: "(ta', va, h') \<in> red_external_aggr P t' a M' (rev (take n stk)) h"
     and ec: "is_native P (the (typeof_addr h a)) M'"
-    by -(erule (2) exec_new_threadE, fastsimp+)
+    by -(erule (2) exec_new_threadE, fastforce+)
   from nt ta obtain x' where "NewThread t x' m \<in> set \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>" by auto
   from red_external_aggr_new_thread_exists_thread_object[OF rel ec ha this] \<sigma>'
   show ?thesis by(cases va) auto
@@ -419,9 +419,9 @@ apply(erule execd_mthr.redT.cases)
  apply(clarsimp)
  apply(drule execd_NewThread_Thread_Object)
     apply(drule (1) ts_okD)
-    apply(fastsimp)
+    apply(fastforce)
    apply(assumption)
-  apply(fastsimp)
+  apply(fastforce)
  apply(clarsimp)
 apply(simp)
 done
@@ -445,8 +445,8 @@ proof -
     with assms show ?thesis
       apply(cases "instrs_of P C M ! pc")
       apply(auto simp add: exec_1_iff lock_ok_las_def finfun_upd_apply split_beta final_thread.actions_ok_iff split: split_if_asm dest: red_external_aggr_ta_satisfiable[where final=JVM_final])
-      apply(fastsimp simp add: final_thread.actions_ok_iff lock_ok_las_def dest: red_external_aggr_ta_satisfiable[where final=JVM_final])
-      apply(fastsimp simp add: finfun_upd_apply intro: exI[where x="\<lambda>\<^isup>f None"] exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] may_lock.intros)+
+      apply(fastforce simp add: final_thread.actions_ok_iff lock_ok_las_def dest: red_external_aggr_ta_satisfiable[where final=JVM_final])
+      apply(fastforce simp add: finfun_upd_apply intro: exI[where x="\<lambda>\<^isup>f None"] exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] may_lock.intros)+
       done
   qed
 qed
@@ -497,7 +497,7 @@ next
     and "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
     and "mexecd P t (x, shr s) ta (x', m')"
     and wait: "\<not> waiting (wset s t)"
-  moreover obtain ls ts h ws "is" where s [simp]: "s = (ls, (ts, h), ws, is)" by(cases s) fastsimp
+  moreover obtain ls ts h ws "is" where s [simp]: "s = (ls, (ts, h), ws, is)" by(cases s) fastforce
   ultimately have "ts t = \<lfloor>(x, no_wait_locks)\<rfloor>" "mexecd P t (x, h) ta (x', m')" by auto
   from wfs have "correct_state_ts \<Phi> ts h" by(auto dest: execd_mthr.wset_Suspend_okD1 simp add: correct_jvm_state_def)
   from wf obtain wfmd where wfp: "wf_prog wfmd P" by(auto dest: wt_jvm_progD)
@@ -524,7 +524,7 @@ next
     and confs: "conf_fs P h \<Phi> M (length Ts) T Frs"
     and confxcp: "conf_xcp P h xcp (ins ! pc)"
     and preh: "preallocated h"
-    by(fastsimp simp add: correct_state_def)
+    by(fastforce simp add: correct_state_def)
   
   have "\<exists>ta' \<sigma>'. P,t \<turnstile> Normal (xcp, h, (stk, loc, C, M, pc) # Frs) -ta'-jvmd\<rightarrow> Normal \<sigma>' \<and>
                  (final_thread.actions_ok JVM_final (ls, (ts, h), ws, is) t ta' \<or>
@@ -577,7 +577,7 @@ next
         and sub: "P \<turnstile> Ts [\<le>] Us"
 	and Ts: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Ts"
         and [simp]: "xcp = None"
-        by(cases xcp)(fastsimp simp add: is_Ref_def has_method_def external_WT'_iff check_def lock_ok_las'_def split: split_if_asm)+
+        by(cases xcp)(fastforce simp add: is_Ref_def has_method_def external_WT'_iff check_def lock_ok_las'_def split: split_if_asm)+
       from exec iec Ta n a sees Invoke obtain ta' va m''
 	where exec': "(ta', va, m'') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
 	and ta: "ta = extTA2JVM P ta'"
@@ -611,7 +611,7 @@ next
       case MExit
       with exec sees False check ws obtain a where [simp]: "hd stk = Addr a" "xcp = None" "ws t = None"
 	and ta: "ta = \<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace> \<or> ta = \<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
-	by(cases xcp)(fastsimp split: split_if_asm simp add: lock_ok_las'_def finfun_upd_apply is_Ref_def check_def)+
+	by(cases xcp)(fastforce split: split_if_asm simp add: lock_ok_las'_def finfun_upd_apply is_Ref_def check_def)+
       from ta show ?thesis
       proof(rule disjE)
 	assume ta: "ta = \<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace>"
@@ -626,7 +626,7 @@ next
 	  by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
 	moreover from ta have "final_thread.actions_subset ?ta' ta"
 	  by(auto simp add: final_thread.actions_subset_iff collect_locks'_def finfun_upd_apply ta_upd_simps)
-	ultimately show ?thesis by(fastsimp simp add: ta_upd_simps)
+	ultimately show ?thesis by(fastforce simp add: ta_upd_simps)
       next
 	assume ta: "ta = \<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
 	let ?ta' = "\<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace>"
@@ -640,14 +640,14 @@ next
 	  by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
 	moreover from ta have "final_thread.actions_subset ?ta' ta"
 	  by(auto simp add: final_thread.actions_subset_iff collect_locks'_def finfun_upd_apply ta_upd_simps)
-	ultimately show ?thesis by(fastsimp simp add: ta_upd_simps)
+	ultimately show ?thesis by(fastforce simp add: ta_upd_simps)
       qed
     qed(case_tac [!] xcp, auto simp add: split_beta lock_ok_las'_def split: split_if_asm)
   qed
   thus "\<exists>ta' x' m'. mexecd P t (x, shr s) ta' (x', m') \<and> 
                    (final_thread.actions_ok JVM_final s t ta' \<or>
                     final_thread.actions_ok' s t ta' \<and> final_thread.actions_subset ta' ta)"
-    by fastsimp
+    by fastforce
 next
   fix s t x
   assume wfs: "s \<in> ?wf_state"
@@ -657,7 +657,7 @@ next
     by(auto dest: execd_mthr.wset_Suspend_okD1 simp add: correct_jvm_state_def)
   obtain xcp frs where x: "x = (xcp, frs)" by (cases x, auto)
   with `\<not> JVM_final x` obtain f Frs where "frs = f # Frs"
-    by(fastsimp simp add: neq_Nil_conv)
+    by(fastforce simp add: neq_Nil_conv)
   with tst correct x have "\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>" by(auto dest: ts_okD)
   with `wf_jvm_prog\<^sub>\<Phi> P`
   have "exec_d P t (xcp, shr s, f # Frs) \<noteq> TypeError" by(auto dest: no_type_error)
@@ -669,8 +669,8 @@ next
   with `x = (xcp, frs)` `frs = f # Frs` `\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>`
     `wf_jvm_prog\<^sub>\<Phi> P` `exec_d P t (xcp, shr s, f # Frs) = Normal \<Sigma>`
   show "\<exists>ta x' m'. mexecd P t (x, shr s) ta (x', m')"
-    by(cases ta, cases \<sigma>)(fastsimp simp add: split_paired_Ex intro: exec_1_d_NormalI)
-qed(fastsimp dest: defensive_imp_aggressive_1 mexec_instr_Wakeup_no_Join exec_ta_satisfiable)+
+    by(cases ta, cases \<sigma>)(fastforce simp add: split_paired_Ex intro: exec_1_d_NormalI)
+qed(fastforce dest: defensive_imp_aggressive_1 mexec_instr_Wakeup_no_Join exec_ta_satisfiable)+
 
 end
 
@@ -859,7 +859,7 @@ proof -
     from progress.wf_progress[OF this]
     show "\<exists>ta x' m'. mexec P t (x, shr s) ta (x', m')"
       by(auto dest: defensive_imp_aggressive_1 simp add: split_beta)
-  qed(fastsimp dest: mexec_instr_Wakeup_no_Join exec_ta_satisfiable)+
+  qed(fastforce dest: mexec_instr_Wakeup_no_Join exec_ta_satisfiable)+
 qed
 
 theorem mexecd_TypeSafety:

@@ -43,8 +43,8 @@ apply auto
 apply(drule_tac xs = xs in cyclerecD)
 apply(drule_tac x = "as!z" in bspec)
 apply (erule nth_mem)
-apply fastsimp
-apply fastsimp
+apply fastforce
+apply fastforce
 done
 
 lemma cyclic_dnfD: "qfree f \<Longrightarrow> cyclic_dnf (dnf(DLO.nnf f)) \<Longrightarrow> ~DLO.I f xs"

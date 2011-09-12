@@ -179,7 +179,7 @@ apply(rule_tac P' = "\<lambda>z s. (z,s) \<in> ({(s,t). b s \<and> s -c\<rightar
  apply(rule_tac thoare.While[OF wf_termi])
  apply(rule allI)
  apply(erule thoare.Conseq)
- apply(fastsimp intro:rtrancl_into_rtrancl dest:while_termiE while_termiE2)
+ apply(fastforce intro:rtrancl_into_rtrancl dest:while_termiE while_termiE2)
 apply(rule conjI)
  apply clarsimp
  apply(erule_tac x = s in allE)
@@ -268,8 +268,8 @@ apply(erule converse_rtrancl_induct2)
 apply(erule exec1.cases)
 apply(blast intro:execs.intros)
 apply(blast intro:execs.intros)
-apply(fastsimp intro:execs.intros)
-apply(fastsimp intro:execs.intros)
+apply(fastforce intro:execs.intros)
+apply(fastforce intro:execs.intros)
 apply(blast intro:execs.intros exec.intros)
 apply(blast intro:execs.intros exec.intros)
 apply(blast intro:execs.intros exec.intros)
@@ -609,7 +609,7 @@ apply(erule termi.induct)
      apply clarsimp
     (*While*)
     apply clarsimp
-   apply(fastsimp dest:inf_cases)
+   apply(fastforce dest:inf_cases)
   (*Call*)
   apply blast
 (*Local*)
@@ -661,7 +661,7 @@ prefer 2
  apply(erule_tac x=i in allE)
  apply(clarify)
  apply(erule_tac P = "\<lambda>cs.([body],S i) \<rightarrow>\<^sup>* (CALL # cs, S(Suc i))" in someI2)
- apply(fastsimp dest:app_execs)
+ apply(fastforce dest:app_execs)
 apply clarify
 apply(subgoal_tac "\<forall>i. ((body # Cs i,S i), (body # Cs(i+1), S(i+1))) : exec1^+")
  prefer 2

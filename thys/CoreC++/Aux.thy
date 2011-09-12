@@ -53,24 +53,24 @@ lemma only_one_append:"\<lbrakk>C' \<notin> set Cs; C' \<notin> set Cs'; Ds@ C'#
      apply (subgoal_tac "hd (us @ C'#Ds') = C'")
       apply (case_tac us)
        apply simp
-      apply fastsimp
+      apply fastforce
      apply simp
     apply (subgoal_tac "hd (us @ C'#Ds') = C'")
      apply (case_tac us)
       apply simp
-     apply fastsimp
+     apply fastforce
     apply simp
    apply (subgoal_tac "hd (us @ C'#Cs') = C'")
     apply (case_tac us)
      apply simp
-    apply fastsimp
+    apply fastforce
    apply (subgoal_tac "hd(C'#Ds') = C'")
     apply simp
    apply (simp (no_asm))
   apply (subgoal_tac "hd (us @ C'#Cs') = C'")
    apply (case_tac us)
     apply simp
-   apply fastsimp
+   apply fastforce
   apply (subgoal_tac "hd(C'#Ds') = C'")
    apply simp
   apply (simp (no_asm))

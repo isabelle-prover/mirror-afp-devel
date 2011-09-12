@@ -37,21 +37,21 @@ next
   from `valid_edge a` `a' \<in> get_return_edges a` obtain a''
     where intra_edge1:"valid_edge a''" "sourcenode a'' = sourcenode a"
     "targetnode a'' = targetnode a'" "kind a'' = (\<lambda>cf. False)\<^isub>\<surd>"
-    by(fastsimp dest:call_return_node_edge)
+    by(fastforce dest:call_return_node_edge)
   from `valid_edge ax` `ax' \<in> get_return_edges ax` obtain ax''
     where intra_edge2:"valid_edge ax''" "sourcenode ax'' = sourcenode ax"
     "targetnode ax'' = targetnode ax'" "kind ax'' = (\<lambda>cf. False)\<^isub>\<surd>"
-    by(fastsimp dest:call_return_node_edge)
+    by(fastforce dest:call_return_node_edge)
   from `valid_edge a` `a' \<in> get_return_edges a` 
   obtain Q r p fs where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
-    by(fastsimp dest!:only_call_get_return_edges)
+    by(fastforce dest!:only_call_get_return_edges)
   with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' p f' 
-    where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by(fastsimp dest!:call_return_edges)
+    where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by(fastforce dest!:call_return_edges)
   with `valid_edge a'`
   have "\<exists>!a''. valid_edge a'' \<and> targetnode a'' = targetnode a' \<and> intra_kind(kind a'')"
     by(rule return_only_one_intra_edge)
   with intra_edge1 intra_edge2 `n = targetnode a'` `n = targetnode ax'`
-  have "a'' = ax''" by(fastsimp simp:intra_kind_def)
+  have "a'' = ax''" by(fastforce simp:intra_kind_def)
   with `sourcenode a'' = sourcenode a` `sourcenode ax'' = sourcenode ax`
     `n' = sourcenode a` `nx = sourcenode ax`
   show "n' = nx" by simp
@@ -63,7 +63,7 @@ lemma return_node_THE_call_node:
   n = targetnode a'\<rbrakk>
   \<Longrightarrow> (THE n'. \<exists>a a'. valid_edge a \<and> n' = sourcenode a \<and> valid_edge a' \<and> 
   a' \<in> get_return_edges a \<and> n = targetnode a') = sourcenode a"
-  by(fastsimp intro!:the1_equality return_node_determines_call_node)
+  by(fastforce intro!:the1_equality return_node_determines_call_node)
 
 
 subsection {* Defining call nodes belonging to a certain @{text "return_node"} *}
@@ -97,7 +97,7 @@ lemma get_return_edges_call_of_return_nodes:
     \<forall>i < length rs. rs!i \<in> get_return_edges (cs!i); length rs = length cs\<rbrakk>
   \<Longrightarrow> \<forall>i<length cs. call_of_return_node (targetnodes rs!i) (sourcenode (cs!i))"
 proof(induct cs arbitrary:m rs)
-  case Nil thus ?case by fastsimp
+  case Nil thus ?case by fastforce
 next
   case (Cons c' cs')
   note IH = `\<And>m rs. \<lbrakk>valid_call_list cs' m; valid_return_list rs m;
@@ -109,7 +109,7 @@ next
   have "\<forall>i<length rs'. rs' ! i \<in> get_return_edges (cs' ! i)"
     and "r' \<in> get_return_edges c'" by auto
   from `valid_call_list (c'#cs') m` have "valid_edge c'"
-    by(fastsimp simp:valid_call_list_def)
+    by(fastforce simp:valid_call_list_def)
   from this `r' \<in> get_return_edges c'`
   have "get_proc (sourcenode c') = get_proc (targetnode r')"
     by(rule get_proc_get_return_edge)
@@ -132,7 +132,7 @@ next
   from `valid_edge c'` `r' \<in> get_return_edges c'` have "valid_edge r'" 
     by(rule get_return_edges_valid)
   from `valid_edge r'` `valid_edge c'` `r' \<in> get_return_edges c'`
-  have "return_node (targetnode r')" by(fastsimp simp:return_node_def)
+  have "return_node (targetnode r')" by(fastforce simp:return_node_def)
   with `valid_edge c'` `r' \<in> get_return_edges c'` `valid_edge r'`
   have "call_of_return_node (targetnode r') (sourcenode c')"
     by(simp add:call_of_return_node_def) blast

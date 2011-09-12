@@ -59,7 +59,7 @@ by (simp add: list_slice_def list_slice_aux_length)
 lemma list_slice_0: "list_slice xs 0 = []"
 by (simp add: list_slice_def)
 lemma list_slice_1: "list_slice xs (Suc 0) = map (\<lambda>x. [x]) xs"
-by (fastsimp simp: list_eq_iff list_slice_def list_slice_aux_nth list_slice_aux_length)
+by (fastforce simp: list_eq_iff list_slice_def list_slice_aux_nth list_slice_aux_length)
 
 lemma list_slice_less: "length xs < k \<Longrightarrow> list_slice xs k = []"
 by (simp add: list_slice_def)
@@ -335,7 +335,7 @@ apply (intro conjI impI)
   apply (drule_tac m=i in Suc_leI)
   apply (drule mult_le_mono1[of _ _ k])
   apply simp
- apply (fastsimp simp: list_eq_iff i_append_nth min_eqR)
+ apply (fastforce simp: list_eq_iff i_append_nth min_eqR)
 apply (simp add: ilist_eq_iff list_eq_iff i_append_nth linorder_not_less)
 apply (clarify, rename_tac j)
 apply (subgoal_tac "n * k \<le> i * k + j")

@@ -219,7 +219,7 @@ lemma check_exec_hext:
 proof -
   from exec have "frs \<noteq> []" by(auto)
   then obtain f Frs where frs [simp]: "frs = f # Frs"
-    by(fastsimp simp add: neq_Nil_conv)
+    by(fastforce simp add: neq_Nil_conv)
   obtain stk loc C0 M0 pc where f [simp]: "f = (stk, loc, C0, M0, pc)"
     by(cases f, blast)
   show ?thesis

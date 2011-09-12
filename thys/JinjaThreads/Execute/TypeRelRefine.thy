@@ -157,7 +157,7 @@ by(rule pred_eqI)(auto elim: subcls'_i_i_iE intro: subcls'_i_i_iI)
 lemma subcls'_i_i_o_program [code]:
   "subcls'_i_i_o (program Pi) C = 
   sup (Predicate.single C) (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> bot | Some m \<Rightarrow> pred_of_cset m)"
-by(cases Pi)(fastsimp simp add: subcls'_i_i_o_def subcls'_def tabulate_subcls_def intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
+by(cases Pi)(fastforce simp add: subcls'_i_i_o_def subcls'_def tabulate_subcls_def intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
 
 lemma rtranclp_FioB_i_i_subcls1_i_i_o_code [code_inline]:
   "rtranclp_FioB_i_i (subcls1_i_i_o P) = subcls'_i_i_i P"
@@ -235,7 +235,7 @@ lemma field_program [code]:
        None \<Rightarrow> Predicate.not_unique bot
      | Some (D', T, fd) \<Rightarrow> (D', T, fd)))"
 unfolding field_def not_unique_def
-by(cases Pi)(fastsimp simp add: tabulate_sees_field_def mem_def split: split_if_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
+by(cases Pi)(fastforce simp add: tabulate_sees_field_def mem_def split: split_if_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
 
 subsection {* Implementation for precomputing mappings *}
 
@@ -304,7 +304,7 @@ lemma subclst_snd_classD:
   assumes "subclst (Program P) C D"
   shows "D \<in> fst ` snd ` set P"
 using assms
-by(induct)(fastsimp elim!: subcls1.cases dest!: map_of_SomeD intro: rev_image_eqI)+
+by(induct)(fastforce elim!: subcls1.cases dest!: map_of_SomeD intro: rev_image_eqI)+
 
 definition check_acyclicity :: "(cname, cname Cset.set) mapping \<Rightarrow> 'm cdecl list \<Rightarrow> unit"
 where "check_acyclicity _ _ = ()"
@@ -447,13 +447,13 @@ using assms
 apply induct
 apply(auto intro: Methods.intros simp add: o_def split_def)
 apply(rule sees_methods_Object)
-apply fastsimp
+apply fastforce
 apply(rule ext)
 apply(subst map_of_map2[unfolded split_def])
 apply(simp add: o_def)
 
 apply(rule sees_methods_rec)
-apply fastsimp
+apply fastforce
 apply simp
 apply assumption
 apply(rule ext)
@@ -493,10 +493,10 @@ lemma Methods'_fun:
   shows "Methods' P C Mm' \<Longrightarrow> Mm = Mm'"
 using assms
 apply(induct arbitrary: Mm')
- apply(fastsimp elim: Methods'.cases)
+ apply(fastforce elim: Methods'.cases)
 apply(rotate_tac -1)
 apply(erule Methods'.cases)
- apply(fastsimp)
+ apply(fastforce)
 apply clarify
 apply(simp)
 done
@@ -533,7 +533,7 @@ apply auto
  apply(clarsimp simp add: Method_def)
  apply(simp add: split_def)
  apply(subst map_of_map2[unfolded split_def])
- apply(fastsimp intro: ccontr)
+ apply(fastforce intro: ccontr)
 apply(rule sym)
 apply(simp add: map_of_eq_None_iff is_class_def)
 apply(simp only: set_map[symmetric] map_map o_def fst_conv)

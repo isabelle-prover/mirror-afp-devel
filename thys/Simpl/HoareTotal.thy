@@ -373,7 +373,7 @@ proof -
     fix \<sigma>
     from hoare_sound [OF deriv_body] hoaret_sound [OF termi_body [rule_format, of \<sigma>]]
     have "\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> I \<inter> b) c ({t. (t, \<sigma>) \<in> V} \<inter> I),A"
-      by (fastsimp simp add: cvalidt_def validt_def cvalid_def valid_def)
+      by (fastforce simp add: cvalidt_def validt_def cvalid_def valid_def)
     then
     show "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> I \<inter> b) c ({t. (t, \<sigma>) \<in> V} \<inter> I),A"
       by (rule hoaret_complete')
@@ -748,7 +748,7 @@ apply  (insert body)
 apply  simp
 apply  (rule hoaret_augment_context [OF deriv_body])
 apply  blast
-apply fastsimp
+apply fastforce
 done
 
 lemma CallBody:

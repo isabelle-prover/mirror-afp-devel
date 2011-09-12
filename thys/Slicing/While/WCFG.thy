@@ -213,24 +213,24 @@ by(induct prog n\<equiv>"(_Entry_)" et n' rule:WCFG_induct,auto)
 lemma WCFG_edge_det:
   "\<lbrakk>prog \<turnstile> n -et\<rightarrow> n'; prog \<turnstile> n -et'\<rightarrow> n'\<rbrakk> \<Longrightarrow> et = et'"
 proof(induct rule:WCFG_induct)
-  case WCFG_Entry_Exit thus ?case by(fastsimp dest:WCFG_EntryD)
+  case WCFG_Entry_Exit thus ?case by(fastforce dest:WCFG_EntryD)
 next
-  case WCFG_Entry thus ?case by(fastsimp dest:WCFG_EntryD)
+  case WCFG_Entry thus ?case by(fastforce dest:WCFG_EntryD)
 next
-  case WCFG_Skip thus ?case by(fastsimp elim:WCFG_elims)
+  case WCFG_Skip thus ?case by(fastforce elim:WCFG_elims)
 next
-  case WCFG_LAss thus ?case by(fastsimp elim:WCFG_elims)
+  case WCFG_LAss thus ?case by(fastforce elim:WCFG_elims)
 next
-  case WCFG_LAssSkip thus ?case by(fastsimp elim:WCFG_elims)
+  case WCFG_LAssSkip thus ?case by(fastforce elim:WCFG_elims)
 next
   case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
   note IH = `c\<^isub>1 \<turnstile> n -et'\<rightarrow> n' \<Longrightarrow> et = et'`
   from `c\<^isub>1 \<turnstile> n -et\<rightarrow> n'` `n' \<noteq> (_Exit_)` obtain l where "n' = (_ l _)"
     by (cases n') auto
   with `c\<^isub>1 \<turnstile> n -et\<rightarrow> n'` have "l < #:c\<^isub>1" 
-    by(fastsimp intro:WCFG_targetlabel_less_num_nodes)
+    by(fastforce intro:WCFG_targetlabel_less_num_nodes)
   with `c\<^isub>1;;c\<^isub>2 \<turnstile> n -et'\<rightarrow> n'` `n' = (_ l _)` have "c\<^isub>1 \<turnstile> n -et'\<rightarrow> n'"
-    by(fastsimp elim:WCFG_elims intro:WCFG_intros dest:label_incr_ge)
+    by(fastforce elim:WCFG_elims intro:WCFG_intros dest:label_incr_ge)
   from IH[OF this] show ?case .
 next
   case (WCFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
@@ -238,9 +238,9 @@ next
   from `c\<^isub>1 \<turnstile> n -et\<rightarrow> (_Exit_)` `n \<noteq> (_Entry_)` obtain l where "n = (_ l _)"
     by (cases n) auto
   with `c\<^isub>1 \<turnstile> n -et\<rightarrow> (_Exit_)` have "l < #:c\<^isub>1"
-    by(fastsimp intro:WCFG_sourcelabel_less_num_nodes)
+    by(fastforce intro:WCFG_sourcelabel_less_num_nodes)
   with `c\<^isub>1;;c\<^isub>2 \<turnstile> n -et'\<rightarrow> (_ 0 _) \<oplus> #:c\<^isub>1` `n = (_ l _)` have "c\<^isub>1 \<turnstile> n -et'\<rightarrow> (_Exit_)"
-    by(fastsimp elim:WCFG_elims dest:WCFG_targetlabel_less_num_nodes label_incr_ge)
+    by(fastforce elim:WCFG_elims dest:WCFG_targetlabel_less_num_nodes label_incr_ge)
   from IH[OF this] show ?case .
 next
   case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
@@ -248,25 +248,25 @@ next
   from `c\<^isub>2 \<turnstile> n -et\<rightarrow> n'` `n \<noteq> (_Entry_)` obtain l where "n = (_ l _)"
     by (cases n) auto
   with `c\<^isub>2 \<turnstile> n -et\<rightarrow> n'` have "l < #:c\<^isub>2"
-    by(fastsimp intro:WCFG_sourcelabel_less_num_nodes)
+    by(fastforce intro:WCFG_sourcelabel_less_num_nodes)
   with `c\<^isub>1;;c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 -et'\<rightarrow> n' \<oplus> #:c\<^isub>1` `n = (_ l _)` have "c\<^isub>2 \<turnstile> n -et'\<rightarrow> n'"
-    by -(erule WCFG_elims,(fastsimp dest:WCFG_sourcelabel_less_num_nodes label_incr_ge
+    by -(erule WCFG_elims,(fastforce dest:WCFG_sourcelabel_less_num_nodes label_incr_ge
                                     dest!:label_incr_inj)+)
   from IH[OF this] show ?case .
 next
-  case WCFG_CondTrue thus ?case by(fastsimp elim:WCFG_elims)
+  case WCFG_CondTrue thus ?case by(fastforce elim:WCFG_elims)
 next
-  case WCFG_CondFalse thus ?case by(fastsimp elim:WCFG_elims)
+  case WCFG_CondFalse thus ?case by(fastforce elim:WCFG_elims)
 next
   case (WCFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
   note IH = `c\<^isub>1 \<turnstile> n -et'\<rightarrow> n' \<Longrightarrow> et = et'`
   from `c\<^isub>1 \<turnstile> n -et\<rightarrow> n'` `n \<noteq> (_Entry_)` obtain l where "n = (_ l _)"
     by (cases n) auto
   with `c\<^isub>1 \<turnstile> n -et\<rightarrow> n'` have "l < #:c\<^isub>1"
-    by(fastsimp intro:WCFG_sourcelabel_less_num_nodes)
+    by(fastforce intro:WCFG_sourcelabel_less_num_nodes)
   with `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> 1 -et'\<rightarrow> n' \<oplus> 1` `n = (_ l _)`
   have "c\<^isub>1 \<turnstile> n -et'\<rightarrow> n'"
-    by -(erule WCFG_elims,(fastsimp dest:label_incr_ge label_incr_inj)+)
+    by -(erule WCFG_elims,(fastforce dest:label_incr_ge label_incr_inj)+)
   from IH[OF this] show ?case .
 next
   case (WCFG_CondElse c\<^isub>2 n et n' b c\<^isub>1)
@@ -274,18 +274,18 @@ next
   from `c\<^isub>2 \<turnstile> n -et\<rightarrow> n'` `n \<noteq> (_Entry_)` obtain l where "n = (_ l _)"
     by (cases n) auto
   with `c\<^isub>2 \<turnstile> n -et\<rightarrow> n'` have "l < #:c\<^isub>2"
-    by(fastsimp intro:WCFG_sourcelabel_less_num_nodes)
+    by(fastforce intro:WCFG_sourcelabel_less_num_nodes)
   with `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) -et'\<rightarrow> n' \<oplus> (#:c\<^isub>1 + 1)` `n = (_ l _)`
   have "c\<^isub>2 \<turnstile> n -et'\<rightarrow> n'"
-    by -(erule WCFG_elims,(fastsimp dest:WCFG_sourcelabel_less_num_nodes 
+    by -(erule WCFG_elims,(fastforce dest:WCFG_sourcelabel_less_num_nodes 
                              label_incr_inj label_incr_ge label_incr_simp_rev)+)
   from IH[OF this] show ?case .
 next
-  case WCFG_WhileTrue thus ?case by(fastsimp elim:WCFG_elims)
+  case WCFG_WhileTrue thus ?case by(fastforce elim:WCFG_elims)
 next
-  case WCFG_WhileFalse thus ?case by(fastsimp elim:WCFG_elims)
+  case WCFG_WhileFalse thus ?case by(fastforce elim:WCFG_elims)
 next
-  case WCFG_WhileFalseSkip thus ?case by(fastsimp elim:WCFG_elims)
+  case WCFG_WhileFalseSkip thus ?case by(fastforce elim:WCFG_elims)
 next
   case (WCFG_WhileBody c' n et n' b)
   note IH = `c' \<turnstile> n -et'\<rightarrow> n' \<Longrightarrow> et = et'`
@@ -293,15 +293,15 @@ next
     by (cases n) auto
   moreover
   with `c' \<turnstile> n -et\<rightarrow> n'` have "l < #:c'"
-    by(fastsimp intro:WCFG_sourcelabel_less_num_nodes)
+    by(fastforce intro:WCFG_sourcelabel_less_num_nodes)
   moreover
   from `c' \<turnstile> n -et\<rightarrow> n'` `n' \<noteq> (_Exit_)` obtain l' where "n' = (_ l' _)"
     by (cases n') auto
   moreover
   with `c' \<turnstile> n -et\<rightarrow> n'` have "l' < #:c'"
-    by(fastsimp intro:WCFG_targetlabel_less_num_nodes)
+    by(fastforce intro:WCFG_targetlabel_less_num_nodes)
   ultimately have "c' \<turnstile> n -et'\<rightarrow> n'" using `while (b) c' \<turnstile> n \<oplus> 2 -et'\<rightarrow> n' \<oplus> 2`
-    by(fastsimp elim:WCFG_elims dest:label_incr_start_Node_smaller)
+    by(fastforce elim:WCFG_elims dest:label_incr_start_Node_smaller)
   from IH[OF this] show ?case .
 next
   case (WCFG_WhileBodyExit c' n et b)
@@ -309,7 +309,7 @@ next
   from `c' \<turnstile> n -et\<rightarrow> (_Exit_)` `n \<noteq> (_Entry_)` obtain l where "n = (_ l _)"
     by (cases n) auto
   with `c' \<turnstile> n -et\<rightarrow> (_Exit_)` have "l < #:c'"
-    by(fastsimp intro:WCFG_sourcelabel_less_num_nodes)
+    by(fastforce intro:WCFG_sourcelabel_less_num_nodes)
   with `while (b) c' \<turnstile> n \<oplus> 2 -et'\<rightarrow> (_0_)` `n = (_ l _)`
   have "c' \<turnstile> n -et'\<rightarrow> (_Exit_)"
     by -(erule WCFG_elims,auto dest:label_incr_start_Node_smaller)
@@ -339,7 +339,7 @@ proof -
       by blast
     from `prog2 \<turnstile> (_ l _) -et\<rightarrow> (_Exit_)` 
     have "prog1;;prog2 \<turnstile> (_ l _) \<oplus> #:prog1 -et\<rightarrow> (_Exit_) \<oplus> #:prog1"
-      by(fastsimp intro:WCFG_SeqSecond)
+      by(fastforce intro:WCFG_SeqSecond)
     with `l < #:prog2` show ?case by(rule_tac x="l + #:prog1" in exI,auto)
   next
     case (Cond b prog1 prog2)
@@ -348,7 +348,7 @@ proof -
       by blast
     from `prog1 \<turnstile> (_ l _) -et\<rightarrow> (_Exit_)`
     have "if (b) prog1 else prog2 \<turnstile> (_ l _) \<oplus> 1 -et\<rightarrow> (_Exit_) \<oplus> 1"
-      by(fastsimp intro:WCFG_CondThen)
+      by(fastforce intro:WCFG_CondThen)
     with `l < #:prog1` show ?case by(rule_tac x="l + 1" in exI,auto)
   next
     case (While b prog')
@@ -366,7 +366,7 @@ lemma less_num_nodes_edge:
 proof(induct prog arbitrary:l)
   case Skip
   from `l < #:Skip` have "l = 0" by simp
-  hence "Skip \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" by(fastsimp intro:WCFG_Skip)
+  hence "Skip \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" by(fastforce intro:WCFG_Skip)
   thus ?case by blast
 next
   case (LAss V e)
@@ -374,11 +374,11 @@ next
   thus ?case
   proof
     assume "l = 0"
-    hence "V:=e \<turnstile> (_Entry_) -(\<lambda>s. True)\<^isub>\<surd>\<rightarrow> (_ l _)" by(fastsimp intro:WCFG_Entry)
+    hence "V:=e \<turnstile> (_Entry_) -(\<lambda>s. True)\<^isub>\<surd>\<rightarrow> (_ l _)" by(fastforce intro:WCFG_Entry)
     thus ?thesis by blast
   next
     assume "l = 1"
-    hence "V:=e \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" by(fastsimp intro:WCFG_LAssSkip)
+    hence "V:=e \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" by(fastforce intro:WCFG_LAssSkip)
     thus ?thesis by blast
   qed
 next
@@ -395,7 +395,7 @@ next
     thus ?thesis
     proof
       assume "prog1 \<turnstile> n -et\<rightarrow> (_ l _)"
-      hence "prog1;; prog2 \<turnstile> n -et\<rightarrow> (_ l _)" by(fastsimp intro:WCFG_SeqFirst)
+      hence "prog1;; prog2 \<turnstile> n -et\<rightarrow> (_ l _)" by(fastforce intro:WCFG_SeqFirst)
       thus ?thesis by blast
     next
       assume edge:"prog1 \<turnstile> (_ l _) -et\<rightarrow> n"
@@ -403,12 +403,12 @@ next
       proof(cases "n = (_Exit_)")
         case True
         with edge have "prog1;; prog2 \<turnstile> (_ l _) -et\<rightarrow> (_0_) \<oplus> #:prog1"
-          by(fastsimp intro:WCFG_SeqConnect)
+          by(fastforce intro:WCFG_SeqConnect)
         thus ?thesis by blast
       next
         case False
         with edge have "prog1;; prog2 \<turnstile> (_ l _) -et\<rightarrow> n"
-          by(fastsimp intro:WCFG_SeqFirst)
+          by(fastforce intro:WCFG_SeqFirst)
         thus ?thesis by blast
       qed
     qed
@@ -430,19 +430,19 @@ next
           and "prog1 \<turnstile> (_ l'' _) -et''\<rightarrow> (_Exit_)"
           by(erule less_num_nodes_edge_Exit)
         hence "prog1;;prog2 \<turnstile> (_ l'' _) -et''\<rightarrow> (_0_) \<oplus> #:prog1"
-          by(fastsimp intro:WCFG_SeqConnect)
+          by(fastforce intro:WCFG_SeqConnect)
         with `l' = 0` `l = l' + #:prog1` show ?thesis by simp blast
       next
         case False
         with `prog2 \<turnstile> n -et\<rightarrow> (_ l' _)`
         have "prog1;;prog2 \<turnstile> n \<oplus> #:prog1 -et\<rightarrow> (_ l' _) \<oplus> #:prog1"
-          by(fastsimp intro:WCFG_SeqSecond)
+          by(fastforce intro:WCFG_SeqSecond)
         with `l = l' + #:prog1` show ?thesis  by simp blast
       qed
     next
       assume "prog2 \<turnstile> (_ l' _) -et\<rightarrow> n"
       hence "prog1;;prog2 \<turnstile> (_ l' _) \<oplus> #:prog1 -et\<rightarrow> n \<oplus> #:prog1"
-        by(fastsimp intro:WCFG_SeqSecond)
+        by(fastforce intro:WCFG_SeqSecond)
       with `l = l' + #:prog1` show ?thesis  by simp blast
     qed
   qed
@@ -481,13 +481,13 @@ next
         next
           case False
           with edge have "if (b) prog1 else prog2 \<turnstile> n \<oplus> 1 -et\<rightarrow> (_ l' _) \<oplus> 1"
-            by(fastsimp intro:WCFG_CondThen)
+            by(fastforce intro:WCFG_CondThen)
           with `l = l' + 1` show ?thesis by simp blast
         qed
       next
         assume "prog1 \<turnstile> (_ l' _) -et\<rightarrow> n"
         hence "if (b) prog1 else prog2 \<turnstile> (_ l' _) \<oplus> 1 -et\<rightarrow> n \<oplus> 1"
-          by(fastsimp intro:WCFG_CondThen)
+          by(fastforce intro:WCFG_CondThen)
         with `l = l' + 1` show ?thesis by simp blast
       qed
     next
@@ -515,14 +515,14 @@ next
           with `prog2 \<turnstile> n -et\<rightarrow> (_ l'' _)`
           have "if (b) prog1 else prog2 \<turnstile> n \<oplus> (#:prog1 + 1) -et\<rightarrow> 
                                           (_ l'' _) \<oplus> (#:prog1 + 1)"
-            by(fastsimp intro:WCFG_CondElse)
+            by(fastforce intro:WCFG_CondElse)
           with `l = l' + 1` `l' = l'' + #:prog1` show ?thesis by simp blast
         qed
       next
         assume "prog2 \<turnstile> (_ l'' _) -et\<rightarrow> n"
         hence "if (b) prog1 else prog2 \<turnstile> (_ l'' _) \<oplus> (#:prog1 + 1) -et\<rightarrow> 
                                          n \<oplus> (#:prog1 + 1)"
-          by(fastsimp intro:WCFG_CondElse)
+          by(fastforce intro:WCFG_CondElse)
         with `l = l' + 1` `l' = l'' + #:prog1` show ?thesis by simp blast
       qed
     qed
@@ -569,7 +569,7 @@ next
           case False
           with `prog' \<turnstile> n -et\<rightarrow> (_ l' _)`
           have "while (b) prog' \<turnstile> n \<oplus> 2 -et\<rightarrow> (_ l' _) \<oplus> 2"
-            by(fastsimp intro:WCFG_WhileBody)
+            by(fastforce intro:WCFG_WhileBody)
           with `l = l' + 2` show ?thesis by simp blast
         qed
       next
@@ -579,13 +579,13 @@ next
           case True
           with `prog' \<turnstile> (_ l' _) -et\<rightarrow> n`
           have "while (b) prog' \<turnstile> (_ l' _) \<oplus> 2 -et\<rightarrow> (_0_)"
-            by(fastsimp intro:WCFG_WhileBodyExit)
+            by(fastforce intro:WCFG_WhileBodyExit)
           with `l = l' + 2` show ?thesis by simp blast
         next
           case False
           with `prog' \<turnstile> (_ l' _) -et\<rightarrow> n`
           have "while (b) prog' \<turnstile> (_ l' _) \<oplus> 2 -et\<rightarrow> n \<oplus> 2"
-            by(fastsimp intro:WCFG_WhileBody)
+            by(fastforce intro:WCFG_WhileBody)
           with `l = l' + 2` show ?thesis by simp blast
         qed
       qed
@@ -602,17 +602,17 @@ lemma WCFG_deterministic:
 proof(induct arbitrary:n\<^isub>2 n\<^isub>2' rule:WCFG_induct)
   case (WCFG_Entry_Exit prog)
   from `prog \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_Entry_) = n\<^isub>2` `(_Exit_) \<noteq> n\<^isub>2'`
-  have "et\<^isub>2 = (\<lambda>s. True)\<^isub>\<surd>" by(fastsimp dest:WCFG_EntryD)
+  have "et\<^isub>2 = (\<lambda>s. True)\<^isub>\<surd>" by(fastforce dest:WCFG_EntryD)
   thus ?case by simp
 next
   case (WCFG_Entry prog)
   from `prog \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_Entry_) = n\<^isub>2` `(_0_) \<noteq> n\<^isub>2'`
-  have "et\<^isub>2 = (\<lambda>s. False)\<^isub>\<surd>" by(fastsimp dest:WCFG_EntryD)
+  have "et\<^isub>2 = (\<lambda>s. False)\<^isub>\<surd>" by(fastforce dest:WCFG_EntryD)
   thus ?case by simp
 next
   case WCFG_Skip
   from `Skip \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_0_) = n\<^isub>2` `(_Exit_) \<noteq> n\<^isub>2'`
-  have False by(fastsimp elim:WCFG.While_CFG.cases)
+  have False by(fastforce elim:WCFG.While_CFG.cases)
   thus ?case by simp
 next
   case (WCFG_LAss V e)
@@ -664,7 +664,7 @@ next
     apply(auto intro:WCFG.While_CFG.intros)
       apply(cases n,auto dest:WCFG_sourcelabel_less_num_nodes)
      apply(cases n,auto dest:WCFG_sourcelabel_less_num_nodes)
-    by(fastsimp dest:label_incr_inj)
+    by(fastforce dest:label_incr_inj)
   with `n' \<oplus> #:c\<^isub>1 \<noteq> n\<^isub>2'` have edge:"c\<^isub>2 \<turnstile> n -et\<^isub>2\<rightarrow> nx" and neq:"n' \<noteq> nx"
     by auto
   from IH[OF edge _ neq] show ?case by simp
@@ -700,7 +700,7 @@ next
     apply(auto intro:WCFG.While_CFG.intros)
      apply(drule label_incr_simp_rev)
      apply(case_tac na,auto,cases n,auto dest:WCFG_sourcelabel_less_num_nodes)
-    by(fastsimp dest:label_incr_inj)
+    by(fastforce dest:label_incr_inj)
   from IH[OF this[THEN conjunct1] _ this[THEN conjunct2]] show ?case by simp
 next
   case (WCFG_WhileTrue b c')
@@ -723,9 +723,9 @@ next
   obtain nx where "c' \<turnstile> n -et\<^isub>2\<rightarrow> nx \<and> n' \<noteq> nx"
     apply - apply(erule WCFG.While_CFG.cases)
     apply(auto intro:WCFG.While_CFG.intros)
-      apply(fastsimp dest:label_incr_ge[OF sym])
-     apply(fastsimp dest:label_incr_inj)
-    by(fastsimp dest:label_incr_inj)
+      apply(fastforce dest:label_incr_ge[OF sym])
+     apply(fastforce dest:label_incr_inj)
+    by(fastforce dest:label_incr_inj)
   from IH[OF this[THEN conjunct1] _ this[THEN conjunct2]] show ?case by simp
 next
   case (WCFG_WhileBodyExit c' n et b)
@@ -736,8 +736,8 @@ next
   obtain nx where "c' \<turnstile> n -et\<^isub>2\<rightarrow> nx \<and> (_Exit_) \<noteq> nx"
     apply - apply(erule WCFG.While_CFG.cases)
     apply(auto intro:WCFG.While_CFG.intros)
-     apply(fastsimp dest:label_incr_ge[OF sym])
-    by(fastsimp dest:label_incr_inj)
+     apply(fastforce dest:label_incr_ge[OF sym])
+    by(fastforce dest:label_incr_inj)
   from IH[OF this[THEN conjunct1] _ this[THEN conjunct2]] show ?case by simp
 qed
 

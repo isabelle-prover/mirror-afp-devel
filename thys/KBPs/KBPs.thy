@@ -150,7 +150,7 @@ definition mkM :: "'s Trace set \<Rightarrow> ('a, 'p, 's Trace) KripkeStructure
         valuation = envVal \<circ> tLast \<rparr>"
 
 lemma mkM_kripke[intro, simp]: "kripke (mkM T)"
-  unfolding mkM_def by (rule kripkeI) fastsimp
+  unfolding mkM_def by (rule kripkeI) fastforce
 
 lemma mkM_S5n[intro, simp]: "S5n (mkM T)"
   unfolding mkM_def
@@ -193,7 +193,7 @@ lemma jkbpTn_length[simp]:
 lemma jkbpT_tLength_inv:
   "\<lbrakk> t \<in> jkbpT T; tLength t = n \<rbrakk> \<Longrightarrow> t \<in> jkbpTn n T"
   unfolding jkbpT_def
-  by (induct n arbitrary: t, fastsimp+)
+  by (induct n arbitrary: t, fastforce+)
 
 lemma jkbpT_traces_of_length:
    "{ t \<in> jkbpT T . tLength t = n } = jkbpTn n T"
@@ -263,11 +263,11 @@ abbreviation mkMCn :: "nat \<Rightarrow> ('a, 'p, 's Trace) KripkeStructure" ("m
 
 lemma jkbpCn_step_inv:
   "t \<leadsto> s \<in> jkbpCn (Suc n) \<Longrightarrow> t \<in> jkbpCn n"
-  by (induct n arbitrary: t, (fastsimp simp add: Let_def)+)
+  by (induct n arbitrary: t, (fastforce simp add: Let_def)+)
 
 lemma jkbpCn_length[simp]:
   "t \<in> jkbpCn n \<Longrightarrow> tLength t = n"
-  by (induct n arbitrary: t, (fastsimp simp add: Let_def)+)
+  by (induct n arbitrary: t, (fastforce simp add: Let_def)+)
 
 lemma jkbpCn_init_inv[intro]:
   "tInit s \<in> jkbpCn n \<Longrightarrow> s \<in> set envInit"
@@ -291,7 +291,7 @@ lemma jkbpCn_jkbpC_inc[intro]:
 lemma jkbpC_tLength_inv[intro]:
   "\<lbrakk> t \<in> jkbpC; tLength t = n \<rbrakk> \<Longrightarrow> t \<in> jkbpCn n"
   unfolding jkbpC_def
-  by (induct n arbitrary: t, (fastsimp simp add: Let_def)+)
+  by (induct n arbitrary: t, (fastforce simp add: Let_def)+)
 
 lemma jkbpC_traces_of_length:
    "{ t \<in> jkbpC . tLength t = n } = jkbpCn n"

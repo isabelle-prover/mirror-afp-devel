@@ -284,7 +284,7 @@ proof (induct c)
         by simp
       with Cons_x1_xs1 Nil x_x1 xs_rest show ?thesis
         apply (cases "flatten (normalize c2)")
-        apply (fastsimp simp add: flatten_nonEmpty)
+        apply (fastforce simp add: flatten_nonEmpty)
         apply simp
         done
     next
@@ -294,7 +294,7 @@ proof (induct c)
         by simp
       with Cons_x1_xs1 Nil x_x1 xs_rest show ?thesis
         apply (cases "flatten (normalize c2)")
-        apply (fastsimp simp add: flatten_nonEmpty)
+        apply (fastforce simp add: flatten_nonEmpty)
         apply (simp split: list.splits)
         done
     qed
@@ -1001,11 +1001,11 @@ apply  (erule_tac x=s in allE, erule exE)
 apply  simp
 apply (rule ext)
 apply (erule_tac x=s in allE, erule exE)
-apply fastsimp
-apply (fastsimp split: option.splits split_if_asm)+
+apply fastforce
+apply (fastforce split: option.splits split_if_asm)+
 (*
 apply simp_all
-apply (fastsimp split: option.splits split_if_asm)+
+apply (fastforce split: option.splits split_if_asm)+
 *)
 done
 
@@ -1018,16 +1018,16 @@ apply (rule conjI)
 apply  (clarsimp)
 apply  (rule ext)
 apply  (erule_tac x=s in allE)+
-apply  fastsimp
-apply fastsimp
-apply (fastsimp split: option.splits split_if_asm)+
+apply  fastforce
+apply fastforce
+apply (fastforce split: option.splits split_if_asm)+
 done
 (*
 lemma inter_guards_sym: "(c1 \<inter>\<^sub>g c2) = (c2 \<inter>\<^sub>g c1)"
 apply (induct c1 c2 rule: inter_guards.induct)
 prefer 8
 apply simp_all
-apply (fastsimp split: option.splits split_if_asm)+
+apply (fastforce split: option.splits split_if_asm)+
 done
 *)
 

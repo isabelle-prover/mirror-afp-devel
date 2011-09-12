@@ -71,7 +71,7 @@ begin
 lemma Low_neq_Exit: assumes "L \<noteq> {}" shows "(_Low_) \<noteq> (_Exit_)"
 proof
   assume "(_Low_) = (_Exit_)"
-  have "Use (_Exit_) = {}" by fastsimp
+  have "Use (_Exit_) = {}" by fastforce
   with UseLow `L \<noteq> {}` `(_Low_) = (_Exit_)` show False by simp
 qed
 
@@ -85,7 +85,7 @@ proof(atomize_elim)
   proof(induct n'\<equiv>"(_Entry_)" as n rule:path.induct)
     case (Cons_path n'' as n' a)
     from `n'' -as\<rightarrow>* n'` `inner_node n'` have "n'' \<noteq> (_Exit_)" 
-      by(fastsimp simp:inner_node_def)
+      by(fastforce simp:inner_node_def)
     with `valid_edge a` `targetnode a = n''` `sourcenode a = (_Entry_)`
     have "n'' = (_High_)" by -(drule Entry_edge_Exit_or_High,auto)
     from High_target_Entry_edge
@@ -96,7 +96,7 @@ proof(atomize_elim)
       `n'' = (_High_)`
     have "a = a'" by(auto dest:edge_det)
     with `n'' -as\<rightarrow>* n'` `n'' = (_High_)` `kind a' = (\<lambda>s. True)\<^isub>\<surd>` show ?case by blast
-  qed fastsimp
+  qed fastforce
 qed
 
 
@@ -110,7 +110,7 @@ proof(atomize_elim)
   show "\<exists>as' a'. as = as'@[a'] \<and> n -as'\<rightarrow>* (_Low_) \<and> kind a' = (\<lambda>s. True)\<^isub>\<surd>"
   proof(induct as rule:rev_induct)
     case Nil
-    with `inner_node n` show ?case by fastsimp
+    with `inner_node n` show ?case by fastforce
   next
     case (snoc a' as')
     from `n -as'@[a']\<rightarrow>* (_Exit_)`
@@ -127,7 +127,7 @@ proof(atomize_elim)
       and "targetnode ax = (_Exit_)" and "kind ax = (\<lambda>s. True)\<^isub>\<surd>"
       by blast
     with `valid_edge a'` `targetnode a' = (_Exit_)` `sourcenode a' = (_Low_)`
-    have "a' = ax" by(fastsimp intro:edge_det)
+    have "a' = ax" by(fastforce intro:edge_det)
     with `n -as'\<rightarrow>* sourcenode a'` `sourcenode a' = (_Low_)` `kind ax = (\<lambda>s. True)\<^isub>\<surd>`
     show ?case by blast
   qed
@@ -136,11 +136,11 @@ qed
 
 lemma not_Low_High: "V \<notin> L \<Longrightarrow> V \<in> H"
   using HighLowUNIV
-  by fastsimp
+  by fastforce
 
 lemma not_High_Low: "V \<notin> H \<Longrightarrow> V \<in> L"
   using HighLowUNIV
-  by fastsimp
+  by fastforce
 
 
 section {* Low Equivalence *}
@@ -181,11 +181,11 @@ proof -
     with `(_Entry_) -as\<rightarrow>* n'` obtain a' as' where "as = a'#as'"
       and "(_High_) -as'\<rightarrow>* n'" by -(erule Entry_path_High_path)
     from `(_Entry_) -as\<rightarrow>* n'` `as = a'#as'`
-    have "sourcenode a' = (_Entry_)" by(fastsimp elim:path.cases)
+    have "sourcenode a' = (_Entry_)" by(fastforce elim:path.cases)
     show ?thesis
     proof(cases "as' = []")
       case True
-      with `(_High_) -as'\<rightarrow>* n'` have "n' = (_High_)" by fastsimp
+      with `(_High_) -as'\<rightarrow>* n'` have "n' = (_High_)" by fastforce
       with `n' \<in> backward_slice S` `(_High_) \<notin> backward_slice S`
       have False by simp
       thus ?thesis by simp
@@ -194,11 +194,11 @@ proof -
       with `(_High_) -as'\<rightarrow>* n'` have "hd (sourcenodes as') = (_High_)"
         by(rule path_sourcenode)
       from False have "hd (sourcenodes as') \<in> set (sourcenodes as')"
-        by(fastsimp intro:hd_in_set simp:sourcenodes_def)
+        by(fastforce intro:hd_in_set simp:sourcenodes_def)
       with `as = a'#as'` have "hd (sourcenodes as') \<in> set (sourcenodes as)"
         by(simp add:sourcenodes_def)
       with `hd (sourcenodes as') = (_High_)` `\<forall>nx \<in> set(sourcenodes as). V \<notin> Def nx`
-      have "V \<notin> Def (_High_)" by fastsimp
+      have "V \<notin> Def (_High_)" by fastforce
       hence "V \<notin> H" by(simp add:DefHigh)
       thus ?thesis by(rule not_High_Low)
     qed
@@ -230,12 +230,12 @@ proof(induct n as n\<equiv>"(_Low_)" arbitrary:as' s s' rule:path.induct)
   { fix V assume "V \<in> Use (_Low_)"
     moreover
     from `valid_node (_Low_)` have "(_Low_) -[]\<rightarrow>* (_Low_)"
-      by(fastsimp intro:path.empty_path)
+      by(fastforce intro:path.empty_path)
     moreover
     from `valid_node (_Low_)` `(_Low_) \<in> S` have "(_Low_) \<in> backward_slice S"
-      by(fastsimp intro:refl)
+      by(fastforce intro:refl)
     ultimately have "V \<in> rv S (_Low_)"
-      by(fastsimp intro:rvI simp:sourcenodes_def) }
+      by(fastforce intro:rvI simp:sourcenodes_def) }
   hence "\<forall>V \<in> Use (_Low_). V \<in> rv S (_Low_)" by simp
   show ?case
   proof(cases "L = {}")
@@ -248,7 +248,7 @@ proof(induct n as n\<equiv>"(_Low_)" arbitrary:as' s s' rule:path.induct)
       from `valid_edge a` `sourcenode a = (_Low_)`
       have "targetnode a = (_Exit_)" by -(rule Exit_successor_of_Low,simp+)
       with `targetnode a = n''` `n'' -as\<rightarrow>* (_Low_)`
-      have "(_Low_) = (_Exit_)" by -(rule path_Exit_source,fastsimp)
+      have "(_Low_) = (_Exit_)" by -(rule path_Exit_source,fastforce)
       with False have False by -(drule Low_neq_Exit,simp)
       thus ?case by simp
     qed simp
@@ -271,7 +271,7 @@ next
     show ?thesis
     proof(cases as')
       case Nil
-      with `n -as'\<rightarrow>* (_Low_)` have "n = (_Low_)" by fastsimp
+      with `n -as'\<rightarrow>* (_Low_)` have "n = (_Low_)" by fastforce
       with `valid_edge a` `sourcenode a = n` have "targetnode a = (_Exit_)"
         by -(rule Exit_successor_of_Low,simp+)
       from Low_source_Exit_edge obtain ax where "valid_edge ax"
@@ -279,7 +279,7 @@ next
         and "kind ax = (\<lambda>s. True)\<^isub>\<surd>" by blast
       from `valid_edge a` `sourcenode a = n` `n = (_Low_)` `targetnode a = (_Exit_)`
         `valid_edge ax` `sourcenode ax = (_Low_)` `targetnode ax = (_Exit_)`
-      have "a = ax" by(fastsimp dest:edge_det)
+      have "a = ax" by(fastforce dest:edge_det)
       with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` have "kind a = (\<lambda>s. True)\<^isub>\<surd>" by simp
       with `targetnode a = (_Exit_)` `targetnode a = n''` `n'' -as\<rightarrow>* (_Low_)`
       have "(_Low_) = (_Exit_)" by -(rule path_Exit_source,auto)
@@ -294,7 +294,7 @@ next
         case True
         with `targetnode ax -asx\<rightarrow>* (_Low_)` have "n'' -asx\<rightarrow>* (_Low_)" by simp
         from `valid_edge ax` `valid_edge a` `n = sourcenode ax` `sourcenode a = n`
-          True `targetnode a = n''` have "ax = a" by(fastsimp intro:edge_det)
+          True `targetnode a = n''` have "ax = a" by(fastforce intro:edge_det)
         from `preds (slice_kinds S (a#as)) s` 
         have preds1:"preds (slice_kinds S as) (transfer (slice_kind S a) s)"
           by(simp add:slice_kinds_def)
@@ -398,16 +398,16 @@ proof -
       and "kind z = (\<lambda>s. False)\<^isub>\<surd>" by blast
     from `valid_edge x` `valid_edge z` `(_Entry_) = sourcenode x` 
       `sourcenode z = (_Entry_)` Exit `targetnode z = (_Exit_)`
-    have "x = z" by(fastsimp intro:edge_det)
+    have "x = z" by(fastforce intro:edge_det)
     with `preds (kinds as) s` `as = x#xs` `xs = []` `kind z = (\<lambda>s. False)\<^isub>\<surd>` 
     have False by(simp add:kinds_def)
     thus ?thesis by simp
   qed simp
   with `targetnode x -xs\<rightarrow>* (_Exit_)` obtain x' xs' where "xs = xs'@[x']"
     and "targetnode x -xs'\<rightarrow>* (_Low_)" and "kind x' = (\<lambda>s. True)\<^isub>\<surd>"
-    by(fastsimp elim:Exit_path_Low_path)
+    by(fastforce elim:Exit_path_Low_path)
   with `(_Entry_) = sourcenode x` `valid_edge x`
-  have "(_Entry_) -x#xs'\<rightarrow>* (_Low_)" by(fastsimp intro:Cons_path)
+  have "(_Entry_) -x#xs'\<rightarrow>* (_Low_)" by(fastforce intro:Cons_path)
   from `as = x#xs` `xs = xs'@[x']` have "as = (x#xs')@[x']" by simp
   with `preds (kinds as) s` have "preds (kinds (x#xs')) s"
     by(simp add:kinds_def preds_split)
@@ -432,16 +432,16 @@ proof -
       and "kind z = (\<lambda>s. False)\<^isub>\<surd>" by blast
     from `valid_edge y` `valid_edge z` `(_Entry_) = sourcenode y` 
       `sourcenode z = (_Entry_)` Exit `targetnode z = (_Exit_)`
-    have "y = z" by(fastsimp intro:edge_det)
+    have "y = z" by(fastforce intro:edge_det)
     with `preds (kinds as') s'` `as' = y#ys` `ys = []` `kind z = (\<lambda>s. False)\<^isub>\<surd>` 
     have False by(simp add:kinds_def)
     thus ?thesis by simp
   qed simp
   with `targetnode y -ys\<rightarrow>* (_Exit_)` obtain y' ys' where "ys = ys'@[y']"
     and "targetnode y -ys'\<rightarrow>* (_Low_)" and "kind y' = (\<lambda>s. True)\<^isub>\<surd>"
-    by(fastsimp elim:Exit_path_Low_path)
+    by(fastforce elim:Exit_path_Low_path)
   with `(_Entry_) = sourcenode y` `valid_edge y`
-  have "(_Entry_) -y#ys'\<rightarrow>* (_Low_)" by(fastsimp intro:Cons_path)
+  have "(_Entry_) -y#ys'\<rightarrow>* (_Low_)" by(fastforce intro:Cons_path)
   from `as' = y#ys` `ys = ys'@[y']` have "as' = (y#ys')@[y']" by simp
   with `preds (kinds as') s'` have "preds (kinds (y#ys')) s'"
     by(simp add:kinds_def preds_split)
@@ -507,13 +507,13 @@ proof -
   from `n \<triangleq> c` `\<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>c',s\<^isub>1'\<rangle>`
   obtain n\<^isub>1 as\<^isub>1 where "n -as\<^isub>1\<rightarrow>* n\<^isub>1" and "transfers (kinds as\<^isub>1) s\<^isub>1 = s\<^isub>1'"
     and "preds (kinds as\<^isub>1) s\<^isub>1" and "n\<^isub>1 \<triangleq> c'"
-    by(fastsimp dest:fundamental_property)
+    by(fastforce dest:fundamental_property)
   from `n -as\<^isub>1\<rightarrow>* n\<^isub>1` `valid_edge a` `sourcenode a = (_High_)` `targetnode a = n`
   have "(_High_) -a#as\<^isub>1\<rightarrow>* n\<^isub>1" by(rule Cons_path)
   from `final c'` `n\<^isub>1 \<triangleq> c'`
   obtain a\<^isub>1 where "valid_edge a\<^isub>1" and "sourcenode a\<^isub>1 = n\<^isub>1" 
-    and "targetnode a\<^isub>1 = (_Low_)" and "kind a\<^isub>1 = \<Up>id" by(fastsimp dest:final_edge_Low)
-  hence "n\<^isub>1 -[a\<^isub>1]\<rightarrow>* (_Low_)" by(fastsimp intro:path_edge)
+    and "targetnode a\<^isub>1 = (_Low_)" and "kind a\<^isub>1 = \<Up>id" by(fastforce dest:final_edge_Low)
+  hence "n\<^isub>1 -[a\<^isub>1]\<rightarrow>* (_Low_)" by(fastforce intro:path_edge)
   with `(_High_) -a#as\<^isub>1\<rightarrow>* n\<^isub>1` have "(_High_) -(a#as\<^isub>1)@[a\<^isub>1]\<rightarrow>* (_Low_)"
     by(rule path_Append)
   with `valid_edge ax` `sourcenode ax = (_Entry_)` `targetnode ax = (_High_)`
@@ -524,13 +524,13 @@ proof -
   from `n \<triangleq> c` `\<langle>c,s\<^isub>2\<rangle> \<Rightarrow> \<langle>c',s\<^isub>2'\<rangle>`
   obtain n\<^isub>2 as\<^isub>2 where "n -as\<^isub>2\<rightarrow>* n\<^isub>2" and "transfers (kinds as\<^isub>2) s\<^isub>2 = s\<^isub>2'"
     and "preds (kinds as\<^isub>2) s\<^isub>2" and "n\<^isub>2 \<triangleq> c'"
-    by(fastsimp dest:fundamental_property)
+    by(fastforce dest:fundamental_property)
   from `n -as\<^isub>2\<rightarrow>* n\<^isub>2` `valid_edge a` `sourcenode a = (_High_)` `targetnode a = n`
   have "(_High_) -a#as\<^isub>2\<rightarrow>* n\<^isub>2" by(rule Cons_path)
   from `final c'` `n\<^isub>2 \<triangleq> c'`
   obtain a\<^isub>2 where "valid_edge a\<^isub>2" and "sourcenode a\<^isub>2 = n\<^isub>2" 
-    and "targetnode a\<^isub>2 = (_Low_)" and "kind a\<^isub>2 = \<Up>id" by(fastsimp dest:final_edge_Low)
-  hence "n\<^isub>2 -[a\<^isub>2]\<rightarrow>* (_Low_)" by(fastsimp intro:path_edge)
+    and "targetnode a\<^isub>2 = (_Low_)" and "kind a\<^isub>2 = \<Up>id" by(fastforce dest:final_edge_Low)
+  hence "n\<^isub>2 -[a\<^isub>2]\<rightarrow>* (_Low_)" by(fastforce intro:path_edge)
   with `(_High_) -a#as\<^isub>2\<rightarrow>* n\<^isub>2` have "(_High_) -(a#as\<^isub>2)@[a\<^isub>2]\<rightarrow>* (_Low_)"
     by(rule path_Append)
   with `valid_edge ax` `sourcenode ax = (_Entry_)` `targetnode ax = (_High_)`

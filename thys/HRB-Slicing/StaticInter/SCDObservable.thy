@@ -15,30 +15,30 @@ proof(atomize_elim)
   from `n\<^isub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^isub>2 \<or> n\<^isub>1 -p:V'\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2` obtain a Q r fs where "valid_edge a" 
     and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "parent_node n\<^isub>1 = sourcenode a"
     and "parent_node n\<^isub>2 = targetnode a"
-    by(fastsimp elim:SDG_edge.cases)
+    by(fastforce elim:SDG_edge.cases)
   from `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` obtain a' Q' f'
     where "valid_edge a'" and "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     and "parent_node n\<^isub>3 = sourcenode a'" and "parent_node n\<^isub>4 = targetnode a'"
-    by(fastsimp elim:SDG_edge.cases)
+    by(fastforce elim:SDG_edge.cases)
   from `valid_edge a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
   obtain ax where "valid_edge ax" and "\<exists>Q r fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
     and "a' \<in> get_return_edges ax"
-    by -(drule return_needs_call,fastsimp+)
+    by -(drule return_needs_call,fastforce+)
   from `valid_edge a` `valid_edge ax` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `\<exists>Q r fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-  have "targetnode a = targetnode ax" by(fastsimp dest:same_proc_call_unique_target)
+  have "targetnode a = targetnode ax" by(fastforce dest:same_proc_call_unique_target)
   from `valid_edge a'` `a' \<in> get_return_edges ax` `valid_edge ax`
   have "call_of_return_node (targetnode a') (sourcenode ax)"
-    by(fastsimp simp:return_node_def call_of_return_node_def)
+    by(fastforce simp:return_node_def call_of_return_node_def)
   with `call_of_return_node (parent_node n\<^isub>4) (parent_node n\<^isub>1)` 
     `parent_node n\<^isub>4 = targetnode a'`
-  have "sourcenode ax = parent_node n\<^isub>1" by fastsimp
+  have "sourcenode ax = parent_node n\<^isub>1" by fastforce
   with `valid_edge ax` `a' \<in> get_return_edges ax` `targetnode a = targetnode ax`
     `parent_node n\<^isub>2 = targetnode a` `parent_node n\<^isub>3 = sourcenode a'` 
     `parent_node n\<^isub>4 = targetnode a'`
   show "\<exists>a a'. valid_edge a \<and> a' \<in> get_return_edges a \<and>
     sourcenode a = parent_node n\<^isub>1 \<and> targetnode a = parent_node n\<^isub>2 \<and>
     sourcenode a' = parent_node n\<^isub>3 \<and> targetnode a' = parent_node n\<^isub>4"
-    by fastsimp
+    by fastforce
 qed
 
 subsection {* Observable set of standard control dependence is at most a singleton *}
@@ -48,7 +48,7 @@ definition SDG_to_CFG_set :: "'node SDG_node set \<Rightarrow> 'node set" ("\<lf
 
 
 lemma [intro]:"\<forall>n \<in> S. valid_SDG_node n \<Longrightarrow> \<forall>n \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub>. valid_node n"
-  by(fastsimp simp:SDG_to_CFG_set_def)
+  by(fastforce simp:SDG_to_CFG_set_def)
 
 
 lemma Exit_HRB_Slice:
@@ -65,7 +65,7 @@ proof -
     have "CFG_node n = CFG_node (_Exit_) \<or> 
       (\<exists>n Vopt popt b. sum_SDG_edge n Vopt popt b (CFG_node (_Exit_)))"
       by(induct rule:sum_SDG_slice1.induct) auto
-    then show ?thesis by(fastsimp dest:Exit_no_sum_SDG_edge_target)
+    then show ?thesis by(fastforce dest:Exit_no_sum_SDG_edge_target)
   next
     case (phase2 nx n' n'' p)
     from `nx \<in> {CFG_node (_Exit_)}` have "nx = CFG_node (_Exit_)" by simp
@@ -73,12 +73,12 @@ proof -
     have "n' = CFG_node (_Exit_) \<or> 
       (\<exists>n Vopt popt b. sum_SDG_edge n Vopt popt b (CFG_node (_Exit_)))"
       by(induct rule:sum_SDG_slice1.induct) auto
-    hence "n' = CFG_node (_Exit_)" by(fastsimp dest:Exit_no_sum_SDG_edge_target)
+    hence "n' = CFG_node (_Exit_)" by(fastforce dest:Exit_no_sum_SDG_edge_target)
     with `CFG_node n \<in> sum_SDG_slice2 n'`
     have "CFG_node n = CFG_node (_Exit_) \<or> 
       (\<exists>n Vopt popt b. sum_SDG_edge n Vopt popt b (CFG_node (_Exit_)))"
       by(induct rule:sum_SDG_slice2.induct) auto
-    then show ?thesis by(fastsimp dest:Exit_no_sum_SDG_edge_target)
+    then show ?thesis by(fastforce dest:Exit_no_sum_SDG_edge_target)
   qed
 qed
 
@@ -118,9 +118,9 @@ lemma obs_intra_postdominate:
 proof(rule ccontr)
   assume "\<not> n postdominates n'"
   from `n \<in> obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` have "valid_node n" 
-    by(fastsimp dest:in_obs_intra_valid)
+    by(fastforce dest:in_obs_intra_valid)
   with `n \<in> obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `\<not> method_exit n` have "n postdominates n"
-    by(fastsimp intro:postdominate_refl)
+    by(fastforce intro:postdominate_refl)
   from `n \<in> obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` obtain as where "n' -as\<rightarrow>\<^isub>\<iota>* n"
     and all_notinS:"\<forall>n' \<in> set(sourcenodes as). n' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     and "n \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(erule obs_intraE)
@@ -128,17 +128,17 @@ proof(rule ccontr)
   obtain as' a as'' where [simp]:"as = as'@a#as''"
     and "valid_edge a" and "\<not> n postdominates (sourcenode a)"
     and "n postdominates (targetnode a)"  and "intra_kind (kind a)"
-    by(fastsimp elim!:postdominate_path_branch simp:intra_path_def)
+    by(fastforce elim!:postdominate_path_branch simp:intra_path_def)
   from `n' -as\<rightarrow>\<^isub>\<iota>* n` have "sourcenode a -a#as''\<rightarrow>\<^isub>\<iota>* n"
-    by(fastsimp elim:path_split intro:Cons_path simp:intra_path_def)
+    by(fastforce elim:path_split intro:Cons_path simp:intra_path_def)
   with `\<not> n postdominates (sourcenode a)` `valid_edge a` `valid_node n` 
   obtain asx pex where "sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex" 
-    and "n \<notin> set(sourcenodes asx)" by(fastsimp simp:postdominate_def)
+    and "n \<notin> set(sourcenodes asx)" by(fastforce simp:postdominate_def)
   have "asx \<noteq> []"
   proof
     assume "asx = []"
     with `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex` have "sourcenode a = pex" 
-      by(fastsimp simp:intra_path_def)
+      by(fastforce simp:intra_path_def)
     from `method_exit pex` show False
     proof(rule method_exit_cases)
       assume "pex = (_Exit_)"
@@ -149,7 +149,7 @@ proof(rule ccontr)
       assume "pex = sourcenode a'" and "valid_edge a'" and "kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       from `valid_edge a'` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `valid_edge a` `intra_kind (kind a)`
         `sourcenode a = pex` `pex = sourcenode a'`
-      show False by(fastsimp dest:return_edges_only simp:intra_kind_def)
+      show False by(fastforce dest:return_edges_only simp:intra_kind_def)
     qed
   qed
   then obtain ax asx' where [simp]:"asx = ax#asx'" by(cases asx) auto
@@ -161,19 +161,19 @@ proof(rule ccontr)
     by(simp add:intra_path_def)
   with `valid_edge ax` `n \<notin> set(sourcenodes asx)` `method_exit pex`
   have "\<not> n postdominates targetnode ax"
-    by(fastsimp simp:postdominate_def sourcenodes_def)
+    by(fastforce simp:postdominate_def sourcenodes_def)
   from `n \<in> obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` all_notinS 
   have "n \<notin> set (sourcenodes (a#as''))"
-    by(fastsimp elim:obs_intra.cases simp:sourcenodes_def)
+    by(fastforce elim:obs_intra.cases simp:sourcenodes_def)
   from `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex` have "intra_kind (kind ax)"
     by(simp add:intra_path_def)
   with `sourcenode a -a#as''\<rightarrow>\<^isub>\<iota>* n` `n postdominates (targetnode a)` 
     `\<not> n postdominates targetnode ax` `valid_edge ax` 
     `n \<notin> set (sourcenodes (a#as''))` `intra_kind (kind a)`
   have "(sourcenode a) controls n"
-    by(fastsimp simp:control_dependence_def)
+    by(fastforce simp:control_dependence_def)
   hence "CFG_node (sourcenode a) s\<longrightarrow>\<^bsub>cd\<^esub> CFG_node n"
-    by(fastsimp intro:sum_SDG_cdep_edge)
+    by(fastforce intro:sum_SDG_cdep_edge)
   with `n \<in> obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` have "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     by(auto elim!:obs_intraE combine_SDG_slices.cases 
             intro:combine_SDG_slices.intros sum_SDG_slice1.intros 
@@ -200,12 +200,12 @@ proof(rule ccontr)
     by(erule obs_intraE)
   from `n -as\<rightarrow>\<^isub>\<iota>* nx` have "n -as\<rightarrow>* nx" and "\<forall>a \<in> set as. intra_kind (kind a)"
     by(simp_all add:intra_path_def)
-  hence "valid_node nx" by(fastsimp dest:path_valid_node)
+  hence "valid_node nx" by(fastforce dest:path_valid_node)
   with `nx \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` have "obs_intra nx \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx}" 
     by -(rule n_in_obs_intra)
   with `n -as\<rightarrow>* nx` `nx \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
     `nx' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `nx \<noteq> nx'` have "as \<noteq> []" 
-    by(fastsimp elim:path.cases simp:intra_path_def)
+    by(fastforce elim:path.cases simp:intra_path_def)
   with `n -as\<rightarrow>* nx` `nx \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
     `nx' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `nx \<noteq> nx'` 
     `obs_intra nx \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx}` `\<forall>a \<in> set as. intra_kind (kind a)` all
@@ -236,7 +236,7 @@ proof(rule ccontr)
     show ?case
     proof(cases "as = []")
       case True
-      with `n'' -as\<rightarrow>* n'` have [simp]:"n'' = n'" by(fastsimp elim:path.cases)
+      with `n'' -as\<rightarrow>* n'` have [simp]:"n'' = n'" by(fastforce elim:path.cases)
       from more_than_one `sourcenode a = n`
       have "\<not> (\<exists>m. obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m} \<or> 
                obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {})"
@@ -264,7 +264,7 @@ proof(rule ccontr)
           apply(rule_tac x="a" in exI)
           apply(rule_tac x="[]" in exI)
           apply(rule_tac x="as" in exI)
-          by(fastsimp intro:empty_path simp:intra_path_def)
+          by(fastforce intro:empty_path simp:intra_path_def)
       next
         case False
         with subset
@@ -283,12 +283,12 @@ proof(rule ccontr)
         from `n'' -as'\<rightarrow>\<^isub>\<iota>* sourcenode a'` `valid_edge a` `sourcenode a = n` 
           `targetnode a = n''` `intra_kind (kind a)` `intra_kind (kind a')`
         have "n -a#as'\<rightarrow>\<^isub>\<iota>* sourcenode a'"
-          by(fastsimp intro:path.Cons_path simp:intra_path_def)
+          by(fastforce intro:path.Cons_path simp:intra_path_def)
         with hyps show ?thesis
           apply(rule_tac x="a'" in exI)
           apply(rule_tac x="a#as'" in exI)
           apply(rule_tac x="as''" in exI)
-          by fastsimp
+          by fastforce
       qed
     qed
   qed simp
@@ -303,7 +303,7 @@ proof(rule ccontr)
     hence "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
     with `valid_edge a`
     have "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {sourcenode a}"
-      by(fastsimp intro!:n_in_obs_intra)
+      by(fastforce intro!:n_in_obs_intra)
     with more_than_one show False by simp
   qed
   with `valid_edge a` `intra_kind (kind a)`
@@ -315,32 +315,32 @@ proof(rule ccontr)
   with more_than_one obtain m 
     where "m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "nx \<noteq> m" by auto
   from `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` have "valid_node m" 
-    by(fastsimp dest:in_obs_intra_valid)
+    by(fastforce dest:in_obs_intra_valid)
   from `obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx}` have "valid_node nx"
-    by(fastsimp dest:in_obs_intra_valid)
+    by(fastforce dest:in_obs_intra_valid)
   show False
   proof(cases "m postdominates (sourcenode a)")
     case True
     with `nx \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     have "m postdominates nx"
-      by(fastsimp intro:postdominate_inner_path_targetnode elim:obs_intraE)
-    with `nx \<noteq> m` have "\<not> nx postdominates m" by(fastsimp dest:postdominate_antisym)
+      by(fastforce intro:postdominate_inner_path_targetnode elim:obs_intraE)
+    with `nx \<noteq> m` have "\<not> nx postdominates m" by(fastforce dest:postdominate_antisym)
     with `valid_node nx` `valid_node m` obtain asx pex where "m -asx\<rightarrow>\<^isub>\<iota>* pex"
       and "method_exit pex" and "nx \<notin> set(sourcenodes asx)"
-      by(fastsimp simp:postdominate_def)
+      by(fastforce simp:postdominate_def)
     have "\<not> nx postdominates (sourcenode a)"
     proof
       assume "nx postdominates sourcenode a"
       from `nx \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
         `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       obtain asx' where "sourcenode a -asx'\<rightarrow>\<^isub>\<iota>* m" and "nx \<notin> set(sourcenodes asx')"
-        by(fastsimp elim:obs_intraE)
+        by(fastforce elim:obs_intraE)
       with `m -asx\<rightarrow>\<^isub>\<iota>* pex` have "sourcenode a -asx'@asx\<rightarrow>\<^isub>\<iota>* pex"
-        by(fastsimp intro:path_Append simp:intra_path_def)
+        by(fastforce intro:path_Append simp:intra_path_def)
       with `nx \<notin> set(sourcenodes asx)` `nx \<notin> set(sourcenodes asx')` 
         `nx postdominates sourcenode a` `method_exit pex` show False
-        by(fastsimp simp:sourcenodes_def postdominate_def)
+        by(fastforce simp:sourcenodes_def postdominate_def)
     qed
     show False
     proof(cases "method_exit nx")
@@ -348,7 +348,7 @@ proof(rule ccontr)
       from `m postdominates nx` obtain xs where "nx -xs\<rightarrow>\<^isub>\<iota>* m"
         by -(erule postdominate_implies_inner_path)
       with True have "nx = m"
-        by(fastsimp dest!:method_exit_inner_path simp:intra_path_def)
+        by(fastforce dest!:method_exit_inner_path simp:intra_path_def)
       with `nx \<noteq> m` show False by simp
     next
       case False
@@ -364,18 +364,18 @@ proof(rule ccontr)
       from `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
         `nx \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       obtain xs where "sourcenode a -xs\<rightarrow>\<^isub>\<iota>* m" and "nx \<notin> set(sourcenodes xs)"
-        by(fastsimp elim:obs_intraE)
+        by(fastforce elim:obs_intraE)
       obtain x' xs' where [simp]:"xs = x'#xs'"
       proof(cases xs)
         case Nil
         with `sourcenode a -xs\<rightarrow>\<^isub>\<iota>* m` have [simp]:"sourcenode a = m"
-          by(fastsimp simp:intra_path_def)
+          by(fastforce simp:intra_path_def)
         with `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
-        have "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastsimp elim:obs_intraE)
+        have "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastforce elim:obs_intraE)
         with `valid_node m` have "obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m}"
           by(rule n_in_obs_intra)
         with `nx \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `nx \<noteq> m` have False
-          by fastsimp
+          by fastforce
         thus ?thesis by simp
       qed blast
       from `sourcenode a -xs\<rightarrow>\<^isub>\<iota>* m` have "sourcenode a = sourcenode x'" 
@@ -385,14 +385,14 @@ proof(rule ccontr)
       from `targetnode x' -xs'\<rightarrow>\<^isub>\<iota>* m` `nx \<notin> set(sourcenodes xs)` `valid_edge x'` 
         `valid_node m` True
       have "\<not> nx postdominates (targetnode x')" 
-        by(fastsimp simp:postdominate_def sourcenodes_def)
+        by(fastforce simp:postdominate_def sourcenodes_def)
       show False
       proof(cases "method_exit nx")
         case True
         from `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `nx \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
         have "get_proc m = get_proc nx"
-          by(fastsimp elim:obs_intraE dest:intra_path_get_procs)
+          by(fastforce elim:obs_intraE dest:intra_path_get_procs)
         with `method_exit m` `method_exit nx` have "m = nx"
           by(rule method_exit_unique)
         with `nx \<noteq> m` show False by simp
@@ -400,12 +400,12 @@ proof(rule ccontr)
         case False
         with `obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx}`
         have "nx postdominates (targetnode a)"
-          by(fastsimp intro:obs_intra_postdominate)
+          by(fastforce intro:obs_intra_postdominate)
         from `obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx}`
         obtain ys where "targetnode a -ys\<rightarrow>\<^isub>\<iota>* nx" 
           and "\<forall>nx' \<in> set(sourcenodes ys). nx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-          and "nx \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastsimp elim:obs_intraE)
-        hence "nx \<notin> set(sourcenodes ys)"by fastsimp
+          and "nx \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastforce elim:obs_intraE)
+        hence "nx \<notin> set(sourcenodes ys)"by fastforce
         have "sourcenode a \<noteq> nx"
         proof
           assume "sourcenode a = nx"
@@ -414,29 +414,29 @@ proof(rule ccontr)
           with `valid_node nx`
           have "obs_intra nx \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx}" by -(erule n_in_obs_intra)
           with `sourcenode a = nx` `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
-            `nx \<noteq> m` show False by fastsimp
+            `nx \<noteq> m` show False by fastforce
         qed
         with `nx \<notin> set(sourcenodes ys)` have "nx \<notin> set(sourcenodes (a#ys))"
-          by(fastsimp simp:sourcenodes_def)
+          by(fastforce simp:sourcenodes_def)
         from `valid_edge a` `targetnode a -ys\<rightarrow>\<^isub>\<iota>* nx` `intra_kind (kind a)`
         have "sourcenode a -a#ys\<rightarrow>\<^isub>\<iota>* nx"
-          by(fastsimp intro:Cons_path simp:intra_path_def)
+          by(fastforce intro:Cons_path simp:intra_path_def)
         from `sourcenode a -a#ys\<rightarrow>\<^isub>\<iota>* nx` `nx \<notin> set(sourcenodes (a#ys))`
           `intra_kind (kind a)` `nx postdominates (targetnode a)`
           `valid_edge x'` `intra_kind (kind x')` `\<not> nx postdominates (targetnode x')`
           `sourcenode a = sourcenode x'`
         have "(sourcenode a) controls nx"
-          by(fastsimp simp:control_dependence_def)
+          by(fastforce simp:control_dependence_def)
         hence "CFG_node (sourcenode a) \<longrightarrow>\<^bsub>cd\<^esub> CFG_node nx" 
-          by(fastsimp intro:SDG_cdep_edge)
+          by(fastforce intro:SDG_cdep_edge)
         with `nx \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` have "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-          by(fastsimp elim!:combine_SDG_slices.cases
+          by(fastforce elim!:combine_SDG_slices.cases
                        dest:SDG_edge_sum_SDG_edge cdep_slice1 cdep_slice2 
                       intro:combine_SDG_slices.intros
                        simp:HRB_slice_def SDG_to_CFG_set_def)
         with `valid_edge a` 
         have "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {sourcenode a}"
-          by(fastsimp intro!:n_in_obs_intra)
+          by(fastforce intro!:n_in_obs_intra)
         with `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `nx \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `nx \<noteq> m`
         show False by simp
@@ -453,10 +453,10 @@ qed
 
 
 lemma obs_intra_finite:"valid_node n \<Longrightarrow> finite (obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)"
-by(fastsimp dest:obs_intra_singleton_disj[of _ S])
+by(fastforce dest:obs_intra_singleton_disj[of _ S])
 
 lemma obs_intra_singleton:"valid_node n \<Longrightarrow> card (obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<le> 1"
-by(fastsimp dest:obs_intra_singleton_disj[of _ S])
+by(fastforce dest:obs_intra_singleton_disj[of _ S])
 
 
 lemma obs_intra_singleton_element:
@@ -469,7 +469,7 @@ done
 
 lemma obs_intra_the_element: 
   "m \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<Longrightarrow> (THE m. m \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) = m"
-by(fastsimp dest:obs_intra_singleton_element)
+by(fastforce dest:obs_intra_singleton_element)
 
 
 lemma obs_singleton_element:
@@ -486,7 +486,7 @@ proof -
     by(erule obsE)
   from `n' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
   have "obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {n'}"
-    by(fastsimp intro!:obs_intra_singleton_element)
+    by(fastforce intro!:obs_intra_singleton_element)
   { fix xs assume "xs \<noteq> ms" and "xs \<in> obs ns \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     from `xs \<in> obs ns \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `\<forall>n \<in> set (tl ns). return_node n`
     obtain zs z zs' z' where "ns = zs@z#zs'" and "xs = z'#zs'"
@@ -498,12 +498,12 @@ proof -
       by(erule obsE)
     with `ns = nsx@n#nsx'` split
     have "nsx = zs \<and> n = z \<and> nsx' = zs'"
-      by -(rule obs_split_det[of _ _ _ _ _ _ "\<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"],fastsimp+)
+      by -(rule obs_split_det[of _ _ _ _ _ _ "\<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"],fastforce+)
     with `obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {n'}` `z' \<in> obs_intra z \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     have "z' = n'" by simp
     with `xs \<noteq> ms` `ms = n'#nsx'` `xs = z'#zs'` `nsx = zs \<and> n = z \<and> nsx' = zs'`
     have False by simp }
-  with `ms \<in> obs ns \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` show ?thesis by fastsimp
+  with `ms \<in> obs ns \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` show ?thesis by fastforce
 qed
 
 

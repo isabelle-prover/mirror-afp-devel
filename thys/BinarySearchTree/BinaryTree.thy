@@ -185,7 +185,7 @@ proof safe
   case None note res = this    
     from s res have "sortedTree h t & (tlookup h (h y) t = None)" by simp
     from this have o1: "ALL x:setOf t. h x ~= h y" by (simp add: tlookup_none)
-    from o1 yint have "h y ~= h y" by fastsimp (* auto does not work *)
+    from o1 yint have "h y ~= h y" by fastforce (* auto does not work *)
     from this show ?thesis by simp
   next case (Some z) note res = this
     have ls: "sortedTree h t & (tlookup h (h y) t = Some z) -->
@@ -212,16 +212,16 @@ lemma assumes s: "sortedTree h t"
 proof (cases "tlookup h (h x) t")
 case None note tNone = this
   from tNone have res: "memb h x t = False" by (simp add: memb_def)
-  from s tNone tlookup_none have o1: "ALL y:setOf t. h y ~= h x" by fastsimp
+  from s tNone tlookup_none have o1: "ALL y:setOf t. h y ~= h x" by fastforce
   have notIn: "x ~: setOf t"
   proof
     assume h: "x : setOf t"
-    from h o1 have "h x ~= h x" by fastsimp
+    from h o1 have "h x ~= h x" by fastforce
     from this show False by simp
   qed
   from res notIn show ?thesis by simp
 next case (Some z) note tSome = this
-  from s tSome tlookup_some have zin: "z : setOf t" by fastsimp
+  from s tSome tlookup_some have zin: "z : setOf t" by fastforce
   show ?thesis
   proof (cases "x=z")
   case True note xez = this
@@ -232,10 +232,10 @@ next case (Some z) note tSome = this
     have "x ~: setOf t"
     proof
       assume xin: "x : setOf t"
-      from s tSome tlookup_some have hzhx: "h x = h z" by fastsimp
+      from s tSome tlookup_some have hzhx: "h x = h z" by fastforce
       have o1: "sorted_distinct_pred h x z t"
       by (insert sorted_distinct [of h x z t], simp)
-      from s xin zin hzhx o1 have "x = z" by fastsimp
+      from s xin zin hzhx o1 have "x = z" by fastforce
       from this xnez show False by simp
     qed  
     from this res show ?thesis by simp
@@ -261,7 +261,7 @@ where
 
 text {* A technique for proving disjointness of sets. *}
 lemma disjCond: "[| !! x. [| x:A; x:B |] ==> False |] ==> A Int B = {}"
-by fastsimp
+by fastforce
 
 text {* The following is a proof that insertion correctly implements
         the set interface.
@@ -298,18 +298,18 @@ proof (induct t)
                 insert e (insert x (setOf t1 Un setOf t2) - eqs h e)"
           proof -
             have eqsLessX: "ALL el: eqs h e. h el < h x" by (simp add: eqs_def eLess)
-            from this have eqsDisjX: "ALL el: eqs h e. h el ~= h x" by fastsimp
+            from this have eqsDisjX: "ALL el: eqs h e. h el ~= h x" by fastforce
             from s have xLessT2: "ALL r: setOf t2. h x < h r" by auto
             have eqsLessT2: "ALL el: eqs h e. ALL r: setOf t2. h el < h r"
             proof safe
               fix el assume hel: "el : eqs h e"
-              from hel eqs_def have o1: "h el = h e" by fastsimp (* auto fails here! *)
+              from hel eqs_def have o1: "h el = h e" by fastforce (* auto fails here! *)
               fix r assume hr: "r : setOf t2"
               from xLessT2 hr o1 eLess show "h el < h r" by auto
             qed
             from eqsLessT2 have eqsDisjT2: "ALL el: eqs h e. ALL r: setOf t2. h el ~= h r"
-            by fastsimp (* auto fails here *)
-            from eqsDisjX eqsDisjT2 show ?thesis by fastsimp
+            by fastforce (* auto fails here *)
+            from eqsDisjX eqsDisjT2 show ?thesis by fastforce
           qed
         qed
       next case False note eNotLess = this
@@ -330,11 +330,11 @@ proof (induct t)
             proof safe
               fix el assume hel: "el : eqs h e"
               fix l assume hl: "l : setOf t1"
-              from hel eqs_def have o1: "h el = h e" by fastsimp (* auto fails here! *)
+              from hel eqs_def have o1: "h el = h e" by fastforce (* auto fails here! *)
               from t1LessX hl o1 xLess show "h l < h el" by auto
             qed
             from T1lessEqs have T1disjEqs: "ALL el: eqs h e. ALL l: setOf t1. h el ~= h l"
-            by fastsimp
+            by fastforce
             from eqsDisjX T1lessEqs show ?thesis by auto
           qed
         qed      
@@ -357,7 +357,7 @@ proof (induct t)
                 assume whSet: "w : setOf t1"
                 assume whEq: "w : eqs h e"
                 from whSet s have o1: "h w < h x" by simp
-                from whEq eqs_def have o2: "h w = h e" by fastsimp
+                from whEq eqs_def have o2: "h w = h e" by fastforce
                 from o2 xeqe have o3: "~ h w < h x" by simp
                 from o1 o3 show False by contradiction
               qed
@@ -367,7 +367,7 @@ proof (induct t)
                 assume whSet: "w : setOf t2"
                 assume whEq: "w : eqs h e"
                 from whSet s have o1: "h x < h w" by simp
-                from whEq eqs_def have o2: "h w = h e" by fastsimp
+                from whEq eqs_def have o2: "h w = h e" by fastforce
                 from o2 xeqe have o3: "~ h x < h w" by simp
                 from o1 o3 show False by contradiction
               qed

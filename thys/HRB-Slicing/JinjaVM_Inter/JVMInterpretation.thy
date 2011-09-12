@@ -39,7 +39,7 @@ lemma in_methods_in_msD': "((C, M), ins, outs) \<in> set (methods D ms)
   \<and> D = C
   \<and> ins = Heap # (map Local [0..<Suc (length Ts)])
   \<and> outs = [Heap, Stack 0, Exception]"
-  by (induct rule: methods.induct) fastsimp+
+  by (induct rule: methods.induct) fastforce+
 
 lemma in_set_methodsE:
   assumes "((C, M), ins, outs) \<in> set (methods D ms)"
@@ -49,7 +49,7 @@ lemma in_set_methodsE:
   and "ins = Heap # (map Local [0..<Suc (length Ts)])"
   and "outs = [Heap, Stack 0, Exception]"
 using assms
-by (induct ms) fastsimp+
+by (induct ms) fastforce+
 
 lemma in_set_procsI:
   assumes sees: "P \<turnstile> D sees M: Ts\<rightarrow>T = mb in D"
@@ -58,7 +58,7 @@ lemma in_set_procsI:
   shows "((D, M), ins, outs) \<in> set (procs P)"
 proof -
   from sees obtain D' fs ms where "map_of P D = \<lfloor>(D', fs, ms)\<rfloor>" and "map_of ms M = \<lfloor>(Ts, T, mb)\<rfloor>"
-    by (fastsimp dest: visible_method_exists simp: class_def)
+    by (fastforce dest: visible_method_exists simp: class_def)
   hence "(D, D', fs, ms) \<in> set P"
     by -(drule map_of_SomeD)
   thus ?thesis
@@ -87,7 +87,7 @@ proof (induct P)
 next
   case (Cons Class P)
   thus ?case
-    by (cases Class) (fastsimp dest: in_methods_in_msD intro: rev_image_eqI)
+    by (cases Class) (fastforce dest: in_methods_in_msD intro: rev_image_eqI)
 qed
 
 lemma in_set_procsE':
@@ -98,7 +98,7 @@ lemma in_set_procsE':
   and "ins = Heap # (map (\<lambda>n. Local n) [0..<Suc (length Ts)])"
   and "outs = [Heap, Stack 0, Exception]"
   using assms
-  by (induct P) (fastsimp elim: in_set_methodsE)+
+  by (induct P) (fastforce elim: in_set_methodsE)+
  
 lemma distinct_Local_vars [simp]: "distinct (map Local [0..<n])"
   by (induct n) auto
@@ -125,7 +125,7 @@ lemma get_return_edgesE [elim!]:
   Stack (stkLength (P, C, M) (Suc pc) - 1) := s (Stack 0))),
   (C, M, \<lfloor>pc\<rfloor>, Return))"
   using assms
-  by -(cases a, cases a', clarsimp, erule get_return_edges.cases, fastsimp)
+  by -(cases a, cases a', clarsimp, erule get_return_edges.cases, fastforce)
 
 lemma distinct_class_names: "distinct_fst (PROG P)"
   using wf_jvmprog_is_wf_typ [of P]
@@ -135,14 +135,14 @@ lemma distinct_method_names:
   "class (PROG P) C = \<lfloor>(D, fs, ms)\<rfloor> \<Longrightarrow> distinct_fst ms"
   using wf_jvmprog_is_wf_typ [of P]
   unfolding wf_jvm_prog_phi_def
-  by (fastsimp dest: class_wf simp: wf_cdecl_def)
+  by (fastforce dest: class_wf simp: wf_cdecl_def)
 
 lemma distinct_fst_is_distinct_fst: "distinct_fst = BasicDefs.distinct_fst"
   by (simp add: distinct_fst_def BasicDefs.distinct_fst_def)
 
 lemma ClassMain_not_in_set_PROG [dest!]: "(ClassMain P, D, fs, ms) \<in> set (PROG P) \<Longrightarrow> False"
   using distinct_class_names [of P] ClassMain_is_no_class [of P]
-by (fastsimp intro: map_of_SomeI simp: class_def)
+by (fastforce intro: map_of_SomeI simp: class_def)
 
 lemma in_set_procsE:
   assumes "((C, M), ins, outs) \<in> set (procs (PROG P))"
@@ -158,14 +158,14 @@ proof -
     and "(M, Ts, T, mxs, mxl\<^isub>0, is, xt) \<in> set ms"
     and "ins = Heap # (map (\<lambda>n. Local n) [0..<Suc (length Ts)])"
     and "outs = [Heap, Stack 0, Exception]"
-    by (fastsimp elim: in_set_procsE')
+    by (fastforce elim: in_set_procsE')
   moreover from `(C, D, fs, ms) \<in> set (PROG P)` distinct_class_names [of P]
   have "class (PROG P) C = \<lfloor>(D, fs, ms)\<rfloor>"
-    by (fastsimp intro: map_of_SomeI simp: class_def)
+    by (fastforce intro: map_of_SomeI simp: class_def)
   moreover from wf_jvmprog_is_wf_typ [of P]
     `(M, Ts, T, mxs, mxl\<^isub>0, is, xt) \<in> set ms` `(C, D, fs, ms) \<in> set (PROG P)`
   have "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
-    by (fastsimp intro: mdecl_visible simp: wf_jvm_prog_phi_def)
+    by (fastforce intro: mdecl_visible simp: wf_jvm_prog_phi_def)
   ultimately show ?thesis using `(\<And>D fs ms Ts T mb.
     \<lbrakk>class (PROG P) C = \<lfloor>(D, fs, ms)\<rfloor>; PROG P \<turnstile> C sees M: Ts\<rightarrow>T = mb in C;
     ins = Heap # map Local [0..<Suc (length Ts)]; outs = [Heap, Stack 0, Exception]\<rbrakk>
@@ -205,7 +205,7 @@ next
     and "sourcenode a = sourcenode a'"
     and "targetnode a = targetnode a'"
   thus "a = a'"
-    by (cases a, cases a') (fastsimp simp: valid_edge_def dest: JVMCFG_edge_det)
+    by (cases a, cases a') (fastforce simp: valid_edge_def dest: JVMCFG_edge_det)
 next
   fix a Q r f
   assume "valid_edge (P, C0, Main) a"
@@ -231,14 +231,14 @@ next
     hence "((C', Main), [Heap, Local 0], [Heap, Stack 0, Exception]) \<in> set (procs (PROG P))"
       and "p = (C', Main)"
       by (auto intro: in_set_procsI dest: sees_method_idemp)
-    thus ?thesis by fastsimp
+    thus ?thesis by fastforce
   next
     case (CFG_Invoke_Call _ n _ _ _ Ts)
     hence "((C', M'), Heap # map (\<lambda>n. Local n) [0..<Suc (length Ts)],
       [Heap, Stack 0, Exception]) \<in> set (procs (PROG P))"
       and "p = (C',M')"
       by (auto intro: in_set_procsI dest: sees_method_idemp)
-    thus ?thesis by fastsimp
+    thus ?thesis by fastforce
   qed simp_all
 next
   fix a
@@ -272,7 +272,7 @@ next
   fix a Q r p fs
   assume "valid_edge (P, C0, Main) a" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
   hence "\<exists>a'. a' \<in> get_return_edges P a"
-    by (cases p, cases r) (fastsimp intro: get_return_edges.intros)
+    by (cases p, cases r) (fastforce intro: get_return_edges.intros)
   thus "get_return_edges P a \<noteq> {}"
     by (simp only: mem_def) clarsimp
 next
@@ -286,7 +286,7 @@ next
       ret = (C, M, pc)\<hookleftarrow>\<^bsub>(D, M')\<^esub>\<lambda>s s'. s'(Heap := s Heap, Exception := s Exception,
                            Stack (stkLength (P, C, M) (Suc pc) - 1) := s (Stack 0)),
     C, M, \<lfloor>pc\<rfloor>, nodeType.Return)"
-    by (fastsimp simp: valid_edge_def)
+    by (fastforce simp: valid_edge_def)
   thus "valid_edge (P, C0, Main) a'"
   proof cases
     case (Main_Call T mxs mxl0 "is" xt D')
@@ -295,22 +295,22 @@ next
     with `(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)`
       `PROG P \<turnstile> C0 sees Main: []\<rightarrow>T = (mxs, mxl0, is, xt) in D'`
     have "(P, C0, Main) \<turnstile> \<Rightarrow>(D, M', None, Enter)"
-      by -(rule reachable_step, fastsimp, fastsimp intro: JVMCFG_reachable.Main_Call)
+      by -(rule reachable_step, fastforce, fastforce intro: JVMCFG_reachable.Main_Call)
     hence "(P, C0, Main) \<turnstile> \<Rightarrow>(D, M', None, nodeType.Return)"
-      by -(rule reachable_step, fastsimp, fastsimp intro: JVMCFG_reachable.Method_LFalse)
+      by -(rule reachable_step, fastforce, fastforce intro: JVMCFG_reachable.Method_LFalse)
     with a'_def Main_Call show ?thesis
-      by (fastsimp intro: CFG_Return_from_Method JVMCFG_reachable.Main_Call simp: valid_edge_def)
+      by (fastforce intro: CFG_Return_from_Method JVMCFG_reachable.Main_Call simp: valid_edge_def)
   next
     case (CFG_Invoke_Call _ _ _ M'' _ _ _ _ _ _ _ _ _ _ D')
     hence "D = D'" and "M' = M''"
       by simp_all
     with CFG_Invoke_Call
     have "(P, C0, Main) \<turnstile> \<Rightarrow>(D, M', None, Enter)"
-      by -(rule reachable_step, fastsimp, fastsimp intro: JVMCFG_reachable.CFG_Invoke_Call)
+      by -(rule reachable_step, fastforce, fastforce intro: JVMCFG_reachable.CFG_Invoke_Call)
     hence "(P, C0, Main) \<turnstile> \<Rightarrow>(D, M', None, nodeType.Return)"
-      by -(rule reachable_step, fastsimp, fastsimp intro: JVMCFG_reachable.Method_LFalse)
+      by -(rule reachable_step, fastforce, fastforce intro: JVMCFG_reachable.Method_LFalse)
     with a'_def CFG_Invoke_Call show ?thesis
-      by (fastsimp intro: CFG_Return_from_Method JVMCFG_reachable.CFG_Invoke_Call
+      by (fastforce intro: CFG_Return_from_Method JVMCFG_reachable.CFG_Invoke_Call
         simp: valid_edge_def)
   qed simp_all
 next
@@ -335,7 +335,7 @@ next
     from this `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
     show "\<exists>a'. valid_edge (P, C0, Main) a' \<and> (\<exists>Q r fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)
       \<and> a \<in> get_return_edges P a'"
-      by cases (cases a, fastsimp intro: get_return_edges.intros[simplified] simp: valid_edge_def)+
+      by cases (cases a, fastforce intro: get_return_edges.intros[simplified] simp: valid_edge_def)+
   next
     fix a' a''
     assume "valid_edge (P, C0, Main) a'
@@ -370,7 +370,7 @@ next
   proof (rule ex_ex1I)
     from call
     show "\<exists>a'. valid_edge (P, C0, Main) a' \<and> sourcenode a' = sourcenode a \<and> intra_kind (kind a')"
-      by cases (fastsimp intro: JVMCFG_reachable.intros simp: intra_kind_def valid_edge_def)+
+      by cases (fastforce intro: JVMCFG_reachable.intros simp: intra_kind_def valid_edge_def)+
   next
     fix a' a''
     assume "valid_edge (P, C0, Main) a' \<and> sourcenode a' = sourcenode a \<and> intra_kind (kind a')"
@@ -401,12 +401,12 @@ next
         case True
         with invoke_reachable CFG_Return_from_Method show ?thesis
           by -(erule JVMCFG.cases, simp_all,
-            fastsimp intro: Main_Call_LFalse simp: valid_edge_def intra_kind_def)
+            fastforce intro: Main_Call_LFalse simp: valid_edge_def intra_kind_def)
       next
         case False
         with invoke_reachable CFG_Return_from_Method show ?thesis
           by -(erule JVMCFG.cases, simp_all,
-            fastsimp intro: CFG_Invoke_False simp: valid_edge_def intra_kind_def)
+            fastforce intro: CFG_Invoke_False simp: valid_edge_def intra_kind_def)
       qed
     qed simp_all
   next
@@ -427,14 +427,14 @@ next
 next
   from distinct_method_names [of P] distinct_class_names [of P]
   have "\<And>C D fs ms. (C, D, fs, ms) \<in> set (PROG P) \<Longrightarrow> distinct_fst ms"
-    by (fastsimp intro: map_of_SomeI simp: class_def)
+    by (fastforce intro: map_of_SomeI simp: class_def)
   moreover {
     fix P
     assume "distinct_fst (P :: jvm_prog)"
       and "\<And>C D fs ms. (C, D, fs, ms) \<in> set P \<Longrightarrow> distinct_fst ms"
     hence "distinct_fst (procs P)"
       by (induct P, simp)
-    (fastsimp intro: equals0I rev_image_eqI dest: in_methods_in_msD in_set_procsD
+    (fastforce intro: equals0I rev_image_eqI dest: in_methods_in_msD in_set_procsD
       simp: distinct_methods distinct_fst_def)
   }
   ultimately have "distinct_fst (procs (PROG P))" using distinct_class_names [of P]
@@ -442,7 +442,7 @@ next
   hence "BasicDefs.distinct_fst (procs (PROG P))"
     by (simp add: distinct_fst_is_distinct_fst)
   thus "BasicDefs.distinct_fst (((ClassMain P, MethodMain P), [], []) # procs (PROG P))"
-    by (fastsimp elim: in_set_procsE)
+    by (fastforce elim: in_set_procsE)
 next
   fix C M P p ins outs
   assume "(p, ins, outs) \<in> set (((C, M), [], []) # procs P)"
@@ -502,7 +502,7 @@ next
     sourcenode a = (ClassMain P, MethodMain P, None, Enter) \<and>
     targetnode a = (ClassMain P, MethodMain P, None, nodeType.Return) \<and>
     kind a = (\<lambda>s. False)\<^isub>\<surd>"
-    by (fastsimp intro: JVMCFG_reachable.intros simp: valid_edge_def)
+    by (fastforce intro: JVMCFG_reachable.intros simp: valid_edge_def)
 qed
 
 end

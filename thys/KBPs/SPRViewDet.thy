@@ -130,12 +130,12 @@ lemma spr_tObsC_trc_aux:
 lemma tObsC_abs_jview_eq[dest]:
   "spr_jview a t' = spr_jview a t
     \<Longrightarrow> tObsC_abs t = tObsC_abs t'"
-  unfolding tObsC_abs_def by (fastsimp dest: spr_jview_tObsC)
+  unfolding tObsC_abs_def by (fastforce dest: spr_jview_tObsC)
 
 lemma tObsC_abs_tObsC_eq[dest]:
   "tObsC t' = tObsC t
     \<Longrightarrow> tObsC_abs t = tObsC_abs t'"
-  unfolding tObsC_abs_def by (fastsimp dest: spr_jview_tObsC)
+  unfolding tObsC_abs_def by (fastforce dest: spr_jview_tObsC)
 
 lemma spr_jview_tObsCI:
   assumes tt': "tObsC t = tObsC t'"
@@ -362,7 +362,7 @@ proof(rule sim_rI)
       and uq: "envObs a (tFirst p) = envObs a uq"
       and vq: "envObs a (tLast p) = envObs a vq"
     unfolding mkKripke_def spr_sim_def_raw spr_sim_rels_def
-    by fastsimp
+    by fastforce
 
   from fpq' have "q' \<in> worlds mkMCS" by simp
   with q' have "(uq, vq) \<in> tObsC_abs p"
@@ -1098,7 +1098,7 @@ next
     where st': "s = spr_sim t'"
       and t'C: "t' \<in> jkbpC"
       and t'O: "tObsC t = tObsC t'"
-    by fastsimp
+    by fastforce
   { fix t''
     assume tt': "(t', t'') \<in> (\<Union>a. relations mkMC a)\<^sup>*"
     from t'C tt' have t''C: "t'' \<in> jkbpC"
@@ -1472,7 +1472,7 @@ proof
       apply (drule imageI[where f=set])
       apply (simp add: partition[OF envObs_rel_equiv])
       apply (erule quotientE)
-      apply fastsimp
+      apply fastforce
       done
     from t'sC tt' aEC' coEC'
     have "spr_simAbs (coEC', aEC') = spr_sim ` equiv_class a (spr_jview a (t' \<leadsto> s))"

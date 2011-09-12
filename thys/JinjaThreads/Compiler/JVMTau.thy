@@ -296,7 +296,7 @@ proof -
     hence "\<tau>moves2 P h stk es pc xcp" by(auto intro: \<tau>moves2xcp) }
   with rhs2lhs2 have "?rhs2 \<Longrightarrow> ?lhs2" by(cases xcp) auto
   moreover have "?lhs1 \<Longrightarrow> ?rhs1" and "?lhs2 \<Longrightarrow> ?rhs2"
-    by(induct rule: \<tau>move2_\<tau>moves2.inducts)(fastsimp simp add: nth_append eval_nat_numeral)+
+    by(induct rule: \<tau>move2_\<tau>moves2.inducts)(fastforce simp add: nth_append eval_nat_numeral)+
   ultimately show "?lhs1 \<longleftrightarrow> ?rhs1" "?lhs2 \<longleftrightarrow> ?rhs2" by blast+
 qed
 

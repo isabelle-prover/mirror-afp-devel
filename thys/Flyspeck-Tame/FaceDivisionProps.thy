@@ -1338,12 +1338,12 @@ apply(case_tac "before vs u v")
 apply(drule (1) between_eq2)
  apply(clarsimp simp:pre_between_def hd_append split:list.split)
  apply(simp add:between_def split_def)
- apply(fastsimp simp:neq_Nil_conv)
+ apply(fastforce simp:neq_Nil_conv)
 apply (simp only:before_xor)
 apply(drule (1) between_eq2)
 apply(clarsimp simp:pre_between_def hd_append split:list.split)
 apply (simp add: append_eq_Cons_conv)
-apply(fastsimp simp:between_def split_def)
+apply(fastforce simp:between_def split_def)
 done
 
 
@@ -1803,7 +1803,7 @@ apply clarsimp
 apply(erule disjE)
  prefer 2 apply(clarsimp simp add:between_def split_def)
 apply(clarsimp simp:append_eq_Cons_conv)
-apply(fastsimp simp:between_def split_def)
+apply(fastforce simp:between_def split_def)
 done
 
 lemma before_between2:
@@ -2151,13 +2151,13 @@ apply(erule disjE)
     notinset_notinEdge1 notinset_notinEdge2
     disj_sets_disj_Edges disj_sets_disj_Edges2
     Int_Un_distrib Int_Un_distrib2)
- apply(fastsimp)
+ apply(fastforce)
 apply(frule split_list[of y])
 apply(clarsimp simp add:between_def split_def)
 apply (clarsimp simp add:Edges_Cons Edges_append notinset_notinEdge1
  notinset_notinEdge2 disj_sets_disj_Edges disj_sets_disj_Edges2
  Int_Un_distrib Int_Un_distrib2)
-apply fastsimp
+apply fastforce
 done
 
 lemma Edges_disj:
@@ -2187,13 +2187,13 @@ apply(erule disjE)
     notinset_notinEdge1 notinset_notinEdge2
     disj_sets_disj_Edges disj_sets_disj_Edges2
     Int_Un_distrib Int_Un_distrib2)
-  apply fastsimp
+  apply fastforce
  apply(frule split_list[of y])
  apply clarsimp
  apply (clarsimp simp add:Edges_Cons Edges_append notinset_notinEdge1
  notinset_notinEdge2 disj_sets_disj_Edges disj_sets_disj_Edges2
  Int_Un_distrib Int_Un_distrib2)
- apply fastsimp
+ apply fastforce
 apply(frule split_list[of z])
 apply(clarsimp simp add:between_def split_def)
 apply(frule split_list[of y])
@@ -2201,7 +2201,7 @@ apply clarsimp
 apply (clarsimp simp add:Edges_Cons Edges_append notinset_notinEdge1
  notinset_notinEdge2 disj_sets_disj_Edges disj_sets_disj_Edges2
  Int_Un_distrib Int_Un_distrib2)
-apply fastsimp
+apply fastforce
 done
 
 lemma edges_conv_Un_Edges:
@@ -2221,14 +2221,14 @@ apply(erule disjE)
     notinset_notinEdge1 notinset_notinEdge2
     disj_sets_disj_Edges disj_sets_disj_Edges2
     Int_Un_distrib Int_Un_distrib2)
- apply(fastsimp)
+ apply(fastforce)
 apply(frule split_list[of y])
 apply(clarsimp simp add:between_def split_def)
 apply (clarsimp simp add:Edges_Cons Edges_append
     notinset_notinEdge1 notinset_notinEdge2
     disj_sets_disj_Edges disj_sets_disj_Edges2
     Int_Un_distrib Int_Un_distrib2)
-apply(fastsimp)
+apply(fastforce)
 done
 
 
@@ -4289,7 +4289,7 @@ next
   with  vert_f21 have m2: "v = v' \<Longrightarrow> verticesFrom f21 v' = v' # ws @ u # snd (splitAt u (verticesFrom f v'))"
     apply auto apply (intro verticesFrom_v dist_f21) by simp
 
-  from pre_add have u: "u \<in> set (verticesFrom f v')" by (fastsimp simp: pre_subdivFace'_def before_def)
+  from pre_add have u: "u \<in> set (verticesFrom f v')" by (fastforce simp: pre_subdivFace'_def before_def)
   then have split_u: "verticesFrom f v'
     = fst (splitAt u (verticesFrom f v')) @ u # snd (splitAt u (verticesFrom f v'))"
     by (auto dest!: splitAt_ram)

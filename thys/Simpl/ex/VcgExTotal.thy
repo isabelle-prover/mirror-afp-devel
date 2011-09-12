@@ -151,7 +151,7 @@ lemma (in append_impl)
    apply (hoare_rule HoareTotal.ProcRec1
             [where r="measure (\<lambda>(s,p). length (list \<^bsup>s\<^esup>p \<^bsup>s\<^esup>next))"])
    apply vcg
-   apply (fastsimp  simp add: List_list)
+   apply (fastforce  simp add: List_list)
    done
 
 
@@ -164,7 +164,7 @@ lemma (in append_impl)
    apply (hoare_rule HoareTotal.ProcRec1
             [where r="measure (\<lambda>(s,p). length (list \<^bsup>s\<^esup>p \<^bsup>s\<^esup>next))"])
    apply vcg
-   apply (fastsimp  simp add: List_list)
+   apply (fastforce  simp add: List_list)
    done
 
 lemma (in append_impl)
@@ -177,7 +177,7 @@ lemma (in append_impl)
    apply (hoare_rule HoareTotal.ProcRec1
             [where r="measure (\<lambda>(s,p). length (list \<^bsup>s\<^esup>p \<^bsup>s\<^esup>next))"])
    apply vcg
-   apply fastsimp
+   apply fastforce
    done
  
 lemma "\<Gamma>\<turnstile>\<lbrace>List \<acute>p \<acute>next Ps\<rbrace>

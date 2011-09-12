@@ -58,10 +58,10 @@ proof (unfold_locales)
     and trg: "targetnode a = (_Entry_)"
   obtain n et n'
     where "a = (n,et,n')"
-    by (cases a) fastsimp
+    by (cases a) fastforce
   with ve trg 
     have "prog \<turnstile> n -et\<rightarrow> (_Entry_)" by simp
-  thus False by fastsimp
+  thus False by fastforce
 next
   fix a a'
   assume valid: "valid_edge prog a"
@@ -70,13 +70,13 @@ next
     and targeteq: "targetnode a = targetnode a'"
   obtain n1 et n2
     where a:"a = (n1, et, n2)"
-    by (cases a) fastsimp
+    by (cases a) fastforce
   obtain n1' et' n2'
     where a':"a' = (n1', et', n2')"
-    by (cases a') fastsimp
+    by (cases a') fastforce
   from a valid a' valid' sourceeq targeteq
   have "et = et'"
-    by (fastsimp elim: JVMCFG_edge_det)
+    by (fastforce elim: JVMCFG_edge_det)
   with a a' sourceeq targeteq
   show "a = a'"
     by simp
@@ -92,16 +92,16 @@ proof(unfold_locales)
     and src: "sourcenode a = (_Exit_)"
   obtain n et n'
     where "a = (n,et,n')"
-    by (cases a) fastsimp
+    by (cases a) fastforce
   with ve src
     have "prog \<turnstile> (_Exit_) -et\<rightarrow> n'" by simp
-  thus False by fastsimp
+  thus False by fastforce
 next
   have "prog \<turnstile> (_Entry_) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (_Exit_)" 
     by (rule JCFG_EntryExit)
   thus "\<exists>a. valid_edge prog a \<and> sourcenode a = (_Entry_) \<and>
             targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^isub>\<surd>"
-    by fastsimp
+    by fastforce
 qed
 
 end

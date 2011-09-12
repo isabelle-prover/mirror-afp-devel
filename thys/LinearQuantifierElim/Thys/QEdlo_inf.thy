@@ -58,15 +58,15 @@ proof(induct \<phi>)
       apply(clarsimp simp:EQ_def nolb_def nth_Cons')
       apply(case_tac "i=0 \<and> j=0") apply simp
       apply(case_tac "i\<noteq>0 \<and> j\<noteq>0") apply simp
-      apply(case_tac "i=0 \<and> j\<noteq>0") apply (fastsimp split:split_if_asm)
-      apply(case_tac "i\<noteq>0 \<and> j=0") apply (fastsimp split:split_if_asm)
+      apply(case_tac "i=0 \<and> j\<noteq>0") apply (fastforce split:split_if_asm)
+      apply(case_tac "i\<noteq>0 \<and> j=0") apply (fastforce split:split_if_asm)
       apply arith
       done
   qed
 next
-  case And thus ?case by (fastsimp)
+  case And thus ?case by (fastforce)
 next
-  case Or thus ?case by (fastsimp)
+  case Or thus ?case by (fastforce)
 qed simp+
 
 
@@ -167,9 +167,9 @@ proof
   { assume "\<forall>i \<in> set ?ebs. \<not>DLO.I \<phi> (xs!i # xs)"
            "\<not> DLO.I (inf\<^isub>- \<phi>) xs"
     with `?QE` `nqfree \<phi>` obtain l where "DLO.I (subst\<^isub>+ \<phi> l) xs"
-      by(fastsimp simp: I_subst qe_eps\<^isub>1_def set_ebounds set_lbounds)
+      by(fastforce simp: I_subst qe_eps\<^isub>1_def set_ebounds set_lbounds)
     then obtain leps where "DLO.I \<phi> (leps#xs)"
-      using I_subst_peps[OF `nqfree \<phi>`] by fastsimp
+      using I_subst_peps[OF `nqfree \<phi>`] by fastforce
     hence ?EX .. }
   ultimately show ?EX by blast
 next
@@ -185,7 +185,7 @@ next
     and "\<forall>k \<in> set ?ebs. \<not> DLO.I (subst \<phi> k) xs"
     hence noE: "\<forall>e \<in> EQ \<phi> xs. \<not> DLO.I \<phi> (e#xs)" using `nqfree \<phi>`
       by (auto simp:set_ebounds EQ_def I_subst nth_Cons' split:split_if_asm)
-    hence "x \<notin> EQ \<phi> xs" using x by fastsimp
+    hence "x \<notin> EQ \<phi> xs" using x by fastforce
     obtain l where "l \<in> LB \<phi> xs" "l < x"
       using LBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^isub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     have "\<exists>l\<in>LB \<phi> xs. l<x \<and> nolb \<phi> xs l x \<and>

@@ -100,7 +100,7 @@ proof -
     from cl'
     have "\<exists>ta''' x''' m'''. t \<turnstile> \<langle>x, shr s\<rangle> -ta'''\<rightarrow> \<langle>x''', m'''\<rangle> \<and> 
             LT = collect_waits ta'''"
-      by (fastsimp elim!: can_syncE)
+      by (fastforce elim!: can_syncE)
     then obtain ta''' x''' m'''
       where red'': "t \<turnstile> \<langle>x, shr s\<rangle> -ta'''\<rightarrow> \<langle>x''', m'''\<rangle>"
       and L: "LT = collect_waits ta'''"
@@ -134,7 +134,7 @@ proof -
         assume t'LT: "Inr (Inl t') \<in> LT"
         hence "\<not> not_final_thread s t' \<and> t' \<noteq> t"
         proof(cases "t' = t")
-	  case False with t'LT mw L show ?thesis by(fastsimp)
+	  case False with t'LT mw L show ?thesis by(fastforce)
         next
 	  case True with tst mw[OF t'LT] nfine' L have False
 	    by(auto intro!: must_wait.intros simp add: not_final_thread_iff)
@@ -145,7 +145,7 @@ proof -
         assume t': "Inr (Inr t') \<in> LT"
         from t' have "\<not> must_wait s t (Inr (Inr t')) (dom (thr s))" by(rule mw)
         hence "t' \<in> interrupts s"
-          by(rule contrapos_np)(fastsimp intro: all_final_exceptI simp add: not_final_thread_iff) }
+          by(rule contrapos_np)(fastforce intro: all_final_exceptI simp add: not_final_thread_iff) }
       note interrupt = this
       from aos L mayl
       have "\<And>l. l \<in> collect_locks' \<lbrace>ta''\<rbrace>\<^bsub>l\<^esub> \<Longrightarrow> may_lock ((locks s)\<^sub>f l) t" by auto
@@ -153,7 +153,7 @@ proof -
       moreover
       from mayj aos L
       have "cond_action_oks s t \<lbrace>ta''\<rbrace>\<^bsub>c\<^esub>"
-        by(fastsimp intro: may_join_cond_action_oks)
+        by(fastforce intro: may_join_cond_action_oks)
       moreover
       from ta_satisfiable[OF wfs tst[simplified] red']
       obtain is' where "interrupt_actions_ok is' \<lbrace>ta''\<rbrace>\<^bsub>i\<^esub>" by auto
@@ -163,7 +163,7 @@ proof -
     qed
     moreover obtain ws'' where "redT_updWs t (wset s) \<lbrace>ta''\<rbrace>\<^bsub>w\<^esub> ws''"
       using redT_updWs_total[of t "wset s" "\<lbrace>ta''\<rbrace>\<^bsub>w\<^esub>"] ..
-    then obtain s' where "redT_upd s t ta'' x'' m'' s'" by fastsimp
+    then obtain s' where "redT_upd s t ta'' x'' m'' s'" by fastforce
     ultimately have "s -t\<triangleright>ta''\<rightarrow> s'"
       using red' tst `wset s t = None` by(auto intro: redT_normal)
     thus ?thesis by blast
@@ -171,7 +171,7 @@ proof -
     case acquire
     hence "may_acquire_all (locks s) t ln" by(auto intro: may_acquire_allI)
     with tst `\<not> waiting (wset s t)` `0 < ln\<^sub>f l`
-    show ?thesis by(fastsimp intro: redT_acquire)
+    show ?thesis by(fastforce intro: redT_acquire)
   next
     case (wakeup w)
     from `wset s t = \<lfloor>PostWS w\<rfloor>`
@@ -210,7 +210,7 @@ proof -
     qed
     moreover obtain ws'' where "redT_updWs t (wset s) \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> ws''"
       using redT_updWs_total[of t "wset s" "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>"] ..
-    then obtain s' where "redT_upd s t ta' x'' m'' s'" by fastsimp
+    then obtain s' where "redT_upd s t ta' x'' m'' s'" by fastforce
     ultimately have "s -t\<triangleright>ta'\<rightarrow> s'" using tst red' wakeup
       by(auto intro: redT_normal)
     thus ?thesis by blast

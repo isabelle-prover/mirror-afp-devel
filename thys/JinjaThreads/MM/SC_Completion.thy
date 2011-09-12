@@ -63,7 +63,7 @@ next
   show ?case
   proof(cases "is_write_action ob \<and> (ad, al) \<in> action_loc_aux P ob \<and> (is_new_action ob \<longrightarrow> \<not> b)")
     case True thus ?thesis using mrw
-      by(fastsimp elim!: is_write_action.cases intro: action_loc_aux_intros split: split_if_asm)
+      by(fastforce elim!: is_write_action.cases intro: action_loc_aux_intros split: split_if_asm)
   next
     case False
     with mrw have "mrw_values P vs0 obs (ad, al) = \<lfloor>(v, b)\<rfloor>"
@@ -75,7 +75,7 @@ next
       with False have "\<exists>wa. wa \<in> set obs \<and> is_write_action wa \<and> (ad, al) \<in> action_loc_aux P wa \<and> (b \<longrightarrow> \<not> is_new_action wa)"
         by auto }
     ultimately have "?concl obs" by(rule snoc)
-    thus ?thesis using False mrw by fastsimp
+    thus ?thesis using False mrw by fastforce
   qed
 qed
 
@@ -101,7 +101,7 @@ apply(induct obs rule: rev_induct)
  apply simp
 apply clarsimp
 apply(erule disjE)
- apply(fastsimp simp add: split_beta elim!: action_loc_aux_cases is_new_action.cases)
+ apply(fastforce simp add: split_beta elim!: action_loc_aux_cases is_new_action.cases)
 apply clarsimp
 apply(rename_tac w' obs' v b)
 apply(case_tac w' rule: mrw_value_cases)
@@ -123,7 +123,7 @@ lemma mrw_values_eq_NoneD:
 using assms
 apply -
 apply(erule is_write_action.cases)
-apply(fastsimp dest: mrw_values_WriteMemD[where ?vs0.0=vs0 and P=P] mrw_values_new_actionD[where ?vs0.0=vs0] elim: action_loc_aux_cases)+
+apply(fastforce dest: mrw_values_WriteMemD[where ?vs0.0=vs0 and P=P] mrw_values_new_actionD[where ?vs0.0=vs0] elim: action_loc_aux_cases)+
 done
 
 lemma mrw_values_mrw:
@@ -187,7 +187,7 @@ proof -
       assume new_wa': "\<not> is_new_action (action_obs ?E wa')"
       with wa' adal' obtain v' where "NormalAction (WriteMem ad al v') \<in> set (map snd obs)"
         unfolding in_set_conv_nth
-        by (fastsimp elim!: write_actions.cases is_write_action.cases simp add: action_obs_def actions_def nth_append split: split_if_asm intro!: exI[where x=wa'])
+        by (fastforce elim!: write_actions.cases is_write_action.cases simp add: action_obs_def actions_def nth_append split: split_if_asm intro!: exI[where x=wa'])
       from mrw_values_WriteMemD[OF this, of P vs0] mrw have b by simp
       with new obs_i have "\<not> is_new_action (action_obs ?E ?i)" by simp
       moreover
@@ -228,7 +228,7 @@ next
   case (Cons ob obs)
   from Cons.prems[of ob]
   have "mrw_value P vs ob adal = vs adal"
-    by(cases adal)(cases ob rule: mrw_value_cases, fastsimp+)
+    by(cases adal)(cases ob rule: mrw_value_cases, fastforce+)
   moreover
   have "mrw_values P (mrw_value P vs ob) obs adal = mrw_value P vs ob adal"
   proof(rule Cons.hyps)
@@ -540,7 +540,7 @@ proof -
 
   from \<E>_ex_new_action[OF E ra adal sc] ra obtain wa 
     where wa: "wa \<in> Q" unfolding Q_def
-    by(fastsimp elim!: new_actionsE is_new_action.cases read_actions.cases intro: write_actionsI action_orderI)
+    by(fastforce elim!: new_actionsE is_new_action.cases read_actions.cases intro: write_actionsI action_orderI)
    
   def wa' == "Max_torder (action_order E) Q"
 
@@ -627,7 +627,7 @@ proof(intro exI conjI)
       show "ws a \<in> write_actions E"
         and "(ad, al) \<in> action_loc P E (ws a)"
         and "\<not> P,E \<turnstile> a \<le>hb ws a"
-        by(fastsimp elim!: most_recent_write_for.cases dest: happens_before_into_action_order antisymPD[OF antisym_action_order] read_actions_not_write_actions)+
+        by(fastforce elim!: most_recent_write_for.cases dest: happens_before_into_action_order antisymPD[OF antisym_action_order] read_actions_not_write_actions)+
 
       let ?between = "ltake (enat (a - Suc w)) (ldropn (Suc w) E)"
       let ?prefix = "ltake (enat w) E"
@@ -659,7 +659,7 @@ proof(intro exI conjI)
       hence mrw_value_w: "mrw_value P ?vs_prefix (snd (lnth E w)) (ad, al) =
                           \<lfloor>(value_written P E w (ad, al), \<not> is_new_action (action_obs E w))\<rfloor>"
         using `ws a \<in> write_actions E` `(ad, al) \<in> action_loc P E (ws a)` w
-        by(cases "snd (lnth E w)" rule: mrw_value_cases)(fastsimp elim: write_actions.cases simp add: value_written_def action_obs_def)+
+        by(cases "snd (lnth E w)" rule: mrw_value_cases)(fastforce elim: write_actions.cases simp add: value_written_def action_obs_def)+
       have "mrw_values P (mrw_value P ?vs_prefix (snd (lnth E w))) (list_of (lmap snd ?between)) (ad, al) = \<lfloor>(value_written P E w (ad, al), \<not> is_new_action (action_obs E w))\<rfloor>"
       proof(subst mrw_values_no_write_unchanged)
         fix wa
@@ -712,7 +712,7 @@ proof(intro exI conjI)
       {
         presume "E \<turnstile> ws a \<le>a a'" "E \<turnstile> a' \<le>a a"
         with mrw adal a' have "a' = ws a" unfolding w
-          by cases(fastsimp dest: antisymPD[OF antisym_action_order] read_actions_not_write_actions elim!: meta_allE[where x=a'])
+          by cases(fastforce dest: antisymPD[OF antisym_action_order] read_actions_not_write_actions elim!: meta_allE[where x=a'])
         thus "a' = ws a" "a' = ws a" by -
       next
         assume "P,E \<turnstile> ws a \<le>hb a'" "P,E \<turnstile> a' \<le>hb a"
@@ -912,7 +912,7 @@ proof(rule ta_seq_consist_nthI)
     obtain wa where "wa \<in> set (map snd (list_of (ltake (enat (ws i)) E)))"
       and "is_write_action wa"
       and "(ad, al) \<in> action_loc_aux P wa"
-      and "\<not> is_new_action wa" by(fastsimp simp del: set_map)
+      and "\<not> is_new_action wa" by(fastforce simp del: set_map)
     moreover then obtain w where w: "w < ws i"  and wa: "wa = snd (lnth E w)"
       unfolding in_set_conv_nth by(cases "llength E")(auto simp add: lnth_ltake length_list_of_conv_the_enat)
     ultimately have "w \<in> write_actions E" "action_obs E w = wa" "(ad, al) \<in> action_loc P E w"
@@ -1062,7 +1062,7 @@ proof -
           and aok': "actions_ok s' t' ta''"
           and sc': "ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)" by blast
         from redT_updWs_total obtain ws' where "redT_updWs t' (wset s') \<lbrace>ta''\<rbrace>\<^bsub>w\<^esub> ws'" ..
-        then obtain s''' where "redT_upd s' t' ta'' x'' m'' s'''" by fastsimp
+        then obtain s''' where "redT_upd s' t' ta'' x'' m'' s'''" by fastforce
         with red' ts''t' aok' have "s' -t'\<triangleright>ta''\<rightarrow> s'''" ..
         thus thesis using sc' by(rule that)
       next
@@ -1081,7 +1081,7 @@ proof -
         unfolding map_append concat_append lappend_llist_of_llist_of[symmetric] 
         by(subst ta_seq_consist_lappend)(auto simp add: split_def)
       ultimately have ?Step
-        by(fastsimp intro: exI[where x="ttas' @ [fst (Eps ?proceed)]"] simp del: split_paired_Ex)
+        by(fastforce intro: exI[where x="ttas' @ [fst (Eps ?proceed)]"] simp del: split_paired_Ex)
       thus ?thesis by simp
     qed
   qed
@@ -1143,7 +1143,7 @@ proof -
           and aok': "actions_ok s' t' ta''"
           and sc': "ta_seq_consist P (?vs ttas') (llist_of \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)" by blast
         from redT_updWs_total obtain ws' where "redT_updWs t' (wset s') \<lbrace>ta''\<rbrace>\<^bsub>w\<^esub> ws'" ..
-        then obtain s''' where "redT_upd s' t' ta'' x'' m'' s'''" by fastsimp
+        then obtain s''' where "redT_upd s' t' ta'' x'' m'' s'''" by fastforce
         with red' ts''t' aok' have "s' -t'\<triangleright>ta''\<rightarrow> s'''" ..
         thus thesis using sc' by(rule that)
       next
@@ -1168,7 +1168,7 @@ proof -
           assume "llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub> = LNil"
           moreover from obs_def `obs \<noteq> LNil`
           have "lfinite (ltakeWhile (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []) (complete_sc s' (?vs ttas')))"
-            unfolding lfinite_ltakeWhile by(fastsimp simp add: split_def lconcat_eq_LNil)
+            unfolding lfinite_ltakeWhile by(fastforce simp add: split_def lconcat_eq_LNil)
           ultimately have "(complete_sc ?s' (?vs (ttas' @ [?tta])), a) \<in> ?R"
             unfolding a_def vs'_def csc_unfold
             by(clarsimp simp add: split_def)(auto simp add: lfinite_eq_range_llist_of) }
@@ -1261,7 +1261,7 @@ proof -
       and aok: "actions_ok s' t ta'" by blast
     obtain ws''' where "redT_updWs t (wset s') \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> ws'''"
       using redT_updWs_total ..
-    then obtain s''' where s''': "redT_upd s' t ta' x'' m'' s'''" by fastsimp
+    then obtain s''' where s''': "redT_upd s' t ta' x'' m'' s'''" by fastforce
     with red `thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>` aok have "s' -t\<triangleright>ta'\<rightarrow> s'''" by(rule redT.redT_normal)
     moreover from sc sc'
     have "ta_seq_consist P vs (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of ttas) (LCons (t, ta') LNil))))"

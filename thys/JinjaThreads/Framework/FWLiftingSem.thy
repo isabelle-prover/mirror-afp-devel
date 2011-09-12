@@ -11,7 +11,7 @@ context multithreaded_base begin
 lemma redT_preserves_ts_inv_ok:
   "\<lbrakk> s -t\<triangleright>ta\<rightarrow> s'; ts_inv_ok (thr s) I \<rbrakk>
   \<Longrightarrow> ts_inv_ok (thr s') (upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)"
-by(erule redT.cases)(fastsimp intro: ts_inv_ok_upd_invs ts_inv_ok_upd_ts redT_updTs_Some)+
+by(erule redT.cases)(fastforce intro: ts_inv_ok_upd_invs ts_inv_ok_upd_ts redT_updTs_Some)+
 
 lemma RedT_preserves_ts_inv_ok:
   "\<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; ts_inv_ok (thr s) I \<rbrakk>
@@ -180,7 +180,7 @@ qed
 
 theorem RedT_preserves:
   "\<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; ts_ok P (thr s) (shr s) \<rbrakk> \<Longrightarrow> ts_ok P (thr s') (shr s')"
-by(erule (1) RedT_lift_preserveD)(fastsimp elim: redT_preserves)
+by(erule (1) RedT_lift_preserveD)(fastforce elim: redT_preserves)
 
 lemma invariant3p_ts_ok: "invariant3p redT {s. ts_ok P (thr s) (shr s)}"
 by(auto intro!: invariant3pI intro: redT_preserves)

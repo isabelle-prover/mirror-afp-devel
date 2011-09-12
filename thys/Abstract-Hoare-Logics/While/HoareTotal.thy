@@ -153,7 +153,7 @@ apply (induct c arbitrary: Q)
     apply(blast intro:thoare.Semi thoare.Conseq)
    apply(blast intro:thoare.If thoare.Conseq)
   defer
- apply(fastsimp intro!: thoare.Local)
+ apply(fastforce intro!: thoare.Local)
 apply(rename_tac b c Q)
 apply(rule weaken_post)
  apply(rule_tac b=b and c=c in thoare.While)

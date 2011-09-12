@@ -88,21 +88,21 @@ next
   proof(rule disjE)
     assume "T' = NT"
     with wf eval sconf wte have "v = Null"
-      by(fastsimp dest:eval_preserves_type)
-    with casts casts' show ?thesis by(fastsimp elim:casts_to.cases)
+      by(fastforce dest:eval_preserves_type)
+    with casts casts' show ?thesis by(fastforce elim:casts_to.cases)
   next
     assume "\<exists>D. T' = Class D \<and> P \<turnstile> Path D to C unique"
     then obtain D where T':"T' = Class D" 
       and path_unique:"P \<turnstile> Path D to C unique" by auto
     with wf eval sconf wte
     have "P,E,h \<turnstile> Val v : T' \<or> P,E,h \<turnstile> Val v : NT"
-      by(fastsimp dest:eval_preserves_type)
+      by(fastforce dest:eval_preserves_type)
     thus ?thesis
     proof(rule disjE)
       assume "P,E,h \<turnstile> Val v : T'"
       with T' obtain a Cs C' S where h:"h a = Some(C',S)" and v:"v = Ref(a,Cs)"
         and last:"last Cs = D"
-        by(fastsimp dest:typeof_Class_Subo)
+        by(fastforce dest:typeof_Class_Subo)
       from casts' v last T obtain Cs' Ds where "P \<turnstile> Path D to C via Cs'"
         and "Ds = Cs@\<^sub>pCs'" and "w' = Ref(a,Ds)"
         by(auto elim:casts_to.cases)
@@ -111,8 +111,8 @@ next
     next
       assume "P,E,h \<turnstile> Val v : NT"
       with wf eval sconf wte have "v = Null"
-        by(fastsimp dest:eval_preserves_type)
-      with casts casts' show ?thesis by(fastsimp elim:casts_to.cases)
+        by(fastforce dest:eval_preserves_type)
+      with casts casts' show ?thesis by(fastforce elim:casts_to.cases)
     qed
   qed
 qed
@@ -212,9 +212,9 @@ next
     from wtref obtain D S where subo:"Subobjs P D Cs" and h:"h a = Some(D,S)"
       by(cases U,auto split:split_if_asm)
     from path Ds have last:"C = last Ds"  
-      by(fastsimp intro!:appendPath_last Subobjs_nonempty simp:path_via_def)
+      by(fastforce intro!:appendPath_last Subobjs_nonempty simp:path_via_def)
     from subo path Ds wf have "Subobjs P D Ds"
-      by(fastsimp intro:Subobjs_appendPath simp:path_via_def)
+      by(fastforce intro:Subobjs_appendPath simp:path_via_def)
     with last h show ?case by simp
   qed
   with IH[OF wtes' evals' sconf' subs'] show ?case
@@ -241,11 +241,11 @@ lemma map_Val_throw_eq:"map Val vs @ throw ex # es = map Val ws @ throw ex' # es
   apply(clarsimp simp:append_eq_append_conv2)
   apply(erule disjE)
    apply(case_tac us)
-    apply(fastsimp elim:map_injective simp:inj_on_def)
-   apply(fastsimp dest:map_Val_throw_False)
+    apply(fastforce elim:map_injective simp:inj_on_def)
+   apply(fastforce dest:map_Val_throw_False)
   apply(case_tac us)
-   apply(fastsimp elim:map_injective simp:inj_on_def)
-  apply(fastsimp dest:sym[THEN map_Val_throw_False])
+   apply(fastforce elim:map_injective simp:inj_on_def)
+  apply(fastforce dest:sym[THEN map_Val_throw_False])
   done
 
 
@@ -287,7 +287,7 @@ next
     proof (rule disjE)
       assume "P \<turnstile> Path D to C unique"
       with path_via path_via' eq last have "Cs' = Xs'"
-        by(fastsimp simp add:path_via_def path_unique_def)
+        by(fastforce simp add:path_via_def path_unique_def)
       with eq ref Ds show ?thesis by simp
     next
       assume "P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs  \<longrightarrow> Subobjs\<^isub>R P C Cs)"
@@ -305,12 +305,12 @@ next
     with wf eval_ref sconf wte obtain C' where 
       last:"last Cs = D" and "Subobjs P C' (Xs@C#Xs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
-    hence subo:"Subobjs P C (C#Xs')" by(fastsimp intro:Subobjs_Subobjs)
-    with eq last have leq:"P \<turnstile> C \<preceq>\<^sup>* D" by(fastsimp dest:Subobjs_subclass)
+    hence subo:"Subobjs P C (C#Xs')" by(fastforce intro:Subobjs_Subobjs)
+    with eq last have leq:"P \<turnstile> C \<preceq>\<^sup>* D" by(fastforce dest:Subobjs_subclass)
     from path_via last have "P \<turnstile> D \<preceq>\<^sup>* C"
       by(auto dest:Subobjs_subclass simp:path_via_def)
     with leq wf have CeqD:"C = D" by(rule subcls_asym2)
-    with last path_via wf have "Cs' = [D]" by(fastsimp intro:path_via_C)
+    with last path_via wf have "Cs' = [D]" by(fastforce intro:path_via_C)
     with Ds last have Ds':"Ds = Cs" by(simp add:appendPath_def)
     from subo CeqD last eq wf have "Xs' = []" by(auto dest:mdc_eq_last)
     with eq Ds' ref show "ref (a,Ds) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
@@ -328,7 +328,7 @@ next
     proof(rule disjE)
       assume path_unique:"P \<turnstile> Path D to C unique"
       with last have "P \<turnstile> D \<preceq>\<^sup>* C" 
-        by(fastsimp dest:Subobjs_subclass simp:path_unique_def)
+        by(fastforce dest:Subobjs_subclass simp:path_unique_def)
       with notleq last eq show ?thesis by simp
     next
       assume ass:"P \<turnstile> C \<preceq>\<^sup>* D \<and> 
@@ -336,12 +336,12 @@ next
       with "class" wf obtain Cs'' where path_via':"P \<turnstile> Path C to D via Cs''"
         by(auto dest:leq_implies_path)
       with path_via wf eq last have "Cs'' = [D]"
-        by(fastsimp dest:path_via_reverse)
+        by(fastforce dest:path_via_reverse)
       with ass path_via' have "Subobjs\<^isub>R P C [D]" by simp
-      thus ?thesis by(fastsimp dest:hd_SubobjsR)
+      thus ?thesis by(fastforce dest:hd_SubobjsR)
     qed
     with last notin eq notempty show "ref (a,Ds) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2"
-      by(fastsimp intro:last_in_set)
+      by(fastforce intro:last_in_set)
   next
     fix e' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle>"
     from IH[OF eval_throw wte sconf] show "ref (a,Ds) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
@@ -369,12 +369,12 @@ next
       last:"last(C#Cs') = D" and "Subobjs P C' (Cs@[C]@Cs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
     hence "P \<turnstile> Path C to D via C#Cs'" 
-      by(fastsimp intro:Subobjs_Subobjs simp:path_via_def)
+      by(fastforce intro:Subobjs_Subobjs simp:path_via_def)
     with eq last path_via wf have "Xs' = [C] \<and> Cs' = [] \<and> C = D"
       apply clarsimp
       apply(split split_if_asm)
       by(simp,drule path_via_reverse,simp,simp)+
-    with ref eq show "ref(a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by(fastsimp simp:appendPath_def)
+    with ref eq show "ref(a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by(fastforce simp:appendPath_def)
   next
     fix Xs Xs' a'
     assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs@C#Xs'),s\<^isub>2\<rangle>"
@@ -397,7 +397,7 @@ next
     assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<^isub>2\<rangle>" and notin:"C \<notin> set Xs"
     from IH[OF eval_ref wte sconf] have "a = a' \<and> Cs@[C]@Cs' = Xs \<and> s\<^isub>1 = s\<^isub>2" 
       by simp
-    with notin show "ref(a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fastsimp
+    with notin show "ref(a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fastforce
   next
     fix e' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle>"
     from IH[OF eval_throw wte sconf] show "ref (a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
@@ -512,7 +512,7 @@ next
     with wf eval_ref sconf wte have last:"last Cs = D"
       by(auto dest:eval_preserves_type split:split_if_asm)
     with path_unique path_via path_via' eq have "Xs' = Cs'"
-      by(fastsimp simp:path_via_def path_unique_def)
+      by(fastforce simp:path_via_def path_unique_def)
     with eq Ds ref show "ref (a, Ds) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   next
     fix Xs Xs' a'
@@ -522,11 +522,11 @@ next
     with wf eval_ref sconf wte obtain C' where 
       last:"last Cs = D" and "Subobjs P C' (Xs@C#Xs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
-    hence "Subobjs P C (C#Xs')" by(fastsimp intro:Subobjs_Subobjs)
+    hence "Subobjs P C (C#Xs')" by(fastforce intro:Subobjs_Subobjs)
     with last eq have "P \<turnstile> Path C to D via C#Xs'" 
       by(simp add:path_via_def)
     with path_via wf last have "Xs' = [] \<and> Cs' = [C] \<and> C = D" 
-      by(fastsimp dest:path_via_reverse)
+      by(fastforce dest:path_via_reverse)
     with eq Ds ref show "ref (a, Ds) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by (simp add:appendPath_def)
   next
     fix Xs Xs' D' S a' h l
@@ -539,10 +539,10 @@ next
       and "Subobjs P D' Cs"
       by(auto dest:eval_preserves_type split:split_if_asm)
     with path_via wf have "P \<turnstile> Path D' to C via Cs@\<^sub>pCs'"
-      by(fastsimp intro:Subobjs_appendPath appendPath_last[THEN sym] 
+      by(fastforce intro:Subobjs_appendPath appendPath_last[THEN sym] 
                    dest:Subobjs_nonempty simp:path_via_def)
     with path_via' path_unique' Ds have "Xs' = Ds"
-      by(fastsimp simp:path_via_def path_unique_def)
+      by(fastforce simp:path_via_def path_unique_def)
     with eq ref show "ref (a, Ds) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   next
     assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>2\<rangle>"
@@ -576,12 +576,12 @@ next
       last:"last(C#Cs') = D" and "Subobjs P C' (Cs@[C]@Cs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
     hence "P \<turnstile> Path C to D via C#Cs'" 
-      by(fastsimp intro:Subobjs_Subobjs simp:path_via_def)
+      by(fastforce intro:Subobjs_Subobjs simp:path_via_def)
     with eq last path_via wf have "Xs' = [C] \<and> Cs' = [] \<and> C = D"
       apply clarsimp
       apply(split split_if_asm)
       by(simp,drule path_via_reverse,simp,simp)+
-    with ref eq show "ref(a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by(fastsimp simp:appendPath_def)
+    with ref eq show "ref(a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by(fastforce simp:appendPath_def)
   next
     fix Xs Xs' a'
     assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs@C#Xs'),s\<^isub>2\<rangle>"
@@ -606,9 +606,9 @@ next
       by simp
     with wf eval_ref sconf wte h have "Subobjs P D' (Cs@[C]@Cs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
-    hence "Subobjs P D' (Cs@[C])" by(fastsimp intro:appendSubobj)
+    hence "Subobjs P D' (Cs@[C])" by(fastforce intro:appendSubobj)
     with path_via path_unique have "Xs' = Cs@[C]" 
-      by(fastsimp simp:path_via_def path_unique_def)
+      by(fastforce simp:path_via_def path_unique_def)
     with eq ref show "ref(a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   next
     assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>2\<rangle>"
@@ -619,7 +619,7 @@ next
       and notin:"C \<notin> set Xs" and s2:"s\<^isub>2 = (h,l)"
     from IH[OF eval_ref wte sconf] s2 have "a = a' \<and> Cs@[C]@Cs' = Xs \<and> s\<^isub>1 = s\<^isub>2"
       by simp
-    with notin show "ref (a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fastsimp
+    with notin show "ref (a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fastforce
   next
     fix e' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle>"
     from IH[OF eval_throw wte sconf] show "ref (a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
@@ -643,10 +643,10 @@ next
       and "Subobjs P D Cs"
       by(auto dest:eval_preserves_type split:split_if_asm)
     with path_via' wf eq have "P \<turnstile> Path D to C via Xs@\<^sub>pXs'"
-      by(fastsimp intro:Subobjs_appendPath appendPath_last[THEN sym] 
+      by(fastforce intro:Subobjs_appendPath appendPath_last[THEN sym] 
                    dest:Subobjs_nonempty simp:path_via_def)
     with path_via path_unique have "Cs' = Xs@\<^sub>pXs'"
-      by(fastsimp simp:path_via_def path_unique_def)
+      by(fastforce simp:path_via_def path_unique_def)
     with ref eq show "ref(a,Cs') = e\<^isub>2 \<and> (h, l) = s\<^isub>2" by simp
   next
     fix Xs Xs' a'
@@ -656,9 +656,9 @@ next
       by simp
     with wf eval_ref sconf wte h have "Subobjs P D (Xs@[C]@Xs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
-    hence "Subobjs P D (Xs@[C])" by(fastsimp intro:appendSubobj)
+    hence "Subobjs P D (Xs@[C])" by(fastforce intro:appendSubobj)
     with path_via path_unique have "Cs' = Xs@[C]" 
-      by(fastsimp simp:path_via_def path_unique_def)
+      by(fastforce simp:path_via_def path_unique_def)
     with eq ref show "ref(a,Cs') = e\<^isub>2 \<and> (h, l) = s\<^isub>2" by simp
   next
     fix Xs Xs' D'' S' a' h' l'
@@ -669,7 +669,7 @@ next
       by simp
     with h h' path_via path_via' path_unique s2 ref
     show "ref(a,Cs') = e\<^isub>2 \<and> (h,l) = s\<^isub>2"
-      by(fastsimp simp:path_via_def path_unique_def)
+      by(fastforce simp:path_via_def path_unique_def)
   next
     assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>2\<rangle>"
     from IH[OF eval_null wte sconf] show "ref(a,Cs') = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by simp
@@ -736,7 +736,7 @@ next
     assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs@C#Xs'),s\<^isub>2\<rangle>"
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs@C#Xs' \<and> (h,l) = s\<^isub>2"
       by simp
-    with notin show "null = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by fastsimp
+    with notin show "null = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by fastforce
   next
     fix Xs Xs' D'' S' a' h' l'
     assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),(h',l')\<rangle>"
@@ -809,7 +809,7 @@ next
       and binop':"binop(bop,w\<^isub>1,w\<^isub>2) = Some w" and e2':"e\<^isub>2' = Val w"
     from IH1[OF eval_val1 wte1 sconf] have w1:"v\<^isub>1 = w\<^isub>1" and s:"s = s\<^isub>1" by simp_all
     with wf eval_val1 wte1 sconf have "P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_val2[simplified s] wte2 this] have "v\<^isub>2 = w\<^isub>2" and s2:"s\<^isub>2 = s\<^isub>2'"
       by simp_all
     with w1 binop binop' have "w = v" by simp
@@ -823,7 +823,7 @@ next
       and eval_throw:"P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>2'\<rangle>"
     from IH1[OF eval_val wte1 sconf] have s:"s = s\<^isub>1" by simp_all
     with wf eval_val wte1 sconf have "P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_throw[simplified s] wte2 this] show "Val v = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'"
       by simp
   qed
@@ -865,7 +865,7 @@ next
       and eval_val2:"P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>Val w\<^isub>2,s\<^isub>2'\<rangle>"
     from IH1[OF eval_val1 wte1 sconf] have s:"s = s\<^isub>1" by simp_all
     with wf eval_val1 wte1 sconf have "P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_val2[simplified s] wte2 this] show "throw e = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'"
       by simp
   next
@@ -879,7 +879,7 @@ next
       and throw:"e\<^isub>2' = throw e'"
     from IH1[OF eval_val wte1 sconf] have s:"s = s\<^isub>1" by simp_all
     with wf eval_val wte1 sconf have "P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_throw[simplified s] wte2 this] throw
     show "throw e = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'"
       by simp
@@ -1020,7 +1020,7 @@ next
     by auto
   from wf eval' wte1 sconf have "last Cs' = C"
     by(auto dest!:eval_preserves_type split:split_if_asm)
-  with has_least has_least' have TeqT':"T = T'" by (fastsimp intro:sees_field_fun)
+  with has_least has_least' have TeqT':"T = T'" by (fastforce intro:sees_field_fun)
   from eval show ?case
   proof(rule eval_cases)
     fix Xs D' S'' U a' fs'' h l s w w'
@@ -1034,9 +1034,9 @@ next
                                      (S''-{(Xs@\<^sub>pCs,fs'')}))),l)"
     from IH1[OF eval_ref wte1 sconf] have eq:"a = a' \<and> Cs' = Xs \<and> s\<^isub>1 = s" by simp
     with wf eval_ref wte1 sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF _ wte2 this] eval_val eq have eq':"v = w \<and> h = h\<^isub>2 \<and> l = l\<^isub>2" by auto
-    from has_least'' eq has_least have UeqT:"U = T" by (fastsimp intro:sees_field_fun)
+    from has_least'' eq has_least have UeqT:"U = T" by (fastforce intro:sees_field_fun)
     from has_least wf have "is_type P T" by(rule least_field_is_type)
     with casts casts' eq eq' UeqT TeqT' wte2 leq eval_val sconf' wf have v':"v' = w'"
       by(auto intro!:casts_casts_eq_result)
@@ -1059,7 +1059,7 @@ next
       and eval_throw:"P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>"
     from IH1[OF eval_val wte1 sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_val wte1 sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_throw[simplified eq] wte2 this]
     show "Val v' = e\<^isub>2' \<and> (h\<^isub>2',l\<^isub>2) = s\<^isub>2" by simp
   qed
@@ -1086,7 +1086,7 @@ next
       and e2':"e\<^isub>2' = THROW NullPointer"
     from IH1[OF eval_null wte1 sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_null wte1 sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_val[simplified eq] wte2 this] e2'
     show "THROW NullPointer = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" by simp
   next
@@ -1099,7 +1099,7 @@ next
       and eval_throw:"P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2'\<rangle>"
     from IH1[OF eval_val wte1 sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_val wte1 sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_throw[simplified eq] wte2 this] 
     show "THROW NullPointer = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" by simp
   qed
@@ -1144,7 +1144,7 @@ next
       and eval_val:"P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>Val w,(h,l)\<rangle>"
     from IH1[OF eval_ref wte1 sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_ref wte1 sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_val[simplified eq] wte2 this] show "throw e' = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'"
       by simp
   next
@@ -1153,7 +1153,7 @@ next
       and eval_val:"P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>Val w,s\<^isub>2'\<rangle>"
     from IH1[OF eval_null wte1 sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_null wte1 sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_val[simplified eq] wte2 this] show "throw e' = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'"
       by simp
   next
@@ -1165,7 +1165,7 @@ next
       and eval_throw:"P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2'\<rangle>" and e2':"e\<^isub>2' = throw ex"
     from IH1[OF eval_val wte1 sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_val wte1 sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval_throw[simplified eq] wte2 this] e2' 
     show "throw e' = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" by simp
   qed
@@ -1245,10 +1245,10 @@ next
         and e2:"e\<^isub>2 = throw ex'"
       from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_throw[simplified eq] wtes this] e2
       have "vs = ws \<and> ex = ex' \<and> es' = es'' \<and> s\<^isub>2 = s\<^isub>2'"
-        by(fastsimp dest:map_Val_throw_eq)
+        by(fastforce dest:map_Val_throw_eq)
       with e2 show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
     next
       fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
@@ -1257,10 +1257,10 @@ next
         and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
       from IH1[OF eval_ref wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this]
       show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-        by(fastsimp dest:sym[THEN map_Val_throw_False])
+        by(fastforce dest:sym[THEN map_Val_throw_False])
     next
       fix s ws
       assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
@@ -1268,10 +1268,10 @@ next
         and e2:"e\<^isub>2 = THROW NullPointer"
       from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this] 
       show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-        by(fastsimp dest:sym[THEN map_Val_throw_False])
+        by(fastforce dest:sym[THEN map_Val_throw_False])
     qed
   next
     fix C' assume "Copt = Some C'"
@@ -1287,10 +1287,10 @@ next
         and e2:"e\<^isub>2 = throw ex'"
       from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_throw[simplified eq] wtes this] e2
       have "vs = ws \<and> ex = ex' \<and> es' = es'' \<and> s\<^isub>2 = s\<^isub>2'"
-        by(fastsimp dest:map_Val_throw_eq)
+        by(fastforce dest:map_Val_throw_eq)
       with e2 show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
     next
       fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
@@ -1299,10 +1299,10 @@ next
         and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
       from IH1[OF eval_ref wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this]
       show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-        by(fastsimp dest:sym[THEN map_Val_throw_False])
+        by(fastforce dest:sym[THEN map_Val_throw_False])
     next
       fix s ws
       assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
@@ -1310,10 +1310,10 @@ next
         and e2:"e\<^isub>2 = THROW NullPointer"
       from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this] 
       show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-        by(fastsimp dest:sym[THEN map_Val_throw_False])
+        by(fastforce dest:sym[THEN map_Val_throw_False])
     qed
   qed
 next
@@ -1346,7 +1346,7 @@ next
   have last:"last Cs = D" by (auto split:split_if_asm)
   with has_least has_least' wf
   have eq:"Ts' = Ss \<and> T' = T'' \<and> (pns',body') = m \<and> Ds = Cs''"
-    by(fastsimp dest:wf_sees_method_fun)
+    by(fastforce dest:wf_sees_method_fun)
   from wf selects have param_type:"\<forall>T \<in> set Ts. is_type P T" 
     and return_type:"is_type P T" and TnotNT:"T \<noteq> NT"
     by(auto dest:select_method_wf_mdecl simp:wf_mdecl_def)
@@ -1376,15 +1376,15 @@ next
     case True
     then obtain D' where T':"T' = Class D'" by auto
     with wf has_least have "class":"is_class P D'"
-      by(fastsimp dest:has_least_wf_mdecl simp:wf_mdecl_def)
+      by(fastforce dest:has_least_wf_mdecl simp:wf_mdecl_def)
     with wf T' TnotNT param_types obtain D'' where T:"T = Class D''"
-      by(fastsimp dest:widen_Class)
+      by(fastforce dest:widen_Class)
     with wf return_type T' param_types have "P \<turnstile> Path D'' to D' unique"
       by(simp add:Class_widen_Class)
     with wt_body "class" T T' new_body show ?thesis by auto
   qed
   hence wt_new_body:"P,E(this\<mapsto>Class(last Cs'),pns[\<mapsto>]Ts) \<turnstile> new_body :: T'"
-    by(fastsimp intro:wt_env_mono)
+    by(fastforce intro:wt_env_mono)
   from eval show ?case
   proof(rule eval_cases)
     fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2\<rangle>"
@@ -1395,9 +1395,9 @@ next
       and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2\<rangle>"
     from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF evals_throw[simplified eq] wtes this] show "e' = e\<^isub>2 \<and> (h\<^isub>3, l\<^isub>2) = s\<^isub>2"
-      by(fastsimp dest:map_Val_throw_False)
+      by(fastforce dest:map_Val_throw_False)
   next
     fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' s ws ws'
     assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
@@ -1413,12 +1413,12 @@ next
     from IH1[OF eval_ref wte sconf] have eq1:"a = a' \<and> Cs = Xs" and s:"s = s\<^isub>1" 
       by simp_all
     with has_least has_least'' wf have eq2:"T' = U' \<and> Ts' = Us' \<and> Ds = Ds'"
-      by(fastsimp dest:wf_sees_method_fun)
+      by(fastforce dest:wf_sees_method_fun)
     from s wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF evals_vals[simplified s] wtes this]
     have eq3:"vs = ws \<and> h\<^isub>2 = h \<and> l\<^isub>2 = l"
-      by(fastsimp elim:map_injective simp:inj_on_def)
+      by(fastforce elim:map_injective simp:inj_on_def)
     with eq1 h2 h have eq4:"C = C' \<and> S = S'" by simp
     with eq1 eq2 selects selects' wf
     have eq5:"Ts = Us \<and> T = U \<and> pns'' = pns \<and> body'' = body \<and> Cs' = Xs'"
@@ -1426,13 +1426,13 @@ next
     with subs eq param_types have "P \<turnstile> Ss' [\<le>] Us" by simp
     with wf Casts Casts' param_type wtes evals_vals sconf' s eq eq2 eq3 eq5
     have eq6:"vs' = ws'"
-      by(fastsimp intro:Casts_Casts_eq_result)
+      by(fastforce intro:Casts_Casts_eq_result)
     with eval_body' l2' eq1 eq2 eq3 eq5 new_body  
     have eval_body'':"P,E(this \<mapsto> Class(last Cs'), pns [\<mapsto>] Ts) \<turnstile> 
                            \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e\<^isub>2,(h',l')\<rangle>"
-      by fastsimp
+      by fastforce
     from wf evals_vals wtes sconf' s eq3 have sconf'':"P,E \<turnstile> (h\<^isub>2,l\<^isub>2) \<surd>"
-      by(fastsimp intro:evals_preserves_sconf)
+      by(fastforce intro:evals_preserves_sconf)
     have "P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> (h\<^isub>2,l\<^isub>2') \<surd>"
     proof(auto simp:sconf_def)
       from sconf'' show "P \<turnstile> h\<^isub>2 \<surd>" by(simp add:sconf_def)
@@ -1460,7 +1460,7 @@ next
             from Casts have "length Ts = length vs'"
               by(induct rule:Casts_to.induct,auto)
             with length have "length pns = length vs'" by simp
-            with map dist V length_i have v:"v = vs'!i" by(fastsimp dest:maps_nth)
+            with map dist V length_i have v:"v = vs'!i" by(fastforce dest:maps_nth)
             from length dist length_i
             have env:"(E(this \<mapsto> Class (last Cs'))(pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
               by(rule_tac E="E(this \<mapsto> Class (last Cs'))" in nth_maps,simp_all)
@@ -1491,9 +1491,9 @@ next
             assume "V \<in> set pns"
             then obtain i where V:"V = pns!i" and length_i:"i < length pns"
               by(auto simp:in_set_conv_nth)
-            with dist length env have "Tx = Ts!i" by(fastsimp dest:maps_nth)
+            with dist length env have "Tx = Ts!i" by(fastforce dest:maps_nth)
             with length_i length have "Tx \<in> set Ts"
-              by(fastsimp simp:in_set_conv_nth)
+              by(fastforce simp:in_set_conv_nth)
             with param_type show ?thesis by simp
           qed
         qed }
@@ -1540,7 +1540,7 @@ next
     and return_type:"is_type P T" and TnotNT:"T \<noteq> NT"
     by(auto dest:has_least_wf_mdecl simp:wf_mdecl_def)
   from path_via have last':"last Cs'' = last(Cs@\<^sub>pCs'')"
-    by(fastsimp intro!:appendPath_last Subobjs_nonempty simp:path_via_def)
+    by(fastforce intro!:appendPath_last Subobjs_nonempty simp:path_via_def)
   from eval'' have hext:"hp s\<^isub>1 \<unlhd> h\<^isub>2" by (cases s\<^isub>1,auto intro: evals_hext)
   from wf eval' sconf wte last have "P,E,(hp s\<^isub>1) \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
     by -(rule eval_preserves_type,simp_all)
@@ -1551,18 +1551,18 @@ next
   with path_via wf have "Subobjs P D (Cs@\<^sub>pCs'')" and "last Cs'' = C"
     by(auto intro:Subobjs_appendPath simp:path_via_def)
   with has_least wf last' Ds have subo:"Subobjs P D Ds"
-    by(fastsimp intro:Subobjs_appendPath simp:LeastMethodDef_def MethodDefs_def)
+    by(fastforce intro:Subobjs_appendPath simp:LeastMethodDef_def MethodDefs_def)
   with wf have "class":"is_class P (last Ds)" by(auto intro!:Subobj_last_isClass)
   from has_least wf obtain D' where "Subobjs P D' Cs'"
     by(auto simp:LeastMethodDef_def MethodDefs_def)
   with Ds have last_Ds:"last Cs' = last Ds"
-    by(fastsimp intro!:appendPath_last Subobjs_nonempty)
+    by(fastforce intro!:appendPath_last Subobjs_nonempty)
   with wf has_least have "P,[this\<mapsto>Class(last Ds),pns[\<mapsto>]Ts] \<turnstile> body :: T"
     and this_not_pns:"this \<notin> set pns" and length:"length pns = length Ts"
     and dist:"distinct pns"
     by(auto dest!:has_least_wf_mdecl simp:wf_mdecl_def)
   hence wt_body:"P,E(this\<mapsto>Class(last Ds),pns[\<mapsto>]Ts) \<turnstile> body :: T"
-    by(fastsimp intro:wt_env_mono)
+    by(fastforce intro:wt_env_mono)
   from eval show ?case
   proof(rule eval_cases)
     fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2\<rangle>"
@@ -1573,9 +1573,9 @@ next
       and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2\<rangle>"
     from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF evals_throw[simplified eq] wtes this] show "e' = e\<^isub>2 \<and> (h\<^isub>3, l\<^isub>2) = s\<^isub>2"
-      by(fastsimp dest:map_Val_throw_False)
+      by(fastforce dest:map_Val_throw_False)
   next
     fix Xs Xs' Xs'' U Us a' body' h h' l l' pns' s ws ws'
     assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
@@ -1592,24 +1592,24 @@ next
       by simp_all
     from has_least has_least' wf 
     have eq2:"T = U \<and> Ts = Us \<and> Cs' = Xs' \<and> pns = pns' \<and> body = body'"
-      by(fastsimp dest:wf_sees_method_fun)
+      by(fastforce dest:wf_sees_method_fun)
     from s wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF evals_vals[simplified s] wtes this]
     have eq3:"vs = ws \<and> h\<^isub>2 = h \<and> l\<^isub>2 = l"
-      by(fastsimp elim:map_injective simp:inj_on_def)
+      by(fastforce elim:map_injective simp:inj_on_def)
     from path_unique path_via path_via' eq1 have "Cs'' = Xs''" 
-      by(fastsimp simp:path_unique_def path_via_def)
+      by(fastforce simp:path_unique_def path_via_def)
     with Ds eq1 eq2 have Ds':"Ds = (Xs@\<^sub>pXs'')@\<^sub>pXs'" by simp
     from wf Casts Casts' param_type wtes subs evals_vals sconf' s eq2 eq3
     have eq4:"vs' = ws'"
-      by(fastsimp intro:Casts_Casts_eq_result)
+      by(fastforce intro:Casts_Casts_eq_result)
     with eval_body' Ds' l2' eq1 eq2 eq3
     have eval_body'':"P,E(this \<mapsto> Class(last Ds),pns [\<mapsto>] Ts) \<turnstile> 
                             \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e\<^isub>2,(h',l')\<rangle>"
       by simp
     from wf evals_vals wtes sconf' s eq3 have sconf'':"P,E \<turnstile> (h\<^isub>2,l\<^isub>2) \<surd>"
-      by(fastsimp intro:evals_preserves_sconf)
+      by(fastforce intro:evals_preserves_sconf)
     have "P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> (h\<^isub>2,l\<^isub>2') \<surd>"
     proof(auto simp:sconf_def)
       from sconf'' show "P \<turnstile> h\<^isub>2 \<surd>" by(simp add:sconf_def)
@@ -1637,7 +1637,7 @@ next
             from Casts have "length Ts = length vs'"
               by(induct rule:Casts_to.induct,auto)
             with length have "length pns = length vs'" by simp
-            with map dist V length_i have v:"v = vs'!i" by(fastsimp dest:maps_nth)
+            with map dist V length_i have v:"v = vs'!i" by(fastforce dest:maps_nth)
             from length dist length_i
             have env:"(E(this \<mapsto> Class (last Ds))(pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
               by(rule_tac E="E(this \<mapsto> Class (last Ds))" in nth_maps,simp_all)
@@ -1668,9 +1668,9 @@ next
             assume "V \<in> set pns"
             then obtain i where V:"V = pns!i" and length_i:"i < length pns"
               by(auto simp:in_set_conv_nth)
-            with dist length env have "Tx = Ts!i" by(fastsimp dest:maps_nth)
+            with dist length env have "Tx = Ts!i" by(fastforce dest:maps_nth)
             with length_i length have "Tx \<in> set Ts"
-              by(fastsimp simp:in_set_conv_nth)
+              by(fastforce simp:in_set_conv_nth)
             with param_type show ?thesis by simp
           qed
         qed }
@@ -1708,9 +1708,9 @@ next
         and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es',s\<^isub>2'\<rangle>"
       from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_throw[simplified eq] wtes this] 
-      show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by(fastsimp dest:map_Val_throw_False)
+      show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by(fastforce dest:map_Val_throw_False)
     next
       fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
           s ws ws'
@@ -1724,7 +1724,7 @@ next
         and e2:"e\<^isub>2 = THROW NullPointer"
       from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this] e2
       show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
     qed
@@ -1742,9 +1742,9 @@ next
         and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es',s\<^isub>2'\<rangle>"
       from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_throw[simplified eq] wtes this] 
-      show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by(fastsimp dest:map_Val_throw_False)
+      show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by(fastforce dest:map_Val_throw_False)
     next
       fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
           s ws ws'
@@ -1758,7 +1758,7 @@ next
         and e2:"e\<^isub>2 = THROW NullPointer"
       from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
       with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-        by(fastsimp intro:eval_preserves_sconf)
+        by(fastforce intro:eval_preserves_sconf)
       from IH2[OF evals_vals[simplified eq] wtes this] e2
       show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
     qed
@@ -1793,7 +1793,7 @@ next
       and eval':"P,E \<turnstile> \<langle>e\<^isub>1,s\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>"
     from IH1[OF eval_val wte0 sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_val wte0 sconf have "P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval'[simplified eq] wte1 this] show "e\<^isub>2 = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" .
   next
     fix ex assume eval_throw:"P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2'\<rangle>"
@@ -1831,7 +1831,7 @@ next
     assume eval_true:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>true,s\<rangle>" and eval':"P,E \<turnstile> \<langle>e\<^isub>1,s\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>"
     from IH1[OF eval_true wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_true wte sconf have "P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval'[simplified eq] wte1 this] show "e' = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" .
   next
     fix s assume eval_false:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>false,s\<rangle>"
@@ -1860,7 +1860,7 @@ next
       and eval':"P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>"
     from IH1[OF eval_false wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_false wte sconf have "P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF eval'[simplified eq] wte2 this] show "e' = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" .
   next
     fix ex assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2'\<rangle>"
@@ -1932,10 +1932,10 @@ next
       and eval_while:"P,E \<turnstile> \<langle>while (e) c,s'\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>"
     from IH1[OF eval_true wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_true wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
    from IH2[OF eval_val[simplified eq] wtc this] have eq':"s' = s\<^isub>2" by simp
    with wf eval_val wtc sconf' eq have "P,E \<turnstile> s\<^isub>2 \<surd>"
-     by(fastsimp intro:eval_preserves_sconf)
+     by(fastforce intro:eval_preserves_sconf)
    from IH3[OF eval_while[simplified eq'] wt this] show "e\<^isub>3 = e\<^isub>2 \<and> s\<^isub>3 = s\<^isub>2'" .
  next
    fix ex assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2'\<rangle>"
@@ -1946,7 +1946,7 @@ next
      and eval_throw:"P,E \<turnstile> \<langle>c,s\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2'\<rangle>"
     from IH1[OF eval_true wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_true wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
    from IH2[OF eval_throw[simplified eq] wtc this] show "e\<^isub>3 = e\<^isub>2 \<and> s\<^isub>3 = s\<^isub>2'" by simp
  qed
 next
@@ -1992,7 +1992,7 @@ next
       and eval_val:"P,E \<turnstile> \<langle>c,s\<rangle> \<Rightarrow> \<langle>Val w,s'\<rangle>"
     from IH1[OF eval_true wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_true wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
    from IH2[OF eval_val[simplified eq] wtc this] show "throw e' = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
      by simp
  next
@@ -2004,7 +2004,7 @@ next
      and eval_throw:"P,E \<turnstile> \<langle>c,s\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2'\<rangle>" and e2:"e\<^isub>2 = throw ex"
    from IH1[OF eval_true wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_true wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
    from IH2[OF eval_throw[simplified eq] wtc this] e2 show "throw e' = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
      by simp
  qed
@@ -2084,7 +2084,7 @@ next
       and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es'',s\<^isub>2'\<rangle>" and es2:"es\<^isub>2 = Val w#es''"
     from IH1[OF eval_val wte sconf] have s:"s = s\<^isub>1" and v:"v = w" by simp_all
     with wf eval_val wte sconf have "P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
+      by(fastforce intro:eval_preserves_sconf)
     from IH2[OF evals_vals[simplified s] wtes this] have "es' = es'' \<and> s\<^isub>2 = s\<^isub>2'" .
     with es2 v show "Val v # es' = es\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
   next

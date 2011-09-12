@@ -188,7 +188,7 @@ lemmas defs1 = correct_state_def conf_f_def wt_instr_def eff_def norm_eff_def ap
 lemma correct_state_impl_Some_method:
   "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd> 
   \<Longrightarrow> \<exists>m Ts T. P \<turnstile> C sees M:Ts\<rightarrow>T = m in C"
-  by(fastsimp simp add: defs1)
+  by(fastforce simp add: defs1)
 
 end
 
@@ -197,7 +197,7 @@ context JVM_heap_conf_base' begin
 lemma correct_state_hext_mono:
   "\<lbrakk> \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>; h \<unlhd> h'; hconf h' \<rbrakk> \<Longrightarrow> \<Phi> \<turnstile> t: (xcp, h', frs) \<surd>"
 unfolding correct_state_def
-by(fastsimp elim: tconf_hext_mono preallocated_hext conf_f_hext conf_fs_hext conf_xcp_hext split: list.split)
+by(fastforce elim: tconf_hext_mono preallocated_hext conf_f_hext conf_fs_hext conf_xcp_hext split: list.split)
 
 end
 

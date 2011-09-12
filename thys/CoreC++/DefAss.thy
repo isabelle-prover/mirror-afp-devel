@@ -131,7 +131,7 @@ apply simp
 apply simp
 apply simp
 apply simp apply (iprover dest:sqUn_lem)
-apply (fastsimp simp add:hyperset_defs)
+apply (fastforce simp add:hyperset_defs)
 apply simp
 apply simp
 apply simp apply (iprover dest:sqUn_lem)

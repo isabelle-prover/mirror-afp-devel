@@ -37,11 +37,11 @@ lemma set_restriction_comp: "
 apply (unfold set_restriction_def)
 apply (elim exE, rename_tac P1 P2)
 apply (rule_tac x="\<lambda>x. P1 x \<and> P2 x" in exI)
-apply fastsimp
+apply fastforce
 done
 lemma set_restriction_commute: "
   \<lbrakk> set_restriction f; set_restriction g \<rbrakk> \<Longrightarrow> f (g I) = g (f I)"
-unfolding set_restriction_def by fastsimp
+unfolding set_restriction_def by fastforce
 
 text {* Constructs a set restriction function with the given restriction predicate *}
 definition
@@ -63,19 +63,19 @@ done
 
 lemma set_restriction_Un: "
   set_restriction f \<Longrightarrow> f (A \<union> B) = f A \<union> f B"
-unfolding set_restriction_def by fastsimp
+unfolding set_restriction_def by fastforce
 lemma set_restriction_Int: "
   set_restriction f \<Longrightarrow> f (A \<inter> B) = f A \<inter> f B"
-unfolding set_restriction_def by fastsimp
+unfolding set_restriction_def by fastforce
 lemma set_restriction_Diff: "
   set_restriction f \<Longrightarrow> f (A - B) = f A - f B"
-unfolding set_restriction_def by fastsimp
+unfolding set_restriction_def by fastforce
 lemma set_restriction_mono: "
   \<lbrakk> set_restriction f; A \<subseteq> B \<rbrakk> \<Longrightarrow> f A \<subseteq> f B"
-unfolding set_restriction_def by fastsimp
+unfolding set_restriction_def by fastforce
 lemma set_restriction_absorb: "
   set_restriction f \<Longrightarrow> f (f A) = f A"
-unfolding set_restriction_def by fastsimp
+unfolding set_restriction_def by fastforce
 lemma set_restriction_empty: "
   set_restriction f \<Longrightarrow> f {} = {}"
 unfolding set_restriction_def by blast
@@ -87,7 +87,7 @@ lemma set_restriction_subset: "
 unfolding set_restriction_def by blast
 lemma set_restriction_finite: "
   \<lbrakk> set_restriction f; finite A \<rbrakk> \<Longrightarrow> finite (f A)"
-unfolding set_restriction_def by fastsimp
+unfolding set_restriction_def by fastforce
 lemma set_restriction_card: "
   \<lbrakk> set_restriction f; finite A \<rbrakk> \<Longrightarrow> 
   card (f A) = card A - card {a \<in> A. f {a} = {}}"
@@ -100,7 +100,7 @@ apply (frule finite_subset, simp)
 thm card_Diff_subset[symmetric]
 apply (simp only: card_Diff_subset[symmetric])
 apply (rule arg_cong[where f=card])
-apply fastsimp
+apply fastforce
 done
 lemma set_restriction_card_le: "
   \<lbrakk> set_restriction f; finite A \<rbrakk> \<Longrightarrow> card (f A) \<le> card A"
@@ -209,7 +209,7 @@ lemma
   cut_less_Diff_conv: "I \<down>< t = I - {t..}" and
   cut_ge_Diff_conv: "I \<down>\<ge> t = I - {..<t}" and
   cut_greater_Diff_conv: "I \<down>> t = I - {..t}"
-by (fastsimp simp: i_cut_defs)+
+by (fastforce simp: i_cut_defs)+
 lemmas i_cut_Diff_conv =
   cut_le_Diff_conv cut_less_Diff_conv
   cut_ge_Diff_conv cut_greater_Diff_conv
@@ -480,7 +480,7 @@ lemma
   cut_less_empty_iff:    "(I \<down>< t = {}) = (\<forall>x\<in>I. t \<le> x)" and
   cut_ge_empty_iff:      "(I \<down>\<ge> t = {}) = (\<forall>x\<in>I. x < t)" and
   cut_greater_empty_iff: "(I \<down>> t = {}) = (\<forall>x\<in>I. x \<le> t)"
-unfolding i_cut_defs by fastsimp+
+unfolding i_cut_defs by fastforce+
 lemmas i_cut_empty_iff =
   cut_le_empty_iff cut_less_empty_iff
   cut_ge_empty_iff cut_greater_empty_iff
@@ -544,21 +544,21 @@ by (drule Collect_minI_ex2, blast)
 
 
 lemma cut_le_cut_greater_ident: "t2 \<le> t1 \<Longrightarrow> I \<down>\<le> t1 \<union> I \<down>> t2 = I"
-by fastsimp
+by fastforce
 lemma cut_less_cut_ge_ident: "t2 \<le> t1 \<Longrightarrow> I \<down>< t1 \<union> I \<down>\<ge> t2 = I"
-by fastsimp
+by fastforce
 lemma cut_le_cut_ge_ident: "t2 \<le> t1 \<Longrightarrow> I \<down>\<le> t1 \<union> I \<down>\<ge> t2 = I"
-by fastsimp
+by fastforce
 
 lemma cut_less_cut_greater_ident: "
   \<lbrakk> t2 \<le> t1; I \<inter> {t1..t2} = {} \<rbrakk> \<Longrightarrow> I \<down>< t1 \<union> I \<down>> t2 = I"
-by fastsimp
+by fastforce
 corollary cut_less_cut_greater_ident': "
   t \<notin> I \<Longrightarrow> I \<down>< t \<union> I \<down>> t = I"
 by (simp add: cut_less_cut_greater_ident)
 
 lemma insert_eq_cut_less_cut_greater: "insert n I = I \<down>< n \<union> {n} \<union> I \<down>> n"
-by fastsimp
+by fastforce
 
 
 
@@ -573,10 +573,10 @@ lemma cut_le_less_conv_if: "I \<down>\<le> t = (
 by (simp add: i_cut_Int_conv lessThan_insert[symmetric] insert_Int_conv_if)
 
 lemma cut_le_less_conv: "I \<down>\<le> t = ({t} \<inter> I) \<union> (I \<down>< t)"
-by fastsimp
+by fastforce
 
 lemma cut_less_le_conv: "I \<down>< t = (I \<down>\<le> t) - {t}"
-by fastsimp
+by fastforce
 lemma cut_less_le_conv_if: "I \<down>< t = (
   if t \<in> I then (I \<down>\<le> t) - {t} else (I \<down>\<le> t))"
 by (simp only: cut_less_le_conv, force)
@@ -596,7 +596,7 @@ apply (case_tac "t \<in> I")
 apply simp_all
 done
 lemma cut_greater_ge_conv: "I \<down>> t = (I \<down>\<ge> t) - {t}"
-by fastsimp
+by fastforce
 lemma cut_greater_ge_conv_if: "I \<down>> t = (
   if t \<in> I then (I \<down>\<ge> t) - {t} else (I \<down>\<ge> t))"
 by (simp only: cut_greater_ge_conv, force)
@@ -604,13 +604,13 @@ by (simp only: cut_greater_ge_conv, force)
 
 
 lemma nat_cut_le_less_conv: "I \<down>\<le> t = I \<down>< Suc t"
-by fastsimp
+by fastforce
 lemma nat_cut_less_le_conv: "0 < t \<Longrightarrow> I \<down>< t = I \<down>\<le> (t - Suc 0)"
-by fastsimp
+by fastforce
 lemma nat_cut_ge_greater_conv: "I \<down>\<ge> Suc t = I \<down>> t"
-by fastsimp
+by fastforce
 lemma nat_cut_greater_ge_conv: "0 < t \<Longrightarrow> I \<down>> (t - Suc 0) = I \<down>\<ge> t"
-by fastsimp
+by fastforce
 
 
 
@@ -682,9 +682,9 @@ by (rule finite_subset[of _ I], rule i_cut_subset, assumption+)+
 
 
 lemma nat_cut_le_finite: "finite (I \<down>\<le> (t::nat))"
-by (fastsimp simp: finite_nat_iff_bounded_le2 cut_le_def)
+by (fastforce simp: finite_nat_iff_bounded_le2 cut_le_def)
 lemma nat_cut_less_finite: "finite (I \<down>< (t::nat))"
-by (fastsimp simp: finite_nat_iff_bounded2 cut_less_def)
+by (fastforce simp: finite_nat_iff_bounded2 cut_less_def)
 lemma nat_cut_ge_finite_iff: "finite (I \<down>\<ge> (t::nat)) = finite I"
 apply (rule iffI)
  thm cut_less_cut_ge_ident[OF order_refl]
@@ -732,9 +732,9 @@ lemma cut_less_Max_eq_Diff: "finite I \<Longrightarrow> I \<down>< (Max I) = I -
 by blast
 
 lemma cut_le_Min_empty: "t < iMin I \<Longrightarrow> I \<down>\<le> t = {}"
-by (fastsimp simp: i_cut_defs)
+by (fastforce simp: i_cut_defs)
 lemma cut_less_Min_empty: "t \<le> iMin I \<Longrightarrow> I \<down>< t = {}"
-by (fastsimp simp: i_cut_defs)
+by (fastforce simp: i_cut_defs)
 
 
 lemma cut_le_Min_not_empty: "\<lbrakk> I \<noteq> {}; iMin I \<le> t \<rbrakk> \<Longrightarrow> I \<down>\<le> t \<noteq> {}"
@@ -777,10 +777,10 @@ thm
   i_cut_min_all
 
 lemma cut_ge_Max_empty: "finite I \<Longrightarrow> Max I < t \<Longrightarrow> I \<down>\<ge> t = {}"
-by (fastsimp simp: i_cut_defs)
+by (fastforce simp: i_cut_defs)
 
 lemma cut_greater_Max_empty: "finite I \<Longrightarrow> Max I \<le> t \<Longrightarrow> I \<down>> t = {}"
-by (fastsimp simp: i_cut_defs)
+by (fastforce simp: i_cut_defs)
 
 lemma cut_ge_Max_not_empty: "\<lbrakk> I \<noteq> {}; finite I; t \<le> Max I \<rbrakk> \<Longrightarrow> I \<down>\<ge> t \<noteq> {}"
 apply (simp add: i_cut_defs)
@@ -796,10 +796,10 @@ apply (simp add: MaxI_ex2)
 done
 
 lemma cut_le_Max_all: "finite I \<Longrightarrow> Max I \<le> t \<Longrightarrow> I \<down>\<le> t = I"
-by (fastsimp simp: i_cut_defs)
+by (fastforce simp: i_cut_defs)
 
 lemma cut_less_Max_all: "finite I \<Longrightarrow> Max I < t \<Longrightarrow> I \<down>< t = I"
-by (fastsimp simp: i_cut_defs)
+by (fastforce simp: i_cut_defs)
 
 lemmas i_cut_max_empty =
   cut_ge_Max_empty
@@ -839,14 +839,14 @@ by (rule cut_ge_bound[OF iMinI_ex2])
 lemma cut_less_Min_eq: "I \<down>< t \<noteq> {} \<Longrightarrow> iMin (I \<down>< t) = iMin I"
 apply (drule cut_less_not_empty_iff[THEN iffD1])
 apply (rule iMin_equality)
- apply (fastsimp intro: iMinI)
+ apply (fastforce intro: iMinI)
 apply blast
 done
 
 lemma cut_le_Min_eq: "I \<down>\<le> t \<noteq> {} \<Longrightarrow> iMin (I \<down>\<le> t) = iMin I"
 apply (drule cut_le_not_empty_iff[THEN iffD1])
 apply (rule iMin_equality)
- apply (fastsimp intro: iMinI)
+ apply (fastforce intro: iMinI)
 apply blast
 done
 
@@ -854,17 +854,17 @@ done
 lemma cut_ge_Max_eq: "\<lbrakk> finite I; I \<down>\<ge> t \<noteq> {} \<rbrakk> \<Longrightarrow> Max (I \<down>\<ge> t) = Max I"
 apply (drule cut_ge_not_empty_iff[THEN iffD1])
 apply (rule Max_equality)
-  apply (fastsimp intro: MaxI)
+  apply (fastforce intro: MaxI)
  apply (simp add: cut_ge_finite)
-apply fastsimp
+apply fastforce
 done
 
 lemma cut_greater_Max_eq: "\<lbrakk> finite I; I \<down>> t \<noteq> {} \<rbrakk> \<Longrightarrow> Max (I \<down>> t) = Max I"
 apply (drule cut_greater_not_empty_iff[THEN iffD1])
 apply (rule Max_equality)
-  apply (fastsimp intro: MaxI)
+  apply (fastforce intro: MaxI)
  apply (simp add: cut_greater_finite)
-apply fastsimp
+apply fastforce
 done
 
 
@@ -896,7 +896,7 @@ lemma
   atLeast_cut_ge:      "{n..} \<down>\<ge> t = (if t \<le> n then {n..} else {t..})" and
   atLeast_cut_greater: "{n..} \<down>\<ge> t = (if t \<le> n then {n..} else {t..})"
 apply (simp_all add: set_eq_iff i_cut_mem_iff linorder_not_le linorder_not_less)
-apply fastsimp+
+apply fastforce+
 done
 
 
@@ -918,7 +918,7 @@ lemma
   atLeastAtMost_cut_ge:      "{m..n} \<down>\<ge> t = (if t \<le> m then {m..n} else {t..n})" and
   atLeastAtMost_cut_greater: "{m..n} \<down>> t = (if t < m then {m..n} else {t<..n})"
 apply (simp_all add: set_eq_iff i_cut_mem_iff split_if linorder_not_le linorder_not_less)
-apply fastsimp+
+apply fastforce+
 done
 
 
@@ -938,7 +938,7 @@ lemma nat_mirror_commute: "nat_mirror n l r = nat_mirror n r l"
 unfolding nat_mirror_def by simp
 
 lemma nat_mirror_inj_on: "inj_on (\<lambda>x. nat_mirror x l r) {..l + r}"
-unfolding inj_on_def nat_mirror_def by fastsimp
+unfolding inj_on_def nat_mirror_def by fastforce
 
 lemma nat_mirror_nat_mirror_ident: "
   n \<le> l + r \<Longrightarrow> nat_mirror (nat_mirror n l r) l r = n"
@@ -956,7 +956,7 @@ lemma nat_mirror_le: "a \<le> b \<Longrightarrow> nat_mirror b l r \<le> nat_mir
 unfolding nat_mirror_def by simp
 lemma nat_mirror_le_conv: "
   a \<le> l + r \<Longrightarrow> (nat_mirror b l r \<le> nat_mirror a l r) = (a \<le> b)"
-unfolding nat_mirror_def by fastsimp
+unfolding nat_mirror_def by fastforce
 
 lemma nat_mirror_less: "
   \<lbrakk> a < b; a < l + r \<rbrakk> \<Longrightarrow> 
@@ -967,12 +967,12 @@ lemma nat_mirror_less_imp_less: "
 unfolding nat_mirror_def by simp 
 lemma nat_mirror_less_conv: "
   a < l + r \<Longrightarrow> (nat_mirror b l r < nat_mirror a l r) = (a < b)"
-unfolding nat_mirror_def by fastsimp
+unfolding nat_mirror_def by fastforce
 
 lemma nat_mirror_eq_conv: "
   \<lbrakk> a \<le> l + r; b \<le> l + r \<rbrakk> \<Longrightarrow> 
   (nat_mirror a l r = nat_mirror b l r) = (a = b)"
-unfolding nat_mirror_def by fastsimp
+unfolding nat_mirror_def by fastforce
 
 text {* Mirroring a single element n between the interval boundaries of I *}
 definition
@@ -1103,7 +1103,7 @@ done
 corollary imirror_iMin_Max: "\<lbrakk> finite I; n \<in> imirror I \<rbrakk> \<Longrightarrow> iMin I \<le> n \<and> n \<le> Max I"
 apply (frule Max_ge[OF imirror_finite, of _ n], assumption)
 thm imirror_iMin imirror_Max
-apply (fastsimp simp: imirror_iMin imirror_Max)
+apply (fastforce simp: imirror_iMin imirror_Max)
 done
 
 thm image_iff
@@ -1120,9 +1120,9 @@ apply (rule set_eqI)
 apply (simp add: imirror_bounds_def image_image image_iff)
 thm nat_mirror_nat_mirror_ident
 apply (rule iffI)
- apply (fastsimp simp: nat_mirror_nat_mirror_ident)
+ apply (fastforce simp: nat_mirror_nat_mirror_ident)
 apply (rule_tac x=x in bexI)
-apply (fastsimp simp: nat_mirror_nat_mirror_ident)+
+apply (fastforce simp: nat_mirror_nat_mirror_ident)+
 done
 
 lemma imirror_imirror_ident: "finite I \<Longrightarrow> imirror (imirror I) = I"
@@ -1150,7 +1150,7 @@ apply (unfold imirror_bounds_def)
 thm inj_on_image_mem_iff[where A="{..l + r}"]
 apply (rule inj_on_image_mem_iff)
 apply (rule nat_mirror_inj_on)
-apply fastsimp
+apply fastforce
 apply simp
 done
 

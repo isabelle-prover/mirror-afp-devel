@@ -379,7 +379,7 @@ next
       by auto
     then have lowhigh_b_eq: "\<forall>pt. pt \<notin> set_of pret 
       \<longrightarrow> low pt = lowb pt \<and> high pt = highb pt"
-      by fastsimp
+      by fastforce
     from wf_marking_ll pret_dag pnN 
     have mark_b_eq: "\<forall>pt. pt \<notin> set_of pret \<longrightarrow> mark pt = marka pt"
       apply -
@@ -390,7 +390,7 @@ next
       apply (rule impI)
       apply (elim conjE)
       apply (erule_tac x=pt in allE)
-      apply fastsimp
+      apply fastforce
       done
     with lowhigh_b_eq rep_eq unmodif_next
     have pret_nc: "\<forall>pt. pt \<notin> set_of pret 
@@ -407,11 +407,11 @@ next
       (\<exists>postbdt. bdt postt var = Some postbdt \<and> prebdt \<sim> postbdt)" 
       apply -
       apply (rule_tac x=postnormt in exI)
-      apply fastsimp
+      apply fastforce
       done*)
     from pret_nc  
     show ?thesis
-      by fastsimp
+      by fastforce
   qed
 next
   -- {* invariant to invariant *}
@@ -1213,7 +1213,7 @@ next
               "(\<forall>no\<in>set_of nort. repc no = no)"
               apply auto
               apply (subgoal_tac "no \<in> Nodes n ll")
-              apply fastsimp
+              apply fastforce
               apply blast
               done
             moreover
@@ -1228,7 +1228,7 @@ next
             have "Dag (repc no) (repc \<propto> low) (repc \<propto> high) nort"
             proof -
               from no_notin_llbn repbc_nc have repbc_no: "repc no = repb no"
-                by fastsimp
+                by fastforce
               with nort_dag 
               have nortrepbc_dag: "Dag (repc no) (repb \<propto> low) (repb \<propto> high) nort"
                 by simp
@@ -1720,7 +1720,7 @@ next
                   from varhnos_n varrep_high 
                   have vrhnos_n: "var (repc (high no)) < n" by simp
                   from rhn_nNull highnort_dag 
-                  have "\<exists>lno rno. rnort = Node lno (repc (high no)) rno" by fastsimp
+                  have "\<exists>lno rno. rnort = Node lno (repc (high no)) rno" by fastforce
                   with highnort_dag rhn_nNull have "root rnort = repc (high no)" by auto
                   with ord_nort have "\<forall>x \<in> set_of rnort. var x <= var (repc (high no))"
                     apply -
@@ -1729,7 +1729,7 @@ next
                     apply auto
                     done
                   with vrhnos_n have vxsn: "\<forall>x \<in> set_of rnort. var x < n" 
-                    by fastsimp
+                    by fastforce
                   from nort_in_Nodes have "\<forall>x \<in> set_of rnort. x \<in> Nodes n ll" 
                     by auto
                   with wf_ll nsll  

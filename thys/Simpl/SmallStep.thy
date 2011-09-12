@@ -278,7 +278,7 @@ next
   also
   have "\<Gamma>\<turnstile> (Catch Skip c\<^isub>2, Fault f) \<rightarrow> (Skip, Fault f)" by (rule CatchSkip) 
   finally show ?case by simp
-qed (fastsimp intro: step.intros)+
+qed (fastforce intro: step.intros)+
 
 lemma steps_Stuck: "\<Gamma>\<turnstile> (c, Stuck) \<rightarrow>\<^sup>* (Skip, Stuck)"
 proof (induct c)
@@ -299,7 +299,7 @@ next
   also
   have "\<Gamma>\<turnstile> (Catch Skip c\<^isub>2, Stuck) \<rightarrow> (Skip, Stuck)" by (rule CatchSkip) 
   finally show ?case by simp
-qed (fastsimp intro: step.intros)+
+qed (fastforce intro: step.intros)+
 
 lemma steps_Abrupt: "\<Gamma>\<turnstile> (c, Abrupt s) \<rightarrow>\<^sup>* (Skip, Abrupt s)"
 proof (induct c)
@@ -320,7 +320,7 @@ next
   also
   have "\<Gamma>\<turnstile> (Catch Skip c\<^isub>2, Abrupt s) \<rightarrow> (Skip, Abrupt s)" by (rule CatchSkip) 
   finally show ?case by simp
-qed (fastsimp intro: step.intros)+
+qed (fastforce intro: step.intros)+
 
 lemma step_Fault_prop: 
   assumes step: "\<Gamma>\<turnstile> (c, s) \<rightarrow> (c', s')"
@@ -393,15 +393,15 @@ proof (induct)
 next
   case Guard thus ?case by (blast intro: step.Guard rtranclp_trans)
 next
-  case GuardFault thus ?case by (fastsimp intro: step.GuardFault rtranclp_trans)
+  case GuardFault thus ?case by (fastforce intro: step.GuardFault rtranclp_trans)
 next
-  case FaultProp show ?case by (fastsimp intro: steps_Fault)
+  case FaultProp show ?case by (fastforce intro: steps_Fault)
 next
-  case Basic thus ?case by (fastsimp intro: step.Basic rtranclp_trans)
+  case Basic thus ?case by (fastforce intro: step.Basic rtranclp_trans)
 next
-  case Spec thus ?case by (fastsimp intro: step.Spec rtranclp_trans)
+  case Spec thus ?case by (fastforce intro: step.Spec rtranclp_trans)
 next
-  case SpecStuck thus ?case by (fastsimp intro: step.SpecStuck rtranclp_trans)
+  case SpecStuck thus ?case by (fastforce intro: step.SpecStuck rtranclp_trans)
 next
   case (Seq c\<^isub>1 s s' c\<^isub>2 t) 
   have exec_c\<^isub>1: "\<Gamma>\<turnstile> \<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> s'" by fact
@@ -500,19 +500,19 @@ next
       by auto
   qed
 next
-  case WhileFalse thus ?case by (fastsimp intro: step.WhileFalse rtrancl_trans)
+  case WhileFalse thus ?case by (fastforce intro: step.WhileFalse rtrancl_trans)
 next
   case Call thus ?case by (blast intro: step.Call rtranclp_trans)
 next
-  case CallUndefined thus ?case by (fastsimp intro: step.CallUndefined rtranclp_trans)
+  case CallUndefined thus ?case by (fastforce intro: step.CallUndefined rtranclp_trans)
 next
-  case StuckProp thus ?case by (fastsimp intro: steps_Stuck)
+  case StuckProp thus ?case by (fastforce intro: steps_Stuck)
 next
   case DynCom thus ?case by (blast intro: step.DynCom rtranclp_trans)
 next
    case Throw thus ?case by simp 
 next
-  case AbruptProp thus ?case by (fastsimp intro: steps_Abrupt)
+  case AbruptProp thus ?case by (fastforce intro: steps_Abrupt)
 next
   case (CatchMatch c\<^isub>1 s s' c\<^isub>2 t)
   from CatchMatch.hyps (2)
@@ -547,7 +547,7 @@ next
     by (rule step.CatchSkip)
   finally show ?case
     using t
-    by (fastsimp split: xstate.splits)
+    by (fastforce split: xstate.splits)
 qed
 
 corollary exec_impl_steps_Normal:
@@ -634,19 +634,19 @@ lemma step_extend:
 using step 
 proof (induct)
   case Basic thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case Spec thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case SpecStuck thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case Guard thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next  
   case GuardFault thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case (Seq c\<^isub>1 s c\<^isub>1' s' c\<^isub>2) 
   have step: "\<Gamma>\<turnstile> (c\<^isub>1, s) \<rightarrow> (c\<^isub>1', s')" by fact
@@ -767,31 +767,31 @@ next
   qed
 next
   case (SeqSkip c\<^isub>2 s t) thus ?case
-    by (cases s) (fastsimp intro: exec.intros elim: exec_elim_cases)+      
+    by (cases s) (fastforce intro: exec.intros elim: exec_elim_cases)+      
 next
   case (SeqThrow c\<^isub>2 s t) thus ?case
-    by (fastsimp intro: exec.intros elim: exec_elim_cases)+      
+    by (fastforce intro: exec.intros elim: exec_elim_cases)+      
 next      
   case CondTrue thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next      
   case CondFalse thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case WhileTrue thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case WhileFalse thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case Call thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case CallUndefined thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case DynCom thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case (Catch c\<^isub>1 s c\<^isub>1' s' c\<^isub>2 t)
   have step: "\<Gamma>\<turnstile> (c\<^isub>1, s) \<rightarrow> (c\<^isub>1', s')" by fact
@@ -923,19 +923,19 @@ next
   qed
 next
   case CatchThrow thus ?case
-    by (fastsimp intro: exec.intros elim: exec_Normal_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_Normal_elim_cases)
 next
   case CatchSkip thus ?case
-    by (fastsimp intro: exec.intros elim: exec_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_elim_cases)
 next
   case FaultProp thus ?case
-    by (fastsimp intro: exec.intros elim: exec_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_elim_cases)
 next
   case StuckProp thus ?case
-    by (fastsimp intro: exec.intros elim: exec_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_elim_cases)
 next
   case AbruptProp thus ?case
-    by (fastsimp intro: exec.intros elim: exec_elim_cases)
+    by (fastforce intro: exec.intros elim: exec_elim_cases)
 qed
 
 theorem steps_Skip_impl_exec:
@@ -988,96 +988,96 @@ lemma step_preserves_termination:
   shows "\<Gamma>\<turnstile>c\<down>s \<Longrightarrow> \<Gamma>\<turnstile>c'\<down>s'"  
 using step
 proof (induct)
-  case Basic thus ?case by (fastsimp intro: terminates.intros)
+  case Basic thus ?case by (fastforce intro: terminates.intros)
 next
-  case Spec thus ?case by (fastsimp intro: terminates.intros)
+  case Spec thus ?case by (fastforce intro: terminates.intros)
 next
-  case SpecStuck thus ?case by (fastsimp intro: terminates.intros)
+  case SpecStuck thus ?case by (fastforce intro: terminates.intros)
 next
   case Guard thus ?case 
-    by (fastsimp intro: terminates.intros elim: terminates_Normal_elim_cases)
+    by (fastforce intro: terminates.intros elim: terminates_Normal_elim_cases)
 next
-  case GuardFault thus ?case by (fastsimp intro: terminates.intros)
+  case GuardFault thus ?case by (fastforce intro: terminates.intros)
 next
   case (Seq c\<^isub>1 s c\<^isub>1' s' c\<^isub>2) thus ?case
     apply (cases s)
     apply     (cases s')
-    apply         (fastsimp intro: terminates.intros step_extend 
+    apply         (fastforce intro: terminates.intros step_extend 
                     elim: terminates_Normal_elim_cases)
-    apply (fastsimp intro: terminates.intros dest: step_Abrupt_prop 
+    apply (fastforce intro: terminates.intros dest: step_Abrupt_prop 
       step_Fault_prop step_Stuck_prop)+
     done
 next
   case (SeqSkip c\<^isub>2 s) 
   thus ?case 
     apply (cases s)
-    apply (fastsimp intro: terminates.intros exec.intros
+    apply (fastforce intro: terminates.intros exec.intros
             elim: terminates_Normal_elim_cases )+
     done
 next
   case (SeqThrow c\<^isub>2 s) 
   thus ?case 
-    by (fastsimp intro: terminates.intros exec.intros
+    by (fastforce intro: terminates.intros exec.intros
             elim: terminates_Normal_elim_cases )
 next
   case CondTrue 
   thus ?case 
-    by (fastsimp intro: terminates.intros exec.intros
+    by (fastforce intro: terminates.intros exec.intros
             elim: terminates_Normal_elim_cases )
 next
   case CondFalse 
   thus ?case 
-    by (fastsimp intro: terminates.intros 
+    by (fastforce intro: terminates.intros 
             elim: terminates_Normal_elim_cases )
 next
   case WhileTrue
   thus ?case 
-    by (fastsimp intro: terminates.intros 
+    by (fastforce intro: terminates.intros 
             elim: terminates_Normal_elim_cases )
 next
   case WhileFalse 
   thus ?case 
-    by (fastsimp intro: terminates.intros 
+    by (fastforce intro: terminates.intros 
             elim: terminates_Normal_elim_cases )
 next
   case Call 
   thus ?case 
-    by (fastsimp intro: terminates.intros 
+    by (fastforce intro: terminates.intros 
             elim: terminates_Normal_elim_cases )
 next
   case CallUndefined
   thus ?case 
-    by (fastsimp intro: terminates.intros 
+    by (fastforce intro: terminates.intros 
             elim: terminates_Normal_elim_cases )
 next
   case DynCom
   thus ?case 
-    by (fastsimp intro: terminates.intros 
+    by (fastforce intro: terminates.intros 
             elim: terminates_Normal_elim_cases )
 next
   case (Catch c\<^isub>1 s c\<^isub>1' s' c\<^isub>2) thus ?case
     apply (cases s)
     apply     (cases s')
-    apply         (fastsimp intro: terminates.intros step_extend 
+    apply         (fastforce intro: terminates.intros step_extend 
                     elim: terminates_Normal_elim_cases)
-    apply (fastsimp intro: terminates.intros dest: step_Abrupt_prop 
+    apply (fastforce intro: terminates.intros dest: step_Abrupt_prop 
       step_Fault_prop step_Stuck_prop)+
     done
 next
   case CatchThrow
   thus ?case 
-   by (fastsimp intro: terminates.intros exec.intros
+   by (fastforce intro: terminates.intros exec.intros
             elim: terminates_Normal_elim_cases )
 next
   case (CatchSkip c\<^isub>2 s) 
   thus ?case 
-    by (cases s) (fastsimp intro: terminates.intros)+
+    by (cases s) (fastforce intro: terminates.intros)+
 next
-  case FaultProp thus ?case by (fastsimp intro: terminates.intros)
+  case FaultProp thus ?case by (fastforce intro: terminates.intros)
 next
-  case StuckProp thus ?case by (fastsimp intro: terminates.intros)
+  case StuckProp thus ?case by (fastforce intro: terminates.intros)
 next
-  case AbruptProp thus ?case by (fastsimp intro: terminates.intros)
+  case AbruptProp thus ?case by (fastforce intro: terminates.intros)
 qed
 
 lemma steps_preserves_termination: 
@@ -1323,7 +1323,7 @@ proof -
       from step [rule_format, of k] f_k
       obtain "\<Gamma>\<turnstile>(Seq Skip c\<^isub>2,s') \<rightarrow> (c\<^isub>2,s')" and
         f_Suc_k: "f (k + 1) = (c\<^isub>2,s')"
-        by (fastsimp elim: step.cases intro: step.intros)
+        by (fastforce elim: step.cases intro: step.intros)
       def g\<equiv>"\<lambda>i. f (i + (k + 1))"
       from f_Suc_k
       have g_0: "g 0 = (c\<^isub>2,s')"
@@ -1344,7 +1344,7 @@ proof -
       from step [rule_format, of k] f_k s'
       obtain "\<Gamma>\<turnstile>(Seq Throw c\<^isub>2,s') \<rightarrow> (Throw,s')" and
         f_Suc_k: "f (k + 1) = (Throw,s')"
-        by (fastsimp elim: step_elim_cases intro: step.intros)
+        by (fastforce elim: step_elim_cases intro: step.intros)
       def g\<equiv>"\<lambda>i. f (i + (k + 1))"
       from f_Suc_k
       have g_0: "g 0 = (Throw,s')"
@@ -1443,7 +1443,7 @@ proof -
       from step [rule_format, of k] f_k
       obtain "\<Gamma>\<turnstile>(Catch Skip c\<^isub>2,s') \<rightarrow> (Skip,s')" and
         f_Suc_k: "f (k + 1) = (Skip,s')"
-        by (fastsimp elim: step.cases intro: step.intros)
+        by (fastforce elim: step.cases intro: step.intros)
       from step [rule_format, of "k+1", simplified f_Suc_k]
       have ?thesis
         by (rule no_step_final') (auto simp add: final_def)
@@ -1460,7 +1460,7 @@ proof -
       from step [rule_format, of k] f_k s'
       obtain "\<Gamma>\<turnstile>(Catch Throw c\<^isub>2,s') \<rightarrow> (c\<^isub>2,s')" and
         f_Suc_k: "f (k + 1) = (c\<^isub>2,s')"
-        by (fastsimp elim: step_elim_cases intro: step.intros)
+        by (fastforce elim: step_elim_cases intro: step.intros)
       def g\<equiv>"\<lambda>i. f (i + (k + 1))"
       from f_Suc_k
       have g_0: "g 0 = (c\<^isub>2,s')"
@@ -1525,7 +1525,7 @@ next
     assume f_0: "f 0 = (Basic g, Stuck)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Spec r) 
@@ -1536,7 +1536,7 @@ next
     assume f_0: "f 0 = (Spec r, Stuck)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Seq c\<^isub>1 c\<^isub>2)
@@ -1556,7 +1556,7 @@ next
     assume f_0: "f 0 = (Cond b c\<^isub>1 c\<^isub>2, Stuck)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (While b c) 
@@ -1567,7 +1567,7 @@ next
     assume f_0: "f 0 = (While b c, Stuck)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Call p) 
@@ -1578,7 +1578,7 @@ next
     assume f_0: "f 0 = (Call p, Stuck)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (DynCom d) 
@@ -1589,7 +1589,7 @@ next
     assume f_0: "f 0 = (DynCom d, Stuck)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Guard m g c)
@@ -1600,7 +1600,7 @@ next
     assume f_0: "f 0 = (Guard m g c, Stuck)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case Throw
@@ -1611,7 +1611,7 @@ next
     assume f_0: "f 0 = (Throw, Stuck)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Catch c\<^isub>1 c\<^isub>2)
@@ -1645,7 +1645,7 @@ next
     assume f_0: "f 0 = (Basic g, Fault x)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Spec r) 
@@ -1656,7 +1656,7 @@ next
     assume f_0: "f 0 = (Spec r, Fault x)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Seq c\<^isub>1 c\<^isub>2)
@@ -1676,7 +1676,7 @@ next
     assume f_0: "f 0 = (Cond b c\<^isub>1 c\<^isub>2, Fault x)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (While b c) 
@@ -1687,7 +1687,7 @@ next
     assume f_0: "f 0 = (While b c, Fault x)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Call p) 
@@ -1698,7 +1698,7 @@ next
     assume f_0: "f 0 = (Call p, Fault x)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (DynCom d) 
@@ -1709,7 +1709,7 @@ next
     assume f_0: "f 0 = (DynCom d, Fault x)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Guard m g c)
@@ -1720,7 +1720,7 @@ next
     assume f_0: "f 0 = (Guard m g c, Fault x)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case Throw
@@ -1731,7 +1731,7 @@ next
     assume f_0: "f 0 = (Throw, Fault x)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Catch c\<^isub>1 c\<^isub>2)
@@ -1765,7 +1765,7 @@ next
     assume f_0: "f 0 = (Basic g, Abrupt s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Spec r) 
@@ -1776,7 +1776,7 @@ next
     assume f_0: "f 0 = (Spec r, Abrupt s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Seq c\<^isub>1 c\<^isub>2)
@@ -1796,7 +1796,7 @@ next
     assume f_0: "f 0 = (Cond b c\<^isub>1 c\<^isub>2, Abrupt s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (While b c) 
@@ -1807,7 +1807,7 @@ next
     assume f_0: "f 0 = (While b c, Abrupt s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Call p) 
@@ -1818,7 +1818,7 @@ next
     assume f_0: "f 0 = (Call p, Abrupt s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (DynCom d) 
@@ -1829,7 +1829,7 @@ next
     assume f_0: "f 0 = (DynCom d, Abrupt s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Guard m g c)
@@ -1840,7 +1840,7 @@ next
     assume f_0: "f 0 = (Guard m g c, Abrupt s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case Throw
@@ -1851,7 +1851,7 @@ next
     assume f_0: "f 0 = (Throw, Abrupt s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Catch c\<^isub>1 c\<^isub>2)
@@ -1888,7 +1888,7 @@ next
     assume f_0: "f 0 = (Basic g, Normal s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Spec r s) 
@@ -1899,7 +1899,7 @@ next
     assume f_0: "f 0 = (Spec r, Normal s)" 
     from f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Guard s g c m)
@@ -1912,7 +1912,7 @@ next
     assume f_0: "f 0 = (Guard m g c, Normal s)" 
     from f_step [of 0] f_0  g
     have "f 1 = (c,Normal s)"
-      by (fastsimp elim: step_elim_cases)
+      by (fastforce elim: step_elim_cases)
     with f_step
     have "\<Gamma>\<turnstile> (c, Normal s) \<rightarrow> \<dots>(\<infinity>)"
       apply (simp add: inf_def)
@@ -1930,7 +1930,7 @@ next
     assume f_0: "f 0 = (Guard m g c, Normal s)" 
     from g f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Fault c m)
@@ -2022,7 +2022,7 @@ next
     assume f_0: "f 0 = (While b c, Normal s)" 
     from b f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Call p bdy s)
@@ -2053,7 +2053,7 @@ next
     assume f_0: "f 0 = (Call p, Normal s)" 
     from no_bdy f_step [of 0] f_0 f_step [of 1]
     show False
-      by (fastsimp elim: Skip_no_step step_elim_cases)
+      by (fastforce elim: Skip_no_step step_elim_cases)
   qed
 next
   case (Stuck c)
@@ -2383,55 +2383,55 @@ proof (simp only: wf_iff_no_infinite_down_chain,clarify, simp)
 qed
 
 lemma not_final_Stuck_step: "\<not> final (c,Stuck) \<Longrightarrow> \<exists>c' s'. \<Gamma>\<turnstile> (c, Stuck) \<rightarrow> (c',s')"
-by (induct c) (fastsimp intro: step.intros simp add: final_def)+
+by (induct c) (fastforce intro: step.intros simp add: final_def)+
 
 lemma not_final_Abrupt_step: 
   "\<not> final (c,Abrupt s) \<Longrightarrow> \<exists>c' s'. \<Gamma>\<turnstile> (c, Abrupt s) \<rightarrow> (c',s')"
-by (induct c) (fastsimp intro: step.intros simp add: final_def)+
+by (induct c) (fastforce intro: step.intros simp add: final_def)+
 
 lemma not_final_Fault_step: 
   "\<not> final (c,Fault f) \<Longrightarrow> \<exists>c' s'. \<Gamma>\<turnstile> (c, Fault f) \<rightarrow> (c',s')"
-by (induct c) (fastsimp intro: step.intros simp add: final_def)+
+by (induct c) (fastforce intro: step.intros simp add: final_def)+
 
 lemma not_final_Normal_step: 
   "\<not> final (c,Normal s) \<Longrightarrow> \<exists>c' s'. \<Gamma>\<turnstile> (c, Normal s) \<rightarrow> (c',s')"
 proof (induct c) 
-  case Skip thus ?case by (fastsimp intro: step.intros simp add: final_def)
+  case Skip thus ?case by (fastforce intro: step.intros simp add: final_def)
 next
-  case Basic thus ?case by (fastsimp intro: step.intros)
+  case Basic thus ?case by (fastforce intro: step.intros)
 next
   case (Spec r)
   thus ?case
-    by (cases "\<exists>t. (s,t) \<in> r") (fastsimp intro: step.intros)+
+    by (cases "\<exists>t. (s,t) \<in> r") (fastforce intro: step.intros)+
 next
   case (Seq c\<^isub>1 c\<^isub>2)
   thus ?case
-    by (cases "final (c\<^isub>1,Normal s)") (fastsimp intro: step.intros simp add: final_def)+
+    by (cases "final (c\<^isub>1,Normal s)") (fastforce intro: step.intros simp add: final_def)+
 next
   case (Cond b c1 c2)
   show ?case
-    by (cases "s \<in> b") (fastsimp intro: step.intros)+
+    by (cases "s \<in> b") (fastforce intro: step.intros)+
 next
   case (While b c)
   show ?case
-    by (cases "s \<in> b") (fastsimp intro: step.intros)+
+    by (cases "s \<in> b") (fastforce intro: step.intros)+
 next
   case (Call p)
   show ?case
-  by (cases "\<Gamma> p") (fastsimp intro: step.intros)+
+  by (cases "\<Gamma> p") (fastforce intro: step.intros)+
 next
-  case DynCom thus ?case by (fastsimp intro: step.intros)
+  case DynCom thus ?case by (fastforce intro: step.intros)
 next
   case (Guard f g c)
   show ?case
-    by (cases "s \<in> g") (fastsimp intro: step.intros)+
+    by (cases "s \<in> g") (fastforce intro: step.intros)+
 next
   case Throw
-  thus ?case by (fastsimp intro: step.intros simp add: final_def)
+  thus ?case by (fastforce intro: step.intros simp add: final_def)
 next
   case (Catch c\<^isub>1 c\<^isub>2)
   thus ?case
-    by (cases "final (c\<^isub>1,Normal s)") (fastsimp intro: step.intros simp add: final_def)+
+    by (cases "final (c\<^isub>1,Normal s)") (fastforce intro: step.intros simp add: final_def)+
 qed
 
 lemma final_termi:
@@ -2457,13 +2457,13 @@ assumes hyp: "\<And>c' s'. \<Gamma>\<turnstile> (c, Normal s) \<rightarrow> (c',
 shows "\<Gamma>\<turnstile>c \<down> Normal s"
 using hyp
 proof (induct c)
-  case Skip show ?case by (fastsimp intro: terminates.intros)
+  case Skip show ?case by (fastforce intro: terminates.intros)
 next
-  case Basic show ?case by (fastsimp intro: terminates.intros)
+  case Basic show ?case by (fastforce intro: terminates.intros)
 next
   case (Spec r)
   show ?case
-    by (cases "\<exists>t. (s,t)\<in>r") (fastsimp intro: terminates.intros)+
+    by (cases "\<exists>t. (s,t)\<in>r") (fastforce intro: terminates.intros)+
 next
   case (Seq c\<^isub>1 c\<^isub>2)
   have hyp: "\<And>c' s'. \<Gamma>\<turnstile> (Seq c\<^isub>1 c\<^isub>2, Normal s) \<rightarrow> (c', s') \<Longrightarrow> \<Gamma>\<turnstile>c' \<down> s'" by fact
@@ -2521,7 +2521,7 @@ next
           fin:"(case s' of
                  Abrupt x \<Rightarrow> c\<^isub>f = Throw \<and> t = Normal x
                 | _ \<Rightarrow> c\<^isub>f = Skip \<and> t = s')"
-          by (fastsimp split: xstate.splits)
+          by (fastforce split: xstate.splits)
         with fin have final: "final (c\<^isub>f,t)"
           by (cases s') (auto simp add: final_def)
         from split_computation [OF steps_c\<^isub>1 False this]
@@ -2709,7 +2709,7 @@ next
         from exec_impl_steps [OF exec_c\<^isub>1]
         obtain c\<^isub>f t where 
           steps_c\<^isub>1: "\<Gamma>\<turnstile> (c\<^isub>1, Normal s) \<rightarrow>\<^sup>* (Throw, Normal s')" 
-          by (fastsimp split: xstate.splits)
+          by (fastforce split: xstate.splits)
         from split_computation [OF steps_c\<^isub>1 False]
         obtain c'' s'' where
           first: "\<Gamma>\<turnstile> (c\<^isub>1, Normal s) \<rightarrow> (c'', s'')" and
@@ -2727,7 +2727,7 @@ next
           by (cases s'')
              (auto dest: steps_Fault_prop steps_Abrupt_prop steps_Stuck_prop)
         ultimately show ?thesis
-          by (fastsimp elim: terminates_elim_cases)
+          by (fastforce elim: terminates_elim_cases)
       qed
     qed
   qed
@@ -2821,11 +2821,11 @@ lemma step_redexes:
   shows "\<And>r r'. \<lbrakk>\<Gamma>\<turnstile>(r,s) \<rightarrow> (r',s'); r \<in> redexes c\<rbrakk> 
   \<Longrightarrow> \<exists>c'. \<Gamma>\<turnstile>(c,s) \<rightarrow> (c',s') \<and> r' \<in> redexes c'"
 proof (induct c)
-  case Skip thus ?case by (fastsimp intro: step.intros elim: step_elim_cases)
+  case Skip thus ?case by (fastforce intro: step.intros elim: step_elim_cases)
 next
-  case Basic thus ?case by (fastsimp intro: step.intros elim: step_elim_cases)
+  case Basic thus ?case by (fastforce intro: step.intros elim: step_elim_cases)
 next
-  case Spec thus ?case by (fastsimp intro: step.intros elim: step_elim_cases)
+  case Spec thus ?case by (fastforce intro: step.intros elim: step_elim_cases)
 next
   case (Seq c\<^isub>1 c\<^isub>2)
   have "r \<in> redexes (Seq c\<^isub>1 c\<^isub>2)" by fact
@@ -2854,23 +2854,23 @@ next
 next
   case Cond 
   thus ?case 
-    by (fastsimp intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
+    by (fastforce intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
 next
   case While 
   thus ?case 
-    by (fastsimp intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
+    by (fastforce intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
 next
   case Call thus ?case 
-    by (fastsimp intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
+    by (fastforce intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
 next
   case DynCom thus ?case 
-    by (fastsimp intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
+    by (fastforce intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
 next
   case Guard thus ?case 
-    by (fastsimp intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
+    by (fastforce intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
 next
   case Throw thus ?case 
-    by (fastsimp intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
+    by (fastforce intro: step.intros elim: step_elim_cases simp add: root_in_redexes)
 next
   case (Catch c\<^isub>1 c\<^isub>2)
   have "r \<in> redexes (Catch c\<^isub>1 c\<^isub>2)" by fact

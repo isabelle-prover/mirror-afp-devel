@@ -138,7 +138,7 @@ proof -
     show ?case
     proof (rule impI)
       assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
-      with ts_cons have e0_typ: "CT;\<Gamma> \<turnstile> e0 : C0" by fastsimp
+      with ts_cons have e0_typ: "CT;\<Gamma> \<turnstile> e0 : C0" by fastforce
       with ts_cons asms have 
           "\<exists>C.(CT;\<Gamma>1 \<turnstile> (ds/xs) e0 : C) \<and> (CT \<turnstile> C <: C0)" 
         and "\<exists>Cs.(CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs) \<and> (CT \<turnstile>+ Cs <: Cs')" 
@@ -183,9 +183,9 @@ proof -
         then obtain i where bs_i_proj: "(Bs!i = Bi)" 
           and i_len: "i < length Bs"
           and P: "(\<And>(l::exp list).((length l = length Bs) \<longrightarrow> ([xs[\<mapsto>]l] x = Some (l!i))))"
-          by fastsimp
+          by fastforce
         from lengths P have subst_x: "([xs[\<mapsto>]ds]x = Some (ds!i))" by auto
-        from asms obtain As where as_ex:"CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs" by fastsimp
+        from asms obtain As where as_ex:"CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs" by fastforce
         hence "length As = length Bs" by (auto simp add: subtypings_length)
         hence proj_i:"CT;\<Gamma>1 \<turnstile> ds!i : As!i \<and> CT \<turnstile> As!i <: Bs!i"
           using i_len lengths as_ex by (auto simp add: typings_proj)
@@ -200,7 +200,7 @@ proof -
     proof(rule impI)
       assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and>
         (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
-      from t_field have flds: "fields(CT,C0) = Cf" by fastsimp
+      from t_field have flds: "fields(CT,C0) = Cf" by fastforce
       from t_field asms obtain C where e0_typ: "CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C" and sub: "CT \<turnstile> C <: C0"
         by auto
       from sub_fields[OF sub flds] obtain Dg where flds_C: "fields(CT,C) = (Cf@Dg)" ..
@@ -307,7 +307,7 @@ proof -
         and sub1: "CT \<turnstile> C' <: D" 
         and nsub1: "CT \<turnstile> C \<not><: D"  
         and nsub2: "CT \<turnstile> D \<not><: C" by auto
-      from not_subtypes[OF sub1 nsub1 nsub2] have "CT \<turnstile> C' \<not><: C" by fastsimp
+      from not_subtypes[OF sub1 nsub1 nsub2] have "CT \<turnstile> C' \<not><: C" by fastforce
       moreover have "CT \<turnstile> C \<not><: C'" proof(rule ccontr)
         assume "\<not> CT \<turnstile> C \<not><: C'"
         hence "CT \<turnstile> C <: C'" by auto
@@ -368,7 +368,7 @@ next
   hence ct: "CT OK"
     and IH: "\<lbrakk>CT OK; mtype(CT,m,Da) = Ds \<rightarrow> D\<rbrakk> 
     \<Longrightarrow> \<exists>D0 C0. (CT \<turnstile> Da <: D0) \<and> (CT \<turnstile> C0 <: D) 
-              \<and> (CT;[xs [\<mapsto>] Ds, this \<mapsto> D0] \<turnstile> e:C0)" by fastsimp+
+              \<and> (CT;[xs [\<mapsto>] Ds, this \<mapsto> D0] \<turnstile> e:C0)" by fastforce+
   from mb_super have c_sub_da: "CT \<turnstile> C <: Da" by (auto simp add:s_super)
   from mb_super have mt:"mtype(CT,m,Da) = Ds \<rightarrow> D" by (auto elim: mtype.cases)
   from IH[OF ct mt] obtain D0 C0 
@@ -391,7 +391,7 @@ proof(induct rule: reduction.induct)
   hence "CT;\<Gamma> \<turnstile> FieldProj (New Ca es) fi : C" 
     and ct_ok: "CT OK" 
     and flds: "fields(CT,Ca) = Cf" 
-    and lkup2: "lookup2 Cf es (\<lambda>fd. vdName fd = fi) = Some e'" by fastsimp+
+    and lkup2: "lookup2 Cf es (\<lambda>fd. vdName fd = fi) = Some e'" by fastforce+
   then obtain Ca' Cf' fDef 
     where new_typ: "CT;\<Gamma> \<turnstile> New Ca es : Ca'" 
     and flds':"fields(CT,Ca') = Cf'" 
@@ -421,7 +421,7 @@ proof(induct rule: reduction.induct)
   ultimately show ?case by auto
 next
   case(r_invk CT m Ca xs e ds es e')
-  from r_invk have mb: "mbody(CT,m,Ca) = xs . e" by fastsimp
+  from r_invk have mb: "mbody(CT,m,Ca) = xs . e" by fastforce
   from r_invk obtain Ca' Ds Cs
     where "CT;\<Gamma> \<turnstile> New Ca es : Ca'"
     and "mtype(CT,m,Ca') = Cs \<rightarrow> C" 

@@ -43,7 +43,7 @@ next
   show ?case
   proof cases
     assume "ok h'"
-    thus ?thesis using succs `P h'` by(fastsimp intro:RTranCl.succs)
+    thus ?thesis using succs `P h'` by(fastforce intro:RTranCl.succs)
   next
     assume "\<not> ok h'" note fin_tame = ok_untame[OF `P h'` `\<not> ok h'`]
     have "h'' = h'" using fin_tame

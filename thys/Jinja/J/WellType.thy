@@ -148,7 +148,7 @@ apply (rule iffI)
  apply(rule conjI)
   prefer 2 apply blast
  apply simp
-apply fastsimp
+apply fastforce
 done
 (*>*)
 
@@ -202,21 +202,21 @@ lemma wt_env_mono:
 (*<*)
 apply(induct rule: WT_WTs_inducts)
 apply(simp add: WTNew)
-apply(fastsimp simp: WTCast)
-apply(fastsimp simp: WTVal)
+apply(fastforce simp: WTCast)
+apply(fastforce simp: WTVal)
 apply(simp add: WTVar map_le_def dom_def)
-apply(fastsimp simp: WTBinOpEq)
-apply(fastsimp simp: WTBinOpAdd)
+apply(fastforce simp: WTBinOpEq)
+apply(fastforce simp: WTBinOpAdd)
 apply(force simp:map_le_def)
-apply(fastsimp simp: WTFAcc)
-apply(fastsimp simp: WTFAss del:WT_WTs.intros WT_elim_cases)
-apply(fastsimp simp: WTCall)
-apply(fastsimp simp: map_le_def WTBlock)
-apply(fastsimp simp: WTSeq)
-apply(fastsimp simp: WTCond)
-apply(fastsimp simp: WTWhile)
-apply(fastsimp simp: WTThrow)
-apply(fastsimp simp: WTTry map_le_def dom_def)
+apply(fastforce simp: WTFAcc)
+apply(fastforce simp: WTFAss del:WT_WTs.intros WT_elim_cases)
+apply(fastforce simp: WTCall)
+apply(fastforce simp: map_le_def WTBlock)
+apply(fastforce simp: WTSeq)
+apply(fastforce simp: WTCond)
+apply(fastforce simp: WTWhile)
+apply(fastforce simp: WTThrow)
+apply(fastforce simp: WTTry map_le_def dom_def)
 apply(simp add: WTNil)
 apply(simp add: WTCons)
 done

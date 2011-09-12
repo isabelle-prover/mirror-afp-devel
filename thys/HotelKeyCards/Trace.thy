@@ -195,8 +195,8 @@ lemma no_checkin_no_newkey:
 "\<lbrakk> hotel(s\<^isub>2 @ [Check_in g r (k,k')] @ s\<^isub>1); no_Check_in s\<^isub>2 r \<rbrakk>
  \<Longrightarrow> (k',k'') \<notin> cards (s\<^isub>2 @ Check_in g r (k,k') # s\<^isub>1) g'"
 apply(induct s\<^isub>2)
- apply fastsimp
-apply(fastsimp split:event.splits dest: currk_Check_in)
+ apply fastforce
+apply(fastforce split:event.splits dest: currk_Check_in)
 done
 
 lemma guest_key2_disj2[simp]: 
@@ -223,7 +223,7 @@ lemma only_owner_enter_normal:
 apply(clarsimp simp:safe\<^isub>0_def)
 apply(erule rev_mp)+
 apply(induct_tac s\<^isub>3)
- apply (fastsimp)
+ apply (fastforce)
 apply (auto simp add:issued_app split:event.split)
 done
 
@@ -269,7 +269,7 @@ next
     thus ?case by blast
   next
     assume "\<not>(x = a \<or> P a)"
-    with assms Cons show ?case by clarsimp (fastsimp intro!: Cons_eq_appendI)
+    with assms Cons show ?case by clarsimp (fastforce intro!: Cons_eq_appendI)
   qed
 qed
 

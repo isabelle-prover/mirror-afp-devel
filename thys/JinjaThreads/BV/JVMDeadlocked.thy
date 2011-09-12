@@ -32,7 +32,7 @@ proof(rule execd_mthr.must_syncI)
     unfolding welltyped_commute[OF wf cs'] .
   moreover from exec have "\<exists>s. exec_mthr.actions_ok s t ta" by(rule exec_ta_satisfiable)
   ultimately show "\<exists>ta x' m' s. mexecd P t ((xcp, frs), h') ta (x', m') \<and> exec_mthr.actions_ok s t ta"
-    by(cases \<sigma>')(fastsimp simp del: split_paired_Ex)
+    by(cases \<sigma>')(fastforce simp del: split_paired_Ex)
 qed
 
 lemma can_sync_devreserp_d:
@@ -60,7 +60,7 @@ proof -
     \<Phi>:      "\<Phi> C M ! pc = Some (ST,LT)" and
     frame:  "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
     frames: "conf_fs P h \<Phi> M (size Ts) T Frs" 
-    by (fastsimp simp add: correct_state_def dest: sees_method_fun)
+    by (fastforce simp add: correct_state_def dest: sees_method_fun)
   from cs have "exec P t (xcp, h, f # Frs) \<noteq> {}"
     by(auto dest!: progress[OF wf] simp add: exec_1_iff)
   with no_type_error[OF wf cs] have check': "check P (xcp, h, frs)"
@@ -121,7 +121,7 @@ proof -
 	  obtain ta' va h'' where ta': "ta = extTA2JVM P ta'"
 	    and va: "(xcp', m', frs') = extRet2JVM n h'' stk loc C M pc Frs va"
 	    and exec': "(ta', va, h'') \<in> red_external_aggr P t a M' (rev (take n stk)) h'"
-	    by(fastsimp)
+	    by(fastforce)
 	  from va have [simp]: "h'' = m'" by(cases va) simp_all
 	  note Ta moreover from check True Invoke Ta meth a n Ta'
 	  obtain U where "P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : U" by(auto simp add: check_def)
@@ -144,7 +144,7 @@ proof -
 	  with True a Ta Invoke meth Ta' n
 	  have "(extTA2JVM P ta'', extRet2JVM n h''' stk loc C M pc Frs va') \<in> exec P t (xcp, h, frs)"
 	    by(force intro: red_external_imp_red_external_aggr simp del: split_paired_Ex)
-	  with ta'' ta' show ?thesis by(fastsimp simp del: split_paired_Ex)
+	  with ta'' ta' show ?thesis by(fastforce simp del: split_paired_Ex)
 	qed
       qed
     qed(auto split: split_if_asm simp add: split_beta ta_upd_simps exec_1_iff simp del: split_paired_Ex)
@@ -286,8 +286,8 @@ proof -
         using `thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>` `thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>`
         apply(auto intro!: ts_okI dest: ts_okD)
         apply(case_tac "t=t'")
-         apply(fastsimp dest: redT_updTs_Some)
-        apply(drule_tac t=t in ts_okD, fastsimp+)
+         apply(fastforce dest: redT_updTs_Some)
+        apply(drule_tac t=t in ts_okD, fastforce+)
         done
       hence "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>) (shr s')" 
         using `s' = (redT_updLs (locks s) t' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>, (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t' \<mapsto> (X', redT_updLns (locks s) t' no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>)), M'), ws', redT_updIs (interrupts s) \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub>)`

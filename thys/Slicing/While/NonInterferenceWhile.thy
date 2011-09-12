@@ -34,7 +34,7 @@ lemma lift_valid_node:
 proof -
   from `CFG.valid_node sourcenode targetnode (valid_edge prog) n`
   obtain a where "valid_edge prog a" and "n = sourcenode a \<or> n = targetnode a"
-    by(fastsimp simp:While_CFG.valid_node_def)
+    by(fastforce simp:While_CFG.valid_node_def)
   from `n = sourcenode a \<or> n = targetnode a`
   show ?thesis
   proof
@@ -44,17 +44,17 @@ proof -
       case True
       have "lift_valid_edge (valid_edge prog) sourcenode targetnode kind Entry Exit 
         (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)"
-        by(fastsimp intro:lve_Entry_edge)
+        by(fastforce intro:lve_Entry_edge)
       with While_CFGExit_wf_aux[of prog] `n = sourcenode a` True show ?thesis
-        by(fastsimp simp:CFG.valid_node_def[OF lift_CFG])
+        by(fastforce simp:CFG.valid_node_def[OF lift_CFG])
     next
       case False
       with `valid_edge prog a` `n = sourcenode a \<or> n = targetnode a`
       have "lift_valid_edge (valid_edge prog) sourcenode targetnode kind Entry Exit 
         (Node (sourcenode a),kind a,Node (targetnode a))"
-        by(fastsimp intro:lve_edge)
+        by(fastforce intro:lve_edge)
       with While_CFGExit_wf_aux[of prog] `n = sourcenode a` show ?thesis
-        by(fastsimp simp:CFG.valid_node_def[OF lift_CFG])
+        by(fastforce simp:CFG.valid_node_def[OF lift_CFG])
     qed
   next
     assume "n = targetnode a"
@@ -63,17 +63,17 @@ proof -
       case True
       have "lift_valid_edge (valid_edge prog) sourcenode targetnode kind Entry Exit 
         (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)"
-        by(fastsimp intro:lve_Exit_edge)
+        by(fastforce intro:lve_Exit_edge)
       with While_CFGExit_wf_aux[of prog] `n = targetnode a` True show ?thesis
-        by(fastsimp simp:CFG.valid_node_def[OF lift_CFG])
+        by(fastforce simp:CFG.valid_node_def[OF lift_CFG])
     next
       case False
       with `valid_edge prog a` `n = sourcenode a \<or> n = targetnode a`
       have "lift_valid_edge (valid_edge prog) sourcenode targetnode kind Entry Exit 
         (Node (sourcenode a),kind a,Node (targetnode a))"
-        by(fastsimp intro:lve_edge)
+        by(fastforce intro:lve_edge)
       with While_CFGExit_wf_aux[of prog] `n = targetnode a` show ?thesis
-        by(fastsimp simp:CFG.valid_node_def[OF lift_CFG])
+        by(fastforce simp:CFG.valid_node_def[OF lift_CFG])
     qed
   qed
 qed
@@ -115,7 +115,7 @@ proof -
     with `transfers (CFG.kinds kind []) s = s'` `preds (CFG.kinds kind []) s`
       valid_node
     show ?case
-      by(fastsimp intro:CFG.empty_path[OF lift_CFG[OF While_CFGExit_wf_aux]] 
+      by(fastforce intro:CFG.empty_path[OF lift_CFG[OF While_CFGExit_wf_aux]] 
                    simp:While_CFG.kinds_def)
   next
     case (Cons_path n'' as n' a nx)
@@ -142,28 +142,28 @@ proof -
       with `valid_edge prog a`
       have edge:"lift_valid_edge (valid_edge prog) sourcenode targetnode kind 
         Entry Exit (Node (sourcenode a),kind a,Node (targetnode a))"
-        by(fastsimp intro:lve_edge)
+        by(fastforce intro:lve_edge)
       from `prog \<turnstile> n'' -as\<rightarrow>* n'`
       have "CFG.valid_node sourcenode targetnode (valid_edge prog) n''"
         by(rule While_CFG.path_valid_node)
       then obtain c'' where "labels_nodes prog n'' c''"
       proof(cases rule:While_CFGExit.valid_node_cases)
         case Entry
-        with `targetnode a = n''` `valid_edge prog a` have False by fastsimp
+        with `targetnode a = n''` `valid_edge prog a` have False by fastforce
         thus ?thesis by simp
       next
         case Exit
-        with `prog \<turnstile> n'' -as\<rightarrow>* n'` have "n' = (_Exit_)" by fastsimp
-        with `labels_nodes prog n' c'` have False by fastsimp
+        with `prog \<turnstile> n'' -as\<rightarrow>* n'` have "n' = (_Exit_)" by fastforce
+        with `labels_nodes prog n' c'` have False by fastforce
         thus ?thesis by simp
       next
         case inner
         then obtain l'' where [simp]:"n'' = (_ l'' _)" by(cases n'') auto
         with `valid_edge prog a` `targetnode a = n''` have "l'' < #:prog"
-          by(fastsimp intro:WCFG_targetlabel_less_num_nodes simp:valid_edge_def)
+          by(fastforce intro:WCFG_targetlabel_less_num_nodes simp:valid_edge_def)
         then obtain c'' where "labels prog l'' c''"
-          by(fastsimp dest:less_num_inner_nodes_label)
-        with that show ?thesis by fastsimp
+          by(fastforce dest:less_num_inner_nodes_label)
+        with that show ?thesis by fastforce
       qed
       from IH[OF `transfers (CFG.kinds kind as) (transfer (kind a) s) = s'`
         `preds (CFG.kinds kind as) (transfer (kind a) s)` _ this 
@@ -179,7 +179,7 @@ proof -
         kind (_Entry_) (_Exit_))
         (LDCFG_node.Node nx) ((Node (sourcenode a),kind a,Node (targetnode a))#es) 
         (LDCFG_node.Node n')"
-        by(fastsimp intro:CFG.Cons_path[OF lift_CFG[OF While_CFGExit_wf_aux]])
+        by(fastforce intro:CFG.Cons_path[OF lift_CFG[OF While_CFGExit_wf_aux]])
       from edge have "knd (Node (sourcenode a),kind a,Node (targetnode a)) = kind a"
         by(simp add:knd_def)
       with `transfers (CFG.kinds knd es) (transfer (kind a) s) = s'`
@@ -193,7 +193,7 @@ proof -
     qed
   qed
   with `n = Node nx` `labels_LDCFG_nodes prog (Node n') c'`
-  show ?thesis by fastsimp
+  show ?thesis by fastforce
 qed
 
 
@@ -209,12 +209,12 @@ proof(induct prog arbitrary:n)
   case Skip
   from `labels_nodes Skip n Skip` have "n = (_ 0 _)" 
     by(cases n)(auto elim:labels.cases)
-  thus ?case by(fastsimp intro:WCFG_Skip)
+  thus ?case by(fastforce intro:WCFG_Skip)
 next
   case (LAss V e)
   from `labels_nodes (V:=e) n Skip` have "n = (_ 1 _)" 
     by(cases n)(auto elim:labels.cases)
-  thus ?case by(fastsimp intro:WCFG_LAssSkip)
+  thus ?case by(fastforce intro:WCFG_LAssSkip)
 next
   case (Seq c\<^isub>1 c\<^isub>2)
   note IH2 = `\<And>n. labels_nodes c\<^isub>2 n Skip \<Longrightarrow> c\<^isub>2 \<turnstile> n -\<Up>id\<rightarrow> (_Exit_)`
@@ -224,7 +224,7 @@ next
   from IH2[OF `labels_nodes c\<^isub>2 (_ l - #:c\<^isub>1 _) Skip`]
   have "c\<^isub>2 \<turnstile> (_ l - #:c\<^isub>1 _) -\<Up>id\<rightarrow> (_Exit_)" .
   with `l \<ge> #:c\<^isub>1` have "c\<^isub>1;;c\<^isub>2 \<turnstile> (_ l - #:c\<^isub>1 _) \<oplus> #:c\<^isub>1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> #:c\<^isub>1"
-    by(fastsimp intro:WCFG_SeqSecond)
+    by(fastforce intro:WCFG_SeqSecond)
   with `n = (_ l _)` `l \<ge> #:c\<^isub>1` show ?case by(simp add:id_def)
 next
   case (Cond b c\<^isub>1 c\<^isub>2)
@@ -233,7 +233,7 @@ next
   from `labels_nodes (if (b) c\<^isub>1 else c\<^isub>2) n Skip`
   obtain l where "n = (_ l _)" and disj:"(l \<ge> 1 \<and> labels_nodes c\<^isub>1 (_ l - 1 _) Skip) \<or>
     (l \<ge> #:c\<^isub>1 + 1 \<and> labels_nodes c\<^isub>2 (_ l - #:c\<^isub>1 - 1 _) Skip)"
-    by(cases n) (fastsimp elim:labels.cases)+
+    by(cases n) (fastforce elim:labels.cases)+
   from disj show ?case
   proof
     assume "1 \<le> l \<and> labels_nodes c\<^isub>1 (_ l - 1 _) Skip"
@@ -241,7 +241,7 @@ next
     from IH1[OF `labels_nodes c\<^isub>1 (_ l - 1 _) Skip`] 
     have "c\<^isub>1 \<turnstile> (_ l - 1 _) -\<Up>id\<rightarrow> (_Exit_)" .
     with `1 \<le> l` have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> (_ l - 1 _) \<oplus> 1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> 1"
-      by(fastsimp intro:WCFG_CondThen)
+      by(fastforce intro:WCFG_CondThen)
     with `n = (_ l _)` `1 \<le> l` show ?case by(simp add:id_def)
   next
     assume "#:c\<^isub>1 + 1 \<le> l \<and> labels_nodes c\<^isub>2 (_ l - #:c\<^isub>1 - 1 _) Skip"
@@ -250,14 +250,14 @@ next
     have "c\<^isub>2 \<turnstile> (_ l - #:c\<^isub>1 - 1 _) -\<Up>id\<rightarrow> (_Exit_)" .
     with `#:c\<^isub>1 + 1 \<le> l` have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> (_ l - #:c\<^isub>1 - 1 _) \<oplus> (#:c\<^isub>1 + 1)
       -\<Up>id\<rightarrow> (_Exit_) \<oplus> (#:c\<^isub>1 + 1)"
-      by(fastsimp intro:WCFG_CondElse)
+      by(fastforce intro:WCFG_CondElse)
     with `n = (_ l _)` `#:c\<^isub>1 + 1 \<le> l` show ?case by(simp add:id_def)
   qed
 next
   case (While b c)
   from `labels_nodes (while (b) c) n Skip` have "n = (_ 1 _)" 
     by(cases n)(auto elim:labels.cases)
-  thus ?case by(fastsimp intro:WCFG_WhileFalseSkip)
+  thus ?case by(fastforce intro:WCFG_WhileFalseSkip)
 qed
 
 
@@ -386,7 +386,7 @@ proof -
          (lift_valid_edge (valid_edge prog) sourcenode targetnode kind
            (_Entry_) (_Exit_)) NewExit)"
      NewExit H L "LDCFG_node.Node (_Entry_)" "LDCFG_node.Node (_Exit_)"
-    by(fastsimp intro:SCDNonInterferenceGraph)
+    by(fastforce intro:SCDNonInterferenceGraph)
   interpret BackwardSlice_wf src trg knd
     "lift_valid_edge (valid_edge prog) sourcenode targetnode kind
       (_Entry_) (_Exit_)"
@@ -471,7 +471,7 @@ proof -
          (lift_valid_edge (valid_edge prog) sourcenode targetnode kind
            (_Entry_) (_Exit_)) NewExit)"
      NewExit H L "LDCFG_node.Node (_Entry_)" "LDCFG_node.Node (_Exit_)"
-    by(fastsimp intro:WCDNonInterferenceGraph)
+    by(fastforce intro:WCDNonInterferenceGraph)
   interpret BackwardSlice_wf src trg knd
     "lift_valid_edge (valid_edge prog) sourcenode targetnode kind
       (_Entry_) (_Exit_)"

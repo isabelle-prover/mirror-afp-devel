@@ -52,7 +52,7 @@ apply (rule less_add_diff)
 by (rule mod_less_divisor)
 
 lemma nat_ge2_conv: "((2::nat) \<le> n) = (n \<noteq> 0 \<and> n \<noteq> 1)"
-by fastsimp
+by fastforce
 
 lemma Suc0_mod: "m \<noteq> Suc 0 \<Longrightarrow> Suc 0 mod m = Suc 0"
 by (case_tac m, simp_all)
@@ -760,26 +760,26 @@ subsection {* Additional multiplication results for @{text mod} and @{text div} 
 
 lemma mod_0_imp_mod_mult_right_0: "
   n mod m = (0::nat) \<Longrightarrow> n * k mod m = 0"
-by fastsimp
+by fastforce
 lemma mod_0_imp_mod_mult_left_0: "
   n mod m = (0::nat) \<Longrightarrow> k * n mod m = 0"
-by fastsimp
+by fastforce
 
 lemma mod_0_imp_div_mult_left_eq: "
   n mod m = (0::nat) \<Longrightarrow> k * n div m = k * (n div m)"
-by fastsimp
+by fastforce
 lemma mod_0_imp_div_mult_right_eq: "
   n mod m = (0::nat) \<Longrightarrow> n * k div m = k * (n div m)"
-by fastsimp
+by fastforce
 
 
 thm Rings.dvd_mult_left
 lemma mod_0_imp_mod_factor_0_left: "
   n mod (m * m') = (0::nat) \<Longrightarrow> n mod m = 0"
-by fastsimp
+by fastforce
 lemma mod_0_imp_mod_factor_0_right: "
   n mod (m * m') = (0::nat) \<Longrightarrow> n mod m' = 0"
-by fastsimp
+by fastforce
 
 
 
@@ -894,7 +894,7 @@ apply (simp add: div_add1_eq1)
 done
 corollary div_add1_eq1_mod_0_right: "
   b mod m = 0 \<Longrightarrow> (a + b) div (m::nat) = a div m + b div m"
-by (fastsimp simp: div_add1_eq1_mod_0_left)
+by (fastforce simp: div_add1_eq1_mod_0_left)
 corollary div_add1_eq2: "
   \<lbrakk> 0 < m; (m::nat) \<le> a mod m + b mod m \<rbrakk> \<Longrightarrow>
   (a + b) div (m::nat) = Suc (a div m + b div m)"
@@ -1192,7 +1192,7 @@ apply simp_all
 done
 
 lemma mod_eq_divisor_minus_Suc_0_conv: "Suc 0 < k \<Longrightarrow> (x mod k = k - Suc 0) = (Suc x mod k = 0)"
-by (simp only: mod_Suc, split split_if, fastsimp)
+by (simp only: mod_Suc, split split_if, fastforce)
 
 
 
@@ -1303,7 +1303,7 @@ apply (rule iffI)
  apply (simp add: linorder_not_less)
  apply (drule div_le_mono[of _ _ m])
  apply simp
-apply fastsimp
+apply fastforce
 done
 lemma div_eq_0_conv': "0 < m \<Longrightarrow> (n div (m::nat) = 0) = (n < m)"
 by (simp add: div_eq_0_conv)
@@ -1315,14 +1315,14 @@ done
 lemma mod_0_less_div_conv: "
   n mod (m::nat) = 0 \<Longrightarrow> (k * m < n) = (k < n div m)"
 apply (case_tac "m = 0", simp)
-apply fastsimp
+apply fastforce
 done
 
 lemma add_le_divisor_imp_le_Suc_div: "
   \<lbrakk> x div m \<le> n; y \<le> m \<rbrakk> \<Longrightarrow> (x + y) div m \<le> Suc n"
 apply (case_tac "m = 0", simp)
 apply (simp only: div_add1_eq_if[of _ x])
-apply (drule order_le_less[of y, THEN iffD1], fastsimp)
+apply (drule order_le_less[of y, THEN iffD1], fastforce)
 done
 
 

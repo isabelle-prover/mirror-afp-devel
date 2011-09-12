@@ -72,11 +72,11 @@ by (induct n) (simp_all add: conc_assoc[symmetric])
 
 lemma length_lang_pow_ub:
   "ALL w : A. length w \<le> k \<Longrightarrow> w : A^^n \<Longrightarrow> length w \<le> k*n"
-by(induct n arbitrary: w) (fastsimp simp: conc_def)+
+by(induct n arbitrary: w) (fastforce simp: conc_def)+
 
 lemma length_lang_pow_lb:
   "ALL w : A. length w \<ge> k \<Longrightarrow> w : A^^n \<Longrightarrow> length w \<ge> k*n"
-by(induct n arbitrary: w) (fastsimp simp: conc_def)+
+by(induct n arbitrary: w) (fastforce simp: conc_def)+
 
 
 subsection{* @{const star} *}
@@ -161,7 +161,7 @@ next
 qed
 
 lemma star_conv_concat: "star A = {concat ws|ws. set ws \<subseteq> A}"
-by (fastsimp simp: in_star_iff_concat)
+by (fastforce simp: in_star_iff_concat)
 
 lemma star_insert_eps[simp]: "star (insert [] A) = star(A)"
 proof-

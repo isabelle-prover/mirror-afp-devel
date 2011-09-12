@@ -152,7 +152,7 @@ lemma bdt_Some_Node_iff [simp]:
                1 < v \<and> var p = v )"
 apply (induct_tac t rule: bdt_fn.induct)
 prefer 5
-apply (fastsimp split: if_splits option.splits)
+apply (fastforce split: if_splits option.splits)
 apply auto
 done
 
@@ -255,10 +255,10 @@ apply clarsimp
 apply (case_tac t1)
 apply (case_tac t2)
 apply simp
-apply fastsimp
+apply fastforce
 apply (case_tac t2)
-apply fastsimp
-apply fastsimp
+apply fastforce
+apply fastforce
 done
 
 
@@ -272,13 +272,13 @@ apply simp
 apply (case_tac t1)
 apply simp
 apply (case_tac t2)
-apply fastsimp
-apply fastsimp
+apply fastforce
+apply fastforce
 apply (case_tac t2)
 apply simp
 apply (case_tac t1)
-apply fastsimp
-apply fastsimp
+apply fastforce
+apply fastforce
 done
 
 lemma dag_setofD: "\<And> p low high n. \<lbrakk> Dag p low high t; n \<in> set_of t \<rbrakk> \<Longrightarrow> 
@@ -286,9 +286,9 @@ lemma dag_setofD: "\<And> p low high n. \<lbrakk> Dag p low high t; n \<in> set_
 apply (induct t)
 apply simp
 apply auto
-apply fastsimp
-apply (fastsimp dest: Dag_unique)
-apply (fastsimp dest: Dag_unique)
+apply fastforce
+apply (fastforce dest: Dag_unique)
+apply (fastforce dest: Dag_unique)
 apply blast
 apply blast
 done
@@ -428,7 +428,7 @@ next
     with Node.prems have notstltorrt: "not <= lt \<or> not <= rt"
       apply -
       apply (simp add: less_dag_def le_dag_def)
-      apply fastsimp
+      apply fastforce
       done
     from Node.prems have ord_lt: "ordered lt var"
       apply -
@@ -747,7 +747,7 @@ prefer 2
 apply assumption
 apply (elim conjE)
 apply (thin_tac "\<forall>q. q \<in> set_of pret \<longrightarrow> q \<in> set (levellista ! var q)")
-apply fastsimp
+apply fastforce
 done
 
 lemma nodes_in_wf_ll: 
@@ -800,7 +800,7 @@ next
       case True
       note xinlt=this
       from Node.prems have "Dag (low p) low high lt" 
-        by fastsimp
+        by fastforce
       with Node.prems True have "low x \<in> set_of lt"
         apply -
         apply (rule Node.hyps)
@@ -813,7 +813,7 @@ next
       with xnp Node.prems have xinrt: "x \<in> set_of rt"
         by simp
       from Node.prems have "Dag (high p) low high rt" 
-        by fastsimp
+        by fastforce
       with Node.prems xinrt have "low x \<in> set_of rt"
         apply -
         apply (rule Node.hyps)
@@ -869,7 +869,7 @@ next
       case True
       note xinlt=this
       from Node.prems have "Dag (low p) low high lt" 
-        by fastsimp
+        by fastforce
       with Node.prems True have "high x \<in> set_of lt"
         apply -
         apply (rule Node.hyps)
@@ -882,7 +882,7 @@ next
       with xnp Node.prems have xinrt: "x \<in> set_of rt"
         by simp
       from Node.prems have "Dag (high p) low high rt" 
-        by fastsimp
+        by fastforce
       with Node.prems xinrt have "high x \<in> set_of rt"
         apply -
         apply (rule Node.hyps)
@@ -917,7 +917,7 @@ next
     apply (erule_tac x=n in allE)
     apply (erule impE)
     apply simp
-    apply fastsimp
+    apply fastforce
     done
   with Suc.prems have "set (levellist ! n) \<subseteq> set_of t"
     apply blast
@@ -1414,7 +1414,7 @@ assumes t_in_DagsSucnb: "t \<in> Dags (Nodes (Suc nb) levellista) low high"
 shows "\<exists> p . Dag p low high t  \<and> p \<in> Nodes (Suc nb) levellista"
 proof -
   from t_in_DagsSucnb obtain p where t_dag: "Dag p low high t" and t_subset_Nodes: "set_of t \<subseteq> Nodes (Suc nb) levellista" and t_nTip: "t\<noteq> Tip"
-    by (fastsimp elim: Dags.cases)
+    by (fastforce elim: Dags.cases)
   from t_dag t_nTip have "p\<noteq>Null"
     apply (case_tac t)
     apply auto
@@ -1486,7 +1486,7 @@ assumes t_in_Dags: "t \<in> Dags nodes low high" and
 shows "st \<in> Dags nodes low high"
 proof -
   from t_in_Dags obtain p where t_dag: "Dag p low high t" and t_subset_Nodes: "set_of t \<subseteq> nodes" and t_nTip: "t\<noteq> Tip"
-    by (fastsimp elim: Dags.cases)
+    by (fastforce elim: Dags.cases)
   from st_t have "set_of st \<subseteq> set_of t"
     by (simp add: le_dag_set_of)
   with t_subset_Nodes have st_subset_fnctNodes: "set_of st \<subseteq> nodes"
@@ -1877,7 +1877,7 @@ apply (case_tac "P x a")
 using [[simp_depth_limit=2]]
 apply  (simp)
 apply clarsimp
-apply (fastsimp dest: hd_filter_prop)
+apply (fastforce dest: hd_filter_prop)
 done
 
 lemma take_Suc_not_last:
@@ -1887,7 +1887,7 @@ apply  simp
 apply (case_tac n)
 apply  simp
 using [[simp_depth_limit=2]]
-apply fastsimp
+apply fastforce
 done
 
 lemma P_eq_list_filter: "\<forall>x \<in> set xs. P x = Q x \<Longrightarrow> filter P xs = filter Q xs"

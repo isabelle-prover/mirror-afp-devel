@@ -83,7 +83,7 @@ lemma find_handler_loc_fun_eq':
   \<Longrightarrow> update_loc loc frs = loc"
 proof
   fix x
-  obtain a' b' where x: "x = (a'::nat,b'::nat)" by fastsimp
+  obtain a' b' where x: "x = (a'::nat,b'::nat)" by fastforce
   assume find_handler: "find_handler (P\<^bsub>wf\<^esub>) a h
     (zip (stkss P cs stk) (zip (locss P cs loc) cs)) =
     (xf, h', frs)"
@@ -131,7 +131,7 @@ lemma find_handler_stk_fun_eq':
   \<Longrightarrow> update_stk stk frs = stk((cd, i) := Addr a)"
 proof
   fix x
-  obtain a' b' where x: "x = (a'::nat,b'::nat)" by fastsimp
+  obtain a' b' where x: "x = (a'::nat,b'::nat)" by fastforce
   assume find_handler: "find_handler (P\<^bsub>wf\<^esub>) a h
     (zip (stkss P cs stk) (zip (locss P cs loc) cs)) =
     (None, h', frs)"
@@ -140,7 +140,7 @@ proof
   from find_handler have "frs \<noteq> []"
     by clarsimp
   then obtain stk' loc' C' M' pc' frs' where frs: "frs = (stk',loc',C',M',pc')#frs'"
-    by (cases frs, fastsimp+)
+    by (cases frs, fastforce+)
   from find_handler
   show "update_stk stk frs x = (stk((cd, i) := Addr a)) x"
   proof (induct cs)
@@ -169,12 +169,12 @@ proof
         case True
         with Some step_case frs calldepth idx x
         show ?thesis
-          by (fastsimp simp: nth_Cons')
+          by (fastforce simp: nth_Cons')
       next
         case False
         with Some step_case frs calldepth idx x
         show ?thesis
-          by (fastsimp simp: nth_Cons' nth_stkss)
+          by (fastforce simp: nth_Cons' nth_stkss)
       qed
     qed
   qed
@@ -205,9 +205,9 @@ next
     and last_C: "fst (last cs) = C0"
     and last_M: "fst(snd (last cs)) = Main"
   with snoc obtain pcX where [simp]: "cs = cs'@[(C0,Main,pcX)]"
-    by (cases "last cs", fastsimp)
+    by (cases "last cs", fastforce)
   obtain h stk loc where [simp]: "s = (h,stk,loc)"
-    by (cases s, fastsimp)
+    by (cases s, fastforce)
   from bv_correct show ?thesis
   proof (cases "snd(snd(state_to_jvm_state P cs s))")
     case Nil
@@ -215,16 +215,16 @@ next
       by (cases cs', auto)
   next
     case (Cons a frs') [simp]
-    obtain stk' loc' C M pc where [simp]: "a = (stk', loc', C, M, pc)" by (cases a, fastsimp)
+    obtain stk' loc' C M pc where [simp]: "a = (stk', loc', C, M, pc)" by (cases a, fastforce)
     from Cons bv_correct show ?thesis
       apply clarsimp
     proof (induct cs' arbitrary: stk' loc' C M pc frs')
       case Nil
-      thus ?case by (fastsimp simp: bv_conform_def)
+      thus ?case by (fastforce simp: bv_conform_def)
     next
       case (Cons a' cs'')
       then have [simp]: "a' = (C,M,pc)"
-        by (cases a', fastsimp)
+        by (cases a', fastforce)
       from Cons obtain T Ts mxs mxl "is" xt
         where sees_M: "(P\<^bsub>wf\<^esub>) \<turnstile> C sees M:Ts\<rightarrow>T = (mxs,mxl,is,xt) in C"
         by (clarsimp simp: bv_conform_def correct_state_def)
@@ -241,7 +241,7 @@ next
                   simp: wt_method_def wt_start_def)
       with Cons sees_M show ?case
         by (cases cs'',
-            (fastsimp dest: sees_method_fun simp: bv_conform_def)+)
+            (fastforce dest: sees_method_fun simp: bv_conform_def)+)
     qed
   qed
 qed
@@ -281,13 +281,13 @@ next
             (zip (stkss P (aa # cs) stk)
               (zip (locss P (aa # cs) loc) (aa # cs))) \<surd>`
   note fhf = `find_handler_for P (cname_of h a) (aa # cs) = (C', M', pc') # cs'`
-  obtain C M pc where [simp]: "aa = (C,M,pc)" by (cases aa, fastsimp)
+  obtain C M pc where [simp]: "aa = (C,M,pc)" by (cases aa, fastforce)
   note P_wf = wf_jvmprog_is_wf [of P]
   from state_correct
   have cs_state_correct: "P\<^bsub>wf\<^esub>,P\<^bsub>\<Phi>\<^esub> \<turnstile> state_to_jvm_state P cs (h, stk, loc) \<surd>"
     apply (auto simp: correct_state_def)
     apply (cases "zip (stkss P cs stk) (zip (locss P cs loc) cs)")
-     by fastsimp+
+     by fastforce+
   show ?thesis
   proof (cases "match_ex_table (P\<^bsub>wf\<^esub>) (cname_of h a) pc (ex_table_of (P\<^bsub>wf\<^esub>) C M)")
     case None
@@ -308,7 +308,7 @@ next
        apply (rule_tac x="xt" in exI)
        apply clarsimp
       apply clarsimp
-      apply (drule sees_method_fun, fastsimp, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
       apply (auto simp: list_all2_Cons1)
        apply (rule list_all2_all_nthI)
         apply clarsimp
@@ -425,7 +425,7 @@ proof -
       pred (kind a_pred) s
     )"
     and state_correct: "P,((C,M,pc)#cs) \<turnstile>\<^bsub>BV\<^esub> s \<surd>"
-  obtain h stk loc where s [simp]: "s = (h,stk,loc)" by (cases s, fastsimp)
+  obtain h stk loc where s [simp]: "s = (h,stk,loc)" by (cases s, fastforce)
   note P_wf = wf_jvmprog_is_wf [of P]
   from ve obtain Ts T mxs mxl "is" xt
     where sees_M: "(P\<^bsub>wf\<^esub>) \<turnstile> C sees M:Ts\<rightarrow>T = (mxs,mxl,is,xt) in C"
@@ -443,18 +443,18 @@ proof -
     "(P\<^bsub>wf\<^esub>),(P\<^bsub>\<Phi>\<^esub>) \<turnstile> the (JVMExec.exec ((P\<^bsub>wf\<^esub>), state_to_jvm_state P ((C,M,pc)#cs) s)) \<surd>"
     apply simp
     apply (drule BV_correct_1)
-      apply (fastsimp simp: bv_conform_def)
+      apply (fastforce simp: bv_conform_def)
      apply (simp add: exec_1_iff)
     by (cases "instrs_of (P\<^bsub>wf\<^esub>) C M ! pc", simp_all add: split_beta)
   from reachable obtain ST LT where reachable: "(P\<^bsub>\<Phi>\<^esub>) C M ! pc = \<lfloor>(ST, LT)\<rfloor>"
-    by fastsimp
+    by fastforce
   with wt_method sees_M `pc < length is`
   have stk_loc_succs:
     "\<forall>pc' \<in> set (succs (is ! pc) (ST, LT) pc).
     stkLength P C M pc' = length (fst (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT))) \<and>
     locLength P C M pc' = length (snd (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)))"
     unfolding wt_method_def
-    using [[simproc del: list_to_set_comprehension]] by (cases "is ! pc", (fastsimp dest!: list_all2_lengthD)+)
+    using [[simproc del: list_to_set_comprehension]] by (cases "is ! pc", (fastforce dest!: list_all2_lengthD)+)
   have [simp]: "\<exists>x. x" by auto
   have [simp]: "Ex Not" by auto
   show ?thesis
@@ -501,9 +501,9 @@ proof -
                  auto simp: bv_conform_def stkss_purge
                   simp del: find_handler_for.simps exec.simps app\<^isub>i.simps fun_upd_apply)
           apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct)
-            apply fastsimp
-           apply (fastsimp simp: split_beta split: split_if_asm)
-          by fastsimp
+            apply fastforce
+           apply (fastforce simp: split_beta split: split_if_asm)
+          by fastforce
       next
         case False [simp]
         from a_pred Invoke
@@ -689,7 +689,7 @@ proof -
     have "is' ! (pc' - 1) = Invoke M (length Ts)"
       apply auto
       apply (erule JVM_CFG.cases, auto)
-      apply (drule sees_method_fun, fastsimp, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
       by (auto dest!: list_all2_lengthD simp: wt_method_def wt_start_def)
     from P_wf sees_M'
     have "wt_method (P\<^bsub>wf\<^esub>) C' Ts' T' mxs' mxl' is' xt' (P\<^bsub>\<Phi>\<^esub> C' M')"
@@ -699,25 +699,25 @@ proof -
       using [[simproc del: list_to_set_comprehension]]
       apply auto
       apply (erule JVM_CFG.cases, auto)
-      apply (drule sees_method_fun, fastsimp, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
       using sees_M'
       apply (auto simp: wt_method_def)
       apply (erule_tac x="pc'" in allE)
       apply (auto simp: bv_conform_def correct_state_def not_less_eq less_Suc_eq)
-       apply (drule sees_method_fun, fastsimp, clarsimp)
-       apply (drule sees_method_fun, fastsimp, clarsimp)
+       apply (drule sees_method_fun, fastforce, clarsimp)
+       apply (drule sees_method_fun, fastforce, clarsimp)
       apply (auto simp: wt_start_def)
       apply (auto dest!: list_all2_lengthD)
-      apply (drule sees_method_fun, fastsimp, clarsimp)
-      apply (drule sees_method_fun, fastsimp, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
       by auto
     from `wt_method (P\<^bsub>wf\<^esub>) C' Ts' T' mxs' mxl' is' xt' (P\<^bsub>\<Phi>\<^esub> C' M')`
       `(pc' - 1) < length is'` `P\<^bsub>\<Phi>\<^esub> C' M' ! (pc' - 1) \<noteq> None`
       `is' ! (pc' - 1) = Invoke M (length Ts)`
     have "stkLength P C' M' (pc' - 1) > 0"
-      by (fastsimp simp: wt_method_def)
+      by (fastforce simp: wt_method_def)
     then obtain ST' STr' where [simp]: "fst (the (P\<^bsub>\<Phi>\<^esub> C' M' ! (pc' - 1))) = ST'#STr'"
-      by (cases "fst (the (P\<^bsub>\<Phi>\<^esub> C' M' ! (pc' - 1)))", fastsimp+)
+      by (cases "fst (the (P\<^bsub>\<Phi>\<^esub> C' M' ! (pc' - 1)))", fastforce+)
     from wt_method
     have "locLength P C M 0 = Suc (length Ts) + mxl"
       by (auto dest!: list_all2_lengthD
@@ -728,14 +728,14 @@ proof -
       using [[simproc del: list_to_set_comprehension]]
       apply auto
       apply (erule JVM_CFG.cases, auto)
-      apply (drule sees_method_fun, fastsimp, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
       using sees_M'
       apply (auto simp: wt_method_def)
       apply (erule_tac x="pc'" in allE)
       apply (auto simp: wt_start_def)
        apply (clarsimp simp: bv_conform_def correct_state_def)
-       apply (drule sees_method_fun, fastsimp, clarsimp)
-       apply (drule sees_method_fun, fastsimp, clarsimp)
+       apply (drule sees_method_fun, fastforce, clarsimp)
+       apply (drule sees_method_fun, fastforce, clarsimp)
       by (auto dest!: list_all2_lengthD)
     with `stkLength P C' M' pc' = stkLength P C' M' (pc' - 1) - length Ts`
       Return state_correct ve P_wf applicable sees_M trg_state_correct sees_M'
@@ -744,11 +744,11 @@ proof -
     show ?thesis
       apply (auto simp: bv_conform_def)
       apply (erule JVM_CFG.cases, auto simp: stkss_purge locss_purge)
-      apply (drule sees_method_fun, fastsimp, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
       apply (auto simp: correct_state_def)
-      apply (drule sees_method_fun, fastsimp, clarsimp)
-      apply (drule sees_method_fun, fastsimp, clarsimp)
-      apply (drule sees_method_fun, fastsimp, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
+      apply (drule sees_method_fun, fastforce, clarsimp)
       apply (rule_tac x="Ts'" in exI)
       apply (rule_tac x="T'" in exI)
       apply (rule_tac x="mxs'" in exI)
@@ -788,8 +788,8 @@ proof -
        apply (clarsimp simp del: exec.simps find_handler_for.simps)
        apply (simp add: bv_conform_def stkss_purge del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
-         apply fastsimp
-        apply fastsimp
+         apply fastforce
+        apply fastforce
        apply clarsimp
       by (auto simp: split_beta bv_conform_def stks_purge' stkss_purge
            simp del: find_handler_for.simps)
@@ -814,8 +814,8 @@ proof -
        apply (clarsimp simp del: exec.simps find_handler_for.simps)
        apply (simp add: bv_conform_def stkss_purge del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
-         apply fastsimp
-        apply (fastsimp simp: split_beta)
+         apply fastforce
+        apply (fastforce simp: split_beta)
        apply clarsimp
       by (auto simp: split_beta bv_conform_def stks_purge' stkss_purge
            simp del: find_handler_for.simps)
@@ -840,8 +840,8 @@ proof -
        apply (clarsimp simp del: exec.simps find_handler_for.simps)
        apply (simp add: bv_conform_def stkss_purge del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
-         apply fastsimp
-        apply (fastsimp simp: split_beta)
+         apply fastforce
+        apply (fastforce simp: split_beta)
        apply clarsimp
       by (auto simp: split_beta bv_conform_def stks_purge' stkss_purge
            simp del: find_handler_for.simps)
@@ -865,8 +865,8 @@ proof -
        apply (clarsimp simp del: exec.simps find_handler_for.simps)
        apply (simp add: bv_conform_def stkss_purge del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
-         apply fastsimp
-        apply (fastsimp simp: split_beta)
+         apply fastforce
+        apply (fastforce simp: split_beta)
        apply clarsimp
       by (auto simp: split_beta bv_conform_def
            simp del: find_handler_for.simps)
@@ -889,13 +889,13 @@ proof -
       apply (rule conjI)
        apply (clarsimp simp: stkss_purge simp del: exec.simps find_handler_for.simps)
        apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
-         apply fastsimp
+         apply fastforce
         apply (simp add: hd_stks)
        apply simp
       apply (clarsimp simp: stkss_purge simp del: exec.simps find_handler_for.simps)
       apply (simp del: find_handler_for.simps exec.simps cong: if_cong)
       apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct [simplified])
-        apply fastsimp
+        apply fastforce
        apply (simp add: hd_stks)
       by simp
   qed
@@ -978,7 +978,7 @@ lemma locLength_is_length_loc:
 
 lemma correct_state_frs_tlD:
   "(P\<^bsub>wf\<^esub>),(P\<^bsub>\<Phi>\<^esub>) \<turnstile> (None, h, a # frs') \<surd> \<Longrightarrow> (P\<^bsub>wf\<^esub>),(P\<^bsub>\<Phi>\<^esub>) \<turnstile> (None, h, frs') \<surd>"
-  by (cases frs', (fastsimp simp: correct_state_def)+)
+  by (cases frs', (fastforce simp: correct_state_def)+)
 
 lemma update_stk_Cons [simp]:
   "stkss P (framestack_to_callstack frs') (update_stk stk ((stk', loc', C', M', pc') # frs')) =
@@ -991,7 +991,7 @@ apply clarsimp
 apply (simp only: f2c_Cons)
 apply clarsimp
 apply (rule stkss_cong)
-  by (fastsimp simp: nth_Cons')+
+  by (fastforce simp: nth_Cons')+
 
 lemma update_loc_Cons [simp]:
   "locss P (framestack_to_callstack frs') (update_loc loc ((stk', loc', C', M', pc') # frs')) =
@@ -1004,7 +1004,7 @@ apply clarsimp
 apply (simp only: f2c_Cons)
 apply clarsimp
 apply (rule locss_cong)
-  by (fastsimp simp: nth_Cons')+
+  by (fastforce simp: nth_Cons')+
 
 lemma s2j_id:
   "(P\<^bsub>wf\<^esub>),(P\<^bsub>\<Phi>\<^esub>) \<turnstile> (None,h',frs') \<surd>
@@ -1054,8 +1054,8 @@ apply (cases frs, auto split: split_if_asm)
  apply (case_tac list, auto)
  apply (case_tac lista, auto)
 apply (drule find_handler_last_cs_eqD)
-  apply fastsimp
- apply fastsimp
+  apply fastforce
+ apply fastforce
 by simp
 
 lemma exec_last_frs_eq_method:
@@ -1071,8 +1071,8 @@ apply (cases frs, auto split: split_if_asm)
  apply (case_tac list, auto)
  apply (case_tac lista, auto)
 apply (drule find_handler_last_cs_eqD)
-  apply fastsimp
- apply fastsimp
+  apply fastforce
+ apply fastforce
 by simp
 
 lemma valid_callstack_append_last_class:
@@ -1103,19 +1103,19 @@ proof(unfold_locales)
     and "identifies n c"
   obtain P C0 M0
     where prog [simp]:"prog = (P,C0,M0)"
-    by (cases prog,fastsimp)
+    by (cases prog,fastforce)
   obtain h stk loc
     where s [simp]: "s = (h,stk,loc)"
-    by (cases s, fastsimp)
+    by (cases s, fastforce)
   obtain h' stk' loc'
     where s' [simp]: "s' = (h',stk',loc')"
-    by (cases s', fastsimp)
+    by (cases s', fastforce)
   from sem_step s s' prog obtain C M pc cs C' M' pc' cs'
     where c [simp]: "c = (C,M,pc)#cs"
     by (cases c, auto elim: sem.cases simp: bv_conform_def)
   with sem_step prog obtain ST LT
     where wt [simp]: " (P\<^bsub>\<Phi>\<^esub>) C M ! pc = \<lfloor>(ST,LT)\<rfloor>"
-    by (auto elim!: sem.cases, cases cs, fastsimp+)
+    by (auto elim!: sem.cases, cases cs, fastforce+)
   note P_wf = wf_jvmprog_is_wf [of P]
   from sem_step prog obtain frs'
     where jvm_exec: "JVMExec.exec ((P\<^bsub>wf\<^esub>), state_to_jvm_state P c s) = \<lfloor>(None,h',frs')\<rfloor>"
@@ -1131,7 +1131,7 @@ proof(unfold_locales)
     by (simp add: bv_conform_def)
   with P_wf jvm_exec s 
   have trg_state_correct: "(P\<^bsub>wf\<^esub>),(P\<^bsub>\<Phi>\<^esub>) \<turnstile> (None,h',frs') \<surd>"
-    by -(rule BV_correct_1, (fastsimp simp: exec_1_iff)+)
+    by -(rule BV_correct_1, (fastforce simp: exec_1_iff)+)
   from sem_step c s prog have prealloc: "preallocated h"
     by (auto elim: sem.cases
              simp: bv_conform_def correct_state_def hconf_def)
@@ -1144,7 +1144,7 @@ proof(unfold_locales)
              simp: bv_conform_def correct_state_def)
   with P_wf sees_M have
     applicable: "app\<^isub>i(is ! pc, (P\<^bsub>wf\<^esub>), pc, mxs, T, ST, LT)"
-    by (fastsimp dest!: sees_wf_mdecl
+    by (fastforce dest!: sees_wf_mdecl
                   simp: wf_jvm_prog_phi_def wf_mdecl_def wt_method_def)
   from sem_step
   have v_cs: "valid_callstack prog c"
@@ -1152,10 +1152,10 @@ proof(unfold_locales)
   then obtain pcL where last_c: "last c = (C0,M0,pcL)"
     apply clarsimp
     apply (induct cs arbitrary: C M pc, simp)
-    by fastsimp
+    by fastforce
   from sees_M P_wf `pc < length is`
   have wt_instrs: "P\<^bsub>wf\<^esub>,T,mxs,length is,xt \<turnstile> is ! pc,pc :: (P\<^bsub>\<Phi>\<^esub>) C M"
-    by -(drule wt_jvm_prog_impl_wt_instr, fastsimp+)
+    by -(drule wt_jvm_prog_impl_wt_instr, fastforce+)
   with applicable
   have effect: "\<forall>succ \<in> set (succs (is ! pc) (ST,LT) pc).
     (P\<^bsub>wf\<^esub>) \<turnstile> \<lfloor>eff\<^isub>i(is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)\<rfloor> \<le>' (P\<^bsub>\<Phi>\<^esub>) C M ! succ \<and> succ < length is"
@@ -1169,7 +1169,7 @@ proof(unfold_locales)
        erule_tac x="succ" in ballE,
        auto,
        induct cs,
-       fastsimp+)
+       fastforce+)
    from trg_state_correct v_cs jvm_exec
    have v_cs_f2c_frs':
      "valid_callstack (P,C0,M0) (framestack_to_callstack frs')"
@@ -1180,21 +1180,21 @@ proof(unfold_locales)
       apply (auto dest!: f2c_emptyD simp del: exec.simps)
       apply (cases cs rule: rev_cases)
        apply (clarsimp simp del: exec.simps)
-       apply (drule exec_last_frs_eq_class, fastsimp+)
+       apply (drule exec_last_frs_eq_class, fastforce+)
       apply (clarsimp simp del: exec.simps)
       apply (simp only: append_Cons [symmetric])
       apply (frule valid_callstack_append_last_class)
       apply (frule valid_callstack_append_last_method)
       apply (clarsimp simp del: exec.simps)
-      apply (drule exec_last_frs_eq_class, fastsimp+)
+      apply (drule exec_last_frs_eq_class, fastforce+)
      apply (cases cs rule: rev_cases)
       apply (clarsimp simp del: exec.simps)
-      apply (drule exec_last_frs_eq_method, fastsimp+)
+      apply (drule exec_last_frs_eq_method, fastforce+)
      apply (clarsimp simp del: exec.simps)
      apply (simp only: append_Cons [symmetric])
      apply (frule valid_callstack_append_last_method)
      apply (clarsimp simp del: exec.simps)
-     by (drule exec_last_frs_eq_method, fastsimp+)
+     by (drule exec_last_frs_eq_method, fastforce+)
   show "\<exists>n' as.
              CFG.path sourcenode targetnode (valid_edge prog) n as n' \<and>
              transfers (CFG.kinds kind as) s = s' \<and>
@@ -1224,7 +1224,7 @@ proof(unfold_locales)
         by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
-          auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+          auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
       moreover from Load jvm_exec loc' stk' c c' s s' prog wt `nat < length LT`
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
         by (auto intro!: ext
@@ -1233,7 +1233,7 @@ proof(unfold_locales)
                          not_less_eq_eq Suc_le_eq)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
-      ultimately show ?thesis by fastsimp
+      ultimately show ?thesis by fastforce
     next
       case (Store nat)
       with sem_step s s' c prog
@@ -1242,7 +1242,7 @@ proof(unfold_locales)
       from applicable Store sees_M
       have "length ST > 0 \<and> nat < length LT"
         by clarsimp
-      then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastsimp+)
+      then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
       from sees_M Store have "Suc pc \<in> set (succs (is ! pc) (ST, LT) pc)"
         by simp
       with prog sem_step Store v_cs_succ
@@ -1250,12 +1250,12 @@ proof(unfold_locales)
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
         (is "valid_edge prog ?e1")
-        by (fastsimp elim: sem.cases intro: JCFG_Straight_NoExc)
+        by (fastforce elim: sem.cases intro: JCFG_Straight_NoExc)
       with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
         by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
-          auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+          auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
       moreover from Store jvm_exec stk' loc' c c' s s' prog wt
         `length ST > 0 \<and> nat < length LT`
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
@@ -1265,7 +1265,7 @@ proof(unfold_locales)
                          not_less_eq_eq hd_stks)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
-      ultimately show ?thesis by fastsimp
+      ultimately show ?thesis by fastforce
     next
       case (Push val)
       with sem_step s s' c prog 
@@ -1278,12 +1278,12 @@ proof(unfold_locales)
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
         (is "valid_edge prog ?e1")
-        by (fastsimp elim: sem.cases intro: JCFG_Straight_NoExc)
+        by (fastforce elim: sem.cases intro: JCFG_Straight_NoExc)
       with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
         by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
-          auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+          auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
       moreover from Push jvm_exec stk' loc' c c' s s' prog wt
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
         by (auto intro!: ext
@@ -1292,7 +1292,7 @@ proof(unfold_locales)
                          not_less_eq_eq)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
-      ultimately show ?thesis by fastsimp
+      ultimately show ?thesis by fastforce
     next
       case (New Cl)
       show ?thesis
@@ -1300,7 +1300,7 @@ proof(unfold_locales)
         case None
         with New sem_step s s' c prog prealloc
         have c': "c' = find_handler_for P OutOfMemory c"
-          by (fastsimp elim!: sem.cases 
+          by (fastforce elim!: sem.cases 
                         dest: find_handler_find_handler_forD)
         with jvm_exec New None prealloc
         have f2c_frs'_c': "framestack_to_callstack frs' = c'"
@@ -1311,24 +1311,24 @@ proof(unfold_locales)
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
-               apply (rule JCFG_New_Exc_Pred, fastsimp+)
+               apply (rule JCFG_New_Exc_Pred, fastforce+)
               apply (rule_tac x="(\<lambda>(h, stk, loc). new_Addr h = None)" in exI)
-              apply (rule JCFG_New_Exc_Pred, fastsimp+)
+              apply (rule JCFG_New_Exc_Pred, fastforce+)
              apply (cases "find_handler_for P OutOfMemory cs")
               apply (rule exI)
               apply clarsimp
-              apply (rule JCFG_New_Exc_Exit, fastsimp+)
+              apply (rule JCFG_New_Exc_Exit, fastforce+)
              apply clarsimp
              apply (rule_tac x="\<lambda>(h, stk, loc).
                (h, stk((length list, stkLength P a aa b - Suc 0) :=
                         Addr (addr_of_sys_xcpt OutOfMemory)),
                loc)" in exI)
-             apply (rule JCFG_New_Exc_Update, fastsimp+)
-            apply (rule JCFG_New_Exc_Pred, fastsimp+)
+             apply (rule JCFG_New_Exc_Update, fastforce+)
+            apply (rule JCFG_New_Exc_Pred, fastforce+)
            apply (rule exI)
-           apply (rule JCFG_New_Exc_Pred, fastsimp+)
+           apply (rule JCFG_New_Exc_Pred, fastforce+)
           apply (rule exI)
-          by (rule JCFG_New_Exc_Update, fastsimp+)
+          by (rule JCFG_New_Exc_Update, fastforce+)
         show ?thesis
         proof (cases c')
           case Nil
@@ -1337,23 +1337,23 @@ proof(unfold_locales)
             \<Up>id,
             (_Exit_))"
             (is "valid_edge prog ?e2")
-            by (fastsimp elim: sem.cases intro: JCFG_New_Exc_Exit)
+            by (fastforce elim: sem.cases intro: JCFG_New_Exc_Exit)
           with v_pred_edge `identifies n c` c c' Nil
           have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
             by -(simp,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
           moreover from Nil None New sem_step c c' s s' prog
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
             by (auto elim!: sem.cases simp: JVM_CFG_Interpret.kinds_def)
           moreover from None s have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis using Nil by fastsimp
+          ultimately show ?thesis using Nil by fastforce
         next
           case (Cons a cs')
-          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastforce)
           from jvm_exec c s None New
           have "update_loc loc frs' = loc"
             by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc], simp)
@@ -1364,7 +1364,7 @@ proof(unfold_locales)
             by (auto elim!: sem.cases)
           moreover obtain stk'' loc'' frs'' where frs': "frs' = (stk'',loc'',C',M',pc')#frs''"
             and cs': "cs' = framestack_to_callstack frs''" using calculation
-            by (cases frs', fastsimp+)
+            by (cases frs', fastforce+)
           ultimately
           have "update_stk stk frs' =
             stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt OutOfMemory))"
@@ -1389,8 +1389,8 @@ proof(unfold_locales)
             (is "valid_edge prog ?e2")
             apply auto
               apply (rule JCFG_New_Exc_Update)
-                 apply fastsimp
-                apply fastsimp
+                 apply fastforce
+                apply fastforce
                using Cons c' apply simp
               apply simp
              using v_pred_edge c' Cons apply clarsimp
@@ -1401,7 +1401,7 @@ proof(unfold_locales)
             by -(rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce+)
           moreover from New c c' s s' loc' stk' `loc' = loc` prog jvm_exec None
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
             by (auto dest: find_handler_heap_eqD
@@ -1409,7 +1409,7 @@ proof(unfold_locales)
           moreover from None s
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         qed
       next
         case (Some obj)
@@ -1425,11 +1425,11 @@ proof(unfold_locales)
           (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
-            apply (fastsimp intro!: JCFG_New_Normal_Pred)
+            apply (fastforce intro!: JCFG_New_Normal_Pred)
            apply (rule exI)
-           apply (fastsimp intro!: JCFG_New_Normal_Pred)
+           apply (fastforce intro!: JCFG_New_Normal_Pred)
           apply (rule exI)
-          by (fastsimp intro!: JCFG_New_Normal_Update)
+          by (fastforce intro!: JCFG_New_Normal_Update)
         from New sees_M have "Suc pc \<in> set (succs (is ! pc) (ST, LT) pc)"
           by simp
         with prog New c' sem_step prog v_cs_succ
@@ -1444,7 +1444,7 @@ proof(unfold_locales)
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
-            auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+            auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
         moreover from New jvm_exec loc' stk' c c' s s' prog Some
         have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
           by (auto intro!: ext
@@ -1454,14 +1454,14 @@ proof(unfold_locales)
         moreover from Some s
         have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-        ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastforce
       qed
     next
       case (Getfield Fd Cl)
       with applicable sees_M
       have "length ST > 0"
         by clarsimp
-      then obtain ST1 STr where ST [simp]: "ST = ST1#STr" by (cases ST, fastsimp+)
+      then obtain ST1 STr where ST [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases "stk(length cs, stkLength P C M pc - 1) = Null")
         case True
@@ -1480,13 +1480,13 @@ proof(unfold_locales)
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply (auto simp del: find_handler_for.simps)
-            apply (fastsimp intro!: JCFG_Getfield_Exc_Pred)
-           apply (fastsimp intro!: JCFG_Getfield_Exc_Pred)
+            apply (fastforce intro!: JCFG_Getfield_Exc_Pred)
+           apply (fastforce intro!: JCFG_Getfield_Exc_Pred)
           apply auto
            apply (cases "find_handler_for P NullPointer cs")
-            apply (fastsimp intro!: JCFG_Getfield_Exc_Exit)
-           apply (fastsimp intro!: JCFG_Getfield_Exc_Update)
-          apply (fastsimp intro!: JCFG_Getfield_Exc_Update)
+            apply (fastforce intro!: JCFG_Getfield_Exc_Exit)
+           apply (fastforce intro!: JCFG_Getfield_Exc_Update)
+          apply (fastforce intro!: JCFG_Getfield_Exc_Update)
           done
         show ?thesis
         proof (cases c')
@@ -1496,14 +1496,14 @@ proof(unfold_locales)
             \<Up>id,
             (_Exit_))"
             (is "valid_edge prog ?e2")
-            by (fastsimp intro: JCFG_Getfield_Exc_Exit)
+            by (fastforce intro: JCFG_Getfield_Exc_Exit)
           with v_pred_edge `identifies n c` c c' Nil
           have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
             by -(simp,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
           moreover from Nil True Getfield sem_step c c' s s' prog wt `length ST > 0`
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
             by (auto elim!: sem.cases
@@ -1511,10 +1511,10 @@ proof(unfold_locales)
           moreover from True s
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis using Nil by fastsimp
+          ultimately show ?thesis using Nil by fastforce
         next
           case (Cons a cs')
-          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastforce)
           from jvm_exec c s True Getfield wt ST
           have "update_loc loc frs' = loc"
             by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
@@ -1526,7 +1526,7 @@ proof(unfold_locales)
             by (auto elim!: sem.cases)
           moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
             and "cs' = framestack_to_callstack frs''" using calculation
-            by (cases frs', fastsimp+)
+            by (cases frs', fastforce+)
           ultimately
           have "update_stk stk frs' =
             stk((length cs',stkLength P C' M' pc' - Suc 0) := Addr (addr_of_sys_xcpt NullPointer))"
@@ -1550,17 +1550,17 @@ proof(unfold_locales)
             (_ c',None _))"
             (is "valid_edge prog ?e2")
             apply (auto simp del: exec.simps find_handler_for.simps)
-                apply (rule JCFG_Getfield_Exc_Update, fastsimp+)
+                apply (rule JCFG_Getfield_Exc_Update, fastforce+)
                apply (simp only: cs'_f2c_frs')
-              apply (fastsimp intro!: JCFG_Getfield_Exc_Pred)
-             apply (fastsimp intro!: JCFG_Getfield_Exc_Update)
+              apply (fastforce intro!: JCFG_Getfield_Exc_Pred)
+             apply (fastforce intro!: JCFG_Getfield_Exc_Update)
             by (simp only: cs'_f2c_frs')
           with v_pred_edge `identifies n c` c c' Nil
           have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
             by -(rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce+)
           moreover from Getfield c c' s s' loc' stk' prog True jvm_exec
             `loc' = loc` wt ST
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
@@ -1569,7 +1569,7 @@ proof(unfold_locales)
           moreover from True s
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         qed
       next
         case False
@@ -1586,22 +1586,22 @@ proof(unfold_locales)
           (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
-            apply (fastsimp intro: JCFG_Getfield_Normal_Pred)
-           apply (fastsimp intro: JCFG_Getfield_Normal_Pred)
-          by (fastsimp intro: JCFG_Getfield_Normal_Update)
+            apply (fastforce intro: JCFG_Getfield_Normal_Pred)
+           apply (fastforce intro: JCFG_Getfield_Normal_Pred)
+          by (fastforce intro: JCFG_Getfield_Normal_Update)
         with prog c' Getfield v_cs_succ sees_M
         have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
           \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
           (_ (C,M,Suc pc)#cs,None _))"
           (is "valid_edge prog ?e2")
-          by (fastsimp intro: JCFG_Getfield_Normal_Update)
+          by (fastforce intro: JCFG_Getfield_Normal_Update)
         with v_pred_edge `identifies n c` c c'
         have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
           by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
-            auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+            auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
         moreover from Getfield jvm_exec stk' loc' c c' s s' prog False wt ST
         have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
           by (auto intro!: ext
@@ -1610,7 +1610,7 @@ proof(unfold_locales)
         moreover from False s
         have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-        ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastforce
       qed
     next
       case (Putfield Fd Cl)
@@ -1618,10 +1618,10 @@ proof(unfold_locales)
       have "length ST > 1"
         by clarsimp
       then obtain ST1 STr' where "ST = ST1#STr'"
-        by (cases ST, fastsimp+)
+        by (cases ST, fastforce+)
       with `length ST > 1` obtain ST2 STr
         where ST: "ST = ST1#ST2#STr"
-        by (cases STr', fastsimp+)
+        by (cases STr', fastforce+)
       show ?thesis
       proof (cases "stk(length cs, stkLength P C M pc - 2) = Null")
         case True
@@ -1639,11 +1639,11 @@ proof(unfold_locales)
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply (auto simp del: find_handler_for.simps)
-            apply (fastsimp intro: JCFG_Putfield_Exc_Pred)
-           apply (fastsimp intro: JCFG_Putfield_Exc_Pred)
+            apply (fastforce intro: JCFG_Putfield_Exc_Pred)
+           apply (fastforce intro: JCFG_Putfield_Exc_Pred)
           apply (cases "find_handler_for P NullPointer ((C, M, pc)#cs)")
-           apply (fastsimp intro: JCFG_Putfield_Exc_Exit)
-          by (fastsimp intro: JCFG_Putfield_Exc_Update)
+           apply (fastforce intro: JCFG_Putfield_Exc_Exit)
+          by (fastforce intro: JCFG_Putfield_Exc_Update)
         show ?thesis
         proof (cases c')
           case Nil
@@ -1652,14 +1652,14 @@ proof(unfold_locales)
             \<Up>id,
             (_Exit_))"
             (is "valid_edge prog ?e2")
-            by (fastsimp intro: JCFG_Putfield_Exc_Exit)
+            by (fastforce intro: JCFG_Putfield_Exc_Exit)
           with v_pred_edge `identifies n c` c c' Nil
           have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
             by -(simp,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
           moreover from Nil True Putfield sem_step c c' s s' prog wt ST
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
             by (auto elim!: sem.cases
@@ -1667,10 +1667,10 @@ proof(unfold_locales)
           moreover from True s
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis using Nil by fastsimp
+          ultimately show ?thesis using Nil by fastforce
         next
           case (Cons a cs')
-          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastforce)
           from jvm_exec c s True Putfield ST wt
           have "update_loc loc frs' = loc"
             by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
@@ -1684,7 +1684,7 @@ proof(unfold_locales)
             by (auto elim!: sem.cases)
           moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
             and "cs' = framestack_to_callstack frs''" using calculation
-            by (cases frs', fastsimp+)
+            by (cases frs', fastforce+)
           ultimately
           have stk':
             "update_stk stk frs' =
@@ -1707,7 +1707,7 @@ proof(unfold_locales)
             by -(rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce+)
           moreover from True Putfield c c' s s' loc' stk' `stk' = update_stk stk frs'`
                         jvm_exec wt ST
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
@@ -1716,7 +1716,7 @@ proof(unfold_locales)
           moreover from True s
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         qed
       next
         case False
@@ -1733,22 +1733,22 @@ proof(unfold_locales)
           (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
-            apply (fastsimp intro: JCFG_Putfield_Normal_Pred)
-           apply (fastsimp intro: JCFG_Putfield_Normal_Pred)
-          by (fastsimp intro: JCFG_Putfield_Normal_Update)
+            apply (fastforce intro: JCFG_Putfield_Normal_Pred)
+           apply (fastforce intro: JCFG_Putfield_Normal_Pred)
+          by (fastforce intro: JCFG_Putfield_Normal_Update)
         with prog Putfield c' v_cs_succ sees_M
         have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
           \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
           (_ (C,M,Suc pc)#cs,None _))"
           (is "valid_edge prog ?e2")
-          by (fastsimp intro: JCFG_Putfield_Normal_Update)
+          by (fastforce intro: JCFG_Putfield_Normal_Update)
         with v_pred_edge `identifies n c` c c'
         have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
           by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
-            auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+            auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
         moreover from Putfield jvm_exec stk' loc' c c' s s' prog False wt ST
         have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
           by (auto intro!: ext
@@ -1758,14 +1758,14 @@ proof(unfold_locales)
         moreover from False s
         have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-        ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastforce
       qed
     next
       case (Checkcast Cl)
       with applicable sees_M
       have "length ST > 0"
         by clarsimp
-      then obtain ST1 STr where ST: "ST = ST1#STr" by (cases ST, fastsimp+)
+      then obtain ST1 STr where ST: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases "\<not> cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs,length ST - Suc 0))")
         case True
@@ -1783,11 +1783,11 @@ proof(unfold_locales)
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply (auto simp del: find_handler_for.simps)
-            apply (fastsimp intro: JCFG_Checkcast_Exc_Pred)
-           apply (fastsimp intro: JCFG_Checkcast_Exc_Pred)
+            apply (fastforce intro: JCFG_Checkcast_Exc_Pred)
+           apply (fastforce intro: JCFG_Checkcast_Exc_Pred)
           apply (cases "find_handler_for P ClassCast ((C,M,pc)#cs)")
-           apply (fastsimp intro: JCFG_Checkcast_Exc_Exit)
-          by (fastsimp intro: JCFG_Checkcast_Exc_Update)
+           apply (fastforce intro: JCFG_Checkcast_Exc_Exit)
+          by (fastforce intro: JCFG_Checkcast_Exc_Update)
         show ?thesis
         proof (cases c')
           case Nil
@@ -1796,14 +1796,14 @@ proof(unfold_locales)
             \<Up>id,
             (_Exit_))"
             (is "valid_edge prog ?e2")
-            by (fastsimp intro: JCFG_Checkcast_Exc_Exit)
+            by (fastforce intro: JCFG_Checkcast_Exc_Exit)
           with v_pred_edge `identifies n c` c c' Nil
           have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_Exit_)"
             by -(simp,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
           moreover from Nil True Checkcast sem_step c c' s s' prog wt `length ST > 0`
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
             by (auto elim!: sem.cases
@@ -1811,10 +1811,10 @@ proof(unfold_locales)
           moreover from True s wt
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis using Nil by fastsimp
+          ultimately show ?thesis using Nil by fastforce
         next
           case (Cons a cs')
-          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+          then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastforce)
           from jvm_exec c s True Checkcast ST wt
           have loc'': "update_loc loc frs' = loc"
             by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
@@ -1825,7 +1825,7 @@ proof(unfold_locales)
             by (auto elim!: sem.cases)
           moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
             and "cs' = framestack_to_callstack frs''" using calculation
-            by (cases frs', fastsimp+)
+            by (cases frs', fastforce+)
           ultimately
           have stk'':
             "update_stk stk frs' =
@@ -1851,7 +1851,7 @@ proof(unfold_locales)
             by -(rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce+)
           moreover from True Checkcast c s s' loc' stk' loc'' stk''
                         prog wt ST jvm_exec
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
@@ -1860,7 +1860,7 @@ proof(unfold_locales)
           moreover from True s wt
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         qed
       next
         case False
@@ -1879,7 +1879,7 @@ proof(unfold_locales)
           by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
-            auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+            auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
         moreover from Checkcast jvm_exec stk' loc' c s s' prog False wt ST
         have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
           by (auto elim!: sem.cases
@@ -1890,16 +1890,16 @@ proof(unfold_locales)
         moreover from False s wt
         have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-        ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastforce
       qed
     next
       case (Invoke M' n')
       with applicable sees_M
       have "length ST > n'"
         by clarsimp
-      moreover obtain STn where "STn = take n' ST" by fastsimp
-      moreover obtain STs where "STs = ST ! n'" by fastsimp
-      moreover obtain STr where "STr = drop (Suc n') ST" by fastsimp
+      moreover obtain STn where "STn = take n' ST" by fastforce
+      moreover obtain STs where "STs = ST ! n'" by fastforce
+      moreover obtain STr where "STr = drop (Suc n') ST" by fastforce
       ultimately have ST:" ST = STn@STs#STr \<and> length STn = n'"
         by (auto simp: id_take_nth_drop)
       with jvm_exec c s Invoke wt
@@ -1925,11 +1925,11 @@ proof(unfold_locales)
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply (auto simp del: find_handler_for.simps)
-            apply (fastsimp intro: JCFG_Invoke_Exc_Pred)
-           apply (fastsimp intro: JCFG_Invoke_Exc_Pred)
+            apply (fastforce intro: JCFG_Invoke_Exc_Pred)
+           apply (fastforce intro: JCFG_Invoke_Exc_Pred)
           apply (cases "find_handler_for P NullPointer ((C, M, pc) # cs)")
-           apply (fastsimp intro: JCFG_Invoke_Exc_Exit)
-          by (fastsimp intro: JCFG_Invoke_Exc_Update)
+           apply (fastforce intro: JCFG_Invoke_Exc_Exit)
+          by (fastforce intro: JCFG_Invoke_Exc_Update)
         show ?thesis
         proof (cases c')
           case Nil
@@ -1938,14 +1938,14 @@ proof(unfold_locales)
             \<Up>id,
             (_Exit_))"
             (is "valid_edge prog ?e2")
-            by (fastsimp intro: JCFG_Invoke_Exc_Exit)
+            by (fastforce intro: JCFG_Invoke_Exc_Exit)
           with v_pred_edge `identifies n c` c c' Nil
           have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
             by -(simp,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
           moreover from Invoke jvm_exec stk' loc' c c' s s'
             prog True wt ST prealloc Nil `h = h'`
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
@@ -1955,11 +1955,11 @@ proof(unfold_locales)
           moreover from s True
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         next
           case (Cons a cs')
           then obtain C' M' pc' where Cons: "c' = (C',M',pc')#cs'" 
-            by (cases a, fastsimp)
+            by (cases a, fastforce)
           from jvm_exec c s True Invoke ST wt
           have loc'': "update_loc loc frs' = loc"
             by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
@@ -1970,7 +1970,7 @@ proof(unfold_locales)
             by (auto elim!: sem.cases)
           moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
             and "cs' = framestack_to_callstack frs''" using calculation
-            by (cases frs', fastsimp+)
+            by (cases frs', fastforce+)
           ultimately
           have stk'':
             "update_stk stk frs' =
@@ -1992,7 +1992,7 @@ proof(unfold_locales)
             by -(rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce+)
           moreover from Cons True Invoke jvm_exec c c' s s' loc' stk' loc'' stk''
                         prog wt ST `h = h'`
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
@@ -2000,7 +2000,7 @@ proof(unfold_locales)
           moreover from True s
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         qed
       next
         case False
@@ -2094,10 +2094,10 @@ proof(unfold_locales)
           (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
-            apply (fastsimp intro: JCFG_Invoke_Normal_Pred)
-           apply (fastsimp intro: JCFG_Invoke_Normal_Pred)
+            apply (fastforce intro: JCFG_Invoke_Normal_Pred)
+           apply (fastforce intro: JCFG_Invoke_Normal_Pred)
           apply (rule exI)
-          by (fastsimp intro: JCFG_Invoke_Normal_Update)
+          by (fastforce intro: JCFG_Invoke_Normal_Update)
         with Invoke v_cs_f2c_frs' c' v_cs
         have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _),
           \<Up>(\<lambda>s.
@@ -2106,7 +2106,7 @@ proof(unfold_locales)
           ),
           (_ (D,M',0)#c,None _))"
           (is "valid_edge prog ?e2")
-          by (fastsimp intro!: JCFG_Invoke_Normal_Update
+          by (fastforce intro!: JCFG_Invoke_Normal_Update
                      simp del: exec.simps valid_callstack.simps)
         with v_pred_edge `identifies n c` c c' locLength_trg
         have "JVM_CFG_Interpret.path prog n [?e1,?e2] (_ c',None _)"
@@ -2114,21 +2114,21 @@ proof(unfold_locales)
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
-            auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+            auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
         moreover from s s' `h = h'` `stk' = stk` upd_loc'
           locLength_trg stk_sees_M' Invoke c wt ST
         have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'" 
           by (simp add: JVM_CFG_Interpret.kinds_def)
         moreover from False s D wt have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-        ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastforce
       qed
     next
       case Return
       with applicable sees_M
       have "length ST > 0"
         by clarsimp
-      then obtain ST1 STr where ST: "ST = ST1#STr" by (cases ST, fastsimp+)
+      then obtain ST1 STr where ST: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases cs)
         case Nil
@@ -2140,21 +2140,21 @@ proof(unfold_locales)
           \<Up>id,
           (_Exit_))"
           (is "valid_edge prog ?e1")
-          by (fastsimp intro: JCFG_ReturnExit elim: sem.cases)
+          by (fastforce intro: JCFG_ReturnExit elim: sem.cases)
         with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
           by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
-            auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+            auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
         moreover from Return sem_step c c' s s' prog wt Nil `length ST > 0`
         have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
           by (auto elim!: sem.cases simp: JVM_CFG_Interpret.kinds_def)
         moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-        ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastforce
       next
         case (Cons a cs')
-        with c obtain D M' pc' where c: "c = (C,M,pc)#(D,M',pc')#cs'" by (cases a, fastsimp)
+        with c obtain D M' pc' where c: "c = (C,M,pc)#(D,M',pc')#cs'" by (cases a, fastforce)
         with prog sem_step Return
         have c': "c' = (D,M',Suc pc')#cs'"
           by (auto elim!: sem.cases)
@@ -2184,19 +2184,19 @@ proof(unfold_locales)
              (Suc (length cs')) (stkLength P C M pc) (stkLength P D M' (Suc pc')) 0),
           (_ (D,M',Suc pc')#cs',None _))"
           (is "valid_edge prog ?e1")
-          by (fastsimp intro: JCFG_Return_Update)
+          by (fastforce intro: JCFG_Return_Update)
         with `identifies n c` c c' 
         have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
           by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
-            auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+            auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
         moreover from stk' loc' s s' `h = h'` `loc' = loc` stk_upd wt
         have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
           by (simp add: JVM_CFG_Interpret.kinds_def)
         moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-        ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastforce
       qed
     next
       case Pop
@@ -2207,7 +2207,7 @@ proof(unfold_locales)
       have "ST \<noteq> []"
         by clarsimp
       then obtain ST1 STr where ST: "ST = ST1#STr"
-        by (cases ST, fastsimp+)
+        by (cases ST, fastforce+)
       with c' jvm_exec Pop
       have "framestack_to_callstack frs' = c'"
         by auto
@@ -2216,12 +2216,12 @@ proof(unfold_locales)
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
         (is "valid_edge prog ?e1")
-        by (fastsimp intro: JCFG_Straight_NoExc)
+        by (fastforce intro: JCFG_Straight_NoExc)
       with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
         by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
-          auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+          auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
       moreover from Pop jvm_exec s s' stk' loc' c wt ST
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
         by (auto intro!: ext
@@ -2229,7 +2229,7 @@ proof(unfold_locales)
                          not_less_eq_eq Suc_le_eq JVM_CFG_Interpret.kinds_def)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
-      ultimately show ?thesis by fastsimp
+      ultimately show ?thesis by fastforce
     next
       case IAdd
       with sem_step s s' c prog 
@@ -2238,9 +2238,9 @@ proof(unfold_locales)
       from IAdd applicable sees_M
       have "length ST > 1"
         by clarsimp
-      then obtain ST1 STr' where "ST = ST1#STr'" by (cases ST, fastsimp+)
+      then obtain ST1 STr' where "ST = ST1#STr'" by (cases ST, fastforce+)
       with `length ST > 1` obtain ST2 STr
-        where ST: "ST = ST1#ST2#STr" by (cases STr', fastsimp+)
+        where ST: "ST = ST1#ST2#STr" by (cases STr', fastforce+)
       from c' jvm_exec IAdd
       have "framestack_to_callstack frs' = c'"
         by auto
@@ -2249,13 +2249,13 @@ proof(unfold_locales)
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
         (is "valid_edge prog ?e1")
-        by (fastsimp intro: JCFG_Straight_NoExc)
+        by (fastforce intro: JCFG_Straight_NoExc)
       with `identifies n c` c c'
       have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
         by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
-          auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+          auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
       moreover from IAdd jvm_exec c s s' stk' loc' wt ST
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
         by (auto intro!: ext
@@ -2264,13 +2264,13 @@ proof(unfold_locales)
                          not_less_eq_eq Suc_le_eq JVM_CFG_Interpret.kinds_def)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
-      ultimately show ?thesis by fastsimp
+      ultimately show ?thesis by fastforce
     next
       case (IfFalse b)
       with applicable sees_M
       have "ST \<noteq> []"
         by clarsimp
-      then obtain ST1 STr where ST [simp]: "ST = ST1#STr" by (cases ST, fastsimp+)
+      then obtain ST1 STr where ST [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases "stk (length cs, stkLength P C M pc - 1) = Bool False \<and> b \<noteq> 1")
         case True
@@ -2286,12 +2286,12 @@ proof(unfold_locales)
           (\<lambda>(h,stk,loc). stk (length cs, stkLength P C M pc - 1) = Bool False)\<^isub>\<surd>,
           (_ (C,M,nat (int pc + b))#cs,None _))"
           (is "valid_edge prog ?e1")
-          by (fastsimp intro: JCFG_IfFalse_False)
+          by (fastforce intro: JCFG_IfFalse_False)
         with `identifies n c` c c' have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
           by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
-            auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+            auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
         moreover from IfFalse True jvm_exec c s s' stk' loc' wt ST
         have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
           by (auto intro!: ext
@@ -2300,7 +2300,7 @@ proof(unfold_locales)
         moreover from True s
         have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-        ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastforce
       next
         case False
         have "nat (int pc + 1) = Suc pc"
@@ -2316,13 +2316,13 @@ proof(unfold_locales)
           (\<lambda>(h,stk,loc). stk (length cs, stkLength P C M pc - 1) \<noteq> Bool False \<or> b = 1)\<^isub>\<surd>,
           (_ (C,M,Suc pc)#cs,None _))"
           (is "valid_edge prog ?e1")
-          by (fastsimp intro: JCFG_IfFalse_Next)
+          by (fastforce intro: JCFG_IfFalse_Next)
         with `identifies n c` c c'
         have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
           by -(simp,
             rule JVM_CFG_Interpret.path.Cons_path,
             rule JVM_CFG_Interpret.path.empty_path,
-            auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+            auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
         moreover from IfFalse False jvm_exec c s s' stk' loc' wt ST
         have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
           by (auto intro!: ext
@@ -2331,7 +2331,7 @@ proof(unfold_locales)
         moreover from False s
         have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
           by (simp add: JVM_CFG_Interpret.kinds_def)
-        ultimately show ?thesis by fastsimp
+        ultimately show ?thesis by fastforce
       qed
     next
       case (Goto i)
@@ -2346,13 +2346,13 @@ proof(unfold_locales)
         \<Up>id,
         (_ (C,M,nat (int pc + i))#cs,None _))"
         (is "valid_edge prog ?e1")
-        by (fastsimp intro: JCFG_Goto_Update)
+        by (fastforce intro: JCFG_Goto_Update)
       with `identifies n c` c c'
       have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
         by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
-          auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+          auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
       moreover from Goto jvm_exec c s s' stk' loc'
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
         by (auto intro!: ext
@@ -2360,7 +2360,7 @@ proof(unfold_locales)
                          JVM_CFG_Interpret.kinds_def not_less_eq_eq)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
-      ultimately show ?thesis by fastsimp
+      ultimately show ?thesis by fastforce
     next
       case CmpEq
       with sem_step s s' c prog 
@@ -2369,9 +2369,9 @@ proof(unfold_locales)
       from CmpEq applicable sees_M
       have "length ST > 1"
         by clarsimp
-      then obtain ST1 STr' where "ST = ST1#STr'" by (cases ST, fastsimp+)
+      then obtain ST1 STr' where "ST = ST1#STr'" by (cases ST, fastforce+)
       with `length ST > 1` obtain ST2 STr
-        where ST: "ST = ST1#ST2#STr" by (cases STr', fastsimp+)
+        where ST: "ST = ST1#ST2#STr" by (cases STr', fastforce+)
       from c' CmpEq jvm_exec
       have "framestack_to_callstack frs' = c'"
         by auto
@@ -2380,13 +2380,13 @@ proof(unfold_locales)
         \<Up>(\<lambda>s. exec_instr (instrs_of (P\<^bsub>wf\<^esub>) C M ! pc) P s (length cs) (stkLength P C M pc) 0 0),
         (_ (C,M,Suc pc)#cs,None _))"
         (is "valid_edge prog ?e1")
-        by (fastsimp intro: JCFG_Straight_NoExc)
+        by (fastforce intro: JCFG_Straight_NoExc)
       with `identifies n c` c c'
       have "JVM_CFG_Interpret.path prog n [?e1] (_ c',None _)"
         by -(simp,
           rule JVM_CFG_Interpret.path.Cons_path,
           rule JVM_CFG_Interpret.path.empty_path,
-          auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+          auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
       moreover from CmpEq jvm_exec c s s' stk' loc' wt ST
       have "transfers (JVM_CFG_Interpret.kinds [?e1]) s = s'"
         by (auto intro!: ext
@@ -2395,13 +2395,13 @@ proof(unfold_locales)
                          not_less_eq_eq JVM_CFG_Interpret.kinds_def)
       moreover have "preds (JVM_CFG_Interpret.kinds [?e1]) s"
         by (simp add: JVM_CFG_Interpret.kinds_def)
-      ultimately show ?thesis by fastsimp
+      ultimately show ?thesis by fastforce
     next
       case Throw
       with sees_M applicable
       have "ST \<noteq> []"
         by clarsimp
-      then obtain ST1 STr where ST: "ST = ST1#STr" by (cases ST, fastsimp+)
+      then obtain ST1 STr where ST: "ST = ST1#STr" by (cases ST, fastforce+)
       from jvm_exec sem_step
       have f2c_frs'_eq_c': "framestack_to_callstack frs' = c'"
         by (auto elim: sem.cases)
@@ -2410,7 +2410,7 @@ proof(unfold_locales)
         case True
         with sem_step Throw s s' c prog wt ST prealloc
         have c':"c' = find_handler_for P NullPointer c"
-          by (fastsimp elim!: sem.cases
+          by (fastforce elim!: sem.cases
                         dest: find_handler_find_handler_forD
                         simp: hd_stks)
         with Throw v_cs v_cs_f2c_frs' f2c_frs'_eq_c' prealloc
@@ -2425,11 +2425,11 @@ proof(unfold_locales)
         (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
         (is "valid_edge prog ?e1")
         apply (auto simp del: find_handler_for.simps)
-          apply (fastsimp intro: JCFG_Throw_Pred)
-         apply (fastsimp intro: JCFG_Throw_Pred)
+          apply (fastforce intro: JCFG_Throw_Pred)
+         apply (fastforce intro: JCFG_Throw_Pred)
         apply (cases "find_handler_for P NullPointer ((C, M, pc) # cs)")
-         apply (fastsimp intro: JCFG_Throw_Exit)
-        by (fastsimp intro: JCFG_Throw_Update)
+         apply (fastforce intro: JCFG_Throw_Exit)
+        by (fastforce intro: JCFG_Throw_Update)
         show ?thesis
         proof (cases c')
           case Nil
@@ -2445,7 +2445,7 @@ proof(unfold_locales)
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce)
           moreover from Throw jvm_exec c c' s s' stk' loc'
             True Nil wt ST trg_state_correct prealloc
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
@@ -2454,11 +2454,11 @@ proof(unfold_locales)
                      simp: JVM_CFG_Interpret.kinds_def split_beta correct_state_def)
           moreover from True s wt c' c have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         next
           case (Cons a cs')
           then obtain C' M' pc'
-            where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+            where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastforce)
           with jvm_exec s loc' c True Throw wt ST
           have "loc' = loc"
             by (auto intro!: ext
@@ -2470,7 +2470,7 @@ proof(unfold_locales)
             by (auto elim!: sem.cases)
           moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
             and "cs' = framestack_to_callstack frs''" using calculation
-            by (cases frs', fastsimp+)
+            by (cases frs', fastforce+)
           ultimately
           have stk'':
             "update_stk stk frs' =
@@ -2501,14 +2501,14 @@ proof(unfold_locales)
             by -(rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce+)
           moreover from Cons True Throw jvm_exec c c' s s' `loc' = loc` stk' stk'' wt ST
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
             by (auto dest: find_handler_heap_eqD simp: JVM_CFG_Interpret.kinds_def)
           moreover from True s wt c c'
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         qed
       next
         case False
@@ -2516,7 +2516,7 @@ proof(unfold_locales)
         have c':
           "c' = find_handler_for P
             (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1)))) c"
-          by (fastsimp elim!: sem.cases
+          by (fastforce elim!: sem.cases
                         dest: find_handler_find_handler_forD
                         simp: hd_stks)
         with Throw v_cs v_cs_f2c_frs' f2c_frs'_eq_c'
@@ -2531,12 +2531,12 @@ proof(unfold_locales)
         (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
         (is "valid_edge prog ?e1")
         apply (auto simp del: find_handler_for.simps)
-          apply (fastsimp intro: JCFG_Throw_Pred)
-         apply (fastsimp intro: JCFG_Throw_Pred)
+          apply (fastforce intro: JCFG_Throw_Pred)
+         apply (fastforce intro: JCFG_Throw_Pred)
         apply (cases "find_handler_for P
           (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1)))) ((C,M,pc)#cs)")
-         apply (fastsimp intro: JCFG_Throw_Exit)
-        by (fastsimp intro: JCFG_Throw_Update)
+         apply (fastforce intro: JCFG_Throw_Exit)
+        by (fastforce intro: JCFG_Throw_Update)
         show ?thesis
         proof (cases c')
           case Nil
@@ -2551,7 +2551,7 @@ proof(unfold_locales)
             by -(rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce+)
           moreover from Throw jvm_exec c c' s s' False Nil trg_state_correct wt ST
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
             by (cases frs',
@@ -2560,11 +2560,11 @@ proof(unfold_locales)
           moreover from False s wt c' c 
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         next
           case (Cons a cs')
           then obtain C' M' pc'
-            where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastsimp)
+            where Cons: "c' = (C',M',pc')#cs'" by (cases a, fastforce)
           with jvm_exec s loc' c Throw wt ST
           have "loc' = loc"
             by (auto intro!: ext
@@ -2576,7 +2576,7 @@ proof(unfold_locales)
             by (auto elim!: sem.cases)
           moreover obtain stk'' loc'' frs'' where "frs' = (stk'',loc'',C',M',pc')#frs''"
             and "cs' = framestack_to_callstack frs''" using calculation
-            by (cases frs', fastsimp+)
+            by (cases frs', fastforce+)
           ultimately
           have stk'':
             "update_stk stk frs' =
@@ -2614,7 +2614,7 @@ proof(unfold_locales)
             by -(rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.Cons_path,
               rule JVM_CFG_Interpret.path.empty_path,
-              auto simp: JVM_CFG_Interpret.valid_node_def, fastsimp+)
+              auto simp: JVM_CFG_Interpret.valid_node_def, fastforce+)
           moreover from Cons False Throw jvm_exec c c' s s' loc' stk'
             addr_the_addr_stk_eq prog wt ST `loc' = loc` stk''
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
@@ -2623,7 +2623,7 @@ proof(unfold_locales)
           moreover from False s wt c c'
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
-          ultimately show ?thesis by fastsimp
+          ultimately show ?thesis by fastforce
         qed
       qed
     qed

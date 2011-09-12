@@ -31,12 +31,12 @@ where "\<Turnstile>\<^sub>n c : A = (\<forall> m . m \<le> n --> (\<forall> s t 
 text{*\ldots plus the obvious relationships.*}
 lemma VDM_valid_validn: "\<Turnstile> c:A \<Longrightarrow> \<Turnstile>\<^sub>n c:A"
 (*<*)
-by (simp add: VDM_valid_def VDM_validn_def Sem_def, fastsimp)
+by (simp add: VDM_valid_def VDM_validn_def Sem_def, fastforce)
 (*>*)
 
 lemma VDM_validn_valid: "(\<forall> n . \<Turnstile>\<^sub>n c:A) \<Longrightarrow> \<Turnstile> c:A"
 (*<*)
-by (simp add: VDM_valid_def VDM_validn_def Sem_def, fastsimp)
+by (simp add: VDM_valid_def VDM_validn_def Sem_def, fastforce)
 (*>*)
 
 lemma VDM_lowerm: "\<lbrakk> \<Turnstile>\<^sub>n c:A; m \<le> n \<rbrakk> \<Longrightarrow> \<Turnstile>\<^sub>m c:A"
@@ -281,7 +281,7 @@ apply (simp add: validn_def VDM_validn_def)
 apply clarsimp
   apply (rule SoundWhile) apply fast apply simp apply simp apply clarsimp
 apply (simp add: validn_def, clarsimp)
-  apply (rule SoundCall) prefer 2 apply assumption apply fastsimp
+  apply (rule SoundCall) prefer 2 apply assumption apply fastforce
 apply (simp add: Ctxt_validn_def validn_def) 
 apply (simp add: validn_def VDM_validn_def) 
 done
@@ -356,7 +356,7 @@ apply clarsimp
   apply (erule_tac x=Ga in allE) 
   apply (erule_tac x=P in allE) 
   apply (erule_tac x="insert A D" in allE, simp) 
-  apply (rule VDMCall) apply fastsimp
+  apply (rule VDMCall) apply fastforce
 apply clarsimp
   apply (erule disjE)
   apply clarsimp apply (erule WEAK) apply assumption
@@ -377,7 +377,7 @@ by (drule CutAux1, simp add: CutAuxProp_def)
 lemma Cut:"\<lbrakk> G \<rhd> Call : P ; (insert P G) \<rhd> c : A \<rbrakk> \<Longrightarrow> G \<rhd> c : A"
 (*<*)
 apply (rotate_tac -1, drule CutAux)
-apply (fastsimp, assumption)
+apply (fastforce, assumption)
 apply (simp, assumption)
 done
 (*>*)

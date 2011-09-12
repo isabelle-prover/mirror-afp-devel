@@ -388,7 +388,7 @@ next
   from s obtain t
     where st: "s = simf t"
       and tCn: "t \<in> jkbpCn n"
-    by fastsimp
+    by fastforce
   from tCn have tC: "t \<in> jkbpC" by blast
   { fix t'
     assume tt': "(t, t') \<in> (\<Union>a. relations mkMC a)\<^sup>*"

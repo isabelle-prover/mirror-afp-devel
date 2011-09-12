@@ -326,7 +326,7 @@ proof -
       from IH[OF Red[simplified] R] show ?case .
     qed
     }
-  with assms show ?thesis by fastsimp
+  with assms show ?thesis by fastforce
 qed
 
 
@@ -341,10 +341,10 @@ lemma [iff]: "\<not> P,E \<turnstile> \<langle>[],s\<rangle> [\<rightarrow>] \<l
 by(blast elim: reds.cases)
 
 lemma [iff]: "\<not> P,E \<turnstile> \<langle>Val v,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-by(fastsimp elim: red.cases)
+by(fastforce elim: red.cases)
 
 lemma [iff]: "\<not> P,E \<turnstile> \<langle>Throw r,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-by(fastsimp elim: red.cases)
+by(fastforce elim: red.cases)
 
 
 lemma red_lcl_incr: "P,E \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>e',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
@@ -358,23 +358,23 @@ and "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h
 proof (induct rule:red_reds_inducts)
   case RedLAss thus ?case by(auto intro:red_reds.intros simp del:fun_upd_apply)
 next
-  case RedStaticDownCast thus ?case by(fastsimp intro:red_reds.intros)
+  case RedStaticDownCast thus ?case by(fastforce intro:red_reds.intros)
 next
-  case RedStaticUpDynCast thus ?case by(fastsimp intro:red_reds.intros)
+  case RedStaticUpDynCast thus ?case by(fastforce intro:red_reds.intros)
 next
-  case RedStaticDownDynCast thus ?case by(fastsimp intro:red_reds.intros)
+  case RedStaticDownDynCast thus ?case by(fastforce intro:red_reds.intros)
 next
-  case RedDynCast thus ?case by(fastsimp intro:red_reds.intros)
+  case RedDynCast thus ?case by(fastforce intro:red_reds.intros)
 next
-  case RedDynCastFail thus ?case by(fastsimp intro:red_reds.intros)
+  case RedDynCastFail thus ?case by(fastforce intro:red_reds.intros)
 next
-  case RedFAcc thus ?case by(fastsimp intro:red_reds.intros)
+  case RedFAcc thus ?case by(fastforce intro:red_reds.intros)
 next
-  case RedFAss thus ?case by (fastsimp intro:red_reds.intros)
+  case RedFAss thus ?case by (fastforce intro:red_reds.intros)
 next
-  case RedCall thus ?case by (fastsimp intro!:red_reds.RedCall)
+  case RedCall thus ?case by (fastforce intro!:red_reds.RedCall)
 next
-  case RedStaticCall thus ?case by(fastsimp intro:red_reds.intros)
+  case RedStaticCall thus ?case by(fastforce intro:red_reds.intros)
 next
   case (InitBlockRed E V T e h l v' e' h' l' v'' v l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V \<mapsto> v'))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"

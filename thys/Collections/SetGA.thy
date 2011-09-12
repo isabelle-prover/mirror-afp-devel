@@ -302,7 +302,7 @@ proof -
         in s1.iterate_rule_P)
       apply (simp_all add: s2.ins_dj_correct)
       apply (subgoal_tac "x\<notin>\<alpha>2 \<sigma>")
-      apply (fastsimp simp add: s2.ins_dj_correct)
+      apply (fastforce simp add: s2.ins_dj_correct)
       apply blast
       done
   }
@@ -450,7 +450,7 @@ proof -
       apply simp
       apply (simp add: s2.empty_correct s2.ins_dj_correct)
       apply (case_tac "f x")
-      apply (fastsimp)
+      apply (fastforce)
       apply simp
       apply (subgoal_tac "a\<notin>\<alpha>2 \<sigma>")
       apply (auto simp add: s2.ins_dj_correct) [1]
@@ -522,7 +522,7 @@ proof -
       \<and> invar3 (it_Union_image it1 em3 un233 f s)"
       apply (unfold it_Union_image_def)
       apply (rule_tac I="\<lambda>it res. invar3 res \<and> \<alpha>3 res = \<Union>\<alpha>2`f`(\<alpha>1 s - it)" in iterate_rule_P)
-      apply (fastsimp simp add: empty_correct union_correct)+
+      apply (fastforce simp add: empty_correct union_correct)+
       done
   }
   thus ?thesis

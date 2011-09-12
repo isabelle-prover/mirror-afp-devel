@@ -116,7 +116,7 @@ lemma S5n_tc_rels_eq:
       and ww': "(w, w') \<in> (\<Union>a \<in> as. relations M a)\<^sup>+"
   shows "(\<Union>a \<in> as. relations M a)\<^sup>+ `` {w} = (\<Union>a \<in> as. relations M a)\<^sup>+ `` {w'}"
   apply (cases "as = {}")
-   apply fastsimp
+   apply fastforce
   apply (rule equiv_class_eq[OF _ ww'])
   apply (erule tc_equiv[OF S5nD[OF S5n]])
   done

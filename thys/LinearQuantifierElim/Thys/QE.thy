@@ -287,7 +287,7 @@ proof -
       apply(simp add: lift_eq_qe_def,
             clarsimp simp: filter_eq_Cons_iff ball_Un)
       apply(rule iffI)
-      apply(fastsimp intro!:exI[of _ e] simp: trivial is_triv_self_subst)
+      apply(fastforce intro!:exI[of _ e] simp: trivial is_triv_self_subst)
       apply (metis subst\<^isub>0)
       done
   qed

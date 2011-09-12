@@ -37,11 +37,11 @@ lemma rhs_interpret_eq:
    \<Longrightarrow> interpret b s' = Some v'"
 proof(induct b arbitrary:v')
   case (Val v)
-  from `interpret (Val v) s = Some v'` have "v' = v" by(fastsimp elim:interpret.cases)
+  from `interpret (Val v) s = Some v'` have "v' = v" by(fastforce elim:interpret.cases)
   thus ?case by simp
 next
   case (Var V)
-  hence "s' V = Some v'" by(fastsimp elim:interpret.cases)
+  hence "s' V = Some v'" by(fastforce elim:interpret.cases)
   thus ?case by simp
 next
   case (BinOp b1 bop b2)
@@ -83,7 +83,7 @@ proof(induct rule:WCFG_induct)
   case (WCFG_LAss V' e)
   have label:"labels (V':=e) 0 (V':=e)" and lhs:"V' \<in> lhs (V':=e)"
     by(auto intro:Labels_Base)
-  hence "V' \<in> Defs (V':=e) (_0_)" by fastsimp
+  hence "V' \<in> Defs (V':=e) (_0_)" by fastforce
   with `V \<notin> Defs (V':=e) (_0_)` show ?case by auto
 next
   case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
@@ -92,12 +92,12 @@ next
   proof
     assume "V \<in> Defs c\<^isub>1 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>1 l c"
-      and "V \<in> lhs c" by fastsimp
+      and "V \<in> lhs c" by fastforce
     from `labels c\<^isub>1 l c` have "labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)"
-      by(fastsimp intro:Labels_Seq1)
+      by(fastforce intro:Labels_Seq1)
     from `V \<in> lhs c` have "V \<in> lhs (c;;c\<^isub>2)" by simp
-    with `labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)` have "V \<in> Defs (c\<^isub>1;;c\<^isub>2) n" by fastsimp
-    with `V \<notin> Defs (c\<^isub>1;;c\<^isub>2) n` show False by fastsimp
+    with `labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)` have "V \<in> Defs (c\<^isub>1;;c\<^isub>2) n" by fastforce
+    with `V \<notin> Defs (c\<^isub>1;;c\<^isub>2) n` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
@@ -107,12 +107,12 @@ next
   proof
     assume "V \<in> Defs c\<^isub>1 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>1 l c"
-      and "V \<in> lhs c" by fastsimp
+      and "V \<in> lhs c" by fastforce
     from `labels c\<^isub>1 l c` have "labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)"
-      by(fastsimp intro:Labels_Seq1)
+      by(fastforce intro:Labels_Seq1)
     from `V \<in> lhs c` have "V \<in> lhs (c;;c\<^isub>2)" by simp
-    with `labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)` have "V \<in> Defs (c\<^isub>1;;c\<^isub>2) n" by fastsimp
-    with `V \<notin> Defs (c\<^isub>1;;c\<^isub>2) n` show False by fastsimp
+    with `labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)` have "V \<in> Defs (c\<^isub>1;;c\<^isub>2) n" by fastforce
+    with `V \<notin> Defs (c\<^isub>1;;c\<^isub>2) n` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
@@ -122,11 +122,11 @@ next
   proof
     assume "V \<in> Defs c\<^isub>2 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>2 l c"
-      and "V \<in> lhs c" by fastsimp
+      and "V \<in> lhs c" by fastforce
     from `labels c\<^isub>2 l c` have "labels (c\<^isub>1;;c\<^isub>2) (l + #:c\<^isub>1) c"
-      by(fastsimp intro:Labels_Seq2)
-    with `V \<in> lhs c` have "V \<in> Defs (c\<^isub>1;;c\<^isub>2) (n \<oplus> #:c\<^isub>1)" by fastsimp
-    with `V \<notin> Defs (c\<^isub>1;;c\<^isub>2) (n \<oplus> #:c\<^isub>1)` show False by fastsimp
+      by(fastforce intro:Labels_Seq2)
+    with `V \<in> lhs c` have "V \<in> Defs (c\<^isub>1;;c\<^isub>2) (n \<oplus> #:c\<^isub>1)" by fastforce
+    with `V \<notin> Defs (c\<^isub>1;;c\<^isub>2) (n \<oplus> #:c\<^isub>1)` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
@@ -136,11 +136,11 @@ next
   proof
     assume "V \<in> Defs c\<^isub>1 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>1 l c"
-      and "V \<in> lhs c" by fastsimp
+      and "V \<in> lhs c" by fastforce
     from `labels c\<^isub>1 l c` have "labels (if (b) c\<^isub>1 else c\<^isub>2) (l + 1) c"
-      by(fastsimp intro:Labels_CondTrue)
-    with `V \<in> lhs c` have "V \<in> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> 1)" by fastsimp
-    with `V \<notin> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> 1)` show False by fastsimp
+      by(fastforce intro:Labels_CondTrue)
+    with `V \<in> lhs c` have "V \<in> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> 1)" by fastforce
+    with `V \<notin> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> 1)` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
@@ -150,12 +150,12 @@ next
   proof
     assume "V \<in> Defs c\<^isub>2 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>2 l c"
-      and "V \<in> lhs c" by fastsimp
+      and "V \<in> lhs c" by fastforce
     from `labels c\<^isub>2 l c` have "labels (if (b) c\<^isub>1 else c\<^isub>2) (l + #:c\<^isub>1 + 1) c"
-      by(fastsimp intro:Labels_CondFalse)
+      by(fastforce intro:Labels_CondFalse)
     with `V \<in> lhs c` have "V \<in> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> #:c\<^isub>1 + 1)"
-      by(fastsimp simp:nat_add_commute nat_add_left_commute)
-    with `V \<notin> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> #:c\<^isub>1 + 1)` show False by fastsimp
+      by(fastforce simp:nat_add_commute nat_add_left_commute)
+    with `V \<notin> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> #:c\<^isub>1 + 1)` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
@@ -165,13 +165,13 @@ next
   proof
     assume "V \<in> Defs c' n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c' l c"
-      and "V \<in> lhs c" by fastsimp
+      and "V \<in> lhs c" by fastforce
     from `labels c' l c` have "labels (while (b) c') (l + 2) (c;;while (b) c')"
-      by(fastsimp intro:Labels_WhileBody)
-    from `V \<in> lhs c` have "V \<in> lhs (c;;while (b) c')" by fastsimp
+      by(fastforce intro:Labels_WhileBody)
+    from `V \<in> lhs c` have "V \<in> lhs (c;;while (b) c')" by fastforce
     with `labels (while (b) c') (l + 2) (c;;while (b) c')`
-    have "V \<in> Defs (while (b) c') (n \<oplus> 2)" by fastsimp
-    with `V \<notin> Defs (while (b) c') (n \<oplus> 2)` show False by fastsimp
+    have "V \<in> Defs (while (b) c') (n \<oplus> 2)" by fastforce
+    with `V \<notin> Defs (while (b) c') (n \<oplus> 2)` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
@@ -181,13 +181,13 @@ next
   proof
     assume "V \<in> Defs c' n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c' l c"
-      and "V \<in> lhs c" by fastsimp
+      and "V \<in> lhs c" by fastforce
     from `labels c' l c` have "labels (while (b) c') (l + 2) (c;;while (b) c')"
-      by(fastsimp intro:Labels_WhileBody)
-    from `V \<in> lhs c` have "V \<in> lhs (c;;while (b) c')" by fastsimp
+      by(fastforce intro:Labels_WhileBody)
+    from `V \<in> lhs c` have "V \<in> lhs (c;;while (b) c')" by fastforce
     with `labels (while (b) c') (l + 2) (c;;while (b) c')`
-    have "V \<in> Defs (while (b) c') (n \<oplus> 2)" by fastsimp
-    with `V \<notin> Defs (while (b) c') (n \<oplus> 2)` show False by fastsimp
+    have "V \<in> Defs (while (b) c') (n \<oplus> 2)" by fastforce
+    with `V \<notin> Defs (while (b) c') (n \<oplus> 2)` show False by fastforce
   qed
   from IH[OF this] show ?case .
 qed auto
@@ -201,25 +201,25 @@ lemma WCFG_edge_transfer_uses_only_Uses:
 proof(induct rule:WCFG_induct)
   case (WCFG_LAss V e)
   have "Uses (V:=e) (_0_) = {V. V \<in> rhs_aux e}"
-    by(fastsimp elim:labels.cases intro:Labels_Base)
+    by(fastforce elim:labels.cases intro:Labels_Base)
   with `\<forall>V'\<in>Uses (V:=e) (_0_). s V' = s' V'` 
   have "\<forall>V'\<in>rhs_aux e. s V' = s' V'" by blast
   have "Defs (V:=e) (_0_) = {V}"
-    by(fastsimp elim:labels.cases intro:Labels_Base)
+    by(fastforce elim:labels.cases intro:Labels_Base)
   have "transfer \<Up>\<lambda>s. s(V := interpret e s) s V =
         transfer \<Up>\<lambda>s. s(V := interpret e s) s' V"
   proof(cases "interpret e s")
     case None
     { fix v assume "interpret e s' = Some v"
       with `\<forall>V'\<in>rhs_aux e. s V' = s' V'` have "interpret e s = Some v"
-        by(fastsimp intro:rhs_interpret_eq)
-      with None have False by(fastsimp split:split_if_asm) }
-    with None show ?thesis by fastsimp
+        by(fastforce intro:rhs_interpret_eq)
+      with None have False by(fastforce split:split_if_asm) }
+    with None show ?thesis by fastforce
   next
     case (Some v)
-    hence "interpret e s = Some v" by(fastsimp split:split_if_asm)
+    hence "interpret e s = Some v" by(fastforce split:split_if_asm)
     with `\<forall>V'\<in>rhs_aux e. s V' = s' V'`
-    have "interpret e s' = Some v" by(fastsimp intro:rhs_interpret_eq)
+    have "interpret e s' = Some v" by(fastforce intro:rhs_interpret_eq)
     with Some show ?thesis by simp
   qed
   with `Defs (V:=e) (_0_) = {V}` show ?case by simp
@@ -233,7 +233,7 @@ next
   with `c\<^isub>1 \<turnstile> n -et\<rightarrow> n'` show ?case using Labels_Base 
     apply clarsimp 
     apply(erule labels.cases,auto dest:WCFG_sourcelabel_less_num_nodes)
-    by(erule_tac x="V" in allE,fastsimp)
+    by(erule_tac x="V" in allE,fastforce)
 next
   case (WCFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
   note IH = `\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V 
@@ -244,7 +244,7 @@ next
   with `c\<^isub>1 \<turnstile> n -et\<rightarrow> (_Exit_)` show ?case using Labels_Base 
     apply clarsimp 
     apply(erule labels.cases,auto dest:WCFG_sourcelabel_less_num_nodes)
-    by(erule_tac x="V" in allE,fastsimp)
+    by(erule_tac x="V" in allE,fastforce)
 next
   case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
   note IH = `\<forall>V\<in>Uses c\<^isub>2 n. s V = s' V 
@@ -304,7 +304,7 @@ next
     apply clarsimp 
     apply(erule labels.cases,auto)
     by(cases n,auto dest:label_less_num_inner_nodes)
-qed (fastsimp elim:labels.cases)+
+qed (fastforce elim:labels.cases)+
 
 
 lemma WCFG_edge_Uses_pred_eq:
@@ -333,7 +333,7 @@ next
   from `\<forall>V\<in>Uses (if (b) c\<^isub>1 else c\<^isub>2) (_0_). s V = s' V` 
   have all:"\<forall>V. labels (if (b) c\<^isub>1 else c\<^isub>2) 0 (if (b) c\<^isub>1 else c\<^isub>2) \<and> 
             V \<in> rhs (if (b) c\<^isub>1 else c\<^isub>2) \<longrightarrow> (s V = s' V)"
-    by fastsimp
+    by fastforce
   obtain v' where [simp]:"v' = true" by simp
   with `pred (\<lambda>s. interpret b s = Some true)\<^isub>\<surd> s`
   have "interpret b s = Some v'" by simp
@@ -347,7 +347,7 @@ next
   from `\<forall>V\<in>Uses (if (b) c\<^isub>1 else c\<^isub>2) (_0_). s V = s' V`
   have all:"\<forall>V. labels (if (b) c\<^isub>1 else c\<^isub>2) 0 (if (b) c\<^isub>1 else c\<^isub>2) \<and> 
               V \<in> rhs (if (b) c\<^isub>1 else c\<^isub>2) \<longrightarrow> (s V = s' V)"
-    by fastsimp
+    by fastforce
   obtain v' where [simp]:"v' = false" by simp
   with `pred (\<lambda>s. interpret b s = Some false)\<^isub>\<surd> s` 
   have "interpret b s = Some v'" by simp
@@ -375,7 +375,7 @@ next
   from `\<forall>V\<in>Uses (while (b) c') (_0_). s V = s' V`
   have all:"\<forall>V. labels (while (b) c') 0 (while (b) c') \<and> 
               V \<in> rhs (while (b) c') \<longrightarrow> (s V = s' V)"
-    by fastsimp
+    by fastforce
   obtain v' where [simp]:"v' = true" by simp
   with `pred (\<lambda>s. interpret b s = Some true)\<^isub>\<surd> s`
   have "interpret b s = Some v'" by simp
@@ -389,7 +389,7 @@ next
   from `\<forall>V\<in>Uses (while (b) c') (_0_). s V = s' V`
   have all:"\<forall>V. labels (while (b) c') 0 (while (b) c') \<and> 
               V \<in> rhs (while (b) c') \<longrightarrow> (s V = s' V)"
-    by fastsimp
+    by fastforce
   obtain v' where [simp]:"v' = false" by simp
   with `pred (\<lambda>s. interpret b s = Some false)\<^isub>\<surd> s`
   have "interpret b s = Some v'" by simp
@@ -427,7 +427,7 @@ next
   obtain nx et nx' where [simp]:"a = (nx,et,nx')" by(cases a) auto
   with `valid_edge prog a` have "prog \<turnstile> nx -et\<rightarrow> nx'" by(simp add:valid_edge_def)
   with `V \<notin> Defs prog (sourcenode a)` show "id (transfer (kind a) s) V = id s V"
-    by(fastsimp intro:WCFG_edge_no_Defs_equal)
+    by(fastforce intro:WCFG_edge_no_Defs_equal)
 next
   fix a fix s s'::state
   assume "valid_edge prog a" 
@@ -452,7 +452,7 @@ next
     and "sourcenode a = sourcenode a'" and "targetnode a \<noteq> targetnode a'"
   thus "\<exists>Q Q'. kind a = (Q)\<^isub>\<surd> \<and> kind a' = (Q')\<^isub>\<surd> \<and> 
                (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
-    by(fastsimp intro!:WCFG_deterministic simp:valid_edge_def)
+    by(fastforce intro!:WCFG_deterministic simp:valid_edge_def)
 qed
 
 

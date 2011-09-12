@@ -54,7 +54,7 @@ where
 (* FIXME: move to wellform *)
 lemma is_class_is_subcls:
   "wf_prog m P \<Longrightarrow> is_class P C = P \<turnstile> C \<preceq>\<^sup>* Object"
-(*<*)by (fastsimp simp:is_class_def
+(*<*)by (fastforce simp:is_class_def
                   elim: subcls_C_Object converse_rtranclE subcls1I
                   dest: subcls1D)
 (*>*)
@@ -108,9 +108,9 @@ apply (rename_tac M T)
 apply (case_tac "EX C. Class C : M")
  prefer 2
  apply (case_tac T)
-     apply fastsimp
-    apply fastsimp
-   apply fastsimp
+     apply fastforce
+    apply fastforce
+   apply fastforce
   apply simp
   apply (rule_tac x = NT in bexI)
    apply (rule allI)

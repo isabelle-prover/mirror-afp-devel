@@ -128,7 +128,7 @@ lemma method_append [simp]:
 (*<*)
   apply (insert class_list)
   apply (unfold list_class_def)
-  apply (fastsimp simp add: Method_def distinct_classes intro: method_def2 Methods.intros)
+  apply (fastforce simp add: Method_def distinct_classes intro: method_def2 Methods.intros)
   done
 (*>*)
 
@@ -138,7 +138,7 @@ lemma method_makelist [simp]:
 (*<*)
   apply (insert class_test)
   apply (unfold test_class_def)
-  apply (fastsimp simp add: Method_def distinct_classes intro: method_def2 Methods.intros)
+  apply (fastforce simp add: Method_def distinct_classes intro: method_def2 Methods.intros)
   done
 (*>*)
 
@@ -147,7 +147,7 @@ lemma field_val [simp]:
 (*<*)
   apply (insert class_list)
   apply (unfold list_class_def)
-  apply (fastsimp simp add: sees_field_def distinct_classes intro: field_def2 Fields.intros)
+  apply (fastforce simp add: sees_field_def distinct_classes intro: field_def2 Fields.intros)
   done
 (*>*)
 
@@ -156,27 +156,27 @@ lemma field_next [simp]:
 (*<*)
   apply (insert class_list)
   apply (unfold list_class_def)
-  apply (fastsimp simp add: distinct_fields sees_field_def distinct_classes intro: field_def2 Fields.intros)
+  apply (fastforce simp add: distinct_fields sees_field_def distinct_classes intro: field_def2 Fields.intros)
   done
 (*>*)
 
 lemma [simp]: "fields E Object = []"
-  by (fastsimp intro: fields_def2 Fields.intros)
+  by (fastforce intro: fields_def2 Fields.intros)
  
 lemma [simp]: "fields E NullPointer = []"
-  by (fastsimp simp add: distinct_classes intro: fields_def2 Fields.intros)
+  by (fastforce simp add: distinct_classes intro: fields_def2 Fields.intros)
 
 lemma [simp]: "fields E ClassCast = []"
-  by (fastsimp simp add: distinct_classes intro: fields_def2 Fields.intros)
+  by (fastforce simp add: distinct_classes intro: fields_def2 Fields.intros)
 
 lemma [simp]: "fields E OutOfMemory = []"
-  by (fastsimp simp add: distinct_classes intro: fields_def2 Fields.intros)
+  by (fastforce simp add: distinct_classes intro: fields_def2 Fields.intros)
 
 lemma [simp]: "fields E test_name = []"
 (*<*)
   apply (insert class_test)
   apply (unfold test_class_def)
-  apply (fastsimp simp add: distinct_classes intro: fields_def2 Fields.intros)
+  apply (fastforce simp add: distinct_classes intro: fields_def2 Fields.intros)
   done
 (*>*)
 
@@ -307,26 +307,26 @@ lemma wt_append [simp]:
   apply (erule_tac P="?x = ?y" in rev_mp)
   apply (elim pc_end pc_next pc_0)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add: matches_ex_entry_def subcls1
+  apply (fastforce simp add: matches_ex_entry_def subcls1
     relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
     distinct_classes distinct_fields intro: Fields.intros)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add:
-    relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
-    distinct_classes distinct_fields intro: Fields.intros)
-  apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add: relevant_entries_def is_relevant_entry_def subcls1)
-  apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add:
+  apply (fastforce simp add:
     relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
     distinct_classes distinct_fields intro: Fields.intros)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastforce simp add: relevant_entries_def is_relevant_entry_def subcls1)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add:
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastforce simp add:
+    relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
+    distinct_classes distinct_fields intro: Fields.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastforce simp add:
     relevant_entries_def is_relevant_entry_def list_class_def
     distinct_classes Method_def intro: Methods.intros)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
@@ -387,32 +387,32 @@ lemma wt_makelist [simp]:
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add:
+  apply (fastforce simp add:
     relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
     distinct_classes intro: Fields.intros)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add:
+  apply (fastforce simp add:
     relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
     distinct_classes intro: Fields.intros)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add:
+  apply (fastforce simp add:
     relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
     distinct_classes intro: Fields.intros)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add:
+  apply (fastforce simp add:
     relevant_entries_def is_relevant_entry_def list_class_def
     distinct_classes Method_def intro: Methods.intros)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
-  apply (fastsimp simp add:
+  apply (fastforce simp add:
     relevant_entries_def is_relevant_entry_def list_class_def
     distinct_classes Method_def intro: Methods.intros)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
@@ -427,7 +427,7 @@ lemma wf_md'E:
   apply (simp add: wf_prog_def)
   apply auto
   apply (simp add: wf_cdecl_def wf_mdecl_def)
-  apply fastsimp
+  apply fastforce
   done
 (*>*)
 
@@ -460,7 +460,7 @@ lemma "E,\<Phi> \<turnstile> start_state E test_name makelist_name \<surd>"
 (*<*)
   apply (rule BV_correct_initial)
     apply (rule wf_prog)
-  apply (fastsimp simp add: test_class_def distinct_classes Method_def intro: Methods.intros)
+  apply (fastforce simp add: test_class_def distinct_classes Method_def intro: Methods.intros)
   done
 (*>*)
 
@@ -566,7 +566,7 @@ lemma [code]:
       (case ST!n of
          Class C \<Rightarrow> Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P C M) (\<lambda>(Ts, T, m, D). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
        | _ \<Rightarrow> False)))"
-by(fastsimp simp add: Predicate.holds_eq simp del: eval_bind split: ty.split_asm split_if_asm intro: bindI Method_i_i_i_o_o_o_oI elim!: bindE Method_i_i_i_o_o_o_oE)
+by(fastforce simp add: Predicate.holds_eq simp del: eval_bind split: ty.split_asm split_if_asm intro: bindI Method_i_i_i_o_o_o_oI elim!: bindE Method_i_i_i_o_o_o_oE)
 
 definition [code del]: "mem2 = op :"
 lemma [code]: "mem2 x A = A x"

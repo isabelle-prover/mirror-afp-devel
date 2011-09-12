@@ -220,7 +220,7 @@ apply simp
 apply simp
 apply simp
 apply simp apply (iprover dest:sqUn_lem)
-apply (fastsimp simp add:hyperset_defs)
+apply (fastforce simp add:hyperset_defs)
 apply simp
 apply simp apply (iprover dest:sqUn_lem)
 apply simp apply (iprover dest:sqUn_lem)
@@ -257,13 +257,13 @@ proof(induct e and es arbitrary: A and A)
   case Var thus ?case by(simp add: hyperset_defs)
 next
   case Block thus ?case
-    by(fastsimp simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
+    by(fastforce simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
 next
-  case Synchronized thus ?case by(fastsimp simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
+  case Synchronized thus ?case by(fastforce simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
 next
-  case InSynchronized thus ?case by(fastsimp simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
+  case InSynchronized thus ?case by(fastforce simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
 next
-  case TryCatch thus ?case by(fastsimp simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
+  case TryCatch thus ?case by(fastforce simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
 qed (simp_all, (blast intro: D_mono' Ds_mono' restrict_lem2 restrict_lem restrict_lem3)+)
 
 end

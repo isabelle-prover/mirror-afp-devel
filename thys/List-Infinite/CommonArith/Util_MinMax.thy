@@ -63,10 +63,10 @@ lemmas le_minI2 = min_max.inf_le2
 lemma 
   min_le_monoR: "(a::'a::linorder) \<le> b \<Longrightarrow> min x a \<le> min x b" and
   min_le_monoL: "(a::'a::linorder) \<le> b \<Longrightarrow> min a x \<le> min b x" 
-by (fastsimp simp: min_max.inf_mono min_def)+
+by (fastforce simp: min_max.inf_mono min_def)+
 lemma 
   max_le_monoR: "(a::'a::linorder) \<le> b \<Longrightarrow> max x a \<le> max x b" and
   max_le_monoL: "(a::'a::linorder) \<le> b \<Longrightarrow> max a x \<le> max b x"
-by (fastsimp simp: min_max.sup_mono max_def)+
+by (fastforce simp: min_max.sup_mono max_def)+
 
 end

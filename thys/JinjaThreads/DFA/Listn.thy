@@ -291,12 +291,12 @@ proof -
   next
     fix n l ls
     assume "?list (l#ls) n"
-    then obtain n' where n: "n = Suc n'" "l \<in> A" and n': "ls@b \<in> list n' A" by fastsimp
+    then obtain n' where n: "n = Suc n'" "l \<in> A" and n': "ls@b \<in> list n' A" by fastforce
     assume "\<And>n. ls @ b \<in> list n A \<Longrightarrow> \<exists>n1 n2. n = n1 + n2 \<and> ls \<in> list n1 A \<and> b \<in> list n2 A"
     from this and n' have "\<exists>n1 n2. n' = n1 + n2 \<and> ls \<in> list n1 A \<and> b \<in> list n2 A" .
     then obtain n1 n2 where "n' = n1 + n2" "ls \<in> list n1 A" "b \<in> list n2 A" by fast
     with n have "?P (l#ls) n (n1+1) n2" by simp
-    thus "\<exists>n1 n2. ?P (l#ls) n n1 n2" by fastsimp
+    thus "\<exists>n1 n2. ?P (l#ls) n n1 n2" by fastforce
   qed
   moreover
   assume "a@b \<in> list n A" "\<And>n1 n2. n=n1+n2 \<Longrightarrow> a \<in> list n1 A \<Longrightarrow> b \<in> list n2 A \<Longrightarrow> P"
@@ -411,7 +411,7 @@ apply (subgoal_tac
   prefer 2
   apply clarify
   apply(frule lesssub_lengthD)
-  apply fastsimp
+  apply fastforce
  apply simp
 apply (rule wf_UN)
  prefer 2
@@ -455,7 +455,7 @@ apply simp
 apply (erule disjE)
  prefer 2
  apply blast
-by fastsimp
+by fastforce
 
 lemma acc_le_listI [intro!]:
   "\<lbrakk> order r; acc A r \<rbrakk> \<Longrightarrow> acc (list n A) (Listn.le r)"
@@ -639,7 +639,7 @@ done
 lemma closed_lift2_sup:
   "closed (err A) (lift2 f) \<Longrightarrow> 
   closed (err (list n A)) (lift2 (sup f))"
-(*<*) by (fastsimp  simp add: closed_def plussub_def sup_def lift2_def 
+(*<*) by (fastforce  simp add: closed_def plussub_def sup_def lift2_def 
                           coalesce_in_err_list closed_map2_list
                 split: err.split) (*>*)
 
@@ -666,7 +666,7 @@ lemma err_semilat_upto_esl:
 apply (unfold Listn.upto_esl_def)
 apply (simp (no_asm_simp) only: split_tupled_all)
 apply simp
-apply (fastsimp intro!: err_semilat_UnionI err_semilat_sup
+apply (fastforce intro!: err_semilat_UnionI err_semilat_sup
                 dest: lesub_list_impl_same_size 
                 simp add: plussub_def Listn.sup_def)
 done

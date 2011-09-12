@@ -119,7 +119,7 @@ where "jvm_thread_action'_ok P ta \<longleftrightarrow> (\<forall>nt \<in> set \
 
 lemma jvm_thread_action'_ok_jvm_thread_action'_of_jvm_thread_action [iff]:
   "jvm_thread_action'_ok P (jvm_thread_action'_of_jvm_thread_action P ta)"
-by(cases ta)(fastsimp dest: sym simp add: jvm_thread_action'_ok_def jvm_thread_action'_of_jvm_thread_action_def)
+by(cases ta)(fastforce dest: sym simp add: jvm_thread_action'_ok_def jvm_thread_action'_of_jvm_thread_action_def)
 
 lemma jvm_thread_action'_ok_\<epsilon> [simp]: "jvm_thread_action'_ok P \<epsilon>"
 by(simp add: jvm_thread_action'_ok_def)
@@ -178,7 +178,7 @@ lemma jvm_ta_state'_ok_inverse:
   shows "jvm_ta_state_of_jvm_ta_state' tas \<in> A \<longleftrightarrow> tas \<in> jvm_ta_state'_of_jvm_ta_state P ` A"
 using assms
 apply(cases tas)
-apply(fastsimp simp add: o_def jvm_thread_action'_of_jvm_thread_action_def jvm_thread_action'_ok_def intro!: map_idI[symmetric] map_idI convert_new_thread_action_eqI dest: bspec intro!: rev_image_eqI elim!: rev_iffD1[OF _ arg_cong[where f="\<lambda>x. x : A"]])
+apply(fastforce simp add: o_def jvm_thread_action'_of_jvm_thread_action_def jvm_thread_action'_ok_def intro!: map_idI[symmetric] map_idI convert_new_thread_action_eqI dest: bspec intro!: rev_image_eqI elim!: rev_iffD1[OF _ arg_cong[where f="\<lambda>x. x : A"]])
 done
 
 context JVM_heap_execute begin
@@ -362,7 +362,7 @@ proof -
   next
     case Invoke
     thus ?thesis using assms 
-      by(cases "method P C M")(fastsimp simp add: extNTA2JVM'_def dest: sees_method_idemp execute.red_external_aggr_new_thread_sub_thread sub_Thread_sees_run[OF wf])
+      by(cases "method P C M")(fastforce simp add: extNTA2JVM'_def dest: sees_method_idemp execute.red_external_aggr_new_thread_sub_thread sub_Thread_sees_run[OF wf])
   next
     case Goto thus ?thesis using assms
       by(cases "method P C M") simp
@@ -394,7 +394,7 @@ proof -
       by(cases "method P C M") simp
   next
     case Invoke thus ?thesis using assms
-      by(cases "method P C M")(fastsimp intro!: rev_bexI convert_new_thread_action_eqI simp add: extNTA2JVM'_def extNTA2JVM_def dest: execute.red_external_aggr_new_thread_sub_thread sub_Thread_sees_run[OF wf] sees_method_idemp)
+      by(cases "method P C M")(fastforce intro!: rev_bexI convert_new_thread_action_eqI simp add: extNTA2JVM'_def extNTA2JVM_def dest: execute.red_external_aggr_new_thread_sub_thread sub_Thread_sees_run[OF wf] sees_method_idemp)
   qed auto
 qed
 
@@ -412,7 +412,7 @@ proof -
   from assms have "jvm_ta_state_of_jvm_ta_state' tas \<in> execute.exec_instr i P t h stk loc C M pc (map frame_of_frame' frs)"
   proof(cases i)
     case Invoke thus ?thesis using assms
-      by(fastsimp simp add: extNTA2JVM'_def extNTA2JVM_def split_def extRet2JVM'_extRet2JVM[simplified])
+      by(fastforce simp add: extNTA2JVM'_def extNTA2JVM_def split_def extRet2JVM'_extRet2JVM[simplified])
   next
     case Return thus ?thesis using assms by(auto simp add: neq_Nil_conv)
   qed auto
@@ -448,11 +448,11 @@ apply(rule Cset.set_eqI)
 apply(rule equalityI)
  apply(clarsimp)
  apply(erule (1) check_exec_instr_refine)
-  apply fastsimp
+  apply fastforce
  apply(simp add: hd_drop_conv_nth)
 apply(clarsimp)
 apply(drule (1) check_exec_instr_complete)
-  apply fastsimp
+  apply fastforce
  apply(assumption)
 apply(simp add: hd_drop_conv_nth)
 done
@@ -472,7 +472,7 @@ apply(rename_tac fr frs')
 apply(case_tac xcp)
  apply(clarsimp simp add: execute.check_def)
  apply(erule (1) check_exec_instr_ok)
-  apply fastsimp
+  apply fastforce
  apply(simp add: hd_drop_conv_nth)
 apply(case_tac fr)
 apply(rename_tac cache stk loc C M pc)

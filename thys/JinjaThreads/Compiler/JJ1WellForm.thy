@@ -21,14 +21,14 @@ lemma assumes wf: "wf_prog wfmd P"
   shows compE1_pres_wt: "\<lbrakk> P,[Vs[\<mapsto>]Ts] \<turnstile> e :: U; size Ts = size Vs \<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 Vs e :: U"
   and compEs1_pres_wt: "\<lbrakk> P,[Vs[\<mapsto>]Ts] \<turnstile> es [::] Us; size Ts = size Vs \<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compEs1 Vs es [::] Us"
 proof(induct Vs e and Vs es arbitrary: Ts U and Ts Us rule: compE1_compEs1_induct)
-  case Var thus ?case by(fastsimp simp:map_upds_apply_eq_Some split:split_if_asm)
+  case Var thus ?case by(fastforce simp:map_upds_apply_eq_Some split:split_if_asm)
 next
-  case LAss thus ?case by(fastsimp simp:map_upds_apply_eq_Some split:split_if_asm)
+  case LAss thus ?case by(fastforce simp:map_upds_apply_eq_Some split:split_if_asm)
 next
   case Call thus ?case
-    by(fastsimp dest: sees_method_compP[where f = f])
+    by(fastforce dest: sees_method_compP[where f = f])
 next
-  case Block thus ?case by(fastsimp simp:nth_append)
+  case Block thus ?case by(fastforce simp:nth_append)
 next
   case (Synchronized Vs V exp1 exp2 Ts U)
   note IH1 = `\<And>Ts U. \<lbrakk>P,[Vs [\<mapsto>] Ts] \<turnstile> exp1 :: U;
@@ -60,7 +60,7 @@ next
     and C: "P \<turnstile> C \<preceq>\<^sup>* Throwable" by(auto simp add: nth_append)
   from wf C have "is_class P C" by(rule is_class_sub_Throwable)
   with IH1[OF wt1 length] IH2[OF wt2] length show ?case by(auto)
-qed(fastsimp)+
+qed(fastforce)+
 
 
 text{*\noindent and the correct block numbering: *}
@@ -80,7 +80,7 @@ lemma fixes e :: "'addr expr" and es :: "'addr expr list"
   and As_compEs1: "\<lbrakk> \<A>s es = \<lfloor>A\<rfloor>; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A>s (compEs1 Vs es) = \<lfloor>index Vs ` A\<rfloor>"
 proof(induct Vs e and Vs es arbitrary: A and A rule: compE1_compEs1_induct)
   case (Block Vs V' T vo e)
-  hence "fv e \<subseteq> set (Vs@[V'])" by fastsimp
+  hence "fv e \<subseteq> set (Vs@[V'])" by fastforce
   moreover obtain B where "\<A> e = \<lfloor>B\<rfloor>"
     using Block.prems by(simp add: hyperset_defs)
   moreover from calculation have "B \<subseteq> set (Vs@[V'])" by(auto dest!:A_fv)
@@ -133,7 +133,7 @@ next
       moreover
       have "A2 \<subseteq> set (Vs@[V'])" using TryCatch.prems A_fv[OF A2] by simp blast
       ultimately show ?thesis using TryCatch A1 A2
-	by(fastsimp simp add: hyperset_defs image_index
+	by(fastforce simp add: hyperset_defs image_index
 	  Diff_subset_conv inj_on_image_Int[OF inj_on_index])
     qed
   qed
@@ -153,7 +153,7 @@ next
       by(auto simp add:hyperset_defs image_Un
 	  inj_on_image_Int[OF inj_on_index])
   }
-  ultimately show ?case by fastsimp
+  ultimately show ?case by fastforce
 qed (auto simp add:hyperset_defs)
 
 lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
@@ -403,7 +403,7 @@ by(induct xs rule:rev_induct) (auto simp add: image_index)
 
 lemma D_compE1:
   "\<lbrakk> \<D> e \<lfloor>set Vs\<rfloor>; fv e \<subseteq> set Vs; distinct Vs \<rbrakk> \<Longrightarrow> \<D> (compE1 Vs e) \<lfloor>{..<length Vs}\<rfloor>"
-by(fastsimp dest!: D_index_compE1[OF subset_refl] simp add:index_image_set)
+by(fastforce dest!: D_index_compE1[OF subset_refl] simp add:index_image_set)
 
 lemma D_compE1':
   assumes "\<D> e \<lfloor>set(V#Vs)\<rfloor>" and "fv e \<subseteq> set(V#Vs)" and "distinct(V#Vs)"
@@ -421,7 +421,7 @@ apply(case_tac m)
 apply(simp add:wf_mdecl_def wf_J1_mdecl_def wf_J_mdecl)
 apply(clarify)
 apply(frule WT_fv)
-apply(fastsimp intro!: compE1_pres_wt D_compE1' \<B> syncvars_compE1)
+apply(fastforce intro!: compE1_pres_wt D_compE1' \<B> syncvars_compE1)
 done
 
 end

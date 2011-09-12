@@ -71,7 +71,7 @@ lemma [iff]: "(s -CALL p\<rightarrow> t) = (s -body p\<rightarrow> t)"
 by(blast elim: exec.cases intro:exec.intros)
 
 lemma [iff]: "(s -LOCAL f; c; g\<rightarrow> u) = (\<exists>t. f s -c\<rightarrow> t \<and> u = g s t)"
-by(fastsimp elim: exec.cases intro:exec.intros)
+by(fastforce elim: exec.cases intro:exec.intros)
 
 inductive
   execn :: "state \<Rightarrow> com \<Rightarrow> nat \<Rightarrow> state \<Rightarrow> bool"   ("_/ -_-_\<rightarrow>/ _" [50,0,0,50] 50)
@@ -138,21 +138,21 @@ apply(rule iffI)
        apply clarify
        apply(rename_tac m n)
        apply(rule_tac x = "max m n" in exI)
-       apply(fastsimp intro:exec.intros exec_mono simp add:max_def)
-      apply fastsimp
-     apply fastsimp
+       apply(fastforce intro:exec.intros exec_mono simp add:max_def)
+      apply fastforce
+     apply fastforce
     apply(blast intro:execn.intros)
    apply clarify
    apply(rename_tac m n)
    apply(rule_tac x = "max m n" in exI)
-   apply(fastsimp elim:execn.WhileTrue exec_mono simp add:max_def)
+   apply(fastforce elim:execn.WhileTrue exec_mono simp add:max_def)
   apply blast
  apply blast
 apply(erule exE, erule execn.induct)
        apply blast
       apply blast
-     apply fastsimp
-    apply fastsimp
+     apply fastforce
+    apply fastforce
    apply(erule exec.WhileFalse)
   apply(blast intro: exec.intros)
  apply blast

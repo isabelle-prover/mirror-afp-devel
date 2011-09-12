@@ -92,7 +92,7 @@ proof -
   obtain T pns body D where h'a: "typeof_addr h' a = \<lfloor>Class C\<rfloor>"
     and sees: "P \<turnstile> C sees M: []\<rightarrow>T = (pns, body) in D" by auto
   from sees_wf_mdecl[OF wf sees] have "fv body \<subseteq> {this}" by(auto simp add: wf_mdecl_def)
-  with red nt h'a sees show ?thesis by(fastsimp simp add: is_call_def intro: bisim_red_red0.intros)
+  with red nt h'a sees show ?thesis by(fastforce simp add: is_call_def intro: bisim_red_red0.intros)
 qed
 
 lemma ta_bisim0_extNTA2J_extNTA2J0:
@@ -122,7 +122,7 @@ proof(induct rule: red_reds.inducts)
   ultimately show ?case unfolding `s' = (h', lcl s)` by blast
 next
   case RedTryFail thus ?case by(force intro: red_reds.RedTryFail)
-qed(fastsimp intro: red_reds.intros simp add: ta_bisim_def ta_upd_simps)+
+qed(fastforce intro: red_reds.intros simp add: ta_bisim_def ta_upd_simps)+
 
 lemma assumes wf: "wwf_J_prog P"
   shows red0_red_tabisim0:
@@ -141,7 +141,7 @@ proof(induct rule: red_reds.inducts)
   ultimately show ?case unfolding `s' = (h', lcl s)` by blast
 next
   case RedTryFail thus ?case by(force intro: red_reds.RedTryFail)
-qed(fastsimp intro: red_reds.intros simp add: ta_bisim_def ta_upd_simps)+
+qed(fastforce intro: red_reds.intros simp add: ta_bisim_def ta_upd_simps)+
 
 lemma red_inline_call_red:
   assumes red: "P,t \<turnstile> \<langle>e, (h, empty)\<rangle> -ta\<rightarrow> \<langle>e', (h', empty)\<rangle>"
@@ -160,15 +160,15 @@ proof(induct E and Es arbitrary: x and x)
   thus ?case
   proof(induct rule: call_callE)
     case CallObj
-    with IHobj[of x] show ?case by(fastsimp intro: red_reds.CallObj)
+    with IHobj[of x] show ?case by(fastforce intro: red_reds.CallObj)
   next
     case (CallParams v'')
-    with IHpns[of x] show ?case by(fastsimp intro: red_reds.CallParams)
+    with IHpns[of x] show ?case by(fastforce intro: red_reds.CallParams)
   next
     case Call
     from red_lcl_add[OF red, where ?l0.0=x]
     have "P,t \<turnstile> \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e', (h', x)\<rangle>" by simp
-    with Call show ?case by(fastsimp dest: BlockRed)
+    with Call show ?case by(fastforce dest: BlockRed)
   qed
 next
   case (Block V T' vo exp x)
@@ -182,14 +182,14 @@ next
     case True
     with `calls (exp # exps) = \<lfloor>aMvs\<rfloor>` have "calls exps = \<lfloor>aMvs\<rfloor>" by auto
     with `calls exps = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concls exps x` True
-    show ?thesis by(fastsimp intro: ListRed2)
+    show ?thesis by(fastforce intro: ListRed2)
   next
     case False
     with `calls (exp # exps) = \<lfloor>aMvs\<rfloor>` have "call exp = \<lfloor>aMvs\<rfloor>" by auto
     with `call exp = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concl exp x`
-    show ?thesis by(fastsimp intro: ListRed1)
+    show ?thesis by(fastforce intro: ListRed1)
   qed
-qed(fastsimp intro: red_reds.intros)+
+qed(fastforce intro: red_reds.intros)+
 
 lemma 
   assumes wf_prog: "wf_prog wfmd P"
@@ -230,7 +230,7 @@ next
   note IH = `\<And>s. \<lbrakk>call exp = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> ?red exp s`
   from `call {V:ty=vo; exp} = \<lfloor>(a, M, vs)\<rfloor>` IH[of "(hp s, (lcl s)(V := vo))"] `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
   show ?case by(cases s, simp del: fun_upd_apply)(drule red_reds.BlockRed, simp)
-qed(fastsimp intro: red_reds.intros)+
+qed(fastforce intro: red_reds.intros)+
 
 lemma red_inline_call_red':
   assumes fv: "fv ee = {}"
@@ -290,7 +290,7 @@ next
     from IHobj[OF _ red'] CallObj obtain ee' 
       where "inline_call ee' obj = obj'" "x = x'"
       and "P,t \<turnstile> \<langle>ee,(h, empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', empty)\<rangle>" by(auto simp del: fun_upd_apply)
-    with `E' = obj'\<bullet>M(pns)` CallObj red' show ?thesis by(fastsimp simp del: fun_upd_apply)
+    with `E' = obj'\<bullet>M(pns)` CallObj red' show ?thesis by(fastforce simp del: fun_upd_apply)
   next
     case (CallParams v'')
     hence "\<not> is_vals pns" by auto
@@ -380,7 +380,7 @@ next
   have "x(V := vo) = x'" by(auto dest: is_call_red_state_unchanged)
   hence "x' V = vo" by auto
   with BlockRed show ?case by(simp)
-qed(fastsimp split: split_if_asm)+
+qed(fastforce split: split_if_asm)+
 
 lemma red_fold_exs:
   "\<lbrakk> P,t \<turnstile> \<langle>e,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', empty)\<rangle>; fvs (e # es) = {}; list_all is_call es \<rbrakk>
@@ -513,11 +513,11 @@ qed
 
 lemma \<tau>Red0r_into_silent_moves:
   "\<tau>Red0r P t h (e, es) (e', es') \<Longrightarrow> red0_mthr.silent_moves P t ((e, es), h) ((e', es'), h)"
-by(induct rule: rtranclp_induct2)(fastsimp intro: \<tau>trsys.silent_move.intros elim!: rtranclp.rtrancl_into_rtrancl)+
+by(induct rule: rtranclp_induct2)(fastforce intro: \<tau>trsys.silent_move.intros elim!: rtranclp.rtrancl_into_rtrancl)+
 
 lemma \<tau>Red0t_into_silent_movet:
   "\<tau>Red0t P t h (e, es) (e', es') \<Longrightarrow> red0_mthr.silent_movet P t ((e, es), h) ((e', es'), h)"
-by(induct rule: tranclp_induct2)(fastsimp intro: \<tau>trsys.silent_move.intros tranclp.r_into_trancl elim!: tranclp.trancl_into_trancl)+
+by(induct rule: tranclp_induct2)(fastforce intro: \<tau>trsys.silent_move.intros tranclp.r_into_trancl elim!: tranclp.trancl_into_trancl)+
 
 lemma red_simulates_red0:
   assumes wwf: "wwf_J_prog P"
@@ -555,7 +555,7 @@ proof -
     moreover from wf_state' have "bisim_red_red0 ((fold_es e' es, empty), h2') s2'" unfolding s2'
       by(auto del: wf_state.cases wf_state.intros)
     ultimately show ?thesis unfolding heap s1 s2 s2' fold x1
-      using tasim by(fastsimp intro!: exI rtranclp.rtrancl_refl)
+      using tasim by(fastforce intro!: exI rtranclp.rtrancl_refl)
   next
     case red0Call
     with \<tau> have False
@@ -705,7 +705,7 @@ next
     moreover from wf_state'
     have "bisim_red_red0 ((fold_es (inline_call e' e) es, empty), h2) ((e', es'), h2')"
       by(auto del: wf_state.intros wf_state.cases)
-    ultimately show ?thesis unfolding s1 s2 s2' fold heap x1 by(fastsimp)
+    ultimately show ?thesis unfolding s1 s2 s2' fold heap x1 by(fastforce)
   next
     case (red0Return E)
     hence [simp]: "es = E # es'" "e' = inline_call e E" "h2' = h2" by auto
@@ -895,7 +895,7 @@ proof -
       using red0_simulates_red_not_final[OF wf, of "fst x1" "snd x1" m1 "fst x2" "snd x2" m2 t ta1 "fst x1'" m1' "snd x1'"]
       using b red1 by(auto simp add: split_beta)
     thus "\<exists>ta2 x2' m2'. mred0 P t (x2, m2) ta2 (x2', m2') \<and> bisim_red_red0 (x1', m1') (x2', m2') \<and> ta_bisim0 ta1 ta2"
-      by(cases ta0)(fastsimp simp add: split_beta)
+      by(cases ta0)(fastforce simp add: split_beta)
   next
     fix t x1 m1 x2 m2 ta2 x2' m2'
     assume b: "bisim_red_red0 (x1, m1) (x2, m2)"
@@ -905,11 +905,11 @@ proof -
     from b have [simp]: "m1 = m2" by cases auto
     with red_simulates_red0[OF wf b red2] wakeup obtain s1' ta1
       where "mred P t (x1, m1) ta1 s1'" "bisim_red_red0 s1' (x2', m2')" "ta_bisim0 ta1 ta2"
-      by(fastsimp simp add: split_paired_Ex)
+      by(fastforce simp add: split_paired_Ex)
     moreover from `bisim_red_red0 s1' (x2', m2')` have "m2' = snd s1'" by cases auto
     ultimately
     show "\<exists>ta1 x1' m1'. mred P t (x1, m1) ta1 (x1', m1') \<and> bisim_red_red0 (x1', m1') (x2', m2') \<and> ta_bisim0 ta1 ta2"
-      by(cases ta1)(fastsimp simp add: split_beta)
+      by(cases ta1)(fastforce simp add: split_beta)
   next
     show "(\<exists>x. final_expr x) \<longleftrightarrow> (\<exists>x. final_expr0 x)"
       by(auto simp add: final_iff)

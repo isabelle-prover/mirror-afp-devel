@@ -59,18 +59,18 @@ next
      proof cases
        assume "i=p1"
        with `?L` assms False show ?thesis
-         by(fastsimp simp add: solution_def swap_def)
+         by(fastforce simp add: solution_def swap_def)
      next
        assume "i\<noteq>p1"
        show ?thesis
        proof cases
          assume "i=p2"
          with `?L` assms False show ?thesis
-           by(fastsimp simp add: solution_def swap_def)
+           by(fastforce simp add: solution_def swap_def)
        next
          assume "i\<noteq>p2"
          with `i\<noteq>p1` `?L` `i<n` assms False show ?thesis
-           by(fastsimp simp add: solution_def swap_def)
+           by(fastforce simp add: solution_def swap_def)
        qed
      qed
    qed

@@ -167,7 +167,7 @@ apply(simp split:bop.splits)
 apply simp
 apply (simp add:sees_field_is_type[OF _ wf])
 apply simp
-apply(fastsimp dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
+apply(fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
 apply simp
 apply simp
 apply blast

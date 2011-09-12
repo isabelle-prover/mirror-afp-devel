@@ -362,7 +362,7 @@ proof (induct)
     by blast
   with CallRec.hyps (2) 
   have "\<forall>(P,p,Q,A)\<in>Specs.  p \<in> dom \<Gamma> \<and> \<Gamma>,\<Theta>'\<union>Specs \<turnstile>\<^bsub>/F\<^esub> P  (the (\<Gamma> p)) Q,A"
-    by fastsimp
+    by fastforce
 
   with CallRec show ?case by - (rule hoarep.CallRec)
 next

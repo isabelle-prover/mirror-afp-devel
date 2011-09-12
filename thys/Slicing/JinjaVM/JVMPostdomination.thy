@@ -86,13 +86,13 @@ next
                            stk_esl_def upto_esl_def loc_sl_def SemiType.esl_def
                            SemiType.sup_def Err.sl_def Err.le_def err_def Listn.sl_def
                            Err.esl_def Opt.esl_def Product.esl_def relevant_entries_def)
-          apply (fastsimp simp: SystemClasses_def ObjectC_def)
+          apply (fastforce simp: SystemClasses_def ObjectC_def)
          apply (clarsimp simp: Method_def)
          apply (cases rule: Methods.cases,
-                (fastsimp simp: class_def SystemClasses_def ObjectC_def)+)
+                (fastforce simp: class_def SystemClasses_def ObjectC_def)+)
         apply (clarsimp simp: Method_def)
         by (cases rule: Methods.cases,
-            (fastsimp simp: class_def SystemClasses_def ObjectC_def)+)
+            (fastforce simp: class_def SystemClasses_def ObjectC_def)+)
     qed
   qed
   with distinct_EP
@@ -152,19 +152,19 @@ apply (clarsimp simp: Method_def EP_def)
 apply (erule Methods.cases, clarsimp simp: class_def SystemClasses_def ObjectC_def)
 apply (clarsimp simp: class_def)
 apply (erule Methods.cases)
- by (fastsimp simp: class_def SystemClasses_def ObjectC_def NullPointerC_def
+ by (fastforce simp: class_def SystemClasses_def ObjectC_def NullPointerC_def
                        OutOfMemoryC_def ClassCastC_def split_if_eq1)+
 
 lemma [simp]:
   "\<exists>T Ts mxs mxl is. (\<exists>xt. EP \<turnstile> ''C'' sees ''M'': Ts\<rightarrow>T = (mxs, mxl, is, xt) in ''C'') \<and> is \<noteq> []"
 using EP_wf
-by (fastsimp dest: mdecl_visible simp: wf_jvm_prog_phi_def EP_def)
+by (fastforce dest: mdecl_visible simp: wf_jvm_prog_phi_def EP_def)
 
 lemma [simp]:
   "\<exists>T Ts mxs mxl is. (\<exists>xt. EP \<turnstile> ''C'' sees ''M'': Ts\<rightarrow>T = (mxs, mxl, is, xt) in ''C'') \<and> 
   Suc 0 < length is"
 using EP_wf
-by (fastsimp dest: mdecl_visible simp: wf_jvm_prog_phi_def EP_def)
+by (fastforce dest: mdecl_visible simp: wf_jvm_prog_phi_def EP_def)
 
 lemma C_sees_M_in_EP [simp]:
   "EP \<turnstile> ''C'' sees ''M'': []\<rightarrow>Void = (1, 0, [Push Unit, Return], []) in ''C''"
@@ -172,19 +172,19 @@ apply (auto simp: Method_def EP_def)
 apply (rule_tac x="Map.empty(''M'' \<mapsto> (([], Void, 1, 0, [Push Unit, Return], []),''C''))" in exI)
 apply auto
 apply (rule Methods.intros(2))
-   apply (fastsimp simp: class_def)
+   apply (fastforce simp: class_def)
   apply clarsimp
  apply (rule Methods.intros(1))
-  apply (fastsimp simp: class_def SystemClasses_def ObjectC_def)
- apply fastsimp
-by fastsimp
+  apply (fastforce simp: class_def SystemClasses_def ObjectC_def)
+ apply fastforce
+by fastforce
 
 lemma instrs_of_EP_C_M [simp]:
   "instrs_of EP ''C'' ''M'' = [Push Unit, Return]"
   using C_sees_M_in_EP
 apply (simp add: method_def)
 apply (rule theI2)
-  apply fastsimp
+  apply fastforce
  apply (clarsimp dest!: method_in_EP_is_M)
 by (clarsimp dest!: method_in_EP_is_M)
 
@@ -192,7 +192,7 @@ by (clarsimp dest!: method_in_EP_is_M)
 lemma valid_cs_seesM_D: 
   "valid_callstack (P, C0, Main) ((C, M, pc)#cs) \<Longrightarrow>
   \<exists>Ts T mxs mxl is xt. (P\<^bsub>wf\<^esub>) \<turnstile> C sees M:Ts\<rightarrow>T=(mxs, mxl, is, xt) in C \<and> pc < length is"
-  by (cases cs, fastsimp+)
+  by (cases cs, fastforce+)
 *)
 
 lemma valid_node_in_EP_D:
@@ -233,7 +233,7 @@ proof -
     next
       case (Some f) [simp]
       obtain cs'' xf where [simp]: "f = (cs'', xf)"
-        by (cases f, fastsimp)
+        by (cases f, fastforce)
       from vn
       show ?thesis
         apply (cases cs)
@@ -262,7 +262,7 @@ proof -
     apply (auto simp: Phi_EP_def)
     by rule auto
   thus ?thesis
-    by (fastsimp simp: JVM_CFG_Interpret.valid_node_def)
+    by (fastforce simp: JVM_CFG_Interpret.valid_node_def)
 qed
 
 lemma EP_C_M_Suc_0_valid [simp]:
@@ -274,7 +274,7 @@ proof -
     apply (auto simp: Phi_EP_def)
     by rule auto
   thus ?thesis
-    by (fastsimp simp: JVM_CFG_Interpret.valid_node_def)
+    by (fastforce simp: JVM_CFG_Interpret.valid_node_def)
 qed
 
 
@@ -297,17 +297,17 @@ proof
     have "JVM_CFG_Interpret.path ?prog (_Entry_) [] (_Entry_)"
       by (simp add: JVM_CFG_Interpret.path.empty_path)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_Entry_) as (_Entry_)"
-      by fastsimp
+      by fastforce
   next
     have "JVM_CFG_Interpret.path ?prog (_Entry_) [?edge0] (_Exit_)"
       by rule (auto intro: JCFG_EntryExit JVM_CFG_Interpret.path.empty_path)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_Entry_) as (_Exit_)"
-      by fastsimp
+      by fastforce
   next
     have "JVM_CFG_Interpret.path ?prog (_Entry_) [?edge1] (_ [(''C'', ''M'', 0)],None _)"
       by rule (auto intro: JCFG_EntryStart simp: JVM_CFG_Interpret.path.empty_path Phi_EP_def)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_Entry_) as (_ [(''C'', ''M'', 0)],None _)"
-      by fastsimp
+      by fastforce
   next
     have "JVM_CFG_Interpret.path ?prog (_ [(''C'', ''M'', 0)],None _) [?edge2, ?edge3] (_Exit_)"
       apply rule
@@ -316,7 +316,7 @@ proof
        apply (rule JCFG_ReturnExit, auto)
       by (rule JCFG_Straight_NoExc, auto simp: Phi_EP_def)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_ [(''C'', ''M'', 0)],None _) as (_Exit_)"
-      by fastsimp
+      by fastforce
   next
     have "JVM_CFG_Interpret.path ?prog (_Entry_) [?edge1, ?edge2] (_ [(''C'', ''M'', 1)],None _)"
       apply rule
@@ -325,24 +325,24 @@ proof
        apply (rule JCFG_Straight_NoExc, auto simp: Phi_EP_def)
       by (rule JCFG_EntryStart, auto)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_Entry_) as (_ [(''C'', ''M'', Suc 0)],None _)"
-      by fastsimp
+      by fastforce
   next
     have "JVM_CFG_Interpret.path ?prog (_ [(''C'', ''M'', Suc 0)],None _) [?edge3] (_Exit_)"
       apply rule
          apply (auto simp: JVM_CFG_Interpret.path.empty_path Phi_EP_def)
       by (rule JCFG_ReturnExit, auto)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_ [(''C'', ''M'', Suc 0)],None _) as (_Exit_)"
-      by fastsimp
+      by fastforce
   next
     have "JVM_CFG_Interpret.path ?prog (_Entry_) [?edge0] (_Exit_)"
       by rule (auto intro: JCFG_EntryExit JVM_CFG_Interpret.path.empty_path)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_Entry_) as (_Exit_)"
-      by fastsimp
+      by fastforce
   next
     have "JVM_CFG_Interpret.path ?prog (_Exit_) [] (_Exit_)"
       by (simp add: JVM_CFG_Interpret.path.empty_path)
     thus "\<exists>as. JVM_CFG_Interpret.path ?prog (_Exit_) as (_Exit_)"
-      by fastsimp
+      by fastforce
   qed
 qed
 
@@ -364,12 +364,12 @@ proof(unfold_locales)
   have prog_is_cfg_wf_prog: "Rep_cfg_wf_prog prog \<in> cfg_wf_prog"
     by (rule Rep_cfg_wf_prog)
   obtain P C0 Main where [simp]: "Rep_cfg_wf_prog prog = (P,C0,Main)"
-    by (cases "Rep_cfg_wf_prog prog", fastsimp)
+    by (cases "Rep_cfg_wf_prog prog", fastforce)
   from prog_is_cfg_wf_prog have "(P, C0, Main) \<in> cfg_wf_prog"
     by simp
   hence "valid_node (P, C0, Main) n \<longrightarrow>
     (\<exists>as. CFG.path sourcenode targetnode (valid_edge (P, C0, Main)) (_Entry_) as n)"
-    by (fastsimp simp: cfg_wf_prog_def)
+    by (fastforce simp: cfg_wf_prog_def)
   moreover from vn have "valid_node (P, C0, Main) n"
     by (auto simp: JVM_CFG_Interpret.valid_node_def)
   ultimately
@@ -381,12 +381,12 @@ next
   have prog_is_cfg_wf_prog: "Rep_cfg_wf_prog prog \<in> cfg_wf_prog"
     by (rule Rep_cfg_wf_prog)
   obtain P C0 Main where [simp]: "Rep_cfg_wf_prog prog = (P,C0,Main)"
-    by (cases "Rep_cfg_wf_prog prog", fastsimp)
+    by (cases "Rep_cfg_wf_prog prog", fastforce)
   from prog_is_cfg_wf_prog have "(P, C0, Main) \<in> cfg_wf_prog"
     by simp
   hence "valid_node (P, C0, Main) n \<longrightarrow>
     (\<exists>as. CFG.path sourcenode targetnode (valid_edge (P, C0, Main)) n as (_Exit_))"
-    by (fastsimp simp: cfg_wf_prog_def)
+    by (fastforce simp: cfg_wf_prog_def)
   moreover from vn have "valid_node (P, C0, Main) n"
     by (auto simp: JVM_CFG_Interpret.valid_node_def)
   ultimately
@@ -441,7 +441,7 @@ next
       by (cases cs', auto)
     with IH None fhf_tl `valid_callstack (P, C0, Main) cs`
     show ?thesis
-      by (cases cs) fastsimp+
+      by (cases cs) fastforce+
   next
     case (Some xte)
     with fhf have [simp]: "C' = C" and [simp]: "M' = M" by simp_all
@@ -449,16 +449,16 @@ next
     obtain Ts T mxs mxl "is" xt where wt_class:
       "(P\<^bsub>wf\<^esub>) \<turnstile> C sees M: Ts\<rightarrow>T = (mxs, mxl, is, xt) in C \<and>
       pc' < length is \<and> (P\<^bsub>\<Phi>\<^esub>) C M ! pc' \<noteq> None"
-      by (cases cs) fastsimp+
+      by (cases cs) fastforce+
     with wf_jvmprog_is_wf [of P]
     have wt_instr:"(P\<^bsub>wf\<^esub>),T,mxs,length is,xt \<turnstile> is ! pc',pc' :: (P\<^bsub>\<Phi>\<^esub>) C M"
-      by (fastsimp dest!: wt_jvm_prog_impl_wt_instr)
+      by (fastforce dest!: wt_jvm_prog_impl_wt_instr)
     from Some fhf obtain f t D d where "(f,t,D,pc,d)\<in> set (ex_table_of (P\<^bsub>wf\<^esub>) C M) \<and>
       matches_ex_entry (P\<^bsub>wf\<^esub>) Exc pc' (f,t,D,pc,d)"
-      by (cases xte, fastsimp dest: match_ex_table_SomeD)
+      by (cases xte, fastforce dest: match_ex_table_SomeD)
     with wt_instr throw wt_class
     show ?thesis
-      by (fastsimp simp: relevant_entries_def is_relevant_entry_def matches_ex_entry_def)
+      by (fastforce simp: relevant_entries_def is_relevant_entry_def matches_ex_entry_def)
   qed
 qed
 
@@ -472,7 +472,7 @@ lemma successor_set_finite:
 proof -
   assume valid_node: "JVM_CFG_Interpret.valid_node prog n"
   obtain P C0 Main where [simp]: "prog = (P, C0, Main)"
-    by (cases prog, fastsimp)
+    by (cases prog, fastforce)
   note P_wf = wf_jvmprog_is_wf [of P]
   show ?thesis
   proof (cases n)
@@ -490,7 +490,7 @@ proof -
           auto elim: JVM_CFG.cases)
     next
       case (Cons a cs') [simp]
-      obtain C M pc where [simp]: "a = (C,M,pc)" by (cases a, fastsimp)
+      obtain C M pc where [simp]: "a = (C,M,pc)" by (cases a, fastforce)
       have finite_classes: "finite {C. is_class (P\<^bsub>wf\<^esub>) C}"
         by (rule finite_is_class)
       from valid_node have "is_class (P\<^bsub>wf\<^esub>) C"
@@ -661,12 +661,12 @@ proof -
            apply (case_tac "find_handler_for P Exc ((C,M,pc)#cs')", simp)
            apply (clarsimp simp del: find_handler_for.simps)
            apply (erule impE)
-            apply (case_tac "list", fastsimp, fastsimp)
+            apply (case_tac "list", fastforce, fastforce)
            apply (frule find_handler_for_tl_eq)
            apply (clarsimp simp del: find_handler_for.simps)
            apply (erule_tac x="list" in allE)
            apply (clarsimp simp del: find_handler_for.simps)
-           apply fastsimp
+           apply fastforce
           apply (subgoal_tac 
             "finite (
               (\<lambda>(Cx,Mx,pc',h,cs'',pcx).  (_ (C, M, pc) # cs',\<lfloor>((Cx, Mx, pc') # h, True)\<rfloor> _)) `

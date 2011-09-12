@@ -32,7 +32,7 @@ proof(unfold_locales)
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
   with `valid_edge prog a` `targetnode a = (_Entry_)` 
   have "prog \<turnstile> nx -et\<rightarrow> (_Entry_)" by(simp add:valid_edge_def)
-  thus False by fastsimp
+  thus False by fastforce
 next
   fix a a'
   assume assms:"valid_edge prog a" "valid_edge prog a'"
@@ -40,7 +40,7 @@ next
   obtain x et y where [simp]:"a = (x,et,y)" by (cases a) auto
   obtain x' et' y' where [simp]:"a' = (x',et',y')" by (cases a') auto
   from assms have "et = et'"
-    by(fastsimp intro:WCFG_edge_det simp:valid_edge_def)
+    by(fastforce intro:WCFG_edge_det simp:valid_edge_def)
   with `sourcenode a = sourcenode a'` `targetnode a = targetnode a'`
   show "a = a'" by simp
 qed
@@ -58,12 +58,12 @@ proof(unfold_locales)
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
   with `valid_edge prog a` `sourcenode a = (_Exit_)` 
   have "prog \<turnstile> (_Exit_) -et\<rightarrow> nx'" by(simp add:valid_edge_def)
-  thus False by fastsimp
+  thus False by fastforce
 next
   have "prog \<turnstile> (_Entry_) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (_Exit_)" by(rule WCFG_Entry_Exit)
   thus "\<exists>a. valid_edge prog a \<and> sourcenode a = (_Entry_) \<and>
             targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^isub>\<surd>"
-    by(fastsimp simp:valid_edge_def)
+    by(fastforce simp:valid_edge_def)
 qed
 
 interpretation While_CFGExit:

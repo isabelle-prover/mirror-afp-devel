@@ -89,7 +89,7 @@ lemma cond_action_ok_final_change:
      \<Longrightarrow> \<exists>x2. thr s2 t = \<lfloor>(x2, no_wait_locks)\<rfloor> \<and> final2 x2 \<and> ln2 = no_wait_locks \<and> wset s2 t = None \<rbrakk>
   \<Longrightarrow> final_thread.cond_action_ok final2 s2 t ca"
 apply(cases ca)
-apply(fastsimp simp add: final_thread.cond_action_ok.simps)+
+apply(fastforce simp add: final_thread.cond_action_ok.simps)+
 done
 
 lemma cond_action_oks_final_change:

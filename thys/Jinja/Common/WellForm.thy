@@ -80,7 +80,7 @@ assumes wf: "wf_prog wf_md P" and sub: "P \<turnstile> C \<preceq>\<^sup>* D"
 shows "is_class P C \<Longrightarrow> is_class P D"
 using sub apply(induct)
  apply assumption
-apply(fastsimp simp:wf_cdecl_def subcls1_def is_class_def
+apply(fastforce simp:wf_cdecl_def subcls1_def is_class_def
                dest:class_wf[OF _ wf])
 done
 
@@ -93,7 +93,7 @@ lemma is_class_xcpt:
   "\<lbrakk> C \<in> sys_xcpts; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_class P C"
 (*<*)
   apply (simp add: wf_prog_def wf_syscls_def is_class_def class_def)
-  apply (fastsimp intro!: map_of_SomeI)
+  apply (fastforce intro!: map_of_SomeI)
   done
 (*>*)
 
@@ -260,7 +260,7 @@ lemma sees_wf_mdecl:
   "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<rbrakk> \<Longrightarrow> wf_mdecl wf_md P D (M,Ts,T,m)"
 (*<*)
 apply(drule visible_method_exists)
-apply(fastsimp simp:wf_cdecl_def dest!:class_wf dest:map_of_SomeD)
+apply(fastforce simp:wf_cdecl_def dest!:class_wf dest:map_of_SomeD)
 done
 (*>*)
 
@@ -272,7 +272,7 @@ lemma sees_method_mono [rule_format (no_asm)]:
 (*<*)
 apply( drule rtranclD)
 apply( erule disjE)
-apply(  fastsimp)
+apply(  fastforce)
 apply( erule conjE)
 apply( erule trancl_trans_induct)
 prefer 2
@@ -292,7 +292,7 @@ apply(rule_tac x = Ts in exI)
 apply(rule_tac x = T in exI)
 apply simp
 apply(rule_tac x = m in exI)
-apply(fastsimp simp add:map_add_def split:option.split)
+apply(fastforce simp add:map_add_def split:option.split)
 apply clarsimp
 apply(rename_tac Ts' T' m')
 apply( drule (1) class_wf)
@@ -301,7 +301,7 @@ apply( frule map_of_SomeD)
 apply auto
 apply(drule (1) bspec, simp)
 apply(erule_tac x=D in allE, erule_tac x=Ts in allE, erule_tac x=T in allE)
-apply(fastsimp simp:map_add_def split:option.split)
+apply(fastforce simp:map_add_def split:option.split)
 done
 (*>*)
 
@@ -322,14 +322,14 @@ using wf "class"
 proof (induct rule:subcls1_induct)
   case Object
   with wf have "distinct_fst ms"
-    by (unfold class_def wf_prog_def wf_cdecl_def) (fastsimp dest:map_of_SomeD)
-  with Object show ?case by(fastsimp intro!: sees_methods_Object map_of_SomeI)
+    by (unfold class_def wf_prog_def wf_cdecl_def) (fastforce dest:map_of_SomeD)
+  with Object show ?case by(fastforce intro!: sees_methods_Object map_of_SomeI)
 next
   case Subcls
   with wf have "distinct_fst ms"
-    by (unfold class_def wf_prog_def wf_cdecl_def) (fastsimp dest:map_of_SomeD)
+    by (unfold class_def wf_prog_def wf_cdecl_def) (fastforce dest:map_of_SomeD)
   with Subcls show ?case
-    by(fastsimp elim:sees_methods_rec dest:subcls1D map_of_SomeI
+    by(fastforce elim:sees_methods_rec dest:subcls1D map_of_SomeI
                 simp:is_class_def)
 qed
 (*>*)
@@ -356,7 +356,7 @@ lemma Call_lemma:
        \<and> is_type P T' \<and> (\<forall>T\<in>set Ts'. is_type P T) \<and> wf_md P D' (M,Ts',T',m')"
 (*<*)
 apply(frule (2) sees_method_mono)
-apply(fastsimp intro:sees_method_decl_above dest:sees_wf_mdecl
+apply(fastforce intro:sees_method_decl_above dest:sees_wf_mdecl
                simp: wf_mdecl_def)
 done
 (*>*)
@@ -409,8 +409,8 @@ lemma has_fields_types:
   "\<lbrakk> P \<turnstile> C has_fields FDTs; (FD,T) \<in> set FDTs; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_type P T"
 (*<*)
 apply(induct rule:Fields.induct)
- apply(fastsimp dest!: class_wf simp: wf_cdecl_def wf_fdecl_def)
-apply(fastsimp dest!: class_wf simp: wf_cdecl_def wf_fdecl_def)
+ apply(fastforce dest!: class_wf simp: wf_cdecl_def wf_fdecl_def)
+apply(fastforce dest!: class_wf simp: wf_cdecl_def wf_fdecl_def)
 done
 (*>*)
 
@@ -418,7 +418,7 @@ done
 lemma sees_field_is_type:
   "\<lbrakk> P \<turnstile> C sees F:T in D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> is_type P T"
 (*<*)
-by(fastsimp simp: sees_field_def
+by(fastforce simp: sees_field_def
             elim: has_fields_types map_of_SomeD[OF map_of_remap_SomeD])
 (*>*)
 

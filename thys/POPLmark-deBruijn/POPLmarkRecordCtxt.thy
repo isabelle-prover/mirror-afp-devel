@@ -196,7 +196,7 @@ proof (induct \<Gamma> "Rcd fs..l" T arbitrary: fs l v rule: typing_induct)
   from `\<Gamma> \<turnstile> Rcd fs : RcdT fTs`
   have "\<forall>(l, U)\<in>set fTs. \<exists>u. fs\<langle>l\<rangle>\<^isub>? = \<lfloor>u\<rfloor> \<and> \<Gamma> \<turnstile> u : U"
     by (rule Rcd_type1')
-  with T_Proj show ?case by (fastsimp dest: assoc_set)
+  with T_Proj show ?case by (fastforce dest: assoc_set)
 next
   case T_Sub
   thus ?case by (blast intro: typing_typings.intros)

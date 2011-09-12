@@ -183,7 +183,7 @@ next
   next
     case False
     thus ?thesis
-      by(fastsimp)
+      by(fastforce)
   qed
 qed
 
@@ -292,7 +292,7 @@ qed
 lemma redT_updT_upd:
   "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_ok ts ta \<rbrakk> \<Longrightarrow> redT_updT ts ta(t \<mapsto> xw') = redT_updT (ts(t \<mapsto> xw')) ta"
 apply(cases ta)
-by(fastsimp intro: fun_upd_twist)+
+by(fastforce intro: fun_upd_twist)+
 
 lemma redT_updTs_upd:
   "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_oks ts tas \<rbrakk> \<Longrightarrow> redT_updTs ts tas(t \<mapsto> xw') = redT_updTs (ts(t \<mapsto> xw')) tas"

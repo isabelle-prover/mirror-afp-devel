@@ -19,7 +19,7 @@ lemma pcs_subset:
   and "pcs(compxEs2 es pc d) \<subseteq> {pc..<pc+size(compEs2 es)}" 
 apply(induct e pc d and es pc d rule: compxE2_compxEs2_induct)
 apply (simp_all add:pcs_def)
-apply (fastsimp)+
+apply (fastforce)+
 done
 
 lemma pcs_Nil [simp]: "pcs [] = {}"
@@ -32,16 +32,16 @@ lemma pcs_append [simp]: "pcs(xt\<^isub>1 @ xt\<^isub>2) = pcs xt\<^isub>1 \<uni
 by(simp add:pcs_def)
 
 lemma [simp]: "pc < pc\<^isub>0 \<or> pc\<^isub>0+size(compE2 e) \<le> pc \<Longrightarrow> pc \<notin> pcs(compxE2 e pc\<^isub>0 d)"
-using pcs_subset by fastsimp
+using pcs_subset by fastforce
 
 lemma [simp]: "pc < pc0 \<or> pc0+size(compEs2 es) \<le> pc \<Longrightarrow> pc \<notin> pcs(compxEs2 es pc0 d)"
-using pcs_subset by fastsimp
+using pcs_subset by fastforce
 
 lemma [simp]: "pc1 + size(compE2 e1) \<le> pc2 \<Longrightarrow> pcs(compxE2 e1 pc1 d1) \<inter> pcs(compxE2 e2 pc2 d2) = {}"
-using pcs_subset by fastsimp
+using pcs_subset by fastforce
 
 lemma [simp]: "pc\<^isub>1 + size(compE2 e) \<le> pc\<^isub>2 \<Longrightarrow> pcs(compxE2 e pc\<^isub>1 d\<^isub>1) \<inter> pcs(compxEs2 es pc\<^isub>2 d\<^isub>2) = {}"
-using pcs_subset by fastsimp
+using pcs_subset by fastforce
 
 lemma match_ex_table_append_not_pcs [simp]:
  "pc \<notin> pcs xt0 \<Longrightarrow> match_ex_table P C pc (xt0 @ xt1) = match_ex_table P C pc xt1"
@@ -81,7 +81,7 @@ by(induct xt\<^isub>1) simp_all
 lemma match_ex_table_eq_NoneI [simp]:
   "\<forall>x \<in> set xtab. \<not> matches_ex_entry P C pc x \<Longrightarrow>
   match_ex_table P C pc xtab = None"
-using match_ex_table_app[where ?xt = "[]"] by fastsimp
+using match_ex_table_app[where ?xt = "[]"] by fastforce
 
 lemma match_ex_table_not_pcs_None:
   "pc \<notin> pcs xt \<Longrightarrow> match_ex_table P C pc xt = None"
@@ -95,11 +95,11 @@ by(simp add:matches_ex_entry_def)
 
 lemma pcs_compxE2D [dest]:
   "pc \<in> pcs (compxE2 e pc' d) \<Longrightarrow> pc' \<le> pc \<and> pc < pc' + length (compE2 e)"
-using pcs_subset by(fastsimp)
+using pcs_subset by(fastforce)
 
 lemma pcs_compxEs2D [dest]:
   "pc \<in> pcs (compxEs2 es pc' d) \<Longrightarrow> pc' \<le> pc \<and> pc < pc' + length (compEs2 es)"
-using pcs_subset by(fastsimp)
+using pcs_subset by(fastforce)
 
 definition shift :: "nat \<Rightarrow> ex_table \<Rightarrow> ex_table"
 where
@@ -243,7 +243,7 @@ lemma match_ex_table_pc_length_compE2:
   
   and match_ex_table_pc_length_compEs2:
   "match_ex_table P a pc (compxEs2 es pc' d) = \<lfloor>pcd\<rfloor> \<Longrightarrow> pc' \<le> pc \<and> pc < length (compEs2 es) + pc'"
-using pcs_subset by(cases pcd, fastsimp dest!: match_ex_table_pcsD)+
+using pcs_subset by(cases pcd, fastforce dest!: match_ex_table_pcsD)+
 
 lemma match_ex_table_compxE2_shift_conv:
   "f > 0 \<Longrightarrow> match_ex_table P C pc (compxE2 e f d) = \<lfloor>(pc', d')\<rfloor> \<longleftrightarrow> pc \<ge> f \<and> pc' \<ge> f \<and> match_ex_table P C (pc - f) (compxE2 e 0 d) = \<lfloor>(pc' - f, d')\<rfloor>"

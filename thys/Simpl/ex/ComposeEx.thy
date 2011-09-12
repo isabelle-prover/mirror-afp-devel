@@ -70,7 +70,7 @@ apply (hoare_rule anno =
        OD" in HoarePartial.annotateI)
 apply vcg 
 apply   clarsimp
-apply  fastsimp
+apply  fastforce
 apply clarsimp
 done
 

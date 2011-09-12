@@ -48,7 +48,7 @@ unfolding strict_mono_on_def strict_mono_def by blast
 
 lemma strict_mono_on_imp_mono_on: "strict_mono_on f A \<Longrightarrow> mono_on f A"
 apply (unfold strict_mono_on_def mono_on_def)
-apply (fastsimp simp: order_le_less)
+apply (fastforce simp: order_le_less)
 done
 
 
@@ -61,7 +61,7 @@ lemma strict_mono_on_imp_inj_on: "
   strict_mono_on f (A::'a::linorder set) \<Longrightarrow> inj_on f A"
 apply (unfold strict_mono_on_def inj_on_def, clarify)
 apply (rule ccontr)
-apply (fastsimp simp add: linorder_neq_iff)
+apply (fastforce simp add: linorder_neq_iff)
 done
 
 
@@ -77,7 +77,7 @@ apply (rule iffI)
  apply blast
 apply (erule conjE)
 apply (unfold inj_on_def mono_on_def strict_mono_on_def, clarify)
-apply fastsimp
+apply fastforce
 done
 
 corollary strict_mono_mono_conv: "
@@ -178,7 +178,7 @@ unfolding surj_on_conv by blast
 lemma surj_on_empty_left: "surj_on f {} B = (B = {})"
 unfolding surj_on_conv by blast
 lemma surj_on_imageI: "surj_on (g \<circ> f) A B \<Longrightarrow> surj_on g (f ` A) B"
-unfolding surj_on_conv by fastsimp
+unfolding surj_on_conv by fastforce
 lemma surj_on_insert_right: "surj_on f A (insert b B) = (surj_on f A B \<and> surj_on f A {b})"
 unfolding surj_on_conv by blast
 lemma surj_on_insert_left: "surj_on f (insert a A) B = (surj_on f A (B - {f a}))"
@@ -387,7 +387,7 @@ lemma div_right_strict_mono_on: "
   \<lbrakk> 0 < (k::nat); \<forall>x\<in>I. \<forall>y\<in>I. x < y \<longrightarrow> x + k \<le> y \<rbrakk> \<Longrightarrow> 
   strict_mono_on (\<lambda>x. x div k) I"
 apply (unfold strict_mono_on_def, clarify)
-apply (fastsimp dest: div_le_mono[of _ _ k])
+apply (fastforce dest: div_le_mono[of _ _ k])
 done
 
 lemma mod_eq_div_right_strict_mono_on: "
@@ -673,7 +673,7 @@ apply (subgoal_tac "\<And>x1 x2 P Q. \<lbrakk>P x1; Q x2; Least P \<le> Least Q\
 apply (unfold min_def, split split_if, safe)
  apply blast
 apply (subst disj_commute)
-apply (fastsimp simp: linorder_not_le)
+apply (fastforce simp: linorder_not_le)
 done
 
 lemma Least_imp_le: "
@@ -1073,7 +1073,7 @@ lemma Max_le_Min_conv_singleton: "
 apply (rule iffI)
  apply (rule_tac x="Min A" in exI)
  apply (rule Max_le_Min_imp_singleton, assumption+)
-apply fastsimp
+apply fastforce
 done
 
 
@@ -1320,11 +1320,11 @@ by (rule infinite_nat_iff_asc_chain[THEN iffD1, OF infinite_imp_nonempty])
 
 
 lemma infinite_image_imp_infinite: "infinite (f ` A) \<Longrightarrow> infinite A"
-by fastsimp
+by fastforce
 
 lemma inj_on_imp_infinite_image: "\<lbrakk> infinite A; inj_on f A \<rbrakk> \<Longrightarrow> infinite (f ` A)"
 apply (frule card_image)
-apply (fastsimp simp: card_eq_0_iff)
+apply (fastforce simp: card_eq_0_iff)
 done
 
 lemma inj_on_infinite_image_iff: "inj_on f A \<Longrightarrow> infinite (f ` A) = infinite A"
@@ -1380,7 +1380,7 @@ thm
   image_def
   image_Collect
 lemma "{f x |x. x \<in> A} = (\<Union>x\<in>A. {f x})"
-by fastsimp
+by fastforce
 
 thm Finite_Set.card_partition
 text {* This lemma version drops the superfluous precondition @{term "finite (\<Union>C)"}
@@ -1440,13 +1440,13 @@ thm image_add_atLeastAtMost
 lemma image_add_atLeast:
   "(\<lambda>n::nat. n+k) ` {i..} = {i+k..}" (is "?A = ?B")
 proof 
-  show "?A \<subseteq> ?B" by fastsimp
+  show "?A \<subseteq> ?B" by fastforce
 next
   show "?B \<subseteq> ?A"
   proof
     fix n assume a: "n : ?B"
     hence "n - k \<in> {i..}" by simp
-    moreover have "n = (n - k) + k" using a by fastsimp
+    moreover have "n = (n - k) + k" using a by fastforce
     ultimately show "n \<in> ?A" by blast
   qed
 qed
@@ -1585,13 +1585,13 @@ lemma Max_atLeastAtMost: "m \<le> n \<Longrightarrow> Max {m..(n::nat)} = n"
 by (rule Max_equality[OF _ finite_atLeastAtMost], simp_all)
 
 lemma infinite_atLeast: "infinite {(n::nat)..}"
-by (rule unbounded_k_infinite[of n], fastsimp)
+by (rule unbounded_k_infinite[of n], fastforce)
 lemma infinite_greaterThan: "infinite {(n::nat)<..}"
 by (simp add: atLeast_Suc_greaterThan[symmetric] infinite_atLeast)
 
 lemma infinite_atLeast_int: "infinite {(n::int)..}"
 apply (rule_tac f="\<lambda>x. nat (x - n)" in inj_on_infinite_image_iff[THEN iffD1, rule_format])
- apply (fastsimp simp: inj_on_def)
+ apply (fastforce simp: inj_on_def)
 apply (rule_tac t="((\<lambda>x. nat (x - n)) ` {n..})" and s="{0..}" in subst)
  apply (simp add: set_eq_iff image_iff Bex_def)
  apply (clarify, rename_tac n1)
@@ -1614,7 +1614,7 @@ apply (rule_tac t="(op - n ` {..n})" and s="{0..}" in subst)
  apply (rule allI, rename_tac n1)
  apply (rule iffI)
   apply (rule_tac x="n - n1" in exI, simp)
-  apply fastsimp
+  apply fastforce
 apply (rule infinite_atLeast_int)
 done
 
@@ -1649,7 +1649,7 @@ by (metis card_eq_SucD)
 lemma card_1_singleton_conv: "(card A = Suc 0) = (\<exists>a. A = {a})"
 apply (rule iffI)
 apply (simp add: card_1_imp_singleton)
-apply fastsimp
+apply fastforce
 done
 
 lemma card_gr0_imp_finite: "0 < card A \<Longrightarrow> finite A"
@@ -1657,7 +1657,7 @@ by (rule ccontr, simp)
 lemma card_gr0_imp_not_empty: "(0 < card A) \<Longrightarrow> A \<noteq> {}"
 by (rule ccontr, simp)
 lemma not_empty_card_gr0_conv: "finite A \<Longrightarrow> (A \<noteq> {}) = (0 < card A)"
-by fastsimp
+by fastforce
 
 lemma nat_card_le_Max: "card (A::nat set) \<le> Suc (Max A)"
 apply (case_tac "finite A")
@@ -1666,7 +1666,7 @@ apply (case_tac "finite A")
 thm card_mono[OF finite_atMost, of A "Max A"]
 apply (cut_tac card_mono[OF finite_atMost, of A "Max A"])
  apply simp
-apply fastsimp
+apply fastforce
 done
 
 lemma Int_card1: "finite A \<Longrightarrow> card (A \<inter> B) \<le> card A"
@@ -1702,7 +1702,7 @@ apply simp_all
 
 apply (clarsimp, rename_tac A1 a)
 apply (case_tac "a \<in> A1", force simp: insert_absorb)
-apply (case_tac "f a \<in> f ` A1", fastsimp+)
+apply (case_tac "f a \<in> f ` A1", fastforce+)
 done
 
 thm pigeonhole_principle
@@ -1710,7 +1710,7 @@ corollary pigeonhole_principle_linorder[rule_format]: "
   card (f ` A) < card (A::'a::linorder set) \<Longrightarrow> (\<exists>x\<in>A. \<exists>y\<in>A. x < y \<and> f x = f y)"
 apply (drule pigeonhole_principle, clarify)
 apply (drule neq_iff[THEN iffD1])
-apply fastsimp
+apply fastforce
 done
 
 corollary pigeonhole_mod: "
@@ -1718,7 +1718,7 @@ corollary pigeonhole_mod: "
 apply (rule pigeonhole_principle_linorder)
 apply (rule le_less_trans[of _ "card {..<m}"])
 apply (rule card_mono)
-apply fastsimp+
+apply fastforce+
 done
 corollary pigeonhole_mod2: "
   \<lbrakk> (0::nat) < m; m \<le> c; inj_on f {..c} \<rbrakk> \<Longrightarrow> \<exists>x\<le>c. \<exists>y\<le>c. x < y \<and> f x mod m = f y mod m"
