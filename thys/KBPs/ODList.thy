@@ -632,7 +632,7 @@ text{*
 
 A few operations on finite maps.
 
-Unlike the AssocList theory, ODLists give us canonical
+Unlike the AList theory, ODLists give us canonical
 representations, so we can order them. Our tabulate has the wrong type
 (we want to take an odlist, not a list) so we can't use that
 part of the framework.

@@ -1,6 +1,6 @@
 theory TypeRelRefine imports
   "../Common/TypeRel"
-  "~~/src/HOL/Library/AssocList"
+  "~~/src/HOL/Library/AList"
   "~~/src/HOL/Library/List_Cset"
 begin
 
