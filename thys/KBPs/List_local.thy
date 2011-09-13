@@ -375,11 +375,6 @@ lemma sorted_filter[simp]:
   "sorted xs \<Longrightarrow> sorted (filter P xs)"
   by (induct xs) (auto iff: sorted_Cons)
 
-lemma sort_sorted_distinct[simp]:
-  "\<lbrakk> distinct xs; sorted xs \<rbrakk> \<Longrightarrow> sort (remdups xs) = xs"
-  using sorted_distinct_set_unique[where xs="sort (remdups xs)" and ys=xs]
-  by simp
-
 
 end
 

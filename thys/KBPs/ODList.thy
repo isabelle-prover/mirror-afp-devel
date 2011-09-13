@@ -303,6 +303,7 @@ proof
     apply (simp only: sorted_list_of_set_sort_remdups)
     apply (case_tac x)
     apply (simp add: odlist_Abs_inverse odlist_Abs_inject)
+    apply (simp add: distinct_remdups_id sorted_sort_id)
     done
   ultimately show "finite ?ol" by (blast intro: finite_surj)
 qed
