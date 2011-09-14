@@ -228,7 +228,7 @@ lemma ZFUnionRangeExplode:
 proof-
   let ?S = "Sep (Sum (Repl (implode A) (implode o f))) (\<lambda> y . \<exists> x  . (Elem x (implode A)) \<and> (Elem y (implode (f x))))"
   have "explode ?S = (\<Union> x \<in> A . f x)"
-  proof(auto simp add: UNION_def explode_def Sep Sum Repl assms Elem_implode)
+  proof(auto simp add: UNION_eq explode_def Sep Sum Repl assms Elem_implode)
     fix x y assume a: "y \<in> A" and b: "x \<in> f y"
     show "\<exists>z. Elem x z \<and> (\<exists>a. a \<in> A \<and> z = implode (f a))"
       apply(rule exI[where ?x = "implode (f y)"])

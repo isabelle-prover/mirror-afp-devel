@@ -330,7 +330,7 @@ apply (erule ex1E)
 apply (erule conjE)
 apply (rule someI2)
 apply fast
-apply (unfold UNION_def)
+apply (unfold UNION_eq)
 apply (simp add: subset_eq)
 apply auto
 done
@@ -382,7 +382,7 @@ apply (cut_tac Rep_hierauto_select)
 apply (unfold hierauto_def HierAuto_def)
 apply auto
 apply (rename_tac S)
-apply (unfold UNION_def)
+apply (unfold UNION_eq)
 apply (simp add: subset_eq)
 apply (erule_tac x=S in allE)
 apply auto
@@ -527,7 +527,7 @@ done
 
 lemma HAStates_SAs_disjunct:
   "HAStates HA1 \<inter> HAStates HA2 = {} \<Longrightarrow> SAs HA1 \<inter> SAs HA2 = {}"
-apply (unfold UNION_def HAStates_def Int_def)
+apply (unfold UNION_eq HAStates_def Int_def)
 apply auto
 apply (rename_tac SA)
 apply (cut_tac SA=SA in EX_State_SA)

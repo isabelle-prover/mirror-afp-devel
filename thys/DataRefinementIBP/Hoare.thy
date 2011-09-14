@@ -142,7 +142,7 @@ theorem hoare_refinement_alpha:
 
 lemma alpha_continous2:
  "SUP_L ((\<lambda>x. \<alpha> x y) \<circ> p) w =  \<alpha> (SUP_L p w) y"
-  apply (simp add: SUP_L_def SUPR_def alpha_continous)
+  apply (simp add: SUP_L_def SUP_def alpha_continous)
   apply (simp add: o_def image_image)
   done
 

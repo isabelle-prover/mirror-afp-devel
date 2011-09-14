@@ -413,7 +413,7 @@ lemma free_tv_le_new_tv: "[| new_tv n t; m:free_tv t |] ==> m<n"
 
 lemma cod_app_subst [simp]:
   "[| v : free_tv(S n); v~=n |] ==> v : cod S"
-apply (unfold dom_def cod_def UNION_def Bex_def)
+apply (unfold dom_def cod_def UNION_eq Bex_def)
 apply (simp (no_asm))
 apply (safe intro!: exI)
 prefer 2 apply (assumption)

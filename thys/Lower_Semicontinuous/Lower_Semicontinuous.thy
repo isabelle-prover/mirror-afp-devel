@@ -257,7 +257,7 @@ proof-
   { fix C assume "C<f x0"
     from this obtain e where e_def: "e>0 & (ALL y:ball x0 e. C < f y)"
       using lsc lst_at_ball[of x0 f] by auto
-    hence "C <= (INF y:(ball x0 e). f y)" apply (subst le_INFI) by (auto simp add: less_imp_le)
+    hence "C <= (INF y:(ball x0 e). f y)" apply (subst INF_greatest) by (auto simp add: less_imp_le)
     also have "...<=(INF y:(ball x0 e - {x0}). f y)" apply (subst INF_mono) by auto
     finally have "EX e:{e. e>0}. C <= (INF y:(ball x0 e - {x0}). f y)" using e_def by auto
   }
@@ -270,7 +270,7 @@ moreover
     from this obtain e where e_def: "e>0 & y <= INFI (ball x0 e - {x0}) f"
       using inf ereal_le_Sup[of "f x0" "{0<..}" "(%e. INFI (ball x0 e - {x0}) f)"]
       unfolding Liminf_at by auto
-    hence "ALL z:(ball x0 e - {x0}). y <= f z" unfolding INFI_def using le_Inf_iff[of y] by auto
+    hence "ALL z:(ball x0 e - {x0}). y <= f z" unfolding INF_def using le_Inf_iff[of y] by auto
     hence "ALL z:ball x0 e. y <= f z" using y_def by auto
     hence "EX e>0. ALL z:ball x0 e. C < f z"
       apply(rule_tac x="e" in exI) using y_def e_def by auto
@@ -813,15 +813,15 @@ lemma min_Liminf_at:
   shows "min (f x) (Liminf (at x) f) = (SUP e:{0<..}. INF y:ball x e. f y)"
 proof-
 have *: "f x >= (SUP e:{0<..}. INF y:ball x e. f y)"
-   apply (subst SUP_leI) apply (subst INF_leI) by auto
+   apply (subst SUP_least) apply (subst INF_lower) by auto
 { assume l: "f x <= Liminf (at x) f"
   hence "lsc_at x f" using lsc_liminf_at by auto
   { fix z assume "z<f x"
     then obtain e where e_def: "e>0 & (ALL y:ball x e. z < f y)"
       using `lsc_at x f` lst_at_ball[of x f] by auto
     hence "(ALL y:ball x e. z <= f y)" by (simp add: less_imp_le)
-    hence "z <= (INF y:ball x e. f y)" apply (subst le_INFI) by auto
-    also have "... <= (SUP e:{0<..}. INF y:ball x e. f y)" apply (subst le_SUPI) using e_def by auto
+    hence "z <= (INF y:ball x e. f y)" apply (subst INF_greatest) by auto
+    also have "... <= (SUP e:{0<..}. INF y:ball x e. f y)" apply (subst SUP_upper) using e_def by auto
     finally have "z <= (SUP e:{0<..}. INF y:ball x e. f y)" by auto
   } hence "f x <= (SUP e:{0<..}. INF y:ball x e. f y)" using ereal_le_ereal[of "f x"] by auto
   hence ?thesis unfolding min_def using * l by auto
@@ -830,7 +830,7 @@ moreover
 { assume g: "f x > Liminf (at x) f"
   { fix e :: real assume "e>0"
     hence "(INF y:(ball x e - {x}). f y) <= Liminf (at x) f"
-      unfolding Liminf_at apply (subst le_SUPI) by auto
+      unfolding Liminf_at apply (subst SUP_upper) by auto
     also have "... <f x" using g by auto
     finally have "EX y:(ball x e - {x}). f y <= f x" using Inf_less[of _ _ "f x"] by auto
     hence "ALL m : ball x e. EX y:ball x e - {x}. f y <= f m" by auto
@@ -856,7 +856,7 @@ proof-
     hence "e/sqrt 2>0" using `e>0` by (auto intro: divide_pos_pos)
     from this obtain e1 where e1_def: "e1<e/sqrt 2 & e1>0" using dense by auto
     hence "(SUP e:{0<..}. INF y:ball x e. f y) >= (INF y:ball x e1. f y)"
-      by (auto intro: le_SUPI)
+      by (auto intro: SUP_upper)
     hence "ereal z >= (INF y:ball x e1. f y)" using xz_def by auto
     hence *: "ALL y>ereal z. EX t. t : ball x e1 & f t <= y"
       using ereal_Inf_le[of "ball x e1" f "ereal z"] by auto
@@ -888,7 +888,7 @@ moreover
       by (auto intro: real_sqrt_sum_squares_ge2)
     also have "...<e" using y_def unfolding dist_prod_def by (simp add: algebra_simps)
     finally have h2: "dist (snd y) z < e" by auto
-    have "(INF y:ball x e. f y) <= f(fst y)" using h1 by (simp add: INF_leI)
+    have "(INF y:ball x e. f y) <= f(fst y)" using h1 by (simp add: INF_lower)
     also have "...<=ereal(snd y)" using y_def unfolding Epigraph_def by auto
     also have "... < ereal(z+e)" using h2 unfolding dist_norm by auto
     finally have "(INF y:ball x e. f y) < ereal(z+e)" by auto
@@ -909,7 +909,7 @@ moreover
         finally have "(INF y:ball x d. f y) < ereal(z+e)" by auto
       } ultimately have "(INF y:ball x d. f y) < ereal(z+e)" by blast
       hence "(INF y:ball x d. f y) <= ereal(z+e)" by auto
-    } hence "min (f x) (Liminf (at x) f) <= ereal (z+e)" unfolding min_Liminf_at by (auto intro: SUP_leI)
+    } hence "min (f x) (Liminf (at x) f) <= ereal (z+e)" unfolding min_Liminf_at by (auto intro: SUP_least)
   } hence "min (f x) (Liminf (at x) f) <= ereal z" using ereal_le_epsilon2 by auto
   hence "(x,z):Epigraph UNIV (%x. min (f x) (Liminf (at x) f))" unfolding Epigraph_def by auto
 }
@@ -926,10 +926,10 @@ lemma lsc_hull_same_inf:
 proof-
 { fix x
   have "(INF x. f x) <= (INF y:ball x 1. f y)" apply (subst INF_mono) by auto
-  also have "... <= min (f x) (Liminf (at x) f)" unfolding min_Liminf_at by (auto intro: le_SUPI)
+  also have "... <= min (f x) (Liminf (at x) f)" unfolding min_Liminf_at by (auto intro: SUP_upper)
   also have "...=(lsc_hull f) x" using lsc_hull_liminf_at[of f] by auto
   finally have "(INF x. f x) <= (lsc_hull f) x" by auto
-} hence "(INF x. f x) <= (INF x. lsc_hull f x)" apply (subst le_INFI) by auto
+} hence "(INF x. f x) <= (INF x. lsc_hull f x)" apply (subst INF_greatest) by auto
 moreover have "(INF x. lsc_hull f x) <= (INF x. f x)"
    apply (subst INF_mono) using lsc_hull_le by auto
 ultimately show ?thesis by auto
@@ -1676,7 +1676,7 @@ proof-
   then obtain z where z_def: "min (f x) (Liminf (at x) f) < z & z < \<infinity>" by (metis ereal_dense)
   { fix e::real assume "e>0"
     hence "INFI (ball x e) f <= min (f x) (Liminf (at x) f)"
-      unfolding min_Liminf_at apply (subst le_SUPI) by auto
+      unfolding min_Liminf_at apply (subst SUP_upper) by auto
     hence "EX y. y : ball x e & f y <= z"
       using ereal_Inf_le[of "ball x e" f "min (f x) (Liminf (at x) f)"] z_def by auto
     hence "EX y. dist x y < e & y : domain f" unfolding domain_def ball_def using z_def by auto

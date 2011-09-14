@@ -3269,7 +3269,7 @@ proof -
 
   from fdg pre have "edges g' = (\<Union>\<^bsub>a\<in>set (replace f [f21] (faces g))\<^esub> edges a) \<union>
        edges (f12)" by(auto simp: splitFace_def split_def edges_graph_def)
-  with pre vs_neq show ?thesis apply (simp add: UNION_def) apply (rule equalityI) apply simp
+  with pre vs_neq show ?thesis apply (simp add: UNION_eq) apply (rule equalityI) apply simp
     apply (rule conjI) apply (rule subsetI) apply simp apply (erule bexE) apply (drule replace5)
     apply (case_tac "xa \<in> \<F> g") apply simp
     apply (subgoal_tac "x \<in> edges g") apply simp
@@ -3362,7 +3362,7 @@ proof -
 
   from fdg pre have "edges g' = (\<Union>\<^bsub>a\<in>set (replace f [f21] (faces g))\<^esub> edges a) \<union>
        edges (f12)" by (auto simp: splitFace_def split_def edges_graph_def)
-  with pre show ?thesis apply (simp add: UNION_def) apply (rule equalityI) apply simp
+  with pre show ?thesis apply (simp add: UNION_eq) apply (rule equalityI) apply simp
     apply (rule conjI) apply (rule subsetI) apply simp apply (erule bexE) apply (drule replace5)
     apply (case_tac "xa \<in> \<F> g") apply simp
     apply (subgoal_tac "x \<in> edges g") apply simp

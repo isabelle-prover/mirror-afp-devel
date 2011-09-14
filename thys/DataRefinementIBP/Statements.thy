@@ -137,18 +137,18 @@ by (simp add: fun_eq_iff inf_fun_def sup_fun_def angelic_def inf_sup_distrib1 Co
 theorem angelic_udisjunctive1:
   "angelic R ((Sup P)::'a::complete_distrib_lattice) = (SUP p:P . (angelic R p))"
   apply (simp add: angelic_def)
-  apply (unfold SUPR_def)
+  apply (unfold SUP_def)
   apply (simp add: inf_Sup)
-  apply (unfold SUPR_def)
+  apply (unfold SUP_def)
   apply auto
   done
 
 theorem angelic_udisjunctive:
   "angelic R ((SUP P)::'a::complete_distrib_lattice) = SUP (\<lambda> w . angelic R (P w))"
   apply (simp add: angelic_def)
-  apply (unfold SUPR_def)
+  apply (unfold SUP_def)
   apply (simp add: inf_Sup)
-  apply (unfold SUPR_def)
+  apply (unfold SUP_def)
   apply auto
   done
 

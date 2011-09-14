@@ -371,7 +371,7 @@ apply (erule_tac x=SAA in ballE)
 prefer 2
 apply simp
 apply blast
-apply (unfold UNION_def Pow_def)
+apply (unfold UNION_eq Pow_def)
 apply simp
 apply (case_tac "SAA = {}")
 apply fast

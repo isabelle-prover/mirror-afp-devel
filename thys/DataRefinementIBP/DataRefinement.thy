@@ -122,7 +122,7 @@ theorem (in DiagramTermination) dgr_data_refinement1:
   apply safe
   apply (rule_tac P = "{s' . s \<in> R i s' \<and> s \<in> SUP P i}" in hoare_pre)
   apply auto
-  apply (simp add: SUPR_def Sup_fun_def Sup_bool_def mem_def)
+  apply (simp add: SUP_def Sup_fun_def Sup_bool_def mem_def)
   by auto
 
 definition
@@ -165,7 +165,7 @@ theorem (in DiagramTermination) Diagram_DataRefinement:
   apply (rule_tac Q="T(i,j)" in data_refinement)
   apply auto
   apply (rule_tac p = "(SUP X i)" in DataRefinement_mono)
-  apply (simp add: SUPR_def Sup_fun_def mem_def)
+  apply (simp add: SUP_def Sup_fun_def mem_def)
   apply auto
   apply (simp add: Sup_bool_def mem_def)
   apply auto

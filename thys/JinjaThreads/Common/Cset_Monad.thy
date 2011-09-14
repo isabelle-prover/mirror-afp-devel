@@ -52,7 +52,7 @@ by(simp add: bind_def single_def)
 
 lemma member_SUPR [simp]:
   "member (SUPR A f) = SUPR A (member \<circ> f)"
-unfolding SUPR_def by simp
+unfolding SUP_def by simp
 
 lemma member_bind [simp]:
   "member (P \<guillemotright>= f) = member (SUPR (member P) f)"

@@ -24,12 +24,12 @@ abbreviation
 
 theorem SUP_upper:
   "P w \<le> SUP P"
-  by (simp add: le_SUPI)
+  by (simp add: SUP_upper)
 
 
 theorem SUP_least:
   "(!! w . P w \<le> Q) \<Longrightarrow> SUP P \<le> Q"
-  by (simp add: SUP_leI)
+  by (simp add: SUP_least)
 
 
 lemma SUP_fun_eq:
@@ -49,7 +49,7 @@ theorem lfp_mono [simp]:
   apply (simp add: mono_def)
   apply auto
   apply (simp_all add: Sup_fun_def)
-  apply (fast intro: SUP_leI le_SUPI2)
+  apply (fast intro: SUP_least SUP_upper2)
   done
 
 text {*Some lattice simplification rules*}

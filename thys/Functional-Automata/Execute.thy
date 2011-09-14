@@ -151,7 +151,7 @@ lemma [code]:
   "na2da' A = (Cset.insert (start A) bot, %a Q. Cset.bind Q (next A a), Cset.exists (fin A))"
 unfolding na2da'_def DA_Abs_def NA_Rep_def na2da_def Cset.bind_def
 apply (auto simp add: fun_eq_iff split: prod.split)
-unfolding member_set_of SUPR_def Cset.Sup_set_def by auto
+unfolding member_set_of SUP_def Cset.Sup_set_def by auto
 
 lemma [code_unfold]:
   "NA.accepts (rexp2na r) w = accepts' (rexp2na' r) w"

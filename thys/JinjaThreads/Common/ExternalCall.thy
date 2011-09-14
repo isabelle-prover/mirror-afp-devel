@@ -710,7 +710,7 @@ lemma native_method_code [code]:
 apply(rule sym, rule the_eqI)
 apply (simp add: native_method_def eval_native_call_i_i_i_o_o_o_conv)
 apply (rule arg_cong [where f=The])
-apply (auto simp add: SUPR_def Sup_fun_def Sup_bool_def fun_eq_iff)
+apply (auto simp add: SUP_def Sup_fun_def Sup_bool_def fun_eq_iff)
 done
 
 end

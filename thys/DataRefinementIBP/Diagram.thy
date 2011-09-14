@@ -45,11 +45,11 @@ theorem mono_step [simp]:
   "dmono D \<Longrightarrow> mono (step D)"
   apply (simp add: dmono_def mono_def le_fun_def step_def Inf_fun_def)
   apply auto
-  apply (rule le_INFI)
+  apply (rule INF_greatest)
   apply auto
   apply (rule_tac y = "D(xa, j) (x j)" in order_trans)
   apply auto
-  apply (rule INF_leI)
+  apply (rule INF_lower)
   by auto
 
 text {*
@@ -108,13 +108,13 @@ theorem hoare_step:
   apply safe
   apply (simp add: le_fun_def Hoare_def step_def)
   apply safe
-  apply (rule le_INFI)
+  apply (rule INF_greatest)
   apply auto
   apply (simp add: le_fun_def Hoare_def step_def)
   apply (erule_tac x = i in allE)
   apply (rule_tac y = "INF j. D(i, j) (Q j)" in order_trans)
   apply auto
-  apply (rule INF_leI)
+  apply (rule INF_lower)
   by auto
 
 text {*
@@ -174,19 +174,19 @@ definition
 
 lemma SUP_L_P_upper:
   "pair v i < u \<Longrightarrow> P v i \<le> SUP_L_P P u i"
-  by (simp add: SUP_L_P_def SUPR_def Sup_upper)
+  by (simp add: SUP_L_P_def SUP_def Sup_upper)
 
 lemma SUP_L_P_least:
   "(!! v . pair v i < u \<Longrightarrow> P v i \<le> Q) \<Longrightarrow> SUP_L_P P u i \<le> Q"
-  by (simp add: SUP_L_P_def SUPR_def, rule Sup_least, auto)
+  by (simp add: SUP_L_P_def SUP_def, rule Sup_least, auto)
 
 lemma SUP_LE_P_upper:
   "pair v i \<le> u \<Longrightarrow> P v i \<le> SUP_LE_P P u i"
-  by (simp add: SUP_LE_P_def SUPR_def Sup_upper)
+  by (simp add: SUP_LE_P_def SUP_def Sup_upper)
 
 lemma SUP_LE_P_least:
   "(!! v . pair v i \<le> u \<Longrightarrow> P v i \<le> Q) \<Longrightarrow> SUP_LE_P P u i \<le> Q"
-  by (simp add: SUP_LE_P_def SUPR_def, rule Sup_least, auto)
+  by (simp add: SUP_LE_P_def SUP_def, rule Sup_least, auto)
 
 lemma SUP_SUP_L [simp]:
   "SUP (SUP_LE_P X) = SUP X"
@@ -219,7 +219,7 @@ theorem (in DiagramTermination) hoare_diagram2:
     \<Turnstile> SUP X {| pt D |} ((SUP X) \<sqinter> (-(grd (step D))))"
   apply (frule_tac X = "SUP_LE_P X" in hoare_diagram)
   apply auto
-  apply (simp add: SUP_LE_P_def SUPR_def)
+  apply (simp add: SUP_LE_P_def SUP_def)
   apply (rule hoare_Sup)
   apply auto
   apply (rule_tac Q = "SUP_L_P X (pair p i) j" in hoare_mono)
@@ -292,7 +292,7 @@ theorem dangelic_udisjunctive:
 
 theorem dangelic_udisjunctive1:
   "dangelic R ((Sup P)::('b\<Rightarrow>('a::complete_distrib_lattice))) = (SUP p:P . dangelic R p)"
-  by (simp add: fun_eq_iff SUPR_def Sup_fun_def dangelic_def angelic_udisjunctive1 Sup_bool_def)
+  by (simp add: fun_eq_iff SUP_def Sup_fun_def dangelic_def angelic_udisjunctive1 Sup_bool_def)
 
 theorem (in DiagramTermination) dangelic_udisjunctive2:
   "SUP_L_P (\<lambda>w. (dangelic R) ((P w)::('b \<Rightarrow> ('u::complete_distrib_lattice))) )(pair u i) = dangelic R (SUP_L_P P (pair u i))"
