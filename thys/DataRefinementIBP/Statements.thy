@@ -141,8 +141,7 @@ theorem angelic_udisjunctive1:
   apply (simp add: inf_Sup)
   apply (unfold SUPR_def)
   apply auto
-  apply (unfold Sup_bot_conv)
-  by auto
+  done
 
 theorem angelic_udisjunctive:
   "angelic R ((SUP P)::'a::complete_distrib_lattice) = SUP (\<lambda> w . angelic R (P w))"
@@ -151,8 +150,7 @@ theorem angelic_udisjunctive:
   apply (simp add: inf_Sup)
   apply (unfold SUPR_def)
   apply auto
-  apply (unfold Sup_bot_conv)
-  by auto
+  done
 
 
 subsection "The guard of a statement"
