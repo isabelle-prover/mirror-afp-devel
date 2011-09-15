@@ -49,7 +49,7 @@ theorem lfp_mono [simp]:
   apply (simp add: mono_def)
   apply auto
   apply (simp_all add: Sup_fun_def)
-  apply (fast intro: SUP_least SUP_upper2)
+  apply (fast intro: complete_lattice_class.SUP_least SUP_upper2)
   done
 
 text {*Some lattice simplification rules*}
