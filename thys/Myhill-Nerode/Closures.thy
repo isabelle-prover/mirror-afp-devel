@@ -250,33 +250,34 @@ abbreviation
 where
   "a ^^^ n \<equiv> replicate n a"
 
-definition
-  "length_test s a b \<equiv> length (filter (op= a) s) = length (filter (op= b) s)"
-
-lemma length_test:
-  "x = y \<Longrightarrow> length_test x a b = length_test y a b"
-by simp
-
 lemma an_bn_not_regular:
   shows "\<not> regular (\<Union>n. {CHR ''a'' ^^^ n @ CHR ''b'' ^^^ n})"
 proof
   def A\<equiv>"\<Union>n. {CHR ''a'' ^^^ n @ CHR ''b'' ^^^ n}"
   def B\<equiv>"\<Union>n. {CHR ''a'' ^^^ n}"
-
   assume as: "regular A"
   def B\<equiv>"\<Union>n. {CHR ''a'' ^^^ n}"
+
+  have sameness: "\<And>i j. CHR ''a'' ^^^ i @ CHR ''b'' ^^^ j \<in> A \<longleftrightarrow> i = j"
+    unfolding A_def 
+    apply auto
+    apply(drule_tac f="\<lambda>s. length (filter (op= (CHR ''a'')) s) = length (filter (op= (CHR ''b'')) s)" 
+      in arg_cong)
+    apply(simp)
+    done
+
   have b: "infinite B"
     unfolding infinite_iff_countable_subset
     unfolding inj_on_def B_def
     by (rule_tac x="\<lambda>n. CHR ''a'' ^^^ n" in exI) (auto)
   moreover
-  have "\<forall>x \<in> B. \<forall>y \<in> B. x \<noteq> y \<longrightarrow> \<not> (x \<approx>A y)" 
-    apply(auto simp add: B_def A_def)
-    apply(auto simp add: str_eq_def)
-    apply(drule_tac x="CHR ''b'' ^^^ aa" in spec)
+  have "\<forall>x \<in> B. \<forall>y \<in> B. x \<noteq> y \<longrightarrow> \<not> (x \<approx>A y)"
     apply(auto)
-    apply(drule_tac a="CHR ''a''" and b="CHR ''b''" in length_test)
-    apply(simp add: length_test_def)
+    unfolding B_def
+    apply(auto)
+    apply(simp add: str_eq_def)
+    apply(drule_tac x="CHR ''b'' ^^^ n" in spec)
+    apply(simp add: sameness)
     done
   ultimately 
   show "False" using continuation_lemma[OF as] by blast
