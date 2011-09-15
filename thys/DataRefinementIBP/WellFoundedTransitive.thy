@@ -39,7 +39,7 @@ lemma SUP_L_upper:
 
 lemma SUP_L_least:
   "(!! v . v < w \<Longrightarrow> P v \<le> Q) \<Longrightarrow> SUP_L P w \<le> Q"
-  by (auto simp add: SUP_L_def intro: SUP_least)
+  by (auto simp add: SUP_L_def intro: Complete_Lattices.SUP_least)
 
 lemma SUP_L_fun_eq:
   "((SUP_L P w) i) = (SUP_L (\<lambda> v . P v i)) w"
