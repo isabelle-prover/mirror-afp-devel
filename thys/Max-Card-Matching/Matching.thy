@@ -7,48 +7,48 @@ type_synonym label = nat
 section {* Definitions *}
 
 definition finite_graph :: "'v set => ('v * 'v) set \<Rightarrow> bool" where
-  "finite_graph V E \<equiv> finite V \<and> finite E \<and> 
-  (\<forall> e \<in> E. fst e \<in> V \<and> snd e \<in> V \<and> fst e ~= snd e)"
+  "finite_graph V E = (finite V \<and> finite E \<and> 
+  (\<forall> e \<in> E. fst e \<in> V \<and> snd e \<in> V \<and> fst e ~= snd e))"
 
 definition degree :: "('v * 'v) set \<Rightarrow> 'v \<Rightarrow> nat" where
-  "degree E v \<equiv> card {e \<in> E. fst e = v \<or> snd e = v}"
+  "degree E v = card {e \<in> E. fst e = v \<or> snd e = v}"
 
 definition edge_as_set :: "('v * 'v) \<Rightarrow> 'v set" where
-  "edge_as_set e \<equiv> { fst e , snd e }"
+  "edge_as_set e = {fst e, snd e}"
 
 definition N :: "'v set \<Rightarrow> ('v \<Rightarrow> label) \<Rightarrow> nat \<Rightarrow> nat" where
-  "N V L i \<equiv> card {v \<in> V. L v = i}"
+  "N V L i = card {v \<in> V. L v = i}"
 
 definition weight:: "label set \<Rightarrow> (label \<Rightarrow> nat) \<Rightarrow> nat" where
-  "weight LV f \<equiv> f 1 + (\<Sum>i\<in>LV. (f i) div 2)"
+  "weight LV f = f 1 + (\<Sum>i\<in>LV. (f i) div 2)"
 
 definition OSC :: "('v \<Rightarrow> label) \<Rightarrow> ('v * 'v) set \<Rightarrow> bool" where
-  "OSC L E \<equiv> \<forall>e \<in> E. L (fst e) = 1 \<or> L (snd e) = 1 \<or> 
-                     L (fst e) = L (snd e) \<and> L (fst e) > 1"
+  "OSC L E = (\<forall>e \<in> E. L (fst e) = 1 \<or> L (snd e) = 1 \<or> 
+                     L (fst e) = L (snd e) \<and> L (fst e) > 1)"
 
 definition disjoint_edges :: "('v * 'v) \<Rightarrow> ('v * 'v) \<Rightarrow> bool" where
-  "disjoint_edges e1 e2 \<equiv> fst e1 \<noteq> fst e2 \<and> fst e1 \<noteq> snd e2 \<and> 
-                          snd e1 \<noteq> fst e2 \<and> snd e1 \<noteq> snd e2"
+  "disjoint_edges e1 e2 = (fst e1 \<noteq> fst e2 \<and> fst e1 \<noteq> snd e2 \<and> 
+                          snd e1 \<noteq> fst e2 \<and> snd e1 \<noteq> snd e2)"
 
 definition matching :: "'v set \<Rightarrow> ('v * 'v) set \<Rightarrow> ('v * 'v) set \<Rightarrow> bool" where
-  "matching V E M  \<equiv> M \<subseteq> E \<and> finite_graph V E \<and> 
-  (\<forall>e1 \<in> M. \<forall> e2 \<in> M. e1 \<noteq> e2 \<longrightarrow> disjoint_edges e1 e2)"
+  "matching V E M = (M \<subseteq> E \<and> finite_graph V E \<and> 
+  (\<forall>e1 \<in> M. \<forall> e2 \<in> M. e1 \<noteq> e2 \<longrightarrow> disjoint_edges e1 e2))"
 
 definition matching_i :: "nat \<Rightarrow> 'v set \<Rightarrow> ('v * 'v) set \<Rightarrow> ('v * 'v) set \<Rightarrow>
   ('v \<Rightarrow> label) \<Rightarrow> ('v * 'v) set" where
-  "matching_i i V E M L \<equiv> {e \<in> M. i=1 \<and> (L (fst e) = i \<or> L (snd e) = i) 
+  "matching_i i V E M L = {e \<in> M. i=1 \<and> (L (fst e) = i \<or> L (snd e) = i) 
   \<or> i>1 \<and> L (fst e) = i \<and> L (snd e) = i}"
 
 definition V_i:: "nat \<Rightarrow> 'v set \<Rightarrow> ('v * 'v) set \<Rightarrow> ('v * 'v) set \<Rightarrow> 
                   ('v \<Rightarrow> label) \<Rightarrow> 'v set" where
-  "V_i i V E M L \<equiv> \<Union> edge_as_set ` matching_i i V E M L"
+  "V_i i V E M L = \<Union> edge_as_set ` matching_i i V E M L"
 
 definition endpoint_inV :: "'v set \<Rightarrow> ('v * 'v) \<Rightarrow> 'v" where 
-  "endpoint_inV V e \<equiv>  if fst e \<in> V then fst e else snd e" 
+  "endpoint_inV V e = (if fst e \<in> V then fst e else snd e)" 
 
 definition relevant_endpoint :: "('v \<Rightarrow> label) \<Rightarrow> 'v set \<Rightarrow> 
                                  ('v * 'v) \<Rightarrow> 'v" where 
-  "relevant_endpoint L V e \<equiv> if L (fst e) = 1 then fst e else snd e"
+  "relevant_endpoint L V e = (if L (fst e) = 1 then fst e else snd e)"
 
 section {* Lemmas *}
 
