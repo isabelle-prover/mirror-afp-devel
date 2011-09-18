@@ -1510,7 +1510,7 @@ apply (case_tac "Suc t1 = t2")
   apply (simp only: mult_commute[of t])
   thm between_imp_mod_le[of "k - Suc 0 - Suc 0" k t "Suc t1"]
   apply (drule_tac n="Suc t1" in between_imp_mod_le[of "k - Suc 0 - Suc 0" k t])
-  apply simp+
+  apply simp_all
 apply (simp add: iIN_iff)
 apply (subgoal_tac "t1 \<le> t * k + k - Suc 0")
  prefer 2
@@ -1537,7 +1537,7 @@ apply (subgoal_tac "t * k + (k - Suc 0) \<le> t2")
  apply (simp only: mult_commute[of t])
  thm mult_divisor_le_mod_ge_imp_ge
  apply (rule mult_divisor_le_mod_ge_imp_ge)
- apply simp+
+ apply simp_all
 done
 
 
