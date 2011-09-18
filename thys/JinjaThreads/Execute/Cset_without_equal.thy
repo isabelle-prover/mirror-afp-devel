@@ -18,7 +18,7 @@ definition insert' :: "'a \<Rightarrow> 'a Cset.set \<Rightarrow> 'a Cset.set"
 where "insert' = Cset.insert"
 
 definition union' :: "'a Cset.set \<Rightarrow> 'a Cset.set \<Rightarrow> 'a Cset.set"
-where "union' A B = semilattice_sup_class.sup A B"
+where "union' A B = sup A B"
 
 end
 
@@ -34,7 +34,7 @@ by(rule Cset.set_eqI)(simp add: Cset.insert'_def)
 
 lemma union'_code:
   "Cset.union' (Cset.set xs) (Cset.set ys) = Cset.set (xs @ ys)"
-by(rule Cset.set_eqI)(simp add: Cset.union'_def)
+by(rule Cset.set_eqI)(simp add: Cset.union'_def fun_eq_iff)
 
 end
 
