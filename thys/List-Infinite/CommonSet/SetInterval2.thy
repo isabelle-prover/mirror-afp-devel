@@ -271,7 +271,7 @@ lemma enat_induct': "
 apply (case_tac n)
  prefer 2 apply simp
 apply (case_tac n0)
- prefer 2 apply (simp add: enat_defs)
+ prefer 2 apply simp
 apply (rename_tac n' n0', simp)
 
 thm nat_induct'[where ?n0.0="n0'" and n=n' and P="\<lambda>n. P (enat n)"]
