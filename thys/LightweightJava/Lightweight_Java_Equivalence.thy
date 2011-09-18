@@ -8,41 +8,43 @@ theory Lightweight_Java_Equivalence imports Lightweight_Java_Definition begin
 
 (* BEGIN: HELPER FUNCTIONS *)
 
-lemma map_id[simp]: "map id list = list" by (induct list, auto)
+lemma map_id[simp]: "map id list = list" by (induct list) auto
 
-lemma id_map_two[simp]: "map (\<lambda>(x,y). (x,y)) list = list" by (induct list, auto)
+lemma id_map_two[simp]: "map (\<lambda>(x,y). (x,y)) list = list" by (induct list) auto
 
-lemma id_image_two[simp]: "(\<lambda>(x,y). (x,y)) ` set list = set list" by(induct list, auto)
+lemma id_image_two[simp]: "(\<lambda>(x,y). (x,y)) ` set list = set list" by (induct list) auto
 
-lemma map_fst[simp]: "map (\<lambda>(x, y). x) list = map fst list" by (induct list, auto)
+lemma map_fst[simp]: "map (\<lambda>(x, y). x) list = map fst list" by (induct list) auto
 
-lemma map_snd[simp]: "map (\<lambda>(x, y). y) list = map snd list" by (induct list, auto)
+lemma map_snd[simp]: "map (\<lambda>(x, y). y) list = map snd list" by (induct list) auto
 
 lemma zip_map_map_two [simp]: "zip (map fst list) (map snd list) = list"
-by (induct list, auto)
+by (induct list) auto
 
 lemma concat_map_singlton [simp]: "concat (map (\<lambda>e. [e]) list) = list"
-by (induct_tac list, simp_all)
+by (induct list) simp_all
 
 lemma list_all_map_P [simp]: "list_all (\<lambda>b. b) (map (\<lambda>x. P x) list) = (\<forall>x \<in> set list. P x)"
-by (induct_tac list, simp_all)
+by (induct list) simp_all
 
 lemma dom_single[simp]: "a : dom (empty(k \<mapsto> v)) = (a = k)"
 by (simp add: dom_def)
 
 lemma predicted_lu[rule_format, simp]:
   "x \<in> set list \<longrightarrow> map_of (map (\<lambda>key. (key, value)) list) x = Some value"
-by (induct list, auto)
+by (induct list) auto
 
 lemma key_in_map1[simp]: "k \<notin> dom M' \<Longrightarrow> (M ++ M') k = M k"
-by (subgoal_tac "M' k = None", simp add: map_add_def, force simp add: domI)
+apply (subgoal_tac "M' k = None")
+apply (simp add: map_add_def, force simp add: domI)
+done
 
 lemma forall_cons [rule_format]: "(\<forall>x \<in> set (s#S). P x) \<and> y \<in> set S \<longrightarrow> P y"
-by (induct_tac S, simp_all)
+by (induct_tac S) simp_all
 
 lemma mem_cong[rule_format]:
   "x \<in> set list \<longrightarrow> (f x \<in> set (map f list))"
-by (induct list, auto)
+by (induct list) auto
 
 lemma forall_union: "\<lbrakk>\<forall>a \<in> dom A. P (A a); \<forall>b \<in> dom B. P (B b)\<rbrakk> \<Longrightarrow> \<forall>x \<in> dom A \<union> dom B. P ((B ++ A) x)"
 apply(safe)
@@ -57,7 +59,7 @@ by (force)
 definition
 class_name_f :: "cld \<Rightarrow> dcl"
 where
-class_name_f_def: "class_name_f cld \<equiv>
+"class_name_f cld =
   (case cld of cld_def dcl cl fds mds \<Rightarrow> dcl)"
 lemma [simp]: "(class_name cld dcl) = (class_name_f cld = dcl)"
 by (force simp add: class_name_f_def split: cld.splits
@@ -66,7 +68,7 @@ by (force simp add: class_name_f_def split: cld.splits
 definition
 superclass_name_f :: "cld \<Rightarrow> cl"
 where
-superclass_name_f_def: "superclass_name_f cld \<equiv>
+"superclass_name_f cld =
   (case cld of cld_def dcl cl fds mds \<Rightarrow> cl)"
 lemma [simp]: "(superclass_name cld cl) = (superclass_name_f cld = cl)"
 by (force simp add: superclass_name_f_def split: cld.splits
@@ -75,7 +77,7 @@ by (force simp add: superclass_name_f_def split: cld.splits
 definition
 class_fields_f :: "cld \<Rightarrow> fds"
 where
-class_fields_f_def: "class_fields_f cld \<equiv>
+"class_fields_f cld =
   (case cld of cld_def dcl cl fds mds \<Rightarrow> fds)"
 lemma [simp]: "(class_fields cld fds) = (class_fields_f cld = fds)"
 by (force simp add: class_fields_f_def split: cld.splits
@@ -84,7 +86,7 @@ by (force simp add: class_fields_f_def split: cld.splits
 definition
 class_methods_f :: "cld \<Rightarrow> meth_defs"
 where
-class_methods_f_def: "class_methods_f cld \<equiv>
+"class_methods_f cld =
   (case cld of cld_def dcl cl fds mds \<Rightarrow> mds)"
 lemma [simp]: "(class_methods cld fds) = (class_methods_f cld = fds)"
 by (force simp add: class_methods_f_def split: cld.splits
@@ -93,7 +95,7 @@ by (force simp add: class_methods_f_def split: cld.splits
 definition
 method_name_f :: "meth_def \<Rightarrow> meth"
 where
-method_name_f_def: "method_name_f md \<equiv>
+"method_name_f md =
   (case md of meth_def_def meth_sig meth_body \<Rightarrow>
   (case meth_sig of meth_sig_def cl meth vds \<Rightarrow> meth))"
 lemma [simp]: "(method_name md m) = (method_name_f md = m)"
@@ -103,7 +105,7 @@ by (force simp add: method_name_f_def split: meth_def.splits meth_sig.splits
 definition
 distinct_names_f :: "P \<Rightarrow> bool"
 where
-distinct_names_f_def: "distinct_names_f P \<equiv>
+"distinct_names_f P =
   (distinct (map class_name_f P))"
 lemma distinct_names_map[rule_format]:
   "(\<forall>x\<in>set cld_dcl_list. split (\<lambda>cld. op = (class_name_f cld)) x) \<and> distinct (map snd cld_dcl_list)
@@ -227,7 +229,7 @@ done
 definition
 find_path_f :: "P \<Rightarrow> ctx \<Rightarrow> cl \<Rightarrow> ctxclds_opt"
 where
-find_path_f_def: "find_path_f P ctx cl == find_path_rec_f P ctx cl []"
+"find_path_f P ctx cl = find_path_rec_f P ctx cl []"
 lemma [simp]: "(find_path P ctx cl path_opt) = (find_path_f P ctx cl = path_opt)"
 apply(rule)
  apply(erule find_path.cases) apply(unfold find_path_f_def) apply(simp)
@@ -294,7 +296,7 @@ done
 definition
 fields_f :: "P \<Rightarrow> ty \<Rightarrow> fs option"
 where
-fields_f_def: "fields_f P ty ==
+"fields_f P ty =
   (case find_path_ty_f P ty of None \<Rightarrow> None | Some ctxclds \<Rightarrow>
     Some (fields_in_path_f ctxclds))"
 lemma [simp]: "\<forall>fs_opt. (fields P ty fs_opt) = (fields_f P ty = fs_opt)"
@@ -353,7 +355,7 @@ done
 definition
 methods_f :: "P \<Rightarrow> ty \<Rightarrow> meths option"
 where
-methods_f_def: "methods_f P ty ==
+"methods_f P ty =
   (case find_path_ty_f P ty of None \<Rightarrow> None | Some ctxclds \<Rightarrow>
     Some (methods_in_path_f (map (\<lambda>(ctx, cld). cld) ctxclds)))"
 lemma [simp]: "(methods P ty meths) = (methods_f P ty = Some meths)"
@@ -408,7 +410,7 @@ done
 definition
 ftype_f :: "P \<Rightarrow> ty \<Rightarrow> f \<Rightarrow> ty_opt"
 where
-ftype_f_def: "ftype_f P ty f ==
+"ftype_f P ty f =
   (case find_path_ty_f P ty of None \<Rightarrow> None | Some ctxclds \<Rightarrow>
      ftype_in_path_f P ctxclds f)"
 lemma [simp]: "(ftype P ty f ty') = (ftype_f P ty f = Some ty')"
@@ -455,7 +457,7 @@ done
 definition
 find_meth_def_f :: "P \<Rightarrow> ty \<Rightarrow> meth \<Rightarrow> ctxmeth_def_opt"
 where
-find_meth_def_f_def: "find_meth_def_f P ty m ==
+"find_meth_def_f P ty m =
   (case find_path_ty_f P ty of None \<Rightarrow> None | Some ctxclds \<Rightarrow>
     find_meth_def_in_path_f ctxclds m)"
 lemma [simp]: "(find_meth_def P ty m ctxmd_opt) = (find_meth_def_f P ty m = ctxmd_opt)"
@@ -477,7 +479,7 @@ where
 definition
 mtype_f :: "P \<Rightarrow> ty \<Rightarrow> meth \<Rightarrow> mty option"
 where
-mtype_f_def: "mtype_f P ty m ==
+"mtype_f P ty m =
   (case find_meth_def_f P ty m of None \<Rightarrow> None | Some (ctx, md) \<Rightarrow>
   (case md of meth_def_def ms mb \<Rightarrow>
   (case ms of meth_sig_def cl m' vds \<Rightarrow>
@@ -548,7 +550,7 @@ done
 definition
 is_sty_one :: "P \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool option"
 where
-is_sty_one_def: "is_sty_one P ty ty' \<equiv>
+"is_sty_one P ty ty' =
   (case find_path_ty_f P ty of None \<Rightarrow> None | Some ctxclds \<Rightarrow>
   (case ty' of ty_top \<Rightarrow> Some True | ty_def ctx' dcl' \<Rightarrow>
     Some ((ctx', dcl') : set (map (\<lambda>(ctx, cld). (ctx, class_name_f cld)) ctxclds)) ))"
@@ -769,7 +771,7 @@ done
 definition
 is_sty_many :: "P \<Rightarrow> tys \<Rightarrow> tys \<Rightarrow> bool option"
 where
-is_sty_many_def: "is_sty_many P tys tys' \<equiv>
+"is_sty_many P tys tys' =
   (if length tys \<noteq> length tys' then None else
   (case lift_opts (map (\<lambda>(ty, ty'). is_sty_one P ty ty') (zip tys tys'))
      of None \<Rightarrow> None | Some bools \<Rightarrow> Some (list_all id bools)))"
@@ -809,12 +811,12 @@ done
 definition
 tr_x :: "T \<Rightarrow> x \<Rightarrow> x"
 where
-tr_x_def: "tr_x T x \<equiv> (case T x of None \<Rightarrow> x | Some x' \<Rightarrow> x')"
+"tr_x T x = (case T x of None \<Rightarrow> x | Some x' \<Rightarrow> x')"
 
 definition
 tr_var :: "T \<Rightarrow> var \<Rightarrow> var"
 where
-tr_var_def: "tr_var T var \<equiv> (case tr_x T (x_var var) of x_this \<Rightarrow> var | x_var var' \<Rightarrow> var')"
+"tr_var T var = (case tr_x T (x_var var) of x_this \<Rightarrow> var | x_var var' \<Rightarrow> var')"
 
 primrec
 tr_s_f  :: "T \<Rightarrow> s \<Rightarrow> s" and
