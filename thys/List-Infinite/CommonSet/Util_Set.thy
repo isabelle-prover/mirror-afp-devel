@@ -6,7 +6,7 @@
 header {* Convenience results for set quantifiers *}
 
 theory Util_Set
-imports Fun Set
+imports Main
 begin
 
 
