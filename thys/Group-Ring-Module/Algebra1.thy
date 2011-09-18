@@ -4406,7 +4406,7 @@ apply (simp add:image_def)
  apply blast
  apply (rule subsetI, simp, erule exE, erule conjE)
  apply (case_tac "xa = Suc n", simp)
- apply (metis le_SucE linorder_antisym_conv2 linorder_neq_iff)
+ apply (metis le_SucE)
 done
 
 lemma Nset_injTr0:"\<lbrakk>f \<in> {i. i \<le> (Suc n)} \<rightarrow> {i. i \<le> (Suc n)}; 
