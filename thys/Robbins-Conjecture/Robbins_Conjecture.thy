@@ -49,7 +49,7 @@ definition minus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl "-" 65) wher
 
 (* We shall need some object in order to define falsum and verum *)
 definition secret_object1 :: "'a" ("\<iota>") where
-  "\<iota> == SOME x. True"
+  "\<iota> = (SOME x. True)"
 
 end
 
@@ -541,17 +541,17 @@ text {* The theorem asserting all Robbins algebras are Boolean
 context robbins_algebra begin
 
 definition secret_object2 :: "'a" ("\<alpha>") where
-  "\<alpha> == -(-(\<iota> \<squnion> \<iota> \<squnion> \<iota>) \<squnion> \<iota>)"
+  "\<alpha> = -(-(\<iota> \<squnion> \<iota> \<squnion> \<iota>) \<squnion> \<iota>)"
 definition secret_object3 :: "'a" ("\<beta>") where
-  "\<beta> == \<iota> \<squnion> \<iota>"
+  "\<beta> = \<iota> \<squnion> \<iota>"
 definition secret_object4 :: "'a" ("\<delta>") where
-  "\<delta> == \<beta> \<squnion> (-(\<alpha> \<squnion> -\<beta>) \<squnion> -(\<alpha> \<squnion> -\<beta>))"
+  "\<delta> = \<beta> \<squnion> (-(\<alpha> \<squnion> -\<beta>) \<squnion> -(\<alpha> \<squnion> -\<beta>))"
 definition secret_object5 :: "'a" ("\<gamma>") where
-  "\<gamma> == \<delta> \<squnion> -(\<delta> \<squnion> -\<delta>)"
+  "\<gamma> = \<delta> \<squnion> -(\<delta> \<squnion> -\<delta>)"
 definition winker_object :: "'a" ("\<rho>") where
-  "\<rho> == \<gamma> \<squnion> \<gamma> \<squnion> \<gamma>"
+  "\<rho> = \<gamma> \<squnion> \<gamma> \<squnion> \<gamma>"
 definition fake_bot :: "'a" ("\<bottom>\<bottom>") where
-  "\<bottom>\<bottom> == -(\<rho> \<squnion> -\<rho>)"
+  "\<bottom>\<bottom> = -(\<rho> \<squnion> -\<rho>)"
 
 (* Towards Winker's Identity *)
 
@@ -964,8 +964,7 @@ qed
 
 end
 
-no_notation
-       secret_object1 ("\<iota>")
+no_notation secret_object1 ("\<iota>")
    and secret_object2 ("\<alpha>") 
    and secret_object3 ("\<beta>")
    and secret_object4 ("\<delta>")
