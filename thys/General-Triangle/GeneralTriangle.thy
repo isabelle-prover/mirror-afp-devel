@@ -1,5 +1,6 @@
 theory GeneralTriangle
-imports Main Real begin
+imports Complex_Main
+begin
 
 section {* Type definitions *}
 
@@ -59,7 +60,7 @@ text {* Two angles can be considered too similar if they differ by less than
 an 11th grade class and was chosen that statistically, 99\% will consider the
 angles as different. *}
 
-definition similar_angle :: "real \<Rightarrow> real \<Rightarrow> bool" ("_ \<sim> _")
+definition similar_angle :: "real \<Rightarrow> real \<Rightarrow> bool"  (infix "\<sim>" 50)
   where "similar_angle x y = (abs (x - y) < 15)"
 
 text {* The usual definitions of right-angled and isosceles, using the just
