@@ -159,7 +159,7 @@ lemma [iff]:
   and Terminal_inject: "Terminal a = Terminal a' \<longleftrightarrow> a = a'"
   and Linear_inject: "Linear b r = Linear b' r' \<longleftrightarrow> b = b' \<and> r = r'"
   and Branch_inject: "Branch c rs = Branch c' rs' \<longleftrightarrow> c = c' \<and> rs = rs'"
-apply(auto simp add: Terminal_def Linear_def Branch_def simp add: Rep_resumption resumption.intros Abs_resumption_inject Rep_resumption_inject intro!: ext)
+apply(auto simp add: Terminal_def Linear_def Branch_def simp add: Rep_resumption resumption.intros Abs_resumption_inject Rep_resumption_inject)
 apply(subst (asm) fun_eq_iff, auto simp add: Rep_resumption_inject)
 done
 
@@ -308,7 +308,7 @@ proof -
     proof(cases "f e")
       case (Resumption_corec r)
       thus ?thesis using x
-	by(cases r)(simp_all add: RESUMPTION_corec Rep_resumption_constructors Rep_resumption)
+        by(cases r)(simp_all add: RESUMPTION_corec Rep_resumption_constructors Rep_resumption)
     qed(auto simp add: RESUMPTION_corec)
   qed
 qed
@@ -439,12 +439,12 @@ proof -
     moreover
     { assume "\<exists>R R' b. r = Linear b R \<and> r' = Linear b R' \<and> (X R R' \<or> R = R')"
       hence ?EqLinear
-	by(clarsimp simp add: Rep_resumption_constructors Eq_RESUMPTION_eq Rep_resumption_inject Rep_resumption)
+        by(clarsimp simp add: Rep_resumption_constructors Eq_RESUMPTION_eq Rep_resumption_inject Rep_resumption)
       hence ?case by blast }
     moreover
     { assume "\<exists>rs rs' c. r = Branch c rs \<and> r' = Branch c rs' \<and> (\<forall>d. X (rs d) (rs' d) \<or> rs d = rs' d)"
       hence ?EqBranch
-	by(clarsimp simp add: Rep_resumption_constructors Eq_RESUMPTION_eq Rep_resumption_inject Rep_resumption)
+        by(clarsimp simp add: Rep_resumption_constructors Eq_RESUMPTION_eq Rep_resumption_inject Rep_resumption)
       hence ?case by blast }
     ultimately show ?case using step[OF `X r r'`] by blast
   qed
@@ -491,7 +491,7 @@ proof
     next
       case (Resumption_corec r)
       thus ?thesis
-	by(cases r)(simp_all add: h h' Rep_resumption_constructors Eq_RESUMPTION_refl Rep_resumption)
+        by(cases r)(simp_all add: h h' Rep_resumption_constructors Eq_RESUMPTION_refl Rep_resumption)
     qed
   qed
 qed
