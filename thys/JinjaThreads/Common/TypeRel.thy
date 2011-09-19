@@ -740,7 +740,6 @@ apply (rule sym, rule the_eqI)
 apply (simp add: method_def eval_Method_i_i_i_o_o_o_o_conv)
 apply (rule arg_cong [where f=The])
 apply (auto simp add: SUP_def Sup_fun_def Sup_bool_def fun_eq_iff)
-apply blast
 done
 
 lemma eval_sees_field_i_i_i_o_o_o_conv:
