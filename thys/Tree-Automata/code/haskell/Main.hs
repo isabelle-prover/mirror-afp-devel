@@ -9,9 +9,9 @@ import Ta;
 import Pt_examples;
 
 
-instance Read Nat where {
-  readsPrec p s = map (\(a,b) -> (Nat a,b)) (filter (\(a,b) -> a>=0) ((readsPrec::Int -> ReadS Integer) p s))
-};
+-- instance Read Nat where {
+--   readsPrec p s = map (\(a,b) -> (Nat a,b)) (filter (\(a,b) -> a>=0) ((readsPrec::Int -> ReadS Integer) p s))
+-- };
 
 
 createFta (states, rules) =
