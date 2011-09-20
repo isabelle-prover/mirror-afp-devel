@@ -1054,7 +1054,7 @@ done
 
 subsection {* Tables *}
 
-types ('a, 'b) table = "('a \<times> 'b) list"
+type_synonym ('a, 'b) table = "('a \<times> 'b) list"
 
 definition isTable :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> ('a, 'b) table \<Rightarrow> bool" where
   "isTable f vs t \<equiv> \<forall>p. p \<in> set t \<longrightarrow> snd p = f (fst p) \<and> fst p \<in> set vs" 

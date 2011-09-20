@@ -1,4 +1,4 @@
-(*  Author: Tobias Nipkow  *)
+(*  Author: Tobias Nipkow  *)  (* FIXME dead code!? *)
 
 theory ArchStat
 imports TameEnum ArchCompAux
@@ -33,7 +33,7 @@ value [code] "stat Hex"
 (* 7: (  23, 18,   357, 13,   278) *)
 (* 8: (  22, 19,   333, 14,   266) *)
 
-types config = "(nat,nat fgraph)tries * nat * nat"
+type_synonym config = "(nat,nat fgraph)tries * nat * nat"
 fun insert_mod :: "graph \<Rightarrow> config \<Rightarrow> config" where
 "insert_mod x (t,tot,fins) =
  (if final x
@@ -63,7 +63,7 @@ definition count where
   Some(t,n,f) \<Rightarrow> Some(avgmax(stat_of_tries t),n,f))"
 
 
-ML"Toplevel.timing := true"
+ML "Toplevel.timing := true"
 (* (total number of entries, number of leaves, max number of enries per leaf),
    total number of graphs, number of final graphs
 *)

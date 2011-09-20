@@ -21,7 +21,7 @@ datatype 'node LDCFG_node = Node 'node
   | NewExit
 
 
-types ('edge,'node,'var,'val,'ret,'pname) LDCFG_edge = 
+type_synonym ('edge,'node,'var,'val,'ret,'pname) LDCFG_edge = 
   "'node LDCFG_node \<times> (('var,'val,'ret,'pname) edge_kind) \<times> 'node LDCFG_node"
 
 
