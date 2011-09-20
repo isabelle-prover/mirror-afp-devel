@@ -1,6 +1,6 @@
 theory TypeRelRefine imports
   "../Common/TypeRel"
-  "~~/src/HOL/Library/AList"
+  "~~/src/HOL/Library/AList_Mapping"
   "~~/src/HOL/Library/List_Cset"
 begin
 
@@ -22,12 +22,9 @@ by(induct xs) auto
 definition map_values :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) mapping \<Rightarrow> ('a, 'c) mapping"
 where "map_values f m = Mapping.Mapping (\<lambda>k. Option.map (f k) (Mapping.lookup m k))"
 
-lemma map_values_Mapping [simp]: "map_values f (Mapping.Mapping m) = Mapping.Mapping (\<lambda>k. Option.map (f k) (m k))"
+lemma map_values_Mapping [simp]: 
+"map_values f (Mapping.Mapping m) = Mapping.Mapping (\<lambda>k. Option.map (f k) (m k))"
 by(rule mapping_eqI)(simp add: map_values_def)
-
-lemma assoc_list_map_values [code]:
-  "map_values f (Mapping xs) = Mapping (map (\<lambda>(k, v). (k, f k v)) xs)"
-by(rule mapping_eqI)(simp add: map_values_def map_of_map2 fun_eq_iff)
 
 definition assoc_list_to_mapping :: "('k \<times> 'v) list \<Rightarrow> ('k, 'v) mapping"
 where "assoc_list_to_mapping xs = Mapping.Mapping (map_of xs)"
@@ -147,7 +144,9 @@ lemma subcls'_program [code]:
    | Some m \<Rightarrow> Cset.member m D)"
 apply(cases Pi)
 apply(clarsimp simp add: subcls'_def tabulate_subcls_def)
-apply(auto elim!: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
+apply(auto elim!: rtranclp_tranclpE dest: subcls_is_class 
+           intro: tranclp_into_rtranclp 
+           simp: mem_def)
 done
 
 lemma subcls'_i_i_i_program [code]:
@@ -157,7 +156,7 @@ by(rule pred_eqI)(auto elim: subcls'_i_i_iE intro: subcls'_i_i_iI)
 lemma subcls'_i_i_o_program [code]:
   "subcls'_i_i_o (program Pi) C = 
   sup (Predicate.single C) (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> bot | Some m \<Rightarrow> pred_of_cset m)"
-by(cases Pi)(fastforce simp add: subcls'_i_i_o_def subcls'_def tabulate_subcls_def intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
+by(cases Pi)(fastforce simp add: mem_def subcls'_i_i_o_def subcls'_def tabulate_subcls_def intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
 
 lemma rtranclp_FioB_i_i_subcls1_i_i_o_code [code_inline]:
   "rtranclp_FioB_i_i (subcls1_i_i_o P) = subcls'_i_i_i P"
