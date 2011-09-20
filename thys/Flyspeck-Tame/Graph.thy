@@ -15,7 +15,7 @@ syntax (xsymbols)
 
 subsection{* Notation *}
 
-types vertex = "nat"
+type_synonym vertex = "nat"
 
 consts
   vertices :: "'a \<Rightarrow> vertex list"

@@ -40,9 +40,8 @@ text{* A plane graph is a set or list (for executability) of faces
 (hence @{text Fgraph} and @{text fgraph}) and a face is a list of
 nodes: *}
 
-types
- 'a Fgraph = "'a list set"
- 'a fgraph = "'a list list"
+type_synonym 'a Fgraph = "'a list set"
+type_synonym 'a fgraph = "'a list list"
 
 subsection{* Equivalence of faces *}
 
@@ -135,7 +134,7 @@ apply(case_tac "n mod length xs = 0")
  apply simp
 apply(subst rotate_conv_mod)
 apply(rule_tac x = "length xs - n mod length xs" in exI)
-apply(simp add:diff_less)
+apply simp
 done
 
 
@@ -460,7 +459,7 @@ lemma inj_on_map_of_zip:
    \<Longrightarrow> inj_on (map_of (zip xs ys)) (set xs)"
 apply(induct rule:list_induct2)
  apply simp
-apply(clarsimp simp add:image_map_upd)
+apply clarsimp
 apply(rule conjI)
  apply(erule inj_on_fun_updI)
  apply(simp add:image_def)
@@ -593,8 +592,9 @@ definition oneone :: "('a * 'b)list \<Rightarrow> bool" where
 "oneone xys  \<equiv>  distinct(map fst xys) \<and> distinct(map snd xys)"
 declare oneone_def[simp]
 
-types
+type_synonym
   ('a,'b)tester = "('a * 'b)list \<Rightarrow> ('a * 'b)list \<Rightarrow> bool"
+type_synonym
   ('a,'b)merger = "('a * 'b)list \<Rightarrow> ('a * 'b)list \<Rightarrow> ('a * 'b)list"
 
 primrec pr_iso_test2 :: "('a,'b)tester \<Rightarrow> ('a,'b)merger \<Rightarrow>
@@ -646,8 +646,7 @@ lemma pr_iso_test2_conv_1:
   pr_iso_test2 tst mrg I Fs\<^isub>1 Fs\<^isub>2 = pr_iso_test1 (map_of I) Fs\<^isub>1 Fs\<^isub>2"
 apply(induct Fs\<^isub>1)
  apply simp
-apply(simp add:Let_def lem inj_on_map_of_zip del:mod_less distinct_map
-           cong:conj_cong)
+apply(simp add:Let_def lem inj_on_map_of_zip del: mod_less cong: conj_cong)
 done
 
 text{* A simple implementation *}
