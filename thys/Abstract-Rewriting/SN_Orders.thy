@@ -38,29 +38,29 @@ Note that we do not use Isabelle's preorders since the condition
    hold if $\delta$ is larger than $0.1$.
 *}
 class non_strict_order = 
-  fixes ge :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<ge>" 21)
-  assumes ge_refl: "x \<ge> (x :: 'a)"
-  and ge_trans[trans]: "\<lbrakk>x \<ge> y; (y :: 'a) \<ge> z\<rbrakk> \<Longrightarrow> x \<ge> z"
+  fixes ge :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succeq>" 50)
+  assumes ge_refl: "x \<succeq> (x :: 'a)"
+  and ge_trans[trans]: "\<lbrakk>x \<succeq> y; (y :: 'a) \<succeq> z\<rbrakk> \<Longrightarrow> x \<succeq> z"
 
 class ordered_ab_semigroup = non_strict_order + ab_semigroup_add +
-  assumes plus_left_mono: "\<lbrakk>ge (x :: 'a) y\<rbrakk> \<Longrightarrow> ge (plus x z)  (plus y z)"
+  assumes plus_left_mono: "\<lbrakk>x \<succeq> y\<rbrakk> \<Longrightarrow>  x + z \<succeq> y + z"
 
-lemma plus_right_mono: "ge y (z :: 'a :: ordered_ab_semigroup) \<Longrightarrow> ge (x + y) (x + z)"
+lemma plus_right_mono: "y \<succeq> (z :: 'a :: ordered_ab_semigroup) \<Longrightarrow> x + y \<succeq> x + z"
   by (simp add: add_commute[of x], rule plus_left_mono, auto)
 
 class ordered_semiring_0 = ordered_ab_semigroup + semiring_0 +
- assumes times_left_mono: "\<lbrakk>ge z 0; ge x y\<rbrakk> \<Longrightarrow> ge (x * z) (y * z)"
-     and times_right_mono: "\<lbrakk>ge x 0; ge y z\<rbrakk> \<Longrightarrow> ge (x * y) (x * z)"
+ assumes times_left_mono: "\<lbrakk>z \<succeq> 0; x \<succeq> y\<rbrakk> \<Longrightarrow> x * z \<succeq> y * z"
+     and times_right_mono: "\<lbrakk>x \<succeq> 0; y \<succeq> z\<rbrakk> \<Longrightarrow> x * y \<succeq> x * z"
 
 class ordered_semiring_1 = ordered_semiring_0 + semiring_1 +
-  assumes one_ge_zero: "ge 1 0"
+  assumes one_ge_zero: "1 \<succeq> 0"
 
 class max_ordered_monoid_add = ordered_ab_semigroup + ab_semigroup_add + monoid_add + 
   fixes max0 :: "'a \<Rightarrow> 'a"
-  assumes max0_id_pos: "ge x 0 \<Longrightarrow> max0 x = x"
-  and max0_pos: " ge (max0 x) 0"
-  and max0_mono: "ge x y \<Longrightarrow> ge (max0 x) (max0 y)"
-  and max0_x: "ge (max0 x) x"
+  assumes max0_id_pos: "x \<succeq> 0 \<Longrightarrow> max0 x = x"
+  and max0_pos: " max0 x \<succeq> 0"
+  and max0_mono: "x \<succeq> y \<Longrightarrow> max0 x \<succeq> max0 y"
+  and max0_x: "max0 x \<succeq> x"
 
 class max_ordered_semiring_1 = max_ordered_monoid_add + ordered_semiring_1
 
@@ -72,37 +72,37 @@ text {*
    $>$ where $x > y = x \geq y + \delta$ for some parameter $\delta$
 *}
 locale order_pair = 
-  fixes gt :: "'a :: {non_strict_order,zero} \<Rightarrow> 'a \<Rightarrow> bool" 
+  fixes gt :: "'a :: {non_strict_order,zero} \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50)
   and default :: "'a"
-  assumes compat[trans]: "\<lbrakk>x \<ge> y; gt y z\<rbrakk> \<Longrightarrow> gt x z"
-  and compat2[trans]: "\<lbrakk>gt x y; y \<ge> z\<rbrakk> \<Longrightarrow> gt x z"
-  and default_ge_zero: "default \<ge> 0"
+  assumes compat[trans]: "\<lbrakk>x \<succeq> y; y \<succ> z\<rbrakk> \<Longrightarrow> x \<succ> z"
+  and compat2[trans]: "\<lbrakk>x \<succ> y; y \<succeq> z\<rbrakk> \<Longrightarrow> x \<succ> z"
+  and default_ge_zero: "default \<succeq> 0"
 
 
 locale one_mono_ordered_semiring_1 = order_pair gt 
-  for gt :: "'a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" + 
-  assumes plus_gt_left_mono: "gt x y \<Longrightarrow> gt (x + z) (y + z)"
-  and default_gt_zero: "gt default 0"
+  for gt :: "'a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50) + 
+  assumes plus_gt_left_mono: "x \<succ> y \<Longrightarrow> x + z \<succ> y + z"
+  and default_gt_zero: "default \<succ> 0"
 
 locale SN_one_mono_ordered_semiring_1 = one_mono_ordered_semiring_1 + order_pair + 
-  assumes SN: "SN {(x,y) . ((y :: 'a :: ordered_semiring_1) \<ge> 0) \<and> (gt x y)}"
+  assumes SN: "SN {(x,y) . y \<succeq> 0 \<and> x \<succ> y}"
 
 
 locale SN_strict_mono_ordered_semiring_1 = SN_one_mono_ordered_semiring_1 +
   fixes mono :: "'a :: ordered_semiring_1 \<Rightarrow> bool"
-  assumes mono: "\<lbrakk>mono x; gt y z; x \<ge> 0\<rbrakk> \<Longrightarrow> gt (x * y) (x * z)" 
+  assumes mono: "\<lbrakk>mono x; y \<succ> z; x \<succeq> 0\<rbrakk> \<Longrightarrow> x * y \<succ> x * z" 
 
 locale both_mono_ordered_semiring_1 = order_pair gt 
-  for gt :: "'a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" + 
-  assumes plus_gt_both_mono: "\<lbrakk>gt x y; gt z u\<rbrakk> \<Longrightarrow> gt (x + z) (y + u)"
-  and times_gt_left_mono: "gt x y \<Longrightarrow> gt (x * z) (y * z)" 
-  and zero_leastI: "gt x 0" 
-  and zero_leastII: "gt 0 x \<Longrightarrow> x = 0" 
-  and zero_leastIII: "(x :: 'a) \<ge> 0"
+  for gt :: "'a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50) + 
+  assumes plus_gt_both_mono: "\<lbrakk>x \<succ> y; z \<succ> u\<rbrakk> \<Longrightarrow> x + z \<succ> y + u"
+  and times_gt_left_mono: "x \<succ> y \<Longrightarrow> x * z \<succ> y * z" 
+  and zero_leastI: "x \<succ> 0" 
+  and zero_leastII: "0 \<succ> x \<Longrightarrow> x = 0" 
+  and zero_leastIII: "(x :: 'a) \<succeq> 0"
 
 locale SN_both_mono_ordered_semiring_1 = both_mono_ordered_semiring_1 +
   fixes arc_pos :: "'a :: ordered_semiring_1 \<Rightarrow> bool"
-  assumes SN: "SN {(x,y) . arc_pos y \<and> gt x y}"
+  assumes SN: "SN {(x,y) . arc_pos y \<and> x \<succ> y}"
   and arc_pos_plus: "arc_pos x \<Longrightarrow> arc_pos (x + y)"
   and arc_pos_mult: "\<lbrakk>arc_pos x; arc_pos y\<rbrakk> \<Longrightarrow> arc_pos (x * y)"
   and arc_pos_default: "arc_pos default"
@@ -123,12 +123,12 @@ class poly_carrier = max_ordered_semiring_1 + comm_semiring_1 (* max_ordered can
   max is only added for Scala export *)
 
 locale poly_order_carrier = SN_one_mono_ordered_semiring_1 default gt 
-  for default :: "'a :: poly_carrier" and gt +
+  for default :: "'a :: poly_carrier" and gt (infix "\<succ>" 50) +
   fixes power_mono :: "bool"
   and   discrete :: "bool"
-  assumes times_gt_mono: "\<lbrakk>gt y z; ge x 1\<rbrakk> \<Longrightarrow> gt (y * x) (z * x)"
-  and gt_imp_ge: "gt x y \<Longrightarrow> ge x y"
-  and power_mono: "power_mono \<Longrightarrow> gt x y \<Longrightarrow> ge y 0 \<Longrightarrow> n \<ge> 1 \<Longrightarrow> gt (x ^ n) (y ^ n)"
-  and discrete: "discrete \<Longrightarrow> ge x y \<Longrightarrow> \<exists> k. x = ((op + 1)^^k) y"
+  assumes times_gt_mono: "\<lbrakk>y \<succ> z; x \<succeq> 1\<rbrakk> \<Longrightarrow> y * x \<succ> z * x"
+  and gt_imp_ge: "x \<succ> y \<Longrightarrow> x \<succeq> y"
+  and power_mono: "power_mono \<Longrightarrow> x \<succ> y \<Longrightarrow> y \<succeq> 0 \<Longrightarrow> n \<ge> 1 \<Longrightarrow> x ^ n \<succ> y ^ n"
+  and discrete: "discrete \<Longrightarrow> x \<succeq> y \<Longrightarrow> \<exists> k. x = ((op + 1)^^k) y"
 
 end
