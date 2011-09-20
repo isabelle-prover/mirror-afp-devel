@@ -120,7 +120,7 @@ where "sub_mat nr nc m = map (sub_vec nr) (take nc m)"
 
 (* comparison of vectors where all components have to be in relation *)
 definition vec_comp_all :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a vec \<Rightarrow> 'a vec \<Rightarrow> bool"
-  where "vec_comp_all rel v w \<equiv> list_all (\<lambda> (a,b). rel a b) (zip v w)"
+  where "vec_comp_all r v w \<equiv> list_all (\<lambda> (a,b). r a b) (zip v w)"
 
 (* comparison of vectors using >= componentwise *)
 definition vec_ge :: "('a :: non_strict_order) vec \<Rightarrow> 'a vec \<Rightarrow> bool"
@@ -128,7 +128,7 @@ definition vec_ge :: "('a :: non_strict_order) vec \<Rightarrow> 'a vec \<Righta
 
 (* comparison of matrices where all components have to be in relation *)
 definition mat_comp_all :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> 'a mat \<Rightarrow> bool"
-  where "mat_comp_all rel m1 m2 \<equiv> list_all (\<lambda> (v,w). vec_comp_all rel v w) (zip m1 m2)"
+  where "mat_comp_all r m1 m2 \<equiv> list_all (\<lambda> (v,w). vec_comp_all r v w) (zip m1 m2)"
 
 (* comparison of matrices using >= componentwise *)
 definition mat_ge :: "('a :: non_strict_order) mat \<Rightarrow> 'a mat \<Rightarrow> bool"
@@ -678,14 +678,14 @@ by (simp only: col_transpose_is_row[OF mat1 i, symmetric],
 
 lemma vec_comp_all_index: assumes "vec nr v1" 
   and "vec nr v2"
-  shows "vec_comp_all rel v1 v2 = (\<forall> i < nr. rel (v1 ! i) (v2 ! i))"
+  shows "vec_comp_all r v1 v2 = (\<forall> i < nr. r (v1 ! i) (v2 ! i))"
 using assms
 unfolding vec_def vec_comp_all_def list_all_iff
 proof (induct nr arbitrary: v1 v2)
   case (Suc nrr)
   from Suc obtain a1 w1 where v1: "v1 = a1 # w1" and lw1: "length w1 = nrr" by (cases v1, auto)
   from Suc obtain a2 w2 where v2: "v2 = a2 # w2" and lw2: "length w2 = nrr" by (cases v2, auto)
-  have rec: "(\<forall> a \<in> set (zip w1 w2). split rel a) = (\<forall> i < nrr. rel (w1 ! i) (w2 ! i))"
+  have rec: "(\<forall> a \<in> set (zip w1 w2). split r a) = (\<forall> i < nrr. r (w1 ! i) (w2 ! i))"
     by (rule Suc, auto simp: Suc lw1 lw2)
   show ?case (is "?l = ?r")
   proof (rule iffI)
@@ -697,7 +697,7 @@ proof (induct nr arbitrary: v1 v2)
     proof (intro allI impI)
       fix i
       assume i: "i < Suc nrr"
-      show "rel (v1 ! i) (v2 ! i)"
+      show "r (v1 ! i) (v2 ! i)"
         using `?l` v1 v2 i
         by (cases i, auto simp: rec)
     qed
@@ -718,7 +718,7 @@ by (simp only: Not_eq_iff[symmetric, of "vec_pre_gtI gt v1 v2"], unfold vec_pre_
     
 lemma mat_comp_all_index: assumes "mat nr nc m1" 
   and "mat nr nc m2"
-  shows "mat_comp_all rel m1 m2 = (\<forall> i < nc. \<forall> j < nr. rel (m1 ! i ! j) (m2 ! i ! j))"
+  shows "mat_comp_all r m1 m2 = (\<forall> i < nc. \<forall> j < nr. r (m1 ! i ! j) (m2 ! i ! j))"
 using assms
 unfolding mat_def mat_comp_all_def list_all_iff
 proof (induct nc arbitrary: m1 m2)
@@ -727,7 +727,7 @@ proof (induct nc arbitrary: m1 m2)
   from Suc obtain v2 mm2 where m2: "m2 = v2 # mm2" and lm2: "length mm2 = ncc \<and> (\<forall> a \<in> set mm2. vec nr a)" by (cases m2, auto)
   from Suc m1 have wf1: "vec nr v1" by simp
   from Suc m2 have wf2: "vec nr v2" by simp
-  have rec: "(\<forall> a \<in> set (zip mm1 mm2). split (vec_comp_all rel) a) = (\<forall> i < ncc. \<forall> j < nr. rel (mm1 ! i ! j) (mm2 ! i ! j))"
+  have rec: "(\<forall> a \<in> set (zip mm1 mm2). split (vec_comp_all r) a) = (\<forall> i < ncc. \<forall> j < nr. r (mm1 ! i ! j) (mm2 ! i ! j))"
     by (rule Suc, auto simp: Suc lm1 lm2)
   show ?case (is "?l = ?r")
   proof (rule iffI)
@@ -735,13 +735,13 @@ proof (induct nc arbitrary: m1 m2)
     thus ?l using m1 m2 lm1 lm2 rec vec_comp_all_index[OF wf1 wf2] by auto
   next
     assume ?l
-    hence ge: "vec_comp_all rel v1 v2" and "\<forall> a \<in> set (zip mm1 mm2). split (vec_comp_all rel) a" using m1 m2 by auto
-    with rec have ge2: " (\<forall>i<ncc. \<forall>j<nr. rel (mm1 ! i ! j) (mm2 ! i ! j))" by simp
+    hence ge: "vec_comp_all r v1 v2" and "\<forall> a \<in> set (zip mm1 mm2). split (vec_comp_all r) a" using m1 m2 by auto
+    with rec have ge2: " (\<forall>i<ncc. \<forall>j<nr. r (mm1 ! i ! j) (mm2 ! i ! j))" by simp
     show ?r
     proof (rule allI, intro impI)
       fix i 
       assume i: "i < Suc ncc" 
-      show "\<forall> j < nr. rel (m1 ! i ! j) (m2 ! i ! j)"
+      show "\<forall> j < nr. r (m1 ! i ! j) (m2 ! i ! j)"
       proof (cases i, simp add: m1 m2, simp only: vec_comp_all_index[OF wf1 wf2, symmetric], rule ge)
         case (Suc ii)   
         with i have " ii < ncc" by simp

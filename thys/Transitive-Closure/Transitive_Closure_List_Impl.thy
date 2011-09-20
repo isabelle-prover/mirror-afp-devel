@@ -54,16 +54,16 @@ latter set will not contain duplicates.
 *} 
 
 definition rtrancl_list_impl :: "('a \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'a list"
-  where "rtrancl_list_impl \<equiv> rtrancl_impl (\<lambda> rel as. remdups (map snd (filter (\<lambda> (a,b). a \<in> set as) rel))) (\<lambda> xs ys. (filter (\<lambda> x. x \<notin> set ys) xs) @ ys)  (\<lambda> x xs. x \<in> set xs) []"
+  where "rtrancl_list_impl \<equiv> rtrancl_impl (\<lambda> r as. remdups (map snd (filter (\<lambda> (a,b). a \<in> set as) r))) (\<lambda> xs ys. (filter (\<lambda> x. x \<notin> set ys) xs) @ ys)  (\<lambda> x xs. x \<in> set xs) []"
 
 definition trancl_list_impl :: "('a \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'a list"
-  where "trancl_list_impl \<equiv> trancl_impl (\<lambda> rel as. remdups (map snd (filter (\<lambda> (a,b). a \<in> set as) rel))) (\<lambda> xs ys. (filter (\<lambda> x. x \<notin> set ys) xs) @ ys)  (\<lambda> x xs. x \<in> set xs) []"
+  where "trancl_list_impl \<equiv> trancl_impl (\<lambda> r as. remdups (map snd (filter (\<lambda> (a,b). a \<in> set as) r))) (\<lambda> xs ys. (filter (\<lambda> x. x \<notin> set ys) xs) @ ys)  (\<lambda> x xs. x \<in> set xs) []"
 
-lemma rtrancl_list_impl: "set (rtrancl_list_impl rel as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set rel)^*}"
+lemma rtrancl_list_impl: "set (rtrancl_list_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)^*}"
   unfolding rtrancl_list_impl_def
   by (rule set_access_gen.rtrancl_impl, unfold_locales, force+)
 
-lemma trancl_list_impl: "set (trancl_list_impl rel as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set rel)^+}"
+lemma trancl_list_impl: "set (trancl_list_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)^+}"
   unfolding trancl_list_impl_def
   by (rule set_access_gen.trancl_impl, unfold_locales, force+)
 
@@ -75,14 +75,14 @@ text {* Storing all relevant entries is done by mapping all left-hand sides of t
 *}
 
 definition memo_list_rtrancl :: "('a \<times> 'a)list \<Rightarrow> ('a \<Rightarrow> 'a list)" 
-where "memo_list_rtrancl rel \<equiv> let tr = rtrancl_list_impl rel;
-                               rm = map (\<lambda> a. (a,tr [a])) ((remdups o map fst) rel)
+where "memo_list_rtrancl r \<equiv> let tr = rtrancl_list_impl r;
+                                 rm = map (\<lambda> a. (a,tr [a])) ((remdups o map fst) r)
                              in (\<lambda> a. case lookup a rm of None \<Rightarrow> [a] | Some as \<Rightarrow> as)"
 
 lemma memo_list_rtrancl:
-  "set (memo_list_rtrancl rel a) = {b. (a,b) \<in> (set rel)^*}" (is "?l = ?r")
+  "set (memo_list_rtrancl r a) = {b. (a,b) \<in> (set r)^*}" (is "?l = ?r")
 proof -
-  let ?rm = "map (\<lambda> a. (a, rtrancl_list_impl rel [a])) ((remdups o map fst) rel)"
+  let ?rm = "map (\<lambda> a. (a, rtrancl_list_impl r [a])) ((remdups o map fst) r)"
   show ?thesis
   proof (cases "lookup a ?rm")
     case None
@@ -90,12 +90,12 @@ proof -
       unfolding memo_list_rtrancl_def Let_def None
       by auto
     from lookup_complete[OF None]
-    have a: "a \<notin> fst ` set rel" by force
+    have a: "a \<notin> fst ` set r" by force
     {
       fix b
       assume "b \<in> ?r"
       from this[unfolded rtrancl_power rel_pow_fun_conv] obtain n f where 
-        ab: "f 0 = a \<and> f n = b" and steps: "\<And> i. i < n \<Longrightarrow> (f i, f (Suc i)) \<in> set rel" by auto
+        ab: "f 0 = a \<and> f n = b" and steps: "\<And> i. i < n \<Longrightarrow> (f i, f (Suc i)) \<in> set r" by auto
       from ab steps[of 0] a have "a = b" 
         by (cases n, force+)
     }
@@ -103,23 +103,23 @@ proof -
     thus ?thesis unfolding one by simp
   next
     case (Some as) 
-    have as: "set as = {b. (a,b) \<in> (set rel)^*}"
+    have as: "set as = {b. (a,b) \<in> (set r)^*}"
       using lookup_sound[OF Some]
-        rtrancl_list_impl[of rel "[a]"] by force
+        rtrancl_list_impl[of r "[a]"] by force
     thus ?thesis unfolding memo_list_rtrancl_def Let_def Some by simp
   qed
 qed
 
 
 definition memo_list_trancl :: "('a \<times> 'a)list \<Rightarrow> ('a \<Rightarrow> 'a list)" 
-where "memo_list_trancl rel \<equiv> let tr = trancl_list_impl rel;
-                               rm = map (\<lambda> a. (a,tr [a])) ((remdups o map fst) rel)
+where "memo_list_trancl r \<equiv> let tr = trancl_list_impl r;
+                               rm = map (\<lambda> a. (a,tr [a])) ((remdups o map fst) r)
                              in (\<lambda> a. case lookup a rm of None \<Rightarrow> [] | Some as \<Rightarrow> as)"
 
 lemma memo_list_trancl:
-  "set (memo_list_trancl rel a) = {b. (a,b) \<in> (set rel)^+}" (is "?l = ?r")
+  "set (memo_list_trancl r a) = {b. (a,b) \<in> (set r)^+}" (is "?l = ?r")
 proof -
-  let ?rm = "map (\<lambda> a. (a, trancl_list_impl rel [a])) ((remdups o map fst) rel)"
+  let ?rm = "map (\<lambda> a. (a, trancl_list_impl r [a])) ((remdups o map fst) r)"
   show ?thesis
   proof (cases "lookup a ?rm")
     case None
@@ -127,7 +127,7 @@ proof -
       unfolding memo_list_trancl_def Let_def None
       by auto
     from lookup_complete[OF None]
-    have a: "a \<notin> fst ` set rel" by force
+    have a: "a \<notin> fst ` set r" by force
     {
       fix b
       assume "b \<in> ?r"
@@ -137,9 +137,9 @@ proof -
     thus ?thesis unfolding one by simp
   next
     case (Some as) 
-    have as: "set as = {b. (a,b) \<in> (set rel)^+}"
+    have as: "set as = {b. (a,b) \<in> (set r)^+}"
       using lookup_sound[OF Some]
-        trancl_list_impl[of rel "[a]"] by force
+        trancl_list_impl[of r "[a]"] by force
     thus ?thesis unfolding memo_list_trancl_def Let_def Some by simp
   qed
 qed
