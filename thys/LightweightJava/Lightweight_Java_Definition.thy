@@ -13,12 +13,12 @@ begin
 
 (** warning: the backend selected ignores the file structure informations *)
 (** syntax *)
-types "j" = "nat"
-types "f" = "string"
-types "meth" = "string"
-types "var" = "string"
-types "dcl" = "string"
-types "oid" = "nat"
+type_synonym "j" = "nat"
+type_synonym "f" = "string"
+type_synonym "meth" = "string"
+type_synonym "var" = "string"
+type_synonym "dcl" = "string"
+type_synonym "oid" = "nat"
 datatype "fqn" = 
    fqn_def "dcl"  
 
@@ -33,11 +33,11 @@ datatype "x" =
 datatype "vd" = 
    vd_def "cl" "var"  
 
-types "X" = "x list"
+type_synonym "X" = "x list"
 datatype "ctx" = 
    ctx_def  
 
-types "vds" = "vd list"
+type_synonym "vds" = "vd list"
 datatype "s" = 
    s_block "s list"  
  | s_ass "var" "x"  
@@ -59,12 +59,12 @@ datatype "fd" =
 datatype "meth_def" = 
    meth_def_def "meth_sig" "meth_body"  
 
-types "fds" = "fd list"
-types "meth_defs" = "meth_def list"
+type_synonym "fds" = "fd list"
+type_synonym "meth_defs" = "meth_def list"
 datatype "cld" = 
    cld_def "dcl" "cl" "fds" "meth_defs"  
 
-types "ctxcld" = "(ctx \<times> cld)"
+type_synonym "ctxcld" = "(ctx \<times> cld)"
 datatype "ty" = 
    ty_top  
  | ty_def "ctx" "dcl"  
@@ -73,38 +73,38 @@ datatype "v" =
    v_null  
  | v_oid "oid"  
 
-types "clds" = "cld list"
-types "ctxclds" = "ctxcld list"
-types "fs" = "f list"
-types "ty_opt" = "ty option"
-types "tys" = "ty list"
-types "L" = "x \<rightharpoonup> v"
-types "H" = "oid \<rightharpoonup> (ty \<times> (f \<rightharpoonup> v))"
+type_synonym "clds" = "cld list"
+type_synonym "ctxclds" = "ctxcld list"
+type_synonym "fs" = "f list"
+type_synonym "ty_opt" = "ty option"
+type_synonym "tys" = "ty list"
+type_synonym "L" = "x \<rightharpoonup> v"
+type_synonym "H" = "oid \<rightharpoonup> (ty \<times> (f \<rightharpoonup> v))"
 datatype "Exception" = 
    ex_npe  
 
-types "P" = "clds"
-types "ctxcld_opt" = "ctxcld option"
-types "nn" = "nat"
-types "ctxclds_opt" = "ctxclds option"
-types "fs_opt" = "fs option"
-types "meths" = "meth list"
+type_synonym "P" = "clds"
+type_synonym "ctxcld_opt" = "ctxcld option"
+type_synonym "nn" = "nat"
+type_synonym "ctxclds_opt" = "ctxclds option"
+type_synonym "fs_opt" = "fs option"
+type_synonym "meths" = "meth list"
 datatype "ty_opt_bot" = 
    ty_opt_bot_opt "ty_opt"  
  | ty_opt_bot_bot  
 
-types "meth_def_opt" = "meth_def option"
-types "ctxmeth_def_opt" = "(ctx \<times> meth_def) option"
+type_synonym "meth_def_opt" = "meth_def option"
+type_synonym "ctxmeth_def_opt" = "(ctx \<times> meth_def) option"
 datatype "mty" = 
    mty_def "tys" "ty"  
 
-types "\<Gamma>" = "x \<rightharpoonup> ty"
-types "v_opt" = "v option"
+type_synonym "\<Gamma>" = "x \<rightharpoonup> ty"
+type_synonym "v_opt" = "v option"
 datatype "config" = 
    config_normal "P" "L" "H" "s list"  
  | config_ex "P" "L" "H" "Exception"  
 
-types "T" = "x \<rightharpoonup> x"
+type_synonym "T" = "x \<rightharpoonup> x"
 
 
 (** library functions *)
