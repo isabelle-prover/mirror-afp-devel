@@ -524,8 +524,7 @@ next
   thus "pos_arctic (x * y)" by (cases x, simp, cases y, auto)
 next
   show "SN {(x,y). pos_arctic y \<and> gt_arctic x y}" (is "SN ?rel")
-    unfolding SN_defs
-  proof (rule allI, rule notI)
+  proof - {
     fix x
     assume "\<exists> f . f 0 = x \<and> (\<forall> i. (f i, f (Suc i)) \<in> ?rel)"
     from this obtain f where "f 0 = x" and seq: "\<forall> i. (f i, f (Suc i)) \<in> ?rel" by auto
@@ -544,7 +543,9 @@ next
     qed
     from this obtain g where "\<forall> i. g (Suc i) \<ge> 0 \<and> (op > :: int \<Rightarrow> int \<Rightarrow> bool) (g i) (g (Suc i))" by auto
     hence "\<exists> f. f 0 = g 0 \<and> (\<forall> i. (f i, f (Suc i)) \<in> {(x,y). y \<ge> 0 \<and> x > y})" by auto
-    with int_SN.SN show False unfolding SN_defs by auto
+    with int_SN.SN have False unfolding SN_defs by auto
+  }
+  thus ?thesis unfolding SN_defs by auto
   qed 
 next
   show "(1 :: arctic) \<ge> 0" unfolding zero_arctic_def by simp
@@ -723,8 +724,7 @@ proof -
     thus "pos_arctic_rat (x * y)" by (cases x, simp, cases y, auto)
   next
     show "SN {(x,y). pos_arctic_rat y \<and> gt_arctic_rat \<delta> x y}" (is "SN ?rel")
-      unfolding SN_defs
-    proof (rule allI, rule notI)
+    proof - {
       fix x
       assume "\<exists> f . f 0 = x \<and> (\<forall> i. (f i, f (Suc i)) \<in> ?rel)"
       from this obtain f where "f 0 = x" and seq: "\<forall> i. (f i, f (Suc i)) \<in> ?rel" by auto
@@ -743,7 +743,9 @@ proof -
       qed
       from this obtain g where "\<forall> i. g (Suc i) \<ge> 0 \<and> rat_gt \<delta> (g i) (g (Suc i))" by auto
       hence "\<exists> f. f 0 = g 0 \<and> (\<forall> i. (f i, f (Suc i)) \<in> {(x,y). y \<ge> 0 \<and> rat_gt \<delta> x y})" by auto
-      with SN show False unfolding SN_defs by auto
+      with SN have False unfolding SN_defs by auto
+    }
+    thus ?thesis unfolding SN_defs by auto
     qed 
   next
     show "(1 :: arctic_rat) \<ge> 0" unfolding zero_arctic_rat_def by simp
