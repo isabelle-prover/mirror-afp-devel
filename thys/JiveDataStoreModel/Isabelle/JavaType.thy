@@ -6,7 +6,8 @@
 
 header {* Java-Type *}
  
-theory JavaType imports TypeIds  begin
+theory JavaType imports "../Isa_Counter/TypeIds"
+begin
 
 text {* This theory formalizes the types that appear in a Java program. Note that
 the types defined by the classes and interfaces are formalized via their identifiers.

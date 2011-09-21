@@ -332,7 +332,7 @@ The intermediate steps of Huffman's algorithm involve a list of prefix code
 trees, or {\sl prefix code forest}.
 *}
 
-types 'a forest = "'a tree list"
+type_synonym 'a forest = "'a tree list"
 
 subsection {* Alphabet *}
 
