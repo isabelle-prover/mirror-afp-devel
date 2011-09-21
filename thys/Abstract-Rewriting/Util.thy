@@ -28,7 +28,6 @@ header {* Util *}
 theory Util
 imports Main Finite_Set
   "~~/src/HOL/Library/Infinite_Set"
-  "../Regular-Sets/Regexp_Method"
   "~~/src/HOL/Library/Monad_Syntax"
 begin
 
@@ -1794,16 +1793,6 @@ lemma foldl_foldr_o_id[symmetric]:
 lemma foldr_o_o_id[simp]:
   "foldr (op \<circ> \<circ> f) xs id a = foldr f xs a"
   by (induct xs) simp_all
-
-lemma rtrancl_comp_trancl_conv: "r^* O r = r^+" by regexp
-
-lemma Un_comp_Un_Id_subset:
-  "A \<union> B O A^= \<subseteq> (A \<union> B)^+"
-  by regexp
-
-lemma comp_Un_Id_subset:
-  "A O (B \<union> Id) \<subseteq> (B \<union> A)^+"
-  by regexp
 
 
 end

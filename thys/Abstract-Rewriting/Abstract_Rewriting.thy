@@ -26,11 +26,11 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Abstract Rewrite Systems *}
 
 theory Abstract_Rewriting
-imports Main Util "../Transitive-Closure/Transitive_Closure_Impl"
+imports 
+  Util 
+  "../Transitive-Closure/Transitive_Closure_Impl"
+  "../Regular-Sets/Regexp_Method"
 begin
-
-lemma trancl_mono_set: "r \<subseteq> s \<Longrightarrow> r^+ \<subseteq> s^+"
-  using trancl_mono by auto
 
 text {*
 An abstract rewrite system (ARS) is a binary endorelation, i.e.,
@@ -135,7 +135,13 @@ next
   with `(a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup>` show ?case unfolding conversion_def by (rule rtrancl.intros)
 qed
 
-lemma trancl_o_refl_is_trancl: "r^+ O r^= = r^+" by (auto)
+
+lemma rtrancl_comp_trancl_conv: "r^* O r = r^+" by regexp
+
+lemma trancl_mono_set: "r \<subseteq> s \<Longrightarrow> r^+ \<subseteq> s^+"
+  using trancl_mono by auto
+
+lemma trancl_o_refl_is_trancl: "r^+ O r^= = r^+" by regexp
 
 lemma conversion_E: "(a, b) \<in> A\<^bsup>\<leftrightarrow>*\<^esup> \<Longrightarrow> ((a, b) \<in> (A\<^sup>\<leftrightarrow>)^* \<Longrightarrow> P) \<Longrightarrow> P"
 by (simp add: conversion_def)
