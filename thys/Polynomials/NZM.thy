@@ -38,7 +38,7 @@ exact criterion for polynomials of degree 2 that is presented in \cite{NZM10}:
 \end{itemize}
 *}
 
-lemma assumes b: "0 < b + a" and a: "0 \<le> (a :: int)"
+lemma assumes b: "b + a > 0" and a: "(a :: int) \<ge> 0"
   shows "check_poly_strict_mono_discrete (op >) (poly_of (PSum [PNum c, PMult [PNum b, PVar x], PMult [PNum a, PVar x, PVar x]])) x"
 proof (cases "a = 0")
   case True
@@ -51,7 +51,7 @@ next
     by (simp add: b False poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_gt_def check_poly_ge.simps check_poly_strict_mono_discrete_def poly_split_def, auto)
 qed
 
-lemma assumes b: "0 \<le> b + a" and a: "0 \<le> (a :: int)" 
+lemma assumes b: "b + a \<ge> 0" and a: "(a :: int) \<ge> 0" 
   shows "check_poly_weak_mono_discrete (poly_of (PSum [PNum c, PMult [PNum b, PVar x], PMult [PNum a, PVar x, PVar x]])) x"
 proof (cases "a = 0")
   case True

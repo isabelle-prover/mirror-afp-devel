@@ -67,7 +67,7 @@ proof (unfold_locales)
     hence "f (Suc (f 0)) + Suc (f 0) \<le> f 0" by blast
     thus False by auto
   qed
-  thus "SN {(x,y). (ge y (0 :: nat)) \<and> y < x}" by auto
+  thus "SN {(x,y). (y :: nat) \<succeq> 0 \<and> y < x}" by auto
 qed (auto simp: nat_mono_def)
 
 instantiation nat :: poly_carrier 
@@ -78,7 +78,7 @@ end
 interpretation nat_poly: poly_order_carrier 1 "op > :: nat \<Rightarrow> nat \<Rightarrow> bool" True discrete
 proof (unfold_locales)
   fix x y :: nat
-  assume ge: "ge x y"
+  assume ge: "x \<succeq> y"
   obtain k where k: "x - y = k" by auto
   show "\<exists> k. x = (op + 1 ^^ k) y" 
   proof (rule exI[of _ k])
@@ -110,7 +110,7 @@ end
 
 interpretation int_SN: SN_strict_mono_ordered_semiring_1 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" int_mono
 proof (unfold_locales)
-  show "SN {(x,y). (ge y 0) \<and> (y :: int) < x}" (is "SN ?gt")
+  show "SN {(x,y). y \<succeq> 0 \<and> (y :: int) < x}" (is "SN ?gt")
   proof (rule ccontr, unfold SN_defs, clarify)
     fix x f
     assume steps: "\<forall> i. (f i, f (Suc i)) \<in> ?gt"
@@ -144,7 +144,7 @@ qed (auto simp: mult_strict_left_mono int_mono_def)
 interpretation int_poly: poly_order_carrier 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" True discrete
 proof (unfold_locales)
   fix x y :: int
-  assume ge: "ge x y"
+  assume ge: "x \<succeq> y"
   then obtain k where k: "x - y = k" and kp: "0 \<le> k" by auto
   then obtain nk where nk: "nk = nat k" and k: "x - y = int nk" by auto
   show "\<exists> k. x = (op + 1 ^^ k) y"
@@ -248,7 +248,7 @@ proof -
   from dpos default have defz: "0 \<le> def" by auto
   show ?thesis
   proof (unfold_locales)
-    show "SN {(x,y). (ge y 0) \<and> rat_gt \<delta> x y}"
+    show "SN {(x,y). y \<succeq> 0 \<and> rat_gt \<delta> x y}"
       by simp (rule rat_gt_SN[OF dpos])
   next
     fix x y z :: rat
@@ -269,7 +269,7 @@ proof -
       also have "\<dots> = ((x - 1) + 1) * (y - z)" by auto
       also have "\<dots> = ?p + 1 * ( y - z)" by (rule ring_distribs(2))
       also have "\<dots> = ?p + (y - z)" by simp
-      also have "greater_eq \<dots> (0 + d)" using yzd `0 \<le> ?p` by auto
+      also have "\<dots> \<succeq> (0 + d)" using yzd `0 \<le> ?p` by auto
       finally 
       show "d \<le> x * y - x * z" by auto
     qed
@@ -284,14 +284,14 @@ proof -
   interpret poly_order_carrier "def" "rat_gt \<delta>" False False
   proof(unfold_locales)
     fix y z x :: rat
-    assume gt: "rat_gt \<delta> y z" and ge: "ge x 1"
-    from ge have ge: "ge x 0" and m: "rat_mono x" unfolding rat_mono_def by auto
+    assume gt: "rat_gt \<delta> y z" and ge: "x \<succeq> 1"
+    from ge have ge: "x \<succeq> 0" and m: "rat_mono x" unfolding rat_mono_def by auto
     show "rat_gt \<delta> (y * x) (z * x)"
       using mono[OF m gt ge] by (auto simp: field_simps)
   next
     fix x y :: rat
     assume gt: "rat_gt \<delta> x y"
-    thus "ge x y" using dpos unfolding rat_gt_def by auto
+    thus "x \<succeq> y" using dpos unfolding rat_gt_def by auto
   next
     fix x y :: rat and n :: nat
     assume False thus "rat_gt \<delta> (x ^ n) (y ^ n)" ..
@@ -303,14 +303,14 @@ proof -
   show ?thesis
   proof(unfold_locales)
     fix x y :: rat and n :: nat
-    assume one: "1 \<le> \<delta>" and gt: "rat_gt \<delta> x y" and y: "ge y 0" and n: "1 \<le> n"
-    then obtain p where n: "n = Suc p" and x: "ge x 1" and y2: "0 \<le> y" and xy: "ge x y" by (cases n, auto simp: rat_gt_def)
+    assume one: "1 \<le> \<delta>" and gt: "rat_gt \<delta> x y" and y: "y \<succeq> 0" and n: "1 \<le> n"
+    then obtain p where n: "n = Suc p" and x: "x \<succeq> 1" and y2: "0 \<le> y" and xy: "x \<succeq> y" by (cases n, auto simp: rat_gt_def)
     show "rat_gt \<delta> (x ^ n) (y ^ n)" 
     proof (simp only: n, induct p, simp add: gt)
       case (Suc p)
       from times_gt_mono[OF this x]
       have one: "rat_gt \<delta> (x ^ Suc (Suc p)) (x * y ^ Suc p)" by (auto simp: field_simps)
-      also have "ge \<dots>  (y * y ^ Suc p)" 
+      also have "\<dots> \<succeq> y * y ^ Suc p" 
         by (rule times_left_mono[OF _ xy], auto simp: zero_le_power[OF y2, of "Suc p", simplified])
       finally show ?case by auto
     qed
@@ -412,27 +412,27 @@ next
     by (cases x, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x y z :: arctic
-  assume "x \<ge> y" 
-  thus "x + z \<ge> y + z"
+  assume "x \<succeq> y" 
+  thus "x + z \<succeq> y + z"
     by (cases x, cases y, cases z, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x y z :: arctic
-  assume "x \<ge> y" 
-  thus "x * z \<ge> y * z"
+  assume "x \<succeq> y" 
+  thus "x * z \<succeq> y * z"
     by (cases x, cases y, cases z, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x y z :: arctic
-  assume "y \<ge> z"
-  thus "x * y \<ge> x * z"
+  assume "y \<succeq> z"
+  thus "x * y \<succeq> x * z"
     by (cases x, cases y, cases z, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x :: arctic
-  show "x \<ge> x" 
+  show "x \<succeq> x" 
     by (cases x, auto)
 next
   fix x y z :: arctic
-  assume "x \<ge> y" and "y \<ge> z"
-  thus "x \<ge> z"
+  assume "x \<succeq> y" and "y \<succeq> z"
+  thus "x \<succeq> z"
     by (cases x, cases y, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x :: arctic
@@ -454,14 +454,14 @@ next
   show "(0 :: arctic) \<noteq> 1"
     by (simp add: zero_arctic_def one_arctic_def)
 next
-  show "(1 :: arctic) \<ge> 0"
+  show "(1 :: arctic) \<succeq> 0"
     by (simp add: zero_arctic_def one_arctic_def)
 next
   fix x :: arctic
-  show "x \<ge> 0" by (cases x, auto simp: zero_arctic_def)
+  show "x \<succeq> 0" by (cases x, auto simp: zero_arctic_def)
 next
   fix x :: arctic
-  show "max0 x \<ge> x" by (cases x, auto)
+  show "max0 x \<succeq> x" by (cases x, auto)
 next
   fix x :: arctic
   show "x + 0 = x" by (cases x, auto simp: zero_arctic_def)
@@ -486,12 +486,12 @@ where "pos_arctic MinInfty = False"
 interpretation arctic_SN: SN_both_mono_ordered_semiring_1 1 gt_arctic pos_arctic
 proof 
   fix x y z :: arctic
-  assume "x \<ge> y" and "gt_arctic y z"
+  assume "x \<succeq> y" and "gt_arctic y z"
   thus "gt_arctic x z"
     by (cases z, simp, cases y, simp, cases x, auto)
 next 
   fix x y z :: arctic
-  assume "gt_arctic x y" and "y \<ge> z"
+  assume "gt_arctic x y" and "y \<succeq> z"
   thus "gt_arctic x z"
     by (cases z, simp, cases y, simp, cases x, auto)
 next
@@ -548,10 +548,10 @@ next
   thus ?thesis unfolding SN_defs by auto
   qed 
 next
-  show "(1 :: arctic) \<ge> 0" unfolding zero_arctic_def by simp
+  show "(1 :: arctic) \<succeq> 0" unfolding zero_arctic_def by simp
 next
   fix x :: arctic 
-  show "x \<ge> 0" unfolding zero_arctic_def by simp
+  show "x \<succeq> 0" unfolding zero_arctic_def by simp
 qed
 
 
@@ -608,27 +608,27 @@ next
     by (cases x, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x y z :: arctic_rat
-  assume "x \<ge> y" 
-  thus "x + z \<ge> y + z"
+  assume "x \<succeq> y" 
+  thus "x + z \<succeq> y + z"
     by (cases x, cases y, cases z, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x y z :: arctic_rat
-  assume "x \<ge> y" 
-  thus "x * z \<ge> y * z"
+  assume "x \<succeq> y" 
+  thus "x * z \<succeq> y * z"
     by (cases x, cases y, cases z, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x y z :: arctic_rat
-  assume "y \<ge> z"
-  thus "x * y \<ge> x * z"
+  assume "y \<succeq> z"
+  thus "x * y \<succeq> x * z"
     by (cases x, cases y, cases z, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x :: arctic_rat
-  show "x \<ge> x" 
+  show "x \<succeq> x" 
     by (cases x, auto)
 next
   fix x y z :: arctic_rat
-  assume "x \<ge> y" and "y \<ge> z"
-  thus "x \<ge> z"
+  assume "x \<succeq> y" and "y \<succeq> z"
+  thus "x \<succeq> z"
     by (cases x, cases y, auto, cases y, cases z, auto, cases z, auto)
 next
   fix x :: arctic_rat
@@ -650,14 +650,14 @@ next
   show "(0 :: arctic_rat) \<noteq> 1"
     by (simp add: zero_arctic_rat_def one_arctic_rat_def)
 next
-  show "(1 :: arctic_rat) \<ge> 0"
+  show "(1 :: arctic_rat) \<succeq> 0"
     by (simp add: zero_arctic_rat_def one_arctic_rat_def)
 next
   fix x :: arctic_rat
-  show "x \<ge> 0" by (cases x, auto simp: zero_arctic_rat_def)
+  show "x \<succeq> 0" by (cases x, auto simp: zero_arctic_rat_def)
 next
   fix x :: arctic_rat
-  show "max0 x \<ge> x" by (cases x, auto)
+  show "max0 x \<succeq> x" by (cases x, auto)
 next
   fix x :: arctic_rat
   show "x + 0 = x" by (cases x, auto simp: zero_arctic_rat_def)
@@ -685,12 +685,12 @@ proof -
   show ?thesis 
   proof
     fix x y z :: arctic_rat
-    assume "x \<ge> y" and "gt_arctic_rat \<delta> y z"
+    assume "x \<succeq> y" and "gt_arctic_rat \<delta> y z"
     thus "gt_arctic_rat \<delta> x z"
       by (cases z, simp, cases y, simp, cases x, simp, simp add: compat)
   next 
     fix x y z :: arctic_rat
-    assume "gt_arctic_rat \<delta> x y" and "y \<ge> z"
+    assume "gt_arctic_rat \<delta> x y" and "y \<succeq> z"
     thus "gt_arctic_rat \<delta> x z"
       by (cases z, simp, cases y, simp, cases x, simp, simp add: compat2)
   next
@@ -748,10 +748,10 @@ proof -
     thus ?thesis unfolding SN_defs by auto
     qed 
   next
-    show "(1 :: arctic_rat) \<ge> 0" unfolding zero_arctic_rat_def by simp
+    show "(1 :: arctic_rat) \<succeq> 0" unfolding zero_arctic_rat_def by simp
   next
     fix x :: arctic_rat
-    show "x \<ge> 0" unfolding zero_arctic_rat_def by simp
+    show "x \<succeq> 0" unfolding zero_arctic_rat_def by simp
   qed
 qed
 
