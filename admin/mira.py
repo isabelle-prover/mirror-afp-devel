@@ -48,7 +48,7 @@ JINJATHREADS_OPTIONS="-M 1 -q 0 -p 0"
         raise Exception('Bad Isabelle image path: %s' % loc_images)
     isabelle_image_path = loc_images[0] + '/'
 
-    fast_flag = ['-f'] if fast else []
+    fast_flag = ['-f'] if fast else ['-F']
     (return_code, log) = env.run_process('admin/testall', '-t',
         path.join(isabelle_home, 'bin', 'isabelle'), *fast_flag,
         ISABELLE_IMAGE_PATH = isabelle_image_path)
@@ -61,13 +61,13 @@ JINJATHREADS_OPTIONS="-M 1 -q 0 -p 0"
 
 
 @configuration(repos = [AFP, Isabelle], deps = [(isabelle.AFP_images, [1])])
-def AFP_complete(env, case, paths, dep_paths, playground):
-    """Full AFP test"""
+def AFP_big(env, case, paths, dep_paths, playground):
+    """Big AFP test"""
     return run_afp_sessions(env, case, paths, dep_paths, playground)
 
 @configuration(repos = [AFP, Isabelle], deps = [(isabelle.AFP_images, [1])])
 def AFP_fast(env, case, paths, dep_paths, playground):
-    """Full AFP test"""
+    """Fast AFP test"""
     return run_afp_sessions(env, case, paths, dep_paths, playground, fast=True)
 
 
