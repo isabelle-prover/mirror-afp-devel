@@ -663,6 +663,15 @@ qed
 lemma steps_preserve_SN_elt: "(a, b) \<in> A^* \<Longrightarrow> SN_elt A a \<Longrightarrow> SN_elt A b"
 by (induct rule: rtrancl.induct) (auto simp: step_preserves_SN_elt)
 
+
+lemma steps_preserve_SN_elt':
+  assumes "(A,B) \<in> R\<^sup>+"
+  and "SN_elt R A"
+  shows "SN_elt R B"
+using steps_preserve_SN_elt[OF trancl_into_rtrancl[OF assms(1)] assms(2)]
+by assumption
+
+
 (* belongs somewhere else *)
 lemma subsetI2[Pure.intro]: "(\<And>x y. (x,y) \<in> A \<Longrightarrow> (x,y) \<in> B) \<Longrightarrow> A \<subseteq> B" by auto
 
@@ -1312,6 +1321,11 @@ lemma SN_imp_SN_pow: assumes "SN R" shows "SN(R^^Suc n)"
 lemma SN_pow: "SN R \<longleftrightarrow> SN(R ^^ Suc n)"
   by (rule iffI,rule SN_imp_SN_pow,assumption,rule SN_pow_imp_SN,assumption)
 
+lemma SN_elt_trancl_imp_SN_elt:
+  assumes "SN_elt (R\<^sup>+) a"
+  shows "SN_elt R a"
+using assms by (cases "\<exists>S. S 0 = a \<and> (\<forall>i. (S i, S (Suc i)) \<in> R)") auto
+
 lemma SN_elt_imp_SN_elt_trancl: assumes "SN_elt A t" shows "SN_elt (A^+) t"
 using assms proof (rule contrapos_pp)
   let ?A = "SN_rel A A"
@@ -1339,6 +1353,9 @@ using assms proof (rule contrapos_pp)
   with `SN (?A^+)` have "False" unfolding SN_defs by simp
   thus "\<not> SN_elt A t" by simp
 qed
+
+lemma SN_elt_trancl_is_SN_elt: "SN_elt (r^+) = SN_elt r"
+  by (rule ext, insert SN_elt_trancl_imp_SN_elt[of r] SN_elt_imp_SN_elt_trancl[of r], auto)
 
 text {* Restrict an ARS to elements of a given set. *}
 definition
@@ -2051,14 +2068,6 @@ lemma SN_weakening:
 using SN_elt_weakening and assms
 unfolding SN_def by metis
 
-lemma SN_elt_trancl_is_SN_elt: "SN_elt (r^+) = SN_elt r"
-proof (intro ext)
-  have r: "r \<subseteq> r^+" by auto
-  fix t
-  show "SN_elt (r^+) t = SN_elt r t"
-    using SN_elt_imp_SN_elt_trancl[of r t]
-    using SN_elt_subset[OF _ r, of t] by auto
-qed
 
 (* an explicit version of infinite reduction *)
 definition ideriv :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool"
