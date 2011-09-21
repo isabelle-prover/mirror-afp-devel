@@ -49,7 +49,7 @@ proof -
     show "\<exists> i. \<forall> j \<ge> i. (f j, f (Suc j)) \<notin> R"
     proof (rule ccontr)
       assume "\<not> ?thesis"
-      hence ih: "infinite_hits r" unfolding infinite_hits_def r by blast
+      hence ih: "infinite_hits r" unfolding infinite_hits_def r INFM_nat_le by blast
       obtain r_index where "r_index = infinite_hits.index r" by simp
       with infinite_hits.index_p[OF ih] infinite_hits.index_ordered[OF ih] infinite_hits.index_not_p_between[OF ih] 
       have r_index: "\<And> i. r (r_index i) \<and> r_index i < r_index (Suc i) \<and> (\<forall> j. r_index i < j \<and> j < r_index (Suc i) \<longrightarrow> \<not> r j)" by auto
