@@ -1706,10 +1706,21 @@ proof (rule subsetI2)
   fix a b assume "(a,b) \<in> restrict_SN R S" thus "(a,b) \<in> R" unfolding restrict_SN_def by simp
 qed
 
-<<<<<<< local
 lemma union_iseq_SN_on_imp_first_step:
   assumes "\<forall>i. (t i, t (Suc i)) \<in> (R \<union> S)" and "SN_on S {t 0}"
-=======
+
+  shows "\<exists>i. (t i, t (Suc i)) \<in> R \<and> (\<forall>j<i. (t j, t (Suc j)) \<in> S \<and> (t j, t (Suc j)) \<notin> R)"
+proof -
+  from `SN_on S {t 0}` obtain i where "(t i, t (Suc i)) \<notin> S" by blast
+  with assms have "(t i, t (Suc i)) \<in> R" (is "?P i") by auto
+  let ?i = "Least ?P"
+  from `?P i` have "?P ?i" by (rule LeastI)
+  have "\<forall>j<?i. (t j, t (Suc j)) \<notin> R" using not_less_Least by auto
+  moreover with assms have "\<forall>j<?i. (t j, t (Suc j)) \<in> S" by best
+  ultimately have "\<forall>j<?i. (t j, t (Suc j)) \<in> S \<and> (t j, t (Suc j)) \<notin> R" by best
+  with `?P ?i` show ?thesis by best
+qed
+
 lemma first_step: assumes C: "C = A \<union> B" and steps: "(x,y) \<in> C^*"
   and Bstep: "(y,z) \<in> B"
   shows "\<exists> y. (x,y) \<in> A^* O B"
@@ -1774,22 +1785,8 @@ next
     qed
   qed
   with LSR show ?thesis by simp
-qed  
-
-lemma union_iseq_SN_elt_imp_first_step:
-  assumes "\<forall>i. (t i, t (Suc i)) \<in> (R \<union> S)" and "SN_elt S (t 0)"
->>>>>>> other
-  shows "\<exists>i. (t i, t (Suc i)) \<in> R \<and> (\<forall>j<i. (t j, t (Suc j)) \<in> S \<and> (t j, t (Suc j)) \<notin> R)"
-proof -
-  from `SN_on S {t 0}` obtain i where "(t i, t (Suc i)) \<notin> S" by blast
-  with assms have "(t i, t (Suc i)) \<in> R" (is "?P i") by auto
-  let ?i = "Least ?P"
-  from `?P i` have "?P ?i" by (rule LeastI)
-  have "\<forall>j<?i. (t j, t (Suc j)) \<notin> R" using not_less_Least by auto
-  moreover with assms have "\<forall>j<?i. (t j, t (Suc j)) \<in> S" by best
-  ultimately have "\<forall>j<?i. (t j, t (Suc j)) \<in> S \<and> (t j, t (Suc j)) \<notin> R" by best
-  with `?P ?i` show ?thesis by best
 qed
+
 
 lemma non_strict_ending:
   assumes seq: "\<forall>i. (t i,t(Suc i)) \<in> R \<union> S"
@@ -1984,30 +1981,27 @@ qed
 
 lemma SN_empty[simp]: "SN {}" by auto
 
-
-<<<<<<< local
-=======
-lemma SN_elt_weakening:
-  assumes "SN_elt R1 a"
-  shows "SN_elt (R1 \<inter> R2) a"
-proof-
-{
-  assume "\<exists>S. S 0 = a \<and> (\<forall>i. (S i, S (Suc i)) \<in> R1 \<inter> R2)"
-  then obtain S where
-    S0: "S 0 = a" and
-    SN: "\<forall>i. (S i, S (Suc i)) \<in> (R1 \<inter> R2)"
-  by auto
-  from SN have SN': "\<forall>i. (S i, S (Suc i)) \<in> R1" by simp
-  with S0 and assms have "False" by auto
-}
-thus ?thesis by auto
+lemma SN_on_weakening:
+  assumes "SN_on R1 A"
+  shows "SN_on (R1 \<inter> R2) A"
+proof -
+  {
+    assume "\<exists>S. S 0 \<in> A \<and> (\<forall>i. (S i, S (Suc i)) \<in> R1 \<inter> R2)"
+    then obtain S where
+      S0: "S 0 \<in> A" and
+      SN: "\<forall>i. (S i, S (Suc i)) \<in> (R1 \<inter> R2)"
+      by auto
+    from SN have SN': "\<forall>i. (S i, S (Suc i)) \<in> R1" by simp
+    with S0 and assms have "False" by auto
+  }
+  thus ?thesis by force
 qed
 
 lemma SN_weakening:
   assumes "SN R1"
   shows "SN (R1 \<inter> R2)"
-using SN_elt_weakening and assms
-unfolding SN_def by metis
+using SN_on_weakening and assms
+unfolding SN_on_def by metis
 
 
 (* an explicit version of infinite reduction *)
@@ -2017,9 +2011,8 @@ where "ideriv R S as \<equiv> (\<forall> i. (as i, as (Suc i)) \<in> R \<union> 
 lemma ideriv_mono: "R \<subseteq> R' \<Longrightarrow> S \<subseteq> S' \<Longrightarrow> ideriv R S as \<Longrightarrow> ideriv R' S' as"
   unfolding ideriv_def INFM_nat by blast
 
-
 fun
-  shift :: "'a iseq \<Rightarrow> nat \<Rightarrow> 'a iseq"
+  shift :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"
 where
   "shift f j = (\<lambda> i. f (i+j))"
 
@@ -2063,7 +2056,7 @@ proof
   assume "ideriv (S \<inter> R) (R - S) as"
   with R have steps: "\<forall> i. (as i, as (Suc i)) \<in> NS \<union> S" and inf: "INFM i. (as i, as (Suc i)) \<in> S \<inter> R" unfolding ideriv_def by auto
   from non_strict_ending[OF steps compat] SN
-  obtain i where i: "\<And> j. j \<ge> i \<Longrightarrow> (as j, as (Suc j)) \<in> NS - S" by auto
+  obtain i where i: "\<And> j. j \<ge> i \<Longrightarrow> (as j, as (Suc j)) \<in> NS - S" by best
   from inf[unfolded INFM_nat] obtain j where "j > i" and "(as j, as (Suc j)) \<in> S" by auto
   with i[of j] show False by auto
 qed
@@ -2957,6 +2950,4 @@ proof -
   qed
 qed
 
-
->>>>>>> other
 end
