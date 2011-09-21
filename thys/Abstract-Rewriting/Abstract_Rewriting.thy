@@ -2368,6 +2368,10 @@ unfolding rel_SN_alt.simps SN_defs by auto
 lemma rel_step_mono: assumes "R \<subseteq> R'" and "S \<subseteq> S'"
   shows "rel_step (R,S) \<subseteq> rel_step (R',S')" using assms rtrancl_mono unfolding rel_step.simps by blast
 
+
+lemma rel_SN_mono': "R \<subseteq> R' \<Longrightarrow> S \<subseteq> R' \<union> S' \<Longrightarrow> rel_SN (R',S') \<Longrightarrow> rel_SN (R,S)"
+  unfolding rel_SN_conv rel_SN_alt.simps INFM_nat_le by blast
+
 lemma rel_SN_mono: assumes R: "R \<subseteq> R'" and S: "S \<subseteq> S'"
   and SN: "rel_SN (R',S')"
   shows "rel_SN (R,S)"
