@@ -393,6 +393,16 @@ lemma SN_onI:
 lemma SN_I: "(\<And>a. SN_on A {a}) \<Longrightarrow> SN A"
   unfolding SN_on_def by blast
 
+lemma SN_on_trancl_imp_SN_on:
+  assumes "SN_on (R^+) T" shows "SN_on R T"
+proof (rule ccontr)
+  assume "\<not> SN_on R T"
+  then obtain s where "s 0 \<in> T" and "\<forall>i. (s i,s(Suc i)) \<in> R" unfolding SN_defs by auto
+  hence "\<forall>i. (s i,s(Suc i)) \<in> R^+" by auto
+  with `s 0 \<in> T` have "\<not> SN_on (R^+) T" unfolding SN_defs by auto
+  with assms show False by simp
+qed
+
 lemma SN_onE:
   assumes "SN_on r A"
     and "\<not> (\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> r)) \<Longrightarrow> P"
@@ -1302,6 +1312,10 @@ proof (rule contrapos_pp)
   with `SN (?r^+)` have False by (simp add: SN_defs)
   thus "\<not> SN_on r A" by simp
 qed
+
+lemma SN_on_trancl_SN_on_conv: "SN_on (R^+) T = SN_on R T"
+  using SN_on_trancl_imp_SN_on[of R] SN_on_trancl[of R] by blast
+
 
 text {* Restrict an ARS to elements of a given set. *}
 definition "restrict" :: "'a ars \<Rightarrow> 'a set \<Rightarrow> 'a ars" where
