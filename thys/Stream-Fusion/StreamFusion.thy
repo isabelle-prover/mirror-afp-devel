@@ -711,7 +711,7 @@ lemmas stream_congs =
 lemma
   "mapL\<cdot>f oo filterL\<cdot>p oo mapL\<cdot>g =
    unstream oo mapS\<cdot>f oo filterS\<cdot>p oo mapS\<cdot>g oo stream"
-apply (rule ext_cfun, simp)
+apply (rule cfun_eqI, simp)
 apply (unfold stream_eqs)
 apply (intro stream_congs refl)
 done

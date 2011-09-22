@@ -100,7 +100,7 @@ Our transformation functions are inverse to each other, so we can use them to tr
 lemma tup_to_sum_to_tup[simp]:
   shows   "sum_to_tup\<cdot>(tup_to_sum\<cdot>F) = F"
 unfolding sum_to_tup_app and tup_to_sum_app
-by (cases F, auto intro:ext_cfun)
+by (cases F, auto intro:cfun_eqI)
 
 lemma fix_transform_pair_sum:
   shows "fix\<cdot>F = sum_to_tup\<cdot>(fix\<cdot>(tup_to_sum oo F oo sum_to_tup))"
@@ -125,7 +125,7 @@ shows  "tup_to_sum oo (\<Lambda> p. (\<lambda>(a, b). (F a b, G a b)) p) oo sum_
             G (\<Lambda> s. f\<cdot>(Discr (Inl (undiscr s))))
              (\<Lambda> s. f\<cdot>(Discr (Inr (undiscr s))))\<cdot>
             (Discr x)))"
-by (rule ext_cfun, rule ext_cfun,
+by (rule cfun_eqI, rule cfun_eqI,
     simp add: sum_to_tup_app tup_to_sum_app
        cont2cont_split_pair[OF f1 f2 g1 g2]
        cont2cont_lambda

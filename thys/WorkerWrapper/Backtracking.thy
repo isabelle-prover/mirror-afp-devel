@@ -60,10 +60,10 @@ where
   "unwrap \<equiv> \<Lambda> r e s f. blah\<cdot>(r\<cdot>e)\<cdot>s\<cdot>f"
 
 lemma unwrap_strict[simp]: "unwrap\<cdot>\<bottom> = \<bottom>"
-  unfolding unwrap_def by (rule ext_cfun)+ simp
+  unfolding unwrap_def by (rule cfun_eqI)+ simp
 
 lemma unwrap_strict2[simp]: "r\<cdot>\<bottom> = \<bottom> \<Longrightarrow> unwrap\<cdot>r\<cdot>\<bottom> = \<bottom>"
-  unfolding unwrap_def by (rule ext_cfun)+ simp
+  unfolding unwrap_def by (rule cfun_eqI)+ simp
 
 definition
   wrap :: "(Expr \<rightarrow> K) \<rightarrow> (Expr \<rightarrow> Nat llist)" where
@@ -71,7 +71,7 @@ definition
 
 lemma wrap_unwrap_id: "wrap oo unwrap = ID"
   unfolding wrap_def unwrap_def
-  apply (rule ext_cfun)+
+  apply (rule cfun_eqI)+
   apply (case_tac "x\<cdot>xa")
   apply (simp_all)
   apply (induct_tac llist)
@@ -116,7 +116,7 @@ lemma FIXME2: "blah\<cdot>(lconcat\<cdot>(lmap\<cdot>g\<cdot>xs))\<cdot>s\<cdot>
 
 lemma eval_body_body':
   "unwrap oo eval_body oo wrap = eval_body' oo unwrap oo wrap"
-  apply (rule ext_cfun)+
+  apply (rule cfun_eqI)+
   apply (case_tac xa)
       apply simp
      apply (simp add: unwrap_def)
@@ -125,12 +125,12 @@ lemma eval_body_body':
     apply (subgoal_tac "(\<Lambda> xa. blah\<cdot>(lconcat\<cdot>(lmap\<cdot>(\<Lambda> y. (xa + y) :@ lnil)\<cdot>(wrap\<cdot>x\<cdot>Expr2)))\<cdot>xb)
                       = (\<Lambda> xa. blah\<cdot>(wrap\<cdot>x\<cdot>Expr2)\<cdot>(\<Lambda> y. xb\<cdot>(xa + y)))")
      apply simp
-    apply (rule ext_cfun)+
+    apply (rule cfun_eqI)+
     apply (simp add: FIXME2)
     apply (subgoal_tac "(\<Lambda> x. blah\<cdot>((xd + x) :@ lnil)\<cdot>xb)
                       = (\<Lambda> y. xb\<cdot>(xd + y))")
      apply simp
-    apply (rule ext_cfun)+
+    apply (rule cfun_eqI)+
     apply simp
    apply (simp add: unwrap_def FIXME)
   apply (simp add: unwrap_def)

@@ -31,7 +31,7 @@ by auto
 lemma theorem10:
   fixes g :: "'a::cpo \<rightarrow> 'b::type set" and r :: "'a \<rightarrow> 'a"
   shows "fix\<cdot>(\<Lambda> f x. g\<cdot>x \<union> f\<cdot>(r\<cdot>x)) = (\<Lambda> x. (\<Union>i. g\<cdot>(r\<^bsup>i\<^esup>\<cdot>x)))"
-proof(induct rule:fix_eqI[OF ext_cfun below_cfun_ext, case_names fp least])
+proof(induct rule:fix_eqI[OF cfun_eqI cfun_belowI, case_names fp least])
 case (fp x)
   have "g\<cdot>x \<union> (\<Union>i. g\<cdot>(r\<^bsup>i\<^esup>\<cdot>(r\<cdot>x))) = g\<cdot>(r\<^bsup>0\<^esup>\<cdot>x) \<union> (\<Union>i. g\<cdot>(r\<^bsup>Suc i\<^esup>\<cdot>x))"
     by (simp add: iterate_Suc2 del: iterate_Suc)
@@ -45,7 +45,7 @@ case (fp x)
   show ?case by auto
 next
 case (least f x)
-  hence expand: "\<And>x. f\<cdot>x = (g\<cdot>x \<union> f\<cdot>(r\<cdot>x))" by (auto simp:expand_cfun_eq)
+  hence expand: "\<And>x. f\<cdot>x = (g\<cdot>x \<union> f\<cdot>(r\<cdot>x))" by (auto simp:cfun_eq_iff)
   { fix n
     have "f\<cdot>x = (\<Union>i\<in>{..n}. g\<cdot>(r\<^bsup>i\<^esup>\<cdot>x)) \<union> f\<cdot>(r\<^bsup>Suc n\<^esup>\<cdot>x)"
     proof(induct n)
@@ -150,7 +150,7 @@ lemma theorem12':
   fixes g :: "'a::discrete_cpo \<rightarrow> 'b::type set" and R :: "'a \<rightarrow> 'a set"
   assumes F_fix: "F = fix\<cdot>(\<Lambda> F x. \<^ps>g\<cdot>x \<union> F\<cdot>(\<^ps>R\<cdot>x))"
   shows "fix\<cdot>(\<Lambda> f x. g\<cdot>x \<union> (\<Union>y\<in>R\<cdot>x. f\<cdot>y)) = (\<Lambda> x. F\<cdot>{x})"
-proof(induct rule:fix_eqI[OF ext_cfun below_cfun_ext, case_names fp least])
+proof(induct rule:fix_eqI[OF cfun_eqI cfun_belowI, case_names fp least])
 have F_union: "F = (\<Lambda> x. \<Union>i. \<^ps>g\<cdot>((\<^ps>R)\<^bsup>i\<^esup>\<cdot>x))"
   using F_fix by(simp)(rule theorem10ps)
 case (fp x)
@@ -164,12 +164,12 @@ next
 case (least f' x)
   hence expand: "f' = (\<Lambda> x. g\<cdot>x \<union> (\<Union>y\<in>R\<cdot>x. f'\<cdot>y))" by simp
   have "\<^ps>f' = (\<Lambda> S. \<^ps>g\<cdot>S \<union> \<^ps>f'\<cdot>(\<^ps>R\<cdot>S))"
-    by (subst expand, rule ext_cfun, auto simp add:powerset_lift_def)
+    by (subst expand, rule cfun_eqI, auto simp add:powerset_lift_def)
   hence "(\<Lambda> F. \<Lambda> x. \<^ps>g\<cdot>x \<union> F\<cdot>(\<^ps>R\<cdot>x))\<cdot>(\<^ps>f') = \<^ps>f'" by simp
   from fix_least[OF this] and F_fix
   have  "F \<sqsubseteq> \<^ps>f'"  by simp
   hence  "F\<cdot>{x} \<sqsubseteq> \<^ps>f'\<cdot>{x}"
-    by (subst (asm)expand_cfun_below, auto simp del:powerset_lift_singleton)
+    by (subst (asm)cfun_below_iff, auto simp del:powerset_lift_singleton)
   thus ?case by (auto simp add:sqsubset_is_subset)
 qed
 

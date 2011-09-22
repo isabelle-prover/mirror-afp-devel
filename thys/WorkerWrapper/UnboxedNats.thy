@@ -46,7 +46,7 @@ lemma fac_body_strict[simp]: "fac_body\<cdot>r\<cdot>\<bottom> = \<bottom>"
   unfolding fac_body_def by simp
 
 lemma fac_fac_body_eq: "fac = fix\<cdot>fac_body"
-  unfolding fac_body_def by (rule ext_cfun, subst fac_def, simp)
+  unfolding fac_body_def by (rule cfun_eqI, subst fac_def, simp)
 
 text{* Wrap / unwrap functions. Note the explicit lifting of the
 co-domain. For some reason the published version of
@@ -70,7 +70,7 @@ definition
 lemma wrapB_unwrapB_body:
   assumes strictF: "f\<cdot>\<bottom> = \<bottom>"
   shows "(wrapB oo unwrapB)\<cdot>f = f" (is "?lhs = ?rhs")
-proof(rule ext_cfun)
+proof(rule cfun_eqI)
   fix x :: Nat
   have "?lhs\<cdot>x = unbox\<cdot>x >>= (\<Lambda> x'. unwrapB\<cdot>f\<cdot>x' >>= box)"
     unfolding wrapB_def by simp
@@ -94,7 +94,7 @@ lemma fac_fac_ww_eq: "fac = fac_wrap" (is "?lhs = ?rhs")
 proof -
   have "wrapB oo unwrapB oo fac_body = fac_body"
     using wrapB_unwrapB_body[OF fac_body_strict]
-    by - (rule ext_cfun, simp)
+    by - (rule cfun_eqI, simp)
   thus ?thesis
     using worker_wrapper_body[where computation=fac and body=fac_body and wrap=wrapB and unwrap=unwrapB]
     unfolding fac_work_def fac_wrap_def by (simp add: fac_fac_body_eq)
@@ -111,7 +111,7 @@ definition
               else unbox\<cdot>(box\<cdot>n - 1) >>= r >>= (\<Lambda> b. box\<cdot>n * box\<cdot>b))"
 
 lemma fac_body'_fac_body: "fac_body' = unwrapB oo fac_body oo wrapB" (is "?lhs = ?rhs")
-proof(rule ext_cfun)+
+proof(rule cfun_eqI)+
   fix r x
   show "?lhs\<cdot>r\<cdot>x = ?rhs\<cdot>r\<cdot>x"
     using bbind_case_distr_strict[where f="\<Lambda> y. box\<cdot>x * y" and g="unbox\<cdot>(box\<cdot>x - 1)"]
@@ -130,7 +130,7 @@ definition
      if n = 0 then up\<cdot>1 else r\<cdot>(n -\<^sub># 1) >>= (\<Lambda> b. up\<cdot>(n *\<^sub># b))"
 
 lemma fac_body_final_fac_body': "fac_body_final = fac_body'" (is "?lhs = ?rhs")
-proof(rule ext_cfun)+
+proof(rule cfun_eqI)+
   fix r x
   show "?lhs\<cdot>r\<cdot>x = ?rhs\<cdot>r\<cdot>x"
     using bbind_case_distr_strict[where f="unbox" and g="r\<cdot>(x -\<^sub># 1)" and h="(\<Lambda> b. box\<cdot>(x *\<^sub># b))"]
@@ -200,7 +200,7 @@ definition
   "unwrapA \<equiv> \<Lambda> f n. f\<cdot>n >>= n2a"
 
 lemma unwrapA_strict[simp]: "unwrapA\<cdot>\<bottom> = \<bottom>"
-  unfolding unwrapA_def by (rule ext_cfun) simp
+  unfolding unwrapA_def by (rule cfun_eqI) simp
 
 definition
   wrapA :: "(UNat \<rightarrow> UNatAcc) \<rightarrow> UNat \<rightarrow> UNat\<^sub>\<bottom>" where
@@ -208,7 +208,7 @@ definition
 
 lemma wrapA_unwrapA_id: "wrapA oo unwrapA = ID"
   unfolding wrapA_def unwrapA_def
-  apply (rule ext_cfun)+
+  apply (rule cfun_eqI)+
   apply (case_tac "x\<cdot>xa")
   apply (simp_all add: a2n_n2a)
   done
@@ -222,7 +222,7 @@ definition
 
 lemma fac_acc_body1_fac_body_final_eq: "fac_acc_body1 = unwrapA oo fac_body_final oo wrapA"
   unfolding fac_acc_body1_def fac_body_final_def wrapA_def unwrapA_def
-  by (rule ext_cfun)+ simp
+  by (rule cfun_eqI)+ simp
 
 text{* Use the homomorphism. *}
 
@@ -233,7 +233,7 @@ definition
 
 lemma fac_acc_body2_body1_eq: "fac_acc_body2 = fac_acc_body1"
   unfolding fac_acc_body1_def fac_acc_body2_def
-  by (rule ext_cfun)+ (simp add: A_hom_mult)
+  by (rule cfun_eqI)+ (simp add: A_hom_mult)
 
 text{* Apply worker/wrapper. *}
 
@@ -243,7 +243,7 @@ definition
      if n = 0 then n2a\<cdot>1 else n2a\<cdot>n >=> r\<cdot>(n -\<^sub># 1)"
 
 lemma fac_acc_body3_body2: "fac_acc_body3 oo (unwrapA oo wrapA) = fac_acc_body2" (is "?lhs=?rhs")
-proof(rule ext_cfun)+
+proof(rule cfun_eqI)+
   fix r n acc
   show "((fac_acc_body3 oo (unwrapA oo wrapA))\<cdot>r\<cdot>n\<cdot>acc) = fac_acc_body2\<cdot>r\<cdot>n\<cdot>acc"
     unfolding fac_acc_body2_def fac_acc_body3_def unwrapA_def
@@ -267,7 +267,7 @@ definition
 
 lemma fac_acc_work_final_fac_acc_work3_eq: "fac_acc_body_final = fac_acc_body3" (is "?lhs=?rhs")
   unfolding fac_acc_body3_def fac_acc_body_final_def n2a_def bKleisli_def
-  by (rule ext_cfun)+
+  by (rule cfun_eqI)+
      (simp add: uMult_arithmetic)
 
 lemma fac_acc_work_final_fac_work: "fac_acc_work_final = fac_work_final" (is "?lhs=?rhs")

@@ -163,7 +163,7 @@ abbreviation
 lemma bKleisli_strict1[simp]: "bKleisli\<cdot>\<bottom> = \<bottom>"
   by (simp add: bKleisli_def)
 lemma bKleisli_strict2[simp]: "b >=> \<bottom> = \<bottom>"
-  by (rule ext_cfun, simp add: bKleisli_def)
+  by (rule cfun_eqI, simp add: bKleisli_def)
 
 lemma bKleisli_bbind: "(f >>= g) >=> h = f >>= (\<Lambda> x. g\<cdot>x >=> h)"
   by (cases f, simp_all)
@@ -198,7 +198,7 @@ proof(cases x)
   case bottom with xbot show ?thesis by simp
 next
   case (Box u) with xbox show ?thesis
-    by (cases u, simp_all add: box_def up_def cont_Iup UU_I[OF minimal_up])
+    by (cases u, simp_all add: box_def up_def cont_Iup bottomI[OF minimal_up])
 qed
 
 lemma bbind_leftID'[simp]: "unbox\<cdot>a >>= box = a" by (cases a, simp_all add: bbind_def)
@@ -231,7 +231,7 @@ definition
   bliftM2 :: "('a::predomain \<rightarrow> 'b::predomain \<rightarrow> 'c::predomain) \<Rightarrow> 'a Box \<rightarrow> 'b Box \<rightarrow> 'c Box" where
   "bliftM2 f \<equiv> \<Lambda> x y. unbox\<cdot>x >>= (\<Lambda> x'. unbox\<cdot>y >>= (\<Lambda> y'. box\<cdot>(f\<cdot>x'\<cdot>y')))"
 
-lemma bliftM2_strict1[simp]: "bliftM2 f\<cdot>\<bottom> = \<bottom>" by (rule ext_cfun)+ (simp add: bliftM2_def)
+lemma bliftM2_strict1[simp]: "bliftM2 f\<cdot>\<bottom> = \<bottom>" by (rule cfun_eqI)+ (simp add: bliftM2_def)
 lemma bliftM2_strict2[simp]: "bliftM2 f\<cdot>x\<cdot>\<bottom> = \<bottom>" by (cases x, simp_all add: bliftM2_def)
 lemma bliftM2_op[simp]: "bliftM2 f\<cdot>(box\<cdot>x)\<cdot>(box\<cdot>y) = box\<cdot>(f\<cdot>x\<cdot>y)" by (simp add: bliftM2_def)
 
@@ -288,7 +288,7 @@ definition
   bpred :: "('a::countable discr \<Rightarrow> 'a discr \<Rightarrow> bool) \<Rightarrow> 'a discr Box \<rightarrow> 'a discr Box \<rightarrow> tr" where
   "bpred p \<equiv> \<Lambda> x y. unbox\<cdot>x >>= (\<Lambda> x'. unbox\<cdot>y >>= (\<Lambda> y'. if p x' y' then TT else FF))"
 
-lemma bpred_strict1[simp]: "bpred p\<cdot>\<bottom> = \<bottom>" unfolding bpred_def by (rule ext_cfun, simp)
+lemma bpred_strict1[simp]: "bpred p\<cdot>\<bottom> = \<bottom>" unfolding bpred_def by (rule cfun_eqI, simp)
 lemma bpred_strict2[simp]: "bpred p\<cdot>x\<cdot>\<bottom> = \<bottom>" unfolding bpred_def by (cases x, simp_all)
 
 lemma bpred_eval[simp]: "bpred p\<cdot>(box\<cdot>x)\<cdot>(box\<cdot>y) = (if p x y then TT else FF)"

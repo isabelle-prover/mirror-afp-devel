@@ -25,7 +25,7 @@ definition
   "list2H \<equiv> lappend"
 
 lemma acc_c2a_strict[simp]: "list2H\<cdot>\<bottom> = \<bottom>"
-  by (rule ext_cfun, simp add: list2H_def)
+  by (rule cfun_eqI, simp add: list2H_def)
 
 definition
   H2list :: "'a H \<rightarrow> 'a llist" where
@@ -37,7 +37,7 @@ dodge an explicit appeal to the equation @{thm "inst_cfun_pcpo"},
 which does not hold in Haskell. *}
 
 lemma H_llist_hom_append: "list2H\<cdot>(xs :++ ys) = list2H\<cdot>xs oo list2H\<cdot>ys" (is "?lhs = ?rhs")
-proof(rule ext_cfun)
+proof(rule cfun_eqI)
   fix zs
   have "?lhs\<cdot>zs = (xs :++ ys) :++ zs" by (simp add: list2H_def)
   also have "\<dots> = xs :++ (ys :++ zs)" by (rule lappend_assoc)
@@ -50,7 +50,7 @@ qed
 lemma H_llist_hom_id: "list2H\<cdot>lnil = ID" by (simp add: list2H_def)
 
 lemma H2list_list2H_inv: "H2list oo list2H = ID"
-  by (rule ext_cfun, simp add: H2list_def list2H_def)
+  by (rule cfun_eqI, simp add: H2list_def list2H_def)
 
 text{* \citet[\S4.2]{GillHutton:2009} define the naive reverse
 function as follows. *}
@@ -78,7 +78,7 @@ to define @{term "lrev_body"} as the generator of the fixpoint
 definition of @{term "lrev"} directly. *}
 
 lemma lrev_lrev_body_eq: "lrev = fix\<cdot>lrev_body"
-  by (rule ext_cfun, subst lrev_def, subst lrev_body.unfold, simp)
+  by (rule cfun_eqI, subst lrev_def, subst lrev_body.unfold, simp)
 
 text{* Wrap / unwrap functions. *}
 
@@ -87,14 +87,14 @@ definition
   "unwrapH \<equiv> \<Lambda> f xs . list2H\<cdot>(f\<cdot>xs)"
 
 lemma unwrapH_strict[simp]: "unwrapH\<cdot>\<bottom> = \<bottom>"
-  unfolding unwrapH_def by (rule ext_cfun, simp)
+  unfolding unwrapH_def by (rule cfun_eqI, simp)
 
 definition
   wrapH :: "('a llist \<rightarrow> 'a H) \<rightarrow> 'a llist \<rightarrow> 'a llist" where
   "wrapH \<equiv> \<Lambda> f xs . H2list\<cdot>(f\<cdot>xs)"
 
 lemma wrapH_unwrapH_id: "wrapH oo unwrapH = ID" (is "?lhs = ?rhs")
-proof(rule ext_cfun)+
+proof(rule cfun_eqI)+
   fix f xs
   have "?lhs\<cdot>f\<cdot>xs = H2list\<cdot>(list2H\<cdot>(f\<cdot>xs))" by (simp add: wrapH_def unwrapH_def)
   also have "\<dots> = (H2list oo list2H)\<cdot>(f\<cdot>xs)" by simp
@@ -131,7 +131,7 @@ definition
   "lrev_work1 \<equiv> fix\<cdot>lrev_body1"
 
 lemma lrev_body_lrev_body1_eq: "lrev_body1 = unwrapH oo lrev_body oo wrapH"
-  apply (rule ext_cfun)+
+  apply (rule cfun_eqI)+
   apply (subst lrev_body.unfold)
   apply (subst lrev_body1.unfold)
   apply (case_tac xa)
@@ -161,7 +161,7 @@ lemma lrev_work2_strict[simp]: "lrev_work2\<cdot>\<bottom> = \<bottom>"
   by (subst fix_eq) simp
 
 lemma lrev_body2_lrev_body1_eq: "lrev_body2 = lrev_body1"
-  by ((rule ext_cfun)+
+  by ((rule cfun_eqI)+
      , (subst lrev_body1.unfold, subst lrev_body2.unfold)
      , (simp add: H_llist_hom_append[symmetric] H_llist_hom_id))
 
@@ -187,7 +187,7 @@ lemma lrev_wwfusion: "list2H\<cdot>((wrapH\<cdot>lrev_work2)\<cdot>xs) = lrev_wo
 proof -
   {
     have "list2H oo wrapH\<cdot>lrev_work2 = unwrapH\<cdot>(wrapH\<cdot>lrev_work2)"
-      by (rule ext_cfun, simp add: unwrapH_def)
+      by (rule cfun_eqI, simp add: unwrapH_def)
     also have "\<dots> = (unwrapH oo wrapH)\<cdot>lrev_work2" by simp
     also have "\<dots> = lrev_work2"
       apply -
@@ -196,7 +196,7 @@ proof -
       done
     finally have "list2H oo wrapH\<cdot>lrev_work2 = lrev_work2" .
   }
-  thus ?thesis using expand_cfun_eq[where f="list2H oo wrapH\<cdot>lrev_work2" and g="lrev_work2"] by auto
+  thus ?thesis using cfun_eq_iff[where f="list2H oo wrapH\<cdot>lrev_work2" and g="lrev_work2"] by auto
 qed
 
 text{* If we use this result directly, we only get a partially-correct
@@ -224,7 +224,7 @@ proof(rule fix_least)
       finally show ?thesis by simp
     qed
   }
-  thus "lrev_body3\<cdot>lrev_work2 = lrev_work2" by (rule ext_cfun)
+  thus "lrev_body3\<cdot>lrev_work2 = lrev_work2" by (rule cfun_eqI)
 qed
 
 text{* We can't show the reverse inclusion in the same way as the
@@ -239,7 +239,7 @@ completely sound in this context, by appealing to the lazy list
 induction principle. *}
 
 lemma lrev_work3_lrev_work2_eq: "lrev_work3 = lrev_work2" (is "?lhs = ?rhs")
-proof(rule ext_cfun)
+proof(rule cfun_eqI)
   fix x
   show "?lhs\<cdot>x = ?rhs\<cdot>x"
   proof(induct x)
@@ -270,7 +270,7 @@ text{* Use the combined worker/wrapper-fusion rule. Note we get a weaker lemma. 
 
 lemma lrev3_2_syntactic: "lrev_body3 oo (unwrapH oo wrapH) = lrev_body2"
   apply (subst lrev_body2.unfold, subst lrev_body3.unfold)
-  apply (rule ext_cfun)+
+  apply (rule cfun_eqI)+
   apply (case_tac xa)
     apply (simp_all add: unwrapH_def)
   done
@@ -305,11 +305,11 @@ lemma lrev_body_final_lrev_body3_eq': "lrev_body_final\<cdot>r\<cdot>xs = lrev_b
   apply (subst lrev_body_final.unfold)
   apply (subst lrev_body3.unfold)
   apply (cases xs)
-  apply (simp_all add: list2H_def ID_def ext_cfun)
+  apply (simp_all add: list2H_def ID_def cfun_eqI)
   done
 
 lemma lrev_body_final_lrev_body3_eq: "lrev_body_final = lrev_body3"
-  by (simp only: lrev_body_final_lrev_body3_eq' ext_cfun)
+  by (simp only: lrev_body_final_lrev_body3_eq' cfun_eqI)
 
 lemma lrev_final_lrev_eq: "lrev = lrev_final" (is "?lhs = ?rhs")
 proof -
@@ -319,7 +319,7 @@ proof -
   also have "\<dots> = wrapH\<cdot>lrev_work2" by (simp only: lrev_work2_lrev_work1_eq)
   also have "\<dots> = wrapH\<cdot>lrev_work3" by (simp only: lrev_work3_lrev_work2_eq)
   also have "\<dots> = wrapH\<cdot>lrev_work_final" by (simp only: lrev_work3_def lrev_work_final_def lrev_body_final_lrev_body3_eq)
-  also have "\<dots> = lrev_final" by (simp add: lrev_final_def ext_cfun H2list_def wrapH_def)
+  also have "\<dots> = lrev_final" by (simp add: lrev_final_def cfun_eqI H2list_def wrapH_def)
   finally show ?thesis .
 qed
 

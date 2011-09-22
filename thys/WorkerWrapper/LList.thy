@@ -40,13 +40,13 @@ text{* This gives us that @{thm lappend_strict'}. *}
 
 text {* This is where we use @{thm inst_cfun_pcpo} *}
 lemma lappend_strict[simp]: "lappend\<cdot>\<bottom> = \<bottom>"
-  by (rule ext_cfun) (simp add: lappend_strict')
+  by (rule cfun_eqI) (simp add: lappend_strict')
 
 lemma lappend_assoc: "(xs :++ ys) :++ zs = xs :++ (ys :++ zs)"
   by (induct xs, simp_all)
 
 lemma lappend_lnil_id_left[simp]: "lappend\<cdot>lnil = ID"
-  by (rule ext_cfun) simp
+  by (rule cfun_eqI) simp
 
 lemma lappend_lnil_id_right[simp]: "xs :++ lnil = xs"
   by (induct xs) simp_all

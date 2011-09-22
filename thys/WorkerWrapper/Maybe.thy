@@ -26,7 +26,7 @@ definition
   "mcatch \<equiv> \<Lambda> body handler. case body of Nothing \<Rightarrow> handler | Just\<cdot>x \<Rightarrow> Just\<cdot>x"
 
 lemma mcatch_strict[simp]: "mcatch\<cdot>\<bottom> = \<bottom>"
-  by (rule ext_cfun, simp add: mcatch_def)
+  by (rule cfun_eqI, simp add: mcatch_def)
 
 definition
   mbind :: "'a Maybe \<rightarrow> ('a \<rightarrow> 'b Maybe) \<rightarrow> 'b Maybe" where
@@ -59,7 +59,7 @@ lemma mliftM2_Nothing1[simp]: "mliftM2 f\<cdot>Nothing\<cdot>y = Nothing" by (si
 lemma mliftM2_Nothing2[simp]: "mliftM2 f\<cdot>(Just\<cdot>x)\<cdot>Nothing = Nothing" by (simp add: mliftM2_def)
 lemma mliftM2_op[simp]: "mliftM2 f\<cdot>(Just\<cdot>x)\<cdot>(Just\<cdot>y) = Just\<cdot>(f\<cdot>x\<cdot>y)" by (simp add: mliftM2_def)
 
-lemma mliftM2_strict1[simp]: "mliftM2 f\<cdot>\<bottom> = \<bottom>" by (rule ext_cfun)+ (simp add: mliftM2_def)
+lemma mliftM2_strict1[simp]: "mliftM2 f\<cdot>\<bottom> = \<bottom>" by (rule cfun_eqI)+ (simp add: mliftM2_def)
 lemma mliftM2_strict2[simp]: "mliftM2 f\<cdot>(Just\<cdot>x)\<cdot>\<bottom> = \<bottom>" by (simp add: mliftM2_def)
 
 end

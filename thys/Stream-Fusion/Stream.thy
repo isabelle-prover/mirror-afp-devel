@@ -44,14 +44,14 @@ proof (rule below_antisym)
   show "unfold\<cdot>h \<sqsubseteq> fix\<cdot>(unfoldF\<cdot>h)"
     apply (rule unfold.induct, simp, simp)
     apply (subst fix_eq)
-    apply (rule below_cfun_ext, rename_tac s)
+    apply (rule cfun_belowI, rename_tac s)
     apply (case_tac "s = \<bottom>", simp, simp)
     apply (intro monofun_cfun monofun_LAM below_refl, simp_all)
     done
   show "fix\<cdot>(unfoldF\<cdot>h) \<sqsubseteq> unfold\<cdot>h"
     apply (rule fix_ind, simp, simp)
     apply (subst unfold.unfold)
-    apply (rule below_cfun_ext, rename_tac s)
+    apply (rule cfun_belowI, rename_tac s)
     apply (case_tac "s = \<bottom>", simp, simp)
     apply (intro monofun_cfun monofun_LAM below_refl, simp_all)
     done
