@@ -1889,6 +1889,16 @@ proof (simp only: mat_comp_all_index[OF wf1 wf3], intro allI impI)
   from one two show "m1 ! i ! j \<succ>  m3 ! i ! j" by (rule compat2)
 qed
 
+lemma mat_gt_arc_trans: assumes gt1: "mat_gt_arc m1 m2" and gt2: "mat_gt_arc m2 m3" and wf1: "mat nr nc m1" and wf2: "mat nr nc m2" and wf3: "mat nr nc m3" 
+  shows "mat_gt_arc m1 m3"
+proof (simp only: mat_comp_all_index[OF wf1 wf3], intro allI impI)
+  fix i j
+  assume i: "i < nc" and j: "j < nr"
+  from gt1 i j have one: "m1 ! i ! j \<succ> m2 ! i ! j" using mat_comp_all_index[OF wf1 wf2] by auto
+  from gt2 i j have two: "m2 ! i ! j \<succ> m3 ! i ! j" using mat_comp_all_index[OF wf2 wf3] by auto
+  from one two show "m1 ! i ! j \<succ> m3 ! i ! j" by (rule gt_trans)
+qed
+
 lemma mat_gt_arc_plus_mono: assumes gt1: "mat_gt_arc x y"
   and gt2: "mat_gt_arc z u"
   and wfx: "mat nr nc x"

@@ -900,6 +900,9 @@ using assms unfolding poly_ge_def poly_gt_def using compat by blast
 lemma poly_compat2: "\<lbrakk>p1 >p p2; p2 \<ge>p p3\<rbrakk> \<Longrightarrow> p1 >p p3"
 using assms unfolding poly_ge_def poly_gt_def using compat2 by blast
 
+lemma poly_gt_trans[trans]: "\<lbrakk>p1 >p p2; p2 >p p3\<rbrakk> \<Longrightarrow> p1 >p p3"
+using assms unfolding poly_gt_def using gt_trans by blast
+
 lemma poly_GT_SN: "SN poly_GT"
 proof
   fix f
