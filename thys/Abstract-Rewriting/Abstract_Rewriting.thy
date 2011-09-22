@@ -390,6 +390,9 @@ lemma SN_onI:
   shows "SN_on r A"
   using assms unfolding SN_defs by blast
 
+lemma SN_I: "(\<And>a. SN_on A {a}) \<Longrightarrow> SN A"
+  unfolding SN_on_def by blast
+
 lemma SN_onE:
   assumes "SN_on r A"
     and "\<not> (\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> r)) \<Longrightarrow> P"
