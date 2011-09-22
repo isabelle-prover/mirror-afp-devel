@@ -1581,6 +1581,10 @@ proof -
   with compat2[OF gt geij] i j show ?thesis 
     by (simp only: mat_gt_index[OF wf1 wf3 sd_n], auto)
 qed
+
+lemma mat_gt_trans: assumes sd_n: "sd \<le> n" and  gt1: "mat_gt sd m1 m2" and gt2: "mat_gt sd m2 m3" and wf1: "mat n n m1" and wf2: "mat n n m2" and wf3: "mat n n m3" 
+  shows "mat_gt sd m1 m3"
+  by (rule mat_gt_compat[OF sd_n _ gt2 wf1 wf2 wf3], insert gt1[unfolded mat_gtI_def], auto)
 end
 
 context one_mono_ordered_semiring_1

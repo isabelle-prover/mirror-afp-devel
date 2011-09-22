@@ -273,6 +273,10 @@ proof -
       finally 
       show "d \<le> x * y - x * z" by auto
     qed
+  next
+    fix x y z
+    assume "rat_gt \<delta> x y" "rat_gt \<delta> y z"
+    thus "rat_gt \<delta> x z" unfolding rat_gt_def using dpos by auto
   qed (auto simp: rat_gt_def dpos default defz)
 qed
 
@@ -495,6 +499,11 @@ next
   thus "gt_arctic x z"
     by (cases z, simp, cases y, simp, cases x, auto)
 next
+  fix x y z :: arctic
+  assume "gt_arctic x y" and "gt_arctic y z"
+  thus "gt_arctic x z"
+    by (cases z, simp, cases y, simp, cases x, auto)
+next
   fix x y z u
   assume "gt_arctic x y" and "gt_arctic z u"
   thus "gt_arctic (x + z) (y + u)"
@@ -693,6 +702,11 @@ proof -
     assume "gt_arctic_rat \<delta> x y" and "y \<succeq> z"
     thus "gt_arctic_rat \<delta> x z"
       by (cases z, simp, cases y, simp, cases x, simp, simp add: compat2)
+  next
+    fix x y z :: arctic_rat
+    assume "gt_arctic_rat \<delta> x y" and "gt_arctic_rat \<delta> y z"
+    thus "gt_arctic_rat \<delta> x z"
+      by (cases z, simp, cases y, simp, cases x, simp, insert dpos, auto simp: compat2 rat_gt_def)
   next
     fix x y z u
     assume "gt_arctic_rat \<delta> x y" and "gt_arctic_rat \<delta> z u"

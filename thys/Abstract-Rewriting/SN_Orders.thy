@@ -76,6 +76,7 @@ locale order_pair =
   and default :: "'a"
   assumes compat[trans]: "\<lbrakk>x \<succeq> y; y \<succ> z\<rbrakk> \<Longrightarrow> x \<succ> z"
   and compat2[trans]: "\<lbrakk>x \<succ> y; y \<succeq> z\<rbrakk> \<Longrightarrow> x \<succ> z"
+  and gt_trans[trans]: "\<lbrakk>x \<succ> y; y \<succ> z\<rbrakk> \<Longrightarrow> x \<succ> z"
   and default_ge_zero: "default \<succeq> 0"
 
 
