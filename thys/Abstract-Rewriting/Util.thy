@@ -31,7 +31,9 @@ imports Main Finite_Set
   "~~/src/HOL/Library/Monad_Syntax"
 begin
 
-text {* Some auxiliary lemmas that do not fit elsewhere. *}
+section {* Auxiliary Lemmas *}
+
+lemma set_not_empty: "xs \<noteq> [] \<longleftrightarrow> set xs \<noteq> {}" by simp
 
 lemma ballI2: assumes "\<And>x y. (x,y) \<in> A \<Longrightarrow> P x y" shows "\<forall>(x,y)\<in>A. P x y"
   using assms by auto
