@@ -526,7 +526,7 @@ proof -
     also have "\<dots> = (\<Sum>i\<in>K. z1 i * \<chi> (C i) t + z2 i * \<chi> (C i) t)" 
       by (rule setsum_addf[THEN sym])
     also have "\<dots> = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi> (C i) t)" 
-      by (simp add: real_add_mult_distrib)
+      by (simp add: left_distrib)
     finally have "f t + g t = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi> (C i) t)" .
   }
 
@@ -548,7 +548,7 @@ proof -
     by (auto simp add: sfis.base)
   also 
   from a2 b2 have "a+b = (\<Sum>i\<in>K. (z1 i + z2 i) * measure M (C i))" 
-    by (simp add: setsum_addf[THEN sym] real_add_mult_distrib)
+    by (simp add: setsum_addf[THEN sym] left_distrib)
   ultimately show ?thesis by simp
 qed
 
@@ -1568,7 +1568,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
               by (simp add: A_def)
             also
             from True have "real (Suc i)/(2::real)^m \<le> real j/(2::real)^m"
-              by (simp add: real_divide_def) 
+              by (simp add: divide_inverse) 
             finally
             show ?thesis 
               by (simp add: A_def)
@@ -1578,7 +1578,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
             with ne have no: "j<i" 
               by arith
             hence "real (Suc j)/(2::real)^m \<le> real i/(2::real)^m"
-              by (simp add: real_divide_def)
+              by (simp add: divide_inverse)
             also
             from tai have "real i / (2::real)^m \<le> f t"
               by (simp add: A_def)
@@ -1827,7 +1827,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
       with lim have "(\<lambda>n. u n t + inverse ((2::real)^n)) ----> c+0"
         by (rule tendsto_add)
       hence "(\<lambda>n. u n t + 1/(2::real)^n) ----> c"
-        by (simp add: real_divide_def)
+        by (simp add: divide_inverse)
       hence "(\<lambda>n. u (n+n0) t + 1/(2::real)^(n+n0)) ----> c"
         by (subst limseq_shift_iff)
       also from pro fless have "\<And>n. f t \<le> u (n+n0) t + 1 / 2 ^ (n+n0)"
@@ -1926,7 +1926,7 @@ proof -
   with nn have a: "a \<in> nnfis (pp f) M" 
     by simp
   have "0\<le>(0::real)" 
-    by (rule real_le_refl)
+    by (rule order_refl)
   with ms nn have "0*a \<in> nnfis (\<lambda>t. 0*f t) M" 
     by (rule nnfis_times) 
   with 0 have 02: "0 \<in> nnfis (np f) M" 
@@ -2269,7 +2269,7 @@ proof -
   from a have "0 < a^n" 
     by (rule zero_less_power)
   ultimately show ?thesis 
-    by (simp add: pos_le_divide_eq real_mult_commute)
+    by (simp add: pos_le_divide_eq mult_commute)
 qed
 
 end

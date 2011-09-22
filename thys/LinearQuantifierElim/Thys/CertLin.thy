@@ -80,9 +80,9 @@ by simp
 lemma I_R_mult_atom: "c \<ge> 0 \<Longrightarrow> I\<^isub>R a xs \<Longrightarrow> I\<^isub>R (c *\<^sub>a a) xs"
 apply(cases a)
  apply(clarsimp)
- apply(rule real_mult_less_mono2)
-  apply arith
- apply simp
+ apply(rule mult_strict_left_mono)
+  apply simp
+ apply arith
 apply(simp)
 done
 

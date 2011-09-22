@@ -206,11 +206,11 @@ proof-
   proof cases
     assume "te q i \<le> te p i"
     from this Eq1 show ?thesis
-      by (simp add: real_abs_def)
+      by (simp add: abs_if)
   next
     assume "\<not> (te q i \<le> te p i)"
     from this Eq1 show ?thesis
-      by (simp add: real_abs_def)
+      by (simp add: abs_if)
   qed
 
   from corr_p rts0d have "te p (i+1) - te p i \<le> rmax"
@@ -237,7 +237,7 @@ proof-
 
   have "\<bar> ?Bp - ?Bq \<bar> \<le> 2*\<rho>*(t - s)"
   proof-
-    from PC_ie have Eq1: "\<bar> ?Bp - ?Bq \<bar> = ?Bp - ?Bq" by (simp add: real_abs_def)
+    from PC_ie have Eq1: "\<bar> ?Bp - ?Bq \<bar> = ?Bp - ?Bq" by (simp add: abs_if)
     from corr_p ie rb1 have Eq2: "?Bp - ?Bq \<le> ?I*(1+\<rho>) - ?Bq" (is "?E1 \<le> ?E2")
       by(simp add: diff_minus[symmetric] rho_bound1_def)
     from corr_q ie rb2 have "?I*(1 - \<rho>) \<le> ?Bq"
@@ -250,7 +250,7 @@ proof-
   qed
   moreover
   have "\<bar>?Dt\<bar>  \<le> \<bar>?Bp - ?Bq\<bar>  + \<bar>?Ds\<bar>"
-    by(simp add: real_abs_def)
+    by(simp add: abs_if)
   ultimately show ?thesis by simp
 qed
 
@@ -407,7 +407,7 @@ proof (rule ccontr)
         proof-
 
           have Eq1: "real i * rmin + rmin = (real i + 1)*rmin" 
-            by (simp add: real_add_mult_distrib) 
+            by (simp add: left_distrib) 
           have Eq2: "real i + 1 = real (i+1)" by simp
           from Eq1 Eq2 
           have Eq3: "real i * rmin + rmin = real (i+1) * rmin"
@@ -538,20 +538,20 @@ proof-
   from corr_q_tq corr_p rts2b have "\<bar>?D\<bar> \<le> \<beta>"
     by(simp)
   from this constants_ax posD have D_beta: "?D*\<rho> \<le> \<beta>*\<rho>"
-    by(simp add: real_abs_def)
+    by(simp add: abs_if)
 
   show ?thesis 
   proof cases
     assume A: "?D \<le> ?X"
     from posX posD A have absEq: "\<bar>?X - ?D\<bar> = ?X - ?D"
-      by(simp add: real_abs_def)
+      by(simp add: abs_if)
     from bound1 have bound2: "?X - ?D \<le> ?D*\<rho>" 
-      by(simp add: real_mult_commute real_add_mult_distrib)
+      by(simp add: mult_commute left_distrib)
     from D_beta absEq bound2 show ?thesis by simp
   next
     assume notA: "\<not> (?D \<le> ?X)"
     from this have absEq2: "\<bar>?X - ?D\<bar> = ?D - ?X"
-      by(simp add: real_abs_def)
+      by(simp add: abs_if)
     from ie corr_l rate_2 have bound3: "?D*(1 - \<rho>) \<le> ?X" by simp
     from this have "?D - ?X \<le> ?D*\<rho>" by (simp add: algebra_simps)
     from this absEq2 D_beta show ?thesis by simp
@@ -579,10 +579,10 @@ proof-
   let ?ICT = "IC l i (te p (i+1)) - IC l i (te q (i+1))"
 
   have "?M = \<bar>(?Xq - ?D) - (?T - ?D)\<bar>"
-  by(simp add: real_abs_def)
+  by(simp add: abs_if)
 
   hence Split: "?M \<le> \<bar>?Xq - ?D\<bar> + \<bar>?T - ?D\<bar>"
-    by(simp add: real_abs_def)
+    by(simp add: abs_if)
 
   from ie corr_q correct_closed have corr_q_tq: "correct q (te q (i+1))"
     by(blast)
@@ -599,13 +599,13 @@ proof-
   have TD: "\<bar>?T - ?D\<bar> \<le> 2*\<Lambda> + \<beta>*\<rho>" 
   proof-
     have Eq1: "\<bar>?T - ?D\<bar> = \<bar>(?T - ?ICT) + (?ICT - ?D)\<bar>" (is "?E1 = ?E2")
-      by (simp add: real_abs_def)
+      by (simp add: abs_if)
   
     have Eq2: "?E2 \<le> \<bar>?T - ?ICT\<bar> + \<bar>?ICT - ?D\<bar>" 
-      by(simp add: real_abs_def)
+      by(simp add: abs_if)
 
     have Eq3: "\<bar>?T - ?ICT\<bar> \<le>  \<bar>?RE1\<bar> + \<bar>?RE2\<bar>"
-      by(simp add: real_abs_def)
+      by(simp add: abs_if)
 
     from readerror corr_p corr_l 
     have Eq4: "\<bar>?RE1\<bar> \<le> \<Lambda>" by simp
@@ -668,9 +668,9 @@ proof-
   let ?IC = "IC l i ?tlm - IC m i ?tlm"
 
   have Eq1: "\<bar>?X\<bar> = \<bar>(?D1 - ?D2) + ?ICS\<bar>" (is "?E1 = ?E2") 
-    by (simp add: real_abs_def)
+    by (simp add: abs_if)
 
-  have Eq2: "?E2 \<le> \<bar>?D1 - ?D2\<bar> + \<bar>?ICS\<bar>" by (simp add: real_abs_def)
+  have Eq2: "?E2 \<le> \<bar>?D1 - ?D2\<bar> + \<bar>?ICS\<bar>" by (simp add: abs_if)
 
   from corr_l_tk corr_k beta_bound1 have ie_lk: "te l i \<le> te k (i+1)" 
     by (simp add: le_diff_eq)
@@ -695,7 +695,7 @@ proof-
   have Eq5: "\<bar>?D1\<bar> \<le> \<Lambda>" by simp
   from corr_k corr_m_tk readerror 
   have Eq6: "\<bar>?D2\<bar> \<le> \<Lambda>" by simp
-  have "\<bar>?D1 - ?D2\<bar> \<le> \<bar>?D1\<bar> + \<bar>?D2\<bar>" by (simp add: real_abs_def)
+  have "\<bar>?D1 - ?D2\<bar> \<le> \<bar>?D1\<bar> + \<bar>?D2\<bar>" by (simp add: abs_if)
   from this Eq5 Eq6 have Eq7: "\<bar>?D1 - ?D2\<bar> \<le> 2*\<Lambda>"
     by (simp)
 
@@ -778,7 +778,7 @@ proof-
     from ie4 corr_p corr_q IC_trans_inv 
     have Eq2: "IC q (i+1) ?tpq = cfn q ?f" by simp
       
-    from Eq1 Eq2 show ?thesis by(simp add: real_abs_def)
+    from Eq1 Eq2 show ?thesis by(simp add: abs_if)
   qed
 
   let ?ppred = "\<lambda> l. correct l (te p (i+1))"
@@ -831,7 +831,7 @@ proof-
         by(auto simp add: okmaxsync_def)
 
       have EqAbs3: "\<bar>?f l - ?f m\<bar> = \<bar>\<theta> q (i+1) l - \<theta> q (i+1) m\<bar>"
-        by (simp add: real_abs_def)
+        by (simp add: abs_if)
 
       from EqAbs1 corr_q_tq corr_l_tq corr_m_tq theta_bound
       have "\<bar>\<theta> q (i+1) l - \<theta> q (i+1) m\<bar> \<le> ?Y"
@@ -919,11 +919,11 @@ proof(induct i)
       proof cases
         assume A:"PC p 0 < PC q 0"
         from A range1 range2 show ?thesis 
-          by(auto simp add: real_abs_def)
+          by(auto simp add: abs_if)
       next
         assume notA: "\<not> (PC p 0 < PC q 0)"
         from notA range1 range2 show ?thesis
-          by(auto simp add: real_abs_def)
+          by(auto simp add: abs_if)
       qed
       from this IC_eq_PC have "?T1 \<le> \<delta>S" by simp
     }
@@ -1185,8 +1185,8 @@ next
   let ?E3 = "cfn q (\<theta> q (i+1)) - \<theta> q (i+1) p"
   let ?E4 = "\<theta> q (i+1) p - IC p i (te q (i+1))"
 
-  have "\<bar>?E2\<bar> = \<bar>?E3 + ?E4\<bar>" by (simp add: real_abs_def)
-  hence Eq8: "\<bar>?E2\<bar> \<le> \<bar>?E3\<bar> + \<bar>?E4\<bar>" by (simp add: real_abs_def)
+  have "\<bar>?E2\<bar> = \<bar>?E3 + ?E4\<bar>" by (simp add: abs_if)
+  hence Eq8: "\<bar>?E2\<bar> \<le> \<bar>?E3\<bar> + \<bar>?E4\<bar>" by (simp add: abs_if)
  
   from correct_count have ppredOK: "np - maxfaults \<le> count ?ppred np"
     by simp

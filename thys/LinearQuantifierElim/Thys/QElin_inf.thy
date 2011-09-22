@@ -136,7 +136,7 @@ next
         and "\<forall>y. ?U < y \<and> y \<le> x \<longrightarrow> ?L < y" using Atom 1
         by(simp_all add:nolb_def depends\<^isub>R_def Ball_def field_simps)
       hence "?L < ?U \<or> ?L = ?U"
-        by (metis linorder_neqE_linordered_idom real_le_refl)
+        by (metis linorder_neqE_linordered_idom order_refl)
       hence ?thesis using Atom 1 `d>0`
         by (simp add: iprod_left_add_distrib field_simps)
     } ultimately show ?thesis by force
@@ -167,7 +167,7 @@ next
       then obtain x where "?a < x" "x < ?b" by(metis dense)
       hence " \<forall>y. ?a < y \<and> y \<le> x \<longrightarrow> s < d*y + \<langle>ds,xs\<rangle>"
         using `d<0` by (simp add:field_simps)
-      (metis add_le_cancel_right mult_le_cancel_left real_le_antisym real_le_linear real_mult_commute xt1(8))
+      (metis add_le_cancel_right mult_le_cancel_left order_antisym linear mult_commute xt1(8))
       hence ?thesis using 1 `?a<x` by auto
     } moreover
     { let ?a = "s - d * r" let ?b = "\<langle>d *\<^sub>s cs + ds,xs\<rangle>"
@@ -178,12 +178,12 @@ next
         assume "?a = ?b"
         thus ?thesis using `d>0` Atom 1
           by(simp add:field_simps iprod_left_add_distrib)
-            (metis add_0_left add_less_cancel_right right_distrib real_mult_commute real_mult_less_mono2)
+            (metis add_0_left add_less_cancel_right right_distrib mult_commute mult_strict_left_mono)
       next
         assume "?a < ?b"
         { fix x assume "r+\<langle>cs,xs\<rangle> < x \<and> x \<le> r+\<langle>cs,xs\<rangle> + 1"
           hence "d*(r + \<langle>cs,xs\<rangle>) < d*x"
-            using `d>0` by(metis real_mult_less_mono2)
+            using `d>0` by(metis mult_strict_left_mono)
           hence "s < d*x + \<langle>ds,xs\<rangle>" using `d>0` `?a < ?b`
             by (simp add:algebra_simps iprod_left_add_distrib)
         }
