@@ -272,6 +272,10 @@ definition SN_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
 abbreviation SN :: "'a ars \<Rightarrow> bool" where
   "SN r \<equiv> SN_on r UNIV"
 
+text {* Alternative definition of @{term "SN"}. *}
+lemma SN_def: "SN r = (\<forall>x. SN_on r {x})"
+  unfolding SN_on_def by blast
+
 definition UNF_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
   "UNF_on r A \<equiv> \<forall>a\<in>A. \<forall>b c. (a, b) \<in> r^! \<and> (a, c) \<in> r^! \<longrightarrow> b = c"
 
