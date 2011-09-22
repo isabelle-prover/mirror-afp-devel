@@ -35,6 +35,10 @@ section {* Auxiliary Lemmas *}
 
 lemma set_not_empty: "xs \<noteq> [] \<longleftrightarrow> set xs \<noteq> {}" by simp
 
+lemma insert_subset: "set xs \<subseteq> set (List.insert x xs)" by auto
+
+lemma removeAll_subset: "set (removeAll x xs) \<subseteq> set xs" by auto
+
 lemma ballI2: assumes "\<And>x y. (x,y) \<in> A \<Longrightarrow> P x y" shows "\<forall>(x,y)\<in>A. P x y"
   using assms by auto
 
