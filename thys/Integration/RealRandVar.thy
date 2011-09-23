@@ -647,7 +647,7 @@ proof -
   have "(\<lambda>w. f w * g w) = (\<lambda>w. (f w + g w)\<twosuperior>/4 - (f w - g w)\<twosuperior>/4)" 
     by (simp only: times_iff_sum_squares)
   also have "\<dots> = (\<lambda>w. (f w + g w)\<twosuperior>*inverse 4 - (f w + - g w)\<twosuperior>*inverse 4)"  
-    by (simp add: real_diff_def)
+    by (simp add: diff_minus)
   also from f g have "\<dots> \<in> rv M" 
   proof -
     from f g have "(\<lambda>w. (f w + g w)\<twosuperior>)  \<in> rv M" 
@@ -661,7 +661,7 @@ proof -
     hence "(\<lambda>w. 0+(f w + - g w)\<twosuperior>*-inverse 4) \<in> rv M" 
       by (rule affine_rv)
     ultimately show ?thesis 
-      by (simp add: rv_plus_rv real_diff_def)
+      by (simp add: rv_plus_rv diff_minus)
   qed txt{*\nopagebreak*}
   ultimately show ?thesis by simp
 qed 
@@ -678,7 +678,7 @@ theorem rv_minus_rv:
   from this g have "(\<lambda>t. -1*g t) \<in> rv M" by (rule rv_times_rv)
   hence "(\<lambda>t. -g t) \<in> rv M" by simp
   with f have "(\<lambda>t. f t +-g t) \<in> rv M" by (rule rv_plus_rv)
-  thus ?thesis by (simp add: real_diff_def)
+  thus ?thesis by (simp add: diff_minus)
 qed(*>*)
 text{*Measurability for limit functions of
     monotone convergent series is also surprisingly straightforward.*}
@@ -785,7 +785,7 @@ lemma assumes a: "0\<le>(a::real)"
     have "pp (\<lambda>t. a*f t) t = a*pp f t \<and> np (\<lambda>t. a*f t) t = a*np f t"
     proof (cases "0 \<le> f t")
       case True
-      from a this a real_le_refl[of 0] have le: "0*0\<le>a*f t" 
+      from a this a order_refl[of 0] have le: "0*0\<le>a*f t" 
         by (rule mult_mono)
       hence "pp (\<lambda>t. a*f t) t = a*f t" by (simp add: positive_part_def)
       also from True have "\<dots> = a*pp f t" by (simp add: positive_part_def)
@@ -798,7 +798,7 @@ lemma assumes a: "0\<le>(a::real)"
       case False
       hence "f t \<le> 0" by simp
       from this a have "(f t)*a \<le> 0*a" by (rule mult_right_mono)
-      hence le: "a*f t \<le> 0" by (simp add: real_mult_commute)
+      hence le: "a*f t \<le> 0" by (simp add: mult_commute)
       hence "pp (\<lambda>t. a*f t) t = 0" 
         by (cases "a*f t<0") (auto simp add: positive_part_def order_le_less ) 
       also from False have "\<dots> = a*pp f t" by (simp add: positive_part_def)

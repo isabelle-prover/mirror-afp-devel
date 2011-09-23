@@ -31,13 +31,13 @@ proof -
   have "?P (fix\<cdot>?F)"
   proof(induct rule: fix_ind)
     case 2 with retraction_strict us ww show ?case
-      by (bestsimp simp add: expand_cfun_eq)
+      by (bestsimp simp add: cfun_eq_iff)
   next
     case (3 xy) thus ?case
       using ww
-      apply (simp add: expand_cfun_eq)
+      apply (simp add: cfun_eq_iff)
       using wb
-      apply (bestsimp simp add: expand_cfun_eq)
+      apply (bestsimp simp add: cfun_eq_iff)
       done
   qed simp
   thus ?thesis
@@ -61,13 +61,13 @@ proof -
   have "?P (fix\<cdot>?F)"
   proof(induct rule: fix_ind)
     case 2 with retraction_strict us ww show ?case
-      by (bestsimp simp add: expand_cfun_eq)
+      by (bestsimp simp add: cfun_eq_iff)
   next
     case 3 thus ?case
       using ww
-      apply (simp add: expand_cfun_eq)
+      apply (simp add: cfun_eq_iff)
       using wb
-      apply (bestsimp simp add: expand_cfun_eq)
+      apply (bestsimp simp add: cfun_eq_iff)
       done
   qed simp
   thus ?thesis

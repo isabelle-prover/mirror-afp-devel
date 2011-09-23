@@ -91,7 +91,7 @@ try to fold some definitions here but it's easier if the stream
 constructor is manifest. *}
 
 lemma unwrapS_unwrapS'_eq: "unwrapS = unwrapS'" (is "?lhs = ?rhs")
-proof(rule ext_cfun)
+proof(rule cfun_eqI)
   fix f show "?lhs\<cdot>f = ?rhs\<cdot>f"
   proof(coinduct rule: Stream.coinduct)
     let ?R = "\<lambda>s s'. (\<exists>f. s = f\<cdot>0 && unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))
@@ -151,7 +151,7 @@ next
 qed
 
 lemma wrapS_unwrapS_id: "f\<cdot>\<bottom> = \<bottom> \<Longrightarrow> (wrapS oo unwrapS)\<cdot>f = f"
-  by (rule ext_cfun, simp add: wrapS_unwrapS_id' wrapS_def)
+  by (rule cfun_eqI, simp add: wrapS_unwrapS_id' wrapS_def)
 
 subsection{* Fibonacci example. *}
 
@@ -183,7 +183,7 @@ definition
   "fib_wrap \<equiv> wrapS\<cdot>fib_work"
 
 lemma wrapS_unwrapS_fib_body: "wrapS oo unwrapS oo fib_body = fib_body"
-proof(rule ext_cfun)
+proof(rule cfun_eqI)
   fix r show "(wrapS oo unwrapS oo fib_body)\<cdot>r = fib_body\<cdot>r"
     using wrapS_unwrapS_id[where f="fib_body\<cdot>r"] by simp
 qed

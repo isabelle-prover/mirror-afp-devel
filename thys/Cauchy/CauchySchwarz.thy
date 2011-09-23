@@ -139,7 +139,7 @@ proof -
   also have
     "\<dots> =
      (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (f k * g j + f j * g k)*(1/2)))"
-    by (simp add: setsum_right_distrib real_mult_commute)
+    by (simp add: setsum_right_distrib mult_commute)
   finally show ?thesis by (auto simp add: inverse_eq_divide)
 qed
 
@@ -229,17 +229,17 @@ proof -
         "\<dots> =
          (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. (inverse 2)*(2*
         (((x\<^sub>k^2*y\<^sub>j^2) + (x\<^sub>j^2*y\<^sub>k^2))*(1/2) - (x\<^sub>k*y\<^sub>k)*(x\<^sub>j*y\<^sub>j)))))"
-        by (simp only: real_mult_assoc)
+        by (simp only: mult_assoc)
       also have
         "\<dots> =
          (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. (inverse 2)*
         ((((x\<^sub>k^2*y\<^sub>j^2) + (x\<^sub>j^2*y\<^sub>k^2))*2*(inverse 2) - 2*(x\<^sub>k*y\<^sub>k)*(x\<^sub>j*y\<^sub>j)))))"
-        by (auto simp add: real_add_mult_distrib real_mult_assoc mult_ac)
+        by (auto simp add: left_distrib mult_assoc mult_ac)
       also have
         "\<dots> =
         (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. (inverse 2)*
         ((((x\<^sub>k^2*y\<^sub>j^2) + (x\<^sub>j^2*y\<^sub>k^2)) - 2*(x\<^sub>k*y\<^sub>k)*(x\<^sub>j*y\<^sub>j)))))"
-        by (simp only: real_mult_assoc, simp)
+        by (simp only: mult_assoc, simp)
       also have
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}.

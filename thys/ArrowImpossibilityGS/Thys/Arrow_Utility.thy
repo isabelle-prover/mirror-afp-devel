@@ -338,7 +338,7 @@ proof-
   }
   with pivotal_xdictates[OF pivo] have "dictator i"
     by(simp add: dictates_def dictatesx_def dictates2_def dictator_def)
-      (metis real_less_def)
+      (metis less_le)
   thus ?thesis ..
 qed
 

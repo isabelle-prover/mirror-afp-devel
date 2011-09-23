@@ -193,7 +193,7 @@ next
       by simp
     also have
       "\<dots> = x/n + (1+(1/n)- 1)*\<Sum>:xs + \<Sum>:(x#xs)"
-      by (subst real_mult_1 [symmetric, of "\<Sum>:xs"], simp only: field_simps)
+      by (subst mult_1_left [symmetric, of "\<Sum>:xs"], simp only: field_simps)
     also have
       "\<dots> = x/n + (1/n)*\<Sum>:xs + \<Sum>:(x#xs)"
       by simp
@@ -404,7 +404,7 @@ proof
     apply (clarsimp simp:field_simps)
     done
   also from l1nez have "\<dots> = \<Sum>:xs / len"
-    apply (subst real_mult_commute [where z="len"])
+    apply (subst mult_commute [where a="len"])
     apply (drule mult_divide_mult_cancel_left
       [where c="len+1" and a="\<Sum>:xs" and b="len"])
     by (simp add: mult_ac add_ac)
@@ -424,7 +424,7 @@ proof
     have "mean xs = \<Sum>:xs / real (length xs)" unfolding mean_def by simp
     hence "\<Sum>:xs = mean xs * real (length xs)" by simp
     moreover from lxsgt0 have "real (length xs) > 0" by simp
-    moreover with calculation lxsgt0 mgt0 real_mult_order show ?thesis by auto
+    moreover with calculation lxsgt0 mgt0 show ?thesis by (auto intro: mult_pos_pos)
   qed
   with xgt0 have "\<Sum>:(x#xs) > 0" by simp
   thus "0 < (mean (x#xs))"
@@ -988,7 +988,7 @@ proof -
         ultimately have "\<Prod>:left_over * (\<alpha>*\<beta>) > 0" by simp
         moreover
         from pos_els \<alpha>mem \<beta>mem have "\<alpha> > 0" and "\<beta> > 0" by auto
-        hence "\<alpha>*\<beta> > 0" by (rule real_mult_order)
+        hence "\<alpha>*\<beta> > 0" by (rule mult_pos_pos)
         ultimately show "\<Prod>:left_over > 0"
           apply -
           apply (rule zero_less_mult_pos2 [where a="(\<alpha> * \<beta>)"])
@@ -996,7 +996,7 @@ proof -
       qed
     ultimately have "\<Prod>:new_list > \<Prod>:xs"
       apply clarsimp
-      apply (rule real_mult_less_mono2)
+      apply (rule mult_strict_left_mono)
       apply assumption
       apply assumption
       done

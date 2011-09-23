@@ -603,7 +603,7 @@ proof-
     fix d :: real
     assume dh: "0<=d"
     have "a * d - b * d = (a - b) * d "
-      by (auto simp add: left_distrib  real_diff_def)
+      by (auto simp add: left_distrib diff_minus)
     hence "\<bar>a * d - b * d\<bar> = \<bar>(a - b) * d\<bar>"
       by simp
     also with dh have
@@ -614,7 +614,7 @@ proof-
         .
     (* This sublemma is solved by ICS, file: abs_distrib_mult.ics *)
     (* It is not solved nor 
-       by (auto simp add: left_distrib  real_diff_def)(arith) 
+       by (auto simp add: left_distrib diff_minus)(arith) 
         in Isabelle  *)
   }
   with ch and divide_inverse show ?thesis
@@ -867,7 +867,7 @@ proof-
   from abs_distrib_div
   have "\<bar>cfnl p f - cfnl q g\<bar> = 
     \<bar>?maxf + ?minf  +  - ?maxg + - ?ming\<bar> / 2"
-    by (unfold cfnl_def, auto simp add: real_diff_def)
+    by (unfold cfnl_def, auto simp add: diff_minus)
   moreover
   have "\<bar>?maxf + ?minf  +  - ?maxg + - ?ming\<bar> <= y + 2 * x"
     -- {* The rest of the property can be proved by CVC-lite
@@ -901,7 +901,7 @@ proof-
     from  mxninC hbx abs_le_D1
     have
       "... <= (f mxf + - g mng) + x"
-      by (auto simp add: real_diff_def)
+      by (auto simp add: diff_minus)
     also
     have 
       "... = (f mxf + - f mng ) + ( f mng + - g mng) + x"
@@ -911,14 +911,14 @@ proof-
     proof-
       from  mxfinC mnginC hby1 abs_le_D1
       have "f mxf + - f mng <= y" 
-        by (auto simp add: real_diff_def)
+        by (auto simp add: diff_minus)
       thus ?thesis
-        by (auto simp add: real_diff_def)
+        by (auto simp add: diff_minus)
     qed
     also
     from  mnginC hbx abs_le_D1
     have "... <= y + 2 * x"
-      by (auto simp add: real_diff_def)
+      by (auto simp add: diff_minus)
     finally 
     show ?thesis .
   next
@@ -959,9 +959,9 @@ proof-
     proof-
       from  mxginC mnfinC hby2 abs_le_D1
       have "g mxg + - g mnf <= y" 
-        by (auto simp add: real_diff_def)
+        by (auto simp add: diff_minus)
       thus ?thesis
-        by (auto simp add: real_diff_def)
+        by (auto simp add: diff_minus)
     qed
     also
     from  mnfinC hbx

@@ -1085,7 +1085,7 @@ lemma convex_on_ereal_setsum_aux:
   assumes "1-a>0"
   shows "(1 - ereal a) * (ereal (c / (1 - a)) * b) = (ereal c) * b"
   by (metis mult_assoc mult_commute eq_divide_eq ereal_minus(1) assms
-            one_ereal_def real_less_def times_ereal.simps(1))
+            one_ereal_def less_le times_ereal.simps(1))
 
 
 lemma convex_on_ereal_setsum:
@@ -1871,7 +1871,7 @@ proof-
   moreover
   { assume "a>=b-e" hence "a:cball b e" unfolding cball_def dist_norm using `a<b` by auto }
   ultimately have "max a (b-e):cball b e"
-    by (metis min_max.sup_absorb1 min_max.sup_absorb2 real_le_linear)
+    by (metis min_max.sup_absorb1 min_max.sup_absorb2 linear)
   hence "max a (b-e):T" using e_def by auto
   moreover have "max a (b-e):{a..<b}" using e_def `a<b` by auto
   ultimately have "EX y:{a..<b}. y : T & y ~= b" by auto

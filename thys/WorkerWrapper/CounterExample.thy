@@ -35,7 +35,7 @@ fixrec unwrap :: "A \<rightarrow> B" where
   "unwrap = B"
 
 lemma wrap_unwrap_ID: "wrap oo unwrap = ID"
-  by (rule ext_cfun) simp
+  by (rule cfun_eqI) simp
 
 text{* Any function that uses the recursion parameter @{term "r"}
 lazily will do. *}
@@ -56,7 +56,7 @@ by fixrec_simp
 (*>*)
 
 lemma "unwrap oo body oo wrap = body' oo unwrap oo wrap"
-  by (rule ext_cfun) simp
+  by (rule cfun_eqI) simp
 
 lemma "fix\<cdot>(unwrap oo body oo wrap) = B\<cdot>A"
   by (subst fix_eq) simp
@@ -138,16 +138,16 @@ definition dc_unwrap :: "C \<rightarrow> D" where
   "dc_unwrap \<equiv> \<Lambda> f. x2y oo f oo y2x"
 
 lemma dc_wrap_strict[simp]: "dc_wrap\<cdot>\<bottom> = \<bottom>"
-  unfolding dc_wrap_def by (rule ext_cfun) simp
+  unfolding dc_wrap_def by (rule cfun_eqI) simp
 
 lemma dc_unwrap_strict[simp]: "dc_unwrap\<cdot>\<bottom> = \<bottom>"
 (*<*)
-  unfolding dc_unwrap_def by (rule ext_cfun) simp
+  unfolding dc_unwrap_def by (rule cfun_eqI) simp
 (*>*)
 
 lemma dc_wrap_dc_unwrap_ID: "dc_wrap oo dc_unwrap = ID"
 (*<*)
-  unfolding dc_wrap_def dc_unwrap_def by (rule ext_cfun)+ simp
+  unfolding dc_wrap_def dc_unwrap_def by (rule cfun_eqI)+ simp
 (*>*)
 
 text {* The particular candidate for worker/wrapper transformaiton is
@@ -219,7 +219,7 @@ proof(rule fix_least)
   also have "... = (dbody' oo dc_unwrap oo dc_wrap)\<cdot>work"
     (*<*)
     unfolding dbody'_def idC_body_def dc_wrap_def dc_unwrap_def
-    by (rule ext_cfun) simp
+    by (rule cfun_eqI) simp
     (*>*)
   also have "... = dbody'\<cdot>work"
     (*<*) unfolding work_def work_body_def (*>*)
@@ -255,7 +255,7 @@ divergence can be masked. *}
 
 lemma "dc_wrap\<cdot>work = dc_wrap\<cdot>(fix\<cdot>dbody')"
   unfolding dbody'_def work_def dc_wrap_def
-  apply (rule ext_cfun)
+  apply (rule cfun_eqI)
   apply (subst fix_eq)
   apply (simp add: idC_body_def work_body_def dc_unwrap_def)
   apply (subst fix_eq)

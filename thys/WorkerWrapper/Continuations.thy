@@ -25,7 +25,7 @@ definition
   "cont2val \<equiv> (\<Lambda> f. f\<cdot>ID)"
 
 lemma cont2val_val2cont_id: "cont2val oo val2cont = ID"
-  by (rule ext_cfun, simp add: val2cont_def cont2val_def)
+  by (rule cfun_eqI, simp add: val2cont_def cont2val_def)
 
 domain Expr =
     Val (lazy val::"Nat")
@@ -51,7 +51,7 @@ lemma eval_body_strictExpr[simp]: "eval_body\<cdot>r\<cdot>\<bottom> = \<bottom>
   by (subst eval_body.unfold, simp)
 
 lemma eval_eval_body_eq: "eval = fix\<cdot>eval_body"
-  by (rule ext_cfun, subst eval_def, subst eval_body.unfold, simp)
+  by (rule cfun_eqI, subst eval_def, subst eval_body.unfold, simp)
 
 subsection{* Worker/wrapper *}
 
@@ -60,14 +60,14 @@ definition
   "unwrapC \<equiv> \<Lambda> g e s f. case g\<cdot>e of Nothing \<Rightarrow> f | Just\<cdot>n \<Rightarrow> s\<cdot>n"
 
 lemma unwrapC_strict[simp]: "unwrapC\<cdot>\<bottom> = \<bottom>"
-  unfolding unwrapC_def by (rule ext_cfun)+ simp
+  unfolding unwrapC_def by (rule cfun_eqI)+ simp
 
 definition
   wrapC :: "(Expr \<rightarrow> (Nat \<rightarrow> Nat Maybe) \<rightarrow> Nat Maybe \<rightarrow> Nat Maybe) \<rightarrow> (Expr \<rightarrow> Nat Maybe)" where
   "wrapC \<equiv> \<Lambda> g e. g\<cdot>e\<cdot>Just\<cdot>Nothing"
 
 lemma wrapC_unwrapC_id: "wrapC oo unwrapC = ID"
-proof(rule ext_cfun)+
+proof(rule cfun_eqI)+
   fix g e
   show "(wrapC oo unwrapC)\<cdot>g\<cdot>e = ID\<cdot>g\<cdot>e"
     by (cases "g\<cdot>e", simp_all add: wrapC_def unwrapC_def)
@@ -108,7 +108,7 @@ text{* This proof is unfortunately quite messy, due to the
 simplifier's inability to cope with HOLCF's case distinctions. *}
 
 lemma eval_body'_eval_body_eq: "eval_body' = unwrapC oo eval_body oo wrapC"
-  apply (rule ext_cfun)+
+  apply (rule cfun_eqI)+
   apply (unfold unwrapC_def wrapC_def)
   apply (case_tac xa)
       apply simp_all
@@ -135,7 +135,7 @@ lemma eval_body_final_strictExpr[simp]: "eval_body_final\<cdot>r\<cdot>\<bottom>
   by (subst eval_body_final.unfold, simp)
 
 lemma eval_body'_eval_body_final_eq: "eval_body_final oo unwrapC oo wrapC = eval_body'"
-  apply (rule ext_cfun)+
+  apply (rule cfun_eqI)+
   apply (case_tac xa)
      apply (simp_all add: unwrapC_def)
   done

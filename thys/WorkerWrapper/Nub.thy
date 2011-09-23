@@ -30,7 +30,7 @@ where
 | "nub_body\<cdot>f\<cdot>(x :@ xs) = x :@ f\<cdot>(lfilter\<cdot>(neg oo (\<Lambda> y. x =\<^sub>B y))\<cdot>xs)"
 
 lemma nub_nub_body_eq: "nub = fix\<cdot>nub_body"
-  by (rule ext_cfun, subst nub_def, subst nub_body.unfold, simp)
+  by (rule cfun_eqI, subst nub_def, subst nub_body.unfold, simp)
 
 (* **************************************** *)
 
@@ -89,7 +89,7 @@ definition
 lemma a2c_strict[simp]: "a2c\<cdot>\<bottom> = \<bottom>" unfolding a2c_def by simp
 
 lemma a2c_c2a_id: "a2c oo c2a = ID"
-  by (rule ext_cfun, simp add: a2c_def c2a_def lfilter_const_true)
+  by (rule cfun_eqI, simp add: a2c_def c2a_def lfilter_const_true)
 
 definition
   wrap :: "(R \<rightarrow> Nat llist) \<rightarrow> Nat llist \<rightarrow> Nat llist" where
@@ -100,11 +100,11 @@ definition
   "unwrap \<equiv> \<Lambda> f r. f\<cdot>(a2c\<cdot>r)"
 
 lemma unwrap_strict[simp]: "unwrap\<cdot>\<bottom> = \<bottom>"
-  unfolding unwrap_def by (rule ext_cfun, simp)
+  unfolding unwrap_def by (rule cfun_eqI, simp)
 
 lemma wrap_unwrap_id: "wrap oo unwrap = ID"
   using cfun_fun_cong[OF a2c_c2a_id]
-  by - ((rule ext_cfun)+, simp add: wrap_def unwrap_def)
+  by - ((rule cfun_eqI)+, simp add: wrap_def unwrap_def)
 
 text {* Equivalences needed for later. *}
 
@@ -163,7 +163,7 @@ definition
 
 lemma nub_body_nub_body'_eq: "unwrap oo nub_body oo wrap = nub_body'"
   unfolding nub_body_def nub_body'_def unwrap_def wrap_def a2c_def c2a_def
-  by ((rule ext_cfun)+
+  by ((rule cfun_eqI)+
      , case_tac "lfilter\<cdot>(\<Lambda> v. Tr.neg\<cdot>(SetMem\<cdot>v\<cdot>(exceptR\<cdot>xa)))\<cdot>(resultR\<cdot>xa)"
      , simp_all add: fix_const)
 
@@ -173,7 +173,7 @@ definition
                                       | Just\<cdot>(x, xs) \<Rightarrow> x :@ f\<cdot>(c2a\<cdot>(lfilter\<cdot>(neg oo (\<Lambda> y. x =\<^sub>B y))\<cdot>(a2c\<cdot>xs)))"
 
 lemma nub_body'_nub_body''_eq: "nub_body' = nub_body''"
-proof(rule ext_cfun)+
+proof(rule cfun_eqI)+
   fix f r show "nub_body'\<cdot>f\<cdot>r = nub_body''\<cdot>f\<cdot>r"
     unfolding nub_body'_def nub_body''_def
     using case_a2c_case_caseR[where f="lnil" and g="\<Lambda> x xs. x :@ f\<cdot>(c2a\<cdot>(lfilter\<cdot>(Tr.neg oo (\<Lambda> y. x =\<^sub>B y))\<cdot>xs))" and w="r"]
@@ -187,7 +187,7 @@ definition
 
 lemma nub_body''_nub_body'''_eq: "nub_body'' = nub_body''' oo (unwrap oo wrap)"
   unfolding nub_body''_def nub_body'''_def wrap_def unwrap_def
-  by ((rule ext_cfun)+, simp add: filter_filterR)
+  by ((rule cfun_eqI)+, simp add: filter_filterR)
 
 text{* Finally glue it all together. *}
 
