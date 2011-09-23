@@ -5,7 +5,7 @@
 
 header {* \isaheader{Exception handling in the JVM} *}
 
-theory JVMExceptions imports JVMInstructions Exceptions begin
+theory JVMExceptions imports JVMInstructions "../Common/Exceptions" begin
 
 definition matches_ex_entry :: "'m prog \<Rightarrow> cname \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool"
 where
