@@ -230,7 +230,8 @@ proof-
     moreover have "(?f y2,y2) : R" using * someI[of "% x. (x,y2) : R"] by auto
     ultimately show "y1 = y2" using ** INJ by auto
   qed
-  ultimately show "|?Y| <=o |?X|" using card_of_ordLeq by (auto dest: predicate1D)
+  ultimately show "|?Y| <=o |?X|"
+    by (auto intro:  card_of_ordLeq [THEN iffD1]) 
 qed
 
 
@@ -2059,10 +2060,10 @@ order relation on
 shall be the restrictions of these relations to the numbers smaller than 
 fixed numbers @{text "n"}, that we abbreviate by @{text "natLeq_on n"}.  *}
 
-abbreviation "(natLeq::nat * nat \<Rightarrow> bool) \<equiv> {(x,y). x \<le> y}"
-abbreviation "(natLess::nat * nat \<Rightarrow> bool) \<equiv> {(x,y). x < y}"
+abbreviation "(natLeq::(nat * nat) set) \<equiv> {(x,y). x \<le> y}"
+abbreviation "(natLess::(nat * nat) set) \<equiv> {(x,y). x < y}"
 
-abbreviation natLeq_on :: "nat \<Rightarrow> (nat * nat \<Rightarrow> bool)"
+abbreviation natLeq_on :: "nat \<Rightarrow> (nat * nat) set"
 where "natLeq_on n \<equiv> {(x,y). x < n \<and> y < n \<and> x \<le> y}"
 
 

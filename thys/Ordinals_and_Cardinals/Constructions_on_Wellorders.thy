@@ -1092,7 +1092,8 @@ assumes NE: "R \<noteq> {}" and WELL: "\<forall>r \<in> R. Well_order r"
 shows "\<exists>r \<in> R. \<forall>r' \<in> R. r \<le>o r'"
 proof-
   obtain r where "r \<in> R \<and> (\<forall>r' \<in> R. \<not> r' <o r)"
-  using assms wf_ordLess wf_eq_minimal[of ordLess] by force (* FIXME: takes a bit too long. *)
+  using assms wf_ordLess wf_eq_minimal[of ordLess]
+    by (auto, metis wf_eq_minimal wf_ordLess)
   with ordLess_iff_not_ordLeq assms show ?thesis by blast
 qed
 
