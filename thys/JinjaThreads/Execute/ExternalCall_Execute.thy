@@ -4,7 +4,7 @@ theory ExternalCall_Execute imports
 begin
 
 abbreviation (input) cset_sup :: "'a Cset.set \<Rightarrow> 'a Cset.set \<Rightarrow> 'a Cset.set"
-where "cset_sup \<equiv> semilattice_sup_class.sup"
+where "cset_sup \<equiv> sup_class.sup"
 
 (* Use locale context to obtain a Cset. prefix: should use proper name spaces instead *)
 locale Cset begin
