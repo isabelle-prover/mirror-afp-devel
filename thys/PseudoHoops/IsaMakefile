@@ -1,8 +1,14 @@
+## configurables
+
+SESSION-NAME = PseudoHoops
+BASE-IMAGE = LatticeProperties
+
 ## targets
 
-default: PseudoHoops
-images: 
-test: PseudoHoops
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images:  
 
 all: images test
 
@@ -13,18 +19,26 @@ SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf
+IMAGE=$(OUT)/$(BASE-IMAGE)
 
-## PseudoHoops
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf
 
-PseudoHoops: $(LOG)/HOL-PseudoHoops.gz
+# time limit (in sec)
+MAXTIME = 3600
 
-$(LOG)/HOL-PseudoHoops.gz: ROOT.ML document/root.tex *.thy
-	@$(USEDIR) HOL .
 
+## dependencies
+
+$(SESSION-NAME): $(BASE-IMAGE) $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(BASE-IMAGE):
+	cd ../$(BASE-IMAGE); $(ISABELLE_TOOL) make $(BASE-IMAGE)
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/HOL-PseudoHoops.gz
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
