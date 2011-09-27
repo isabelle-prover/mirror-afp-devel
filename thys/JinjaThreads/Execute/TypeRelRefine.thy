@@ -1,7 +1,7 @@
 theory TypeRelRefine imports
   "../Common/TypeRel"
   "~~/src/HOL/Library/AList_Mapping"
-  "~~/src/HOL/Library/List_Cset"
+  "../Common/List_Cset"
 begin
 
 subsection {* Auxiliary lemmata *}

@@ -2,8 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-theory Cset_without_equal 
-imports "~~/src/HOL/Library/List_Cset"
+theory Cset_without_equal
+imports "../Common/List_Cset"
 begin
 
 text {*

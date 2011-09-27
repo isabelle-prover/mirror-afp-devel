@@ -15,7 +15,7 @@ imports
   "~~/src/HOL/Library/Transitive_Closure_Table"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
-  "~~/src/HOL/Library/Cset_Monad"
+  "Cset_Monad"
 begin
 
 (* FIXME move and possibly turn into a general simproc *)
