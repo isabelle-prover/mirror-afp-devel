@@ -232,12 +232,12 @@ theorem hoare_fixpoint:
   apply safe
   apply (subgoal_tac "Sup_less (assert o p) w * post {\<cdot>q} \<le> (Sup_less (\<lambda>w\<Colon>'b. {\<cdot>p w} * post {\<cdot>q}) w)")
   apply simp
-  apply (simp add: Sup_less_def Sup_comp SUPR_def)
+  apply (simp add: Sup_less_def Sup_comp SUP_def)
   apply (subgoal_tac "((\<lambda>x . x * post {\<cdot>q}) ` {y. \<exists>v<w. y = {\<cdot>p v}}) = {y\<Colon>'a. \<exists>v<w. y = {\<cdot>p v} * post {\<cdot>q}}")
   apply simp
   apply auto [1]
   apply (subgoal_tac "Sup (range (\<lambda>w . {\<cdot>p w} * post {\<cdot>q})) = (Sup (range (assert o p))) * post {\<cdot>q}", simp)
-  apply (simp add: Sup_comp SUPR_def)
+  apply (simp add: Sup_comp SUP_def)
   apply (subgoal_tac "range (\<lambda>w. {\<cdot>p w} * post {\<cdot>q}) = ((\<lambda>x . x * post {\<cdot>q}) ` range (assert o p))")
   by auto
  

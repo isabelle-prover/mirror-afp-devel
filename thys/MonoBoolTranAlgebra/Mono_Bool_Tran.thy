@@ -1,8 +1,7 @@
 header {* Monotonic Boolean Transformers *}
 
 theory  Mono_Bool_Tran
-imports "../LatticeProperties/Complete_Lattice_Prop"
-        "../LatticeProperties/Complete_Distrib_Lattice"
+imports "../LatticeProperties/Complete_Lattice_Prop"  "../LatticeProperties/Complete_Distrib_Lattice"
 begin
 
 text{*
@@ -196,20 +195,18 @@ end
 lemma Sup_MonoTran [simp]: "X \<subseteq> MonoTran \<Longrightarrow> Sup X \<in> MonoTran"
   apply (simp add: MonoTran_def mono_def Sup_fun_def)
   apply safe
-  apply (rule Sup_least)
-  apply safe
+  apply (rule SUP_least)
   apply (rule_tac y = "f y" in order_trans) 
   apply blast
-  by (rule Sup_upper, blast)
+  by (rule SUP_upper, blast)
 
 
 lemma Inf_MonoTran [simp]: "X \<subseteq> MonoTran \<Longrightarrow> Inf X \<in> MonoTran"
   apply (simp add: MonoTran_def mono_def Inf_fun_def)
   apply safe
-  apply (rule Inf_greatest)
-  apply safe
+  apply (rule INF_greatest)
   apply (rule_tac y = "f x" in order_trans) 
-  apply (rule Inf_lower, blast)
+  apply (rule INF_lower, blast)
   by blast
 
 lemma [simp]: "Rep_MonoTran ` A \<subseteq> MonoTran"
@@ -250,7 +247,7 @@ instantiation MonoTran :: (complete_distrib_lattice) complete_distrib_lattice
 begin
 instance proof
   fix x :: "'a MonoTran" fix Y :: "'a MonoTran set" show "x \<sqinter> Sup Y = (SUP y:Y. x \<sqinter> y)"
-    apply (simp add: SUPR_def Sup_MonoTran_def inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse inf_Sup_distrib1)
+    apply (simp add: SUP_def Sup_MonoTran_def inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse inf_Sup_distrib1)
     apply (simp add: image_def)
     apply (subgoal_tac "{y . \<exists>xa . (\<exists>x \<in> Y . xa = Rep_MonoTran x) \<and> y = Rep_MonoTran x \<sqinter> xa} 
        = {y . \<exists>xa . (\<exists>xb\<Colon>'a MonoTran\<in>Y. xa = Abs_MonoTran (Rep_MonoTran x \<sqinter> Rep_MonoTran xb)) \<and> y = Rep_MonoTran xa}")
@@ -259,7 +256,7 @@ instance proof
     by (simp_all add: Abs_MonoTran_inverse, auto)
 next
   fix x :: "'a MonoTran" fix Y show "x \<squnion> Inf Y = (INF y:Y. x \<squnion> y)"
-    apply (simp add: INFI_def Inf_MonoTran_def sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse sup_Inf_distrib1)
+    apply (simp add: INF_def Inf_MonoTran_def sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse sup_Inf_distrib1)
     apply (simp add: image_def)
     apply (subgoal_tac "{y . \<exists>xa . (\<exists>x \<in> Y . xa = Rep_MonoTran x) \<and> y = Rep_MonoTran x \<squnion> xa} 
       = {y . \<exists>xa . (\<exists>xb \<in>Y. xa = Abs_MonoTran (Rep_MonoTran x \<squnion> Rep_MonoTran xb)) \<and> y = Rep_MonoTran xa}")
@@ -274,10 +271,7 @@ definition
   "dual_fun (f::'a::boolean_algebra \<Rightarrow> 'a) = (\<lambda> p . - (f (- p)))"
 
 lemma [simp]: "f \<in> MonoTran \<Longrightarrow> dual_fun f \<in> MonoTran"
-  apply (simp add: MonoTran_def dual_fun_def mono_def, safe)
-  apply (drule_tac x = "- y" in spec)
-  apply (drule_tac x = "- x" in spec)
-  by (simp add: compl_le_compl_iff)
+  by (simp add: MonoTran_def dual_fun_def mono_def)
 
 definition
   "Omega_fun f g = (\<lambda> h . (f o h) \<sqinter> g)"
@@ -314,6 +308,7 @@ lemma [simp]: "f \<in> MonoTran \<Longrightarrow> omega_fun f \<in> MonoTran"
 lemma Sup_comp_fun: "(Sup M) o f = Sup {g . \<exists> m \<in> M . g = m o f}"
   apply (simp add: fun_eq_iff Sup_fun_def o_def)
   apply safe
+  apply (simp add: SUP_def image_def)
   apply (subgoal_tac "{y . \<exists>fa \<in> M . y = fa (f x)} = {y . \<exists>fa . (\<exists>m \<in> M . \<forall>x . fa x = m (f x)) \<and> y = fa x}")
   by auto
 
@@ -321,6 +316,7 @@ lemma Sup_comp_fun: "(Sup M) o f = Sup {g . \<exists> m \<in> M . g = m o f}"
 lemma Inf_comp_fun: "(Inf M) o f = Inf {g . \<exists> m \<in> M . g = m o f}"
   apply (simp add: fun_eq_iff Inf_fun_def o_def)
   apply safe
+  apply (simp add: INF_def image_def)
   apply (subgoal_tac "{y . \<exists>fa \<in> M . y = fa (f x)} = {y . \<exists>fa . (\<exists>m \<in> M . \<forall>x\<Colon>'a. fa x = m (f x)) \<and> y = fa x}")
   by auto
 
@@ -370,7 +366,7 @@ lemma lfp_omega: "f \<in> MonoTran \<Longrightarrow> ((omega_fun f) o g) = lfp (
   by simp
 
 
-definition "assert_fun p q = p \<sqinter> q"
+definition "assert_fun p q = (p \<sqinter> q :: 'a::semilattice_inf)"
 
 lemma assert_fun_MonoTran [simp]: "(assert_fun p) \<in> MonoTran"
   apply (simp add: assert_fun_def MonoTran_def mono_def, safe)
@@ -396,7 +392,7 @@ lemma assert_cont:
   apply (subst inf_sup_distrib)
   apply simp
   apply (rule_tac y = "inf (- xa) xa" in order_trans)
-  apply simp
+  apply (simp del: compl_inf_bot)
   apply (rule_tac y = "x (- xa)" in order_trans)
   apply simp
   apply simp

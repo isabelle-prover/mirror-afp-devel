@@ -709,7 +709,7 @@ begin
 
 instance proof
   fix z :: "'a MonoTran" fix X show "Inf X * z = (INF x:X. x * z)"
-    apply (simp add: INFI_def Inf_MonoTran_def times_MonoTran_def Inf_comp_fun Abs_MonoTran_inverse sup_Inf_distrib1)
+    apply (simp add: INF_def Inf_MonoTran_def times_MonoTran_def Inf_comp_fun Abs_MonoTran_inverse sup_Inf_distrib1)
     apply (subgoal_tac "{g\<Colon>'a \<Rightarrow> 'a. \<exists>m\<Colon>'a MonoTran\<in>X. g = Rep_MonoTran m \<circ> Rep_MonoTran z} = Rep_MonoTran ` (\<lambda>x\<Colon>'a MonoTran. Abs_MonoTran (Rep_MonoTran x \<circ> Rep_MonoTran z)) ` X")
     apply simp
     apply (simp add: image_def, safe)
@@ -722,7 +722,7 @@ end
 context complete_mbt_algebra begin
 lemma dual_Inf: "(Inf X) ^ o = (SUP x: X . x ^ o)"
   apply (rule antisym)
-  apply (simp_all add: SUPR_def)
+  apply (simp_all add: SUP_def)
   apply (subst dual_le, simp)
   apply (rule Inf_greatest)
   apply (subst dual_le, simp)
@@ -733,7 +733,7 @@ lemma dual_Inf: "(Inf X) ^ o = (SUP x: X . x ^ o)"
 
 lemma dual_Sup: "(Sup X) ^ o = (INF x: X . x ^ o)"
   apply (rule antisym)
-  apply (simp_all add: INFI_def)
+  apply (simp_all add: INF_def)
   apply (rule Inf_greatest, safe)
   apply (subst dual_le, simp)
   apply (rule Sup_upper, simp)
@@ -743,17 +743,17 @@ lemma dual_Sup: "(Sup X) ^ o = (INF x: X . x ^ o)"
   by (rule Inf_lower, simp)
 
 lemma INFI_comp: "(INFI A f) * z = (INF a : A . (f a) * z)"
-  apply (simp add: INFI_def Inf_comp)
+  apply (simp add: INF_def Inf_comp)
   apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
   by auto
 
 lemma dual_INFI: "(INFI A f) ^ o = (SUP a : A . (f a) ^ o)"
-  apply (simp add: INFI_def dual_Inf SUPR_def)
+  apply (simp add: INF_def dual_Inf SUP_def)
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
   by auto
 
 lemma dual_SUPR: "(SUPR A f) ^ o = (INF a : A . (f a) ^ o)"
-  apply (simp add: INFI_def dual_Sup SUPR_def)
+  apply (simp add: INF_def dual_Sup SUP_def)
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
   by auto
 
@@ -762,7 +762,7 @@ lemma Sup_comp: "(Sup X) * z = (SUP x : X . (x * z))"
   by (simp add: dual_comp dual_Sup dual_SUPR INFI_comp)
 
 lemma SUPR_comp: "(SUPR A f) * z = (SUP a : A . (f a) * z)"
-  apply (simp add: SUPR_def Sup_comp)
+  apply (simp add: SUP_def Sup_comp)
   apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
   by auto
 
@@ -772,7 +772,7 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
   apply safe
   apply (rule Sup_least)
   apply blast
-  apply (simp add: Sup_comp dual_Sup SUPR_def inf_Sup_distrib2)
+  apply (simp add: Sup_comp dual_Sup SUP_def inf_Sup_distrib2)
   apply (subgoal_tac "((\<lambda>y . y \<sqinter> INFI X dual) ` (\<lambda>x . x * \<top>) ` X) = X")
   apply simp
   proof -
@@ -784,11 +784,11 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
         have "x * \<top> \<sqinter> INFI X dual = x * \<top> \<sqinter> (x ^ o \<sqinter> INFI X dual)"
           apply (subgoal_tac "INFI X dual = (x ^ o \<sqinter> INFI X dual)", simp)
           apply (rule antisym, simp_all)
-          by (unfold INFI_def, rule Inf_lower, cut_tac C, simp)
+          by (unfold INF_def, rule Inf_lower, cut_tac C, simp)
         also have "\<dots> = x \<sqinter> INFI X dual" by (unfold  inf_assoc [THEN sym], cut_tac A, cut_tac C, auto)
         also have "\<dots> = x"
           apply (rule antisym, simp_all)
-          apply (simp add: INFI_def)
+          apply (simp add: INF_def)
           apply (rule Inf_greatest, safe)
           apply (cut_tac A C)
           apply (rule_tac y = 1 in order_trans)

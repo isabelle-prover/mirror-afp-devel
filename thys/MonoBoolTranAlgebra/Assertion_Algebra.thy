@@ -183,7 +183,7 @@ lemma assert_Inf: "{\<cdot>Inf A} = (Inf (assert ` A)) \<sqinter> 1"
   apply (case_tac "A = {}")
   apply simp
   apply (simp add: Inf_Assertion_def uminus_Assertion_def)
-  apply (simp add: neg_assert_def assert_Sup dual_Sup INFI_def Inf_comp inf_commute inf_Inf)
+  apply (simp add: neg_assert_def assert_Sup dual_Sup INF_def Inf_comp inf_commute inf_Inf)
   apply (rule_tac f = Inf in fun_eq)
   apply safe
   apply simp
