@@ -57,7 +57,7 @@ proof -
         by (simp) (blast)
       with X_in Y_in 
       have "X = Y"
-	unfolding quotient_def tag_eq_def by auto
+        unfolding quotient_def tag_eq_def by auto
     } 
     then show "inj_on ?f ?A" unfolding inj_on_def by auto
   qed

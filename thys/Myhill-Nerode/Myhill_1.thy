@@ -287,21 +287,21 @@ proof
     assume in_X: "x \<in> X"
     { assume empty: "x = []"
       then have "x \<in> lang_rhs rhs" using X_in_eqs in_X
-	unfolding Init_def Init_rhs_def
+        unfolding Init_def Init_rhs_def
         by auto
     }
     moreover
     { assume not_empty: "x \<noteq> []"
       then obtain s c where decom: "x = s @ [c]"
-	using rev_cases by blast
+        using rev_cases by blast
       have "X \<in> UNIV // \<approx>A" using X_in_eqs unfolding Init_def by auto
       then obtain Y where "Y \<in> UNIV // \<approx>A" "Y \<cdot> {[c]} \<subseteq> X" "s \<in> Y"
         using decom in_X every_eqclass_has_transition by metis
       then have "x \<in> lang_rhs {Trn Y (Atom c)| Y c. Y \<in> UNIV // \<approx>A \<and> Y \<Turnstile>c\<Rightarrow> X}"
         unfolding transition_def
-	using decom by (force simp add: conc_def)
+        using decom by (force simp add: conc_def)
       then have "x \<in> lang_rhs rhs" using X_in_eqs in_X
-	unfolding Init_def Init_rhs_def by simp
+        unfolding Init_def Init_rhs_def by simp
     }
     ultimately show "x \<in> lang_rhs rhs" by blast
   qed

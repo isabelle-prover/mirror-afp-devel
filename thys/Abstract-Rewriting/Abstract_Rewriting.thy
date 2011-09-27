@@ -1798,9 +1798,9 @@ next
       case True 
       have "(y,z) \<in> S" 
       proof (rule ccontr)
-	assume "(y,z) \<notin> S" with `(y,z) \<in> ?SR` have "(y,z) \<in> R" by auto
-	with True  have "(x,z) \<in> R^*"  by auto
-	with `(x,z) \<notin> R^*` show False ..
+        assume "(y,z) \<notin> S" with `(y,z) \<in> ?SR` have "(y,z) \<in> R" by auto
+        with True  have "(x,z) \<in> R^*"  by auto
+        with `(x,z) \<notin> R^*` show False ..
       qed
       with True show ?thesis by auto
     qed
