@@ -1,9 +1,14 @@
+## configurables
+
+SESSION-NAME = MonoBoolTranAlgebra
+BASE-IMAGE = LatticeProperties
 
 ## targets
 
-default: ProgramAlgebra
-images: 
-test: ProgramAlgebra
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images:  
 
 all: images test
 
@@ -14,18 +19,26 @@ SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf  ## -D generated
+IMAGE=$(OUT)/$(BASE-IMAGE)
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf
+
+# time limit (in sec)
+MAXTIME = 3600
 
 
-## ProgramAlgebra
+## dependencies
 
-ProgramAlgebra: $(LOG)/HOL-ProgramAlgebra.gz
+$(SESSION-NAME): $(BASE-IMAGE) $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
-$(LOG)/HOL-ProgramAlgebra.gz: ROOT.ML document/root.tex *.thy
-	@$(USEDIR) HOL .
+$(BASE-IMAGE):
+	cd ../$(BASE-IMAGE); $(ISABELLE_TOOL) make $(BASE-IMAGE)
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/HOL-ProgramAlgebra.gz
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz

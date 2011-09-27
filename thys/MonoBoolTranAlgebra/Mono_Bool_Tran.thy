@@ -1,7 +1,8 @@
 header {* Monotonic Boolean Transformers *}
 
 theory  Mono_Bool_Tran
-imports "../LatticeProperties/Complete_Lattice_Prop"  "../LatticeProperties/Complete_Distrib_Lattice"
+imports "../LatticeProperties/Complete_Lattice_Prop"
+        "../LatticeProperties/Complete_Distrib_Lattice"
 begin
 
 text{*
