@@ -20,16 +20,16 @@ This result was proved by Bergmann in \cite{bergmann:1929}. The formalization
 presented here is based on \cite{birkhoff:1967,burris:sankappanavar:1981}.
 *}
 
-class modular_lattice = lattice_infix +
+class modular_lattice = lattice +
   assumes modular: "x \<le> y \<Longrightarrow>  x \<squnion> (y \<sqinter> z) = y \<sqinter> (x \<squnion> z)"
 
-context distrib_lattice_infix begin
+context distrib_lattice begin
 subclass modular_lattice
   apply unfold_locales
   by (simp add: inf_sup_distrib inf_absorb2)
 end
 
-context lattice_infix begin
+context lattice begin
 definition
   "d_aux a b c = (a \<sqinter> b) \<squnion> (b \<sqinter> c) \<squnion> (c \<sqinter> a)"
 
@@ -122,7 +122,7 @@ lemma b_join_d: "b \<squnion> d_aux a b c = b \<squnion> (c \<sqinter> a)"
 
 end
 
-context lattice_infix begin
+context lattice begin
 definition
   "no_distrib a b c = (a \<sqinter> b \<squnion> c \<sqinter> a < a \<sqinter> (b \<squnion> c))"
 
@@ -295,11 +295,11 @@ lemma M5_modular_def: "M5_lattice a b c = (a \<sqinter> b = b \<sqinter> c \<and
 
 end
 
-context lattice_infix begin
+context lattice begin
 
-lemma not_modular_N5: "(\<not> class.modular_lattice inf sup ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <) =
+lemma not_modular_N5: "(\<not> class.modular_lattice inf ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < sup) =
    (\<exists> a b c::'a . N5_lattice a b c)"
-  apply (subgoal_tac "class.lattice_infix op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <")
+  apply (subgoal_tac "class.lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < sup")
   apply (unfold N5_lattice_def class.modular_lattice_def class.modular_lattice_axioms_def)
   apply simp_all
   apply safe
@@ -329,7 +329,6 @@ lemma not_modular_N5: "(\<not> class.modular_lattice inf sup ((op \<le>)::'a \<R
   apply (simp add: less_le)
   apply (rule_tac x = c in exI)
   apply simp
-  apply (simp add: inf_sup_absorb)
   apply (simp add: less_le)
   apply safe
   apply (subgoal_tac "a \<squnion> a \<sqinter> c = b")
@@ -338,15 +337,13 @@ lemma not_modular_N5: "(\<not> class.modular_lattice inf sup ((op \<le>)::'a \<R
   apply simp
   proof qed
 
-lemma not_distrib_N5_M5: "(\<not> class.distrib_lattice_infix op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <) =
+lemma not_distrib_N5_M5: "(\<not> class.distrib_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion>) =
    ((\<exists> a b c::'a . N5_lattice a b c) \<or> (\<exists> a b c::'a . M5_lattice a b c))"
   apply (unfold not_modular_N5 [THEN sym])
   proof
-    assume A: "\<not> class.distrib_lattice_infix op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <"
+    assume A: "\<not> class.distrib_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion>"
     have B: "\<exists> a b c:: 'a . (a \<sqinter> b) \<squnion> (a \<sqinter> c) < a \<sqinter> (b \<squnion> c)"
       apply (cut_tac A)
-      apply (unfold  class.distrib_lattice_infix_def)
-      apply (unfold  class.distrib_lattice_infix_axioms_def)
       apply (unfold  class.distrib_lattice_def)
       apply safe
       apply simp_all
@@ -358,12 +355,12 @@ lemma not_distrib_N5_M5: "(\<not> class.distrib_lattice_infix op \<sqinter> op \
           apply (rule distrib_imp1)
           by (simp add: less_le)
       qed
-    from B show "\<not> class.modular_lattice op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < \<or> (\<exists>a b c::'a. M5_lattice a b c)"
+    from B show "\<not> class.modular_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion> \<or> (\<exists>a b c::'a. M5_lattice a b c)"
       proof (unfold disj_not1, safe)
         fix a b c::'a
         assume A: "a \<sqinter> b \<squnion> a \<sqinter> c < a \<sqinter> (b \<squnion> c)"
-        assume B: "class.modular_lattice op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <"
-        interpret modular: modular_lattice "op \<sqinter>" "op \<squnion>" "((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool)" "op <"
+        assume B: "class.modular_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion>"
+        interpret modular: modular_lattice "op \<sqinter>" "((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool)" "op <" "op \<squnion>"
           by (fact B)
 
         have H: "M5_lattice (a_aux a b c) (b_aux a b c) (c_aux a b c)"
@@ -375,14 +372,12 @@ lemma not_distrib_N5_M5: "(\<not> class.distrib_lattice_infix op \<sqinter> op \
         from H show "\<exists>a b c\<Colon>'a. M5_lattice a b c" by blast
      qed
    next
-     assume A: "\<not> class.modular_lattice op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <  \<or> (\<exists>(a\<Colon>'a) (b\<Colon>'a) c\<Colon>'a. M5_lattice a b c)"
-     show "\<not> class.distrib_lattice_infix op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <"
+     assume A: "\<not> class.modular_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion> \<or> (\<exists>(a\<Colon>'a) (b\<Colon>'a) c\<Colon>'a. M5_lattice a b c)"
+     show "\<not> class.distrib_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion>"
        apply (cut_tac A)
        apply safe
        apply (erule notE)
        apply unfold_locales
-       apply (unfold class.distrib_lattice_infix_def)
-       apply (unfold class.distrib_lattice_infix_axioms_def)
        apply (unfold class.distrib_lattice_def)
        apply (unfold class.distrib_lattice_axioms_def)
        apply safe
@@ -413,19 +408,19 @@ lemma not_distrib_N5_M5: "(\<not> class.distrib_lattice_infix op \<sqinter> op \
        qed
      qed
  
-lemma distrib_not_N5_M5: "(class.distrib_lattice_infix op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <) =
+lemma distrib_not_N5_M5: "(class.distrib_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion>) =
    ((\<forall> a b c::'a . \<not> N5_lattice a b c) \<and> (\<forall> a b c::'a . \<not> M5_lattice a b c))"
   apply (cut_tac not_distrib_N5_M5)
   by auto
 
 lemma distrib_inf_sup_eq:
-  "(class.distrib_lattice_infix op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <) = 
+  "(class.distrib_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion>) = 
     (\<forall> x y z::'a . x \<sqinter> z = y \<sqinter> z \<and> x \<squnion> z = y \<squnion> z \<longrightarrow> x = y)"
   apply safe
   proof -
     fix x y z:: 'a
-    assume A: "class.distrib_lattice_infix op \<sqinter> op \<squnion> (op \<le> ::'a \<Rightarrow> 'a \<Rightarrow> bool) op <"
-    interpret distrib: distrib_lattice_infix "op \<sqinter>" "op \<squnion>" "op \<le> :: 'a \<Rightarrow> 'a \<Rightarrow> bool" "op <"
+    assume A: "class.distrib_lattice op \<sqinter> (op \<le> ::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion>"
+    interpret distrib: distrib_lattice "op \<sqinter>" "op \<le> :: 'a \<Rightarrow> 'a \<Rightarrow> bool" "op <" "op \<squnion>"
       by (fact A)
     assume B: "x \<sqinter> z = y \<sqinter> z"
     assume C: "x \<squnion> z = y \<squnion> z"
@@ -440,7 +435,7 @@ lemma distrib_inf_sup_eq:
     assume A: "(\<forall>x y z:: 'a. x \<sqinter> z = y \<sqinter> z \<and> x \<squnion> z = y \<squnion> z \<longrightarrow> x = y)"
     have B: "!! x y z :: 'a. x \<sqinter> z = y \<sqinter> z \<and> x \<squnion> z = y \<squnion> z \<Longrightarrow> x = y"
       by (cut_tac A, blast)
-    show "class.distrib_lattice_infix op \<sqinter> op \<squnion> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op <"
+    show "class.distrib_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion>"
       apply (unfold distrib_not_N5_M5)
       apply safe
       apply (unfold N5_lattice_def)
@@ -452,10 +447,10 @@ lemma distrib_inf_sup_eq:
  qed
 end
 
-class inf_sup_eq_lattice = lattice_infix +
+class inf_sup_eq_lattice = lattice +
   assumes inf_sup_eq: "x \<sqinter> z = y \<sqinter> z \<Longrightarrow> x \<squnion> z = y \<squnion> z \<Longrightarrow> x = y"
 begin
-subclass distrib_lattice_infix
+subclass distrib_lattice
   by (metis distrib_inf_sup_eq inf_sup_eq)
 end
 

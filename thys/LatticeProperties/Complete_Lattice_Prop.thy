@@ -18,28 +18,11 @@ context complete_lattice begin
 
 theorem Sup_bottom:
   "(Sup X = bot) = (\<forall> x \<in> X . x = bot)"
-  apply (rule iffI)
-  apply (rule ballI)
-  apply (rule_tac antisym)
-  apply auto
-  apply (drule Sup_upper)
-  apply auto
-  apply (rule_tac antisym)
-  apply (rule Sup_least)
-  by auto
+  by (rule Sup_bot_conv)
 
 theorem Inf_top:
   "(Inf X = top) = (\<forall> x \<in> X . x = top)"
-  apply (rule iffI)
-  apply (rule ballI)
-  apply (rule_tac antisym)
-  apply auto
-  apply (drule Inf_lower)
-  apply auto
-  apply (rule_tac antisym)
-  apply simp
-  apply (rule Inf_greatest)
-  by auto
+  by (rule Inf_top_conv)
 
 lemma inf_Inf: assumes nonempty: "A \<noteq> {}"
    shows "inf x (Inf A) = Inf ((inf x) ` A)"
@@ -78,11 +61,10 @@ theorem lfp_mono [simp]:
   apply (simp add: mono_def)
   apply auto
   apply (simp_all add: Sup_fun_def)
-  apply (rule Sup_least)
-  apply safe
+  apply (rule SUP_least)
   apply (rule_tac y = "f y" in order_trans)
   apply auto
-  apply (rule Sup_upper)
+  apply (rule SUP_upper)
   by auto
 
 
@@ -124,7 +106,8 @@ lemma conjunctiveD: "x \<in> conjunctive \<Longrightarrow> times_abc x (inf_b y 
 
 end
 
-interpretation Apply: conjunctive inf inf "\<lambda> f . f"
+interpretation Apply: conjunctive "inf::'a::semilattice_inf \<Rightarrow> 'a \<Rightarrow> 'a"
+  "inf::'b::semilattice_inf \<Rightarrow> 'b \<Rightarrow> 'b" "\<lambda> f . f"
   done
 
 interpretation Comp: conjunctive "inf::('a::lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" 
@@ -153,7 +136,8 @@ lemma disjunctiveD: "x \<in> disjunctive \<Longrightarrow> times_abc x (sup_b y 
 
 end
 
-interpretation Apply: disjunctive sup sup "\<lambda> f . f"
+interpretation Apply: disjunctive "sup::'a::semilattice_sup \<Rightarrow> 'a \<Rightarrow> 'a"
+  "sup::'b::semilattice_sup \<Rightarrow> 'b \<Rightarrow> 'b" "\<lambda> f . f"
   done
 
 interpretation Comp: disjunctive "sup::('a::lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" 
@@ -192,6 +176,7 @@ lemma "Apply.Conjunctive = Comp.Conjunctive"
   apply (simp add: Apply.Conjunctive_def Comp.Conjunctive_def)
   apply safe
   apply (simp add: fun_eq_iff  Inf_fun_def comp_def image_def)
+  apply (simp only: INF_def)
   apply safe
   apply (rule_tac f = Inf in fun_eq)
   apply auto
@@ -199,7 +184,7 @@ lemma "Apply.Conjunctive = Comp.Conjunctive"
   apply (simp add: fun_eq_iff  Inf_fun_def comp_def image_def)
   apply (drule_tac x = "bot" in spec)
   apply (subgoal_tac "{y\<Colon>'a. \<exists>f . (\<exists>y \<in> X. \<forall>x::'a . f x = y) \<and> y = f bot} = X \<and> {y\<Colon>'a. \<exists>f. (\<exists>xa. (\<exists>y \<in> X. \<forall>x\<Colon>'a. xa x = y) \<and> (\<forall>xb\<Colon>'a. f xb = x (xa xb))) \<and> y = f bot} = {y\<Colon>'a. \<exists>xa\<Colon>'a\<in>X. y = x xa}")
-  apply (simp, safe)
+  apply (simp add: INF_def image_def, safe)
   apply simp_all
   apply auto[1]
   apply auto [1]
@@ -228,6 +213,7 @@ lemma "Apply.Disjunctive = Comp.Disjunctive"
   apply (simp add: Apply.Disjunctive_def Comp.Disjunctive_def)
   apply safe
   apply (simp add: fun_eq_iff  Sup_fun_def comp_def image_def)
+  apply (simp only: SUP_def)
   apply safe
   apply (rule_tac f = Sup in fun_eq)
   apply auto
@@ -236,7 +222,7 @@ lemma "Apply.Disjunctive = Comp.Disjunctive"
   apply (drule_tac x = "bot" in spec)
   apply (subgoal_tac "{y. \<exists>f::'a \<Rightarrow> 'a. (\<exists>y\<in>X. \<forall>x. f x = y) \<and> y = f bot} = X 
     \<and> {y. \<exists>f::'a \<Rightarrow> 'a. (\<exists>xa. (\<exists>y\<in>X. \<forall>x. xa x = y) \<and> (\<forall>xb. f xb = x (xa xb))) \<and> y = f bot} = {y. \<exists>xa\<in>X. y = x xa}")
-  apply (simp, safe)
+  apply (simp add: SUP_def image_def, safe)
   apply simp_all
   apply auto[1]
   apply auto [1]
@@ -248,7 +234,7 @@ lemma [simp]: "(F::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) \<in
   apply (simp add: Apply.Conjunctive_def Apply.conjunctive_def)
   apply safe
   apply (drule_tac x = "{y, z}" in spec)
-  by (simp add: Inf_binary)
+  by simp
 
 lemma [simp]: "F \<in> Apply.conjunctive \<Longrightarrow> mono F"
   apply (simp add: Apply.conjunctive_def mono_def)
@@ -272,7 +258,7 @@ lemma [simp]: "(F::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) \<in
   apply (simp add: Apply.Disjunctive_def Apply.disjunctive_def)
   apply safe
   apply (drule_tac x = "{y, z}" in spec)
-  by (simp add: Sup_binary)
+  by simp
 
 lemma [simp]: "F \<in> Apply.disjunctive \<Longrightarrow> mono F"
   apply (simp add: Apply.disjunctive_def mono_def)

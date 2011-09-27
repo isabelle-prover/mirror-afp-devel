@@ -14,7 +14,7 @@ and proves some results about them. The most important result is
 that a lattice ordered group is also a distributive lattice.
 *}
 
-class lgroup = group_add + lattice_infix +
+class lgroup = group_add + lattice +
 assumes add_order_preserving: "a \<le> b \<Longrightarrow> u + a + v \<le> u + b + v"
 begin
 
