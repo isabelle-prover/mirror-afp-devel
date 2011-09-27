@@ -1,7 +1,31 @@
+[PseudoHoops]
+title = Pseudo Hoops
+author = George Georgescu, Laurentiu Leustean, Viorel Preoteasa <http://users.abo.fi/vpreotea/>
+topic = Mathematics/Algebra
+base = HOL/LatticeProperties
+date = 2011-09-22
+abstract = Pseudo-hoops are algebraic structures introduced by B. Bosbach under the name of complementary semigroups. In this formalization we prove some properties of pseudo-hoops and we define the basic concepts of filter and normal filter. The lattice of normal filters is isomorphic with the lattice of congruences of a pseudo-hoop. We also study some important classes of pseudo-hoops. Bounded Wajsberg pseudo-hoops are equivalent to pseudo-Wajsberg algebras and bounded basic pseudo-hoops are equivalent to pseudo-BL algebras. Some examples of pseudo-hoops are given in the last section of the formalization.
+  
+[MonoBoolTranAlgebra]
+title = Algebra of Monotonic Boolean Transformers
+author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>
+topic = Computer Science/Programming Languages/Logics
+base = HOL/LatticeProperties
+date = 2011-09-22
+abstract = Algebras of imperative programming languages have been successful in reasoning about programs. In general an algebra of programs is an algebraic structure with programs as elements and with program compositions (sequential composition, choice, skip) as algebra operations. Various versions of these algebras were introduced to model partial correctness, total correctness, refinement, demonic choice, and other aspects. We formalize here an algebra which can be used to model total correctness, refinement, demonic and angelic choice. The basic model of this algebra are monotonic Boolean transformers (monotonic functions from a Boolean algebra to itself).
+
+[LatticeProperties]
+title = Lattice Properties
+author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>
+topic = Mathematics/Algebra
+base = HOL
+date = 2011-09-22
+abstract = This formalization introduces and collects some algebraic structures based on lattices and complete lattices for use in other developments. The structures introduced are complete distributive lattices, modular and distributive lattices, as well as lattice ordered groups. In addition to the results proved for the new lattices, this formalization also introduces theorems about latices and distributive lattices in general.
+
 [KBPs]
 title = Knowledge-based programs
 author = Peter Gammie <http://peteg.org/>
-topic = Logic/Automata and Formal Languages
+topic = Computer Science/Automata and Formal Languages
 base = HOL
 date = 2011-05-17
 abstract = Knowledge-based programs (KBPs) are a formalism for directly relating agents' knowledge and behaviour. Here we present a general scheme for compiling KBPs to executable automata with a proof of correctness in Isabelle/HOL. We develop the algorithm top-down, using Isabelle's locale mechanism to structure these proofs, and show that two classic examples can be synthesised using Isabelle's code generator.

@@ -33,6 +33,7 @@
 <h3>Automata and Formal Languages</h3>
 
 <div class="list">
+<a href="entries/KBPs.shtml">KBPs</a> &nbsp;
 <a href="entries/Regular-Sets.shtml">Regular-Sets</a> &nbsp;
 <a href="entries/Myhill-Nerode.shtml">Myhill-Nerode</a> &nbsp;
 <a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
@@ -103,7 +104,8 @@
 <strong>Type Systems:</strong>&nbsp;<a href="entries/MiniML.shtml">MiniML</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 
-<strong>Logics:</strong>&nbsp;<a href="entries/Simpl.shtml">Simpl</a> &nbsp;
+<strong>Logics:</strong>&nbsp;<a href="entries/MonoBoolTranAlgebra.shtml">MonoBoolTranAlgebra</a> &nbsp;
+<a href="entries/Simpl.shtml">Simpl</a> &nbsp;
 <a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
 <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp;
 <a href="entries/DataRefinementIBP.shtml">DataRefinementIBP</a> &nbsp;
@@ -160,6 +162,8 @@
 <h3>Algebra</h3>
 
 <div class="list">
+<a href="entries/PseudoHoops.shtml">PseudoHoops</a> &nbsp;
+<a href="entries/LatticeProperties.shtml">LatticeProperties</a> &nbsp;
 <a href="entries/Gauss-Jordan-Elim-Fun.shtml">Gauss-Jordan-Elim-Fun</a> &nbsp;
 <a href="entries/Free-Groups.shtml">Free-Groups</a> &nbsp;
 <a href="entries/CofGroups.shtml">CofGroups</a> &nbsp;
