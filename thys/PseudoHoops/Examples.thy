@@ -1432,7 +1432,9 @@ definition one_bool_def:
 definition times_bool_def:
   "a * b = (a \<and> b)"
 
-definition inf_bool_def: "(a :: bool) \<sqinter> b = (a l\<rightarrow> b) * a"
+lemma inf_bool_def: "(a :: bool) \<sqinter> b = (a l\<rightarrow> b) * a"
+  by (auto simp add: times_bool_def impl_bool_def)
+  
 
 instance
   apply intro_classes

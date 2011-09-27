@@ -27,7 +27,7 @@ lemma lcm_D: "a l\<rightarrow> a = 1"
   apply (rule antisym, simp)
   by (unfold left_residual [THEN sym], simp)
 
-subclass semilattice_inf_infix
+subclass semilattice_inf
     apply unfold_locales
     apply (metis inf_l_def right_divisibility)
     apply (metis inf_l_def left_residual order_refl)    

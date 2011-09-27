@@ -159,7 +159,7 @@ sublocale impl_lr_algebra < order_b!:order lesseq_b less_b
   apply (rule P2_b)
   by simp_all
 
-sublocale impl_lr_algebra < slattice_a!:semilattice_sup lesseq_a less_a sup_a
+sublocale impl_lr_algebra < slattice_a!:semilattice_sup sup_a lesseq_a less_a
   apply unfold_locales
   apply (simp_all add: lesseq_a_def sup_a_def)
   apply (simp add: P9)
@@ -176,7 +176,7 @@ sublocale impl_lr_algebra < slattice_a!:semilattice_sup lesseq_a less_a sup_a
   apply (cut_tac a = z and b = x and c = y in W3a)
   by simp
 
-sublocale impl_lr_algebra < slattice_b!:semilattice_sup lesseq_b less_b sup_a
+sublocale impl_lr_algebra < slattice_b!:semilattice_sup sup_a lesseq_b less_b
   apply unfold_locales
   apply (simp_all add: lesseq_b_def sup_a_def)
   apply (simp_all add: W2b)
@@ -382,7 +382,7 @@ definition
 
 end
 
-sublocale pseudo_wajsberg_algebra < slattice_inf_a!:semilattice_inf "op \<le>" "op <" inf_a
+sublocale pseudo_wajsberg_algebra < slattice_inf_a!:semilattice_inf inf_a "op \<le>" "op <"
   apply unfold_locales
   apply (simp_all add: inf_a_def)
   apply (subst C7_b) 
@@ -416,7 +416,7 @@ sublocale pseudo_wajsberg_algebra < slattice_inf_a!:semilattice_inf "op \<le>" "
     qed
       
 
-sublocale pseudo_wajsberg_algebra < slattice_inf_b!:semilattice_inf "op \<le>" "op <" inf_b
+sublocale pseudo_wajsberg_algebra < slattice_inf_b!:semilattice_inf inf_b "op \<le>" "op <"
   apply unfold_locales
   apply (simp_all add: inf_b_def)
   apply (subst C7_a)

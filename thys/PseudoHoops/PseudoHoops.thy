@@ -642,7 +642,7 @@ begin
     by (simp add: le_iff_inf)
 end
 
-sublocale pseudo_hoop_lattice_a <  lattice "op \<le>" "op <" "op \<sqinter>" "op \<squnion>"
+sublocale pseudo_hoop_lattice_a <  lattice "op \<sqinter>" "op \<le>" "op <" "op \<squnion>"
   by (unfold_locales, simp_all)
 
 class pseudo_hoop_lattice_b = pseudo_hoop_sup_algebra +
@@ -700,10 +700,10 @@ sublocale pseudo_hoop_lattice <  pseudo_hoop_lattice_b "op \<squnion>" "op *" "o
   by (unfold_locales, rule le_sup_cong_c)
 
 
-sublocale pseudo_hoop_lattice <  semilattice_sup "op \<le>" "op <" "op \<squnion>"
+sublocale pseudo_hoop_lattice <  semilattice_sup "op \<squnion>" "op \<le>" "op <"
   by (unfold_locales, simp_all)
 
-sublocale pseudo_hoop_lattice <  lattice "op \<le>" "op <" "op \<sqinter>" "op \<squnion>"
+sublocale pseudo_hoop_lattice <  lattice "op \<sqinter>" "op \<le>" "op <" "op \<squnion>"
   by unfold_locales
 
 lemma (in pseudo_hoop_lattice_a) supremum_pair [simp]:
@@ -714,7 +714,7 @@ lemma (in pseudo_hoop_lattice_a) supremum_pair [simp]:
   apply (rule antisym)
   by simp_all
 
-sublocale pseudo_hoop_lattice <  distrib_lattice "op \<le>" "op <" "op \<sqinter>" "op \<squnion>"
+sublocale pseudo_hoop_lattice <  distrib_lattice "op \<sqinter>" "op \<le>" "op <" "op \<squnion>"
   apply unfold_locales
   apply (rule distrib_imp1)
   apply (case_tac "xa \<sqinter> (ya \<squnion> za) \<in> supremum (op \<sqinter> xa ` {ya, za})")
@@ -730,7 +730,7 @@ lemma inf_eq_top_iff [simp]:
   by (simp add: eq_iff)
 end
 
-sublocale pseudo_hoop_algebra < bounded_semilattice_inf_top "op \<le>" "op <" "op \<sqinter>" "1"
+sublocale pseudo_hoop_algebra < bounded_semilattice_inf_top "op \<sqinter>" "op \<le>" "op <" "1"
   by unfold_locales simp
 
 definition (in pseudo_hoop_algebra)

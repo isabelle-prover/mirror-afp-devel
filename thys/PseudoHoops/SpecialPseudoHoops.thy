@@ -377,7 +377,7 @@ lemma lemma_4_5: "a \<squnion>1 b = a \<squnion>2 b"
   by (simp_all add: lemma_4_5_a lemma_4_5_b)
 end
 
-sublocale basic_pseudo_hoop_algebra <  basic_lattice!:lattice "op \<le>" "op <" "op \<sqinter>" "op \<squnion>1"
+sublocale basic_pseudo_hoop_algebra <  basic_lattice!:lattice "op \<sqinter>" "op \<le>" "op <" "op \<squnion>1"
   apply unfold_locales
   by (simp_all add: lemma_4_5_a)
 
@@ -538,7 +538,7 @@ class inf_a =
 
 
 class pseudo_bl_algebra = zero + sup + inf + monoid_mult + ord + left_imp + right_imp +
-  assumes  bounded_lattice: "class.bounded_lattice (op \<le>) (op <) inf sup 0 1"
+  assumes  bounded_lattice: "class.bounded_lattice inf (op \<le>) (op <) sup 0 1"
   and left_residual_bl: "(x * a \<le> b) = (x \<le> a l\<rightarrow> b)"
   and right_residual_bl: "(a * x \<le> b) = (x \<le> a r\<rightarrow> b)"
   and inf_l_bl_def: "a \<sqinter> b = (a l\<rightarrow> b) * a"
@@ -561,7 +561,7 @@ sublocale bounded_basic_pseudo_hoop_algebra < basic!:pseudo_bl_algebra 1 "op *" 
   apply (simp add: lemma_4_5) 
   by (rule lemma_4_5_ii)
 
-sublocale pseudo_bl_algebra < bounded_lattice!: bounded_lattice "op \<le>" "op <" "inf" "sup" "0" "1"
+sublocale pseudo_bl_algebra < bounded_lattice!: bounded_lattice "inf" "op \<le>" "op <" "sup" "0" "1"
   by (rule bounded_lattice)
 
 context pseudo_bl_algebra

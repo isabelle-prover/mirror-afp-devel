@@ -30,10 +30,10 @@ context right_complemented_monoid begin
 lemma rcm_D: "a r\<rightarrow> a = 1"
   by (rule dual.lcm_D)
 
-subclass semilattice_inf_infix
+subclass semilattice_inf
     by unfold_locales
 
-lemma right_semilattice_inf: "class.semilattice_inf_infix inf op \<le> op <"
+lemma right_semilattice_inf: "class.semilattice_inf inf op \<le> op <"
   by unfold_locales
 
   lemma right_one_inf [simp]: "1 \<sqinter> a = a"
