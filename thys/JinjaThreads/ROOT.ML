@@ -6,6 +6,7 @@ no_document use_thys
    "~~/src/HOL/Library/Code_Char",
    "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs",
    "~~/src/HOL/Library/Zorn",
+   "~~/src/HOL/Library/Wfrec",
    "Common/Cset_Monad",
    "~~/src/HOL/Library/Dlist",
    "Common/List_Cset",

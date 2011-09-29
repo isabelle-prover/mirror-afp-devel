@@ -237,7 +237,8 @@ by(blast intro: is_lub.intros)
 
 subsection{* Method lookup *}
 
-inductive Methods :: "'m prog \<Rightarrow> cname \<Rightarrow> (mname \<rightharpoonup> (ty list \<times> ty \<times> 'm) \<times> cname) \<Rightarrow> bool" ("_ \<turnstile> _ sees'_methods _" [51,51,51] 50)
+inductive Methods :: "'m prog \<Rightarrow> cname \<Rightarrow> (mname \<rightharpoonup> (ty list \<times> ty \<times> 'm option) \<times> cname) \<Rightarrow> bool" 
+  ("_ \<turnstile> _ sees'_methods _" [51,51,51] 50)
   for P :: "'m prog"
 where 
 sees_methods_Object:
@@ -247,7 +248,6 @@ sees_methods_Object:
  "\<lbrakk> class P C = Some(D,fs,ms); C \<noteq> Object; P \<turnstile> D sees_methods Mm;
     Mm' = Mm ++ (Option.map (\<lambda>m. (m,C)) \<circ> map_of ms) \<rbrakk>
   \<Longrightarrow> P \<turnstile> C sees_methods Mm'"
-
 
 lemma sees_methods_fun:
 assumes 1: "P \<turnstile> C sees_methods Mm"
@@ -343,11 +343,20 @@ qed
 (*>*)
 
 
-definition Method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> cname \<Rightarrow> bool"
+definition Method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm option \<Rightarrow> cname \<Rightarrow> bool"
             ("_ \<turnstile> _ sees _: _\<rightarrow>_ = _ in _" [51,51,51,51,51,51,51] 50)
 where
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D  \<equiv>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and> Mm M = Some((Ts,T,m),D)"
+
+text {*
+  Output translation to replace @{term "None"} with its notation @{text "Native"}
+  when used as method body in @{term "Method"}.
+*}
+abbreviation (output)
+  Method_native :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
+  ("_ \<turnstile> _ sees _: _\<rightarrow>_ = Native in _" [51,51,51,51,51,51] 50)
+where "Method_native P C M Ts T D \<equiv> Method P C M Ts T Native D"
 
 definition has_method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" ("_ \<turnstile> _ has _" [51,0,51] 50)
 where
@@ -603,7 +612,7 @@ lemma sees_field_idemp:
 
 subsection "Functional lookup"
 
-definition method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> cname \<times> ty list \<times> ty \<times> 'm"
+definition method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> cname \<times> ty list \<times> ty \<times> 'm option"
 where "method P C M  \<equiv>  THE (D,Ts,T,m). P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
 
 definition field  :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> cname \<times> ty \<times> fmod"

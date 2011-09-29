@@ -42,12 +42,9 @@ where
   (let (stk,loc,C,M,pc) = f in
   (\<exists>ST LT Ts T mxs mxl\<^isub>0 is xt.
     \<Phi> C M ! pc = Some (ST,LT) \<and> 
-    (P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^isub>0,is,xt) in C) \<and>
-    (\<exists>Ts' T'.  
-       is!pc = (Invoke M\<^isub>0 n\<^isub>0) \<and> 
-       (if is_native P (ST!n\<^isub>0) M\<^isub>0 then P \<turnstile> ST!n\<^isub>0\<bullet>M\<^isub>0(Ts') :: T' 
-        else \<exists>D m D'. class_type_of (ST!n\<^isub>0) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M\<^isub>0:Ts' \<rightarrow> T' = m in D') \<and> 
-       P \<turnstile> T\<^isub>0 \<le> T') \<and>
+    (P \<turnstile> C sees M:Ts \<rightarrow> T = \<lfloor>(mxs,mxl\<^isub>0,is,xt)\<rfloor> in C) \<and>
+    (\<exists>Ts' T' D m D'.  
+       is!pc = (Invoke M\<^isub>0 n\<^isub>0) \<and> class_type_of (ST!n\<^isub>0) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M\<^isub>0:Ts' \<rightarrow> T' = m in D' \<and> P \<turnstile> T\<^isub>0 \<le> T') \<and>
     conf_f P h (ST, LT) is f \<and> conf_fs P h \<Phi> M (size Ts) T frs))"
 
 primrec conf_xcp :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> 'addr option \<Rightarrow> 'addr instr \<Rightarrow> bool" where
@@ -69,7 +66,7 @@ where
              | (f#fs) \<Rightarrow> 
              (let (stk,loc,C,M,pc) = f
               in \<exists>Ts T mxs mxl\<^isub>0 is xt \<tau>.
-                    (P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs,mxl\<^isub>0,is,xt) in C) \<and>
+                    (P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(mxs,mxl\<^isub>0,is,xt)\<rfloor> in C) \<and>
                     \<Phi> C M ! pc = Some \<tau> \<and>
                     conf_f P h \<tau> is f \<and> conf_fs P h \<Phi> M (size Ts) T fs \<and>
                     conf_xcp P h xp (is ! pc) ))"
@@ -187,7 +184,7 @@ lemmas defs1 = correct_state_def conf_f_def wt_instr_def eff_def norm_eff_def ap
 
 lemma correct_state_impl_Some_method:
   "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd> 
-  \<Longrightarrow> \<exists>m Ts T. P \<turnstile> C sees M:Ts\<rightarrow>T = m in C"
+  \<Longrightarrow> \<exists>m Ts T. P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in C"
   by(fastforce simp add: defs1)
 
 end
@@ -197,7 +194,7 @@ context JVM_heap_conf_base' begin
 lemma correct_state_hext_mono:
   "\<lbrakk> \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>; h \<unlhd> h'; hconf h' \<rbrakk> \<Longrightarrow> \<Phi> \<turnstile> t: (xcp, h', frs) \<surd>"
 unfolding correct_state_def
-by(fastforce elim: tconf_hext_mono preallocated_hext conf_f_hext conf_fs_hext conf_xcp_hext split: list.split)
+by(fastsimp elim: tconf_hext_mono preallocated_hext conf_f_hext conf_fs_hext conf_xcp_hext split: list.split)
 
 end
 

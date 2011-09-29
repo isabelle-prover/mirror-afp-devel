@@ -48,13 +48,13 @@ definition addr_of_sys_xcpt :: "cname \<Rightarrow> 'addr"
 where "addr_of_sys_xcpt C = the (map_of (zip initialization_list start_addrs) C)"
 
 definition start_tid :: 'thread_id
-where "start_tid = addr2thread_id (addr_of_sys_xcpt Thread)"
+where "start_tid = addr2thread_id (hd start_addrs)"
 
 definition start_state :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> 'addr val list \<Rightarrow> 'x) \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr,'thread_id,'x,'heap,'addr) state"
 where
   "start_state f P C M vs \<equiv>
    let (D, Ts, T, m) = method P C M
-   in (\<lambda>\<^isup>f None, ([start_tid \<mapsto> (f D M Ts T m vs, no_wait_locks)], start_heap), empty, {})"
+   in (\<lambda>\<^isup>f None, ([start_tid \<mapsto> (f D M Ts T (the m) vs, no_wait_locks)], start_heap), empty, {})"
 
 lemma create_initial_object_simps:
   "create_initial_object (h, ads, b) C = 
@@ -357,9 +357,24 @@ end
 
 subsection {* Code generation *}
 
+lemma (in heap_base) start_heap_data_code:
+  "start_heap_data = 
+   (let 
+     (h, ads, b) = foldl 
+        (\<lambda>(h, ads, b) C. 
+           if b then 
+             let (h', a') = new_obj h C 
+             in case a' of None \<Rightarrow> (h', ads, False) 
+                     | Some a'' \<Rightarrow> (h', a'' # ads, True) 
+           else (h, ads, False)) 
+        (empty_heap, [], True) 
+        initialization_list 
+    in (h, rev ads, b))"
+unfolding start_heap_data_def create_initial_object_def
+by(rule rev_induct)(simp_all add: split_beta)
+
 lemmas [code] =
-  heap_base.create_initial_object_def
-  heap_base.start_heap_data_def
+  heap_base.start_heap_data_code
   heap_base.start_heap_def
   heap_base.start_heap_ok_def
   heap_base.start_heap_obs_def

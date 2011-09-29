@@ -10,7 +10,6 @@ imports
   TypeSafe
   "../Framework/FWProgress"
 begin
-
 lemma lock_ok_ls_Some_ex_ts_not_final:
   assumes lock: "lock_ok ls ts"
   and hl: "has_lock (ls\<^sub>f l) t"
@@ -51,7 +50,7 @@ proof(induct rule: red_reds.inducts)
   then obtain C fs a where subThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" and ext: "extNTA2J P (C, run, a) = (e'', x'')"
     by(fastforce dest: red_external_new_thread_sub_thread)
   from sub_Thread_sees_run[OF wf subThread] obtain D pns body
-    where sees: "P \<turnstile> C sees run: []\<rightarrow>Void = (pns, body) in D" by auto
+    where sees: "P \<turnstile> C sees run: []\<rightarrow>Void = \<lfloor>(pns, body)\<rfloor> in D" by auto
   from sees_wf_mdecl[OF wf this] have "\<D> body \<lfloor>{this}\<rfloor>"
     by(auto simp add: wf_mdecl_def)
   with sees ext show ?case by(clarsimp simp del: fun_upd_apply)
@@ -63,7 +62,7 @@ apply(auto dest: red_preserves_defass red_def_ass_new_thread)
 done
 
 lemma def_ass_ts_ok_J_start_state:
-  "\<lbrakk> wf_J_prog P; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D; length vs = length Ts \<rbrakk> \<Longrightarrow>
+  "\<lbrakk> wf_J_prog P; P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D; length vs = length Ts \<rbrakk> \<Longrightarrow>
   def_ass_ts_ok (thr (J_start_state P C M vs)) h"
 apply(rule ts_okI)
 apply(drule (1) sees_wf_mdecl)
@@ -94,13 +93,13 @@ lemma fixes E :: env
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t'' (e'', x'') (hp s') \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; P,E,hp s \<turnstile> es [:] Ts \<rbrakk>
   \<Longrightarrow> \<exists>E T. P,E,hp s' \<turnstile> e'' : T \<and> P,hp s' \<turnstile> x'' (:\<le>) E"
 proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
-  case (RedCallExternal s a U M vs ta va h' ta' e' s')
+  case (RedCallExternal s a U C M Ts T' D vs ta va h' ta' e' s')
   from `NewThread t'' (e'', x'') (hp s') \<in> set \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>` `ta' = extTA2J P ta`
   obtain C' M' a' where nt: "NewThread t'' (C', M', a') (hp s') \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
     and "extNTA2J P (C', M', a') = (e'', x'')" by fastforce
   from red_external_new_thread_sees[OF wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` nt] `typeof_addr (hp s) a = \<lfloor>U\<rfloor>`
   obtain T pns body D where h'a': "typeof_addr h' a' = \<lfloor>Class C'\<rfloor>"
-    and sees: " P \<turnstile> C' sees M': []\<rightarrow>T = (pns, body) in D" by auto
+    and sees: " P \<turnstile> C' sees M': []\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" by auto
   from sees_wf_mdecl[OF wf sees] obtain T where "P,[this \<mapsto> Class D] \<turnstile> body :: T"
     by(auto simp add: wf_mdecl_def)
   hence "WTrt P (hp s') [this \<mapsto> Class D] body T" by(rule WT_implies_WTrt)
@@ -136,7 +135,7 @@ by(auto elim: WTrt_hext_mono dest!: red_hext_incr)
 context J_heap_conf begin
 
 lemma (in J_heap_conf) sconf_type_ts_ok_J_start_state:
-  "\<lbrakk> wf_J_prog P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D; P,start_heap \<turnstile> vs [:\<le>] Ts \<rbrakk>
+  "\<lbrakk> wf_J_prog P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D; P,start_heap \<turnstile> vs [:\<le>] Ts \<rbrakk>
   \<Longrightarrow> sconf_type_ts_ok (J_sconf_type_ET_start P C M) (thr (J_start_state P C M vs)) (shr (J_start_state P C M vs))"
 apply(rule ts_invI)
 apply(simp add: start_state_def split: split_if_asm)
@@ -155,7 +154,7 @@ done
 lemma J_start_state_sconf_type_ok:
   assumes wf: "wf_J_prog P"
   and ok: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=(pns, body) in D"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns, body)\<rfloor> in D"
   and vs: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   shows "sconf_type_ts_ok [start_tid \<mapsto> (empty, T)] (thr (J_start_state P C M vs)) (shr (J_start_state P C M vs))"
 proof(rule ts_invI)
@@ -163,7 +162,7 @@ proof(rule ts_invI)
   assume xln: "thr (J_start_state P C M vs) t = \<lfloor>(x, ln)\<rfloor>"
   hence t [simp]: "t = start_tid" by(simp add: start_state_def split_beta split: split_if_asm)
   moreover {
-    from wf sees have "wf_mdecl wf_J_mdecl P D (M, Ts, T, pns, body)"
+    from wf sees have "wf_mdecl wf_J_mdecl P D (M, Ts, T, \<lfloor>(pns, body)\<rfloor>)"
       by(rule sees_wf_mdecl)
     then obtain T' where "length Ts = length pns" "P,[this \<mapsto> Class D, pns [\<mapsto>] Ts] \<turnstile> body :: T'" "P \<turnstile> T' \<le> T"
       by(auto simp add: wf_mdecl_def)
@@ -287,42 +286,28 @@ lemma assumes wf: "wf_prog wf_md P"
     sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
      \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_locks e l;
      ws t = None \<or> 
-     (\<exists>a vs w T. call e = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_native P T wait \<and> ws t = \<lfloor>PostWS w\<rfloor>) \<rbrakk>
+     (\<exists>a vs w T C Ts Tr D. call e = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees wait: Ts\<rightarrow>Tr = Native in D \<and> ws t = \<lfloor>PostWS w\<rfloor>) \<rbrakk>
     \<Longrightarrow> \<exists>e'' s'' ta'. P,t \<turnstile> \<langle>e, s\<rangle> -ta'\<rightarrow> \<langle>e'',s''\<rangle> \<and> 
         (red_mthr.actions_ok (ls, (ts, m), ws, is) t ta' \<or> 
          red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta' \<and> red_mthr.actions_subset ta' ta)"
-  (is "\<lbrakk> _; _; _; _; _; _; ?wakeup e s \<rbrakk> \<Longrightarrow> ?concl e s ta")
+  (is "PROP ?thesis1")
     and reds_wf_red_aux:
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; \<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta;
      sync_oks es; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
      \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_lockss es l;
      ws t = None \<or> 
-     (\<exists>a vs w T. calls es = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_native P T wait \<and> ws t = \<lfloor>PostWS w\<rfloor>) \<rbrakk>
+     (\<exists>a vs w T C Ts T Tr D. calls es = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees wait: Ts\<rightarrow>Tr = Native in D \<and> ws t = \<lfloor>PostWS w\<rfloor>) \<rbrakk>
     \<Longrightarrow> \<exists>es'' s'' ta'. P,t \<turnstile> \<langle>es, s\<rangle> [-ta'\<rightarrow>] \<langle>es'',s''\<rangle> \<and> 
         (red_mthr.actions_ok (ls, (ts, m), ws, is) t ta' \<or> 
          red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta' \<and> red_mthr.actions_subset ta' ta)"
+  (is "PROP ?thesis2")
 proof -
   note red_mthr.actions_ok_iff [simp del]
   note red_mthr.actions_ok.cases [rule del]
   note red_mthr.actions_ok.intros [rule del]
 
-  show "\<lbrakk> P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>; \<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta; 
-    sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
-     \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_locks e l;
-     ws t = None \<or> 
-     (\<exists>a vs w T. call e = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_native P T wait \<and> ws t = \<lfloor>PostWS w\<rfloor>) \<rbrakk>
-    \<Longrightarrow> \<exists>e'' s'' ta'. P,t \<turnstile> \<langle>e, s\<rangle> -ta'\<rightarrow> \<langle>e'',s''\<rangle> \<and> 
-        (red_mthr.actions_ok (ls, (ts, m), ws, is) t ta' \<or> 
-         red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta' \<and> red_mthr.actions_subset ta' ta)"
-    and 
-  "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; \<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta;
-     sync_oks es; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
-     \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_lockss es l;
-     ws t = None \<or> 
-     (\<exists>a vs w T. calls es = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_native P T wait \<and> ws t = \<lfloor>PostWS w\<rfloor>) \<rbrakk>
-    \<Longrightarrow> \<exists>es'' s'' ta'. P,t \<turnstile> \<langle>es, s\<rangle> [-ta'\<rightarrow>] \<langle>es'',s''\<rangle> \<and> 
-        (red_mthr.actions_ok (ls, (ts, m), ws, is) t ta' \<or> 
-         red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta' \<and> red_mthr.actions_subset ta' ta)"
+  show "PROP ?thesis1" (is "\<lbrakk> _; _; _; _; _; _; ?wakeup e s \<rbrakk> \<Longrightarrow> ?concl e s ta")
+    and "PROP ?thesis2"
   proof(induct rule: red_reds.inducts)
     case (SynchronizedRed2 e s ta e' s' a)
     note IH = `\<lbrakk>\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta; sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
@@ -337,11 +322,10 @@ proof -
     ultimately have "?concl e s ta" by(rule IH)
     thus ?case by(fastforce intro: red_reds.SynchronizedRed2)
   next
-    case RedCall
-    thus ?case
-      by(auto simp add: is_val_iff contains_insync_expr_locks_conv contains_insyncs_expr_lockss_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs)
+    case RedCall thus ?case
+      by(auto simp add: is_val_iff contains_insync_expr_locks_conv contains_insyncs_expr_lockss_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
   next
-    case (RedCallExternal s a T M vs ta va h' ta' e' s')
+    case (RedCallExternal s a U C M Ts T D vs ta va h' ta' e' s')
     from `?wakeup (addr a\<bullet>M(map Val vs)) s`
     have "wset (ls, (ts, m), ws, is) t = None \<or> (M = wait \<and> (\<exists>w. wset (ls, (ts, m), ws, is) t = \<lfloor>PostWS w\<rfloor>))" by auto
     with wf  `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>` `P,hp s \<turnstile> t \<surd>t` `hconf (hp s)`
@@ -353,7 +337,7 @@ proof -
     have "red_mthr.actions_ok (ls, (ts, m), ws, is) t (extTA2J P ta'') \<or>
           red_mthr.actions_ok' (ls, (ts, m), ws, is) t (extTA2J P ta'') \<and> red_mthr.actions_subset (extTA2J P ta'') ta'"
       by(auto simp add: red_mthr.actions_ok'_convert_extTA red_mthr.actions_ok_iff elim: final_thread.actions_subset.cases del: subsetI)
-    moreover from red' `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `is_native P T M`
+    moreover from red' `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `is_class_type_of U C` `P \<turnstile> C sees M: Ts\<rightarrow>T = Native in D`
     obtain s'' e'' where "P,t \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J P ta''\<rightarrow> \<langle>e'',s''\<rangle>"
       by(fastforce intro: red_reds.RedCallExternal)
     ultimately show ?case by blast
@@ -394,7 +378,6 @@ apply(fastforce simp add: lock_ok_las_def finfun_upd_apply intro: exI[where x="\
 done
 
 end
-
 
 context J_typesafe begin
 
@@ -472,7 +455,7 @@ next
     case False
     from lock_okD2[OF lockok, OF tst[unfolded ex]]
     have locks: "\<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_locks e l" by simp
-    have "ws t = None \<or> (\<exists>a vs w T. call e = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp (m, x)) a = \<lfloor>T\<rfloor> \<and> is_native P T wait \<and> ws t = \<lfloor>PostWS w\<rfloor>)"
+    have "ws t = None \<or> (\<exists>a vs w T C Ts Tr D. call e = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp (m, x)) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees wait: Ts\<rightarrow>Tr = Native in D \<and> ws t = \<lfloor>PostWS w\<rfloor>)"
     proof(cases "ws t")
       case None thus ?thesis ..
     next
@@ -482,17 +465,18 @@ next
         where red0: "P,t \<turnstile> \<langle>e0, (m0, x0)\<rangle> -ta0\<rightarrow> \<langle>e, (shr s1, x)\<rangle>"
         and Suspend: "Suspend w' \<in> set \<lbrace>ta0\<rbrace>\<^bsub>w\<^esub>"
         and s1: "P \<turnstile> s1 -\<triangleright>tta1\<rightarrow>* s" by auto 
-      from red_Suspend_is_call[OF red0 Suspend] obtain a vs T
+      from red_Suspend_is_call[OF red0 Suspend] obtain a vs T C Ts Tr D
         where call: "call e = \<lfloor>(a, wait, vs)\<rfloor>"
         and type: "typeof_addr m0 a = \<lfloor>T\<rfloor>" 
-        and iec: "is_native P T wait" by auto
+        and icto: "is_class_type_of T C"
+        and iec: "P \<turnstile> C sees wait: Ts\<rightarrow>Tr = Native in D" by fastforce
       from red0 have "m0 \<unlhd> shr s1" by(auto dest: red_hext_incr)
       also from s1 have "shr s1 \<unlhd> shr s" by(rule RedT_hext_incr)
       finally have "typeof_addr (shr s) a = \<lfloor>T\<rfloor>" using type
         by(rule typeof_addr_hext_mono)
       moreover from Some wait s obtain w' where "ws t = \<lfloor>PostWS w'\<rfloor>"
         by(auto simp add: not_waiting_iff)
-      ultimately show ?thesis using call iec s by auto
+      ultimately show ?thesis using call iec s icto by auto
     qed
     from red_wf_red_aux[OF wf red False[unfolded s] aoe _ _ locks, OF _ _ this] `hconf m` `P,shr s \<turnstile> t \<surd>t` ex s
     show ?thesis by fastforce
@@ -531,7 +515,7 @@ qed
 
 lemma redT_progress_deadlock:
   assumes wf: "wf_J_prog P"
-  and start: "start_heap_ok" "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D" "P,start_heap \<turnstile> vs [:\<le>] Ts"
+  and start: "start_heap_ok" "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" "P,start_heap \<turnstile> vs [:\<le>] Ts"
   and Red: "P \<turnstile> J_start_state P C M vs -\<triangleright>ttas\<rightarrow>* s"
   and ndead: "\<not> red_mthr.deadlock P s"
   shows "\<exists>t' ta' s'. P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
@@ -558,7 +542,7 @@ qed
 
 lemma redT_progress_deadlocked:
   assumes wf: "wf_J_prog P" 
-  and start: "start_heap_ok" "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D" "P,start_heap \<turnstile> vs [:\<le>] Ts"
+  and start: "start_heap_ok" "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" "P,start_heap \<turnstile> vs [:\<le>] Ts"
   and Red: "P \<turnstile> J_start_state P C M vs -\<triangleright>ttas\<rightarrow>* s"
   and ndead:  "red_mthr.not_final_thread s t" "\<not> t \<in> red_mthr.deadlocked P s"
   shows "\<exists>t' ta' s'. P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
@@ -577,7 +561,7 @@ theorem TypeSafetyT:
   and     "Es' == upd_invs Es sconf_type_ok (concat (map (thr_a \<circ> snd) ttas))"
   assumes wf: "wf_J_prog P"
   and start_heap: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
   and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   and RedT: "P \<turnstile> J_start_state P C M vs -\<triangleright>ttas\<rightarrow>* s'"
   and nored: "\<not> (\<exists>t ta s''. P \<turnstile> s' -t\<triangleright>ta\<rightarrow> s'')"

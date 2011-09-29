@@ -1360,7 +1360,7 @@ lemma read_ex_NewHeapElem [consumes 5, case_names start Red]:
   and red: "mthr.if.redT s (t, ta) s'"
   and read: "NormalAction (ReadMem ad al v) \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
   and sc: "ta_seq_consist P empty (llist_of (map snd (lift_start_obs start_tid start_heap_obs) @ concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-  and known: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (snd (snd (snd (method P C M)))) vs) \<subseteq> allocated start_heap"
+  and known: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
   obtains (start) CTn where "NewHeapElem ad CTn \<in> set start_heap_obs"
   | (Red) ttas' s'' t' ta' s''' ttas'' CTn
   where "mthr.if.RedT (init_fin_lift_state status (start_state f P C M vs)) ttas' s''"
@@ -1547,7 +1547,7 @@ lemma executions_sc:
   and ok: "start_heap_ok"
   and wfx_start: "ts_ok wfx (thr (start_state f P C M vs)) start_heap"
   and vs_conf_start: "vs_conf P start_heap (mrw_values P empty (map NormalAction start_heap_obs))"
-  and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (snd (snd (snd (method P C M)))) vs) \<subseteq> allocated start_heap"
+  and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
   shows
   "executions_sc (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))) P"
   (is "executions_sc ?E P")
@@ -2104,7 +2104,7 @@ lemma executions:
   and ok: "start_heap_ok"
   and wfx_start: "ts_ok wfx (thr (start_state f P C M vs)) start_heap"
   and vs: "vs_conf P start_heap (mrw_values P Map.empty (map NormalAction start_heap_obs))"
-  and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (snd (snd (snd (method P C M)))) vs) \<subseteq> allocated start_heap"
+  and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
   shows "executions \<E> P" (is "executions ?\<E> _")
 proof -
   let ?\<E> = "lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))"

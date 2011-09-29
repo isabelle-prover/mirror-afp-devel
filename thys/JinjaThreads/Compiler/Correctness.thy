@@ -9,7 +9,7 @@ imports
   J0Bisim
   J1Deadlock 
   "../Framework/FWBisimDeadlock"
-  Correctness2Threaded 
+  Correctness2
   Correctness1Threaded
   Correctness1 
   JJ1WellForm
@@ -112,17 +112,17 @@ proof -
     by(rule red0_Red1'_FWweak_bisim[OF wf])
 
   interpret b11: bisimulation_into_delay
-    "Red1'_mthr.redT (compP1 P)"
-    "Red1_mthr.redT (compP1 P)"
+    "Red1_mthr.redT False (compP1 P)"
+    "Red1_mthr.redT True (compP1 P)"
     "mbisim_Red1'_Red1" 
     "op ="
-    "Red1'_mthr.m\<tau>move (compP1 P)"
+    "Red1_mthr.m\<tau>move (compP1 P)"
     "Red1_mthr.m\<tau>move (compP1 P)"
     using compP1_pres_wf[OF wf] by(rule Red1'_Red1_bisim_into_weak)
 
   interpret b11': bisimulation_final
-    "Red1'_mthr.redT (compP1 P)"
-    "Red1_mthr.redT (compP1 P)"
+    "Red1_mthr.redT False (compP1 P)"
+    "Red1_mthr.redT True (compP1 P)"
     "mbisim_Red1'_Red1" 
     "op =" 
     Red1_mthr.mfinal
@@ -159,7 +159,7 @@ qed
 lemma bisimJ2JVM_start:
   assumes wf: "wf_J_prog P"
   and start: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=(pns,body) in C"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns,body)\<rfloor> in C"
   and vs: "length vs = length pns" and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   shows "bisimJ2JVM (J_start_state P C M vs) (JVM_start_state (J2JVM P) C M vs)"
 using assms sees_method_compP[OF sees, of "\<lambda>C M Ts T (pns, body). compE1 (this # pns) body"]
@@ -270,7 +270,7 @@ theorem J2JVM_correct:
   and comps: "cs \<equiv> JVM_start_state (J2JVM P) C M vs"
   assumes wf: "wf_J_prog P"
   and start: "start_heap_ok"
-  and sees': "P \<turnstile> C sees M:Ts\<rightarrow>T=(pns,body) in C"
+  and sees': "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns,body)\<rfloor> in C"
   and vs: "length vs = length pns" and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts" 
   shows
   "\<lbrakk> red_mthr.mthr.\<tau>rtrancl3p P s ttas s'; red_mthr.mfinal s' \<rbrakk>
@@ -373,11 +373,11 @@ next
     by(rule red0_Red1'_FWweak_bisim[OF wf])
 
   interpret b11: bisimulation_into_delay 
-    "Red1'_mthr.redT (compP1 P)"
-    "Red1_mthr.redT (compP1 P)"
+    "Red1_mthr.redT False (compP1 P)"
+    "Red1_mthr.redT True (compP1 P)"
     "mbisim_Red1'_Red1" 
     "op =" 
-    "Red1'_mthr.m\<tau>move (compP1 P)"
+    "Red1_mthr.m\<tau>move (compP1 P)"
     "Red1_mthr.m\<tau>move (compP1 P)"
     using compP1_pres_wf[OF wf] by(rule Red1'_Red1_bisim_into_weak)
 
@@ -417,25 +417,25 @@ next
     have "red0_mthr.mthr.\<tau>rtrancl3p P s0 (ttas0 @ []) s0''"
       by(rule red0_mthr.mthr.\<tau>rtrancl3p_trans[OF _ red0_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
     from b01.mthr.simulation1_\<tau>rtrancl3p[OF this bisim01]
-    obtain ttas1 s1'' where "Red1'_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1 ttas1 s1''"
+    obtain ttas1 s1'' where "Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 ttas1 s1''"
       and "red0_Red1'.mbisim s0'' s1''"
       and tlsim01: "bisimulation_base.Tlsim red0_Red1'.mta_bisim ttas0 ttas1" by auto
     from b01.deadlock1_imp_\<tau>s_deadlock2[OF `red0_Red1'.mbisim s0'' s1''` dead0]
-    obtain s1''' where "Red1'_mthr.mthr.silent_moves (compP1 P) s1'' s1'''"
-      and dead1: "Red1'_mthr.deadlock (compP1 P) s1'''"
+    obtain s1''' where "Red1_mthr.mthr.silent_moves False (compP1 P) s1'' s1'''"
+      and dead1: "Red1_mthr.deadlock False (compP1 P) s1'''"
       and bisim01': "red0_Red1'.mbisim s0'' s1'''" by auto
-    from `Red1'_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1 ttas1 s1''` `Red1'_mthr.mthr.silent_moves (compP1 P) s1'' s1'''`
-    have "Red1'_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1 (ttas1 @ []) s1'''"
-      by(rule Red1'_mthr.mthr.\<tau>rtrancl3p_trans[OF _ Red1'_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
+    from `Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 ttas1 s1''` `Red1_mthr.mthr.silent_moves False (compP1 P) s1'' s1'''`
+    have "Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 (ttas1 @ []) s1'''"
+      by(rule Red1_mthr.mthr.\<tau>rtrancl3p_trans[OF _ Red1_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
     from b11.simulation1_\<tau>rtrancl3p[OF this bisim11]
-    obtain s1'''' where "Red1_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1' ttas1 s1''''"
+    obtain s1'''' where "Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' ttas1 s1''''"
       and bisim11': "mbisim_Red1'_Red1 s1''' s1''''" by auto
-    from b12.mthr.simulation1_\<tau>rtrancl3p[OF `Red1_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1' ttas1 s1''''` bisim12]
+    from b12.mthr.simulation1_\<tau>rtrancl3p[OF `Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' ttas1 s1''''` bisim12]
     obtain ttas' cs' where "execd_mthr.mthr.\<tau>rtrancl3p (compP2 (compP1 P)) cs ttas' cs'"
       and "Red1_execd.mbisim s1'''' cs'"
       and tlsim12: "list_all2 Red1_execd.mta_bisim ttas1 ttas'" by(auto)
     from bisim11' have "s1''' = s1''''" by(simp add: mbisim_Red1'_Red1_def)
-    with dead1 have "Red1_mthr.deadlock (compP1 P) s1''''"
+    with dead1 have "Red1_mthr.deadlock True (compP1 P) s1''''"
       by(simp add: Red1_Red1'_deadlock_inv)
     from b12.deadlock1_imp_\<tau>s_deadlock2[OF `Red1_execd.mbisim s1'''' cs'` this]
     obtain cs'' where "execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs' cs''"
@@ -458,25 +458,25 @@ next
       and dead: "execd_mthr.deadlock (compP2 (compP1 P)) cs'"
       by(simp_all add: J2JVM_def o_def)
     from b12.mthr.simulation2_\<tau>rtrancl3p[OF `execd_mthr.mthr.\<tau>rtrancl3p (compP2 (compP1 P)) cs ttas' cs'` bisim12]
-    obtain ttas1 s1'' where "Red1_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1' ttas1 s1''"
+    obtain ttas1 s1'' where "Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' ttas1 s1''"
       and "Red1_execd.mbisim s1'' cs'"
       and tlsim12: "list_all2 Red1_execd.mta_bisim ttas1 ttas'" by(auto)
     from b12.deadlock2_imp_\<tau>s_deadlock1[OF `Red1_execd.mbisim s1'' cs'` dead]
-    obtain s1''' where "Red1_mthr.mthr.silent_moves (compP1 P) s1'' s1'''"
-      and dead1: "Red1_mthr.deadlock (compP1 P) s1'''"
+    obtain s1''' where "Red1_mthr.mthr.silent_moves True (compP1 P) s1'' s1'''"
+      and dead1: "Red1_mthr.deadlock True (compP1 P) s1'''"
       and bisim12': "Red1_execd.mbisim s1''' cs'" by auto
-    from `Red1_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1' ttas1 s1''` `Red1_mthr.mthr.silent_moves (compP1 P) s1'' s1'''`
-    have "Red1_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1' (ttas1 @ []) s1'''"
+    from `Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' ttas1 s1''` `Red1_mthr.mthr.silent_moves True (compP1 P) s1'' s1'''`
+    have "Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' (ttas1 @ []) s1'''"
       by(rule Red1_mthr.mthr.\<tau>rtrancl3p_trans[OF _ Red1_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
     from b11.simulation2_\<tau>rtrancl3p[OF this bisim11]
-    obtain s1'''' where "Red1'_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1 ttas1 s1''''"
+    obtain s1'''' where "Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 ttas1 s1''''"
       and bisim11': "mbisim_Red1'_Red1 s1'''' s1'''" by(auto)
-    from b01.mthr.simulation2_\<tau>rtrancl3p[OF `Red1'_mthr.mthr.\<tau>rtrancl3p (compP1 P) s1 ttas1 s1''''` bisim01]
+    from b01.mthr.simulation2_\<tau>rtrancl3p[OF `Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 ttas1 s1''''` bisim01]
     obtain ttas0 s0' where "red0_mthr.mthr.\<tau>rtrancl3p P s0 ttas0 s0'"
       and "red0_Red1'.mbisim s0' s1''''"
       and tlsim01: "bisimulation_base.Tlsim red0_Red1'.mta_bisim ttas0 ttas1" by auto
     from bisim11' have "s1''' = s1''''" by(simp add: mbisim_Red1'_Red1_def)
-    with dead1 have "Red1'_mthr.deadlock (compP1 P) s1''''"
+    with dead1 have "Red1_mthr.deadlock False (compP1 P) s1''''"
       by(simp add: Red1_Red1'_deadlock_inv)
     from b01.deadlock2_imp_\<tau>s_deadlock1[OF `red0_Red1'.mbisim s0' s1''''` this]
     obtain s0'' where "red0_mthr.mthr.silent_moves P s0' s0''"

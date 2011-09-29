@@ -20,7 +20,19 @@ text {*
   Any other class name (like @{term undefined}) would do as well except for code generation.
 *}
 definition ObjectC :: "'m cdecl"
-where [code_inline]: "ObjectC = (Object, (STR '''',[],[]))"
+where [code_inline]: 
+  "ObjectC = 
+  (Object, (STR '''',[],
+    [(wait,[],Void,Native), 
+     (notify,[],Void,Native),
+     (notifyAll,[],Void,Native),
+     (hashcode,[],Integer,Native),
+     (clone,[],Class Object,Native),
+     (print,[Integer],Void,Native),
+     (currentThread,[],Class Thread,Native),
+     (interrupted,[],Boolean,Native),
+     (yield,[],Void,Native)
+    ]))"
 
 definition ThrowableC :: "'m cdecl"
 where [code_inline]: "ThrowableC \<equiv> (Throwable, (Object, [], []))"

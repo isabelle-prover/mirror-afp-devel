@@ -16,6 +16,7 @@ imports
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
   "Cset_Monad"
+  "~~/src/HOL/Library/Wfrec"
 begin
 
 (* FIXME move and possibly turn into a general simproc *)
@@ -491,7 +492,7 @@ by(simp add: ran_def)
 
 lemma map_le_dom_eq_conv_eq:
   "\<lbrakk> m \<subseteq>\<^sub>m m'; dom m = dom m' \<rbrakk> \<Longrightarrow> m = m'"
-by (metisFT map_le_antisym map_le_def)
+by (metis map_le_antisym map_le_def)
 
 lemma map_leI:
   "(\<And>k v. f k = Some v \<Longrightarrow> g k = Some v) \<Longrightarrow> f \<subseteq>\<^sub>m g"

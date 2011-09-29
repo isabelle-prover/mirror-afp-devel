@@ -66,7 +66,7 @@ proof(cases)
       hence [simp]: "ta = \<epsilon>"
 	"e' = blocks (this # pns) (Class D # Ts) (Addr a # vs) body"
 	"es' = e # es" "h' = h"
-	and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by auto
+	and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" by auto
       from sees_wf_mdecl[OF wf sees]
       have "fv body \<subseteq> insert this (set pns)" "length Ts = length pns" by(simp_all add: wf_mdecl_def)
       thus ?thesis using fv `length vs = length pns` by auto
@@ -90,7 +90,7 @@ proof -
   from red nt have [simp]: "m = h'" by(rule red_ext_new_thread_heap)
   from red_external_new_thread_sees[OF wf red nt[unfolded CMa]]
   obtain T pns body D where h'a: "typeof_addr h' a = \<lfloor>Class C\<rfloor>"
-    and sees: "P \<turnstile> C sees M: []\<rightarrow>T = (pns, body) in D" by auto
+    and sees: "P \<turnstile> C sees M: []\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" by auto
   from sees_wf_mdecl[OF wf sees] have "fv body \<subseteq> {this}" by(auto simp add: wf_mdecl_def)
   with red nt h'a sees show ?thesis by(fastforce simp add: is_call_def intro: bisim_red_red0.intros)
 qed
@@ -111,10 +111,10 @@ lemma assumes wf: "wwf_J_prog P"
   and reds_reds0_tabisim0:
   "P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> \<exists>ta'. extTA2J0 P,P,t \<turnstile> \<langle>es, s\<rangle> [-ta'\<rightarrow>] \<langle>es', s'\<rangle> \<and> ta_bisim0 ta ta'"
 proof(induct rule: red_reds.inducts)
-  case (RedCallExternal s a T M vs ta va h' ta' e' s')
+  case (RedCallExternal s a T C M Ts Tr D vs ta va h' ta' e' s')
   note red = `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
   note T = `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
-  from T `is_native P T M` red
+  from T `is_class_type_of T C` `P \<turnstile> C sees M: Ts\<rightarrow>Tr = Native in D` red
   have "extTA2J0 P,P,t \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J0 P ta\<rightarrow> \<langle>e',(h', lcl s)\<rangle>"
     by(rule red_reds.RedCallExternal)(simp_all add: `e' = extRet2J (addr a\<bullet>M(map Val vs)) va`)
   moreover from `ta' = extTA2J P ta` T red wf
@@ -130,10 +130,10 @@ lemma assumes wf: "wwf_J_prog P"
   and reds0_reds_tabisim0:
   "extTA2J0 P,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> \<exists>ta'. P,t \<turnstile> \<langle>es, s\<rangle> [-ta'\<rightarrow>] \<langle>es', s'\<rangle> \<and> ta_bisim0 ta' ta"
 proof(induct rule: red_reds.inducts)
-  case (RedCallExternal s a T M vs ta va h' ta' e' s')
+  case (RedCallExternal s a T C M Ts Tr D vs ta va h' ta' e' s')
   note red = `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
   note T = `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
-  from T `is_native P T M` red
+  from T `is_class_type_of T C` `P \<turnstile> C sees M: Ts\<rightarrow>Tr = Native in D` red
   have "P,t \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J P ta\<rightarrow> \<langle>e',(h', lcl s)\<rangle>"
     by(rule red_reds.RedCallExternal)(simp_all add: `e' = extRet2J (addr a\<bullet>M(map Val vs)) va`)
   moreover from `ta' = extTA2J0 P ta` T red wf
@@ -193,8 +193,7 @@ qed(fastforce intro: red_reds.intros)+
 
 lemma 
   assumes wf_prog: "wf_prog wfmd P"
-  and "is_class_type_of T C" "P \<turnstile> C sees M:Us\<rightarrow>U = (pns, body) in D" "length vs = length pns" "length Us = length pns"
-  and "\<not> is_native P T M"
+  and "is_class_type_of T C" "P \<turnstile> C sees M:Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D" "length vs = length pns" "length Us = length pns"
   shows is_call_red_inline_call:
   "\<lbrakk> call e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> 
   \<Longrightarrow> P,t \<turnstile> \<langle>e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call (blocks (this # pns) (Class D # Us) (Addr a # vs) body) e, s\<rangle>"
@@ -222,7 +221,7 @@ proof(induct e and es arbitrary: s and s)
     ultimately show ?case using `obj = Val v` by(auto intro: red_reds.CallParams)
   next
     case Call
-    with RedCall[where s=s, simplified, OF `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `is_class_type_of T C` `\<not> is_native P T M` `P \<turnstile> C sees M:Us\<rightarrow>U = (pns, body) in D` `length vs = length pns` `length Us = length pns`] 
+    with RedCall[where s=s, simplified, OF `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `is_class_type_of T C` `P \<turnstile> C sees M:Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D` `length vs = length pns` `length Us = length pns`] 
     show ?thesis by(simp)
   qed
 next
@@ -359,8 +358,7 @@ qed
 
 lemma assumes wf: "wwf_J_prog P"
   and icto: "is_class_type_of T C"
-  and sees: "P \<turnstile> C sees M:Us\<rightarrow>U = (pns, body) in D"
-  and "\<not> is_native P T M"
+  and sees: "P \<turnstile> C sees M:Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D"
   shows is_call_red_inline_callD:
   "\<lbrakk> P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor>; \<not> synthesized_call P (hp s) (a, M, vs) \<rbrakk>
   \<Longrightarrow> e' = inline_call (blocks (this # pns) (Class D # Us) (Addr a # vs) body) e"
@@ -372,7 +370,7 @@ proof(induct rule: red_reds.inducts)
     by(auto dest: sees_method_fun simp add: is_class_type_of_conv_class_type_of_Some)
 next
   case RedCallExternal
-  with `\<not> is_native P T M` icto sees show ?case by(auto)
+  with icto sees show ?case by(auto simp add: is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
 next
   case (BlockRed e h x V vo ta e' h' x' T)
   from `call {V:T=vo; e} = \<lfloor>(a, M, vs)\<rfloor>` have "call e = \<lfloor>(a, M, vs)\<rfloor>" by simp
@@ -559,7 +557,7 @@ proof -
   next
     case red0Call
     with \<tau> have False
-      by(auto simp add: synthesized_call_def \<tau>external'_def dest: \<tau>move0_callD[where P=P and h=h2])
+      by(auto simp add: synthesized_call_def \<tau>external'_def is_class_type_of_conv_class_type_of_Some dest!: \<tau>move0_callD[where P=P and h=h2] dest: sees_method_fun)
     thus ?thesis ..
   next
     case red0Return with nfin show ?thesis by simp
@@ -630,12 +628,11 @@ next
       where "h1' = h1"
       and ha: "typeof_addr h1 a = \<lfloor>T\<rfloor>"
       and icto: "is_class_type_of T C"
-      and sees: "P \<turnstile> C sees M: Us\<rightarrow>U = (pns, body) in D"
+      and sees: "P \<turnstile> C sees M: Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D"
       and length: "length vs = length pns" "length Us = length pns"
       by(auto)
-    with notsynth have nec: "\<not> is_native P T M" by(simp add: synthesized_call_def)
     let ?e = "blocks (this # pns) (Class D # Us) (Addr a # vs) body"
-    from call ha icto nec have "P,t \<turnstile>0 \<langle>e'/es',h1\<rangle> -\<epsilon>\<rightarrow> \<langle>?e/e' # es',h1\<rangle>"
+    from call ha icto have "P,t \<turnstile>0 \<langle>e'/es',h1\<rangle> -\<epsilon>\<rightarrow> \<langle>?e/e' # es',h1\<rangle>"
       using sees length by(rule red0Call)
     moreover from \<tau> fold feq icl nfin False have "\<tau>move0 P h1 e'" by(simp add: fold_es_\<tau>move0_inv)
     ultimately have "\<tau>Red0 P t h1 (e', es') (?e, e' # es')" by auto
@@ -643,7 +640,7 @@ next
     moreover {
       from `P,t \<turnstile>0 \<langle>e'/es',h1\<rangle> -\<epsilon>\<rightarrow> \<langle>?e/e' # es',h1\<rangle>` have "wf_state ?e (e' # es')"
 	using wf_state' by(rule red0_preserves_wf_state[OF wf])
-      moreover from is_call_red_inline_callD[OF wf icto sees nec red' call] ha notsynth
+      moreover from is_call_red_inline_callD[OF wf icto sees red' call] ha notsynth
       have "E' = inline_call ?e e'" by auto
       ultimately have "bisim_red_red0 s1' ((?e, e' # es'), h1')" unfolding s1' e1' x1'
 	by(auto del: wf_state.cases wf_state.intros) }
@@ -692,15 +689,14 @@ next
       and call: "call e = \<lfloor>(a, M, vs)\<rfloor>"
       and ha: "typeof_addr h2 a = \<lfloor>U\<rfloor>"
       and icto: "is_class_type_of U C"
-      and nec: "\<not> is_native P U M"
-      and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D"
+      and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
       and len: "length vs = length pns" "length Ts = length pns" by auto
-    from is_call_red_inline_call(1)[OF wf icto sees len nec call, of "(h2, empty)"] ha
+    from is_call_red_inline_call(1)[OF wf icto sees len call, of "(h2, empty)"] ha
     have "P,t \<turnstile> \<langle>e,(h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e' e, (h2, empty)\<rangle>" by simp
     with wf_state have "P,t \<turnstile> \<langle>fold_es e es, (h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>fold_es (inline_call e' e) es, (h2, empty)\<rangle>"
       by -(erule red_fold_exs, auto)
-    moreover from call nec ha wf_state \<tau> have "\<tau>move0 P h2 (fold_es e es)"
-      by(subst fold_es_\<tau>move0_inv)  auto
+    moreover from call ha wf_state \<tau> have "\<tau>move0 P h2 (fold_es e es)"
+      by(subst fold_es_\<tau>move0_inv) auto
     hence "\<tau>MOVE P ((fold_es e es, empty), h2) \<epsilon> ((fold_es (inline_call e' e) es, empty), h2)" by auto
     moreover from wf_state'
     have "bisim_red_red0 ((fold_es (inline_call e' e) es, empty), h2) ((e', es'), h2')"
@@ -935,7 +931,7 @@ context J_heap_base begin
 
 lemma bisim_J_J0_start:
   assumes wf: "wwf_J_prog P"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=(pns,body) in C"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns,body)\<rfloor> in C"
   and vs: "length vs = length pns" and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   shows "red_red0.mbisim (J_start_state P C M vs) (J0_start_state P C M vs)"
 proof -

@@ -1,10 +1,10 @@
-(*  Title:      JinjaThreads/Compiler/Correctness2Threaded.thy
+(*  Title:      JinjaThreads/Compiler/Correctness2.thy
     Author:     Andreas Lochbihler
 *)
 
 header {* \isaheader{Correctness of Stage 2: The multithreaded setting} *}
 
-theory Correctness2Threaded
+theory Correctness2
 imports
   J1JVM
   JVMJ1
@@ -13,27 +13,10 @@ begin
 
 declare Listn.lesub_list_impl_same_size[simp del]
 
-context JVM_heap_base begin
-
-lemma exec_instr_\<tau>move2_taD:
-  "\<lbrakk> \<tau>move2 P h stk e pc None; (ta, xcp', h2', frs') \<in> exec_instr (compE2 e ! pc) (compP2 P) t h stk loc C M pc' frs\<rbrakk>
-  \<Longrightarrow> ta = \<epsilon>"
-apply(cases "compE2 e ! pc")
-apply(auto simp add: \<tau>move2_iff compP2_def split: split_if_asm dest: \<tau>external_red_external_aggr_TA_empty)
-done
-
-lemma exec_instr_\<tau>moves2_taD:
-  "\<lbrakk> \<tau>moves2 P h stk es pc None; (ta, xcp', h2', frs') \<in> exec_instr (compEs2 es ! pc) (compP2 P) t h stk loc C M pc' frs\<rbrakk>
-  \<Longrightarrow> ta = \<epsilon>"
-by(cases "compEs2 es ! pc")(auto simp add: \<tau>moves2_iff compP2_def split: split_if_asm dest: \<tau>external_red_external_aggr_TA_empty)
-
-end
-
 context J1_JVM_heap_conf_base begin
 
 lemma bisim1_list1_has_methodD: "bisim1_list1 t h ex exs xcp ((stk, loc, C, M, pc) # frs) \<Longrightarrow> P \<turnstile> C has M"
 by(fastforce elim!: bisim1_list1.cases intro: has_methodI)
-
 
 end
 
@@ -117,7 +100,7 @@ proof
   moreover obtain e xs exs h where s1: "s1 = (((e, xs), exs), h)" by(cases s1) auto
   moreover obtain e' xs' exs' h1' where s1': "s1' = (((e', xs'), exs'), h1')" by(cases s1') auto
   moreover obtain xcp frs h2 where s2: "s2 = ((xcp, frs), h2)" by(cases s2) auto
-  ultimately have [simp]: "h2 = h" and red: "P,t \<turnstile>1 \<langle>(e, xs)/exs,h\<rangle> -\<epsilon>\<rightarrow> \<langle>(e', xs')/exs',h1'\<rangle>"
+  ultimately have [simp]: "h2 = h" and red: "True,P,t \<turnstile>1 \<langle>(e, xs)/exs,h\<rangle> -\<epsilon>\<rightarrow> \<langle>(e', xs')/exs',h1'\<rangle>"
     and \<tau>: "\<tau>Move1 P h ((e, xs), exs)" and bisim: "bisim1_list1 t h (e, xs) exs xcp frs" by(auto)
   from red \<tau> bisim have h1' [simp]: "h1' = h" by(auto dest: \<tau>move1_heap_unchanged elim!: Red1.cases bisim1_list1.cases)
   from exec_1_simulates_Red1_\<tau>[OF wf red[unfolded h1'] bisim \<tau>] obtain xcp' frs'
@@ -153,7 +136,7 @@ next
   moreover obtain e xs exs h where s1: "s1 = (((e, xs), exs), h)" by(cases s1) auto
   moreover obtain e' xs' exs' h1' where s1': "s1' = (((e', xs'), exs'), h1')" by(cases s1') auto
   moreover obtain xcp frs h2 where s2: "s2 = ((xcp, frs), h2)" by(cases s2) auto
-  ultimately have [simp]: "h2 = h"  and red: "P,t \<turnstile>1 \<langle>(e, xs)/exs,h\<rangle> -tl1\<rightarrow> \<langle>(e', xs')/exs',h1'\<rangle>"
+  ultimately have [simp]: "h2 = h"  and red: "True,P,t \<turnstile>1 \<langle>(e, xs)/exs,h\<rangle> -tl1\<rightarrow> \<langle>(e', xs')/exs',h1'\<rangle>"
     and \<tau>: "\<not> \<tau>Move1 P h ((e, xs), exs)" and bisim: "bisim1_list1 t h (e, xs) exs xcp frs"
     by(fastforce elim!: Red1.cases dest: red1_\<tau>_taD)+
   from exec_1_simulates_Red1_not_\<tau>[OF wf red bisim \<tau>] obtain ta' xcp' frs' xcp'' frs''
@@ -186,11 +169,11 @@ next
     apply(rename_tac stk loc C M pc frs)
     apply(case_tac "instrs_of (compP2 P) C M ! pc")
     apply(simp_all split: split_if_asm)
-    apply(auto dest: \<tau>external_red_external_aggr_TA_empty)
+    apply(auto dest!: \<tau>external_red_external_aggr_TA_empty simp add: check_def has_method_def \<tau>external_def \<tau>external'_def is_class_type_of_conv_class_type_of_Some)
     done
   from \<tau>Red1_simulates_exec_1_not_\<tau>[OF wf exec bisim \<tau>] obtain e' xs' exs' ta' e'' xs'' exs''
     where red1: "\<tau>Red1r P t h ((e, xs), exs) ((e', xs'), exs')"
-    and red2: "P,t \<turnstile>1 \<langle>(e', xs')/exs',h\<rangle> -ta'\<rightarrow> \<langle>(e'', xs'')/exs'',h2'\<rangle>"
+    and red2: "True,P,t \<turnstile>1 \<langle>(e', xs')/exs',h\<rangle> -ta'\<rightarrow> \<langle>(e'', xs'')/exs'',h2'\<rangle>"
     and \<tau>': "\<not> \<tau>Move1 P h ((e', xs'), exs')" and ta': "ta_bisim wbisim1 ta' tl2"
     and bisim': "bisim1_list1 t h2' (e'', xs'') exs'' xcp' frs'" by blast
   from red1 have "\<tau>trsys.silent_moves (mred1 P t) (\<tau>MOVE1 P) (((e, xs), exs), h) (((e', xs'), exs'), h)"
@@ -291,7 +274,7 @@ proof -
       case (bl1_Normal stk loc C M pc frs' Ts T body D)
       hence [simp]: "frs = [(stk, loc, C, M, pc)]"
         and conf: "compTP P \<turnstile> t:(xcp, m1, frs) \<surd>"
-        and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = body in D"
+        and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D"
         and bisim: "P,blocks1 0 (Class D # Ts) body,0,m1 \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
         and var: "max_vars e \<le> length xs" by auto
       from `final e` show ?thesis
@@ -432,7 +415,7 @@ proof -
     moreover obtain e1' xs1' exs1' where [simp]: "x1' = ((e1', xs1'), exs1')" by(cases x1') auto
     ultimately have [simp]: "m1 = m2" 
       and bisim: "bisim1_list1 t m2 (e1, xs1) exs1 xcp frs"
-      and red: "P,t \<turnstile>1 \<langle>(e1, xs1)/exs1, m2\<rangle> -ta1\<rightarrow> \<langle>(e1', xs1')/exs1', m1'\<rangle>"
+      and red: "True,P,t \<turnstile>1 \<langle>(e1, xs1)/exs1, m2\<rangle> -ta1\<rightarrow> \<langle>(e1', xs1')/exs1', m1'\<rangle>"
       and call: "call1 e1 \<noteq> None" 
                 "case frs of [] \<Rightarrow> False | (stk, loc, C, M, pc) # frs' \<Rightarrow> \<exists>M' n. instrs_of (compP2 P) C M ! pc = Invoke M' n"
       by(auto simp add: bisim_wait1JVM_def split_def)
@@ -485,7 +468,7 @@ context J1_JVM_heap_conf begin
 lemma bisim_J1_JVM_start:
   assumes wf: "wf_J1_prog P"
   and start: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=body in D"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>body\<rfloor> in D"
   and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   shows "Red1_execd.mbisim (J1_start_state P C M vs) (JVM_start_state (compP2 P) C M vs)"
 proof -
@@ -506,7 +489,7 @@ proof -
   moreover
   from wf have wf': "wf_jvm_prog\<^bsub>compTP P\<^esub> (compP2 P)" by(rule wt_compTP_compP2)
   from sees_method_compP[OF sees, of "\<lambda>C M Ts T. compMb2"]
-  have sees': "compP2 P \<turnstile> C sees M: Ts\<rightarrow>T = compMb2 body in D" by(simp add: compP2_def)
+  have sees': "compP2 P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>compMb2 body\<rfloor> in D" by(simp add: compP2_def)
   from conf have "compP2 P,start_heap \<turnstile> vs [:\<le>] Ts" by(simp add: compP2_def heap_base.compP_confs)
   from BV_correct_initial[OF wf' start sees' this] sees'
   have "compTP P \<turnstile> start_tid:(None, start_heap, [([], ?xs, D, M, 0)]) \<surd>"

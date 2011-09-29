@@ -167,7 +167,7 @@ next
     by (metis nat_less_iff si' sint_0 word_sle_def)
   with si' T'' Ha have "P,H \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
-  from heap_write_total[OF this conf]
+  from heap_write_total[OF hconf this conf]
   obtain H' where "heap_write H a (ACell (nat (sint i))) w H'" ..
   ultimately show ?case using `0 <=s i` `sint i < int (array_length h a)` Ha T'' `P \<turnstile> U \<le> T` si'
     by(fastforce simp del: split_paired_Ex intro: red_reds.RedAAss)
@@ -218,7 +218,7 @@ next
   moreover from wt have Ha: "typeof_addr H a = \<lfloor>U\<rfloor>" by(auto)
   with icto has have adal: "P,H \<turnstile> a@CField D F : T'" by(auto intro: addr_loc_type.intros)
   from wtv T2T have "P,H \<turnstile> v :\<le> T'" by(auto simp add: conf_def)
-  from heap_write_total[OF adal this]
+  from heap_write_total[OF hconf adal this]
   obtain h' where "heap_write H a (CField D F) v h'" ..
   thus ?case by(fastforce intro: red_reds.RedFAss)
 next
@@ -229,61 +229,54 @@ next
   case (RedCall s a U C M Ts T pns body D vs E T')
   from `P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T'` show ?case
   proof(rule WTrt_elim_cases)
-    fix U' C' Ts' pns' body' D' Ts''
+    fix U' C' Ts' meth D' Ts''
     assume wta: "P,E,H \<turnstile> addr a : U'"
       and icto: "is_class_type_of U' C'"
-      and sees: "P \<turnstile> C' sees M: Ts'\<rightarrow>T' = (pns', body') in D'"
+      and sees: "P \<turnstile> C' sees M: Ts'\<rightarrow>T' = meth in D'"
       and wtes: "P,E,H \<turnstile> map Val vs [:] Ts''"
       and widens: "P \<turnstile> Ts'' [\<le>] Ts'"
-      and nexc: "\<not> is_native P U' M"
     from wta have Ha: "typeof_addr H a = \<lfloor>U'\<rfloor>" by(auto)
-    moreover from wtes have "length vs = length Ts''"
+    moreover from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `H \<unlhd> hp s` Ha
+    have [simp]: "U = U'" by(auto dest: typeof_addr_hext_mono)
+    from wtes have "length vs = length Ts''"
       by(auto intro: map_eq_imp_length_eq)
     moreover from widens have "length Ts'' = length Ts'"
       by(auto dest: widens_lengthD)
-    moreover from sees wf have "wf_mdecl wf_J_mdecl P D' (M, Ts', T', pns', body')"
+    moreover from sees `is_class_type_of U C` icto sees `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
+    have [simp]: "meth = \<lfloor>(pns, body)\<rfloor>" by(auto simp add: is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
+    with sees wf have "wf_mdecl wf_J_mdecl P D' (M, Ts', T', \<lfloor>(pns, body)\<rfloor>)"
       by(auto intro: sees_wf_mdecl)
-    hence "length pns' = length Ts'"
-      by(simp add: wf_mdecl_def)
-    moreover from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `H \<unlhd> hp s` Ha
-    have "U = U'" by(auto dest: typeof_addr_hext_mono)
-    ultimately show ?thesis using sees nexc icto
+    hence "length pns = length Ts'" by(simp add: wf_mdecl_def)
+    ultimately show ?thesis using sees icto 
       by(fastforce intro: red_reds.RedCall)
   next
     fix Ts
     assume "P,E,H \<turnstile> addr a : NT"
     hence False by(auto dest: typeof_addr_eq_Some_conv)
     thus ?thesis ..
-  next
-    fix T Ts' Ts''
-    assume "P \<turnstile> T\<bullet>M(Ts'') :: T'" "P,E,H \<turnstile> addr a : T" "P,E,H \<turnstile> map Val vs [:] Ts'" "P \<turnstile> Ts' [\<le>] Ts''"
-    with `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `H \<unlhd> hp s` have "is_native P U M"
-      by(auto dest!: typeof_addr_hext_mono intro: external_WT_is_native)
-    thus ?case using `\<not> is_native P U M` by contradiction
   qed
 next
-  case (RedCallExternal s a U M vs ta va h' ta' e' s')
+  case (RedCallExternal s a U C M Ts T' D vs ta va h' ta' e' s')
   from `P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T` show ?case
   proof(rule WTrt_elim_cases)
-    fix U' C ts pns body D Ts'
-    assume "P,E,H \<turnstile> addr a : U'" "is_class_type_of U' C" "\<not> is_native P U' M"
-    with `is_native P U M` `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `hext H (hp s)` have False
+    fix U' C' Ts' meth D' Ts''
+    assume wta: "P,E,H \<turnstile> addr a : U'" and icto: "is_class_type_of U' C'"
+      and sees: "P \<turnstile> C' sees M: Ts'\<rightarrow>T = meth in D'"
+      and wtvs: "P,E,H \<turnstile> map Val vs [:] Ts''" 
+      and sub: "P \<turnstile> Ts'' [\<le>] Ts'"
+    from wta `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `hext H (hp s)` have [simp]: "U' = U"
       by(auto dest: typeof_addr_hext_mono)
-    thus ?thesis ..
+    with icto `is_class_type_of U C` have [simp]: "C' = C"
+      by(auto simp add: is_class_type_of_conv_class_type_of_Some)
+    from sees `P \<turnstile> C sees M: Ts\<rightarrow>T' = Native in D`
+    have [simp]: "meth = Native" by(auto dest: sees_method_fun)
+    with wta sees icto wtvs sub have "P,H \<turnstile> a\<bullet>M(vs) : T" by(auto simp add: external_WT'_iff)
+    from red_external_wt_hconf_hext[OF wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `H \<unlhd> hp s` this tconf hconf]
+      wta icto sees `ta' = convert_extTA extNTA ta` `e' = extRet2J (addr a\<bullet>M(map Val vs)) va` `s' = (h', lcl s)`
+    show ?thesis by(fastforce intro: red_reds.RedCallExternal simp del: split_paired_Ex)    
   next
     fix Ts
     assume "P,E,H \<turnstile> addr a : NT" thus ?thesis by(auto dest: typeof_addr_eq_Some_conv)
-  next
-    fix T' Ts Ts'
-    assume wta: "P,E,H \<turnstile> addr a : T'" and wtvs: "P,E,H \<turnstile> map Val vs [:] Ts"
-      and wtext: "P \<turnstile> T'\<bullet>M(Ts') :: T" "P \<turnstile> Ts [\<le>] Ts'"
-    from wta `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `hext H (hp s)` have [simp]: "T' = U"
-      by(auto dest: typeof_addr_hext_mono)
-    with wta have "typeof_addr H a = \<lfloor>U\<rfloor>" by simp
-    hence "P,H \<turnstile> a\<bullet>M(vs) : T" using wtext `P,E,H \<turnstile> map Val vs [:] Ts` by(auto intro: external_WT'.intros)
-    from red_external_wt_hconf_hext[OF wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `H \<unlhd> hp s` this tconf hconf]
-      wta `is_native P U M` `ta' = convert_extTA extNTA ta` `e' = extRet2J (addr a\<bullet>M(map Val vs)) va` `s' = (h', lcl s)`
-    show ?thesis by(fastforce intro: red_reds.RedCallExternal simp del: split_paired_Ex)
   qed
 next
   case RedCallNull thus ?case by(fastforce intro: red_reds.intros)

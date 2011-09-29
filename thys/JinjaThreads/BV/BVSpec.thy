@@ -68,7 +68,7 @@ lemma wt_jvm_progD:
 
 lemma wt_jvm_prog_impl_wt_instr:
   "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; 
-      P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^isub>0,ins,xt) in C; pc < size ins \<rbrakk> 
+      P \<turnstile> C sees M:Ts \<rightarrow> T = \<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; pc < size ins \<rbrakk> 
   \<Longrightarrow> P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
 (*<*)
   apply (unfold wf_jvm_prog_phi_def)
@@ -79,7 +79,7 @@ lemma wt_jvm_prog_impl_wt_instr:
 
 lemma wt_jvm_prog_impl_wt_start:
   "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; 
-     P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^isub>0,ins,xt) in C \<rbrakk> \<Longrightarrow> 
+     P \<turnstile> C sees M:Ts \<rightarrow> T = \<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C \<rbrakk> \<Longrightarrow> 
   0 < size ins \<and> wt_start P C Ts mxl\<^isub>0 (\<Phi> C M)"
 (*<*)
   apply (unfold wf_jvm_prog_phi_def)

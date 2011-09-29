@@ -74,13 +74,9 @@ inductive WT1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 \<R
   \<Longrightarrow> P,E \<turnstile>1 e1\<bullet>F{D} := e2 :: Void"
 
 | WT1Call:
-  "\<lbrakk> P,E \<turnstile>1 e :: U; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M:Ts \<rightarrow> T = m in D;
+  "\<lbrakk> P,E \<turnstile>1 e :: U; is_class_type_of U C; P \<turnstile> C sees M:Ts \<rightarrow> T = m in D;
      P,E \<turnstile>1 es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e\<bullet>M(es) :: T"
-
-| WT1External:
-  "\<lbrakk> P,E \<turnstile>1 e :: T; P,E \<turnstile>1 es [::] Ts; P \<turnstile> T\<bullet>M(Ts') :: U; P \<turnstile> Ts [\<le>] Ts' \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile>1 e\<bullet>M(es) :: U"
 
 | WT1Block:
   "\<lbrakk> is_type P T;  P,E@[T] \<turnstile>1 e :: T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
@@ -116,8 +112,6 @@ inductive WT1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 \<R
 
 declare WT1_WTs1.intros[intro!]
 declare WT1Nil[iff]
-declare WT1Call[rule del, intro]
-declare WT1External[rule del, intro]
 
 inductive_cases WT1_WTs1_cases[elim!]:
   "P,E \<turnstile>1 Val v :: T"
@@ -193,11 +187,9 @@ apply (blast dest:sees_field_idemp sees_field_fun)
 apply (blast dest: sees_field_fun)
 
 apply(erule WT1_WTs1_cases)
- apply(simp add: is_class_type_of_conv_class_type_of_Some)
- apply (blast dest:sees_method_idemp sees_method_fun)
-apply(fastforce dest: external_WT_is_native list_all2_lengthD WTs1_same_size)
+apply(simp add: is_class_type_of_conv_class_type_of_Some)
+apply (blast dest:sees_method_idemp sees_method_fun)
 
-apply(fastforce dest: external_WT_is_native list_all2_lengthD WTs1_same_size external_WT_determ)
 apply blast
 apply blast
 apply blast
@@ -227,7 +219,6 @@ apply(simp)
 apply (simp add:sees_field_is_type[OF _ wf])
 apply simp
 apply(fastforce dest!: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
-apply(fastforce dest: external_WT_is_type[OF wf])
 apply(simp)
 apply(simp add: is_class_Object[OF wf])
 apply simp

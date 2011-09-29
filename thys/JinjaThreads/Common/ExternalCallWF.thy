@@ -7,22 +7,9 @@ header{* \isaheader{ Properties of external calls in well-formed programs } *}
 theory ExternalCallWF imports WellForm "../Framework/FWSemantics" begin
 
 lemma external_WT_defs_is_type:
-  assumes "wf_prog wf_md P" and "T\<bullet>M(Ts) :: U"
-  shows "is_type P T" and "is_type P U" "set Ts \<subseteq> types P"
+  assumes "wf_prog wf_md P" and "C\<bullet>M(Ts) :: T"
+  shows "is_class P C" and "is_type P T" "set Ts \<subseteq> types P"
 using assms by(auto elim: external_WT_defs.cases)
-
-lemma native_call_is_type:
-  assumes "wf_prog wf_md P"
-  and "P \<turnstile> T native M:Ts\<rightarrow>Tr in T'" 
-  shows "is_type P Tr" "is_type P T'" "set Ts \<subseteq> types P"
-using assms
-by(auto simp add: native_call_def dest: external_WT_defs_is_type)
-
-lemma external_WT_is_type:
-  assumes "wf_prog wf_md P" and "P \<turnstile> T\<bullet>M(Ts) :: U" and "is_type P T"
-  shows "is_type P U" "set Ts \<subseteq> types P"
-using assms
-by(auto elim!: external_WT.cases dest: native_call_is_type)
 
 context heap_base begin
 
@@ -31,10 +18,10 @@ lemma WT_red_external_aggr_imp_red_external:
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
 apply(drule tconfD)
 apply(erule external_WT'.cases)
-apply(erule external_WT.cases)
-apply(clarsimp simp add: native_call_def)
+apply(clarsimp)
+apply(drule (1) sees_wf_native)
 apply(erule external_WT_defs.cases)
-apply(auto simp add: red_external_aggr_def widen_Class intro: red_external.intros split: split_if_asm)
+apply(auto 4 3 simp add: red_external_aggr_def widen_Class intro: red_external.intros split: split_if_asm elim: is_class_type_of.cases dest: sees_method_decl_above)
 done
 
 lemma WT_red_external_list_conv:
@@ -44,7 +31,7 @@ by(blast intro: WT_red_external_aggr_imp_red_external red_external_imp_red_exter
 
 lemma red_external_new_thread_sees:
   "\<lbrakk> wf_prog wf_md P; P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class C\<rfloor> \<and> (\<exists>T meth D. P \<turnstile> C sees M':[]\<rightarrow>T = meth in D)"
+  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class C\<rfloor> \<and> (\<exists>T meth D. P \<turnstile> C sees M':[]\<rightarrow>T = \<lfloor>meth\<rfloor> in D)"
 by(fastforce elim!: red_external.cases simp add: widen_Class ta_upd_simps dest: sub_Thread_sees_run)
 
 end
@@ -181,12 +168,15 @@ end
 context heap_conf begin
 
 lemma red_external_conf_extRet:
-  "\<lbrakk> wf_prog wf_md P; P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; P,h \<turnstile> a\<bullet>M(vs) : U; hconf h; preallocated h; P,h \<turnstile> t \<surd>t \<rbrakk>
+  assumes wf: "wf_prog wf_md P"
+  shows "\<lbrakk>P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; P,h \<turnstile> a\<bullet>M(vs) : U; hconf h; preallocated h; P,h \<turnstile> t \<surd>t \<rbrakk>
   \<Longrightarrow> conf_extRet P h' va U"
+using wf apply -
 apply(frule red_external_hext)
 apply(drule (1) preallocated_hext)
-apply(auto elim!: red_external.cases external_WT.cases external_WT'.cases external_WT_defs_cases simp add: native_call_def)
-apply(auto simp add: conf_def tconf_def intro: xcpt_subcls_Throwable dest!: hext_heap_write dest: typeof_addr_heap_clone)
+apply(auto elim!: red_external.cases external_WT'.cases external_WT_defs_cases dest!: sees_wf_native[OF wf])
+apply(auto simp add: conf_def tconf_def intro: xcpt_subcls_Throwable dest!: hext_heap_write)
+apply(auto 4 4 elim!: is_class_type_of.cases dest!: typeof_addr_heap_clone dest: typeof_addr_is_type intro: widen_array_object subcls_C_Object)
 done
 
 end
@@ -203,7 +193,7 @@ lemma heap_copy_loc_progress:
 proof -
   from heap_read_total[OF hconf alconfa]
   obtain v where "heap_read h a al v" "P,h \<turnstile> v :\<le> T" by blast
-  moreover from heap_write_total[OF alconfa' `P,h \<turnstile> v :\<le> T`] obtain h' where "heap_write h a' al v h'" ..
+  moreover from heap_write_total[OF hconf alconfa' `P,h \<turnstile> v :\<le> T`] obtain h' where "heap_write h a' al v h'" ..
   moreover hence "hconf h'" using hconf alconfa' `P,h \<turnstile> v :\<le> T` by(rule hconf_heap_write_mono)
   ultimately show ?thesis by(blast intro: heap_copy_loc.intros)
 qed
@@ -338,19 +328,21 @@ theorem external_call_progress:
   shows "\<exists>ta va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
 proof -
   note [simp del] = split_paired_Ex
-  from wt obtain T Ts Ts'
+  from wt obtain T C Ts Ts' D
     where T: "typeof_addr h a = \<lfloor>T\<rfloor>" and Ts: "map typeof\<^bsub>h\<^esub> vs = map Some Ts"
-    and "P \<turnstile> T\<bullet>M(Ts') :: U" and subTs: "P \<turnstile> Ts [\<le>] Ts'"
+    and "is_class_type_of T C" and "P \<turnstile> C sees M:Ts'\<rightarrow>U = Native in D" and subTs: "P \<turnstile> Ts [\<le>] Ts'"
     unfolding external_WT'_iff by blast
-  from `P \<turnstile> T\<bullet>M(Ts') :: U` obtain T' where native: "P \<turnstile> T native M:Ts' \<rightarrow> U in T'" by cases
-  hence "T'\<bullet>M(Ts') :: U" and subT': "P \<turnstile> T \<le> T'"
-    by(auto simp add: is_native_def2 native_call_def)
-  from `T'\<bullet>M(Ts') :: U` subT' native T Ts subTs show ?thesis
+  from wf `P \<turnstile> C sees M:Ts'\<rightarrow>U = Native in D` 
+  have "D\<bullet>M(Ts') :: U" by(rule sees_wf_native)
+  moreover from `P \<turnstile> C sees M:Ts'\<rightarrow>U = Native in D` `is_class_type_of T C`
+  have "P \<turnstile> T \<le> Class D" "T \<noteq> NT"
+    by(auto dest: sees_method_decl_above is_class_type_of_widenD[where P=P] intro: widen_trans)
+  ultimately show ?thesis using T Ts subTs
   proof cases
-    assume [simp]: "T' = Class Object" "M = clone" "Ts' = []" "U = Class Object"
+    assume [simp]: "D = Object" "M = clone" "Ts' = []" "U = Class Object"
     from heap_clone_progress[OF wf T hconf] obtain h' res where "heap_clone P h a h' res" by blast
     thus ?thesis using subTs Ts by(cases res)(auto intro: red_external.intros)
-  qed(fastforce simp add: widen_Class intro: red_external.intros dest: native_call_not_NT)+
+  qed(auto simp add: widen_Class intro: red_external.intros)
 qed
 
 end
@@ -373,13 +365,9 @@ lemma red_external_wt_hconf_hext:
 using red wt hext
 proof cases
   case (RedClone obs a')
-  from wt obtain T Ts Ts'
-    where T: "typeof_addr h'' a = \<lfloor>T\<rfloor>" and "P \<turnstile> T\<bullet>M(Ts') :: U"
+  from wt obtain T C Ts Ts' D
+    where T: "typeof_addr h'' a = \<lfloor>T\<rfloor>" 
     unfolding external_WT'_iff by blast
-  from `P \<turnstile> T\<bullet>M(Ts') :: U` obtain T' where "P \<turnstile> T native M:Ts' \<rightarrow> U in T'" by cases
-  hence "T'\<bullet>M(Ts') :: U" and subT': "P \<turnstile> T \<le> T'" by(simp_all add: native_call_def)
-  from `M = clone` `T'\<bullet>M(Ts') :: U` have [simp]: "T' = Class Object"
-    by(auto elim!: external_WT_defs.cases)
   from heap_clone_progress[OF wf T hconf]
   obtain h''' res where "heap_clone P h'' a h''' res" by blast
   thus ?thesis using RedClone
@@ -387,12 +375,8 @@ proof cases
 next
   case RedCloneFail
   from wt obtain T Ts Ts'
-    where T: "typeof_addr h'' a = \<lfloor>T\<rfloor>" and "P \<turnstile> T\<bullet>M(Ts') :: U"
+    where T: "typeof_addr h'' a = \<lfloor>T\<rfloor>" 
     unfolding external_WT'_iff by blast
-  from `P \<turnstile> T\<bullet>M(Ts') :: U` obtain T' where "P \<turnstile> T native M:Ts' \<rightarrow> U in T'" by cases
-  hence "T'\<bullet>M(Ts') :: U" and subT': "P \<turnstile> T \<le> T'" by(simp_all add: native_call_def)
-  from `M = clone` `T'\<bullet>M(Ts') :: U` have [simp]: "T' = Class Object"
-    by(auto elim!: external_WT_defs.cases)
   from heap_clone_progress[OF wf T hconf]
   obtain h''' res where "heap_clone P h'' a h''' res" by blast
   thus ?thesis using RedCloneFail
@@ -704,8 +688,7 @@ qed
 
 lemma red_external_aggr_ta_satisfiable:
   fixes final
-  assumes red: "(ta, va, h') \<in> red_external_aggr P t a M vs h"
-  and native: "is_native P (the (typeof_addr h a)) M"
+  assumes "(ta, va, h') \<in> red_external_aggr P t a M vs h"
   shows "\<exists>s. final_thread.actions_ok final s t ta"
 proof -
   note [simp] = 
@@ -715,8 +698,8 @@ proof -
     free_thread_id.intros
     and [cong] = conj_cong
   
-  from red native show ?thesis
-    by(fastforce simp add: red_external_aggr_def is_native_def2 native_call_def split_beta ta_upd_simps elim!: external_WT_defs_cases elim: external_WT_defs.cases split: split_if_asm intro: exI[where x="(\<lambda>\<^isup>f None)(\<^sup>f a := \<lfloor>(t, 0)\<rfloor>)"] exI[where x="(\<lambda>\<^isup>f None)"])
+  from assms show ?thesis
+    by(fastforce simp add: red_external_aggr_def split_beta ta_upd_simps split: split_if_asm intro: exI[where x="empty"] exI[where x="(\<lambda>\<^isup>f None)(\<^sup>f a := \<lfloor>(t, 0)\<rfloor>)"] exI[where x="(\<lambda>\<^isup>f None)"])
 qed
 
 end

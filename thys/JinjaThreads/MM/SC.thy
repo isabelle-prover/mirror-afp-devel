@@ -237,16 +237,13 @@ by(rule sc.hextI)(auto simp:fun_upd_apply sc_typeof_addr_def sc_array_length_def
 
 subsection {* Conformance *}
 
-definition sc_oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> heapobj \<Rightarrow> bool"   ("_,_ \<turnstile>sc _ \<surd>" [51,51,51] 50)
-where
-  "P,h \<turnstile>sc obj \<surd>  \<equiv>
-   (case obj of
-     Obj C fs \<Rightarrow> 
-        is_class P C \<and> (\<forall>F D T fm. P \<turnstile> C has F:T (fm) in D \<longrightarrow> (\<exists>v. fs(F,D) = Some v \<and> P,h \<turnstile>sc v :\<le> T))
-   | Arr T f el \<Rightarrow> 
-        is_type P (T\<lfloor>\<rceil>) \<and> (\<forall>v \<in> set el. P,h \<turnstile>sc v :\<le> T) \<and> 
-        (\<forall>F T fm. P \<turnstile> Object has F:T (fm) in Object \<longrightarrow> (\<exists>v. f (F, Object) = Some v \<and> P,h \<turnstile>sc v :\<le> T)))"
+definition sc_fconf :: "'m prog \<Rightarrow> cname \<Rightarrow> heap \<Rightarrow> fields \<Rightarrow> bool" ("_,_,_ \<turnstile>sc _ \<surd>" [51,51,51,51] 50)
+where "P,C,h \<turnstile>sc fs \<surd> = (\<forall>F D T fm. P \<turnstile> C has F:T (fm) in D \<longrightarrow> (\<exists>v. fs(F,D) = Some v \<and> P,h \<turnstile>sc v :\<le> T))"
 
+primrec sc_oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> heapobj \<Rightarrow> bool"   ("_,_ \<turnstile>sc _ \<surd>" [51,51,51] 50)
+where
+  "P,h \<turnstile>sc Obj C fs \<surd> \<longleftrightarrow> is_class P C \<and> P,C,h \<turnstile>sc fs \<surd>"
+| "P,h \<turnstile>sc Arr T fs el \<surd> \<longleftrightarrow> is_type P (T\<lfloor>\<rceil>) \<and> P,Object,h \<turnstile>sc fs \<surd> \<and> (\<forall>v \<in> set el. P,h \<turnstile>sc v :\<le> T)"
 
 definition sc_hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile>sc _ \<surd>" [51,51] 50)
 where "P \<turnstile>sc h \<surd> \<longleftrightarrow> (\<forall>a obj. h a = Some obj \<longrightarrow> P,h \<turnstile>sc obj \<surd>)"
@@ -282,54 +279,39 @@ apply(auto simp add: sc_typeof_addr_def split: split_if_asm)
 done
 
 lemma sc_oconf_hext: "P,h \<turnstile>sc obj \<surd> \<Longrightarrow> h \<unlhd>sc h' \<Longrightarrow> P,h' \<turnstile>sc obj \<surd>"
-unfolding sc_oconf_def
-by(fastforce split: heapobj.split elim: sc.conf_hext)
+by(cases obj)(fastforce elim: sc.conf_hext simp add: sc_fconf_def)+
 
 lemma sc_oconf_init_fields:
   assumes "P \<turnstile> C has_fields FDTs"
   shows "P,h \<turnstile>sc (Obj C (init_fields FDTs)) \<surd>"
 using assms has_fields_is_class[OF assms]
-by(auto simp add: has_field_def sc_oconf_def init_fields_def split_def o_def map_of_map[simplified split_def, where f="\<lambda>p. default_val (fst p)"] dest: has_fields_fun)
-
-lemma init_fields_array_aux: 
-  "\<lbrakk> snd ` fst ` set FDTs \<subseteq> {Object};
-     map_of FDTs (F, Object) = \<lfloor>(T, fm)\<rfloor>  \<rbrakk>
-  \<Longrightarrow> init_fields FDTs (F, Object) = Some (default_val T)"
-by(induct FDTs)(auto split: split_if_asm simp add: init_fields_def)
-
-lemma init_fields_array:
-  assumes "P \<turnstile> Object has_fields FDTs"
-  and "map_of FDTs (F, Object) = \<lfloor>(T, fm)\<rfloor>"
-  shows "init_fields FDTs (F, Object) = Some (default_val T)"
-using assms
-by(rule init_fields_array_aux[OF Object_has_fields_Object])
+by(auto simp add: has_field_def init_fields_def sc_fconf_def split_def o_def map_of_map[simplified split_def, where f="\<lambda>p. default_val (fst p)"] dest: has_fields_fun)
 
 lemma sc_oconf_init_arr:
  "is_type P (U\<lfloor>\<rceil>) \<Longrightarrow> P,h \<turnstile>sc blank_arr P U n \<surd>"
-by(fastforce simp add: sc_oconf_def set_replicate_conv_if has_field_def blank_arr_def dest: init_fields_array)
+by(auto simp add: sc_fconf_def set_replicate_conv_if has_field_def blank_arr_def has_field_def init_fields_def sc_fconf_def split_def o_def map_of_map[simplified split_def, where f="\<lambda>p. default_val (fst p)"] dest: has_fields_fun)
 
 lemma sc_oconf_fupd [intro?]:
   "\<lbrakk> P \<turnstile> C has F:T (fm) in D; P,h \<turnstile>sc v :\<le> T; P,h \<turnstile>sc (Obj C fs) \<surd> \<rbrakk> 
   \<Longrightarrow> P,h \<turnstile>sc (Obj C (fs((F,D)\<mapsto>v))) \<surd>"
-unfolding sc_oconf_def has_field_def
-by(fastforce dest: has_fields_fun simp add: fun_upd_apply)
+unfolding has_field_def
+by(auto simp add: fun_upd_apply sc_fconf_def has_field_def dest: has_fields_fun)
 
 lemma sc_oconf_fupd_arr [intro?]:
   "\<lbrakk> P,h \<turnstile>sc v :\<le> T; P,h \<turnstile>sc (Arr T f el) \<surd> \<rbrakk>
   \<Longrightarrow> P,h \<turnstile>sc (Arr T f (el[i := v])) \<surd>"
-unfolding sc_oconf_def
 by(auto dest: subsetD[OF set_update_subset_insert])
 
 lemma sc_oconf_fupd_arr_fields:
   "\<lbrakk> P \<turnstile> Object has F:T (fm) in Object; P,h \<turnstile>sc v :\<le> T; P,h \<turnstile>sc (Arr T' f el) \<surd> \<rbrakk>
   \<Longrightarrow> P,h \<turnstile>sc (Arr T' (f((F, Object) \<mapsto> v)) el) \<surd>"
-unfolding sc_oconf_def by(auto dest: has_field_fun)
+by(auto dest: has_fields_fun simp add: sc_fconf_def has_field_def)
 
 lemma sc_oconf_new: "\<lbrakk> P,h \<turnstile>sc obj \<surd>; h a = None \<rbrakk> \<Longrightarrow> P,h(a \<mapsto> arrobj) \<turnstile>sc obj \<surd>"
 by(erule sc_oconf_hext)(rule sc_hext_new)
 
 lemma sc_oconf_blank: "is_class P C \<Longrightarrow> P,h \<turnstile>sc blank P C \<surd>"
-by(auto simp add: sc_oconf_def blank_def init_fields_def has_field_def map_of_map[simplified split_def, where f = "\<lambda>p. default_val (fst p)"] split_def o_def)
+by(auto simp add: sc_fconf_def blank_def init_fields_def has_field_def map_of_map[simplified split_def, where f = "\<lambda>p. default_val (fst p)"] split_def o_def)
 
 lemmas sc_oconf_upd_obj = sc_oconf_hext [OF _ sc_hext_upd_obj]
 
@@ -338,7 +320,7 @@ lemma sc_oconf_upd_arr:
   and ha: "h a = \<lfloor>Arr T f el\<rfloor>"
   shows "P,h(a \<mapsto> Arr T f' el') \<turnstile>sc obj \<surd>"
 using assms
-by(fastforce simp add: sc_oconf_def sc_conf_upd_arr[where h=h, OF ha] split: heapobj.split)
+by(cases obj)(auto simp add: sc_conf_upd_arr[where h=h, OF ha] sc_fconf_def)
 
 lemma sc_hconfD: "\<lbrakk> P \<turnstile>sc h \<surd>; h a = Some obj \<rbrakk> \<Longrightarrow> P,h \<turnstile>sc obj \<surd>"
 unfolding sc_hconf_def by blast
@@ -353,11 +335,11 @@ by(auto intro: sc_oconf_new)
 
 lemma sc_hconf_upd_obj: "\<lbrakk> P \<turnstile>sc h \<surd>; h a = Some (Obj C fs); P,h \<turnstile>sc (Obj C fs') \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile>sc h(a\<mapsto>(Obj C fs')) \<surd>"
 unfolding sc_hconf_def
-by(auto intro: sc_oconf_upd_obj)
+by(auto intro: sc_oconf_upd_obj simp del: sc_oconf.simps)
 
 lemma sc_hconf_upd_arr: "\<lbrakk> P \<turnstile>sc h \<surd>; h a = Some(Arr T f el); P,h \<turnstile>sc (Arr T f' el') \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile>sc h(a\<mapsto>(Arr T f' el')) \<surd>"
 unfolding sc_hconf_def
-by(auto intro: sc_oconf_upd_arr)
+by(auto intro: sc_oconf_upd_arr simp del: sc_oconf.simps)
 
 lemma sc_heap_conf: 
   "heap_conf addr2thread_id thread_id2addr sc_empty (sc_new_obj P) (sc_new_arr P) sc_typeof_addr sc_array_length sc_heap_write (sc_hconf P) P"
@@ -422,7 +404,7 @@ proof
       have [simp]: "C' = C" by(auto simp add: sc_typeof_addr_def)
       from hconf arrobj Obj have "P,h \<turnstile>sc Obj C fs \<surd>" by(auto dest: sc_hconfD)
       with `P \<turnstile> C has F:T (fm) in D` obtain v 
-        where "fs (F, D) = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T" by(fastforce simp add: sc_oconf_def)
+        where "fs (F, D) = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T" by(fastforce simp add: sc_fconf_def)
       thus ?thesis using Obj arrobj by(auto intro: sc_heap_read.intros)
     next
       case (Arr T' f el)
@@ -433,7 +415,7 @@ proof
         by(auto dest: has_field_decl_above)
       with `P,h \<turnstile>sc Arr T' f el \<surd>` `P \<turnstile> C has F:T (fm) in D`
       obtain v where "f (F, Object) = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T"
-        by(fastforce simp add: sc_oconf_def)
+        by(fastforce simp add: sc_fconf_def)
       thus ?thesis using Arr arrobj by(auto intro: sc_heap_read.intros)
     qed
   next
@@ -444,7 +426,7 @@ proof
     from addr_loc_type_cell arrobj
     have [simp]: "al = ACell n" "n < length el" by(auto simp add: sc_array_length_def)
     from hconf arrobj have "P,h \<turnstile>sc Arr T f el \<surd>" by(auto dest: sc_hconfD)
-    hence "P,h \<turnstile>sc el ! n :\<le> T" by(fastforce simp add: sc_oconf_def)
+    hence "P,h \<turnstile>sc el ! n :\<le> T" by(fastforce)
     thus ?thesis using arrobj by(fastforce intro: sc_heap_read.intros)
   qed
 next
@@ -479,7 +461,7 @@ proof
     and alt: "sc.addr_loc_type P h a al T"
     and hconf: "P \<turnstile>sc h \<surd>"
   thus "P,h \<turnstile>sc v :\<le> T"
-    by(auto elim!: sc_heap_read.cases sc.addr_loc_type.cases simp add: sc_typeof_addr_def)(fastforce dest!: sc_hconfD simp add: sc_oconf_def)+
+    by(auto elim!: sc_heap_read.cases sc.addr_loc_type.cases simp add: sc_typeof_addr_def)(fastforce dest!: sc_hconfD simp add: sc_fconf_def)+
 qed
 
 interpretation sc!: heap_conf_read

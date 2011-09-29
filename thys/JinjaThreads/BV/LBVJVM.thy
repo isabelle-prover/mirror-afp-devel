@@ -45,7 +45,7 @@ where
 
 definition prg_cert :: "'addr jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> prog_cert"
 where
-  "prg_cert P phi C mn \<equiv> let (C,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,ins,et)) = method P C mn
+  "prg_cert P phi C mn \<equiv> let (C,Ts,T\<^isub>r,meth) = method P C mn; (mxs,mxl\<^isub>0,ins,et) = the meth
                          in  mk_cert P mxs T\<^isub>r et ins (phi C mn)"
    
 lemma check_certD [intro?]:
@@ -188,7 +188,7 @@ theorem jvm_lbv_correct:
   "wt_jvm_prog_lbv P Cert \<Longrightarrow> wf_jvm_prog P"
 (*<*)
 proof -  
-  let ?\<Phi> = "\<lambda>C mn. let (C,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,is,xt)) = method P C mn in 
+  let ?\<Phi> = "\<lambda>C mn. let (C,Ts,T\<^isub>r,meth) = method P C mn; (mxs,mxl\<^isub>0,is,xt) = the meth in 
               SOME \<tau>s. wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<tau>s"
     
   assume wt: "wt_jvm_prog_lbv P Cert"

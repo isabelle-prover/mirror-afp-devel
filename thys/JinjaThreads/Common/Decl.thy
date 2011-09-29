@@ -15,7 +15,8 @@ record fmod =
 
 type_synonym fdecl    = "vname \<times> ty \<times> fmod"        -- "field declaration"
 type_synonym 'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg. types, return type, body"
-type_synonym 'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
+type_synonym 'm mdecl' = "mname \<times> ty list \<times> ty \<times> 'm option"     -- "method = name, arg. types, return type, possible body"
+type_synonym 'm "class" = "cname \<times> fdecl list \<times> 'm mdecl' list"       -- "class = superclass, fields, methods"
 type_synonym 'm cdecl = "cname \<times> 'm class"  -- "class declaration"
 
 datatype
@@ -24,8 +25,11 @@ datatype
 translations
   (type) "fdecl"   <= (type) "String.literal \<times> ty \<times> fmod"
   (type) "'c mdecl" <= (type) "String.literal \<times> ty list \<times> ty \<times> 'c"
+  (type) "'c mdecl'" <= (type) "String.literal \<times> ty list \<times> ty \<times> 'c option"
   (type) "'c class" <= (type) "String.literal \<times> fdecl list \<times> ('c mdecl) list"
   (type) "'c cdecl" <= (type) "String.literal \<times> ('c class)"
+
+notation (input) None ("Native")
 
 primrec "classes" :: "'m prog \<Rightarrow> 'm cdecl list"
 where

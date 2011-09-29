@@ -121,16 +121,18 @@ lemma exec_instr_code [code]:
     in (if r = Null then Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
         else (let ps = rev (take n stk);
                   a = the_Addr r;
-                  T = the (typeof_addr h a)
-              in if is_native P T M
-                 then do {
+                  T = the (typeof_addr h a);
+                  C = the (class_type_of T);
+                  (D,M',Ts,meth)= method P C M
+         in case meth of 
+               Native \<Rightarrow>
+                      do {
                         (ta, va, h') \<leftarrow> red_external_aggr P t a M ps h;
                         Cset.single (extTA2JVM P ta, extRet2JVM n h' stk loc C0 M0 pc frs va)
                       }
-                 else let C = the (class_type_of T);
-                          (D,M',Ts,mxs,mxl\<^isub>0,ins,xt)= method P C M;
-                          f' = ([],[r]@ps@(replicate mxl\<^isub>0 undefined_value),D,M,0)
-                       in Cset.single (\<epsilon>, None, h, f' # (stk, loc, C0, M0, pc) # frs))))"
+            | \<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> \<Rightarrow>
+              let f' = ([],[r]@ps@(replicate mxl\<^isub>0 undefined_value),D,M,0)
+              in Cset.single (\<epsilon>, None, h, f' # (stk, loc, C0, M0, pc) # frs))))"
   "exec_instr Return P t h stk\<^isub>0 loc\<^isub>0 C\<^isub>0 M\<^isub>0 pc frs =
    Cset.single 
       (\<epsilon>, (if frs=[] then (None, h, []) 
@@ -170,7 +172,7 @@ lemma exec_instr_code [code]:
       else Cset.set [(\<lbrace>Unlock\<rightarrow>the_Addr v, SyncUnlock (the_Addr v)\<rbrace>, None, h, (tl stk, loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs),
                      (\<lbrace>UnlockFail\<rightarrow>the_Addr v\<rbrace>, \<lfloor>execute.addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)])"
 apply(simp_all add: JVM_heap_base.exec_instr.simps Cset.set_eq_iff)
-apply auto
+apply(auto 4 3 intro: rev_bexI)
 apply(auto split: extCallRet.splits)
 done
 

@@ -56,7 +56,7 @@ proof -
   from cs obtain ST LT Ts T mxs mxl ins xt where
     hconf:  "hconf h" and
     tconf:  "P,h \<turnstile> t \<surd>t" and
-    meth:   "P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl, ins, xt) in C" and
+    meth:   "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(mxs, mxl, ins, xt)\<rfloor> in C" and
     \<Phi>:      "\<Phi> C M ! pc = Some (ST,LT)" and
     frame:  "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
     frames: "conf_fs P h \<Phi> M (size Ts) T Frs" 
@@ -111,37 +111,47 @@ proof -
 	with a obtain ao Ta where Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>"
 	  by(auto simp add: conf_def)
 	from hext Ta have Ta': "typeof_addr h' a = \<lfloor>Ta\<rfloor>" by(rule typeof_addr_hext_mono)
+        with check a meth Invoke False obtain D Ts' T' meth D'
+          where C: "class_type_of Ta = \<lfloor>D\<rfloor>"
+          and sees': "P \<turnstile> D sees M':Ts'\<rightarrow>T' = meth in D'"
+          and params: "P,h' \<turnstile> rev (take n stk) [:\<le>] Ts'"
+          by(auto simp add: check_def has_method_def)
 	show ?thesis
-	proof(cases "is_native P Ta M'")
-	  case False
-	  with exec meth a Ta Ta' Invoke n show ?thesis by(simp add: split_beta)
+	proof(cases "meth")
+	  case Some
+	  with exec meth a Ta Ta' Invoke n sees' C show ?thesis by(simp add: split_beta)
 	next
-	  case True
-	  with exec meth a Ta Ta' Invoke n
+	  case None
+	  with exec meth a Ta Ta' Invoke n sees' C
 	  obtain ta' va h'' where ta': "ta = extTA2JVM P ta'"
 	    and va: "(xcp', m', frs') = extRet2JVM n h'' stk loc C M pc Frs va"
 	    and exec': "(ta', va, h'') \<in> red_external_aggr P t a M' (rev (take n stk)) h'"
 	    by(fastforce)
 	  from va have [simp]: "h'' = m'" by(cases va) simp_all
-	  note Ta moreover from check True Invoke Ta meth a n Ta'
-	  obtain U where "P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : U" by(auto simp add: check_def)
+	  note Ta moreover from None sees' wfp have "D'\<bullet>M'(Ts') :: T'" by(auto intro: sees_wf_native)
+          with C sees' params Ta' None have "P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : T'"
+            by(auto simp add: external_WT'_iff confs_conv_map is_class_type_of_conv_class_type_of_Some)
 	  with wfp exec' tconf' have red: "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h'\<rangle> -ta'\<rightarrow>ext \<langle>va, m'\<rangle>"
 	    by(simp add: WT_red_external_list_conv)
+
 	  from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
 	  then obtain Ts where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Ts"
 	    by(auto simp add: confs_conv_map)
 	  hence "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Ts)" by(simp only: rev_map[symmetric])
 	  moreover hence "map typeof\<^bsub>h'\<^esub> (rev (take n stk)) = map Some (rev Ts)" using hext by(rule map_typeof_hext_mono)
-	  with `P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : U` Ta' obtain Us where "P \<turnstile> Ta\<bullet>M'(Us) :: U" "P \<turnstile> rev Ts [\<le>] Us"
-	    by(auto simp add: external_WT'_iff)
-	  ultimately have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U" by(rule external_WT'.intros)
+          with `P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : T'` `D'\<bullet>M'(Ts') :: T'` sees' C Ta' Ta
+          have "P \<turnstile> rev Ts [\<le>] Ts'"
+            by cases(auto simp add: is_class_type_of_conv_class_type_of_Some dest: sees_method_fun[where C=D])
+          ultimately have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : T'"
+            using Ta C sees' params None `D'\<bullet>M'(Ts') :: T'`
+            by(auto simp add: external_WT'_iff confs_conv_map is_class_type_of_conv_class_type_of_Some)
           from red_external_wt_hconf_hext[OF wfp red hext this tconf hconf]
 	  obtain ta'' va' h''' where "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h\<rangle> -ta''\<rightarrow>ext \<langle>va',h'''\<rangle>"
 	    and ta'': "collect_locks \<lbrace>ta''\<rbrace>\<^bsub>l\<^esub> = collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>" 
             "collect_cond_actions \<lbrace>ta''\<rbrace>\<^bsub>c\<^esub> = collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>"
             "collect_interrupts \<lbrace>ta''\<rbrace>\<^bsub>i\<^esub> = collect_interrupts \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub>"
             by auto
-	  with True a Ta Invoke meth Ta' n
+	  with None a Ta Invoke meth Ta' n C sees'
 	  have "(extTA2JVM P ta'', extRet2JVM n h''' stk loc C M pc Frs va') \<in> exec P t (xcp, h, frs)"
 	    by(force intro: red_external_imp_red_external_aggr simp del: split_paired_Ex)
 	  with ta'' ta' show ?thesis by(fastforce simp del: split_paired_Ex)

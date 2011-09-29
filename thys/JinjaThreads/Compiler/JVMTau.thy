@@ -38,7 +38,7 @@ where
 | "\<tau>instr P h stk (Invoke M n) = 
    (n < length stk \<and> 
     (stk ! n = Null \<or> 
-     (let T = the (typeof_addr h (the_Addr (stk ! n))) in is_native P T M \<longrightarrow> \<tau>external P T M)))"
+     (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! n)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))"
 | "\<tau>instr P h stk Return = True"
 | "\<tau>instr P h stk Pop = True"
 | "\<tau>instr P h stk Dup = True"
@@ -104,7 +104,8 @@ where
   "\<tau>moves2 P h stk ps pc xcp \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) (length (compE2 obj) + pc) xcp"
 | \<tau>move2Call:
   "\<lbrakk> length ps < length stk;
-     stk ! length ps = Null \<or> (is_native P (the (typeof_addr h (the_Addr (stk ! length ps)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! length ps)))) M) \<rbrakk>
+     stk ! length ps = Null \<or> 
+     (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! length ps)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)\<rbrakk>
   \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) (length (compE2 obj) + length (compEs2 ps)) None"
 
 | \<tau>move2BlockSome1:
@@ -248,7 +249,8 @@ lemma \<tau>move2_intros':
   and \<tau>move2FAssRed': "pc = Suc (length (compE2 e) + length (compE2 e')) \<Longrightarrow> \<tau>move2 P h stk (e\<bullet>F{D} := e') pc None"
   and \<tau>move2CallParams': "\<lbrakk> \<tau>moves2 P h stk ps pc xcp; pc' = length (compE2 obj) + pc \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) pc' xcp"
   and \<tau>move2Call': "\<lbrakk> pc = length (compE2 obj) + length (compEs2 ps); length ps < length stk; 
-                     stk ! length ps = Null \<or> (is_native P (the (typeof_addr h (the_Addr (stk ! length ps)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! length ps)))) M) \<rbrakk>
+                     stk ! length ps = Null \<or> 
+                     (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! length ps)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M) \<rbrakk>
                    \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) pc None"
   and \<tau>move2BlockSome2: "pc = Suc 0 \<Longrightarrow> \<tau>move2 P h stk {V:T=\<lfloor>v\<rfloor>; e} pc None"
   and \<tau>move2BlockSome': "\<lbrakk> \<tau>move2 P h stk e pc xcp; pc' = Suc (Suc pc) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk {V:T=\<lfloor>v\<rfloor>; e} pc' xcp"
@@ -277,7 +279,8 @@ lemma \<tau>move2_intros':
   and \<tau>move2Try2': "\<lbrakk> \<tau>move2 P h stk {V:T=None; e'} pc xcp; pc' = Suc (Suc (length (compE2 e) + pc)) \<rbrakk>
                     \<Longrightarrow> \<tau>move2 P h stk (try e catch(C V) e') pc' xcp"
   and \<tau>moves2Tl': "\<lbrakk> \<tau>moves2 P h stk es pc xcp; pc' = length (compE2 e) + pc \<rbrakk> \<Longrightarrow> \<tau>moves2 P h stk (e # es) pc' xcp"
-by(blast intro: \<tau>move2_\<tau>moves2.intros)+
+apply(blast intro: \<tau>move2_\<tau>moves2.intros)+
+done
 
 lemma \<tau>move2_iff: "\<tau>move2 P h stk e pc xcp \<longleftrightarrow> pc < length (compE2 e) \<and> (xcp = None \<longrightarrow> \<tau>instr P h stk (compE2 e ! pc))" (is "?lhs1 \<longleftrightarrow> ?rhs1")
   and \<tau>moves2_iff: "\<tau>moves2 P h stk es pc xcp \<longleftrightarrow> pc < length (compEs2 es) \<and> (xcp = None \<longrightarrow> \<tau>instr P h stk (compEs2 es ! pc))" (is "?lhs2 \<longleftrightarrow> ?rhs2")
@@ -357,12 +360,12 @@ done
 
 lemma \<tau>move2_Invoke:
   "\<lbrakk>\<tau>move2 P h stk e pc None; compE2 e ! pc = Invoke M n \<rbrakk>
-  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (is_native P (the (typeof_addr h (the_Addr (stk ! n)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! n)))) M))"
+  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! n)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M))"
 
   and \<tau>moves2_Invoke: 
   "\<lbrakk>\<tau>moves2 P h stk es pc None; compEs2 es ! pc = Invoke M n \<rbrakk> 
-  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (is_native P (the (typeof_addr h (the_Addr (stk ! n)))) M \<longrightarrow> \<tau>external P (the (typeof_addr h (the_Addr (stk ! n)))) M))"
-by(simp_all add: \<tau>move2_iff \<tau>moves2_iff)
+  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! n)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M))"
+by(simp_all add: \<tau>move2_iff \<tau>moves2_iff split_beta)
 
 lemmas \<tau>move2_compE2_not_Invoke = \<tau>move2_Invoke
 lemmas \<tau>moves2_compEs2_not_Invoke = \<tau>moves2_Invoke
@@ -387,14 +390,14 @@ fun \<tau>Move2 :: "'addr jvm_prog \<Rightarrow> ('addr, 'heap) jvm_state \<Righ
 where 
   "\<tau>Move2 P (xcp, h, []) = False"
 | "\<tau>Move2 P (xcp, h, (stk, loc, C, M, pc) # frs) =
-       (let (_,_,_,_,_,ins,xt) = method P C M
+       (let (_,_,_,meth) = method P C M; (_,_,ins,xt) = the meth
         in (pc < length ins \<and> (xcp = None \<longrightarrow> \<tau>instr P h stk (ins ! pc))))"
 
 lemma \<tau>Move2_iff:
   "\<tau>Move2 P \<sigma> = (let (xcp, h, frs) = \<sigma>
                  in case frs of [] \<Rightarrow> False
      | (stk, loc, C, M, pc) # frs' \<Rightarrow> 
-       (let (_,_,_,_,_,ins,xt) = method P C M
+       (let (_,_,_,meth) = method P C M; (_,_,ins,xt) = the meth
         in (pc < length ins \<and> (xcp = None \<longrightarrow> \<tau>instr P h stk (ins ! pc)))))"
 by(cases \<sigma>)(clarsimp split: list.splits simp add: fun_eq_iff split_beta)
 
@@ -407,7 +410,7 @@ lemma [simp]: fixes e :: "'addr expr1" and es :: "'addr expr1 list"
 by(auto simp add: \<tau>move2_iff \<tau>moves2_iff fun_eq_iff)
 
 lemma \<tau>Move2_compP2:
-  "P \<turnstile> C sees M:Ts\<rightarrow>T=body in D \<Longrightarrow> 
+  "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>body\<rfloor> in D \<Longrightarrow> 
    \<tau>Move2 (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs) =
    (case xcp of None \<Rightarrow> \<tau>move2 P h stk body pc xcp \<or> pc = length (compE2 body) | Some a \<Rightarrow> pc < Suc (length (compE2 body)))"
 by(clarsimp simp add: \<tau>move2_iff compP2_def compMb2_def nth_append nth_Cons' split: option.splits split_if_asm)
@@ -422,12 +425,13 @@ lemma \<tau>jvmd_heap_unchanged:
 apply(erule jvmd_NormalE)
 apply(clarsimp)
 apply(cases xcp)
- apply(rename_tac stk loc C M pc FRS M' Ts T mxs mxl ins xt)
+ apply(rename_tac stk loc C M pc FRS M' Ts T meth mxs mxl ins xt)
  apply(case_tac "ins ! pc")
  prefer 18 -- BinOpInstr
  apply(rename_tac bop)
  apply(case_tac "the (binop bop (hd (tl stk)) (hd stk))")
- apply(auto simp add: split_beta split: split_if_asm dest: \<tau>external_red_external_aggr_heap_unchanged)
+ apply(auto simp add: split_beta \<tau>external_def split: split_if_asm)
+apply(fastforce simp add: check_def has_method_def \<tau>external_def is_class_type_of_conv_class_type_of_Some dest: \<tau>external_red_external_aggr_heap_unchanged)
 done
 
 lemma mexecd_\<tau>mthr_wf:
@@ -467,7 +471,7 @@ apply auto
 apply(rename_tac stk loc C M pc FRS)
 apply(case_tac "instrs_of P C M ! pc")
 apply(simp_all split: split_if_asm)
-apply(auto dest: \<tau>external_red_external_aggr_TA_empty) 
+apply(auto simp add: check_def has_method_def is_class_type_of_conv_class_type_of_Some \<tau>external_def dest!: \<tau>external_red_external_aggr_TA_empty)
 done
 
 end

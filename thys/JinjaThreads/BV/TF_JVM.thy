@@ -306,24 +306,9 @@ theorem (in start_context) exec_pres_type:
   -- Invoke
   apply(rename_tac the_s M n)
   apply (clarsimp split: split_if_asm)
-    apply(rule conjI)
-     apply(fastforce split: option.splits)
-    apply fastforce
-   apply (erule disjE)
-    apply(clarsimp)
-    apply(rule conjI)
-     apply(erule in_listE)+
-     apply(clarsimp simp add: external_WT.simps)
-     apply(rule external_WT_is_type[OF wf])
-     apply(erule external_WT.intros)
-     apply(drule_tac c="a!n" in subsetD, simp)
-     apply simp
-    apply simp
-   apply clarsimp
    apply(rule conjI)
     apply(fastforce split: option.splits)
    apply fastforce
-  apply clarsimp
   apply(erule disjE)
    apply clarsimp
    apply(rule conjI)
@@ -336,6 +321,7 @@ theorem (in start_context) exec_pres_type:
   apply(erule impE, blast)
   apply(clarsimp split: option.splits)
   done
+
 (*>*)
 
 declare option.weak_case_cong[cong]

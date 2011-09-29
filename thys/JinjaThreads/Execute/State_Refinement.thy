@@ -64,7 +64,7 @@ where
   "\<And>is_empty.
   start_state_refine thr_empty thr_update ws_empty is_empty f P C M vs =
   (let (D, Ts, T, m) = method P C M
-   in (\<lambda>\<^isup>f None, (thr_update start_tid (f D M Ts T m vs, no_wait_locks) thr_empty, start_heap), ws_empty, is_empty))"
+   in (\<lambda>\<^isup>f None, (thr_update start_tid (f D M Ts T (the m) vs, no_wait_locks) thr_empty, start_heap), ws_empty, is_empty))"
 
 definition Jinja_output :: 
   "'s \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) thread_action 

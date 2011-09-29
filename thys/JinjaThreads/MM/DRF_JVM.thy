@@ -17,9 +17,9 @@ where
 context heap begin
 
 lemma red_external_aggr_read_mem_typeable:
-  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; is_native P (the (typeof_addr h a)) M \<rbrakk>
+  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> \<exists>T'. P,h \<turnstile> ad@al : T'"
-by(auto simp add: red_external_aggr_def split_beta is_native_def2 native_call_def external_WT_defs.simps split: split_if_asm dest: heap_clone_read_typeable)
+by(auto simp add: red_external_aggr_def split_beta split: split_if_asm dest: heap_clone_read_typeable)
 
 end
 
@@ -62,12 +62,12 @@ proof -
       with check Invoke obtain a where stkn: "stk ! n = Addr a" "n < length stk" by auto
       hence a: "a \<in> (\<Union>v \<in> set stk. ka_Val v)" by(fastforce dest: nth_mem)
       show ?thesis
-      proof(cases "is_native P (the (typeof_addr h (the_Addr (stk ! n)))) M'")
+      proof(cases "snd (snd (snd (method P (the (class_type_of (the (typeof_addr h (the_Addr (stk ! n)))))) M'))) = Native")
         case True
         with exec check Invoke a stkn show ?thesis
           apply clarsimp
           apply(drule red_external_aggr_known_addrs_mono[OF ok], simp)
-          apply(auto dest!: in_set_takeD dest: bspec subsetD split: extCallRet.split_asm)
+          apply(auto dest!: in_set_takeD dest: bspec subsetD split: extCallRet.split_asm simp add: has_method_def is_native.simps is_class_type_of_conv_class_type_of_Some)
           done
       next
         case False
@@ -249,8 +249,11 @@ by(unfold_locales)
 context JVM_allocated_heap begin
 
 lemma exec_instr_allocated_mono:
-  "(ta, xcp', h', frs') \<in> exec_instr i P t h stk loc C M pc frs \<Longrightarrow> allocated h \<subseteq> allocated h'"
-by(cases i)(auto simp add: split_beta split: split_if_asm sum.split_asm intro: new_obj_allocated_mono' new_arr_allocated_mono' dest: heap_write_allocated_same red_external_aggr_allocated_mono del: subsetI)
+  "\<lbrakk> (ta, xcp', h', frs') \<in> exec_instr i P t h stk loc C M pc frs; check_instr i P h stk loc C M pc frs \<rbrakk>
+  \<Longrightarrow> allocated h \<subseteq> allocated h'"
+apply(cases i)
+apply(auto 4 4 simp add: split_beta has_method_def is_native.simps is_class_type_of_conv_class_type_of_Some split: split_if_asm sum.split_asm intro: new_obj_allocated_mono' new_arr_allocated_mono' dest: heap_write_allocated_same dest!: red_external_aggr_allocated_mono del: subsetI)
+done
 
 lemma mexecd_allocated_mono:
   "mexecd P t (xcpfrs, h) ta (xcpfrs', h') \<Longrightarrow> allocated h \<subseteq> allocated h'"
@@ -259,14 +262,15 @@ apply(cases xcpfrs')
 apply(simp)
 apply(erule jvmd_NormalE)
 apply(cases "fst xcpfrs")
-apply(auto del: subsetI dest: exec_instr_allocated_mono)
+apply(auto del: subsetI simp add: check_def dest: exec_instr_allocated_mono)
 done
 
 lemma exec_instr_allocatedD:
-  "\<lbrakk> (ta, xcp', h', frs') \<in> exec_instr i P t h stk loc C M pc frs; NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
+  "\<lbrakk> (ta, xcp', h', frs') \<in> exec_instr i P t h stk loc C M pc frs; 
+     check_instr i P h stk loc C M pc frs; NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> ad \<in> allocated h' \<and> ad \<notin> allocated h"
 apply(cases i)
-apply(auto split: split_if_asm prod.split_asm dest: new_obj_allocatedD new_obj_allocated_fail new_arr_allocatedD red_external_aggr_allocatedD)
+apply(auto 4 4 split: split_if_asm prod.split_asm dest: new_obj_allocatedD new_obj_allocated_fail new_arr_allocatedD dest!: red_external_aggr_allocatedD simp add: has_method_def is_native.simps is_class_type_of_conv_class_type_of_Some)
 done
 
 lemma mexecd_allocatedD:
@@ -277,14 +281,15 @@ apply(cases xcpfrs')
 apply(simp)
 apply(erule jvmd_NormalE)
 apply(cases "fst xcpfrs")
-apply(auto del: subsetI dest: exec_instr_allocatedD)
+apply(auto del: subsetI dest: exec_instr_allocatedD simp add: check_def)
 done
 
 lemma exec_instr_NewHeapElemD:
-  "\<lbrakk> (ta, xcp', h', frs') \<in> exec_instr i P t h stk loc C M pc frs; ad \<in> allocated h'; ad \<notin> allocated h \<rbrakk>
+  "\<lbrakk> (ta, xcp', h', frs') \<in> exec_instr i P t h stk loc C M pc frs; check_instr i P h stk loc C M pc frs;
+     ad \<in> allocated h'; ad \<notin> allocated h \<rbrakk>
   \<Longrightarrow> \<exists>CTn. NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 apply(cases i)
-apply(auto 4 3 split: split_if_asm prod.split_asm sum.split_asm dest: new_obj_allocatedD new_arr_allocatedD new_obj_allocated_fail new_arr_allocated_fail heap_write_allocated_same red_external_aggr_NewHeapElemD)
+apply(auto 4 3 split: split_if_asm prod.split_asm sum.split_asm dest: new_obj_allocatedD new_arr_allocatedD new_obj_allocated_fail new_arr_allocated_fail heap_write_allocated_same dest!: red_external_aggr_NewHeapElemD simp add: is_native.simps is_class_type_of_conv_class_type_of_Some has_method_def)
 done
 
 lemma mexecd_NewHeapElemD:
@@ -295,7 +300,7 @@ apply(cases xcpfrs')
 apply(simp)
 apply(erule jvmd_NormalE)
 apply(cases "fst xcpfrs")
-apply(auto dest: exec_instr_NewHeapElemD)
+apply(auto dest: exec_instr_NewHeapElemD simp add: check_def)
 done
 
 lemma mexecd_allocated_multithreaded:
@@ -387,7 +392,6 @@ next
   with exec check read obtain a vs ta' va T
     where "(ta', va, h') \<in> red_external_aggr P t a M vs h"
     and "ReadMem ad al v \<in> set \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
-    and "is_native P (the (typeof_addr h a)) M"
     by(auto split: split_if_asm simp add: is_Ref_def)
   thus ?thesis by(rule red_external_aggr_read_mem_typeable)
 qed(auto simp add: split_beta is_Ref_def split: split_if_asm)
@@ -431,7 +435,7 @@ lemma exec_instr_New_typeof_addrD:
   \<Longrightarrow> typeof_addr h' a = Some (ty_of_htype x)"
 apply(cases i)
 apply(auto dest: new_obj_SomeD new_arr_SomeD split: prod.split_asm split_if_asm)
-apply(auto split: extCallRet.split_asm dest: red_external_aggr_New_typeof_addrD)
+apply(auto 4 4 split: extCallRet.split_asm dest!: red_external_aggr_New_typeof_addrD simp add: has_method_def is_native.simps is_class_type_of_conv_class_type_of_Some)
 done
 
 lemma exec_1_d_New_typeof_addrD:
@@ -467,7 +471,7 @@ proof -
       by(auto 4 3 intro!: heap_read_typedI dest: vs_confD addr_loc_type_fun)
   next
     case Invoke with assms show ?thesis
-      by(fastforce dest: red_external_aggr_ta_seq_consist_typeable)
+      by(fastforce dest: red_external_aggr_ta_seq_consist_typeable simp add: has_method_def is_class_type_of_conv_class_type_of_Some is_native.simps)
   next
     case AStore
     { 
@@ -508,7 +512,7 @@ lemma exec_instr_NewArr_lengthD:
   \<Longrightarrow> array_length h' a = n"
 apply(cases i)
 apply(auto dest: new_arr_SomeD split: prod.split_asm split_if_asm)
-apply(auto split: extCallRet.split_asm dest: red_external_aggr_NewArr_lengthD)
+apply(auto 4 4 split: extCallRet.split_asm dest!: red_external_aggr_NewArr_lengthD simp add: is_native.simps has_method_def is_class_type_of_conv_class_type_of_Some)
 done
 
 lemma exec_1_d_NewArr_lengthD:
@@ -616,7 +620,7 @@ qed
 lemma executions_sc:
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and ok: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=(pns, body) in D"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns, body)\<rfloor> in D"
   and vs1: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   and vs2: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
   shows
@@ -642,7 +646,7 @@ proof -
     show "vs_conf P start_heap (mrw_values P empty (map NormalAction start_heap_obs))"
       by(simp add: start_state_def lift_start_obs_def o_def)
   next
-    show "jvm_known_addrs start_tid ((\<lambda>(mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, fst (method P C M), M, 0)])) (snd (snd (snd (method P C M)))) vs) \<subseteq> allocated start_heap"
+    show "jvm_known_addrs start_tid ((\<lambda>(mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, fst (method P C M), M, 0)])) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
       using vs2
       by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF `wf_syscls P` ok])
   qed
@@ -733,23 +737,26 @@ next
   let ?a = "the_Addr (stk ! n)"
   let ?vs = "rev (take n stk)"
   show ?thesis
-  proof(cases "stk ! n = Null \<or> \<not> is_native P (the (typeof_addr (shr s) ?a)) M")
+  proof(cases "stk ! n = Null \<or> snd (snd (snd (method P (the (class_type_of (the (typeof_addr (shr s) ?a)))) M))) \<noteq> Native")
     case True with exec_i aok show ?thesis by auto
   next
     case False
     hence Null: "stk ! n \<noteq> Null" 
-      and iec: "is_native P (the (typeof_addr (shr s) ?a)) M" by simp_all
-    with check obtain a T U
+      and iec: "snd (snd (snd (method P (the (class_type_of (the (typeof_addr (shr s) ?a)))) M))) = Native"
+      by(simp_all del: not_None_eq)
+    with check obtain a T C Ts Tr D
       where a: "stk ! n = Addr a" "n < length stk"
       and type: "typeof_addr (shr s) ?a = \<lfloor>T\<rfloor>"
-      and extwt: "P,shr s \<turnstile> ?a\<bullet>M(?vs) : U" by(auto simp add: is_Ref_def)
+      and extwt: "class_type_of T = \<lfloor>C\<rfloor>" "P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D" "D\<bullet>M(Ts) :: Tr"
+      by(auto simp add: is_Ref_def has_method_def)
+    from extwt have native: "is_native P T M" by(auto simp add: is_native.simps is_class_type_of_conv_class_type_of_Some)
     from Null iec type exec_i obtain ta' va
       where red: "(ta', va, h') \<in> red_external_aggr P t ?a M ?vs (shr s)"
       and ta: "ta = extTA2JVM P ta'" by(fastforce)
     from aok ta have aok': "execd_mthr.if.actions_ok s t ta'" by simp
     from dom_vs a have "{(a, al) |al. \<exists>T. P,shr s \<turnstile> a@al : T} \<subseteq> dom vs"
       by(auto simp add: jvm_known_addrs_def in_set_conv_nth iff del: domIff del: subsetI dest!: UNION_subsetD[where a="Addr a" and A="set stk"])
-    from red_external_aggr_cut_and_update[OF hrt vs this red[unfolded a the_Addr.simps] iec[unfolded a the_Addr.simps] aok' hconf]
+    from red_external_aggr_cut_and_update[OF hrt vs this red[unfolded a the_Addr.simps] _ aok' hconf] native type
     obtain ta'' va'' h'' where "(ta'', va'', h'') \<in> red_external_aggr P t ?a M ?vs (shr s)"
       and "execd_mthr.if.actions_ok s t ta''"
       and "ta_seq_consist P vs (llist_of (map NormalAction \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>))"
@@ -818,7 +825,7 @@ lemma cut_and_update:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable"
   and ok: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
   and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
   shows "execd_mthr.if.cut_and_update (init_fin_lift_state status (JVM_start_state P C M vs)) 
@@ -929,7 +936,7 @@ lemma JVM_executions:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable"
   and ok: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D"
+  and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
   and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
 shows "executions (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
@@ -955,7 +962,7 @@ proof -
     show "vs_conf P start_heap (mrw_values P empty (map NormalAction start_heap_obs))"
       by(simp add: start_state_def lift_start_obs_def o_def)
   next
-    show "jvm_known_addrs start_tid ((\<lambda>(mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, fst (method P C M), M, 0)])) (snd (snd (snd (method P C M)))) vs) \<subseteq> allocated start_heap"
+    show "jvm_known_addrs start_tid ((\<lambda>(mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, fst (method P C M), M, 0)])) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
       using ka
       by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF `wf_syscls P` ok])
   qed

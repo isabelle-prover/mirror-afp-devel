@@ -6,7 +6,6 @@ header {* \isaheader{JMM Instantiation with Jinja -- common parts} *}
 
 theory JMM_Common imports
   "JMM_Framework"
-  "../Framework/FWInitFinLift"
   "../Common/BinOp"
   "../Common/ExternalCallWF"
 begin
@@ -43,11 +42,11 @@ lemma red_external_New_same_addr_same:
 by(auto elim!: red_external.cases simp add: nth_Cons' split: split_if_asm dest: heap_clone_New_same_addr_same)
 
 lemma red_external_aggr_New_same_addr_same:
-  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; is_native P (the (typeof_addr h a)) M;
+  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h;
     \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NewHeapElem a' x; i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>;
     \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! j = NewHeapElem a' x'; j < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> i = j"
-by(auto simp add: is_native_def2 native_call_def external_WT_defs.simps red_external_aggr_def nth_Cons' split: split_if_asm split_if_asm dest: heap_clone_New_same_addr_same)
+by(auto simp add: external_WT_defs.simps red_external_aggr_def nth_Cons' split: split_if_asm split_if_asm dest: heap_clone_New_same_addr_same)
 
 lemma heap_copy_loc_read_typeable:
   assumes "heap_copy_loc a a' al h obs h'"
@@ -175,7 +174,7 @@ lemma red_external_aggr_NewArr_lengthD:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; NewArr a' T n \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>;
      is_native P (the (typeof_addr h a)) M; hconf h \<rbrakk>
   \<Longrightarrow> array_length h' a' = n"
-by(auto simp add: is_native_def2 native_call_def external_WT_defs.simps red_external_aggr_def split: split_if_asm dest: heap_clone_array_lengthD)
+by(auto simp add: is_native.simps external_WT_defs.simps red_external_aggr_def split: split_if_asm dest: heap_clone_array_lengthD)
 
 
 lemma heap_clone_typeof_addrD:
@@ -194,7 +193,7 @@ lemma red_external_aggr_New_typeof_addrD:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; NewHeapElem a' x \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>;
      is_native P (the (typeof_addr h a)) M; hconf h \<rbrakk>
   \<Longrightarrow> typeof_addr h' a' = Some (ty_of_htype x)"
-apply(auto simp add: is_native_def2 native_call_def external_WT_defs.simps red_external_aggr_def split: split_if_asm)
+apply(auto simp add: is_native.simps external_WT_defs.simps red_external_aggr_def split: split_if_asm)
 apply(blast dest: heap_clone_typeof_addrD)+
 done
 
@@ -387,7 +386,7 @@ lemma red_external_aggr_ta_seq_consist_typeable:
   and "vs_conf P h' (mrw_values P Vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))" (is ?thesis2)
 proof -
   have "?thesis1 \<and> ?thesis2" using assms
-    by(auto 4 3 simp add: is_native_def2 native_call_def external_WT_defs.simps red_external_aggr_def heap_base.red_external_aggr_def split: split_if_asm split del: split_if del: disjCI intro: heap_clone_ta_seq_consist_typeable_None heap_clone_ta_seq_consist_typeable_Some dest: hext_heap_clone elim: vs_conf_hext)
+    by(auto 4 3 simp add: is_native.simps external_WT_defs.simps red_external_aggr_def heap_base.red_external_aggr_def split: split_if_asm split del: split_if del: disjCI intro: heap_clone_ta_seq_consist_typeable_None heap_clone_ta_seq_consist_typeable_Some dest: hext_heap_clone elim: vs_conf_hext is_class_type_of.cases dest: sees_method_decl_above)
   thus ?thesis1 ?thesis2 by(blast)+
 qed
 
@@ -412,7 +411,7 @@ proof -
   with vs type have conf: "P,h \<turnstile> v' :\<le> T" by(auto dest: addr_loc_type_fun vs_confD)
   let ?obs'' = "[ReadMem a al v', WriteMem a' al v']"
   from hrt type(1) conf hconf have "heap_read h a al v'" by(rule heap_read_typeableD)
-  moreover from heap_write_total[OF type(2) conf] 
+  moreover from heap_write_total[OF hconf type(2) conf] 
   obtain h'' where "heap_write h a' al v' h''" ..
   ultimately have "heap_copy_loc a a' al h ?obs'' h''" ..
   moreover have "ta_seq_consist P vs (llist_of (map NormalAction ?obs''))"
@@ -639,18 +638,13 @@ using red native aok hconf
 apply(simp add: red_external_aggr_def final_thread.actions_ok_iff ex_disj_distrib conj_disj_distribR split del: split_if split: split_if_asm disj_split_asm)
    apply(drule (1) heap_clone_cut_and_update[OF hrt vs dom_vs], fastforce)
   apply blast
- apply(auto simp add: is_native_def2 native_call_def external_WT_defs.simps)
+ apply(auto simp add: is_native.simps external_WT_defs.simps)
 done
 
 end
 
 declare split_paired_Ex [simp]
 declare eq_upto_seq_inconsist_simps [simp del]
-
-
-
-
-
 
 
 context allocated_heap begin
@@ -690,7 +684,7 @@ by(cases)(blast del: subsetI intro: heap_clone_allocated_mono heap_write_allocat
 lemma red_external_aggr_allocated_mono:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; is_native P (the (typeof_addr h a)) M \<rbrakk>
   \<Longrightarrow> allocated h \<subseteq> allocated h'"
-by(auto simp add: is_native_def2 native_call_def external_WT_defs.simps red_external_aggr_def split: split_if_asm dest: heap_clone_allocated_mono)
+by(auto simp add: is_native.simps external_WT_defs.simps red_external_aggr_def split: split_if_asm dest: heap_clone_allocated_mono sees_method_decl_above elim!: is_class_type_of.cases)
 
 lemma heap_clone_allocatedD:
   assumes "heap_clone P h a h' \<lfloor>(obs, a')\<rfloor>"
@@ -708,7 +702,7 @@ lemma red_external_aggr_allocatedD:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; NewHeapElem a' x \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>;
      is_native P (the (typeof_addr h a)) M \<rbrakk>
   \<Longrightarrow> a' \<in> allocated h' \<and> a' \<notin> allocated h"
-by(auto simp add: is_native_def2 native_call_def external_WT_defs.simps red_external_aggr_def split: split_if_asm dest: heap_clone_allocatedD)
+by(auto simp add: is_native.simps external_WT_defs.simps red_external_aggr_def split: split_if_asm dest: heap_clone_allocatedD sees_method_decl_above elim!: is_class_type_of.cases)
 
 lemma heap_clone_NewHeapElemD:
   assumes "heap_clone P h a h' \<lfloor>(obs, a')\<rfloor>"
@@ -733,8 +727,7 @@ lemma red_external_aggr_NewHeapElemD:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; a' \<in> allocated h'; a' \<notin> allocated h;
      is_native P (the (typeof_addr h a)) M \<rbrakk>
   \<Longrightarrow> \<exists>CTn. NewHeapElem a' CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
-by(auto simp add: is_native_def2 native_call_def external_WT_defs.simps red_external_aggr_def split: split_if_asm dest: heap_clone_fail_allocated_same heap_clone_NewHeapElemD)
-
+by(auto simp add: is_native.simps external_WT_defs.simps red_external_aggr_def split: split_if_asm dest: heap_clone_fail_allocated_same heap_clone_NewHeapElemD sees_method_decl_above elim!: is_class_type_of.cases)
 end
 
 context heap_base begin
@@ -773,10 +766,9 @@ lemma red_external_known_addrs_ReadMem:
 by(erule red_external.cases)(simp_all add: heap_clone_known_addrs_ReadMem)
 
 lemma red_external_aggr_known_addrs_ReadMem:
-  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; is_native P (the (typeof_addr h a)) M\<rbrakk>
+  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> ad \<in> {thread_id2addr t, a} \<union> (\<Union>ka_Val ` set vs) \<union> set start_addrs"
 apply(auto simp add: red_external_aggr_def split: split_if_asm dest: heap_clone_known_addrs_ReadMem)
-apply(auto simp add: is_native_def2 native_call_def elim!: external_WT_defs.cases)
 done
 
 lemma heap_copy_loc_known_addrs_WriteMem:
@@ -807,10 +799,9 @@ by(erule red_external.cases)(auto dest: heap_clone_known_addrs_WriteMem)
 
 lemma red_external_aggr_known_addrs_WriteMem:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h;
-     \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n = WriteMem ad al (Addr a'); n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; is_native P (the (typeof_addr h a)) M\<rbrakk>
+     \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n = WriteMem ad al (Addr a'); n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> a' \<in> {thread_id2addr t, a} \<union> (\<Union>ka_Val ` set vs) \<union> set start_addrs \<union> new_obs_addrs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 apply(auto simp add: red_external_aggr_def split: split_if_asm dest: heap_clone_known_addrs_WriteMem)
-apply(auto simp add: is_native_def2 native_call_def elim!: external_WT_defs.cases)
 done
 
 lemma red_external_known_addrs_mono:
@@ -826,7 +817,7 @@ lemma red_external_aggr_known_addrs_mono:
   shows "(case va of RetVal v \<Rightarrow> ka_Val v | RetExc a \<Rightarrow> {a} | RetStaySame \<Rightarrow> {}) \<subseteq> {thread_id2addr t, a} \<union> (\<Union>ka_Val ` set vs) \<union> set start_addrs \<union> new_obs_addrs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 using red
 apply(auto simp add: red_external_aggr_def addr_of_sys_xcpt_start_addr[OF ok] new_obs_addrs_def heap_clone.simps split: split_if_asm)
-apply(auto simp add: is_native_def2 native_call_def elim!: external_WT_defs.cases)
+apply(auto simp add: is_native.simps elim!: external_WT_defs.cases is_class_type_of.cases dest: sees_method_decl_above)
 done
 
 lemma red_external_NewThread_idD:
@@ -836,10 +827,9 @@ by(erule red_external.cases) simp_all
 
 lemma red_external_aggr_NewThread_idD:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; 
-     NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; is_native P (the (typeof_addr h a)) M\<rbrakk>
+     NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> t' = addr2thread_id a \<and> a' = a"
 apply(auto simp add: red_external_aggr_def split: split_if_asm)
-apply(auto simp add: is_native_def2 native_call_def elim!: external_WT_defs.cases)
 done
 
 end

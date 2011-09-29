@@ -408,7 +408,7 @@ next
                   case True
                   with wte evalw have "P,h \<turnstile> w :\<le> U"
                     by(auto simp add: conf_def)
-                  from heap_write_total[OF adal this]
+                  from heap_write_total[OF hconf adal this]
                   obtain h' where h': "heap_write h ad (ACell (nat (sint idx))) w h'" ..
                   with ty False vidx ivalv evalw Array wte True
                   show ?thesis by(fastforce intro: RedAAss)
@@ -588,7 +588,7 @@ next
             by(auto intro: addr_loc_type.intros)
           from e2 `P \<turnstile> T2 \<le> T` `P,E,h \<turnstile> e2 : T2`
           have "P,h \<turnstile> v :\<le> T" by(auto simp add: conf_def)
-          from heap_write_total[OF adal this] obtain h' 
+          from heap_write_total[OF hconf adal this] obtain h' 
             where "heap_write h a (CField D F) v h'" ..
           with wte1 field e1 e2 show ?thesis
 	    by(fastforce intro: RedFAss)
@@ -628,13 +628,12 @@ next
     with WTrtFAssNT show ?thesis by (fastforce intro:FAssRed1)
   qed
 next
-  case (WTrtCall E e U C M Ts T pns body D es Ts' l)
+  case (WTrtCall E e U C M Ts T meth D es Ts' l)
   have wte: "P,E,h \<turnstile> e : U" 
     and icto: "is_class_type_of U C" by fact+
   have IHe: "\<And>l. \<lbrakk> \<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk>
              \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
-  have sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by fact
-  have nexc: "\<not> is_native P U M" by fact
+  have sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = meth in D" by fact
   have wtes: "P,E,h \<turnstile> es [:] Ts'" by fact
   have IHes: "\<And>l. \<lbrakk>\<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk> \<Longrightarrow> \<exists>es' s' ta. extTA,P,t \<turnstile> \<langle>es,(h, l)\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>" by fact
   have subtype: "P \<turnstile> Ts' [\<le>] Ts" by fact
@@ -652,8 +651,23 @@ next
 	have "length es = length Ts'" using wtes by(auto simp add: WTrts_conv_list_all2 dest: list_all2_lengthD)
 	moreover from subtype have "length Ts' = length Ts" by(auto dest: list_all2_lengthD)
 	ultimately have esTs: "length es = length Ts" by(auto)
-	thus ?thesis using e_addr ha sees subtype es sees_wf_mdecl[OF wf sees] nexc icto
-	  by (fastforce intro!: RedCall simp:list_all2_def wf_mdecl_def)
+        show ?thesis
+        proof(cases meth)
+          case (Some pnsbody)
+          with esTs e_addr ha sees subtype es sees_wf_mdecl[OF wf sees] icto
+          show ?thesis by(cases pnsbody) (fastforce intro!: RedCall simp:list_all2_def wf_mdecl_def)
+        next
+          case None
+          with sees wf have "D\<bullet>M(Ts) :: T" by(auto intro: sees_wf_native)
+          moreover from es obtain vs where vs: "es = map Val vs" ..
+          with wtes have tyes: "map typeof\<^bsub>h\<^esub> vs = map Some Ts'" by simp
+	  with ha `D\<bullet>M(Ts) :: T` icto sees None
+          have "P,h \<turnstile> a\<bullet>M(vs) : T" using subtype by(auto simp add: external_WT'_iff)
+          from external_call_progress[OF wf this hconf, of t] obtain ta va h'
+	    where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>" by blast
+	  thus ?thesis using ha icto None sees vs e_addr
+            by(fastforce intro: RedCallExternal simp del: split_paired_Ex)
+        qed
       next
 	assume "\<not>(\<exists>vs. es = map Val vs)"
 	hence not_all_Val: "\<not>(\<forall>e \<in> set es. \<exists>v. e = Val v)"
@@ -730,56 +744,6 @@ next
   next
     assume "\<not> final e" --"@{term e} reduces by IH"
     with WTrtCallNT show ?thesis by (fastforce intro:CallObj)
-  qed
-next
-  case (WTrtCallExternal E e T es Ts M Ts' U l)
-  have wte: "P,E,h \<turnstile> e : T" by fact
-  have IHe: "\<And>l. \<lbrakk> \<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk>
-             \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
-  have wtes: "P,E,h \<turnstile> es [:] Ts" by fact
-  have IHes: "\<And>l. \<lbrakk>\<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk> \<Longrightarrow> \<exists>es' s' ta. extTA,P,t \<turnstile> \<langle>es,(h, l)\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>" by fact
-  have wtext: "P \<turnstile> T\<bullet>M(Ts') :: U" by fact
-  have dae: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" by fact
-  show ?case
-  proof(cases "final e")
-    assume fine: "final e"
-    from wtext have "T \<noteq> NT" by(rule external_WT_not_NT)
-    with is_native_is_refT[OF external_WT_is_native[OF wtext]] fine wte
-    obtain a where e: "e = addr a \<or> e = Throw a" 
-      by -(rule finalRefE, auto)
-    thus ?thesis
-    proof
-      assume e: "e = addr a"
-      from e wte have tya: "typeof_addr h a = \<lfloor>T\<rfloor>" by simp
-      show ?thesis
-      proof(cases "finals es")
-	case True
-	hence "(\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')" unfolding finals_def .
-	thus ?thesis
-	proof
-	  assume "\<exists>vs. es = map Val vs"
-	  then obtain vs where es: "es = map Val vs" ..
-	  with wtes have tyes: "map typeof\<^bsub>h\<^esub> vs = map Some Ts" by simp
-	  with tya have "P,h \<turnstile> a\<bullet>M(vs) : U" using wtext `P \<turnstile> Ts [\<le>] Ts'` by(rule external_WT'.intros)
-          from external_call_progress[OF wf this hconf, of t] obtain ta va h'
-	    where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>" by blast
-	  thus ?thesis using tya external_WT_is_native[OF wtext] e es
-	    by(fastforce intro: RedCallExternal simp del: split_paired_Ex)
-	next
-	  assume "\<exists>vs a es'. es = map Val vs @ Throw a # es'"
-	  with e show ?thesis by(auto intro: CallThrowParams simp del: split_paired_Ex)
-	qed
-      next
-	case False
-	from dae IHes[OF _ this, of l] e show ?thesis by(fastforce intro!: CallParams)
-      qed
-    next
-      assume "e = Throw a"
-      thus ?thesis by(auto intro: CallThrowObj simp del: split_paired_Ex)
-    qed
-  next
-    case False
-    with dae IHe[OF _ False, of l] show ?thesis by(fastforce intro: CallObj)
   qed
 next
   case (WTrtBlock E V T e T' vo l)

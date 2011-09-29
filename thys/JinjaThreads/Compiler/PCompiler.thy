@@ -11,8 +11,8 @@ imports
   "../Common/Conform"
 begin
 
-definition compM :: "(mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a mdecl \<Rightarrow> 'b mdecl"
-where "compM f \<equiv> \<lambda>(M, Ts, T, m). (M, Ts, T, f M Ts T m)"
+definition compM :: "(mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a mdecl' \<Rightarrow> 'b mdecl'"
+where "compM f \<equiv> \<lambda>(M, Ts, T, m). (M, Ts, T, Option.map (f M Ts T) m)"
 
 definition compC :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a cdecl \<Rightarrow> 'b cdecl"
 where "compC f  \<equiv>  \<lambda>(C,D,Fdecls,Mdecls). (C,D,Fdecls, map (compM (f C)) Mdecls)"
@@ -38,7 +38,6 @@ lemma class_compP:
   \<Longrightarrow> class (compP f P) C = Some (D, fs, map (compM (f C)) ms)"
 by(cases P)(simp add:class_def compP_def compC_def map_of_map4)
 
-
 lemma class_compPD:
   "class (compP f P) C = Some (D, fs, cms)
   \<Longrightarrow> \<exists>ms. class P C = Some(D,fs,ms) \<and> cms = map (compM (f C)) ms"
@@ -59,7 +58,7 @@ done
 
 lemma sees_methods_compP:
   "P \<turnstile> C sees_methods Mm \<Longrightarrow>
-  compP f P \<turnstile> C sees_methods (\<lambda>M. Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,f D M Ts T m),D)) (Mm M))"
+  compP f P \<turnstile> C sees_methods (\<lambda>M. Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,Option.map (f D M Ts T) m),D)) (Mm M))"
 (*<*)
 apply(erule Methods.induct)
  apply(rule sees_methods_Object)
@@ -81,13 +80,13 @@ done
 
 lemma sees_method_compP:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<Longrightarrow>
-  compP f P \<turnstile> C sees M: Ts\<rightarrow>T = (f D M Ts T m) in D"
+  compP f P \<turnstile> C sees M: Ts\<rightarrow>T = Option.map (f D M Ts T) m in D"
 (*<*)by(fastforce elim:sees_methods_compP simp add:Method_def)(*>*)
 
 
 lemma [simp]:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<Longrightarrow>
-  method (compP f P) C M = (D,Ts,T,f D M Ts T m)"
+  method (compP f P) C M = (D,Ts,T,Option.map (f D M Ts T) m)"
 (*<*)
 apply(drule sees_method_compP)
 apply(simp add:method_def)
@@ -101,7 +100,7 @@ done
 lemma sees_methods_compPD:
   "\<lbrakk> cP \<turnstile> C sees_methods Mm'; cP = compP f P \<rbrakk> \<Longrightarrow>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and>
-        Mm' = (\<lambda>M. Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,f D M Ts T m),D)) (Mm M))"
+        Mm' = (\<lambda>M. Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,Option.map (f D M Ts T) m),D)) (Mm M))"
 (*<*)
 apply(erule Methods.induct)
  apply(clarsimp simp:compC_def)
@@ -125,7 +124,7 @@ done
 
 lemma sees_method_compPD:
   "compP f P \<turnstile> C sees M: Ts\<rightarrow>T = fm in D \<Longrightarrow>
-  \<exists>m. P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<and> f D M Ts T m = fm"
+  \<exists>m. P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<and> Option.map (f D M Ts T) m = fm"
 (*<*)
 apply(simp add:Method_def)
 apply clarify
@@ -135,6 +134,9 @@ apply blast
 done
 (*>*)
 
+lemma sees_method_native_compP [simp]:
+  "compP f P \<turnstile> C sees M:Ts \<rightarrow> T = Native in D \<longleftrightarrow> P \<turnstile> C sees M:Ts \<rightarrow> T = Native in D"
+by(auto dest: sees_method_compPD sees_method_compP)
 
 lemma [simp]: "subcls1(compP f P) = subcls1 P"
 by(fastforce simp add: is_class_def compC_def intro:subcls1I order_antisym dest:subcls1D)
@@ -161,7 +163,6 @@ done
 lemma is_lub_compP [simp]:
   "is_lub (compP f P) = is_lub P"
 by(auto intro!: ext elim!: is_lub.cases intro: is_lub.intros)
-
 
 lemma [simp]:
   fixes f :: "cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b"
@@ -244,25 +245,12 @@ lemma compP_has_method: "compP f P \<turnstile> C has M \<longleftrightarrow> P 
 unfolding has_method_def
 by(fastforce dest: sees_method_compPD intro: sees_method_compP)
 
-lemma native_call_compP [simp]: "native_call (compP f P) = native_call P"
-by(rule ext)+(fastforce simp add: native_call_def intro: sees_method_compP[where f=f] dest: sees_method_compPD[where f=f])
-
 lemma is_native_compP [simp]: "is_native (compP f P) = is_native P"
-by(auto simp add: fun_eq_iff is_native_def2)
-
-lemma external_WT_compP [simp]:
-  "compP f P \<turnstile> T\<bullet>M(vs) :: U \<longleftrightarrow> P \<turnstile> T\<bullet>M(vs) :: U"
-by(auto elim!: external_WT.cases intro: external_WT.intros)
-
-lemma WT_external_compP' [simp]: "external_WT (compP f P) = external_WT P"
-by(auto simp add: fun_eq_iff)
+by(auto simp add: fun_eq_iff is_native.simps)
 
 lemma \<tau>external_compP [simp]:
   "\<tau>external (compP f P) = \<tau>external P"
 by(auto intro!: ext simp add: \<tau>external_def)
-
-lemma native_method_compP: "native_method (compP f P) = native_method P"
-by(auto intro!: ext simp add: native_method_def)
 
 context heap_base begin
 
@@ -280,16 +268,13 @@ by(simp add: \<tau>external'_def_raw)
 
 end
 
-lemma wf_native_compP [simp]: "wf_native (compP f P) C (compM (f C) m) = wf_native P C m"
-by(cases m)(auto simp add: compM_def)
-
 lemma wf_overriding_compP [simp]: "wf_overriding (compP f P) D (compM (f C) m) = wf_overriding P D m"
 by(cases m)(fastforce intro: sees_method_compP[where f=f] dest: sees_method_compPD[where f=f] simp add: compM_def)
 
-
 lemma wf_cdecl_compPI:
   assumes wf1_imp_wf2: 
-    "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^isub>1 P C (M,Ts,T,m); P \<turnstile> C sees M:Ts\<rightarrow>T = m in C \<rbrakk> \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, f C M Ts T m)"
+    "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^isub>1 P C (M,Ts,T,\<lfloor>m\<rfloor>); P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in C \<rbrakk>
+    \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, \<lfloor>f C M Ts T m\<rfloor>)"
   and wfcP1: "\<forall>C rest. class P C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf\<^isub>1 P (C, rest)"
   and xcomp: "class (compP f P) C = \<lfloor>rest'\<rfloor>"
   and wf: "wf_prog p P"
@@ -309,7 +294,7 @@ proof -
   { fix m
     assume mset': "m \<in> set ms'"
     then obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m, auto)
-    with ms' obtain body where mf: "body' = f C M Ts' T' body"
+    with ms' obtain body where mf: "body' = Option.map (f C M Ts' T') body"
       and mset: "(M, Ts', T', body) \<in> set ms" using mset'
       by(clarsimp simp add: image_iff compM_def)
     moreover from mset xsrc wfcP1 have "wf_mdecl wf\<^isub>1 P C (M,Ts',T',body)"
@@ -317,11 +302,7 @@ proof -
     moreover from wf xsrc mset x have "P \<turnstile> C sees M:Ts'\<rightarrow>T' = body in C"
       by(auto intro: mdecl_visible)
     ultimately have "wf_mdecl wf\<^isub>2 (compP f P) C m" using m
-      by(auto intro: wf1_imp_wf2)
-    moreover from mset xsrc wfcP1 have "wf_native P C (M, Ts', T', body)"
-      by(fastforce simp add: wf_cdecl_def)
-    hence "wf_native (compP f P) C m" using m by simp
-    moreover note calculation }
+      by(cases body)(simp add: wf_mdecl_def, auto intro: wf1_imp_wf2) }
   moreover from wf1 have "distinct_fst ms" by(simp add: wf_cdecl_def)
   with ms' have "distinct_fst ms'" by(auto)
   moreover
@@ -332,7 +313,7 @@ proof -
     { fix m
       assume mset': "m \<in> set ms'"
       obtain M Ts T body' where m: "m = (M, Ts, T, body')" by(cases m)
-      with mset' ms' obtain body where mf: "body' = f C M Ts T body"
+      with mset' ms' obtain body where mf: "body' = Option.map (f C M Ts T) body"
 	and mset: "(M, Ts, T, body) \<in> set ms"
 	by(clarsimp simp add: image_iff compM_def)
       from wf1 CObj mset
@@ -350,8 +331,8 @@ qed
 lemma wf_prog_compPI:
 assumes lift: 
   "\<And>C M Ts T m. 
-    \<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = m in C; wf_mdecl wf\<^isub>1 P C (M,Ts,T,m) \<rbrakk>
-    \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, f C M Ts T m)"
+    \<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in C; wf_mdecl wf\<^isub>1 P C (M,Ts,T,\<lfloor>m\<rfloor>) \<rbrakk>
+    \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, \<lfloor>f C M Ts T m\<rfloor>)"
 and wf: "wf_prog wf\<^isub>1 P"
 shows "wf_prog wf\<^isub>2 (compP f P)"
 using wf
@@ -362,7 +343,8 @@ done
 
 lemma wf_cdecl_compPD:
   assumes wf1_imp_wf2: 
-    "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^isub>1 (compP f P) C (M,Ts,T,f C M Ts T m); compP f P \<turnstile> C sees M:Ts\<rightarrow>T = f C M Ts T m in C \<rbrakk> \<Longrightarrow> wf_mdecl wf\<^isub>2 P C (M,Ts,T, m)"
+    "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^isub>1 (compP f P) C (M,Ts,T,\<lfloor>f C M Ts T m\<rfloor>); compP f P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>f C M Ts T m\<rfloor> in C \<rbrakk>
+    \<Longrightarrow> wf_mdecl wf\<^isub>2 P C (M,Ts,T, \<lfloor>m\<rfloor>)"
   and wfcP1: "\<forall>C rest. class (compP f P) C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf\<^isub>1 (compP f P) (C, rest)"
   and xcomp: "class P C = \<lfloor>rest\<rfloor>"
   and wf: "wf_prog wf_md (compP f P)"
@@ -381,17 +363,15 @@ proof -
   { fix m
     assume mset': "m \<in> set ms'"
     then obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m)
-    hence mset: "(M, Ts', T', f C M Ts' T' body') \<in> set (map (compM (f C)) ms')" using mset'
+    hence mset: "(M, Ts', T', Option.map (f C M Ts' T') body') \<in> set (map (compM (f C)) ms')" using mset'
       by(auto simp add: image_iff compM_def intro: rev_bexI)
-    moreover from wf xsrc mset x have "compP f P \<turnstile> C sees M:Ts'\<rightarrow>T' = f C M Ts' T' body' in C"
+    moreover from wf xsrc mset x have "compP f P \<turnstile> C sees M:Ts'\<rightarrow>T' = Option.map (f C M Ts' T') body' in C"
       by(auto intro: mdecl_visible)
     moreover from mset wfcP1[rule_format, OF xsrc]
-    have "wf_mdecl wf\<^isub>1 (compP f P) C (M,Ts',T',f C M Ts' T' body')"
+    have "wf_mdecl wf\<^isub>1 (compP f P) C (M,Ts',T',Option.map (f C M Ts' T') body')"
       by(auto simp add: wf_cdecl_def)
-    ultimately have "wf_mdecl wf\<^isub>2 P C m" using m by(auto intro: wf1_imp_wf2)
-    moreover from mset wfcP1[rule_format, OF xsrc] have "wf_native P C m" unfolding m
-      by(auto simp add: wf_cdecl_def compM_def)
-    moreover note calculation }
+    ultimately have "wf_mdecl wf\<^isub>2 P C m" using m
+      by(cases body')(simp add: wf_mdecl_def, auto intro: wf1_imp_wf2) }
   moreover from wf1 have "distinct_fst ms'" by(simp add: wf_cdecl_def)
   moreover
   { assume CObj: "C \<noteq> Object"
@@ -415,8 +395,8 @@ lemma wf_prog_compPD:
 assumes wf: "wf_prog wf1 (compP f P)"
 and lift: 
   "\<And>C M Ts T m. 
-    \<lbrakk> compP f P \<turnstile> C sees M:Ts\<rightarrow>T = f C M Ts T m in C; wf_mdecl wf1 (compP f P) C (M,Ts,T, f C M Ts T m) \<rbrakk>
-    \<Longrightarrow> wf_mdecl wf2 P C (M,Ts,T,m)"
+    \<lbrakk> compP f P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>f C M Ts T m\<rfloor> in C; wf_mdecl wf1 (compP f P) C (M,Ts,T, \<lfloor>f C M Ts T m\<rfloor>) \<rbrakk>
+    \<Longrightarrow> wf_mdecl wf2 P C (M,Ts,T,\<lfloor>m\<rfloor>)"
 shows "wf_prog wf2 P"
 using wf
 apply(clarsimp simp add:wf_prog_def2)

@@ -173,10 +173,13 @@ by(induct es arbitrary: e)(auto dest: final_inline_callD)
 context heap_base begin
 
 definition synthesized_call :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('addr \<times> mname \<times> 'addr val list) \<Rightarrow> bool"
-where "synthesized_call P h = (\<lambda>(a, M, vs). \<exists>T. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_native P T M)"
+where
+  "synthesized_call P h = 
+   (\<lambda>(a, M, vs). \<exists>T C Ts Tr D. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D)"
 
 lemma synthesized_call_conv:
-  "synthesized_call P h (a, M, vs) = (\<exists>T. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_native P T M)"
+  "synthesized_call P h (a, M, vs) = 
+   (\<exists>T C Ts Tr D. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D)"
 by(simp add: synthesized_call_def)
 
 end

@@ -54,7 +54,7 @@ type_synonym
    (cname, 'm class) mapping \<times>
    (cname, cname Cset.set) mapping \<times> 
    (cname, (vname, cname \<times> ty \<times> fmod) mapping) mapping \<times> 
-   (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm) mapping) mapping"
+   (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm option) mapping) mapping"
 
 definition tabulate_class :: "'m cdecl list \<Rightarrow> (cname, 'm class) mapping"
 where "tabulate_class P = Mapping.Mapping (class (Program P))"
@@ -75,7 +75,7 @@ where
         Some (Mapping.Mapping (\<lambda>F. if \<exists>T fm D. Program P \<turnstile> C sees F:T (fm) in D then Some (field (Program P) C F) else None)) 
       else None)"
 
-definition tabulate_Method :: "'m cdecl list \<Rightarrow> (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm) mapping) mapping"
+definition tabulate_Method :: "'m cdecl list \<Rightarrow> (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm option) mapping) mapping"
 where
   "tabulate_Method P =
   Mapping.Mapping 
@@ -144,9 +144,7 @@ lemma subcls'_program [code]:
    | Some m \<Rightarrow> Cset.member m D)"
 apply(cases Pi)
 apply(clarsimp simp add: subcls'_def tabulate_subcls_def)
-apply(auto elim!: rtranclp_tranclpE dest: subcls_is_class 
-           intro: tranclp_into_rtranclp 
-           simp: mem_def)
+apply(auto elim!: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp simp add: mem_def)
 done
 
 lemma subcls'_i_i_i_program [code]:
@@ -430,7 +428,7 @@ done
 
 subsubsection {* @{term "Methods" } *}
 
-inductive Methods' :: "'m cdecl list \<Rightarrow> cname \<Rightarrow> (mname \<times> (ty list \<times> ty \<times> 'm) \<times> cname) list \<Rightarrow> bool"
+inductive Methods' :: "'m cdecl list \<Rightarrow> cname \<Rightarrow> (mname \<times> (ty list \<times> ty \<times> 'm option) \<times> cname) list \<Rightarrow> bool"
   for P :: "'m cdecl list"
 where 
   "\<lbrakk> map_of P Object = Some(D,fs,ms); Mm = map (\<lambda>(M, rest). (M, (rest, Object))) ms \<rbrakk>
@@ -477,7 +475,7 @@ code_pred
   Methods'
 .
 
-definition methods' :: "'m cdecl list \<Rightarrow> cname \<Rightarrow> (mname \<times> (ty list \<times> ty \<times> 'm) \<times> cname) list"
+definition methods' :: "'m cdecl list \<Rightarrow> cname \<Rightarrow> (mname \<times> (ty list \<times> ty \<times> 'm option) \<times> cname) list"
 where "methods' P C = (if \<exists>Mm. Methods' P C Mm then THE Mm. Methods' P C Mm else [])"
 
 lemma methods'_code [code]:

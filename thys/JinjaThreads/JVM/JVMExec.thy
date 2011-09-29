@@ -11,7 +11,7 @@ theory JVMExec imports
 begin
 
 abbreviation instrs_of :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr instr list"
-where "instrs_of P C M == fst(snd(snd(snd(snd(snd(method P C M))))))"
+where "instrs_of P C M == fst(snd(snd(the(snd(snd(snd(method P C M)))))))"
 
 section "single step execution"
 
@@ -68,7 +68,8 @@ where
 definition JVM_start_state' :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr, 'heap) jvm_state"
 where
   "JVM_start_state' P C M vs \<equiv>
-   let (D, Ts, T, mxs, mxl0, b) = method P C M
+   let (D, Ts, T, meth) = method P C M;
+       (mxs, mxl0, ins, xt) = the meth
    in (None, start_heap, [([], Null # vs @ replicate mxl0 undefined_value, D, M, 0)])"
 
 end

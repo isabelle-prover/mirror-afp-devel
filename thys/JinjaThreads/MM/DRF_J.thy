@@ -85,7 +85,7 @@ next
   case RedCall thus ?case
     by(auto simp add: ka_blocks new_obs_addrs_def wf_mdecl_def dest!: sees_wf_mdecl[OF wf] WT_ka)
 next
-  case (RedCallExternal s a T M vs ta va h') thus ?case
+  case (RedCallExternal s a T C M Ts T D vs ta va h') thus ?case
     by(cases va)(auto dest!: red_external_known_addrs_mono[OF ok])
 next
   case (BlockRed e h l V vo ta e' h' l')
@@ -137,7 +137,7 @@ lemma
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t' x' h' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> J_known_addrs t' x' \<subseteq> insert (thread_id2addr t) (kas es \<union> ka_locals (lcl s) \<union> set start_addrs)"
 proof(induct rule: red_reds.inducts)
-  case (RedCallExternal s a T M vs ta va h') thus ?case
+  case RedCallExternal thus ?case
     apply clarsimp
     apply(frule (1) red_external_new_thread_sub_thread)
     apply(frule (1) red_external_NewThread_idD)
@@ -355,13 +355,13 @@ lemma assumes wf: "wf_J_prog P"
   and "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; new_typess es \<subseteq> types P \<rbrakk> \<Longrightarrow> new_typess es' \<subseteq> types P"
 proof(induct rule: red_reds.inducts)
   case (RedCall s a U C M Ts T pns body D vs)
-  from wf `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
-  have "wf_mdecl wf_J_mdecl P D (M, Ts, T, pns, body)" by(rule sees_wf_mdecl)
+  from wf `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
+  have "wf_mdecl wf_J_mdecl P D (M, Ts, T, \<lfloor>(pns, body)\<rfloor>)" by(rule sees_wf_mdecl)
   then obtain T' where "P,[this \<mapsto> Class D, pns [\<mapsto>] Ts] \<turnstile> body :: T'" by(auto simp add: wf_mdecl_def)
   hence "new_types body \<subseteq> types P" by(rule WT_new_types_types)
   with RedCall show ?case by(simp add: new_types_blocks)
 next
-  case (RedCallExternal s a T M vs ta va h' ta' e' s')
+  case (RedCallExternal s a T C M Ts Tr D vs ta va h' ta' e' s')
   thus ?case by(cases va)(simp_all)
 qed(simp_all)
 
@@ -570,7 +570,7 @@ context J_allocated_heap_conf begin
 lemma executions_sc:
   assumes wf: "wf_J_prog P"
   and ok: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=(pns, body) in D"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns, body)\<rfloor> in D"
   and vs1: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   and vs2: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
   shows
@@ -597,11 +597,11 @@ proof -
     show "vs_conf P start_heap (mrw_values P empty (map NormalAction start_heap_obs))"
       by(simp add: start_state_def lift_start_obs_def o_def)
   next
-    from wf sees have "wf_mdecl wf_J_mdecl P D (M, Ts, T, pns, body)" by(rule sees_wf_mdecl)
+    from wf sees have "wf_mdecl wf_J_mdecl P D (M, Ts, T, \<lfloor>(pns, body)\<rfloor>)" by(rule sees_wf_mdecl)
     then obtain T' where len1: "length pns = length Ts" and wt: "P,[this\<mapsto>Class D,pns [\<mapsto>] Ts] \<turnstile> body :: T'"
       by(auto simp add: wf_mdecl_def)
     from vs1 have len2: "length vs = length Ts" by(rule list_all2_lengthD)
-    show "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, empty)) (snd (snd (snd (method P C M)))) vs) \<subseteq> allocated start_heap"
+    show "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
       using sees vs2 len1 len2 WT_ka[OF wt]
       by(auto simp add: split_beta start_addrs_allocated ka_blocks intro: start_tid_start_addrs[OF wf_prog_wf_syscls[OF wf] ok])
   qed
@@ -664,13 +664,14 @@ next
   with bv' `red_mthr.if.actions_ok s t \<lbrace>ReadMem a (CField D F) v\<rbrace>`
   show ?case by(fastforce intro: red_reds.RedFAcc)
 next
-  case (RedCallExternal a U M ps ta' va h' ta e')
+  case (RedCallExternal a U C M Ts Tr D ps ta' va h' ta e')
   from `P,t \<turnstile> \<langle>a\<bullet>M(ps),hp (shr s, xs)\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>`
   have red: "P,t \<turnstile> \<langle>a\<bullet>M(ps),shr s\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by simp
   from RedCallExternal have aok: "red_mthr.if.actions_ok s t ta'" by simp
   from RedCallExternal have "{(a, al) |al. \<exists>T. P,shr s \<turnstile> a@al : T} \<subseteq> dom vs" by auto
   from red_external_cut_and_update[OF hrt vs this red aok hconf]
-    `typeof_addr (hp (shr s, xs)) a = \<lfloor>U\<rfloor>` `is_native P U M` `ta = extTA2J P ta'`
+    `typeof_addr (hp (shr s, xs)) a = \<lfloor>U\<rfloor>` `is_class_type_of U C`
+    `P \<turnstile> C sees M: Ts\<rightarrow>Tr = Native in D` `ta = extTA2J P ta'`
   show ?case by(fastforce intro: red_reds.RedCallExternal)
 next
   case RedNew thus ?case by(fastforce intro!: red_reds.RedNew exI)
@@ -889,7 +890,7 @@ lemma cut_and_update:
   assumes wf: "wf_J_prog P"
   and hrt: "heap_read_typeable"
   and ok: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
   and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
   shows "red_mthr.if.cut_and_update (init_fin_lift_state status (J_start_state P C M vs)) 
@@ -918,7 +919,7 @@ proof(rule red_mthr.if.cut_and_updateI)
     final_expr "mred P" "\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h" P
     using wf ok by(rule mred_known_addrs_typing)
 
-  from wf sees have "wf_mdecl wf_J_mdecl P D (M, Ts, T, pns, body)" by(rule sees_wf_mdecl)
+  from wf sees have "wf_mdecl wf_J_mdecl P D (M, Ts, T, \<lfloor>(pns, body)\<rfloor>)" by(rule sees_wf_mdecl)
   then obtain T' where len1: "length pns = length Ts" and wt: "P,[this\<mapsto>Class D,pns [\<mapsto>] Ts] \<turnstile> body :: T'"
     by(auto simp add: wf_mdecl_def)
   from conf have len2: "length vs = length Ts" by(rule list_all2_lengthD)
@@ -1005,7 +1006,7 @@ lemma J_executions:
   assumes wf: "wf_J_prog P"
   and hrt: "heap_read_typeable"
   and ok: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D"
+  and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
   and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
   and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
 shows "executions (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
@@ -1031,11 +1032,11 @@ proof -
     show "vs_conf P start_heap (mrw_values P empty (map NormalAction start_heap_obs))"
       by(simp add: start_state_def lift_start_obs_def o_def)
   next
-    from wf sees have "wf_mdecl wf_J_mdecl P D (M, Ts, T, pns, body)" by(rule sees_wf_mdecl)
+    from wf sees have "wf_mdecl wf_J_mdecl P D (M, Ts, T, \<lfloor>(pns, body)\<rfloor>)" by(rule sees_wf_mdecl)
     then obtain T' where len1: "length pns = length Ts" and wt: "P,[this\<mapsto>Class D,pns [\<mapsto>] Ts] \<turnstile> body :: T'"
       by(auto simp add: wf_mdecl_def)
     from conf have len2: "length vs = length Ts" by(rule list_all2_lengthD)
-    show "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, empty)) (snd (snd (snd (method P C M)))) vs) \<subseteq> allocated start_heap"
+    show "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
       using sees ka len1 len2 WT_ka[OF wt]
       by(auto simp add: split_beta start_addrs_allocated ka_blocks intro: start_tid_start_addrs[OF wf_prog_wf_syscls[OF wf] ok])
   qed

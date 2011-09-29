@@ -86,10 +86,10 @@ where
     (let a = the_Addr (stk!n); 
          T = the (typeof_addr h a);
          C = the (class_type_of T);
-         Ts = fst (snd (method P C M))
-    in typeof_addr h a \<noteq> None \<and>
-       (if is_native P T M then \<exists>U. P,h \<turnstile> a\<bullet>M(rev (take n stk)) : U 
-        else class_type_of T \<noteq> None \<and> P \<turnstile> C has M \<and> P,h \<turnstile> rev (take n stk) [:\<le>] Ts))))"
+         (D, Ts, Tr, meth) = method P C M
+    in typeof_addr h a \<noteq> None \<and> class_type_of T \<noteq> None \<and> P \<turnstile> C has M \<and> 
+       P,h \<turnstile> rev (take n stk) [:\<le>] Ts \<and> 
+       (meth = None \<longrightarrow> D\<bullet>M(Ts) :: Tr))))"
 
 | check_instr_Return:
   "check_instr Return P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
@@ -146,8 +146,8 @@ where
   "check P \<sigma> \<equiv> let (xcpt, h, frs) = \<sigma> in
                (case frs of [] \<Rightarrow> True | (stk,loc,C,M,pc)#frs' \<Rightarrow> 
                 P \<turnstile> C has M \<and>
-                (let (C',Ts,T,mxs,mxl\<^isub>0,ins,xt) = method P C M; i = ins!pc in
-                 pc < size ins \<and> size stk \<le> mxs \<and>
+                (let (C',Ts,T,meth) = method P C M; (mxs,mxl\<^isub>0,ins,xt) = the meth; i = ins!pc in
+                 meth \<noteq> None \<and> pc < size ins \<and> size stk \<le> mxs \<and>
                  (case xcpt of None \<Rightarrow> check_instr i P h stk loc C M pc frs'
                            | Some a \<Rightarrow> check_xcpt P h (length stk) pc xt a)))"
 
@@ -226,8 +226,8 @@ proof -
   proof(cases xcp)
     case None
     with check obtain C' Ts T mxs mxl0 ins xt
-      where mthd: "P \<turnstile> C0 sees M0 : Ts \<rightarrow> T = (mxs, mxl0, ins, xt) in C'"
-                  "method P C0 M0 = (C', Ts, T, mxs, mxl0, ins, xt)"
+      where mthd: "P \<turnstile> C0 sees M0 : Ts \<rightarrow> T = \<lfloor>(mxs, mxl0, ins, xt)\<rfloor> in C'"
+                  "method P C0 M0 = (C', Ts, T, \<lfloor>(mxs, mxl0, ins, xt)\<rfloor>)"
       and check_ins: "check_instr (ins ! pc) P h stk loc C0 M0 pc Frs"
       and "pc < length ins"
       and "length stk \<le> mxs"
@@ -256,10 +256,10 @@ proof -
     next
       case (Invoke M n)
       with xexec check_ins show ?thesis
-        apply(auto simp add: min_def split_beta is_Ref_def extRet2JVM_def
+        apply(auto simp add: min_def split_beta is_Ref_def extRet2JVM_def has_method_def
                 split: split_if_asm intro: red_external_aggr_hext)
         apply(case_tac va)
-        apply(auto intro: red_external_aggr_hext)
+        apply(auto 4 3 intro: red_external_aggr_hext is_native.intros simp add: is_class_type_of_conv_class_type_of_Some)
         done
     next
       case (BinOpInstr bop)

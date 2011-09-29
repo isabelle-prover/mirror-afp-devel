@@ -728,7 +728,7 @@ end
 context TC3 begin
 
 lemma wt_Invoke:
-  "\<lbrakk> size es = size Ts'; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M: Ts\<rightarrow>T = m in D; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+  "\<lbrakk> size es = size Ts'; is_class_type_of U C; P \<turnstile> C sees M: Ts\<rightarrow>T = m in D; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> \<turnstile> [Invoke M (size es)],[] [::] [ty\<^isub>i' (rev Ts' @ U # ST) E A, ty\<^isub>i' (T#ST) E A]"
 apply(clarsimp simp add: ty\<^isub>i'_def wt_defs)
 apply safe
@@ -1258,58 +1258,32 @@ next
   finally show ?case using wte wt\<^isub>1 wt\<^isub>2 by(simp add:after_def hyperUn_assoc)
 next
   case (Call E A ST e M es)
-  from `P,E \<turnstile>1 e\<bullet>M(es) :: T` show ?case apply -
-  proof(ind_cases "P,E \<turnstile>1 e\<bullet>M(es) :: T")
-    fix U C D Ts m Ts'
-    assume C: "P,E \<turnstile>1 e :: U"
-      and icto: "is_class_type_of U C"
-      and method: "P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
-      and iec: "\<not> is_native P U M"
-      and wtes: "P,E \<turnstile>1 es [::] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
-    from wtes have same_size: "size es = size Ts'" by(rule WTs1_same_size)
-    let ?A\<^isub>0 = "A \<squnion> \<A> e" let ?A\<^isub>1 = "?A\<^isub>0 \<squnion> \<A>s es"
-    let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s\<^isub>e = "compT E A ST e"
-    let ?\<tau>\<^isub>e = "ty\<^isub>i' (U # ST) E ?A\<^isub>0"
-    let ?\<tau>s\<^isub>e\<^isub>s = "compTs E ?A\<^isub>0 (U # ST) es"
-    let ?\<tau>\<^isub>1 = "ty\<^isub>i' (rev Ts' @ U # ST) E ?A\<^isub>1"
-    let ?\<tau>' = "ty\<^isub>i' (T # ST) E ?A\<^isub>1"
-    have "\<turnstile> [Invoke M (size es)],[] [::] [?\<tau>\<^isub>1,?\<tau>']"
-      by(rule wt_Invoke[OF same_size icto iec method subs])
-    also
-    from Call.hyps(2)[of Ts'] Call.prems wtes C
-    have "\<turnstile> compEs2 es,compxEs2 es 0 (size ST+1) [::] ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s"
-      "last (?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s) = ?\<tau>\<^isub>1"
-      by(auto simp add:after_def)
-    also have "(?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s) @ [?\<tau>'] = ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s @ [?\<tau>']" by simp
-    also have "\<turnstile> compE2 e,compxE2 e 0 (size ST) [::] ?\<tau> # ?\<tau>s\<^isub>e @ [?\<tau>\<^isub>e]"
-      using Call C by(auto simp add:after_def)
-    finally show ?thesis using Call.prems C
-      by(simp add:after_def hyperUn_assoc shift_compxEs2 stack_xlift_compxEs2 del: compxEs2_stack_xlift_convs compxEs2_size_convs)
-  next
-    fix Te Ts Ts'
-    assume wte: "P,E \<turnstile>1 e :: Te" and wtes: "P,E \<turnstile>1 es [::] Ts"
-      and wtext: "P \<turnstile> Te\<bullet>M(Ts') :: T" and sub: "P \<turnstile> Ts [\<le>] Ts'"
-    from wtes have same_size: "size es = size Ts" by(rule WTs1_same_size)
-    let ?A\<^isub>0 = "A \<squnion> \<A> e" let ?A\<^isub>1 = "?A\<^isub>0 \<squnion> \<A>s es"
-    let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s\<^isub>e = "compT E A ST e"
-    let ?\<tau>\<^isub>e = "ty\<^isub>i' (Te # ST) E ?A\<^isub>0"
-    let ?\<tau>s\<^isub>e\<^isub>s = "compTs E ?A\<^isub>0 (Te # ST) es"
-    let ?\<tau>\<^isub>1 = "ty\<^isub>i' (rev Ts @ Te # ST) E ?A\<^isub>1"
-    let ?\<tau>' = "ty\<^isub>i' (T # ST) E ?A\<^isub>1"
-    from wte wtext same_size external_WT_is_native[OF wtext] sub
-    have "\<turnstile> [Invoke M (size es)],[] [::] [?\<tau>\<^isub>1,?\<tau>']"
-      by(auto simp add: ty\<^isub>i'_def wt_defs is_native_def2 external_WT.simps) blast
-    also
-    from Call.hyps(2)[of Ts] wtes wte Call.prems
-    have "\<turnstile> compEs2 es,compxEs2 es 0 (size ST+1) [::] ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s"
-      "last (?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s) = ?\<tau>\<^isub>1"
-      by(auto simp add:after_def)
-    also have "(?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s) @ [?\<tau>'] = ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s @ [?\<tau>']" by simp
-    also have "\<turnstile> compE2 e,compxE2 e 0 (size ST) [::] ?\<tau> # ?\<tau>s\<^isub>e @ [?\<tau>\<^isub>e]"
-      using Call wte by(auto simp add:after_def)
-    finally show ?thesis using Call.prems wte
-      by(simp add:after_def hyperUn_assoc shift_compxEs2 stack_xlift_compxEs2 del: compxEs2_stack_xlift_convs compxEs2_size_convs)
-  qed
+  from `P,E \<turnstile>1 e\<bullet>M(es) :: T`
+  obtain U C D Ts m Ts'
+    where C: "P,E \<turnstile>1 e :: U"
+    and icto: "is_class_type_of U C"
+    and method: "P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
+    and wtes: "P,E \<turnstile>1 es [::] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
+    by(cases) auto
+  from wtes have same_size: "size es = size Ts'" by(rule WTs1_same_size)
+  let ?A\<^isub>0 = "A \<squnion> \<A> e" let ?A\<^isub>1 = "?A\<^isub>0 \<squnion> \<A>s es"
+  let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s\<^isub>e = "compT E A ST e"
+  let ?\<tau>\<^isub>e = "ty\<^isub>i' (U # ST) E ?A\<^isub>0"
+  let ?\<tau>s\<^isub>e\<^isub>s = "compTs E ?A\<^isub>0 (U # ST) es"
+  let ?\<tau>\<^isub>1 = "ty\<^isub>i' (rev Ts' @ U # ST) E ?A\<^isub>1"
+  let ?\<tau>' = "ty\<^isub>i' (T # ST) E ?A\<^isub>1"
+  have "\<turnstile> [Invoke M (size es)],[] [::] [?\<tau>\<^isub>1,?\<tau>']"
+    by(rule wt_Invoke[OF same_size icto method subs])
+  also
+  from Call.hyps(2)[of Ts'] Call.prems wtes C
+  have "\<turnstile> compEs2 es,compxEs2 es 0 (size ST+1) [::] ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s"
+    "last (?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s) = ?\<tau>\<^isub>1"
+    by(auto simp add:after_def)
+  also have "(?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s) @ [?\<tau>'] = ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s @ [?\<tau>']" by simp
+  also have "\<turnstile> compE2 e,compxE2 e 0 (size ST) [::] ?\<tau> # ?\<tau>s\<^isub>e @ [?\<tau>\<^isub>e]"
+    using Call C by(auto simp add:after_def)
+  finally show ?case using Call.prems C
+    by(simp add:after_def hyperUn_assoc shift_compxEs2 stack_xlift_compxEs2 del: compxEs2_stack_xlift_convs compxEs2_size_convs)
 next
   case Seq thus ?case
     by(auto simp:after_def)
@@ -1406,7 +1380,7 @@ lemma [simp]: "app i (compP f P) mpc T pc mxl xt \<tau> = app i P mpc T pc mxl x
 lemma [simp]: "app i P mpc T pc mxl xt \<tau> \<Longrightarrow> eff i (compP f P) pc xt \<tau> = eff i P pc xt \<tau>"
   apply (clarsimp simp add: eff_def norm_eff_def xcpt_eff_def app_def)
   apply (cases i)
-  apply(auto simp add: native_method_compP)
+  apply(auto)
   done
 
 lemma [simp]: "widen (compP f P) = widen P"
@@ -1470,7 +1444,8 @@ done
 definition compTP :: "'addr J1_prog \<Rightarrow> ty\<^isub>P"
 where
   "compTP P C M  \<equiv>
-  let (D,Ts,T,e) = method P C M;
+  let (D,Ts,T,meth) = method P C M;
+       e = the meth;
        E = Class C # Ts;
        A = \<lfloor>{..size Ts}\<rfloor>;
        mxl = 1 + size Ts + max_vars e

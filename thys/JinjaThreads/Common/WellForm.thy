@@ -25,20 +25,15 @@ become more general.
 
 type_synonym 'm wf_mdecl_test = "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
 
-fun wf_native :: "'m wf_mdecl_test"
-where
-  "wf_native P C (M, Ts, T, m) \<longleftrightarrow>
-  (\<forall>U Ts' T'. U\<bullet>M(Ts') :: T' \<longrightarrow> 
-    (P \<turnstile> Class C \<le> U \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T') \<and> 
-    (P \<turnstile> U \<le> Class C \<longrightarrow> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T' \<le> T))"
-
 definition wf_fdecl :: "'m prog \<Rightarrow> fdecl \<Rightarrow> bool"
 where "wf_fdecl P \<equiv> \<lambda>(F,T,fm). is_type P T"
 
-definition wf_mdecl :: "'m wf_mdecl_test \<Rightarrow> 'm wf_mdecl_test"
-where "wf_mdecl wf_md P C \<equiv> \<lambda>(M,Ts,T,mb). (\<forall>T\<in>set Ts. is_type P T) \<and> is_type P T \<and> wf_md P C (M,Ts,T,mb)"
+definition wf_mdecl :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> 'm mdecl' \<Rightarrow> bool" where 
+  "wf_mdecl wf_md P C \<equiv> 
+  \<lambda>(M,Ts,T,m). (\<forall>T\<in>set Ts. is_type P T) \<and> is_type P T \<and> 
+    (case m of Native \<Rightarrow> C\<bullet>M(Ts) :: T | \<lfloor>mb\<rfloor> \<Rightarrow> wf_md P C (M,Ts,T,mb))"
 
-fun wf_overriding :: "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
+fun wf_overriding :: "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl' \<Rightarrow> bool"
 where
   "wf_overriding P D (M,Ts,T,m) =
   (\<forall>D' Ts' T' m'. P \<turnstile> D sees M:Ts' \<rightarrow> T' = m' in D' \<longrightarrow> P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T')"
@@ -47,7 +42,7 @@ definition wf_cdecl :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> 'm 
 where
   "wf_cdecl wf_md P  \<equiv>  \<lambda>(C,(D,fs,ms)).
   (\<forall>f\<in>set fs. wf_fdecl P f) \<and> distinct_fst fs \<and>
-  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m \<and> wf_native P C m) \<and>
+  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m) \<and>
   distinct_fst ms \<and>
   (C \<noteq> Object \<longrightarrow>
    is_class P D \<and> \<not> P \<turnstile> D \<preceq>\<^sup>* C \<and>
@@ -474,105 +469,16 @@ proof -
 qed
 
 lemma sees_wf_native:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T=meth in D \<rbrakk> \<Longrightarrow> wf_native P D (M,Ts,T,meth)"
-apply(drule visible_method_exists)
-apply clarify
-apply(drule (1) class_wf)
-apply(drule map_of_SomeD)
-apply(auto simp add: wf_cdecl_def)
+  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T=Native in D \<rbrakk> \<Longrightarrow> D\<bullet>M(Ts) :: T"
+apply(drule (1) sees_wf_mdecl)
+apply(simp add: wf_mdecl_def)
 done
-
-lemma is_native_sees_method_overriding:
-  assumes wf: "wf_prog wf_md P"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>Tr = body in D"
-  and "is_native P T M"
-  and icto: "is_class_type_of T C"
-  shows "\<exists>Ts' Tr'. P \<turnstile> T\<bullet>M(Ts') :: Tr' \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> Tr' \<le> Tr"
-proof -
-  from `is_native P T M` obtain Ts' Tr' T'
-    where native: "P \<turnstile> T native M:Ts' \<rightarrow> Tr' in T'" unfolding is_native_def2 by blast
-  hence "P \<turnstile> T\<bullet>M(Ts') :: Tr'" ..
-  moreover {
-    from native sees icto have "P \<turnstile> T' \<le> Class D" by(rule native_call_sees_method)
-    moreover from native have "T'\<bullet>M(Ts') :: Tr'" unfolding native_call_def by simp
-    moreover from wf sees have "wf_native P D (M,Ts,Tr,body)" by(rule sees_wf_native)
-    ultimately have "P \<turnstile> Ts [\<le>] Ts'" "P \<turnstile> Tr' \<le> Tr" by auto }
-  ultimately show ?thesis by blast
-qed
-
-lemma native_not_native_overriding:
-  assumes wf: "wf_prog wf_md P"
-  and native: "P \<turnstile> T native M:Ts\<rightarrow>Tr in T'"
-  and "\<not> is_native P U M"
-  and "P \<turnstile> U \<le> T" "U \<noteq> NT"
-  shows "\<exists>C Ts' Tr' body D. is_class_type_of U C \<and> P \<turnstile> C sees M:Ts'\<rightarrow>Tr' = body in D \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> Tr' \<le> Tr \<and> P \<turnstile> Class C \<le> T'"
-using `\<not> is_native P U M`
-proof(rule contrapos_np)
-  assume not_sees: "\<not> ?thesis"
-  { fix C Ts' Tr' body D
-    assume icto: "is_class_type_of U C"
-      and sees: "P \<turnstile> C sees M: Ts'\<rightarrow>Tr' = body in D"
-    from icto have "P \<turnstile> T' \<le> Class D \<and> T' \<noteq> Class D"
-    proof cases
-      case (is_class_type_of_Array U')[simp]
-      hence [simp]: "D = Object" using sees by(auto dest: sees_method_decl_above)
-      from native have "P \<turnstile> T \<le> T'" unfolding native_call_def ..
-      with `P \<turnstile> U \<le> T` have "P \<turnstile> T' \<le> Class D"
-        by(auto intro: widen_array_object dest: Array_widen dest: Class_widen)
-      moreover from native sees `P \<turnstile> U \<le> T` have "T' \<noteq> Class D"
-        by(fastforce simp add: native_call_def dest: Array_widen)
-      ultimately show ?thesis ..
-    next
-      case is_class_type_of_Class[simp]
-      from native have "P \<turnstile> T \<le> T'" by(simp add: native_call_def)
-      with `P \<turnstile> U \<le> T` have "P \<turnstile> U \<le> T'" by(rule widen_trans)
-      then obtain C' where [simp]: "T' = Class C'" by(auto dest: Class_widen)
-      with `P \<turnstile> U \<le> T'` have "P \<turnstile> C \<preceq>\<^sup>* C'" by simp
-      moreover from sees have "P \<turnstile> C \<preceq>\<^sup>* D" by(rule sees_method_decl_above)
-      ultimately have "P \<turnstile> C' \<preceq>\<^sup>* D \<or> P \<turnstile> D \<preceq>\<^sup>* C'"
-        using single_valued_confluent[OF single_valued_subcls1[OF wf], of C C' D]
-        by(simp add: rtrancl_def)
-      hence "P \<turnstile> C' \<preceq>\<^sup>* D"
-      proof
-        assume "P \<turnstile> D \<preceq>\<^sup>* C'"
-        moreover
-        from wf sees have "wf_native P D (M,Ts',Tr',body)" by(rule sees_wf_native)
-        moreover from native have "Class C'\<bullet>M(Ts) :: Tr" unfolding native_call_def by simp
-        ultimately have "P \<turnstile> Ts [\<le>] Ts'" "P \<turnstile> Tr' \<le> Tr" by auto
-        with sees not_sees `P \<turnstile> C \<preceq>\<^sup>* C'` have False by auto
-        thus ?thesis ..
-      qed
-      moreover
-      from `U \<noteq> NT` `P \<turnstile> U \<le> T` have "T \<noteq> NT" by auto
-      then obtain D' where "is_class_type_of T D'" and "P \<turnstile> D' \<preceq>\<^sup>* C'"
-        by(auto intro: widen_is_class_type_of[OF _ `P \<turnstile> T \<le> T'`, of C'])
-      from `P \<turnstile> D' \<preceq>\<^sup>* C'` `P \<turnstile> C' \<preceq>\<^sup>* D` have "P \<turnstile> D' \<preceq>\<^sup>* D" by simp
-      with sees_method_idemp[OF sees] obtain Ts'' Tr'' body' D'' 
-        where sees': "P \<turnstile> D' sees M:Ts'' \<rightarrow> Tr'' = body' in D''"
-        by(auto dest: sees_method_mono[OF _ wf])
-      with `is_class_type_of T D'` native
-      have "P \<turnstile> C' \<preceq>\<^sup>* D''" "C' \<noteq> D''" by(auto simp add: native_call_def)
-      from `P \<turnstile> D' \<preceq>\<^sup>* D` sees_method_idemp[OF sees] sees'
-      have "P \<turnstile> D'' \<preceq>\<^sup>* D" by(rule sees_method_decl_mono)
-      have "C' \<noteq> D"
-      proof
-        assume "C' = D"
-        with `P \<turnstile> C' \<preceq>\<^sup>* D''` `P \<turnstile> D'' \<preceq>\<^sup>* D`
-        have "C' = D''" using subcls_antisym[OF wf, of C' D''] by simp
-        with `C' \<noteq> D''` show False by contradiction
-      qed
-      ultimately show ?thesis by simp
-    qed }
-  hence "P \<turnstile> U native M:Ts\<rightarrow>Tr in T'" using `U \<noteq> NT` `P \<turnstile> U \<le> T` `P \<turnstile> T native M:Ts\<rightarrow>Tr in T'`
-    unfolding native_call_def by(auto intro: widen_trans)
-  thus "is_native P U M" ..
-qed
 
 lemma Call_lemma:
   "\<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = m in D; P \<turnstile> C' \<preceq>\<^sup>* C; wf_prog wf_md P \<rbrakk>
   \<Longrightarrow> \<exists>D' Ts' T' m'.
        P \<turnstile> C' sees M:Ts'\<rightarrow>T' = m' in D' \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T' \<le> T \<and> P \<turnstile> C' \<preceq>\<^sup>* D'
-       \<and> is_type P T' \<and> (\<forall>T\<in>set Ts'. is_type P T) \<and> wf_md P D' (M,Ts',T',m')"
+       \<and> is_type P T' \<and> (\<forall>T\<in>set Ts'. is_type P T) \<and> (m' \<noteq> Native \<longrightarrow> wf_md P D' (M,Ts',T',the m'))"
 apply(frule (2) sees_method_mono)
 apply(fastforce intro:sees_method_decl_above dest:sees_wf_mdecl
                simp: wf_mdecl_def)
@@ -581,7 +487,7 @@ done
 lemma sub_Thread_sees_run:
   assumes wf: "wf_prog wf_md P"
   and PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
-  shows "\<exists>D mthd. P \<turnstile> C sees run: []\<rightarrow>Void = mthd in D"
+  shows "\<exists>D mthd. P \<turnstile> C sees run: []\<rightarrow>Void = \<lfloor>mthd\<rfloor> in D"
 proof -
   from class_Thread[OF wf] obtain T' fsT MsT
     where classT: "class P Thread = \<lfloor>(T', fsT, MsT)\<rfloor>" by blast
@@ -599,14 +505,23 @@ proof -
     by(fastforce)
   with ThreadMmT have Tseesrun: "P \<turnstile> Thread sees run: []\<rightarrow>Void = mthd in Thread"
     by(auto simp add: Method_def)
-  from sees_method_mono[OF PCThread wf Tseesrun] show ?thesis by auto
+  from sees_method_mono[OF PCThread wf Tseesrun]
+  obtain D' m' where "P \<turnstile> C sees run: []\<rightarrow>Void = m' in D'" by auto
+  moreover have "m' \<noteq> None"
+  proof
+    assume "m' = None"
+    with wf `P \<turnstile> C sees run: []\<rightarrow>Void = m' in D'` have "D'\<bullet>run([]) :: Void"
+      by(auto intro: sees_wf_native)
+    thus False by cases auto
+  qed
+  ultimately show ?thesis by auto
 qed
 
 lemma wf_prog_lift:
   assumes wf: "wf_prog (\<lambda>P C bd. A P C bd) P"
   and rule:
   "\<And>wf_md C M Ts C T m.
-   \<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T = m in C; is_class P C; set Ts \<subseteq> types P; A P C (M,Ts,T,m) \<rbrakk>
+   \<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in C; is_class P C; set Ts \<subseteq> types P; A P C (M,Ts,T,m) \<rbrakk>
    \<Longrightarrow> B P C (M,Ts,T,m)"
   shows "wf_prog (\<lambda>P C bd. B P C bd) P"
 proof(cases P)
@@ -620,8 +535,11 @@ proof(cases P)
      apply(simp add: is_class_def)
      apply(drule weak_map_of_SomeI)
      apply(simp add: Program)
-    apply(clarsimp simp add: Program wf_mdecl_def)
+    apply(clarsimp simp add: Program wf_mdecl_def split del: option.split)
     apply(drule (1) bspec)
+    apply clarsimp
+    apply(rule conjI)
+     apply clarsimp
     apply clarsimp
     apply(frule (1) map_of_SomeI)
     apply(rule rule[OF wf, unfolded Program])
@@ -774,10 +692,6 @@ subsection {* Code generation *}
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
-  [inductify] wf_native .
-
-code_pred
-  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
   [inductify]
   wf_overriding 
 .
@@ -797,7 +711,7 @@ definition wf_cdecl' :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> 'm
 where
   "wf_cdecl' wf_md P = (\<lambda>(C,(D,fs,ms)).
   (\<forall>f\<in>set fs. wf_fdecl P f) \<and> distinct_fst fs \<and>
-  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m \<and> wf_native P C m) \<and>
+  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m) \<and>
   distinct_fst ms \<and>
   (C \<noteq> Object \<longrightarrow> is_class P D \<and> (\<forall>m\<in>set ms. wf_overriding P D m)) \<and>
   (C = Thread \<longrightarrow> (\<exists>m. (run, [], Void, m) \<in> set ms)))"
@@ -809,7 +723,7 @@ by(simp add: acyclic_class_hierarchy_def subcls'_def)
 lemma wf_cdecl'_code [code]:
   "wf_cdecl' wf_md P = (\<lambda>(C,(D,fs,ms)).
   (\<forall>f\<in>set fs. wf_fdecl P f) \<and>  distinct_fst fs \<and>
-  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m \<and> wf_native P C m) \<and>
+  (\<forall>m\<in>set ms. wf_mdecl wf_md P C m) \<and>
   distinct_fst ms \<and>
   (C \<noteq> Object \<longrightarrow> is_class P D \<and> (\<forall>m\<in>set ms. wf_overriding P D m)) \<and>
   (C = Thread \<longrightarrow> ((run, [], Void) \<in> set (map (\<lambda>(M, Ts, T, b). (M, Ts, T)) ms))))"

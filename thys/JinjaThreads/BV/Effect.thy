@@ -108,10 +108,7 @@ where
 
 | eff\<^isub>i_Invoke:
   "eff\<^isub>i (Invoke M n, P, (ST,LT))          =
-  (let T = ST ! n;
-       U = if is_native P T M 
-           then snd (snd (native_method P T M))
-           else fst (snd (snd (method P (the (class_type_of T)) M)))
+  (let U = fst (snd (snd (method P (the (class_type_of (ST ! n))) M)))
    in (U # drop (n+1) ST, LT))"
 
 | eff\<^isub>i_Goto:
@@ -255,8 +252,7 @@ where
   "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
     (n < length ST \<and> 
     (ST!n \<noteq> NT \<longrightarrow>
-      (if is_native P (ST ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M(Ts) :: U
-       else \<exists>C D Ts T m. class_type_of (ST ! n) = \<lfloor>C\<rfloor> \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and> P \<turnstile> rev (take n ST) [\<le>] Ts)))"
+      (\<exists>C D Ts T m. class_type_of (ST ! n) = \<lfloor>C\<rfloor> \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and> P \<turnstile> rev (take n ST) [\<le>] Ts)))"
 | app\<^isub>i_MEnter:
   "app\<^isub>i (MEnter,P, pc,mxs,T\<^isub>r,(T#ST,LT)) = (is_refT T)"
 | app\<^isub>i_MExit:
@@ -581,18 +577,15 @@ lemma app\<^isub>i_Invoke_code:
   "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
   (n < length ST \<and> 
   (ST!n \<noteq> NT \<longrightarrow>
-    (if is_native P (ST ! n) M 
-     then Predicate.holds (Predicate.bind (external_WT_i_i_i_o_o P (ST ! n) M) 
-                                          (\<lambda>(Ts, U). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
-     else (case class_type_of (ST ! n) of Some C \<Rightarrow> 
-               Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P C M) 
-                                               (\<lambda>(Ts, _). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
-                              | _ \<Rightarrow> False))))"
+     (case class_type_of (ST ! n) of Some C \<Rightarrow> 
+         Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P C M) 
+                                          (\<lambda>(Ts, _). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
+      | _ \<Rightarrow> False)))"
 proof -
   have bind_Ex: "\<And>P f. Predicate.bind P f = Predicate.Pred (\<lambda>x. (\<exists>y. Predicate.eval P y \<and> Predicate.eval (f y) x))"
     by (rule pred_eqI) auto
   thus ?thesis
-    by (auto simp add: bind_Ex Predicate.single_def holds_eq eval_external_WT_i_i_i_o_o_conv eval_Method_i_i_i_o_o_o_o_conv split: ty.split)
+    by (auto simp add: bind_Ex Predicate.single_def holds_eq eval_Method_i_i_i_o_o_o_o_conv split: ty.split)
 qed
 
 lemma app\<^isub>i_Throw_code:

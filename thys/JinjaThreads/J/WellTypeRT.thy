@@ -82,17 +82,13 @@ inductive WTrt :: "'addr J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarr
     \<Longrightarrow> WTrt P h E (e1\<bullet>F{D}:=e2) Void"
 
 | WTrtCall:
-    "\<lbrakk> WTrt P h E e U; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
+    "\<lbrakk> WTrt P h E e U; is_class_type_of U C; P \<turnstile> C sees M:Ts \<rightarrow> T = meth in D;
        WTrts P h E es Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
     \<Longrightarrow> WTrt P h E (e\<bullet>M(es)) T"
 
 | WTrtCallNT:
     "\<lbrakk> WTrt P h E e NT; WTrts P h E es Ts \<rbrakk>
     \<Longrightarrow> WTrt P h E (e\<bullet>M(es)) T"
-
-| WTrtCallExternal:
-    "\<lbrakk> WTrt P h E e T; WTrts P h E es Ts; P \<turnstile> T\<bullet>M(Ts') :: U; P \<turnstile> Ts [\<le>] Ts' \<rbrakk>
-    \<Longrightarrow> WTrt P h E (e\<bullet>M(es)) U"
 
 | WTrtBlock:
     "\<lbrakk> WTrt P h (E(V\<mapsto>T)) e T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof\<^bsub>h\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
@@ -146,7 +142,7 @@ lemmas [intro!] =
   WTrtThrow WTrtTry WTrtNil WTrtCons
 
 lemmas [intro] =
-  WTrtFAcc WTrtFAccNT WTrtFAss WTrtFAssNT WTrtCall WTrtCallNT WTrtCallExternal
+  WTrtFAcc WTrtFAccNT WTrtFAss WTrtFAssNT WTrtCall WTrtCallNT
   WTrtAAcc WTrtAAccNT WTrtAAss WTrtAAssNT WTrtALength WTrtALengthNT 
 
 subsection{*Easy consequences*}
@@ -218,7 +214,6 @@ apply(fastforce simp: WTrtFAss)
 apply(fastforce simp: WTrtFAssNT)
 apply(fastforce simp: WTrtCall)
 apply(fastforce simp: WTrtCallNT)
-apply(fastforce intro: WTrtCallExternal)
 apply(fastforce simp: map_le_def)
 apply(fastforce)
 apply(fastforce)
@@ -250,7 +245,6 @@ apply(erule WTrtALength)
 apply(fastforce intro: WTrtFAcc has_visible_field)
 apply(fastforce simp: WTrtFAss dest: has_visible_field)
 apply(fastforce simp: WTrtCall)
-apply(fastforce intro: WTrtCallExternal)
 apply(clarsimp simp del: fun_upd_apply, blast intro: typeof_lit_typeof)
 apply(fastforce)+
 done
@@ -291,7 +285,6 @@ apply(fastforce simp: WTrtFAss del:WTrt_WTrts.intros WTrt_elim_cases)
 apply(fastforce simp: WTrtFAssNT)
 apply(fastforce simp: WTrtCall)
 apply(fastforce simp: WTrtCallNT)
-apply(fastforce intro: WTrtCallExternal)
 apply(fastforce intro: hext_typeof_mono)
 apply fastforce+
 done

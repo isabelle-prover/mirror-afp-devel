@@ -33,22 +33,6 @@ lemma wf_J_mdecl[simp]:
 abbreviation wf_J_prog :: "'addr J_prog \<Rightarrow> bool"
 where "wf_J_prog == wf_prog wf_J_mdecl"
 
-lemma wf_J_prog_wf_J_mdecl:
-  "\<lbrakk> wf_J_prog P; class P C = \<lfloor>(D, fds, mths)\<rfloor>; jmdcl \<in> set mths \<rbrakk>
-  \<Longrightarrow> wf_J_mdecl P C jmdcl"
-apply(cases P)
-apply (simp add: wf_prog_def)
-apply (simp add: wf_cdecl_def)
-apply (erule conjE)+
-apply(drule map_of_SomeD)
-apply (drule bspec, assumption)
-apply simp
-apply (erule conjE)+
-apply (drule bspec, assumption)
-apply (simp add: wf_mdecl_def split_beta)
-done
-(*>*)
-
 lemma wf_mdecl_wwf_mdecl: "wf_J_mdecl P C Md \<Longrightarrow> wwf_J_mdecl P C Md"
 (*<*)
 apply(clarsimp simp add: wwf_J_mdecl_def)
@@ -56,21 +40,8 @@ apply(frule WT_fv)
 apply(auto)
 done
 
-lemma wf_mdecl_mono: "\<lbrakk> wf_mdecl wf_md1 P C Md; wf_md1 P C Md \<Longrightarrow> wf_md2 P C Md \<rbrakk> \<Longrightarrow> wf_mdecl wf_md2 P C Md"
-apply(clarsimp simp add:  wf_mdecl_def)
-done
-
 lemma wf_prog_wwf_prog: "wf_J_prog P \<Longrightarrow> wwf_J_prog P"
-(*<*)
-apply(clarsimp simp add:wf_prog_def wf_cdecl_def)
-apply(drule bspec, assumption)
-apply(clarsimp)
-apply(drule bspec, assumption)
-apply(clarify)
-apply(erule wf_mdecl_mono)
-apply(erule wf_mdecl_wwf_mdecl)
-done
-(*>*)
+by(erule wf_prog_lift)(erule wf_mdecl_wwf_mdecl)
 
 subsection {* Code generation *}
 

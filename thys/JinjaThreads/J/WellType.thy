@@ -78,13 +78,9 @@ where
   \<Longrightarrow> is_lub,P,E \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :: Void"
 
 | WTCall:
-  "\<lbrakk> is_lub,P,E \<turnstile> e :: U; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: U; is_class_type_of U C; P \<turnstile> C sees M:Ts \<rightarrow> T = meth in D;
      is_lub,P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>M(es) :: T"
-
-| WTExternal:
-  "\<lbrakk> is_lub,P,E \<turnstile> e :: T; is_lub,P,E \<turnstile> es [::] Ts; P \<turnstile> T\<bullet>M(Ts') :: U; P \<turnstile> Ts [\<le>] Ts' \<rbrakk>
-  \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>M(es) :: U"
 
 | WTBlock:
   "\<lbrakk> is_type P T;  is_lub,P,E(V \<mapsto> T) \<turnstile> e :: T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
@@ -126,7 +122,6 @@ abbreviation WTs' :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr li
 where "WTs' P \<equiv> WTs (TypeRel.is_lub P) P"
 
 declare WT_WTs.intros[intro!]
-declare WTCall[rule del, intro] WTExternal[rule del, intro]
 
 inductive_simps WTs_iffs [iff]:
   "is_lub',P,E \<turnstile> [] [::] Ts"
@@ -169,9 +164,6 @@ inductive_cases WT_elim_cases[elim!]:
   "is_lub',P,E \<turnstile> sync(o') e :: T"
   "is_lub',P,E \<turnstile> insync(a) e :: T"
 
-inductive_cases WT_callE:
-  "is_lub',P,E \<turnstile> e\<bullet>M(es) :: T"
-
 lemma fixes is_lub :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("\<turnstile> lub'((_,/ _)') = _" [51,51,51] 50)
   assumes is_lub_unique: "\<And>T1 T2 T3 T4. \<lbrakk> \<turnstile> lub(T1, T2) = T3; \<turnstile> lub(T1, T2) = T4 \<rbrakk> \<Longrightarrow> T3 = T4"
   shows WT_unique: "\<lbrakk> is_lub,P,E \<turnstile> e :: T; is_lub,P,E \<turnstile> e :: T' \<rbrakk> \<Longrightarrow> T = T'"
@@ -190,12 +182,7 @@ apply fastforce
 apply fastforce
 apply(fastforce dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
 apply(fastforce dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
-apply(erule WT_callE)
- apply(fastforce dest: sees_method_fun simp add: is_class_type_of_conv_class_type_of_Some)
-apply(fastforce dest: external_WT_is_native)
-apply(erule WT_callE)
- apply(fastforce dest: external_WT_is_native)
-apply(fastforce dest: external_WT_determ)
+apply(fastforce dest: sees_method_fun simp add: is_class_type_of_conv_class_type_of_Some)
 apply fastforce
 apply fastforce
 apply fastforce
@@ -224,7 +211,6 @@ apply(simp add: WTAAss, fastforce)
 apply(simp add: WTALength, fastforce)
 apply(fastforce simp: WTFAcc)
 apply(fastforce simp: WTFAss del:WT_WTs.intros WT_elim_cases)
-apply(clarsimp, rule WTCall, blast+)[1]
 apply(fastforce)
 apply(fastforce simp: map_le_def WTBlock)
 apply(fastforce simp: WTSynchronized)
@@ -270,7 +256,6 @@ apply(simp)
 apply(simp add:sees_field_is_type[OF _ wf])
 apply(simp)
 apply(fastforce dest: sees_wf_mdecl[OF wf] simp:wf_mdecl_def)
-apply(fastforce dest: external_WT_is_type[OF wf])
 apply(fastforce simp add: ran_def split: split_if_asm)
 apply(simp add: is_class_Object[OF wf])
 apply(simp)
@@ -331,7 +316,6 @@ by(auto)
 lemmas [code_pred_intro] =
   WTNew WTNewArray WTCast WTInstanceOf WTVal WTVar WTBinOp WTLAss WTAAcc WTAAss WTALength WTFAcc WTFAss WTCall 
 declare 
-  WTExternal [code_pred_intro WTExternal']
   WTBlock_code [code_pred_intro WTBlock']
 lemmas [code_pred_intro] =
   WTSynchronized WTSeq WTCond WTWhile WTThrow WTTry
@@ -347,8 +331,6 @@ proof -
   case WT
   from WT.prems show thesis
   proof cases
-    case WTExternal thus ?thesis by(rule WTExternal'[OF refl refl refl _ refl])
-  next
     case (WTBlock T V e vo)
     thus thesis using WTBlock'[OF refl refl refl, of V T vo e] by(auto)
   qed(assumption|erule that[OF refl refl refl]|rule refl)+

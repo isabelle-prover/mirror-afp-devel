@@ -89,7 +89,7 @@ locale heap_progress =
   and P :: "'m prog" 
   +
   assumes heap_read_total: "\<lbrakk> hconf h; P,h \<turnstile> a@al : T \<rbrakk> \<Longrightarrow> \<exists>v. heap_read h a al v \<and> P,h \<turnstile> v :\<le> T"
-  and heap_write_total: "\<lbrakk> P,h \<turnstile> a@al : T; P,h \<turnstile> v :\<le> T \<rbrakk> \<Longrightarrow> \<exists>h'. heap_write h a al v h'"
+  and heap_write_total: "\<lbrakk> hconf h; P,h \<turnstile> a@al : T; P,h \<turnstile> v :\<le> T \<rbrakk> \<Longrightarrow> \<exists>h'. heap_write h a al v h'"
 
 locale heap_conf_read =
   heap_conf

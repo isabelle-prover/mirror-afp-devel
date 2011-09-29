@@ -59,7 +59,7 @@ print_translation {*
 typ "('addr, 'thread_id, 'heap) J_state"
 
 definition extNTA2J :: "'addr J_prog \<Rightarrow> (cname \<times> mname \<times> 'addr) \<Rightarrow> 'addr expr \<times> 'addr locals"
-where "extNTA2J P = (\<lambda>(C, M, a). let (D,Ts,T,pns,body) = method P C M
+where "extNTA2J P = (\<lambda>(C, M, a). let (D,Ts,T,meth) = method P C M; (pns,body) = the meth
                                  in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, empty))"
 
 abbreviation (in J_heap_base) 
@@ -69,7 +69,7 @@ where
    start_state (\<lambda>C M Ts T (pns, body) vs. (blocks (this # pns) (Class C # Ts) (Null # vs) body, empty))"
 
 lemma extNTA2J_iff [simp]:
-  "extNTA2J P (C, M, a) = ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (snd (snd (snd (method P C M))))}, empty)"
+  "extNTA2J P (C, M, a) = ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (the (snd (snd (snd (method P C M)))))}, empty)"
 by(simp add: extNTA2J_def split_beta)
 
 abbreviation extTA2J :: 
@@ -261,12 +261,13 @@ where
   extTA,P,t \<turnstile> \<langle>(Val v)\<bullet>M(es),s\<rangle> -ta\<rightarrow> \<langle>(Val v)\<bullet>M(es'),s'\<rangle>"
 
 | RedCall:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>U\<rfloor>; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D; 
+  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>U\<rfloor>; is_class_type_of U C; P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns,body)\<rfloor> in D; 
     size vs = size pns; size Ts = size pns \<rbrakk>
   \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -\<epsilon>\<rightarrow> \<langle>blocks (this # pns) (Class D # Ts) (Addr a # vs) body, s\<rangle>"
 
 | RedCallExternal:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>T\<rfloor>; is_native P T M; P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>;
+  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>U\<rfloor>; is_class_type_of U C; P \<turnstile> C sees M:Ts\<rightarrow>T = Native in D;
+     P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>;
      ta' = extTA ta; e' = extRet2J ((addr a)\<bullet>M(map Val vs)) va; s' = (h', lcl s) \<rbrakk>
   \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -ta'\<rightarrow> \<langle>e', s'\<rangle>"
 
@@ -535,16 +536,16 @@ qed auto
 
 lemma red_Suspend_is_call:
   "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>a vs T. call e' = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_native P T wait"
+  \<Longrightarrow> \<exists>a vs T C Ts Tr D. call e' = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees wait:Ts\<rightarrow>Tr = Native in D"
   and reds_Suspend_is_calls:
   "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>a vs T. calls es' = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_native P T wait"
+  \<Longrightarrow> \<exists>a vs T C Ts Tr D. calls es' = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees wait:Ts\<rightarrow>Tr = Native in D"
 proof(induct rule: red_reds.inducts)
   case RedCallExternal
   thus ?case
     apply clarsimp
     apply(frule red_external_Suspend_StaySame, simp)
-    apply(drule red_external_Suspend_waitD, simp_all)
+    apply(drule red_external_Suspend_waitD, fastforce+)
     done
 qed auto
 
@@ -569,12 +570,13 @@ subsection {* Code generation *}
 context J_heap_base begin
 
 lemma RedCall_code:
-  "\<lbrakk> is_vals es; typeof_addr (hp s) a = \<lfloor>U\<rfloor>; is_class_type_of U C; \<not> is_native P U M; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D; 
+  "\<lbrakk> is_vals es; typeof_addr (hp s) a = \<lfloor>U\<rfloor>; is_class_type_of U C; P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns,body)\<rfloor> in D; 
     size es = size pns; size Ts = size pns \<rbrakk>
   \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>blocks (this # pns) (Class D # Ts) (Addr a # map the_Val es) body, s\<rangle>"
 
   and RedCallExternal_code:
-  "\<lbrakk> is_vals es; typeof_addr (hp s) a = \<lfloor>T\<rfloor>; is_native P T M; P,t \<turnstile> \<langle>a\<bullet>M(map the_Val es), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<rbrakk>
+  "\<lbrakk> is_vals es; typeof_addr (hp s) a = \<lfloor>U\<rfloor>; is_class_type_of U C; P \<turnstile> C sees M:Ts\<rightarrow>T = Native in D;
+     P,t \<turnstile> \<langle>a\<bullet>M(map the_Val es), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<rbrakk>
   \<Longrightarrow> extTA,P,t \<turnstile> \<langle>(addr a)\<bullet>M(es), s\<rangle> -extTA ta\<rightarrow> \<langle>extRet2J ((addr a)\<bullet>M(es)) va, (h', lcl s)\<rangle>"
 
   and RedCallNull_code:
@@ -660,8 +662,8 @@ proof -
     with RedCall_code[OF refl refl refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s pns D Ts body U C T]
     show ?thesis by(simp add: o_def)
   next
-    case (RedCallExternal s a T M vs ta va h' ta' e' s')
-    with RedCallExternal_code[OF refl refl refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s ta va h' T]
+    case (RedCallExternal s a U C M Ts T D vs ta va h' ta' e' s')
+    with RedCallExternal_code[OF refl refl refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s ta va h' U C Ts T D]
     show ?thesis by(simp add: o_def)
   next
     case (RedCallNull M vs s)

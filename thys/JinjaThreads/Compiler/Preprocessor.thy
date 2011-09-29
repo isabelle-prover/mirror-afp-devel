@@ -25,11 +25,11 @@ lemma fixes is_lub
   shows WT_compP: "is_lub,P,E \<turnstile> e :: T \<Longrightarrow> is_lub,compP f P,E \<turnstile> e :: T"
   and WTs_compP: "is_lub,P,E \<turnstile> es [::] Ts \<Longrightarrow> is_lub,compP f P,E \<turnstile> es [::] Ts"
 proof(induct rule: WT_WTs.inducts)
-  case (WTCall E e U C M Ts T pns body D es Ts')
-  from `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
-  have "compP f P \<turnstile> C sees M: Ts\<rightarrow>T = (fst (f D M Ts T (pns, body)), snd (f D M Ts T (pns, body))) in D"
+  case (WTCall E e U C M Ts T meth D es Ts')
+  from `P \<turnstile> C sees M: Ts\<rightarrow>T = meth in D`
+  have "compP f P \<turnstile> C sees M: Ts\<rightarrow>T = Option.map (f D M Ts T) meth in D"
     by(auto dest: sees_method_compP[where f=f])
-  with WTCall show ?case by(auto simp del: pair_collapse)
+  with WTCall show ?case by(auto)
 qed(auto simp del: fun_upd_apply)
 
 lemma fixes is_lub
@@ -50,30 +50,30 @@ proof -
     unfolding annotate_prog_code_def_raw
   proof(rule wf_prog_compPD)
     fix C M Ts T m
-    assume "compP (annotate_Mb_code P) P \<turnstile> C sees M: Ts\<rightarrow>T = annotate_Mb_code P C M Ts T m in C"
-      and "wf_mdecl ?wf_md (compP (annotate_Mb_code P) P) C (M, Ts, T, annotate_Mb_code P C M Ts T m)"
+    assume "compP (annotate_Mb_code P) P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>annotate_Mb_code P C M Ts T m\<rfloor> in C"
+      and "wf_mdecl ?wf_md (compP (annotate_Mb_code P) P) C (M, Ts, T, \<lfloor>annotate_Mb_code P C M Ts T m\<rfloor>)"
     moreover obtain pns body where "m = (pns, body)" by(cases m)
-    ultimately show "wf_mdecl ?wf_md P C (M, Ts, T, m)"
+    ultimately show "wf_mdecl ?wf_md P C (M, Ts, T, \<lfloor>m\<rfloor>)"
       by(fastforce simp add: annotate_Mb_code_def annotate_code_def wf_mdecl_def THE_default_def the_equality Anno_code_def split: split_if_asm dest: Anno_block_types)
   qed
 
   { fix C D fs ms M Ts T pns body
     assume "(C, D, fs, ms) \<in> set (classes P)"
-      and "(M, Ts, T, pns, body) \<in> set ms"
+      and "(M, Ts, T, \<lfloor>(pns, body)\<rfloor>) \<in> set ms"
     from `(C, D, fs, ms) \<in> set (classes P)` have "class P C = \<lfloor>(D, fs, ms)\<rfloor>" using wf'
       by(cases P)(auto simp add: wf_prog_def dest: map_of_SomeI)
-    with wf' have sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in C"
-      using `(M, Ts, T, pns, body) \<in> set ms` by(rule mdecl_visible)
+    with wf' have sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in C"
+      using `(M, Ts, T, \<lfloor>(pns, body)\<rfloor>) \<in> set ms` by(rule mdecl_visible)
 
     from sees_method_compP[OF this, where f="annotate_Mb_code P"]
-    have sees': "annotate_prog_code P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, annotate_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body) in C"
+    have sees': "annotate_prog_code P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, annotate_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body)\<rfloor> in C"
       unfolding annotate_prog_code_def annotate_Mb_code_def by(auto)
     with wf
-    have "wf_mdecl wf_J_mdecl (annotate_prog_code P) C (M, Ts, T, pns, annotate_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body)"
+    have "wf_mdecl wf_J_mdecl (annotate_prog_code P) C (M, Ts, T, \<lfloor>(pns, annotate_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body)\<rfloor>)"
       by(rule sees_wf_mdecl)
     hence "set Ts \<subseteq> types P" by(auto simp add: wf_mdecl_def annotate_prog_code_def)
     moreover from sees have "is_class P C" by(rule sees_method_is_class)
-    moreover from wf' sees have "wf_mdecl ?wf_md P C (M, Ts, T, pns, body)" by(rule sees_wf_mdecl)
+    moreover from wf' sees have "wf_mdecl ?wf_md P C (M, Ts, T, \<lfloor>(pns, body)\<rfloor>)" by(rule sees_wf_mdecl)
     hence "set (block_types body) \<subseteq> types P" by(simp add: wf_mdecl_def)
     ultimately have "ran [this \<mapsto> Class C, pns [\<mapsto>] Ts] \<union> set (block_types body) \<subseteq> types P"
       by(auto simp add: ran_def wf_mdecl_def map_upds_def split: split_if_asm dest!: map_of_SomeD set_zip_rightD)
@@ -81,7 +81,7 @@ proof -
       unfolding annotate_code_def annotate_def
       by -(rule arg_cong[where f="THE_default body"], auto intro!: ext intro: Anno_code_into_Anno[OF wf'] Anno_into_Anno_code[OF wf']) }
   thus ?thesis unfolding annotate_prog_code_def annotate_prog_def
-    by(cases P)(auto simp add: compC_def compM_def annotate_Mb_def annotate_Mb_code_def)
+    by(cases P)(auto simp add: compC_def compM_def annotate_Mb_def annotate_Mb_code_def Option.map_def)
 qed
 
 end

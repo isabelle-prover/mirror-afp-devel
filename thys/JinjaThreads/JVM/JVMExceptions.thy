@@ -25,7 +25,7 @@ where
                                    else match_ex_table P C pc es)"
 
 abbreviation ex_table_of :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table"
-where "ex_table_of P C M == snd (snd (snd (snd (snd (snd(method P C M))))))"
+where "ex_table_of P C M == snd (snd (snd (the (snd (snd (snd(method P C M)))))))"
 
 lemma match_ex_table_SomeD:
   "match_ex_table P C pc xt = Some (pc',d') \<Longrightarrow> 

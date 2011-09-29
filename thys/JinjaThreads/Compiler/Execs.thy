@@ -1908,7 +1908,7 @@ by(cases ins)(simp_all split: split_if_asm)
 
 lemma exec_move_exec_1:
   assumes exec: "exec_move ci P t body h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = body in D"
+  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D"
   shows "exec_1 (compP2 P) t (xcp, h, (stk, loc, C, M, pc) # frs) ta (xcp', h', (stk', loc', C, M, pc') # frs)"
 using exec unfolding exec_move_def
 proof(cases)
@@ -1932,7 +1932,7 @@ qed
 
 lemma \<tau>exec_move_\<tau>exec_1:
   assumes exec: "\<tau>exec_move ci P t body h (stk, loc, pc, xcp) (stk', loc', pc', xcp')"
-  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = body in D"
+  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D"
   shows "\<tau>exec_1 (compP2 P) t (xcp, h, (stk, loc, C, M, pc) # frs) (xcp', h, (stk', loc', C, M, pc') # frs)"
 proof(rule \<tau>exec_1I)
   from exec obtain exec': "exec_move ci P t body h (stk, loc, pc, xcp) \<epsilon> h (stk', loc', pc', xcp')"
@@ -1953,27 +1953,17 @@ qed
 
 lemma \<tau>Exec_mover_\<tau>Exec_1r:
   assumes move: "\<tau>Exec_mover ci P t body h (stk, loc, pc, xcp) (stk', loc', pc', xcp')"
-  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = body in D"
+  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D"
   shows "\<tau>Exec_1r (compP2 P) t (xcp, h, (stk, loc, C, M, pc) # frs') (xcp', h, (stk', loc', C, M, pc') # frs')"
 using move
 by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl \<tau>exec_move_\<tau>exec_1[OF _ sees])+
 
 lemma \<tau>Exec_movet_\<tau>Exec_1t:
   assumes move: "\<tau>Exec_movet ci P t body h (stk, loc, pc, xcp) (stk', loc', pc', xcp')"
-  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = body in D"
+  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D"
   shows "\<tau>Exec_1t (compP2 P) t (xcp, h, (stk, loc, C, M, pc) # frs') (xcp', h, (stk', loc', C, M, pc') # frs')"
 using move
 by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl \<tau>exec_move_\<tau>exec_1[OF _ sees])+
-
-lemma exec_meth_\<tau>_heap_unchanged:
-  "\<lbrakk> \<tau>move2 P h stk e pc None; (ta, xcp', h', frs') \<in> exec_instr (compE2 e ! pc) P t h stk loc C M pc' frs \<rbrakk> \<Longrightarrow> h' = h"
-apply(cases "compE2 e ! pc")
-apply(auto simp add: \<tau>move2_iff split_beta \<tau>moves2_iff split: split_if_asm sum.split_asm dest: \<tau>external_red_external_aggr_heap_unchanged)
-done
-
-lemma exec_meth_\<tau>s_heap_unchanged:
-  "\<lbrakk> \<tau>moves2 P h stk es pc None; (ta, xcp', h', frs') \<in> exec_instr (compEs2 es ! pc) P t h stk loc C M pc' frs \<rbrakk> \<Longrightarrow> h' = h"
-by(cases "compEs2 es ! pc")(auto simp add: \<tau>move2_iff \<tau>moves2_iff split_beta split: split_if_asm sum.split_asm dest: \<tau>external_red_external_aggr_heap_unchanged)
 
 lemma \<tau>Exec_1r_rtranclpD:
   "\<tau>Exec_1r P t (xcp, h, frs) (xcp', h', frs')

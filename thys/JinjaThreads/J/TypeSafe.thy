@@ -42,8 +42,9 @@ next
   case RedFAss thus ?case
     by(fastforce elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def dest: typeof_addr_eq_Some_conv)
 next
-  case (RedCallExternal s a U M vs ta va h' ta' e' s')
-  hence "P,hp s \<turnstile> a\<bullet>M(vs) : T" by(auto intro: external_WT'.intros)
+  case (RedCallExternal s a U C M Ts T' D vs ta va h' ta' e' s')
+  hence "P,hp s \<turnstile> a\<bullet>M(vs) : T"
+    by(fastforce simp add: external_WT'_iff is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
   with RedCallExternal show ?case by(auto dest: external_call_hconf)
 qed auto
 
@@ -90,7 +91,7 @@ next
   with `P,h' \<turnstile> x (:\<le>) E` show ?case
     by(auto simp add: lconf_def split: split_if_asm)
 next
-  case (RedCallExternal s a U M vs ta va h' ta' e' s')
+  case (RedCallExternal s a U C M Ts T' D vs ta va h' ta' e' s')
   from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` have "hp s \<unlhd> h'" by(rule red_external_hext)
   with `s' = (h', lcl s)` `P,hp s \<turnstile> lcl s (:\<le>) E` show ?case by(auto intro: lconf_hext)
 qed auto
@@ -550,11 +551,10 @@ next
   -- "We distinguish if @{term e} has type @{term NT} or a Class type"
   from wt show ?case
   proof(rule WTrt_elim_cases)
-    fix T' C Ts pns body D Us
+    fix T' C Ts meth D Us
     assume wte: "P,E,hp s \<turnstile> e : T'" and icto: "is_class_type_of T' C"
-      and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
+      and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = meth in D"
       and wtes: "P,E,hp s \<turnstile> es [:] Us" and subs: "P \<turnstile> Us [\<le>] Ts"
-      and nexc: "\<not> is_native P T' M"
     obtain U where wte': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> T'"
       using IH[OF conf wte tconf] by blast
     show ?thesis
@@ -569,24 +569,13 @@ next
         where icto': "is_class_type_of U C'" and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C"
         by(rule widen_is_class_type_of)
 
-      obtain Ts' T' pns' body' D'
-	where method': "P \<turnstile> C' sees M:Ts'\<rightarrow>T' = (pns',body') in D'"
+      obtain Ts' T' meth' D'
+	where method': "P \<turnstile> C' sees M:Ts'\<rightarrow>T' = meth' in D'"
 	and subs': "P \<turnstile> Ts [\<le>] Ts'" and sub': "P \<turnstile> T' \<le> T"
 	using Call_lemma[OF method "subclass" wf] by fast
       have wtes': "P,E,hp s' \<turnstile> es [:] Us"
 	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
-      show ?thesis
-      proof(cases "is_native P U M")
-        case False
-        with wtes' wte' icto' subs method' subs' sub'
-        show ?thesis by(blast intro:widens_trans)
-      next
-        case True
-        from is_native_sees_method_overriding[OF wf method' True icto']
-        obtain Ts'' Tr' where "P \<turnstile> U\<bullet>M(Ts'') :: Tr'" "P \<turnstile> Ts' [\<le>] Ts''" "P \<turnstile> Tr' \<le> T'" by blast
-        with wtes' wte' icto' subs subs' sub' True
-        show ?thesis by(blast intro:widens_trans widen_trans)
-      qed
+      show ?thesis using wtes' wte' icto' subs method' subs' sub' by(blast intro:widens_trans)
     qed
   next
     fix Ts
@@ -597,39 +586,6 @@ next
     have "P,E,hp s' \<turnstile> es [:] Ts"
       by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
     ultimately show ?thesis by(blast intro!:WTrtCallNT)
-  next
-    fix U Ts Ts'
-    assume wte: "P,E,hp s \<turnstile> e : U" and wtes: "P,E,hp s \<turnstile> es [:] Ts"
-      and wtext: "P \<turnstile> U\<bullet>M(Ts') :: T" and sub: "P \<turnstile> Ts [\<le>] Ts'"
-    from IH[OF conf wte tconf] obtain U' where wte': "P,E,hp s' \<turnstile> e' : U'" 
-      and U': "P \<turnstile> U' \<le> U" by(blast)
-    note wtes' = WTrts_hext_mono[OF wtes red_hext_incr[OF red]]
-    show ?thesis
-    proof(cases "U' = NT")
-      case True
-      with wte' wtes' show ?thesis by(blast intro: WTrtCallNT)
-    next
-      case False
-      from wtext obtain Ti where native: "P \<turnstile> U native M:Ts' \<rightarrow> T in Ti" by cases
-      show ?thesis
-      proof(cases "is_native P U' M")
-        case True
-        then obtain Ts'' T'' Ti' where native': "P \<turnstile> U' native M: Ts'' \<rightarrow> T'' in Ti'" by cases
-        with native have "P \<turnstile> Ts' [\<le>] Ts''" "P \<turnstile> T'' \<le> T" using U' by(rule native_native_overriding)+
-        moreover from native' have "P \<turnstile> U'\<bullet>M(Ts'') :: T''" ..
-        ultimately show ?thesis using wte' wtes' sub
-          by(blast intro: WTrtCallExternal widens_trans)
-      next
-        case False
-        from native_not_native_overriding[OF wf native False U' `U' \<noteq> NT`]
-        obtain C Ts'' Tr' pns body D
-          where "is_class_type_of U' C"
-          and "P \<turnstile> C sees M: Ts''\<rightarrow>Tr' = (pns, body) in D"
-          and "P \<turnstile> Ts' [\<le>] Ts''" "P \<turnstile> Tr' \<le> T" by auto
-        with wte' wtes' sub False show ?thesis
-          by(blast intro: widens_trans)
-      qed
-    qed
   qed
 next
   case (CallParams es s ta es' s' v M T E)
@@ -640,16 +596,15 @@ next
    and tconf: "P,hp s \<turnstile> t \<surd>t" by fact+
   from wt show ?case
   proof (rule WTrt_elim_cases)
-    fix U C Ts pns body D Us
+    fix U C Ts meth D Us
     assume wte: "P,E,hp s \<turnstile> Val v : U" and icto: "is_class_type_of U C"
-      and "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
+      and "P \<turnstile> C sees M:Ts\<rightarrow>T = meth in D"
       and wtes: "P,E,hp s \<turnstile> es [:] Us" and "P \<turnstile> Us [\<le>] Ts"
-      and nexc: "\<not> is_native P U M"
     moreover have "P,E,hp s' \<turnstile> Val v : U"
       by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
     moreover obtain Us' where "P,E,hp s' \<turnstile> es' [:] Us'" "P \<turnstile> Us' [\<le>] Us"
       using IH[OF conf wtes tconf] by blast
-    ultimately show ?thesis using nexc by(fastforce intro:WTrtCall widens_trans)
+    ultimately show ?thesis by(fastforce intro:WTrtCall widens_trans)
   next
     fix Us
     assume null: "P,E,hp s \<turnstile> Val v : NT" and wtes: "P,E,hp s \<turnstile> es [:] Us"
@@ -658,28 +613,17 @@ next
     obtain Us' where "P,E,hp s' \<turnstile> es' [:] Us' \<and> P \<turnstile> Us' [\<le>] Us"
       using IH[OF conf wtes tconf] by blast
     ultimately show ?thesis by(fastforce intro:WTrtCallNT)
-  next
-    fix U Ts Ts''
-    assume wte: "P,E,hp s \<turnstile> Val v : U" 
-      and wtes: "P,E,hp s \<turnstile> es [:] Ts"
-      and wtext: "P \<turnstile> U\<bullet>M(Ts'') :: T" and sub': "P \<turnstile> Ts [\<le>] Ts''"
-    from IH[OF conf wtes tconf] obtain Ts' where wtes': "P,E,hp s' \<turnstile> es' [:] Ts'"
-      and sub: "P \<turnstile> Ts' [\<le>] Ts" by blast
-    from wte reds_hext_incr[OF reds] have wte': "P,E,hp s' \<turnstile> Val v : U"
-      by(rule WTrt_hext_mono)
-    thus ?thesis using wtes' wtext sub' sub by(blast intro: widens_trans)
   qed
 next
   case (RedCall s a U C M Ts T pns body D vs T' E)
   have hp: "typeof_addr (hp s) a = \<lfloor>U\<rfloor>"
     and icto: "is_class_type_of U C"
-    and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns,body) in D"
-    and wt: "P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T'" 
-    and nexc: "\<not> is_native P U M" by fact+
+    and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns,body)\<rfloor> in D"
+    and wt: "P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T'" by fact+
   obtain Ts' where wtes: "P,E,hp s \<turnstile> map Val vs [:] Ts'"
     and subs: "P \<turnstile> Ts' [\<le>] Ts" and T'isT: "T' = T"
-    using wt method hp wf nexc icto
-    by(auto elim!: WTrt_elim_cases dest: sees_method_fun external_WT_is_native map_eq_imp_length_eq intro: widens_refl simp add: is_class_type_of_conv_class_type_of_Some)
+    using wt method hp wf icto
+    by(auto simp add: is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
   from wtes subs have length_vs: "length vs = length Ts"
     by(auto simp add: WTrts_conv_list_all2 dest!: list_all2_lengthD)
   from icto have UsubD: "P \<turnstile> U \<le> Class C" by(rule is_class_type_of_widenD)
@@ -696,12 +640,15 @@ next
     by(auto simp add:wt_blocks rel_list_all2_Cons2 intro: widen_trans)
   with T''subT T'isT show ?case by blast
 next
-  case (RedCallExternal s a T M vs ta va h' ta' e' s' Ty)
+  case (RedCallExternal s a U C M Ts T' D vs ta va h' ta' e' s')
   from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` have "hp s \<unlhd> h'" by(rule red_external_hext)
-  with `P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : Ty`
-  have "P,E,h' \<turnstile> addr a\<bullet>M(map Val vs) : Ty" by(rule WTrt_hext_mono)
-  with RedCallExternal show ?case
-    by(auto intro: red_external_conf_extRet[OF wf] intro!: wt_external_call intro!: external_WT'.intros simp add: sconf_def)
+  with `P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T`
+  have "P,E,h' \<turnstile> addr a\<bullet>M(map Val vs) : T" by(rule WTrt_hext_mono)
+  moreover from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `is_class_type_of U C` `P \<turnstile> C sees M: Ts\<rightarrow>T' = Native in D` `P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T`
+  have "P,hp s \<turnstile> a\<bullet>M(vs) : T'"
+    by(fastforce simp add: external_WT'_iff is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
+  ultimately show ?case using RedCallExternal
+    by(auto 4 3 intro: red_external_conf_extRet[OF wf] intro!: wt_external_call simp add: sconf_def is_class_type_of_conv_class_type_of_Some dest: sees_method_fun[where C=C])
 next
   case RedCallNull thus ?case unfolding sconf_def
     by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])

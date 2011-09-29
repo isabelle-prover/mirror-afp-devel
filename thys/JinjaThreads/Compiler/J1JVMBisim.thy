@@ -1964,7 +1964,7 @@ done
 inductive bisim1_fr :: "'addr J1_prog \<Rightarrow> 'heap \<Rightarrow> 'addr expr1 \<times> 'addr locals1 \<Rightarrow> 'addr frame \<Rightarrow> bool"
 for P :: "'addr J1_prog" and h :: 'heap
 where
-  "\<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = body in D;
+  "\<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D;
      P,blocks1 0 (Class D#Ts) body, 0, h \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, None);
      call1 e = \<lfloor>(a, M', vs)\<rfloor>;
      max_vars e \<le> length xs \<rbrakk>
@@ -4955,7 +4955,7 @@ for t :: 'thread_id and h :: 'heap
 where
   bl1_Normal:
   "\<lbrakk> compTP P \<turnstile> t:(xcp, h, (stk, loc, C, M, pc) # frs) \<surd>;
-     P \<turnstile> C sees M : Ts\<rightarrow>T = body in D;
+     P \<turnstile> C sees M : Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D;
      P,blocks1 0 (Class D#Ts) body, 0, h \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, xcp); max_vars e \<le> length xs;
      list_all2 (bisim1_fr P h) exs frs \<rbrakk>
   \<Longrightarrow> bisim1_list1 t h (e, xs) exs xcp ((stk, loc, C, M, pc) # frs)"
@@ -4976,7 +4976,7 @@ lemma new_thread_conf_compTP:
   assumes hconf: "hconf h" "preallocated h"
   and ha: "typeof_addr h a = \<lfloor>Class C\<rfloor>"
   and sub: "typeof_addr h (thread_id2addr t) = \<lfloor>Class C'\<rfloor>" "P \<turnstile> C' \<preceq>\<^sup>* Thread"
-  and sees: "P \<turnstile> C sees M: []\<rightarrow>T = meth in D"
+  and sees: "P \<turnstile> C sees M: []\<rightarrow>T = \<lfloor>meth\<rfloor> in D"
   shows "compTP P \<turnstile> t:(None, h, [([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)]) \<surd>"
 proof -
   from ha sees_method_decl_above[OF sees]
@@ -5000,18 +5000,18 @@ lemma ta_bisim12_extTA2J1_extTA2JVM:
   assumes wf: "wf_J1_prog P"
   and nt: "\<And>n T C M a h. \<lbrakk> n < length \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> ! n = NewThread T (C, M, a) h \<rbrakk> 
            \<Longrightarrow> typeof_addr h a = \<lfloor>Class C\<rfloor> \<and> (\<exists>C'. typeof_addr h (thread_id2addr T) = \<lfloor>Class C'\<rfloor> \<and> P \<turnstile> C' \<preceq>\<^sup>* Thread) \<and>
-              (\<exists>T meth D. P \<turnstile> C sees M:[]\<rightarrow>T =meth in D) \<and> hconf h \<and> preallocated h"
+              (\<exists>T meth D. P \<turnstile> C sees M:[]\<rightarrow>T =\<lfloor>meth\<rfloor> in D) \<and> hconf h \<and> preallocated h"
   shows "ta_bisim wbisim1 (extTA2J1 P ta) (extTA2JVM (compP2 P) ta)"
 proof -
   { fix n t C M a m
     assume "n < length \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" and "\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> ! n = NewThread t (C, M, a) m"
     from nt[OF this] obtain T meth D C'
       where ma: "typeof_addr m a = \<lfloor>Class C\<rfloor>"
-      and sees: "P \<turnstile> C sees M: []\<rightarrow>T = meth in D"
+      and sees: "P \<turnstile> C sees M: []\<rightarrow>T = \<lfloor>meth\<rfloor> in D"
       and sub: "typeof_addr m (thread_id2addr t) = \<lfloor>Class C'\<rfloor>" "P \<turnstile> C' \<preceq>\<^sup>* Thread"
       and mconf: "hconf m" "preallocated m" by fastforce
     from sees_method_compP[OF sees, where f="\<lambda>C M Ts T. compMb2"]
-    have sees': "compP2 P \<turnstile> C sees M: []\<rightarrow>T = (max_stack meth, max_vars meth, compE2 meth @ [Return], compxE2 meth 0 0) in D"
+    have sees': "compP2 P \<turnstile> C sees M: []\<rightarrow>T = \<lfloor>(max_stack meth, max_vars meth, compE2 meth @ [Return], compxE2 meth 0 0)\<rfloor> in D"
       by(simp add: compMb2_def compP2_def)
     have "bisim1_list1 t m ({0:Class D=None; meth}, Addr a # replicate (max_vars meth) undefined_value) ([]) None [([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)]"
     proof
@@ -5019,7 +5019,7 @@ proof -
       show "compTP P \<turnstile> t:(None, m, [([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)]) \<surd>"
 	by(rule new_thread_conf_compTP)
 
-      from sees show "P \<turnstile> D sees M: []\<rightarrow>T = meth in D" by(rule sees_method_idemp)
+      from sees show "P \<turnstile> D sees M: []\<rightarrow>T = \<lfloor>meth\<rfloor> in D" by(rule sees_method_idemp)
       show "list_all2 (bisim1_fr P m) [] []" by simp
       from sees_wf_mdecl[OF wf sees] have "bsok meth (Suc 0)"
 	by(auto simp add: wf_mdecl_def bsok_def intro: WT1_expr_locks)
@@ -5027,7 +5027,7 @@ proof -
                                                 ([], Addr a # replicate (max_vars meth) undefined_value, 0, None)"
 	by simp(rule bisim1_refl, simp)
     qed simp
-    with sees sees' have "bisim1_list1 t m ({0:Class (fst (method P C M))=None; snd (snd (snd (method P C M)))}, Addr a # replicate (max_vars (snd (snd (snd (method P C M))))) undefined_value) [] None [([], Addr a # replicate (fst (snd (snd (snd (snd (method (compP2 P) C M)))))) undefined_value, fst (method (compP2 P) C M), M, 0)]" by simp }
+    with sees sees' have "bisim1_list1 t m ({0:Class (fst (method P C M))=None; the (snd (snd (snd (method P C M))))}, Addr a # replicate (max_vars (the (snd (snd (snd (method P C M)))))) undefined_value) [] None [([], Addr a # replicate (fst (snd (the (snd (snd (snd (method (compP2 P) C M))))))) undefined_value, fst (method (compP2 P) C M), M, 0)]" by simp }
   thus ?thesis
     apply(auto simp add: ta_bisim_def intro!: list_all2_all_nthI)
     apply(case_tac "\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> ! n", auto simp add: extNTA2JVM_def)
@@ -5102,29 +5102,28 @@ done
 
 lemma ta_bisim_red_extTA2J1_extTA2JVM:
   assumes wf: "wf_J1_prog P"
-  and red: "P,t' \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  and red: "uf,P,t' \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   and hconf: "hconf (hp s')" "preallocated (hp s')"
   shows "ta_bisim wbisim1 (extTA2J1 P ta) (extTA2JVM (compP2 P) ta)"
 proof -
   { fix n t C M a H
     assume len: "n < length \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" and tan: "\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> ! n = NewThread t (C, M, a) H"
     hence nt: "NewThread t (C, M, a) H \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" unfolding set_conv_nth by(auto intro!: exI)
-    from red1_new_threadD[OF red nt] obtain ad M' vs va T
+    from red1_new_threadD[OF red nt] obtain ad M' vs va T C' Ts' Tr' D'
       where rede: "P,t' \<turnstile> \<langle>ad\<bullet>M'(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,hp s'\<rangle>"
-      and ad: "typeof_addr (hp s) ad = \<lfloor>T\<rfloor>" and iec: "is_native P T M'"
-      by(fastforce simp add: set_conv_nth)
+      and ad: "typeof_addr (hp s) ad = \<lfloor>T\<rfloor>" by blast
     from red_ext_new_thread_heap[OF rede nt] have [simp]: "hp s' = H" by simp
     from red_external_new_thread_sees[OF wf rede nt] 
     obtain T body D where Ha: "typeof_addr H a = \<lfloor>Class C\<rfloor>"
-      and sees: "P \<turnstile> C sees M:[]\<rightarrow>T=body in D" by auto
-    have sees': "compP2 P \<turnstile> C sees M:[]\<rightarrow>T=(max_stack body, max_vars body, compE2 body @ [Return], compxE2 body 0 0) in D"
-      using sees unfolding compP2_def compMb2_def Let_def by(rule sees_method_compP)
+      and sees: "P \<turnstile> C sees M:[]\<rightarrow>T=\<lfloor>body\<rfloor> in D" by auto
+    have sees': "compP2 P \<turnstile> C sees M:[]\<rightarrow>T=\<lfloor>(max_stack body, max_vars body, compE2 body @ [Return], compxE2 body 0 0)\<rfloor> in D"
+      using sees unfolding compP2_def compMb2_def Let_def by(auto dest: sees_method_compP)
     from red_external_new_thread_exists_thread_object[unfolded compP2_def, simplified, OF rede nt] hconf Ha sees
     have "compTP P \<turnstile> t:(None, H, [([], Addr a # replicate (max_vars body) undefined_value, D, M, 0)]) \<surd>"
       by(auto intro: new_thread_conf_compTP)
     hence "bisim1_list1 t H ({0:Class D=None; body}, Addr a # replicate (max_vars body) undefined_value) [] None [([], Addr a # replicate (max_vars body) undefined_value, D, M, 0)]"
     proof
-      from sees show "P \<turnstile> D sees M:[]\<rightarrow>T=body in D" by(rule sees_method_idemp)
+      from sees show "P \<turnstile> D sees M:[]\<rightarrow>T=\<lfloor>body\<rfloor> in D" by(rule sees_method_idemp)
 
       from sees_wf_mdecl[OF wf sees] have "bsok body (Suc 0)"
 	by(auto simp add: wf_mdecl_def bsok_def intro: WT1_expr_locks)
@@ -5132,10 +5131,10 @@ proof -
                                                 ([], Addr a # replicate (max_vars body) undefined_value, 0, None)"
 	by(auto intro: bisim1_refl)
     qed simp_all
-    hence "bisim1_list1 t H ({0:Class (fst (method P C M))=None; snd (snd (snd (method P C M)))},
-                               Addr a # replicate (max_vars (snd (snd (snd (method P C M))))) undefined_value)
+    hence "bisim1_list1 t H ({0:Class (fst (method P C M))=None; the (snd (snd (snd (method P C M))))},
+                               Addr a # replicate (max_vars (the (snd (snd (snd (method P C M)))))) undefined_value)
                               []
-                              None [([], Addr a # replicate (fst (snd (snd (snd (snd (method (compP2 P) C M)))))) undefined_value,
+                              None [([], Addr a # replicate (fst (snd (the (snd (snd (snd (method (compP2 P) C M))))))) undefined_value,
                                     fst (method (compP2 P) C M), M, 0)]"
       using sees sees' by simp }
   thus ?thesis

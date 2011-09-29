@@ -158,16 +158,15 @@ where
 
 lemma mexecd_Suspend_Invoke:
   "\<lbrakk> mexecd P t (x, m) ta (x', m'); Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>stk loc C M pc frs' n a T. x' = (None, (stk, loc, C, M, pc) # frs') \<and> instrs_of P C M ! pc = Invoke wait n \<and> stk ! n = Addr a \<and> typeof_addr m a = \<lfloor>T\<rfloor> \<and> is_native P T wait"
+  \<Longrightarrow> \<exists>stk loc C M pc frs' n a T C' Ts Tr D. x' = (None, (stk, loc, C, M, pc) # frs') \<and> instrs_of P C M ! pc = Invoke wait n \<and> stk ! n = Addr a \<and> typeof_addr m a = \<lfloor>T\<rfloor> \<and> class_type_of T = \<lfloor>C'\<rfloor> \<and> P \<turnstile> C' sees wait:Ts\<rightarrow>Tr = Native in D \<and> D\<bullet>wait(Ts) :: Tr"
 apply(cases x')
 apply(cases x)
 apply(cases "fst x")
 apply(auto elim!: jvmd_NormalE simp add: split_beta)
 apply(rename_tac [!] stk loc C M pc frs)
 apply(case_tac [!] "instrs_of P C M ! pc")
-apply(auto split: split_if_asm simp add: split_beta)
-apply(frule (1) red_external_aggr_Suspend_StaySame, simp, drule (1) red_external_aggr_Suspend_waitD, simp, simp)+
-apply(auto simp add: check_def is_Ref_def)
+apply(auto split: split_if_asm simp add: split_beta check_def is_Ref_def has_method_def)
+apply(frule red_external_aggr_Suspend_StaySame, simp, drule red_external_aggr_Suspend_waitD, simp, fastforce)+
 done
 
 end
@@ -197,7 +196,7 @@ lemma exec_instr_preserve_tconf:
      P,h \<turnstile> t' \<surd>t \<rbrakk>
   \<Longrightarrow> P,h' \<turnstile> t' \<surd>t"
 apply(cases ins)
-apply(auto intro: tconf_hext_mono hext_heap_ops_mono' hext_heap_write split: split_if_asm sum.split_asm simp add: split_beta intro: red_external_aggr_preserves_tconf)
+apply(auto intro: tconf_hext_mono hext_heap_ops_mono' hext_heap_write red_external_aggr_preserves_tconf split: split_if_asm sum.split_asm simp add: split_beta is_class_type_of_conv_class_type_of_Some has_method_def intro!: is_native.intros)
 done
 
 lemma exec_preserve_tconf:

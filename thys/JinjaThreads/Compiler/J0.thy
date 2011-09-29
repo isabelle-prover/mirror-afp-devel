@@ -67,12 +67,12 @@ typ "('addr, 'thread_id, 'heap) J0_state"
 
 definition extNTA2J0 :: "'addr J_prog \<Rightarrow> (cname \<times> mname \<times> 'addr) \<Rightarrow> ('addr expr \<times> 'addr expr list)"
 where
-  "extNTA2J0 P = (\<lambda>(C, M, a). let (D, _, _, _, body) = method P C M
+  "extNTA2J0 P = (\<lambda>(C, M, a). let (D, _, _, meth) = method P C M; (_, body) = the meth
                                in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, []))"
 
 lemma extNTA2J0_iff [simp]:
   "extNTA2J0 P (C, M, a) = 
-   ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (snd (snd (snd (method P C M))))}, [])"
+   ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (the (snd (snd (snd (method P C M)))))}, [])"
 by(simp add: extNTA2J0_def split_def)
 
 abbreviation extTA2J0 :: 
@@ -107,7 +107,7 @@ where
 
 | red0Call:
   "\<lbrakk> call e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr h a = \<lfloor>U\<rfloor>; is_class_type_of U C;
-     \<not> is_native P U M; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D; 
+     P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D; 
      size vs = size pns; size Ts = size pns \<rbrakk>
   \<Longrightarrow> P,t \<turnstile>0 \<langle>e/es, h\<rangle> -\<epsilon>\<rightarrow> \<langle>blocks (this # pns) (Class D # Ts) (Addr a # vs) body/e#es, h\<rangle>"
 
@@ -152,7 +152,7 @@ lemma assumes wwf: "wwf_J_prog P"
   and reds_fvs_ok: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; fvs es \<subseteq> dom (lcl s) \<rbrakk> \<Longrightarrow> fvs es' \<subseteq> dom (lcl s')"
 proof(induct rule: red_reds.inducts)
   case (RedCall s a U C M Ts T pns body D vs)
-  from `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D` have "wwf_J_mdecl P D (M,Ts,T,pns,body)"
+  from `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D` have "wwf_J_mdecl P D (M,Ts,T,pns,body)"
     by(auto dest!: sees_wf_mdecl[OF wwf] simp add: wf_mdecl_def)
   with RedCall show ?case by(auto)
 next
@@ -183,12 +183,12 @@ done
 lemma called_methodD:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call e = \<lfloor>(a, M, vs)\<rfloor>; \<not> synthesized_call P (hp s) (a, M, vs) \<rbrakk> 
   \<Longrightarrow> \<exists>T C D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and>
-                           P \<turnstile> C sees M: Us\<rightarrow>U = (pns, body) in D \<and> length vs = length pns \<and> length Us = length pns"
+                           P \<turnstile> C sees M: Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D \<and> length vs = length pns \<and> length Us = length pns"
 
   and called_methodsD:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; calls es = \<lfloor>(a, M, vs)\<rfloor>; \<not> synthesized_call P (hp s) (a, M, vs) \<rbrakk> 
   \<Longrightarrow> \<exists>T C fs D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and>
-                              P \<turnstile> C sees M: Us\<rightarrow>U = (pns, body) in D \<and> length vs = length pns \<and> length Us = length pns"
+                              P \<turnstile> C sees M: Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D \<and> length vs = length pns \<and> length Us = length pns"
 apply(induct rule: red_reds.inducts)
 apply(auto split: split_if_asm simp add: synthesized_call_def)
 apply(fastforce)
@@ -216,7 +216,7 @@ where
 | "\<tau>move0 P h (FAss e F D e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> (\<tau>move0 P h e' \<or> (\<exists>a. e' = Throw a)))"
 | "\<tau>move0 P h (e\<bullet>M(es)) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and>
    ((\<tau>moves0 P h es \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')) \<or> 
-    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> is_native P T M \<longrightarrow> \<tau>external P T M)))))"
+    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T C Ts Tr D. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> is_class_type_of T C \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))))"
 | "\<tau>move0 P h ({V:T=vo; e}) \<longleftrightarrow> \<tau>move0 P h e \<or> ((\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v))"
 | "\<tau>move0 P h (sync\<^bsub>V'\<^esub>(e) e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a)"
 | "\<tau>move0 P h (insync\<^bsub>V'\<^esub>(ad) e) \<longleftrightarrow> \<tau>move0 P h e"
@@ -310,7 +310,7 @@ lemma \<tau>move0_\<tau>moves0_intros:
   and \<tau>move0FAss2: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>F{D} := e)"
   and \<tau>move0CallObj: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (e\<bullet>M(es))"
   and \<tau>move0CallParams: "\<tau>moves0 P h es \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(es))"
-  and \<tau>move0Call: "(\<And>T. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<Longrightarrow> is_native P T M \<Longrightarrow> \<tau>external P T M) \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(map Val vs))"
+  and \<tau>move0Call: "(\<And>T C Ts Tr D. \<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>; is_class_type_of T C; P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<rbrakk> \<Longrightarrow> \<tau>external_defs D M) \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(map Val vs))"
   and \<tau>move0Block: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h {V:T=vo; e}"
   and \<tau>move0BlockRed: "\<tau>move0 P h {V:T=vo; Val v}"
   and \<tau>move0Sync: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (sync\<^bsub>V'\<^esub> (e) e')"
@@ -368,14 +368,14 @@ lemma assumes [simp]: "extTA \<epsilon> = \<epsilon>"
   shows red_\<tau>_taD: "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move0 P (hp s) e \<rbrakk> \<Longrightarrow> ta = \<epsilon>"
   and reds_\<tau>_taD: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; \<tau>moves0 P (hp s) es \<rbrakk> \<Longrightarrow> ta = \<epsilon>"
 apply(induct rule: red_reds.inducts)
-apply(fastforce simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_TA_empty)+
+apply(fastforce simp add: map_eq_append_conv \<tau>external'_def \<tau>external_def dest: \<tau>external'_red_external_TA_empty)+
 done
 
 lemma \<tau>move0_heap_unchanged: "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move0 P (hp s) e \<rbrakk> \<Longrightarrow> hp s' = hp s"
   and \<tau>moves0_heap_unchanged: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; \<tau>moves0 P (hp s) es \<rbrakk> \<Longrightarrow> hp s' = hp s"
 apply(induct rule: red_reds.inducts)
 apply(auto)
-apply(fastforce simp add: map_eq_append_conv \<tau>external'_def dest: \<tau>external'_red_external_heap_unchanged)+
+apply(fastforce simp add: map_eq_append_conv \<tau>external'_def \<tau>external_def dest: \<tau>external'_red_external_heap_unchanged)+
 done
 
 lemma \<tau>Move0_iff:
@@ -777,13 +777,12 @@ lemma \<tau>red0t_fv_subset:
   shows "\<tau>red0t extTA P t h (e, xs) (e', xs') \<Longrightarrow> fv e' \<subseteq> fv e"
 by(rule \<tau>red0r_fv_subset[OF wwf])(rule tranclp_into_rtranclp)
 
-
 lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move0_callD: "call e = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>move0 P h e \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
   and \<tau>moves0_callsD: "calls es = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>moves0 P h es \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
 apply(induct e and es)
 apply(auto split: split_if_asm simp add: is_vals_conv)
-apply(auto simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def)
+apply(fastforce simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def \<tau>external_def is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)+
 done
 
 lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"

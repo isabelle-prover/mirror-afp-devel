@@ -442,11 +442,11 @@ qed
 
 lemma bisim_list_extTA2J0_extTA2J1:
   assumes wf: "wf_J_prog P"
-  and sees: "P \<turnstile> C sees M:[]\<rightarrow>T = meth in D"
+  and sees: "P \<turnstile> C sees M:[]\<rightarrow>T = \<lfloor>meth\<rfloor> in D"
   shows "bisim_list1 (extNTA2J0 P (C, M, a)) (extNTA2J1 (compP1 P) (C, M, a))"
 proof -
   obtain pns body where "meth = (pns, body)" by(cases meth)
-  with sees have sees: "P \<turnstile> C sees M:[]\<rightarrow>T = (pns, body) in D" by simp
+  with sees have sees: "P \<turnstile> C sees M:[]\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" by simp
   moreover let ?xs = "Addr a # replicate (max_vars body) undefined_value"
   let ?e' = "{0:Class D=None; compE1 (this # pns) body}"
   have "bisim_list1 ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, []) ((?e', ?xs), [])"
@@ -723,41 +723,41 @@ lemma \<tau>Move1_compP [simp]: "\<tau>Move1 (compP f P) = \<tau>Move1 P"
 by(intro ext) auto
 
 lemma red1_preserves_unmod:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; unmod e i \<rbrakk> \<Longrightarrow> (lcl s') ! i = (lcl s) ! i"
+  "\<lbrakk> uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; unmod e i \<rbrakk> \<Longrightarrow> (lcl s') ! i = (lcl s) ! i"
   
   and reds1_preserves_unmod:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; unmods es i \<rbrakk> \<Longrightarrow> (lcl s') ! i = (lcl s) ! i"
+  "\<lbrakk> uf,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; unmods es i \<rbrakk> \<Longrightarrow> (lcl s') ! i = (lcl s) ! i"
 apply(induct rule: red1_reds1.inducts)
 apply(auto split: split_if_asm)
 done
 
 lemma red1_unmod_preserved:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; unmod e i \<rbrakk> \<Longrightarrow> unmod e' i"
+  "\<lbrakk> uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; unmod e i \<rbrakk> \<Longrightarrow> unmod e' i"
   and reds1_unmods_preserved:
-  "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; unmods es i \<rbrakk> \<Longrightarrow> unmods es' i"
+  "\<lbrakk> uf,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; unmods es i \<rbrakk> \<Longrightarrow> unmods es' i"
 by(induct rule: red1_reds1.inducts)(auto split: split_if_asm)
 
-lemma \<tau>red1't_unmod_preserved:
-  "\<lbrakk> \<tau>red1't P t h (e, xs) (e', xs'); unmod e i \<rbrakk> \<Longrightarrow> unmod e' i"
+lemma \<tau>red1t_unmod_preserved:
+  "\<lbrakk> \<tau>red1gt uf P t h (e, xs) (e', xs'); unmod e i \<rbrakk> \<Longrightarrow> unmod e' i"
 by(induct rule: tranclp_induct2)(auto intro: red1_unmod_preserved)
 
-lemma \<tau>red1'r_unmod_preserved:
-  "\<lbrakk> \<tau>red1'r P t h (e, xs) (e', xs'); unmod e i \<rbrakk> \<Longrightarrow> unmod e' i"
+lemma \<tau>red1r_unmod_preserved:
+  "\<lbrakk> \<tau>red1gr uf P t h (e, xs) (e', xs'); unmod e i \<rbrakk> \<Longrightarrow> unmod e' i"
 by(induct rule: rtranclp_induct2)(auto intro: red1_unmod_preserved)
 
-lemma \<tau>red1't_preserves_unmod: 
-  "\<lbrakk>\<tau>red1't P t h (e, xs) (e', xs'); unmod e i; i < length xs \<rbrakk>
+lemma \<tau>red1t_preserves_unmod: 
+  "\<lbrakk>\<tau>red1gt uf P t h (e, xs) (e', xs'); unmod e i; i < length xs \<rbrakk>
   \<Longrightarrow> xs' ! i = xs ! i"
 apply(induct rule: tranclp_induct2)
  apply(auto dest: red1_preserves_unmod)
 apply(drule red1_preserves_unmod)
-apply(erule (1) \<tau>red1't_unmod_preserved)
-apply(drule \<tau>red1't_preserves_len)
+apply(erule (1) \<tau>red1t_unmod_preserved)
+apply(drule \<tau>red1t_preserves_len)
 apply auto
 done
 
 lemma \<tau>red1'r_preserves_unmod: 
-  "\<lbrakk>\<tau>red1'r P t h (e, xs) (e', xs'); unmod e i; i < length xs \<rbrakk>
+  "\<lbrakk>\<tau>red1gr uf P t h (e, xs) (e', xs'); unmod e i; i < length xs \<rbrakk>
   \<Longrightarrow> xs' ! i = xs ! i"
 apply(induct rule: converse_rtranclp_induct2)
  apply(auto dest: red1_preserves_unmod red1_unmod_preserved red1_preserves_len)

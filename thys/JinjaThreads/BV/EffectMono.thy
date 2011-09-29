@@ -46,84 +46,27 @@ proof -
       assume ST: "ST!n \<noteq> NT" and ST': "ST'!n \<noteq> NT" 
 
       from ST' app Invoke
-      have "if is_native P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
-	    else \<exists>D Ts T m C'. class_type_of (ST' ! n) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
-	by fastforce
-      moreover
+      obtain D Ts T m C'
+        where D: "class_type_of (ST' ! n) = \<lfloor>D\<rfloor>"
+	and Ts: "P \<turnstile> rev (take n ST') [\<le>] Ts"
+	and D_M: "P \<turnstile> D sees M: Ts\<rightarrow>T = m in C'"
+        by fastsimp
+
       from less have "P \<turnstile> ST!n \<le> ST'!n"
 	by(auto dest: list_all2_nthD2[OF _ n])
-      { fix D Ts T m C'
-	assume D: "class_type_of (ST' ! n) = \<lfloor>D\<rfloor>"
-	  and Ts: "P \<turnstile> rev (take n ST') [\<le>] Ts"
-	  and D_M: "P \<turnstile> D sees M: Ts\<rightarrow>T = m in C'"
-	  and nec: "\<not> is_native P (ST' ! n) M"
-        
-        from D `P \<turnstile> ST!n \<le> ST'!n` ST
-        obtain D' where D': "class_type_of (ST ! n) = \<lfloor>D'\<rfloor>" 
-          and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
-          unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
-          by(rule widen_is_class_type_of)
-	from wf D_M DsubC obtain Ts' T' m' C'' where
-          D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
-          Ts': "P \<turnstile> Ts [\<le>] Ts'"
-          by (blast dest: sees_method_mono) 
-	
-        have ?thesis
-        proof(cases "is_native P (ST ! n) M")
-          case False
-	  from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
-	  also note Ts also note Ts' 
-	  finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
-	  with False D'_M D' app less Invoke D show ?thesis by(auto)
-        next
-          case True
-          with D' D'_M obtain Ts'' Tr''
-            where wtext: "P \<turnstile> ST ! n\<bullet>M(Ts'') :: Tr''" 
-            and "P \<turnstile> Ts' [\<le>] Ts''" "P \<turnstile> Tr'' \<le> T'"
-            unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
-            by(auto dest: is_native_sees_method_overriding[OF wf])
-          from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
-          also note Ts also note Ts' also note `P \<turnstile> Ts' [\<le>] Ts''`
-          finally have "P \<turnstile> rev (take n ST) [\<le>] Ts''" .
-          with D'_M D' app less Invoke D Ts' D' nec ST wtext `P \<turnstile> Tr'' \<le> T'` True
-          show ?thesis by(auto)
-        qed
-      } moreover {
-	fix Ts U
-	assume exc: "is_native P (ST' ! n) M"
-	  and wtext: "P \<turnstile> ST' ! n\<bullet>M(Ts) :: U"
-          and sub: "P \<turnstile> rev (take n ST') [\<le>] Ts"
-        from wtext obtain T' where native': "P \<turnstile> ST' ! n native M:Ts\<rightarrow>U in T'"
-          unfolding is_native_def2 by(auto simp add: external_WT.simps)
-        have ?thesis
-        proof(cases "is_native P (ST ! n) M")
-          case True
-          then obtain Ts' Tr' T'
-            where native: "P \<turnstile> ST ! n native M:Ts'\<rightarrow>Tr' in T'"
-            unfolding is_native_def2 by blast
-          moreover {
-            from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
-            also note sub also from native' native `P \<turnstile> ST!n \<le> ST'!n`
-            have "P \<turnstile> Ts [\<le>] Ts'" by(rule native_native_overriding)
-            finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" . }
-          ultimately show ?thesis using app Invoke ST' exc True wtext
-            by(auto simp add: external_WT.simps)
-        next
-          case False
-          with native_not_native_overriding[OF wf native' this `P \<turnstile> ST ! n \<le> ST' ! n` ST]
-          obtain C Ts' Tr' body D where "is_class_type_of (ST ! n) C"
-            and "P \<turnstile> C sees M: Ts'\<rightarrow>Tr' = body in D"
-            and "P \<turnstile> Ts [\<le>] Ts'" and "P \<turnstile> Tr' \<le> U" " P \<turnstile> Class C \<le> T'"
-            by blast
-          moreover {
-            from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
-            also note sub also note `P \<turnstile> Ts [\<le>] Ts'`
-            finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
-          }
-          ultimately show ?thesis using app Invoke False 
-            by(auto simp add: is_class_type_of_conv_class_type_of_Some)
-        qed }
-      ultimately have ?thesis by(auto split: split_if_asm) }
+      with D obtain D' where D': "class_type_of (ST ! n) = \<lfloor>D'\<rfloor>" 
+        and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
+        using ST unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
+        by(rule widen_is_class_type_of)
+      from wf D_M DsubC obtain Ts' T' m' C'' where
+        D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
+        Ts': "P \<turnstile> Ts [\<le>] Ts'"
+        by (blast dest: sees_method_mono)
+      from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
+      also note Ts also note Ts' 
+      finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
+      with D'_M D' app less Invoke D have ?thesis by(auto)
+    }
     ultimately show ?thesis by blast
   next 
     case Getfield
@@ -324,87 +267,26 @@ proof -
     from less have [simp]: "size ST = size ST'" 
       by (auto dest: list_all2_lengthD)
 
-    from Invoke succs have ST: "ST!n \<noteq> NT" and ST': "ST'!n \<noteq> NT"
-      by (auto)
+    from Invoke succs have ST: "ST!n \<noteq> NT" and ST': "ST'!n \<noteq> NT" by (auto)
     
-    from ST' app\<^isub>i Invoke
-    have "if is_native P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
-          else \<exists>D Ts T m C'. class_type_of (ST' ! n) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
-      by fastforce
-    moreover
-    from less have "P \<turnstile> ST!n \<le> ST'!n"
-      by(auto dest: list_all2_nthD2[OF _ n])
-    { fix D Ts T m C'
-      assume D: "class_type_of (ST' ! n) = \<lfloor>D\<rfloor>"
-        and Ts: "P \<turnstile> rev (take n ST') [\<le>] Ts"
-	and D_M: "P \<turnstile> D sees M: Ts\<rightarrow>T = m in C'"
-	and nec: "\<not> is_native P (ST' ! n) M"
+    from ST' app\<^isub>i Invoke obtain D Ts T m C'
+      where D: "class_type_of (ST' ! n) = \<lfloor>D\<rfloor>"
+      and Ts: "P \<turnstile> rev (take n ST') [\<le>] Ts"
+      and D_M: "P \<turnstile> D sees M: Ts\<rightarrow>T = m in C'"
+      by fastsimp
 
-        from D `P \<turnstile> ST!n \<le> ST'!n` ST
-        obtain D' where D': "class_type_of (ST ! n) = \<lfloor>D'\<rfloor>" 
-          and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
-          unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
-          by(rule widen_is_class_type_of)
+    from less have "P \<turnstile> ST!n \<le> ST'!n" by(auto dest: list_all2_nthD2[OF _ n])
+    with D obtain D' where D': "class_type_of (ST ! n) = \<lfloor>D'\<rfloor>" 
+      and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
+      using ST unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
+      by(rule widen_is_class_type_of)
 
-      from wf D_M DsubC obtain Ts' T' m' C'' where
-	D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
-	Ts': "P \<turnstile> Ts [\<le>] Ts'" and "P \<turnstile> T' \<le> T" by (blast dest: sees_method_mono)
+    from wf D_M DsubC obtain Ts' T' m' C'' where
+      D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
+      Ts': "P \<turnstile> Ts [\<le>] Ts'" and "P \<turnstile> T' \<le> T" by (blast dest: sees_method_mono)
 
-
-      have ?thesis
-      proof(cases "is_native P (ST ! n) M")
-        case False
-        thus ?thesis using Invoke n D D' D_M less nec D'_M Ts' `P \<turnstile> T' \<le> T`
-          by(auto intro: list_all2_dropI)
-      next
-        case True
-        with D' D'_M obtain Ts'' Tr''
-          where wtext: "P \<turnstile> ST ! n\<bullet>M(Ts'') :: Tr''" 
-          and "P \<turnstile> Ts' [\<le>] Ts''" "P \<turnstile> Tr'' \<le> T'"
-          unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
-          by(auto dest: is_native_sees_method_overriding[OF wf])
-        from `P \<turnstile> Tr'' \<le> T'` `P \<turnstile> T' \<le> T` have "P \<turnstile> Tr'' \<le> T" by(rule widen_trans)
-        from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by simp
-        also note Ts also note Ts' also note `P \<turnstile> Ts' [\<le>] Ts''`
-        finally have "P \<turnstile> rev (take n ST) [\<le>] Ts''" .
-        thus ?thesis using Invoke n D D' D_M less nec D'_M Ts' wtext `P \<turnstile> Tr'' \<le> T` `P \<turnstile> T' \<le> T`
-          by(auto simp add: is_native_def2 elim!: external_WT.cases dest: native_call_fun)
-      qed }
-    moreover
-    { fix Ts U
-      assume nexc': "is_native P (ST' ! n) M"
-	and wtext: "P \<turnstile> ST' ! n\<bullet>M(Ts) :: U"
-        and sub: "P \<turnstile> rev (take n ST') [\<le>] Ts"
-
-      from wtext obtain T' where native': "P \<turnstile> ST' ! n native M:Ts\<rightarrow>U in T'"
-        unfolding is_native_def2 by(auto simp add: external_WT.simps)
-      have ?thesis
-      proof(cases "is_native P (ST ! n) M")
-        case True
-        then obtain Ts' Tr' T'
-          where native: "P \<turnstile> ST ! n native M:Ts'\<rightarrow>Tr' in T'"
-          unfolding is_native_def2 by blast
-        hence "P \<turnstile> ST ! n\<bullet>M(Ts') :: Tr'" ..
-        
-        from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
-        also note sub 
-        also from native' native `P \<turnstile> ST!n \<le> ST'!n`
-        have "P \<turnstile> Ts [\<le>] Ts'" by(rule native_native_overriding)
-        finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
-        moreover from native' native `P \<turnstile> ST!n \<le> ST'!n`
-        have "P \<turnstile> Tr' \<le> U" by(rule native_native_overriding)
-        ultimately show ?thesis using Invoke ST less nexc' wtext True native
-          by(auto elim: external_WT.cases)
-      next
-        case False
-        from native_not_native_overriding[OF wf native' this `P \<turnstile> ST ! n \<le> ST' ! n` ST]
-        obtain C Ts' Tr' body D where "is_class_type_of (ST ! n) C"
-          and "P \<turnstile> C sees M: Ts'\<rightarrow>Tr' = body in D"
-          and "P \<turnstile> Ts [\<le>] Ts'" and "P \<turnstile> Tr' \<le> U" " P \<turnstile> Class C \<le> T'" by blast
-        thus ?thesis using Invoke ST less nexc' False wtext
-          by(auto simp add: is_class_type_of_conv_class_type_of_Some elim: external_WT.cases)
-      qed }
-    ultimately show ?thesis by(auto split: split_if_asm)
+    show ?thesis using Invoke n D D' D_M less D'_M Ts' `P \<turnstile> T' \<le> T`
+      by(auto intro: list_all2_dropI)
   next
     case ALoad with less app app\<^isub>i succs
     show ?thesis by(auto split: split_if_asm dest: Array_Array_widen)

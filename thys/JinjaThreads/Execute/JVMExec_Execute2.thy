@@ -90,7 +90,7 @@ where [simp]:
 fun frame'_ok :: "'addr jvm_prog \<Rightarrow> 'addr frame' \<Rightarrow> bool"
 where 
   "frame'_ok P ((ins', insxt), stk, loc, C, M, pc) \<longleftrightarrow> 
-  ins' = drop pc (instrs_of P C M) \<and> insxt = snd (snd (snd (snd (snd (method P C M)))))"
+  ins' = drop pc (instrs_of P C M) \<and> insxt = snd (snd (the (snd (snd (snd (method P C M))))))"
 
 lemma frame'_ok_frame'_of_frame [iff]: 
   "frame'_ok P (frame'_of_frame P f)"
@@ -148,7 +148,7 @@ where
 | "extRet2JVM' ins' ins xt n h stk loc C M pc frs RetStaySame = (None, h, ((ins', ins, xt), stk, loc, C, M, pc) # frs)"
 
 definition extNTA2JVM' :: "'addr jvm_prog \<Rightarrow> (cname \<times> mname \<times> 'addr) \<Rightarrow> 'addr jvm_thread_state'"
-where "extNTA2JVM' P \<equiv> (\<lambda>(C, M, a). let (D,M',Ts,mxs,mxl0,ins,xt) = method P C M
+where "extNTA2JVM' P \<equiv> (\<lambda>(C, M, a). let (D,Ts,T,meth) = method P C M; (mxs,mxl0,ins,xt) = the meth
                                    in (None, [((ins, ins, xt), [],Addr a # replicate mxl0 undefined_value, D, M, 0)]))"
 
 abbreviation extTA2JVM' :: 
@@ -180,6 +180,16 @@ using assms
 apply(cases tas)
 apply(fastforce simp add: o_def jvm_thread_action'_of_jvm_thread_action_def jvm_thread_action'_ok_def intro!: map_idI[symmetric] map_idI convert_new_thread_action_eqI dest: bspec intro!: rev_image_eqI elim!: rev_iffD1[OF _ arg_cong[where f="\<lambda>x. x : A"]])
 done
+
+context heap_base begin -- "Move to ExternalCall"
+
+lemma red_external_aggr_new_thread_sub_thread':
+  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; typeof_addr h a \<noteq> None; typeof_addr h a \<noteq> \<lfloor>NT\<rfloor>;
+     NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
+  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
+by(auto simp add: red_external_aggr_def split_beta ta_upd_simps widen_Class split: split_if_asm dest!: Array_widen)
+
+end
 
 context JVM_heap_execute begin
 
@@ -273,15 +283,17 @@ where
     in (if r = Null then Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)
         else (let ps = rev (take n stk);
                   a = the_Addr r;
-                  T = the (typeof_addr h a)
-              in if is_native P T M
-                 then do {
+                  T = the (typeof_addr h a);
+                  C = the (class_type_of T);
+                  (D,Ts,T,meth)= method P C M
+              in case meth of
+                   Native \<Rightarrow> 
+                      do {
                         (ta, va, h') \<leftarrow> red_external_aggr P t a M ps h;
                         Cset.single (extTA2JVM' P ta, extRet2JVM' ins' ins xt n h' stk loc C0 M0 pc frs va)
                       }
-                 else let C = the (class_type_of T);
-                          (D,M',Ts,mxs,mxl\<^isub>0,ins'',xt'')= method P C M;
-                          f' = ((ins'', ins'', xt''), [],[r]@ps@(replicate mxl\<^isub>0 undefined_value),D,M,0)
+                 | \<lfloor>(mxs,mxl\<^isub>0,ins'',xt'')\<rfloor> \<Rightarrow>
+                       let f' = ((ins'', ins'', xt''), [],[r]@ps@(replicate mxl\<^isub>0 undefined_value),D,M,0)
                        in Cset.single (\<epsilon>, None, h, f' # ((ins', ins, xt), stk, loc, C0, M0, pc) # frs))))"
 | "exec_instr ins' ins xt Return P t h stk\<^isub>0 loc\<^isub>0 C\<^isub>0 M\<^isub>0 pc frs =
    Cset.single 
@@ -349,6 +361,7 @@ where "exec_1 P t \<sigma> = pred_of_cset (exec P t \<sigma>)"
 lemma check_exec_instr_ok:
   assumes wf: "wf_prog wf_md P"
   and "execute.check_instr i P h stk loc C M pc (map frame_of_frame' frs)"
+  and "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
   and "jvm_state'_ok P (None, h, ((ins', ins, xt), stk, loc, C, M, pc) # frs)"
   and "tas \<in> member (exec_instr ins' ins xt i P t h stk loc C M pc frs)"
   shows "jvm_ta_state'_ok P tas"
@@ -362,19 +375,28 @@ proof -
   next
     case Invoke
     thus ?thesis using assms 
-      by(cases "method P C M")(fastforce simp add: extNTA2JVM'_def dest: sees_method_idemp execute.red_external_aggr_new_thread_sub_thread sub_Thread_sees_run[OF wf])
+      apply(cases m)
+      apply(auto simp add: extNTA2JVM'_def dest: sees_method_idemp execute.red_external_aggr_new_thread_sub_thread' sub_Thread_sees_run[OF wf])
+       apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, clarsimp, assumption, clarsimp)
+       apply(drule sub_Thread_sees_run[OF wf], clarsimp)
+       apply(fastforce dest: sees_method_idemp)
+      apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, clarsimp, assumption, clarsimp)
+      apply(drule sub_Thread_sees_run[OF wf], clarsimp)
+      apply(fastforce dest: sees_method_idemp)
+      done
   next
     case Goto thus ?thesis using assms
-      by(cases "method P C M") simp
+      by(cases "m") simp
   next
     case IfFalse thus ?thesis using assms
-      by(cases "method P C M") simp
+      by(cases "m") simp
   qed(auto)
 qed
 
 lemma check_exec_instr_complete:
   assumes wf: "wf_prog wf_md P"
   and "execute.check_instr i P h stk loc C M pc (map frame_of_frame' frs)"
+  and "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
   and "jvm_state'_ok P (None, h, ((ins', ins, xt), stk, loc, C, M, pc) # frs)"
   and "tas \<in> execute.exec_instr i P t h stk loc C M pc (map frame_of_frame' frs)"
   shows "jvm_ta_state'_of_jvm_ta_state P tas \<in> member (exec_instr ins' ins xt i P t h stk loc C M pc frs)"
@@ -388,19 +410,28 @@ proof -
     case Return thus ?thesis using assms by(cases frs) auto
   next
     case Goto thus ?thesis using assms
-      by(cases "method P C M") simp
+      by(cases "m") simp
   next
     case IfFalse thus ?thesis using assms
-      by(cases "method P C M") simp
+      by(cases "m") simp
   next
     case Invoke thus ?thesis using assms
-      by(cases "method P C M")(fastforce intro!: rev_bexI convert_new_thread_action_eqI simp add: extNTA2JVM'_def extNTA2JVM_def dest: execute.red_external_aggr_new_thread_sub_thread sub_Thread_sees_run[OF wf] sees_method_idemp)
+      apply(cases "m")
+      apply(auto intro!: rev_bexI convert_new_thread_action_eqI simp add: extNTA2JVM'_def extNTA2JVM_def dest: execute.red_external_aggr_new_thread_sub_thread' sub_Thread_sees_run[OF wf] sees_method_idemp)
+       apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, clarsimp, assumption, clarsimp)
+       apply(drule sub_Thread_sees_run[OF wf], clarsimp)
+       apply(fastforce dest: sees_method_idemp)
+      apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, clarsimp, assumption, clarsimp)
+      apply(drule sub_Thread_sees_run[OF wf], clarsimp)
+      apply(fastforce dest: sees_method_idemp)
+      done
   qed auto
 qed
 
 lemma check_exec_instr_refine:
   assumes wf: "wf_prog wf_md P"
   and "execute.check_instr i P h stk loc C M pc (map frame_of_frame' frs)"
+  and "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
   and "jvm_state'_ok P (None, h, ((ins', ins, xt), stk, loc, C, M, pc) # frs)"
   and "tas \<in> member (exec_instr ins' ins xt i P t h stk loc C M pc frs)"
   shows "tas \<in> jvm_ta_state'_of_jvm_ta_state P ` execute.exec_instr i P t h stk loc C M pc (map frame_of_frame' frs)"
@@ -428,7 +459,7 @@ lemma exception_step_ok:
   shows "jvm_state'_ok P (exception_step P a h fr frs)"
   and "exception_step P a h fr frs = jvm_state'_of_jvm_state P (execute.exception_step P a h (snd fr) (map frame_of_frame' frs))"
 using assms
-by(cases fr, case_tac "method P d e", clarsimp)+
+by(cases fr, case_tac "the (snd (snd (snd (method P d e))))", clarsimp)+
 
 lemma exec_step_conv:
   assumes "wf_prog wf_md P"
@@ -446,12 +477,12 @@ apply(case_tac xcp)
 apply(clarsimp simp add: execute.check_def)
 apply(rule Cset.set_eqI)
 apply(rule equalityI)
- apply(clarsimp)
- apply(erule (1) check_exec_instr_refine)
+ apply(clarsimp simp add: has_method_def)
+ apply(erule (2) check_exec_instr_refine)
   apply fastforce
  apply(simp add: hd_drop_conv_nth)
-apply(clarsimp)
-apply(drule (1) check_exec_instr_complete)
+apply(clarsimp simp add: has_method_def)
+apply(drule (2) check_exec_instr_complete)
   apply fastforce
  apply(assumption)
 apply(simp add: hd_drop_conv_nth)
@@ -470,13 +501,13 @@ apply(case_tac frs)
  apply simp
 apply(rename_tac fr frs')
 apply(case_tac xcp)
- apply(clarsimp simp add: execute.check_def)
- apply(erule (1) check_exec_instr_ok)
+ apply(clarsimp simp add: execute.check_def has_method_def)
+ apply(erule (2) check_exec_instr_ok)
   apply fastforce
  apply(simp add: hd_drop_conv_nth)
 apply(case_tac fr)
 apply(rename_tac cache stk loc C M pc)
-apply(case_tac "method P C M")
+apply(case_tac "the (snd (snd (snd (method P C M))))")
 apply auto
 done
 

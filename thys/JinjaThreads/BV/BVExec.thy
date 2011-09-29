@@ -204,7 +204,7 @@ theorem jvm_kildall_correct:
   "wf_jvm_prog\<^isub>k P = wf_jvm_prog P"
 (*<*)
 proof 
-  let ?\<Phi> = "\<lambda>C M. let (C,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,is,xt)) = method P C M in 
+  let ?\<Phi> = "\<lambda>C M. let (C,Ts,T\<^isub>r,meth) = method P C M; (mxs,mxl\<^isub>0,is,xt) = the meth in 
               SOME \<tau>s. wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<tau>s"
 
   -- "soundness"

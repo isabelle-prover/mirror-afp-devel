@@ -107,14 +107,14 @@ by(simp add: sc.start_state_def split_beta fun_eq_iff)
 lemma sc_jvm_start_state_invar:
   assumes "wf_jvm_prog\<^sub>\<Phi> P"
   and "sc_start_heap_ok P"
-  and "P \<turnstile> C sees M:Ts\<rightarrow>T = m in D"
+  and "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
   and "P,sc_start_heap P \<turnstile>sc vs [:\<le>] Ts"
   shows "sc_state_\<alpha> (sc_jvm_start_state_refine P C M vs) \<in> sc_jvm_state_invar P \<Phi>"
 unfolding sc_jvm_state_invar_def Int_iff mem_Collect_eq
 apply(rule conjI)
  apply(simp add: sc.execute.correct_jvm_state_initial[OF assms])
 apply(rule ts_okI)
-apply(insert `P \<turnstile> C sees M:Ts\<rightarrow>T = m in D`)
+apply(insert `P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D`)
 apply(frule sees_method_idemp)
 apply(clarsimp simp add: sc.start_state_def split_beta split: split_if_asm)
 done
@@ -151,12 +151,10 @@ proof(rule invariant3pI)
   moreover from invar
   have "sc.execute.correct_state_ts P \<Phi> (thr (jvm_mstate_of_jvm_mstate' s)) (shr (jvm_mstate_of_jvm_mstate' s))"
     and "lock_thread_ok (locks (jvm_mstate_of_jvm_mstate' s)) (thr (jvm_mstate_of_jvm_mstate' s))"
-    and "wset_thread_ok (wset (jvm_mstate_of_jvm_mstate' s)) (thr (jvm_mstate_of_jvm_mstate' s))"
     by(simp_all add: sc_jvm_state_invar_def sc.execute.correct_jvm_state_def)
   ultimately have "sc.execute.correct_state_ts P \<Phi> (thr (jvm_mstate_of_jvm_mstate' s')) (shr (jvm_mstate_of_jvm_mstate' s'))"
     and "lock_thread_ok (locks (jvm_mstate_of_jvm_mstate' s')) (thr (jvm_mstate_of_jvm_mstate' s'))"
-    and "wset_thread_ok (wset (jvm_mstate_of_jvm_mstate' s')) (thr (jvm_mstate_of_jvm_mstate' s'))"
-    by(blast intro: lifting_wf.redT_preserves[OF sc.execute.lifting_wf_correct_state, OF assms] sc.execute.exec_mthr.redT_preserves_lock_thread_ok sc.execute.exec_mthr.redT_preserves_wset_thread_ok)+
+    by(blast intro: lifting_wf.redT_preserves[OF sc.execute.lifting_wf_correct_state, OF assms] sc.execute.exec_mthr.redT_preserves_lock_thread_ok)+
   hence "jvm_mstate_of_jvm_mstate' s' \<in> sc.execute.correct_jvm_state P \<Phi>"
     by(simp add: sc.execute.correct_jvm_state_def)
   moreover from red have "ts_ok (\<lambda>t (xcp, frs) h. \<forall>f\<in>set frs. frame'_ok P f) (thr s') (shr s')" unfolding tl 
