@@ -77,6 +77,13 @@ lemma lfinite_Lazy_llist [code]:
   "lfinite (Lazy_llist xs) = (case xs () of None \<Rightarrow> True | Some (x, ys) \<Rightarrow> lfinite ys)"
 by simp
 
+declare list_of_aux_code [code del]
+
+lemma list_of_aux_Lazy_llist [code]:
+  "list_of_aux xs (Lazy_llist ys) = 
+  (case ys () of None \<Rightarrow> rev xs | Some (y, ys) \<Rightarrow> list_of_aux (y # xs) ys)"
+by(simp add: list_of_aux_code)
+
 declare llength_LNil [code del] llength_LCons [code del]
 
 lemma llength_Lazy_llist [code]:
@@ -215,19 +222,20 @@ declare Lazy_llist_def [simp del]
 text {* Simple ML test for laziness *}
 
 ML {*
-  val zeros = @{code iterates} (fn x => x) 0;
+  val zeros = @{code iterates} (fn x => x + 1) 0;
   val lhd = @{code lhd} zeros;
   val ltl = @{code ltl} zeros;
+  val ltl' = @{code force} ltl;
   
-  val ltake = @{code ltake} (@{code eSuc} @{code "0::enat"}) zeros;
+  val ltake = @{code ltake} (@{code eSuc} (@{code eSuc} @{code "0::enat"})) zeros;
   val ldrop = @{code ldrop} (@{code eSuc} @{code "0::enat"}) zeros;
+  val list_of = @{code list_of} ltake;
   
   val ltakeWhile = @{code ltakeWhile} (fn _ => true) zeros;
   val ldropWhile = @{code ldropWhile} (fn _ => false) zeros;
   val hd = @{code lhd} ldropWhile;
   
   val lfilter = @{code lfilter} (fn _ => false) zeros;
-  val ldropWhile = @{code force} ltl;
 *}
 
 hide_const (open) force

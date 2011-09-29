@@ -396,7 +396,7 @@ by(fastforce simp add: list_of_def intro: inv_f_f inj_onI)
 lemma llist_of_list_of [simp]: "lfinite xs \<Longrightarrow> llist_of (list_of xs) = xs"
 unfolding lfinite_eq_range_llist_of by auto
 
-lemma list_of_LNil [simp, code, nitpick_simp]: "list_of LNil = []"
+lemma list_of_LNil [simp, nitpick_simp]: "list_of LNil = []"
 using list_of_llist_of[of "[]"] by simp
 
 lemma list_of_LCons [simp]: "lfinite xs \<Longrightarrow> list_of (LCons x xs) = x # list_of xs"
@@ -410,7 +410,7 @@ next
       llist_of_list_of[OF `lfinite xs'`] by simp
 qed
 
-lemma list_of_LCons_code [code, nitpick_simp]:
+lemma list_of_LCons_conv [nitpick_simp]:
   "list_of (LCons x xs) = (if lfinite xs then x # list_of xs else undefined)"
 by(auto)(auto simp add: list_of_def)
 
@@ -423,6 +423,19 @@ lemma list_of_lmap [simp]:
   assumes "lfinite xs"
   shows "list_of (lmap f xs) = map f (list_of xs)"
 using assms by induct simp_all
+
+text {* Efficient implementation via tail recursion suggested by Brian Huffman *}
+
+definition list_of_aux :: "'a list \<Rightarrow> 'a llist \<Rightarrow> 'a list"
+where "list_of_aux xs ys = (if lfinite ys then rev xs @ list_of ys else undefined)"
+
+lemma list_of_code [code]: "list_of = list_of_aux []"
+by(simp add: fun_eq_iff list_of_def list_of_aux_def)
+
+lemma list_of_aux_code [code]:
+  "list_of_aux xs LNil = rev xs"
+  "list_of_aux xs (LCons y ys) = list_of_aux (y # xs) ys"
+by(simp_all add: list_of_aux_def)
 
 subsection {* The length of a lazy list: @{term "llength"} *}
 
