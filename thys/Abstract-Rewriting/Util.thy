@@ -850,43 +850,73 @@ primrec option_to_list :: "'a option \<Rightarrow> 'a list" where
 lemma option_to_list_sound[simp]: "set (option_to_list t) \<equiv> Option.set t"
   by (induct t) auto
 
+fun zip_option :: "'a list => 'b list => ('a \<times> 'b) list option" where
+  "zip_option [] [] = Some []"
+| "zip_option (x#xs) (y#ys) = do { zs \<leftarrow> zip_option xs ys; Some ((x, y) # zs) }"
+| "zip_option (x#xs) [] = None"
+| "zip_option [] (y#ys) = None"
 
-fun decomp :: "'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list option"
-  where "decomp [] [] = Some []"
-      | "decomp (_#_) [] = None"
-      | "decomp [] (_#_) = None"
-      | "decomp (s#ss) (t#ts) = 
-            (case decomp ss ts of 
-                None \<Rightarrow> None
-               | Some pairs \<Rightarrow> Some ((s,t)#pairs))"
-
-lemma decompZip: "decomp ss ts = Some pairs \<Longrightarrow> pairs = zip ss ts"
-proof (induct ss ts arbitrary: pairs rule: decomp.induct)
-  case 1 thus ?case by simp next
-  case 2 thus ?case by simp next
-  case 3 thus ?case by simp next
-  case (4 s ss t ts pairs) thus ?case by (cases "decomp ss ts", auto)
+(*induction scheme for zip*)
+lemma zip_induct[case_names Cons_Cons Nil1 Nil2]:
+  assumes "\<And>x xs y ys. P xs ys \<Longrightarrow> P (x # xs) (y # ys)"
+    and "\<And>ys. P [] ys"
+    and "\<And>xs. P xs []"
+  shows "P xs ys"
+proof (induct xs arbitrary: ys)
+  case Nil thus ?case by fact
+next
+  case (Cons x xs)
+  note IH = this
+  show ?case
+  proof (cases ys)
+    case Nil show ?thesis unfolding Nil by fact
+  next
+    case (Cons z zs)
+    show ?thesis unfolding Cons using assms(1)[OF IH] .
+  qed
 qed
 
-lemma decompLength: "decomp ss ts = Some pairs \<Longrightarrow> length ss = length ts"
-proof (induct ss ts arbitrary: pairs rule: decomp.induct)
-  case 1 thus ?case by simp next
-  case 2 thus ?case by simp next
-  case 3 thus ?case by simp next
-  case (4 s ss t ts pairs) thus ?case by (cases "decomp ss ts", auto)
+lemma zip_option_Some[simp]:
+  "zip_option xs ys = Some zs \<longleftrightarrow> length xs = length ys \<and> zip xs ys = zs"
+proof -
+  {
+    assume "zip_option xs ys = Some zs"
+    hence "length xs = length ys \<and> zip xs ys = zs"
+    proof (induct xs ys arbitrary: zs rule: zip_option.induct)
+      case (2 x xs y ys)
+      then obtain zs' where "zip_option xs ys = Some zs'"
+        and "zs = (x, y) # zs'" by (cases "zip_option xs ys") auto
+      with 2(1) show ?case by simp
+    qed simp_all
+  } moreover {
+    assume "length xs = length ys" and "zip xs ys = zs"
+    hence "zip_option xs ys = Some zs"
+      by (induct xs ys arbitrary: zs rule: zip_induct) force+
+  }
+  ultimately show ?thesis by blast
 qed
 
-lemma decompNone: "decomp ss ts = None \<Longrightarrow> length ss \<noteq> length ts"
-using assms
-proof (induct rule: decomp.induct)
-  case 1 thus ?case by simp next
-  case 2 thus ?case by simp next
-  case 3 thus ?case by simp next
-  case (4 s sss t tss) thus ?case by (cases "decomp sss tss = None", auto)
+lemma zip_option_None[simp]:
+  "zip_option xs ys = None \<longleftrightarrow> length xs \<noteq> length ys"
+proof -
+  {
+    assume "zip_option xs ys = None"
+    have "length xs \<noteq> length ys"
+    proof (rule ccontr)
+      assume "\<not> length xs \<noteq> length ys"
+      hence "length xs = length ys" by simp
+      hence "zip_option xs ys = Some (zip xs ys)" by simp
+      with `zip_option xs ys = None` show False by simp
+    qed
+  } moreover {
+    assume "length xs \<noteq> length ys"
+    hence "zip_option xs ys = None"
+      by (induct xs ys rule: zip_option.induct) simp_all
+  }
+  ultimately show ?thesis by blast
 qed
 
-declare decomp.simps[simp del]
-
+declare zip_option.simps[simp del]
 
 
 fun "extract" :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> ('a list \<times> 'a \<times> 'a list)option"
