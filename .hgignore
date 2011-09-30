@@ -1,5 +1,9 @@
 syntax: glob
 
+*~
+
+thys/JinjaThreads/generated
+
 thys/Collections/generated
 thys/Huffman/generated
 
