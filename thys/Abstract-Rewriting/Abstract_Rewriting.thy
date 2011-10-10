@@ -36,6 +36,10 @@ begin
 lemma trancl_mono_set: "r \<subseteq> s \<Longrightarrow> r^+ \<subseteq> s^+"
   by (blast intro: trancl_mono)
 
+lemma rel_pow_mono: assumes "(r :: ('a \<times> 'a)set) \<subseteq> r'" shows "r ^^ n \<subseteq> r' ^^ n"
+  by (induct n, insert assms, auto)
+
+
 text {*
   An abstract rewrite system (ARS) is a binary endorelation, i.e., a binary
   relation where domain and codomain coincide.
