@@ -176,25 +176,25 @@ apply (simp add:order_le_less)
 done
 
 lemma int_mult_le1:"\<lbrakk>i \<le> j; (0::int) \<le> k\<rbrakk> \<Longrightarrow> i * k \<le> j * k"
-apply (simp add:zmult_commute[of _ "k"])
+apply (simp add:mult_commute[of _ "k"])
 apply (simp add:int_mult_le)
 done
 
 lemma zmult_zminus_right:"(w::int) * (- z) = - (w * z)"
-apply (insert zadd_zmult_distrib2[of "w" "z" "-z"]) 
+apply (insert right_distrib[of "w" "z" "-z"]) 
 apply simp
 done
 
 lemma zmult_zle_mono1_neg:"\<lbrakk>(i::int) \<le> j; k \<le> 0\<rbrakk> \<Longrightarrow> j * k \<le> i * k"
 apply (subgoal_tac "0 \<le> - k") prefer 2 apply simp
 apply (frule int_mult_le [of "i" "j" "- k"], assumption+)
-apply (simp add:zmult_commute)
+apply (simp add:mult_commute)
 done 
 
 lemma zmult_zless_mono_neg:"\<lbrakk>(i::int) < j; k < 0\<rbrakk> \<Longrightarrow> j * k < i * k"
 apply (subgoal_tac "0 < -k", 
        frule int_mult_mono[of "i" "j" "-k"], assumption+,
-       simp add:zmult_commute, simp)
+       simp add:mult_commute, simp)
 done
 
 lemma zmult_neg_neg:"\<lbrakk>i < (0::int); j < 0 \<rbrakk> \<Longrightarrow> 0 < i * j"
@@ -204,7 +204,7 @@ done
 
 lemma zmult_pos_pos:"\<lbrakk>(0::int) < i; 0 < j\<rbrakk> \<Longrightarrow> 0 < i * j"
 apply (frule int_mult_mono[of "0" "i" "j"], assumption+)
-apply (simp add:zmult_commute)
+apply (simp add:mult_commute)
 done
 
 lemma zmult_pos_neg:"\<lbrakk>(0::int) < i; j < 0\<rbrakk> \<Longrightarrow> i * j < 0"
@@ -213,7 +213,7 @@ done
 
 lemma zmult_neg_pos:"\<lbrakk>i < (0::int); 0 < j\<rbrakk> \<Longrightarrow> i * j < 0"
 apply (frule int_mult_mono[of "i" "0" "j"], assumption+, 
-       simp add:zmult_commute)
+       simp add:mult_commute)
 done
 
 lemma zle:"((z::int) \<le> w) = (\<not> (w < z))" 
@@ -250,7 +250,7 @@ done
 
 lemma zmult_zle_mono_r:"\<lbrakk>i \<le> (j::int); 0 < k\<rbrakk> \<Longrightarrow> i * k \<le> j * k"
 apply (frule zmult_zle_mono[of "i" "j" "k"], assumption)
-apply (simp add:zmult_commute)
+apply (simp add:mult_commute)
 done 
 
 lemma pos_zmult_pos:"\<lbrakk> 0 \<le> (a::int); 0 < (b::int)\<rbrakk> \<Longrightarrow> a \<le> a * b"
@@ -260,16 +260,16 @@ apply simp
 done 
 
 lemma pos_mult_l_gt:"\<lbrakk>(0::int) < w; i \<le> j; 0 \<le> i\<rbrakk> \<Longrightarrow> i \<le> w * j"
-by (metis not_zless pos_zmult_pos zle_trans zmult_commute)
+by (metis not_zless pos_zmult_pos order_trans mult_commute)
 
 lemma  pos_mult_r_gt:"\<lbrakk>(0::int) < w; i \<le> j; 0 \<le> i\<rbrakk> \<Longrightarrow> i \<le> j * w"
 apply (frule pos_mult_l_gt[of "w" "i" "j"], assumption+)
-apply (simp add:zmult_commute[of "w" "j"])
+apply (simp add:mult_commute[of "w" "j"])
 done
 
 lemma mult_pos_iff:"\<lbrakk>(0::int) < i; 0 \<le> i * j \<rbrakk> \<Longrightarrow> 0 \<le> j" 
 apply (rule contrapos_pp, simp+) 
- apply (cut_tac zle_linear[of "0" "j"]) apply simp
+ apply (cut_tac linorder_linear[of "0" "j"]) apply simp
  apply (simp add:not_zle)
  apply (frule int_mult_mono[of "j" "0" "i"], assumption+)  apply simp
 done
@@ -301,7 +301,7 @@ by (rule mult_pos_iff, assumption+)
 
 lemma int_pos_mult_monol:"\<lbrakk> 0 < (m::int); 0 \<le> n * m \<rbrakk> \<Longrightarrow> 0 \<le> n" 
 apply (rule int_pos_mult_monor, assumption+)
-apply (simp add:zmult_commute)
+apply (simp add:mult_commute)
 done
 
 lemma zdiv_positive:"\<lbrakk>(0::int) \<le> a; 0 < b\<rbrakk> \<Longrightarrow> 0 \<le> a div b"
@@ -317,12 +317,12 @@ apply (simp add:zle)
 done (** zmult_div_mono to rename **)
 
 lemma zdiv_pos_mono_l:"\<lbrakk> (0::int) < w; z * w \<le> z' * w\<rbrakk> \<Longrightarrow> z \<le> z'"
-apply (simp add:zmult_commute)
+apply (simp add:mult_commute)
 apply (rule zdiv_pos_mono_r, assumption+)
 done
 
 lemma zdiv_pos_pos_l:"\<lbrakk> (0::int) < w; 0 \<le> z * w\<rbrakk> \<Longrightarrow> 0 \<le> z"
-by (simp add:zmult_commute, frule zdiv_pos_mono_r[of "w" "0" "z"], simp, 
+by (simp add:mult_commute, frule zdiv_pos_mono_r[of "w" "0" "z"], simp, 
         assumption)
 
 section "Sets"
@@ -1664,7 +1664,7 @@ apply (simp,
        thin_tac "{j. j \<le> Suc (n - Suc (Suc 0))} =
         insert (Suc (n - Suc (Suc 0))) {j. j \<le> n - Suc (Suc 0)}")
 apply (simp add:Suc_Suc_Tr)
-apply (auto );  
+apply (auto )
 done
 
 lemma func_pre:"f \<in> {j. j \<le> (Suc n)} \<rightarrow> A \<Longrightarrow> f \<in> {j. j \<le> n} \<rightarrow> A"
@@ -1850,12 +1850,12 @@ definition
   LB :: "[int set, int] \<Rightarrow> bool" where
   "LB A n = (\<forall>a\<in>A. n \<le> a)"
 
-lemma zle_linear1:"(m::int) < n \<or> n \<le> m"
+lemma linorder_linear1:"(m::int) < n \<or> n \<le> m"
 apply (subgoal_tac "m < n \<or> n = m \<or> n < m")
 apply (case_tac "m < n") apply simp apply simp
 apply (subgoal_tac "m < n \<or> m = n \<or> n < m") 
 apply blast
-apply (simp add:zless_linear)
+apply (simp add:less_linear)
 done
 
 primrec dec_seq :: "[int set, int, nat] \<Rightarrow> int"
@@ -1898,8 +1898,8 @@ apply (induct_tac n)
 apply (frule_tac n = n in dec_seqn1[of "a" "A"], assumption+)
  apply (subgoal_tac "dec_seq A a n - 1 \<le> a - (int n) - 1") prefer 2 
    apply simp apply (thin_tac "dec_seq A a n \<le> a - int n")
- apply (frule_tac i = "dec_seq A a (Suc n)" and j = "dec_seq A a n - 1" and
- k = "a - int n - 1" in zle_trans, assumption+)
+ apply (frule_tac x = "dec_seq A a (Suc n)" and y = "dec_seq A a n - 1" and
+ z = "a - int n - 1" in order_trans, assumption+)
  apply (thin_tac "\<not> (\<exists>m. m \<in> A \<and> (\<forall>x\<in>A. m \<le> x))")
  apply (thin_tac "dec_seq A a (Suc n) \<le> dec_seq A a n - 1")
  apply (thin_tac "dec_seq A a n - 1 \<le> a - int n - 1")
@@ -2391,7 +2391,7 @@ done
 lemma an_Suc:"an (Suc n) = an n + 1"
     apply (subst an_1[THEN sym])
     apply (simp del:an_1 add:an_def) 
-    apply (simp del:an_1 add:a_zpz, simp add:zadd_commute)
+    apply (simp del:an_1 add:a_zpz, simp add:add_commute)
 done
 
 lemma aeq_zeq [iff]: "(ant m = ant n) = (m = n)"
@@ -2462,25 +2462,25 @@ by (rule contrapos_pp, simp+, cut_tac mem_ant[of "a"], erule disjE,
 lemma adiv_eq:"\<lbrakk> z \<noteq> 0; a * (ant z) = b * (ant z)\<rbrakk> \<Longrightarrow> a = b"
 apply (cut_tac mem_ant[of "a"], cut_tac mem_ant[of "b"],
       (erule disjE)+, simp, erule disjE, erule exE,
-       cut_tac zless_linear[of "z" "0"], erule disjE, simp add:a_z_z,
+       cut_tac less_linear[of "z" "0"], erule disjE, simp add:a_z_z,
        frule sym, thin_tac "\<infinity> = ant (za * z)", simp,
        simp add:a_z_z, frule sym, thin_tac "- \<infinity> = ant (za * z)", simp,
-       cut_tac zless_linear[of "z" "0"], erule disjE, simp,
+       cut_tac less_linear[of "z" "0"], erule disjE, simp,
        simp, erule disjE, erule exE)
 apply (erule disjE,
-        cut_tac zless_linear[of "z" "0"], simp,
+        cut_tac less_linear[of "z" "0"], simp,
         erule disjE, simp add:a_z_z, simp add:a_z_z,
         erule disjE, erule exE, simp add:a_z_z,
-        cut_tac zless_linear[of "z" "0"], simp,
+        cut_tac less_linear[of "z" "0"], simp,
         erule disjE, simp add:a_z_z, simp add:a_z_z,
         erule disjE,
-        cut_tac zless_linear[of "z" "0"], simp,
+        cut_tac less_linear[of "z" "0"], simp,
         erule disjE, simp+)
 apply (erule disjE, erule exE, simp add:a_z_z,
-        cut_tac zless_linear[of "z" "0"], simp, erule disjE, simp,
+        cut_tac less_linear[of "z" "0"], simp, erule disjE, simp,
         frule sym, thin_tac "- \<infinity> = ant (za * z)", simp,
         simp, frule sym, thin_tac "\<infinity> = ant (za * z)", simp,
-        cut_tac zless_linear[of "z" "0"], simp) 
+        cut_tac less_linear[of "z" "0"], simp) 
 done
 
 lemma aminus_add_distrib: "- (z + w) = (- z) + (- w::ant)"
@@ -2605,7 +2605,7 @@ apply (cut_tac mem_ant[of "x"],
        cut_tac mem_ant[of "y"])
 apply (erule disjE, erule disjE, simp)
 apply (erule disjE, erule exE, simp)
-apply (cut_tac x = 0 and y = z in zless_linear)
+apply (cut_tac x = 0 and y = z in less_linear)
 apply (erule disjE, simp) 
 apply (erule disjE, rotate_tac -1, frule sym, thin_tac "0 = z", simp)
 apply (simp add:inf_ant_def ant_def, simp add:minus_ant_def,
@@ -2624,7 +2624,7 @@ apply (simp add:mult_ant_def minus_ant_def,
         simp add:Abs_Ainteg_inverse, simp add:zag_t_def)
 apply (erule disjE, erule disjE, simp)
 apply (erule exE,
-       cut_tac x = 0 and y = z in zless_linear)
+       cut_tac x = 0 and y = z in less_linear)
 apply (erule disjE, simp)
 apply (erule disjE, rotate_tac -1, thin_tac "0 = z", simp add:mult_ant_def,
       simp add:ant_def inf_ant_def minus_ant_def,
@@ -2642,7 +2642,7 @@ apply (simp add:inf_ant_def minus_ant_def,
       simp add:Abs_Ainteg_inverse, simp add:zag_t_def)
 apply ((erule disjE)+, (erule exE)+, simp add:a_z_z)
 apply (erule exE,
-       cut_tac  x = 0 and y = z in zless_linear,
+       cut_tac  x = 0 and y = z in less_linear,
        erule disjE, simp)
 apply (erule disjE, rotate_tac -1, frule sym, thin_tac "0 = z", simp,
       simp add:mult_ant_def ant_def inf_ant_def,
@@ -2651,7 +2651,7 @@ apply (erule disjE, rotate_tac -1, frule sym, thin_tac "0 = z", simp,
       simp add:Abs_Ainteg_inverse, simp add:zag_t_def,
       simp)
 apply (erule disjE, erule exE,
-       cut_tac  x = 0 and y = z in zless_linear,
+       cut_tac  x = 0 and y = z in less_linear,
        erule disjE, simp,
       erule disjE, rotate_tac -1, frule sym, thin_tac "0 = z", simp,
       simp add:mult_ant_def ant_def inf_ant_def,
@@ -2810,31 +2810,31 @@ done
 lemma amult_distrib1:"(ant z) \<noteq> 0 \<Longrightarrow> 
              (a + b) * (ant z) = a * (ant z) + b * (ant z)"
 apply (cut_tac mem_ant[of "a"], cut_tac mem_ant[of "b"],
-     (erule disjE)+, simp, cut_tac zless_linear[of "z" "0"], 
+     (erule disjE)+, simp, cut_tac less_linear[of "z" "0"], 
       erule disjE, simp, erule disjE, simp, simp add:ant_0, simp,
       erule disjE, erule exE, simp,
-      cut_tac zless_linear[of "z" "0"], 
+      cut_tac less_linear[of "z" "0"], 
       erule disjE, simp add:a_z_z, erule disjE, simp add:ant_0,
       simp add:a_z_z,
-      cut_tac zless_linear[of "z" "0"], simp,
+      cut_tac less_linear[of "z" "0"], simp,
       erule disjE, simp add:ant_0[THEN sym] a_z_z)
 apply (erule disjE, simp add:ant_0[THEN sym],
        simp, simp add:ant_0[THEN sym], simp add:a_z_z,
-       (erule disjE)+, (erule exE)+, cut_tac zless_linear[of "z" "0"], simp,
+       (erule disjE)+, (erule exE)+, cut_tac less_linear[of "z" "0"], simp,
        erule disjE, simp add:a_z_z,
        erule disjE, simp add:ant_0, simp add:a_z_z,
-       cut_tac zless_linear[of "z" "0"],
+       cut_tac less_linear[of "z" "0"],
        erule disjE, simp add:ant_0[THEN sym])
 apply (simp add:a_z_z, simp, 
        erule disjE, simp add:ant_0, simp add:ant_0[THEN sym] a_z_z,
       (erule disjE)+, (erule exE)+, simp add:a_zpz a_z_z,
-       simp add:zadd_zmult_distrib, erule exE, simp add:a_z_z,
-       cut_tac zless_linear[of "z" "0"], erule disjE, simp,
+       simp add:left_distrib, erule exE, simp add:a_z_z,
+       cut_tac less_linear[of "z" "0"], erule disjE, simp,
        erule disjE, simp add:ant_0, simp)
 apply (erule disjE, erule exE, simp, 
-       cut_tac zless_linear[of "z" "0"], erule disjE, simp add:a_z_z,
+       cut_tac less_linear[of "z" "0"], erule disjE, simp add:a_z_z,
        erule disjE, simp add:ant_0, simp add:a_z_z,
-       cut_tac zless_linear[of "z" "0"], erule disjE, simp,
+       cut_tac less_linear[of "z" "0"], erule disjE, simp,
        erule disjE, simp add:ant_0, simp)
 done
 
@@ -2887,7 +2887,7 @@ apply (simp add:asprod_mult)
 done
 
 lemma agsprod_assoc:"\<lbrakk>m \<noteq> 0; n \<noteq> 0\<rbrakk> \<Longrightarrow> m *\<^sub>a (n *\<^sub>a x) = (m * n) *\<^sub>a x"
-apply (cut_tac zless_linear[of "m" "0"], cut_tac zless_linear[of "n" "0"],
+apply (cut_tac less_linear[of "m" "0"], cut_tac less_linear[of "n" "0"],
        cut_tac mem_ant[of "x"],
       (erule disjE)+, simp,
       frule zmult_neg_neg[of "m" "n"], assumption+, simp)
@@ -2910,7 +2910,7 @@ done
 
 lemma asprod_distrib1:"m \<noteq> 0 \<Longrightarrow> m *\<^sub>a (x + y) = (m *\<^sub>a x) + (m *\<^sub>a y)"
 apply (cut_tac mem_ant[of "x"], cut_tac mem_ant[of "y"])
-apply (cut_tac zless_linear[of "m" "0"], 
+apply (cut_tac less_linear[of "m" "0"], 
       erule disjE,
       erule disjE, erule disjE, simp,
       erule disjE, simp add:asprod_def  add_ant_def, simp,
@@ -2925,10 +2925,10 @@ apply (erule disjE, erule exE, simp add:asprod_mult,
       simp add:Zero_ant_def asprod_mult)
 apply (simp, erule disjE, erule exE, simp,
       (erule disjE)+, erule exE, simp add:asprod_mult,
-      simp add:a_zpz, simp add:asprod_mult zadd_zmult_distrib2,
+      simp add:a_zpz, simp add:asprod_mult right_distrib,
       simp add:asprod_mult)
 apply (erule disjE, erule exE, simp add:a_zpz asprod_mult,
-       simp add:zadd_zmult_distrib2, simp add:asprod_mult,
+       simp add:right_distrib, simp add:asprod_mult,
       (erule disjE)+, erule exE, simp add:asprod_mult, simp,
       erule disjE, erule exE, simp add:asprod_mult, simp) 
 done
@@ -2946,7 +2946,7 @@ done
 lemma asprod_distrib2:"\<lbrakk>0 < i; 0 < j\<rbrakk> \<Longrightarrow> (i + j) *\<^sub>a x = (i *\<^sub>a x) + (j *\<^sub>a x)"
 by (cut_tac mem_ant[of "x"], erule disjE, simp,
        erule disjE, erule exE, simp add:asprod_mult,
-       simp add:zadd_zmult_distrib a_zpz, simp)
+       simp add:left_distrib a_zpz, simp)
 
 lemma asprod_minus:"x \<noteq> -\<infinity> \<and> x \<noteq> \<infinity> \<Longrightarrow> - z *\<^sub>a x = z *\<^sub>a (- x)"
 apply (cut_tac mem_ant[of "x"], erule disjE, simp+)
@@ -2954,7 +2954,7 @@ apply (erule exE, simp add:asprod_mult aminus)
 done
 
 lemma asprod_div_eq:"\<lbrakk>n \<noteq> 0; n *\<^sub>a x = n *\<^sub>a y\<rbrakk> \<Longrightarrow> x = y"
-apply (cut_tac zless_linear[of "n" "0"], simp)
+apply (cut_tac less_linear[of "n" "0"], simp)
 apply (cut_tac mem_ant[of "x"], cut_tac mem_ant[of "y"])
 apply ((erule disjE)+, simp,
       erule disjE, erule exE, rule contrapos_pp, simp+,
@@ -3091,14 +3091,14 @@ apply (cut_tac mem_ant[of "z"], cut_tac mem_ant[of "w"],
        erule disjE, simp,
        erule disjE, simp)
 apply ((erule disjE)+, (erule exE)+, simp add:ale[THEN sym],
-       simp add:zle_linear)
+       simp add:linorder_linear)
 apply simp+
 done
 
 instance ant :: linorder
 proof qed (rule ale_linear)
 
-lemmas aless_linear = linorder_less_linear [where 'a = ant]
+lemmas aless_linear = less_linear [where 'a = ant]
 
 
 lemma ant_eq_0_conv [simp]: "(ant n = 0) = (n = 0)"
@@ -3152,7 +3152,7 @@ lemma amult_one_r:"(x::ant)* 1 = x"
 by (cut_tac amult_one_l[of "x"], simp add:amult_commute)
 
 lemma amult_eq_eq_r:"\<lbrakk>z \<noteq> 0;  a * ant z = b * ant z\<rbrakk> \<Longrightarrow> a = b"
-apply (cut_tac zless_linear[of "z" "0"], simp,
+apply (cut_tac less_linear[of "z" "0"], simp,
        cut_tac mem_ant[of "a"], cut_tac mem_ant[of "b"],
        (erule disjE)+, simp,
       erule disjE, erule exE, simp add:a_z_z,
@@ -3178,7 +3178,7 @@ apply (cut_tac mem_ant[of "x"], erule disjE, simp,
        erule disjE, erule exE, simp add:asprod_mult,
        simp add:zpos_apos[THEN sym],
        frule_tac a = z and b = b in pos_zmult_pos, assumption+,
-       simp add:zmult_commute, simp)
+       simp add:mult_commute, simp)
 done
 
 lemma asprod_amult:"0 < z \<Longrightarrow> z *\<^sub>a x = (ant z) * x"
@@ -3201,7 +3201,7 @@ apply (rule iffI,
 apply ((erule disjE)+, (erule exE)+, simp add:a_z_z, 
        rule iffI,
        rule zdiv_pos_mono_r[of "w"], assumption+,
-       subst zmult_commute, subst zmult_commute,
+       subst mult_commute, subst mult_commute,
        rule zmult_zle_mono[of _ _ "w"], assumption+)
 apply (erule exE, simp add:a_z_z)
 apply (erule disjE, erule exE, simp add:a_z_z,
@@ -3337,7 +3337,7 @@ apply (cut_tac x = "ant za" in inf_ge_any, frule_tac x = "ant za" in
 done
 
 lemma aadd_less_mono_z:"(x::ant) < y \<Longrightarrow> (x + (ant z)) < (y + (ant z))"
-apply (simp add:less_ant_def, simp add:aadd_le_mono);
+apply (simp add:less_ant_def, simp add:aadd_le_mono)
 apply (cut_tac mem_ant[of "x"], cut_tac mem_ant[of "y"])
 apply auto
 apply (metis a_inv a_ipi a_ipz a_zpz aadd_minus_r less_le diff_ant_def minf_less_0)
@@ -3856,15 +3856,15 @@ apply (rule contrapos_pp, simp,
        simp add:UBset_def)
 apply (frule_tac c = "aasc_seq A (ant w) (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1))" in 
        subsetD[of "A" "{x. x \<le> ant z}"], assumption+,
-       simp);
+       simp)
 apply(frule_tac i = "ant w + an (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1))" and 
        j = "aasc_seq A (ant w) (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1))" and 
-        k = "ant z" in ale_trans, assumption+);
+        k = "ant z" in ale_trans, assumption+)
 apply (thin_tac "ant w + an (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1))
            \<le> aasc_seq A (ant w) (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1))",
        thin_tac "aasc_seq A (ant w) (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1)) \<in> A",
        thin_tac "aasc_seq A (ant w) (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1)) \<le> ant z",
-       simp add:an_def a_zpz);
+       simp add:an_def a_zpz)
  apply (cut_tac a = a in mem_ant, erule disjE, simp, erule disjE, erule exE,
         simp, simp add:UBset_def, frule subsetD[of "A" "{x. x \<le> ant z}" "\<infinity>"],
         assumption+, simp, cut_tac inf_ge_any[of "ant z"], 
@@ -4550,7 +4550,7 @@ by (cut_tac less_le_trans[of "1" "2" "m"],
        simp only:zless_int[THEN sym, of "1" "m"],
        subgoal_tac "0 \<le> int m",
        frule pos_zmult_pos[of "int m" "z"], assumption+,
-       rule zless_zle_trans[of "1" "int m" "int m * z"],
+       rule less_le_trans[of "1" "int m" "int m * z"],
        simp+) 
 
 lemma zmult_pos_mono:"\<lbrakk> (0::int) < w; w * z \<le> w * z'\<rbrakk> \<Longrightarrow> z \<le> z'"
@@ -4562,7 +4562,7 @@ done
 
 lemma zmult_pos_mono_r:
          "\<lbrakk>(0::int) < w; z * w \<le> z' * w\<rbrakk> \<Longrightarrow> z \<le> z'"
-apply (simp add:zmult_commute)
+apply (simp add:mult_commute)
 apply (rule zmult_pos_mono, assumption+)
 done 
 
@@ -5600,7 +5600,7 @@ done
 lemma (in Worder) isom_Worder:"\<lbrakk>Order T; ord_isom D T f\<rbrakk> \<Longrightarrow> Worder T"
 apply (rule Worder.intro)
 apply (rule Torder.intro) 
-apply assumption; 
+apply assumption
 apply (rule Torder_axioms.intro)
 apply (frule_tac b = a in ord_isom_surj[of T f], assumption+,
        frule_tac b = b in ord_isom_surj[of T f], assumption+,
@@ -5610,8 +5610,8 @@ apply (cut_tac Torder_axioms, simp add:Torder_axioms_def)
 apply (rule Worder_axioms.intro)
  apply (rule allI, rule impI, erule conjE) 
 
- apply (frule ord_isom_func[of "T" "f"], assumption+);
- apply (frule ord_isom_bij_to[of "T" "f"], assumption+);
+ apply (frule ord_isom_func[of "T" "f"], assumption+)
+ apply (frule ord_isom_bij_to[of "T" "f"], assumption+)
  apply (frule ord_isom_sym[of "T" "f"], assumption+,
         frule Order.ord_isom_func[of "T" "D" 
               "invfun (carrier D) (carrier T) f"])

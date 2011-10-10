@@ -477,7 +477,7 @@ proof -
   also have "\<dots> = m * q2 - m * q1 + r2 - r1"
     by simp
   finally have "b - a = m * (q2 - q1) + (r2 - r1)"
-    by (simp add: zdiff_zmult_distrib2)
+    by (simp add: right_diff_distrib)
   hence "(b - a) mod m = (r2 - r1) mod m"
     by (simp add: mod_add_eq)
   hence r2_r1_mod_m_0:"(r2 - r1) mod m = 0" (is "?R1")
@@ -514,7 +514,7 @@ proof -
       by simp
     
     have "r2 - r1 = 0"
-      using s1_pos s1_neg zle_linear by blast
+      using s1_pos s1_neg linorder_linear by blast
     hence "r1 = r2" by simp
     thus False
       using as1' by blast
@@ -535,7 +535,7 @@ apply (insert pos_mod_bound[of m a] pos_mod_bound[of m b], simp_all)
 done
 lemma zmod_zminus_eq_conv: "
   ((a::int) mod - m = b mod - m) = (a mod m = b mod m)"
-apply (insert zless_linear[of 0 m], elim disjE)
+apply (insert linorder_less_linear[of 0 m], elim disjE)
 apply (blast dest: zmod_zminus_eq_conv_pos)
 apply simp
 thm zmod_zminus_eq_conv_pos[of "-m", symmetric]
@@ -575,7 +575,7 @@ thm
 
 lemma zmult_div_leq_mono:"
   \<lbrakk> (0::int) \<le> x; a \<le> b; 0 < d \<rbrakk> \<Longrightarrow> x * a div d \<le> x * b div d"
-by (metis mult_right_mono zdiv_mono1 zmult_commute)
+by (metis mult_right_mono zdiv_mono1 mult_commute)
 
 lemma zmult_div_leq_mono_neg:"
   \<lbrakk> x \<le> (0::int); a \<le> b; 0 < d \<rbrakk> \<Longrightarrow> x * b div d \<le> x * a div d"
@@ -587,7 +587,7 @@ apply (case_tac "b = 0", simp)
 apply (subgoal_tac "b * a \<le> c * a")
  prefer 2 
  apply (simp only: mult_right_mono)
-apply (simp only: zmult_commute)
+apply (simp only: mult_commute)
 apply (subgoal_tac "a * b div c \<le> a * c div c")
  prefer 2 
  thm zdiv_mono1
@@ -600,7 +600,7 @@ lemma zmult_div_neg_le:"
 apply (subgoal_tac "b * a \<le> c * a")
  prefer 2 
  apply (simp only: mult_right_mono_neg)
-apply (simp only:zmult_commute)
+apply (simp only: mult_commute)
 apply (subgoal_tac "a * b div c \<le> a * c div c")
  prefer 2 
  thm zdiv_mono1 

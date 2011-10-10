@@ -41,11 +41,11 @@ by (subgoal_tac "\<forall>m. (nat((abs z) + (abs x))) < m \<longrightarrow> z < 
        blast, rule allI, rule impI, arith)
 
 lemma zle_less_trans:"\<lbrakk>(i::int) \<le> j; j < k\<rbrakk> \<Longrightarrow> i < k"
-apply (simp add:zless_le) 
+apply (simp add:less_le) 
 done  
 
 lemma  zless_le_trans:"\<lbrakk>(i::int) < j; j \<le> k\<rbrakk> \<Longrightarrow> i < k"
-apply (simp add:zless_le) 
+apply (simp add:less_le) 
 done 
 
 lemma zmult_pos_bignumTr:"0 < (a::int) \<Longrightarrow> 
@@ -57,11 +57,11 @@ apply (rule allI, rule impI)
  apply (drule_tac a = m in forall_spec, assumption)
  apply (subgoal_tac "0 \<le> int m")
  apply (frule_tac a = "int m" and b = a in pos_zmult_pos, assumption)
- apply (cut_tac zle_refl[of "x"])
+ apply (cut_tac order_refl[of "x"])
  apply (frule_tac z' = "int m" and z = "int m * a" in 
          zadd_zle_mono[of "x" "x"], assumption+)
- apply (rule_tac j = "x + int m" and k = "x + (int m)* a" in 
-         zless_le_trans[of "z"], assumption+)
+ apply (rule_tac y = "x + int m" and z = "x + (int m)* a" in 
+         less_le_trans[of "z"], assumption+)
  apply simp
 done
 
@@ -121,11 +121,11 @@ apply ((erule disjE)+, erule exE, simp,
        simp del:ant_1)
 apply ((erule disjE)+, (erule exE)+, simp only:ant_1[THEN sym],
        simp del:ant_1 add:a_z_z,
-       (cut_tac z = z and w = za in zmult_commute, simp,
+       (cut_tac a = z and b = za in mult_commute, simp,
         cut_tac z = za and z' = z in  times_1_both, assumption+),
        simp)
 apply (erule exE, simp,
-       cut_tac x = z and y = 0 in zless_linear, erule disjE, simp,
+       cut_tac x = z and y = 0 in less_linear, erule disjE, simp,
        frule sym, thin_tac "-\<infinity> = 1", simp only:ant_1[THEN sym],
        simp del:ant_1,
        erule disjE, simp add:ant_0, simp, 
@@ -260,7 +260,7 @@ apply (frule_tac a = "ant z" in gt_na_poss[of _ "m"])
  apply (case_tac "z \<le> 0")
  apply (frule_tac k = za in zmult_zless_mono2[of "int 0" "int m"], assumption+)
  apply simp apply (rule zle_zless_trans[of _ "0"], assumption+)
- apply (simp add:zmult_commute[of _ "int m"])
+ apply (simp add:mult_commute[of _ "int m"])
 apply (simp only:not_zle) 
  apply (cut_tac z = za in zgt_0_zge_1, assumption+)
  apply (frule_tac j = za and k = "int m" in int_mult_le[of "1"])
@@ -278,7 +278,7 @@ apply (frule_tac x = 0 and y = "ant z" in aless_imp_le)
 done
 
 lemma  zmult_gt_one:"\<lbrakk>2 \<le> m; 0 < xa\<rbrakk> \<Longrightarrow> 1 < int m * xa"
-by (metis ge2_zmult_pos zmult_commute)
+by (metis ge2_zmult_pos mult_commute)
 
 lemma zmult_pos:"\<lbrakk> 0 < m; 0 < (a::int)\<rbrakk> \<Longrightarrow> 0 < (int m) * a" 
 by (frule zmult_zless_mono2[of "0" "a" "int m"], simp, simp)
@@ -339,7 +339,7 @@ by auto
 
 lemma nset_Suc:"nset (Suc 0) (Suc (Suc n)) = 
                   nset (Suc 0) (Suc n) \<union> {Suc (Suc n)}"
-by (auto simp add:nset_def); 
+by (auto simp add:nset_def)
 
 lemma AinequalityTr0:"x \<noteq> -\<infinity> \<Longrightarrow> \<exists>L. (\<forall>N. L < N \<longrightarrow> 
                           (an m) < (x + an N))"
@@ -717,7 +717,7 @@ apply (subst val_t2p[of v _ x], assumption+,
        rule Ring.npClose, assumption+,
        frule val_nonzero_z[of v x], assumption+,
               erule exE, simp add:asprod_mult a_zpz,
-       simp add:zadd_zmult_distrib)
+       simp add:left_distrib)
 done
 
 text{* exponent in a field *}
@@ -1076,14 +1076,14 @@ apply ((erule exE)+,
        (erule exE)+, simp add:a_z_z,
        thin_tac "c = ant z", frule sym, thin_tac "zb * z = za", simp)
 apply (subgoal_tac "0 < zb", 
-       cut_tac z = zc and w = zb in zmult_commute, simp,
+       cut_tac a = zc and b = zb in mult_commute, simp,
        simp add:pos_zmult_eq_1_iff,
        rule contrapos_pp, simp+,
-       cut_tac x = 0 and y = zb in zless_linear, simp,
+       cut_tac x = 0 and y = zb in less_linear, simp,
        thin_tac "\<not> 0 < zb",
        erule disjE, simp,
        frule_tac i = 0 and j = z and k = zb in zmult_zless_mono_neg,
-             assumption+, simp add:zmult_commute)
+             assumption+, simp add:mult_commute)
 apply (rule contrapos_pp, simp+, thin_tac "a \<noteq> \<infinity> \<and> a \<noteq> - \<infinity>",
        erule disjE, simp, rotate_tac 5, drule sym, 
        simp, simp, rotate_tac 5, drule sym, simp)

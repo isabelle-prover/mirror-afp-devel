@@ -101,7 +101,7 @@ proof(induct \<phi> rule:min_inf.induct)
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
           by(simp add: algebra_simps)
         also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
-          by (metis dvd_diff zdvd_zdiffD dvd_mult zmult_commute)
+          by (metis dvd_diff zdvd_zdiffD dvd_mult mult_commute)
         also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
           by(simp add: algebra_simps)
         finally show ?thesis .
@@ -129,7 +129,7 @@ next
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
           by(simp add: algebra_simps)
         also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
-          by (metis dvd_diff zdvd_zdiffD dvd_mult zmult_commute)
+          by (metis dvd_diff zdvd_zdiffD dvd_mult mult_commute)
         also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
           by(simp add: algebra_simps)
         finally show ?thesis .

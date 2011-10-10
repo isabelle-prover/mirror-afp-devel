@@ -63,7 +63,7 @@ next
       with vo have "v^3 \<in> zOdd" and "w^3 \<in> zEven" 
         by (auto simp only: power_preserves_even power_preserves_odd)
       hence "w^3 + v^3 \<in> zOdd" by (simp only: even_plus_odd)
-      with vwx have "x^3 \<in> zOdd" by (simp add: zadd_commute)
+      with vwx have "x^3 \<in> zOdd" by (simp add: add_commute)
       hence "x \<in> zOdd" by (simp only: power_preserves_odd)
       with vwx show False by (auto simp add: odd_iff_not_even)
     qed
@@ -365,7 +365,7 @@ next
           then obtain t where "r = h*t" by (auto simp add: dvd_def)
           hence t: "r^2 = h*(h*t^2)" by (auto simp add: power2_eq_square)
           with rqh have "h*s = h*(3*h*t^2) + q^2" by simp
-          hence "q^2 = h*(s - 3*h*t^2)" by (simp add: zdiff_zmult_distrib2)
+          hence "q^2 = h*(s - 3*h*t^2)" by (simp add: right_diff_distrib)
           hence "h dvd q^2" by simp
           with h have "h dvd q" by (auto dest: zprime_zdvd_power)
           with hr have "h dvd zgcd q r" by (simp add: zgcd_greatest_iff)
@@ -567,7 +567,7 @@ proof (rule ccontr)
     have zgab: "z^3 = ?g^3 * (a^3+b^3)"
     proof -
       from ab and ass have "z^3 = (?g*a)^3+(?g*b)^3" by simp
-      thus ?thesis by (simp only: power_mult_distrib zadd_zmult_distrib2)
+      thus ?thesis by (simp only: power_mult_distrib right_distrib)
     qed
     have cgz: "?c * ?g = z"
     proof - 

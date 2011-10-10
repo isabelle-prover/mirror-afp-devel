@@ -162,8 +162,8 @@ proof -
     moreover
     { assume "t > n+1"
       with p0 have "p*(n+1) < p*t" by (simp only: zmult_zless_mono2)
-      with n have "p*t > (2*n+1)*n + (2*n+1)*1" by (simp only: zadd_zmult_distrib2)
-      hence "p*t > 2*n*n + n + 2*n + 1" by (simp only: zadd_zmult_distrib zmult_1)
+      with n have "p*t > (2*n+1)*n + (2*n+1)*1" by (simp only: right_distrib)
+      hence "p*t > 2*n*n + n + 2*n + 1" by (simp only: left_distrib mult_1_left)
       with n0 have "p*t > 2*n^2 + 1" by (simp add: power2_eq_square) }
     ultimately have "\<not> t > n+1" by auto
     with n0 n show "t < p" by auto
@@ -332,10 +332,10 @@ next
           from bc_def ass have 
             "?B = p*x - 2*(a1*c1+a2*c2+a3*c3+a4*c4)*x + ?C*x^2"
             by (auto simp add: zdiff_power2 sum4sq_def 
-              zadd_zmult_distrib power_mult_distrib)
+              left_distrib power_mult_distrib)
           thus "?B = x*(p - 2*(a1*c1+a2*c2+a3*c3+a4*c4) + ?C*x)"
             by (auto simp add: mult_ac power2_eq_square
-              zadd_zmult_distrib2 zdiff_zmult_distrib2)
+              right_distrib right_diff_distrib)
         qed
         then obtain y where y: "?B = x * y" by (auto simp add: dvd_def)
         let ?A1 = "a1*b1 + a2*b2 + a3*b3 + a4*b4"
@@ -349,25 +349,25 @@ next
             "?A1 = (b1+c1*x)*b1 + (b2+c2*x)*b2 + (b3+c3*x)*b3 + (b4+c4*x)*b4"
             by simp
           also with y have "\<dots> = x*(y + c1*b1 + c2*b2 + c3*b3 + c4*b4)"
-            by (auto simp add: zadd_zmult_distrib2 power2_eq_square mult_ac)
+            by (auto simp add: right_distrib power2_eq_square mult_ac)
           finally show "x dvd ?A1" by auto
           from bc_def have 
             "?A2 = (b1+c1*x)*b2 - (b2+c2*x)*b1 - (b3+c3*x)*b4 + (b4+c4*x)*b3"
             by simp
           also have "\<dots> = x*(c1*b2 - c2*b1 - c3*b4 + c4*b3)"
-            by (auto simp add: zadd_zmult_distrib2 zdiff_zmult_distrib2 mult_ac)
+            by (auto simp add: right_distrib right_diff_distrib mult_ac)
           finally show "x dvd ?A2" by auto
           from bc_def have 
             "?A3 = (b1+c1*x)*b3 + (b2+c2*x)*b4 - (b3+c3*x)*b1 - (b4+c4*x)*b2"
             by simp
           also have "\<dots> = x*(c1*b3 + c2*b4 - c3*b1 - c4*b2)"
-            by (auto simp add: zadd_zmult_distrib2 zdiff_zmult_distrib2 mult_ac)
+            by (auto simp add: right_distrib right_diff_distrib mult_ac)
           finally show "x dvd ?A3" by auto
           from bc_def have 
             "?A4 = (b1+c1*x)*b4 - (b2+c2*x)*b3 + (b3+c3*x)*b2 - (b4+c4*x)*b1"
             by simp
           also have "\<dots> = x*(c1*b4 - c2*b3 + c3*b2 - c4*b1)"
-            by (auto simp add: zadd_zmult_distrib2 zdiff_zmult_distrib2 mult_ac)
+            by (auto simp add: right_distrib right_diff_distrib mult_ac)
           finally show "x dvd ?A4" by auto
         qed
         then obtain d1 d2 d3 d4 where d: 
@@ -375,12 +375,12 @@ next
           by (auto simp add: dvd_def)
         let ?D = "sum4sq(d1,d2,d3,d4)"
         from d have "x^2*?D = ?A" 
-          by (auto simp only: sum4sq_def power_mult_distrib zadd_zmult_distrib2) 
+          by (auto simp only: sum4sq_def power_mult_distrib right_distrib) 
         also have "\<dots> = sum4sq(a1,a2,a3,a4)*sum4sq(b1,b2,b3,b4)"
           by (simp only: mult_sum4sq)
         also with y ass have "\<dots> = (p*x)*(x*y)" by (auto simp add: sum4sq_def)
         also have "\<dots> = x^2*(p*y)" by (simp only: power2_eq_square mult_ac)
-        finally have "x^2*(?D - p*y) = 0" by (auto simp add: zdiff_zmult_distrib2)
+        finally have "x^2*(?D - p*y) = 0" by (auto simp add: right_diff_distrib)
         with ass have "?D = p*y" by auto
         moreover have y_l_x: "y < x"
         proof -
@@ -391,7 +391,7 @@ next
             by (auto simp add: power_strict_mono)
           hence "?B < x^2" by auto
           with y have "x*(x-y) > 0"
-            by (auto simp add: power2_eq_square zdiff_zmult_distrib2)
+            by (auto simp add: power2_eq_square right_diff_distrib)
           moreover from ass have "x > 0" by simp
           ultimately show ?thesis by (auto dest: pos_zmult_pos)
         qed
