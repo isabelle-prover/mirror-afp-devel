@@ -24,6 +24,13 @@ D  -> Should we separate fifo-class from implementation? I.e. are there other us
 
 D  Migrate to Isabelle2009-1
 
+skew_invar: Typ anpassen. Andere solche abbreviations suchen
+
+rm_ops: Komischer Typ wird inferiert. Typ explizit angeben! Auch bei anderen omap/oset-defs
+
+Thomas Collections_Add einbauen --> SetGA, MapGA
+
+
 Add surjectivity lemmas for implementations, stating that every abstract value has a corresponding concrete one,
 i.e. ALL a. finite a --> EX c. \alpha c = a && invar c
 

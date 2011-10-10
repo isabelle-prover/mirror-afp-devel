@@ -56,8 +56,6 @@ definition "tm_ball == sel_ball tm_sel"
 definition "tm_to_list == it_map_to_list tm_iterate"
 definition "list_to_tm == gen_list_to_map tm_empty tm_update"
 
-definition "tm_sng == map_sng tm_empty tm_update"
-
 lemmas tm_defs = 
   tm_\<alpha>_def
   tm_empty_def
@@ -75,7 +73,6 @@ lemmas tm_defs =
   tm_ball_def
   tm_to_list_def
   list_to_tm_def
-  tm_sng_def
 
 subsection {* Correctness *}
 
@@ -139,8 +136,6 @@ lemma list_to_tm_impl: "list_to_map tm_\<alpha> tm_invar list_to_tm"
 unfolding list_to_tm_def
 by(rule gen_list_to_map_correct tm_empty_impl tm_update_impl)+
 
-lemmas tm_sng_correct 
-  = map_sng_correct[OF tm_empty_impl tm_update_impl, folded tm_sng_def]
 
 interpretation tm: map_empty tm_\<alpha> tm_invar tm_empty 
   using tm_empty_impl .
@@ -189,7 +184,6 @@ lemmas tm_correct =
   tm.ball_correct
   tm.to_list_correct
   tm.to_map_correct
-  tm_sng_correct
 
 subsection "Code Generation"
 
@@ -209,7 +203,6 @@ export_code
   tm_ball
   tm_to_list
   list_to_tm
-  tm_sng
   in SML
   module_name TrieMap
   file -

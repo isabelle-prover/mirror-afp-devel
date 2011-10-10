@@ -262,6 +262,178 @@ lemmas it_set_to_fifo_correct = it_set_to_List_enq_correct[OF _ fifo_empty_impl 
   lemmas aaa_union_dj_impl = SetGA.it_union_dj_correct[OF ahs_iterate_impl ahs_ins_dj_impl, folded aaa_union_dj_def]
   interpretation aaa: set_union_dj ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar aaa_union_dj using aaa_union_dj_impl .
 
+  definition "lili_diff == SetGA.it_diff lsi_iterate lsi_delete"
+  lemmas lili_diff_impl = SetGA.it_diff_correct[OF lsi_iterate_impl lsi_delete_impl, folded lili_diff_def]
+  interpretation lili: set_diff lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lili_diff using lili_diff_impl .
+  definition "lli_diff == SetGA.it_diff lsi_iterate ls_delete"
+  lemmas lli_diff_impl = SetGA.it_diff_correct[OF lsi_iterate_impl ls_delete_impl, folded lli_diff_def]
+  interpretation lli: set_diff ls_\<alpha> ls_invar lsi_\<alpha> lsi_invar lli_diff using lli_diff_impl .
+  definition "rli_diff == SetGA.it_diff lsi_iterate rs_delete"
+  lemmas rli_diff_impl = SetGA.it_diff_correct[OF lsi_iterate_impl rs_delete_impl, folded rli_diff_def]
+  interpretation rli: set_diff rs_\<alpha> rs_invar lsi_\<alpha> lsi_invar rli_diff using rli_diff_impl .
+  definition "hli_diff == SetGA.it_diff lsi_iterate hs_delete"
+  lemmas hli_diff_impl = SetGA.it_diff_correct[OF lsi_iterate_impl hs_delete_impl, folded hli_diff_def]
+  interpretation hli: set_diff hs_\<alpha> hs_invar lsi_\<alpha> lsi_invar hli_diff using hli_diff_impl .
+  definition "ali_diff == SetGA.it_diff lsi_iterate ahs_delete"
+  lemmas ali_diff_impl = SetGA.it_diff_correct[OF lsi_iterate_impl ahs_delete_impl, folded ali_diff_def]
+  interpretation ali: set_diff ahs_\<alpha> ahs_invar lsi_\<alpha> lsi_invar ali_diff using ali_diff_impl .
+  definition "lil_diff == SetGA.it_diff ls_iterate lsi_delete"
+  lemmas lil_diff_impl = SetGA.it_diff_correct[OF ls_iterate_impl lsi_delete_impl, folded lil_diff_def]
+  interpretation lil: set_diff lsi_\<alpha> lsi_invar ls_\<alpha> ls_invar lil_diff using lil_diff_impl .
+  definition "ll_diff == SetGA.it_diff ls_iterate ls_delete"
+  lemmas ll_diff_impl = SetGA.it_diff_correct[OF ls_iterate_impl ls_delete_impl, folded ll_diff_def]
+  interpretation ll: set_diff ls_\<alpha> ls_invar ls_\<alpha> ls_invar ll_diff using ll_diff_impl .
+  definition "rl_diff == SetGA.it_diff ls_iterate rs_delete"
+  lemmas rl_diff_impl = SetGA.it_diff_correct[OF ls_iterate_impl rs_delete_impl, folded rl_diff_def]
+  interpretation rl: set_diff rs_\<alpha> rs_invar ls_\<alpha> ls_invar rl_diff using rl_diff_impl .
+  definition "hl_diff == SetGA.it_diff ls_iterate hs_delete"
+  lemmas hl_diff_impl = SetGA.it_diff_correct[OF ls_iterate_impl hs_delete_impl, folded hl_diff_def]
+  interpretation hl: set_diff hs_\<alpha> hs_invar ls_\<alpha> ls_invar hl_diff using hl_diff_impl .
+  definition "al_diff == SetGA.it_diff ls_iterate ahs_delete"
+  lemmas al_diff_impl = SetGA.it_diff_correct[OF ls_iterate_impl ahs_delete_impl, folded al_diff_def]
+  interpretation al: set_diff ahs_\<alpha> ahs_invar ls_\<alpha> ls_invar al_diff using al_diff_impl .
+  definition "lir_diff == SetGA.it_diff rs_iterate lsi_delete"
+  lemmas lir_diff_impl = SetGA.it_diff_correct[OF rs_iterate_impl lsi_delete_impl, folded lir_diff_def]
+  interpretation lir: set_diff lsi_\<alpha> lsi_invar rs_\<alpha> rs_invar lir_diff using lir_diff_impl .
+  definition "lr_diff == SetGA.it_diff rs_iterate ls_delete"
+  lemmas lr_diff_impl = SetGA.it_diff_correct[OF rs_iterate_impl ls_delete_impl, folded lr_diff_def]
+  interpretation lr: set_diff ls_\<alpha> ls_invar rs_\<alpha> rs_invar lr_diff using lr_diff_impl .
+  definition "rr_diff == SetGA.it_diff rs_iterate rs_delete"
+  lemmas rr_diff_impl = SetGA.it_diff_correct[OF rs_iterate_impl rs_delete_impl, folded rr_diff_def]
+  interpretation rr: set_diff rs_\<alpha> rs_invar rs_\<alpha> rs_invar rr_diff using rr_diff_impl .
+  definition "hr_diff == SetGA.it_diff rs_iterate hs_delete"
+  lemmas hr_diff_impl = SetGA.it_diff_correct[OF rs_iterate_impl hs_delete_impl, folded hr_diff_def]
+  interpretation hr: set_diff hs_\<alpha> hs_invar rs_\<alpha> rs_invar hr_diff using hr_diff_impl .
+  definition "ar_diff == SetGA.it_diff rs_iterate ahs_delete"
+  lemmas ar_diff_impl = SetGA.it_diff_correct[OF rs_iterate_impl ahs_delete_impl, folded ar_diff_def]
+  interpretation ar: set_diff ahs_\<alpha> ahs_invar rs_\<alpha> rs_invar ar_diff using ar_diff_impl .
+  definition "lih_diff == SetGA.it_diff hs_iterate lsi_delete"
+  lemmas lih_diff_impl = SetGA.it_diff_correct[OF hs_iterate_impl lsi_delete_impl, folded lih_diff_def]
+  interpretation lih: set_diff lsi_\<alpha> lsi_invar hs_\<alpha> hs_invar lih_diff using lih_diff_impl .
+  definition "lh_diff == SetGA.it_diff hs_iterate ls_delete"
+  lemmas lh_diff_impl = SetGA.it_diff_correct[OF hs_iterate_impl ls_delete_impl, folded lh_diff_def]
+  interpretation lh: set_diff ls_\<alpha> ls_invar hs_\<alpha> hs_invar lh_diff using lh_diff_impl .
+  definition "rh_diff == SetGA.it_diff hs_iterate rs_delete"
+  lemmas rh_diff_impl = SetGA.it_diff_correct[OF hs_iterate_impl rs_delete_impl, folded rh_diff_def]
+  interpretation rh: set_diff rs_\<alpha> rs_invar hs_\<alpha> hs_invar rh_diff using rh_diff_impl .
+  definition "hh_diff == SetGA.it_diff hs_iterate hs_delete"
+  lemmas hh_diff_impl = SetGA.it_diff_correct[OF hs_iterate_impl hs_delete_impl, folded hh_diff_def]
+  interpretation hh: set_diff hs_\<alpha> hs_invar hs_\<alpha> hs_invar hh_diff using hh_diff_impl .
+  definition "ah_diff == SetGA.it_diff hs_iterate ahs_delete"
+  lemmas ah_diff_impl = SetGA.it_diff_correct[OF hs_iterate_impl ahs_delete_impl, folded ah_diff_def]
+  interpretation ah: set_diff ahs_\<alpha> ahs_invar hs_\<alpha> hs_invar ah_diff using ah_diff_impl .
+  definition "lia_diff == SetGA.it_diff ahs_iterate lsi_delete"
+  lemmas lia_diff_impl = SetGA.it_diff_correct[OF ahs_iterate_impl lsi_delete_impl, folded lia_diff_def]
+  interpretation lia: set_diff lsi_\<alpha> lsi_invar ahs_\<alpha> ahs_invar lia_diff using lia_diff_impl .
+  definition "la_diff == SetGA.it_diff ahs_iterate ls_delete"
+  lemmas la_diff_impl = SetGA.it_diff_correct[OF ahs_iterate_impl ls_delete_impl, folded la_diff_def]
+  interpretation la: set_diff ls_\<alpha> ls_invar ahs_\<alpha> ahs_invar la_diff using la_diff_impl .
+  definition "ra_diff == SetGA.it_diff ahs_iterate rs_delete"
+  lemmas ra_diff_impl = SetGA.it_diff_correct[OF ahs_iterate_impl rs_delete_impl, folded ra_diff_def]
+  interpretation ra: set_diff rs_\<alpha> rs_invar ahs_\<alpha> ahs_invar ra_diff using ra_diff_impl .
+  definition "ha_diff == SetGA.it_diff ahs_iterate hs_delete"
+  lemmas ha_diff_impl = SetGA.it_diff_correct[OF ahs_iterate_impl hs_delete_impl, folded ha_diff_def]
+  interpretation ha: set_diff hs_\<alpha> hs_invar ahs_\<alpha> ahs_invar ha_diff using ha_diff_impl .
+  definition "aa_diff == SetGA.it_diff ahs_iterate ahs_delete"
+  lemmas aa_diff_impl = SetGA.it_diff_correct[OF ahs_iterate_impl ahs_delete_impl, folded aa_diff_def]
+  interpretation aa: set_diff ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar aa_diff using aa_diff_impl .
+
+  definition "lsi_sng == SetGA.ei_sng lsi_empty lsi_ins"
+  lemmas lsi_sng_impl = SetGA.ei_sng_correct[OF lsi_empty_impl lsi_ins_impl, folded lsi_sng_def]
+  interpretation lsi: set_sng lsi_\<alpha> lsi_invar lsi_sng using lsi_sng_impl .
+  definition "ls_sng == SetGA.ei_sng ls_empty ls_ins"
+  lemmas ls_sng_impl = SetGA.ei_sng_correct[OF ls_empty_impl ls_ins_impl, folded ls_sng_def]
+  interpretation ls: set_sng ls_\<alpha> ls_invar ls_sng using ls_sng_impl .
+  definition "rs_sng == SetGA.ei_sng rs_empty rs_ins"
+  lemmas rs_sng_impl = SetGA.ei_sng_correct[OF rs_empty_impl rs_ins_impl, folded rs_sng_def]
+  interpretation rs: set_sng rs_\<alpha> rs_invar rs_sng using rs_sng_impl .
+  definition "hs_sng == SetGA.ei_sng hs_empty hs_ins"
+  lemmas hs_sng_impl = SetGA.ei_sng_correct[OF hs_empty_impl hs_ins_impl, folded hs_sng_def]
+  interpretation hs: set_sng hs_\<alpha> hs_invar hs_sng using hs_sng_impl .
+  definition "ahs_sng == SetGA.ei_sng ahs_empty ahs_ins"
+  lemmas ahs_sng_impl = SetGA.ei_sng_correct[OF ahs_empty_impl ahs_ins_impl, folded ahs_sng_def]
+  interpretation ahs: set_sng ahs_\<alpha> ahs_invar ahs_sng using ahs_sng_impl .
+
+  definition "lsi_size == SetGA.it_size lsi_iterate"
+  lemmas lsi_size_impl = SetGA.it_size_correct[OF lsi_iterate_impl, folded lsi_size_def]
+  interpretation lsi: set_size lsi_\<alpha> lsi_invar lsi_size using lsi_size_impl .
+  definition "ls_size == SetGA.it_size ls_iterate"
+  lemmas ls_size_impl = SetGA.it_size_correct[OF ls_iterate_impl, folded ls_size_def]
+  interpretation ls: set_size ls_\<alpha> ls_invar ls_size using ls_size_impl .
+  definition "rs_size == SetGA.it_size rs_iterate"
+  lemmas rs_size_impl = SetGA.it_size_correct[OF rs_iterate_impl, folded rs_size_def]
+  interpretation rs: set_size rs_\<alpha> rs_invar rs_size using rs_size_impl .
+  definition "hs_size == SetGA.it_size hs_iterate"
+  lemmas hs_size_impl = SetGA.it_size_correct[OF hs_iterate_impl, folded hs_size_def]
+  interpretation hs: set_size hs_\<alpha> hs_invar hs_size using hs_size_impl .
+  definition "ahs_size == SetGA.it_size ahs_iterate"
+  lemmas ahs_size_impl = SetGA.it_size_correct[OF ahs_iterate_impl, folded ahs_size_def]
+  interpretation ahs: set_size ahs_\<alpha> ahs_invar ahs_size using ahs_size_impl .
+
+  definition "lsi_size_abort == SetGA.iti_size_abort lsi_iteratei"
+  lemmas lsi_size_abort_impl = SetGA.iti_size_abort_correct[OF lsi_iteratei_impl, folded lsi_size_abort_def]
+  interpretation lsi: set_size_abort lsi_\<alpha> lsi_invar lsi_size_abort using lsi_size_abort_impl .
+  definition "ls_size_abort == SetGA.iti_size_abort ls_iteratei"
+  lemmas ls_size_abort_impl = SetGA.iti_size_abort_correct[OF ls_iteratei_impl, folded ls_size_abort_def]
+  interpretation ls: set_size_abort ls_\<alpha> ls_invar ls_size_abort using ls_size_abort_impl .
+  definition "rs_size_abort == SetGA.iti_size_abort rs_iteratei"
+  lemmas rs_size_abort_impl = SetGA.iti_size_abort_correct[OF rs_iteratei_impl, folded rs_size_abort_def]
+  interpretation rs: set_size_abort rs_\<alpha> rs_invar rs_size_abort using rs_size_abort_impl .
+  definition "hs_size_abort == SetGA.iti_size_abort hs_iteratei"
+  lemmas hs_size_abort_impl = SetGA.iti_size_abort_correct[OF hs_iteratei_impl, folded hs_size_abort_def]
+  interpretation hs: set_size_abort hs_\<alpha> hs_invar hs_size_abort using hs_size_abort_impl .
+  definition "ahs_size_abort == SetGA.iti_size_abort ahs_iteratei"
+  lemmas ahs_size_abort_impl = SetGA.iti_size_abort_correct[OF ahs_iteratei_impl, folded ahs_size_abort_def]
+  interpretation ahs: set_size_abort ahs_\<alpha> ahs_invar ahs_size_abort using ahs_size_abort_impl .
+
+  definition "lsi_isSng == SetGA.sza_isSng lsi_size_abort"
+  lemmas lsi_isSng_impl = SetGA.sza_isSng_correct[OF lsi_size_abort_impl, folded lsi_isSng_def]
+  interpretation lsi: set_isSng lsi_\<alpha> lsi_invar lsi_isSng using lsi_isSng_impl .
+  definition "ls_isSng == SetGA.sza_isSng ls_size_abort"
+  lemmas ls_isSng_impl = SetGA.sza_isSng_correct[OF ls_size_abort_impl, folded ls_isSng_def]
+  interpretation ls: set_isSng ls_\<alpha> ls_invar ls_isSng using ls_isSng_impl .
+  definition "rs_isSng == SetGA.sza_isSng rs_size_abort"
+  lemmas rs_isSng_impl = SetGA.sza_isSng_correct[OF rs_size_abort_impl, folded rs_isSng_def]
+  interpretation rs: set_isSng rs_\<alpha> rs_invar rs_isSng using rs_isSng_impl .
+  definition "hs_isSng == SetGA.sza_isSng hs_size_abort"
+  lemmas hs_isSng_impl = SetGA.sza_isSng_correct[OF hs_size_abort_impl, folded hs_isSng_def]
+  interpretation hs: set_isSng hs_\<alpha> hs_invar hs_isSng using hs_isSng_impl .
+  definition "ahs_isSng == SetGA.sza_isSng ahs_size_abort"
+  lemmas ahs_isSng_impl = SetGA.sza_isSng_correct[OF ahs_size_abort_impl, folded ahs_isSng_def]
+  interpretation ahs: set_isSng ahs_\<alpha> ahs_invar ahs_isSng using ahs_isSng_impl .
+
+  definition "lsi_ball == SetGA.iti_ball lsi_iteratei"
+  lemmas lsi_ball_impl = SetGA.iti_ball_correct[OF lsi_iteratei_impl, folded lsi_ball_def]
+  interpretation lsi: set_ball lsi_\<alpha> lsi_invar lsi_ball using lsi_ball_impl .
+  definition "ls_ball == SetGA.iti_ball ls_iteratei"
+  lemmas ls_ball_impl = SetGA.iti_ball_correct[OF ls_iteratei_impl, folded ls_ball_def]
+  interpretation ls: set_ball ls_\<alpha> ls_invar ls_ball using ls_ball_impl .
+  definition "rs_ball == SetGA.iti_ball rs_iteratei"
+  lemmas rs_ball_impl = SetGA.iti_ball_correct[OF rs_iteratei_impl, folded rs_ball_def]
+  interpretation rs: set_ball rs_\<alpha> rs_invar rs_ball using rs_ball_impl .
+  definition "hs_ball == SetGA.iti_ball hs_iteratei"
+  lemmas hs_ball_impl = SetGA.iti_ball_correct[OF hs_iteratei_impl, folded hs_ball_def]
+  interpretation hs: set_ball hs_\<alpha> hs_invar hs_ball using hs_ball_impl .
+  definition "ahs_ball == SetGA.iti_ball ahs_iteratei"
+  lemmas ahs_ball_impl = SetGA.iti_ball_correct[OF ahs_iteratei_impl, folded ahs_ball_def]
+  interpretation ahs: set_ball ahs_\<alpha> ahs_invar ahs_ball using ahs_ball_impl .
+
+  definition "lsi_bexists == SetGA.neg_ball_bexists lsi_ball"
+  lemmas lsi_bexists_impl = SetGA.neg_ball_bexists_correct[OF lsi_ball_impl, folded lsi_bexists_def]
+  interpretation lsi: set_bexists lsi_\<alpha> lsi_invar lsi_bexists using lsi_bexists_impl .
+  definition "ls_bexists == SetGA.neg_ball_bexists ls_ball"
+  lemmas ls_bexists_impl = SetGA.neg_ball_bexists_correct[OF ls_ball_impl, folded ls_bexists_def]
+  interpretation ls: set_bexists ls_\<alpha> ls_invar ls_bexists using ls_bexists_impl .
+  definition "rs_bexists == SetGA.neg_ball_bexists rs_ball"
+  lemmas rs_bexists_impl = SetGA.neg_ball_bexists_correct[OF rs_ball_impl, folded rs_bexists_def]
+  interpretation rs: set_bexists rs_\<alpha> rs_invar rs_bexists using rs_bexists_impl .
+  definition "hs_bexists == SetGA.neg_ball_bexists hs_ball"
+  lemmas hs_bexists_impl = SetGA.neg_ball_bexists_correct[OF hs_ball_impl, folded hs_bexists_def]
+  interpretation hs: set_bexists hs_\<alpha> hs_invar hs_bexists using hs_bexists_impl .
+  definition "ahs_bexists == SetGA.neg_ball_bexists ahs_ball"
+  lemmas ahs_bexists_impl = SetGA.neg_ball_bexists_correct[OF ahs_ball_impl, folded ahs_bexists_def]
+  interpretation ahs: set_bexists ahs_\<alpha> ahs_invar ahs_bexists using ahs_bexists_impl .
+
   definition "lilili_inter == SetGA.it_inter lsi_iterate lsi_memb lsi_empty lsi_ins_dj"
   lemmas lilili_inter_impl = SetGA.it_inter_correct[OF lsi_iterate_impl lsi_memb_impl lsi_empty_impl lsi_ins_dj_impl, folded lilili_inter_def]
   interpretation lilili: set_inter lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lilili_inter using lilili_inter_impl .
@@ -1094,6 +1266,82 @@ lemmas it_set_to_fifo_correct = it_set_to_List_enq_correct[OF _ fifo_empty_impl 
   lemmas aa_inj_image_impl = SetGA.iflt_inj_image_correct[OF aa_inj_image_filter_impl, folded aa_inj_image_def]
   interpretation aa: set_inj_image ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar aa_inj_image using aa_inj_image_impl .
 
+  definition "lili_filter == SetGA.iflt_filter lili_inj_image_filter"
+  lemmas lili_filter_impl = SetGA.iflt_filter_correct[OF lili_inj_image_filter_impl, folded lili_filter_def]
+  interpretation lili: set_filter lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lili_filter using lili_filter_impl .
+  definition "lil_filter == SetGA.iflt_filter lil_inj_image_filter"
+  lemmas lil_filter_impl = SetGA.iflt_filter_correct[OF lil_inj_image_filter_impl, folded lil_filter_def]
+  interpretation lil: set_filter lsi_\<alpha> lsi_invar ls_\<alpha> ls_invar lil_filter using lil_filter_impl .
+  definition "lir_filter == SetGA.iflt_filter lir_inj_image_filter"
+  lemmas lir_filter_impl = SetGA.iflt_filter_correct[OF lir_inj_image_filter_impl, folded lir_filter_def]
+  interpretation lir: set_filter lsi_\<alpha> lsi_invar rs_\<alpha> rs_invar lir_filter using lir_filter_impl .
+  definition "lih_filter == SetGA.iflt_filter lih_inj_image_filter"
+  lemmas lih_filter_impl = SetGA.iflt_filter_correct[OF lih_inj_image_filter_impl, folded lih_filter_def]
+  interpretation lih: set_filter lsi_\<alpha> lsi_invar hs_\<alpha> hs_invar lih_filter using lih_filter_impl .
+  definition "lia_filter == SetGA.iflt_filter lia_inj_image_filter"
+  lemmas lia_filter_impl = SetGA.iflt_filter_correct[OF lia_inj_image_filter_impl, folded lia_filter_def]
+  interpretation lia: set_filter lsi_\<alpha> lsi_invar ahs_\<alpha> ahs_invar lia_filter using lia_filter_impl .
+  definition "lli_filter == SetGA.iflt_filter lli_inj_image_filter"
+  lemmas lli_filter_impl = SetGA.iflt_filter_correct[OF lli_inj_image_filter_impl, folded lli_filter_def]
+  interpretation lli: set_filter ls_\<alpha> ls_invar lsi_\<alpha> lsi_invar lli_filter using lli_filter_impl .
+  definition "ll_filter == SetGA.iflt_filter ll_inj_image_filter"
+  lemmas ll_filter_impl = SetGA.iflt_filter_correct[OF ll_inj_image_filter_impl, folded ll_filter_def]
+  interpretation ll: set_filter ls_\<alpha> ls_invar ls_\<alpha> ls_invar ll_filter using ll_filter_impl .
+  definition "lr_filter == SetGA.iflt_filter lr_inj_image_filter"
+  lemmas lr_filter_impl = SetGA.iflt_filter_correct[OF lr_inj_image_filter_impl, folded lr_filter_def]
+  interpretation lr: set_filter ls_\<alpha> ls_invar rs_\<alpha> rs_invar lr_filter using lr_filter_impl .
+  definition "lh_filter == SetGA.iflt_filter lh_inj_image_filter"
+  lemmas lh_filter_impl = SetGA.iflt_filter_correct[OF lh_inj_image_filter_impl, folded lh_filter_def]
+  interpretation lh: set_filter ls_\<alpha> ls_invar hs_\<alpha> hs_invar lh_filter using lh_filter_impl .
+  definition "la_filter == SetGA.iflt_filter la_inj_image_filter"
+  lemmas la_filter_impl = SetGA.iflt_filter_correct[OF la_inj_image_filter_impl, folded la_filter_def]
+  interpretation la: set_filter ls_\<alpha> ls_invar ahs_\<alpha> ahs_invar la_filter using la_filter_impl .
+  definition "rli_filter == SetGA.iflt_filter rli_inj_image_filter"
+  lemmas rli_filter_impl = SetGA.iflt_filter_correct[OF rli_inj_image_filter_impl, folded rli_filter_def]
+  interpretation rli: set_filter rs_\<alpha> rs_invar lsi_\<alpha> lsi_invar rli_filter using rli_filter_impl .
+  definition "rl_filter == SetGA.iflt_filter rl_inj_image_filter"
+  lemmas rl_filter_impl = SetGA.iflt_filter_correct[OF rl_inj_image_filter_impl, folded rl_filter_def]
+  interpretation rl: set_filter rs_\<alpha> rs_invar ls_\<alpha> ls_invar rl_filter using rl_filter_impl .
+  definition "rr_filter == SetGA.iflt_filter rr_inj_image_filter"
+  lemmas rr_filter_impl = SetGA.iflt_filter_correct[OF rr_inj_image_filter_impl, folded rr_filter_def]
+  interpretation rr: set_filter rs_\<alpha> rs_invar rs_\<alpha> rs_invar rr_filter using rr_filter_impl .
+  definition "rh_filter == SetGA.iflt_filter rh_inj_image_filter"
+  lemmas rh_filter_impl = SetGA.iflt_filter_correct[OF rh_inj_image_filter_impl, folded rh_filter_def]
+  interpretation rh: set_filter rs_\<alpha> rs_invar hs_\<alpha> hs_invar rh_filter using rh_filter_impl .
+  definition "ra_filter == SetGA.iflt_filter ra_inj_image_filter"
+  lemmas ra_filter_impl = SetGA.iflt_filter_correct[OF ra_inj_image_filter_impl, folded ra_filter_def]
+  interpretation ra: set_filter rs_\<alpha> rs_invar ahs_\<alpha> ahs_invar ra_filter using ra_filter_impl .
+  definition "hli_filter == SetGA.iflt_filter hli_inj_image_filter"
+  lemmas hli_filter_impl = SetGA.iflt_filter_correct[OF hli_inj_image_filter_impl, folded hli_filter_def]
+  interpretation hli: set_filter hs_\<alpha> hs_invar lsi_\<alpha> lsi_invar hli_filter using hli_filter_impl .
+  definition "hl_filter == SetGA.iflt_filter hl_inj_image_filter"
+  lemmas hl_filter_impl = SetGA.iflt_filter_correct[OF hl_inj_image_filter_impl, folded hl_filter_def]
+  interpretation hl: set_filter hs_\<alpha> hs_invar ls_\<alpha> ls_invar hl_filter using hl_filter_impl .
+  definition "hr_filter == SetGA.iflt_filter hr_inj_image_filter"
+  lemmas hr_filter_impl = SetGA.iflt_filter_correct[OF hr_inj_image_filter_impl, folded hr_filter_def]
+  interpretation hr: set_filter hs_\<alpha> hs_invar rs_\<alpha> rs_invar hr_filter using hr_filter_impl .
+  definition "hh_filter == SetGA.iflt_filter hh_inj_image_filter"
+  lemmas hh_filter_impl = SetGA.iflt_filter_correct[OF hh_inj_image_filter_impl, folded hh_filter_def]
+  interpretation hh: set_filter hs_\<alpha> hs_invar hs_\<alpha> hs_invar hh_filter using hh_filter_impl .
+  definition "ha_filter == SetGA.iflt_filter ha_inj_image_filter"
+  lemmas ha_filter_impl = SetGA.iflt_filter_correct[OF ha_inj_image_filter_impl, folded ha_filter_def]
+  interpretation ha: set_filter hs_\<alpha> hs_invar ahs_\<alpha> ahs_invar ha_filter using ha_filter_impl .
+  definition "ali_filter == SetGA.iflt_filter ali_inj_image_filter"
+  lemmas ali_filter_impl = SetGA.iflt_filter_correct[OF ali_inj_image_filter_impl, folded ali_filter_def]
+  interpretation ali: set_filter ahs_\<alpha> ahs_invar lsi_\<alpha> lsi_invar ali_filter using ali_filter_impl .
+  definition "al_filter == SetGA.iflt_filter al_inj_image_filter"
+  lemmas al_filter_impl = SetGA.iflt_filter_correct[OF al_inj_image_filter_impl, folded al_filter_def]
+  interpretation al: set_filter ahs_\<alpha> ahs_invar ls_\<alpha> ls_invar al_filter using al_filter_impl .
+  definition "ar_filter == SetGA.iflt_filter ar_inj_image_filter"
+  lemmas ar_filter_impl = SetGA.iflt_filter_correct[OF ar_inj_image_filter_impl, folded ar_filter_def]
+  interpretation ar: set_filter ahs_\<alpha> ahs_invar rs_\<alpha> rs_invar ar_filter using ar_filter_impl .
+  definition "ah_filter == SetGA.iflt_filter ah_inj_image_filter"
+  lemmas ah_filter_impl = SetGA.iflt_filter_correct[OF ah_inj_image_filter_impl, folded ah_filter_def]
+  interpretation ah: set_filter ahs_\<alpha> ahs_invar hs_\<alpha> hs_invar ah_filter using ah_filter_impl .
+  definition "aa_filter == SetGA.iflt_filter aa_inj_image_filter"
+  lemmas aa_filter_impl = SetGA.iflt_filter_correct[OF aa_inj_image_filter_impl, folded aa_filter_def]
+  interpretation aa: set_filter ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar aa_filter using aa_filter_impl .
+
   definition "lilili_Union_image == SetGA.it_Union_image lsi_iterate lsi_empty lilili_union"
   lemmas lilili_Union_image_impl = SetGA.it_Union_image_correct[OF lsi_iterate_impl lsi_empty_impl lilili_union_impl, folded lilili_Union_image_def]
   interpretation lilili: set_Union_image lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lilili_Union_image using lilili_Union_image_impl .
@@ -1621,6 +1869,508 @@ lemmas it_set_to_fifo_correct = it_set_to_List_enq_correct[OF _ fifo_empty_impl 
   definition "aa_disjoint == SetGA.ball_disjoint ahs_ball ahs_memb"
   lemmas aa_disjoint_impl = SetGA.ball_disjoint_correct[OF ahs_ball_impl ahs_memb_impl, folded aa_disjoint_def]
   interpretation aa: set_disjoint ahs_\<alpha> ahs_invar ahs_\<alpha> ahs_invar aa_disjoint using aa_disjoint_impl .
+
+  definition "lilili_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate lsi_iterate lsi_empty lsi_ins"
+  lemmas lilili_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_impl, folded lilili_image_filter_cartesian_product_def]
+  definition "lilil_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate lsi_iterate ls_empty ls_ins"
+  lemmas lilil_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_impl, folded lilil_image_filter_cartesian_product_def]
+  definition "lilir_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate lsi_iterate rs_empty rs_ins"
+  lemmas lilir_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_impl, folded lilir_image_filter_cartesian_product_def]
+  definition "lilih_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate lsi_iterate hs_empty hs_ins"
+  lemmas lilih_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_impl, folded lilih_image_filter_cartesian_product_def]
+  definition "lilia_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate lsi_iterate ahs_empty ahs_ins"
+  lemmas lilia_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_impl, folded lilia_image_filter_cartesian_product_def]
+  definition "lilli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ls_iterate lsi_empty lsi_ins"
+  lemmas lilli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_impl, folded lilli_image_filter_cartesian_product_def]
+  definition "lill_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ls_iterate ls_empty ls_ins"
+  lemmas lill_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_impl, folded lill_image_filter_cartesian_product_def]
+  definition "lilr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ls_iterate rs_empty rs_ins"
+  lemmas lilr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_impl, folded lilr_image_filter_cartesian_product_def]
+  definition "lilh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ls_iterate hs_empty hs_ins"
+  lemmas lilh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_impl, folded lilh_image_filter_cartesian_product_def]
+  definition "lila_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ls_iterate ahs_empty ahs_ins"
+  lemmas lila_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_impl, folded lila_image_filter_cartesian_product_def]
+  definition "lirli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate rs_iterate lsi_empty lsi_ins"
+  lemmas lirli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_impl, folded lirli_image_filter_cartesian_product_def]
+  definition "lirl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate rs_iterate ls_empty ls_ins"
+  lemmas lirl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_impl, folded lirl_image_filter_cartesian_product_def]
+  definition "lirr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate rs_iterate rs_empty rs_ins"
+  lemmas lirr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_impl, folded lirr_image_filter_cartesian_product_def]
+  definition "lirh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate rs_iterate hs_empty hs_ins"
+  lemmas lirh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_impl, folded lirh_image_filter_cartesian_product_def]
+  definition "lira_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate rs_iterate ahs_empty ahs_ins"
+  lemmas lira_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_impl, folded lira_image_filter_cartesian_product_def]
+  definition "lihli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate hs_iterate lsi_empty lsi_ins"
+  lemmas lihli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_impl, folded lihli_image_filter_cartesian_product_def]
+  definition "lihl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate hs_iterate ls_empty ls_ins"
+  lemmas lihl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_impl, folded lihl_image_filter_cartesian_product_def]
+  definition "lihr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate hs_iterate rs_empty rs_ins"
+  lemmas lihr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_impl, folded lihr_image_filter_cartesian_product_def]
+  definition "lihh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate hs_iterate hs_empty hs_ins"
+  lemmas lihh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_impl, folded lihh_image_filter_cartesian_product_def]
+  definition "liha_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate hs_iterate ahs_empty ahs_ins"
+  lemmas liha_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_impl, folded liha_image_filter_cartesian_product_def]
+  definition "liali_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ahs_iterate lsi_empty lsi_ins"
+  lemmas liali_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_impl, folded liali_image_filter_cartesian_product_def]
+  definition "lial_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ahs_iterate ls_empty ls_ins"
+  lemmas lial_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_impl, folded lial_image_filter_cartesian_product_def]
+  definition "liar_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ahs_iterate rs_empty rs_ins"
+  lemmas liar_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_impl, folded liar_image_filter_cartesian_product_def]
+  definition "liah_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ahs_iterate hs_empty hs_ins"
+  lemmas liah_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_impl, folded liah_image_filter_cartesian_product_def]
+  definition "liaa_image_filter_cartesian_product == SetGA.image_filter_cartesian_product lsi_iterate ahs_iterate ahs_empty ahs_ins"
+  lemmas liaa_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_impl, folded liaa_image_filter_cartesian_product_def]
+  definition "llili_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate lsi_iterate lsi_empty lsi_ins"
+  lemmas llili_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_impl, folded llili_image_filter_cartesian_product_def]
+  definition "llil_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate lsi_iterate ls_empty ls_ins"
+  lemmas llil_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_impl, folded llil_image_filter_cartesian_product_def]
+  definition "llir_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate lsi_iterate rs_empty rs_ins"
+  lemmas llir_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_impl, folded llir_image_filter_cartesian_product_def]
+  definition "llih_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate lsi_iterate hs_empty hs_ins"
+  lemmas llih_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_impl, folded llih_image_filter_cartesian_product_def]
+  definition "llia_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate lsi_iterate ahs_empty ahs_ins"
+  lemmas llia_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_impl, folded llia_image_filter_cartesian_product_def]
+  definition "llli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ls_iterate lsi_empty lsi_ins"
+  lemmas llli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_impl, folded llli_image_filter_cartesian_product_def]
+  definition "lll_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ls_iterate ls_empty ls_ins"
+  lemmas lll_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_impl, folded lll_image_filter_cartesian_product_def]
+  definition "llr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ls_iterate rs_empty rs_ins"
+  lemmas llr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_impl, folded llr_image_filter_cartesian_product_def]
+  definition "llh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ls_iterate hs_empty hs_ins"
+  lemmas llh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_impl, folded llh_image_filter_cartesian_product_def]
+  definition "lla_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ls_iterate ahs_empty ahs_ins"
+  lemmas lla_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_impl, folded lla_image_filter_cartesian_product_def]
+  definition "lrli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate rs_iterate lsi_empty lsi_ins"
+  lemmas lrli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_impl, folded lrli_image_filter_cartesian_product_def]
+  definition "lrl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate rs_iterate ls_empty ls_ins"
+  lemmas lrl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_impl, folded lrl_image_filter_cartesian_product_def]
+  definition "lrr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate rs_iterate rs_empty rs_ins"
+  lemmas lrr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_impl, folded lrr_image_filter_cartesian_product_def]
+  definition "lrh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate rs_iterate hs_empty hs_ins"
+  lemmas lrh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_impl, folded lrh_image_filter_cartesian_product_def]
+  definition "lra_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate rs_iterate ahs_empty ahs_ins"
+  lemmas lra_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_impl, folded lra_image_filter_cartesian_product_def]
+  definition "lhli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate hs_iterate lsi_empty lsi_ins"
+  lemmas lhli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_impl, folded lhli_image_filter_cartesian_product_def]
+  definition "lhl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate hs_iterate ls_empty ls_ins"
+  lemmas lhl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_impl, folded lhl_image_filter_cartesian_product_def]
+  definition "lhr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate hs_iterate rs_empty rs_ins"
+  lemmas lhr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_impl, folded lhr_image_filter_cartesian_product_def]
+  definition "lhh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate hs_iterate hs_empty hs_ins"
+  lemmas lhh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_impl, folded lhh_image_filter_cartesian_product_def]
+  definition "lha_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate hs_iterate ahs_empty ahs_ins"
+  lemmas lha_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_impl, folded lha_image_filter_cartesian_product_def]
+  definition "lali_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ahs_iterate lsi_empty lsi_ins"
+  lemmas lali_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_impl, folded lali_image_filter_cartesian_product_def]
+  definition "lal_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ahs_iterate ls_empty ls_ins"
+  lemmas lal_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_impl, folded lal_image_filter_cartesian_product_def]
+  definition "lar_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ahs_iterate rs_empty rs_ins"
+  lemmas lar_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_impl, folded lar_image_filter_cartesian_product_def]
+  definition "lah_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ahs_iterate hs_empty hs_ins"
+  lemmas lah_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_impl, folded lah_image_filter_cartesian_product_def]
+  definition "laa_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ls_iterate ahs_iterate ahs_empty ahs_ins"
+  lemmas laa_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_impl, folded laa_image_filter_cartesian_product_def]
+  definition "rlili_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate lsi_iterate lsi_empty lsi_ins"
+  lemmas rlili_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_impl, folded rlili_image_filter_cartesian_product_def]
+  definition "rlil_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate lsi_iterate ls_empty ls_ins"
+  lemmas rlil_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_impl, folded rlil_image_filter_cartesian_product_def]
+  definition "rlir_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate lsi_iterate rs_empty rs_ins"
+  lemmas rlir_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_impl, folded rlir_image_filter_cartesian_product_def]
+  definition "rlih_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate lsi_iterate hs_empty hs_ins"
+  lemmas rlih_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_impl, folded rlih_image_filter_cartesian_product_def]
+  definition "rlia_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate lsi_iterate ahs_empty ahs_ins"
+  lemmas rlia_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_impl, folded rlia_image_filter_cartesian_product_def]
+  definition "rlli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ls_iterate lsi_empty lsi_ins"
+  lemmas rlli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_impl, folded rlli_image_filter_cartesian_product_def]
+  definition "rll_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ls_iterate ls_empty ls_ins"
+  lemmas rll_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_impl, folded rll_image_filter_cartesian_product_def]
+  definition "rlr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ls_iterate rs_empty rs_ins"
+  lemmas rlr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_impl, folded rlr_image_filter_cartesian_product_def]
+  definition "rlh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ls_iterate hs_empty hs_ins"
+  lemmas rlh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_impl, folded rlh_image_filter_cartesian_product_def]
+  definition "rla_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ls_iterate ahs_empty ahs_ins"
+  lemmas rla_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_impl, folded rla_image_filter_cartesian_product_def]
+  definition "rrli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate rs_iterate lsi_empty lsi_ins"
+  lemmas rrli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_impl, folded rrli_image_filter_cartesian_product_def]
+  definition "rrl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate rs_iterate ls_empty ls_ins"
+  lemmas rrl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_impl, folded rrl_image_filter_cartesian_product_def]
+  definition "rrr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate rs_iterate rs_empty rs_ins"
+  lemmas rrr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_impl, folded rrr_image_filter_cartesian_product_def]
+  definition "rrh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate rs_iterate hs_empty hs_ins"
+  lemmas rrh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_impl, folded rrh_image_filter_cartesian_product_def]
+  definition "rra_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate rs_iterate ahs_empty ahs_ins"
+  lemmas rra_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_impl, folded rra_image_filter_cartesian_product_def]
+  definition "rhli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate hs_iterate lsi_empty lsi_ins"
+  lemmas rhli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_impl, folded rhli_image_filter_cartesian_product_def]
+  definition "rhl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate hs_iterate ls_empty ls_ins"
+  lemmas rhl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_impl, folded rhl_image_filter_cartesian_product_def]
+  definition "rhr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate hs_iterate rs_empty rs_ins"
+  lemmas rhr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_impl, folded rhr_image_filter_cartesian_product_def]
+  definition "rhh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate hs_iterate hs_empty hs_ins"
+  lemmas rhh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_impl, folded rhh_image_filter_cartesian_product_def]
+  definition "rha_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate hs_iterate ahs_empty ahs_ins"
+  lemmas rha_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_impl, folded rha_image_filter_cartesian_product_def]
+  definition "rali_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ahs_iterate lsi_empty lsi_ins"
+  lemmas rali_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_impl, folded rali_image_filter_cartesian_product_def]
+  definition "ral_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ahs_iterate ls_empty ls_ins"
+  lemmas ral_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_impl, folded ral_image_filter_cartesian_product_def]
+  definition "rar_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ahs_iterate rs_empty rs_ins"
+  lemmas rar_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_impl, folded rar_image_filter_cartesian_product_def]
+  definition "rah_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ahs_iterate hs_empty hs_ins"
+  lemmas rah_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_impl, folded rah_image_filter_cartesian_product_def]
+  definition "raa_image_filter_cartesian_product == SetGA.image_filter_cartesian_product rs_iterate ahs_iterate ahs_empty ahs_ins"
+  lemmas raa_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_impl, folded raa_image_filter_cartesian_product_def]
+  definition "hlili_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate lsi_iterate lsi_empty lsi_ins"
+  lemmas hlili_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_impl, folded hlili_image_filter_cartesian_product_def]
+  definition "hlil_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate lsi_iterate ls_empty ls_ins"
+  lemmas hlil_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_impl, folded hlil_image_filter_cartesian_product_def]
+  definition "hlir_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate lsi_iterate rs_empty rs_ins"
+  lemmas hlir_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_impl, folded hlir_image_filter_cartesian_product_def]
+  definition "hlih_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate lsi_iterate hs_empty hs_ins"
+  lemmas hlih_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_impl, folded hlih_image_filter_cartesian_product_def]
+  definition "hlia_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate lsi_iterate ahs_empty ahs_ins"
+  lemmas hlia_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_impl, folded hlia_image_filter_cartesian_product_def]
+  definition "hlli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ls_iterate lsi_empty lsi_ins"
+  lemmas hlli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_impl, folded hlli_image_filter_cartesian_product_def]
+  definition "hll_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ls_iterate ls_empty ls_ins"
+  lemmas hll_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_impl, folded hll_image_filter_cartesian_product_def]
+  definition "hlr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ls_iterate rs_empty rs_ins"
+  lemmas hlr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_impl, folded hlr_image_filter_cartesian_product_def]
+  definition "hlh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ls_iterate hs_empty hs_ins"
+  lemmas hlh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_impl, folded hlh_image_filter_cartesian_product_def]
+  definition "hla_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ls_iterate ahs_empty ahs_ins"
+  lemmas hla_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_impl, folded hla_image_filter_cartesian_product_def]
+  definition "hrli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate rs_iterate lsi_empty lsi_ins"
+  lemmas hrli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_impl, folded hrli_image_filter_cartesian_product_def]
+  definition "hrl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate rs_iterate ls_empty ls_ins"
+  lemmas hrl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_impl, folded hrl_image_filter_cartesian_product_def]
+  definition "hrr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate rs_iterate rs_empty rs_ins"
+  lemmas hrr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_impl, folded hrr_image_filter_cartesian_product_def]
+  definition "hrh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate rs_iterate hs_empty hs_ins"
+  lemmas hrh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_impl, folded hrh_image_filter_cartesian_product_def]
+  definition "hra_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate rs_iterate ahs_empty ahs_ins"
+  lemmas hra_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_impl, folded hra_image_filter_cartesian_product_def]
+  definition "hhli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate hs_iterate lsi_empty lsi_ins"
+  lemmas hhli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_impl, folded hhli_image_filter_cartesian_product_def]
+  definition "hhl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate hs_iterate ls_empty ls_ins"
+  lemmas hhl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_impl, folded hhl_image_filter_cartesian_product_def]
+  definition "hhr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate hs_iterate rs_empty rs_ins"
+  lemmas hhr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_impl, folded hhr_image_filter_cartesian_product_def]
+  definition "hhh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate hs_iterate hs_empty hs_ins"
+  lemmas hhh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_impl, folded hhh_image_filter_cartesian_product_def]
+  definition "hha_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate hs_iterate ahs_empty ahs_ins"
+  lemmas hha_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_impl, folded hha_image_filter_cartesian_product_def]
+  definition "hali_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ahs_iterate lsi_empty lsi_ins"
+  lemmas hali_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_impl, folded hali_image_filter_cartesian_product_def]
+  definition "hal_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ahs_iterate ls_empty ls_ins"
+  lemmas hal_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_impl, folded hal_image_filter_cartesian_product_def]
+  definition "har_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ahs_iterate rs_empty rs_ins"
+  lemmas har_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_impl, folded har_image_filter_cartesian_product_def]
+  definition "hah_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ahs_iterate hs_empty hs_ins"
+  lemmas hah_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_impl, folded hah_image_filter_cartesian_product_def]
+  definition "haa_image_filter_cartesian_product == SetGA.image_filter_cartesian_product hs_iterate ahs_iterate ahs_empty ahs_ins"
+  lemmas haa_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_impl, folded haa_image_filter_cartesian_product_def]
+  definition "alili_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate lsi_iterate lsi_empty lsi_ins"
+  lemmas alili_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_impl, folded alili_image_filter_cartesian_product_def]
+  definition "alil_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate lsi_iterate ls_empty ls_ins"
+  lemmas alil_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_impl, folded alil_image_filter_cartesian_product_def]
+  definition "alir_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate lsi_iterate rs_empty rs_ins"
+  lemmas alir_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_impl, folded alir_image_filter_cartesian_product_def]
+  definition "alih_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate lsi_iterate hs_empty hs_ins"
+  lemmas alih_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_impl, folded alih_image_filter_cartesian_product_def]
+  definition "alia_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate lsi_iterate ahs_empty ahs_ins"
+  lemmas alia_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_impl, folded alia_image_filter_cartesian_product_def]
+  definition "alli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ls_iterate lsi_empty lsi_ins"
+  lemmas alli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_impl, folded alli_image_filter_cartesian_product_def]
+  definition "all_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ls_iterate ls_empty ls_ins"
+  lemmas all_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_impl, folded all_image_filter_cartesian_product_def]
+  definition "alr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ls_iterate rs_empty rs_ins"
+  lemmas alr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_impl, folded alr_image_filter_cartesian_product_def]
+  definition "alh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ls_iterate hs_empty hs_ins"
+  lemmas alh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_impl, folded alh_image_filter_cartesian_product_def]
+  definition "ala_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ls_iterate ahs_empty ahs_ins"
+  lemmas ala_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_impl, folded ala_image_filter_cartesian_product_def]
+  definition "arli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate rs_iterate lsi_empty lsi_ins"
+  lemmas arli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_impl, folded arli_image_filter_cartesian_product_def]
+  definition "arl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate rs_iterate ls_empty ls_ins"
+  lemmas arl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_impl, folded arl_image_filter_cartesian_product_def]
+  definition "arr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate rs_iterate rs_empty rs_ins"
+  lemmas arr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_impl, folded arr_image_filter_cartesian_product_def]
+  definition "arh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate rs_iterate hs_empty hs_ins"
+  lemmas arh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_impl, folded arh_image_filter_cartesian_product_def]
+  definition "ara_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate rs_iterate ahs_empty ahs_ins"
+  lemmas ara_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_impl, folded ara_image_filter_cartesian_product_def]
+  definition "ahli_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate hs_iterate lsi_empty lsi_ins"
+  lemmas ahli_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_impl, folded ahli_image_filter_cartesian_product_def]
+  definition "ahl_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate hs_iterate ls_empty ls_ins"
+  lemmas ahl_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_impl, folded ahl_image_filter_cartesian_product_def]
+  definition "ahr_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate hs_iterate rs_empty rs_ins"
+  lemmas ahr_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_impl, folded ahr_image_filter_cartesian_product_def]
+  definition "ahh_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate hs_iterate hs_empty hs_ins"
+  lemmas ahh_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_impl, folded ahh_image_filter_cartesian_product_def]
+  definition "aha_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate hs_iterate ahs_empty ahs_ins"
+  lemmas aha_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_impl, folded aha_image_filter_cartesian_product_def]
+  definition "aali_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ahs_iterate lsi_empty lsi_ins"
+  lemmas aali_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_impl, folded aali_image_filter_cartesian_product_def]
+  definition "aal_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ahs_iterate ls_empty ls_ins"
+  lemmas aal_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_impl, folded aal_image_filter_cartesian_product_def]
+  definition "aar_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ahs_iterate rs_empty rs_ins"
+  lemmas aar_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_impl, folded aar_image_filter_cartesian_product_def]
+  definition "aah_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ahs_iterate hs_empty hs_ins"
+  lemmas aah_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_impl, folded aah_image_filter_cartesian_product_def]
+  definition "aaa_image_filter_cartesian_product == SetGA.image_filter_cartesian_product ahs_iterate ahs_iterate ahs_empty ahs_ins"
+  lemmas aaa_image_filter_cartesian_product_correct = SetGA.image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_impl, folded aaa_image_filter_cartesian_product_def]
+
+  definition "lilili_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate lsi_iterate lsi_empty lsi_ins_dj"
+  lemmas lilili_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded lilili_inj_image_filter_cartesian_product_def]
+  definition "lilil_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate lsi_iterate ls_empty ls_ins_dj"
+  lemmas lilil_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_dj_impl, folded lilil_inj_image_filter_cartesian_product_def]
+  definition "lilir_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate lsi_iterate rs_empty rs_ins_dj"
+  lemmas lilir_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_dj_impl, folded lilir_inj_image_filter_cartesian_product_def]
+  definition "lilih_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate lsi_iterate hs_empty hs_ins_dj"
+  lemmas lilih_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_dj_impl, folded lilih_inj_image_filter_cartesian_product_def]
+  definition "lilia_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate lsi_iterate ahs_empty ahs_ins_dj"
+  lemmas lilia_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded lilia_inj_image_filter_cartesian_product_def]
+  definition "lilli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ls_iterate lsi_empty lsi_ins_dj"
+  lemmas lilli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded lilli_inj_image_filter_cartesian_product_def]
+  definition "lill_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ls_iterate ls_empty ls_ins_dj"
+  lemmas lill_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_dj_impl, folded lill_inj_image_filter_cartesian_product_def]
+  definition "lilr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ls_iterate rs_empty rs_ins_dj"
+  lemmas lilr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_dj_impl, folded lilr_inj_image_filter_cartesian_product_def]
+  definition "lilh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ls_iterate hs_empty hs_ins_dj"
+  lemmas lilh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_dj_impl, folded lilh_inj_image_filter_cartesian_product_def]
+  definition "lila_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ls_iterate ahs_empty ahs_ins_dj"
+  lemmas lila_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded lila_inj_image_filter_cartesian_product_def]
+  definition "lirli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate rs_iterate lsi_empty lsi_ins_dj"
+  lemmas lirli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded lirli_inj_image_filter_cartesian_product_def]
+  definition "lirl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate rs_iterate ls_empty ls_ins_dj"
+  lemmas lirl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded lirl_inj_image_filter_cartesian_product_def]
+  definition "lirr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate rs_iterate rs_empty rs_ins_dj"
+  lemmas lirr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded lirr_inj_image_filter_cartesian_product_def]
+  definition "lirh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate rs_iterate hs_empty hs_ins_dj"
+  lemmas lirh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded lirh_inj_image_filter_cartesian_product_def]
+  definition "lira_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate rs_iterate ahs_empty ahs_ins_dj"
+  lemmas lira_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded lira_inj_image_filter_cartesian_product_def]
+  definition "lihli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate hs_iterate lsi_empty lsi_ins_dj"
+  lemmas lihli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded lihli_inj_image_filter_cartesian_product_def]
+  definition "lihl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate hs_iterate ls_empty ls_ins_dj"
+  lemmas lihl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded lihl_inj_image_filter_cartesian_product_def]
+  definition "lihr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate hs_iterate rs_empty rs_ins_dj"
+  lemmas lihr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded lihr_inj_image_filter_cartesian_product_def]
+  definition "lihh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate hs_iterate hs_empty hs_ins_dj"
+  lemmas lihh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded lihh_inj_image_filter_cartesian_product_def]
+  definition "liha_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate hs_iterate ahs_empty ahs_ins_dj"
+  lemmas liha_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded liha_inj_image_filter_cartesian_product_def]
+  definition "liali_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ahs_iterate lsi_empty lsi_ins_dj"
+  lemmas liali_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded liali_inj_image_filter_cartesian_product_def]
+  definition "lial_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ahs_iterate ls_empty ls_ins_dj"
+  lemmas lial_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded lial_inj_image_filter_cartesian_product_def]
+  definition "liar_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ahs_iterate rs_empty rs_ins_dj"
+  lemmas liar_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded liar_inj_image_filter_cartesian_product_def]
+  definition "liah_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ahs_iterate hs_empty hs_ins_dj"
+  lemmas liah_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded liah_inj_image_filter_cartesian_product_def]
+  definition "liaa_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product lsi_iterate ahs_iterate ahs_empty ahs_ins_dj"
+  lemmas liaa_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF lsi_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded liaa_inj_image_filter_cartesian_product_def]
+  definition "llili_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate lsi_iterate lsi_empty lsi_ins_dj"
+  lemmas llili_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded llili_inj_image_filter_cartesian_product_def]
+  definition "llil_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate lsi_iterate ls_empty ls_ins_dj"
+  lemmas llil_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_dj_impl, folded llil_inj_image_filter_cartesian_product_def]
+  definition "llir_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate lsi_iterate rs_empty rs_ins_dj"
+  lemmas llir_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_dj_impl, folded llir_inj_image_filter_cartesian_product_def]
+  definition "llih_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate lsi_iterate hs_empty hs_ins_dj"
+  lemmas llih_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_dj_impl, folded llih_inj_image_filter_cartesian_product_def]
+  definition "llia_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate lsi_iterate ahs_empty ahs_ins_dj"
+  lemmas llia_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded llia_inj_image_filter_cartesian_product_def]
+  definition "llli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ls_iterate lsi_empty lsi_ins_dj"
+  lemmas llli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded llli_inj_image_filter_cartesian_product_def]
+  definition "lll_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ls_iterate ls_empty ls_ins_dj"
+  lemmas lll_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_dj_impl, folded lll_inj_image_filter_cartesian_product_def]
+  definition "llr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ls_iterate rs_empty rs_ins_dj"
+  lemmas llr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_dj_impl, folded llr_inj_image_filter_cartesian_product_def]
+  definition "llh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ls_iterate hs_empty hs_ins_dj"
+  lemmas llh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_dj_impl, folded llh_inj_image_filter_cartesian_product_def]
+  definition "lla_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ls_iterate ahs_empty ahs_ins_dj"
+  lemmas lla_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded lla_inj_image_filter_cartesian_product_def]
+  definition "lrli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate rs_iterate lsi_empty lsi_ins_dj"
+  lemmas lrli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded lrli_inj_image_filter_cartesian_product_def]
+  definition "lrl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate rs_iterate ls_empty ls_ins_dj"
+  lemmas lrl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded lrl_inj_image_filter_cartesian_product_def]
+  definition "lrr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate rs_iterate rs_empty rs_ins_dj"
+  lemmas lrr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded lrr_inj_image_filter_cartesian_product_def]
+  definition "lrh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate rs_iterate hs_empty hs_ins_dj"
+  lemmas lrh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded lrh_inj_image_filter_cartesian_product_def]
+  definition "lra_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate rs_iterate ahs_empty ahs_ins_dj"
+  lemmas lra_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded lra_inj_image_filter_cartesian_product_def]
+  definition "lhli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate hs_iterate lsi_empty lsi_ins_dj"
+  lemmas lhli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded lhli_inj_image_filter_cartesian_product_def]
+  definition "lhl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate hs_iterate ls_empty ls_ins_dj"
+  lemmas lhl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded lhl_inj_image_filter_cartesian_product_def]
+  definition "lhr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate hs_iterate rs_empty rs_ins_dj"
+  lemmas lhr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded lhr_inj_image_filter_cartesian_product_def]
+  definition "lhh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate hs_iterate hs_empty hs_ins_dj"
+  lemmas lhh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded lhh_inj_image_filter_cartesian_product_def]
+  definition "lha_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate hs_iterate ahs_empty ahs_ins_dj"
+  lemmas lha_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded lha_inj_image_filter_cartesian_product_def]
+  definition "lali_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ahs_iterate lsi_empty lsi_ins_dj"
+  lemmas lali_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded lali_inj_image_filter_cartesian_product_def]
+  definition "lal_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ahs_iterate ls_empty ls_ins_dj"
+  lemmas lal_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded lal_inj_image_filter_cartesian_product_def]
+  definition "lar_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ahs_iterate rs_empty rs_ins_dj"
+  lemmas lar_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded lar_inj_image_filter_cartesian_product_def]
+  definition "lah_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ahs_iterate hs_empty hs_ins_dj"
+  lemmas lah_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded lah_inj_image_filter_cartesian_product_def]
+  definition "laa_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ls_iterate ahs_iterate ahs_empty ahs_ins_dj"
+  lemmas laa_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ls_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded laa_inj_image_filter_cartesian_product_def]
+  definition "rlili_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate lsi_iterate lsi_empty lsi_ins_dj"
+  lemmas rlili_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded rlili_inj_image_filter_cartesian_product_def]
+  definition "rlil_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate lsi_iterate ls_empty ls_ins_dj"
+  lemmas rlil_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_dj_impl, folded rlil_inj_image_filter_cartesian_product_def]
+  definition "rlir_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate lsi_iterate rs_empty rs_ins_dj"
+  lemmas rlir_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_dj_impl, folded rlir_inj_image_filter_cartesian_product_def]
+  definition "rlih_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate lsi_iterate hs_empty hs_ins_dj"
+  lemmas rlih_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_dj_impl, folded rlih_inj_image_filter_cartesian_product_def]
+  definition "rlia_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate lsi_iterate ahs_empty ahs_ins_dj"
+  lemmas rlia_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded rlia_inj_image_filter_cartesian_product_def]
+  definition "rlli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ls_iterate lsi_empty lsi_ins_dj"
+  lemmas rlli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded rlli_inj_image_filter_cartesian_product_def]
+  definition "rll_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ls_iterate ls_empty ls_ins_dj"
+  lemmas rll_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_dj_impl, folded rll_inj_image_filter_cartesian_product_def]
+  definition "rlr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ls_iterate rs_empty rs_ins_dj"
+  lemmas rlr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_dj_impl, folded rlr_inj_image_filter_cartesian_product_def]
+  definition "rlh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ls_iterate hs_empty hs_ins_dj"
+  lemmas rlh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_dj_impl, folded rlh_inj_image_filter_cartesian_product_def]
+  definition "rla_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ls_iterate ahs_empty ahs_ins_dj"
+  lemmas rla_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded rla_inj_image_filter_cartesian_product_def]
+  definition "rrli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate rs_iterate lsi_empty lsi_ins_dj"
+  lemmas rrli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded rrli_inj_image_filter_cartesian_product_def]
+  definition "rrl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate rs_iterate ls_empty ls_ins_dj"
+  lemmas rrl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded rrl_inj_image_filter_cartesian_product_def]
+  definition "rrr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate rs_iterate rs_empty rs_ins_dj"
+  lemmas rrr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded rrr_inj_image_filter_cartesian_product_def]
+  definition "rrh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate rs_iterate hs_empty hs_ins_dj"
+  lemmas rrh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded rrh_inj_image_filter_cartesian_product_def]
+  definition "rra_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate rs_iterate ahs_empty ahs_ins_dj"
+  lemmas rra_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded rra_inj_image_filter_cartesian_product_def]
+  definition "rhli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate hs_iterate lsi_empty lsi_ins_dj"
+  lemmas rhli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded rhli_inj_image_filter_cartesian_product_def]
+  definition "rhl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate hs_iterate ls_empty ls_ins_dj"
+  lemmas rhl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded rhl_inj_image_filter_cartesian_product_def]
+  definition "rhr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate hs_iterate rs_empty rs_ins_dj"
+  lemmas rhr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded rhr_inj_image_filter_cartesian_product_def]
+  definition "rhh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate hs_iterate hs_empty hs_ins_dj"
+  lemmas rhh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded rhh_inj_image_filter_cartesian_product_def]
+  definition "rha_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate hs_iterate ahs_empty ahs_ins_dj"
+  lemmas rha_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded rha_inj_image_filter_cartesian_product_def]
+  definition "rali_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ahs_iterate lsi_empty lsi_ins_dj"
+  lemmas rali_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded rali_inj_image_filter_cartesian_product_def]
+  definition "ral_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ahs_iterate ls_empty ls_ins_dj"
+  lemmas ral_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded ral_inj_image_filter_cartesian_product_def]
+  definition "rar_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ahs_iterate rs_empty rs_ins_dj"
+  lemmas rar_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded rar_inj_image_filter_cartesian_product_def]
+  definition "rah_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ahs_iterate hs_empty hs_ins_dj"
+  lemmas rah_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded rah_inj_image_filter_cartesian_product_def]
+  definition "raa_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product rs_iterate ahs_iterate ahs_empty ahs_ins_dj"
+  lemmas raa_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF rs_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded raa_inj_image_filter_cartesian_product_def]
+  definition "hlili_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate lsi_iterate lsi_empty lsi_ins_dj"
+  lemmas hlili_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded hlili_inj_image_filter_cartesian_product_def]
+  definition "hlil_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate lsi_iterate ls_empty ls_ins_dj"
+  lemmas hlil_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_dj_impl, folded hlil_inj_image_filter_cartesian_product_def]
+  definition "hlir_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate lsi_iterate rs_empty rs_ins_dj"
+  lemmas hlir_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_dj_impl, folded hlir_inj_image_filter_cartesian_product_def]
+  definition "hlih_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate lsi_iterate hs_empty hs_ins_dj"
+  lemmas hlih_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_dj_impl, folded hlih_inj_image_filter_cartesian_product_def]
+  definition "hlia_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate lsi_iterate ahs_empty ahs_ins_dj"
+  lemmas hlia_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded hlia_inj_image_filter_cartesian_product_def]
+  definition "hlli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ls_iterate lsi_empty lsi_ins_dj"
+  lemmas hlli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded hlli_inj_image_filter_cartesian_product_def]
+  definition "hll_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ls_iterate ls_empty ls_ins_dj"
+  lemmas hll_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_dj_impl, folded hll_inj_image_filter_cartesian_product_def]
+  definition "hlr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ls_iterate rs_empty rs_ins_dj"
+  lemmas hlr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_dj_impl, folded hlr_inj_image_filter_cartesian_product_def]
+  definition "hlh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ls_iterate hs_empty hs_ins_dj"
+  lemmas hlh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_dj_impl, folded hlh_inj_image_filter_cartesian_product_def]
+  definition "hla_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ls_iterate ahs_empty ahs_ins_dj"
+  lemmas hla_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded hla_inj_image_filter_cartesian_product_def]
+  definition "hrli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate rs_iterate lsi_empty lsi_ins_dj"
+  lemmas hrli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded hrli_inj_image_filter_cartesian_product_def]
+  definition "hrl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate rs_iterate ls_empty ls_ins_dj"
+  lemmas hrl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded hrl_inj_image_filter_cartesian_product_def]
+  definition "hrr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate rs_iterate rs_empty rs_ins_dj"
+  lemmas hrr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded hrr_inj_image_filter_cartesian_product_def]
+  definition "hrh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate rs_iterate hs_empty hs_ins_dj"
+  lemmas hrh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded hrh_inj_image_filter_cartesian_product_def]
+  definition "hra_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate rs_iterate ahs_empty ahs_ins_dj"
+  lemmas hra_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded hra_inj_image_filter_cartesian_product_def]
+  definition "hhli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate hs_iterate lsi_empty lsi_ins_dj"
+  lemmas hhli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded hhli_inj_image_filter_cartesian_product_def]
+  definition "hhl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate hs_iterate ls_empty ls_ins_dj"
+  lemmas hhl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded hhl_inj_image_filter_cartesian_product_def]
+  definition "hhr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate hs_iterate rs_empty rs_ins_dj"
+  lemmas hhr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded hhr_inj_image_filter_cartesian_product_def]
+  definition "hhh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate hs_iterate hs_empty hs_ins_dj"
+  lemmas hhh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded hhh_inj_image_filter_cartesian_product_def]
+  definition "hha_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate hs_iterate ahs_empty ahs_ins_dj"
+  lemmas hha_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded hha_inj_image_filter_cartesian_product_def]
+  definition "hali_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ahs_iterate lsi_empty lsi_ins_dj"
+  lemmas hali_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded hali_inj_image_filter_cartesian_product_def]
+  definition "hal_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ahs_iterate ls_empty ls_ins_dj"
+  lemmas hal_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded hal_inj_image_filter_cartesian_product_def]
+  definition "har_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ahs_iterate rs_empty rs_ins_dj"
+  lemmas har_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded har_inj_image_filter_cartesian_product_def]
+  definition "hah_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ahs_iterate hs_empty hs_ins_dj"
+  lemmas hah_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded hah_inj_image_filter_cartesian_product_def]
+  definition "haa_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product hs_iterate ahs_iterate ahs_empty ahs_ins_dj"
+  lemmas haa_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF hs_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded haa_inj_image_filter_cartesian_product_def]
+  definition "alili_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate lsi_iterate lsi_empty lsi_ins_dj"
+  lemmas alili_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded alili_inj_image_filter_cartesian_product_def]
+  definition "alil_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate lsi_iterate ls_empty ls_ins_dj"
+  lemmas alil_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl ls_empty_impl ls_ins_dj_impl, folded alil_inj_image_filter_cartesian_product_def]
+  definition "alir_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate lsi_iterate rs_empty rs_ins_dj"
+  lemmas alir_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl rs_empty_impl rs_ins_dj_impl, folded alir_inj_image_filter_cartesian_product_def]
+  definition "alih_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate lsi_iterate hs_empty hs_ins_dj"
+  lemmas alih_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl hs_empty_impl hs_ins_dj_impl, folded alih_inj_image_filter_cartesian_product_def]
+  definition "alia_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate lsi_iterate ahs_empty ahs_ins_dj"
+  lemmas alia_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl lsi_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded alia_inj_image_filter_cartesian_product_def]
+  definition "alli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ls_iterate lsi_empty lsi_ins_dj"
+  lemmas alli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded alli_inj_image_filter_cartesian_product_def]
+  definition "all_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ls_iterate ls_empty ls_ins_dj"
+  lemmas all_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl ls_empty_impl ls_ins_dj_impl, folded all_inj_image_filter_cartesian_product_def]
+  definition "alr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ls_iterate rs_empty rs_ins_dj"
+  lemmas alr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl rs_empty_impl rs_ins_dj_impl, folded alr_inj_image_filter_cartesian_product_def]
+  definition "alh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ls_iterate hs_empty hs_ins_dj"
+  lemmas alh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl hs_empty_impl hs_ins_dj_impl, folded alh_inj_image_filter_cartesian_product_def]
+  definition "ala_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ls_iterate ahs_empty ahs_ins_dj"
+  lemmas ala_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ls_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded ala_inj_image_filter_cartesian_product_def]
+  definition "arli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate rs_iterate lsi_empty lsi_ins_dj"
+  lemmas arli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded arli_inj_image_filter_cartesian_product_def]
+  definition "arl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate rs_iterate ls_empty ls_ins_dj"
+  lemmas arl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded arl_inj_image_filter_cartesian_product_def]
+  definition "arr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate rs_iterate rs_empty rs_ins_dj"
+  lemmas arr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded arr_inj_image_filter_cartesian_product_def]
+  definition "arh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate rs_iterate hs_empty hs_ins_dj"
+  lemmas arh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded arh_inj_image_filter_cartesian_product_def]
+  definition "ara_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate rs_iterate ahs_empty ahs_ins_dj"
+  lemmas ara_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl rs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded ara_inj_image_filter_cartesian_product_def]
+  definition "ahli_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate hs_iterate lsi_empty lsi_ins_dj"
+  lemmas ahli_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded ahli_inj_image_filter_cartesian_product_def]
+  definition "ahl_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate hs_iterate ls_empty ls_ins_dj"
+  lemmas ahl_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded ahl_inj_image_filter_cartesian_product_def]
+  definition "ahr_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate hs_iterate rs_empty rs_ins_dj"
+  lemmas ahr_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded ahr_inj_image_filter_cartesian_product_def]
+  definition "ahh_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate hs_iterate hs_empty hs_ins_dj"
+  lemmas ahh_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded ahh_inj_image_filter_cartesian_product_def]
+  definition "aha_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate hs_iterate ahs_empty ahs_ins_dj"
+  lemmas aha_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl hs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded aha_inj_image_filter_cartesian_product_def]
+  definition "aali_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ahs_iterate lsi_empty lsi_ins_dj"
+  lemmas aali_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl lsi_empty_impl lsi_ins_dj_impl, folded aali_inj_image_filter_cartesian_product_def]
+  definition "aal_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ahs_iterate ls_empty ls_ins_dj"
+  lemmas aal_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl ls_empty_impl ls_ins_dj_impl, folded aal_inj_image_filter_cartesian_product_def]
+  definition "aar_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ahs_iterate rs_empty rs_ins_dj"
+  lemmas aar_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl rs_empty_impl rs_ins_dj_impl, folded aar_inj_image_filter_cartesian_product_def]
+  definition "aah_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ahs_iterate hs_empty hs_ins_dj"
+  lemmas aah_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl hs_empty_impl hs_ins_dj_impl, folded aah_inj_image_filter_cartesian_product_def]
+  definition "aaa_inj_image_filter_cartesian_product == SetGA.inj_image_filter_cartesian_product ahs_iterate ahs_iterate ahs_empty ahs_ins_dj"
+  lemmas aaa_inj_image_filter_cartesian_product_correct = SetGA.inj_image_filter_cartesian_product_correct[OF ahs_iterate_impl ahs_iterate_impl ahs_empty_impl ahs_ins_dj_impl, folded aaa_inj_image_filter_cartesian_product_def]
 
   definition "lilili_image_filter_cp == SetGA.image_filter_cp lsi_iterate lsi_iterate lsi_empty lsi_ins"
   lemmas lilili_image_filter_cp_correct = SetGA.image_filter_cp_correct[OF lsi_iterate_impl lsi_iterate_impl lsi_empty_impl lsi_ins_impl, folded lilili_image_filter_cp_def]
@@ -2436,6 +3186,201 @@ lemmas it_set_to_fifo_correct = it_set_to_List_enq_correct[OF _ fifo_empty_impl 
   lemmas ah_map_to_nat_correct = map_to_nat_correct[OF ahs_iterate_impl hm_empty_impl hm_update_impl, folded ah_map_to_nat_def]
   definition "aa_map_to_nat == map_to_nat ahs_iterate ahm_empty ahm_update"
   lemmas aa_map_to_nat_correct = map_to_nat_correct[OF ahs_iterate_impl ahm_empty_impl ahm_update_impl, folded aa_map_to_nat_def]
+
+  definition "lili_dom_fun_to_map == it_dom_fun_to_map lsi_iterate lmi_update_dj lmi_empty"
+  lemmas lili_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF lsi_iterate_impl lmi_update_dj_impl lmi_empty_impl, folded lili_dom_fun_to_map_def]
+  definition "lil_dom_fun_to_map == it_dom_fun_to_map lsi_iterate lm_update_dj lm_empty"
+  lemmas lil_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF lsi_iterate_impl lm_update_dj_impl lm_empty_impl, folded lil_dom_fun_to_map_def]
+  definition "lir_dom_fun_to_map == it_dom_fun_to_map lsi_iterate rm_update_dj rm_empty"
+  lemmas lir_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF lsi_iterate_impl rm_update_dj_impl rm_empty_impl, folded lir_dom_fun_to_map_def]
+  definition "lih_dom_fun_to_map == it_dom_fun_to_map lsi_iterate hm_update_dj hm_empty"
+  lemmas lih_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF lsi_iterate_impl hm_update_dj_impl hm_empty_impl, folded lih_dom_fun_to_map_def]
+  definition "lia_dom_fun_to_map == it_dom_fun_to_map lsi_iterate ahm_update_dj ahm_empty"
+  lemmas lia_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF lsi_iterate_impl ahm_update_dj_impl ahm_empty_impl, folded lia_dom_fun_to_map_def]
+  definition "lli_dom_fun_to_map == it_dom_fun_to_map ls_iterate lmi_update_dj lmi_empty"
+  lemmas lli_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ls_iterate_impl lmi_update_dj_impl lmi_empty_impl, folded lli_dom_fun_to_map_def]
+  definition "ll_dom_fun_to_map == it_dom_fun_to_map ls_iterate lm_update_dj lm_empty"
+  lemmas ll_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ls_iterate_impl lm_update_dj_impl lm_empty_impl, folded ll_dom_fun_to_map_def]
+  definition "lr_dom_fun_to_map == it_dom_fun_to_map ls_iterate rm_update_dj rm_empty"
+  lemmas lr_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ls_iterate_impl rm_update_dj_impl rm_empty_impl, folded lr_dom_fun_to_map_def]
+  definition "lh_dom_fun_to_map == it_dom_fun_to_map ls_iterate hm_update_dj hm_empty"
+  lemmas lh_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ls_iterate_impl hm_update_dj_impl hm_empty_impl, folded lh_dom_fun_to_map_def]
+  definition "la_dom_fun_to_map == it_dom_fun_to_map ls_iterate ahm_update_dj ahm_empty"
+  lemmas la_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ls_iterate_impl ahm_update_dj_impl ahm_empty_impl, folded la_dom_fun_to_map_def]
+  definition "rli_dom_fun_to_map == it_dom_fun_to_map rs_iterate lmi_update_dj lmi_empty"
+  lemmas rli_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF rs_iterate_impl lmi_update_dj_impl lmi_empty_impl, folded rli_dom_fun_to_map_def]
+  definition "rl_dom_fun_to_map == it_dom_fun_to_map rs_iterate lm_update_dj lm_empty"
+  lemmas rl_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF rs_iterate_impl lm_update_dj_impl lm_empty_impl, folded rl_dom_fun_to_map_def]
+  definition "rr_dom_fun_to_map == it_dom_fun_to_map rs_iterate rm_update_dj rm_empty"
+  lemmas rr_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF rs_iterate_impl rm_update_dj_impl rm_empty_impl, folded rr_dom_fun_to_map_def]
+  definition "rh_dom_fun_to_map == it_dom_fun_to_map rs_iterate hm_update_dj hm_empty"
+  lemmas rh_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF rs_iterate_impl hm_update_dj_impl hm_empty_impl, folded rh_dom_fun_to_map_def]
+  definition "ra_dom_fun_to_map == it_dom_fun_to_map rs_iterate ahm_update_dj ahm_empty"
+  lemmas ra_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF rs_iterate_impl ahm_update_dj_impl ahm_empty_impl, folded ra_dom_fun_to_map_def]
+  definition "hli_dom_fun_to_map == it_dom_fun_to_map hs_iterate lmi_update_dj lmi_empty"
+  lemmas hli_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF hs_iterate_impl lmi_update_dj_impl lmi_empty_impl, folded hli_dom_fun_to_map_def]
+  definition "hl_dom_fun_to_map == it_dom_fun_to_map hs_iterate lm_update_dj lm_empty"
+  lemmas hl_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF hs_iterate_impl lm_update_dj_impl lm_empty_impl, folded hl_dom_fun_to_map_def]
+  definition "hr_dom_fun_to_map == it_dom_fun_to_map hs_iterate rm_update_dj rm_empty"
+  lemmas hr_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF hs_iterate_impl rm_update_dj_impl rm_empty_impl, folded hr_dom_fun_to_map_def]
+  definition "hh_dom_fun_to_map == it_dom_fun_to_map hs_iterate hm_update_dj hm_empty"
+  lemmas hh_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF hs_iterate_impl hm_update_dj_impl hm_empty_impl, folded hh_dom_fun_to_map_def]
+  definition "ha_dom_fun_to_map == it_dom_fun_to_map hs_iterate ahm_update_dj ahm_empty"
+  lemmas ha_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF hs_iterate_impl ahm_update_dj_impl ahm_empty_impl, folded ha_dom_fun_to_map_def]
+  definition "ali_dom_fun_to_map == it_dom_fun_to_map ahs_iterate lmi_update_dj lmi_empty"
+  lemmas ali_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ahs_iterate_impl lmi_update_dj_impl lmi_empty_impl, folded ali_dom_fun_to_map_def]
+  definition "al_dom_fun_to_map == it_dom_fun_to_map ahs_iterate lm_update_dj lm_empty"
+  lemmas al_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ahs_iterate_impl lm_update_dj_impl lm_empty_impl, folded al_dom_fun_to_map_def]
+  definition "ar_dom_fun_to_map == it_dom_fun_to_map ahs_iterate rm_update_dj rm_empty"
+  lemmas ar_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ahs_iterate_impl rm_update_dj_impl rm_empty_impl, folded ar_dom_fun_to_map_def]
+  definition "ah_dom_fun_to_map == it_dom_fun_to_map ahs_iterate hm_update_dj hm_empty"
+  lemmas ah_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ahs_iterate_impl hm_update_dj_impl hm_empty_impl, folded ah_dom_fun_to_map_def]
+  definition "aa_dom_fun_to_map == it_dom_fun_to_map ahs_iterate ahm_update_dj ahm_empty"
+  lemmas aa_dom_fun_to_map_correct = it_dom_fun_to_map_correct[OF ahs_iterate_impl ahm_update_dj_impl ahm_empty_impl, folded aa_dom_fun_to_map_def]
+
+  definition "lili_restrict == MapGA.it_map_restrict lmi_iterate lmi_empty lmi_update_dj"
+  lemmas lili_restrict_impl = MapGA.it_map_restrict_correct[OF lmi_iterate_impl lmi_empty_impl lmi_update_dj_impl, folded lili_restrict_def]
+  interpretation lili: map_restrict lmi_\<alpha> lmi_invar lmi_\<alpha> lmi_invar lili_restrict using lili_restrict_impl .
+  definition "ll_restrict == MapGA.it_map_restrict lm_iterate lm_empty lm_update_dj"
+  lemmas ll_restrict_impl = MapGA.it_map_restrict_correct[OF lm_iterate_impl lm_empty_impl lm_update_dj_impl, folded ll_restrict_def]
+  interpretation ll: map_restrict lm_\<alpha> lm_invar lm_\<alpha> lm_invar ll_restrict using ll_restrict_impl .
+  definition "rr_restrict == MapGA.it_map_restrict rm_iterate rm_empty rm_update_dj"
+  lemmas rr_restrict_impl = MapGA.it_map_restrict_correct[OF rm_iterate_impl rm_empty_impl rm_update_dj_impl, folded rr_restrict_def]
+  interpretation rr: map_restrict rm_\<alpha> rm_invar rm_\<alpha> rm_invar rr_restrict using rr_restrict_impl .
+  definition "hh_restrict == MapGA.it_map_restrict hm_iterate hm_empty hm_update_dj"
+  lemmas hh_restrict_impl = MapGA.it_map_restrict_correct[OF hm_iterate_impl hm_empty_impl hm_update_dj_impl, folded hh_restrict_def]
+  interpretation hh: map_restrict hm_\<alpha> hm_invar hm_\<alpha> hm_invar hh_restrict using hh_restrict_impl .
+  definition "aa_restrict == MapGA.it_map_restrict ahm_iterate ahm_empty ahm_update_dj"
+  lemmas aa_restrict_impl = MapGA.it_map_restrict_correct[OF ahm_iterate_impl ahm_empty_impl ahm_update_dj_impl, folded aa_restrict_def]
+  interpretation aa: map_restrict ahm_\<alpha> ahm_invar ahm_\<alpha> ahm_invar aa_restrict using aa_restrict_impl .
+
+  definition "lili_map_value_image_filter == MapGA.it_map_value_image_filter lmi_iterate lmi_empty lmi_update_dj"
+  lemmas lili_map_value_image_filter_impl = MapGA.it_map_value_image_filter_correct[OF lmi_iterate_impl lmi_empty_impl lmi_update_dj_impl, folded lili_map_value_image_filter_def]
+  interpretation lili: map_value_image_filter lmi_\<alpha> lmi_invar lmi_\<alpha> lmi_invar lili_map_value_image_filter using lili_map_value_image_filter_impl .
+  definition "ll_map_value_image_filter == MapGA.it_map_value_image_filter lm_iterate lm_empty lm_update_dj"
+  lemmas ll_map_value_image_filter_impl = MapGA.it_map_value_image_filter_correct[OF lm_iterate_impl lm_empty_impl lm_update_dj_impl, folded ll_map_value_image_filter_def]
+  interpretation ll: map_value_image_filter lm_\<alpha> lm_invar lm_\<alpha> lm_invar ll_map_value_image_filter using ll_map_value_image_filter_impl .
+  definition "rr_map_value_image_filter == MapGA.it_map_value_image_filter rm_iterate rm_empty rm_update_dj"
+  lemmas rr_map_value_image_filter_impl = MapGA.it_map_value_image_filter_correct[OF rm_iterate_impl rm_empty_impl rm_update_dj_impl, folded rr_map_value_image_filter_def]
+  interpretation rr: map_value_image_filter rm_\<alpha> rm_invar rm_\<alpha> rm_invar rr_map_value_image_filter using rr_map_value_image_filter_impl .
+  definition "hh_map_value_image_filter == MapGA.it_map_value_image_filter hm_iterate hm_empty hm_update_dj"
+  lemmas hh_map_value_image_filter_impl = MapGA.it_map_value_image_filter_correct[OF hm_iterate_impl hm_empty_impl hm_update_dj_impl, folded hh_map_value_image_filter_def]
+  interpretation hh: map_value_image_filter hm_\<alpha> hm_invar hm_\<alpha> hm_invar hh_map_value_image_filter using hh_map_value_image_filter_impl .
+  definition "aa_map_value_image_filter == MapGA.it_map_value_image_filter ahm_iterate ahm_empty ahm_update_dj"
+  lemmas aa_map_value_image_filter_impl = MapGA.it_map_value_image_filter_correct[OF ahm_iterate_impl ahm_empty_impl ahm_update_dj_impl, folded aa_map_value_image_filter_def]
+  interpretation aa: map_value_image_filter ahm_\<alpha> ahm_invar ahm_\<alpha> ahm_invar aa_map_value_image_filter using aa_map_value_image_filter_impl .
+
+  definition "lili_map_image_filter == MapGA.it_map_image_filter lmi_iterate lmi_empty lmi_update_dj"
+  lemmas lili_map_image_filter_impl = MapGA.it_map_image_filter_correct[OF lmi_iterate_impl lmi_empty_impl lmi_update_dj_impl, folded lili_map_image_filter_def]
+  interpretation lili: map_image_filter lmi_\<alpha> lmi_invar lmi_\<alpha> lmi_invar lili_map_image_filter using lili_map_image_filter_impl .
+  definition "ll_map_image_filter == MapGA.it_map_image_filter lm_iterate lm_empty lm_update_dj"
+  lemmas ll_map_image_filter_impl = MapGA.it_map_image_filter_correct[OF lm_iterate_impl lm_empty_impl lm_update_dj_impl, folded ll_map_image_filter_def]
+  interpretation ll: map_image_filter lm_\<alpha> lm_invar lm_\<alpha> lm_invar ll_map_image_filter using ll_map_image_filter_impl .
+  definition "rr_map_image_filter == MapGA.it_map_image_filter rm_iterate rm_empty rm_update_dj"
+  lemmas rr_map_image_filter_impl = MapGA.it_map_image_filter_correct[OF rm_iterate_impl rm_empty_impl rm_update_dj_impl, folded rr_map_image_filter_def]
+  interpretation rr: map_image_filter rm_\<alpha> rm_invar rm_\<alpha> rm_invar rr_map_image_filter using rr_map_image_filter_impl .
+  definition "hh_map_image_filter == MapGA.it_map_image_filter hm_iterate hm_empty hm_update_dj"
+  lemmas hh_map_image_filter_impl = MapGA.it_map_image_filter_correct[OF hm_iterate_impl hm_empty_impl hm_update_dj_impl, folded hh_map_image_filter_def]
+  interpretation hh: map_image_filter hm_\<alpha> hm_invar hm_\<alpha> hm_invar hh_map_image_filter using hh_map_image_filter_impl .
+  definition "aa_map_image_filter == MapGA.it_map_image_filter ahm_iterate ahm_empty ahm_update_dj"
+  lemmas aa_map_image_filter_impl = MapGA.it_map_image_filter_correct[OF ahm_iterate_impl ahm_empty_impl ahm_update_dj_impl, folded aa_map_image_filter_def]
+  interpretation aa: map_image_filter ahm_\<alpha> ahm_invar ahm_\<alpha> ahm_invar aa_map_image_filter using aa_map_image_filter_impl .
+
+  definition "lmi_sng == MapGA.eu_sng lmi_empty lmi_update"
+  lemmas lmi_sng_impl = MapGA.eu_sng_correct[OF lmi_empty_impl lmi_update_impl, folded lmi_sng_def]
+  interpretation lmi: map_sng lmi_\<alpha> lmi_invar lmi_sng using lmi_sng_impl .
+  definition "lm_sng == MapGA.eu_sng lm_empty lm_update"
+  lemmas lm_sng_impl = MapGA.eu_sng_correct[OF lm_empty_impl lm_update_impl, folded lm_sng_def]
+  interpretation lm: map_sng lm_\<alpha> lm_invar lm_sng using lm_sng_impl .
+  definition "rm_sng == MapGA.eu_sng rm_empty rm_update"
+  lemmas rm_sng_impl = MapGA.eu_sng_correct[OF rm_empty_impl rm_update_impl, folded rm_sng_def]
+  interpretation rm: map_sng rm_\<alpha> rm_invar rm_sng using rm_sng_impl .
+  definition "hm_sng == MapGA.eu_sng hm_empty hm_update"
+  lemmas hm_sng_impl = MapGA.eu_sng_correct[OF hm_empty_impl hm_update_impl, folded hm_sng_def]
+  interpretation hm: map_sng hm_\<alpha> hm_invar hm_sng using hm_sng_impl .
+  definition "ahm_sng == MapGA.eu_sng ahm_empty ahm_update"
+  lemmas ahm_sng_impl = MapGA.eu_sng_correct[OF ahm_empty_impl ahm_update_impl, folded ahm_sng_def]
+  interpretation ahm: map_sng ahm_\<alpha> ahm_invar ahm_sng using ahm_sng_impl .
+
+  definition "lmi_size == MapGA.it_size lmi_iterate"
+  lemmas lmi_size_impl = MapGA.it_size_correct[OF lmi_iterate_impl, folded lmi_size_def]
+  interpretation lmi: map_size lmi_\<alpha> lmi_invar lmi_size using lmi_size_impl .
+  definition "lm_size == MapGA.it_size lm_iterate"
+  lemmas lm_size_impl = MapGA.it_size_correct[OF lm_iterate_impl, folded lm_size_def]
+  interpretation lm: map_size lm_\<alpha> lm_invar lm_size using lm_size_impl .
+  definition "rm_size == MapGA.it_size rm_iterate"
+  lemmas rm_size_impl = MapGA.it_size_correct[OF rm_iterate_impl, folded rm_size_def]
+  interpretation rm: map_size rm_\<alpha> rm_invar rm_size using rm_size_impl .
+  definition "hm_size == MapGA.it_size hm_iterate"
+  lemmas hm_size_impl = MapGA.it_size_correct[OF hm_iterate_impl, folded hm_size_def]
+  interpretation hm: map_size hm_\<alpha> hm_invar hm_size using hm_size_impl .
+  definition "ahm_size == MapGA.it_size ahm_iterate"
+  lemmas ahm_size_impl = MapGA.it_size_correct[OF ahm_iterate_impl, folded ahm_size_def]
+  interpretation ahm: map_size ahm_\<alpha> ahm_invar ahm_size using ahm_size_impl .
+
+  definition "lmi_size_abort == MapGA.iti_size_abort lmi_iteratei"
+  lemmas lmi_size_abort_impl = MapGA.iti_size_abort_correct[OF lmi_iteratei_impl, folded lmi_size_abort_def]
+  interpretation lmi: map_size_abort lmi_\<alpha> lmi_invar lmi_size_abort using lmi_size_abort_impl .
+  definition "lm_size_abort == MapGA.iti_size_abort lm_iteratei"
+  lemmas lm_size_abort_impl = MapGA.iti_size_abort_correct[OF lm_iteratei_impl, folded lm_size_abort_def]
+  interpretation lm: map_size_abort lm_\<alpha> lm_invar lm_size_abort using lm_size_abort_impl .
+  definition "rm_size_abort == MapGA.iti_size_abort rm_iteratei"
+  lemmas rm_size_abort_impl = MapGA.iti_size_abort_correct[OF rm_iteratei_impl, folded rm_size_abort_def]
+  interpretation rm: map_size_abort rm_\<alpha> rm_invar rm_size_abort using rm_size_abort_impl .
+  definition "hm_size_abort == MapGA.iti_size_abort hm_iteratei"
+  lemmas hm_size_abort_impl = MapGA.iti_size_abort_correct[OF hm_iteratei_impl, folded hm_size_abort_def]
+  interpretation hm: map_size_abort hm_\<alpha> hm_invar hm_size_abort using hm_size_abort_impl .
+  definition "ahm_size_abort == MapGA.iti_size_abort ahm_iteratei"
+  lemmas ahm_size_abort_impl = MapGA.iti_size_abort_correct[OF ahm_iteratei_impl, folded ahm_size_abort_def]
+  interpretation ahm: map_size_abort ahm_\<alpha> ahm_invar ahm_size_abort using ahm_size_abort_impl .
+
+  definition "lmi_isSng == MapGA.sza_isSng lmi_size_abort"
+  lemmas lmi_isSng_impl = MapGA.sza_isSng_correct[OF lmi_size_abort_impl, folded lmi_isSng_def]
+  interpretation lmi: map_isSng lmi_\<alpha> lmi_invar lmi_isSng using lmi_isSng_impl .
+  definition "lm_isSng == MapGA.sza_isSng lm_size_abort"
+  lemmas lm_isSng_impl = MapGA.sza_isSng_correct[OF lm_size_abort_impl, folded lm_isSng_def]
+  interpretation lm: map_isSng lm_\<alpha> lm_invar lm_isSng using lm_isSng_impl .
+  definition "rm_isSng == MapGA.sza_isSng rm_size_abort"
+  lemmas rm_isSng_impl = MapGA.sza_isSng_correct[OF rm_size_abort_impl, folded rm_isSng_def]
+  interpretation rm: map_isSng rm_\<alpha> rm_invar rm_isSng using rm_isSng_impl .
+  definition "hm_isSng == MapGA.sza_isSng hm_size_abort"
+  lemmas hm_isSng_impl = MapGA.sza_isSng_correct[OF hm_size_abort_impl, folded hm_isSng_def]
+  interpretation hm: map_isSng hm_\<alpha> hm_invar hm_isSng using hm_isSng_impl .
+  definition "ahm_isSng == MapGA.sza_isSng ahm_size_abort"
+  lemmas ahm_isSng_impl = MapGA.sza_isSng_correct[OF ahm_size_abort_impl, folded ahm_isSng_def]
+  interpretation ahm: map_isSng ahm_\<alpha> ahm_invar ahm_isSng using ahm_isSng_impl .
+
+  definition "lmi_ball == MapGA.sel_ball lmi_sel"
+  lemmas lmi_ball_impl = MapGA.sel_ball_correct[OF lmi_sel_impl, folded lmi_ball_def]
+  interpretation lmi: map_ball lmi_\<alpha> lmi_invar lmi_ball using lmi_ball_impl .
+  definition "lm_ball == MapGA.sel_ball lm_sel"
+  lemmas lm_ball_impl = MapGA.sel_ball_correct[OF lm_sel_impl, folded lm_ball_def]
+  interpretation lm: map_ball lm_\<alpha> lm_invar lm_ball using lm_ball_impl .
+  definition "rm_ball == MapGA.sel_ball rm_sel"
+  lemmas rm_ball_impl = MapGA.sel_ball_correct[OF rm_sel_impl, folded rm_ball_def]
+  interpretation rm: map_ball rm_\<alpha> rm_invar rm_ball using rm_ball_impl .
+  definition "hm_ball == MapGA.sel_ball hm_sel"
+  lemmas hm_ball_impl = MapGA.sel_ball_correct[OF hm_sel_impl, folded hm_ball_def]
+  interpretation hm: map_ball hm_\<alpha> hm_invar hm_ball using hm_ball_impl .
+  definition "ahm_ball == MapGA.sel_ball ahm_sel"
+  lemmas ahm_ball_impl = MapGA.sel_ball_correct[OF ahm_sel_impl, folded ahm_ball_def]
+  interpretation ahm: map_ball ahm_\<alpha> ahm_invar ahm_ball using ahm_ball_impl .
+
+  definition "lmi_bexists == MapGA.neg_ball_bexists lmi_ball"
+  lemmas lmi_bexists_impl = MapGA.neg_ball_bexists_correct[OF lmi_ball_impl, folded lmi_bexists_def]
+  interpretation lmi: map_bexists lmi_\<alpha> lmi_invar lmi_bexists using lmi_bexists_impl .
+  definition "lm_bexists == MapGA.neg_ball_bexists lm_ball"
+  lemmas lm_bexists_impl = MapGA.neg_ball_bexists_correct[OF lm_ball_impl, folded lm_bexists_def]
+  interpretation lm: map_bexists lm_\<alpha> lm_invar lm_bexists using lm_bexists_impl .
+  definition "rm_bexists == MapGA.neg_ball_bexists rm_ball"
+  lemmas rm_bexists_impl = MapGA.neg_ball_bexists_correct[OF rm_ball_impl, folded rm_bexists_def]
+  interpretation rm: map_bexists rm_\<alpha> rm_invar rm_bexists using rm_bexists_impl .
+  definition "hm_bexists == MapGA.neg_ball_bexists hm_ball"
+  lemmas hm_bexists_impl = MapGA.neg_ball_bexists_correct[OF hm_ball_impl, folded hm_bexists_def]
+  interpretation hm: map_bexists hm_\<alpha> hm_invar hm_bexists using hm_bexists_impl .
+  definition "ahm_bexists == MapGA.neg_ball_bexists ahm_ball"
+  lemmas ahm_bexists_impl = MapGA.neg_ball_bexists_correct[OF ahm_ball_impl, folded ahm_bexists_def]
+  interpretation ahm: map_bexists ahm_\<alpha> ahm_invar ahm_bexists using ahm_bexists_impl .
 (*#end_generated*)
 
 

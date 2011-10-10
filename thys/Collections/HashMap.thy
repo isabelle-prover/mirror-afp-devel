@@ -167,9 +167,6 @@ lemmas hm_add_dj_impl =
   it_add_dj_correct[OF hm_iterate_impl hm_update_dj_impl, 
                  folded hm_add_dj_def]
 
-definition "hm_ball == sel_ball hm_sel"
-lemmas hm_ball_impl = sel_ball_correct[OF hm_sel_impl, folded hm_ball_def]
-
 definition "hm_to_list == it_map_to_list hm_iterate"
 lemmas hm_to_list_impl = it_map_to_list_correct[OF hm_iterate_impl, 
                                                   folded hm_to_list_def]
@@ -193,7 +190,6 @@ interpretation hm: map_iterate hm_\<alpha> hm_invar hm_iterate using hm_iterate_
 interpretation hm: map_iteratei hm_\<alpha> hm_invar hm_iteratei using hm_iteratei_impl .
 interpretation hm: map_add hm_\<alpha> hm_invar hm_add using hm_add_impl .
 interpretation hm: map_add_dj hm_\<alpha> hm_invar hm_add_dj using hm_add_dj_impl .
-interpretation hm: map_ball hm_\<alpha> hm_invar hm_ball using hm_ball_impl .
 interpretation hm: map_to_list hm_\<alpha> hm_invar hm_to_list using hm_to_list_impl .
 interpretation hm: list_to_map hm_\<alpha> hm_invar list_to_hm using list_to_hm_impl .
 
@@ -208,7 +204,6 @@ lemmas hm_correct =
   hm.add_correct
   hm.add_dj_correct
   hm.isEmpty_correct
-  hm.ball_correct
   hm.to_list_correct
   hm.to_map_correct
 
@@ -228,7 +223,6 @@ export_code
   hm_iteratei
   hm_add
   hm_add_dj
-  hm_ball
   hm_to_list
   list_to_hm
   in SML

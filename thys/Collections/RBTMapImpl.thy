@@ -43,11 +43,8 @@ definition "rm_isEmpty m == m=RBT.empty"
 definition "rm_sel == iti_sel rm_iteratei"
 definition "rm_sel' = sel_sel' rm_sel"
 
-definition "rm_ball == sel_ball rm_sel"
 definition "rm_to_list == rito_map_to_sorted_list rm_reverse_iterateo"
 definition "list_to_rm == gen_list_to_map rm_empty rm_update"
-
-definition "rm_sng == map_sng rm_empty rm_update"
 
 definition "rm_min == MapGA.itoi_min rm_iterateoi"
 
@@ -73,7 +70,6 @@ lemmas rm_defs =
   rm_isEmpty_def
   rm_sel_def
   rm_sel'_def
-  rm_ball_def
   rm_to_list_def
   list_to_rm_def
   rm_min_def
@@ -98,12 +94,6 @@ lemma rm_update_dj_impl: "map_update_dj rm_\<alpha> rm_invar rm_update_dj"
 lemma rm_delete_impl: "map_delete rm_\<alpha> rm_invar rm_delete"
   by (unfold_locales, unfold rm_defs)
      (simp_all)
-
-(* Discontinued, as iterators are no longer implemented by fold. *)
-(*lemma rm_iterate_alt: 
-  "rm_iterate f t \<sigma> = foldl (\<lambda>x (k, v). f k v x) \<sigma> (alist_of t)"
-  by (simp add: rm_iterate_def fold_alist_fold)
-*)
 
 lemma rm_\<alpha>_alist: "rm_invar m \<Longrightarrow> rm_\<alpha> m = Map.map_of (RBT.entries m)"
   by (simp add: rm_\<alpha>_def)
@@ -692,17 +682,12 @@ lemma rm_isEmpty_impl: "map_isEmpty rm_\<alpha> rm_invar rm_isEmpty"
 lemmas rm_sel_impl = iti_sel_correct[OF rm_iteratei_impl, folded rm_sel_def]
 lemmas rm_sel'_impl = sel_sel'_correct[OF rm_sel_impl, folded rm_sel'_def]
 
-lemmas rm_ball_impl = sel_ball_correct[OF rm_sel_impl, folded rm_ball_def]
-
 lemmas rm_to_sorted_list_impl 
   = rito_map_to_sorted_list_correct[OF rm_reverse_iterateo_impl, folded rm_to_list_def]
 
 lemmas list_to_rm_impl
   = gen_list_to_map_correct[OF rm_empty_impl rm_update_impl, 
                             folded list_to_rm_def]
-
-lemmas rm_sng_correct 
-  = map_sng_correct[OF rm_empty_impl rm_update_impl, folded rm_sng_def]
 
 lemmas rm_min_impl = MapGA.itoi_min_correct[OF rm_iterateoi_impl, folded rm_min_def]
 lemmas rm_max_impl = MapGA.ritoi_max_correct[OF rm_reverse_iterateoi_impl, folded rm_max_def]
@@ -742,8 +727,6 @@ interpretation rm: map_sel rm_\<alpha> rm_invar rm_sel
   using rm_sel_impl .
 interpretation rm: map_sel' rm_\<alpha> rm_invar rm_sel' 
   using rm_sel'_impl .
-interpretation rm: map_ball rm_\<alpha> rm_invar rm_ball 
-  using rm_ball_impl .
 interpretation rm: map_to_sorted_list rm_\<alpha> rm_invar rm_to_list 
   using rm_to_sorted_list_impl .
 interpretation rm: list_to_map rm_\<alpha> rm_invar list_to_rm 
@@ -765,10 +748,8 @@ lemmas rm_correct =
   rm.add_correct
   rm.add_dj_correct
   rm.isEmpty_correct
-  rm.ball_correct
   rm.to_list_correct
   rm.to_map_correct
-  rm_sng_correct
 
 subsection "Code Generation"
 
@@ -789,10 +770,8 @@ export_code
   rm_isEmpty
   rm_sel
   rm_sel'
-  rm_ball
   rm_to_list
   list_to_rm
-  rm_sng
   rm_min
   rm_max
   in SML

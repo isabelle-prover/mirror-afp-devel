@@ -80,9 +80,51 @@ locale map_isEmpty = map +
   fixes isEmpty :: "'s \<Rightarrow> bool"
   assumes isEmpty_correct : "invar m \<Longrightarrow> isEmpty m \<longleftrightarrow> \<alpha> m = Map.empty"
 
+subsubsection "Singleton Maps"
+locale map_sng = map +
+  constrains \<alpha> :: "'s \<Rightarrow> 'u \<rightharpoonup> 'v"
+  fixes sng :: "'u \<Rightarrow> 'v \<Rightarrow> 's"
+  assumes sng_correct : 
+    "\<alpha> (sng k v) = [k \<mapsto> v]"
+    "invar (sng k v)"
+
+locale map_isSng = map +
+  constrains \<alpha> :: "'s \<Rightarrow> 'k \<rightharpoonup> 'v"
+  fixes isSng :: "'s \<Rightarrow> bool"
+  assumes isSng_correct:
+    "invar s \<Longrightarrow> isSng s \<longleftrightarrow> (\<exists>k v. \<alpha> s = [k \<mapsto> v])"
+begin
+  lemma isSng_correct_exists1 :
+    "invar s \<Longrightarrow> (isSng s \<longleftrightarrow> (\<exists>!k. \<exists>v. (\<alpha> s k = Some v)))"
+    apply (auto simp add: isSng_correct split: split_if_asm)
+    apply (rule_tac x=k in exI)
+    apply (rule_tac x=v in exI)
+    apply (rule ext)
+    apply (case_tac "\<alpha> s x")
+    apply auto
+    apply force
+    done
+
+  lemma isSng_correct_card :
+    "invar s \<Longrightarrow> (isSng s \<longleftrightarrow> (card (dom (\<alpha> s)) = 1))"
+    by (auto simp add: isSng_correct card_Suc_eq dom_eq_singleton_conv)
+
+end
+
 subsubsection "Finite Maps"
 locale finite_map = map +
   assumes finite[simp, intro!]: "invar m \<Longrightarrow> finite (dom (\<alpha> m))"
+
+subsubsection "Size"
+locale map_size = finite_map +
+  constrains \<alpha> :: "'s \<Rightarrow> 'u \<rightharpoonup> 'v"
+  fixes size :: "'s \<Rightarrow> nat"
+  assumes size_correct: "invar s \<Longrightarrow> size s = card (dom (\<alpha> s))"
+  
+locale map_size_abort = finite_map +
+  constrains \<alpha> :: "'s \<Rightarrow> 'u \<rightharpoonup> 'v"
+  fixes size_abort :: "nat \<Rightarrow> 's \<Rightarrow> nat"
+  assumes size_abort_correct: "invar s \<Longrightarrow> size_abort m s = min m (card (dom (\<alpha> s)))"
 
 subsubsection "Iterators"
 text {*
@@ -114,6 +156,36 @@ begin
     \<rbrakk> \<Longrightarrow> P"
     by (metis iterate_rule)
 
+  lemma iterate_rule_insert_P':
+    assumes A: 
+      "invar m" 
+      "I {} \<sigma>0"
+      "!!k v it \<sigma>. \<lbrakk> k \<in> (dom (\<alpha> m) - it); \<alpha> m k = Some v; it \<subseteq> dom (\<alpha> m); I it \<sigma> \<rbrakk> 
+          \<Longrightarrow> I (insert k it) (f k v \<sigma>)"
+    assumes C: 
+      "I (dom (\<alpha> m)) (iterate f m \<sigma>0) \<Longrightarrow> P"
+    shows 
+      "P"
+  proof -
+    let ?I' = "\<lambda>it \<sigma>. I (dom(\<alpha> m) - it) \<sigma>"
+
+    have pre :"!!k v it \<sigma>. \<lbrakk> k \<in> it; \<alpha> m k = Some v; it \<subseteq> dom (\<alpha> m); ?I' it \<sigma> \<rbrakk> 
+                  \<Longrightarrow> ?I' (it - {k}) (f k v \<sigma>)"
+    proof -
+      fix k v it \<sigma>
+      assume AA : "k \<in> it" "\<alpha> m k = Some v" "it \<subseteq> dom (\<alpha> m)" "?I' it \<sigma>"  
+
+      from AA(1) AA(3) have "dom (\<alpha> m) - (it - {k}) = insert k (dom (\<alpha> m) - it)" by auto
+      moreover
+      note A(3) [of k "dom (\<alpha> m) - it" v "\<sigma>"] AA
+      ultimately show "?I' (it - {k}) (f k v \<sigma>)"
+        by auto
+    qed
+
+    note iterate_rule_P' [of m ?I' \<sigma>0 f P] pre
+    thus "P" using A C by auto
+  qed
+
   lemma iterate_rule_P:
     "\<lbrakk>
       invar m;
@@ -122,8 +194,19 @@ begin
                   \<Longrightarrow> I (it - {k}) (f k v \<sigma>);
       !!\<sigma>. I {} \<sigma> \<Longrightarrow> P \<sigma>
     \<rbrakk> \<Longrightarrow> P (iterate f m \<sigma>0)"
-    by (metis iterate_rule)
+    using iterate_rule_P' [of m I \<sigma>0 f "P (iterate f m \<sigma>0)"] 
+    by fast
 
+  lemma iterate_rule_insert_P:
+    "\<lbrakk>
+      invar m;
+      I {} \<sigma>0;
+      !!k v it \<sigma>. \<lbrakk> k \<in> (dom (\<alpha> m) - it); \<alpha> m k = Some v; it \<subseteq> dom (\<alpha> m); I it \<sigma> \<rbrakk> 
+                  \<Longrightarrow> I (insert k it) (f k v \<sigma>);
+      !!\<sigma>. I (dom (\<alpha> m)) \<sigma> \<Longrightarrow> P \<sigma>
+    \<rbrakk> \<Longrightarrow> P (iterate f m \<sigma>0)"
+    using iterate_rule_insert_P' [of m I \<sigma>0 f "P (iterate f m \<sigma>0)"]
+    by fast
 end
 
 text {*
@@ -163,6 +246,57 @@ begin
     using iteratei_rule[of m I \<sigma>0 c f]
     by blast
 
+  lemma iteratei_rule_insert_P':
+    assumes A: 
+      "invar m" 
+      "I {} \<sigma>0"
+      "!!k v it \<sigma>. \<lbrakk> c \<sigma>; k \<in> (dom (\<alpha> m) - it); \<alpha> m k = Some v; it \<subseteq> dom (\<alpha> m); I it \<sigma> \<rbrakk> 
+          \<Longrightarrow> I (insert k it) (f k v \<sigma>)"
+    assumes C: 
+      "I (dom (\<alpha> m)) (iteratei c f m \<sigma>0) \<Longrightarrow> P"
+      "!!it. \<lbrakk> it \<subseteq> dom (\<alpha> m); it \<noteq> dom (\<alpha> m); 
+               \<not> (c (iteratei c f m \<sigma>0)); 
+               I it (iteratei c f m \<sigma>0) \<rbrakk> \<Longrightarrow> P"
+    shows 
+      "P"
+  proof -
+    let ?I' = "\<lambda>it \<sigma>. I (dom(\<alpha> m) - it) \<sigma>"
+
+    have pre1: 
+      "!!it. \<lbrakk> it \<subseteq> dom (\<alpha> m); it \<noteq> {}; 
+              \<not> (c (iteratei c f m \<sigma>0)); 
+              ?I' it (iteratei c f m \<sigma>0)
+             \<rbrakk> \<Longrightarrow> P"
+    proof -
+      fix it
+      assume AA: 
+        "it \<subseteq> dom (\<alpha> m)" "it \<noteq> {}"
+        "\<not> (c (iteratei c f m \<sigma>0))" 
+        "?I' it (iteratei c f m \<sigma>0)"
+
+      from AA have "dom (\<alpha> m) - it \<noteq> dom (\<alpha> m)" by auto
+      moreover
+      note C(2) [of "dom (\<alpha> m) - it"] AA
+      ultimately show "P" by auto
+    qed
+
+    have pre2 :"!!k v it \<sigma>. \<lbrakk> c \<sigma>; k \<in> it; \<alpha> m k = Some v; it \<subseteq> dom (\<alpha> m); ?I' it \<sigma> \<rbrakk> 
+                  \<Longrightarrow> ?I' (it - {k}) (f k v \<sigma>)"
+    proof -
+      fix k v it \<sigma>
+      assume AA : "k \<in> it" "\<alpha> m k = Some v" "it \<subseteq> dom (\<alpha> m)" "?I' it \<sigma>" "c \<sigma>" 
+
+      from AA(1) AA(3) have "dom (\<alpha> m) - (it - {k}) = insert k (dom (\<alpha> m) - it)" by auto
+      moreover
+      note A(3) [of \<sigma> k "dom (\<alpha> m) - it" v] AA
+      ultimately show "?I' (it - {k}) (f k v \<sigma>)"
+        by auto
+    qed
+
+    note iteratei_rule_P' [of m ?I' \<sigma>0 c f P] pre1 pre2 A C
+    thus "P" by simp
+  qed
+
   lemma iteratei_rule_P:
     "\<lbrakk>
       invar m;
@@ -174,6 +308,21 @@ begin
     \<rbrakk> \<Longrightarrow> P (iteratei c f m \<sigma>0)"
     by (rule iteratei_rule_P')
 
+  lemma iteratei_rule_insert_P:
+    assumes  
+      "invar m" 
+      "I {} \<sigma>0"
+      "!!k v it \<sigma>. \<lbrakk> c \<sigma>; k \<in> (dom (\<alpha> m) - it); \<alpha> m k = Some v; it \<subseteq> dom (\<alpha> m); I it \<sigma> \<rbrakk> 
+          \<Longrightarrow> I (insert k it) (f k v \<sigma>)"
+      "!!\<sigma>. I (dom (\<alpha> m)) \<sigma> \<Longrightarrow> P \<sigma>"
+      "!!\<sigma> it. \<lbrakk> it \<subseteq> dom (\<alpha> m); it \<noteq> dom (\<alpha> m); 
+               \<not> (c \<sigma>); 
+               I it \<sigma> \<rbrakk> \<Longrightarrow> P \<sigma>"
+    shows 
+      "P (iteratei c f m \<sigma>0)"
+    using assms 
+    using iteratei_rule_insert_P' [of m I \<sigma>0 c f "P (iteratei c f m \<sigma>0)"]
+    by simp
 end
 
 
@@ -182,6 +331,12 @@ locale map_ball = map +
   constrains \<alpha> :: "'s \<Rightarrow> 'u \<rightharpoonup> 'v"
   fixes ball :: "'s \<Rightarrow> ('u \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> bool"
   assumes ball_correct: "invar m \<Longrightarrow> ball m P \<longleftrightarrow> (\<forall>u v. \<alpha> m u = Some v \<longrightarrow> P u v)"
+
+locale map_bexists = map +
+  constrains \<alpha> :: "'s \<Rightarrow> 'u \<rightharpoonup> 'v"
+  fixes bexists :: "'s \<Rightarrow> ('u \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> bool"
+  assumes bexists_correct: "invar m \<Longrightarrow> bexists m P \<longleftrightarrow> (\<exists>u v. \<alpha> m u = Some v \<and> P u v)"
+
 
 subsubsection "Selection of Entry"
 locale map_sel = map +
@@ -305,6 +460,136 @@ locale list_to_map = map +
     "\<alpha> (to_map l) = map_of l"
     "invar (to_map l)"
 
+subsubsection "Image of a Map"
+
+text {* This locale allows to apply a function to both the keys and
+ the values of a map while at the same time filtering entries. *}
+
+definition transforms_to_unique_keys ::
+  "('u1 \<rightharpoonup> 'v1) \<Rightarrow> ('u1 \<Rightarrow> 'v1 \<rightharpoonup> ('u2 \<times> 'v2)) \<Rightarrow> bool"
+  where
+  "transforms_to_unique_keys m f \<equiv> (\<forall>k1 k2 v1 v2 k' v1' v2'. ( 
+         m k1 = Some v1 \<and>
+         m k2 = Some v2 \<and>
+         f k1 v1 = Some (k', v1') \<and>
+         f k2 v2 = Some (k', v2')) -->
+       (k1 = k2))"
+
+locale map_image_filter = map \<alpha>1 invar1 + map \<alpha>2 invar2
+  for \<alpha>1 :: "'m1 \<Rightarrow> 'u1 \<rightharpoonup> 'v1" and invar1
+  and \<alpha>2 :: "'m2 \<Rightarrow> 'u2 \<rightharpoonup> 'v2" and invar2
+  +
+  fixes map_image_filter :: "('u1 \<Rightarrow> 'v1 \<Rightarrow> ('u2 \<times> 'v2) option) \<Rightarrow> 'm1 \<Rightarrow> 'm2"
+  assumes map_image_filter_correct_aux1:
+    "\<And>k' v'. 
+     \<lbrakk>invar1 m; transforms_to_unique_keys (\<alpha>1 m) f\<rbrakk> \<Longrightarrow> 
+     (invar2 (map_image_filter f m) \<and>
+      ((\<alpha>2 (map_image_filter f m) k' = Some v') \<longleftrightarrow>
+       (\<exists>k v. (\<alpha>1 m k = Some v) \<and> f k v = Some (k', v'))))"
+begin
+
+  (*Let's use a definition for the precondition *)
+
+  lemma map_image_filter_correct_aux2 :
+    assumes "invar1 m" 
+      and "transforms_to_unique_keys (\<alpha>1 m) f"
+    shows "(\<alpha>2 (map_image_filter f m) k' = None) \<longleftrightarrow>
+      (\<forall>k v v'. \<alpha>1 m k = Some v \<longrightarrow> f k v \<noteq> Some (k', v'))"
+  proof -
+    note map_image_filter_correct_aux1 [OF assms]
+    have Some_eq: "\<And>v'. (\<alpha>2 (map_image_filter f m) k' = Some v') =
+          (\<exists>k v. \<alpha>1 m k = Some v \<and> f k v = Some (k', v'))"
+      by (simp add: map_image_filter_correct_aux1 [OF assms])
+    
+    have intro_some: "(\<alpha>2 (map_image_filter f m) k' = None) \<longleftrightarrow>
+                      (\<forall>v'. \<alpha>2 (map_image_filter f m) k' \<noteq> Some v')" by auto
+    
+    from intro_some Some_eq show ?thesis by auto
+  qed
+
+  lemmas map_image_filter_correct = 
+     conjunct1 [OF map_image_filter_correct_aux1] 
+     conjunct2 [OF map_image_filter_correct_aux1] 
+     map_image_filter_correct_aux2
+end
+    
+
+text {* Most of the time the mapping function is only applied to values. Then,
+  the precondition disapears.*}
+
+locale map_value_image_filter = map \<alpha>1 invar1 + map \<alpha>2 invar2
+  for \<alpha>1 :: "'m1 \<Rightarrow> 'u \<rightharpoonup> 'v1" and invar1
+  and \<alpha>2 :: "'m2 \<Rightarrow> 'u \<rightharpoonup> 'v2" and invar2
+  +
+  fixes map_value_image_filter :: "('u \<Rightarrow> 'v1 \<Rightarrow> 'v2 option) \<Rightarrow> 'm1 \<Rightarrow> 'm2"
+  assumes map_value_image_filter_correct :
+    "invar1 m \<Longrightarrow> 
+     invar2 (map_value_image_filter f m) \<and>
+     (\<alpha>2 (map_value_image_filter f m) = 
+      (\<lambda>k. Option.bind (\<alpha>1 m k) (f k)))"
+begin
+
+  lemma map_value_image_filter_correct_alt :
+    "invar1 m \<Longrightarrow> 
+     invar2 (map_value_image_filter f m)"
+    "invar1 m \<Longrightarrow>
+     (\<alpha>2 (map_value_image_filter f m) k = Some v') \<longleftrightarrow>
+     (\<exists>v. (\<alpha>1 m k = Some v) \<and> f k v = Some v')"
+    "invar1 m \<Longrightarrow>
+     (\<alpha>2 (map_value_image_filter f m) k = None) \<longleftrightarrow>
+     (\<forall>v. (\<alpha>1 m k = Some v) --> f k v = None)"
+  proof -
+    assume invar_m : "invar1 m"
+    note aux = map_value_image_filter_correct [OF invar_m]
+
+    from aux show "invar2 (map_value_image_filter f m)" by simp
+    from aux show "(\<alpha>2 (map_value_image_filter f m) k = Some v') \<longleftrightarrow>
+     (\<exists>v. (\<alpha>1 m k = Some v) \<and> f k v = Some v')" 
+      by (cases "\<alpha>1 m k", simp_all)
+    from aux show "(\<alpha>2 (map_value_image_filter f m) k = None) \<longleftrightarrow>
+     (\<forall>v. (\<alpha>1 m k = Some v) --> f k v = None)" 
+      by (cases "\<alpha>1 m k", simp_all)
+  qed
+end
+
+
+locale map_restrict = map \<alpha>1 invar1 + map \<alpha>2 invar2 
+  for \<alpha>1 :: "'m1 \<Rightarrow> 'u \<rightharpoonup> 'v" and invar1
+  and \<alpha>2 :: "'m2 \<Rightarrow> 'u \<rightharpoonup> 'v" and invar2
+  +
+  fixes restrict :: "('u \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> 'm1 \<Rightarrow> 'm2"
+  assumes restrict_correct_aux1 :
+    "invar1 m \<Longrightarrow> \<alpha>2 (restrict P m) = \<alpha>1 m |` {k. \<exists>v. \<alpha>1 m k = Some v \<and> P k v}"
+    "invar1 m \<Longrightarrow> invar2 (restrict P m)"
+begin
+  lemma restrict_correct_aux2 :
+    "invar1 m \<Longrightarrow> \<alpha>2 (restrict (\<lambda>k v. P k) m) = \<alpha>1 m |` {k. P k}"
+  proof -
+    assume invar_m : "invar1 m"
+    have "\<alpha>1 m |` {k. (\<exists>v. \<alpha>1 m k = Some v) \<and> P k} = \<alpha>1 m |` {k. P k}"
+      (is "\<alpha>1 m |` ?A1 = \<alpha>1 m |` ?A2")
+    proof
+      fix k
+      show "(\<alpha>1 m |` ?A1) k = (\<alpha>1 m |` ?A2) k"
+      proof (cases "k \<in> ?A2")
+        case False thus ?thesis by simp
+      next
+        case True
+        hence P_k : "P k" by simp
+
+        show ?thesis
+          by (cases "\<alpha>1 m k", simp_all add: P_k)
+      qed
+    qed
+    with invar_m show "\<alpha>2 (restrict (\<lambda>k v. P k) m) = \<alpha>1 m |` {k. P k}"
+      by (simp add: restrict_correct_aux1)
+  qed
+
+  lemmas restrict_correct = 
+     restrict_correct_aux1
+     restrict_correct_aux2
+end
+
 
 subsection "Record Based Interface"
 
@@ -312,14 +597,20 @@ subsection "Record Based Interface"
     map_op_\<alpha> :: "'s \<Rightarrow> 'k \<rightharpoonup> 'v"
     map_op_invar :: "'s \<Rightarrow> bool"
     map_op_empty :: "'s"
+    map_op_sng :: "'k \<Rightarrow> 'v \<Rightarrow> 's"
     map_op_lookup :: "'k \<Rightarrow> 's \<Rightarrow> 'v option"
     map_op_update :: "'k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's"
     map_op_update_dj :: "'k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's"
     map_op_delete :: "'k \<Rightarrow> 's \<Rightarrow> 's"
+    map_op_restrict :: "('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> 's"
     map_op_add :: "'s \<Rightarrow> 's \<Rightarrow> 's"
     map_op_add_dj :: "'s \<Rightarrow> 's \<Rightarrow> 's"
     map_op_isEmpty :: "'s \<Rightarrow> bool"
+    map_op_isSng :: "'s \<Rightarrow> bool"
     map_op_ball :: "'s \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> bool"
+    map_op_bexists :: "'s \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> bool"
+    map_op_size :: "'s \<Rightarrow> nat"
+    map_op_size_abort :: "nat \<Rightarrow> 's \<Rightarrow> nat"
     map_op_sel :: "'s \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> ('k\<times>'v) option" -- "Version without mapping"
     map_op_to_list :: "'s \<Rightarrow> ('k\<times>'v) list"
     map_op_to_map :: "('k\<times>'v) list \<Rightarrow> 's"
@@ -330,14 +621,20 @@ subsection "Record Based Interface"
     abbreviation \<alpha> where "\<alpha> == map_op_\<alpha> ops" 
     abbreviation invar where "invar == map_op_invar ops" 
     abbreviation empty where "empty == map_op_empty ops" 
+    abbreviation sng where "sng == map_op_sng ops" 
     abbreviation lookup where "lookup == map_op_lookup ops" 
     abbreviation update where "update == map_op_update ops" 
     abbreviation update_dj where "update_dj == map_op_update_dj ops" 
     abbreviation delete where "delete == map_op_delete ops" 
+    abbreviation restrict where "restrict == map_op_restrict ops" 
     abbreviation add where "add == map_op_add ops" 
     abbreviation add_dj where "add_dj == map_op_add_dj ops" 
     abbreviation isEmpty where "isEmpty == map_op_isEmpty ops" 
+    abbreviation isSng where "isSng == map_op_isSng ops" 
     abbreviation ball where "ball == map_op_ball ops" 
+    abbreviation bexists where "bexists == map_op_bexists ops" 
+    abbreviation size where "size == map_op_size ops" 
+    abbreviation size_abort where "size_abort == map_op_size_abort ops" 
     abbreviation sel where "sel == map_op_sel ops" 
     abbreviation to_list where "to_list == map_op_to_list ops" 
     abbreviation to_map where "to_map == map_op_to_map ops"
@@ -347,14 +644,20 @@ subsection "Record Based Interface"
   locale StdMap = StdMapDefs ops +
     map \<alpha> invar +
     map_empty \<alpha> invar empty  +
+    map_sng \<alpha> invar sng  +
     map_lookup \<alpha> invar lookup  +
     map_update \<alpha> invar update  +
     map_update_dj \<alpha> invar update_dj  +
     map_delete \<alpha> invar delete  +
+    map_restrict \<alpha> invar \<alpha> invar restrict +
     map_add \<alpha> invar add  +
     map_add_dj \<alpha> invar add_dj  +
     map_isEmpty \<alpha> invar isEmpty  +
+    map_isSng \<alpha> invar isSng  +
     map_ball \<alpha> invar ball  +
+    map_bexists \<alpha> invar bexists  +
+    map_size \<alpha> invar size +
+    map_size_abort \<alpha> invar size_abort +
     map_sel' \<alpha> invar sel  +
     map_to_list \<alpha> invar to_list  +
     list_to_map \<alpha> invar to_map 
@@ -362,14 +665,20 @@ subsection "Record Based Interface"
   begin
     lemmas correct =
       empty_correct
+      sng_correct
       lookup_correct
       update_correct
       update_dj_correct
       delete_correct
+      restrict_correct
       add_correct
       add_dj_correct
       isEmpty_correct
+      isSng_correct
       ball_correct
+      bexists_correct
+      size_correct
+      size_abort_correct
       to_list_correct
       to_map_correct
 

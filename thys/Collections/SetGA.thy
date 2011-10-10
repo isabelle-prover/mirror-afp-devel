@@ -16,6 +16,19 @@ begin
 text_raw {*\label{thy:SetGA}*}
 
 
+subsection {* Singleton Set (by empty,insert)*}
+definition ei_sng :: "'s \<Rightarrow> ('x\<Rightarrow>'s\<Rightarrow>'s) \<Rightarrow> 'x \<Rightarrow> 's" where "ei_sng e i x = i x e"
+lemma ei_sng_correct: 
+  assumes "set_empty \<alpha> invar e"
+  assumes "set_ins \<alpha> invar i"
+  shows "set_sng \<alpha> invar (ei_sng e i)"
+proof -
+  interpret set_empty \<alpha> invar e + set_ins \<alpha> invar i by fact+
+  show ?thesis
+    apply (unfold_locales)
+    unfolding ei_sng_def
+    by (auto simp: empty_correct ins_correct)
+qed
 
 subsection {*Disjoint Insert (by insert)*}
 lemma (in set_ins) ins_dj_by_ins: 
@@ -166,6 +179,36 @@ lemma (in set_reverse_iterateoi) itoi_reverse_iterateo_correct:
   apply auto
   done
 
+subsection {* Show that iterate is related to fold *}
+lemma (in set_iterate) iterate_fold: 
+assumes lc_f: "comp_fun_commute f"
+    and invar_S: "invar S"
+shows "iterate f S \<sigma> = Finite_Set.fold f \<sigma> (\<alpha> S)"
+proof (rule iterate_rule_P [where I = "\<lambda>(X::'x set) \<sigma>'. \<sigma>' = Finite_Set.fold f \<sigma> ((\<alpha> S) - X)"])
+   show "invar S" by (fact invar_S)
+   show "\<sigma> = Finite_Set.fold f \<sigma> (\<alpha> S - \<alpha> S)" by simp
+   {
+     fix \<sigma>'
+     assume "\<sigma>' = Finite_Set.fold f \<sigma> (\<alpha> S - {})"
+     thus "\<sigma>' = Finite_Set.fold f \<sigma> (\<alpha> S)" by simp
+   }
+
+   {
+     fix x X \<sigma>'
+     assume "x \<in> X" "X \<subseteq> \<alpha> S" 
+     hence diff_eq: "\<alpha> S - (X - {x}) = insert x (\<alpha> S - X)"
+       and x_nin: "x \<notin> (\<alpha> S - X)" by auto
+     from invar_S have finite_diff : "finite (\<alpha> S - X)" by simp
+
+     note fold_eq = comp_fun_commute.fold_insert [OF lc_f finite_diff x_nin]
+
+     assume "\<sigma>' = Finite_Set.fold f \<sigma> (\<alpha> S - X)"
+     with diff_eq fold_eq show "f x \<sigma>' = Finite_Set.fold f \<sigma> (\<alpha> S - (X - {x}))"
+       by simp
+   }
+qed
+
+
 subsection {*Emptiness check (by iteratei)*}
 
 definition iti_isEmpty
@@ -208,6 +251,43 @@ proof -
     done
 qed
 
+definition iti_bexists
+  :: "('s,'a,bool) iteratori \<Rightarrow> 's \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
+  where "iti_bexists it s P == it Not (\<lambda>a r. P a) s False"
+
+lemma iti_bexists_correct:
+  fixes ins
+  assumes "set_iteratei \<alpha> invar iti"
+  shows "set_bexists \<alpha> invar (iti_bexists iti)"
+proof -
+  interpret set_iteratei \<alpha> invar iti by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (unfold iti_bexists_def)
+    apply (rule_tac 
+      I="\<lambda>it res. res \<longleftrightarrow> (\<exists>x\<in>\<alpha> S - it. P x)" 
+      in iteratei_rule_P)
+    apply auto
+    done
+qed
+
+definition neg_ball_bexists
+  :: "('s \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
+  where "neg_ball_bexists ball s P == \<not> (ball s (\<lambda>x. \<not>(P x)))"
+
+lemma neg_ball_bexists_correct:
+  fixes ball
+  assumes "set_ball \<alpha> invar ball"
+  shows "set_bexists \<alpha> invar (neg_ball_bexists ball)"
+proof -
+  interpret set_ball \<alpha> invar ball by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (unfold neg_ball_bexists_def)
+    apply (simp add: ball_correct)
+  done
+qed
+
 subsection {* Size (by iterate)*}
 definition it_size :: "('s,'x,nat) iterator \<Rightarrow> 's \<Rightarrow> nat" 
   where "it_size iterate S == iterate (\<lambda>x c. Suc c) S 0"
@@ -225,6 +305,81 @@ proof -
     apply (subgoal_tac "\<alpha> s - (it - {x}) = insert x (\<alpha> s - it)")
     apply auto
     done
+qed
+
+subsection {* Size with abort (by iterate) *}
+definition iti_size_abort :: "('s,'x,nat) iteratori \<Rightarrow> nat \<Rightarrow> 's \<Rightarrow> nat"
+  where "iti_size_abort it m s == 
+    (it (\<lambda>n. n < m) (\<lambda>x n. Suc n) s 0)"
+
+lemma iti_size_abort_correct:
+  fixes \<alpha> :: "'s \<Rightarrow> 'x set"
+  assumes S: "set_iteratei \<alpha> invar it"
+  shows "set_size_abort \<alpha> invar (iti_size_abort it)"
+proof - 
+  interpret set_iteratei \<alpha> invar it by fact
+
+  have "\<And>s m. invar s \<Longrightarrow> it (\<lambda>n. n < m) (\<lambda>x. Suc) s 0 = min m (card (\<alpha> s))"
+  proof (rule_tac I="\<lambda>it res. res = min m (card (\<alpha> s - it))" in iteratei_rule_P)
+    fix s m
+    assume invar_s: "invar s"
+
+    show "invar s" by fact
+    show "0 = min m (card (\<alpha> s - \<alpha> s))" by simp
+    from invar_s have fin_s : "finite (\<alpha> s)" by simp
+
+    {
+      fix \<sigma>
+      assume "\<sigma> = min m (card (\<alpha> s - {}))"
+      thus "\<sigma> = min m (card (\<alpha> s))" by simp
+    }
+
+    {
+      fix \<sigma> it
+      assume it_subset: "it \<subseteq> \<alpha> s"
+      assume \<sigma>_eq: "\<sigma> = min m (card (\<alpha> s - it))" 
+      
+      assume "\<not> (\<sigma> < m)" 
+      with \<sigma>_eq have \<sigma>_eq_m: "\<sigma> = m" by auto
+
+      with \<sigma>_eq have "m \<le> card (\<alpha> s - it)" by auto
+      hence "m \<le> card (\<alpha> s)" using fin_s it_subset 
+        by (simp add: card_Diff_subset finite_subset)
+      with \<sigma>_eq_m show "\<sigma> = min m (card (\<alpha> s))" by simp
+    }
+
+    {
+      fix x it \<sigma>
+      assume A: "it \<subseteq> \<alpha> s" "x \<in> it" "\<sigma> = min m (card (\<alpha> s - it))" "\<sigma> < m" 
+
+      from A have "\<alpha> s - (it - {x}) = insert x (\<alpha> s - it)" by auto
+      with A invar_s show "Suc \<sigma> = min m (card (\<alpha> s - (it - {x})))"
+        by auto
+    }
+  qed
+  thus ?thesis 
+    unfolding set_size_abort_def finite_set_def 
+              set_size_abort_axioms_def iti_size_abort_def
+    by simp
+qed
+  
+
+subsection {* Singleton check (by size-abort) *}
+definition sza_isSng :: "(nat \<Rightarrow> 's \<Rightarrow> nat) \<Rightarrow> 's \<Rightarrow> bool"
+  where "sza_isSng sza s == sza 2 s = 1"
+
+lemma sza_isSng_correct:
+  fixes \<alpha> :: "'s \<Rightarrow> 'x set"
+  assumes S: "set_size_abort \<alpha> invar sza"
+  shows "set_isSng \<alpha> invar (sza_isSng sza)"
+proof -
+  interpret set_size_abort \<alpha> invar sza
+    by fact
+  
+  have "\<And>n::nat. min 2 n = 1 \<longleftrightarrow> n = 1" by auto
+  thus ?thesis
+    unfolding set_isSng_def finite_set_def sza_isSng_def
+    by (simp add: size_abort_correct card_Suc_eq)
 qed
 
 subsection {*Copy (by iterate)*}
@@ -310,6 +465,31 @@ proof -
     by unfold_locales auto
 qed
 
+subsection {* Diff (by iterator) *}
+definition it_diff 
+  :: "('s1,'x,_) iterator \<Rightarrow> ('x \<Rightarrow> 's2 \<Rightarrow> 's2) \<Rightarrow> 's2 \<Rightarrow> 's1 \<Rightarrow> 's2"
+  where "it_diff iterate1 del2 s2 s1 == iterate1 (\<lambda>x s. del2 x s) s1 s2"
+
+lemma it_diff_correct:
+  fixes \<alpha>1 :: "'s1 \<Rightarrow> 'x set"
+  fixes \<alpha>2 :: "'s2 \<Rightarrow> 'x set"
+  assumes S1: "set_iterate \<alpha>1 invar1 iterate1"
+  assumes S2: "set_delete \<alpha>2 invar2 del2"
+  shows "set_diff \<alpha>2 invar2 \<alpha>1 invar1 (it_diff iterate1 del2)"
+proof -
+  interpret s1: set_iterate \<alpha>1 invar1 iterate1 using S1 .
+  interpret s2: set_delete \<alpha>2 invar2 del2 using S2 .
+  
+  have "\<And>s1 s2. \<lbrakk>invar1 s1; invar2 s2\<rbrakk> \<Longrightarrow> 
+          (\<alpha>2 ((it_diff iterate1 del2) s2 s1) = \<alpha>2 s2 - \<alpha>1 s1) \<and>
+          (invar2 ((it_diff iterate1 del2) s2 s1))"
+  unfolding it_diff_def
+    apply (rule_tac I="\<lambda>it res. invar2 res \<and> \<alpha>2 res = \<alpha>2 s2 - (\<alpha>1 s1 - it)" 
+              in s1.iterate_rule_P)
+    apply (auto simp add: s2.delete_correct)
+  done
+  thus ?thesis by (simp add: set_diff_def)
+qed
 
 subsection {*Intersection (by iterator)*}
 definition it_inter
@@ -497,6 +677,32 @@ proof -
     apply (auto simp add: dom_const intro: inj_onI dest: inj_onD)
     done
 qed
+
+
+subsection{* Filter (by image-filter)*}
+definition "iflt_filter iflt P s == iflt (\<lambda>x. if P x then Some x else None) s"
+
+lemma iflt_filter_correct:
+  fixes \<alpha>1 :: "'s1 \<Rightarrow> 'a set"
+  fixes \<alpha>2 :: "'s2 \<Rightarrow> 'a set"
+  assumes "set_inj_image_filter \<alpha>1 invar1 \<alpha>2 invar2 iflt"
+  shows "set_filter \<alpha>1 invar1 \<alpha>2 invar2 (iflt_filter iflt)"
+proof (rule set_filter.intro)
+  fix s P
+  assume invar_s: "invar1 s"
+  interpret S: set_inj_image_filter \<alpha>1 invar1 \<alpha>2 invar2 iflt by fact
+
+  let ?f' = "\<lambda>x::'a. if P x then Some x else None"
+  have inj_f': "inj_on ?f' (\<alpha>1 s \<inter> dom ?f')"
+    by (simp add: inj_on_def Ball_def domIff)
+  note correct' = S.inj_image_filter_correct [OF invar_s inj_f',
+    folded iflt_filter_def]
+
+  show "invar2 (iflt_filter iflt P s)"
+       "\<alpha>2 (iflt_filter iflt P s) = {e \<in> \<alpha>1 s. P e}"
+    by (auto simp add: correct')
+qed
+
 
 subsection {* Union of image of Set (by iterate) *}
 definition it_Union_image
@@ -703,30 +909,33 @@ text {*
 
 subsubsection "Image and Filter of Cartesian Product"
 
-definition image_filter_cp 
+definition image_filter_cartesian_product 
   :: "('s1,'x,'s3) iterator \<Rightarrow> 
       ('s2,'y,'s3) iterator \<Rightarrow> 
       's3 \<Rightarrow> ('z \<Rightarrow> 's3 \<Rightarrow> 's3) \<Rightarrow> 
-      ('x \<Rightarrow> 'y \<Rightarrow> 'z) \<Rightarrow> ('x \<Rightarrow> 'y \<Rightarrow> bool) \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> 's3"
+      ('x \<Rightarrow> 'y \<Rightarrow> 'z option) \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> 's3"
   where
-  "image_filter_cp iterate1 iterate2 empty3 insert3 f P s1 s2 ==
+  "image_filter_cartesian_product iterate1 iterate2 empty3 insert3 f s1 s2 ==
     iterate1 (\<lambda>x res.
       iterate2 (\<lambda>y res.
-        if P x y then insert3 (f x y) res else res
+        case (f x y) of 
+          None \<Rightarrow> res
+        | Some z \<Rightarrow> (insert3 z res)
       ) s2 res
     ) s1 empty3
   "
 
-lemma image_filter_cp_correct:
+
+lemma image_filter_cartesian_product_correct:
   assumes S: "set_iterate \<alpha>1 invar1 iterate1"
              "set_iterate \<alpha>2 invar2 iterate2"
              "set_empty \<alpha>3 invar3 empty3"
              "set_ins \<alpha>3 invar3 ins3"
   assumes I[simp, intro!]: "invar1 s1" "invar2 s2"
   shows 
-  "\<alpha>3 (image_filter_cp iterate1 iterate2 empty3 ins3 f P s1 s2) 
-   = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 \<and> y\<in>\<alpha>2 s2 }" (is ?T1)
-  "invar3 (image_filter_cp iterate1 iterate2 empty3 ins3 f P s1 s2)" (is ?T2)
+  "\<alpha>3 (image_filter_cartesian_product iterate1 iterate2 empty3 ins3 f s1 s2) 
+   = { z | x y z. f x y = Some z \<and> x\<in>\<alpha>1 s1 \<and> y\<in>\<alpha>2 s2 }" (is ?T1)
+  "invar3 (image_filter_cartesian_product iterate1 iterate2 empty3 ins3 f s1 s2)" (is ?T2)
 proof -
   interpret s1: set_iterate \<alpha>1 invar1 iterate1 by fact
   interpret s2: set_iterate \<alpha>2 invar2 iterate2 by fact
@@ -734,10 +943,10 @@ proof -
   interpret s3: set_ins \<alpha>3 invar3 ins3 by fact
 
   have "?T1 \<and> ?T2"
-    apply (unfold image_filter_cp_def)
+    apply (unfold image_filter_cartesian_product_def)
     apply (rule_tac 
            I="\<lambda>it res. invar3 res \<and> 
-                \<alpha>3 res = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 }" 
+                \<alpha>3 res = { z | x y z. f x y = Some z \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 }" 
            in s1.iterate_rule_P)
         -- "Invar"
       apply simp
@@ -746,15 +955,15 @@ proof -
         -- "Step"
       apply (rule_tac 
              I="\<lambda>it2 res2. invar3 res2 \<and> 
-                \<alpha>3 res2 = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 } 
-                          \<union> { f x y | y. P x y \<and> y\<in>\<alpha>2 s2 - it2 }" 
+                \<alpha>3 res2 = { z | x y z. f x y = Some z \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 } 
+                          \<union> { z | y z. f x y = Some z \<and> y\<in>\<alpha>2 s2 - it2 }" 
              in s2.iterate_rule_P)
           -- "Invar"
         apply simp
           -- "Init"
         apply simp
           -- "Step"
-        apply (auto simp add: s3.ins_correct) [1]
+	      apply (auto simp add: s3.ins_correct split: option.split) [1]
           -- "Final"
         apply auto [1]
         -- "Final"
@@ -763,31 +972,57 @@ proof -
   thus ?T1 ?T2 by auto
 qed
 
+
+definition image_filter_cp where
+  "image_filter_cp iterate1 iterate2 empty3 insert3 f P s1 s2 \<equiv>
+   image_filter_cartesian_product iterate1 iterate2 empty3 insert3
+     (\<lambda>x y. if P x y then Some (f x y) else None) s1 s2"
+  
+lemma image_filter_cp_correct:
+  assumes S: "set_iterate \<alpha>1 invar1 iterate1"
+             "set_iterate \<alpha>2 invar2 iterate2"
+             "set_empty \<alpha>3 invar3 empty3"
+             "set_ins \<alpha>3 invar3 ins3"
+  assumes I: "invar1 s1" "invar2 s2"
+  shows 
+  "\<alpha>3 (image_filter_cp iterate1 iterate2 empty3 ins3 f P s1 s2) 
+   = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 \<and> y\<in>\<alpha>2 s2 }" (is ?T1)
+  "invar3 (image_filter_cp iterate1 iterate2 empty3 ins3 f P s1 s2)" (is ?T2)
+proof -
+  note image_filter_cartesian_product_correct [OF S, OF I]
+  thus "?T1" "?T2"
+    unfolding image_filter_cp_def
+    by auto
+qed
+
+
 subsubsection "Injective Image and Filter of Cartesian Product"
-definition inj_image_filter_cp 
+definition inj_image_filter_cartesian_product 
   :: "('s1,'x,'s3) iterator \<Rightarrow> 
       ('s2,'y,'s3) iterator \<Rightarrow> 
       's3 \<Rightarrow> ('z \<Rightarrow> 's3 \<Rightarrow> 's3) \<Rightarrow> 
-      ('x \<Rightarrow> 'y \<Rightarrow> 'z) \<Rightarrow> ('x \<Rightarrow> 'y \<Rightarrow> bool) \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> 's3"
+      ('x \<Rightarrow> 'y \<Rightarrow> 'z option) \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> 's3"
   where
-  "inj_image_filter_cp iterate1 iterate2 empty3 insert_dj3 f P s1 s2 ==
+  "inj_image_filter_cartesian_product iterate1 iterate2 empty3 insert_dj3 f s1 s2 ==
     iterate1 (\<lambda>x res.
       iterate2 (\<lambda>y res.
-        if P x y then insert_dj3 (f x y) res else res
+        case (f x y) of 
+          None \<Rightarrow> res
+        | Some z \<Rightarrow> (insert_dj3 z res)
       ) s2 res
     ) s1 empty3
   "
 
-lemma inj_image_filter_cp_correct:
+lemma inj_image_filter_cartesian_product_correct:
   assumes S: "set_iterate \<alpha>1 invar1 iterate1"
              "set_iterate \<alpha>2 invar2 iterate2"
              "set_empty \<alpha>3 invar3 empty3"
              "set_ins_dj \<alpha>3 invar3 ins_dj3"
   assumes I[simp, intro!]: "invar1 s1" "invar2 s2"
-  assumes INJ: "!!x y x' y'. \<lbrakk> P x y; P x' y'; f x y = f x' y' \<rbrakk> \<Longrightarrow> x=x' \<and> y=y'"
-  shows "\<alpha>3 (inj_image_filter_cp iterate1 iterate2 empty3 ins_dj3 f P s1 s2) 
-         = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 \<and> y\<in>\<alpha>2 s2 }" (is ?T1)
-  "invar3 (inj_image_filter_cp iterate1 iterate2 empty3 ins_dj3 f P s1 s2)" (is ?T2)
+  assumes INJ: "!!x y x' y' z. \<lbrakk> f x y = Some z; f x' y' = Some z \<rbrakk> \<Longrightarrow> x=x' \<and> y=y'"
+  shows "\<alpha>3 (inj_image_filter_cartesian_product iterate1 iterate2 empty3 ins_dj3 f s1 s2) 
+         = { z | x y z. f x y = Some z \<and> x\<in>\<alpha>1 s1 \<and> y\<in>\<alpha>2 s2 }" (is ?T1)
+  "invar3 (inj_image_filter_cartesian_product iterate1 iterate2 empty3 ins_dj3 f s1 s2)" (is ?T2)
 proof -
   interpret s1: set_iterate \<alpha>1 invar1 iterate1 by fact
   interpret s2: set_iterate \<alpha>2 invar2 iterate2 by fact
@@ -795,10 +1030,10 @@ proof -
   interpret s3: set_ins_dj \<alpha>3 invar3 ins_dj3 by fact
 
   have "?T1 \<and> ?T2"
-    apply (unfold inj_image_filter_cp_def)
+    apply (unfold inj_image_filter_cartesian_product_def)
     apply (rule_tac 
            I="\<lambda>it res. invar3 res \<and> 
-                \<alpha>3 res = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 }" 
+                \<alpha>3 res = { z | x y z. f x y = Some z \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 }" 
       in s1.iterate_rule_P)
         -- "Invar"
       apply simp
@@ -807,17 +1042,17 @@ proof -
         -- "Step"
       apply (rule_tac 
              I="\<lambda>it2 res2. invar3 res2 \<and> 
-                  \<alpha>3 res2 = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 } 
-                            \<union> { f x y | y. P x y \<and> y\<in>\<alpha>2 s2 - it2 }" 
+                  \<alpha>3 res2 = { z | x y z. f x y = Some z \<and> x\<in>\<alpha>1 s1 - it \<and> y\<in>\<alpha>2 s2 } 
+                            \<union> { z | y z. f x y = Some z \<and> y\<in>\<alpha>2 s2 - it2 }" 
         in s2.iterate_rule_P)
           -- "Invar"
         apply simp
           -- "Init"
         apply simp
           -- "Step"
-        apply (subgoal_tac "P x xa \<Longrightarrow> f x xa \<notin> \<alpha>3 \<sigma>'")
-        apply (auto simp add: s3.ins_dj_correct) [1]
-        apply (auto dest: INJ) [1]
+        apply (subgoal_tac "\<And>z. f x xa = Some z \<Longrightarrow> z \<notin> \<alpha>3 \<sigma>'")
+	      apply (auto simp add: s3.ins_dj_correct split: option.split) [1]
+        apply (auto dest: INJ split:option.split) [1]
           -- "Final"
         apply auto [1]
 
@@ -827,8 +1062,38 @@ proof -
   thus ?T1 ?T2 by auto
 qed
 
+subsubsection "Injective Image and Filter of Cartesian Product"
+definition inj_image_filter_cp where
+   "inj_image_filter_cp iterate1 iterate2 empty3 insert_dj3 f P s1 s2 \<equiv>
+    inj_image_filter_cartesian_product iterate1 iterate2 empty3 insert_dj3 
+      (\<lambda>x y. if P x y then Some (f x y) else None) s1 s2"
+  
+lemma inj_image_filter_cp_correct:
+  assumes S: "set_iterate \<alpha>1 invar1 iterate1"
+             "set_iterate \<alpha>2 invar2 iterate2"
+             "set_empty \<alpha>3 invar3 empty3"
+             "set_ins_dj \<alpha>3 invar3 ins_dj3"
+  assumes I[simp, intro!]: "invar1 s1" "invar2 s2"
+  assumes INJ: "!!x y x' y' z. \<lbrakk> P x y; P x' y'; f x y = f x' y' \<rbrakk> \<Longrightarrow> x=x' \<and> y=y'"
+  shows "\<alpha>3 (inj_image_filter_cp iterate1 iterate2 empty3 ins_dj3 f P s1 s2) 
+         = { f x y | x y. P x y \<and> x\<in>\<alpha>1 s1 \<and> y\<in>\<alpha>2 s2 }" (is ?T1)
+  "invar3 (inj_image_filter_cp iterate1 iterate2 empty3 ins_dj3 f P s1 s2)" (is ?T2)
+proof -
+  let ?f = "\<lambda>x y. if P x y then Some (f x y) else None"
+  from INJ have INJ': 
+    "!!x y x' y' z. \<lbrakk> ?f x y = Some z; ?f x' y' = Some z \<rbrakk> \<Longrightarrow> x=x' \<and> y=y'"
+   by (auto simp add: split_if_eq1)
+
+  note inj_image_filter_cartesian_product_correct [OF S, OF I,
+    where f = ?f, folded inj_image_filter_cp_def]
+
+  with INJ' show "?T1" "?T2"
+    unfolding inj_image_filter_cp_def
+    by auto
+qed
+
 subsubsection "Cartesian Product"
-definition "cart it1 it2 empty3 ins3 s1 s2 == inj_image_filter_cp it1 it2 empty3 ins3 (\<lambda>x y. (x,y)) (\<lambda>x y. True) s1 s2"
+definition "cart it1 it2 empty3 ins3 s1 s2 == inj_image_filter_cartesian_product it1 it2 empty3 ins3 (\<lambda>x y. Some (x,y)) s1 s2"
 
 lemma cart_correct:
   assumes S: "set_iterate \<alpha>1 invar1 iterate1"
@@ -841,14 +1106,11 @@ lemma cart_correct:
   "invar3 (cart iterate1 iterate2 empty3 ins_dj3 s1 s2)" (is ?T2)
   apply -
   apply (unfold cart_def)
-  apply (subst inj_image_filter_cp_correct[OF S, OF I])
-  apply simp_all
-  apply (subst inj_image_filter_cp_correct[OF S, OF I])
-  apply simp_all
+  apply (subst inj_image_filter_cartesian_product_correct[OF S, OF I])
+  apply auto
+  apply (subst inj_image_filter_cartesian_product_correct[OF S, OF I])
+  apply auto
   done
-
-lemmas inj_image_filter_cp_correct[where f=Pair and P="\<lambda>x y. True", folded cart_def, simplified]
-
 
 
 subsection {* Min (by iterateoi) *}

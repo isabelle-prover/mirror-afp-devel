@@ -13,6 +13,7 @@ header {* \chapter{Generic algorithms} \label{ch:GA} \isaheader{Generic Algorith
 theory MapGA
 imports MapSpec OrderedMap "common/Misc"
 begin
+
 text_raw {*\label{thy:MapGA}*}
 
 subsection {*Disjoint Update (by update)*}
@@ -340,6 +341,120 @@ proof -
     done
 qed
 
+definition sel_bexists
+  :: "('s \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> unit option) \<rightharpoonup> unit) \<Rightarrow> 's \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> bool"
+  where "sel_bexists sel s P == sel s (\<lambda>k v. if P k v then Some () else None) = Some ()"
+
+lemma sel_bexists_correct:
+  assumes "map_sel \<alpha> invar sel"
+  shows "map_bexists \<alpha> invar (sel_bexists sel)"
+proof -
+  interpret map_sel \<alpha> invar sel by fact
+  
+  show ?thesis
+    apply unfold_locales
+    apply (unfold sel_bexists_def)
+    apply auto
+    apply (force elim!: sel_someE split: split_if_asm) []
+    apply (erule_tac f="(\<lambda>k v. if P k v then Some () else None)" in selE)
+    apply assumption
+    apply simp
+    apply simp
+    done
+qed
+
+definition neg_ball_bexists
+  :: "('s \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> bool"
+  where "neg_ball_bexists ball s P == \<not> (ball s (\<lambda>k v. \<not>(P k v)))"
+
+lemma neg_ball_bexists_correct:
+  fixes ball
+  assumes "map_ball \<alpha> invar ball"
+  shows "map_bexists \<alpha> invar (neg_ball_bexists ball)"
+proof -
+  interpret map_ball \<alpha> invar ball by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (unfold neg_ball_bexists_def)
+    apply (simp add: ball_correct)
+  done
+qed
+
+
+subsection {* Size (by iterate)*}
+definition it_size :: "('s,'k,'v,nat) map_iterator \<Rightarrow> 's \<Rightarrow> nat" 
+  where "it_size iterate S == iterate (\<lambda>k v c. Suc c) S 0"
+
+lemma it_size_correct:
+  assumes A: "map_iterate \<alpha> invar iterate"
+  shows "map_size \<alpha> invar (it_size iterate)"
+proof -
+  interpret map_iterate \<alpha> invar iterate by fact
+  show ?thesis
+    apply (unfold_locales)
+    apply (unfold it_size_def)
+    apply (rule_tac I="\<lambda>it res. res = card (dom (\<alpha> s) - it)" in iterate_rule_P)
+    apply auto
+    apply (subgoal_tac "dom (\<alpha> s) - (it - {k}) = insert k (dom (\<alpha> s) - it)")
+    apply auto
+    done
+qed
+
+subsection {* Size with abort (by iterate) *}
+definition iti_size_abort :: "('s,'k,'v,nat) map_iteratori \<Rightarrow> nat \<Rightarrow> 's \<Rightarrow> nat"
+  where "iti_size_abort it m s == 
+    (it (\<lambda>n. n < m) (\<lambda>k v n. Suc n) s 0)"
+
+lemma iti_size_abort_correct:
+  assumes S: "map_iteratei \<alpha> invar it"
+  shows "map_size_abort \<alpha> invar (iti_size_abort it)"
+proof - 
+  interpret map_iteratei \<alpha> invar it by fact
+
+  show ?thesis
+    apply (unfold_locales)
+    apply (unfold iti_size_abort_def)
+  proof (rule_tac I="\<lambda>it res. res = min m (card (dom (\<alpha> s) - it))" in iteratei_rule_P)
+    fix s m k v it \<sigma>
+    assume "k\<in>it" and "it \<subseteq> dom (\<alpha> s)"
+    hence "dom (\<alpha> s) - (it - {k}) = insert k (dom (\<alpha> s) - it)" by auto
+    moreover assume "\<sigma><m" and "\<sigma> = min m (card (dom (\<alpha> s) - it))"
+    moreover assume "invar s"
+    ultimately show "Suc \<sigma> = min m (card (dom (\<alpha> s) - (it - {k})))"
+      using `k\<in>it` 
+      by auto
+  next
+    fix s m \<sigma> it
+    assume [simp]: "invar s"
+    assume "\<not>\<sigma><m" and [simp]: "\<sigma> = min m (card (dom (\<alpha> s) - it))"
+    hence [simp]: "m \<le> (card (dom (\<alpha> s) - it))" by auto
+    also have "\<dots> \<le> card (dom (\<alpha> s))"
+      by (auto intro: card_mono)
+    finally have "min m (card (dom (\<alpha> s))) = m"
+      by auto
+    thus "\<sigma> = min m (card (dom (\<alpha> s)))"
+      by (auto simp: min_max.inf_absorb1)
+  qed auto
+qed
+
+subsection {* Singleton check (by size-abort) *}
+definition sza_isSng :: "(nat \<Rightarrow> 's \<Rightarrow> nat) \<Rightarrow> 's \<Rightarrow> bool"
+  where "sza_isSng sza s == sza 2 s = 1"
+
+lemma sza_isSng_correct:
+  fixes \<alpha> :: "'s \<Rightarrow> 'k \<rightharpoonup> 'v"
+  assumes S: "map_size_abort \<alpha> invar sza"
+  shows "map_isSng \<alpha> invar (sza_isSng sza)"
+proof -
+  interpret map_size_abort \<alpha> invar sza
+    by fact
+  
+  have "\<And>n::nat. min 2 n = 1 \<longleftrightarrow> n = 1" by auto
+  thus ?thesis
+    unfolding map_isSng_def sza_isSng_def
+    by (simp add: size_abort_correct card_Suc_eq dom_eq_singleton_conv)
+qed
+
 subsection {*Map to List (by iterate)*}
 definition it_map_to_list
   :: "('m,'u,'v,('u\<times>'v) list) map_iterator \<Rightarrow> 'm \<Rightarrow> ('u\<times>'v) list"
@@ -401,23 +516,23 @@ proof -
 qed
 
 subsection {* Singleton (by empty, update) *}
-(* TODO: It might make sense to define a singleton function as locale *)
-definition map_sng
+definition eu_sng
   :: "'m \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> 'm \<Rightarrow> 'm) \<Rightarrow> 'k \<Rightarrow> 'v \<Rightarrow> 'm"
-  where "map_sng empt update k v == update k v empt"
+  where "eu_sng empt update k v == update k v empt"
 
-lemma map_sng_correct:
+lemma eu_sng_correct:
   fixes empty
   assumes "map_empty \<alpha> invar empty"
   assumes "map_update \<alpha> invar update"
-  shows "\<alpha> (map_sng empty update k v) = [k \<mapsto> v]" (is ?T1)
-        "invar (map_sng empty update k v)" (is ?T2)
+  shows "map_sng \<alpha> invar (eu_sng empty update)"
 proof -
   interpret map_empty \<alpha> invar empty by fact
   interpret map_update \<alpha> invar update by fact
 
-  show ?T1 ?T2
-    by (simp_all add: update_correct empty_correct map_sng_def)
+  show ?thesis
+    apply (unfold_locales)
+    apply (simp_all add: update_correct empty_correct eu_sng_def)
+  done
 qed
 
 subsection {* Min (by iterateoi) *}
@@ -556,6 +671,251 @@ proof -
       in reverse_iterateo_rule_P)
     apply (auto simp add: sorted_Cons)
     done
+qed
+
+
+subsection {* image restrict *}
+
+definition it_map_image_filter ::
+  "('s1,'u1,'v1,'s2) map_iterator \<Rightarrow> 's2 \<Rightarrow> ('u2 \<Rightarrow> 'v2 \<Rightarrow> 's2 \<Rightarrow> 's2) \<Rightarrow> ('u1 \<Rightarrow> 'v1 \<Rightarrow> ('u2 \<times> 'v2) option) \<Rightarrow> 's1 \<Rightarrow> 's2"
+  where "it_map_image_filter map_it map_emp map_up_dj f m \<equiv>
+         map_it (\<lambda>k v \<sigma>. case (f k v) of None \<Rightarrow> \<sigma> | Some (k', v') \<Rightarrow> (map_up_dj k' v' \<sigma>)) m map_emp"
+
+lemma it_map_image_filter_correct:
+  fixes \<alpha>1 :: "'s1 \<Rightarrow> 'u1 \<rightharpoonup> 'v1"
+  fixes \<alpha>2 :: "'s2 \<Rightarrow> 'u2 \<rightharpoonup> 'v2" 
+  assumes it: "map_iterate \<alpha>1 invar1 map_it"
+  assumes emp: "map_empty \<alpha>2 invar2 map_emp"
+  assumes up: "map_update_dj \<alpha>2 invar2 map_up_dj"
+  shows "map_image_filter \<alpha>1 invar1 \<alpha>2 invar2 (it_map_image_filter map_it map_emp map_up_dj)"
+proof -
+  interpret it: map_iterate \<alpha>1 invar1 map_it using it .
+  interpret emp: map_empty \<alpha>2 invar2 map_emp using emp .
+  interpret up: map_update_dj \<alpha>2 invar2 map_up_dj using up .
+
+
+  have "\<And>m f.
+       \<lbrakk>invar1 m; transforms_to_unique_keys (\<alpha>1 m) f\<rbrakk>
+       \<Longrightarrow> invar2 (it_map_image_filter map_it map_emp map_up_dj f m) \<and>
+          (\<forall>k' v'. (\<alpha>2 (it_map_image_filter map_it map_emp map_up_dj f m) k' = Some v') =
+                   (\<exists>k v. \<alpha>1 m k = Some v \<and> f k v = Some (k', v')))"
+  proof -
+    fix m :: 's1
+    fix f :: "'u1 \<Rightarrow> 'v1 \<Rightarrow> ('u2 \<times> 'v2) option"
+    assume invar_m : "invar1 m"
+    assume tf_f : "transforms_to_unique_keys (\<alpha>1 m) f"
+    let ?f' = "\<lambda>k v \<sigma>. case f k v of None \<Rightarrow> \<sigma> | Some (k', v') \<Rightarrow> map_up_dj k' v' \<sigma>"
+
+    show "invar2 (it_map_image_filter map_it map_emp map_up_dj f m) \<and>
+          (\<forall>k' v'. (\<alpha>2 (it_map_image_filter map_it map_emp map_up_dj f m) k' = Some v') =
+                   (\<exists>k v. \<alpha>1 m k = Some v \<and> f k v = Some (k', v')))"
+    unfolding it_map_image_filter_def
+    proof (induct rule: it.iterate_rule_P [where I="\<lambda>d res. 
+          invar2 res \<and>
+          (\<forall>k' v'. (\<alpha>2 res k' = Some v') \<longleftrightarrow>  
+                   (\<exists>k v. k \<notin> d \<and> \<alpha>1 m k = Some v \<and> f k v = Some (k', v')))"])
+
+       case 1 thus ?case by (fact invar_m)
+     next
+       case 2 thus ?case by (auto simp add: emp.empty_correct domIff)
+     next
+       case 4 thus ?case by simp
+     next
+       case (3 k v d res)
+       note k_in_d = 3(1)
+       note m_k_eq = 3(2)
+       note d_subset_dom = 3(3)
+       note ind_hyp = 3(4)
+
+       show "invar2 (?f' k v res) \<and>
+             (\<forall>k' v'. (\<alpha>2 (?f' k v res) k' = Some v') \<longleftrightarrow>  
+                      (\<exists>k'' v. k'' \<notin> d - {k} \<and> \<alpha>1 m k'' = Some v \<and> 
+                               f k'' v = Some (k', v')))"
+       proof (cases "f k v")
+         case None thus ?thesis by (auto simp add: ind_hyp m_k_eq)
+       next
+         case (Some kv') note f_k_v_eq = this 
+         then obtain k' v' where kv'_eq : "kv' = (k', v')" by (cases kv', blast)
+         
+         have "\<And>k2 v2 v2'.
+                 \<lbrakk>\<alpha>1 m k2 = Some v2; 
+                  f k2 v2 = Some (k', v2')\<rbrakk> \<Longrightarrow> k2 = k"
+             by (metis f_k_v_eq [unfolded kv'_eq] m_k_eq tf_f[unfolded transforms_to_unique_keys_def])
+         hence f_eq_k'_simp: "\<And>k2 v2 v2'.
+                  (\<alpha>1 m k2 = Some v2 \<and> f k2 v2 = Some (k', v2') \<longleftrightarrow> (k2 = k  \<and> v2' = v' \<and> v2 = v))"
+           by (metis Pair_eq f_k_v_eq [unfolded kv'_eq] m_k_eq Option.option.inject)
+
+         have k'_nin_dom_res: "k' \<notin> dom (\<alpha>2 res)"
+           by (simp add: domIff ind_hyp, metis k_in_d f_eq_k'_simp)
+
+         from k'_nin_dom_res kv'_eq f_k_v_eq d_subset_dom show ?thesis 
+            apply (simp add: up.update_dj_correct ind_hyp all_conj_distrib
+                     f_eq_k'_simp)
+            apply (auto)
+            apply (auto simp add: f_k_v_eq kv'_eq m_k_eq)
+         done
+       qed
+    qed
+  qed
+
+  thus ?thesis 
+    apply (rule_tac map_image_filter.intro)
+    apply auto
+  done
+qed
+
+
+definition mif_map_value_image_filter :: 
+  "(('u \<Rightarrow> 'v1 \<Rightarrow> ('u \<times> 'v2) option) \<Rightarrow> 's1 \<Rightarrow> 's2) \<Rightarrow>
+    ('u \<Rightarrow> 'v1 \<Rightarrow> 'v2 option) \<Rightarrow> 's1 \<Rightarrow> 's2"
+where
+    "mif_map_value_image_filter mif f \<equiv>
+     mif (\<lambda>k v. case (f k v) of Some v' \<Rightarrow> Some (k, v') | None \<Rightarrow> None)"
+
+
+lemma mif_map_value_image_filter_correct :
+  fixes \<alpha>1 :: "'s1 \<Rightarrow> 'u \<rightharpoonup> 'v1"
+  fixes \<alpha>2 :: "'s2 \<Rightarrow> 'u \<rightharpoonup> 'v2" 
+shows "map_image_filter \<alpha>1 invar1 \<alpha>2 invar2 mif \<Longrightarrow>
+     map_value_image_filter \<alpha>1 invar1 \<alpha>2 invar2 (mif_map_value_image_filter mif)"
+proof -
+  assume "map_image_filter \<alpha>1 invar1 \<alpha>2 invar2 mif"
+  then interpret map_image_filter \<alpha>1 invar1 \<alpha>2 invar2 mif . 
+
+  show "map_value_image_filter \<alpha>1 invar1 \<alpha>2 invar2 (mif_map_value_image_filter mif)"
+  proof (intro map_value_image_filter.intro conjI)
+    fix m 
+    fix f :: "'u \<Rightarrow> 'v1 \<Rightarrow> 'v2 option"
+    assume invar: "invar1 m"
+
+    let ?f = "\<lambda>k v. case (f k v) of Some v' \<Rightarrow> Some (k, v') | None \<Rightarrow> None"
+    have unique_f: "transforms_to_unique_keys (\<alpha>1 m) ?f"
+      unfolding transforms_to_unique_keys_def
+      by (auto split: option.split)
+
+    note correct' = map_image_filter_correct [OF invar unique_f, folded mif_map_value_image_filter_def]
+
+    from correct' show "invar2 (mif_map_value_image_filter mif f m)"
+      by simp
+
+    have "\<And>k. \<alpha>2 (mif_map_value_image_filter mif f m) k = Option.bind (\<alpha>1 m k) (f k)"
+    proof -
+      fix k
+      show "\<alpha>2 (mif_map_value_image_filter mif f m) k = Option.bind (\<alpha>1 m k) (f k)"
+      using correct'
+      apply (cases "Option.bind (\<alpha>1 m k) (f k)")
+      apply (auto split: option.split)
+      apply (case_tac "\<alpha>1 m k")
+      apply (auto split: option.split)
+      apply (metis option.inject)
+      done
+    qed
+    thus "\<alpha>2 (mif_map_value_image_filter mif f m) = (\<lambda>k. Option.bind (\<alpha>1 m k) (f k))"
+      by (simp add: fun_eq_iff)
+  qed
+qed
+
+definition it_map_value_image_filter ::
+  "('s1,'u,'v1,'s2) map_iterator \<Rightarrow> 's2 \<Rightarrow> ('u \<Rightarrow> 'v2 \<Rightarrow> 's2 \<Rightarrow> 's2) \<Rightarrow> 
+   ('u \<Rightarrow> 'v1 \<Rightarrow> 'v2 option) \<Rightarrow> 's1 \<Rightarrow> 's2" where
+  "it_map_value_image_filter map_it map_emp map_up_dj f \<equiv>
+   it_map_image_filter map_it map_emp map_up_dj
+     (\<lambda>k v. case (f k v) of Some v' \<Rightarrow> Some (k, v') | None \<Rightarrow> None)"
+
+lemma it_map_value_image_filter_alt_def :
+  "it_map_value_image_filter map_it map_emp map_up_dj =
+   mif_map_value_image_filter (it_map_image_filter map_it map_emp map_up_dj)"
+apply (simp add: fun_eq_iff)
+unfolding it_map_image_filter_def mif_map_value_image_filter_def
+  it_map_value_image_filter_def
+by fast
+
+lemma it_map_value_image_filter_correct:
+  fixes \<alpha>1 :: "'s1 \<Rightarrow> 'u \<rightharpoonup> 'v1"
+  fixes \<alpha>2 :: "'s2 \<Rightarrow> 'u \<rightharpoonup> 'v2" 
+  assumes it: "map_iterate \<alpha>1 invar1 map_it"
+  assumes emp: "map_empty \<alpha>2 invar2 map_emp"
+  assumes up: "map_update_dj \<alpha>2 invar2 map_up_dj"
+  shows "map_value_image_filter \<alpha>1 invar1 \<alpha>2 invar2 
+    (it_map_value_image_filter map_it map_emp map_up_dj)"
+proof -
+  note mif_OK = it_map_image_filter_correct [OF it emp up]
+  note mif_map_value_image_filter_correct [OF mif_OK]
+  thus ?thesis
+    unfolding it_map_value_image_filter_alt_def
+    by fast
+qed
+
+
+definition mif_map_restrict :: 
+  "(('u \<Rightarrow> 'v \<Rightarrow> ('u \<times> 'v) option) \<Rightarrow> 's1 \<Rightarrow> 's2) \<Rightarrow>
+   ('u \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> 's1 \<Rightarrow> 's2"
+where
+    "mif_map_restrict mif P \<equiv>
+     mif (\<lambda>k v. if (P k v) then Some (k, v) else None)"
+
+lemma mif_map_restrict_alt_def :
+  "mif_map_restrict mif P =
+   mif_map_value_image_filter mif (\<lambda>k v. if (P k v) then Some v else None)"
+proof -
+  have "(\<lambda>k v. if P k v then Some (k, v) else None) =
+        (\<lambda>k v. case if P k v then Some v else None of None \<Rightarrow> None
+               | Some v' \<Rightarrow> Some (k, v'))" 
+    by (simp add: fun_eq_iff)
+  thus ?thesis
+    unfolding mif_map_restrict_def mif_map_value_image_filter_def
+    by simp
+qed
+
+lemma mif_map_restrict_correct :
+  fixes \<alpha>1 :: "'s1 \<Rightarrow> 'u \<rightharpoonup> 'v"
+  fixes \<alpha>2 :: "'s2 \<Rightarrow> 'u \<rightharpoonup> 'v" 
+shows "map_image_filter \<alpha>1 invar1 \<alpha>2 invar2 mif \<Longrightarrow>
+       map_restrict \<alpha>1 invar1 \<alpha>2 invar2 (mif_map_restrict mif)"
+proof -
+  assume "map_image_filter \<alpha>1 invar1 \<alpha>2 invar2 mif"
+  then interpret map_value_image_filter \<alpha>1 invar1 \<alpha>2 invar2 
+                "mif_map_value_image_filter mif"
+    by (rule mif_map_value_image_filter_correct) 
+
+  show ?thesis
+    unfolding mif_map_restrict_alt_def map_restrict_def
+    apply (auto simp add: map_value_image_filter_correct fun_eq_iff
+              restrict_map_def)
+    apply (case_tac "\<alpha>1 m x")
+    apply auto
+  done
+qed
+
+definition it_map_restrict ::
+  "('s1,'u,'v,'s2) map_iterator \<Rightarrow> 's2 \<Rightarrow> ('u \<Rightarrow> 'v \<Rightarrow> 's2 \<Rightarrow> 's2) \<Rightarrow> 
+   ('u \<Rightarrow> 'v \<Rightarrow> bool) \<Rightarrow> 's1 \<Rightarrow> 's2" where
+  "it_map_restrict map_it map_emp map_up_dj P \<equiv>
+   it_map_image_filter map_it map_emp map_up_dj
+     (\<lambda>k v. if (P k v) then Some (k, v) else None)"
+
+lemma it_map_restrict_alt_def :
+  "it_map_restrict map_it map_emp map_up_dj =
+   mif_map_restrict (it_map_image_filter map_it map_emp map_up_dj)"
+apply (simp add: fun_eq_iff)
+unfolding it_map_image_filter_def mif_map_restrict_def
+  it_map_restrict_def
+by fast
+
+lemma it_map_restrict_correct:
+  fixes \<alpha>1 :: "'s1 \<Rightarrow> 'u \<rightharpoonup> 'v"
+  fixes \<alpha>2 :: "'s2 \<Rightarrow> 'u \<rightharpoonup> 'v" 
+  assumes it: "map_iterate \<alpha>1 invar1 map_it"
+  assumes emp: "map_empty \<alpha>2 invar2 map_emp"
+  assumes up: "map_update_dj \<alpha>2 invar2 map_up_dj"
+  shows "map_restrict \<alpha>1 invar1 \<alpha>2 invar2 
+    (it_map_restrict map_it map_emp map_up_dj)"
+proof -
+  note mif_OK = it_map_image_filter_correct [OF it emp up]
+  note mif_map_restrict_correct [OF mif_OK]
+  thus ?thesis
+    unfolding it_map_restrict_alt_def
+    by fast
 qed
 
 end

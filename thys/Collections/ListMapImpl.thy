@@ -40,12 +40,9 @@ definition "lm_add_dj == lm_add"
 
 definition "lm_sel == iti_sel lm_iteratei"
 definition "lm_sel' == sel_sel' lm_sel"
-definition "lm_ball == sel_ball lm_sel"
 definition lm_to_list :: "('u,'v) lm \<Rightarrow> ('u \<times> 'v) list"
   where "lm_to_list = Assoc_List.impl_of"
 definition "list_to_lm == gen_list_to_map lm_empty lm_update"
-definition "lm_sng == map_sng lm_empty lm_update"
-
 
 subsection "Correctness"
 
@@ -63,7 +60,6 @@ lemmas lm_defs =
   lm_add_dj_def
   lm_sel_def
   lm_sel'_def
-  lm_ball_def
   lm_to_list_def
   list_to_lm_def
 
@@ -146,9 +142,6 @@ interpretation lm: map_sel lm_\<alpha> lm_invar lm_sel using lm_sel_impl .
 lemmas lm_sel'_impl = sel_sel'_correct[OF lm_sel_impl, folded lm_sel'_def]
 interpretation lm: map_sel' lm_\<alpha> lm_invar lm_sel' using lm_sel'_impl .
 
-lemmas lm_ball_impl = sel_ball_correct[OF lm_sel_impl, folded lm_ball_def]
-interpretation lm: map_ball lm_\<alpha> lm_invar lm_ball using lm_ball_impl .
-
 lemma lm_to_list_impl: "map_to_list lm_\<alpha> lm_invar lm_to_list"
 by(unfold_locales)(auto simp add: lm_defs Assoc_List.lookup_def)
 
@@ -161,7 +154,6 @@ lemmas list_to_lm_impl =
 interpretation lm: list_to_map lm_\<alpha> lm_invar list_to_lm 
   using list_to_lm_impl .
 
-lemmas lm_sng_correct = map_sng_correct[OF lm_empty_impl lm_update_impl, folded lm_sng_def]
 
 subsection "Code Generation"
 
@@ -174,10 +166,8 @@ lemmas lm_correct =
   lm.isEmpty_correct
   lm.add_correct
   lm.add_dj_correct
-  lm.ball_correct
   lm.to_list_correct
   lm.to_map_correct
-  lm_sng_correct
 
 export_code
   lm_empty
@@ -192,10 +182,8 @@ export_code
   lm_add_dj
   lm_sel
   lm_sel'
-  lm_ball
   lm_to_list
   list_to_lm
-  lm_sng
   in SML
   module_name ListMap
   file -

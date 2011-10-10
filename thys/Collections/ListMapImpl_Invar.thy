@@ -36,14 +36,11 @@ definition lmi_add_dj :: "('k,'v) lmi \<Rightarrow> ('k,'v) lmi \<Rightarrow> ('
 
 definition "lmi_sel == iti_sel lmi_iteratei"
 definition "lmi_sel' == sel_sel' lmi_sel"
-definition "lmi_ball == sel_ball lmi_sel"
 definition lmi_to_list :: "('u,'v) lmi \<Rightarrow> ('u\<times>'v) list"
   where "lmi_to_list = id"
 definition "list_to_lmi == gen_list_to_map lmi_empty lmi_update"
 definition list_to_lmi_dj :: "('u\<times>'v) list \<Rightarrow> ('u,'v) lmi"
   where "list_to_lmi_dj == id"
-definition "lmi_sng == map_sng lmi_empty lmi_update"
-
 
 subsection "Correctness"
 lemmas lmi_defs =
@@ -61,11 +58,9 @@ lemmas lmi_defs =
   lmi_add_dj_def
   lmi_sel_def
   lmi_sel'_def
-  lmi_ball_def
   lmi_to_list_def
   list_to_lmi_def
   list_to_lmi_dj_def
-  lmi_sng_def
 
 lemma lmi_empty_impl: 
   "map_empty lmi_\<alpha> lmi_invar lmi_empty"
@@ -162,9 +157,6 @@ interpretation lmi: map_sel lmi_\<alpha> lmi_invar lmi_sel using lmi_sel_impl .
 lemmas lmi_sel'_impl = sel_sel'_correct[OF lmi_sel_impl, folded lmi_sel'_def]
 interpretation lmi: map_sel' lmi_\<alpha> lmi_invar lmi_sel' using lmi_sel'_impl .
 
-lemmas lmi_ball_impl = sel_ball_correct[OF lmi_sel_impl, folded lmi_ball_def]
-interpretation lmi: map_ball lmi_\<alpha> lmi_invar lmi_ball using lmi_ball_impl .
-
 lemma lmi_to_list_impl: "map_to_list lmi_\<alpha> lmi_invar lmi_to_list"
   by (unfold_locales)
      (auto simp add: lmi_defs)
@@ -187,8 +179,6 @@ lemma lmi_to_list_to_lm[simp]:
   "lmi_invar m \<Longrightarrow> lmi_\<alpha> (list_to_lmi_dj (lmi_to_list m)) = lmi_\<alpha> m"
   by (simp add: lmi.to_list_correct list_to_lmi_dj_correct)
 
-lemmas lmi_sng_correct = map_sng_correct[OF lmi_empty_impl lmi_update_impl, folded lmi_sng_def]
-
 subsection "Code Generation"
 
 lemma lmi_iterate_code [code]:
@@ -205,11 +195,9 @@ lemmas lmi_correct =
   lmi.isEmpty_correct
   lmi.add_correct
   lmi.add_dj_correct
-  lmi.ball_correct
   lmi.to_list_correct
   lmi.to_map_correct
   list_to_lmi_dj_correct
-  lmi_sng_correct
 
 export_code
   lmi_empty
@@ -224,11 +212,9 @@ export_code
   lmi_add_dj
   lmi_sel
   lmi_sel'
-  lmi_ball
   lmi_to_list
   list_to_lmi
   list_to_lmi_dj
-  lmi_sng
   in SML
   module_name ListMap
   file -

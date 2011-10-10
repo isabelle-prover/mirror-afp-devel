@@ -9,7 +9,7 @@ text {* In this theory, we implement priority queues by skew binomial heaps. *}
 subsection "Definitions"
 definition skew_\<alpha> where "skew_\<alpha> q \<equiv> SkewBinomialHeap.to_mset q"
 definition skew_insert where "skew_insert \<equiv> SkewBinomialHeap.insert"
-abbreviation skew_invar where "skew_invar \<equiv> \<lambda>_. True"
+abbreviation (input) skew_invar where "skew_invar \<equiv> \<lambda>_. True"
 definition skew_find where "skew_find \<equiv> SkewBinomialHeap.findMin"
 definition skew_delete where "skew_delete \<equiv> SkewBinomialHeap.deleteMin"
 definition skew_meld where "skew_meld \<equiv> SkewBinomialHeap.meld"
