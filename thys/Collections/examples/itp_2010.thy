@@ -227,7 +227,7 @@ text {*
 
   -- "Using abbreviations"
 
-  type_synonym 'a my_set = "'a hs"
+  types 'a my_set = "'a hs"
   abbreviation "my_\<alpha> == hs_\<alpha>"
   abbreviation "my_invar == hs_invar"
   abbreviation "my_empty == hs_empty"

@@ -84,6 +84,11 @@ locale set_ball = set +
   fixes ball :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> bool"
   assumes ball_correct: "invar S \<Longrightarrow> ball S P \<longleftrightarrow> (\<forall>x\<in>\<alpha> S. P x)"
 
+locale set_bexists = set +
+  constrains \<alpha> :: "'s \<Rightarrow> 'x set"
+  fixes bexists :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> bool"
+  assumes bexists_correct: "invar S \<Longrightarrow> bexists S P \<longleftrightarrow> (\<exists>x\<in>\<alpha> S. P x)"
+
 subsubsection "Finite Set"
 locale finite_set = set +
   assumes finite[simp, intro!]: "invar s \<Longrightarrow> finite (\<alpha> s)"
@@ -96,6 +101,36 @@ locale set_size = finite_set +
   assumes size_correct: 
     "invar s \<Longrightarrow> size s = card (\<alpha> s)"
   
+locale set_size_abort = finite_set +
+  constrains \<alpha> :: "'s \<Rightarrow> 'x set"
+  fixes size_abort :: "nat \<Rightarrow> 's \<Rightarrow> nat"
+  assumes size_abort_correct: 
+    "invar s \<Longrightarrow> size_abort m s = min m (card (\<alpha> s))"
+
+subsubsection "Singleton sets"
+
+locale set_sng = set +
+  constrains \<alpha> :: "'s \<Rightarrow> 'x set"
+  fixes sng :: "'x \<Rightarrow> 's"
+  assumes sng_correct:
+    "\<alpha> (sng x) = {x}"
+    "invar (sng x)"
+
+locale set_isSng = set +
+  constrains \<alpha> :: "'s \<Rightarrow> 'x set"
+  fixes isSng :: "'s \<Rightarrow> bool"
+  assumes isSng_correct:
+    "invar s \<Longrightarrow> isSng s \<longleftrightarrow> (\<exists>e. \<alpha> s = {e})"
+begin
+  lemma isSng_correct_exists1 :
+    "invar s \<Longrightarrow> (isSng s \<longleftrightarrow> (\<exists>!e. (e \<in> \<alpha> s)))"
+  by (auto simp add: isSng_correct)
+
+  lemma isSng_correct_card :
+    "invar s \<Longrightarrow> (isSng s \<longleftrightarrow> (card (\<alpha> s) = 1))"
+  by (auto simp add: isSng_correct card_Suc_eq)
+end
+
 subsection "Iterators"
 text {*
   An iterator applies a
@@ -130,6 +165,35 @@ begin
     using C[OF iterate_rule[OF A(1), of I, OF A(2,3)]]
     by force
 
+  text {* Instead of keeping track of the elements that still need to be
+    processed, the invariant may also talk about the already processed elements *}
+  lemma iterate_rule_insert_P:
+    assumes A: 
+      "invar S" 
+      "I {} \<sigma>0"
+      "!!x it \<sigma>. \<lbrakk> x \<in> (\<alpha> S - it); it \<subseteq> \<alpha> S; I it \<sigma> \<rbrakk> \<Longrightarrow> I (insert x it) (f x \<sigma>)"
+    assumes C: 
+      "!!\<sigma>. I (\<alpha> S) \<sigma> \<Longrightarrow> P \<sigma>"
+    shows 
+      "P (iterate f S \<sigma>0)"
+  proof -
+    let ?I' = "\<lambda>it \<sigma>. I (\<alpha> S - it) \<sigma>"
+
+    have pre :"\<And>x it \<sigma>. \<lbrakk> x \<in> it; it \<subseteq> \<alpha> S; ?I' it \<sigma> \<rbrakk> \<Longrightarrow> ?I' (it - {x}) (f x \<sigma>)"
+    proof -
+      fix x it \<sigma>
+      assume AA : "x \<in> it" "it \<subseteq> \<alpha> S" "?I' it \<sigma>"  
+
+      from AA(1) AA(2) have "\<alpha> S - (it - {x}) = insert x (\<alpha> S - it)" by auto
+      moreover
+      note A(3) [of x "\<alpha> S - it" "\<sigma>"] AA
+      ultimately show "?I' (it - {x}) (f x \<sigma>)"
+        by auto
+    qed
+
+    note iterate_rule_P [of S ?I' \<sigma>0 f P] pre
+    thus "P (iterate f S \<sigma>0)" using A C by auto
+  qed
 end
 
 text {*
@@ -169,6 +233,54 @@ begin
     using iteratei_rule[of S I \<sigma>0 c f]
     by blast
 
+  lemma iteratei_rule_insert_P':
+    assumes A: 
+      "invar S"
+      "I {} \<sigma>0"
+      "!!x it \<sigma>. \<lbrakk> c \<sigma>; x \<in> \<alpha> S - it; it \<subseteq> \<alpha> S; I it \<sigma> \<rbrakk> \<Longrightarrow> 
+                 I (insert x it) (f x \<sigma>)"
+    assumes C:
+      "\<lbrakk> I (\<alpha> S) (iteratei c f S \<sigma>0) \<rbrakk> \<Longrightarrow> P"
+      "!!it. \<lbrakk> it \<subseteq> \<alpha> S; it \<noteq> \<alpha> S; 
+              \<not> (c (iteratei c f S \<sigma>0)); 
+              I it (iteratei c f S \<sigma>0)
+             \<rbrakk> \<Longrightarrow> P"
+   shows "P" 
+  proof -
+    let ?I' = "\<lambda>it \<sigma>. I (\<alpha> S - it) \<sigma>"
+
+    have pre1: 
+      "!!it. \<lbrakk> it \<subseteq> \<alpha> S; it \<noteq> {}; 
+              \<not> (c (iteratei c f S \<sigma>0)); 
+              ?I' it (iteratei c f S \<sigma>0)
+             \<rbrakk> \<Longrightarrow> P"
+    proof -
+      fix it
+      assume AA: 
+        "it \<subseteq> \<alpha> S" "it \<noteq> {}"
+        "\<not> (c (iteratei c f S \<sigma>0))" 
+        "?I' it (iteratei c f S \<sigma>0)"
+
+      note C(2) [of "\<alpha> S - it"] AA
+      thus "P" by auto
+    qed
+
+    have pre2 :"\<And>x it \<sigma>. \<lbrakk>c \<sigma>; x \<in> it; it \<subseteq> \<alpha> S; ?I' it \<sigma> \<rbrakk> \<Longrightarrow> ?I' (it - {x}) (f x \<sigma>)"
+    proof -
+      fix x it \<sigma>
+      assume AA : "c \<sigma>" "x \<in> it" "it \<subseteq> \<alpha> S" "?I' it \<sigma>"  
+
+      from AA(2) AA(3) have "\<alpha> S - (it - {x}) = insert x (\<alpha> S - it)" by auto
+      moreover 
+      note A(3) [of \<sigma> x "\<alpha> S - it"] AA
+      ultimately show "?I' (it - {x}) (f x \<sigma>)"
+        by auto
+    qed
+
+    note iteratei_rule_P' [of S ?I' \<sigma>0 c f P] pre1 pre2 A C
+    thus "P" by auto
+  qed
+
   lemma iteratei_rule_P:
     "\<lbrakk>
       invar S;
@@ -178,6 +290,16 @@ begin
       !!\<sigma> it. \<lbrakk> it \<subseteq> \<alpha> S; it \<noteq> {}; \<not> c \<sigma>; I it \<sigma> \<rbrakk> \<Longrightarrow> P \<sigma>
     \<rbrakk> \<Longrightarrow> P (iteratei c f S \<sigma>0)"
     by (rule iteratei_rule_P')
+
+  lemma iteratei_rule_insert_P:
+    "\<lbrakk>
+      invar S;
+      I {} \<sigma>0;
+      !!x it \<sigma>. \<lbrakk> c \<sigma>; x \<in> \<alpha> S - it; it \<subseteq> \<alpha> S; I it \<sigma> \<rbrakk> \<Longrightarrow> I (insert x it) (f x \<sigma>);
+      !!\<sigma>. I (\<alpha> S) \<sigma> \<Longrightarrow> P \<sigma>;
+      !!\<sigma> it. \<lbrakk> it \<subseteq> \<alpha> S; it \<noteq> \<alpha> S; \<not> c \<sigma>; I it \<sigma> \<rbrakk> \<Longrightarrow> P \<sigma>
+    \<rbrakk> \<Longrightarrow> P (iteratei c f S \<sigma>0)"
+    by (rule iteratei_rule_insert_P')
 
 end
 
@@ -217,6 +339,17 @@ locale set_union_dj = set \<alpha>1 invar1 + set \<alpha>2 invar2 + set \<alpha>
   assumes union_dj_correct:
     "\<lbrakk>invar1 s1; invar2 s2; \<alpha>1 s1 \<inter> \<alpha>2 s2 = {}\<rbrakk> \<Longrightarrow> \<alpha>3 (union_dj s1 s2) = \<alpha>1 s1 \<union> \<alpha>2 s2"
     "\<lbrakk>invar1 s1; invar2 s2; \<alpha>1 s1 \<inter> \<alpha>2 s2 = {}\<rbrakk> \<Longrightarrow> invar3 (union_dj s1 s2)"
+
+subsubsection "Difference"
+
+locale set_diff = set \<alpha>1 invar1 + set \<alpha>2 invar2 
+  for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
+  and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
+  +
+  fixes diff :: "'s1 \<Rightarrow> 's2 \<Rightarrow> 's1"
+  assumes diff_correct:
+    "invar1 s1 \<Longrightarrow> invar2 s2 \<Longrightarrow> \<alpha>1 (diff s1 s2) = \<alpha>1 s1 - \<alpha>2 s2"
+    "invar1 s1 \<Longrightarrow> invar2 s2 \<Longrightarrow> invar1 (diff s1 s2)"
 
 subsubsection "Intersection"
 
@@ -303,6 +436,19 @@ locale set_inj_image = set \<alpha>1 invar1 + set \<alpha>2 invar2
   assumes inj_image_correct:
     "\<lbrakk>invar1 s; inj_on f (\<alpha>1 s)\<rbrakk> \<Longrightarrow> \<alpha>2 (inj_image f s) = f`\<alpha>1 s"
     "\<lbrakk>invar1 s; inj_on f (\<alpha>1 s)\<rbrakk> \<Longrightarrow> invar2 (inj_image f s)"
+
+
+subsubsection "Filter"
+
+locale set_filter = set \<alpha>1 invar1 + set \<alpha>2 invar2
+  for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
+  and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
+  +
+  fixes filter :: "('a \<Rightarrow> bool) \<Rightarrow> 's1 \<Rightarrow> 's2"
+  assumes filter_correct:
+    "invar1 s \<Longrightarrow> \<alpha>2 (filter P s) = {e. e \<in> \<alpha>1 s \<and> P e}"
+    "invar1 s \<Longrightarrow> invar2 (filter P s)"
+
 
 subsubsection "Union of Set of Sets"
 
@@ -445,15 +591,21 @@ subsection "Record Based Interface"
     set_op_\<alpha> :: "'s \<Rightarrow> 'x set"
     set_op_invar :: "'s \<Rightarrow> bool"
     set_op_empty :: "'s"
+    set_op_sng :: "'x \<Rightarrow> 's"
     set_op_memb :: "'x \<Rightarrow> 's \<Rightarrow> bool"
     set_op_ins :: "'x \<Rightarrow> 's \<Rightarrow> 's"
     set_op_ins_dj :: "'x \<Rightarrow> 's \<Rightarrow> 's"
     set_op_delete :: "'x \<Rightarrow> 's \<Rightarrow> 's"
     set_op_isEmpty :: "'s \<Rightarrow> bool"
+    set_op_isSng :: "'s \<Rightarrow> bool"
     set_op_ball :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> bool"
+    set_op_bexists :: "'s \<Rightarrow> ('x \<Rightarrow> bool) \<Rightarrow> bool"
     set_op_size :: "'s \<Rightarrow> nat"
+    set_op_size_abort :: "nat \<Rightarrow> 's \<Rightarrow> nat"
     set_op_union :: "'s \<Rightarrow> 's \<Rightarrow> 's"
     set_op_union_dj :: "'s \<Rightarrow> 's \<Rightarrow> 's"
+    set_op_diff :: "'s \<Rightarrow> 's \<Rightarrow> 's"
+    set_op_filter :: "('x \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> 's"
     set_op_inter :: "'s \<Rightarrow> 's \<Rightarrow> 's"
     set_op_subset :: "'s \<Rightarrow> 's \<Rightarrow> bool"
     set_op_equal :: "'s \<Rightarrow> 's \<Rightarrow> bool"
@@ -470,15 +622,21 @@ subsection "Record Based Interface"
     abbreviation \<alpha> where "\<alpha> == set_op_\<alpha> ops"
     abbreviation invar where "invar == set_op_invar ops"
     abbreviation empty where "empty == set_op_empty ops"
+    abbreviation sng where "sng == set_op_sng ops"
     abbreviation memb where "memb == set_op_memb ops"
     abbreviation ins where "ins == set_op_ins ops"
     abbreviation ins_dj where "ins_dj == set_op_ins_dj ops"
     abbreviation delete where "delete == set_op_delete ops"
     abbreviation isEmpty where "isEmpty == set_op_isEmpty ops"
+    abbreviation isSng where "isSng == set_op_isSng ops"
     abbreviation ball where "ball == set_op_ball ops"
+    abbreviation bexists where "bexists == set_op_bexists ops"
     abbreviation size where "size == set_op_size ops"
+    abbreviation size_abort where "size_abort == set_op_size_abort ops"
     abbreviation union where "union == set_op_union ops"
     abbreviation union_dj where "union_dj == set_op_union_dj ops"
+    abbreviation diff where "diff == set_op_diff ops"
+    abbreviation filter where "filter == set_op_filter ops"
     abbreviation inter where "inter == set_op_inter ops"
     abbreviation subset where "subset == set_op_subset ops"
     abbreviation equal where "equal == set_op_equal ops"
@@ -493,15 +651,21 @@ subsection "Record Based Interface"
   locale StdSet = StdSetDefs ops +
     set \<alpha> invar +
     set_empty \<alpha> invar empty + 
+    set_sng \<alpha> invar sng + 
     set_memb \<alpha> invar memb + 
     set_ins \<alpha> invar ins + 
     set_ins_dj \<alpha> invar ins_dj + 
     set_delete \<alpha> invar delete + 
     set_isEmpty \<alpha> invar isEmpty + 
+    set_isSng \<alpha> invar isSng + 
     set_ball \<alpha> invar ball + 
+    set_bexists \<alpha> invar bexists + 
     set_size \<alpha> invar size + 
+    set_size_abort \<alpha> invar size_abort + 
     set_union \<alpha> invar \<alpha> invar \<alpha> invar union + 
     set_union_dj \<alpha> invar \<alpha> invar \<alpha> invar union_dj + 
+    set_diff \<alpha> invar \<alpha> invar diff + 
+    set_filter \<alpha> invar \<alpha> invar filter +  
     set_inter \<alpha> invar \<alpha> invar \<alpha> invar inter + 
     set_subset \<alpha> invar \<alpha> invar subset + 
     set_equal \<alpha> invar \<alpha> invar equal + 
@@ -515,15 +679,21 @@ subsection "Record Based Interface"
 
     lemmas correct = 
       empty_correct
+      sng_correct
       memb_correct
       ins_correct
       ins_dj_correct
       delete_correct
       isEmpty_correct
+      isSng_correct
       ball_correct
+      bexists_correct
       size_correct
+      size_abort_correct
       union_correct
       union_dj_correct
+      diff_correct
+      filter_correct
       inter_correct
       subset_correct
       equal_correct

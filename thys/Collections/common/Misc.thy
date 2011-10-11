@@ -37,81 +37,6 @@ lemma (in AC) left_commute[simp]: "f x (f y z) = f y (f x z)"
 
 lemmas (in AC) AC_simps = commute assoc left_commute
 
-(* TODO: Most of this stuff is superseeded by the standard library in OrderedGroups.thy *)
-
-(*locale Left_Ident =
-  fixes f I
-  assumes left_ident[simp]: "f I x = x"
-
-locale Right_Ident =
-  fixes f I
-  assumes right_ident[simp]: "f x I = x"
-
-locale AI = Assoc + Left_Ident + Right_Ident
-
-lemmas (in AI) AI_simps = assoc left_ident right_ident
-
-locale ACI = AC + AI
-begin
-  lemmas ident = left_ident right_ident
-
-  lemmas ACI_simps = commute assoc left_commute ident
-end
-
-lemma ACI_leftI: assumes L: "Left_Ident f I" and AC: "AC f" shows "ACI f I"
-proof -
-  interpret Left_Ident f I using L .
-  interpret AC f using AC .
-  show "ACI f I"
-    apply (unfold_locales)
-    apply (simp only: commute[of _ I])
-    apply (simp del: commute)
-    done
-qed
-
-lemma ACI_rightI: assumes R: "Right_Ident f I" and AC: "AC f" shows "ACI f I"
-proof -
-  interpret Right_Ident f I using R .
-  interpret AC f using AC .
-  show "ACI f I"
-    apply (unfold_locales)
-    apply simp
-    done
-qed
-
-locale ACZ = AC +
-  fixes Z
-  assumes left_zero[simp]: "f Z x = Z"
-begin
-  lemma right_zero[simp]: "f x Z = Z" by simp
-  lemmas zero = left_zero right_zero
-  lemmas ACZ_simps = commute assoc left_commute zero
-end
-
-locale ACIZ = ACI + ACZ
-begin
-  lemmas ACIZ_simps = commute assoc left_commute ident zero
-end
-
-sublocale ACI \<subseteq> AI by (unfold_locales) (auto)
-
-sublocale ACI \<subseteq> comm_monoid_add "I" "f"
-  by (unfold_locales) auto
-
-sublocale ACI \<subseteq> comm_monoid_mult "I" "f"
-  by (unfold_locales) auto
-
-interpretation comm_monoid_add \<subseteq> (ACI "plus" "zero")
-  by (unfold_locales) (auto simp add: add_ac)
-
-
-lemma (in AC) ACI_rightI: "\<lbrakk>!!x. f x I = x\<rbrakk> \<Longrightarrow> ACI f I"
-  by (unfold_locales) (auto)
-  
-lemma (in AC) ACZ_rightI: "\<lbrakk>!!x. f x Z = Z\<rbrakk> \<Longrightarrow> ACZ f Z"
-  by (intro_locales) (auto intro: ACZ_axioms.intro)
-*)
-
 text {* Locale to define functions from surjective, unique relations *}
 locale su_rel_fun =
   fixes F and f
@@ -2211,5 +2136,22 @@ next
     qed
   qed
 qed
+
+
+
+lemma (in order) min_arg_le[simp]:
+  "n \<le> min m n \<longleftrightarrow> min m n = n" 
+  "m \<le> min m n \<longleftrightarrow> min m n = m" 
+  by (auto simp: min_def)
+
+lemma (in linorder) min_arg_not_ge[simp]: 
+  "\<not> min m n < m \<longleftrightarrow> min m n = m"
+  "\<not> min m n < n \<longleftrightarrow> min m n = n"
+  by (auto simp: min_def)
+
+lemma (in linorder) min_eq_arg[simp]: 
+  " min m n = m \<longleftrightarrow> m\<le>n"
+  " min m n = n \<longleftrightarrow> n\<le>m"
+  by (auto simp: min_def)
 
 end

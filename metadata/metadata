@@ -292,6 +292,10 @@ extra-history =
     Record-interfaces: All operations of an interface encapsulated as record.
     Examples moved to examples subdirectory.<br>
   [2010-12-01]: New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues.
+  [2011-10-10]: SetSpec: Added operations: sng, isSng, bexists, size_abort, diff, filter, iterate_rule_insertP
+                MapSpec: Added operations: sng, isSng, iterate_rule_insertP, bexists, size, size_abort, restrict, 
+                          map_image_filter, map_value_image_filter
+                Some maintenance changes
 
 [FileRefinement]
 title = File Refinement

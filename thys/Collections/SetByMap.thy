@@ -23,6 +23,7 @@ subsection "Definitions"
 definition s_\<alpha> :: "('s \<Rightarrow> 'u \<rightharpoonup> unit) \<Rightarrow> 's \<Rightarrow> 'u set" 
   where "s_\<alpha> \<alpha> m == dom (\<alpha> m)"
 definition "s_empty empt = empt" 
+definition "s_sng sng x = sng x ()" 
 definition "s_memb lookup x s == lookup x s \<noteq> None"
 definition s_ins where "s_ins update x s == update x () s"
 definition s_ins_dj where "s_ins_dj update_dj x s == update_dj x () s"
@@ -32,6 +33,7 @@ definition s_sel
       's \<Rightarrow> ('u \<Rightarrow> 'r option) \<Rightarrow> 'r option" 
   where "s_sel sel s f == sel s (\<lambda>u v. f u)"
 definition "s_isEmpty isEmpty == isEmpty"
+definition "s_isSng isSng == isSng"
 
 definition s_iterate :: "('s,'k,unit,'\<sigma>) map_iterator \<Rightarrow> ('s,'k,'\<sigma>) iterator"
   where  "s_iterate iterate f s \<sigma>0 == iterate (\<lambda>k v \<sigma>. f k \<sigma>) s \<sigma>0"
@@ -56,18 +58,28 @@ definition s_reverse_iterateoi
 definition s_ball 
   :: "('s \<Rightarrow> ('u \<Rightarrow> unit \<Rightarrow> bool) \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> ('u \<Rightarrow> bool) \<Rightarrow> bool" 
   where "s_ball ball s P == ball s (\<lambda>u v. P u)"
+
+definition s_bexists
+  :: "('s \<Rightarrow> ('u \<Rightarrow> unit \<Rightarrow> bool) \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> ('u \<Rightarrow> bool) \<Rightarrow> bool" 
+  where "s_bexists bexists s P == bexists s (\<lambda>u v. P u)"
+
+definition "s_size sz \<equiv> sz"
+definition "s_size_abort size_abort \<equiv> size_abort"
+
 definition "s_union add == add"
 definition "s_union_dj add_dj = add_dj"
 
 lemmas s_defs =
   s_\<alpha>_def
   s_empty_def
+  s_sng_def
   s_memb_def
   s_ins_def
   s_ins_dj_def
   s_delete_def
   s_sel_def
   s_isEmpty_def
+  s_isSng_def
   s_iterate_def
   s_iteratei_def
   s_iterateo_def
@@ -75,6 +87,9 @@ lemmas s_defs =
   s_reverse_iterateo_def
   s_reverse_iterateoi_def
   s_ball_def
+  s_bexists_def
+  s_size_def
+  s_size_abort_def
   s_union_def
   s_union_dj_def
 
@@ -89,6 +104,17 @@ proof -
   show ?thesis                                                 
     by unfold_locales                                          
        (auto simp add: s_defs empty_correct)                   
+qed                                                            
+
+lemma s_sng_correct:         
+  fixes sng
+  assumes "map_sng \<alpha> invar sng"
+  shows "set_sng (s_\<alpha> \<alpha>) invar (s_sng sng)"
+proof -                                                        
+  interpret map_sng \<alpha> invar sng by fact             
+  show ?thesis                                                 
+    by unfold_locales                                          
+       (auto simp add: s_defs sng_correct)                   
 qed                                                            
 
 lemma s_memb_correct:
@@ -157,6 +183,17 @@ proof -
   show ?thesis                                                       
     by unfold_locales                                                
        (auto simp add: s_defs isEmpty_correct)                       
+qed                                                                  
+
+lemma s_isSng_correct:
+  fixes isSng
+  assumes "map_isSng \<alpha> invar isSng"
+  shows "set_isSng (s_\<alpha> \<alpha>) invar (s_isSng isSng)"
+proof -                                                              
+  interpret map_isSng \<alpha> invar isSng by fact               
+  show ?thesis                                                       
+    by unfold_locales 
+       (auto simp add: s_defs isSng_correct dom_eq_singleton_conv)
 qed                                                                  
 
 lemma s_iterate_correct:
@@ -260,6 +297,39 @@ proof -
     by unfold_locales                                       
        (auto simp add: s_defs ball_correct)                 
 qed                                                         
+
+lemma s_bexists_correct:
+  fixes bexists         
+  assumes "map_bexists \<alpha> invar bexists"
+  shows "set_bexists (s_\<alpha> \<alpha>) invar (s_bexists bexists)"
+proof -                                                     
+  interpret map_bexists \<alpha> invar bexists by fact            
+  show ?thesis                                              
+    by unfold_locales                                       
+       (auto simp add: s_defs bexists_correct)                 
+qed
+
+lemma s_size_correct:
+  fixes size
+  assumes "map_size \<alpha> invar size"
+  shows "set_size (s_\<alpha> \<alpha>) invar (s_size size)"
+proof -                                                     
+  interpret map_size \<alpha> invar size by fact            
+  show ?thesis                                              
+    by unfold_locales                                       
+       (auto simp add: s_defs size_correct)                 
+qed
+
+lemma s_size_abort_correct:
+  fixes size_abort
+  assumes "map_size_abort \<alpha> invar size_abort"
+  shows "set_size_abort (s_\<alpha> \<alpha>) invar (s_size_abort size_abort)"
+proof -                                                     
+  interpret map_size_abort \<alpha> invar size_abort by fact            
+  show ?thesis                                              
+    by unfold_locales                                       
+       (auto simp add: s_defs size_abort_correct)                 
+qed
 
 lemma s_union_correct:
   fixes add

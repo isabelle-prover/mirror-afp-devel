@@ -51,16 +51,12 @@ definition lsi_inj_image_filter
 definition "lsi_image == iflt_image lsi_image_filter"
 definition "lsi_inj_image == iflt_inj_image lsi_inj_image_filter"
 
-definition lsi_ball :: "'a lsi \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" 
-  where "lsi_ball l P == list_all P l"
 definition lsi_sel :: "'a lsi \<Rightarrow> ('a \<Rightarrow> 'r option) \<Rightarrow> 'r option" 
   where "lsi_sel == iti_sel lsi_iteratei"
 definition "lsi_sel' == SetGA.sel_sel' lsi_sel"
 
 definition lsi_to_list :: "'a lsi \<Rightarrow> 'a list" where "lsi_to_list == id"
 definition list_to_lsi :: "'a list \<Rightarrow> 'a lsi" where "list_to_lsi == remdups"
-
-definition "lsi_size == it_size lsi_iterate"
 
 subsection "Correctness"
 lemmas lsi_defs = 
@@ -81,12 +77,10 @@ lemmas lsi_defs =
   lsi_inj_image_filter_def
   lsi_image_def
   lsi_inj_image_def
-  lsi_ball_def
   lsi_sel_def
   lsi_sel'_def
   lsi_to_list_def
   list_to_lsi_def
-  lsi_size_def
 
 lemma lsi_empty_impl: "set_empty lsi_\<alpha> lsi_invar lsi_empty"
 by (unfold_locales) (auto simp add: lsi_defs)
@@ -130,9 +124,6 @@ lemmas lsi_inj_image_filter_impl = it_inj_image_filter_correct[OF lsi_iterate_im
 lemmas lsi_image_impl = iflt_image_correct[OF lsi_image_filter_impl, folded lsi_image_def]
 lemmas lsi_inj_image_impl = iflt_inj_image_correct[OF lsi_inj_image_filter_impl, folded lsi_inj_image_def]
 
-lemma lsi_ball_impl: "set_ball lsi_\<alpha> lsi_invar lsi_ball"
-by(unfold_locales)(auto simp add: lsi_defs list_all_iff)
-
 lemmas lsi_sel_impl = iti_sel_correct[OF lsi_iteratei_impl, folded lsi_sel_def]
 lemmas lsi_sel'_impl = SetGA.sel_sel'_correct[OF lsi_sel_impl, folded lsi_sel'_def]
 
@@ -141,8 +132,6 @@ by(unfold_locales)(auto simp add: lsi_defs)
 
 lemma list_to_lsi_impl: "list_to_set lsi_\<alpha> lsi_invar list_to_lsi"
 by(unfold_locales)(auto simp add: lsi_defs)
-
-lemmas lsi_size_impl = it_size_correct[OF lsi_iterate_impl, folded lsi_size_def]
 
 interpretation lsi: set_empty lsi_\<alpha> lsi_invar lsi_empty using lsi_empty_impl .
 interpretation lsi: set_memb lsi_\<alpha> lsi_invar lsi_memb using lsi_memb_impl .   
@@ -160,12 +149,10 @@ interpretation lsi: set_image_filter lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_inv
 interpretation lsi: set_inj_image_filter lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lsi_inj_image_filter using lsi_inj_image_filter_impl .
 interpretation lsi: set_image lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lsi_image using lsi_image_impl .
 interpretation lsi: set_inj_image lsi_\<alpha> lsi_invar lsi_\<alpha> lsi_invar lsi_inj_image using lsi_inj_image_impl .
-interpretation lsi: set_ball lsi_\<alpha> lsi_invar lsi_ball using lsi_ball_impl .
 interpretation lsi: set_sel lsi_\<alpha> lsi_invar lsi_sel using lsi_sel_impl .
 interpretation lsi: set_sel' lsi_\<alpha> lsi_invar lsi_sel' using lsi_sel'_impl .
 interpretation lsi: set_to_list lsi_\<alpha> lsi_invar lsi_to_list using lsi_to_list_impl .
 interpretation lsi: list_to_set lsi_\<alpha> lsi_invar list_to_lsi using list_to_lsi_impl .
-interpretation lsi: set_size lsi_\<alpha> lsi_invar lsi_size using lsi_size_impl .
 
 declare lsi.finite[simp del, rule del]
 
@@ -183,10 +170,8 @@ lemmas lsi_correct =
   lsi.inj_image_filter_correct
   lsi.image_correct
   lsi.inj_image_correct
-  lsi.ball_correct
   lsi.to_list_correct
   lsi.to_set_correct
-  lsi.size_correct
 
 
 subsection "Code Generation"
@@ -212,12 +197,10 @@ export_code
   lsi_inj_image_filter
   lsi_image
   lsi_inj_image
-  lsi_ball
   lsi_sel
   lsi_sel'
   lsi_to_list
   list_to_lsi
-  lsi_size
   in SML
   module_name ListSet
   file -

@@ -9,7 +9,7 @@ text {* In this theory, we implement priority queues by binomial heaps. *}
 subsection "Definitions"
 definition bino_\<alpha> where "bino_\<alpha> q \<equiv> BinomialHeap.to_mset q"
 definition bino_insert where "bino_insert \<equiv> BinomialHeap.insert"
-abbreviation bino_invar where "bino_invar \<equiv> \<lambda>_. True"
+abbreviation (input) bino_invar where "bino_invar \<equiv> \<lambda>_. True"
 definition bino_find where "bino_find \<equiv> BinomialHeap.findMin"
 definition bino_delete where "bino_delete \<equiv> BinomialHeap.deleteMin"
 definition bino_meld where "bino_meld \<equiv> BinomialHeap.meld"

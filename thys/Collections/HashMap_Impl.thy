@@ -245,7 +245,7 @@ definition update :: "'k::hashable \<Rightarrow> 'v \<Rightarrow> ('k,'v) hm_imp
   "update k v m == 
    let hc = hashcode k in
      case rm_lookup hc m of
-       None \<Rightarrow> rm_update hc (lm_sng k v) m |
+       None \<Rightarrow> rm_update hc (lm_update k v lm_empty) m |
        Some bm \<Rightarrow> rm_update hc (lm_update k v bm) m" 
 
   -- "Lookup value by key"

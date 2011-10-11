@@ -85,7 +85,6 @@ definition "ahm_isEmpty == iti_isEmpty ahm_iteratei"
 definition "ahm_sel == iti_sel ahm_iteratei"
 definition "ahm_sel' == sel_sel' ahm_sel"
 
-definition "ahm_ball == sel_ball ahm_sel"
 definition "ahm_to_list == it_map_to_list ahm_iterate"
 definition "list_to_ahm == gen_list_to_map ahm_empty ahm_update"
 
@@ -103,7 +102,6 @@ lemmas ahm_defs =
   ahm_isEmpty_def
   ahm_sel_def
   ahm_sel'_def
-  ahm_ball_def
   ahm_to_list_def
   list_to_ahm_def
 
@@ -193,9 +191,6 @@ unfolding ahm_sel_def by(rule iti_sel_correct)(rule ahm_iteratei_impl)
 lemma ahm_sel'_impl: "map_sel' ahm_\<alpha> ahm_invar ahm_sel'"
 unfolding ahm_sel'_def by(rule sel_sel'_correct)(rule ahm_sel_impl)
 
-lemma ahm_ball_impl: "map_ball ahm_\<alpha> ahm_invar ahm_ball"
-unfolding ahm_ball_def by(rule sel_ball_correct)(rule ahm_sel_impl)
-
 lemma ahm_to_list_impl: "map_to_list ahm_\<alpha> ahm_invar ahm_to_list"
 unfolding ahm_to_list_def by(rule it_map_to_list_correct)(rule ahm_iterate_impl)
 
@@ -216,8 +211,6 @@ interpretation ahm!: map_sel ahm_\<alpha> ahm_invar ahm_sel
   using ahm_sel_impl .
 interpretation ahm!: map_sel' ahm_\<alpha> ahm_invar ahm_sel'
   using ahm_sel'_impl .
-interpretation ahm!: map_ball ahm_\<alpha> ahm_invar ahm_ball 
-  using ahm_ball_impl .
 interpretation ahm!: map_to_list ahm_\<alpha> ahm_invar ahm_to_list
   using ahm_to_list_impl .
 interpretation ahm!: list_to_map ahm_\<alpha> ahm_invar list_to_ahm 
@@ -234,7 +227,6 @@ lemmas ahm_correct =
   ahm.add_correct
   ahm.add_dj_correct
   ahm.isEmpty_correct
-  ahm.ball_correct
   ahm.to_list_correct
   ahm.to_map_correct
 
@@ -253,7 +245,6 @@ export_code
   ahm_isEmpty
   ahm_sel
   ahm_sel'
-  ahm_ball
   ahm_to_list
   list_to_ahm
   in SML
