@@ -131,7 +131,7 @@ declare lset_LNil[code del] lset_LCons[code del]
 lemma lset_Lazy_llist [code]:
   "lset (Lazy_llist xs) =
   (case xs () of None \<Rightarrow> {} | Some (y, ys) \<Rightarrow> insert y (lset ys))"
-by(auto simp add: insert_code)
+by auto
 
 declare llist_all2_code [code del]
 
