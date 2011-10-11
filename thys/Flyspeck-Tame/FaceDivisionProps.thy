@@ -3549,11 +3549,11 @@ length (natToVertexList v f es) = length es" apply (case_tac es) by simp_all
 
 
 lemma  natToVertexList_nth_Suc: "incrIndexList es (length es) (length (vertices f)) \<Longrightarrow> Suc n < length es \<Longrightarrow>
-(natToVertexList v f es)!(Suc n) = (if (es!n = es!(Suc n)) then None else (Some f\<^bsup>(es!Suc n)\<^esup> \<bullet> v))"
+(natToVertexList v f es)!(Suc n) = (if (es!n = es!(Suc n)) then None else Some (f\<^bsup>(es!Suc n)\<^esup> \<bullet> v))"
 proof -
   assume incr: "incrIndexList es (length es) (length (vertices f))" and n: "Suc n < length es"
   have rec: "\<And> old n. Suc n < length es \<Longrightarrow>
-    (natToVertexListRec old v f es)!(Suc n) = (if (es!n = es!(Suc n)) then None else (Some f\<^bsup>(es!Suc n)\<^esup> \<bullet> v))"
+    (natToVertexListRec old v f es)!(Suc n) = (if (es!n = es!(Suc n)) then None else Some (f\<^bsup>(es!Suc n)\<^esup> \<bullet> v))"
   proof (induct es)
     case Nil then show ?case by auto
   next
@@ -3569,18 +3569,21 @@ proof -
 	case 0 with Cons cons1 show ?thesis by simp
       next
 	case (Suc m) with Cons cons1
-	have "\<And> old. natToVertexListRec old v f es ! Suc m = (if es ! m = es ! Suc m then None else Some f\<^bsup>es ! Suc m\<^esup> \<bullet> v)"
+	have "\<And> old. natToVertexListRec old v f es ! Suc m = (if es ! m = es ! Suc m then None else Some (f\<^bsup>es ! Suc m\<^esup> \<bullet> v))"
 	  by (rule_tac cons1) auto
 	then show ?thesis apply (cases "e = old") by (simp_all add: Suc)
       qed
     qed
   qed
-  with  n have "natToVertexListRec 0 v f es ! Suc n = (if es ! n = es ! Suc n then None else Some f\<^bsup>es ! Suc n\<^esup> \<bullet> v)" by (rule_tac rec) auto
+  with  n have "natToVertexListRec 0 v f es ! Suc n = (if es ! n = es ! Suc n then None else Some (f\<^bsup>es ! Suc n\<^esup> \<bullet> v))" by (rule_tac rec) auto
   with incr show ?thesis by (cases es) auto
 qed
 
 lemma  natToVertexList_nth_0: "incrIndexList es (length es) (length (vertices f)) \<Longrightarrow> 0 < length es \<Longrightarrow>
-(natToVertexList v f es)!0 = (Some f\<^bsup>(es!0)\<^esup> \<bullet> v)" apply (cases es) apply (simp_all add: nextVertices_def) by (subgoal_tac "a = 0")  auto
+(natToVertexList v f es)!0 = Some (f\<^bsup>(es!0)\<^esup> \<bullet> v)"
+ apply (cases es) 
+ apply (simp_all add: nextVertices_def)
+ by (subgoal_tac "a = 0")  auto
 
 lemma  natToVertexList_hd[simp]:
   "incrIndexList es (length es) (length (vertices f)) \<Longrightarrow> hd (natToVertexList v f es) = Some v"
@@ -3604,8 +3607,8 @@ proof -
   from n'l  have "es!n' = last (butlast es)" apply (cases es rule: rev_exhaust) by (auto simp: nth_append)
   with last_es incr have less: "es!n' < es!(Suc n')" by auto
   from n'l have "Suc n' < length es" by arith
-  with incr less have "(natToVertexList v f es)!(Suc n') = (Some f\<^bsup>(es!Suc n')\<^esup> \<bullet> v)" by (auto dest: natToVertexList_nth_Suc)
-  with incr last_ntvl last_es have rule1: "last (natToVertexList v f es) = Some f\<^bsup>((length (vertices f)) - (Suc 0))\<^esup> \<bullet> v" by auto
+  with incr less have "(natToVertexList v f es)!(Suc n') = (Some (f\<^bsup>(es!Suc n')\<^esup> \<bullet> v))" by (auto dest: natToVertexList_nth_Suc)
+  with incr last_ntvl last_es have rule1: "last (natToVertexList v f es) = Some (f\<^bsup>((length (vertices f)) - (Suc 0))\<^esup> \<bullet> v)" by auto
 
   from incr have lvf: "1 < length (vertices f)" by auto
   with vors have rule2: "verticesFrom f v ! ((length (vertices f)) - (Suc 0)) = f\<^bsup>((length (vertices f)) - (Suc 0))\<^esup> \<bullet> v" by (auto intro!: verticesFrom_nth)
@@ -3723,10 +3726,10 @@ next
       case (Suc n')
       with Some suc1 lvs have esn: "es!n \<noteq> es!n'" by (simp add: natToVertexList_nth_Suc split: split_if_asm)
       from suc1 Suc have "Suc n' < length es" by auto
-      with suc1 lvs esn  have "natToVertexList v f es !(Suc n') = Some f\<^bsup>(es!(Suc n'))\<^esup> \<bullet> v"
+      with suc1 lvs esn  have "natToVertexList v f es !(Suc n') = Some (f\<^bsup>(es!(Suc n'))\<^esup> \<bullet> v)"
       apply (simp add: natToVertexList_nth_Suc)
 	by (simp add: Suc)
-      with Suc have "natToVertexList v f es ! n = Some f\<^bsup>(es!n)\<^esup> \<bullet> v" by auto
+      with Suc have "natToVertexList v f es ! n = Some (f\<^bsup>(es!n)\<^esup> \<bullet> v)" by auto
       with Some have v': "v' = f\<^bsup>(es!n)\<^esup> \<bullet> v" by simp
       from Suc have n': "n - Suc 0 = n'" by auto
       from suc1 Suc have "es = take (Suc n') es @ es!n # drop (Suc n) es" by (auto intro: id_take_nth_drop)

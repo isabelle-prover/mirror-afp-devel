@@ -2600,10 +2600,10 @@ proof -
      apply (rule nextVertices_in_face) apply simp
     apply simp
     apply (subgoal_tac "natToVertexList v f e ! Suc nat =
-	(if e ! nat = e ! Suc nat then None else Some f\<^bsup>e ! Suc nat\<^esup> \<bullet> v)")
+	(if e ! nat = e ! Suc nat then None else Some (f\<^bsup>e ! Suc nat\<^esup> \<bullet> v))")
      apply (simp split: split_if_asm)
      apply (subgoal_tac "natToVertexList v f e ! Suc (Suc nat) =
-	(if e ! (Suc nat) = e ! Suc (Suc nat) then None else Some f\<^bsup>e ! Suc (Suc nat)\<^esup> \<bullet> v)")
+	(if e ! (Suc nat) = e ! Suc (Suc nat) then None else Some (f\<^bsup>e ! Suc (Suc nat)\<^esup> \<bullet> v))")
       apply (simp split: split_if_asm)
       apply (drule spec) apply (rotate_tac -1)  apply (erule impE)
        apply (subgoal_tac "e ! nat < e ! Suc nat") apply assumption

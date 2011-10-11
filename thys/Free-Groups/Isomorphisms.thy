@@ -362,14 +362,14 @@ lemma hom_F_C2_Powerset:
 proof
   interpret F: group "\<F>\<^bsub>X\<^esub>" by (rule free_group_is_group)
   interpret C2: group C2 by (rule C2_is_group)
-  let ?f = "\<lambda>S . restrict (C2.lift S) (carrier \<F>\<^bsub>X\<^esub>)"
-  let ?f' = "\<lambda>h . X \<inter> (h \<circ> insert)"
+  let ?f = "\<lambda>S . restrict (C2.lift (\<lambda>x. x \<in> S)) (carrier \<F>\<^bsub>X\<^esub>)"
+  let ?f' = "\<lambda>h . X \<inter> Collect(h \<circ> insert)"
   show "bij_betw ?f (Pow X) (homr (\<F>\<^bsub>X\<^esub>) C2)"
   proof(induct rule: bij_betwI[of ?f _ _ ?f'])
   case 1 show ?case
     proof
       fix S assume "S \<in> Pow X"
-      interpret h: group_hom "\<F>\<^bsub>X\<^esub>" C2 "C2.lift S"
+      interpret h: group_hom "\<F>\<^bsub>X\<^esub>" C2 "C2.lift (\<lambda>x. x \<in> S)"
         by unfold_locales (auto intro: C2.lift_is_hom)
       show "?f S \<in> homr \<F>\<^bsub>X\<^esub> C2"
         by (rule h.restrict_hom)
@@ -381,7 +381,7 @@ proof
       case (1 x) show ?case
       proof(cases "x \<in> X")
       case True thus ?thesis using insert_closed[of x X]
-         by (auto simp add:insert_def C2.lift_def C2.lift_gi_def mem_def )
+         by (auto simp add:insert_def C2.lift_def C2.lift_gi_def)
       next case False thus ?thesis using 3 by auto
     qed
   qed
@@ -390,9 +390,9 @@ proof
     hence hom: "h \<in> hom \<F>\<^bsub>X\<^esub> C2"
       and extn: "h \<in> extensional (carrier \<F>\<^bsub>X\<^esub>)"
       unfolding homr_def by auto
-    have "\<forall>x \<in> carrier \<F>\<^bsub>X\<^esub> . h x = group.lift C2 (X \<inter> (h \<circ> FreeGroups.insert)) x"
-     by (rule C2.lift_is_unique[OF C2_is_group _ hom, of "X \<inter> (h \<circ> FreeGroups.insert)"],
-             auto simp add:mem_def)
+    have "\<forall>x \<in> carrier \<F>\<^bsub>X\<^esub> . h x = group.lift C2 (\<lambda>z. z \<in> X & (h \<circ> FreeGroups.insert) z) x"
+     by (rule C2.lift_is_unique[OF C2_is_group _ hom, of "(\<lambda>z. z \<in> X & (h \<circ> FreeGroups.insert) z)"],
+             auto)
     thus ?case
     by -(rule extensionalityI[OF restrict_extensional extn], auto)
   qed

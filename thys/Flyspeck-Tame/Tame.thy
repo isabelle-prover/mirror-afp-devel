@@ -97,7 +97,7 @@ definition admissible\<^isub>1 :: "(face \<Rightarrow> nat) \<Rightarrow> graph 
 
 definition admissible\<^isub>2 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
  "admissible\<^isub>2 w g \<equiv> 
-  \<forall>v \<in> \<V> g. except g v = 0 \<longrightarrow> \<b> (tri g v) (quad g v) \<le> \<Sum>\<^bsub>f\<in>facesAt g v\<^esub> w f"
+  \<forall>v \<in> \<V> g. except g v = 0 \<longrightarrow> \<b> (tri g v) (quad g v) \<le> (\<Sum>\<^bsub>f\<in>facesAt g v\<^esub> w f)"
 
 definition admissible\<^isub>3 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
  "admissible\<^isub>3 w g  \<equiv>
@@ -135,7 +135,7 @@ text {* 7. There exists an admissible weight assignment of total
 weight less than the target: *}
 
 definition tame13a :: "graph \<Rightarrow> bool" where
-"tame13a g = (\<exists>w. admissible w g \<and> \<Sum>\<^bsub>f \<in> faces g\<^esub> w f < squanderTarget)"
+"tame13a g = (\<exists>w. admissible w g \<and> (\<Sum>\<^bsub>f \<in> faces g\<^esub> w f) < squanderTarget)"
 
 text {* Finally we define the notion of tameness. *}
 

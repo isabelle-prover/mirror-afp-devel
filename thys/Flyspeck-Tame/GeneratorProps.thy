@@ -77,7 +77,7 @@ proof -
     also have "\<dots> = (\<Sum>\<^bsub>f\<in>finals g'\<^esub> \<d> |vertices f| )"
       using dist' by(simp add:finals_def ListSum_conv_setsum)
     finally show "(\<Sum>\<^bsub>f\<in>finals g\<^esub> \<d> |vertices f| ) + \<d> |vertices f|
-          \<le> \<Sum>\<^bsub>f\<in>finals g'\<^esub> \<d> |vertices f|" .
+          \<le> (\<Sum>\<^bsub>f\<in>finals g'\<^esub> \<d> |vertices f| )" .
   qed
   with size show ?thesis by blast
 qed
