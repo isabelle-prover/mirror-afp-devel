@@ -27,7 +27,7 @@ primrec steps :: "('a,'s)na => 'a list => ('s * 's)set" where
 "steps A (a#w) = step A a  O  steps A w"
 
 lemma steps_append[simp]:
- "steps A (v@w) = steps A v  O  steps A w";
+ "steps A (v@w) = steps A v  O  steps A w"
 by(induct v, simp_all add:O_assoc)
 
 lemma in_steps_append[iff]:
@@ -40,7 +40,7 @@ lemma delta_conv_steps: "!!p. delta A w p = {q. (p,q) : steps A w}"
 by(induct w)(auto simp:step_def)
 
 lemma accepts_conv_steps:
- "accepts A w = (? q. (start A,q) : steps A w & fin A q)";
+ "accepts A w = (? q. (start A,q) : steps A w & fin A q)"
 by(simp add: delta_conv_steps accepts_def)
 
 abbreviation
