@@ -11,9 +11,7 @@ lemma permutation_validS: "fs <~~> gs --> (validS fs = validS gs)"
 lemma modelAssigns_vblcase: "phi \<in> modelAssigns M \<Longrightarrow>  x \<in> objects M \<Longrightarrow> vblcase x phi \<in> modelAssigns M"
   apply (simp add: modelAssigns_def, rule)
   apply(erule_tac rangeE)
-  apply(case_tac xaa rule: vbl_casesE)
-  apply(simp add: vblsimps)
-  apply(simp add: vblsimps) apply force
+  apply(case_tac xaa rule: vbl_casesE, auto)
   done
 
 lemma tmp: "(!x : A. P x | Q) ==> (! x : A. P x) | Q " by blast
@@ -35,14 +33,14 @@ lemma soundnessFAll: "!!Gamma.
    apply(rule evalF_equiv)
    apply(rule equalOn_vblcaseI)
     apply(rule,rule)
-   apply(simp add: freeVarsFL_nil freeVarsFL_cons)
+   apply(simp add: freeVarsFL_cons)
    apply (rule equalOnI, force)
   apply(rule disjI2)
   apply(subgoal_tac "evalS M (\<lambda>y. if y = u then x else phi y) Gamma = evalS M phi Gamma")
    apply force
   apply(rule evalS_equiv)
   apply(rule equalOnI)
-  apply(force simp: freeVarsFL_nil freeVarsFL_cons)
+  apply(force simp: freeVarsFL_cons)
   done
 
 lemma soundnessFEx: "validS (instanceF x A # Gamma) ==> validS (FAll Neg A # Gamma)"
@@ -64,7 +62,7 @@ lemma soundnessFCut: "[| validS (C # Gamma); validS (FNot C # Delta) |] ==> vali
   apply(drule_tac x=M in spec)
   apply(drule_tac x=phi in bspec) apply assumption
   apply(drule_tac x=phi in bspec) apply assumption
-  apply (simp add: evalS_append evalS_cons evalF_FNot, blast)
+  apply (simp add: evalS_append evalF_FNot, blast)
   done
 
 lemma soundness: "fs : deductions(PC) ==> (validS fs)"  
