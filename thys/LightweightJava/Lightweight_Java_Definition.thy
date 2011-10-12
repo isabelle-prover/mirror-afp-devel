@@ -1,7 +1,7 @@
 (*  Title:       Lightweight Java, the definition
     Authors:     Rok Strnisa <rok@strnisa.com>, 2006
                  Matthew Parkinson <matt@matthewp.com>, 2006
-    Maintainer:  
+    Maintainer:
     Note:        This file should _not_ be modified directly. Please see the
                  accompanying README file.
 *)
@@ -19,59 +19,59 @@ type_synonym "meth" = "string"
 type_synonym "var" = "string"
 type_synonym "dcl" = "string"
 type_synonym "oid" = "nat"
-datatype "fqn" = 
-   fqn_def "dcl"  
+datatype "fqn" =
+   fqn_def "dcl"
 
-datatype "cl" = 
-   cl_object  
- | cl_fqn "fqn"  
+datatype "cl" =
+   cl_object
+ | cl_fqn "fqn"
 
-datatype "x" = 
-   x_var "var"  
- | x_this  
+datatype "x" =
+   x_var "var"
+ | x_this
 
-datatype "vd" = 
-   vd_def "cl" "var"  
+datatype "vd" =
+   vd_def "cl" "var"
 
 type_synonym "X" = "x list"
-datatype "ctx" = 
-   ctx_def  
+datatype "ctx" =
+   ctx_def
 
 type_synonym "vds" = "vd list"
-datatype "s" = 
-   s_block "s list"  
- | s_ass "var" "x"  
- | s_read "var" "x" "f"  
- | s_write "x" "f" "x"  
- | s_if "x" "x" "s" "s"  
- | s_new "var" "ctx" "cl"  
- | s_call "var" "x" "meth" "X"  
+datatype "s" =
+   s_block "s list"
+ | s_ass "var" "x"
+ | s_read "var" "x" "f"
+ | s_write "x" "f" "x"
+ | s_if "x" "x" "s" "s"
+ | s_new "var" "ctx" "cl"
+ | s_call "var" "x" "meth" "X"
 
-datatype "meth_sig" = 
-   meth_sig_def "cl" "meth" "vds"  
+datatype "meth_sig" =
+   meth_sig_def "cl" "meth" "vds"
 
-datatype "meth_body" = 
-   meth_body_def "s list" "x"  
+datatype "meth_body" =
+   meth_body_def "s list" "x"
 
-datatype "fd" = 
-   fd_def "cl" "f"  
+datatype "fd" =
+   fd_def "cl" "f"
 
-datatype "meth_def" = 
-   meth_def_def "meth_sig" "meth_body"  
+datatype "meth_def" =
+   meth_def_def "meth_sig" "meth_body"
 
 type_synonym "fds" = "fd list"
 type_synonym "meth_defs" = "meth_def list"
-datatype "cld" = 
-   cld_def "dcl" "cl" "fds" "meth_defs"  
+datatype "cld" =
+   cld_def "dcl" "cl" "fds" "meth_defs"
 
 type_synonym "ctxcld" = "(ctx \<times> cld)"
-datatype "ty" = 
-   ty_top  
- | ty_def "ctx" "dcl"  
+datatype "ty" =
+   ty_top
+ | ty_def "ctx" "dcl"
 
-datatype "v" = 
-   v_null  
- | v_oid "oid"  
+datatype "v" =
+   v_null
+ | v_oid "oid"
 
 type_synonym "clds" = "cld list"
 type_synonym "ctxclds" = "ctxcld list"
@@ -80,8 +80,8 @@ type_synonym "ty_opt" = "ty option"
 type_synonym "tys" = "ty list"
 type_synonym "L" = "x \<rightharpoonup> v"
 type_synonym "H" = "oid \<rightharpoonup> (ty \<times> (f \<rightharpoonup> v))"
-datatype "Exception" = 
-   ex_npe  
+datatype "Exception" =
+   ex_npe
 
 type_synonym "P" = "clds"
 type_synonym "ctxcld_opt" = "ctxcld option"
@@ -89,20 +89,20 @@ type_synonym "nn" = "nat"
 type_synonym "ctxclds_opt" = "ctxclds option"
 type_synonym "fs_opt" = "fs option"
 type_synonym "meths" = "meth list"
-datatype "ty_opt_bot" = 
-   ty_opt_bot_opt "ty_opt"  
- | ty_opt_bot_bot  
+datatype "ty_opt_bot" =
+   ty_opt_bot_opt "ty_opt"
+ | ty_opt_bot_bot
 
 type_synonym "meth_def_opt" = "meth_def option"
 type_synonym "ctxmeth_def_opt" = "(ctx \<times> meth_def) option"
-datatype "mty" = 
-   mty_def "tys" "ty"  
+datatype "mty" =
+   mty_def "tys" "ty"
 
 type_synonym "\<Gamma>" = "x \<rightharpoonup> ty"
 type_synonym "v_opt" = "v option"
-datatype "config" = 
-   config_normal "P" "L" "H" "s list"  
- | config_ex "P" "L" "H" "Exception"  
+datatype "config" =
+   config_normal "P" "L" "H" "s list"
+ | config_ex "P" "L" "H" "Exception"
 
 type_synonym "T" = "x \<rightharpoonup> x"
 
@@ -152,7 +152,7 @@ where
 method_nameI: "method_name ((meth_def_def (meth_sig_def cl meth vds) meth_body)) (meth)"
 
 (*defns distinct_names_def *)
-inductive distinct_names :: "P set"
+inductive distinct_names :: "P \<Rightarrow> bool"
 where
 (* defn distinct_names *)
 
@@ -203,7 +203,7 @@ path_length (P) (ctx') (cl) (nn)\<rbrakk> \<Longrightarrow>
 path_length (P) (ctx) ((cl_fqn fqn)) ( ( nn +  1  ) )"
 
 (*defns acyclic_clds_def *)
-inductive acyclic_clds :: "P set"
+inductive acyclic_clds :: "P \<Rightarrow> bool"
 where
 (* defn acyclic_clds *)
 
@@ -432,7 +432,7 @@ inductive wf_object :: "P \<Rightarrow> H \<Rightarrow> v_opt \<Rightarrow> ty_o
  and wf_meth :: "P \<Rightarrow> ty \<Rightarrow> meth_def \<Rightarrow> bool"
  and wf_class_common :: "P \<Rightarrow> ctx \<Rightarrow> dcl \<Rightarrow> cl \<Rightarrow> fds \<Rightarrow> meth_defs \<Rightarrow> bool"
  and wf_class :: "P \<Rightarrow> cld \<Rightarrow> bool"
- and wf_program :: "P set"
+ and wf_program :: "P \<Rightarrow> bool"
 where
 (* defn object *)
 
@@ -558,29 +558,29 @@ tr_s (T) ((s_block ((List.map (%((s_XXX::s),(s_'::s)).s_XXX) s_s'_list)))) ((s_b
 
 | tr_s_var_assignI: "\<lbrakk> (case  T  (x_var  var ) of
                     None \<Rightarrow>  var  | Some x' \<Rightarrow>
-                 (case x' of x_this \<Rightarrow>  var 
+                 (case x' of x_this \<Rightarrow>  var
                            | x_var var' \<Rightarrow> var')) =  var'  ;
- (case  T   x  of None \<Rightarrow>  x 
+ (case  T   x  of None \<Rightarrow>  x
                                     | Some x' \<Rightarrow> x') =  x' \<rbrakk> \<Longrightarrow>
 tr_s (T) ((s_ass var x)) ((s_ass var' x'))"
 
 | tr_s_field_readI: "\<lbrakk> (case  T  (x_var  var ) of
                     None \<Rightarrow>  var  | Some x' \<Rightarrow>
-                 (case x' of x_this \<Rightarrow>  var 
+                 (case x' of x_this \<Rightarrow>  var
                            | x_var var' \<Rightarrow> var')) =  var'  ;
- (case  T   x  of None \<Rightarrow>  x 
+ (case  T   x  of None \<Rightarrow>  x
                                     | Some x' \<Rightarrow> x') =  x' \<rbrakk> \<Longrightarrow>
 tr_s (T) ((s_read var x f)) ((s_read var' x' f))"
 
-| tr_s_field_writeI: "\<lbrakk> (case  T   x  of None \<Rightarrow>  x 
+| tr_s_field_writeI: "\<lbrakk> (case  T   x  of None \<Rightarrow>  x
                                     | Some x' \<Rightarrow> x') =  x'  ;
- (case  T   y  of None \<Rightarrow>  y 
+ (case  T   y  of None \<Rightarrow>  y
                                     | Some x' \<Rightarrow> x') =  y' \<rbrakk> \<Longrightarrow>
 tr_s (T) ((s_write x f y)) ((s_write x' f y'))"
 
-| tr_s_ifI: "\<lbrakk> (case  T   x  of None \<Rightarrow>  x 
+| tr_s_ifI: "\<lbrakk> (case  T   x  of None \<Rightarrow>  x
                                     | Some x' \<Rightarrow> x') =  x'  ;
- (case  T   y  of None \<Rightarrow>  y 
+ (case  T   y  of None \<Rightarrow>  y
                                     | Some x' \<Rightarrow> x') =  y'  ;
 tr_s (T) (s1) (s1') ;
 tr_s (T) (s2) (s2')\<rbrakk> \<Longrightarrow>
@@ -588,17 +588,17 @@ tr_s (T) ((s_if x y s1 s2)) ((s_if x' y' s1' s2'))"
 
 | tr_s_newI: "\<lbrakk> (case  T  (x_var  var ) of
                     None \<Rightarrow>  var  | Some x' \<Rightarrow>
-                 (case x' of x_this \<Rightarrow>  var 
+                 (case x' of x_this \<Rightarrow>  var
                            | x_var var' \<Rightarrow> var')) =  var' \<rbrakk> \<Longrightarrow>
 tr_s (T) ((s_new var ctx cl)) ((s_new var' ctx cl))"
 
 | tr_s_mcallI: "\<lbrakk> (case  T  (x_var  var ) of
                     None \<Rightarrow>  var  | Some x' \<Rightarrow>
-                 (case x' of x_this \<Rightarrow>  var 
+                 (case x' of x_this \<Rightarrow>  var
                            | x_var var' \<Rightarrow> var')) =  var'  ;
- (case  T   x  of None \<Rightarrow>  x 
+ (case  T   x  of None \<Rightarrow>  x
                                     | Some x' \<Rightarrow> x') =  x'  ;
- list_all (\<lambda>f. f)  ((List.map (%((y_XXX::x),(y_'::x)). (case  T   y_XXX  of None \<Rightarrow>  y_XXX 
+ list_all (\<lambda>f. f)  ((List.map (%((y_XXX::x),(y_'::x)). (case  T   y_XXX  of None \<Rightarrow>  y_XXX
                                     | Some x' \<Rightarrow> x') =  y_' ) y_y'_list)) \<rbrakk> \<Longrightarrow>
 tr_s (T) ((s_call var x meth  ((List.map (%((y_XXX::x),(y_'::x)).y_XXX) y_y'_list)) )) ((s_call var' x' meth  ((List.map (%((y_XXX::x),(y_'::x)).y_') y_y'_list)) ))"
 
@@ -629,7 +629,7 @@ r_stmt ((config_normal P L H ([((s_write x f y))] @ s_list))) ((config_ex P L H 
 r_stmt ((config_normal P L H ([((s_write x f y))] @ s_list))) ((config_normal P L  (case  H   oid  of
                 None \<Rightarrow> arbitrary
               | Some tyfs \<Rightarrow>
-                   (( H  ( oid   \<mapsto> 
+                   (( H  ( oid   \<mapsto>
                        (fst tyfs, snd tyfs ( f   \<mapsto>   v ))))::H))  (s_list)))"
 
 | r_if_trueI: "\<lbrakk>  L   x   = Some  v  ;
@@ -665,7 +665,7 @@ find_meth_def (P) (ty) (meth) ( (Some ( ctx , (meth_def_def (meth_sig_def cl met
  L'  =   (  ( L  ++ (map_of ( ((List.map (%((y_XXX::x),(cl_XXX::cl),(var_XXX::var),(var_'::var),(v_XXX::v)).((x_var var_'),v_XXX)) y_cl_var_var'_v_list)) )))   ( x'   \<mapsto>   (v_oid oid) ))   ;
  T  =   (  (map_of ( ((List.map (%((y_XXX::x),(cl_XXX::cl),(var_XXX::var),(var_'::var),(v_XXX::v)).((x_var var_XXX),(x_var var_'))) y_cl_var_var'_v_list)) ))   ( x_this   \<mapsto>   x' ))   ;
  list_all (\<lambda>f. f)  ((List.map (%((s_''::s),(s_'::s)).tr_s (T) (s_') (s_'')) s''_s'_list))  ;
- (case  T   y  of None \<Rightarrow>  y 
+ (case  T   y  of None \<Rightarrow>  y
                                     | Some x' \<Rightarrow> x') =  y' \<rbrakk> \<Longrightarrow>
 r_stmt ((config_normal P L H ([((s_call var x meth  ((List.map (%((y_XXX::x),(cl_XXX::cl),(var_XXX::var),(var_'::var),(v_XXX::v)).y_XXX) y_cl_var_var'_v_list)) ))] @ s_list))) ((config_normal P L' H ((List.map (%((s_''::s),(s_'::s)).s_'') s''_s'_list) @ [((s_ass var y'))] @ s_list)))"
 
