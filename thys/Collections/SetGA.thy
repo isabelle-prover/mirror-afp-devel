@@ -963,7 +963,7 @@ proof -
           -- "Init"
         apply simp
           -- "Step"
-	      apply (auto simp add: s3.ins_correct split: option.split) [1]
+        apply (auto simp add: s3.ins_correct split: option.split) [1]
           -- "Final"
         apply auto [1]
         -- "Final"
@@ -1051,7 +1051,7 @@ proof -
         apply simp
           -- "Step"
         apply (subgoal_tac "\<And>z. f x xa = Some z \<Longrightarrow> z \<notin> \<alpha>3 \<sigma>'")
-	      apply (auto simp add: s3.ins_dj_correct split: option.split) [1]
+        apply (auto simp add: s3.ins_dj_correct split: option.split) [1]
         apply (auto dest: INJ split:option.split) [1]
           -- "Final"
         apply auto [1]
