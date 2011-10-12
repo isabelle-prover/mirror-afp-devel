@@ -148,15 +148,15 @@ proof (simp add:is_sublist_def)
       case goal1 note xs = goal1
       show ?case
       proof
-	case goal1 show ?case by auto
+        case goal1 show ?case by auto
       next
-	case goal2 show ?case
-	proof
-	  case goal1
-	  have "ys = take |xs| ys @ drop |xs| ys" by simp
-	  also have "\<dots> = [] @ xs @ drop |xs| ys" by(simp add:xs[symmetric])
-	  finally show ?case by blast
-	qed
+        case goal2 show ?case
+        proof
+          case goal1
+          have "ys = take |xs| ys @ drop |xs| ys" by simp
+          also have "\<dots> = [] @ xs @ drop |xs| ys" by(simp add:xs[symmetric])
+          finally show ?case by blast
+        qed
       qed
     qed
   next
@@ -165,29 +165,29 @@ proof (simp add:is_sublist_def)
       case goal1 note xs_neq = this
       show ?case
       proof
-	case goal1 show ?case by auto
+        case goal1 show ?case by auto
       next
-	case goal2 show ?case
-	proof
-	  case goal1 note not_less = this show ?case
-	  proof
-	    case goal1
-	    then obtain as bs where ys: "ys = as @ xs @ bs" by blast
-	    have "as \<noteq> []" using xs_neq ys by auto
-	    then obtain a as' where "as = a # as'"
-	      by (simp add:neq_Nil_conv) blast
-	    hence "tl ys = as' @ xs @ bs" by(simp add:ys)
-	    thus ?case by blast
-	  next
-	    case goal2
-	    then obtain as bs where ys: "tl ys = as @ xs @ bs" by blast
-	    have "ys \<noteq> []" using xs_neq not_less by auto
-	    then obtain y ys' where "ys = y # ys'"
-	      by (simp add:neq_Nil_conv) blast
-	    hence "ys = (y#as) @ xs @ bs" using ys by simp
-	    thus ?case by blast
-	  qed
-	qed
+        case goal2 show ?case
+        proof
+          case goal1 note not_less = this show ?case
+          proof
+            case goal1
+            then obtain as bs where ys: "ys = as @ xs @ bs" by blast
+            have "as \<noteq> []" using xs_neq ys by auto
+            then obtain a as' where "as = a # as'"
+              by (simp add:neq_Nil_conv) blast
+            hence "tl ys = as' @ xs @ bs" by(simp add:ys)
+            thus ?case by blast
+          next
+            case goal2
+            then obtain as bs where ys: "tl ys = as @ xs @ bs" by blast
+            have "ys \<noteq> []" using xs_neq not_less by auto
+            then obtain y ys' where "ys = y # ys'"
+              by (simp add:neq_Nil_conv) blast
+            hence "ys = (y#as) @ xs @ bs" using ys by simp
+            thus ?case by blast
+          qed
+        qed
       qed
     qed
   qed
@@ -664,7 +664,7 @@ proof -
       def b \<equiv> "fst (splitAt ram2 (snd (splitAt ram1 vs)))"
       def c \<equiv> "snd (splitAt ram2 (snd (splitAt ram1 vs)))"
       case True with r1 a_def b_def c_def have "vs = a @ [ram1] @ b @ [ram2] @ c"
-	by (auto dest!: splitAt_ram)
+        by (auto dest!: splitAt_ram)
       then show ?thesis apply (simp add: before_def) by auto
     next
       def ab \<equiv> "fst (splitAt ram1 vs)"
@@ -902,15 +902,15 @@ next
       case False then have r1in: "ram1 \<in> set vs" by auto
       then show ?thesis
       proof (cases "ram2 \<notin> set vs")
-	from d have h1: "ram1 \<notin> set (fst (splitAt ram1 vs))" by (auto del: notI)
-	case True with d h1 show ?thesis
+        from d have h1: "ram1 \<notin> set (fst (splitAt ram1 vs))" by (auto del: notI)
+        case True with d h1 show ?thesis
         by (auto dest: splitAt_not1 splitAt_in_fst splitAt_ram
         splitAt_no_ram simp: between_def split_def del: notI)
       next
-	case False then have r2in: "ram2 \<in> set vs" by auto
-	with d neq r1in have "pre_between vs ram1 ram2"
+        case False then have r2in: "ram2 \<in> set vs" by auto
+        with d neq r1in have "pre_between vs ram1 ram2"
           by (auto simp: pre_between_def)
-	with p show ?thesis by auto
+        with p show ?thesis by auto
       qed
     qed
   qed
@@ -951,12 +951,12 @@ next
       case False then have r1in: "ram2 \<in> set vs" by auto
       then show ?thesis
       proof (cases "ram1 \<notin> set vs")
-	from d have h1: "ram1 \<notin> set (fst (splitAt ram1 vs))" by (auto del: notI)
-	case True with d h1 show ?thesis by  (auto dest: splitAt_ram splitAt_no_ram simp: between_def split_def del: notI)
+        from d have h1: "ram1 \<notin> set (fst (splitAt ram1 vs))" by (auto del: notI)
+        case True with d h1 show ?thesis by  (auto dest: splitAt_ram splitAt_no_ram simp: between_def split_def del: notI)
       next
-	case False then have r2in: "ram1 \<in> set vs" by auto
-	with d neq r1in have "pre_between vs ram1 ram2" by (auto simp: pre_between_def)
-	with p show ?thesis by auto
+        case False then have r2in: "ram1 \<in> set vs" by auto
+        with d neq r1in have "pre_between vs ram1 ram2" by (auto simp: pre_between_def)
+        with p show ?thesis by auto
       qed
     qed
   qed
@@ -1049,8 +1049,8 @@ proof -
     next
       case (Cons u' us')
       with vors pb2 show ?thesis apply (auto simp: before_def)
-	apply (case_tac "a") apply auto
-	by (simp_all add: between_def split_def pre_between_def)
+        apply (case_tac "a") apply auto
+        by (simp_all add: between_def split_def pre_between_def)
     qed
   qed
 
@@ -1065,8 +1065,8 @@ proof -
     next
       case (Cons u' us')
       with vors pb2 show ?thesis apply (auto simp: before_def)
-	apply (case_tac "a") apply auto
-	by (simp_all add: between_def split_def pre_between_def)
+        apply (case_tac "a") apply auto
+        by (simp_all add: between_def split_def pre_between_def)
     qed
   qed
 
@@ -2722,7 +2722,7 @@ next
      apply (case_tac "vs")  apply simp
      apply simp apply (intro exI)
      apply (subgoal_tac "ram2 # between (vertices f) ram2 ram1 @ ram1 # a # list =
-	(ram2 # between (vertices f) ram2 ram1) @ ram1 # a # list") apply assumption apply simp
+        (ram2 # between (vertices f) ram2 ram1) @ ram1 # a # list") apply assumption apply simp
     apply (case_tac "c = last vs \<and> d = ram2")
      apply (case_tac vs rule:rev_exhaust) apply simp
      apply simp
@@ -2737,10 +2737,10 @@ next
     apply (case_tac "(c, d) \<in> Edges vs") apply (simp add: Edges_def is_sublist_def)
      apply (elim exE) apply simp apply (rule conjI) apply (rule impI) apply (rule disjI1) apply (intro exI)
       apply (subgoal_tac "ram2 # between (vertices f) ram2 ram1 @ ram1 # as @ [c, d]
-	= (ram2 # between (vertices f) ram2 ram1 @ ram1 # as) @ c # d # []") apply assumption apply simp
+        = (ram2 # between (vertices f) ram2 ram1 @ ram1 # as) @ c # d # []") apply assumption apply simp
      apply (rule impI) apply (rule disjI1) apply (intro exI)
      apply (subgoal_tac "ram2 # between (vertices f) ram2 ram1 @ ram1 # as @ c # d # bs
-	= (ram2 # between (vertices f) ram2 ram1 @ ram1 # as) @ c # d # bs") apply assumption apply simp
+        = (ram2 # between (vertices f) ram2 ram1 @ ram1 # as) @ c # d # bs") apply assumption apply simp
     apply (simp add: Edges_def is_sublist_def)
     apply (elim exE) apply simp apply (rule disjI1) apply (intro exI)
     apply (subgoal_tac "ram2 # as @ c # d # bs @ ram1 # vs = (ram2 # as) @ c # d # (bs @ ram1 # vs)")
@@ -2875,17 +2875,17 @@ next
      apply (case_tac "vs")  apply simp
      apply simp apply (intro exI)
      apply (subgoal_tac "ram2 # ram1 # a # list =
-	[ram2] @ ram1 # a # list") apply assumption  apply simp
+        [ram2] @ ram1 # a # list") apply assumption  apply simp
     apply (case_tac "c = last vs \<and> d = ram2")
      apply (case_tac vs rule: rev_exhaust) apply simp
      apply simp
     apply (simp add: Edges_def is_sublist_def)
     apply (elim exE) apply simp apply (rule conjI) apply (rule impI) apply (rule disjI1) apply (intro exI)
      apply (subgoal_tac "ram2 # ram1 # as @ [c, d]
-	= (ram2 # ram1 # as) @ c # d # []") apply assumption apply simp
+        = (ram2 # ram1 # as) @ c # d # []") apply assumption apply simp
     apply (rule impI) apply (rule disjI1) apply (intro exI)
     apply (subgoal_tac "ram2 #  ram1 # as @ c # d # bs
-	= (ram2 # ram1 # as) @ c # d # bs") apply assumption by simp
+        = (ram2 # ram1 # as) @ c # d # bs") apply assumption by simp
 qed
 
 
@@ -3044,7 +3044,7 @@ proof (intro equalityI subsetI)
     apply (case_tac "c = ram2 \<and> d = hd (between (vertices f) ram2 ram1)")
       apply (case_tac "between (vertices f) ram2 ram1") apply simp apply (simp add: is_sublist_def) apply (intro exI)
       apply (subgoal_tac "ram1 # ram2 # a # list =
-	[ram1] @ ram2 # a # (list)") apply assumption apply simp
+        [ram1] @ ram2 # a # (list)") apply assumption apply simp
     apply simp
       apply (subgoal_tac "is_sublist [c, d] ((ram1 #
                         [ram2]) @ between (vertices f) ram2 ram1 @ [])")
@@ -3116,7 +3116,7 @@ proof (intro equalityI subsetI)
       apply (case_tac "between (vertices f) ram1 ram2" rule: rev_exhaust) apply simp apply (simp add: is_sublist_def)
       apply (intro exI)
       apply (subgoal_tac "ram1 # ys @ [y, ram2] =
-	(ram1 # ys) @ y # ram2 # []") apply assumption apply simp
+        (ram1 # ys) @ y # ram2 # []") apply assumption apply simp
     apply simp
       apply (simp add: Edges_def)
       apply (subgoal_tac "is_sublist [c, d] ([ram1] @ between (vertices f) ram1 ram2 @ [ram2])")
@@ -3151,24 +3151,24 @@ proof (intro equalityI subsetI)
         apply (drule is_sublist_distinct_prefix) apply (subgoal_tac "distinct (ram1 # vs1 @ [ram2])")
         apply simp apply (rule dist_vs1) apply simp
       apply (case_tac "c = ram2")
-	apply (subgoal_tac "\<not> is_sublist [c, d] (ram1 # vs1 @ [ram2])") apply simp
-	apply (rule is_sublist_notlast) apply (rule_tac dist_vs1) apply simp
+        apply (subgoal_tac "\<not> is_sublist [c, d] (ram1 # vs1 @ [ram2])") apply simp
+        apply (rule is_sublist_notlast) apply (rule_tac dist_vs1) apply simp
       apply simp apply (simp add: is_sublist_def) apply (elim exE)
         apply (case_tac "between (vertices f) ram1 ram2" rule: rev_exhaust) apply simp apply simp
-	apply (case_tac "bs" rule: rev_exhaust) apply simp apply simp
-	apply (rule disjI2) apply (rule disjI2) apply (rule disjI1) apply (intro exI) apply simp
+        apply (case_tac "bs" rule: rev_exhaust) apply simp apply simp
+        apply (rule disjI2) apply (rule disjI2) apply (rule disjI1) apply (intro exI) apply simp
     apply simp
       apply (case_tac "c = ram2")
         apply (case_tac "between (vertices f) ram2 ram1") apply simp apply simp
         apply (drule is_sublist_distinct_prefix) apply (subgoal_tac "distinct (ram2 # vs2 @ [ram1])")
         apply simp apply (rule dist_vs2) apply simp
       apply (case_tac "c = ram1")
-	apply (subgoal_tac "\<not> is_sublist [c, d] (ram2 # vs2 @ [ram1])") apply simp
-	apply (rule is_sublist_notlast) apply (rule_tac dist_vs2) apply simp
+        apply (subgoal_tac "\<not> is_sublist [c, d] (ram2 # vs2 @ [ram1])") apply simp
+        apply (rule is_sublist_notlast) apply (rule_tac dist_vs2) apply simp
       apply simp apply (simp add: is_sublist_def) apply (elim exE)
         apply (case_tac "between (vertices f) ram2 ram1" rule: rev_exhaust) apply simp apply simp
-	apply (case_tac "bs" rule: rev_exhaust) apply simp apply simp
-	apply (rule disjI2) apply (rule disjI2) apply (rule disjI2) apply (intro exI) apply simp
+        apply (case_tac "bs" rule: rev_exhaust) apply simp apply simp
+        apply (rule disjI2) apply (rule disjI2) apply (rule disjI2) apply (intro exI) apply simp
    apply (rule pre_split_face_p_between) by simp
 next
   fix x
@@ -3191,11 +3191,11 @@ next
       apply (case_tac "between (vertices f) ram1 ram2" rule: rev_exhaust) apply simp apply (simp add: is_sublist_def)
       apply (intro exI)
       apply (subgoal_tac "ram1 # ys @ y # ram2 # between (vertices f) ram2 ram1 =
-	(ram1 # ys) @ y # ram2 # (between (vertices f) ram2 ram1)") apply assumption apply simp apply simp
+        (ram1 # ys) @ y # ram2 # (between (vertices f) ram2 ram1)") apply assumption apply simp apply simp
     apply (case_tac "c = ram2 \<and> d = hd (between (vertices f) ram2 ram1)")
       apply (case_tac "between (vertices f) ram2 ram1") apply simp apply (simp add: is_sublist_def) apply (intro exI)
       apply (subgoal_tac "ram1 # between (vertices f) ram1 ram2 @ ram2 # a # list =
-	(ram1 # between (vertices f) ram1 ram2) @ ram2 # a # (list)") apply assumption apply simp apply simp
+        (ram1 # between (vertices f) ram1 ram2) @ ram2 # a # (list)") apply assumption apply simp apply simp
     apply (case_tac "(c, d) \<in> Edges (between (vertices f) ram1 ram2)") apply (simp add: Edges_def)
       apply (subgoal_tac "is_sublist [c, d] ([ram1] @ between (vertices f) ram1 ram2 @
                         (ram2 # between (vertices f) ram2 ram1))")
@@ -3284,7 +3284,7 @@ proof -
     apply (frule split_face_edges_f21) apply (rule split) apply simp apply simp apply simp
       apply (case_tac "between (vertices f) ram1 ram2 = []")
         apply (frule split_face_edges_f_vs1) apply simp apply simp apply simp apply simp apply force
-	apply (frule split_face_edges_f) apply simp apply simp apply simp apply simp apply force
+        apply (frule split_face_edges_f) apply simp apply simp apply simp apply simp apply force
     apply simp
     apply (subgoal_tac "pre_split_face f ram1 ram2 vs")
     apply (case_tac "between (vertices f) ram1 ram2 = []")
@@ -3295,7 +3295,7 @@ proof -
     apply (frule split_face_edges_f12) apply (rule split) apply simp apply simp apply simp
       apply (case_tac "between (vertices f) ram2 ram1 = []")
         apply (frule split_face_edges_f_vs2) apply simp apply simp apply simp apply simp apply force
-	apply (frule split_face_edges_f) apply simp apply simp apply simp apply simp apply force
+        apply (frule split_face_edges_f) apply simp apply simp apply simp apply simp apply force
     apply simp
     apply simp
     apply (subgoal_tac "pre_split_face f ram1 ram2 vs")
@@ -3566,12 +3566,12 @@ proof -
       case (Cons e' es')
       with cons1 show ?thesis
       proof (cases n)
-	case 0 with Cons cons1 show ?thesis by simp
+        case 0 with Cons cons1 show ?thesis by simp
       next
-	case (Suc m) with Cons cons1
-	have "\<And> old. natToVertexListRec old v f es ! Suc m = (if es ! m = es ! Suc m then None else Some (f\<^bsup>es ! Suc m\<^esup> \<bullet> v))"
-	  by (rule_tac cons1) auto
-	then show ?thesis apply (cases "e = old") by (simp_all add: Suc)
+        case (Suc m) with Cons cons1
+        have "\<And> old. natToVertexListRec old v f es ! Suc m = (if es ! m = es ! Suc m then None else Some (f\<^bsup>es ! Suc m\<^esup> \<bullet> v))"
+          by (rule_tac cons1) auto
+        then show ?thesis apply (cases "e = old") by (simp_all add: Suc)
       qed
     qed
   qed
@@ -3666,47 +3666,47 @@ next
       from Suc have n': "n - Suc 0 = n'" by auto
       show ?thesis
       proof (cases "Suc n = length es")
-	case True then
-	have small_n: "n < length es" by auto
-	from True have "take (Suc n) es = es" by auto
-	with small_n have "take n es @ [es!n] = es" by (simp add: take_Suc_conv_app_nth)
-	then have esn_simps: "take n es = butlast es \<and>  es!n = last es" by (cases es rule: rev_exhaust) auto
+        case True then
+        have small_n: "n < length es" by auto
+        from True have "take (Suc n) es = es" by auto
+        with small_n have "take n es @ [es!n] = es" by (simp add: take_Suc_conv_app_nth)
+        then have esn_simps: "take n es = butlast es \<and>  es!n = last es" by (cases es rule: rev_exhaust) auto
 
-	from True Suc have n'l: "Suc n' = length (butlast es)" by auto
-	then have small_n': "n' < length (butlast es)" by auto
+        from True Suc have n'l: "Suc n' = length (butlast es)" by auto
+        then have small_n': "n' < length (butlast es)" by auto
 
-	from Suc small_n have take_n': "take (Suc n') (butlast es @ [last es]) = take (Suc n') (butlast es)" by auto
-	
-	from small_n have es_exh: "es = butlast es @ [last es]" by (cases es rule: rev_exhaust) auto
-	
-	from n'l have "take (Suc n') (butlast es @ [last es]) = butlast es" by auto
-	with es_exh have "take (Suc n') es = butlast es" by auto
-	with small_n Suc have "take n' es @ [es!n'] = (butlast es)" by (simp add: take_Suc_conv_app_nth)
-	with small_n' have esn'_simps: "take n' es = butlast (butlast es) \<and>  es!n' = last (butlast es)"
+        from Suc small_n have take_n': "take (Suc n') (butlast es @ [last es]) = take (Suc n') (butlast es)" by auto
+        
+        from small_n have es_exh: "es = butlast es @ [last es]" by (cases es rule: rev_exhaust) auto
+        
+        from n'l have "take (Suc n') (butlast es @ [last es]) = butlast es" by auto
+        with es_exh have "take (Suc n') es = butlast es" by auto
+        with small_n Suc have "take n' es @ [es!n'] = (butlast es)" by (simp add: take_Suc_conv_app_nth)
+        with small_n' have esn'_simps: "take n' es = butlast (butlast es) \<and>  es!n' = last (butlast es)"
           by (cases "butlast es" rule: rev_exhaust) auto
 
-	from suc1 have "last (butlast es) < last es" by auto
-	with esn esn_simps esn'_simps have False by auto (* have "last (butlast es) = last es" by auto  *)
-	then show ?thesis by auto
+        from suc1 have "last (butlast es) < last es" by auto
+        with esn esn_simps esn'_simps have False by auto (* have "last (butlast es) = last es" by auto  *)
+        then show ?thesis by auto
       next
-	case False with suc1 have le: "Suc n < length es" by auto
-	from suc1 le have "es = take (Suc n) es @ es!(Suc n) # drop (Suc (Suc n)) es" by (auto intro: id_take_nth_drop)
-	with suc1 have "increasing (take (Suc n) es @ es!(Suc n) # drop (Suc (Suc n)) es)" by auto
-	then have "\<forall> i \<in> (set (take (Suc n) es)). i \<le>  es ! (Suc n)" by (auto intro: increasing2)
-	with suc1 have  "\<forall> i \<in> (set (take n es)). i \<le>  es ! (Suc n)" by (simp add: take_Suc_conv_app_nth)
-	then have seq: "sublist (take (Suc (es ! Suc n)) (verticesFrom f v)) (set (take n es))
+        case False with suc1 have le: "Suc n < length es" by auto
+        from suc1 le have "es = take (Suc n) es @ es!(Suc n) # drop (Suc (Suc n)) es" by (auto intro: id_take_nth_drop)
+        with suc1 have "increasing (take (Suc n) es @ es!(Suc n) # drop (Suc (Suc n)) es)" by auto
+        then have "\<forall> i \<in> (set (take (Suc n) es)). i \<le>  es ! (Suc n)" by (auto intro: increasing2)
+        with suc1 have  "\<forall> i \<in> (set (take n es)). i \<le>  es ! (Suc n)" by (simp add: take_Suc_conv_app_nth)
+        then have seq: "sublist (take (Suc (es ! Suc n)) (verticesFrom f v)) (set (take n es))
           = sublist (verticesFrom f v) (set (take n es))"
-	  apply (rule_tac sublist_take) by auto
-	from suc1 have "es = take n es @ es!n # drop (Suc n) es" by (auto intro: id_take_nth_drop)
-	with suc1 have "increasing (take n es @ es!n # drop (Suc n) es)" by auto
-	then have "\<forall> i \<in> (set (take n es)). i \<le>  es ! n" by (auto intro: increasing2)
-	with suc1 esn have  "\<forall> i \<in> (set (take n es)). i \<le>  es ! n'" by (simp add: take_Suc_conv_app_nth)
-	with Suc have seq2: "sublist (take (Suc (es ! n')) (verticesFrom f v)) (set (take n es))
+          apply (rule_tac sublist_take) by auto
+        from suc1 have "es = take n es @ es!n # drop (Suc n) es" by (auto intro: id_take_nth_drop)
+        with suc1 have "increasing (take n es @ es!n # drop (Suc n) es)" by auto
+        then have "\<forall> i \<in> (set (take n es)). i \<le>  es ! n" by (auto intro: increasing2)
+        with suc1 esn have  "\<forall> i \<in> (set (take n es)). i \<le>  es ! n'" by (simp add: take_Suc_conv_app_nth)
+        with Suc have seq2: "sublist (take (Suc (es ! n')) (verticesFrom f v)) (set (take n es))
          = sublist  (verticesFrom f v) (set (take n es))"
-	  apply (rule_tac sublist_take) by auto
-	from Suc suc1 have "(insert (es ! n') (set (take n es))) = set (take n es)"
+          apply (rule_tac sublist_take) by auto
+        from Suc suc1 have "(insert (es ! n') (set (take n es))) = set (take n es)"
         apply auto by (simp add: take_Suc_conv_app_nth)
-	with esn None suc1 seq seq2 n' show ?thesis by (simp add: take_Suc_conv_app_nth)
+        with esn None suc1 seq seq2 n' show ?thesis by (simp add: take_Suc_conv_app_nth)
       qed
     qed
   next
@@ -3720,7 +3720,7 @@ next
       then have sub: "sublist (verticesFrom f v) {0} = [v]" by (auto simp: sublist_Cons)
       from 0 suc1 have "es!0 = 0" by (cases es)  auto
       with 0 Some suc1 lvs sub vsne show ?thesis
-	by (simp add: take_Suc_conv_app_nth natToVertexList_nth_0 nextVertices_def take_Suc
+        by (simp add: take_Suc_conv_app_nth natToVertexList_nth_0 nextVertices_def take_Suc
         sublist_Cons verticesFrom_hd del:verticesFrom_empty)
     next
       case (Suc n')
@@ -3728,7 +3728,7 @@ next
       from suc1 Suc have "Suc n' < length es" by auto
       with suc1 lvs esn  have "natToVertexList v f es !(Suc n') = Some (f\<^bsup>(es!(Suc n'))\<^esup> \<bullet> v)"
       apply (simp add: natToVertexList_nth_Suc)
-	by (simp add: Suc)
+        by (simp add: Suc)
       with Suc have "natToVertexList v f es ! n = Some (f\<^bsup>(es!n)\<^esup> \<bullet> v)" by auto
       with Some have v': "v' = f\<^bsup>(es!n)\<^esup> \<bullet> v" by simp
       from Suc have n': "n - Suc 0 = n'" by auto
@@ -3747,25 +3747,25 @@ next
 
       have "\<And>x. x \<in> (set (take n es)) \<Longrightarrow> x < (es ! n)"
       proof -
-	fix x
-	assume x: "x \<in> set (take n es)"
-	from suc1 Suc have "es = take n' es @ es!n' # drop (Suc n') es" by (auto intro: id_take_nth_drop)
-	with suc1 have "increasing (take n' es @ es!n' # drop (Suc n') es)" by auto
-	then have "\<And> x. x \<in> set (take n' es) \<Longrightarrow> x \<le> es!n'" by (auto intro!: increasing2)
-	with x Suc suc1 have "x \<le> es!n'" by (auto simp: take_Suc_conv_app_nth)
-	with smaller_n show "x < es!n" by auto
+        fix x
+        assume x: "x \<in> set (take n es)"
+        from suc1 Suc have "es = take n' es @ es!n' # drop (Suc n') es" by (auto intro: id_take_nth_drop)
+        with suc1 have "increasing (take n' es @ es!n' # drop (Suc n') es)" by auto
+        then have "\<And> x. x \<in> set (take n' es) \<Longrightarrow> x \<le> es!n'" by (auto intro!: increasing2)
+        with x Suc suc1 have "x \<le> es!n'" by (auto simp: take_Suc_conv_app_nth)
+        with smaller_n show "x < es!n" by auto
       qed
       then have "{i. i < es ! n \<and> i \<in> set (take n es)} = (set (take n es))" by auto
       then have elim_insert: "{i. i < es ! n \<and> i \<in> insert (es ! n) (set (take n es))} = (set (take n es))" by auto
 
       have "sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
-	sublist (take (es ! n) (verticesFrom f v)) {i. i < length (take (es ! n) (verticesFrom f v))
+        sublist (take (es ! n) (verticesFrom f v)) {i. i < length (take (es ! n) (verticesFrom f v))
          \<and> i \<in> (insert (es ! n) (set (take n es)))}" by (rule sublist_reduceIndices)
       with len have "sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
-	sublist (take (es ! n) (verticesFrom f v)) {i. i < (es ! n) \<and> i \<in> (insert (es ! n) (set (take n es)))}"
+        sublist (take (es ! n) (verticesFrom f v)) {i. i < (es ! n) \<and> i \<in> (insert (es ! n) (set (take n es)))}"
         by simp
       with elim_insert have sub2: "sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
-	sublist (take (es ! n) (verticesFrom f v)) (set (take n es))" by simp
+        sublist (take (es ! n) (verticesFrom f v)) (set (take n es))" by simp
 
       def m \<equiv> "es!n - es!n'"
       with smaller_n have mgz: "0 < m" by auto
@@ -3773,12 +3773,12 @@ next
 
       have helper: "\<And>x. x \<in> (set (take n es)) \<Longrightarrow> x \<le>  (es ! n')"
       proof -
-	fix x
-	assume x: "x \<in> set (take n es)"
-	from suc1 Suc have "es = take n' es @ es!n' # drop (Suc n') es" by (auto intro: id_take_nth_drop)
-	with suc1 have "increasing (take n' es @ es!n' # drop (Suc n') es)" by auto
-	then have "\<And> x. x \<in> set (take n' es) \<Longrightarrow> x \<le> es!n'" by (auto intro!: increasing2)
-	with x Suc suc1 show "x \<le> es!n'" by (auto simp: take_Suc_conv_app_nth)
+        fix x
+        assume x: "x \<in> set (take n es)"
+        from suc1 Suc have "es = take n' es @ es!n' # drop (Suc n') es" by (auto intro: id_take_nth_drop)
+        with suc1 have "increasing (take n' es @ es!n' # drop (Suc n') es)" by auto
+        then have "\<And> x. x \<in> set (take n' es) \<Longrightarrow> x \<le> es!n'" by (auto intro!: increasing2)
+        with x Suc suc1 show "x \<le> es!n'" by (auto simp: take_Suc_conv_app_nth)
       qed
 
       def m' \<equiv> "m - 1"
@@ -3797,14 +3797,14 @@ next
       with esn' have "sublist (take (es ! n) vs) (set (take n es))
          = sublist (take (Suc_es_n') vs @ take m' (drop (Suc_es_n') vs)) (set (take n es))" by auto
       then have "sublist (take (es ! n) vs) (set (take n es)) =
-	sublist (take (Suc_es_n') vs) (set (take n es)) @
-	sublist (take m' (drop (Suc_es_n') vs)) {j. j + length (take (Suc_es_n') vs) : (set (take n es))}"
+        sublist (take (Suc_es_n') vs) (set (take n es)) @
+        sublist (take m' (drop (Suc_es_n') vs)) {j. j + length (take (Suc_es_n') vs) : (set (take n es))}"
         by (simp add: sublist_append)
       with empty Suc_es_n'_def have "sublist (take (es ! n) vs) (set (take n es)) =
-	sublist (take (Suc (es!n')) vs) (set (take n es))" by simp
+        sublist (take (Suc (es!n')) vs) (set (take n es))" by simp
       with suc1 sub2 have sub3: "sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
-	sublist (take (Suc (es!n')) (verticesFrom f v)) (set (take n es))" by simp
-	
+        sublist (take (Suc (es!n')) (verticesFrom f v)) (set (take n es))" by simp
+        
       from smaller suc1 have "take (Suc (es ! n)) (verticesFrom f v)
        = take (es ! n) (verticesFrom f v) @ [((verticesFrom f v)!(es!n))]"
        by (auto simp: take_Suc_conv_app_nth)
@@ -3812,7 +3812,7 @@ next
         "sublist (take (Suc (es ! n)) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
          sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es)))
          @ sublist ([((verticesFrom f v)!(es!n))])  {j. j + (es!n) : (insert (es ! n) (set (take n es)))}"
-	by (auto simp: sublist_append)
+        by (auto simp: sublist_append)
       with sub1 sub3 have "sublist (take (Suc (es ! n)) (verticesFrom f v)) (insert (es ! n) (set (take n es)))
        = sublist (take (Suc (es ! n')) (verticesFrom f v)) (set (take n es)) @ [v']" by auto
       with Some suc1 lvs n' show ?thesis by (simp add: take_Suc_conv_app_nth)
@@ -4481,7 +4481,7 @@ next
       apply assumption apply simp
       apply (intro exI )
       apply (subgoal_tac "v' # tl (fst (splitAt v (verticesFrom f v'))) @ v # ws @ u # z1 @ hd (removeNones vol) # z2 =
-	(v' # tl (fst (splitAt v (verticesFrom f v'))) @ v # ws) @ u # z1 @ hd (removeNones vol) # z2")
+        (v' # tl (fst (splitAt v (verticesFrom f v'))) @ v # ws) @ u # z1 @ hd (removeNones vol) # z2")
       apply assumption by simp
   qed
 
@@ -4617,7 +4617,7 @@ next
            apply (frule split_face_edges_f21_bet_vs) apply simp apply simp
            apply simp
           apply (frule split_face_edges_f21_vs) apply simp apply simp apply simp
-	  apply (case_tac "a = v \<and> aa = u") apply simp apply simp
+          apply (case_tac "a = v \<and> aa = u") apply simp apply simp
          apply (rule split)
         apply (subgoal_tac "pre_split_face f v u ws") apply simp
         apply (rule pre_splitFace_pre_split_face) apply (rule pre_fdg)
@@ -4627,13 +4627,13 @@ next
          apply (case_tac "between (vertices f) u v = []")
           apply (frule split_face_edges_f21_bet) apply simp apply simp apply simp
           apply simp
-	  apply (case_tac "a = u \<and> aa = last ws") apply simp apply simp
-    	  apply (case_tac "a = hd ws \<and> aa = v") apply simp apply simp
-	  apply (case_tac "a = v \<and> aa = hd ws") apply simp apply simp
-	  apply (case_tac "a = last ws \<and> aa = u") apply simp apply simp
-	  apply (case_tac "(a, aa) \<in> Edges ws") apply simp
-	  apply simp
- 	 apply (frule split_face_edges_f21) apply simp apply simp apply simp apply simp
+          apply (case_tac "a = u \<and> aa = last ws") apply simp apply simp
+          apply (case_tac "a = hd ws \<and> aa = v") apply simp apply simp
+          apply (case_tac "a = v \<and> aa = hd ws") apply simp apply simp
+          apply (case_tac "a = last ws \<and> aa = u") apply simp apply simp
+          apply (case_tac "(a, aa) \<in> Edges ws") apply simp
+          apply simp
+         apply (frule split_face_edges_f21) apply simp apply simp apply simp apply simp
          apply (force)
         apply (rule split)
        apply (rule pre_splitFace_pre_split_face) apply (rule pre_fdg)
@@ -4747,7 +4747,7 @@ next
         apply (case_tac "between (vertices f) u v = []")
          apply (frule split_face_edges_f21_bet) apply simp apply simp apply simp
          apply (force)
-	apply (frule split_face_edges_f21) apply simp apply simp apply simp apply simp
+        apply (frule split_face_edges_f21) apply simp apply simp apply simp apply simp
         apply (force)
        apply (rule split)
       apply (rule pre_splitFace_pre_split_face) apply (rule pre_fdg)
@@ -4767,7 +4767,7 @@ next
         apply (case_tac "between (vertices f) u v = []")
          apply (frule split_face_edges_f21_bet_vs) apply simp apply simp
          apply simp
-	apply (frule split_face_edges_f21_vs) apply simp apply simp apply simp
+        apply (frule split_face_edges_f21_vs) apply simp apply simp apply simp
         apply force
        apply (rule split)
       apply (subgoal_tac "pre_split_face f v u ws") apply simp

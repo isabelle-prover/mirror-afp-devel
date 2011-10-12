@@ -374,7 +374,7 @@ next
     have uw: "u \<noteq> w" using pre by(clarsimp simp: pre_subdivFace'_def)
     { assume w: "f \<bullet> v = w" and n: "n = 0"
       have pre': "pre_subdivFace' g f u w 0 ovs"
-	using pre Some n using [[simp_depth_limit = 5]] by (simp add: pre_subdivFace'_Some2)
+        using pre Some n using [[simp_depth_limit = 5]] by (simp add: pre_subdivFace'_Some2)
       note IH[OF pre' mgp fg]
     } moreover
     { let ?vs = "[countVertices g..<countVertices g + n]"
@@ -384,105 +384,105 @@ next
       let ?fvw = "between(vertices f) v w" and ?fwv = "between(vertices f) w v"
       assume a: "f \<bullet> v = w \<longrightarrow> 0 < n"
       have fsubg: "\<V> f \<subseteq> \<V> g"
-	using mgp fg by(simp add: minGraphProps_def faces_subset_def)
+        using mgp fg by(simp add: minGraphProps_def faces_subset_def)
       have pre_fdg: "pre_splitFace g v w f ?vs"
            apply (rule pre_subdivFace'_preFaceDiv[OF pre fg _ fsubg])
            using a by (simp)
       hence "v \<noteq> w" and "w \<in> \<V> f" by(unfold pre_splitFace_def)simp+
       have f\<^isub>1: "?f\<^isub>1= fst(split_face f v w ?vs)"
-	and f\<^isub>2: "?f\<^isub>2 = snd(split_face f v w ?vs)"
-	by(auto simp add:splitFace_def split_def)
+        and f\<^isub>2: "?f\<^isub>2 = snd(split_face f v w ?vs)"
+        by(auto simp add:splitFace_def split_def)
       note pre_split = pre_splitFace_pre_split_face[OF pre_fdg]
       have E\<^isub>1: "\<E> ?f\<^isub>1 = Edges (w # rev ?vs @ [v]) \<union> Edges (v # ?fvw @ [w])"
-	using f\<^isub>1 by(simp add:edges_split_face1[OF pre_split])
+        using f\<^isub>1 by(simp add:edges_split_face1[OF pre_split])
       have E\<^isub>2: "\<E> ?f\<^isub>2 = Edges (v # ?vs @ [w]) \<union> Edges (w # ?fwv @ [v])"
-	by(simp add:splitFace_def split_def
-	    edges_split_face2[OF pre_split])
+        by(simp add:splitFace_def split_def
+            edges_split_face2[OF pre_split])
       note mgp' = splitFace_holds_minGraphProps[OF pre_fdg mgp]
       note distFg' = minGraphProps11'[OF mgp']
       have pre': "pre_subdivFace' ?g' ?f\<^isub>2 u w 0 ovs"
-	by (rule pre_subdivFace'_Some1[OF pre fg _ fsubg HOL.refl HOL.refl])
+        by (rule pre_subdivFace'_Some1[OF pre fg _ fsubg HOL.refl HOL.refl])
            (simp add:a)
       note f2inF = splitFace_add_f21'[OF fg]
       have 1: "\<exists>e \<in> \<E> ?f\<^isub>1. e \<notin> \<E> g"
       proof cases
-	assume "rev ?vs = []"
-	hence "(w,v) \<in> \<E> ?f\<^isub>1 \<and> (w,v) \<notin> \<E> g" using pre_fdg E\<^isub>1
-	  by(unfold pre_splitFace_def) (auto simp:Edges_Cons)
-	thus ?thesis by blast
+        assume "rev ?vs = []"
+        hence "(w,v) \<in> \<E> ?f\<^isub>1 \<and> (w,v) \<notin> \<E> g" using pre_fdg E\<^isub>1
+          by(unfold pre_splitFace_def) (auto simp:Edges_Cons)
+        thus ?thesis by blast
       next
-	assume "rev ?vs \<noteq> []"
-	then obtain x xs where rvs: "rev ?vs = x#xs"
-	  by(auto simp only:neq_Nil_conv)
-	hence "(w,x) \<in> \<E> ?f\<^isub>1" using E\<^isub>1 by (auto simp:Edges_Cons)
-	moreover have "(w,x) \<notin> \<E> g"
-	proof -
-	  have "x \<in> set(rev ?vs)" using rvs by simp
-	  hence "x \<ge> countVertices g" by simp
-	  hence "x \<notin> \<V> g" by(induct g) (simp add:vertices_graph_def)
-	  thus ?thesis
-	    by (auto simp:edges_graph_def)
+        assume "rev ?vs \<noteq> []"
+        then obtain x xs where rvs: "rev ?vs = x#xs"
+          by(auto simp only:neq_Nil_conv)
+        hence "(w,x) \<in> \<E> ?f\<^isub>1" using E\<^isub>1 by (auto simp:Edges_Cons)
+        moreover have "(w,x) \<notin> \<E> g"
+        proof -
+          have "x \<in> set(rev ?vs)" using rvs by simp
+          hence "x \<ge> countVertices g" by simp
+          hence "x \<notin> \<V> g" by(induct g) (simp add:vertices_graph_def)
+          thus ?thesis
+            by (auto simp:edges_graph_def)
                (blast dest: in_edges_in_vertices minGraphProps9[OF mgp])
-	qed
-	ultimately show ?thesis by blast
+        qed
+        ultimately show ?thesis by blast
       qed
       have 2: "\<exists>e \<in> \<E> ?f\<^isub>2. e \<notin> \<E> g"
       proof cases
-	assume "?vs = []"
-	hence "(v,w) \<in> \<E> ?f\<^isub>2 \<and> (v,w) \<notin> \<E> g" using pre_fdg E\<^isub>2
-	  by(unfold pre_splitFace_def) (auto simp:Edges_Cons)
-	thus ?thesis by blast
+        assume "?vs = []"
+        hence "(v,w) \<in> \<E> ?f\<^isub>2 \<and> (v,w) \<notin> \<E> g" using pre_fdg E\<^isub>2
+          by(unfold pre_splitFace_def) (auto simp:Edges_Cons)
+        thus ?thesis by blast
       next
-	assume "?vs \<noteq> []"
-	then obtain x xs where vs: "?vs = x#xs"
-	  by(auto simp only:neq_Nil_conv)
-	hence "(v,x) \<in> \<E> ?f\<^isub>2" using E\<^isub>2 by (auto simp:Edges_Cons)
-	moreover have "(v,x) \<notin> \<E> g"
-	proof -
-	  have "x \<in> set ?vs" using vs by simp
-	  hence "x \<ge> countVertices g" by simp
-	  hence "x \<notin> \<V> g" by(induct g) (simp add:vertices_graph_def)
-	  thus ?thesis
-	    by (auto simp:edges_graph_def)
+        assume "?vs \<noteq> []"
+        then obtain x xs where vs: "?vs = x#xs"
+          by(auto simp only:neq_Nil_conv)
+        hence "(v,x) \<in> \<E> ?f\<^isub>2" using E\<^isub>2 by (auto simp:Edges_Cons)
+        moreover have "(v,x) \<notin> \<E> g"
+        proof -
+          have "x \<in> set ?vs" using vs by simp
+          hence "x \<ge> countVertices g" by simp
+          hence "x \<notin> \<V> g" by(induct g) (simp add:vertices_graph_def)
+          thus ?thesis
+            by (auto simp:edges_graph_def)
                (blast dest: in_edges_in_vertices minGraphProps9[OF mgp])
-	qed
-	ultimately show ?thesis by blast
+        qed
+        ultimately show ?thesis by blast
       qed
       have fdg: "(?f\<^isub>1,?f\<^isub>2,?g') = splitFace g v w f ?vs" by auto
       hence Fg': "\<F> ?g' = {?f\<^isub>1,?f\<^isub>2} \<union> (\<F> g - {f})"
-	using set_faces_splitFace[OF mgp fg pre_fdg] by blast
+        using set_faces_splitFace[OF mgp fg pre_fdg] by blast
       have "\<forall>f' \<in> \<F> ?g'' - (\<F> g - {f}). \<exists>e \<in> \<E> f'. e \<notin> \<E> g"
       proof (clarify)
-	fix f' assume f'g'': "f' \<in> \<F> ?g''" and f'ng: "f' \<notin> \<F> g - {f}"
-	from IH[OF pre' mgp' f2inF]
-	show "\<exists>e \<in> \<E> f'. e \<notin> \<E> g"
-	proof
-	  assume "?g'' = makeFaceFinal ?f\<^isub>2 ?g'"
-	  hence "f' = setFinal ?f\<^isub>2 \<or> f' = ?f\<^isub>1" (is "?A \<or> ?B")
-	    using f'g'' Fg' f'ng
-	    by(auto simp:makeFaceFinal_def makeFaceFinalFaceList_def
-	      distinct_set_replace[OF distFg'])
-	  thus ?thesis
-	  proof
-	    assume ?A thus ?thesis using 2 by(simp)
-	  next
-	    assume ?B thus ?thesis using 1 by blast
-	  qed
-	next
-	  assume A: "\<forall>f' \<in> \<F> ?g'' - (\<F> ?g' - {?f\<^isub>2}).
+        fix f' assume f'g'': "f' \<in> \<F> ?g''" and f'ng: "f' \<notin> \<F> g - {f}"
+        from IH[OF pre' mgp' f2inF]
+        show "\<exists>e \<in> \<E> f'. e \<notin> \<E> g"
+        proof
+          assume "?g'' = makeFaceFinal ?f\<^isub>2 ?g'"
+          hence "f' = setFinal ?f\<^isub>2 \<or> f' = ?f\<^isub>1" (is "?A \<or> ?B")
+            using f'g'' Fg' f'ng
+            by(auto simp:makeFaceFinal_def makeFaceFinalFaceList_def
+              distinct_set_replace[OF distFg'])
+          thus ?thesis
+          proof
+            assume ?A thus ?thesis using 2 by(simp)
+          next
+            assume ?B thus ?thesis using 1 by blast
+          qed
+        next
+          assume A: "\<forall>f' \<in> \<F> ?g'' - (\<F> ?g' - {?f\<^isub>2}).
                      \<exists>e \<in> \<E> f'. e \<notin> \<E> ?g'"
-	  show ?thesis
-	  proof cases
-	    assume "f' \<in> {?f\<^isub>1,?f\<^isub>2}"
-	    thus ?thesis using 1 2 by blast
-	  next
-	    assume "f' \<notin> {?f\<^isub>1,?f\<^isub>2}"
-	    hence "\<exists>e\<in>\<E> f'. e \<notin> \<E> ?g'"
-	      using A f'g'' f'ng Fg' by simp
-	    with splitFace_edges_incr[OF pre_fdg fdg]
-	    show ?thesis by blast
-	  qed
-	qed
+          show ?thesis
+          proof cases
+            assume "f' \<in> {?f\<^isub>1,?f\<^isub>2}"
+            thus ?thesis using 1 2 by blast
+          next
+            assume "f' \<notin> {?f\<^isub>1,?f\<^isub>2}"
+            hence "\<exists>e\<in>\<E> f'. e \<notin> \<E> ?g'"
+              using A f'g'' f'ng Fg' by simp
+            with splitFace_edges_incr[OF pre_fdg fdg]
+            show ?thesis by blast
+          qed
+        qed
       qed
     }
     ultimately show ?thesis using Some by(auto simp: split_def)
@@ -528,11 +528,11 @@ proof (induct ovs)
     show "?P (setFinal f)" (is "?A \<and> ?B")
     proof
       show "?A" using Nil
-	by(simp add:pre_subdivFace'_def prevVertex_in_edges
+        by(simp add:pre_subdivFace'_def prevVertex_in_edges
           del:is_nextElem_edges_eq)
       show  "?B"
-	using Nil mgp_vertices3[OF Nil(1,3)]
-	by(simp add:  setFinal_def between_last pre_subdivFace'_def)
+        using Nil mgp_vertices3[OF Nil(1,3)]
+        by(simp add:  setFinal_def between_last pre_subdivFace'_def)
     qed
   next
     show "setFinal f \<in> ?F" using Nil
@@ -555,17 +555,17 @@ next
     case (Some v)
     note pre = pre[simplified Some]
       have ruv: "before (verticesFrom f r) u v" and "r \<noteq> v"
-	using pre by(simp add:pre_subdivFace'_def)+
+        using pre by(simp add:pre_subdivFace'_def)+
     show ?thesis
     proof (cases "f \<bullet> u = v \<and> n = 0")
       case True
       have pre': "pre_subdivFace' g f r v 0 ovs"
-	using pre True using [[simp_depth_limit = 5]] by (simp add: pre_subdivFace'_Some2)
+        using pre True using [[simp_depth_limit = 5]] by (simp add: pre_subdivFace'_Some2)
       have mt: "ovs = [] \<longrightarrow> 0 = 0 \<and> v = last (verticesFrom f r)"
-	using pre by(clarsimp simp:pre_subdivFace'_def)
+        using pre by(clarsimp simp:pre_subdivFace'_def)
       show ?thesis using Some True IH[OF mgp pre' fg mt] `r \<noteq> v`
-	by(auto simp: between_next_empty[OF distf]
-	  unroll_between_next2[OF distf `r \<in> \<V> f` `u \<in> \<V> f`])
+        by(auto simp: between_next_empty[OF distf]
+          unroll_between_next2[OF distf `r \<in> \<V> f` `u \<in> \<V> f`])
     next
       case False
       let ?vs = "[countVertices g..<countVertices g + n]"
@@ -574,85 +574,85 @@ next
       let ?fvu = "between (vertices f) v u"
       have False': "f \<bullet> u = v \<longrightarrow> n \<noteq> 0" using False by auto
       have VfVg: "\<V> f \<subseteq> \<V> g" using mgp fg
-	  by (simp add: minGraphProps_def faces_subset_def)
+          by (simp add: minGraphProps_def faces_subset_def)
       note pre_fdg = pre_subdivFace'_preFaceDiv[OF pre fg False' VfVg]
       hence "u \<noteq> v" and "v \<in> \<V> f" and disj: "\<V> f \<inter> set ?vs = {}"
-	by(unfold pre_splitFace_def)simp+
+        by(unfold pre_splitFace_def)simp+
       hence vvs: "v \<notin> set ?vs" by auto
       have vf\<^isub>2: "vertices ?f\<^isub>2 = [v] @ ?fvu @ u # ?vs"
-	by(simp add:split_face_def splitFace_def split_def)
+        by(simp add:split_face_def splitFace_def split_def)
       hence betuvf\<^isub>2: "between (vertices ?f\<^isub>2) u v = ?vs"
-	using splitFace_distinct1[OF pre_fdg]
-	by(simp add: between_back)
+        using splitFace_distinct1[OF pre_fdg]
+        by(simp add: between_back)
       have betrvf\<^isub>2: "r \<noteq> u \<Longrightarrow> between (vertices ?f\<^isub>2) r v =
-	between (vertices f) r u @ [u] @ ?vs"
+        between (vertices f) r u @ [u] @ ?vs"
       proof -
-	assume "r\<noteq>u"
-	have r: "r \<in> set (between (vertices f) v u)"
-	  using `r\<noteq>u` `r\<noteq>v` `u\<noteq>v` `v \<in> \<V> f` `r \<in> \<V> f` distf ruv
-	  by(blast intro:rotate_before_vFrom before_between)
-	have "between (vertices f) v u =
-	  between (vertices f) v r @ [r] @ between (vertices f) r u"
-	  using split_between[OF distf `v \<in> \<V> f` `u \<in> \<V> f` r] `r\<noteq>v`
-	  by simp
-	moreover hence "v \<notin> set (between (vertices f) r u)"
-	  using between_not_r1[OF distf, of v u] by simp
-	ultimately show ?thesis using vf\<^isub>2 `r\<noteq>v` `u\<noteq>v` vvs
-	  by (simp add: between_back between_not_r2[OF distf])
+        assume "r\<noteq>u"
+        have r: "r \<in> set (between (vertices f) v u)"
+          using `r\<noteq>u` `r\<noteq>v` `u\<noteq>v` `v \<in> \<V> f` `r \<in> \<V> f` distf ruv
+          by(blast intro:rotate_before_vFrom before_between)
+        have "between (vertices f) v u =
+          between (vertices f) v r @ [r] @ between (vertices f) r u"
+          using split_between[OF distf `v \<in> \<V> f` `u \<in> \<V> f` r] `r\<noteq>v`
+          by simp
+        moreover hence "v \<notin> set (between (vertices f) r u)"
+          using between_not_r1[OF distf, of v u] by simp
+        ultimately show ?thesis using vf\<^isub>2 `r\<noteq>v` `u\<noteq>v` vvs
+          by (simp add: between_back between_not_r2[OF distf])
       qed
       note mgp' = splitFace_holds_minGraphProps[OF pre_fdg mgp]
       note f2g = splitFace_add_f21'[OF fg]
       note pre' = pre_subdivFace'_Some1[OF pre fg False' VfVg HOL.refl HOL.refl]
       from pre_fdg have "v \<in> \<V> f" and disj: "\<V> f \<inter> set ?vs = {}"
-	by(unfold pre_splitFace_def, simp)+
+        by(unfold pre_splitFace_def, simp)+
       have fr: "?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r = f\<^bsup>-1\<^esup> \<bullet> r"
       proof -
-	note pre_split = pre_splitFace_pre_split_face[OF pre_fdg]
-	have rinf\<^isub>2: "r \<in> \<V> ?f\<^isub>2"
-	proof cases
-	  assume "r = u" thus ?thesis by(simp add:vf\<^isub>2)
-	next
-	  assume "r \<noteq> u"
-	  hence "r \<in> set ?fvu" using distf `v : \<V> f` `r\<noteq>v` `r : \<V> f` ruv
-	    by(blast intro: before_between rotate_before_vFrom)
-	  thus ?thesis by(simp add:vf\<^isub>2)
-	qed
-	have E\<^isub>2: "\<E> ?f\<^isub>2 = Edges (u # ?vs @ [v]) \<union>
+        note pre_split = pre_splitFace_pre_split_face[OF pre_fdg]
+        have rinf\<^isub>2: "r \<in> \<V> ?f\<^isub>2"
+        proof cases
+          assume "r = u" thus ?thesis by(simp add:vf\<^isub>2)
+        next
+          assume "r \<noteq> u"
+          hence "r \<in> set ?fvu" using distf `v : \<V> f` `r\<noteq>v` `r : \<V> f` ruv
+            by(blast intro: before_between rotate_before_vFrom)
+          thus ?thesis by(simp add:vf\<^isub>2)
+        qed
+        have E\<^isub>2: "\<E> ?f\<^isub>2 = Edges (u # ?vs @ [v]) \<union>
                              Edges (v # ?fvu @ [u])"
-	  by(simp add:splitFace_def split_def
-	    edges_split_face2[OF pre_split])
-	moreover have "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> ?f\<^isub>2"
-	  by(blast intro: prevVertex_in_edges rinf\<^isub>2
-	    splitFace_distinct1[OF pre_fdg])
-	moreover have "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<notin> Edges (u # ?vs @ [v])"
-	proof -
-	  have "r \<notin> set ?vs" using `r : \<V> f` disj by blast
-	  thus ?thesis using `r \<noteq> v`
-	    by(simp add:Edges_Cons Edges_append notinset_notinEdge2) arith
-	qed
-	ultimately have "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> Edges (v # ?fvu @ [u])" by blast
-	hence "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> f" using pre_split_face_symI[OF pre_split]
-	  by(blast intro: Edges_between_edges)
-	hence eq: "f \<bullet> (?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r) = r" and inf: "?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r \<in> \<V> f"
-	  by(simp add:edges_face_eq)+
-	have "?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r = f\<^bsup>-1\<^esup> \<bullet> (f \<bullet> (?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r))"
-	  using prevVertex_nextVertex[OF distf inf] by simp
-	also have "\<dots> = f\<^bsup>-1\<^esup> \<bullet> r" using eq by simp
-	finally show ?thesis .
+          by(simp add:splitFace_def split_def
+            edges_split_face2[OF pre_split])
+        moreover have "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> ?f\<^isub>2"
+          by(blast intro: prevVertex_in_edges rinf\<^isub>2
+            splitFace_distinct1[OF pre_fdg])
+        moreover have "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<notin> Edges (u # ?vs @ [v])"
+        proof -
+          have "r \<notin> set ?vs" using `r : \<V> f` disj by blast
+          thus ?thesis using `r \<noteq> v`
+            by(simp add:Edges_Cons Edges_append notinset_notinEdge2) arith
+        qed
+        ultimately have "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> Edges (v # ?fvu @ [u])" by blast
+        hence "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> f" using pre_split_face_symI[OF pre_split]
+          by(blast intro: Edges_between_edges)
+        hence eq: "f \<bullet> (?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r) = r" and inf: "?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r \<in> \<V> f"
+          by(simp add:edges_face_eq)+
+        have "?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r = f\<^bsup>-1\<^esup> \<bullet> (f \<bullet> (?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r))"
+          using prevVertex_nextVertex[OF distf inf] by simp
+        also have "\<dots> = f\<^bsup>-1\<^esup> \<bullet> r" using eq by simp
+        finally show ?thesis .
       qed
       hence mt: "ovs = [] \<longrightarrow> 0 = 0 \<and> v = last (verticesFrom ?f\<^isub>2 r)"
-	using pre' pre by(auto simp:pre_subdivFace'_def splitFace_def
-	  split_def last_vFrom)
+        using pre' pre by(auto simp:pre_subdivFace'_def splitFace_def
+          split_def last_vFrom)
       from IH[OF mgp' pre' f2g mt] `r \<noteq> v` obtain f' :: face where
-	f: "f' \<in> set(finals(subdivFace' ?g' ?f\<^isub>2 v 0 ovs)) - set(finals ?g')"
-	and ff: "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> f'"
-	"|vertices f'| = |ovs| + |between (vertices ?f\<^isub>2) r v| + 2"
-	by simp blast
+        f: "f' \<in> set(finals(subdivFace' ?g' ?f\<^isub>2 v 0 ovs)) - set(finals ?g')"
+        and ff: "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> f'"
+        "|vertices f'| = |ovs| + |between (vertices ?f\<^isub>2) r v| + 2"
+        by simp blast
       show ?thesis (is "\<exists>f' \<in> ?F. ?P f'")
       proof
-	show "f' \<in> ?F" using f pre Some fg
-	  by(simp add:False split_def pre_subdivFace'_def)
-	show "?P f'" using ff fr by(clarsimp simp:betuvf\<^isub>2 betrvf\<^isub>2)
+        show "f' \<in> ?F" using f pre Some fg
+          by(simp add:False split_def pre_subdivFace'_def)
+        show "?P f'" using ff fr by(clarsimp simp:betuvf\<^isub>2 betrvf\<^isub>2)
       qed
     qed
   qed

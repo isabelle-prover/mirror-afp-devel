@@ -109,13 +109,13 @@ proof -
     proof
       assume "v = f \<bullet> u"
       then obtain f' where "f' \<in> set(facesAt g v)" "f' \<bullet> v = u"
-	using mgp_nextVertex_face_ex2[OF mgp ug f] by blast
+        using mgp_nextVertex_face_ex2[OF mgp ug f] by blast
       thus ?thesis by(auto simp:close_def)
     next
       assume v: "v = f \<bullet> (f \<bullet> u)"
       hence "f \<bullet> (f \<bullet> v) = u" using quad_next4_id[OF 4 distf uf] by simp
       moreover have "f \<in> set(facesAt g v)" using v uf
-	by(simp add: minGraphProps7[OF mgp minGraphProps5[OF mgp ug f]])
+        by(simp add: minGraphProps7[OF mgp minGraphProps5[OF mgp ug f]])
       ultimately show ?thesis using 4 by(auto simp:close_def)
     qed
   next
@@ -148,25 +148,25 @@ proof
       hence "v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u)" using "if" by simp
       thus False
       proof
-	assume "v = f \<bullet> u"
-	thus False using sep f uv
-	  by(simp add:separated_def separated\<^isub>2_def separated\<^isub>3_def)
+        assume "v = f \<bullet> u"
+        thus False using sep f uv
+          by(simp add:separated_def separated\<^isub>2_def separated\<^isub>3_def)
       next
-	assume "v = f \<bullet> (f \<bullet> u)"
-	moreover hence "v \<in> \<V> f" using `u \<in> \<V> f` by simp
-	moreover have "|vertices f| \<le> 4" using 4 by arith
-	ultimately show False using sep f uv `u \<in> \<V> f`
-	  apply(unfold separated_def separated\<^isub>2_def separated\<^isub>3_def)
+        assume "v = f \<bullet> (f \<bullet> u)"
+        moreover hence "v \<in> \<V> f" using `u \<in> \<V> f` by simp
+        moreover have "|vertices f| \<le> 4" using 4 by arith
+        ultimately show False using sep f uv `u \<in> \<V> f`
+          apply(unfold separated_def separated\<^isub>2_def separated\<^isub>3_def)
 (* why does blast get stuck? *)
-	  apply(subgoal_tac "f \<bullet> (f \<bullet> u) \<in> \<V> f \<inter> V")
-	  prefer 2 apply blast
-	  by simp
+          apply(subgoal_tac "f \<bullet> (f \<bullet> u) \<in> \<V> f \<inter> V")
+          prefer 2 apply blast
+          by simp
       qed
     next
       assume 4: "|vertices f| \<noteq> 4"
       hence "v = f \<bullet> u" using "if" by simp
       thus False using sep f uv
-	by(simp add:separated_def separated\<^isub>2_def separated\<^isub>3_def)
+        by(simp add:separated_def separated\<^isub>2_def separated\<^isub>3_def)
     qed
   qed
 next
@@ -178,7 +178,7 @@ next
       fix v f assume a: "v \<in> V" "f \<in> set (facesAt g v)" "f \<bullet> v \<in> V"
       have "v : \<V> g" using a(1) `V <= \<V> g` by blast
       show False using a not_cl mgp_facesAt_no_loop[OF mgp `v : \<V> g` a(2)]
-	by(fastforce simp: close_def split:split_if_asm)
+        by(fastforce simp: close_def split:split_if_asm)
     qed
     show "separated\<^isub>3 g V"
     proof (clarsimp simp:separated\<^isub>3_def)
@@ -188,60 +188,60 @@ next
       note distf = minGraphProps3[OF mgp minGraphProps5[OF mgp vg f]]
       note vf = minGraphProps6[OF mgp vg f]
       { fix u assume "u \<in> \<V> f" and "u \<in> V"
-	have "u = v"
-	proof cases
-	  assume 3: "|vertices f| = 3"
-	  hence "\<V> f = {v, f \<bullet> v, f \<bullet> (f \<bullet> v)}"
-	    using vertices_triangle[OF _ vf distf] by simp
-	  moreover
-	  { assume "u = f \<bullet> v"
-	    hence "u = v"
-	      using not_cl f `u \<in> V` `v \<in> V` 3
-	      by(force simp:close_def split:split_if_asm)
-	  }
-	  moreover
-	  { assume "u = f \<bullet> (f \<bullet> v)"
-	    hence fu: "f \<bullet> u = v"
-	      by(simp add: tri_next3_id[OF 3 distf `v \<in> \<V> f`])
-	    hence "(u,v) \<in> \<E> f" using nextVertex_in_edges[OF `u \<in> \<V> f`]
-	      by(simp add:fu)
-	    then obtain f' where "f' \<in> set(facesAt g v)" "(v,u) \<in>  \<E> f'"
-	      using mgp_edge_face_ex[OF mgp vg f] by blast
-	    hence "u = v" using not_cl `u \<in> V` `v \<in> V` 3
-	      by(force simp:close_def edges_face_eq split:split_if_asm)
-	  }
-	  ultimately show "u=v" using `u \<in> \<V> f` by blast
-	next
-	  assume 3: "|vertices f| \<noteq> 3"
-	  hence 4: "|vertices f| = 4"
-	    using len mgp_vertices3[OF mgp minGraphProps5[OF mgp vg f]] by arith
-	  hence "\<V> f = {v, f \<bullet> v, f \<bullet> (f \<bullet> v), f \<bullet> (f \<bullet> (f \<bullet> v))}"
-	    using vertices_quad[OF _ vf distf] by simp
-	  moreover
-	  { assume "u = f \<bullet> v"
-	    hence "u = v"
-	      using not_cl f `u \<in> V` `v \<in> V` 4
-	      by(force simp:close_def split:split_if_asm)
-	  }
-	  moreover
-	  { assume "u = f \<bullet> (f \<bullet> v)"
-	    hence "u = v"
-	      using not_cl f `u \<in> V` `v \<in> V` 4
-	      by(force simp:close_def split:split_if_asm)
-	  }
-	  moreover
-	  { assume "u = f \<bullet> (f \<bullet> (f \<bullet> v))"
-	    hence fu: "f \<bullet> u = v"
-	      by(simp add: quad_next4_id[OF 4 distf `v \<in> \<V> f`])
-	    hence "(u,v) \<in> \<E> f" using nextVertex_in_edges[OF `u \<in> \<V> f`]
-	      by(simp add:fu)
-	    then obtain f' where "f' \<in> set(facesAt g v)" "(v,u) \<in>  \<E> f'"
-	      using mgp_edge_face_ex[OF mgp vg f] by blast
-	    hence "u = v" using not_cl `u \<in> V` `v \<in> V` 4
-	      by(force simp:close_def edges_face_eq split:split_if_asm)
-	  }
-	  ultimately show "u=v" using `u \<in> \<V> f` by blast
-	qed
+        have "u = v"
+        proof cases
+          assume 3: "|vertices f| = 3"
+          hence "\<V> f = {v, f \<bullet> v, f \<bullet> (f \<bullet> v)}"
+            using vertices_triangle[OF _ vf distf] by simp
+          moreover
+          { assume "u = f \<bullet> v"
+            hence "u = v"
+              using not_cl f `u \<in> V` `v \<in> V` 3
+              by(force simp:close_def split:split_if_asm)
+          }
+          moreover
+          { assume "u = f \<bullet> (f \<bullet> v)"
+            hence fu: "f \<bullet> u = v"
+              by(simp add: tri_next3_id[OF 3 distf `v \<in> \<V> f`])
+            hence "(u,v) \<in> \<E> f" using nextVertex_in_edges[OF `u \<in> \<V> f`]
+              by(simp add:fu)
+            then obtain f' where "f' \<in> set(facesAt g v)" "(v,u) \<in>  \<E> f'"
+              using mgp_edge_face_ex[OF mgp vg f] by blast
+            hence "u = v" using not_cl `u \<in> V` `v \<in> V` 3
+              by(force simp:close_def edges_face_eq split:split_if_asm)
+          }
+          ultimately show "u=v" using `u \<in> \<V> f` by blast
+        next
+          assume 3: "|vertices f| \<noteq> 3"
+          hence 4: "|vertices f| = 4"
+            using len mgp_vertices3[OF mgp minGraphProps5[OF mgp vg f]] by arith
+          hence "\<V> f = {v, f \<bullet> v, f \<bullet> (f \<bullet> v), f \<bullet> (f \<bullet> (f \<bullet> v))}"
+            using vertices_quad[OF _ vf distf] by simp
+          moreover
+          { assume "u = f \<bullet> v"
+            hence "u = v"
+              using not_cl f `u \<in> V` `v \<in> V` 4
+              by(force simp:close_def split:split_if_asm)
+          }
+          moreover
+          { assume "u = f \<bullet> (f \<bullet> v)"
+            hence "u = v"
+              using not_cl f `u \<in> V` `v \<in> V` 4
+              by(force simp:close_def split:split_if_asm)
+          }
+          moreover
+          { assume "u = f \<bullet> (f \<bullet> (f \<bullet> v))"
+            hence fu: "f \<bullet> u = v"
+              by(simp add: quad_next4_id[OF 4 distf `v \<in> \<V> f`])
+            hence "(u,v) \<in> \<E> f" using nextVertex_in_edges[OF `u \<in> \<V> f`]
+              by(simp add:fu)
+            then obtain f' where "f' \<in> set(facesAt g v)" "(v,u) \<in>  \<E> f'"
+              using mgp_edge_face_ex[OF mgp vg f] by blast
+            hence "u = v" using not_cl `u \<in> V` `v \<in> V` 4
+              by(force simp:close_def edges_face_eq split:split_if_asm)
+          }
+          ultimately show "u=v" using `u \<in> \<V> f` by blast
+        qed
       }
       thus "\<V> f \<inter> V = {v}" using `v \<in> V` vf by blast
     qed
@@ -330,8 +330,8 @@ proof(induct ps rule: length_induct)
     proof -
       have "{setsum snd P |P.
             P \<subseteq> insert p (set ps) \<and> p \<in> P \<and> separated g (fst ` P)} \<noteq> {}"
-	apply simp
-	apply(rule_tac x="{p}" in exI)
+        apply simp
+        apply(rule_tac x="{p}" in exI)
         using `fst p : \<V> g` by(simp add:sep_conv[OF mgp])
       thus ?thesis by(simp add: Max_Un fin_aux sep_ne)
     qed
@@ -455,8 +455,8 @@ proof(clarsimp simp add: notame_def notame7_def untame_def tame11b_def is_tame13
     next
       assume "except g v \<noteq> 0"
       thus False using `tame g` v
-	by(auto simp: except_def filter_empty_conv tame_def tame11b_def
-	  minGraphProps_facesAt_eq[OF inv_mgp[OF `inv g`]] split:split_if_asm)
+        by(auto simp: except_def filter_empty_conv tame_def tame11b_def
+          minGraphProps_facesAt_eq[OF inv_mgp[OF `inv g`]] split:split_if_asm)
     qed
   next
     assume ?A

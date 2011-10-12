@@ -382,8 +382,8 @@ proof -
     proof -
       from m props'' have l_ls: "2 < length ls"  by auto
       then have "\<exists> x y ks. ls = x # ks @ [y]"
-	apply (case_tac "ls::(nat list)") apply auto
-	apply (case_tac "list" rule: rev_exhaust) by auto
+        apply (case_tac "ls::(nat list)") apply auto
+        apply (case_tac "list" rule: rev_exhaust) by auto
       then obtain x y ks where "ls = x # ks @ [y]" by auto
       with props'' have ls': "ls = 0 # ks @ [nmax - 1]" by auto
       with l_ls have l_ms: "0 < length ks" by auto
@@ -398,22 +398,22 @@ proof -
 
       have "ks \<in> set ((enumAppend (nmax - 2)
          ^^ (length ks - Suc 0)) (enumBase (nmax - 2)))"
-      proof (cases "ks = []")	
-	case True with ms_ne show ?thesis by simp
+      proof (cases "ks = []")   
+        case True with ms_ne show ?thesis by simp
       next
-	case False
-	from props'' have "increasing ls" by auto
-	with ls' have "increasing (0 # ks)" by (auto intro: increasing4)
-	then have "increasing ([0] @ ks)" by auto
-	then have ndks: "increasing ks" by (rule_tac increasing5)
-	have listall: "list_all (\<lambda>x. x < Suc (nmax - 2)) ks"
+        case False
+        from props'' have "increasing ls" by auto
+        with ls' have "increasing (0 # ks)" by (auto intro: increasing4)
+        then have "increasing ([0] @ ks)" by auto
+        then have ndks: "increasing ks" by (rule_tac increasing5)
+        have listall: "list_all (\<lambda>x. x < Suc (nmax - 2)) ks"
           apply (simp add: list_all_iff)
-	  by (auto dest: z')
-	with False ndks show ?thesis
-	  apply (rule_tac enumerator_completeness_help) by auto
+          by (auto dest: z')
+        with False ndks show ?thesis
+          apply (rule_tac enumerator_completeness_help) by auto
       qed
       with lks props' have
-	"ks \<in> set ((enumAppend (nmax - 2) ^^ (m - 3)) (enumBase (nmax - 2)))" by auto
+        "ks \<in> set ((enumAppend (nmax - 2) ^^ (m - 3)) (enumBase (nmax - 2)))" by auto
       with m ls' show ?thesis by (simp add: enumerator_def)
     qed
   qed

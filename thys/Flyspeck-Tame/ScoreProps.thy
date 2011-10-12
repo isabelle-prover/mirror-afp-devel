@@ -101,16 +101,16 @@ proof -
     proof (rule ccontr)
       assume "\<not> ?A"
       then obtain b where b1: "b \<noteq> a" "b \<in> \<V> f"
-	"b \<in> set (map fst (deleteAround g a ps))" by auto
+        "b \<in> set (map fst (deleteAround g a ps))" by auto
       from MGP have d: "distinct (vertices f)"
-	by(blast intro:minGraphProps)
+        by(blast intro:minGraphProps)
       with af 3 have "\<V> f = {a, f \<bullet> a, f \<bullet> (f \<bullet> a)}"
-	  by (rule_tac vertices_triangle)
+          by (rule_tac vertices_triangle)
       also from d af 3 have
         "f \<bullet> (f \<bullet> a) = f\<^bsup>-1\<^esup> \<bullet> a"
         by (simp add: triangle_nextVertex_prevVertex)
       finally have
-	"b \<in> {f \<bullet> a, f\<^bsup>-1\<^esup> \<bullet> a}"
+        "b \<in> {f \<bullet> a, f\<^bsup>-1\<^esup> \<bullet> a}"
         using b1 by simp
       with MGP have "b \<notin> set (map fst (deleteAround g a ps))"
       using deleteAround_nextVertex deleteAround_prevVertex by auto
@@ -122,7 +122,7 @@ proof -
     proof (rule ccontr)
       assume "\<not> ?A"
       then obtain b where b1: "b \<noteq> a" "b \<in> \<V> f"
-	"b \<in> set (map fst (deleteAround g a ps))" by auto
+        "b \<in> set (map fst (deleteAround g a ps))" by auto
       from MGP have d: "distinct (vertices f)" by(blast intro:minGraphProps)
       with af 4 have "\<V> f = {a, f \<bullet> a, f \<bullet> (f \<bullet> a), f \<bullet> (f \<bullet> (f \<bullet> a))}"
         by (rule_tac vertices_quad)
@@ -316,12 +316,12 @@ proof -
             using deleteAround_subset by fastforce
           finally show ?thesis using prem by(auto simp: isTable_def)
         qed
-	from H1
+        from H1
         show pS: "separated g
             (set (ExcessNotAtRecList (deleteAround g a ps) g))"
-	  by simp
+          by simp
 
-	fix f assume f: "f \<in> set (facesAt g a)"
+        fix f assume f: "f \<in> set (facesAt g a)"
         then have
         "f \<bullet> a \<notin> set [fst p. p \<leftarrow> deleteAround g a ps]"
           by (auto simp add: facesAt_def deleteAround_eq deleteAround'_def
@@ -341,11 +341,11 @@ proof -
         moreover
         have "set (ExcessNotAtRecList (deleteAround g a ps) g)
           \<subseteq> set [fst p. p \<leftarrow> deleteAround g a ps]"
-	   by (rule ExcessNotAtRecList_subset)
+           by (rule ExcessNotAtRecList_subset)
         ultimately
         show "set (vertices f)
            \<inter> set (ExcessNotAtRecList (deleteAround g a ps) g) \<subseteq> {a}"
-	  by blast
+          by blast
       qed
       with H1 E c show ?thesis by (simp)
     next

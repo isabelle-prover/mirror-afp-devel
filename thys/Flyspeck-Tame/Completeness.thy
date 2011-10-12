@@ -54,7 +54,7 @@ proof -
   have "Seed\<^bsub>p\<^esub> [next_plane0\<^bsub>p\<^esub>]\<rightarrow>* g"
     by(rule RTranCl_subset2[OF g1])
       (blast intro:inv_mgp inv_Seed mgp_next_plane0_if_next_plane
-	dest:RTranCl_inv[OF inv_inv_next_plane])
+        dest:RTranCl_inv[OF inv_inv_next_plane])
   with `tame g` `final g` have "p \<le> 3" by(blast intro:tame5)
   with g1 `tame g` `final g` show ?thesis using TameEnum_Archive
     by(simp add: qle_gr.defs TameEnum_def TameEnumP_def)
