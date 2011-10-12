@@ -106,9 +106,9 @@ thm valuep.equation
 code_pred (modes: i => i => bool,  i => o => bool as normalize) norm .
 
 thm norm.equation
-lemma [code]: "value = valuep"
-unfolding value_def Collect_def ..
-declare mem_def[code_inline]
+
+lemma [code_unfold]: "x \<in> value \<longleftrightarrow> valuep x"
+  by (simp add: value_def)
 
 values "{u. norm fact2 u}"
 
