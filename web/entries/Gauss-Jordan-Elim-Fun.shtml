@@ -89,7 +89,10 @@ This theory provides a compact formulation of Gauss-Jordan elimination for matri
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-08-19.tar.gz">afp-<!--#echo var="name" -->-2011-08-19.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

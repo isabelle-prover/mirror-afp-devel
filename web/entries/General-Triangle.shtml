@@ -87,7 +87,10 @@ Some acute-angled triangles are special, e.g. right-angled or isoscele triangles
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-04-01.tar.gz">afp-<!--#echo var="name" -->-2011-04-01.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

@@ -92,7 +92,10 @@ We provide a generic work-list algorithm to compute the transitive closure of fi
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-03-14.tar.gz">afp-<!--#echo var="name" -->-2011-03-14.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

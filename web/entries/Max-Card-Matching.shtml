@@ -98,7 +98,11 @@ then <i>M</i> is a maximum cardinality matching.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-08-19.tar.gz">afp-<!--#echo var="name" -->-2011-08-19.tar.gz</a></li>
+<li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-08-15.tar.gz">afp-<!--#echo var="name" -->-2011-08-15.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

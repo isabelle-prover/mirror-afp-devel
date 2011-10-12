@@ -84,7 +84,10 @@ We introduce a theory of infinite lists in HOL formalized as functions over natu
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-02-24.tar.gz">afp-<!--#echo var="name" -->-2011-02-24.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

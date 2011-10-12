@@ -92,7 +92,10 @@ We introduce a theory of temporal logic operators using sets of natural numbers 
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-02-24.tar.gz">afp-<!--#echo var="name" -->-2011-02-24.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
