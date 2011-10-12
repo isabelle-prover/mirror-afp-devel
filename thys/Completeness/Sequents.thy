@@ -65,6 +65,9 @@ lemma mapRuleI: "[| A = map f a; B = (map f) ` b |] ==> (A,B) = mapRule f (a,b)"
 
 subsection "Deductions"
 
+(*FIXME. I don't see why plain Pow_mono is rejected.*)
+lemmas Powp_mono [mono] = Pow_mono [to_pred pred_subset_eq]
+
 inductive_set
   deductions  :: "rule set => formula list set"
   for rules :: "rule set"
@@ -85,8 +88,7 @@ inductive_set
                 conc' : deductions(rules)
              |] ==> conc : deductions(rules)"
 *)
-  monos Pow_mono
-
+ 
 lemma mono_deductions: "[| A <= B |] ==> deductions(A) <= deductions(B)"
   apply(best intro: deductions.inferI elim: deductions.induct) done
   

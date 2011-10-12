@@ -21,8 +21,8 @@ next
 next
 next
   from tame obtain w where adm: "admissible w g"
-    and sqn: "\<Sum>\<^bsub>f \<in> faces g\<^esub> w f < squanderTarget" by(auto simp:tame_def tame13a_def)
-  moreover have "squanderLowerBound g \<le>  \<Sum>\<^bsub>f \<in> faces g\<^esub> w f"
+    and sqn: "(\<Sum>\<^bsub>f \<in> faces g\<^esub> w f) < squanderTarget" by(auto simp:tame_def tame13a_def)
+  moreover have "squanderLowerBound g \<le>  (\<Sum>\<^bsub>f \<in> faces g\<^esub> w f)"
     using pl fin tame adm sqn by (rule total_weight_lowerbound)
   ultimately show "is_tame13a g" by(auto simp:is_tame13a_def)
 qed

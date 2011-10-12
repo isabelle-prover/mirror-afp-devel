@@ -4026,7 +4026,7 @@ apply (rule conjI)
  apply (simp add:Zr_def Zset_def)
 apply (rule conjI,
        (rule allI, rule impI)+, simp add:Zr_def Zset_def)
- apply (simp add:zadd_zmult_distrib2)
+ apply (simp add:right_distrib)
 apply (rule allI, rule impI)
   apply (simp add:Zr_def Zset_def)
 done
@@ -4093,7 +4093,7 @@ apply simp
         subgoal_tac "x div lev I \<in> carrier Zr", blast)
  apply (simp add:Zr_def Zset_def)
 apply (subgoal_tac "x mod lev I = 0", simp)
- apply (subst zmult_commute, assumption)
+ apply (subst mult_commute, assumption)
  apply (subgoal_tac "x mod lev I \<in> I")
  apply (thin_tac "x = lev I * (x div lev I) + x mod lev I")
  apply (frule_tac a = x in pos_mod_conj[of "lev I"])
@@ -6203,11 +6203,11 @@ apply (induct_tac "j", simp)
         simp add:Ring.ring_r_one)
 apply (rule impI, simp)
  apply (subst zdiff)
- apply (simp add:zadd_commute[of "1"])
+ apply (simp add:add_commute[of "1"])
  apply (cut_tac z = i and w = "int n + 1" in zdiff,
-       simp only:zminus_zadd_distrib,
+       simp only:minus_add_distrib,
        thin_tac "i - (int n + 1) = i + (- int n + - 1)")
- apply (simp only:zadd_assoc[THEN sym])
+ apply (simp only:add_assoc[THEN sym])
  apply (simp only:zdiff[THEN sym, of _ "1"])
  apply (cut_tac z = "i + - int n" in nat_diff_distrib[of "1"],
          simp, simp)
@@ -6273,7 +6273,7 @@ apply (cut_tac field_is_ring)
  apply (subst zminus_minus[THEN sym, of "i" "j"],
         subst npow_exp_minusTr2[of "x" "i" "-j"], assumption+)
   apply (simp add:zle, simp add:zless_imp_zle, simp add:npowf_def)
- apply (simp add:zadd_commute[of "i" "j"],
+ apply (simp add:add_commute[of "i" "j"],
         subst zminus_minus[THEN sym, of "j" "i"],
         subst npow_exp_minusTr2[of "x" "j" "-i"], assumption+)
   apply (simp add:zle, simp add:zless_imp_zle, simp)

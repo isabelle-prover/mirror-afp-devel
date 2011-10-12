@@ -34,12 +34,12 @@ lemma trans6: "(a::nat) = b1 + (b2 + b3) + b4 \<Longrightarrow> b3 = 0 \<Longrig
 
 theorem total_weight_lowerbound:
  "inv g \<Longrightarrow> final g \<Longrightarrow> tame g \<Longrightarrow> admissible w g \<Longrightarrow>
- \<Sum>\<^bsub>f \<in> faces g\<^esub> w f < squanderTarget \<Longrightarrow>
- squanderLowerBound g \<le> \<Sum>\<^bsub>f \<in> faces g\<^esub> w f"
+ (\<Sum>\<^bsub>f \<in> faces g\<^esub> w f) < squanderTarget \<Longrightarrow>
+ squanderLowerBound g \<le> (\<Sum>\<^bsub>f \<in> faces g\<^esub> w f)"
 proof -
   assume final: "final g" and tame: "tame g" and pl: "inv g"
   assume admissible: "admissible w g"
-  assume w: "\<Sum>\<^bsub>f \<in> faces g\<^esub> w f < squanderTarget"
+  assume w: "(\<Sum>\<^bsub>f \<in> faces g\<^esub> w f) < squanderTarget"
 (*<*)
   from admissible have admissible\<^isub>1:
    "\<And>f. f \<in> set (faces g) \<Longrightarrow> \<d> |vertices f| \<le> w f"
@@ -52,12 +52,12 @@ proof -
 
   txt {* We expand the definition of @{text "faceSquanderLowerBound"}. *}
 
-  also have "faceSquanderLowerBound g = \<Sum>\<^bsub>f \<in> faces g\<^esub> \<d> |vertices f|" (*<*)
+  also have "faceSquanderLowerBound g = (\<Sum>\<^bsub>f \<in> faces g\<^esub> \<d> |vertices f| )" (*<*)
     by (simp add: faceSquanderLowerBound_def final) (*>*)
 
   txt {* We expand the definition of @{text "ExcessNotAt"}. *}
   also from ExcessNotAt_eq[OF pl[THEN inv_mgp] final] obtain V
-    where eq: "ExcessNotAt g None = \<Sum>\<^bsub>v \<in> V\<^esub> ExcessAt g v"
+    where eq: "ExcessNotAt g None = (\<Sum>\<^bsub>v \<in> V\<^esub> ExcessAt g v)"
     and pS:  "separated g (set V)"
     and V_subset: "set V \<subseteq> set(vertices g)"
     and V_distinct: "distinct V" (*<*)
@@ -108,7 +108,7 @@ proof -
 (*>*)
 
   have "(\<Sum>\<^bsub>v \<in> V2\<^esub> ExcessAt g v)
-    = (\<Sum>\<^bsub>v \<in> V3\<^esub> ExcessAt g v) + \<Sum>\<^bsub>v \<in> V4\<^esub> ExcessAt g v" (*<*)
+    = (\<Sum>\<^bsub>v \<in> V3\<^esub> ExcessAt g v) + (\<Sum>\<^bsub>v \<in> V4\<^esub> ExcessAt g v)" (*<*)
     by (simp add: V4_def V3_def ListSum_compl) (*>*) (* *)
 
   txt {*  We partition  @{text "faces g"} in two disjoint subsets:
@@ -118,8 +118,8 @@ proof -
   also def F1 \<equiv> "[f \<leftarrow> faces g . \<exists> v \<in> set V1. f \<in> set (facesAt g v)]"
   def F2 \<equiv> "[f \<leftarrow> faces g . \<not>(\<exists> v \<in> set V1. f \<in> set (facesAt g v))]"
 
-  have "\<Sum>\<^bsub>f \<in> faces g\<^esub> \<d> |vertices f|
-      = (\<Sum>\<^bsub>f \<in> F1\<^esub> \<d> |vertices f| ) + \<Sum>\<^bsub> f \<in> F2\<^esub> \<d> |vertices f|" (*<*)
+  have "(\<Sum>\<^bsub>f \<in> faces g\<^esub> \<d> |vertices f| )
+      = (\<Sum>\<^bsub>f \<in> F1\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub> f \<in> F2\<^esub> \<d> |vertices f| )" (*<*)
     by (simp only: ListSum_compl F1_def F2_def) (*>*) (* *)
 
   txt {*  We split up @{text "F2"} in two disjoint subsets: *}
@@ -157,17 +157,17 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
   qed simp
 
   have "(\<Sum>\<^bsub>f\<in>F2\<^esub> \<d> |vertices f| )
-   = (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) + \<Sum>\<^bsub>f\<in>F4\<^esub> \<d> |vertices f|" (*<*)
+   = (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub>f\<in>F4\<^esub> \<d> |vertices f| )" (*<*)
     by (simp only: F3_def F4_def ListSum_compl) (*>*) (* *)
 
   txt_raw {* \newpage *}
   txt {* ($E_1$) From the definition of @{text "ExcessAt"} we have *}
 
-  also have "(\<Sum>\<^bsub>v \<in> V1\<^esub> ExcessAt g v) + \<Sum>\<^bsub> f \<in> F1\<^esub> \<d> |vertices f|
-      = \<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v)"
+  also have "(\<Sum>\<^bsub>v \<in> V1\<^esub> ExcessAt g v) + (\<Sum>\<^bsub> f \<in> F1\<^esub> \<d> |vertices f| )
+      = (\<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v))"
   proof -
-    from noExV1 V_subset have "\<Sum>\<^bsub> f \<in> F1\<^esub> \<d> |vertices f|
-      = \<Sum>\<^bsub>v \<in> V1\<^esub> (tri g v *  \<d> 3 + quad g v * \<d> 4)"
+    from noExV1 V_subset have "(\<Sum>\<^bsub> f \<in> F1\<^esub> \<d> |vertices f| )
+      = (\<Sum>\<^bsub>v \<in> V1\<^esub> (tri g v *  \<d> 3 + quad g v * \<d> 4))"
     apply (unfold F1_def)
     apply (rule_tac squanderFace_distr2)
     apply (rule pl)
@@ -180,11 +180,11 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
     done
 
     also have "(\<Sum>\<^bsub>v \<in> V1\<^esub> ExcessAt g v)
-      + \<Sum>\<^bsub>v \<in> V1\<^esub> (tri g v * \<d> 3 + quad g v * \<d> 4)
-      = \<Sum>\<^bsub>v \<in> V1\<^esub> (ExcessAt g v
-      + tri g v * \<d> 3 + quad g v * \<d> 4)" (*<*)
+      + (\<Sum>\<^bsub>v \<in> V1\<^esub> (tri g v * \<d> 3 + quad g v * \<d> 4))
+      = (\<Sum>\<^bsub>v \<in> V1\<^esub> (ExcessAt g v
+      + tri g v * \<d> 3 + quad g v * \<d> 4))" (*<*)
       by (simp add: ListSum_add add_ac) (*>*) (* FIXME  also takes too long *)
-    also from pl final tame have "\<dots> = \<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v)"
+    also from pl final tame have "\<dots> = (\<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v))"
       by (rule_tac ListSum_eq)
          (fastforce simp add: V1_def V_subset[THEN subsetD] intro: excess_eq1)
     finally show ?thesis .
@@ -195,7 +195,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
   also (trans1)
     from pl final V_subset have
-    "(\<Sum>\<^bsub>v \<in> V3\<^esub> ExcessAt g v) = \<Sum>\<^bsub>v \<in> V3\<^esub> \<a>" (*<*)
+    "(\<Sum>\<^bsub>v \<in> V3\<^esub> ExcessAt g v) = (\<Sum>\<^bsub>v \<in> V3\<^esub> \<a>)" (*<*)
      apply (rule_tac ListSum_eq)
      apply (simp add: V3_def V2_def excessAtType_def ExcessAt_def degree_eq vertextype_def)
      by(blast intro: finalVertexI)
@@ -204,7 +204,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
   txt {* ($E_3$) For all exceptional vertices of degree $\neq 5$
   @{text "ExcessAt"} returns 0. *}
 
-  also from pl final tame have "(\<Sum>\<^bsub>v \<in> V4\<^esub> ExcessAt g v) = \<Sum>\<^bsub>v \<in> V4\<^esub> 0" (*<*)
+  also from pl final tame have "(\<Sum>\<^bsub>v \<in> V4\<^esub> ExcessAt g v) = (\<Sum>\<^bsub>v \<in> V4\<^esub> 0)" (*<*)
     by (rule_tac ListSum_eq)
        (auto simp: V2_def V4_def excessAtType_def ExcessAt_def degree_eq V_subset_simp tame_def tame12o_def) (*>*) (* *)
 
@@ -213,16 +213,16 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
   txt {* ($A_1$) We use property @{text "admissible\<^isub>2"}. *}
 
   also(trans6) have
-  "\<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v) \<le> (\<Sum>\<^bsub>v \<in> V1\<^esub> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> w f)"
+  "(\<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v)) \<le> (\<Sum>\<^bsub>v \<in> V1\<^esub> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> w f)"
 
   proof (rule_tac ListSum_le)
     fix v assume "v \<in> set V1"
     with V1_def V_subset have "v \<in> set (vertices g)" (*<*)  by auto (*>*) (* *)
-    with admissible show "\<b> (tri g v) (quad g v) \<le> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> w f"
+    with admissible show "\<b> (tri g v) (quad g v) \<le> (\<Sum>\<^bsub>f \<in> facesAt g v\<^esub> w f)"
       using `v \<in> set V1` by (auto simp add:admissible_def admissible\<^isub>2_def V1_def)
   qed
 
-  also(trans2) from pSV1 V1_distinct V_subset have "\<dots> = \<Sum>\<^bsub>f \<in> F1\<^esub> w f"
+  also(trans2) from pSV1 V1_distinct V_subset have "\<dots> = (\<Sum>\<^bsub>f \<in> F1\<^esub> w f)"
     apply (unfold F1_def)
     apply (rule ScoreProps.separated_disj_Union2)
     apply (rule pl)
@@ -236,7 +236,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
   txt {* ($A_2$) We use property @{text "admissible\<^isub>4"}. *}
 
-  also have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) \<le> \<Sum>\<^bsub>f \<in> F3 \<^esub>w f" (*<*)
+  also have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f \<in> F3 \<^esub>w f)" (*<*)
   proof-
     def T == "[f\<leftarrow>F3. triangle f]"
     def E == "[f\<leftarrow>F3. ~ triangle f]"
@@ -244,12 +244,12 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
       (\<Sum>\<^bsub>f\<in>T\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| )"
       by(simp only: T_def E_def ListSum_compl2)
     also have "(\<Sum>\<^bsub>f\<in>T\<^esub> \<d> |vertices f| ) =
-          (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) Int triangle]\<^esub> \<d> |vertices f| )"
+          (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) Int Collect triangle]\<^esub> \<d> |vertices f| )"
       by(rule listsum_cong[OF _ HOL.refl])
-        (simp add:T_def F3 mem_def Int_def Collect_def)
+        (simp add:T_def F3 Int_def)
     also have "\<dots> = (\<Sum>\<^bsub>v \<in> V3\<^esub> \<Sum>\<^bsub>f \<in> filter triangle (facesAt g v)\<^esub> \<d> |vertices f| )"
       by(rule ListSum_V_F_eq_ListSum_F[symmetric, OF `inv g` V3 `distinct V3` `set V3 \<subseteq> \<V> g`])
-        (simp add:Ball_def mem_def)
+        (simp add:Ball_def)
     also have "\<dots> = 0" by (simp add: squanderFace_def)
     finally have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) =
       (\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| )" by simp
@@ -261,11 +261,11 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
       using `admissible w g`
       by(rule_tac ListSum_le)
         (simp add: admissible_def admissible\<^isub>3_def V3_def V2_def V_subset_simp)
-    also have "\<dots> = \<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) Int triangle]\<^esub> w f"
+    also have "\<dots> = (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) Int Collect triangle]\<^esub> w f)"
       by(rule ListSum_V_F_eq_ListSum_F[OF `inv g` V3 `distinct V3` `set V3 \<subseteq> \<V> g`])
-        (simp add:Ball_def mem_def)
-    also have "\<dots> = \<Sum>\<^bsub>f\<in>T\<^esub> w f"
-      by(simp add: T_def F3 mem_def Int_def Collect_def)
+        (simp add:Ball_def)
+    also have "\<dots> = (\<Sum>\<^bsub>f\<in>T\<^esub> w f)"
+      by(simp add: T_def F3 Int_def)
     also have "ListSum T w + ListSum E w = ListSum F3 w"
       by(simp add: T_def E_def ListSum_compl2)
     finally show ?thesis by simp
@@ -274,7 +274,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
   txt_raw {* \newpage *}
   txt {* ($A_3$) We use property @{text "admissible\<^isub>1"}. *}
 
-  also(trans3) have "\<Sum>\<^bsub> f \<in> F4\<^esub> \<d> |vertices f| \<le> \<Sum>\<^bsub>f \<in> F4\<^esub> w f"
+  also(trans3) have "(\<Sum>\<^bsub> f \<in> F4\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f \<in> F4\<^esub> w f)"
   proof (rule ListSum_le)
     fix f assume "f \<in> set F4"
     then have f: "f \<in> set (faces g)" (*<*) by (simp add: F4_def F2_def)(*>*) (* *)
@@ -288,10 +288,10 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
   txt {*  We reunite $F1$ and $F2$.  *}
 
-  also(trans5) have "(\<Sum>\<^bsub> f \<in> F1\<^esub> w f) + (\<Sum>\<^bsub> f \<in> F2\<^esub> w f) = \<Sum>\<^bsub>f \<in> faces g\<^esub> w f" (*<*)
+  also(trans5) have "(\<Sum>\<^bsub> f \<in> F1\<^esub> w f) + (\<Sum>\<^bsub> f \<in> F2\<^esub> w f) = (\<Sum>\<^bsub>f \<in> faces g\<^esub> w f)" (*<*)
     by (simp only: F1_def F2_def ListSum_compl) (*>*) (* *)
 
-  finally show "squanderLowerBound g \<le> \<Sum>\<^bsub>f \<in> faces g\<^esub> w f" .
+  finally show "squanderLowerBound g \<le> (\<Sum>\<^bsub>f \<in> faces g\<^esub> w f)" .
 qed
 
 end

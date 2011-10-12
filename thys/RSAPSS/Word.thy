@@ -1538,7 +1538,7 @@ proof -
         by simp
       with bv_to_int_upper_range [of w1]
       have "bv_to_int w1 + bv_to_int w2 < (2 ^ (length w1 - 1)) + (2 ^ (length w2 - 1))"
-        by (rule zadd_zless_mono)
+        by (rule add_less_le_mono)
       also have "... \<le> 2 ^ max (length w1) (length w2)"
         apply (rule adder_helper)
         apply (rule helper)
@@ -1625,7 +1625,7 @@ next
       from bv_to_int_lower_range [of w2]
       have v2: "- bv_to_int w2 \<le> 2 ^ (length w2 - 1)" by simp
       have "bv_to_int w1 + - bv_to_int w2 < (2 ^ (length w1 - 1)) + (2 ^ (length w2 - 1))"
-        apply (rule zadd_zless_mono)
+        apply (rule add_less_le_mono)
         apply (rule bv_to_int_upper_range [of w1])
         apply (rule v2)
         done
@@ -1717,7 +1717,7 @@ proof -
           done
         also have "... \<le> 2 ^ (length w1 + length w2 - Suc 0)"
           apply simp
-          apply (subst zpower_zadd_distrib [symmetric])
+          apply (subst power_add [symmetric])
           apply simp
           done
         finally show "?Q < 2 ^ (length w1 + length w2 - Suc 0)" .
@@ -1744,7 +1744,7 @@ proof -
           by simp
         also have "... < 2 ^ (length w1 + length w2 - Suc 0)"
           apply simp
-          apply (subst zpower_zadd_distrib [symmetric])
+          apply (subst power_add [symmetric])
           apply simp
           apply (cut_tac lmw)
           apply arith
@@ -1763,7 +1763,7 @@ proof -
     proof simp
       have "(2::int) ^ (length w1 - 1) * 2 ^(length w2 - 1) \<le> 2 ^ (length w1 + length w2 - Suc 0)"
         apply simp
-        apply (subst zpower_zadd_distrib [symmetric])
+        apply (subst power_add [symmetric])
         apply simp
         done
       hence "-((2::int) ^ (length w1 + length w2 - Suc 0)) \<le> -(2^(length w1 - 1) * 2 ^ (length w2 - 1))"
@@ -1788,7 +1788,7 @@ proof -
             apply simp
             done
           hence "-?Q \<le> ((2::int)^(length w1 - 1)) * (2 ^ (length w2 - 1))"
-            by (simp add: zmult_ac)
+            by (simp add: mult_ac)
           thus "-(((2::int)^(length w1 - Suc 0)) * (2 ^ (length w2 - Suc 0))) \<le> ?Q"
             by simp
         next
@@ -1805,7 +1805,7 @@ proof -
             apply simp
             done
           hence "-?Q \<le> ((2::int)^(length w1 - 1)) * (2 ^ (length w2 - 1))"
-            by (simp add: zmult_ac)
+            by (simp add: mult_ac)
           thus "-(((2::int)^(length w1 - Suc 0)) * (2 ^ (length w2 - Suc 0))) \<le> ?Q"
             by simp
         qed
@@ -1853,7 +1853,7 @@ proof -
           done
         also have "... \<le> 2 ^ (length w1 + length w2 - Suc 0)"
           apply simp
-          apply (subst zpower_zadd_distrib [symmetric])
+          apply (subst power_add [symmetric])
           apply simp
           apply (cut_tac lmw)
           apply arith
@@ -1883,7 +1883,7 @@ proof -
     proof simp
       have "(2::int) ^ length w1 * 2 ^(length w2 - 1) \<le> 2 ^ (length w1 + length w2 - Suc 0)"
         apply simp
-        apply (subst zpower_zadd_distrib [symmetric])
+        apply (subst power_add [symmetric])
         apply simp
         apply (cut_tac lmw)
         apply arith
@@ -1913,7 +1913,7 @@ proof -
             apply simp
             done
           hence "-?Q \<le> ((2::int)^length w1) * (2 ^ (length w2 - 1))"
-            by (simp add: zmult_ac)
+            by (simp add: mult_ac)
           thus "-(((2::int)^length w1) * (2 ^ (length w2 - Suc 0))) \<le> ?Q"
             by simp
         next
@@ -1928,7 +1928,7 @@ proof -
 qed
 
 lemma bv_smult_sym: "bv_smult w1 w2 = bv_smult w2 w1"
-  by (simp add: bv_smult_def zmult_ac)
+  by (simp add: bv_smult_def mult_ac)
 
 subsection {* Structural operations *}
 

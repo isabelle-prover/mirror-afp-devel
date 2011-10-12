@@ -85,7 +85,7 @@ proof -
       from s0p have "s \<le> ?p - 1" by (auto simp add: less_int_def)
       with s0p have "s^2 \<le> (?p - 1)^2" by (simp only: power_mono)
       also have "\<dots> = ?p*(?p - 1) - 1*(?p - 1)" 
-        by (simp only: power2_eq_square zdiff_zmult_distrib)
+        by (simp only: power2_eq_square left_diff_distrib)
       finally show ?thesis by auto
     qed
     finally have "?p < 2" by arith
@@ -140,8 +140,8 @@ proof -
             ?n1*?p - ?n1*(2*x*r) - ?n1*(2*y*s) + ?n1^2*r^2 + ?n1^2*s^2"
             by (simp only: mult_ac power_mult_distrib)
           finally show "?C = ?n1*(?p - 2*x*r - 2*y*s + ?n1*(r^2 + s^2))" 
-            by (simp only: power_mult_distrib zadd_zmult_distrib2 mult_ac
-          zdiff_zmult_distrib zdiff_zmult_distrib2 power2_eq_square)
+            by (simp only: power_mult_distrib right_distrib mult_ac
+          left_diff_distrib right_diff_distrib power2_eq_square)
         qed
         then obtain m1 where m1: "?C = ?n1*m1" by (auto simp add: dvd_def)
         have mn: "m1 < ?n1" 
@@ -163,7 +163,7 @@ proof -
           finally have "?n1*m1*4 \<le> ?n1*?n1*2" 
             by (simp add: power2_eq_square mult_ac)
           hence "?n1*(2*?n1- 4*m1) \<ge> 0" 
-            by (auto simp add: zdiff_zmult_distrib2 mult_ac)
+            by (auto simp add: right_diff_distrib mult_ac)
           hence "?n1*(2*?n1- 4*m1) > -1" by auto
           with contr show False by auto
         qed
@@ -186,9 +186,9 @@ proof -
             by (simp add: eval_nat_numeral field_simps)
           with m1 have 
             "?n1^2*(?p*m1) = ?n1^2*((r*v + s*w + m1)^2 + (r*w - s*v)^2)"
-            by (simp only: mult_ac power2_eq_square, simp add: zadd_zmult_distrib2)
+            by (simp only: mult_ac power2_eq_square, simp add: right_distrib)
           hence "?n1^2*(?p*m1 - (r*v+s*w+m1)^2 - (r*w-s*v)^2) = 0"
-            by (auto simp add: zadd_zmult_distrib2 zdiff_zmult_distrib2)
+            by (auto simp add: right_distrib right_diff_distrib)
           moreover from n1pos have "?n1^2 \<noteq> 0" by (simp add: power2_eq_square)
           ultimately show ?thesis by simp
         qed

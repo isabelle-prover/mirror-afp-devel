@@ -1701,7 +1701,7 @@ apply (frule_tac x = "x \<cdot>\<^sub>r (t\<^bsub>K\<^esub>\<^bsup>- tna (v x)\<
 apply (frule_tac x = a in Vr_mem_f_mem[of  "v"], assumption+)
 apply (simp add:Ring.ring_tOp_assoc[of "K"])
  apply (simp add:npowf_exp_1_add[THEN sym, of "t" "tna (v x)"]) 
- apply (simp add:zadd_commute)
+ apply (simp add:add_commute)
 apply (simp add:Kxa_def) 
 apply (frule npowf_mem[of "t" "1 + tna (v x)"], assumption+)
 apply (simp add:Ring.ring_tOp_commute[of "K" _ "t\<^bsub>K\<^esub>\<^bsup>(1 + tna (v x))\<^esup>"])
@@ -1786,8 +1786,8 @@ apply (frule_tac a = k in rHom_mem[of "pj (Vr K v) (vp K v)" "Vr K v"
  apply (frule_tac x = a in Vr_mem_f_mem[of v], assumption+)
  apply (simp add:Ring.ring_tOp_assoc[of "K"])
  apply (simp add:npowf_exp_1_add[THEN sym, of "t"])
- apply (simp add:zadd_commute[of "2"])
- apply (simp add:zadd_assoc)
+ apply (simp add:add_commute[of "2"])
+ apply (simp add:add_assoc)
  apply (subst Ring.ring_tOp_commute, assumption+)
  apply (rule npowf_mem, assumption+) apply blast
 done
@@ -1925,16 +1925,16 @@ apply (cut_tac aneg_less[THEN sym, of "0" "Abs (v x)"], simp)
 apply (frule val_nonzero_noninf[of v x], assumption+)
 apply (simp add:tna_ant)
 apply (simp only:ant_1[THEN sym], simp del:ant_1 add:a_zpz)
-apply (simp add:zadd_assoc[THEN sym])
+apply (simp add:add_assoc[THEN sym])
 apply (cut_tac m1 = "N + nat \<bar>z\<bar>" and n1 = n in zless_int[THEN sym], simp)
-apply (frule_tac i = "int N + abs z" and j = "int n" and k = "z + 1" in 
-       zadd_strict_right_mono, simp only:zadd_commute)
-apply (simp only:zadd_assoc[of _ "1"])
-apply (simp only:zadd_assoc[THEN sym, of "1"])
-apply (simp only:zadd_commute[of "1"])
-apply (simp only:zadd_assoc[of _ "1"])
-apply (cut_tac ?z1.1= z and ?z2.1= "abs z" and ?z3.1 = "1 + int N" in 
-       zadd_assoc[THEN sym])
+apply (frule_tac a = "int N + abs z" and b = "int n" and c = "z + 1" in 
+       add_strict_right_mono, simp only:add_commute)
+apply (simp only:add_assoc[of _ "1"])
+apply (simp only:add_assoc[THEN sym, of "1"])
+apply (simp only:add_commute[of "1"])
+apply (simp only:add_assoc[of _ "1"])
+apply (cut_tac ?a1 = z and ?b1 = "abs z" and ?c1 = "1 + int N" in 
+       add_assoc[THEN sym])
 apply (thin_tac "\<bar>z\<bar> + int N < int n")
 apply (frule_tac a = "z + (\<bar>z\<bar> + (1 + int N))" and b = "z + \<bar>z\<bar> + (1 + int N)" and c = "int n + (z + 1)" in ineq_conv1, assumption+)
 apply (thin_tac "z + (\<bar>z\<bar> + (1 + int N)) < int n + (z + 1)",
@@ -1943,7 +1943,7 @@ apply (thin_tac "z + (\<bar>z\<bar> + (1 + int N)) < int n + (z + 1)",
 apply (cut_tac z = z in abs_p_self_pos)
 apply (frule_tac i = 0 and j = "z + abs z" and k = "1 + int N" in 
         zadd_right_mono) 
-apply (simp only:zadd_0)
+apply (simp only:add_0)
 apply (frule_tac i = "1 + int N" and j = "z + \<bar>z\<bar> + (1 + int N)" and 
        k = "int n + (z + 1)" in zle_zless_trans, assumption+) 
 apply (thin_tac "z + \<bar>z\<bar> + (1 + int N) < int n + (z + 1)",

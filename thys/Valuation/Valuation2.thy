@@ -954,7 +954,7 @@ apply (cut_tac i = 0 and j = "v (x^\<^bsup>K j\<^esup>)" and k = "v (\<^bsub>Suc
         erule exE,
         cut_tac m1 = 0 and n1 = j in zless_int[THEN sym],
         frule_tac a = "0 < j" and b = "int 0 < int j" in a_b_exchange,
-        assumption, thin_tac "0 < j", thin_tac "(0 < j) = (int 0 < int j)");
+        assumption, thin_tac "0 < j", thin_tac "(0 < j) = (int 0 < int j)")
 apply (simp del: of_nat_0_less_iff)
 
 apply (frule_tac w1 = "int j" and x1 = 0 and y1 = "ant z" in 
@@ -974,7 +974,7 @@ apply (        frule_tac a = "0 < j" and b = "int 0 < int j" in a_b_exchange,
         assumption+, thin_tac "0 < j", thin_tac "(0 < j) = (int 0 < int j)",
         frule_tac z = "int 0" and z' = "int j" in zless_imp_zle,
         frule_tac i = "int 0" and j = "int j" and k = z in int_mult_le,
-         assumption+, simp add:zmult_commute )
+         assumption+, simp add:mult_commute )
  apply assumption
 done
 
@@ -2643,9 +2643,9 @@ apply (frule_tac j = ja in val_LI_noninf[of "n" "P" "I"], assumption+,
        frule_tac j = ja in val_LI_pos[of "n" "P" "I"], assumption+,
        frule_tac a = "LI K (\<nu>\<^bsub>K (P ja)\<^esub>) I" in apos_neq_minf, simp add:ant_tna,
        simp add:ant_0) apply (unfold LI_def)
- apply (frule_tac j = "tna (AMin (\<nu>\<^bsub>K (P ja)\<^esub> ` I))" and k = "m_zmax n (\<lambda>j. tna (AMin (\<nu>\<^bsub>K (P j)\<^esub> ` I)))" in zle_trans[of "0"], assumption+)
- apply (rule_tac j = "m_zmax n (\<lambda>j. tna (AMin (\<nu>\<^bsub>K (P j)\<^esub> ` I)))" and 
-        k = "m_zmax n (\<lambda>j. tna (AMin (\<nu>\<^bsub>K (P j)\<^esub> ` I))) + 1" in zle_trans[of "0"],
+ apply (frule_tac y = "tna (AMin (\<nu>\<^bsub>K (P ja)\<^esub> ` I))" and z = "m_zmax n (\<lambda>j. tna (AMin (\<nu>\<^bsub>K (P j)\<^esub> ` I)))" in order_trans[of "0"], assumption+)
+ apply (rule_tac y = "m_zmax n (\<lambda>j. tna (AMin (\<nu>\<^bsub>K (P j)\<^esub> ` I)))" and 
+        z = "m_zmax n (\<lambda>j. tna (AMin (\<nu>\<^bsub>K (P j)\<^esub> ` I))) + 1" in order_trans[of "0"],
         assumption+) apply simp
 
  apply (rule allI, rule impI) apply (simp add:Zset_def)

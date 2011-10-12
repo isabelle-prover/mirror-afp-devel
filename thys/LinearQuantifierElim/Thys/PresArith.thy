@@ -129,7 +129,7 @@ lemma zlcms_pos: "\<forall>i \<in> set is. i\<noteq>0 \<Longrightarrow> zlcms is
 by(induct "is")(auto simp:lcm_pos_int)
 
 lemma zlcms0_iff[simp]: "(zlcms is = 0) = (0 : set is)"
-by (metis DIVISION_BY_ZERO dvd_eq_mod_eq_0 dvd_zlcms zlcms_pos zless_le)
+by (metis DIVISION_BY_ZERO dvd_eq_mod_eq_0 dvd_zlcms zlcms_pos less_le)
 
 lemma elem_le_zlcms: "\<forall>i \<in> set is. i \<noteq> 0 \<Longrightarrow> i : set is \<Longrightarrow> i \<le> zlcms is"
 by (metis dvd_zlcms zdvd_imp_le zlcms_pos)
