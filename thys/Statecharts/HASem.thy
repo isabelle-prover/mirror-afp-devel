@@ -1,5 +1,5 @@
 (*  Title:      statecharts/HA/HASem.thy
-    ID:         $Id: HASem.thy,v 1.1 2010/07/23 16:56:55 helke Exp $
+
     Author:     Steffen Helke and Florian Kammüller, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)

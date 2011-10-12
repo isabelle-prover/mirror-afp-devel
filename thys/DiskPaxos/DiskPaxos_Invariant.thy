@@ -1,5 +1,5 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Invariant.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro at fceia.unr.edu.ar>
 *)

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExecInstr.thy
-    ID:         $Id: JVMExecInstr.thy,v 1.4 2008-10-07 14:07:44 fhaftmann Exp $
+
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)

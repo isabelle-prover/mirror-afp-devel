@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalOmega.thy,v 1.7 2008-06-25 18:30:28 makarius Exp $
+
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)

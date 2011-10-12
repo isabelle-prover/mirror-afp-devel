@@ -1,4 +1,4 @@
-(*  ID:          $Id: Semantic.thy,v 1.8 2008-06-12 06:57:27 lsf37 Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

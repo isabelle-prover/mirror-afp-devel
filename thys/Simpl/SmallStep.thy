@@ -1,4 +1,4 @@
-(*  ID:          $Id: SmallStep.thy,v 1.10 2008-06-16 20:13:41 makarius Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id$
+
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)

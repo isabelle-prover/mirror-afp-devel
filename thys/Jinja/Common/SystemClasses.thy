@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/SystemClasses.thy
-    ID:         $Id: SystemClasses.thy,v 1.4 2008-10-07 14:07:44 fhaftmann Exp $
+
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)

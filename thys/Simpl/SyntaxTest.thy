@@ -1,4 +1,4 @@
-(*  ID:          $Id: SyntaxTest.thy,v 1.4 2009-02-16 10:18:05 norbertschirmer Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

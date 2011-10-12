@@ -1,5 +1,5 @@
 (*  Title:      generalise_state.ML
-    ID:         $Id: generalise_state.ML,v 1.2 2008-03-06 15:22:27 lsf37 Exp $
+
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2005-2007 Norbert Schirmer 

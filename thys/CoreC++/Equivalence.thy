@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.20 2009-03-20 17:56:16 makarius Exp $
+
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 

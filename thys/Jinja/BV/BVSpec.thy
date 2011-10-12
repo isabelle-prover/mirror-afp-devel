@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVSpec.thy
-    ID:         $Id: BVSpec.thy,v 1.2 2008-06-24 22:23:29 makarius Exp $
+
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 

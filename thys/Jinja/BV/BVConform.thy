@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Correct.thy
-    ID:         $Id: BVConform.thy,v 1.3 2006-11-17 01:28:44 makarius Exp $
+
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 

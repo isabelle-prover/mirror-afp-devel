@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/execute_Bigstep.thy
-    ID:         $Id: execute_Bigstep.thy,v 1.8 2009-07-14 09:00:10 fhaftmann Exp $
+
     Author:     Tobias Nipkow
     Copyright   2004 Technische Universitaet Muenchen
 *)

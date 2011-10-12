@@ -1,4 +1,4 @@
-(*  ID:          $Id: Compose.thy,v 1.8 2009-06-25 13:42:08 fhaftmann Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

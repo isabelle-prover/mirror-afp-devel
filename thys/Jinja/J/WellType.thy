@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellType.thy
-    ID:         $Id: WellType.thy,v 1.5 2007-07-11 10:17:12 stefanberghofer Exp $
+
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)

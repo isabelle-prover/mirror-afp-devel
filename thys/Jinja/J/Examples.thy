@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Examples.thy
-    ID:         $Id: Examples.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
+
     Author:     Christoph Petzinger
     Copyright   2004 Technische Universitaet Muenchen
 *)

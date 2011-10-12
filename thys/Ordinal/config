@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-# $Id: config,v 1.3 2006-06-15 14:19:05 lsf37 Exp $
+
 
 # Get email when automated build fails. May be empty.
 # values: "email1 email2 .. emailn"

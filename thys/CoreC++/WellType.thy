@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellType.thy,v 1.11 2007-07-11 10:07:50 stefanberghofer Exp $
+
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 

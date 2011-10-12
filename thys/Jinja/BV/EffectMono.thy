@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/EffMono.thy
-    ID:         $Id: EffectMono.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
+
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)

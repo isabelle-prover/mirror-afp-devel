@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: TF_JVM.thy,v 1.6 2007-02-07 17:19:08 stefanberghofer Exp $
+
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)

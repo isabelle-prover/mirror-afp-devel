@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVSpecTypeSafe.thy
-    ID:         $Id: BVSpecTypeSafe.thy,v 1.7 2008-10-07 12:15:15 fhaftmann Exp $
+
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)

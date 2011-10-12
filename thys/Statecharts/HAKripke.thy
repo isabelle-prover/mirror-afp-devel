@@ -1,5 +1,5 @@
 (*  Title:      statecharts/HA/HAKripke.thy
-    ID:         $Id: HAKripke.thy,v 1.3 2010/05/14 16:53:18 helke Exp $
+
     Author:     Steffen Helke, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)

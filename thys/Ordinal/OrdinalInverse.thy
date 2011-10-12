@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalInverse.thy,v 1.10 2008-07-18 16:27:23 fhaftmann Exp $
+
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)

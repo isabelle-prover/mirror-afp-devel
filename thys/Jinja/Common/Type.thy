@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/Type.thy
-    ID:         $Id: Type.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 Technische Universitaet Muenchen
 *)

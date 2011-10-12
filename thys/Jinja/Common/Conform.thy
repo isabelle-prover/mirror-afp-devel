@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Conform.thy
-    ID:         $Id: Conform.thy,v 1.4 2007-02-07 17:19:08 stefanberghofer Exp $
+
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 Technische Universitaet Muenchen
 *)

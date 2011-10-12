@@ -1,4 +1,4 @@
-(*  ID:          $Id: Closure.thy,v 1.6 2008-06-12 06:57:28 lsf37 Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

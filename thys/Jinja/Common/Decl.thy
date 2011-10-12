@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/Decl.thy
-    ID:         $Id: Decl.thy,v 1.7 2008-06-24 22:23:29 makarius Exp $
+
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)

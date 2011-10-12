@@ -1,4 +1,4 @@
-(*  ID:          $Id: ProcParExSP.thy,v 1.10 2009-08-31 15:34:44 nipkow Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

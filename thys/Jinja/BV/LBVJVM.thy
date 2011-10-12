@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: LBVJVM.thy,v 1.4 2008-07-25 10:03:40 fhaftmann Exp $
+
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)

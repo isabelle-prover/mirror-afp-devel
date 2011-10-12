@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.11 2007-07-24 19:52:33 alexkrauss Exp $
+
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)

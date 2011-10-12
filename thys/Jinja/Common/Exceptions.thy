@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/Exceptions.thy
-    ID:         $Id: Exceptions.thy,v 1.3 2008-10-07 14:07:44 fhaftmann Exp $
+
     Author:     Gerwin Klein, Martin Strecker
     Copyright   2002 Technische Universitaet Muenchen
 *)

@@ -1,4 +1,4 @@
-(*  ID:         $Id: Tilings.thy,v 1.1 2008-11-07 10:52:09 nipkow Exp $
+(*
     Author:     Lawrence C Paulson, Cambridge University Computer Laboratory
                 Tobias Nipkow, TUM
 *)

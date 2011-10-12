@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/Basis.thy
-    ID:         $Id: Aux.thy,v 1.5 2008-06-24 22:23:29 makarius Exp $
+
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 TU Muenchen
 *)

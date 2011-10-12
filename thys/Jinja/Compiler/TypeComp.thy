@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.11 2008-07-28 08:55:13 fhaftmann Exp $
+
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/WellType1.thy
-    ID:         $Id: J1WellForm.thy,v 1.6 2008-06-24 22:23:30 makarius Exp $
+
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)

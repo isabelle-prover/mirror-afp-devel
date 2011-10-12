@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalDef.thy,v 1.13 2009-07-27 20:02:15 alexkrauss Exp $
+
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)

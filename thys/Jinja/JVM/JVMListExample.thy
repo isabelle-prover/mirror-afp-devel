@@ -1,5 +1,5 @@
 (*  Title:      Jinja/JVM/JVMListExample.thy
-    ID:         $Id: JVMListExample.thy,v 1.10 2009-07-14 09:00:10 fhaftmann Exp $
+
     Author:     Stefan Berghofer, Gerwin Klein
 *)
 

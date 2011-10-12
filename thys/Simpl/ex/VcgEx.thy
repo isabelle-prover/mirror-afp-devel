@@ -1,4 +1,4 @@
-(*  ID:          $Id: VcgEx.thy,v 1.8 2008-12-30 15:30:13 ballarin Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

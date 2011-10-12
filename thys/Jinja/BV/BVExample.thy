@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.12 2009-07-14 09:00:10 fhaftmann Exp $
+
     Author:     Gerwin Klein
 *)
 

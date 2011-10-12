@@ -1,5 +1,5 @@
 (*  Title:      State based hotel key card system with "new card"
-    ID:         $Id: NewCard.thy,v 1.3 2007-07-11 10:14:40 stefanberghofer Exp $
+
     Author:     Tobias Nipkow, TU Muenchen
 
 Like State.thy but with additional features: cards can be lost and new

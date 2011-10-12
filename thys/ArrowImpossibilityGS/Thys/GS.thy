@@ -1,4 +1,4 @@
-(*  ID:         $Id: GS.thy,v 1.1 2008-10-03 09:26:59 nipkow Exp $
+(*
     Author:     Tobias Nipkow, 2008
 *)
 

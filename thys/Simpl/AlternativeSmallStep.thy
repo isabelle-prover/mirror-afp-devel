@@ -1,4 +1,4 @@
-(*  ID:          $Id: AlternativeSmallStep.thy,v 1.10 2009-04-24 19:28:46 fhaftmann Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

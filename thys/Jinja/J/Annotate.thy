@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Annotate.thy
-    ID:         $Id: Annotate.thy,v 1.5 2008-06-24 22:23:36 makarius Exp $
+
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)

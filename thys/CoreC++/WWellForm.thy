@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WWellForm.thy,v 1.7 2008-06-23 21:24:36 makarius Exp $
+
     Author:      Tobias Nipkow
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)

@@ -1,5 +1,5 @@
 (*  Title:      statecharts/CTL/Kripke.thy
-    ID:         $Id: Kripke.thy,v 1.2 2010/07/23 15:49:07 helke Exp $
+
     Author:     Steffen Helke, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)

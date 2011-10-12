@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: JVM_SemiType.thy,v 1.5 2007-02-07 17:19:08 stefanberghofer Exp $
+
     Author:     Gerwin Klein
     Copyright   2000 TUM
 

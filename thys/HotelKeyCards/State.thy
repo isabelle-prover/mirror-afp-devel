@@ -1,5 +1,5 @@
 (*  Title:      A state based hotel key card system
-    ID:         $Id: State.thy,v 1.7 2008-06-12 06:57:19 lsf37 Exp $
+
     Author:     Tobias Nipkow, TU Muenchen
 *)
 

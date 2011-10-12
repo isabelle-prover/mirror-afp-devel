@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: ClassRel.thy,v 1.8 2007-07-11 10:07:48 stefanberghofer Exp $
+
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 

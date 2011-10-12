@@ -1,5 +1,5 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL2.thy,v 1.10 2008-11-17 16:01:18 fhaftmann Exp $
+
     Author:     Tobias Nipkow and Cornelia Pusch,
                 converted to Isar by Gerwin Klein
                 contributions by Achim Brucker, Burkhart Wolff and Jan Smaus

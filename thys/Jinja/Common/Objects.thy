@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/State.thy
-    ID:         $Id: Objects.thy,v 1.4 2006-11-17 01:28:44 makarius Exp $
+
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)

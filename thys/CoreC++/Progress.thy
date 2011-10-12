@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.17 2007-07-24 19:52:32 alexkrauss Exp $
+
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 

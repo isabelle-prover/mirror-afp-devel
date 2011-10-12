@@ -1,4 +1,4 @@
-(*  ID:          $Id: ComposeEx.thy,v 1.8 2009-03-04 14:00:59 nipkow Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/JWellForm.thy
-    ID:         $Id: JWellForm.thy,v 1.2 2008-06-24 22:23:36 makarius Exp $
+
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)

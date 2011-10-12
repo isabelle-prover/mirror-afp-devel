@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVNoTypeErrors.thy
-    ID:         $Id: BVNoTypeError.thy,v 1.8 2008-06-12 06:57:20 lsf37 Exp $
+
     Author:     Gerwin Klein
     Copyright   GPL
 *)

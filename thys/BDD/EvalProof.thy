@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: EvalProof.thy,v 1.5 2008-06-12 06:57:15 lsf37 Exp $
+
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LPGL

@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Maybe.thy
-   ID:        $Id: Maybe.thy,v 1.8 2007-10-03 19:09:51 makarius Exp $
+
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)

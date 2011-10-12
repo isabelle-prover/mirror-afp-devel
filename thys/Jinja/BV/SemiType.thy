@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/SemiType.thy
-    ID:         $Id: SemiType.thy,v 1.7 2007-07-11 10:17:10 stefanberghofer Exp $
+
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)

@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-# $Id: config,v 1.1 2007-11-06 16:55:08 nipkow Exp $
+
 
 # Get email when automated build fails. May be empty.
 # values: "email1 email2 .. emailn"

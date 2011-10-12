@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Mod.thy
-    ID:         $Id: Mod.thy,v 1.6 2008-07-10 21:20:00 makarius Exp $
+
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)

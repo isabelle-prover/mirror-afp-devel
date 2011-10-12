@@ -1,5 +1,5 @@
 (*  Title:      statecharts/DataSpace/Data.thy
-    ID:         $Id: Data.thy,v 1.2 2010/07/23 15:41:50 helke Exp $
+
     Author:     Steffen Helke, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)

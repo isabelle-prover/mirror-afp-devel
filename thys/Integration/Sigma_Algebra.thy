@@ -1,5 +1,5 @@
 (*  Title:      Sigma_Algebra.thy
-    ID:         $Id: Sigma_Algebra.thy,v 1.9 2008-06-25 18:29:56 makarius Exp $
+
     Author:     Stefan Richter, Markus Wenzel, TU Muenchen
     License:    LGPL
 

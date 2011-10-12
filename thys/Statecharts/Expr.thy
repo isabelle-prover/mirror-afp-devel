@@ -1,5 +1,5 @@
 (*  Title:      statecharts/SA/Expr.thy
-    ID:         $Id: Expr.thy,v 1.1 2010/07/23 15:57:41 helke Exp $
+
     Author:     Steffen Helke, Software Engineering Group
     Copyright   2010 Technische Universitaet Berlin
 *)

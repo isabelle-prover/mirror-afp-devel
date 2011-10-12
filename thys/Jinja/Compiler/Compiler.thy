@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Compiler.thy
-    ID:         $Id: Compiler.thy,v 1.3 2005-10-08 04:54:30 nipkow Exp $
+
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)

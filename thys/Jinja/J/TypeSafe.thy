@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallTypeSafe.thy
-    ID:         $Id$
+
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)

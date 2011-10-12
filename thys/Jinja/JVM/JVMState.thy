@@ -1,5 +1,5 @@
 (*  Title:      Jinja/JVM/JVMState.thy
-    ID:         $Id: JVMState.thy,v 1.3 2007-08-12 17:21:47 makarius Exp $
+
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)

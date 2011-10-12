@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/BigStep.thy
-    ID:         $Id: BigStep.thy,v 1.8 2007-07-19 21:23:11 makarius Exp $
+
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)

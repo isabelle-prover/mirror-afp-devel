@@ -1,5 +1,5 @@
 (*  Title:      Notation for hotel key card system
-    ID:         $Id: Notation.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
+
     Author:     Tobias Nipkow, TU Muenchen
 *)
 

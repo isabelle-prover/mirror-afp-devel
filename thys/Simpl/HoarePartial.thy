@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartial.thy,v 1.9 2009-05-19 11:25:43 nipkow Exp $
+(*
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

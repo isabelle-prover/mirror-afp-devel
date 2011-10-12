@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/PCompiler.thy
-    ID:         $Id: PCompiler.thy,v 1.3 2009-03-04 14:00:59 nipkow Exp $
+
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
