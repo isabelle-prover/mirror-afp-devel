@@ -123,7 +123,7 @@ lemma Casts_Casts_eq_result:
           P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts; P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h,l)\<rangle>;
           P,E \<turnstile> s \<surd>\<rbrakk>
       \<Longrightarrow> vs' = ws'"
-proof (induct vs arbitrary: vs' ws ws' Ts Ts' es s)
+proof (induct vs arbitrary: vs' ws' Ts Ts' es s)
   case Nil thus ?case by (auto elim!:Casts_to.cases)
 next
   case (Cons x xs)

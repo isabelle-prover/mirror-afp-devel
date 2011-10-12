@@ -35,7 +35,7 @@ lemma partition_split:
   shows "set (fst (partition_split r x xs)) = set xs - (r `` {x})"
     and "set (snd (partition_split r x xs)) = set xs \<inter> (r `` {x})"
 using assms
-proof(induct xs arbitrary: xs')
+proof(induct xs)
   case Nil
   { case 1 with Nil show ?case
       unfolding partition_split_def by simp }
@@ -235,7 +235,7 @@ proof -
         apply (erule_tac x=xa in ballE)
          unfolding Image_def
          apply clarsimp
-        apply (auto dest: symD transD)
+        apply (auto dest: symD transD)  (* SLOW *)
         done
     qed
 

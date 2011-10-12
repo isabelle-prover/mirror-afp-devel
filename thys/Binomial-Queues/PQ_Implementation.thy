@@ -594,7 +594,8 @@ lemma is_binqueue_min_Min_prios:
   and "normalized xs"
   and "xs \<noteq> []"
   shows "min xs = Some (Min (set (prios xs)))"
-using assms proof (induct xs arbitrary: l)
+using assms
+proof (induct xs)
   case (Some l xs x) then show ?case
   proof (cases "xs \<noteq> []")
     case False with Some show ?thesis

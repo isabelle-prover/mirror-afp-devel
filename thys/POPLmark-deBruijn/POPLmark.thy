@@ -217,7 +217,7 @@ lemma lift_size [simp]: "size (\<up>\<^isub>\<tau> n k T) = size T"
 lemma liftT0 [simp]: "\<up>\<^isub>\<tau> 0 i T = T"
   by (induct T arbitrary: i) simp_all
 
-lemma lift0 [simp]: "\<And>i. \<up> 0 i t = t"
+lemma lift0 [simp]: "\<up> 0 i t = t"
   by (induct t arbitrary: i) simp_all
 
 theorem substT_liftT [simp]:

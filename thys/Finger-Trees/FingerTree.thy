@@ -274,7 +274,7 @@ lemma nrcons_invlevel: "\<lbrakk>is_leveln_ftree n t; is_leveln_node n nd\<rbrak
 
 lemma nrcons_invmeas: "\<lbrakk>is_measured_ftree t; is_measured_node nd\<rbrakk> 
   \<Longrightarrow> is_measured_ftree (nrcons t nd)"
-  apply (induct t nd arbitrary: nd n rule:nrcons.induct) 
+  apply (induct t nd arbitrary: nd rule:nrcons.induct) 
   apply(auto simp add: deep_def node3_def)
   done
 

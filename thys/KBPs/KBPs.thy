@@ -236,7 +236,7 @@ lemma sync_sub_model_tLength:
   apply (auto dest: sync_tLength_eq_trc[where as=UNIV] kripke_rels_trc_worlds)[1]
 
   using tT traces
-  apply (auto dest: sync_tLength_eq_trc[where as=UNIV] kripke_rels_trc_worlds)[1]
+  apply (auto dest: sync_tLength_eq_trc[where as=UNIV] kripke_rels_trc_worlds)[1]  (* SLOW *)
 
   done
 

@@ -161,7 +161,7 @@ lemma cc_single_valued':
        (   single_valued (\<C>\<cdot>(Discr (c,\<beta>',ve,b)))
        \<and> (\<forall> ((lab,\<beta>),t) \<in> \<C>\<cdot>(Discr (c,\<beta>',ve,b)). \<exists> b'. b' \<in> ran \<beta> \<and> b \<le> b')
        )"
-proof(induct arbitrary:d ds ve b c \<beta>' b' rule:evalF_evalC_induct)
+proof(induct arbitrary:d ds ve b c \<beta>' rule:evalF_evalC_induct)
 case Admissibility show ?case
   by (intro adm_lemmas adm_ball' adm_prod_split adm_not_conj adm_not_mem adm_single_valued cont2cont)
 next

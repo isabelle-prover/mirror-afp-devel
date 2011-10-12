@@ -96,7 +96,7 @@ qed simp_all
 
 
 lemma bv_leqs_antisym:"\<lbrakk>xs \<preceq>\<^isub>b ys; ys \<preceq>\<^isub>b xs\<rbrakk> \<Longrightarrow> xs = ys"
-by(induct xs ys arbitrary:zs rule:bv_leqs.induct)auto
+  by(induct xs ys rule:bv_leqs.induct)auto
 
 
 definition bv_less :: "bit_vector \<Rightarrow> bit_vector \<Rightarrow> bool" ("_ \<prec>\<^isub>b _" 99)

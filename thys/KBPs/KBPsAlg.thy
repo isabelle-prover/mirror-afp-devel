@@ -545,7 +545,7 @@ proof
         and iobs: "envObs a s = iobs"
       by (auto simp del: simInit)
     from R x have "simAbs x \<in> ?rhs"
-    proof(induct arbitrary: sx rule: rtrancl_induct)
+    proof(induct rule: rtrancl_induct)
       case base
       with sI iobs show ?case
         using simInit'[where a=a and obs=iobs]

@@ -322,7 +322,7 @@ lemma less_num_nodes_edge_Exit:
   obtains l et where "l < #:prog" and "prog \<turnstile> (_ l _) -et\<rightarrow> (_Exit_)"
 proof -
   have "\<exists>l et. l < #:prog \<and> prog \<turnstile> (_ l _) -et\<rightarrow> (_Exit_)"
-  proof(induct prog arbitrary:l)
+  proof(induct prog)
     case Skip
     have "0 < #:Skip" by simp
     moreover have "Skip \<turnstile> (_0_) -\<Up>id\<rightarrow> (_Exit_)" by(rule WCFG_Skip)

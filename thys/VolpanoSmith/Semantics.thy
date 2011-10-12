@@ -243,7 +243,7 @@ lemma while_red_nE:
   \<Longrightarrow> (\<lbrakk>b\<rbrakk> s = Some false \<and> s = s' \<and> n = 1) \<or>
      (\<exists>i j s''. \<lbrakk>b\<rbrakk> s = Some true \<and> \<langle>cx,s\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,s''\<rangle> \<and> 
                 \<langle>while (b) cx,s''\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle> \<and> n = i + j + 2)"
-proof(induct "while (b) cx" s n "Skip" s' arbitrary:c rule:red_n.induct)
+proof(induct "while (b) cx" s n "Skip" s' rule:red_n.induct)
   case (red_n_Rec s c'' s'' n s')
   from `\<langle>while (b) cx,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>`
   have "(\<lbrakk>b\<rbrakk> s = Some false \<and> c'' = Skip \<and> s'' = s) \<or>

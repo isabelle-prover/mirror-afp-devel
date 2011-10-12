@@ -84,7 +84,7 @@ lemma length_deal_aux:
   "foldr deal_body zs (b, ([], [])) = (b', xs, ys)
      \<Longrightarrow> length xs < Suc (length zs)
        \<and> length ys < Suc (length zs)"
-proof(induct zs arbitrary: as bs b b' xs ys)
+proof(induct zs arbitrary: b b' xs ys)
   case (Cons z zs)
   then obtain b'' xs' ys'
     where F: "foldr deal_body zs (b, [], []) = (b'', xs', ys')"
@@ -114,7 +114,7 @@ lemma length_deal[simp]:
 lemma set_deal_aux:
   "foldr deal_body zs (b, ([], [])) = (b', xs, ys)
      \<Longrightarrow> set xs \<union> set ys = set zs"
-proof(induct zs arbitrary: as bs b b' xs ys)
+proof(induct zs arbitrary: b b' xs ys)
   case (Cons z zs)
   then obtain b'' xs' ys'
     where F: "foldr deal_body zs (b, [], []) = (b'', xs', ys')"
@@ -143,7 +143,7 @@ lemma set_deal:
 lemma distinct_deal_aux:
   "\<lbrakk> foldr deal_body zs (b, ([], [])) = (b', xs, ys); distinct zs \<rbrakk>
      \<Longrightarrow> distinct xs \<and> distinct ys \<and> set xs \<union> set ys = set zs"
-proof(induct zs arbitrary: as bs b b' xs ys)
+proof(induct zs arbitrary: b b' xs ys)
   case (Cons z zs)
   then obtain b'' xs' ys'
     where F: "foldr deal_body zs (b, [], []) = (b'', xs', ys')"
