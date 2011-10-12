@@ -1,7 +1,10 @@
 header {* Deciding Regular Expression Equivalence *}
 
 theory Equivalence_Checking
-imports Derivatives "~~/src/HOL/Library/While_Combinator"
+imports
+  Derivatives
+  "~~/src/HOL/Library/While_Combinator"
+  "~~/src/HOL/Library/More_Set"
 begin
 
 subsection {* Term ordering *}
