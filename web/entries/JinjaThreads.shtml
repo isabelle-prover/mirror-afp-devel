@@ -74,7 +74,7 @@ executable scheduler for source code semantics
 [2011-02-02]:
 simplified code generator setup
 new random scheduler
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/3059dafd013f">3059dafd013f</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/3059dafd013f">3059dafd013f</a>)<br>
 [2011-07-21]:
 new interruption model,
 generalized JMM proof of DRF guarantee,

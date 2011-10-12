@@ -18,7 +18,7 @@ the AFP project.
 <b>Setup:</b><br>
 Check out the archive from the mercurial repository with:
 
-<pre>hg clone ssh://&lt;login%gt;@afp.hg.sourceforge.net/hgroot/afp/afp afp-devel</pre>
+<pre>hg clone ssh://&lt;login&gt;@afp.hg.sourceforge.net/hgroot/afp/afp afp-devel</pre>
 
 where <code>&lt;login&gt;</code> is your sourceforge login. 
 The command above will create a directory <code>afp-devel</code> 
@@ -82,7 +82,17 @@ to check them out.
     when a new version of the archive is released 
     (usually together with Isabelle). Please contact 
     one of the editors if you feel there is something 
-    that should be made available immediately.</li>
+    that should be made available immediately.
+    The changes will show up with about 24h delay in the
+    web development snapshot of the AFP.</li>
+<li>If you make a change that is more than maintenance and
+    that you think may be interesting to users of your entry,
+    please add a manual change log in the
+    file <code>afp-devel/metadata/metada</code> by adding
+    an <code>[extra-history]</code> section to your entry.
+    If possible and sensible, this log should link to the
+    relevant hg change set(s). See existing change logs like
+    the one for JinjaThreads for examples.</li>
 </ul>
 </p>
 
