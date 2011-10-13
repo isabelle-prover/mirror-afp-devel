@@ -1,12 +1,15 @@
 (*  Title:      Jinja/JVM/JVMListExample.thy
-
     Author:     Stefan Berghofer, Gerwin Klein
 *)
 
 header {* \isaheader{Example for generating executable code from JVM semantics}\label{sec:JVMListExample} *}
 
 theory JVMListExample
-imports "../Common/SystemClasses" JVMExec "~~/src/HOL/Library/Efficient_Nat"
+imports
+  "../Common/SystemClasses"
+  JVMExec
+  "~~/src/HOL/Library/More_Set"
+  "~~/src/HOL/Library/Efficient_Nat"
 begin
 
 definition list_name :: string
@@ -112,7 +115,10 @@ code_const undefined_val
 
 lemmas [code_unfold] = SystemClasses_def [unfolded ObjectC_def NullPointerC_def ClassCastC_def OutOfMemoryC_def]
 
+declare mem_Collect_eq [code_unfold]
+
 definition "test = exec (E, start_state E test_name makelist_name)"
+
 ML {* 
   @{code test};
   @{code exec} (@{code E}, @{code the} it);

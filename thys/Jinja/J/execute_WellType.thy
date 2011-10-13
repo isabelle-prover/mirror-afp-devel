@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/execute_WellType.thy
-
+    ID:         $Id: execute_WellType.thy,v 1.4 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Christoph Petzinger
     Copyright   2004 Technische Universitaet Muenchen
 *)
@@ -85,6 +85,8 @@ definition test3 where "test3 = [], empty(''V'' \<mapsto> Integer)  \<turnstile>
 definition test4 where "test4 = [], empty(''V'' \<mapsto> Integer)  \<turnstile> testExpr4 :: _"
 definition test5 where "test5 = [classObject, (''C'',(''Object'',[(''F'',Integer)],[]))], empty  \<turnstile> testExpr5 :: _"
 definition test6 where "test6 = [classObject, classI], empty  \<turnstile> testExpr6 :: _"
+
+declare mem_Collect_eq [code_unfold]
 
 ML {*
   val SOME(@{code Integer}, _) = Predicate.yield @{code test1};

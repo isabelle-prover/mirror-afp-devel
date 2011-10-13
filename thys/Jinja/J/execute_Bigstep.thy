@@ -1,12 +1,14 @@
 (*  Title:      Jinja/J/execute_Bigstep.thy
-
     Author:     Tobias Nipkow
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Code Generation For BigStep} *}
 
-theory execute_Bigstep imports BigStep Examples
+theory execute_Bigstep
+imports
+  BigStep Examples
+  "~~/src/HOL/Library/More_Set"
   "~~/src/HOL/Library/Efficient_Nat"
 begin
 
@@ -170,6 +172,8 @@ definition "test6 = [(''Object'',('''',[],[])), classI] \<turnstile> \<langle>te
 definition "V = ''V''"
 definition "C = ''C''"
 definition "F = ''F''"
+
+declare mem_Collect_eq [code_unfold]
 
 ML {*
   val SOME ((@{code Val} (@{code Intg} 5), _), _) = Predicate.yield @{code test1};

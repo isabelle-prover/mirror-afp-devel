@@ -271,10 +271,10 @@ next
 next
   fix a Q r p fs
   assume "valid_edge (P, C0, Main) a" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
-  hence "\<exists>a'. a' \<in> get_return_edges P a"
+  then have "\<exists>a'. a' \<in> get_return_edges P a"
     by (cases p, cases r) (fastforce intro: get_return_edges.intros)
-  thus "get_return_edges P a \<noteq> {}"
-    by (simp only: mem_def) clarsimp
+  then show "get_return_edges P a \<noteq> {}"
+    by (simp only: ex_in_conv) simp
 next
   fix a a'
   assume "valid_edge (P, C0, Main) a" "a' \<in> get_return_edges P a"
