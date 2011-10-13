@@ -254,8 +254,6 @@ end
 code_const "HOL.equal \<Colon> node \<Rightarrow> node \<Rightarrow> bool"
   (SML "!((_ : int) = _)")
 
-export_code dfs dfs2 checking SML
-
 export_code dfs dfs2 in SML file "dfs.ML"
 
 text {* Invocation of the SML code generator *}
