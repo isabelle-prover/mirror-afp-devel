@@ -8,8 +8,6 @@ begin
 
 subsection "Basics"
 
-consts_code undefined ("(raise Match)")
-
 class dlo = linorder +
 assumes dense: "x < z \<Longrightarrow> \<exists>y. x < y \<and> y < z"
 and no_ub: "\<exists>u. x < u" and no_lb: "\<exists>l. l < x"

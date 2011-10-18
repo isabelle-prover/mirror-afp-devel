@@ -256,12 +256,5 @@ code_const "HOL.equal \<Colon> node \<Rightarrow> node \<Rightarrow> bool"
 
 export_code dfs dfs2 in SML file "dfs.ML"
 
-text {* Invocation of the SML code generator *}
-
-types_code 
-  node ("int")
-
-code_module DFS file "DFS.sml" contains
-  dfs = "dfs" dfs2 = "dfs2"
 
 end

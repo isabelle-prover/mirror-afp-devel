@@ -77,11 +77,4 @@ code_const Vector and tabulate' and sub1
 code_reserved SML Vector
 
 
-types_code
-  vector  ("_ vector")
-
-consts_code
-  "tabulate'"  ("Vector.tabulate")
-  "sub1"       ("Vector.sub")
-
 end
