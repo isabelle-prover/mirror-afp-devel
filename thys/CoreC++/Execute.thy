@@ -41,7 +41,7 @@ theorem app_eq: "app xs ys zs = (zs = xs @ ys)"
   apply (erule app_eq1)
   done
 
-lemmas [code_ind_set] = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl
+lemmas rtrancl (*[code_ind_set]*) = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl
 
 
 inductive
@@ -158,17 +158,17 @@ definition FieldDecls' :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Righta
 definition MinimalMethodDefs' :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool" where
   "MinimalMethodDefs' P C M Cs mthd \<equiv> (Cs, mthd) \<in> MinimalMethodDefs P C M"
 
-lemma [code_ind params: 3]:
+lemma (*[code_ind params: 3]*)
   "Subobjs P C Cs \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of ms M =  \<lfloor>mthd\<rfloor> \<Longrightarrow>
    MethodDefs' P C M Cs mthd"
  by (simp add: MethodDefs_def MethodDefs'_def)
 
-lemma [code_ind params: 3]:
+lemma (*[code_ind params: 3]*)
   "Subobjs P C Cs \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of fs F =  \<lfloor>T\<rfloor> \<Longrightarrow>
    FieldDecls' P C F Cs T"
  by (simp add: FieldDecls_def FieldDecls'_def)
 
-lemma [code_ind params: 3]:
+lemma (*[code_ind params: 3]*)
   "MethodDefs' P C M Cs mthd \<Longrightarrow> 
    \<forall>(Cs', mthd)\<in>{(Cs', mthd). MethodDefs' P C M Cs' mthd}. P,C \<turnstile> Cs' \<sqsubseteq> Cs \<longrightarrow> Cs' = Cs \<Longrightarrow>
    MinimalMethodDefs' P C M Cs mthd"
@@ -648,18 +648,18 @@ lemma WTStaticCall_new:
   apply(auto simp:path_unique_def)
   done
 
-lemma [code_ind]:
+lemma widen_subcls'(*[code_ind]*):
   "\<lbrakk>Subobjs P C Cs'; last Cs' = D;
     \<forall>Cs''\<in>{Cs''. Subobjs P C Cs''}. last Cs'' = D \<longrightarrow> Cs' = Cs'' \<rbrakk> 
 \<Longrightarrow> P \<turnstile> Class C \<le> Class D"
 by(rule widen_subcls,auto simp:path_unique_def)
 
-lemmas [code_ind] = widen_refl widen_null
+lemmas widen_intros (*[code_ind]*) = widen_refl widen_null
 
 
 section{* Code generation *}
 
-lemmas [code_ind] = 
+lemmas code_intros (*[code_ind]*) = 
  Overrider1[simplified LeastMethodDef_def codegen_simps, OF conjI]
  Overrider2[simplified LeastMethodDef_def codegen_simps, OF conjI]
 
@@ -709,7 +709,7 @@ lemmas [code_ind] =
  WT_WTs.WTNil WT_WTs.WTCons
 
 (* A hack to make set operations work on sets with function types *)
-
+(*
 consts_code
   "insert :: ('a \<times> ('b \<Rightarrow> 'c)) \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("(fn x => fn {*Set*} xs => {*Set*} (Library.insert (eq'_fst (op =)) x xs))")
@@ -729,15 +729,18 @@ fun new_addr z s alloc some hp =
 *}
 
   "undefined" ("(raise ERROR \"undefined\")")
-
+*)
 
 text{* Definition of program examples *}
 
-
+(* FIXME: Once set is reintroduced as type and executable, this part can be replaced by
+ values commands *)
 
 text{* {\ldots}and off we go *}
 
   (* Examples with no prog needed *)
+
+(*
 code_module NoProg
 contains
   test0 = "[],empty \<turnstile> \<langle>{''V'':Integer; ''V'' :=  Val(Intg 5);; Var ''V''},(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
@@ -767,7 +770,7 @@ ML {* local open NoProg in val Some (Intg 6) =
 ML {* local open NoProg in val Some (Intg 12) = 
       let val (_,(h,l)) = DSeq.hd testWhile in l mult end end *}
 ML {* local open NoProg in val Val (Intg 30) = fst (DSeq.hd testIf) end *}
-
+*)
 
   (* progOverrider examples *)
 
@@ -798,7 +801,10 @@ definition
   progOverrider :: "cdecl list" where
   "progOverrider = [classBottom, classLeft, classRight, classRight2, classTop]"
 
+(* FIXME: Once set is reintroduced as type and executable, this part can be replaced by
+ values commands *)
 
+(*
 code_module ProgOverrider
 contains
   dynCastSide = "progOverrider,[''V''\<mapsto>Class ''Right''] \<turnstile>
@@ -881,7 +887,7 @@ ML {* local open ProgOverrider in val Class Top    = DSeq.hd typeBlock end *}
 ML {* local open ProgOverrider in val Integer      = DSeq.hd typeCond end *}
 ML {* local open ProgOverrider in val Void         = DSeq.hd typeThrow end *}
 ML {* local open ProgOverrider in val Integer      = DSeq.hd typeBig end *}
-
+*)
 
 
   (* progDiamond examples *)
@@ -914,7 +920,10 @@ definition
   progDiamond :: "cdecl list" where
   "progDiamond = [classDiamondBottom, classDiamondLeft, classDiamondRight, classDiamondTopRep, classDiamondTopSh]"
 
+(* FIXME: Once set is reintroduced as type and executable, this part can be replaced by
+ values commands *)
 
+(*
 code_module ProgDiamond
 contains
   cast1 = "progDiamond,[''V''\<mapsto>Class ''Left''] \<turnstile> \<langle>''V'' := new ''Bottom'',
@@ -960,7 +969,7 @@ ML {* local open ProgDiamond in val Val Null = fst (DSeq.hd dynCastNull) end *}
 ML {* local open ProgDiamond in val Val Null = fst (DSeq.hd dynCastFail) end *}
 ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left])) = 
       fst (DSeq.hd dynCastSide) end *}
-
+*)
 
 
   (* failing g++ example *)
@@ -988,6 +997,9 @@ definition
   ProgFailing :: "cdecl list" where
   "ProgFailing = [classA,classB,classC,classD]"
 
+(* FIXME: Once set is reintroduced as type and executable, this part can be replaced by
+ values commands *)
+(*
 code_module Fail
 contains
 
@@ -997,5 +1009,6 @@ contains
 
 ML {* local open Fail in val Val(Intg 42) = 
       fst (DSeq.hd callFailGplusplus) end *}
+*)
 
 end
