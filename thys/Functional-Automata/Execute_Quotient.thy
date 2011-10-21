@@ -117,41 +117,23 @@ apply (lifting RegExp2NA.atom_def)
 apply (simp add: fun_rel_eq identity_equivp)
 done
 
-lemma or_def_equation:
-  "RegExp2NA.or (ql, dl, fl) (qr, dr, fr) =
-    ([], %a. list_case ((True ## (dl a ql)) Un (False ## dr a qr))
-              (%left s. if left then (True ## (dl a s)) else (False ## (dr a s))),
-     list_case (fl ql | fr qr) (%left s. if left then fl s else fr s))"
-unfolding RegExp2NA.or_def by simp
-
 lemma [code]:
-  "or' (ql, dl, fl) (qr, dr, fr) =
+  "or' = (%(ql, dl, fl) (qr, dr, fr).
     ([], %a. list_case (Cset.union (Cset.map (Cons True) (dl a ql)) (Cset.map (Cons False) (dr a qr)))
               (%left s. if left then Cset.map (Cons True) (dl a s) else Cset.map (Cons False) (dr a s)),
-     list_case (fl ql | fr qr) (%left s. if left then fl s else fr s))"
-apply (lifting or_def_equation)
-apply (simp add: fun_rel_eq identity_equivp)
-done
-
-lemma conc_def_equation:
-  "RegExp2NA.conc (ql, dl, fl) (qr, dr, fr) =
-    (True # ql,
-     %a. list_case {}
-          (%left s.
-              if left then (True ## dl a s) Un (if fl s then False ## dr a qr else {}) else False ## dr a s),
-     list_case False (%left s. left & fl s & fr qr | ~ left & fr s))"
-unfolding RegExp2NA.conc_def by simp
+     list_case (fl ql | fr qr) (%left s. if left then fl s else fr s)))"
+apply (lifting RegExp2NA.or_def)
+by (auto simp add: prod_rel_eq fun_rel_eq fun_eq_iff split: list.split)
 
 lemma [code]:
-  "conc' (ql, dl, fl) (qr, dr, fr) =
+  "conc' = (%(ql, dl, fl) (qr, dr, fr).
    (True # ql,
      %a. list_case Cset.empty
           (%left s.
               if left then Cset.union (Cset.map (Cons True) (dl a s)) (if fl s then Cset.map (Cons False) (dr a qr) else Cset.empty) else Cset.map (Cons False) (dr a s)),
-     list_case False (%left s. left & fl s & fr qr | ~ left & fr s))"
-apply (lifting conc_def_equation)
-apply (simp add: fun_rel_eq identity_equivp)
-done
+     list_case False (%left s. left & fl s & fr qr | ~ left & fr s)))"
+apply (lifting RegExp2NA.conc_def)
+by (auto simp add: prod_rel_eq fun_rel_eq fun_eq_iff split: list.split)
 
 lemma [code]: "epsilon' = ([], %a s. Cset.empty, %s. s = [])"
 apply (lifting RegExp2NA.epsilon_def)
@@ -185,7 +167,6 @@ apply (lifting rexp2na.simps)
 apply (auto simp add: fun_rel_eq identity_equivp)
 done
 
-
 thm na2da_def[unfolded Union_image_eq]
 lemma [code]:
   "na2da' A = (Cset.insert (start A) Cset.empty, %a Q. Cset.UNION Q (next A a), %Q. Cset.exists Q (fin A))"
@@ -194,7 +175,6 @@ apply (fact na2da_def[unfolded Union_image_eq])
 apply (simp add: fun_rel_eq identity_equivp)+
 apply (simp add: Fun.map_fun_def o_def)
 done
-
 
 lemma [code]:
   "accepts' A w = (Cset.exists (delta' A w (start A)) (fin A))"
@@ -254,8 +234,6 @@ where
 
 value [code] "NA.accepts (rexp2na example_expression) [0,1,1,0,0,1]"
 value [code] "DA.accepts (na2da (rexp2na example_expression)) [0,1,1,0,0,1]"
-
-
 
 
 end
