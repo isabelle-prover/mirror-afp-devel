@@ -662,7 +662,7 @@ code_pred
   subcls'
 .
 
-lemma subcls_conv_subcls' [code_inline]:
+lemma subcls_conv_subcls' [code_unfold]:
   "(subcls1 P)^** = subcls' P"
 by(simp add: subcls'_def)
 

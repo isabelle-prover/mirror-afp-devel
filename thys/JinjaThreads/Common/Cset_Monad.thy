@@ -100,19 +100,19 @@ setup {*
 *}
 
 declare
-  Cset.bind_single [simp, code_inline]
-  Cset.single_bind [simp, code_inline]
+  Cset.bind_single [simp, code_unfold]
+  Cset.single_bind [simp, code_unfold]
   Cset.member_SUPR [simp]
   Cset.member_bind [simp]
   Cset.member_single [simp]
-  Cset.single_sup_simps [simp, code_inline]
-  Cset.empty_bind [simp, code_inline]
+  Cset.single_sup_simps [simp, code_unfold]
+  Cset.empty_bind [simp, code_unfold]
   Cset.member_of_pred [simp]
   Cset.member_of_seq [simp]
   Cset.of_pred_code [code]
   Cset.of_seq_code [code]
   Cset.undefined_def [simp]
-  Cset.undefined_code [code_inline]
+  Cset.undefined_code [code_unfold]
 
 code_abort Cset.Undefined
 

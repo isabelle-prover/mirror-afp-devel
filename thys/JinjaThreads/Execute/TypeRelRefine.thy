@@ -156,7 +156,7 @@ lemma subcls'_i_i_o_program [code]:
   sup (Predicate.single C) (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> bot | Some m \<Rightarrow> pred_of_cset m)"
 by(cases Pi)(fastforce simp add: mem_def subcls'_i_i_o_def subcls'_def tabulate_subcls_def intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
 
-lemma rtranclp_FioB_i_i_subcls1_i_i_o_code [code_inline]:
+lemma rtranclp_FioB_i_i_subcls1_i_i_o_code [code_unfold]:
   "rtranclp_FioB_i_i (subcls1_i_i_o P) = subcls'_i_i_i P"
 by(auto simp add: fun_eq_iff subcls1_i_i_o_def subcls'_def rtranclp_FioB_i_i_def subcls'_i_i_i_def)
 

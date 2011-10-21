@@ -73,7 +73,7 @@ where "interrupted = STR ''~Thread.interrupted()Z''"
 definition yield :: mname
 where "yield = STR ''~Thread.yield()V''"
 
-lemmas identifier_name_defs [code_inline] =
+lemmas identifier_name_defs [code_unfold] =
   this_def run_def start_def wait_def notify_def notifyAll_def join_def interrupt_def isInterrupted_def
   hashcode_def clone_def print_def currentThread_def interrupted_def yield_def
 

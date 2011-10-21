@@ -20,7 +20,7 @@ text {*
   Any other class name (like @{term undefined}) would do as well except for code generation.
 *}
 definition ObjectC :: "'m cdecl"
-where [code_inline]: 
+where [code_unfold]: 
   "ObjectC = 
   (Object, (STR '''',[],
     [(wait,[],Void,Native), 
@@ -35,40 +35,40 @@ where [code_inline]:
     ]))"
 
 definition ThrowableC :: "'m cdecl"
-where [code_inline]: "ThrowableC \<equiv> (Throwable, (Object, [], []))"
+where [code_unfold]: "ThrowableC \<equiv> (Throwable, (Object, [], []))"
 
 definition NullPointerC :: "'m cdecl"
-where [code_inline]: "NullPointerC \<equiv> (NullPointer, (Throwable,[],[]))"
+where [code_unfold]: "NullPointerC \<equiv> (NullPointer, (Throwable,[],[]))"
 
 definition ClassCastC :: "'m cdecl"
-where [code_inline]: "ClassCastC \<equiv> (ClassCast, (Throwable,[],[]))"
+where [code_unfold]: "ClassCastC \<equiv> (ClassCast, (Throwable,[],[]))"
 
 definition OutOfMemoryC :: "'m cdecl"
-where [code_inline]: "OutOfMemoryC \<equiv> (OutOfMemory, (Throwable,[],[]))"
+where [code_unfold]: "OutOfMemoryC \<equiv> (OutOfMemory, (Throwable,[],[]))"
 
 definition ArrayIndexOutOfBoundsC :: "'m cdecl"
-where [code_inline]: "ArrayIndexOutOfBoundsC \<equiv> (ArrayIndexOutOfBounds, (Throwable,[],[]))"
+where [code_unfold]: "ArrayIndexOutOfBoundsC \<equiv> (ArrayIndexOutOfBounds, (Throwable,[],[]))"
 
 definition ArrayStoreC :: "'m cdecl"
-where [code_inline]: "ArrayStoreC \<equiv> (ArrayStore, (Throwable, [], []))"
+where [code_unfold]: "ArrayStoreC \<equiv> (ArrayStore, (Throwable, [], []))"
 
 definition NegativeArraySizeC :: "'m cdecl"
-where [code_inline]: "NegativeArraySizeC \<equiv> (NegativeArraySize, (Throwable,[],[]))"
+where [code_unfold]: "NegativeArraySizeC \<equiv> (NegativeArraySize, (Throwable,[],[]))"
 
 definition ArithmeticExceptionC :: "'m cdecl"
-where [code_inline]: "ArithmeticExceptionC \<equiv> (ArithmeticException, (Throwable,[],[]))"
+where [code_unfold]: "ArithmeticExceptionC \<equiv> (ArithmeticException, (Throwable,[],[]))"
 
 definition IllegalMonitorStateC :: "'m cdecl"
-where [code_inline]: "IllegalMonitorStateC \<equiv> (IllegalMonitorState, (Throwable,[],[]))"
+where [code_unfold]: "IllegalMonitorStateC \<equiv> (IllegalMonitorState, (Throwable,[],[]))"
 
 definition IllegalThreadStateC :: "'m cdecl"
-where [code_inline]: "IllegalThreadStateC \<equiv> (IllegalThreadState, (Throwable,[],[]))"
+where [code_unfold]: "IllegalThreadStateC \<equiv> (IllegalThreadState, (Throwable,[],[]))"
 
 definition InterruptedExceptionC :: "'m cdecl"
-where [code_inline]: "InterruptedExceptionC \<equiv> (InterruptedException, (Throwable,[],[]))"
+where [code_unfold]: "InterruptedExceptionC \<equiv> (InterruptedException, (Throwable,[],[]))"
 
 definition SystemClasses :: "'m cdecl list"
-where [code_inline]: 
+where [code_unfold]: 
   "SystemClasses \<equiv> 
   [ObjectC, ThrowableC, NullPointerC, ClassCastC, OutOfMemoryC,
    ArrayIndexOutOfBoundsC, ArrayStoreC, NegativeArraySizeC,

@@ -9,34 +9,34 @@ header {* \isaheader{Exceptions} *}
 theory Exceptions imports Value begin
 
 definition NullPointer :: cname
-where [code_inline]: "NullPointer = STR ''java/lang/NullPointerException''"
+where [code_unfold]: "NullPointer = STR ''java/lang/NullPointerException''"
 
 definition ClassCast :: cname
-where [code_inline]: "ClassCast = STR ''java/lang/ClassCastException''"
+where [code_unfold]: "ClassCast = STR ''java/lang/ClassCastException''"
 
 definition OutOfMemory :: cname
-where [code_inline]: "OutOfMemory = STR ''java/lang/OutOfMemoryError''"
+where [code_unfold]: "OutOfMemory = STR ''java/lang/OutOfMemoryError''"
 
 definition ArrayIndexOutOfBounds :: cname
-where [code_inline]: "ArrayIndexOutOfBounds = STR ''java/lang/ArrayIndexOutOfBoundsException''"
+where [code_unfold]: "ArrayIndexOutOfBounds = STR ''java/lang/ArrayIndexOutOfBoundsException''"
 
 definition ArrayStore :: cname
-where [code_inline]: "ArrayStore = STR ''java/lang/ArrayStoreException''"
+where [code_unfold]: "ArrayStore = STR ''java/lang/ArrayStoreException''"
 
 definition NegativeArraySize :: cname
-where [code_inline]: "NegativeArraySize = STR ''java/lang/NegativeArraySizeException''"
+where [code_unfold]: "NegativeArraySize = STR ''java/lang/NegativeArraySizeException''"
 
 definition ArithmeticException :: cname
-where [code_inline]: "ArithmeticException = STR ''java/lang/ArithmeticException''"
+where [code_unfold]: "ArithmeticException = STR ''java/lang/ArithmeticException''"
 
 definition IllegalMonitorState :: cname
-where [code_inline]: "IllegalMonitorState = STR ''java/lang/IllegalMonitorStateException''"
+where [code_unfold]: "IllegalMonitorState = STR ''java/lang/IllegalMonitorStateException''"
 
 definition IllegalThreadState :: cname
-where [code_inline]: "IllegalThreadState = STR ''java/lang/IllegalThreadStateException''"
+where [code_unfold]: "IllegalThreadState = STR ''java/lang/IllegalThreadStateException''"
 
 definition InterruptedException :: cname
-where [code_inline]: "InterruptedException = STR ''java/lang/InterruptedException''"
+where [code_unfold]: "InterruptedException = STR ''java/lang/InterruptedException''"
 
 definition sys_xcpts_list :: "cname list"
 where
@@ -45,7 +45,7 @@ where
    IllegalMonitorState, IllegalThreadState, InterruptedException]"
 
 definition sys_xcpts :: "cname set"
-where [code_inline]: "sys_xcpts = set sys_xcpts_list"
+where [code_unfold]: "sys_xcpts = set sys_xcpts_list"
 
 definition wf_syscls :: "'m prog \<Rightarrow> bool"
 where "wf_syscls P \<equiv> (\<forall>C \<in> {Object, Throwable, Thread}. is_class P C) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"

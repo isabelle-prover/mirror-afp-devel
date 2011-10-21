@@ -23,8 +23,8 @@ where "union' A B = sup A B"
 end
 
 declare
-  Cset.insert'_def[symmetric, code_inline]
-  Cset.union'_def[symmetric, code_inline]
+  Cset.insert'_def[symmetric, code_unfold]
+  Cset.union'_def[symmetric, code_unfold]
 
 locale List_Cset begin
 

@@ -9,7 +9,7 @@ theory BCVExec imports
   "BVExec"
 begin
 
-lemmas [code_inline] = exec_lub_def
+lemmas [code_unfold] = exec_lub_def
 
 lemmas [code] = JVM_le_unfold[THEN meta_eq_to_obj_eq]
 
@@ -26,7 +26,7 @@ lemma opt_code [code]:
   "opt A = option_case True A"
 by(auto simp add: opt_def mem_def split: option.split)
 
-lemma Times_code [code_inline]:
+lemma Times_code [code_unfold]:
   "Sigma A (%_. B) = (\<lambda>(a, b). a \<in> A \<and> b \<in> B)"
 by(auto)(auto simp add: mem_def)
 
@@ -54,7 +54,7 @@ lemma check_types_code [code]:
   "check_types P mxs mxl \<tau>s = (list_all (states P mxs mxl) \<tau>s)"
 unfolding check_types_def by(auto simp add: list_all_iff mem_def)
 
-lemma wf_jvm_prog_code [code_inline]:
+lemma wf_jvm_prog_code [code_unfold]:
   "wf_jvm_prog = wf_jvm_prog\<^isub>k"
 by(simp add: fun_eq_iff jvm_kildall_correct)
 
