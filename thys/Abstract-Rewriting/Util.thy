@@ -560,7 +560,7 @@ next
   qed
 qed
 
-lemma [code_inline]: "(set xs \<subseteq> set ys) = list_all (\<lambda> x. x \<in> set ys) xs"
+lemma [code_unfold]: "(set xs \<subseteq> set ys) = list_all (\<lambda> x. x \<in> set ys) xs"
   unfolding list_all_iff by auto
 
 fun concat_lists :: "'a list list \<Rightarrow> 'a list list"

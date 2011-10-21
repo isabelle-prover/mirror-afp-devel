@@ -2098,7 +2098,7 @@ subsection "Finite Sets"
 
 
 
-lemma set_union_code [code_inline]:
+lemma set_union_code [code_unfold]:
   "set xs \<union> set ys = set (xs @ ys)"
 by auto
 

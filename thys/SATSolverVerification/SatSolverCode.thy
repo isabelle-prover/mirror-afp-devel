@@ -12,7 +12,7 @@ begin
 subsection{* Specification *}
 (******************************************************************************)
 
-lemma [code_inline]:
+lemma [code_unfold]:
   fixes literal :: Literal and clause :: Clause
   shows "literal el clause = List.member clause literal"
   by (auto simp add: member_def)
@@ -53,7 +53,7 @@ where
            getWatchList := (getWatchList state)(literal := clause # (getWatchList state literal)) 
          \<rparr>
 "
-declare setWatch1_def[code_inline]
+declare setWatch1_def[code_unfold]
 
 definition
 setWatch2 :: "nat \<Rightarrow> Literal \<Rightarrow> State \<Rightarrow> State"
@@ -63,7 +63,7 @@ where
            getWatchList := (getWatchList state)(literal := clause # (getWatchList state literal)) 
          \<rparr>
 "
-declare setWatch2_def[code_inline]
+declare setWatch2_def[code_unfold]
 
 
 definition
@@ -74,7 +74,7 @@ where
            getWatch2 := (getWatch2 state)(clause := (getWatch1 state clause))
          \<rparr>
 "
-declare swapWatches_def[code_inline]
+declare swapWatches_def[code_unfold]
 
 primrec getNonWatchedUnfalsifiedLiteral :: "Clause \<Rightarrow> Literal \<Rightarrow> Literal \<Rightarrow> LiteralTrail \<Rightarrow> Literal option"
 where
@@ -95,7 +95,7 @@ where
 "setReason literal clause state = 
     state\<lparr> getReason := (getReason state)(literal := Some clause) \<rparr>
 "
-declare setReason_def[code_inline]
+declare setReason_def[code_unfold]
 
 primrec notifyWatches_loop::"Literal \<Rightarrow> nat list \<Rightarrow> nat list \<Rightarrow> State \<Rightarrow> State"
 where
@@ -143,7 +143,7 @@ where
 "notifyWatches literal state ==
     notifyWatches_loop literal (getWatchList state literal) [] state
 "
-declare notifyWatches_def[code_inline]
+declare notifyWatches_def[code_unfold]
 
 
 definition

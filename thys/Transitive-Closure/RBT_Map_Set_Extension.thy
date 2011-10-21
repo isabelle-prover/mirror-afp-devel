@@ -122,7 +122,7 @@ lemma rs_subset_list[simp]: "(rs_subset_list as bs = None) = (rs_\<alpha> as \<s
   by (simp add: rs_correct)
 
 definition rs_Union :: "('q :: linorder)rs list \<Rightarrow> 'q rs"
-where [code_inline]: "rs_Union \<equiv> foldl rs_union rs_empty"
+where [code_unfold]: "rs_Union \<equiv> foldl rs_union rs_empty"
 
 lemma rs_Union[simp]: "rs_\<alpha> (rs_Union qs) = (\<Union> rs_\<alpha> ` set qs)"
 proof -

@@ -541,7 +541,7 @@ text {* Use a version of @{term "tfilter"} for code generation that does not eva
 definition tfilter' :: "(unit \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 where [simp, code del]: "tfilter' b = tfilter (b ())"
 
-lemma tfilter_code [code, code_inline]:
+lemma tfilter_code [code, code_unfold]:
   "tfilter = (\<lambda>b. tfilter' (\<lambda>_. b))" 
 by simp
 
@@ -565,7 +565,7 @@ text {* Use a version of @{term "tconcat"} for code generation that does not eva
 definition tconcat' :: "(unit \<Rightarrow> 'b) \<Rightarrow> ('a llist, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 where [simp, code del]: "tconcat' b = tconcat (b ())"
 
-lemma tconcat_code [code, code_inline]: "tconcat = (\<lambda>b. tconcat' (\<lambda>_. b))"
+lemma tconcat_code [code, code_unfold]: "tconcat = (\<lambda>b. tconcat' (\<lambda>_. b))"
 by simp
 
 lemma tconcat'_code [code]:
