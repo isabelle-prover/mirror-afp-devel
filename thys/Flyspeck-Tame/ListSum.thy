@@ -15,25 +15,6 @@ syntax "_ListSum" :: "idt \<Rightarrow> 'b list \<Rightarrow> ('a::comm_monoid_a
   ('a::comm_monoid_add)"    ("\<Sum>\<^bsub>_\<in>_\<^esub> _" [0, 0, 10] 10)
 translations "\<Sum>\<^bsub>x\<in>xs\<^esub> f" == "CONST ListSum xs (\<lambda>x. f)" 
 
-(* implementation on natural numbers *)
-(* 1. nat list sum *)
-primrec natListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> nat) \<Rightarrow> nat" where
-  "natListSum [] f = 0"
-| "natListSum (l#ls) f = f l + natListSum ls f"
-
-(* implementation on integers *)
-(* 2. int list sum *)
-primrec intListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> int) \<Rightarrow> int" where
-  "intListSum [] f = 0"
-| "intListSum (l#ls) f = f l + intListSum ls f"
-
-
-lemma [code_unfold, code_inline del]: "((ListSum ls f)::nat) = natListSum ls f"
- by (induct ls) simp_all
-
-lemma [code_unfold, code_inline del]: "((ListSum ls f)::int) = intListSum ls f"
- by (induct ls) simp_all
-
 lemma [simp]: "(\<Sum>\<^bsub>v \<in> V\<^esub> 0) = (0::nat)" by (induct V) simp_all
 
 lemma ListSum_compl1: 

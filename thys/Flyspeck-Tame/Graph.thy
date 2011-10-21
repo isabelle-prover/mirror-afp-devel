@@ -102,11 +102,7 @@ end
 lemma [simp]: "vertices ((f::face)\<^bsup>op\<^esup>) = (vertices f)\<^bsup>op\<^esup>"
   by (induct f) (simp add: op_vertices_def)
 lemma [simp]: "xs \<noteq> [] \<Longrightarrow> hd (rev xs)= last xs"
-  by(induct xs) simp_all
-lemma [code_unfold, code_inline del]: "f\<^bsup>op\<^esup>\<bullet>v = (if
-      vertices f = [] then hd (vertices f)
-      else (let vs = vertices f in nextElem (rev vs) (last vs) v))"
- by (simp add: nextVertex_def op_vertices_def) (*>*) (* *)
+  by(induct xs) simp_all (*>*) (* *)
 
 definition prevVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_\<^bsup>-1\<^esup> \<bullet>" [100]) (*>*)where (* *)
   "f\<^bsup>-1\<^esup> \<bullet> v \<equiv> (let vs = vertices f in nextElem (rev vs) (last vs) v)"
@@ -141,11 +137,11 @@ end
 lemma vertices_graph: "vertices g = [0 ..< countVertices g]"
 by (induct g) simp
 
-lemma in_vertices_graph [code_unfold, code_inline del]:
+lemma in_vertices_graph:
   "v \<in> set (vertices g) = (v < countVertices g)"
 by (simp add:vertices_graph)
 
-lemma len_vertices_graph [code_unfold, code_inline del]:
+lemma len_vertices_graph:
   "|vertices g| = countVertices g"
 by (simp add:vertices_graph)
 

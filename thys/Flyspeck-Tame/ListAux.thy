@@ -9,8 +9,6 @@ begin
 
 declare Let_def[simp]
 
-declare comp_def[code_unfold, code_inline del]
-
 subsection {* HOL *}
 
 lemma pairD:  "(a,b) = p \<Longrightarrow> a = fst p \<and> b = snd p"
