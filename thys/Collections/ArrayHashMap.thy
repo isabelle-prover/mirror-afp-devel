@@ -135,7 +135,7 @@ lemma ahm_iteratei_impl:
   "map_iteratei ahm_\<alpha> ahm_invar ahm_iteratei"
 proof(unfold_locales)
   fix hm :: "('a, 'b) hashmap"
-    and I :: "('a \<Rightarrow> bool) \<Rightarrow> 'c \<Rightarrow> bool"
+    and I :: "'a set \<Rightarrow> 'c \<Rightarrow> bool"
     and \<sigma>0 :: "'c"
     and c :: "'c \<Rightarrow> bool"
     and f :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'c"

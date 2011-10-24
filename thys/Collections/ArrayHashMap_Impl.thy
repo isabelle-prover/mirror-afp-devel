@@ -397,7 +397,7 @@ proof -
   show ?thesis
   proof(unfold_locales)
     fix A :: "('a \<times> 'b) list array"
-      and I :: "('a \<Rightarrow> bool) \<Rightarrow> 'c \<Rightarrow> bool"
+      and I :: "'a set \<Rightarrow> 'c \<Rightarrow> bool"
       and \<sigma>0 :: "'c"
       and c :: "'c \<Rightarrow> bool"
       and f :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'c"
@@ -433,7 +433,7 @@ qed
 
 lemma ahm_iteratei_correct:
   fixes hm :: "('a :: hashable, 'b) hashmap"
-  and I :: "('a \<Rightarrow> bool) \<Rightarrow> 'c \<Rightarrow> bool"
+  and I :: "'a set \<Rightarrow> 'c \<Rightarrow> bool"
   and \<sigma>0 :: "'c"
   and c :: "'c \<Rightarrow> bool"
   and f :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'c"

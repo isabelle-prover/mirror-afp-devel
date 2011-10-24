@@ -339,8 +339,7 @@ qed
 lemma distinct_sortet_list_app:
   "\<lbrakk>sorted xs; distinct xs; xs = as @ b # cs\<rbrakk>
   \<Longrightarrow> \<forall> x\<in> set cs. b < x"
-  by (metis distinct.simps(2) distinct_append 
-    linorder_antisym_conv2 mem_def sorted_Cons sorted_append)
+by(auto simp add: sorted_append sorted_Cons dest: bspec intro: xt1(11))
 
 lemma distinct_sorted_list_lem1:
   assumes 
@@ -474,12 +473,9 @@ proof -
   show ?thesis 
     apply (unfold_locales) 
     apply (auto simp add: aluprio_defs isEmpty_correct)
-    apply (metis Nil_is_map_conv hd_in_set length_map length_remove1 
-      length_sort map_eq_imp_length_eq map_fst_zip map_map map_of.simps(1) 
-      map_of_eq_None_iff remove1.simps(1) set_map)
+    apply (metis Nil_is_map_conv hd_in_set map_map map_of_eq_None_iff set_map)
     done
 qed
-
 
 subsubsection "Insert"
 
@@ -944,7 +940,7 @@ proof -
     qed
   qed
 qed
-        
+
 
 subsubsection "Pop"
 

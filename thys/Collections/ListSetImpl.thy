@@ -17,7 +17,7 @@ type_synonym
 
 subsection "Definitions"
 
-definition ls_\<alpha> :: "'a ls \<Rightarrow> 'a set" where "ls_\<alpha> == Dlist.member"
+definition ls_\<alpha> :: "'a ls \<Rightarrow> 'a set" where "ls_\<alpha> xs == {x. Dlist.member xs x}"
 abbreviation (input) ls_invar :: "'a ls \<Rightarrow> bool" where "ls_invar == \<lambda>_. True"
 definition ls_empty :: "'a ls" where "ls_empty == Dlist.empty"
 definition ls_memb :: "'a \<Rightarrow> 'a ls \<Rightarrow> bool" where "ls_memb x l == Dlist.member l x"
@@ -87,10 +87,10 @@ lemma ls_empty_impl: "set_empty ls_\<alpha> ls_invar ls_empty"
 by(unfold_locales)(auto simp add: ls_defs member_empty)
 
 lemma ls_memb_impl: "set_memb ls_\<alpha> ls_invar ls_memb"
-by(unfold_locales)(auto simp add: ls_defs mem_def)
+by(unfold_locales)(auto simp add: ls_defs)
 
 lemma ls_ins_impl: "set_ins ls_\<alpha> ls_invar ls_ins"
-by(unfold_locales)(auto simp add: ls_defs mem_def)
+by(unfold_locales)(auto simp add: ls_defs)
 
 lemma ls_ins_dj_impl: "set_ins_dj ls_\<alpha> ls_invar ls_ins_dj"
 by(unfold_locales)(auto simp add: ls_defs)
@@ -110,7 +110,7 @@ by(unfold_locales)(unfold ls_defs, simp, rule iteratei_correct)
 lemmas ls_iterate_impl = set_iteratei.iti_iterate_correct[OF ls_iteratei_impl, folded ls_iterate_def]
 
 lemma ls_isEmpty_impl: "set_isEmpty ls_\<alpha> ls_invar ls_isEmpty"
-by (unfold_locales) (auto simp add: ls_defs null_def member_def List.null_def member_set)
+by (unfold_locales) (auto simp add: ls_defs null_def member_def List.null_def List.member_def)
 
 lemmas ls_union_impl = it_union_correct[OF ls_iterate_impl ls_ins_impl, folded ls_union_def] 
 
@@ -128,10 +128,10 @@ lemmas ls_sel_impl = iti_sel_correct[OF ls_iteratei_impl, folded ls_sel_def]
 lemmas ls_sel'_impl = sel_sel'_correct[OF ls_sel_impl, folded ls_sel'_def]
 
 lemma ls_to_list_impl: "set_to_list ls_\<alpha> ls_invar ls_to_list"
-by(unfold_locales)(auto simp add: ls_defs Dlist.member_def member_set)
+by(unfold_locales)(auto simp add: ls_defs Dlist.member_def List.member_def)
 
 lemma list_to_ls_impl: "list_to_set ls_\<alpha> ls_invar list_to_ls"
-by(unfold_locales)(auto simp add: ls_defs Dlist.member_def member_set)
+by(unfold_locales)(auto simp add: ls_defs Dlist.member_def List.member_def)
 
 
 interpretation ls: set_empty ls_\<alpha> ls_invar ls_empty using ls_empty_impl .
@@ -158,9 +158,9 @@ interpretation ls: list_to_set ls_\<alpha> ls_invar list_to_ls using list_to_ls_
 declare ls.finite[simp del, rule del]
 
 lemmas ls_correct =
-  ls.empty_correct                                                                                                 
-  ls.memb_correct                                                                                                  
-  ls.ins_correct                                                                                                   
+  ls.empty_correct
+  ls.memb_correct
+  ls.ins_correct
   ls.ins_dj_correct
   ls.delete_correct
   ls.isEmpty_correct

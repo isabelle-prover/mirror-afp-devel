@@ -35,7 +35,7 @@ text {*
   -- "Encapsulates a while-algorithm and its invariant "
 record 'S while_algo =
   -- "Termination condition"
-  wa_cond :: "'S \<Rightarrow> bool"
+  wa_cond :: "'S set"
   -- "Step relation (nondeterministic)"
   wa_step :: "('S \<times> 'S) set"
   -- "Initial state (nondeterministic)"

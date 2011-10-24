@@ -19,15 +19,15 @@ lemma list_of_dlist_remove' [simp, code abstract]:
   "list_of_dlist (remove' a xs) = remove1' a [] (list_of_dlist xs)"
 by(simp add: remove'_def distinct_remove1')
 
-lemma remove'_correct: "y \<in> Dlist.member (remove' x xs) = (if x = y then False else y \<in> Dlist.member xs)"
-by(simp add: remove'_def Dlist.member_def member_set set_remove1')
+lemma remove'_correct: "Dlist.member (remove' x xs) y = (if x = y then False else Dlist.member xs y)"
+by(simp add: remove'_def Dlist.member_def List.member_def set_remove1')
 
-primrec iteratei_aux :: "'a set \<Rightarrow> ('b \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'b list \<Rightarrow> 'a \<Rightarrow> 'a"
+primrec iteratei_aux :: "('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'b list \<Rightarrow> 'a \<Rightarrow> 'a"
 where
   "iteratei_aux c f [] \<sigma> = \<sigma>"
 | "iteratei_aux c f (x # xs) \<sigma> = (if c \<sigma> then iteratei_aux c f xs (f x \<sigma>) else \<sigma>)"
 
-definition iteratei :: "'a set \<Rightarrow> ('b \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'b dlist \<Rightarrow> 'a \<Rightarrow> 'a"
+definition iteratei :: "('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'b dlist \<Rightarrow> 'a \<Rightarrow> 'a"
 where "iteratei c f xs = iteratei_aux c f (list_of_dlist xs)"
 
 lemma iteratei_aux_correct:
@@ -84,22 +84,21 @@ proof -
 qed
 
 lemma iteratei_correct:
-  assumes "I (Dlist.member xs) \<sigma>0"
-  and "\<And>x it \<sigma>. \<lbrakk>c \<sigma>; x \<in> it; it \<subseteq> Dlist.member xs; I it \<sigma>\<rbrakk> \<Longrightarrow> I (it - {x}) (f x \<sigma>)"
+  assumes "I {y. Dlist.member xs y} \<sigma>0"
+  and "\<And>x it \<sigma>. \<lbrakk>c \<sigma>; x \<in> it; it \<subseteq> {y. Dlist.member xs y}; I it \<sigma>\<rbrakk> \<Longrightarrow> I (it - {x}) (f x \<sigma>)"
   shows "I {} (iteratei c f xs \<sigma>0) \<or>
-        (\<exists>it\<subseteq>Dlist.member xs. it \<noteq> {} \<and> \<not> c (iteratei c f xs \<sigma>0) \<and> I it (iteratei c f xs \<sigma>0))"
+        (\<exists>it\<subseteq>{y. Dlist.member xs y}. it \<noteq> {} \<and> \<not> c (iteratei c f xs \<sigma>0) \<and> I it (iteratei c f xs \<sigma>0))"
 using distinct_list_of_dlist[of xs] assms
-unfolding Dlist.member_def member_set iteratei_def
+unfolding Dlist.member_def List.member_def iteratei_def Collect_mem_eq
 by(rule iteratei_aux_correct)
 
+lemma member_empty: "Dlist.member Dlist.empty = (\<lambda>x. False)"
+by(simp add: empty_def member_def fun_eq_iff List.member_def)
 
-lemma member_empty: "Dlist.member Dlist.empty = {}"
-by(simp add: empty_def member_def member_set)
+lemma member_insert [simp]: "Dlist.member (Dlist.insert x xs) = (Dlist.member xs)(x := True)"
+by(simp add: Dlist.insert_def Dlist.member_def List.member_def fun_eq_iff)
 
-lemma member_insert [simp]: "Dlist.member (Dlist.insert x xs) = insert x (Dlist.member xs)"
-by(simp add: Dlist.insert_def Dlist.member_def member_set)
-
-lemma finite_member [simp, intro!]: "finite (Dlist.member xs)"
-by(simp add: member_def member_set)
+lemma finite_member [simp, intro!]: "finite {x. Dlist.member xs x}"
+by(simp add: member_def List.member_def)
 
 end
