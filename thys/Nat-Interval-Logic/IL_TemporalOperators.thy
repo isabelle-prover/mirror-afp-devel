@@ -37,13 +37,6 @@ lemmas bool_op_rel_defs =
   le_bool_def
 thm bool_op_rel_defs
 
-
-instance bool :: "linorder"
-apply intro_classes
-apply (unfold le_bool_def less_bool_def)
-apply blast+
-done
-
 instance bool :: wellorder
 apply (rule wf_wellorderI)
  apply (rule_tac t="{(x, y). x < y}" and s="{(False, True)}" in subst)

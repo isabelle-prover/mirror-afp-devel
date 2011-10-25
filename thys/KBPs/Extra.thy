@@ -40,17 +40,6 @@ instance
 
 end
 
-instantiation bool :: linorder
-begin
-
-instance
-  apply intro_classes
-  unfolding le_bool_def
-  apply auto
-  done
-
-end
-
 lemma map_prod_eq:
   assumes f: "map fst xs = map fst ys"
       and s: "map snd xs = map snd ys"
