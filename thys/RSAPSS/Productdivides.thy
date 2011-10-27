@@ -18,7 +18,7 @@ lemma productdivides:"\<lbrakk>x mod a = (0::nat); x mod b = 0; prime a; prime b
   apply (simp add: mod_eq_0_iff [of x a])
   apply (erule exE)
   apply (simp)
-  apply (rule productdivides_lemma)
+  apply (rule disjI2)
   apply (simp add: dvd_eq_mod_eq_0 [symmetric])
   apply (drule prime_dvd_mult [of b])
   apply (assumption)
