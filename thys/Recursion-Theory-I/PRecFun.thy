@@ -80,7 +80,11 @@ lemmas pr_rec = PrimRec1_PrimRec2_PrimRec3.prim_rec
 use "Utils.ML"
 
 ML {*
-structure PRec = Named_Thms(val name = "prec" val description = "fact for prec method")
+structure PRec = Named_Thms
+(
+  val name = @{binding prec}
+  val description = "fact for prec method"
+)
 *}
 
 setup PRec.setup
