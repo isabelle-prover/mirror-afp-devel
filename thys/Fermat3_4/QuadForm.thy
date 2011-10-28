@@ -1416,7 +1416,7 @@ proof -
     { assume k1: "\<bar>k\<bar> > 1" 
       with p2 have "\<bar>k\<bar>*2 < \<bar>k\<bar>*p" 
         by (simp only: zmult_zless_mono2)
-      with k1 have "\<bar>k\<bar>*p > 2" by auto }
+      with k1 have "\<bar>k\<bar>*p > 2" by arith }
    ultimately have "\<bar>k\<bar>*p > 2" by auto
    moreover from p2 have "\<bar>p\<bar> = p" by auto
    ultimately have "\<bar>k*p\<bar> > 2" by (auto simp only: abs_mult)
