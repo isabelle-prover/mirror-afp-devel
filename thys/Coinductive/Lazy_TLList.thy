@@ -43,6 +43,15 @@ lemma Lazy_tllist_inverse [simp, code]:
   "force (Lazy_tllist xs) = xs ()"
 by(simp)
 
+declare equal_tllist_code [code del]
+lemma equal_tllist_Lazy_tllist [code]:
+  "equal_class.equal (Lazy_tllist xs) (Lazy_tllist ys) =
+  (case xs () of 
+     Inr b \<Rightarrow> (case ys () of Inr b' \<Rightarrow> b = b' | _ \<Rightarrow> False)
+   | Inl (x, xs') \<Rightarrow>
+     (case ys () of Inr b' \<Rightarrow> False | Inl (y, ys') \<Rightarrow> if x = y then equal_class.equal xs' ys' else False))"
+by(auto simp add: equal_tllist_def)
+
 declare tllist_corec [code del]
 
 lemma tllist_corec_Lazy_tllist [code]:

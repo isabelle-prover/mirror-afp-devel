@@ -48,6 +48,16 @@ by(simp)
 lemma LCons_Lazy_llist [code]: "LCons x xs = Lazy_llist (\<lambda>_. Some (x, xs))"
 by simp
 
+declare equal_llist_code [code del]
+
+lemma equal_llist_Lazy_llist [code]:
+  "equal_class.equal (Lazy_llist xs) (Lazy_llist ys) \<longleftrightarrow>
+   (case xs () of None \<Rightarrow> (case ys () of None \<Rightarrow> True | _ \<Rightarrow> False)
+    | Some (x, xs') \<Rightarrow> 
+       (case ys () of None \<Rightarrow> False 
+        | Some (y, ys') \<Rightarrow> if x = y then equal_class.equal xs' ys' else False))"
+by(auto simp add: equal_llist_def)
+
 lemma llist_corec_Lazy_llist [code]:
   "llist_corec a f = Lazy_llist (\<lambda>_. case f a of None \<Rightarrow> None | Some (x, a') \<Rightarrow> Some (x, llist_corec a' f))"
 by(subst llist_corec) simp
@@ -131,7 +141,7 @@ declare lset_LNil[code del] lset_LCons[code del]
 lemma lset_Lazy_llist [code]:
   "lset (Lazy_llist xs) =
   (case xs () of None \<Rightarrow> {} | Some (y, ys) \<Rightarrow> insert y (lset ys))"
-by auto
+by(auto)
 
 declare llist_all2_code [code del]
 
@@ -189,6 +199,15 @@ lemma lstrict_prefix_Lazy_llist [code]:
     None \<Rightarrow> False 
   | Some (y, ys') \<Rightarrow> 
     case xs () of None \<Rightarrow> True | Some (x, xs') \<Rightarrow> x = y \<and> lstrict_prefix xs' ys')"
+by auto
+
+declare llcp_simps [code del]
+
+lemma llcp_Lazy_llist [code]:
+  "llcp (Lazy_llist xs) (Lazy_llist ys) =
+  (case xs () of None \<Rightarrow> 0 
+   | Some (x, xs') \<Rightarrow> case ys () of None \<Rightarrow> 0
+                     | Some (y, ys') \<Rightarrow> if x = y then eSuc (llcp xs' ys') else 0)"
 by auto
 
 declare llexord_code [code del]
