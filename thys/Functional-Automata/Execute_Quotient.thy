@@ -5,7 +5,7 @@ header {* Executing Automata and membership of Regular Expressions employing the
 theory Execute_Quotient
 imports AutoRegExp
   "~~/src/HOL/Library/Quotient_Product"
-  "~~/src/HOL/Quotient_Examples/List_Quotient_Set"
+  "~~/src/HOL/Quotient_Examples/List_Quotient_Cset"
 begin
 
 subsection {* Preliminaries to be moved to @{text Quotient_List} (?) *}
