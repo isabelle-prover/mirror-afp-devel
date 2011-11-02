@@ -28,9 +28,11 @@ where "flip f = (\<lambda>b a. f a b)"
 
 text {* Create a dynamic list @{text "flip_simps"} of theorems for flip *}
 ML {*
-  structure FlipSimpRules = Named_Thms
-    (val name = "flip_simps"
-     val description = "Simplification rules for flip in bisimulations")
+structure FlipSimpRules = Named_Thms
+(
+  val name = @{binding flip_simps}
+  val description = "Simplification rules for flip in bisimulations"
+)
 *}
 setup {* FlipSimpRules.setup *}
 

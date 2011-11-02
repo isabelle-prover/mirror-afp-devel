@@ -121,8 +121,12 @@ by (unfold is_Msg_def, case_tac m, simp+)
 
 text {* Collection for definitions for is\_NoMsg. *}
 ML {* 
-  structure is_NoMsg_defs = 
-    Named_Thms(val name = "is_NoMsg_defs" val description = "is_NoMsg_defs rules") *}
+structure is_NoMsg_defs = Named_Thms
+(
+  val name = @{binding is_NoMsg_defs}
+  val description = "is_NoMsg_defs rules"
+)
+*}
 setup is_NoMsg_defs.setup
 
 declare 

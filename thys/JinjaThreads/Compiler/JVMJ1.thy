@@ -2920,7 +2920,7 @@ definition sim21_size :: "'addr jvm_prog \<Rightarrow> 'addr jvm_thread_state \<
 where
   "sim21_size P xcpfrs xcpfrs' \<longleftrightarrow>
    (xcpfrs, xcpfrs') \<in> 
-   inv_image (less_than <*lex*> same_fst (\<lambda>n. True) (\<lambda>n (pcxcp, pcxcp'). sim21_size_aux n pcxcp pcxcp'))
+   inv_image (less_than <*lex*> same_fst (\<lambda>n. True) (\<lambda>n. {(pcxcp, pcxcp'). sim21_size_aux n pcxcp pcxcp'}))
              (\<lambda>(xcp, frs). (length frs, case frs of [] \<Rightarrow> undefined
                           | (stk, loc, C, M, pc) # frs \<Rightarrow> (length (fst (snd (snd (the (snd (snd (snd (method P C M)))))))), pc, xcp)))"
 
@@ -2937,12 +2937,12 @@ qed
 lemma Collect_split_mem: "{(x, y). (x, y) \<in> Q} = Q" by simp
 
 lemma wfP_sim21_size: "wfP (sim21_size P)"
-unfolding wfP_def sim21_size_def Collect_split_mem split_def
+unfolding wfP_def sim21_size_def_raw Collect_split_mem
 apply(rule wf_inv_image)
 apply(rule wf_lex_prod)
  apply(rule wf_less_than)
 apply(rule wf_same_fst)
-apply(rule wfP_sim21_size_aux[unfolded wfP_def Collect_def])
+apply(rule wfP_sim21_size_aux[unfolded wfP_def])
 done
 
 declare split_beta[simp]

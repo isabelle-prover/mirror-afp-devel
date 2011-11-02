@@ -995,11 +995,7 @@ proof -
           by auto
       qed
     ultimately have "\<Prod>:new_list > \<Prod>:xs"
-      apply clarsimp
-      apply (rule mult_strict_left_mono)
-      apply assumption
-      apply assumption
-      done
+      by simp
     moreover with pos_asm nl have "\<Prod>:new_list > 0" by auto
     moreover from calculation pos_asm xsne nlne leq list_gmean_gt_iff
     show "gmean new_list > gmean xs" by simp

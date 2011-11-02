@@ -401,6 +401,90 @@ lemma TDROPn_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) TDROPn TDROPn"
   by (auto intro!: fun_relI)
 
+subsection {* Code generator setup *}
+
+instantiation tllist :: (equal,equal) equal begin
+
+definition equal_tllist :: "('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist \<Rightarrow> bool"
+where [code del]: "equal_tllist xs ys \<longleftrightarrow> xs = ys"
+instance proof qed(simp add: equal_tllist_def)
+end
+
+lemma equal_tllist_code [code]:
+  "equal_class.equal (TNil b) (TNil b') \<longleftrightarrow> b = b'"
+  "equal_class.equal (TNil b) (TCons y ys) \<longleftrightarrow> False"
+  "equal_class.equal (TCons x xs) (TNil b') \<longleftrightarrow> False"
+  "equal_class.equal (TCons x xs) (TCons y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
+by(simp_all add: equal_tllist_def)
+
+text {* Setup for quickcheck *}
+
+notation fcomp (infixl "o>" 60)
+notation scomp (infixl "o\<rightarrow>" 60)
+
+definition (in term_syntax) valtermify_TNil ::
+  "'b :: typerep \<times> (unit \<Rightarrow> Code_Evaluation.term)
+   \<Rightarrow> ('a :: typerep, 'b) tllist \<times> (unit \<Rightarrow> Code_Evaluation.term)" 
+where
+  "valtermify_TNil b = Code_Evaluation.valtermify TNil {\<cdot>} b"
+
+definition (in term_syntax) valtermify_TCons ::
+  "'a :: typerep \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> ('a, 'b :: typerep) tllist \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> ('a, 'b) tllist \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
+  "valtermify_TCons x xs = Code_Evaluation.valtermify TCons {\<cdot>} x {\<cdot>} xs"
+
+instantiation tllist :: (random, random) random begin
+
+primrec random_aux_tllist :: 
+  "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> (('a, 'b) tllist \<times> (unit \<Rightarrow> Code_Evaluation.term)) \<times> Random.seed"
+where
+  "random_aux_tllist 0 j = 
+   Quickcheck.collapse (Random.select_weight 
+     [(1, Quickcheck.random j o\<rightarrow> (\<lambda>b. Pair (valtermify_TNil b)))])"
+| "random_aux_tllist (Suc_code_numeral i) j =
+   Quickcheck.collapse (Random.select_weight
+     [(Suc_code_numeral i, Quickcheck.random j o\<rightarrow> (\<lambda>x. random_aux_tllist i j o\<rightarrow> (\<lambda>xs. Pair (valtermify_TCons x xs)))),
+      (1, Quickcheck.random j o\<rightarrow> (\<lambda>b. Pair (valtermify_TNil b)))])"
+definition "Quickcheck.random i = random_aux_tllist i i"
+instance ..
+end
+
+lemma random_aux_tllist_code [code]:
+  "random_aux_tllist i j = Quickcheck.collapse (Random.select_weight
+     [(i, Quickcheck.random j o\<rightarrow> (\<lambda>x. random_aux_tllist (i - 1) j o\<rightarrow> (\<lambda>xs. Pair (valtermify_TCons x xs)))),
+      (1, Quickcheck.random j o\<rightarrow> (\<lambda>b. Pair (valtermify_TNil b)))])"
+  apply (cases i rule: code_numeral.exhaust)
+  apply (simp_all only: random_aux_tllist.simps code_numeral_zero_minus_one Suc_code_numeral_minus_one)
+  apply (subst select_weight_cons_zero) apply (simp only:)
+  done
+
+no_notation fcomp (infixl "o>" 60)
+no_notation scomp (infixl "o\<rightarrow>" 60)
+
+instantiation tllist :: (full_exhaustive, full_exhaustive) full_exhaustive begin
+fun full_exhaustive_tllist 
+  ::"(('a, 'b) tllist \<times> (unit \<Rightarrow> term) \<Rightarrow> term list option) \<Rightarrow> code_numeral \<Rightarrow> term list option"
+where
+  "full_exhaustive_tllist f i =
+   (let A = Typerep.typerep TYPE('a);
+        B = Typerep.typerep TYPE('b);
+        Tllist = \<lambda>A B. Typerep.Typerep (STR ''TLList.tllist'') [A, B];
+        fun = \<lambda>A B. Typerep.Typerep (STR ''fun'') [A, B]
+    in
+      if 0 < i then 
+        case full_exhaustive (\<lambda>(b, bt). f (TNil b, \<lambda>_. Code_Evaluation.App 
+          (Code_Evaluation.Const (STR ''TLList.TNil'') (fun B (Tllist A B)))
+          (bt ()))) (i - 1)
+        of None \<Rightarrow> 
+            full_exhaustive (\<lambda>(x, xt). full_exhaustive_tllist (\<lambda>(xs, xst). 
+              f (TCons x xs, \<lambda>_. Code_Evaluation.App (Code_Evaluation.App 
+                   (Code_Evaluation.Const (STR ''TLList.TCons'') (fun A (fun (Tllist A B) (Tllist A B))))
+                   (xt ())) (xst ())))
+              (i - 1)) (i - 1)
+        | Some ts \<Rightarrow> Some ts
+      else None)"
+instance ..
+end
+
 subsection {* From a lazy list to a terminated lazy list @{term tllist_of_llist } *}
 
 lemma tllist_of_llist_LNil: "tllist_of_llist s LNil = TNil s"

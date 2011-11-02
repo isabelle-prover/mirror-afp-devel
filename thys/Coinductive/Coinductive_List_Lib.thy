@@ -68,10 +68,10 @@ where [code del]:
 
 primrec ldropn :: "nat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
-  "ldropn 0 xs = xs"
-| "ldropn (Suc n) xs = (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> ldropn n xs')"
+  ldropn_0: "ldropn 0 xs = xs"
+| ldropn_Suc: "ldropn (Suc n) xs = (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> ldropn n xs')"
 
-declare ldropn.simps(2) [simp del]
+declare ldropn_Suc [simp del]
 
 primrec ldrop :: "enat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
@@ -134,6 +134,10 @@ where [code del]: "lprefix xs ys \<equiv> \<exists>zs. lappend xs zs = ys"
 
 definition lstrict_prefix :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool"
 where [code del]: "lstrict_prefix xs ys \<equiv> lprefix xs ys \<and> xs \<noteq> ys"
+
+text {* longest common prefix *}
+definition llcp :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> enat"
+where [code del]: "llcp xs ys = enat_corec (xs, ys) (\<lambda>(xs, ys). case xs of LNil \<Rightarrow> None | LCons x xs' \<Rightarrow> case ys of LNil \<Rightarrow> None | LCons y ys' \<Rightarrow> if x = y then Some (xs', ys') else None)"
 
 coinductive llexord :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist \<Rightarrow> bool"
 for r :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -796,14 +800,14 @@ by(induct arbitrary: n)
   (simp_all add: take_Cons zero_enat_def[symmetric] eSuc_enat[symmetric] split: nat.split)
 
 lemma ldropn_LNil [simp]: "ldropn n LNil = LNil"
-by(cases n)(simp_all add: ldropn.simps)
+by(cases n)(simp_all add: ldropn_Suc)
 
 lemma ldropn_LCons: 
   "ldropn n (LCons x xs) = (case n of 0 \<Rightarrow> LCons x xs | Suc n' \<Rightarrow> ldropn n' xs)"
-by(cases n)(simp_all add: ldropn.simps)
+by(cases n)(simp_all add: ldropn_Suc)
 
 lemma ldrop_LNil [simp]: "ldrop n LNil = LNil"
-by(cases n)(simp_all add: ldropn.simps)
+by(cases n)(simp_all add: ldropn_Suc)
 
 lemma ldropn_Suc_LCons [simp]: "ldropn (Suc n) (LCons x xs) = ldropn n xs"
 by(simp add: ldropn_LCons)
@@ -812,7 +816,7 @@ lemma ldrop_0 [simp]: "ldrop 0 xs = xs"
 by(simp add: zero_enat_def)
 
 lemma ldrop_eSuc_LCons [simp]: "ldrop (eSuc n) (LCons x xs) = ldrop n xs"
-by(simp add: eSuc_def ldropn.simps split: enat.split)
+by(simp add: eSuc_def ldropn_Suc split: enat.split)
 
 lemma ldrop_eSuc: 
   "ldrop (eSuc n) xs = (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> ldrop n xs')"
@@ -1632,6 +1636,92 @@ by(simp add: finite_lprefix_def not_lfinite_lprefix_conv_eq)
 hide_const (open) finite_lprefix
 hide_fact (open) finite_lprefix_def finite_lprefix_nitpick_simps lprefix_nitpick_simps
 
+subsection {* Length of the longest common prefix *}
+
+lemma llcp_simps [simp, code, nitpick_simp]:
+  shows llcp_LNil1: "llcp LNil ys = 0"
+  and llcp_LNil2: "llcp xs LNil = 0"
+  and llcp_LCons: "llcp (LCons x xs) (LCons y ys) = (if x = y then eSuc (llcp xs ys) else 0)"
+by(simp_all add: llcp_def enat_corec split: llist_split)
+
+lemma llcp_commute: "llcp xs ys = llcp ys xs"
+proof -
+  def n \<equiv> "llcp xs ys" and m \<equiv> "llcp ys xs"
+  hence "(n, m) \<in> {(llcp xs ys, llcp ys xs)|xs ys :: 'a llist. True}" by blast
+  thus "n = m"
+  proof(coinduct rule: enat_equalityI)
+    case (Eqenat n m)
+    then obtain xs ys :: "'a llist" where "n = llcp xs ys" "m = llcp ys xs" by blast
+    thus ?case by(cases xs)(case_tac [!] ys, auto)
+  qed
+qed
+
+lemma llcp_same_conv_length [simp]: "llcp xs xs = llength xs"
+proof -
+  def m \<equiv> "llcp xs xs" and n \<equiv> "llength xs"
+  hence "(m, n) \<in> {(llcp xs xs, llength xs)|xs :: 'a llist. True}" by blast
+  thus "m = n"
+  proof(coinduct rule: enat_equalityI)
+    case (Eqenat m n)
+    then obtain xs :: "'a llist" where "m = llcp xs xs" "n = llength xs" by blast
+    thus ?case by(cases xs) auto
+  qed
+qed
+
+lemma llcp_lappend_same [simp]: 
+  "llcp (lappend xs ys) (lappend xs zs) = llength xs + llcp ys zs"
+proof -
+  def m \<equiv> "llcp (lappend xs ys) (lappend xs zs)" and n \<equiv> "llength xs + llcp ys zs"
+  hence "(m, n) \<in> {(llcp (lappend xs ys) (lappend xs zs), llength xs + llcp ys zs)|xs :: 'a llist. True}" 
+    by blast
+  thus "m = n"
+  proof(coinduct rule: enat_equalityI)
+    case (Eqenat m n)
+    then obtain xs :: "'a llist" 
+      where "m = llcp (lappend xs ys) (lappend xs zs)" "n = llength xs + llcp ys zs" by blast
+    thus ?case
+      by(cases xs)(cases ys zs rule: llist_cases[case_product llist_cases], auto simp add: iadd_Suc)
+  qed
+qed
+
+lemma llcp_lprefix1 [simp]: "lprefix xs ys \<Longrightarrow> llcp xs ys = llength xs"
+by (metis add_0_right lappend_LNil2 llcp_LNil1 llcp_lappend_same lprefix_def)
+
+lemma llcp_lprefix2 [simp]: "lprefix ys xs \<Longrightarrow> llcp xs ys = llength ys"
+by (metis llcp_commute llcp_lprefix1)
+
+lemma llcp_le_length: "llcp xs ys \<le> min (llength xs) (llength ys)"
+proof -
+  def m \<equiv> "llcp xs ys" and n \<equiv> "min (llength xs) (llength ys)"
+  hence "(m, n) \<in> {(llcp xs ys, min (llength xs) (llength ys)) |xs ys :: 'a llist. True}" by blast
+  thus "m \<le> n"
+  proof(coinduct rule: enat_leI)
+    case (Leenat m n)
+    then obtain xs ys :: "'a llist" where "m = llcp xs ys" "n = min (llength xs) (llength ys)" by blast
+    thus ?case
+      by(cases xs ys rule: llist_cases[case_product llist_cases])(auto 4 3 intro!: exI[where x="Suc 0"] simp add: eSuc_enat[symmetric] iadd_Suc_right zero_enat_def[symmetric])
+  qed
+qed
+
+lemma llcp_ltake1: "llcp (ltake n xs) ys = min n (llcp xs ys)"
+proof -
+  def m \<equiv> "llcp (ltake n xs) ys" and N \<equiv> "min n (llcp xs ys)"
+  hence "(m, N) \<in> {(llcp (ltake n xs) ys, min n (llcp xs ys))|xs (ys :: 'a llist) n. True}" by blast
+  thus "m = N"
+  proof(coinduct rule: enat_equalityI)
+    case (Eqenat m N)
+    then obtain xs ys :: "'a llist" and n where "m = llcp (ltake n xs) ys" "N = min n (llcp xs ys)" by blast
+    thus ?case
+      by(cases xs ys n rule: llist_cases[case_product llist_cases[case_product enat_coexhaust]]) auto
+  qed
+qed
+
+lemma llcp_ltake2: "llcp xs (ltake n ys) = min n (llcp xs ys)"
+by (metis llcp_commute llcp_ltake1)
+
+lemma llcp_ltake [simp]: "llcp (ltake n xs) (ltake m ys) = min (min n m) (llcp xs ys)"
+by (metis (no_types) llcp_ltake1 llcp_ltake2 min_max.inf.assoc min_max.inf.commute)
+
 subsection {* Zipping two lazy lists to a lazy list of pairs @{term "lzip" } *}
 
 lemma lzip_simps [simp, code, nitpick_simp]:
@@ -2091,7 +2181,7 @@ by(induct xs) simp_all
 lemma set_list_of [simp]:
   assumes "lfinite xs"
   shows "set (list_of xs) = lset xs"
-using assms by(induct)(simp_all add: list_of_LCons)
+using assms by(induct)(simp_all)
 
 lemma split_llist_first:
   assumes "x \<in> lset xs"
@@ -4873,3 +4963,4 @@ lemma (in monoid_add) llistsum_infllist: "llistsum (inf_llist f) = 0"
 by simp
 
 end
+

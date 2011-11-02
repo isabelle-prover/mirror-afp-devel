@@ -170,9 +170,10 @@ done
 lemma int_mult_le:"\<lbrakk>i \<le> j; (0::int) \<le> k\<rbrakk> \<Longrightarrow> k * i \<le> k * j"
 apply (simp add:order_le_less)
  apply (case_tac "i < j")
-  apply (case_tac "0 < k") 
-  apply (simp add:order_le_less) apply (simp add:int_mult_mono)
- apply (simp add:order_le_less) apply simp
+  apply (case_tac "0 < k")
+   apply simp
+  apply simp
+ apply simp
 done
 
 lemma int_mult_le1:"\<lbrakk>i \<le> j; (0::int) \<le> k\<rbrakk> \<Longrightarrow> i * k \<le> j * k"
@@ -244,8 +245,6 @@ lemma zmult_zle_mono:"\<lbrakk>i \<le> (j::int); 0 < k\<rbrakk> \<Longrightarrow
 apply (case_tac "i = j") apply simp
 apply (frule zle_imp_zless_or_eq[of "i" "j"]) 
  apply (thin_tac "i \<le> j") apply simp
- apply (frule zmult_zless_mono2[of "i" "j" "k"], assumption+)
- apply (simp add:zle_imp_zless_or_eq)
 done
 
 lemma zmult_zle_mono_r:"\<lbrakk>i \<le> (j::int); 0 < k\<rbrakk> \<Longrightarrow> i * k \<le> j * k"
@@ -311,14 +310,10 @@ done
 
 lemma zdiv_pos_mono_r:"\<lbrakk> (0::int) < w; w * z \<le> w * z'\<rbrakk> \<Longrightarrow> z \<le> z'"
 apply (rule contrapos_pp, simp+) 
-apply (simp add:not_zle)
-apply (frule int_mult_mono[of "z'" "z" "w"], assumption+)
-apply (simp add:zle)
 done (** zmult_div_mono to rename **)
 
 lemma zdiv_pos_mono_l:"\<lbrakk> (0::int) < w; z * w \<le> z' * w\<rbrakk> \<Longrightarrow> z \<le> z'"
 apply (simp add:mult_commute)
-apply (rule zdiv_pos_mono_r, assumption+)
 done
 
 lemma zdiv_pos_pos_l:"\<lbrakk> (0::int) < w; 0 \<le> z * w\<rbrakk> \<Longrightarrow> 0 \<le> z"
@@ -3198,11 +3193,7 @@ apply (rule iffI,
        cut_tac x = "ant z" in minf_le_any, frule_tac x = "ant z"
        in ale_antisym, assumption+, simp) 
  apply simp
-apply ((erule disjE)+, (erule exE)+, simp add:a_z_z, 
-       rule iffI,
-       rule zdiv_pos_mono_r[of "w"], assumption+,
-       subst mult_commute, subst mult_commute,
-       rule zmult_zle_mono[of _ _ "w"], assumption+)
+apply ((erule disjE)+, (erule exE)+, simp add:a_z_z)
 apply (erule exE, simp add:a_z_z)
 apply (erule disjE, erule exE, simp add:a_z_z,
        rule iffI,
@@ -4555,15 +4546,11 @@ by (cut_tac less_le_trans[of "1" "2" "m"],
 
 lemma zmult_pos_mono:"\<lbrakk> (0::int) < w; w * z \<le> w * z'\<rbrakk> \<Longrightarrow> z \<le> z'"
 apply (rule contrapos_pp, simp+) 
-apply (simp add:not_zle)
-apply (frule int_mult_mono[of z' z w], assumption)
-apply (simp add:zle)
 done 
 
 lemma zmult_pos_mono_r:
          "\<lbrakk>(0::int) < w; z * w \<le> z' * w\<rbrakk> \<Longrightarrow> z \<le> z'"
 apply (simp add:mult_commute)
-apply (rule zmult_pos_mono, assumption+)
 done 
 
 lemma an_neq_inf:"an n \<noteq> \<infinity>"

@@ -851,4 +851,84 @@ proof -
   qed
 qed
 
+subsection {* Code generator setup *}
+
+instantiation llist :: (equal) equal begin
+
+definition equal_llist :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool"
+where [code del]: "equal_llist xs ys \<longleftrightarrow> xs = ys"
+instance proof qed(simp add: equal_llist_def)
+end
+
+lemma equal_llist_code [code]:
+  "equal_class.equal LNil LNil \<longleftrightarrow> True"
+  "equal_class.equal LNil (LCons y ys) \<longleftrightarrow> False"
+  "equal_class.equal (LCons x xs) LNil \<longleftrightarrow> False"
+  "equal_class.equal (LCons x xs) (LCons y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
+by(simp_all add: equal_llist_def)
+
+text {* Setup for quickcheck *}
+
+notation fcomp (infixl "o>" 60)
+notation scomp (infixl "o\<rightarrow>" 60)
+
+definition (in term_syntax) valtermify_LNil ::
+  "'a :: typerep llist \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
+  "valtermify_LNil = Code_Evaluation.valtermify LNil"
+
+definition (in term_syntax) valtermify_LCons ::
+  "'a :: typerep \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 'a llist \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 'a llist \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
+  "valtermify_LCons x xs = Code_Evaluation.valtermify LCons {\<cdot>} x {\<cdot>} xs"
+
+instantiation llist :: (random) random begin
+
+primrec random_aux_llist :: 
+  "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> ('a llist \<times> (unit \<Rightarrow> Code_Evaluation.term)) \<times> Random.seed"
+where
+  "random_aux_llist 0 j = 
+   Quickcheck.collapse (Random.select_weight 
+     [(1, Pair valtermify_LNil)])"
+| "random_aux_llist (Suc_code_numeral i) j =
+   Quickcheck.collapse (Random.select_weight
+     [(Suc_code_numeral i, Quickcheck.random j o\<rightarrow> (\<lambda>x. random_aux_llist i j o\<rightarrow> (\<lambda>xs. Pair (valtermify_LCons x xs)))),
+      (1, Pair valtermify_LNil)])"
+definition "Quickcheck.random i = random_aux_llist i i"
+instance ..
+end
+
+lemma random_aux_llist_code [code]:
+  "random_aux_llist i j = Quickcheck.collapse (Random.select_weight
+     [(i, Quickcheck.random j o\<rightarrow> (\<lambda>x. random_aux_llist (i - 1) j o\<rightarrow> (\<lambda>xs. Pair (valtermify_LCons x xs)))),
+      (1, Pair valtermify_LNil)])"
+  apply (cases i rule: code_numeral.exhaust)
+  apply (simp_all only: random_aux_llist.simps code_numeral_zero_minus_one Suc_code_numeral_minus_one)
+  apply (subst select_weight_cons_zero) apply (simp only:)
+  done
+
+no_notation fcomp (infixl "o>" 60)
+no_notation scomp (infixl "o\<rightarrow>" 60)
+
+instantiation llist :: (full_exhaustive) full_exhaustive begin
+
+fun full_exhaustive_llist 
+  ::"('a llist \<times> (unit \<Rightarrow> term) \<Rightarrow> term list option) \<Rightarrow> code_numeral \<Rightarrow> term list option"
+where
+  "full_exhaustive_llist f i =
+   (let A = Typerep.typerep TYPE('a);
+        Llist = \<lambda>A. Typerep.Typerep (STR ''Coinductive_List.llist'') [A];
+        fun = \<lambda>A B. Typerep.Typerep (STR ''fun'') [A, B]
+    in
+      if 0 < i then 
+        case f (LNil, \<lambda>_. Code_Evaluation.Const (STR ''Coinductive_List.LNil'') (Llist A))
+          of None \<Rightarrow> 
+            full_exhaustive (\<lambda>(x, xt). full_exhaustive_llist (\<lambda>(xs, xst). 
+              f (LCons x xs, \<lambda>_. Code_Evaluation.App (Code_Evaluation.App 
+                   (Code_Evaluation.Const (STR ''Coinductive_List.LCons'') (fun A (fun (Llist A) (Llist A))))
+                   (xt ())) (xst ())))
+              (i - 1)) (i - 1)
+      | Some ts \<Rightarrow> Some ts
+    else None)"
+instance ..
+end
+
 end
