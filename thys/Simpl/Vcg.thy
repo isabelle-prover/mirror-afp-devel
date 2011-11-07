@@ -585,7 +585,7 @@ parse_translation (advanced) {*
 *}
 
 
-print_translation {*
+print_translation (advanced) {*
     [(@{const_syntax Basic}, Hoare_Syntax.assign_tr'),
      (@{const_syntax raise}, Hoare_Syntax.raise_tr'),
      (@{const_syntax Basic}, Hoare_Syntax.new_tr'),
@@ -595,19 +595,17 @@ print_translation {*
      (@{const_syntax Collect}, Hoare_Syntax.assert_tr'),
      (@{const_syntax Cond}, Hoare_Syntax.bexp_tr' "_Cond"),
      (@{const_syntax switch}, Hoare_Syntax.switch_tr'),
-     (@{const_syntax Basic}, Hoare_Syntax.basic_tr')]
+     (@{const_syntax Basic}, Hoare_Syntax.basic_tr'),
+     (@{const_syntax guards}, Hoare_Syntax.guards_tr'),
+     (@{const_syntax whileAnnoG}, Hoare_Syntax.whileAnnoG_tr'),
+     (@{const_syntax whileAnnoGFix}, Hoare_Syntax.whileAnnoGFix_tr'),
+     (@{const_syntax bind}, Hoare_Syntax.bind_tr')]
 *}
+
 
 print_translation (advanced) {*
-    [(@{const_syntax guards}, Hoare_Syntax.guards_tr'),
-     (@{const_syntax whileAnnoG}, Hoare_Syntax.whileAnnoG_tr'),
-     (@{const_syntax whileAnnoGFix}, Hoare_Syntax.whileAnnoGFix_tr')]
-*}
-
-
-print_translation {*
 let
-fun spec_tr' ((coll as Const _)$
+fun spec_tr' ctxt ((coll as Const _)$
                ((splt as Const _) $ (t as (Abs (s,T,p))))::ts) =
       let
         fun selector (Const (c, T)) = Hoare.is_state_var c
@@ -617,11 +615,11 @@ fun spec_tr' ((coll as Const _)$
       in
         if Hoare_Syntax.antiquote_applied_only_to selector p then
           Syntax.const @{const_syntax Spec} $ coll $
-            (splt $ Hoare_Syntax.quote_mult_tr' selector
+            (splt $ Hoare_Syntax.quote_mult_tr' ctxt selector
                 Hoare_Syntax.antiquoteCur Hoare_Syntax.antiquoteOld  (Abs (s,T,t)))
          else raise Match
       end
-  | spec_tr' ts = raise Match
+  | spec_tr' _ ts = raise Match
 in [(@{const_syntax Spec}, spec_tr')] end
 *}
 
@@ -638,30 +636,26 @@ translations
 
 
 
-print_translation {*
+print_translation (advanced) {*
 let
   fun selector (Const (c,T)) = Hoare.is_state_var c  
     | selector _ = false;
 
-  fun measure_tr' ((t as (Abs (_,_,p)))::ts) =
+  fun measure_tr' ctxt ((t as (Abs (_,_,p)))::ts) =
         if Hoare_Syntax.antiquote_applied_only_to selector p
-        then Hoare_Syntax.app_quote_tr' (Syntax.const @{syntax_const "_Measure"}) (t::ts)
+        then Hoare_Syntax.app_quote_tr' ctxt (Syntax.const @{syntax_const "_Measure"}) (t::ts)
         else raise Match
-    | measure_tr' _ = raise Match
+    | measure_tr' _ _ = raise Match
 
-  fun mlex_tr' ((t as (Abs (_,_,p)))::r::ts) =
+  fun mlex_tr' ctxt ((t as (Abs (_,_,p)))::r::ts) =
         if Hoare_Syntax.antiquote_applied_only_to selector p
-        then Hoare_Syntax.app_quote_tr' (Syntax.const @{syntax_const "_Mlex"}) (t::r::ts)
+        then Hoare_Syntax.app_quote_tr' ctxt (Syntax.const @{syntax_const "_Mlex"}) (t::r::ts)
         else raise Match
-    | mlex_tr' _ = raise Match
+    | mlex_tr' _ _ = raise Match
 
 in [(@{const_syntax measure}, measure_tr'), (@{const_syntax mlex_prod}, mlex_tr')] end
 *}
 
-
-print_translation {*
-  [(@{const_syntax bind}, Hoare_Syntax.bind_tr')]
-*}
 
 print_translation (advanced) {*
  [(@{const_syntax call}, Hoare_Syntax.call_tr'),
