@@ -30,8 +30,10 @@ sig
   val par_deco: string -> string
   val chopsfx: string -> string -> string
   val is_state_var: string -> bool
-  val remdeco: string -> string
-  val undeco: term -> term
+  val extern: Proof.context -> string -> string
+  val remdeco: Proof.context -> string -> string
+  val remdeco': string -> string
+  val undeco: Proof.context -> term -> term
   val varname: string -> string
   val resuffix: string -> string -> string -> string
   type proc_info =
@@ -686,7 +688,7 @@ val is_state_var = can (unsuffix deco);
  * The a is also chopped, since sometimes the bound variables
  * are renamed, I think SELECT_GOAL in rename_goal is to blame
  *)
-fun remdeco str =
+fun remdeco' str =
     let
         fun chop (p::ps) (x::xs) = chop ps xs
           | chop []      xs      = []
@@ -698,13 +700,20 @@ fun remdeco str =
 
     in String.implode (remove (String.explode deco) (String.explode str)) end;
 
-fun undeco (Const (c,T)) = (Const (remdeco c,T))
-  | undeco ((f as Const (@{syntax_const "_free"},_)) $ Free (x, T)) =
-      (*f$*)Const (remdeco x,T)
-  | undeco (Const (lookup,_)$_$((f as Const (@{syntax_const "_free"},_)) $ Free (x, T))) =
-      (*f$*)Const (remdeco x,T)
-  | undeco (Free (c,T)) = (Const (remdeco c,T))
-  | undeco x = x
+fun extern ctxt s =
+  (case try (Proof_Context.extern_const ctxt o Lexicon.unmark_const) s of
+     NONE => s
+   | SOME s' => s');
+
+fun remdeco ctxt s = remdeco' (extern ctxt s);
+
+fun undeco ctxt (Const (c, T)) = Const (remdeco ctxt c, T)
+  | undeco ctxt ((f as Const (@{syntax_const "_free"},_)) $ Free (x, T)) =
+      (*f$*)Const (remdeco' x, T)
+  | undeco ctxt (Const (lookup,_)$_$((f as Const (@{syntax_const "_free"},_)) $ Free (x, T))) =
+      (*f$*)Const (remdeco' x, T)
+  | undeco ctxt (Free (c, T)) = Const (remdeco' c, T)
+  | undeco ctxt x = x
 
 fun varname x = x ^ deco
 
@@ -744,13 +753,13 @@ datatype callMode = Static | Parameter
 
 fun proc_name Static (Const (p,_)$_) = resuffix deco proc_deco (Long_Name.base_name p)
   | proc_name Static (Const (@{const_name StateFun.lookup},_)$_$Free (p,_)$_) =
-       suffix proc_deco (remdeco (Long_Name.base_name p))
+       suffix proc_deco (remdeco' (Long_Name.base_name p))
   | proc_name Static p = dest_string' p
   | proc_name Parameter (Const (p,_)) = resuffix deco proc_deco (Long_Name.base_name p)
   | proc_name Parameter (Abs (_,_,Const (p,_)$Bound 0)) =
       resuffix deco proc_deco (Long_Name.base_name p)
   | proc_name Parameter (Abs (_,_,Const (@{const_name StateFun.lookup},_)$_$Free (p,_)$_)) =
-      suffix proc_deco (remdeco (Long_Name.base_name p))
+      suffix proc_deco (remdeco' (Long_Name.base_name p))
   | proc_name _ t = raise TERM ("proc_name",[t]);
 
 
@@ -1080,7 +1089,7 @@ fun add_locale_cmd name expr elems thy =
   |> snd
   |> Local_Theory.exit;
 
-fun add_variable_statespaces prep_typ (cname,(inpars,outpars,locvars)) thy =
+fun add_variable_statespaces prep_typ (cname,pars as (inpars,outpars,locvars)) thy =
   let
     val inpars'  = if forall (fn (_,T) => T = "") inpars then [] else inpars;
     val outpars' = if forall (fn (_,T) => T = "") outpars then [] else outpars;
@@ -3081,7 +3090,7 @@ fun bound xs (t as (Const (x,_)$_)) =
   | bound xs t = raise TERM ("RecordSplitState.bound",[t]);
 
 fun abs_var _ (Const (x,T)$_) =
-     (remdeco (Long_Name.base_name x),range_type T)
+     (remdeco' (Long_Name.base_name x),range_type T)
   | abs_var _ t = raise TERM ("RecordSplitState.abs_var",[t]);
 
 fun fld_eq (x,_) y = (x=y)
@@ -3271,8 +3280,8 @@ fun sort_vars ctxt vars =
     val fld_idx = idx (fn s1:string => fn s2 => s1 = s2);
     fun compare (_$_$n$(Const (s1,_)$_),_$_$m$(Const (s2,_)$_)) =
       let
-        val n' = remdeco (comp_name n);
-        val m' = remdeco (comp_name m);
+        val n' = remdeco' (comp_name n);
+        val m' = remdeco' (comp_name m);
       in if s1 = full_globalsN
          then if s2 = full_globalsN then
               string_ord (n',m')
@@ -3290,7 +3299,7 @@ fun split_state ctxt s T t =
   in (abstract_vars vars' s t,rev vars') end;
 
 fun abs_var ctxt t =
-    (remdeco (sel_name t),sel_type t)
+    (remdeco' (sel_name t),sel_type t)
   | abs_var _ t = raise TERM ("FunSplitState.abs_var",[t]);
 
 fun lookup' _ [] _ = NONE
@@ -3484,7 +3493,7 @@ fun solve_modifies_tac ctxt state_kind state_space i =
           (((fn k => (TRY (REPEAT_ALL_NEW (resolve_tac [conjI, impI, allI]) k)))
             THEN_ALL_NEW
           (fn k => EVERY [state_split_simp_tac [] is_split_state k,
-                          simp_tac ss k THEN_MAYBE rename_goal ctxt remdeco k
+                          simp_tac ss k THEN_MAYBE rename_goal ctxt remdeco' k
                           ])) i) (*)*)
         | try_solve StateFun i =
            ((fn k => (TRY (REPEAT_ALL_NEW (resolve_tac [conjI, impI, allI]) k)))
@@ -3607,7 +3616,7 @@ fun vcg_polish_tac solve_modifies ctxt state_kind state_space i =
     if solve_modifies
     then solve_modifies_tac ctxt state_kind state_space i
     else record_vanish_tac ctxt state_kind state_space i
-         THEN_MAYBE EVERY [rename_goal ctxt remdeco i(*,
+         THEN_MAYBE EVERY [rename_goal ctxt remdeco' i(*,
                            simp_tac (HOL_basic_ss addsimps @{thms simp_thms})) i*)];
 
 fun is_funtype (Type ("fun", _)) = true
