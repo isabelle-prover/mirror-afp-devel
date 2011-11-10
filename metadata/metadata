@@ -153,6 +153,13 @@ topic = Computer Science/Algorithms
 abstract = The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as a benchmark in many formalizations of pointer programs. The main purpose of this mechanization is to show how data refinement of invariant based programs can be used in verifying practical algorithms. The verification starts with an abstract algorithm working on a graph given by a relation <i>next</i> on nodes. Gradually the abstract program is refined into Deutsch-Schorr-Waite graph marking algorithm where only one bit per graph node of additional memory is used for marking. 
 depends-on = DataRefinementIBP
 
+[Efficient-Mergesort]
+title = Efficient Mergesort
+topic = Computer Science/Algorithms
+date = 2011-11-09
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>
+abstract = We provide a formalization of the mergesort algorithm as used in GHC's Data.List module, proving correctness and stability. Furthermore, experimental data suggests that generated (Haskell-)code for this algorithm is much faster than for previous algorithms available in the Isabelle distribution.
+
 [SATSolverVerification]
 title = Formal Verification of Modern SAT Solvers 
 author = Filip Maric <http://www.matf.bg.ac.yu/~filip>
