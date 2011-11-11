@@ -766,6 +766,8 @@ fun proc_name Static (Const (p,_)$_) = resuffix deco proc_deco (Long_Name.base_n
 
 fun dest_call (Const (@{const_name Language.call},_)$init$pname$return$c) =
            (init,pname,return,c,Static,true)
+  | dest_call (Const (@{const_name Language.fcall},_)$init$pname$return$_$c) =
+           (init,pname,return,c,Static,true)
   | dest_call (Const (@{const_name Language.com.Call},_)$pname) =
            (Bound 0,pname,Bound 0,Bound 0,Static,false)
   | dest_call (Const (@{const_name Language.dynCall},_)$init$pname$return$c) =
