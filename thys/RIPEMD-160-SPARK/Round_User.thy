@@ -164,7 +164,7 @@ proof -
     have "(?MM::int) = 2 ^ len_of TYPE(32)" by simp
     show ?thesis
       unfolding
-        word_add_alt
+        word_add_def
         uint_word_of_int_id[OF `0 <= a` `a <= ?M`]
         uint_word_of_int_id[OF `0 <= ?X` `?X <= ?M`]
         int_word_uint
@@ -209,7 +209,7 @@ proof -
       by simp
     show ?thesis
       unfolding
-        word_add_alt
+        word_add_def
         uint_word_of_int_id[OF `0 <= a'` `a' <= ?M`]
         uint_word_of_int_id[OF `0 <= ?X` `?X <= ?M`]
         int_word_uint
