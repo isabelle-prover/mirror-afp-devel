@@ -121,7 +121,7 @@ declare word_sdiv_def [simp] word_smod_def [simp]
 lemma sdiv_smod_id: "(a sdiv b) * b + (a smod b) = a"
 proof -
   have F5: "\<forall>u\<Colon>'a word. - (- u) = u" by (metis word_sint.Rep_inverse' minus_minus wi_hom_neg)
-  have F7: "\<forall>v u\<Colon>'a word. u + v = v + u" by(metis word_add_left_commute word_add_0_right)
+  have F7: "\<forall>v u\<Colon>'a word. u + v = v + u" by(metis add_left_commute add_0_right)
   have F8: "\<forall>(w\<Colon>'a word) (v\<Colon>int) u\<Colon>int. word_of_int u + word_of_int v * w = word_of_int (u + v * sint w)"
     by (metis wi_hom_syms(1) wi_hom_syms(2) word_sint.Rep_inverse')
   have "\<exists>u. u = - sint b \<and> word_of_int (sint a mod u + - (- u * (sint a div u))) = a"
@@ -138,7 +138,7 @@ proof -
     proof(cases "sint b < 0")
       case True
       with a show ?thesis
-        by simp (metis wi_hom_syms(1) wi_hom_syms(2) word_add_commute word_mult_commute word_sint.Rep_inverse zmod_zdiv_equality)
+        by simp (metis wi_hom_syms(1) wi_hom_syms(2) add_commute mult_commute word_sint.Rep_inverse zmod_zdiv_equality)
     next
       case False
       from eq have "word_of_int (- (- sint a div sint b)) * b + word_of_int (- (- sint a mod sint b)) = a"
@@ -153,7 +153,7 @@ proof -
       with a eq show ?thesis by simp
     next
       case False with a show ?thesis
-        by simp (metis wi_hom_add wi_hom_mult word_add_commute word_mult_commute word_sint.Rep_inverse add_commute zmod_zdiv_equality)
+        by simp (metis wi_hom_add wi_hom_mult add_commute mult_commute word_sint.Rep_inverse add_commute zmod_zdiv_equality)
     qed
   qed
 qed
