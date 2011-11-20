@@ -4,7 +4,7 @@
 *)
 header "Operational Semantics"
 theory Semantics
-imports Main Flowgraph Multiset LTS Interleave ThreadTracking
+imports Main Flowgraph "~~/src/HOL/Library/Multiset" LTS Interleave ThreadTracking
 begin
 text_raw {*\label{thy:Semantics}*}
 

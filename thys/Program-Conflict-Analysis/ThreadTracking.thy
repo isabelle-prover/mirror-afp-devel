@@ -4,7 +4,7 @@
 *)
 header "Thread Tracking"
 theory ThreadTracking
-imports Main Multiset LTS Misc
+imports Main "~~/src/HOL/Library/Multiset" LTS Misc
 begin
 text_raw {*\label{thy:ThreadTracking}*}
 
