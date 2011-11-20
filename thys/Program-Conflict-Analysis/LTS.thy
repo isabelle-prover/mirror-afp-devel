@@ -123,8 +123,8 @@ qed
 
 
 subsubsection "Special lemmas for reasoning about states that are pairs"
-lemmas trcl_pair_induct = trcl.induct[of "(xc1,xc2)" "xb" "(xa1,xa2)", consumes 1, split_format (complete), case_names empty cons]
-lemmas trcl_rev_pair_induct = trcl_rev_induct[of "(xc1,xc2)" "xb" "(xa1,xa2)", consumes 1, split_format (complete), case_names empty snoc]
+lemmas trcl_pair_induct = trcl.induct[of "(xc1,xc2)" "xb" "(xa1,xa2)", split_format (complete), consumes 1, case_names empty cons]
+lemmas trcl_rev_pair_induct = trcl_rev_induct[of "(xc1,xc2)" "xb" "(xa1,xa2)", split_format (complete), consumes 1, case_names empty snoc]
 
 (*lemma trcl_pair_induct[induct set]: 
   "\<lbrakk>((xc1,xc2), xb, (xa1,xa2)) \<in> trcl t; \<And>c1 c2. P c1 c2 [] c1 c2; \<And>a c1 c2 c1' c2' c1'' c2'' w. \<lbrakk>((c1,c2), a, (c1',c2')) \<in> t; ((c1',c2'), w, (c1'',c2'')) \<in> trcl t; P c1' c2' w c1'' c2''\<rbrakk> \<Longrightarrow> P c1 c2 (a # w) c1'' c2''\<rbrakk> 
