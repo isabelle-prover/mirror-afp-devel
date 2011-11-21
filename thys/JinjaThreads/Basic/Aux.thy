@@ -1,4 +1,4 @@
-(*  Title:      JinjaThreads/Common/Aux.thy
+(*  Title:      JinjaThreads/Basic/Aux.thy
     Author:     Andreas Lochbihler, David von Oheimb, Tobias Nipkow
 
     Based on the Jinja theory Common/Aux.thy by David von Oheimb and Tobias Nipkow
