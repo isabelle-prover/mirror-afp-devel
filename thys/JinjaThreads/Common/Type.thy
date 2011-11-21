@@ -10,7 +10,7 @@ header {*
 *}
 
 theory Type imports
-  Aux
+  "../Basic/Aux"
 begin
 
 type_synonym cname = String.literal -- "class names"

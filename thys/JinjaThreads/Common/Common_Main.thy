@@ -1,6 +1,6 @@
 theory Common_Main
 imports
-  Aux
+  "../Basic/Aux"
   "../Framework/FWProgress"
   "../Framework/FWBisimDeadlock"
   "../Framework/FWInitFinLift"
