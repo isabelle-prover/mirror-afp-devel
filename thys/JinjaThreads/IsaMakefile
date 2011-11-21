@@ -14,6 +14,7 @@ all: $(SESSION-NAME)
 
 ## global settings
 
+AFP ?= $(abspath $(CURDIR)/..)
 SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
