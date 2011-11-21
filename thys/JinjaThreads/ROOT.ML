@@ -16,7 +16,8 @@ no_document use_thys
    "../Collections/RBTSetImpl",
    "../Collections/TrieMapImpl",
    "../Collections/ListMapImpl",
-   "../Collections/Fifo"
+   "../Collections/Fifo",
+   "Basic/Basic_Main"
   ];
 
 use_thy "JinjaThreads";
