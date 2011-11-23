@@ -1658,7 +1658,7 @@ local
                                    anno_defs@mark_guards_simps@merge_guards_simps@
                                    guards_simps@strip_guards_simps@
                                    is_Guard_simps@dest_Guard_simps)
-                        addcongs [@{thm if_weak_cong}];
+                        |> Simplifier.add_cong @{thm if_weak_cong};
 in
 val merge_mark_strip_guards_simp_tac = simp_tac ss
 end;
@@ -1896,7 +1896,7 @@ fun in_assertion_simp_tac ctxt state_kind thms i =
                                      empty_subsetI, empty_iff, UNIV_I,
                                      Collect_False]@thms@K_convs@vcg_simps)
                           addsimprocs (state_simprocs state_kind)
-                          addcongs K_congs)  i
+                          |> fold Simplifier.add_cong K_congs)  i
            THEN_MAYBE
            (simp_tac (HOL_basic_ss' addsimprocs [state_upd_simproc state_kind])  i)
          ]
@@ -2057,24 +2057,25 @@ local
    usually be the first variable. EX s a b. s=s' ... . We have to transport
    EX s to s=s' to perform the substitution *)
 
-val conseq1_ss_base = (HOL_basic_ss
-                       addsimps ([mem_Collect_eq,singleton_iff,Int_iff,
-                                  empty_iff,UNIV_I,
-                                  conj_assoc, @{thm disj_assoc}] @ all_imp_eq_triv
-                                  @K_convs @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
-                       delsimps [all_imp_to_ex]
-                       addcongs K_congs
-                       )
+val conseq1_ss_base =
+  HOL_basic_ss
+    addsimps ([mem_Collect_eq,singleton_iff,Int_iff,
+              empty_iff,UNIV_I,
+              conj_assoc, @{thm disj_assoc}] @ all_imp_eq_triv
+              @K_convs @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
+    delsimps [all_imp_to_ex]
+    |> fold Simplifier.add_cong K_congs
 val conseq1_ss_record = conseq1_ss_base addsimprocs (state_simprocs Record);
 val conseq1_ss_fun    = conseq1_ss_base addsimprocs (state_simprocs Function);
 fun conseq1_ss Record   = conseq1_ss_record
   | conseq1_ss Function = conseq1_ss_fun;
 
-val conseq2_ss_base = (HOL_basic_ss
-        addsimps (all_imp_eq_triv @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
-        delsimps [all_imp_to_ex]
-        addcongs [imp_cong]
-    )
+val conseq2_ss_base =
+  HOL_basic_ss
+    addsimps (all_imp_eq_triv @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
+    delsimps [all_imp_to_ex]
+    |> Simplifier.add_cong imp_cong
+
 val conseq2_ss_record = conseq2_ss_base addsimprocs
                            [state_upd_simproc Record,state_ex_sel_eq_simproc Record];
 val conseq2_ss_fun    = conseq2_ss_base
@@ -2534,7 +2535,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                        (Simplifier.context ctxt (global_simpset_of @{theory Set}))
                        addsimps ([mex_def,meq_def,upd_globals_def]@K_convs)
                        addsimprocs (state_upd_simproc Record::(state_simprocs state_kind))
-                       addcongs K_congs)) i)
+                       |> fold Simplifier.add_cong K_congs)) i)
                 THEN_MAYBE
                 EVERY [trace_tac ctxt "modify_tac: splitting record",
                        state_split_simp_tac [] state_space i];
@@ -2648,7 +2649,8 @@ fun solve_in_Faults_tac i =
 
 local
 val triv_simp = merge_assertion_simp_tac [mem_Collect_eq] THEN'
-         simp_tac (HOL_basic_ss addsimps @{thms simp_thms} addcongs [@{thm conj_cong}, @{thm imp_cong}]);
+         simp_tac (HOL_basic_ss addsimps @{thms simp_thms}
+           |> fold Simplifier.add_cong [@{thm conj_cong}, @{thm imp_cong}]);
     (* a guarded while produces stupid things, since the guards are
           put at the end of the body and in the invariant (rule WhileAnnoG):
          - guard: g /\ g
@@ -3325,7 +3327,7 @@ val ss = global_simpset_of @{theory Fun}
     :: @{thms list.inject} @ @{thms char.inject}
     @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms})
   addsimprocs [Record.simproc, StateFun.lazy_conj_simproc]
-  addcongs @{thms block_conj_cong};
+  |> fold Simplifier.add_cong @{thms block_conj_cong};
 
 in
 
@@ -3465,9 +3467,9 @@ val state_fun_update_ss = HOL_basic_ss
   addsimps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}]
     @ @{thms list.inject} @ @{thms char.inject}
     @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms} @ K_fun_convs)
-    addcongs ([imp_cong] (* @ K_fun_congs  FIXME: Stefan fragen*))
-    addsplits [@{thm split_if}]
     addsimprocs [DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"]]
+    |> Simplifier.add_cong imp_cong (* K_fun_congs  FIXME: Stefan fragen*)
+    |> Splitter.add_split @{thm split_if}
 
 in
 
@@ -3512,7 +3514,7 @@ fun solve_modifies_tac ctxt state_kind state_space i =
             (Simplifier.context ctxt (global_simpset_of @{theory Set}))
              addsimps ([mex_def,meq_def]@K_convs)
              addsimprocs (state_upd_simproc Record::(state_simprocs Record))
-             addcongs K_congs)) i)
+             |> fold Simplifier.add_cong K_congs)) i)
     THEN_MAYBE
      try_solve state_kind i
   end;
