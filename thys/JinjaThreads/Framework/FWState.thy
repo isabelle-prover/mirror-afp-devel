@@ -7,7 +7,7 @@ header {*
   \isaheader{State of the multithreaded semantics} *}
 
 theory FWState imports 
-  "../Common/Aux"
+  "../Basic/Aux"
 begin
 
 datatype lock_action =

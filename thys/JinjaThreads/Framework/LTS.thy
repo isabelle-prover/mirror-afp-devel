@@ -5,7 +5,7 @@
 header {* \isaheader{Labelled transition systems} *}
 
 theory LTS imports
-  "../Common/Aux"
+  "../Basic/Aux"
   "../../Coinductive/TLList"
   "~~/src/HOL/Library/Quotient_Option"
 begin
