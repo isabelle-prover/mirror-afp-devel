@@ -8,7 +8,7 @@ imports Main
   "~~/src/HOL/Library/Wfrec"
   Cset_Monad
   "~~/src/HOL/Library/Dlist"
-  List_Cset
+  Cset_without_equal
   "$AFP/FinFun/FinFun"
   "$AFP/Coinductive/Lazy_TLList"
   "$AFP/Collections/ListSetImpl_Invar"

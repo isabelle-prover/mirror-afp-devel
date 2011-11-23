@@ -1,9 +1,9 @@
-(*  Title:      JinjaThreads/Common/Cset_without_equal.thy
+(*  Title:      JinjaThreads/Basic/Cset_without_equal.thy
     Author:     Andreas Lochbihler
 *)
 
 theory Cset_without_equal
-imports "../Common/List_Cset"
+imports "List_Cset"
 begin
 
 text {*
