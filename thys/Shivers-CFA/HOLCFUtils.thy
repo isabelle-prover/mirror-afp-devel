@@ -97,7 +97,7 @@ lemma cont2cont_insert [simp, cont2cont]:
 unfolding insert_def using assms
 by (intro cont2cont)
 
-lemmas adm_subset = adm_below[where ?'b = "'a::type set", standard, unfolded sqsubset_is_subset]
+lemmas adm_subset = adm_below[where ?'b = "'a::type set", unfolded sqsubset_is_subset]
 
 lemma cont2cont_UNION[cont2cont,simp]:
   assumes "cont f"

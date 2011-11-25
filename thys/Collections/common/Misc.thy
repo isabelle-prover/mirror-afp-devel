@@ -1485,7 +1485,7 @@ subsubsection {* Miscellaneous *}
     apply (case_tac al', fastforce, fastforce)+
     done
 
-  lemmas prop_matchD = rev_iffD1[OF _ prop_match[where P=P], standard]
+  lemmas prop_matchD = rev_iffD1[OF _ prop_match[where P=P]] for P
 
   lemma list_match_lel_lel: "\<lbrakk>
     c1 @ qs # c2 = c1' @ qs' # c2'; 
@@ -2093,7 +2093,7 @@ subsection "Finite Sets"
     using card_mono[of "UNIV::'a::finite set" S, simplified]
     by auto
   
-  lemmas length_remdups_card = length_remdups_concat[of "[l]", simplified, standard]
+  lemmas length_remdups_card = length_remdups_concat[of "[l]", simplified] for l
 
 
 

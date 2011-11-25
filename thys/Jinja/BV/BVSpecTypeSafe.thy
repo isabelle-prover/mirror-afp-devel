@@ -646,7 +646,7 @@ lemma Checkcast_correct:
 
 declare split_paired_All [simp del]
 
-lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
+lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P"] for P
 
 lemma Getfield_correct:
   fixes \<sigma>' :: jvm_state

@@ -194,10 +194,10 @@ lemma ccache_approx_empty[simp]:
   shows "{} \<lessapprox> x"
   unfolding ccache_approx_def by simp
 
-lemmas ccache_approx_trans[trans] = subset_trans[where 'a = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>)",folded ccache_approx_def, standard]
-lemmas Un_mono_approx = Un_mono[where 'a = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>)",folded ccache_approx_def, standard]
-lemmas Un_upper1_approx = Un_upper1[where 'a = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>)",folded ccache_approx_def, standard]
-lemmas Un_upper2_approx = Un_upper2[where 'a = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>)",folded ccache_approx_def, standard]
+lemmas ccache_approx_trans[trans] = subset_trans[where 'a = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>)", folded ccache_approx_def]
+lemmas Un_mono_approx = Un_mono[where 'a = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>)", folded ccache_approx_def]
+lemmas Un_upper1_approx = Un_upper1[where 'a = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>)", folded ccache_approx_def]
+lemmas Un_upper2_approx = Un_upper2[where 'a = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>)", folded ccache_approx_def]
 
 lemma abs_ccache_union: "|c1 \<union> c2| \<lessapprox> |c1| \<union> |c2|"
   unfolding ccache_approx_def abs_ccache_def by auto

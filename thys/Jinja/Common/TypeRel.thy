@@ -152,8 +152,8 @@ lemma widens_trans [trans]: "\<lbrakk>P \<turnstile> Ss [\<le>] Ts; P \<turnstil
 
 
 (*<*)
-lemmas widens_refl [iff] = list_all2_refl [of "widen P", OF widen_refl, standard]
-lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
+lemmas widens_refl [iff] = list_all2_refl [of "widen P", OF widen_refl] for P
+lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P"] for P
 (*>*)
 
 

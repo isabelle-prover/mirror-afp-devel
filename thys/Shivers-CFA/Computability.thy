@@ -137,7 +137,7 @@ qed
 text {*
 Theorem 10 as it will be used in Theorem 12.
 *}
-lemmas theorem10ps = theorem10[of "\<^ps>g" "\<^ps>r",standard]
+lemmas theorem10ps = theorem10[of "\<^ps>g" "\<^ps>r"] for g r
 
 text {*
 Now we can show Lemma 12: If $F$ is the least solution to the recursive power-set equation, then $x \mapsto F\ {x}$ is the least solution to the equation with branching $R$.

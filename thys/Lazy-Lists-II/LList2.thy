@@ -465,20 +465,20 @@ where "lbutlast \<equiv> finlsts_rec LNil (\<lambda> x xs l. if xs = LNil then L
 definition lrev :: "'a llist \<Rightarrow> 'a llist"
 where "lrev \<equiv> finlsts_rec LNil (\<lambda> x xs l. l @@ x ## LNil)"
 
-lemmas llength_LNil  = llength_def [THEN finlsts_rec_LNil_def, standard]
-  and  llength_LCons = llength_def [THEN finlsts_rec_LCons_def, standard]
+lemmas llength_LNil  = llength_def [THEN finlsts_rec_LNil_def]
+  and  llength_LCons = llength_def [THEN finlsts_rec_LCons_def]
 lemmas llength_simps [simp] = llength_LNil llength_LCons
 
-lemmas llast_LNil  = llast_def [THEN finlsts_rec_LNil_def, standard]
-  and  llast_LCons = llast_def [THEN finlsts_rec_LCons_def, standard]
+lemmas llast_LNil  = llast_def [THEN finlsts_rec_LNil_def]
+  and  llast_LCons = llast_def [THEN finlsts_rec_LCons_def]
 lemmas llast_simps [simp] = llast_LNil llast_LCons
 
-lemmas lbutlast_LNil = lbutlast_def [THEN finlsts_rec_LNil_def, standard]
-  and lbutlast_LCons = lbutlast_def [THEN finlsts_rec_LCons_def, standard]
+lemmas lbutlast_LNil = lbutlast_def [THEN finlsts_rec_LNil_def]
+  and lbutlast_LCons = lbutlast_def [THEN finlsts_rec_LCons_def]
 lemmas lbutlast_simps [simp] = lbutlast_LNil lbutlast_LCons
 
-lemmas lrev_LNil = lrev_def [THEN finlsts_rec_LNil_def, standard]
-  and lrev_LCons = lrev_def [THEN finlsts_rec_LCons_def, standard]
+lemmas lrev_LNil = lrev_def [THEN finlsts_rec_LNil_def]
+  and lrev_LCons = lrev_def [THEN finlsts_rec_LCons_def]
 lemmas lrev_simps [simp] = lrev_LNil lrev_LCons
 
 lemma lrevT [simp, intro!]:
@@ -566,7 +566,7 @@ qed
 lemma infinite_Some: "t \<in> A\<^sup>\<omega> \<Longrightarrow> \<exists>a. t!!i = Some a"
   by (rule ccontr) (auto dest: None_lfinite)
 
-lemmas infinite_idx_SomeE = exE [OF infinite_Some, standard]
+lemmas infinite_idx_SomeE = exE [OF infinite_Some]
 
 lemma Least_True [simp]:
   "(LEAST (n::nat). True) = 0"
@@ -597,7 +597,7 @@ next
     by (cases t) auto
 qed
 
-lemmas ll2f_Suc_Some = ll2f_lem1 [THEN exE, standard]
+lemmas ll2f_Suc_Some = ll2f_lem1 [THEN exE]
 
 lemma ll2f_None_Suc: "t !! i = None \<Longrightarrow> t !! Suc i = None"
 proof (induct i arbitrary: t)

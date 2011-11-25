@@ -1391,19 +1391,19 @@ theorem wf_typeE2:
   done
 
 lemmas ptyping_induct = ptyping_ptypings.inducts(1)
-  [of _ _ _ _ "\<lambda>x y z. True", simplified True_simps, standard, consumes 1,
+  [of _ _ _ _ "\<lambda>x y z. True", simplified True_simps, consumes 1,
    case_names P_Var P_Rcd]
 
 lemmas ptypings_induct = ptyping_ptypings.inducts(2)
-  [of _ _ _ "\<lambda>x y z. True", simplified True_simps, standard, consumes 1,
+  [of _ _ _ "\<lambda>x y z. True", simplified True_simps, consumes 1,
    case_names P_Nil P_Cons]
 
 lemmas typing_induct = typing_typings.inducts(1)
-  [of _ _ _ _ "\<lambda>x y z. True", simplified True_simps, standard, consumes 1,
+  [of _ _ _ _ "\<lambda>x y z. True", simplified True_simps, consumes 1,
    case_names T_Var T_Abs T_App T_TAbs T_TApp T_Sub T_Let T_Rcd T_Proj]
 
 lemmas typings_induct = typing_typings.inducts(2)
-  [of _ _ _ "\<lambda>x y z. True", simplified True_simps, standard, consumes 1,
+  [of _ _ _ "\<lambda>x y z. True", simplified True_simps, consumes 1,
    case_names T_Nil T_Cons]
 
 lemma narrow_type: -- {* A.7 *}
@@ -1956,11 +1956,11 @@ whereas @{text E_Proj}, @{text E_Rcd}, @{text E_Let}, @{text E_hd} and
 *}
 
 lemmas matchs_induct = match_matchs.inducts(2)
-  [of _ _ _ "\<lambda>x y z. True", simplified True_simps, standard, consumes 1,
+  [of _ _ _ "\<lambda>x y z. True", simplified True_simps, consumes 1,
    case_names M_Nil M_Cons]
 
 lemmas evals_induct = eval_evals.inducts(2)
-  [of _ _ "\<lambda>x y. True", simplified True_simps, standard, consumes 1,
+  [of _ _ "\<lambda>x y. True", simplified True_simps, consumes 1,
    case_names E_hd E_tl]
 
 lemma matchs_mono:

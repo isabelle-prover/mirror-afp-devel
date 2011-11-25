@@ -97,7 +97,7 @@ lemma confT_widen [intro?, trans]:
 
 section {* Stack and Registers *}
 
-lemmas confTs_Cons1 [iff] = list_all2_Cons1 [of "confT P h", standard]
+lemmas confTs_Cons1 [iff] = list_all2_Cons1 [of "confT P h"] for P h
 
 lemma confTs_confT_sup:
   "\<lbrakk> P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT; n < size LT; LT!n = OK T; P \<turnstile> T \<le> T' \<rbrakk> 

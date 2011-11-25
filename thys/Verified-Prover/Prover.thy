@@ -1227,8 +1227,8 @@ lemmas ss = list.simps if_True if_False flatten.simps map.simps
   subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms
   membership_simps
 
-lemmas prove'_Nil = prove' [of "[]", simplified, standard]
-lemmas prove'_Cons = prove' [of "x#l", simplified, standard]
+lemmas prove'_Nil = prove' [of "[]", simplified]
+lemmas prove'_Cons = prove' [of "x#l", simplified] for x l
 
 lemma search: "finite (deriv [(0,my_f)])"
   apply(simp add: my_f_def finite_deriv_prove prove_def)

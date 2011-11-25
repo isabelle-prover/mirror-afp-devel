@@ -1188,8 +1188,9 @@ lemma \<delta>_prod_sng_alt:
   done
   
 lemmas \<delta>_prod_insert = 
-  \<delta>_prod_Un(1)[where ?\<delta>1.0="{x}", simplified, folded \<delta>_prod_sng_alt, standard]
-  \<delta>_prod_Un(2)[where ?\<delta>2.0="{x}", simplified, folded \<delta>_prod_sng_alt, standard]
+  \<delta>_prod_Un(1)[where ?\<delta>1.0="{x}", simplified, folded \<delta>_prod_sng_alt]
+  \<delta>_prod_Un(2)[where ?\<delta>2.0="{x}", simplified, folded \<delta>_prod_sng_alt]
+  for x
 
   -- "Product automaton"
 definition "ta_prod TA1 TA2 == 

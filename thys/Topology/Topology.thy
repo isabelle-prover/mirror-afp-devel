@@ -649,7 +649,7 @@ lemma (in carrier) core_subset:
   "core a \<subseteq> a"
   by (auto simp: cor_def)
 
-lemmas (in carrier) core_subsetD = subsetD [OF core_subset, standard]
+lemmas (in carrier) core_subsetD = subsetD [OF core_subset]
 
 lemma (in carrier) core_greatest:
   "\<lbrakk> m open; m \<subseteq> a \<rbrakk> \<Longrightarrow> m \<subseteq> core a"

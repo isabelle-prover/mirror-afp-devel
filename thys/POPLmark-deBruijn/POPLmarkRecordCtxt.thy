@@ -34,8 +34,7 @@ where
 | C_tl: "v \<in> value \<Longrightarrow> E \<in> rctxt \<Longrightarrow> (\<lambda>t. (l, v) \<Colon> E t) \<in> rctxt"
 
 lemmas rctxt_induct = ctxt_rctxt.inducts(2)
-  [of _ "\<lambda>x. True", simplified True_simps, standard, consumes 1,
-   case_names C_hd C_tl]
+  [of _ "\<lambda>x. True", simplified True_simps, consumes 1, case_names C_hd C_tl]
 
 lemma rctxt_labels:
   assumes H: "E \<in> rctxt"

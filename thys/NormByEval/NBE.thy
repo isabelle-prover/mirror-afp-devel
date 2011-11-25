@@ -211,8 +211,9 @@ apply(case_tac t, simp+)+
 done
 
 declare
-  tm_eq_iff[of "h \<bullet>\<bullet> ts", standard, simp]
-  tm_eq_iff[of _ "h \<bullet>\<bullet> ts", standard, simp]
+  tm_eq_iff[of "h \<bullet>\<bullet> ts", simp]
+  tm_eq_iff[of _ "h \<bullet>\<bullet> ts", simp]
+  for h ts
 
 lemma atomic_tm_head_tm: "atomic_tm(head_tm t)"
 by(induct t) auto
@@ -253,7 +254,7 @@ fun lift_ml :: "nat \<Rightarrow> ml \<Rightarrow> ml" ("lift") where
 "lift i (Clo v vs n) = Clo (lift i v) (map (lift i) vs) n" |
 "lift i (apply u v) = apply (lift i u) (lift i v)"
 
-lemmas ml_induct = lift_ml.induct[of "\<lambda>i v. P v", standard]
+lemmas ml_induct = lift_ml.induct[of "\<lambda>i v. P v"] for P
 
 fun lift_tm :: "nat \<Rightarrow> tm \<Rightarrow> tm" ("lift") where
 "lift i (C nm) = C nm" |

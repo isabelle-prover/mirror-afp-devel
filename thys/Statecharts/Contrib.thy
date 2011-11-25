@@ -238,7 +238,7 @@ done
 lemma Part_eqI [intro]: "\<lbrakk> a \<in> A; a=h(b) \<rbrakk> \<Longrightarrow> a \<in> Part A h"
 by (auto simp add: Part_def)
 
-lemmas PartI = Part_eqI [OF _ refl, standard]
+lemmas PartI = Part_eqI [OF _ refl]
 
 lemma PartE [elim!]: "\<lbrakk> a \<in> Part A h;  !!z. \<lbrakk> a \<in> A;  a=h(z) \<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
 by (auto simp add: Part_def)
