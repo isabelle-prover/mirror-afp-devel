@@ -4,8 +4,9 @@
 
 header {* \isaheader{Various notions of bisimulation} *}
 
-theory Bisimulation imports
-  "LTS"
+theory Bisimulation
+imports
+  LTS
 begin
 
 type_synonym ('a, 'b) bisim = "'a \<Rightarrow> 'b \<Rightarrow> bool"

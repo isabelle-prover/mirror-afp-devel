@@ -4,7 +4,8 @@
 
 header {* \isaheader{Synthetic first and last actions for each thread} *}
 
-theory FWInitFinLift imports
+theory FWInitFinLift
+imports
   FWLTS
   FWLiftingSem
 begin

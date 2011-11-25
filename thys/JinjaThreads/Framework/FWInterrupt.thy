@@ -4,7 +4,10 @@
 
 header {* \isaheader{Semantics of the thread actions for interruption} *}
 
-theory FWInterrupt imports FWState begin
+theory FWInterrupt
+imports
+  FWState
+begin
 
 primrec redT_updI :: "'t interrupts \<Rightarrow> 't interrupt_action \<Rightarrow> 't interrupts"
 where

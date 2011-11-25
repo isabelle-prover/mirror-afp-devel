@@ -1,6 +1,7 @@
-theory SC_Schedulers imports
-  "Random_Scheduler"
-  "Round_Robin"
+theory SC_Schedulers
+imports
+  Random_Scheduler
+  Round_Robin
   "../MM/SC_Collections"
   "../../Collections/RBTMapImpl"
   "../../Collections/RBTSetImpl"

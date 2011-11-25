@@ -4,7 +4,8 @@
 
 header{* \isaheader{Conformance for threads} *}
 
-theory ConformThreaded imports
+theory ConformThreaded
+imports
   "../Framework/FWLifting"
   "../Framework/FWWellform"
   Conform

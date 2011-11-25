@@ -7,7 +7,8 @@
 
 header {* \isaheader{Jinja Values} *}
 
-theory Value imports
+theory Value
+imports
   TypeRel
   "~~/src/HOL/Word/Word"
 begin

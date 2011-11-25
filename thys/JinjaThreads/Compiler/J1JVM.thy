@@ -4,7 +4,10 @@
 
 header {* \isaheader{Correctness of Stage: From intermediate language to JVM} *}
 
-theory J1JVM imports J1JVMBisim begin
+theory J1JVM
+imports
+  J1JVMBisim
+begin
 
 context J1_JVM_heap_base begin
 

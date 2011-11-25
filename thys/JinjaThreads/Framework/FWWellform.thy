@@ -4,7 +4,13 @@
 
 header {* \isaheader{Wellformedness conditions for the multithreaded state } *}
 
-theory FWWellform imports FWLocking FWThread FWWait FWCondAction begin
+theory FWWellform
+imports
+  FWLocking
+  FWThread
+  FWWait
+  FWCondAction
+begin
 
 text{* Well-formedness property: Locks are held by real threads *}
 

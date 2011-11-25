@@ -4,7 +4,8 @@
 
 header {* \isaheader{Orders as predicates} *}
 
-theory Orders imports
+theory Orders
+imports
   Main
   "~~/src/HOL/Library/Zorn"
 begin

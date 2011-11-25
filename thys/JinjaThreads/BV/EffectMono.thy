@@ -4,7 +4,10 @@
 
 header {* \isaheader{Monotonicity of eff and app} *}
 
-theory EffectMono imports Effect begin
+theory EffectMono
+imports
+  Effect
+begin
 
 declare not_Err_eq [iff]
 

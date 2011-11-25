@@ -4,7 +4,8 @@
 
 header {* \isaheader{Random scheduler} *}
 
-theory Random_Scheduler imports
+theory Random_Scheduler
+imports
   Scheduler
 begin
 

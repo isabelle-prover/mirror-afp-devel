@@ -4,7 +4,10 @@
 
 header {* \isaheader{Deadlock formalisation} *}
 
-theory FWDeadlock imports FWProgressAux begin
+theory FWDeadlock
+imports
+  FWProgressAux
+begin
 
 context final_thread begin
 

@@ -5,12 +5,13 @@
 header {*
   \isaheader{The JinjaThreads source language with explicit call stacks}
 *}
-theory J0 imports
+theory J0
+imports
   "../J/WWellForm"
   "../J/WellType"
   "../J/Threaded" 
   "../Framework/FWBisimulation" 
-  "CallExpr"
+  CallExpr
 begin
 
 declare widen_refT [elim]

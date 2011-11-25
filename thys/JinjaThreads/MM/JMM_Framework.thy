@@ -4,7 +4,8 @@
 
 header {* \isaheader{Combination of locales for heap operations and interleaving} *}
 
-theory JMM_Framework imports
+theory JMM_Framework
+imports
   JMM_Heap
   "../Framework/FWInitFinLift"
   "../Common/WellForm"

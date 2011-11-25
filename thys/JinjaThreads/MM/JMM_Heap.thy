@@ -4,10 +4,11 @@
 
 header {* \isaheader{ Locales for heap operations with set of allocated addresses} *}
 
-theory JMM_Heap imports
+theory JMM_Heap
+imports
   JMM_Spec
   "../Common/WellForm"
-  "SC_Completion"
+  SC_Completion
 begin
 
 

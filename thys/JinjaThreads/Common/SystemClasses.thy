@@ -6,7 +6,10 @@
 
 header {* \isaheader{System Classes} *}
 
-theory SystemClasses imports Exceptions begin
+theory SystemClasses
+imports
+  Exceptions
+begin
 
 text {*
   This theory provides definitions for the @{text Object} class,

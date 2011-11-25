@@ -4,7 +4,10 @@
 
 header {* \isaheader{Exception handling in the JVM} *}
 
-theory JVMExceptions imports JVMInstructions begin
+theory JVMExceptions
+imports
+  JVMInstructions
+begin
 
 abbreviation Any :: "'addr :: addr option"
 where "Any \<equiv> None"

@@ -4,7 +4,10 @@
 
 header {* \isaheader{Semantics of the thread action ReleaseAcquire for the thread state} *}
 
-theory FWLockingThread imports FWLocking begin
+theory FWLockingThread
+imports
+  FWLocking
+begin
 
 fun upd_threadR :: "nat \<Rightarrow> 't lock \<Rightarrow> 't \<Rightarrow> lock_action \<Rightarrow> nat"
 where

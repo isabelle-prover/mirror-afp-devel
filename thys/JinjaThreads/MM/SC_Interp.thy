@@ -4,7 +4,8 @@
     Interpret the language specific heap locales with the SC memory model
 *)
 
-theory SC_Interp imports
+theory SC_Interp
+imports
   SC
   "../Compiler/Correctness" 
   "../J/Deadlocked"

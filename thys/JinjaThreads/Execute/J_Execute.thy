@@ -4,7 +4,8 @@
 
 header {* \isaheader{Executable semantics for J} *}
 
-theory J_Execute imports
+theory J_Execute
+imports
   SC_Schedulers
   "../J/Threaded"
 begin

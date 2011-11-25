@@ -1,6 +1,7 @@
-theory JVMExec_Execute2 imports
+theory JVMExec_Execute2
+imports
   "../BV/BVNoTypeError"
-  "ExternalCall_Execute"
+  ExternalCall_Execute
 begin
 
 section {* An optimized JVM *}

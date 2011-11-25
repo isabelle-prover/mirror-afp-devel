@@ -4,9 +4,10 @@
 
 header {* \isaheader{Semantics of method calls that cannot be defined inside JinjaThreads} *}
 
-theory ExternalCall imports
+theory ExternalCall
+imports
   "../Framework/FWSemantics"
-  "Conform"
+  Conform
 begin
 
 type_synonym

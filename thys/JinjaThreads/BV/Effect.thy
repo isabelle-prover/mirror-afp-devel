@@ -5,7 +5,9 @@
 header {* \isaheader{Effect of Instructions on the State Type} *}
 
 theory Effect
-imports JVM_SemiType "../JVM/JVMExceptions"
+imports
+  JVM_SemiType
+  "../JVM/JVMExceptions"
 begin
 
 locale jvm_method = prog +

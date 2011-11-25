@@ -4,7 +4,8 @@
 
 header {* \isaheader{The multithreaded semantics} *}
 
-theory FWSemantics imports
+theory FWSemantics
+imports
   FWWellform
   FWLockingThread
   FWCondAction

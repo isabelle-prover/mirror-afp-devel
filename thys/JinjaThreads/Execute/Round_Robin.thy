@@ -4,7 +4,8 @@
 
 header {* \isaheader{Round robin scheduler} *}
 
-theory Round_Robin imports
+theory Round_Robin
+imports
   Scheduler
 begin
 

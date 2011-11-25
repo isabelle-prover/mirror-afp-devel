@@ -4,7 +4,8 @@
 
 header {* \isaheader{Program Execution in the JVM} *}
 
-theory JVMExec imports
+theory JVMExec
+imports
   JVMExecInstr
   JVMExceptions
   "../Common/StartConfig"

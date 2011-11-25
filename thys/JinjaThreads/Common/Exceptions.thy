@@ -6,7 +6,10 @@
 
 header {* \isaheader{Exceptions} *}
 
-theory Exceptions imports Value begin
+theory Exceptions
+imports
+  Value
+begin
 
 definition NullPointer :: cname
 where [code_unfold]: "NullPointer = STR ''java/lang/NullPointerException''"

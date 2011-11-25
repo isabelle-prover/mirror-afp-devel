@@ -4,7 +4,11 @@
 
 header {* \isaheader{Weak well-formedness of Jinja programs} *}
 
-theory WWellForm imports "../Common/WellForm" Expr begin
+theory WWellForm
+imports
+  "../Common/WellForm"
+  Expr
+begin
 
 definition
   wwf_J_mdecl :: "'addr J_prog \<Rightarrow> cname \<Rightarrow> 'addr J_mb mdecl \<Rightarrow> bool"

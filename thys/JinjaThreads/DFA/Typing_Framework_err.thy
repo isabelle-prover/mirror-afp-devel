@@ -6,7 +6,11 @@
 
 header {* \isaheader{Lifting the Typing Framework to err, app, and eff} *}
 
-theory Typing_Framework_err imports Typing_Framework SemilatAlg begin
+theory Typing_Framework_err
+imports
+  Typing_Framework
+  SemilatAlg
+begin
 
 definition wt_err_step :: "'s ord \<Rightarrow> 's err step_type \<Rightarrow> 's err list \<Rightarrow> bool"
 where

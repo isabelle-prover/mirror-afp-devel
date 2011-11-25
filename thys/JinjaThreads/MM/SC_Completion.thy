@@ -4,8 +4,9 @@
 
 header {* \isaheader{Sequentially consistent completion of executions in the JMM} *}
 
-theory SC_Completion imports
-  "JMM_Spec"
+theory SC_Completion
+imports
+  JMM_Spec
   "../Framework/FWLTS"
 begin
 

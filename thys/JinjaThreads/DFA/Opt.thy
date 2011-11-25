@@ -7,7 +7,10 @@ More about options.
 
 header {* \isaheader{More about Options} *}
 
-theory Opt imports Err begin
+theory Opt
+imports
+  Err
+begin
 
 definition le :: "'a ord \<Rightarrow> 'a option ord"
 where

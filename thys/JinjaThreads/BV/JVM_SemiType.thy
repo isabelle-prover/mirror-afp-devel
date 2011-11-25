@@ -9,7 +9,10 @@ header {*
   \isaheader{The JVM Type System as Semilattice} 
 *}
 
-theory JVM_SemiType imports "../Common/SemiType" begin
+theory JVM_SemiType
+imports
+  "../Common/SemiType"
+begin
 
 type_synonym ty\<^isub>l = "ty err list"
 type_synonym ty\<^isub>s = "ty list"

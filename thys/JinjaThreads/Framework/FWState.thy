@@ -6,7 +6,8 @@ header {*
   \chapter{The generic multithreaded semantics}
   \isaheader{State of the multithreaded semantics} *}
 
-theory FWState imports 
+theory FWState
+imports 
   "../Basic/Aux"
 begin
 

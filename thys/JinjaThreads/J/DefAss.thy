@@ -4,7 +4,8 @@
 
 header {* \isaheader{Definite assignment} *}
 
-theory DefAss imports 
+theory DefAss
+imports 
   Expr
 begin
 

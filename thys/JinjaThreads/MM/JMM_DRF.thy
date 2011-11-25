@@ -4,7 +4,8 @@
 
 header {* \isaheader{The data race free guarantee of the JMM} *}
 
-theory JMM_DRF imports
+theory JMM_DRF
+imports
   JMM_Spec
 begin
 

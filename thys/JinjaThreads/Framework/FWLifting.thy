@@ -4,7 +4,10 @@
 
 header {* \isaheader{Lifting of thread-local properties to the multithreaded case} *}
 
-theory FWLifting imports FWWellform begin
+theory FWLifting
+imports
+  FWWellform
+begin
 
 text{* Lifting for properties that only involve thread-local state information and the shared memory. *}
 

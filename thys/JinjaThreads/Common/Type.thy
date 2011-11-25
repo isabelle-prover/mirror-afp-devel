@@ -9,7 +9,8 @@ header {*
   \isaheader{JinjaThreads types}
 *}
 
-theory Type imports
+theory Type
+imports
   "../Basic/Aux"
 begin
 

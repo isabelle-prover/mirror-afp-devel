@@ -4,9 +4,10 @@
 
 header {* \isaheader{Code generation for the byte code verifier} *}
 
-theory BCVExec imports
-  "BVNoTypeError" 
-  "BVExec"
+theory BCVExec
+imports
+  BVNoTypeError
+  BVExec
 begin
 
 lemmas [code_unfold] = exec_lub_def

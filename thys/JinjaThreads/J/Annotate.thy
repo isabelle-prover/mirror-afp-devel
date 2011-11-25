@@ -4,7 +4,8 @@
 
 header {* \isaheader{Program annotation} *}
 
-theory Annotate imports
+theory Annotate
+imports
   WellType
 begin
 

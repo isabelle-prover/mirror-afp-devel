@@ -4,7 +4,10 @@
 
 header {* \chapter{Memory Models} *}
 
-theory MM imports "../Common/Heap" begin
+theory MM
+imports
+  "../Common/Heap"
+begin
 
 type_synonym addr = nat
 type_synonym thread_id = addr

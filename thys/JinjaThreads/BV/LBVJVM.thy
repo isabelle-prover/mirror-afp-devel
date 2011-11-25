@@ -7,7 +7,9 @@
 header {* \isaheader{LBV for the JVM}\label{sec:JVM} *}
 
 theory LBVJVM
-imports "../DFA/Abstract_BV" TF_JVM
+imports
+  "../DFA/Abstract_BV"
+  TF_JVM
 begin
 
 type_synonym prog_cert = "cname \<Rightarrow> mname \<Rightarrow> ty\<^isub>i' err list"

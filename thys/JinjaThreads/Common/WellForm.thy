@@ -6,7 +6,8 @@
 
 header {* \isaheader{Generic Well-formedness of programs} *}
 
-theory WellForm imports
+theory WellForm
+imports
   SystemClasses
   ExternalCall
 begin

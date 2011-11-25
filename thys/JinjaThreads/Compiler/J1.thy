@@ -4,9 +4,10 @@
 
 header {* \isaheader{Semantics of the intermediate language} *}
 
-theory J1 imports
-  "J1State"
-  "J1Heap"
+theory J1
+imports
+  J1State
+  J1Heap
   "../Framework/FWBisimulation"
 begin
 

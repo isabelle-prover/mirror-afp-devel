@@ -4,9 +4,10 @@
 
 header {* \isaheader{Abstract heap locales for byte code programs} *}
 
-theory JVMHeap imports
+theory JVMHeap
+imports
   "../Common/Conform"
-  "JVMInstructions"
+  JVMInstructions
 begin
 
 locale JVM_heap_base =

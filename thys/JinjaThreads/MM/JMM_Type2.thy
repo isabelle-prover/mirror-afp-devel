@@ -4,10 +4,11 @@
 
 header {* \isaheader{Heap implementation for the JMM} *}
 
-theory JMM_Type2 imports 
+theory JMM_Type2
+imports 
   "../Common/ExternalCallWF"
   "../Common/ConformThreaded"
-  "JMM_Heap"
+  JMM_Heap
 begin
 
 section {* Definitions *}

@@ -1,6 +1,7 @@
-theory JVM_Execute imports
-  "SC_Schedulers"
-  "JVMExec_Execute"
+theory JVM_Execute
+imports
+  SC_Schedulers
+  JVMExec_Execute
   "../BV/BVProgressThreaded"
 begin
 

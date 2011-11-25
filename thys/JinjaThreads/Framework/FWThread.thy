@@ -4,7 +4,10 @@
 
 header {* \isaheader{Semantics of the thread actions for thread creation} *}
 
-theory FWThread imports FWState begin
+theory FWThread
+imports
+  FWState
+begin
 
 text{* Abstractions for thread ids *}
 

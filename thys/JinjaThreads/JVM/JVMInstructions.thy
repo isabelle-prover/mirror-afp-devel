@@ -4,7 +4,11 @@
 
 header {* \isaheader{Instructions of the JVM} *}
 
-theory JVMInstructions imports JVMState "../Common/BinOp" begin
+theory JVMInstructions
+imports
+  JVMState
+  "../Common/BinOp"
+begin
 
 datatype 'addr instr 
   = Load nat                  -- "load from local variable"

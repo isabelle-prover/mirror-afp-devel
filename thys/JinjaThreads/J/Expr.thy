@@ -4,7 +4,8 @@
 
 header {* \isaheader{Expressions} *}
 
-theory Expr imports
+theory Expr
+imports
   "../Common/BinOp"
 begin
 

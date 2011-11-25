@@ -6,7 +6,8 @@
 
 header {* \isaheader{The heap implemented as a map} *}
 
-theory SC imports 
+theory SC
+imports 
   "../Common/Conform"
   "MM"
 begin

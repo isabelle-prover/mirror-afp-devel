@@ -2,7 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-theory JMM imports
+theory JMM
+imports
   JMM_DRF
   DRF_J
   DRF_JVM

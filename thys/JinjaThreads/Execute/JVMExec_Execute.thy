@@ -1,6 +1,7 @@
-theory JVMExec_Execute imports
+theory JVMExec_Execute
+imports
   "../JVM/JVMExec"
-  "ExternalCall_Execute"
+  ExternalCall_Execute
 begin
 
 subsection {* Manual translation of the JVM to @{text "Cset"} *}

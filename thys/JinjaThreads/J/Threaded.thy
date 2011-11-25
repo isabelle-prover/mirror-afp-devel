@@ -4,7 +4,8 @@
 
 header{* \isaheader{The source language as an instance of the framework} *}
 
-theory Threaded imports
+theory Threaded
+imports
   SmallStep
   JWellForm
   "../Common/ConformThreaded"

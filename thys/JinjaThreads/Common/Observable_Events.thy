@@ -4,7 +4,8 @@
 
 header {* \isaheader{Observable events in JinjaThreads} *}
 
-theory Observable_Events imports 
+theory Observable_Events
+imports 
   Heap
   "../Framework/FWState"
 begin

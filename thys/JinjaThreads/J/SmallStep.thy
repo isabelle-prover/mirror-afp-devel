@@ -4,7 +4,8 @@
 
 header {* \isaheader{Small Step Semantics} *}
 
-theory SmallStep imports
+theory SmallStep
+imports
   Expr
   State
   JHeap

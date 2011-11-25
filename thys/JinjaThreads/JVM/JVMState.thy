@@ -7,7 +7,8 @@ header {*
   \isaheader{State of the JVM} 
 *}
 
-theory JVMState imports
+theory JVMState
+imports
   "../Common/Observable_Events"
 begin
 

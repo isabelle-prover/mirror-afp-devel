@@ -3,7 +3,8 @@
 *)
 
 theory Cset_without_equal
-imports "List_Cset"
+imports
+  List_Cset
 begin
 
 text {*

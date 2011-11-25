@@ -1,5 +1,6 @@
-theory DRF_JVM imports
-  "JMM_Common"
+theory DRF_JVM
+imports
+  JMM_Common
   "../BV/BVProgressThreaded"
 begin
 

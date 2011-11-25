@@ -1,9 +1,10 @@
-theory SC_Collections imports
+theory SC_Collections
+imports
   "../Common/Conform"
   "../../Collections/RBTMapImpl"
   "../../Collections/TrieMapImpl"
   "../../Collections/ListMapImpl"
-  "MM"
+  MM
 begin
 
 hide_const (open) new_Addr

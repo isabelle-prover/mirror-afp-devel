@@ -4,7 +4,8 @@
 
 header {* \isaheader{The Typing Framework for the JVM}\label{sec:JVM} *}
 
-theory TF_JVM imports
+theory TF_JVM
+imports
   "../DFA/Typing_Framework_err" 
   EffectMono 
   BVSpec

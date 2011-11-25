@@ -4,8 +4,9 @@
 
 header {* \isaheader{JMM Instantiation with Jinja -- common parts} *}
 
-theory JMM_Common imports
-  "JMM_Framework"
+theory JMM_Common
+imports
+  JMM_Framework
   "../Common/BinOp"
   "../Common/ExternalCallWF"
 begin

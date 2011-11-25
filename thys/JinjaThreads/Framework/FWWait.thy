@@ -4,7 +4,10 @@
 
 header {* \isaheader{Semantics of the thread actions for wait, notify and interrupt} *}
 
-theory FWWait imports FWState begin
+theory FWWait
+imports
+  FWState
+begin
 
 text {* Update functions for the wait sets in the multithreaded state *}
 

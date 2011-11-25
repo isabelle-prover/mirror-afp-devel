@@ -4,7 +4,11 @@
 
 header{* \isaheader{ Properties of external calls in well-formed programs } *}
 
-theory ExternalCallWF imports WellForm "../Framework/FWSemantics" begin
+theory ExternalCallWF
+imports
+  WellForm
+  "../Framework/FWSemantics"
+begin
 
 lemma external_WT_defs_is_type:
   assumes "wf_prog wf_md P" and "C\<bullet>M(Ts) :: T"

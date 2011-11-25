@@ -7,7 +7,8 @@ header {*
   \isaheader{Program State} 
 *}
 
-theory State imports
+theory State
+imports
   "../Common/Heap"
 begin
 

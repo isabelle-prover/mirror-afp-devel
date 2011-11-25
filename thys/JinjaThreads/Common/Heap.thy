@@ -8,7 +8,8 @@ header {*
   \isaheader{An abstract heap model}
 *}
 
-theory Heap imports 
+theory Heap
+imports 
   Value
 begin
 

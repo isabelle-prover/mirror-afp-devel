@@ -4,7 +4,11 @@
 
 header {* \isaheader{Preservation of deadlock across bisimulations} *}
 
-theory FWBisimDeadlock imports FWBisimulation FWDeadlock begin
+theory FWBisimDeadlock
+imports
+  FWBisimulation
+  FWDeadlock
+begin
 
 context FWdelay_bisimulation_obs begin
 

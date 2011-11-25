@@ -7,7 +7,10 @@
 
 header {* \isaheader{Relations between Jinja Types} *}
 
-theory TypeRel imports Decl begin
+theory TypeRel
+imports
+  Decl
+begin
 
 subsection{* The subclass relations *}
 

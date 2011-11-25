@@ -4,7 +4,10 @@
 
 header{* \isaheader{ Binary Operators } *}
 
-theory BinOp imports WellForm begin
+theory BinOp
+imports
+  WellForm
+begin
 
 datatype bop =  -- "names of binary operations"
     Eq

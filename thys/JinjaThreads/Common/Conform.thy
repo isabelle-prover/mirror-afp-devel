@@ -6,7 +6,8 @@
 
 header {* \isaheader{Conformance Relations for Type Soundness Proofs} *}
 
-theory Conform imports
+theory Conform
+imports
   StartConfig
 begin
 

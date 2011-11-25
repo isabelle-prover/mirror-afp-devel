@@ -3,7 +3,8 @@
 *)
 
 header {* \isaheader{Progress of Small Step Semantics} *}
-theory Progress imports
+theory Progress
+imports
   WellTypeRT
   DefAss
   SmallStep

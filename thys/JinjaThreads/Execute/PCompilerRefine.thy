@@ -1,5 +1,6 @@
-theory PCompilerRefine imports
-  "TypeRelRefine"
+theory PCompilerRefine
+imports
+  TypeRelRefine
   "../Compiler/PCompiler"
 begin
 

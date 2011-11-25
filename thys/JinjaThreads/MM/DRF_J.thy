@@ -1,5 +1,6 @@
-theory DRF_J imports
-  "JMM_Common"
+theory DRF_J
+imports
+  JMM_Common
   "../J/ProgressThreaded"
 begin
 

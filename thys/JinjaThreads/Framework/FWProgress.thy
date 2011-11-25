@@ -4,7 +4,10 @@
 
 header {* \isaheader{Progress theorem for the multithreaded semantics} *}
 
-theory FWProgress imports FWDeadlock begin
+theory FWProgress
+imports
+  FWDeadlock
+begin
 
 locale progress = multithreaded final r convert_RA 
   for final :: "'x \<Rightarrow> bool"

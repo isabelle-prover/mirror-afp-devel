@@ -4,7 +4,11 @@
 
 header {* \isaheader{Semantic properties of lifted predicates} *}
 
-theory FWLiftingSem imports FWSemantics FWLifting begin
+theory FWLiftingSem
+imports
+  FWSemantics
+  FWLifting
+begin
 
 context multithreaded_base begin
 

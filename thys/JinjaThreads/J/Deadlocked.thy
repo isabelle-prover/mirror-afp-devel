@@ -4,7 +4,10 @@
 
 header{* \isaheader{Preservation of Deadlock} *}
 
-theory Deadlocked imports ProgressThreaded begin
+theory Deadlocked
+imports
+  ProgressThreaded
+begin
 
 context J_progress begin
 

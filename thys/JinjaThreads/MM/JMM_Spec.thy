@@ -4,8 +4,9 @@
 
 header {* \isaheader{Axiomatic specification of the JMM} *}
 
-theory JMM_Spec imports
-  "Orders"
+theory JMM_Spec
+imports
+  Orders
   "../Common/Observable_Events"
   "../../Coinductive/Coinductive_List_Lib"
 begin

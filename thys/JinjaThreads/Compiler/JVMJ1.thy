@@ -4,7 +4,8 @@
 
 header {* \isaheader{Correctness of Stage 2: From JVM to intermediate language} *}
 
-theory JVMJ1 imports 
+theory JVMJ1
+imports 
   J1JVMBisim
 begin
 

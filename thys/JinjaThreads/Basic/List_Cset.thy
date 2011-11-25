@@ -4,7 +4,8 @@
 header {* implementation of Cset.sets based on lists *}
 
 theory List_Cset
-imports Cset
+imports
+  Cset
 begin
 
 declare mem_def [simp]

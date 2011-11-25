@@ -4,7 +4,8 @@
 
 header {* \isaheader{Well-typedness of Jinja expressions} *}
 
-theory WellType imports
+theory WellType
+imports
   Expr
   State
   "../Common/ExternalCallWF"

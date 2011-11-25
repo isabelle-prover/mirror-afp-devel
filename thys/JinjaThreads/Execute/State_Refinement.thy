@@ -5,7 +5,8 @@
 header {* \chapter{Schedulers}
           \isaheader{Refinement for multithreaded states} *}
 
-theory State_Refinement imports
+theory State_Refinement
+imports
   "../Framework/FWSemantics"
   "../Common/StartConfig"
 begin

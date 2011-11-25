@@ -1,4 +1,5 @@
-theory TypeRelRefine imports
+theory TypeRelRefine
+imports
   "../Common/TypeRel"
   "~~/src/HOL/Library/AList_Mapping"
   "../Common/List_Cset"

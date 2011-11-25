@@ -4,9 +4,10 @@
 
 header {* \isaheader{Abstract heap locales for source code programs} *}
 
-theory JHeap imports
+theory JHeap
+imports
   "../Common/Conform"
-  "Expr"
+  Expr
 begin
 
 locale J_heap_base = heap_base +

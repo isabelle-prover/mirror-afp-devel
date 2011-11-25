@@ -4,7 +4,8 @@
 
 header {* \isaheader{Unlocking a sync block never fails} *}
 
-theory Correctness1Threaded imports 
+theory Correctness1Threaded
+imports 
   J0J1Bisim
 begin
 

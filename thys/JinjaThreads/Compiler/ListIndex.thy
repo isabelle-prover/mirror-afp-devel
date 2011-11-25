@@ -4,7 +4,10 @@
 
 header {* \isaheader{Indexing variables in variable lists} *}
 
-theory ListIndex imports Main begin
+theory ListIndex
+imports
+  Main
+begin
 
 text{* In order to support local variables and arbitrarily nested
 blocks, the local variables are arranged as an indexed list. The

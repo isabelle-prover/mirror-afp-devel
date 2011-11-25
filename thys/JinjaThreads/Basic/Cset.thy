@@ -4,7 +4,9 @@
 header {* A dedicated set type which is executable on its finite part *}
 
 theory Cset
-imports "~~/src/HOL/Library/More_Set" "~~/src/HOL/Library/More_List"
+imports
+  "~~/src/HOL/Library/More_Set"
+  "~~/src/HOL/Library/More_List"
 begin
 
 subsection {* Lifting *}

@@ -4,7 +4,10 @@
 
 header {* \isaheader{JVM Semantics for the delay bisimulation proof from intermediate language to byte code} *}
 
-theory Execs imports JVMTau begin
+theory Execs
+imports
+  JVMTau
+begin
 
 declare match_ex_table_app [simp del]
   match_ex_table_eq_NoneI [simp del]

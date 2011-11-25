@@ -4,7 +4,10 @@
 
 header {* \isaheader{Auxiliary definitions for the progress theorem for the multithreaded semantics} *}
 
-theory FWProgressAux imports FWSemantics begin
+theory FWProgressAux
+imports
+  FWSemantics
+begin
 
 abbreviation collect_waits :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('l + 't + 't) set"
 where "collect_waits ta \<equiv> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"

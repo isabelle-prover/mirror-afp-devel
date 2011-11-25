@@ -4,7 +4,8 @@
 
 header{* \isaheader{Instantiating the framework semantics with the JVM} *}
 
-theory JVMThreaded imports
+theory JVMThreaded
+imports
   JVMDefensive
   "../Common/ConformThreaded"
   "../Framework/FWLiftingSem"

@@ -5,7 +5,9 @@
 header {* \isaheader{Welltyped Programs produce no Type Errors} *}
 
 theory BVNoTypeError
-imports "../JVM/JVMDefensive" BVSpecTypeSafe
+imports
+  "../JVM/JVMDefensive"
+  BVSpecTypeSafe
 begin
 
 lemma wt_jvm_prog_states:

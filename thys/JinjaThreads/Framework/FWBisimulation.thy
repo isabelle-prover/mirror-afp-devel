@@ -4,7 +4,8 @@
 
 header {* \isaheader{Bisimulation relations for the multithreaded semantics } *}
 
-theory FWBisimulation imports
+theory FWBisimulation
+imports
   FWLTS
   Bisimulation
 begin

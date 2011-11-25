@@ -6,7 +6,10 @@
 
 header {* \isaheader{Class Declarations and Programs} *}
 
-theory Decl imports Type begin
+theory Decl
+imports
+  Type
+begin
 
 type_synonym volatile = bool
 

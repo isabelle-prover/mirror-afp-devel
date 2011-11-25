@@ -5,7 +5,8 @@
 header {* 
   \isaheader{The initial configuration}
 *}
-theory StartConfig imports
+theory StartConfig
+imports
   Exceptions
   Observable_Events
 begin

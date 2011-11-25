@@ -4,7 +4,10 @@
 
 header{* \isaheader{Preservation of deadlock for the JVMs} *}
 
-theory JVMDeadlocked imports BVProgressThreaded begin
+theory JVMDeadlocked
+imports
+  BVProgressThreaded
+begin
 
 context JVM_progress begin
 

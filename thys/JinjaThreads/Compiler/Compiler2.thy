@@ -5,7 +5,10 @@
 header {* \isaheader{Compilation Stage 2} *}
 
 theory Compiler2
-imports PCompiler J1State "../JVM/JVMInstructions"
+imports
+  PCompiler
+  J1State
+  "../JVM/JVMInstructions"
 begin
 
 primrec compE2  :: "'addr expr1      \<Rightarrow> 'addr instr list"

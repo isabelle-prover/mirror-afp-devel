@@ -4,7 +4,8 @@
 
 header {* \isaheader{Unobservable steps for the JVM} *}
 
-theory JVMTau imports
+theory JVMTau
+imports
   TypeComp
   "../JVM/JVMThreaded"
   "../Framework/FWLTS"

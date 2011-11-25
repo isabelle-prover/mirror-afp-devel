@@ -6,8 +6,9 @@ header {*
   \isaheader{The Jinja Type System as a Semilattice} 
 *}
 
-theory SemiType imports
-  "WellForm" 
+theory SemiType
+imports
+  WellForm
   "../DFA/Semilattices"
 begin
 

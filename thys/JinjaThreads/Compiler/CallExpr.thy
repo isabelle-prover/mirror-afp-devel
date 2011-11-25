@@ -7,7 +7,8 @@ header {*
   \isaheader{Method calls in expressions} 
 *}
 
-theory CallExpr imports 
+theory CallExpr
+imports 
   "../J/Expr"
 begin
 

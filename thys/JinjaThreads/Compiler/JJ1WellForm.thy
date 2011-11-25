@@ -7,10 +7,11 @@
 header {* \isaheader{Preservation of well-formedness from source code to intermediate language} *}
 
 
-theory JJ1WellForm imports
+theory JJ1WellForm
+imports
   "../J/JWellForm"
-  "J1WellForm"
-  "Compiler1"
+  J1WellForm
+  Compiler1
 begin
 
 text{* The compiler preserves well-formedness. Is less trivial than it

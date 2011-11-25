@@ -4,7 +4,8 @@
 
 header {* \isaheader{Type rules for the intermediate language} *}
 
-theory J1WellType imports
+theory J1WellType
+imports
   J1State
   "../Common/ExternalCallWF"
   "../Common/SemiType"

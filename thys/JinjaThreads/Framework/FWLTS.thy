@@ -4,7 +4,8 @@
 
 header {* \isaheader{The multithreaded semantics as a labelled transition system} *}
 
-theory FWLTS imports
+theory FWLTS
+imports
   FWProgressAux
   FWLifting
   LTS

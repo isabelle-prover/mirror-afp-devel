@@ -4,7 +4,10 @@
 
 header {* \isaheader{All about a managing a single lock} *}
 
-theory FWLock imports FWState begin
+theory FWLock
+imports
+  FWState
+begin
 
 fun has_locks :: "'t lock \<Rightarrow> 't \<Rightarrow> nat" where
   "has_locks None t = 0"

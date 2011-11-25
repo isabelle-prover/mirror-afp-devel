@@ -4,7 +4,8 @@
 
 header {* \isaheader{Abstract scheduler} *}
 
-theory Scheduler imports
+theory Scheduler
+imports
   State_Refinement
   "../Framework/FWProgressAux"
   "../Framework/FWLTS"

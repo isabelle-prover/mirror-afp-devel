@@ -3,7 +3,8 @@
 *)
 header {* \isaheader{Preservation of definite assignment} *}
 
-theory DefAssPreservation imports
+theory DefAssPreservation
+imports
   DefAss
   JWellForm
   SmallStep

@@ -4,7 +4,10 @@
 
 header {* \isaheader{Semantics of the thread actions for purely conditional purpose such as Join} *}
 
-theory FWCondAction imports FWState begin
+theory FWCondAction
+imports
+  FWState
+begin
 
 locale final_thread =
   fixes final :: "'x \<Rightarrow> bool"
