@@ -25,18 +25,31 @@ IMAGE=$(OUT)/$(BASE-IMAGE)
 # machine does not have enough memory for more threads 
 # JINJATHREADS_OPTIONS="-M 1"
 USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -V outline=/proof,/ML $(JINJATHREADS_OPTIONS)
+USEDIR_SIMPLE = $(ISABELLE_TOOL) usedir -v true -i false -g false -d false $(JINJATHREADS_OPTIONS)
 
 ## dependencies
 
 # test run and proof document
 
-$(SESSION-NAME): HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
-
 HOL-Word: 
 	cd $(ISABELLE_HOME)/src/HOL; $(ISABELLE_TOOL) make HOL-Word
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Common/*.thy J/*.thy Framework/*.thy document/*.tex BV/*.thy JVM/*.thy Compiler/*.thy MM/*.thy DFA/*.thy ../Coinductive/*.thy ../FinFun/*.thy
+$(SESSION-NAME): HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME)-Basic: HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Basic.gz
+$(SESSION-NAME)-Common: HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Common.gz
+$(SESSION-NAME)-Compiler: HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Compiler.gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT*.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy Framework/*.thy DFA/*.thy Common/*.thy J/*.thy JVM/*.thy BV/*.thy Compiler/*.thy MM/*.thy Execute/*.thy document/*.tex
 	cd ..; $(USEDIR) $(IMAGE) $(SESSION-NAME)
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Basic.gz: $(IMAGE) ROOT*.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy
+	cd ..; $(USEDIR_SIMPLE) -s $(SESSION-NAME)-Basic -f ROOT-Basic.ML $(IMAGE) $(SESSION-NAME)
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Common.gz: $(IMAGE) ROOT*.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy Framework/*.thy DFA/*.thy Common/*.thy
+	cd ..; $(USEDIR_SIMPLE) -s $(SESSION-NAME)-Common -f ROOT-Common.ML $(IMAGE) $(SESSION-NAME)
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Compiler.gz: $(IMAGE) ROOT*.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy Framework/*.thy DFA/*.thy Common/*.thy J/*.thy JVM/*.thy BV/*.thy Compiler/*.thy
+	cd ..; $(USEDIR_SIMPLE) -s $(SESSION-NAME)-Compiler -f ROOT-Compiler.ML $(IMAGE) $(SESSION-NAME)
 
 ## clean
 
