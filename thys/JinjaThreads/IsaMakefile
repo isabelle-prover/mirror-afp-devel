@@ -19,13 +19,15 @@ OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
 # base image is not an Isabelle release image, so always source from $(OUT)
-IMAGE=$(OUT)/$(BASE-IMAGE)
+IMAGE_BASE_NAME = $(BASE-IMAGE)-$(SESSION-NAME)
+IMAGE = $(OUT)/$(BASE-IMAGE)
+IMAGE_BASIC = $(OUT)/$(IMAGE_BASE_NAME)-Basic
 
 # use something like the following in your .isabelle/etc/settings if your 
 # machine does not have enough memory for more threads 
 # JINJATHREADS_OPTIONS="-M 1"
 USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -V outline=/proof,/ML $(JINJATHREADS_OPTIONS)
-USEDIR_SIMPLE = $(ISABELLE_TOOL) usedir -v true -i false -g false -d false $(JINJATHREADS_OPTIONS)
+USEDIR_NO_DOCUMENT = $(ISABELLE_TOOL) usedir -v true -i false -g false -d false $(JINJATHREADS_OPTIONS)
 
 ## dependencies
 
@@ -34,22 +36,25 @@ USEDIR_SIMPLE = $(ISABELLE_TOOL) usedir -v true -i false -g false -d false $(JIN
 HOL-Word: 
 	cd $(ISABELLE_HOME)/src/HOL; $(ISABELLE_TOOL) make HOL-Word
 
-$(SESSION-NAME): HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 $(SESSION-NAME)-Basic: HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Basic.gz
-$(SESSION-NAME)-Common: HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Common.gz
-$(SESSION-NAME)-Compiler: HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Compiler.gz
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT*.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy Framework/*.thy DFA/*.thy Common/*.thy J/*.thy JVM/*.thy BV/*.thy Compiler/*.thy MM/*.thy Execute/*.thy document/*.tex
-	cd ..; $(USEDIR) $(IMAGE) $(SESSION-NAME)
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Basic.gz: $(IMAGE) ROOT-Basic.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy
+	$(USEDIR_NO_DOCUMENT) -b -f ROOT-Basic.ML $(IMAGE) $(IMAGE_BASE_NAME)-Basic
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Basic.gz: $(IMAGE) ROOT*.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy
-	cd ..; $(USEDIR_SIMPLE) -s $(SESSION-NAME)-Basic -f ROOT-Basic.ML $(IMAGE) $(SESSION-NAME)
+$(SESSION-NAME)-Common: $(SESSION-NAME)-Basic $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Common.gz
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Common.gz: $(IMAGE) ROOT*.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy Framework/*.thy DFA/*.thy Common/*.thy
-	cd ..; $(USEDIR_SIMPLE) -s $(SESSION-NAME)-Common -f ROOT-Common.ML $(IMAGE) $(SESSION-NAME)
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Common.gz: $(IMAGE) ROOT-Common.ML Framework/*.thy DFA/*.thy Common/*.thy
+	$(USEDIR_NO_DOCUMENT) -b -r -f ROOT-Common.ML $(IMAGE_BASIC) $(IMAGE_BASE_NAME)-Common
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Compiler.gz: $(IMAGE) ROOT*.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy Framework/*.thy DFA/*.thy Common/*.thy J/*.thy JVM/*.thy BV/*.thy Compiler/*.thy
-	cd ..; $(USEDIR_SIMPLE) -s $(SESSION-NAME)-Compiler -f ROOT-Compiler.ML $(IMAGE) $(SESSION-NAME)
+$(SESSION-NAME)-Compiler: $(SESSION-NAME)-Basic $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Compiler.gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Compiler.gz: $(IMAGE) ROOT-Compiler.ML Framework/*.thy DFA/*.thy Common/*.thy J/*.thy JVM/*.thy BV/*.thy Compiler/*.thy
+	$(USEDIR_NO_DOCUMENT) -b -r -f ROOT-Compiler.ML $(IMAGE_BASIC) $(IMAGE_BASE_NAME)-Compiler
+
+$(SESSION-NAME): $(SESSION-NAME)-Basic $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Framework/*.thy DFA/*.thy Common/*.thy J/*.thy JVM/*.thy BV/*.thy Compiler/*.thy MM/*.thy Execute/*.thy document/*.tex
+	cd ..; $(USEDIR) -r -s $(SESSION-NAME) $(IMAGE_BASIC) $(SESSION-NAME)
 
 ## clean
 
