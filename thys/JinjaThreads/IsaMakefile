@@ -14,12 +14,9 @@ all: $(SESSION-NAME)
 
 ## global settings
 
-AFP ?= $(abspath $(CURDIR)/..)
 SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
-
-export AFP
 
 # base image is not an Isabelle release image, so always source from $(OUT)
 IMAGE=$(OUT)/$(BASE-IMAGE)

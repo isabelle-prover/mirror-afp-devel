@@ -9,13 +9,13 @@ imports Main
   Cset_Monad
   "~~/src/HOL/Library/Dlist"
   Cset_without_equal
-  "$AFP/FinFun/FinFun"
-  "$AFP/Coinductive/Lazy_TLList"
-  "$AFP/Collections/ListSetImpl_Invar"
-  "$AFP/Collections/RBTSetImpl"
-  "$AFP/Collections/TrieMapImpl"
-  "$AFP/Collections/ListMapImpl"
-  "$AFP/Collections/Fifo"
+  "../../FinFun/FinFun"
+  "../../Coinductive/Lazy_TLList"
+  "../../Collections/ListSetImpl_Invar"
+  "../../Collections/RBTSetImpl"
+  "../../Collections/TrieMapImpl"
+  "../../Collections/ListMapImpl"
+  "../../Collections/Fifo"
   Aux
 begin
 
