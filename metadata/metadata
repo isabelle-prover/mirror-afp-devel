@@ -389,7 +389,7 @@ title = Stream Fusion
 author = Brian Huffman <http://cs.pdx.edu/~brianh>
 topic = Computer Science/Functional Programming
 date = 2009-04-29
-base = HOLCF
+base = HOL/HOLCF
 abstract = Stream Fusion is a system for removing intermediate list structures from Haskell programs; it consists of a Haskell library along with several compiler rewrite rules. (The library is available <a href="http://www.cse.unsw.edu.au/~dons/streams.html">online</a>.)<br><br>These theories contain a formalization of much of the Stream Fusion library in HOLCF. Lazy list and stream types are defined, along with coercions between the two types, as well as an equivalence relation for streams that generate the same list. List and stream versions of map, filter, foldr, enumFromTo, append, zipWith, and concatMap are defined, and the stream versions are shown to respect stream equivalence. 
 
 [CoreC++]
@@ -590,7 +590,7 @@ title = Shivers' Control Flow Analysis
 topic = Computer Science/Programming Languages/Static Analysis
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
 date = 2010-11-16
-base = HOLCF
+base = HOL/HOLCF
 abstract =
  In his dissertation, Olin Shivers introduces a concept of control flow graphs
  for functional languages, provides an algorithm to statically derive a safe
@@ -620,7 +620,7 @@ depends-on = Jinja
 title = The Worker/Wrapper Transformation
 author = Peter Gammie <http://peteg.org/>
 date = 2009-10-30
-base = HOLCF
+base = HOL/HOLCF
 topic = Computer Science/Programming Languages/Transformations
 abstract = Gill and Hutton formalise the worker/wrapper transformation, building on the work of Launchbury and Peyton-Jones who developed it as a way of changing the type at which a recursive function operates. This development establishes the soundness of the technique and several examples of its use.
 
