@@ -1294,7 +1294,7 @@ lemma allD: "\<forall>ll. P ll \<Longrightarrow> P ll"
 
 lemma replicate_spec: "\<lbrakk>\<forall>i < n. xs ! i = x; n=length xs\<rbrakk> 
   \<Longrightarrow> replicate (length xs) x = xs"
-apply (tactic "hyp_subst_tac 1")
+apply hypsubst
 apply (induct xs)
 apply  simp
 apply force
@@ -1323,7 +1323,7 @@ apply  (clarsimp simp add: Levellist_def )
 apply  (case_tac i)
 apply   simp
 apply  simp
-apply (simp add: mem_Collect_eq Collect_conv_if split:split_if_asm)
+apply (simp add: Collect_conv_if split:split_if_asm)
 apply vcg_step
 apply (elim exE conjE)
 apply (rule_tac x=ll' in exI)

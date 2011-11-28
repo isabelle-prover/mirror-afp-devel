@@ -132,7 +132,7 @@ apply     simp
 prefer 4
 apply   (elim exE conjE)
 apply   (simp (no_asm_use))
-apply   (tactic "hyp_subst_tac 1")
+apply   hypsubst
 using  [[simp_depth_limit = 100]]
 proof -
   (* IF-THEN to postcondition *)

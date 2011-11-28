@@ -124,24 +124,24 @@ where
 
 lemma eval_zero: "\<lbrakk>bdt (Node l v r) var = Some x; 
 var (root (Node l v r)) = (0::nat)\<rbrakk> \<Longrightarrow> x = Zero"
-apply (case_tac l)
-apply (case_tac r)
+apply (cases l)
+apply (cases r)
 apply simp
 apply simp
-apply (case_tac r)
+apply (cases r)
 apply simp
 apply simp
 done
 
 lemma bdt_Some_One_iff [simp]: 
   "(bdt t var = Some One) = (\<exists> p. t = Node Tip p Tip \<and> var p = 1)"
-apply (induct_tac t rule: bdt_fn.induct)
+apply (induct t rule: bdt_fn.induct)
 apply (auto split: option.splits) (*in order to split the cases Zero and One*)
 done
 
 lemma bdt_Some_Zero_iff [simp]: 
   "(bdt t var = Some Zero) = (\<exists> p. t = Node Tip p Tip \<and> var p = 0)"
-apply (induct_tac t rule: bdt_fn.induct)
+apply (induct t rule: bdt_fn.induct)
 apply (auto split: option.splits)
 done
 
@@ -150,7 +150,7 @@ lemma bdt_Some_Node_iff [simp]:
  "(bdt t var = Some (Bdt_Node bdt1 v bdt2)) = 
     (\<exists> p l r. t = Node l p r \<and> bdt l var = Some bdt1 \<and> bdt r var = Some bdt2 \<and> 
                1 < v \<and> var p = v )"
-apply (induct_tac t rule: bdt_fn.induct)
+apply (induct t rule: bdt_fn.induct)
 prefer 5
 apply (fastforce split: if_splits option.splits)
 apply auto
@@ -302,10 +302,10 @@ apply (simp add: dag_setofD)
 done  
 
 lemma subdag_parentdag_low: "not <= lt \<Longrightarrow> not <= (Node lt p rt)"
-apply (case_tac "not = lt")
-apply (case_tac lt)
+apply (cases "not = lt")
+apply (cases lt)
 apply simp
-apply (case_tac rt)
+apply (cases rt)
 apply simp
 apply (simp add: le_dag_def less_dag_def)
 apply (simp add: le_dag_def less_dag_def)
@@ -314,10 +314,10 @@ apply (simp add: le_dag_def less_dag_def)
 done
 
 lemma subdag_parentdag_high: "not <= rt \<Longrightarrow> not <= (Node lt p rt)"
-apply (case_tac "not = rt")
-apply (case_tac lt)
+apply (cases "not = rt")
+apply (cases lt)
 apply simp
-apply (case_tac rt)
+apply (cases rt)
 apply simp
 apply (simp add: le_dag_def less_dag_def)
 apply (simp add: le_dag_def less_dag_def)
@@ -645,10 +645,9 @@ definition Nodes :: "nat \<Rightarrow> ref list list \<Rightarrow> ref set"
   where "Nodes i levellist = (\<Union>k\<in>{k. k < i} . set (levellist ! k))"
 
 
-inductive_set 
- Dags :: "ref set \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> dag set"
- for "nodes" "low" "high"
- where
+inductive_set Dags :: "ref set \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> dag set"
+  for "nodes" "low" "high"
+where
   DagsI: "\<lbrakk> set_of t \<subseteq>  nodes; Dag p low high t; t \<noteq> Tip\<rbrakk> 
            \<Longrightarrow> t \<in> Dags nodes low high"
 
@@ -703,22 +702,23 @@ defs shared_lower_levels_def : "shared_lower_levels t i bdtvar == \<forall> st1 
 
 
 fun reduced :: "dag \<Rightarrow> bool" where
-"reduced Tip = True"
+  "reduced Tip = True"
 | "reduced (Node Tip v Tip) = True"
 | "reduced (Node l v r) = (l \<noteq> r \<and> reduced l \<and> reduced r)"  
 
 primrec reduced_bdt :: "bdt \<Rightarrow> bool"
 where
-"reduced_bdt Zero = True" |
-"reduced_bdt One = True" |
-"reduced_bdt (Bdt_Node lbdt v rbdt) = (if lbdt = rbdt then False 
-                                       else (reduced_bdt lbdt \<and> reduced_bdt rbdt))"
+  "reduced_bdt Zero = True"
+| "reduced_bdt One = True"
+| "reduced_bdt (Bdt_Node lbdt v rbdt) =
+    (if lbdt = rbdt then False 
+     else (reduced_bdt lbdt \<and> reduced_bdt rbdt))"
 
 
 lemma replicate_elem: "i < n ==>  (replicate n x !i) = x"
 apply (induct n)
 apply simp
-apply (case_tac i)
+apply (cases i)
 apply auto
 done
 
@@ -729,14 +729,14 @@ lemma no_in_one_ll:
 apply (unfold wf_ll_def)
 apply (erule conjE)
 apply (rotate_tac 5)
-apply (frule_tac x=i and ?R=" no \<in> set_of pret \<and> var no = i" in allE)
+apply (frule_tac x = i and ?R= "no \<in> set_of pret \<and> var no = i" in allE)
 apply (erule impE)
 apply simp
 apply (rotate_tac 6)
 apply (erule_tac x=no in ballE)
 apply assumption
 apply simp
-apply (case_tac "no \<notin> set (levellista ! j)")
+apply (cases "no \<notin> set (levellista ! j)")
 apply assumption
 apply (erule_tac x=j in allE)
 apply (erule impE)
@@ -932,8 +932,7 @@ lemma bdt_child:
 "\<lbrakk> bdt (Node (Node llt l rlt) p (Node lrt r rrt)) var = Some bdt1\<rbrakk> 
  \<Longrightarrow> \<exists> lbdt rbdt.  bdt (Node llt l rlt) var = Some lbdt \<and> 
                    bdt (Node lrt r rrt) var = Some rbdt"
-apply (simp split: option.splits if_splits)
-done
+  by (simp split: option.splits)
 
 
 lemma subbdt_ex_dag_def: 
@@ -1145,7 +1144,6 @@ next
         by simp
       from Node.prems have ord_lt: "ordered lt var"
         apply -
-        apply (rotate_tac 1)
         apply (drule children_ordered)
         apply simp
         done
@@ -1163,7 +1161,6 @@ next
         by simp
       from Node.prems have ord_rt: "ordered rt var"
         apply -
-        apply (rotate_tac 1)
         apply (drule children_ordered)
         apply simp
         done
@@ -1415,16 +1412,9 @@ shows "\<exists> p . Dag p low high t  \<and> p \<in> Nodes (Suc nb) levellista"
 proof -
   from t_in_DagsSucnb obtain p where t_dag: "Dag p low high t" and t_subset_Nodes: "set_of t \<subseteq> Nodes (Suc nb) levellista" and t_nTip: "t\<noteq> Tip"
     by (fastforce elim: Dags.cases)
-  from t_dag t_nTip have "p\<noteq>Null"
-    apply (case_tac t)
-    apply auto
-    done
+  from t_dag t_nTip have "p\<noteq>Null" by (cases t) auto
   with t_subset_Nodes t_dag have "p \<in> Nodes (Suc nb) levellista" 
-    apply simp
-    apply (case_tac t)
-    apply simp
-    apply simp
-    done
+    by (cases t) auto
   with t_dag show ?thesis
     by auto
 qed
@@ -1493,7 +1483,6 @@ proof -
     by blast
   from st_t t_dag obtain stp where "Dag stp low high st"
     apply -
-    apply (rotate_tac 2)
     apply (drule subdag_dag)
     apply auto
     done

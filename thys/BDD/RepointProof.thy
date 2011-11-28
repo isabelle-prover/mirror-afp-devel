@@ -261,7 +261,6 @@ proof -
       pa_def: "pa = (rep \<propto> low) (rep p)" and
       lowa_higha_def: "(\<forall> no \<in> set_of lrept. lowa no = (rep \<propto> low) no \<and> higha no = (rep \<propto> high) no)"
       apply -
-      apply (rotate_tac 1)
       apply (drule Dags_eq_hp_eq)
       apply auto
       done
@@ -321,7 +320,6 @@ proof -
       pb_def: "pb = ((rep \<propto> high) (rep p))" and
       lowb_highb_def: "(\<forall> no \<in> set_of rrept. lowb no = (rep \<propto> low) no \<and> highb no = (rep \<propto> high) no)"
       apply -
-      apply (rotate_tac 1)
       apply (drule Dags_eq_hp_eq)
       apply auto
       done
@@ -479,7 +477,6 @@ proof -
         lowa_higha_def: "\<forall>no \<in> set_of lrept. 
         lowa no = (rep \<propto> low) no \<and> higha no = (rep \<propto> high) no"
         apply -
-        apply (rotate_tac 1)
         apply (drule Dags_eq_hp_eq)
         apply auto
         done
@@ -545,7 +542,6 @@ proof -
           lowb_highb_def: "\<forall>no \<in> set_of rrept. 
                               lowb no = (rep \<propto> low) no \<and> highb no = (rep \<propto> high) no"
           apply -
-          apply (rotate_tac 1)
           apply (drule Dags_eq_hp_eq)
           apply auto
           done
@@ -723,7 +719,6 @@ proof -
         lowa_higha_def: "\<forall>no \<in> set_of lrept. 
         lowa no = (rep \<propto> low) no \<and> higha no = (rep \<propto> high) no"
         apply -
-        apply (rotate_tac 1)
         apply (drule Dags_eq_hp_eq)
         apply auto
         done
@@ -793,7 +788,6 @@ proof -
           lowb_highb_def: "\<forall>no \<in> set_of rrept. 
                               lowb no = (rep \<propto> low) no \<and> highb no = (rep \<propto> high) no"
           apply -
-          apply (rotate_tac 1)
           apply (drule Dags_eq_hp_eq)
           apply auto
           done

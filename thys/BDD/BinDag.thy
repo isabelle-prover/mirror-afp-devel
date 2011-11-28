@@ -91,45 +91,45 @@ lemma le_dag_trans:
   fixes x::dag and  y and z 
   assumes x_y: "x \<le> y" and y_z: "y \<le> z" 
   shows "x \<le> z"
-  proof (cases "x=y")
-    case True with y_z show ?thesis by simp
+proof (cases "x=y")
+  case True with y_z show ?thesis by simp
+next
+  case False
+  note x_neq_y = this
+  with x_y have x_less_y: "x < y" by (simp add: le_dag_def)
+  show ?thesis
+  proof (cases "y=z")
+    case True
+    with x_y show ?thesis by simp
   next
     case False
-    note x_neq_y = this
-    with x_y have x_less_y: "x < y" by (simp add: le_dag_def)
-    show ?thesis
-    proof (cases "y=z")
-      case True
-      with x_y show ?thesis by simp
-    next
-      case False
-      with y_z have "y < z" by (simp add: le_dag_def)
-      with x_less_y have "x < z" 
-        by (auto simp add: less_dag_def intro: subdag_trans)
-      thus ?thesis
-        by (simp add: le_dag_def)
-    qed
+    with y_z have "y < z" by (simp add: le_dag_def)
+    with x_less_y have "x < z" 
+      by (auto simp add: less_dag_def intro: subdag_trans)
+    thus ?thesis
+      by (simp add: le_dag_def)
   qed
+qed
 
 lemma le_dag_antisym:
   fixes x::dag and  y   
   assumes x_y: "x \<le> y" and y_x: "y \<le> x" 
   shows "x = y"
-  proof (cases "x=y")
-    case True thus ?thesis .
-  next
-    case False
-    with x_y y_x show ?thesis
-      by (auto simp add: less_dag_def le_dag_def intro: subdag_not_sym)
-  qed
+proof (cases "x=y")
+  case True thus ?thesis .
+next
+  case False
+  with x_y y_x show ?thesis
+    by (auto simp add: less_dag_def le_dag_def intro: subdag_not_sym)
+qed
 
 lemma dag_less_le: 
   fixes x::dag and y
   shows "(x < y) = (x \<le> y \<and> x \<noteq> y)"
   by (auto simp add: less_dag_def le_dag_def dest: subdag_neq)
  
-instance proof
-qed (auto simp add: dag_less_le le_dag_refl intro: le_dag_trans dest: le_dag_antisym)
+instance
+  by default (auto simp add: dag_less_le le_dag_refl intro: le_dag_trans dest: le_dag_antisym)
 
 end
 
@@ -153,11 +153,12 @@ lemma less_dag_set_of: "x < y \<Longrightarrow> set_of x \<subseteq> set_of y"
 lemma le_dag_set_of: "x \<le> y \<Longrightarrow> set_of x \<subseteq> set_of y"
   apply (unfold le_dag_def)
   apply (erule disjE)
-  apply  simp
-  by (rule less_dag_set_of)
+   apply simp
+  apply (erule less_dag_set_of)
+  done
 
-lemma DAG_less: "\<lbrakk>DAG y; x < y\<rbrakk>  \<Longrightarrow> DAG x"
-  by (induct y) (auto simp add:  less_dag_Node')
+lemma DAG_less: "DAG y \<Longrightarrow> x < y \<Longrightarrow> DAG x"
+  by (induct y) (auto simp add: less_dag_Node')
 
 lemma less_DAG_set_of: 
   assumes x_less_y: "x < y" 
@@ -218,38 +219,38 @@ where
                               Dag (l p) l r lt \<and> Dag (r p) l r  rt)"
 
 lemma Dag_Null [simp]: "Dag Null l r  t = (t = Tip)"
-by (cases t) simp_all
+  by (cases t) simp_all
 
 lemma Dag_Ref [simp]: 
   "p\<noteq>Null \<Longrightarrow> Dag p l r  t = (\<exists>lt rt. t=Node lt p rt \<and> 
                                 Dag (l p) l r lt \<and> Dag (r p) l r rt)"
-by (cases t) auto
+  by (cases t) auto
 
-lemma Null_notin_Dag [simp,intro]: "\<And>p l r. Dag p l r t \<Longrightarrow> Null \<notin> set_of t"
-by (induct t) fastforce+
-
-theorem notin_Dag_update_l[simp]:
- "\<And> p. q \<notin> set_of t \<Longrightarrow> Dag p (l(q := y)) r  t = Dag p l r t"  
+lemma Null_notin_Dag [simp, intro]: "\<And>p l r. Dag p l r t \<Longrightarrow> Null \<notin> set_of t"
   by (induct t) auto
 
-theorem notin_Dag_update_r[simp]:
- "\<And> p. q \<notin> set_of t \<Longrightarrow> Dag p l (r(q := y)) t = Dag p l r t"  
+theorem notin_Dag_update_l [simp]:
+    "\<And> p. q \<notin> set_of t \<Longrightarrow> Dag p (l(q := y)) r  t = Dag p l r t"  
+  by (induct t) auto
+
+theorem notin_Dag_update_r [simp]:
+    "\<And> p. q \<notin> set_of t \<Longrightarrow> Dag p l (r(q := y)) t = Dag p l r t"  
   by (induct t) auto
 
 
 lemma Dag_upd_same_l_lemma: "\<And>p. p\<noteq>Null \<Longrightarrow> \<not> Dag p (l(p:=p)) r t"
-apply (induct t)
-apply  simp
-apply (simp (no_asm_simp) del: fun_upd_apply)
-apply (simp (no_asm_simp) only: fun_upd_apply refl if_True)
-apply blast
-done
+  apply (induct t)
+   apply simp
+  apply (simp (no_asm_simp) del: fun_upd_apply)
+  apply (simp (no_asm_simp) only: fun_upd_apply refl if_True)
+  apply blast
+  done
 
 lemma Dag_upd_same_l [simp]: "Dag p (l(p:=p)) r t = (p=Null \<and> t=Tip)"
-apply (cases "p=Null")
-apply  simp
-apply (fast dest: Dag_upd_same_l_lemma)
-done
+  apply (cases "p=Null")
+   apply simp
+  apply (fast dest: Dag_upd_same_l_lemma)
+  done
 
 text {* @{thm[source] Dag_upd_same_l} prevents 
 @{term "p\<noteq>Null \<Longrightarrow> Dag p (l(p:=p)) r t = X"} from looping, because of 
@@ -257,37 +258,37 @@ text {* @{thm[source] Dag_upd_same_l} prevents
  *}
 
 lemma Dag_upd_same_r_lemma: "\<And>p. p\<noteq>Null \<Longrightarrow> \<not> Dag p l (r(p:=p)) t"
-apply (induct t)
-apply  simp
-apply (simp (no_asm_simp) del: fun_upd_apply)
-apply (simp (no_asm_simp) only: fun_upd_apply refl if_True)
-apply blast
-done
+  apply (induct t)
+   apply simp
+  apply (simp (no_asm_simp) del: fun_upd_apply)
+  apply (simp (no_asm_simp) only: fun_upd_apply refl if_True)
+  apply blast
+  done
 
 lemma Dag_upd_same_r [simp]: "Dag p l (r(p:=p)) t = (p=Null \<and> t=Tip)"
-apply (cases "p=Null")
-apply  simp
-apply (fast dest: Dag_upd_same_r_lemma)
-done
+  apply (cases "p=Null")
+   apply simp
+  apply (fast dest: Dag_upd_same_r_lemma)
+  done
 
 lemma  Dag_update_l_new [simp]: "\<lbrakk>set_of t \<subseteq> set alloc\<rbrakk>
      \<Longrightarrow> Dag p (l(new (set alloc) := x)) r t = Dag p l r t"
-by (rule notin_Dag_update_l) fastforce
+  by (rule notin_Dag_update_l) fastforce
 
 lemma  Dag_update_r_new [simp]: "\<lbrakk>set_of t \<subseteq> set alloc\<rbrakk>
      \<Longrightarrow> Dag p l (r(new (set alloc) := x)) t = Dag p l r t"
-by (rule notin_Dag_update_r) fastforce
+  by (rule notin_Dag_update_r) fastforce
 
 lemma Dag_update_lI [intro]:
- "\<lbrakk>Dag p l r t; q \<notin> set_of t\<rbrakk> \<Longrightarrow> Dag p (l(q := y)) r t"
-by simp
+    "\<lbrakk>Dag p l r t; q \<notin> set_of t\<rbrakk> \<Longrightarrow> Dag p (l(q := y)) r t"
+  by simp
 
 lemma Dag_update_rI [intro]:
- "\<lbrakk>Dag p l r t; q \<notin> set_of t\<rbrakk> \<Longrightarrow> Dag p l (r(q := y)) t"
-by simp
+    "\<lbrakk>Dag p l r t; q \<notin> set_of t\<rbrakk> \<Longrightarrow> Dag p l (r(q := y)) t"
+  by simp
 
 lemma Dag_unique: "\<And> p t2. Dag p l r t1 \<Longrightarrow> Dag p l r t2 \<Longrightarrow> t1=t2"
-by (induct t1)  auto 
+  by (induct t1) auto
 
 lemma Dag_unique1: "Dag p l r t \<Longrightarrow> \<exists>!t. Dag p l r t"
   by (blast intro: Dag_unique)
@@ -295,16 +296,16 @@ lemma Dag_unique1: "Dag p l r t \<Longrightarrow> \<exists>!t. Dag p l r t"
 lemma Dag_subdag: "\<And> p. Dag p l r t \<Longrightarrow> subdag t s \<Longrightarrow> \<exists> q. Dag q l r s"
   by (induct t) auto
 
-lemma Dag_root_not_in_subdag_l[simp,intro]: 
- "Dag (l p) l r t \<Longrightarrow> p \<notin> set_of t"
+lemma Dag_root_not_in_subdag_l [simp,intro]: 
+  assumes "Dag (l p) l r t"
+  shows "p \<notin> set_of t"
 proof - 
-  assume T: "Dag (l p) l r t"
   {
     fix lt rt
     assume t: "t = Node lt p rt"
-    from T have "Dag (l p) l r lt" 
+    from assms have "Dag (l p) l r lt" 
       by (clarsimp simp only: t Dag.simps)
-    with T have "t=lt"
+    with assms have "t=lt"
       by (rule Dag_unique)
     with t have False
       by simp
@@ -313,11 +314,11 @@ proof -
   {
     fix lt rt
     assume subdag: "subdag t (Node lt p rt)"
-    with T obtain q where "Dag q l r (Node lt p rt)"
+    with assms obtain q where "Dag q l r (Node lt p rt)"
       by (rule Dag_subdag [elim_format]) iprover
     hence "Dag (l p) l r lt"
       by auto
-    with T have "t=lt"
+    with assms have "t=lt"
       by (rule Dag_unique)
     moreover 
     have "subdag t lt" 
@@ -333,16 +334,16 @@ proof -
     by (auto simp add: in_set_of_decomp)
 qed
 
-lemma Dag_root_not_in_subdag_r[simp,intro]:
- "Dag (r p) l r t \<Longrightarrow> p \<notin> set_of t"
+lemma Dag_root_not_in_subdag_r [simp, intro]:
+  assumes "Dag (r p) l r t"
+  shows "p \<notin> set_of t"
 proof - 
-  assume T: "Dag (r p) l r t"
   {
     fix lt rt
     assume t: "t = Node lt p rt"
-    from T have "Dag (r p) l r rt" 
+    from assms have "Dag (r p) l r rt" 
       by (clarsimp simp only: t Dag.simps)
-    with T have "t=rt"
+    with assms have "t=rt"
       by (rule Dag_unique)
     with t have False
       by simp
@@ -351,11 +352,11 @@ proof -
   {
     fix lt rt
     assume subdag: "subdag t (Node lt p rt)"
-    with T obtain q where "Dag q l r (Node lt p rt)"
+    with assms obtain q where "Dag q l r (Node lt p rt)"
       by (rule Dag_subdag [elim_format]) iprover
     hence "Dag (r p) l r rt"
       by auto
-    with T have "t=rt"
+    with assms have "t=rt"
       by (rule Dag_unique)
     moreover 
     have "subdag t rt" 
@@ -373,61 +374,58 @@ qed
 
 
 lemma Dag_is_DAG: "\<And>p l r. Dag p l r t \<Longrightarrow> DAG t"
-by (induct t) auto
+  by (induct t) auto
  
 lemma heaps_eq_Dag_eq:
- "\<And>p. \<forall>x \<in> set_of t. l x = l' x \<and> r x = r' x 
-  \<Longrightarrow> Dag p l r t = Dag p l' r' t"
-by (induct t) auto
+  "\<And>p. \<forall>x \<in> set_of t. l x = l' x \<and> r x = r' x 
+    \<Longrightarrow> Dag p l r t = Dag p l' r' t"
+  by (induct t) auto
 
 lemma heaps_eq_DagI1: 
-"\<lbrakk>Dag p l r t; \<forall>x\<in>set_of t. l x = l' x \<and> r x = r' x\<rbrakk>
-\<Longrightarrow> Dag p l' r' t"
+  "\<lbrakk>Dag p l r t; \<forall>x\<in>set_of t. l x = l' x \<and> r x = r' x\<rbrakk>
+    \<Longrightarrow> Dag p l' r' t"
   by (rule heaps_eq_Dag_eq [THEN iffD1])
 
 lemma heaps_eq_DagI2: 
-"\<lbrakk>Dag p l' r' t; \<forall>x\<in>set_of t. l x = l' x \<and> r x = r' x\<rbrakk>
-\<Longrightarrow> Dag p l r t"
- by (rule heaps_eq_Dag_eq [THEN iffD2]) auto
+  "\<lbrakk>Dag p l' r' t; \<forall>x\<in>set_of t. l x = l' x \<and> r x = r' x\<rbrakk>
+    \<Longrightarrow> Dag p l r t"
+  by (rule heaps_eq_Dag_eq [THEN iffD2]) auto
  
 lemma  Dag_unique_all_impl_simp [simp]: 
- "Dag p l r t \<Longrightarrow> (\<forall>t. Dag p l r t \<longrightarrow> P t) = P t"
-by (auto dest: Dag_unique)
+  "Dag p l r t \<Longrightarrow> (\<forall>t. Dag p l r t \<longrightarrow> P t) = P t"
+  by (auto dest: Dag_unique)
 
 lemma Dag_unique_ex_conj_simp [simp]: 
-"Dag p l r t \<Longrightarrow> (\<exists>t. Dag p l r t \<and> P t) = P t"
-by (auto dest: Dag_unique)
+  "Dag p l r t \<Longrightarrow> (\<exists>t. Dag p l r t \<and> P t) = P t"
+  by (auto dest: Dag_unique)
 
 lemma Dags_eq_hp_eq: 
   "\<And>p p'. \<lbrakk>Dag p l r t; Dag p' l' r' t\<rbrakk> \<Longrightarrow>
-   p'=p \<and> (\<forall>no \<in> set_of t. l' no = l no \<and> r' no = r no)"
-apply (induct t)
-apply auto
-done
+    p'=p \<and> (\<forall>no \<in> set_of t. l' no = l no \<and> r' no = r no)"
+  by (induct t) auto
 
-definition isDag::"ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
+definition isDag :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
   where "isDag p l r = (\<exists>t. Dag p l r t)"
 
-definition dag:: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> dag"
+definition dag :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> dag"
   where "dag p l r = (THE t. Dag p l r t)"
 
 lemma Dag_conv_isDag_dag: "Dag p l r t = (isDag p l r \<and> t=dag p l r)"
   apply (simp add: isDag_def dag_def)
   apply (rule iffI)
-  apply  (rule conjI)
-  apply   blast
-  apply  (subst the1_equality)
-  apply    (erule Dag_unique1)
-  apply   assumption
-  apply  (rule refl)
-  apply  clarify
+   apply (rule conjI)
+    apply blast
+   apply (subst the1_equality)
+     apply (erule Dag_unique1)
+    apply assumption
+   apply (rule refl)
+  apply clarify
   apply (rule theI)
-  apply   assumption
-  by (rule Dag_unique)
-
+   apply assumption
+  apply (erule (1) Dag_unique)
+  done
 
 lemma Dag_dag: "Dag p l r t \<Longrightarrow> dag p l r = t"
   by (simp add: Dag_conv_isDag_dag)
-  
 
 end
