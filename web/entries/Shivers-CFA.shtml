@@ -65,7 +65,7 @@ in the HOLCF extension of HOL.
 <p></p>
 
 <!--#set var="name" value="Shivers-CFA" -->
-<!--#set var="binfo" value="../browser_info/current/HOLCF/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOLCF/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
