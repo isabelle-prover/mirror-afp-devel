@@ -8,7 +8,7 @@ Kildall's algorithm.
 header {* \isaheader{Kildall's Algorithm}\label{sec:Kildall} *}
 
 theory Kildall
-imports SemilatAlg "../Common/Aux"
+imports SemilatAlg "../Basic/Aux"
 begin
 
 locale Kildall_base =
