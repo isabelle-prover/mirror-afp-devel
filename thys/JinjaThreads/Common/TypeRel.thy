@@ -196,7 +196,7 @@ lemma widen_append1:
   "P \<turnstile> (xs @ ys) [\<le>] Ts = (\<exists>Ts1 Ts2. Ts = Ts1 @ Ts2 \<and> length xs = length Ts1 \<and> length ys = length Ts2 \<and> P \<turnstile> xs [\<le>] Ts1 \<and> P \<turnstile> ys [\<le>] Ts2)"
 unfolding list_all2_append1 by fastforce
 
-lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
+lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P"] for P
 
 lemma widens_lengthD:
   "P \<turnstile> xs [\<le>] ys \<Longrightarrow> length xs = length ys"
