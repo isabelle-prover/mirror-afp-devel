@@ -419,7 +419,7 @@ where
 | copyp_Suc: "(Suc k) \<otimes> x = (k \<otimes> x) \<squnion> x"
 
 no_notation 
-  Times (infixr "\<times>" 80)
+  Product_Type.Times (infixr "\<times>" 80)
 
 primrec copy :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<times>" 85)
 where
@@ -980,6 +980,6 @@ no_notation secret_object1 ("\<iota>")
    and copy (infix "\<times>" 85)
 
 notation
-  Times  (infixr "\<times>" 80)
+  Product_Type.Times  (infixr "\<times>" 80)
 
 end
