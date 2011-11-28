@@ -48,18 +48,18 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
-2011-11-09:
-<a href="entries/Efficient-Mergesort.shtml">Efficient Mergesort</a>
-<br>Author:
-Christian Sternagel
-</td></tr>
-
-<tr><td class="entry">
 2011-11-19:
 <a href="entries/TLA.shtml">A Definitional Encoding of TLA* in Isabelle/HOL</a>
 <br>Author:
 <a href="http://homepages.inf.ed.ac.uk/ggrov">Gudmund Grov</a> and 
 <a href="http://www.loria.fr/~merz">Stephan Merz</a>
+</td></tr>
+
+<tr><td class="entry">
+2011-11-09:
+<a href="entries/Efficient-Mergesort.shtml">Efficient Mergesort</a>
+<br>Author:
+Christian Sternagel
 </td></tr>
 
 <tr><td class="entry">
