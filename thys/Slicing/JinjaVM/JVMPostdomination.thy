@@ -278,10 +278,14 @@ proof -
 qed
 
 
-typedef cfg_wf_prog =
-  "{P. (\<forall>n. valid_node P n \<longrightarrow>
+definition
+  "cfg_wf_prog =
+    {P. (\<forall>n. valid_node P n \<longrightarrow>
          (\<exists>as. JVM_CFG_Interpret.path P (_Entry_) as n) \<and>
          (\<exists>as. JVM_CFG_Interpret.path P n as (_Exit_)))}"
+
+typedef (open) cfg_wf_prog = cfg_wf_prog
+  unfolding cfg_wf_prog_def
 proof
   let ?prog = "((Abs_wf_jvmprog (EP, Phi_EP)), ''C'', ''M'')"
   let ?edge0 = "((_Entry_), (\<lambda>s. False)\<^isub>\<surd>, (_Exit_))"

@@ -81,13 +81,20 @@ apply (rule HierAuto_EmptySet)
 apply simp
 done
 
-typedef ('s,'e,'d) status
-    = "{(HA,C,E,D) |
+definition
+  "status =
+    {(HA,C,E,D) |
         (HA::('s,'e,'d)hierauto)
         (C::('s set))
         (E::('e set))
-        (D::'d data). Status HA C E D}"  
-by (rule exI, rule Status_EmptySet)
+        (D::'d data). Status HA C E D}"
+
+typedef (open) ('s,'e,'d) status =
+    "status :: (('s,'e,'d)hierauto * 's set * 'e set * 'd data) set"
+  unfolding status_def
+  apply (rule exI)
+  apply (rule Status_EmptySet)
+  done
 
 
 definition

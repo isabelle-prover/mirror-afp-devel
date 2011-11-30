@@ -25,12 +25,18 @@ apply (subst Abs_dataspace_inverse)
 apply auto
 done
 
-typedef ('d)data
-        = "{ (L,D) |
+definition
+  "data =
+    { (L,D) |
              (L::('d list))
              (D::('d dataspace)).
-              Data L D }" 
-by (rule exI, rule Data_EmptySet)
+              Data L D }"
+
+typedef (open) 'd data = "data :: ('d list * 'd dataspace) set"
+  unfolding data_def
+  apply (rule exI)
+  apply (rule Data_EmptySet)
+  done
 
 definition
  DataValue :: "('d data) => ('d list)" where
@@ -98,12 +104,18 @@ apply (subst Abs_dataspace_inverse)
 apply auto
 done
 
-typedef ('d)pdata
-        = "{ (L,D) |
+definition
+  "pdata =
+    { (L,D) |
              (L::('d option list))
              (D::('d dataspace)).
-              PData L D }" 
-by (rule exI, rule PData_EmptySet)
+              PData L D }"
+
+typedef (open) 'd pdata = "pdata :: ('d option list * 'd dataspace) set"
+  unfolding pdata_def
+  apply (rule exI)
+  apply (rule PData_EmptySet)
+  done
 
 definition
   PDataValue :: "('d pdata) => ('d option list)" where

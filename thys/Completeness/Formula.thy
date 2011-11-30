@@ -310,7 +310,10 @@ where inj_obj: "inj obj"
 
 subsection "model, non empty set and positive atom valuation"
 
-typedef model = "{ z :: (object set * ([predicate,object list] => bool)) . (fst z ~= {}) }" by auto
+definition "model = {z :: (object set * ([predicate,object list] => bool)). (fst z ~= {})}"
+
+typedef (open) model = model
+  unfolding model_def by auto
 
 definition
   objects :: "model => object set" where

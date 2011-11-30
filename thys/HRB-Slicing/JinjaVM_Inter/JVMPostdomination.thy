@@ -952,10 +952,14 @@ lemma Exit_reachable [simp]: "(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain
   by (rule reachable_step [where n="(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Return)"], simp)
 (fastforce intro: JVMCFG_reachable.intros)
 
-typedef cfg_wf_prog =
-  "{(P, C0, Main). (\<forall>n. JVMCFG_Interpret.valid_node P C0 Main n \<longrightarrow>
+definition
+  "cfg_wf_prog =
+    {(P, C0, Main). (\<forall>n. JVMCFG_Interpret.valid_node P C0 Main n \<longrightarrow>
          (\<exists>as. CFG.valid_path' sourcenode targetnode kind (valid_edge (P, C0, Main))
                          (get_return_edges P) n as (ClassMain P, MethodMain P, None, Return)))}"
+
+typedef (open) cfg_wf_prog = cfg_wf_prog
+  unfolding cfg_wf_prog_def
 proof
   let ?prog = "(Abs_wf_jvmprog (EP, Phi_EP), ''C'', ''M'')"
   let ?edge_main0 = "((ClassMain (fst ?prog), MethodMain (fst ?prog), None, Enter),

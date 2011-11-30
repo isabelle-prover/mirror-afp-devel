@@ -28,14 +28,21 @@ lemma Kripke_EmptySet:
    {(S,S0,R,L) | S S0 R L. Kripke S S0 R L}"
 by (unfold Kripke_def Domain_def, auto)
 
-typedef ('s,'a) kripke
-    = "{(S,S0,T,L) |
+definition
+  "kripke =
+    {(S,S0,T,L) |
         (S::('s set))
         (S0::('s set))
         (T::(('s * 's) set))
         (L::('s ~=> ('a  set))).
-                      Kripke S S0 T L}" 
-by (rule exI, rule Kripke_EmptySet)
+                      Kripke S S0 T L}"
+
+typedef (open) ('s,'a) kripke =
+    "kripke :: ('s set * 's set * ('s * 's) set * ('s ~=> 'a set)) set"
+  unfolding kripke_def
+  apply (rule exI)
+  apply (rule Kripke_EmptySet)
+  done
 
 definition
   Statuses :: "('s,'a) kripke => 's set" where

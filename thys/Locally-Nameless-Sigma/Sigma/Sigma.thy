@@ -9,8 +9,10 @@ subsection {* Infrastructure for the finite maps *}
 axiomatization max_label :: nat where
   LabelAvail: "max_label > 10"
 
-typedef Label = "{n :: nat. n \<le> max_label}"
-  by auto
+definition "Label = {n :: nat. n \<le> max_label}"
+
+typedef (open) Label = Label
+  unfolding Label_def by auto
 
 lemmas finite_Label_set = Finite_Set.finite_Collect_le_nat[of max_label]
 

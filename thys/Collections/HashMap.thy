@@ -10,7 +10,8 @@ subsection "Type definition"
 typedef (open) ('k, 'v) hashmap = "{hm :: ('k :: hashable, 'v) hm_impl. HashMap_Impl.invar hm}"
   morphisms impl_of_RBT_HM RBT_HM
 proof
-  show "HashMap_Impl.empty \<in> ?hashmap" by(simp add: HashMap_Impl.empty_correct')
+  show "HashMap_Impl.empty \<in> {hm. HashMap_Impl.invar hm}"
+    by(simp add: HashMap_Impl.empty_correct')
 qed
 
 lemma impl_of_RBT_HM_invar [simp, intro!]: "HashMap_Impl.invar (impl_of_RBT_HM hm)"

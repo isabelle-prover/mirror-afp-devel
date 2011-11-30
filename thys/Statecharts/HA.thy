@@ -82,14 +82,21 @@ apply (unfold HierAuto_def IsCompFun_def Root_def RootEx_def MutuallyDistinct_de
 apply auto
 done
 
-typedef ('s,'e,'d) hierauto
-    = "{(D,F,E,G) |
+definition
+  "hierauto =
+    {(D,F,E,G) |
         (D::'d data)
         (F::(('s,'e,'d) seqauto) set)
         (E::('e set))
         (G::('s ~=> (('s,'e,'d) seqauto) set)).
                                 HierAuto D F E G}"
-by (rule exI, rule HierAuto_EmptySet)
+
+typedef (open) ('s,'e,'d) hierauto =
+    "hierauto :: ('d data * ('s,'e,'d) seqauto set * 'e set * ('s ~=> ('s,'e,'d) seqauto set)) set"
+  unfolding hierauto_def
+  apply (rule exI)
+  apply (rule HierAuto_EmptySet)
+  done
 
 definition
   SAs :: "(('s,'e,'d) hierauto)  => (('s,'e,'d) seqauto) set" where

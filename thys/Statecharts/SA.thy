@@ -22,14 +22,21 @@ lemma SeqAuto_EmptySet:
  "({@x .True}, (@x .True), {}, {}) \<in> {(S,I,L,D) | S I L D. SeqAuto S I L D}"
 by (unfold SeqAuto_def, auto)
 
-typedef ('s,'e,'d)seqauto
-        = "{ (S,I,L,D) |
+definition
+  "seqauto =
+    { (S,I,L,D) |
               (S::'s set)
               (I::'s)
               (L::(('s,'e,'d)label) set)
               (D::(('s,'e,'d)trans) set).
              SeqAuto S I L D}"
-by (rule exI, rule SeqAuto_EmptySet)
+
+typedef (open) ('s,'e,'d) seqauto =
+    "seqauto :: ('s set * 's * (('s,'e,'d)label) set * (('s,'e,'d)trans) set) set"
+  unfolding seqauto_def
+  apply (rule exI)
+  apply (rule SeqAuto_EmptySet)
+  done
 
 definition
  States :: "(('s,'e,'d)seqauto) => 's set" where

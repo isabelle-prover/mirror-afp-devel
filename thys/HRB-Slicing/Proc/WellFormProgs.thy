@@ -312,8 +312,13 @@ qed
 
 subsection {* Type of well-formed programs *}
 
-typedef wf_prog = "{(prog,procs). wf prog procs}"
-by(rule_tac x="(Skip,[])" in exI,simp add:wf_def well_formed_def)
+definition "wf_prog = {(prog,procs). wf prog procs}"
+
+typedef (open) wf_prog = wf_prog
+  unfolding wf_prog_def
+  apply (rule_tac x="(Skip,[])" in exI)
+  apply (simp add:wf_def well_formed_def)
+  done
 
 lemma wf_wf_prog:"Rep_wf_prog wfp = (prog,procs) \<Longrightarrow> wf prog procs"
 using Rep_wf_prog[of wfp] by(simp add:wf_prog_def)

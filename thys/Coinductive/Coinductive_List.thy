@@ -119,9 +119,11 @@ qed
 
 subsection {* Abstract type definition *}
 
-typedef 'a llist = "LList (range Datatype.Leaf) :: 'a Datatype.item set"
+definition "llist = LList (range Datatype.Leaf)"
+
+typedef (open) 'a llist = "llist :: 'a Datatype.item set"
 proof
-  show "NIL \<in> ?llist" ..
+  show "NIL \<in> llist" unfolding llist_def ..
 qed
 
 lemma NIL_type: "NIL \<in> llist"

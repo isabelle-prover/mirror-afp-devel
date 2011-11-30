@@ -14,7 +14,10 @@ In preparation of the correctness proof we change the type of the contour counte
 Note that for the exact semantics, this is information is not used in any way and it would have been possible to just use natural numbers again. This is reflected by the preorder instance for the contours which only look at the length of the list, but not the entries.
 *}
 
-typedef contour = "UNIV::label list set" by auto
+definition "contour = (UNIV::label list set)"
+
+typedef (open) contour = contour
+  unfolding contour_def by auto
 
 definition initial_contour ("\<binit>")
   where "\<binit> = Abs_contour []"

@@ -17,12 +17,19 @@ Isabelle expects us to prove that the type is not empty, which we do by an examp
 
 *}
 
-typedef triangle = "{ l . l \<in> lists angles \<and> 
+definition
+  "triangle =
+    { l . l \<in> lists angles \<and> 
                     length l = 3 \<and>
                     listsum l = 180 \<and>
                     sorted l
                     }"
-by (rule exI[of _ "[45,45,90]"], auto)
+
+typedef (open) triangle = triangle
+  unfolding triangle_def
+  apply (rule_tac x = "[45,45,90]" in exI)
+  apply auto
+  done
 
 text {* For convenience, the following lemma gives us easy access to the three angles
 of a triangle and their properties. *}

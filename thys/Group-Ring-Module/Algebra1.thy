@@ -1973,7 +1973,11 @@ definition
                                then ((fst x)*(fst y), 0) else (0, -1)))
             else (if 0 < (snd x)*(snd y) then (0, 1) else (0, -1)))" 
 
-typedef (Ainteg) ant = "zag"
+definition "Ainteg = zag"
+
+typedef (open) ant = Ainteg
+  morphisms Rep_Ainteg Abs_Ainteg
+  unfolding Ainteg_def
 proof
   show "(1, 0) \<in> zag" unfolding zag_def by auto
 qed

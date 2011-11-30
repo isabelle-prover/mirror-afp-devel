@@ -12,10 +12,12 @@ subsection {* Type definitions *}
 
 subsubsection {* Wellformed Programs *}
 
-typedef wf_jvmprog = "{(P, Phi). wf_jvm_prog\<^bsub>Phi\<^esub> P}"
+definition "wf_jvmprog = {(P, Phi). wf_jvm_prog\<^bsub>Phi\<^esub> P}"
+
+typedef (open) wf_jvmprog = "wf_jvmprog"
 proof
-  show "(E, Phi) \<in> {(P, Phi). wf_jvm_prog\<^bsub>Phi\<^esub> P}"
-    by (auto intro: wf_prog)
+  show "(E, Phi) \<in> wf_jvmprog"
+    unfolding wf_jvmprog_def by (auto intro: wf_prog)
 qed
 
 hide_const Phi E

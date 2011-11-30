@@ -84,13 +84,17 @@ all stored values are of the correct type (i.e.~of the type of the location
 they are stored in).
 *}
 
-typedef Store = "{s. (\<forall> l. aliveImpl (vals s l) s) \<and> 
+definition "Store = {s. (\<forall> l. aliveImpl (vals s l) s) \<and> 
                   (\<forall> l. \<not> aliveImpl (ref l) s \<longrightarrow> vals s l = init (ltype l)) \<and>
                   (\<forall> l. typeof (vals s l) \<le> ltype l)}"
-  by (rule exI [where ?x="\<lparr> newOID = (\<lambda>C. 0),
+
+typedef (open) Store = Store
+  unfolding Store_def
+  apply (rule exI [where ?x="\<lparr> newOID = (\<lambda>C. 0),
                           newAID = (\<lambda>T. 0),
                           vals = (\<lambda>l. init (ltype l)) \<rparr>"])
-(auto simp add: aliveImpl_def init_def NullT_leaf_array split: Javatype.splits)
+  apply (auto simp add: aliveImpl_def init_def NullT_leaf_array split: Javatype.splits)
+  done
 
 text {* One might also model the Store as axiomatic type class and prove that the type StoreImpl belongs
 to this type class. This way, a clearer separation between the axiomatic description of the store and its

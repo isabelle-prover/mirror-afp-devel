@@ -30,9 +30,13 @@ notation
   and sup (infixl "\<squnion>" 65)
 
 
-typedef ('a::order) MonoTran = "{f::'a \<Rightarrow> 'a . mono f}"
+definition "MonoTran = {f::'a::order \<Rightarrow> 'a . mono f}"
+
+typedef (open) ('a::order) MonoTran = "MonoTran :: ('a => 'a) set"
+  unfolding MonoTran_def
   apply (rule_tac x = id in exI)
-  by (simp add: mono_def)
+  apply (simp add: mono_def)
+  done
 
 lemma [simp]: "Rep_MonoTran x \<in> MonoTran"
   by (rule Rep_MonoTran)

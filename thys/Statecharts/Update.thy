@@ -19,11 +19,14 @@ lemma Update_EmptySet:
  "(% d. d) \<in> { L | L. Update L}"; 
 by (unfold Update_def, auto)
 
+definition
+  "update = { L | (L::(('d data) => ('d data))). Update L}"
 
-typedef ('d)update
-        = "{ L | (L::(('d data) => ('d data))).
-                  Update L}" 
-by (rule exI, rule Update_EmptySet)
+typedef (open) 'd update = "update :: ('d data => 'd data) set"
+  unfolding update_def
+  apply (rule exI)
+  apply (rule Update_EmptySet)
+  done
  
 definition
  UpdateApply :: "['d update, 'd data] => 'd data" ("(_ !!!/ _)" [10,11]10) where
@@ -73,10 +76,13 @@ lemma PUpdate_EmptySet:
  "(% d. Data2PData d) \<in> { L | L. PUpdate L}"; 
 by (unfold PUpdate_def, auto)
 
-typedef ('d)pupdate
-        = "{ L | (L::(('d data) => ('d pdata))).
-                  PUpdate L}" 
-by (rule exI, rule PUpdate_EmptySet)
+definition "pupdate = { L | (L::(('d data) => ('d pdata))). PUpdate L}"
+
+typedef (open) 'd pupdate = "pupdate :: ('d data => 'd pdata) set" 
+  unfolding pupdate_def
+  apply (rule exI)
+  apply (rule PUpdate_EmptySet)
+  done
  
 definition
  PUpdateApply :: "['d pupdate, 'd data] => 'd pdata" ("(_ !!/ _)" [10,11]10) where
