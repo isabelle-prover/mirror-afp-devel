@@ -7,7 +7,7 @@
 header {* Location *}
 
 theory Location
-imports AttributesIndep Value
+imports AttributesIndep "../Isabelle/Value"
 begin 
 
 text {* A storage location can be a field of an object, a static field,
