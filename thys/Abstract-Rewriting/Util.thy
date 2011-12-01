@@ -1537,62 +1537,6 @@ proof -
   qed
 qed
 
-subsection {* map for option monad *}
-fun mapM :: "('a \<Rightarrow> 'b option) \<Rightarrow> 'a list \<Rightarrow> 'b list option"
-  where "mapM f [] = Some []"
-      | "mapM f (x # xs) = do { y \<leftarrow> f x; ys \<leftarrow> mapM f xs; Some (y # ys)}"
-
-lemma mapM_None: "(mapM f xs = None) = (\<exists> x \<in> set xs. f x = None)" 
-proof (induct xs)
-  case (Cons x xs) thus ?case 
-    by (cases "f x", simp, cases "mapM f xs", auto)
-qed simp
-
-lemma mapM_Some: "mapM f xs = Some ys \<Longrightarrow> ys = map (\<lambda> x. the (f x)) xs \<and> (\<forall> x \<in> set xs. f x \<noteq> None)"
-proof (induct xs arbitrary: ys)
-  case (Cons x xs ys)   
-  thus ?case 
-    by (cases "f x", simp, cases "mapM f xs", auto)
-qed simp
-
-lemma mapM_Some_idx: assumes some: "mapM f xs = Some ys" and i: "i < length xs" 
-  shows "\<exists> y. f (xs ! i) = Some y \<and> ys ! i = y"
-proof -
-  note m =  mapM_Some[OF some]
-  from m[unfolded set_conv_nth] i have "f (xs ! i) \<noteq> None" by auto
-  then obtain y where f: "f (xs ! i) = Some y" by auto
-  have "f (xs ! i) = Some y \<and> ys ! i = y" unfolding m[THEN conjunct1] using i f by auto
-  thus ?thesis ..
-qed
-
-
-lemma mapM_cong[fundef_cong]: assumes id1: "xs = ys" and id2: "\<And> x. x \<in> set ys \<Longrightarrow> f x = g x"
-  shows "mapM f xs = mapM g ys" unfolding id1
-  using id2 by (induct ys, auto)
-
-lemma mapM_map: "mapM f xs = (if (\<forall> x \<in> set xs. f x \<noteq> None) then Some (map (\<lambda> x. the (f x)) xs) else None)"
-proof (cases "mapM f xs")
-  case None
-  thus ?thesis using mapM_None by auto
-next
-  case (Some ys)
-  with mapM_Some[OF Some] show ?thesis by auto
-qed
-
-
-lemma mapM_mono[partial_function_mono]: fixes C :: "'a \<Rightarrow> ('b \<Rightarrow> 'c option) \<Rightarrow> 'd option"
-  assumes C: "\<And> y. mono_option (C y)"
-  shows "mono_option (\<lambda> f. mapM (\<lambda> y. C y f) B)" 
-proof (induct B)
-  case Nil
-  show ?case unfolding mapM.simps 
-    by (rule option.const_mono)
-next
-  case (Cons b B)
-  show ?case unfolding mapM.simps
-    by (rule bind_mono[OF C bind_mono[OF Cons option.const_mono]])
-qed
-
 
 subsection {* Miscellaneous *}
 
