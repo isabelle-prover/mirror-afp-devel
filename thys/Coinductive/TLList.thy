@@ -462,7 +462,7 @@ no_notation scomp (infixl "o\<rightarrow>" 60)
 
 instantiation tllist :: (full_exhaustive, full_exhaustive) full_exhaustive begin
 fun full_exhaustive_tllist 
-  ::"(('a, 'b) tllist \<times> (unit \<Rightarrow> term) \<Rightarrow> term list option) \<Rightarrow> code_numeral \<Rightarrow> term list option"
+  ::"(('a, 'b) tllist \<times> (unit \<Rightarrow> term) \<Rightarrow> (bool \<times> term list) option) \<Rightarrow> code_numeral \<Rightarrow> (bool \<times> term list) option"
 where
   "full_exhaustive_tllist f i =
    (let A = Typerep.typerep TYPE('a);
