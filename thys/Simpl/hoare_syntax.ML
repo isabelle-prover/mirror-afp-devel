@@ -1588,8 +1588,8 @@ local
   fun guard_tr' fg =
     let val (flag, g) = HOLogic.dest_prod fg
     in
-      if flag = HOLogic.true_const then Syntax.const @{syntax_const "_guarantee"} $ g
-      else if flag = HOLogic.false_const then g
+      if flag aconv @{term True} then Syntax.const @{syntax_const "_guarantee"} $ g
+      else if flag aconv @{term False} then g
       else fg
     end handle TERM _ => fg;
 

@@ -1618,7 +1618,7 @@ fun fold_com f t =
 fun mark_proven_guards proven t =
   let
     fun mark_grd cnt idx =
-         if proven (cnt + idx) then (K (SOME HOLogic.true_const)) else (fn f => SOME f)
+         if proven (cnt + idx) then (K (SOME @{term True})) else (fn f => SOME f)
     fun mark cnt (c as Const (@{const_name Language.com.Skip},_)) [] [] = c
       | mark cnt (c as Const (@{const_name Language.com.Basic},_)) [g] [] = list_comb (c,[g])
       | mark cnt (c as Const (@{const_name Language.com.Spec},_)) [r] [] = list_comb (c,[r])
