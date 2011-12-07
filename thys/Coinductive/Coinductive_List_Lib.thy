@@ -4306,7 +4306,7 @@ proof(induct n arbitrary: xss)
   moreover have "enat 0 < llength (lnth xss (length xss'))"
     by(simp add: zero_enat_def[symmetric])
   moreover have "enat (length xss') < llength xss" unfolding xss 
-    by simp (metis add_commute eSuc_plus iless_Suc_eq enat_le_plus_same(2))
+    by simp
   moreover have "(\<Sum>i < length xss'. llength (lnth xss i)) = (\<Sum>i < length xss'. 0)"
   proof(rule setsum_cong)
     show "{..< length xss'} = {..< length xss'}" by simp
@@ -4364,17 +4364,16 @@ next
     moreover have "enat n' < llength (lnth xss (m + length xss'))"
       using concat_xss' n' unfolding xss by(simp add: lnth_lappend2)
     moreover have "enat (m + length xss') < llength xss"
-      using concat_xss' m' unfolding xss apply(simp add: Suc_ile_eq)
-      apply(simp add: eSuc_enat[symmetric] plus_enat_simps(1)[symmetric] del: plus_enat_simps(1))
-      apply(simp add: eSuc_plus_1 one_enat_def del: plus_enat_simps(1))
-      apply(metis add_commute add_assoc enat_add_mono)
+      using concat_xss' m' unfolding xss
+      apply (simp add: Suc_ile_eq)
+      apply (simp add: eSuc_enat[symmetric] eSuc_plus_1
+        plus_enat_simps(1)[symmetric] del: plus_enat_simps(1))
       done
     moreover have "enat (m + length xss') < llength xss"
       using m' unfolding xss
       apply(simp add: Suc_ile_eq)
-      apply(simp add: eSuc_enat[symmetric] plus_enat_simps(1)[symmetric] del: plus_enat_simps(1))
-      apply(simp add: eSuc_plus_1 one_enat_def del: plus_enat_simps(1))
-      apply(metis add_commute add_assoc enat_add_mono)
+      apply (simp add: eSuc_enat[symmetric] eSuc_plus_1
+        plus_enat_simps(1)[symmetric] del: plus_enat_simps(1))
       done
     moreover
     { have "(\<Sum>i < m + length xss'. llength (lnth xss i)) =
@@ -4413,7 +4412,7 @@ next
     moreover have "enat (Suc n') < llength (lnth xss (length xss'))"
       using concat_xss n' unfolding xss by(simp add: lnth_lappend2 Suc_ile_eq)
     moreover have "enat (length xss') < llength xss" unfolding xss 
-      by simp (metis add_ac(1) iless_Suc_eq enat_le_plus_same(1) plus_1_eSuc(2))
+      by simp
     moreover from lnth_prefix have "(\<Sum>i<length xss'. llength (lnth xss i)) = 0" by simp
     hence "enat (Suc n) = (\<Sum>i<length xss'. llength (lnth xss i)) + enat (Suc n')"
       using n_eq by simp
