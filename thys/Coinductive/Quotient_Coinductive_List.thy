@@ -22,10 +22,10 @@ lemma id_preserve [quot_preserve]:
   shows "(Rep ---> Abs) id = id"
   using Quotient_abs_rep [OF assms] by (simp add: fun_eq_iff)
 
-;enriched_type lmap: lmap
+enriched_type lmap: lmap
    by (simp_all add: fun_eq_iff id_def)
 
-declare [[map llist = (lmap, llist_all2)]]
+declare [[map llist = llist_all2]]
 
 lemma reflp_llist_all2: "reflp R \<Longrightarrow> reflp (llist_all2 R)"
   by (auto intro!: reflpI elim: reflpE simp add: llist_all2_conv_all_lnth)
