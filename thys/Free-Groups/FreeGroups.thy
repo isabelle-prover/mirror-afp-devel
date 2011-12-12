@@ -230,11 +230,11 @@ text {* Free Groups are important due to their universal property: Every map of
 the set of generators to another group can be extended uniquely to an
 homomorphism from the Free Group. *}
 
-definition insert
-  where "insert g = [(False, g)]"
+definition insert ("\<iota>")
+  where "\<iota> g = [(False, g)]"
 
 lemma insert_closed:
-  "g \<in> gens \<Longrightarrow> insert g \<in> carrier \<F>\<^bsub>gens\<^esub>"
+  "g \<in> gens \<Longrightarrow> \<iota> g \<in> carrier \<F>\<^bsub>gens\<^esub>"
   by (auto simp add:insert_def free_group_def)
 
 definition (in group) lift_gi
@@ -248,6 +248,9 @@ using assms by (auto simp add:lift_gi_def)
 
 definition (in group) lift
   where "lift f w = m_concat (map (lift_gi f) w)"
+
+lemma (in group) lift_nil[simp]: "lift f [] = \<one>"
+ by (auto simp add:lift_def)
 
 lemma (in group) lift_closed[simp]:
   assumes cl: "f \<in> gens \<rightarrow> carrier G"
@@ -370,63 +373,63 @@ proof-
 qed
 
 lemma gens_span_free_group:
-shows "\<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub> = carrier \<F>\<^bsub>gens\<^esub>"
+shows "\<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub> = carrier \<F>\<^bsub>gens\<^esub>"
 proof
   interpret group "\<F>\<^bsub>gens\<^esub>" by (rule free_group_is_group)
-  show "\<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub> \<subseteq> carrier \<F>\<^bsub>gens\<^esub>"
+  show "\<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub> \<subseteq> carrier \<F>\<^bsub>gens\<^esub>"
   by(rule gen_span_closed, auto simp add:insert_def free_group_def)
 
-  show "carrier \<F>\<^bsub>gens\<^esub>  \<subseteq> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+  show "carrier \<F>\<^bsub>gens\<^esub>  \<subseteq> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
   proof
     fix x
-    show "x \<in> carrier \<F>\<^bsub>gens\<^esub> \<Longrightarrow> x \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+    show "x \<in> carrier \<F>\<^bsub>gens\<^esub> \<Longrightarrow> x \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
     proof(induct x)
     case Nil
-      have "one \<F>\<^bsub>gens\<^esub> \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+      have "one \<F>\<^bsub>gens\<^esub> \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
         by simp
-      thus "[] \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+      thus "[] \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
         by (simp add:free_group_def)
     next
     case (Cons a x)
       from `a # x \<in> carrier \<F>\<^bsub>gens\<^esub>`
       have "x \<in> carrier \<F>\<^bsub>gens\<^esub>"
         by (auto intro:cons_canceled simp add:free_group_def)
-      hence "x \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+      hence "x \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
         using Cons by simp
       moreover
 
       from `a # x \<in> carrier \<F>\<^bsub>gens\<^esub>`
       have "snd a \<in> gens"
         by (auto simp add:free_group_def)
-      hence isa: "insert (snd a) \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+      hence isa: "\<iota> (snd a) \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
         by (auto simp add:insert_def intro:gen_gens)
-      have "[a] \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+      have "[a] \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
       proof(cases "fst a")
         case False
-          hence "[a] = insert (snd a)" by (cases a, auto simp add:insert_def)
-           with isa show "[a] \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>" by simp
+          hence "[a] = \<iota> (snd a)" by (cases a, auto simp add:insert_def)
+           with isa show "[a] \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>" by simp
        next
         case True
           from `snd a \<in> gens`
-          have "insert (snd a) \<in> carrier \<F>\<^bsub>gens\<^esub>" 
+          have "\<iota> (snd a) \<in> carrier \<F>\<^bsub>gens\<^esub>" 
             by (auto simp add:free_group_def insert_def)
           with True
-          have "[a] = inv\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub> (insert (snd a))"
+          have "[a] = inv\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub> (\<iota> (snd a))"
             by (cases a, auto simp add:insert_def inv_fg_def inv1_def)
           moreover
           from isa
-          have "inv\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub> (insert (snd a)) \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+          have "inv\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub> (\<iota> (snd a)) \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
             by (auto intro:gen_inv)
           ultimately
-          show "[a] \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+          show "[a] \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
             by simp
       qed
       ultimately 
-      have "mult \<F>\<^bsub>gens\<^esub> [a] x \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
+      have "mult \<F>\<^bsub>gens\<^esub> [a] x \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
         by (auto intro:gen_mult)
       with
       `a # x \<in> carrier \<F>\<^bsub>gens\<^esub>`
-      show "a # x \<in> \<langle>insert ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>" by (simp add:free_group_def)
+      show "a # x \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>" by (simp add:free_group_def)
     qed
   qed
 qed
@@ -435,7 +438,7 @@ lemma (in group) lift_is_unique:
   assumes "group G"
   and cl: "f \<in> gens \<rightarrow> carrier G"
   and "h \<in> hom \<F>\<^bsub>gens\<^esub> G"
-  and "\<forall> g \<in> gens. h (insert g) = f g"
+  and "\<forall> g \<in> gens. h (\<iota> g) = f g"
   shows "\<forall>x \<in> carrier \<F>\<^bsub>gens\<^esub>. h x = lift f x"
 unfolding gens_span_free_group[THEN sym]
 proof(rule hom_unique_on_span[of "\<F>\<^bsub>gens\<^esub>" G])
@@ -443,15 +446,15 @@ proof(rule hom_unique_on_span[of "\<F>\<^bsub>gens\<^esub>" G])
 next
   show "group G" by fact
 next
-  show "insert ` gens \<subseteq> carrier \<F>\<^bsub>gens\<^esub>"
+  show "\<iota> ` gens \<subseteq> carrier \<F>\<^bsub>gens\<^esub>"
     by(auto intro:insert_closed)
 next
   show "h \<in> hom \<F>\<^bsub>gens\<^esub> G" by fact
 next
   show "lift f \<in> hom \<F>\<^bsub>gens\<^esub> G" by (rule lift_is_hom[OF cl])
 next
-  from `\<forall>g\<in> gens. h (insert g) = f g` and cl[THEN funcset_image]
-  show "\<forall>g\<in> insert ` gens. h g = lift f g"
+  from `\<forall>g\<in> gens. h (\<iota> g) = f g` and cl[THEN funcset_image]
+  show "\<forall>g\<in> \<iota> ` gens. h g = lift f g"
     by(auto simp add:insert_def lift_def lift_gi_def)
 qed
 

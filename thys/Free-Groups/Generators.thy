@@ -245,6 +245,20 @@ proof(rule ballI, rule ballI, rule impI)
     by(auto dest: G.inv_equality)
 qed
 
+lemma (in group_hom) group_hom_isoI:
+  assumes inj1: "\<forall>x\<in>carrier G. h x = \<one>\<^bsub>H\<^esub> \<longrightarrow> x = \<one>\<^bsub>G\<^esub>"
+      and surj: "h ` (carrier G) = carrier H"
+  shows "h \<in> G \<cong> H"
+proof-
+  from inj1
+  have "inj_on h (carrier G)" 
+    by(auto intro: hom_injI)
+  hence bij: "bij_betw h (carrier G) (carrier H)"
+    using surj  unfolding bij_betw_def by auto
+  thus "h \<in> G \<cong> H"
+    unfolding iso_def by auto
+qed
+
 lemma group_isoI[intro]:
   assumes G: "group G"
       and H: "group H"
@@ -256,21 +270,9 @@ proof-
   from surj
   have "h \<in> carrier G \<rightarrow> carrier H"
     by auto
-  with hom have "h \<in> hom G H"
-    unfolding hom_def by auto
-  then interpret group_hom G H h using G and H 
+  then interpret group_hom G H h using G and H and hom
     by (auto intro!: group_hom.intro group_hom_axioms.intro)
-  
-  from inj1
-  have "inj_on h (carrier G)" 
-    by(auto intro: hom_injI)
-  hence bij: "bij_betw h (carrier G) (carrier H)"
-    using surj  unfolding bij_betw_def by auto
-  thus "h \<in> G \<cong> H"
-    using `h \<in> hom G H`
-    unfolding iso_def by auto
+  show ?thesis
+  using assms unfolding hom_def by (auto intro: group_hom_isoI)
 qed
-
-
 end
-

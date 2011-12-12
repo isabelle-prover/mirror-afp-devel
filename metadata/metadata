@@ -769,6 +769,9 @@ abstract =
  the set of fully canceled words in the generators. The universal property is
  proven, as well as some isomorphisms results about Free Groups.
 depends-on = Ordinals_and_Cardinals
+extra-history =
+ Change history:
+ [2011-12-11]: Added the Ping Pong Lemma.
 
 [CofGroups]
 title = An Example of a Cofinitary Group in Isabelle/HOL
