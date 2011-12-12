@@ -47,8 +47,9 @@ This is a library of constructions on regular expressions and languages. It prov
 
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
-        [2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions
-        </td></tr> 
+
+[2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions
+        </td></tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>

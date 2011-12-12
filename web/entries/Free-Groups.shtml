@@ -49,6 +49,12 @@ the set of fully canceled words in the generators. The universal property is
 proven, as well as some isomorphisms results about Free Groups.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2011-12-11]: Added the Ping Pong Lemma.
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
