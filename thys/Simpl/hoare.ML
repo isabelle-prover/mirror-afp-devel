@@ -1091,14 +1091,24 @@ fun add_locale_cmd name expr elems thy =
   |> snd
   |> Local_Theory.exit;
 
-fun add_variable_statespaces prep_typ (cname,pars as (inpars,outpars,locvars)) thy =
+fun read_typ thy raw_T env =
+  let
+    val ctxt' =
+      Proof_Context.init_global thy
+      |> fold (Variable.declare_typ o TFree) env;
+    val T = Syntax.read_typ ctxt' raw_T;
+    val env' = Term.add_tfreesT T env;
+  in (T, env') end;
+
+fun add_variable_statespaces (cname,pars as (inpars,outpars,locvars)) thy =
   let
     val inpars'  = if forall (fn (_,T) => T = "") inpars then [] else inpars;
     val outpars' = if forall (fn (_,T) => T = "") outpars then [] else outpars;
-    fun prep_comp (n,T) env =
-      let val (T', env') = prep_typ (Proof_Context.init_global thy) T env handle ERROR msg =>
-       cat_error msg ("The error(s) above occured in component " ^ quote n)
-      in ((n,T'), env') end;
+    fun prep_comp (n, T) env =
+      let
+        val (T', env') = read_typ thy T env handle ERROR msg =>
+          cat_error msg ("The error(s) above occured in component " ^ quote n)
+      in ((n, T'), env') end;
 
     val (in_outs,in_out_env) = fold_map prep_comp (distinct (op =) (inpars'@outpars')) [];
     val (locs,var_env) = fold_map prep_comp locvars in_out_env;
@@ -1450,7 +1460,7 @@ fun procedures_definition locname procs thy =
 
   in
     thy
-    |> fold (add_variable_statespaces Record.read_typ o clique_vars) cliques
+    |> fold (add_variable_statespaces o clique_vars) cliques
     |> fold (fn c => fold (fn n => add_signature_locale (lname "" c, n)) c) cliques
     |> fold add_body_locale name_pars
     |> fold add_impl_locales cliques
