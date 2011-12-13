@@ -444,8 +444,11 @@ where
    Quickcheck.collapse (Random.select_weight
      [(Suc_code_numeral i, Quickcheck.random j o\<rightarrow> (\<lambda>x. random_aux_tllist i j o\<rightarrow> (\<lambda>xs. Pair (valtermify_TCons x xs)))),
       (1, Quickcheck.random j o\<rightarrow> (\<lambda>b. Pair (valtermify_TNil b)))])"
+
 definition "Quickcheck.random i = random_aux_tllist i i"
+
 instance ..
+
 end
 
 lemma random_aux_tllist_code [code]:
@@ -461,6 +464,7 @@ no_notation fcomp (infixl "o>" 60)
 no_notation scomp (infixl "o\<rightarrow>" 60)
 
 instantiation tllist :: (full_exhaustive, full_exhaustive) full_exhaustive begin
+
 fun full_exhaustive_tllist 
   ::"(('a, 'b) tllist \<times> (unit \<Rightarrow> term) \<Rightarrow> (bool \<times> term list) option) \<Rightarrow> code_numeral \<Rightarrow> (bool \<times> term list) option"
 where
@@ -471,18 +475,20 @@ where
         fun = \<lambda>A B. Typerep.Typerep (STR ''fun'') [A, B]
     in
       if 0 < i then 
-        case full_exhaustive (\<lambda>(b, bt). f (TNil b, \<lambda>_. Code_Evaluation.App 
+        case Quickcheck_Exhaustive.full_exhaustive (\<lambda>(b, bt). f (TNil b, \<lambda>_. Code_Evaluation.App 
           (Code_Evaluation.Const (STR ''TLList.TNil'') (fun B (Tllist A B)))
           (bt ()))) (i - 1)
         of None \<Rightarrow> 
-            full_exhaustive (\<lambda>(x, xt). full_exhaustive_tllist (\<lambda>(xs, xst). 
+            Quickcheck_Exhaustive.full_exhaustive (\<lambda>(x, xt). full_exhaustive_tllist (\<lambda>(xs, xst). 
               f (TCons x xs, \<lambda>_. Code_Evaluation.App (Code_Evaluation.App 
                    (Code_Evaluation.Const (STR ''TLList.TCons'') (fun A (fun (Tllist A B) (Tllist A B))))
                    (xt ())) (xst ())))
               (i - 1)) (i - 1)
         | Some ts \<Rightarrow> Some ts
       else None)"
+
 instance ..
+
 end
 
 subsection {* From a lazy list to a terminated lazy list @{term tllist_of_llist } *}
