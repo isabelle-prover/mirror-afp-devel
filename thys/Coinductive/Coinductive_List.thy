@@ -923,7 +923,7 @@ where
       if 0 < i then 
         case f (LNil, \<lambda>_. Code_Evaluation.Const (STR ''Coinductive_List.LNil'') (Llist A))
           of None \<Rightarrow> 
-            full_exhaustive (\<lambda>(x, xt). full_exhaustive_llist (\<lambda>(xs, xst). 
+            Quickcheck_Exhaustive.full_exhaustive (\<lambda>(x, xt). full_exhaustive_llist (\<lambda>(xs, xst). 
               f (LCons x xs, \<lambda>_. Code_Evaluation.App (Code_Evaluation.App 
                    (Code_Evaluation.Const (STR ''Coinductive_List.LCons'') (fun A (fun (Llist A) (Llist A))))
                    (xt ())) (xst ())))

@@ -471,11 +471,11 @@ where
         fun = \<lambda>A B. Typerep.Typerep (STR ''fun'') [A, B]
     in
       if 0 < i then 
-        case full_exhaustive (\<lambda>(b, bt). f (TNil b, \<lambda>_. Code_Evaluation.App 
+        case Quickcheck_Exhaustive.full_exhaustive (\<lambda>(b, bt). f (TNil b, \<lambda>_. Code_Evaluation.App 
           (Code_Evaluation.Const (STR ''TLList.TNil'') (fun B (Tllist A B)))
           (bt ()))) (i - 1)
         of None \<Rightarrow> 
-            full_exhaustive (\<lambda>(x, xt). full_exhaustive_tllist (\<lambda>(xs, xst). 
+            Quickcheck_Exhaustive.full_exhaustive (\<lambda>(x, xt). full_exhaustive_tllist (\<lambda>(xs, xst). 
               f (TCons x xs, \<lambda>_. Code_Evaluation.App (Code_Evaluation.App 
                    (Code_Evaluation.Const (STR ''TLList.TCons'') (fun A (fun (Tllist A B) (Tllist A B))))
                    (xt ())) (xst ())))
