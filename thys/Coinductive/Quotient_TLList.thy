@@ -12,7 +12,7 @@ begin
 enriched_type tmap: tmap
    by (simp_all add: fun_eq_iff tmap_id_id)
 
-declare [[map tllist = (tmap, tllist_all2)]]
+declare [[map tllist = tllist_all2]]
 
 lemma tmap_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
