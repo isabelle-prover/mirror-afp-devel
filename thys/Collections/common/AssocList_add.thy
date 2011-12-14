@@ -1,8 +1,8 @@
 theory AssocList_add imports
-  "~~/src/HOL/Library/AList"
+  "~~/src/HOL/Library/AList_Impl"
 begin
 
-text {* @{term map_ran} with more general type - lemmas replicated from AList in HOL/Library *}
+text {* @{term map_ran} with more general type - lemmas replicated from AList_Impl in HOL/Library *}
 
 hide_const (open) map_ran
 

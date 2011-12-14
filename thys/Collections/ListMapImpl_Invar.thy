@@ -22,7 +22,7 @@ definition "lmi_\<alpha> == Map.map_of"
 definition "lmi_invar m == distinct (List.map fst m)"
 definition "lmi_empty == []"
 definition "lmi_lookup k m == Map.map_of m k"
-definition "lmi_update == AList.update"
+definition "lmi_update == AList_Impl.update"
 definition "lmi_update_dj k v m == (k, v) # m"  
 definition "lmi_delete k m == Assoc_List.delete_aux k m"
 definition lmi_iteratei :: "(('k,'v) lmi,'k,'v,'\<sigma>) map_iteratori"
@@ -66,7 +66,7 @@ lemma lmi_empty_impl:
   "map_empty lmi_\<alpha> lmi_invar lmi_empty"
   apply (unfold_locales)
   apply (auto 
-    simp add: lmi_defs AList.update_conv' AList.distinct_update)
+    simp add: lmi_defs AList_Impl.update_conv' AList_Impl.distinct_update)
   done
 
 interpretation lmi: map_empty lmi_\<alpha> lmi_invar lmi_empty using lmi_empty_impl .
@@ -75,7 +75,7 @@ lemma lmi_lookup_impl:
   "map_lookup lmi_\<alpha> lmi_invar lmi_lookup"
   apply (unfold_locales)
   apply (auto 
-    simp add: lmi_defs AList.update_conv' AList.distinct_update)
+    simp add: lmi_defs AList_Impl.update_conv' AList_Impl.distinct_update)
   done
 
 interpretation lmi: map_lookup lmi_\<alpha> lmi_invar lmi_lookup using lmi_lookup_impl .
@@ -84,7 +84,7 @@ lemma lmi_update_impl:
   "map_update lmi_\<alpha> lmi_invar lmi_update"
   apply (unfold_locales)
   apply (auto 
-    simp add: lmi_defs AList.update_conv' AList.distinct_update)
+    simp add: lmi_defs AList_Impl.update_conv' AList_Impl.distinct_update)
   done
 
 interpretation lmi: map_update lmi_\<alpha> lmi_invar lmi_update using lmi_update_impl .
@@ -100,7 +100,7 @@ interpretation lmi: map_update_dj lmi_\<alpha> lmi_invar lmi_update_dj using lmi
 lemma lmi_delete_impl: 
   "map_delete lmi_\<alpha> lmi_invar lmi_delete"
   apply (unfold_locales)
-  apply (auto simp add: lmi_defs AList.update_conv' AList.distinct_update
+  apply (auto simp add: lmi_defs AList_Impl.update_conv' AList_Impl.distinct_update
                         Assoc_List.map_of_delete_aux')
   done
 

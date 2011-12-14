@@ -10,7 +10,7 @@ header {*Perfect Recall in Broadcast Environments with Deterministic Protocols*}
 theory SPRViewDet
 imports
   KBPsAlg List_local ODList
-  Mapping AList Trie
+  Mapping AList_Impl Trie
 begin
 
 

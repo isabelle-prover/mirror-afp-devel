@@ -7,7 +7,7 @@
 
 theory SPRViewSingle
 imports KBPsAlg List_local ODList
-  "~~/src/HOL/Library/Mapping" "~~/src/HOL/Library/AList" Trie
+  "~~/src/HOL/Library/Mapping" "~~/src/HOL/Library/AList_Impl" Trie
 begin
 
 
