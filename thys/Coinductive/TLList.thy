@@ -756,6 +756,24 @@ lemma tllist_all2_mono:
   \<Longrightarrow> tllist_all2 P' Q' xs ys"
 by descending(auto elim!: llist_all2_mono)
 
+lemma tllist_all2_tlengthD: "tllist_all2 P Q xs ys \<Longrightarrow> tlength xs = tlength ys"
+by(descending)(auto dest: llist_all2_llengthD)
+
+lemma tllist_all2_tfiniteD: "tllist_all2 P Q xs ys \<Longrightarrow> tfinite xs = tfinite ys"
+by(descending)(auto dest: llist_all2_lfiniteD)
+
+lemma tllist_all2_tfinite1_terminalD:
+  "\<lbrakk> tllist_all2 P Q xs ys; tfinite xs \<rbrakk> \<Longrightarrow> Q (terminal xs) (terminal ys)"
+by(frule tllist_all2_tfiniteD)(descending, auto)
+
+lemma tllist_all2_tfinite2_terminalD:
+  "\<lbrakk> tllist_all2 P Q xs ys; tfinite ys \<rbrakk> \<Longrightarrow> Q (terminal xs) (terminal ys)"
+by(metis tllist_all2_tfinite1_terminalD tllist_all2_tfiniteD)
+
+lemma tllist_all2D_llist_all2_llist_of_tllist:
+  "tllist_all2 P Q xs ys \<Longrightarrow> llist_all2 P (llist_of_tllist xs) (llist_of_tllist ys)"
+by(descending) auto
+
 lemma tllist_all2_code [code]:
   "tllist_all2 P Q (TNil b) (TNil b') \<longleftrightarrow> Q b b'"
   "tllist_all2 P Q (TNil b) (TCons y ys) \<longleftrightarrow> False"

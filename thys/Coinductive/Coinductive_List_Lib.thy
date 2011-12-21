@@ -1081,6 +1081,10 @@ next
     by(cases xs)(auto simp add: eSuc_def zero_enat_def split: enat.split_asm)
 qed
 
+lemma lnth_lappend:
+  "lnth (lappend xs ys) n = (if enat n < llength xs then lnth xs n else lnth ys (n - the_enat (llength xs)))"
+by(cases "llength xs")(auto simp add: lnth_lappend1 lnth_lappend2)
+
 lemma lnth_ltake:
   "enat m < n \<Longrightarrow> lnth (ltake n xs) m = lnth xs m"
 proof(induct m arbitrary: xs n)
