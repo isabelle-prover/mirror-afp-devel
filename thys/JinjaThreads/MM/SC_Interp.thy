@@ -17,11 +17,11 @@ text {*
 *}
 
 lemma sc_J_typesafe:
-  "J_typesafe addr2thread_id thread_id2addr sc_empty (sc_new_obj P) (sc_new_arr P) sc_typeof_addr sc_array_length sc_heap_read sc_heap_write (sc_hconf P) P"
+  "J_typesafe addr2thread_id thread_id2addr sc_empty (sc_allocate P) sc_typeof_addr sc_heap_read sc_heap_write (sc_hconf P) P"
 by unfold_locales
 
 lemma sc_JVM_typesafe:
-  "JVM_typesafe addr2thread_id thread_id2addr sc_empty (sc_new_obj P) (sc_new_arr P) sc_typeof_addr sc_array_length sc_heap_read sc_heap_write (sc_hconf P) P"
+  "JVM_typesafe addr2thread_id thread_id2addr sc_empty (sc_allocate P) sc_typeof_addr sc_heap_read sc_heap_write (sc_hconf P) P"
 by unfold_locales
 
 lemma compP2_compP1_convs:
@@ -32,7 +32,7 @@ lemma compP2_compP1_convs:
 by(simp_all add: compP2_def heap_base.compP_conf heap_base.compP_addr_loc_type fun_eq_iff split: addr_loc.splits)
 
 lemma sc_J_JVM_conf_read:
-  "J_JVM_conf_read addr2thread_id thread_id2addr sc_empty (sc_new_obj P) (sc_new_arr P) sc_typeof_addr sc_array_length sc_heap_read sc_heap_write (sc_hconf P) P"
+  "J_JVM_conf_read addr2thread_id thread_id2addr sc_empty (sc_allocate P) sc_typeof_addr sc_heap_read sc_heap_write (sc_hconf P) P"
 apply(rule J_JVM_conf_read.intro)
 apply(rule J1_JVM_conf_read.intro)
 apply(rule JVM_conf_read.intro)

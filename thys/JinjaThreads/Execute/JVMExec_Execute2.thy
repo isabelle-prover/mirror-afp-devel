@@ -1,10 +1,14 @@
+(*  Title:      JinjaThreads/Execute/JVMExec_Execute2.thy
+    Author:     Andreas Lochbihler
+*)
+
+header {* \isaheader{An optimized JVM} *}
+
 theory JVMExec_Execute2
 imports
   "../BV/BVNoTypeError"
   ExternalCall_Execute
 begin
-
-section {* An optimized JVM *}
 
 text {*
   This JVM must lookup the method declaration of the top call frame at every step to find the next instruction.
@@ -17,16 +21,14 @@ locale JVM_heap_execute = heap_execute +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr" 
   and empty_heap :: "'heap" 
-  and new_obj :: "'heap \<Rightarrow> String.literal \<Rightarrow> 'heap \<times> 'addr option" 
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> 'heap \<times> 'addr option" 
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> ty option" 
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat" 
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val Cset.set" 
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap Cset.set"
 
 sublocale JVM_heap_execute < execute!: JVM_heap_base
   addr2thread_id thread_id2addr 
-  empty_heap new_obj new_arr typeof_addr array_length
+  empty_heap allocate typeof_addr
   "\<lambda>h a ad v. v \<in> member (heap_read h a ad)" "\<lambda>h a ad v h'. h' \<in> Cset.member (heap_write h a ad v)"
 .
 
@@ -185,9 +187,9 @@ done
 context heap_base begin -- "Move to ExternalCall"
 
 lemma red_external_aggr_new_thread_sub_thread':
-  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; typeof_addr h a \<noteq> None; typeof_addr h a \<noteq> \<lfloor>NT\<rfloor>;
+  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; typeof_addr h a \<noteq> None; 
      NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
+  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
 by(auto simp add: red_external_aggr_def split_beta ta_upd_simps widen_Class split: split_if_asm dest!: Array_widen)
 
 end
@@ -208,24 +210,25 @@ where
    Cset.set [(\<epsilon>, (None, h, ((tl ins', ins, xt), v # stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs))]"
 | "exec_instr ins' ins xt (New C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
    Cset.single 
-     (let (h', ao) = new_obj h C
+     (let (h', ao) = allocate h (Class_type C)
       in case ao of None \<Rightarrow> (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h', ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
-                | Some a \<Rightarrow> (\<lbrace>NewObj a C\<rbrace>, None, h', ((tl ins', ins, xt), Addr a # stk, loc, C\<^isub>0, M\<^isub>0, pc + 1)#frs))"
+                | Some a \<Rightarrow> (\<lbrace>NewHeapElem a (Class_type C)\<rbrace>, None, h', ((tl ins', ins, xt), Addr a # stk, loc, C\<^isub>0, M\<^isub>0, pc + 1)#frs))"
 | "exec_instr ins' ins xt (NewArray T) P t h stk loc C0 M0 pc frs =
    Cset.single
     (let si = the_Intg (hd stk);
          i = nat (sint si)
       in (if si <s 0
           then (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NegativeArraySize\<rfloor>, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)
-          else (let (h', ao) = new_arr h T i
+          else (let (h', ao) = allocate h (Array_type T i)
                 in case ao of None \<Rightarrow> (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h', ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)
-                          | Some a \<Rightarrow> (\<lbrace>NewArr a T i \<rbrace>, None, h', ((tl ins', ins, xt), Addr a # tl stk, loc, C0, M0, pc + 1) # frs))))"
+                          | Some a \<Rightarrow> (\<lbrace>NewHeapElem a (Array_type T i) \<rbrace>, None, h', ((tl ins', ins, xt), Addr a # tl stk, loc, C0, M0, pc + 1) # frs))))"
 | "exec_instr ins' ins xt ALoad P t h stk loc C0 M0 pc frs =
    (let i = the_Intg (hd stk);
         va = hd (tl stk);
-        a = the_Addr va
+        a = the_Addr va;
+        len = alen_of_htype (the (typeof_addr h a))
     in (if va = Null then Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)
-        else if i <s 0 \<or> int (array_length h a) \<le> sint i then
+        else if i <s 0 \<or> int len \<le> sint i then
              Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)
         else do {
            v \<leftarrow> heap_read h a (ACell (nat (sint i)));
@@ -239,9 +242,11 @@ where
        else (let i = the_Intg vi;
                  idx = nat (sint i);
                  a = the_Addr va;
-                 T = the (typeof_addr h a);
+                 hT = the (typeof_addr h a);
+                 T = ty_of_htype hT;
+                 len = alen_of_htype hT;
                  U = the (execute.typeof_h h ve)
-             in (if i <s 0 \<or> int (array_length h a) \<le> sint i then
+             in (if i <s 0 \<or> int len \<le> sint i then
                       Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)
                  else if P \<turnstile> U \<le> the_Array T then 
                       do {
@@ -254,7 +259,7 @@ where
      (\<epsilon>, (let va = hd stk
           in if va = Null
              then (\<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)
-             else (None, h, ((tl ins', ins, xt), Intg (word_of_int (int (array_length h (the_Addr va)))) # tl stk, loc, C0, M0, pc+1) # frs)))"
+             else (None, h, ((tl ins', ins, xt), Intg (word_of_int (int (alen_of_htype (the (typeof_addr h (the_Addr va)))))) # tl stk, loc, C0, M0, pc+1) # frs)))"
 | "exec_instr ins' ins xt (Getfield F C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
    (let v = hd stk
     in if v = Null then Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
@@ -285,8 +290,7 @@ where
         else (let ps = rev (take n stk);
                   a = the_Addr r;
                   T = the (typeof_addr h a);
-                  C = the (class_type_of T);
-                  (D,Ts,T,meth)= method P C M
+                  (D,Ts,T,meth)= method P (class_type_of T) M
               in case meth of
                    Native \<Rightarrow> 
                       do {
@@ -378,10 +382,10 @@ proof -
     thus ?thesis using assms 
       apply(cases m)
       apply(auto simp add: extNTA2JVM'_def dest: sees_method_idemp execute.red_external_aggr_new_thread_sub_thread' sub_Thread_sees_run[OF wf])
-       apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, clarsimp, assumption, clarsimp)
+       apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, assumption, clarsimp)
        apply(drule sub_Thread_sees_run[OF wf], clarsimp)
        apply(fastforce dest: sees_method_idemp)
-      apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, clarsimp, assumption, clarsimp)
+      apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, assumption, clarsimp)
       apply(drule sub_Thread_sees_run[OF wf], clarsimp)
       apply(fastforce dest: sees_method_idemp)
       done
@@ -419,10 +423,10 @@ proof -
     case Invoke thus ?thesis using assms
       apply(cases "m")
       apply(auto intro!: rev_bexI convert_new_thread_action_eqI simp add: extNTA2JVM'_def extNTA2JVM_def dest: execute.red_external_aggr_new_thread_sub_thread' sub_Thread_sees_run[OF wf] sees_method_idemp)
-       apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, clarsimp, assumption, clarsimp)
+       apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, assumption, clarsimp)
        apply(drule sub_Thread_sees_run[OF wf], clarsimp)
        apply(fastforce dest: sees_method_idemp)
-      apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, clarsimp, assumption, clarsimp)
+      apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, assumption, clarsimp)
       apply(drule sub_Thread_sees_run[OF wf], clarsimp)
       apply(fastforce dest: sees_method_idemp)
       done
@@ -518,16 +522,14 @@ end
 locale JVM_heap_execute_conf_read = JVM_heap_execute +
   execute!: JVM_conf_read
     addr2thread_id thread_id2addr 
-    empty_heap new_obj new_arr typeof_addr array_length 
+    empty_heap allocate typeof_addr 
     "\<lambda>h a ad v. v \<in> member (heap_read h a ad)" "\<lambda>h a ad v h'. h' \<in> Cset.member (heap_write h a ad v)"
   +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr" 
   and empty_heap :: "'heap" 
-  and new_obj :: "'heap \<Rightarrow> String.literal \<Rightarrow> 'heap \<times> 'addr option" 
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> 'heap \<times> 'addr option" 
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> ty option" 
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat" 
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val Cset.set" 
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap Cset.set"
   and hconf :: "'heap \<Rightarrow> bool"

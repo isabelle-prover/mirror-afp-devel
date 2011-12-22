@@ -1,3 +1,7 @@
+(*  Title:      JinjaThreads/Execute/JVM_Execute2.thy
+    Author:     Andreas Lochbihler
+*)
+
 theory JVM_Execute2
 imports
   SC_Schedulers
@@ -16,10 +20,8 @@ interpretation sc!:
     "addr2thread_id"
     "thread_id2addr"
     "sc_empty"
-    "sc_new_obj P"
-    "sc_new_arr P" 
+    "sc_allocate P"
     "sc_typeof_addr"
-    "sc_array_length"
     "sc_heap_read_cset"
     "sc_heap_write_cset"
   for P
@@ -33,10 +35,8 @@ interpretation sc!:
     "addr2thread_id"
     "thread_id2addr"
     "sc_empty"
-    "sc_new_obj P"
-    "sc_new_arr P" 
+    "sc_allocate P"
     "sc_typeof_addr"
-    "sc_array_length"
     "sc_heap_read_cset"
     "sc_heap_write_cset"
     "sc_hconf P"
@@ -50,8 +50,8 @@ proof -
     by(simp_all add: eval_sc_heap_read_i_i_i_o eval_sc_heap_write_i_i_i_i_o)
   show "JVM_heap_execute_conf_read
     addr2thread_id thread_id2addr
-    sc_empty (sc_new_obj P) (sc_new_arr P)
-    sc_typeof_addr sc_array_length sc_heap_read_cset sc_heap_write_cset
+    sc_empty (sc_allocate P)
+    sc_typeof_addr sc_heap_read_cset sc_heap_write_cset
     (sc_hconf P) P"
     apply(rule JVM_heap_execute_conf_read.intro)
     apply(unfold unfolds)
@@ -107,17 +107,14 @@ by(simp add: sc.start_state_def split_beta fun_eq_iff)
 
 lemma sc_jvm_start_state_invar:
   assumes "wf_jvm_prog\<^sub>\<Phi> P"
-  and "sc_start_heap_ok P"
-  and "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
-  and "P,sc_start_heap P \<turnstile>sc vs [:\<le>] Ts"
+  and "sc_wf_start_state P C M vs"
   shows "sc_state_\<alpha> (sc_jvm_start_state_refine P C M vs) \<in> sc_jvm_state_invar P \<Phi>"
 unfolding sc_jvm_state_invar_def Int_iff mem_Collect_eq
 apply(rule conjI)
  apply(simp add: sc.execute.correct_jvm_state_initial[OF assms])
 apply(rule ts_okI)
-apply(insert `P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D`)
-apply(frule sees_method_idemp)
-apply(clarsimp simp add: sc.start_state_def split_beta split: split_if_asm)
+using `sc_wf_start_state P C M vs`
+apply(auto simp add: sc.start_state_def split_beta sc_wf_start_state_iff split: split_if_asm dest: sees_method_idemp)
 done
 
 lemma invariant3p_sc_jvm_state_invar:

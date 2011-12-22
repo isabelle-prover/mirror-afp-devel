@@ -725,4 +725,10 @@ proof -
   show ?thesis by blast
 qed
 
+lemma inv_imageP_id [simp]: "inv_imageP R id = R"
+by(simp add: fun_eq_iff)
+
+lemma inv_into_id [simp]: "a \<in> A \<Longrightarrow> inv_into A id a = a"
+by (metis f_inv_into_f id_apply image_id)
+
 end

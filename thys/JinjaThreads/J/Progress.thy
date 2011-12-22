@@ -12,8 +12,10 @@ imports
   WWellForm
 begin
 
-lemma (in J_heap_base) final_addrE [consumes 3, case_names addr Throw]:
-  "\<lbrakk> P,E,h \<turnstile> e : T; is_class_type_of T U; final e;
+context J_heap begin
+
+lemma final_addrE [consumes 3, case_names addr Throw]:
+  "\<lbrakk> P,E,h \<turnstile> e : T; class_type_of' T = \<lfloor>U\<rfloor>; final e;
     \<And>a. e = addr a \<Longrightarrow> R;
     \<And>a. e = Throw a \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
 apply(auto elim!: final.cases)
@@ -21,7 +23,7 @@ apply(case_tac v)
 apply auto
 done
 
-lemma (in J_heap) finalRefE [consumes 3, case_names null Class Array Throw]:
+lemma finalRefE [consumes 3, case_names null Class Array Throw]:
  "\<lbrakk> P,E,h \<turnstile> e : T; is_refT T; final e;
    e = null \<Longrightarrow> R;
    \<And>a C. \<lbrakk> e = addr a; T = Class C \<rbrakk> \<Longrightarrow> R;
@@ -29,8 +31,10 @@ lemma (in J_heap) finalRefE [consumes 3, case_names null Class Array Throw]:
    \<And>a. e = Throw a \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
 apply(auto simp:final_iff)
 apply(case_tac v)
-apply(auto elim!: is_refT.cases dest: typeof_addr_eq_Some_conv)
+apply(auto elim!: is_refT.cases)
 done
+
+end
 
 theorem (in J_progress) red_progress:
   assumes wf: "wwf_J_prog P" and hconf: "hconf h"
@@ -38,7 +42,7 @@ theorem (in J_progress) red_progress:
   and progresss: "\<lbrakk> P,E,h \<turnstile> es [:] Ts; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es \<rbrakk> \<Longrightarrow> \<exists>es' s' ta. extTA,P,t \<turnstile> \<langle>es,(h,l)\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>"
 proof (induct arbitrary: l and l rule:WTrt_WTrts.inducts)
   case (WTrtNew C)
-  obtain h' ao where h': "new_obj h C = (h', ao)" by(cases "new_obj h C")
+  obtain h' ao where h': "allocate h (Class_type C) = (h', ao)" by(cases "allocate h (Class_type C)")
   thus ?case using WTrtNew
     by(cases ao)(fastforce intro: RedNewFail RedNew)+
 next
@@ -60,8 +64,8 @@ next
       thus ?thesis
       proof (cases "0 <=s i")
 	case True
-        obtain h' ao where "new_arr h T (nat (sint i)) = (h', ao)"
-          by(cases "new_arr h T (nat (sint i))")
+        obtain h' ao where "allocate h (Array_type T (nat (sint i))) = (h', ao)"
+          by(cases "allocate h (Array_type T (nat (sint i)))")
 	thus ?thesis using True `v = Intg i` WTrtNewArray.prems
           by(cases ao)(auto simp del: split_paired_Ex,(blast intro: RedNewArrayFail RedNewArray)+)
       next
@@ -237,7 +241,7 @@ next
       qed
     next
       case (Array ad U)
-      with wte have ty: "typeof_addr h ad = \<lfloor>Array U\<rfloor>" by auto
+      with wte obtain n where ty: "typeof_addr h ad = \<lfloor>Array_type U n\<rfloor>" by auto
       thus ?thesis
       proof (cases "final i")
 	assume "final i"
@@ -249,12 +253,12 @@ next
 	  hence "\<exists>i. v = Intg i" by fastforce
 	  then obtain i where [simp]: "v = Intg i" by blast
 	  thus ?thesis
-	  proof (cases "i <s 0 \<or> sint i \<ge> int (array_length h ad)")
+	  proof (cases "i <s 0 \<or> sint i \<ge> int n")
             case True
-	    with WTrtAAcc Array show ?thesis by (fastforce intro: RedAAccBounds)
+	    with WTrtAAcc Array ty show ?thesis by (fastforce intro: RedAAccBounds)
           next
             case False
-            hence "nat (sint i) < array_length h ad"
+            hence "nat (sint i) < n"
               by(metis int_le_0_conv linorder_not_less nat_int.Rep_inverse' sint_0 transfer_int_nat_numerals(1) word_sless_alt zless_nat_conj)
             with ty have "P,h \<turnstile> ad@ACell (nat (sint i)) : U" by(auto intro!: addr_loc_type.intros)
             from heap_read_total[OF hconf this]
@@ -377,7 +381,7 @@ next
       qed
     next
       case (Array ad U)
-      with wta have ty: "typeof_addr h ad = \<lfloor>Array U\<rfloor>" by auto
+      with wta obtain n where ty: "typeof_addr h ad = \<lfloor>Array_type U n\<rfloor>" by auto
       thus ?thesis
       proof (cases "final i")
 	assume fi: "final i"
@@ -395,12 +399,12 @@ next
 	      fix w
 	      assume evalw: "e = Val w"
 	      show ?thesis
-              proof(cases "idx <s 0 \<or> sint idx \<ge> int (array_length h ad)")
+              proof(cases "idx <s 0 \<or> sint idx \<ge> int n")
                 case True
                 with ty evalw Array ivalv vidx show ?thesis by(fastforce intro: RedAAssBounds)
               next
                 case False
-                hence "nat (sint idx) < array_length h ad"
+                hence "nat (sint idx) < n"
                   by(metis int_le_0_conv linorder_not_less nat_int.Rep_inverse' sint_0 transfer_int_nat_numerals(1) word_sless_alt zless_nat_conj)
                 with ty have adal: "P,h \<turnstile> ad@ACell (nat (sint idx)) : U"
                   by(auto intro!: addr_loc_type.intros)
@@ -415,7 +419,7 @@ next
                   show ?thesis by(fastforce intro: RedAAss)
                 next
                   case False
-                  with ty vidx ivalv evalw Array wte `\<not> (idx <s 0 \<or> sint idx \<ge> int (array_length h ad))`
+                  with ty vidx ivalv evalw Array wte `\<not> (idx <s 0 \<or> sint idx \<ge> int n)`
                   show ?thesis by(fastforce intro: RedAAssStore)
                 qed
               qed
@@ -536,7 +540,7 @@ next
 next
   case (WTrtFAcc E e U C F T fm D l)
   have wte: "P,E,h \<turnstile> e : U"
-    and icto: "is_class_type_of U C"
+    and icto: "class_type_of' U = \<lfloor>C\<rfloor>"
    and field: "P \<turnstile> C has F:T (fm) in D" by fact+
   show ?case
   proof cases
@@ -544,7 +548,7 @@ next
     with wte icto show ?thesis
     proof (cases rule: final_addrE)
       case (addr a)
-      with wte have ty: "typeof_addr h a = \<lfloor>U\<rfloor>" by auto
+      with wte obtain hU where ty: "typeof_addr h a = \<lfloor>hU\<rfloor>" "U = ty_of_htype hU" by auto
       with icto field have "P,h \<turnstile> a@CField D F : T" by(auto intro: addr_loc_type.intros)
       from heap_read_total[OF hconf this]
       obtain v where "heap_read h a (CField D F) v" by blast
@@ -571,7 +575,7 @@ next
 next
   case (WTrtFAss E e1 U C F T fm D e2 T2 l)
   have wte1: "P,E,h \<turnstile> e1 : U"
-    and icto: "is_class_type_of U C"
+    and icto: "class_type_of' U = \<lfloor>C\<rfloor>"
     and field: "P \<turnstile> C has F:T (fm) in D" by fact+
   show ?case
   proof cases
@@ -631,7 +635,7 @@ next
 next
   case (WTrtCall E e U C M Ts T meth D es Ts' l)
   have wte: "P,E,h \<turnstile> e : U" 
-    and icto: "is_class_type_of U C" by fact+
+    and icto: "class_type_of' U = \<lfloor>C\<rfloor>" by fact+
   have IHe: "\<And>l. \<lbrakk> \<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk>
              \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
   have sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = meth in D" by fact
@@ -648,7 +652,7 @@ next
       show ?thesis
       proof(cases "\<exists>vs. es = map Val vs")
 	assume es: "\<exists>vs. es = map Val vs"
-	from wte e_addr have ha: "typeof_addr h a = \<lfloor>U\<rfloor>"  by(auto)
+	from wte e_addr obtain hU where ha: "typeof_addr h a = \<lfloor>hU\<rfloor>" "U = ty_of_htype hU"  by(auto)
 	have "length es = length Ts'" using wtes by(auto simp add: WTrts_conv_list_all2 dest: list_all2_lengthD)
 	moreover from subtype have "length Ts' = length Ts" by(auto dest: list_all2_lengthD)
 	ultimately have esTs: "length es = length Ts" by(auto)
@@ -732,7 +736,7 @@ next
 	moreover
 	{ fix vs a es' assume "es = map Val vs @ Throw a # es'"
 	  with WTrtCallNT `e = null` `finals es` have ?thesis by(fastforce intro: CallThrowParams) }
-	ultimately show ?thesis by(fastforce simp:finals_def)
+	ultimately show ?thesis by(fastforce simp:finals_iff)
       next
 	assume "\<not> finals es" --"@{term es} reduces by IH"
 	with WTrtCallNT `e = null` show ?thesis by(fastforce intro: CallParams)
@@ -885,8 +889,8 @@ next
     next
       fix a
       assume e1_Throw: "e1 = Throw a"
-      with wt1 obtain D where ha: "typeof_addr h a = \<lfloor>Class D\<rfloor>"
-	by(auto simp add: widen_Class dest: typeof_addr_eq_Some_conv)
+      with wt1 obtain D where ha: "typeof_addr h a = \<lfloor>Class_type D\<rfloor>"
+	by(auto simp add: widen_Class)
       thus ?thesis using e1_Throw
         by(cases "P \<turnstile> D \<preceq>\<^sup>* C")(fastforce intro:RedTryCatch RedTryFail)+
     qed

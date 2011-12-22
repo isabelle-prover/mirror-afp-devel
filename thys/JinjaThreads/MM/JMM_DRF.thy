@@ -9,7 +9,7 @@ imports
   JMM_Spec
 begin
 
-context executions begin
+context drf begin
 
 lemma drf_lemma:
   assumes wf: "P \<turnstile> (E, ws) \<surd>"
@@ -177,16 +177,16 @@ proof(atomize_elim)
 qed
 
 theorem drf:
-  assumes E: "E \<in> \<E>"
-  and sync: "correctly_synchronized P \<E>"
+  assumes sync: "correctly_synchronized P \<E>"
   and legal: "legal_execution P \<E> (E, ws)"
   shows "sequentially_consistent P (E, ws)"
-using legal_wf_execD[OF legal] E sync
+using legal_wf_execD[OF legal] legal_\<E>D[OF legal] sync
 proof(rule drf_lemma)
   fix r
   assume "r \<in> read_actions E"
 
-  from legal obtain J where wf_exec: "P \<turnstile> (E, ws) \<surd>"
+  from legal obtain J where E: "E \<in> \<E>"
+    and wf_exec: "P \<turnstile> (E, ws) \<surd>"
     and J: "P \<turnstile> (E, ws) justified_by J"
     and range_J: "range (justifying_exec \<circ> J) \<subseteq> \<E>"
     by(rule legal_executionE)
@@ -269,7 +269,7 @@ proof(rule drf_lemma)
         have r_conv_inv: "r' = inv_into (actions (?E (Suc n))) (?\<phi> (Suc n)) (?\<phi> n r'')"
           using `r' \<in> actions (?E (Suc n))` unfolding r'_r''[symmetric]
           by(simp add: inv_into_f_f[OF injSn])
-        with `r'' \<in> ?C n` r' J
+        with `r'' \<in> ?C n` r' J `r'' \<in> read_actions (?E n)`
         have ws_eq[symmetric]: "?\<phi> (Suc n) (?ws (Suc n) r') = ws (?\<phi> n r'')"
           by(simp add: is_justified_by.simps Let_def)
         with r'_r''[symmetric] hb'' have "P,E \<turnstile> ?\<phi> (Suc n) (?ws (Suc n) r') \<le>hb ?\<phi> (Suc n) r'" by simp

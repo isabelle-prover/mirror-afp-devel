@@ -4,8 +4,7 @@
 
 header {* \isaheader{Deadlock perservation for the intermediate language} *}
 
-theory J1Deadlock
-imports
+theory J1Deadlock imports
   J1
   "../Framework/FWDeadlock"
   "../Common/ExternalCallWF"

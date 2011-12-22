@@ -32,19 +32,18 @@ next
   case RedNewArrayFail thus ?case
     by(auto intro: hconf_heap_ops_mono)
 next
-  case (RedAAss h a U i v U' h' l)
-  from `sint i < int (array_length h a)` `0 <=s i`
-  have "nat (sint i) < array_length h a"
-    by(metis nat_less_iff sint_0 word_sle_def)
+  case (RedAAss h a U n i v U' h' l)
+  from `sint i < int n` `0 <=s i`
+  have "nat (sint i) < n" by(metis nat_less_iff sint_0 word_sle_def)
   thus ?case using RedAAss
     by(fastforce elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def)
 next
   case RedFAss thus ?case
-    by(fastforce elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def dest: typeof_addr_eq_Some_conv)
+    by(fastforce elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def)
 next
-  case (RedCallExternal s a U C M Ts T' D vs ta va h' ta' e' s')
+  case (RedCallExternal s a U M Ts T' D vs ta va h' ta' e' s')
   hence "P,hp s \<turnstile> a\<bullet>M(vs) : T"
-    by(fastforce simp add: external_WT'_iff is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
+    by(fastforce simp add: external_WT'_iff dest: sees_method_fun)
   with RedCallExternal show ?case by(auto dest: external_call_hconf)
 qed auto
 
@@ -91,7 +90,7 @@ next
   with `P,h' \<turnstile> x (:\<le>) E` show ?case
     by(auto simp add: lconf_def split: split_if_asm)
 next
-  case (RedCallExternal s a U C M Ts T' D vs ta va h' ta' e' s')
+  case (RedCallExternal s a U M Ts T' D vs ta va h' ta' e' s')
   from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` have "hp s \<unlhd> h'" by(rule red_external_hext)
   with `s' = (h', lcl s)` `P,hp s \<turnstile> lcl s (:\<le>) E` show ?case by(auto intro: lconf_hext)
 qed auto
@@ -132,7 +131,7 @@ theorem (in J_conf_read) assumes wf: "wf_J_prog P"
   \<Longrightarrow> \<exists>Ts'. P,E,hp s' \<turnstile> es'[:]Ts' \<and> P \<turnstile> Ts' [\<le>] Ts"
 proof (induct arbitrary: T E and Ts E rule:red_reds.inducts)
   case RedNew
-  thus ?case by(auto dest: new_obj_SomeD)
+  thus ?case by(auto dest: allocate_SomeD)
 next
   case RedNewFail thus ?case unfolding sconf_def
     by(fastforce intro:typeof_OutOfMemory preallocated_heap_ops simp add: xcpt_subcls_Throwable[OF _ wf]) 
@@ -141,7 +140,7 @@ next
   thus ?case by fastforce
 next
   case RedNewArray
-  thus ?case by(auto dest: new_arr_SomeD)
+  thus ?case by(auto dest: allocate_SomeD)
 next
   case RedNewArrayNegative thus ?case unfolding sconf_def
     by(fastforce intro: preallocated_heap_ops simp add: xcpt_subcls_Throwable[OF _ wf]) 
@@ -281,12 +280,11 @@ next
   case RedAAccBounds thus ?case unfolding sconf_def
     by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
-  case (RedAAcc h a T i v l T' E)
+  case (RedAAcc h a T n i v l T' E)
   from `E \<turnstile> (h, l) \<surd>` have "hconf h" by(clarsimp simp add: sconf_def)
-  from `0 <=s i` `sint i < int (array_length h a)`
-  have "nat (sint i) < array_length h a"
-    by(metis nat_less_iff sint_0 word_sle_def)
-  with `typeof_addr h a = \<lfloor>T\<lfloor>\<rceil>\<rfloor>` have "P,h \<turnstile> a@ACell (nat (sint i)) : T"
+  from `0 <=s i` `sint i < int n`
+  have "nat (sint i) < n" by(metis nat_less_iff sint_0 word_sle_def)
+  with `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>` have "P,h \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
   from heap_read_conf[OF `heap_read h a (ACell (nat (sint i))) v` this] `hconf h`
   have "P,h \<turnstile> v :\<le> T" by simp
@@ -425,8 +423,8 @@ next
     with wta' show ?thesis by(auto)
   qed
 next
-  case (RedALength h a T l T' E)
-  from `P,E,hp (h, l) \<turnstile> addr a\<bullet>length : T'` `typeof_addr h a = \<lfloor>T\<lfloor>\<rceil>\<rfloor>`
+  case (RedALength h a T n l T' E)
+  from `P,E,hp (h, l) \<turnstile> addr a\<bullet>length : T'` `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>`
   have [simp]: "T' = Integer" by(auto)
   thus ?case by(auto)
 next
@@ -441,7 +439,7 @@ next
   -- "Now distinguish the two cases how wt can have arisen."
   { fix T' C fm
     assume wte: "P,E,hp s \<turnstile> e : T'"
-      and icto: "is_class_type_of T' C"
+      and icto: "class_type_of' T' = \<lfloor>C\<rfloor>"
       and has: "P \<turnstile> C has F:T (fm) in D"
     from IH[OF conf wte tconf]
     obtain U where wte': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> T'" by auto
@@ -452,7 +450,7 @@ next
       thus ?thesis using wte' by(blast intro:WTrtFAccNT widen_refl) 
     next
       case False
-      with icto UsubC obtain C' where icto': "is_class_type_of U C'"
+      with icto UsubC obtain C' where icto': "class_type_of' U = \<lfloor>C'\<rfloor>"
         and C'subC: "P \<turnstile> C' \<preceq>\<^sup>* C"
         by(rule widen_is_class_type_of)
       from has_field_mono[OF has C'subC] wte' icto'
@@ -465,7 +463,7 @@ next
   ultimately show ?case using wt by blast
 next
   case RedFAcc thus ?case unfolding sconf_def
-    by(fastforce dest: heap_read_conf typeof_addr_eq_Some_conv intro: addr_loc_type.intros simp add: conf_def)
+    by(fastforce dest: heap_read_conf intro: addr_loc_type.intros simp add: conf_def)
 next
   case RedFAccNull thus ?case unfolding sconf_def
     by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
@@ -487,7 +485,7 @@ next
   }
   moreover
   { fix T' C TF T\<^isub>2 fm
-    assume wt\<^isub>1: "P,E,hp s \<turnstile> e : T'" and icto: "is_class_type_of T' C" and wt\<^isub>2: "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2"
+    assume wt\<^isub>1: "P,E,hp s \<turnstile> e : T'" and icto: "class_type_of' T' = \<lfloor>C\<rfloor>" and wt\<^isub>2: "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2"
       and has: "P \<turnstile> C has F:TF (fm) in D" and sub: "P \<turnstile> T\<^isub>2 \<le> TF"
     obtain U where wt\<^isub>1': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> T'"
       using IH[OF conf wt\<^isub>1 tconf] by blast
@@ -500,7 +498,7 @@ next
       with wt\<^isub>1' wt\<^isub>2' void show ?thesis by(blast intro!:WTrtFAssNT)
     next
       case False
-      with icto UsubC obtain C' where icto': "is_class_type_of U C'"
+      with icto UsubC obtain C' where icto': "class_type_of' U = \<lfloor>C'\<rfloor>"
         and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C" by(rule widen_is_class_type_of)
       have "P \<turnstile> C' has F:TF (fm) in D" by(rule has_field_mono[OF has "subclass"])
       with wt\<^isub>1' show ?thesis using wt\<^isub>2' sub void icto' by(blast intro:WTrtFAss)
@@ -518,7 +516,7 @@ next
   proof (rule WTrt_elim_cases)
     fix U C TF T\<^isub>2 fm
     assume wt\<^isub>1: "P,E,hp s \<turnstile> Val v : U"
-      and icto: "is_class_type_of U C"
+      and icto: "class_type_of' U = \<lfloor>C\<rfloor>"
       and has: "P \<turnstile> C has F:TF (fm) in D"
       and wt\<^isub>2: "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2" and TsubTF: "P \<turnstile> T\<^isub>2 \<le> TF"
     have wt\<^isub>1': "P,E,hp s' \<turnstile> Val v : U"
@@ -552,7 +550,7 @@ next
   from wt show ?case
   proof(rule WTrt_elim_cases)
     fix T' C Ts meth D Us
-    assume wte: "P,E,hp s \<turnstile> e : T'" and icto: "is_class_type_of T' C"
+    assume wte: "P,E,hp s \<turnstile> e : T'" and icto: "class_type_of' T' = \<lfloor>C\<rfloor>"
       and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = meth in D"
       and wtes: "P,E,hp s \<turnstile> es [:] Us" and subs: "P \<turnstile> Us [\<le>] Ts"
     obtain U where wte': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> T'"
@@ -566,7 +564,7 @@ next
     next
       case False
       with icto UsubC obtain C'
-        where icto': "is_class_type_of U C'" and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C"
+        where icto': "class_type_of' U = \<lfloor>C'\<rfloor>" and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C"
         by(rule widen_is_class_type_of)
 
       obtain Ts' T' meth' D'
@@ -597,7 +595,7 @@ next
   from wt show ?case
   proof (rule WTrt_elim_cases)
     fix U C Ts meth D Us
-    assume wte: "P,E,hp s \<turnstile> Val v : U" and icto: "is_class_type_of U C"
+    assume wte: "P,E,hp s \<turnstile> Val v : U" and icto: "class_type_of' U = \<lfloor>C\<rfloor>"
       and "P \<turnstile> C sees M:Ts\<rightarrow>T = meth in D"
       and wtes: "P,E,hp s \<turnstile> es [:] Us" and "P \<turnstile> Us [\<le>] Ts"
     moreover have "P,E,hp s' \<turnstile> Val v : U"
@@ -615,18 +613,17 @@ next
     ultimately show ?thesis by(fastforce intro:WTrtCallNT)
   qed
 next
-  case (RedCall s a U C M Ts T pns body D vs T' E)
+  case (RedCall s a U M Ts T pns body D vs T' E)
   have hp: "typeof_addr (hp s) a = \<lfloor>U\<rfloor>"
-    and icto: "is_class_type_of U C"
-    and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns,body)\<rfloor> in D"
+    and method: "P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns,body)\<rfloor> in D"
     and wt: "P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T'" by fact+
   obtain Ts' where wtes: "P,E,hp s \<turnstile> map Val vs [:] Ts'"
     and subs: "P \<turnstile> Ts' [\<le>] Ts" and T'isT: "T' = T"
-    using wt method hp wf icto
-    by(auto simp add: is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
+    using wt method hp wf by(auto 4 3 dest: sees_method_fun)
   from wtes subs have length_vs: "length vs = length Ts"
     by(auto simp add: WTrts_conv_list_all2 dest!: list_all2_lengthD)
-  from icto have UsubD: "P \<turnstile> U \<le> Class C" by(rule is_class_type_of_widenD)
+  have UsubD: "P \<turnstile> ty_of_htype U \<le> Class (class_type_of U)"
+    by(cases U)(simp_all add: widen_array_object)
   from sees_wf_mdecl[OF wf method] obtain T''
     where wtabody: "P,[this#pns [\<mapsto>] Class D#Ts] \<turnstile> body :: T''"
     and T''subT: "P \<turnstile> T'' \<le> T" and length_pns: "length pns = length Ts"
@@ -636,19 +633,19 @@ next
   hence "P,E(this#pns [\<mapsto>] Class D#Ts),hp s \<turnstile> body : T''"
     by(rule WTrt_env_mono) simp
   hence "P,E,hp s \<turnstile> blocks (this#pns) (Class D#Ts) (Addr a#vs) body : T''"
-    using wtes icto subs hp sees_method_decl_above[OF method] length_vs length_pns UsubD
+    using wtes subs hp sees_method_decl_above[OF method] length_vs length_pns UsubD
     by(auto simp add:wt_blocks rel_list_all2_Cons2 intro: widen_trans)
   with T''subT T'isT show ?case by blast
 next
-  case (RedCallExternal s a U C M Ts T' D vs ta va h' ta' e' s')
+  case (RedCallExternal s a U M Ts T' D vs ta va h' ta' e' s')
   from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` have "hp s \<unlhd> h'" by(rule red_external_hext)
   with `P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T`
   have "P,E,h' \<turnstile> addr a\<bullet>M(map Val vs) : T" by(rule WTrt_hext_mono)
-  moreover from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `is_class_type_of U C` `P \<turnstile> C sees M: Ts\<rightarrow>T' = Native in D` `P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T`
+  moreover from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T' = Native in D` `P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T`
   have "P,hp s \<turnstile> a\<bullet>M(vs) : T'"
-    by(fastforce simp add: external_WT'_iff is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
+    by(fastforce simp add: external_WT'_iff dest: sees_method_fun)
   ultimately show ?case using RedCallExternal
-    by(auto 4 3 intro: red_external_conf_extRet[OF wf] intro!: wt_external_call simp add: sconf_def is_class_type_of_conv_class_type_of_Some dest: sees_method_fun[where C=C])
+    by(auto 4 3 intro: red_external_conf_extRet[OF wf] intro!: wt_external_call simp add: sconf_def dest: sees_method_fun[where C="class_type_of U"])
 next
   case RedCallNull thus ?case unfolding sconf_def
     by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
@@ -711,7 +708,7 @@ next
     from `P,E,hp s \<turnstile> e : T` conf `P,hp s \<turnstile> t \<surd>t` obtain T'
       where "P,E,hp s' \<turnstile> e' : T'" "P \<turnstile> T' \<le> T" by(blast dest: IH)
     moreover from red have hext: "hp s \<unlhd> hp s'" by(auto dest: red_hext_incr)
-    with hpa have "P,E,hp s' \<turnstile> addr a : Ta"
+    with hpa have "P,E,hp s' \<turnstile> addr a : ty_of_htype Ta"
       by(auto intro: typeof_addr_hext_mono)
     ultimately show ?thesis by auto
   qed

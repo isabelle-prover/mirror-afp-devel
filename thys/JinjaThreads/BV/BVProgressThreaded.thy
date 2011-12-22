@@ -42,7 +42,7 @@ lemma invoke_new_thread:
   and "ins ! pc = Invoke Type.start 0"
   and "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   and "\<Phi> \<turnstile> t: (None, h, (stk, loc, C, M, pc) # frs) \<surd>"
-  and "typeof_addr h (thread_id2addr a) = \<lfloor>Class D\<rfloor>"
+  and "typeof_addr h (thread_id2addr a) = \<lfloor>Class_type D\<rfloor>"
   and "P \<turnstile> D \<preceq>\<^sup>* Thread"
   and "P \<turnstile> D sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'"
   shows "\<Phi> \<turnstile> a: (None, h, [([], Addr (thread_id2addr a) # replicate mxl0' undefined_value, D', run, 0)]) \<surd>"
@@ -65,7 +65,7 @@ proof -
     have "P,h \<turnstile> replicate mxl0' undefined_value [:\<le>\<^sub>\<top>] replicate mxl0' Err" by simp
     also from `P \<turnstile> D sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'`
     have "P \<turnstile> D \<preceq>\<^sup>* D'" by(rule sees_method_decl_above)
-    with `typeof_addr h (thread_id2addr a) = \<lfloor>Class D\<rfloor>`
+    with `typeof_addr h (thread_id2addr a) = \<lfloor>Class_type D\<rfloor>`
     have "P,h \<turnstile> Addr (thread_id2addr a) :\<le> Class D'"
       by(simp add: conf_def)
     ultimately have "P,h \<turnstile> Addr (thread_id2addr a) # replicate mxl0' undefined_value [:\<le>\<^sub>\<top>] ?LT" by(simp)
@@ -74,7 +74,7 @@ proof -
     finally have "P,h \<turnstile> Addr (thread_id2addr a) # replicate mxl0' undefined_value [:\<le>\<^sub>\<top>] LT'" .
     with `ins' \<noteq> []` show ?thesis by(simp add: conf_f_def)
   qed
-  moreover from `typeof_addr h (thread_id2addr a) = \<lfloor>Class D\<rfloor>` `P \<turnstile> D \<preceq>\<^sup>* Thread`
+  moreover from `typeof_addr h (thread_id2addr a) = \<lfloor>Class_type D\<rfloor>` `P \<turnstile> D \<preceq>\<^sup>* Thread`
   have "P,h \<turnstile> a \<surd>t" by(rule tconfI)
   ultimately show ?thesis using `P \<turnstile> D' sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'`
     by(fastforce simp add: correct_state_def)
@@ -85,7 +85,7 @@ lemma exec_new_threadE:
   and "P,t \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>'"
   and "\<Phi> \<turnstile> t: \<sigma> \<surd>"
   and "\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []"
-  obtains h frs a stk loc C M pc Ts T mxs mxl0 ins xt M' n Ta ta' va  Us Us' U m' D D'
+  obtains h frs a stk loc C M pc Ts T mxs mxl0 ins xt M' n Ta ta' va  Us Us' U m' D'
   where "\<sigma> = (None, h, (stk, loc, C, M, pc) # frs)"
   and "(ta, \<sigma>') \<in> exec P t (None, h, (stk, loc, C, M, pc) # frs)"
   and "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(mxs, mxl0, ins, xt)\<rfloor> in C"
@@ -98,8 +98,7 @@ lemma exec_new_threadE:
   and "\<sigma>' = extRet2JVM n m' stk loc C M pc frs va"
   and "(ta', va, m') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
   and "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Us"
-  and "class_type_of Ta = \<lfloor>D\<rfloor>"
-  and "P \<turnstile> D sees M':Us'\<rightarrow>U = Native in D'"
+  and "P \<turnstile> class_type_of Ta sees M':Us'\<rightarrow>U = Native in D'"
   and "D'\<bullet>M'(Us') :: U"
   and "P \<turnstile> Us [\<le>] Us'"
 proof -
@@ -132,8 +131,8 @@ proof -
     by(auto simp add: is_Ref_def elim: is_AddrE)
   moreover with checkins obtain Ta where Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>" by(fastforce)
   moreover with checkins exec sees `n < length stk` `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []` `stk ! n = Addr a`
-  obtain Us Us' U D D' where "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Us"
-    and "class_type_of Ta = \<lfloor>D\<rfloor>" and "P \<turnstile> D sees M':Us'\<rightarrow>U = Native in D'" and "D'\<bullet>M'(Us') :: U"
+  obtain Us Us' U D' where "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Us"
+    and "P \<turnstile> class_type_of Ta sees M':Us'\<rightarrow>U = Native in D'" and "D'\<bullet>M'(Us') :: U"
     and "P \<turnstile> Us [\<le>] Us'"
     by(auto simp add: confs_conv_map min_def split_beta has_method_def external_WT'_iff split: split_if_asm)
   moreover with `typeof_addr h a = \<lfloor>Ta\<rfloor>` `n < length stk` exec sees `stk ! n = Addr a`
@@ -141,7 +140,7 @@ proof -
     "(ta', va, h') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
     by(fastforce simp add: min_def)
   ultimately show thesis using exec sees 
-    by-(rule that, auto intro!: is_native.intros simp add: is_class_type_of_conv_class_type_of_Some)
+    by-(rule that, auto intro!: is_native.intros)
 qed
 
 end
@@ -158,7 +157,7 @@ proof -
   from wf obtain wt where wfp: "wf_prog wt P" by(blast dest: wt_jvm_progD)
   from nt have "\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []" by auto
   with wf red cs
-  obtain h Frs a stk loc C M pc Ts T mxs mxl0 ins xt M' n Ta ta' va h' Us Us' U D D'
+  obtain h Frs a stk loc C M pc Ts T mxs mxl0 ins xt M' n Ta ta' va h' Us Us' U D'
     where [simp]: "\<sigma> = (None, h, (stk, loc, C, M, pc) # Frs)"
     and exec: "(ta, \<sigma>') \<in> exec P t (None, h, (stk, loc, C, M, pc) # Frs)"
     and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(mxs, mxl0, ins, xt)\<rfloor> in C"
@@ -171,20 +170,20 @@ proof -
     and \<sigma>': "\<sigma>' = extRet2JVM n h' stk loc C M pc Frs va"
     and rel: "(ta', va, h') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
     and Us: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Us"
-    and wtext: "class_type_of Ta = \<lfloor>D\<rfloor>" "P \<turnstile> D sees M':Us'\<rightarrow>U = Native in D'" "D'\<bullet>M'(Us') :: U"
+    and wtext: "P \<turnstile> class_type_of Ta sees M':Us'\<rightarrow>U = Native in D'" "D'\<bullet>M'(Us') :: U"
     and sub: "P \<turnstile> Us [\<le>] Us'"
     by(rule exec_new_threadE)
   from cs have hconf: "hconf h" and preh: "preallocated h"
     and tconf: "P,h \<turnstile> t \<surd>t" by(auto simp add: correct_state_def)
   from Ta Us wtext sub have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U"
-    by(auto intro!: external_WT'.intros simp add: is_class_type_of_conv_class_type_of_Some)
+    by(auto intro!: external_WT'.intros)
   from rel have red: "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h\<rangle> -ta'\<rightarrow>ext \<langle>va, h'\<rangle>"
     by(unfold WT_red_external_list_conv[OF wfp wtext' tconf])
   from ta nt obtain D M'' a' where nt': "NewThread t'' (D, M'', a') h'' \<in> set \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>"
     "(xcp, frs) = extNTA2JVM P (D, M'', a')" by auto
   with red have [simp]: "h'' = h'" by-(rule red_ext_new_thread_heap)
   from red_external_new_thread_sub_thread[OF red nt'(1)]
-  have h't'': "typeof_addr h' a' = \<lfloor>Class D\<rfloor>" "P \<turnstile> D \<preceq>\<^sup>* Thread" and [simp]: "M'' = run" by auto
+  have h't'': "typeof_addr h' a' = \<lfloor>Class_type D\<rfloor>" "P \<turnstile> D \<preceq>\<^sup>* Thread" and [simp]: "M'' = run" by auto
   from red_external_new_thread_exists_thread_object[OF red nt'(1)] 
   have tconf': "P,h' \<turnstile> t'' \<surd>t" by(auto intro: tconfI)
   from sub_Thread_sees_run[OF wfp `P \<turnstile> D \<preceq>\<^sup>* Thread`] obtain mxs' mxl0' ins' xt' D'
@@ -319,14 +318,15 @@ context JVM_heap_conf begin
 
 lemma correct_jvm_state_initial:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
-  and start: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
-  and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
+  and wf_start: "wf_start_state P C M vs"
   shows "JVM_start_state P C M vs \<in> correct_jvm_state \<Phi>"
-using assms BV_correct_initial[OF wf start sees conf]
-apply(cases m)
-apply(auto simp add: correct_jvm_state_def start_state_def JVM_start_state'_def intro: lock_thread_okI ts_okI split: split_if_asm)
-done
+proof -
+  from wf_start obtain Ts T m D 
+    where "start_heap_ok" and "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
+    and "P,start_heap \<turnstile> vs [:\<le>] Ts" by cases
+  with wf BV_correct_initial[OF wf this] show ?thesis
+    by(cases m)(auto simp add: correct_jvm_state_def start_state_def JVM_start_state'_def intro: lock_thread_okI ts_okI split: split_if_asm)
+qed
 
 end
 
@@ -362,12 +362,10 @@ by(rule invariant3p_rtrancl3p[OF invariant3p_correct_jvm_state_mexecT])
 
 theorem jvm_typesafe:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
-  and start: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in C"
-  and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
+  and start: "wf_start_state P C M vs"
   and exec: "P \<turnstile> JVM_start_state P C M vs -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s'"
   shows "s' \<in> correct_jvm_state \<Phi>"
-by(rule correct_jvm_state_preserved[OF wf _ exec])(rule correct_jvm_state_initial[OF wf start sees conf])
+by(rule correct_jvm_state_preserved[OF wf _ exec])(rule correct_jvm_state_initial[OF wf start])
 
 declare split_paired_Ex [simp del]
 
@@ -380,7 +378,7 @@ lemma execd_NewThread_Thread_Object:
   and conf: "\<Phi> \<turnstile> t': \<sigma> \<surd>"
   and red: "P,t' \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>'"
   and nt: "NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
-  shows "\<exists>C. typeof_addr (fst (snd \<sigma>')) (thread_id2addr t) = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> Class C \<le> Class Thread"
+  shows "\<exists>C. typeof_addr (fst (snd \<sigma>')) (thread_id2addr t) = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> Class C \<le> Class Thread"
 proof -
   from wf obtain wfmd where wfp: "wf_prog wfmd P" by(blast dest: wt_jvm_progD)
   from red obtain h f Frs xcp
@@ -412,7 +410,7 @@ qed
 
 lemma mexecdT_NewThread_Thread_Object:
   "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; correct_state_ts \<Phi> (thr s) (shr s); P \<turnstile> s -t'\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'; NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>C. typeof_addr (shr s') (thread_id2addr t) = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+  \<Longrightarrow> \<exists>C. typeof_addr (shr s') (thread_id2addr t) = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 apply(frule correct_state_ts_thread_conf)
 apply(erule execd_mthr.redT.cases)
  apply(hypsubst)
@@ -555,7 +553,7 @@ next
       obtain n a T where [simp]: "ins ! pc = Invoke wait n" "xcp = None" "stk ! n = Addr a"
         and type: "typeof_addr h0 a = \<lfloor>T\<rfloor>"
         and iec: "is_native P T wait"
-        by(auto simp add: is_native.simps is_class_type_of_conv_class_type_of_Some) blast
+        by(auto simp add: is_native.simps) blast
       
       from red0 have "h0 \<unlhd> shr s1" by(auto dest: exec_1_d_hext)
       also from s1 have "shr s1 \<unlhd> shr s" by(rule Execd_hext)
@@ -574,24 +572,23 @@ next
 	where a: "stk ! n = Addr a"
 	and n: "n < length stk"
 	and Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>"
-	and iec: "class_type_of Ta = \<lfloor>D\<rfloor>"
-	and wtext: "P \<turnstile> D sees M':Us\<rightarrow>U = Native in D'" "D'\<bullet>M'(Us)::U"
+	and wtext: "P \<turnstile> class_type_of Ta sees M':Us\<rightarrow>U = Native in D'" "D'\<bullet>M'(Us)::U"
         and sub: "P \<turnstile> Ts [\<le>] Us"
 	and Ts: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Ts"
         and [simp]: "xcp = None"
         apply(cases xcp)
-        apply(simp add: is_Ref_def has_method_def external_WT'_iff check_def lock_ok_las'_def is_class_type_of_conv_class_type_of_Some confs_conv_map split_beta split: split_if_asm option.splits)
-        apply(auto simp add: lock_ok_las'_def is_class_type_of_conv_class_type_of_Some, blast+)[2]
-        apply(fastforce simp add: is_native.simps is_class_type_of_conv_class_type_of_Some lock_ok_las'_def dest: sees_method_fun)+
+        apply(simp add: is_Ref_def has_method_def external_WT'_iff check_def lock_ok_las'_def confs_conv_map split_beta split: split_if_asm option.splits)
+        apply(auto simp add: lock_ok_las'_def, blast+)[2]
+        apply(fastforce simp add: is_native.simps lock_ok_las'_def dest: sees_method_fun)+
         done
-      from exec iec Ta n a sees Invoke wtext obtain ta' va m''
+      from exec Ta n a sees Invoke wtext obtain ta' va m''
 	where exec': "(ta', va, m'') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
 	and ta: "ta = extTA2JVM P ta'"
 	and va: "(xcp', m', frs') = extRet2JVM n m'' stk loc C M pc Frs va"
 	by(auto)
       from va have [simp]: "m'' = m'" by(cases va) simp_all
-      from Ta Ts wtext sub iec have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U"
-        by(auto intro!: external_WT'.intros simp add: is_native.simps is_class_type_of_conv_class_type_of_Some)
+      from Ta Ts wtext sub have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U"
+        by(auto intro!: external_WT'.intros simp add: is_native.simps)
       with wfp exec' tconf have red: "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h\<rangle> -ta'\<rightarrow>ext \<langle>va, m'\<rangle>"
 	by(simp add: WT_red_external_list_conv)
       from ws Invoke have "wset s t = None \<or> M' = wait \<and> (\<exists>w. wset s t = \<lfloor>PostWS w\<rfloor>)" by auto
@@ -599,7 +596,7 @@ next
 	where red': "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h\<rangle> -ta''\<rightarrow>ext \<langle>va',h''\<rangle>"
         and ok': "final_thread.actions_ok JVM_final s t ta'' \<or> final_thread.actions_ok' s t ta'' \<and> final_thread.actions_subset ta'' ta'"
 	by(rule red_external_wf_red)
-      from red' a n Ta iec Invoke sees wtext
+      from red' a n Ta Invoke sees wtext
       have "(extTA2JVM P ta'', extRet2JVM n h'' stk loc C M pc Frs va') \<in> exec P t (xcp, h, f # Frs)" 
 	by(auto intro: red_external_imp_red_external_aggr)
       with check have "P,t \<turnstile> Normal (xcp, h, (stk, loc, C, M, pc) # Frs) -extTA2JVM P ta''-jvmd\<rightarrow> Normal (extRet2JVM n h'' stk loc C M pc Frs va')"
@@ -938,9 +935,7 @@ qed
 
 lemma start_mexec_mexecd_commute:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
-  and start: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
-  and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
+  and start: "wf_start_state P C M vs"
   shows "P \<turnstile> JVM_start_state P C M vs -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s \<longleftrightarrow> P \<turnstile> JVM_start_state P C M vs -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s"
 using correct_jvm_state_initial[OF assms]
 by(clarsimp simp add: correct_jvm_state_def)(rule mExecT_eq_mExecdT[symmetric, OF wf])
@@ -964,17 +959,16 @@ lemma exec_instr_deterministic:
 using exec1 exec2 aok1 aok2
 proof(cases i)
   case (Invoke M' n)
-  { fix T ta''' ta'''' va' va'' h' h'' C
+  { fix T ta''' ta'''' va' va'' h' h''
     assume T: "typeof_addr (shr s) (the_Addr (stk ! n)) = \<lfloor>T\<rfloor>"
-      and C: "class_type_of T = \<lfloor>C\<rfloor>"
-      and method: "snd (snd (snd (method P C M'))) = None" "P \<turnstile> C has M'"
-      and params: "P,shr s \<turnstile> rev (take n stk) [:\<le>] fst (snd (method P C M'))"
+      and method: "snd (snd (snd (method P (class_type_of T) M'))) = None" "P \<turnstile> class_type_of T has M'"
+      and params: "P,shr s \<turnstile> rev (take n stk) [:\<le>] fst (snd (method P (class_type_of T) M'))"
       and red1: "(ta''', va', h') \<in> red_external_aggr P t (the_Addr (stk ! n)) M' (rev (take n stk)) (shr s)"
       and red2: "(ta'''', va'', h'') \<in> red_external_aggr P t (the_Addr (stk ! n)) M' (rev (take n stk)) (shr s)"
       and ta': "ta' = extTA2JVM P ta'''"
       and ta'': "ta'' = extTA2JVM P ta''''"
-    from T C method params obtain T' where "P,shr s \<turnstile> the_Addr (stk ! n)\<bullet>M'(rev (take n stk)) : T'"
-      by(fastsimp simp add: has_method_def confs_conv_map is_class_type_of_conv_class_type_of_Some external_WT'_iff)
+    from T method params obtain T' where "P,shr s \<turnstile> the_Addr (stk ! n)\<bullet>M'(rev (take n stk)) : T'"
+      by(fastforce simp add: has_method_def confs_conv_map external_WT'_iff)
     hence "P,t \<turnstile> \<langle>the_Addr (stk ! n)\<bullet>M'(rev (take n stk)), shr s\<rangle> -ta'''\<rightarrow>ext \<langle>va', h'\<rangle>"
       and "P,t \<turnstile> \<langle>the_Addr (stk ! n)\<bullet>M'(rev (take n stk)), shr s\<rangle> -ta''''\<rightarrow>ext \<langle>va'', h''\<rangle>"
       using red1 red2 tconf

@@ -122,10 +122,10 @@ context J_heap begin
 
 lemma red_NewThread_Thread_Object:
   "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t' x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> 
-  \<Longrightarrow> \<exists>C. typeof_addr (hp s') (thread_id2addr t') = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+  \<Longrightarrow> \<exists>C. typeof_addr (hp s') (thread_id2addr t') = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
   and reds_NewThread_Thread_Object:
   "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t' x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>C. typeof_addr (hp s') (thread_id2addr t') = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+  \<Longrightarrow> \<exists>C. typeof_addr (hp s') (thread_id2addr t') = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 apply(induct rule: red_reds.inducts)
 apply(fastforce dest: red_external_new_thread_exists_thread_object simp add: ta_upd_simps)+
 done
@@ -201,8 +201,8 @@ lemma assumes wf: "wf_J_prog P"
   shows red_preserve_sync_ok: "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk> \<Longrightarrow> sync_ok e'"
   and reds_preserve_sync_oks: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk> \<Longrightarrow> sync_oks es'"
 proof(induct rule: red_reds.inducts)
-  case (RedCall s U a C M Ts T pns body D vs)
-  from wf `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
+  case (RedCall s a U M Ts T pns body D vs)
+  from wf `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
   have "wf_mdecl wf_J_mdecl P D (M,Ts,T,\<lfloor>(pns,body)\<rfloor>)"
     by(rule sees_wf_mdecl)
   then obtain T where "P,[this\<mapsto>Class D,pns[\<mapsto>]Ts] \<turnstile> body :: T"
@@ -221,7 +221,7 @@ lemma assumes wf: "wf_J_prog P"
   and expr_locks_new_thread':
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t'' (e'', x'') h \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> expr_locks e'' = (\<lambda>ad. 0)"
 proof(induct rule: red_reds.inducts)
-  case (RedCallExternal s a U C M Ts T D vs ta va h' ta' e' s')
+  case (RedCallExternal s a U M Ts T D vs ta va h' ta' e' s')
   then obtain C fs a where subThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" and ext: "extNTA2J P (C, run, a) = (e'', x'')"
     by(fastforce dest: red_external_new_thread_sub_thread)
   from sub_Thread_sees_run[OF wf subThread] obtain D pns body
@@ -375,8 +375,8 @@ proof -
     and "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk>
         \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = (\<lambda>ad. (int o expr_lockss es') ad - (int o expr_lockss es) ad)"
   proof(induct rule: red_reds.inducts)
-    case (RedCall s U a C M Ts T pns body D vs)
-    from wf `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
+    case (RedCall s a U M Ts T pns body D vs)
+    from wf `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
     have "wf_mdecl wf_J_mdecl P D (M,Ts,T,\<lfloor>(pns,body)\<rfloor>)"
       by(rule sees_wf_mdecl)
     then obtain T where "P,[this\<mapsto>Class D,pns[\<mapsto>]Ts] \<turnstile> body :: T"
@@ -724,10 +724,10 @@ lemma
   \<Longrightarrow> ta = ta' \<and> es' = es'' \<and> s' = s''"
 proof(induct e "(shr s, xs)" ta e' s' and es "(shr s, xs)" ta es' s' arbitrary: e'' s'' xs and es'' s'' xs rule: red_reds.inducts)
   case RedCall thus ?case
-    by(auto elim!: red_cases dest: sees_method_fun simp add: map_eq_append_conv is_class_type_of_conv_class_type_of_Some)
+    by(auto elim!: red_cases dest: sees_method_fun simp add: map_eq_append_conv)
 next
   case RedCallExternal thus ?case
-    by(auto elim!: red_cases dest: red_external_deterministic[OF det] simp add: final_thread.actions_ok_iff map_eq_append_conv is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
+    by(auto elim!: red_cases dest: red_external_deterministic[OF det] simp add: final_thread.actions_ok_iff map_eq_append_conv dest: sees_method_fun)
 next
   case RedCallNull thus ?case by(auto elim!: red_cases dest: sees_method_fun simp add: map_eq_append_conv)
 next

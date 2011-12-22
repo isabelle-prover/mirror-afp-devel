@@ -6,7 +6,7 @@ Semilattices.
 *)
 
 header {* 
-  \chapter{Bytecode Verifier}\label{cha:bv}
+  \chapter{Data Flow Analysis Framework}\label{cha:bv}
   \isaheader{Semilattices} 
 *}
 

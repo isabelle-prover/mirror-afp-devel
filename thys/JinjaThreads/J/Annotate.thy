@@ -70,7 +70,7 @@ where
     The last premise implements the hiding because field lookup does does not model the implicit declaration.
   *}
   AnnoFAcc:
-  "\<lbrakk> is_lub,P,E \<turnstile> e \<leadsto> e';  is_lub,P,E \<turnstile> e' :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D; 
+  "\<lbrakk> is_lub,P,E \<turnstile> e \<leadsto> e';  is_lub,P,E \<turnstile> e' :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D; 
      is_Array U \<longrightarrow> F \<noteq> array_length_field_name \<rbrakk>
    \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>F{STR []} \<leadsto> e'\<bullet>F{D}"
 | AnnoFAccALength:
@@ -83,7 +83,7 @@ where
   \<Longrightarrow> is_lub,P,E \<turnstile> Var super\<bullet>F{STR []} \<leadsto> (Cast (Class D) (Var this))\<bullet>F{D'}"
 |  AnnoFAss:
   "\<lbrakk> is_lub,P,E \<turnstile> e1 \<leadsto> e1';  is_lub,P,E \<turnstile> e2 \<leadsto> e2';
-     is_lub,P,E \<turnstile> e1' :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D;
+     is_lub,P,E \<turnstile> e1' :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D;
      is_Array U \<longrightarrow> F \<noteq> array_length_field_name \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> e1\<bullet>F{STR []} := e2 \<leadsto> e1'\<bullet>F{D} := e2'"
 | AnnoFAssSuper:
@@ -165,13 +165,13 @@ proof(induct arbitrary: e'' and es'' rule: Anno_Annos.inducts)
   proof(rule Anno_cases)
     fix e''' U' C' T' fm' D'
     assume "is_lub,P,E \<turnstile> e \<leadsto> e'''" "is_lub,P,E \<turnstile> e''' :: U'"
-      and "is_class_type_of U' C'"
+      and "class_type_of' U' = \<lfloor>C'\<rfloor>"
       and "P \<turnstile> C' sees F:T' (fm') in D'" "e'' = e'''\<bullet>F{D'}"
     from `is_lub,P,E \<turnstile> e \<leadsto> e'''` have "e' = e'''" by(rule AnnoFAcc)
     with `is_lub,P,E \<turnstile> e' :: U` `is_lub,P,E \<turnstile> e''' :: U'`
     have "U = U'" by(auto intro: WT_unique is_lub_unique)
-    with `is_class_type_of U C` `is_class_type_of U' C'`
-    have "C = C'" by(auto simp add: is_class_type_of_conv_class_type_of_Some)
+    with `class_type_of' U = \<lfloor>C\<rfloor>` `class_type_of' U' = \<lfloor>C'\<rfloor>`
+    have "C = C'" by(auto)
     with `P \<turnstile> C' sees F:T' (fm') in D'` `P \<turnstile> C sees F:T (fm) in D`
     have "D' = D" by(auto dest: sees_field_fun)
     with `e'' = e'''\<bullet>F{D'}` `e' = e'''` show ?thesis by simp
@@ -183,7 +183,7 @@ proof(induct arbitrary: e'' and es'' rule: Anno_Annos.inducts)
       and "F = array_length_field_name"
     from `is_lub,P,E \<turnstile> e \<leadsto> e'''` have "e' = e'''" by(rule AnnoFAcc)
     with `is_lub,P,E \<turnstile> e' :: U` `is_lub,P,E \<turnstile> e''' :: T\<lfloor>\<rceil>` have "U = T\<lfloor>\<rceil>" by(auto intro: WT_unique is_lub_unique)
-    with `is_class_type_of U C` `is_Array U \<longrightarrow> F \<noteq> array_length_field_name`
+    with `class_type_of' U = \<lfloor>C\<rfloor>` `is_Array U \<longrightarrow> F \<noteq> array_length_field_name`
     show ?thesis using `F = array_length_field_name` by simp
   next
     fix C' D' fs ms T D''
@@ -203,14 +203,14 @@ next
   proof(rule Anno_cases)
     fix e1'' e2'' U' C' T' fm' D'
     assume "is_lub,P,E \<turnstile> e1 \<leadsto> e1''" "is_lub,P,E \<turnstile> e2 \<leadsto> e2''"
-      and "is_lub,P,E \<turnstile> e1'' :: U'" and "is_class_type_of U' C'"
+      and "is_lub,P,E \<turnstile> e1'' :: U'" and "class_type_of' U' = \<lfloor>C'\<rfloor>"
       and "P \<turnstile> C' sees F:T' (fm') in D'"
       and "e'' = e1''\<bullet>F{D'} := e2''"
     from `is_lub,P,E \<turnstile> e1 \<leadsto> e1''` have "e1' = e1''" by(rule AnnoFAss)
     moreover with `is_lub,P,E \<turnstile> e1' :: U` `is_lub,P,E \<turnstile> e1'' :: U'`
     have "U = U'" by(auto intro: WT_unique is_lub_unique)
-    with `is_class_type_of U C` `is_class_type_of U' C'`
-    have "C = C'" by(auto simp add: is_class_type_of_conv_class_type_of_Some)
+    with `class_type_of' U = \<lfloor>C\<rfloor>` `class_type_of' U' = \<lfloor>C'\<rfloor>`
+    have "C = C'" by(auto)
     with `P \<turnstile> C' sees F:T' (fm') in D'` `P \<turnstile> C sees F:T (fm) in D`
     have "D' = D" by(auto dest: sees_field_fun)
     moreover from `is_lub,P,E \<turnstile> e2 \<leadsto> e2''` have "e2' = e2''" by(rule AnnoFAss)

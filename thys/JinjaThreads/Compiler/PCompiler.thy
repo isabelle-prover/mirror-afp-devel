@@ -440,6 +440,10 @@ by(simp add: compP_conf)
 lemma tconf_compP [simp]: "compP f P, h \<turnstile> t \<surd>t \<longleftrightarrow> P,h \<turnstile> t \<surd>t"
 by(auto simp add: tconf_def)
 
+lemma wf_start_state_compP [simp]:
+  "wf_start_state (compP f P) = wf_start_state P"
+by(auto 4 6 simp add: fun_eq_iff wf_start_state.simps compP_conf dest: sees_method_compP[where f=f] sees_method_compPD[where f=f])
+
 end
 
 lemma compP_addr_conv:
@@ -448,23 +452,37 @@ unfolding addr_conv_def
 by simp
 
 lemma compP_heap:
-  "heap addr2thead_id thread_id2addr new_obj new_arr typeof_addr array_length heap_write (compP f P) =
-  heap addr2thead_id thread_id2addr new_obj new_arr typeof_addr array_length heap_write P"
+  "heap addr2thead_id thread_id2addr allocate typeof_addr heap_write (compP f P) =
+  heap addr2thead_id thread_id2addr allocate typeof_addr heap_write P"
 unfolding heap_def compP_addr_conv heap_axioms_def
 by auto
 
 lemma compP_heap_conf:
-  "heap_conf addr2thead_id thread_id2addr empty_heap new_obj new_arr typeof_addr array_length heap_write hconf (compP f P) =
-   heap_conf addr2thead_id thread_id2addr empty_heap new_obj new_arr typeof_addr array_length heap_write hconf P"
+  "heap_conf addr2thead_id thread_id2addr empty_heap allocate typeof_addr heap_write hconf (compP f P) =
+   heap_conf addr2thead_id thread_id2addr empty_heap allocate typeof_addr heap_write hconf P"
 unfolding heap_conf_def heap_conf_axioms_def compP_heap
 unfolding heap_base.compP_conf heap_base.compP_addr_loc_type is_type_compP is_class_compP
 by(rule refl)
 
 lemma compP_heap_conf_read:
-  "heap_conf_read addr2thead_id thread_id2addr empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf (compP f P) =
-   heap_conf_read addr2thead_id thread_id2addr empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf P"
+  "heap_conf_read addr2thead_id thread_id2addr empty_heap allocate typeof_addr heap_read heap_write hconf (compP f P) =
+   heap_conf_read addr2thead_id thread_id2addr empty_heap allocate typeof_addr heap_read heap_write hconf P"
 unfolding heap_conf_read_def heap_conf_read_axioms_def
 unfolding compP_heap_conf heap_base.compP_conf heap_base.compP_addr_loc_type 
 by(rule refl)
+
+text {* compiler composition *}
+
+lemma compM_compM:
+  "compM f (compM g md) = compM (\<lambda>M Ts T. f M Ts T \<circ> g M Ts T) md"
+by(cases md)(simp add: compM_def option_map_comp o_def)
+
+lemma compC_compC:
+  "compC f (compC g cd) = compC (\<lambda>C M Ts T. f C M Ts T \<circ> g C M Ts T) cd"
+by(simp add: compC_def split_beta compM_compM)
+
+lemma compP_compP:
+  "compP f (compP g P) = compP (\<lambda>C M Ts T. f C M Ts T \<circ> g C M Ts T) P"
+by(cases P)(simp add: compC_compC)
 
 end

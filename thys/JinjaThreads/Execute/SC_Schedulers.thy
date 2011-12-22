@@ -16,7 +16,7 @@ abbreviation sc_start_state_refine ::
 where
   "\<And>is_empty.
    sc_start_state_refine thr_empty thr_update ws_empty is_empty f P \<equiv>
-   heap_base.start_state_refine addr2thread_id sc_empty (sc_new_obj P) thr_empty thr_update ws_empty is_empty f P"
+   heap_base.start_state_refine addr2thread_id sc_empty (sc_allocate P) thr_empty thr_update ws_empty is_empty f P"
 
 abbreviation sc_state_\<alpha> ::
   "('l, 't :: linorder, 'm, ('t, 'x \<times> 'l \<Rightarrow>\<^isub>f nat) rm, ('t, 'w wait_set_status) rm, 't rs) state_refine

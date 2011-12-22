@@ -697,14 +697,14 @@ by(auto simp:hyperset_defs nth_list_update ty\<^isub>i'_def wt_defs ty\<^isub>l_
 
 
 lemma wt_Get:
- "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; is_class_type_of U C \<rbrakk> \<Longrightarrow>
+ "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; class_type_of' U = \<lfloor>C\<rfloor> \<rbrakk> \<Longrightarrow>
   \<turnstile> [Getfield F D],[] [::] [ty\<^isub>i' (U # ST) E A, ty\<^isub>i' (T # ST) E A]"
-by(auto simp: ty\<^isub>i'_def wt_defs dest: sees_field_idemp sees_field_decl_above is_class_type_of_widenD intro: widens_refl widen_trans)
+by(cases U)(auto simp: ty\<^isub>i'_def wt_defs dest: sees_field_idemp sees_field_decl_above intro: widens_refl widen_trans widen_array_object)
 
 lemma wt_Put:
-  "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; is_class_type_of U C; P \<turnstile> T' \<le> T \<rbrakk> \<Longrightarrow>
+  "\<lbrakk> P \<turnstile> C sees F:T (fm) in D; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> T' \<le> T \<rbrakk> \<Longrightarrow>
   \<turnstile> [Putfield F D],[] [::] [ty\<^isub>i' (T' # U # ST) E A, ty\<^isub>i' ST E A]"
-by(auto intro: sees_field_idemp widen_trans dest: sees_field_decl_above is_class_type_of_widenD simp: ty\<^isub>i'_def wt_defs)
+by(cases U)(auto 4 3 intro: sees_field_idemp widen_trans widen_array_object dest: sees_field_decl_above simp: ty\<^isub>i'_def wt_defs)
 
 lemma wt_Throw:
   "P \<turnstile> C \<preceq>\<^sup>* Throwable \<Longrightarrow> \<turnstile> [ThrowExc],[] [::] [ty\<^isub>i' (Class C # ST) E A, \<tau>']"
@@ -728,12 +728,12 @@ end
 context TC3 begin
 
 lemma wt_Invoke:
-  "\<lbrakk> size es = size Ts'; is_class_type_of U C; P \<turnstile> C sees M: Ts\<rightarrow>T = m in D; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+  "\<lbrakk> size es = size Ts'; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees M: Ts\<rightarrow>T = m in D; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> \<turnstile> [Invoke M (size es)],[] [::] [ty\<^isub>i' (rev Ts' @ U # ST) E A, ty\<^isub>i' (T#ST) E A]"
 apply(clarsimp simp add: ty\<^isub>i'_def wt_defs)
 apply safe
 apply(simp_all (no_asm_use))
-apply(auto simp add: is_class_type_of_conv_class_type_of_Some intro: widens_refl)
+apply(auto simp add: intro: widens_refl)
 done
 
 end
@@ -1090,7 +1090,7 @@ next
   case (FAss E A ST e\<^isub>1 F D e\<^isub>2)
   hence Void: "P,E \<turnstile>1 e\<^isub>1\<bullet>F{D} := e\<^isub>2 :: Void" by auto
   then obtain U C T T' fm where    
-    C: "P,E \<turnstile>1 e\<^isub>1 :: U" and U: "is_class_type_of U C" and sees: "P \<turnstile> C sees F:T (fm) in D" and
+    C: "P,E \<turnstile>1 e\<^isub>1 :: U" and U: "class_type_of' U = \<lfloor>C\<rfloor>" and sees: "P \<turnstile> C sees F:T (fm) in D" and
     T': "P,E \<turnstile>1 e\<^isub>2 :: T'" and T'_T: "P \<turnstile> T' \<le> T" by auto
   let ?A\<^isub>1 = "A \<squnion> \<A> e\<^isub>1" let ?A\<^isub>2 = "?A\<^isub>1 \<squnion> \<A> e\<^isub>2"  
   let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s\<^isub>1 = "compT E A ST e\<^isub>1"
@@ -1261,7 +1261,7 @@ next
   from `P,E \<turnstile>1 e\<bullet>M(es) :: T`
   obtain U C D Ts m Ts'
     where C: "P,E \<turnstile>1 e :: U"
-    and icto: "is_class_type_of U C"
+    and icto: "class_type_of' U = \<lfloor>C\<rfloor>"
     and method: "P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
     and wtes: "P,E \<turnstile>1 es [::] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
     by(cases) auto

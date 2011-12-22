@@ -15,6 +15,7 @@ imports
   "~~/src/HOL/Library/Transitive_Closure_Table"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
+  "~~/src/HOL/Library/Quotient_Option"
   "Cset_Monad"
   "~~/src/HOL/Library/Wfrec"
 begin
@@ -27,6 +28,14 @@ lemma nat_add_max_le[simp]:
 lemma Suc_add_max_le[simp]:
   "(Suc(n + max i j) \<le> m) = (Suc(n + i) \<le> m \<and> Suc(n + j) \<le> m)"
 (*<*)by arith(*>*)
+
+lemma less_min_eq1:
+  "(a :: 'a :: order) < b \<Longrightarrow> min a b = a"
+by(auto simp add: min_def order_less_imp_le)
+
+lemma less_min_eq2:
+  "(a :: 'a :: order) > b \<Longrightarrow> min a b = b"
+by(auto simp add: min_def order_less_imp_le)
 
 notation Some ("(\<lfloor>_\<rfloor>)")
 
@@ -97,6 +106,13 @@ lemma map_of_SomeI:
   "\<lbrakk> distinct_fst kxs; (k,x) \<in> set kxs \<rbrakk> \<Longrightarrow> map_of kxs k = Some x"
 (*<*)by (induct kxs) (auto simp:fun_upd_apply)(*>*)
 
+lemma option_rel_Some1:
+  "option_rel R (Some x) y \<longleftrightarrow> (\<exists>y'. y = Some y' \<and> R x y')"
+by(cases y) simp_all
+
+lemma option_rel_Some2:
+  "option_rel R x (Some y) \<longleftrightarrow> (\<exists>x'. x = Some x' \<and> R x' y)"
+by(cases x) simp_all
 
 subsection {* Using @{term list_all2} for relations *}
 
@@ -371,10 +387,17 @@ lemma disj_split_asm:
 apply(auto simp add: disj_split[of P])
 done
 
+lemma disjCE:
+  assumes "P \<or> Q"
+  obtains P | "Q" "\<not> P"
+using assms by blast
+
 lemma option_case_conv_if:
   "(case v of None \<Rightarrow> f | Some x \<Rightarrow> g x) = (if \<exists>a. v = Some a then g (the v) else f)"
 by(simp)
 
+lemma LetI: "(\<And>x. x = t \<Longrightarrow> P x) \<Longrightarrow> let x = t in P x" -- "Move to Aux"
+by(simp)
 
 (* rearrange parameters and premises to allow application of one-point-rules *)
 (* adapted from Tools/induct.ML and Isabelle Developer Workshop 2010 *)
@@ -780,6 +803,14 @@ using assms
 apply(induct a "bs @ bs'" arbitrary: bs rule: rtrancl3p_converse_induct')
 apply(fastforce intro: rtrancl3p_step_converse simp add: Cons_eq_append_conv)+
 done
+
+lemma rtrancl3p_Cons:
+  "rtrancl3p r a (b # bs) a' \<longleftrightarrow> (\<exists>a''. r a b a'' \<and> rtrancl3p r a'' bs a')"
+by(auto intro: rtrancl3p_step_converse converse_rtrancl3p_step)
+
+lemma rtrancl3p_Nil:
+  "rtrancl3p r a [] a' \<longleftrightarrow> a = a'"
+by(auto elim: rtrancl3p_cases)
 
 definition invariant3p :: "('a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool"
 where "invariant3p r I \<longleftrightarrow> (\<forall>s tl s'. s \<in> I \<longrightarrow> r s tl s' \<longrightarrow> s' \<in> I)"

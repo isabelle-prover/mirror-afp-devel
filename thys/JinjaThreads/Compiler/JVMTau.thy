@@ -4,8 +4,7 @@
 
 header {* \isaheader{Unobservable steps for the JVM} *}
 
-theory JVMTau
-imports
+theory JVMTau imports
   TypeComp
   "../JVM/JVMThreaded"
   "../Framework/FWLTS"
@@ -39,7 +38,7 @@ where
 | "\<tau>instr P h stk (Invoke M n) = 
    (n < length stk \<and> 
     (stk ! n = Null \<or> 
-     (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! n)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))"
+     (\<forall>T Ts Tr D. typeof_addr h (the_Addr (stk ! n)) = \<lfloor>T\<rfloor> \<longrightarrow> P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))"
 | "\<tau>instr P h stk Return = True"
 | "\<tau>instr P h stk Pop = True"
 | "\<tau>instr P h stk Dup = True"
@@ -106,7 +105,7 @@ where
 | \<tau>move2Call:
   "\<lbrakk> length ps < length stk;
      stk ! length ps = Null \<or> 
-     (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! length ps)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)\<rbrakk>
+     (\<forall>T Ts Tr D. typeof_addr h (the_Addr (stk ! length ps)) = \<lfloor>T\<rfloor> \<longrightarrow> P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)\<rbrakk>
   \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) (length (compE2 obj) + length (compEs2 ps)) None"
 
 | \<tau>move2BlockSome1:
@@ -251,7 +250,7 @@ lemma \<tau>move2_intros':
   and \<tau>move2CallParams': "\<lbrakk> \<tau>moves2 P h stk ps pc xcp; pc' = length (compE2 obj) + pc \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) pc' xcp"
   and \<tau>move2Call': "\<lbrakk> pc = length (compE2 obj) + length (compEs2 ps); length ps < length stk; 
                      stk ! length ps = Null \<or> 
-                     (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! length ps)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M) \<rbrakk>
+                     (\<forall>T Ts Tr D. typeof_addr h (the_Addr (stk ! length ps)) = \<lfloor>T\<rfloor> \<longrightarrow> P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M) \<rbrakk>
                    \<Longrightarrow> \<tau>move2 P h stk (obj\<bullet>M(ps)) pc None"
   and \<tau>move2BlockSome2: "pc = Suc 0 \<Longrightarrow> \<tau>move2 P h stk {V:T=\<lfloor>v\<rfloor>; e} pc None"
   and \<tau>move2BlockSome': "\<lbrakk> \<tau>move2 P h stk e pc xcp; pc' = Suc (Suc pc) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk {V:T=\<lfloor>v\<rfloor>; e} pc' xcp"
@@ -361,11 +360,11 @@ done
 
 lemma \<tau>move2_Invoke:
   "\<lbrakk>\<tau>move2 P h stk e pc None; compE2 e ! pc = Invoke M n \<rbrakk>
-  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! n)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M))"
+  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (\<forall>T Ts Tr D. typeof_addr h (the_Addr (stk ! n)) = \<lfloor>T\<rfloor> \<longrightarrow> P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M))"
 
   and \<tau>moves2_Invoke: 
   "\<lbrakk>\<tau>moves2 P h stk es pc None; compEs2 es ! pc = Invoke M n \<rbrakk> 
-  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! n)) = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M))"
+  \<Longrightarrow> n < length stk \<and> (stk ! n = Null \<or> (\<forall>T C Ts Tr D. typeof_addr h (the_Addr (stk ! n)) = \<lfloor>T\<rfloor> \<longrightarrow> P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M))"
 by(simp_all add: \<tau>move2_iff \<tau>moves2_iff split_beta)
 
 lemmas \<tau>move2_compE2_not_Invoke = \<tau>move2_Invoke
@@ -432,7 +431,7 @@ apply(cases xcp)
  apply(rename_tac bop)
  apply(case_tac "the (binop bop (hd (tl stk)) (hd stk))")
  apply(auto simp add: split_beta \<tau>external_def split: split_if_asm)
-apply(fastforce simp add: check_def has_method_def \<tau>external_def is_class_type_of_conv_class_type_of_Some dest: \<tau>external_red_external_aggr_heap_unchanged)
+apply(fastforce simp add: check_def has_method_def \<tau>external_def dest: \<tau>external_red_external_aggr_heap_unchanged)
 done
 
 lemma mexecd_\<tau>mthr_wf:
@@ -472,7 +471,7 @@ apply auto
 apply(rename_tac stk loc C M pc FRS)
 apply(case_tac "instrs_of P C M ! pc")
 apply(simp_all split: split_if_asm)
-apply(auto simp add: check_def has_method_def is_class_type_of_conv_class_type_of_Some \<tau>external_def dest!: \<tau>external_red_external_aggr_TA_empty)
+apply(auto simp add: check_def has_method_def \<tau>external_def dest!: \<tau>external_red_external_aggr_TA_empty)
 done
 
 end

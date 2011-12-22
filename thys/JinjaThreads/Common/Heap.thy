@@ -39,38 +39,34 @@ locale heap_base =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   +
   fixes empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
 begin
 
 fun typeof_h :: "'heap \<Rightarrow> 'addr val \<Rightarrow> ty option"  ("typeof\<^bsub>_\<^esub>")
 where
-  "typeof\<^bsub>h\<^esub> (Addr a) = typeof_addr h a"
+  "typeof\<^bsub>h\<^esub> (Addr a) = Option.map ty_of_htype (typeof_addr h a)"
 | "typeof\<^bsub>h\<^esub>  v = typeof v"
 
 definition cname_of :: "'heap \<Rightarrow> 'addr \<Rightarrow> cname"
-where "cname_of h a = the_Class (the (typeof_addr h a))"
+where "cname_of h a = the_Class (ty_of_htype (the (typeof_addr h a)))"
 
 definition hext :: "'heap \<Rightarrow> 'heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50)
 where
-  "h \<unlhd> h' \<equiv> 
-   (\<forall>a C. typeof_addr h a = \<lfloor>Class C\<rfloor> \<longrightarrow> typeof_addr h' a = \<lfloor>Class C\<rfloor>) \<and>
-   (\<forall>a T. typeof_addr h a = \<lfloor>Array T\<rfloor> \<longrightarrow> typeof_addr h' a = \<lfloor>Array T\<rfloor> \<and> array_length h' a = array_length h a)"
+  "h \<unlhd> h' \<equiv> typeof_addr h \<subseteq>\<^sub>m typeof_addr h'"
 
 inductive addr_loc_type :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> ty \<Rightarrow> bool"
   ("_,_ \<turnstile> _@_ : _" [50, 50, 50, 50, 50] 51)
 for P :: "'m prog" and h :: 'heap and a :: 'addr
 where
   addr_loc_type_field:
-  "\<lbrakk> typeof_addr h a = \<lfloor>U\<rfloor>; is_class_type_of U C; P \<turnstile> C has F:T (fm) in D \<rbrakk> 
+  "\<lbrakk> typeof_addr h a = \<lfloor>U\<rfloor>; P \<turnstile> class_type_of U has F:T (fm) in D \<rbrakk> 
   \<Longrightarrow> P,h \<turnstile> a@CField D F : T"
 
 | addr_loc_type_cell:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; n < array_length h a \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n'\<rfloor>; n < n' \<rbrakk>
   \<Longrightarrow> P,h \<turnstile> a@ACell n : T"
 
 definition typeof_addr_loc :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> ty"
@@ -112,32 +108,39 @@ by(cases v) auto
 
 context heap_base begin
 
+lemma typeof_h_eq_Boolean [simp]: "(typeof\<^bsub>h\<^esub> v = Some Boolean) = (\<exists>b. v = Bool b)"
+by(cases v)(auto)
+
+lemma typeof_h_eq_Integer [simp]: "(typeof\<^bsub>h\<^esub> v = Some Integer) = (\<exists>i. v = Intg i)"
+by(cases v)(auto)
+
+lemma typeof_h_eq_NT [simp]: "(typeof\<^bsub>h\<^esub> v = Some NT) = (v = Null)"
+by(cases v)(auto)
+
+
 lemma hextI:
-  "\<lbrakk> \<And>a C. typeof_addr h a = \<lfloor>Class C\<rfloor> \<Longrightarrow> typeof_addr h' a = \<lfloor>Class C\<rfloor>;
-     \<And>a T. typeof_addr h a = \<lfloor>Array T\<rfloor> \<Longrightarrow> typeof_addr h' a = \<lfloor>Array T\<rfloor> \<and> array_length h' a = array_length h a \<rbrakk>
+  "\<lbrakk> \<And>a C. typeof_addr h a = \<lfloor>Class_type C\<rfloor> \<Longrightarrow> typeof_addr h' a = \<lfloor>Class_type C\<rfloor>;
+     \<And>a T n. typeof_addr h a = \<lfloor>Array_type T n\<rfloor> \<Longrightarrow> typeof_addr h' a = \<lfloor>Array_type T n\<rfloor> \<rbrakk>
   \<Longrightarrow> h \<unlhd> h'"
-unfolding hext_def by(auto)
+unfolding hext_def 
+by(rule map_leI)(case_tac v, simp_all)
 
 lemma hext_objD:
   assumes "h \<unlhd> h'"
-  and "typeof_addr h a = \<lfloor>Class C\<rfloor>"
-  shows "typeof_addr h' a = \<lfloor>Class C\<rfloor>"
-using assms unfolding hext_def by auto
+  and "typeof_addr h a = \<lfloor>Class_type C\<rfloor>"
+  shows "typeof_addr h' a = \<lfloor>Class_type C\<rfloor>"
+using assms unfolding hext_def by(auto dest: map_le_SomeD)
 
 lemma hext_arrD:
-  assumes "h \<unlhd> h'" "typeof_addr h a = \<lfloor>Array T\<rfloor>"
-  shows "typeof_addr h' a = \<lfloor>Array T\<rfloor>"
-  and "array_length h' a = array_length h a"
-using assms unfolding hext_def by blast+
+  assumes "h \<unlhd> h'" "typeof_addr h a = \<lfloor>Array_type T n\<rfloor>"
+  shows "typeof_addr h' a = \<lfloor>Array_type T n\<rfloor>"
+using assms unfolding hext_def by(blast dest: map_le_SomeD)
 
 lemma hext_refl [iff]: "h \<unlhd> h"
 by (rule hextI) blast+
 
 lemma hext_trans [trans]: "\<lbrakk> h \<unlhd> h'; h' \<unlhd> h'' \<rbrakk> \<Longrightarrow> h \<unlhd> h''"
-apply (rule hextI)
-apply (fast dest: hext_objD)
-apply (fastforce dest: hext_arrD)
-done
+unfolding hext_def by(rule map_le_trans)
 
 lemma typeof_lit_typeof:
   "typeof v = \<lfloor>T\<rfloor> \<Longrightarrow> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>"
@@ -145,7 +148,7 @@ by(cases v)(simp_all)
 
 lemma addr_loc_type_fun:
   "\<lbrakk> P,h \<turnstile> a@al : T; P,h \<turnstile> a@al : T' \<rbrakk> \<Longrightarrow> T = T'"
-by(auto elim!: addr_loc_type.cases dest: has_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
+by(auto elim!: addr_loc_type.cases dest: has_field_fun)
 
 lemma typeof_addr_locI [simp]:
   "P,h \<turnstile> a@al : T \<Longrightarrow> typeof_addr_loc P h a al = T"
@@ -170,26 +173,24 @@ end
 locale addr_conv =
   heap_base
     addr2thread_id thread_id2addr
-    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write
+    empty_heap allocate typeof_addr heap_read heap_write
   +
   prog P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and P :: "'m prog"
   +
   assumes addr2thread_id_inverse: 
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> thread_id2addr (addr2thread_id a) = a"
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> thread_id2addr (addr2thread_id a) = a"
 begin
 
 lemma typeof_addr_thread_id2_addr_addr2thread_id [simp]:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> typeof_addr h (thread_id2addr (addr2thread_id a)) = \<lfloor>Class C\<rfloor>"
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> typeof_addr h (thread_id2addr (addr2thread_id a)) = \<lfloor>Class_type C\<rfloor>"
 by(simp add: addr2thread_id_inverse)
 
 end
@@ -197,66 +198,35 @@ end
 locale heap =
   addr_conv
     addr2thread_id thread_id2addr
-    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write
+    empty_heap allocate typeof_addr heap_read heap_write
     P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and P :: "'m prog"
   +
-  assumes new_obj_SomeD:
-  "\<lbrakk> new_obj h C = (h', Some a); is_class P C \<rbrakk> \<Longrightarrow> typeof_addr h' a = Some (Class C)"
+  assumes allocate_SomeD: "\<lbrakk> allocate h hT = (h', Some a); is_htype P hT \<rbrakk> \<Longrightarrow> typeof_addr h' a = Some hT"
 
-  and hext_new_obj: "\<And>a. new_obj h C = (h', a) \<Longrightarrow> h \<unlhd> h'"
-
-  and new_arr_SomeD:
-  "\<lbrakk> new_arr h T n = (h', Some a); is_type P (T\<lfloor>\<rceil>) \<rbrakk>
-  \<Longrightarrow> typeof_addr h' a = Some (T\<lfloor>\<rceil>) \<and> array_length h' a = n"
-
-  and hext_new_arr: "\<And>a. new_arr h T n = (h', a) \<Longrightarrow> h \<unlhd> h'"
-
-  and ran_typeof_addr:
-  "ran (typeof_addr h) \<subseteq> range Class \<union> range Array"
+  and hext_allocate: "\<And>a. allocate h hT = (h', a) \<Longrightarrow> h \<unlhd> h'"
 
   and hext_heap_write:
   "heap_write h a al v h' \<Longrightarrow> h \<unlhd> h'"
 
 begin
 
-lemmas hext_heap_ops = 
-  hext_new_obj hext_new_arr
-  hext_heap_write
+lemmas hext_heap_ops = hext_allocate hext_heap_write
 
-lemma hext_heap_ops_mono':
-  shows hext_new_obj': "h \<unlhd> fst (new_obj h C)"
-  and hext_new_arr': "h \<unlhd> fst (new_arr h T n)"
-using hext_new_obj[of h C "fst (new_obj h C)" "snd (new_obj h C)"]
-  and hext_new_arr[of h T n "fst (new_arr h T n)" "snd (new_arr h T n)"]
-by auto
-
-lemma typeof_addr_eq_Some_conv:
-  "typeof_addr h a = Some T \<Longrightarrow> (\<exists>C. T = Class C) \<or> (\<exists>U. T = U\<lfloor>\<rceil>)"
-using ran_typeof_addr[of h] unfolding ran_def by auto
-
-lemma typeof_h_eq_Boolean [simp]: "(typeof\<^bsub>h\<^esub> v = Some Boolean) = (\<exists>b. v = Bool b)"
-by(cases v)(auto dest: typeof_addr_eq_Some_conv)
-
-lemma typeof_h_eq_Integer [simp]: "(typeof\<^bsub>h\<^esub> v = Some Integer) = (\<exists>i. v = Intg i)"
-by(cases v)(auto dest: typeof_addr_eq_Some_conv)
-
-lemma typeof_h_eq_NT [simp]: "(typeof\<^bsub>h\<^esub> v = Some NT) = (v = Null)"
-by(cases v)(auto dest: typeof_addr_eq_Some_conv)
+lemma hext_allocate': "h \<unlhd> fst (allocate h hT)"
+using hext_allocate[of h hT "fst (allocate h hT)" "snd (allocate h hT)"]
+by simp
 
 lemma typeof_addr_hext_mono:
-  "\<lbrakk> h \<unlhd> h'; typeof_addr h a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> typeof_addr h' a = \<lfloor>T\<rfloor>"
-using ran_typeof_addr[of h] unfolding ran_def
-by(auto dest: typeof_addr_eq_Some_conv hext_objD hext_arrD)
+  "\<lbrakk> h \<unlhd> h'; typeof_addr h a = \<lfloor>hT\<rfloor> \<rbrakk> \<Longrightarrow> typeof_addr h' a = \<lfloor>hT\<rfloor>"
+unfolding hext_def by(rule map_le_SomeD)
 
 lemma hext_typeof_mono:
   "\<lbrakk> h \<unlhd> h'; typeof\<^bsub>h\<^esub> v = Some T \<rbrakk> \<Longrightarrow> typeof\<^bsub>h'\<^esub> v = Some T"

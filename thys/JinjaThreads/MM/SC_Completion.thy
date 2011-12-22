@@ -4,10 +4,9 @@
 
 header {* \isaheader{Sequentially consistent completion of executions in the JMM} *}
 
-theory SC_Completion
+theory SC_Completion 
 imports
-  JMM_Spec
-  "../Framework/FWLTS"
+  "Non_Speculative"
 begin
 
 section {* Most recently written values *}
@@ -17,20 +16,15 @@ fun mrw_value ::
   \<Rightarrow> (('addr \<times> addr_loc) \<rightharpoonup> ('addr val \<times> bool))"
 where
   "mrw_value P vs (NormalAction (WriteMem ad al v)) = vs((ad, al) \<mapsto> (v, True))"
-| "mrw_value P vs (NormalAction (NewObj ad C)) =
-   (\<lambda>(ad', al). if ad = ad' \<and> al \<in> addr_locs P (Class_type C) \<and> (case vs (ad, al) of None \<Rightarrow> True | Some (v, b) \<Rightarrow> \<not> b)
-                then Some (addr_loc_default P (Class_type C) al, False)
-                else vs (ad', al))"
-| "mrw_value P vs (NormalAction (NewArr ad T n)) =
-   (\<lambda>(ad', al). if ad = ad' \<and> al \<in> addr_locs P (Array_type T n) \<and> (case vs (ad, al) of None \<Rightarrow> True | Some (v, b) \<Rightarrow> \<not> b)
-                then Some (addr_loc_default P (Array_type T n) al, False)
+| "mrw_value P vs (NormalAction (NewHeapElem ad hT)) =
+   (\<lambda>(ad', al). if ad = ad' \<and> al \<in> addr_locs P hT \<and> (case vs (ad, al) of None \<Rightarrow> True | Some (v, b) \<Rightarrow> \<not> b)
+                then Some (addr_loc_default P hT al, False)
                 else vs (ad', al))"
 | "mrw_value P vs _ = vs"
 
 lemma mrw_value_cases:
   obtains ad al v where "x = NormalAction (WriteMem ad al v)"
-  | ad C where "x = NormalAction (NewObj ad C)"
-  | ad T n where "x = NormalAction (NewArr ad T n)"
+  | ad hT where "x = NormalAction (NewHeapElem ad hT)"
   | ad M vs v where "x = NormalAction (ExternalCall ad M vs v)"
   | ad al v where "x = NormalAction (ReadMem ad al v)"
   | t where "x = NormalAction (ThreadStart t)"
@@ -68,7 +62,7 @@ next
   next
     case False
     with mrw have "mrw_values P vs0 obs (ad, al) = \<lfloor>(v, b)\<rfloor>"
-      by(cases "ob" rule: mrw_value_cases)(auto split: split_if_asm)
+      by(cases "ob" rule: mrw_value_cases)(auto split: split_if_asm simp add: addr_locs_def split: htype.split_asm)
     moreover
     { assume "vs0 (ad, al) = \<lfloor>(v, b)\<rfloor>"
       hence "\<exists>wa. wa \<in> set (obs @ [ob]) \<and> is_write_action wa \<and> (ad, al) \<in> action_loc_aux P wa \<and> (b \<longrightarrow> \<not> is_new_action wa)"
@@ -229,7 +223,11 @@ next
   case (Cons ob obs)
   from Cons.prems[of ob]
   have "mrw_value P vs ob adal = vs adal"
-    by(cases adal)(cases ob rule: mrw_value_cases, fastforce+)
+    apply(cases adal)
+    apply(cases ob rule: mrw_value_cases, fastforce+)
+    apply(auto simp add: addr_locs_def split: htype.split_asm)
+    apply blast+
+    done
   moreover
   have "mrw_values P (mrw_value P vs ob) obs adal = mrw_value P vs ob adal"
   proof(rule Cons.hyps)
@@ -491,126 +489,129 @@ proof -
   qed
 qed
 
-locale executions_sc =
-  executions_base \<E> P
-  for \<E> :: "('addr, 'thread_id) execution set"
-  and P :: "'m prog" +
-  assumes \<E>_new_actions_for_fun:
-  "\<lbrakk> E \<in> \<E>; a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
-  and \<E>_ex_new_action:
-  "\<lbrakk> E \<in> \<E>; ra \<in> read_actions E; adal \<in> action_loc P E ra; ta_seq_consist P empty (ltake (enat ra) (lmap snd E)) \<rbrakk>
-  \<Longrightarrow> \<exists>wa. wa \<in> new_actions_for P E adal \<and> wa < ra"
-begin
-
-lemma \<E>_new_same_addr_singleton:
-  assumes E: "E \<in> \<E>"
-  shows "\<exists>a. new_actions_for P E adal \<subseteq> {a}"
-by(blast dest: \<E>_new_actions_for_fun[OF E])
-
-lemma new_action_before_read:
-  assumes E: "E \<in> \<E>"
-  and ra: "ra \<in> read_actions E"
-  and adal: "adal \<in> action_loc P E ra"
-  and new: "wa \<in> new_actions_for P E adal"
-  and sc: "ta_seq_consist P empty (ltake (enat ra) (lmap snd E))"
-  shows "wa < ra"
-using \<E>_new_same_addr_singleton[OF E, of adal] \<E>_ex_new_action[OF E ra adal sc] new
-by auto
-
-lemma most_recent_write_exists:
-  assumes E: "E \<in> \<E>"
-  and ra: "ra \<in> read_actions E"
-  and sc: "ta_seq_consist P empty (ltake (enat ra) (lmap snd E))"
-  shows "\<exists>wa. P,E \<turnstile> ra \<leadsto>mrw wa"
+lemma ta_seq_consist_into_non_speculative:
+  assumes "ta_seq_consist P vs obs"
+  and "\<forall>adal. Option.set (vs adal) \<subseteq> vs' adal \<times> UNIV"
+  shows "non_speculative P vs' obs"
 proof -
-  from ra obtain ad al where
-    adal: "(ad, al) \<in> action_loc P E ra"
-    by(rule read_action_action_locE)
-
-  def Q == "{a. a \<in> write_actions E \<and> (ad, al) \<in> action_loc P E a \<and> E \<turnstile> a \<le>a ra}"
-  let ?A = "new_actions_for P E (ad, al)"
-  let ?B = "{a. a \<in> actions E \<and> (\<exists>v'. action_obs E a = NormalAction (WriteMem ad al v')) \<and> a \<le> ra}"
-
-  have "Q \<subseteq> ?A \<union> ?B" unfolding Q_def
-    by(auto elim!: write_actions.cases action_loc_aux_cases simp add: new_actions_for_def elim: action_orderE)
-  moreover from \<E>_new_same_addr_singleton[OF E, of "(ad, al)"]
-  have "finite ?A" by(blast intro: finite_subset)
-  moreover have "finite ?B" by auto
-  ultimately have finQ: "finite Q" 
-    by(blast intro: finite_subset)
-
-  from \<E>_ex_new_action[OF E ra adal sc] ra obtain wa 
-    where wa: "wa \<in> Q" unfolding Q_def
-    by(fastforce elim!: new_actionsE is_new_action.cases read_actions.cases intro: write_actionsI action_orderI)
-   
-  def wa' == "Max_torder (action_order E) Q"
-
-  from wa have "Q \<noteq> {}" "Q \<subseteq> actions E" by(auto simp add: Q_def)
-  with finQ have "wa' \<in> Q" unfolding wa'_def
-    by(rule Max_torder_in_set[OF torder_action_order])
-  hence "E \<turnstile> wa' \<le>a ra" "wa' \<in> write_actions E"
-    and "(ad, al) \<in> action_loc P E wa'" by(simp_all add: Q_def)
-  with ra adal have "P,E \<turnstile> ra \<leadsto>mrw wa'"
-  proof
-    fix wa''
-    assume wa'': "wa'' \<in> write_actions E" "(ad, al) \<in> action_loc P E wa''"
-    from `wa'' \<in> write_actions E` ra
-    have "ra \<noteq> wa''" by(auto dest: read_actions_not_write_actions)
-    show "E \<turnstile> wa'' \<le>a wa' \<or> E \<turnstile> ra \<le>a wa''"
-    proof(rule disjCI)
-      assume "\<not> E \<turnstile> ra \<le>a wa''"
-      with total_onPD[OF total_action_order, of ra E wa''] 
-        `ra \<noteq> wa''` `ra \<in> read_actions E` `wa'' \<in> write_actions E`
-      have "E \<turnstile> wa'' \<le>a ra" by simp
-      with wa'' have "wa'' \<in> Q" by(simp add: Q_def)
-      with finQ show "E \<turnstile> wa'' \<le>a wa'"
-        using `Q \<subseteq> actions E` unfolding wa'_def
-        by(rule Max_torder_above[OF torder_action_order])
-    qed
+  from assms have "\<exists>vs. ta_seq_consist P vs obs \<and> (\<forall>adal. Option.set (vs adal) \<subseteq> vs' adal \<times> UNIV)" by blast
+  thus ?thesis
+  proof(coinduct)
+    case (non_speculative vs' obs)
+    then obtain vs where "ta_seq_consist P vs obs" "\<forall>adal. Option.set (vs adal) \<subseteq> vs' adal \<times> UNIV" by best
+    thus ?case
+      apply cases
+      apply(auto split: action.split_asm obs_event.split_asm)
+      apply(rule exI, erule conjI, auto)+
+      done
   qed
-  thus ?thesis ..
 qed
 
+lemma llist_of_list_of_append:
+  "lfinite xs \<Longrightarrow> llist_of (list_of xs @ ys) = lappend xs (llist_of ys)"
+unfolding lfinite_eq_range_llist_of by clarsimp
 
-lemma mrw_before:
-  assumes E: "E \<in> \<E>"
+lemma ta_seq_consist_most_recent_write_for:
+  assumes sc: "ta_seq_consist P empty (lmap snd E)"
+  and read: "r \<in> read_actions E"
+  and new_actions_for_fun: "\<And>adal a a'. \<lbrakk> a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
+  shows "\<exists>i. P,E \<turnstile> r \<leadsto>mrw i \<and> i < r"
+proof -
+  from read obtain t v ad al 
+    where nth_r: "lnth E r = (t, NormalAction (ReadMem ad al v))"
+    and r: "enat r < llength E"
+    by(cases)(cases "lnth E r", auto simp add: action_obs_def actions_def)
+  from nth_r r
+  have E_unfold: "E = lappend (ltake (enat r) E) (LCons (t, NormalAction (ReadMem ad al v)) (ldropn (Suc r) E))"
+    by (metis lappend_ltake_enat_ldropn ldropn_Suc_conv_ldropn)
+  from sc obtain b where sc': "ta_seq_consist P empty (ltake (enat r) (lmap snd E))"
+    and mrw': "mrw_values P empty (map snd (list_of (ltake (enat r) E))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
+    by(subst (asm) (3) E_unfold)(auto simp add: ta_seq_consist_lappend lmap_lappend_distrib)
+  
+  from mrw_values_mrw[OF mrw', of t] r
+  obtain E' w' 
+    where E': "E' = llist_of (list_of (ltake (enat r) E) @ [(t, NormalAction (ReadMem ad al v))])"
+    and v: "v = value_written P (ltake (enat r) E) w' (ad, al)"
+    and mrw'': "P,E' \<turnstile> r \<leadsto>mrw w'"
+    and w': "w' < r" by(fastforce simp add: length_list_of_conv_the_enat min_def split: split_if_asm)
+
+  from E' r have sim: "ltake (enat (Suc r)) E' [\<approx>] ltake (enat (Suc r)) E"
+    by(subst E_unfold)(simp add: ltake_lappend llist_of_list_of_append min_def, auto simp add: eSuc_enat[symmetric] zero_enat_def[symmetric] eq_into_sim_actions)
+  from nth_r have adal_r: "(ad, al) \<in> action_loc P E r" by(simp add: action_obs_def)
+  from E' r have nth_r': "lnth E' r = (t, NormalAction (ReadMem ad al v))"
+    by(auto simp add: nth_append length_list_of_conv_the_enat min_def)
+  with mrw'' w' r adal_r obtain "E \<turnstile> w' \<le>a r" "w' \<in> write_actions E" "(ad, al) \<in> action_loc P E w'"
+    by cases(fastforce simp add: action_obs_def action_loc_change_prefix[OF sim[symmetric], simplified action_obs_def] intro: action_order_change_prefix[OF _ sim] write_actions_change_prefix[OF _ sim])
+  
+  with read adal_r have "P,E \<turnstile> r \<leadsto>mrw w'"
+  proof(rule most_recent_write_for.intros)
+    fix wa'
+    assume write': "wa' \<in> write_actions E"
+      and adal_wa': "(ad, al) \<in> action_loc P E wa'"
+    show "E \<turnstile> wa' \<le>a w' \<or> E \<turnstile> r \<le>a wa'"
+    proof(cases "r \<le> wa'")
+      assume "r \<le> wa'"
+      show ?thesis
+      proof(cases "is_new_action (action_obs E wa')")
+        case False
+        with `r \<le> wa'` have "E \<turnstile> r \<le>a wa'" using read write'
+          by(auto simp add: action_order_def elim!: read_actions.cases)
+        thus ?thesis ..
+      next
+        case True
+        with write' adal_wa' have "wa' \<in> new_actions_for P E (ad, al)"
+          by(simp add: new_actions_for_def)
+        hence "w' \<notin> new_actions_for P E (ad, al)" using r w' `r \<le> wa'`
+          by(auto dest: new_actions_for_fun)
+        with `w' \<in> write_actions E` `(ad, al) \<in> action_loc P E w'`
+        have "\<not> is_new_action (action_obs E w')" by(simp add: new_actions_for_def)
+        with write' True `w' \<in> write_actions E` have "E \<turnstile> wa' \<le>a w'" by(simp add: action_order_def)
+        thus ?thesis ..
+      qed
+    next
+      assume "\<not> r \<le> wa'"
+      hence "wa' < r" by simp
+      with write' adal_wa'
+      have "wa' \<in> write_actions E'" "(ad, al) \<in> action_loc P E' wa'"
+        by(auto intro: write_actions_change_prefix[OF _ sim[symmetric]] simp add: action_loc_change_prefix[OF sim])
+      from most_recent_write_recent[OF mrw'' _ this] nth_r'
+      have "E' \<turnstile> wa' \<le>a w' \<or> E' \<turnstile> r \<le>a wa'" by(simp add: action_obs_def)
+      thus ?thesis using `wa' < r` w'
+        by(auto 4 3 del: disjCI intro: disjI1 disjI2 action_order_change_prefix[OF _ sim])
+    qed
+  qed
+  with w' show ?thesis by blast
+qed
+
+lemma ta_seq_consist_mrw_before:
+  assumes sc: "ta_seq_consist P empty (lmap snd E)"
+  and new_actions_for_fun: "\<And>adal a a'. \<lbrakk> a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
   and mrw: "P,E \<turnstile> r \<leadsto>mrw w"
-  and sc: "ta_seq_consist P empty (ltake (enat r) (lmap snd E))"
   shows "w < r"
-using mrw read_actions_not_write_actions[of r E]
-apply cases
-apply(erule action_orderE)
- apply(erule (1) new_action_before_read[OF E])
-  apply(simp add: new_actions_for_def)
- apply(rule sc)
-apply(cases "w = r")
-apply auto
-done
-
-lemma sequentially_consistent_most_recent_write_for:
-  assumes E: "E \<in> \<E>"
-  and sc: "ta_seq_consist P empty (lmap snd E)"
-  shows "sequentially_consistent P (E, \<lambda>r. THE w. P,E \<turnstile> r \<leadsto>mrw w)"
-proof(rule sequentially_consistentI)
-  fix r
-  assume r: "r \<in> read_actions E"
-  from sc have sc': "ta_seq_consist P empty (ltake (enat r) (lmap snd E))"
-    by(rule ta_seq_consist_ltake)
-  from most_recent_write_exists[OF E r this]
-  obtain w where "P,E \<turnstile> r \<leadsto>mrw w" ..
-  thus "P,E \<turnstile> r \<leadsto>mrw THE w. P,E \<turnstile> r \<leadsto>mrw w"
-    by(simp add: THE_most_recent_writeI)
+proof -
+  from mrw have "r \<in> read_actions E" by cases
+  with sc new_actions_for_fun obtain w' where "P,E \<turnstile> r \<leadsto>mrw w'" "w' < r"
+    by(auto dest: ta_seq_consist_most_recent_write_for)
+  with mrw show ?thesis by(auto dest: most_recent_write_for_fun)
 qed
 
 lemma ta_seq_consist_imp_sequentially_consistent:
-  assumes E: "E \<in> \<E>"
-  and tsa_ok: "thread_start_actions_ok E"
+  assumes tsa_ok: "thread_start_actions_ok E"
+  and new_actions_for_fun: "\<And>adal a a'. \<lbrakk> a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
   and seq: "ta_seq_consist P empty (lmap snd E)"
   shows "\<exists>ws. sequentially_consistent P (E, ws) \<and> P \<turnstile> (E, ws) \<surd>"
 proof(intro exI conjI)
   def ws == "\<lambda>i. THE w. P,E \<turnstile> i \<leadsto>mrw w"
-  from E seq show "sequentially_consistent P (E, ws)"
-    unfolding ws_def by(rule sequentially_consistent_most_recent_write_for)
+  from seq have ns: "non_speculative P (\<lambda>_. {}) (lmap snd E)"
+    by(rule ta_seq_consist_into_non_speculative) simp
+  show "sequentially_consistent P (E, ws)" unfolding ws_def
+  proof(rule sequentially_consistentI)
+    fix r
+    assume "r \<in> read_actions E"
+    with seq new_actions_for_fun
+    obtain w where "P,E \<turnstile> r \<leadsto>mrw w" by(auto dest: ta_seq_consist_most_recent_write_for)
+    thus "P,E \<turnstile> r \<leadsto>mrw THE w. P,E \<turnstile> r \<leadsto>mrw w" by(simp add: THE_most_recent_writeI)
+  qed
 
   show "P \<turnstile> (E, ws) \<surd>"
   proof(rule wf_execI)
@@ -619,9 +620,10 @@ proof(intro exI conjI)
       fix a ad al v
       assume a: "a \<in> read_actions E"
         and adal: "action_obs E a = NormalAction (ReadMem ad al v)"
-      from seq have seq': "ta_seq_consist P empty (ltake (enat a) (lmap snd E))" by(rule ta_seq_consist_ltake)
-      from most_recent_write_exists[OF E a seq']
-      obtain w where mrw: "P,E \<turnstile> a \<leadsto>mrw w" ..
+      from ns have seq': "non_speculative P (\<lambda>_. {}) (ltake (enat a) (lmap snd E))" by(rule non_speculative_ltake)
+      from seq a seq new_actions_for_fun
+      obtain w where mrw: "P,E \<turnstile> a \<leadsto>mrw w" 
+        and "w < a" by(auto dest: ta_seq_consist_most_recent_write_for)
       hence w: "ws a = w" by(simp add: ws_def THE_most_recent_writeI)
       with mrw adal
 
@@ -633,8 +635,6 @@ proof(intro exI conjI)
       let ?between = "ltake (enat (a - Suc w)) (ldropn (Suc w) E)"
       let ?prefix = "ltake (enat w) E"
       let ?vs_prefix = "mrw_values P empty (map snd (list_of ?prefix))"
-
-      from E mrw seq' have "w < a" by(rule mrw_before)
 
       { fix v'
         assume new: "is_new_action (action_obs E w)"
@@ -726,7 +726,136 @@ proof(intro exI conjI)
   qed(rule tsa_ok)
 qed
 
+(*
+context executions_sc_hb begin
+
+lemma ta_seq_consist_imp_sequentially_consistent:
+  assumes E: "E \<in> \<E>"
+  and tsa_ok: "thread_start_actions_ok E"
+  and seq: "ta_seq_consist P empty (lmap snd E)"
+  shows "\<exists>ws. sequentially_consistent P (E, ws) \<and> P \<turnstile> (E, ws) \<surd>"
+proof(intro exI conjI)
+  def ws == "\<lambda>i. THE w. P,E \<turnstile> i \<leadsto>mrw w"
+  from seq have ns: "non_speculative P (\<lambda>_. {}) (lmap snd E)"
+    by(rule ta_seq_consist_into_non_speculative) simp
+  with E show "sequentially_consistent P (E, ws)"
+    unfolding ws_def by(rule sequentially_consistent_most_recent_write_for)
+
+  show "P \<turnstile> (E, ws) \<surd>"
+  proof(rule wf_execI)
+    show "is_write_seen P E ws"
+    proof(rule is_write_seenI)
+      fix a ad al v
+      assume a: "a \<in> read_actions E"
+        and adal: "action_obs E a = NormalAction (ReadMem ad al v)"
+      from ns have seq': "non_speculative P (\<lambda>_. {}) (ltake (enat a) (lmap snd E))" by(rule non_speculative_ltake)
+      from most_recent_write_exists[OF E a seq']
+      obtain w where mrw: "P,E \<turnstile> a \<leadsto>mrw w" ..
+      hence w: "ws a = w" by(simp add: ws_def THE_most_recent_writeI)
+      with mrw adal
+
+      show "ws a \<in> write_actions E"
+        and "(ad, al) \<in> action_loc P E (ws a)"
+        and "\<not> P,E \<turnstile> a \<le>hb ws a"
+        by(fastforce elim!: most_recent_write_for.cases dest: happens_before_into_action_order antisymPD[OF antisym_action_order] read_actions_not_write_actions)+
+
+      let ?between = "ltake (enat (a - Suc w)) (ldropn (Suc w) E)"
+      let ?prefix = "ltake (enat w) E"
+      let ?vs_prefix = "mrw_values P empty (map snd (list_of ?prefix))"
+
+      from E mrw seq' have "w < a" by(rule mrw_before)
+
+      { fix v'
+        assume new: "is_new_action (action_obs E w)"
+          and vs': "?vs_prefix (ad, al) = \<lfloor>(v', True)\<rfloor>"
+        from mrw_values_eq_SomeD[OF vs']
+        obtain obs' wa obs'' where split: "map snd (list_of ?prefix) = obs' @ wa # obs''"
+          and wa: "is_write_action wa"
+          and adal': "(ad, al) \<in> action_loc_aux P wa"
+          and new_wa: "\<not> is_new_action wa" by blast
+        from split have "length (map snd (list_of ?prefix)) = Suc (length obs' + length obs'')" by simp
+        hence len_prefix: "llength ?prefix = enat \<dots>" by(simp add: length_list_of_conv_the_enat min_enat1_conv_enat)
+        with split have "nth (map snd (list_of ?prefix)) (length obs') = wa"
+          and "enat (length obs') < llength ?prefix" by simp_all
+        hence "snd (lnth ?prefix (length obs')) = wa" by(simp add: list_of_lmap[symmetric] del: list_of_lmap)
+        hence wa': "action_obs E (length obs') = wa" and "enat (length obs') < llength E"
+          using `enat (length obs') < llength ?prefix` by(auto simp add: action_obs_def lnth_ltake)
+        with wa have "length obs' \<in> write_actions E" by(auto intro: write_actions.intros simp add: actions_def)
+        from most_recent_write_recent[OF mrw _ this, of "(ad, al)"] adal adal' wa'
+        have "E \<turnstile> length obs' \<le>a w \<or> E \<turnstile> a \<le>a length obs'" by simp
+        hence False using new_wa new wa' adal len_prefix `w < a`
+          by(auto elim!: action_orderE simp add: min_enat1_conv_enat split: enat.split_asm) 
+      }
+      hence mrw_value_w: "mrw_value P ?vs_prefix (snd (lnth E w)) (ad, al) =
+                          \<lfloor>(value_written P E w (ad, al), \<not> is_new_action (action_obs E w))\<rfloor>"
+        using `ws a \<in> write_actions E` `(ad, al) \<in> action_loc P E (ws a)` w
+        by(cases "snd (lnth E w)" rule: mrw_value_cases)(fastforce elim: write_actions.cases simp add: value_written_def action_obs_def)+
+      have "mrw_values P (mrw_value P ?vs_prefix (snd (lnth E w))) (list_of (lmap snd ?between)) (ad, al) = \<lfloor>(value_written P E w (ad, al), \<not> is_new_action (action_obs E w))\<rfloor>"
+      proof(subst mrw_values_no_write_unchanged)
+        fix wa
+        assume "wa \<in> set (list_of (lmap snd ?between))"
+          and write_wa: "is_write_action wa"
+          and adal_wa: "(ad, al) \<in> action_loc_aux P wa"
+        hence wa: "wa \<in> lset (lmap snd ?between)" by simp
+        from wa obtain i_wa where "wa = lnth (lmap snd ?between) i_wa"
+          and i_wa: "enat i_wa < llength (lmap snd ?between)"
+          unfolding lset_def by blast
+        moreover hence i_wa_len: "enat (Suc (w + i_wa)) < llength E" by(cases "llength E") auto
+        ultimately have wa': "wa = action_obs E (Suc (w + i_wa))"
+          by(simp_all add: lnth_ltake action_obs_def add_ac)
+        with write_wa i_wa_len have "Suc (w + i_wa) \<in> write_actions E"
+          by(auto intro: write_actions.intros simp add: actions_def)
+        from most_recent_write_recent[OF mrw _ this, of "(ad, al)"] adal adal_wa wa'
+        have "E \<turnstile> Suc (w + i_wa) \<le>a w \<or> E \<turnstile> a \<le>a Suc (w + i_wa)" by(simp)
+        hence "is_new_action wa \<and> \<not> is_new_action (action_obs E w)"
+          using adal i_wa wa' by(auto elim: action_orderE)
+        thus "case (mrw_value P ?vs_prefix (snd (lnth E w)) (ad, al)) of None \<Rightarrow> False | Some (v, b) \<Rightarrow> b \<and> is_new_action wa"
+          unfolding mrw_value_w by simp
+      qed(simp add: mrw_value_w)
+
+      moreover
+
+      from a have "a \<in> actions E" by simp
+      hence "enat a < llength E" by(rule actionsE)
+      with `w < a` have "enat (a - Suc w) < llength E - enat (Suc w)"
+        by(cases "llength E") simp_all
+      hence "E = lappend (lappend ?prefix (LCons (lnth E w) ?between)) (LCons (lnth (ldropn (Suc w) E) (a - Suc w)) (ldropn (Suc (a - Suc w)) (ldropn (Suc w) E)))"
+        using `w < a` `enat a < llength E` unfolding lappend_assoc lappend_LCons
+        apply(subst ldropn_Suc_conv_ldropn, simp)
+        apply(subst lappend_ltake_enat_ldropn)
+        apply(subst ldropn_Suc_conv_ldropn, simp add: less_trans[where y="enat a"])
+        by simp
+      hence E': "E = lappend (lappend ?prefix (LCons (lnth E w) ?between)) (LCons (lnth E a) (ldropn (Suc a) E))"
+        using `w < a` `enat a < llength E` by simp
+      
+      from seq have "ta_seq_consist P (mrw_values P empty (list_of (lappend (lmap snd ?prefix) (LCons (snd (lnth E w)) (lmap snd ?between))))) (lmap snd (LCons (lnth E a) (ldropn (Suc a) E)))"
+        by(subst (asm) E')(simp add: lmap_lappend_distrib ta_seq_consist_lappend)
+      ultimately show "value_written P E (ws a) (ad, al) = v" using adal w
+        by(clarsimp simp add: action_obs_def list_of_lappend list_of_LCons)
+
+      show "\<not> P,E \<turnstile> a \<le>so ws a" using `w < a` w adal by(auto elim!: action_orderE sync_orderE)
+
+      fix a'
+      assume a': "a' \<in> write_actions E" "(ad, al) \<in> action_loc P E a'"
+
+      {
+        presume "E \<turnstile> ws a \<le>a a'" "E \<turnstile> a' \<le>a a"
+        with mrw adal a' have "a' = ws a" unfolding w
+          by cases(fastforce dest: antisymPD[OF antisym_action_order] read_actions_not_write_actions elim!: meta_allE[where x=a'])
+        thus "a' = ws a" "a' = ws a" by -
+      next
+        assume "P,E \<turnstile> ws a \<le>hb a'" "P,E \<turnstile> a' \<le>hb a"
+        thus "E \<turnstile> ws a \<le>a a'" "E \<turnstile> a' \<le>a a" using a' by(blast intro: happens_before_into_action_order)+
+      next
+        assume "is_volatile P al" "P,E \<turnstile> ws a \<le>so a'" "P,E \<turnstile> a' \<le>so a"
+        thus "E \<turnstile> ws a \<le>a a'" "E \<turnstile> a' \<le>a a" by(auto elim: sync_orderE)
+      }
+    qed
+  qed(rule tsa_ok)
+qed
+
 end
+*)
 
 section {* Cut-and-update and sequentially consistent completion *}
 
@@ -811,7 +940,7 @@ done
 declare split_paired_Ex [simp]
 declare eq_upto_seq_inconsist_simps [simp del]
 
-context executions_sc begin
+context executions_sc_hb begin
 
 lemma ta_seq_consist_mrwI:
   assumes E: "E \<in> \<E>"
@@ -824,14 +953,16 @@ proof(rule ta_seq_consist_nthI)
     and E_i: "lnth (lmap snd (ltake r E)) i = NormalAction (ReadMem ad al v)"
     and sc: "ta_seq_consist P empty (ltake (enat i) (lmap snd (ltake r E)))"
   from i_len have "enat i < r" by simp
-  with sc have sc': "ta_seq_consist P empty (ltake (enat i) (lmap snd E))"
+  with sc have "ta_seq_consist P empty (ltake (enat i) (lmap snd E))"
     by(simp add: min_def split: split_if_asm)
+  hence ns: "non_speculative P (\<lambda>_. {}) (ltake (enat i) (lmap snd E))"
+    by(rule ta_seq_consist_into_non_speculative) simp
   from i_len have "i \<in> actions E" by(simp add: actions_def)
   moreover from E_i i_len have obs_i: "action_obs E i = NormalAction (ReadMem ad al v)"
     by(simp add: action_obs_def lnth_ltake)
   ultimately have read: "i \<in> read_actions E" ..
   with i_len have mrw_i: "P,E \<turnstile> i \<leadsto>mrw ws i" by(auto intro: mrw)
-  with E have "ws i < i" using sc' by(rule mrw_before)
+  with E have "ws i < i" using ns by(rule mrw_before)
 
   from mrw_i obs_i obtain adal_w: "(ad, al) \<in> action_loc P E (ws i)"
     and adal_r: "(ad, al) \<in> action_loc P E i"
@@ -947,17 +1078,12 @@ qed
 
 end
 
-locale jmm_multithreaded = multithreaded_base +
-  constrains final :: "'x \<Rightarrow> bool" 
-  and r :: "('l, 't, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) semantics" 
-  and convert_RA :: "'l released_locks \<Rightarrow> ('addr, 'thread_id) obs_event action list" 
-  fixes P :: "'md prog"
-begin
+context jmm_multithreaded begin
 
 primrec complete_sc_aux :: 
-  "(('l,'t,'x,'m,'w) state \<times> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool)) 
-  \<Rightarrow> (('t \<times> ('l, 't, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) 
-      \<times> (('l,'t,'x,'m,'w) state \<times> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool))) option"
+  "(('l,'thread_id,'x,'m,'w) state \<times> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool)) 
+  \<Rightarrow> (('thread_id \<times> ('l, 'thread_id, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) 
+      \<times> (('l,'thread_id,'x,'m,'w) state \<times> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool))) option"
 where
   "complete_sc_aux (s, vs) =
    (if \<exists>t ta s'. s -t\<triangleright>ta\<rightarrow> s'
@@ -968,11 +1094,11 @@ where
 
 declare complete_sc_aux.simps [simp del]
 
-definition complete_sc :: "('l,'t,'x,'m,'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> 
-  ('t \<times> ('l, 't, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) llist"
+definition complete_sc :: "('l,'thread_id,'x,'m,'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> 
+  ('thread_id \<times> ('l, 'thread_id, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) llist"
 where "complete_sc s vs = llist_corec (s, vs) complete_sc_aux"
 
-definition sc_completion :: "('l, 't, 'x, 'm, 'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> bool"
+definition sc_completion :: "('l, 'thread_id, 'x, 'm, 'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> bool"
 where
   "sc_completion s vs \<longleftrightarrow>
    (\<forall>ttas s' t x ta x' m'.
@@ -1026,7 +1152,7 @@ lemma complete_sc_in_Runs:
 proof -
   def s' \<equiv> s and vs' \<equiv> vs
   def ttas \<equiv> "complete_sc s' vs'"
-  let ?ttas' = "\<lambda>ttas' :: ('t \<times> ('l,'t,'x,'m,'w, ('addr, 'thread_id) obs_event action) thread_action) list.
+  let ?ttas' = "\<lambda>ttas' :: ('thread_id \<times> ('l,'thread_id,'x,'m,'w, ('addr, 'thread_id) obs_event action) thread_action) list.
                concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')"
   let "?vs ttas'" = "mrw_values P vs (?ttas' ttas')"
   from s'_def vs'_def
@@ -1097,7 +1223,7 @@ proof -
   let ?obs = "\<lambda>ttas. lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)"
   def obs \<equiv> "?obs (complete_sc s vs)"
   def a \<equiv> "complete_sc s vs'"
-  let ?ttas' = "\<lambda>ttas' :: ('t \<times> ('l,'t,'x,'m,'w,('addr, 'thread_id) obs_event action) thread_action) list.
+  let ?ttas' = "\<lambda>ttas' :: ('thread_id \<times> ('l,'thread_id,'x,'m,'w,('addr, 'thread_id) obs_event action) thread_action) list.
                concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')"
   let "?vs ttas'" = "mrw_values P vs (?ttas' ttas')"
   from vs'_def obs_def
@@ -1199,7 +1325,7 @@ using complete_sc_ta_seq_consist[OF assms] complete_sc_in_Runs[OF assms]
 by blast
 
 
-definition cut_and_update :: "('l, 't, 'x, 'm, 'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> bool"
+definition cut_and_update :: "('l, 'thread_id, 'x, 'm, 'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> bool"
 where
   "cut_and_update s vs \<longleftrightarrow>
    (\<forall>ttas s' t x ta x' m'.

@@ -5,13 +5,12 @@
 header {*
   \isaheader{The JinjaThreads source language with explicit call stacks}
 *}
-theory J0
-imports
+theory J0 imports
   "../J/WWellForm"
   "../J/WellType"
   "../J/Threaded" 
   "../Framework/FWBisimulation" 
-  CallExpr
+  "CallExpr"
 begin
 
 declare widen_refT [elim]
@@ -107,8 +106,8 @@ where
   \<Longrightarrow> P,t \<turnstile>0 \<langle>e/es, h\<rangle> -ta\<rightarrow> \<langle>e'/es, h'\<rangle>"
 
 | red0Call:
-  "\<lbrakk> call e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr h a = \<lfloor>U\<rfloor>; is_class_type_of U C;
-     P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D; 
+  "\<lbrakk> call e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr h a = \<lfloor>U\<rfloor>; 
+     P \<turnstile> class_type_of U sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D; 
      size vs = size pns; size Ts = size pns \<rbrakk>
   \<Longrightarrow> P,t \<turnstile>0 \<langle>e/es, h\<rangle> -\<epsilon>\<rightarrow> \<langle>blocks (this # pns) (Class D # Ts) (Addr a # vs) body/e#es, h\<rangle>"
 
@@ -134,7 +133,7 @@ lemma assumes wf: "wwf_J_prog P"
   shows red_fv_subset: "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> fv e' \<subseteq> fv e"
   and reds_fvs_subset: "extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> fvs es' \<subseteq> fvs es"
 proof(induct rule: red_reds.inducts)
-  case (RedCall s a U C M Ts T pns body D vs)
+  case (RedCall s a U M Ts T pns body D vs)
   hence "fv body \<subseteq> {this} \<union> set pns"
     using wf by(fastforce dest!:sees_wf_mdecl simp:wf_mdecl_def)
   with RedCall show ?case by fastforce
@@ -152,8 +151,8 @@ lemma assumes wwf: "wwf_J_prog P"
   shows red_fv_ok: "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; fv e \<subseteq> dom (lcl s) \<rbrakk> \<Longrightarrow> fv e' \<subseteq> dom (lcl s')"
   and reds_fvs_ok: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; fvs es \<subseteq> dom (lcl s) \<rbrakk> \<Longrightarrow> fvs es' \<subseteq> dom (lcl s')"
 proof(induct rule: red_reds.inducts)
-  case (RedCall s a U C M Ts T pns body D vs)
-  from `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D` have "wwf_J_mdecl P D (M,Ts,T,pns,body)"
+  case (RedCall s a U M Ts T pns body D vs)
+  from `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D` have "wwf_J_mdecl P D (M,Ts,T,pns,body)"
     by(auto dest!: sees_wf_mdecl[OF wwf] simp add: wf_mdecl_def)
   with RedCall show ?case by(auto)
 next
@@ -183,13 +182,15 @@ done
 
 lemma called_methodD:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call e = \<lfloor>(a, M, vs)\<rfloor>; \<not> synthesized_call P (hp s) (a, M, vs) \<rbrakk> 
-  \<Longrightarrow> \<exists>T C D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and>
-                           P \<turnstile> C sees M: Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D \<and> length vs = length pns \<and> length Us = length pns"
+  \<Longrightarrow> \<exists>hT D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>hT\<rfloor> \<and>
+                           P \<turnstile> class_type_of hT sees M: Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D \<and> 
+                           length vs = length pns \<and> length Us = length pns"
 
   and called_methodsD:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; calls es = \<lfloor>(a, M, vs)\<rfloor>; \<not> synthesized_call P (hp s) (a, M, vs) \<rbrakk> 
-  \<Longrightarrow> \<exists>T C fs D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and>
-                              P \<turnstile> C sees M: Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D \<and> length vs = length pns \<and> length Us = length pns"
+  \<Longrightarrow> \<exists>hT D Us U pns body. hp s' = hp s \<and> typeof_addr (hp s) a = \<lfloor>hT\<rfloor> \<and>
+                           P \<turnstile> class_type_of hT sees M: Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D \<and>
+                           length vs = length pns \<and> length Us = length pns"
 apply(induct rule: red_reds.inducts)
 apply(auto split: split_if_asm simp add: synthesized_call_def)
 apply(fastforce)
@@ -217,14 +218,17 @@ where
 | "\<tau>move0 P h (FAss e F D e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> (\<tau>move0 P h e' \<or> (\<exists>a. e' = Throw a)))"
 | "\<tau>move0 P h (e\<bullet>M(es)) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and>
    ((\<tau>moves0 P h es \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')) \<or> 
-    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T C Ts Tr D. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> is_class_type_of T C \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))))"
+    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T C Ts Tr D. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of' T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))))"
 | "\<tau>move0 P h ({V:T=vo; e}) \<longleftrightarrow> \<tau>move0 P h e \<or> ((\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v))"
 | "\<tau>move0 P h (sync\<^bsub>V'\<^esub>(e) e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a)"
 | "\<tau>move0 P h (insync\<^bsub>V'\<^esub>(ad) e) \<longleftrightarrow> \<tau>move0 P h e"
 | "\<tau>move0 P h (e;;e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
 | "\<tau>move0 P h (if (e) e' else e'') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
 | "\<tau>move0 P h (while (e) e') = True"
-| "\<tau>move0 P h (throw e) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> e = null"
+| -- {* @{term "Throw a"} is no @{text "\<tau>move0"} because there is no reduction for it.
+  If it were, most defining equations would be simpler. However, @{term "insync\<^bsub>V'\<^esub>(ad) (Throw ad)"}
+  must not be a @{text "\<tau>move0"}, but would be if @{term "Throw a"} was. *}
+  "\<tau>move0 P h (throw e) \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> e = null"
 | "\<tau>move0 P h (try e catch(C V) e') \<longleftrightarrow> \<tau>move0 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
 
 | "\<tau>moves0 P h [] \<longleftrightarrow> False"
@@ -311,7 +315,7 @@ lemma \<tau>move0_\<tau>moves0_intros:
   and \<tau>move0FAss2: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>F{D} := e)"
   and \<tau>move0CallObj: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (e\<bullet>M(es))"
   and \<tau>move0CallParams: "\<tau>moves0 P h es \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(es))"
-  and \<tau>move0Call: "(\<And>T C Ts Tr D. \<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>; is_class_type_of T C; P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<rbrakk> \<Longrightarrow> \<tau>external_defs D M) \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(map Val vs))"
+  and \<tau>move0Call: "(\<And>T C Ts Tr D. \<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>; class_type_of' T = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<rbrakk> \<Longrightarrow> \<tau>external_defs D M) \<Longrightarrow> \<tau>move0 P h (Val v\<bullet>M(map Val vs))"
   and \<tau>move0Block: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h {V:T=vo; e}"
   and \<tau>move0BlockRed: "\<tau>move0 P h {V:T=vo; Val v}"
   and \<tau>move0Sync: "\<tau>move0 P h e \<Longrightarrow> \<tau>move0 P h (sync\<^bsub>V'\<^esub> (e) e')"
@@ -783,7 +787,7 @@ lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   and \<tau>moves0_callsD: "calls es = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>moves0 P h es \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
 apply(induct e and es)
 apply(auto split: split_if_asm simp add: is_vals_conv)
-apply(fastforce simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def \<tau>external_def is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)+
+apply(fastforce simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def \<tau>external_def dest: sees_method_fun)+
 done
 
 lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"

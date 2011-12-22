@@ -161,17 +161,18 @@ proof -
   qed
 qed
 
-lemma
-  "  5  sdiv ( 3 :: word32) =  1"
-  "  5  smod ( 3 :: word32) =  2"
-  "  5  sdiv (-3 :: word32) = -1"
-  "  5  smod (-3 :: word32) =  2"
-  "(-5) sdiv ( 3 :: word32) = -1"
-  "(-5) smod ( 3 :: word32) = -2"
-  "(-5) sdiv (-3 :: word32) =  1"
-  "(-5) smod (-3 :: word32) = -2"
-  "-2147483648 sdiv 1 = (-2147483648 :: word32)"
-by eval+
+notepad begin
+have  "  5  sdiv ( 3 :: word32) =  1"
+  and "  5  smod ( 3 :: word32) =  2"
+  and "  5  sdiv (-3 :: word32) = -1"
+  and "  5  smod (-3 :: word32) =  2"
+  and "(-5) sdiv ( 3 :: word32) = -1"
+  and "(-5) smod ( 3 :: word32) = -2"
+  and "(-5) sdiv (-3 :: word32) =  1"
+  and "(-5) smod (-3 :: word32) = -2"
+  and "-2147483648 sdiv 1 = (-2147483648 :: word32)"
+  by eval+
+end
 
 context heap_base begin
 

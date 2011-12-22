@@ -4,8 +4,7 @@
 
 header {* \isaheader{Various Operations for Exception Tables} *}
 
-theory Exception_Tables
-imports
+theory Exception_Tables imports
   Compiler2
   "../Common/ExternalCallWF"
   "../JVM/JVMExceptions"

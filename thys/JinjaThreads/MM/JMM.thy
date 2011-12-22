@@ -5,10 +5,11 @@
 theory JMM
 imports
   JMM_DRF
+  SC_Legal
   DRF_J
   DRF_JVM
   JMM_Type
-  JMM_Type2
+  JMM_Interp
 begin
 
 end

@@ -4,9 +4,9 @@
 
 header {* \isaheader{Unlocking a sync block never fails} *}
 
-theory Correctness1Threaded
-imports 
+theory Correctness1Threaded imports 
   J0J1Bisim
+  "../Framework/FWInitFinLift"
 begin
 
 definition lock_oks1 :: 
@@ -224,7 +224,7 @@ lemma Red1_preserves_el_loc_ok1:
 apply(erule Red1.cases)
   apply(auto simp add: el_loc_ok1_def dest: red1_preserves_el_loc_ok red1_preserves_sync_ok intro: el_loc_ok_inline_call sync_ok_inline_call)
  apply(fastforce dest!: sees_wf_mdecl[OF wf] simp add: wf_mdecl_def intro!: el_loc_okI dest: WT1_not_contains_insync intro: not_contains_insync_sync_ok)+
-done 
+done
 
 lemma assumes wf: "wf_J1_prog P"
   shows red1_el_loc_ok1_new_thread:
@@ -252,6 +252,41 @@ lemma Red1_el_loc_ok:
   shows "lifting_wf final_expr1 (mred1g uf P) (\<lambda>t exexs h. el_loc_ok1 exexs)"
 by(unfold_locales)(auto elim: Red1_preserves_el_loc_ok1[OF wf] Red1_el_loc_ok1_new_thread[OF wf])
 
+lemma mred1_eq_mred1':
+  assumes lok: "lock_oks1 (locks s) (thr s)"
+  and elo: "ts_ok (\<lambda>t exexs h. el_loc_ok1 exexs) (thr s) (shr s)"
+  and tst: "thr s t = \<lfloor>(exexs, no_wait_locks)\<rfloor>"
+  and aoe: "Red1_mthr.actions_ok s t ta"
+  shows "mred1 P t (exexs, shr s) ta = mred1' P t (exexs, shr s) ta"
+proof(intro ext iffI)
+  fix xm'
+  assume "mred1 P t (exexs, shr s) ta xm'"
+  moreover obtain ex exs where exexs [simp]: "exexs = (ex, exs)" by(cases exexs)
+  moreover obtain ex' exs' m' where xm' [simp]: "xm' = ((ex', exs'), m')" by(cases xm') auto
+  ultimately have red: "True,P,t \<turnstile>1 \<langle>ex/exs,shr s\<rangle> -ta\<rightarrow> \<langle>ex'/exs',m'\<rangle>" by simp
+  from elo tst have "el_loc_ok1 (ex, exs)" by(auto dest: ts_okD)
+  from Red1_True_into_Red1_False[OF red this]
+  have "False,P,t \<turnstile>1 \<langle>ex/exs,shr s\<rangle> -ta\<rightarrow> \<langle>ex'/exs',m'\<rangle>"
+  proof
+    assume "\<exists>l. ta = \<lbrace>UnlockFail\<rightarrow>l\<rbrace> \<and> 0 < expr_lockss (fst ex # map fst exs) l"
+    then obtain l where ta: "ta = \<lbrace>UnlockFail\<rightarrow>l\<rbrace>" 
+      and el: "expr_lockss (fst ex # map fst exs) l > 0" by blast
+    from aoe have "lock_actions_ok ((locks s)\<^sub>f l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)"
+      by(auto simp add: lock_ok_las_def)
+    with ta have "has_locks ((locks s)\<^sub>f l) t = 0" by simp
+    with lok tst have "expr_lockss (map fst (ex # exs)) l = 0"
+      by(cases ex)(auto 4 6 simp add: lock_oks1_def)
+    with el have False by simp
+    thus ?thesis ..
+  qed
+  thus "mred1' P t (exexs, shr s) ta xm'" by simp
+next
+  fix xm'
+  assume "mred1' P t (exexs, shr s) ta xm'"
+  thus "mred1 P t (exexs, shr s) ta xm'"
+    by(cases xm')(auto simp add: split_beta intro: Red1_False_into_Red1_True)
+qed
+
 lemma Red1_mthr_eq_Red1_mthr':
   assumes lok: "lock_oks1 (locks s) (thr s)"
   and elo: "ts_ok (\<lambda>t exexs h. el_loc_ok1 exexs) (thr s) (shr s)"
@@ -263,55 +298,23 @@ proof(intro ext)
     assume "?lhs" thus ?rhs
     proof cases
       case (redT_normal t x ta x' m')
-      note [simp] = `tta = (t, ta)`
-      note thrS = `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
-      note aoe = `Red1_mthr.actions_ok s t ta` 
-      obtain ex exs where x [simp]: "x = (ex, exs)" by(cases x)
-      obtain ex' exs' where x' [simp]: "x' = (ex', exs')" by(cases x')
-      from `mred1 P t (x, shr s) ta (x', m')`
-      have red: "True,P,t \<turnstile>1 \<langle>ex/exs,shr s\<rangle> -ta\<rightarrow> \<langle>ex'/exs',m'\<rangle>" by simp
-      from elo thrS have "el_loc_ok1 (ex, exs)" by(auto dest: ts_okD)
-      from Red1_True_into_Red1_False[OF red this]
-      have "False,P,t \<turnstile>1 \<langle>ex/exs,shr s\<rangle> -ta\<rightarrow> \<langle>ex'/exs',m'\<rangle>"
-      proof
-        assume "\<exists>l. ta = \<lbrace>UnlockFail\<rightarrow>l\<rbrace> \<and> 0 < expr_lockss (fst ex # map fst exs) l"
-        then obtain l where ta: "ta = \<lbrace>UnlockFail\<rightarrow>l\<rbrace>" 
-          and el: "expr_lockss (fst ex # map fst exs) l > 0" by blast
-        from aoe have "lock_actions_ok ((locks s)\<^sub>f l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)"
-	  by(auto simp add: lock_ok_las_def)
-	with ta have "has_locks ((locks s)\<^sub>f l) t = 0" by simp
-        with lok thrS have "expr_lockss (map fst (ex # exs)) l = 0"
-          by(cases ex)(auto 4 6 simp add: lock_oks1_def)
-        with el have False by simp
-        thus ?thesis ..
-      qed
-      hence "mred1' P t (x, shr s) ta (x', m')" by simp
-      moreover note thrS aoe `redT_upd s t ta x' m' s'`
-      ultimately have "Red1_mthr.redT False P s (t, ta) s'"
-	by(rule Red1_mthr.redT.redT_normal)
-      thus ?thesis unfolding `tta = (t, ta)` .
+      from `mred1 P t (x, shr s) ta (x', m')` have "mred1' P t (x, shr s) ta (x', m')"
+        unfolding mred1_eq_mred1'[OF lok elo `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `Red1_mthr.actions_ok s t ta`] .
+      thus ?thesis using redT_normal(3-) unfolding `tta = (t, ta)` ..
     next
       case (redT_acquire t x ln n)
-      from `thr s t = \<lfloor>(x, ln)\<rfloor>` `\<not> waiting (wset s t)` `may_acquire_all (locks s) t ln`
-	`0 < ln\<^sub>f n` `s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s)`
-      show ?thesis unfolding `tta = (t, \<lambda>\<^isup>f [], [], [], [], [], convert_RA ln)`
-	by(rule Red1_mthr.redT_acquire)
+      from this(2-) show ?thesis unfolding redT_acquire(1) ..
     qed
   next
     assume ?rhs thus ?lhs
     proof(cases)
       case (redT_normal t x ta x' m')
       from `mred1' P t (x, shr s) ta (x', m')` have "mred1 P t (x, shr s) ta (x', m')"
-	by(auto simp add: split_beta intro: Red1_False_into_Red1_True)
-      moreover note `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `Red1_mthr.actions_ok s t ta` `redT_upd s t ta x' m' s'`
-      ultimately show ?thesis unfolding `tta = (t, ta)`
-	by(rule Red1_mthr.redT.redT_normal)
+        unfolding mred1_eq_mred1'[OF lok elo `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `Red1_mthr.actions_ok s t ta`] .
+      thus ?thesis using redT_normal(3-) unfolding `tta = (t, ta)` ..
     next
       case (redT_acquire t x ln n)
-      from `thr s t = \<lfloor>(x, ln)\<rfloor>` `\<not> waiting (wset s t)` `may_acquire_all (locks s) t ln`
-	`0 < ln\<^sub>f n` `s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s)`
-      show ?thesis unfolding `tta = (t, \<lambda>\<^isup>f [], [], [], [], [], convert_RA ln)`
-	by(rule Red1_mthr.redT_acquire)
+      from this(2-) show ?thesis unfolding redT_acquire(1) ..
     qed
   qed
 qed
@@ -446,8 +449,8 @@ proof(cases rule: Red1_mthr.redT.cases)
       hence "\<forall>l. has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)\<^sub>f l) t' + LN\<^sub>f l = expr_lockss (map fst (eX # eXS)) l" .. }
     ultimately show ?thesis using s1' unfolding lock_oks1_def x' by(clarsimp simp del: fun_upd_apply)
   next
-    case (red1Call e a M vs U C Ts T body D x)
-    from wf `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D`
+    case (red1Call e a M vs U Ts T body D x)
+    from wf `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D`
     obtain T' where "P,Class D # Ts \<turnstile>1 body :: T'"
       by(auto simp add: wf_mdecl_def dest!: sees_wf_mdecl)
     hence "expr_locks (blocks1 0 (Class D#Ts) body) = (\<lambda>l. 0)"
@@ -515,18 +518,31 @@ next
     by(cases tl2)(auto simp add: mbisim_Red1'_Red1_def Red1_mthr_eq_Red1_mthr' simp del: split_paired_Ex elim: Red1'_preserves_lock_oks[OF wf] lifting_wf.redT_preserves[OF Red1_el_loc_ok, OF wf])
 qed
 
+lemma Red1'_Red1_bisimulation_final:
+  "wf_J1_prog P 
+  \<Longrightarrow> bisimulation_final (Red1_mthr.redT False P) (Red1_mthr.redT True P) 
+       mbisim_Red1'_Red1 (op =) Red1_mthr.mfinal Red1_mthr.mfinal"
+apply(intro_locales)
+ apply(erule Red1'_Red1_bisimulation)
+apply(unfold_locales)
+apply(auto simp add: mbisim_Red1'_Red1_def)
+done
+
 lemma bisim_J1_J1_start:
   assumes wf: "wf_J1_prog P"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>body\<rfloor> in C"
-  and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
+  and wf_start: "wf_start_state P C M vs"
   shows "mbisim_Red1'_Red1 (J1_start_state P C M vs) (J1_start_state P C M vs)"
 proof -
+  from wf_start obtain Ts T body D 
+    where sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>body\<rfloor> in D"
+    and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
+    by cases
   let ?e = "blocks1 0 (Class C#Ts) body"
   let ?xs = "Null # vs @ replicate (max_vars body) undefined_value"
 
   from sees_wf_mdecl[OF wf sees] obtain T'
     where B: "\<B> body (Suc (length Ts))"
-    and wt: "P,Class C # Ts \<turnstile>1 body :: T'"
+    and wt: "P,Class D # Ts \<turnstile>1 body :: T'"
     and da: "\<D> body \<lfloor>{..length Ts}\<rfloor>"
     and sv: "syncvars body"
     by(auto simp add: wf_mdecl_def)
@@ -545,6 +561,183 @@ proof -
     by(rule Red1'_Red1_bisimulation[OF wf])
   show ?thesis by(unfold_locales)(simp add: mbisim_Red1'_Red1_def)
 qed
+
+end
+
+sublocale J1_heap_base < Red1_mthr!:
+  if_\<tau>multithreaded_wf
+    final_expr1
+    "mred1g uf P"
+    convert_RA
+    "\<tau>MOVE1 P"
+  for uf P
+by(unfold_locales)
+
+context J1_heap_base begin
+
+abbreviation if_lock_oks1 ::
+  "('addr,'thread_id) locks 
+  \<Rightarrow> ('addr,'thread_id,(status \<times> (('a,'b,'addr) exp \<times> 'c) \<times> (('a,'b,'addr) exp \<times> 'c) list)) thread_info
+  \<Rightarrow> bool" 
+where
+  "if_lock_oks1 ls ts \<equiv> lock_oks1 ls (init_fin_descend_thr ts)"
+
+definition if_mbisim_Red1'_Red1 ::
+  "(('addr,'thread_id,status \<times> (('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list),'heap,'addr) state, 
+    ('addr,'thread_id,status \<times> (('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list),'heap,'addr) state) bisim"
+where
+  "if_mbisim_Red1'_Red1 s1 s2 \<longleftrightarrow>
+  s1 = s2 \<and> if_lock_oks1 (locks s1) (thr s1) \<and> ts_ok (init_fin_lift (\<lambda>t exexs h. el_loc_ok1 exexs)) (thr s1) (shr s1)"
+
+lemma if_mbisim_Red1'_Red1_imp_mbisim_Red1'_Red1:
+  "if_mbisim_Red1'_Red1 s1 s2 \<Longrightarrow> mbisim_Red1'_Red1 (init_fin_descend_state s1) (init_fin_descend_state s2)"
+by(auto simp add: mbisim_Red1'_Red1_def if_mbisim_Red1'_Red1_def ts_ok_init_fin_descend_state)
+
+lemma if_Red1_mthr_imp_if_Red1_mthr':
+  assumes lok: "if_lock_oks1 (locks s) (thr s)"
+  and elo: "ts_ok (init_fin_lift (\<lambda>t exexs h. el_loc_ok1 exexs)) (thr s) (shr s)"
+  and Red: "Red1_mthr.if.redT uf P s tta s'"
+  shows "Red1_mthr.if.redT (\<not> uf) P s tta s'"
+using Red
+proof(cases)
+  case (redT_acquire t x ln n)
+  from this(2-) show ?thesis unfolding redT_acquire(1) ..
+next
+  case (redT_normal t x ta x' m')
+  note aok = `Red1_mthr.if.actions_ok s t ta`
+    and tst = `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
+  from `Red1_mthr.init_fin uf P t (x, shr s) ta (x', m')`
+  have "Red1_mthr.init_fin (\<not> uf) P t (x, shr s) ta (x', m')"
+  proof(cases)
+    case InitialThreadAction show ?thesis unfolding InitialThreadAction ..
+  next
+    case (ThreadFinishAction exexs)
+    from `final_expr1 exexs` show ?thesis unfolding ThreadFinishAction ..
+  next
+    case (NormalAction exexs ta' exexs')
+    let ?s = "init_fin_descend_state s"
+
+    from lok have "lock_oks1 (locks ?s) (thr ?s)" by(simp)
+    moreover from elo have elo: "ts_ok (\<lambda>t exexs h. el_loc_ok1 exexs) (thr ?s) (shr ?s)"
+      by(simp add: ts_ok_init_fin_descend_state)
+    moreover from tst `x = (Running, exexs)`
+    have "thr ?s t = \<lfloor>(exexs, no_wait_locks)\<rfloor>" by simp
+    moreover from aok have "Red1_mthr.actions_ok ?s t ta'"
+      using `ta = convert_TA_initial (convert_obs_initial ta')` by auto
+    ultimately have "mred1 P t (exexs, shr ?s) ta' = mred1' P t (exexs, shr ?s) ta'"
+      by(rule mred1_eq_mred1')
+    with `mred1g uf P t (exexs, shr s) ta' (exexs', m')`
+    have "mred1g (\<not> uf) P t (exexs, shr s) ta' (exexs', m')"
+      by(cases uf) simp_all
+    thus ?thesis unfolding NormalAction(1-3) by(rule Red1_mthr.init_fin.NormalAction)
+  qed
+  thus ?thesis using tst aok `redT_upd s t ta x' m' s'` unfolding `tta = (t, ta)` ..
+qed
+
+lemma if_Red1_mthr_eq_if_Red1_mthr':
+  assumes lok: "if_lock_oks1 (locks s) (thr s)"
+  and elo: "ts_ok (init_fin_lift (\<lambda>t exexs h. el_loc_ok1 exexs)) (thr s) (shr s)"
+  shows "Red1_mthr.if.redT True P s = Red1_mthr.if.redT False P s"
+using if_Red1_mthr_imp_if_Red1_mthr'[OF assms, of True P, simplified]
+  if_Red1_mthr_imp_if_Red1_mthr'[OF assms, of False P, simplified]
+by(blast del: equalityI)
+
+lemma if_Red1_el_loc_ok: 
+  assumes wf: "wf_J1_prog P"
+  shows "lifting_wf Red1_mthr.init_fin_final (Red1_mthr.init_fin uf P) (init_fin_lift (\<lambda>t exexs h. el_loc_ok1 exexs))"
+by(rule lifting_wf.lifting_wf_init_fin_lift)(rule Red1_el_loc_ok[OF wf])
+
+lemma if_Red1'_preserves_if_lock_oks:
+  assumes wf: "wf_J1_prog P"
+  and Red: "Red1_mthr.if.redT False P s1 ta1 s1'"
+  and loks: "if_lock_oks1 (locks s1) (thr s1)"
+  and sync: "ts_ok (init_fin_lift (\<lambda>t exexs h. el_loc_ok1 exexs)) (thr s1) (shr s1)"
+  shows "if_lock_oks1 (locks s1') (thr s1')"
+proof -
+  let ?s1 = "init_fin_descend_state s1"
+  let ?s1' = "init_fin_descend_state s1'"
+  from loks have loks': "lock_oks1 (locks ?s1) (thr ?s1)" by simp
+  from sync have sync': "ts_ok (\<lambda>t exexs h. el_loc_ok1 exexs) (thr ?s1) (shr ?s1)"
+    by(simp add: ts_ok_init_fin_descend_state)
+  from Red show ?thesis
+  proof(cases)
+    case (redT_acquire t x ln n)
+    hence "Red1_mthr.redT False P ?s1 (t, \<lambda>\<^isup>f [], [], [], [], [], convert_RA ln) ?s1'"
+      by(cases x)(auto intro!: Red1_mthr.redT.redT_acquire simp add: init_fin_descend_thr_def)
+    with wf have "lock_oks1 (locks ?s1') (thr ?s1')" using loks' sync' by(rule Red1'_preserves_lock_oks)
+    thus ?thesis by simp
+  next
+    case (redT_normal t sx ta sx' m')
+    note tst = `thr s1 t = \<lfloor>(sx, no_wait_locks)\<rfloor>`
+    from `Red1_mthr.init_fin False P t (sx, shr s1) ta (sx', m')`
+    show ?thesis
+    proof(cases)
+      case (InitialThreadAction x) thus ?thesis using redT_normal loks
+        by(cases x)(auto 4 3 simp add: init_fin_descend_thr_def redT_updLns_def expand_finfun_eq fun_eq_iff intro: lock_oks1_thr_updI)
+    next
+      case (ThreadFinishAction x) thus ?thesis using redT_normal loks
+        by(cases x)(auto 4 3 simp add: init_fin_descend_thr_def redT_updLns_def expand_finfun_eq fun_eq_iff intro: lock_oks1_thr_updI)
+    next
+      case (NormalAction x ta' x')
+      note ta = `ta = convert_TA_initial (convert_obs_initial ta')`
+      from `mred1' P t (x, shr s1) ta' (x', m')`
+      have "mred1' P t (x, shr ?s1) ta' (x', m')" by simp
+      moreover have tst': "thr ?s1 t = \<lfloor>(x, no_wait_locks)\<rfloor>" 
+        using tst `sx = (Running, x)` by simp
+      moreover have "Red1_mthr.actions_ok ?s1 t ta'"
+        using ta `Red1_mthr.if.actions_ok s1 t ta` by simp
+      moreover from `redT_upd s1 t ta sx' m' s1'` tst tst' ta `sx' = (Running, x')`
+      have "redT_upd ?s1 t ta' x' m' ?s1'" by auto
+      ultimately have "Red1_mthr.redT False P ?s1 (t, ta') ?s1'" ..
+      with wf have "lock_oks1 (locks ?s1') (thr ?s1')" using loks' sync' by(rule Red1'_preserves_lock_oks)
+      thus ?thesis by simp
+    qed
+  qed
+qed
+
+lemma Red1'_Red1_if_bisimulation:
+  assumes wf: "wf_J1_prog P"
+  shows "bisimulation (Red1_mthr.if.redT False P) (Red1_mthr.if.redT True P) if_mbisim_Red1'_Red1 op ="
+proof
+  fix s1 s2 tl1 s1'
+  assume "if_mbisim_Red1'_Red1 s1 s2" and "Red1_mthr.if.redT False P s1 tl1 s1'"
+  thus "\<exists>s2' tl2. Red1_mthr.if.redT True P s2 tl2 s2' \<and> if_mbisim_Red1'_Red1 s1' s2' \<and> tl1 = tl2"
+    by(cases tl1)(auto simp add: if_mbisim_Red1'_Red1_def if_Red1_mthr_eq_if_Red1_mthr' simp del: split_paired_Ex elim: if_Red1'_preserves_if_lock_oks[OF wf] lifting_wf.redT_preserves[OF if_Red1_el_loc_ok, OF wf])
+next
+  fix s1 s2 tl2 s2'
+  assume "if_mbisim_Red1'_Red1 s1 s2" "Red1_mthr.if.redT True P s2 tl2 s2'"
+  thus "\<exists>s1' tl1. Red1_mthr.if.redT False P s1 tl1 s1' \<and> if_mbisim_Red1'_Red1 s1' s2' \<and> tl1 = tl2"
+    by(cases tl2)(auto simp add: if_mbisim_Red1'_Red1_def if_Red1_mthr_eq_if_Red1_mthr' simp del: split_paired_Ex elim: if_Red1'_preserves_if_lock_oks[OF wf] lifting_wf.redT_preserves[OF if_Red1_el_loc_ok, OF wf])
+qed
+
+lemma if_bisim_J1_J1_start:
+  assumes wf: "wf_J1_prog P"
+  and wf_start: "wf_start_state P C M vs"
+  shows "if_mbisim_Red1'_Red1 (init_fin_lift_state status (J1_start_state P C M vs)) (init_fin_lift_state status (J1_start_state P C M vs))"
+proof -
+  from assms have "mbisim_Red1'_Red1 (J1_start_state P C M vs) (J1_start_state P C M vs)" by(rule bisim_J1_J1_start)
+  thus ?thesis
+    by(simp add: if_mbisim_Red1'_Red1_def mbisim_Red1'_Red1_def)(simp add: init_fin_lift_state_conv_simps init_fin_descend_thr_def thr_init_fin_list_state' o_def Option.map.compositionality Option.map.identity split_beta)
+qed
+
+lemma if_Red1'_Red1_bisim_into_weak:
+  assumes wf: "wf_J1_prog P"
+  shows "bisimulation_into_delay (Red1_mthr.if.redT False P) (Red1_mthr.if.redT True P) if_mbisim_Red1'_Red1 (op =) (Red1_mthr.if.m\<tau>move P) (Red1_mthr.if.m\<tau>move P)"
+proof -
+  interpret b: bisimulation "Red1_mthr.if.redT False P" "Red1_mthr.if.redT True P" "if_mbisim_Red1'_Red1" "op ="
+    by(rule Red1'_Red1_if_bisimulation[OF wf])
+  show ?thesis by(unfold_locales)(simp add: if_mbisim_Red1'_Red1_def)
+qed
+
+lemma if_Red1'_Red1_bisimulation_final:
+  "wf_J1_prog P 
+  \<Longrightarrow> bisimulation_final (Red1_mthr.if.redT False P) (Red1_mthr.if.redT True P) 
+       if_mbisim_Red1'_Red1 (op =) Red1_mthr.if.mfinal Red1_mthr.if.mfinal"
+apply(intro_locales)
+ apply(erule Red1'_Red1_if_bisimulation)
+apply(unfold_locales)
+apply(auto simp add: if_mbisim_Red1'_Red1_def)
+done
 
 end
 

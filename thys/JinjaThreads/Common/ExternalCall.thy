@@ -61,125 +61,26 @@ inductive_cases external_WT_defs_cases:
   "a\<bullet>interrupted([]) :: T"
   "a\<bullet>yield(vs) :: T"
 
-inductive is_native :: "'m prog \<Rightarrow> ty \<Rightarrow> mname \<Rightarrow> bool"
-  for P :: "'m prog" and U :: ty and M :: mname
-where "\<lbrakk> is_class_type_of U C; P \<turnstile> C sees M:Ts\<rightarrow>T = Native in D; D\<bullet>M(Ts) :: T \<rbrakk> \<Longrightarrow> is_native P U M"
+inductive is_native :: "'m prog \<Rightarrow> htype \<Rightarrow> mname \<Rightarrow> bool"
+  for P :: "'m prog" and hT :: htype and M :: mname
+where "\<lbrakk> P \<turnstile> class_type_of hT sees M:Ts\<rightarrow>T = Native in D; D\<bullet>M(Ts) :: T \<rbrakk> \<Longrightarrow> is_native P hT M"
 
-lemma is_nativeD: "is_native P U M \<Longrightarrow> \<exists>C Ts T D. is_class_type_of U C \<and> P \<turnstile> C sees M:Ts\<rightarrow>T = Native in D \<and> D\<bullet>M(Ts)::T"
+lemma is_nativeD: "is_native P hT M \<Longrightarrow> \<exists>Ts T D. P \<turnstile> class_type_of hT sees M:Ts\<rightarrow>T = Native in D \<and> D\<bullet>M(Ts)::T"
 by(simp add: is_native.simps)
 
 inductive (in heap_base) external_WT' :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ty \<Rightarrow> bool"
   ("_,_ \<turnstile> (_\<bullet>_'(_')) : _" [50,0,0,0,50] 60)
 for P :: "'m prog" and h :: 'heap and a :: 'addr and M :: mname and vs :: "'addr val list" and U :: ty
-where "\<lbrakk> typeof_addr h a = \<lfloor>T\<rfloor>; map typeof\<^bsub>h\<^esub> vs = map Some Ts; is_class_type_of T C; P \<turnstile> C sees M:Ts'\<rightarrow>U = Native in D; P \<turnstile> Ts [\<le>] Ts' \<rbrakk> \<Longrightarrow> P,h \<turnstile> a\<bullet>M(vs) : U"
-
-(*
-definition native_call :: 
-  "'m prog \<Rightarrow> ty \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" 
-  ("_ \<turnstile> _ native _:_\<rightarrow>_ in _" [51,51,51,51,51,51] 50)
-where
-  "P \<turnstile> T native M:Ts\<rightarrow>Tr in T' \<longleftrightarrow>
-  (P \<turnstile> T \<le> T' \<and> T \<noteq> NT \<and> T'\<bullet>M(Ts) :: Tr \<and>
-   (\<forall>C Ts Tr body D. is_class_type_of T C \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr=body in D \<longrightarrow> P \<turnstile> T' \<le> Class D \<and> T' \<noteq> Class D))"
-
-inductive external_WT :: "'m prog \<Rightarrow> ty \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> (_\<bullet>_'(_')) :: _" [50, 0, 0, 50] 60)
-where
-  "P \<turnstile> T native M:Ts\<rightarrow>U in T' \<Longrightarrow> P \<turnstile> T\<bullet>M(Ts) :: U"
-
-inductive (in heap_base) external_WT' :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ty \<Rightarrow> bool"
-  ("_,_ \<turnstile> (_\<bullet>_'(_')) : _" [50,0,0,0,50] 60)
-for P :: "'m prog" and h :: 'heap and a :: 'addr and M :: mname and vs :: "'addr val list" and U :: ty
-where "\<lbrakk> typeof_addr h a = \<lfloor>T\<rfloor>; map typeof\<^bsub>h\<^esub> vs = map Some Ts; P \<turnstile> T\<bullet>M(Ts') :: U; P \<turnstile> Ts [\<le>] Ts' \<rbrakk> \<Longrightarrow> P,h \<turnstile> a\<bullet>M(vs) : U"
-
-inductive is_native :: "'m prog \<Rightarrow> ty \<Rightarrow> mname \<Rightarrow> bool"
-for P and T and M
-where "P \<turnstile> T native M:Ts\<rightarrow>Tr in T' \<Longrightarrow> is_native P T M"
-
-=======
->>>>>>> AFP
-lemma native_callI:
-  "\<lbrakk> P \<turnstile> T \<le> T'; T'\<bullet>M(Ts) :: Tr; T \<noteq> NT;
-     \<And>C Ts Tr body D. \<lbrakk> is_class_type_of T C; P \<turnstile> C sees M:Ts\<rightarrow>Tr=body in D \<rbrakk> \<Longrightarrow> P \<turnstile> T' \<le> Class D \<and> T' \<noteq> Class D \<rbrakk>
-  \<Longrightarrow> P \<turnstile> T native M:Ts\<rightarrow>Tr in T'"
-unfolding native_call_def by blast
-
-lemma is_native_def2:
-  "is_native P T M \<longleftrightarrow> (\<exists>Ts Tr T'. P \<turnstile> T native M:Ts\<rightarrow>Tr in T')"
-by(rule is_native.simps)
-
-lemma native_call_not_NT:
-  "P \<turnstile> T native M:Ts\<rightarrow>Tr in T' \<Longrightarrow> T \<noteq> NT"
-by(simp add: native_call_def)
-
-lemma native_call_not_NT':
-  "P \<turnstile> T native M:Ts\<rightarrow>Tr in T' \<Longrightarrow> T' \<noteq> NT"
-by(auto simp add: native_call_def)
-
-lemma native_call_sees_method:
-  "\<lbrakk> P \<turnstile> T native M:Ts\<rightarrow>Tr in T'; P \<turnstile> C sees M: Ts' \<rightarrow> Tr' = mthd in D; is_class_type_of T C \<rbrakk>
-  \<Longrightarrow> P \<turnstile> T' \<le> Class D"
-by(auto simp add: native_call_def)
-
-lemma native_call_fun:
-  "\<lbrakk> P \<turnstile> T native M:Ts\<rightarrow>Tr in T'; P \<turnstile> T native M:Ts'\<rightarrow>Tr' in T'' \<rbrakk>
-  \<Longrightarrow> Ts = Ts' \<and> Tr = Tr' \<and> T' = T''"
-by(auto simp add: native_call_def elim!: external_WT_defs.cases)
-
-lemma external_WT_determ:
-  "\<lbrakk> P \<turnstile> T\<bullet>M(Ts) :: U; P \<turnstile> T\<bullet>M(Ts') :: U' \<rbrakk> \<Longrightarrow> Ts = Ts' \<and> U = U'"
-by(auto elim!: external_WT.cases dest: native_call_fun)
-
-lemma external_WT_The_conv:
-  "P \<turnstile> T\<bullet>M(TS) :: U \<Longrightarrow> (THE U. P \<turnstile> T\<bullet>M(TS) :: U) = U"
-by(auto dest: external_WT_determ)
-
-lemma external_WT_The_Ex_conv:
-  "P \<turnstile> T\<bullet>M(TS) :: U \<Longrightarrow> (THE U. \<exists>TS. P \<turnstile> T\<bullet>M(TS) :: U) = U"
-by(auto dest: external_WT_determ)
-
-lemma external_WT_The_Ex_conv2:
-  "\<lbrakk> P \<turnstile> T\<bullet>M(Ts') :: U; P \<turnstile> Ts [\<le>] Ts' \<rbrakk> \<Longrightarrow> (THE U. \<exists>Ts'. P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T\<bullet>M(Ts') :: U) = U"
-by(auto dest: external_WT_determ)
-
-lemma external_WT_is_native:
-  "P \<turnstile> T\<bullet>M(Ts) :: U \<Longrightarrow> is_native P T M"
-by(auto elim!: external_WT.cases simp add: is_native_def2)
-
-lemma external_WT_not_NT:
-  "P \<turnstile> T\<bullet>M(Ts) :: U \<Longrightarrow> T \<noteq> NT"
-by(auto elim!: external_WT.cases dest: native_call_not_NT)
-
-lemma external_WT_defs_is_refT:
-  "T\<bullet>M(Ts) :: Tr \<Longrightarrow> is_refT T"
-by(auto elim: external_WT_defs.cases)
-
-lemma native_native_overriding:
-  assumes "P \<turnstile> T native M:Ts\<rightarrow>Tr in T'"
-  and "P \<turnstile> U native M:Us\<rightarrow>Ur in U'"
-  and "P \<turnstile> U \<le> T"
-  shows "P \<turnstile> Ts [\<le>] Us" "P \<turnstile> Ur \<le> Tr"
-using assms
-by(auto simp add: native_call_def widen_Class elim!: external_WT_defs.cases)
-<<<<<<< HEAD
-
-lemma native_call_is_refT: "P \<turnstile> T native M:Ts\<rightarrow>Tr in T' \<Longrightarrow> is_refT T"
-by(auto simp add: native_call_def dest: external_WT_defs_is_refT intro: widen_refT)
-*)
-
-lemma is_native_is_refT: "is_native P T M \<Longrightarrow> is_refT T"
-by(auto simp add: is_native.simps elim: is_class_type_of.cases)
-
-lemma is_native_not_NT: "is_native P T M \<Longrightarrow> T \<noteq> NT"
-by(auto simp add: is_native.simps)
-
-lemma not_is_native_NT [simp]: "\<not> is_native P NT M"
-by(blast dest: is_native_not_NT)
+where 
+  "\<lbrakk> typeof_addr h a = \<lfloor>hT\<rfloor>; map typeof\<^bsub>h\<^esub> vs = map Some Ts; P \<turnstile> class_type_of hT sees M:Ts'\<rightarrow>U = Native in D; 
+     P \<turnstile> Ts [\<le>] Ts' \<rbrakk> 
+  \<Longrightarrow> P,h \<turnstile> a\<bullet>M(vs) : U"
 
 context heap_base begin
 
 lemma external_WT'_iff:
   "P,h \<turnstile> a\<bullet>M(vs) : U \<longleftrightarrow> 
-  (\<exists>T Ts C Ts' D. typeof_addr h a = \<lfloor>T\<rfloor> \<and> map typeof\<^bsub>h\<^esub> vs = map Some Ts \<and> is_class_type_of T C \<and> P \<turnstile> C sees M:Ts'\<rightarrow>U=Native in D \<and> P \<turnstile> Ts [\<le>] Ts')"
+  (\<exists>hT Ts Ts' D. typeof_addr h a = \<lfloor>hT\<rfloor> \<and> map typeof\<^bsub>h\<^esub> vs = map Some Ts \<and> P \<turnstile> class_type_of hT sees M:Ts'\<rightarrow>U=Native in D \<and> P \<turnstile> Ts [\<le>] Ts')"
 by(simp add: external_WT'.simps)
 
 end
@@ -242,20 +143,17 @@ text {*
 inductive heap_clone :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> 'heap \<Rightarrow> (('addr, 'thread_id) obs_event list \<times> 'addr) option \<Rightarrow> bool"
 for P :: "'m prog" and h :: 'heap and a :: 'addr 
 where
-  ObjFail:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; new_obj h C = (h', None) \<rbrakk>
-  \<Longrightarrow> heap_clone P h a h' None"
-| ArrFail:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; new_arr h T (array_length h a) = (h', None) \<rbrakk>
+  CloneFail:
+  "\<lbrakk> typeof_addr h a = \<lfloor>hT\<rfloor>; allocate h hT = (h', None) \<rbrakk>
   \<Longrightarrow> heap_clone P h a h' None"
 | ObjClone:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; new_obj h C = (h', \<lfloor>a'\<rfloor>);
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; allocate h (Class_type C) = (h', \<lfloor>a'\<rfloor>);
      P \<turnstile> C has_fields FDTs; heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h' obs h'' \<rbrakk>
-  \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewObj a' C # obs, a')\<rfloor>"
+  \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewHeapElem a' (Class_type C) # obs, a')\<rfloor>"
 | ArrClone:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; n = array_length h a; new_arr h T n = (h', \<lfloor>a'\<rfloor>); P \<turnstile> Object has_fields FDTs;
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; allocate h (Array_type T n) = (h', \<lfloor>a'\<rfloor>); P \<turnstile> Object has_fields FDTs;
      heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h' obs  h'' \<rbrakk>
-  \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewArr a' T n # obs, a')\<rfloor>"
+  \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewHeapElem a' (Array_type T n) # obs, a')\<rfloor>"
 
 inductive red_external ::
   "'m prog \<Rightarrow> 'thread_id \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list 
@@ -269,19 +167,19 @@ where
   "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<equiv> red_external P t h a M vs ta va h'"
 
 | RedNewThread:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>start([]), h\<rangle> -\<lbrace>NewThread (addr2thread_id a) (C, run, a) h, ThreadStart (addr2thread_id a) \<rbrace>\<rightarrow>ext \<langle>RetVal Unit, h\<rangle>"
 
 | RedNewThreadFail:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>start([]), h\<rangle> -\<lbrace>ThreadExists (addr2thread_id a) True\<rbrace>\<rightarrow>ext \<langle>RetEXC IllegalThreadState, h\<rangle>"
 
 | RedJoin:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>join([]), h\<rangle> -\<lbrace>Join (addr2thread_id a), IsInterrupted t False, ThreadJoin (addr2thread_id a)\<rbrace>\<rightarrow>ext \<langle>RetVal Unit, h\<rangle>"
 
 | RedJoinInterrupt:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>join([]), h\<rangle> -\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>\<rightarrow>ext \<langle>RetEXC InterruptedException, h\<rangle>"
 
     -- {* 
@@ -299,25 +197,25 @@ where
     *}
   
 | RedInterrupt:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>interrupt([]), h\<rangle> 
             -\<lbrace>ThreadExists (addr2thread_id a) True, WakeUp (addr2thread_id a), 
               Interrupt (addr2thread_id a), ObsInterrupt (addr2thread_id a)\<rbrace>\<rightarrow>ext
             \<langle>RetVal Unit, h\<rangle>"
 
 | RedInterruptInexist:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>interrupt([]), h\<rangle> 
             -\<lbrace>ThreadExists (addr2thread_id a) False\<rbrace>\<rightarrow>ext
             \<langle>RetVal Unit, h\<rangle>"
 
 | RedIsInterruptedTrue:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>isInterrupted([]), h\<rangle> -\<lbrace> IsInterrupted (addr2thread_id a) True, ObsInterrupted (addr2thread_id a)\<rbrace>\<rightarrow>ext
            \<langle>RetVal (Bool True), h\<rangle>"
 
 | RedIsInterruptedFalse:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
   \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>isInterrupted([]), h\<rangle> -\<lbrace>IsInterrupted (addr2thread_id a) False\<rbrace>\<rightarrow>ext \<langle>RetVal (Bool False), h\<rangle>"
 
     -- {*
@@ -416,11 +314,11 @@ where
                                   (\<lbrace>IsInterrupted t False\<rbrace>, RetVal (Bool False), h)}
     else if M = yield then {(\<lbrace>Yield\<rbrace>, RetVal Unit, h)}
     else
-      let T = the (typeof_addr h a)
-      in if P \<turnstile> T \<le> Class Thread then
+      let hT = the (typeof_addr h a)
+      in if P \<turnstile> ty_of_htype hT \<le> Class Thread then
         let t_a = addr2thread_id a 
         in if M = start then 
-             {(\<lbrace>NewThread t_a (the_Class T, run, a) h, ThreadStart t_a\<rbrace>, RetVal Unit, h), 
+             {(\<lbrace>NewThread t_a (the_Class (ty_of_htype hT), run, a) h, ThreadStart t_a\<rbrace>, RetVal Unit, h), 
               (\<lbrace>ThreadExists t_a True\<rbrace>, RetEXC IllegalThreadState, h)}
            else if M = join then 
              {(\<lbrace>Join t_a, IsInterrupted t False, ThreadJoin t_a\<rbrace>, RetVal Unit, h),
@@ -476,7 +374,7 @@ lemma typeof_addr_heap_clone:
   and "hconf h"
   shows "typeof_addr h' a' = typeof_addr h a"
 using assms
-by cases (auto dest!: new_obj_SomeD new_arr_SomeD hext_heap_copies dest: typeof_addr_hext_mono typeof_addr_is_type is_type_ArrayD)
+by cases (auto dest!: allocate_SomeD hext_heap_copies dest: typeof_addr_hext_mono typeof_addr_is_type is_type_ArrayD)
 
 end
 
@@ -496,23 +394,23 @@ context addr_conv begin
 
 lemma red_external_new_thread_exists_thread_object:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; NewThread t' x h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+  \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 by(auto elim!: red_external.cases dest!: Array_widen simp add: ta_upd_simps)
+
+lemma red_external_aggr_new_thread_exists_thread_object:
+  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; typeof_addr h a \<noteq> None;
+     NewThread t' x h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
+  \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+by(auto simp add: red_external_aggr_def is_native.simps split_beta ta_upd_simps widen_Class split: split_if_asm dest!: Array_widen)
 
 end
 
 context heap begin
 
-lemma red_external_aggr_new_thread_exists_thread_object:
-  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; typeof_addr h a \<noteq> None;
-     NewThread t' x h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
-by(auto simp add: red_external_aggr_def is_native.simps split_beta ta_upd_simps widen_Class split: split_if_asm dest!: Array_widen dest: typeof_addr_eq_Some_conv)
-
 lemma red_external_aggr_hext: 
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; is_native P (the (typeof_addr h a)) M \<rbrakk> \<Longrightarrow> h \<unlhd> h'"
 apply(auto simp add: red_external_aggr_def split_beta is_native.simps elim!: external_WT_defs_cases hext_heap_clone split: split_if_asm)
-apply(auto elim!: external_WT_defs.cases dest!: sees_method_decl_above is_class_type_of_widenD[where P=P] intro: widen_trans)
+apply(auto elim!: external_WT_defs.cases dest!: sees_method_decl_above intro: widen_trans simp add: class_type_of_eq split: htype.split_asm)
 done
 
 lemma red_external_aggr_preserves_tconf:
@@ -553,18 +451,24 @@ by(auto simp add: red_external_aggr_def split_beta ta_upd_simps split: split_if_
 
 lemma red_external_new_thread_sub_thread:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
+  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
 by(auto elim!: red_external.cases simp add: widen_Class ta_upd_simps)
-
-end
-
-context heap begin
 
 lemma red_external_aggr_new_thread_sub_thread:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; typeof_addr h a \<noteq> None;
      NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
-by(auto simp add: red_external_aggr_def split_beta ta_upd_simps widen_Class dest: typeof_addr_eq_Some_conv split: split_if_asm dest!: Array_widen)
+  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
+by(auto simp add: red_external_aggr_def split_beta ta_upd_simps widen_Class split: split_if_asm dest!: Array_widen)
+
+lemma heap_copy_loc_length:
+  assumes "heap_copy_loc a a' al h obs h'"
+  shows "length obs = 2"
+using assms by(cases) simp
+
+lemma heap_copies_length:
+  assumes "heap_copies a a' als h obs h'"
+  shows "length obs = 2 * length als"
+using assms by(induct)(auto dest!: heap_copy_loc_length)
 
 end
 
@@ -575,13 +479,13 @@ where
   "\<tau>external_defs Object hashcode"
 | "\<tau>external_defs Object currentThread"
 
-definition \<tau>external :: "'m prog \<Rightarrow> ty \<Rightarrow> mname \<Rightarrow> bool"
-where "\<tau>external P T M \<longleftrightarrow> (\<exists>C Ts Tr D. is_class_type_of T C \<and> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<and> \<tau>external_defs D M)"
+definition \<tau>external :: "'m prog \<Rightarrow> htype \<Rightarrow> mname \<Rightarrow> bool"
+where "\<tau>external P hT M \<longleftrightarrow> (\<exists>Ts Tr D. P \<turnstile> class_type_of hT sees M:Ts\<rightarrow>Tr = Native in D \<and> \<tau>external_defs D M)"
 
 context heap_base begin
 
 definition \<tau>external' :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> bool"
-where "\<tau>external' P h a M \<longleftrightarrow> (\<exists>T. typeof_addr h a = Some T \<and> \<tau>external P T M)"
+where "\<tau>external' P h a M \<longleftrightarrow> (\<exists>hT. typeof_addr h a = Some hT \<and> \<tau>external P hT M)"
 
 lemma \<tau>external'_red_external_heap_unchanged:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; \<tau>external' P h a M \<rbrakk> \<Longrightarrow> h' = h"
@@ -627,7 +531,7 @@ code_pred
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
-  [inductify]
+  [inductify, skip_proof]
   is_native
 .
 
@@ -656,24 +560,24 @@ qed
 declare heap_base.heap_clone.intros [code_pred_intro]
 
 code_pred 
-  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
+  (modes: i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
   heap_base.heap_clone
 proof -
   case heap_clone
   from heap_clone.prems show thesis
-    by(rule heap_base.heap_clone.cases)(erule (3) that[OF refl refl refl refl refl refl refl refl refl]|assumption)+
+    by(rule heap_base.heap_clone.cases)(erule (3) that[OF refl refl refl refl refl refl refl]|assumption)+
 qed
 
 declare heap_base.red_external.intros[code_pred_intro]
 
 code_pred
-  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
   heap_base.red_external
 proof -
   case red_external
   from red_external.prems show ?thesis
     apply(rule heap_base.red_external.cases)
-    apply(erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl refl refl]|assumption)+
+    apply(erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl]|assumption)+
     done
 qed
 

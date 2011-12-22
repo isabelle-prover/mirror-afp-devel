@@ -19,19 +19,17 @@ begin
 locale J_JVM_heap_conf_base = 
   J0_J1_heap_base
     addr2thread_id thread_id2addr
-    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    empty_heap allocate typeof_addr heap_read heap_write 
   +
   J1_JVM_heap_conf_base 
     addr2thread_id thread_id2addr
-    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    empty_heap allocate typeof_addr heap_read heap_write 
     hconf "compP1 P"
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and hconf :: "'heap \<Rightarrow> bool"
@@ -53,19 +51,16 @@ end
 lemma compP2_has_method [simp]: "compP2 P \<turnstile> C has M \<longleftrightarrow> P \<turnstile> C has M"
 by(auto simp add: compP2_def compP_has_method)
 
-
 locale J_JVM_conf_read = 
   J1_JVM_conf_read
     addr2thread_id thread_id2addr
-    empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write 
+    empty_heap allocate typeof_addr heap_read heap_write 
     hconf "compP1 P"
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and hconf :: "'heap \<Rightarrow> bool"
@@ -74,104 +69,43 @@ locale J_JVM_conf_read =
 sublocale J_JVM_conf_read < J_JVM_heap_conf_base
 by(unfold_locales)
 
-sublocale J_JVM_conf_read < J_heap_base .
-
 context J_JVM_conf_read begin
 
 theorem bisimJ2JVM_weak_bisim:
   assumes wf: "wf_J_prog P"
   shows "delay_bisimulation_diverge_final (mredT P) (execd_mthr.redT (J2JVM P)) bisimJ2JVM tlsimJ2JVM 
-                                    (red_red0.m\<tau>move1 P) Red1_execd.m\<tau>move2 red_mthr.mfinal exec_mthr.mfinal"
-proof -
-  interpret b0: FWdelay_bisimulation_measure
-    final_expr
-    "mred P"
-    final_expr0
-    "mred0 P"
-    convert_RA
-    "\<lambda>t. bisim_red_red0" 
-    "\<lambda>exs (e0, es0). is_call e0"
-    "\<tau>MOVE P"
-    "\<tau>MOVE0 P"
-    "\<lambda>e e'. False" 
-    "\<lambda>((e, es), h) ((e, es'), h). length es < length es'"
-    by(rule red_red0_FWbisim[OF wf_prog_wwf_prog[OF wf]])
+            (red_mthr.m\<tau>move P) (execd_mthr.m\<tau>move (J2JVM P)) red_mthr.mfinal exec_mthr.mfinal"
+unfolding bisimJ2JVM_def tlsimJ2JVM_def J2JVM_def o_apply
+apply(rule delay_bisimulation_diverge_final_compose)
+ apply(rule FWdelay_bisimulation_diverge.mthr_delay_bisimulation_diverge_final)
+ apply(rule red_red0_FWbisim[OF wf_prog_wwf_prog[OF wf]])
+apply(rule delay_bisimulation_diverge_final_compose)
+ apply(rule FWdelay_bisimulation_diverge.mthr_delay_bisimulation_diverge_final)
+ apply(rule red0_Red1'_FWweak_bisim[OF wf])
+apply(rule delay_bisimulation_diverge_final_compose)
+ apply(rule delay_bisimulation_diverge_final.intro)
+  apply(rule bisimulation_into_delay.delay_bisimulation)
+  apply(rule Red1'_Red1_bisim_into_weak[OF compP1_pres_wf[OF wf]])
+ apply(rule bisimulation_final.delay_bisimulation_final_base)
+ apply(rule Red1'_Red1_bisimulation_final[OF compP1_pres_wf[OF wf]])
+apply(rule FWdelay_bisimulation_diverge.mthr_delay_bisimulation_diverge_final)
+apply(rule Red1_exec1_FWwbisim[OF compP1_pres_wf[OF wf]])
+done
 
-  interpret b01: FWdelay_bisimulation_measure 
-    final_expr0
-    "mred0 P"
-    final_expr1
-    "mred1' (compP1 P)"
-    convert_RA
-    "\<lambda>t. bisim_red0_Red1" 
-    "bisim_wait01" 
-    "\<tau>MOVE0 P"
-    "\<tau>MOVE1 (compP1 P)"
-    "\<lambda>es es'. False" 
-    "\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e'< countInitBlock e"
-    by(rule red0_Red1'_FWweak_bisim[OF wf])
-
-  interpret b11: bisimulation_into_delay
-    "Red1_mthr.redT False (compP1 P)"
-    "Red1_mthr.redT True (compP1 P)"
-    "mbisim_Red1'_Red1" 
-    "op ="
-    "Red1_mthr.m\<tau>move (compP1 P)"
-    "Red1_mthr.m\<tau>move (compP1 P)"
-    using compP1_pres_wf[OF wf] by(rule Red1'_Red1_bisim_into_weak)
-
-  interpret b11': bisimulation_final
-    "Red1_mthr.redT False (compP1 P)"
-    "Red1_mthr.redT True (compP1 P)"
-    "mbisim_Red1'_Red1" 
-    "op =" 
-    Red1_mthr.mfinal
-    Red1_mthr.mfinal
-    by(unfold_locales)(auto simp add: mbisim_Red1'_Red1_def)
-
-  interpret b12: FWdelay_bisimulation_measure 
-    final_expr1
-    "mred1 (compP1 P)"
-    JVM_final
-    "mexecd (compP2 (compP1 P))"
-    convert_RA
-    "wbisim1"
-    "bisim_wait1JVM (compP2 (compP1 P))"
-    "\<tau>MOVE1 (compP1 P)"
-    "\<tau>MOVE2 (compP2 (compP1 P))"
-    "\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e'"
-    "\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 (compP1 P)) xcpfrs xcpfrs'"
-    using compP1_pres_wf[OF wf] by(intro Red1_exec1_FWwbisim)
-
-  show ?thesis unfolding bisimJ2JVM_def tlsimJ2JVM_def J2JVM_def o_def
-    apply(rule delay_bisimulation_diverge_final_compose)
-     apply(rule b0.mthr.delay_bisimulation_diverge_final_axioms)
-    apply(rule delay_bisimulation_diverge_final_compose)
-     apply(rule b01.mthr.delay_bisimulation_diverge_final_axioms)
-    apply(rule delay_bisimulation_diverge_final_compose)
-     apply(rule delay_bisimulation_diverge_final.intro)
-      apply(rule b11.delay_bisimulation)
-     apply(rule b11'.delay_bisimulation_final_base_axioms)
-    apply(rule b12.mthr.delay_bisimulation_diverge_final_axioms)
-    done
-qed
 
 lemma bisimJ2JVM_start:
   assumes wf: "wf_J_prog P"
-  and start: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns,body)\<rfloor> in C"
-  and vs: "length vs = length pns" and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
+  and start: "wf_start_state P C M vs"
   shows "bisimJ2JVM (J_start_state P C M vs) (JVM_start_state (J2JVM P) C M vs)"
-using assms sees_method_compP[OF sees, of "\<lambda>C M Ts T (pns, body). compE1 (this # pns) body"]
+using assms
 unfolding bisimJ2JVM_def J2JVM_def o_def
 apply(intro bisim_composeI)
-   apply(erule (3) bisim_J_J0_start[OF wf_prog_wwf_prog])
-  apply(erule (3) bisim_J0_J1_start)
+   apply(erule (1) bisim_J_J0_start[OF wf_prog_wwf_prog])
+  apply(erule (1) bisim_J0_J1_start)
  apply(erule bisim_J1_J1_start[OF compP1_pres_wf])
-  apply simp
- apply(simp add: heap_base.compP_confs)
-apply(rule bisim_J1_JVM_start[OF compP1_pres_wf])
-apply(simp_all add: heap_base.compP_confs)
+ apply simp
+apply(erule bisim_J1_JVM_start[OF compP1_pres_wf])
+apply simp
 done
 
 end
@@ -184,7 +118,8 @@ definition mexception ::
   "('addr,'thread_id,'addr expr\<times>'addr locals,'heap,'addr) state \<Rightarrow> 
    ('addr,'thread_id,'addr option\<times>'addr frame list,'heap,'addr) state"
 where
-  "mexception s \<equiv> (locks s, (\<lambda>t. case thr s t of \<lfloor>(e, ln)\<rfloor> \<Rightarrow> \<lfloor>(exception e, ln)\<rfloor> | None \<Rightarrow> None, shr s), wset s, interrupts s)"
+  "mexception s \<equiv> 
+  (locks s, (\<lambda>t. case thr s t of \<lfloor>(e, ln)\<rfloor> \<Rightarrow> \<lfloor>(exception e, ln)\<rfloor> | None \<Rightarrow> None, shr s), wset s, interrupts s)"
 
 declare compP1_def [simp del]
 
@@ -261,256 +196,219 @@ qed
 
 end
 
-
 context J_JVM_conf_read begin
 
-theorem J2JVM_correct:
+theorem J2JVM_correct1:
   fixes C M vs
   defines s: "s \<equiv> J_start_state P C M vs"
   and comps: "cs \<equiv> JVM_start_state (J2JVM P) C M vs"
   assumes wf: "wf_J_prog P"
-  and start: "start_heap_ok"
-  and sees': "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns,body)\<rfloor> in C"
-  and vs: "length vs = length pns" and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts" 
-  shows
-  "\<lbrakk> red_mthr.mthr.\<tau>rtrancl3p P s ttas s'; red_mthr.mfinal s' \<rbrakk>
-  \<Longrightarrow> \<exists>ttas'. execd_mthr.mthr.\<tau>rtrancl3p (J2JVM P) cs ttas' (mexception s') \<and>
-             bisimulation_base.Tlsim tlsimJ2JVM ttas ttas'" (is "\<lbrakk> _; _ \<rbrakk> \<Longrightarrow> ?thesis1")
-  and
-  "\<lbrakk> execd_mthr.mthr.\<tau>rtrancl3p (J2JVM P) cs ttas' cs'; exec_mthr.mfinal cs' \<rbrakk>
-  \<Longrightarrow> \<exists>s' ttas. red_mthr.mthr.\<tau>rtrancl3p P s ttas s' \<and> mexception s' = cs' \<and>
-               bisimulation_base.Tlsim tlsimJ2JVM ttas ttas'" (is "\<lbrakk> _; _ \<rbrakk> \<Longrightarrow> ?thesis2")
-  and
-  "red_mthr.mthr.\<tau>inf_step P s Ttas
-  \<Longrightarrow> \<exists>Ttas'. execd_mthr.mthr.\<tau>inf_step (J2JVM P) cs Ttas' \<and> bisimulation_base.Tlsiml tlsimJ2JVM Ttas Ttas'"
-  (is "_ \<Longrightarrow> ?thesis3")
-  and
-  "execd_mthr.mthr.\<tau>inf_step (J2JVM P) cs Ttas'
-  \<Longrightarrow> \<exists>Ttas. red_mthr.mthr.\<tau>inf_step P s Ttas \<and> bisimulation_base.Tlsiml tlsimJ2JVM Ttas Ttas'"
-  (is "_ \<Longrightarrow> ?thesis4")
-  and
-  "\<lbrakk> red_mthr.mthr.\<tau>rtrancl3p P s ttas s'; red_mthr.deadlock P s' \<rbrakk>
-  \<Longrightarrow> \<exists>cs' ttas'. execd_mthr.mthr.\<tau>rtrancl3p (J2JVM P) cs ttas' cs' \<and>
-                 execd_mthr.deadlock (J2JVM P) cs' \<and> bisimJ2JVM s' cs' \<and>
-                 bisimulation_base.Tlsim tlsimJ2JVM ttas ttas'" (is "\<lbrakk> _; _ \<rbrakk> \<Longrightarrow> ?thesis5")
-  and
-  "\<lbrakk> execd_mthr.mthr.\<tau>rtrancl3p (J2JVM P) cs ttas' cs'; execd_mthr.deadlock (J2JVM P) cs' \<rbrakk>
-  \<Longrightarrow> \<exists>s' ttas. red_mthr.mthr.\<tau>rtrancl3p P s ttas s' \<and> red_mthr.deadlock P s' \<and> bisimJ2JVM s' cs' \<and>
-               bisimulation_base.Tlsim tlsimJ2JVM ttas ttas'" (is "\<lbrakk> _; _ \<rbrakk> \<Longrightarrow> ?thesis6")
+  and wf_start: "wf_start_state P C M vs"
+  and red: "red_mthr.mthr.\<tau>Runs P s \<xi>"
+  obtains \<xi>' 
+  where "execd_mthr.mthr.\<tau>Runs (J2JVM P) cs \<xi>'" "tllist_all2 tlsimJ2JVM (option_rel bisimJ2JVM) \<xi> \<xi>'"
+  and "\<And>s'. \<lbrakk> tfinite \<xi>; terminal \<xi> = \<lfloor>s'\<rfloor>; red_mthr.mfinal s' \<rbrakk>
+      \<Longrightarrow> tfinite \<xi>' \<and> terminal \<xi>' = \<lfloor>mexception s'\<rfloor>"
+  and "\<And>s'. \<lbrakk> tfinite \<xi>; terminal \<xi> = \<lfloor>s'\<rfloor>; red_mthr.deadlock P s' \<rbrakk>
+      \<Longrightarrow> \<exists>cs'. tfinite \<xi>' \<and> terminal \<xi>' = \<lfloor>cs'\<rfloor> \<and> execd_mthr.deadlock (J2JVM P) cs' \<and> bisimJ2JVM s' cs'"
+  and "\<lbrakk> tfinite \<xi>; terminal \<xi> = None \<rbrakk> \<Longrightarrow> tfinite \<xi>' \<and> terminal \<xi>' = None"
+  and "\<not> tfinite \<xi> \<Longrightarrow> \<not> tfinite \<xi>'"
 proof -
-  interpret delay_bisimulation_diverge_final
-    "mredT P"
-    "execd_mthr.redT (J2JVM P)"
-    "bisimJ2JVM" 
-    "tlsimJ2JVM"
-    "red_red0.m\<tau>move1 P"
-    "Red1_execd.m\<tau>move2"
-    red_mthr.mfinal
-    exec_mthr.mfinal
-    using wf by(rule bisimJ2JVM_weak_bisim)
+  from wf wf_start have bisim: "bisimJ2JVM s cs" unfolding s comps by(rule bisimJ2JVM_start)
 
-  from wf start sees' vs conf have bisim: "bisimJ2JVM s cs" unfolding s comps by(rule bisimJ2JVM_start)
-  { assume red: "red_mthr.mthr.\<tau>rtrancl3p P s ttas s'"
-    and fin: "red_mthr.mfinal s'"
-    
-    from final_simulation1[OF bisim red fin] obtain cs' ttas'
-      where exec: "execd_mthr.mthr.\<tau>rtrancl3p (J2JVM P) cs ttas' cs'"
+  note divfin = delay_bisimulation_diverge_final.delay_bisimulation_diverge[OF bisimJ2JVM_weak_bisim[OF wf]]
+  note divfin2 = delay_bisimulation_diverge_final.delay_bisimulation_final_base[OF bisimJ2JVM_weak_bisim[OF wf]]
+
+  from delay_bisimulation_diverge.simulation_\<tau>Runs1[OF divfin, OF bisim red] obtain \<xi>' 
+    where exec: "execd_mthr.mthr.\<tau>Runs (J2JVM P) cs \<xi>'" 
+    and tlsim: "tllist_all2 tlsimJ2JVM (option_rel bisimJ2JVM) \<xi> \<xi>'" by blast
+  moreover {
+    fix s'
+    assume fin: "tfinite \<xi>" and s': "terminal \<xi> = \<lfloor>s'\<rfloor>" and final: "red_mthr.mfinal s'"
+    from delay_bisimulation_final_base.\<tau>Runs_terminate_final1[OF divfin2, OF red exec tlsim fin s' final]
+    obtain cs' where fin': "tfinite \<xi>'" and cs': "terminal \<xi>' = \<lfloor>cs'\<rfloor>"
+      and final': "exec_mthr.mfinal cs'" by blast
+    from tlsim fin s' cs' have bisim': "bisimJ2JVM s' cs'" by(auto dest: tllist_all2_tfinite1_terminalD)
+    from red_mthr.mthr.\<tau>Runs_into_\<tau>rtrancl3p[OF red fin s'] 
+    have "thr s' start_tid \<noteq> None" unfolding s
+      by(rule red_mthr.\<tau>rtrancl3p_redT_thread_not_disappear)(simp add: start_state_def)
+    with bisim' final final' have [simp]: "cs' = mexception s'"
+      by(intro bisimJ2JVM_mfinal_mexception disjI1)
+    with fin' cs' have "tfinite \<xi>' \<and> terminal \<xi>' = \<lfloor>mexception s'\<rfloor>" by simp }
+  moreover {
+    fix s'
+    assume fin: "tfinite \<xi>" and s': "terminal \<xi> = \<lfloor>s'\<rfloor>" and dead: "red_mthr.deadlock P s'"
+    from tlsim fin s'
+    obtain cs' where "tfinite \<xi>'" and cs': "terminal \<xi>' = \<lfloor>cs'\<rfloor>"
       and bisim': "bisimJ2JVM s' cs'"
-      and fin': "exec_mthr.mfinal cs'" and tlsim: "bisimulation_base.Tlsim tlsimJ2JVM ttas ttas'"
-      unfolding J2JVM_def o_def by(clarify)
-    moreover from red s have "thr s' start_tid \<noteq> None"
-      by -(erule red_mthr.\<tau>rtrancl3p_redT_thread_not_disappear, simp add: start_state_def)
-    with bisim' fin' fin have [simp]: "cs' = mexception s'" by(intro bisimJ2JVM_mfinal_mexception disjI1)
-    ultimately show ?thesis1 by blast
-  next
-    assume exec: "execd_mthr.mthr.\<tau>rtrancl3p (J2JVM P) cs ttas' cs'"
-      and fin: "exec_mthr.mfinal cs'"
-    from final_simulation2[OF bisim, folded J2JVM_def[THEN meta_eq_to_obj_eq, unfolded fun_eq_iff, THEN spec, unfolded o_def], OF exec fin]
-    obtain s' ttas where red: "red_mthr.mthr.\<tau>rtrancl3p P s ttas s'"
-      and bisim': "bisimJ2JVM s' cs'" and fin': "red_mthr.mfinal s'"
-      and tlsim: "bisimulation_base.Tlsim tlsimJ2JVM ttas ttas'" by blast
-    moreover from red s have "thr s' start_tid \<noteq> None"
-      by -(erule red_mthr.\<tau>rtrancl3p_redT_thread_not_disappear, simp add: start_state_def split_beta)
-    with bisim' fin fin' have [simp]: "cs' = mexception s'" by(intro bisimJ2JVM_mfinal_mexception disjI2)
-    ultimately show ?thesis2 by blast
-  next
-    assume "red_mthr.mthr.\<tau>inf_step P s Ttas"
-    from simulation1_\<tau>inf_step[OF this bisim] show ?thesis3
-      unfolding J2JVM_def o_def .
-  next
-    assume "execd_mthr.mthr.\<tau>inf_step (J2JVM P) cs Ttas'"
-    thus ?thesis4 using bisim
-      by -(rule simulation2_\<tau>inf_step, auto simp add: J2JVM_def o_def)
-  }
+      by(cases "terminal \<xi>'")(fastforce dest: tllist_all2_tfinite1_terminalD tllist_all2_tfiniteD)+
+    from bisim' obtain s0' s1' S1' where bisim0: "red_red0.mbisim s' s0'"
+      and bisim01: "red0_Red1'.mbisim s0' s1'"
+      and bisim11: "mbisim_Red1'_Red1 s1' S1'"
+      and bisim12: "Red1_execd.mbisim S1' cs'"
+      unfolding bisimJ2JVM_def by auto
 
-next
-  interpret b0: FWdelay_bisimulation_measure 
-    final_expr
-    "mred P"
-    final_expr0
-    "mred0 P"
-    convert_RA
-    "\<lambda>t. bisim_red_red0" 
-    "\<lambda>exs (e0, es0). is_call e0"
-    "\<tau>MOVE P"
-    "\<tau>MOVE0 P"
-    "\<lambda>e e'. False" 
-    "\<lambda>((e, es), h) ((e, es'), h). length es < length es'"
-    by(rule red_red0_FWbisim[OF wf_prog_wwf_prog[OF wf]])
+    note b0 = red_red0_FWbisim[OF wf_prog_wwf_prog[OF wf]]
+    note b01 = red0_Red1'_FWweak_bisim[OF wf]
+    note b01mthr = FWdelay_bisimulation_diverge.mbisim_delay_bisimulation[OF b01]
+    note b11 = Red1'_Red1_bisim_into_weak[OF compP1_pres_wf[OF wf]]
+    note b11delay = bisimulation_into_delay.delay_bisimulation[OF b11]
+    note b12 = Red1_exec1_FWwbisim[OF compP1_pres_wf[OF wf]]
+    note b12mthr = FWdelay_bisimulation_diverge.mbisim_delay_bisimulation[OF b12]
 
-  interpret b01: FWdelay_bisimulation_measure 
-    final_expr0
-    "mred0 P"
-    final_expr1
-    "mred1' (compP1 P)"
-    convert_RA
-    "\<lambda>t. bisim_red0_Red1" 
-    "bisim_wait01" 
-    "\<tau>MOVE0 P"
-    "\<tau>MOVE1 (compP1 P)"
-    "\<lambda>es es'. False"
-    "\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e'< countInitBlock e"
-    by(rule red0_Red1'_FWweak_bisim[OF wf])
-
-  interpret b11: bisimulation_into_delay 
-    "Red1_mthr.redT False (compP1 P)"
-    "Red1_mthr.redT True (compP1 P)"
-    "mbisim_Red1'_Red1" 
-    "op =" 
-    "Red1_mthr.m\<tau>move (compP1 P)"
-    "Red1_mthr.m\<tau>move (compP1 P)"
-    using compP1_pres_wf[OF wf] by(rule Red1'_Red1_bisim_into_weak)
-
-  interpret b12: FWdelay_bisimulation_measure
-    final_expr1
-    "mred1 (compP1 P)"
-    JVM_final
-    "mexecd (compP2 (compP1 P))"
-    convert_RA
-    "wbisim1"
-    "bisim_wait1JVM (compP2 (compP1 P))"
-    "\<tau>MOVE1 (compP1 P)"
-    "\<tau>MOVE2 (compP2 (compP1 P))"
-    "\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e'"
-    "\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 (compP1 P)) xcpfrs xcpfrs'"
-    using compP1_pres_wf[OF wf] by(intro Red1_exec1_FWwbisim)
-
-  from wf start sees' vs conf have bisim: "bisimJ2JVM s cs" unfolding s comps by(rule bisimJ2JVM_start)
-  from bisim obtain s0 s1 s1' where bisim0: "red_red0.mbisim s s0"
-    and bisim01: "red0_Red1'.mbisim s0 s1"
-    and bisim11: "mbisim_Red1'_Red1 s1 s1'"
-    and bisim12: "Red1_execd.mbisim s1' cs"
-    unfolding bisimJ2JVM_def by auto
-  from bisim11 have "s1' = s1" by(simp add: mbisim_Red1'_Red1_def)
-  {
-    assume red: "red_mthr.mthr.\<tau>rtrancl3p P s ttas s'"
-      and dead: "red_mthr.deadlock P s'"
-    from b0.mthr.simulation1_\<tau>rtrancl3p[OF red bisim0]
-    obtain ttas0 s0' where "red0_mthr.mthr.\<tau>rtrancl3p P s0 ttas0 s0'"
-      and "red_red0.mbisim s' s0'"
-      and tlsim0: "bisimulation_base.Tlsim red_red0.mta_bisim ttas ttas0" by auto
-    from b0.deadlock1_imp_\<tau>s_deadlock2[OF `red_red0.mbisim s' s0'` dead]
+    from FWdelay_bisimulation_diverge.deadlock1_imp_\<tau>s_deadlock2[OF b0, OF bisim0 dead, of convert_RA]
     obtain s0'' where "red0_mthr.mthr.silent_moves P s0' s0''"
       and bisim0': "red_red0.mbisim s' s0''"
       and dead0: "red0_mthr.deadlock P s0''" by auto
-    from `red0_mthr.mthr.\<tau>rtrancl3p P s0 ttas0 s0'` `red0_mthr.mthr.silent_moves P s0' s0''`
-    have "red0_mthr.mthr.\<tau>rtrancl3p P s0 (ttas0 @ []) s0''"
-      by(rule red0_mthr.mthr.\<tau>rtrancl3p_trans[OF _ red0_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
-    from b01.mthr.simulation1_\<tau>rtrancl3p[OF this bisim01]
-    obtain ttas1 s1'' where "Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 ttas1 s1''"
-      and "red0_Red1'.mbisim s0'' s1''"
-      and tlsim01: "bisimulation_base.Tlsim red0_Red1'.mta_bisim ttas0 ttas1" by auto
-    from b01.deadlock1_imp_\<tau>s_deadlock2[OF `red0_Red1'.mbisim s0'' s1''` dead0]
+    
+    from delay_bisimulation_diverge.simulation_silents1[OF b01mthr, OF bisim01 `red0_mthr.mthr.silent_moves P s0' s0''`]
+    obtain s1'' where "Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''"
+      and "red0_Red1'.mbisim s0'' s1''" by auto
+    from FWdelay_bisimulation_diverge.deadlock1_imp_\<tau>s_deadlock2[OF b01, OF `red0_Red1'.mbisim s0'' s1''` dead0, of convert_RA]
     obtain s1''' where "Red1_mthr.mthr.silent_moves False (compP1 P) s1'' s1'''"
       and dead1: "Red1_mthr.deadlock False (compP1 P) s1'''"
       and bisim01': "red0_Red1'.mbisim s0'' s1'''" by auto
-    from `Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 ttas1 s1''` `Red1_mthr.mthr.silent_moves False (compP1 P) s1'' s1'''`
-    have "Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 (ttas1 @ []) s1'''"
-      by(rule Red1_mthr.mthr.\<tau>rtrancl3p_trans[OF _ Red1_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
-    from b11.simulation1_\<tau>rtrancl3p[OF this bisim11]
-    obtain s1'''' where "Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' ttas1 s1''''"
-      and bisim11': "mbisim_Red1'_Red1 s1''' s1''''" by auto
-    from b12.mthr.simulation1_\<tau>rtrancl3p[OF `Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' ttas1 s1''''` bisim12]
-    obtain ttas' cs' where "execd_mthr.mthr.\<tau>rtrancl3p (compP2 (compP1 P)) cs ttas' cs'"
-      and "Red1_execd.mbisim s1'''' cs'"
-      and tlsim12: "list_all2 Red1_execd.mta_bisim ttas1 ttas'" by(auto)
-    from bisim11' have "s1''' = s1''''" by(simp add: mbisim_Red1'_Red1_def)
-    with dead1 have "Red1_mthr.deadlock True (compP1 P) s1''''"
+    from `Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''` `Red1_mthr.mthr.silent_moves False (compP1 P) s1'' s1'''`
+    have "Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1'''" by(rule rtranclp_trans)
+
+    from delay_bisimulation_diverge.simulation_silents1[OF b11delay, OF bisim11 this]
+    obtain S1'' where "Red1_mthr.mthr.silent_moves True (compP1 P) S1' S1''"
+      and bisim11': "mbisim_Red1'_Red1 s1''' S1''" by auto
+    from bisim11' have "s1''' = S1''" by(simp add: mbisim_Red1'_Red1_def)
+    with dead1 have dead1': "Red1_mthr.deadlock True (compP1 P) S1''"
       by(simp add: Red1_Red1'_deadlock_inv)
-    from b12.deadlock1_imp_\<tau>s_deadlock2[OF `Red1_execd.mbisim s1'''' cs'` this]
+
+    from delay_bisimulation_diverge.simulation_silents1[OF b12mthr, OF bisim12 `Red1_mthr.mthr.silent_moves True (compP1 P) S1' S1''`]
     obtain cs'' where "execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs' cs''"
-      and bisim12': "Red1_execd.mbisim s1'''' cs''"
-      and dead': "execd_mthr.deadlock (compP2 (compP1 P)) cs''" by auto
-    from `execd_mthr.mthr.\<tau>rtrancl3p (compP2 (compP1 P)) cs ttas' cs'` `execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs' cs''`
-    have "execd_mthr.mthr.\<tau>rtrancl3p (compP2 (compP1 P)) cs (ttas' @ []) cs''"
-      by(rule execd_mthr.mthr.\<tau>rtrancl3p_trans[OF _ execd_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
-    moreover from bisim0' bisim01' bisim11' bisim12' have "bisimJ2JVM s' cs''"
-      by(auto simp add: bisimJ2JVM_def J2JVM_def o_def intro: bisim_composeI)
-    moreover from tlsim0 tlsim01 tlsim12
-    have "list_all2 tlsimJ2JVM ttas ttas'"
-      by(auto intro!: list_all2_bisim_composeI simp add: tlsimJ2JVM_def)
-    ultimately show ?thesis5 using dead' unfolding J2JVM_def o_def
-      by-(rule exI conjI|assumption|simp)+
-  next
-    assume "execd_mthr.mthr.\<tau>rtrancl3p (J2JVM P) cs ttas' cs'"
-      and "execd_mthr.deadlock (J2JVM P) cs'"
-    hence "execd_mthr.mthr.\<tau>rtrancl3p (compP2 (compP1 P)) cs ttas' cs'"
-      and dead: "execd_mthr.deadlock (compP2 (compP1 P)) cs'"
-      by(simp_all add: J2JVM_def o_def)
-    from b12.mthr.simulation2_\<tau>rtrancl3p[OF `execd_mthr.mthr.\<tau>rtrancl3p (compP2 (compP1 P)) cs ttas' cs'` bisim12]
-    obtain ttas1 s1'' where "Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' ttas1 s1''"
-      and "Red1_execd.mbisim s1'' cs'"
-      and tlsim12: "list_all2 Red1_execd.mta_bisim ttas1 ttas'" by(auto)
-    from b12.deadlock2_imp_\<tau>s_deadlock1[OF `Red1_execd.mbisim s1'' cs'` dead]
-    obtain s1''' where "Red1_mthr.mthr.silent_moves True (compP1 P) s1'' s1'''"
-      and dead1: "Red1_mthr.deadlock True (compP1 P) s1'''"
-      and bisim12': "Red1_execd.mbisim s1''' cs'" by auto
-    from `Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' ttas1 s1''` `Red1_mthr.mthr.silent_moves True (compP1 P) s1'' s1'''`
-    have "Red1_mthr.mthr.\<tau>rtrancl3p True (compP1 P) s1' (ttas1 @ []) s1'''"
-      by(rule Red1_mthr.mthr.\<tau>rtrancl3p_trans[OF _ Red1_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
-    from b11.simulation2_\<tau>rtrancl3p[OF this bisim11]
-    obtain s1'''' where "Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 ttas1 s1''''"
-      and bisim11': "mbisim_Red1'_Red1 s1'''' s1'''" by(auto)
-    from b01.mthr.simulation2_\<tau>rtrancl3p[OF `Red1_mthr.mthr.\<tau>rtrancl3p False (compP1 P) s1 ttas1 s1''''` bisim01]
-    obtain ttas0 s0' where "red0_mthr.mthr.\<tau>rtrancl3p P s0 ttas0 s0'"
-      and "red0_Red1'.mbisim s0' s1''''"
-      and tlsim01: "bisimulation_base.Tlsim red0_Red1'.mta_bisim ttas0 ttas1" by auto
-    from bisim11' have "s1''' = s1''''" by(simp add: mbisim_Red1'_Red1_def)
-    with dead1 have "Red1_mthr.deadlock False (compP1 P) s1''''"
-      by(simp add: Red1_Red1'_deadlock_inv)
-    from b01.deadlock2_imp_\<tau>s_deadlock1[OF `red0_Red1'.mbisim s0' s1''''` this]
-    obtain s0'' where "red0_mthr.mthr.silent_moves P s0' s0''"
-      and bisim01': "red0_Red1'.mbisim s0'' s1''''"
-      and dead0: "red0_mthr.deadlock P s0''" by auto
-    from `red0_mthr.mthr.\<tau>rtrancl3p P s0 ttas0 s0'` `red0_mthr.mthr.silent_moves P s0' s0''`
-    have "red0_mthr.mthr.\<tau>rtrancl3p P s0 (ttas0 @ []) s0''"
-      by(rule red0_mthr.mthr.\<tau>rtrancl3p_trans[OF _ red0_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
-    from b0.mthr.simulation2_\<tau>rtrancl3p[OF this bisim0]
-    obtain ttas s' where "red_mthr.mthr.\<tau>rtrancl3p P s ttas s'"
-      and "red_red0.mbisim s' s0''"
-      and tlsim0: "bisimulation_base.Tlsim red_red0.mta_bisim ttas ttas0" by auto
-    from b0.deadlock2_imp_\<tau>s_deadlock1[OF `red_red0.mbisim s' s0''` dead0]
-    obtain s'' where "red_mthr.mthr.silent_moves P s' s''"
-      and dead': "red_mthr.deadlock P s''"
-      and bisim0': "red_red0.mbisim s'' s0''" by auto
-    from `red_mthr.mthr.\<tau>rtrancl3p P s ttas s'` `red_mthr.mthr.silent_moves P s' s''`
-    have "red_mthr.mthr.\<tau>rtrancl3p P s (ttas @ []) s''"
-      by(rule red_mthr.mthr.\<tau>rtrancl3p_trans[OF _ red_mthr.mthr.silent_moves_into_\<tau>rtrancl3p])
-    moreover from bisim0' bisim01' bisim11' bisim12' have "bisimJ2JVM s'' cs'"
-      by(auto simp add: bisimJ2JVM_def J2JVM_def o_def intro: bisim_composeI)
-    moreover from tlsim0 tlsim01 tlsim12
-    have "list_all2 tlsimJ2JVM ttas ttas'"
-      by(auto intro!: list_all2_bisim_composeI simp add: tlsimJ2JVM_def)
-    ultimately show ?thesis6 using dead'
-      by-(rule exI conjI|assumption|simp)+
-  }
+      and "Red1_execd.mbisim S1'' cs''" by auto
+    from FWdelay_bisimulation_diverge.deadlock1_imp_\<tau>s_deadlock2[OF b12 `Red1_execd.mbisim S1'' cs''` dead1', of convert_RA]
+    obtain cs''' where "execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs'' cs'''"
+      and bisim12': "Red1_execd.mbisim S1'' cs'''"
+      and dead': "execd_mthr.deadlock (compP2 (compP1 P)) cs'''" by auto
+    from `execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs' cs''` `execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs'' cs'''`
+    have "execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs' cs'''" by(rule rtranclp_trans)
+    hence "cs''' = cs'" using execd_mthr.mthr.\<tau>Runs_terminal_stuck[OF exec `tfinite \<xi>'` `terminal \<xi>' = \<lfloor>cs'\<rfloor>`]
+      by(cases rule: converse_rtranclpE)(fastforce simp add: J2JVM_def)+
+    with dead' have "execd_mthr.deadlock (J2JVM P) cs'" by(simp add: J2JVM_def)
+    hence "\<exists>cs'. tfinite \<xi>' \<and> terminal \<xi>' = \<lfloor>cs'\<rfloor> \<and> execd_mthr.deadlock (J2JVM P) cs' \<and> bisimJ2JVM s' cs'"
+      using `tfinite \<xi>'` `terminal \<xi>' = \<lfloor>cs'\<rfloor>` bisim' by blast }
+  moreover {
+    assume "tfinite \<xi>" and "terminal \<xi> = None"
+    hence "tfinite \<xi>' \<and> terminal \<xi>' = None" using tlsim tllist_all2_tfiniteD[OF tlsim]
+      by(cases "terminal \<xi>'")(auto dest: tllist_all2_tfinite1_terminalD) }
+  moreover {
+    assume "\<not> tfinite \<xi>"
+      hence "\<not> tfinite \<xi>'" using tlsim by(blast dest: tllist_all2_tfiniteD) }
+  ultimately show thesis by(rule that)
 qed
+
+theorem J2JVM_correct2:
+  fixes C M vs
+  defines s: "s \<equiv> J_start_state P C M vs"
+  and comps: "cs \<equiv> JVM_start_state (J2JVM P) C M vs"
+  assumes wf: "wf_J_prog P"
+  and wf_start: "wf_start_state P C M vs"
+  and exec: "execd_mthr.mthr.\<tau>Runs (J2JVM P) cs \<xi>'"
+  obtains \<xi> 
+  where "red_mthr.mthr.\<tau>Runs P s \<xi>" "tllist_all2 tlsimJ2JVM (option_rel bisimJ2JVM) \<xi> \<xi>'"
+  and "\<And>cs'. \<lbrakk> tfinite \<xi>'; terminal \<xi>' = \<lfloor>cs'\<rfloor>; exec_mthr.mfinal cs' \<rbrakk>
+      \<Longrightarrow> \<exists>s'. tfinite \<xi> \<and> terminal \<xi> = \<lfloor>s'\<rfloor> \<and> cs' = mexception s' \<and> bisimJ2JVM s' cs'"
+  and "\<And>cs'. \<lbrakk> tfinite \<xi>'; terminal \<xi>' = \<lfloor>cs'\<rfloor>; execd_mthr.deadlock (J2JVM P) cs' \<rbrakk>
+      \<Longrightarrow> \<exists>s'. tfinite \<xi> \<and> terminal \<xi> = \<lfloor>s'\<rfloor> \<and> red_mthr.deadlock P s' \<and> bisimJ2JVM s' cs'"
+  and "\<lbrakk> tfinite \<xi>'; terminal \<xi>' = None \<rbrakk> \<Longrightarrow> tfinite \<xi> \<and> terminal \<xi> = None"
+  and "\<not> tfinite \<xi>' \<Longrightarrow> \<not> tfinite \<xi>"
+proof -
+  from wf wf_start have bisim: "bisimJ2JVM s cs" unfolding s comps by(rule bisimJ2JVM_start)
+
+  note divfin = delay_bisimulation_diverge_final.delay_bisimulation_diverge[OF bisimJ2JVM_weak_bisim[OF wf]]
+  note divfin2 = delay_bisimulation_diverge_final.delay_bisimulation_final_base[OF bisimJ2JVM_weak_bisim[OF wf]]
+
+  from delay_bisimulation_diverge.simulation_\<tau>Runs2[OF divfin, OF bisim exec] obtain \<xi>
+    where red: "red_mthr.mthr.\<tau>Runs P s \<xi>" 
+    and tlsim: "tllist_all2 tlsimJ2JVM (option_rel bisimJ2JVM) \<xi> \<xi>'" by blast
+  moreover {
+    fix cs'
+    assume fin: "tfinite \<xi>'" and cs': "terminal \<xi>' = \<lfloor>cs'\<rfloor>" and final: "exec_mthr.mfinal cs'"
+    from delay_bisimulation_final_base.\<tau>Runs_terminate_final2[OF divfin2, OF red exec tlsim fin cs' final]
+    obtain s' where fin': "tfinite \<xi>" and s': "terminal \<xi> = \<lfloor>s'\<rfloor>"
+      and final': "red_mthr.mfinal s'" by blast
+    from tlsim fin s' cs' have bisim': "bisimJ2JVM s' cs'" by(auto dest: tllist_all2_tfinite2_terminalD)
+    from red_mthr.mthr.\<tau>Runs_into_\<tau>rtrancl3p[OF red fin' s'] 
+    have "thr s' start_tid \<noteq> None" unfolding s
+      by(rule red_mthr.\<tau>rtrancl3p_redT_thread_not_disappear)(simp add: start_state_def)
+    with bisim' final final' have [simp]: "cs' = mexception s'"
+      by(intro bisimJ2JVM_mfinal_mexception)
+    with fin' s' bisim' have "\<exists>s'. tfinite \<xi> \<and> terminal \<xi> = \<lfloor>s'\<rfloor> \<and> cs' = mexception s' \<and> bisimJ2JVM s' cs'" by simp }
+  moreover {
+    fix cs'
+    assume fin: "tfinite \<xi>'" and cs': "terminal \<xi>' = \<lfloor>cs'\<rfloor>" and dead': "execd_mthr.deadlock (J2JVM P) cs'"
+    from tlsim fin cs'
+    obtain s' where "tfinite \<xi>" and s': "terminal \<xi> = \<lfloor>s'\<rfloor>"
+      and bisim': "bisimJ2JVM s' cs'"
+      by(cases "terminal \<xi>")(fastforce dest: tllist_all2_tfinite2_terminalD tllist_all2_tfiniteD)+
+    from bisim' obtain s0' s1' S1' where bisim0: "red_red0.mbisim s' s0'"
+      and bisim01: "red0_Red1'.mbisim s0' s1'"
+      and bisim11: "mbisim_Red1'_Red1 s1' S1'"
+      and bisim12: "Red1_execd.mbisim S1' cs'"
+      unfolding bisimJ2JVM_def by auto
+
+    note b0 = red_red0_FWbisim[OF wf_prog_wwf_prog[OF wf]]
+    note b0mthr = FWdelay_bisimulation_diverge.mbisim_delay_bisimulation[OF b0]
+    note b01 = red0_Red1'_FWweak_bisim[OF wf]
+    note b01mthr = FWdelay_bisimulation_diverge.mbisim_delay_bisimulation[OF b01]
+    note b11 = Red1'_Red1_bisim_into_weak[OF compP1_pres_wf[OF wf]]
+    note b11delay = bisimulation_into_delay.delay_bisimulation[OF b11]
+    note b12 = Red1_exec1_FWwbisim[OF compP1_pres_wf[OF wf]]
+
+    from FWdelay_bisimulation_diverge.deadlock2_imp_\<tau>s_deadlock1[OF b12 bisim12, of convert_RA] dead'
+    obtain S1'' where "Red1_mthr.mthr.silent_moves True (compP1 P) S1' S1''"
+      and bisim12': "Red1_execd.mbisim S1'' cs'"
+      and dead': "Red1_mthr.deadlock True (compP1 P) S1''" by(auto simp add: J2JVM_def)
+    from delay_bisimulation_diverge.simulation_silents2[OF b11delay, OF bisim11 `Red1_mthr.mthr.silent_moves True (compP1 P) S1' S1''`]
+    obtain s1'' where "Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''"
+      and bisim11': "mbisim_Red1'_Red1 s1'' S1''" by blast
+    from bisim11' have "s1'' = S1''" by(simp add: mbisim_Red1'_Red1_def)
+    with dead' have dead1: "Red1_mthr.deadlock False (compP1 P) s1''"
+      by(simp add: Red1_Red1'_deadlock_inv)
+    from delay_bisimulation_diverge.simulation_silents2[OF b01mthr, OF bisim01 `Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''`]
+    obtain s0'' where "red0_mthr.mthr.silent_moves P s0' s0''"
+      and bisim01': "red0_Red1'.mbisim s0'' s1''" by auto
+    from FWdelay_bisimulation_diverge.deadlock2_imp_\<tau>s_deadlock1[OF b01 bisim01' dead1, of convert_RA]
+    obtain s0''' where "red0_mthr.mthr.silent_moves P s0'' s0'''"
+      and bisim01'': "red0_Red1'.mbisim s0''' s1''"
+      and dead0: "red0_mthr.deadlock P s0'''" by auto
+    from `red0_mthr.mthr.silent_moves P s0' s0''` `red0_mthr.mthr.silent_moves P s0'' s0'''`
+    have "red0_mthr.mthr.silent_moves P s0' s0'''" by(rule rtranclp_trans)
+    from delay_bisimulation_diverge.simulation_silents2[OF b0mthr, OF bisim0 this]
+    obtain s'' where "red_mthr.mthr.silent_moves P s' s''" 
+      and "red_red0.mbisim s'' s0'''" by blast
+    from FWdelay_bisimulation_diverge.deadlock2_imp_\<tau>s_deadlock1[OF b0 `red_red0.mbisim s'' s0'''` dead0, of convert_RA]
+    obtain s''' where "red_mthr.mthr.silent_moves P s'' s'''" 
+      and "red_red0.mbisim s''' s0'''"
+      and dead: "red_mthr.deadlock P s'''" by blast
+    from `red_mthr.mthr.silent_moves P s' s''` `red_mthr.mthr.silent_moves P s'' s'''`
+    have "red_mthr.mthr.silent_moves P s' s'''" by(rule rtranclp_trans)
+    hence "s''' = s'" using red_mthr.mthr.\<tau>Runs_terminal_stuck[OF red `tfinite \<xi>` `terminal \<xi> = \<lfloor>s'\<rfloor>`]
+      by(cases rule: converse_rtranclpE) fastforce+
+    with dead have "red_mthr.deadlock P s'" by(simp)
+    hence "\<exists>s'. tfinite \<xi> \<and> terminal \<xi> = \<lfloor>s'\<rfloor> \<and> red_mthr.deadlock P s' \<and> bisimJ2JVM s' cs'"
+      using `tfinite \<xi>` `terminal \<xi> = \<lfloor>s'\<rfloor>` bisim' by blast }
+  moreover {
+    assume "tfinite \<xi>'" and "terminal \<xi>' = None"
+    hence "tfinite \<xi> \<and> terminal \<xi> = None" using tlsim tllist_all2_tfiniteD[OF tlsim]
+      by(cases "terminal \<xi>")(auto dest: tllist_all2_tfinite2_terminalD) }
+  moreover {
+    assume "\<not> tfinite \<xi>'"
+      hence "\<not> tfinite \<xi>" using tlsim by(blast dest: tllist_all2_tfiniteD) }
+  ultimately show thesis by(rule that)
+qed
+
 
 end
 
 declare compP1_def [simp]
 
-lemma wt_J2JVM: "wf_J_prog P \<Longrightarrow> wf_jvm_prog (J2JVM P)"
+theorem wt_J2JVM: "wf_J_prog P \<Longrightarrow> wf_jvm_prog (J2JVM P)"
 unfolding J2JVM_def o_def
 by(rule wt_compP2)(rule compP1_pres_wf)
 

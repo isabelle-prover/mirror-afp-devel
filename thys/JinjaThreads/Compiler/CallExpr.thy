@@ -7,8 +7,7 @@ header {*
   \isaheader{Method calls in expressions} 
 *}
 
-theory CallExpr
-imports 
+theory CallExpr imports 
   "../J/Expr"
 begin
 
@@ -44,9 +43,9 @@ where
 | "inline_calls f [] = []"
 | "inline_calls f (e#es) = (if is_val e then e # inline_calls f es else inline_call f e # es)"
 
-primrec fold_es :: "'addr expr \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr" where
-  "fold_es e [] = e"
-| "fold_es e (e' # es) = fold_es (inline_call e e') es"
+fun collapse :: "'addr expr \<times> 'addr expr list \<Rightarrow> 'addr expr" where
+  "collapse (e, []) = e"
+| "collapse (e, (e' # es)) = collapse (inline_call e e', es)"
 
 definition is_call :: "('a, 'b, 'addr) exp \<Rightarrow> bool"
 where "is_call e = (call e \<noteq> None)"
@@ -142,7 +141,7 @@ by(induct e and es)(fastforce split: split_if_asm)+
 lemma contains_insync_inline_call_conv:
   "contains_insync (inline_call e e') \<longleftrightarrow> contains_insync e \<and> call e' \<noteq> None \<or> contains_insync e'"
   and contains_insyncs_inline_calls_conv:
-   "contains_insyncs (inline_calls e es') \<longleftrightarrow> contains_insync e \<and> calls es' \<noteq> None \<or> contains_insyncs es'"
+  "contains_insyncs (inline_calls e es') \<longleftrightarrow> contains_insync e \<and> calls es' \<noteq> None \<or> contains_insyncs es'"
 by(induct e' and es')(auto split: split_if_asm simp add: is_vals_conv)
 
 lemma contains_insync_inline_call [simp]:
@@ -151,15 +150,15 @@ lemma contains_insync_inline_call [simp]:
   "calls es' = \<lfloor>aMvs\<rfloor> \<Longrightarrow> contains_insyncs (inline_calls e es') \<longleftrightarrow> contains_insync e \<or> contains_insyncs es'"
 by(simp_all add: contains_insync_inline_call_conv contains_insyncs_inline_calls_conv)
 
-lemma fold_es_append [simp]:
-  "fold_es e (es @ es') = fold_es (fold_es e es) es'"
+lemma collapse_append [simp]:
+  "collapse (e, es @ es') = collapse (collapse (e, es), es')"
 by(induct es arbitrary: e, auto)
 
-lemma fold_es_conv_foldl:
-  "fold_es e es = foldl inline_call e es"
+lemma collapse_conv_foldl:
+  "collapse (e, es) = foldl inline_call e es"
 by(induct es arbitrary: e) simp_all
 
-lemma fv_fold_es: "list_all is_call es \<Longrightarrow> fv (fold_es e es) \<subseteq> fvs (e # es)"
+lemma fv_collapse: "\<forall>e \<in> set es. is_call e \<Longrightarrow> fv (collapse (e, es)) \<subseteq> fvs (e # es)"
 apply(induct es arbitrary: e)
 apply(insert fv_inline_call)
 apply(fastforce dest: subsetD)+
@@ -168,7 +167,7 @@ done
 lemma final_inline_callD: "\<lbrakk> final (inline_call E e); is_call e \<rbrakk> \<Longrightarrow> final E"
 by(induct e)(auto simp add: is_call_def split: split_if_asm)
 
-lemma fold_es_finalD: "\<lbrakk> final (fold_es e es); list_all is_call es \<rbrakk> \<Longrightarrow> final e"
+lemma collapse_finalD: "\<lbrakk> final (collapse (e, es)); \<forall>e\<in>set es. is_call e \<rbrakk> \<Longrightarrow> final e"
 by(induct es arbitrary: e)(auto dest: final_inline_callD)
 
 context heap_base begin
@@ -176,11 +175,11 @@ context heap_base begin
 definition synthesized_call :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('addr \<times> mname \<times> 'addr val list) \<Rightarrow> bool"
 where
   "synthesized_call P h = 
-   (\<lambda>(a, M, vs). \<exists>T C Ts Tr D. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D)"
+   (\<lambda>(a, M, vs). \<exists>T Ts Tr D. typeof_addr h a = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D)"
 
 lemma synthesized_call_conv:
   "synthesized_call P h (a, M, vs) = 
-   (\<exists>T C Ts Tr D. typeof_addr h a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D)"
+   (\<exists>T Ts Tr D. typeof_addr h a = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D)"
 by(simp add: synthesized_call_def)
 
 end

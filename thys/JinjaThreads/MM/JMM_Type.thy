@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Heap implementation for the JMM} *}
+header {* \isaheader{JMM heap implementation 1} *}
 
 theory JMM_Type
 imports 
@@ -30,17 +30,11 @@ by(auto simp add:new_Addr_def split:if_splits intro: someI)
 
 abbreviation jmm_empty :: "'addr JMM_heap" where "jmm_empty == Map.empty"
 
-definition jmm_new_obj :: "'addr JMM_heap \<Rightarrow> cname \<Rightarrow> 'addr JMM_heap \<times> 'addr option"
-where "jmm_new_obj h C = (case new_Addr h of None \<Rightarrow> (h, None) | Some a \<Rightarrow> (h(a \<mapsto> Class_type C), Some a))"
+definition jmm_allocate :: "'addr JMM_heap \<Rightarrow> htype \<Rightarrow> 'addr JMM_heap \<times> 'addr option"
+where "jmm_allocate h hT = (case new_Addr h of None \<Rightarrow> (h, None) | Some a \<Rightarrow> (h(a \<mapsto> hT), Some a))"
 
-definition jmm_new_arr :: "'addr JMM_heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> 'addr JMM_heap \<times> 'addr option"
-where "jmm_new_arr h T n = (case new_Addr h of None \<Rightarrow> (h, None) | Some a \<Rightarrow> (h(a \<mapsto> Array_type T n), Some a))"
-
-definition jmm_typeof_addr :: "'addr JMM_heap \<Rightarrow> 'addr \<rightharpoonup> ty"
-where "jmm_typeof_addr h a = Option.map ty_of_htype (h a)"
-
-definition jmm_array_length :: "'addr JMM_heap \<Rightarrow> 'addr \<Rightarrow> nat"
-where "jmm_array_length h a = alen_of_htype (the (h a))"
+definition jmm_typeof_addr :: "'addr JMM_heap \<Rightarrow> 'addr \<rightharpoonup> htype"
+where "jmm_typeof_addr h = h"
 
 definition jmm_heap_read :: "'addr JMM_heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
 where "jmm_heap_read h a ad v = True"
@@ -55,8 +49,8 @@ definition jmm_allocated :: "'addr JMM_heap \<Rightarrow> 'addr set"
 where "jmm_allocated h = dom (jmm_typeof_addr h)"
 
 lemmas jmm_heap_ops_defs =
-  jmm_new_obj_def jmm_new_arr_def jmm_typeof_addr_def 
-  jmm_array_length_def jmm_heap_read_def jmm_heap_write_def
+  jmm_allocate_def jmm_typeof_addr_def 
+  jmm_heap_read_def jmm_heap_write_def
   jmm_allocated_def
 
 type_synonym 'addr thread_id = "'addr"
@@ -69,7 +63,7 @@ where "thread_id2addr \<equiv> \<lambda>x. x"
 
 interpretation jmm!: heap_base
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_read jmm_heap_write 
+  jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_read jmm_heap_write 
 .
 
 notation jmm.hext  ("_ \<unlhd>jmm _" [51,51] 50)
@@ -82,7 +76,7 @@ text {* Now a variation of the JMM with a different read operation that permits 
 
 interpretation jmm'!: heap_base
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length "jmm.heap_read_typed P" jmm_heap_write
+  jmm_empty jmm_allocate jmm_typeof_addr "jmm.heap_read_typed P" jmm_heap_write
   for P .
 
 notation jmm'.hext ("_ \<unlhd>jmm' _" [51,51] 50)
@@ -95,31 +89,17 @@ section {* Heap locale interpretations *}
 
 subsection {* Locale @{text heap} *}
 
-lemma jmm_heap: "heap addr2thread_id thread_id2addr jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_write P"
+lemma jmm_heap: "heap addr2thread_id thread_id2addr jmm_allocate jmm_typeof_addr jmm_heap_write P"
 proof
-  fix h C h' a
-  assume "jmm_new_obj h C = (h', \<lfloor>a\<rfloor>)"
-  thus "jmm_typeof_addr h' a = \<lfloor>Class C\<rfloor>"
+  fix h hT h' a
+  assume "jmm_allocate h hT = (h', \<lfloor>a\<rfloor>)"
+  thus "jmm_typeof_addr h' a = \<lfloor>hT\<rfloor>"
     by(auto simp add: jmm_heap_ops_defs dest: new_Addr_SomeD)
 next
-  fix h C and h' :: "('addr :: addr) JMM_heap" and a
-  assume "jmm_new_obj h C = (h', a)"
+  fix h hT and h' :: "('addr :: addr) JMM_heap" and a
+  assume "jmm_allocate h hT = (h', a)"
   thus "h \<unlhd>jmm h'"
     by(fastforce simp add: jmm_heap_ops_defs intro: jmm.hextI dest: new_Addr_SomeD[OF sym])
-next
-  fix h T n h' a
-  assume "jmm_new_arr h T n = (h', \<lfloor>a\<rfloor>)"
-  thus "jmm_typeof_addr h' a = \<lfloor>T\<lfloor>\<rceil>\<rfloor> \<and> jmm_array_length h' a = n"
-    by(auto simp add: jmm_heap_ops_defs dest: new_Addr_SomeD)
-next
-  fix h T n and h' :: "('addr :: addr) JMM_heap" and a
-  assume "jmm_new_arr h T n = (h', a)"
-  thus "h \<unlhd>jmm h'"
-    by(fastforce simp add: jmm_heap_ops_defs intro: jmm.hextI dest: new_Addr_SomeD[OF sym])
-next
-  fix h
-  show "ran (jmm_typeof_addr h) \<subseteq> range Class \<union> range Array" using range_ty_of_htype
-    by(auto simp add: jmm_heap_ops_defs ran_def)
 next
   fix h a al v and h' :: "('addr :: addr) JMM_heap"
   assume "jmm_heap_write h a al v h'"
@@ -128,7 +108,7 @@ qed simp
 
 interpretation jmm!: heap
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_read jmm_heap_write
+  jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_read jmm_heap_write
   P
   for P
 by(rule jmm_heap)
@@ -139,7 +119,7 @@ lemmas jmm'_heap = jmm_heap
 
 interpretation jmm'!: heap
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length "jmm.heap_read_typed P" jmm_heap_write
+  jmm_empty jmm_allocate jmm_typeof_addr "jmm.heap_read_typed P" jmm_heap_write
   P
   for P
 by(rule jmm'_heap)
@@ -150,7 +130,7 @@ subsection {* Locale @{text "heap_conf"} *}
 
 interpretation jmm!: heap_conf_base
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_read jmm_heap_write "jmm_hconf P"
+  jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_read jmm_heap_write "jmm_hconf P"
   P
   for P .
 
@@ -159,15 +139,15 @@ where "jmm'_hconf == jmm_hconf"
 
 interpretation jmm'!: heap_conf_base
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
+  jmm_empty jmm_allocate jmm_typeof_addr "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
   P
   for P .
 
 abbreviation jmm_heap_read_typeable :: "('addr :: addr) itself \<Rightarrow> 'm prog \<Rightarrow> bool"
-where "jmm_heap_read_typeable tytok P \<equiv> jmm.heap_read_typeable tytok TYPE('m) P"
+where "jmm_heap_read_typeable tytok P \<equiv> jmm.heap_read_typeable (jmm_hconf P :: 'addr JMM_heap \<Rightarrow> bool) P"
 
 abbreviation jmm'_heap_read_typeable :: "('addr :: addr) itself \<Rightarrow> 'm prog \<Rightarrow> bool"
-where "jmm'_heap_read_typeable tytok P \<equiv> jmm'.heap_read_typeable tytok TYPE('m) P"
+where "jmm'_heap_read_typeable tytok P \<equiv> jmm'.heap_read_typeable TYPE('m) P (jmm_hconf P :: 'addr JMM_heap \<Rightarrow> bool) P"
 
 lemma jmm_heap_read_typeable: "jmm_heap_read_typeable tytok P"
 by(rule jmm.heap_read_typeableI)(simp add: jmm_heap_read_def)
@@ -176,22 +156,17 @@ lemma jmm'_heap_read_typeable: "jmm'_heap_read_typeable tytok P"
 by(rule jmm'.heap_read_typeableI)(auto simp add: jmm.heap_read_typed_def jmm_heap_read_def dest: jmm'.addr_loc_type_fun)
 
 lemma jmm_heap_conf:
-  "heap_conf addr2thread_id thread_id2addr jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_write (jmm_hconf P) P"
+  "heap_conf addr2thread_id thread_id2addr jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_write (jmm_hconf P) P"
 proof
   show "P \<turnstile>jmm jmm_empty \<surd>"
     by(simp add: jmm_hconf_def)
 next
-  fix h a T
-  assume "jmm_typeof_addr h a = \<lfloor>T\<rfloor>" "P \<turnstile>jmm h \<surd>"
-  thus "is_type P T" by(auto simp add: jmm_hconf_def jmm_heap_ops_defs intro: ranI)
+  fix h a hT
+  assume "jmm_typeof_addr h a = \<lfloor>hT\<rfloor>" "P \<turnstile>jmm h \<surd>"
+  thus "is_htype P hT" by(auto simp add: jmm_hconf_def jmm_heap_ops_defs intro: ranI)
 next
-  fix h C h' a
-  assume "jmm_new_obj h C = (h', a)" "P \<turnstile>jmm h \<surd>" "is_class P C"
-  thus "P \<turnstile>jmm h' \<surd>"
-    by(fastforce simp add: jmm_hconf_def jmm_heap_ops_defs ran_def split: split_if_asm)
-next
-  fix h T n h' a
-  assume "jmm_new_arr h T n = (h', a)" "P \<turnstile>jmm h \<surd>" "is_type P (T\<lfloor>\<rceil>)"
+  fix h hT h' a
+  assume "jmm_allocate h hT = (h', a)" "P \<turnstile>jmm h \<surd>" "is_htype P hT"
   thus "P \<turnstile>jmm h' \<surd>"
     by(fastforce simp add: jmm_hconf_def jmm_heap_ops_defs ran_def split: split_if_asm)
 next
@@ -203,7 +178,7 @@ qed
 
 interpretation jmm!: heap_conf
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_read jmm_heap_write "jmm_hconf P"
+  jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_read jmm_heap_write "jmm_hconf P"
   P
   for P
 by(rule jmm_heap_conf)
@@ -212,7 +187,7 @@ lemmas jmm'_heap_conf = jmm_heap_conf
 
 interpretation jmm'!: heap_conf
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
+  jmm_empty jmm_allocate jmm_typeof_addr "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
   P
   for P
 by(rule jmm'_heap_conf)
@@ -220,7 +195,7 @@ by(rule jmm'_heap_conf)
 subsection {* Locale @{text heap_progress} *}
 
 lemma jmm_heap_progress:
-  "heap_progress addr2thread_id thread_id2addr jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_read jmm_heap_write (jmm_hconf P) P"
+  "heap_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_read jmm_heap_write (jmm_hconf P) P"
 proof
   fix h a al T
   assume "P \<turnstile>jmm h \<surd>"
@@ -236,13 +211,13 @@ qed
 
 interpretation jmm!: heap_progress
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_read jmm_heap_write "jmm_hconf P"
+  jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_read jmm_heap_write "jmm_hconf P"
   P
   for P
 by(rule jmm_heap_progress)
 
 lemma jmm'_heap_progress:
-  "heap_progress addr2thread_id thread_id2addr jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length (jmm.heap_read_typed P) jmm_heap_write (jmm'_hconf P) P"
+  "heap_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate jmm_typeof_addr (jmm.heap_read_typed P) jmm_heap_write (jmm'_hconf P) P"
 proof
   fix h a al T
   assume "P \<turnstile>jmm' h \<surd>"
@@ -260,7 +235,7 @@ qed
 
 interpretation jmm'!: heap_progress
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
+  jmm_empty jmm_allocate jmm_typeof_addr "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
   P
   for P
 by(rule jmm'_heap_progress)
@@ -268,19 +243,19 @@ by(rule jmm'_heap_progress)
 subsection {* Locale @{text heap_conf_read} *}
 
 lemma jmm'_heap_conf_read:
-  "heap_conf_read addr2thread_id thread_id2addr jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length (jmm.heap_read_typed P) jmm_heap_write (jmm'_hconf P) P"
+  "heap_conf_read addr2thread_id thread_id2addr jmm_empty jmm_allocate jmm_typeof_addr (jmm.heap_read_typed P) jmm_heap_write (jmm'_hconf P) P"
 by(rule jmm.heap_conf_read_heap_read_typed)
 
 interpretation jmm'!: heap_conf_read
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
+  jmm_empty jmm_allocate jmm_typeof_addr "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
   P
   for P
 by(rule jmm'_heap_conf_read)
 
 interpretation jmm'!: heap_typesafe
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
+  jmm_empty jmm_allocate jmm_typeof_addr "jmm.heap_read_typed P" jmm_heap_write "jmm'_hconf P"
   P
   for P
 ..
@@ -288,27 +263,17 @@ interpretation jmm'!: heap_typesafe
 subsection {* Locale @{text allocated_heap} *}
 
 lemma jmm_allocated_heap: 
-  "allocated_heap addr2thread_id thread_id2addr jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_write jmm_allocated P"
+  "allocated_heap addr2thread_id thread_id2addr jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_write jmm_allocated P"
 proof
   show "jmm_allocated jmm_empty = {}" by(auto simp add: jmm_heap_ops_defs)
 next
-  fix h C h' a
-  assume "jmm_new_obj h C = (h', \<lfloor>a\<rfloor>)"
+  fix h hT h' a
+  assume "jmm_allocate h hT = (h', \<lfloor>a\<rfloor>)"
   thus "jmm_allocated h' = insert a (jmm_allocated h) \<and> a \<notin> jmm_allocated h"
     by(auto simp add: jmm_heap_ops_defs split: split_if_asm dest: new_Addr_SomeD)
 next
-  fix h C h'
-  assume "jmm_new_obj h C = (h', None)"
-  thus "jmm_allocated h' = jmm_allocated h"
-    by(auto simp add: jmm_heap_ops_defs)
-next
-  fix h T n h' a
-  assume "jmm_new_arr h T n = (h', \<lfloor>a\<rfloor>)"
-  thus "jmm_allocated h' = insert a (jmm_allocated h) \<and> a \<notin> jmm_allocated h"
-    by(auto simp add: jmm_heap_ops_defs split: split_if_asm dest: new_Addr_SomeD)
-next
-  fix h T n h'
-  assume "jmm_new_arr h T n = (h', None)"
+  fix h hT h'
+  assume "jmm_allocate h hT = (h', None)"
   thus "jmm_allocated h' = jmm_allocated h"
     by(auto simp add: jmm_heap_ops_defs)
 next
@@ -319,7 +284,7 @@ qed
 
 interpretation jmm!: allocated_heap
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length jmm_heap_read jmm_heap_write
+  jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_read jmm_heap_write
   jmm_allocated
   P
   for P
@@ -329,7 +294,7 @@ lemmas jmm'_allocated_heap = jmm_allocated_heap
 
 interpretation jmm'!: allocated_heap
   addr2thread_id thread_id2addr
-  jmm_empty jmm_new_obj jmm_new_arr jmm_typeof_addr jmm_array_length "jmm.heap_read_typed P" jmm_heap_write
+  jmm_empty jmm_allocate jmm_typeof_addr "jmm.heap_read_typed P" jmm_heap_write
   jmm_allocated
   P
   for P

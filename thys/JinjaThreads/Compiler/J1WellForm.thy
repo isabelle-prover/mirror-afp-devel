@@ -4,10 +4,9 @@
 
 header {* \isaheader{Well-Formedness of Intermediate Language} *}
 
-theory J1WellForm
-imports
+theory J1WellForm imports
   "../J/DefAss"
-  J1WellType
+  "J1WellType"
 begin
 
 subsection{* Well-formedness*}

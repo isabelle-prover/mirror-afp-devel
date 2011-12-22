@@ -77,6 +77,9 @@ by(induct T)(auto, metis is_type_ArrayD is_type_array)
 abbreviation "types" :: "'m prog \<Rightarrow> ty set"
 where "types P \<equiv> {T. is_type P T}"
 
+abbreviation is_htype :: "'m prog \<Rightarrow> htype \<Rightarrow> bool"
+where "is_htype P hT \<equiv> is_type P (ty_of_htype hT)"
+
 subsection {* Code generation *}
 
 lemma is_class_intros [code_pred_intro]:

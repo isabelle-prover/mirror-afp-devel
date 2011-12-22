@@ -67,14 +67,14 @@ inductive WTrt :: "'addr J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarr
   "WTrt P h E a NT \<Longrightarrow> WTrt P h E (a\<bullet>length) T"
 
 | WTrtFAcc:
-    "\<lbrakk> WTrt P h E e U; is_class_type_of U C; P \<turnstile> C has F:T (fm) in D \<rbrakk> \<Longrightarrow>
+    "\<lbrakk> WTrt P h E e U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C has F:T (fm) in D \<rbrakk> \<Longrightarrow>
     WTrt P h E (e\<bullet>F{D}) T"
 
 | WTrtFAccNT:
     "WTrt P h E e NT \<Longrightarrow> WTrt P h E (e\<bullet>F{D}) T"
 
 | WTrtFAss:
-    "\<lbrakk> WTrt P h E e1 U; is_class_type_of U C;  P \<turnstile> C has F:T (fm) in D; WTrt P h E e2 T2;  P \<turnstile> T2 \<le> T \<rbrakk>
+    "\<lbrakk> WTrt P h E e1 U; class_type_of' U = \<lfloor>C\<rfloor>;  P \<turnstile> C has F:T (fm) in D; WTrt P h E e2 T2;  P \<turnstile> T2 \<le> T \<rbrakk>
     \<Longrightarrow> WTrt P h E (e1\<bullet>F{D}:=e2) Void"
 
 | WTrtFAssNT:
@@ -82,7 +82,7 @@ inductive WTrt :: "'addr J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarr
     \<Longrightarrow> WTrt P h E (e1\<bullet>F{D}:=e2) Void"
 
 | WTrtCall:
-    "\<lbrakk> WTrt P h E e U; is_class_type_of U C; P \<turnstile> C sees M:Ts \<rightarrow> T = meth in D;
+    "\<lbrakk> WTrt P h E e U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts \<rightarrow> T = meth in D;
        WTrts P h E es Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
     \<Longrightarrow> WTrt P h E (e\<bullet>M(es)) T"
 

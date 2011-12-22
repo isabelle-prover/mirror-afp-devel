@@ -54,9 +54,9 @@ exec_instr_Load:
 
 | exec_instr_New:
  "exec_instr (New C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
-  {let (h', ao) = new_obj h C
+  {let (h', ao) = allocate h (Class_type C)
    in case ao of None \<Rightarrow> (\<epsilon>, \<lfloor>addr_of_sys_xcpt OutOfMemory\<rfloor>, h', (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
-             | Some a \<Rightarrow> (\<lbrace>NewObj a C\<rbrace>, None, h', (Addr a # stk, loc, C\<^isub>0, M\<^isub>0, pc + 1)#frs) }"
+             | Some a \<Rightarrow> (\<lbrace>NewHeapElem a (Class_type C)\<rbrace>, None, h', (Addr a # stk, loc, C\<^isub>0, M\<^isub>0, pc + 1)#frs) }"
 
 | exec_instr_NewArray:
   "exec_instr (NewArray T) P t h stk loc C0 M0 pc frs =
@@ -64,17 +64,18 @@ exec_instr_Load:
         i = nat (sint si)
     in (if si <s 0
         then (\<epsilon>, \<lfloor>addr_of_sys_xcpt NegativeArraySize\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
-        else (let (h', ao) = new_arr h T i
+        else (let (h', ao) = allocate h (Array_type T i)
               in case ao of None \<Rightarrow> (\<epsilon>, \<lfloor>addr_of_sys_xcpt OutOfMemory\<rfloor>, h', (stk, loc, C0, M0, pc) # frs)
-                        | Some a \<Rightarrow> (\<lbrace>NewArr a T i\<rbrace>, None, h', (Addr a # tl stk, loc, C0, M0, pc + 1) # frs))) }"
+                        | Some a \<Rightarrow> (\<lbrace>NewHeapElem a (Array_type T i)\<rbrace>, None, h', (Addr a # tl stk, loc, C0, M0, pc + 1) # frs))) }"
 
 | exec_instr_ALoad:
   "exec_instr ALoad P t h stk loc C0 M0 pc frs =
    (let i = the_Intg (hd stk);
         va = hd (tl stk);
-        a = the_Addr va
+        a = the_Addr va;
+        len = alen_of_htype (the (typeof_addr h a))
     in (if va = Null then {(\<epsilon>, \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
-        else if i <s 0 \<or> int (array_length h a) \<le> sint i then
+        else if i <s 0 \<or> int len \<le> sint i then
              {(\<epsilon>, \<lfloor>addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
         else {(\<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>, None, h, (v # tl (tl stk), loc, C0, M0, pc + 1) # frs) | v. 
               heap_read h a (ACell (nat (sint i))) v }))"
@@ -88,9 +89,11 @@ exec_instr_Load:
        else (let i = the_Intg vi;
                  idx = nat (sint i);
                  a = the_Addr va;
-                 T = the (typeof_addr h a);
+                 hT = the (typeof_addr h a);
+                 T = ty_of_htype hT;
+                 len = alen_of_htype hT;
                  U = the (typeof\<^bsub>h\<^esub> ve)
-             in (if i <s 0 \<or> int (array_length h a) \<le> sint i then
+             in (if i <s 0 \<or> int len \<le> sint i then
                       {(\<epsilon>, \<lfloor>addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
                  else if P \<turnstile> U \<le> the_Array T then 
                       {(\<lbrace>WriteMem a (ACell idx) ve\<rbrace>, None, h', (tl (tl (tl stk)), loc, C0, M0, pc+1) # frs)
@@ -102,8 +105,7 @@ exec_instr_Load:
    {(\<epsilon>, (let va = hd stk
          in if va = Null
             then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
-            else (None, h, (Intg (word_of_int (int (array_length h (the_Addr va)))) # tl stk, loc, C0, M0, pc+1) # frs)))}"
-
+            else (None, h, (Intg (word_of_int (int (alen_of_htype (the (typeof_addr h (the_Addr va)))))) # tl stk, loc, C0, M0, pc+1) # frs)))}"
 
 | "exec_instr (Getfield F C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
    (let v = hd stk
@@ -136,7 +138,7 @@ exec_instr_Load:
        T = the (typeof_addr h a)
    in (if r = Null then {(\<epsilon>, \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
        else 
-         let C = the (class_type_of T);
+         let C = class_type_of T;
              (D,M',Ts,meth)= method P C M
          in case meth of 
                Native \<Rightarrow>
@@ -145,6 +147,7 @@ exec_instr_Load:
             | \<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> \<Rightarrow>
               let f' = ([],[r]@ps@(replicate mxl\<^isub>0 undefined_value),D,M,0)
               in {(\<epsilon>, None, h, f' # (stk, loc, C0, M0, pc) # frs)}))"
+
 | "exec_instr Return P t h stk\<^isub>0 loc\<^isub>0 C\<^isub>0 M\<^isub>0 pc frs =
   {(\<epsilon>, (if frs=[] then (None, h, []) else 
        let v = hd stk\<^isub>0; 

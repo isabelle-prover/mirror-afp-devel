@@ -155,33 +155,51 @@ primrec the_Array :: "ty \<Rightarrow> ty"
 where
   "the_Array (T\<lfloor>\<rceil>) = T"
 
-fun class_type_of :: "ty \<Rightarrow> cname option"
-where 
-  "class_type_of (Class C) = \<lfloor>C\<rfloor>"
-| "class_type_of (Array T) = \<lfloor>Object\<rfloor>"
-| "class_type_of _ = None"
 
-inductive is_class_type_of :: "ty \<Rightarrow> cname \<Rightarrow> bool"
-where 
-  is_class_type_of_Class: "is_class_type_of (Class C) C"
-| is_class_type_of_Array: "is_class_type_of (Array T) Object"
+datatype htype =
+  Class_type "cname"
+| Array_type "ty" "nat"
 
-inductive_simps is_class_type_of_simps [simp]:
-  "is_class_type_of (Class C) X"
-  "is_class_type_of (Array T) X"
-  "is_class_type_of Integer X"
-  "is_class_type_of Boolean X"
-  "is_class_type_of Void X"
-  "is_class_type_of NT X"
+primrec ty_of_htype :: "htype \<Rightarrow> ty"
+where
+  "ty_of_htype (Class_type C) = Class C"
+| "ty_of_htype (Array_type T n) = Array T"
+
+primrec alen_of_htype :: "htype \<Rightarrow> nat"
+where
+  "alen_of_htype (Array_type T n) = n"
+
+primrec class_type_of :: "htype \<Rightarrow> cname"
+where 
+  "class_type_of (Class_type C) = C"
+| "class_type_of (Array_type T n) = Object"
+
+fun class_type_of' :: "ty \<Rightarrow> cname option"
+where 
+  "class_type_of' (Class C) = \<lfloor>C\<rfloor>"
+| "class_type_of' (Array T) = \<lfloor>Object\<rfloor>"
+| "class_type_of' _ = None" 
+
+lemma htype_rec_case [simp]: "htype_rec = htype_case"
+by(auto simp add: fun_eq_iff split: htype.split)
+
+lemma ty_of_htype_eq_convs [simp]:
+  shows ty_of_htype_eq_Boolean: "ty_of_htype hT \<noteq> Boolean"
+  and ty_of_htype_eq_Void: "ty_of_htype hT \<noteq> Void"
+  and ty_of_htype_eq_Integer: "ty_of_htype hT \<noteq> Integer"
+  and ty_of_htype_eq_NT: "ty_of_htype hT \<noteq> NT"
+  and ty_of_htype_eq_Class: "ty_of_htype hT = Class C \<longleftrightarrow> hT = Class_type C"
+  and ty_of_htype_eq_Array: "ty_of_htype hT = Array T \<longleftrightarrow> (\<exists>n. hT = Array_type T n)"
+by(case_tac [!] hT) simp_all
 
 lemma class_type_of_eq:
-  "class_type_of T = 
-  (case T of Class C \<Rightarrow> \<lfloor>C\<rfloor> | Array T \<Rightarrow> \<lfloor>Object\<rfloor> | _ \<Rightarrow> None)"
-by(cases T rule: class_type_of.cases) simp_all
+  "class_type_of hT = 
+  (case hT of Class_type C \<Rightarrow> C | Array_type T n \<Rightarrow> Object)"
+by(simp split: htype.split)
 
-lemma is_class_type_of_conv_class_type_of_Some:
-  "is_class_type_of T C \<longleftrightarrow> class_type_of T = \<lfloor>C\<rfloor>"
-by(cases T rule: class_type_of.cases) auto
+lemma class_type_of'_ty_of_htype [simp]:
+  "class_type_of' (ty_of_htype hT) = \<lfloor>class_type_of hT\<rfloor>"
+by(cases hT) simp_all
 
 fun is_Array :: "ty \<Rightarrow> bool"
 where
@@ -202,13 +220,5 @@ by(cases T) simp_all
 subsection {* Code generator setup *}
 
 code_pred is_refT .
-
-code_pred
-  (modes: i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> bool)
-  [detect_switches, skip_proof]
-  is_class_type_of
-.
-
-declare is_class_type_of_conv_class_type_of_Some [code]
 
 end

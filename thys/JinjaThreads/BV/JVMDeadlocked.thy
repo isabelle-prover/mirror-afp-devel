@@ -74,7 +74,7 @@ proof -
   proof(cases xcp)
     case (Some a)[simp]
     with exec have [simp]: "m' = h'" by(auto)
-    from `\<Phi> \<turnstile> t: (xcp, h, frs) \<surd>` obtain D where D: "typeof_addr h a = \<lfloor>Class D\<rfloor>"
+    from `\<Phi> \<turnstile> t: (xcp, h, frs) \<surd>` obtain D where D: "typeof_addr h a = \<lfloor>Class_type D\<rfloor>"
       by(auto simp add: correct_state_def)
     with hext have "cname_of h a = cname_of h' a" by(auto dest: hext_objD simp add: cname_of_def)
     with exec have "(ta, xcp', h, frs') \<in> exec P t (xcp, h, frs)" by auto
@@ -115,7 +115,7 @@ proof -
 	  by(auto simp add: conf_def)
 	from hext Ta have Ta': "typeof_addr h' a = \<lfloor>Ta\<rfloor>" by(rule typeof_addr_hext_mono)
         with check a meth Invoke False obtain D Ts' T' meth D'
-          where C: "class_type_of Ta = \<lfloor>D\<rfloor>"
+          where C: "D = class_type_of Ta"
           and sees': "P \<turnstile> D sees M':Ts'\<rightarrow>T' = meth in D'"
           and params: "P,h' \<turnstile> rev (take n stk) [:\<le>] Ts'"
           by(auto simp add: check_def has_method_def)
@@ -133,7 +133,7 @@ proof -
 	  from va have [simp]: "h'' = m'" by(cases va) simp_all
 	  note Ta moreover from None sees' wfp have "D'\<bullet>M'(Ts') :: T'" by(auto intro: sees_wf_native)
           with C sees' params Ta' None have "P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : T'"
-            by(auto simp add: external_WT'_iff confs_conv_map is_class_type_of_conv_class_type_of_Some)
+            by(auto simp add: external_WT'_iff confs_conv_map)
 	  with wfp exec' tconf' have red: "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h'\<rangle> -ta'\<rightarrow>ext \<langle>va, m'\<rangle>"
 	    by(simp add: WT_red_external_list_conv)
 
@@ -143,11 +143,10 @@ proof -
 	  hence "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Ts)" by(simp only: rev_map[symmetric])
 	  moreover hence "map typeof\<^bsub>h'\<^esub> (rev (take n stk)) = map Some (rev Ts)" using hext by(rule map_typeof_hext_mono)
           with `P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : T'` `D'\<bullet>M'(Ts') :: T'` sees' C Ta' Ta
-          have "P \<turnstile> rev Ts [\<le>] Ts'"
-            by cases(auto simp add: is_class_type_of_conv_class_type_of_Some dest: sees_method_fun[where C=D])
+          have "P \<turnstile> rev Ts [\<le>] Ts'" by cases (auto dest: sees_method_fun)
           ultimately have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : T'"
             using Ta C sees' params None `D'\<bullet>M'(Ts') :: T'`
-            by(auto simp add: external_WT'_iff confs_conv_map is_class_type_of_conv_class_type_of_Some)
+            by(auto simp add: external_WT'_iff confs_conv_map)
           from red_external_wt_hconf_hext[OF wfp red hext this tconf hconf]
 	  obtain ta'' va' h''' where "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h\<rangle> -ta''\<rightarrow>ext \<langle>va',h'''\<rangle>"
 	    and ta'': "collect_locks \<lbrace>ta''\<rbrace>\<^bsub>l\<^esub> = collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>" 

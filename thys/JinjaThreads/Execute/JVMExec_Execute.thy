@@ -1,3 +1,7 @@
+(*  Title:      JinjaThreads/Execute/JVMExec_Execute.thy
+    Author:     Andreas Lochbihler
+*)
+
 theory JVMExec_Execute
 imports
   "../JVM/JVMExec"
@@ -10,16 +14,14 @@ locale JVM_heap_execute = heap_execute +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr" 
   and empty_heap :: "'heap" 
-  and new_obj :: "'heap \<Rightarrow> String.literal \<Rightarrow> 'heap \<times> 'addr option" 
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> 'heap \<times> 'addr option" 
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> ty option" 
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat" 
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val Cset.set" 
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap Cset.set"
 
 sublocale JVM_heap_execute < execute!: JVM_heap_base
   addr2thread_id thread_id2addr 
-  empty_heap new_obj new_arr typeof_addr array_length
+  empty_heap allocate typeof_addr
   "\<lambda>h a ad v. v \<in> member (heap_read h a ad)" "\<lambda>h a ad v h'. h' \<in> Cset.member (heap_write h a ad v)"
 .
 
@@ -46,24 +48,25 @@ lemma exec_instr_code [code]:
    Cset.set [(\<epsilon>, (None, h, (v # stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs))]"
   "exec_instr (New C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
    Cset.single 
-     (let (h', ao) = new_obj h C
+     (let (h', ao) = allocate h (Class_type C)
       in case ao of None \<Rightarrow> (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h', (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
-                | Some a \<Rightarrow> (\<lbrace>NewObj a C\<rbrace>, None, h', (Addr a # stk, loc, C\<^isub>0, M\<^isub>0, pc + 1)#frs))"
+                | Some a \<Rightarrow> (\<lbrace>NewHeapElem a (Class_type C)\<rbrace>, None, h', (Addr a # stk, loc, C\<^isub>0, M\<^isub>0, pc + 1)#frs))"
   "exec_instr (NewArray T) P t h stk loc C0 M0 pc frs =
    Cset.single
     (let si = the_Intg (hd stk);
          i = nat (sint si)
       in (if si <s 0
           then (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NegativeArraySize\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
-          else (let (h', ao) = new_arr h T i
+          else (let (h', ao) = allocate h (Array_type T i)
                 in case ao of None \<Rightarrow> (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h', (stk, loc, C0, M0, pc) # frs)
-                          | Some a \<Rightarrow> (\<lbrace>NewArr a T i\<rbrace>, None, h', (Addr a # tl stk, loc, C0, M0, pc + 1) # frs))))"
+                          | Some a \<Rightarrow> (\<lbrace>NewHeapElem a (Array_type T i)\<rbrace>, None, h', (Addr a # tl stk, loc, C0, M0, pc + 1) # frs))))"
   "exec_instr ALoad P t h stk loc C0 M0 pc frs =
    (let i = the_Intg (hd stk);
         va = hd (tl stk);
-        a = the_Addr va
+        a = the_Addr va;
+        len = alen_of_htype (the (typeof_addr h a))
     in (if va = Null then Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
-        else if i <s 0 \<or> int (array_length h a) \<le> sint i then
+        else if i <s 0 \<or> int len \<le> sint i then
              Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
         else do {
            v \<leftarrow> heap_read h a (ACell (nat (sint i)));
@@ -77,9 +80,11 @@ lemma exec_instr_code [code]:
        else (let i = the_Intg vi;
                  idx = nat (sint i);
                  a = the_Addr va;
-                 T = the (typeof_addr h a);
+                 hT = the (typeof_addr h a);
+                 T = ty_of_htype hT;
+                 len = alen_of_htype hT;
                  U = the (execute.typeof_h h ve)
-             in (if i <s 0 \<or> int (array_length h a) \<le> sint i then
+             in (if i <s 0 \<or> int len \<le> sint i then
                       Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
                  else if P \<turnstile> U \<le> the_Array T then 
                       do {
@@ -92,7 +97,7 @@ lemma exec_instr_code [code]:
      (\<epsilon>, (let va = hd stk
           in if va = Null
              then (\<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
-             else (None, h, (Intg (word_of_int (int (array_length h (the_Addr va)))) # tl stk, loc, C0, M0, pc+1) # frs)))"
+             else (None, h, (Intg (word_of_int (int (alen_of_htype (the (typeof_addr h (the_Addr va)))))) # tl stk, loc, C0, M0, pc+1) # frs)))"
   "exec_instr (Getfield F C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
    (let v = hd stk
     in if v = Null then Cset.single (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
@@ -123,8 +128,7 @@ lemma exec_instr_code [code]:
         else (let ps = rev (take n stk);
                   a = the_Addr r;
                   T = the (typeof_addr h a);
-                  C = the (class_type_of T);
-                  (D,M',Ts,meth)= method P C M
+                  (D,M',Ts,meth)= method P (class_type_of T) M
          in case meth of 
                Native \<Rightarrow>
                       do {

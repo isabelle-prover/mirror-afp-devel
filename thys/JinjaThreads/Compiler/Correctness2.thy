@@ -169,7 +169,7 @@ next
     apply(rename_tac stk loc C M pc frs)
     apply(case_tac "instrs_of (compP2 P) C M ! pc")
     apply(simp_all split: split_if_asm)
-    apply(auto dest!: \<tau>external_red_external_aggr_TA_empty simp add: check_def has_method_def \<tau>external_def \<tau>external'_def is_class_type_of_conv_class_type_of_Some)
+    apply(auto dest!: \<tau>external_red_external_aggr_TA_empty simp add: check_def has_method_def \<tau>external_def \<tau>external'_def)
     done
   from \<tau>Red1_simulates_exec_1_not_\<tau>[OF wf exec bisim \<tau>] obtain e' xs' exs' ta' e'' xs'' exs''
     where red1: "\<tau>Red1r P t h ((e, xs), exs) ((e', xs'), exs')"
@@ -203,6 +203,18 @@ next
   also have "\<dots> = {(x, y). (\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs') x y}" by(auto)
   finally show "wfP (\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs')"
     unfolding wfP_def .
+qed
+
+lemma Red1_execd_delay_bisim:
+  assumes wf: "wf_J1_prog P"
+  shows "delay_bisimulation_diverge (mred1 P t) (mexecd (compP2 P) t) (wbisim1 t) (ta_bisim wbisim1) (\<tau>MOVE1 P) (\<tau>MOVE2 (compP2 P))"
+proof -
+  interpret delay_bisimulation_measure
+    "mred1 P t" "mexecd (compP2 P) t" "wbisim1 t" "ta_bisim wbisim1" "\<tau>MOVE1 P" "\<tau>MOVE2 (compP2 P)"
+    "\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e'"
+    "\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs'"
+    using wf by(rule Red1_execd_weak_bisim)
+  show ?thesis by(unfold_locales)
 qed
 
 end
@@ -251,14 +263,15 @@ context J1_JVM_conf_read begin
 
 theorem Red1_exec1_FWwbisim:
   assumes wf: "wf_J1_prog P"
-  shows "FWdelay_bisimulation_measure final_expr1 (mred1 P) JVM_final (mexecd (compP2 P)) wbisim1 (bisim_wait1JVM (compP2 P)) (\<tau>MOVE1 P) (\<tau>MOVE2 (compP2 P)) (\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e') (\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs')"
+  shows "FWdelay_bisimulation_diverge final_expr1 (mred1 P) JVM_final (mexecd (compP2 P)) wbisim1 (bisim_wait1JVM (compP2 P)) (\<tau>MOVE1 P) (\<tau>MOVE2 (compP2 P))"
 proof -
   let ?exec = "mexecd (compP2 P)"
   let ?\<tau>exec = "\<lambda>t. \<tau>trsys.silent_moves (mexecd (compP2 P) t) (\<tau>MOVE2 (compP2 P))"
   let ?\<tau>red = "\<lambda>t. \<tau>trsys.silent_moves (mred1 P t) (\<tau>MOVE1 P)"
-  interpret delay_bisimulation_measure "mred1 P t" "?exec t" "wbisim1 t" "ta_bisim wbisim1" "\<tau>MOVE1 P" "\<tau>MOVE2 (compP2 P)" "\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e'" "\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs'" 
+  interpret delay_bisimulation_diverge 
+    "mred1 P t" "?exec t" "wbisim1 t" "ta_bisim wbisim1" "\<tau>MOVE1 P" "\<tau>MOVE2 (compP2 P)"
     for t
-    by(intro Red1_execd_weak_bisim wf)
+    using wf by(rule Red1_execd_delay_bisim)
   show ?thesis
   proof
     fix t s1 s2
@@ -275,7 +288,7 @@ proof -
       hence [simp]: "frs = [(stk, loc, C, M, pc)]"
         and conf: "compTP P \<turnstile> t:(xcp, m1, frs) \<surd>"
         and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D"
-        and bisim: "P,blocks1 0 (Class D # Ts) body,0,m1 \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
+        and bisim: "P,blocks1 0 (Class D # Ts) body,m1 \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
         and var: "max_vars e \<le> length xs" by auto
       from `final e` show ?thesis
       proof cases
@@ -303,7 +316,7 @@ proof -
       next
         fix a
         assume [simp]: "e = throw (addr a)"
-        hence "\<exists>stk' loc' pc'. \<tau>Exec_mover_a P t body m1 (stk, loc, pc, xcp) (stk', loc', pc', \<lfloor>a\<rfloor>) \<and> P,blocks1 0 (Class D # Ts) body,0,m1 \<turnstile> (Throw a, xs) \<leftrightarrow> (stk', loc', pc', \<lfloor>a\<rfloor>)"
+        hence "\<exists>stk' loc' pc'. \<tau>Exec_mover_a P t body m1 (stk, loc, pc, xcp) (stk', loc', pc', \<lfloor>a\<rfloor>) \<and> P,blocks1 0 (Class D # Ts) body,m1 \<turnstile> (Throw a, xs) \<leftrightarrow> (stk', loc', pc', \<lfloor>a\<rfloor>)"
         proof(cases xcp)
           case None
           with bisim show ?thesis
@@ -315,7 +328,7 @@ proof -
         qed
         then obtain stk' loc' pc'
           where exec: "\<tau>Exec_mover_a P t body m1 (stk, loc, pc, xcp) (stk', loc', pc', \<lfloor>a\<rfloor>)" 
-          and bisim': "P,blocks1 0 (Class D # Ts) body,0,m1 \<turnstile> (throw (addr a), xs) \<leftrightarrow> (stk', loc', pc', \<lfloor>a\<rfloor>)" by blast
+          and bisim': "P,blocks1 0 (Class D # Ts) body,m1 \<turnstile> (throw (addr a), xs) \<leftrightarrow> (stk', loc', pc', \<lfloor>a\<rfloor>)" by blast
         with sees have "\<tau>Exec_1r (compP2 P) t (xcp, m1, frs) (\<lfloor>a\<rfloor>, m1, [(stk', loc', C, M, pc')])"
           by(auto intro: \<tau>Exec_mover_\<tau>Exec_1r)
         with wt_compTP_compP2[OF wf]
@@ -467,11 +480,12 @@ context J1_JVM_heap_conf begin
 
 lemma bisim_J1_JVM_start:
   assumes wf: "wf_J1_prog P"
-  and start: "start_heap_ok"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>body\<rfloor> in D"
-  and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
+  and wf_start: "wf_start_state P C M vs"
   shows "Red1_execd.mbisim (J1_start_state P C M vs) (JVM_start_state (compP2 P) C M vs)"
 proof -
+  from wf_start obtain Ts T body D where start: "start_heap_ok"
+  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>body\<rfloor> in D" and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts" by cases
+
   let ?e = "blocks1 0 (Class D#Ts) body"
   let ?xs = "Null # vs @ replicate (max_vars body) undefined_value"
 
@@ -482,10 +496,7 @@ proof -
     and sv: "syncvars body"
     by(auto simp add: wf_mdecl_def)
 
-  from conf B have "\<B> ?e 0" by(auto)
-  moreover from wt have "expr_locks ?e = (\<lambda>_. 0)" by(auto intro: WT1_expr_locks)
-  ultimately have "bsok ?e 0" by(simp add: bsok_def)
-  hence "P,?e,0,start_heap \<turnstile> (?e, ?xs) \<leftrightarrow> ([], ?xs, 0, None)" by(rule bisim1_refl)
+  have "P,?e,start_heap \<turnstile> (?e, ?xs) \<leftrightarrow> ([], ?xs, 0, None)" by(rule bisim1_refl)
   moreover
   from wf have wf': "wf_jvm_prog\<^bsub>compTP P\<^esub> (compP2 P)" by(rule wt_compTP_compP2)
   from sees_method_compP[OF sees, of "\<lambda>C M Ts T. compMb2"]
@@ -497,7 +508,7 @@ proof -
   hence "bisim1_list1 start_tid start_heap (?e, ?xs) [] None [([], ?xs, D, M, 0)]"
     using sees_method_idemp[OF sees]
   proof
-    from `bsok ?e 0` show "P,?e,0,start_heap \<turnstile> (?e, ?xs) \<leftrightarrow> ([], ?xs, 0, None)"
+    show "P,?e,start_heap \<turnstile> (?e, ?xs) \<leftrightarrow> ([], ?xs, 0, None)"
       by(rule bisim1_refl)
     show "max_vars ?e \<le> length ?xs" using conf
       by(auto simp add: blocks1_max_vars dest: list_all2_lengthD)

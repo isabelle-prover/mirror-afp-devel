@@ -36,13 +36,8 @@ where
   "A \<sqsubseteq> B  \<equiv>  case B of None \<Rightarrow> True
                  | \<lfloor>B\<rfloor> \<Rightarrow> (case A of None \<Rightarrow> False | \<lfloor>A\<rfloor> \<Rightarrow> A \<subseteq> B)"
 
-definition hyperRestrict :: "'a hyperset \<Rightarrow> 'a set \<Rightarrow> 'a hyperset" (infixl "\<exclamdown>" 65)
-where
-  "A \<exclamdown> B \<equiv> case A of None \<Rightarrow> None
-                   | \<lfloor>A'\<rfloor> \<Rightarrow> \<lfloor>A' \<inter> B\<rfloor>"
-
 lemmas hyperset_defs =
- hyperUn_def hyperInt_def hyperDiff1_def hyper_isin_def hyper_subset_def hyperRestrict_def
+ hyperUn_def hyperInt_def hyperDiff1_def hyper_isin_def hyper_subset_def
 
 lemma [simp]: "\<lfloor>{}\<rfloor> \<squnion> A = A  \<and>  A \<squnion> \<lfloor>{}\<rfloor> = A"
 (*<*)by(simp add:hyperset_defs)(*>*)
@@ -61,15 +56,6 @@ lemma hyperUn_assoc: "(A \<squnion> B) \<squnion> C = A \<squnion> (B \<squnion>
 
 lemma hyper_insert_comm: "A \<squnion> \<lfloor>{a}\<rfloor> = \<lfloor>{a}\<rfloor> \<squnion> A \<and> A \<squnion> (\<lfloor>{a}\<rfloor> \<squnion> B) = \<lfloor>{a}\<rfloor> \<squnion> (A \<squnion> B)"
 (*<*)by(simp add:hyperset_defs)(*>*)
-
-lemma [simp]: "None \<exclamdown> B = None"
-by(simp add: hyperRestrict_def)
-
-lemma [simp]: "\<lfloor>A\<rfloor> \<exclamdown> B = \<lfloor>A \<inter> B\<rfloor>"
-by(simp add: hyperRestrict_def)
-
-lemma sqSub_lem: "A \<sqsubseteq> A' \<Longrightarrow> A \<exclamdown> B \<sqsubseteq> A' \<exclamdown> B"
-by(auto simp add: hyperset_defs)
 
 lemma sqSub_mem_lem [elim]: "\<lbrakk> A \<sqsubseteq> A'; a \<in>\<in> A \<rbrakk> \<Longrightarrow> a \<in>\<in> A'"
 by(auto simp add: hyperset_defs)
@@ -100,22 +86,7 @@ lemmas hyperUn_ac = hyperUn_comm hyperUn_leftComm hyperUn_assoc
 lemma [simp]: "\<lfloor>{}\<rfloor> \<squnion> B = B"
 by(auto)
 
-lemma [simp]: "A \<exclamdown> B \<sqsubseteq> A"
-by(auto simp add: hyperset_defs)
-
 lemma [simp]: "\<lfloor>{}\<rfloor> \<sqsubseteq> A"
-by(auto simp add: hyperset_defs)
-
-lemma [simp]: "A \<exclamdown> B \<exclamdown> C = A \<exclamdown> (B \<inter> C)"
-by(auto simp add: hyperRestrict_def)
-
-lemma restrict_lem: "C \<subseteq> D \<Longrightarrow> A \<squnion> B \<exclamdown> C \<sqsubseteq> B \<squnion> (A \<exclamdown> D)"
-by(auto simp add: hyperset_defs)
-
-lemma restrict_lem2: "A \<subseteq> B \<Longrightarrow> C \<exclamdown> A \<sqsubseteq> C \<exclamdown> B"
-by(auto simp add: hyperRestrict_def)
-
-lemma restrict_lem3: "D \<subseteq> E \<Longrightarrow> A \<squnion> (B \<squnion> C) \<exclamdown> D \<sqsubseteq> B \<squnion> (C \<squnion> (A \<exclamdown> E))"
 by(auto simp add: hyperset_defs)
 
 lemma sqInt_lem: "A \<sqsubseteq> A' \<Longrightarrow> A \<sqinter> B \<sqsubseteq> A' \<sqinter> B"
@@ -249,22 +220,5 @@ and Ds_mono': "\<D>s es A \<Longrightarrow> A \<sqsubseteq> A' \<Longrightarrow>
 
 declare hyperUn_comm [simp]
 declare hyperUn_leftComm [simp]
-
-lemma fixes e :: "('a,'b,'addr) exp"
-  and es :: "('a,'b,'addr) exp list"
-  shows D_fv: "\<D> e A \<Longrightarrow> \<D> e (A \<exclamdown> (fv e))"
-  and Ds_fvs: "\<D>s es A \<Longrightarrow> \<D>s es (A \<exclamdown> (fvs es))"
-proof(induct e and es arbitrary: A and A)
-  case Var thus ?case by(simp add: hyperset_defs)
-next
-  case Block thus ?case
-    by(fastforce simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
-next
-  case Synchronized thus ?case by(fastforce simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
-next
-  case InSynchronized thus ?case by(fastforce simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
-next
-  case TryCatch thus ?case by(fastforce simp add: hyperset_defs simp del: hyperRestrict_def intro: D_mono')
-qed (simp_all, (blast intro: D_mono' Ds_mono' restrict_lem2 restrict_lem restrict_lem3)+)
 
 end

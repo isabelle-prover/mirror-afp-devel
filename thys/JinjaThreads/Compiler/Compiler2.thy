@@ -5,10 +5,7 @@
 header {* \isaheader{Compilation Stage 2} *}
 
 theory Compiler2
-imports
-  PCompiler
-  J1State
-  "../JVM/JVMInstructions"
+imports PCompiler J1State "../JVM/JVMInstructions"
 begin
 
 primrec compE2  :: "'addr expr1      \<Rightarrow> 'addr instr list"
@@ -168,7 +165,7 @@ where
 | "max_stack (e1\<bullet>F{D} := e2) = max (max_stack e1) (max_stack e2) + 1"
 | "max_stack (e\<bullet>M(es)) = max (max_stack e) (max_stacks es) + 1"
 | "max_stack ({i:T=vo; e}) = max_stack e"
-| "max_stack (sync\<^bsub>V\<^esub> (o') e) = max (max_stack o') (max_stack e + 1)"
+| "max_stack (sync\<^bsub>V\<^esub> (o') e) = max (max_stack o') (max (max_stack e) 2)"
 | "max_stack (insync\<^bsub>V\<^esub> (a) e) = 1"
 | "max_stack (e1;;e2) = max (max_stack e1) (max_stack e2)"
 | "max_stack (if (e) e\<^isub>1 else e\<^isub>2) =
@@ -179,7 +176,6 @@ where
 
 | "max_stacks [] = 0"
 | "max_stacks (e#es) = max (max_stack e) (1 + max_stacks es)"
-
 
 lemma max_stack1: "1 \<le> max_stack e"
 (*<*)by(induct e) (simp_all add:max_def)(*>*)

@@ -110,8 +110,8 @@ proof -
 	  with ref have "T \<noteq> NT" by auto
 	  with TNT obtain T' where T': "T = T'\<lfloor>\<rceil>" by auto
           with ref refN is_Ref wf
-	  have "\<exists>T. typeof_addr h (the_Addr ref) = \<lfloor>Array T\<rfloor>"
-            by(cases ref)(auto simp add:conf_def widen_Array dest: typeof_addr_eq_Some_conv) }
+	  have "\<exists>T n. typeof_addr h (the_Addr ref) = \<lfloor>Array_type T n\<rfloor>"
+            by(cases ref)(auto simp add:conf_def widen_Array) }
 	ultimately show ?thesis using ALoad stk'
 	  by(auto)
       next
@@ -133,8 +133,8 @@ proof -
 	  with ref have "U \<noteq> NT" by auto
 	  with TNT obtain T' where T': "U = T'\<lfloor>\<rceil>" by auto
           with ref refN is_Ref wf
-	  have "\<exists>T. typeof_addr h (the_Addr ref) = \<lfloor>Array T\<rfloor>"
-	    by(cases ref)(auto simp add:conf_def widen_Array dest: typeof_addr_eq_Some_conv) }
+	  have "\<exists>T n. typeof_addr h (the_Addr ref) = \<lfloor>Array_type T n\<rfloor>"
+	    by(cases ref)(auto simp add:conf_def widen_Array) }
 	ultimately show ?thesis using AStore stk' e by(auto simp add: conf_def)
       next
 	case ALength
@@ -154,8 +154,8 @@ proof -
 	  with ref have "T \<noteq> NT" by auto
 	  with TNT obtain T' where T': "T = T'\<lfloor>\<rceil>" by auto
           with ref refN is_Ref wf
-	  have "\<exists>T. typeof_addr h (the_Addr ref) = \<lfloor>Array T\<rfloor>"
-	    by(cases ref)(auto simp add:conf_def widen_Array dest: typeof_addr_eq_Some_conv) }
+	  have "\<exists>T n. typeof_addr h (the_Addr ref) = \<lfloor>Array_type T n\<rfloor>"
+	    by(cases ref)(auto simp add:conf_def widen_Array) }
 	ultimately show ?thesis using ALength stk'
 	  by(auto)
       next
@@ -169,7 +169,7 @@ proof -
 	moreover {
           assume "v \<noteq> Null" 
           with conf field is_Ref wf 
-          have "\<exists>U D. typeof_addr h (the_Addr v) = Some U \<and> class_type_of U = \<lfloor>D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C"
+          have "\<exists>U. typeof_addr h (the_Addr v) = Some U \<and> P \<turnstile> class_type_of U \<preceq>\<^sup>* C"
             by (auto dest!: non_npD2)
 	}
 	ultimately show ?thesis using Getfield field stk by auto
@@ -186,7 +186,7 @@ proof -
 	moreover {
           assume "ref \<noteq> Null" 
           with confr field is_Ref wf
-          have "\<exists>U D. typeof_addr h (the_Addr ref) = Some U \<and> class_type_of U = Some D \<and> P \<turnstile> D \<preceq>\<^sup>* C"
+          have "\<exists>U. typeof_addr h (the_Addr ref) = Some U \<and> P \<turnstile> class_type_of U \<preceq>\<^sup>* C"
             by (auto dest: non_npD2)
 	}
 	ultimately show ?thesis using Putfield field stk confv by auto
@@ -207,19 +207,17 @@ proof -
 	  
 	  from NT app Invoke
           obtain D D' Ts T m
-            where D: "class_type_of (ST!n) = \<lfloor>D\<rfloor>"
+            where D: "class_type_of' (ST!n) = \<lfloor>D\<rfloor>"
 	    and M': "P \<turnstile> D sees M': Ts\<rightarrow>T = m in D'"
 	    and Ts: "P \<turnstile> rev (take n ST) [\<le>] Ts" by auto
           from stk n have "P,h \<turnstile> stk!n :\<le> ST!n" 
             by (auto simp: list_all2_conv_all_nth)
           with Null D obtain a U where 
-            [simp]: "stk!n = Addr a" "typeof_addr h a = Some U" and UsubSTn: "P \<turnstile> U \<le> ST!n"
-              and UnNT: "U \<noteq> NT"
-            by(cases "stk ! n")(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
-          from D UsubSTn UnNT obtain C'
-            where U: "class_type_of U = \<lfloor>C'\<rfloor>" and "P \<turnstile> C' \<preceq>\<^sup>* D"
-            unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
-            by(rule widen_is_class_type_of)
+            [simp]: "stk!n = Addr a" "typeof_addr h a = Some U" and UsubSTn: "P \<turnstile> ty_of_htype U \<le> ST!n"
+            by(cases "stk ! n")(auto simp add: conf_def widen_Class)
+          from D UsubSTn obtain C'
+            where U: "class_type_of' (ty_of_htype U) = \<lfloor>C'\<rfloor>" and "P \<turnstile> C' \<preceq>\<^sup>* D"
+            by(rule widen_is_class_type_of) simp
 
 	  from `P \<turnstile> C' \<preceq>\<^sup>* D` wf M' obtain m' Ts' T' D'' where 
             C': "P \<turnstile> C' sees M': Ts'\<rightarrow>T' = m' in D''" and
@@ -246,7 +244,7 @@ proof -
       thus "check P \<sigma>" using meth pc mxs by (simp add: check_def has_methodI)
     next
       case (Some a)
-      with confxcp obtain D where "typeof_addr h a = \<lfloor>Class D\<rfloor>"
+      with confxcp obtain D where "typeof_addr h a = \<lfloor>Class_type D\<rfloor>"
         by(auto simp add: check_xcpt_def)
       moreover from stk have "length stk = length ST" by(rule list_all2_lengthD)
       ultimately show ?thesis using meth pc mxs Some confxcp app

@@ -52,7 +52,7 @@ where
 
 definition wf_prog :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> bool"
 where 
-  "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> (\<forall>c \<in> set (classes P). wf_cdecl wf_md P c) \<and> distinct_fst (classes P)"
+  "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> distinct_fst (classes P) \<and> (\<forall>c \<in> set (classes P). wf_cdecl wf_md P c)"
 
 lemma wf_prog_def2:
   "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> (\<forall>C rest. class P C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf_md P (C, rest)) \<and> distinct_fst (classes P)"
@@ -101,9 +101,9 @@ lemma wf_preallocatedE:
   assumes "wf_prog wf_md P"
   and "preallocated h"
   and "C \<in> sys_xcpts"
-  obtains "typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class C\<rfloor>" "P \<turnstile> C \<preceq>\<^sup>* Throwable"
+  obtains "typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class_type C\<rfloor>" "P \<turnstile> C \<preceq>\<^sup>* Throwable"
 proof -
-  from `preallocated h` `C \<in> sys_xcpts` have "typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class C\<rfloor>" 
+  from `preallocated h` `C \<in> sys_xcpts` have "typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class_type C\<rfloor>" 
     by(rule typeof_addr_sys_xcp)
   moreover from `C \<in> sys_xcpts` `wf_prog wf_md P` have "P \<turnstile> C \<preceq>\<^sup>* Throwable" by(rule xcpt_subcls_Throwable)
   ultimately show thesis by(rule that)
@@ -113,7 +113,7 @@ lemma wf_preallocatedD:
   assumes "wf_prog wf_md P"
   and "preallocated h"
   and "C \<in> sys_xcpts"
-  shows "typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable"
+  shows "typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable"
 using assms
 by(rule wf_preallocatedE) blast
 
@@ -122,8 +122,7 @@ end
 lemma (in heap_conf) hconf_start_heap:
   "wf_prog wf_md P \<Longrightarrow> hconf start_heap"
 unfolding start_heap_def start_heap_data_def initialization_list_def sys_xcpts_list_def
-apply(auto split: prod.split elim!: hconf_new_obj_mono intro: is_class_xcpt simp add: create_initial_object_simps)
-done
+by(auto split: prod.split elim!: hconf_allocate_mono simp add: is_class_xcpt create_initial_object_simps)
 
 lemma subcls1_wfD:
   "\<lbrakk> P \<turnstile> C \<prec>\<^sup>1 D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> D \<noteq> C \<and> \<not> (subcls1 P)\<^sup>+\<^sup>+ D C"
@@ -168,26 +167,19 @@ by(auto)
 
 lemma acyclic_subcls1:
   "wf_prog wf_md P \<Longrightarrow> acyclicP (subcls1 P)"
-(*<*)
-apply (unfold acyclicP_def)
-apply (fast dest: subcls_irrefl)
-done
-(*>*)
+by(unfold acyclicP_def)(fast dest: subcls_irrefl)
 
+lemma finite_conversep: "finite {(x, y). r\<inverse>\<inverse> x y} = finite {(x, y). r x y}"
+by(subst finite_converse[unfolded converse_def, symmetric]) simp
+
+lemma acyclicP_wf_subcls1:
+  "acyclicP (subcls1 P) \<Longrightarrow> wfP ((subcls1 P)\<inverse>\<inverse>)"
+unfolding wfP_def
+by(rule finite_acyclic_wf)(simp_all only: finite_conversep finite_subcls1 acyclicP_converse)
 
 lemma wf_subcls1:
   "wf_prog wf_md P \<Longrightarrow> wfP ((subcls1 P)\<inverse>\<inverse>)"
-unfolding wfP_def
-apply (rule finite_acyclic_wf)
- apply(subst finite_converse[unfolded converse_def, symmetric])
- apply(simp)
- apply(rule finite_subcls1)
-apply(subst acyclic_converse[unfolded converse_def, symmetric])
-apply(simp)
-apply (erule acyclic_subcls1)
-done
-(*>*)
-
+by(rule acyclicP_wf_subcls1)(rule acyclic_subcls1)
 
 lemma single_valued_subcls1:
   "wf_prog wf_md G \<Longrightarrow> single_valuedP (subcls1 G)"
@@ -735,7 +727,8 @@ declare set_append [symmetric, code_unfold]
 lemma wf_prog_code [code]:
   "wf_prog wf_md P \<longleftrightarrow>
    acyclic_class_hierarchy P \<and>
-   wf_syscls P \<and> (\<forall>c \<in> set (classes P). wf_cdecl' wf_md P c) \<and> distinct_fst (classes P)"
+   wf_syscls P \<and> distinct_fst (classes P) \<and>
+   (\<forall>c \<in> set (classes P). wf_cdecl' wf_md P c)"
 unfolding wf_prog_def wf_cdecl_def wf_cdecl'_def acyclic_class_hierarchy_def split_def
 by blast
 

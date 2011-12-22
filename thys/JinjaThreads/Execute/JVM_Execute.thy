@@ -1,3 +1,7 @@
+(*  Title:      JinjaThreads/Execute/JVM_Execute.thy
+    Author:     Andreas Lochbihler
+*)
+
 theory JVM_Execute
 imports
   SC_Schedulers
@@ -16,10 +20,8 @@ interpretation sc!:
     "addr2thread_id"
     "thread_id2addr"
     "sc_empty"
-    "sc_new_obj P"
-    "sc_new_arr P" 
+    "sc_allocate P"
     "sc_typeof_addr"
-    "sc_array_length"
     "sc_heap_read_cset"
     "sc_heap_write_cset"
   for P
@@ -33,10 +35,8 @@ interpretation sc_execute!:
     "addr2thread_id"
     "thread_id2addr"
     "sc_empty"
-    "sc_new_obj P"
-    "sc_new_arr P" 
+    "sc_allocate P"
     "sc_typeof_addr"
-    "sc_array_length"
     "sc_heap_read"
     "sc_heap_write"
     "sc_hconf P"
@@ -67,9 +67,7 @@ by(rule ext)+(fastforce intro!: SUP1_I simp add: sc.exec_1_eq')
 
 lemma sc_jvm_start_state_invar: 
   assumes "wf_jvm_prog\<^sub>\<Phi> P"
-  and "sc_start_heap_ok P"
-  and "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
-  and "P,sc_start_heap P \<turnstile>sc vs [:\<le>] Ts"
+  and "sc_wf_start_state P C M vs"
   shows "sc_state_\<alpha> (sc_jvm_start_state_refine P C M vs) \<in> sc_jvm_state_invar P \<Phi>"
 using sc_execute.correct_jvm_state_initial[OF assms]
 by(simp add: sc_execute.correct_jvm_state_def)

@@ -25,7 +25,8 @@ apply(erule external_WT'.cases)
 apply(clarsimp)
 apply(drule (1) sees_wf_native)
 apply(erule external_WT_defs.cases)
-apply(auto 4 3 simp add: red_external_aggr_def widen_Class intro: red_external.intros split: split_if_asm elim: is_class_type_of.cases dest: sees_method_decl_above)
+apply(case_tac [!] hT)
+apply(auto 4 3 simp add: red_external_aggr_def widen_Class intro: red_external.intros split: split_if_asm dest: sees_method_decl_above)
 done
 
 lemma WT_red_external_list_conv:
@@ -35,7 +36,7 @@ by(blast intro: WT_red_external_aggr_imp_red_external red_external_imp_red_exter
 
 lemma red_external_new_thread_sees:
   "\<lbrakk> wf_prog wf_md P; P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class C\<rfloor> \<and> (\<exists>T meth D. P \<turnstile> C sees M':[]\<rightarrow>T = \<lfloor>meth\<rfloor> in D)"
+  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class_type C\<rfloor> \<and> (\<exists>T meth D. P \<turnstile> C sees M':[]\<rightarrow>T = \<lfloor>meth\<rfloor> in D)"
 by(fastforce elim!: red_external.cases simp add: widen_Class ta_upd_simps dest: sub_Thread_sees_run)
 
 end
@@ -95,10 +96,7 @@ lemma hconf_heap_clone_mono:
   shows "hconf h'"
 using `heap_clone P h a h' res`
 proof cases
-  case ObjFail thus ?thesis using `hconf h`
-    by(fastforce intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
-next
-  case ArrFail thus ?thesis using `hconf h`
+  case CloneFail thus ?thesis using `hconf h`
     by(fastforce intro: hconf_heap_ops_mono dest: typeof_addr_is_type)
 next
   case (ObjClone C h'' a' FDTs obs)
@@ -106,20 +104,20 @@ next
   let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
   let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
   note `heap_copies a a' ?als h'' obs h'` 
-  moreover from `typeof_addr h a = \<lfloor>Class C\<rfloor>` `hconf h` have "is_class P C"
+  moreover from `typeof_addr h a = \<lfloor>Class_type C\<rfloor>` `hconf h` have "is_class P C"
     by(auto dest: typeof_addr_is_type)
-  from `new_obj h C = (h'', \<lfloor>a'\<rfloor>)` have "h \<unlhd> h''" "hconf h''"
-    by(rule hext_heap_ops hconf_new_obj_mono[OF _ `hconf h` `is_class P C`])+
+  from `allocate h (Class_type C) = (h'', \<lfloor>a'\<rfloor>)` have "h \<unlhd> h''" "hconf h''"
+    by(rule hext_heap_ops hconf_allocate_mono)+(simp_all add: `hconf h` `is_class P C`)
   note `hconf h''` 
   moreover
-  from `typeof_addr h a = \<lfloor>Class C\<rfloor>` FDTs
+  from `typeof_addr h a = \<lfloor>Class_type C\<rfloor>` FDTs
   have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
     by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h''`])
-  moreover from `new_obj h C = (h'', \<lfloor>a'\<rfloor>)` `is_class P C`
-  have "typeof_addr h'' a' = \<lfloor>Class C\<rfloor>" by(auto dest: new_obj_SomeD)
+  moreover from `allocate h (Class_type C) = (h'', \<lfloor>a'\<rfloor>)` `is_class P C`
+  have "typeof_addr h'' a' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
   with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
@@ -127,24 +125,21 @@ next
   thus ?thesis using ObjClone by simp
 next
   case (ArrClone T n h'' a' FDTs obs)
-  note [simp] = `n = array_length h a`
   let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]"
   let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate n T"
   note `heap_copies a a' ?als h'' obs h'`
-  moreover from `typeof_addr h a = \<lfloor>T\<lfloor>\<rceil>\<rfloor>` `hconf h` have "is_type P (T\<lfloor>\<rceil>)"
+  moreover from `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>` `hconf h` have "is_type P (T\<lfloor>\<rceil>)"
     by(auto dest: typeof_addr_is_type)
-  from `new_arr h T n = (h'', \<lfloor>a'\<rfloor>)` have "h \<unlhd> h''" "hconf h''"
-    by(rule hext_heap_ops hconf_new_arr_mono[OF _ `hconf h` `is_type P (T\<lfloor>\<rceil>)`])+
+  from `allocate h (Array_type T n) = (h'', \<lfloor>a'\<rfloor>)` have "h \<unlhd> h''" "hconf h''"
+    by(rule hext_heap_ops hconf_allocate_mono)+(simp_all add: `hconf h` `is_type P (T\<lfloor>\<rceil>)`[simplified])
   note `hconf h''`
-  moreover from `h \<unlhd> h''` `typeof_addr h a = \<lfloor>Array T\<rfloor>`
-  have type'a: "typeof_addr h'' a = \<lfloor>Array T\<rfloor>"
-    and [simp]: "array_length h'' a = array_length h a" by(auto intro: hext_arrD)
+  moreover from `h \<unlhd> h''` `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>`
+  have type'a: "typeof_addr h'' a = \<lfloor>Array_type T n\<rfloor>" by(auto intro: hext_arrD)
   note FDTs = `P \<turnstile> Object has_fields FDTs`
   from type'a FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
     by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
-  moreover from `new_arr h T n = (h'', \<lfloor>a'\<rfloor>)` `is_type P (T\<lfloor>\<rceil>)`
-  have "typeof_addr h'' a' = \<lfloor>Array T\<rfloor>" "array_length h'' a' = array_length h a"
-    by(auto dest: new_arr_SomeD)
+  moreover from `allocate h (Array_type T n) = (h'', \<lfloor>a'\<rfloor>)` `is_type P (T\<lfloor>\<rceil>)`
+  have "typeof_addr h'' a' = \<lfloor>Array_type T n\<rfloor>" by(auto dest: allocate_SomeD)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts" using FDTs
     by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
   ultimately have "hconf h'" by(rule hconf_heap_copies_mono)
@@ -180,7 +175,8 @@ apply(frule red_external_hext)
 apply(drule (1) preallocated_hext)
 apply(auto elim!: red_external.cases external_WT'.cases external_WT_defs_cases dest!: sees_wf_native[OF wf])
 apply(auto simp add: conf_def tconf_def intro: xcpt_subcls_Throwable dest!: hext_heap_write)
-apply(auto 4 4 elim!: is_class_type_of.cases dest!: typeof_addr_heap_clone dest: typeof_addr_is_type intro: widen_array_object subcls_C_Object)
+apply(case_tac hT)
+apply(auto 4 4 dest!: typeof_addr_heap_clone dest: typeof_addr_is_type intro: widen_array_object subcls_C_Object)
 done
 
 end
@@ -245,29 +241,25 @@ qed
 
 lemma heap_clone_progress:
   assumes wf: "wf_prog wf_md P"
-  and typea: "typeof_addr h a = \<lfloor>T\<rfloor>"
+  and typea: "typeof_addr h a = \<lfloor>hT\<rfloor>"
   and hconf: "hconf h"
   shows "\<exists>h' res. heap_clone P h a h' res"
 proof -
-  from typea hconf have "is_type P T" by(rule typeof_addr_is_type)
-  from typea have "(\<exists>C. T = Class C) \<or> (\<exists>U. T = Array U)"
-    by(rule typeof_addr_eq_Some_conv)
-  thus ?thesis
-  proof
-    assume "\<exists>C. T = Class C"
-    then obtain C where [simp]: "T = Class C" ..
-    obtain h' res where new: "new_obj h C = (h', res)" by(cases "new_obj h C")
-    hence "h \<unlhd> h'" by(rule hext_new_obj)
-    from `is_type P T` new have "hconf h'"
-      using hconf by simp (rule hconf_new_obj_mono) 
+  from typea hconf have "is_htype P hT" by(rule typeof_addr_is_type)
+  obtain h' res where new: "allocate h hT = (h', res)" by(cases "allocate h hT")  
+  hence "h \<unlhd> h'" by(rule hext_allocate)
+  have "hconf h'" using new hconf `is_htype P hT` by(rule hconf_allocate_mono)
+  show ?thesis
+  proof(cases res)
+    case None
+    with typea new CloneFail[of h a hT h' P]
+    show ?thesis by auto
+  next
+    case (Some a')
     show ?thesis
-    proof(cases res)
-      case None
-      with typea new ObjFail[of h a C h' P]
-      show ?thesis by auto
-    next
-      case (Some a')
-      from `is_type P T` have "is_class P C" by simp
+    proof(cases hT)
+      case (Class_type C)[simp]
+      from `is_htype P hT` have "is_class P C" by simp
       from wf_Fields_Ex[OF wf this]
       obtain FDTs where FDTs: "P \<turnstile> C has_fields FDTs" ..
       let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
@@ -278,7 +270,7 @@ proof -
       hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
         by(rule list_all2_mono)(simp add: addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`] split_def)
       moreover from new Some `is_class P C`
-      have "typeof_addr h' a' = \<lfloor>Class C\<rfloor>" by(auto dest: new_obj_SomeD)
+      have "typeof_addr h' a' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
       with FDTs have "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts"
         unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
         by(fastforce intro: addr_loc_type.intros map_of_SomeI simp add: has_field_def dest: weak_map_of_SomeI)
@@ -286,40 +278,24 @@ proof -
         by(blast dest: heap_copies_progress[OF `hconf h'`])
       with typea new Some FDTs ObjClone[of h a C h' a' P FDTs obs h'']
       show ?thesis by auto
-    qed
-  next
-    assume "\<exists>U. T = Array U"
-    then obtain U where T [simp]: "T = Array U" ..
-    obtain h' res where new: "new_arr h U (array_length h a) = (h', res)"
-      by(cases "new_arr h U (array_length h a)")
-    hence "h \<unlhd> h'" by(rule hext_new_arr)
-    from new hconf `is_type P T` have "hconf h'"
-      by(simp del: is_type.simps)(rule hconf_new_arr_mono)
-    show ?thesis
-    proof(cases res)
-      case None
-      with typea new ArrFail[of h a U h' P]
-      show ?thesis by auto
     next
-      case (Some a')
-      from wf
-      obtain FDTs where FDTs: "P \<turnstile> Object has_fields FDTs"
+      case (Array_type T n)[simp]
+      from wf obtain FDTs where FDTs: "P \<turnstile> Object has_fields FDTs"
         by(blast dest: wf_Fields_Ex is_class_Object)
-      let ?n = "array_length h a"
-      let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<?n]"
-      let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate ?n U"
-      from `h \<unlhd> h'` typea have type'a: "typeof_addr h' a = \<lfloor>Array U\<rfloor>"
-        and [simp]: "array_length h' a = array_length h a" by(auto intro: hext_arrD)
+      let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]"
+      let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate n T"
+      from `h \<unlhd> h'` typea have type'a: "typeof_addr h' a = \<lfloor>Array_type T n\<rfloor>"
+        by(auto intro: hext_arrD)
       from type'a FDTs have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
         by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
-      moreover from new Some `is_type P T`
-      have "typeof_addr h' a' = \<lfloor>Array U\<rfloor>" "array_length h' a' = array_length h a"
-        by(auto dest: new_arr_SomeD)
+      moreover from new Some `is_htype P hT`
+      have "typeof_addr h' a' = \<lfloor>Array_type T n\<rfloor>"
+        by(auto dest: allocate_SomeD)
       hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts" using FDTs
         by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
       ultimately obtain obs h'' where "heap_copies a a' ?als h' obs h''" "hconf h''"
         by(blast dest: heap_copies_progress[OF `hconf h'`])
-      with typea new Some FDTs ArrClone[of h a U "?n" h' a' P FDTs obs h'']
+      with typea new Some FDTs ArrClone[of h a T n h' a' P FDTs obs h'']
       show ?thesis by auto
     qed
   qed
@@ -332,15 +308,15 @@ theorem external_call_progress:
   shows "\<exists>ta va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
 proof -
   note [simp del] = split_paired_Ex
-  from wt obtain T C Ts Ts' D
-    where T: "typeof_addr h a = \<lfloor>T\<rfloor>" and Ts: "map typeof\<^bsub>h\<^esub> vs = map Some Ts"
-    and "is_class_type_of T C" and "P \<turnstile> C sees M:Ts'\<rightarrow>U = Native in D" and subTs: "P \<turnstile> Ts [\<le>] Ts'"
+  from wt obtain hT Ts Ts' D
+    where T: "typeof_addr h a = \<lfloor>hT\<rfloor>" and Ts: "map typeof\<^bsub>h\<^esub> vs = map Some Ts"
+    and "P \<turnstile> class_type_of hT sees M:Ts'\<rightarrow>U = Native in D" and subTs: "P \<turnstile> Ts [\<le>] Ts'"
     unfolding external_WT'_iff by blast
-  from wf `P \<turnstile> C sees M:Ts'\<rightarrow>U = Native in D` 
+  from wf `P \<turnstile> class_type_of hT sees M:Ts'\<rightarrow>U = Native in D` 
   have "D\<bullet>M(Ts') :: U" by(rule sees_wf_native)
-  moreover from `P \<turnstile> C sees M:Ts'\<rightarrow>U = Native in D` `is_class_type_of T C`
-  have "P \<turnstile> T \<le> Class D" "T \<noteq> NT"
-    by(auto dest: sees_method_decl_above is_class_type_of_widenD[where P=P] intro: widen_trans)
+  moreover from `P \<turnstile> class_type_of hT sees M:Ts'\<rightarrow>U = Native in D`
+  have "P \<turnstile> ty_of_htype hT \<le> Class D"
+    by(cases hT)(auto dest: sees_method_decl_above intro: widen_trans widen_array_object)
   ultimately show ?thesis using T Ts subTs
   proof cases
     assume [simp]: "D = Object" "M = clone" "Ts' = []" "U = Class Object"
@@ -369,8 +345,8 @@ lemma red_external_wt_hconf_hext:
 using red wt hext
 proof cases
   case (RedClone obs a')
-  from wt obtain T C Ts Ts' D
-    where T: "typeof_addr h'' a = \<lfloor>T\<rfloor>" 
+  from wt obtain hT C Ts Ts' D
+    where T: "typeof_addr h'' a = \<lfloor>hT\<rfloor>" 
     unfolding external_WT'_iff by blast
   from heap_clone_progress[OF wf T hconf]
   obtain h''' res where "heap_clone P h'' a h''' res" by blast
@@ -378,8 +354,8 @@ proof cases
     by(cases res)(fastforce intro: red_external.intros)+
 next
   case RedCloneFail
-  from wt obtain T Ts Ts'
-    where T: "typeof_addr h'' a = \<lfloor>T\<rfloor>" 
+  from wt obtain hT Ts Ts'
+    where T: "typeof_addr h'' a = \<lfloor>hT\<rfloor>" 
     unfolding external_WT'_iff by blast
   from heap_clone_progress[OF wf T hconf]
   obtain h''' res where "heap_clone P h'' a h''' res" by blast
@@ -400,7 +376,7 @@ proof(atomize_elim)
   let ?a_t = "thread_id2addr t"
   let ?t_a = "addr2thread_id a"
 
-  from tconf obtain C where ht: "typeof_addr h ?a_t = \<lfloor>Class C\<rfloor>" 
+  from tconf obtain C where ht: "typeof_addr h ?a_t = \<lfloor>Class_type C\<rfloor>" 
     and sub: "P \<turnstile> C \<preceq>\<^sup>* Thread" by(fastforce dest: tconfD)
 
   show "\<exists>ta' va' h'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta'\<rightarrow>ext \<langle>va', h'\<rangle> \<and> (final_thread.actions_ok final s t ta' \<or> final_thread.actions_ok' s t ta' \<and> final_thread.actions_subset ta' ta)"

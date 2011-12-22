@@ -18,7 +18,7 @@ context JVM_heap_base begin
 definition is_Array_ref :: "'addr val \<Rightarrow> 'heap \<Rightarrow> bool" where
   "is_Array_ref v h \<equiv> 
   is_Ref v \<and> 
-  (v \<noteq> Null \<longrightarrow> typeof_addr h (the_Addr v) \<noteq> None \<and> is_Array (the (typeof_addr h (the_Addr v))))"
+  (v \<noteq> Null \<longrightarrow> typeof_addr h (the_Addr v) \<noteq> None \<and> is_Array (ty_of_htype (the (typeof_addr h (the_Addr v)))))"
 
 declare is_Array_ref_def[simp]
 
@@ -62,14 +62,14 @@ where
   (0 < length stk \<and> (\<exists>C' T fm. P \<turnstile> C sees F:T (fm) in C') \<and> 
   (let (C', T, fm) = field P C F; ref = hd stk in 
     C' = C \<and> is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
-      (\<exists>T D. typeof_addr h (the_Addr ref) = \<lfloor>T\<rfloor> \<and> class_type_of T = \<lfloor>D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C))))"
+      (\<exists>T. typeof_addr h (the_Addr ref) = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T \<preceq>\<^sup>* C))))"
 
 | check_instr_Putfield:
   "check_instr (Putfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
   (1 < length stk \<and> (\<exists>C' T fm. P \<turnstile> C sees F:T (fm) in C') \<and>
   (let (C', T, fm) = field P C F; v = hd stk; ref = hd (tl stk) in 
     C' = C \<and> is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
-      (\<exists>T' D. typeof_addr h (the_Addr ref) = \<lfloor>T'\<rfloor> \<and> class_type_of T' = \<lfloor>D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* C \<and> P,h \<turnstile> v :\<le> T))))"
+      (\<exists>T'. typeof_addr h (the_Addr ref) = \<lfloor>T'\<rfloor> \<and> P \<turnstile> class_type_of T' \<preceq>\<^sup>* C \<and> P,h \<turnstile> v :\<le> T))))"
 
 | check_instr_Checkcast:
   "check_instr (Checkcast T) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
@@ -85,9 +85,9 @@ where
   (stk!n \<noteq> Null \<longrightarrow> 
     (let a = the_Addr (stk!n); 
          T = the (typeof_addr h a);
-         C = the (class_type_of T);
+         C = class_type_of T;
          (D, Ts, Tr, meth) = method P C M
-    in typeof_addr h a \<noteq> None \<and> class_type_of T \<noteq> None \<and> P \<turnstile> C has M \<and> 
+    in typeof_addr h a \<noteq> None \<and> P \<turnstile> C has M \<and> 
        P,h \<turnstile> rev (take n stk) [:\<le>] Ts \<and> 
        (meth = None \<longrightarrow> D\<bullet>M(Ts) :: Tr))))"
 
@@ -138,7 +138,7 @@ where
 definition check_xcpt :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> nat \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> 'addr \<Rightarrow> bool"
 where
   "check_xcpt P h n pc xt a \<longleftrightarrow>
-  (\<exists>C. typeof_addr h a = \<lfloor>Class C\<rfloor> \<and> 
+  (\<exists>C. typeof_addr h a = \<lfloor>Class_type C\<rfloor> \<and> 
   (case match_ex_table P C pc xt of None \<Rightarrow> True | Some (pc', d') \<Rightarrow> d' \<le> n))"
 
 definition check :: "'addr jvm_prog \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
@@ -237,14 +237,14 @@ proof -
     thus ?thesis
     proof(cases "ins ! pc")
       case (New C)
-      obtain h' ao where "new_obj h C = (h', ao)" by(cases "new_obj h C")
-      with xexec New show ?thesis by(auto simp add: split_beta intro: hext_new_obj)
+      obtain h' ao where "allocate h (Class_type C) = (h', ao)" by(cases "allocate h (Class_type C)")
+      with xexec New show ?thesis by(auto simp add: split_beta intro: hext_allocate)
     next
       case (NewArray T)
-      obtain h' ao where "new_arr h T (nat (sint (the_Intg (hd stk)))) = (h', ao)"
-        by(cases "new_arr h T (nat (sint (the_Intg (hd stk))))")
+      obtain h' ao where "allocate h (Array_type T (nat (sint (the_Intg (hd stk))))) = (h', ao)"
+        by(cases "allocate h (Array_type T (nat (sint (the_Intg (hd stk)))))")
       with xexec NewArray show ?thesis
-        by(auto intro: hext_new_arr split: split_if_asm)
+        by(auto intro: hext_allocate split: split_if_asm)
     next
       case AStore
       with xexec check_ins show ?thesis
@@ -259,7 +259,7 @@ proof -
         apply(auto simp add: min_def split_beta is_Ref_def extRet2JVM_def has_method_def
                 split: split_if_asm intro: red_external_aggr_hext)
         apply(case_tac va)
-        apply(auto 4 3 intro: red_external_aggr_hext is_native.intros simp add: is_class_type_of_conv_class_type_of_Some)
+        apply(auto 4 3 intro: red_external_aggr_hext is_native.intros)
         done
     next
       case (BinOpInstr bop)

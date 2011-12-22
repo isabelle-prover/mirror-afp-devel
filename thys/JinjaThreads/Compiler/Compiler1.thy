@@ -6,8 +6,7 @@
 
 header {* \isaheader{Compilation Stage 1} *}
 
-theory Compiler1
-imports
+theory Compiler1 imports
   PCompiler
   J1State
   ListIndex 

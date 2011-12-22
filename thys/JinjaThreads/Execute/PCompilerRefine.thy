@@ -1,3 +1,9 @@
+(*  Title:      JinjaThreads/Execute/PCompilerRefine.thy
+    Author:     Andreas Lochbihler
+
+    Tabulation for the compiler
+*)
+
 theory PCompilerRefine
 imports
   TypeRelRefine
@@ -7,10 +13,9 @@ begin
 subsection {* @{term "compP"} *}
 
 text {* 
-  Although it is possible to adapt the compiler framework to work with tabulated programs, 
-  it is not sensible to apply the compiler to the tabulated program because this requires
-  either to compile every method twice (once for the program itself and once for method lookup)
-  or to recompute the class and method lookup tabulation from scratch.
+  Applying the compiler to a tabulated program either compiles every
+  method twice (once for the program itself and once for method lookup)
+  or recomputes the class and method lookup tabulation from scratch.
   We follow the second approach.
 *}
 

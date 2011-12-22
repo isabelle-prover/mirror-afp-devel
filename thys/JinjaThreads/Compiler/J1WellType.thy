@@ -4,8 +4,7 @@
 
 header {* \isaheader{Type rules for the intermediate language} *}
 
-theory J1WellType
-imports
+theory J1WellType imports
   J1State
   "../Common/ExternalCallWF"
   "../Common/SemiType"
@@ -67,15 +66,15 @@ inductive WT1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 \<R
   "P,E \<turnstile>1 a :: T\<lfloor>\<rceil> \<Longrightarrow> P,E \<turnstile>1 a\<bullet>length :: Integer"
 
 | WTFAcc1:
-  "\<lbrakk> P,E \<turnstile>1 e :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D \<rbrakk>
+  "\<lbrakk> P,E \<turnstile>1 e :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e\<bullet>F{D} :: T"
 
 | WTFAss1:
-  "\<lbrakk> P,E \<turnstile>1 e1 :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D;  P,E \<turnstile>1 e2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
+  "\<lbrakk> P,E \<turnstile>1 e1 :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D;  P,E \<turnstile>1 e2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e1\<bullet>F{D} := e2 :: Void"
 
 | WT1Call:
-  "\<lbrakk> P,E \<turnstile>1 e :: U; is_class_type_of U C; P \<turnstile> C sees M:Ts \<rightarrow> T = m in D;
+  "\<lbrakk> P,E \<turnstile>1 e :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts \<rightarrow> T = m in D;
      P,E \<turnstile>1 es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e\<bullet>M(es) :: T"
 
@@ -188,7 +187,7 @@ apply (blast dest:sees_field_idemp sees_field_fun)
 apply (blast dest: sees_field_fun)
 
 apply(erule WT1_WTs1_cases)
-apply(simp add: is_class_type_of_conv_class_type_of_Some)
+apply(simp)
 apply (blast dest:sees_method_idemp sees_method_fun)
 
 apply blast

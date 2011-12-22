@@ -4,10 +4,7 @@
 
 header {* \isaheader{JVM Semantics for the delay bisimulation proof from intermediate language to byte code} *}
 
-theory Execs
-imports
-  JVMTau
-begin
+theory Execs imports JVMTau begin
 
 declare match_ex_table_app [simp del]
   match_ex_table_eq_NoneI [simp del]
@@ -545,7 +542,7 @@ next
     by(auto dest: match_ex_table_pcsD match_ex_table_shift_pcD simp add: match_ex_table_append)
 qed
 
-lemmas exec_meth_drop_pc = exec_meth_drop_xt_pc[where xt="[]", simplified]
+lemmas exec_meth_drop_pc = exec_meth_drop_xt_pc[where xt="[]", simplified, standard]
 
 definition exec_move ::
   "('addr, 'heap) check_instr \<Rightarrow> 'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr1

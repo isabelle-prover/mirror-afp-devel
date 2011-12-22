@@ -15,10 +15,8 @@ interpretation sc!:
     "addr2thread_id"
     "thread_id2addr"
     "sc_empty"
-    "sc_new_obj P"
-    "sc_new_arr P" 
+    "sc_allocate P"
     "sc_typeof_addr"
-    "sc_array_length"
     "sc_heap_read"
     "sc_heap_write"
   for P .
@@ -34,9 +32,9 @@ where
 fun sc_red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o
 where
   "sc_red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P t ((e, xs), h) =
-  red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o 
+  red_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o 
     addr2thread_id thread_id2addr
-    sc_empty (sc_new_obj P) (sc_new_arr P) sc_typeof_addr sc_array_length sc_heap_read_i_i_i_o sc_heap_write_i_i_i_i_o
+    sc_empty (sc_allocate P) sc_typeof_addr sc_heap_read_i_i_i_o sc_heap_write_i_i_i_i_o
     (extTA2J P) P t e (h, xs)
   \<guillemotright>= (\<lambda>(ta, e, h, xs). Predicate.single (ta, (e, xs), h))"
 
@@ -52,7 +50,7 @@ where
 lemma eval_sc_red_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o:
   "(\<lambda>t xm ta x'm'. Predicate.eval (sc_red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P t xm) (ta, x'm')) = 
   (\<lambda>t ((e, xs), h) ta ((e', xs'), h'). extTA2J P,P,t \<turnstile>sc \<langle>e, (h, xs)\<rangle> -ta\<rightarrow> \<langle>e', (h', xs')\<rangle>)"
-by(fastforce elim!: red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oE intro!: red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oI ext SUP1_I simp add: eval_sc_heap_write_i_i_i_i_o eval_sc_heap_read_i_i_i_o)
+by(fastforce elim!: red_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oE intro!: red_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oI ext SUP1_I simp add: eval_sc_heap_write_i_i_i_i_o eval_sc_heap_read_i_i_i_o)
 
 lemma sc_J_start_state_invar: "(\<lambda>_. True) (sc_state_\<alpha> (sc_J_start_state_refine P C M vs))"
 by simp

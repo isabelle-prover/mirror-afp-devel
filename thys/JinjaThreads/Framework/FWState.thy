@@ -408,6 +408,14 @@ apply(case_tac x)
 apply(auto dest: injD)
 done
 
+lemma convert_new_thread_action_id:
+  "convert_new_thread_action id = (id :: ('t, 'x, 'm) new_thread_action \<Rightarrow> ('t, 'x, 'm) new_thread_action)" (is ?thesis1)
+  "convert_new_thread_action (\<lambda>x. x) = (id :: ('t, 'x, 'm) new_thread_action \<Rightarrow> ('t, 'x, 'm) new_thread_action)" (is ?thesis2)
+proof -
+  show ?thesis1 by(rule ext)(case_tac x, simp_all)
+  thus ?thesis2 by(simp add: id_def)
+qed
+
 definition convert_extTA :: "('x \<Rightarrow> 'x') \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('l,'t,'x','m,'w,'o) thread_action"
 where "convert_extTA f ta = (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, map (convert_new_thread_action f) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>, snd (snd ta))"
 

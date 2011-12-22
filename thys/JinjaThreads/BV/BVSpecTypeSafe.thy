@@ -64,7 +64,7 @@ proof -
     by (simp add: correct_state_def fr) blast
 
   from correct meth fr obtain D 
-    where hxcp: "typeof_addr h xcp = \<lfloor>Class D\<rfloor>" and DsubThrowable: "P \<turnstile> D \<preceq>\<^sup>* Throwable"
+    where hxcp: "typeof_addr h xcp = \<lfloor>Class_type D\<rfloor>" and DsubThrowable: "P \<turnstile> D \<preceq>\<^sup>* Throwable"
     and rv: "\<And>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<Longrightarrow> is_relevant_class (instrs_of P C M ! pc) P D'"
     by(fastforce simp add: correct_state_def dest: sees_method_fun)
   
@@ -209,7 +209,7 @@ proof -
       and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'"
       by(auto simp add: neq_Nil_conv sup_state_opt_any_Some split: split_if_asm)
     with NT ins wti \<Phi>_pc obtain D D' TTs TT m
-      where D: "class_type_of (ST!n) = \<lfloor>D\<rfloor>"
+      where D: "class_type_of' (ST!n) = \<lfloor>D\<rfloor>"
       and m_D: "P \<turnstile> D sees M': TTs\<rightarrow>TT = m in D'"
       and Ts:  "P \<turnstile> rev (take n ST) [\<le>] TTs"
       and ST': "P \<turnstile> (TT # drop (n+1) ST) [\<le>] ST'" 
@@ -222,14 +222,12 @@ proof -
     obtain U a where
       Addr:   "stk!n = Addr a" and
       obj:    "typeof_addr h a = Some U" and
-      UsubSTn: "P \<turnstile> U \<le> ST ! n" and
-      UnNT: "U \<noteq> NT"
-      by(cases "stk ! n")(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
+      UsubSTn: "P \<turnstile> ty_of_htype U \<le> ST ! n"
+      by(cases "stk ! n")(auto simp add: conf_def widen_Class)
 
-    from D UsubSTn UnNT obtain C' where
-      C': "class_type_of U = \<lfloor>C'\<rfloor>" and C'subD: "P \<turnstile> C' \<preceq>\<^sup>* D"
-      unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
-      by(rule widen_is_class_type_of)
+    from D UsubSTn obtain C' where
+      C': "class_type_of' (ty_of_htype U) = \<lfloor>C'\<rfloor>" and C'subD: "P \<turnstile> C' \<preceq>\<^sup>* D"
+      by(rule widen_is_class_type_of) simp
 
     with wfprog m_D
     obtain Ts' T' D'' meth' where
@@ -254,8 +252,7 @@ proof -
       let ?f  = "(stk, loc, C, M, pc)"
       
       from Addr obj m_C' ins meth_C exec C' False
-      have s': "\<sigma> = (None, h, ?f' # ?f # frs)"
-        by(auto split: split_if_asm simp add: is_class_type_of_conv_class_type_of_Some)
+      have s': "\<sigma> = (None, h, ?f' # ?f # frs)" by(auto split: split_if_asm)
       
       moreover 
       from wtprog mD''
@@ -275,9 +272,9 @@ proof -
 	also
 	have "P,h \<turnstile> replicate mxl' undefined_value [:\<le>\<^sub>\<top>] replicate mxl' Err" by simp
 	also from m_C' have "P \<turnstile> C' \<preceq>\<^sup>* D''" by (rule sees_method_decl_above)
-        from obj heap_ok have "is_type P U" by (rule typeof_addr_is_type)
-        with C' have "P \<turnstile> U \<le> Class C'" 
-          by (metis is_class_type_of_conv_class_type_of_Some is_class_type_of_widenD)
+        from obj heap_ok have "is_htype P U" by (rule typeof_addr_is_type)
+        with C' have "P \<turnstile> ty_of_htype U \<le> Class C'" 
+          by(cases U)(simp_all add: widen_array_object)
         with `P \<turnstile> C' \<preceq>\<^sup>* D''` obj C' have "P,h \<turnstile> Addr a :\<le> Class D''"
           by (auto simp add: conf_def intro: widen_trans)
 	ultimately
@@ -287,12 +284,11 @@ proof -
 	thus ?thesis using ins' by simp
       qed
       ultimately have ?thesis using s' \<Phi>_pc approx meth_C m_D T' ins D tconf C' mD''
-	by (fastsimp dest: sees_method_fun [of _ C]) }
+	by (fastforce dest: sees_method_fun [of _ C]) }
     moreover
     { assume [simp]: "meth' = Native"
       with wfprog m_C' have "D''\<bullet>M'(Ts') :: T'" by(simp add: sees_wf_native)
-      with C' m_C' have nec: "is_native P U M'"
-        by(auto intro: is_native.intros simp add: is_class_type_of_conv_class_type_of_Some)
+      with C' m_C' have nec: "is_native P U M'" by(auto intro: is_native.intros)
 
       from ins n Addr obj exec m_C' C'
       obtain va h' tas' where va: "(tas', va, h') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
@@ -312,8 +308,7 @@ proof -
       from `P \<turnstile> rev Us [\<le>] rev (take n ST)` Ts Ts'
       have "P \<turnstile> rev Us [\<le>] Ts'" by(blast intro: widens_trans)
       with obj `map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)` C' m_C' 
-      have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : T'" 
-        by(simp add: external_WT'.intros is_class_type_of_conv_class_type_of_Some)
+      have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : T'" by(simp add: external_WT'.intros)
       from va have va': "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h\<rangle> -tas'\<rightarrow>ext \<langle>va,h'\<rangle>"
         by(unfold WT_red_external_list_conv[OF wfprog wtext' tconf])
       with heap_ok wtext' tconf wfprog have heap_ok': "hconf h'" by(auto dest: external_call_hconf)
@@ -323,11 +318,11 @@ proof -
         case (RetExc a')
         from frame hext have "conf_f P h' (ST, LT) ins (stk, loc, C, M, pc)" by(rule conf_f_hext)
         with \<sigma> tconf' heap_ok' meth_C \<Phi>_pc frames' RetExc red_external_conf_extRet[OF wfprog va' wtext' heap_ok preh tconf] ins preh'
-        show ?thesis by(fastsimp simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
+        show ?thesis by(fastforce simp add: conf_def widen_Class)
       next
         case RetStaySame
         from frame hext have "conf_f P h' (ST, LT) ins (stk, loc, C, M, pc)" by(rule conf_f_hext)
-        with \<sigma> heap_ok' meth_C \<Phi>_pc RetStaySame frames' tconf' preh' show ?thesis by fastsimp
+        with \<sigma> heap_ok' meth_C \<Phi>_pc RetStaySame frames' tconf' preh' show ?thesis by fastforce
       next
         case (RetVal v)
         with \<sigma> have \<sigma>: "\<sigma> = (None, h', (v # drop (n+1) stk, loc, C, M, pc+1) # frs)" by simp
@@ -343,7 +338,7 @@ proof -
           by(auto dest: sees_method_fun intro: widen_trans)
         also from loc hext have "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT" by(rule confTs_hext)
         hence "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" using LT' by(rule confTs_widen)
-        ultimately show ?thesis using `hconf h'` \<sigma> meth_C \<Phi>' pc' frames' tconf' preh' by fastsimp
+        ultimately show ?thesis using `hconf h'` \<sigma> meth_C \<Phi>' pc' frames' tconf' preh' by fastforce
       qed }
     ultimately show ?thesis by(cases meth') auto
   qed
@@ -397,7 +392,7 @@ proof -
       \<Phi>': "\<Phi> C' M' ! pc' = Some (ST', LT')" and
       meth_C':  "P \<turnstile> C' sees M':Ts''\<rightarrow>T''=\<lfloor>(mxs',mxl\<^isub>0',ins',xt')\<rfloor> in C'" and
       ins': "ins' ! pc' = Invoke M (size Ts)" and
-      D: "\<exists>D m D'. class_type_of (ST' ! (size Ts)) = Some D \<and> P \<turnstile> D sees M: Ts'\<rightarrow>T' = m in D'" and
+      D: "\<exists>D m D'. class_type_of' (ST' ! (size Ts)) = Some D \<and> P \<turnstile> D sees M: Ts'\<rightarrow>T' = m in D'" and
       T': "P \<turnstile> T \<le> T'" and
       frame':   "conf_f P h (ST',LT') ins' f" and
       conf_fs:  "conf_fs P h \<Phi> M' (size Ts'') T'' frs'"
@@ -579,15 +574,14 @@ proof -
     from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
     with False obtain a U' D' where a: "ref = Addr a"
       and h: "typeof_addr h a = Some U'"
-      and U': "class_type_of U' = Some D'" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+      and U': "D' = class_type_of U'" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
       by (blast dest: non_npD2)
 
     { fix v
       assume read: "heap_read h a (CField D F) v"
       from D' F have has_field: "P \<turnstile> D' has F:vT (fm) in D"
         by (blast intro: has_field_mono has_visible_field)
-      with h U' have "P,h \<turnstile> a@CField D F : vT"
-        unfolding is_class_type_of_conv_class_type_of_Some[symmetric] ..
+      with h have "P,h \<turnstile> a@CField D F : vT" unfolding U' .. 
       with read have v: "P,h \<turnstile> v :\<le> vT" using "h\<surd>"
         by(rule heap_read_conf)
       
@@ -650,15 +644,14 @@ proof -
     from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
     with False obtain a U' D' where 
       a: "ref = Addr a" and h: "typeof_addr h a = Some U'"
-      and U': "class_type_of U' = \<lfloor>D'\<rfloor>" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+      and U': "D' = class_type_of U'" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
       by (blast dest: non_npD2)
     
     from v vT have vT': "P,h \<turnstile> v :\<le> vT'" ..
     
     from field D' have has_field: "P \<turnstile> D' has F:vT' (fm) in D"
       by (blast intro: has_field_mono has_visible_field)
-    with h U' have al: "P,h \<turnstile> a@CField D F : vT'"
-      unfolding is_class_type_of_conv_class_type_of_Some[symmetric] ..
+    with h have al: "P,h \<turnstile> a@CField D F : vT'" unfolding U' ..
     let ?f' = "(stk',loc,C,M,pc+1)"
 
     { fix h'
@@ -712,11 +705,11 @@ proof -
     \<Phi>_suc:      "\<Phi> C M!(pc+1) = Some (ST', LT')" and
     less:       "P \<turnstile> (Class X # ST, LT) \<le>\<^sub>i (ST', LT')"
     by auto
-  obtain h' ao where new: "new_obj h X = (h', ao)" by(cases "new_obj h X")
-  hence hext: "h \<unlhd> h'" by(rule hext_new_obj)
+  obtain h' ao where new: "allocate h (Class_type X) = (h', ao)" by(cases "allocate h (Class_type X)")
+  hence hext: "h \<unlhd> h'" by(rule hext_allocate)
   with preh have preh': "preallocated h'" by(rule preallocated_hext)
   from new heap_ok is_class_X have heap_ok': "hconf h'"
-    by(rule hconf_new_obj_mono)
+    by(auto intro: hconf_allocate_mono)
   show ?thesis
   proof(cases "ao")
     case None
@@ -726,7 +719,7 @@ proof -
       by(fastforce intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext)
   next
     case (Some oref)
-    with new is_class_X have h': "typeof_addr h' oref = \<lfloor>Class X\<rfloor>" by(auto dest: new_obj_SomeD)
+    with new is_class_X have h': "typeof_addr h' oref = \<lfloor>Class_type X\<rfloor>" by(auto dest: allocate_SomeD)
   
     with ins meth Some no_x new have \<sigma>':
       "\<sigma> = (None, h', (Addr oref#stk,loc,C,M,pc+1)#frs)"
@@ -797,7 +790,6 @@ apply(clarsimp split: sum.split_asm)
 apply(frule (5) binop_type)
 apply(clarsimp simp add: conf_def)
 apply(clarsimp simp add: widen_Class)
-apply(frule typeof_addr_eq_Some_conv)
 apply(fastforce intro: widen_trans dest: binop_relevant_class simp add: cname_of_def conf_def)
 done
 
@@ -896,10 +888,11 @@ proof -
   from stk ST obtain si stk' where si: "stk = Intg si # stk'"
     by(auto simp add: conf_def)
   
-  obtain h' ao where new: "new_arr h X (nat (sint si)) = (h', ao)" by(cases "new_arr h X (nat (sint si))")
-  hence hext: "h \<unlhd> h'" by(rule hext_new_arr)
+  obtain h' ao where new: "allocate h (Array_type X (nat (sint si))) = (h', ao)"
+    by(cases "allocate h (Array_type X (nat (sint si)))")
+  hence hext: "h \<unlhd> h'" by(rule hext_allocate)
   with preh have preh': "preallocated h'" by(rule preallocated_hext)
-  from new heap_ok is_type_X have heap_ok': "hconf h'" by(rule hconf_new_arr_mono)
+  from new heap_ok is_type_X have heap_ok': "hconf h'" by(auto intro: hconf_allocate_mono)
 
   show ?thesis
   proof(cases "si <s 0 \<or> ao = None")
@@ -913,8 +906,8 @@ proof -
     then obtain oref where new_Addr: "ao = Some oref" 
       and si': "0 <=s si"
       by(auto)
-    with new is_type_X have h': "typeof_addr h' oref = \<lfloor>Array X\<rfloor>" and "array_length h' oref = nat (sint si)"
-      by(auto dest: new_arr_SomeD)
+    with new is_type_X have h': "typeof_addr h' oref = \<lfloor>Array_type X (nat (sint si))\<rfloor>" 
+      by(auto dest: allocate_SomeD)
 
     with ins meth new_Addr si si' no_x new have \<sigma>':
       "\<sigma> = (None, h', (Addr oref#tl stk,loc,C,M,pc+1)#frs)"
@@ -993,19 +986,19 @@ proof -
       by auto
 
     from stkNN stk' have "ref \<noteq> Null" by(simp)
-    with ref obtain a Xel
+    with ref obtain a Xel n
       where a: "ref = Addr a"
-      and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
+      and ha: "typeof_addr h a = \<lfloor>Array_type Xel n\<rfloor>"
       and Xel: "P \<turnstile> Xel \<le> X"
-      by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
+      by(cases ref)(fastforce simp add: conf_def widen_Array)+
 
     from idx obtain idxI where idxI: "idx = Intg idxI"
       by(auto simp add: conf_def)
     show ?thesis
-    proof(cases "0 <=s idxI \<and> sint idxI < int (array_length h a)")
+    proof(cases "0 <=s idxI \<and> sint idxI < int n")
       case True
-      hence si': "0 <=s idxI" "sint idxI < int (array_length h a)" by auto
-      hence "nat (sint idxI) < array_length h a"
+      hence si': "0 <=s idxI" "sint idxI < int n" by auto
+      hence "nat (sint idxI) < n"
         by(metis nat_less_iff  sint_0 word_sle_def)
       with ha have al: "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
 
@@ -1092,19 +1085,19 @@ proof -
       by auto
 
     from stkNN stk' have "ref \<noteq> Null" by(simp)
-    with ref obtain a Xel 
+    with ref obtain a Xel n
       where a: "ref = Addr a"
-      and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
+      and ha: "typeof_addr h a = \<lfloor>Array_type Xel n\<rfloor>"
       and Xel: "P \<turnstile> Xel \<le> X"
-      by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
+      by(cases ref)(fastforce simp add: conf_def widen_Array)+
 
     from idx obtain idxI where idxI: "idx = Intg idxI"
       by(auto simp add: conf_def)
     
     show ?thesis
-    proof(cases "0 <=s idxI \<and> sint idxI < int (array_length h a)")
+    proof(cases "0 <=s idxI \<and> sint idxI < int n")
       case True
-      hence si': "0 <=s idxI" "sint idxI < int (array_length h a)" by simp_all
+      hence si': "0 <=s idxI" "sint idxI < int n" by simp_all
 
       from e obtain Te where Te: "typeof\<^bsub>h\<^esub> e = \<lfloor>Te\<rfloor>" "P \<turnstile> Te \<le> Y"
         by(auto simp add: conf_def)
@@ -1122,7 +1115,7 @@ proof -
 
           let ?f = "(stk', loc, C, M, pc + 1)"
 
-          from si' have "nat (sint idxI) < array_length h a"
+          from si' have "nat (sint idxI) < n"
             by(metis nat_less_iff  sint_0 word_sle_def)
           with ha have "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
           with "write" heap_ok have heap_ok': "hconf h'" using eXel
@@ -1218,14 +1211,14 @@ proof -
       by auto
 
     from stkNN stk' have "ref \<noteq> Null" by(simp)
-    with ref obtain a Xel 
+    with ref obtain a Xel n
       where a: "ref = Addr a"
-      and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
+      and ha: "typeof_addr h a = \<lfloor>Array_type Xel n\<rfloor>"
       and Xel: "P \<turnstile> Xel \<le> X"
-      by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
+      by(cases ref)(fastforce simp add: conf_def widen_Array)+
 
     from ins meth stk' a ha no_x have \<sigma>':
-      "\<sigma> = (None, h, (Intg (word_of_int (int (array_length h a))) # stk', loc, C, M, pc + 1) # frs)"
+      "\<sigma> = (None, h, (Intg (word_of_int (int n)) # stk', loc, C, M, pc + 1) # frs)"
       (is "\<sigma> = (None, h, ?f # frs)")
       by(auto)
     moreover
@@ -1502,19 +1495,19 @@ proof -
           and ref:  "P,h \<turnstile> ref :\<le> X\<lfloor>\<rceil>" by(auto)
 
         from False stk' have "ref \<noteq> Null" by(simp)
-        with ref obtain a Xel where a: "ref = Addr a"
-          and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
+        with ref obtain a Xel n where a: "ref = Addr a"
+          and ha: "typeof_addr h a = \<lfloor>Array_type Xel n\<rfloor>"
           and Xel: "P \<turnstile> Xel \<le> X"
-          by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
+          by(cases ref)(fastforce simp add: conf_def widen_Array)+
         
         from idx obtain idxI where idxI: "idx = Intg idxI"
           by(auto simp add: conf_def)
         show ?thesis
-        proof(cases "0 <=s idxI \<and> sint idxI < int (array_length h a)")
+        proof(cases "0 <=s idxI \<and> sint idxI < int n")
           case True
-          hence si': "0 <=s idxI" "sint idxI < int (array_length h a)" by auto
-          hence "nat (sint idxI) < array_length h a"
-            by(metis nat_less_iff  sint_0 word_sle_def)
+          hence si': "0 <=s idxI" "sint idxI < int n" by auto
+          hence "nat (sint idxI) < n"
+            by(metis nat_less_iff sint_0 word_sle_def)
           with ha have al: "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
           from heap_read_total[OF hconf this] True False ha stk' idxI a
           show ?thesis by auto
@@ -1550,19 +1543,19 @@ proof -
           and e: "P,h \<turnstile> e :\<le> Y" by auto
 
         from stkNN stk' have "ref \<noteq> Null" by(simp)
-        with ref obtain a Xel where a: "ref = Addr a"
-          and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
+        with ref obtain a Xel n where a: "ref = Addr a"
+          and ha: "typeof_addr h a = \<lfloor>Array_type Xel n\<rfloor>"
           and Xel: "P \<turnstile> Xel \<le> X"
-          by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
+          by(cases ref)(fastforce simp add: conf_def widen_Array)+
 
         from idx obtain idxI where idxI: "idx = Intg idxI"
           by(auto simp add: conf_def)
         
         show ?thesis
-        proof(cases "0 <=s idxI \<and> sint idxI < int (array_length h a)")
+        proof(cases "0 <=s idxI \<and> sint idxI < int n")
           case True
-          hence si': "0 <=s idxI" "sint idxI < int (array_length h a)" by simp_all
-          hence "nat (sint idxI) < array_length h a"
+          hence si': "0 <=s idxI" "sint idxI < int n" by simp_all
+          hence "nat (sint idxI) < n"
             by(metis nat_less_iff  sint_0 word_sle_def)
           with ha have adal: "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
           
@@ -1597,13 +1590,12 @@ proof -
         from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
         with False obtain a U' D' where 
           a: "ref = Addr a" and h: "typeof_addr h a = Some U'"
-          and U': "class_type_of U' = Some D'" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+          and U': "D' = class_type_of U'" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
           by (blast dest: non_npD2)
     
         from D' F have has_field: "P \<turnstile> D' has F:vT (fm) in D"
           by (blast intro: has_field_mono has_visible_field)
-        with h U' have "P,h \<turnstile> a@CField D F : vT" 
-          unfolding is_class_type_of_conv_class_type_of_Some[symmetric] ..
+        with h have "P,h \<turnstile> a@CField D F : vT" unfolding U' ..
         from heap_read_total[OF hconf this]
         show ?thesis using stk' a by auto
       qed
@@ -1626,13 +1618,12 @@ proof -
         from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
         with False obtain a U' D' where 
           a: "ref = Addr a" and h: "typeof_addr h a = Some U'" and
-          U': "class_type_of U' = Some D'" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+          U': "D' = class_type_of U'" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
           by (blast dest: non_npD2)
 
         from field D' have has_field: "P \<turnstile> D' has F:vT' (fm) in D"
           by (blast intro: has_field_mono has_visible_field)
-        with h U' have al: "P,h \<turnstile> a@CField D F : vT'" 
-          unfolding is_class_type_of_conv_class_type_of_Some[symmetric] ..
+        with h have al: "P,h \<turnstile> a@CField D F : vT'" unfolding U' ..
         from v vT' have "P,h \<turnstile> v :\<le> vT'" by auto
         from heap_write_total[OF hconf al this] v a stk' h show ?thesis by auto
       qed
@@ -1656,7 +1647,7 @@ proof -
         qed
 
         from NT wt \<Phi>_pc obtain D D' Ts T m
-          where D: "class_type_of (ST!n) = Some D"
+          where D: "class_type_of' (ST!n) = Some D"
 	  and m_D: "P \<turnstile> D sees M': Ts\<rightarrow>T = m in D'"
 	  and Ts:  "P \<turnstile> rev (take n ST) [\<le>] Ts"
           by auto
@@ -1668,14 +1659,12 @@ proof -
         obtain a T' where
 	  Addr:   "stk!n = Addr a" and
 	  obj:    "typeof_addr h a = Some T'" and
-	  T'subSTn: "P \<turnstile> T' \<le> ST ! n" and
-          T'nNT: "T' \<noteq> NT"
-          by(cases "stk ! n")(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
+	  T'subSTn: "P \<turnstile> ty_of_htype T' \<le> ST ! n"
+          by(cases "stk ! n")(auto simp add: conf_def widen_Class)
 
-        from D T'subSTn T'nNT obtain C' where
-          C': "class_type_of T' = \<lfloor>C'\<rfloor>" and C'subD: "P \<turnstile> C' \<preceq>\<^sup>* D"
-          unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
-          by(rule widen_is_class_type_of)
+        from D T'subSTn obtain C' where
+          C': "class_type_of' (ty_of_htype T') = \<lfloor>C'\<rfloor>" and C'subD: "P \<turnstile> C' \<preceq>\<^sup>* D"
+          by(rule widen_is_class_type_of) simp
 
         from Call_lemma[OF m_D C'subD wf]
         obtain D' Ts' T' m' 
@@ -1695,7 +1684,7 @@ proof -
 	    by- (simp only: rev_map[symmetric], simp)
           with Ts `P \<turnstile> Ts [\<le>] Ts'` have "P \<turnstile> rev Us [\<le>] Ts'" by(blast intro: widens_trans)
           with obj Us Call' C' have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : T'"
-            by(auto intro!: external_WT'.intros simp add: is_class_type_of_conv_class_type_of_Some)
+            by(auto intro!: external_WT'.intros)
           from external_call_progress[OF wf this hconf, of t] obj Addr Call' C'
           show ?thesis by(auto dest!: red_external_imp_red_external_aggr)
         qed

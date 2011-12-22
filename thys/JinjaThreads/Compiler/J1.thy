@@ -4,10 +4,9 @@
 
 header {* \isaheader{Semantics of the intermediate language} *}
 
-theory J1
-imports
-  J1State
-  J1Heap
+theory J1 imports
+  "J1State"
+  "J1Heap"
   "../Framework/FWBisimulation"
 begin
 
@@ -53,11 +52,11 @@ inductive red1 ::
 for uf :: bool and P :: "'addr J1_prog" and t :: 'thread_id
 where
   Red1New:
-  "new_obj h C = (h', \<lfloor>a\<rfloor>)
-  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>new C, (h, l)\<rangle> -\<lbrace>NewObj a C\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
+  "allocate h (Class_type C) = (h', \<lfloor>a\<rfloor>)
+  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>new C, (h, l)\<rangle> -\<lbrace>NewHeapElem a (Class_type C)\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
 
 | Red1NewFail:
-  "new_obj h C = (h', None)
+  "allocate h (Class_type C) = (h', None)
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>new C, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h', l)\<rangle>"
 
 | New1ArrayRed:
@@ -65,14 +64,14 @@ where
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>e\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>newA T\<lfloor>e'\<rceil>, s'\<rangle>"
 
 | Red1NewArray:
-  "\<lbrakk> 0 <=s i; new_arr h T (nat (sint i)) = (h', \<lfloor>a\<rfloor>) \<rbrakk>
-  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<lbrace>NewArr a T (nat (sint i))\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
+  "\<lbrakk> 0 <=s i; allocate h (Array_type T (nat (sint i))) = (h', \<lfloor>a\<rfloor>) \<rbrakk>
+  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
 
 | Red1NewArrayNegative:
   "i <s 0 \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize, s\<rangle>"
 
 | Red1NewArrayFail:
-  "\<lbrakk> 0 <=s i; new_arr h T (nat (sint i)) = (h', None) \<rbrakk>
+  "\<lbrakk> 0 <=s i; allocate h (Array_type T (nat (sint i))) = (h', None) \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h', l)\<rangle>"
 
 | Cast1Red:
@@ -130,11 +129,11 @@ where
   "uf,P,t \<turnstile>1 \<langle>null\<lfloor>Val i\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
 | Red1AAccBounds:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Array T\<rfloor>; i <s 0 \<or> sint i \<ge> int (array_length (hp s) a) \<rbrakk>
+  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Array_type T n\<rfloor>; i <s 0 \<or> sint i \<ge> int n \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayIndexOutOfBounds, s\<rangle>"
 
 | Red1AAcc:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a);
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; 0 <=s i; sint i < int n;
      heap_read h a (ACell (nat (sint i))) v \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, (h, xs)\<rangle> -\<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>\<rightarrow> \<langle>Val v, (h, xs)\<rangle>"
 
@@ -151,16 +150,16 @@ where
   "uf,P,t \<turnstile>1 \<langle>AAss null (Val i) (Val e), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
 | Red1AAssBounds:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Array T\<rfloor>; i <s 0 \<or> sint i \<ge> int (array_length (hp s) a) \<rbrakk>
+  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Array_type T n\<rfloor>; i <s 0 \<or> sint i \<ge> int n \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>AAss (addr a) (Val (Intg i)) (Val e), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayIndexOutOfBounds, s\<rangle>"
 
 | Red1AAssStore:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length (hp s) a);
+  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Array_type T n\<rfloor>; 0 <=s i; sint i < int n;
      typeof\<^bsub>hp s\<^esub> w = \<lfloor>U\<rfloor>; \<not> (P \<turnstile> U \<le> T) \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>AAss (addr a) (Val (Intg i)) (Val w), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayStore, s\<rangle>"
 
 | Red1AAss:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a); typeof\<^bsub>h\<^esub> w = Some U; P \<turnstile> U \<le> T;
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; 0 <=s i; sint i < int n; typeof\<^bsub>h\<^esub> w = Some U; P \<turnstile> U \<le> T;
      heap_write h a (ACell (nat (sint i))) w h' \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>AAss (addr a) (Val (Intg i)) (Val w), (h, l)\<rangle> -\<lbrace>WriteMem a (ACell (nat (sint i))) w\<rbrace>\<rightarrow> \<langle>unit, (h', l)\<rangle>"
 
@@ -168,8 +167,8 @@ where
   "uf,P,t \<turnstile>1 \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>a\<bullet>length, s\<rangle> -ta\<rightarrow> \<langle>a'\<bullet>length, s'\<rangle>"
 
 | Red1ALength:
-  "typeof_addr h a = \<lfloor>Array T\<rfloor> 
-  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>addr a\<bullet>length, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (Intg (word_of_int (int (array_length h a)))), (h, xs)\<rangle>"
+  "typeof_addr h a = \<lfloor>Array_type T n\<rfloor> 
+  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>addr a\<bullet>length, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (Intg (word_of_int (int n))), (h, xs)\<rangle>"
 
 | Red1ALengthNull:
   "uf,P,t \<turnstile>1 \<langle>null\<bullet>length, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
@@ -205,7 +204,7 @@ where
   uf,P,t \<turnstile>1 \<langle>(Val v)\<bullet>M(es),s\<rangle> -ta\<rightarrow> \<langle>(Val v)\<bullet>M(es'),s'\<rangle>"
 
 | Red1CallExternal:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>T\<rfloor>; is_class_type_of T C; P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D; P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>;
+  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>T\<rfloor>; P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D; P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>;
      e' = extRet2J1 ((addr a)\<bullet>M(map Val vs)) va; s' = (h', lcl s) \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 
@@ -275,11 +274,11 @@ where
   "uf,P,t \<turnstile>1 \<langle>try (Val v) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
 
 | Red1TryCatch:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class D\<rfloor>; P \<turnstile> D \<preceq>\<^sup>* C; V < length x \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type D\<rfloor>; P \<turnstile> D \<preceq>\<^sup>* C; V < length x \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>try (Throw a) catch(C V) e2, (h, x)\<rangle> -\<epsilon>\<rightarrow> \<langle>{V:Class C=None; e2}, (h, x[V := Addr a])\<rangle>"
 
 | Red1TryFail:
-  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Class D\<rfloor>; \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
+  "\<lbrakk> typeof_addr (hp s) a = \<lfloor>Class_type D\<rfloor>; \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>try (Throw a) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 
 | List1Red1:
@@ -354,8 +353,8 @@ where
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>(e, x)/exs, h\<rangle> -extTA2J1 P ta\<rightarrow> \<langle>(e', x')/exs, h'\<rangle>"
 
 | red1Call:
-  "\<lbrakk> call1 e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr h a = \<lfloor>U\<rfloor>; is_class_type_of U C; 
-     P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D; 
+  "\<lbrakk> call1 e = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr h a = \<lfloor>U\<rfloor>; 
+     P \<turnstile> class_type_of U sees M:Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D; 
      size vs = size Ts \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>(e, x)/exs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>(blocks1 0 (Class D#Ts) body, Addr a # vs @ replicate (max_vars body) undefined_value)/(e, x)#exs, h\<rangle>"
 
@@ -380,23 +379,25 @@ by(induct rule: red1_reds1.inducts)(auto)
 lemma reds1_preserves_elen: "uf,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> length es' = length es"
 by(induct es arbitrary: es')(auto elim: reds1.cases)
 
-lemma red1_no_val [dest]:
-  "uf,P,t \<turnstile>1 \<langle>Val v, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> False"
+lemma red1_Val_iff [iff]:
+  "\<not> uf,P,t \<turnstile>1 \<langle>Val v, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 by(auto elim: red1.cases)
 
-lemma reds1_no_val [dest]:
-  "uf,P,t \<turnstile>1 \<langle>map Val vs, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> False"
-apply(induct vs arbitrary: es')
-apply(erule reds1.cases, auto)+
-done
+lemma red1_Throw_iff [iff]:
+  "\<not> uf,P,t \<turnstile>1 \<langle>Throw a, xs\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+by(auto elim: red1.cases)
 
-lemma no_reds1_map_Val_Throw [dest]:
-  "uf,P,t \<turnstile>1 \<langle>map Val vs @ Throw a # es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> False"
+lemma reds1_Nil_iff [iff]:
+  "\<not> uf,P,t \<turnstile>1 \<langle>[], s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>"
+by(auto elim: reds1.cases)
+
+lemma reds1_Val_iff [iff]:
+  "\<not> uf,P,t \<turnstile>1 \<langle>map Val vs, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>"
+by(induct vs arbitrary: es')(auto elim: reds1.cases)
+
+lemma reds1_map_Val_Throw_iff [iff]:
+  "\<not> uf,P,t \<turnstile>1 \<langle>map Val vs @ Throw a # es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>"
 by(induct vs arbitrary: es')(auto elim: reds1.cases elim!: red1_cases)
-
-lemma red1_no_Throw [dest]:
-  "uf,P,t \<turnstile>1 \<langle>Throw a, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> False"
-by(auto elim: red1.cases)
 
 lemma red1_max_vars_decr: "uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> max_vars e' \<le> max_vars e" 
   and reds1_max_varss_decr: "uf,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> max_varss es' \<le> max_varss es"
@@ -410,10 +411,10 @@ done
 
 lemma red1_new_threadD:
   "\<lbrakk> uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t' x H \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>a M vs va T C Ts Tr D. P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, hp s'\<rangle> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D"
+  \<Longrightarrow> \<exists>a M vs va T Ts Tr D. P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, hp s'\<rangle> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D"
   and reds1_new_threadD:
   "\<lbrakk> uf,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t' x H \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>a M vs va T C Ts Tr D. P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, hp s'\<rangle> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_class_type_of T C \<and> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D"
+  \<Longrightarrow> \<exists>a M vs va T Ts Tr D. P,t \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, hp s'\<rangle> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T sees M:Ts\<rightarrow>Tr = Native in D"
 by(induct rule: red1_reds1.inducts)(fastforce simp add: ta_upd_simps)+
 
 lemma red1_call_synthesized: "\<lbrakk> uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call1 e = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> synthesized_call P (hp s) aMvs"
@@ -449,12 +450,12 @@ primrec \<tau>move1 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b, 'addr
 where
   "\<tau>move1 P h (new C) \<longleftrightarrow> False"
 | "\<tau>move1 P h (newA T\<lfloor>e\<rceil>) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a)"
-| "\<tau>move1 P h (Cast U e) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
-| "\<tau>move1 P h (e instanceof T) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
-| "\<tau>move1 P h (e \<guillemotleft>bop\<guillemotright> e') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> (\<tau>move1 P h e' \<or> (\<exists>a. e' = Throw a) \<or> (\<exists>v. e' = Val v)))"
+| "\<tau>move1 P h (Cast U e) \<longleftrightarrow> \<tau>move1 P h e \<or> final e"
+| "\<tau>move1 P h (e instanceof T) \<longleftrightarrow> \<tau>move1 P h e \<or> final e"
+| "\<tau>move1 P h (e \<guillemotleft>bop\<guillemotright> e') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> (\<tau>move1 P h e' \<or> final e'))"
 | "\<tau>move1 P h (Val v) \<longleftrightarrow> False"
 | "\<tau>move1 P h (Var V) \<longleftrightarrow> True"
-| "\<tau>move1 P h (V := e) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
+| "\<tau>move1 P h (V := e) \<longleftrightarrow> \<tau>move1 P h e \<or> final e"
 | "\<tau>move1 P h (a\<lfloor>i\<rceil>) \<longleftrightarrow> \<tau>move1 P h a \<or> (\<exists>ad. a = Throw ad) \<or> (\<exists>v. a = Val v \<and> (\<tau>move1 P h i \<or> (\<exists>a. i = Throw a)))"
 | "\<tau>move1 P h (AAss a i e) \<longleftrightarrow> \<tau>move1 P h a \<or> (\<exists>ad. a = Throw ad) \<or> (\<exists>v. a = Val v \<and> (\<tau>move1 P h i \<or> (\<exists>a. i = Throw a) \<or> (\<exists>v. i = Val v \<and> (\<tau>move1 P h e \<or> (\<exists>a. e = Throw a)))))"
 | "\<tau>move1 P h (a\<bullet>length) \<longleftrightarrow> \<tau>move1 P h a \<or> (\<exists>ad. a = Throw ad)"
@@ -462,15 +463,15 @@ where
 | "\<tau>move1 P h (FAss e F D e') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> (\<tau>move1 P h e' \<or> (\<exists>a. e' = Throw a)))"
 | "\<tau>move1 P h (e\<bullet>M(es)) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v \<and> 
    (\<tau>moves1 P h es \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es') \<or> 
-    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T C Ts Tr D. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> is_class_type_of T C \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))))"
-| "\<tau>move1 P h ({V:T=vo; e}) \<longleftrightarrow> (\<tau>move1 P h e \<and> vo = None) \<or> (((\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)) \<and> vo = None) \<or> vo \<noteq> None"
+    (\<exists>vs. es = map Val vs \<and> (v = Null \<or> (\<forall>T C Ts Tr D. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<longrightarrow> class_type_of' T = \<lfloor>C\<rfloor> \<longrightarrow> P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<longrightarrow> \<tau>external_defs D M)))))"
+| "\<tau>move1 P h ({V:T=vo; e}) \<longleftrightarrow> vo \<noteq> None \<or> \<tau>move1 P h e \<or> final e"
 | "\<tau>move1 P h (sync\<^bsub>V'\<^esub>(e) e') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a)"
 | "\<tau>move1 P h (insync\<^bsub>V'\<^esub>(ad) e) \<longleftrightarrow> \<tau>move1 P h e"
-| "\<tau>move1 P h (e;;e') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
-| "\<tau>move1 P h (if (e) e' else e'') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
+| "\<tau>move1 P h (e;;e') \<longleftrightarrow> \<tau>move1 P h e \<or> final e"
+| "\<tau>move1 P h (if (e) e' else e'') \<longleftrightarrow> \<tau>move1 P h e \<or> final e"
 | "\<tau>move1 P h (while (e) e') = True"
 | "\<tau>move1 P h (throw e) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> e = null"
-| "\<tau>move1 P h (try e catch(C V) e') \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>a. e = Throw a) \<or> (\<exists>v. e = Val v)"
+| "\<tau>move1 P h (try e catch(C V) e') \<longleftrightarrow> \<tau>move1 P h e \<or> final e"
 
 | "\<tau>moves1 P h [] \<longleftrightarrow> False"
 | "\<tau>moves1 P h (e # es) \<longleftrightarrow> \<tau>move1 P h e \<or> (\<exists>v. e = Val v \<and> \<tau>moves1 P h es)"
@@ -625,7 +626,7 @@ lemma \<tau>move1_\<tau>moves1_intros:
   and \<tau>move1FAss2: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h (FAss (Val v) F D e)"
   and \<tau>move1CallObj: "\<tau>move1 P h obj \<Longrightarrow> \<tau>move1 P h (obj\<bullet>M(ps))"
   and \<tau>move1CallParams: "\<tau>moves1 P h ps \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>M(ps))"
-  and \<tau>move1Call: "(\<And>T C Ts Tr D. \<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>; is_class_type_of T C; P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<rbrakk> \<Longrightarrow> \<tau>external_defs D M) \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>M(map Val vs))"
+  and \<tau>move1Call: "(\<And>T C Ts Tr D. \<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor>; class_type_of' T = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts\<rightarrow>Tr = Native in D \<rbrakk> \<Longrightarrow> \<tau>external_defs D M) \<Longrightarrow> \<tau>move1 P h (Val v\<bullet>M(map Val vs))"
   and \<tau>move1BlockSome: "\<tau>move1 P h {V:T=\<lfloor>v\<rfloor>; e}"
   and \<tau>move1Block: "\<tau>move1 P h e \<Longrightarrow> \<tau>move1 P h {V:T=None; e}"
   and \<tau>move1BlockRed: "\<tau>move1 P h {V:T=None; Val v}"
@@ -682,7 +683,7 @@ lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   "calls1 es = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>moves1 P h es \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
 apply(induct e and es)
 apply(auto split: split_if_asm simp add: is_vals_conv)
-apply(fastforce simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def \<tau>external_def is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)+
+apply(fastforce simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def \<tau>external_def dest: sees_method_fun)+
 done
 
 lemma red1_\<tau>_taD: "\<lbrakk> uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move1 P (hp s) e \<rbrakk> \<Longrightarrow> ta = \<epsilon>"
@@ -697,7 +698,6 @@ apply(induct rule: red1_reds1.inducts)
 apply(auto)
 apply(fastforce simp add: map_eq_append_conv \<tau>external'_def \<tau>external_def dest: \<tau>external'_red_external_heap_unchanged)+
 done
-
 
 lemma \<tau>Move1_iff:
   "\<tau>Move1 P h exexs \<longleftrightarrow> (let ((e, _), _) = exexs in \<tau>move1 P h e \<or> final e)"
@@ -1061,6 +1061,32 @@ proof
   assume "\<tau>reds1gt uf P t h (map Val vs, xs) s'"
   thus "False" by induct auto
 qed auto
+
+lemma \<tau>reds1r_map_Val_Throw:
+  "\<tau>reds1gr uf P t h (map Val vs @ Throw a # es, xs) s' \<longleftrightarrow> s' = (map Val vs @ Throw a # es, xs)"
+  (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume ?lhs thus ?rhs by induct auto
+qed auto
+
+lemma \<tau>reds1t_map_Val_Throw:
+  "\<tau>reds1gt uf P t h (map Val vs @ Throw a # es, xs) s' \<longleftrightarrow> False"
+  (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume ?lhs thus ?rhs by induct auto
+qed auto
+
+lemma \<tau>red1r_Throw:
+  "\<tau>red1gr uf P t h (Throw a, xs) s' \<longleftrightarrow> s' = (Throw a, xs)" (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume ?lhs thus ?rhs by induct auto
+qed simp
+
+lemma \<tau>red1t_Throw:
+  "\<tau>red1gt uf P t h (Throw a, xs) s' \<longleftrightarrow> False" (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume ?lhs thus ?rhs by induct auto
+qed simp
 
 lemma red1_False_into_red1_True:
   "False,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> True,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"

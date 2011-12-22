@@ -159,7 +159,7 @@ where
 
 lemma mexecd_Suspend_Invoke:
   "\<lbrakk> mexecd P t (x, m) ta (x', m'); Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>stk loc C M pc frs' n a T C' Ts Tr D. x' = (None, (stk, loc, C, M, pc) # frs') \<and> instrs_of P C M ! pc = Invoke wait n \<and> stk ! n = Addr a \<and> typeof_addr m a = \<lfloor>T\<rfloor> \<and> class_type_of T = \<lfloor>C'\<rfloor> \<and> P \<turnstile> C' sees wait:Ts\<rightarrow>Tr = Native in D \<and> D\<bullet>wait(Ts) :: Tr"
+  \<Longrightarrow> \<exists>stk loc C M pc frs' n a T Ts Tr D. x' = (None, (stk, loc, C, M, pc) # frs') \<and> instrs_of P C M ! pc = Invoke wait n \<and> stk ! n = Addr a \<and> typeof_addr m a = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T sees wait:Ts\<rightarrow>Tr = Native in D \<and> D\<bullet>wait(Ts) :: Tr"
 apply(cases x')
 apply(cases x)
 apply(cases "fst x")
@@ -178,14 +178,14 @@ lemma exec_instr_New_Thread_exists_thread_object:
   "\<lbrakk> (ta, xcp', h', frs') \<in> exec_instr ins P t h stk loc C M pc frs;
      check_instr ins P h stk loc C M pc frs;
      NewThread t' x h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+  \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 apply(cases ins)
 apply(fastforce simp add: split_beta ta_upd_simps split: split_if_asm intro: red_external_aggr_new_thread_exists_thread_object)+
 done
 
 lemma exec_New_Thread_exists_thread_object:
   "\<lbrakk> P,t \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', h', frs'); NewThread t' x h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+  \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 apply(cases xcp)
 apply(case_tac [!] frs)
 apply(auto simp add: check_def elim!: jvmd_NormalE dest!: exec_instr_New_Thread_exists_thread_object)
@@ -197,7 +197,7 @@ lemma exec_instr_preserve_tconf:
      P,h \<turnstile> t' \<surd>t \<rbrakk>
   \<Longrightarrow> P,h' \<turnstile> t' \<surd>t"
 apply(cases ins)
-apply(auto intro: tconf_hext_mono hext_heap_ops_mono' hext_heap_write red_external_aggr_preserves_tconf split: split_if_asm sum.split_asm simp add: split_beta is_class_type_of_conv_class_type_of_Some has_method_def intro!: is_native.intros)
+apply(auto intro: tconf_hext_mono hext_allocate' hext_heap_write red_external_aggr_preserves_tconf split: split_if_asm sum.split_asm simp add: split_beta has_method_def intro!: is_native.intros)
 done
 
 lemma exec_preserve_tconf:

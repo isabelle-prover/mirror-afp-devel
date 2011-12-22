@@ -9,7 +9,7 @@ imports
   JVMInstructions
 begin
 
-abbreviation Any :: "'addr :: addr option"
+abbreviation Any :: "cname option"
 where "Any \<equiv> None"
 
 definition matches_ex_entry :: "'m prog \<Rightarrow> cname \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool"

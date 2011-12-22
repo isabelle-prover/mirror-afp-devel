@@ -227,14 +227,10 @@ where
 
 lemma expr_lockss_append [simp]:
   "expr_lockss (es @ es') = (\<lambda>ad. expr_lockss es ad + expr_lockss es' ad)"
-apply(induct es)
-apply(auto intro: ext)
-done
+by(induct es) auto
 
 lemma expr_lockss_map_Val [simp]: "expr_lockss (map Val vs) = (\<lambda>ad. 0)"
-apply(induct vs)
-apply(auto)
-done
+by(induct vs) auto
 
 primrec contains_insync :: "('a,'b,'addr) exp \<Rightarrow> bool"
   and contains_insyncs :: "('a,'b,'addr) exp list \<Rightarrow> bool"
@@ -278,14 +274,6 @@ by(induct e and es)(auto)
 lemma contains_insyncs_map_Val [simp]: "\<not> contains_insyncs (map Val vs)"
 by(induct vs) auto
 
-lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
-  shows contains_insync_expr_locks_conv: "contains_insync e \<longleftrightarrow> (\<exists>l. expr_locks e l > 0)"
-  and contains_insyncs_expr_lockss_conv: "contains_insyncs es \<longleftrightarrow> (\<exists>l. expr_lockss es l > 0)"
-apply(induct e and es)
-apply auto
-done
-
-
 subsection {* Value expressions *}
 
 inductive is_val :: "('a,'b,'addr) exp \<Rightarrow> bool" where
@@ -307,13 +295,10 @@ lemma is_vals_append [simp]: "is_vals (es @ es') \<longleftrightarrow> is_vals e
 by(induct es) auto
 
 lemma is_vals_conv: "is_vals es = (\<exists>vs. es = map Val vs)"
-apply(induct es, auto)
-apply(rule_tac x="v#vsa" in exI, simp)
-done
+by(induct es)(auto simp add: Cons_eq_map_conv)
 
 lemma is_vals_map_Vals [simp]: "is_vals (map Val vs) = True"
 unfolding is_vals_conv by auto
-
 
 inductive is_addr :: "('a,'b,'addr) exp \<Rightarrow> bool"
 where "is_addr (addr a)"
@@ -333,26 +318,21 @@ where
   "is_Throws (Throw a # es)"
 | "is_Throws es \<Longrightarrow> is_Throws (Val v # es)"
 
+inductive_simps is_Throws_simps:
+  "is_Throws []"
+  "is_Throws (e # es)"
+
 code_pred is_Throws .
 
 lemma is_Throws_conv: "is_Throws es \<longleftrightarrow> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
-apply(rule iffI)
- apply(erule is_Throws.induct)
-  apply(rule exI[where x="[]"])
-  apply simp
- apply(clarsimp)
- apply(rule_tac x="v # vs" in exI)
- apply simp
-apply(induct es arbitrary: vs)
- apply simp
-apply(clarsimp simp add: Cons_eq_append_conv)
-apply(erule disjE)
- apply(simp add: is_Throws.intros)
-apply(clarsimp)
-apply(rule is_Throws.intros)
-apply(erule meta_mp)
-apply blast
-done
+  (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume ?lhs thus ?rhs
+    by(induct)(fastforce simp add: Cons_eq_append_conv Cons_eq_map_conv)+
+next
+  assume ?rhs thus ?lhs
+    by(induct es arbitrary: vs)(auto simp add: is_Throws_simps Cons_eq_map_conv Cons_eq_append_conv)
+qed
 
 subsection {* @{text "blocks"} *}
 
@@ -363,10 +343,7 @@ where
 
 lemma [simp]:
   "\<lbrakk> size vs = size Vs; size Ts = size Vs \<rbrakk> \<Longrightarrow> fv (blocks Vs Ts vs e) = fv e - set Vs"
-apply(induct rule:blocks.induct)
-apply simp_all
-apply blast
-done
+by(induct rule:blocks.induct)(simp_all, blast)
 
 lemma expr_locks_blocks:
   "\<lbrakk> length vs = length pns; length Ts = length pns \<rbrakk>
@@ -390,66 +367,38 @@ by(auto)
 lemma final_locks: "final e \<Longrightarrow> expr_locks e l = 0"
 by(auto elim: finalE)
 
-definition finals:: "('a,'b,'addr) exp list \<Rightarrow> bool"
-where "finals es  \<equiv>  (\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
+inductive finals :: "('a,'b,'addr) exp list \<Rightarrow> bool"
+where
+  "finals []"
+| "finals (Throw a # es)"
+| "finals es \<Longrightarrow> finals (Val v # es)"
+
+inductive_simps finals_simps:
+  "finals (e # es)"
 
 lemma [iff]: "finals []"
-by(simp add:finals_def)
+by(rule finals.intros)
 
 lemma [iff]: "finals (Val v # es) = finals es"
-apply(clarsimp simp add: finals_def)
-apply(rule iffI)
- apply(erule disjE)
-  apply fastforce
- apply(rule disjI2)
- apply clarsimp
- apply(case_tac vs)
-  apply simp
- apply fastforce
-apply(erule disjE)
- apply clarsimp
- apply(rule_tac x="v#vs" in exI)
- apply(simp)
-apply(rule disjI2)
-apply clarsimp
-apply(rule_tac x = "v#vs" in exI)
-apply simp
-done
+by(simp add: finals_simps)
 
-lemma finals_app_map[iff]: "finals (map Val vs @ es) = finals es"
-(*<*)by(induct_tac vs, auto)(*>*)
-
-lemma [iff]: "finals (map Val vs)"
-(*<*)using finals_app_map[of vs "[]"]by(simp)(*>*)
+lemma finals_app_map [iff]: "finals (map Val vs @ es) = finals es"
+by(induct vs) simp_all
 
 lemma [iff]: "finals (throw e # es) = (\<exists>a. e = addr a)"
-(*<*)
-apply(simp add:finals_def)
-apply(rule iffI)
- apply(erule disjE)
-  apply(fastforce)
- apply clarsimp
- apply(case_tac vs)
-  apply simp
- apply fastforce
-apply clarsimp
-apply(rule_tac x = "[]" in exI)
-apply simp
-apply(erule_tac x="[]" in allE)
-apply(fastforce)
-done
-(*>*)
+by(simp add: finals_simps)
 
-lemma not_finals_ConsI: "\<not> final e \<Longrightarrow> \<not> finals(e#es)"
- (*<*)
-apply(clarsimp simp add:finals_def final_iff)
-apply(rule conjI)
- apply(fastforce)
-apply(clarsimp)
-apply(case_tac vs)
-apply auto
-done
-(*>*)
+lemma not_finals_ConsI: "\<not> final e \<Longrightarrow> \<not> finals (e # es)"
+by(simp add: finals_simps final_iff)
+
+lemma finals_iff: "finals es \<longleftrightarrow> (\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
+  (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume ?lhs thus ?rhs
+    by induct(auto simp add: Cons_eq_append_conv Cons_eq_map_conv, metis)
+next
+  assume ?rhs thus ?lhs by(induct es) auto
+qed
 
 code_pred final .
 
@@ -508,45 +457,6 @@ lemma call_callE [consumes 1, case_names CallObj CallParams Call]:
      \<lbrakk> obj = addr a; pns = map Val vs; M = M' \<rbrakk> \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
 by(auto split: split_if_asm simp add: is_vals_conv)
 
-lemma calls_conv:
-  "calls es = \<lfloor>aMvs\<rfloor> \<longleftrightarrow> (\<exists>vs e es'. es = map Val vs @ e # es' \<and> call e = \<lfloor>aMvs\<rfloor>)"
-proof(induct es)
-  case Nil thus ?case by simp
-next
-  case (Cons e es)
-  note IH = `(calls es = \<lfloor>aMvs\<rfloor>) = (\<exists>vs e es'. es = map Val vs @ e # es' \<and> call e = \<lfloor>aMvs\<rfloor>)`
-  show ?case
-  proof(cases "is_val e")
-    case True
-    then obtain v where e: "e = Val v" by auto
-    hence "calls (e # es) = calls es" by(auto)
-    moreover from e
-    have "(calls es = \<lfloor>aMvs\<rfloor>) = (\<exists>vs e' es'. e # es = map Val (v # vs) @ e' # es' \<and> call e' = \<lfloor>aMvs\<rfloor>)"
-      unfolding IH by(auto)
-    also from e have "\<dots> = (\<exists>vs e' es'. e # es = map Val vs @ e' # es' \<and> call e' = \<lfloor>aMvs\<rfloor>)"
-      apply(auto simp add: Cons_eq_append_conv)
-      apply(rule_tac x="v # vs" in exI)
-      by(clarsimp)
-    finally show ?thesis .
-  next
-    case False
-    show ?thesis
-    proof(rule iffI)
-      assume "calls (e # es) = \<lfloor>aMvs\<rfloor>"
-      with False have "call e = \<lfloor>aMvs\<rfloor>" by(auto)
-      hence "e # es = map Val [] @ e # es" "call e = \<lfloor>aMvs\<rfloor>" by auto
-      thus "\<exists>vs e' es'. e # es = map Val vs @ e' # es' \<and> call e' = \<lfloor>aMvs\<rfloor>" by blast
-    next
-      assume "\<exists>vs e' es'. e # es = map Val vs @ e' # es' \<and> call e' = \<lfloor>aMvs\<rfloor>"
-      then obtain vs e' es' where "e # es = map Val vs @ e' # es'" "call e' = \<lfloor>aMvs\<rfloor>" by(blast)
-      moreover
-      with False have "vs = []" 
-	by-(erule contrapos_np, auto simp add: neq_Nil_conv)
-      ultimately show "calls (e # es) = \<lfloor>aMvs\<rfloor>" by(auto)
-    qed
-  qed
-qed
-
 lemma calls_map_Val [simp]:
   "calls (map Val vs) = None"
 by(induct vs) auto
@@ -556,6 +466,5 @@ by(cases e) auto
 
 lemma is_calls_not_is_vals [dest]: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<not> is_vals es"
 by(induct es) auto
-
 
 end

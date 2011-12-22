@@ -1,3 +1,9 @@
+(*  Title:      JinjaThreads/Execute/ExternalCall_Execute.thy
+    Author:     Andreas Lochbihler
+*)
+
+header {* \isaheader{Executable semantics for the JVM} *}
+
 theory ExternalCall_Execute
 imports
   "../Common/ExternalCall"
@@ -13,16 +19,14 @@ locale heap_execute = addr_base +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr" 
   fixes empty_heap :: "'heap" 
-  and new_obj :: "'heap \<Rightarrow> String.literal \<Rightarrow> 'heap \<times> 'addr option" 
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> 'heap \<times> 'addr option" 
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> ty option" 
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat" 
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val Cset.set" 
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap Cset.set"
 
 sublocale heap_execute < execute!: heap_base
   addr2thread_id thread_id2addr 
-  empty_heap new_obj new_arr typeof_addr array_length
+  empty_heap allocate typeof_addr
   "\<lambda>h a ad v. v \<in> Cset.member (heap_read h a ad)" "\<lambda>h a ad v h'. h' \<in> Cset.member (heap_write h a ad v)"
 .
 
@@ -76,25 +80,24 @@ by(simp add: heap_clone_def)
 lemma heap_clone_code:
   "heap_clone P h a =
   (case typeof_addr h a of
-    \<lfloor>Class C\<rfloor> \<Rightarrow> 
-    (case new_obj h C of
+    \<lfloor>Class_type C\<rfloor> \<Rightarrow> 
+    (case allocate h (Class_type C) of
        (h', None) \<Rightarrow> Cset.single (h', None)
      | (h', Some a') \<Rightarrow> do {
           FDTs \<leftarrow> Cset.of_pred (Fields_i_i_o P C);
           (obs, h'') \<leftarrow> heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h';
-          Cset.single (h'', \<lfloor>(NewObj a' C # obs, a')\<rfloor>)
+          Cset.single (h'', \<lfloor>(NewHeapElem a' (Class_type C) # obs, a')\<rfloor>)
        })
-  | \<lfloor>Array T\<rfloor> \<Rightarrow>
-    (let n = array_length h a
-     in case new_arr h T n of
+  | \<lfloor>Array_type T n\<rfloor> \<Rightarrow>
+     (case allocate h (Array_type T n) of
           (h', None) \<Rightarrow> Cset.single (h', None)
         | (h', \<lfloor>a'\<rfloor>) \<Rightarrow> do {
              FDTs \<leftarrow> Cset.of_pred (Fields_i_i_o P Object);
              (obs, h'') \<leftarrow> heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h';
-             Cset.single (h'', \<lfloor>(NewArr a' T n # obs, a')\<rfloor>)
+             Cset.single (h'', \<lfloor>(NewHeapElem a' (Array_type T n) # obs, a')\<rfloor>)
            })
   | _ \<Rightarrow> Cset.empty)"
-by(auto simp add: Cset.set_eq_iff split: ty.splits elim!: execute.heap_clone.cases intro: execute.heap_clone.intros simp add: eval_Fields_conv split_beta Pair_fst_snd_eq)
+by(auto simp add: Cset.set_eq_iff split: ty.splits prod.split_asm htype.splits elim!: execute.heap_clone.cases intro: execute.heap_clone.intros simp add: eval_Fields_conv split_beta Pair_fst_snd_eq)
 
 definition red_external_aggr :: 
   "'m prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> 'heap \<Rightarrow> 
@@ -137,7 +140,7 @@ lemma red_external_aggr_code:
                 (\<lbrace>IsInterrupted t False\<rbrace>, RetVal (Bool False), h)]
     else if M = yield then Cset.single (\<lbrace>Yield\<rbrace>, RetVal Unit, h)
     else
-      let T = the (typeof_addr h a)
+      let T = ty_of_htype (the (typeof_addr h a))
       in if P \<turnstile> T \<le> Class Thread then
         let t_a = addr2thread_id a 
         in if M = start then 

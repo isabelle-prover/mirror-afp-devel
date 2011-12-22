@@ -50,17 +50,16 @@ proof -
 
       from ST' app Invoke
       obtain D Ts T m C'
-        where D: "class_type_of (ST' ! n) = \<lfloor>D\<rfloor>"
+        where D: "class_type_of' (ST' ! n) = \<lfloor>D\<rfloor>"
 	and Ts: "P \<turnstile> rev (take n ST') [\<le>] Ts"
 	and D_M: "P \<turnstile> D sees M: Ts\<rightarrow>T = m in C'"
-        by fastsimp
+        by fastforce
 
       from less have "P \<turnstile> ST!n \<le> ST'!n"
 	by(auto dest: list_all2_nthD2[OF _ n])
-      with D obtain D' where D': "class_type_of (ST ! n) = \<lfloor>D'\<rfloor>" 
+      with D obtain D' where D': "class_type_of' (ST ! n) = \<lfloor>D'\<rfloor>" 
         and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
-        using ST unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
-        by(rule widen_is_class_type_of)
+        using ST by(rule widen_is_class_type_of)
       from wf D_M DsubC obtain Ts' T' m' C'' where
         D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
         Ts': "P \<turnstile> Ts [\<le>] Ts'"
@@ -273,16 +272,15 @@ proof -
     from Invoke succs have ST: "ST!n \<noteq> NT" and ST': "ST'!n \<noteq> NT" by (auto)
     
     from ST' app\<^isub>i Invoke obtain D Ts T m C'
-      where D: "class_type_of (ST' ! n) = \<lfloor>D\<rfloor>"
+      where D: "class_type_of' (ST' ! n) = \<lfloor>D\<rfloor>"
       and Ts: "P \<turnstile> rev (take n ST') [\<le>] Ts"
       and D_M: "P \<turnstile> D sees M: Ts\<rightarrow>T = m in C'"
-      by fastsimp
+      by fastforce
 
     from less have "P \<turnstile> ST!n \<le> ST'!n" by(auto dest: list_all2_nthD2[OF _ n])
-    with D obtain D' where D': "class_type_of (ST ! n) = \<lfloor>D'\<rfloor>" 
+    with D obtain D' where D': "class_type_of' (ST ! n) = \<lfloor>D'\<rfloor>" 
       and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
-      using ST unfolding is_class_type_of_conv_class_type_of_Some[symmetric]
-      by(rule widen_is_class_type_of)
+      using ST by(rule widen_is_class_type_of)
 
     from wf D_M DsubC obtain Ts' T' m' C'' where
       D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and

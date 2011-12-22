@@ -10,7 +10,6 @@ theory BVConform
 imports
   BVSpec
   "../JVM/JVMExec"
-  "../JVM/JVMHeap"
 begin
 
 context JVM_heap_base begin
@@ -44,12 +43,12 @@ where
     \<Phi> C M ! pc = Some (ST,LT) \<and> 
     (P \<turnstile> C sees M:Ts \<rightarrow> T = \<lfloor>(mxs,mxl\<^isub>0,is,xt)\<rfloor> in C) \<and>
     (\<exists>Ts' T' D m D'.  
-       is!pc = (Invoke M\<^isub>0 n\<^isub>0) \<and> class_type_of (ST!n\<^isub>0) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M\<^isub>0:Ts' \<rightarrow> T' = m in D' \<and> P \<turnstile> T\<^isub>0 \<le> T') \<and>
+       is!pc = (Invoke M\<^isub>0 n\<^isub>0) \<and> class_type_of' (ST!n\<^isub>0) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M\<^isub>0:Ts' \<rightarrow> T' = m in D' \<and> P \<turnstile> T\<^isub>0 \<le> T') \<and>
     conf_f P h (ST, LT) is f \<and> conf_fs P h \<Phi> M (size Ts) T frs))"
 
 primrec conf_xcp :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> 'addr option \<Rightarrow> 'addr instr \<Rightarrow> bool" where
   "conf_xcp P h None i = True"
-| "conf_xcp P h \<lfloor>a\<rfloor>   i = (\<exists>D. typeof_addr h a = \<lfloor>Class D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* Throwable \<and>
+| "conf_xcp P h \<lfloor>a\<rfloor>   i = (\<exists>D. typeof_addr h a = \<lfloor>Class_type D\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* Throwable \<and>
                                (\<forall>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<longrightarrow> is_relevant_class i P D'))"
 
 end

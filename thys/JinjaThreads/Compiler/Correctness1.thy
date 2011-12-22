@@ -6,11 +6,13 @@
 
 header {* \isaheader{Semantic Correctness of Stage 1} *}
 
-theory Correctness1
-imports
+theory Correctness1 imports
   J0J1Bisim
   "../J/DefAssPreservation"
 begin
+
+lemma finals_map_Val [simp]: "finals (map Val vs)"
+by(simp add: finals_iff)
 
 context J_heap_base begin
 
@@ -69,10 +71,8 @@ locale J0_J1_heap_base =
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and empty_heap :: "'heap"
-  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> 'addr option)"
-  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> 'addr option)"
-  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> ty"
-  and array_length :: "'heap \<Rightarrow> 'addr \<Rightarrow> nat"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
 begin
@@ -80,7 +80,7 @@ begin
 lemma ta_bisim01_extTA2J0_extTA2J1:
   assumes wf: "wf_J_prog P"
   and nt: "\<And>n T C M a h. \<lbrakk> n < length \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> ! n = NewThread T (C, M, a) h \<rbrakk>
-           \<Longrightarrow> typeof_addr h a = \<lfloor>Class C\<rfloor> \<and> (\<exists>T meth D. P \<turnstile> C sees M:[]\<rightarrow>T =\<lfloor>meth\<rfloor> in D)"
+           \<Longrightarrow> typeof_addr h a = \<lfloor>Class_type C\<rfloor> \<and> (\<exists>T meth D. P \<turnstile> C sees M:[]\<rightarrow>T =\<lfloor>meth\<rfloor> in D)"
   shows "ta_bisim01 (extTA2J0 P ta) (extTA2J1 (compP1 P) ta)"
 apply(simp add: ta_bisim_def ta_upd_simps)
 apply(auto intro!: list_all2_all_nthI)
@@ -172,7 +172,7 @@ done
 lemma sim_moves01_expr:
   "sim_move01 P t ta0 e0 e h xs ta e' h' xs' \<Longrightarrow> sim_moves01 P t ta0 (e0 # es2) (e # es2') h xs ta (e' # es2') h' xs'"
   "sim_moves01 P t ta0 es0 es h xs ta es' h' xs' \<Longrightarrow> sim_moves01 P t ta0 (Val v # es0) (Val v # es) h xs ta (Val v # es') h' xs'"
-apply(simp_all add: sim_move01_def sim_moves01_def final_iff finals_def Cons_eq_append_conv \<tau>red1t_Val \<tau>red1r_Val split: split_if_asm split del: split_if)
+apply(simp_all add: sim_move01_def sim_moves01_def final_iff finals_iff Cons_eq_append_conv \<tau>red1t_Val \<tau>red1r_Val split: split_if_asm split del: split_if)
 apply(auto simp add: Cons_eq_append_conv \<tau>red1t_Val \<tau>red1r_Val split: split_if_asm intro: List1Red1 List1Red2 \<tau>red1t_inj_\<tau>reds1t \<tau>red1r_inj_\<tau>reds1r \<tau>reds1t_cons_\<tau>reds1t \<tau>reds1r_cons_\<tau>reds1r)
 apply(force elim!: \<tau>red1r_inj_\<tau>reds1r List1Red1)
 apply(force elim!: \<tau>red1r_inj_\<tau>reds1r List1Red1)
@@ -190,30 +190,26 @@ apply(clarsimp simp add: sim_move01_def sim_moves01_def \<tau>reds1r_map_Val \<t
  apply(rule conjI, fastforce)
  apply(split split_if)
  apply(rule conjI)
-  apply(clarsimp simp add: finals_def)
+  apply(clarsimp simp add: finals_iff)
  apply(clarify)
  apply(split split_if)
  apply(rule conjI)
   apply(simp del: call_calls.simps call1_calls1.simps)
-  apply(rule conjI)
-   apply clarify
-   apply(simp split: split_if_asm)
-   apply(fastforce simp add: sim_move01_def sim_moves01_def \<tau>red1r_Val \<tau>red1t_Val intro: Call_\<tau>red1r_param Call1Params)
-  apply(fastforce simp add: sim_move01_def sim_moves01_def \<tau>red1r_Val \<tau>red1t_Val intro: Call_\<tau>red1r_param Call1Params)
- apply(fastforce split: split_if_asm simp add: is_vals_conv \<tau>reds1r_map_Val)
+  apply(fastforce simp add: sim_move01_def sim_moves01_def \<tau>red1r_Val \<tau>red1t_Val \<tau>reds1r_map_Val_Throw intro: Call_\<tau>red1r_param Call1Params split: split_if_asm)
+ apply(fastforce split: split_if_asm simp add: is_vals_conv \<tau>reds1r_map_Val \<tau>reds1r_map_Val_Throw)
 apply(rule conjI, fastforce)
 apply(fastforce simp add: sim_move01_def sim_moves01_def \<tau>red1r_Val \<tau>red1t_Val \<tau>reds1t_map_Val \<tau>reds1r_map_Val is_vals_conv intro: Call_\<tau>red1r_param Call1Params split: split_if_asm)
 done
 
 lemma sim_move01_reds:
-  "\<lbrakk> new_obj h C = (h', \<lfloor>a\<rfloor>); ta0 = \<lbrace>NewObj a C\<rbrace>; ta = \<lbrace>NewObj a C\<rbrace> \<rbrakk>
+  "\<lbrakk> allocate h (Class_type C) = (h', \<lfloor>a\<rfloor>); ta0 = \<lbrace>NewHeapElem a (Class_type C)\<rbrace>; ta = \<lbrace>NewHeapElem a (Class_type C)\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move01 P t ta0 (new C) (new C) h xs ta (addr a) h' xs"
-  "new_obj h C = (h', None) \<Longrightarrow> sim_move01 P t \<epsilon> (new C) (new C) h xs \<epsilon> (THROW OutOfMemory) h' xs"
-  "\<lbrakk> new_arr h T (nat (sint i)) = (h', \<lfloor>a\<rfloor>); 0 <=s i;
-     ta0 = \<lbrace>NewArr a T (nat (sint i))\<rbrace>; ta = \<lbrace>NewArr a T (nat (sint i))\<rbrace> \<rbrakk>
+  "allocate h (Class_type C) = (h', None) \<Longrightarrow> sim_move01 P t \<epsilon> (new C) (new C) h xs \<epsilon> (THROW OutOfMemory) h' xs"
+  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = (h', \<lfloor>a\<rfloor>); 0 <=s i;
+     ta0 = \<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace>; ta = \<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move01 P t ta0 (newA T\<lfloor>Val (Intg i)\<rceil>) (newA T\<lfloor>Val (Intg i)\<rceil>) h xs ta (addr a) h' xs"
   "i <s 0 \<Longrightarrow> sim_move01 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW NegativeArraySize) h xs"
-  "\<lbrakk> new_arr h T (nat (sint i)) = (h', None); 0 <=s i \<rbrakk>
+  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = (h', None); 0 <=s i \<rbrakk>
   \<Longrightarrow> sim_move01 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW OutOfMemory) h' xs"
   "\<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; P \<turnstile> U \<le> T \<rbrakk>
   \<Longrightarrow> sim_move01 P t \<epsilon> (Cast T (Val v)) (Cast T (Val v)) h xs \<epsilon> (Val v) h xs"
@@ -226,23 +222,23 @@ lemma sim_move01_reds:
   "\<lbrakk> xs!V = v; V < size xs \<rbrakk> \<Longrightarrow> sim_move01 P t \<epsilon> (Var V') (Var V) h xs \<epsilon> (Val v) h xs"
   "V < length xs \<Longrightarrow> sim_move01 P t \<epsilon> (V' := Val v) (V := Val v) h xs \<epsilon> unit h (xs[V := v])"
   "sim_move01 P t \<epsilon> (null\<lfloor>Val v\<rceil>) (null\<lfloor>Val v\<rceil>) h xs \<epsilon> (THROW NullPointer) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; i <s 0 \<or> sint i \<ge> int (array_length h a) \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; i <s 0 \<or> sint i \<ge> int n \<rbrakk>
   \<Longrightarrow> sim_move01 P t \<epsilon> (addr a\<lfloor>Val (Intg i)\<rceil>) ((addr a)\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW ArrayIndexOutOfBounds) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a);
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; 0 <=s i; sint i < int n;
      heap_read h a (ACell (nat (sint i))) v;
      ta0 = \<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>; 
      ta = \<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move01 P t ta0 (addr a\<lfloor>Val (Intg i)\<rceil>) ((addr a)\<lfloor>Val (Intg i)\<rceil>) h xs ta (Val v) h xs"
   "sim_move01 P t \<epsilon> (null\<lfloor>Val v\<rceil> := Val v') (null\<lfloor>Val v\<rceil> := Val v') h xs \<epsilon> (THROW NullPointer) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; i <s 0 \<or> sint i \<ge> int (array_length h a) \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; i <s 0 \<or> sint i \<ge> int n \<rbrakk>
   \<Longrightarrow> sim_move01 P t \<epsilon> (AAss (addr a) (Val (Intg i)) (Val v)) (AAss (addr a) (Val (Intg i)) (Val v)) h xs \<epsilon> (THROW ArrayIndexOutOfBounds) h xs"
- "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a); typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; \<not> (P \<turnstile> U \<le> T) \<rbrakk>
+ "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; 0 <=s i; sint i < int n; typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; \<not> (P \<turnstile> U \<le> T) \<rbrakk>
   \<Longrightarrow> sim_move01 P t \<epsilon> (AAss (addr a) (Val (Intg i)) (Val v)) (AAss (addr a) (Val (Intg i)) (Val v)) h xs \<epsilon> (THROW ArrayStore) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a); typeof\<^bsub>h\<^esub> v = Some U; P \<turnstile> U \<le> T;
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; 0 <=s i; sint i < int n; typeof\<^bsub>h\<^esub> v = Some U; P \<turnstile> U \<le> T;
      heap_write h a (ACell (nat (sint i))) v h'; 
      ta0 = \<lbrace>WriteMem a (ACell (nat (sint i))) v\<rbrace>; ta = \<lbrace>WriteMem a (ACell (nat (sint i))) v \<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move01 P t ta0 (AAss (addr a) (Val (Intg i)) (Val v)) (AAss (addr a) (Val (Intg i)) (Val v)) h xs ta unit h' xs"
-  "typeof_addr h a = \<lfloor>Array T\<rfloor> \<Longrightarrow> sim_move01 P t \<epsilon> (addr a\<bullet>length) (addr a\<bullet>length) h xs \<epsilon> (Val (Intg (word_of_int (int (array_length h a))))) h xs"
+  "typeof_addr h a = \<lfloor>Array_type T n\<rfloor> \<Longrightarrow> sim_move01 P t \<epsilon> (addr a\<bullet>length) (addr a\<bullet>length) h xs \<epsilon> (Val (Intg (word_of_int (int n)))) h xs"
   "sim_move01 P t \<epsilon> (null\<bullet>length) (null\<bullet>length) h xs \<epsilon> (THROW NullPointer) h xs"
 
   "\<lbrakk> heap_read h a (CField D F) v; ta0 = \<lbrace>ReadMem a (CField D F) v\<rbrace>; ta = \<lbrace>ReadMem a (CField D F) v\<rbrace> \<rbrakk>
@@ -258,7 +254,7 @@ lemma sim_move01_reds:
   "sim_move01 P t \<epsilon> (if (false) e0 else e0') (if (false) e1 else e1') h xs \<epsilon> e1' h xs"
   "sim_move01 P t \<epsilon> (throw null) (throw null) h xs \<epsilon> (THROW NullPointer) h xs"
   "sim_move01 P t \<epsilon> (try (Val v) catch(C V') e0) (try (Val v) catch(C V) e1) h xs \<epsilon> (Val v) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class D\<rfloor>; P \<turnstile> D \<preceq>\<^sup>* C; V < length xs \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type D\<rfloor>; P \<turnstile> D \<preceq>\<^sup>* C; V < length xs \<rbrakk>
   \<Longrightarrow> sim_move01 P t \<epsilon> (try (Throw a) catch(C V') e0) (try (Throw a) catch(C V) e1) h xs \<epsilon> ({V:Class C=None; e1}) h (xs[V := Addr a])"
   "sim_move01 P t \<epsilon> (newA T\<lfloor>Throw a\<rceil>) (newA T\<lfloor>Throw a\<rceil>) h xs \<epsilon> (Throw a) h xs"
   "sim_move01 P t \<epsilon> (Cast T (Throw a)) (Cast T (Throw a)) h xs \<epsilon> (Throw a) h xs"
@@ -309,7 +305,7 @@ lemma sim_move01_SyncLocks:
 by(fastforce simp add: sim_move01_def ta_bisim_def expand_finfun_eq fun_eq_iff finfun_upd_apply ta_upd_simps  intro: red1_reds1.intros[simplified] split: split_if_asm)+
 
 lemma sim_move01_TryFail:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class D\<rfloor>; \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type D\<rfloor>; \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> sim_move01 P t \<epsilon> (try (Throw a) catch(C V') e0) (try (Throw a) catch(C V) e1) h xs \<epsilon> (Throw a) h xs"
 by(auto simp add: sim_move01_def intro!: Red1TryFail)
 
@@ -495,27 +491,27 @@ next
     `length Vs + max_vars (Val v\<bullet>M(es)) \<le> length xs`
   ultimately show ?case by(fastforce elim!: sim_move01_CallParams)
 next
-  case (RedCall s a U C M Ts T pns body D vs Vs E2 xs)
-  from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `is_class_type_of U C`
+  case (RedCall s a U M Ts T pns body D vs Vs E2 xs)
+  from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>`
   have "call (addr a\<bullet>M(map Val vs)) = \<lfloor>(a, M, vs)\<rfloor>" by auto
   with `?synth (addr a\<bullet>M(map Val vs)) s` have "synthesized_call P (hp s) (a, M, vs)" by auto
-  with `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `is_class_type_of U C` `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
-  have False by(auto simp add: synthesized_call_conv is_class_type_of_conv_class_type_of_Some dest: sees_method_fun)
+  with `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
+  have False by(auto simp add: synthesized_call_conv dest: sees_method_fun)
   thus ?case ..
 next
-  case (RedCallExternal s a T C M Ts Tr D vs ta va h' ta' e' s' Vs E2 xs)
+  case (RedCallExternal s a T M Ts Tr D vs ta va h' ta' e' s' Vs E2 xs)
   from `bisim Vs (addr a\<bullet>M(map Val vs)) E2 xs` have "E2 = addr a\<bullet>M(map Val vs)" by auto
-  moreover note `is_class_type_of T C` `P \<turnstile> C sees M: Ts\<rightarrow>Tr = Native in D` `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `ta' = extTA2J0 P ta`
+  moreover note `P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D` `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `ta' = extTA2J0 P ta`
     `e' = extRet2J (addr a\<bullet>M(map Val vs)) va` `s' = (h', lcl s)` `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
     `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
   moreover from wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
   have "ta_bisim01 (extTA2J0 P ta) (extTA2J1 (compP1 P) ta)" by(rule red_external_ta_bisim01)
-  moreover from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `is_class_type_of T C`
-    `P \<turnstile> C sees M: Ts\<rightarrow>Tr = Native in D`
+  moreover from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
+    `P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D`
   have "\<tau>external_defs D M \<Longrightarrow> h' = hp s \<and> ta = \<epsilon>"
     by(fastforce dest: \<tau>external'_red_external_heap_unchanged \<tau>external'_red_external_TA_empty simp add: \<tau>external'_def \<tau>external_def)
   ultimately show ?case 
-    by(cases va)(fastforce intro!: exI[where x=ta] intro: Red1CallExternal simp add: map_eq_append_conv sim_move01_def is_class_type_of_conv_class_type_of_Some dest: sees_method_fun simp del: split_paired_Ex)+
+    by(cases va)(fastforce intro!: exI[where x=ta] intro: Red1CallExternal simp add: map_eq_append_conv sim_move01_def dest: sees_method_fun simp del: split_paired_Ex)+
 next
   case (BlockRed e h x V vo ta e' h' x' T Vs E2 xs)
   note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl (h, x(V := vo)) \<subseteq>\<^sub>m [vs [\<mapsto>] XS];
@@ -893,7 +889,7 @@ done
 lemma sim_moves10_expr:
   "sim_move10 P t ta1 e1 e1' e h xs ta e' h' xs' \<Longrightarrow> sim_moves10 P t ta1 (e1 # es2) (e1' # es2) (e # es2') h xs ta (e' # es2') h' xs'"
   "sim_moves10 P t ta1 es1 es1' es h xs ta es' h' xs' \<Longrightarrow> sim_moves10 P t ta1 (Val v # es1) (Val v # es1') (Val v # es) h xs ta (Val v # es') h' xs'"
-unfolding sim_moves10_def sim_move10_def final_iff finals_def
+unfolding sim_moves10_def sim_move10_def final_iff finals_iff
 apply(simp_all add: Cons_eq_append_conv split del: split_if split: split_if_asm)
 apply(safe intro!: if_split)
 apply(fastforce simp add: is_vals_conv \<tau>reds0t_map_Val \<tau>reds0r_map_Val \<tau>red0t_Val \<tau>red0r_Val intro!: \<tau>red0r_inj_\<tau>reds0r \<tau>reds0r_cons_\<tau>reds0r \<tau>red0t_inj_\<tau>reds0t \<tau>reds0t_cons_\<tau>reds0t ListRed1 ListRed2 split: split_if_asm)+
@@ -952,14 +948,14 @@ proof -
 qed
 
 lemma sim_move10_reds:
-  "\<lbrakk> new_obj h C = (h', \<lfloor>a\<rfloor>); ta1 = \<lbrace>NewObj a C\<rbrace>; ta = \<lbrace>NewObj a C\<rbrace> \<rbrakk>
+  "\<lbrakk> allocate h (Class_type C) = (h', \<lfloor>a\<rfloor>); ta1 = \<lbrace>NewHeapElem a (Class_type C)\<rbrace>; ta = \<lbrace>NewHeapElem a (Class_type C)\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (new C) e1' (new C) h xs ta (addr a) h' xs"
-  "new_obj h C = (h', None) \<Longrightarrow> sim_move10 P t \<epsilon> (new C) e1' (new C) h xs \<epsilon> (THROW OutOfMemory) h' xs"
-  "\<lbrakk> new_arr h T (nat (sint i)) = (h', \<lfloor>a\<rfloor>); 0 <=s i;
-     ta1 = \<lbrace>NewArr a T (nat (sint i))\<rbrace>; ta = \<lbrace>NewArr a T (nat (sint i))\<rbrace> \<rbrakk>
+  "allocate h (Class_type C) = (h', None) \<Longrightarrow> sim_move10 P t \<epsilon> (new C) e1' (new C) h xs \<epsilon> (THROW OutOfMemory) h' xs"
+  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = (h', \<lfloor>a\<rfloor>); 0 <=s i;
+     ta1 = \<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace>; ta = \<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (newA T\<lfloor>Val (Intg i)\<rceil>) e1' (newA T\<lfloor>Val (Intg i)\<rceil>) h xs ta (addr a) h' xs"
   "i <s 0 \<Longrightarrow> sim_move10 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) e1' (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW NegativeArraySize) h xs"
-  "\<lbrakk> new_arr h T (nat (sint i)) = (h', None); 0 <=s i \<rbrakk>
+  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = (h', None); 0 <=s i \<rbrakk>
   \<Longrightarrow> sim_move10 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) e1' (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW OutOfMemory) h' xs"
   "\<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; P \<turnstile> U \<le> T \<rbrakk>
   \<Longrightarrow> sim_move10 P t \<epsilon> (Cast T (Val v)) e1' (Cast T (Val v)) h xs \<epsilon> (Val v) h xs"
@@ -972,22 +968,22 @@ lemma sim_move10_reds:
   "xs V = \<lfloor>v\<rfloor> \<Longrightarrow> sim_move10 P t \<epsilon> (Var V') e1' (Var V) h xs \<epsilon> (Val v) h xs"
   "sim_move10 P t \<epsilon> (V' := Val v) e1' (V := Val v) h xs \<epsilon> unit h (xs(V \<mapsto> v))"
   "sim_move10 P t \<epsilon> (null\<lfloor>Val v\<rceil>) e1' (null\<lfloor>Val v\<rceil>) h xs \<epsilon> (THROW NullPointer) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; i <s 0 \<or> sint i \<ge> int (array_length h a) \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; i <s 0 \<or> sint i \<ge> int n \<rbrakk>
   \<Longrightarrow> sim_move10 P t \<epsilon> (addr a\<lfloor>Val (Intg i)\<rceil>) e1' ((addr a)\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW ArrayIndexOutOfBounds) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a);
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; 0 <=s i; sint i < int n;
      heap_read h a (ACell (nat (sint i))) v;
      ta1 = \<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>; ta = \<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (addr a\<lfloor>Val (Intg i)\<rceil>) e1' ((addr a)\<lfloor>Val (Intg i)\<rceil>) h xs ta (Val v) h xs"
   "sim_move10 P t \<epsilon> (null\<lfloor>Val v\<rceil> := Val v') e1' (null\<lfloor>Val v\<rceil> := Val v') h xs \<epsilon> (THROW NullPointer) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; i <s 0 \<or> sint i \<ge> int (array_length h a) \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; i <s 0 \<or> sint i \<ge> int n \<rbrakk>
   \<Longrightarrow> sim_move10 P t \<epsilon> (AAss (addr a) (Val (Intg i)) (Val v)) e1' (AAss (addr a) (Val (Intg i)) (Val v)) h xs \<epsilon> (THROW ArrayIndexOutOfBounds) h xs"
- "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a); typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; \<not> (P \<turnstile> U \<le> T) \<rbrakk>
+ "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; 0 <=s i; sint i < int n; typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; \<not> (P \<turnstile> U \<le> T) \<rbrakk>
   \<Longrightarrow> sim_move10 P t \<epsilon> (AAss (addr a) (Val (Intg i)) (Val v)) e1' (AAss (addr a) (Val (Intg i)) (Val v)) h xs \<epsilon> (THROW ArrayStore) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array T\<rfloor>; 0 <=s i; sint i < int (array_length h a); typeof\<^bsub>h\<^esub> v = Some U; P \<turnstile> U \<le> T;
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; 0 <=s i; sint i < int n; typeof\<^bsub>h\<^esub> v = Some U; P \<turnstile> U \<le> T;
      heap_write h a (ACell (nat (sint i))) v h';
      ta1 = \<lbrace>WriteMem a (ACell (nat (sint i))) v\<rbrace>; ta = \<lbrace>WriteMem a (ACell (nat (sint i))) v\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (AAss (addr a) (Val (Intg i)) (Val v)) e1' (AAss (addr a) (Val (Intg i)) (Val v)) h xs ta unit h' xs"
-  "typeof_addr h a = \<lfloor>Array T\<rfloor> \<Longrightarrow> sim_move10 P t \<epsilon> (addr a\<bullet>length) e1' (addr a\<bullet>length) h xs \<epsilon> (Val (Intg (word_of_int (int (array_length h a))))) h xs"
+  "typeof_addr h a = \<lfloor>Array_type T n\<rfloor> \<Longrightarrow> sim_move10 P t \<epsilon> (addr a\<bullet>length) e1' (addr a\<bullet>length) h xs \<epsilon> (Val (Intg (word_of_int (int n)))) h xs"
   "sim_move10 P t \<epsilon> (null\<bullet>length) e1' (null\<bullet>length) h xs \<epsilon> (THROW NullPointer) h xs"
   "\<lbrakk> heap_read h a (CField D F) v; ta1 = \<lbrace>ReadMem a (CField D F) v\<rbrace>; ta = \<lbrace>ReadMem a (CField D F) v\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (addr a\<bullet>F{D}) e1' (addr a\<bullet>F{D}) h xs ta (Val v) h xs"
@@ -1004,7 +1000,7 @@ lemma sim_move10_reds:
   "sim_move10 P t \<epsilon> (if (false) e0 else e0') e1' (if (false) e1 else e2) h xs \<epsilon> e2 h xs"
   "sim_move10 P t \<epsilon> (throw null) e1' (throw null) h xs \<epsilon> (THROW NullPointer) h xs"
   "sim_move10 P t \<epsilon> (try (Val v) catch(C V') e0) e1' (try (Val v) catch(C V) e1) h xs \<epsilon> (Val v) h xs"
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class D\<rfloor>; P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type D\<rfloor>; P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> sim_move10 P t \<epsilon> (try (Throw a) catch(C V') e0) e1' (try (Throw a) catch(C V) e1) h xs \<epsilon> ({V:Class C=\<lfloor>Addr a\<rfloor>; e1}) h xs"
   "sim_move10 P t \<epsilon> (newA T\<lfloor>Throw a\<rceil>) e1' (newA T\<lfloor>Throw a\<rceil>) h xs \<epsilon> (Throw a) h xs"
   "sim_move10 P t \<epsilon> (Cast T (Throw a)) e1' (Cast T (Throw a)) h xs \<epsilon> (Throw a) h xs"
@@ -1045,7 +1041,7 @@ lemma sim_move10_SyncLocks:
 by(fastforce simp add: sim_move10_def ta_bisim_def ta_upd_simps intro: red_reds.intros[simplified])+
 
 lemma sim_move10_TryFail:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class D\<rfloor>; \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type D\<rfloor>; \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> sim_move10 P t \<epsilon> (try (Throw a) catch(C V') e0) e1' (try (Throw a) catch(C V) e1) h xs \<epsilon> (Throw a) h xs"
 by(auto simp add: sim_move10_def intro!: RedTryFail)
 
@@ -1254,22 +1250,22 @@ next
     `length Vs + max_vars (Val v\<bullet>M(es)) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
     `E2 = Val v \<bullet>M(Es)` show ?case by(fastforce intro: CallParams)
 next
-  case (Red1CallExternal s a T C M Ts Tr D vs ta va h' e' s' Vs E2 X)
+  case (Red1CallExternal s a T M Ts Tr D vs ta va h' e' s' Vs E2 X)
   from `bisim Vs E2 (addr a\<bullet>M(map Val vs)) (lcl s)` have E2: "E2 = addr a\<bullet>M(map Val vs)" by auto
-  moreover from `compP1 P \<turnstile> C sees M: Ts\<rightarrow>Tr = Native in D`
-  have "P \<turnstile> C sees M: Ts\<rightarrow>Tr = Native in D" by simp
+  moreover from `compP1 P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D`
+  have "P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D" by simp
   moreover from `compP1 P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
   have "P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>" by simp
   moreover from wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
   have "ta_bisim01 (extTA2J0 P ta) (extTA2J1 (compP1 P) ta)"
     by(rule red_external_ta_bisim01)
   moreover note `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `e' = extRet2J1 (addr a\<bullet>M(map Val vs)) va` `s' = (h', lcl s)`
-  moreover from `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `is_class_type_of T C`
-    `P \<turnstile> C sees M: Ts\<rightarrow>Tr = Native in D`
+  moreover from `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
+    `P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D`
   have "\<tau>external_defs D M \<Longrightarrow> ta = \<epsilon> \<and> h' = hp s"
     by(fastforce dest: \<tau>external'_red_external_heap_unchanged \<tau>external'_red_external_TA_empty simp add: \<tau>external'_def \<tau>external_def)
-  ultimately show ?case using `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]` `is_class_type_of T C`
-    by(fastforce intro!: exI[where x="extTA2J0 P ta"] intro: RedCallExternal simp add: map_eq_append_conv sim_move10_def is_class_type_of_conv_class_type_of_Some synthesized_call_def dest: sees_method_fun del: disjCI intro: disjI1 disjI2)
+  ultimately show ?case using `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
+    by(fastforce intro!: exI[where x="extTA2J0 P ta"] intro: RedCallExternal simp add: map_eq_append_conv sim_move10_def synthesized_call_def dest: sees_method_fun del: disjCI intro: disjI1 disjI2)
 next
   case (Block1Red e h x ta e' h' x' V T Vs E2 X)
   note IH = `\<And>vs e2 xa. \<lbrakk> bisim vs e2 e (lcl (h, x)); fv e2 \<subseteq> set vs; xa \<subseteq>\<^sub>m [vs [\<mapsto>] lcl (h, x)];
@@ -1462,7 +1458,7 @@ next
   have "[Vs [\<mapsto>] x[length Vs := Addr a]] = [Vs [\<mapsto>] x]" by simp
   with `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]` have "X \<subseteq>\<^sub>m [Vs [\<mapsto>] x[length Vs := Addr a]]" by simp
   moreover note `e2 = compE1 (Vs @ [V']) E2'` `E2 = try Throw a catch(C V') E2'`
-    `typeof_addr h a = \<lfloor>Class D\<rfloor>` `compP1 P \<turnstile> D \<preceq>\<^sup>* C` `V = length Vs`
+    `typeof_addr h a = \<lfloor>Class_type D\<rfloor>` `compP1 P \<turnstile> D \<preceq>\<^sup>* C` `V = length Vs`
   ultimately show ?case by(auto intro!: exI)
 next
   case Red1TryFail thus ?case by(auto intro!: exI sim_move10_TryFail)
@@ -1658,13 +1654,13 @@ proof(cases)
     ultimately have "bisim_list1 (e1', es1) ((e2', xs'), exs2)" by(rule bisim_list1I) }
   ultimately show ?thesis using ex2 by(simp split del: split_if)(rule exI conjI|assumption)+
 next
-  case (red0Call a M vs U C Ts T pns body D)
+  case (red0Call a M vs U Ts T pns body D)
   note [simp] = `ta = \<epsilon>` `h' = h`
     and es1' = `es1' = e1 # es1`
     and e1' = `e1' = blocks (this # pns) (Class D # Ts) (Addr a # vs) body`
     and call = `call e1 = \<lfloor>(a, M, vs)\<rfloor>`
-    and ha = `typeof_addr h a = \<lfloor>U\<rfloor>` `is_class_type_of U C`
-    and sees = `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
+    and ha = `typeof_addr h a = \<lfloor>U\<rfloor>`
+    and sees = `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
     and len = `length vs = length pns` `length Ts = length pns`
   from bisiml obtain E xs where ex2: "ex2 = (E, xs)"
     and bisim: "bisim [] e1 E xs" and fv: "fv e1 = {}" 
@@ -1686,13 +1682,13 @@ next
   moreover {
     note `call1 e' = \<lfloor>(a, M, vs)\<rfloor>` 
     moreover note ha
-    moreover have "compP1 P \<turnstile> C sees M:Ts \<rightarrow> T = Option.map (\<lambda>(pns, body). compE1 (this # pns) body) \<lfloor>(pns, body)\<rfloor> in D"
+    moreover have "compP1 P \<turnstile> class_type_of U sees M:Ts \<rightarrow> T = Option.map (\<lambda>(pns, body). compE1 (this # pns) body) \<lfloor>(pns, body)\<rfloor> in D"
       using sees unfolding compP1_def by(rule sees_method_compP)
-    hence sees': "compP1 P \<turnstile> C sees M:Ts \<rightarrow> T = \<lfloor>compE1 (this # pns) body\<rfloor> in D" by simp
+    hence sees': "compP1 P \<turnstile> class_type_of U sees M:Ts \<rightarrow> T = \<lfloor>compE1 (this # pns) body\<rfloor> in D" by simp
     moreover from len have "length vs = length Ts" by simp
     ultimately have "False,compP1 P,t \<turnstile>1 \<langle>(e', xs')/exs2,h\<rangle> -\<epsilon>\<rightarrow> \<langle>(?e2', ?xs2')/?exs2', h\<rangle>" by(rule red1Call) 
     moreover have "\<tau>Move1 P h ((e', xs'), exs2)" using `call1 e' = \<lfloor>(a, M, vs)\<rfloor>` ha sees
-      by(auto simp add: synthesized_call_def \<tau>external'_def is_class_type_of_conv_class_type_of_Some dest: sees_method_fun dest!: \<tau>move1_not_call1[where P=P and h=h])
+      by(auto simp add: synthesized_call_def \<tau>external'_def dest: sees_method_fun dest!: \<tau>move1_not_call1[where P=P and h=h])
     ultimately have "\<tau>Red1' (compP1 P) t h ((e', xs'), exs2) ((?e2', ?xs2'), ?exs2')" by auto }
   ultimately have "\<tau>Red1't (compP1 P) t h ((E, xs), exs2) ((?e2', ?xs2'), ?exs2')" by(rule rtranclp_into_tranclp1)
   moreover
@@ -1707,7 +1703,7 @@ next
     from wf_prog_wwf_prog[OF wf] sees
     have "wf_mdecl wwf_J_mdecl P D (M,Ts,T,\<lfloor>(pns,body)\<rfloor>)" by(rule sees_wf_mdecl)
     hence fv': "fv body \<subseteq> set pns \<union> {this}" by(auto simp add: wf_mdecl_def)
-    moreover from `P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D` have "\<not> contains_insync body"
+    moreover from `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D` have "\<not> contains_insync body"
       by(auto dest!: sees_wf_mdecl[OF wf] WT_expr_locks simp add: wf_mdecl_def contains_insync_conv)
     ultimately have "bisim ([this] @ pns) body (compE1 ([this] @ pns) body) ?xs2'"
       by -(rule compE1_bisim, auto)
@@ -1728,7 +1724,7 @@ next
     from len show "max_vars ?e2' \<le> length ?xs2'" by(auto simp add: blocks1_max_vars)
   qed
   moreover have "\<tau>Move0 P h (e1, es1)" using call ha sees
-    by(fastforce simp add: synthesized_call_def  \<tau>external'_def is_class_type_of_conv_class_type_of_Some dest: sees_method_fun \<tau>move0_callD[where P=P and h=h])
+    by(fastforce simp add: synthesized_call_def  \<tau>external'_def dest: sees_method_fun \<tau>move0_callD[where P=P and h=h])
   ultimately show ?thesis using ex2 `call e1 = \<lfloor>(a, M, vs)\<rfloor>` 
     by(simp del: \<tau>Move1.simps)(rule exI conjI|assumption)+
 next
@@ -1879,12 +1875,12 @@ proof(cases)
   ultimately show ?thesis using ex2'
     by(clarsimp split: split_if_asm)(rule exI conjI|assumption|simp)+
 next
-  case (red1Call E a M vs U C Ts T body D xs)
+  case (red1Call E a M vs U Ts T body D xs)
   note [simp] = `ex2 = (E, xs)` `h' = h` `ta = \<epsilon>`
     and ex2' = `ex2' = (blocks1 0 (Class D#Ts) body, Addr a # vs @ replicate (max_vars body) undefined_value)`
     and exs' = `exs2' = (E, xs) # exs2`
-    and call = `call1 E = \<lfloor>(a, M, vs)\<rfloor>` and ha = `typeof_addr h a = \<lfloor>U\<rfloor>` `is_class_type_of U C`
-    and sees = `compP1 P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D`
+    and call = `call1 E = \<lfloor>(a, M, vs)\<rfloor>` and ha = `typeof_addr h a = \<lfloor>U\<rfloor>`
+    and sees = `compP1 P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D`
     and len = `length vs = length Ts`
   let ?e2' = "blocks1 0 (Class D#Ts) body"
   let ?xs2' = "Addr a # vs @ replicate (max_vars body) undefined_value"
@@ -1895,8 +1891,8 @@ next
   from bisim `call1 E = \<lfloor>(a, M, vs)\<rfloor>`
   have "call e = \<lfloor>(a, M, vs)\<rfloor>" by(rule bisim_call1_Some_call)
   moreover note ha
-  moreover from `compP1 P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D`
-  obtain pns Jbody where sees': "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, Jbody)\<rfloor> in D"
+  moreover from `compP1 P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D`
+  obtain pns Jbody where sees': "P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, Jbody)\<rfloor> in D"
     and body: "body = compE1 (this # pns) Jbody"
     by(auto dest: sees_method_compPD)
   let ?e' = "blocks (this # pns) (Class D # Ts) (Addr a # vs) Jbody"
@@ -1906,7 +1902,7 @@ next
   ultimately have red': "P,t \<turnstile>0 \<langle>e/es, h\<rangle> -\<epsilon>\<rightarrow> \<langle>?e'/e#es, h\<rangle>" by(rule red0Call)
   moreover from `call e = \<lfloor>(a, M, vs)\<rfloor>` ha sees'
   have "\<tau>Move0 P h (e, es)"
-    by(fastforce simp add: synthesized_call_def is_class_type_of_conv_class_type_of_Some dest: \<tau>move0_callD[where P=P and h=h] sees_method_fun)
+    by(fastforce simp add: synthesized_call_def dest: \<tau>move0_callD[where P=P and h=h] sees_method_fun)
   ultimately have "\<tau>Red0t P t h (e, es) (?e', e#es)" by auto
   moreover
   from bsl bisim fv D length `call e = \<lfloor>(a, M, vs)\<rfloor>` `call1 E = \<lfloor>(a, M, vs)\<rfloor>`
@@ -1935,7 +1931,7 @@ next
     from len show "max_vars ?e2' \<le> length ?xs2'" by(simp add: blocks1_max_vars)
   qed
   moreover have "\<tau>Move1 P h (ex2, exs2)" using ha `call1 E = \<lfloor>(a, M, vs)\<rfloor>` sees'
-    by(auto simp add: synthesized_call_def is_class_type_of_conv_class_type_of_Some \<tau>external'_def dest!: \<tau>move1_not_call1[where P=P and h=h] dest: sees_method_fun)
+    by(auto simp add: synthesized_call_def \<tau>external'_def dest!: \<tau>move1_not_call1[where P=P and h=h] dest: sees_method_fun)
   ultimately show ?thesis using exs'
     by(simp del: \<tau>Move1.simps \<tau>Move0.simps)(rule exI conjI rtranclp.rtrancl_refl|assumption)+
 next
@@ -2114,22 +2110,29 @@ next
   finally show "wfP ?\<mu>2" by(simp add: wfP_def)
 qed
 
-lemma red0_Red1'_FWweak_bisim:
-  assumes wf: "wf_J_prog P"
-  shows "FWdelay_bisimulation_measure final_expr0 (mred0 P) final_expr1 (mred1' (compP1 P))
-           (\<lambda>t. bisim_red0_Red1) bisim_wait01 (\<tau>MOVE0 P) (\<tau>MOVE1 (compP1 P))
-           (\<lambda>es es'. False)
-           (\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e'< countInitBlock e)"
+lemma delay_bisimulation_diverge_red0_Red1: 
+  assumes "wf_J_prog P"
+  shows "delay_bisimulation_diverge (mred0 P t) (mred1' (compP1 P) t) bisim_red0_Red1 (ta_bisim (\<lambda>t. bisim_red0_Red1)) (\<tau>MOVE0 P) (\<tau>MOVE1 (compP1 P))"
 proof -
   interpret delay_bisimulation_measure
+    "mred0 P t" "mred1' (compP1 P) t" "bisim_red0_Red1" "ta_bisim (\<lambda>t. bisim_red0_Red1)" "\<tau>MOVE0 P" "\<tau>MOVE1 (compP1 P)"
+    "\<lambda>es es'. False" "\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e'< countInitBlock e"
+    using assms by(rule delay_bisimulation_red0_Red1)
+  thus ?thesis by unfold_locales
+qed
+
+lemma red0_Red1'_FWweak_bisim:
+  assumes wf: "wf_J_prog P"
+  shows "FWdelay_bisimulation_diverge final_expr0 (mred0 P) final_expr1 (mred1' (compP1 P))
+           (\<lambda>t. bisim_red0_Red1) bisim_wait01 (\<tau>MOVE0 P) (\<tau>MOVE1 (compP1 P))"
+proof -
+  interpret delay_bisimulation_diverge
     "mred0 P t"
     "mred1' (compP1 P) t" 
     bisim_red0_Red1 
     "ta_bisim (\<lambda>t. bisim_red0_Red1)" "\<tau>MOVE0 P" "\<tau>MOVE1 (compP1 P)"
-    "\<lambda>es es'. False"
-    "\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e' < countInitBlock e"
     for t
-    using wf by(rule delay_bisimulation_red0_Red1)
+    using wf by(rule delay_bisimulation_diverge_red0_Red1)
   show ?thesis
   proof
     fix t and s1 and s2 :: "(('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list) \<times> 'heap"
@@ -2220,27 +2223,31 @@ qed
 
 lemma bisim_J0_J1_start:
   assumes wf: "wf_J_prog P"
-  and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns,body)\<rfloor> in C"
-  and vs: "length vs = length pns" and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
+  and start: "wf_start_state P C M vs"
   shows "red0_Red1'.mbisim (J0_start_state P C M vs) (J1_start_state (compP1 P) C M vs)"
 proof -
+  from start obtain Ts T pns body D
+    where sees: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns,body)\<rfloor> in D"
+    and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts"
+    by cases auto
+  from conf have vs: "length vs = length Ts" by(rule list_all2_lengthD)
   from sees_wf_mdecl[OF wf_prog_wwf_prog[OF wf] sees]
   have fvbody: "fv body \<subseteq> {this} \<union> set pns" and len: "length pns = length Ts"
     by(auto simp add: wf_mdecl_def)
   with vs have fv: "fv (blocks pns Ts vs body) \<subseteq> {this}" by auto
-  have wfCM: "wf_J_mdecl P C (M, Ts, T, pns, body)"
+  have wfCM: "wf_J_mdecl P D (M, Ts, T, pns, body)"
     using sees_wf_mdecl[OF wf sees] by(auto simp add: wf_mdecl_def)
-  then obtain T' where wtbody: "P,[this # pns [\<mapsto>] Class C # Ts] \<turnstile> body :: T'" by auto
+  then obtain T' where wtbody: "P,[this # pns [\<mapsto>] Class D # Ts] \<turnstile> body :: T'" by auto
   hence elbody: "expr_locks body = (\<lambda>l. 0)" by(rule WT_expr_locks)
   hence cisbody: "\<not> contains_insync body" by(auto simp add: contains_insync_conv)
   from wfCM len vs have dabody: "\<D> (blocks pns Ts vs body) \<lfloor>{this}\<rfloor>" by auto
-  from sees have sees1: "compP1 P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>compE1 (this # pns) body\<rfloor> in C"
+  from sees have sees1: "compP1 P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>compE1 (this # pns) body\<rfloor> in D"
     by(auto dest: sees_method_compP[where f="(\<lambda>C M Ts T (pns, body). compE1 (this # pns) body)"])
 
   let ?e = "blocks1 0 (Class C#Ts) (compE1 (this # pns) body)"
   let ?xs = "Null # vs @ replicate (max_vars body) undefined_value"
   from fvbody cisbody len vs
-  have "bisim [] (blocks (this # pns) (Class C # Ts) (Null # vs) body) (blocks1 (length ([] :: vname list)) (Class C # Ts) (compE1 (this # pns) body)) ?xs"
+  have "bisim [] (blocks (this # pns) (Class D # Ts) (Null # vs) body) (blocks1 (length ([] :: vname list)) (Class D # Ts) (compE1 (this # pns) body)) ?xs"
     by-(rule blocks_bisim,(fastforce simp add: nth_Cons' nth_append)+)
   with fv dabody len vs elbody sees sees1
   show ?thesis unfolding start_state_def

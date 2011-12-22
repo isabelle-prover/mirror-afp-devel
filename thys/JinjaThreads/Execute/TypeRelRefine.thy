@@ -1,3 +1,11 @@
+(*  Title:      JinjaThreads/Execute/TypeRelRefine.thy
+    Author:     Andreas Lochbihler
+
+    Tabulation for lookup functions
+*)
+
+header {* \isaheader{Tabulation for lookup functions} *}
+
 theory TypeRelRefine
 imports
   "../Common/TypeRel"

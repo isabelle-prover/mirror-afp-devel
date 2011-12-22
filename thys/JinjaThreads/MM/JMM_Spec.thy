@@ -30,13 +30,11 @@ where "tactions E t = {a. a \<in> actions E \<and> action_tid E a = t}"
 
 inductive is_new_action :: "('addr, 'thread_id) obs_event action \<Rightarrow> bool"
 where
-  NewObj: "is_new_action (NormalAction (NewObj C a))"
-| NewArr: "is_new_action (NormalAction (NewArr T n a))"
+  NewHeapElem: "is_new_action (NormalAction (NewHeapElem a hT))"
 
 inductive is_write_action :: "('addr, 'thread_id) obs_event action \<Rightarrow> bool"
 where
-  NewObj: "is_write_action (NormalAction (NewObj ad C))"
-| NewArr: "is_write_action (NormalAction (NewArr ad T n))"
+  NewHeapElem: "is_write_action (NormalAction (NewHeapElem ad hT))"
 | WriteMem: "is_write_action (NormalAction (WriteMem ad al v))"
 
 text {*
@@ -77,8 +75,7 @@ r1 = x | r2 = x
 inductive saction :: "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> bool"
 for P :: "'m prog"
 where
-  NewObj: "saction P (NormalAction (NewObj a C))"
-| NewArr: "saction P (NormalAction (NewArr a T n))"
+  NewHeapElem: "saction P (NormalAction (NewHeapElem a hT))"
 | Read: "is_volatile P al \<Longrightarrow> saction P (NormalAction (ReadMem a al v))"
 | Write: "is_volatile P al \<Longrightarrow> saction P (NormalAction (WriteMem a al v))"
 | ThreadStart: "saction P (NormalAction (ThreadStart t))"
@@ -111,14 +108,55 @@ where
   "addr_locs P (Class_type C) = {CField D F|D F. \<exists>fm T. P \<turnstile> C has F:T (fm) in D}"
 | "addr_locs P (Array_type T n) = ({ACell n'|n'. n' < n} \<union> {CField Object F|F. \<exists>fm T. P \<turnstile> Object has F:T (fm) in Object})"
 
-inductive action_loc_aux :: "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> ('addr \<times> addr_loc) set"
-for P :: "'m prog"
+text {*
+  @{text "action_loc_aux"} would naturally be an inductive set,
+  but inductive\_set does not allow to pattern match on parameters.
+  Hence, specify it using function and derive the setup manually.
+*}
+
+fun action_loc_aux :: "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> ('addr \<times> addr_loc) set"
 where
-  NewObj: "P \<turnstile> C has F:T (fm) in D \<Longrightarrow> action_loc_aux P (NormalAction (NewObj ad C)) (ad, CField D F)"
-| NewArr: "n < n' \<Longrightarrow> action_loc_aux P (NormalAction (NewArr ad T n')) (ad, ACell n)"
-| NewArrObj: "P \<turnstile> Object has F:T' (fm) in Object \<Longrightarrow> action_loc_aux P (NormalAction (NewArr ad T n')) (ad, CField Object F)"
-| WriteMem: "action_loc_aux P (NormalAction (WriteMem ad al v)) (ad, al)"
-| ReadMem: "action_loc_aux P (NormalAction (ReadMem ad al v)) (ad, al)"
+  "action_loc_aux P (NormalAction (NewHeapElem ad (Class_type C))) = 
+  {(ad, CField D F)|D F T fm. P \<turnstile> C has F:T (fm) in D}"
+| "action_loc_aux P (NormalAction (NewHeapElem ad (Array_type T n'))) = 
+  {(ad, ACell n)|n. n < n'} \<union> {(ad, CField D F)|D F T fm. P \<turnstile> Object has F:T (fm) in D}"
+| "action_loc_aux P (NormalAction (WriteMem ad al v)) = {(ad, al)}"
+| "action_loc_aux P (NormalAction (ReadMem ad al v)) = {(ad, al)}"
+| "action_loc_aux _ _ = {}"
+
+lemma action_loc_aux_intros [intro?]:
+  "P \<turnstile> class_type_of hT has F:T (fm) in D \<Longrightarrow> (ad, CField D F) \<in> action_loc_aux P (NormalAction (NewHeapElem ad hT))"
+  "n < n' \<Longrightarrow> (ad, ACell n) \<in> action_loc_aux P (NormalAction (NewHeapElem ad (Array_type T n')))"
+  "(ad, al) \<in> action_loc_aux P (NormalAction (WriteMem ad al v))"
+  "(ad, al) \<in> action_loc_aux P (NormalAction (ReadMem ad al v))"
+by(cases hT) auto
+
+lemma action_loc_aux_cases [elim?, cases set: action_loc_aux]:
+  assumes "adal \<in> action_loc_aux P obs"
+  obtains (NewHeapElem) hT F T fm D ad where "obs = NormalAction (NewHeapElem ad hT)" "adal = (ad, CField D F)" "P \<turnstile> class_type_of hT has F:T (fm) in D"
+  | (NewArr) n n' ad T where "obs = NormalAction (NewHeapElem ad (Array_type T n'))" "adal = (ad, ACell n)" "n < n'"
+  | (WriteMem) ad al v where "obs = NormalAction (WriteMem ad al v)" "adal = (ad, al)"
+  | (ReadMem) ad al v where "obs = NormalAction (ReadMem ad al v)" "adal = (ad, al)"
+using assms by(cases "(P, obs)" rule: action_loc_aux.cases) fastforce+
+
+lemma action_loc_aux_simps [simp]:
+  "(ad', al') \<in> action_loc_aux P (NormalAction (NewHeapElem ad hT)) \<longleftrightarrow> 
+   (\<exists>D F T fm. ad = ad' \<and> al' = CField D F \<and> P \<turnstile> class_type_of hT has F:T (fm) in D) \<or> 
+   (\<exists>n T n'. ad = ad' \<and> al' = ACell n \<and> hT = Array_type T n' \<and> n < n')"
+  "(ad', al') \<in> action_loc_aux P (NormalAction (WriteMem ad al v)) \<longleftrightarrow> ad = ad' \<and> al = al'"
+  "(ad', al') \<in> action_loc_aux P (NormalAction (ReadMem ad al v)) \<longleftrightarrow> ad = ad' \<and> al = al'"
+  "(ad', al') \<notin> action_loc_aux P InitialThreadAction"
+  "(ad', al') \<notin> action_loc_aux P ThreadFinishAction"
+  "(ad', al') \<notin> action_loc_aux P (NormalAction (ExternalCall a m vs v))"
+  "(ad', al') \<notin> action_loc_aux P (NormalAction (ThreadStart t))"
+  "(ad', al') \<notin> action_loc_aux P (NormalAction (ThreadJoin t))"
+  "(ad', al') \<notin> action_loc_aux P (NormalAction (SyncLock a))"
+  "(ad', al') \<notin> action_loc_aux P (NormalAction (SyncUnlock a))"
+  "(ad', al') \<notin> action_loc_aux P (NormalAction (ObsInterrupt t))"
+  "(ad', al') \<notin> action_loc_aux P (NormalAction (ObsInterrupted t))"
+by(cases hT) auto
+
+declare action_loc_aux.simps [simp del]
 
 abbreviation action_loc :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> ('addr \<times> addr_loc) set"
 where "action_loc P E a \<equiv> action_loc_aux P (action_obs E a)"
@@ -134,6 +172,7 @@ where
 | "addr_loc_default P (Array_type T n) (ACell n') = default_val T"
 | addr_loc_default_Array_CField: 
   "addr_loc_default P (Array_type T n) (CField D F) = default_val (fst (the (map_of (fields P Object) (F, Object))))"
+| "addr_loc_default P _ _ = undefined"
 
 definition new_actions_for :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> ('addr \<times> addr_loc) \<Rightarrow> JMM_action set"
 where 
@@ -148,8 +187,7 @@ where
 
 fun value_written_aux :: "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> addr_loc \<Rightarrow> 'addr val"
 where
-  "value_written_aux P (NormalAction (NewObj ad' C)) al = addr_loc_default P (Class_type C) al"
-| "value_written_aux P (NormalAction (NewArr ad' T n)) al = addr_loc_default P (Array_type T n) al"
+  "value_written_aux P (NormalAction (NewHeapElem ad' hT)) al = addr_loc_default P hT al"
 | value_written_aux_WriteMem':
   "value_written_aux P (NormalAction (WriteMem ad al' v)) al = (if al = al' then v else undefined)"
 | value_written_aux_undefined:
@@ -192,9 +230,8 @@ where
        We could check volatility of @{term "al"} here, but this is checked by @{term "sactions"}
        in @{text sync_with} anyway. *}
   Volatile: "(t, NormalAction (WriteMem a al v)) \<leadsto>sw (t', NormalAction (ReadMem a al v'))"
-| VolatileNew: "(t, NormalAction (NewObj a C)) \<leadsto>sw (t', NormalAction (ReadMem a al v))"
-| NewObj: "(t, NormalAction (NewObj a C)) \<leadsto>sw (t', InitialThreadAction)"
-| NewArr: "(t, NormalAction (NewArr a T n)) \<leadsto>sw (t', InitialThreadAction)"
+| VolatileNew: "(t, NormalAction (NewHeapElem a (Class_type C))) \<leadsto>sw (t', NormalAction (ReadMem a al v))"
+| NewHeapElem: "(t, NormalAction (NewHeapElem a hT)) \<leadsto>sw (t', InitialThreadAction)"
 | Interrupt: "(t, NormalAction (ObsInterrupt t')) \<leadsto>sw (t'', NormalAction (ObsInterrupted t'))"
 
 definition sync_order :: 
@@ -258,8 +295,7 @@ inductive_cases is_new_action_cases [elim!]:
   "is_new_action (NormalAction (ExternalCall a M vs v))"
   "is_new_action (NormalAction (ReadMem a al v))"
   "is_new_action (NormalAction (WriteMem a al v))"
-  "is_new_action (NormalAction (NewObj C a))"
-  "is_new_action (NormalAction (NewArr T n a))"
+  "is_new_action (NormalAction (NewHeapElem a hT))"
   "is_new_action (NormalAction (ThreadStart t))"
   "is_new_action (NormalAction (ThreadJoin t))"
   "is_new_action (NormalAction (SyncLock a))"
@@ -270,8 +306,7 @@ inductive_cases is_new_action_cases [elim!]:
   "is_new_action ThreadFinishAction"
 
 inductive_simps is_new_action_simps [simp]:
-  "is_new_action (NormalAction (NewObj C a))"
-  "is_new_action (NormalAction (NewArr T n a))"
+  "is_new_action (NormalAction (NewHeapElem a hT))"
   "is_new_action (NormalAction (ExternalCall a M vs v))"
   "is_new_action (NormalAction (ReadMem a al v))"
   "is_new_action (NormalAction (WriteMem a al v))"
@@ -284,9 +319,6 @@ inductive_simps is_new_action_simps [simp]:
   "is_new_action InitialThreadAction"
   "is_new_action ThreadFinishAction"
 
-lemma is_new_action_NewHeapElem [simp]: "is_new_action (NormalAction (NewHeapElem ad CTn))"
-by(cases CTn) simp_all
-
 lemmas is_new_action_iff = is_new_action.simps
 
 inductive_simps is_write_action_simps [simp]:
@@ -295,8 +327,7 @@ inductive_simps is_write_action_simps [simp]:
   "is_write_action (NormalAction (ExternalCall a m vs v))"
   "is_write_action (NormalAction (ReadMem a al v))"
   "is_write_action (NormalAction (WriteMem a al v))"
-  "is_write_action (NormalAction (NewObj a C))"
-  "is_write_action (NormalAction (NewArr a T n))"
+  "is_write_action (NormalAction (NewHeapElem a hT))"
   "is_write_action (NormalAction (ThreadStart t))"
   "is_write_action (NormalAction (ThreadJoin t))"
   "is_write_action (NormalAction (SyncLock a))"
@@ -304,17 +335,13 @@ inductive_simps is_write_action_simps [simp]:
   "is_write_action (NormalAction (ObsInterrupt t))"
   "is_write_action (NormalAction (ObsInterrupted t))"
 
-lemma is_write_action_NewHeapElem [simp]: "is_write_action (NormalAction (NewHeapElem a CTn))"
-by(cases CTn) simp_all
-
 declare saction.intros [intro!]
 
 inductive_cases saction_cases [elim!]:
   "saction P (NormalAction (ExternalCall a M vs v))"
   "saction P (NormalAction (ReadMem a al v))"
   "saction P (NormalAction (WriteMem a al v))"
-  "saction P (NormalAction (NewObj a C))"
-  "saction P (NormalAction (NewArr a T n))"
+  "saction P (NormalAction (NewHeapElem a hT))"
   "saction P (NormalAction (ThreadStart t))"
   "saction P (NormalAction (ThreadJoin t))"
   "saction P (NormalAction (SyncLock a))"
@@ -328,8 +355,7 @@ inductive_simps saction_simps [simp]:
   "saction P (NormalAction (ExternalCall a M vs v))"
   "saction P (NormalAction (ReadMem a al v))"
   "saction P (NormalAction (WriteMem a al v))"
-  "saction P (NormalAction (NewObj a C))"
-  "saction P (NormalAction (NewArr a T n))"
+  "saction P (NormalAction (NewHeapElem a hT))"
   "saction P (NormalAction (ThreadStart t))"
   "saction P (NormalAction (ThreadJoin t))"
   "saction P (NormalAction (SyncLock a))"
@@ -381,49 +407,6 @@ using assms unfolding sactions_def by blast
 lemma sactions_actions [simp]:
   "a \<in> sactions P E \<Longrightarrow> a \<in> actions E"
 by(rule sactionsE)
-
-lemma action_loc_aux_intros [intro?]:
-  "P \<turnstile> C has F:T (fm) in D \<Longrightarrow> (ad, CField D F) \<in> action_loc_aux P (NormalAction (NewObj ad C))"
-  "n < n' \<Longrightarrow> (ad, ACell n) \<in> action_loc_aux P (NormalAction (NewArr ad T n'))"
-  "P \<turnstile> Object has F:T' (fm) in Object \<Longrightarrow> (ad, CField Object F) \<in> action_loc_aux P (NormalAction (NewArr ad T n))"
-  "(ad, al) \<in> action_loc_aux P (NormalAction (WriteMem ad al v))"
-  "(ad, al) \<in> action_loc_aux P (NormalAction (ReadMem ad al v))"
-unfolding mem_def by(blast intro: action_loc_aux.intros)+
-
-lemma action_loc_aux_cases [elim?, cases set: action_loc_aux]:
-  assumes "adal \<in> action_loc_aux P obs"
-  obtains (NewObj) C F T fm D ad where "obs = NormalAction (NewObj ad C)" "adal = (ad, CField D F)" "P \<turnstile> C has F:T (fm) in D"
-  | (NewArr) n n' ad T where "obs = NormalAction (NewArr ad T n')" "adal = (ad, ACell n)" "n < n'"
-  | (NewArrField) n ad T F T' fm where "obs = NormalAction (NewArr ad T n)" "adal = (ad, CField Object F)" "P \<turnstile> Object has F:T' (fm) in Object"
-  | (WriteMem) ad al v where "obs = NormalAction (WriteMem ad al v)" "adal = (ad, al)"
-  | (ReadMem) ad al v where "obs = NormalAction (ReadMem ad al v)" "adal = (ad, al)"
-using assms unfolding mem_def
-by cases blast+
-
-declare action_loc_aux.intros [Pure.rule del]
-declare action_loc_aux.cases [Pure.rule del]
-
-lemma action_loc_aux_simps [simp]:
-  "(ad', al') \<in> action_loc_aux P (NormalAction (NewObj ad C)) \<longleftrightarrow> 
-   (\<exists>D F T fm. ad = ad' \<and> al' = CField D F \<and> P \<turnstile> C has F:T (fm) in D)"
-  "(ad', al') \<in> action_loc_aux P (NormalAction (NewArr ad T n)) \<longleftrightarrow>
-   (\<exists>n'. ad = ad' \<and> al' = ACell n' \<and> n' < n) \<or> 
-   (\<exists>F T fm. ad = ad' \<and> al' = CField Object F \<and> P \<turnstile> Object has F:T (fm) in Object)"
-  "(ad', al') \<in> action_loc_aux P (NormalAction (NewHeapElem ad CTn)) \<longleftrightarrow> 
-   (\<exists>C. CTn = Class_type C \<and> ad' = ad \<and> (\<exists>F T D fm. al' = CField D F \<and> P \<turnstile> C has F:T (fm) in D)) \<or>
-   (\<exists>n n'. (\<exists>T. CTn = Array_type T n') \<and> ad' = ad \<and> (al' = ACell n \<and> n < n' \<or> (\<exists>F T fm. al' = CField Object F \<and> P \<turnstile> Object has F:T (fm) in Object)))"
-  "(ad', al') \<in> action_loc_aux P (NormalAction (WriteMem ad al v)) \<longleftrightarrow> ad = ad' \<and> al = al'"
-  "(ad', al') \<in> action_loc_aux P (NormalAction (ReadMem ad al v)) \<longleftrightarrow> ad = ad' \<and> al = al'"
-  "(ad', al') \<notin> action_loc_aux P InitialThreadAction"
-  "(ad', al') \<notin> action_loc_aux P ThreadFinishAction"
-  "(ad', al') \<notin> action_loc_aux P (NormalAction (ExternalCall a m vs v))"
-  "(ad', al') \<notin> action_loc_aux P (NormalAction (ThreadStart t))"
-  "(ad', al') \<notin> action_loc_aux P (NormalAction (ThreadJoin t))"
-  "(ad', al') \<notin> action_loc_aux P (NormalAction (SyncLock a))"
-  "(ad', al') \<notin> action_loc_aux P (NormalAction (SyncUnlock a))"
-  "(ad', al') \<notin> action_loc_aux P (NormalAction (ObsInterrupt t))"
-  "(ad', al') \<notin> action_loc_aux P (NormalAction (ObsInterrupted t))"
-by(auto elim!: action_loc_aux_cases intro: action_loc_aux_intros)
 
 lemma value_written_aux_WriteMem [simp]:
   "value_written_aux P (NormalAction (WriteMem ad al v)) al = v"
@@ -487,6 +470,11 @@ using assms unfolding new_actions_for_def by blast
 lemma action_loc_read_action_singleton:
   "\<lbrakk> r \<in> read_actions E; adal \<in> action_loc P E r; adal' \<in> action_loc P E r \<rbrakk> \<Longrightarrow> adal = adal'"
 by(cases adal, cases adal')(fastforce elim: read_actions.cases action_loc_aux_cases)
+
+lemma addr_locsI:
+  "P \<turnstile> class_type_of hT has F:T (fm) in D \<Longrightarrow> CField D F \<in> addr_locs P hT"
+  "\<lbrakk> hT = Array_type T n; n' < n \<rbrakk> \<Longrightarrow> ACell n' \<in> addr_locs P hT"
+by(cases hT)(auto dest: has_field_decl_above)
 
 section {* Orders *}
 subsection {* Action order *}
@@ -789,6 +777,9 @@ next
     by(auto dest!: po_sw_into_action_order elim!: action_orderE)
 qed
 
+lemma external_actions_not_new:
+  "\<lbrakk> a \<in> external_actions E; is_new_action (action_obs E a) \<rbrakk> \<Longrightarrow> False"
+by(erule external_actions.cases)(simp)
 
 section {* Most recent writes and sequential consistency *}
 
@@ -863,6 +854,16 @@ lemma thread_start_actions_okD:
   \<Longrightarrow> \<exists>i. i \<le> a \<and> action_obs E i = InitialThreadAction \<and> action_tid E i = action_tid E a"
 unfolding thread_start_actions_ok_def by blast
 
+lemma thread_start_actions_ok_prefix:
+  "\<lbrakk> thread_start_actions_ok E'; lprefix E E' \<rbrakk> \<Longrightarrow> thread_start_actions_ok E"
+apply(clarsimp simp add: lprefix_def)
+apply(rule thread_start_actions_okI)
+apply(drule_tac a=a in thread_start_actions_okD)
+  apply(simp add: actions_def)
+  apply(metis Suc_ile_eq enat_le_plus_same(1) xtr6)
+apply(auto simp add: action_obs_def lnth_lappend1 actions_def action_tid_def le_less_trans[where y="enat a", standard])
+done
+
 lemma wf_execI [intro?]:
   "\<lbrakk> is_write_seen P E ws;
     thread_start_actions_ok E \<rbrakk>
@@ -899,8 +900,7 @@ inductive sim_action ::
 where
   InitialThreadAction: "InitialThreadAction \<approx> InitialThreadAction"
 | ThreadFinishAction: "ThreadFinishAction \<approx> ThreadFinishAction"
-| NewObj: "NormalAction (NewObj C a) \<approx> NormalAction (NewObj C a)"
-| NewArr: "NormalAction (NewArr T n a) \<approx> NormalAction (NewArr T n a)"
+| NewHeapElem: "NormalAction (NewHeapElem a hT) \<approx> NormalAction (NewHeapElem a hT)"
 | ReadMem: "NormalAction (ReadMem ad al v) \<approx> NormalAction (ReadMem ad al v')"
 | WriteMem: "NormalAction (WriteMem ad al v) \<approx> NormalAction (WriteMem ad al v')"
 | ThreadStart: "NormalAction (ThreadStart t) \<approx> NormalAction (ThreadStart t)"
@@ -925,8 +925,7 @@ done
 inductive_cases sim_action_cases [elim!]:
   "InitialThreadAction \<approx> obs"
   "ThreadFinishAction \<approx> obs"
-  "NormalAction (NewObj C a) \<approx> obs"
-  "NormalAction (NewArr T n a) \<approx> obs"
+  "NormalAction (NewHeapElem a hT) \<approx> obs"
   "NormalAction (ReadMem ad al v) \<approx> obs"
   "NormalAction (WriteMem ad al v) \<approx> obs"
   "NormalAction (ThreadStart t) \<approx> obs"
@@ -939,8 +938,7 @@ inductive_cases sim_action_cases [elim!]:
 
   "obs \<approx> InitialThreadAction"
   "obs \<approx> ThreadFinishAction"
-  "obs \<approx> NormalAction (NewObj C a)"
-  "obs \<approx> NormalAction (NewArr T n a)"
+  "obs \<approx> NormalAction (NewHeapElem a hT)"
   "obs \<approx> NormalAction (ReadMem ad al v')"
   "obs \<approx> NormalAction (WriteMem ad al v')"
   "obs \<approx> NormalAction (ThreadStart t)"
@@ -954,8 +952,7 @@ inductive_cases sim_action_cases [elim!]:
 inductive_simps sim_action_simps [simp]:
   "InitialThreadAction \<approx> obs"
   "ThreadFinishAction \<approx> obs"
-  "NormalAction (NewObj C a) \<approx> obs"
-  "NormalAction (NewArr T n a) \<approx> obs"
+  "NormalAction (NewHeapElem a hT) \<approx> obs"
   "NormalAction (ReadMem ad al v) \<approx> obs"
   "NormalAction (WriteMem ad al v) \<approx> obs"
   "NormalAction (ThreadStart t) \<approx> obs"
@@ -968,8 +965,7 @@ inductive_simps sim_action_simps [simp]:
 
   "obs \<approx> InitialThreadAction"
   "obs \<approx> ThreadFinishAction"
-  "obs \<approx> NormalAction (NewObj C a)"
-  "obs \<approx> NormalAction (NewArr T n a)"
+  "obs \<approx> NormalAction (NewHeapElem a hT)"
   "obs \<approx> NormalAction (ReadMem ad al v')"
   "obs \<approx> NormalAction (WriteMem ad al v')"
   "obs \<approx> NormalAction (ThreadStart t)"
@@ -1016,7 +1012,7 @@ locale executions_base =
   fixes \<E> :: "('addr, 'thread_id) execution set"
   and P :: "'m prog"
 
-locale executions =
+locale drf =
   executions_base \<E> P
   for \<E> :: "('addr, 'thread_id) execution set"
   and P :: "'m prog" +
@@ -1027,6 +1023,35 @@ locale executions =
   \<Longrightarrow> \<exists>E' \<in> \<E>. \<exists>ws'. P \<turnstile> (E', ws') \<surd> \<and> ltake (enat r) E = ltake (enat r) E' \<and> sequentially_consistent P (E', ws') \<and>
                  action_tid E r = action_tid E' r \<and> action_obs E r \<approx> action_obs E' r \<and>
                  (r \<in> actions E \<longrightarrow> r \<in> actions E')"
+
+locale executions_aux =
+  executions_base \<E> P
+  for \<E> :: "('addr, 'thread_id) execution set"
+  and P :: "'m prog" +
+  assumes init_before_read:
+  "\<lbrakk>  E \<in> \<E>; P \<turnstile> (E, ws) \<surd>; r \<in> read_actions E; adal \<in> action_loc P E r; 
+      \<And>a. \<lbrakk> a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a \<rbrakk>
+  \<Longrightarrow> \<exists>i<r. i \<in> new_actions_for P E adal"
+  and \<E>_new_actions_for_fun:
+  "\<lbrakk> E \<in> \<E>; a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
+
+locale sc_legal =
+  executions_aux \<E> P
+  for \<E> :: "('addr, 'thread_id) execution set"
+  and P :: "'m prog" +
+  assumes \<E>_hb_completion:
+  "\<lbrakk> E \<in> \<E>; P \<turnstile> (E, ws) \<surd>; \<And>a. \<lbrakk> a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a \<rbrakk>
+  \<Longrightarrow> \<exists>E' \<in> \<E>. \<exists>ws'. P \<turnstile> (E', ws') \<surd> \<and> ltake (enat r) E = ltake (enat r) E' \<and>
+                 (\<forall>a \<in> read_actions E'. if a < r then ws' a = ws a else P,E' \<turnstile> ws' a \<le>hb a) \<and>
+                 action_tid E' r = action_tid E r \<and> 
+                 (if r \<in> read_actions E then sim_action else op =) (action_obs E' r) (action_obs E r) \<and>
+                 (r \<in> actions E \<longrightarrow> r \<in> actions E')"
+
+locale jmm_consistent =
+  drf \<E> P +
+  sc_legal \<E> P
+  for \<E> :: "('addr, 'thread_id) execution set"
+  and P :: "'m prog"
 
 section {* Legal executions *}
 
@@ -1061,6 +1086,11 @@ text {*
   Hence, @{text "is_justified_by"} omits this constraint.
 *}
 
+abbreviation wf_action_translation :: "('addr, 'thread_id) execution \<Rightarrow> ('addr, 'thread_id) justifying_execution \<Rightarrow> bool"
+where
+  "wf_action_translation E J \<equiv> 
+   wf_action_translation_on (justifying_exec J) E (committed J) (action_translation J)"
+
 primrec is_justified_by ::
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> ('addr, 'thread_id) justification \<Rightarrow> bool" 
   ("_ \<turnstile> _ justified'_by _" [51, 50, 50] 50)
@@ -1091,8 +1121,8 @@ where
        let w' = action_translation (J n) w
        in (\<forall>adal \<in> action_loc P E w'. value_written P (justifying_exec (J n)) w adal = value_written P E w' adal)) \<and>
 
-  (* write-seen for committed reads as in E -- JMM constraint 5 *)
-  (\<forall>n. \<forall>r' \<in> committed (J n).
+  (* write-seen for committed reads as in E -- JMM constraint 5 -- restricted to read actions *)
+  (\<forall>n. \<forall>r' \<in> read_actions (justifying_exec (J n)) \<inter> committed (J n).
        let r = action_translation (J n) r';
            r'' = inv_into (actions (justifying_exec (J (Suc n)))) (action_translation (J (Suc n))) r
        in action_translation (J (Suc n)) (justifying_ws (J (Suc n)) r'') = ws r) \<and>
@@ -1135,12 +1165,14 @@ where
   (\<forall>E \<in> \<E>. \<forall>ws. P \<turnstile> (E, ws) \<surd> \<longrightarrow> sequentially_consistent P (E, ws) \<longrightarrow> 
                    (\<forall>a \<in> actions E. \<forall>a' \<in> actions E. P,E \<turnstile> a \<dagger> a' \<longrightarrow> P,E \<turnstile> a \<le>hb a' \<or> P,E \<turnstile> a' \<le>hb a))"
 
-definition legal_execution :: 
+primrec legal_execution :: 
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution set \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> bool"
 where
-  "legal_execution P \<E> Ews \<longleftrightarrow>
-   P \<turnstile> Ews \<surd> \<and>
-   (\<exists>J. P \<turnstile> Ews justified_by J \<and> range (justifying_exec \<circ> J) \<subseteq> \<E>)"
+  "legal_execution P \<E> (E, ws) \<longleftrightarrow>
+   E \<in> \<E> \<and> P \<turnstile> (E, ws) \<surd> \<and> 
+   (\<exists>J. P \<turnstile> (E, ws) justified_by J \<and> range (justifying_exec \<circ> J) \<subseteq> \<E>)"
+
+declare legal_execution.simps [simp del]
 
 lemma sym_conflict:
   "symP (conflict P E)"
@@ -1148,23 +1180,38 @@ unfolding conflict_def
 by(rule symPI) blast
 
 lemma legal_executionI:
-  "\<lbrakk> P \<turnstile> Ews \<surd>; P \<turnstile> Ews justified_by J; range (justifying_exec \<circ> J) \<subseteq> \<E> \<rbrakk>
-  \<Longrightarrow> legal_execution P \<E> Ews"
-unfolding legal_execution_def by blast
+  "\<lbrakk> E \<in> \<E>; P \<turnstile> (E, ws) \<surd>; P \<turnstile> (E, ws) justified_by J; range (justifying_exec \<circ> J) \<subseteq> \<E> \<rbrakk>
+  \<Longrightarrow> legal_execution P \<E> (E, ws)"
+unfolding legal_execution.simps by blast
 
 lemma legal_executionE:
-  assumes "legal_execution P \<E> Ews"
-  obtains J where "P \<turnstile> Ews \<surd>" "P \<turnstile> Ews justified_by J" "range (justifying_exec \<circ> J) \<subseteq> \<E>"
-using assms unfolding legal_execution_def by blast
+  assumes "legal_execution P \<E> (E, ws)"
+  obtains J where "E \<in> \<E>" "P \<turnstile> (E, ws) \<surd>" "P \<turnstile> (E, ws) justified_by J" "range (justifying_exec \<circ> J) \<subseteq> \<E>"
+using assms unfolding legal_execution.simps by blast
+
+lemma legal_\<E>D: "legal_execution P \<E> (E, ws) \<Longrightarrow> E \<in> \<E>"
+by(erule legal_executionE)
 
 lemma legal_wf_execD:
   "legal_execution P \<E> Ews \<Longrightarrow> P \<turnstile> Ews \<surd>"
-by(erule legal_executionE)
+by(cases Ews)(auto elim: legal_executionE)
 
 lemma correctly_synchronizedD:
   "\<lbrakk> correctly_synchronized P \<E>; E \<in> \<E>; P \<turnstile> (E, ws) \<surd>; sequentially_consistent P (E, ws) \<rbrakk>
   \<Longrightarrow> \<forall>a a'. a \<in> actions E \<longrightarrow> a' \<in> actions E \<longrightarrow> P,E \<turnstile> a \<dagger> a' \<longrightarrow> P,E \<turnstile> a \<le>hb a' \<or> P,E \<turnstile> a' \<le>hb a"
 unfolding correctly_synchronized_def by blast
+
+lemma committed_conv [simp]: "committed (A, E, ws, \<phi>) = A"
+by(simp add: committed_def)
+
+lemma justifying_exec_conv [simp]: "justifying_exec (A, E, ws, \<phi>) = E"
+by(simp add: justifying_exec_def)
+
+lemma justifying_ws_conv [simp]: "justifying_ws (A, E, ws, \<phi>) = ws"
+by(simp add: justifying_ws_def)
+
+lemma action_translation_conv [simp]: "action_translation (A, E, ws, \<phi>) = \<phi>"
+by(simp add: action_translation_def)
 
 lemma wf_action_translation_on_actionD:
   "\<lbrakk> wf_action_translation_on E E' A f; a \<in> A \<rbrakk> 
@@ -1244,7 +1291,7 @@ proof -
       have r_conv_inv: "r = inv_into (actions (?E (Suc n))) (?\<phi> (Suc n)) (?\<phi> n r')"
         using `r \<in> actions (?E (Suc n))` unfolding r_r'[symmetric]
         by(simp add: inv_into_f_f[OF injSn])
-      with `r' \<in> ?C n` r J
+      with `r' \<in> ?C n` r J `r' \<in> read_actions (?E n)`
       have ws_eq: "?\<phi> (Suc n) (?ws (Suc n) r) = ws (?\<phi> n r')"
         by(simp add: is_justified_by.simps Let_def)
       with ws CnCSn have "?\<phi> (Suc n) (?ws (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)" by auto
@@ -1507,5 +1554,161 @@ next
     ultimately show "P,E' \<turnstile> a \<le>hb a''" by(rule happens_before_new_not_new)
   qed
 qed
+
+lemma thread_start_actions_ok_change:
+  assumes tsa: "thread_start_actions_ok E"
+  and sim: "E [\<approx>] E'"
+  shows "thread_start_actions_ok E'"
+proof(rule thread_start_actions_okI)
+  fix a
+  assume "a \<in> actions E'" "\<not> is_new_action (action_obs E' a)"
+  from sim have len_eq: "llength E = llength E'" by(simp add: sim_actions_def)(rule llist_all2_llengthD)
+  with sim have sim': "ltake (llength E) E [\<approx>] ltake (llength E) E'" by(simp add: ltake_all)
+
+  from `a \<in> actions E'` len_eq have "enat a < llength E" by(simp add: actions_def)
+  with `a \<in> actions E'` sim'[symmetric] have "a \<in> actions E" by(rule actions_change_prefix)
+  moreover have "\<not> is_new_action (action_obs E a)"
+    using action_obs_change_prefix[OF sim' `enat a < llength E`] `\<not> is_new_action (action_obs E' a)`
+    by(auto elim!: is_new_action.cases)
+  ultimately obtain i where "i \<le> a" "action_obs E i = InitialThreadAction" "action_tid E i = action_tid E a"
+    by(blast dest: thread_start_actions_okD[OF tsa])
+  thus "\<exists>i \<le> a. action_obs E' i = InitialThreadAction \<and> action_tid E' i = action_tid E' a"
+    using action_tid_change_prefix[OF sim', of i] action_tid_change_prefix[OF sim', of a] `enat a < llength E`
+      action_obs_change_prefix[OF sim', of i]
+    by(cases "llength E")(auto intro!: exI[where x=i])
+qed
+
+context executions_aux begin
+
+lemma \<E>_new_same_addr_singleton:
+  assumes E: "E \<in> \<E>"
+  shows "\<exists>a. new_actions_for P E adal \<subseteq> {a}"
+by(blast dest: \<E>_new_actions_for_fun[OF E])
+
+lemma new_action_before_read:
+  assumes E: "E \<in> \<E>"
+  and wf: "P \<turnstile> (E, ws) \<surd>"
+  and ra: "ra \<in> read_actions E"
+  and adal: "adal \<in> action_loc P E ra"
+  and new: "wa \<in> new_actions_for P E adal"
+  and sc: "\<And>a. \<lbrakk> a < ra; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
+  shows "wa < ra"
+using \<E>_new_same_addr_singleton[OF E, of adal] init_before_read[OF E wf ra adal sc] new
+by auto
+
+lemma mrw_before:
+  assumes E: "E \<in> \<E>"
+  and wf: "P \<turnstile> (E, ws) \<surd>"
+  and mrw: "P,E \<turnstile> r \<leadsto>mrw w"
+  and sc: "\<And>a. \<lbrakk> a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
+  shows "w < r"
+using mrw read_actions_not_write_actions[of r E]
+apply cases
+apply(erule action_orderE)
+ apply(erule (1) new_action_before_read[OF E wf])
+  apply(simp add: new_actions_for_def)
+ apply(erule (1) sc)
+apply(cases "w = r")
+apply auto
+done
+
+lemma mrw_change_prefix:
+  assumes E': "E' \<in> \<E>"
+  and mrw: "P,E \<turnstile> r \<leadsto>mrw w"
+  and tsa_ok: "thread_start_actions_ok E'"
+  and prefix: "ltake n E [\<approx>] ltake n E'"
+  and an: "enat r < n"
+  and a'n: "enat w < n"
+  shows "P,E' \<turnstile> r \<leadsto>mrw w"
+using mrw
+proof cases
+  fix adal
+  assume r: "r \<in> read_actions E"
+    and adal_r: "adal \<in> action_loc P E r"
+    and war: "E \<turnstile> w \<le>a r"
+    and w: "w \<in> write_actions E"
+    and adal_w: "adal \<in> action_loc P E w"
+    and mrw: "\<And>wa'. \<lbrakk>wa' \<in> write_actions E; adal \<in> action_loc P E wa'\<rbrakk>
+              \<Longrightarrow> E \<turnstile> wa' \<le>a w \<or> E \<turnstile> r \<le>a wa'"
+  show ?thesis
+  proof(rule most_recent_write_for.intros)
+    from r prefix an show r': "r \<in> read_actions E'"
+      by(rule read_actions_change_prefix)
+    from adal_r show "adal \<in> action_loc P E' r"
+      by(simp add: action_loc_change_prefix[OF prefix[symmetric] an])
+    from war prefix a'n an show "E' \<turnstile> w \<le>a r" by(rule action_order_change_prefix)
+    from w prefix a'n show w': "w \<in> write_actions E'" by(rule write_actions_change_prefix)
+    from adal_w show adal_w': "adal \<in> action_loc P E' w" by(simp add: action_loc_change_prefix[OF prefix[symmetric] a'n])
+
+    fix wa'
+    assume wa': "wa' \<in> write_actions E'" 
+      and adal_wa': "adal \<in> action_loc P E' wa'"
+    show "E' \<turnstile> wa' \<le>a w \<or> E' \<turnstile> r \<le>a wa'"
+    proof(cases "enat wa' < n")
+      case True
+      note wa'n = this
+      with wa' prefix[symmetric] have "wa' \<in> write_actions E" by(rule write_actions_change_prefix)
+      moreover from adal_wa' have "adal \<in> action_loc P E wa'"
+        by(simp add: action_loc_change_prefix[OF prefix wa'n])
+      ultimately have "E \<turnstile> wa' \<le>a w \<or> E \<turnstile> r \<le>a wa'" by(rule mrw)
+      thus ?thesis
+      proof
+        assume "E \<turnstile> wa' \<le>a w"
+        hence "E' \<turnstile> wa' \<le>a w" using prefix wa'n a'n by(rule action_order_change_prefix)
+        thus ?thesis ..
+      next
+        assume "E \<turnstile> r \<le>a wa'"
+        hence "E' \<turnstile> r \<le>a wa'" using prefix an wa'n by(rule action_order_change_prefix)
+        thus ?thesis ..
+      qed
+    next
+      case False note wa'n = this
+      show ?thesis
+      proof(cases "is_new_action (action_obs E' wa')")
+        case False
+        hence "E' \<turnstile> r \<le>a wa'" using wa'n r' wa' an
+          by(auto intro!: action_orderI) (metis enat_ord_code(1) linorder_le_cases order_le_less_trans)
+        thus ?thesis ..
+      next
+        case True
+        with wa' adal_wa' have new: "wa' \<in> new_actions_for P E' adal" by(simp add: new_actions_for_def)
+        show ?thesis
+        proof(cases "is_new_action (action_obs E' w)")
+          case True
+          with adal_w' a'n w' have "w \<in> new_actions_for P E' adal" by(simp add: new_actions_for_def)
+          with E' new have "wa' = w" by(rule \<E>_new_actions_for_fun)
+          thus ?thesis using w' by(auto intro: refl_onPD[OF refl_action_order])
+        next
+          case False
+          with True wa' w' show ?thesis by(auto intro!: action_orderI)
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma action_order_read_before_write:
+  assumes E: "E \<in> \<E>" "P \<turnstile> (E, ws) \<surd>"
+  and ao: "E \<turnstile> w \<le>a r"
+  and r: "r \<in> read_actions E"
+  and w: "w \<in> write_actions E"
+  and adal: "adal \<in> action_loc P E r" "adal \<in> action_loc P E w"
+  and sc: "\<And>a. \<lbrakk> a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
+  shows "w < r"
+using ao
+proof(cases rule: action_orderE)
+  case 1
+  from init_before_read[OF E r adal(1) sc]
+  obtain i where "i < r" "i \<in> new_actions_for P E adal" by blast
+  moreover from `is_new_action (action_obs E w)` adal(2) `w \<in> actions E`
+  have "w \<in> new_actions_for P E adal" by(simp add: new_actions_for_def)
+  ultimately show "w < r" using E by(auto dest: \<E>_new_actions_for_fun)
+next
+  case 2
+  with r w show ?thesis
+    by(cases "w = r")(auto dest: read_actions_not_write_actions)
+qed
+
+end
 
 end

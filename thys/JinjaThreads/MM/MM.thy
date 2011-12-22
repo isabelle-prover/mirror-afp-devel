@@ -71,5 +71,3 @@ apply simp
 done
 
 end
-
-

@@ -71,15 +71,15 @@ where
   "is_lub,P,E \<turnstile> a :: T\<lfloor>\<rceil> \<Longrightarrow> is_lub,P,E \<turnstile> a\<bullet>length :: Integer"
 
 | WTFAcc:
-  "\<lbrakk> is_lub,P,E \<turnstile> e :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D \<rbrakk>
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>F{D} :: T"
 
 | WTFAss:
-  "\<lbrakk> is_lub,P,E \<turnstile> e\<^isub>1 :: U; is_class_type_of U C; P \<turnstile> C sees F:T (fm) in D; is_lub,P,E \<turnstile> e\<^isub>2 :: T'; P \<turnstile> T' \<le> T \<rbrakk>
+  "\<lbrakk> is_lub,P,E \<turnstile> e\<^isub>1 :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D; is_lub,P,E \<turnstile> e\<^isub>2 :: T'; P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :: Void"
 
 | WTCall:
-  "\<lbrakk> is_lub,P,E \<turnstile> e :: U; is_class_type_of U C; P \<turnstile> C sees M:Ts \<rightarrow> T = meth in D;
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts \<rightarrow> T = meth in D;
      is_lub,P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>M(es) :: T"
 
@@ -181,9 +181,9 @@ apply fastforce
 apply fastforce
 apply fastforce
 apply fastforce
-apply(fastforce dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
-apply(fastforce dest: sees_field_fun simp add: is_class_type_of_conv_class_type_of_Some)
-apply(fastforce dest: sees_method_fun simp add: is_class_type_of_conv_class_type_of_Some)
+apply(fastforce dest: sees_field_fun)
+apply(fastforce dest: sees_field_fun)
+apply(fastforce dest: sees_method_fun)
 apply fastforce
 apply fastforce
 apply fastforce
