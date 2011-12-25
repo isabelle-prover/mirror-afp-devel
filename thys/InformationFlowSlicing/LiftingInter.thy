@@ -1,7 +1,7 @@
 header {* \isaheader{Framework Graph Lifting for Noninterference} *}
 
 theory LiftingInter 
-  imports NonInterferenceInter 
+imports NonInterferenceInter 
 begin
 
 text {* In this section, we show how a valid CFG from the slicing framework in
@@ -876,7 +876,7 @@ proof -
       have "intra_kind (kind a)" and "pred (kind a) s" 
         and "knd e = kind a" and "src e = Node (sourcenode a)" by simp_all
       from `V \<notin> lift_Def Def Entry Exit H L (src e)` `src e = Node (sourcenode a)`
-      have "V \<notin> Def (sourcenode a)" by(fastforce dest:lift_Def_node)
+      have "V \<notin> Def (sourcenode a)" by (auto dest: lift_Def_node)
       from `valid_edge a` `V \<notin> Def (sourcenode a)` `intra_kind (kind a)` 
         `pred (kind a) s`
       have "state_val (transfer (kind a) s) V = state_val s V" 

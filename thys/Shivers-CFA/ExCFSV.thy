@@ -166,8 +166,8 @@ case Admissibility show ?case
   by (intro adm_lemmas adm_ball' adm_prod_split adm_not_conj adm_not_mem adm_single_valued cont2cont)
 next
   case Bottom {
-    case 1 thus ?case by (auto simp add:mem_def) next
-    case 2 thus ?case by (auto simp add:mem_def)
+    case 1 thus ?case by auto next
+    case 2 thus ?case by auto
   }
 next
   case (Next evalF evalC)

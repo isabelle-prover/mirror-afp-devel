@@ -664,7 +664,7 @@ lemma UNC_imp_UNF:
 proof - {
   fix x y z assume "(x,y) \<in> r^!" and "(x,z) \<in> r^!"
   hence "(x,y) \<in> r^*" and "(x,z) \<in> r^*" and "y \<in> NF r" and "z \<in> NF r" by auto
-  hence "(x,y) \<in> r^<->*" and "(x,z) \<in> r^<->*" by (auto intro: conversionI')
+  hence "(x,y) \<in> r^<->*" and "(x,z) \<in> r^<->*" by auto
   hence "(z,x) \<in> r^<->*" using conversion_sym unfolding sym_def by best
   with `(x,y) \<in> r^<->*` have "(z,y) \<in> r^<->*" using conversion_trans unfolding trans_def by best
   from assms and this and `z \<in> NF r` and `y \<in> NF r` have "z = y" unfolding UNC_def by auto
@@ -709,7 +709,7 @@ lemma join_imp_conversion: "r\<^sup>\<down> \<subseteq> r^<->*"
 proof
   fix x z assume "(x,z) \<in> r\<^sup>\<down>"
   then obtain y where "(x,y) \<in> r^*" and "(z,y) \<in> r^*" by auto
-  hence "(x,y) \<in> r^<->*" and "(z,y) \<in> r^<->*" by (auto intro: conversionI')
+  hence "(x,y) \<in> r^<->*" and "(z,y) \<in> r^<->*" by auto
   from `(z,y) \<in> r^<->*` have "(y,z) \<in> r^<->*" using conversion_sym unfolding sym_def by best
   with `(x,y) \<in> r^<->*` show "(x,z) \<in> r^<->*" using conversion_trans unfolding trans_def by best
 qed
@@ -718,7 +718,7 @@ lemma meet_imp_conversion: "r\<^sup>\<up> \<subseteq> r^<->*"
 proof (rule subsetI2)
   fix y z assume "(y,z) \<in> r\<^sup>\<up>"
   then obtain x where "(x,y) \<in> r^*" and "(x,z) \<in> r^*" by auto
-  hence "(x,y) \<in> r^<->*" and "(x,z) \<in> r^<->*" by (auto intro: conversionI')
+  hence "(x,y) \<in> r^<->*" and "(x,z) \<in> r^<->*" by auto
   from `(x,y) \<in> r^<->*` have "(y,x) \<in> r^<->*" using conversion_sym unfolding sym_def by best
   with `(x,z) \<in> r^<->*` show "(y,z) \<in> r^<->*" using conversion_trans unfolding trans_def by best
 qed
@@ -790,7 +790,7 @@ lemma CR_join_right_I:
  assumes "CR r" and "(x,y) \<in> r\<^sup>\<down>" and "(y,z) \<in> r^*" shows "(x,z) \<in> r\<^sup>\<down>"
 proof -
   have "r^<->* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join[OF `CR r`])
-  from `(y,z) \<in> r^*` have "(y,z) \<in> r^<->*" by (auto intro: conversionI')
+  from `(y,z) \<in> r^*` have "(y,z) \<in> r^<->*" by auto
   with `(x,y) \<in> r\<^sup>\<down>` show ?thesis unfolding `r^<->* = r\<^sup>\<down>`[symmetric] using conversion_trans
     unfolding trans_def by fast
 qed
@@ -838,7 +838,7 @@ proof -
     from `(x,u) \<in> r^!` and `(y,v) \<in> r^!` have "u = v" using equal_NF by simp
     from `(x,u) \<in> r^!` and `(y,v) \<in> r^!` have "(x,v) \<in> r^*" and "(y,v) \<in> r^*"
       unfolding `u = v` by auto
-    hence "(x,v) \<in> r^<->*" and "(y,v) \<in> r^<->*" by (auto intro: conversionI')
+    hence "(x,v) \<in> r^<->*" and "(y,v) \<in> r^<->*" by auto
     from `(y,v) \<in> r^<->*` have "(v,y) \<in> r^<->*" using conversion_sym unfolding sym_def by best
     with `(x,v) \<in> r^<->*` show "(x,y) \<in> r^<->*" using conversion_trans unfolding trans_def by best
   qed
@@ -847,7 +847,7 @@ qed
 lemma CR_imp_UNC: assumes "CR r" shows "UNC r"
 proof - {
   fix x y assume "x \<in> NF r" and "y \<in> NF r" and "(x,y) \<in> r^<->*"
-  have "r^<->* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join[OF assms])
+  have "r^<->* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join [OF assms])
   from `(x,y) \<in> r^<->*` have "(x,y) \<in> r\<^sup>\<down>" unfolding `r^<->* = r\<^sup>\<down>` by simp
   then obtain x' where "(x,x') \<in> r^*" and "(y,x') \<in> r^*" by best
   from `(x,x') \<in> r^*` and `x \<in> NF r` have "x = x'" by (rule NF_not_suc)
@@ -860,12 +860,12 @@ lemma WN_UNF_imp_CR: assumes "WN r" and "UNF r" shows "CR r"
 proof - {
   fix x y z assume "(x,y) \<in> r^*" and "(x,z) \<in> r^*"
   from assms obtain y' where "(y,y') \<in> r^!" unfolding WN_defs by best
-  with `(x,y) \<in> r^*` have "(x,y') \<in> r^!" by (auto intro: normalizability_I')
+  with `(x,y) \<in> r^*` have "(x,y') \<in> r^!" by auto
   from assms obtain z' where "(z,z') \<in> r^!" unfolding WN_defs by best
-  with `(x,z) \<in> r^*` have "(x,z') \<in> r^!" by (auto intro: normalizability_I')
+  with `(x,z) \<in> r^*` have "(x,z') \<in> r^!" by auto
   with `(x,y') \<in> r^!` have "y' = z'" using `UNF r` unfolding UNF_defs by auto
   from `(y,y') \<in> r^!` and `(z,z') \<in> r^!` have "(y,z) \<in> r\<^sup>\<down>" unfolding `y' = z'` by auto
-} thus ?thesis by (auto intro: CR_onI)
+} thus ?thesis by auto
 qed
 
 definition diamond :: "'a ars \<Rightarrow> bool" ("\<diamond>") where "\<diamond> r \<equiv> (r\<inverse> O r) \<subseteq> (r O r\<inverse>)"
@@ -914,7 +914,7 @@ proof - {
     from `(y,y') \<in> r^*` and `(y',u) \<in> r^*` have "(y,u) \<in> r^*" by auto
     with `(z,u) \<in> r^*` show ?case by best
   qed
-} thus ?thesis by (auto intro: CR_onI)
+} thus ?thesis by auto
 qed
  
 lemma diamond_imp_CR: assumes "\<diamond> r" shows "CR r"
@@ -1099,17 +1099,15 @@ lemma SN_on_conv_accp:
         accp_imp_SN_on[of "{x}" g]
   by auto
 
-lemma SN_on_conv_acc: "SN_on {(y,z). (z,y) \<in> r} {x} = acc r x"
-  unfolding SN_on_conv_accp using accp_acc_eq 
-  by (force simp: mem_def)
+lemma SN_on_conv_acc: "SN_on {(y,z). (z,y) \<in> r} {x} \<longleftrightarrow> x \<in> acc r"
+  unfolding SN_on_conv_accp accp_acc_eq ..
 
 lemma acc_imp_SN_on:
   assumes "x \<in> acc r" shows "SN_on {(y,z). (z,y) \<in> r} {x}"
-  using assms unfolding SN_on_conv_acc by (simp add: mem_def)
+  using assms unfolding SN_on_conv_acc by simp
 
 lemma SN_on_imp_acc: assumes "SN_on {(y,z). (z,y) \<in> r} {x}" shows "x \<in> acc r"
-  using assms unfolding SN_on_conv_acc
-  by (simp add: mem_def)
+  using assms unfolding SN_on_conv_acc by simp
 
 
 subsection {* Newman's Lemma *}
