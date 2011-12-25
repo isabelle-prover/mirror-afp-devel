@@ -8,13 +8,10 @@ header {* \isaheader{Code generation for Semantics and Type System} *}
 
 theory Execute
 imports BigStep WellType
-  "~~/src/HOL/Library/Executable_Set" "~~/src/HOL/Library/Efficient_Nat"
+  "~~/src/HOL/Library/More_Set" "~~/src/HOL/Library/Efficient_Nat"
 begin
 
 section{* General redefinitions *}
-
-lemma [code_unfold del]: "op = = Executable_Set.set_eq"
-  by simp
 
 lemma [code_unfold]: "List.member = (\<lambda> xs x. ListMem x xs)"
   by (simp add: ListMem_iff member_def fun_eq_iff)
@@ -713,10 +710,10 @@ lemmas code_intros (*[code_ind]*) =
 consts_code
   "insert :: ('a \<times> ('b \<Rightarrow> 'c)) \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("(fn x => fn {*Set*} xs => {*Set*} (Library.insert (eq'_fst (op =)) x xs))")
-  "Executable_Set.union :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set => ('a \<times> ('b \<Rightarrow> 'c)) set"
+  "sup :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set => ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("(fn {*Set*} xs => fn {*Set*} ys => {*Set*} (Library.union (eq'_fst (op =)) xs ys))")
-  "Executable_Set.subtract :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
-    ("(fn {*Set*} xs => fn {*Set*} ys => {*Set*} (Library.subtract (eq'_fst (op =)) xs ys))")
+  "minus :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
+    ("(fn {*Set*} xs => fn {*Set*} ys => {*Set*} (Library.subtract (eq'_fst (op =)) ys xs))")
 
 consts_code
   "new_Addr"

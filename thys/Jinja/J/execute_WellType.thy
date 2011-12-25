@@ -86,8 +86,6 @@ definition test4 where "test4 = [], empty(''V'' \<mapsto> Integer)  \<turnstile>
 definition test5 where "test5 = [classObject, (''C'',(''Object'',[(''F'',Integer)],[]))], empty  \<turnstile> testExpr5 :: _"
 definition test6 where "test6 = [classObject, classI], empty  \<turnstile> testExpr6 :: _"
 
-declare mem_Collect_eq [code_unfold]
-
 ML {*
   val SOME(@{code Integer}, _) = Predicate.yield @{code test1};
   val SOME(@{code Integer}, _) = Predicate.yield @{code test2};

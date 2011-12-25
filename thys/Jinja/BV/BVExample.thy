@@ -516,7 +516,7 @@ notepad begin
 end
 
 lemma [code]:
-  "iter f step ss w = while (\<lambda>(ss, w). \<not> is_empty w)
+  "iter f step ss w = while (\<lambda>(ss, w). \<not> More_Set.is_empty w)
     (\<lambda>(ss, w).
         let p = some_elem w in propa f (step p (ss ! p)) ss (w - {p}))
     (ss, w)"
@@ -566,14 +566,10 @@ lemma [code]:
       (case ST!n of
          Class C \<Rightarrow> Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P C M) (\<lambda>(Ts, T, m, D). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
        | _ \<Rightarrow> False)))"
-by(fastforce simp add: Predicate.holds_eq simp del: eval_bind split: ty.split_asm split_if_asm intro: bindI Method_i_i_i_o_o_o_oI elim!: bindE Method_i_i_i_o_o_o_oE)
+by (fastforce simp add: Predicate.holds_eq simp del: eval_bind split: ty.split_asm split_if_asm intro: bindI Method_i_i_i_o_o_o_oI elim!: bindE Method_i_i_i_o_o_o_oE)
 
-definition [code del]: "mem2 = op :"
-lemma [code]: "mem2 x A = A x"
-  by(simp add: mem2_def mem_def)
-
-lemmas [folded mem2_def, code] =
-  SemiType.sup_def[unfolded exec_lub_def]
+lemmas [code] =
+  SemiType.sup_def [unfolded exec_lub_def]
   widen.equation
   is_relevant_class.simps
 

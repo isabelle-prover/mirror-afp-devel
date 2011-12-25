@@ -115,8 +115,6 @@ code_const undefined_val
 
 lemmas [code_unfold] = SystemClasses_def [unfolded ObjectC_def NullPointerC_def ClassCastC_def OutOfMemoryC_def]
 
-declare mem_Collect_eq [code_unfold]
-
 definition "test = exec (E, start_state E test_name makelist_name)"
 
 ML {* 

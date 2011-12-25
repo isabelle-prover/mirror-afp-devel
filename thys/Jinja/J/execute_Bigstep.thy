@@ -173,8 +173,6 @@ definition "V = ''V''"
 definition "C = ''C''"
 definition "F = ''F''"
 
-declare mem_Collect_eq [code_unfold]
-
 ML {*
   val SOME ((@{code Val} (@{code Intg} 5), _), _) = Predicate.yield @{code test1};
   val SOME ((@{code Val} (@{code Intg} 11), _), _) = Predicate.yield @{code test2};
