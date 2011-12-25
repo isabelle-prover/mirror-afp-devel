@@ -6,7 +6,7 @@ begin
 text {*
 We use @{theory HOLCF} to define the denotational semantics. By default, HOLCF does not turn the regular @{text set} type into a partial order, so this is done here. Some of the lemmas here are contributed by Brian Huffman.
 
-We start by making the type @{text bool} a pointed chain-complete partial order. Because @{text "'a set"} is just an abbreviation for @{text "'a => bool"}, this gives us a pcpo for sets.
+We start by making the type @{text bool} a pointed chain-complete partial order.
 *}
 
 instantiation bool :: po
@@ -29,6 +29,12 @@ proof
   thus "\<exists>x::bool. \<forall>y. x \<sqsubseteq> y" ..
 qed
 
+lemma is_lub_bool: "S <<| (True \<in> S)"
+  unfolding is_lub_def is_ub_def below_bool_def by auto
+
+lemma lub_bool: "lub S = (True \<in> S)"
+  using is_lub_bool by (rule lub_eqI)
+
 lemma bottom_eq_False[simp]: "\<bottom> = False"
 by (rule below_antisym [OF minimal], simp add: below_bool_def)
 
@@ -36,23 +42,33 @@ text {*
 To convert between the squared syntax used by @{theory HOLCF} and the regular, round syntax for sets, we state some of the equivalencies.
 *}
 
-lemma sqsubset_is_subset:"A \<sqsubseteq> B \<longleftrightarrow> A \<subseteq> B"
-unfolding below_fun_def and below_bool_def
-  by (auto simp:mem_def)
+instantiation set :: (type) po
+begin
+definition
+  "A \<sqsubseteq> B \<longleftrightarrow> A \<subseteq> B"
+instance by (default, unfold below_set_def, fast+)
+end
+
+lemma sqsubset_is_subset: "A \<sqsubseteq> B \<longleftrightarrow> A \<subseteq> B"
+  by (fact below_set_def)
+
+lemma is_lub_set: "S <<| \<Union>S"
+  unfolding is_lub_def is_ub_def below_set_def by fast
 
 lemma lub_is_union: "lub S = \<Union>S"
-apply(rule lub_eqI)
-  unfolding is_lub_def and is_ub_def
-  by (auto iff:sqsubset_is_subset)
+  using is_lub_set by (rule lub_eqI)
 
-lemma const_False_is_bot[simp]: "(\<lambda>a. False) = {}" 
-  by (rule ext, auto)
-
-lemma bot_bool_is_emptyset[simp]: "\<bottom> = {}"
-  by (simp add:inst_fun_pcpo)
+instance set :: (type) cpo
+  by (default, fast intro: is_lub_set)
 
 lemma emptyset_is_bot[simp]: "{} \<sqsubseteq> S"
   by (simp add:sqsubset_is_subset)
+
+instance set :: (type) pcpo
+  by (default, fast intro: emptyset_is_bot)
+
+lemma bot_bool_is_emptyset[simp]: "\<bottom> = {}"
+  using emptyset_is_bot by (rule bottomI [symmetric])
 
 text {*
 To actually use these instance in @{text fixrec} definitions or fixed-point inductions, we need continuity requrements for various boolean and set operations.
@@ -77,14 +93,18 @@ unfolding imp_conv_disj by (rule cont2cont_disj[OF f g])
 lemma cont2cont_Collect [simp, cont2cont]:
   assumes "\<And>y. cont (\<lambda>x. f x y)"
   shows "cont (\<lambda>x. {y. f x y})"
-unfolding Collect_def using assms
-by (rule cont2cont_lambda)
+apply (rule contI)
+apply (subst cont2contlubE [OF assms], assumption)
+apply (auto simp add: is_lub_def is_ub_def below_set_def lub_bool)
+done
 
 lemma cont2cont_mem [simp, cont2cont]:
   assumes "cont (\<lambda>x. f x)"
   shows "cont (\<lambda>x. y \<in> f x)"
-unfolding mem_def using assms
-by (rule cont2cont_fun)
+apply (rule cont_compose [OF _ assms])
+apply (rule contI)
+apply (auto simp add: is_lub_def is_ub_def below_bool_def lub_is_union)
+done
 
 lemma cont2cont_union [simp, cont2cont]:
   "cont (\<lambda>x. f x) \<Longrightarrow> cont (\<lambda>x. g x)
@@ -148,12 +168,12 @@ lemma adm_not_mem:
 using assms
 apply (erule_tac t = f in adm_subst)
 proof (rule admI)
-fix Y :: "nat \<Rightarrow> 'b \<Rightarrow> bool"
+fix Y :: "nat \<Rightarrow> 'b set"
 assume chain: "chain Y"
-assume "\<forall>i. y \<notin> Y i" hence  "(\<Squnion> i. Y i y) = False"
-  unfolding mem_def by (auto simp del: const_False_is_bot)
+assume "\<forall>i. y \<notin> Y i" hence  "(\<Squnion> i. y \<in> Y i) = False"
+  by auto
 thus "y \<notin> (\<Squnion> i. Y i)"
-  using chain unfolding mem_def by (subst lub_fun) auto
+  using chain unfolding lub_bool lub_is_union by auto
 qed
 
 lemma adm_id[simp]: "adm (\<lambda>x . x)"

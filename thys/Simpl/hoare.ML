@@ -131,7 +131,7 @@ fun mk_Un T (A, B) = Const (@{const_name Lattices.sup}, T --> T --> T) $ A $ B;
 fun dest_Un (Const (@{const_name Lattices.sup}, _) $ t1 $ t2) = dest_Un t1 @ dest_Un t2
   | dest_Un t = [t]
 
-fun UN_const (dT as (Type ("fun", [dT', @{typ bool}]))) rT =
+fun UN_const (dT as (Type (@{type_name set}, [dT']))) rT = 
       Const (@{const_name Complete_Lattices.SUPR}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name Orderings.top}, dT)
   | UN_const _ _ = raise Match;
 
@@ -1718,8 +1718,7 @@ fun split_pair_apps thm =
               let
                 val len = length args;
                 val idxs = (len - 1) downto 0;
-                val (argTs, bdyTs) = chop len (binder_types vT);
-                val bdyT = bdyTs ---> body_type vT;
+                val (argTs,bdyT) = strip_type vT;
                 val (z, _) = Name.variant "z" (fold Term.declare_term_frees args Name.context);
                 val frees = map (apfst (fn i => z^string_of_int i))
                                 (0 upto (len - 1) ~~ argTs);
@@ -1853,8 +1852,7 @@ fun gen_call_rec_rule specs_name n rule =
     val maxidx = #maxidx (rep_cterm (cprop_of rule));
     val vars = Term.add_vars (prop_of rule) [];
     fun get_type n = the (AList.lookup (op =) vars (n, 0));
-    val specsT as (Type ("fun", [Type (_,[assT,Type (_,[pT,_])]), Type (@{type_name bool}, [])])) =
-      get_type specs_name;
+    val specsT as (Type (_, [Type (_, [assT, Type (_, [pT,_])])])) = get_type specs_name;
     val zT = TVar (("z",maxidx+1),Sign.defaultS thy)
 
     fun mk_var i n T = Var ((n ^ string_of_int i,0),T);
@@ -3660,7 +3658,7 @@ fun get_state_space_in_subset_eq thy t =
       (strip_comb o HOLogic.dest_Trueprop o strip_qnt_body @{const_name all}) t;
     val Ts = map snd (strip_vars t);
     val T = fastype_of1 (Ts,subset_eq);
-    val Type(_,[_,Type(_,[Type ("fun", [state_spaceT, Type (@{type_name bool}, [])]),_])]) = T;
+    val Type (_, [_,Type (_, [Type (_, [state_spaceT]), _])]) = T; 
             (* also works for "in": x : P *)
     val SOME Tids = stateT_ids state_spaceT;
   in SOME (Tids,Partial,state_kind_of thy state_spaceT)
