@@ -7,7 +7,7 @@ header {* \isaheader{Example Welltypings}\label{sec:BVExample} *}
 
 theory BVExample
 imports "../JVM/JVMListExample" BVSpecTypeSafe BVExec
-  "~~/src/HOL/Library/Executable_Set"
+  "~~/src/HOL/Library/More_Set"
   "~~/src/HOL/Library/Efficient_Nat"
 begin
 
@@ -506,7 +506,6 @@ definition some_elem :: "'a set \<Rightarrow> 'a" where [code del]:
   "some_elem = (%S. SOME x. x : S)"
 code_const some_elem
   (SML "(case/ _ of/ Set/ xs/ =>/ hd/ xs)")
-setup {* Code.add_signature_cmd ("some_elem", "'a set \<Rightarrow> 'a") *}
 
 text {* This code setup is just a demonstration and \emph{not} sound! *}
 notepad begin

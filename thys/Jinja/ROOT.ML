@@ -4,7 +4,7 @@ no_document use_thys [
   "~~/src/HOL/Library/List_Prefix",
   "~~/src/HOL/Library/While_Combinator",
   "~~/src/HOL/Library/Efficient_Nat",
-  "~~/src/HOL/Library/Executable_Set"
+  "~~/src/HOL/Library/More_Set"
 ];
 
 use_thy "Jinja"
