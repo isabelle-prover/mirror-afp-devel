@@ -145,7 +145,7 @@ lemma [simp]: "is_type (compP f P) T = is_type P T"
 by(induct T)(auto cong: ty.case_cong)
 
 lemma is_type_compP [simp]: "is_type (compP f P) = is_type P"
-by(auto simp add: mem_def)
+by auto
 
 lemma compP_widen[simp]:
   "(compP f P \<turnstile> T \<le> T') = (P \<turnstile> T \<le> T')"
