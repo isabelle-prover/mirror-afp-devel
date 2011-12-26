@@ -3,9 +3,7 @@
 *)
 
 theory Set_without_equal
-imports
-  Main
-  "~~/src/HOL/Library/More_Set"
+imports Main
 begin
 
 text {*
@@ -39,15 +37,12 @@ declare
 text {* Merge name spaces to avoid cyclic module dependencies *}
 
 code_modulename SML
-  More_Set Set
   Set_without_equal Set
 
 code_modulename Haskell
-  More_Set Set
   Set_without_equal Set
 
 code_modulename OCaml
-  More_Set Set
   Set_without_equal Set
 
 end

@@ -9,7 +9,6 @@ imports
   WWellForm
   WellType
   DefAss
-  "~~/src/HOL/Library/More_Set"
 begin
 
 definition wf_J_mdecl :: "'addr J_prog \<Rightarrow> cname \<Rightarrow> 'addr J_mb mdecl \<Rightarrow> bool"

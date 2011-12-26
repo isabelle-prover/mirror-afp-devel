@@ -7,8 +7,7 @@
 header {* \isaheader{Code generation for Semantics and Type System} *}
 
 theory Execute
-imports BigStep WellType
-  "~~/src/HOL/Library/More_Set" "~~/src/HOL/Library/Efficient_Nat"
+imports BigStep WellType "~~/src/HOL/Library/Efficient_Nat"
 begin
 
 section{* General redefinitions *}

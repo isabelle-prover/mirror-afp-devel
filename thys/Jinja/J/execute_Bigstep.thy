@@ -8,7 +8,6 @@ header {* \isaheader{Code Generation For BigStep} *}
 theory execute_Bigstep
 imports
   BigStep Examples
-  "~~/src/HOL/Library/More_Set"
   "~~/src/HOL/Library/Efficient_Nat"
 begin
 

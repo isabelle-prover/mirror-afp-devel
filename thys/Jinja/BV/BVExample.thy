@@ -7,7 +7,6 @@ header {* \isaheader{Example Welltypings}\label{sec:BVExample} *}
 
 theory BVExample
 imports "../JVM/JVMListExample" BVSpecTypeSafe BVExec
-  "~~/src/HOL/Library/More_Set"
   "~~/src/HOL/Library/Efficient_Nat"
 begin
 

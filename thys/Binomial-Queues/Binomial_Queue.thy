@@ -3,7 +3,7 @@
 header {* Functional Binomial Queues *}
 
 theory Binomial_Queue
-imports PQ "~~/src/HOL/Library/More_List"
+imports PQ
 begin
 
 subsection {* Type definition and projections *}

@@ -8,7 +8,6 @@ theory JVMListExample
 imports
   "../Common/SystemClasses"
   JVMExec
-  "~~/src/HOL/Library/More_Set"
   "~~/src/HOL/Library/Efficient_Nat"
 begin
 
