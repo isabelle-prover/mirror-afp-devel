@@ -90,7 +90,7 @@ by(simp_all add: undefined_value_def)
 class addr =
   fixes hash_addr :: "'a \<Rightarrow> int"
   and monitor_finfun_to_list :: "('a \<Rightarrow>\<^isub>f nat) \<Rightarrow> 'a list"
-  assumes "set (monitor_finfun_to_list f) = (finfun_dom f)\<^sub>f"
+  assumes "set (monitor_finfun_to_list f) = Collect (finfun_dom f)\<^sub>f"
 
 locale addr_base =
   fixes addr2thread_id :: "'addr \<Rightarrow> 'thread_id"

@@ -762,24 +762,23 @@ proof(intro allI impI)
   proof(cases "\<exists>s'. s -\<tau>\<rightarrow> s' \<and> (\<exists>x'. silent_moves s' x' \<and> x' \<in> Q)")
     case False
     hence "\<forall>y. silent_move_from s x y \<longrightarrow> \<not> y \<in> Q"
-      by(cases "x=s")(auto simp add: mem_def, blast elim: converse_rtranclpE intro: rtranclp.rtrancl_into_rtrancl)
+      by(cases "x=s")(auto, blast elim: converse_rtranclpE intro: rtranclp.rtrancl_into_rtrancl)
     with `x \<in> Q` show ?thesis by blast
   next
     case True
     then obtain s' x' where "s -\<tau>\<rightarrow> s'" and "silent_moves s' x'" and "x' \<in> Q"
-      by(auto simp add: mem_def)
+      by auto
     from `s -\<tau>\<rightarrow> s'` have "wfP (flip (silent_move_from s'))" by(rule wfPs')
-    moreover from `x' \<in> Q` have "Q x'" by(simp add: mem_def)
-    ultimately obtain z where "Q z" and min: "\<And>y. silent_move_from s' z y \<Longrightarrow> \<not> Q y"
+    from this `x' \<in> Q` obtain z where "z \<in> Q" and min: "\<And>y. silent_move_from s' z y \<Longrightarrow> \<not> y \<in> Q"
       and "(silent_move_from s')^** x' z"
-      by(rule wfP_minimalE)(unfold flip_simps, blast)
+      by (rule wfP_minimalE) (unfold flip_simps, blast)
     { fix y
       assume "silent_move_from s z y"
       with `(silent_move_from s')^** x' z` `silent_move^** s' x'`
       have "silent_move_from s' z y"
 	by(blast intro: rtranclp_silent_move_from_imp_silent_moves)
-      hence "\<not> Q y" by(rule min) }
-    with `Q z` show ?thesis by(auto simp add: mem_def intro!: bexI)
+      hence "\<not> y \<in> Q" by(rule min) }
+    with `z \<in> Q` show ?thesis by(auto simp add: intro!: bexI)
   qed
 qed
 

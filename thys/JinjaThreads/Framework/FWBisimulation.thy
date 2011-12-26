@@ -134,8 +134,10 @@ lemma mbisim_thrD2:
 by(frule mbisim_thrNone_eq[where t=t])(cases "thr s1 t",(fastforce simp add: mbisim_def tbisim_def)+)
 
 lemma mbisim_dom_eq: "s1 \<approx>m s2 \<Longrightarrow> dom (thr s1) = dom (thr s2)"
-apply(clarsimp simp add: dom_def Collect_def fun_eq_iff simp del: not_None_eq)
-apply(erule mbisim_thrNone_eq)
+apply(clarsimp simp add: dom_def fun_eq_iff simp del: not_None_eq)
+apply(rule Collect_cong)
+apply(drule mbisim_thrNone_eq)
+apply(simp del: not_None_eq)
 done
 
 lemma mbisim_wset_thread_ok1:
@@ -171,7 +173,8 @@ apply(auto simp add: mbisim_def tbisim_def)
     apply(auto dest!: wset_thread_okD)[1]
    apply fastforce
   apply(erule back_subst[where P=finite])
-  apply(clarsimp simp add: dom_def Collect_def fun_eq_iff simp del: not_None_eq)
+  apply(clarsimp simp add: dom_def fun_eq_iff simp del: not_None_eq)
+  defer
   apply(rename_tac t)
   apply(case_tac [!] "thr s2 t")
 by fastforce+

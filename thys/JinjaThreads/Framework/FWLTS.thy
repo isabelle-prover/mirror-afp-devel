@@ -454,7 +454,7 @@ begin
 lemma wf_m\<mu>t: "wfP (m\<mu>t m)"
 unfolding wfP_eq_minimal
 proof(intro strip)
-  fix Q :: "('l,'t,'x) thread_info \<Rightarrow> bool" and ts
+  fix Q :: "('l,'t,'x) thread_info set" and ts
   assume "ts \<in> Q"
   show "\<exists>z\<in>Q. \<forall>y. m\<mu>t m y z \<longrightarrow> y \<notin> Q"
   proof(cases "finite (dom ts)")
@@ -538,11 +538,11 @@ qed
 
 lemma wf_m\<mu>: "wfP m\<mu>"
 proof -
-  have "wf (inv_image (same_fst (\<lambda>m. True) (\<lambda>m (ts, ts'). m\<mu>t m ts ts')) (\<lambda>s. (shr s, thr s)))"
-    by(rule wf_inv_image)(rule wf_same_fst, rule wf_m\<mu>t[unfolded wfP_def Collect_def])
-  also have "inv_image (same_fst (\<lambda>m. True) (\<lambda>m (ts, ts'). m\<mu>t m ts ts')) (\<lambda>s. (shr s, thr s)) = (\<lambda>(s, s'). m\<mu> s s')"
-    by(auto simp add: m\<mu>_def same_fst_def)(auto simp add: mem_def)
-  finally show ?thesis by(simp add: wfP_def Collect_def)
+  have "wf (inv_image (same_fst (\<lambda>m. True) (\<lambda>m. {(ts, ts'). m\<mu>t m ts ts'})) (\<lambda>s. (shr s, thr s)))"
+    by(rule wf_inv_image)(rule wf_same_fst, rule wf_m\<mu>t[unfolded wfP_def])
+  also have "inv_image (same_fst (\<lambda>m. True) (\<lambda>m. {(ts, ts'). m\<mu>t m ts ts'})) (\<lambda>s. (shr s, thr s)) = {(s, s'). m\<mu> s s'}"
+    by(auto simp add: m\<mu>_def same_fst_def)
+  finally show ?thesis by(simp add: wfP_def)
 qed
 
 end

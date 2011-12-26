@@ -2825,7 +2825,7 @@ definition sim21_size :: "'addr jvm_prog \<Rightarrow> 'addr jvm_thread_state \<
 where
   "sim21_size P xcpfrs xcpfrs' \<longleftrightarrow>
    (xcpfrs, xcpfrs') \<in> 
-   inv_image (less_than <*lex*> same_fst (\<lambda>n. True) (\<lambda>n (pcxcp, pcxcp'). sim21_size_aux n pcxcp pcxcp'))
+   inv_image (less_than <*lex*> same_fst (\<lambda>n. True) (\<lambda>n. {(pcxcp, pcxcp'). sim21_size_aux n pcxcp pcxcp'}))
              (\<lambda>(xcp, frs). (length frs, case frs of [] \<Rightarrow> undefined
                           | (stk, loc, C, M, pc) # frs \<Rightarrow> (length (fst (snd (snd (the (snd (snd (snd (method P C M)))))))), pc, xcp)))"
 
@@ -2847,7 +2847,7 @@ apply(rule wf_inv_image)
 apply(rule wf_lex_prod)
  apply(rule wf_less_than)
 apply(rule wf_same_fst)
-apply(rule wfP_sim21_size_aux[unfolded wfP_def Collect_def])
+apply(rule wfP_sim21_size_aux[unfolded wfP_def])
 done
 
 declare split_beta[simp]
@@ -3440,7 +3440,7 @@ proof(cases)
 	    fix a assume "xcp' = \<lfloor>a\<rfloor>"
 	    with exec' have "pc = pc'" by(auto dest: exec_move_raise_xcp_pcD) }
 	  ultimately have "sim21_size (compP2 P) (xcp', frs') (xcp, frs)" using sees True 
-	    by(auto simp add: sim21_size_def)(auto simp add: mem_def compP2_def compMb2_def intro!: sim21_size_aux.intros)
+	    by(auto simp add: sim21_size_def)(auto simp add: compP2_def compMb2_def intro!: sim21_size_aux.intros)
 	  with red True show ?thesis by simp(rule \<tau>red1r_into_\<tau>Red1r)
         next
 	  case False
@@ -3637,7 +3637,7 @@ proof(cases)
 	from bisim b' have "pc \<le> Suc (length (compE2 body))" "pch \<le> Suc (length (compE2 body))"
 	  by(auto dest: bisim1_pc_length_compE2)
 	with sees True have "sim21_size (compP2 P) (xcp', frs') (xcp, frs)"
-	  by(auto simp add: sim21_size_def)(auto simp add: mem_def compP2_def compMb2_def intro: sim21_size_aux.intros)
+	  by(auto simp add: sim21_size_def)(auto simp add: compP2_def compMb2_def intro: sim21_size_aux.intros)
 	with red True show ?thesis by simp(rule \<tau>red1r_into_\<tau>Red1r)
       next
 	case False

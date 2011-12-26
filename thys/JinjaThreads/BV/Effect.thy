@@ -547,7 +547,9 @@ lemmas eff\<^isub>i_code[code] =
 lemma app\<^isub>i_Getfield_code:
   "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) \<longleftrightarrow>
   Predicate.holds (Predicate.bind (sees_field_i_i_i_o_o_i P C F C) (\<lambda>T. Predicate.single ())) \<and> P \<turnstile> T \<le> Class C"
-by(clarsimp simp add: Predicate.bind_def Predicate.single_def holds_eq eval_sees_field_i_i_i_o_i_conv)
+apply(clarsimp simp add: Predicate.bind_def Predicate.single_def holds_eq eval_sees_field_i_i_i_o_i_conv)
+apply(simp add: SUP_def Sup_apply)
+done
  
 lemma app\<^isub>i_Putfield_code:
   "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) \<longleftrightarrow>

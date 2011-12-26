@@ -280,38 +280,38 @@ apply(frule (2) wf_ci_ins_jump_ok)
 apply(erule (2) wf_ciD3)
 done
 
-typedef (open) ('addr, 'heap) check_instr = "(wf_ci :: ('addr, 'heap) check_instr' \<Rightarrow> bool)"
+typedef (open) ('addr, 'heap) check_instr = "Collect wf_ci :: ('addr, 'heap) check_instr' set"
   morphisms ci_app Abs_check_instr
-by(auto simp add: mem_def)
+by auto
 
 lemma ci_app_check_instr' [simp]: "ci_app (Abs_check_instr check_instr') = check_instr'"
-by(simp add: Abs_check_instr_inverse mem_def)
+by(simp add: Abs_check_instr_inverse)
 
 lemma (in JVM_heap_base) ci_app_check_instr [simp]: "ci_app (Abs_check_instr check_instr) = check_instr"
-by(simp add: Abs_check_instr_inverse mem_def)
+by(simp add: Abs_check_instr_inverse)
 
 lemma wf_ci_stk_offerD:
   "ci_app ci ins P h stk loc C M pc frs \<Longrightarrow> ci_app ci ins P h (stk @ stk') loc C M pc frs"
 apply(rule ci_stk_offerD[OF wf_ciD1]) back
-by(rule ci_app[simplified mem_def])
+by(rule ci_app [simplified])
 
 lemma wf_ciD2_ci_app:
   "ci_app ci ins P h stk loc C M pc frs \<Longrightarrow> check_instr' ins P h stk loc C M pc frs"
 apply(cases ci)
-apply(simp add: mem_def Abs_check_instr_inverse)
+apply(simp add: Abs_check_instr_inverse)
 apply(erule (1) wf_ciD2)
 done
 
 lemma wf_ciD3_ci_app:
   "\<lbrakk> ci_app ci ins P h stk loc C M pc frs; ins_jump_ok ins pc' \<rbrakk> \<Longrightarrow> ci_app ci ins P h stk loc C M pc' frs"
 apply(cases ci)
-apply(simp add: mem_def Abs_check_instr_inverse)
+apply(simp add: Abs_check_instr_inverse)
 apply(erule (2) wf_ciD3)
 done
 
 lemma wf_ciD3'_ci_app: "\<lbrakk> ci_app ci ins P h stk loc C M pc frs; pc \<le> pc' \<rbrakk> \<Longrightarrow> ci_app ci ins P h stk loc C M pc' frs"
 apply(cases ci)
-apply(simp add: mem_def Abs_check_instr_inverse)
+apply(simp add: Abs_check_instr_inverse)
 apply(erule (2) wf_ciD3')
 done
 

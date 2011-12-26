@@ -1142,16 +1142,16 @@ by(atomize_elim)(rule bisim[unfolded bisim_compose_def])
 
 lemma bisim_compose_assoc [simp]:
   "(bisim12 \<circ>\<^isub>B bisim23) \<circ>\<^isub>B bisim34 = bisim12 \<circ>\<^isub>B bisim23 \<circ>\<^isub>B bisim34"
-by(auto simp add: fun_eq_iff intro: bisim_composeI)
+by(auto simp add: fun_eq_iff)
 
 lemma bisim_compose_conv_rel_comp:
-  "split (bisim_compose bisim12 bisim23) = rel_comp (split bisim12) (split bisim23)"
-by(auto simp add: rel_comp_def mem_def intro: bisim_composeI)
+  "split (bisim_compose bisim12 bisim23) = (\<lambda>x. x \<in> rel_comp (Collect (split bisim12)) (Collect (split bisim23)))"
+by(auto simp add: rel_comp_def)
 
 lemma list_all2_bisim_composeI:
   "\<lbrakk> list_all2 A xs ys; list_all2 B ys zs \<rbrakk>
   \<Longrightarrow> list_all2 (A \<circ>\<^isub>B B) xs zs"
-by(rule list_all2_trans)(auto intro: bisim_composeI)+
+by(rule list_all2_trans) auto+
 
 lemma delay_bisimulation_diverge_compose:
   assumes wbisim12: "delay_bisimulation_diverge trsys1 trsys2 bisim12 tlsim12 \<tau>move1 \<tau>move2"

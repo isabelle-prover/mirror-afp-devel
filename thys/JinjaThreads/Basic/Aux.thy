@@ -16,7 +16,7 @@ imports
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Quotient_Option"
-  "Cset_Monad"
+  "~~/src/HOL/Library/Monad_Syntax"
   "~~/src/HOL/Library/Wfrec"
 begin
 
@@ -336,7 +336,7 @@ lemma is_emptyD:
   assumes "Predicate.is_empty P"
   shows "Predicate.eval P x \<Longrightarrow> False"
 using assms
-by(simp add: Predicate.is_empty_def bot_pred_def Set.empty_def[unfolded Collect_def])
+by(simp add: Predicate.is_empty_def bot_pred_def bot_apply Set.empty_def)
 
 lemma eval_bind_conv:
   "Predicate.eval (P \<guillemotright>= R) y = (\<exists>x. Predicate.eval P x \<and> Predicate.eval (R x) y)"
@@ -487,7 +487,7 @@ done
 
 lemma inj_on_image_mem_iff:
   "\<lbrakk> inj_on f A; B \<subseteq> A; a \<in> A \<rbrakk> \<Longrightarrow> f a \<in> f ` B \<longleftrightarrow> a \<in> B"
-by(metis inv_into_f_eq inv_into_image_cancel mem_def rev_image_eqI)
+by(metis inv_into_f_eq inv_into_image_cancel rev_image_eqI)
 
 lemma setsum_hom:
   assumes hom_add [simp]: "\<And>a b. f (a + b) = f a + f b"
@@ -613,8 +613,8 @@ proof -
   from `P x` have "?Q x" by blast
   from `wfP r` have "\<And>Q. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. r y z \<longrightarrow> y \<notin> Q)"
     unfolding wfP_eq_minimal by blast
-  from this[rule_format, of ?Q] `?Q x`
-  obtain z where "?Q z" and min: "\<And>y. r y z \<Longrightarrow> \<not> ?Q y" by(auto simp add: mem_def)
+  from this[rule_format, of "Collect ?Q"] `?Q x`
+  obtain z where "?Q z" and min: "\<And>y. r y z \<Longrightarrow> \<not> ?Q y" by auto
   from `?Q z` have "P z" "r^** z x" by auto
   moreover
   { fix y
