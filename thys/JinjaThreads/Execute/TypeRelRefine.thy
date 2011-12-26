@@ -10,7 +10,6 @@ theory TypeRelRefine
 imports
   "../Common/TypeRel"
   "~~/src/HOL/Library/AList_Mapping"
-  "../Common/List_Cset"
 begin
 
 subsection {* Auxiliary lemmata *}
@@ -61,19 +60,19 @@ type_synonym
   'm prog_impl' = 
   "'m cdecl list \<times>
    (cname, 'm class) mapping \<times>
-   (cname, cname Cset.set) mapping \<times> 
+   (cname, cname set) mapping \<times> 
    (cname, (vname, cname \<times> ty \<times> fmod) mapping) mapping \<times> 
    (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm option) mapping) mapping"
 
 definition tabulate_class :: "'m cdecl list \<Rightarrow> (cname, 'm class) mapping"
 where "tabulate_class P = Mapping.Mapping (class (Program P))"
 
-definition tabulate_subcls :: "'m cdecl list \<Rightarrow> (cname, cname Cset.set) mapping"
+definition tabulate_subcls :: "'m cdecl list \<Rightarrow> (cname, cname set) mapping"
 where 
   "tabulate_subcls P = 
   Mapping.Mapping 
     (\<lambda>C. if is_class (Program P) C then
-        Some (Cset.Set (\<lambda>D. Program P \<turnstile> C \<preceq>\<^sup>* D)) 
+        Some (set (\<lambda>D. Program P \<turnstile> C \<preceq>\<^sup>* D)) 
       else None)"
 
 definition tabulate_sees_field :: "'m cdecl list \<Rightarrow> (cname, (vname, cname \<times> ty \<times> fmod) mapping) mapping"
@@ -150,10 +149,10 @@ lemma subcls'_program [code]:
   "subcls' (program Pi) C D \<longleftrightarrow> 
   C = D \<or>
   (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> False
-   | Some m \<Rightarrow> Cset.member m D)"
+   | Some m \<Rightarrow> member D \<in> m)"
 apply(cases Pi)
 apply(clarsimp simp add: subcls'_def tabulate_subcls_def)
-apply(auto elim!: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp simp add: mem_def)
+apply(auto elim!: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
 done
 
 lemma subcls'_i_i_i_program [code]:
@@ -162,8 +161,8 @@ by(rule pred_eqI)(auto elim: subcls'_i_i_iE intro: subcls'_i_i_iI)
 
 lemma subcls'_i_i_o_program [code]:
   "subcls'_i_i_o (program Pi) C = 
-  sup (Predicate.single C) (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> bot | Some m \<Rightarrow> pred_of_cset m)"
-by(cases Pi)(fastforce simp add: mem_def subcls'_i_i_o_def subcls'_def tabulate_subcls_def intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
+  sup (Predicate.single C) (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> bot | Some m \<Rightarrow> pred_of_set m)"
+by(cases Pi)(fastforce simp add: subcls'_i_i_o_def subcls'_def tabulate_subcls_def intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
 
 lemma rtranclp_FioB_i_i_subcls1_i_i_o_code [code_unfold]:
   "rtranclp_FioB_i_i (subcls1_i_i_o P) = subcls'_i_i_i P"
@@ -241,7 +240,7 @@ lemma field_program [code]:
        None \<Rightarrow> Predicate.not_unique bot
      | Some (D', T, fd) \<Rightarrow> (D', T, fd)))"
 unfolding field_def not_unique_def
-by(cases Pi)(fastforce simp add: tabulate_sees_field_def mem_def split: split_if_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
+by(cases Pi)(fastforce simp add: tabulate_sees_field_def split: split_if_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
 
 subsection {* Implementation for precomputing mappings *}
 
@@ -312,7 +311,7 @@ lemma subclst_snd_classD:
 using assms
 by(induct)(fastforce elim!: subcls1.cases dest!: map_of_SomeD intro: rev_image_eqI)+
 
-definition check_acyclicity :: "(cname, cname Cset.set) mapping \<Rightarrow> 'm cdecl list \<Rightarrow> unit"
+definition check_acyclicity :: "(cname, cname set) mapping \<Rightarrow> 'm cdecl list \<Rightarrow> unit"
 where "check_acyclicity _ _ = ()"
 
 definition cyclic_class_hierarchy :: unit 
@@ -328,7 +327,7 @@ lemma check_acyclicity_code:
        else
          (case Mapping.lookup mapping D of 
             None \<Rightarrow> ()
-          | Some Cs \<Rightarrow> if Cset.member Cs C then cyclic_class_hierarchy else ()))
+          | Some Cs \<Rightarrow> if C \<in> Cs then cyclic_class_hierarchy else ()))
        P
     in ())"
 by simp
@@ -337,13 +336,13 @@ lemma tablulate_subcls_code [code]:
   "tabulate_subcls P = 
   (let cnames = map fst P;
        cnames' = map (fst \<circ> snd) P;
-       mapping = Mapping.tabulate cnames (\<lambda>C. Cset.set (C # [D \<leftarrow> cnames'. subcls'' P C D]));
+       mapping = Mapping.tabulate cnames (\<lambda>C. set (C # [D \<leftarrow> cnames'. subcls'' P C D]));
        _ = check_acyclicity mapping P
    in mapping
   )"
 apply(auto simp add: tabulate_subcls_def Mapping.tabulate_def fun_eq_iff is_class_def o_def map_of_map2[simplified split_def])
 apply(subst map_of_map2[simplified split_def])
-apply(auto simp add: fun_eq_iff subcls''_eq_subcls map_of_map_K Cset.set_def Set.insert_code Collect_def dest: subclst_snd_classD elim: rtranclp_tranclpE)
+apply(auto simp add: fun_eq_iff subcls''_eq_subcls map_of_map_K Set.insert_code dest: subclst_snd_classD elim: rtranclp_tranclpE)
 apply(subst map_of_map2[simplified split_def])
 apply(rule sym)
 apply simp
