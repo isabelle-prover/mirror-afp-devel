@@ -9,6 +9,7 @@ imports
   WWellForm
   WellType
   DefAss
+  "~~/src/HOL/Library/More_Set"
 begin
 
 definition wf_J_mdecl :: "'addr J_prog \<Rightarrow> cname \<Rightarrow> 'addr J_mb mdecl \<Rightarrow> bool"
@@ -87,9 +88,6 @@ code_pred
   [inductify]
   typeable_with 
 .
-
-declare set.equation(3) [code del]
-declare set.simps[code]
 
 text {* Formal code generation test *}
 ML {* @{code wf_J_prog'}  *}
