@@ -6,9 +6,9 @@ imports Main
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Zorn"
   "~~/src/HOL/Library/Wfrec"
-  Cset_Monad
   "~~/src/HOL/Library/Dlist"
-  Cset_without_equal
+  Set_without_equal
+  Set_Monad
   "../../FinFun/FinFun"
   "../../Coinductive/Lazy_TLList"
   "../../Collections/ListSetImpl_Invar"
