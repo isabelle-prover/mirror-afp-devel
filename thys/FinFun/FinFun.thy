@@ -375,11 +375,11 @@ qed
 
 lemma fold_finfun_update_finite_univ:
   assumes fin: "finite (UNIV :: 'a set)"
-  shows "fold (\<lambda>a f. f(\<^sup>f a := b')) (\<lambda>\<^isup>f b) (UNIV :: 'a set) = (\<lambda>\<^isup>f b')"
+  shows "Finite_Set.fold (\<lambda>a f. f(\<^sup>f a := b')) (\<lambda>\<^isup>f b) (UNIV :: 'a set) = (\<lambda>\<^isup>f b')"
 proof -
   { fix A :: "'a set"
     from fin have "finite A" by(auto intro: finite_subset)
-    hence "fold (\<lambda>a f. f(\<^sup>f a := b')) (\<lambda>\<^isup>f b) A = Abs_finfun (\<lambda>a. if a \<in> A then b' else b)"
+    hence "Finite_Set.fold (\<lambda>a f. f(\<^sup>f a := b')) (\<lambda>\<^isup>f b) A = Abs_finfun (\<lambda>a. if a \<in> A then b' else b)"
     proof(induct)
       case (insert x F)
       have "(\<lambda>a. if a = x then b' else (if a \<in> F then b' else b)) = (\<lambda>a. if a = x \<or> a \<in> F then b' else b)"
@@ -489,7 +489,7 @@ where [code del]:
   "finfun_rec cnst upd f \<equiv>
    let b = finfun_default f;
        g = THE g. f = Abs_finfun (map_default b g) \<and> finite (dom g) \<and> b \<notin> ran g
-   in fold (\<lambda>a. upd a (map_default b g a)) (cnst b) (dom g)"
+   in Finite_Set.fold (\<lambda>a. upd a (map_default b g a)) (cnst b) (dom g)"
 
 locale finfun_rec_wf_aux =
   fixes cnst :: "'b \<Rightarrow> 'c"
@@ -512,11 +512,11 @@ lemma map_default_update_const:
   assumes fin: "finite (dom f)"
   and anf: "a \<notin> dom f"
   and fg: "f \<subseteq>\<^sub>m g"
-  shows "upd a d  (fold (\<lambda>a. upd a (map_default d g a)) (cnst d) (dom f)) =
-         fold (\<lambda>a. upd a (map_default d g a)) (cnst d) (dom f)"
+  shows "upd a d  (Finite_Set.fold (\<lambda>a. upd a (map_default d g a)) (cnst d) (dom f)) =
+         Finite_Set.fold (\<lambda>a. upd a (map_default d g a)) (cnst d) (dom f)"
 proof -
   let ?upd = "\<lambda>a. upd a (map_default d g a)"
-  let ?fr = "\<lambda>A. fold ?upd (cnst d) A"
+  let ?fr = "\<lambda>A. Finite_Set.fold ?upd (cnst d) A"
   interpret gwf: comp_fun_commute "?upd" by(rule upd_left_comm)
   
   from fin anf fg show ?thesis
@@ -550,11 +550,11 @@ lemma map_default_update_twice:
   assumes fin: "finite (dom f)"
   and anf: "a \<notin> dom f"
   and fg: "f \<subseteq>\<^sub>m g"
-  shows "upd a d'' (upd a d' (fold (\<lambda>a. upd a (map_default d g a)) (cnst d) (dom f))) =
-         upd a d'' (fold (\<lambda>a. upd a (map_default d g a)) (cnst d) (dom f))"
+  shows "upd a d'' (upd a d' (Finite_Set.fold (\<lambda>a. upd a (map_default d g a)) (cnst d) (dom f))) =
+         upd a d'' (Finite_Set.fold (\<lambda>a. upd a (map_default d g a)) (cnst d) (dom f))"
 proof -
   let ?upd = "\<lambda>a. upd a (map_default d g a)"
-  let ?fr = "\<lambda>A. fold ?upd (cnst d) A"
+  let ?fr = "\<lambda>A. Finite_Set.fold ?upd (cnst d) A"
   interpret gwf: comp_fun_commute "?upd" by(rule upd_left_comm)
   
   from fin anf fg show ?thesis
@@ -594,25 +594,25 @@ lemma finite_rec_cong1:
   assumes f: "comp_fun_commute f" and g: "comp_fun_commute g"
   and fin: "finite A"
   and eq: "\<And>a. a \<in> A \<Longrightarrow> f a = g a"
-  shows "fold f z A = fold g z A"
+  shows "Finite_Set.fold f z A = Finite_Set.fold g z A"
 proof -
   interpret f: comp_fun_commute f by(rule f)
   interpret g: comp_fun_commute g by(rule g)
   { fix B
     assume BsubA: "B \<subseteq> A"
     with fin have "finite B" by(blast intro: finite_subset)
-    hence "B \<subseteq> A \<Longrightarrow> fold f z B = fold g z B"
+    hence "B \<subseteq> A \<Longrightarrow> Finite_Set.fold f z B = Finite_Set.fold g z B"
     proof(induct)
       case empty thus ?case by simp
     next
       case (insert a B)
       note finB = `finite B` note anB = `a \<notin> B` note sub = `insert a B \<subseteq> A`
-      note IH = `B \<subseteq> A \<Longrightarrow> fold f z B = fold g z B`
+      note IH = `B \<subseteq> A \<Longrightarrow> Finite_Set.fold f z B = Finite_Set.fold g z B`
       from sub anB have BpsubA: "B \<subset> A" and BsubA: "B \<subseteq> A" and aA: "a \<in> A" by auto
       from IH[OF BsubA] eq[OF aA] finB anB
       show ?case by(auto)
     qed
-    with BsubA have "fold f z B = fold g z B" by blast }
+    with BsubA have "Finite_Set.fold f z B = Finite_Set.fold g z B" by blast }
   thus ?thesis by blast
 qed
 
@@ -658,10 +658,10 @@ proof -
     let ?b' = "\<lambda>a. case ?g' a of None \<Rightarrow> b | Some b \<Rightarrow> b"
     let ?b = "map_default b ?g"
     from upd_left_comm upd_left_comm fing'
-    have "fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g') = fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g')"
+    have "Finite_Set.fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g') = Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g')"
       by(rule finite_rec_cong1)(auto simp add: restrict_map_def b'b b map_default_def)
     also interpret gwf: comp_fun_commute "\<lambda>a. upd a (?b a)" by(rule upd_left_comm)
-    have "fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g') = upd a' b' (fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g))"
+    have "Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g') = upd a' b' (Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g))"
     proof(cases "y a' = b")
       case True
       with b'b have g': "?g' = ?g" by(auto simp add: restrict_map_def intro: ext)
@@ -672,11 +672,11 @@ proof -
       case False
       hence domg: "dom ?g = insert a' (dom ?g')" by auto
       from False b'b have a'ndomg': "a' \<notin> dom ?g'" by auto
-      have "fold (\<lambda>a. upd a (?b a)) (cnst b) (insert a' (dom ?g')) = 
-            upd a' (?b a') (fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g'))"
+      have "Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (insert a' (dom ?g')) = 
+            upd a' (?b a') (Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g'))"
         using fing' a'ndomg' unfolding b'b by(rule gwf.fold_insert)
-      hence "upd a' b (fold (\<lambda>a. upd a (?b a)) (cnst b) (insert a' (dom ?g'))) =
-             upd a' b (upd a' (?b a') (fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g')))" by simp
+      hence "upd a' b (Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (insert a' (dom ?g'))) =
+             upd a' b (upd a' (?b a') (Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g')))" by simp
       also from b'b have g'leg: "?g' \<subseteq>\<^sub>m ?g" by(auto simp add: restrict_map_def map_le_def)
       note map_default_update_twice[OF fing' a'ndomg' this, of b "?b a'" b]
       also note map_default_update_const[OF fing' a'ndomg' g'leg, of b]
@@ -735,7 +735,7 @@ proof -
       hence f': "f = Abs_finfun (map_default b (?g' |` dom ?g))" using f by simp
       interpret g'wf: comp_fun_commute "\<lambda>a. upd a (?b' a)" by(rule upd_left_comm)
       from upd_left_comm upd_left_comm fing
-      have "fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g) = fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g)"
+      have "Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g) = Finite_Set.fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g)"
         by(rule finite_rec_cong1)(auto simp add: restrict_map_def b'b True map_default_def)
       thus ?thesis unfolding finfun_rec_def Let_def finfun_default_update_const b[symmetric]
         unfolding g' g[symmetric] gg g'wf.fold_insert[OF fing a'ndomg, of "cnst b", folded dom]
@@ -752,8 +752,8 @@ proof -
         have bnrang'': "b \<notin> ran ?g''" by(auto simp add: ran_def restrict_map_def)
         interpret gwf: comp_fun_commute "\<lambda>a. upd a (?b a)" by(rule upd_left_comm)
         interpret g'wf: comp_fun_commute "\<lambda>a. upd a (?b' a)" by(rule upd_left_comm)
-        have "upd a' b' (fold (\<lambda>a. upd a (?b a)) (cnst b) (insert a' (dom ?g''))) =
-              upd a' b' (upd a' (?b a') (fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g'')))"
+        have "upd a' b' (Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (insert a' (dom ?g''))) =
+              upd a' b' (upd a' (?b a') (Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g'')))"
           unfolding gwf.fold_insert[OF fing'' a'ndomg''] f ..
         also have g''leg: "?g |` dom ?g'' \<subseteq>\<^sub>m ?g" by(auto simp add: map_le_def)
         have "dom (?g |` dom ?g'') = dom ?g''" by auto
@@ -761,16 +761,16 @@ proof -
                                      unfolded this, OF fing'' a'ndomg'' g''leg]
         also have b': "b' = ?b' a'" by(auto simp add: map_default_def)
         from upd_left_comm upd_left_comm fing''
-        have "fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g'') = fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g'')"
+        have "Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g'') = Finite_Set.fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g'')"
           by(rule finite_rec_cong1)(auto simp add: restrict_map_def b'b map_default_def)
-        with b' have "upd a' b' (fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g'')) =
-                     upd a' (?b' a') (fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g''))" by simp
+        with b' have "upd a' b' (Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g'')) =
+                     upd a' (?b' a') (Finite_Set.fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g''))" by simp
         also note g'wf.fold_insert[OF fing'' a'ndomg'', symmetric]
-        finally have "upd a' b' (fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g)) =
-                   fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g)"
+        finally have "upd a' b' (Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g)) =
+                   Finite_Set.fold (\<lambda>a. upd a (?b' a)) (cnst b) (dom ?g)"
           unfolding domg . }
-      ultimately have "fold (\<lambda>a. upd a (?b' a)) (cnst b) (insert a' (dom ?g)) =
-                    upd a' b' (fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g))" by simp
+      ultimately have "Finite_Set.fold (\<lambda>a. upd a (?b' a)) (cnst b) (insert a' (dom ?g)) =
+                    upd a' b' (Finite_Set.fold (\<lambda>a. upd a (?b a)) (cnst b) (dom ?g))" by simp
       thus ?thesis unfolding finfun_rec_def Let_def finfun_default_update_const b[symmetric] g[symmetric] g' dom[symmetric]
         using b'b gg by(simp add: map_default_insert)
     qed
@@ -783,7 +783,7 @@ end
 
 locale finfun_rec_wf = finfun_rec_wf_aux + 
   assumes const_update_all:
-  "finite (UNIV :: 'a set) \<Longrightarrow> fold (\<lambda>a. upd a b') (cnst b) (UNIV :: 'a set) = cnst b'"
+  "finite (UNIV :: 'a set) \<Longrightarrow> Finite_Set.fold (\<lambda>a. upd a b') (cnst b) (UNIV :: 'a set) = cnst b'"
 begin
 
 declare finfun_simp [simp] finfun_iff [iff] finfun_intro [intro]
@@ -924,9 +924,9 @@ proof(unfold_locales)
   { fix A :: "'b set"
     interpret comp_fun_commute "\<lambda>a'. If (a = a') b'" by(rule finfun_apply_aux.upd_left_comm)
     from fin have "finite A" by(auto intro: finite_subset)
-    hence "fold (\<lambda>a'. If (a = a') b') b A = (if a \<in> A then b' else b)"
+    hence "Finite_Set.fold (\<lambda>a'. If (a = a') b') b A = (if a \<in> A then b' else b)"
       by induct auto }
-  from this[of UNIV] show "fold (\<lambda>a'. If (a = a') b') b UNIV = b'" by simp
+  from this[of UNIV] show "Finite_Set.fold (\<lambda>a'. If (a = a') b') b UNIV = b'" by simp
 qed
 
 lemma finfun_const_apply [simp, code]: "(\<lambda>\<^isup>f b)\<^sub>f a = b"
@@ -984,10 +984,10 @@ proof
   assume fin: "finite (UNIV :: 'c set)"
   { fix A :: "'c set"
     from fin have "finite A" by(auto intro: finite_subset)
-    hence "fold (\<lambda>(a :: 'c) c. c(\<^sup>f a := g b')) (\<lambda>\<^isup>f g b) A =
+    hence "Finite_Set.fold (\<lambda>(a :: 'c) c. c(\<^sup>f a := g b')) (\<lambda>\<^isup>f g b) A =
       Abs_finfun (\<lambda>a. if a \<in> A then g b' else g b)"
       by induct (simp_all add: finfun_const_def, auto simp add: finfun_update_def Abs_finfun_inverse_finite fun_upd_def Abs_finfun_inject_finite fun_eq_iff fin) }
-  from this[of UNIV] show "fold (\<lambda>(a :: 'c) c. c(\<^sup>f a := g b')) (\<lambda>\<^isup>f g b) UNIV = (\<lambda>\<^isup>f g b')"
+  from this[of UNIV] show "Finite_Set.fold (\<lambda>(a :: 'c) c. c(\<^sup>f a := g b')) (\<lambda>\<^isup>f g b) UNIV = (\<lambda>\<^isup>f g b')"
     by(simp add: finfun_const_def)
 qed
 
@@ -1119,11 +1119,11 @@ proof
   { fix A :: "'c set"
     interpret comp_fun_commute "\<lambda>a c. c(\<^sup>f a := (b', g\<^sub>f a))" by(rule finfun_Diag_aux.upd_left_comm)
     from fin have "finite A" by(auto intro: finite_subset)
-    hence "fold (\<lambda>a c. c(\<^sup>f a := (b', g\<^sub>f a))) (Pair b \<circ>\<^isub>f g) A =
+    hence "Finite_Set.fold (\<lambda>a c. c(\<^sup>f a := (b', g\<^sub>f a))) (Pair b \<circ>\<^isub>f g) A =
       Abs_finfun (\<lambda>a. (if a \<in> A then b' else b, g\<^sub>f a))"
       by(induct)(simp_all add: finfun_const_def finfun_comp_conv_comp o_def,
                  auto simp add: finfun_update_def Abs_finfun_inverse_finite fun_upd_def Abs_finfun_inject_finite fun_eq_iff fin) }
-  from this[of UNIV] show "fold (\<lambda>a c. c(\<^sup>f a := (b', g\<^sub>f a))) (Pair b \<circ>\<^isub>f g) UNIV = Pair b' \<circ>\<^isub>f g"
+  from this[of UNIV] show "Finite_Set.fold (\<lambda>a c. c(\<^sup>f a := (b', g\<^sub>f a))) (Pair b \<circ>\<^isub>f g) UNIV = Pair b' \<circ>\<^isub>f g"
     by(simp add: finfun_const_def finfun_comp_conv_comp o_def)
 qed
 
@@ -1257,10 +1257,10 @@ proof(unfold_locales)
     interpret comp_fun_commute "\<lambda>a :: 'c \<times> 'a. (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c))) a b'"
       by(rule finfun_curry_aux.upd_left_comm)
     from fin have "finite A" by(auto intro: finite_subset)
-    hence "fold (\<lambda>a :: 'c \<times> 'a. (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c))) a b') ((finfun_const \<circ> finfun_const) b) A = Abs_finfun (\<lambda>a. Abs_finfun (\<lambda>b''. if (a, b'') \<in> A then b' else b))"
+    hence "Finite_Set.fold (\<lambda>a :: 'c \<times> 'a. (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c))) a b') ((finfun_const \<circ> finfun_const) b) A = Abs_finfun (\<lambda>a. Abs_finfun (\<lambda>b''. if (a, b'') \<in> A then b' else b))"
       by induct (simp_all, auto simp add: finfun_update_def finfun_const_def split_def finfun_apply_Rep_finfun intro!: arg_cong[where f="Abs_finfun"] ext) }
   from this[of UNIV]
-  show "fold (\<lambda>a :: 'c \<times> 'a. (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c))) a b') ((finfun_const \<circ> finfun_const) b) UNIV = (finfun_const \<circ> finfun_const) b'"
+  show "Finite_Set.fold (\<lambda>a :: 'c \<times> 'a. (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c))) a b') ((finfun_const \<circ> finfun_const) b) UNIV = (finfun_const \<circ> finfun_const) b'"
     by(simp add: finfun_const_def)
 qed
 

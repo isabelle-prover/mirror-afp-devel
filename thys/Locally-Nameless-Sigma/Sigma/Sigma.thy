@@ -2587,7 +2587,7 @@ compared to size, the size of an object is the sum of the size of its fields +1 
 
 definition fsize0 :: "(Label -~> sterm) \<Rightarrow> (sterm \<Rightarrow> nat) \<Rightarrow> nat" where
   "fsize0 f sts =
-    foldl (op +) 0 (map sts (fold (\<lambda>x z. z@[THE y. Some y = f x]) [] (dom f)))"
+    foldl (op +) 0 (map sts (Finite_Set.fold (\<lambda>x z. z@[THE y. Some y = f x]) [] (dom f)))"
 
 primrec
  ssize        :: "sterm \<Rightarrow> nat" 
@@ -2598,7 +2598,7 @@ where
 | ssize_Fvar : "ssize (Fvar x) = 0"
 | ssize_Call : "ssize (Call a l b) = (ssize a) + (ssize b) + Suc 0"
 | ssize_Upd  : "ssize (Upd a l b) = (ssize a) + (ssize b) + Suc 0" 
-| ssize_Obj  : "ssize (Obj f T) = fold (\<lambda>x y. y + ssize_option (f x)) (Suc 0) (dom f)"
+| ssize_Obj  : "ssize (Obj f T) = Finite_Set.fold (\<lambda>x y. y + ssize_option (f x)) (Suc 0) (dom f)"
 | ssize_None : "ssize_option (None) = 0"
 | ssize_Some : "ssize_option (Some y) = ssize y + Suc 0"
 
@@ -2609,7 +2609,7 @@ interpretation comp_fun_commute "(\<lambda>x y::nat. y + (f x))"
 lemma SizeOfObjectPos: "ssize (Obj (f::Label -~> sterm) T) > 0"
 proof (simp)
   from finite_dom_fmap have "finite (dom f)" by auto
-  thus "0 < fold (\<lambda>x y. y + ssize_option (f x)) (Suc 0) (dom f)"
+  thus "0 < Finite_Set.fold (\<lambda>x y. y + ssize_option (f x)) (Suc 0) (dom f)"
   proof (induct)
     case empty thus ?case by simp
   next
