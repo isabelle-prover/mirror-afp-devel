@@ -8,15 +8,15 @@ lemma member_SUPR: (* FIXME delete candidate: should be subsumed by default simp
   "x \<in> UNION A f = (SUP B:A. (\<lambda>x. x \<in> f B)) x"
   by auto
 
-abbreviation (input) "of_pred == Set.set_of_pred" (* FIXME delte alias *)
-abbreviation (input) "of_seq == Set.set_of_seq" (* FIXME delte alias *)
+abbreviation (input) "of_pred == Predicate.set_of_pred" (* FIXME delte alias *)
+abbreviation (input) "of_seq == Predicate.set_of_seq" (* FIXME delte alias *)
 
 lemmas bind_def = Set.bind_def (* FIXME delte alias *)
 lemmas bind_bind = Set.bind_bind (* FIXME delte alias *)
 lemmas empty_bind = Set.empty_bind (* FIXME delte alias *)
 lemmas bind_const = Set.bind_const (* FIXME delte alias *)
-lemmas member_set_of_pred = Set.member_of_pred (* FIXME delte alias *)
-lemmas member_set_of_seq = Set.member_of_seq (* FIXME delte alias *)
+lemmas member_of_pred = Predicate.member_set_of_pred (* FIXME delte alias *)
+lemmas member_of_seq = Predicate.member_set_of_seq (* FIXME delte alias *)
 
 definition single :: "'a \<Rightarrow> 'a set"
   where "single a = {a}"
