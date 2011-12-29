@@ -17,6 +17,13 @@ definition of_seq :: "'a Predicate.seq \<Rightarrow> 'a set"
   where "of_seq = of_pred \<circ> Predicate.pred_of_seq"
 
 lemmas bind_def = Set.bind_def
+lemmas bind_bind = Set.bind_bind
+lemmas empty_bind = Set.empty_bind
+lemmas bind_const = Set.bind_const
+
+lemma member_SUPR: (* FIXME delete candidate: should be subsumed by default simpset as soon as SUP_apply is included *)
+  "x \<in> UNION A f = (SUP B:A. (\<lambda>x. x \<in> f B)) x"
+  by auto -- {* dangerous as simp rule: @{const UNION} is standard operation *}
 
 definition single :: "'a \<Rightarrow> 'a set"
   where "single a = {a}"
@@ -35,11 +42,6 @@ lemma undefined_code [code_unfold]:
   "undefined = Undefined ()"
   by (simp add: Undefined_def)
 
-lemma bind_bind:
-  fixes A :: "'a set"
-  shows "(A \<guillemotright>= B) \<guillemotright>= C = A \<guillemotright>= (\<lambda>x. B x \<guillemotright>= C)"
-  by (auto simp add: bind_def)
-
 lemma bind_single [simp, code_unfold]:
   "A \<guillemotright>= single = A"
   by (simp add: bind_def single_def)
@@ -48,29 +50,16 @@ lemma single_bind [simp, code_unfold]:
   "single a \<guillemotright>= B = B a"
   by (simp add: bind_def single_def)
 
-lemma member_SUPR:
-  "x \<in> UNION A f = (SUP B:A. (\<lambda>x. x \<in> f B)) x"
-  by auto -- {* dangerous as simp rule: @{const UNION} is standard operation *}
-
-lemma member_bind [simp]:
-  "x \<in> P \<guillemotright>= f \<longleftrightarrow> x \<in> UNION P f "
-  by (simp add: bind_def)
+declare Set.empty_bind [code_unfold]
 
 lemma member_single [simp]:
   "x \<in> single a <-> x = a"
 by (simp add: single_def)
 
-lemma bind_const: "A \<guillemotright>= (\<lambda>_. B) = (if A = {} then {} else B)"
-  by (unfold set_eq_iff) simp
-
 lemma single_sup_simps [simp, code_unfold]:
   shows single_sup: "sup (single a) A = insert a A"
   and sup_single: "sup A (single a) = insert a A"
   by (unfold set_eq_iff) auto
-
-lemma empty_bind [simp, code_unfold]:
-  "{} \<guillemotright>= f = {}"
-  by (simp add: set_eq_iff)
 
 lemma member_of_pred [simp]:
   "x \<in> of_pred P = Predicate.eval P x"
@@ -96,13 +85,6 @@ lemma of_seq_code [code]:
 lemma single_code [code]:
   "single a = set [a]"
   by (simp add: set_eq_iff)
-
-lemma bind_code [code]:
-  "set xs \<guillemotright>= f = foldl (\<lambda>A x. sup A (f x)) (set []) xs"
-  apply (rule sym)
-  apply (induct xs rule: rev_induct)
-  apply (auto simp add: bind_def)
-  done
 
 lemma pred_of_cset_code [code]:
   "pred_of_set (set xs) = foldr sup (map Predicate.single xs) bot"
