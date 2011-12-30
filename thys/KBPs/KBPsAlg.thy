@@ -416,11 +416,10 @@ definition (in Algorithm)
 where
   "k_frontier_init \<equiv> \<lambda>a. map (simInit a \<circ> envObs a) envInit"
 
-lemma k_frontier_init_is_node[intro, simp]:
+lemma k_frontier_init_is_node [intro, simp]:
   "list_all k_is_node (k_frontier_init a)"
-  unfolding k_frontier_init_def k_is_node_def
-  apply (clarsimp simp: simInit list_all_iff)
-  apply (rule_tac x="tInit (envObs a x)" in image_eqI)
+  apply (clarsimp simp: simInit k_frontier_init_def k_is_node_def list_all_iff)
+  apply (rule_tac x="tInit (envObs a ec)" in image_eqI)
   apply (auto simp: spr_jview_def)
   done
 
