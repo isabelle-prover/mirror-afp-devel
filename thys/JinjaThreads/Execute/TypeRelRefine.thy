@@ -72,7 +72,7 @@ where
   "tabulate_subcls P = 
   Mapping.Mapping 
     (\<lambda>C. if is_class (Program P) C then
-        Some (set (\<lambda>D. Program P \<turnstile> C \<preceq>\<^sup>* D)) 
+        Some {D. Program P \<turnstile> C \<preceq>\<^sup>* D} 
       else None)"
 
 definition tabulate_sees_field :: "'m cdecl list \<Rightarrow> (cname, (vname, cname \<times> ty \<times> fmod) mapping) mapping"
@@ -149,7 +149,7 @@ lemma subcls'_program [code]:
   "subcls' (program Pi) C D \<longleftrightarrow> 
   C = D \<or>
   (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> False
-   | Some m \<Rightarrow> member D \<in> m)"
+   | Some m \<Rightarrow> D \<in> m)"
 apply(cases Pi)
 apply(clarsimp simp add: subcls'_def tabulate_subcls_def)
 apply(auto elim!: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
@@ -341,8 +341,8 @@ lemma tablulate_subcls_code [code]:
    in mapping
   )"
 apply(auto simp add: tabulate_subcls_def Mapping.tabulate_def fun_eq_iff is_class_def o_def map_of_map2[simplified split_def])
-apply(subst map_of_map2[simplified split_def])
-apply(auto simp add: fun_eq_iff subcls''_eq_subcls map_of_map_K Set.insert_code dest: subclst_snd_classD elim: rtranclp_tranclpE)
+ apply(subst map_of_map2[simplified split_def])
+ apply(auto simp add: fun_eq_iff subcls''_eq_subcls map_of_map_K dest: subclst_snd_classD elim: rtranclp_tranclpE)[1]
 apply(subst map_of_map2[simplified split_def])
 apply(rule sym)
 apply simp
@@ -352,9 +352,17 @@ done
 
 subsubsection {* @{term Fields} *}
 
-text {* Problem: Terminiert bei zyklischer Klassenhierarchie nicht! Existiert bereits in Jinja in Wohlgeformtheitspruefung: @{text wf_cdecl} ruft @{text wf_mdecl} vor Azyklizitaetstest auf, @{text wf_J_mdecl} braucht Typsystem, das wiederum Fields (ueber @{text sees_field}) benoetigt.
-  Azyklizitaetstest vor Ausfuehrung schwierig, da dann Vorberechnung mit Wohlgeformtheitstest verschraenkt werden muesste.
-  Loesungsmoeglichkeiten: zusaetzlicher Terminierungsparameter + list option als Rueckgabe mit Fallunterscheidung in der Regel
+text {* 
+  Problem: Does not terminate for cyclic class hierarchies!
+  This problem already occurs in Jinja's well-formedness checker: 
+  @{text wf_cdecl} calls @{text wf_mdecl} before checking for acyclicity, 
+  but @{text wf_J_mdecl} involves the type judgements, 
+  which in turn requires @{term "Fields"} (via @{term sees_field}).
+  Checking acyclicity before executing @{term "Fields'"} for tabulation is difficult
+  because we would have to intertwine tabulation and well-formedness checking.
+  Possible (local) solution:
+  additional termination parameter (like memoisation for @{term "rtranclp"}) 
+  and list option as error return parameter.
 *}
 inductive
   Fields' :: "'m cdecl list \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> (ty \<times> fmod)) list \<Rightarrow> bool"
@@ -436,6 +444,7 @@ done
 
 subsubsection {* @{term "Methods" } *}
 
+text {* Same termination problem as for @{term Fields'} *}
 inductive Methods' :: "'m cdecl list \<Rightarrow> cname \<Rightarrow> (mname \<times> (ty list \<times> ty \<times> 'm option) \<times> cname) list \<Rightarrow> bool"
   for P :: "'m cdecl list"
 where 

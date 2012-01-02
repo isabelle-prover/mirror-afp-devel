@@ -9,11 +9,11 @@ imports
   "../BV/BVProgressThreaded"
 begin
 
-abbreviation sc_heap_read_cset :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val Cset.set"
-where "sc_heap_read_cset h ad al \<equiv> Cset.of_pred (sc_heap_read_i_i_i_o h ad al)"
+abbreviation sc_heap_read_cset :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val set"
+where "sc_heap_read_cset h ad al \<equiv> set_of_pred (sc_heap_read_i_i_i_o h ad al)"
 
-abbreviation sc_heap_write_cset :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> heap Cset.set"
-where "sc_heap_write_cset h ad al v \<equiv> Cset.of_pred (sc_heap_write_i_i_i_i_o h ad al v)"
+abbreviation sc_heap_write_cset :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> heap set"
+where "sc_heap_write_cset h ad al v \<equiv> set_of_pred (sc_heap_write_i_i_i_i_o h ad al v)"
 
 interpretation sc!: 
   JVM_heap_execute
@@ -25,8 +25,8 @@ interpretation sc!:
     "sc_heap_read_cset"
     "sc_heap_write_cset"
   for P
-  where "\<And>h ad al v. v \<in> member (sc_heap_read_cset h ad al) \<equiv> sc_heap_read h ad al v"
-  and "\<And>h ad al v h'. h' \<in> member (sc_heap_write_cset h ad al v) \<equiv> sc_heap_write h ad al v h'"
+  where "\<And>h ad al v. v \<in> sc_heap_read_cset h ad al \<equiv> sc_heap_read h ad al v"
+  and "\<And>h ad al v h'. h' \<in> sc_heap_write_cset h ad al v \<equiv> sc_heap_write h ad al v h'"
 apply(simp_all add: eval_sc_heap_read_i_i_i_o eval_sc_heap_write_i_i_i_i_o)
 done
 
@@ -42,11 +42,11 @@ interpretation sc!:
     "sc_hconf P"
     "P"
   for P
-  where "\<And>h ad al v. v \<in> member (sc_heap_read_cset h ad al) \<equiv> sc_heap_read h ad al v"
-  and "\<And>h ad al v h'. h' \<in> member (sc_heap_write_cset h ad al v) \<equiv> sc_heap_write h ad al v h'"
+  where "\<And>h ad al v. v \<in> sc_heap_read_cset h ad al \<equiv> sc_heap_read h ad al v"
+  and "\<And>h ad al v h'. h' \<in> sc_heap_write_cset h ad al v \<equiv> sc_heap_write h ad al v h'"
 proof -
-  show unfolds: "\<And>h ad al v. v \<in> member (sc_heap_read_cset h ad al) \<equiv> sc_heap_read h ad al v"
-    "\<And>h ad al v h'. h' \<in> member (sc_heap_write_cset h ad al v) \<equiv> sc_heap_write h ad al v h'"
+  show unfolds: "\<And>h ad al v. v \<in> sc_heap_read_cset h ad al \<equiv> sc_heap_read h ad al v"
+    "\<And>h ad al v h'. h' \<in> sc_heap_write_cset h ad al v \<equiv> sc_heap_write h ad al v h'"
     by(simp_all add: eval_sc_heap_read_i_i_i_o eval_sc_heap_write_i_i_i_i_o)
   show "JVM_heap_execute_conf_read
     addr2thread_id thread_id2addr
@@ -62,7 +62,7 @@ qed
 abbreviation sc_JVM_start_state :: "addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> (addr,thread_id,addr jvm_thread_state,heap,addr) state"
 where "sc_JVM_start_state P \<equiv> sc.execute.JVM_start_state TYPE(addr jvm_method) P P"
 
-abbreviation sc_exec :: "addr jvm_prog \<Rightarrow> thread_id \<Rightarrow> (addr, heap) jvm_state' \<Rightarrow> (addr, thread_id, heap) jvm_ta_state' Cset.set"
+abbreviation sc_exec :: "addr jvm_prog \<Rightarrow> thread_id \<Rightarrow> (addr, heap) jvm_state' \<Rightarrow> (addr, thread_id, heap) jvm_ta_state' set"
 where "sc_exec P \<equiv> sc.exec TYPE(addr jvm_method) P P"
 
 abbreviation sc_execute_mexec :: "addr jvm_prog \<Rightarrow> thread_id \<Rightarrow> (addr jvm_thread_state \<times> heap)
@@ -88,7 +88,7 @@ fun jvm_mstate_of_jvm_mstate' ::
 where
   "jvm_mstate_of_jvm_mstate' (ls, (ts, m), ws) = (ls, (\<lambda>t. Option.map (map_pair jvm_thread_state_of_jvm_thread_state' id) (ts t), m), ws)"
 
-definition sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state',heap,addr) state \<Rightarrow> bool"
+definition sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state',heap,addr) state set"
 where
   "sc_jvm_state_invar P \<Phi> \<equiv> 
    {s. jvm_mstate_of_jvm_mstate' s \<in> sc.execute.correct_jvm_state P \<Phi>} \<inter> 
@@ -142,7 +142,7 @@ proof(rule invariant3pI)
     note eq = sc.exec_correct_state(1)[OF assms this]
     with normal x tl
     have "sc_execute_mexec P t (jvm_thread_state_of_jvm_thread_state' x, shr (jvm_mstate_of_jvm_mstate' s)) (jvm_thread_action_of_jvm_thread_action' ta) (jvm_thread_state_of_jvm_thread_state' x', m')" 
-      by(auto simp add: sc.exec_1_def eq jvm_thread_action'_of_jvm_thread_action_def sc.execute.exec_1_iff elim!: imageE[OF mem_def[THEN iffD2]])
+      by(auto simp add: sc.exec_1_def eq jvm_thread_action'_of_jvm_thread_action_def sc.execute.exec_1_iff)
     with normal tl show ?thesis
       by(cases s)(fastforce intro!: multithreaded_base.redT.redT_normal simp add: final_thread.actions_ok_iff fun_eq_iff map_redT_updTs elim: rev_iffD1[OF _ thread_oks_ts_change] cond_action_oks_final_change)
   qed
@@ -171,7 +171,7 @@ proof(rule invariant3pI)
       done
     from normal x invar show ?thesis
       apply(auto simp add: sc.exec_1_def final_thread.actions_ok_iff jvm_thread_action'_ok_def sc_jvm_state_invar_def)
-      apply(drule sc.exec_correct_state(3)[OF assms correct ok, simplified mem_def])
+      apply(drule sc.exec_correct_state(3)[OF assms correct ok])
       apply(rule ts_okI)
       apply(clarsimp split: split_if_asm simp add: jvm_thread_action'_ok_def)
       apply(drule (1) bspec)
@@ -217,7 +217,7 @@ proof -
     from exec1 exec2 x
     have "sc_execute_mexec P t (jvm_thread_state_of_jvm_thread_state' x, shr (jvm_mstate_of_jvm_mstate' s)) (jvm_thread_action_of_jvm_thread_action' ta') (jvm_thread_state_of_jvm_thread_state' x', m')" 
       and "sc_execute_mexec P t (jvm_thread_state_of_jvm_thread_state' x, shr (jvm_mstate_of_jvm_mstate' s)) (jvm_thread_action_of_jvm_thread_action' ta'') (jvm_thread_state_of_jvm_thread_state' x'', m'')"
-      by(auto simp add: sc.exec_1_def eq jvm_thread_action'_of_jvm_thread_action_def sc.execute.exec_1_iff elim!: imageE[OF mem_def[THEN iffD2]])
+      by(auto simp add: sc.exec_1_def eq jvm_thread_action'_of_jvm_thread_action_def sc.execute.exec_1_iff)
     moreover have "thr (jvm_mstate_of_jvm_mstate' s) t = \<lfloor>(jvm_thread_state_of_jvm_thread_state' x, no_wait_locks)\<rfloor>"
       using tst by(cases s) clarsimp
     moreover have "final_thread.actions_ok JVM_final (jvm_mstate_of_jvm_mstate' s) t (jvm_thread_action_of_jvm_thread_action' ta')"
@@ -233,9 +233,9 @@ proof -
           m' = m''"
       by-(drule (4) multithreaded_base.deterministicD[OF det], simp_all)
     moreover from exec1 exec2 x
-    have "(ta', (fst x', m', snd x')) \<in> member (sc_exec P t (xcp, shr s, frs))" 
-      and "(ta'', (fst x'', m'', snd x'')) \<in> member (sc_exec P t (xcp, shr s, frs))"
-      by(auto simp add: sc.exec_1_def mem_def)
+    have "(ta', (fst x', m', snd x')) \<in> sc_exec P t (xcp, shr s, frs)" 
+      and "(ta'', (fst x'', m'', snd x'')) \<in> sc_exec P t (xcp, shr s, frs)"
+      by(auto simp add: sc.exec_1_def)
     hence "jvm_ta_state'_ok P (ta', (fst x', m', snd x'))"
       and "jvm_ta_state'_ok P (ta'', (fst x'', m'', snd x''))"
       by(blast intro: sc.exec_correct_state[OF assms correct ok])+

@@ -7,11 +7,36 @@ header {* \isaheader{Executable semantics for the JVM} *}
 theory ExternalCall_Execute
 imports
   "../Common/ExternalCall"
-  "../Basic/Cset_without_equal"
+  More_Set
+  "../Basic/Set_without_equal"
 begin
 
-abbreviation (input) cset_sup :: "'a Cset.set \<Rightarrow> 'a Cset.set \<Rightarrow> 'a Cset.set"
-where "cset_sup \<equiv> sup_class.sup"
+(* Move to Aux or More_Set begin *)
+
+lemma foldl_inter_Int: "foldl inter (A \<inter> B) As = foldl inter A As \<inter> B"
+by(induct As rule: rev_induct) auto
+
+lemma foldl_inter: "foldl inter A As = A \<inter> \<Inter>set As"
+by(induct As arbitrary: A)(simp_all add: foldl_inter_Int Int_ac)
+
+lemma foldl_union: "foldl union A As = A \<union> \<Union>set As"
+by(induct As arbitrary: A)(simp_all add: sup_assoc)
+
+lemmas [code del] = Inf_set_def Sup_set_def
+
+lemma Inter_code [code]:
+  "Inter (set []) = UNIV"
+  "Inter (set (A # As)) = foldl inter A As" (is ?thesis2)
+  "Inter (More_Set.coset []) = {}"
+by(simp_all add: foldl_inter)
+
+lemma Union_code [code]:
+  "Union (set []) = {}"
+  "Union (set (A # As)) = foldl union A As" (is ?thesis2)
+  "Union (More_Set.coset []) = UNIV"
+by(simp_all add: foldl_union)
+
+(* Move end *)
 
 section {* Translated versions of external calls for the JVM *}
 
@@ -21,143 +46,123 @@ locale heap_execute = addr_base +
   fixes empty_heap :: "'heap" 
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 
-  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val Cset.set" 
-  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap Cset.set"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val set" 
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap set"
 
 sublocale heap_execute < execute!: heap_base
   addr2thread_id thread_id2addr 
   empty_heap allocate typeof_addr
-  "\<lambda>h a ad v. v \<in> Cset.member (heap_read h a ad)" "\<lambda>h a ad v h'. h' \<in> Cset.member (heap_write h a ad v)"
+  "\<lambda>h a ad v. v \<in> heap_read h a ad" "\<lambda>h a ad v h'. h' \<in> heap_write h a ad v"
 .
 
 context heap_execute begin
 
-definition heap_copy_loc :: "'addr \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'heap \<Rightarrow> (('addr, 'thread_id) obs_event list \<times> 'heap) Cset.set"
-where
-  "heap_copy_loc a a' al h = Cset.Set (\<lambda>(obs, h'). execute.heap_copy_loc a a' al h obs h')"
-
-lemma member_heap_copy_loc [simp]:
-  "member (heap_copy_loc a a' al h) = {(obs, h'). execute.heap_copy_loc a a' al h obs h'}"
-by(auto simp add: heap_copy_loc_def mem_def)
+definition heap_copy_loc :: "'addr \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'heap \<Rightarrow> (('addr, 'thread_id) obs_event list \<times> 'heap) set"
+where [simp]:
+  "heap_copy_loc a a' al h = {(obs, h'). execute.heap_copy_loc a a' al h obs h'}"
 
 lemma heap_copy_loc_code:
   "heap_copy_loc a a' al h =
    (do {
       v \<leftarrow> heap_read h a al;
       h' \<leftarrow> heap_write h a' al v;
-      Cset.single ([ReadMem a al v, WriteMem a' al v], h')
+      {([ReadMem a al v, WriteMem a' al v], h')}
    })"
-apply(auto simp add: Cset.set_eq_iff)
-apply(auto simp add: elim!: execute.heap_copy_loc.cases intro: execute.heap_copy_loc.intros)
-done
+by(auto simp add: execute.heap_copy_loc.simps)
 
-definition heap_copies :: "'addr \<Rightarrow> 'addr \<Rightarrow> addr_loc list \<Rightarrow> 'heap \<Rightarrow> (('addr, 'thread_id) obs_event list \<times> 'heap) Cset.set"
-where "heap_copies a a' al h = Cset.Set (\<lambda>(obs, h'). execute.heap_copies a a' al h obs h')"
-
-lemma member_heap_copies [simp]:
-  "member (heap_copies a a' al h) = {(obs, h'). execute.heap_copies a a' al h obs h'}"
-by(auto simp add: heap_copies_def mem_def)
+definition heap_copies :: "'addr \<Rightarrow> 'addr \<Rightarrow> addr_loc list \<Rightarrow> 'heap \<Rightarrow> (('addr, 'thread_id) obs_event list \<times> 'heap) set"
+where [simp]: "heap_copies a a' al h = {(obs, h'). execute.heap_copies a a' al h obs h'}"
 
 lemma heap_copies_code:
   shows heap_copies_Nil: 
-  "heap_copies a a' [] h = Cset.single ([], h)"
+  "heap_copies a a' [] h = {([], h)}"
   and heap_copies_Cons:
   "heap_copies a a' (al # als) h =
   (do {
      (ob, h') \<leftarrow> heap_copy_loc a a' al h;
      (obs, h'') \<leftarrow> heap_copies a a' als h';
-     Cset.single (ob @ obs, h'')
+     {(ob @ obs, h'')}
   })"
-by(auto simp add: Cset.set_eq_iff elim!: execute.heap_copies_cases intro: execute.heap_copies.intros)
+by(fastforce elim!: execute.heap_copies_cases intro: execute.heap_copies.intros)+
 
-definition heap_clone :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> ('heap \<times> (('addr, 'thread_id) obs_event list \<times> 'addr) option) Cset.set"
-where "heap_clone P h a = Cset.Set {(h', obsa). execute.heap_clone P h a h' obsa}"
-
-lemma member_heap_clone [simp]: 
-  "member (heap_clone P h a) = {(h', obsa). execute.heap_clone P h a h' obsa}"
-by(simp add: heap_clone_def)
+definition heap_clone :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> ('heap \<times> (('addr, 'thread_id) obs_event list \<times> 'addr) option) set"
+where [simp]: "heap_clone P h a = {(h', obsa). execute.heap_clone P h a h' obsa}"
 
 lemma heap_clone_code:
   "heap_clone P h a =
   (case typeof_addr h a of
     \<lfloor>Class_type C\<rfloor> \<Rightarrow> 
     (case allocate h (Class_type C) of
-       (h', None) \<Rightarrow> Cset.single (h', None)
+       (h', None) \<Rightarrow> {(h', None)}
      | (h', Some a') \<Rightarrow> do {
-          FDTs \<leftarrow> Cset.of_pred (Fields_i_i_o P C);
+          FDTs \<leftarrow> set_of_pred (Fields_i_i_o P C);
           (obs, h'') \<leftarrow> heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h';
-          Cset.single (h'', \<lfloor>(NewHeapElem a' (Class_type C) # obs, a')\<rfloor>)
+          {(h'', \<lfloor>(NewHeapElem a' (Class_type C) # obs, a')\<rfloor>)}
        })
   | \<lfloor>Array_type T n\<rfloor> \<Rightarrow>
      (case allocate h (Array_type T n) of
-          (h', None) \<Rightarrow> Cset.single (h', None)
+          (h', None) \<Rightarrow> {(h', None)}
         | (h', \<lfloor>a'\<rfloor>) \<Rightarrow> do {
-             FDTs \<leftarrow> Cset.of_pred (Fields_i_i_o P Object);
+             FDTs \<leftarrow> set_of_pred (Fields_i_i_o P Object);
              (obs, h'') \<leftarrow> heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h';
-             Cset.single (h'', \<lfloor>(NewHeapElem a' (Array_type T n) # obs, a')\<rfloor>)
+             {(h'', \<lfloor>(NewHeapElem a' (Array_type T n) # obs, a')\<rfloor>)}
            })
-  | _ \<Rightarrow> Cset.empty)"
-by(auto simp add: Cset.set_eq_iff split: ty.splits prod.split_asm htype.splits elim!: execute.heap_clone.cases intro: execute.heap_clone.intros simp add: eval_Fields_conv split_beta Pair_fst_snd_eq)
+  | _ \<Rightarrow> {})"
+by(auto 4 3 elim!: execute.heap_clone.cases split: ty.splits prod.split_asm htype.splits intro: execute.heap_clone.intros simp add: eval_Fields_conv split_beta Pair_fst_snd_eq)
 
 definition red_external_aggr :: 
   "'m prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> 'heap \<Rightarrow> 
-  (('addr, 'thread_id, 'heap) external_thread_action \<times> 'addr extCallRet \<times> 'heap) Cset.set"
-where
-  "red_external_aggr P t a M vs h = Cset.Set (execute.red_external_aggr P t a M vs h)"
-
-lemma member_red_external_aggr [simp]:
-  "member (red_external_aggr P t a M vs h) = execute.red_external_aggr P t a M vs h"
-by(simp add: red_external_aggr_def)
+  (('addr, 'thread_id, 'heap) external_thread_action \<times> 'addr extCallRet \<times> 'heap) set"
+where [simp]:
+  "red_external_aggr P t a M vs h = execute.red_external_aggr P t a M vs h"
 
 lemma red_external_aggr_code:
   "red_external_aggr P t a M vs h =
    (if M = wait then
       let ad_t = thread_id2addr t
-      in Cset.set
-         [(\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>, execute.RetEXC InterruptedException, h),
+      in {(\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>, execute.RetEXC InterruptedException, h),
           (\<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>, RetStaySame, h),
           (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, execute.RetEXC IllegalMonitorState, h),
           (\<lbrace>Notified\<rbrace>, RetVal Unit, h),
-          (\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>, execute.RetEXC InterruptedException, h)]
+          (\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>, execute.RetEXC InterruptedException, h)}
     else if M = notify then
-       Cset.set [(\<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>, RetVal Unit, h),
-                 (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, execute.RetEXC IllegalMonitorState, h)]
+       {(\<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>, RetVal Unit, h),
+        (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, execute.RetEXC IllegalMonitorState, h)}
     else if M = notifyAll then 
-       Cset.set [(\<lbrace>NotifyAll a, Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>, RetVal Unit, h),
-                 (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, execute.RetEXC IllegalMonitorState, h)]
+       {(\<lbrace>NotifyAll a, Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>, RetVal Unit, h),
+        (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, execute.RetEXC IllegalMonitorState, h)}
     else if M = clone then
        do {
          (h', obsa) \<leftarrow> heap_clone P h a;
-         Cset.single 
-           (case obsa of None \<Rightarrow> (\<epsilon>, execute.RetEXC OutOfMemory, h')
-             | Some (obs, a') \<Rightarrow> ((\<lambda>\<^isup>f [], [], [], [], [], obs), RetVal (Addr a'), h'))
+         {case obsa of None \<Rightarrow> (\<epsilon>, execute.RetEXC OutOfMemory, h')
+           | Some (obs, a') \<Rightarrow> ((\<lambda>\<^isup>f [], [], [], [], [], obs), RetVal (Addr a'), h')}
        }
-    else if M = hashcode then Cset.single ((\<epsilon>, RetVal (Intg (word_of_int (hash_addr a))), h))
-    else if M = print then Cset.single (\<lbrace>ExternalCall a M vs Unit\<rbrace>, RetVal Unit, h)
-    else if M = currentThread then Cset.single (\<epsilon>, RetVal (Addr (thread_id2addr t)), h)
+    else if M = hashcode then {(\<epsilon>, RetVal (Intg (word_of_int (hash_addr a))), h)}
+    else if M = print then {(\<lbrace>ExternalCall a M vs Unit\<rbrace>, RetVal Unit, h)}
+    else if M = currentThread then {(\<epsilon>, RetVal (Addr (thread_id2addr t)), h)}
     else if M = interrupted then 
-      Cset.set [(\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>, RetVal (Bool True), h),
-                (\<lbrace>IsInterrupted t False\<rbrace>, RetVal (Bool False), h)]
-    else if M = yield then Cset.single (\<lbrace>Yield\<rbrace>, RetVal Unit, h)
+      {(\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>, RetVal (Bool True), h),
+       (\<lbrace>IsInterrupted t False\<rbrace>, RetVal (Bool False), h)}
+    else if M = yield then {(\<lbrace>Yield\<rbrace>, RetVal Unit, h)}
     else
       let T = ty_of_htype (the (typeof_addr h a))
       in if P \<turnstile> T \<le> Class Thread then
         let t_a = addr2thread_id a 
         in if M = start then 
-             Cset.set [(\<lbrace>NewThread t_a (the_Class T, run, a) h, ThreadStart t_a\<rbrace>, RetVal Unit, h),
-                       (\<lbrace>ThreadExists t_a True\<rbrace>, execute.RetEXC IllegalThreadState, h)]
+             {(\<lbrace>NewThread t_a (the_Class T, run, a) h, ThreadStart t_a\<rbrace>, RetVal Unit, h),
+              (\<lbrace>ThreadExists t_a True\<rbrace>, execute.RetEXC IllegalThreadState, h)}
            else if M = join then
-             Cset.set [(\<lbrace>Join t_a, IsInterrupted t False, ThreadJoin t_a\<rbrace>, RetVal Unit, h),
-                       (\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>, execute.RetEXC InterruptedException, h)]
+             {(\<lbrace>Join t_a, IsInterrupted t False, ThreadJoin t_a\<rbrace>, RetVal Unit, h),
+              (\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>, execute.RetEXC InterruptedException, h)}
            else if M = interrupt then
-             Cset.set [(\<lbrace>ThreadExists t_a True, WakeUp t_a, Interrupt t_a, ObsInterrupt t_a\<rbrace>, RetVal Unit, h),
-                       (\<lbrace>ThreadExists t_a False\<rbrace>, RetVal Unit, h)]
+             {(\<lbrace>ThreadExists t_a True, WakeUp t_a, Interrupt t_a, ObsInterrupt t_a\<rbrace>, RetVal Unit, h),
+              (\<lbrace>ThreadExists t_a False\<rbrace>, RetVal Unit, h)}
            else if M = isInterrupted then
-             Cset.set [(\<lbrace>IsInterrupted t_a False\<rbrace>, RetVal (Bool False), h),
-                       (\<lbrace>IsInterrupted t_a True, ObsInterrupted t_a\<rbrace>, RetVal (Bool True), h)]
-         else Cset.set [(\<lbrace>\<rbrace>, undefined)]
-    else Cset.set [(\<lbrace>\<rbrace>, undefined)])"
-by(fastforce simp add: execute.red_external_aggr_def Cset.set_eq_iff split_beta Collect_conv_UN_singleton split: val.split)
+             {(\<lbrace>IsInterrupted t_a False\<rbrace>, RetVal (Bool False), h),
+              (\<lbrace>IsInterrupted t_a True, ObsInterrupted t_a\<rbrace>, RetVal (Bool True), h)}
+         else {(\<lbrace>\<rbrace>, undefined)}
+    else {(\<lbrace>\<rbrace>, undefined)})"
+by(auto simp add: execute.red_external_aggr_def split del: option.splits)(auto)
 
 end
 

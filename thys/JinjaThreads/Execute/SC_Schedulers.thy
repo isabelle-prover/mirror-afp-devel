@@ -42,7 +42,7 @@ locale sc_scheduler =
   and "output" :: "'s \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'q option"
   and pick_wakeup :: "'s \<Rightarrow> 't \<Rightarrow> 'w \<Rightarrow> ('t, 'w wait_set_status) RBT.rbt \<Rightarrow> 't option"
   and \<sigma>_invar :: "'s \<Rightarrow> 't set \<Rightarrow> bool"
-  and invariant :: "('l,'t,'x,'m,'w) state \<Rightarrow> bool"
+  and invariant :: "('l,'t,'x,'m,'w) state set"
 
 locale sc_round_robin_base =
   round_robin_base

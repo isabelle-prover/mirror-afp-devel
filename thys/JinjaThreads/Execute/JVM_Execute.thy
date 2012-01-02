@@ -9,11 +9,11 @@ imports
   "../BV/BVProgressThreaded"
 begin
 
-abbreviation sc_heap_read_cset :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val Cset.set"
-where "sc_heap_read_cset h ad al \<equiv> Cset.of_pred (sc_heap_read_i_i_i_o h ad al)"
+abbreviation sc_heap_read_cset :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val set"
+where "sc_heap_read_cset h ad al \<equiv> set_of_pred (sc_heap_read_i_i_i_o h ad al)"
 
-abbreviation sc_heap_write_cset :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> heap Cset.set"
-where "sc_heap_write_cset h ad al v \<equiv> Cset.of_pred (sc_heap_write_i_i_i_i_o h ad al v)"
+abbreviation sc_heap_write_cset :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> heap set"
+where "sc_heap_write_cset h ad al v \<equiv> set_of_pred (sc_heap_write_i_i_i_i_o h ad al v)"
 
 interpretation sc!: 
   JVM_heap_execute
@@ -25,8 +25,8 @@ interpretation sc!:
     "sc_heap_read_cset"
     "sc_heap_write_cset"
   for P
-  where "\<And>h ad al v. v \<in> member (sc_heap_read_cset h ad al) \<equiv> sc_heap_read h ad al v"
-  and "\<And>h ad al v h'. h' \<in> member (sc_heap_write_cset h ad al v) \<equiv> sc_heap_write h ad al v h'"
+  where "\<And>h ad al v. v \<in> sc_heap_read_cset h ad al \<equiv> sc_heap_read h ad al v"
+  and "\<And>h ad al v h'. h' \<in> sc_heap_write_cset h ad al v \<equiv> sc_heap_write h ad al v h'"
 apply(simp_all add: eval_sc_heap_read_i_i_i_o eval_sc_heap_write_i_i_i_i_o)
 done
 
@@ -57,7 +57,7 @@ where
   "sc_jvm_start_state_refine \<equiv> 
    sc_start_state_refine rm_empty rm_update rm_empty rs_empty (\<lambda>C M Ts T (mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, C, M, 0)]))"
 
-abbreviation sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state,heap,addr) state \<Rightarrow> bool"
+abbreviation sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state,heap,addr) state set"
 where "sc_jvm_state_invar P \<Phi> \<equiv> {s. sc_execute.correct_state_ts P \<Phi> (thr s) (shr s)}"
 
 lemma eval_sc_mexec:
