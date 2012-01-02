@@ -9,6 +9,8 @@ theory JMM_Interp imports
   "../J/Deadlocked"
   "../BV/JVMDeadlocked"
   "JMM_Type2"
+  "DRF_J"
+  "DRF_JVM"
 begin
 
 lemma jmm'_J_typesafe:
@@ -42,6 +44,12 @@ apply(rule JVM_conf_read.intro)
  apply unfold_locales
 done
 
-(* TODO: Add locales allocated and known_addrs *)
+lemma jmm'_J_allocated_progress:
+  "J_allocated_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) (jmm_heap_read_typed P) jmm_heap_write jmm_hconf jmm_allocated P"
+by(unfold_locales)
+
+lemma jmm'_JVM_allocated_progress:
+  "JVM_allocated_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) (jmm_heap_read_typed P) jmm_heap_write jmm_hconf jmm_allocated P"
+by(unfold_locales)
 
 end
