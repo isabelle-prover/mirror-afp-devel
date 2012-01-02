@@ -320,7 +320,7 @@ where
 
 abbreviation jmm'_red_external_aggr :: 
   "'m prog \<Rightarrow> 'addr thread_id \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> 'addr JMM_heap 
-    \<Rightarrow> ('addr :: addr, 'addr thread_id, 'addr JMM_heap) external_thread_action \<times> 'addr extCallRet \<times> 'addr JMM_heap \<Rightarrow> bool"
+    \<Rightarrow> (('addr :: addr, 'addr thread_id, 'addr JMM_heap) external_thread_action \<times> 'addr extCallRet \<times> 'addr JMM_heap) set"
 where "jmm'_red_external_aggr P \<equiv> jmm'.red_external_aggr TYPE('m) P P"
 
 abbreviation jmm'_heap_copy_loc :: 

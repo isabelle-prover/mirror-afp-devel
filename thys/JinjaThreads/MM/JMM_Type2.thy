@@ -20,11 +20,11 @@ by(auto intro!: ext split: addr.split)
 
 instantiation addr :: addr begin
 definition "hash_addr (a :: addr) = (case a of Address ht n \<Rightarrow> int n)"
-definition "monitor_finfun_to_list (ls :: addr \<Rightarrow>\<^isub>f nat) = (SOME xs. set xs = (finfun_dom ls)\<^sub>f)"
+definition "monitor_finfun_to_list (ls :: addr \<Rightarrow>\<^isub>f nat) = (SOME xs. set xs = {x. (finfun_dom ls)\<^sub>f x })"
 instance
 proof
   fix ls :: "addr \<Rightarrow>\<^isub>f nat"
-  show "set (monitor_finfun_to_list ls) = (finfun_dom ls)\<^sub>f"
+  show "set (monitor_finfun_to_list ls) = Collect (finfun_dom ls)\<^sub>f"
     unfolding monitor_finfun_to_list_addr_def
     using finite_list[OF finite_finfun_dom, where ?f.1 = "ls"]
     by(rule someI_ex)
@@ -354,7 +354,7 @@ where
 
 abbreviation jmm'_red_external_aggr :: 
   "'m prog \<Rightarrow> thread_id \<Rightarrow> addr \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> JMM_heap 
-    \<Rightarrow> (addr, thread_id, JMM_heap) external_thread_action \<times> addr extCallRet \<times> JMM_heap \<Rightarrow> bool"
+    \<Rightarrow> ((addr, thread_id, JMM_heap) external_thread_action \<times> addr extCallRet \<times> JMM_heap) set"
 where "jmm'_red_external_aggr P \<equiv> jmm'.red_external_aggr TYPE('m) P P"
 
 abbreviation jmm'_heap_copy_loc :: 
