@@ -65,7 +65,7 @@ ZeroConf and an analysis of the anonymity of the Crowds protocol.
 <p></p>
 
 <!--#set var="name" value="Markov_Models" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Probability/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
