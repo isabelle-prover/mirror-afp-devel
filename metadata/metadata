@@ -840,7 +840,7 @@ title = Markov Models
 author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2012-01-03
 topic = Mathematics/Probability Theory, Computer Science/Automata and Formal Languages
-base = HOL/HOL-Probability
+base = HOL/HOL-Multivariate_Analysis/HOL-Probability
 abstract = This is a formalization of Markov models in Isabelle/HOL. It 
   builds on Isabelle's probability theory. The available models are 
   currently Discrete-Time Markov Chains and a extensions of them with
