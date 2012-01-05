@@ -1,0 +1,13 @@
+
+  Probabilistic Models
+  --------------------
+
+This is a formalization of probabilistic models in Isabelle/HOL. It builds on
+Isabelle's probability theory. The available models are currently Discrete-Time
+Markov Chains and a extensions of them with rewards.
+
+As application of these models we formalize probabilistic model checking of pCTL
+formulas, analysis of IPv4 address allocation in ZeroConf and a analysis of the
+anonymity of the Crowds protocol.
+
+For the PCTL model checking we need the AFP entry Gauss-Jordan-Elim-Fun.
