@@ -1,6 +1,6 @@
 ## configurables
 
-SESSION-NAME = Probabilistic_Models
+SESSION-NAME = Markov_Models
 BASE-IMAGE = HOL-Probability
 
 ## targets
