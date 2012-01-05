@@ -23,6 +23,7 @@ notation
 
 translations
   "case p of XCONST LNil \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightleftharpoons> "CONST llist_case a (\<lambda>x l. b) p"
+  "case p of XCONST LNil :: 'a \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightharpoonup> "CONST llist_case a (\<lambda>x l. b) p"
 
 
 lemmas llistE = llist_cases

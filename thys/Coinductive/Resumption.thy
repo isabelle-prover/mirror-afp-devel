@@ -183,12 +183,9 @@ lemma resumption_case_simps [simp, code]:
   and resumption_case_Branch: "resumption_case t l br (Branch c rs) = br c rs"
 by(simp_all add: Terminal_def Linear_def Branch_def resumption_case_def Abs_resumption_inverse resumption.intros Rep_resumption Rep_resumption_inverse)
 
-syntax
-  Terminal :: logic
-  Linear :: logic
-  Branch :: logic
 translations
-  "case p of Terminal a \<Rightarrow> t | Linear b r \<Rightarrow> l | Branch c rs \<Rightarrow> d" \<rightleftharpoons> "CONST resumption_case (\<lambda>a. t) (\<lambda>b r. l) (\<lambda>c rs. d) p"
+  "case p of XCONST Terminal a \<Rightarrow> t | XCONST Linear b r \<Rightarrow> l | XCONST Branch c rs \<Rightarrow> d" \<rightleftharpoons> "CONST resumption_case (\<lambda>a. t) (\<lambda>b r. l) (\<lambda>c rs. d) p"
+  "case p of (XCONST Terminal :: 'a) a \<Rightarrow> t | (XCONST Linear :: 'b) b r \<Rightarrow> l | (XCONST Branch :: 'c) c rs \<Rightarrow> d" \<rightharpoonup> "CONST resumption_case (\<lambda>a. t) (\<lambda>b r. l) (\<lambda>c rs. d) p"
 
 lemma resumption_case_cert:
   assumes "CASE \<equiv> resumption_case t l br"

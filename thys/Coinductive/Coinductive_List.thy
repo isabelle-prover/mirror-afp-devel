@@ -205,6 +205,7 @@ definition
 
 translations
   "case p of XCONST LNil \<Rightarrow> a | XCONST LCons x l \<Rightarrow> b" \<rightleftharpoons> "CONST llist_case a (\<lambda>x l. b) p"
+  "case p of XCONST LNil :: 'a \<Rightarrow> a | (XCONST LCons :: 'b) x l \<Rightarrow> b" \<rightharpoonup> "CONST llist_case a (\<lambda>x l. b) p"
 
 lemma llist_case_LNil [simp, code]: "llist_case c d LNil = c"
   by (simp add: llist_case_def LNil_def

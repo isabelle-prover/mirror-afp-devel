@@ -74,10 +74,9 @@ lemma neq_zero_conv_eSuc:
   "n \<noteq> 0 \<longleftrightarrow> (\<exists>n'. n = eSuc n')"
 by(cases n rule: enat_coexhaust) simp_all
 
-syntax
-  eSuc :: logic
 translations
-  "case p of 0 \<Rightarrow> a | eSuc n \<Rightarrow> b" \<rightleftharpoons> "CONST enat_cocase a (\<lambda>n. b) p"
+  "case p of 0 \<Rightarrow> a | XCONST eSuc n \<Rightarrow> b" \<rightleftharpoons> "CONST enat_cocase a (\<lambda>n. b) p"
+  "case p of 0 \<Rightarrow> a | (XCONST eSuc :: 'a) n \<Rightarrow> b" \<rightharpoonup> "CONST enat_cocase a (\<lambda>n. b) p"
 
 lemma enat_cocase_cert:
   assumes "CASE \<equiv> enat_cocase c d"

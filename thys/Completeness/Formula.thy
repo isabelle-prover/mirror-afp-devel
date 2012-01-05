@@ -30,6 +30,7 @@ definition
 
 translations
   "case p of XCONST zeroX \<Rightarrow> a | XCONST nextX y \<Rightarrow> b" == "(CONST vblcase a (%y. b) p)"
+  "case p of XCONST zeroX :: 'a \<Rightarrow> a | (XCONST nextX :: 'b) y \<Rightarrow> b" => "(CONST vblcase a (%y. b) p)"
 
 definition
   freshVar :: "vbl set => vbl" where

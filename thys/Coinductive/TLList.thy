@@ -132,6 +132,7 @@ is "tllist_case_aux"
 
 translations
   "case p of XCONST TNil y \<Rightarrow> a | XCONST TCons x l \<Rightarrow> b" \<rightleftharpoons> "CONST tllist_case (\<lambda>y. a) (\<lambda>x l. b) p"
+  "case p of (XCONST TNil :: 'a) y \<Rightarrow> a | (XCONST TCons :: 'b) x l \<Rightarrow> b" \<rightharpoonup> "CONST tllist_case (\<lambda>y. a) (\<lambda>x l. b) p"
 
 lemma tllist_case_simps [simp, code, nitpick_simp]:
   shows tllist_case_TNil: "tllist_case f g (TNil b) = f b"
