@@ -27,7 +27,8 @@ locale pointer = node +
   fixes none :: "'index"
   fixes link0::"'index \<Rightarrow> 'node \<Rightarrow> 'node"
   fixes label0 :: "'node \<Rightarrow> 'index"
-  (* next assume is used to bind the type variable 'node introduced in this locale to the type variable 'node introduced in the locale node. *)
+  (* next assume is used to bind the type variable 'node introduced in this locale to the 
+    type variable 'node introduced in the locale node. *)
   assumes "(nil::'node) = nil"
 begin
   definition "next =  {(a, b) . (\<exists> i . link0 i a = b) \<and> a \<noteq> nil \<and> b \<noteq> nil \<and> label0 a = none}"
@@ -89,7 +90,6 @@ lemma link_out_range0 [simp]:
   apply (rule_tac P="\<forall> link p . \<not> x \<in> set S \<longrightarrow> link_0 link label p S i x = link i x" in mp)
   by (simp, induct_tac S, auto)
 
-
 lemma link_out_range [simp]: "\<not> x \<in> set S \<Longrightarrow> link_0 link (label(x := y)) p S = link_0 link label p S"
   apply (rule_tac P="\<forall> link p . \<not> x \<in> set S \<longrightarrow> link_0 link (label(x := y)) p S = link_0 link label p S" in mp)
   by (simp, induct_tac S, auto)
@@ -115,37 +115,36 @@ by simp
 subsection {* Transitions *}
 
 definition
-  "Q1'' s \<equiv> let (p, t, lnk, lbl, mrk) = s in { (p', t', lnk', lbl', mrk') .
-      root = nil \<and> p' = nil \<and> t' = nil \<and> lnk' = lnk \<and> lbl' = lbl \<and> mrk' = mrk}"
-
-
-definition
-  "Q2'' s \<equiv> let (p, t, lnk, lbl, mrk) = s in { (p', t', lnk', lbl', mrk') .
-      root \<noteq> nil \<and> p' = root \<and> t' = nil \<and> lnk' = lnk \<and> lbl' = lbl \<and> mrk' = mrk \<union> {root}}"
+  "Q1''_a \<equiv> [: p, t, lnk, lbl, mrk \<leadsto> p', t', lnk', lbl', mrk' .
+      root = nil \<and> p' = nil \<and> t' = nil \<and> lnk' = lnk \<and> lbl' = lbl \<and> mrk' = mrk:]"
 
 definition
-  "Q3'' s \<equiv> let (p, t, lnk, lbl, mrk) = s in { (p', t', lnk', lbl', mrk') .
+  "Q2''_a \<equiv> [: p, t, lnk, lbl, mrk \<leadsto> p', t', lnk', lbl', mrk' .
+      root \<noteq> nil \<and> p' = root \<and> t' = nil \<and> lnk' = lnk \<and> lbl' = lbl \<and> mrk' = mrk \<union> {root} :]"
+
+definition
+  "Q3''_a \<equiv> [: p, t, lnk, lbl, mrk \<leadsto> p', t', lnk', lbl', mrk' .
          p \<noteq> nil \<and> 
          (\<exists> i . g mrk lbl (lnk i) p \<and> 
             p' = lnk i p \<and> t' =  p \<and> lnk' =  lnk(i := (lnk i)(p := t)) \<and> lbl' = lbl(p := i) \<and>
-            mrk' = mrk \<union> {lnk i p})}"
+            mrk' = mrk \<union> {lnk i p}) :]"
 
 definition
-  "Q4'' s  \<equiv> let (p, t, lnk, lbl, mrk) = s in { (p', t', lnk', lbl', mrk') .
+  "Q4''_a  \<equiv> [: p, t, lnk, lbl, mrk \<leadsto> p', t', lnk', lbl', mrk' .
           p \<noteq> nil \<and> 
           (\<forall> i . \<not> g mrk lbl (lnk i) p) \<and> t \<noteq> nil \<and> 
-          p' = t \<and> t' = lnk (lbl t) t \<and> lnk' = lnk(lbl t := (lnk (lbl t))(t := p)) \<and> lbl' = lbl(t := none) \<and> 
-          mrk' = mrk}"
+          p' = t \<and> t' = lnk (lbl t) t \<and> lnk' = lnk(lbl t := (lnk (lbl t))(t := p)) 
+          \<and> lbl' = lbl(t := none) \<and> mrk' = mrk:]"
 
 definition
-  "Q5'' s \<equiv> let (p, t, lnk, lbl, mrk) = s in { (p', t', lnk', lbl', mrk') .
+  "Q5''_a \<equiv> [: p, t, lnk, lbl, mrk \<leadsto> p', t', lnk', lbl', mrk' .
            p \<noteq> nil \<and> 
           (\<forall> i . \<not> g mrk lbl (lnk i) p) \<and> t = nil \<and>
-           p' = nil \<and> t' = t \<and> lnk' =  lnk \<and> lbl' = lbl \<and> mrk' = mrk}"
+           p' = nil \<and> t' = t \<and> lnk' =  lnk \<and> lbl' = lbl \<and> mrk' = mrk:]"
 
 definition
-  "Q6'' s \<equiv> let (p, t, lnk, lbl, mrk) = s in {(p', t', lnk', lbl', mrk') . p = nil \<and>  
-         p' = p \<and> t' = t \<and> lnk' = lnk \<and> lbl' =  lbl \<and> mrk' = mrk}"
+  "Q6''_a \<equiv> [: p, t, lnk, lbl, mrk \<leadsto> p', t', lnk', lbl', mrk' . p = nil \<and>  
+         p' = p \<and> t' = t \<and> lnk' = lnk \<and> lbl' =  lbl \<and> mrk' = mrk :]"
 
 subsection {* Invariants *}
 
@@ -161,32 +160,38 @@ definition
 subsection {* Data refinement relations *}
 
 definition 
-  "R1' \<equiv> (\<lambda> (p, t, lnk, lbl, mrk) . {(stk, mrk') . (p, t, lnk, lbl, mrk) \<in> Init'' \<and> mrk' = mrk})"
+  "R1'_a \<equiv> {: p, t, lnk, lbl, mrk \<leadsto> stk, mrk' . (p, t, lnk, lbl, mrk) \<in> Init'' \<and> mrk' = mrk:}"
 
 definition  
-  "R2' \<equiv> (\<lambda> (p, t, lnk, lbl, mrk) . {(stk, mrk') .  
+  "R2'_a \<equiv> {: p, t, lnk, lbl, mrk \<leadsto> stk, mrk' .  
        p = head stk \<and>  
        t = head (tail stk) \<and>  
        stack lnk lbl t (tail stk) \<and> 
        link0 = link_0 lnk lbl p (tail stk) \<and> 
        label0 = label_0 lbl (tail stk) \<and>
        \<not> nil \<in> set stk \<and> 
-       mrk' = mrk})"
+       mrk' = mrk :}"
+
+lemma [simp]: "R1'_a \<in> Apply.Disjunctive" by (simp add: R1'_a_def)
+
+lemma [simp]: "R2'_a \<in> Apply.Disjunctive" by (simp add: R2'_a_def)
 
 definition [simp]:
-  "R' i = (case i of
-      I.init  \<Rightarrow> R1' |
-      I.loop  \<Rightarrow> R2' |
-      I.final \<Rightarrow> R1')"
+  "R'_a i = (case i of
+      I.init  \<Rightarrow> R1'_a |
+      I.loop  \<Rightarrow> R2'_a |
+      I.final \<Rightarrow> R1'_a)"
+
+lemma [simp]: "Disjunctive_fun R'_a" by (simp add: Disjunctive_fun_def)
 
 subsection{* Diagram *}
 
-definition
-  "LinkMark_rel = (\<lambda> (i, j) . (case (i, j) of
-      (I.init, I.loop)  \<Rightarrow> Q1'' \<squnion> Q2'' |
-      (I.loop, I.loop)  \<Rightarrow> Q3'' \<squnion> (Q4'' \<squnion> Q5'') |
-      (I.loop, I.final) \<Rightarrow> Q6'' |
-       _ \<Rightarrow> \<bottom>))"
+definition 
+  "LinkMark = (\<lambda> (i, j) . (case (i, j) of
+      (I.init, I.loop)  \<Rightarrow> Q1''_a \<sqinter>  Q2''_a |
+      (I.loop, I.loop)  \<Rightarrow> Q3''_a \<sqinter> (Q4''_a \<sqinter> Q5''_a) |
+      (I.loop, I.final) \<Rightarrow> Q6''_a |
+       _ \<Rightarrow> \<top>))"
 
 definition [simp]:
   "LinkMarkInv i = (case i of
@@ -196,28 +201,26 @@ definition [simp]:
 
 subsection {* Data refinement of the transitions *}
 
-theorem init1 [simp]:
-  "DataRefinement Init' Q1' R1' R2' (demonic Q1'')"
-  by (simp add: DataRefinement_def hoare_demonic Q1''_def Init'_def Init''_def 
-       Loop''_def R1'_def R2'_def Q1'_def tail_def head_def angelic_def subset_eq)
+theorem init1_a [simp]:
+  "DataRefinement ({.Init'.} o Q1'_a) R1'_a R2'_a Q1''_a"
+  by (simp add: data_refinement_hoare hoare_demonic Q1''_a_def Init'_def Init''_def 
+       Loop''_def R1'_a_def R2'_a_def Q1'_a_def tail_def head_def angelic_def subset_eq)
 
-theorem init2 [simp]:
-  "DataRefinement Init' Q2' R1' R2' (demonic Q2'')"
-  by (simp add: DataRefinement_def hoare_demonic Q2''_def Init'_def Init''_def 
-       Loop''_def R1'_def R2'_def Q2'_def tail_def head_def angelic_def subset_eq)
+theorem init2_a [simp]:
+  "DataRefinement ({.Init'.} o Q2'_a) R1'_a R2'_a Q2''_a"
+  by (simp add: data_refinement_hoare hoare_demonic Q2''_a_def Init'_def Init''_def 
+       Loop''_def R1'_a_def R2'_a_def Q2'_a_def tail_def head_def angelic_def subset_eq)
 
-theorem step1 [simp]:
-  "DataRefinement Loop' Q3' R2' R2' (demonic Q3'')"
-  apply (simp add: DataRefinement_def hoare_demonic Q3''_def Init'_def Init''_def 
-       Loop'_def R1'_def Q3'_def tail_def head_def angelic_def subset_eq)
-  apply (simp add: simp_eq_emptyset)
-  apply auto
+theorem step1_a [simp]:
+  "DataRefinement ({.Loop'.} o Q3'_a) R2'_a R2'_a Q3''_a"
+  apply (simp add: data_refinement_hoare hoare_demonic Q3''_a_def Init'_def Init''_def 
+       Loop'_def R1'_a_def Q3'_a_def tail_def head_def angelic_def subset_eq)
   apply (unfold next_def)
-  apply (unfold R2'_def)
-  apply (simp add: simp_eq_emptyset)
-  apply safe
-  apply simp
-  apply (rule_tac x = "ac i (hd a) # a" in exI)
+  apply (simp add: R2'_a_def)
+  apply (simp add: data_refinement_hoare)
+  apply (simp_all add: R2'_a_def angelic_def hoare_demonic simp_eq_emptyset)
+  apply auto
+  apply (rule_tac x = "aa i (hd a) # a" in exI)
   apply safe
   apply simp_all
   apply (simp add: g_def  neq_Nil_conv)
@@ -230,79 +233,94 @@ theorem step1 [simp]:
   apply (case_tac a)
   by auto
 
+
 lemma neqif [simp]: "x \<noteq> y \<Longrightarrow> (if y = x then a else b) = b"
   apply (case_tac "y \<noteq> x")
   apply simp_all
   done
 
-theorem step2 [simp]:
-  "DataRefinement Loop' Q4' R2' R2' (demonic Q4'')"
-  apply (simp add: DataRefinement_def hoare_demonic Q4''_def Init'_def Init''_def 
-       Loop'_def Q4'_def angelic_def subset_eq)
-  apply (simp add: simp_eq_emptyset)
-  apply safe
+theorem step2_a [simp]:
+  "DataRefinement ({.Loop'.} o Q4'_a) R2'_a R2'_a Q4''_a"
+  apply (simp add: data_refinement_hoare hoare_demonic Q4''_a_def Init'_def Init''_def 
+       Loop'_def Q4'_a_def tail_def head_def angelic_def subset_eq)
   apply (unfold next_def)
-  apply (unfold R2'_def)
+  apply (simp add: R2'_a_def)
+  apply (simp add: data_refinement_hoare)
+  apply (simp_all add: R2'_a_def angelic_def hoare_demonic simp_eq_emptyset)
   apply (simp_all add: neq_Nil_conv)
+  apply (unfold g_def)
+  apply (simp add: head_def)
+  apply safe
+  apply auto [1]
   apply auto [1]
   apply (case_tac ysa)
-  apply (simp add: head_def)
-  apply (simp add: head_def)
-  apply (case_tac a)
-  apply simp
-  apply simp
-  apply (unfold g_def)
+  apply simp_all
+  apply safe
+  apply (case_tac "ab ya = i")
   by auto
+
 
 lemma setsimp: "a = c \<Longrightarrow> (x \<in> a) = (x \<in> c)" 
   apply simp
   done
 
-theorem step3 [simp]:
-  "DataRefinement Loop' Q4' R2' R2' (demonic Q5'')"
-  apply (simp add: DataRefinement_def hoare_demonic Q5''_def Init'_def Init''_def 
-       Loop'_def Q4'_def angelic_def subset_eq)
-  apply (unfold R2'_def)
+theorem step3_a [simp]:
+  "DataRefinement ({.Loop'.} o Q4'_a) R2'_a R2'_a Q5''_a"
+  apply (simp add: data_refinement_hoare hoare_demonic Q5''_a_def Init'_def Init''_def 
+       Loop'_def Q4'_a_def angelic_def subset_eq)
+  apply (unfold R2'_a_def)
   apply (unfold next_def)
-  apply (simp add: simp_eq_emptyset)
-  apply (unfold g_def)
-  apply safe 
-  apply (simp_all add: head_def tail_def)
+  apply (simp add: data_refinement_hoare hoare_demonic angelic_def subset_eq 
+           simp_eq_emptyset g_def head_def tail_def)
   by auto
 
-theorem final [simp]:
-  "DataRefinement Loop' Q5' R2' R1' (demonic Q6'')"
-   apply (simp add: DataRefinement_def hoare_demonic Q6''_def Init'_def Init''_def 
-       Loop'_def R2'_def R1'_def Q5'_def angelic_def subset_eq neq_Nil_conv tail_def head_def)
-  apply (simp add: simp_eq_emptyset)
+theorem final_a [simp]:
+  "DataRefinement ({.Loop'.} o Q5'_a) R2'_a R1'_a Q6''_a"
+   apply (simp add: data_refinement_hoare hoare_demonic Q6''_a_def Init'_def Init''_def 
+       Loop'_def R2'_a_def R1'_a_def Q5'_a_def angelic_def subset_eq neq_Nil_conv tail_def head_def)
+   apply (simp add: simp_eq_emptyset)
    apply safe
    by simp_all
 
 subsection {* Diagram data refinement *}
 
-theorem LinkMark_DataRefinement [simp]:
- "DgrDataRefinement (dangelic R SetMarkInv) StackMark_rel R' (dgr_demonic LinkMark_rel)"
+lemma apply_fun_index [simp]: "(r .. P) i = (r i) (P i)" by (simp add: apply_fun_def)
+
+lemma [simp]: "Disjunctive_fun (r::('c \<Rightarrow> 'a::complete_lattice \<Rightarrow> 'b::complete_lattice)) 
+        \<Longrightarrow> mono_fun r"
+  by (simp add: Disjunctive_fun_def mono_fun_def)
+
+theorem LinkMark_DataRefinement_a [simp]:
+ "DgrDataRefinement2 (R_a .. SetMarkInv) StackMark_a R'_a LinkMark"
   apply (rule_tac P = "StackMarkInv" in DgrDataRefinement_mono)
-  apply (simp add: le_fun_def dangelic_def SetMarkInv_def angelic_def R1_def R2_def Init'_def Final'_def mem_def le_bool_def)
-  apply auto
-  apply (unfold Collect_def)
-  apply auto
-  apply (metis mem_def)
-  apply (simp add: DgrDataRefinement_def dgr_demonic_def LinkMark_rel_def StackMark_rel_def demonic_sup_inf data_refinement_choice2)
+  apply (simp add: le_fun_def SetMarkInv_def angelic_def 
+               R1_a_def R2_a_def Init'_def Final'_def)
+  apply safe
+  apply simp
+  apply (simp add: DgrDataRefinement2_def dgr_demonic_def LinkMark_def 
+    StackMark_a_def demonic_sup_inf data_refinement_choice2 assert_comp_choice)
   apply (rule data_refinement_choice2)
-  apply auto
-  apply (rule data_refinement_choice)
-  by auto
+  apply simp_all
+  apply (rule data_refinement_choice1)
+  by simp_all
+
+lemma [simp]: "mono Q1'_a" by (simp add: Q1'_a_def)
+lemma [simp]: "mono Q2'_a" by (simp add: Q2'_a_def)
+lemma [simp]: "mono Q3'_a" by (simp add: Q3'_a_def)
+lemma [simp]: "mono Q4'_a" by (simp add: Q4'_a_def)
+lemma [simp]: "mono Q5'_a" by (simp add: Q5'_a_def)
+
+lemma [simp]: "dmono StackMark_a"
+  apply (unfold dmono_def StackMark_a_def)
+  by simp
 
 subsection {* Diagram correctness *}
 
 theorem LinkMark_correct:
-  "Hoare_dgr (dangelic R' (dangelic R SetMarkInv)) (dgr_demonic LinkMark_rel) ((dangelic R' (dangelic R SetMarkInv)) \<sqinter> (- grd (step ((dgr_demonic LinkMark_rel)))))"
-  apply (rule_tac T="StackMark_rel" in Diagram_DataRefinement)
-  apply auto
+  "Hoare_dgr (R'_a .. (R_a .. SetMarkInv)) LinkMark ((R'_a .. (R_a .. SetMarkInv)) \<sqinter> (- grd (step LinkMark)))"
+  apply (rule_tac D = "StackMark_a" in Diagram_DataRefinement2)
+  apply simp_all
   by (rule StackMark_correct)
 
-
 end
-
 end

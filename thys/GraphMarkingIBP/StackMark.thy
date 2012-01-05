@@ -1,7 +1,7 @@
 header {*  Marking Using a Stack  *}
 
 theory StackMark
-imports SetMark DataRefinement
+imports SetMark "../DataRefinementIBP/DataRefinement"
 begin
 
 text{*
@@ -19,22 +19,23 @@ has distinct elements and the elements of the list and the set are the same.
 subsection {* Transitions *}
 
 definition (in graph)
-  "Q1' s \<equiv> let (stk::('node list), mrk::('node set)) = s in {(stk'::('node list), mrk') . 
-           root = nil \<and> stk' = [] \<and> mrk' = mrk}"
+  "Q1'_a \<equiv> [:\<lambda> (stk::('node list), mrk::('node set)) . {(stk'::('node list), mrk') . 
+             root = nil \<and> stk' = [] \<and> mrk' = mrk}:]"
 
 definition (in graph)
-  "Q2' s \<equiv> let (stk::('node list), mrk::('node set)) = s in {(stk', mrk') . root \<noteq> nil \<and> stk' = [root] \<and> mrk' = mrk \<union> {root}}"
+  "Q2'_a \<equiv> [:\<lambda> (stk::('node list), mrk::('node set)) . {(stk', mrk') . 
+         root \<noteq> nil \<and> stk' = [root] \<and> mrk' = mrk \<union> {root}}:]"
 
 definition (in graph)
-  "Q3' s \<equiv> let (stk, mrk) = s in {(stk', mrk') .  stk \<noteq> [] \<and> (\<exists> y . (hd stk, y) \<in> next \<and> 
-    y \<notin> mrk \<and> stk' = y # stk \<and> mrk' = mrk \<union> {y})}"
+  "Q3'_a \<equiv> [:\<lambda> (stk, mrk) . {(stk', mrk') .  stk \<noteq> [] \<and> (\<exists> y . (hd stk, y) \<in> next \<and> 
+         y \<notin> mrk \<and> stk' = y # stk \<and> mrk' = mrk \<union> {y})}:]"
 
 definition (in graph)
-  "Q4' s \<equiv> let (stk, mrk) = s in {(stk', mrk') . stk \<noteq> [] \<and> 
-  (\<forall> y . (hd stk, y) \<in> next \<longrightarrow> y \<in> mrk) \<and> stk' = tl stk \<and> mrk' = mrk}"
+  "Q4'_a \<equiv> [:\<lambda> (stk, mrk) . {(stk', mrk') . stk \<noteq> [] \<and> 
+        (\<forall> y . (hd stk, y) \<in> next \<longrightarrow> y \<in> mrk) \<and> stk' = tl stk \<and> mrk' = mrk}:]"
 
 definition
-  "Q5' s \<equiv> let (stk, mrk) = s in {(stk', mrk') . stk = [] \<and> mrk' = mrk}"
+  "Q5'_a \<equiv> [:\<lambda> (stk, mrk) . {(stk', mrk') . stk = [] \<and> mrk' = mrk}:]"
 
 subsection {* Invariants *}
 
@@ -56,70 +57,99 @@ definition [simp]:
 subsection {* Data refinement relations *}
 
 definition
-  "R1 \<equiv> \<lambda> (stk, mrk) . {(X, mrk') . mrk' = mrk}"
+  "R1_a \<equiv> {: stk, mrk \<leadsto> X, mrk' . mrk' = mrk :}"
 
 definition
-  "R2 \<equiv> \<lambda> (stk, mrk) . {(X, mrk') . X = {x . x \<in> set stk} \<and> (stk, mrk) \<in> Loop' \<and> mrk' = mrk}"
+  "R2_a \<equiv> {: stk, mrk \<leadsto> X, mrk' . X = set stk \<and> (stk, mrk) \<in> Loop' \<and> mrk' = mrk :}"
+
+lemma [simp]: "R1_a \<in> Apply.Disjunctive"
+       by (simp add: R1_a_def)
+
+lemma [simp]: "R2_a \<in> Apply.Disjunctive" by (simp add: R2_a_def)
 
 definition [simp]:
-  "R i = (case i of
-      I.init  \<Rightarrow> R1 |
-      I.loop  \<Rightarrow> R2 |
-      I.final \<Rightarrow> R1)"
+  "R_a i = (case i of
+      I.init  \<Rightarrow> R1_a |
+      I.loop  \<Rightarrow> R2_a |
+      I.final \<Rightarrow> R1_a)"
+
+lemma [simp]: "Disjunctive_fun R_a" by (simp add: Disjunctive_fun_def)
+
+definition
+  "angelic_fun r = (\<lambda> i . {:r i:})"
 
 definition (in graph)
-  "StackMark_rel = (\<lambda> (i, j) . (case (i, j) of
-      (I.init, I.loop)  \<Rightarrow> Q1' \<squnion> Q2' |
-      (I.loop, I.loop)  \<Rightarrow> Q3' \<squnion> Q4' |
-      (I.loop, I.final) \<Rightarrow> Q5' |
-       _ \<Rightarrow> \<bottom>))"
+  "StackMark_a = (\<lambda> (i, j) . (case (i, j) of
+      (I.init, I.loop)  \<Rightarrow> Q1'_a \<sqinter> Q2'_a |
+      (I.loop, I.loop)  \<Rightarrow> Q3'_a \<sqinter> Q4'_a |
+      (I.loop, I.final) \<Rightarrow> Q5'_a |
+       _ \<Rightarrow> \<top>))"
 
 subsection {* Data refinement of the transitions *}
 
 theorem (in graph) init_nil [simp]:
-  "DataRefinement Init Q1 R1 R2 (demonic Q1')"
-   by (simp add: DataRefinement_def hoare_demonic Q1'_def Init_def 
-     R1_def Loop'_def R1_def R2_def Q1_def angelic_def subset_eq)
-   
-theorem (in graph) init_root [simp]:
-  "DataRefinement Init Q2 R1 R2 (demonic Q2')"
-by (auto simp: DataRefinement_def hoare_demonic Q2'_def Init_def
-     Loop'_def R1_def R2_def Q2_def angelic_def subset_eq)
+  "DataRefinement ({.Init.} o Q1_a) R1_a R2_a Q1'_a"
+   by (simp add: data_refinement_hoare hoare_demonic Q1'_a_def Init_def 
+     Loop'_def R1_a_def R2_a_def Q1_a_def angelic_def subset_eq)
 
+theorem (in graph) init_root [simp]:
+  "DataRefinement ({.Init.} o Q2_a) R1_a R2_a Q2'_a"
+   by (simp add: data_refinement_hoare hoare_demonic Q2'_a_def Init_def 
+     Loop'_def R1_a_def R2_a_def Q2_a_def angelic_def subset_eq)
+   
 theorem (in graph) step1 [simp]:
-  "DataRefinement Loop Q3 R2 R2 (demonic Q3')"
-  apply (simp add: DataRefinement_def hoare_demonic Loop_def 
-    Loop'_def R2_def Q3_def Q3'_def angelic_def subset_eq)
+  "DataRefinement ({.Loop.} o Q3_a) R2_a R2_a Q3'_a"
+  apply (simp add: data_refinement_hoare hoare_demonic Loop_def 
+    Loop'_def R2_a_def Q3_a_def Q3'_a_def angelic_def subset_eq)
   apply (simp add: simp_eq_emptyset)
-by (metis Collect_def List.set.simps(2) hd_in_set mem_def member_set distinct.simps(2))
+  by (metis List.set.simps(2) hd_in_set distinct.simps(2))
 
 theorem (in graph) step2 [simp]:
-  "DataRefinement Loop Q4 R2 R2 (demonic Q4')"
-  apply (simp add: DataRefinement_def hoare_demonic Loop_def 
-    Loop'_def R2_def Q4_def Q4'_def angelic_def subset_eq)
+  "DataRefinement ({.Loop.} o Q4_a) R2_a R2_a Q4'_a"
+  apply (simp add: data_refinement_hoare hoare_demonic Loop_def 
+    Loop'_def R2_a_def Q4_a_def Q4'_a_def angelic_def subset_eq)
   apply (simp add: simp_eq_emptyset)
   apply clarify
   apply (case_tac a)
   by auto
 
-
 theorem (in graph) final [simp]:
-  "DataRefinement Loop Q5 R2 R1 (demonic Q5')"
-  apply (simp add: DataRefinement_def hoare_demonic Loop_def 
-    Loop'_def R2_def R1_def Q5_def Q5'_def angelic_def subset_eq)
+  "DataRefinement ({.Loop.} o Q5_a)  R2_a R1_a Q5'_a"
+  apply (simp add: data_refinement_hoare hoare_demonic Loop_def 
+    Loop'_def R2_a_def R1_a_def Q5_a_def Q5'_a_def angelic_def subset_eq)
   by (simp add: simp_eq_emptyset)
 
 subsection {* Diagram data refinement *}
 
+lemma assert_comp_choice: "{.p.} o (S \<sqinter> T) = ({.p.} o S) \<sqinter> ({.p.} o T)"
+  apply (rule antisym)
+  apply (simp_all add: fun_eq_iff assert_def le_fun_def inf_fun_def inf_assoc)
+  apply safe
+  apply (rule_tac y = "S x \<sqinter> T x" in order_trans)
+  apply (rule inf_le2)
+  apply simp
+  apply (rule_tac y = "S x \<sqinter> T x" in order_trans)
+  apply (rule inf_le2)
+  apply simp
+  apply (rule_tac y = "S x \<sqinter> (p \<sqinter> T x)" in order_trans)
+  apply (rule inf_le2)
+  apply simp
+  apply (rule_tac y = "S x \<sqinter> (p \<sqinter> T x)" in order_trans)
+  apply (rule inf_le2)
+  apply (rule_tac y = "p \<sqinter> T x" in order_trans)
+  apply (rule inf_le2)
+  by simp
+
 theorem (in graph) StackMark_DataRefinement [simp]:
- "DgrDataRefinement SetMarkInv SetMark_rel R (dgr_demonic StackMark_rel)"
-  by (simp add: DgrDataRefinement_def dgr_demonic_def StackMark_rel_def SetMark_rel_def demonic_sup_inf SetMarkInv_def data_refinement_choice2)
+ "DgrDataRefinement2 SetMarkInv SetMark R_a StackMark_a"
+  by (simp add: DgrDataRefinement2_def  StackMark_a_def SetMark_def demonic_sup_inf 
+    SetMarkInv_def data_refinement_choice2 assert_comp_choice)
 
 subsection {* Diagram correctness *}
 
 theorem (in graph) StackMark_correct:
-  "Hoare_dgr (dangelic R SetMarkInv) (dgr_demonic StackMark_rel) ((dangelic R SetMarkInv) \<sqinter> (- grd (step ((dgr_demonic StackMark_rel)))))"
-  apply (rule_tac T="SetMark_rel" in Diagram_DataRefinement)
+  "Hoare_dgr (R_a .. SetMarkInv) StackMark_a ((R_a .. SetMarkInv) \<sqinter> (- grd (step (StackMark_a))))"
+  apply (rule_tac D = "SetMark" in Diagram_DataRefinement2)
   apply auto
   by (rule SetMark_correct1)
 

@@ -1,14 +1,12 @@
 header {*  Well founded and transitive relations  *}
 
 theory WellFoundedTransitive
-imports Preliminaries
+imports Main
 begin
 
-class well_founded_transitive = ord +
+class transitive = ord +
   assumes order_trans1: "x < y \<Longrightarrow> y < z \<Longrightarrow> x < z"
   and less_eq_def: "x \<le> y <-> x = y \<or> x < y"
-  and less_induct1 [case_names less]: "(!!x . (!!y . y < x \<Longrightarrow> P y) \<Longrightarrow> P x) \<Longrightarrow> P a"
-
 begin
 
 lemma eq_less_eq [simp]:
@@ -28,36 +26,28 @@ lemma order_trans3:
   apply auto
   apply (erule less_eq_def order_trans1)
   by assumption
-
-
-definition
-  "SUP_L P w = SUPR {v . v < w} P"
-
-lemma SUP_L_upper:
-  "v < w \<Longrightarrow> P v \<le> SUP_L P w"
-  by (simp add: SUP_L_def SUP_upper2)
-
-lemma SUP_L_least:
-  "(!! v . v < w \<Longrightarrow> P v \<le> Q) \<Longrightarrow> SUP_L P w \<le> Q"
-  by (auto simp add: SUP_L_def intro: Complete_Lattices.SUP_least)
-
-lemma SUP_L_fun_eq:
-  "((SUP_L P w) i) = (SUP_L (\<lambda> v . P v i)) w"
-  by (simp add: SUP_L_def SUP_apply)
-
 end
 
-instantiation prod:: (well_founded_transitive, well_founded_transitive) well_founded_transitive
+class well_founded = ord +
+  assumes less_induct1 [case_names less]: "(!!x . (!!y . y < x \<Longrightarrow> P y) \<Longrightarrow> P x) \<Longrightarrow> P a"
+
+class well_founded_transitive = transitive + well_founded
+
+instantiation prod:: (ord, ord) ord
 begin
 
 definition
   less_pair_def: "a < b <->  fst a  < fst b \<or> (fst a = fst b \<and> snd a < snd b)"
 
 definition
-  less_eq_pair_def: "(a::('a::well_founded_transitive * 'b::well_founded_transitive)) <= b <-> a = b \<or> a < b"
+  less_eq_pair_def: "(a::('a::ord * 'b::ord)) <= b <-> a = b \<or> a < b"
+instance proof qed
+end
 
+instantiation prod:: (transitive, transitive) transitive
+begin
 instance proof
-  fix x y z :: "('a::well_founded_transitive * 'b::well_founded_transitive)"
+  fix x y z :: "('a::transitive * 'b::transitive)"
   assume "x < y" and "y < z" then  show  "x < z"
     apply (simp add: less_pair_def)
     apply auto
@@ -72,7 +62,12 @@ next
   fix x y :: "'a * 'b"
   show  "x \<le> y <-> x = y \<or> x < y"
     by (simp add: less_eq_pair_def)
-next
+qed
+end
+
+instantiation prod:: (well_founded, well_founded) well_founded
+begin
+instance proof
   fix P::"('a * 'b) \<Rightarrow> bool"
   have a:  "!P . (!x::'a . (!y . y < x \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> (!a . P a)"
     apply safe
@@ -94,13 +89,18 @@ next
     apply (drule spec)
     apply (erule mp)
     by blast
-  from c show "!! a . (!! x. (!! y. y < x \<Longrightarrow> P y) \<Longrightarrow> P x) \<Longrightarrow> P a"
-    by blast
-next
-qed (blast)
+  assume A: "(!! x. (!! y. y < x \<Longrightarrow> P y) \<Longrightarrow> P x)"
+  fix a
+  from c A show "P a" by blast
+qed
 end
 
-instantiation "nat":: well_founded_transitive
+instantiation prod:: (well_founded_transitive, well_founded_transitive) well_founded_transitive
+begin
+instance proof qed
+end
+
+instantiation "nat" :: transitive
 begin
 
 instance proof
@@ -110,12 +110,23 @@ instance proof
   fix x y::nat show "(x \<le> y) <-> (x = y \<or> x < y)"
     apply (unfold le_less)
     by safe
-  next
-  show "!!P (a::nat) . (!!x . (!!y . y < x \<Longrightarrow> P y) \<Longrightarrow> P x) \<Longrightarrow> P a"
-   apply (rule less_induct)
-   by blast
-  qed blast
+  qed
+end
 
+instantiation "nat":: well_founded
+begin
+instance proof
+  fix P::"nat \<Rightarrow> bool" 
+  fix a
+  assume A: "(!!x . (!!y . y < x \<Longrightarrow> P y) \<Longrightarrow> P x)"
+  show "P a"
+  by (rule less_induct, rule A, simp)
+  qed
+end
+
+instantiation "nat":: well_founded_transitive
+begin
+instance proof qed
 end
 
 end

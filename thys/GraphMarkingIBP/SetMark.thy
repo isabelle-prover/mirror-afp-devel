@@ -10,7 +10,8 @@ We construct in this theory a diagram which computes all reachable nodes
 from a given root node in a graph. The graph is defined in the theory
 Graph and is given by a relation $next$ on the nodes of the graph.
 
-The diagram has only three ordered situation ($\mathit{init} > \mathit{loop} > \mathit{final}$). The termination
+The diagram has only three ordered situation 
+($\mathit{init} > \mathit{loop} > \mathit{final}$). The termination
 variant is a pair of a situation and a natural number with the lexicographic
 ordering. The idea of this ordering is that we can go from a bigger situation
 to a smaller one, however if we stay in the same situation the second
@@ -58,27 +59,13 @@ qed (simp)
 
 end
 
-definition (in graph)
-  "reach x \<equiv> {y . (x, y) \<in> next\<^sup>* \<and> y \<noteq> nil}"
-
-theorem (in graph) reach_nil [simp]: "reach nil = {}"
-  apply (simp add: reach_def, safe)
-  apply (drule rtrancl_induct)
-  by auto
-
-theorem (in graph)  reach_next: "b \<in> reach a \<Longrightarrow> (b, c) \<in> next \<Longrightarrow> c \<in> reach a"
-  apply (simp add: reach_def)
-  by auto
-
-definition (in graph) 
-  "path S mrk \<equiv> {x . (\<exists> s . s \<in> S \<and> (s, x) \<in> next O (next \<inter> ((-mrk)\<times>(-mrk)))\<^sup>* )}"
 
 text{*
 The set $\mathit{path}\ S \ \mathit{mrk}$ contains all reachable nodes from S along paths with
 unmarked nodes.
 *}
 
-lemma (in graph) trascl_less: "x \<noteq> y \<Longrightarrow> (a, x) \<in> R\<^sup>* \<Longrightarrow> 
+lemma trascl_less: "x \<noteq> y \<Longrightarrow> (a, x) \<in> R\<^sup>* \<Longrightarrow> 
     ((a,x) \<in> (R \<inter> (-{y})\<times>(-{y}))\<^sup>* \<or>  (y,x) \<in> R O (R \<inter> (-{y})\<times>(-{y}))\<^sup>* )"
   apply (drule_tac 
     b = x and a = a and r = R and 
@@ -152,22 +139,23 @@ lemma (in graph)  init_set2: "x \<in> reach root \<Longrightarrow> x \<notin> pa
 
 subsection {* Transitions *}
 
-definition (in graph) 
-  "Q1 \<equiv> \<lambda>  (X::('node set), mrk::('node set)) . { (X'::('node set), mrk') . (root::'node) = nil \<and> X' = {} \<and> mrk' = mrk}"
+definition (in graph)
+  "Q1_a \<equiv> [: X, mrk \<leadsto> X', mrk'. (root::'node) = nil \<and> X' = {} \<and> mrk' = mrk :]"
 
-definition (in graph) 
-  "Q2 \<equiv> \<lambda> (X::('node set), mrk::('node set)) . { (X', mrk') . (root::'node) \<noteq> nil \<and> X' = {root::'node} \<and> mrk' = {root::'node}}"
+definition (in graph)
+  "Q2_a \<equiv> [: X, mrk \<leadsto> X', mrk' . 
+       (root::'node) \<noteq> nil \<and> X' = {root::'node} \<and> mrk' = {root::'node} :]"
 
-definition (in graph) 
-  "Q3 \<equiv> \<lambda> (X, mrk) . { (X', mrk') . 
-        (\<exists> x \<in> X . \<exists> y . (x, y) \<in> next \<and> y \<notin> mrk \<and> X' = X \<union> {y} \<and> mrk' = mrk \<union> {y})}"
+definition (in graph)
+  "Q3_a \<equiv> [: X, mrk \<leadsto> X', mrk' . 
+        (\<exists> x \<in> X . \<exists> y . (x, y) \<in> next \<and> y \<notin> mrk \<and> X' = X \<union> {y} \<and> mrk' = mrk \<union> {y}):]"
 
-definition (in graph) 
-  "Q4 \<equiv> \<lambda> (X, mrk) . { (X', mrk') .  
-        (\<exists> x \<in> X . (\<forall> y . (x, y) \<in> next \<longrightarrow> y \<in> mrk) \<and> X' = X - {x} \<and> mrk' = mrk)}"
+definition (in graph)
+  "Q4_a \<equiv> [: X, mrk \<leadsto> X', mrk' .  
+        (\<exists> x \<in> X . (\<forall> y . (x, y) \<in> next \<longrightarrow> y \<in> mrk) \<and> X' = X - {x} \<and> mrk' = mrk):]"
 
-definition (in graph) 
-  "Q5 \<equiv> \<lambda> (X::('node set), mrk::('node set)) . { (X'::('node set), mrk') . X = {} \<and> mrk = mrk'}"
+definition (in graph)
+  "Q5_a \<equiv> [: X, mrk \<leadsto> X', mrk' . X = {} \<and> mrk = mrk' :]"
 
 subsection {* Invariants *}
 
@@ -185,11 +173,11 @@ definition
 definition
   "term_less t w = {s . t s < w}"
 
-lemma union_term_eq[simp]:  "(\<Union> w . term_eq t w) = UNIV"
+lemma union_term_eq [simp]:  "(\<Union> w . term_eq t w) = UNIV"
   apply (simp add: term_eq_def)
   by auto
 
-lemma union_less_term_eq[simp]: "(\<Union>v\<in>{v. v < w}. term_eq t v) = term_less t w"
+lemma union_less_term_eq [simp]: "(\<Union>v\<in>{v. v < w}. term_eq t v) = term_less t w"
   apply (simp add: term_eq_def term_less_def)
   by auto
 
@@ -216,48 +204,36 @@ definition  (in graph) [simp]:
       I.loop  \<Rightarrow> Loop \<inter> {s . trm s = w} |
       I.final \<Rightarrow> Final)"
 
-definition (in graph) 
-  "SetMark_rel \<equiv> \<lambda> (i, j) . (case (i, j) of
-      (I.init, I.loop)  \<Rightarrow> Q1 \<squnion> Q2 |
-      (I.loop, I.loop)  \<Rightarrow> Q3 \<squnion> Q4 |
-      (I.loop, I.final) \<Rightarrow> Q5 |
-       _ \<Rightarrow> \<bottom>)"
-  
-
 subsection {* Diagram *}
 
 definition (in graph) 
   "SetMark \<equiv> \<lambda> (i, j) . (case (i, j) of
-      (I.init, I.loop)  \<Rightarrow> (demonic Q1) \<sqinter> (demonic Q2) |
-      (I.loop, I.loop)  \<Rightarrow> (demonic Q3) \<sqinter> (demonic Q4) |
-      (I.loop, I.final) \<Rightarrow> demonic Q5 |
+      (I.init, I.loop)  \<Rightarrow> Q1_a \<sqinter> Q2_a |
+      (I.loop, I.loop)  \<Rightarrow> Q3_a \<sqinter> Q4_a |
+      (I.loop, I.final) \<Rightarrow> Q5_a |
        _ \<Rightarrow> top)"
-
-lemma (in graph) dgr_dmonic_SetMark [simp]:
-  "dgr_demonic SetMark_rel = SetMark"
-  by (simp add: fun_eq_iff SetMark_def dgr_demonic_def SetMark_rel_def demonic_sup_inf)
 
 lemma (in graph)  SetMark_dmono [simp]:
   "dmono SetMark"
-  apply (unfold dmono_def SetMark_def)
+  apply (unfold dmono_def SetMark_def Q1_a_def Q2_a_def Q3_a_def Q4_a_def Q5_a_def)
   by simp
 
 subsection {* Correctness of the transitions *}
 
-lemma  (in graph) init_loop_1[simp]: "\<Turnstile> Init {| demonic Q1 |} Loop"
-  apply (unfold hoare_demonic Init_def Q1_def Loop_def)
+
+lemma  (in graph) init_loop_1_a[simp]: "\<Turnstile> Init {| Q1_a |} Loop"
+  apply (unfold hoare_demonic Init_def Q1_a_def Loop_def)
   by auto
 
-lemma  (in graph) init_loop_2[simp]: "\<Turnstile> Init {| demonic Q2 |} Loop"
-  apply (simp add: hoare_demonic Init_def Q2_def Loop_def)
+lemma  (in graph) init_loop_2_a[simp]: "\<Turnstile> Init {| Q2_a |} Loop"
+  apply (simp add: hoare_demonic Init_def Q2_a_def Loop_def)
   apply auto
   apply (simp_all add: reach_def)
   apply (rule init_set2)
   by (simp_all add: reach_def)
 
-
- lemma  (in graph) loop_loop_1[simp]: "\<Turnstile> (Loop \<inter>  {s . trm s = w}) {| demonic Q3 |} (Loop \<inter> {s. trm s < w})"
-  apply (simp add: hoare_demonic Q3_def Loop_def trm_def)
+lemma  (in graph) loop_loop_1_a [simp]: "\<Turnstile> (Loop \<inter>  {s . trm s = w}) {| Q3_a |} (Loop \<inter> {s. trm s < w})"
+  apply (simp add: hoare_demonic Q3_a_def Loop_def trm_def)
   apply safe
   apply (simp_all)
   apply (simp_all add: reach_def subset_eq)
@@ -270,17 +246,15 @@ lemma  (in graph) init_loop_2[simp]: "\<Turnstile> Init {| demonic Q2 |} Loop"
   apply (case_tac "card (-b) > 0")
   by auto
 
-
- lemma  (in graph) loop_loop_2[simp]: "\<Turnstile> (Loop \<inter>  {s . trm s = w}) {| demonic Q4 |} (Loop \<inter> {s. trm s < w})"
-  apply (simp add: hoare_demonic Q4_def Loop_def trm_def)
+ lemma  (in graph) loop_loop_2_a[simp]: "\<Turnstile> (Loop \<inter>  {s . trm s = w}) {| Q4_a |} (Loop \<inter> {s. trm s < w})"
+  apply (simp add: hoare_demonic Q4_a_def Loop_def trm_def)
   apply auto
   apply (case_tac "card a > 0")
   by auto
 
- lemma  (in graph) loop_final[simp]: "\<Turnstile> (Loop \<inter> {s . trm s = w}) {| demonic Q5 |} Final"
-  apply (simp add: hoare_demonic Q5_def Loop_def Final_def subset_eq Int_def path_def)
+ lemma  (in graph) loop_final_a [simp]: "\<Turnstile> (Loop \<inter> {s . trm s = w}) {| Q5_a |} Final"
+  apply (simp add: hoare_demonic Q5_a_def Loop_def Final_def subset_eq Int_def path_def)
   by auto
-
 
 lemma union_term_w[simp]:  "(\<Union>w. {s. t s = w}) = UNIV"
   by auto
@@ -288,17 +262,14 @@ lemma union_term_w[simp]:  "(\<Union>w. {s. t s = w}) = UNIV"
 lemma union_less_term_w[simp]: "(\<Union>v\<in>{v. v < w}. {s. t s = v}) = {s . t s < w}"
   by auto
 
-lemma sup_union[simp]: "SUP A i =  (\<Union> w . A w i)"
-  by (simp_all add: SUP_fun_eq)
+lemma sup_union[simp]: "Sup (range A) i =  (\<Union> w . A w i)"
+  by (simp_all add: Sup_fun_def)
 
-lemma empty_pred_false[simp]: "{} a = False"
-  by blast
-
-lemma forall_simp[simp]: "(!a b. \<forall> x\<in> A . (a = (t x)) \<longrightarrow> (h x) \<or> b \<noteq> u x) = (\<forall> x\<in> A . h x)"
+lemma forall_simp [simp]: "(!a b. \<forall> x\<in> A . (a = (t x)) \<longrightarrow> (h x) \<or> b \<noteq> u x) = (\<forall> x\<in> A . h x)"
   apply safe
   by auto
 
-lemma forall_simp2[simp]: "(!a b. \<forall> x\<in> A . !y . (a  = t x y) \<longrightarrow> (h x y) \<longrightarrow> (g x y) \<or> b \<noteq> u x y) = (\<forall> x\<in> A . ! y . h x y \<longrightarrow> g x y )"
+lemma forall_simp2 [simp]: "(!a b. \<forall> x\<in> A . !y . (a  = t x y) \<longrightarrow> (h x y) \<longrightarrow> (g x y) \<or> b \<noteq> u x y) = (\<forall> x\<in> A . ! y . h x y \<longrightarrow> g x y )"
   apply safe
   by auto
 
@@ -319,19 +290,25 @@ proof (rule_tac X = "SetMarkInvTerm" in hoare_diagram3)
   show "\<forall>u i j. \<Turnstile> SetMarkInvTerm u i{| SetMark (i, j) |}
     DiagramTermination.SUP_L_P (\<lambda>n i. (i, n)) SetMarkInvTerm (i, u) j"
     by (auto simp add: SUP_L_P_def  less_pair_def less_I_def hoare_choice SetMark_def)
-  show "SetMarkInv \<le> SUP SetMarkInvTerm"
-    apply (auto)
-    apply (case_tac x)
+  show "SetMarkInv \<le> Sup (range SetMarkInvTerm)"
+    apply (simp add: le_fun_def, safe)
     apply (simp_all add: SetMarkInv_def)
+    apply (case_tac x)
+    apply auto
     done
-  show "SUP SetMarkInvTerm \<sqinter> - grd (step SetMark) \<le> SetMarkInvFinal"
-    apply (auto simp add: SetMark_def SetMarkInvFinal_def uminus_apply simp del: bool_Compl_def)
+  show "Sup (range SetMarkInvTerm) \<sqinter> - grd (step SetMark) \<le> SetMarkInvFinal"
+    apply (simp add: le_fun_def inf_fun_def SetMarkInvFinal_def)
+    apply safe
+    apply simp_all
+    apply (simp_all add: fun_Compl_def)
     apply (drule_tac x="I.loop" in spec)
-    apply (simp add: Q1_def Q2_def)
+    apply (simp add: SetMark_def)
+    apply (simp add: Q1_a_def Q2_a_def)
     apply auto
     apply (frule_tac x="I.loop" in spec)
     apply (drule_tac x="I.final" in spec)
-    apply (simp add: Q3_def Q4_def Q5_def)
+    apply (simp add: SetMark_def)
+    apply (simp add: Q3_a_def Q4_a_def Q5_a_def)
     apply (auto)
     done
 qed
@@ -340,20 +317,15 @@ theorem (in graph) SetMark_correct1 [simp]:
   "Hoare_dgr SetMarkInv SetMark (SetMarkInv \<sqinter> (- grd (step SetMark)))"
   apply (simp add: Hoare_dgr_def)
   apply (rule_tac x = SetMarkInvTerm in exI)
+  apply (subgoal_tac "SetMarkInv = \<Squnion>range SetMarkInvTerm")
   apply simp
   apply safe
   apply (simp_all add: SetMark_def SUP_L_P_def
-       less_pair_def less_I_def not_grd_dgr hoare_choice SetMarkInv_def SetMarkInvFinal_def uminus_apply SetMark_def)
-
+       less_pair_def less_I_def hoare_choice  uminus_apply)
   apply (simp_all add: fun_eq_iff)
   apply safe
   apply (unfold SetMarkInv_def)
-  apply auto
-  apply (case_tac x)
-  apply simp_all
-  apply (case_tac x)
-  by simp_all
-
+  by auto
 
 theorem (in graph) stack_not_nil [simp]:
   "(mrk, S) \<in> Loop \<Longrightarrow> x \<in> S \<Longrightarrow> x \<noteq> nil"

@@ -1,4 +1,4 @@
 use_thys [
-  "Complete_Distrib_Lattice", 
-  "Complete_Lattice_Prop", 
+  "Complete_Lattice_Prop",
+  "Conj_Disj",
   "Lattice_Ordered_Group"];

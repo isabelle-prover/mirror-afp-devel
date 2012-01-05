@@ -56,7 +56,7 @@ definition
 instance proof
   fix x y :: "'a MonoTran" show "(x \<le> y) = (y ^ o \<le> x ^ o)"
     apply (simp add: dual_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-    apply (simp add: dual_fun_def le_fun_def compl_le_compl_iff)
+    apply (simp add: dual_fun_def le_fun_def)
     apply safe
     apply simp
     apply (drule_tac x = "-xa" in spec) 
@@ -664,6 +664,21 @@ end
 
 subsection{*Monotonic Boolean trasformers algebra with post condition statement*}
 
+definition
+  "post_fun (p::'a::order) q = (if p \<le> q then \<top> else \<bottom>)"
+
+lemma post_mono [simp]: "(post_fun p) \<in> MonoTran"
+   apply (simp add: post_fun_def MonoTran_def mono_def, safe)
+   apply (subgoal_tac "p \<le> y", simp)
+   by (rule_tac y = x in order_trans, simp_all)
+
+lemma post_top [simp]: "post_fun p p = \<top>"
+  by (simp add: post_fun_def)
+
+lemma post_refin [simp]: "mono S \<Longrightarrow> ((S p)::'a::bounded_lattice) \<sqinter> (post_fun p) x \<le> S x"
+  apply (simp add: le_fun_def assert_fun_def post_fun_def, safe)
+  by (rule_tac f = S in monoD, simp_all)
+
 class post_mbt_algebra = mbt_algebra +
   fixes post :: "'a \<Rightarrow> 'a"
   assumes post_1: "(post x) * x * \<top> = \<top>"
@@ -672,28 +687,19 @@ class post_mbt_algebra = mbt_algebra +
 instantiation MonoTran :: (complete_boolean_algebra) post_mbt_algebra
 begin
 definition
-  post_MonoTran_def: "post x = Abs_MonoTran (\<lambda> q . if (Rep_MonoTran x) \<top> \<le> q then \<top> else \<bottom>)"
+  post_MonoTran_def: "post x = Abs_MonoTran (post_fun ((Rep_MonoTran x) \<top>))"
 instance proof
 have op_p_MonoTran [simp]: "\<And>p::'a . op \<sqinter> p \<in> MonoTran"
    apply (simp add: MonoTran_def mono_def, safe)
    by (rule_tac y = x in order_trans, simp_all)
-have [simp]: "\<And>p :: 'a .  (\<lambda>q . if p \<le> q then \<top> else \<bottom>) \<in> MonoTran"
-   apply (simp add: MonoTran_def mono_def, safe)
-   apply (subgoal_tac "p \<le> y", simp)
-   by (rule_tac y = x in order_trans, simp_all)
   fix x :: "'a MonoTran" show "post x * x * \<top> = \<top>"
     apply (simp add: post_MonoTran_def times_MonoTran_def top_MonoTran_def 
       Abs_MonoTran_inverse Rep_MonoTran_inverse)
-   by (simp add: fun_eq_iff top_fun_def o_def)
- 
+   by (simp add:  top_fun_def o_def)
   fix x y :: "'a MonoTran" show "y * x * \<top> \<sqinter> post x \<le> y"
     apply (simp add: post_MonoTran_def times_MonoTran_def top_MonoTran_def Abs_MonoTran_inverse 
       Rep_MonoTran_inverse inf_MonoTran_def less_eq_MonoTran_def)
-    apply (simp add: le_fun_def bot_fun_def inf_fun_def top_fun_def o_def)
-    apply safe
-    apply (rule_tac f = "Rep_MonoTran y" in monoD)
-    apply (cut_tac x = y in  Rep_MonoTran)
-    by (simp_all)
+    by (simp add: le_fun_def bot_fun_def inf_fun_def top_fun_def o_def)
 qed
    
 end
@@ -709,8 +715,9 @@ begin
 
 instance proof
   fix z :: "'a MonoTran" fix X show "Inf X * z = (INF x:X. x * z)"
-    apply (simp add: INF_def Inf_MonoTran_def times_MonoTran_def Inf_comp_fun Abs_MonoTran_inverse sup_Inf_distrib1)
-    apply (subgoal_tac "{g\<Colon>'a \<Rightarrow> 'a. \<exists>m\<Colon>'a MonoTran\<in>X. g = Rep_MonoTran m \<circ> Rep_MonoTran z} = Rep_MonoTran ` (\<lambda>x\<Colon>'a MonoTran. Abs_MonoTran (Rep_MonoTran x \<circ> Rep_MonoTran z)) ` X")
+    apply (simp add: INF_def Inf_MonoTran_def times_MonoTran_def Inf_comp_fun Abs_MonoTran_inverse sup_Inf)
+    apply (subgoal_tac "{g\<Colon>'a \<Rightarrow> 'a. \<exists>m\<Colon>'a MonoTran\<in>X. g = Rep_MonoTran m \<circ> Rep_MonoTran z} = 
+        Rep_MonoTran ` (\<lambda>x\<Colon>'a MonoTran. Abs_MonoTran (Rep_MonoTran x \<circ> Rep_MonoTran z)) ` X")
     apply simp
     apply (simp add: image_def, safe)
     apply (rule_tac x = "Abs_MonoTran (Rep_MonoTran m \<circ> Rep_MonoTran z)" in exI)
@@ -772,7 +779,7 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
   apply safe
   apply (rule Sup_least)
   apply blast
-  apply (simp add: Sup_comp dual_Sup SUP_def inf_Sup_distrib2)
+  apply (simp add: Sup_comp dual_Sup SUP_def Sup_inf)
   apply (subgoal_tac "((\<lambda>y . y \<sqinter> INFI X dual) ` (\<lambda>x . x * \<top>) ` X) = X")
   apply simp
   proof -
@@ -814,7 +821,5 @@ theorem omega_lfp:
   apply (rule lfp_lowerbound)
   apply (subst (2) omega_fix)
   by (simp add: inf_comp mult_assoc)
-
 end
-
 end

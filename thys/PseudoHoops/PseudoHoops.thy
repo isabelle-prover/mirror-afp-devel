@@ -78,7 +78,7 @@ sublocale pseudo_hoop_algebra <
      pseudo_hoop_dual!: pseudo_hoop_algebra "\<lambda> a b . b * a" "op \<sqinter>" "op r\<rightarrow>" "op \<le>" "op <" 1 "op l\<rightarrow>"
   apply unfold_locales
   apply (simp add: inf_l_def)
-  apply (simp add: left_impl_one)
+  apply simp
   apply (simp add: left_impl_times)
   apply (simp add: left_impl_ded)
   by (simp add: left_right_impl_times)

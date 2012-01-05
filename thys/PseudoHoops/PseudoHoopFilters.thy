@@ -114,14 +114,14 @@ lemma prop_3_2_i:
   apply safe
   apply (rule_tac x = "1::nat" in exI)
   apply (rule_tac x = "xa" in exI)
-  apply (simp add: power_set_Suc power_set_0 times_set_def)
+  apply (simp add: times_set_def)
   apply (drule drop_assumption)
   apply (simp add: filters_def)
   apply safe
   apply (rule_tac x = "1" in exI)
   apply (rule_tac x = "0" in exI)
   apply (rule_tac x = "1" in exI)
-  apply (simp add: power_set_0)
+  apply simp
   apply (rule_tac x = "n + na" in exI)
   apply (rule_tac x = "x * xa" in exI)
   apply safe
@@ -184,7 +184,7 @@ lemma [simp]: "filterof X \<in> filters"
 lemma singleton_power [simp]: "{a} *^ n = {b . b = a ^ n}"
   apply (induct_tac n)
   apply auto [1]
-  by (simp add: power_set_Suc times_set_def)
+  by (simp add: times_set_def)
 
 lemma power_pair: "x \<in> {a, b} *^ n \<Longrightarrow> \<exists> i j . i + j = n \<and> x \<le> a ^ i \<and> x \<le> b ^ j"
   apply (subgoal_tac "\<forall> x . x \<in> {a, b} *^ n \<longrightarrow> (\<exists> i j . i + j = n \<and> x \<le> a ^ i \<and> x \<le> b ^ j)")
@@ -193,7 +193,7 @@ lemma power_pair: "x \<in> {a, b} *^ n \<Longrightarrow> \<exists> i j . i + j =
   apply (induct_tac n)
   apply auto [1]
   apply safe
-  apply (simp add: power_set_Suc times_set_def)
+  apply (simp add: times_set_def)
   apply safe
   apply (drule_tac x = y in spec)
   apply safe
@@ -641,13 +641,6 @@ end
 
 context pseudo_hoop_algebra begin
 
-(*
-
-lemma one_inter [simp]: "1 \<sqinter> a = a"
-  apply (rule antisym)
-  by simp_all
-*)
-
 lemma impl_l_d1: "(a l\<rightarrow> b) = d1 a (a \<sqinter> b)"
   by (simp add: d1_def lemma_2_6_20_a ) 
 
@@ -690,15 +683,15 @@ lemma times_set_in: "a \<in> A \<Longrightarrow> b \<in> B \<Longrightarrow> c =
 lemma power_set_power: "a \<in> A \<Longrightarrow> a ^ n \<in> A *^ n"
   apply (induct_tac n)
   apply simp
-  apply (simp add: power_set_Suc)
+  apply simp
   apply (rule_tac a = a and b = "a ^ n" in times_set_in)
   by simp_all
 
 lemma normal_filter_union: "H \<in> normalfilters \<Longrightarrow> (H \<union> {x}) *^ n = (H ** (allpowers x n)) \<union> {x ^ n} "
   apply (induct_tac n)
-  apply (simp add: power_set_Suc power_set_0 times_set_def allpowers_def)
+  apply (simp add: times_set_def allpowers_def)
   apply safe
-  apply (simp add: power_set_Suc)
+  apply simp
   apply (simp add:  times_set_def)
   apply safe
   apply (simp add:  allpowers_def)
@@ -736,7 +729,7 @@ lemma normal_filter_union: "H \<in> normalfilters \<Longrightarrow> (H \<union> 
   apply safe
   apply (rule_tac x = i in exI)
   apply simp
-  apply (simp add: power_set_Suc)
+  apply simp
   apply (subst (asm)  times_set_def)
   apply (subst (asm)  times_set_def)
   apply simp

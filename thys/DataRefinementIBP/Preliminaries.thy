@@ -1,8 +1,19 @@
 header {*  Preliminaries  *}
 
 theory Preliminaries
-imports Main "~~/src/HOL/Library/Lattice_Syntax"
+imports Main "../LatticeProperties/Complete_Lattice_Prop" 
+  "../LatticeProperties/Conj_Disj"
 begin
+
+notation
+  less_eq (infix "\<sqsubseteq>" 50) and
+  less (infix "\<sqsubset>" 50) and
+  inf (infixl "\<sqinter>" 70) and
+  sup (infixl "\<squnion>" 65) and
+  top ("\<top>") and
+  bot ("\<bottom>") and
+  Inf ("\<Sqinter>_" [900] 900) and
+  Sup ("\<Squnion>_" [900] 900)
 
 subsection {*Simplification Lemmas*}
 
@@ -14,43 +25,6 @@ lemma simp_eq_emptyset:
 
 lemma mono_comp: "mono f \<Longrightarrow> mono g \<Longrightarrow> mono (f o g)" 
   by (unfold mono_def) auto
-
-
-subsection {*Complete Lattice Results*}
-
-abbreviation
-  SUP1_syntax :: "('a \<Rightarrow> 'b::complete_lattice) \<Rightarrow> 'b"  ("(SUP _)" [1000] 1000)
-  where "SUP P == SUPR UNIV P"
-
-theorem SUP_upper:
-  "P w \<le> SUP P"
-  by (simp add: SUP_upper)
-
-
-theorem SUP_least:
-  "(!! w . P w \<le> Q) \<Longrightarrow> SUP P \<le> Q"
-  by (simp add: SUP_least)
-
-
-lemma SUP_fun_eq:
-  "SUP A i = SUP (\<lambda> w . A w i)"
-  by (rule SUP_apply)
-
-text {*Monotonic applications which map monotonic to monotonic have monotonic fixpoints*}
-
-definition
-  "mono_mono F = (mono F \<and> (\<forall> f . mono f \<longrightarrow> mono (F f)))"
-
-theorem lfp_mono [simp]:
-  "mono_mono F \<Longrightarrow> mono (lfp F)"
-  apply (simp add: mono_mono_def)
-  apply (rule_tac f="F" and P = "mono" in lfp_ordinal_induct)
-  apply auto
-  apply (simp add: mono_def)
-  apply auto
-  apply (simp_all add: Sup_fun_def)
-  apply (fast intro: complete_lattice_class.SUP_least SUP_upper2)
-  done
 
 text {*Some lattice simplification rules*}
 

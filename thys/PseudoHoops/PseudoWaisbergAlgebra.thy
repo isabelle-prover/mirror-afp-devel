@@ -331,12 +331,12 @@ lemma C3_b: "x r\<rightarrow> 0 = -r x"
 lemma C4_a [simp]: "-r (-l x) = x" 
   apply (unfold C3_b [THEN sym] C3_a [THEN sym])
   apply (subst W2a)
-  by (simp add: C2_a)
+  by simp
  
 lemma C4_b [simp]: "-l (-r x) = x" 
   apply (unfold C3_b [THEN sym] C3_a [THEN sym])
   apply (subst W2c)
-  by (simp add: C2_b)
+  by simp
 
 lemma C5_a: "-r x l\<rightarrow> -r y = y r\<rightarrow> x"
   apply (rule antisym)

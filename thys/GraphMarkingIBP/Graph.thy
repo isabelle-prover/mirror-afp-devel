@@ -56,6 +56,20 @@ it returns the empty list otherwise.
     "tail (x # S) = S"
     by (simp add: tail_def)
 
+  definition (in graph)
+    "reach x \<equiv> {y . (x, y) \<in> next\<^sup>* \<and> y \<noteq> nil}"
+
+  theorem (in graph) reach_nil [simp]: "reach nil = {}"
+    apply (simp add: reach_def, safe)
+    apply (drule rtrancl_induct)
+    by auto
+
+  theorem (in graph)  reach_next: "b \<in> reach a \<Longrightarrow> (b, c) \<in> next \<Longrightarrow> c \<in> reach a"
+    apply (simp add: reach_def)
+    by auto
+
+  definition (in graph) 
+    "path S mrk \<equiv> {x . (\<exists> s . s \<in> S \<and> (s, x) \<in> next O (next \<inter> ((-mrk)\<times>(-mrk)))\<^sup>* )}"
   end
   
 end

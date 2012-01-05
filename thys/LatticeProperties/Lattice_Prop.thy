@@ -1,25 +1,24 @@
-header{* Lattice with infix operations *}
+header{* Simplification Lemmas for Lattices *}
 
 (*
     Author: Viorel Preoteasa
 *)
 
-theory Lattice_Infix
+theory Lattice_Prop
 imports Main
 begin
 
 text{*
-This theory introduces the inf and sup operators as clasess
-and it redefines the lattice as subclass of inf and sup classes.
-Some siplifications lemmas are also proved.
+This theory introduces some simplification lemmas
+for semilattices and lattices
 *}
 
-notation inf (infixl "\<sqinter>" 70)
-
-notation sup (infixl "\<squnion>" 65)
+notation 
+   inf (infixl "\<sqinter>" 70) and
+   sup (infixl "\<squnion>" 65)
 
 context semilattice_inf begin
-lemma [simp]: "x \<sqinter> y \<sqinter> z \<le> x"
+lemma [simp]: "(x \<sqinter> y) \<sqinter> z \<le> x"
   by (metis inf_le1 order_trans)
 
 lemma [simp]: "x \<sqinter> y \<sqinter> z \<le> y"

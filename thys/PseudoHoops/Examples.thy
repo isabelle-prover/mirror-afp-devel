@@ -17,13 +17,9 @@ class lgroup_with_const = lgroup +
   fixes u::'a
   assumes [simp]: "0 \<le> u"
 
-definition "G = {a::'a::lgroup_with_const . (0 \<le> a \<and> a \<le> u)}"
-
-typedef (open) ('a::lgroup_with_const) G = "G :: 'a set"
-  unfolding G_def
+typedef ('a::lgroup_with_const) G = "{a::'a . (0 \<le> a \<and> a \<le> u)}"
   apply (rule_tac x = 0 in exI)
-  apply simp
-  done
+  by simp
 
 
 instantiation "G" :: (lgroup_with_const) bounded_wajsberg_pseudo_hoop_algebra
@@ -648,14 +644,10 @@ lemma "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarrow> K \<in>
   apply simp_all
   apply (rule normal_2) 
   by simp_all
-
-definition "N = {a::'a::lgroup. a \<le> 0}"
-
-typedef (open) ('a::lgroup) N = "N :: 'a set"
-  unfolding N_def
+    
+typedef ('a::lgroup) N = "{a::'a . a \<le> 0}"
   apply (rule_tac x = 0 in exI)
-  apply simp
-  done
+  by simp
 
 class cancel_product_pseudo_hoop_algebra = cancel_pseudo_hoop_algebra + product_pseudo_hoop_algebra
 
@@ -1130,15 +1122,9 @@ by (fact cancel_times_left cancel_times_right prod_1 prod_2 prod_3 prod_4 prod_5
 
 end
 
-definition
-  "OrdSum = {x. (\<exists> (a::'a::pseudo_hoop_algebra). x = (a, 1::'b::pseudo_hoop_algebra)) \<or>
-    (\<exists> (b::'b) . x =(1::'a, b))}"
-
-typedef (open) ('a::pseudo_hoop_algebra, 'b::pseudo_hoop_algebra) OrdSum = "OrdSum :: ('a * 'b) set"
-  unfolding OrdSum_def
+typedef ('a::pseudo_hoop_algebra, 'b::pseudo_hoop_algebra) OrdSum = "{x . (\<exists> (a::'a) . x = (a, 1::'b)) \<or> (\<exists> (b::'b) . x =(1::'a, b))}"
   apply (rule_tac x = "(1::'a, 1::'b)" in exI)
-  apply simp
-  done
+  by simp
 
 lemma [simp]: "(1, b) \<in> OrdSum"
   by (simp add: OrdSum_def)

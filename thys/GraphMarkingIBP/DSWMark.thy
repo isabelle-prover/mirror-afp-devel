@@ -49,83 +49,84 @@ definition
 subsection {* Transitions *}
 
 definition
-  "QQ1 \<equiv> \<lambda> (p, t, left, right, atom, mrk) . {(p', t', left', right', atom', mrk') . 
-         root = nil \<and>  p' = nil \<and> t' = nil \<and> mrk' = mrk \<and> left' = left \<and> right' = right \<and> atom' = atom}"
+  "QQ1_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
+         root = nil \<and>  p' = nil \<and> t' = nil \<and> mrk' = mrk \<and> left' = left 
+         \<and> right' = right \<and> atom' = atom :]"
   
 definition
-  "QQ2 \<equiv> \<lambda> (p, t, left, right, atom, mrk) . {(p', t', left', right', atom', mrk') . 
-         root \<noteq> nil \<and>  p' = root \<and> t' = nil \<and> mrk' = mrk \<union> {root} \<and> left' = left \<and> right' = right \<and> atom' = atom}"
+  "QQ2_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
+         root \<noteq> nil \<and>  p' = root \<and> t' = nil \<and> mrk' = mrk \<union> {root} 
+         \<and> left' = left \<and> right' = right \<and> atom' = atom :]"
 
 definition
-  "QQ3 \<equiv> \<lambda> (p, t, left, right, atom, mrk) . {(p', t', left', right', atom', mrk') . 
+  "QQ3_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
       p \<noteq> nil \<and> gg mrk atom left p \<and>
       p' = left p \<and> t' = p \<and> mrk' = mrk \<union> {left p} \<and> 
-      left' = left(p := t) \<and> right' = right \<and> atom' = atom}"
+      left' = left(p := t) \<and> right' = right \<and> atom' = atom:]"
 
 definition
-  "QQ4 \<equiv> \<lambda> (p, t, left, right, atom, mrk) . {(p', t', left', right', atom', mrk') . 
+  "QQ4_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
       p \<noteq> nil \<and> gg mrk atom right p \<and>
       p' = right p \<and> t' = p \<and> mrk' = mrk \<union> {right p} \<and> 
-      left' = left \<and> right' = right(p := t) \<and> atom' = atom(p := True)}"
+      left' = left \<and> right' = right(p := t) \<and> atom' = atom(p := True) :]"
 
 definition
-  "QQ5 \<equiv>  \<lambda> (p, t, left, right, atom, mrk) . {(p', t', left', right', atom', mrk') . 
+  "QQ5_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
       p \<noteq> nil \<and> (*not needed in the proof*)
       \<not> gg mrk atom left p \<and> \<not> gg mrk atom right p \<and>
       t \<noteq> nil \<and> \<not> atom t \<and>
       p' = t \<and> t' = left t \<and> mrk' = mrk \<and> 
-      left' = left(t := p) \<and> right' = right \<and> atom' = atom}"
+      left' = left(t := p) \<and> right' = right \<and> atom' = atom :]"
 
 
 definition
-  "QQ6 \<equiv> \<lambda> (p, t, left, right, atom, mrk) . {(p', t', left', right', atom', mrk') . 
+  "QQ6_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
       p \<noteq> nil \<and> (*not needed in the proof*)
       \<not> gg mrk atom left p \<and> \<not> gg mrk atom right p \<and>
       t \<noteq> nil \<and> atom t \<and>
       p' = t \<and> t' = right t \<and> mrk' = mrk \<and> 
-      left' = left \<and> right' = right(t := p) \<and> atom' = atom(t := False)}"
+      left' = left \<and> right' = right(t := p) \<and> atom' = atom(t := False) :]"
 
 definition
-  "QQ7 \<equiv> \<lambda> (p, t, left, right, atom, mrk) . {(p', t', left', right', atom', mrk') . 
+  "QQ7_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
       p \<noteq> nil \<and>
       \<not> gg mrk atom left p \<and> \<not> gg mrk atom right p \<and>
       t = nil \<and>
       p' = nil \<and> t' = t \<and> mrk' = mrk \<and> 
-      left' = left \<and> right' = right \<and> atom' = atom}"
-
+      left' = left \<and> right' = right \<and> atom' = atom :]"
 
 definition
-  "QQ8 \<equiv> \<lambda> (p, t, left, right, atom, mrk) . {(p', t', left', right', atom', mrk') . 
-     p = nil \<and> p' = p \<and> t' = t \<and> mrk' = mrk \<and> left' = left \<and> right' = right \<and> atom' = atom}"
+  "QQ8_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
+     p = nil \<and> p' = p \<and> t' = t \<and> mrk' = mrk \<and> left' = left \<and> right' = right \<and> atom' = atom:]"
 
 section {* Data refinement relation *}
 
 definition
-  "RR \<equiv> \<lambda> (p, t, left, right, atom, mrk) . {(p', t', lnk, lbl, mrk') .
+  "RR_a \<equiv> {: p, t, left, right, atom, mrk \<leadsto> p', t', lnk, lbl, mrk' .
           lnk none = left \<and> lnk some = right \<and>
           lbl = (\<lambda> x . if atom x then some else none) \<and>
-          p' = p \<and> t' = t \<and> mrk' = mrk}"
+          p' = p \<and> t' = t \<and> mrk' = mrk :}"
 
 definition [simp]:
-  "R'' i = RR"
+  "R''_a i = RR_a"
 
 definition
-  "ClassicMark_rel = (\<lambda> (i, j) . (case (i, j) of
-      (I.init, I.loop)  \<Rightarrow> QQ1 \<squnion> QQ2 |
-      (I.loop, I.loop)  \<Rightarrow> (QQ3 \<squnion> QQ4) \<squnion> ((QQ5 \<squnion> QQ6) \<squnion> QQ7) |
-      (I.loop, I.final) \<Rightarrow> QQ8 |
-       _ \<Rightarrow> \<bottom>))"
+  "ClassicMark = (\<lambda> (i, j) . (case (i, j) of
+      (I.init, I.loop)  \<Rightarrow> QQ1_a \<sqinter> QQ2_a |
+      (I.loop, I.loop)  \<Rightarrow> (QQ3_a \<sqinter> QQ4_a) \<sqinter> ((QQ5_a \<sqinter> QQ6_a) \<sqinter> QQ7_a) |
+      (I.loop, I.final) \<Rightarrow> QQ8_a |
+       _ \<Rightarrow> \<top>))"
 
 subsection {* Data refinement of the transitions *}
 
-theorem init1 [simp]:
-  "DataRefinement Init'' Q1'' RR RR (demonic QQ1)"
-  by (simp add: DataRefinement_def hoare_demonic angelic_def QQ1_def Q1''_def RR_def
+theorem init1_a [simp]:
+  "DataRefinement ({.Init''.} o Q1''_a) RR_a RR_a QQ1_a"
+  by (simp add: data_refinement_hoare hoare_demonic angelic_def QQ1_a_def Q1''_a_def RR_a_def
        Init''_def subset_eq)
 
-theorem init2 [simp]:
-  "DataRefinement Init'' Q2'' RR RR (demonic QQ2)"
-  by (simp add: DataRefinement_def hoare_demonic angelic_def QQ2_def Q2''_def RR_def
+theorem init2_a [simp]:
+  "DataRefinement ({.Init''.} o Q2''_a) RR_a RR_a QQ2_a"
+  by (simp add: data_refinement_hoare hoare_demonic angelic_def QQ2_a_def Q2''_a_def RR_a_def
        Init''_def subset_eq)
 
 lemma index_simp: 
@@ -133,9 +134,9 @@ lemma index_simp:
   by (safe, rule ext, case_tac "x", auto)
 
 
-theorem step1 [simp]:
-  "DataRefinement Loop'' Q3'' RR RR (demonic QQ3)"
-  apply (simp add: DataRefinement_def hoare_demonic angelic_def QQ3_def  Q3''_def RR_def
+theorem step1_a [simp]:
+  "DataRefinement ({.Loop''.} o Q3''_a) RR_a RR_a QQ3_a"
+  apply (simp add: data_refinement_hoare hoare_demonic angelic_def QQ3_a_def  Q3''_a_def RR_a_def
        Loop''_def subset_eq g_def gg_def simp_eq_emptyset)
   apply safe
   apply (rule_tac x="\<lambda> x . if x = some then ab some else (ab none)(a := aa)" in exI)
@@ -144,9 +145,9 @@ theorem step1 [simp]:
   apply (simp add: index_simp)
   done
 
-theorem step2 [simp]:
-  "DataRefinement Loop'' Q3'' RR RR (demonic QQ4)"
-  apply (simp add: DataRefinement_def hoare_demonic angelic_def QQ4_def Q3''_def RR_def
+theorem step2_a[simp]:
+  "DataRefinement ({.Loop''.} o Q3''_a) RR_a RR_a QQ4_a"
+  apply (simp add: data_refinement_hoare hoare_demonic angelic_def QQ4_a_def Q3''_a_def RR_a_def
        Loop''_def subset_eq g_def gg_def simp_eq_emptyset)
   apply safe
   apply (rule_tac x="\<lambda> x . if x = none then ab none else (ab some)(a := aa)" in exI)
@@ -157,10 +158,9 @@ theorem step2 [simp]:
   apply auto
   done
 
-
-theorem step3 [simp]:
-  "DataRefinement Loop'' Q4'' RR RR (demonic QQ5)"
-  apply (simp add: DataRefinement_def hoare_demonic angelic_def QQ5_def Q4''_def RR_def
+theorem step3_a [simp]:
+  "DataRefinement ({.Loop''.} o Q4''_a) RR_a RR_a QQ5_a"
+  apply (simp add: data_refinement_hoare hoare_demonic angelic_def QQ5_a_def Q4''_a_def RR_a_def
        Loop''_def subset_eq g_def gg_def simp_eq_emptyset)
   apply clarify
   apply (case_tac "i")
@@ -170,55 +170,78 @@ theorem step3 [simp]:
 lemma if_set_elim: "(x \<in> (if b then A else B)) = ((b \<and> x \<in> A) \<or> (\<not> b \<and> x \<in> B))"
   by auto
 
-theorem step4 [simp]:
-  "DataRefinement Loop'' Q4'' RR RR (demonic QQ6)"
-  apply (simp add: DataRefinement_def hoare_demonic angelic_def  QQ6_def Q4''_def
-       Loop''_def subset_eq simp_eq_emptyset)
-  apply (auto simp add: RR_def)
+theorem step4_a [simp]:
+  "DataRefinement ({.Loop''.} o  Q4''_a) RR_a RR_a QQ6_a"
+  apply (simp add: data_refinement_hoare hoare_demonic angelic_def RR_a_def QQ6_a_def Q4''_a_def
+       Loop''_def subset_eq simp_eq_emptyset g_def gg_def if_set_elim)
+  apply (simp add: ext)
+  apply safe
   apply (case_tac "i")
-  apply (simp_all add: RR_def g_def gg_def if_set_elim)
-  done
+  apply simp_all
+  apply (case_tac "i")
+  apply simp_all
+  apply (case_tac "i")
+  apply simp_all
+  apply (case_tac "i")
+  by simp_all
 
-theorem step5 [simp]:
-  "DataRefinement Loop'' Q5'' RR RR (demonic QQ7)"
-  apply (simp add: DataRefinement_def hoare_demonic angelic_def Q5''_def QQ7_def 
-       Loop''_def subset_eq RR_def simp_eq_emptyset)
+theorem step5_a [simp]:
+  "DataRefinement ({.Loop''.} o Q5''_a) RR_a RR_a QQ7_a"
+  apply (simp add: data_refinement_hoare hoare_demonic angelic_def Q5''_a_def QQ7_a_def 
+       Loop''_def subset_eq RR_a_def simp_eq_emptyset)
   apply safe
   apply (simp_all add: g_def gg_def)
   apply (case_tac "i")
   by auto
 
+theorem final_step_a [simp]:
+  "DataRefinement ({.Loop''.} o Q6''_a) RR_a RR_a QQ8_a"
+  by (simp add: data_refinement_hoare hoare_demonic angelic_def Q6''_a_def QQ8_a_def 
+       Loop''_def subset_eq RR_a_def simp_eq_emptyset)
 
-theorem final_step [simp]:
-  "DataRefinement Loop'' Q6'' RR RR (demonic QQ8)"
-  by (simp add: DataRefinement_def hoare_demonic angelic_def Q6''_def QQ8_def 
-       Loop''_def subset_eq RR_def simp_eq_emptyset)
 
 subsection {* Diagram data refinement *}
 
-theorem ClassicMark_DataRefinement [simp]:
- "DgrDataRefinement (dangelic R' (dangelic R SetMarkInv)) LinkMark_rel R'' (dgr_demonic ClassicMark_rel)"
+lemma [simp]: "mono RR_a" by (simp add: RR_a_def)
+lemma [simp]: "RR_a \<in> Apply.Disjunctive" by (simp add: RR_a_def)
+lemma [simp]: "Disjunctive_fun R''_a" by (simp add: Disjunctive_fun_def)
+
+lemma [simp]: "mono_fun R''_a" by simp
+
+lemma [simp]: "mono Q1''_a" by (simp add: Q1''_a_def)
+lemma [simp]: "mono Q2''_a" by (simp add: Q2''_a_def)
+lemma [simp]: "mono Q3''_a" by (simp add: Q3''_a_def)
+lemma [simp]: "mono Q4''_a" by (simp add: Q4''_a_def)
+lemma [simp]: "mono Q5''_a" by (simp add: Q5''_a_def)
+lemma [simp]: "mono Q6''_a" by (simp add: Q6''_a_def)
+
+lemma [simp]: "dmono LinkMark"
+  apply (unfold dmono_def LinkMark_def)
+  by simp
+
+theorem ClassicMark_DataRefinement_a [simp]:
+ "DgrDataRefinement2 (R'_a .. (R_a .. SetMarkInv)) LinkMark R''_a ClassicMark"
   apply (rule_tac P = "LinkMarkInv" in DgrDataRefinement_mono)
-  apply (simp add: le_fun_def dangelic_def SetMarkInv_def angelic_def R1'_def R2'_def Init''_def Loop''_def Final''_def mem_def)
+  apply (simp add: le_fun_def SetMarkInv_def 
+    angelic_def R1'_a_def R2'_a_def Init''_def Loop''_def Final''_def)
   apply auto
-  apply (unfold cong[OF Collect_def refl])
-  apply auto
-  apply (simp add: DgrDataRefinement_def dgr_demonic_def ClassicMark_rel_def LinkMark_rel_def demonic_sup_inf data_refinement_choice2)
+  apply (simp add: DgrDataRefinement2_def dgr_demonic_def ClassicMark_def LinkMark_def 
+    demonic_sup_inf data_refinement_choice2 assert_comp_choice)
   apply (rule data_refinement_choice2)
-  apply auto
-  apply (rule data_refinement_choice)
-  apply auto
+  apply simp
+  apply (rule data_refinement_choice1)
+  apply simp_all
   apply (rule data_refinement_choice2)
-  apply auto
-  apply (rule data_refinement_choice)
-  by auto
+  apply simp_all
+  apply (rule data_refinement_choice1)
+  by simp_all
 
 subsection {* Diagram corectness *}
 
-theorem ClassicMark_correct [simp]:
-  "Hoare_dgr  (dangelic R'' (dangelic R' (dangelic R SetMarkInv))) (dgr_demonic ClassicMark_rel) 
-   ((dangelic R'' (dangelic R' (dangelic R SetMarkInv))) \<sqinter> (- grd (step ((dgr_demonic ClassicMark_rel)))))"
-  apply (rule_tac T="LinkMark_rel" in Diagram_DataRefinement)
+theorem ClassicMark_correct_a [simp]:
+  "Hoare_dgr  (R''_a .. (R'_a .. (R_a .. SetMarkInv)))  ClassicMark 
+         ((R''_a .. (R'_a ..(R_a .. SetMarkInv))) \<sqinter> (- grd (step ClassicMark)))"
+  apply (rule_tac D = "LinkMark" in Diagram_DataRefinement2)
   apply auto
   by (rule LinkMark_correct)
 
@@ -251,33 +274,23 @@ definition
        mrk = reach root}"
 
 theorem [simp]:
-  "ClassicInit \<subseteq> (angelic RR (angelic R1' (angelic R1 (SetMarkInv init))))"
+  "ClassicInit \<subseteq> (RR_a (R1'_a (R1_a (SetMarkInv init))))"
   apply (simp add: SetMarkInv_def)
-  apply (simp add: ClassicInit_def angelic_def RR_def R1'_def R1_def Init_def Init''_def)
-  apply (simp add: mem_def simp_eq_emptyset inf_fun_def inf_bool_def) 
-  apply clarify
-  apply (simp add: cong[OF Collect_def refl])
-  apply (simp_all add: fun_eq_iff link0_def label0_def cong[OF Collect_def refl])
-  done
-
-theorem [simp]:
-  "ClassicInit \<subseteq> (angelic (R'' init) (angelic (R' init) (angelic (R init) (SetMarkInv init))))"
-  by (simp add: R''_def R'_def R_def)
-
-theorem [simp]:
-  "(angelic RR (angelic R1' (angelic R1 (SetMarkInv final)))) \<le> ClassicFinal"
-  apply (simp add: SetMarkInv_def)
-  apply (simp add: ClassicFinal_def angelic_def RR_def R1'_def R1_def Final_def Final''_def Init''_def label0_def link0_def)
-  apply (simp add: mem_def simp_eq_emptyset inf_fun_def inf_bool_def)
-  apply (simp_all add: cong[OF Collect_def refl] link0_def)
+  apply (simp add: ClassicInit_def angelic_def RR_a_def R1'_a_def R1_a_def Init_def Init''_def)
   apply safe
-  apply (simp_all add: cong[OF Collect_def refl])
-  apply (simp_all add: link0_def)
-  by auto
+  apply (unfold simp_eq_emptyset)
+  apply (simp add: link0_def label0_def)
+  apply (simp add: fun_eq_iff)
+  by (simp add: label0_def)
 
 theorem [simp]:
-  "(angelic (R'' final) (angelic (R' final) (angelic (R final) (SetMarkInv final)))) \<le> ClassicFinal"
-  by (simp add: R''_def R'_def R_def)
+  "(RR_a (R1'_a (R1_a (SetMarkInv final)))) \<le> ClassicFinal"
+  apply (simp add: SetMarkInv_def)
+  apply (simp add: ClassicFinal_def angelic_def RR_a_def R1'_a_def R1_a_def 
+    Final_def Final''_def Init''_def label0_def link0_def)
+  apply (simp add: simp_eq_emptyset inf_fun_def)
+  apply auto
+  by (simp_all add: link0_def)
 
 text{*
 The indexed predicate $\mathit{ClassicPre}$ is the precondition of the diagram, and since we are only interested
@@ -303,50 +316,35 @@ definition [simp]:
       I.loop  \<Rightarrow> {} |
       I.final \<Rightarrow> ClassicFinal)"
 
-definition [simp]:
-  "ClassicMark = dgr_demonic ClassicMark_rel"
-
 lemma exists_or:
   "(\<exists> x . p x \<or> q x) = ((\<exists> x . p x) \<or> (\<exists> x . q x))"
   by auto
 
+lemma [simp]:
+  "(- grd (step  ClassicMark)) init = {}"
+  apply (simp add: grd_def step_def)
+  apply safe
+  apply simp
+  apply (drule_tac x = loop in spec)
+  apply (subst (asm) bot_fun_def) 
+  apply (simp add: ClassicMark_def)
+  apply (subst (asm) inf_fun_def, simp)
+  by (simp add: QQ1_a_def QQ2_a_def demonic_def, auto)  
+
+lemma [simp]: "grd \<top> = \<bottom>"
+  by (simp add: grd_def top_fun_def)
 
 lemma [simp]:
-  "(- grd (step (dgr_demonic ClassicMark_rel))) init = {}"
-  apply (unfold fun_eq_iff)
-  apply (unfold fun_Compl_def)
-  apply (simp del: bool_Compl_def)
-  apply (unfold dgr_demonic_def)
+  "(- grd (step  ClassicMark)) loop = {}"
   apply safe
-  apply (unfold grd_demonic)
-  apply auto
-  apply (unfold ClassicMark_rel_def)
-  apply auto
-  apply (rule_tac x = loop in exI)
-  apply auto
-  apply (simp add: QQ1_def QQ2_def sup_fun_def sup_bool_def)
-  by (simp add: mem_def cong[OF Collect_def refl] exists_or)
-
-lemma [simp]:
-  "(- grd (step (dgr_demonic ClassicMark_rel))) loop = {}"
-  apply (unfold fun_eq_iff)
-  apply (unfold fun_Compl_def)
-  apply (simp del: bool_Compl_def)
-  apply (unfold dgr_demonic_def)
-  apply safe
-  apply (unfold grd_demonic)
-  apply auto
-  apply (unfold ClassicMark_rel_def)
-  apply auto
-  apply (simp add: bot_fun_def bot_bool_def)
-  apply (simp add: QQ3_def QQ4_def QQ5_def QQ6_def QQ7_def QQ8_def sup_fun_def sup_bool_def)
-  apply (simp add: mem_def cong[OF Collect_def refl])
+  apply simp
+  apply (subst (asm) fun_Compl_def)
+  apply simp 
+  apply (frule_tac x = "final" in spec)
+  apply (drule_tac x = "loop" in spec)
+  apply (unfold ClassicMark_def QQ1_a_def QQ2_a_def QQ3_a_def QQ4_a_def QQ5_a_def QQ6_a_def QQ7_a_def QQ8_a_def)
+  apply simp
   apply (case_tac "a \<noteq> nil")
-  apply auto
-  apply (rule_tac x = loop in exI)
-  apply auto
-  apply (simp add: exists_or)
-  apply (unfold gg_def)
   by auto
 
 text {*
@@ -355,23 +353,32 @@ $\mathit{ClassicPre}$ and the postcondition $\mathit{ClassicPost}$, that is, if 
 situation, then it will terminate in the final situation, and it will mark all reachable nodes.
 *}
 
+lemma [simp]: "mono QQ1_a" by (simp add: QQ1_a_def)
+lemma [simp]: "mono QQ2_a" by (simp add: QQ2_a_def)
+lemma [simp]: "mono QQ3_a" by (simp add: QQ3_a_def)
+lemma [simp]: "mono QQ4_a" by (simp add: QQ4_a_def)
+lemma [simp]: "mono QQ5_a" by (simp add: QQ5_a_def)
+lemma [simp]: "mono QQ6_a" by (simp add: QQ6_a_def)
+lemma [simp]: "mono QQ7_a" by (simp add: QQ7_a_def)
+lemma [simp]: "mono QQ8_a" by (simp add: QQ8_a_def)
+
+lemma [simp]: "dmono ClassicMark"
+  apply (unfold dmono_def ClassicMark_def)
+  by simp
+
 theorem "\<Turnstile> ClassicPre {| pt ClassicMark |} ClassicPost"
-  apply (rule_tac P="(dangelic R'' (dangelic R' (dangelic R SetMarkInv)))" in hoare_pre)
+  apply (rule_tac P = "(R''_a .. (R'_a .. (R_a ..SetMarkInv)))" in hoare_pre)
   apply (subst le_fun_def)
-  apply (simp add: dangelic_def)
-  apply (rule_tac Q = "((dangelic R'' (dangelic R' (dangelic R SetMarkInv))) \<sqinter> (- grd (step ((dgr_demonic ClassicMark_rel)))))" in hoare_mono)
   apply simp
+  apply (rule_tac Q = "((R''_a .. (R'_a .. (R_a .. SetMarkInv))) \<sqinter> (- grd (step ((ClassicMark)))))" in hoare_mono)
+  apply simp
+  apply (simp_all add: hoare_dgr_correctness)
   apply (rule le_funI)
   apply (case_tac x)
-  apply (rule le_funI)
-  apply (simp add: inf_fun_def mem_def)
-  apply (rule le_funI)
-  apply (simp add: inf_fun_def mem_def)
-  apply (subst inf_fun_def)
-  apply (simp_all add: dangelic_def)
-  apply (rule_tac y = "angelic RR (angelic R1' (angelic R1 (SetMarkInv final)))" in order_trans)
-  apply auto [1]
-  by (simp_all add: hoare_dgr_correctness)
+  apply simp_all
+  apply (simp_all add: inf_fun_def)
+  apply (rule_tac y = "RR_a (R1'_a (R1_a (SetMarkInv final)))" in order_trans)
+  by auto
 end
 
 end

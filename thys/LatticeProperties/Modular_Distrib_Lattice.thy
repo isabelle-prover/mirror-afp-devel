@@ -5,7 +5,7 @@ header{* Modular and Distributive Lattices *}
 *)
 
 theory Modular_Distrib_Lattice
-imports Lattice_Infix
+imports Lattice_Prop
 begin
 
 text {*
@@ -143,7 +143,7 @@ lemma M5_lattice_incomp: "M5_lattice a b c \<Longrightarrow> incomp a b"
   apply (subgoal_tac "c \<sqinter> (b \<squnion> c) = c")
   apply simp
   apply (subst sup_commute)
-  by (simp add: inf_sup_absorb)
+  by simp
 end
 
 
@@ -366,9 +366,7 @@ lemma not_distrib_N5_M5: "(\<not> class.distrib_lattice op \<sqinter> ((op \<le>
         have H: "M5_lattice (a_aux a b c) (b_aux a b c) (c_aux a b c)"
           apply (cut_tac a = a and b = b and c = c in  modular.M5_modular)
           apply (unfold no_distrib_def)
-          apply (simp add: A inf_commute)
-          apply (unfold M5_lattice_def modular.M5_modular_def)
-          by safe
+          by (simp_all add: A inf_commute)
         from H show "\<exists>a b c\<Colon>'a. M5_lattice a b c" by blast
      qed
    next
@@ -424,12 +422,12 @@ lemma distrib_inf_sup_eq:
       by (fact A)
     assume B: "x \<sqinter> z = y \<sqinter> z"
     assume C: "x \<squnion> z = y \<squnion> z"
-    have "x = x \<sqinter> (x \<squnion> z)" by (simp add: inf_sup_absorb)
+    have "x = x \<sqinter> (x \<squnion> z)" by simp
     also have "\<dots> = x \<sqinter> (y \<squnion> z)" by (simp add: C)
     also have "\<dots> = (x \<sqinter> y) \<squnion> (x \<sqinter> z)" by (simp add: distrib.inf_sup_distrib)
     also have "\<dots> = (y \<sqinter> x) \<squnion> (y \<sqinter> z)" by (simp add: B inf_commute)
     also have "\<dots> = y \<sqinter> (x \<squnion> z)" by (simp add: distrib.inf_sup_distrib)
-    also have "\<dots> = y" by (simp add: C inf_sup_absorb)
+    also have "\<dots> = y" by (simp add: C)
     finally show "x = y" .
   next
     assume A: "(\<forall>x y z:: 'a. x \<sqinter> z = y \<sqinter> z \<and> x \<squnion> z = y \<squnion> z \<longrightarrow> x = y)"

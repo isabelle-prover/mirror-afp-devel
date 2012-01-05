@@ -1,7 +1,8 @@
 header {* Monotonic Boolean Transformers *}
 
 theory  Mono_Bool_Tran
-imports "../LatticeProperties/Complete_Lattice_Prop"  "../LatticeProperties/Complete_Distrib_Lattice"
+imports "../LatticeProperties/Complete_Lattice_Prop"
+   "../LatticeProperties/Conj_Disj"
 begin
 
 text{*
@@ -23,20 +24,14 @@ over a complete lattice.
 
 notation
   bot ("\<bottom>") and
-  top ("\<top>") 
-
-notation
+  top ("\<top>") and
   inf (infixl "\<sqinter>" 70)
   and sup (infixl "\<squnion>" 65)
 
 
-definition "MonoTran = {f::'a::order \<Rightarrow> 'a . mono f}"
-
-typedef (open) ('a::order) MonoTran = "MonoTran :: ('a => 'a) set"
-  unfolding MonoTran_def
+typedef ('a::order) MonoTran = "{f::'a \<Rightarrow> 'a . mono f}"
   apply (rule_tac x = id in exI)
-  apply (simp add: mono_def)
-  done
+  by (simp add: mono_def)
 
 lemma [simp]: "Rep_MonoTran x \<in> MonoTran"
   by (rule Rep_MonoTran)
@@ -251,7 +246,7 @@ instantiation MonoTran :: (complete_distrib_lattice) complete_distrib_lattice
 begin
 instance proof
   fix x :: "'a MonoTran" fix Y :: "'a MonoTran set" show "x \<sqinter> Sup Y = (SUP y:Y. x \<sqinter> y)"
-    apply (simp add: SUP_def Sup_MonoTran_def inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse inf_Sup_distrib1)
+    apply (simp add: SUP_def Sup_MonoTran_def inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse inf_Sup)
     apply (simp add: image_def)
     apply (subgoal_tac "{y . \<exists>xa . (\<exists>x \<in> Y . xa = Rep_MonoTran x) \<and> y = Rep_MonoTran x \<sqinter> xa} 
        = {y . \<exists>xa . (\<exists>xb\<Colon>'a MonoTran\<in>Y. xa = Abs_MonoTran (Rep_MonoTran x \<sqinter> Rep_MonoTran xb)) \<and> y = Rep_MonoTran xa}")
@@ -260,7 +255,7 @@ instance proof
     by (simp_all add: Abs_MonoTran_inverse, auto)
 next
   fix x :: "'a MonoTran" fix Y show "x \<squnion> Inf Y = (INF y:Y. x \<squnion> y)"
-    apply (simp add: INF_def Inf_MonoTran_def sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse sup_Inf_distrib1)
+    apply (simp add: INF_def Inf_MonoTran_def sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse sup_Inf)
     apply (simp add: image_def)
     apply (subgoal_tac "{y . \<exists>xa . (\<exists>x \<in> Y . xa = Rep_MonoTran x) \<and> y = Rep_MonoTran x \<squnion> xa} 
       = {y . \<exists>xa . (\<exists>xb \<in>Y. xa = Abs_MonoTran (Rep_MonoTran x \<squnion> Rep_MonoTran xb)) \<and> y = Rep_MonoTran xa}")
@@ -400,7 +395,7 @@ lemma assert_cont:
   apply (rule_tac y = "x (- xa)" in order_trans)
   apply simp
   apply simp
-  apply (simp add: compl_inf_bot)
+  apply simp
   apply (cut_tac x = x and y = xa and z = "-xa" in Apply.disjunctiveD, simp)
   apply (subst (asm) sup_commute)
   apply (subst (asm) compl_sup_top)
@@ -421,10 +416,8 @@ lemma assertion_fun_dual: "x \<in> assertion_fun \<Longrightarrow> (x o \<top>) 
 lemma assertion_fun_MonoTran [simp]: "x \<in> assertion_fun \<Longrightarrow> x \<in> MonoTran"
   by (unfold assertion_fun_def MonoTran_def, auto)
 
-
 lemma assertion_fun_le_one [simp]: "x \<in> assertion_fun \<Longrightarrow> x \<le> id"
   by (unfold assertion_fun_def, auto)
-
 
 end
 

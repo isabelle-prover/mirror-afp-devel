@@ -19,12 +19,8 @@ text {*
   angelic update statements. We will prove also that these statements are monotonic.
 *}
 
-
-
 lemma mono_top[simp]: "mono top"
   by (simp add: mono_def top_fun_def)
-
-
 
 lemma mono_choice[simp]: "mono S \<Longrightarrow> mono T \<Longrightarrow> mono (S \<sqinter> T)"
   apply (simp add: mono_def inf_fun_def)
@@ -42,7 +38,13 @@ if $s\not\in p$ and behaves as skip otherwise.
 *}
 
 definition
-  "assert p q = p \<sqinter> q"
+  assert::"'a::semilattice_inf \<Rightarrow> 'a \<Rightarrow> 'a" ("{. _ .}" [0] 1000) where
+  "{.p.} q \<equiv>  p \<sqinter> q"
+
+lemma mono_assert [simp]: "mono {.p.}"
+  apply (simp add: assert_def mono_def, safe)
+  apply (rule_tac y = "x" in order_trans)
+  by simp_all
 
 subsection "Assume statement"
 
@@ -52,7 +54,9 @@ if $s\not\in p$ and behaves as skip otherwise.
 *}
 
 definition
-  "assume (P::'a::boolean_algebra) Q = -P \<squnion> Q"
+  "assume" :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a" ("[. _ .]" [0] 1000) where
+  "[. p .] q \<equiv>  -p \<squnion> q"
+
 
 lemma mono_assume [simp]: "mono (assume P)"
   apply (simp add: assume_def mono_def)
@@ -72,28 +76,26 @@ in $s$.
 *}
 
 definition
-  "demonic Q p = {s . Q s \<le> p}"
+  demonic :: "('a \<Rightarrow> 'b\<Colon>ord) \<Rightarrow> 'b\<Colon>ord \<Rightarrow> 'a set" ("[: _ :]" [0] 1000) where
+  "[:Q:] p = {s . Q s \<le> p}"
 
-lemma mono_demonic [simp]: "mono (demonic Q)"
-  apply (simp add: mono_def demonic_def le_bool_def)
+lemma mono_demonic [simp]: "mono [:Q:]"
+  apply (simp add: mono_def demonic_def)
   by auto
 
 theorem demonic_bottom:
-  "demonic R (\<bottom>::('a::{order, bot})) = {s . (R s) = \<bottom>}"
-  apply (unfold demonic_def)
-  apply auto
+  "[:R:] (\<bottom>::('a::{order, bot})) = {s . (R s) = \<bottom>}"
+  apply (unfold demonic_def, safe, simp_all)
   apply (rule antisym)
   by auto
 
 theorem demonic_bottom_top [simp]:
-  "demonic \<bottom>  = \<top>"
+  "[:\<bottom>:]  = \<top>"
   by (simp add: fun_eq_iff inf_fun_def sup_fun_def demonic_def top_fun_def bot_fun_def)
 
 theorem demonic_sup_inf:
-  "demonic (Q \<squnion> Q') = demonic Q \<sqinter> demonic Q'"
-  by (simp add: fun_eq_iff sup_fun_def inf_fun_def demonic_def Collect_def)
-
-
+  "[:Q \<squnion> Q':] = [:Q:] \<sqinter> [:Q':]"
+  by (simp add: fun_eq_iff sup_fun_def inf_fun_def demonic_def, blast)
 
 subsection "Angelic update statement"
 
@@ -104,53 +106,26 @@ is correct. If there is no state $s'$
 such that $Q\ s \ s'$, then the angelic update of $Q$ fails in $s$.
 *}
 
-definition angelic :: "('a \<Rightarrow> 'b :: {semilattice_inf,bot}) \<Rightarrow> 'b \<Rightarrow> 'a set"
-where
-  "angelic Q p = {s . (Q s) \<sqinter> p \<noteq> \<bottom>}"
+definition
+  angelic :: "('a \<Rightarrow> 'b\<Colon>{semilattice_inf,bot}) \<Rightarrow> 'b \<Rightarrow> 'a set" 
+               ("{: _ :}" [0] 1000) where
+  "{:Q:} p = {s . (Q s) \<sqinter> p \<noteq> \<bottom>}"
 
+syntax "_update" :: "patterns => patterns => logic => logic" ("_ \<leadsto> _ . _" 0)
+translations
+  "_update (_patterns x xs) (_patterns y ys) t" == "CONST id (_abs
+           (_pattern x xs) (_Coll (_pattern y ys) t))"
+  "_update x y t" == "CONST id (_abs x (_Coll y t))"
 
-lemma mono_angelic[simp]:
-  "mono (angelic R)" 
-  apply (unfold mono_def)
-  apply (unfold angelic_def)
-  apply auto
-  apply (erule notE)
-  apply (rule antisym)
-  apply auto
-  apply (case_tac "R xa \<sqinter> x \<le> R xa \<sqinter> y")
-  apply simp
-  apply (erule notE)
-  apply (rule_tac inf_greatest)
-  apply auto
-  apply (rule_tac y = x in order_trans)
-  by auto
+term "{: y, z \<leadsto> x, z' . P x y z z' :}"
 
 theorem angelic_bottom [simp]:
   "angelic R \<bottom>  = {}"
   by (simp add: angelic_def inf_bot_bot)
 
-
-theorem angelic_disjunctive:
-  "angelic R ((p::'a::boolean_algebra) \<squnion> q) = angelic R p \<squnion> angelic R q"
-by (simp add: fun_eq_iff inf_fun_def sup_fun_def angelic_def inf_sup_distrib1 Collect_def)
-
-theorem angelic_udisjunctive1:
-  "angelic R ((Sup P)::'a::complete_distrib_lattice) = (SUP p:P . (angelic R p))"
-  apply (simp add: angelic_def)
-  apply (unfold SUP_def)
-  apply (simp add: inf_Sup)
-  apply (unfold SUP_def)
-  apply auto
-  done
-
-theorem angelic_udisjunctive:
-  "angelic R ((SUP P)::'a::complete_distrib_lattice) = SUP (\<lambda> w . angelic R (P w))"
-  apply (simp add: angelic_def)
-  apply (unfold SUP_def)
-  apply (simp add: inf_Sup)
-  apply (unfold SUP_def)
-  apply auto
-  done
+theorem angelic_disjunctive [simp]:
+  "{:(R::('a \<Rightarrow> 'b::complete_distrib_lattice)):} \<in> Apply.Disjunctive"
+  by (simp add: Apply.Disjunctive_def angelic_def inf_Sup, blast)
 
 
 subsection "The guard of a statement"
@@ -164,19 +139,17 @@ definition
   "((grd S)::'a::boolean_algebra) = - (S bot)"
 
 lemma grd_choice[simp]: "grd (S \<sqinter> T) = (grd S) \<squnion> (grd T)"
-  by (simp add: grd_def compl_inf inf_fun_def)
+  by (simp add: grd_def inf_fun_def)
 
-lemma grd_demonic: "grd (demonic Q) = {s . \<exists> s' . s' \<in> (Q s) }" 
+lemma grd_demonic: "grd [:Q:] = {s . \<exists> s' . s' \<in> (Q s) }" 
   apply (simp add: grd_def demonic_def)
   by blast
 
-lemma grd_demonic_2[simp]: "(s \<notin> grd (demonic Q)) = (\<forall> s' . s' \<notin>  (Q s))" 
+lemma grd_demonic_2[simp]: "(s \<notin> grd [:Q:]) = (\<forall> s' . s' \<notin>  (Q s))" 
   by (simp add: grd_demonic)
 
-
 theorem grd_angelic:
-  "grd (angelic R) = UNIV"
+  "grd {:R:} = UNIV"
   by (simp add: grd_def)
-
 
 end

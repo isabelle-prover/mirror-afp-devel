@@ -20,7 +20,13 @@ author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>
 topic = Mathematics/Algebra
 base = HOL
 date = 2011-09-22
-abstract = This formalization introduces and collects some algebraic structures based on lattices and complete lattices for use in other developments. The structures introduced are complete distributive lattices, modular and distributive lattices, as well as lattice ordered groups. In addition to the results proved for the new lattices, this formalization also introduces theorems about latices and distributive lattices in general.
+abstract = This formalization introduces and collects some algebraic structures based on lattices and complete lattices for use in other developments. The structures introduced are modular, and lattice ordered groups. In addition to the results proved for the new lattices, this formalization also introduces theorems about latices and complete lattices in general.
+extra-history =
+  Change history:
+  [2012-01-05]: Removed the theory about distributive complete lattices which is in the standard library now.
+      Added a theory about well founded and transitive relations and a result about fixpoints in complete lattices and well founded relations.
+      Moved the results about conjunctive and disjunctive functions to a new theory.
+      Removed the syntactic classes for inf and sup which are in the standard library now. 
 
 [KBPs]
 title = Knowledge-based programs
@@ -155,6 +161,9 @@ date = 2010-05-28
 topic = Computer Science/Algorithms
 abstract = The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as a benchmark in many formalizations of pointer programs. The main purpose of this mechanization is to show how data refinement of invariant based programs can be used in verifying practical algorithms. The verification starts with an abstract algorithm working on a graph given by a relation <i>next</i> on nodes. Gradually the abstract program is refined into Deutsch-Schorr-Waite graph marking algorithm where only one bit per graph node of additional memory is used for marking. 
 depends-on = DataRefinementIBP
+extra-history =
+  Change history:
+  [2012-01-05]: Updated for the new definition of data refinement and the new syntax for demonic and angelic update statements
 
 [Efficient-Mergesort]
 title = Efficient Mergesort
@@ -537,6 +546,12 @@ author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <htt
 date = 2010-05-28
 topic = Computer Science/Programming Languages/Logics
 abstract = The invariant based programming is a technique of constructing correct programs by first identifying the basic situations (pre- and post-conditions and invariants) that can occur during the execution of the program, and then defining the transitions and proving that they preserve the invariants. Data refinement is a technique of building correct programs working on concrete datatypes as refinements of more abstract programs. In the theories presented here we formalize the predicate transformer semantics for invariant based programs and their data refinement.
+depends-on = LatticeProperties
+extra-history =
+  Change history:
+  [2012-01-05]: Moved some general complete lattice properties to the AFP entry Lattice Properties.
+      Changed the definition of the data refinement relation to be more general and updated all corresponding theorems.
+      Added new syntax for demonic and angelic update statements.
 
 [SIFPL]
 title = Secure information flow and program logics

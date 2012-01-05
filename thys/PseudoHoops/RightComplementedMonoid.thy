@@ -37,10 +37,10 @@ lemma right_semilattice_inf: "class.semilattice_inf inf op \<le> op <"
   by unfold_locales
 
   lemma right_one_inf [simp]: "1 \<sqinter> a = a"
-    by (rule dual.left_one_inf)
+    by simp
 
   lemma right_one_impl [simp]: "1 r\<rightarrow> a = a"
-    by (rule dual.left_one_impl)
+    by simp
 
   lemma rcm_A: "a * (a r\<rightarrow> b) = b * (b r\<rightarrow> a)"
     by (rule dual.lcm_A)

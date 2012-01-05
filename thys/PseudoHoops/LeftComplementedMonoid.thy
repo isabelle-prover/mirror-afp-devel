@@ -1,7 +1,7 @@
 header{* Left Complemented Monoid *}
 
 theory LeftComplementedMonoid
-  imports Operations "../LatticeProperties/Lattice_Infix"
+  imports Operations "../LatticeProperties/Lattice_Prop"
 begin
 
 class right_pordered_monoid_mult = order + monoid_mult +
@@ -132,8 +132,8 @@ begin
     apply safe
     apply (unfold left_lesseq)
     apply (rule_tac x = "b l\<rightarrow> a" in exI)
-    apply (simp add: left_impl_times one_left)
-    apply (simp add: left_impl_ded left_impl_one)
+    apply (simp add: left_impl_times)
+    apply (simp add: left_impl_ded)
     apply (case_tac "c \<le> 1")
     apply (simp add: left_lesseq)
     by (simp add: D)
@@ -169,14 +169,15 @@ begin
 
   subclass left_complemented_monoid 
     apply unfold_locales 
-    apply (simp_all add: one_left one_right less_def D associativity K)
+    apply (simp_all add:  less_def D associativity K)
     apply (simp add: L)
     by (simp add: less_eq)
   end
 
 
 
-lemma (in left_complemented_monoid) left_complemented_monoid: "class.left_complemented_monoid_algebra (op *) inf (op l\<rightarrow>) (op \<le>) (op <) 1"
+lemma (in left_complemented_monoid) left_complemented_monoid: 
+    "class.left_complemented_monoid_algebra (op *) inf (op l\<rightarrow>) (op \<le>) (op <) 1"
   by (unfold_locales, simp_all add: less_le_not_le lcm_A lcm_B lcm_C lcm_D)
 
 end

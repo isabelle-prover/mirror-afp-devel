@@ -1,7 +1,7 @@
 header {* Hoare Triples  *}
 
 theory Hoare
-imports Statements WellFoundedTransitive
+imports Statements
 begin
 
 text {*
@@ -18,31 +18,26 @@ over a complete lattice.
 *}
 
 definition
-  Hoare :: "'a::complete_lattice \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool" ("\<Turnstile> (_){| _ |}(_)" [0,0,900] 900) where
+  Hoare :: "'a::complete_distrib_lattice \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool" ("\<Turnstile> (_){| _ |}(_)" [0,0,900] 900) where
   "\<Turnstile> p {|S|} q = (p \<le> (S q))"
 
 theorem hoare_sequential:
-  "mono S \<Longrightarrow> (\<Turnstile> p {| S o T |} r) = ( (\<exists> q. \<Turnstile> p {| S |} q \<and> \<Turnstile> q {| T |} r))" 
-  apply safe
-  apply (simp_all add: Hoare_def mono_def)
-  apply (rule_tac x = "T r" in exI)
-  apply simp
-  apply (rule_tac y = "S q" in order_trans)
-  by auto
+  "mono S \<Longrightarrow> (\<Turnstile> p {| S o T |} r) = ( (\<exists> q. \<Turnstile> p {| S |} q \<and> \<Turnstile> q {| T |} r))"
+  by (metis (no_types) Hoare_def monoD o_def order_refl order_trans)
 
 theorem hoare_choice:
   "\<Turnstile> p {| S \<sqinter> T |} q = (\<Turnstile> p {| S |} q \<and> \<Turnstile> p {| T |} q)"
   by (simp_all add: Hoare_def inf_fun_def)
 
 theorem hoare_assume:
-  "(\<Turnstile> P {| assume R |} Q) = (P \<sqinter> R \<le> Q)"
+  "(\<Turnstile> P {| [.R.] |} Q) = (P \<sqinter> R \<le> Q)"
   apply (simp add: Hoare_def assume_def)
   apply safe
   apply (case_tac "(inf P R) \<le> (inf (sup (- R) Q) R)")
-  apply (simp add: inf_sup_distrib2 compl_inf_bot)
+  apply (simp add: inf_sup_distrib2)
   apply (simp add: le_infI1)
   apply (case_tac "(sup (-R) (inf P R)) \<le> sup (- R) Q")
-  apply (simp add: sup_inf_distrib1 compl_sup_top)
+  apply (simp add: sup_inf_distrib1)
   by (simp add: le_supI2)
 
 theorem hoare_mono:
@@ -56,31 +51,25 @@ theorem hoare_pre:
   by (simp add: Hoare_def)
 
 theorem hoare_Sup:
-  "(\<forall> p \<in> P . \<Turnstile> p {| S |} q) \<Longrightarrow> \<Turnstile> Sup P {| S |} q"
-  by (simp add: Hoare_def Sup_least)
+  "(\<forall> p \<in> P . \<Turnstile> p {| S |} q) = \<Turnstile> Sup P {| S |} q"
+  apply (simp add: Hoare_def, safe, simp add: Sup_least)
+  apply (rule_tac y = "\<Squnion>P" in order_trans, simp_all)
+  by (simp add: Sup_upper)
   
-lemma hoare_magic [simp]: "\<Turnstile> P {| top |} Q" 
+lemma hoare_magic [simp]: "\<Turnstile> P {| \<top> |} Q" 
   by (simp add: Hoare_def top_fun_def)
 
-lemma hoare_demonic: "\<Turnstile> P {| demonic R |} Q = (\<forall> s . s \<in> P \<longrightarrow>  R s \<subseteq> Q)"
+lemma hoare_demonic: "\<Turnstile> P {| [:R:] |} Q = (\<forall> s . s \<in> P \<longrightarrow>  R s \<subseteq> Q)"
   apply (unfold Hoare_def demonic_def)
   by auto
 
 lemma hoare_not_guard:
-  "mono S \<Longrightarrow> \<Turnstile> p {| S |} q \<Longrightarrow> \<Turnstile> (p \<squnion> (- grd S)) {| S |} q"
-  apply (simp add: Hoare_def grd_def)
+  "mono S \<Longrightarrow> \<Turnstile> p {| S |} q = \<Turnstile> (p \<squnion> (- grd S)) {| S |} q"
+  apply (simp add: Hoare_def grd_def, safe)
   apply (drule monoD)
   by auto
 
 subsection {* Hoare rule for recursive statements *}
-
-theorem fp_wf_induction:
-  "mono f \<Longrightarrow> (\<forall> w . (p w) \<le> f (SUP_L p w)) \<Longrightarrow> f x = x \<Longrightarrow> SUP p \<le> x"
-  apply (rule SUP_least)
-  apply (rule less_induct1, simp_all)
-  apply (rule_tac y = "f (SUP_L p xa)" in order_trans, simp)
-  apply (drule_tac x = "SUP_L p xa" and y = "x" in monoD)
-  by (simp_all add: SUP_L_least)
 
 text {*
 A statement $S$ is refined by another statement $S'$ if $\models p \{| S' |\} q$ 
@@ -93,31 +82,24 @@ transformers to predicate transformers.
 *}
 
 theorem lfp_wf_induction:
-  "mono f \<Longrightarrow> (\<forall> w . (p w) \<le> f (SUP_L p w)) \<Longrightarrow> SUP p \<le> lfp f"
- apply (frule fp_wf_induction)
- apply simp_all
- apply (drule lfp_unfold)
- by simp
+  "mono f \<Longrightarrow> (\<forall> w . (p w) \<le> f (Sup_less p w)) \<Longrightarrow> Sup (range p) \<le> lfp f"
+ apply (rule fp_wf_induction, simp_all)
+ by (drule lfp_unfold, simp)
 
-definition alpha_def:
-  "\<alpha> x y z = (if y \<le> z then x else bot)"
+definition
+  "post_fun (p::'a::order) q = (if p \<le> q then \<top> else \<bottom>)"
 
-lemma alpha_mono [simp]: "mono (\<alpha> x y)"
-  apply (simp add: mono_def alpha_def)
-  apply auto
-  apply (drule_tac x = "y" and y = "xa" and z = "ya" in order_trans)
-  by simp_all
+lemma post_mono [simp]: "mono (post_fun p)"
+   apply (simp add: post_fun_def  mono_def, safe)
+   apply (subgoal_tac "p \<le> y", simp)
+   by (rule_tac y = x in order_trans, simp_all)
 
-lemma alpha_continous: 
-  "\<alpha> (Sup X) y = Sup ((\<lambda> x . \<alpha> x y) ` X)"
-  apply (rule antisym)
-  apply (auto simp add: le_fun_def alpha_def Sup_fun_def SUP_def image_image
-    intro: Sup_least)
-  done
+lemma post_top [simp]: "post_fun p p = \<top>"
+  by (simp add: post_fun_def)
 
-lemma alpha_continous1: 
-  "\<alpha> (SUP X) y = SUP ((\<lambda> x . \<alpha> x y) o X)"
-  by (simp add: fun_eq_iff alpha_def SUP_fun_eq)
+lemma post_refin [simp]: "mono S \<Longrightarrow> ((S p)::'a::bounded_lattice) \<sqinter> (post_fun p) x \<le> S x"
+  apply (simp add: le_fun_def post_fun_def, safe)
+  by (rule_tac f = S in monoD, simp_all)
 
 text {*
 Next theorem shows the equivalence between the validity of Hoare
@@ -126,25 +108,17 @@ theorem for refinement of recursive programs will be used to prove
 a Hoare rule for recursive programs.
 *}
 
-theorem hoare_refinement_alpha:
-  "mono f \<Longrightarrow>  (\<Turnstile> x {| f |} y) = (\<alpha> x y \<le> f)"
+theorem hoare_refinement_post:
+  "mono f \<Longrightarrow>  (\<Turnstile> x {| f |} y) = ({.x.} o (post_fun y) \<le> f)"
   apply safe
   apply (simp_all add: Hoare_def)
   apply (simp_all add: le_fun_def)
-  apply (simp add: alpha_def)
-  apply auto
-  apply (drule_tac x = "y" and y = "xa" in monoD)
-  apply auto
-  apply (case_tac "\<alpha> x y y \<le> f y")
-  apply (simp add: alpha_def)
-  apply (erule notE)
-  by auto
+  apply (simp add: assert_def, safe)
+  apply (rule_tac y = "f y \<sqinter> post_fun y xa" in order_trans, simp_all)
+  apply (rule_tac y = "x" in order_trans, simp_all)
+  apply (simp add: assert_def)
+  by (drule_tac x = "y" in spec, simp)
 
-lemma alpha_continous2:
- "SUP_L ((\<lambda>x. \<alpha> x y) \<circ> p) w =  \<alpha> (SUP_L p w) y"
-  apply (simp add: SUP_L_def SUP_def alpha_continous)
-  apply (simp add: o_def image_image)
-  done
 
 text {*
 Next theorem gives a Hoare rule for recursive programs. If we can prove correct the unfolding 
@@ -153,15 +127,42 @@ that $f$ is correct when starting from $p\  v$, $v<w$, $\models SUP-L\  p\  w\  
 the recursive program is correct $\models SUP\ p\ \{| lfp\  F |\}\  y$
 *}
 
+lemma assert_Sup: "{.\<Squnion> (X::'a::complete_distrib_lattice set).} = \<Squnion> (assert ` X)"
+  by (simp add: fun_eq_iff assert_def Sup_fun_def Sup_inf)
+
+lemma assert_Sup_range: "{.\<Squnion> (range (p::'W \<Rightarrow> 'a::complete_distrib_lattice)).} = \<Squnion> (range (assert o p))"
+  by (simp add: fun_eq_iff assert_def Sup_fun_def Sup_inf)
+
+lemma Sup_range_comp: "(\<Squnion> range p) o S = \<Squnion> (range (\<lambda> w . ((p w) o S)))"
+  by (simp add: fun_eq_iff Sup_fun_def)
+
+lemma Sup_less_comp: "(Sup_less P) w o S = Sup_less (\<lambda> w . ((P w) o S)) w"
+  apply (simp add: Sup_less_def fun_eq_iff Sup_fun_def SUP_def, safe)
+  apply (subgoal_tac "((\<lambda>f. f (S x)) ` {y. \<exists>v<w. \<forall>x. y x = P v x}) = ((\<lambda>f. f x) ` {y. \<exists>v<w. \<forall>x. y x = P v (S x)})")
+  by auto
+
+lemma Sup_less_assert: "Sup_less (\<lambda>w. {. (p w)::'a::complete_distrib_lattice .}) w = {.Sup_less p w.}"
+  apply (simp add: Sup_less_def assert_Sup image_def)
+  apply (subgoal_tac "{y. \<exists>v<w. y = {. p v .}} = {y. \<exists>x. (\<exists>v<w. x = p v) \<and> y = {. x .}}")
+  by auto
+
+
+declare mono_comp[simp]
+
 theorem hoare_fixpoint:
   "mono_mono F \<Longrightarrow>
-   (!! w f . mono f \<and> \<Turnstile> SUP_L p w {| f |} y \<Longrightarrow> \<Turnstile> p w {| F f |} y) \<Longrightarrow> \<Turnstile> SUP p {| lfp F |} y"
-  apply (simp add: mono_mono_def hoare_refinement_alpha)
-  apply (simp add: alpha_continous1)
+   (!! w f . mono f \<and> \<Turnstile> Sup_less p w {| f |} y \<Longrightarrow> \<Turnstile> p w {| F f |} y) \<Longrightarrow> \<Turnstile> (Sup (range p)) {| lfp F |} y"
+  apply (simp add: mono_mono_def hoare_refinement_post assert_Sup_range Sup_range_comp)
   apply (rule lfp_wf_induction)
   apply auto
-  apply (simp add: alpha_continous2)
-  apply (drule_tac x = "\<alpha> (SUP_L p w) y" in spec)
-  by (simp add: hoare_refinement_alpha)
+  apply (simp add: Sup_less_comp [THEN sym])
+  apply (simp add: Sup_less_assert)
+  apply (drule_tac x = "{. Sup_less p w .} \<circ> post_fun y" in spec, safe)
+  apply simp
+  by (simp add: hoare_refinement_post)
+
+theorem "(\<forall> t . \<Turnstile> ({s . t \<in> R s}) {|S|} q) \<Longrightarrow> \<Turnstile> ({:R:} p) {| S |} q"
+  apply (simp add: Hoare_def angelic_def subset_eq)
+  by auto
 
 end
