@@ -15,7 +15,7 @@ text {*
   and replaces the second stack.
 
   If list reversal is implemented efficiently (what is the case in Isabelle/HOL, 
-  cf @{thm [source] List.rev_foldl_cons})
+  cf @{thm [source] List.rev_conv_fold})
   the amortized time per buffer operation is constant.
 
   Moreover, this fifo implementation also supports efficient push and pop operations.

@@ -179,7 +179,7 @@ proof -
   next
     case (Cons x xs base)
     show ?case
-      apply (simp only: foldl.simps)
+      apply (simp only: foldl_Cons)
       apply (subst Cons [of "2 * base + bitval x"])
       apply simp
       apply (subst Cons [of "bitval x"])
@@ -2237,8 +2237,10 @@ proof (simp add: bv_to_nat_def)
     apply (induct bs,simp)
     apply (case_tac a,simp_all)
     done
-  thus "foldl (\<lambda>bn b. 2 * bn + bitval b) 0 bs \<equiv> number_of (fast_bv_to_nat_helper bs Int.Pls)"
-    by (simp del: nat_numeral_0_eq_0 add: nat_numeral_0_eq_0 [symmetric])
+  then have "foldl (\<lambda>bn b. 2 * bn + bitval b) 0 bs = number_of (fast_bv_to_nat_helper bs Int.Pls)"
+    by (simp del: semiring_numeral_0_eq_0 add: nat_numeral_0_eq_0 [symmetric])
+  then show "foldl (\<lambda>bn b. 2 * bn + bitval b) 0 bs \<equiv> number_of (fast_bv_to_nat_helper bs Int.Pls)"
+    by simp
 qed
 
 declare fast_bv_to_nat_Cons [simp del]
