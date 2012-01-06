@@ -1661,7 +1661,7 @@ declare flip_def[simp]
 lemma const_apply[simp]: "const x y = x"
   by (simp add: const_def)
 
-lemma foldr_Cons[simp]:
+lemma foldr_Cons [simp]:
   "foldr op # xs ys = xs @ ys"
   by (induct xs) simp_all
 
@@ -1699,14 +1699,19 @@ lemma foldr_assoc:
   shows "foldr b xs (b y z) = b (foldr b xs y) z"
   using assms by (induct xs) simp_all
 
-lemma foldl_foldr_o_id[symmetric]:
-  "foldr op \<circ> fs id = foldl op \<circ> id fs"
-  by (induct fs) (simp_all add: o.foldl_assoc[symmetric]
-                           del: o_apply id_apply)
+lemma foldl_foldr_o_id:
+  "foldl op \<circ> id fs = foldr op \<circ> fs id"
+proof (induct fs)
+  case Nil show ?case by simp
+next
+  case (Cons f fs)
+  have "id \<circ> f = f \<circ> id" by simp
+  with Cons [symmetric] show ?case
+    by (simp only: foldl_Cons List.foldr_Cons o_apply [of _ _ id] foldl_assoc o_assoc)
+qed
 
 lemma foldr_o_o_id[simp]:
   "foldr (op \<circ> \<circ> f) xs id a = foldr f xs a"
   by (induct xs) simp_all
-
 
 end
