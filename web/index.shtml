@@ -44,6 +44,26 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 <table width="80%" class="entries">
   <tbody>
     <tr>
+	  <td class="head">2012</td>
+	</tr>
+
+<tr><td class="entry">
+2012-01-03:
+<a href="entries/Markov_Models.shtml">Markov Models</a>
+<br>Author:
+<a href="http://www.in.tum.de/~hoelzl">Johannes Hölzl</a> and 
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
+
+
+
+  </tbody>
+</table>
+
+<p> </p>
+<table width="80%" class="entries">
+  <tbody>
+    <tr>
 	  <td class="head">2011</td>
 	</tr>
 

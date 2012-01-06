@@ -859,6 +859,21 @@ extra-history =
   Change history: 
   [2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
 
+[Markov_Models]
+title = Markov Models
+author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2012-01-03
+topic = Mathematics/Probability Theory, Computer Science/Automata and Formal Languages
+base = HOL/HOL-Multivariate_Analysis/HOL-Probability
+abstract = This is a formalization of Markov models in Isabelle/HOL. It 
+  builds on Isabelle's probability theory. The available models are 
+  currently Discrete-Time Markov Chains and a extensions of them with
+  rewards.
+  <p>
+  As application of these models we formalize probabilistic model
+  checking of pCTL formulas, analysis of IPv4 address allocation in
+  ZeroConf and an analysis of the anonymity of the Crowds protocol.
+
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
 author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>

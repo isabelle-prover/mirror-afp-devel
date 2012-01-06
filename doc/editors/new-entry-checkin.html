@@ -50,19 +50,21 @@ properly public with the next Isabelle release (they are only available as
 <ol>
 <li>unpack tar file and move new entry to <tt>afp/release/thys</tt></li>
 
+<li>create/adjust <tt>config</tt> file (template in <tt>thys/Example-Submission/config</tt>)</li>
+
 <li>to check, run in <tt>afp/release/thys</tt><br>
 <code>../admin/testall -r Isabelle20XX -c &lt;name&gt;</code><br>
 (be sure to have ISABELLE_RELEASES set to the path where Isabelle releases are kept, e.g. /home/proj/isabelle/)
 
 </li>
 
-<li>create/adjust <tt>config</tt> file (template in <tt>thys/Example-Submission/config</tt>)</li>
-
 <li>check license headers: if the authors want the code released under LGPL instead of BSD, each file should mention "License: LGPL" in the header.</li>
 
 <li><code>hg add</code> and <code>hg commit</code> the new submission</li>
 
-<li>Enter data for author/abstract/index/etc in the file <code>metadata/metada</code>.</li>
+<li>Enter data for author/abstract/index/etc in the file <code>metadata/metada</code>. If the entry uses a new topic 
+or category, add it to metadata/topics (make sure there is an empty line at the end of the file). 
+</li>
 
 <li>Generate the new web site by running <code>admin/sitegen</code>.</li>
 
