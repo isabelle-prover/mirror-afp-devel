@@ -7,36 +7,8 @@ header {* \isaheader{Executable semantics for the JVM} *}
 theory ExternalCall_Execute
 imports
   "../Common/ExternalCall"
-  More_Set
   "../Basic/Set_without_equal"
 begin
-
-(* Move to Aux or More_Set begin *)
-
-lemma foldl_inter_Int: "foldl inter (A \<inter> B) As = foldl inter A As \<inter> B"
-by(induct As rule: rev_induct) auto
-
-lemma foldl_inter: "foldl inter A As = A \<inter> \<Inter>set As"
-by(induct As arbitrary: A)(simp_all add: foldl_inter_Int Int_ac)
-
-lemma foldl_union: "foldl union A As = A \<union> \<Union>set As"
-by(induct As arbitrary: A)(simp_all add: sup_assoc)
-
-lemmas [code del] = Inf_set_def Sup_set_def
-
-lemma Inter_code [code]:
-  "Inter (set []) = UNIV"
-  "Inter (set (A # As)) = foldl inter A As" (is ?thesis2)
-  "Inter (More_Set.coset []) = {}"
-by(simp_all add: foldl_inter)
-
-lemma Union_code [code]:
-  "Union (set []) = {}"
-  "Union (set (A # As)) = foldl union A As" (is ?thesis2)
-  "Union (More_Set.coset []) = UNIV"
-by(simp_all add: foldl_union)
-
-(* Move end *)
 
 section {* Translated versions of external calls for the JVM *}
 
