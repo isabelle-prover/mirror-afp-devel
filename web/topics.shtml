@@ -184,6 +184,12 @@
 <a href="entries/Polynomials.shtml">Polynomials</a> &nbsp;
 </div>
 
+<h3>Probability Theory</h3>
+
+<div class="list">
+<a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
+</div>
+
 <h3>Number Theory</h3>
 
 <div class="list">
@@ -237,12 +243,6 @@
 <div class="list">
 <a href="entries/FunWithFunctions.shtml">FunWithFunctions</a> &nbsp;
 <a href="entries/FunWithTilings.shtml">FunWithTilings</a> &nbsp;
-</div>
-
-<h3>Probability Theory</h3>
-
-<div class="list">
-<a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
 </div>
 
 
