@@ -3,7 +3,7 @@
 theory PCTL
 imports 
   "../Rewarded_DTMC"
-  "Gauss2"
+  "../../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
   "~~/src/HOL/Library/While_Combinator"
   "~~/src/HOL/Library/Monad_Syntax"
 begin

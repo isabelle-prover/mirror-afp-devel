@@ -7,7 +7,6 @@ no_document use_thys [
 use_thys [
   "Discrete_Time_Markov_Chain",
   "Rewarded_DTMC",
-  "ex/Gauss2",
   "ex/PCTL",
   "ex/Zeroconf_Analysis",
   "ex/Gossip_Broadcast",

@@ -49,7 +49,7 @@ proof -
 qed
 
 interpretation pborel_sequence!: product_prob_space "\<lambda>i. pborel" "UNIV::nat set"
-  by default simp
+  ..
 
 lemma space_pborel_sequence[simp]:
   "space (\<Pi>\<^isub>P i::nat\<in>UNIV. pborel) = UNIV \<rightarrow> {0 ..< 1}"
@@ -102,19 +102,22 @@ proof -
 
   show ?thesis
   proof
-    from m w show "positive ?M' (measure ?M')"
-      by (auto intro!: setsum_nonneg ereal_0_le_mult simp: positive_def)
-    show "countably_additive ?M' (measure ?M')"
-    proof (rule countably_additiveI, simp)
-      fix A :: "nat \<Rightarrow> _" assume A: "range A \<subseteq> events" "disjoint_family A" "UNION UNIV A \<in> events"
-      { fix i assume "i \<in> I"
-        note m(3)[unfolded countably_additive_def, rule_format, OF `i \<in> I` A, symmetric] }
-      then show "(\<Sum>n. \<Sum>i\<in>I. w i * m i (A n)) = (\<Sum>i\<in>I. w i * m i (\<Union>x. A x))"
-        apply (simp add: countably_additive_def subset_eq)
-        apply (subst suminf_setsum_ereal)
-        using m w A
-        apply (auto intro!: setsum_nonneg ereal_0_le_mult setsum_cong suminf_cmult_ereal simp: subset_eq)
-        done
+    show "measure_space ?M'"
+    proof
+      from m w show "positive ?M' (measure ?M')"
+        by (auto intro!: setsum_nonneg ereal_0_le_mult simp: positive_def)
+      show "countably_additive ?M' (measure ?M')"
+      proof (rule countably_additiveI, simp)
+        fix A :: "nat \<Rightarrow> _" assume A: "range A \<subseteq> events" "disjoint_family A" "UNION UNIV A \<in> events"
+        { fix i assume "i \<in> I"
+          note m(3)[unfolded countably_additive_def, rule_format, OF `i \<in> I` A, symmetric] }
+        then show "(\<Sum>n. \<Sum>i\<in>I. w i * m i (A n)) = (\<Sum>i\<in>I. w i * m i (\<Union>x. A x))"
+          apply (simp add: countably_additive_def subset_eq)
+          apply (subst suminf_setsum_ereal)
+          using m w A
+          apply (auto intro!: setsum_nonneg ereal_0_le_mult setsum_cong suminf_cmult_ereal simp: subset_eq)
+          done
+      qed
     qed
     show "measure ?M' (space ?M') = 1"
       using m w by simp

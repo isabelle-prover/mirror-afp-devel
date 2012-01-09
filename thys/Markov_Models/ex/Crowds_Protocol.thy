@@ -453,17 +453,17 @@ proof -
   proof (subst until_eq_1_if_reachable, safe)
     fix s assume *: "reachable (valid_states - {End}) s \<inter> {End} = {}"
     assume "s \<in> reachable (valid_states - {End}) Start"
-    then have s: "s \<in> valid_states" by (auto simp: reachable_def)
-    show False
-    proof (cases rule: valid_statesE[OF s])
-      case 1 with End_reachable_Start * show False by auto
+    then have "s \<in> valid_states" by (auto simp: reachable_def)
+    then show False
+    proof (cases rule: valid_statesE)
+      case Start with End_reachable_Start * show False by auto
     next
-      case 2 with * show False by (force simp: reachable_def next_step_neq_0_cases)
+      case End with * show False by (force simp: reachable_def next_step_neq_0_cases)
     next
-      case (3 j) with * show False
+      case (Mix j) with * show False
         by (force simp: reachable_def next_step_neq_0_cases)
     next
-      case (4 i)
+      case (Init i)
       moreover from j have "End \<in> reachable (valid_states - {End}) (Init i)"
         unfolding reachable_def next_step_neq_0_cases
         by (auto intro!: exI[of _ "nat_case (Mix j) (\<lambda>i. End)"] exI[of _ 1]
@@ -1032,16 +1032,19 @@ proof -
     unfolding C_def sigma_algebra_measure_update ..
   interpret C!: prob_space C
   proof
-    show "positive C (measure C)"
-      by (simp add: positive_def C_def cond_prob_def zero_le_divide_iff)
-    show "countably_additive C (measure_space.measure C)"
-    proof (simp add: countably_additive_def C_def, intro allI impI)
-      fix A :: "nat \<Rightarrow> _" assume "range A \<subseteq> sets \<P>" "disjoint_family A"
-      then have "(\<lambda>i. cond_prob \<P> (\<lambda>\<omega>. \<omega> \<in> A i) hit_colls) sums (cond_prob \<P> (\<lambda>\<omega>. \<exists>i. \<omega> \<in> A i) hit_colls)"
-        unfolding cond_prob_def
-        by (auto intro!: sums_divide prob_sums AE_I2 sets_Collect events_hit_colls sets_in simp: disjoint_family_on_def)
-      then show "(\<Sum>i. ereal (cond_prob \<P> (\<lambda>\<omega>. \<omega> \<in> A i) hit_colls)) = cond_prob \<P> (\<lambda>\<omega>. \<exists>i. \<omega> \<in> A i) hit_colls"
-        by (subst (asm) sums_ereal[symmetric]) (simp add: sums_iff)
+    show "measure_space C"
+    proof
+      show "positive C (measure C)"
+        by (simp add: positive_def C_def cond_prob_def zero_le_divide_iff)
+      show "countably_additive C (measure_space.measure C)"
+      proof (simp add: countably_additive_def C_def, intro allI impI)
+        fix A :: "nat \<Rightarrow> _" assume "range A \<subseteq> sets \<P>" "disjoint_family A"
+        then have "(\<lambda>i. cond_prob \<P> (\<lambda>\<omega>. \<omega> \<in> A i) hit_colls) sums (cond_prob \<P> (\<lambda>\<omega>. \<exists>i. \<omega> \<in> A i) hit_colls)"
+          unfolding cond_prob_def
+          by (auto intro!: sums_divide prob_sums AE_I2 sets_Collect events_hit_colls sets_in simp: disjoint_family_on_def)
+        then show "(\<Sum>i. ereal (cond_prob \<P> (\<lambda>\<omega>. \<omega> \<in> A i) hit_colls)) = cond_prob \<P> (\<lambda>\<omega>. \<exists>i. \<omega> \<in> A i) hit_colls"
+          by (subst (asm) sums_ereal[symmetric]) (simp add: sums_iff)
+      qed
     qed
     show "measure C (space C) = 1"
       using H_pf_1 H
