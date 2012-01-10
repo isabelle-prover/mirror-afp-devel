@@ -100,7 +100,7 @@ lemma lm_isEmpty_impl:
   apply(rule iffI)
    apply(simp add: impl_of_inject lookup_empty')
   apply(case_tac m)
-  apply(simp add: empty_def lookup_def Assoc_List_inverse Assoc_List_inject)
+  apply(simp add: Assoc_List.empty_def Assoc_List.lookup_def Assoc_List_inverse Assoc_List_inject)
   apply(case_tac y)
   apply simp_all
   done

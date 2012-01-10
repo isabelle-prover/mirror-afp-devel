@@ -26,7 +26,7 @@ lemma distinct_map_ran: "distinct (map fst al) \<Longrightarrow> distinct (map f
 lemma map_ran_filter: "map_ran f [(a, _)\<leftarrow>ps. fst p \<noteq> a] = [(a, _)\<leftarrow>map_ran f ps. fst p \<noteq> a]"
   by (induct ps) auto
 
-lemma clearjunk_map_ran: "clearjunk (map_ran f al) = map_ran f (clearjunk al)"
+lemma clearjunk_map_ran: "AList_Impl.clearjunk (map_ran f al) = map_ran f (AList_Impl.clearjunk al)"
 by (induct al rule: clearjunk.induct) (simp_all add: delete_eq map_ran_filter)
 
 text {* new lemmas and definitions *}
@@ -35,19 +35,19 @@ lemma map_ran_cong [fundef_cong]:
   "\<lbrakk> al = al'; \<And>k v. (k, v) \<in> set al \<Longrightarrow> f k v = g k v \<rbrakk> \<Longrightarrow> map_ran f al = map_ran g al'"
 by clarify (induct al', auto)
 
-lemma list_size_delete: "list_size f (delete a al) \<le> list_size f al"
+lemma list_size_delete: "list_size f (AList_Impl.delete a al) \<le> list_size f al"
 by(induct al) simp_all
 
-lemma list_size_clearjunk: "list_size f (clearjunk al) \<le> list_size f al"
+lemma list_size_clearjunk: "list_size f (AList_Impl.clearjunk al) \<le> list_size f al"
 by(induct al)(auto simp add: clearjunk_delete intro: le_trans[OF list_size_delete])
 
-lemma set_delete_conv: "set (delete a al) = set al - ({a} \<times> UNIV)"
+lemma set_delete_conv: "set (AList_Impl.delete a al) = set al - ({a} \<times> UNIV)"
 proof(induct al)
   case (Cons kv al)
   thus ?case by(cases kv) auto
 qed simp
 
-lemma set_clearjunk_subset: "set (clearjunk al) \<subseteq> set al"
+lemma set_clearjunk_subset: "set (AList_Impl.clearjunk al) \<subseteq> set al"
 by(induct al)(auto simp add: clearjunk_delete set_delete_conv)
 
 lemma map_ran_conv_map:
@@ -88,11 +88,11 @@ lemma distinct_update_with [simp]:
 by(induct ps)(auto simp add: dom_update_with)
 
 lemma length_update: 
-  "length (update k v xs) = (if k \<in> fst ` set xs then length xs else Suc (length xs))"
+  "length (AList_Impl.update k v xs) = (if k \<in> fst ` set xs then length xs else Suc (length xs))"
 by(induct xs) simp_all
 
 lemma length_distinct: 
-  "distinct (map fst xs) \<Longrightarrow> length (delete k xs) = (if k \<in> fst ` set xs then length xs - 1 else length xs)"
+  "distinct (map fst xs) \<Longrightarrow> length (AList_Impl.delete k xs) = (if k \<in> fst ` set xs then length xs - 1 else length xs)"
 by(induct xs)(auto split: split_if_asm simp add: in_set_conv_nth)
 
 end

@@ -136,7 +136,7 @@ where
   (let h = bounded_hashcode (array_length a) k;
        m = array_get a h;
        insert = map_of m k = None
-   in HashMap (array_set a h (update k v m)) (if insert then n + 1 else n))"
+   in HashMap (array_set a h (AList_Impl.update k v m)) (if insert then n + 1 else n))"
 
 definition ahm_update :: "'key \<Rightarrow> 'val \<Rightarrow> ('key :: hashable, 'val) hashmap \<Rightarrow> ('key, 'val) hashmap"
 where
@@ -150,7 +150,7 @@ where
   (let h = bounded_hashcode (array_length a) k;
        m = array_get a h;
        deleted = (map_of m k \<noteq> None)
-   in HashMap (array_set a h (delete k m)) (if deleted then n - 1 else n))"
+   in HashMap (array_set a h (AList_Impl.delete k m)) (if deleted then n - 1 else n))"
 
 
 lemma hm_grow_gt_1 [iff]:
@@ -278,7 +278,7 @@ lemma finite_dom_ahm_\<alpha>_aux:
   shows "finite (dom (ahm_\<alpha>_aux a))"
 proof -
   have "dom (ahm_\<alpha>_aux a) \<subseteq> (\<Union>h \<in> range (bounded_hashcode (array_length a) :: 'a \<Rightarrow> nat). dom (map_of (array_get a h)))"
-    by(force simp add: dom_map_of_conv_image_fst ahm_\<alpha>_aux_def dest: map_of_SomeD)
+    by(force simp add: dom_map_of_conv_image_fst dest: map_of_SomeD)
   moreover have "finite \<dots>"
   proof(rule finite_UN_I)
     from `ahm_invar_aux n a` have "array_length a > 1" by(simp add: ahm_invar_aux_def)
@@ -598,7 +598,7 @@ proof -
     ultimately show "?I (it - {k}) (ahm_rehash_aux' sz k v a')" by simp
   qed
   thus ?thesis1 ?thesis2 unfolding ahm_rehash_aux_def
-    by(auto intro: ext)
+    by auto
 qed
 
 lemma ahm_rehash_correct:
@@ -619,7 +619,7 @@ proof -
   obtain a n where [simp]: "hm = HashMap a n" by(cases hm)
 
   let ?h = "bounded_hashcode (array_length a) k"
-  let ?a' = "array_set a ?h (update k v (array_get a ?h))"
+  let ?a' = "array_set a ?h (AList_Impl.update k v (array_get a ?h))"
   let ?n' = "if map_of (array_get a ?h) k = None then n + 1 else n"
 
   have "ahm_invar (HashMap ?a' ?n')" unfolding ahm_invar.simps
@@ -696,7 +696,7 @@ proof -
   obtain a n where hm [simp]: "hm = HashMap a n" by(cases hm)
 
   let ?h = "bounded_hashcode (array_length a) k"
-  let ?a' = "array_set a ?h (delete k (array_get a ?h))"
+  let ?a' = "array_set a ?h (AList_Impl.delete k (array_get a ?h))"
   let ?n' = "if map_of (array_get a (bounded_hashcode (array_length a) k)) k = None then n else n - 1"
   
   have "ahm_invar_aux ?n' ?a'"
