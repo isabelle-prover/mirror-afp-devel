@@ -3426,7 +3426,7 @@ fun generalise Record = GeneraliseRecord.GENERALISE
 *)
 fun record_vanish_tac ctxt state_kind state_space i =
     let
-        val rem_useless_vars_simps = [triv_forall_equality,triv_All_eq,triv_Ex_eq];
+        val rem_useless_vars_simps = [Drule.triv_forall_equality,triv_All_eq,triv_Ex_eq];
         val rem_useless_vars_ss = empty_ss addsimps rem_useless_vars_simps;
         fun no_spec (t as (Const (@{const_name All},_)$_)) =
               is_none (try dest_hoare_raw (strip_qnt_body @{const_name All} t))
