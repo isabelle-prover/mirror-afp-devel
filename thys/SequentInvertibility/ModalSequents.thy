@@ -223,7 +223,7 @@ text{*
 inductive_set p_e :: "('a,'b) rule set \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> ('a,'b) rule set" 
   for R :: "('a,'b) rule set" and M N :: "'b" 
   where
-  (*<*)I[intro]:(*>*) "\<lbrakk> r \<in> R ; R \<subseteq> modRules2 \<rbrakk> \<Longrightarrow> extendRule (M\<cdot>\<Gamma> \<Rightarrow>* N\<cdot>\<Delta>) r \<in> p_e R M N"
+  (*<*)I[intro]:(*>*) "\<lbrakk> (Ps, c) \<in> R ; R \<subseteq> modRules2 \<rbrakk> \<Longrightarrow> extendRule (M\<cdot>\<Gamma> \<Rightarrow>* N\<cdot>\<Delta>) (Ps, c) \<in> p_e R M N"
 
 text{*
 \noindent We need a method for extending the conclusion of a rule without extending the premisses.  Again, this is simple:*}
@@ -442,12 +442,11 @@ shows "\<exists> F Fs \<Gamma> \<Delta> ps r. (Ps,C) = extendRule (M\<cdot>\<Gam
                      r = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>))"
 using assms
 proof (cases)
-  case (I r \<Gamma> \<Delta>)
-  then have "r \<in> modRules2" by auto
-  obtain ps c where "r = (ps,c)" by (cases r) auto
-  with `r \<in> modRules2` obtain F Fs where "c = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> c = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
+  case (I ps c \<Gamma> \<Delta>)
+  then have "(ps, c) \<in> modRules2" by auto
+  with `(ps, c) \<in> modRules2` obtain F Fs where "c = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> c = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
     using modRule2Characterise[where C=c and Ps=ps] by auto
-  with I show ?thesis using `r = (ps,c)`
+  with I show ?thesis
     apply -
     apply (rule_tac x=F in exI) apply (rule_tac x=Fs in exI) apply (rule_tac x=\<Gamma> in exI)
     apply (rule_tac x=\<Delta> in exI) apply auto done
@@ -586,7 +585,7 @@ using disjoint_Aux2
 apply auto apply (rule upRules.cases) apply auto
 apply (rule p_e.cases)  apply auto apply (rule modRules2.cases) 
 apply (auto simp add:extendRule_def extend_def union_ac)
-apply (drule_tac x=ca in meta_spec) apply (drule_tac x="Modal Ma Ms" in meta_spec)
+apply (drule_tac x=cb in meta_spec) apply (drule_tac x="Modal Ma Ms" in meta_spec)
 apply (drule_tac x="Compound R Fs" in meta_spec) apply (drule_tac x="M\<cdot>\<Gamma> \<Rightarrow>* N\<cdot>\<Delta>" in meta_spec) by (auto simp:union_ac)
 
 lemmas disjoint = disjoint_Ax_up disjoint_Ax_mod1 disjoint_Ax_mod2 
@@ -698,7 +697,7 @@ shows "\<not> rightPrincipal r (Compound M Ms) R"
 using assms
 proof-
 from assms have "fst r \<noteq> []" apply (rule p_e.cases) apply (insert modRule2Characterise)
-     apply (drule_tac x="fst ra" in meta_spec) apply (drule_tac x="snd ra" in meta_spec)
+     apply (drule_tac x=Ps in meta_spec) apply (drule_tac x=c in meta_spec)
      by (auto simp add:extendRule_def)
 {assume "rightPrincipal r (Compound M Ms) R"
  with assms obtain ps c where "r = (ps,c)" and "c = (\<Empt> \<Rightarrow>* \<LM>Compound M Ms\<RM>)" using not_principal_aux
@@ -715,7 +714,7 @@ shows "\<not> leftPrincipal r (Compound M Ms) R"
 using assms
 proof-
 from assms have "fst r \<noteq> []" apply (rule p_e.cases) apply (insert modRule2Characterise)
-     apply (drule_tac x="fst ra" in meta_spec) apply (drule_tac x="snd ra" in meta_spec)
+     apply (drule_tac x=Ps in meta_spec) apply (drule_tac x=c in meta_spec)
      by (auto simp add:extendRule_def)
 {assume "leftPrincipal r (Compound M Ms) R"
  with assms obtain ps c where "r = (ps,c)" and "c = (\<LM>Compound M Ms\<RM> \<Rightarrow>* \<Empt>)" using not_principal_aux2
@@ -889,7 +888,7 @@ shows "A \<noteq> Modal M [A]" and "ps \<noteq> [Modal M ps]" by (induct A and p
 lemma p_e_non_empty: 
  "r \<in> p_e R M N \<Longrightarrow> fst r \<noteq> []"
 apply (rule p_e.cases) apply auto
-apply (subgoal_tac "(a,b) \<in> modRules2")
+apply (subgoal_tac "(Ps, c) \<in> modRules2")
 apply (rule modRules2.cases) by (auto simp add:extendRule_def)
 
 
@@ -927,7 +926,7 @@ case 0
                                  apply (rule modRules2.cases, auto)
                                  apply (rule p_e.cases,auto simp add:extendRule_def)
                                  apply (insert p_e_non_empty[where R=R2 and M=M and N=N])
-                                 apply (drule_tac x="([], extend ( M \<cdot> \<Gamma> \<Rightarrow>* N \<cdot> \<Delta>) b)" in meta_spec) by auto
+                                 apply (drule_tac x="([], extend ( M \<cdot> \<Gamma> \<Rightarrow>* N \<cdot> \<Delta>) c)" in meta_spec) by auto
  with `r = ([],c)` obtain i where "c = (\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>) \<or> c = (\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
       using characteriseAx[where r=r] by auto
  moreover
