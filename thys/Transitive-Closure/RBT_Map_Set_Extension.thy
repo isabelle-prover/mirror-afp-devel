@@ -164,7 +164,7 @@ lemma rm_to_list_empty[simp]:
   unfolding rito_map_to_sorted_list_def rm_reverse_iterateo_def
   unfolding MapGA.itoi_reverse_iterateo_def
   unfolding rm_reverse_iterateoi_def
-  unfolding impl_of_empty
+  unfolding RBT.impl_of_empty
   by simp
 
 
@@ -226,7 +226,7 @@ proof
       qed
     qed
   qed
-qed (force simp: rm_set_lookup_def finite_set)
+qed (force simp: rm_set_lookup_def)
 end
 
 
