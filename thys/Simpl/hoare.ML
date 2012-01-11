@@ -2082,7 +2082,7 @@ val conseq2_ss_base =
   HOL_basic_ss
     addsimps (all_imp_eq_triv @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
     delsimps [all_imp_to_ex]
-    |> Simplifier.add_cong imp_cong
+    |> Simplifier.add_cong @{thm imp_cong}
 
 val conseq2_ss_record = conseq2_ss_base addsimprocs
                            [state_upd_simproc Record,state_ex_sel_eq_simproc Record];
@@ -3475,7 +3475,7 @@ val state_fun_update_ss = HOL_basic_ss
     @ @{thms list.inject} @ @{thms char.inject}
     @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms} @ K_fun_convs)
     addsimprocs [DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"]]
-    |> Simplifier.add_cong imp_cong (* K_fun_congs  FIXME: Stefan fragen*)
+    |> Simplifier.add_cong @{thm imp_cong} (* K_fun_congs  FIXME: Stefan fragen*)
     |> Splitter.add_split @{thm split_if}
 
 in
