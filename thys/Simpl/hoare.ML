@@ -115,7 +115,6 @@ val KNF = @{const_name StateFun.K_statefun};
 (* Some abstract syntax operations *)
 
 val Trueprop = HOLogic.mk_Trueprop;
-fun All xs t = Term.list_all_free (xs, t);
 
 infix 0 ===;
 val (op ===) = Trueprop o HOLogic.mk_eq;
@@ -1773,7 +1772,7 @@ fun mk_split_thms ctxt (vars as _::_)  =
 
     val split_meta_prop =
       let val P = Free (singleton (Name.variant_list names) "P", pT --> Term.propT)
-      in Logic.mk_equals (All [x] (P $ Free x), All vars (P $ xp))
+      in Logic.mk_equals (Logic.all (Free x) (P $ Free x), fold_rev Logic.all free_vars (P $ xp))
       end;
 
     val P = Free (singleton (Name.variant_list names) "P", pT --> HOLogic.boolT);
