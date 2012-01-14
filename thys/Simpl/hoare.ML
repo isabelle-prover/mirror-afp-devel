@@ -556,7 +556,7 @@ fun absfree_name ((a,T,body)) =
 fun list_all_free_name ([], t: term) = t
   | list_all_free_name ((a,T)::vars, t) =
       let val (t' as Abs (_,T',_)) = (absfree_name(a, T, list_all_free_name(vars,t)));
-      in Term.all T' $ t' end;
+      in Logic.all_const T' $ t' end;
 
 
 (* first_subterm
@@ -2696,7 +2696,7 @@ val in_rel_simp = simp_tac (HOL_basic_ss addsimps
 fun while_annotate_tac ctxt inv i st =
   let
     val annotateWhile = Thm.lift_rule (Thm.cprem_of st i) ReannotateWhileNoGuard;
-    val lifted_inv = list_abs ((Logic.strip_params (Logic.get_goal (prop_of st) i)),inv);
+    val lifted_inv = fold_rev Term.abs (Logic.strip_params (Logic.get_goal (prop_of st) i)) inv;
     val thy = Proof_Context.theory_of ctxt;
     val invVar = (#1 o strip_comb o #3 o dest_whileAnno o #2 o dest_hoare)
                   (List.last (prems_of annotateWhile));
@@ -2710,7 +2710,7 @@ fun while_annotate_tac ctxt inv i st =
 fun cond_annotate_tac ctxt inv mode (_,i) st =
   let
     val annotateCond = Thm.lift_rule (Thm.cprem_of st i) (CondInv' mode);
-    val lifted_inv = list_abs ((Logic.strip_params (Logic.get_goal (prop_of st) i)),inv);
+    val lifted_inv = fold_rev Term.abs (Logic.strip_params (Logic.get_goal (prop_of st) i)) inv;
     val thy = Proof_Context.theory_of ctxt;
     val invVar = List.last (prems_of annotateCond) |> dest_hoare |> #3 |> strip_comb |> #1;
     val annotate = cterm_instantiate
@@ -2772,7 +2772,7 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
     val (I_vs,I_recomb,I') = dest_split I;
     val grds' = map_filter (leave_grd (extract_faults F)) (HOLogic.dest_list grds);
     val pars = (Logic.strip_params (Logic.get_goal (prop_of st) i));
-    val J = list_abs (pars,I_recomb (fold_rev (mk_Int (map snd (pars@I_vs))) grds' I'));
+    val J = fold_rev Term.abs pars (I_recomb (fold_rev (mk_Int (map snd (pars@I_vs))) grds' I'));
     val cterm = Thm.cterm_of (Proof_Context.theory_of ctxt);
     val WhileG = Thm.lift_rule (Thm.cprem_of st i) Rule;
     val invVar = (fst o strip_comb o #3 o dest_whileAnno o (fn xs => nth xs 1) o snd
@@ -3382,7 +3382,7 @@ fun ex_tac vs st =
                 upds
                 s0;
 
-    val inst = list_abs (map (fn t => (sel_name t, sel_type t)) vs,upd);
+    val inst = fold_rev (Term.abs o (fn t => (sel_name t, sel_type t))) vs upd;
     fun lift_inst_ex_tac i st =
       let
         val thy = theory_of_thm st;
