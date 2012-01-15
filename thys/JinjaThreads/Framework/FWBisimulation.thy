@@ -919,7 +919,7 @@ proof -
     def s1' == "(locks s1, ((thr s1)(t := None), shr s1), wset s1, interrupts s1)"
     def s2' == "(locks s2, ((thr s2)(t := None), shr s2), wset s2, interrupts s2)"
     from `t \<notin> A` `insert t A = r1.final_threads s1` have "A = r1.final_threads s1'"
-      unfolding s1'_def by(auto simp add: r1.final_thread_def)
+      unfolding s1'_def by(auto simp add: r1.final_thread_def r1.final_threads_def)
     moreover from `insert t A = r1.final_threads s1` have "r1.final_thread s1 t" by auto
     hence "wset s1 t = None" by(auto simp add: r1.final_thread_def)
     with `s1 \<approx>m s2` have "s1' \<approx>m s2'" unfolding s1'_def s2'_def

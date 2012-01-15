@@ -772,7 +772,7 @@ proof
     have "wset s' t' = None" by cases(auto simp: redT_updWs_None_implies_None)
     ultimately have "final_thread s' t'" using tst' `final x'`
       by(auto simp add: final_thread_def) }
-  hence subset: "deadlocked s \<union> {t. final_thread s t} \<subseteq> deadlocked s \<union> deadlocked s' \<union> final_threads s'" by(auto)
+  hence subset: "deadlocked s \<union> final_threads s \<subseteq> deadlocked s \<union> deadlocked s' \<union> final_threads s'" by(auto)
 
   from Red show "t' \<in> deadlocked s'"
   proof(cases)
