@@ -5,7 +5,7 @@ no_document use_thys
  [
    "~~/src/HOL/Library/LaTeXsugar",
    "~~/src/HOL/Library/OptionalSugar",
-  "~~/src/HOL/Library/AList_Impl",
+  "~~/src/HOL/Library/AList",
   "Extra",
   "List_local",
   "~~/src/HOL/Library/Mapping"

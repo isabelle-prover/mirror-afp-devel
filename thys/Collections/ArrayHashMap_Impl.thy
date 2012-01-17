@@ -136,7 +136,7 @@ where
   (let h = bounded_hashcode (array_length a) k;
        m = array_get a h;
        insert = map_of m k = None
-   in HashMap (array_set a h (AList_Impl.update k v m)) (if insert then n + 1 else n))"
+   in HashMap (array_set a h (AList.update k v m)) (if insert then n + 1 else n))"
 
 definition ahm_update :: "'key \<Rightarrow> 'val \<Rightarrow> ('key :: hashable, 'val) hashmap \<Rightarrow> ('key, 'val) hashmap"
 where
@@ -150,7 +150,7 @@ where
   (let h = bounded_hashcode (array_length a) k;
        m = array_get a h;
        deleted = (map_of m k \<noteq> None)
-   in HashMap (array_set a h (AList_Impl.delete k m)) (if deleted then n - 1 else n))"
+   in HashMap (array_set a h (AList.delete k m)) (if deleted then n - 1 else n))"
 
 
 lemma hm_grow_gt_1 [iff]:
@@ -619,7 +619,7 @@ proof -
   obtain a n where [simp]: "hm = HashMap a n" by(cases hm)
 
   let ?h = "bounded_hashcode (array_length a) k"
-  let ?a' = "array_set a ?h (AList_Impl.update k v (array_get a ?h))"
+  let ?a' = "array_set a ?h (AList.update k v (array_get a ?h))"
   let ?n' = "if map_of (array_get a ?h) k = None then n + 1 else n"
 
   have "ahm_invar (HashMap ?a' ?n')" unfolding ahm_invar.simps
@@ -696,7 +696,7 @@ proof -
   obtain a n where hm [simp]: "hm = HashMap a n" by(cases hm)
 
   let ?h = "bounded_hashcode (array_length a) k"
-  let ?a' = "array_set a ?h (AList_Impl.delete k (array_get a ?h))"
+  let ?a' = "array_set a ?h (AList.delete k (array_get a ?h))"
   let ?n' = "if map_of (array_get a (bounded_hashcode (array_length a) k)) k = None then n else n - 1"
   
   have "ahm_invar_aux ?n' ?a'"

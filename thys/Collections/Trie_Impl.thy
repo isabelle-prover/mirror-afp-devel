@@ -42,7 +42,7 @@ where
                     | Some t \<Rightarrow> let t' = delete t ks 
                                 in if isEmpty t'
                                    then Trie vo (Assoc_List.delete_aux k ts)
-                                   else Trie vo (AList_Impl.update k t' ts))"
+                                   else Trie vo (AList.update k t' ts))"
 
 fun trie_invar :: "('key, 'val) trie \<Rightarrow> bool"
 where "trie_invar (Trie vo kts) = (distinct (map fst kts) \<and> (\<forall>(k, t) \<in> set kts. \<not> isEmpty t \<and> trie_invar t))"
@@ -238,8 +238,8 @@ next
     next
       case False
       { fix k' t'
-        assume k't':"(k', t') \<in> set (AList_Impl.update k (delete t ks) ts)"
-        hence "map_of (AList_Impl.update k (delete t ks) ts) k' = Some t'"
+        assume k't':"(k', t') \<in> set (AList.update k (delete t ks) ts)"
+        hence "map_of (AList.update k (delete t ks) ts) k' = Some t'"
           using invar by(auto simp add: distinct_update)
         hence eq: "((map_of ts)(k \<mapsto> delete t ks)) k' = Some t'" unfolding update_conv .
         have "\<not> isEmpty t' \<and> trie_invar t'"

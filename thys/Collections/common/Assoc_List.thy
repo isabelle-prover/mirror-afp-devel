@@ -1,5 +1,5 @@
 header {* \isaheader{The type of associative lists} *}
-theory Assoc_List imports "~~/src/HOL/Library/AList_Impl" begin
+theory Assoc_List imports "~~/src/HOL/Library/AList" begin
 
 subsection {* Additional operations for associative lists *}
 
@@ -15,7 +15,7 @@ where
 | "update_with_aux v k f (p # ps) = (if (fst p = k) then (k, f (snd p)) # ps else p # update_with_aux v k f ps)"
 
 text {*
-  Do not use @{term "AList_Impl.delete"} because this traverses all the list even if it has found the key.
+  Do not use @{term "AList.delete"} because this traverses all the list even if it has found the key.
   We do not have to keep going because we use the invariant that keys are distinct.
 *}
 fun delete_aux :: "'key \<Rightarrow> ('key \<times> 'val) list \<Rightarrow> ('key \<times> 'val) list"
