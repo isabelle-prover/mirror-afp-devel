@@ -21,6 +21,7 @@ function fail()
 
 . $WORKING_COPY/admin/main-config || fail "could not read main-config."
 
+[ -d $DISTSRC ] || fail "$DISTSRC is not a directory."
 [ -d $DISTPREFIX ] || fail "$DISTPREFIX is not a directory."
 
 export DISTPREFIX
@@ -29,7 +30,13 @@ export SCALA_HOME=$AFP_CONTRIB/scala
 rm -rf $DISTPREFIX/dist-*
 rm -rf $DISTPREFIX/Isabelle*
 rm -f $DISTPREFIX/ISABELLE*
-$ISA_ADMIN/makedist >> $DISTLOG 2>&1
+
+#for building the release:
+#$ISA_ADMIN/makedist >> $DISTLOG 2>&1
+
+#for just unpacking a pre-built release:
+cp $DISTSRC/ISABELLE_DIST $DISTPREFIX/
+cp $DISTSRC/ISABELLE_IDENT $DISTPREFIX/
 
 ISABELLE_DIST=$(cat $DISTPREFIX/ISABELLE_DIST)
 
