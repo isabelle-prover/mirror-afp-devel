@@ -291,11 +291,6 @@ lemma filter_by_key_drop_chain_gt[simp]:
   shows "[y\<leftarrow>drop_chain b (gt key) xs. key a = key y] = [y\<leftarrow>xs. key a = key y]"
   using assms by (induct xs arbitrary: b) auto
 
-lemma filter_by_key_rev_take_chain_gt[simp]:
-  assumes "key b \<le> key a"
-  shows "[y\<leftarrow>rev (take_chain b (gt key) xs). key a = key y] = []"
-  using assms by (induct xs arbitrary: b) auto
-
 lemma filter_by_key_take_chain_gt[simp]:
   assumes "key b \<le> key a"
   shows "[y\<leftarrow>take_chain b (gt key) xs. key a = key y] = []"
