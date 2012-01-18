@@ -265,12 +265,6 @@ proof -
     show ?thesis by (simp add: o_def)
 qed
 
-lemma sequences_simp[simp]:
-  "sequences key (a#b#xs) = (if le key a b
-    then (a # b # take_chain b (le key) xs) # sequences key (drop_chain b (le key) xs)
-    else (rev (take_chain b (gt key) xs) @ [b, a]) # sequences key (drop_chain b (gt key) xs))"
-  by force
-
 lemma sequences_induct[case_names Nil singleton many]:
   assumes "\<And>key. P key []" and "\<And>key x. P key [x]"
     and "\<And>key a b xs.
