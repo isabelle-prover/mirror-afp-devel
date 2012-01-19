@@ -5,11 +5,12 @@
 MAIN_NOTIFY="kleing@cse.unsw.edu.au nipkow@in.tum.de lp15@cam.ac.uk brianh@cs.pdx.edu bulwahn@in.tum.de krauss@in.tum.de"
 
 # settings for preparing an Isabelle development snapshot
+DISTSRC=~/isadist
 DISTPREFIX=~/afp/isadist
 ISABELLE_DEVEL=$DISTPREFIX/Isabelle
 ISABELLE_IDENT=$DISTPREFIX/ISABELLE_IDENT
 
-ISA_ADMIN=~/isabelle/Admin
+ISA_ADMIN=~/admin
 ISA_SETTINGS=$ISA_ADMIN/isatest/settings
 SHORT=afp-poly
 
