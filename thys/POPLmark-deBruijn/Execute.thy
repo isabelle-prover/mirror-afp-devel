@@ -38,7 +38,7 @@ by (auto intro!: valuep.intros elim!: valuep.cases)
 
 lemmas valuep.intros(1)[code_pred_intro Abs'] valuep.intros(2)[code_pred_intro TAbs']
 
-code_pred valuep
+code_pred (modes: i => bool) valuep
 proof -
   case valuep
   from valuep.prems show thesis
@@ -57,9 +57,14 @@ qed
 
 thm valuep.equation
 
-code_pred (modes: i => i => bool,  i => o => bool as normalize) norm .
+code_pred (modes: i => i => bool, i => o => bool as normalize) norm .
 
 thm norm.equation
+
+lemma [code]:
+  "normal_forms = set_of_pred o normalize"
+unfolding set_of_pred_def o_def normal_forms_def_raw
+by (auto intro: set_eqI normalizeI elim: normalizeE)
 
 lemma [code_unfold]: "x \<in> value \<longleftrightarrow> valuep x"
   by (simp add: value_def)
