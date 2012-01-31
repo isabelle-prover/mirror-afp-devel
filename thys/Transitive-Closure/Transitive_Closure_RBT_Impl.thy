@@ -102,7 +102,7 @@ proof -
     {
       fix b
       assume "b \<in> ?r"
-      from this[unfolded rtrancl_power rel_pow_fun_conv] obtain n f where 
+      from this[unfolded rtrancl_power relpow_fun_conv] obtain n f where 
         ab: "f 0 = a \<and> f n = b" and steps: "\<And> i. i < n \<Longrightarrow> (f i, f (Suc i)) \<in> set r" by auto
       from ab steps[of 0] a have "b = a" 
         by (cases n, force+)

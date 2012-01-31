@@ -36,7 +36,7 @@ begin
 lemma trancl_mono_set: "r \<subseteq> s \<Longrightarrow> r^+ \<subseteq> s^+"
   by (blast intro: trancl_mono)
 
-lemma rel_pow_mono: assumes "(r :: ('a \<times> 'a)set) \<subseteq> r'" shows "r ^^ n \<subseteq> r' ^^ n"
+lemma relpow_mono: assumes "(r :: ('a \<times> 'a)set) \<subseteq> r'" shows "r ^^ n \<subseteq> r' ^^ n"
   by (induct n, insert assms, auto)
 
 
@@ -737,7 +737,7 @@ qed
 lemma CR_iff_conversion_imp_join: "CR r = (r^<->* \<subseteq> r\<^sup>\<down>)"
 proof (intro iffI subsetI2)
   fix x y assume "CR r" and "(x,y) \<in> r^<->*"
-  then obtain n where "(x,y) \<in> (r\<^sup>\<leftrightarrow>)^^n" unfolding conversion_def rtrancl_is_UN_rel_pow by auto
+  then obtain n where "(x,y) \<in> (r\<^sup>\<leftrightarrow>)^^n" unfolding conversion_def rtrancl_is_UN_relpow by auto
   thus "(x,y) \<in> r\<^sup>\<down>"
   proof (induct n arbitrary: x)
     case 0
@@ -746,7 +746,7 @@ proof (intro iffI subsetI2)
   next
     case (Suc n)
     from `(x,y) \<in> r\<^sup>\<leftrightarrow> ^^ Suc n` obtain  z where "(x,z) \<in> r\<^sup>\<leftrightarrow>" and "(z,y) \<in> r\<^sup>\<leftrightarrow> ^^ n"
-      using rel_pow_Suc_D2 by best
+      using relpow_Suc_D2 by best
     with Suc have "(z,y) \<in> r\<^sup>\<down>" by simp
     from `(x,z) \<in> r\<^sup>\<leftrightarrow>` show ?case
     proof
@@ -879,14 +879,14 @@ lemma diamond_imp_semi_confluence: assumes "\<diamond> r" shows "(r\<inverse> O 
 proof (rule subsetI2)
   fix y z assume "(y,z) \<in>  r\<inverse> O r^*"
   then obtain x where "(x,y) \<in> r" and "(x,z) \<in> r^*" by best
-  then obtain n where "(x,z) \<in> r^^n" using rtrancl_imp_UN_rel_pow by best
+  then obtain n where "(x,z) \<in> r^^n" using rtrancl_imp_UN_relpow by best
   with `(x,y) \<in> r` show "(y,z) \<in> r\<^sup>\<down>"
   proof (induct n arbitrary: x z y)
     case 0 thus ?case by auto
   next
     case (Suc n)
     from `(x,z) \<in> r^^Suc n` obtain x' where "(x,x') \<in> r" and "(x',z) \<in> r^^n"
-      using rel_pow_Suc_D2 by best
+      using relpow_Suc_D2 by best
     with `(x,y) \<in> r` have "(y,x') \<in> (r\<inverse> O r)" by auto
     with `\<diamond> r` have "(y,x') \<in> (r O r\<inverse>)" by auto
     then obtain y' where "(x',y') \<in> r" and "(y,y') \<in> r" by best
@@ -898,14 +898,14 @@ qed
 lemma semi_confluence_imp_CR: assumes "(r\<inverse> O r^*) \<subseteq> r\<^sup>\<down>" shows "CR r"
 proof - {
   fix x y z assume "(x,y) \<in> r^*" and "(x,z) \<in> r^*"
-  then obtain n where "(x,z) \<in> r^^n" using rtrancl_imp_UN_rel_pow by best
+  then obtain n where "(x,z) \<in> r^^n" using rtrancl_imp_UN_relpow by best
   with `(x,y) \<in> r^*` have "(y,z) \<in> r\<^sup>\<down>"
   proof (induct n arbitrary: x y z)
     case 0 thus ?case by auto
   next
     case (Suc n)
     from `(x,z) \<in> r^^Suc n` obtain x' where "(x,x') \<in> r" and "(x',z) \<in> r^^n"
-      using rel_pow_Suc_D2 by best
+      using relpow_Suc_D2 by best
     from `(x,x') \<in> r` and `(x,y) \<in> r^*` have "(x',y) \<in> (r\<inverse> O r^* )" by auto
     with assms have "(x',y) \<in> r\<^sup>\<down>" by auto
     then obtain y' where "(x',y') \<in> r^*" and "(y,y') \<in> r^*" by best
@@ -1113,14 +1113,14 @@ lemma SN_on_imp_acc: assumes "SN_on {(y,z). (z,y) \<in> r} {x}" shows "x \<in> a
 subsection {* Newman's Lemma *}
 
 lemma rtrancl_len_E[elim]: assumes "(x, y) \<in> r^*" obtains n where "(x, y) \<in> r^^n"
-using rtrancl_imp_UN_rel_pow[OF assms] by best
+using rtrancl_imp_UN_relpow[OF assms] by best
 
-lemma rel_pow_Suc_E2'[elim]:
+lemma relpow_Suc_E2'[elim]:
   assumes "(x, z) \<in> A^^Suc n" obtains y where "(x, y) \<in> A" and "(y, z) \<in> A^*"
 proof -
   assume assm: "\<And>y. (x,y) \<in> A \<Longrightarrow> (y,z) \<in> A^* \<Longrightarrow> thesis"
-  from rel_pow_Suc_E2[OF assms] obtain y where "(x,y) \<in> A" and "(y,z) \<in> A^^n" by auto
-  hence "(y,z) \<in> A^*" using rel_pow_imp_rtrancl by auto
+  from relpow_Suc_E2[OF assms] obtain y where "(x,y) \<in> A" and "(y,z) \<in> A^^n" by auto
+  hence "(y,z) \<in> A^*" using relpow_imp_rtrancl by auto
   from assm[OF `(x,y) \<in> A` this] show thesis .
 qed
 
@@ -1371,14 +1371,14 @@ proof -
   {
     fix x y assume "(x,y) \<in> r^*" and "x \<in> ?S" and "y \<in> ?S"
     then obtain n where "(x,y) \<in> r^^n" and "x \<in> ?S" and "y \<in> ?S"
-      using rtrancl_imp_UN_rel_pow by best
+      using rtrancl_imp_UN_relpow by best
     hence "(x,y) \<in> ?r^*"
     proof (induct n arbitrary: x y)
       case 0 thus ?case by simp
     next
       case (Suc n)
       from `(x,y) \<in> r^^Suc n` obtain x' where "(x,x') \<in> r" and "(x',y) \<in> r^^n"
-        using rel_pow_Suc_D2 by best
+        using relpow_Suc_D2 by best
       hence "(x,x') \<in> r^*" by simp
       with `x \<in> ?S` have "x' \<in> ?S" by (rule rtrancl_Image_step)
       with Suc and `(x',y) \<in> r^^n` have "(x',y) \<in> ?r^*" by simp
@@ -1844,12 +1844,12 @@ lemmas SN_on_mono = SN_on_subset1
 
 lemma rtrancl_fun_conv:
   "((s,t) \<in> R^*) = (\<exists> f n. f 0 = s \<and> f n = t \<and> (\<forall> i < n. (f i, f (Suc i)) \<in> R))"
-  unfolding rtrancl_is_UN_rel_pow using rel_pow_fun_conv[where R = R]
+  unfolding rtrancl_is_UN_relpow using relpow_fun_conv[where R = R]
   by auto
 
 
-lemma rtrancl_imp_rel_pow': "(x,y) \<in> R^* \<Longrightarrow> \<exists>n. (x,y) \<in> ((R::'a ars) ^^ n)"
-  unfolding rtrancl_is_UN_rel_pow by auto
+lemma rtrancl_imp_relpow': "(x,y) \<in> R^* \<Longrightarrow> \<exists>n. (x,y) \<in> ((R::'a ars) ^^ n)"
+  unfolding rtrancl_is_UN_relpow by auto
 
 lemma compat_tr_compat: assumes "NS O S \<subseteq> S" shows "NS^* O S \<subseteq> S"
   using non_strict_into_strict[where S = S and NS = NS] assms by blast
@@ -1912,13 +1912,13 @@ lemma compatible_rtrancl_split:
    and steps: "(x, y) \<in> (NS \<union> S)^*"
   shows "(x, y) \<in> S O S^* O NS^* \<union> NS^*"
 proof-
-  from steps have "\<exists> n. (x, y) \<in> (NS \<union> S)^^n" using rtrancl_imp_rel_pow'[where ?R="NS \<union> S"] by auto
+  from steps have "\<exists> n. (x, y) \<in> (NS \<union> S)^^n" using rtrancl_imp_relpow'[where ?R="NS \<union> S"] by auto
   then obtain n where "(x, y) \<in> (NS \<union> S)^^n" by auto
   thus "(x, y) \<in>  S O S^* O NS^* \<union> NS^*"
   proof (induct n arbitrary: x, simp)
     case (Suc m)
     assume "(x, y) \<in> (NS \<union> S)^^(Suc m)"
-    hence "\<exists> z. (x, z) \<in> (NS \<union> S) \<and> (z, y) \<in> (NS \<union> S)^^m" using rel_pow_Suc_D2[where ?R="NS \<union> S"] by auto
+    hence "\<exists> z. (x, z) \<in> (NS \<union> S) \<and> (z, y) \<in> (NS \<union> S)^^m" using relpow_Suc_D2[where ?R="NS \<union> S"] by auto
     then obtain z where xz:"(x, z) \<in> (NS \<union> S)" and zy:"(z, y) \<in> (NS \<union> S)^^m" by auto
     with Suc have zy:"(z, y) \<in>  S O S^* O NS^* \<union> NS^*" by auto
     thus "(x, y) \<in>  S O S^* O NS^* \<union> NS^*"
@@ -1973,7 +1973,7 @@ lemma rtrancl_diff_decomp:
  shows "(x, y) \<in> A^* O (A - B) O A^*"
 proof-
  from assms have A: "(x, y) \<in> A^*" and B:"(x, y) \<notin> B^*" by auto
- from A have "\<exists> k. (x, y) \<in> A^^k" by (rule rtrancl_imp_rel_pow')
+ from A have "\<exists> k. (x, y) \<in> A^^k" by (rule rtrancl_imp_relpow')
  then obtain k where Ak:"(x, y) \<in> A^^k" by auto
  from Ak B show "(x, y) \<in> A^* O (A - B) O A^*"
  proof (induct k arbitrary: x)
@@ -1982,9 +1982,9 @@ proof-
  next
  case (Suc i)
   hence B:"(x, y) \<notin> B^*" and ASk:"(x, y) \<in> A ^^ Suc i" by auto
-  from ASk have "\<exists>z. (x, z) \<in> A \<and> (z, y) \<in> A ^^ i" using rel_pow_Suc_D2[where ?R=A] by auto
+  from ASk have "\<exists>z. (x, z) \<in> A \<and> (z, y) \<in> A ^^ i" using relpow_Suc_D2[where ?R=A] by auto
   then obtain z where xz:"(x, z) \<in> A" and "(z, y) \<in> A ^^ i" by auto
-  hence zy:"(z, y) \<in> A^*" using rel_pow_imp_rtrancl by auto
+  hence zy:"(z, y) \<in> A^*" using relpow_imp_rtrancl by auto
   from xz show "(x, y) \<in> A^* O (A - B) O A^*"
   proof (cases "(x, z) \<in> B")
    case False

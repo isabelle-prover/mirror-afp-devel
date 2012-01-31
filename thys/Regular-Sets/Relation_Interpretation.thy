@@ -34,7 +34,7 @@ next
       case 0 show ?case by simp
     next
       case (Suc n) thus ?case
-        unfolding relpow.simps rel_pow_commute[symmetric]
+        unfolding relpow.simps relpow_commute[symmetric]
         by (auto simp add: Star conc_def word_rel_append
           rel_comp_UNION_distrib rel_comp_UNION_distrib2)
     qed }

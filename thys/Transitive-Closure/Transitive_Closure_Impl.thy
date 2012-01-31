@@ -45,7 +45,7 @@ text {*
 subsection {* Bounded reachability *} 
 
 text {*
-  We provide an algorithm @{text rel_pow_impl} that computes all states that are
+  We provide an algorithm @{text relpow_impl} that computes all states that are
   reachable from an initial set of states @{term new} by at most $n$ steps.  The
   algorithm also stores a set of states that have already been visited @{term
   have}, and thus, do not have to be expanded a second time.  The algorithm is
@@ -54,24 +54,24 @@ text {*
   list.
 *}
 fun
-  rel_pow_impl ::
+  relpow_impl ::
     "('a list \<Rightarrow> 'a list) \<Rightarrow> ('a list \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool)
       \<Rightarrow> 'a list \<Rightarrow> 'b \<Rightarrow> nat \<Rightarrow> 'b"
 where
-  "rel_pow_impl succ un memb new have 0 = un new have"
-| "rel_pow_impl succ un memb new have (Suc m) = (if new = [] then have else (
+  "relpow_impl succ un memb new have 0 = un new have"
+| "relpow_impl succ un memb new have (Suc m) = (if new = [] then have else (
   let maybe = succ new;
     have' = un new have;
     new' = filter (\<lambda> n. \<not> (memb n have')) maybe
-      in rel_pow_impl succ un memb new' have' m))"
+      in relpow_impl succ un memb new' have' m))"
 
 text {*
-  Before we can prove what @{const rel_pow_impl} computes, we need the following
+  Before we can prove what @{const relpow_impl} computes, we need the following
   auxiliary lemma that makes all elements in a sequence $a \mathrel{R} \ldots \mathrel{R} b$ 
   of length $n$ accessible.
 *}
 
-lemma rel_pow_fun_conv:
+lemma relpow_fun_conv:
   "((a,b) \<in> R ^^ n) = (\<exists>f. f 0 = a \<and> f n = b \<and> (\<forall>i < n. (f i, f (Suc i)) \<in> R))"
 proof (induct n arbitrary: b)
   case 0
@@ -115,14 +115,14 @@ locale set_access_succ = set_access un
   assumes succ: "set (succ as) = {b. \<exists> a \<in> set as. (a,b) \<in> rel}"
 begin
 
-abbreviation rel_pow_i where "rel_pow_i \<equiv> rel_pow_impl succ un memb"
+abbreviation relpow_i where "relpow_i \<equiv> relpow_impl succ un memb"
 
-text {* What follows is the main technical result of the @{const rel_pow_impl}
+text {* What follows is the main technical result of the @{const relpow_impl}
 algorithm: what it computes for arbitrary values of @{term new} and @{term
 have}. *}
 
-lemma rel_pow_impl_main: 
-  "set_of (rel_pow_i new have n) = 
+lemma relpow_impl_main: 
+  "set_of (relpow_i new have n) = 
   {b | a b m. a \<in> set new \<and> m \<le> n \<and> (a,b) \<in> (rel  \<inter> {(a,b). b \<notin> set_of have})^^m} \<union> set_of have " 
   (is "?l new have n = ?r new have n")
 proof (induct n arbitrary: "have" new)
@@ -170,7 +170,7 @@ next
         then obtain a2 a1 m where a2n: "a2 \<notin> new" and a2h: "a2 \<notin> have" and a1: "a1 \<in> new" and a1a2: "(a1,a2) \<in> rel"
           and m: "m \<le> n" and a2b: "(a2,b) \<in> ?reln m" by auto
         have "b \<in> ?r1"
-          by (rule CollectI, rule exI, rule exI[of _ "Suc m"], intro conjI, rule a1, simp add: m, rule rel_pow_Suc_I2, rule, rule a1a2, simp add: a2h, insert a2b, induct m arbitrary: a2 b, auto)
+          by (rule CollectI, rule exI, rule exI[of _ "Suc m"], intro conjI, rule a1, simp add: m, rule relpow_Suc_I2, rule, rule a1a2, simp add: a2h, insert a2b, induct m arbitrary: a2 b, auto)
         thus ?thesis by auto
       qed
     }     
@@ -195,7 +195,7 @@ next
         with m have ln: "l \<le> Suc n" by auto
         from least obtain a where a: "a \<in> new"
           and ab: "(a,b) \<in> ?rel l" by auto
-        from ab[unfolded rel_pow_fun_conv]
+        from ab[unfolded relpow_fun_conv]
         obtain f where fa: "f 0 = a" and fb: "b = f l"
           and steps: "\<And> i. i < l \<Longrightarrow> (f i, f (Suc i)) \<in> ?rel 1" by auto
         {
@@ -206,7 +206,7 @@ next
             assume new: "f (Suc i) \<in> new"
             let ?f = "\<lambda> j. f (Suc i + j)"
             have seq: "(f (Suc i), b) \<in> ?rel (l - Suc i)"
-              unfolding rel_pow_fun_conv
+              unfolding relpow_fun_conv
             proof (rule exI[of _ ?f], intro conjI allI impI)
               from i show "f (Suc i + (l - Suc i)) = b"
                 unfolding fb by auto
@@ -224,7 +224,7 @@ next
           hence "(f i, f (Suc i)) \<in> ?reln 1"
             using steps[OF i] by auto
         } note steps = this
-        have ab: "(a,b) \<in> ?reln l" unfolding rel_pow_fun_conv
+        have ab: "(a,b) \<in> ?reln l" unfolding relpow_fun_conv
           by (intro exI conjI, insert fa fb steps, auto)
         have "b \<in> ?l1 \<union> ?l2" 
         proof (cases l)
@@ -232,7 +232,7 @@ next
           with ab a show ?thesis by auto
         next
           case (Suc ll)
-          from rel_pow_Suc_D2[OF ab[unfolded Suc]] a ln Suc 
+          from relpow_Suc_D2[OF ab[unfolded Suc]] a ln Suc 
           show ?thesis by auto
         qed
         thus ?thesis by auto
@@ -243,23 +243,23 @@ next
   qed
 qed
 
-text {* From the previous lemma we can directly derive that @{const rel_pow_impl}
+text {* From the previous lemma we can directly derive that @{const relpow_impl}
   works correctly if @{term have} is initially set to @{text empty}
 *}
-lemma rel_pow_impl: "set_of (rel_pow_i new empty n) = 
+lemma relpow_impl: "set_of (relpow_i new empty n) = 
   {b | a b m. a \<in> set new \<and> m \<le> n \<and> (a,b) \<in> rel^^m}" 
 proof -
   have id: "rel \<inter> {(a,b). True} = rel" by auto
   show ?thesis
-  unfolding rel_pow_impl_main empty by (simp add: id)
+  unfolding relpow_impl_main empty by (simp add: id)
 qed
 end
 
 subsection {* Reflexive transitive closure and transitive closure *}
 
-text {* Using @{const rel_pow_impl} it is now easy to obtain algorithms for the
+text {* Using @{const relpow_impl} it is now easy to obtain algorithms for the
 reflexive transitive closure and the transitive closure by restricting the
-number of steps to $|R|$. Note that @{const rel_pow_impl} will abort the
+number of steps to $|R|$. Note that @{const relpow_impl} will abort the
 computation as soon as no new states are detected.  Hence, there is no penalty
 in using this large bound.  *}
 
@@ -267,20 +267,20 @@ definition rtrancl_impl :: "(('a \<times> 'a)list \<Rightarrow> 'a list \<Righta
   where "rtrancl_impl gen_succ un memb emp rel \<equiv> 
               let succ = gen_succ rel;
                   n = length rel
-               in (\<lambda> as. rel_pow_impl succ un memb as emp n)"
+               in (\<lambda> as. relpow_impl succ un memb as emp n)"
 
 definition trancl_impl :: "(('a \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'a list) \<Rightarrow> ('a list \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> ('a \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'b"
   where "trancl_impl gen_succ un memb emp rel \<equiv> 
               let succ = gen_succ rel;
                   n = length rel
-               in (\<lambda> as. rel_pow_impl succ un memb (succ as) emp n)"
+               in (\<lambda> as. relpow_impl succ un memb (succ as) emp n)"
 
 text {* The soundness of both @{const rtrancl_impl} and @{const trancl_impl}
-follows from the soundness of @{const rel_pow_impl} and the fact that for finite
+follows from the soundness of @{const relpow_impl} and the fact that for finite
 relations, we can limit the number of steps to explore all elements in the
 reflexive transitive closure. *}
 
-lemma rtrancl_finite_rel_pow: "((a,b) \<in> (set rel)^*) = (\<exists> n \<le> length rel. (a,b) \<in> set rel ^^ n)" (is "?l = ?r")
+lemma rtrancl_finite_relpow: "((a,b) \<in> (set rel)^*) = (\<exists> n \<le> length rel. (a,b) \<in> set rel ^^ n)" (is "?l = ?r")
 proof
   assume ?r
   thus ?l
@@ -292,7 +292,7 @@ next
   obtain l where l: "l = (LEAST n. (a,b) \<in> set rel ^^ n)" by auto
   have ab: "(a,b) \<in> set rel ^^ l" unfolding l
     by (intro LeastI, rule ab)
-  from this[unfolded rel_pow_fun_conv]
+  from this[unfolded relpow_fun_conv]
   obtain f where a: "f 0 = a" and b: "f l = b" and steps: "\<And> i. i < l \<Longrightarrow> (f i, f (Suc i)) \<in> set rel" by auto
   let ?hits = "map (\<lambda> i. f (Suc i)) [0 ..< l]"
   from steps have subset: "set ?hits \<subseteq> snd ` set rel" by force
@@ -318,7 +318,7 @@ next
     let ?g = "\<lambda> n. if n \<le> i then f n else f (n + (j - i))"
     let ?l = "l - (j - i)"
     have abl: "(a,b) \<in> set rel ^^ ?l"
-      unfolding rel_pow_fun_conv
+      unfolding relpow_fun_conv
     proof (rule exI[of _ ?g], intro conjI impI allI)
       show "?g ?l = b" unfolding b[symmetric] using j ij by auto
     next
@@ -368,15 +368,15 @@ lemma rtrancl_impl: "set_of (rtrancl_i rel as) = {b. (\<exists> a \<in> set as. 
 proof -
   interpret set_access_succ set_of memb empty un "gen_succ rel" "set rel"
     by (unfold_locales, insert gen_succ, auto)
-  show ?thesis unfolding rtrancl_impl_def Let_def rel_pow_impl
-    by (auto simp: rtrancl_finite_rel_pow)
+  show ?thesis unfolding rtrancl_impl_def Let_def relpow_impl
+    by (auto simp: rtrancl_finite_relpow)
 qed
 
 lemma trancl_impl: "set_of (trancl_i rel as) = {b. (\<exists> a \<in> set as. (a,b) \<in> (set rel)^+)}"
 proof -
   interpret set_access_succ set_of memb empty un "gen_succ rel" "set rel"
     by (unfold_locales, insert gen_succ, auto)
-  show ?thesis unfolding trancl_impl_def Let_def rel_pow_impl trancl_unfold_left rel_comp_def rtrancl_finite_rel_pow succ by auto
+  show ?thesis unfolding trancl_impl_def Let_def relpow_impl trancl_unfold_left rel_comp_def rtrancl_finite_relpow succ by auto
 qed
 end
 

@@ -1908,7 +1908,7 @@ next
     by (simp add:listsum_update_nat)
   obtain t' where "ts!k \<Rightarrow> t'" "(t', ts'!k) : Red_term^^l"
     using Suc(3) `k<size ts` `size ns = size ts` `ns!k = Suc l`
-    by (metis rel_pow_Suc_E2)
+    by (metis relpow_Suc_E2)
   then have 1: "\<forall>i<size(ts[k:=t']). (ts[k:=t']!i, ts'!i) : Red_term^^(?ns!i)"
     using Suc(3) `k<size ts` `size ns = size ts`
     by (auto simp add:nth_list_update)
@@ -2093,7 +2093,7 @@ qed
 lemma Lam_Red_term_itE:
   "(\<Lambda> t, t') : Red_term^^i \<Longrightarrow> \<exists>t''. t' = \<Lambda> t'' \<and> (t,t'') : Red_term^^i"
 apply(induct i arbitrary: t')apply simp
-apply(erule rel_pow_Suc_E)
+apply(erule relpow_Suc_E)
 apply(erule Red_term.cases)
 apply (simp_all)
 apply blast+
@@ -2116,7 +2116,7 @@ next
   case (Suc i rs)
   from `(V x \<bullet>\<bullet> rs, r) \<in> Red_term ^^ Suc i`
   obtain r' where r': "V x \<bullet>\<bullet> rs \<Rightarrow> r'" and "(r',r) \<in> Red_term ^^ i"
-    by (metis rel_pow_Suc_D2)
+    by (metis relpow_Suc_D2)
   from r' have "\<exists>k<size rs. \<exists>s. rs!k \<Rightarrow> s \<and> r' = V x \<bullet>\<bullet> rs[k:=s]"
   proof(induct rs arbitrary: r' rule:rev_induct)
     case Nil thus ?case by(fastforce elim: Red_term.cases)
@@ -2151,7 +2151,7 @@ next
     apply (auto simp:nth_list_update)
     apply(erule_tac x=k in allE)
     apply auto
-    apply (metis rel_pow_Suc_I2 relpow.simps(2))
+    apply (metis relpow_Suc_I2 relpow.simps(2))
     done
 qed
 
@@ -2171,7 +2171,7 @@ next
   case (Suc i rs)
   from `(C nm \<bullet>\<bullet> rs, r) \<in> Red_term ^^ Suc i`
   obtain r' where r': "C nm \<bullet>\<bullet> rs \<Rightarrow> r'" and "(r',r) \<in> Red_term ^^ i"
-    by (metis rel_pow_Suc_D2)
+    by (metis relpow_Suc_D2)
   from r' have "\<exists>k<size rs. \<exists>s. rs!k \<Rightarrow> s \<and> r' = C nm \<bullet>\<bullet> rs[k:=s]"
   proof(induct rs arbitrary: r' rule:rev_induct)
     case Nil thus ?case by(fastforce elim: Red_term.cases)
@@ -2206,7 +2206,7 @@ next
     apply (auto simp:nth_list_update)
     apply(erule_tac x=k in allE)
     apply auto
-    apply (metis rel_pow_Suc_I2 relpow.simps(2))
+    apply (metis relpow_Suc_I2 relpow.simps(2))
     done
 qed
 
@@ -2231,7 +2231,7 @@ proof -
     next
       case (Suc i)
       then obtain i' s where "t \<Rightarrow> s" and red: "(s,t') : Red_term^^i'" and [arith]: "i' <= i"
-        by (metis eq_imp_le less(5) Suc rel_pow_Suc_D2)
+        by (metis eq_imp_le less(5) Suc relpow_Suc_D2)
       hence "term v \<Rightarrow> s" using Suc less by simp
       thus ?thesis
       proof cases
@@ -2272,7 +2272,7 @@ proof -
               (\<forall>j< ?n. (map term (rev vs) ! j, ts' ! j) \<in> Red_term ^^ is ! j \<and> is ! j \<le> i')"
             using sz by auto
           from `t' = C nm \<bullet>\<bullet> ts'` `t' = C nm \<bullet>\<bullet> ts` have "ts = ts'" by simp
-          show ?thesis using sz by (auto  simp: rtrancl_is_UN_rel_pow)
+          show ?thesis using sz by (auto  simp: rtrancl_is_UN_relpow)
         qed
         have 5: "\<forall>t\<in>set(map term vs). C_normal t"
           using less term_C by auto
@@ -2335,7 +2335,7 @@ proof -
     qed
   qed
   }
-  thus ?thesis using assms(2-) rtrancl_imp_rel_pow[OF assms(1)] by blast
+  thus ?thesis using assms(2-) rtrancl_imp_relpow[OF assms(1)] by blast
 qed
 
 lemma C_normal_ML_compile:
