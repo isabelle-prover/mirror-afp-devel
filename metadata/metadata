@@ -215,6 +215,7 @@ abstract = Two formalizations of AVL trees with room for extensions. The first f
 title = BDD Normalisation
 author = Veronika Ortner, Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
 date = 2008-02-29
+base = HOL/Simpl
 topic = Computer Science/Data Structures
 abstract = We present the verification of the normalisation of a binary decision diagram (BDD). The normalisation follows the original algorithm presented by Bryant in 1986 and transforms an ordered BDD in a reduced, ordered and shared BDD. The verification is based on Hoare logics.
 depends-on = Simpl
