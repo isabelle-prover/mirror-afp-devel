@@ -46,7 +46,7 @@ the
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that a graph with arbitrarily large girth and chromatic number exists. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
+This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that graphs with arbitrarily large girth and chromatic number exist. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
         </td></tr>
 
     <tr><td class="datahead">License:</td>

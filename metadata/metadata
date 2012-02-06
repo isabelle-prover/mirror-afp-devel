@@ -922,7 +922,7 @@ author = Lars Noschinski <mailto:noschinl@in.tum.de>
 date = 2012-02-06
 topic = Mathematics/Graph Theory
 base = HOL/HOL-Multivariate_Analysis/HOL-Probability
-abstract = This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that a graph with arbitrarily large girth and chromatic number exists. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
+abstract = This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that graphs with arbitrarily large girth and chromatic number exist. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
 
 [Flyspeck-Tame]
 title = Flyspeck I: Tame Graphs 
