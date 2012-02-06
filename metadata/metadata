@@ -918,7 +918,7 @@ abstract = A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
 
 [Girth_Chromatic]
 title = A Probabilistic Proof of the Girth-Chromatic Number Theorem
-author = Lars Noschinski
+author = Lars Noschinski <mailto:noschinl@in.tum.de>
 date = 2012-02-06
 topic = Mathematics/Graph Theory
 base = HOL/HOL-Multivariate_Analysis/HOL-Probability
