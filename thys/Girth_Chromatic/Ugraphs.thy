@@ -285,10 +285,9 @@ proof -
     using setsum_bounded[of vc card "\<alpha> G"]
     by (simp add: of_nat_eq_enat[symmetric] of_nat_setsum)
   then have "ereal_of_enat (card (uverts G)) \<le> ereal_of_enat (\<alpha> G) * ereal_of_enat (card vc)"
-    by (simp add: sum_vc_card ac_simps ereal_of_enat_mult[symmetric] ereal_of_enat_inf
-      del: ereal_of_enat_simps)
+    by (simp add: sum_vc_card ereal_of_enat_pushout ac_simps ereal_of_enat_inf del: ereal_of_enat_simps)
   with zero_less_\<alpha>[OF neG] \<alpha>_fin[OF fin_G] vc_size show ?thesis
-    by (simp add: ereal_divide_le_pos ereal_of_enat_inf real_eq_of_nat)
+    by (simp add: ereal_divide_le_pos ereal_of_enat_inf)
 qed
 
 end

@@ -72,16 +72,9 @@ proof (rule finite_prob_spaceI)
   from finite_edges show "measure P (space P) = 1"
     by (simp add: full_sum P_def one_ereal_def)
 next
-  fix A assume "A \<subseteq> space P"
-  with p_prob show "0 \<le> measure_space.measure P A"
-    by (auto simp: P_def zero_le_mult_iff setsum_nonneg)
-next
-  fix A B assume "A \<subseteq> space P" "B \<subseteq> space P" "A \<inter> B = {}"
-  moreover then have "finite A" "finite B" using finite_edges
-    by (auto simp: P_def intro: finite_subset)
-  ultimately
-  show "measure_space.measure P (A \<union> B) = measure_space.measure P A + measure_space.measure P B "
-    by (auto simp: P_def setsum_Un_disjoint)
+  fix x assume "x \<in> space P"
+  with p_prob show "0 \<le> measure_space.measure P {x}"
+    by (auto simp: P_def zero_le_mult_iff)
 qed (auto simp: P_def)
 
 end
@@ -272,7 +265,7 @@ proof (induct G k rule: ksc_induct)
   moreover
   have "card (short_cycles ?oG k) < card (short_cycles G k)"
     by (intro psubset_card_mono kill_vert.hyps kill_step_smaller)
-  ultimately show ?case using kill_vert.hyps by auto
+  ultimately show ?case using kill_vert.hyps by presburger
 qed simp
 
 lemma \<alpha>_kill_short_verts:
@@ -720,9 +713,9 @@ proof -
   also have "\<dots> < (n/2) / \<alpha> G" using G_props `3 \<le> k`
     by (cases "\<alpha> G") (auto simp: real_of_nat_def[symmetric] field_simps)
   also have "\<dots> \<le> (n/2) / \<alpha> H" using \<alpha>_HG `0 < \<alpha> H`
-    by (auto simp: ereal_of_enat_mult[symmetric] intro!: ereal_divide_left_mono)
+    by (auto simp: ereal_of_enat_pushout intro!: ereal_divide_left_mono)
   also have "\<dots> \<le> card (uverts H) / \<alpha> H" using card_H `0 < \<alpha> H`
-    by (auto intro!: ereal_divide_right_mono simp: real_eq_of_nat)
+    by (auto intro!: ereal_divide_right_mono)
   also have "\<dots> \<le> chromatic_number H" using uverts_H T1 by (intro chromatic_lb) auto
   finally have T3: "l < chromatic_number H"
     by (simp add: ereal_of_enat_less_iff del: ereal_of_enat_simps)
