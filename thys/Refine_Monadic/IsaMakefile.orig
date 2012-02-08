@@ -1,0 +1,46 @@
+
+## targets
+
+default: Refine Userguide
+images: 
+test: Refine
+
+all: images test
+
+Userguide: Userguide.pdf
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf  -D generated
+
+
+## refine
+
+Refine: $(LOG)/Collections-Refine.gz
+
+$(LOG)/Collections-Refine.gz: ROOT.ML document/root.tex *.thy ex/*.thy
+	@cd .. && $(USEDIR) Collections Refine
+
+Userguide.pdf: $(LOG)/Collections-Refine.gz
+	@cd generated; \
+	$(ISABELLE_TOOL) latex -o sty "root_userguide.tex" > userguide.log;\
+	$(ISABELLE_TOOL) latex -o sty "root_userguide.tex" >> userguide.log && \
+	$(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
+	{ [ ! -f root.bib ] || $(ISABELLE_TOOL) latex -o bbl "root_userguide.tex" >> userguide.log; } && \
+	{ [ ! -f root.idx ] || $(ISABELLE_TOOL) latex -o idx "root_userguide.tex" >> userguide.log; } && \
+	$(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
+	$(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
+	cd ..;
+	mv generated/root_userguide.pdf Userguide.pdf && \
+	echo "Userguide at ${PWD}/Userguide.pdf"; \
+
+## clean
+
+clean:
+	@rm -f $(LOG)/Collections-Refine.gz
+	@rm -rf generated
+	@rm -f Userguide.pdf

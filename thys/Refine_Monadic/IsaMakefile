@@ -1,0 +1,57 @@
+## configurables
+
+SESSION-NAME = Refine_Monadic
+BASE-IMAGE = Collections
+
+## targets
+
+default: $(SESSION-NAME) Userguide.pdf
+test: $(SESSION-NAME)
+# usually empty:
+images:  
+
+all: images test Userguide.pdf
+
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+# BASE-IMAGE not from distribution
+IMAGE=$(OUT)/$(BASE-IMAGE)
+
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" -D generated
+
+# time limit (in sec)
+MAXTIME = 3600
+
+
+## dependencies
+
+$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy ex/*.thy document/*.tex document/*.bib
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+
+Userguide.pdf: $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@cd generated; \
+	$(ISABELLE_TOOL) latex -o sty "root_userguide.tex" > userguide.log;\
+	$(ISABELLE_TOOL) latex -o sty "root_userguide.tex" >> userguide.log && \
+	$(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
+	{ [ ! -f root.bib ] || $(ISABELLE_TOOL) latex -o bbl "root_userguide.tex" >> userguide.log; } && \
+	{ [ ! -f root.idx ] || $(ISABELLE_TOOL) latex -o idx "root_userguide.tex" >> userguide.log; } && \
+	$(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
+	$(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
+	cd ..;
+	mv generated/root_userguide.pdf Userguide.pdf && \
+	echo "Userguide at ${PWD}/Userguide.pdf"; \
+
+## clean
+
+clean:
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -rf generated
+	@rm -f Userguide.pdf
