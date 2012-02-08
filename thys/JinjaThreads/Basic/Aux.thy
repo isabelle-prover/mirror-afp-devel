@@ -243,7 +243,7 @@ qed
 
 lemma replicate_Suc_snoc:
   "replicate (Suc n) x = replicate n x @ [x]"
-by (metis replicate_Suc replicate_append_same rotate_simps)
+by (metis replicate_Suc replicate_append_same)
 
 lemma map_eq_append_conv:
   "map f xs = ys @ zs \<longleftrightarrow> (\<exists>ys' zs'. map f ys' = ys \<and> map f zs' = zs \<and> xs = ys' @ zs')"

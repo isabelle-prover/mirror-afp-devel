@@ -235,8 +235,7 @@ lemma tm_vector_cases:
    (\<exists>v ts. t = term v \<bullet>\<bullet> ts)"
 apply(induct t)
 apply simp_all
-apply (metis append_is_Nil_conv args_tm.simps(2) args_tm.simps(5) args_tm_foldl_At butlast.simps(2) butlast_append butlast_snoc eta_head_args head_tm.simps(2) head_tm.simps(4) head_tm.simps(5) head_tm_foldl_At last_snoc list.simps(2) not_Cons_self rotate1_is_Nil_conv rotate_simps self_append_conv self_append_conv2 tm.simps(12) tm.simps(22))
-done
+by (metis snoc_eq_iff_butlast)
 
 lemma fv_head_C[simp]: "fv (t \<bullet>\<bullet> ts) = fv t \<union> (\<Union>t\<in>set ts. fv t)"
 by(induct ts arbitrary:t) auto
@@ -553,9 +552,7 @@ done
 lemma pattern_At_decomp: "pattern(s \<bullet> t) \<Longrightarrow> \<exists>nm ss. s = C nm \<bullet>\<bullet> ss"
 proof(induct s arbitrary: t)
   case (At s1 s2) show ?case
-(* FIXME fails using At apply (metis foldl_Cons foldl_Nil foldl_append pattern_AtD1) *)
-    using pattern_AtD12[OF At.prems] At(1)[of s2]
-    by clarsimp (metis append_is_Nil_conv butlast_snoc last_snoc not_Cons_self)
+    using At by (metis foldl_Cons foldl_Nil foldl_append pattern_AtD12)
 qed (auto elim!: pattern.cases split:split_if_asm)
 
 

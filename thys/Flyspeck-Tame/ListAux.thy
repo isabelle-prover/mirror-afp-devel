@@ -496,10 +496,10 @@ lemma rotate_id[simp]: "rotate ((length ls) - (n mod length ls)) (rotate n ls) =
 apply (rule sym) apply (rule rotate_inv2) by simp
 
 lemma nth_rotate1_Suc: "Suc n < length ls \<Longrightarrow> ls!(Suc n) = (rotate1 ls)!n"
-  apply (auto simp: rotate1_def) apply (cases ls) apply auto
+  apply (cases ls) apply auto
   by (simp add: nth_append)
 
-lemma nth_rotate1_0: "ls!0 = (rotate1 ls)!(length ls - 1)" apply (cases ls)  by (auto simp: rotate1_def)
+lemma nth_rotate1_0: "ls!0 = (rotate1 ls)!(length ls - 1)" apply (cases ls)  by auto
 
 lemma nth_rotate1: "0 < length ls \<Longrightarrow> ls!((Suc n) mod (length ls)) = (rotate1 ls)!(n mod (length ls))"
 proof (cases "0 < (Suc n) mod (length ls)")
@@ -973,7 +973,7 @@ lemma splitAt_rotate_pair_conv:
       snd (splitAt x xs) @ fst (splitAt x xs)"
 apply(induct n) apply simp
 apply(simp del:rotate_Suc2 add:rotate1_rotate_swap)
-apply(clarsimp simp add:rotate1_def split:list.split)
+apply(case_tac xs) apply clarsimp+
 apply(erule disjE) apply simp
 apply(drule split_list)
 apply clarsimp

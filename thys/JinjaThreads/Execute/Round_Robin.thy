@@ -575,7 +575,8 @@ lemma queue_rotate1_correct:
   shows "queue_\<alpha> (queue_rotate1 queue) = rotate1 (queue_\<alpha> queue)"
   and "queue_invar (queue_rotate1 queue)"
 using assms
-by(auto simp add: queue_rotate1_def split_beta queue.dequeue_correct queue.enqueue_correct rotate1_def split: list.split)
+apply(auto simp add: queue_rotate1_def split_beta queue.dequeue_correct queue.enqueue_correct)
+by(cases "queue_\<alpha> queue") simp_all
 
 lemma enqueue_thread_correct:
   assumes "queue_invar queue"
