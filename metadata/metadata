@@ -1,3 +1,37 @@
+[Dijkstra_Shortest_Path]
+title = Dijkstra's Shortest Path Algorithm
+author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <mailto:lammich@in.tum.de>
+topic = Computer Science/Algorithms
+base = HOL/Collections/Refine_Monadic
+date = 2012-01-30
+depends-on = Refine_Monadic, Collections
+abstract = We implement and prove correct Dijkstra's algorithm for the
+ single source shortest path problem, conceived in 1956 by E. Dijkstra.
+ The algorithm is implemented using the data refinement framework for monadic,
+ nondeterministic programs. An efficient implementation is derived using data
+ structures from the Isabelle Collection Framework.
+
+[Refine_Monadic]
+title = Refinement for Monadic Programs
+author = Peter Lammich <mailto:lammich@in.tum.de>
+topic = Computer Science/Programming Languages/Logics
+base = HOL/Collections
+date = 2012-01-30
+depends-on = Collections
+abstract = We provide a framework for program and data refinement in Isabelle/HOL.
+  The framework is based on a nondeterminism-monad with assertions, i.e.,
+  the monad carries a set of results or an assertion failure.
+  Recursion is expressed by fixed points. For convenience, we also provide
+  while and foreach combinators.
+ <p>
+  The framework provides tools to automatize canonical tasks, such as
+  verification condition generation, finding appropriate data refinement relations,
+  and refine an executable program to a form that is accepted by the
+  Isabelle/HOL code generator.
+ <p>
+  This submission comes with a collection of examples and a user-guide,
+  illustrating the usage of the framework.
+
 [PseudoHoops]
 title = Pseudo Hoops
 author = George Georgescu, Laurentiu Leustean, Viorel Preoteasa <http://users.abo.fi/vpreotea/>

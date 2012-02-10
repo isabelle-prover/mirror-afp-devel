@@ -6,6 +6,8 @@ thys/JinjaThreads/generated
 
 thys/Collections/generated
 thys/Huffman/generated
+thys/Refine_Monadic/generated
+thys/Refine_Monadic/Userguide.pdf
 
 thys/Tree-Automata/code/haskell/generated/Nat.hs
 thys/Tree-Automata/code/haskell/generated/Ta.hs

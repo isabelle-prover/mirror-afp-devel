@@ -1,0 +1,65 @@
+Changes of Refinement Framework since 2011-12-24:
+
+2012-01-28
+  * Added parameters to refine_transfer, refine_rcg, and refine_autoref.
+    Usage:
+      refine_transfer trans_thms
+      refine_rcg refine_thms
+      refine_autoref spec_thms
+  * "refine_dref_type_only" is now "refine_dref_type (nopost)". INCOMPATIBILITY.
+  * Added "refine_dref_type (trace)"
+  * "refine_autoref_ss" is now "refine_autoref (trace) (ss)". INCOMPATIBILITY.
+  * Changed determinization for iterators. An additional wrapper-function 
+    occurs in generated function. INCOMPATIBILITY if generated function was copied.
+  
+
+
+2012-01-26
+  * Added monotonicity prover (refine_mono - method), and integrated it
+    with refine_rcg tactic. Maybe INCOMPATIBILITY, however, it only changes
+    mono-goals that it can completely solve.
+  * Automatic Refinement. Examples are in: 
+      (ex/Automatic_Determinization, ex/Recursion, 
+       ../Dijkstra/Dijkstra_Impl_Aref).
+  * Example for use of REC and RECT combinators (ex/Recursion)
+
+2012-01-16 [Release to Cava-Repo]
+  * Changed definition of conc_fun (\Down), such that \Up and \Down always form
+    a Galois-Connection. Equivalent in the single valued case, INCOMPATIBILITY
+    in the non-single-valued case. Currently, refinement rules for WHILE assume 
+    singe-valued relations, thus had to disable WHILEI_invisible_refine example.
+    Generalizing to general case remains future work.
+  * Total correct recursion is now expressed by greatest fixed points rather than
+    least fixed points with asserted variant. Rules remain the same for 
+    WHILE-loops, INCOMPATIBILITY for arbitrary recursion. 
+    Introduced REC and RECT combinators, that should be used for recursion 
+    (formerly lfp and lfpT). 
+  * Changed code generation. INCOMPATIBILITY. Partial correct code now is inside 
+    a monad with a flat complete lattice domain, rather than the option monad.
+    The embedding function is nres_of (formerly: EMBED).
+    The actual translation is done by the refine_transfer method 
+    (formerly: (rule refine_cgt / refine_cgp)+), that handles both, goals of the
+    form "RETURN ?f <= S" and "nres_of ?f <= S"
+    Also the attribute names changed: [refine_cgp] and [refine_cgt] are both
+    [refine_transfer] now. 
+
+2011-12-31
+  * Added WHILEI_invisible_refine rule, that supports refinement with invisible
+    concrete steps for partial correct WHILE-loops. Also added example to ex/ 
+    subdirectory.
+  * Fixed bind2let_refine rule, the assumption was to strong.
+  * Renamed le_ASSERTI_pres -> ref_ASSERTI_pres
+
+2011-12-30:
+  * Added FOREACH-refine rules with stronger coupling invariants.
+  * Added conditions to step-refine assumptions of conditional foreach rules.
+
+2011-12-29:
+  * Added nofail/inres predicates and related lemmas.
+  * Arbitrary recursion via lfp. Changed basis of while-combinator to
+    use that. Also a well-founded variant lfpT. 
+    INCOMPATIBILITIES:
+      WINV is now WI_reach, and definition of while-loop has changed completely.
+  
+
+
