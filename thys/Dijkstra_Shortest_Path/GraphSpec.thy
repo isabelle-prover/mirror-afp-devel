@@ -1,7 +1,7 @@
 header "Graph Interface"
 theory GraphSpec
-imports Main Graph "../Refine/Refine" 
-  (*"../Refine/Refine_Autodet"*)
+imports Main Graph "../Refine_Monadic/Refine" 
+  (*"../Refine_Monadic/Refine_Autodet"*)
 begin
   text {*
     This theory defines an ICF-style interface for graphs.

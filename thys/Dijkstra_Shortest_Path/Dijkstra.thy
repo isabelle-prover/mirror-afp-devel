@@ -1,7 +1,7 @@
 header {* Dijkstra's Algorithm *}
 theory Dijkstra
   imports Graph Dijkstra_Misc 
-  "../Refine/Refine" "../Refine/Collection_Bindings"
+  "../Refine_Monadic/Refine" "../Refine_Monadic/Collection_Bindings"
   Weight
 begin
 text {*

@@ -31,13 +31,13 @@ MAXTIME = 3600
 
 ## dependencies
 
-$(SESSION-NAME): Collections $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): Collections $(OUT)/$(SESSION-NAME)
 
 Collections:
 	@cd ../Collections; $(ISABELLE_TOOL) make
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy ex/*.thy document/*.tex document/*.bib
-	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy ex/*.thy document/*.tex document/*.bib
+	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
 Userguide.pdf: $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 	@cd generated; \
@@ -55,6 +55,7 @@ Userguide.pdf: $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 ## clean
 
 clean:
-	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -f $(LOG)/$(SESSION-NAME).gz
+	@rm -f $(OUT)/$(SESSION-NAME)
 	@rm -rf generated
 	@rm -f Userguide.pdf

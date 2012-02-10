@@ -1,11 +1,16 @@
+## configurables
+
+SESSION-NAME = Dijkstra_Shortest_Path
+BASE-IMAGE = Refine_Monadic
 
 ## targets
 
-default: Dijkstra
-images: 
-test: Dijkstra
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images:  
 
-all: images test 
+all: images test
 
 
 ## global settings
@@ -14,20 +19,28 @@ SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf ## -D generated
+# BASE-IMAGE not from distribution
+IMAGE=$(OUT)/$(BASE-IMAGE)
+
+# Isabelle library path already set in base image
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf
+
+# time limit (in sec)
+MAXTIME = 3600
 
 
-## Dijkstra
+## dependencies
 
-Dijkstra: $(LOG)/Collections-Dijkstra.gz
+$(SESSION-NAME): $(BASE-IMAGE) $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
-$(LOG)/Collections-Dijkstra.gz: ROOT.ML document/root.tex *.thy ../Refine/*.thy
-	@tdir=${PWD};cd ..;\
-	$(USEDIR) Collections Dijkstra;res=$?;\
-	cd ${tdir};exit ${res}
+$(BASE-IMAGE):
+	@cd ../$(BASE-IMAGE); $(ISABELLE_TOOL) make
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/Collections-Dijkstra.gz
-
+	@rm -f $(LOG)/$(SESSION-NAME).gz
