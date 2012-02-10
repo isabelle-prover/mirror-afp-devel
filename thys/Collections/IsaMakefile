@@ -33,13 +33,13 @@ MAXTIME = 1200
 
 ## Collections
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): $(OUT)/$(SESSION-NAME)
 
 StdInst.thy: StdInst.in.thy
 	scripts/inst.rb < StdInst.in.thy > StdInst.thy
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: ROOT.ML document/*.tex document/*.bib *.thy common/*.thy
-	@cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+$(OUT)/$(SESSION-NAME): ROOT.ML document/*.tex document/*.bib *.thy common/*.thy
+	@ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
 generated/Userguide.pdf: $(LOG)/HOL-Collections.gz
 	@cd generated; \
@@ -57,5 +57,6 @@ generated/Userguide.pdf: $(LOG)/HOL-Collections.gz
 ## clean
 
 clean:
-	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -f $(OUT)/$(SESSION-NAME)
+	@rm -f $(LOG)/$(SESSION-NAME).gz
 	@rm -rf generated

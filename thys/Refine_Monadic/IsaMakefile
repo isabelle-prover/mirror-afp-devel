@@ -22,8 +22,8 @@ LOG = $(OUT)/log
 # BASE-IMAGE not from distribution
 IMAGE=$(OUT)/$(BASE-IMAGE)
 
-
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" -D generated
+# Isabelle library path already set in base image
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -D generated
 
 # time limit (in sec)
 MAXTIME = 3600
@@ -31,7 +31,10 @@ MAXTIME = 3600
 
 ## dependencies
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): Collections $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+Collections:
+	@cd ../Collections; $(ISABELLE_TOOL) make
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy ex/*.thy document/*.tex document/*.bib
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
