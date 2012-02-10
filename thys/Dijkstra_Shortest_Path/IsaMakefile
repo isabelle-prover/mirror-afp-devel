@@ -1,0 +1,33 @@
+
+## targets
+
+default: Dijkstra
+images: 
+test: Dijkstra
+
+all: images test 
+
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf ## -D generated
+
+
+## Dijkstra
+
+Dijkstra: $(LOG)/Collections-Dijkstra.gz
+
+$(LOG)/Collections-Dijkstra.gz: ROOT.ML document/root.tex *.thy ../Refine/*.thy
+	@tdir=${PWD};cd ..;\
+	$(USEDIR) Collections Dijkstra;res=$?;\
+	cd ${tdir};exit ${res}
+
+## clean
+
+clean:
+	@rm -f $(LOG)/Collections-Dijkstra.gz
+
