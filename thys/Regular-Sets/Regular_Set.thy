@@ -11,12 +11,28 @@ type_synonym 'a lang = "'a list set"
 definition conc :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> 'a lang" (infixr "@@" 75) where
 "A @@ B = {xs@ys | xs ys. xs:A & ys:B}"
 
+lemma [code]:
+  "A @@ B = (%(xs, ys). xs @ ys) ` (A \<times> B)"
+unfolding conc_def by auto
+
 overloading lang_pow == "compow :: nat \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
 begin
   primrec lang_pow :: "nat \<Rightarrow> 'a lang \<Rightarrow> 'a lang" where
   "lang_pow 0 A = {[]}" |
   "lang_pow (Suc n) A = A @@ (lang_pow n A)"
 end
+
+text {* for code generation *}
+
+definition lang_pow :: "nat \<Rightarrow> 'a lang \<Rightarrow> 'a lang" where
+  lang_pow_code_def [code_abbrev]: "lang_pow = compow"
+
+lemma [code]:
+  "lang_pow (Suc n) A = A @@ (lang_pow n A)"
+  "lang_pow 0 A = {[]}"
+  by (simp_all add: lang_pow_code_def)
+
+hide_const (open) lang_pow
 
 definition star :: "'a lang \<Rightarrow> 'a lang" where
 "star A = (\<Union>n. A ^^ n)"
@@ -289,6 +305,5 @@ next
   finally show "X = X @@ A \<union> B" 
     using eq by blast 
 qed
-
 
 end
