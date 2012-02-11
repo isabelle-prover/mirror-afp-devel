@@ -21,7 +21,9 @@ where
 | singleton[iff]: "linked P [x]"
 | many: "P x y \<Longrightarrow> linked P (y#ys) \<Longrightarrow> linked P (x#y#ys)"
 
-lemma linked_many_eq[simp]:
+declare eqTrueI[OF Nil, code] eqTrueI[OF singleton, code]
+
+lemma linked_many_eq[simp, code]:
   "linked P (x#y#zs) \<longleftrightarrow> P x y \<and> linked P (y#zs)"
   by (blast intro: linked.many elim: linked.cases)
 
