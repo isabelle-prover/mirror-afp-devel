@@ -9,7 +9,7 @@ begin
 ML {*
 structure RefineG_Transfer = struct
   structure transfer = Named_Thms
-    ( val name = "refine_transfer"
+    ( val name = @{binding refine_transfer}
       val description = "Refinement Framework: " ^ 
         "Transfer rules" );
 
@@ -101,7 +101,7 @@ text {* Transfer into ccpo with distributive
   transfer function. *}
 locale dist_ccpo_transfer = ccpo_transfer \<alpha>
   for \<alpha> :: "'c::ccpo \<Rightarrow> 'a::complete_lattice" + 
-  assumes \<alpha>_dist: "\<And>A. is_chain A \<Longrightarrow> \<alpha> (Complete_Partial_Order.lub A) = Sup (\<alpha>`A)"
+  assumes \<alpha>_dist: "\<And>A. is_chain A \<Longrightarrow> \<alpha> (Sup A) = Sup (\<alpha>`A)"
 begin
 
   lemma \<alpha>_mono[simp, intro!]: "mono \<alpha>"
@@ -111,16 +111,16 @@ begin
     hence C[simp, intro!]: "is_chain {x,y}" by (auto intro: chainI)
     from LE have "\<alpha> x \<le> sup (\<alpha> x) (\<alpha> y)" by simp
     also have "\<dots> = Sup (\<alpha>`{x,y})" by simp
-    also have "\<dots> = \<alpha> (Complete_Partial_Order.lub {x,y})"
+    also have "\<dots> = \<alpha> (Sup {x,y})"
       by (rule \<alpha>_dist[symmetric]) simp
-    also have "Complete_Partial_Order.lub {x,y} = y"
+    also have "Sup {x,y} = y"
       apply (rule antisym)
-      apply (rule lub_least[OF C]) using LE apply auto []
-      apply (rule lub_upper[OF C]) by auto
+      apply (rule ccpo_Sup_least[OF C]) using LE apply auto []
+      apply (rule ccpo_Sup_upper[OF C]) by auto
     finally show "\<alpha> x \<le> \<alpha> y" .
   qed
 
-  lemma \<alpha>_strict[simp]: "\<alpha> (Complete_Partial_Order.lub {}) = bot"
+  lemma \<alpha>_strict[simp]: "\<alpha> (Sup {}) = bot"
     using \<alpha>_dist[of "{}"] by simp
 end
 

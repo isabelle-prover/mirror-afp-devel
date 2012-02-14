@@ -2,6 +2,7 @@ header {* \isaheader{Fold-Combinator} *}
 theory Refine_Fold
 imports "../Refine" "../Collection_Bindings"
 begin
+
   text {*
     In this theory, we explore the usage of the partial-function package, and
     define a function with a higher-order argument. As example, we choose a
@@ -44,7 +45,7 @@ begin
     using assms
     apply (induct l arbitrary: s)
     apply simp
-    apply (simp only: foldl.simps rfoldl_simps)
+    apply (simp only: foldl_Nil foldl_append rfoldl_simps)
     apply simp
     apply (rule order_trans[rotated])
     apply (rule refine_transfer)

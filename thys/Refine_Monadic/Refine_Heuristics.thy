@@ -16,7 +16,7 @@ text {*
 
 ML {*
   structure refine_heuristics_simps = Named_Thms
-    ( val name = "refine_hsimp"
+    ( val name = @{binding refine_hsimp}
       val description = "Refinement Framework: " ^
         "Data refinement heuristics simp rules" );
 *}
@@ -40,12 +40,12 @@ structure Refine_dref_type = struct
   open Refine_Misc;
 
   structure pattern_rules = Named_Thms
-    ( val name = "refine_dref_pattern"
+    ( val name = @{binding refine_dref_pattern}
       val description = "Refinement Framework: " ^
         "Pattern rules to recognize refinement goal" );
 
   structure RELATES_rules = Named_Thms ( 
-    val name = "refine_dref_RELATES"
+    val name = @{binding refine_dref_RELATES}
     val description = "Refinement Framework: " ^
         "Type based heuristics introduction rules" 
   );

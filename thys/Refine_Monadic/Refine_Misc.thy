@@ -87,12 +87,12 @@ structure Refine_Misc = struct
   (********************)
 
     structure refine_mono = Named_Thms
-      ( val name = "refine_mono"
+      ( val name = @{binding refine_mono}
         val description = "Refinement Framework: " ^
           "Monotonicity rules" )
 
     structure refine_mono_trigger = Named_Thms
-      ( val name = "refine_mono_trigger"
+      ( val name = @{binding refine_mono_trigger}
         val description = "Refinement Framework: " ^
           "Triggering rules for monotonicity prover" )
 
@@ -487,12 +487,15 @@ lemma lfp_le_gfp': "mono f \<Longrightarrow> lfp f x \<le> gfp f x"
 
 subsubsection {* Connecting Complete Lattices and 
   Chain-Complete Partial Orders *}
-lemma (in complete_lattice) is_ccpo: "class.ccpo (op \<le>) (op <) Sup"
+(* Note: Also connected by subclass now. However, we need both directions
+  of embedding*)
+lemma (in complete_lattice) is_ccpo: "class.ccpo Sup (op \<le>) (op <)"
   apply unfold_locales
   apply (erule Sup_upper)
   apply (erule Sup_least)
   done
-lemma (in complete_lattice) is_dual_ccpo: "class.ccpo (op \<ge>) (op >) Inf"
+
+lemma (in complete_lattice) is_dual_ccpo: "class.ccpo Inf (op \<ge>) (op >)"
   apply unfold_locales
   apply (rule less_le_not_le)
   apply (rule order_refl)
@@ -501,7 +504,8 @@ lemma (in complete_lattice) is_dual_ccpo: "class.ccpo (op \<ge>) (op >) Inf"
   apply (erule Inf_lower)
   apply (erule Inf_greatest)
   done
-    
+  
+  
 lemma ccpo_mono_simp: "monotone (op \<le>) (op \<le>) f \<longleftrightarrow> mono f"
   unfolding monotone_def mono_def by simp
 lemma ccpo_monoI: "mono f \<Longrightarrow> monotone (op \<le>) (op \<le>) f" 
@@ -516,7 +520,7 @@ lemma dual_ccpo_monoI: "mono f \<Longrightarrow> monotone (op \<ge>) (op \<ge>) 
 lemma dual_ccpo_monoD: "monotone (op \<ge>) (op \<ge>) f \<Longrightarrow> mono f" 
   by (simp add: dual_ccpo_mono_simp) 
 
-lemma ccpo_lfp_simp: "\<And>f. mono f \<Longrightarrow> ccpo.fixp op \<le> Sup f = lfp f"
+lemma ccpo_lfp_simp: "\<And>f. mono f \<Longrightarrow> ccpo.fixp Sup op \<le> f = lfp f"
   apply (rule antisym)
   defer
   apply (rule lfp_lowerbound)
@@ -527,7 +531,7 @@ lemma ccpo_lfp_simp: "\<And>f. mono f \<Longrightarrow> ccpo.fixp op \<le> Sup f
   apply (simp add: lfp_unfold[symmetric])
   done
 
-lemma ccpo_gfp_simp: "\<And>f. mono f \<Longrightarrow> ccpo.fixp op \<ge> Inf f = gfp f"
+lemma ccpo_gfp_simp: "\<And>f. mono f \<Longrightarrow> ccpo.fixp Inf op \<ge> f = gfp f"
   apply (rule antisym)
   apply (rule gfp_upperbound)
   apply (drule ccpo.fixp_unfold[OF is_dual_ccpo dual_ccpo_monoI, symmetric])
@@ -537,11 +541,11 @@ lemma ccpo_gfp_simp: "\<And>f. mono f \<Longrightarrow> ccpo.fixp op \<ge> Inf f
   apply (simp add: gfp_unfold[symmetric])
   done
 
-abbreviation "chain_admissible P \<equiv> ccpo.admissible op \<le> Sup P"
+abbreviation "chain_admissible P \<equiv> ccpo.admissible Sup op \<le> P"
 abbreviation "is_chain \<equiv> Complete_Partial_Order.chain (op \<le>)"
 lemmas chain_admissibleI[intro?] = ccpo.admissibleI[OF is_ccpo]
 
-abbreviation "dual_chain_admissible P \<equiv> ccpo.admissible (\<lambda>x y. y\<le>x) Inf P"
+abbreviation "dual_chain_admissible P \<equiv> ccpo.admissible Inf (\<lambda>x y. y\<le>x) P"
 abbreviation "is_dual_chain \<equiv> Complete_Partial_Order.chain (\<lambda>x y. y\<le>x)"
 lemmas dual_chain_admissibleI[intro?] = ccpo.admissibleI[OF is_dual_ccpo]
 

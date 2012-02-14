@@ -13,31 +13,31 @@ subsection {* Setup *}
     open Refine_Misc;
 
     structure vcg = Named_Thms
-      ( val name = "refine_vcg"
+      ( val name = @{binding refine_vcg}
         val description = "Refinement Framework: " ^ 
           "Verification condition generation rules (intro)" )
 
     structure refine0 = Named_Thms
-      ( val name = "refine0"
+      ( val name = @{binding refine0}
         val description = "Refinement Framework: " ^
           "Refinement rules applied first (intro)" )
 
     structure refine = Named_Thms
-      ( val name = "refine"
+      ( val name = @{binding refine}
         val description = "Refinement Framework: Refinement rules (intro)" )
 
     structure refine2 = Named_Thms
-      ( val name = "refine2"
+      ( val name = @{binding refine2}
         val description = "Refinement Framework: " ^
           "Refinement rules 2nd stage (intro)" )
 
     structure refine_pw_simps = Named_Thms
-      ( val name = "refine_pw_simps"
+      ( val name = @{binding refine_pw_simps}
         val description = "Refinement Framework: " ^
           "Simplifier rules for pointwise reasoning" )
 
     structure refine_post = Named_Thms
-      ( val name = "refine_post"
+      ( val name = @{binding refine_post}
         val description = "Refinement Framework: " ^
           "Postprocessing rules" )
 
@@ -51,7 +51,7 @@ subsection {* Setup *}
       let 
         val ref_thms = (refine0.get ctxt 
           @ add_thms @ refine.get ctxt @ refine2.get ctxt);
-        val prod_ss = (HOL_basic_ss addsplits @{thms prod.split});
+        val prod_ss = (Splitter.add_split @{thm prod.split} HOL_basic_ss);
         val prod_simp_tac = 
           if Config.get ctxt no_prod_split then 
             K no_tac

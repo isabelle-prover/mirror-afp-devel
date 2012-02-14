@@ -29,29 +29,29 @@ structure Refine_Autoref = struct
   (******************************)
 
   structure prg_thms = Named_Thms
-    ( val name = "autoref_prg"
+    ( val name = @{binding autoref_prg}
       val description = "Automatic Refinement: Program translation rules." );
 
   structure exp_thms = Named_Thms
-    ( val name = "autoref_ex"
+    ( val name = @{binding autoref_ex}
       val description = "Automatic Refinement: Expression translation rules.");
 
   structure spec_thms = Named_Thms
-    ( val name = "autoref_spec"
+    ( val name = @{binding autoref_spec}
       val description = "Automatic Refinement: Specification rules"
         ^"decomposition rules." );
 
   structure other_thms = Named_Thms
-    ( val name = "autoref_other"
+    ( val name = @{binding autoref_other}
       val description = "Automatic Refinement: Rules for subgoals of "
       ^"other types" );
 
   structure elim_thms = Named_Thms
-    ( val name = "autoref_elim"
+    ( val name = @{binding autoref_elim}
       val description = "Automatic Refinement: Preprocessing elim rules" );
 
   structure simp_thms = Named_Thms
-    ( val name = "autoref_simp"
+    ( val name = @{binding autoref_simp}
       val description = "Automatic Refinement: Preprocessing simp rules" );
 
   type config = {

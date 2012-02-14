@@ -284,16 +284,18 @@ subsubsection {* Splitting Paths *}
 subsection {* Weighted Graphs *}
   locale valid_mgraph = valid_graph G for G::"('v,'w::monoid_add) graph"
 
-  definition path_weight :: "('v,'w::{zero,plus}) path \<Rightarrow> 'w"
-    where "path_weight p \<equiv> foldl (op +) 0 (map (fst \<circ> snd) p)"
+  definition path_weight :: "('v,'w::monoid_add) path \<Rightarrow> 'w"
+    where "path_weight p \<equiv> listsum (map (fst \<circ> snd) p)"
 
-  lemma path_weight_alt: "path_weight p \<equiv> listsum (map (fst \<circ> snd) p)"
-    unfolding path_weight_def
+  (* 
+    lemma path_weight_alt: "path_weight p \<equiv> listsum (map (fst \<circ> snd) p)"
+    unfolding path_weight_def foldl_def
     by (simp add: listsum_foldl)
+  *)
 
   lemma path_weight_split[simp]:
     "(path_weight (p1@p2)::'w::monoid_add) = path_weight p1 + path_weight p2"
-    unfolding path_weight_alt
+    unfolding path_weight_def
     by (auto)
 
   lemma path_weight_empty[simp]: "path_weight [] = 0"
@@ -302,7 +304,7 @@ subsection {* Weighted Graphs *}
 
   lemma path_weight_cons[simp]:
     "(path_weight (e#p)::'w::monoid_add) = fst (snd e) + path_weight p"
-    unfolding path_weight_alt
+    unfolding path_weight_def
     by (auto)
 
 end

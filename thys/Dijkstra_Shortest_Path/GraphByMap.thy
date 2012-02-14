@@ -245,7 +245,7 @@ begin
     assumes mit: "map_iteratei m1.\<alpha> m1.invar mit"
     shows "graph_nodes_it gbm_\<alpha> gbm_invar (gbm_nodes_it mit)"
   proof 
-    fix g::'m1 and I::"('V \<Rightarrow> bool) \<Rightarrow> 'd \<Rightarrow> bool" and \<sigma>0::"'d" and 
+    fix g::'m1 and I::"('V set) \<Rightarrow> 'd \<Rightarrow> bool" and \<sigma>0::"'d" and 
       c::"'d \<Rightarrow> bool" and f::"'V \<Rightarrow> 'd \<Rightarrow> 'd"
 
     assume INV: "gbm_invar g"
@@ -290,7 +290,7 @@ begin
     assumes sit: "set_iteratei s3.\<alpha> s3.invar sit"
     shows "graph_edges_it gbm_\<alpha> gbm_invar (gbm_edges_it mit1 mit2 sit)"
   proof 
-    fix g::'m1 and I::"(('V\<times>'W\<times>'V) \<Rightarrow> bool) \<Rightarrow> 'd \<Rightarrow> bool" and \<sigma>0::"'d" and 
+    fix g::'m1 and I::"(('V\<times>'W\<times>'V) set) \<Rightarrow> 'd \<Rightarrow> bool" and \<sigma>0::"'d" and 
       c::"'d \<Rightarrow> bool" and f::"('V\<times>'W\<times>'V) \<Rightarrow> 'd \<Rightarrow> 'd"
 
     have SUB: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it=it' \<Longrightarrow> I it' \<sigma>" by auto
@@ -427,7 +427,7 @@ begin
     shows "graph_succ_it gbm_\<alpha> gbm_invar (gbm_succ_it mit2 sit)"
   proof 
     fix g::'m1 and v::"'V" 
-      and I::"(('W\<times>'V) \<Rightarrow> bool) \<Rightarrow> 'd \<Rightarrow> bool" and \<sigma>0::"'d" and 
+      and I::"(('W\<times>'V) set) \<Rightarrow> 'd \<Rightarrow> bool" and \<sigma>0::"'d" and 
       c::"'d \<Rightarrow> bool" and f::"('W\<times>'V) \<Rightarrow> 'd \<Rightarrow> 'd"
 
     have SUB: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it=it' \<Longrightarrow> I it' \<sigma>" by auto
