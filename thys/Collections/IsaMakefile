@@ -41,7 +41,7 @@ StdInst.thy: StdInst.in.thy
 $(OUT)/$(SESSION-NAME): ROOT.ML document/*.tex document/*.bib *.thy common/*.thy
 	@ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
-generated/Userguide.pdf: $(LOG)/HOL-Collections.gz
+generated/Userguide.pdf: $(OUT)/$(SESSION-NAME)
 	@cd generated; \
     $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" > userguide.log;\
     $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" >> userguide.log && \
