@@ -224,9 +224,9 @@ proof-
            ultimately show ?thesis using `x\<in> X` that by auto
          qed
     
-	 txt {* The proof works by induction over the length of the word. Each
-	 inductive step is one ping as in ping pong. At the end, we land in one
-	 of the subsets of X, so the word cannot be the identity. *}
+         txt {* The proof works by induction over the length of the word. Each
+         inductive step is one ping as in ping pong. At the end, we land in one
+         of the subsets of X, so the word cannot be the identity. *}
          from x1 and w
          have "w = [] \<or> act (G.lift g w) x \<in> Xin' (hd w)"
          proof(induct w)
