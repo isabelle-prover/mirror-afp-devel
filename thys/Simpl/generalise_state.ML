@@ -157,7 +157,7 @@ fun eta_expand ct =
     val thy = theory_of_cterm ct;
     val T = domain_type (typ_of (ctyp_of_term ct)); 
     val x = cterm_of thy (Var (("s",mi+1),T));
-  in (Thm.cabs x (Thm.capply ct x)) end;
+  in Thm.lambda x (Thm.apply ct x) end;
 
 fun split_abs ct =
   (case term_of ct of
