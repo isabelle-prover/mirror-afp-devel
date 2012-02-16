@@ -507,7 +507,10 @@ extra-history =
         allow class Object to declare methods and fields,
         simplified subtyping relation, 
         corrected division and modulo implementation
-        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/46e4181ed142">46e4181ed142</a>)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/46e4181ed142">46e4181ed142</a>)<br>
+  [2012-02-16]:
+        added example programs
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/bf0b06c8913d">bf0b06c8913d</a>)
 
 [Locally-Nameless-Sigma]
 title = Locally Nameless Sigma Calculus
