@@ -5,7 +5,7 @@ Normalization by Evaluation.
 (*<*)
 theory NBE imports Main begin
 
-declare [[syntax_ambiguity_level = 1000000]]
+declare [[syntax_ambiguity = ignore]]
 
 declare Let_def[simp]
 (*>*)
