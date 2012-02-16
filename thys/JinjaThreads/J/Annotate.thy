@@ -54,9 +54,9 @@ where
   "\<lbrakk> is_lub,P,E \<turnstile> e1 \<leadsto> e1';  is_lub,P,E \<turnstile> e2 \<leadsto> e2' \<rbrakk>
    \<Longrightarrow> is_lub,P,E \<turnstile> e1 \<guillemotleft>bop\<guillemotright> e2 \<leadsto> e1' \<guillemotleft>bop\<guillemotright> e2'"
 | AnnoLAssVar:
-  "\<lbrakk> E V = \<lfloor>T\<rfloor>; is_lub,P,E \<turnstile> e \<leadsto> e' \<rbrakk> \<Longrightarrow> is_lub,P,E \<turnstile> V:=e \<leadsto> V:=e'"
+  "\<lbrakk> E V = \<lfloor>T\<rfloor>; V \<noteq> super; is_lub,P,E \<turnstile> e \<leadsto> e' \<rbrakk> \<Longrightarrow> is_lub,P,E \<turnstile> V:=e \<leadsto> V:=e'"
 | AnnoLAssField:
-  "\<lbrakk> E V = None; E this = \<lfloor>Class C\<rfloor>; P \<turnstile> C sees V:T (fm) in D; is_lub,P,E \<turnstile> e \<leadsto> e' \<rbrakk>
+  "\<lbrakk> E V = None; V \<noteq> super; E this = \<lfloor>Class C\<rfloor>; P \<turnstile> C sees V:T (fm) in D; is_lub,P,E \<turnstile> e \<leadsto> e' \<rbrakk>
    \<Longrightarrow> is_lub,P,E \<turnstile> V:=e \<leadsto> Var this\<bullet>V{D} := e'"
 | AnnoAAcc:
   "\<lbrakk> is_lub,P,E \<turnstile> a \<leadsto> a'; is_lub,P,E \<turnstile> i \<leadsto> i' \<rbrakk> \<Longrightarrow> is_lub,P,E \<turnstile> a\<lfloor>i\<rceil> \<leadsto> a'\<lfloor>i'\<rceil>"

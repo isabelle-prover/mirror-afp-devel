@@ -68,7 +68,18 @@ by(unfold_locales)(fastforce simp add: init_fin.simps convert_obs_initial_def ta
 
 end
 
-locale if_multithreaded = multithreaded +
+locale if_multithreaded_base = multithreaded_base +
+  constrains final :: "'x \<Rightarrow> bool" 
+  and r :: "('l,'t,'x,'m,'w,'o) semantics" 
+  and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
+
+sublocale if_multithreaded_base < "if"!: multithreaded_base
+  "init_fin_final"
+  "init_fin"
+  "map NormalAction \<circ> convert_RA"
+.
+
+locale if_multithreaded = if_multithreaded_base + multithreaded +
   constrains final :: "'x \<Rightarrow> bool" 
   and r :: "('l,'t,'x,'m,'w,'o) semantics" 
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
@@ -165,7 +176,7 @@ lemma init_fin_\<tau>moves_False:
   "\<tau>multithreaded.init_fin_\<tau>move (\<lambda>_ _ _. False) = (\<lambda>_ _ _. False)"
 by(simp add: fun_eq_iff \<tau>multithreaded.init_fin_\<tau>move.simps)
 
-locale if_\<tau>multithreaded = \<tau>multithreaded +
+locale if_\<tau>multithreaded = if_multithreaded_base + \<tau>multithreaded +
   constrains final :: "'x \<Rightarrow> bool" 
   and r :: "('l,'t,'x,'m,'w,'o) semantics" 
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
@@ -178,7 +189,7 @@ sublocale if_\<tau>multithreaded < "if"!: \<tau>multithreaded
   "init_fin_\<tau>move"
 .
 
-locale if_\<tau>multithreaded_wf = \<tau>multithreaded_wf +
+locale if_\<tau>multithreaded_wf = if_multithreaded_base + \<tau>multithreaded_wf +
   constrains final :: "'x \<Rightarrow> bool" 
   and r :: "('l,'t,'x,'m,'w,'o) semantics" 
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"

@@ -440,7 +440,7 @@ proof(atomize_elim)
         case RedJoin
         let ?ta = "\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>"
         from `ta = \<lbrace>Join (addr2thread_id a), IsInterrupted t False, ThreadJoin (addr2thread_id a)\<rbrace>` None False
-        have "t \<in> interrupts s" by(auto simp add: interrupt_actions_ok'_def)
+        have "t \<in> interrupts s" by(auto)
         hence "final_thread.actions_ok final s t ?ta"
           using None by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps)
         moreover obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta\<rightarrow>ext \<langle>va,h'\<rangle>" using RedJoinInterrupt RedJoin by auto
@@ -480,7 +480,7 @@ proof(atomize_elim)
         case (RedIsInterruptedFalse C)
         let ?ta' = "\<lbrace>IsInterrupted ?t_a True, ObsInterrupted ?t_a\<rbrace>"
         from RedIsInterruptedFalse have "?t_a \<in> interrupts s"
-          using False None by(auto simp add: interrupt_actions_ok'_def)
+          using False None by(auto)
         hence "final_thread.actions_ok final s t ?ta'"
           using None by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps)
         moreover obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>"
@@ -638,7 +638,7 @@ proof(atomize_elim)
         let ?ta' = "\<lbrace>IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>"
         from RedInterruptedFalse have "final_thread.actions_ok final s t ?ta'"
           using None False
-          by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps interrupt_actions_ok'_def)
+          by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps)
         moreover obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>"
           using RedInterruptedFalse RedInterruptedTrue by auto
         ultimately show ?thesis by blast

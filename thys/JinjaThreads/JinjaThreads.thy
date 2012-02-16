@@ -8,6 +8,7 @@ imports
   "Compiler/Compiler_Main"
   "MM/MM_Main"
   "Execute/Execute_Main"
+  "Examples/Examples_Main"
 begin
 
 end

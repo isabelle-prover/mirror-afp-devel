@@ -330,7 +330,7 @@ qed
 
 end
 
-context JVM_typesafe begin
+context JVM_conf_read begin
 
 lemma invariant3p_correct_jvm_state_mexecdT:
   assumes wf:  "wf_jvm_prog\<^sub>\<Phi> P"
@@ -367,9 +367,10 @@ theorem jvm_typesafe:
   shows "s' \<in> correct_jvm_state \<Phi>"
 by(rule correct_jvm_state_preserved[OF wf _ exec])(rule correct_jvm_state_initial[OF wf start])
 
-declare split_paired_Ex [simp del]
-
 end
+
+
+declare (in JVM_typesafe) split_paired_Ex [simp del]
 
 context JVM_heap_conf_base' begin 
 

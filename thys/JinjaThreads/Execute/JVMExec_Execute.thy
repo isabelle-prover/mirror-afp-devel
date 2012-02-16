@@ -53,17 +53,18 @@ lemma exec_instr_code [code]:
               in case ao of None \<Rightarrow> (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h', (stk, loc, C0, M0, pc) # frs)
                         | Some a \<Rightarrow> (\<lbrace>NewHeapElem a (Array_type T i)\<rbrace>, None, h', (Addr a # tl stk, loc, C0, M0, pc + 1) # frs)))}"
   "exec_instr ALoad P t h stk loc C0 M0 pc frs =
-   (let i = the_Intg (hd stk);
-        va = hd (tl stk);
-        a = the_Addr va;
-        len = alen_of_htype (the (typeof_addr h a))
+   (let va = hd (tl stk)
     in (if va = Null then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
-        else if i <s 0 \<or> int len \<le> sint i then
-             {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
-        else do {
-           v \<leftarrow> heap_read h a (ACell (nat (sint i)));
-           {(\<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>, None, h, (v # tl (tl stk), loc, C0, M0, pc + 1) # frs)}
-        }))"
+        else 
+          let i = the_Intg (hd stk);
+              a = the_Addr va;
+              len = alen_of_htype (the (typeof_addr h a))
+          in if i <s 0 \<or> int len \<le> sint i then
+               {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
+             else do {
+                 v \<leftarrow> heap_read h a (ACell (nat (sint i)));
+                 {(\<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>, None, h, (v # tl (tl stk), loc, C0, M0, pc + 1) # frs)}
+               }))"
   "exec_instr AStore P t h stk loc C0 M0 pc frs =
   (let ve = hd stk;
        vi = hd (tl stk);
