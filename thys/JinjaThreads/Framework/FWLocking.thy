@@ -118,10 +118,9 @@ qed
 
 lemma must_acquire_lock_contains_lock:
   "must_acquire_lock las \<Longrightarrow> Lock \<in> set las"
-apply(induct las)
- apply(simp)
-apply(case_tac a, auto)
-done
+proof(induct las)
+  case (Cons l las) thus ?case by(cases l) auto
+qed simp
 
 lemma must_acquire_lock_conv:
   "must_acquire_lock las = (case (filter (\<lambda>L. L = Lock \<or> L = Unlock) las) of [] \<Rightarrow> False | L#Ls \<Rightarrow> L = Lock)"
@@ -171,100 +170,55 @@ lemma lock_ok_las'_collect_locks'_may_lock:
   and mayl: "\<forall>l \<in> collect_locks' las. may_lock (ls\<^sub>f l) t"
   and l: "l \<in> collect_locks las"
   shows "may_lock (ls\<^sub>f l) t"
-proof -
-  show "may_lock (ls\<^sub>f l) t"
-  proof(cases "l \<in> collect_locks' las")
-    case True
-    thus ?thesis using mayl by auto
+proof(cases "l \<in> collect_locks' las")
+  case True thus ?thesis using mayl by auto
+next
+  case False
+  hence nmal: "\<not> must_acquire_lock (las\<^sub>f l)"
+    by(auto intro: collect_locks'I)
+  from l have locklasl: "Lock \<in> set (las\<^sub>f l)"
+    by(rule collect_locksD)
+  then obtain ys zs
+    where las: "las\<^sub>f l = ys @ Lock # zs"
+    and notin: "Lock \<notin> set ys"
+    by(auto dest: split_list_first)
+  from lot' have "lock_actions_ok' (ls\<^sub>f l) t (las\<^sub>f l)"
+    by(auto simp add: lock_ok_las'_def)
+  thus ?thesis
+  proof(induct rule: lock_actions_ok'E)
+    case ok
+    with locklasl show ?thesis
+      by -(rule lock_actions_ok_Lock_may_lock)
   next
-    case False
-    hence nmal: "\<not> must_acquire_lock (las\<^sub>f l)"
-      by(auto intro: collect_locks'I)
-    from l have locklasl: "Lock \<in> set (las\<^sub>f l)"
-      by(rule collect_locksD)
-    then obtain ys zs
-      where las: "las\<^sub>f l = ys @ Lock # zs"
-      and notin: "Lock \<notin> set ys"
+    case (Lock YS ZS)
+    note LAS = `las\<^sub>f l = YS @ Lock # ZS`
+    note lao = `lock_actions_ok (ls\<^sub>f l) t YS`
+    note nml = `\<not> may_lock (upd_locks (ls\<^sub>f l) t YS) t`
+    from LAS las nmal notin have "Unlock \<in> set YS"
+      by -(erule contrapos_np, auto simp add: must_acquire_lock_append append_eq_append_conv2 append_eq_Cons_conv)
+    then obtain ys' zs'
+      where YS: "YS = ys' @ Unlock # zs'"
+      and unlock: "Unlock \<notin> set ys'"
       by(auto dest: split_list_first)
-    from lot' have "lock_actions_ok' (ls\<^sub>f l) t (las\<^sub>f l)"
-      by(auto simp add: lock_ok_las'_def)
-    thus ?thesis
-    proof(induct rule: lock_actions_ok'E)
-      case ok
-      with locklasl show ?thesis
-	by -(rule lock_actions_ok_Lock_may_lock)
-    next
-      case (Lock YS ZS)
-      note LAS = `las\<^sub>f l = YS @ Lock # ZS`
-      note lao = `lock_actions_ok (ls\<^sub>f l) t YS`
-      note nml = `\<not> may_lock (upd_locks (ls\<^sub>f l) t YS) t`
-      from LAS las nmal notin have "Unlock \<in> set YS"
-	by -(erule contrapos_np, auto simp add: must_acquire_lock_append append_eq_append_conv2 append_eq_Cons_conv)
-      then obtain ys' zs'
-	where YS: "YS = ys' @ Unlock # zs'"
-	and unlock: "Unlock \<notin> set ys'"
-	by(auto dest: split_list_first)
-      from YS las LAS lao have lao': "lock_actions_ok (ls\<^sub>f l) t (ys' @ [Unlock])" by(auto)
-      hence "has_lock (upd_locks (ls\<^sub>f l) t ys') t" by simp
-      hence "may_lock (upd_locks (ls\<^sub>f l) t ys') t"
-	by(rule has_lock_may_lock)
-      moreover from lao' have "lock_actions_ok (ls\<^sub>f l) t ys'" by simp
-      ultimately show ?thesis by simp
-    qed
+    from YS las LAS lao have lao': "lock_actions_ok (ls\<^sub>f l) t (ys' @ [Unlock])" by(auto)
+    hence "has_lock (upd_locks (ls\<^sub>f l) t ys') t" by simp
+    hence "may_lock (upd_locks (ls\<^sub>f l) t ys') t"
+      by(rule has_lock_may_lock)
+    moreover from lao' have "lock_actions_ok (ls\<^sub>f l) t ys'" by simp
+    ultimately show ?thesis by simp
   qed
 qed
 
 lemma lock_actions_ok'_must_acquire_lock_lock_actions_ok:
   "\<lbrakk> lock_actions_ok' l t Ls; must_acquire_lock Ls \<longrightarrow> may_lock l t\<rbrakk> \<Longrightarrow> lock_actions_ok l t Ls"
-proof(induct Ls arbitrary: l)
-  case Nil thus ?case by(simp)
+proof(induct l t Ls rule: lock_actions_ok.induct)
+  case 1 thus ?case by simp
 next
-  case (Cons L LS l)
-  note IH = `\<And>l. \<lbrakk>lock_actions_ok' l t LS; must_acquire_lock LS \<longrightarrow> may_lock l t\<rbrakk> \<Longrightarrow> lock_actions_ok l t LS`
-  note laos' = `lock_actions_ok' l t (L # LS)`
-  note malml = `must_acquire_lock (L # LS) \<longrightarrow> may_lock l t`
-  show ?case
-  proof(cases L)
-    case Lock
-    with malml have mll: "may_lock l t" by(simp)
-    with Lock have "lock_action_ok l t L" by simp
-    moreover
-    with mll have "may_lock (upd_lock l t L) t" by simp
-    with laos' Lock mll have "lock_actions_ok (upd_lock l t L) t LS"
-      by -(rule IH, auto simp add: lock_actions_ok'_iff Cons_eq_append_conv)
-    ultimately show ?thesis by simp
-  next
-    case Unlock
-    with laos' have hl: "has_lock l t"
-      by(auto simp: lock_actions_ok'_iff Cons_eq_append_conv)
-    with Unlock have lao: "lock_action_ok l t L" by simp
-    moreover
-    from hl have mll: "may_lock l t" by(rule has_lock_may_lock)
-    with lao have "may_lock (upd_lock l t L) t" by simp
-    with laos' Unlock mll have "lock_actions_ok (upd_lock l t L) t LS"
-      by -(rule IH, auto simp add: lock_actions_ok'_iff Cons_eq_append_conv)
-    ultimately show ?thesis by simp
-  next
-    case UnlockFail
-    with laos' have nhl: "\<not> has_lock l t"
-      by(auto simp add: lock_actions_ok'_iff Cons_eq_append_conv)
-    from UnlockFail laos' have "lock_actions_ok' l t LS"
-      by(auto simp add: lock_actions_ok'_iff Cons_eq_append_conv)
-    moreover
-    from malml UnlockFail
-    have "must_acquire_lock LS \<longrightarrow> may_lock l t" by simp
-    ultimately have "lock_actions_ok l t LS" by(rule IH)
-    with UnlockFail nhl show ?thesis by(simp)
-  next
-    case ReleaseAcquire
-    moreover with `lock_actions_ok' l t (L # LS)`
-    have "lock_actions_ok' (release_all l t) t LS"
-      by(auto simp add: lock_actions_ok'_iff Cons_eq_append_conv)
-    moreover
-    from ReleaseAcquire `must_acquire_lock (L # LS) \<longrightarrow> may_lock l t`
-    have "must_acquire_lock LS \<longrightarrow> may_lock (release_all l t) t" by auto
-    ultimately show ?thesis by(auto intro: IH)
-  qed
+  case (2 l t L LS) thus ?case
+  proof(cases "L = Lock \<or> L = Unlock")
+    case True
+    with 2 show ?thesis by(auto simp add: lock_actions_ok'_iff Cons_eq_append_conv intro: has_lock_may_lock)
+  qed(cases L, auto)
 qed
 
 lemma lock_ok_las'_collect_locks_lock_ok_las:

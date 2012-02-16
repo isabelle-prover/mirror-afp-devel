@@ -88,7 +88,7 @@ end
 
 section {* JMM traces for Jinja semantics *}
 
-context multithreaded begin
+context multithreaded_base begin
 
 inductive_set \<E> :: "('l,'t,'x,'m,'w) state \<Rightarrow> ('t \<times> 'o) llist set"
   for \<sigma> :: "('l,'t,'x,'m,'w) state"
@@ -390,7 +390,46 @@ qed
 
 end
 
+locale heap_multithreaded_base =
+  heap_base
+    addr2thread_id thread_id2addr
+    empty_heap allocate typeof_addr heap_read heap_write 
+  +
+  mthr!: multithreaded_base final r convert_RA
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+
+  and empty_heap :: "'heap"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool" 
+  and final :: "'x \<Rightarrow> bool"
+  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and convert_RA :: "'addr released_locks \<Rightarrow> ('addr, 'thread_id) obs_event list"
+
+sublocale heap_multithreaded_base < mthr!: if_multithreaded_base final r convert_RA
+.
+
+context heap_multithreaded_base begin
+
+abbreviation \<E>_start ::
+  "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'md \<Rightarrow> 'addr val list \<Rightarrow> 'x) 
+  \<Rightarrow> 'md prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> status 
+  \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id) obs_event action) llist set"
+where
+  "\<E>_start f P C M vs status \<equiv> 
+  lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
+  mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))"
+
+end
+
 locale heap_multithreaded =
+  heap_multithreaded_base 
+    addr2thread_id thread_id2addr
+    empty_heap allocate typeof_addr heap_read heap_write
+    final r convert_RA
+  +
   heap
     addr2thread_id thread_id2addr
     empty_heap allocate typeof_addr heap_read heap_write 
@@ -415,10 +454,10 @@ sublocale heap_multithreaded < mthr!: if_multithreaded final r convert_RA
 by(unfold_locales)
 
 sublocale heap_multithreaded < "if"!: jmm_multithreaded
-  mthr.init_fin_final mthr.init_fin "map NormalAction \<circ> convert_RA"
+  mthr.init_fin_final mthr.init_fin "map NormalAction \<circ> convert_RA" P
 .
 
-lemma nth_concat_eqI:
+lemma nth_concat_eqI: -- "Move to Aux"
   "\<lbrakk> n = listsum (map length (take i xss)) + k; i < length xss; k < length (xss ! i); x = xss ! i ! k \<rbrakk>
   \<Longrightarrow> concat xss ! n = x"
 apply(induct xss arbitrary: n i k)
@@ -662,6 +701,8 @@ proof(rule thread_start_actions_okI)
   qed
 qed
 
+
+
 end
 
 text {* In the subsequent locales, @{text "convert_RA"} refers to @{term "convert_RA"} and is no longer a parameter! *}
@@ -800,7 +841,7 @@ next
 qed
 
 lemma \<E>_new_actions_for_unique:
-  assumes E: "E \<in> lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))"
+  assumes E: "E \<in> \<E>_start f P C M vs status"
   and a: "a \<in> new_actions_for P E adal"
   and a': "a' \<in> new_actions_for P E adal"
   shows "a = a'"
@@ -1668,12 +1709,10 @@ next
 qed
 
 lemma Ex_new_action_for:
-  fixes f C M vs status
-  defines "\<E> \<equiv> lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))"
   assumes wf: "wf_syscls P"
   and wfx_start: "ts_ok wfx (thr (start_state f P C M vs)) start_heap"
   and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
-  and E: "E \<in> \<E>"
+  and E: "E \<in> \<E>_start f P C M vs status"
   and read: "ra \<in> read_actions E"
   and aloc: "adal \<in> action_loc P E ra"
   and sc: "non_speculative P (\<lambda>_. {}) (ltake (enat ra) (lmap snd E))"
@@ -1692,7 +1731,7 @@ proof -
     by(cases "lnth E ra")(auto elim!: read_actions.cases actionsE)
 
   from E obtain E'' where E: "E = lappend (llist_of ?obs_prefix) E''"
-    and E'': "E'' \<in> mthr.if.\<E> ?start_state" by(auto simp add: \<E>_def)
+    and E'': "E'' \<in> mthr.if.\<E> ?start_state" by(auto)
   from E'' obtain E' where E': "E'' = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E')"
     and \<tau>Runs: "mthr.if.mthr.Runs ?start_state E'" by(rule mthr.if.\<E>.cases)
 
@@ -1888,7 +1927,7 @@ lemma executions_sc_hb:
   and "ts_ok wfx (thr (start_state f P C M vs)) start_heap"
   and "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
   shows
-  "executions_sc_hb (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))) P"
+  "executions_sc_hb (\<E>_start f P C M vs status) P"
   (is "executions_sc_hb ?E P")
 proof
   fix E a adal a'
@@ -2195,26 +2234,24 @@ proof -
 qed
 
 lemma executions_aux:
-  fixes status f C M vs
-  defines "\<E> \<equiv> lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
-                  mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))"
   assumes wf: "wf_syscls P"
   and wfx_start: "ts_ok wfx (thr (start_state f P C M vs)) start_heap" (is "ts_ok wfx (thr ?start_state) _")
   and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
-  shows "executions_aux \<E> P"
+  shows "executions_aux (\<E>_start f P C M vs status) P"
+  (is "executions_aux ?\<E> P")
 proof
   fix E a adal a'
-  assume "E \<in> \<E>" "a \<in> new_actions_for P E adal" "a' \<in> new_actions_for P E adal"
-  thus "a = a'" unfolding \<E>_def by(rule \<E>_new_actions_for_unique)
+  assume "E \<in> ?\<E>" "a \<in> new_actions_for P E adal" "a' \<in> new_actions_for P E adal"
+  thus "a = a'" by(rule \<E>_new_actions_for_unique)
 next
   fix E ws r adal
-  assume E: "E \<in> \<E>"
+  assume E: "E \<in> ?\<E>"
     and wf_exec: "P \<turnstile> (E, ws) \<surd>" 
     and read: "r \<in> read_actions E" "adal \<in> action_loc P E r"
     and sc: "\<And>a. \<lbrakk>a < r; a \<in> read_actions E\<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
 
-  interpret jmm!: executions_sc_hb \<E> P
-    using wf wfx_start ka unfolding \<E>_def by(rule executions_sc_hb)
+  interpret jmm!: executions_sc_hb ?\<E> P
+    using wf wfx_start ka by(rule executions_sc_hb)
 
   from E wf_exec sc
   have "ta_seq_consist P empty (ltake (enat r) (lmap snd E))"
@@ -2223,14 +2260,11 @@ next
     by(rule ta_seq_consist_into_non_speculative) simp
   with wf wfx_start ka E read
   have "\<exists>i. i \<in> new_actions_for P E adal \<and> i < r"
-    unfolding \<E>_def by(rule Ex_new_action_for)
+    by(rule Ex_new_action_for)
   thus "\<exists>i<r. i \<in> new_actions_for P E adal" by blast
 qed
 
 lemma drf:
-  fixes status f C M vs
-  defines "\<E> \<equiv> lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
-                  mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))"
   assumes cut_and_update:
     "if.cut_and_update
        (init_fin_lift_state status (start_state f P C M vs))
@@ -2240,16 +2274,15 @@ lemma drf:
   and ok: "start_heap_ok"
   and wfx_start: "ts_ok wfx (thr (start_state f P C M vs)) start_heap"
   and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
-  shows "drf \<E> P" (is "drf ?\<E> _")
+  shows "drf (\<E>_start f P C M vs status) P" (is "drf ?\<E> _")
 proof -
-  let ?\<E> = "lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))"
   interpret jmm!: executions_sc_hb "?\<E>" P
     using wf wfx_start ka by(rule executions_sc_hb)
 
   let ?n = "length ?start_heap_obs"
   let ?\<E>' = "lappend (llist_of ?start_heap_obs) ` mthr.if.\<E> ?start_state"
 
-  show ?thesis unfolding \<E>_def
+  show ?thesis 
   proof
     fix E ws r
     assume E: "E \<in> ?\<E>'"
@@ -2490,9 +2523,6 @@ end
 context known_addrs_typing begin 
 
 lemma sc_legal:
-  fixes status f C M vs
-  defines "\<E> \<equiv> lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
-                  mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))"
   assumes hb_completion:
     "if.hb_completion (init_fin_lift_state status (start_state f P C M vs)) (lift_start_obs start_tid start_heap_obs)"
     (is "if.hb_completion ?start_state ?start_heap_obs")
@@ -2500,36 +2530,35 @@ lemma sc_legal:
   and ok: "start_heap_ok"
   and wfx_start: "ts_ok wfx (thr (start_state f P C M vs)) start_heap"
   and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
-  shows "sc_legal \<E> P"
+  shows "sc_legal (\<E>_start f P C M vs status) P"
+  (is "sc_legal ?\<E> P")
 proof -
-  let ?\<E> = "lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` mthr.if.\<E> (init_fin_lift_state status (start_state f P C M vs))"
+  interpret jmm!: executions_sc_hb ?\<E> P
+    using wf wfx_start ka by(rule executions_sc_hb)
 
-  interpret jmm!: executions_sc_hb "\<E>" P
-    using wf wfx_start ka unfolding \<E>_def by(rule executions_sc_hb)
-
-  interpret jmm!: executions_aux "\<E>" P unfolding \<E>_def
+  interpret jmm!: executions_aux ?\<E> P
     using wf wfx_start ka by(rule executions_aux)
 
   show ?thesis
   proof
     fix E ws r
-    assume E: "E \<in> \<E>" and wf_exec: "P \<turnstile> (E, ws) \<surd>"
+    assume E: "E \<in> ?\<E>" and wf_exec: "P \<turnstile> (E, ws) \<surd>"
       and mrw: "\<And>a. \<lbrakk>a < r; a \<in> read_actions E\<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
 
 
     from E obtain E'' where E: "E = lappend (llist_of ?start_heap_obs) E''"
-      and E'': "E'' \<in> mthr.if.\<E> ?start_state" unfolding \<E>_def by auto
+      and E'': "E'' \<in> mthr.if.\<E> ?start_state" by auto
     
     from E'' obtain E' where E': "E'' = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E')"
       and \<tau>Runs: "mthr.if.mthr.Runs ?start_state E'"
       by(rule mthr.if.\<E>.cases)
     
-    show "\<exists>E'\<in>\<E>. \<exists>ws'. P \<turnstile> (E', ws') \<surd> \<and> ltake (enat r) E = ltake (enat r) E' \<and>
+    show "\<exists>E'\<in>?\<E>. \<exists>ws'. P \<turnstile> (E', ws') \<surd> \<and> ltake (enat r) E = ltake (enat r) E' \<and>
                          (\<forall>a\<in>read_actions E'. if a < r then ws' a = ws a else P,E' \<turnstile> ws' a \<le>hb a) \<and>
                          action_tid E' r = action_tid E r \<and>
                          (if r \<in> read_actions E then sim_action else op =) (action_obs E' r) (action_obs E r) \<and>
                          (r \<in> actions E \<longrightarrow> r \<in> actions E')"
-      (is "\<exists>E'\<in>\<E>. \<exists>ws'. _ \<and> ?same E' \<and> ?read E' ws' \<and> ?tid E' \<and> ?obs E' \<and> ?actions E'")
+      (is "\<exists>E'\<in>?\<E>. \<exists>ws'. _ \<and> ?same E' \<and> ?read E' ws' \<and> ?tid E' \<and> ?obs E' \<and> ?actions E'")
     proof(cases "r < length ?start_heap_obs")
       case True
 
@@ -2542,7 +2571,7 @@ proof -
         by(rule mthr.if.\<E>.intros)
         
       let ?E = "lappend (llist_of ?start_heap_obs) (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ttas))"
-      from \<E> have E': "?E \<in> \<E>" unfolding \<E>_def by blast
+      from \<E> have E': "?E \<in> ?\<E>" by blast
 
       from \<E> have tsa: "thread_start_actions_ok ?E" by(rule thread_start_actions_ok_init_fin)
 
@@ -2587,7 +2616,7 @@ proof -
         case False
         then obtain "?same E" "?read E ws" "?tid E" "?obs E" "?actions E"
           by(cases "llength E")(fastforce elim!: read_actions.cases simp add: actions_def split: split_if_asm)+
-        with wf_exec `E \<in> \<E>` show ?thesis by blast
+        with wf_exec `E \<in> ?\<E>` show ?thesis by blast
       next
         case True
         note r' = this
@@ -2615,7 +2644,7 @@ proof -
           unfolding E'_r_m by cases
 
         let ?vs = "mrw_values P empty (map snd ?start_heap_obs)"
-        from `E \<in> \<E>` wf_exec have "ta_seq_consist P empty (lmap snd (ltake (enat r) E))"
+        from `E \<in> ?\<E>` wf_exec have "ta_seq_consist P empty (lmap snd (ltake (enat r) E))"
           by(rule jmm.ta_seq_consist_mrwI)(simp add: mrw)
         hence ns: "non_speculative P (\<lambda>_. {}) (lmap snd (ltake (enat r) E))"
           by(rule ta_seq_consist_into_non_speculative) simp
@@ -2700,7 +2729,7 @@ proof -
 
         have \<E>: "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (lappend (ltake (enat r_m) E') (LCons (t_r, ta'_r) ttas'))) \<in> mthr.if.\<E> ?start_state"
           by(subst (4) llist_of_list_of[symmetric])(simp, blast intro: mthr.if.\<E>.intros mthr.if.mthr.Trsys_into_Runs \<sigma>_\<sigma>' mthr.if.mthr.Runs.Step red_ra' Runs')
-        hence \<E>': "?E \<in> \<E>" unfolding \<E>_def by blast
+        hence \<E>': "?E \<in> ?\<E>" by blast
 
         from \<E> have tsa: "thread_start_actions_ok ?E" by(rule thread_start_actions_ok_init_fin)
         also let ?E' = "lappend (llist_of (lift_start_obs start_tid start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))) @ map (Pair t_r) (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>))) (lappend (llist_of (map (Pair t_r) (drop r_n \<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub>))) (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ttas')))"
@@ -2750,7 +2779,7 @@ proof -
           have a_obs': "action_obs E a = NormalAction (ReadMem ad al v)" by simp
           
           have a_mrw: "P,E \<turnstile> a \<leadsto>mrw ws a" using a_r a' by(rule mrw)
-          with `E \<in> \<E>` wf_exec have ws_a_a: "ws a < a"
+          with `E \<in> ?\<E>` wf_exec have ws_a_a: "ws a < a"
             by(rule jmm.mrw_before)(auto intro: a_r less_trans mrw)
           hence [simp]: "ws a < r" using a_r by simp
 
@@ -3062,13 +3091,6 @@ proof(rule if.cut_and_updateI)
 
   have vs_vs'': "\<And>adal. Option.set (?vs' adal) \<subseteq> ?vs adal \<times> UNIV"
     by(rule w_values_mrw_values_conf)(auto simp add: vs'_def vs_def del: subsetI intro: w_values_mrw_values_conf)
-(*  from dom_vs' have dom_vs'': "dom ?vs' = {adal. ?vs adal \<noteq> {}}"
-    by(rule w_values_mrw_values_dom_eq_preserve) *)
-
-(*  from Red ns dom_vs dom_typeof_addr wt vs
-  have ka: "(\<Union>a \<in> if.known_addrs_state s' \<union> w_addrs ?vs. {(a, al) | al. \<exists>T. P,shr s' \<turnstile> a@al : T}) \<subseteq> {adal. ?vs adal \<noteq> {}}"
-    by(rule if_RedT_known_addrs_w_addrs_dom_vs)
-*)  
   from Red wt ns vs
   have wt': "ts_ok (init_fin_lift wfx) (thr s') (shr s')"
     by(rule if_RedT_non_speculative_invar)

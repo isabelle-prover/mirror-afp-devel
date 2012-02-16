@@ -7,6 +7,7 @@ header {* \isaheader{JMM Instantiation for J} *}
 theory DRF_J
 imports
   JMM_Common
+  JMM_J
   "../J/ProgressThreaded"
   "SC_Legal"
 begin
@@ -346,21 +347,6 @@ lemma WT_new_types_types: "P,E \<turnstile> e :: T \<Longrightarrow> new_types e
   and WTs_new_typess_types: "P,E \<turnstile> es [::] Ts \<Longrightarrow> new_typess es \<subseteq> types P"
 by(induct rule: WT_WTs.inducts) simp_all
 
-lemma assumes wf: "wf_J_prog P"
-  shows "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; new_types e \<subseteq> types P \<rbrakk> \<Longrightarrow> new_types e' \<subseteq> types P"
-  and "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; new_typess es \<subseteq> types P \<rbrakk> \<Longrightarrow> new_typess es' \<subseteq> types P"
-proof(induct rule: red_reds.inducts)
-  case (RedCall s a U M Ts T pns body D vs)
-  from wf `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
-  have "wf_mdecl wf_J_mdecl P D (M, Ts, T, \<lfloor>(pns, body)\<rfloor>)" by(rule sees_wf_mdecl)
-  then obtain T' where "P,[this \<mapsto> Class D, pns [\<mapsto>] Ts] \<turnstile> body :: T'" by(auto simp add: wf_mdecl_def)
-  hence "new_types body \<subseteq> types P" by(rule WT_new_types_types)
-  with RedCall show ?case by(simp add: new_types_blocks)
-next
-  case (RedCallExternal s a T M Ts Tr D vs ta va h' ta' e' s')
-  thus ?case by(cases va)(simp_all)
-qed(simp_all)
-
 end
 
 context J_heap_conf begin
@@ -550,8 +536,7 @@ lemma executions_sc:
   assumes wf: "wf_J_prog P"
   and wf_start: "wf_start_state P C M vs"
   and vs2: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
-  shows
-  "executions_sc_hb (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` red_mthr.if.\<E> P (init_fin_lift_state status (J_start_state P C M vs))) P"
+  shows "executions_sc_hb (J_\<E> P C M vs status) P"
   (is "executions_sc_hb ?E P")
 proof -
   from wf_start obtain Ts T pns body D where ok: "start_heap_ok"
@@ -580,7 +565,6 @@ qed
 
 end
 
-
 declare split_paired_Ex [simp del]
 
 context J_progress begin
@@ -594,20 +578,20 @@ lemma assumes hrt: "heap_read_typeable hconf P"
   and hconf: "hconf (shr s)"
   shows red_non_speculative_read:
   "\<lbrakk> P,t \<turnstile> \<langle>e, (shr s, xs)\<rangle> -ta\<rightarrow> \<langle>e', (h', xs')\<rangle>; \<exists>E T. P,E,shr s \<turnstile> e : T;
-    red_mthr.if.actions_ok s t ta; 
+    red_mthr.mthr.if.actions_ok s t ta; 
     I < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v; v' \<in> w_values P vs (map NormalAction (take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (a'', al'');
     non_speculative P vs (llist_of (map NormalAction (take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))) \<rbrakk>
   \<Longrightarrow> \<exists>ta' e'' xs'' h''. P,t \<turnstile> \<langle>e, (shr s, xs)\<rangle> -ta'\<rightarrow> \<langle>e'', (h'', xs'')\<rangle> \<and> 
-           red_mthr.if.actions_ok s t ta' \<and> 
+           red_mthr.mthr.if.actions_ok s t ta' \<and> 
            I < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take I \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
            \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
   and reds_non_speculative_read:
   "\<lbrakk> P,t \<turnstile> \<langle>es, (shr s, xs)\<rangle> [-ta\<rightarrow>] \<langle>es', (h', xs')\<rangle>; \<exists>E Ts. P,E,shr s \<turnstile> es [:] Ts;
-     red_mthr.if.actions_ok s t ta;
+     red_mthr.mthr.if.actions_ok s t ta;
     I < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v; v' \<in> w_values P vs (map NormalAction (take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (a'', al'');
     non_speculative P vs (llist_of (map NormalAction (take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))) \<rbrakk>
   \<Longrightarrow> \<exists>ta' es'' xs'' h''. P,t \<turnstile> \<langle>es, (shr s, xs)\<rangle> [-ta'\<rightarrow>] \<langle>es'', (h'', xs'')\<rangle> \<and> 
-           red_mthr.if.actions_ok s t ta' \<and> 
+           red_mthr.mthr.if.actions_ok s t ta' \<and> 
            I < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take I \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take I \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and> 
            \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 proof(induct e hxs\<equiv>"(shr s, xs)" ta e' hxs'\<equiv>"(h', xs')" 
@@ -621,7 +605,7 @@ proof(induct e hxs\<equiv>"(shr s, xs)" ta e' hxs'\<equiv>"(h', xs')"
   from v' vs adal have "P,shr s \<turnstile> v' :\<le> U" by(auto dest!: vs_confD dest: addr_loc_type_fun)  
   with hrt adal have "heap_read (shr s) a (ACell (nat (sint i))) v'" using hconf by(rule heap_read_typeableD)
   with `typeof_addr (shr s) a = \<lfloor>Array_type U n\<rfloor>` `0 <=s i` `sint i < int n` 
-    `red_mthr.if.actions_ok s t \<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>`
+    `red_mthr.mthr.if.actions_ok s t \<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>`
   show ?case by(fastforce intro: red_reds.RedAAcc)
 next
   case (RedFAcc a D F v)
@@ -631,13 +615,13 @@ next
   with RedFAcc have adal: "P,shr s \<turnstile> a@CField D F : T" by(auto 4 4 intro: addr_loc_type.intros)
   from v' vs adal have "P,shr s \<turnstile> v' :\<le> T" by(auto dest!: vs_confD dest: addr_loc_type_fun)  
   with hrt adal have "heap_read (shr s) a (CField D F) v'" using hconf by(rule heap_read_typeableD)
-  with `red_mthr.if.actions_ok s t \<lbrace>ReadMem a (CField D F) v\<rbrace>`
+  with `red_mthr.mthr.if.actions_ok s t \<lbrace>ReadMem a (CField D F) v\<rbrace>`
   show ?case by(fastforce intro: red_reds.RedFAcc)
 next
   case (RedCallExternal a U M Ts Tr D ps ta' va h' ta e')
   from `P,t \<turnstile> \<langle>a\<bullet>M(ps),hp (shr s, xs)\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>`
   have red: "P,t \<turnstile> \<langle>a\<bullet>M(ps),shr s\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by simp
-  from RedCallExternal have aok: "red_mthr.if.actions_ok s t ta'" by simp
+  from RedCallExternal have aok: "red_mthr.mthr.if.actions_ok s t ta'" by simp
   from RedCallExternal have "I < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
     and "\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v"
     and "v' \<in> w_values P vs (map NormalAction (take I \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)) (a'', al'')"
@@ -771,11 +755,11 @@ lemma non_speculative_read:
   (is "red_mthr.if.non_speculative_read ?start_state ?start_vs")
 proof(rule red_mthr.if.non_speculative_readI)
   fix ttas s' t x ta x' m' i ad al v v'
-  assume \<tau>Red: "red_mthr.if.RedT P ?start_state ttas s'"
+  assume \<tau>Red: "red_mthr.mthr.if.RedT P ?start_state ttas s'"
     and sc: "non_speculative P ?start_vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
     and ts't: "thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor>"
     and red: "red_mthr.init_fin P t (x, shr s') ta (x', m')"
-    and aok: "red_mthr.if.actions_ok s' t ta"
+    and aok: "red_mthr.mthr.if.actions_ok s' t ta"
     and i: "i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
     and ns': "non_speculative P (w_values P ?start_vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of (take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
     and read: "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v)"
@@ -826,7 +810,7 @@ proof(rule red_mthr.if.non_speculative_readI)
     and hconf: "hconf (shr s')"
     by(auto dest!: ts_okD simp add: sconf_type_ok_def sconf_def type_ok_def)
 
-  have aok': "red_mthr.if.actions_ok s' t ta'" using aok unfolding ta by simp
+  have aok': "red_mthr.mthr.if.actions_ok s' t ta'" using aok unfolding ta by simp
 
   from i read v' ta ns' have "i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>" and "\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i = ReadMem ad al v" 
     and "v' \<in> w_values P ?vs' (map NormalAction (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)) (ad, al)"
@@ -836,7 +820,7 @@ proof(rule red_mthr.if.non_speculative_readI)
   from red_non_speculative_read[OF hrt vs' hconf red' _ aok' this] wte
   obtain ta'' e'' xs'' h''
     where red'': "P,t \<turnstile> \<langle>e, (shr s', xs)\<rangle> -ta''\<rightarrow> \<langle>e'', (h'', xs'')\<rangle>"
-    and aok'': "red_mthr.if.actions_ok s' t ta''"
+    and aok'': "red_mthr.mthr.if.actions_ok s' t ta''"
     and i'': "i < length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>"
     and eq'': "take i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
     and read'': "\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! i = ReadMem ad al v'"
@@ -846,14 +830,14 @@ proof(rule red_mthr.if.non_speculative_readI)
   let ?ta' = "convert_TA_initial (convert_obs_initial ta'')"
   from red'' have "red_mthr.init_fin P t (x, shr s') ?ta' (?x', h'')"
     unfolding x by -(rule red_mthr.init_fin.NormalAction, simp)
-  moreover from aok'' have "red_mthr.if.actions_ok s' t ?ta'" by simp
+  moreover from aok'' have "red_mthr.mthr.if.actions_ok s' t ?ta'" by simp
   moreover from i'' have "i < length \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub>" by simp
   moreover from eq'' have "take i \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" unfolding ta by(simp add: take_map)
   moreover from read'' i'' have "\<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v')" by(simp add: nth_map)
   moreover from len'' have "length \<lbrace>?ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" unfolding ta by simp
   ultimately
   show "\<exists>ta' x'' m''. red_mthr.init_fin P t (x, shr s') ta' (x'', m'') \<and>
-                      red_mthr.if.actions_ok s' t ta' \<and>
+                      red_mthr.mthr.if.actions_ok s' t ta' \<and>
                       i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<and> take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = take i \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<and>
                       \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v') \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
     by blast
@@ -905,8 +889,7 @@ lemma J_drf:
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
-  shows "drf (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
-              red_mthr.if.\<E> P (init_fin_lift_state status (J_start_state P C M vs))) P"
+  shows "drf (J_\<E> P C M vs status) P"
 proof -
   from wf_start obtain Ts T pns body D where ok: "start_heap_ok"
     and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
@@ -929,8 +912,7 @@ lemma J_sc_legal:
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
-shows "sc_legal (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
-                red_mthr.if.\<E> P (init_fin_lift_state status (J_start_state P C M vs))) P"
+  shows "sc_legal (J_\<E> P C M vs status) P"
 proof -
   from wf_start obtain Ts T pns body D where ok: "start_heap_ok"
     and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
@@ -972,8 +954,7 @@ lemma J_jmm_consistent:
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
-  shows "jmm_consistent (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
-                         red_mthr.if.\<E> P (init_fin_lift_state status (J_start_state P C M vs))) P"
+  shows "jmm_consistent (J_\<E> P C M vs status) P"
   (is "jmm_consistent ?\<E> P")
 proof -
   interpret drf "?\<E>" P using assms by(rule J_drf)
@@ -986,9 +967,7 @@ lemma J_ex_sc_exec:
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
-  shows "\<exists>E ws. E \<in> lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
-                    red_mthr.if.\<E> P (init_fin_lift_state status (J_start_state P C M vs)) \<and> 
-                P \<turnstile> (E, ws) \<surd> \<and> sequentially_consistent P (E, ws)"
+  shows "\<exists>E ws. E \<in> J_\<E> P C M vs status \<and> P \<turnstile> (E, ws) \<surd> \<and> sequentially_consistent P (E, ws)"
   (is "\<exists>E ws. _ \<in> ?\<E> \<and> _")
 proof -
   interpret jmm!: executions_sc_hb ?\<E> P using assms by -(rule executions_sc)
@@ -997,12 +976,12 @@ proof -
   let ?start_mrw = "mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs))"
 
   from red_mthr.if.sequential_completion_Runs[OF red_mthr.if.cut_and_update_imp_sc_completion[OF J_cut_and_update[OF assms]] ta_seq_consist_convert_RA]
-  obtain ttas where Red: "red_mthr.if.mthr.Runs P ?start_state ttas"
+  obtain ttas where Red: "red_mthr.mthr.if.mthr.Runs P ?start_state ttas"
     and sc: "ta_seq_consist P ?start_mrw (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))" by blast
   let ?E = "lappend (llist_of (lift_start_obs start_tid start_heap_obs)) (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ttas))"
-  from Red have "?E \<in> ?\<E>" by(blast intro: red_mthr.if.\<E>.intros)
+  from Red have "?E \<in> ?\<E>" by(blast intro: red_mthr.mthr.if.\<E>.intros)
   moreover from Red have tsa: "thread_start_actions_ok ?E"
-    by(blast intro: red_mthr.thread_start_actions_ok_init_fin red_mthr.if.\<E>.intros)
+    by(blast intro: red_mthr.thread_start_actions_ok_init_fin red_mthr.mthr.if.\<E>.intros)
   from sc have "ta_seq_consist P empty (lmap snd ?E)"
     unfolding lmap_lappend_distrib lmap_lconcat lmap_compose[symmetric] split_def o_def lmap_llist_of map_map snd_conv
     by(simp add: ta_seq_consist_lappend ta_seq_consist_start_heap_obs)
@@ -1016,11 +995,9 @@ theorem J_consistent:
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
-  shows "\<exists>E ws. legal_execution P (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
-                    red_mthr.if.\<E> P (init_fin_lift_state status (J_start_state P C M vs))) (E, ws)"
+  shows "\<exists>E ws. legal_execution P (J_\<E> P C M vs status) (E, ws)"
 proof -
-  let ?\<E> = "lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` 
-                    red_mthr.if.\<E> P (init_fin_lift_state status (J_start_state P C M vs))"
+  let ?\<E> = "J_\<E> P C M vs status"
   interpret sc_legal "?\<E>" P using assms by(rule J_sc_legal)
   from J_ex_sc_exec[OF assms]
   obtain E ws where "E \<in> ?\<E>" "P \<turnstile> (E, ws) \<surd>" "sequentially_consistent P (E, ws)" by blast

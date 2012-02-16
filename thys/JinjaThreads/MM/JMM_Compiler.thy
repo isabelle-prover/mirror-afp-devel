@@ -7,7 +7,8 @@
 header {* \isaheader{Compiler correctness for the JMM} *}
 
 theory JMM_Compiler imports
-  "JMM_Framework"
+  JMM_J
+  JMM_JVM
   "../Compiler/Correctness" 
   "../Framework/FWBisimLift"
 begin
@@ -69,10 +70,12 @@ by(simp add: fun_eq_iff is_justified_by.simps)
 lemma legal_execution_compP: "legal_execution (compP f P) = legal_execution P"
 by(simp add: fun_eq_iff legal_execution_def)
 
-lemma most_recent_write_for_compP [simp]: "most_recent_write_for (compP f P) = most_recent_write_for P"
+lemma most_recent_write_for_compP [simp]: 
+  "most_recent_write_for (compP f P) = most_recent_write_for P"
 by(simp add: fun_eq_iff most_recent_write_for.simps)
 
-lemma sequentially_consistent_compP [simp]: "sequentially_consistent (compP f P) = sequentially_consistent P"
+lemma sequentially_consistent_compP [simp]:
+  "sequentially_consistent (compP f P) = sequentially_consistent P"
 by(simp add: sequentially_consistent_def split_beta)
 
 lemma conflict_compP [simp]: "conflict (compP f P) = conflict P"
@@ -96,8 +99,10 @@ where
    FWbisimulation_base.mbisim Red1_execd.init_fin_bisim Red1_execd.init_fin_bisim_wait"
 
 definition if_tlsimJ2JVM ::
-  "('thread_id \<times> ('addr, 'thread_id, status \<times> 'addr expr \<times> 'addr locals, 'heap, 'addr, ('addr, 'thread_id) obs_event action) thread_action,
-    'thread_id \<times> ('addr, 'thread_id, status \<times> 'addr jvm_thread_state, 'heap, 'addr, ('addr, 'thread_id) obs_event action) thread_action) bisim"
+  "('thread_id \<times> ('addr, 'thread_id, status \<times> 'addr expr \<times> 'addr locals,
+                  'heap, 'addr, ('addr, 'thread_id) obs_event action) thread_action,
+    'thread_id \<times> ('addr, 'thread_id, status \<times> 'addr jvm_thread_state,
+                  'heap, 'addr, ('addr, 'thread_id) obs_event action) thread_action) bisim"
 where
   "if_tlsimJ2JVM = 
    FWbisimulation_base.mta_bisim red_red0.init_fin_bisim \<circ>\<^isub>B 
@@ -121,8 +126,9 @@ context J_JVM_conf_read begin
 
 theorem if_bisimJ2JVM_weak_bisim:
   assumes wf: "wf_J_prog P"
-  shows "delay_bisimulation_diverge_final red_mthr.if.redT execd_mthr.if.redT if_bisimJ2JVM if_tlsimJ2JVM 
-                                    red_mthr.if.m\<tau>move execd_mthr.if.m\<tau>move red_mthr.if.mfinal execd_mthr.if.mfinal"
+  shows "delay_bisimulation_diverge_final
+    (red_mthr.mthr.if.redT P) (execd_mthr.mthr.if.redT (J2JVM P)) if_bisimJ2JVM if_tlsimJ2JVM 
+    red_mthr.if.m\<tau>move execd_mthr.if.m\<tau>move red_mthr.mthr.if.mfinal execd_mthr.mthr.if.mfinal"
 unfolding if_bisimJ2JVM_def if_tlsimJ2JVM_def J2JVM_def o_apply
 apply(rule delay_bisimulation_diverge_final_compose)
  apply(rule FWdelay_bisimulation_diverge.mthr_delay_bisimulation_diverge_final)
@@ -146,7 +152,8 @@ done
 lemma if_bisimJ2JVM_start:
   assumes wf: "wf_J_prog P"
   and wf_start: "wf_start_state P C M vs"
-  shows "if_bisimJ2JVM (init_fin_lift_state Running (J_start_state P C M vs)) (init_fin_lift_state Running (JVM_start_state (J2JVM P) C M vs))"
+  shows "if_bisimJ2JVM (init_fin_lift_state Running (J_start_state P C M vs))
+                       (init_fin_lift_state Running (JVM_start_state (J2JVM P) C M vs))"
 using assms
 unfolding if_bisimJ2JVM_def J2JVM_def o_apply
 apply(intro bisim_composeI)
@@ -167,24 +174,23 @@ lemma red_Runs_eq_mexecd_Runs:
   and comps: "cs \<equiv> init_fin_lift_state Running (JVM_start_state (J2JVM P) C M vs)"
   assumes wf: "wf_J_prog P"
   and wf_start: "wf_start_state P C M vs"
-  shows "red_mthr.if.\<E> s = execd_mthr.if.\<E> cs"
-  (is "?lhs = ?rhs")
+  shows "red_mthr.mthr.if.\<E> P s = execd_mthr.mthr.if.\<E> (J2JVM P) cs"
 proof -
   from wf wf_start have bisim: "if_bisimJ2JVM s cs"
     unfolding s comps by(rule if_bisimJ2JVM_start)
 
   interpret divfin!: delay_bisimulation_diverge_final 
-    "red_mthr.if.redT" 
-    "execd_mthr.if.redT"
+    "red_mthr.mthr.if.redT P" 
+    "execd_mthr.mthr.if.redT (J2JVM P)"
     "if_bisimJ2JVM"
     "if_tlsimJ2JVM"
     "red_mthr.if.m\<tau>move"
     "execd_mthr.if.m\<tau>move"
-    "red_mthr.if.mfinal"
-    "execd_mthr.if.mfinal"
+    "red_mthr.mthr.if.mfinal"
+    "execd_mthr.mthr.if.mfinal"
     using wf by(rule if_bisimJ2JVM_weak_bisim)
   
-  show ?thesis
+  show ?thesis (is "?lhs = ?rhs")
   proof(intro equalityI subsetI)
     fix E
     assume "E \<in> ?lhs"
@@ -198,7 +204,8 @@ proof -
     let ?E = "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))"
     from tlsim have "llist_all2 if_tlsimJ2JVM (llist_of_tllist E') (llist_of_tllist E'')"
       by(rule tllist_all2D_llist_all2_llist_of_tllist)
-    hence "llist_all2 (op =) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))"
+    hence "llist_all2 (op =) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))
+                             (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))"
       unfolding llist_all2_lmap1 llist_all2_lmap2
       by(rule llist_all2_mono)(auto simp add: if_tlsimJ2JVM_def FWbisimulation_base.mta_bisim_def ta_bisim_def)
     hence "?E = E" unfolding llist_all2_eq E by simp
@@ -216,7 +223,8 @@ proof -
     let ?E = "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))"
     from tlsim have "llist_all2 if_tlsimJ2JVM (llist_of_tllist E'') (llist_of_tllist E')"
       by(rule tllist_all2D_llist_all2_llist_of_tllist)
-    hence "llist_all2 (op =) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'')) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
+    hence "llist_all2 (op =) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))
+                             (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
       unfolding llist_all2_lmap1 llist_all2_lmap2
       by(rule llist_all2_mono)(auto simp add: if_tlsimJ2JVM_def FWbisimulation_base.mta_bisim_def ta_bisim_def)
     hence "?E = E" unfolding llist_all2_eq E by simp
@@ -227,21 +235,21 @@ qed
 
 lemma red_\<E>_eq_mexecd_\<E>:
   "\<lbrakk> wf_J_prog P; wf_start_state P C M vs \<rbrakk>
-  \<Longrightarrow> lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` red_mthr.if.\<E> (init_fin_lift_state Running (J_start_state P C M vs)) = 
-     lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` execd_mthr.if.\<E> (init_fin_lift_state Running (JVM_start_state (J2JVM P) C M vs))"
+  \<Longrightarrow> J_\<E> P C M vs Running = JVMd_\<E> (J2JVM P) C M vs Running"
 by(simp only: red_Runs_eq_mexecd_Runs)
 
 theorem J2JVM_jmm_correct:
   assumes wf: "wf_J_prog P"
   and wf_start: "wf_start_state P C M vs"
-  shows "legal_execution P (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` red_mthr.if.\<E> (init_fin_lift_state Running (J_start_state P C M vs))) (E, ws) \<longleftrightarrow> legal_execution (J2JVM P) (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` execd_mthr.if.\<E> (init_fin_lift_state Running (JVM_start_state (J2JVM P) C M vs))) (E, ws)"
+  shows "legal_execution P (J_\<E> P C M vs Running) (E, ws) \<longleftrightarrow> 
+         legal_execution (J2JVM P) (JVMd_\<E> (J2JVM P) C M vs Running) (E, ws)"
 by(simp only: red_\<E>_eq_mexecd_\<E>[OF assms] J2JVM_def o_apply compP1_def compP2_def legal_execution_compP)
-
 
 theorem J2JVM_jmm_correctly_synchronized:
   assumes wf: "wf_J_prog P"
   and wf_start: "wf_start_state P C M vs"
-  shows "correctly_synchronized (J2JVM P) (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` execd_mthr.if.\<E> (init_fin_lift_state Running (JVM_start_state (J2JVM P) C M vs))) \<longleftrightarrow> correctly_synchronized P (lappend (llist_of (lift_start_obs start_tid start_heap_obs)) ` red_mthr.if.\<E> (init_fin_lift_state Running (J_start_state P C M vs)))"
+  shows "correctly_synchronized (J2JVM P) (JVMd_\<E> (J2JVM P) C M vs Running) \<longleftrightarrow> 
+         correctly_synchronized P (J_\<E> P C M vs Running)"
 by(simp only: red_\<E>_eq_mexecd_\<E>[OF assms] J2JVM_def o_apply compP1_def compP2_def correctly_synchronized_compP)
 
 end

@@ -135,9 +135,7 @@ by(induct n arbitrary: l, auto)
 
 lemma may_lock_unlock_lock_conv [simp]:
   "has_lock l t \<Longrightarrow> may_lock (unlock_lock l) t = may_lock l t"
-apply(cases l, auto split: split_if_asm elim!: may_lock.cases intro: may_lock.intros split: nat.split_asm)
-apply(case_tac n, auto intro: may_lock.intros)
-done
+by(cases l)(auto split: split_if_asm nat.splits elim!: may_lock.cases intro: may_lock.intros)
 
 lemma may_lock_release_all_conv [simp]:
   "may_lock (release_all l t) t = may_lock l t"
@@ -154,19 +152,15 @@ by(auto elim!: may_lock.cases)
 
 lemma has_locks_unlock_lock_conv [simp]:
   "has_lock l t \<Longrightarrow> has_locks (unlock_lock l) t = has_locks l t - 1"
-apply(cases l, auto)
-apply(case_tac b, auto)
-done
+by(cases l)(auto split: nat.split)
 
 lemma has_lock_lock_lock_unlock_lock_id [simp]:
   "has_lock l t \<Longrightarrow> lock_lock (unlock_lock l) t = l"
-apply(cases l, auto split: split_if_asm)
-apply(case_tac b, auto)
-done
+by(cases l)(auto split: split_if_asm nat.split)
 
 lemma may_lock_unlock_lock_lock_lock_id [simp]:
   "may_lock l t \<Longrightarrow> unlock_lock (lock_lock l t) = l"
-by(cases l, auto)
+by(cases l) auto
 
 
 lemma may_lock_has_locks_0:
@@ -214,28 +208,11 @@ qed
 
 lemma has_lock_upd_lock_implies_has_lock:
   "\<lbrakk> has_lock (upd_lock l t L) t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_lock l t'"
-apply(cases l)
- apply(cases L, auto)
-apply(cases L, auto split: split_if_asm)
-apply(case_tac b, auto split: split_if_asm)
-done
+by(cases l L rule: option.exhaust[case_product lock_action.exhaust])(auto split: split_if_asm nat.split_asm)
 
 lemma has_lock_upd_locks_implies_has_lock:
-  assumes ul: "has_lock (upd_locks l t Ls) t'"
-  and tt': "t \<noteq> t'"
-  shows "has_lock l t'"
-using ul
-proof(induct Ls arbitrary: l)
-  case Nil thus ?case by simp
-next
-  case (Cons L Ls l)
-  from `has_lock (upd_locks l t (L # Ls)) t'`
-  have "has_lock (upd_locks (upd_lock l t L) t Ls) t'" by simp
-  with `\<And>l. has_lock (upd_locks l t Ls) t' \<Longrightarrow> has_lock l t'`
-  have "has_lock (upd_lock l t L) t'" .
-  with tt' show ?case
-    by -(rule has_lock_upd_lock_implies_has_lock)
-qed
+  "\<lbrakk> has_lock (upd_locks l t Ls) t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_lock l t'"
+by(induct l t Ls rule: upd_locks.induct)(auto intro: has_lock_upd_lock_implies_has_lock)
 
 (* Preconditions for lock actions *)
 
@@ -251,7 +228,7 @@ fun lock_actions_ok :: "'t lock \<Rightarrow> 't \<Rightarrow> lock_action list 
 
 lemma lock_actions_ok_append [simp]:
   "lock_actions_ok l t (Ls @ Ls') \<longleftrightarrow> lock_actions_ok l t Ls \<and> lock_actions_ok (upd_locks l t Ls) t Ls'"
-by(induct Ls arbitrary: l, auto)
+by(induct Ls arbitrary: l) auto
 
 lemma not_lock_action_okE [consumes 1, case_names Lock Unlock UnlockFail]:
   "\<lbrakk> \<not> lock_action_ok l t L;
@@ -259,109 +236,43 @@ lemma not_lock_action_okE [consumes 1, case_names Lock Unlock UnlockFail]:
      \<lbrakk> L = Unlock; \<not> has_lock l t \<rbrakk> \<Longrightarrow> Q;
      \<lbrakk> L = UnlockFail; has_lock l t \<rbrakk> \<Longrightarrow> Q\<rbrakk>
   \<Longrightarrow> Q"
-by(cases L, auto)
-
-lemma not_lock_actions_ok_conv:
-  "\<And>l. (\<not> lock_actions_ok l t las) = (\<exists>xs L ys. las = xs @ L # ys \<and> lock_actions_ok l t xs \<and> \<not> lock_action_ok (upd_locks l t xs) t L)"
-  (is "\<And>l. ?lhs l = ?rhs l")
-proof(induct las arbitrary: l)
-  case Nil thus ?case by(simp)
-next
-  case (Cons la las l)
-  note IH = `(\<not> lock_actions_ok (upd_lock l t la) t las) =
-              (\<exists>xs L ys. las = xs @ L # ys \<and> lock_actions_ok (upd_lock l t la) t xs 
-                      \<and> \<not> lock_action_ok (upd_locks (upd_lock l t la) t xs) t L)`
-  show ?case
-  proof(cases "lock_action_ok l t la")
-    case True
-    hence "(\<not> lock_actions_ok l t (la # las)) = (\<not> lock_actions_ok (upd_lock l t la) t las)"
-      by auto
-    also note IH
-    also have "(\<exists>xs L ys. las = xs @ L # ys \<and> lock_actions_ok (upd_lock l t la) t xs \<and> \<not> lock_action_ok (upd_locks (upd_lock l t la) t xs) t L) = 
-               (\<exists>xs L ys. la # las = xs @ L # ys \<and> lock_actions_ok l t xs \<and> \<not> lock_action_ok (upd_locks l t xs) t L)"
-    proof(rule iffI)
-      assume "\<exists>xs L ys. las = xs @ L # ys \<and> lock_actions_ok (upd_lock l t la) t xs \<and> \<not> lock_action_ok (upd_locks (upd_lock l t la) t xs) t L"
-      then obtain xs L ys
-	where "las = xs @ L # ys"
-	and "lock_actions_ok (upd_lock l t la) t xs"
-	and "\<not> lock_action_ok (upd_locks (upd_lock l t la) t xs) t L"
-	by blast
-      with True 
-      have "(la # las) = (la # xs) @ L # ys"
-	and "lock_actions_ok l t (la # xs)"
-	and "\<not> lock_action_ok (upd_locks l t (la # xs)) t L"
-	by(auto)
-      thus "\<exists>xs L ys. la # las = xs @ L # ys \<and> lock_actions_ok l t xs \<and> \<not> lock_action_ok (upd_locks l t xs) t L"
-	by blast
-    next
-      assume "\<exists>xs L ys. la # las = xs @ L # ys \<and> lock_actions_ok l t xs \<and> \<not> lock_action_ok (upd_locks l t xs) t L"
-      then obtain xs L ys
-	where "la # las = xs @ L # ys"
-	and "lock_actions_ok l t xs"
-	and "\<not> lock_action_ok (upd_locks l t xs) t L"
-	by blast
-      moreover
-      with True have "xs \<noteq> []" by(auto)
-      then obtain la' xs' where "xs = la' # xs'" by(cases xs, auto)
-      ultimately
-      have "las = xs' @ L # ys"
-	and "lock_actions_ok (upd_lock l t la) t xs'"
-	and "\<not> lock_action_ok (upd_locks (upd_lock l t la) t xs') t L"
-	by(auto)
-      thus "\<exists>xs L ys. las = xs @ L # ys \<and> lock_actions_ok (upd_lock l t la) t xs \<and> \<not> lock_action_ok (upd_locks (upd_lock l t la) t xs) t L" by blast
-    qed
-    finally show ?thesis .
-  next
-    case False
-    hence "\<not> lock_actions_ok l t (la # las)" by simp
-    moreover
-    with False have "la # las = [] @ la # las"
-      and "lock_actions_ok l t []"
-      and "\<not> lock_action_ok (upd_locks l t []) t la"
-      by (auto)
-    ultimately show ?thesis
-      by blast
-  qed
-qed
-
+by(cases L) auto
 
 lemma may_lock_upd_lock_conv [simp]:
   "lock_action_ok l t L \<Longrightarrow> may_lock (upd_lock l t L) t = may_lock l t"
-by(cases L, auto)
+by(cases L) auto
 
 lemma may_lock_upd_locks_conv [simp]:
   "lock_actions_ok l t Ls \<Longrightarrow> may_lock (upd_locks l t Ls) t = may_lock l t"
-by(induct Ls arbitrary: l, auto)
+by(induct l t Ls rule: upd_locks.induct) simp_all
 
 lemma lock_actions_ok_Lock_may_lock:
   "\<lbrakk> lock_actions_ok l t Ls; Lock \<in> set Ls \<rbrakk> \<Longrightarrow> may_lock l t"
-by(induct Ls arbitrary: l, fastforce+)
+by(induct l t Ls rule: lock_actions_ok.induct) auto
 
 lemma has_locks_lock_lock_conv' [simp]:
   "\<lbrakk> may_lock l t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_locks (lock_lock l t') t = has_locks l t"
-by(cases l, auto elim: may_lock.cases)
+by(cases l)(auto elim: may_lock.cases)
 
 lemma has_locks_unlock_lock_conv' [simp]:
   "\<lbrakk> has_lock l t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_locks (unlock_lock l) t = has_locks l t"
-apply(cases l, auto split: split_if_asm)
-apply(case_tac b, auto)
-done
+by(cases l)(auto split: split_if_asm nat.split)
 
 lemma has_locks_release_all_conv' [simp]:
   "t \<noteq> t' \<Longrightarrow> has_locks (release_all l t') t = has_locks l t"
-by(cases l, auto)
+by(cases l) auto
 
 lemma has_locks_acquire_locks_conv' [simp]:
   "\<lbrakk> may_lock l t; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_locks (acquire_locks l t n) t' = has_locks l t'"
-by(induct n arbitrary: l, auto)
+by(induct l t n rule: acquire_locks.induct) simp_all
 
 lemma lock_action_ok_has_locks_upd_lock_eq_has_locks [simp]:
   "\<lbrakk> lock_action_ok l t' L; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_locks (upd_lock l t' L) t = has_locks l t"
-by(cases L, auto)
+by(cases L) auto
 
 lemma lock_actions_ok_has_locks_upd_locks_eq_has_locks [simp]:
   "\<lbrakk> lock_actions_ok l t' Ls; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_locks (upd_locks l t' Ls) t = has_locks l t"
-by(induct Ls arbitrary: l, auto)
+by(induct l t' Ls rule: upd_locks.induct) simp_all
 
 lemma has_lock_acquire_locks_implies_has_lock:
   "\<lbrakk> has_lock (acquire_locks l t n) t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_lock l t'"
@@ -373,38 +284,6 @@ lemma has_lock_has_lock_acquire_locks:
   unfolding acquire_locks_conv
   by(auto)
 
-lemma lock_actions_ok_not_may_lock_upd_lock:
-  "\<lbrakk> lock_actions_ok L t las; \<not> may_lock (upd_locks L t las) t \<rbrakk> \<Longrightarrow> set las \<subseteq> { UnlockFail, ReleaseAcquire }"
-proof(induct las arbitrary: L)
-  case Nil thus ?case by auto
-next
-  case (Cons LA LAS l)
-  note IH = `\<And>L. \<lbrakk>lock_actions_ok L t LAS; \<not> may_lock (upd_locks L t LAS) t\<rbrakk> \<Longrightarrow> set LAS \<subseteq> {UnlockFail, ReleaseAcquire}`
-  note laos = `lock_actions_ok l t (LA # LAS)`
-  hence lao: "lock_action_ok l t LA" by simp
-  have "LA = UnlockFail \<or> LA = ReleaseAcquire"
-  proof(cases LA)
-    case Lock
-    with lao have "may_lock l t" by simp
-    with laos have "may_lock (upd_locks l t (LA # LAS)) t" by simp
-    with `\<not> may_lock (upd_locks l t (LA # LAS)) t`
-    have False by contradiction
-    thus ?thesis ..
-  next
-    case Unlock
-    with lao have "has_lock l t" by simp
-    with laos have "may_lock (upd_locks l t (LA # LAS)) t"
-      by(auto intro: has_lock_may_lock)
-    with `\<not> may_lock (upd_locks l t (LA # LAS)) t`
-    have False by contradiction
-    thus ?thesis ..
-  qed(auto)
-  moreover from IH[of "upd_lock l t LA"] laos `\<not> may_lock (upd_locks l t (LA # LAS)) t`
-  have "set LAS \<subseteq> {UnlockFail, ReleaseAcquire}" by(simp)
-  ultimately show ?case by auto
-qed
-
-
 
 fun lock_actions_ok' :: "'t lock \<Rightarrow> 't \<Rightarrow> lock_action list \<Rightarrow> bool" where
   "lock_actions_ok' l t [] = True"
@@ -414,13 +293,8 @@ fun lock_actions_ok' :: "'t lock \<Rightarrow> 't \<Rightarrow> lock_action list
 lemma lock_actions_ok'_iff:
   "lock_actions_ok' l t las \<longleftrightarrow> 
    lock_actions_ok l t las \<or> (\<exists>xs ys. las = xs @ Lock # ys \<and> lock_actions_ok l t xs \<and> \<not> may_lock (upd_locks l t xs) t)"
-proof(induct las arbitrary: l)
-  case Nil thus ?case by simp
-next
-  case (Cons LA LAS L)
-  note IH = `\<And>l. lock_actions_ok' l t LAS =
-                 (lock_actions_ok l t LAS \<or>
-                  (\<exists>xs ys. LAS = xs @ Lock # ys \<and> lock_actions_ok l t xs \<and> \<not> may_lock (upd_locks l t xs) t))`
+proof(induct l t las rule: lock_actions_ok.induct)
+  case (2 L t LA LAS)
   show ?case
   proof(cases "LA = Lock \<and> \<not> may_lock L t")
     case True
@@ -429,49 +303,16 @@ next
     with True show ?thesis by(simp (no_asm))(blast)
   next
     case False
-    hence LA: "LA = Lock \<longrightarrow> may_lock L t" by simp
-    show ?thesis
-    proof(rule iffI)
-      assume "lock_actions_ok' L t (LA # LAS)"
-      with LA have "lock_action_ok L t LA"
-	and "lock_actions_ok' (upd_lock L t LA) t LAS" by(auto)
-      hence "lock_actions_ok (upd_lock L t LA) t LAS \<or>
-             (\<exists>xs ys. LAS = xs @ Lock # ys \<and> lock_actions_ok (upd_lock L t LA) t xs \<and>
-                      \<not> may_lock (upd_locks L t (LA # xs)) t)"
-	by(simp add: IH)
-      with `lock_action_ok L t LA`
-      show "lock_actions_ok L t (LA # LAS) \<or> 
-            (\<exists>xs ys. LA # LAS = xs @ Lock # ys \<and> 
-                     lock_actions_ok L t xs \<and> \<not> may_lock (upd_locks L t xs) t)"
-	apply(auto)
-	apply(erule_tac x="LA # xs" in allE)
-	by(auto)
-    next
-      assume "lock_actions_ok L t (LA # LAS) \<or>
-              (\<exists>xs ys. LA # LAS = xs @ Lock # ys \<and> lock_actions_ok L t xs \<and> \<not> may_lock (upd_locks L t xs) t)"
-      with LA
-      have "lock_action_ok L t LA \<and> (lock_actions_ok (upd_lock L t LA) t LAS \<or> 
-                                     (\<exists>xs ys. LAS = xs @ Lock # ys \<and> lock_actions_ok (upd_lock L t LA) t xs \<and>
-                                              \<not> may_lock (upd_locks (upd_lock L t LA) t xs) t))"
-	by(auto simp add: Cons_eq_append_conv)
-      hence "lock_action_ok L t LA \<and> lock_actions_ok' (upd_lock L t LA) t LAS"
-	unfolding IH by auto
-      with LA show "lock_actions_ok' L t (LA # LAS)" by(auto)
-    qed
+    with 2 show ?thesis
+      by(fastforce simp add: Cons_eq_append_conv elim: allE[where x="LA # xs", standard])
   qed
-qed
+qed simp
 
 lemma lock_actions_ok'E[consumes 1, case_names ok Lock]:
   "\<lbrakk> lock_actions_ok' l t las;
      lock_actions_ok l t las \<Longrightarrow> P;
      \<And>xs ys. \<lbrakk> las = xs @ Lock # ys; lock_actions_ok l t xs; \<not> may_lock (upd_locks l t xs) t \<rbrakk> \<Longrightarrow> P \<rbrakk> 
   \<Longrightarrow> P"
-by(auto simp add: lock_actions_ok'_iff)
-
-lemma not_lock_actions_ok'_conv: 
-  "(\<not> lock_actions_ok' l t las) \<longleftrightarrow>
-   \<not> lock_actions_ok l t las \<and> 
-  (\<forall>xs ys. las = xs @ Lock # ys \<and> lock_actions_ok l t xs \<longrightarrow> may_lock (upd_locks l t xs) t)"
 by(auto simp add: lock_actions_ok'_iff)
 
 end
