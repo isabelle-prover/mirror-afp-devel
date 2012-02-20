@@ -910,7 +910,7 @@ next
   moreover def distr \<equiv> "LES (Prob0 (svalid F1) (svalid F2) \<union> svalid F2)"
   ultimately obtain l where eq: "Sat F1 = Some (svalid F1)" "Sat F2 = Some (svalid F2)"
     and l: "gauss_jordan' distr constants = Some l"
-    by (auto simp add: ProbUinfty_def split: split_option_bind_asm)
+    by atomize_elim (simp add: ProbUinfty_def split: split_option_bind_asm)
     
   from l have P: "ProbUinfty (svalid F1) (svalid F2) = Some l"
     unfolding ProbUinfty_def constants_def distr_def by simp
@@ -1123,7 +1123,7 @@ next
     unfolding ExpFuture_def const_def N_def Y_def by auto
   with F show ?case
     by auto
-qed auto
+qed (force split: split_option_bind)+
 
 subsection {* Completeness and Soundness @{const Sat} *}
 
