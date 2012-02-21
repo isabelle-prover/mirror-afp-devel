@@ -45,6 +45,9 @@ in
 end
 *} "decide relation equalities via regular expressions"
 
+hide_const (open) le_rexp nPlus nTimes norm final bisimilar is_bisimulation closure step test
+  step pre_bisim add_atoms check_eqv rel word_rel
+
 text {* Example: *}
 
 lemma "(r \<union> s^+)^* = (r \<union> s)^*"
