@@ -35,18 +35,18 @@ let
 in
   Scan.succeed (fn ctxt =>
     SIMPLE_METHOD' (
-      (K (TRY (Local_Defs.unfold_tac ctxt @{thms regexp_unfold}))
-      THEN' Reflection.genreify_tac ctxt 
-        @{thms regexp_reify} NONE
-      THEN' rtac @{thm rel_eqI}
-      THEN' CONVERSION (Conv.params_conv (~1) 
-        (K (Conv.concl_conv (~1) regexp_conv)) ctxt)
-      THEN' rtac TrueI)))
+      (TRY o etac @{thm rev_subsetD})
+      THEN' (Subgoal.FOCUS_PARAMS (fn {context=ctxt', ...} =>
+        TRY (Local_Defs.unfold_tac ctxt @{thms regexp_unfold})
+        THEN Reflection.genreify_tac ctxt @{thms regexp_reify} NONE 1
+        THEN rtac @{thm rel_eqI} 1
+        THEN CONVERSION regexp_conv 1
+        THEN rtac TrueI 1) ctxt)))
 end
 *} "decide relation equalities via regular expressions"
 
 hide_const (open) le_rexp nPlus nTimes norm final bisimilar is_bisimulation closure step test
-  step pre_bisim add_atoms check_eqv rel word_rel
+  step pre_bisim add_atoms check_eqv rel word_rel rel_eq
 
 text {* Example: *}
 
