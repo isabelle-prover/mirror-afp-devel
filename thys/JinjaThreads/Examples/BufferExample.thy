@@ -46,6 +46,7 @@ where
         (STR ''size'' := (Var (STR ''size'') \<guillemotleft>Subtract\<guillemotright> Val (Intg 1)));;
         {(STR ''result''):Class Object=None; 
           ((STR ''result'') := ((Var (STR ''buffer''))\<lfloor>Var (STR ''front'')\<rceil>));;
+          (STR ''front'' := (Var (STR ''front'') \<guillemotleft>Add\<guillemotright> Val (Intg 1)));;
           (if ((Var (STR ''front'')) \<guillemotleft>Eq\<guillemotright> ((Var (STR ''buffer''))\<bullet>length))
              (STR ''front'' := Val (Intg 0))
            else unit);;
@@ -76,7 +77,7 @@ where
    (Producer, Thread, [(STR ''buffer'', Class Buffer, \<lparr>volatile=False\<rparr>)],
     [(run, [], Void, \<lfloor>([],
      {STR ''i'':Integer=\<lfloor>Intg 0\<rfloor>;
-        while ((Var (STR ''i'') \<guillemotleft>Eq\<guillemotright> Val (Intg (word_of_int n))) \<guillemotleft>Eq\<guillemotright> false) (
+        while (Var (STR ''i'') \<guillemotleft>NotEq\<guillemotright> Val (Intg (word_of_int n))) (
           (Var (STR ''buffer''))\<bullet>STR ''put''([{STR ''temp'':Class (STR ''Integer'')=None; (STR ''temp'' := new (STR ''Integer'');; ((FAss (Var (STR ''temp'')) (STR ''value'') (STR []) (Var (STR ''i'')));; Var (STR ''temp'')))} ]);;
           STR ''i'' := (Var (STR ''i'') \<guillemotleft>Add\<guillemotright> (Val (Intg 1))))
      })\<rfloor>)])"
@@ -90,7 +91,7 @@ where
   (Consumer, Thread, [(STR ''buffer'', Class Buffer, \<lparr>volatile=False\<rparr>)],
    [(run, [], Void, \<lfloor>([],
     {STR ''i'':Integer=\<lfloor>Intg 0\<rfloor>;
-      while ((Var (STR ''i'') \<guillemotleft>Eq\<guillemotright> Val (Intg (word_of_int n))) \<guillemotleft>Eq\<guillemotright> false) (
+      while (Var (STR ''i'') \<guillemotleft>NotEq\<guillemotright> Val (Intg (word_of_int n))) (
         {STR ''o'':Class Object=None; 
           Seq (STR ''o'' := ((Var (STR ''buffer''))\<bullet>STR ''get''([])))
               (STR ''i'' := (Var (STR ''i'') \<guillemotleft>Add\<guillemotright> Val (Intg 1)))})
