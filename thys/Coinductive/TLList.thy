@@ -441,9 +441,9 @@ where
   "random_aux_tllist 0 j = 
    Quickcheck.collapse (Random.select_weight 
      [(1, Quickcheck.random j o\<rightarrow> (\<lambda>b. Pair (valtermify_TNil b)))])"
-| "random_aux_tllist (Suc_code_numeral i) j =
+| "random_aux_tllist (Code_Numeral.Suc i) j =
    Quickcheck.collapse (Random.select_weight
-     [(Suc_code_numeral i, Quickcheck.random j o\<rightarrow> (\<lambda>x. random_aux_tllist i j o\<rightarrow> (\<lambda>xs. Pair (valtermify_TCons x xs)))),
+     [(Code_Numeral.Suc i, Quickcheck.random j o\<rightarrow> (\<lambda>x. random_aux_tllist i j o\<rightarrow> (\<lambda>xs. Pair (valtermify_TCons x xs)))),
       (1, Quickcheck.random j o\<rightarrow> (\<lambda>b. Pair (valtermify_TNil b)))])"
 
 definition "Quickcheck.random i = random_aux_tllist i i"

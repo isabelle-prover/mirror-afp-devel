@@ -330,8 +330,8 @@ begin
 primrec random_finfun_aux :: "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b \<times> (unit \<Rightarrow> Code_Evaluation.term)) \<times> Random.seed" where
     "random_finfun_aux 0 j = Quickcheck.collapse (Random.select_weight
        [(1, Quickcheck.random j o\<rightarrow> (\<lambda>y. Pair (valtermify_finfun_const y)))])"
-  | "random_finfun_aux (Suc_code_numeral i) j = Quickcheck.collapse (Random.select_weight
-       [(Suc_code_numeral i, Quickcheck.random j o\<rightarrow> (\<lambda>x. Quickcheck.random j o\<rightarrow> (\<lambda>y. random_finfun_aux i j o\<rightarrow> (\<lambda>f. Pair (valtermify_finfun_update_code x y f))))),
+  | "random_finfun_aux (Code_Numeral.Suc i) j = Quickcheck.collapse (Random.select_weight
+       [(Code_Numeral.Suc i, Quickcheck.random j o\<rightarrow> (\<lambda>x. Quickcheck.random j o\<rightarrow> (\<lambda>y. random_finfun_aux i j o\<rightarrow> (\<lambda>f. Pair (valtermify_finfun_update_code x y f))))),
          (1, Quickcheck.random j o\<rightarrow> (\<lambda>y. Pair (valtermify_finfun_const y)))])"
 
 definition 
