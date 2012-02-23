@@ -1244,8 +1244,7 @@ fun procedures_definition locname procs thy =
         val my_body = AList.lookup (op =) (names ~~ bodies);
 
         fun is_recursive n =
-          let val pths = Graph.all_paths graph' (n,n)
-          in pths <> [] end;
+          exists (fn [_] => false | ns => member (op =) ns n) (Graph.strong_conn graph');
 
         fun has_body n =
           (case my_body n of
