@@ -267,86 +267,9 @@ proof
   thus False using assms unfolding SN_defs by force
 qed
 
-lemma relto_trancl_conv: "(relto R S)^+ = ((R \<union> S))^* O R O ((R \<union> S))^*" (is "_ = ?RS^* O ?R O _")
-proof
-  show "?RS^* O ?R O ?RS^* \<subseteq> (relto R S)^+"
-  proof(clarify, simp)
-    fix x1 x2 x3 x4
-    assume x12: "(x1,x2) \<in> ((R \<union> S))^*" and x23: "(x2,x3) \<in> R" and x34: "(x3,x4) \<in> ((R \<union> S))^*"
-    let ?S = "S^*"
-    {
-      fix x y z
-      assume "(y,z) \<in> ((R \<union> S))^*"
-      hence "(x,y) \<in> relto R S \<longrightarrow> (x,z) \<in> (relto R S)^+"
-      proof (induct)
-        case base
-        show ?case by auto
-      next
-        case (step u z)
-        show ?case
-        proof
-          assume "(x,y) \<in> relto R S"
-          with step have nearly: "(x,u) \<in> (relto R S)^+" by simp
-          from step(2)
-          show "(x,z) \<in> (relto R S)^+"
-          proof
-            assume "(u,z) \<in> R"
-            hence "(u,z) \<in> relto R S" by auto
-            with nearly show ?thesis by auto
-          next
-            assume uz: "(u,z) \<in> S"
-            from nearly[unfolded trancl_unfold_right]
-            obtain v where xv: "(x,v) \<in> (relto R S)^*" and vu: "(v,u) \<in> relto R S" by auto
-            from vu obtain w where vw: "(v,w) \<in> ?S O R" and wu: "(w,u) \<in> ?S" by auto
-            from wu uz have wz: "(w,z) \<in> ?S" by auto
-            with vw have vz: "(v,z) \<in> relto R S" by auto
-            with xv show ?thesis by auto
-          qed
-        qed
-      qed
-    } note steps_right = this
-    from x23 have "(x2,x3) \<in> relto R S" by auto
-    from mp[OF steps_right[OF x34] this] have x24: "(x2,x4) \<in> (relto R S)^+" .
-    with x12 show "(x1,x4) \<in> (relto R S)^+" 
-    proof (induct arbitrary: x4, simp)
-      case (step y z) 
-      from step(2)
-      have "(y,x4) \<in> (relto R S)^+"
-      proof
-        assume "(y,z) \<in> R"
-        hence "(y,z) \<in> relto R S" by auto
-        with step(4) show ?thesis by auto
-      next
-        assume yz: "(y,z) \<in> S"
-        from step(4)[unfolded trancl_unfold_left]
-        obtain v where zv: "(z,v) \<in> relto R S" and vx4: "(v,x4) \<in> (relto R S)^*" by auto
-        from zv obtain w where zw: "(z,w) \<in> ?S" and wv: "(w,v) \<in> R O ?S" by auto
-        from yz zw have "(y,w) \<in> ?S" by auto
-        with wv have "(y,v) \<in> relto R S" by auto
-        with vx4 show ?thesis by auto
-      qed
-      from step(3)[OF this] show ?case .
-    qed
-  qed 
-next
-  have S: "S^* \<subseteq> ?RS^*" by (rule rtrancl_mono[of S "R \<union> S", simplified])
-  have R: "R \<subseteq> ?RS^*" by auto
-  show "(relto R S)^+ \<subseteq> ?RS^* O ?R O ?RS^*"
-  proof
-    fix x y
-    assume "(x,y) \<in> (S^* O R O S^*)^+"
-    thus "(x,y) \<in> ?RS^* O ?R O ?RS^*"
-    proof (induct)
-      case (base y)
-      thus ?case using S by blast 
-    next
-      case (step y z)
-      from step(2) have "(y,z) \<in> ?RS^* O ?RS^* O ?RS^*" using R S by blast
-      hence "(y,z) \<in> ?RS^*" by auto
-      with step (3) show ?case by force
-    qed
-  qed
-qed
+lemma relto_trancl_conv:
+  "(relto R S)^+ = ((R \<union> S))^* O R O ((R \<union> S))^*"
+  by regexp
 
 lemma relto_Id: "relto R (S \<union> Id) = relto R S"
   by simp
