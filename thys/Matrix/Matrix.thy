@@ -313,8 +313,7 @@ lemma mat0_col: assumes "i < nc"
 unfolding mat0I_def col_def
 using assms by auto
 
-lemma vec1_index: assumes i: "i < n"
-  and j: "j < n"
+lemma vec1_index: assumes j: "j < n"
   shows "vec1I ze on n i ! j = (if i = j then on else ze)" (is "_ = ?r")
 unfolding vec1I_def
 proof -
@@ -336,7 +335,7 @@ proof -
       with `j \<noteq> i` have gt: "j > i" by auto
       from this have "\<exists> k. j = i + Suc k" by arith
       from this obtain k where k: "j = i + Suc k" by auto
-      with j i show ?thesis by (simp add: nth_append)
+      with j show ?thesis by (simp add: nth_append)
     qed
   qed
 qed
@@ -653,7 +652,7 @@ unfolding mat1I_def col_def using assms by auto
 
 lemma mat1_index: assumes i: "i < n" and j: "j < n"
   shows "mat1I ze on n ! i ! j = (if i = j then on else ze)"
-  by (simp add: col_mat1[OF i, simplified col_def] vec1_index[OF i j])
+  by (simp add: col_mat1[OF i, simplified col_def] vec1_index[OF j])
 
 lemma transpose_mat1: "transpose nr (mat1I ze on nr) = (mat1I ze on nr)"
 proof (simp only: mat_eq_index[OF transpose[OF mat1] mat1], intro impI allI)
@@ -666,8 +665,8 @@ proof (simp only: mat_eq_index[OF transpose[OF mat1] mat1], intro impI allI)
       simp only: row_col[OF transpose[OF mat1] j i,symmetric],
       simp only: row_transpose_is_col[OF mat1 j],
       simp only: col_mat1[OF j],
-      simp only: vec1_index[OF i j],
-      simp only: vec1_index[OF j i], simp)
+      simp only: vec1_index[OF j],
+      simp only: vec1_index[OF i], simp)
 qed
 
 lemma row_mat1: assumes i: "i < nr"
