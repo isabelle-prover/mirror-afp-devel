@@ -149,7 +149,7 @@ by (simp add:inj_on_def)
 lemma index_conv_takeWhile: "index xs x = size(takeWhile (\<lambda>y. x\<noteq>y) xs)"
 by(induct xs) auto
 
-lemma index_take: "\<lbrakk> x \<in> set xs; index xs x >= i \<rbrakk> \<Longrightarrow> x \<notin> set(take i xs)"
+lemma index_take: "index xs x >= i \<Longrightarrow> x \<notin> set(take i xs)"
 apply(subst (asm) index_conv_takeWhile)
 apply(subgoal_tac "set(take i xs) <= set(takeWhile (op \<noteq> x) xs)")
  apply(blast dest: set_takeWhileD)
@@ -157,7 +157,7 @@ apply(metis set_take_subset_set_take takeWhile_eq_take)
 done
 
 lemma last_index_drop:
-  "\<lbrakk> x \<in> set xs; last_index xs x < i \<rbrakk> \<Longrightarrow> x \<notin> set(drop i xs)"
+  "last_index xs x < i \<Longrightarrow> x \<notin> set(drop i xs)"
 apply(subgoal_tac "set(drop i xs) = set(take (size xs - i) (rev xs))")
  apply(simp add: last_index_def index_take Let_def split:split_if_asm)
 apply (metis rev_drop set_rev)
