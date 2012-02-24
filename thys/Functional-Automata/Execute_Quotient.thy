@@ -219,7 +219,7 @@ apply (erule_tac x="aa" in allE)
 apply (erule_tac x="b" in allE)
 apply (erule_tac x="x" in allE)
 apply (erule_tac x="a" in allE)
-apply (fastforce simp only: map.id id_apply)
+apply (fastforce simp only: List.map.id id_apply)
 done
 
 lemma [code_unfold]:
