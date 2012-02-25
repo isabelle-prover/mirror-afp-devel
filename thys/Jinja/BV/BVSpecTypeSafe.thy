@@ -588,7 +588,7 @@ lemma Store_correct:
   apply clarsimp 
   apply (drule (1) sees_method_fun)
   apply clarsimp
-  apply (blast intro!: list_all2_update_cong2)
+  apply (blast intro!: list_all2_update_cong)
   done
 (*>*)
 
