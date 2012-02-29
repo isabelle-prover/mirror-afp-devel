@@ -210,6 +210,27 @@ license = LGPL
 abstract = We provide a generic work-list algorithm to compute the transitive closure of finite relations where only successors of newly detected states are generated. This algorithm is then instantiated for lists over arbitrary carriers and red black trees (which are faster but require a linear order on the carrier), respectively.  Our formalization was performed as part of the IsaFoR/CeTA project where reflexive transitive closures of large tree automata have to be computed.
 depends-on = Collections, Abstract-Rewriting
 
+[Transitive-Closure-II]
+title = Executable Transitive Closures
+topic = Computer Science/Algorithms
+date = 2011-03-14
+author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+license = LGPL
+abstract =
+  We provide a generic work-list algorithm to compute the
+  (reflexive-)transitive closure of relations where only successors of newly
+  detected states are generated.
+  In contrast to our previous work, the relations do not have to be finite, 
+  but each element must only have finitely many (indirect) successors. 
+  Moreover, a subsumption relation can be used instead of pure equality.
+  An executable variant of the algorithm is available where the generic operations 
+  are instantiated with list operations.
+  
+  This formalization was performed as part of the IsaFoR/CeTA project,
+  and it has been used to certify size-change 
+  termination proofs where large transitive closures have to be computed.
+depends-on = Regular-Sets
+
 [MuchAdoAboutTwo]
 title = Much Ado About Two 
 author = Sascha B&ouml;hme <http://www4.in.tum.de/~boehmes/>
