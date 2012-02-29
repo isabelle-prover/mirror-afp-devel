@@ -193,12 +193,12 @@ next
       using dense_interval[where P = "\<lambda>x. DLO.I \<phi> (x#xs)", OF finite_LB `l\<in>LB \<phi> xs` `l<x` x] x innermost_intvl[OF `nqfree \<phi>` _ _ `x \<notin> EQ \<phi> xs`]
       by (simp add:nolb_def)
     then obtain m
-      where "Less (Suc m) 0 \<in> set ?as \<and> xs!m < x \<and> nolb \<phi> xs (xs!m) x
+      where *: "Less (Suc m) 0 \<in> set ?as \<and> xs!m < x \<and> nolb \<phi> xs (xs!m) x
             \<and> (\<forall>y. xs!m < y \<and> y \<le> x \<longrightarrow> DLO.I \<phi> (y#xs))"
       by blast
-    then moreover have "DLO.I (subst\<^isub>+ \<phi> m) xs"
+    then have "DLO.I (subst\<^isub>+ \<phi> m) xs"
       using noE by(auto intro!: I_subst_peps2[OF `nqfree \<phi>`])
-    ultimately have ?QE
+    with * have ?QE
       by(simp add:qe_eps\<^isub>1_def bex_Un set_lbounds set_ebounds) metis
   } ultimately show ?QE by blast
 qed

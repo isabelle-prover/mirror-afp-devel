@@ -267,14 +267,14 @@ next
       using dense_interval[where P = "\<lambda>x. R.I f (x#xs)", OF finite_LB `l\<in>LB f xs` `l<x` x] x innermost_intvl[OF `nqfree f` _ _ `x \<notin> EQ f xs`]
       by (simp add:nolb_def)
     then obtain r c cs
-      where "Less r (c#cs) \<in> set(R.atoms\<^isub>0 f) \<and> c>0 \<and>
+      where *: "Less r (c#cs) \<in> set(R.atoms\<^isub>0 f) \<and> c>0 \<and>
             (r - \<langle>cs,xs\<rangle>)/c < x \<and> nolb f xs ((r - \<langle>cs,xs\<rangle>)/c) x
             \<and> (\<forall>y. (r - \<langle>cs,xs\<rangle>)/c < y \<and> y \<le> x \<longrightarrow> R.I f (y#xs))"
       by blast
-    then moreover have "R.I (subst\<^isub>+ f (r/c, (-1/c) *\<^sub>s cs)) xs" using noE
+    then have "R.I (subst\<^isub>+ f (r/c, (-1/c) *\<^sub>s cs)) xs" using noE
       by(auto intro!: I_subst_peps2[OF `nqfree f`]
         simp:EQ2_def diff_divide_distrib algebra_simps)
-    ultimately have ?QE
+    with * have ?QE
       by(simp add:qe_eps\<^isub>1_def bex_Un set_lbounds) metis
   } ultimately show ?QE by blast
 qed

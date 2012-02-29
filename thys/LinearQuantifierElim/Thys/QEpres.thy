@@ -265,7 +265,7 @@ proof -
               also have "\<dots> = x mod divisor a" by simp
               finally
               show "(li + ?n - \<langle>lks,xs\<rangle>) mod divisor a = x mod divisor a"
-                using norm by(auto simp:pos_mod_sign zlcms_pos)
+                using norm by(auto simp: zlcms_pos)
             qed }
           ultimately show ?thesis using `a \<in> set as` as by blast
         qed

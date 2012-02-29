@@ -71,7 +71,7 @@ lemma ownsD: "owns s r = Some g \<Longrightarrow>
  EX s\<^isub>1 s\<^isub>2 c. s = s\<^isub>2 @ [Check_in g r c] @ s\<^isub>1 \<and> no_Check_in s\<^isub>2 r"
 apply(induct s)
  apply simp
-apply (auto split:event.splits if_splits)
+apply (auto split:event.splits)
 apply(rule_tac x = s in exI)
 apply(rule_tac x = "[]" in exI)
 apply simp

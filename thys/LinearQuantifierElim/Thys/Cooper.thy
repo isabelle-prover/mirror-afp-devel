@@ -223,8 +223,8 @@ proof
   have "x mod d = x - (x div d)*d"
     by(simp add:zmod_zdiv_equality mult_ac eq_diff_eq)
   hence Pmod: "P x = P(x mod d)" using modd by simp
-  have "P(x mod d)" using dpos P Pmod by(simp add:pos_mod_sign pos_mod_bound)
-  moreover have "x mod d : {0..d - 1}" using dpos by(auto simp:pos_mod_sign)
+  have "P(x mod d)" using dpos P Pmod by simp
+  moreover have "x mod d : {0..d - 1}" using dpos by auto
   ultimately show ?RHS ..
 qed auto
 

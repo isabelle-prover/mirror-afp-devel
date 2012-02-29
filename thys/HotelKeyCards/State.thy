@@ -333,9 +333,9 @@ proof induct
       have "g \<in> isin s r \<or> g = g1" using isin by auto
       thus ?thesis
       proof
-        assume "g \<in> isin s r"
-        then moreover have "safe s r" using safe by auto
-        ultimately show ?thesis using IH by simp
+        assume g: "g \<in> isin s r"
+        then have "safe s r" using safe by auto
+        with g show ?thesis using IH by simp
       next
         assume [simp]: "g = g1"
         have "k2 = roomk s r1 \<or> k1 = roomk s r1"
@@ -344,7 +344,7 @@ proof induct
         proof
           assume "k2 = roomk s r1"
           with card_g1 s safe show ?thesis
-          by(auto simp add: safe_only_owner_enter_normal)
+            by auto
       next
         assume [simp]: "k1 = roomk s r1"
         have "owns s r = Some g1 \<or> safe s r" using safe by auto

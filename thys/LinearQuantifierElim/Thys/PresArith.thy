@@ -198,7 +198,7 @@ proof(induct a)
       also have "\<dots> \<longleftrightarrow> ?m'*i \<le> ?m' * (k*x + \<langle>ks',xs\<rangle>)" using 1
         by(simp (no_asm_simp) add:algebra_simps)
       also have "\<dots> \<longleftrightarrow> i \<le> k*x + \<langle>ks',xs\<rangle>" using `?m'>0`
-        by(simp add: mult_compare_simps)
+        by simp
       finally show ?thesis by(simp)
     qed
   qed

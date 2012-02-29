@@ -1,3 +1,5 @@
+(* FIXME dead code? *)
+
 theory CertDloEx imports CertDlo
 begin
 

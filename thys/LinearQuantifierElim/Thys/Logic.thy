@@ -271,8 +271,8 @@ by (simp add:Logic.or_def)
 lemma normal_list_disj[simp]:
   "\<forall>\<phi>\<in>set fs. normal \<phi> \<Longrightarrow> normal (list_disj fs)"
 apply(induct fs)
- apply (simp add:list_disj_def normal_simps)
-apply (simp add:list_disj_def normal_simps)
+ apply (simp add:list_disj_def)
+apply (simp add:list_disj_def)
 done
 
 lemma normal_nnf: "normal \<phi> \<Longrightarrow> normal(nnf \<phi>)"
