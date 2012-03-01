@@ -769,7 +769,7 @@ proof -
   assume r_ce: "r \<in> ce_rels"
   then have "r^-1 \<in> ce_rels" by (rule ce_rel_lm_25)
   then have "Domain (r^-1) \<in> ce_sets" by (rule ce_rel_lm_26)
-  then show ?thesis by (unfold Range_def)
+  then show ?thesis by (unfold Domain_converse [symmetric])
 qed
 
 lemma ce_rel_lm_28: "r \<in> ce_rels \<Longrightarrow> Field r \<in> ce_sets"

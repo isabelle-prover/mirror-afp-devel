@@ -902,7 +902,7 @@ lemma cong_r: "H \<in> normalfilters \<Longrightarrow> cong H = cong_r H"
 
 lemma cong_equiv: "H \<in> normalfilters \<Longrightarrow> equivp (cong H)"
   apply (simp add: cong_l)
-  apply (simp add: equivp_reflp_symp_transp reflp_def refl_on_def cong_l_reflexive cong_l_symmetric symp_def sym_def transp_def trans_def)
+  apply (simp add: equivp_reflp_symp_transp reflp_def refl_on_def cong_l_reflexive cong_l_symmetric symp_def sym_def transp_unfold trans_def)
   apply safe
   apply (rule cong_l_transitive)
   by simp_all

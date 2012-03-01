@@ -1170,7 +1170,7 @@ proof-
    unfolding dir_image_def by auto
   }
   thus ?thesis 
-  by(unfold refl_on_def Field_def Domain_def Range_def, auto)
+  by(unfold refl_on_def Field_def Domain_unfold Domain_converse [symmetric], auto)
 qed
 
 
@@ -1276,7 +1276,7 @@ using Linear_order_dir_image[of r f] wf_dir_image[of "r - Id" f]
 
 lemma dir_image_Field2:
 "Refl r \<Longrightarrow> Field(dir_image r f) = f ` (Field r)"
-unfolding Field_def dir_image_def refl_on_def Domain_def Range_def by blast
+unfolding Field_def dir_image_def refl_on_def Domain_unfold Domain_converse [symmetric] by blast
 
 
 lemma dir_image_bij_betw: 

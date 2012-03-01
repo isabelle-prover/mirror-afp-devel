@@ -630,7 +630,7 @@ definition Max_torder :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow>
 where "Max_torder r = fold1 (max_torder r)"
 
 lemma refl_on_DomainD: "refl_on A r \<Longrightarrow> A = Domain r"
-by(auto simp add: Domain_def dest: refl_onD refl_onD1)
+by(auto simp add: Domain_unfold dest: refl_onD refl_onD1)
 
 lemma refl_onP_DomainPD: "refl_onP A r \<Longrightarrow> A = {a. DomainP r a}"
 by(drule refl_on_DomainD) auto

@@ -1202,7 +1202,7 @@ by (unfold ChiPlus_def, auto)
 
 lemma HARootStates_Range_ChiPlus2 [simp]:
   "\<lbrakk> S \<in> States (HARoot A) \<rbrakk> \<Longrightarrow> (x,S) \<notin> (ChiPlus A)" 
-by (frule HARootStates_Range_ChiPlus, unfold Range_def, fast)
+by (frule HARootStates_Range_ChiPlus, unfold Domain_converse [symmetric], fast)
 
 lemma SAStates_ChiPlus_ChiRel_NoCycle_1 [rule_format]:
  "\<lbrakk> (S,U) \<in> ChiPlus A; SA \<in> SAs A \<rbrakk> \<Longrightarrow> (U,T) \<in> (ChiRel A) \<longrightarrow> S \<in> States SA \<longrightarrow> T \<in> States SA \<longrightarrow> 

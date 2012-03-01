@@ -26,7 +26,7 @@ definition
 lemma Kripke_EmptySet:
  "({@x. True}, {@x. True},{(@x. True, @x. True)}, empty(@x. True \<mapsto> {@x. True})) \<in> 
    {(S,S0,R,L) | S S0 R L. Kripke S S0 R L}"
-by (unfold Kripke_def Domain_def, auto)
+by (unfold Kripke_def Domain_unfold, auto)
 
 definition
   "kripke =

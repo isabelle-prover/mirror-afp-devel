@@ -43,7 +43,7 @@ qed
 lemma finite_subcls1':
   "finite ({(D, C). P \<turnstile> C \<prec>\<^sup>1 D})"
 by(subst finite_converse[symmetric])
-  (simp add: converse_def finite_subcls1 del: finite_converse)
+  (simp add: converse_unfold finite_subcls1 del: finite_converse)
 
 lemma subcls_is_class: "(subcls1 P)\<^sup>+\<^sup>+ C D \<Longrightarrow> is_class P C"
 by(auto elim: converse_tranclpE dest!: subcls1D simp add: is_class_def)

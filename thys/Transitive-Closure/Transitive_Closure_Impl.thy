@@ -79,7 +79,7 @@ proof (induct n arbitrary: b)
 next
   case (Suc n)
   show ?case 
-  proof (simp add: relpow.simps rel_comp_def Suc) 
+  proof (simp add: relpow.simps rel_comp_unfold Suc) 
     show "(\<exists> y. (\<exists> f. f 0 = a \<and> f n = y \<and> (\<forall> i < n. (f i, f (Suc i)) \<in> R)) \<and> (y,b) \<in> R) = (\<exists> f. f 0 = a \<and> f (Suc n) = b \<and> (\<forall>i < Suc n. (f i, f (Suc i)) \<in> R))" (is "?l = ?r")
     proof
       assume ?l
@@ -376,7 +376,7 @@ lemma trancl_impl: "set_of (trancl_i rel as) = {b. (\<exists> a \<in> set as. (a
 proof -
   interpret set_access_succ set_of memb empty un "gen_succ rel" "set rel"
     by (unfold_locales, insert gen_succ, auto)
-  show ?thesis unfolding trancl_impl_def Let_def relpow_impl trancl_unfold_left rel_comp_def rtrancl_finite_relpow succ by auto
+  show ?thesis unfolding trancl_impl_def Let_def relpow_impl trancl_unfold_left rel_comp_unfold rtrancl_finite_relpow succ by auto
 qed
 end
 

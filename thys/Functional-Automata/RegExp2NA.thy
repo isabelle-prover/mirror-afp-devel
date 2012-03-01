@@ -78,14 +78,14 @@ lemma False_False_in_steps_atom:
  "([False],[False]) : steps (atom a) w = (w = [])"
 apply (induct "w")
  apply simp
-apply (simp add: rel_comp_def)
+apply (simp add: rel_comp_unfold)
 done
 
 lemma start_fin_in_steps_atom:
  "(start (atom a), [False]) : steps (atom a) w = (w = [a])"
 apply (induct "w")
  apply (simp add: start_atom)
-apply (simp add: False_False_in_steps_atom rel_comp_def start_atom)
+apply (simp add: False_False_in_steps_atom rel_comp_unfold start_atom)
 done
 
 lemma accepts_atom:

@@ -798,7 +798,7 @@ qed
 lemma NF_not_suc: assumes "(x,y) \<in> r^*" and "x \<in> NF r" shows "x = y"
 proof -
   from `x \<in> NF r` have "\<forall>y. (x,y) \<notin> r" using NF_no_step by auto
-  hence "x \<notin> Domain r" unfolding Domain_def by simp
+  hence "x \<notin> Domain r" unfolding Domain_unfold by simp
   from `(x,y) \<in> r^*` show ?thesis unfolding Not_Domain_rtrancl[OF `x \<notin> Domain r`] by simp
 qed
 
@@ -1229,7 +1229,7 @@ lemma SN_trancl_SN_conv: "SN (R^+) = SN R"
 
 (*FIXME: move to HOL/Relation.thy (in Isabelle)*)
 lemma converse_inv_image[simp]: "(inv_image R f)^-1 = inv_image (R^-1) f"
-  unfolding inv_image_def converse_def by auto
+  unfolding inv_image_def converse_unfold by auto
 
 lemma SN_inv_image: "SN R \<Longrightarrow> SN(inv_image R f)" unfolding SN_iff_wf by simp
 
@@ -1877,7 +1877,7 @@ proof
     fix i
     from seq have "(F i,F (Suc i)) \<in> (S O S^* O NS^*)" by auto
     thus "\<exists> y z. (F i, y)  \<in> S \<and> (y, z)  \<in> S^* \<and> (z, F (Suc i)) \<in> NS^*"
-      unfolding rel_comp_def using mem_Collect_eq by auto
+      unfolding rel_comp_unfold using mem_Collect_eq by auto
   qed
   hence "\<exists> f. (\<forall> i. (\<exists> z. (F i, f i)  \<in> S \<and> ((f i, z)  \<in> S^*) \<and>(z, F (Suc i)) \<in> NS^*))"
     by (rule choice)
@@ -1888,7 +1888,7 @@ proof
   then obtain g where "\<forall> i. (F i, f i)  \<in> S \<and> (f i, g i)  \<in> S^* \<and> (g i, F (Suc i)) \<in> NS^*" ..
   hence "\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, F (Suc i)) \<in> NS^* \<and> (F (Suc i), f (Suc i))  \<in> S"
     by auto
-  hence "\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S" unfolding rel_comp_def
+  hence "\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S" unfolding rel_comp_unfold
     using tr_compat by auto
   hence all:"\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S^+" by auto
   have "\<forall> i. (f i, f (Suc i))  \<in> S^+"

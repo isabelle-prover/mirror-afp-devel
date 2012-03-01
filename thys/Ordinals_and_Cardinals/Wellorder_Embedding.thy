@@ -1160,7 +1160,7 @@ next
    next
      fix b assume "b \<in> under r a"
      hence "a \<in> Field r \<and> b \<in> Field r \<and> (b,a) \<in> r" 
-     unfolding rel.under_def by (auto simp add: Field_def Range_def Domain_def)
+     unfolding rel.under_def by (auto simp add: Field_def Domain_converse [symmetric] Domain_unfold)
      with 1 ** show "f b \<in> under r' (f a)"
      unfolding rel.under_def by auto
    next

@@ -1146,7 +1146,7 @@ by(auto simp add: fun_eq_iff)
 
 lemma bisim_compose_conv_rel_comp:
   "split (bisim_compose bisim12 bisim23) = (\<lambda>x. x \<in> rel_comp (Collect (split bisim12)) (Collect (split bisim23)))"
-by(auto simp add: rel_comp_def)
+by(auto simp add: rel_comp_unfold)
 
 lemma list_all2_bisim_composeI:
   "\<lbrakk> list_all2 A xs ys; list_all2 B ys zs \<rbrakk>

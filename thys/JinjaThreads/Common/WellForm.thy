@@ -170,7 +170,7 @@ lemma acyclic_subcls1:
 by(unfold acyclicP_def)(fast dest: subcls_irrefl)
 
 lemma finite_conversep: "finite {(x, y). r\<inverse>\<inverse> x y} = finite {(x, y). r x y}"
-by(subst finite_converse[unfolded converse_def, symmetric]) simp
+by(subst finite_converse[unfolded converse_unfold, symmetric]) simp
 
 lemma acyclicP_wf_subcls1:
   "acyclicP (subcls1 P) \<Longrightarrow> wfP ((subcls1 P)\<inverse>\<inverse>)"
