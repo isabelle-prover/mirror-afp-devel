@@ -982,7 +982,7 @@ apply (frule CompFun_ChiRel)
 apply fast
 apply (rule InitState_States)
 apply simp
-apply (rule_tac b="S" in trancl_trans)
+apply (rule trancl_trans [of _ S])
 apply (rule r_into_trancl')
 apply auto
 apply (rule r_into_trancl')
@@ -991,7 +991,7 @@ apply (rule CompFun_HAInitStates_HAStates)
 prefer 2
 apply fast
 apply (cut_tac A="HA ST" in HAInitStates_HAStates, fast)
-apply (rule_tac b="U" in trancl_trans)
+apply (rule_tac y = U in trancl_trans)
 apply (rule r_into_trancl')
 apply auto
 done
