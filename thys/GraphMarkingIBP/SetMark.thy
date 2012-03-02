@@ -74,11 +74,11 @@ lemma trascl_less: "x \<noteq> y \<Longrightarrow> (a, x) \<in> R\<^sup>* \<Long
   apply (auto simp: Compl_insert)
   apply (case_tac "ya = y")
   apply auto
-  apply (rule_tac a = a and b = ya and c = z and r = "R \<inter> ((UNIV - {y}) \<times> (UNIV - {y}))" in rtrancl_trans)
+  apply (rule_tac x = a and y = ya and z = z and r = "R \<inter> ((UNIV - {y}) \<times> (UNIV - {y}))" in rtrancl_trans)
   apply auto
   apply (case_tac "za = y")
   apply auto
-  apply (drule_tac a = ya and b = za and c = z and r = "(R \<inter> (UNIV - {y}) \<times> (UNIV - {y}))" in rtrancl_trans)
+  apply (drule_tac x = ya and y = za and z = z and r = "(R \<inter> (UNIV - {y}) \<times> (UNIV - {y}))" in rtrancl_trans)
   by auto
 
 lemma (in graph) add_set [simp]: "x \<noteq> y \<Longrightarrow> x \<in> path S mrk \<Longrightarrow> x \<in> path (insert y S) (insert y mrk)"
