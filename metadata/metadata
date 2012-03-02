@@ -264,6 +264,7 @@ title = Abortable Linearizable Modules
 author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <mailto:viktor.kuncak@epfl.ch>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
 date = 2012-03-1
 topic = Computer Science/Algorithms/Distributed
+base = HOL/HOLCF
 abstract =
   We define the Abortable Linearizable Module automaton (ALM for short)
   and prove its key composition property using the IOA theory of

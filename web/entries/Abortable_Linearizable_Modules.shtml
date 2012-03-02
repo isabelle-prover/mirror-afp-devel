@@ -70,7 +70,7 @@ refinement proof in the I/O-automata framework of Lynch and Tuttle.
 <p></p>
 
 <!--#set var="name" value="Abortable_Linearizable_Modules" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOLCF/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
