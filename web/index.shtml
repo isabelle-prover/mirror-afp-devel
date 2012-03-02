@@ -48,6 +48,15 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2012-03-1:
+<a href="entries/Abortable_Linearizable_Modules.shtml">Abortable Linearizable Modules</a>
+<br>Author:
+Rachid Guerraoui,
+Viktor Kuncak and 
+Giuliano Losa
+</td></tr>
+
+<tr><td class="entry">
 2012-02-29:
 <a href="entries/Transitive-Closure-II.shtml">Executable Transitive Closures</a>
 <br>Author:

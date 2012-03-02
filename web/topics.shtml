@@ -61,6 +61,7 @@
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
 <a href="entries/ClockSynchInst.shtml">ClockSynchInst</a> &nbsp;
+<a href="entries/Abortable_Linearizable_Modules.shtml">Abortable_Linearizable_Modules</a> &nbsp;
 </div>
 
 <h3>Data Structures</h3>

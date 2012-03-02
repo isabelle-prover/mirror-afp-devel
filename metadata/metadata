@@ -259,6 +259,24 @@ date = 2006-03-15
 topic = Computer Science/Algorithms/Distributed
 abstract = F. B. Schneider ("Understanding protocols for Byzantine clock synchronization") generalizes a number of protocols for Byzantine fault-tolerant clock synchronization and presents a uniform proof for their correctness. In Schneider's schema, each processor maintains a local clock by periodically adjusting each value to one computed by a convergence function applied to the readings of all the clocks. Then, correctness of an algorithm, i.e. that the readings of two clocks at any time are within a fixed bound of each other, is based upon some conditions on the convergence function. To prove that a particular clock synchronization algorithm is correct it suffices to show that the convergence function used by the algorithm meets Schneider's conditions. Using the theorem prover Isabelle, we formalize the proofs that the convergence functions of two algorithms, namely, the Interactive Convergence Algorithm (ICA) of Lamport and Melliar-Smith and the Fault-tolerant Midpoint algorithm of Lundelius-Lynch, meet Schneider's conditions. Furthermore, we experiment on handling some parts of the proofs with fully automatic tools like ICS and CVC-lite. These theories are part of a joint work with Alwen Tiu and Leonor P. Nieto <a href="http://users.rsise.anu.edu.au/~tiu/clocksync.pdf">"Verification of Clock Synchronization Algorithms: Experiments on a combination of deductive tools"</a> in proceedings of AVOCS 2005. In this work the correctness of Schneider schema was also verified using Isabelle (entry <a href="GenClock.shtml">GenClock</a> in AFP). 
 
+[Abortable_Linearizable_Modules]
+title = Abortable Linearizable Modules
+author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <mailto:viktor.kuncak@epfl.ch>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
+date = 2012-03-1
+topic = Computer Science/Algorithms/Distributed
+abstract =
+  We define the Abortable Linearizable Module automaton (ALM for short)
+  and prove its key composition property using the IOA theory of
+  HOLCF. The ALM is at the heart of the Speculative Linearizability
+  framework. This framework simplifies devising correct speculative
+  algorithms by enabling their decomposition into independent modules
+  that can be analyzed and proved correct in isolation. It is
+  particularly useful when working in a distributed environment, where
+  the need to tolerate faults and asynchrony has made current
+  monolithic protocols so intricate that it is no longer tractable to
+  check their correctness. Our theory contains a typical example of a
+  refinement proof in the I/O-automata framework of Lynch and Tuttle.
+
 [AVL-Trees]
 title = AVL Trees
 author = Tobias Nipkow <http://www4.in.tum.de/~nipkow/>, Cornelia Pusch 
