@@ -379,6 +379,8 @@ theorem "\<Turnstile> ClassicPre {| pt ClassicMark |} ClassicPost"
   apply (simp_all add: inf_fun_def)
   apply (rule_tac y = "RR_a (R1'_a (R1_a (SetMarkInv final)))" in order_trans)
   by auto
+
 end
 
 end
+
