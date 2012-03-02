@@ -1992,7 +1992,7 @@ proof-
    next
    case True
     hence "(x, z) \<in> B^*" by auto
-    have "\<lbrakk>(x, z) \<in> B^*; (z, y) \<in> B^*\<rbrakk> \<Longrightarrow> (x, y) \<in> B^*" using rtrancl_trans[where ?r=B and ?a=x and ?b=z] by auto
+    have "\<lbrakk>(x, z) \<in> B^*; (z, y) \<in> B^*\<rbrakk> \<Longrightarrow> (x, y) \<in> B^*" using rtrancl_trans [of x z B] by auto
     with  `(x, z) \<in> B^*` `(x, y) \<notin> B^*` have "(z, y) \<notin> B^*" by auto
     with Suc `(z, y) \<in> A ^^ i` have "(z, y) \<in> A^* O (A - B) O A^*" by auto
     with xz have xy:"(x, y) \<in> A O A\<^sup>* O (A - B) O A\<^sup>*" by auto
@@ -2974,3 +2974,4 @@ proof -
 qed
 
 end
+
