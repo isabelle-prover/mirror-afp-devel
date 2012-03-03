@@ -1,12 +1,17 @@
+(*<*)
 (*
  * The worker/wrapper transformation, following Gill and Hutton.
- * (C)opyright 2009, Peter Gammie, peteg42 at gmail.com.
+ * (C)opyright 2009-2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-(*<*)
 theory Nub
-imports HOLCF LList Maybe Nats WorkerWrapperNew
+imports
+  HOLCF
+  LList
+  Maybe
+  Nats
+  WorkerWrapperNew
 begin
 (*>*)
 
@@ -192,7 +197,7 @@ lemma nub_body''_nub_body'''_eq: "nub_body'' = nub_body''' oo (unwrap oo wrap)"
 text{* Finally glue it all together. *}
 
 lemma nub_wrap_nub_body''': "nub = wrap\<cdot>(fix\<cdot>nub_body''')"
-  using worker_wrapper_new[OF wrap_unwrap_id unwrap_strict, where G=nub_body]
+  using worker_wrapper_fusion_new[OF wrap_unwrap_id unwrap_strict, where body=nub_body]
         nub_nub_body_eq
         nub_body_nub_body'_eq
         nub_body'_nub_body''_eq

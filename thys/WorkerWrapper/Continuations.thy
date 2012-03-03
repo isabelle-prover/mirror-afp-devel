@@ -1,12 +1,16 @@
+(*<*)
 (*
  * The worker/wrapper transformation, following Gill and Hutton.
- * (C)opyright 2009, Peter Gammie, peteg42 at gmail.com.
+ * (C)opyright 2009-2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-(*<*)
 theory Continuations
-imports HOLCF Maybe Nats WorkerWrapperNew
+imports
+  HOLCF
+  Maybe
+  Nats
+  WorkerWrapperNew
 begin
 (*>*)
 
@@ -67,7 +71,7 @@ definition
   "wrapC \<equiv> \<Lambda> g e. g\<cdot>e\<cdot>Just\<cdot>Nothing"
 
 lemma wrapC_unwrapC_id: "wrapC oo unwrapC = ID"
-proof(rule cfun_eqI)+
+proof(intro cfun_eqI)
   fix g e
   show "(wrapC oo unwrapC)\<cdot>g\<cdot>e = ID\<cdot>g\<cdot>e"
     by (cases "g\<cdot>e", simp_all add: wrapC_def unwrapC_def)
@@ -108,7 +112,7 @@ text{* This proof is unfortunately quite messy, due to the
 simplifier's inability to cope with HOLCF's case distinctions. *}
 
 lemma eval_body'_eval_body_eq: "eval_body' = unwrapC oo eval_body oo wrapC"
-  apply (rule cfun_eqI)+
+  apply (intro cfun_eqI)
   apply (unfold unwrapC_def wrapC_def)
   apply (case_tac xa)
       apply simp_all
@@ -152,7 +156,7 @@ lemma "eval = eval_final"
 proof -
   have "eval = fix\<cdot>eval_body" by (rule eval_eval_body_eq)
   also from wrapC_unwrapC_id unwrapC_strict have "\<dots> = wrapC\<cdot>(fix\<cdot>eval_body_final)"
-    apply (rule worker_wrapper_new)
+    apply (rule worker_wrapper_fusion_new)
     using eval_body'_eval_body_final_eq eval_body'_eval_body_eq by simp
   also have "\<dots> = eval_final"
     unfolding eval_final_def eval_work_final_def wrapC_def

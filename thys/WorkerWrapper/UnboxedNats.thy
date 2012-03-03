@@ -1,12 +1,15 @@
+(*<*)
 (*
  * The worker/wrapper transformation, following Gill and Hutton.
- * (C)opyright 2009, Peter Gammie, peteg42 at gmail.com.
+ * (C)opyright 2009-2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-(*<*)
 theory UnboxedNats
-imports HOLCF Nats WorkerWrapperNew
+imports
+  HOLCF
+  Nats
+  WorkerWrapperNew
 begin
 (*>*)
 
@@ -253,7 +256,7 @@ qed
 
 lemma fac_work_final_body3_eq: "fac_work_final = wrapA\<cdot>(fix\<cdot>fac_acc_body3)"
   unfolding fac_work_final_def
-  by (rule worker_wrapper_new[OF wrapA_unwrapA_id unwrapA_strict])
+  by (rule worker_wrapper_fusion_new[OF wrapA_unwrapA_id unwrapA_strict])
      (simp add: fac_acc_body3_body2 fac_acc_body2_body1_eq fac_acc_body1_fac_body_final_eq)
 
 definition

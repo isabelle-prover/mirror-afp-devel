@@ -1,10 +1,19 @@
+(*<*)
+(*
+ * The worker/wrapper transformation, following Gill and Hutton.
+ * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
+ * License: BSD
+ *)
+
 theory Last
-
-imports HOLCF LList WorkerWrapper
-
+imports
+  HOLCF
+  LList
+  WorkerWrapper
 begin
 
-section{* Optimise "last". *}
+(*>*)
+section{* Optimise ``last''. *}
 
 text{* Andy Gill's solution, mechanised. No fusion, works fine using their rule. *}
 

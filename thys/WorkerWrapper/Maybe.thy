@@ -1,10 +1,10 @@
+(*<*)
 (*
  * The Maybe monad.
- * (C)opyright 2009, Peter Gammie, peteg42 at gmail.com.
+ * (C)opyright 2009-2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-(*<*)
 theory Maybe
 imports HOLCF
 begin
@@ -18,11 +18,13 @@ Maybe"} type. @{term "return"} is @{term "Just"}. *}
 domain 'a Maybe = Nothing | Just (lazy "'a")
 
 definition
-  mfail :: "'a Maybe" where
+  mfail :: "'a Maybe"
+where
   "mfail \<equiv> Nothing"
 
 definition
-  mcatch :: "'a Maybe \<rightarrow> 'a Maybe \<rightarrow> 'a Maybe" where
+  mcatch :: "'a Maybe \<rightarrow> 'a Maybe \<rightarrow> 'a Maybe"
+where
   "mcatch \<equiv> \<Lambda> body handler. case body of Nothing \<Rightarrow> handler | Just\<cdot>x \<Rightarrow> Just\<cdot>x"
 
 lemma mcatch_strict[simp]: "mcatch\<cdot>\<bottom> = \<bottom>"

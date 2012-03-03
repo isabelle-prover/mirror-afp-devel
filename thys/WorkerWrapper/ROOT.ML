@@ -1,6 +1,6 @@
 no_document use_thys ["LList", "Maybe", "Nats"];
 use_thys [
-  "LFPFusion",
+  "FixedPointTheorems",
   "WorkerWrapper",
   "CounterExample",
   "WorkerWrapperNew",
@@ -13,4 +13,3 @@ use_thys [
   "Nub",
   "Last"
 ];
-

@@ -1,12 +1,15 @@
+(*<*)
 (*
  * The worker/wrapper transformation, following Gill and Hutton.
- * (C)opyright 2009, Peter Gammie, peteg42 at gmail.com.
+ * (C)opyright 2009-2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-(*<*)
 theory Streams
-imports HOLCF Nats WorkerWrapper
+imports
+  HOLCF
+  Nats
+  WorkerWrapper
 begin
 (*>*)
 
@@ -100,10 +103,10 @@ proof(rule cfun_eqI)
     proof
       fix s s' assume "?R s s'"
       then obtain f where fs:  "s = f\<cdot>0 && unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))"
-                      and fs': "s' = f\<cdot>0 && smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats"
+	              and fs': "s' = f\<cdot>0 && smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats"
         by blast
       have "?R (unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))) (smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats)"
-        by ( rule exI[where x="f oo (\<Lambda> x. 1 + x)"]
+	by ( rule exI[where x="f oo (\<Lambda> x. 1 + x)"]
            , subst unwrapS.unfold, subst nats.unfold, simp add: smap_smap)
       with fs fs'
       show "(s = \<bottom> \<and> s' = \<bottom>)
@@ -208,11 +211,15 @@ definition
   fib_final :: "Nat \<rightarrow> Nat" where
   "fib_final \<equiv> \<Lambda> n. fib_work_final !! n"
 
-text{* This proof is only fiddly due to the way mutual recursion is
-encoded: we need to use Beki\'{c}'s Theorem
-\citep{Bekic:1969}\footnote{The interested reader can find some
-historical commentary in \citet{Harel:1980, Sangiorgi:2007}.} to
-massage the definitions into their final form. *}
+text{*
+
+This proof is only fiddly due to the way mutual recursion is encoded:
+we need to use Beki\'{c}'s Theorem \citep{Bekic:1969}\footnote{The
+interested reader can find some historical commentary in
+\citet{Harel:1980, DBLP:journals/toplas/Sangiorgi09}.} to massage the
+definitions into their final form.
+
+*}
 
 lemma fib_work_final_fib_work_eq: "fib_work_final = fib_work" (is "?lhs = ?rhs")
 proof -

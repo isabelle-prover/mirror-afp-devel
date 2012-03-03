@@ -1,12 +1,15 @@
+(*<*)
 (*
  * The worker/wrapper transformation, following Gill and Hutton.
- * (C)opyright 2009, Peter Gammie, peteg42 at gmail.com.
+ * (C)opyright 2009-2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-(*<*)
 theory Accumulator
-imports HOLCF LList WorkerWrapperNew
+imports
+  HOLCF
+  LList
+  WorkerWrapperNew
 begin
 (*>*)
 
@@ -211,16 +214,16 @@ proof(rule fix_least)
       case bottom thus ?thesis by simp
     next
       case lnil thus ?thesis
-        unfolding lrev_work2_def
-        by (subst fix_eq[where F="lrev_body2"], simp)
+	unfolding lrev_work2_def
+	by (subst fix_eq[where F="lrev_body2"], simp)
     next
       case (lcons y ys)
       hence "lrev_body3\<cdot>lrev_work2\<cdot>xs = lrev_work2\<cdot>ys oo list2H\<cdot>(y :@ lnil)" by simp
       also have "\<dots> = list2H\<cdot>((wrapH\<cdot>lrev_work2)\<cdot>ys) oo list2H\<cdot>(y :@ lnil)"
-        using lrev_wwfusion[where xs=ys] by simp
+	using lrev_wwfusion[where xs=ys] by simp
       also from lcons have "\<dots> = lrev_body2\<cdot>lrev_work2\<cdot>xs" by simp
       also have "\<dots> = lrev_work2\<cdot>xs"
-        unfolding lrev_work2_def by (simp only: fix_eq[symmetric])
+	unfolding lrev_work2_def by (simp only: fix_eq[symmetric])
       finally show ?thesis by simp
     qed
   }
@@ -281,7 +284,7 @@ proof -
   have "lrev = fix\<cdot>lrev_body" .
   also from wrapH_unwrapH_id unwrapH_strict
   have "\<dots> = wrapH\<cdot>(fix\<cdot>lrev_body3)"
-    by (rule worker_wrapper_new
+    by (rule worker_wrapper_fusion_new
        , simp add: lrev3_2_syntactic lrev_body2_lrev_body1_eq lrev_body_lrev_body1_eq)
   finally show ?thesis unfolding lrev_work3_def by simp
 qed

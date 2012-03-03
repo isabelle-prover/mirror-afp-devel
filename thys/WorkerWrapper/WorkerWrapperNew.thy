@@ -1,128 +1,123 @@
+(*<*)
 (*
  * The worker/wrapper transformation, following Gill and Hutton.
- * (C)opyright 2009, Peter Gammie, peteg42 at gmail.com.
+ * (C)opyright 2009-2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-(*<*)
 theory WorkerWrapperNew
-imports HOLCF LFPFusion WorkerWrapper
+imports
+  HOLCF
+  FixedPointTheorems
+  WorkerWrapper
 begin
-(*>*)
 
+(*>*)
 section{* A totally-correct fusion rule *}
+
 text{*
 \label{sec:ww-fixed}
 
-Taking inspiration from the counterexample of
-\S\ref{sec:unwrap-strict}, we can show that if @{term "unwrap"} is
-strict then fusion is totally correct. *}
+We now show that a termination-preserving worker/wrapper fusion rule
+can be obtained by requiring @{term "unwrap"} to be strict. (As we
+observed earlier, @{term "wrap"} must always be strict due to the
+assumption that @{text "wrap oo unwrap = ID"}.)
 
-lemma
-  fixes w :: "'b \<rightarrow> 'a"
-  fixes u :: "'a \<rightarrow> 'b"
-  assumes us: "u\<cdot>\<bottom> = \<bottom>"
-      and ww: "w oo u = ID"
-      and wb: "u oo b oo w = b' oo u oo w"
-  shows "fix\<cdot>(u oo b oo w) = fix\<cdot>(b')"
-proof -
-  let ?P = "\<lambda>xy. fst xy = snd xy \<and> u\<cdot>(w\<cdot>(fst xy)) = fst xy"
-  let ?F = "\<Lambda> xy. ((u oo b oo w)\<cdot>(fst xy), b'\<cdot>(snd xy))"
-  have "?P (fix\<cdot>?F)"
-  proof(induct rule: fix_ind)
-    case 2 with retraction_strict us ww show ?case
-      by (bestsimp simp add: cfun_eq_iff)
-  next
-    case (3 xy) thus ?case
-      using ww
-      apply (simp add: cfun_eq_iff)
-      using wb
-      apply (bestsimp simp add: cfun_eq_iff)
-      done
-  qed simp
-  thus ?thesis
-    using fix_cprod[where F="?F"]
-    by (simp add: cfcomp1 eta_cfun)
-qed
+Our first result shows that a combined worker/wrapper transformation
+and fusion rule is sound, using the assumptions of @{text
+"worker_wrapper_id"} and the ubiquitous @{text "lfp_fusion"} rule.
 
-text{* The second version is a generalisation: not all recursive calls
-have to be fusable. *}
+*}
 
 lemma worker_wrapper_fusion_new:
-  fixes w :: "'b \<rightarrow> 'a"
-  fixes u :: "'a \<rightarrow> 'b"
-  assumes us: "u\<cdot>\<bottom> = \<bottom>"
-      and ww: "w oo u = ID"
-      and wb: "u oo b oo w = (\<Lambda> r. b'\<cdot>r\<cdot>(u\<cdot>(w\<cdot>r)))"
-  shows "fix\<cdot>(u oo b oo w) = (\<mu> r. b'\<cdot>r\<cdot>r)"
+  fixes wrap :: "'b::pcpo \<rightarrow> 'a::pcpo"
+  fixes unwrap :: "'a \<rightarrow> 'b"
+  fixes body' :: "'b \<rightarrow> 'b"
+  assumes wrap_unwrap: "wrap oo unwrap = (ID :: 'a \<rightarrow> 'a)"
+  assumes unwrap_strict: "unwrap\<cdot>\<bottom> = \<bottom>"
+  assumes body_body': "unwrap oo body oo wrap = body' oo (unwrap oo wrap)"
+  shows "fix\<cdot>body = wrap\<cdot>(fix\<cdot>body')"
 proof -
-  let ?P = "\<lambda>xy. fst xy = snd xy \<and> u\<cdot>(w\<cdot>(fst xy)) = fst xy"
-  let ?F = "\<Lambda> xy. ((u oo b oo w)\<cdot>(fst xy), b'\<cdot>(snd xy)\<cdot>(snd xy))"
-  have "?P (fix\<cdot>?F)"
-  proof(induct rule: fix_ind)
-    case 2 with retraction_strict us ww show ?case
+  from body_body'
+  have "unwrap oo body oo (wrap oo unwrap) = (body' oo unwrap oo (wrap oo unwrap))"
+    by (simp add: assoc_oo)
+  with wrap_unwrap have "unwrap oo body = body' oo unwrap"
+    by simp
+  with unwrap_strict have "unwrap\<cdot>(fix\<cdot>body) = fix\<cdot>body'"
+    by (rule lfp_fusion)
+  hence "(wrap oo unwrap)\<cdot>(fix\<cdot>body) = wrap\<cdot>(fix\<cdot>body')"
+    by simp
+  with wrap_unwrap show ?thesis by simp
+qed
+
+text{*
+
+We can also show a more general result which allows fusion to be
+optionally performed on a per-recursive-call basis using
+\texttt{parallel\_fix\_ind}:
+
+*}
+
+lemma worker_wrapper_fusion_new_general:
+  fixes wrap :: "'b::pcpo \<rightarrow> 'a::pcpo"
+  fixes unwrap :: "'a \<rightarrow> 'b"
+  assumes wrap_unwrap: "wrap oo unwrap = (ID :: 'a \<rightarrow> 'a)"
+  assumes unwrap_strict: "unwrap\<cdot>\<bottom> = \<bottom>"
+  assumes body_body': "\<And>r. (unwrap oo wrap)\<cdot>r = r
+                        \<Longrightarrow> (unwrap oo body oo wrap)\<cdot>r = body'\<cdot>r"
+  shows "fix\<cdot>body = wrap\<cdot>(fix\<cdot>body')"
+proof -
+  let ?P = "\<lambda>(x, y). x = y \<and> unwrap\<cdot>(wrap\<cdot>x) = x"
+  have "?P (fix\<cdot>(unwrap oo body oo wrap), (fix\<cdot>body'))"
+  proof(induct rule: parallel_fix_ind)
+    case 2 with retraction_strict unwrap_strict wrap_unwrap show "?P (\<bottom>, \<bottom>)"
       by (bestsimp simp add: cfun_eq_iff)
-  next
-    case 3 thus ?case
-      using ww
-      apply (simp add: cfun_eq_iff)
-      using wb
-      apply (bestsimp simp add: cfun_eq_iff)
-      done
+    case (3 x y)
+    hence xy: "x = y" and unwrap_wrap: "unwrap\<cdot>(wrap\<cdot>x) = x" by auto
+    from body_body' xy unwrap_wrap
+    have "(unwrap oo body oo wrap)\<cdot>x = body'\<cdot>y"
+      by simp
+    moreover
+    from wrap_unwrap
+    have "unwrap\<cdot>(wrap\<cdot>((unwrap oo body oo wrap)\<cdot>x)) = (unwrap oo body oo wrap)\<cdot>x"
+      by (simp add: cfun_eq_iff)
+    ultimately show ?case by simp
   qed simp
   thus ?thesis
-    using fix_cprod[where F="?F"]
-    by (simp add: cfcomp1)
+    using worker_wrapper_id[OF wrap_unwrap refl] by simp
 qed
 
-text{* One might hope to show this result using @{text
-"lfp_fusion"}. The best I have managed to do is to show that fusion
-works in the context of the worker generated by @{text
-"worker_wrapper_id"}. In other words, I have shown that a rule where
-the worker/wrapper transformation and fusion are combined is sound. *}
+text{*
 
-lemma worker_wrapper_new:
-  fixes F :: "'b \<rightarrow> 'b"
-  assumes wu: "wrap oo unwrap = (ID :: 'a \<rightarrow> 'a)"
-      and abs: "unwrap\<cdot>\<bottom> = \<bottom>"
-      and Fb: "F oo (unwrap oo wrap) = unwrap oo G oo wrap"
-  shows "fix\<cdot>G = wrap\<cdot>(fix\<cdot>F)"
-proof -
-  from Fb have "(F oo unwrap oo (wrap oo unwrap)) = unwrap oo G oo (wrap oo unwrap)"
-    by (simp add: assoc_oo)
-  with wu have "F oo unwrap = unwrap oo G" by simp
-  with abs have "unwrap\<cdot>(fix\<cdot>G) = fix\<cdot>F"
-    by - (rule lfp_fusion, simp)
-  hence "(wrap oo unwrap)\<cdot>(fix\<cdot>G) = wrap\<cdot>(fix\<cdot>F)" by simp
-  with wu show ?thesis by simp
-qed
+This justifies the syntactically-oriented rules shown in
+Figure~\ref{fig:wwc2}; note the scoping of the fusion rule.
 
-text{* As above, this is readily generalised to handle fusion or not
-at each recursive call. The proof is a more involved application of
-@{text "lfp_fusion"}. Note that $\mu\_.\_$ is the least-fixed-point
-operator. *}
+Those familiar with the ``bananas'' work of \citet*{barbed-wire:1991}
+will not be surprised that adding a strictness assumption justifies an
+equational fusion rule.
 
-lemma worker_wrapper_general:
-  fixes F :: "'b \<rightarrow> 'b \<rightarrow> 'b"
-  assumes ww: "wrap oo unwrap = (ID :: 'a \<rightarrow> 'a)"
-      and unwraps: "unwrap\<cdot>\<bottom> = \<bottom>"
-      and Fb: "(\<Lambda> r. F\<cdot>r\<cdot>((unwrap oo wrap)\<cdot>r)) = unwrap oo G oo wrap"
-  shows "fix\<cdot>G = wrap\<cdot>(\<mu> r. F\<cdot>r\<cdot>r)"
-proof -
-  from Fb have "(\<Lambda> r. F\<cdot>r\<cdot>((unwrap oo wrap)\<cdot>r)) oo unwrap = unwrap oo G oo (wrap oo unwrap)"
-    by (simp add: assoc_oo)
-  hence "(\<Lambda> r. F\<cdot>(unwrap\<cdot>r)\<cdot>((unwrap oo (wrap oo unwrap))\<cdot>r)) = unwrap oo G oo (wrap oo unwrap)"
-    by (simp add: cfcomp1)
-  with ww have "(\<Lambda> r. F\<cdot>(unwrap\<cdot>r)\<cdot>(unwrap\<cdot>r)) = unwrap oo G" by simp
-  hence "(\<Lambda> r. F\<cdot>r\<cdot>r) oo unwrap = unwrap oo G" by (simp add: cfcomp1)
-  with unwraps have "unwrap\<cdot>(fix\<cdot>G) = (\<mu> r. F\<cdot>r\<cdot>r)"
-    by - (rule lfp_fusion, simp)
-  hence "(wrap oo unwrap)\<cdot>(fix\<cdot>G) = wrap\<cdot>(\<mu> r. F\<cdot>r\<cdot>r)" by simp
-  with ww show ?thesis by simp
-qed
+\begin{figure}[tb]
+ \begin{center}
+  \fbox{\parbox{0.96\textwidth}{For a recursive definition \<comp =
+      body\> of type \<A\> and a pair of functions \<wrap :: B \to A\>
+      and \<unwrap :: A \to B\> where \<wrap \circ unwrap = id_A\> and
+      \<unwrap\ \bot = \bot\>, define:
 
-text{* The following sections are mechanisations of the examples by
-\citet{GillHutton:2009}. *}
+      \parbox{0.35\textwidth}{\begin{haskell}
+        comp & = wrap\ work\\
+        work & = unwrap\ (body[wrap\ work / comp])
+      \end{haskell}}\hfill \textsf{(the worker/wrapper transformation)}
+
+    In the scope of \<work\>, the following rewrite is admissable:
+
+    \parbox{0.35\textwidth}{\begin{haskell}
+        unwrap\ (wrap\ work) \Longrightarrow work
+      \end{haskell}}\hfill \textsf{(worker/wrapper fusion)}}}%
+ \end{center}%
+\caption{The syntactic worker/wrapper transformation and fusion rule.}\label{fig:wwc2}
+\end{figure}
+
+*}
 
 (*<*)
 end

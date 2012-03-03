@@ -1,10 +1,10 @@
+(*<*)
 (*
  * Domains of natural numbers.
- * (C)opyright 2009, Peter Gammie, peteg42 at gmail.com.
+ * (C)opyright 2009-2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-(*<*)
 theory Nats
 imports HOLCF
 begin
@@ -146,11 +146,15 @@ lemma bbind_assoc[simp]: "f >>= g >>= h = f >>= (\<Lambda> x. g\<cdot>x >>= h)"
 lemma bbind_case_distr_strict: "f\<cdot>\<bottom> = \<bottom> \<Longrightarrow> f\<cdot>(g >>= h) = g >>= (\<Lambda> x. f\<cdot>(h\<cdot>x))"
   unfolding bbind_def by (cases g, simp_all)
 
-text{* Kleisli composition is sometimes helpful. It forms a monad too,
+text{*
+
+Kleisli composition is sometimes helpful. It forms a monad too,
 and has many useful algebraic properties. Unfortunately it is more
 work than is useful to write the lemmas in a way that makes the
 higher-order unifier in the simplifier happy. Seems easier just to
-unfold the definition and go from there. *}
+unfold the definition and go from there.
+
+*}
 
 definition
   bKleisli :: "('a::cpo \<rightarrow> ('b::cpo)\<^sub>\<bottom>) \<rightarrow> ('b \<rightarrow> ('c::cpo)\<^sub>\<bottom>) \<rightarrow> ('a \<rightarrow> 'c\<^sub>\<bottom>)" where
@@ -168,7 +172,9 @@ lemma bKleisli_strict2[simp]: "b >=> \<bottom> = \<bottom>"
 lemma bKleisli_bbind: "(f >>= g) >=> h = f >>= (\<Lambda> x. g\<cdot>x >=> h)"
   by (cases f, simp_all)
 
-text {* The "Box" type denotes computations that, when demanded, yield
+text {*
+
+The "Box" type denotes computations that, when demanded, yield
 either @{term "\<bottom>"} or an unboxed value. Note that the @{term "Box"}
 constructor is strict, and so merely tags the lifted computation @{typ
 "'a\<^sub>\<bottom>"}. @{typ "'a"} can be pointed or unpointed. This approach enables
@@ -187,8 +193,12 @@ lemma boxI: "Box\<cdot>(up\<cdot>x) = box\<cdot>x" unfolding box_def by simp
 lemma unbox_box[simp]: "unbox\<cdot>(box\<cdot>x) = up\<cdot>x" unfolding box_def by simp
 lemma unbox_Box[simp]: "x \<noteq> \<bottom> \<Longrightarrow> unbox\<cdot>(Box\<cdot>x) = x" by simp
 
-text{* If we suceed in @{term "box"}ing something, then clearly that
-something was not @{term "\<bottom>"}. *}
+text{*
+
+If we suceed in @{term "box"}ing something, then clearly that
+something was not @{term "\<bottom>"}.
+
+*}
 
 lemma box_casedist[case_names bottom Box, cases type: Box]:
   assumes xbot: "x = \<bottom> \<Longrightarrow> P"
@@ -204,10 +214,14 @@ qed
 lemma bbind_leftID'[simp]: "unbox\<cdot>a >>= box = a" by (cases a, simp_all add: bbind_def)
 
 (*<*)
-text {* The optimisations of \citet{SPJ-JL:1991}.
+text {*
+
+The optimisations of \citet{SPJ-JL:1991}.
 
 p11: Repeated unboxing of the same value can be done once (roughly:
-store the value in a register). Their story is more general. *}
+store the value in a register). Their story is more general.
+
+*}
 
 lemma box_repeated:
   "x >>= (\<Lambda> x'. f >>= (\<Lambda> y'. x >>= body\<cdot>x'\<cdot>y'))
@@ -235,9 +249,13 @@ lemma bliftM2_strict1[simp]: "bliftM2 f\<cdot>\<bottom> = \<bottom>" by (rule cf
 lemma bliftM2_strict2[simp]: "bliftM2 f\<cdot>x\<cdot>\<bottom> = \<bottom>" by (cases x, simp_all add: bliftM2_def)
 lemma bliftM2_op[simp]: "bliftM2 f\<cdot>(box\<cdot>x)\<cdot>(box\<cdot>y) = box\<cdot>(f\<cdot>x\<cdot>y)" by (simp add: bliftM2_def)
 
-text{* Define the arithmetic operations. We need extra continuity lemmas as
+text{*
+
+Define the arithmetic operations. We need extra continuity lemmas as
 we're using the full function space, so we can re-use the conventional
-operators. The goal is to work at this level. *}
+operators. The goal is to work at this level.
+
+*}
 
 instantiation Box :: ("{predomain,plus}") plus
 begin
