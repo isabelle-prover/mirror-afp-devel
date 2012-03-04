@@ -66,33 +66,33 @@ lemma  my_rule2:"[|0 < id1; id1 < id2; s -a--composeALMs id1 id2-> t; [|in_trans
 
 subsection {*Invariants of a single ALM instance*}
 
-definition P1a :: "(ALM_state * ALM_state) set" 
+definition P1a :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   where
   -- {*In ALM 1, a pending request of client c has client c as sender*}
   "P1a == % s . let s1 = fst s; s2 = snd s in
                ALL c . phase s1 c \<in> {Pending, Aborted} --> request_snd (pending s1 c) = c"
 
-definition P1b :: "(ALM_state * ALM_state) set"
+definition P1b :: "(ALM_state * ALM_state) \<Rightarrow> bool"
   where
   -- {*In ALM 2, a pending request of client c has client c as sender*}
   "P1b == % s . let s1 = fst s; s2 = snd s in
                ALL c . phase s2 c \<noteq> Sleep --> request_snd (pending s2 c) = c"
 
-definition P2 :: "(ALM_state * ALM_state) set" where
+definition P2 :: "(ALM_state * ALM_state) \<Rightarrow> bool" where
   "P2 == % s . let s1 = fst s; s2 = snd s in
        (\<forall> c . phase s2 c = Sleep) \<longrightarrow> (\<not> initialized s2 \<and> hist s2 = [])"
 
-definition P3 :: "(ALM_state * ALM_state) set" where
+definition P3 :: "(ALM_state * ALM_state) \<Rightarrow> bool" where
   "P3 == % s . let s1 = fst s; s2 = snd s in
         \<forall> c . (phase s2 c = Ready \<longrightarrow> initialized s2)"
 
-definition P4 :: "(ALM_state * ALM_state) set" 
+definition P4 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   where
   -- {*The set of init histories of ALM 2 is empty when no client ever invoked anything*}
   "P4 == % s . let s1 = fst s; s2 = snd s in
       (\<forall> c . phase s2 c = Sleep) = (initHists s2 = {})"
 
-definition P5 :: "(ALM_state * ALM_state) set" 
+definition P5 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   -- {*In ALM 1 a client never sleeps*}
   where
   "P5 == % s . let s1 = fst s; s2 = snd s in
@@ -100,55 +100,55 @@ definition P5 :: "(ALM_state * ALM_state) set"
 
 subsection {*Invariants of the composition of two ALM instances*}
 
-definition P6 :: "(ALM_state * ALM_state) set" 
+definition P6 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   -- {*Non-interference accross instances*}
   where
   "P6 == % s . let s1 = fst s; s2 = snd s in 
                 (~ aborted s1 --> (ALL c . phase s2 c = Sleep)) & (ALL c . phase s1 c ~= Aborted = (phase s2 c = Sleep))"
 
-definition P7 :: "(ALM_state * ALM_state) set" 
+definition P7 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   -- {*Before initialization of the ALM 2, pending requests are the same as in ALM 1 and no new requests may be accepted (phase is not Ready)*}
   where
   "P7 == % s . let s1 = fst s; s2 = snd s in
                ALL c . phase s1 c = Aborted \<and> \<not> initialized s2 \<longrightarrow> (pending s2 c = pending s1 c \<and> phase s2 c \<in> {Pending, Aborted})"
 
-definition P8 :: "(ALM_state * ALM_state) set" 
+definition P8 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   -- {*Init histories of ALM 2 are built from the history of ALM 1 plus pending requests of ALM 1*}
   where
   "P8 == % s . let s1 = fst s; s2 = snd s in
                \<forall> h \<in> initHists s2 . h \<in> postfix_all (hist s1) (linearizations (pendingReqs s1))"
 
-definition P9 :: "(ALM_state * ALM_state) set" 
+definition P9 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   -- {*ALM 2 does not abort before ALM 1 aborts*}
   where
   "P9 == % s . let s1 = fst s; s2 = snd s in
               aborted s2 \<longrightarrow> aborted s1"
 
-definition P10 :: "(ALM_state * ALM_state) set" 
+definition P10 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   -- {*ALM 1 is always initialized and when ALM 2 is not initialized its history is empty*}
   where
   "P10 == % s . let s1 = fst s; s2 = snd s in
               initialized s1 \<and> (\<not> initialized s2 \<longrightarrow> (hist s2 = []))"
 
-definition P11 :: "(ALM_state * ALM_state) set" 
+definition P11 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   where
   -- {*After ALM 2 has been invoked and before it is initialized, any request found in init histories after their longest common prefix is pending in ALM 1*}
   "P11 == % s . let s1 = fst s; s2 = snd s in
        ((\<exists> c . phase s2 c \<noteq> Sleep) \<and> \<not> initialized s2) \<longrightarrow> initValidReqs s2 \<subseteq> pendingReqs s1"
 
-definition P12:: "(ALM_state * ALM_state) set" 
+definition P12:: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   where
   -- {*After ALM 2 has been invoked and before it is initialized, the longest common prefix of the init histories of ALM 2 is buit from appending a set of request pending in ALM 1 to the history of ALM 1*}
   "P12 == % s . let s1 = fst s; s2 = snd s in
        (\<exists> c . phase s2 c \<noteq> Sleep) \<longrightarrow> (\<exists> rs . l_c_p (initHists s2) = rs @ (hist s1) \<and> set rs \<subseteq> pendingReqs s1 \<and> distinct rs)"
 
-definition P13 :: "(ALM_state * ALM_state) set" 
+definition P13 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   where
   -- {*After ALM 2 has been invoked and before it is initialized, any history that may be chosen at initialization is a valid linearization of the concurrent history of ALM 1*}
   "P13 == % s . let s1 = fst s; s2 = snd s in
        ((\<exists> c . phase s2 c \<noteq> Sleep) \<and> \<not> initialized s2) \<longrightarrow> postfix_all (l_c_p (initHists s2)) (linearizations (initValidReqs s2)) \<subseteq> postfix_all (hist s1) (linearizations (pendingReqs s1))"
 
-definition P14 :: "(ALM_state * ALM_state) set" 
+definition P14 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   where
   -- {*The history of ALM 1 is a postfix of the history of ALM 2 and requests appearing in ALM 2 after the history of ALM 1 are not in the history of ALM 1*}
   "P14 == % s . let s1 = fst s; s2 = snd s in
@@ -156,7 +156,7 @@ definition P14 :: "(ALM_state * ALM_state) set"
           hist s2 = rs @ (hist s1) 
           \<and> set rs \<inter> set (hist s1) = {})"
 
-definition P15 :: "(ALM_state * ALM_state) set" 
+definition P15 :: "(ALM_state * ALM_state) \<Rightarrow> bool" 
   where
   -- {*A client that hasn't yet invoked ALM 2 has no request commited in ALM 2 except for its pending request*}
   "P15 == % s . let s1 = fst s; s2 = snd s in
