@@ -20,20 +20,22 @@ text{* Partition a list with respect to an equivalence relation. *}
 
 text{* First up: split a list according to a relation. *}
 
-definition
-  partition_split_body :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list \<times> 'a list \<Rightarrow> 'a list \<times> 'a list"
-where
-  [code]: "partition_split_body r x \<equiv> \<lambda>y (X', xc).
-            if (x, y) \<in> r then (X', List.insert y xc) else (List.insert y X', xc)"
+abbreviation "rel_ext r \<equiv> { x . r x }"
 
 definition
-  partition_split :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list"
+  partition_split_body :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list \<times> 'a list \<Rightarrow> 'a list \<times> 'a list"
+where
+  [code]: "partition_split_body r x \<equiv> \<lambda>y (X', xc).
+            if r (x, y) then (X', List.insert y xc) else (List.insert y X', xc)"
+
+definition
+  partition_split :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list"
 where
   [code]: "partition_split r x xs \<equiv> foldr (partition_split_body r x) xs ([], [])"
 
 lemma partition_split:
-  shows "set (fst (partition_split r x xs)) = set xs - (r `` {x})"
-    and "set (snd (partition_split r x xs)) = set xs \<inter> (r `` {x})"
+  shows "set (fst (partition_split r x xs)) = set xs - (rel_ext r `` {x})"
+    and "set (snd (partition_split r x xs)) = set xs \<inter> (rel_ext r `` {x})"
 using assms
 proof(induct xs)
   case Nil
@@ -69,8 +71,8 @@ qed
 
 lemma partition_split':
   assumes "partition_split r x xs = (xxs', xec)"
-  shows "set xxs' = set xs - (r `` {x})"
-    and "set xec = set xs \<inter> (r `` {x})"
+  shows "set xxs' = set xs - (rel_ext r `` {x})"
+    and "set xec = set xs \<inter> (rel_ext r `` {x})"
   using assms partition_split[where r=r and x=x and xs=xs]
   by simp_all
 
@@ -78,15 +80,14 @@ text{* Next, split an list on each of its members. For this to be
 unambiguous @{term "r"} must be an equivalence relation. *}
 
 definition
-  partition_aux_body :: "('a \<times> 'a) set \<Rightarrow> 'a list \<times> 'a list list \<Rightarrow> 'a list \<times> 'a list list"
+  partition_aux_body :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<times> 'a list list \<Rightarrow> 'a list \<times> 'a list list"
 where
   "partition_aux_body \<equiv> \<lambda>r (xxs, ecs). case xxs of [] \<Rightarrow> ([], []) | x # xs \<Rightarrow>
                            let (xxs', xec) = partition_split r x xs
                             in (xxs', (x # xec) # ecs)"
 
-
 definition
-  partition_aux :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list list"
+  partition_aux :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list list"
 where
   [code]: "partition_aux r xs \<equiv>
              while (Not \<circ> List.null \<circ> fst) (partition_aux_body r) (xs, [])"
@@ -121,15 +122,15 @@ lemma FIXME_third_fiddle:
   by auto
 
 lemma partition_aux:
-  assumes equiv: "equiv X r"
+  assumes equiv: "equiv X (rel_ext r)"
       and XZ: "set xs \<subseteq> X"
   shows "fst (partition_aux r xs) = []
        \<and> set ` set (snd (partition_aux r xs))
-       = (set xs // (r \<inter> set xs \<times> set xs))"
+       = (set xs // (rel_ext r \<inter> set xs \<times> set xs))"
 proof -
   let ?b = "Not \<circ> List.null \<circ> fst"
   let ?c = "partition_aux_body r"
-  let ?r' = "\<lambda>A. r \<inter> A \<times> A"
+  let ?r' = "\<lambda>A. rel_ext r \<inter> A \<times> A"
   let ?P1 = "\<lambda>(A, B). set A \<subseteq> set xs"
   let ?P2 = "\<lambda>(A, B). ?r' (set xs) `` set A \<subseteq> set A"
   let ?P3 = "\<lambda>(A, B). set ` set B = ((set xs - set A) // ?r' (set xs - set A))"
@@ -208,12 +209,12 @@ proof -
          apply rule
           apply rule
           apply clarsimp
-          apply (cut_tac X="insert aa (set list)" and Y="set xs" and x=xa and y=aa and r="r \<inter> set xs \<times> set xs" in equiv_subseteq_in_sym)
+          apply (cut_tac X="insert aa (set list)" and Y="set xs" and x=xa and y=aa and r="rel_ext r \<inter> set xs \<times> set xs" in equiv_subseteq_in_sym)
           apply simp_all
           using equiv
           apply blast
          apply clarsimp
-         apply (cut_tac X="insert aa (set list)" and Y="set xs" and x=xa and y=xb and r="r \<inter> set xs \<times> set xs" in equiv_subseteq_in_sym)
+         apply (cut_tac X="insert aa (set list)" and Y="set xs" and x=xa and y=xb and r="rel_ext r \<inter> set xs \<times> set xs" in equiv_subseteq_in_sym)
          apply simp_all
          using equiv
          apply blast
@@ -279,14 +280,14 @@ proof -
 qed
 
 definition
-  partition :: "('a \<times> 'a) set \<Rightarrow> 'a list \<Rightarrow> 'a list list"
+  partition :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list list"
 where
   [code]: "partition r xs \<equiv> snd (partition_aux r xs)"
 
 lemma partition:
-  assumes equiv: "equiv X r"
+  assumes equiv: "equiv X (rel_ext r)"
       and xs: "set xs \<subseteq> X"
-  shows "set ` set (partition r xs) = set xs // (r \<inter> set xs \<times> set xs)"
+  shows "set ` set (partition r xs) = set xs // ((rel_ext r) \<inter> set xs \<times> set xs)"
   unfolding partition_def
   using partition_aux[OF equiv xs] by simp
 
@@ -375,6 +376,16 @@ lemma sorted_filter[simp]:
   "sorted xs \<Longrightarrow> sorted (filter P xs)"
   by (induct xs) (auto iff: sorted_Cons)
 
+lemma map_prod_eq:
+  assumes f: "map fst xs = map fst ys"
+      and s: "map snd xs = map snd ys"
+  shows "xs = ys"
+  using assms by (induct rule: list_induct2[OF map_eq_imp_length_eq[OF f]]) (simp_all add: prod_eqI)
+
+lemma list_choose_hd:
+  assumes "\<forall>x \<in> set xs. P x"
+      and "x \<in> set xs"
+  shows "P (List.hd xs)"
+  using assms by (induct xs arbitrary: x) auto
 
 end
-

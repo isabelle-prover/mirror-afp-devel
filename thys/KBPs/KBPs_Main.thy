@@ -1,5 +1,7 @@
 theory KBPs_Main
-imports Robot MuddyChildren
+imports
+  Views
+  Examples
 begin
 
 end

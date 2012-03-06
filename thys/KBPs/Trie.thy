@@ -1,17 +1,18 @@
 (* Title: Implementation of a trie
    Author: Andreas Lochbihler < andreas dot lochbihler at kit dot edu >
-   Author: Peter Gammie (gross simplification), 2010
+   Author: Peter Gammie < peteg42 at gmail dot com >
+
+A gross simplification of Andreas Lochbihler's code from the Isabelle
+Collections Framework: here there is no need for data refinement.
+
 *)
 
-
-header "Trie"
-
+(*<*)
 theory Trie imports
-  Main
   MapOps
   ODList
 begin
-
+(*>*)
 
 (* From AssocList2 *)
 
@@ -135,6 +136,6 @@ lemma trie_odlist_MapOps[intro, simp]:
   apply (auto dest: inj_onD simp add: trie_lookup_trie_update)
   done
 
-
+(*<*)
 end
-
+(*>*)

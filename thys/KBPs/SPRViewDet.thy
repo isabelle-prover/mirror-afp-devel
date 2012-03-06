@@ -1,23 +1,79 @@
-
+(*<*)
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-header {*Perfect Recall in Broadcast Environments with Deterministic Protocols*}
-
 theory SPRViewDet
 imports
-  KBPsAlg List_local ODList
-  "~~/src/HOL/Library/Mapping" "~~/src/HOL/Library/AList" Trie
+  SPRView
+  KBPsAlg
+  Eval
+  List_local
+  ODList Trie
+  "../Transitive-Closure/Transitive_Closure_List_Impl"
+  "~~/src/HOL/Library/Mapping"
 begin
+(*>*)
 
+subsection{* Perfect Recall in Deterministic Broadcast Environments *}
 
-record ('a, 'es, 'as) BEState =
+text{*
+
+\label{sec:kbps-theory-spr-deterministic-protocols}
+
+It is well known that simultaneous broadcast has the effect of making
+information \emph{common knowledge}; roughly put, the agents all learn
+the same things at the same time as the system evolves, so the
+relation amongst the agents' states of knowledge never becomes more
+complex than it is in the initial state
+\citep[Chapter~6]{FHMV:1995}. For this reason we might hope to find
+finite-state implementations of JKBPs in broadcast environments.
+
+The broadcast assumption by itself is insufficient in general, however
+\citep[\S7]{Ron:1996}, and so we need to further constrain the
+scenario. Here we require that for each canonical trace the JKBP
+prescribes at most one action. In practice this constraint is easier
+to verify than the circularity would suggest; we return to this point
+at the end of this section.
+
+*}
+
+text_raw{*
+\begin{figure}[tb]
+\begin{isabellebody}%
+*}
+record ('a, 'es, 'ps) BEState =
   es :: "'es"
-  ps :: "('a \<times> 'as) odlist" -- {* Associates an agent with her private state. *}
+  ps :: "('a \<times> 'ps) odlist"
 
+locale FiniteDetBroadcastEnvironment =
+  Environment jkbp envInit envAction envTrans envVal envObs
+    for jkbp :: "'a \<Rightarrow> ('a :: {finite,linorder}, 'p, 'aAct) KBP"
+    and envInit
+         :: "('a, 'es :: {finite,linorder}, 'as :: {finite,linorder}) BEState list"
+    and envAction :: "('a, 'es, 'as) BEState \<Rightarrow> 'eAct list"
+    and envTrans :: "'eAct \<Rightarrow> ('a \<Rightarrow> 'aAct)
+                     \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> ('a, 'es, 'as) BEState"
+    and envVal :: "('a, 'es, 'as) BEState \<Rightarrow> 'p \<Rightarrow> bool"
+    and envObs :: "'a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> ('cobs \<times> 'as option)"
+
++ fixes agents :: "'a odlist"
+  fixes envObsC :: "'es \<Rightarrow> 'cobs"
+  defines "envObs a s \<equiv> (envObsC (es s), ODList.lookup (ps s) a)"
+  assumes agents: "ODList.toSet agents = UNIV"
+  assumes envTrans: "\<forall>s s' a eact eact' aact aact'.
+            ODList.lookup (ps s) a = ODList.lookup (ps s') a \<and> aact a = aact' a
+             \<longrightarrow> ODList.lookup (ps (envTrans eact aact s)) a
+               = ODList.lookup (ps (envTrans eact' aact' s')) a"
+  assumes jkbpDet: "\<forall>a. \<forall>t \<in> SPR.jkbpC. length (jAction SPR.MC t a) \<le> 1"
+text_raw{*
+  \end{isabellebody}%
+  \caption{Finite broadcast environments with a deterministic JKBP.}
+  \label{fig:kbps-theory-det-broadcast-envs}
+\end{figure}
+*}(*<*)
 
 instantiation BEState_ext :: (linorder, linorder, linorder, linorder) linorder
 begin
@@ -48,51 +104,60 @@ proof
  show "finite ?U" by (simp add: U)
 qed
 
+(*>*)
+text{*
 
-locale DetBroadcastEnvironment =
-  Environment jkbp envInit envAction envTrans envVal envObs
-    for jkbp :: "'a \<Rightarrow> ('a :: {finite, linorder}, 'p, 'aAct) KBP"
-    and envInit :: "('a, 'es :: {finite, linorder}, 'as :: {finite, linorder}) BEState list"
-    and envAction :: "('a, 'es, 'as) BEState \<Rightarrow> 'eAct list"
-    and envTrans :: "'eAct \<Rightarrow> ('a \<Rightarrow> 'aAct)
-                     \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> ('a, 'es, 'as) BEState"
-    and envVal :: "('a, 'es, 'as) BEState \<Rightarrow> 'p \<Rightarrow> bool"
-    and envObs :: "'a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> ('cobs \<times> 'as option)"
+We encode our expectations of the scenario in the @{term
+"FiniteBroadcastEnvironment"} locale of
+Figure~\ref{fig:kbps-theory-det-broadcast-envs}. The broadcast is
+modelled by having all agents make the same common observation of the
+shared state of type @{typ "'es"}. We also allow each agent to
+maintain a private state of type @{typ "'ps"}; that other agents
+cannot influence it or directly observe it is enforced by the
+constraint @{text "envTrans"} and the definition of @{term "envObs"}.
 
-+ fixes agents :: "'a odlist"
-    and envObsC :: "'es \<Rightarrow> 'cobs"
-  defines "envObs a s \<equiv> (envObsC (es s), ODList.lookup (ps s) a)"
-  assumes agents: "ODList.toSet agents = UNIV"
-      and envTrans: "\<forall>s s' a eact eact' aact aact'.
-              ODList.lookup (ps s) a = ODList.lookup (ps s') a \<and> aact a = aact' a
-               \<longrightarrow> ODList.lookup (ps (envTrans eact aact s)) a
-                 = ODList.lookup (ps (envTrans eact' aact' s')) a"
-      and jkbpDet: "\<forall>a. \<forall>t \<in> jkbpC. length (jAction mkMC t a) \<le> 1"
+We do however allow the environment's protocol to be non-deterministic
+and a function of the entire system state, including private states.
 
-context DetBroadcastEnvironment begin
+*}
 
+context FiniteDetBroadcastEnvironment
+begin
+(*<*)
+
+(* ouch *)
 lemma envObs_def_raw:
   "envObs a = (\<lambda>s. (envObsC (es s), ODList.lookup (ps s) a))"
   apply (rule ext)+
   apply (simp add: envObs_def)
   done
 
+(*>*)
+text{*
+
+We seek a suitable simulation space by considering what determines an
+agent's knowledge. Intuitively any set of traces that is relevant to
+the agents' states of knowledge with respect to @{term "t \<in> jkbpC"}
+need include only those with the same common observation as @{term
+"t"}:
+
+*}
+
 definition tObsC :: "('a, 'es, 'as) BEState Trace \<Rightarrow> 'cobs Trace" where
   "tObsC \<equiv> tMap (envObsC \<circ> es)"
 
+text{*
 
-definition tObsC_abs :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) BEState Relation" where
-  "tObsC_abs t \<equiv> {(tFirst t', tLast t') |t'. t' \<in> jkbpC \<and> tObsC t' = tObsC t}"
+Clearly this is an abstraction of the SPR jview of the given trace.
 
+*}
 
 lemma spr_jview_tObsC:
   assumes "spr_jview a t = spr_jview a t'"
   shows "tObsC t = tObsC t'"
-  unfolding tObsC_def
-  using spr_sync[OF assms] assms
-  apply (induct rule: trace_induct2)
-  apply (auto simp: Let_def envObs_def_raw)
-  done
+(*<*)
+  using SPR.sync[rule_format, OF assms] assms
+  by (induct rule: trace_induct2) (auto simp: envObs_def tObsC_def)
 
 lemma tObsC_tLength:
   "tObsC t = tObsC t' \<Longrightarrow> tLength t = tLength t'"
@@ -117,7 +182,7 @@ lemma tObsC_initial[iff]:
   unfolding tObsC_def by simp_all
 
 lemma spr_tObsC_trc_aux:
-  assumes "(t, t') \<in> (\<Union>a. relations mkMC a)\<^sup>*"
+  assumes "(t, t') \<in> (\<Union>a. relations SPR.MC a)\<^sup>*"
   shows "tObsC t = tObsC t'"
   using assms
   apply (induct)
@@ -127,6 +192,29 @@ lemma spr_tObsC_trc_aux:
   apply simp
   done
 
+lemma spr_jview_tObsC_trans:
+  "\<lbrakk>spr_jview a t = spr_jview a t'; spr_jview a' t' = spr_jview a' t''\<rbrakk>
+     \<Longrightarrow> tObsC t = tObsC t''"
+  by (fastforce dest: spr_jview_tObsC)
+
+(*>*)
+text{*
+
+Unlike the single-agent case of \S\ref{sec:kbps-spr-single-agent}, it
+is not sufficient for a simulation to record only the final states; we
+need to relate the initial private states of the agents with the final
+states they consider possible, as the initial states may contain
+information that is not common knowledge. This motivates the following
+abstraction:
+
+*}
+
+definition
+  tObsC_abs :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) BEState Relation"
+where
+  "tObsC_abs t \<equiv> { (tFirst t', tLast t')
+                    |t'. t' \<in> SPR.jkbpC \<and> tObsC t' = tObsC t}"
+(*<*)
 lemma tObsC_abs_jview_eq[dest]:
   "spr_jview a t' = spr_jview a t
     \<Longrightarrow> tObsC_abs t = tObsC_abs t'"
@@ -143,16 +231,16 @@ lemma spr_jview_tObsCI:
       and "tMap (\<lambda>s. ODList.lookup (ps s) a) t = tMap (\<lambda>s. ODList.lookup (ps s) a) t'"
   shows "spr_jview a t = spr_jview a t'"
   using tObsC_tLength[OF tt'] assms
-  by (induct rule: trace_induct2, auto iff: tObsC_def envObs_def_raw spr_jview_def)
+  by (induct rule: trace_induct2, auto iff: tObsC_def envObs_def spr_jview_def)
 
 lemma tObsC_absI[intro]:
-  "\<lbrakk> t' \<in> jkbpC; tObsC t' = tObsC t; u = tFirst t'; v = tLast t' \<rbrakk>
+  "\<lbrakk> t' \<in> SPR.jkbpC; tObsC t' = tObsC t; u = tFirst t'; v = tLast t' \<rbrakk>
     \<Longrightarrow> (u, v) \<in> tObsC_abs t"
   unfolding tObsC_abs_def by blast
 
 lemma tObsC_abs_conv:
   "(u, v) \<in> tObsC_abs t
-    \<longleftrightarrow> (\<exists>t'. t' \<in> jkbpC \<and> tObsC t' = tObsC t \<and> u = tFirst t' \<and> v = tLast t')"
+    \<longleftrightarrow> (\<exists>t'. t' \<in> SPR.jkbpC \<and> tObsC t' = tObsC t \<and> u = tFirst t' \<and> v = tLast t')"
   unfolding tObsC_abs_def by blast
 
 lemma tObsC_abs_tLast[simp]:
@@ -169,208 +257,210 @@ lemma tObsC_abs_tInit[iff]:
   apply simp
   done
 
-end (* context *)
+(*>*)
+text{**}
+
+end (* context FiniteDetBroadcastEnvironment *)
 
 text{*
 
-We can predict an agent's final private state on @{term "t' \<in> jkbpC"}
-where @{term "tObsC t' = tObsC t"} from the agent's private state in
-@{term "tFirst t'"} and @{term "tObsC_abs t"} due to the determinacy
-requirement @{term "jkbpDet"} and the constraint @{term
-"envTrans"}. Thus the agent's state of knowledge on @{term "t"} is
-captured by the following simulation:
+We use the following record to represent the worlds of the simulated
+Kripke structure:
 
 *}
 
-record ('a, 'es, 'as) SPRstate =
+record ('a, 'es, 'as) spr_simWorld =
   sprFst :: "('a, 'es, 'as) BEState"
   sprLst :: "('a, 'es, 'as) BEState"
-  sprCRel :: "(('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState) set"
+  sprCRel :: "('a, 'es, 'as) BEState Relation"
 
-definition(in DetBroadcastEnvironment) spr_sim :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) SPRstate" where
-  "spr_sim t \<equiv> \<lparr> sprFst = tFirst t, sprLst = tLast t, sprCRel = tObsC_abs t \<rparr>"
-
-
-instance SPRstate_ext :: ("{finite, linorder}", finite, "{finite, linorder}", finite) finite
+(*<*)
+instance spr_simWorld_ext :: ("{finite, linorder}", finite, "{finite, linorder}", finite) finite
 proof
- let ?U = "UNIV :: ('a, 'b, 'c, 'd) SPRstate_ext set"
- { fix x :: "('a, 'b, 'c, 'd) SPRstate_scheme"
-   have "\<exists>a b c d. x = SPRstate_ext a b c d"
+ let ?U = "UNIV :: ('a, 'b, 'c, 'd) spr_simWorld_ext set"
+ { fix x :: "('a, 'b, 'c, 'd) spr_simWorld_scheme"
+   have "\<exists>a b c d. x = spr_simWorld_ext a b c d"
      by (cases x) simp
  } then have U:
-   "?U = (\<lambda>(a, (b, (c, d))). SPRstate_ext a b c d) ` (UNIV \<times> (UNIV \<times> (UNIV \<times> UNIV)))"
+   "?U = (\<lambda>(a, (b, (c, d))). spr_simWorld_ext a b c d) ` (UNIV \<times> (UNIV \<times> (UNIV \<times> UNIV)))"
    by (auto simp add: Set.image_def)
  show "finite ?U" by (simp add: U)
 qed
 
-context DetBroadcastEnvironment begin
+(*>*)
 
-lemma spr_sim_tFirst_tLast:
-  "\<lbrakk> spr_sim t = s; t \<in> jkbpC \<rbrakk> \<Longrightarrow> (sprFst s, sprLst s) \<in> sprCRel s"
-  unfolding spr_sim_def by auto
+context FiniteDetBroadcastEnvironment
+begin
 
-lemma spr_sim_tObsC:
-  shows "tObsC_abs t = sprCRel (spr_sim t)"
-  unfolding tObsC_abs_def spr_sim_def by simp
+text{*
+
+The simulation of a trace @{term "t \<in> jkbpC"} records its initial and
+final states, and the relation between initial and final states of all
+commonly-plausible traces:
+
+*}
 
 definition
-  spr_sim_rels :: "'a \<Rightarrow> ('a, 'es, 'as) SPRstate Relation"
+  spr_sim :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) spr_simWorld"
 where
-  "spr_sim_rels \<equiv> \<lambda>a. { (s, s') |s s'.
+  "spr_sim \<equiv> \<lambda>t. \<lparr> sprFst = tFirst t, sprLst = tLast t, sprCRel = tObsC_abs t \<rparr>"
+
+text{*
+
+The associated Kripke structure relates two worlds for an agent if the
+agent's observation on the the first and last states corresponds, and
+the worlds have the same common observation relation. As always, we
+evaluate propositions on the final state of the trace.
+
+*}
+
+definition
+  spr_simRels :: "'a \<Rightarrow> ('a, 'es, 'as) spr_simWorld Relation"
+where
+  "spr_simRels \<equiv> \<lambda>a. { (s, s') |s s'.
                          envObs a (sprFst s) = envObs a (sprFst s')
                        \<and> envObs a (sprLst s) = envObs a (sprLst s')
                        \<and> sprCRel s = sprCRel s' }"
 
-definition
-  spr_sim_val :: "('a, 'es, 'as) SPRstate \<Rightarrow> 'p \<Rightarrow> bool"
-where
-  "spr_sim_val \<equiv> envVal \<circ> sprLst"
-
-lemma spr_sim_val_eq[iff]:
-  "spr_sim_val (spr_sim t) = envVal (tLast t)"
-  unfolding spr_sim_def spr_sim_val_def by simp
+definition spr_simVal :: "('a, 'es, 'as) spr_simWorld \<Rightarrow> 'p \<Rightarrow> bool" where
+  "spr_simVal \<equiv> envVal \<circ> sprLst"
 
 abbreviation
-  "jkbpCSn n \<equiv> spr_sim ` jkbpCn n"
+  "spr_simMC \<equiv> mkKripke (spr_sim ` SPR.jkbpC) spr_simRels spr_simVal"
+(*<*)
 
-abbreviation
-  "jkbpCS \<equiv> spr_sim ` jkbpC"
+lemma spr_sim_tFirst_tLast:
+  "\<lbrakk> spr_sim t = s; t \<in> SPR.jkbpC \<rbrakk> \<Longrightarrow> (sprFst s, sprLst s) \<in> sprCRel s"
+  unfolding spr_sim_def by auto
 
-abbreviation
-  "mkMCSn n \<equiv> mkKripke (jkbpCSn n) spr_sim_rels spr_sim_val"
+lemma spr_sim_tObsC_abs:
+  shows "tObsC_abs t = sprCRel (spr_sim t)"
+  unfolding tObsC_abs_def spr_sim_def by simp
 
-abbreviation
-  "mkMCS \<equiv> mkKripke jkbpCS spr_sim_rels spr_sim_val"
-
-(* Show this setup has the simulation properties. *)
+lemma spr_simVal_eq[iff]:
+  "spr_simVal (spr_sim t) = envVal (tLast t)"
+  unfolding spr_sim_def spr_simVal_def by simp
 
 lemma spr_sim_range:
-  "sim_range mkMC mkMCS spr_sim"
+  "sim_range SPR.MC spr_simMC spr_sim"
   by (rule sim_rangeI) (simp_all add: spr_sim_def)
 
-lemma spr_sim_val:
-  "sim_val mkMC mkMCS spr_sim"
+lemma spr_simVal:
+  "sim_val SPR.MC spr_simMC spr_sim"
   by (rule sim_valI) simp
 
 lemma spr_sim_f:
-  "sim_f mkMC mkMCS spr_sim"
-  unfolding spr_sim_rels_def spr_sim_def_raw mkKripke_def mkM_def
+  "sim_f SPR.MC spr_simMC spr_sim"
+  unfolding spr_simRels_def spr_sim_def mkKripke_def SPR.mkM_def
   by (rule sim_fI, auto)
 
-(*
-
-Reverse simulation is the tricky party.
-
-This is the critical lemma that shows that the final private state of
-an agent on a trace is a function of its initial observation and the
-common observation on the trace.
-
-*)
-
 lemma envDetJKBP':
-  assumes tCn: "t \<in> jkbpCn n"
-      and aact: "act \<in> set (jAction (mkMCn n) t a)"
-  shows "jAction (mkMCn n) t a = [act]"
+  assumes tCn: "t \<in> SPR.jkbpCn n"
+      and aact: "act \<in> set (jAction (SPR.MCn n) t a)"
+  shows "jAction (SPR.MCn n) t a = [act]"
   using jkbpDet[rule_format, where t=t and a=a] assms
   apply -
-  apply (cases "jAction mkMC t a")
-   apply (auto iff: jkbpC_jkbpCn_jAction_eq[OF tCn] dest: jkbpCn_jkbpC_inc)
+  apply (cases "jAction SPR.MC t a")
+   apply (auto iff: SPR.jkbpC_jkbpCn_jAction_eq[OF tCn] dest: SPR.jkbpCn_jkbpC_inc)
   done
 
+(*>*)
+text{*
+
+All the properties of a simulation are easy to show for @{term
+"spr_sim"} except for reverse simulation.
+
+The critical lemma states that if we have two traces that yield the
+same common observations, and an agent makes the same observation on
+their initial states, then that agent's private states at each point
+on the two traces are identical.
+
+*}
+
 lemma spr_jview_det_ps:
-  assumes tt': "{t, t'} \<subseteq> jkbpC"
-      and obsCtt': "tObsC t = tObsC t'"
-      and first: "envObs a (tFirst t) = envObs a (tFirst t')"
-  shows "tMap (\<lambda>s. ODList.lookup (ps s) a) t = tMap (\<lambda>s. ODList.lookup (ps s) a) t'"
-using tObsC_tLength[OF obsCtt'] first tt' obsCtt'
+  assumes tt'C: "{t, t'} \<subseteq> SPR.jkbpC"
+  assumes obsCtt': "tObsC t = tObsC t'"
+  assumes first: "envObs a (tFirst t) = envObs a (tFirst t')"
+  shows "tMap (\<lambda>s. ODList.lookup (ps s) a) t
+       = tMap (\<lambda>s. ODList.lookup (ps s) a) t'"
+(*<*)
+using tObsC_tLength[OF obsCtt'] first tt'C obsCtt'
 proof(induct rule: trace_induct2)
   case (tInit s s') thus ?case
-    unfolding envObs_def_raw by simp
+    by (simp add: envObs_def)
 next
   case (tStep s s' t t')
-
   from tStep
-  have ts: "t \<leadsto> s \<in> jkbpCn (tLength (t \<leadsto> s))"
-   and t's': "t' \<leadsto> s' \<in> jkbpCn (tLength (t' \<leadsto> s'))"
+  have ts: "t \<leadsto> s \<in> SPR.jkbpCn (tLength (t \<leadsto> s))"
+   and t's': "t' \<leadsto> s' \<in> SPR.jkbpCn (tLength (t' \<leadsto> s'))"
     by blast+
-
-  from tStep have tt': "spr_jview a t = spr_jview a t'"
+  from tStep have jvtt': "spr_jview a t = spr_jview a t'"
     by - (rule spr_jview_tObsCI, auto)
-
-  with tStep have FIXME:
-     "jAction (mkMCn (tLength t)) t a
-    = jAction (mkMCn (tLength t')) t' a"
+  with tStep have jatt':
+    "jAction (SPR.MCn (tLength t)) t a
+   = jAction (SPR.MCn (tLength t')) t' a"
     apply -
     apply simp
     apply (rule S5n_jAction_eq)
-      apply blast
-     unfolding mkM_def
-     apply simp
      apply blast
-     done
-
-   from tt' have tt'Last: "ODList.lookup (ps (tLast t)) a
-                         = ODList.lookup (ps (tLast t')) a"
-     by (auto iff: envObs_def_raw)
-
-   from ts obtain eact aact
-     where aact: "\<forall>a. aact a \<in> set (jAction (mkMCn (tLength t)) t a)"
-       and s: "s = envTrans eact aact (tLast t)"
-     by (auto iff: Let_def)
-
-   from t's' obtain eact' aact'
-     where aact': "\<forall>a. aact' a \<in> set (jAction (mkMCn (tLength t')) t' a)"
-       and s': "s' = envTrans eact' aact' (tLast t')"
-     by (auto iff: Let_def)
-
-   from tStep have tCn: "t \<in> jkbpCn (tLength t)" by auto
-   from aact
-   obtain act
-     where act: "jAction (mkMCn (tLength t)) t a = [act]"
-     using envDetJKBP'[OF tCn, where a=a and act="aact a"]
-     apply auto
-     done
-   hence "jAction (mkMCn (tLength t')) t' a = [act]"
-     by (simp only: FIXME)
-   with act aact aact'
-   have "aact a = aact' a"
-     apply -
-     apply (erule allE[where x=a])
-     apply (erule allE[where x=a])
-     apply simp
-     done
-   with agents tt'Last s s'
-   have "ODList.lookup (ps s) a = ODList.lookup (ps s') a"
-     by (simp add: envTrans)
-   moreover
-   from tStep have "tMap (\<lambda>s. ODList.lookup (ps s) a) t = tMap (\<lambda>s. ODList.lookup (ps s) a) t'"
-     by auto
-   moreover
-   from tStep have "envObsC (es s) = envObsC (es s')"
-     unfolding tObsC_def by simp
-   ultimately show ?case by simp
+    unfolding SPR.mkM_def
+    apply auto
+    done
+  from jvtt'
+  have tt'Last: "ODList.lookup (ps (tLast t)) a
+               = ODList.lookup (ps (tLast t')) a"
+    by (auto simp: envObs_def)
+  from ts obtain eact aact
+    where aact: "\<forall>a. aact a \<in> set (jAction (SPR.MCn (tLength t)) t a)"
+      and s: "s = envTrans eact aact (tLast t)"
+    by (auto iff: Let_def)
+  from t's' obtain eact' aact'
+    where aact': "\<forall>a. aact' a \<in> set (jAction (SPR.MCn (tLength t')) t' a)"
+      and s': "s' = envTrans eact' aact' (tLast t')"
+    by (auto iff: Let_def)
+  from tStep have tCn: "t \<in> SPR.jkbpCn (tLength t)" by auto
+  from aact
+  obtain act
+    where act: "jAction (SPR.MCn (tLength t)) t a = [act]"
+    using envDetJKBP'[OF tCn, where a=a and act="aact a"]
+    by auto
+  hence "jAction (SPR.MCn (tLength t')) t' a = [act]"
+    by (simp only: jatt')
+  with act aact aact'
+  have "aact a = aact' a"
+    by (auto elim!: allE[where x=a])
+  with agents tt'Last s s'
+  have "ODList.lookup (ps s) a = ODList.lookup (ps s') a"
+    by (simp add: envTrans)
+  moreover
+  from tStep have "tMap (\<lambda>s. ODList.lookup (ps s) a) t = tMap (\<lambda>s. ODList.lookup (ps s) a) t'"
+    by auto
+  moreover
+  from tStep have "envObsC (es s) = envObsC (es s')"
+    unfolding tObsC_def by simp
+  ultimately show ?case by simp
 qed
 
 lemma spr_sim_r:
-  "sim_r mkMC mkMCS spr_sim"
+  "sim_r SPR.MC spr_simMC spr_sim"
 proof(rule sim_rI)
   fix a p q'
-  assume pT: "p \<in> worlds mkMC"
-     and fpq': "(spr_sim p, q') \<in> relations mkMCS a"
+  assume pT: "p \<in> worlds SPR.MC"
+     and fpq': "(spr_sim p, q') \<in> relations spr_simMC a"
   from fpq' obtain uq fq vq
     where q': "q' = \<lparr> sprFst = uq, sprLst = vq, sprCRel = tObsC_abs p \<rparr>"
       and uq: "envObs a (tFirst p) = envObs a uq"
       and vq: "envObs a (tLast p) = envObs a vq"
-    unfolding mkKripke_def spr_sim_def_raw spr_sim_rels_def
+    unfolding mkKripke_def spr_sim_def spr_simRels_def
     by fastforce
 
-  from fpq' have "q' \<in> worlds mkMCS" by simp
+  from fpq' have "q' \<in> worlds spr_simMC" by simp
   with q' have "(uq, vq) \<in> tObsC_abs p"
     using spr_sim_tFirst_tLast[where s=q']
     apply auto
     done
   then obtain t
-    where tT: "t \<in> jkbpC"
+    where tT: "t \<in> SPR.jkbpC"
       and tp: "tObsC t = tObsC p"
       and tuq: "tFirst t = uq"
       and tvq: "tLast t = vq"
@@ -383,509 +473,603 @@ proof(rule sim_rI)
   have "spr_jview a p = spr_jview a t"
     by (auto intro: spr_jview_tObsCI)
 
-  with pT tT have pt: "(p, t) \<in> relations mkMC a"
-    unfolding mkM_def
-    apply simp
-    done
+  with pT tT have pt: "(p, t) \<in> relations SPR.MC a"
+    unfolding SPR.mkM_def by simp
   from q' uq vq tp tuq tvq have ftq': "spr_sim t = q'"
-    unfolding spr_sim_def_raw by blast
+    unfolding spr_sim_def by auto
   from pt ftq'
-  show "\<exists>q. (p, q) \<in> relations mkMC a \<and> spr_sim q = q'"
+  show "\<exists>q. (p, q) \<in> relations SPR.MC a \<and> spr_sim q = q'"
     by blast
 qed
 
-lemma spr_sim[intro, simp]:
-  "sim mkMC mkMCS spr_sim"
-  using spr_sim_range spr_sim_val spr_sim_f spr_sim_r
+(*>*)
+text{*
+
+The proof proceeds by lock-step induction over @{term "t"} and @{term
+"t'"}, appealing to the @{term "jkbpDet"} assumption, the definition
+of @{term "envObs"} and the constraint @{term "envTrans"}.
+
+It is then a short step to showing reverse simulation, and hence
+simulation:
+
+*}
+
+lemma spr_sim: "sim SPR.MC spr_simMC spr_sim"
+(*<*)
+  using spr_sim_range spr_simVal spr_sim_f spr_sim_r
   unfolding sim_def
   by blast
+(*>*)
 
+end (* context FiniteDetBroadcastEnvironment *)
 
-end
+sublocale FiniteDetBroadcastEnvironment
+        < SPRdet!: SimIncrEnvironment jkbp envInit envAction envTrans envVal
+                                     spr_jview envObs spr_jviewInit spr_jviewIncr
+                                     spr_sim spr_simRels spr_simVal
+(*<*)
+  by default (rule spr_sim)
+(*>*)
 
-type_synonym
-  ('a, 'es, 'as) SPRstate_ec_rep
-    = "('a, 'es, 'as) BEState ODRelation"
-type_synonym
-  ('a, 'es, 'as) SPRstate_rep
-    = "('a, 'es, 'as) SPRstate_ec_rep
-     \<times> ('a, 'es, 'as) SPRstate_ec_rep"
+(* **************************************** *)
 
-definition
-  spr_simInit :: "('a, 'es, 'as) BEState list \<Rightarrow> ('es \<Rightarrow> 'cobs) \<Rightarrow> ('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'obs)
-                     \<Rightarrow> 'a \<Rightarrow> ('cobs \<times> 'obs) \<Rightarrow> ('a :: linorder, 'es :: linorder, 'as :: linorder) SPRstate_rep"
-where
- [code]: "spr_simInit envInit envObsC envObs \<equiv> \<lambda>a iobs.
-             (ODList.fromList [ (s, s). s \<leftarrow> envInit, envObsC (es s) = fst iobs ],
-              ODList.fromList [ (s, s). s \<leftarrow> envInit, envObs a s = iobs ])"
+subsubsection{* Representations *}
 
-(* It takes some digging to get to a representative state. *)
+text{*
 
-definition
-  spr_simObs :: "('es \<Rightarrow> 'cobs)
-               \<Rightarrow> 'a \<Rightarrow> ('a :: linorder, 'es :: linorder, 'as :: linorder) SPRstate_rep \<Rightarrow> 'cobs \<times> 'as option"
-where
-  [code]: "spr_simObs envObsC \<equiv> \<lambda>a. (\<lambda>s. (envObsC (es s), ODList.lookup (ps s) a)) \<circ> snd \<circ> ODList.hd \<circ> snd"
+As before we canonically represent the quotient of the simulated
+worlds @{typ "('a, 'es, 'as) spr_simWorld"} under @{term
+"spr_simRels"} using ordered, distinct lists. In particular, we use
+the type @{typ "('a \<times> 'a) odlist"} (abbreviated @{typ "'a
+odrelation"}) to canonically represent relations.
 
-function
-  eval_rec :: "(('a, 'es, 'as) BEState \<Rightarrow> 'p \<Rightarrow> bool)
-         \<Rightarrow> ('a :: linorder, 'es :: linorder, 'as :: linorder) SPRstate_ec_rep
-         \<Rightarrow> ('a \<Rightarrow> ('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState \<Rightarrow> ('a, 'es, 'as) SPRstate_ec_rep)
-         \<Rightarrow> ('a, 'p) Kform
-         \<Rightarrow> ('a, 'es, 'as) SPRstate_ec_rep"
-where
-  "eval_rec val X R (Kprop p)  = ODList.filter (\<lambda>s. val (snd s) p) X"
-| "eval_rec val X R (Knot \<phi>)   = ODList.difference X (eval_rec val X R \<phi>)"
-| "eval_rec val X R (Kand \<phi> \<psi>) = ODList.intersection (eval_rec val X R \<phi>) (eval_rec val X R \<psi>)"
-| "eval_rec val X R (\<^bold>K\<^sub>a \<phi>)     = ODList.filter (\<lambda>s. eval_rec val (R a s) R (Knot \<phi>) = ODList.empty) X"
-  by pat_completeness auto
-termination eval_rec by size_change
+*}
 
-declare eval_rec.simps [code]
-
-fun
-  evalS
-where
-  "evalS val X R (Kprop p)  = undefined"
-| "evalS val X R (Knot \<phi>)   = (\<not>evalS val X R \<phi>)"
-| "evalS val X R (Kand \<phi> \<psi>) = (evalS val X R \<phi> \<and> evalS val X R \<psi>)"
-| "evalS val X R (\<^bold>K\<^sub>a \<phi>)     = (eval_rec val X R (Knot \<phi>) = ODList.empty)"
-
-(* Partition the common observation EC for each agent. *)
-
-definition
-  coEC_rels :: "('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
-              \<Rightarrow> 'a \<Rightarrow> ('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState
-                    \<Rightarrow> ('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState \<Rightarrow> bool"
-where
-  "coEC_rels envObs \<equiv> \<lambda>a (u, v) (u', v').
-     envObs a u = envObs a u' \<and> envObs a v = envObs a v'"
-
-definition
-  spr_coEC_relation_image :: "('a \<Rightarrow> ('a :: linorder, 'es :: linorder, 'as :: linorder) BEState \<Rightarrow> 'cobs \<times> 'as option)
-                      \<Rightarrow> ('a, 'es, 'as) BEState ODRelation
-                      \<Rightarrow> 'a \<Rightarrow> ('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState
-                           \<Rightarrow> ('a, 'es, 'as) SPRstate_ec_rep"
-where
-  [code]: "spr_coEC_relation_image envObs coEC \<equiv> \<lambda>a s.
-             fromList [ s' . s' \<leftarrow> toList coEC, coEC_rels envObs a s s' ]"
-
-definition
-  "eval envVal envObs \<equiv> \<lambda>(Y, X) \<phi>.
-     evalS envVal X (spr_coEC_relation_image envObs Y) \<phi>"
-
-definition
-  spr_simAction :: "('a \<Rightarrow> ('a, 'p, 'aAct) KBP) \<Rightarrow> (('a, 'es, 'as) BEState \<Rightarrow> 'p \<Rightarrow> bool)
-                     \<Rightarrow> ('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
-                     \<Rightarrow> ('a :: linorder, 'es :: linorder, 'as :: linorder) SPRstate_rep \<Rightarrow> 'a \<Rightarrow> 'aAct list"
-where
-  [code]: "spr_simAction jkbp envVal envObs \<equiv> \<lambda>ec a.
-             [ action gc. gc \<leftarrow> jkbp a, eval envVal envObs ec (guard gc) ]"
-
-(* Concretely enumerate all the agent action functions. Can't be too
-abstract here as we want extensionality. *)
-
-definition
-  mkAact
-where
-  "mkAact xs \<equiv> foldr (\<lambda>(a, acts) M. [ m(a := act) . m \<leftarrow> M, act \<leftarrow> acts ]) xs [(\<lambda>_. undefined)]"
-
-lemma mkAact_FIXME:
-  "\<lbrakk> M \<in> set (mkAact xs); x \<in> fst ` set xs \<rbrakk>
-     \<Longrightarrow> M x \<in> { y |y ys. (x, ys) \<in> set xs \<and> y \<in> set ys}"
-  unfolding mkAact_def
-  apply (induct xs arbitrary: M)
-   apply simp_all
-  apply (case_tac a)
-  apply clarsimp
-  apply (erule disjE)
-  apply auto
-  done
-
-lemma FIXME_distinct_map_fst:
-  "\<lbrakk> x \<notin> fst ` set xs; distinct (map fst xs) \<rbrakk> \<Longrightarrow> (x, y) \<notin> set xs"
-  by (induct xs) auto
-
-lemma mkAact_FIXME_rev:
-  "\<lbrakk> \<And>x. M x \<in> (if x \<in> fst ` set xs then { y |y ys. (x, ys) \<in> set xs \<and> y \<in> set ys} else {undefined}); distinct (map fst xs) \<rbrakk>
-      \<Longrightarrow> M \<in> set (mkAact xs)"
-proof(induct xs arbitrary: M)
-  case Nil thus ?case
-    unfolding mkAact_def by simp
-next
-  case (Cons x xs)
-  let ?M' = "M(fst x := undefined)"
-  have M': "?M' \<in> set (mkAact xs)"
-    apply (rule Cons.hyps)
-     prefer 2
-     using Cons(3)
-     apply simp
-    apply (case_tac "xa = fst x")
-     using Cons(3)
-     apply simp
-    apply (case_tac "xa \<in> fst ` set xs")
-     apply (cut_tac x=xa in Cons(2))
-     apply (cases x)
-     apply auto[1]
-    apply (cut_tac x=xa in Cons(2))
-    apply simp
-    done
-  then show ?case
-    unfolding mkAact_def
-    apply (cases x)
-    apply simp
-    apply (rule bexI[where x="?M'"])
-     apply simp_all
-    apply (rule_tac x="M a" in image_eqI)
-     apply simp
-    apply (cut_tac x=a in Cons(2))
-    using Cons(3)
-    apply clarsimp
-    apply (erule disjE)
-     apply simp
-    apply (auto dest: FIXME_distinct_map_fst)
-    done
-qed
-
-definition
-  mkAacts :: "('a \<Rightarrow> 'b list) \<Rightarrow> 'a list \<Rightarrow> ('a \<Rightarrow> 'b) list"
-where
-  "mkAacts f \<equiv> mkAact \<circ> map (\<lambda>x. (x, f x))"
-
-lemma FIXME_dumb:
-  "\<lbrakk> set xs = UNIV \<rbrakk> \<Longrightarrow> x \<in> fst ` set (map (\<lambda>x. (x, f x)) xs)"
-  apply (simp only: set_map[symmetric] map_map)
-  apply simp
-  done
-
-lemma mkAacts_FIXME:
-  assumes xs: "set xs = UNIV"
-      and d: "distinct xs"
-  shows "g \<in> set (mkAacts f xs) \<longleftrightarrow> (\<forall>x. g x \<in> set (f x))"
-  unfolding mkAacts_def
-  apply simp
-  apply rule
-   apply clarsimp
-   apply (cut_tac x=x in mkAact_FIXME[where M=g, OF _ FIXME_dumb[OF xs]])
-    apply simp
-   apply clarsimp
-  apply (rule mkAact_FIXME_rev)
-   using FIXME_dumb[OF xs]
-   apply auto[1]
-   apply (rule_tac x="f xa" in exI)
-   apply simp
-   apply (rule_tac x=xa in image_eqI)
-    apply simp
-   apply simp
-  using d
-  apply (simp add: distinct_map)
-  apply (auto intro: inj_onI)
-  done
-
-definition
-  "spr_jAction jkbp envVal envObs coEC s \<equiv> \<lambda>a.
-     spr_simAction jkbp envVal envObs (coEC, spr_coEC_relation_image envObs coEC a s) a"
-
-definition
-  spr_trans :: "'a odlist
-              \<Rightarrow> ('a \<Rightarrow> ('a, 'p, 'aAct) KBP)
-              \<Rightarrow> (('a, 'es, 'as) BEState \<Rightarrow> 'eAct list)
-              \<Rightarrow> ('eAct \<Rightarrow> ('a \<Rightarrow> 'aAct) \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> ('a, 'es, 'as) BEState)
-              \<Rightarrow> (('a, 'es, 'as) BEState \<Rightarrow> 'p \<Rightarrow> bool)
-              \<Rightarrow> ('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
-                \<Rightarrow> ('a, 'es, 'as) SPRstate_ec_rep
-                \<Rightarrow> ('a, 'es, 'as) SPRstate_ec_rep
-                  \<Rightarrow> (('a :: linorder, 'es :: linorder, 'as :: linorder) BEState \<times> ('a, 'es, 'as) BEState) list"
-where
-  [code]: "spr_trans agents jkbp envAction envTrans envVal envObs \<equiv> \<lambda>coEC ec.
-             [ (initialS, succS) .
-                 (initialS, finalS) \<leftarrow> toList ec,
-                 eact \<leftarrow> envAction finalS,
-                 succS \<leftarrow> [ envTrans eact aact finalS .
-                             aact \<leftarrow> mkAacts (spr_jAction jkbp envVal envObs coEC (initialS, finalS)) (toList agents) ] ]"
-
-definition
-  spr_simObsC :: "('es \<Rightarrow> 'cobs)
-               \<Rightarrow> (('a :: linorder, 'es :: linorder, 'as :: linorder) BEState \<times> ('a, 'es, 'as) BEState) odlist
-               \<Rightarrow> 'cobs"
-where
-  [code]: "spr_simObsC envObsC \<equiv> envObsC \<circ> es \<circ> snd \<circ> ODList.hd"
-
-abbreviation
-  envObs_rel :: "(('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
-               \<Rightarrow> (('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState) Relation"
-where
-  "envObs_rel envObs \<equiv> {(s, s'). envObs (snd s') = envObs (snd s)}"
-
-lemma envObs_rel_equiv:
-  "equiv UNIV (envObs_rel envObs)"
-  by (rule equivI) (auto intro: refl_onI symI transI)
-
-definition
-  spr_simTrans :: "'a odlist
-              \<Rightarrow> ('a \<Rightarrow> ('a, 'p, 'aAct) KBP)
-              \<Rightarrow> (('a, 'es, 'as) BEState \<Rightarrow> 'eAct list)
-              \<Rightarrow> ('eAct \<Rightarrow> ('a \<Rightarrow> 'aAct) \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> ('a, 'es, 'as) BEState)
-              \<Rightarrow> (('a, 'es, 'as) BEState \<Rightarrow> 'p \<Rightarrow> bool)
-              \<Rightarrow> ('es \<Rightarrow> 'cobs)
-              \<Rightarrow> ('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
-                \<Rightarrow> 'a
-                \<Rightarrow> ('a, 'es, 'as) SPRstate_rep
-                  \<Rightarrow> ('a :: linorder, 'es :: linorder, 'as :: linorder) SPRstate_rep list"
-where
-  [code]: "spr_simTrans agents jkbp envAction envTrans envVal envObsC envObs \<equiv> \<lambda>a ec.
-     let aSuccs = spr_trans agents jkbp envAction envTrans envVal envObs (fst ec) (snd ec);
-         coEC' = fromList (spr_trans agents jkbp envAction envTrans envVal envObs (fst ec) (fst ec))
-      in [ (ODList.filter (\<lambda>s. envObsC (es (snd s)) = spr_simObsC envObsC aEC') coEC', aEC')
-             . aEC' \<leftarrow> map fromList (partition (envObs_rel (envObs a)) aSuccs) ]"
-
-context DetBroadcastEnvironment
+context FiniteDetBroadcastEnvironment
 begin
 
-(* Define a bunch of locale-local abbreviations. Note these aren't
-polymorphic - these type variables and sorts and fixed by the
-locale. The type (sort) errors can be confusing. *)
+type_synonym (in -) ('a, 'es, 'as) spr_simWorldsECRep
+  = "('a, 'es, 'as) BEState odrelation"
+type_synonym (in -) ('a, 'es, 'as) spr_simWorldsRep
+  = "('a, 'es, 'as) spr_simWorldsECRep \<times> ('a, 'es, 'as) spr_simWorldsECRep"
 
-abbreviation
-  spr_simInit :: "'a \<Rightarrow> ('cobs \<times> 'as option) \<Rightarrow> ('a, 'es, 'as) SPRstate_rep"
-where
-  "spr_simInit \<equiv> SPRViewDet.spr_simInit envInit envObsC envObs"
+text{*
 
-abbreviation
-  spr_simObs :: "'a \<Rightarrow> ('a, 'es, 'as) SPRstate_rep \<Rightarrow> 'cobs \<times> 'as option"
-where
-  "spr_simObs \<equiv> SPRViewDet.spr_simObs envObsC"
+We can abstract such a representation into a set of simulated
+equivalence classes:
 
-abbreviation
-  spr_simAction :: "('a, 'es, 'as) SPRstate_rep \<Rightarrow> 'a \<Rightarrow> 'aAct list"
-where
-  "spr_simAction \<equiv> SPRViewDet.spr_simAction jkbp envVal envObs"
-
-abbreviation
-  spr_trans :: "('a, 'es, 'as) SPRstate_ec_rep
-              \<Rightarrow> ('a, 'es, 'as) SPRstate_ec_rep
-              \<Rightarrow> (('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState) list"
-where
-  "spr_trans \<equiv> SPRViewDet.spr_trans agents jkbp envAction envTrans envVal envObs"
-
-abbreviation
-  spr_simTrans :: "'a \<Rightarrow> ('a, 'es, 'as) SPRstate_rep \<Rightarrow> ('a, 'es, 'as) SPRstate_rep list"
-where
-  "spr_simTrans \<equiv> SPRViewDet.spr_simTrans agents jkbp envAction envTrans envVal envObsC envObs"
-
-(* Abstract from representations to sets of simulated equivalence
-classes. *)
+*}
 
 definition
-  spr_simAbs :: "('a, 'es, 'as) SPRstate_rep \<Rightarrow> ('a, 'es, 'as) SPRstate set"
+  spr_simAbs :: "('a, 'es, 'as) spr_simWorldsRep
+              \<Rightarrow> ('a, 'es, 'as) spr_simWorld set"
 where
-  "spr_simAbs \<equiv> \<lambda>(coEC, aEC). { \<lparr> sprFst = s, sprLst = s', sprCRel = toSet coEC \<rparr> |s s'. (s, s') \<in> toSet aEC }"
+  "spr_simAbs \<equiv> \<lambda>(cec, aec). { \<lparr> sprFst = s, sprLst = s', sprCRel = toSet cec \<rparr>
+                                |s s'. (s, s') \<in> toSet aec }"
+
+text{*
+
+Assuming @{term "X"} represents a simulated equivalence class for
+@{term "t \<in> jkbpC"}, we can decompose @{term "spr_simAbs X"} in terms
+of @{term "tObsC_abs t"} and @{term "agent_abs t"}:
+
+*}
 
 definition
-  agent_equiv :: "'a \<Rightarrow> ('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) BEState Relation"
+  agent_abs :: "'a \<Rightarrow> ('a, 'es, 'as) BEState Trace
+             \<Rightarrow> ('a, 'es, 'as) BEState Relation"
 where
-  "agent_equiv a t \<equiv>
-     { (tFirst t', tLast t') |t'. t' \<in> jkbpC \<and> spr_jview a t' = spr_jview a t }"
+  "agent_abs a t \<equiv> { (tFirst t', tLast t')
+                     |t'. t' \<in> SPR.jkbpC \<and> spr_jview a t' = spr_jview a t }"
+(*<*)
 
-lemma agent_equivI[intro]:
-  "\<lbrakk> spr_jview a t' = spr_jview a t; t' \<in> jkbpC; t \<in> jkbpC \<rbrakk>
-      \<Longrightarrow> (tFirst t', tLast t') \<in> agent_equiv a t"
-  unfolding agent_equiv_def by auto
+lemma agent_absI[intro]:
+  "\<lbrakk> spr_jview a t' = spr_jview a t; t' \<in> SPR.jkbpC; t \<in> SPR.jkbpC \<rbrakk>
+      \<Longrightarrow> (tFirst t', tLast t') \<in> agent_abs a t"
+  unfolding agent_abs_def by auto
 
-lemma simAbs_ec_refl:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
+lemma spr_simAbs_refl:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
   shows "spr_sim t \<in> spr_simAbs ec"
   using assms by simp
 
-lemma simAbs_ec_tObsC_abs[simp]:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
+lemma spr_simAbs_tObsC_abs[simp]:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
   shows "toSet (fst ec) = tObsC_abs t"
-  using tC simAbs_ec_refl[OF tC ec]
-  unfolding spr_sim_def_raw spr_simAbs_def by auto
+  using tC spr_simAbs_refl[OF tC ec]
+  unfolding spr_sim_def spr_simAbs_def by auto
 
-lemma simAbs_ec_agent_equiv[simp]:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
-  shows "toSet (snd ec) = agent_equiv a t" (is "?lhs = ?rhs")
+lemma spr_simAbs_agent_abs[simp]:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
+  shows "toSet (snd ec) = agent_abs a t"
   using tC ec
-  unfolding spr_sim_def_raw spr_simAbs_def agent_equiv_def
+  unfolding spr_sim_def spr_simAbs_def agent_abs_def
   apply (cases ec)
   apply auto
   apply (subgoal_tac "\<lparr>sprFst = aaa, sprLst = ba, sprCRel = toSet aa\<rparr> \<in> {\<lparr>sprFst = s, sprLst = s', sprCRel = toSet aa\<rparr> |s s'. (s, s') \<in> toSet b}")
   apply auto
   done
 
-(* simInit *)
+(*>*)
+text{*
 
-lemma spr_simInit:
-  "\<forall>a iobs. iobs \<in> envObs a ` set envInit
-    \<longrightarrow> spr_simAbs (spr_simInit a iobs)
-      = spr_sim ` equiv_class a (tInit iobs)"
-  unfolding spr_simInit_def spr_simAbs_def spr_sim_def_raw
-  apply (clarsimp simp add: Let_def split: split_split)
-  apply rule
-   apply clarsimp
-   apply (rule_tac x="tInit s" in image_eqI)
-  apply (auto iff: spr_jview_def envObs_def_raw)
+This representation is canonical on the domain of interest (though not
+in general):
+
+*}
+
+lemma spr_simAbs_inj_on:
+  "inj_on spr_simAbs { x . spr_simAbs x \<in> SPRdet.jkbpSEC }"
+(*<*)
+proof(rule inj_onI)
+  fix x y
+  assume x: "x \<in> { x . spr_simAbs x \<in> SPRdet.jkbpSEC }"
+     and y: "y \<in> { x . spr_simAbs x \<in> SPRdet.jkbpSEC }"
+     and xy: "spr_simAbs x = spr_simAbs y"
+  from x obtain a t
+    where tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs x = SPRdet.sim_equiv_class a t"
+    by auto
+  from spr_simAbs_tObsC_abs[OF tC ec] spr_simAbs_tObsC_abs[OF tC trans[OF xy[symmetric] ec], symmetric]
+  have "fst x = fst y" by (blast intro: injD[OF toSet_inj])
+  moreover
+  from spr_simAbs_agent_abs[OF tC ec] spr_simAbs_agent_abs[OF tC trans[OF xy[symmetric] ec], symmetric]
+  have "snd x = snd y" by (blast intro: injD[OF toSet_inj])
+  ultimately show "x = y" by (simp add: prod_eqI)
+qed
+
+(*>*)
+text{*
+
+The following sections make use of a Kripke structure constructed over
+@{term "tObsC_abs t"} for some canonical trace @{term "t"}. Note that
+we use the relation in the generated code.
+
+*}
+
+type_synonym (in -) ('a, 'es, 'as) spr_simWorlds
+  = "('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState"
+
+definition (in -)
+  spr_repRels :: "('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
+                 \<Rightarrow> 'a \<Rightarrow> ('a, 'es, 'as) spr_simWorlds Relation"
+where
+  "spr_repRels envObs \<equiv> \<lambda>a. { ((u, v), (u', v')).
+        envObs a u = envObs a u' \<and> envObs a v = envObs a v' }"
+
+definition
+  spr_repVal :: "('a, 'es, 'as) spr_simWorlds \<Rightarrow> 'p \<Rightarrow> bool"
+where
+  "spr_repVal \<equiv> envVal \<circ> snd"
+
+abbreviation
+  spr_repMC :: "('a, 'es, 'as) BEState Relation
+               \<Rightarrow> ('a, 'p, ('a, 'es, 'as) spr_simWorlds) KripkeStructure"
+where
+  "spr_repMC \<equiv> \<lambda>tcobsR. mkKripke tcobsR (spr_repRels envObs) spr_repVal"
+(*<*)
+
+abbreviation
+  spr_repRels :: "'a \<Rightarrow> ('a, 'es, 'as) spr_simWorlds Relation"
+where
+  "spr_repRels \<equiv> SPRViewDet.spr_repRels envObs"
+
+lemma spr_repMC_kripke[intro, simp]: "kripke (spr_repMC X)"
+  by (rule kripkeI) simp
+
+lemma spr_repMC_S5n[intro, simp]: "S5n (spr_repMC X)"
+  unfolding spr_repRels_def
+  by (intro S5nI equivI refl_onI symI transI) auto
+
+(*>*)
+text{*
+
+As before we can show that this Kripke structure is adequate for a
+particular canonical trace @{term "t"} by showing that it simulates
+@{term "spr_repMC"} We introduce an intermediate structure:
+
+*}
+
+abbreviation
+  spr_jkbpCSt :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) spr_simWorld set"
+where
+  "spr_jkbpCSt t \<equiv> spr_sim ` { t' . t' \<in> SPR.jkbpC \<and> tObsC t = tObsC t' }"
+
+abbreviation
+  spr_simMCt :: "('a, 'es, 'as) BEState Trace
+                \<Rightarrow> ('a, 'p, ('a, 'es, 'as) spr_simWorld) KripkeStructure"
+where
+  "spr_simMCt t \<equiv> mkKripke (spr_jkbpCSt t) spr_simRels spr_simVal"
+
+definition
+  spr_repSim :: "('a, 'es, 'as) spr_simWorld \<Rightarrow> ('a, 'es, 'as) spr_simWorlds"
+where
+  "spr_repSim \<equiv> \<lambda>s. (sprFst s, sprLst s)"
+(*<*)
+
+lemma spr_repSim_simps[simp]:
+  "spr_repSim ` spr_sim ` T = (\<lambda>t. (tFirst t, tLast t)) ` T"
+  "spr_repSim (spr_sim t) = (tFirst t, tLast t)"
+  unfolding spr_repSim_def spr_sim_def
+  apply auto
+  apply (rule_tac x="\<lparr> sprFst = tFirst t, sprLst = tLast t, sprCRel = tObsC_abs t \<rparr>" in image_eqI)
+  apply auto
   done
 
-(* simObs *)
+lemma jkbpCSt_jkbpCS_subset:
+  "spr_jkbpCSt t \<subseteq> spr_sim ` SPR.jkbpC"
+  by auto
 
-lemma spr_simObs_aux:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
-  shows "\<exists>x xs. toList (snd ec) = x # xs \<and> envObs a (snd x) = envObs a (tLast t)"
-proof -
-  obtain coEC aEC where ecp: "ec = (coEC, aEC)" by (cases ec)
-  then show "\<exists>x xs. toList (snd ec) = x # xs \<and> envObs a (snd x) = envObs a (tLast t)"
-    apply -
-    apply (cases aEC)
-     using simAbs_ec_refl[OF tC ec]
-     apply (unfold spr_sim_def_raw spr_simAbs_def)[1]
-     apply simp
-    using simAbs_ec_agent_equiv[OF tC ec] ecp
-    apply (auto simp add: Let_def toList_fromList sorted_Cons agent_equiv_def)
-    apply (subgoal_tac "(aa, b) \<in> insert (aa, b) (set xs)")
-     defer
-     apply blast
+(*>*)
+text{**}
+
+lemma spr_repSim:
+  assumes tC: "t \<in> SPR.jkbpC"
+  shows "sim (spr_simMCt t)
+             ((spr_repMC \<circ> sprCRel) (spr_sim t))
+             spr_repSim"
+(*<*) (is "sim ?M ?M' ?f")
+proof
+  show "sim_range ?M ?M' ?f"
+  proof
+    show "worlds ?M' = ?f ` worlds ?M"
+      apply (simp add: spr_sim_def spr_repSim_def)
+      apply (auto iff: tObsC_abs_def)
+      apply (rule_tac x="\<lparr> sprFst = tFirst t', sprLst = tLast t', sprCRel = tObsC_abs t \<rparr>" in image_eqI)
+       apply simp
+      apply (rule_tac x=t' in image_eqI)
+       apply (simp add: tObsC_abs_def)
+      apply auto[1]
+      done
+  next
+    fix a
+    show "relations ?M' a \<subseteq> worlds ?M' \<times> worlds ?M'"
+      by (simp add: spr_sim_def spr_repSim_def)
+  qed
+next
+  show "sim_val ?M ?M' ?f"
+    by rule (simp add: spr_sim_def spr_simVal_def spr_repSim_def spr_repVal_def split: split_split)
+next
+  show "sim_f ?M ?M' ?f"
+    by rule (auto iff: spr_sim_def simp: spr_simRels_def spr_repRels_def spr_repSim_def)
+next
+  show "sim_r ?M ?M' ?f"
+    apply rule
+    unfolding spr_repRels_def spr_repSim_def spr_simRels_def spr_sim_def
+    apply clarsimp
+    apply (rule_tac x="\<lparr> sprFst = aa, sprLst = b, sprCRel = tObsC_abs ta \<rparr>" in exI)
+    apply (auto iff: tObsC_abs_def)
+    apply (rule_tac x=t'a in image_eqI)
     apply auto
     done
 qed
+(*>*)
+text{*
 
-lemma spr_simObs'[iff]:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
-  shows "spr_simObs a ec = envObs a (tLast t)"
-  using simAbs_ec_agent_equiv[OF tC ec] spr_simObs_aux[OF tC ec]
-  unfolding spr_simObs_def envObs_def_raw
-  apply (cases ec)
-  apply clarsimp
-  apply (cut_tac xs="b" and y="(aa, ba)" and ys=xs in hd_toList)
-   apply simp
-  apply simp
+As before we define a set of constants that satisfy the @{text
+"Algorithm"} locale given the assumptions of the @{term
+"FiniteDetBroadcastEnvironment"} locale.
+
+*}
+
+(* **************************************** *)
+
+subsubsection{* Initial states *}
+
+text{*
+
+The initial states for agent @{term "a"} given an initial observation
+@{term "iobs"} consist of the set of states that yield a common
+observation consonant with @{term "iobs"} paired with the set of
+states where @{term "a"} observes @{term "iobs"}:
+
+*}
+
+definition (in -)
+  spr_simInit ::
+        "('a, 'es, 'as) BEState list \<Rightarrow> ('es \<Rightarrow> 'cobs)
+      \<Rightarrow> ('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'obs)
+       \<Rightarrow> 'a \<Rightarrow> ('cobs \<times> 'obs)
+       \<Rightarrow> ('a :: linorder, 'es :: linorder, 'as :: linorder) spr_simWorldsRep"
+where
+  "spr_simInit envInit envObsC envObs \<equiv> \<lambda>a iobs.
+    (ODList.fromList [ (s, s). s \<leftarrow> envInit, envObsC (es s) = fst iobs ],
+     ODList.fromList [ (s, s). s \<leftarrow> envInit, envObs a s = iobs ])"
+(*<*)
+
+abbreviation
+  spr_simInit :: "'a \<Rightarrow> ('cobs \<times> 'as option) \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep"
+where
+  "spr_simInit \<equiv> SPRViewDet.spr_simInit envInit envObsC envObs"
+
+(*>*)
+text{**}
+
+lemma spr_simInit:
+  assumes "iobs \<in> envObs a ` set envInit"
+  shows "spr_simAbs (spr_simInit a iobs)
+       = spr_sim ` { t' \<in> SPR.jkbpC. spr_jview a t' = spr_jviewInit a iobs }"
+(*<*)
+  using assms
+  unfolding spr_simInit_def spr_simAbs_def spr_sim_def_raw
+  apply (clarsimp simp: Let_def SPR.jviewInit split: split_split)
+  apply rule
+   apply clarsimp
+   apply (rule_tac x="tInit s" in image_eqI)
+    apply (auto iff: spr_jview_def envObs_def)
   done
+(*>*)
+
+(* **************************************** *)
+
+subsubsection{* Simulated observations *}
+
+text{*
+
+An observation can be made at any element of the representation of a
+simulated equivalence class of a canonical trace:
+
+*}
+
+definition (in -)
+  spr_simObs ::
+        "('es \<Rightarrow> 'cobs)
+      \<Rightarrow> 'a \<Rightarrow> ('a :: linorder, 'es :: linorder, 'as :: linorder) spr_simWorldsRep
+      \<Rightarrow> 'cobs \<times> 'as option"
+where
+  "spr_simObs envObsC \<equiv> \<lambda>a. (\<lambda>s. (envObsC (es s), ODList.lookup (ps s) a))
+                           \<circ> snd \<circ> ODList.hd \<circ> snd"
+(*<*)
+
+abbreviation
+  spr_simObs :: "'a \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep \<Rightarrow> 'cobs \<times> 'as option"
+where
+  "spr_simObs \<equiv> SPRViewDet.spr_simObs envObsC"
+
+(*>*)
+text{**}
 
 lemma spr_simObs:
-  "\<forall>a ec t. t \<in> jkbpC \<and> spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)
-  \<longrightarrow> spr_simObs a ec = envObs a (tLast t)"
-  by auto
+  assumes tC: "t \<in> SPR.jkbpC"
+  assumes ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
+  shows "spr_simObs a ec = envObs a (tLast t)"
+(*<*)
+proof -
+  have A: "\<forall>s \<in> set (toList (snd ec)). envObs a (snd s) = envObs a (tLast t)"
+    using spr_simAbs_agent_abs[OF tC ec]
+    apply (clarsimp simp: toSet_def)
+    apply (auto simp: agent_abs_def)
+    done
+  from tC ec have B: "(tFirst t, tLast t) \<in> set (toList (snd ec))"
+    by (auto iff: spr_simAbs_def spr_sim_def toSet_def split_def)
+  show ?thesis
+    unfolding spr_simObs_def
+    using list_choose_hd[OF A B]
+    by (simp add: ODList.hd_def envObs_def)
+qed
+(*>*)
 
-(* simAction *)
+(* **************************************** *)
 
-definition
-  spr_rep_rels :: "'a \<Rightarrow> (('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState) Relation"
+subsubsection{* Evaluation *}
+
+text{*
+
+As for the clock semantics (\S\ref{sec:kbps-theory-clock-view-eval}),
+we use the general evalation function @{term "evalS"}.
+
+Once again we propositions are used to filter the set of possible
+worlds @{term "X"}:
+
+*}
+
+abbreviation (in -)
+  spr_evalProp ::
+        "(('a::linorder, 'es::linorder, 'as::linorder) BEState \<Rightarrow> 'p \<Rightarrow> bool)
+      \<Rightarrow> ('a, 'es, 'as) BEState odrelation
+      \<Rightarrow> 'p \<Rightarrow> ('a, 'es, 'as) BEState odrelation"
 where
-  "spr_rep_rels \<equiv> \<lambda>a.
-    { ((u, v), (u', v')) . coEC_rels envObs a (u, v) (u', v') }"
+  "spr_evalProp envVal \<equiv> \<lambda>X p. ODList.filter (\<lambda>s. envVal (snd s) p) X"
 
-definition
-  spr_rep_ks :: "('a, 'es, 'as) BEState Relation
-               \<Rightarrow> ('a, 'p, ('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState) KripkeStructure"
+text{*
+
+The knowledge operation computes the subset of possible worlds @{term
+"cec"} that yield the same observation as @{term "s"} for agent @{term
+"a"}:
+
+*}
+
+definition (in -)
+  spr_knowledge ::
+     "('a \<Rightarrow> ('a::linorder, 'es::linorder, 'as::linorder) BEState
+          \<Rightarrow> 'cobs \<times> 'as option)
+       \<Rightarrow> ('a, 'es, 'as) BEState odrelation
+       \<Rightarrow> 'a \<Rightarrow> ('a, 'es, 'as) spr_simWorlds
+       \<Rightarrow> ('a, 'es, 'as) spr_simWorldsECRep"
 where
-  "spr_rep_ks \<equiv> \<lambda>tcobsR. mkKripke tcobsR spr_rep_rels (envVal \<circ> snd)"
+  "spr_knowledge envObs cec \<equiv> \<lambda>a s.
+    ODList.fromList [ s' . s' \<leftarrow> toList cec, (s, s') \<in> spr_repRels envObs a ]"
+(*<*)
 
-lemma spr_rep_ks_kripke[intro, simp]: "kripke (spr_rep_ks X)"
-  unfolding spr_rep_ks_def by (rule kripkeI) simp
+(* We need to avoid the explicit enumeration of the set in spr_repRels. *)
 
-lemma spr_rep_ks_S5n[intro, simp]: "S5n (spr_rep_ks X)"
-  unfolding spr_rep_ks_def spr_rep_rels_def coEC_rels_def
-  apply (rule S5nI, rule equivI)
-  apply (auto intro: refl_onI symI transI)
+declare (in -) spr_knowledge_def[code del]
+
+lemma (in -) [code]:
+  "spr_knowledge envObs cec = (\<lambda>a s.
+     ODList.fromList [ s' . s' \<leftarrow> toList cec,
+                               envObs a (fst s) = envObs a (fst s') \<and> envObs a (snd s) = envObs a (snd s') ])"
+  unfolding spr_knowledge_def spr_repRels_def by (simp add: split_def)
+
+(*>*)
+text{*
+
+Similarly the common knowledge operation computes the transitive
+closure \citep{AFP:TRANCL} of the union of the knowledge relations for
+the agents @{text "as"}:
+
+*}
+
+definition (in -)
+  spr_commonKnowledge ::
+     "('a \<Rightarrow> ('a::linorder, 'es::linorder, 'as::linorder) BEState
+          \<Rightarrow> 'cobs \<times> 'as option)
+        \<Rightarrow> ('a, 'es, 'as) BEState odrelation
+        \<Rightarrow> 'a list
+        \<Rightarrow> ('a, 'es, 'as) spr_simWorlds
+        \<Rightarrow> ('a, 'es, 'as) spr_simWorldsECRep"
+where
+  "spr_commonKnowledge envObs cec \<equiv> \<lambda>as s.
+    let r = \<lambda>a. ODList.fromList
+               [ (s', s'') . s' \<leftarrow> toList cec, s'' \<leftarrow> toList cec,
+                             (s', s'') \<in> spr_repRels envObs a ];
+        R = toList (ODList.big_union r as)
+     in ODList.fromList (memo_list_trancl R s)"
+(*<*)
+
+(* We need to avoid the explicit enumeration of the set in spr_repRels. *)
+
+declare (in -) spr_commonKnowledge_def[code del]
+
+lemma (in -) [code]:
+  "spr_commonKnowledge envObs cec = (\<lambda>as s.
+    let r = \<lambda>a. ODList.fromList
+               [ (s', s'') . s' \<leftarrow> toList cec, s'' \<leftarrow> toList cec,
+                             envObs a (fst s') = envObs a (fst s'') \<and> envObs a (snd s') = envObs a (snd s'') ];
+        R = toList (ODList.big_union r as)
+     in ODList.fromList (memo_list_trancl R s))"
+  unfolding spr_commonKnowledge_def spr_repRels_def by (simp add: split_def)
+
+(*>*)
+text{*
+
+The evaluation function evaluates a subjective knowledge formula on
+the representation of an equivalence class:
+
+*}
+
+definition (in -)
+  "eval envVal envObs \<equiv> \<lambda>(cec, X).
+     evalS (spr_evalProp envVal)
+           (spr_knowledge envObs cec)
+           (spr_commonKnowledge envObs cec)
+           X"
+(*<*)
+
+lemma spr_knowledge:
+  "s \<in> toSet cec
+    \<Longrightarrow> toSet (spr_knowledge envObs cec a s) = relations (spr_repMC (toSet cec)) a `` {s}"
+  unfolding spr_knowledge_def spr_repRels_def by (auto simp: toSet_def[symmetric])
+
+lemma spr_commonKnowledge_relation_image:
+  "s \<in> toSet cec
+    \<Longrightarrow> toSet (spr_commonKnowledge envObs cec as s) = (\<Union>a \<in> set as. relations (spr_repMC (toSet cec)) a)\<^sup>+ `` {s}"
+  unfolding spr_commonKnowledge_def Let_def
+  apply (simp add: memo_list_trancl toSet_def[symmetric] Image_def split_def)
+  apply (rule Collect_cong)
+  apply (rule_tac f="\<lambda>x. (s, b) \<in> x" in arg_cong)
+  apply (rule arg_cong[where f=trancl])
+  apply fastforce
   done
 
-lemma spr_rep_ks_simps[simp]:
-  "worlds (spr_rep_ks X) = X"
-  "\<lbrakk> (s, s') \<in> relations (spr_rep_ks X) a \<rbrakk> \<Longrightarrow> envObs a (fst s) = envObs a (fst s')"
-  "\<lbrakk> (s, s') \<in> relations (spr_rep_ks X) a \<rbrakk> \<Longrightarrow> envObs a (snd s) = envObs a (snd s')"
-  "valuation (spr_rep_ks X) = envVal \<circ> snd"
-  unfolding spr_rep_ks_def spr_rep_rels_def coEC_rels_def by auto
-
-(* Show the eval function corresponds with the standard semantics. *)
-
-lemma spr_coEC_relation_image_FIXME:
-  "s \<in> toSet coEC
-    \<Longrightarrow> toSet (spr_coEC_relation_image envObs coEC a s) = relations (spr_rep_ks (toSet coEC)) a `` {s}"
-  unfolding spr_coEC_relation_image_def spr_rep_ks_def spr_rep_rels_def
-  by (auto simp: toSet_def[symmetric])
-
-lemma FIXME_rels_closed:
-  "S5n M \<Longrightarrow> relations M a `` (relations M a `` X) \<subseteq> relations M a `` X"
-  apply (drule S5nD[where a=a])
-  apply (erule equivE)
-  by (auto dest: refl_onD symD transD elim: equivE)
-
 lemma eval_rec_models:
-  assumes X: "relations (spr_rep_ks (toSet Y)) a `` toSet X \<subseteq> toSet X"
-      and XY: "toSet X \<subseteq> toSet Y"
+  assumes XY: "toSet X \<subseteq> toSet Y"
       and s: "s \<in> toSet X"
-  shows "s \<in> toSet (eval_rec envVal X (spr_coEC_relation_image envObs Y) \<phi>)
-     \<longleftrightarrow> spr_rep_ks (toSet Y), s \<Turnstile> \<phi>"
-using X XY s
-proof(induct \<phi> arbitrary: X s a)
-  case (Knows a' \<phi> X s a)
-  from Knows(4) show ?case
-    using spr_coEC_relation_image_FIXME[OF set_mp[OF Knows(3) Knows(4)], where a=a']
-    apply (simp add: Let_def)
+  shows "s \<in> toSet (eval_rec (spr_evalProp envVal) (spr_knowledge envObs Y) (spr_commonKnowledge envObs Y) X \<phi>)
+     \<longleftrightarrow> spr_repMC (toSet Y), s \<Turnstile> \<phi>"
+using XY s
+proof(induct \<phi> arbitrary: X s)
+  case (Kknows a' \<phi> X s)
+  from `s \<in> toSet X` spr_knowledge[OF set_mp[OF Kknows(2) Kknows(3)], where a=a']
+  show ?case
+    apply simp
     apply rule
      apply (drule arg_cong[where f="toSet"])
      apply (clarsimp simp: odlist_all_iff)
-     apply (cut_tac a=a' and s="(a, b)" and X="spr_coEC_relation_image envObs Y a' (aa, ba)" in Knows.hyps)
-      using Knows(2)
-      apply simp_all
-      apply (auto simp add: FIXME_rels_closed[OF spr_rep_ks_S5n])[1]
-      apply (auto iff: spr_rep_ks_def)[1]
-     apply auto[1]
+     apply (cut_tac s="(a, b)" and X="spr_knowledge envObs Y a' (aa, ba)" in Kknows.hyps)
+      using Kknows(2) Kknows(3)
+      apply (auto simp add: S5n_rels_closed[OF spr_repMC_S5n])[3]
 
     apply (clarsimp simp: toSet_eq_iff odlist_all_iff)
-    apply (subst Knows.hyps[where a=a'])
-     apply simp_all
-     apply (auto simp add: FIXME_rels_closed[OF spr_rep_ks_S5n])[1]
-     apply (auto iff: spr_rep_ks_def)[1]
+    apply (subst Kknows.hyps)
+      using Kknows(2) Kknows(3)
+      apply (auto simp add: S5n_rels_closed[OF spr_repMC_S5n] o_def)
     done
-qed simp_all
+next
+  case (Kcknows as \<phi> X s)
+  show ?case
+  proof(cases "as = Nil")
+    case True with `s \<in> toSet X` show ?thesis by clarsimp
+  next
+    case False
+    with `s \<in> toSet X` spr_commonKnowledge_relation_image[OF set_mp[OF Kcknows(2) Kcknows(3)], where as=as]
+    show ?thesis
+      apply simp
+      apply rule
+       apply (drule arg_cong[where f="toSet"])
+       apply (clarsimp simp: odlist_all_iff)
+       apply (cut_tac s="(a, b)" and X="spr_commonKnowledge envObs Y as (aa, ba)" in Kcknows.hyps)
+        using Kcknows(2) Kcknows(3)
+        apply (auto simp add: S5n_rels_closed[OF spr_repMC_S5n])[2]
+        apply (subst (asm) trancl_unfold) back back back (* FIXME clunky, why did this break? *)
+        apply (auto simp add: S5n_rels_closed[OF spr_repMC_S5n])[2]
 
-lemma FIXME_X_closed:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
-  shows "relations (spr_rep_ks (toSet (fst ec))) a `` toSet (snd ec) \<subseteq> toSet (snd ec)"
-  apply rule
-  apply (simp add: simAbs_ec_agent_equiv[OF tC ec] simAbs_ec_tObsC_abs[OF tC ec])
-  unfolding spr_rep_ks_def
-  apply simp
-  unfolding agent_equiv_def tObsC_abs_def spr_rep_rels_def coEC_rels_def
-  apply auto
-  apply (rule_tac x=t'b in exI)
-  apply clarsimp
-  apply (rule spr_jview_tObsCI)
-  apply simp_all
-  apply auto[1]
-  apply (rule spr_jview_det_ps)
-  using tC
-  apply auto
-  done
+      apply (clarsimp simp: toSet_eq_iff odlist_all_iff)
+      apply (subst Kcknows.hyps)
+       using Kcknows(2) Kcknows(3)
+       apply (auto simp add: S5n_rels_closed[OF spr_repMC_S5n] o_def)
+       apply (subst (asm) trancl_unfold) back back back (* FIXME clunky, why did this break? *)
+       apply blast
+      done
+  qed
+qed (simp_all add: spr_repVal_def)
 
-lemma FIXME_agent_equiv_tObsC_abs:
-  "tObsC t' = tObsC t \<Longrightarrow> agent_equiv a t \<subseteq> tObsC_abs t'"
-  unfolding agent_equiv_def tObsC_abs_def
+lemma agent_abs_tObsC_abs_subset:
+  "tObsC t' = tObsC t \<Longrightarrow> agent_abs a t \<subseteq> tObsC_abs t'"
+  unfolding agent_abs_def tObsC_abs_def
   by (auto intro: spr_jview_tObsC)
 
-lemma FIXME_X_Y:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
+lemma spr_simAbs_fst_snd:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
   shows "toSet (snd ec) \<subseteq> toSet (fst ec)"
-  using assms by (simp add: FIXME_agent_equiv_tObsC_abs)
+  using assms by (simp add: agent_abs_tObsC_abs_subset)
 
-lemma FIXME_rels:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
-      and x: "x \<in> agent_equiv a t"
-      and xy: "(x, y) \<in> relations (spr_rep_ks (toSet (fst ec))) a"
-  shows "y \<in> agent_equiv a t"
+lemma tObsC_abs_rel:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
+      and r: "(x, y) \<in> (UNION (set as) (relations (spr_repMC (tObsC_abs t))))\<^sup>+"
+  shows "x \<in> tObsC_abs t \<longleftrightarrow>y \<in> tObsC_abs t"
+  using assms
+  apply -
+  apply rule
+   apply (erule trancl_induct, auto)+
+  done
+
+lemma spr_simAbs_fst_snd_trc:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
+  shows "toSet (big_union (spr_commonKnowledge envObs (fst ec) as) (toList (snd ec))) \<subseteq> toSet (fst ec)"
+  using assms
+  apply clarsimp
+  apply (simp only: toSet_def[symmetric])
+  apply (subgoal_tac "(ab,ba) \<in> toSet (fst ec)")
+   apply (simp add: spr_commonKnowledge_relation_image tObsC_abs_rel[OF tC ec])
+  apply (simp add: set_mp[OF agent_abs_tObsC_abs_subset[OF refl]])
+  done
+
+lemma agent_abs_rel_inv:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
+      and x: "x \<in> agent_abs a t"
+      and xy: "(x, y) \<in> relations (spr_repMC (toSet (fst ec))) a"
+  shows "y \<in> agent_abs a t"
   using assms
   apply simp
-  unfolding agent_equiv_def tObsC_abs_def spr_rep_ks_def spr_rep_rels_def coEC_rels_def
+  unfolding agent_abs_def tObsC_abs_def spr_repRels_def
   apply auto
   apply (rule_tac x=t'b in exI)
   apply clarsimp
@@ -897,13 +1081,13 @@ lemma FIXME_rels:
   apply auto
   done
 
-lemma FIXME_rels2:
-  assumes tC: "t \<in> jkbpC"
-      and x: "x \<in> agent_equiv a t"
-      and y: "y \<in> agent_equiv a t"
-  shows "(x, y) \<in> relations (spr_rep_ks (tObsC_abs t)) a"
+lemma agent_abs_tObsC_abs:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and x: "x \<in> agent_abs a t"
+      and y: "y \<in> agent_abs a t"
+  shows "(x, y) \<in> relations (spr_repMC (tObsC_abs t)) a"
   using assms
-  unfolding agent_equiv_def spr_rep_ks_def spr_rep_rels_def coEC_rels_def
+  unfolding agent_abs_def spr_repRels_def
   apply clarsimp
   apply safe
   prefer 3
@@ -920,61 +1104,156 @@ lemma FIXME_rels2:
    apply simp
   done
 
+lemma agent_abs_spr_repRels:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and x: "x \<in> agent_abs a t"
+      and y: "y \<in> agent_abs a t"
+  shows "(x, y) \<in> spr_repRels a"
+  using assms
+  unfolding agent_abs_def spr_repRels_def
+  by (auto elim!: spr_tFirst spr_tLast)
+
 lemma evalS_models:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
       and subj_phi: "subjective a \<phi>"
       and s: "s \<in> toSet (snd ec)"
-  shows "evalS envVal (snd ec) (spr_coEC_relation_image envObs (fst ec)) \<phi>
-     \<longleftrightarrow> spr_rep_ks (toSet (fst ec)), s \<Turnstile> \<phi>" (is "?lhs \<phi> = ?rhs \<phi>")
+  shows "evalS (spr_evalProp envVal) (spr_knowledge envObs (fst ec)) (spr_commonKnowledge envObs (fst ec)) (snd ec) \<phi>
+     \<longleftrightarrow> spr_repMC (toSet (fst ec)), s \<Turnstile> \<phi>" (is "?lhs \<phi> = ?rhs \<phi>")
 using subj_phi s ec
-proof(induct \<phi> rule: subjective.induct[case_names Kprop Knot Kand Knows])
-  case (Knows a a' \<psi>) thus ?case
-    apply (simp add: toSet_eq_iff)
+proof(induct \<phi> rule: subjective.induct[case_names Kprop Knot Kand Kknows Kcknows])
+  case (Kknows a a' \<psi>) thus ?case
+    apply (clarsimp simp: toSet_eq_iff)
     apply rule
      apply clarsimp
      apply (subgoal_tac "(a, b) \<in> toSet (snd ec)")
-     apply (drule_tac c="(a, b)" in subsetD)
-       apply blast
-      apply (simp only: eval_rec_models[OF FIXME_X_closed[OF tC ec] FIXME_X_Y[OF tC ec]])
-     using tC Knows
-     apply simp
-     apply (erule FIXME_rels[OF tC])
-     apply simp
-     using tC ec
-     apply simp
+      apply (drule (1) subsetD) back
+      apply (simp only: eval_rec_models[OF spr_simAbs_fst_snd[OF tC ec]])
+      using tC Kknows
+      apply simp
+       using tC ec
+       apply -
+       apply (erule (1) agent_abs_rel_inv[OF tC])
+       apply simp
 
     apply clarsimp
-    apply (simp only: eval_rec_models[OF FIXME_X_closed[OF tC ec] FIXME_X_Y[OF tC ec]])
-    using tC ec
-    apply simp
-    apply (erule_tac x="(aa, b)" in ballE)
+    apply (subst eval_rec_models[OF spr_simAbs_fst_snd[OF tC ec]])
      apply simp
-    using FIXME_rels2[OF tC]
-    apply simp
+    using agent_abs_tObsC_abs[OF tC]
+    apply auto
     done
+next
+  case (Kcknows a as \<psi>)
+  have "?lhs (Kcknows as \<psi>)
+      = (\<forall>y\<in>agent_abs a t.
+           \<forall>x\<in>((\<Union>a\<in>set as. relations (spr_repMC (toSet (fst ec))) a)\<^sup>+ `` {y}).
+              x \<in> toSet (eval_rec (spr_evalProp envVal) (spr_knowledge envObs (fst ec)) (spr_commonKnowledge envObs (fst ec))
+                       (big_union (spr_commonKnowledge envObs (fst ec) as) (toList (snd ec))) \<psi>))"
+    (* FIXME dreaming of a cong rule here. *)
+    using toSet_def[symmetric] spr_simAbs_agent_abs[OF tC Kcknows(3)] spr_simAbs_tObsC_abs[OF tC Kcknows(3)]
+    apply (clarsimp simp: toSet_eq_iff toSet_def[symmetric] subset_eq)
+    apply (rule ball_cong[OF refl])
+    apply (rule ball_cong)
+    apply (subst spr_commonKnowledge_relation_image)
+    apply (simp_all add: set_mp[OF agent_abs_tObsC_abs_subset[OF refl]])
+    done
+  also have "... = (\<forall>s\<in>agent_abs a t. spr_repMC (toSet (fst ec)), s \<Turnstile> Kcknows as \<psi>)"
+    apply (rule ball_cong[OF refl])
+    apply simp
+    apply (rule ball_cong[OF refl])
+    apply (subst eval_rec_models[OF spr_simAbs_fst_snd_trc[OF tC Kcknows(3), where as=as], symmetric])
+     using spr_simAbs_agent_abs[OF tC Kcknows(3)] spr_simAbs_tObsC_abs[OF tC Kcknows(3)]
+     apply (simp add: toSet_def[symmetric])
+     apply (rule_tac x=y in bexI)
+      apply (subst spr_commonKnowledge_relation_image)
+       apply (auto elim: set_mp[OF agent_abs_tObsC_abs_subset[OF refl]])[1]
+      apply simp
+     apply assumption
+    apply (rule refl)
+    done
+  also have "... = spr_repMC (toSet (fst ec)), s \<Turnstile> Kknows a (Kcknows as \<psi>)"
+    using spr_simAbs_agent_abs[OF tC Kcknows(3)] spr_simAbs_tObsC_abs[OF tC Kcknows(3)]
+          Kcknows(2) tC
+    apply simp
+    apply (rule ball_cong[OF _ refl])
+    apply rule
+     apply (clarsimp simp: subsetD[OF agent_abs_tObsC_abs_subset] agent_abs_spr_repRels[OF tC])
+    apply (clarsimp elim!: agent_abs_rel_inv[OF tC Kcknows(3)])
+    done
+
+  also have "... = spr_repMC (toSet (fst ec)), s \<Turnstile> Kcknows as \<psi>"
+    apply (rule S5n_common_knowledge_fixed_point_simpler[symmetric])
+    using spr_simAbs_agent_abs[OF tC Kcknows(3)] spr_simAbs_tObsC_abs[OF tC Kcknows(3)]
+          Kcknows(1) Kcknows(2)
+      apply (auto elim: set_mp[OF agent_abs_tObsC_abs_subset[OF refl]])
+    done
+  finally show ?case .
 qed simp_all
 
-lemma eval_models':
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
-      and subj_phi: "subjective a \<phi>"
-      and s: "s \<in> toSet (snd ec)"
-  shows "eval envVal envObs ec \<phi>
-     \<longleftrightarrow> spr_rep_ks (toSet (fst ec)), s \<Turnstile> \<phi>"
+(*>*)
+text{*
+
+This function corresponds with the standard semantics:
+
+*}
+
+lemma eval_models:
+  assumes tC: "t \<in> SPR.jkbpC"
+  assumes ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
+  assumes subj_phi: "subjective a \<phi>"
+  assumes s: "s \<in> toSet (snd ec)"
+  shows "eval envVal envObs ec \<phi> \<longleftrightarrow> spr_repMC (toSet (fst ec)), s \<Turnstile> \<phi>"
+(*<*)
   unfolding eval_def
   using evalS_models[OF tC ec subj_phi s]
   apply auto
   done
+(*>*)
 
-(* This final lemma is specialised for the ultimate equivalence
-proof. *)
+(* **************************************** *)
 
-lemma eval_models:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
-  shows "set (spr_simAction ec a)
-       = set (jAction (spr_rep_ks (toSet (fst ec))) (tFirst t, tLast t) a)"
+subsubsection{* Simulated actions *}
+
+text{*
+
+From a common equivalence class and a subjective equivalence class for
+agent @{term "a"}, we can compute the actions enabled for @{term "a"}:
+
+*}
+
+definition (in -)
+  spr_simAction ::
+       "('a, 'p, 'aAct) JKBP \<Rightarrow> (('a, 'es, 'as) BEState \<Rightarrow> 'p \<Rightarrow> bool)
+     \<Rightarrow> ('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
+     \<Rightarrow> 'a
+     \<Rightarrow> ('a::linorder, 'es::linorder, 'as::linorder) spr_simWorldsRep
+     \<Rightarrow> 'aAct list"
+where
+  "spr_simAction jkbp envVal envObs \<equiv> \<lambda>a ec.
+    [ action gc. gc \<leftarrow> jkbp a, eval envVal envObs ec (guard gc) ]"
+(*<*)
+
+abbreviation
+  spr_simAction :: "'a \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep \<Rightarrow> 'aAct list"
+where
+  "spr_simAction \<equiv> SPRViewDet.spr_simAction jkbp envVal envObs"
+
+(*>*)
+text{*
+
+Using the above result about evaluation, we can relate @{text
+"spr_simAction"} to @{term "jAction"}. Firstly, @{text
+"spr_simAction"} behaves the same as @{term "jAction"} using the
+@{term "spr_repMC"} structure:
+
+*}
+
+lemma spr_action_jaction:
+  assumes tC: "t \<in> SPR.jkbpC"
+  assumes ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
+  shows "set (spr_simAction a ec)
+       = set (jAction (spr_repMC (toSet (fst ec))) (tFirst t, tLast t) a)"
+(*<*)
   unfolding spr_simAction_def jAction_def
   apply clarsimp
   apply rule
@@ -982,247 +1261,269 @@ lemma eval_models:
    apply (rule_tac x=aa in bexI)
     apply simp
    apply clarsimp
-   apply (subst eval_models'[OF tC ec, symmetric])
+   apply (subst eval_models[OF tC ec, symmetric])
     using tC ec subj
     apply simp_all
-    apply (rule agent_equivI)
+    apply (rule agent_absI)
     apply simp_all
   apply clarsimp
   apply (rule_tac x=aa in bexI)
    apply simp
   apply clarsimp
-  apply (subst eval_models'[OF tC ec])
+  apply (subst eval_models[OF tC ec])
    using tC ec subj
    apply simp_all
-  apply (rule agent_equivI)
+  apply (rule agent_absI)
    apply simp_all
   done
 
-(* We need an intermediate Kripke structure that allows us to show we
-have retained enough structure from @{term "mkMCS"} to decide the
-formulas in the kbp.
-
-This is a Kripke structure for the simulated temporal slice: the
-subset of jkbpC under simulation relevant to @{term "t"}. *)
-
-definition
-  "spr_rep_sim \<equiv> \<lambda>s. (sprFst s, sprLst s)"
-
-abbreviation
-  "jkbpCSt_spr t \<equiv> spr_sim ` { t' . t' \<in> jkbpC \<and> tObsC t = tObsC t' }"
-
-abbreviation
-  "mkMCSt_spr t \<equiv> mkKripke (jkbpCSt_spr t) spr_sim_rels spr_sim_val"
-
-lemma FIXME_spr_rep_sim_simps[simp]:
-  "spr_rep_sim ` spr_sim ` T = (\<lambda>t. (tFirst t, tLast t)) ` T"
-  "spr_rep_sim (spr_sim t) = (tFirst t, tLast t)"
-  unfolding spr_rep_sim_def spr_sim_def_raw
-  apply auto
-  apply (rule_tac x="\<lparr> sprFst = tFirst t, sprLst = tLast t, sprCRel = tObsC_abs t \<rparr>" in image_eqI)
-  apply auto
-  done
-
-lemma jkbpCSt_jkbpCS_subset:
-  "jkbpCSt_spr t \<subseteq> spr_sim ` jkbpC"
-  by auto
-
-lemma spr_rep_sim:
-  assumes tC: "t \<in> jkbpC"
-  shows "sim (mkMCSt_spr t)
-             ((spr_rep_ks \<circ> sprCRel) (spr_sim t))
-             spr_rep_sim" (is "sim ?M ?M' ?f")
-proof
-  show "sim_range ?M ?M' ?f"
-  proof
-    show "worlds ?M' = ?f ` worlds ?M"
-      apply (simp add: spr_sim_def_raw spr_rep_sim_def)
-      apply (auto iff: tObsC_abs_def)
-      apply (rule_tac x="\<lparr> sprFst = tFirst t', sprLst = tLast t', sprCRel = tObsC_abs t \<rparr>" in image_eqI)
-       apply simp
-      apply (rule_tac x=t' in image_eqI)
-       apply (simp add: tObsC_abs_def)
-      apply auto[1]
-      done
-  next
-    fix a
-    show "relations ?M' a \<subseteq> worlds ?M' \<times> worlds ?M'"
-      by (simp add: spr_sim_def_raw spr_rep_sim_def spr_rep_ks_def)
-  qed
-next
-  show "sim_val ?M ?M' ?f"
-    by (rule, simp add: spr_sim_def spr_sim_val_def spr_rep_ks_def spr_rep_sim_def split: split_split)
-next
-  show "sim_f ?M ?M' ?f"
-    apply rule
-    unfolding spr_rep_ks_def spr_rep_rels_def spr_rep_sim_def spr_sim_rels_def coEC_rels_def
-    apply (auto iff: spr_sim_def)
-    done
-next
-  show "sim_r ?M ?M' ?f"
-    apply rule
-    unfolding spr_rep_ks_def spr_rep_rels_def spr_rep_sim_def spr_sim_rels_def spr_sim_def_raw coEC_rels_def
-    apply clarsimp
-    apply (rule_tac x="\<lparr> sprFst = aa, sprLst = b, sprCRel = tObsC_abs ta \<rparr>" in exI)
-    apply (auto iff: tObsC_abs_def)
-    apply (rule_tac x=t'a in image_eqI)
-    apply auto
-    done
-qed
-
-(* Connect the simulated temporal slice up to the set of all simulated
-traces. *)
-
-lemma FIXME_spr_submodel_aux:
-  assumes tC: "t \<in> jkbpC"
-      and s: "s \<in> worlds (mkMCSt_spr t)"
-  shows "sub_model mkMCS s = sub_model (mkMCSt_spr t) s"
-proof(rule sub_model_subset[where T="jkbpCSt_spr t"])
+lemma spr_submodel_aux:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and s: "s \<in> worlds (spr_simMCt t)"
+  shows "gen_model SPRdet.MCS s = gen_model (spr_simMCt t) s"
+proof(rule gen_model_subset[where T="spr_jkbpCSt t"])
   fix a
-  let ?X = "spr_sim ` { t' . t' \<in> jkbpC \<and> tObsC t = tObsC t' }"
-  show "relations mkMCS a \<inter> ?X \<times> ?X
-      = relations (mkMCSt_spr t) a \<inter> ?X \<times> ?X"
+  let ?X = "spr_sim ` { t' . t' \<in> SPR.jkbpC \<and> tObsC t = tObsC t' }"
+  show "relations SPRdet.MCS a \<inter> ?X \<times> ?X
+      = relations (spr_simMCt t) a \<inter> ?X \<times> ?X"
     by (simp add: Int_ac Int_absorb1
                   relation_mono[OF jkbpCSt_jkbpCS_subset jkbpCSt_jkbpCS_subset])
 next
-  let ?X = "spr_sim ` { t' . t' \<in> jkbpC \<and> tObsC t = tObsC t' }"
-  from s show "(\<Union>a. relations (mkMCSt_spr t) a)\<^sup>* `` {s} \<subseteq> ?X"
+  let ?X = "spr_sim ` { t' . t' \<in> SPR.jkbpC \<and> tObsC t = tObsC t' }"
+  from s show "(\<Union>a. relations (spr_simMCt t) a)\<^sup>* `` {s} \<subseteq> ?X"
     apply (clarsimp simp del: mkKripke_simps)
-    apply (erule kripke_rels_trc_worlds)
+    apply (erule (1) kripke_rels_trc_worlds)
     apply auto
     done
 next
-  let ?Y = "{ t' . t' \<in> jkbpC \<and> tObsC t = tObsC t' }"
+  let ?Y = "{ t' . t' \<in> SPR.jkbpC \<and> tObsC t = tObsC t' }"
   let ?X = "spr_sim ` ?Y"
   from s obtain t'
     where st': "s = spr_sim t'"
-      and t'C: "t' \<in> jkbpC"
+      and t'C: "t' \<in> SPR.jkbpC"
       and t'O: "tObsC t = tObsC t'"
     by fastforce
   { fix t''
-    assume tt': "(t', t'') \<in> (\<Union>a. relations mkMC a)\<^sup>*"
-    from t'C tt' have t''C: "t'' \<in> jkbpC"
+    assume tt': "(t', t'') \<in> (\<Union>a. relations SPR.MC a)\<^sup>*"
+    from t'C tt' have t''C: "t'' \<in> SPR.jkbpC"
       by - (erule kripke_rels_trc_worlds, simp_all)
     from t'O tt' have t''O: "tObsC t = tObsC t''"
       by (simp add: spr_tObsC_trc_aux)
     from t''C t''O have "t'' \<in> ?Y" by simp }
-  hence "(\<Union>a. relations mkMC a)\<^sup>* `` {t'} \<subseteq> ?Y"
+  hence "(\<Union>a. relations SPR.MC a)\<^sup>* `` {t'} \<subseteq> ?Y"
     by clarsimp
-  hence "spr_sim ` ((\<Union>a. relations mkMC a)\<^sup>* `` {t'}) \<subseteq> ?X"
+  hence "spr_sim ` ((\<Union>a. relations SPR.MC a)\<^sup>* `` {t'}) \<subseteq> ?X"
     by (rule image_mono)
   with st' t'C
-  show "(\<Union>a. relations mkMCS a)\<^sup>* `` {s} \<subseteq> ?X"
-    using sim_trc_commute[OF mkM_kripke spr_sim, where t=t'] by simp
+  show "(\<Union>a. relations SPRdet.MCS a)\<^sup>* `` {s} \<subseteq> ?X"
+    using sim_trc_commute[OF SPR.mkM_kripke spr_sim, where t=t'] by simp
 qed (insert s, auto)
 
-(* What we want to show. The proof is a straightforward chaining of
-the above refinements. *)
+(*>*)
+text{*
 
-lemma spr_simAction':
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
-  shows "set (spr_simAction ec a) = set (jAction mkMC t a)" (is "?lhs = ?rhs")
+We can connect the agent's choice of actions on the @{text
+"spr_repMC"} structure to those on the @{text "SPR.MC"} structure
+using our earlier results about actions being preserved by generated
+models and simulations.
+
+*}
+
+lemma spr_simAction:
+  assumes tC: "t \<in> SPR.jkbpC"
+  assumes ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
+  shows "set (spr_simAction a ec) = set (jAction SPR.MC t a)"
+(*<*) (is "?lhs = ?rhs")
 proof -
   from tC ec
-  have "?lhs = set (jAction (spr_rep_ks (toSet (fst ec))) (tFirst t, tLast t) a)"
-    by (rule eval_models)
-  also from tC ec have "... = set (jAction (mkMCSt_spr t) (spr_sim t) a)"
-    by (simp add: simulation_jAction_eq[OF _ spr_rep_sim] spr_sim_tObsC)
-  also from tC have "... = set (jAction mkMCS (spr_sim t) a)"
-    using sub_model_jAction_eq[OF FIXME_spr_submodel_aux[OF tC, where s="spr_sim t"], where w'="spr_sim t"]
-          sub_model_world_refl[where w="spr_sim t" and M="mkMCSt_spr t"]
+  have "?lhs = set (jAction (spr_repMC (toSet (fst ec))) (tFirst t, tLast t) a)"
+    by (rule spr_action_jaction)
+  also from tC ec have "... = set (jAction (spr_simMCt t) (spr_sim t) a)"
+    by (simp add: simulation_jAction_eq[OF _ spr_repSim] spr_sim_tObsC_abs)
+  also from tC have "... = set (jAction SPRdet.MCS (spr_sim t) a)"
+    using gen_model_jAction_eq[OF spr_submodel_aux[OF tC, where s="spr_sim t"], where w'="spr_sim t"]
+          gen_model_world_refl[where w="spr_sim t" and M="spr_simMCt t"]
     by simp
-  also from tC have "... = set (jAction mkMC t a)"
+  also from tC have "... = set (jAction SPR.MC t a)"
     by (simp add: simulation_jAction_eq[OF _ spr_sim])
   finally show ?thesis .
 qed
+(*>*)
 
-lemma spr_simAction:
-  "\<forall>a ec t. t \<in> jkbpC \<and> spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)
-   \<longrightarrow> set (spr_simAction ec a) = set (jAction mkMC t a)"
-  using spr_simAction' by auto
+(* **************************************** *)
 
-(* simTrans *)
+subsubsection{* Simulated transitions *}
 
-lemma spr_jview_tObsC_trans:
-  "\<lbrakk>spr_jview a t = spr_jview a t'; spr_jview a' t' = spr_jview a' t''\<rbrakk>
-     \<Longrightarrow> tObsC t = tObsC t''"
-  apply (drule spr_jview_tObsC)
-  apply (drule spr_jview_tObsC)
-  apply simp
-  done
+text{*
 
-lemma FIXME_spr_trans_aEC:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
+The story of simulated transitions takes some doing. We begin by
+computing the successor relation of a given equivalence class @{term
+"X"} with respect to the common equivalence class @{term "cec"}:
+
+*}
+
+abbreviation (in -)
+  "spr_jAction jkbp envVal envObs cec s \<equiv> \<lambda>a.
+     spr_simAction jkbp envVal envObs a (cec, spr_knowledge envObs cec a s)"
+
+definition (in -)
+  spr_trans :: "'a odlist
+              \<Rightarrow> ('a, 'p, 'aAct) JKBP
+              \<Rightarrow> (('a::linorder, 'es::linorder, 'as::linorder) BEState \<Rightarrow> 'eAct list)
+              \<Rightarrow> ('eAct \<Rightarrow> ('a \<Rightarrow> 'aAct)
+                  \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> ('a, 'es, 'as) BEState)
+              \<Rightarrow> (('a, 'es, 'as) BEState \<Rightarrow> 'p \<Rightarrow> bool)
+              \<Rightarrow> ('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
+                \<Rightarrow> ('a, 'es, 'as) spr_simWorldsECRep
+                \<Rightarrow> ('a, 'es, 'as) spr_simWorldsECRep
+                  \<Rightarrow> (('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState) list"
+where
+  "spr_trans agents jkbp envAction envTrans envVal envObs \<equiv> \<lambda>cec X.
+    [ (initialS, succS) .
+       (initialS, finalS) \<leftarrow> toList X,
+       eact \<leftarrow> envAction finalS,
+       succS \<leftarrow> [ envTrans eact aact finalS .
+                   aact \<leftarrow> listToFuns (spr_jAction jkbp envVal envObs cec
+                                                (initialS, finalS))
+                                   (toList agents) ] ]"
+
+text{*
+
+We will split the result of this function according to the common
+observation and also agent @{term "a"}'s observation, where @{term
+"a"} is the agent we are constructing the automaton for.
+
+*}
+
+definition (in -)
+  spr_simObsC :: "('es \<Rightarrow> 'cobs)
+               \<Rightarrow> (('a::linorder, 'es::linorder, 'as::linorder) BEState
+                 \<times> ('a, 'es, 'as) BEState) odlist
+               \<Rightarrow> 'cobs"
+where
+  "spr_simObsC envObsC \<equiv> envObsC \<circ> es \<circ> snd \<circ> ODList.hd"
+
+abbreviation (in -)
+  envObs_rel :: "(('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
+              \<Rightarrow> ('a, 'es, 'as) spr_simWorlds \<times> ('a, 'es, 'as) spr_simWorlds \<Rightarrow> bool"
+where
+  "envObs_rel envObs \<equiv> \<lambda>(s, s'). envObs (snd s') = envObs (snd s)"
+
+text{*
+
+The above combine to yield the successor equivalence classes like so:
+
+*}
+
+definition (in -)
+  spr_simTrans :: "'a odlist
+              \<Rightarrow> ('a, 'p, 'aAct) JKBP
+              \<Rightarrow> (('a::linorder, 'es::linorder, 'as::linorder) BEState \<Rightarrow> 'eAct list)
+              \<Rightarrow> ('eAct \<Rightarrow> ('a \<Rightarrow> 'aAct)
+                  \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> ('a, 'es, 'as) BEState)
+              \<Rightarrow> (('a, 'es, 'as) BEState \<Rightarrow> 'p \<Rightarrow> bool)
+              \<Rightarrow> ('es \<Rightarrow> 'cobs)
+              \<Rightarrow> ('a \<Rightarrow> ('a, 'es, 'as) BEState \<Rightarrow> 'cobs \<times> 'as option)
+               \<Rightarrow> 'a
+               \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep
+               \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep list"
+where
+  "spr_simTrans agents jkbp envAction envTrans envVal envObsC envObs \<equiv> \<lambda>a ec.
+    let aSuccs = spr_trans agents jkbp envAction envTrans envVal envObs
+                           (fst ec) (snd ec);
+        cec' = ODList.fromList
+                 (spr_trans agents jkbp envAction envTrans envVal envObs
+                            (fst ec) (fst ec))
+     in [ (ODList.filter (\<lambda>s. envObsC (es (snd s)) = spr_simObsC envObsC aec') cec',
+           aec') .
+          aec' \<leftarrow> map ODList.fromList (partition (envObs_rel (envObs a)) aSuccs) ]"
+(*<*)
+
+abbreviation
+  spr_trans :: "('a, 'es, 'as) spr_simWorldsECRep
+              \<Rightarrow> ('a, 'es, 'as) spr_simWorldsECRep
+              \<Rightarrow> (('a, 'es, 'as) spr_simWorlds) list"
+where
+  "spr_trans \<equiv> SPRViewDet.spr_trans agents jkbp envAction envTrans envVal envObs"
+
+abbreviation
+  spr_simTrans :: "'a \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep list"
+where
+  "spr_simTrans \<equiv> SPRViewDet.spr_simTrans agents jkbp envAction envTrans envVal envObsC envObs"
+
+lemma spr_trans_aec:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
   shows "set (spr_trans (fst ec) (snd ec))
-       = { (tFirst t', s) |t' s. t' \<leadsto> s \<in> jkbpC \<and> spr_jview a t' = spr_jview a t }" (is "?lhs = ?rhs")
+       = { (tFirst t', s) |t' s. t' \<leadsto> s \<in> SPR.jkbpC \<and> spr_jview a t' = spr_jview a t }" (is "?lhs = ?rhs")
 proof
   show "?lhs \<subseteq> ?rhs"
   proof
     fix x assume x: "x \<in> ?lhs"
     with assms show "x \<in> ?rhs"
       unfolding spr_trans_def
-      apply (clarsimp simp del: split_paired_Ex split_paired_All simp add: toSet_def[symmetric] agent_equiv_def)
+      apply (clarsimp simp del: split_paired_Ex split_paired_All simp add: toSet_def[symmetric] agent_abs_def)
       apply (rule_tac x=t' in exI)
       apply simp
-      apply (rule_tac n="Suc (tLength t')" in jkbpCn_jkbpC_inc)
+      apply (rule_tac n="Suc (tLength t')" in SPR.jkbpCn_jkbpC_inc)
       apply (auto iff: Let_def simp del: split_paired_Ex split_paired_All)
-      apply (simp add: mkAacts_FIXME[OF agents[unfolded toSet_def]])
+      apply (simp add: listToFuns_ext[OF agents[unfolded toSet_def]])
 
       apply (rule_tac x=aa in exI)
       apply (rule_tac x=x in exI)
-      apply (simp add: spr_jAction_def)
-      apply (subst (asm) spr_simAction')
+      apply simp
+      apply (subst (asm) spr_simAction)
         apply assumption
         apply rule
          apply clarsimp
          apply (clarsimp simp: spr_simAbs_def)
-         apply (subst (asm) spr_coEC_relation_image_FIXME)
+         apply (subst (asm) spr_knowledge)
           apply (simp add: ec)
           apply (erule tObsC_absI)
-          apply simp_all
+           apply simp_all
           apply (erule spr_jview_tObsC)
-          using ec
-          apply (clarsimp simp: spr_rep_ks_def spr_rep_rels_def coEC_rels_def tObsC_abs_conv)
-          apply (rule_tac x=t'b in image_eqI)
+         using ec
+         apply clarsimp (* FIXME *)
+
+         apply (clarsimp simp: spr_repRels_def tObsC_abs_conv)
+         apply (rule_tac x=t'b in image_eqI)
           apply (auto iff: spr_sim_def)[1]
-          apply clarsimp
-          apply (rule spr_jview_tObsCI[OF _ _ spr_jview_det_ps])
+         apply clarsimp
+         apply (rule spr_jview_tObsCI[OF _ _ spr_jview_det_ps])
            apply simp_all
           apply (erule spr_jview_tObsC[symmetric])
           apply (erule spr_jview_tObsC[symmetric])
-         apply clarsimp
-         apply (clarsimp simp: spr_simAbs_def)
-         apply (subst spr_coEC_relation_image_FIXME)
-          apply (simp_all add: ec)
-          apply (erule tObsC_absI)
-          apply (erule spr_jview_tObsC)
-          apply simp_all
-         apply (rule_tac x="tFirst xb" in exI)
-         apply (rule_tac x="tLast xb" in exI)
-         apply (simp add: spr_sim_def)
-         apply rule
-          apply (drule tObsC_abs_jview_eq)
-          apply simp
-          apply (erule tObsC_abs_jview_eq[symmetric])
-         apply (clarsimp simp: spr_rep_ks_def spr_rep_rels_def coEC_rels_def tObsC_abs_conv)
-         apply rule
-         apply (rule spr_tFirst)
-          apply simp
-         apply rule
-         apply (rule spr_tLast)
-          apply simp
-         apply rule
-         apply (rule_tac x=t' in exI)
-         apply simp
+       apply clarsimp
+       apply (clarsimp simp: spr_simAbs_def)
+       apply (subst spr_knowledge)
+        apply (simp_all add: ec)
+        apply (erule tObsC_absI)
          apply (erule spr_jview_tObsC)
-         apply (rule_tac x=xb in exI)
-         apply simp
-         apply (drule spr_jview_tObsC)
-         apply (drule spr_jview_tObsC)
-         apply simp
-      apply (subst jkbpC_jkbpCn_jAction_eq[symmetric])
+        apply simp_all
+       apply (rule_tac x="tFirst xb" in exI)
+       apply (rule_tac x="tLast xb" in exI)
+       apply (simp add: spr_sim_def)
+       apply rule
+        apply (drule tObsC_abs_jview_eq)
+        apply simp
+        apply (erule tObsC_abs_jview_eq[symmetric])
+       apply (clarsimp simp: spr_repRels_def tObsC_abs_conv)
+       apply rule
+        apply (rule spr_tFirst)
+        apply simp
+       apply rule
+        apply (rule spr_tLast)
+        apply simp
+       apply rule
+        apply (rule_tac x=t' in exI)
+        apply simp
+        apply (erule spr_jview_tObsC)
+       apply (rule_tac x=xb in exI)
+       apply simp
+       apply (drule spr_jview_tObsC)
+       apply (drule spr_jview_tObsC)
+       apply simp
+      apply (subst SPR.jkbpC_jkbpCn_jAction_eq[symmetric])
       apply auto
       done
   qed
@@ -1231,15 +1532,15 @@ proof
     fix x assume x: "x \<in> ?rhs"
     then obtain t' s
       where x': "x = (tFirst t', s)"
-        and t'sC: "t' \<leadsto> s \<in> jkbpC"
+        and t'sC: "t' \<leadsto> s \<in> SPR.jkbpC"
         and F: "spr_jview a t' = spr_jview a t"
       by blast
-    from t'sC have t'Cn: "t' \<in> jkbpCn (tLength t')" by blast
+    from t'sC have t'Cn: "t' \<in> SPR.jkbpCn (tLength t')" by blast
     from t'sC obtain eact aact
       where eact: "eact \<in> set (envAction (tLast t'))"
-        and aact: "\<forall>a. aact a \<in> set (jAction (mkM (jkbpCn (tLength t'))) t' a)"
+        and aact: "\<forall>a. aact a \<in> set (jAction (SPR.mkM (SPR.jkbpCn (tLength t'))) t' a)"
         and s: "s = envTrans eact aact (tLast t')"
-      using jkbpC_tLength_inv[where t="t' \<leadsto> s" and n="Suc (tLength t')"]
+      using SPR.jkbpC_tLength_inv[where t="t' \<leadsto> s" and n="Suc (tLength t')"]
       by (auto iff: Let_def)
     from tC t'sC ec F x' s eact aact
     show "x \<in> ?lhs"
@@ -1250,23 +1551,22 @@ proof
       apply (rule bexI[where x="eact"])
       apply (rule_tac x="aact" in image_eqI)
       apply simp_all
-      apply (simp add: mkAacts_FIXME[OF agents[unfolded toSet_def]])
+      apply (simp add: listToFuns_ext[OF agents[unfolded toSet_def]])
       defer
       apply blast
-      apply (simp add: spr_jAction_def)
-      apply (subst spr_simAction'[where t=t'])
+      apply (subst spr_simAction[where t=t'])
       apply blast
       defer
-      apply (auto iff: jkbpC_jkbpCn_jAction_eq[OF t'Cn])[1]
+      apply (auto iff: SPR.jkbpC_jkbpCn_jAction_eq[OF t'Cn])[1]
 
       apply (clarsimp simp: spr_simAbs_def)
-      apply (subst spr_coEC_relation_image_FIXME)
+      apply (subst spr_knowledge)
       apply (simp_all add: ec)
       apply (rule tObsC_absI[where t=t and t'=t'])
        apply simp_all
        apply blast
        apply (blast intro: spr_jview_tObsC)
-      apply (clarsimp simp: spr_rep_ks_def spr_rep_rels_def coEC_rels_def tObsC_abs_conv)
+      apply (clarsimp simp: spr_repRels_def tObsC_abs_conv)
       apply rule
        apply clarsimp
        apply (rule_tac x=t'aa in image_eqI)
@@ -1295,11 +1595,11 @@ proof
   qed
 qed
 
-lemma FIXME_spr_trans_coEC:
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
+lemma spr_trans_cec:
+  assumes tC: "t \<in> SPR.jkbpC"
+      and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
   shows "set (spr_trans (fst ec) (fst ec))
-       = { (tFirst t', s) |t' s. t' \<leadsto> s \<in> jkbpC \<and> tObsC t' = tObsC t }" (is "?lhs = ?rhs")
+       = { (tFirst t', s) |t' s. t' \<leadsto> s \<in> SPR.jkbpC \<and> tObsC t' = tObsC t }" (is "?lhs = ?rhs")
 proof
   show "?lhs \<subseteq> ?rhs"
   proof
@@ -1309,30 +1609,30 @@ proof
       apply (clarsimp simp del: split_paired_Ex split_paired_All simp add: toSet_def[symmetric] tObsC_abs_def)
       apply (rule_tac x=t' in exI)
       apply simp
-      apply (rule_tac n="Suc (tLength t')" in jkbpCn_jkbpC_inc)
+      apply (rule_tac n="Suc (tLength t')" in SPR.jkbpCn_jkbpC_inc)
       apply (auto iff: Let_def simp del: split_paired_Ex split_paired_All)
-      apply (simp add: mkAacts_FIXME[OF agents[unfolded toSet_def]])
+      apply (simp add: listToFuns_ext[OF agents[unfolded toSet_def]])
 
       apply (rule_tac x=aa in exI)
       apply (rule_tac x=x in exI)
-      apply (simp add: spr_jAction_def)
-      apply (subst (asm) spr_simAction')
+      apply simp
+      apply (subst (asm) spr_simAction)
         apply assumption
        apply rule
         apply clarsimp
         apply (clarsimp simp: spr_simAbs_def)
-        apply (subst (asm) spr_coEC_relation_image_FIXME)
+        apply (subst (asm) spr_knowledge)
          apply (simp add: ec)
          apply (erule tObsC_absI)
           apply simp_all
-        apply (clarsimp simp: spr_rep_ks_def spr_rep_rels_def coEC_rels_def tObsC_abs_conv ec)
+        apply (clarsimp simp: spr_repRels_def tObsC_abs_conv ec)
         apply (rule_tac x=t'b in image_eqI)
          apply (auto iff: spr_sim_def ec)[1]
         apply clarsimp
         apply (rule spr_jview_tObsCI[OF _ _ spr_jview_det_ps])
          apply simp_all
        apply (clarsimp simp: spr_simAbs_def)
-       apply (subst spr_coEC_relation_image_FIXME)
+       apply (subst spr_knowledge)
         apply (simp_all add: ec)
         apply (erule tObsC_absI)
         apply simp_all
@@ -1342,7 +1642,7 @@ proof
        apply rule
         apply (drule tObsC_abs_jview_eq)
         apply auto[1]
-       apply (clarsimp simp: spr_rep_ks_def spr_rep_rels_def coEC_rels_def tObsC_abs_conv)
+       apply (clarsimp simp: spr_repRels_def tObsC_abs_conv)
        apply rule
         apply (rule spr_tFirst)
         apply simp
@@ -1356,7 +1656,7 @@ proof
        apply simp
        apply (drule spr_jview_tObsC)
        apply simp
-      apply (subst jkbpC_jkbpCn_jAction_eq[symmetric])
+      apply (subst SPR.jkbpC_jkbpCn_jAction_eq[symmetric])
       apply auto
       done
   qed
@@ -1365,15 +1665,15 @@ proof
     fix x assume x: "x \<in> ?rhs"
     then obtain t' s
       where x': "x = (tFirst t', s)"
-        and t'sC: "t' \<leadsto> s \<in> jkbpC"
+        and t'sC: "t' \<leadsto> s \<in> SPR.jkbpC"
         and F: "tObsC t' = tObsC t"
       by blast
-    from t'sC have t'Cn: "t' \<in> jkbpCn (tLength t')" by blast
+    from t'sC have t'Cn: "t' \<in> SPR.jkbpCn (tLength t')" by blast
     from t'sC obtain eact aact
       where eact: "eact \<in> set (envAction (tLast t'))"
-        and aact: "\<forall>a. aact a \<in> set (jAction (mkM (jkbpCn (tLength t'))) t' a)"
+        and aact: "\<forall>a. aact a \<in> set (jAction (SPR.mkM (SPR.jkbpCn (tLength t'))) t' a)"
         and s: "s = envTrans eact aact (tLast t')"
-      using jkbpC_tLength_inv[where t="t' \<leadsto> s" and n="Suc (tLength t')"]
+      using SPR.jkbpC_tLength_inv[where t="t' \<leadsto> s" and n="Suc (tLength t')"]
       by (auto iff: Let_def)
     from tC t'sC ec F x' s eact aact
     show "x \<in> ?lhs"
@@ -1384,22 +1684,21 @@ proof
       apply (rule bexI[where x="eact"])
       apply (rule_tac x="aact" in image_eqI)
       apply simp_all
-      apply (simp add: mkAacts_FIXME[OF agents[unfolded toSet_def]])
+      apply (simp add: listToFuns_ext[OF agents[unfolded toSet_def]])
       defer
       apply blast
-      apply (simp add: spr_jAction_def)
-      apply (subst spr_simAction'[where t=t'])
+      apply (subst spr_simAction[where t=t'])
       apply blast
       defer
-      apply (auto iff: jkbpC_jkbpCn_jAction_eq[OF t'Cn])[1]
+      apply (auto iff: SPR.jkbpC_jkbpCn_jAction_eq[OF t'Cn])[1]
 
       apply (clarsimp simp: spr_simAbs_def)
-      apply (subst spr_coEC_relation_image_FIXME)
+      apply (subst spr_knowledge)
       apply (simp_all add: ec)
       apply (rule tObsC_absI[where t=t and t'=t'])
        apply simp_all
        apply blast
-      apply (clarsimp simp: spr_rep_ks_def spr_rep_rels_def coEC_rels_def tObsC_abs_conv)
+      apply (clarsimp simp: spr_repRels_def tObsC_abs_conv)
       apply rule
        apply clarsimp
        apply (rule_tac x=t'aa in image_eqI)
@@ -1409,14 +1708,14 @@ proof
        apply simp_all
        apply blast
       apply (clarsimp simp: spr_sim_def_raw)
-      apply rule
-       apply (drule tObsC_abs_jview_eq)
-       apply simp
-      apply rule
+      apply (rule conjI)
+       apply (auto dest!: tObsC_abs_jview_eq intro: spr_tFirst spr_tLast)[1]
+      apply (rule conjI)
       apply (auto intro: spr_tFirst)[1]
-      apply rule
-      apply (auto intro: spr_tLast)[1]
-      apply (auto intro: spr_tLast)[1]
+      apply (rule conjI)
+       apply (auto intro: spr_tLast)[1]
+      apply (rule conjI)
+       apply (auto intro: spr_tLast)[1]
       apply (rule_tac x=ta in exI)
       apply (auto dest: spr_jview_tObsC intro: spr_jview_tObsC_trans)[1]
       done
@@ -1424,34 +1723,42 @@ proof
 qed
 
 lemma spr_simObsC:
-    assumes t'sC: "t \<leadsto> s \<in> jkbpC"
-        and aEC': "toSet aEC = (envObs_rel (envObs a) \<inter> X \<times> X) `` {(tFirst t, s)}"
-        and X: "X = {(tFirst t', s) |t' s. t' \<leadsto> s \<in> jkbpC \<and> spr_jview a t' = spr_jview a t}"
-    shows "spr_simObsC envObsC aEC = envObsC (es s)"
+    assumes t'sC: "t \<leadsto> s \<in> SPR.jkbpC"
+        and aec': "toSet aec = (rel_ext (envObs_rel (envObs a)) \<inter> X \<times> X) `` {(tFirst t, s)}"
+        and X: "X = {(tFirst t', s) |t' s. t' \<leadsto> s \<in> SPR.jkbpC \<and> spr_jview a t' = spr_jview a t}"
+    shows "spr_simObsC envObsC aec = envObsC (es s)"
   unfolding spr_simObsC_def
-  apply (cases aEC)
+  apply (cases aec)
    using assms
    apply auto[1]
   using assms
   apply (simp add: ODList.hd_def toList_fromList)
   apply (subgoal_tac "x \<in> insert x (set xs)")
-   apply (auto iff: envObs_def_raw)[1]
+   apply (auto iff: envObs_def)[1]
   apply blast
   done
 
-lemma spr_simAbs_shuffle:
-  "spr_simAbs ` X
- = (\<lambda>(coEC, aEC). {\<lparr>sprFst = s, sprLst = s', sprCRel = coEC\<rparr> |s s'. (s, s') \<in> aEC}) ` { (toSet x, toSet y) |x y. (x, y) \<in> X }"
-  unfolding spr_simAbs_def
-  apply auto
-  done
+lemma envObs_rel_equiv:
+  "equiv UNIV (rel_ext (envObs_rel (envObs a)))"
+  by (intro equivI refl_onI symI transI) auto
 
-lemma spr_simTrans':
-  assumes tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)"
+(*>*)
+text{*
+
+Showing that @{text "spr_simTrans"} works requires a series of
+auxiliary lemmas that show we do in fact compute the correct successor
+equivalence classes. We elide the unedifying details, skipping
+straight to the lemma that the @{term "Algorithm"} locale expects:
+
+*}
+
+lemma spr_simTrans:
+  assumes tC: "t \<in> SPR.jkbpC"
+  assumes ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
   shows "spr_simAbs ` set (spr_simTrans a ec)
-      = { spr_sim ` equiv_class a (spr_jview a (t' \<leadsto> s))
-          |t' s. t' \<leadsto> s \<in> jkbpC \<and> spr_jview a t' = spr_jview a t}" (is "?lhs = ?rhs")
+      = { SPRdet.sim_equiv_class a (t' \<leadsto> s)
+          |t' s. t' \<leadsto> s \<in> SPR.jkbpC \<and> spr_jview a t' = spr_jview a t}"
+(*<*)(is "?lhs = ?rhs")
 proof
   show "?lhs \<subseteq> ?rhs"
   proof
@@ -1459,31 +1766,31 @@ proof
     then obtain rx
       where xrx: "x = spr_simAbs rx"
         and rx: "rx \<in> set (spr_simTrans a ec)" by blast
-    with tC ec obtain coEC' aEC' UV' t' s
-      where rxp: "rx = (coEC', aEC')"
-        and t'sC: "t' \<leadsto> s \<in> jkbpC"
+    with tC ec obtain cec' aec' UV' t' s
+      where rxp: "rx = (cec', aec')"
+        and t'sC: "t' \<leadsto> s \<in> SPR.jkbpC"
         and tt': "spr_jview a t' = spr_jview a t"
-        and aEC': "toSet aEC' = (envObs_rel (envObs a) \<inter> set (spr_trans (fst ec) (snd ec))
+        and aec': "toSet aec' = (rel_ext (envObs_rel (envObs a)) \<inter> set (spr_trans (fst ec) (snd ec))
                                                        \<times> set (spr_trans (fst ec) (snd ec))) `` {(tFirst t', s)}"
-        and coEC': "coEC' = ODList.filter (\<lambda>s. envObsC (es (snd s)) = spr_simObsC envObsC aEC') (fromList (local.spr_trans (fst ec) (fst ec)))"
+        and cec': "cec' = ODList.filter (\<lambda>s. envObsC (es (snd s)) = spr_simObsC envObsC aec') (fromList (local.spr_trans (fst ec) (fst ec)))"
       unfolding spr_simTrans_def
-      using FIXME_spr_trans_aEC[OF assms]
+      using spr_trans_aec[OF assms]
       apply (auto split: split_split_asm)
       apply (drule imageI[where f=set])
-      apply (simp add: partition[OF envObs_rel_equiv])
+      apply (simp add: partition[OF envObs_rel_equiv subset_UNIV])
       apply (erule quotientE)
       apply fastforce
       done
-    from t'sC tt' aEC' coEC'
-    have "spr_simAbs (coEC', aEC') = spr_sim ` equiv_class a (spr_jview a (t' \<leadsto> s))"
+    from t'sC tt' aec' cec'
+    have "spr_simAbs (cec', aec') = SPRdet.sim_equiv_class a (t' \<leadsto> s)"
       unfolding spr_simAbs_def
       apply clarsimp
       apply rule
-       using FIXME_spr_trans_aEC[OF assms] FIXME_spr_trans_coEC[OF assms]
+       using spr_trans_aec[OF assms] spr_trans_cec[OF assms]
        apply clarsimp
        apply (rule_tac x="t'aa \<leadsto> s'" in image_eqI)
         apply (simp add: spr_sim_def)
-        apply (cut_tac aEC=aEC' and t=t' and s=s in spr_simObsC[where a=a])
+        apply (cut_tac aec=aec' and t=t' and s=s in spr_simObsC[where a=a])
         apply simp_all
         apply rule
          apply clarsimp
@@ -1497,9 +1804,9 @@ proof
         apply (rule_tac x=Trace in exI)
         apply (auto dest: spr_jview_tObsC simp: tObsC_def)[1]
        apply (simp add: spr_jview_def)
-      using FIXME_spr_trans_aEC[OF assms] FIXME_spr_trans_coEC[OF assms]
+      using spr_trans_aec[OF assms] spr_trans_cec[OF assms]
       apply (clarsimp simp: spr_sim_def)
-      apply (cut_tac aEC=aEC' and t=t' and s=s in spr_simObsC[where a=a])
+      apply (cut_tac aec=aec' and t=t' and s=s in spr_simObsC[where a=a])
        apply simp_all
       apply (frule spr_jview_tStep_eq_inv)
       apply clarsimp
@@ -1540,12 +1847,12 @@ next
   proof
     fix x assume x: "x \<in> ?rhs"
     then obtain t' s
-      where t'sC: "t' \<leadsto> s \<in> jkbpC"
+      where t'sC: "t' \<leadsto> s \<in> SPR.jkbpC"
         and tt': "spr_jview a t' = spr_jview a t"
-        and xt's: "x = spr_sim ` equiv_class a (spr_jview a (t' \<leadsto> s))"
+        and xt's: "x = SPRdet.sim_equiv_class a (t' \<leadsto> s)"
       by auto
     then have "(\<lambda>s. (sprFst s, sprLst s)) ` x \<in> set ` set (partition (envObs_rel (envObs a)) (spr_trans (fst ec) (snd ec)))"
-      apply (simp add: partition[OF envObs_rel_equiv[where envObs="envObs a"]] FIXME_spr_trans_aEC[OF assms] spr_sim_def_raw)
+      apply (simp add: partition[OF envObs_rel_equiv] spr_trans_aec[OF assms] spr_sim_def_raw)
       apply clarsimp
       apply (rule_tac x="(tFirst t', s)" in quotientI2)
        apply auto[1]
@@ -1586,7 +1893,7 @@ next
          apply simp
         apply (simp add: spr_jview_def)
 
-       apply (clarsimp simp: FIXME_spr_trans_coEC[OF assms] spr_sim_def_raw spr_simAbs_def)
+       apply (clarsimp simp: spr_trans_cec[OF assms] spr_sim_def_raw spr_simAbs_def)
        apply rule
         apply (auto iff: tObsC_abs_conv)[1]
          apply (frule spr_jview_tStep_eq_inv)
@@ -1654,92 +1961,79 @@ next
   qed
 qed
 
-lemma spr_simTrans:
-  "\<forall>a ec t. t \<in> jkbpC \<and> spr_simAbs ec = spr_sim ` equiv_class a (spr_jview a t)
-     \<longrightarrow> spr_simAbs ` set (spr_simTrans a ec)
-      = { spr_sim ` equiv_class a (spr_jview a (t' \<leadsto> s))
-          |t' s. t' \<leadsto> s \<in> jkbpC \<and> spr_jview a t' = spr_jview a t}"
-  using spr_simTrans' by auto
+(*>*)
+text{*
 
-end
+The explicit-state approach sketched above is quite inefficient, and
+also some distance from the symbolic techniques we use in
+\S\ref{sec:kbps-prag-algorithmics}. However it does suffice to
+demonstrate the theory on the muddy children example in
+\S\ref{sec:kbps-theory-mc}.
 
-sublocale DetBroadcastEnvironment < SPRdet!: SimEnvironment
-            jkbp envInit envAction envTrans envVal
-            envObs spr_sim spr_sim_rels spr_sim_val
-            spr_simAbs spr_simObs spr_simInit spr_simTrans spr_simAction
+*}
 
-  apply unfold_locales
+end (* context FiniteDetBroadcastEnvironment *)
 
-  apply simp
+subsubsection{* Maps *}
 
-  apply (rule spr_simInit)
-  apply (rule spr_simObs)
-  apply (rule spr_simAction)
-  apply (rule spr_simTrans)
-  done
+text{*
 
-type_synonym
-  ('a, 'es, 'obs, 'as) trans_trie
+As always we use a pair of tries. The domain of these maps is the pair
+of relations.
+
+*}
+
+type_synonym ('a, 'es, 'obs, 'as) trans_trie
     = "(('a, 'es, 'as) BEState,
         (('a, 'es, 'as) BEState,
           (('a, 'es, 'as) BEState,
-           (('a, 'es, 'as) BEState, ('obs, ('a, 'es, 'as) SPRstate_rep) mapping) trie) trie) trie) trie"
+           (('a, 'es, 'as) BEState,
+            ('obs, ('a, 'es, 'as) spr_simWorldsRep) mapping) trie) trie) trie) trie"
+
+type_synonym
+  ('a, 'es, 'aAct, 'as) acts_trie
+    = "(('a, 'es, 'as) BEState,
+        (('a, 'es, 'as) BEState,
+          (('a, 'es, 'as) BEState,
+           (('a, 'es, 'as) BEState, 'aAct) trie) trie) trie) trie"
+(*<*)
 
 definition
   trans_MapOps_lookup :: "('a :: linorder, 'es :: linorder, 'obs, 'as :: linorder) trans_trie
-                        \<Rightarrow> ('a, 'es, 'as) SPRstate_rep \<times> 'obs
-                        \<rightharpoonup> ('a, 'es, 'as) SPRstate_rep"
+                        \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep \<times> 'obs
+                        \<rightharpoonup> ('a, 'es, 'as) spr_simWorldsRep"
 where
-  "trans_MapOps_lookup \<equiv> \<lambda>m ((coEC, aEC), obs).
-     Option.bind (trie_lookup m (map fst (toList coEC)))
-      (\<lambda>m. Option.bind (trie_lookup m (map snd (toList coEC)))
-       (\<lambda>m. Option.bind (trie_lookup m (map fst (toList aEC)))
-        (\<lambda>m. Option.bind (trie_lookup m (map snd (toList aEC)))
+  "trans_MapOps_lookup \<equiv> \<lambda>m ((cec, aec), obs).
+     Option.bind (trie_lookup m (map fst (toList cec)))
+      (\<lambda>m. Option.bind (trie_lookup m (map snd (toList cec)))
+       (\<lambda>m. Option.bind (trie_lookup m (map fst (toList aec)))
+        (\<lambda>m. Option.bind (trie_lookup m (map snd (toList aec)))
          (\<lambda>m. Mapping.lookup m obs))))"
 
 definition
-  trans_MapOps_update :: "('a, 'es, 'as) SPRstate_rep \<times> 'obs
-                        \<Rightarrow> ('a, 'es, 'as) SPRstate_rep
+  trans_MapOps_update :: "('a, 'es, 'as) spr_simWorldsRep \<times> 'obs
+                        \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep
                         \<Rightarrow> ('a :: linorder, 'es :: linorder, 'obs, 'as :: linorder) trans_trie
                         \<Rightarrow> ('a, 'es, 'obs, 'as) trans_trie"
 where
-  "trans_MapOps_update \<equiv> \<lambda>((coEC, aEC), obs) v m.
-     trie_update_with' (map fst (toList coEC)) m trie_empty
-      (\<lambda>m. trie_update_with' (map snd (toList coEC)) m trie_empty
-       (\<lambda>m. trie_update_with' (map fst (toList aEC)) m trie_empty
-        (\<lambda>m. trie_update_with' (map snd (toList aEC)) m Mapping.empty
+  "trans_MapOps_update \<equiv> \<lambda>((cec, aec), obs) v m.
+     trie_update_with' (map fst (toList cec)) m trie_empty
+      (\<lambda>m. trie_update_with' (map snd (toList cec)) m trie_empty
+       (\<lambda>m. trie_update_with' (map fst (toList aec)) m trie_empty
+        (\<lambda>m. trie_update_with' (map snd (toList aec)) m Mapping.empty
          (\<lambda>m. Mapping.update obs v m))))"
 
 definition
   trans_MapOps :: "(('a :: linorder, 'es :: linorder, 'obs, 'as :: linorder) trans_trie,
-                    ('a, 'es, 'as) SPRstate_rep \<times> 'obs,
-                    ('a, 'es, 'as) SPRstate_rep) MapOps"
+                    ('a, 'es, 'as) spr_simWorldsRep \<times> 'obs,
+                    ('a, 'es, 'as) spr_simWorldsRep) MapOps"
 where
   "trans_MapOps \<equiv>
      \<lparr> MapOps.empty = trie_empty,
        lookup = trans_MapOps_lookup,
        update = trans_MapOps_update \<rparr>"
 
-lemma (in DetBroadcastEnvironment) spr_simAbs_inj_on[intro, simp]:
-  "inj_on spr_simAbs { x . spr_simAbs x \<in> SPRdet.jkbpSEC }"
-proof(rule inj_onI)
-  fix x y
-  assume x: "x \<in> { x . spr_simAbs x \<in> SPRdet.jkbpSEC }"
-     and y: "y \<in> { x . spr_simAbs x \<in> SPRdet.jkbpSEC }"
-     and xy: "spr_simAbs x = spr_simAbs y"
-  from x obtain a t
-    where tC: "t \<in> jkbpC"
-      and ec: "spr_simAbs x = spr_sim ` equiv_class a (spr_jview a t)"
-    by auto
-  from simAbs_ec_tObsC_abs[OF tC ec] simAbs_ec_tObsC_abs[OF tC trans[OF xy[symmetric] ec], symmetric]
-  have "fst x = fst y" by (blast intro: injD[OF toSet_inj])
-  moreover
-  from simAbs_ec_agent_equiv[OF tC ec] simAbs_ec_agent_equiv[OF tC trans[OF xy[symmetric] ec], symmetric]
-  have "snd x = snd y" by (blast intro: injD[OF toSet_inj])
-  ultimately show "x = y" by (simp add: prod_eqI)
-qed
-
-lemma (in DetBroadcastEnvironment) trans_MapOps[intro, simp]:
+lemma (in FiniteDetBroadcastEnvironment) trans_MapOps[intro, simp]:
   "MapOps (\<lambda>k. (spr_simAbs (fst k), snd k)) (SPRdet.jkbpSEC \<times> UNIV) trans_MapOps"
 proof
   fix k show "MapOps.lookup trans_MapOps (MapOps.empty trans_MapOps) k = None"
@@ -1767,39 +2061,32 @@ qed
 
 (* A map for the agent actions. *)
 
-type_synonym
-  ('a, 'es, 'aAct, 'as) acts_trie
-    = "(('a, 'es, 'as) BEState,
-        (('a, 'es, 'as) BEState,
-          (('a, 'es, 'as) BEState,
-           (('a, 'es, 'as) BEState, 'aAct) trie) trie) trie) trie"
-
 definition
   acts_MapOps_lookup :: "('a :: linorder, 'es :: linorder, 'aAct, 'as :: linorder) acts_trie
-                       \<Rightarrow> ('a, 'es, 'as) SPRstate_rep
+                       \<Rightarrow> ('a, 'es, 'as) spr_simWorldsRep
                        \<rightharpoonup> 'aAct"
 where
-  "acts_MapOps_lookup \<equiv> \<lambda>m (coEC, aEC).
-     Option.bind (trie_lookup m (map fst (toList coEC)))
-      (\<lambda>m. Option.bind (trie_lookup m (map snd (toList coEC)))
-       (\<lambda>m. Option.bind (trie_lookup m (map fst (toList aEC)))
-        (\<lambda>m. trie_lookup m (map snd (toList aEC)))))"
+  "acts_MapOps_lookup \<equiv> \<lambda>m (cec, aec).
+     Option.bind (trie_lookup m (map fst (toList cec)))
+      (\<lambda>m. Option.bind (trie_lookup m (map snd (toList cec)))
+       (\<lambda>m. Option.bind (trie_lookup m (map fst (toList aec)))
+        (\<lambda>m. trie_lookup m (map snd (toList aec)))))"
 
 definition
-  acts_MapOps_update :: "('a, 'es, 'as) SPRstate_rep
+  acts_MapOps_update :: "('a, 'es, 'as) spr_simWorldsRep
                        \<Rightarrow> 'aAct
                        \<Rightarrow> ('a :: linorder, 'es :: linorder, 'aAct, 'as :: linorder) acts_trie
                        \<Rightarrow> ('a, 'es, 'aAct, 'as) acts_trie"
 where
-  "acts_MapOps_update \<equiv> \<lambda>(coEC, aEC) pAct m.
-     trie_update_with' (map fst (toList coEC)) m trie_empty
-      (\<lambda>m. trie_update_with' (map snd (toList coEC)) m trie_empty
-       (\<lambda>m. trie_update_with' (map fst (toList aEC)) m trie_empty
-        (\<lambda>m. trie_update (map snd (toList aEC)) pAct m)))"
+  "acts_MapOps_update \<equiv> \<lambda>(cec, aec) pAct m.
+     trie_update_with' (map fst (toList cec)) m trie_empty
+      (\<lambda>m. trie_update_with' (map snd (toList cec)) m trie_empty
+       (\<lambda>m. trie_update_with' (map fst (toList aec)) m trie_empty
+        (\<lambda>m. trie_update (map snd (toList aec)) pAct m)))"
 
 definition
   acts_MapOps :: "(('a :: linorder, 'es :: linorder, 'aAct, 'as :: linorder) acts_trie,
-                   ('a, 'es, 'as) SPRstate_rep,
+                   ('a, 'es, 'as) spr_simWorldsRep,
                    'aAct) MapOps"
 where
   "acts_MapOps \<equiv>
@@ -1807,7 +2094,7 @@ where
        lookup = acts_MapOps_lookup,
        update = acts_MapOps_update \<rparr>"
 
-lemma (in DetBroadcastEnvironment) acts_MapOps[intro, simp]:
+lemma (in FiniteDetBroadcastEnvironment) acts_MapOps[intro, simp]:
   "MapOps spr_simAbs SPRdet.jkbpSEC acts_MapOps"
 proof
   fix k show "MapOps.lookup acts_MapOps (MapOps.empty acts_MapOps) k = None"
@@ -1832,59 +2119,121 @@ next
   qed
 qed
 
-sublocale DetBroadcastEnvironment < SPRdet!: Algorithm
+(*>*)
+text{*
+
+This suffices to placate the @{term "Algorithm"} locale.
+
+*}
+
+sublocale FiniteDetBroadcastEnvironment
+        < SPRdet!: Algorithm
             jkbp envInit envAction envTrans envVal
-            envObs spr_sim spr_sim_rels spr_sim_val
+            spr_jview envObs spr_jviewInit spr_jviewIncr
+            spr_sim spr_simRels spr_simVal
             spr_simAbs spr_simObs spr_simInit spr_simTrans spr_simAction
             acts_MapOps trans_MapOps
-  by (unfold_locales) blast+
+(*<*)
+  apply (unfold_locales)
+
+  using spr_simInit
+  apply auto[1]
+
+  using spr_simObs
+  apply auto[1]
+
+  using spr_simAction
+  apply auto[1]
+
+  using spr_simTrans
+  apply auto[1]
+
+  apply (rule acts_MapOps)
+  apply (rule trans_MapOps)
+
+  done
 
 definition
-  SPRDetAutoDFS
-where
-  "SPRDetAutoDFS \<equiv> \<lambda>agents jkbp envInit envAction envTrans envVal envObsC envObs. \<lambda>a.
-    alg_dfs acts_MapOps
-            trans_MapOps
-            (Algorithm.k_frontier_init envInit envObs (spr_simInit envInit envObsC envObs) a)
-            (spr_simObs envObsC a)
-            (spr_simTrans agents jkbp envAction envTrans envVal envObsC envObs a)
-            (\<lambda>ss. spr_simAction jkbp envVal envObs ss a)"
-
-definition
-  mkSPRDetAuto
-where
   "mkSPRDetAuto \<equiv> \<lambda>agents jkbp envInit envAction envTrans envVal envObsC envObs.
-    mkAutoAlg acts_MapOps
+    mkAlgAuto acts_MapOps
               trans_MapOps
-              (Algorithm.k_frontier_init envInit envObs (spr_simInit envInit envObsC envObs))
               (spr_simObs envObsC)
               (spr_simInit envInit envObsC envObs)
               (spr_simTrans agents jkbp envAction envTrans envVal envObsC envObs)
-              (spr_simAction jkbp envVal envObs)"
+              (spr_simAction jkbp envVal envObs)
+              (\<lambda>a. map (spr_simInit envInit envObsC envObs a \<circ> envObs a) envInit)"
 
-lemma (in DetBroadcastEnvironment) mkSPRDetAuto_implements:
-  "implements (mkSPRDetAuto agents jkbp envInit envAction envTrans envVal envObsC envObs)"
-  using SPRdet.k_mkAutoAlg_implements
-  unfolding mkSPRDetAuto_def mkAutoAlg_def
+lemma (in FiniteDetBroadcastEnvironment) mkSPRDetAuto_implements:
+  "SPR.implements (mkSPRDetAuto agents jkbp envInit envAction envTrans envVal envObsC envObs)"
+  using SPRdet.k_mkAlgAuto_implements
+  unfolding mkSPRDetAuto_def mkAlgAuto_def SPRdet.k_frontier_def
   by simp
 
-(* This is the syntactic criterion mentioned in the Muddy Children example. *)
+(*
 
-lemma (in Environment) jkbpDetI:
+We actually run this unfolding of the algorithm. The lemma is keeping
+us honest.
+
+*)
+
+definition
+  "SPRDetAutoDFS \<equiv> \<lambda>agents jkbp envInit envAction envTrans envVal envObsC envObs. \<lambda>a.
+    alg_dfs acts_MapOps
+            trans_MapOps
+            (spr_simObs envObsC a)
+            (spr_simTrans agents jkbp envAction envTrans envVal envObsC envObs a)
+            (spr_simAction jkbp envVal envObs a)
+            (map (spr_simInit envInit envObsC envObs a \<circ> envObs a) envInit)"
+
+lemma (in FiniteDetBroadcastEnvironment)
+  "mkSPRDetAuto agents jkbp envInit envAction envTrans envVal envObsC envObs
+ = (\<lambda>a. alg_mk_auto acts_MapOps trans_MapOps
+           (local.spr_simInit a)
+           (SPRDetAutoDFS agents jkbp envInit envAction envTrans envVal envObsC envObs a))"
+  unfolding mkSPRDetAuto_def mkAlgAuto_def SPRDetAutoDFS_def alg_mk_auto_def by (simp add: Let_def)
+
+(*>*)
+text{*
+
+As we remarked earlier in this section, in general it may be difficult
+to establish the determinacy of a KBP as it is a function of the
+environment. However in many cases determinism is syntactically
+manifest as the guards are logically disjoint, independently of the
+knowledge subformulas. The following lemma generates the required
+proof obligations for this case:
+
+*}
+
+lemma (in PreEnvironmentJView) jkbpDetI:
   assumes tC: "t \<in> jkbpC"
-      and jkbpSynDet: "\<And>a. distinct (map guard (jkbp a))"
-      and jkbpSemDet: "\<And>a gc gc'. \<lbrakk> gc \<in> set (jkbp a); gc' \<in> set (jkbp a); t \<in> jkbpC \<rbrakk>
-                         \<Longrightarrow> guard gc = guard gc' \<or> \<not>(mkMC, t \<Turnstile> guard gc \<and> mkMC, t \<Turnstile> guard gc')"
-  shows "length (jAction mkMC t a) \<le> 1"
+  assumes jkbpSynDet: "\<forall>a. distinct (map guard (jkbp a))"
+  assumes jkbpSemDet: "\<forall>a gc gc'.
+        gc \<in> set (jkbp a) \<and> gc' \<in> set (jkbp a) \<and> t \<in> jkbpC
+    \<longrightarrow> guard gc = guard gc' \<or> \<not>(MC, t \<Turnstile> guard gc \<and> MC, t \<Turnstile> guard gc')"
+  shows "length (jAction MC t a) \<le> 1"
+(*<*)
 proof -
   { fix a X
     assume "set X \<subseteq> set (jkbp a)"
        and "distinct (map guard X)"
-    with tC have "length [ action gc . gc \<leftarrow> X, mkMC, t \<Turnstile> guard gc ] \<le> 1"
-      by (induct X) (auto dest: jkbpSemDet) }
-  from this[OF subset_refl jkbpSynDet] show ?thesis
+    with tC have "length [ action gc . gc \<leftarrow> X, MC, t \<Turnstile> guard gc ] \<le> 1"
+      apply (induct X)
+      using jkbpSemDet[rule_format, where a=a]
+      apply auto
+      done }
+  from this[OF subset_refl jkbpSynDet[rule_format]] show ?thesis
     unfolding jAction_def by simp
 qed
 
-end
+(*>*)
+text{*
 
+The scenario presented here is a variant of the broadcast environments
+treated by \citet{Ron:1996}, which we cover in the next section.
+
+\FloatBarrier
+
+*}
+(*<*)
+end
+(*>*)

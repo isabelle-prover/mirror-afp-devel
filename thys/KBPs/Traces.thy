@@ -1,21 +1,25 @@
-
+(*<*)
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-header "Traces"
-
 theory Traces
 imports Main
 begin
+(*>*)
 
+section{* Traces *}
 
-text{* A \emph{trace} is a non-empty sequence of states. By using this
-custom type rather than the standard HOL list type, we ease some later
-inductions at the cost of having to reimplement the standard
-operations. *}
+text{*
+
+A \emph{trace} is a non-empty sequence of states. This custom type has
+the advantage over the standard HOL list type of providing a more
+suitable induction rule. We use these to give a semantics to
+knowledge-based programs in \S\ref{sec:kbps-theory-kbps-semantics}.
+
+*}
 
 datatype 's Trace = tInit "'s"
                   | tStep "'s Trace" "'s" (infixl "\<leadsto>" 65)
@@ -27,20 +31,25 @@ fun tFirst :: "'s Trace \<Rightarrow> 's" where
 fun tLast :: "'s Trace \<Rightarrow> 's" where
     "tLast (tInit s) = s"
   | "tLast (t \<leadsto> s) = s"
-
+(*<*)
 
 lemma tLast_tInit_comp[simp]: "tLast \<circ> tInit = id"
   by (rule ext) simp
+(*>*)
 
+text{*
 
-text{* Our later ease hinges on taking the length of a trace to be
-zero-based. *}
+We provide a few of the standard list operations: @{term "tLength"},
+@{term "tMap"} and @{term "tZip"}. Our later ease hinges on taking the
+length of a trace to be zero-based.
+
+*}
 
 fun tLength :: "'s Trace \<Rightarrow> nat" where
     "tLength (tInit s) = 0"
   | "tLength (t \<leadsto> s) = 1 + tLength t"
 
-
+(*<*)
 lemma tLength_0_conv:
   "(tLength t = 0) \<longleftrightarrow> (\<exists>s. t = tInit s)"
   by (cases t) simp_all
@@ -65,13 +74,13 @@ proof (induct t arbitrary: t')
 next
   case (tStep t s t') with tS show ?case by (cases t') simp_all
 qed
-
+(*>*)
 
 fun tMap where
   "tMap f (tInit x) = tInit (f x)"
 | "tMap f (xs \<leadsto> x) = tMap f xs \<leadsto> f x"
 
-
+(*<*)
 lemma tLength_tMap[iff]: "tLength (tMap f t) = tLength t"
   by (induct t) simp_all
 
@@ -123,8 +132,17 @@ proof -
   from M have L: "tLength t = tLength t'" by (rule tMap_eq_imp_tLength_eq)
   from L M show ?thesis by (induct rule: trace_induct2, simp_all)
 qed
+(*>*)
 
+fun tZip where
+  "tZip f (tInit x) (tInit y) = tInit (f x y)"
+| "tZip f (xs \<leadsto> x) (ys \<leadsto> y) = tZip f xs ys \<leadsto> f x y"
+(*<*)
 
+lemma tLength_tZip[iff]: "tLength xs = tLength ys \<Longrightarrow> tLength (tZip f xs ys) = tLength xs"
+  by (induct rule: trace_induct2) simp_all
 
+(*>*)
+(*<*)
 end
-
+(*>*)

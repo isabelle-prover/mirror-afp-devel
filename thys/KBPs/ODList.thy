@@ -1,42 +1,38 @@
-
+(*<*)
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
+ *
+ * Based on Florian Haftmann's DList.thy and Tobias Nipkow's msort proofs.
  *)
 
-header "Ordered Distinct Lists"
-
 theory ODList
-imports Main List_local
+imports
+  "~~/src/HOL/Library/Multiset"
+  List_local
 begin
-
+(*>*)
 
 text{*
+
 Define a type of ordered distinct lists, intended to represent sets.
 
 The advantage of this representation is that it is isomorphic to the
 set of finite sets. Conversely it requires the carrier type to be a
-linear order.
+linear order.  Note that this representation does not arise from a
+quotient on lists: all the unsorted lists are junk.
+
 *}
-
-(*    
-FIXME provide a bunch of invariant-preserving list operations too.
-
-FIXME note this representation does not arise from a quotient on
-lists. We need to consider only the sorted lists, which we could
-quotient under membership. Starting with all lists we have junk
-representations.
-
-FIXME Based on Florian Haftmann's DList.thy and Nipkow's mergesort
-proofs.
-*)
 
 context linorder
 begin
 
-text{* "Absorbing" mergesort, a variant of Tobias Nipkow's proof from
-1992. *}
+text{*
+
+"Absorbing" msort, a variant of Tobias Nipkow's proofs from 1992.
+
+*}
 
 fun
   merge :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
@@ -48,7 +44,7 @@ where
              else if x < y then x # merge xs (y#ys)
                            else y # merge (x#xs) ys)"
 
-
+(*<*)
 lemma set_merge[simp]:
   "set (merge xs ys) = set (xs @ ys)"
   by (induct xs ys rule: merge.induct) auto
@@ -58,178 +54,54 @@ lemma distinct_sorted_merge[simp]:
      \<Longrightarrow> distinct (merge xs ys) \<and> sorted (merge xs ys)"
   by (induct xs ys rule: merge.induct) (auto iff: sorted_Cons)
 
-
-text{* Deal a list into two sublists. *}
-
-(*
-FIXME what is the most efficient thing to do here? This does a lot
-more allocation than one might like.
-
-Probably best is to @{term "map (op # [])"} and merge pairs of
-sublists until there is only one left.
-*)
-
-definition
-  deal_body :: "'a \<Rightarrow> bool \<times> ('a list \<times> 'a list) \<Rightarrow> bool \<times> ('a list \<times> 'a list)"
-where
-  [code]: "deal_body \<equiv> \<lambda>x (b, ys, zs). if b then (False, x # ys, zs) else (True, ys, x # zs)"
-
-definition
-  deal :: "'a list \<Rightarrow> 'a list \<times> 'a list"
-where
-  [code]: "deal xs \<equiv> snd (foldr deal_body xs (False, [], []))"
-
-
-lemma length_deal_aux:
-  "foldr deal_body zs (b, ([], [])) = (b', xs, ys)
-     \<Longrightarrow> length xs < Suc (length zs)
-       \<and> length ys < Suc (length zs)"
-proof(induct zs arbitrary: b b' xs ys)
-  case (Cons z zs)
-  then obtain b'' xs' ys'
-    where F: "foldr deal_body zs (b, [], []) = (b'', xs', ys')"
-    apply (case_tac "foldr deal_body zs (b, [], [])")
-    apply auto
-    done
-  with Cons(1)
-  have "length xs' < Suc (length zs) \<and> length ys' < Suc (length zs)"
-    by blast
-  with F Cons(2) show ?case
-    unfolding deal_body_def
-    apply simp
-    apply (fold deal_body_def)+
-    apply (cases b'')
-    apply auto
-    done
-qed simp
-
-lemma length_deal[simp]:
-  "(xs, ys) = deal zs \<Longrightarrow> length xs < Suc (length zs) \<and> length ys < Suc (length zs)"
-  unfolding deal_def
-  apply (cases "foldr deal_body zs (False, [], [])")
-  using length_deal_aux
-  apply simp
-  done
-
-lemma set_deal_aux:
-  "foldr deal_body zs (b, ([], [])) = (b', xs, ys)
-     \<Longrightarrow> set xs \<union> set ys = set zs"
-proof(induct zs arbitrary: b b' xs ys)
-  case (Cons z zs)
-  then obtain b'' xs' ys'
-    where F: "foldr deal_body zs (b, [], []) = (b'', xs', ys')"
-    apply (case_tac "foldr deal_body zs (b, [], [])")
-    apply auto
-    done
-  with Cons have "set xs' \<union> set ys' = set zs" by simp
-  with F Cons(2) show ?case
-    unfolding deal_body_def
-    apply simp_all
-    apply (fold deal_body_def)+
-    apply (cases b'')
-     apply clarsimp
-    apply clarsimp
-    done
-qed simp
-
-lemma set_deal:
-  "deal zs = (xs, ys) \<Longrightarrow> set xs \<union> set ys = set zs"
-  unfolding deal_def
-  apply (cases "foldr deal_body zs (False, [], [])")
-  using set_deal_aux
-  apply simp
-  done
-
-lemma distinct_deal_aux:
-  "\<lbrakk> foldr deal_body zs (b, ([], [])) = (b', xs, ys); distinct zs \<rbrakk>
-     \<Longrightarrow> distinct xs \<and> distinct ys \<and> set xs \<union> set ys = set zs"
-proof(induct zs arbitrary: b b' xs ys)
-  case (Cons z zs)
-  then obtain b'' xs' ys'
-    where F: "foldr deal_body zs (b, [], []) = (b'', xs', ys')"
-    apply (case_tac "foldr deal_body zs (b, [], [])")
-    apply auto
-    done
-  with Cons have "distinct xs' \<and> distinct ys' \<and> set xs' \<union> set ys' = set zs" by simp
-  with F Cons(2) Cons(3) show ?case
-    unfolding deal_body_def
-    apply simp_all
-    apply (fold deal_body_def)+
-    apply (cases b'')
-     apply clarsimp
-     apply blast
-    apply clarsimp
-    apply blast
-    done
-qed simp
-
-lemma distinct_deal[simp]:
-  "\<lbrakk> (xs, ys) = deal zs; distinct zs \<rbrakk> \<Longrightarrow> distinct xs \<and> distinct ys"
-  unfolding deal_def
-  apply (cases "foldr deal_body zs (False, [], [])")
-  using distinct_deal_aux
-  apply simp
-  done
-
-
+lemma multiset_of_merge [simp]:
+  "\<lbrakk> distinct (xs @ ys) \<rbrakk> \<Longrightarrow> multiset_of (merge xs ys) = multiset_of xs + multiset_of ys"
+  by (induct xs ys rule: merge.induct) (simp_all add: ac_simps)
+(*>*)
 
 text{* The "absorbing" sort itself. *}
 
-fun
-  mergesort :: "'a list \<Rightarrow> 'a list"
+fun msort :: "'a list \<Rightarrow> 'a list"
 where
-  "mergesort []  = []"
-| "mergesort [x] = [x]"
-| "mergesort (x # y # zs) =
-     (let (xs, ys) = deal zs
-       in merge (mergesort (x # xs)) (mergesort (y # ys)))"
+  "msort [] = []"
+| "msort [x] = [x]"
+| "msort xs = merge (msort (take (size xs div 2) xs))
+                    (msort (drop (size xs div 2) xs))"
+
+(*<*)
+lemma msort_distinct_sorted[simp]:
+  "distinct (msort xs) \<and> sorted (msort xs)"
+  by (induct xs rule: msort.induct) simp_all
+
+lemma msort_set[simp]:
+  "set (msort xs) = set xs"
+  by (induct xs rule: msort.induct)
+     (simp_all, metis List.set.simps(2) append_take_drop_id set_append) (* thankyou sledgehammer! *)
+
+lemma msort_remdups[simp]:
+  "remdups (msort xs) = msort xs"
+  by simp
+
+lemma msort_idle[simp]:
+  "\<lbrakk> distinct xs; sorted xs \<rbrakk> \<Longrightarrow> msort xs = xs"
+  by (rule map_sorted_distinct_set_unique[where f=id]) (auto simp: map.id)
+
+lemma multiset_of_msort[simp]:
+  "distinct xs \<Longrightarrow> multiset_of (msort xs) = multiset_of xs"
+  by (rule iffD1[OF set_eq_iff_multiset_of_eq_distinct]) simp_all
+
+lemma msort_sort[simp]:
+  "distinct xs \<Longrightarrow> sort xs = msort xs"
+  by (simp add: properties_for_sort)
+(*>*)
+
+end (* context linorder *)
 
 
-
-declare mergesort.simps [code]
-
-lemma mergesort_distinct_sorted:
-  "distinct (mergesort xs) \<and> sorted (mergesort xs)"
-  by (induct xs rule: mergesort.induct) (auto split: split_split)
-
-lemma mergesort_set:
-  "set (mergesort xs) = set xs"
-proof(induct xs rule: mergesort.induct)
-  case (3 x y zs)
-  hence X: "\<And>xs ys. deal zs = (xs, ys) \<Longrightarrow> set (mergesort (x # xs)) = set (x # xs)"
-    and Y: "\<And>xs ys. deal zs = (xs, ys) \<Longrightarrow> set (mergesort (y # ys)) = set (y # ys)"
-    by force+
-  show ?case
-    apply simp
-    apply (cases "deal zs")
-    apply (frule set_deal[symmetric])
-    apply (frule X)
-    apply (frule Y)
-    apply auto
-    done
-qed simp_all
-
-lemma mergesort_remdups:
-  "remdups (mergesort xs) = mergesort xs"
-  by (simp add: mergesort_distinct_sorted)
-
-lemma mergesort_idle[simp]:
-  "\<lbrakk> distinct xs; sorted xs \<rbrakk> \<Longrightarrow> mergesort xs = xs"
-  apply (rule map_sorted_distinct_set_unique[where f=id])
-  using mergesort_distinct_sorted mergesort_set
-  apply auto
-  done
-
-end (*  context *)
-
-
-subsection {* The @{term "odlist"} type *}
+section {* The @{term "odlist"} type *}
 
 typedef (open) ('a :: linorder) odlist = "{ x::'a list . sorted x \<and> distinct x }"
-  morphisms toList odlist_Abs
-  apply (rule exI[where x="[]"])
-  apply simp
-  done
+  morphisms toList odlist_Abs by auto
 
 lemma distinct_toList[simp]: "distinct (toList xs)"
   using toList by auto
@@ -237,28 +109,34 @@ lemma distinct_toList[simp]: "distinct (toList xs)"
 lemma sorted_toList[simp]: "sorted (toList xs)"
   using toList by auto
 
-text{* Code generator voodoo: this is the constructor for the
-abstract type. *}
+text{*
+
+Code generator voodoo: this is the constructor for the abstract type.
+
+*}
 
 definition
   ODList :: "('a :: linorder) list \<Rightarrow> 'a odlist"
 where
-  "ODList \<equiv> odlist_Abs \<circ> mergesort"
+  "ODList \<equiv> odlist_Abs \<circ> msort"
 
 lemma toList_ODList:
-  "toList (ODList xs) = mergesort xs"
-  unfolding ODList_def by (simp add: mergesort_distinct_sorted odlist_Abs_inverse)
+  "toList (ODList xs) = msort xs"
+  unfolding ODList_def
+  by (simp add: odlist_Abs_inverse)
 
 lemma ODList_toList[simp, code abstype]:
   "ODList (toList xs) = xs"
   unfolding ODList_def
-  apply (cases xs)
-  apply (simp add: odlist_Abs_inverse)
-  done
+  by (cases xs) (simp add: odlist_Abs_inverse)
 
-text{* Runtime cast from @{typ "'a list"} into @{typ "'a
-odlist"}. This is just a renaming of @{term "ODList"} -- names are
-significant to the code generator's abstract type machinery. *}
+text{*
+
+Runtime cast from @{typ "'a list"} into @{typ "'a odlist"}. This is
+just a renaming of @{term "ODList"} -- names are significant to the
+code generator's abstract type machinery.
+
+*}
 
 definition
   fromList :: "('a :: linorder) list \<Rightarrow> 'a odlist"
@@ -266,48 +144,47 @@ where
   "fromList \<equiv> ODList"
 
 lemma toList_fromList[code abstract]:
-  "toList (fromList xs) = mergesort xs"
-  unfolding fromList_def by (simp add: toList_ODList)
+  "toList (fromList xs) = msort xs"
+  unfolding fromList_def
+  by (simp add: toList_ODList)
 
 subsection{* Basic properties: equality, finiteness *}
 
-
+(*<*)
 declare toList_inject[iff]
-
+(*>*)
 
 instantiation odlist :: (linorder) equal
-
+(*<*)
 begin
 
 definition [code]:
   "HOL.equal A B \<longleftrightarrow> odlist_equal (toList A) (toList B)"
 
-instance proof
-qed (simp add: equal_odlist_def)
+instance
+  by default (simp add: equal_odlist_def)
 
 end
-
+(*>*)
 
 instance odlist :: ("{finite, linorder}") finite
-
+(*<*)
 proof
   let ?ol = "UNIV :: 'a odlist set"
   let ?s = "UNIV :: 'a set set"
   have "finite ?s" by simp
-  moreover then have "?ol \<subseteq> range (odlist_Abs \<circ> sorted_list_of_set)"
-    apply -
-    apply rule
-    apply auto
-    apply (rule_tac x="set (toList x)" in image_eqI)
-    apply simp_all
-    apply (simp only: sorted_list_of_set_sort_remdups)
-    apply (case_tac x)
-    apply (simp add: odlist_Abs_inverse odlist_Abs_inject)
-    apply (simp add: distinct_remdups_id sorted_sort_id)
-    done
+  moreover
+  have "?ol \<subseteq> range (odlist_Abs \<circ> sorted_list_of_set)"
+  proof
+    fix x show "x \<in> range (odlist_Abs \<circ> sorted_list_of_set)"
+      apply (cases x)
+      apply (rule range_eqI[where x="set (toList x)"])
+      apply (clarsimp simp: odlist_Abs_inject sorted_list_of_set_sort_remdups odlist_Abs_inverse distinct_remdups_id)
+      done
+  qed
   ultimately show "finite ?ol" by (blast intro: finite_surj)
 qed
-
+(*>*)
 
 subsection{* Constants *}
 
@@ -321,10 +198,6 @@ lemma toList_empty[simp, code abstract]:
   unfolding empty_def by (simp add: toList_ODList)
 
 subsection{* Operations *}
-
-text{* We need to hoist all list operations we want to use and
-show they preserve the invariant. We cannot generate code for toList,
-so there's no getting around this. *}
 
 subsubsection{* toSet *}
 
@@ -344,7 +217,7 @@ lemma toSet_ODList[simp]:
 lemma toSet_fromList_set[simp]:
   "toSet (fromList xs) = set xs"
   unfolding toSet_def fromList_def
-  by (simp add: toList_ODList mergesort_set)
+  by (simp add: toList_ODList)
 
 lemma toSet_inj[intro, simp]: "inj toSet"
   apply (rule injI)
@@ -367,6 +240,17 @@ where
 
 lemma hd_toList: "toList xs = y # ys \<Longrightarrow> ODList.hd xs = y"
   unfolding hd_def by simp
+
+subsubsection{* member *}
+
+definition
+  member :: "('a :: linorder) odlist \<Rightarrow> 'a \<Rightarrow> bool"
+where
+  [code]: "member xs x \<equiv> List.member (toList xs) x"
+
+lemma member_toSet[iff]:
+  "member xs x \<longleftrightarrow>x \<in> toSet xs"
+  unfolding member_def toSet_def by (simp add: in_set_member)
 
 subsubsection{* Filter *}
 
@@ -422,17 +306,17 @@ lemma toSet_difference[simp]:
 subsubsection{* Intersection *}
 
 definition
-  intersection :: "('a :: linorder) odlist \<Rightarrow> 'a odlist \<Rightarrow> 'a odlist"
+  intersect :: "('a :: linorder) odlist \<Rightarrow> 'a odlist \<Rightarrow> 'a odlist"
 where
-  "intersection xs ys = ODList (List_local.intersection (toList xs) (toList ys))"
+  "intersect xs ys = ODList (List_local.intersection (toList xs) (toList ys))"
 
-lemma toList_intersection[simp, code abstract]:
-  "toList (intersection xs ys) = List_local.intersection (toList xs) (toList ys)"
-  unfolding intersection_def by (simp add: toList_ODList)
+lemma toList_intersect[simp, code abstract]:
+  "toList (intersect xs ys) = List_local.intersection (toList xs) (toList ys)"
+  unfolding intersect_def by (simp add: toList_ODList)
 
-lemma toSet_intersection[simp]:
-  "toSet (intersection xs ys) = toSet xs \<inter> toSet ys"
-  unfolding intersection_def
+lemma toSet_intersect[simp]:
+  "toSet (intersect xs ys) = toSet xs \<inter> toSet ys"
+  unfolding intersect_def
   apply simp
   apply (simp add: toSet_def)
   done
@@ -455,12 +339,27 @@ lemma toSet_union[simp]:
   apply (simp add: toSet_def)
   done
 
+definition
+  big_union :: "('b \<Rightarrow> ('a :: linorder) odlist) \<Rightarrow> 'b list \<Rightarrow> 'a odlist"
+where
+  [code]: "big_union f X \<equiv> foldr (\<lambda>a A. ODList.union (f a) A) X ODList.empty"
+
+lemma toSet_big_union[simp]:
+  "toSet (big_union f X) = (\<Union>x \<in> set X. toSet (f x))"
+proof -
+  { fix X Y
+    have "toSet (foldr (\<lambda>x A. ODList.union (f x) A) X Y) = toSet Y \<union> (\<Union>x \<in> set X. toSet (f x))"
+      by (induct X arbitrary: Y) auto }
+   thus ?thesis
+     unfolding big_union_def by simp
+qed
+
 subsubsection{* Case distinctions *}
 
 text{*
 
-We construct ODLists out of lists, so talk in terms of those,
-not a one-step constructor we don't use.
+We construct ODLists out of lists, so talk in terms of those, not a
+one-step constructor we don't use.
 
 *}
 
@@ -521,13 +420,22 @@ qed
 
 subsubsection{* Relations *}
 
-type_synonym 'a ODRelation = "('a \<times> 'a) odlist"
+text{*
+
+Relations, represented as a list of pairs.
+
+*}
+
+type_synonym 'a odrelation = "('a \<times> 'a) odlist"
 
 subsubsection{* Image *}
 
-text{* Note the output of @{term "List_local.image"} is not guaranteed
-to be ordered or distinct. Also the relation need not be
-monomorphic. *}
+text{*
+
+The output of @{term "List_local.image"} is not guaranteed to be
+ordered or distinct. Also the relation need not be monomorphic.
+
+*}
 
 definition
   image :: "('a :: linorder \<times> 'b :: linorder) odlist \<Rightarrow> 'a odlist \<Rightarrow> 'b odlist"
@@ -535,17 +443,20 @@ where
   "image R xs = ODList (List_local.image (toList R) (toList xs))"
 
 lemma toList_image[simp, code abstract]:
-  "toList (image R xs) = mergesort (List_local.image (toList R) (toList xs))"
+  "toList (image R xs) = msort (List_local.image (toList R) (toList xs))"
   unfolding image_def by (simp add: toList_ODList)
 
 lemma toSet_image[simp]:
   "toSet (image R xs) = toSet R `` toSet xs"
-  unfolding image_def by (simp add: toSet_def toList_ODList mergesort_set)
+  unfolding image_def by (simp add: toSet_def toList_ODList)
 
 subsubsection{* Linear order *}
 
-text{* Lexicographic ordering on lists. Executable, unlike in
-List.thy. *}
+text{*
+
+Lexicographic ordering on lists. Executable, unlike in List.thy.
+
+*}
 
 instantiation odlist :: (linorder) linorder
 begin
@@ -633,7 +544,7 @@ text{*
 
 A few operations on finite maps.
 
-Unlike the AList theory, ODLists give us canonical
+Unlike the AssocList theory, ODLists give us canonical
 representations, so we can order them. Our tabulate has the wrong type
 (we want to take an odlist, not a list) so we can't use that
 part of the framework.
@@ -645,14 +556,12 @@ definition
 where
   [code]: "lookup = map_of \<circ> toList"
 
-text{* FIXME specific to ODLists. *}
+text{* Specific to ODLists. *}
 
 definition
   tabulate :: "('a :: linorder) odlist \<Rightarrow> ('a \<Rightarrow> 'b :: linorder) \<Rightarrow> ('a \<times> 'b) odlist"
 where
   "tabulate ks f = ODList (List.map (\<lambda>k. (k, f k)) (toList ks))"
-
-(* FIXME mono + inj \<Longrightarrow> strictly increasing? Isabelle def? See Orderings. *)
 
 definition (in order) mono_on :: "('a \<Rightarrow> 'b\<Colon>order) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "mono_on f X \<longleftrightarrow> (\<forall>x\<in>X. \<forall>y\<in>X. x \<le> y \<longrightarrow> f x \<le> f y)"
@@ -681,18 +590,18 @@ lemma sorted_mono_map:
   apply (auto dest: mono_onD)
   done
 
-lemma mergesort_map:
-  "\<lbrakk> distinct xs; sorted xs; inj_on f (set xs); mono_on f (set xs) \<rbrakk> \<Longrightarrow> mergesort (List.map f xs) = List.map f xs"
-  apply (rule mergesort_idle)
+lemma msort_map:
+  "\<lbrakk> distinct xs; sorted xs; inj_on f (set xs); mono_on f (set xs) \<rbrakk> \<Longrightarrow> msort (List.map f xs) = List.map f xs"
+  apply (rule msort_idle)
    apply (simp add: distinct_map)
   apply (simp add: sorted_mono_map)
   done
 
-lemma tabulate_odlist[simp, code abstract]:
+lemma tabulate_toList[simp, code abstract]:
   "toList (tabulate ks f) = List.map (\<lambda>k. (k, f k)) (toList ks)"
   unfolding tabulate_def
   apply (simp add: toList_ODList)
-  apply (subst mergesort_map)
+  apply (subst msort_map)
   apply simp_all
    apply (rule inj_onI)
    apply simp
@@ -701,14 +610,14 @@ lemma tabulate_odlist[simp, code abstract]:
   apply auto
   done
 
-lemma lookup_tabulate [simp]:
+lemma lookup_tabulate[simp]:
   "lookup (tabulate ks f) = (Some o f) |` toSet ks"
 proof(induct ks rule: odlist_induct)
   case (empty dxs) thus ?case unfolding tabulate_def lookup_def by (simp add: toList_ODList)
 next
   case (insert dxs x xs)
-  from insert have "map_of (List.map (\<lambda>k. (k, f k)) xs) = map_of (mergesort (List.map (\<lambda>k. (k, f k)) xs))"
-    apply (subst mergesort_map)
+  from insert have "map_of (List.map (\<lambda>k. (k, f k)) xs) = map_of (msort (List.map (\<lambda>k. (k, f k)) xs))"
+    apply (subst msort_map)
     apply (auto intro: inj_onI simp: sorted_Cons)
     apply (rule mono_onI)
     unfolding less_eq_prod_def
@@ -722,10 +631,10 @@ next
   finally have IH: "map_of (List.map (\<lambda>k. (k, f k)) xs) = (Some \<circ> f) |` toSet (fromList xs)" .
   from insert have "lookup (tabulate dxs f) = map_of (toList (ODList (List.map (\<lambda>k. (k, f k)) (x # xs))))"
     unfolding tabulate_def lookup_def by (simp add: toList_fromList)
-  also have "... = map_of (mergesort (List.map (\<lambda>k. (k, f k)) (x # xs)))"
+  also have "... = map_of (msort (List.map (\<lambda>k. (k, f k)) (x # xs)))"
     by (simp only: toList_ODList)
   also from insert have "... = map_of (List.map (\<lambda>k. (k, f k)) (x # xs))"
-    apply (subst mergesort_map)
+    apply (subst msort_map)
     apply (auto intro: inj_onI)
     apply (rule mono_onI)
     unfolding less_eq_prod_def
@@ -736,6 +645,6 @@ next
   finally show ?case .
 qed
 
-
+(*<*)
 end
-
+(*>*)

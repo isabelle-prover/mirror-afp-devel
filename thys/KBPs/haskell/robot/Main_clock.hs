@@ -2,16 +2,16 @@
 
 Turn a trie into a DFA and reduce it under bisimulation.
 
-Run the DFS on the example, copy the result into MC.hs
+Run the DFS on the example, copy the result into Robot_clock.hs
 
-Initial states for Child0:
+Initial states for the robot:
 
-:t [ (s, SPRViewDet.spr_simAgentInit envInit envObsC envObsInit Child0 (envObsInit Child0 s)) | s <- envInit ]
+:t [ (s, ClockView.clock_simInit envInit (const envObs) Robot (envObs s)) | s <- envInit ]
 
 -}
 module Main where
 
-import MC
+import Robot_clock
 
 import Prelude
 import Control.Monad ( foldM, when )
@@ -37,42 +37,37 @@ traverse_trieM ks (Trie v ls) a f =
 
 tat dfa t =
   traverse_trieM [] t a0 $ \k a v ->
-    traverse_trieM [] v a $ \k' a' v' ->
-      traverse_trieM [] v' a' $ \k'' a'' v'' ->
-        traverse_trieM [] v'' a'' $ \k''' (sm, lm, lim) (Mapping v''') ->
-          do let srcKey = (zip k k', zip k'' k''')
+    traverse_trieM [] v a $ \k' (sm, lm, lim) (Mapping v') ->
+          do let srcKey = (k, k')
                  (sm0, i) = update_map srcKey sm
                  f (sm', lm', lim') (obs, (ODList x0, ODList x1)) =
                    do let (sm'', j) = update_map (x0, x1) sm'
                           (lm'', k) = update_map obs lm'
-                          ((ca0, (ca1, ca2)), _) = obs
-                          lim'' = Map.insert k (show ca0 ++ " " ++ show ca1 ++ " " ++ show ca2) lim'
+                          lim'' = Map.insert k (show obs) lim'
                       addTransition dfa (i, k, j)
                       return (sm'', lm'', lim'')
-             when (null v''') $ putStrLn $ "No successors for state " ++ show srcKey
-             foldM f (sm0, lm, lim) v'''
+             when (null v') $ putStrLn $ "No successors for state " ++ show srcKey
+             foldM f (sm0, lm, lim) v'
   where
     a0 = (Map.empty, Map.empty, Map.empty)
 
 taa dfa sm t =
   traverse_trieM [] t a0 $ \k a v ->
     traverse_trieM [] v a $ \k' a' v' ->
-      traverse_trieM [] v' a' $ \k'' a'' v'' ->
-        traverse_trieM [] v'' a'' $ \k''' a''' v''' ->
-          do let srcKey = (zip k k', zip k'' k''')
-                 f (act, _) =
+          do let srcKey = (k, k')
+                 f act =
                    case act of
-                     SayIKnow -> setSatBit dfa (Map.findWithDefault (error "FIXME") srcKey sm)
-                     SayNothing -> return ()
-             mapM_ f v'''
+                     Halt -> setSatBit dfa (Map.findWithDefault (error "FIXME") srcKey sm)
+                     Nop -> return ()
+             mapM_ f v'
   where
     a0 = ()
 
 ti dfa sm = foldM f
   where
     f (i, lim) (s, (ODList k1, ODList k2)) =
-      do let BEState_ext ((c0,(c1,c2)),_) _ _ = s
-             str = show c0 ++ show c1 ++ show c2
+      do let (_, (obs, _)) = s
+             str = show obs
              lim' = Map.insert i str lim
          DFA.addInitialTransition dfa (i, Map.findWithDefault (error $ "ti: " ++ show (k1,k2)) (k1, k2) sm)
          return (i + 1, lim')
@@ -92,5 +87,5 @@ main =
      (_, lim') <- ti dfa sm (cToNum (Map.size lm), lim) mc_init
      minimize dfa
      let llim l = Map.findWithDefault (error $ "FIXME: lim: " ++ show l) l lim'
-     writeDotToFile dfa "mc.dot" llim
+     writeDotToFile dfa "robot_clock.dot" llim
      return ()

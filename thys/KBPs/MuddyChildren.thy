@@ -1,15 +1,99 @@
-
+(*<*)
 (*
  * Knowledge-based programs.
  * (C)opyright 2011, Peter Gammie, peteg42 at gmail.com.
  * License: BSD
  *)
 
-header {* The Muddy Children *}
-
 theory MuddyChildren
-imports SPRViewDet
+imports ClockView SPRViewDet
 begin
+(*>*)
+
+subsection{* The Muddy Children *}
+
+text{*
+
+\label{sec:kbps-theory-mc}
+
+Our first example of a multi-agent broadcast scenario is the classic
+muddy children puzzle, one of a class of such puzzles that exemplify
+non-obvious reasoning about mutual states of knowledge. It goes as
+follows \citep[\S1.1, Example~7.2.5]{FHMV:1995}:
+\begin{quotation}
+
+  $N$ children are playing together, $k$ of whom get mud on their
+  foreheads. Each can see the mud on the others' foreheads but not
+  their own.
+
+  A parental figure appears and says ``At least one of you has mud on your
+  forehead.'', expressing something already known to each of them if $k >
+  1$.
+
+  The parental figure then asks ``Does any of you know whether you have mud
+  on your own forehead?'' over and over.
+
+  Assuming the children are perceptive, intelligent, truthful and they
+  answer simultaneously, what will happen?
+\end{quotation}
+This puzzle relies essentially on \emph{synchronous public broadcasts}
+making particular facts \emph{common knowledge}, and that agents are
+capable of the requisite logical inference.
+
+As the mother has complete knowledge of the situation, we integrate
+her behaviour into the environment. Each agent $\mbox{child}_i$
+reasons with the following KBP:
+\begin{center}
+  \begin{tabular}{lll}
+    $\mathbf{do}$\\
+     & $\gcalt\ \hat{\mathbf{K}}_{\mbox{child}_i} \mbox{muddy}_i$ & $@{text "\<rightarrow>"}$ Say ``I know if my forehead is muddy''\\
+     & $\gcalt\ @{text "\<not>"}\hat{\mathbf{K}}_{\mbox{child}_i} \mbox{muddy}_i$ & $@{text "\<rightarrow>"}$ Say nothing\\
+    $\mathbf{od}$\\
+  \end{tabular}
+\end{center}
+where $\hat{\mathbf{K}}_a @{text "\<phi>"}$ abbreviates $\mathbf{K}_a
+@{text "\<phi>"}\ @{text "\<or>"}\ \mathbf{K}_a @{text "\<not>\<phi>"}$.
+
+As this protocol is deterministic, we use the SPR algorithm of
+\S\ref{sec:kbps-theory-spr-deterministic-protocols}.
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \vspace{-20pt}
+  \includegraphics[width=0.48\textwidth]{MC}
+  \vspace{-10pt}
+  \caption{The protocol of $\mbox{child}_0$.}
+  \label{fig:mc}
+\end{wrapfigure}
+
+The model records a child's initial observation of the mother's
+pronouncement and the muddiness of the other children in her initial
+private state, and these states are not changed by @{term
+"envTrans"}. The recurring common observation is all of the children's
+public responses to the mother's questions. Being able to distinguish
+these observations is crucial to making this a broadcast scenario.
+
+Running the algorithm for three children and minimising using
+Hopcroft's algorithm yields the automaton in Figure~\ref{fig:mc} for
+$\mbox{child}_0$. The initial transitions are labelled with the
+initial observation, i.e., the cleanliness ``C'' or muddiness ``M'' of
+the other two children. The dashed initial transition covers the case
+where everyone is clean; in the others the mother has announced that
+someone is dirty. Later transitions simply record the actions
+performed by each of the agents, where ``K'' is the first action in
+the above KBP, and ``N'' the second. Double-circled states are those
+in which $\mbox{child}_0$ knows whether she is muddy, and
+single-circled where she does not.
+
+In essence the child counts the number of muddy foreheads she sees and
+waits that many rounds before announcing that she knows.
+
+Note that a solution to this puzzle is beyond the reach of the clock
+semantics as it requires (in general) remembering the sequence of
+previous broadcasts of length proportional to the number of
+children. We discuss this further in \S\ref{sec:kbps-muddychildren}.
+
+*}
+(*<*)
 
 datatype Agent = Child0 | Child1 | Child2
 datatype Proposition = Dirty Agent
@@ -61,6 +145,25 @@ instance
   done
 end
 
+instantiation Agent :: enum
+begin
+
+definition
+  "enum_class.enum = [Child0, Child1, Child2]"
+
+definition
+  "enum_class.enum_all P = (P Child0 \<and> P Child1 \<and> P Child2)"
+
+definition
+  "enum_class.enum_ex P = (P Child0 \<or> P Child1 \<or> P Child2)"
+
+instance
+  apply default
+  unfolding enum_Agent_def enum_all_Agent_def enum_ex_Agent_def
+  by auto (case_tac x, auto)+
+
+end
+
 lemma Act_univ: "(UNIV :: ChildAct set) = {SayIKnow, SayNothing}"
   unfolding UNIV_def
   apply auto
@@ -69,9 +172,26 @@ lemma Act_univ: "(UNIV :: ChildAct set) = {SayIKnow, SayNothing}"
   done
 
 instance ChildAct :: finite
-  apply intro_classes
-  apply (auto iff: Act_univ)
-  done
+  by default (auto iff: Act_univ)
+
+instantiation ChildAct :: enum
+begin
+
+definition
+  "enum_class.enum = [SayIKnow, SayNothing]"
+
+definition
+  "enum_class.enum_all P = (P SayIKnow \<and> P SayNothing)"
+
+definition
+  "enum_class.enum_ex P = (P SayIKnow \<or> P SayNothing)"
+
+instance
+  apply default
+  unfolding enum_ChildAct_def enum_all_ChildAct_def enum_ex_ChildAct_def
+  by auto (case_tac x, auto)+
+
+end
 
 instantiation ChildAct :: linorder
 begin
@@ -179,19 +299,44 @@ where
               \<lparr> guard = Kand (Knot (\<^bold>K\<^sub>a (Kprop (Dirty a))))
                              (Knot (\<^bold>K\<^sub>a (Knot (Kprop (Dirty a))))), action = SayNothing \<rparr> ]"
 
+subsubsection{* Locale instantiations *}
+
 interpretation MC!: Environment jkbp envInit envAction envTrans envVal envObs
   apply unfold_locales
-  unfolding jkbp_def
-  apply auto
+  apply (auto simp: jkbp_def)
   done
 
-interpretation MC!:
-  DetBroadcastEnvironment jkbp envInit envAction envTrans envVal envObs agents envObsC
+subsubsection{* The Clock view implementation *}
+
+interpretation MC_Clock!:
+  FiniteLinorderEnvironment jkbp envInit envAction envTrans envVal envObs agents
+  apply unfold_locales
+  apply (simp add: Agent_univ agents_def)
+  done
+
+definition
+  mc_ClockDFS
+where
+  "mc_ClockDFS \<equiv> ClockAutoDFS agents jkbp envInit envAction envTrans envVal envObs"
+
+definition
+  mc_ClockAlg
+where
+  "mc_ClockAlg \<equiv> mkClockAuto agents jkbp envInit envAction envTrans envVal envObs"
+
+lemma (in FiniteLinorderEnvironment)
+  "MC.Clock.implements mc_ClockAlg"
+  unfolding mc_ClockAlg_def by (rule MC_Clock.mkClockAuto_implements)
+
+subsubsection{* The SPR view implementation *}
+
+interpretation MC_SPR!:
+  FiniteDetBroadcastEnvironment jkbp envInit envAction envTrans envVal envObs agents envObsC
   apply unfold_locales
   prefer 3
   apply (fold envObs_def envAction_def envTrans_def)
   apply clarify
-  apply (erule MC.jkbpDetI)
+  apply (erule MC.SPR.jkbpDetI)
    apply (simp add: jkbp_def)
    apply (auto simp: jkbp_def)[1]
 
@@ -201,22 +346,18 @@ interpretation MC!:
   done
 
 definition
-  mcDFS
+  mc_SPRDFS
 where
-  [code]: "mcDFS \<equiv> SPRDetAutoDFS agents jkbp envInit envAction envTrans envVal envObsC envObs"
+  "mc_SPRDFS \<equiv> SPRDetAutoDFS agents jkbp envInit envAction envTrans envVal envObsC envObs"
 
 definition
-  mcAlg
+  mc_SPRAlg
 where
-  [code]: "mcAlg \<equiv> mkSPRDetAuto agents jkbp envInit envAction envTrans envVal envObsC envObs"
+  "mc_SPRAlg \<equiv> mkSPRDetAuto agents jkbp envInit envAction envTrans envVal envObsC envObs"
 
-lemma (in DetBroadcastEnvironment)
-  "MC.implements mcAlg"
-  unfolding mcAlg_def by (rule MC.mkSPRDetAuto_implements)
-
-(*
-export_code "mcDFS" "mcAlg" in Haskell file "/tmp/" (string_classes)
-*)
+lemma (in FiniteDetBroadcastEnvironment)
+  "MC.SPR.implements mc_SPRAlg"
+  unfolding mc_SPRAlg_def by (rule MC_SPR.mkSPRDetAuto_implements)
 
 end
-
+(*>*)
