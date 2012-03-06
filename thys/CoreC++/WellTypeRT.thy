@@ -157,26 +157,14 @@ lemmas WTrt_induct = WTrt_WTrts.induct [split_format (complete)]
 
 section{*Easy consequences*}
 
-lemma [iff]: "(P,E,h \<turnstile> [] [:] Ts) = (Ts = [])"
-
-apply(rule iffI)
-apply (auto elim: WTrts.cases)
-done
-
-
-lemma [iff]: "(P,E,h \<turnstile> e#es [:] T#Ts) = (P,E,h \<turnstile> e : T \<and> P,E,h \<turnstile> es [:] Ts)"
-
-apply(rule iffI)
-apply (auto elim: WTrts.cases)
-done
-
-
-lemma [iff]: "(P,E,h \<turnstile> (e#es) [:] Ts) =
-  (\<exists>U Us. Ts = U#Us \<and> P,E,h \<turnstile> e : U \<and> P,E,h \<turnstile> es [:] Us)"
-
-apply(rule iffI)
-apply (auto elim: WTrts.cases)
-done
+inductive_simps [iff]:
+  "P,E,h \<turnstile> [] [:] Ts"
+  "P,E,h \<turnstile> e#es [:] T#Ts"
+  "P,E,h \<turnstile> (e#es) [:] Ts"
+  "P,E,h \<turnstile> Val v : T"
+  "P,E,h \<turnstile> Var V : T"
+  "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2"
+  "P,E,h \<turnstile> {V:T; e} : T'"
 
 
 lemma [simp]: "\<forall>Ts. (P,E,h \<turnstile> es\<^isub>1 @ es\<^isub>2 [:] Ts) =
@@ -193,34 +181,6 @@ apply (rule iffI)
   prefer 2 apply blast
  apply simp
 apply fastforce
-done
-
-
-lemma [iff]: "P,E,h \<turnstile> Val v : T = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
-
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-
-
-lemma [iff]: "P,E,h \<turnstile> Var V : T = (E V = Some T)"
-
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-
-
-lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:T\<^isub>2)"
-
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-
-
-lemma [iff]: "P,E,h \<turnstile> {V:T; e} : T'  =  (P,E(V\<mapsto>T),h \<turnstile> e : T' \<and> is_type P T)"
-
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
 done
 
 
