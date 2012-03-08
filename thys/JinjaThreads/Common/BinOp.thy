@@ -126,7 +126,7 @@ proof -
   have F5: "\<forall>u\<Colon>'a word. - (- u) = u" by (metis word_sint.Rep_inverse' minus_minus wi_hom_neg)
   have F7: "\<forall>v u\<Colon>'a word. u + v = v + u" by(metis add_left_commute add_0_right)
   have F8: "\<forall>(w\<Colon>'a word) (v\<Colon>int) u\<Colon>int. word_of_int u + word_of_int v * w = word_of_int (u + v * sint w)"
-    by (metis num_AB_s wi_hom_syms(1) wi_hom_syms(3) word_no_wi)
+    by (metis word_sint.Rep_inverse wi_hom_syms(1) wi_hom_syms(3) word_no_wi)
   have "\<exists>u. u = - sint b \<and> word_of_int (sint a mod u + - (- u * (sint a div u))) = a"
     using F5 by (metis minus_minus word_sint.Rep_inverse' mult_minus_left add_commute zmod_zdiv_equality)
   hence "word_of_int (sint a mod - sint b + - (sint b * (sint a div - sint b))) = a" by (metis equation_minus_iff)
