@@ -187,8 +187,8 @@ text {* Attribute which unlifts an intensional formula or preformula *}
 ML {*
 fun unl_rewr thm = 
     let
-       val unl = (thm RS @{thm intD}) handle _ => (thm RS @{thm prefD})
-                                      handle _ => thm
+       val unl = (thm RS @{thm intD}) handle THM _ => (thm RS @{thm prefD})
+                                      handle THM _ => thm
        val rewr = rewrite_rule @{thms intensional_rews} 
      in
        unl |> rewr
@@ -209,9 +209,9 @@ text {*
 ML {*
 fun int_rewr thm = 
    (thm RS @{thm inteq_reflection})
-     handle _ => (thm RS @{thm prefeq_reflection})
-     handle _ => ((thm RS @{thm int_eq_true}) RS @{thm inteq_reflection})
-     handle _ => ((thm RS @{thm pref_eq_true}) RS @{thm prefeq_reflection});
+     handle THM _ => (thm RS @{thm prefeq_reflection})
+     handle THM _ => ((thm RS @{thm int_eq_true}) RS @{thm inteq_reflection})
+     handle THM _ => ((thm RS @{thm pref_eq_true}) RS @{thm prefeq_reflection});
 
 val att_int_rew_tac =
   Thm.rule_attribute (fn _ => int_rewr)
