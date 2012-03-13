@@ -2118,7 +2118,7 @@ proof -
     "mred0 P t" "mred1' (compP1 P) t" "bisim_red0_Red1" "ta_bisim (\<lambda>t. bisim_red0_Red1)" "\<tau>MOVE0 P" "\<tau>MOVE1 (compP1 P)"
     "\<lambda>es es'. False" "\<lambda>(((e', xs'), exs'), h') (((e, xs), exs), h). countInitBlock e'< countInitBlock e"
     using assms by(rule delay_bisimulation_red0_Red1)
-  thus ?thesis by unfold_locales
+  show ?thesis by unfold_locales
 qed
 
 lemma red0_Red1'_FWweak_bisim:

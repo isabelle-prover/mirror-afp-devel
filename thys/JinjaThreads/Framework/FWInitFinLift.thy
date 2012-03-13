@@ -295,7 +295,7 @@ lemma (in if_lifting_wf) if_lifting_inv:
   "if_lifting_inv final r (\<lambda>_::unit. P)"
 proof -
   interpret lifting_inv final r convert_RA  "\<lambda>_ :: unit. P" by(rule lifting_inv)
-  thus ?thesis by unfold_locales
+  show ?thesis by unfold_locales
 qed
 
 locale \<tau>lifting_inv = \<tau>multithreaded_wf +
