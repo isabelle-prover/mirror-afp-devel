@@ -454,7 +454,7 @@ proof -
     invs: "invar s" 
     unfolding alprio_invar_def by simp
   interpret al_annot \<alpha> invar annot by fact
-  with invs have 
+  from invs have 
     sv2: "Infty + listsum (map snd (\<alpha> s)) \<le> annot s" 
     by (auto simp add: annot_correct plus_def 
       plesseq_def p_min_le_neut p_order_refl)
@@ -465,7 +465,7 @@ proof -
     alr: "\<alpha> s = \<alpha> l @ (e, a) # \<alpha> r" 
     by auto
   interpret al_app \<alpha> invar app by fact
-  with invlr app_correct have 
+  from invlr app_correct have 
     invapplr: "invar (app l r)" 
     by simp
   from invlr app_correct have 
@@ -526,7 +526,7 @@ proof -
     invs: "invar s" 
     unfolding alprio_invar_def by simp
   interpret al_annot \<alpha> invar annot by fact
-  with invs have 
+  from invs have 
     sv2: "Infty + listsum (map snd (\<alpha> s)) \<le> annot s" 
     by (auto simp add: annot_correct plus_def 
       plesseq_def p_min_le_neut p_order_refl)
