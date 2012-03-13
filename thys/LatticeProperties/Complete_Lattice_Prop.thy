@@ -50,15 +50,11 @@ theorem lfp_mono [simp]:
   "mono_mono F \<Longrightarrow> mono (lfp F)"
   apply (simp add: mono_mono_def)
   apply (rule_tac f="F" and P = "mono" in lfp_ordinal_induct)
-  apply auto
-  apply (simp add: mono_def)
-  apply auto
-  apply (simp_all add: Sup_fun_def)
-  apply (rule SUP_least)
+  apply (simp_all add: mono_def)
+  apply (intro allI impI SUP_least)
   apply (rule_tac y = "f y" in order_trans)
-  apply auto
-  apply (rule SUP_upper)
-  by auto
+  apply (auto intro: SUP_upper)
+  done
 
 context complete_lattice begin
 
