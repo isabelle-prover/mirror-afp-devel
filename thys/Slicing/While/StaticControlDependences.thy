@@ -59,7 +59,7 @@ proof -
     "StandardControlDependencePDG.PDG_BS_s sourcenode targetnode
     (valid_edge prog) (Defs prog) (Uses prog) Exit"
     by(rule WStandardControlDependence.PDGBackwardSliceCorrect)
-  thus ?thesis by(unfold_locales)
+  show ?thesis by(unfold_locales)
 qed
 
 interpretation Fundamental_property_scd: BackwardSlice_wf sourcenode targetnode kind 
@@ -90,7 +90,7 @@ proof -
     "WeakControlDependencePDG.PDG_BS_w sourcenode targetnode
     (valid_edge prog) (Defs prog) (Uses prog) Exit"
     by(rule WWeakControlDependence.WeakPDGBackwardSliceCorrect)
-  thus ?thesis by(unfold_locales)
+  show ?thesis by(unfold_locales)
 qed
 
 interpretation Fundamental_property_wcd: BackwardSlice_wf sourcenode targetnode kind 
@@ -110,7 +110,7 @@ proof -
     "CFG_wf.wod_backward_slice sourcenode targetnode (valid_edge prog)
     (Defs prog) (Uses prog)"
     by(rule While_CFG_wf.WODBackwardSliceCorrect)
-  thus ?thesis by(unfold_locales)
+  show ?thesis by(unfold_locales)
 qed
 
 interpretation Fundamental_property_wod: BackwardSlice_wf sourcenode targetnode kind 

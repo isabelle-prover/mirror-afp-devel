@@ -314,7 +314,7 @@ proof -
       preds (CFG.kinds knd as) s \<and> labels_LDCFG_nodes prog n' c'"
       by(rule lifted_CFG_fund_prop)
   qed
-  thus ?thesis 
+  show ?thesis 
   proof(unfold_locales)
     fix c n
     assume "final c" and "labels_LDCFG_nodes prog n c"
@@ -409,7 +409,7 @@ proof -
       preds (CFG.kinds knd as) s \<and> labels_LDCFG_nodes prog n' c'"
       by(rule lifted_CFG_fund_prop)
   qed
-  thus ?thesis 
+  show ?thesis 
   proof(unfold_locales)
     fix c n
     assume "final c" and "labels_LDCFG_nodes prog n c"
@@ -494,7 +494,7 @@ proof -
       preds (CFG.kinds knd as) s \<and> labels_LDCFG_nodes prog n' c'"
       by(rule lifted_CFG_fund_prop)
   qed
-  thus ?thesis 
+  show ?thesis 
   proof(unfold_locales)
     fix c n
     assume "final c" and "labels_LDCFG_nodes prog n c"
