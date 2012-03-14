@@ -47,7 +47,7 @@ proof -
     unfolding annotate_prog_code_def
     by(rule wf_prog_lift)(auto dest!: WT_block_types_is_type[OF wf[unfolded annotate_prog_code_def]] simp add: wf_J_mdecl_def)
   hence wf': "wf_prog ?wf_md P"
-    unfolding annotate_prog_code_def_raw
+    unfolding annotate_prog_code_def [abs_def]
   proof(rule wf_prog_compPD)
     fix C M Ts T m
     assume "compP (annotate_Mb_code P) P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>annotate_Mb_code P C M Ts T m\<rfloor> in C"

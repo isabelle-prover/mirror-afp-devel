@@ -174,7 +174,7 @@ subsection "Dijkstra's Algorithm"
   theorem dijkstra_correct: "dijkstra \<le> SPEC (is_shortest_path_map v0)"
     unfolding dijkstra_def
     unfolding dinit_def
-    unfolding pop_min_def update_def_raw
+    unfolding pop_min_def update_def [abs_def]
     apply (intro 
       WHILEIT_rule[where R="inv_image {(x,y). x<y} (card \<circ> fst)"]
       refine_vcg conjI)

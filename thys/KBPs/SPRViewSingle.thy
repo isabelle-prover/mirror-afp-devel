@@ -396,7 +396,7 @@ lemma spr_simInit:
   using assms
   unfolding spr_simInit_def
   using envSingleAgent[where a=a]
-  unfolding spr_simAbs_def spr_sim_def_raw spr_abs_def
+  unfolding spr_simAbs_def spr_sim_def [abs_def] spr_abs_def
   apply (auto iff: spr_jview_def SPR.jviewInit)
    apply (rule_tac x="tInit s" in image_eqI)
     apply (auto iff: spr_jview_def)[1]
@@ -863,7 +863,7 @@ proof -
      apply rule
       apply clarsimp
       apply (rule_tac x="t'a \<leadsto> s" in image_eqI)
-       apply (unfold spr_sim_def_raw spr_abs_def)[1]
+       apply (unfold spr_sim_def [abs_def] spr_abs_def)[1]
        apply clarsimp
        apply (auto iff: spr_jview_def)[1]
         apply (rule_tac x="t'c \<leadsto> xa" in image_eqI)
@@ -874,7 +874,7 @@ proof -
      apply (frule spr_jview_tStep_eq_inv)
      apply clarsimp
      apply (rule_tac x=s' in exI)
-     apply (unfold spr_sim_def_raw spr_abs_def)[1]
+     apply (unfold spr_sim_def [abs_def] spr_abs_def)[1]
      apply clarsimp
      apply (auto iff: spr_jview_def)[1]
       apply (rule_tac x="t'b \<leadsto> xa" in image_eqI)
@@ -889,7 +889,7 @@ proof -
        apply clarsimp
        apply (frule spr_jview_tStep_eq_inv)
        apply clarsimp
-       apply (unfold spr_sim_def_raw)[1]
+       apply (unfold spr_sim_def [abs_def])[1]
        apply clarsimp
        apply rule
         apply (erule spr_abs_eq)
@@ -902,7 +902,7 @@ proof -
       apply (frule spr_jview_tStep_eq_inv)
       apply clarsimp
       apply (rule_tac x="t'' \<leadsto> s'" in image_eqI)
-       apply (unfold spr_sim_def_raw)[1]
+       apply (unfold spr_sim_def [abs_def])[1]
        apply clarsimp
        apply blast
       apply blast

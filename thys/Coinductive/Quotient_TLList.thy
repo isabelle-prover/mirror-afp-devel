@@ -266,13 +266,13 @@ proof(intro ext)
     thus ?case
     proof(cases "f a")
       case (Inl l)
-      hence ?EqTCons unfolding q map_fun_def_raw 
+      hence ?EqTCons unfolding q map_fun_def [abs_def]
         using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2]
         by (cases l) (auto simp add: tllist_corec)
       thus ?thesis ..
     next
       case (Inr r)
-      hence ?EqTNil unfolding q map_fun_def_raw
+      hence ?EqTNil unfolding q map_fun_def [abs_def]
         using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q3]
         by (simp add: tllist_corec)
       thus ?thesis ..

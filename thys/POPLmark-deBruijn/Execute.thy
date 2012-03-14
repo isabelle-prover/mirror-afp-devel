@@ -63,7 +63,7 @@ thm norm.equation
 
 lemma [code]:
   "normal_forms = set_of_pred o normalize"
-unfolding set_of_pred_def o_def normal_forms_def_raw
+unfolding set_of_pred_def o_def normal_forms_def [abs_def]
 by (auto intro: set_eqI normalizeI elim: normalizeE)
 
 lemma [code_unfold]: "x \<in> value \<longleftrightarrow> valuep x"

@@ -111,7 +111,7 @@ lemma [code]:
   "delta' A []    p = Quotient_Cset.insert p Quotient_Cset.empty"
   "delta' (A :: ('a, 's) executable_na) (a#(w :: 'a list)) p = Quotient_Cset.UNION (next A a p) (delta' A w)"
 apply (lifting delta.simps[unfolded Union_image_eq])
-unfolding next_def_raw by simp
+unfolding next_def [abs_def] by simp
 
 lemma [code]:
   "atom' a = ([True], %b s. if s = [True] & b = a then Quotient_Cset.insert [False] Quotient_Cset.empty else Quotient_Cset.empty, %s. s = [False])"
@@ -209,7 +209,7 @@ done
 
 lemma [quot_preserve]:
    "(map_pair rep_set (map_pair (id ---> abs_set ---> rep_set) (abs_set ---> id)) ---> id) DA.accepts = DA.accepts"
-unfolding DA.accepts_def_raw
+unfolding DA.accepts_def [abs_def]
 apply (insert delta_prs[OF Quotient_set identity_quotient])
 apply (simp only: fun_eq_iff)
 apply simp

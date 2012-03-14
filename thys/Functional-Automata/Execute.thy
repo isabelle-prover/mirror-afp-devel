@@ -90,7 +90,7 @@ lemma [code]:
   "delta' A (a#w) p = Cset.bind (next A a p) (delta' A w)"
 unfolding delta.simps Cset.bind_def delta'_def
 apply (metis Cset.single_code Cset.single_def)
-unfolding delta'_def_raw delta.simps 
+unfolding delta'_def [abs_def] delta.simps 
 unfolding SUP_def Cset.Sup_set_def  
 by (auto simp add:Cset.member_def)
 

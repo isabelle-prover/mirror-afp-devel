@@ -14,11 +14,11 @@ definition REC where "REC B x \<equiv> if (mono B) then (lfp B x) else top"
 definition RECT ("REC\<^isub>T") where "RECT B x \<equiv> if (mono B) then (gfp B x) else top"
 
 lemma REC_unfold: "mono B \<Longrightarrow> REC B x = B (REC B) x"
-  unfolding REC_def_raw
+  unfolding REC_def [abs_def]
   by (simp add: lfp_unfold[symmetric])
 
 lemma RECT_unfold: "mono B \<Longrightarrow> RECT B x = B (RECT B) x"
-  unfolding RECT_def_raw
+  unfolding RECT_def [abs_def]
   by (simp add: gfp_unfold[symmetric])
 
 lemma REC_mono[refine_mono]:

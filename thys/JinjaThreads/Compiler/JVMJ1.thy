@@ -2842,7 +2842,7 @@ qed
 lemma Collect_split_mem: "{(x, y). (x, y) \<in> Q} = Q" by simp
 
 lemma wfP_sim21_size: "wfP (sim21_size P)"
-unfolding wfP_def Collect_split_mem sim21_size_def_raw
+unfolding wfP_def Collect_split_mem sim21_size_def [abs_def]
 apply(rule wf_inv_image)
 apply(rule wf_lex_prod)
  apply(rule wf_less_than)

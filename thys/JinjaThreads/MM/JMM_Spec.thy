@@ -694,7 +694,7 @@ section {* Happens before *}
 
 lemma porder_happens_before:
   "porder_on (actions E) (happens_before P E)"
-unfolding po_sw_def_raw
+unfolding po_sw_def [abs_def]
 by(rule porder_on_sub_torder_on_tranclp_porder_onI[OF porder_program_order torder_sync_order consistent_program_order_sync_order])(auto elim: sync_withE)
 
 lemma porder_tranclp_po_so:
@@ -710,7 +710,7 @@ by(rule porder_onE)(erule refl_onPD[OF _ assms])
 lemma happens_before_into_po_so_tranclp:
   assumes "P,E \<turnstile> a \<le>hb a'"
   shows "(\<lambda>a a'. E \<turnstile> a \<le>po a' \<or> P,E \<turnstile> a \<le>so a')^++ a a'"
-using assms unfolding po_sw_def_raw
+using assms unfolding po_sw_def [abs_def]
 by(induct)(blast elim: sync_withE intro: tranclp.trancl_into_trancl)+
 
 lemma po_so_extend_torder:
@@ -1501,7 +1501,7 @@ proof -
     moreover from new_a obs_i have "(action_tid E a, action_obs E a) \<leadsto>sw (action_tid E i, action_obs E i)"
       by cases(auto intro: synchronizes_with.intros)
     ultimately have "P,E \<turnstile> a \<le>sw i" by(rule sync_withI) }
-  ultimately show ?thesis unfolding po_sw_def_raw by(blast intro: tranclp.r_into_trancl tranclp_trans)
+  ultimately show ?thesis unfolding po_sw_def [abs_def] by(blast intro: tranclp.r_into_trancl tranclp_trans)
 qed
 
 lemma happens_before_change_prefix:

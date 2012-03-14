@@ -251,7 +251,7 @@ lemma inres_simps[simp, refine_pw_simps]:
   "inres FAIL = (\<lambda>_. True)"
   "inres (RES X) = (\<lambda>x. x\<in>X)"
   "inres SUCCEED = (\<lambda>_. False)"
-  unfolding inres_def_raw
+  unfolding inres_def [abs_def]
   by (simp_all)
 
 lemma not_nofail_iff: 
@@ -593,10 +593,10 @@ lemma conc_fun_chain: "single_valued R \<Longrightarrow> \<Down>R (\<Down>S M) =
   by (auto split: nres.split dest: single_valuedD)
 
 lemma conc_Id[simp]: "\<Down>Id = id"
-  unfolding conc_fun_def_raw by (auto split: nres.split)
+  unfolding conc_fun_def [abs_def] by (auto split: nres.split)
 
 lemma abs_Id[simp]: "\<Up>Id = id"
-  unfolding abs_fun_def_raw by (auto split: nres.split)
+  unfolding abs_fun_def [abs_def] by (auto split: nres.split)
 
 lemma conc_fun_fail_iff[simp]: 
   "\<Down>R S = FAIL \<longleftrightarrow> S=FAIL"

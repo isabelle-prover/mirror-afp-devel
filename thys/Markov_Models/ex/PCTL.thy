@@ -222,7 +222,7 @@ lemma reward_measurable: "reward F \<in> borel_measurable (path_space s)"
 proof (cases F)
   case (Future F)
   then have "reward (Future F) = reward_until (svalid F)"
-    unfolding reward_until_def_raw hitting_time_def_raw by simp
+    unfolding reward_until_def [abs_def] hitting_time_def [abs_def] by simp
   with Future show ?thesis
     by auto
 qed (auto intro!: borel_measurable_ereal borel_measurable_setsum)

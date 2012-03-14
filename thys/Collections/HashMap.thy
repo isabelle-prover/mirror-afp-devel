@@ -112,7 +112,7 @@ lemma hm_finite[simp, intro!]:
 proof(cases m)
   case (RBT_HM m')
   hence SS: "dom (hm_\<alpha> m) \<subseteq> \<Union>{ dom (lm_\<alpha> lm) | lm hc. rm_\<alpha> m' hc = Some lm }"
-    apply(clarsimp simp add: RBT_HM_inverse hm_\<alpha>_def hm_\<alpha>'_def_raw ahm_\<alpha>_def_raw)
+    apply(clarsimp simp add: RBT_HM_inverse hm_\<alpha>_def hm_\<alpha>'_def [abs_def] ahm_\<alpha>_def [abs_def])
     apply(auto split: option.split_asm option.split)
     done
   moreover have "finite \<dots>" (is "finite (\<Union>?A)")
@@ -137,7 +137,7 @@ lemma hm_isEmpty_impl: "map_isEmpty hm_\<alpha> hm_invar hm_isEmpty"
 by(unfold_locales)(simp add: hm_isEmpty_def hm_\<alpha>_def isEmpty_correct')
 
 lemma hm_sel_impl: "map_sel hm_\<alpha> hm_invar hm_sel"
-  unfolding hm_sel_def_raw hm_\<alpha>_def o_def
+  unfolding hm_sel_def [abs_def] hm_\<alpha>_def o_def
   by(rule map_sel_altI)(blast intro: sel_correct'[OF impl_of_RBT_HM_invar])+
 
 lemma hm_sel'_impl: "map_sel' hm_\<alpha> hm_invar hm_sel'"

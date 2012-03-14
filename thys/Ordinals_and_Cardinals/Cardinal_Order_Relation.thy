@@ -1189,7 +1189,7 @@ using embed_inj_on[of "|A|" "|B|"]  embed_Field[of "|A|" "|B|"]
 lemma card_of_ordIso_finite:
 assumes "|A| =o |B|" 
 shows "finite A = finite B"
-using assms unfolding ordIso_def iso_def_raw
+using assms unfolding ordIso_def iso_def [abs_def]
 by (auto simp add: Field_card_of bij_betw_finite)
 
 
@@ -1293,7 +1293,7 @@ proof-
     using card_of_least[of "?A \<times> ?A"] 4 by auto
     ultimately have "r <o ?r'" using ordLess_ordLeq_trans by auto
     then obtain f where 6: "embed r ?r' f" and 7: "\<not> bij_betw f ?A (?A \<times> ?A)"
-    unfolding ordLess_def embedS_def_raw 
+    unfolding ordLess_def embedS_def [abs_def] 
     by (auto simp add: Field_bsqr)
     let ?B = "f ` ?A"
     have "|?A| =o |?B|" 
@@ -2244,7 +2244,7 @@ lemma natLeq_on_injective_ordIso:
 proof(auto simp add: natLeq_on_Well_order ordIso_reflexive)
   assume "natLeq_on m =o natLeq_on n"
   then obtain f where "bij_betw f {0..<m} {0..<n}" 
-  using Field_natLeq_on assms unfolding ordIso_def iso_def_raw by auto
+  using Field_natLeq_on assms unfolding ordIso_def iso_def [abs_def] by auto
   thus "m = n" using atLeastLessThan_injective2 by blast 
 qed
 
@@ -2317,7 +2317,7 @@ using infinite_iff_natLeq_ordLeq ordLess_iff_not_ordLeq
 
 lemma ordIso_natLeq_on_imp_finite:
 "|A| =o natLeq_on n \<Longrightarrow> finite A"
-unfolding ordIso_def iso_def_raw 
+unfolding ordIso_def iso_def [abs_def] 
 by (auto simp add: Field_card_of Field_natLeq_on bij_betw_finite)
 
 

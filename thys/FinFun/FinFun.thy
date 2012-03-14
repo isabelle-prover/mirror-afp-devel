@@ -835,7 +835,7 @@ next
     have the: "The ?the = (\<lambda>a :: 'a. Some c)"
     proof (rule the_equality)
       from False True show "?the (\<lambda>a :: 'a. Some c)"
-        by(auto simp add: map_default_def_raw finfun_const_def dom_def ran_def)
+        by(auto simp add: map_default_def [abs_def] finfun_const_def dom_def ran_def)
     next
       fix g' :: "'a \<rightharpoonup> 'b"
       assume "?the g'"
@@ -845,7 +845,8 @@ next
       with fg have "map_default undefined g' = (\<lambda>a. c)"
         by(auto simp add: finfun_const_def intro: Abs_finfun_inject[THEN iffD1])
       with True False show "g' = (\<lambda>a::'a. Some c)"
-        by -(rule map_default_inject(2)[OF _ fin g], auto simp add: dom_def ran_def map_default_def_raw)
+        by - (rule map_default_inject(2)[OF _ fin g],
+          auto simp add: dom_def ran_def map_default_def [abs_def])
     qed
     show ?thesis unfolding finfun_rec_def using True False
       unfolding Let_def the default by(simp add: dom_def map_default_def const_update_all)
@@ -1206,7 +1207,7 @@ lemma finfun_fst_conv [simp]: "finfun_fst (f, g)\<^sup>f = f"
 by(induct f rule: finfun_weak_induct)(simp_all add: finfun_Diag_const1 finfun_fst_comp_conv o_def finfun_Diag_update1 finfun_fst_update)
 
 lemma finfun_fst_conv_Abs_finfun: "finfun_fst = (\<lambda>f. Abs_finfun (fst o Rep_finfun f))"
-by(simp add: finfun_fst_def_raw finfun_comp_conv_comp finfun_apply_Rep_finfun)
+by(simp add: finfun_fst_def [abs_def] finfun_comp_conv_comp finfun_apply_Rep_finfun)
 
 
 definition finfun_snd :: "'a \<Rightarrow>\<^isub>f ('b \<times> 'c) \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'c"
@@ -1228,7 +1229,7 @@ apply(auto simp add: finfun_Diag_const1 finfun_snd_comp_conv o_def finfun_Diag_u
 done
 
 lemma finfun_snd_conv_Abs_finfun: "finfun_snd = (\<lambda>f. Abs_finfun (snd o Rep_finfun f))"
-by(simp add: finfun_snd_def_raw finfun_comp_conv_comp finfun_apply_Rep_finfun)
+by(simp add: finfun_snd_def [abs_def] finfun_comp_conv_comp finfun_apply_Rep_finfun)
 
 lemma finfun_Diag_collapse [simp]: "(finfun_fst f, finfun_snd f)\<^sup>f = f"
 by(induct f rule: finfun_weak_induct)(simp_all add: finfun_fst_const finfun_snd_const finfun_fst_update finfun_snd_update finfun_Diag_update_update)

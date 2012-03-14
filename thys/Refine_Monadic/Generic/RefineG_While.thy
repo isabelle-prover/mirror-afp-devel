@@ -34,10 +34,10 @@ locale generic_WHILE =
   assumes WHILE_eq: "WHILE \<equiv> iWHILE bind return"
 begin
 
-  lemmas WHILEIT_def = WHILEIT_eq[unfolded iWHILEIT_def_raw]
-  lemmas WHILEI_def = WHILEI_eq[unfolded iWHILEI_def_raw]
+  lemmas WHILEIT_def = WHILEIT_eq[unfolded iWHILEIT_def [abs_def]]
+  lemmas WHILEI_def = WHILEI_eq[unfolded iWHILEI_def [abs_def]]
   lemmas WHILET_def = WHILET_eq[unfolded iWHILET_def, folded WHILEIT_eq]
-  lemmas WHILE_def = WHILE_eq[unfolded iWHILE_def_raw, folded WHILEI_eq]
+  lemmas WHILE_def = WHILE_eq[unfolded iWHILE_def [abs_def], folded WHILEI_eq]
 
   lemmas imonad_laws = imonad1 imonad2 imonad3
   

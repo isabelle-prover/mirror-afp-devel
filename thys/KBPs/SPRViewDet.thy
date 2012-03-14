@@ -794,7 +794,7 @@ lemma spr_simInit:
        = spr_sim ` { t' \<in> SPR.jkbpC. spr_jview a t' = spr_jviewInit a iobs }"
 (*<*)
   using assms
-  unfolding spr_simInit_def spr_simAbs_def spr_sim_def_raw
+  unfolding spr_simInit_def spr_simAbs_def spr_sim_def [abs_def]
   apply (clarsimp simp: Let_def SPR.jviewInit split: split_split)
   apply rule
    apply clarsimp
@@ -1702,12 +1702,12 @@ proof
       apply rule
        apply clarsimp
        apply (rule_tac x=t'aa in image_eqI)
-        apply (auto iff: spr_sim_def_raw)[1]
+        apply (auto iff: spr_sim_def [abs_def])[1]
        apply simp
        apply (rule spr_jview_tObsCI[OF _ _ spr_jview_det_ps])
        apply simp_all
        apply blast
-      apply (clarsimp simp: spr_sim_def_raw)
+      apply (clarsimp simp: spr_sim_def [abs_def])
       apply (rule conjI)
        apply (auto dest!: tObsC_abs_jview_eq intro: spr_tFirst spr_tLast)[1]
       apply (rule conjI)
@@ -1852,7 +1852,7 @@ next
         and xt's: "x = SPRdet.sim_equiv_class a (t' \<leadsto> s)"
       by auto
     then have "(\<lambda>s. (sprFst s, sprLst s)) ` x \<in> set ` set (partition (envObs_rel (envObs a)) (spr_trans (fst ec) (snd ec)))"
-      apply (simp add: partition[OF envObs_rel_equiv] spr_trans_aec[OF assms] spr_sim_def_raw)
+      apply (simp add: partition[OF envObs_rel_equiv] spr_trans_aec[OF assms] spr_sim_def [abs_def])
       apply clarsimp
       apply (rule_tac x="(tFirst t', s)" in quotientI2)
        apply auto[1]
@@ -1885,15 +1885,15 @@ next
         apply rule
          apply clarsimp
          apply (frule spr_jview_tStep_eq_inv)
-         apply (auto simp: spr_jview_def spr_sim_def_raw)[1]
+         apply (auto simp: spr_jview_def spr_sim_def [abs_def])[1]
         apply clarsimp
         apply (rule_tac x="spr_sim (t'aa \<leadsto> sa)" in image_eqI)
-         apply (simp add: spr_sim_def_raw)
+         apply (simp add: spr_sim_def [abs_def])
         apply (rule_tac x="t'aa \<leadsto> sa" in image_eqI)
          apply simp
         apply (simp add: spr_jview_def)
 
-       apply (clarsimp simp: spr_trans_cec[OF assms] spr_sim_def_raw spr_simAbs_def)
+       apply (clarsimp simp: spr_trans_cec[OF assms] spr_sim_def [abs_def] spr_simAbs_def)
        apply rule
         apply (auto iff: tObsC_abs_conv)[1]
          apply (frule spr_jview_tStep_eq_inv)
@@ -1923,9 +1923,9 @@ next
          apply (simp add: tObsC_def)
 
          apply (rule_tac x="spr_sim ta" in image_eqI)
-          apply (simp add: spr_sim_def_raw)
+          apply (simp add: spr_sim_def [abs_def])
          apply (rule_tac x=ta in image_eqI)
-          apply (simp add: spr_sim_def_raw)
+          apply (simp add: spr_sim_def [abs_def])
          apply simp
        apply clarsimp
        apply (rule_tac x=ta in image_eqI)

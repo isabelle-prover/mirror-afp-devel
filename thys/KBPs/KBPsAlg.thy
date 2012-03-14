@@ -234,7 +234,7 @@ proof -
   have F: "\<And>y. y \<in> set (k_succs x) \<Longrightarrow> simAbs y \<in> simAbs ` set (k_succs x)" by simp
   show ?thesis
     using simTrans[rule_format, where a=a and t=t] tC sx
-    unfolding k_isNode_def_raw
+    unfolding k_isNode_def [abs_def]
     apply (auto iff: list_all_iff)
     apply (frule F)
     apply (auto)

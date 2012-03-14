@@ -264,7 +264,7 @@ by(auto elim!: red_external.cases intro: red_external.intros)
 
 lemma \<tau>external'_compP [simp]:
   "\<tau>external' (compP f P) = \<tau>external' P"
-by(simp add: \<tau>external'_def_raw)
+by(simp add: \<tau>external'_def [abs_def])
 
 end
 

@@ -43,7 +43,7 @@ begin
         unfolding adjl_\<alpha>_def by auto
     }
     thus ?thesis
-      unfolding gga_from_list_def_raw
+      unfolding gga_from_list_def [abs_def]
       apply unfold_locales
       apply auto
       done

@@ -34,15 +34,15 @@ definition "hlg_succ_it \<equiv> hlg_defs.gbm_succ_it hm_iteratei ls_iteratei"
 definition "hlg_to_list \<equiv> gga_to_list hlg_nodes_it hlg_edges_it"
 
 lemmas hlg_gbm_defs = 
-  hlg_defs.gbm_empty_def_raw
-  hlg_defs.gbm_add_node_def_raw
-  hlg_defs.gbm_delete_node_def_raw
-  hlg_defs.gbm_add_edge_def_raw
-  hlg_defs.gbm_delete_edge_def_raw
-  hlg_defs.gbm_from_list_def_raw
-  hlg_defs.gbm_nodes_it_def_raw
-  hlg_defs.gbm_succ_it_def_raw
-  hlg_defs.gbm_edges_it_def_raw
+  hlg_defs.gbm_empty_def [abs_def]
+  hlg_defs.gbm_add_node_def [abs_def]
+  hlg_defs.gbm_delete_node_def [abs_def]
+  hlg_defs.gbm_add_edge_def [abs_def]
+  hlg_defs.gbm_delete_edge_def [abs_def]
+  hlg_defs.gbm_from_list_def [abs_def]
+  hlg_defs.gbm_nodes_it_def [abs_def]
+  hlg_defs.gbm_succ_it_def [abs_def]
+  hlg_defs.gbm_edges_it_def [abs_def]
 
 lemmas hlg_defs = 
   hlg_\<alpha>_def

@@ -325,7 +325,7 @@ lemma  listsum_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longri
       apply auto
       apply (cases "listsum (map snd as)")
       apply auto
-      apply (metis linorder_linear p_min_re_neut p_unwrap.simps plus_def_raw snd_eqD)
+      apply (metis linorder_linear p_min_re_neut p_unwrap.simps plus_def [abs_def] snd_eqD)
       apply (auto simp add: p_unwrap_less_sum)
       apply (unfold plus_def)
       apply (cases "(snd a, listsum (map snd as))" rule: p_min.cases)

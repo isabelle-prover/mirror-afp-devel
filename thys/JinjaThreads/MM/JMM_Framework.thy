@@ -3482,7 +3482,7 @@ proof
                   have "(action_tid (llist_of E') w'', action_obs (llist_of E') w'') \<leadsto>sw (action_tid (llist_of E') (length EE), action_obs (llist_of E') (length EE))"
                     by(auto simp add: E'_def EE_def action_obs_def min_def nth_append Volatile)
                   with so' have "P,llist_of E' \<turnstile> w'' \<le>sw length EE" by(rule sync_withI)
-                  thus ?thesis unfolding po_sw_def_raw by(blast intro: tranclp.r_into_trancl)
+                  thus ?thesis unfolding po_sw_def [abs_def] by(blast intro: tranclp.r_into_trancl)
                 qed }
             qed
             ultimately have "ta_hb_consistent P ?E (lappend (llist_of (map (Pair t) (take j (drop i \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>)))) (llist_of ([(t, \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! (i + j))])))"

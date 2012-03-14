@@ -544,7 +544,7 @@ lemma clock_simInit:
                        clock_jview a t' = clock_jviewInit a iobs }"
 (*<*)
   using assms
-  unfolding clock_simInit_def clock_simAbs_def clock_sim_def_raw Let_def
+  unfolding clock_simInit_def clock_simAbs_def clock_sim_def [abs_def] Let_def
   apply clarsimp
   apply rule
    apply clarsimp

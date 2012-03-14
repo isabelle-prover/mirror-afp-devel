@@ -88,7 +88,7 @@ where
 "embed r r' f \<equiv> \<forall>a \<in> Field r. bij_betw f (under r a) (under r' (f a))"
 
 
-lemmas embed_defs = embed_def embed_def_raw
+lemmas embed_defs = embed_def embed_def [abs_def]
 
 
 text {* Strict embeddings: *}
@@ -98,7 +98,7 @@ where
 "embedS r r' f \<equiv> embed r r' f \<and> \<not> bij_betw f (Field r) (Field r')" 
 
 
-lemmas embedS_defs = embedS_def embedS_def_raw
+lemmas embedS_defs = embedS_def embedS_def [abs_def]
 
 
 definition iso :: "'a rel \<Rightarrow> 'a' rel \<Rightarrow> ('a \<Rightarrow> 'a') \<Rightarrow> bool"
@@ -106,7 +106,7 @@ where
 "iso r r' f \<equiv> embed r r' f \<and> bij_betw f (Field r) (Field r')"
 
 
-lemmas iso_defs = iso_def iso_def_raw
+lemmas iso_defs = iso_def iso_def [abs_def]
 
 
 definition compat :: "'a rel \<Rightarrow> 'a' rel \<Rightarrow> ('a \<Rightarrow> 'a') \<Rightarrow> bool"

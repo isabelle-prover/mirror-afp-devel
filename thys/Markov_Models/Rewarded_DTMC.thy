@@ -39,7 +39,7 @@ proof -
               simp: space_path_space)
   then show ?thesis
     by (auto intro!: borel_measurable_ereal measurable_If borel_measurable_setsum sets_Collect
-             simp: space_path_space reward_until_def_raw)
+             simp: space_path_space reward_until_def [abs_def])
 qed
 
 lemma reward_until_nat_case_Suc:
