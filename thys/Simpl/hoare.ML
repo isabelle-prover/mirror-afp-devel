@@ -1308,7 +1308,8 @@ fun procedures_definition locname procs thy =
         val name' = unsuffix proc_deco name;
         val bdy = read_term (the (AList.lookup (op =) name_body name));
         val bdy_defN = suffix body_def_sfx name';
-      in ((Binding.name bdy_defN, NoSyn), (Attrib.empty_binding, bdy)) end;
+        val b = Binding.name bdy_defN;
+      in ((b, NoSyn), ((Thm.def_binding b, []), bdy)) end;
 
    fun add_body_locale (name,pars) thy =
       let
