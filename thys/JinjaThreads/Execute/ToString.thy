@@ -8,7 +8,7 @@ theory ToString imports
   "../JVM/JVMInstructions"
   "../../Collections/TrieMapImpl"
   "../../Collections/RBTMapImpl"
-  "../../Collections/Assoc_List"
+  "../../Collections/common/Assoc_List"
 begin
 
 class toString =
