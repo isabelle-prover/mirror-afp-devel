@@ -1105,7 +1105,6 @@ proof -
      apply(drule (1) \<alpha>.deterministicD[OF `\<alpha>.deterministic I`, where s="state_\<alpha> s", simplified, OF red _ tst aok])
       apply(rule I)
      apply simp
-    apply(erule bot1E)
     done
 qed
 
