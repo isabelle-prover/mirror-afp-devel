@@ -300,11 +300,10 @@ proof (rule_tac X = "SetMarkInvTerm" in hoare_diagram3)
     apply (simp add: le_fun_def inf_fun_def SetMarkInvFinal_def)
     apply safe
     apply simp_all
-    apply (simp_all add: fun_Compl_def)
     apply (drule_tac x="I.loop" in spec)
     apply (simp add: SetMark_def)
     apply (simp add: Q1_a_def Q2_a_def)
-    apply auto
+    apply auto[1]
     apply (frule_tac x="I.loop" in spec)
     apply (drule_tac x="I.final" in spec)
     apply (simp add: SetMark_def)

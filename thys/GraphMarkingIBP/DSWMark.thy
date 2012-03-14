@@ -13,7 +13,7 @@ elements $none$  and $\mathit{some}$, $\mathit{left} = \mathit{link}\ \mathit{no
 $\mathit{right}=\mathit{link}\  \mathit{some}$, and $\mathit{atom}\ x$ is true 
 if and only if $\mathit{label}\ x = \mathit{some}$.
 
-We use a new locale which fixes the iniatial values of the variables $\mathit{left}$, $\mathit{right}$, and 
+We use a new locale which fixes the initial values of the variables $\mathit{left}$, $\mathit{right}$, and
 $\mathit{atom}$ in $\mathit{left0}$, $\mathit{right0}$, and $\mathit{atom0}$ respectively.
 *}
 
@@ -326,10 +326,7 @@ lemma [simp]:
   apply safe
   apply simp
   apply (drule_tac x = loop in spec)
-  apply (subst (asm) bot_fun_def) 
-  apply (simp add: ClassicMark_def)
-  apply (subst (asm) inf_fun_def, simp)
-  by (simp add: QQ1_a_def QQ2_a_def demonic_def, auto)  
+  by (simp add: ClassicMark_def QQ1_a_def QQ2_a_def demonic_def, auto)
 
 lemma [simp]: "grd \<top> = \<bottom>"
   by (simp add: grd_def top_fun_def)
@@ -338,8 +335,6 @@ lemma [simp]:
   "(- grd (step  ClassicMark)) loop = {}"
   apply safe
   apply simp
-  apply (subst (asm) fun_Compl_def)
-  apply simp 
   apply (frule_tac x = "final" in spec)
   apply (drule_tac x = "loop" in spec)
   apply (unfold ClassicMark_def QQ1_a_def QQ2_a_def QQ3_a_def QQ4_a_def QQ5_a_def QQ6_a_def QQ7_a_def QQ8_a_def)
@@ -371,12 +366,10 @@ theorem "\<Turnstile> ClassicPre {| pt ClassicMark |} ClassicPost"
   apply (subst le_fun_def)
   apply simp
   apply (rule_tac Q = "((R''_a .. (R'_a .. (R_a .. SetMarkInv))) \<sqinter> (- grd (step ((ClassicMark)))))" in hoare_mono)
-  apply simp
   apply (simp_all add: hoare_dgr_correctness)
   apply (rule le_funI)
   apply (case_tac x)
-  apply simp_all
-  apply (simp_all add: inf_fun_def)
+  apply (simp_all add: inf_fun_def del: uminus_apply)
   apply (rule_tac y = "RR_a (R1'_a (R1_a (SetMarkInv final)))" in order_trans)
   by auto
 

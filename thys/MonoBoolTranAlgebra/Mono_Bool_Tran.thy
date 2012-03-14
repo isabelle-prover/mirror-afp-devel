@@ -297,8 +297,6 @@ lemma [simp]: "f \<in> MonoTran \<Longrightarrow> omega_fun f \<in> MonoTran"
   apply (rule_tac y = "f \<circ> x" in order_trans)
   apply simp
   apply (simp add: le_fun_def inf_fun_def id_def o_def)
-  apply (simp add: le_fun_def inf_fun_def id_def o_def)
-  apply safe
   apply (rule_tac y = "f (fa x)" in order_trans)
   apply simp_all
   apply (rule_tac y = "x" in order_trans)
