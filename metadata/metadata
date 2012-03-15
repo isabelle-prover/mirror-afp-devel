@@ -1070,4 +1070,4 @@ depends-on = Coinductive
 title = Example Submission
 author = Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>
 date = 2004-02-25
-abstract = This is an example submission to the Archive of Formal Proof. It shows submission requirements and explains the structure of a simple typical submission.
+abstract = This is an example submission to the Archive of Formal Proofs. It shows submission requirements and explains the structure of a simple typical submission.
