@@ -21,8 +21,7 @@
 
 <div align="center">
 <p> </p>
-<h1><font class="first">T</font>he
-    <font class="first">A</font>rchive of
+<h1><font class="first">A</font>rchive of
     <font class="first">F</font>ormal
     <font class="first">P</font>roofs</h1>
 <p> </p>
