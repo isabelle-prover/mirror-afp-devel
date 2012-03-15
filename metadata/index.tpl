@@ -2,7 +2,7 @@
 		"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>The Archive of Formal Proofs</title>
+  <title>Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -33,7 +33,7 @@
 The Archive of Formal Proofs is a collection of proof libraries, examples,
 and larger scientific developments, mechanically checked in the theorem prover
 <a href="http://isabelle.in.tum.de/">Isabelle</a>. It is organized in the way 
-of a scientific journal and has an ISSN: 2150-914x. Submissions are refereed. The preferred citation style 
+of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/journals/afp/">dblp</a> and has an ISSN: 2150-914x. Submissions are refereed. The preferred citation style 
 is available <a href="citing.shtml">[here]</a>.
 A <a href="devel.shtml">development version</a> of the archive is available as well.</td></tr>
 </table>
