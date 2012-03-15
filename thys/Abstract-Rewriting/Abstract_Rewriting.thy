@@ -30,6 +30,7 @@ imports
   Util 
   "../Transitive-Closure/Transitive_Closure_Impl"
   "../Regular-Sets/Regexp_Method"
+  "$HOME/rewriting/IsaFoR/Seq"
 begin
 
 (*FIXME: move*)
@@ -401,8 +402,8 @@ lemma SN_on_trancl_imp_SN_on:
   assumes "SN_on (R^+) T" shows "SN_on R T"
 proof (rule ccontr)
   assume "\<not> SN_on R T"
-  then obtain s where "s 0 \<in> T" and "\<forall>i. (s i,s(Suc i)) \<in> R" unfolding SN_defs by auto
-  hence "\<forall>i. (s i,s(Suc i)) \<in> R^+" by auto
+  then obtain s where "s 0 \<in> T" and "\<forall>i. (s i, s(Suc i)) \<in> R" unfolding SN_defs by auto
+  hence "\<forall>i. (s i, s (Suc i)) \<in> R^+" by auto
   with `s 0 \<in> T` have "\<not> SN_on (R^+) T" unfolding SN_defs by auto
   with assms show False by simp
 qed
@@ -441,8 +442,8 @@ lemma WCR_onE:
 lemma SN_nat_bounded: "SN {(x,y :: nat). x < y \<and> y \<le> b}" (is "SN ?R")
 proof 
   fix f
-  assume "\<forall> i. (f i, f (Suc i)) \<in> ?R"
-  hence steps: "\<And> i. (f i, f (Suc i)) \<in> ?R" ..
+  assume "\<forall>i. (f i, f (Suc i)) \<in> ?R"
+  hence steps: "\<And>i. (f i, f (Suc i)) \<in> ?R" ..
   {
     fix i
     have inc: "f 0 + i \<le> f i"
@@ -498,21 +499,10 @@ lemma SN_on_Image:
   shows "SN_on r (r `` A)"
 proof
   fix f
-  assume 1: "f 0 \<in> r `` A" and seq: "\<forall>i. (f i, f (Suc i)) \<in> r"
-  then obtain a where "a \<in> A" and "(a, f 0) \<in> r" by auto
-  let ?g = "\<lambda>i. case i of 0 \<Rightarrow> a | Suc i \<Rightarrow> f i"
-  have "\<forall>i. (?g i, ?g (Suc i)) \<in> r"
-  proof
-    fix i show "(?g i, ?g (Suc i)) \<in> r"
-    proof (cases i)
-      case 0
-      from `(a, f 0) \<in> r` and 1 show ?thesis by (simp add: 0)
-    next
-      case (Suc j)
-      from seq have "(f j, f (Suc j)) \<in> r" ..
-      thus ?thesis by (simp add: Suc)
-    qed
-  qed
+  assume "f 0 \<in> r `` A" and seq: "\<forall>i. (f i, f (Suc i)) \<in> r"
+  then obtain a where "a \<in> A" and 1: "(a, f 0) \<in> r" by auto
+  let ?g = "a #s f"
+  from cons_linkedrel[OF 1 seq] have "\<forall>i. (?g i, ?g (Suc i)) \<in> r" .
   moreover have "?g 0 \<in> A" by (simp add: `a \<in> A`)
   ultimately have "\<not> SN_on r A" unfolding SN_defs by best
   with assms show False by simp
@@ -579,6 +569,7 @@ proof
       obtain g where g0: "g 0 = a" and "g n = f 0"
       and gseq: "\<forall>i<n. (g i, g (Suc i)) \<in> r" by auto
     let ?f = "\<lambda>i. if i < n then g i else f (i - n)"
+    (*continue here*)
     have "\<forall>i. (?f i, ?f (Suc i)) \<in> r"
     proof
       fix i
