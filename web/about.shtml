@@ -2,7 +2,7 @@
 		"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>The Archive of Formal Proofs</title>
+  <title>Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -74,7 +74,7 @@ understand details of your development, and it makes it easier to use and
 build on your work.</p>
 
 <h2>License</h2>
-<p>All entries in the Archive of Formal Proof are licensed under 
+<p>All entries in the Archive of Formal Proofs are licensed under 
 a <a href="LICENSE">BSD-style License</a> or
 the <a href="http://www.gnu.org/copyleft/lesser.html">GNU LGPL</a>.
 This means they are free to download, free to use, free to change, and

@@ -1,4 +1,4 @@
-(*  Title:       An example submission to the Archive of Formal Proof
+(*  Title:       An example submission to the Archive of Formal Proofs
     Author:      Gerwin Klein <kleing at cse.unsw.edu.au>, 2004
     Maintainer:  Gerwin Klein <kleing at cse.unsw.edu.au>
 *)
@@ -10,7 +10,7 @@ theory Submission
 begin
 
 text {*
-  This is an example submission to the Archive of Formal Proof.
+  This is an example submission to the Archive of Formal Proofs.
 
   The scope of the archive encompasses examples, textbook-style
   proofs, libraries and larger scientific developments.
