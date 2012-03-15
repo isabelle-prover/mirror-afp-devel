@@ -39,7 +39,7 @@ Collections:
 $(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy ex/*.thy document/*.tex document/*.bib
 	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
-Userguide.pdf: $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+Userguide.pdf: $(OUT)/$(SESSION-NAME)
 	@cd generated; \
 	$(ISABELLE_TOOL) latex -o sty "root_userguide.tex" > userguide.log;\
 	$(ISABELLE_TOOL) latex -o sty "root_userguide.tex" >> userguide.log && \
