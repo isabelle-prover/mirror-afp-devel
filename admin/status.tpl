@@ -2,7 +2,7 @@
 		"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>The Archive of Formal Proofs</title>
+  <title>Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -21,8 +21,7 @@
 
 <div align="center">
 <p> </p>
-<h1><font class="first">T</font>he
-    <font class="first">A</font>rchive of
+<h1><font class="first">A</font>rchive of
     <font class="first">F</font>ormal
     <font class="first">P</font>roofs</h1>
 <p> </p>
