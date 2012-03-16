@@ -26,7 +26,9 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Matrices *}
 
 theory Matrix
-imports "../Abstract-Rewriting/SN_Orders"
+imports
+  "../Abstract-Rewriting/SN_Orders"
+  Finite_Set
 begin
 
 text {*
@@ -35,6 +37,31 @@ text {*
   Moreover, it is proven that strongly normalizing (monotone) orders can be lifted to
   strongly normalizing (monotone) orders over matrices. 
 *}
+
+
+subsection {* Miscellaneous *}
+
+lemma infinite_imp_elem: "\<not> finite A \<Longrightarrow> \<exists> x. x \<in> A"
+  by (cases "A = {}", auto)
+
+lemma inf_pigeonhole_principle:
+  assumes "\<forall>k::nat. \<exists>i<n::nat. f k i"
+  shows "\<exists>i<n. \<forall>k. \<exists>k'\<ge>k. f k' i"
+proof -
+  have nfin: "~ finite (UNIV :: nat set)" by auto
+  have fin: "finite ({i. i < n})" by auto
+  from pigeonhole_infinite_rel[OF nfin fin] assms
+  obtain i where i: "i < n" and nfin: "\<not> finite {a. f a i}" by auto
+  show ?thesis 
+  proof (intro exI conjI, rule i, intro allI)
+    fix k
+    have "finite {a. f a i \<and> a < k}" by auto
+    with nfin have "\<not> finite ({a. f a i} - {a. f a i \<and> a < k})" by auto
+    from infinite_imp_elem[OF this]
+    obtain a where "f a i" and "a \<ge> k" by auto
+    thus "\<exists> k' \<ge> k. f k' i" by force
+  qed
+qed
 
 
 subsection {* types and well-formedness of vectors / matrices *}
@@ -175,12 +202,18 @@ where "mat_arc_posI ap m \<equiv> ap (m ! 0 ! 0)"
 subsection {* algorithms preserve dimensions *}
 
 (* locally add these lemmas to the simplifier *)
+lemmas list_all_ex = list_all_iff list_ex_iff
 declare list_all_ex[simp]
 (* and at the end throw them out of the simplifier again *)
 
 
 lemma vec0[simp]: "vec nr (vec0I ze nr)"
   by (simp add: vec_def vec0I_def)
+
+lemma replicate_prop:
+  assumes "P x"
+  shows "\<forall>y\<in>set (replicate n x). P y"
+  using assms by (induct n) simp_all
 
 lemma mat0[simp]: "mat nr nc (mat0I ze nr nc)"
 unfolding mat_def mat0I_def
@@ -1726,7 +1759,7 @@ proof clarify
   with all have ex: "\<And> k. (\<exists> i < sd. (f k i, f (Suc k) i) \<in> ?rel)" and all: "\<And> k.(\<forall> i < sd. f k i \<succeq> f (Suc k) i)" by auto
   let ?g = "\<lambda> k i. (f k i, f (Suc k) i) \<in> ?rel"
   from ex have g: "\<forall> k. \<exists> i < sd. ?g k i" by auto
-  from inf_pigeon_hole_principle[OF g] obtain i where i: "i < sd" and inf: "\<forall> k. \<exists> k' \<ge> k. ?g k' i" by auto
+  from inf_pigeonhole_principle[OF g] obtain i where i: "i < sd" and inf: "\<forall> k. \<exists> k' \<ge> k. ?g k' i" by auto
   let ?h = "\<lambda> k. (f k i)"
   let ?nRel = "{(x,y) | x y :: 'a. x \<succeq> y}"
   from all i have all: "\<forall> k. (?h k, ?h (Suc k)) \<in> ?nRel \<union> ?rel" by auto

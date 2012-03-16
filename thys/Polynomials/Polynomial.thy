@@ -74,6 +74,52 @@ where "eval_monom \<alpha> [] = 1"
 lemma eval_monom_list[simp]: "eval_monom \<alpha> (m @ n) = eval_monom \<alpha> m * eval_monom \<alpha> n"
   by (induct m, auto simp: field_simps)
 
+
+fun "extract" :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> ('a list \<times> 'a \<times> 'a list) option" where
+  "extract p [] = None"
+| "extract p (x # xs) = (if p x then Some ([], x, xs) else 
+  (case extract p xs of
+    None \<Rightarrow> None
+  | Some (ys, y, zs) \<Rightarrow> Some (x#ys, y, zs)))"
+
+lemma extract_None: "extract p xs = None \<Longrightarrow> \<forall>x\<in>set xs. \<not> p x"
+proof (induct xs, simp)
+  case (Cons x xs)
+  show ?case 
+  proof (cases "p x")
+    case True
+    hence False using Cons(2) by simp
+    thus ?thesis ..
+  next
+    case False
+    with Cons show ?thesis by (cases "extract p xs", auto)
+  qed
+qed
+
+lemma extract_Some:
+  assumes "extract p xs = Some (ys, y, zs)" 
+  shows "xs = ys @ y # zs \<and> p y"
+using assms
+proof (induct xs arbitrary: ys, simp)
+  case (Cons x xs)
+  show ?case 
+  proof (cases "p x")
+    case True
+    thus ?thesis using Cons(2) by auto
+  next
+    case False
+    show ?thesis 
+    proof (cases "extract p xs")
+      case None
+      with Cons(2) False show ?thesis by simp
+    next
+      case (Some res)
+      with False Cons(2) obtain us where rec: "extract p xs = Some (us, y, zs)" and ys: "ys = x # us" by (cases res, auto)
+      from Cons(1)[OF rec] ys show ?thesis by simp        
+    qed
+  qed
+qed
+
 text {*
 equality of monomials should be able to identify $x^2 \cdot y$ with $y \cdot x^2$,
 essentially, it checks for permutations. Checking of permutations 
@@ -81,11 +127,12 @@ suffices, since in $x^2 \cdot x^1 = x^3$, the left-hand side should not
 be constructed due to the invariant, that every variable occurs at
 most once in a monomial.
 *}
-fun eq_monom :: "'v monom \<Rightarrow> 'v monom \<Rightarrow> bool" (infix "=m" 51)
-where "[] =m n = (n = [])" 
-  |   "(x,p) # m =m n = (case extract (\<lambda> yq. fst yq = x) n of
-                           None \<Rightarrow> False
-                         | Some (n1,(_,q),n2) \<Rightarrow> p = q \<and> m =m (n1 @ n2))"
+fun eq_monom :: "'v monom \<Rightarrow> 'v monom \<Rightarrow> bool" (infix "=m" 51) where
+  "[] =m n = (n = [])" 
+| "(x,p) # m =m n =
+  (case extract (\<lambda>yq. fst yq = x) n of
+    None \<Rightarrow> False
+  | Some (n1,(_,q),n2) \<Rightarrow> p = q \<and> m =m (n1 @ n2))"
 
 lemma eq_monom_refl: "m =m m"
 proof (induct m)
@@ -414,9 +461,15 @@ The polynomials we construct satisfy the following invariants:
 \end{itemize}
 *}
 
+fun distinct_eq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool" where
+  "distinct_eq _ [] = True"
+| "distinct_eq eq (x # xs) = ((\<forall> y \<in> set xs. \<not> (eq y x)) \<and> distinct_eq eq xs)"
+
+lemma distinct_eq_append: "distinct_eq eq (xs @ ys) = (distinct_eq eq xs \<and> distinct_eq eq ys \<and> (\<forall> x \<in> set xs. \<forall> y \<in> set ys. \<not> (eq y x)))"
+  by (induct xs, auto)
 
 definition poly_inv :: "('v,'a :: zero)poly \<Rightarrow> bool"
-  where "poly_inv p \<equiv> (\<forall> (m,c) \<in> set p. monom_inv m \<and> c \<noteq> 0) \<and> distinct_eq (\<lambda> (m1,_) (m2,_). m1 =m m2) p" 
+  where "poly_inv p \<equiv> (\<forall> (m,c) \<in> set p. monom_inv m \<and> c \<noteq> 0) \<and> distinct_eq (\<lambda> (m1,_) (m2,_). m1 =m m2) p"
 
 
 abbreviation eval_monomc where "eval_monomc \<alpha> mc \<equiv> eval_monom \<alpha> (fst mc) * (snd mc)"
