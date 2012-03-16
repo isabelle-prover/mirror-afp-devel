@@ -26,7 +26,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Closure computation on lists *}
 
 theory Transitive_Closure_List_Impl
-imports Transitive_Closure_Impl "../Abstract-Rewriting/Util"
+imports Transitive_Closure_Impl
 begin
 
 text {*
