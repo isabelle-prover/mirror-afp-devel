@@ -1073,6 +1073,9 @@ val NoBodyN = @{const_name Vcg.NoBody};
 val statetypeN = "StateType";
 val proc_nameT = HOLogic.stringT;
 
+fun expression_no_pos (expr, fixes) : Expression.expression =
+  (map (fn (name, inst) => ((name, Position.none), inst)) expr, fixes);
+
 fun add_locale name expr elems thy =
   thy 
   |> Expression.add_locale I (Binding.name name) (Binding.name name) expr elems
@@ -1086,7 +1089,8 @@ fun add_locale' name expr elems thy =
 
 fun add_locale_cmd name expr elems thy =
   thy 
-  |> Expression.add_locale_cmd I (Binding.name name) (Binding.name name) expr elems
+  |> Expression.add_locale_cmd I (Binding.name name) (Binding.name name)
+    (expression_no_pos expr) elems
   |> snd
   |> Local_Theory.exit;
 

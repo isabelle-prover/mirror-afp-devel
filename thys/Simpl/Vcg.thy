@@ -28,6 +28,7 @@ USA
 header {* Facilitating the Hoare Logic *}
 theory Vcg
 imports StateSpace "~~/src/HOL/Statespace/StateSpaceLocale" Generalise
+keywords "procedures" "hoarestate" :: thy_decl
 uses ("hoare.ML") ("hoare_syntax.ML")
 begin
 
