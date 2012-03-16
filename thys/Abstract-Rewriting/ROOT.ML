@@ -1,5 +1,4 @@
 no_document use_thys [
-  "Util",
   "../Transitive-Closure/Transitive_Closure_Impl",
   "../Regular-Sets/Regexp_Method"
 ];
