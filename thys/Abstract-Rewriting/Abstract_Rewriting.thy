@@ -272,7 +272,7 @@ abbreviation CR :: "'a ars \<Rightarrow> bool" where
   "CR r \<equiv> CR_on r UNIV"
 
 definition SN_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "SN_on r A \<equiv> \<not> (\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> r))"
+  "SN_on r A \<equiv> \<not> (\<exists>f. f 0 \<in> A \<and> chain r f)"
 
 abbreviation SN :: "'a ars \<Rightarrow> bool" where
   "SN r \<equiv> SN_on r UNIV"
@@ -391,7 +391,7 @@ declare UNF_onD[dest]
 declare UNF_onE[elim]
 
 lemma SN_onI:
-  assumes "\<And>f. \<lbrakk>f 0 \<in> A; \<forall>i. (f i, f (Suc i)) \<in> r\<rbrakk> \<Longrightarrow> False"
+  assumes "\<And>f. \<lbrakk>f 0 \<in> A; chain r f\<rbrakk> \<Longrightarrow> False"
   shows "SN_on r A"
   using assms unfolding SN_defs by blast
 
@@ -402,21 +402,21 @@ lemma SN_on_trancl_imp_SN_on:
   assumes "SN_on (R^+) T" shows "SN_on R T"
 proof (rule ccontr)
   assume "\<not> SN_on R T"
-  then obtain s where "s 0 \<in> T" and "\<forall>i. (s i, s(Suc i)) \<in> R" unfolding SN_defs by auto
-  hence "\<forall>i. (s i, s (Suc i)) \<in> R^+" by auto
+  then obtain s where "s 0 \<in> T" and "chain R s" unfolding SN_defs by auto
+  hence "chain (R^+) s" by auto
   with `s 0 \<in> T` have "\<not> SN_on (R^+) T" unfolding SN_defs by auto
   with assms show False by simp
 qed
 
 lemma SN_onE:
   assumes "SN_on r A"
-    and "\<not> (\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> r)) \<Longrightarrow> P"
+    and "\<not> (\<exists>f. f 0 \<in> A \<and> chain r f) \<Longrightarrow> P"
   shows "P"
   using assms unfolding SN_defs by simp
 
 lemma not_SN_onE:
   assumes "\<not> SN_on r A"
-    and "\<And>f. \<lbrakk>f 0 \<in> A; \<forall>i. (f i, f (Suc i)) \<in> r\<rbrakk> \<Longrightarrow> P"
+    and "\<And>f. \<lbrakk>f 0 \<in> A; chain r f\<rbrakk> \<Longrightarrow> P"
   shows "P"
   using assms unfolding SN_defs by blast
 
@@ -442,7 +442,7 @@ lemma WCR_onE:
 lemma SN_nat_bounded: "SN {(x,y :: nat). x < y \<and> y \<le> b}" (is "SN ?R")
 proof 
   fix f
-  assume "\<forall>i. (f i, f (Suc i)) \<in> ?R"
+  assume "chain ?R f"
   hence steps: "\<And>i. (f i, f (Suc i)) \<in> ?R" ..
   {
     fix i
@@ -499,10 +499,10 @@ lemma SN_on_Image:
   shows "SN_on r (r `` A)"
 proof
   fix f
-  assume "f 0 \<in> r `` A" and seq: "\<forall>i. (f i, f (Suc i)) \<in> r"
+  assume "f 0 \<in> r `` A" and chain: "chain r f"
   then obtain a where "a \<in> A" and 1: "(a, f 0) \<in> r" by auto
   let ?g = "a #s f"
-  from cons_linkedrel[OF 1 seq] have "\<forall>i. (?g i, ?g (Suc i)) \<in> r" .
+  from cons_chain[OF 1 chain] have "chain r ?g" .
   moreover have "?g 0 \<in> A" by (simp add: `a \<in> A`)
   ultimately have "\<not> SN_on r A" unfolding SN_defs by best
   with assms show False by simp
@@ -553,7 +553,7 @@ lemma SN_on_Image_rtrancl:
   shows "SN_on r (r^* `` A)"
 proof
   fix f
-  assume f0: "f 0 \<in> r^* `` A" and fseq: "\<forall>i. (f i, f (Suc i)) \<in> r"
+  assume f0: "f 0 \<in> r^* `` A" and chain: "chain r f"
   then obtain a where a: "a \<in> A" and "(a, f 0) \<in> r^*" by auto
   then obtain n where "(a, f 0) \<in> r^^n" unfolding rtrancl_power by auto
   show False
@@ -561,7 +561,7 @@ proof
     case 0
     with `(a, f 0) \<in> r^^n` have "f 0 = a" by simp
     hence "f 0 \<in> A" by (simp add: a)
-    with fseq have "\<not> SN_on r A" by auto
+    with chain have "\<not> SN_on r A" by auto
     with assms show False by simp
   next
     case (Suc m)
@@ -569,8 +569,7 @@ proof
       obtain g where g0: "g 0 = a" and "g n = f 0"
       and gseq: "\<forall>i<n. (g i, g (Suc i)) \<in> r" by auto
     let ?f = "\<lambda>i. if i < n then g i else f (i - n)"
-    (*continue here*)
-    have "\<forall>i. (?f i, ?f (Suc i)) \<in> r"
+    have "chain r ?f"
     proof
       fix i
       {
@@ -581,7 +580,7 @@ proof
       {
         assume "Suc i > n"
         hence eq: "Suc (i - n) = Suc i - n" by arith
-        from fseq have "(f (i - n), f (Suc (i - n))) \<in> r" by simp
+        from chain have "(f (i - n), f (Suc (i - n))) \<in> r" by simp
         hence "(f (i - n), f (Suc i - n)) \<in> r" by (simp add: eq)
         with `Suc i > n` have "(?f i, ?f (Suc i)) \<in> r" by simp
       }
@@ -727,8 +726,8 @@ qed
 
 lemma CR_iff_conversion_imp_join: "CR r = (r^<->* \<subseteq> r\<^sup>\<down>)"
 proof (intro iffI subsetI2)
-  fix x y assume "CR r" and "(x,y) \<in> r^<->*"
-  then obtain n where "(x,y) \<in> (r\<^sup>\<leftrightarrow>)^^n" unfolding conversion_def rtrancl_is_UN_relpow by auto
+  fix x y assume "CR r" and "(x,y) \<in> r^<->*"                      (*FIXME*)
+  then obtain n where "(x,y) \<in> (r\<^sup>\<leftrightarrow>)^^n" unfolding conversion_def rtrancl_is_UN_rel_pow by auto
   thus "(x,y) \<in> r\<^sup>\<down>"
   proof (induct n arbitrary: x)
     case 0
@@ -737,7 +736,8 @@ proof (intro iffI subsetI2)
   next
     case (Suc n)
     from `(x,y) \<in> r\<^sup>\<leftrightarrow> ^^ Suc n` obtain  z where "(x,z) \<in> r\<^sup>\<leftrightarrow>" and "(z,y) \<in> r\<^sup>\<leftrightarrow> ^^ n"
-      using relpow_Suc_D2 by best
+      (*FIXME*)
+      using rel_pow_Suc_D2 by best
     with Suc have "(z,y) \<in> r\<^sup>\<down>" by simp
     from `(x,z) \<in> r\<^sup>\<leftrightarrow>` show ?case
     proof
@@ -789,7 +789,8 @@ qed
 lemma NF_not_suc: assumes "(x,y) \<in> r^*" and "x \<in> NF r" shows "x = y"
 proof -
   from `x \<in> NF r` have "\<forall>y. (x,y) \<notin> r" using NF_no_step by auto
-  hence "x \<notin> Domain r" unfolding Domain_unfold by simp
+                                 (*FIXME:Domain_unfold*)
+  hence "x \<notin> Domain r" unfolding Domain_def by simp
   from `(x,y) \<in> r^*` show ?thesis unfolding Not_Domain_rtrancl[OF `x \<notin> Domain r`] by simp
 qed
 
@@ -870,14 +871,16 @@ lemma diamond_imp_semi_confluence: assumes "\<diamond> r" shows "(r\<inverse> O 
 proof (rule subsetI2)
   fix y z assume "(y,z) \<in>  r\<inverse> O r^*"
   then obtain x where "(x,y) \<in> r" and "(x,z) \<in> r^*" by best
-  then obtain n where "(x,z) \<in> r^^n" using rtrancl_imp_UN_relpow by best
+                                           (*FIXME*)
+  then obtain n where "(x,z) \<in> r^^n" using rtrancl_imp_UN_rel_pow by best
   with `(x,y) \<in> r` show "(y,z) \<in> r\<^sup>\<down>"
   proof (induct n arbitrary: x z y)
     case 0 thus ?case by auto
   next
     case (Suc n)
     from `(x,z) \<in> r^^Suc n` obtain x' where "(x,x') \<in> r" and "(x',z) \<in> r^^n"
-      using relpow_Suc_D2 by best
+            (*FIXME*)
+      using rel_pow_Suc_D2 by best
     with `(x,y) \<in> r` have "(y,x') \<in> (r\<inverse> O r)" by auto
     with `\<diamond> r` have "(y,x') \<in> (r O r\<inverse>)" by auto
     then obtain y' where "(x',y') \<in> r" and "(y,y') \<in> r" by best
@@ -889,14 +892,14 @@ qed
 lemma semi_confluence_imp_CR: assumes "(r\<inverse> O r^*) \<subseteq> r\<^sup>\<down>" shows "CR r"
 proof - {
   fix x y z assume "(x,y) \<in> r^*" and "(x,z) \<in> r^*"
-  then obtain n where "(x,z) \<in> r^^n" using rtrancl_imp_UN_relpow by best
+  then obtain n where "(x,z) \<in> r^^n" using rtrancl_imp_UN_rel_pow (*FIXME*) by best
   with `(x,y) \<in> r^*` have "(y,z) \<in> r\<^sup>\<down>"
   proof (induct n arbitrary: x y z)
     case 0 thus ?case by auto
   next
     case (Suc n)
     from `(x,z) \<in> r^^Suc n` obtain x' where "(x,x') \<in> r" and "(x',z) \<in> r^^n"
-      using relpow_Suc_D2 by best
+      using (*FIXME*) rel_pow_Suc_D2 by best
     from `(x,x') \<in> r` and `(x,y) \<in> r^*` have "(x',y) \<in> (r\<inverse> O r^* )" by auto
     with assms have "(x',y) \<in> r\<^sup>\<down>" by auto
     then obtain y' where "(x',y') \<in> r^*" and "(y,y') \<in> r^*" by best
@@ -942,7 +945,7 @@ proof (rule ccontr)
     fix i show "(?S i, ?S (Suc i)) \<in> A \<and> ?S (Suc i) \<in> Q"
       by (induct i) (auto simp: `x \<in> Q` a)
   qed
-  with `?S 0 = x` have "\<exists>S. S 0 = x \<and> (\<forall>i. (S i, S (Suc i)) \<in> A)" by fast
+  with `?S 0 = x` have "\<exists>S. S 0 = x \<and> chain A S" by fast
   with assms show False by auto
 qed
 
@@ -961,7 +964,7 @@ proof (rule ccontr)
   proof
     fix i show "(?S i,?S(Suc i)) \<in> r \<and> ?S(Suc i) \<in> Q" by (induct i) (auto simp:`x \<in> Q` a)
   qed
-  with `?S 0 = x` have "\<exists>S. S 0 = x \<and> (\<forall>i. (S i,S(Suc i)) \<in> r)" by fast
+  with `?S 0 = x` have "\<exists>S. S 0 = x \<and> chain r S" by fast
   with assms show False by auto
 qed
 
@@ -987,7 +990,7 @@ lemmas SN_imp_wf = SN_imp_minimal[THEN minimal_imp_wf]
 lemma wf_imp_SN: assumes "wf (A\<inverse>)" shows "SN A"
 proof - {
   fix a
-  let ?P = "\<lambda>a. \<not>(\<exists>S. S 0 = a \<and> (\<forall>i. (S i,S(Suc i)) \<in> A))"
+  let ?P = "\<lambda>a. \<not>(\<exists>S. S 0 = a \<and> chain A S)"
   from `wf (A\<inverse>)` have "?P a"
   proof induct
     case (less a)
@@ -995,10 +998,10 @@ proof - {
     show "?P a"
     proof (rule ccontr)
       assume "\<not> ?P a"
-      then obtain S where "S 0 = a" and "\<forall>i. (S i,S(Suc i)) \<in> A" by auto
+      then obtain S where "S 0 = a" and "chain A S" by auto
       hence "(S 0, S 1) \<in> A" by auto
       with IH have "?P (S 1)" unfolding `S 0 = a` by auto
-      with `\<forall>i. (S i, S (Suc i)) \<in> A` show False by auto
+      with `chain A S` show False by auto
     qed
   qed
   hence "SN_on A {a}" unfolding SN_defs by auto
@@ -1104,14 +1107,14 @@ lemma SN_on_imp_acc: assumes "SN_on {(y,z). (z,y) \<in> r} {x}" shows "x \<in> a
 subsection {* Newman's Lemma *}
 
 lemma rtrancl_len_E[elim]: assumes "(x, y) \<in> r^*" obtains n where "(x, y) \<in> r^^n"
-using rtrancl_imp_UN_relpow[OF assms] by best
+  using rtrancl_imp_UN_rel_pow[OF assms] (*FIXME*) by best
 
 lemma relpow_Suc_E2'[elim]:
   assumes "(x, z) \<in> A^^Suc n" obtains y where "(x, y) \<in> A" and "(y, z) \<in> A^*"
 proof -
   assume assm: "\<And>y. (x,y) \<in> A \<Longrightarrow> (y,z) \<in> A^* \<Longrightarrow> thesis"
-  from relpow_Suc_E2[OF assms] obtain y where "(x,y) \<in> A" and "(y,z) \<in> A^^n" by auto
-  hence "(y,z) \<in> A^*" using relpow_imp_rtrancl by auto
+  from (*FIXME*) rel_pow_Suc_E2[OF assms] obtain y where "(x,y) \<in> A" and "(y,z) \<in> A^^n" by auto
+  hence "(y,z) \<in> A^*" using (*FIXME*) rel_pow_imp_rtrancl by auto
   from assm[OF `(x,y) \<in> A` this] show thesis .
 qed
 
@@ -1178,13 +1181,13 @@ lemma Image_SN_on:
   shows "SN_on r A"
 proof
   fix f
-  assume "f 0 \<in> A" and seq: "\<forall>i. (f i, f (Suc i)) \<in> r"
+  assume "f 0 \<in> A" and chain: "chain r f"
   hence "f (Suc 0) \<in> r `` A" by auto
   with assms have "SN_on r {f (Suc 0)}" by (auto simp add: `f 0 \<in> A` SN_defs)
   moreover have "\<not> SN_on r {f (Suc 0)}"
   proof -
     have "f (Suc 0) \<in> {f (Suc 0)}" by simp
-    moreover from seq have "\<forall>i. (f (Suc i), f (Suc (Suc i))) \<in> r" by simp
+    moreover from chain have "chain r (f \<circ> Suc)" by auto
     ultimately show ?thesis by auto
   qed
   ultimately show False by simp
@@ -1208,8 +1211,8 @@ lemma SN_imp_SN_trancl: "SN R \<Longrightarrow> SN (R^+)"
 lemma SN_trancl_imp_SN: assumes "SN (R^+)" shows "SN R"
 proof (rule ccontr)
   assume "\<not> SN R"
-  then obtain s where "\<forall>i. (s i,s(Suc i)) \<in> R" unfolding SN_defs by auto
-  hence "\<forall>i. (s i,s(Suc i)) \<in> R^+" by auto
+  then obtain s where "chain R s" unfolding SN_defs by auto
+  hence "chain (R^+) s" by auto
   hence "\<not> SN(R^+)" unfolding SN_defs by auto
   with assms show False by simp
 qed
@@ -1220,41 +1223,20 @@ lemma SN_trancl_SN_conv: "SN (R^+) = SN R"
 
 (*FIXME: move to HOL/Relation.thy (in Isabelle)*)
 lemma converse_inv_image[simp]: "(inv_image R f)^-1 = inv_image (R^-1) f"
-  unfolding inv_image_def converse_unfold by auto
+  unfolding inv_image_def converse_def (*FIXME:converse_unfold*) by auto
 
-lemma SN_inv_image: "SN R \<Longrightarrow> SN(inv_image R f)" unfolding SN_iff_wf by simp
+lemma SN_inv_image: "SN R \<Longrightarrow> SN (inv_image R f)" unfolding SN_iff_wf by simp
 
 lemma SN_subset: "SN R \<Longrightarrow> R' \<subseteq> R \<Longrightarrow> SN R'" unfolding SN_defs by blast
-
-lemma iseq_imp_condensed_iseq:
-  assumes "\<forall>i. (S i, S (Suc i)) \<in> A" shows "\<forall>j>0. (S i, S (i + j)) \<in> A^^j"
-proof (intro allI impI)
-  fix j::nat assume "j > 0"
-  thus "(S i, S (i + j)) \<in> A^^j"
-  proof (induct j)
-    case 0 show ?case by simp
-  next
-    case (Suc j) thus ?case
-    proof (cases "j = 0")
-      case True show ?thesis unfolding True using assms by simp
-    next
-      case False
-      hence "j > 0" by simp
-      with Suc have "(S i, S (i + j)) \<in> A^^j" by simp
-      moreover from assms have "(S (i + j), S (Suc (i + j))) \<in> A" by simp
-      ultimately show ?thesis by auto
-    qed
-  qed
-qed
  
 lemma SN_pow_imp_SN: assumes "SN (A^^Suc n)" shows "SN A"
 proof (rule ccontr)
   assume "\<not> SN A"
-  then obtain S where "\<forall>i. (S i, S(Suc i)) \<in> A" unfolding SN_defs by auto
-  from iseq_imp_condensed_iseq[OF this]
-    have step: "\<And>i. (S i, S (i + (Suc n))) \<in> A^^Suc n" by force
+  then obtain S where "chain A S" unfolding SN_defs by auto
+  from chain_imp_relpow[OF this]
+    have step: "\<And>i. (S i, S (i + (Suc n))) \<in> A^^Suc n" .
   let ?T = "\<lambda>i. S (i * (Suc n))"
-  have "\<forall>i. (?T i, ?T (Suc i)) \<in> A^^Suc n"
+  have "chain (A^^Suc n) ?T"
   proof
     fix i show "(?T i, ?T (Suc i)) \<in> A^^Suc n" unfolding mult_Suc
       using step[of "i * Suc n"] unfolding add_commute .
@@ -1265,7 +1247,7 @@ qed
 
 (* TODO: move to Isabelle Library? *)
 lemma pow_Suc_subset_trancl: "R^^(Suc n) \<subseteq> R^+"
-using trancl_power[of _ R] by blast
+  using trancl_power[of _ R] by blast
 
 lemma SN_imp_SN_pow: assumes "SN R" shows "SN (R^^Suc n)"
   using SN_subset[where R="R^+",OF SN_imp_SN_trancl[OF assms] pow_Suc_subset_trancl] by simp
@@ -1280,7 +1262,7 @@ using assms
 proof (rule contrapos_pp)
   let ?r = "restrict_SN r r"
   assume "\<not> SN_on (r^+) A"
-  then obtain f where "f 0 \<in> A" and seq: "\<forall>i. (f i, f (Suc i)) \<in> r^+" by auto
+  then obtain f where "f 0 \<in> A" and chain: "chain (r^+) f" by auto
   have "SN ?r" by (rule SN_restrict_SN_idemp)
   hence "SN (?r^+)" by (rule SN_imp_SN_trancl)
   have "\<forall>i. (f 0, f i) \<in> r^*"
@@ -1290,7 +1272,7 @@ proof (rule contrapos_pp)
       case 0 show ?case ..
     next
       case (Suc i)
-      from seq have "(f i, f (Suc i)) \<in> r^+" ..
+      from chain have "(f i, f (Suc i)) \<in> r^+" ..
       with Suc show ?case by auto
     qed
   qed
@@ -1298,7 +1280,7 @@ proof (rule contrapos_pp)
     using steps_preserve_SN_on[of "f 0" _ r]
     and `f 0 \<in> A`
     and SN_on_subset2[of "{f 0}" "A"] by auto
-  with seq have "\<forall>i. (f i, f (Suc i)) \<in> ?r^+"
+  with chain have "chain (?r^+) f"
     unfolding restrict_SN_trancl_simp
     unfolding restrict_SN_def by auto
   hence "\<not> SN_on (?r^+) {f 0}" by auto
@@ -1319,8 +1301,8 @@ lemma SN_on_restrict:
   shows "SN_on (restrict r S) A" (is "SN_on ?r A")
 proof (rule ccontr)
   assume "\<not> SN_on ?r A"
-  hence "\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> ?r)" by auto
-  hence "\<exists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> r)" unfolding restrict_def by auto
+  hence "\<exists>f. f 0 \<in> A \<and> chain ?r f" by auto
+  hence "\<exists>f. f 0 \<in> A \<and> chain r f" unfolding restrict_def by auto
   with `SN_on r A` show False by auto
 qed
 
@@ -1362,14 +1344,14 @@ proof -
   {
     fix x y assume "(x,y) \<in> r^*" and "x \<in> ?S" and "y \<in> ?S"
     then obtain n where "(x,y) \<in> r^^n" and "x \<in> ?S" and "y \<in> ?S"
-      using rtrancl_imp_UN_relpow by best
+      using rtrancl_imp_UN_rel_pow(*FIXME*) by best
     hence "(x,y) \<in> ?r^*"
     proof (induct n arbitrary: x y)
       case 0 thus ?case by simp
     next
       case (Suc n)
       from `(x,y) \<in> r^^Suc n` obtain x' where "(x,x') \<in> r" and "(x',y) \<in> r^^n"
-        using relpow_Suc_D2 by best
+        using (*FIXME*)rel_pow_Suc_D2 by best
       hence "(x,x') \<in> r^*" by simp
       with `x \<in> ?S` have "x' \<in> ?S" by (rule rtrancl_Image_step)
       with Suc and `(x',y) \<in> r^^n` have "(x',y) \<in> ?r^*" by simp
@@ -1542,15 +1524,15 @@ lemma steps_reflect_SN_on:
   using rev_SN_on_Image_rtrancl[of r "{a}"]
   and assms and SN_on_subset2[of "{b}" "r^* `` {a}" r] by blast
 
-lemma iseq_not_SN_on:
-   assumes "\<forall>i. (f i, f (Suc i)) \<in> r"
+lemma chain_imp_not_SN_on:
+   assumes "chain r f"
    shows "\<not> SN_on r {f i}"
 proof -
   let ?f = "\<lambda>j. f (i + j)"
   have "?f 0 \<in> {f i}" by simp
-  moreover have "\<forall>i. (?f i, ?f (Suc i)) \<in> r" using assms by auto
-  ultimately have "?f 0 \<in> {f i} \<and> (\<forall>i. (?f i, ?f (Suc i)) \<in> r)" by blast
-  hence "\<exists>g. g 0 \<in> {f i} \<and> (\<forall>i. (g i, g (Suc i)) \<in> r)" by (rule exI[of _ "?f"])
+  moreover have "chain r ?f" using assms by auto
+  ultimately have "?f 0 \<in> {f i} \<and> chain r ?f" by blast
+  hence "\<exists>g. g 0 \<in> {f i} \<and> chain r g" by (rule exI[of _ "?f"])
   thus ?thesis unfolding SN_defs by auto
 qed
 
@@ -1568,22 +1550,22 @@ proof -
     hence "\<forall>x. x \<in> ?B \<longrightarrow> (\<exists>z\<in>?B. \<forall>y. (z,y) \<in> r \<longrightarrow> y \<notin> ?B)" by (rule spec[where x = ?B])
     with `a \<in> ?B` obtain b where "b \<in> ?B" and min: "\<forall>y. (b,y) \<in> r \<longrightarrow> y \<notin> ?B" by auto
     from `b \<in> ?B` obtain S where "S 0 = b" and
-      seq: "\<forall>i. (S i,S(Suc i)) \<in> r \<union> s" unfolding SN_on_def by auto
+      chain: "chain (r \<union> s) S" unfolding SN_on_def by auto
     let ?S = "\<lambda>i. S(Suc i)"
     have "?S 0 = S 1" by simp
-    from seq have "\<forall>i. (?S i,?S(Suc i)) \<in> r \<union> s" by auto
+    from chain have "chain (r \<union> s) ?S" by auto
     with `?S 0 = S 1` have "\<not> SN_on (r \<union> s) {S 1}" unfolding SN_on_def by auto
-    from `S 0 = b` and seq have "(b,S 1) \<in> r \<union> s" by auto
+    from `S 0 = b` and chain have "(b,S 1) \<in> r \<union> s" by auto
     with min and `\<not> SN_on (r \<union> s) {S 1}` have "(b,S 1) \<in> s" by auto
     let ?i = "LEAST i. (S i,S(Suc i)) \<notin> s"
     {
-      assume "\<forall>i. (S i,S(Suc i)) \<in> s"
+      assume "chain s S"
       with `S 0 = b` have "\<not> SN_on s {b}" unfolding SN_on_def by auto
       with `SN s` have False unfolding SN_defs by auto
     }
     hence ex: "\<exists>i. (S i,S(Suc i)) \<notin> s" by auto
     hence "(S ?i,S(Suc ?i)) \<notin> s" by (rule LeastI_ex)
-    with seq have "(S ?i,S(Suc ?i)) \<in> r" by auto
+    with chain have "(S ?i,S(Suc ?i)) \<in> r" by auto
     have ini: "\<forall>i<?i. (S i,S(Suc i)) \<in> s" using not_less_Least by auto
     {
       fix i assume "i < ?i" hence "(b,S(Suc i)) \<in> s^+"
@@ -1613,8 +1595,8 @@ proof -
       unfolding quasi_commute_def by auto
     then obtain c where "(b,c) \<in> r" and "(c,S(Suc ?i)) \<in> (r \<union> s^+)^*" by best
     from `(b,c) \<in> r` have "(b,c) \<in> (r \<union> s)^*" by auto
-    from iseq_not_SN_on[of S "r \<union> s"]
-      and seq have "\<not> SN_on (r \<union> s) {S (Suc ?i)}" by auto
+    from chain_imp_not_SN_on[of S "r \<union> s"]
+      and chain have "\<not> SN_on (r \<union> s) {S (Suc ?i)}" by auto
     from `(c,S(Suc ?i)) \<in> (r \<union> s^+)^*` have "(c,S(Suc ?i)) \<in> (r \<union> s)^*"
       unfolding rtrancl_union_subset_rtrancl_union_trancl by auto
     with steps_reflect_SN_on[of "r \<union> s"]
@@ -1683,27 +1665,7 @@ using seq proof
   qed
 qed
 
-lemma iseq_imp_steps:
-fixes i j :: nat
-assumes seq: "\<forall>i. (s i, s (Suc i)) \<in> A"
-  and "j \<ge> i"
-shows "(s i, s j) \<in> A^*"
-using `j \<ge> i` proof (induct j)
-  case 0 thus ?case by simp
-next
-  case (Suc j)
-  show ?case
-  proof (cases "i = Suc j")
-    case True show ?thesis by (simp add: True)
-  next
-    case False
-    with Suc have "(s i, s j) \<in> A^*" by simp
-    moreover from seq have "(s j, s (Suc j)) \<in> A^*" by auto
-    ultimately show ?thesis by simp
-  qed
-qed
-
-lemma trancl_union_right: fixes r::"'a ars" shows "r^+ \<subseteq> (s \<union> r)^+"
+lemma trancl_union_right: "r^+ \<subseteq> (s \<union> r)^+"
 proof (rule subsetI2)
   fix x y assume "(x,y) \<in> r^+" thus "(x,y) \<in> (s \<union> r)^+"
   proof (induct)
@@ -1720,9 +1682,8 @@ proof (rule subsetI2)
   fix a b assume "(a,b) \<in> restrict_SN R S" thus "(a,b) \<in> R" unfolding restrict_SN_def by simp
 qed
 
-lemma union_iseq_SN_on_imp_first_step:
-  assumes "\<forall>i. (t i, t (Suc i)) \<in> (R \<union> S)" and "SN_on S {t 0}"
-
+lemma chain_Un_SN_on_imp_first_step:
+  assumes "chain (R \<union> S) t" and "SN_on S {t 0}"
   shows "\<exists>i. (t i, t (Suc i)) \<in> R \<and> (\<forall>j<i. (t j, t (Suc j)) \<in> S \<and> (t j, t (Suc j)) \<notin> R)"
 proof -
   from `SN_on S {t 0}` obtain i where "(t i, t (Suc i)) \<notin> S" by blast
@@ -1735,9 +1696,9 @@ proof -
   with `?P ?i` show ?thesis by best
 qed
 
-lemma first_step: assumes C: "C = A \<union> B" and steps: "(x,y) \<in> C^*"
-  and Bstep: "(y,z) \<in> B"
-  shows "\<exists> y. (x,y) \<in> A^* O B"
+lemma first_step:
+  assumes C: "C = A \<union> B" and steps: "(x, y) \<in> C^*" and Bstep: "(y, z) \<in> B"
+  shows "\<exists>y. (x, y) \<in> A^* O B"
   using steps
 proof (induct rule: converse_rtrancl_induct)
   case base
@@ -1803,24 +1764,24 @@ qed
 
 
 lemma non_strict_ending:
-  assumes seq: "\<forall>i. (t i,t(Suc i)) \<in> R \<union> S"
+  assumes chain: "chain (R \<union> S) t"
     and comp: "R O S \<subseteq> S"
     and SN: "SN_on S {t 0}"
-  shows "\<exists>j. \<forall>i\<ge>j. (t i,t(Suc i)) \<in> R - S" (is ?thesis)
+  shows "\<exists>j. \<forall>i\<ge>j. (t i, t (Suc i)) \<in> R - S"
 proof (rule ccontr)
   assume "\<not> ?thesis"
-  with seq have "\<forall>j.\<exists>i. i\<ge>j \<and> (t i,t(Suc i)) \<in> S" by blast
-  from choice[OF this] obtain f where S_steps: "\<forall>i. i\<le>f i \<and> (t(f i),t(Suc(f i))) \<in> S" ..
-  let ?t = "\<lambda>i. t (((Suc \<circ> f)^^i) 0)"
-  have S_seq: "\<forall>i. (t i,t(Suc(f i))) \<in> S^+"
+  with chain have "\<forall>i. \<exists>j. j \<ge> i \<and> (t j, t (Suc j)) \<in> S" by blast
+  from choice[OF this] obtain f where S_steps: "\<forall>i. i \<le> f i \<and> (t (f i), t (Suc (f i))) \<in> S" ..
+  let ?t = "\<lambda>i. t (((Suc \<circ> f) ^^ i) 0)"
+  have S_chain: "\<forall>i. (t i, t (Suc (f i))) \<in> S^+"
   proof
     fix i
     from S_steps have leq: "i\<le>f i" and step: "(t(f i),t(Suc(f i))) \<in> S" by auto
-    from iseq_imp_steps[OF seq leq] have "(t i,t(f i)) \<in> (R \<union> S)^*" by simp
+    from chain_imp_rtrancl[OF chain leq] have "(t i,t(f i)) \<in> (R \<union> S)^*" .
     with step have "(t i,t(Suc(f i))) \<in> (R \<union> S)^* O S" by auto
     from comp_rtrancl_trancl[OF comp this] show "(t i,t(Suc(f i))) \<in> S^+" .
   qed
-  hence "\<forall>i. (?t i,?t(Suc i)) \<in> S^+" by simp
+  hence "chain (S^+) ?t"by simp
   moreover have "SN_on (S^+) {?t 0}" using SN_on_trancl[OF SN] by simp
   ultimately show False unfolding SN_defs by best
 qed
@@ -1835,12 +1796,12 @@ lemmas SN_on_mono = SN_on_subset1
 
 lemma rtrancl_fun_conv:
   "((s,t) \<in> R^*) = (\<exists> f n. f 0 = s \<and> f n = t \<and> (\<forall> i < n. (f i, f (Suc i)) \<in> R))"
-  unfolding rtrancl_is_UN_relpow using relpow_fun_conv[where R = R]
+  unfolding rtrancl_is_UN_rel_pow(*FIXME*) using relpow_fun_conv[where R = R]
   by auto
 
 
 lemma rtrancl_imp_relpow': "(x,y) \<in> R^* \<Longrightarrow> \<exists>n. (x,y) \<in> ((R::'a ars) ^^ n)"
-  unfolding rtrancl_is_UN_relpow by auto
+  unfolding rtrancl_is_UN_rel_pow (*FIXME*) by auto
 
 lemma compat_tr_compat: assumes "NS O S \<subseteq> S" shows "NS^* O S \<subseteq> S"
   using non_strict_into_strict[where S = S and NS = NS] assms by blast
@@ -1861,14 +1822,14 @@ lemma compatible_SN:
   and compat: "NS O S \<subseteq> S" 
   shows "SN (S O S^* O NS^*)" (is "SN ?A")
 proof
-  fix F assume seq: "\<forall>i. (F i, F (Suc i)) \<in> ?A"
+  fix F assume chain: "chain ?A F"
   from compat compat_tr_compat have tr_compat: "NS^* O S \<subseteq> S" by blast
-  have "\<forall> i. (\<exists> y z. (F i, y)  \<in> S \<and> (y, z)  \<in> S^* \<and> (z, F (Suc i)) \<in> NS^*)"
+  have "\<forall>i. (\<exists>y z. (F i, y) \<in> S \<and> (y, z)  \<in> S^* \<and> (z, F (Suc i)) \<in> NS^*)"
   proof
     fix i
-    from seq have "(F i,F (Suc i)) \<in> (S O S^* O NS^*)" by auto
+    from chain have "(F i, F (Suc i)) \<in> (S O S^* O NS^*)" by auto
     thus "\<exists> y z. (F i, y)  \<in> S \<and> (y, z)  \<in> S^* \<and> (z, F (Suc i)) \<in> NS^*"
-      unfolding rel_comp_unfold using mem_Collect_eq by auto
+      unfolding rel_comp_def (*FIXME:rel_comp_unfold*) using mem_Collect_eq by auto
   qed
   hence "\<exists> f. (\<forall> i. (\<exists> z. (F i, f i)  \<in> S \<and> ((f i, z)  \<in> S^*) \<and>(z, F (Suc i)) \<in> NS^*))"
     by (rule choice)
@@ -1879,7 +1840,7 @@ proof
   then obtain g where "\<forall> i. (F i, f i)  \<in> S \<and> (f i, g i)  \<in> S^* \<and> (g i, F (Suc i)) \<in> NS^*" ..
   hence "\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, F (Suc i)) \<in> NS^* \<and> (F (Suc i), f (Suc i))  \<in> S"
     by auto
-  hence "\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S" unfolding rel_comp_unfold
+  hence "\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S" unfolding rel_comp_def (*FIXME*)
     using tr_compat by auto
   hence all:"\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S^+" by auto
   have "\<forall> i. (f i, f (Suc i))  \<in> S^+"
@@ -1888,9 +1849,9 @@ proof
     from all have "(f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S^+" ..
     thus "(f i, f (Suc i))  \<in> S^+" using transitive_closure_trans by auto
   qed
-  hence "\<exists> x. ((f 0) = x) \<and> (\<forall>i. (f i, f (Suc i)) \<in> S^+)" by auto
-  then obtain x where "((f 0) = x) \<and> (\<forall>i. (f i, f (Suc i)) \<in> S^+)" by auto
-  hence "\<exists> f. ((f 0) = x) \<and> (\<forall>i. (f i, f (Suc i)) \<in> S^+)" by auto
+  hence "\<exists>x. f 0 = x \<and> chain (S^+) f"by auto
+  then obtain x where "f 0 = x \<and> chain (S^+) f" by auto
+  hence "\<exists>f. f 0 = x \<and> chain (S^+) f" by auto
   hence "\<not> SN_on (S^+) {x}" by auto
   hence "\<not> SN (S^+)" unfolding SN_defs by auto
   hence wfSconv:"\<not> wf ((S^+)\<inverse>)" using SN_iff_wf by auto
@@ -1909,7 +1870,7 @@ proof-
   proof (induct n arbitrary: x, simp)
     case (Suc m)
     assume "(x, y) \<in> (NS \<union> S)^^(Suc m)"
-    hence "\<exists> z. (x, z) \<in> (NS \<union> S) \<and> (z, y) \<in> (NS \<union> S)^^m" using relpow_Suc_D2[where ?R="NS \<union> S"] by auto
+    hence "\<exists> z. (x, z) \<in> (NS \<union> S) \<and> (z, y) \<in> (NS \<union> S)^^m" using (*FIXME*) rel_pow_Suc_D2[where ?R="NS \<union> S"] by auto
     then obtain z where xz:"(x, z) \<in> (NS \<union> S)" and zy:"(z, y) \<in> (NS \<union> S)^^m" by auto
     with Suc have zy:"(z, y) \<in>  S O S^* O NS^* \<union> NS^*" by auto
     thus "(x, y) \<in>  S O S^* O NS^* \<union> NS^*"
@@ -1973,9 +1934,9 @@ proof-
  next
  case (Suc i)
   hence B:"(x, y) \<notin> B^*" and ASk:"(x, y) \<in> A ^^ Suc i" by auto
-  from ASk have "\<exists>z. (x, z) \<in> A \<and> (z, y) \<in> A ^^ i" using relpow_Suc_D2[where ?R=A] by auto
+  from ASk have "\<exists>z. (x, z) \<in> A \<and> (z, y) \<in> A ^^ i" using rel_pow_Suc_D2[where ?R=A] (*FIXME*) by auto
   then obtain z where xz:"(x, z) \<in> A" and "(z, y) \<in> A ^^ i" by auto
-  hence zy:"(z, y) \<in> A^*" using relpow_imp_rtrancl by auto
+  hence zy:"(z, y) \<in> A^*" using (*FIXME*) rel_pow_imp_rtrancl by auto
   from xz show "(x, y) \<in> A^* O (A - B) O A^*"
   proof (cases "(x, z) \<in> B")
    case False
@@ -2000,12 +1961,12 @@ lemma SN_on_weakening:
   shows "SN_on (R1 \<inter> R2) A"
 proof -
   {
-    assume "\<exists>S. S 0 \<in> A \<and> (\<forall>i. (S i, S (Suc i)) \<in> R1 \<inter> R2)"
+    assume "\<exists>S. S 0 \<in> A \<and> chain (R1 \<inter> R2) S"
     then obtain S where
       S0: "S 0 \<in> A" and
-      SN: "\<forall>i. (S i, S (Suc i)) \<in> (R1 \<inter> R2)"
+      SN: "chain (R1 \<inter> R2) S"
       by auto
-    from SN have SN': "\<forall>i. (S i, S (Suc i)) \<in> R1" by simp
+    from SN have SN': "chain R1 S" by simp
     with S0 and assms have "False" by auto
   }
   thus ?thesis by force
@@ -2118,7 +2079,7 @@ fun
   rel_SN_alt :: "'a rel_ars \<Rightarrow> bool"
 where
   "rel_SN_alt (R, S) = (\<forall>(f::nat \<Rightarrow> 'a).
-    (\<forall>i. (f i, f (Suc i)) \<in> R \<union> S) \<longrightarrow> \<not> (INFM j. (f j, f (Suc j)) \<in> R))"
+    chain (R \<union> S) f \<longrightarrow> \<not> (INFM j. (f j, f (Suc j)) \<in> R))"
 
 lemma rel_SN_to_rel_SN_alt: "rel_SN (R, S) \<Longrightarrow> rel_SN_alt (R, S)"
 proof (unfold rel_SN_def)
