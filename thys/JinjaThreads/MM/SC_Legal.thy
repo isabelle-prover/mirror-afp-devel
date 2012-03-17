@@ -310,7 +310,7 @@ proof -
         case False
         with r' r C_n have [simp]: "r' = n" 
           apply(auto split: split_if_asm dest!: read_actions_actions elim!: actionsE)
-          apply(metis enat_ord_code(1) less_SucI less_eq_Suc_le_raw not_less_eq_eq order_trans)
+          apply(metis enat_ord_code(1) less_SucI less_eq_Suc_le not_less_eq_eq order_trans)
           by (metis Suc_ile_eq enat_ord_code(1) leD leI linorder_cases)
         from r' have len_E: "enat (Suc n) \<le> llength E"
           by(clarsimp simp add: actions_def Suc_ile_eq split: split_if_asm)
