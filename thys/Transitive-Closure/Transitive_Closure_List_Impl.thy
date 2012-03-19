@@ -75,7 +75,7 @@ fun lookup :: "'a \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> 'b option" w
   "lookup x [] = None"
 | "lookup x ((y, v)#xs) = (if x = y then Some v else lookup x xs)"
 
-lemma lookup_NoneD:
+lemma lookup_None:
   assumes "lookup x xs = None"
   shows "\<not> (\<exists>v. (x, v) \<in> set xs)"
 using assms
@@ -88,7 +88,7 @@ proof (induct xs)
   qed
 qed simp
 
-lemma lookup_SomeD:
+lemma lookup_Some:
   assumes "lookup x xs = Some v"
   shows "(x, v) \<in> set xs"
 using assms
@@ -121,7 +121,7 @@ proof -
     have one: "?l = {a}"
       unfolding memo_list_rtrancl_def Let_def None
       by auto
-    from lookup_NoneD[OF None]
+    from lookup_None[OF None]
     have a: "a \<notin> fst ` set r" by force
     {
       fix b
@@ -136,7 +136,7 @@ proof -
   next
     case (Some as) 
     have as: "set as = {b. (a,b) \<in> (set r)^*}"
-      using lookup_SomeD[OF Some]
+      using lookup_Some[OF Some]
         rtrancl_list_impl[of r "[a]"] by force
     thus ?thesis unfolding memo_list_rtrancl_def Let_def Some by simp
   qed
@@ -158,7 +158,7 @@ proof -
     have one: "?l = {}"
       unfolding memo_list_trancl_def Let_def None
       by auto
-    from lookup_NoneD[OF None]
+    from lookup_None[OF None]
     have a: "a \<notin> fst ` set r" by force
     {
       fix b
@@ -170,7 +170,7 @@ proof -
   next
     case (Some as) 
     have as: "set as = {b. (a,b) \<in> (set r)^+}"
-      using lookup_SomeD[OF Some]
+      using lookup_Some[OF Some]
         trancl_list_impl[of r "[a]"] by force
     thus ?thesis unfolding memo_list_trancl_def Let_def Some by simp
   qed
