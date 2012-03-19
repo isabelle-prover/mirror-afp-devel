@@ -1095,7 +1095,6 @@ lemma deterministic_THE2:
   and I: "state_\<alpha> s \<in> I"
   shows "Predicate.the (r t (x, shr s) \<guillemotright>= (\<lambda>(ta, x', m'). if \<alpha>.actions_ok (state_\<alpha> s) t ta then Predicate.single (ta, x', m') else bot)) = (ta, x', m')"
 proof -
-  note \<alpha>.actions_ok_iff[simp del] \<alpha>.actions_ok.cases[rule del]
   show ?thesis unfolding the_def
     apply(rule the_equality)
      apply(rule bindI[OF red])
@@ -1120,7 +1119,7 @@ proof -
   proof(cases "step_thread update_state s t")
     case None
     with invar show ?thesis
-      by(fastforce simp add: thr.lookup_correct \<alpha>.step_thread_def step_thread_def ws.lookup_correct split_beta holds_eq split: split_if_asm)
+      by (auto simp add: thr.lookup_correct \<alpha>.step_thread_def step_thread_def ws.lookup_correct split_beta holds_eq split: split_if_asm) metis+
   next
     case (Some a)
     then obtain t' taxm \<sigma>' 
