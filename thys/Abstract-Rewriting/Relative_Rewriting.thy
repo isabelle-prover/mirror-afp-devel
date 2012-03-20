@@ -31,19 +31,19 @@ begin
 
 text {*Considering a relation @{term R} relative to another relation @{term S}, i.e.,
 @{term R}-steps may be preceded and followd by arbitrary many @{term S}-steps.*}
-abbreviation (input) relto :: "('a * 'a) set \<Rightarrow> ('a * 'a) set \<Rightarrow> ('a * 'a) set" where
+abbreviation (input) relto :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
   "relto R S \<equiv> S^* O R O S^*"
 
-definition SN_rel_on :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition SN_rel_on :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "SN_rel_on R S \<equiv> SN_on (relto R S)"
 
-definition SN_rel_on_alt :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition SN_rel_on_alt :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "SN_rel_on_alt R S T = (\<forall>f. chain (R \<union> S) f \<and> f 0 \<in> T \<longrightarrow> \<not> (INFM j. (f j, f (Suc j)) \<in> R))"
 
-abbreviation SN_rel :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> bool" where
+abbreviation SN_rel :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> bool" where
   "SN_rel R S \<equiv> SN_rel_on R S UNIV"
 
-abbreviation SN_rel_alt :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> bool" where
+abbreviation SN_rel_alt :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> bool" where
   "SN_rel_alt R S \<equiv> SN_rel_on_alt R S UNIV"
 
 
@@ -657,7 +657,7 @@ next
 qed
 
 lemma SN_rel_map:
-  fixes R Rw R' Rw' :: "'a ars" 
+  fixes R Rw R' Rw' :: "'a rel" 
   defines A: "A \<equiv> R' \<union> Rw'"
   assumes SN: "SN_rel R' Rw'" 
   and R: "\<And>s t. (s,t) \<in> R \<Longrightarrow> (f s, f t) \<in> A^* O R' O A^*"
@@ -702,14 +702,14 @@ qed
 
 datatype SN_rel_ext_type = top_s | top_ns | normal_s | normal_ns
 
-fun SN_rel_ext_step :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a ars \<Rightarrow> SN_rel_ext_type \<Rightarrow> 'a ars" where
+fun SN_rel_ext_step :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> SN_rel_ext_type \<Rightarrow> 'a rel" where
   "SN_rel_ext_step P Pw R Rw top_s = P"
 | "SN_rel_ext_step P Pw R Rw top_ns = Pw"
 | "SN_rel_ext_step P Pw R Rw normal_s = R"
 | "SN_rel_ext_step P Pw R Rw normal_ns = Rw"
 
 (* relative termination with four relations as required in DP-framework *)
-definition SN_rel_ext :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a ars \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" where
+definition SN_rel_ext :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" where
   "SN_rel_ext P Pw R Rw M \<equiv> (\<not> (\<exists>f t. 
     (\<forall> i. (f i, f (Suc i)) \<in> SN_rel_ext_step P Pw R Rw (t i))
     \<and> (\<forall> i. M (f i))
@@ -717,7 +717,7 @@ definition SN_rel_ext :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a ars \<Rig
     \<and> (INFM i. t i \<in> {top_s,normal_s})))"
 
 lemma SN_rel_ext_trans:
-  fixes P Pw R Rw :: "'a ars" and M :: "'a \<Rightarrow> bool"
+  fixes P Pw R Rw :: "'a rel" and M :: "'a \<Rightarrow> bool"
   defines M': "M' \<equiv> {(s,t). M t}"
   defines A: "A \<equiv> (P \<union> Pw \<union> R \<union> Rw) \<inter> M'"
   assumes "SN_rel_ext P Pw R Rw M" 
@@ -931,7 +931,7 @@ proof (rule ccontr)
 qed
 
 
-lemma SN_rel_ext_map: fixes P Pw R Rw P' Pw' R' Rw' :: "'a ars" and M M' :: "'a \<Rightarrow> bool"
+lemma SN_rel_ext_map: fixes P Pw R Rw P' Pw' R' Rw' :: "'a rel" and M M' :: "'a \<Rightarrow> bool"
   defines Ms: "Ms \<equiv> {(s,t). M' t}"
   defines A: "A \<equiv> (P' \<union> Pw' \<union> R' \<union> Rw') \<inter> Ms"
   assumes SN: "SN_rel_ext P' Pw' R' Rw' M'" 
@@ -1068,7 +1068,7 @@ proof -
 qed
 
 (* and a version where it is assumed that f always preserves M and that R' and Rw' preserve M' *)
-lemma SN_rel_ext_map_min: fixes P Pw R Rw P' Pw' R' Rw' :: "'a ars" and M M' :: "'a \<Rightarrow> bool"
+lemma SN_rel_ext_map_min: fixes P Pw R Rw P' Pw' R' Rw' :: "'a rel" and M M' :: "'a \<Rightarrow> bool"
   defines Ms: "Ms \<equiv> {(s,t). M' t}"
   defines A: "A \<equiv> P' \<inter> Ms \<union> Pw' \<inter> Ms \<union> R' \<union> Rw'"
   assumes SN: "SN_rel_ext P' Pw' R' Rw' M'" 

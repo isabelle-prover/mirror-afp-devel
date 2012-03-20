@@ -944,7 +944,7 @@ where "p >p q = (\<forall> \<alpha>. pos_assign \<alpha> \<longrightarrow> eval_
 
 lemma poly_gt_imp_poly_ge: "p >p q \<Longrightarrow> p \<ge>p q" unfolding poly_ge_def poly_gt_def using gt_imp_ge by blast
 
-abbreviation poly_GT :: "('v,'a)poly ars"
+abbreviation poly_GT :: "('v,'a)poly rel"
 where "poly_GT \<equiv> {(p,q) | p q. p >p q \<and> q \<ge>p zero_poly}"
 
 lemma poly_compat: "\<lbrakk>p1 \<ge>p p2; p2 >p p3\<rbrakk> \<Longrightarrow> p1 >p p3"
@@ -1617,7 +1617,7 @@ next
     check2[unfolded check_poly_weak_mono_and_pos_def, simplified False, simplified]
   show ?thesis by auto
 qed
-      
+
 end
 
 end

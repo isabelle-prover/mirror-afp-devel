@@ -30,22 +30,16 @@ imports
   "~~/src/HOL/Library/Infinite_Set"
   "../Transitive-Closure/Transitive_Closure_Impl"
   "../Regular-Sets/Regexp_Method"
-  "$SEQ/Seq"
+  "~/$SEQ/Seq"
 begin
 
 (*FIXME: move*)
 lemma trancl_mono_set: "r \<subseteq> s \<Longrightarrow> r^+ \<subseteq> s^+"
   by (blast intro: trancl_mono)
 
-lemma relpow_mono: assumes "(r :: ('a \<times> 'a)set) \<subseteq> r'" shows "r ^^ n \<subseteq> r' ^^ n"
+lemma relpow_mono: assumes "(r :: 'a rel) \<subseteq> r'" shows "r ^^ n \<subseteq> r' ^^ n"
   by (induct n, insert assms, auto)
 
-
-text {*
-  An abstract rewrite system (ARS) is a binary endorelation, i.e., a binary
-  relation where domain and codomain coincide.
-*}
-type_synonym 'a ars = "('a \<times> 'a) set"
 
 subsection {* Definitions *}
 
@@ -53,18 +47,18 @@ text {*
   Two elements are \emph{joinable} (and hence in the joinability relation)
   w.r.t.\ @{term "A"}, iff they have a common reduct.
 *}
-definition join :: "'a ars \<Rightarrow> 'a ars" where
+definition join :: "'a rel \<Rightarrow> 'a rel" where
   "join A \<equiv> A^* O (A\<inverse>)^*"
 
 text {*
   Two elements are \emph{meetable} (and hence in the meetability relation)
   w.r.t.\ @{term "A"}, iff they have a common ancestor.
 *}
-definition meet :: "'a ars \<Rightarrow> 'a ars" where
+definition meet :: "'a rel \<Rightarrow> 'a rel" where
   "meet A \<equiv> (A^-1)^* O A^*"
 
 text {*The \emph{symmetric closure} of a relation allows steps in both directions.*}
-abbreviation symcl :: "'a ars \<Rightarrow> 'a ars" ("(_^<->)" [1000] 999) where
+abbreviation symcl :: "'a rel \<Rightarrow> 'a rel" ("(_^<->)" [1000] 999) where
   "A^<-> \<equiv> A \<union> A^-1"
 
 text {*
@@ -72,7 +66,7 @@ text {*
   closure.
 *}
 definition
-  conversion :: "'a ars \<Rightarrow> 'a ars" ("(_^<->*)" [1000] 999)
+  conversion :: "'a rel \<Rightarrow> 'a rel" ("(_^<->*)" [1000] 999)
 where
   "A^<->* \<equiv> (A^<->)^*"
 
@@ -80,11 +74,11 @@ text {*
   The set of \emph{normal forms} of an ARS constitutes all the elements that do
   not have any successors.
 *}
-definition NF :: "'a ars \<Rightarrow> 'a set" where
+definition NF :: "'a rel \<Rightarrow> 'a set" where
   "NF A \<equiv> {a. A `` {a} = {}}"
 
 definition
-  normalizability :: "'a ars \<Rightarrow> 'a ars" ("(_^!)" [1000] 999)
+  normalizability :: "'a rel \<Rightarrow> 'a rel" ("(_^!)" [1000] 999)
 where
   "A^! \<equiv> {(a, b). (a, b) \<in> A^* \<and> b \<in> NF A}"
 
@@ -265,36 +259,36 @@ text {*
   forms, Weak Church-Rosser property, and weak normalization. 
 *}
 
-definition CR_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition CR_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "CR_on r A \<equiv> \<forall>a\<in>A. \<forall>b c. (a, b) \<in> r^* \<and> (a, c) \<in> r^* \<longrightarrow> (b, c) \<in> join r"
 
-abbreviation CR :: "'a ars \<Rightarrow> bool" where
+abbreviation CR :: "'a rel \<Rightarrow> bool" where
   "CR r \<equiv> CR_on r UNIV"
 
-definition SN_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition SN_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "SN_on r A \<equiv> \<not> (\<exists>f. f 0 \<in> A \<and> chain r f)"
 
-abbreviation SN :: "'a ars \<Rightarrow> bool" where
+abbreviation SN :: "'a rel \<Rightarrow> bool" where
   "SN r \<equiv> SN_on r UNIV"
 
 text {* Alternative definition of @{term "SN"}. *}
 lemma SN_def: "SN r = (\<forall>x. SN_on r {x})"
   unfolding SN_on_def by blast
 
-definition UNF_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition UNF_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "UNF_on r A \<equiv> \<forall>a\<in>A. \<forall>b c. (a, b) \<in> r^! \<and> (a, c) \<in> r^! \<longrightarrow> b = c"
 
-abbreviation UNF :: "'a ars \<Rightarrow> bool" where "UNF r \<equiv> UNF_on r UNIV"
+abbreviation UNF :: "'a rel \<Rightarrow> bool" where "UNF r \<equiv> UNF_on r UNIV"
 
-definition WCR_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition WCR_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "WCR_on r A \<equiv> \<forall>a\<in>A. \<forall>b c. (a, b) \<in> r \<and> (a, c) \<in> r \<longrightarrow> (b, c) \<in> join r"
 
-abbreviation WCR :: "'a ars \<Rightarrow> bool" where "WCR r \<equiv> WCR_on r UNIV"
+abbreviation WCR :: "'a rel \<Rightarrow> bool" where "WCR r \<equiv> WCR_on r UNIV"
 
-definition WN_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition WN_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "WN_on r A \<equiv> \<forall>a\<in>A. \<exists>b. (a, b) \<in> r^!"
 
-abbreviation WN :: "'a ars \<Rightarrow> bool" where
+abbreviation WN :: "'a rel \<Rightarrow> bool" where
   "WN r \<equiv> WN_on r UNIV"
 
 lemmas CR_defs = CR_on_def
@@ -303,16 +297,16 @@ lemmas UNF_defs = UNF_on_def
 lemmas WCR_defs = WCR_on_def
 lemmas WN_defs = WN_on_def
 
-definition complete_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition complete_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "complete_on r A \<equiv> SN_on r A \<and> CR_on r A"
 
-abbreviation complete :: "'a ars \<Rightarrow> bool" where
+abbreviation complete :: "'a rel \<Rightarrow> bool" where
   "complete r \<equiv> complete_on r UNIV"
 
-definition semi_complete_on :: "'a ars \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition semi_complete_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "semi_complete_on r A \<equiv>  WN_on r A \<and> CR_on r A"
 
-abbreviation semi_complete :: "'a ars \<Rightarrow> bool" where
+abbreviation semi_complete :: "'a rel \<Rightarrow> bool" where
   "semi_complete r \<equiv> semi_complete_on r UNIV"
 
 lemmas complete_defs = complete_on_def
@@ -320,7 +314,7 @@ lemmas semi_complete_defs = semi_complete_on_def
 
 text {* Unique normal forms with respect to conversion. *}
 definition
-  UNC :: "'a ars \<Rightarrow> bool"
+  UNC :: "'a rel \<Rightarrow> bool"
 where
   "UNC A \<equiv> \<forall>a b. a \<in> NF A \<and> b \<in> NF A \<and> (a, b) \<in> A^<->* \<longrightarrow> a = b"
 
@@ -487,7 +481,7 @@ text {*
   normalizing with respect to a relation @{term s}.
 *}
 definition
-  restrict_SN :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> 'a ars" 
+  restrict_SN :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" 
 where
   "restrict_SN r s \<equiv> {(a, b) | a b. (a, b) \<in> r \<and> SN_on s {a}}"
 
@@ -858,7 +852,7 @@ proof - {
 } thus ?thesis by auto
 qed
 
-definition diamond :: "'a ars \<Rightarrow> bool" ("\<diamond>") where "\<diamond> r \<equiv> (r\<inverse> O r) \<subseteq> (r O r\<inverse>)"
+definition diamond :: "'a rel \<Rightarrow> bool" ("\<diamond>") where "\<diamond> r \<equiv> (r\<inverse> O r) \<subseteq> (r O r\<inverse>)"
 
 lemma diamond_I[intro]: "(r\<inverse> O r) \<subseteq> (r O r\<inverse>) \<Longrightarrow> \<diamond> r" unfolding diamond_def by simp
 
@@ -1289,7 +1283,7 @@ lemma SN_on_trancl_SN_on_conv: "SN_on (R^+) T = SN_on R T"
 
 
 text {* Restrict an ARS to elements of a given set. *}
-definition "restrict" :: "'a ars \<Rightarrow> 'a set \<Rightarrow> 'a ars" where
+definition "restrict" :: "'a rel \<Rightarrow> 'a set \<Rightarrow> 'a rel" where
   "restrict r S \<equiv> {(x, y). x \<in> S \<and> y \<in> S \<and> (x, y) \<in> r}"
 
 lemma SN_on_restrict:
@@ -1426,7 +1420,7 @@ lemma SN_on_imp_normalizability:
 
 subsection {* Commutation *}
 
-definition commute :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> bool"
+definition commute :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> bool"
 where "commute r s \<equiv> ((r\<inverse>)^* O s^*) \<subseteq> (s^* O (r\<inverse>)^*)"
 
 lemma CR_iff_self_commute: "CR r = commute r r"
@@ -1447,7 +1441,7 @@ next
 qed
 
 definition
-  quasi_commute :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> bool"
+  quasi_commute :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> bool"
 where
   "quasi_commute r s \<equiv> (s O r) \<subseteq> r O (r \<union> s)^*"
 
@@ -1796,7 +1790,7 @@ lemma rtrancl_fun_conv:
   by auto
 
 
-lemma rtrancl_imp_relpow': "(x,y) \<in> R^* \<Longrightarrow> \<exists>n. (x,y) \<in> ((R::'a ars) ^^ n)"
+lemma rtrancl_imp_relpow': "(x,y) \<in> R^* \<Longrightarrow> \<exists>n. (x,y) \<in> ((R::'a rel) ^^ n)"
   unfolding rtrancl_is_UN_relpow by auto
 
 lemma compat_tr_compat: assumes "NS O S \<subseteq> S" shows "NS^* O S \<subseteq> S"
@@ -1976,7 +1970,7 @@ lemma SN_weakening:
   unfolding SN_on_def by best
 
 (* an explicit version of infinite reduction *)
-definition ideriv :: "'a ars \<Rightarrow> 'a ars \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool" where
+definition ideriv :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool" where
   "ideriv R S as \<equiv> (\<forall>i. (as i, as (Suc i)) \<in> R \<union> S) \<and> (INFM i. (as i, as (Suc i)) \<in> R)"
 
 lemma ideriv_mono: "R \<subseteq> R' \<Longrightarrow> S \<subseteq> S' \<Longrightarrow> ideriv R S as \<Longrightarrow> ideriv R' S' as"
@@ -2126,7 +2120,7 @@ proof -
   qed
 qed
 
-definition some_NF :: "'a ars \<Rightarrow> 'a \<Rightarrow> 'a" where
+definition some_NF :: "'a rel \<Rightarrow> 'a \<Rightarrow> 'a" where
   "some_NF r x \<equiv> SOME y. (x, y) \<in> r^* \<and> y \<in> NF r"
 
 lemma some_NF:
@@ -2165,7 +2159,7 @@ proof -
   from UNF[unfolded UNF_on_def] y nf show ?thesis by auto
 qed
 
-definition weak_diamond :: "'a ars \<Rightarrow> bool" ("w\<diamond>") where "w\<diamond> r \<equiv> (r\<inverse> O r) - Id \<subseteq> (r O r\<inverse>)"
+definition weak_diamond :: "'a rel \<Rightarrow> bool" ("w\<diamond>") where "w\<diamond> r \<equiv> (r\<inverse> O r) - Id \<subseteq> (r O r\<inverse>)"
 
 lemma weak_diamond_imp_CR:
   assumes wd: "w\<diamond> r"
@@ -2214,7 +2208,7 @@ qed
 
 lemma steps_imp_not_SN_on:
   fixes t :: "'a \<Rightarrow> 'b"
-    and R :: "'b ars"
+    and R :: "'b rel"
   assumes steps: "\<And> x. (t x, t (f x)) \<in> R"
   shows "\<not> SN_on R {t x}"
 proof  
@@ -2228,7 +2222,7 @@ qed
 
 lemma steps_imp_not_SN:
   fixes t :: "'a \<Rightarrow> 'b"
-    and R :: "'b ars"
+    and R :: "'b rel"
   assumes steps: "\<And> x. (t x, t (f x)) \<in> R"
   shows "\<not> SN R"
 proof -
@@ -2273,8 +2267,8 @@ qed
 subsection {* Terminating part of a relation *}
 
 inductive_set
-  SN_part :: "('a \<times> 'a) set \<Rightarrow> 'a set"
-  for r :: "('a \<times> 'a) set"
+  SN_part :: "'a rel \<Rightarrow> 'a set"
+  for r :: "'a rel"
 where
   SN_partI: "(\<And>y. (x, y) \<in> r \<Longrightarrow> y \<in> SN_part r) \<Longrightarrow> x \<in> SN_part r"
 
