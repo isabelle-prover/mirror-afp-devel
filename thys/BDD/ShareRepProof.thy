@@ -28,7 +28,7 @@ USA
 *)
 
 header {*Proof of Procedure ShareRep*}
-theory ShareRepProof imports ProcedureSpecs HeapList begin
+theory ShareRepProof imports ProcedureSpecs "../Simpl/HeapList" begin
 
 lemma (in ShareRep_impl) ShareRep_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>}  PROC ShareRep (\<acute>nodeslist, \<acute>p) 

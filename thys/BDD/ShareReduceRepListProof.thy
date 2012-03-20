@@ -31,7 +31,7 @@ header {*Proof of Procedure ShareReduceRepList*}
 theory ShareReduceRepListProof imports ShareRepProof begin
 
 lemma (in ShareReduceRepList_impl) ShareReduceRepList_modifies:
-  shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>}  PROC ShareReduceRepList (\<acute>nodeslist) 
+  shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>}  PROC ShareReduceRepList (\<acute>nodeslist)
         {t. t may_only_modify_globals \<sigma> in [rep]}"
   apply (hoare_rule HoarePartial.ProcRec1)
   apply (vcg spec=modifies)

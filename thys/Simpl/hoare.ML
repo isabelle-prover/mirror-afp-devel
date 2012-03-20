@@ -1073,6 +1073,9 @@ val NoBodyN = @{const_name Vcg.NoBody};
 val statetypeN = "StateType";
 val proc_nameT = HOLogic.stringT;
 
+fun expression_no_pos (expr, fixes) : Expression.expression =
+  (map (fn (name, inst) => ((name, Position.none), inst)) expr, fixes);
+
 fun add_locale name expr elems thy =
   thy 
   |> Expression.add_locale I (Binding.name name) (Binding.name name) expr elems
@@ -1086,7 +1089,8 @@ fun add_locale' name expr elems thy =
 
 fun add_locale_cmd name expr elems thy =
   thy 
-  |> Expression.add_locale_cmd I (Binding.name name) (Binding.name name) expr elems
+  |> Expression.add_locale_cmd I (Binding.name name) (Binding.name name)
+    (expression_no_pos expr) elems
   |> snd
   |> Local_Theory.exit;
 
@@ -1515,25 +1519,24 @@ fun proc_specs x = (P.!!! (Scan.repeat (S.thm_name ":" -- P.prop_group))
 
 val par_loc = Scan.option (P.$$$ "(" |-- P.$$$ "imports" |-- P.name --| P.$$$ ")");
 
-val proceduresP =
-     (par_loc -- (P.and_list1 (proc_decl -- loc_decl -- proc_body -- proc_specs)))
 
-val procs_command = Outer_Syntax.command "procedures" "define procedures" K.thy_decl
-  (proceduresP
-    >> (fn (loc,decls) =>
-        let
-          val decls' = map (fn ((((state_kind,(name,(ins,outs))),ls),bdy),specs) =>
-                               (name,ins,outs,ls,bdy,specs,state_kind))
-                         decls
-        in Toplevel.theory (procedures_definition loc decls')
-        end));
+val _ =
+  Outer_Syntax.command @{command_spec "procedures"} "define procedures"
+    (par_loc -- (P.and_list1 (proc_decl -- loc_decl -- proc_body -- proc_specs))
+      >> (fn (loc,decls) =>
+          let
+            val decls' = map (fn ((((state_kind,(name,(ins,outs))),ls),bdy),specs) =>
+                                 (name,ins,outs,ls,bdy,specs,state_kind))
+                           decls
+          in Toplevel.theory (procedures_definition loc decls')
+          end));
 
 
-val hoare_statespace_command =
-  Outer_Syntax.command "hoarestate" "define state space for hoare logic" K.thy_decl
-  (StateSpace.statespace_decl >> (fn ((args,name),(parents,comps)) =>
-    Toplevel.theory
-      (StateSpace.define_statespace args name parents (map (apfst (suffix deco)) comps))));
+val _ =
+  Outer_Syntax.command @{command_spec "hoarestate"} "define state space for hoare logic"
+    (StateSpace.statespace_decl >> (fn ((args,name),(parents,comps)) =>
+      Toplevel.theory
+        (StateSpace.define_statespace args name parents (map (apfst (suffix deco)) comps))));
 
 
 end;

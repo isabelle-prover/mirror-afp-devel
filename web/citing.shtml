@@ -2,7 +2,7 @@
 		"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>The Archive of Formal Proofs</title>
+  <title>Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -34,7 +34,7 @@ entries in the AFP:</p>
 
 <div class="cite">
 M. Jaskelioff and S. Merz, <em>Proving the Correctness of Disk
-Paxos</em>. In: G. Klein, T. Nipkow, and L. Paulson (ed), The Archive
+Paxos</em>. In: G. Klein, T. Nipkow, and L. Paulson (ed), Archive
 of Formal Proofs, <a
 href="http://afp.sf.net/entries/DiskPaxos.shtml"><tt>http://afp.sf.net/entries/DiskPaxos.shtml</tt></a>,
 June 2005, Formal proof development.
@@ -48,7 +48,7 @@ The bibtext entry for this would be:
 @incollection{Jaskelioff-Merz-AFP05,
   author =       {Mauro Jaskelioff and Stephan Merz},
   title =        {Proving the Correctness of Disk Paxos},
-  booktitle =    {The Archive of Formal Proofs},
+  booktitle =    {Archive of Formal Proofs},
   editor =       {Gerwin Klein and Tobias Nipkow and Lawrence Paulson},
   publisher =    {\url{http://afp.sf.net/entries/DiskPaxos.shtml}},
   month =        Jun,

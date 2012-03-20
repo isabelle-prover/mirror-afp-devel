@@ -512,7 +512,7 @@ to the caller.
 
 
 text {*
-Behind the scenes the @{text procedures} command provides us convenient syntax
+Behind the scenes the @{text "procedures"} command provides us convenient syntax
 for procedure calls, defines a constant for the procedure body 
 (named @{term "Fac_body"}) and creates some locales. The purpose of locales 
 is to set up logical contexts to support modular reasoning.
