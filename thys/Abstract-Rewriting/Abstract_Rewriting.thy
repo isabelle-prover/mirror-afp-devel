@@ -30,7 +30,7 @@ imports
   "~~/src/HOL/Library/Infinite_Set"
   "../Transitive-Closure/Transitive_Closure_Impl"
   "../Regular-Sets/Regexp_Method"
-  "$HOME/rewriting/IsaFoR/Seq"
+  "$SEQ/Seq"
 begin
 
 (*FIXME: move*)
