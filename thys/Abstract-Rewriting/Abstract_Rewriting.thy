@@ -30,7 +30,7 @@ imports
   "~~/src/HOL/Library/Infinite_Set"
   "../Transitive-Closure/Transitive_Closure_Impl"
   "../Regular-Sets/Regexp_Method"
-  "~/$SEQ/Seq"
+  Seq
 begin
 
 (*FIXME: move*)
