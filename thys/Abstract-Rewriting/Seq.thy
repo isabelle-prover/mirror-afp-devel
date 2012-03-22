@@ -14,14 +14,6 @@ text {*Adding a new element at the front.*}
 abbreviation cons :: "'a \<Rightarrow> 'a seq \<Rightarrow> 'a seq" (infixr "#s" 65) where (*FIXME: find better infix symbol*)
   "x #s S \<equiv> (\<lambda>i. case i of 0 \<Rightarrow> x | Suc n \<Rightarrow> S n)"
 
-text {*Interleave two infinite sequences.*}
-abbreviation splice :: "'a seq \<Rightarrow> 'a seq \<Rightarrow> 'a seq" where
-  "splice S T \<equiv> \<lambda>i. if i mod 2 = 0 then S (i div 2) else T (i div 2)"
-
-text {*Combine two infinite sequences using a function.*}
-abbreviation combine :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'a seq \<Rightarrow> 'b seq \<Rightarrow> 'c seq" where
-  "combine f S T \<equiv> \<lambda>i. f (S i) (T i)"
-
 text {*An infinite sequence is \emph{linked} by a binary predicate @{term P} if every two
 consecutive elements satisfy it. Such a sequence is called a \emph{@{term P}-chain}. *}
 abbreviation (input) chainp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow>'a seq \<Rightarrow> bool" where
