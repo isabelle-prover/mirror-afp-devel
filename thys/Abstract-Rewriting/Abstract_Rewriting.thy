@@ -418,6 +418,9 @@ declare SN_onI[intro]
 declare SN_onE[elim]
 declare not_SN_onE[Pure.elim, elim]
 
+lemma refl_not_SN: "(x, x) \<in> R \<Longrightarrow> \<not> SN R"
+  unfolding SN_defs by force
+
 lemma SN_on_irrefl:
   assumes "SN_on r A"
   shows "\<forall>a\<in>A. (a, a) \<notin> r"
@@ -999,6 +1002,9 @@ proof - {
 qed
 
 lemma SN_iff_wf: "SN A = wf (A\<inverse>)" by (auto simp: SN_imp_wf wf_imp_SN)
+
+lemma SN_imp_acyclic: "SN R \<Longrightarrow> acyclic R"
+  using wf_acyclic[of "R^-1", unfolded SN_iff_wf[symmetric]] by auto
 
 lemma SN_induct:
   assumes sn: "SN r" and step: "\<And>a. (\<And>b. (a, b) \<in> r \<Longrightarrow> P b) \<Longrightarrow> P a"
