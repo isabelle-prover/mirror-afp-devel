@@ -33,11 +33,22 @@ lemma list_case_rsp [quot_respect]:
   shows "(R1 ===> (R2 ===> list_all2 R2 ===> R1) ===> list_all2 R2 ===> R1) list_case list_case"
   using assms
   apply(auto simp add: fun_rel_def)
+
   apply (case_tac xb)
   apply auto
   apply (case_tac yb)
   apply auto
   done
+
+lemma [quot_respect]:
+  "(set_eq ===> (op = ===> op = ===> set_eq) ===> op = ===> set_eq) list_case list_case"
+  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op = ===> op = ===> set_eq) NA.delta NA.delta"
+  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op =) start start"
+  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op = ===> op = ===> set_eq) next next"
+  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op =) fin fin"
+  "(prod_rel set_eq (prod_rel (op = ===> set_eq ===> set_eq) (set_eq ===> op =)) ===> op =) DA.accepts DA.accepts"
+by (auto simp add: fun_rel_eq prod_rel_eq)
+
 
 
 subsection {* Executable types *}
