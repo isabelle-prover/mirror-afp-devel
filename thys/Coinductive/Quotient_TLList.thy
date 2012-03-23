@@ -12,8 +12,6 @@ begin
 enriched_type tmap: tmap
    by (simp_all add: fun_eq_iff tmap_id_id)
 
-declare [[map tllist = tllist_all2]]
-
 lemma tmap_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
   and q2: "Quotient R2 Abs2 Rep2"
@@ -139,6 +137,8 @@ lemma tllist_quotient [quot_thm]:
   "\<lbrakk> Quotient R1 Abs1 Rep1; Quotient R2 Abs2 Rep2 \<rbrakk> 
   \<Longrightarrow> Quotient (tllist_all2 R1 R2) (tmap Abs1 Abs2) (tmap Rep1 Rep2)"
 by(blast intro: QuotientI dest: Quotient_tmap_Abs_Rep Quotient_tllist_all2_tmap_tmapI tllist_all2_rel)
+
+declare [[map tllist = (tllist_all2, tllist_quotient)]]
 
 lemma TCons_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
