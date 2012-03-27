@@ -325,7 +325,7 @@ lemma finite_set_has_max2:
   "\<lbrakk>finite A; A \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists> max \<in> A. \<forall> a \<in> A. length a \<le> length max"
 apply(induct rule:finite.induct)
 apply(simp)
-by (metis (full_types) all_not_in_conv insert_iff linorder_linear order_trans)
+by (metis (no_types) all_not_in_conv insert_iff linorder_le_cases order_trans)
 
 lemma finite_strict_prefix_set: 
   shows "finite {xa. xa < (x::'a list)}"

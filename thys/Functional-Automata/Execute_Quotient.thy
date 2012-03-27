@@ -33,11 +33,22 @@ lemma list_case_rsp [quot_respect]:
   shows "(R1 ===> (R2 ===> list_all2 R2 ===> R1) ===> list_all2 R2 ===> R1) list_case list_case"
   using assms
   apply(auto simp add: fun_rel_def)
+
   apply (case_tac xb)
   apply auto
   apply (case_tac yb)
   apply auto
   done
+
+lemma [quot_respect]:
+  "(set_eq ===> (op = ===> op = ===> set_eq) ===> op = ===> set_eq) list_case list_case"
+  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op = ===> op = ===> set_eq) NA.delta NA.delta"
+  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op =) start start"
+  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op = ===> op = ===> set_eq) next next"
+  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op =) fin fin"
+  "(prod_rel set_eq (prod_rel (op = ===> set_eq ===> set_eq) (set_eq ===> op =)) ===> op =) DA.accepts DA.accepts"
+by (auto simp add: fun_rel_eq prod_rel_eq)
+
 
 
 subsection {* Executable types *}
@@ -47,60 +58,35 @@ type_synonym 'a executable_bitsNA = "('a, bool list) executable_na"
 
 subsection {* Lifted operations on executable types *}
 
-lemma [quot_respect]:
-  "(set_eq ===> (op = ===> op = ===> set_eq) ===> op = ===> set_eq) list_case list_case"
-  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op = ===> op = ===> set_eq) NA.delta NA.delta"
-  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op =) start start"
-  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op = ===> op = ===> set_eq) next next"
-  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op =) fin fin"
-  "(op = ===> prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =)) RegExp2NA.atom RegExp2NA.atom"
-  "prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) RegExp2NA.epsilon RegExp2NA.epsilon"
-  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===>
-    prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===>
-    prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =)) RegExp2NA.conc RegExp2NA.conc"
-  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===>
-    prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =)) RegExp2NA.plus RegExp2NA.plus"
-  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===>
-    prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =)) RegExp2NA.star RegExp2NA.star"
-    "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===>
-      prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===>
-      prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =)) RegExp2NA.or RegExp2NA.or"
-  "(op = ===> prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =)) rexp2na rexp2na"
-  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===>
-    prod_rel set_eq (prod_rel (op = ===> set_eq ===> set_eq) (set_eq ===> op =))) na2da na2da"
-  "(prod_rel op = (prod_rel (op = ===> op = ===> set_eq) op =) ===> op =) NA.accepts NA.accepts"
-  "(prod_rel set_eq (prod_rel (op = ===> set_eq ===> set_eq) (set_eq ===> op =)) ===> op =) DA.accepts DA.accepts"
-by (auto simp add: fun_rel_eq prod_rel_eq)
-
 quotient_definition "delta' :: ('b, 'a) executable_na => 'b list => 'a => 'a Quotient_Cset.set"
-is delta
+is delta by (auto simp add: fun_rel_eq prod_rel_eq)
 
 quotient_definition "atom' :: 'a => 'a executable_bitsNA"
-is RegExp2NA.atom
+is RegExp2NA.atom by (auto simp add: fun_rel_eq prod_rel_eq)
 
 quotient_definition "or' :: 'a executable_bitsNA => 'a executable_bitsNA => 'a executable_bitsNA"
-is RegExp2NA.or
+is RegExp2NA.or by (auto simp add: fun_rel_eq prod_rel_eq)
 
 quotient_definition "conc' :: 'a executable_bitsNA => 'a executable_bitsNA => 'a executable_bitsNA"
-is RegExp2NA.conc
+is RegExp2NA.conc by (auto simp add: fun_rel_eq prod_rel_eq)
 
 quotient_definition "epsilon' :: 'a executable_bitsNA"
-is RegExp2NA.epsilon
+is RegExp2NA.epsilon by (auto simp add: fun_rel_eq prod_rel_eq)
 
 quotient_definition "plus' :: 'a executable_bitsNA => 'a executable_bitsNA"
-is RegExp2NA.plus
+is RegExp2NA.plus by (auto simp add: fun_rel_eq prod_rel_eq)
 
 quotient_definition "star' :: 'a executable_bitsNA => 'a executable_bitsNA"
-is RegExp2NA.star
+is RegExp2NA.star by (auto simp add: fun_rel_eq prod_rel_eq)
 
 quotient_definition "rexp2na' :: 'a rexp => 'a executable_bitsNA"
-is rexp2na
+is rexp2na by (auto simp add: fun_rel_eq prod_rel_eq)
 
 quotient_definition "accepts' :: ('b, 'a) executable_na => 'b list => bool"
-is NA.accepts
+is NA.accepts by (auto simp add: fun_rel_eq prod_rel_eq)
 
 quotient_definition "na2da' :: ('b, 'a) executable_na => ('b, 'a Quotient_Cset.set) da"
-is na2da
+is na2da by (auto simp add: fun_rel_eq prod_rel_eq)
 
 lemma [simp]: "abs_set (rep_set x) = x"
 by (metis Quotient_def Quotient_set)

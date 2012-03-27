@@ -25,8 +25,6 @@ lemma id_preserve [quot_preserve]:
 enriched_type lmap: lmap
    by (simp_all add: fun_eq_iff id_def)
 
-declare [[map llist = llist_all2]]
-
 lemma reflp_llist_all2: "reflp R \<Longrightarrow> reflp (llist_all2 R)"
   by (auto intro!: reflpI elim: reflpE simp add: llist_all2_conv_all_lnth)
 
@@ -96,6 +94,8 @@ by(auto intro!: llist_all2_all_lnthI intro: Quotient_rep_reflp)
 lemma llist_quotient [quot_thm]:
   "Quotient R Abs Rep \<Longrightarrow> Quotient (llist_all2 R) (lmap Abs) (lmap Rep)"
 by(blast intro: QuotientI dest: Quotient_lmap_Abs_Rep Quotient_llist_all2_lmap_Rep llist_all2_rel)
+
+declare [[map llist = (llist_all2, llist_quotient)]]
 
 lemma LCons_preserve [quot_preserve]:
   assumes "Quotient R Abs Rep"

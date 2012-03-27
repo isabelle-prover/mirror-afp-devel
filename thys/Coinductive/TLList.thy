@@ -98,18 +98,10 @@ definition TCONS :: "'a \<Rightarrow> ('a llist \<times> 'b) \<Rightarrow> ('a l
 where "TCONS = apfst \<circ> LCons"
 
 quotient_definition "TNil :: 'a \<Rightarrow> ('b, 'a) tllist"
-is "TNIL"
+is "TNIL" done
 
 quotient_definition "TCons :: 'a \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
-is "TCONS"
-
-lemma TNil_respect [quot_respect]:
-  "(op = ===> tlist_eq) TNIL TNIL"
-  by (simp add: TNIL_def fun_rel_def)
-
-lemma TCons_respect [quot_respect]:
-  "(op = ===> tlist_eq ===> tlist_eq) TCONS TCONS"
-  by (simp add: TCONS_def fun_rel_def)
+is "TCONS" by (auto simp add: TCONS_def)
 
 code_datatype TNil TCons
 
@@ -123,12 +115,8 @@ by(descending, clarsimp simp add: TNIL_def TCONS_def)+
 primrec tllist_case_aux :: "('b \<Rightarrow> 'e) \<Rightarrow> ('a \<Rightarrow> ('a llist \<times> 'b) \<Rightarrow> 'e) \<Rightarrow> ('a llist \<times> 'b) \<Rightarrow> 'e"
 where "tllist_case_aux f g (xs, b) = (case xs of LNil \<Rightarrow> f b | LCons x xs' \<Rightarrow> g x (xs', b))"
 
-lemma tllist_case_aux_respect [quot_respect]:
-  "(op = ===> (op = ===> tlist_eq ===> op =) ===> tlist_eq ===> op =) tllist_case_aux tllist_case_aux"
-  by (auto intro: ext split: llist_split simp add: fun_rel_def)
-
 quotient_definition "tllist_case :: ('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> ('c, 'a) tllist \<Rightarrow> 'b) \<Rightarrow> ('c, 'a) tllist \<Rightarrow> 'b"
-is "tllist_case_aux"
+is "tllist_case_aux" by (fastforce split: llist_split)
 
 translations
   "case p of XCONST TNil y \<Rightarrow> a | XCONST TCons x l \<Rightarrow> b" \<rightleftharpoons> "CONST tllist_case (\<lambda>y. a) (\<lambda>x l. b) p"
@@ -258,11 +246,7 @@ next
 qed
 
 quotient_definition "tllist_corec :: 'a \<Rightarrow> ('a \<Rightarrow> (('b \<times> 'a) + 'c)) \<Rightarrow> ('b, 'c) tllist"
-is "tllist_corec_aux"
-
-lemma tllist_corec_aux_respect_tlist_eq [quot_respect]:
-  "(op = ===> op = ===> tlist_eq) tllist_corec_aux tllist_corec_aux"
-by(auto intro: ext equivp_reflp[OF tllist_equivp])
+is "tllist_corec_aux" done
 
 lemma tllist_corec [code, nitpick_simp]:
   "tllist_corec a f = (sum_case (prod_case (\<lambda>b a'. TCons b (tllist_corec a' f))) TNil (f a))"
@@ -279,128 +263,79 @@ definition TLLIST_OF_LLIST :: "'a \<Rightarrow> 'b llist \<Rightarrow> 'b llist 
 where "TLLIST_OF_LLIST a xs = (xs, a)"
 
 quotient_definition "tllist_of_llist :: 'a \<Rightarrow> 'b llist \<Rightarrow> ('b, 'a) tllist"
-is "TLLIST_OF_LLIST"
+is "TLLIST_OF_LLIST" done
 
 primrec TERMINAL :: "('a llist \<times> 'b) \<Rightarrow> 'b"
 where "TERMINAL (xs, c) = (if lfinite xs then c else undefined)"
 
 quotient_definition "terminal :: ('a, 'b) tllist \<Rightarrow> 'b"
-is "TERMINAL"
+is "TERMINAL" by auto
 
 primrec tMAP :: "('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> 'a llist \<times> 'c \<Rightarrow> 'b llist \<times> 'd"
 where "tMAP f g (xs, b) = (lmap f xs, g b)"
 
 quotient_definition "tmap :: ('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('a, 'c) tllist \<Rightarrow> ('b, 'd) tllist"
-is "tMAP"
+is "tMAP" by auto
 
 primrec tAPPEND :: "'a llist \<times> 'b \<Rightarrow> ('b \<Rightarrow> 'a llist \<times> 'c) \<Rightarrow> 'a llist \<times> 'c"
 where "tAPPEND (xs, b) f = (lappend xs (fst (f b)), snd (f b))"
 
 quotient_definition "tappend :: ('a, 'b) tllist \<Rightarrow> ('b \<Rightarrow> ('a, 'c) tllist) \<Rightarrow> ('a, 'c) tllist"
 is "tAPPEND"
+  apply (auto simp add: lappend_inf split: split_fst) 
+  apply (metis tlist_eq.simps)+
+done
 
 primrec lAPPENDt :: "'a llist \<Rightarrow> 'a llist \<times> 'b \<Rightarrow> 'a llist \<times> 'b"
 where "lAPPENDt xs (ys, b) = (lappend xs ys, b)"
 
 quotient_definition "lappendt :: 'a llist \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
-is "lAPPENDt"
+is "lAPPENDt" by auto
 
 primrec tFILTER :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('b llist \<times> 'a) \<Rightarrow> ('b llist \<times> 'a)"
 where "tFILTER b P (xs, b') = (lfilter P xs, if lfinite xs then b' else b)"
 
 quotient_definition "tfilter :: 'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('b, 'a) tllist \<Rightarrow> ('b, 'a) tllist"
-is "tFILTER"
+is "tFILTER" by auto
 
 primrec tCONCAT :: "'a \<Rightarrow> ('b llist llist \<times> 'a) \<Rightarrow> ('b llist \<times> 'a)"
 where "tCONCAT b (xss, b') = (lconcat xss, if lfinite xss then b' else b)"
 
 quotient_definition "tconcat :: 'a \<Rightarrow> ('b llist, 'a) tllist \<Rightarrow> ('b, 'a) tllist"
-is "tCONCAT"
+is "tCONCAT" by auto
 
 fun TLLIST_ALL2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a llist \<times> 'c) \<Rightarrow> ('b llist \<times> 'd) \<Rightarrow> bool"
 where "TLLIST_ALL2 P Q (xs, b) (ys, b') \<longleftrightarrow> llist_all2 P xs ys \<and> (lfinite xs \<longrightarrow> Q b b')"
 
 quotient_definition "tllist_all2 :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a, 'c) tllist \<Rightarrow> ('b, 'd) tllist \<Rightarrow> bool"
-is TLLIST_ALL2
+is TLLIST_ALL2 by (auto dest: llist_all2_lfiniteD)
 
 quotient_definition "llist_of_tllist :: ('a, 'b) tllist \<Rightarrow> 'a llist"
-is "fst :: ('a llist \<times> 'b) \<Rightarrow> 'a llist"
+is "fst :: ('a llist \<times> 'b) \<Rightarrow> 'a llist" by auto
 
 primrec TNTH :: "('a llist \<times> 'b) \<Rightarrow> nat \<Rightarrow> 'a"
 where "TNTH (xs, b) = lnth xs"
 
 quotient_definition "tnth :: ('a, 'b) tllist \<Rightarrow> nat \<Rightarrow> 'a"
-is "TNTH"
+is "TNTH" by auto
 
 primrec TLENGTH :: "('a llist \<times> 'b) \<Rightarrow> enat"
 where "TLENGTH (xs, b) = llength xs"
 
 quotient_definition "tlength :: ('a, 'b) tllist \<Rightarrow> enat"
-is "TLENGTH"
+is "TLENGTH" by auto
 
 primrec TDROPn :: "nat \<Rightarrow> ('a llist \<times> 'b) \<Rightarrow> ('a llist \<times> 'b)"
 where "TDROPn n (xs, b) = (ldropn n xs, b)"
 
 quotient_definition "tdropn :: nat \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
-is "TDROPn"
+is "TDROPn" by auto
 
 abbreviation tset :: "('a, 'b) tllist \<Rightarrow> 'a set" 
 where "tset xs \<equiv> lset (llist_of_tllist xs)"
 
 abbreviation tfinite :: "('a, 'b) tllist \<Rightarrow> bool"
 where "tfinite xs \<equiv> lfinite (llist_of_tllist xs)"
-
-subsection {* Respectfulness theorems *}
-
-lemma tllist_of_llist_respect [quot_respect]:
-  "(op = ===> op = ===> tlist_eq) TLLIST_OF_LLIST TLLIST_OF_LLIST"
-by(auto intro!: fun_relI simp add: TLLIST_OF_LLIST_def)
-
-lemma TERMINAL_respect [quot_respect]:
-  "(tlist_eq ===> op =) TERMINAL TERMINAL"
-by(auto)
-
-lemma tMAP_respect [quot_respect]:
-  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tMAP tMAP"
-  by (auto intro: ext intro!: fun_relI)
-
-lemma tAPPEND_respect [quot_respect]:
-  "(tlist_eq ===> (op = ===> tlist_eq) ===> tlist_eq) tAPPEND tAPPEND"
-apply(auto intro: ext simp add: lappend_inf fun_rel_def split: split_fst)
-apply(erule_tac x=ba in allE, auto)+
-done
-
-lemma lAPPENDt_respect [quot_respect]:
-  "(op = ===> tlist_eq ===> tlist_eq) lAPPENDt lAPPENDt"
-by(auto intro!: ext fun_relI)
-
-lemma tFILTER_respect [quot_respect]: 
-  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tFILTER tFILTER"
-  by (auto intro: ext intro!: fun_relI)
-
-lemma tCONCAT_respect [quot_respect]:
-  "(op = ===> tlist_eq ===> tlist_eq) tCONCAT tCONCAT"
-  by (auto intro: ext intro!: fun_relI)
-
-lemma tllist_all2_respect_tlist_eq [quot_respect]:
-  "(op = ===> op = ===> tlist_eq ===> tlist_eq ===> op =) TLLIST_ALL2 TLLIST_ALL2"
-by(auto dest: llist_all2_lfiniteD simp add: fun_rel_def)
-
-lemma llist_of_tllist_respect [quot_respect]: 
-  "(tlist_eq ===> op =) fst fst"
-by auto
-
-lemma TNTH_respect [quot_respect]:
-  "(tlist_eq ===> op =) TNTH TNTH"
-by auto
-
-lemma TLENGTH_respect [quot_respect]:
-  "(tlist_eq ===> op =) TLENGTH TLENGTH"
-by auto
-
-lemma TDROPn_respect [quot_respect]:
-  "(op = ===> tlist_eq ===> tlist_eq) TDROPn TDROPn"
-  by (auto intro!: fun_relI)
 
 subsection {* Code generator setup *}
 
