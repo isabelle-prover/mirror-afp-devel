@@ -70,58 +70,31 @@ lemma trancl_list_impl: "set (trancl_list_impl r as) = {b. \<exists> a \<in> set
 
 subsection {* Precomputing closures for single states *}
 
-
-fun lookup :: "'a \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> 'b option" where
-  "lookup x [] = None"
-| "lookup x ((y, v)#xs) = (if x = y then Some v else lookup x xs)"
-
-lemma lookup_None:
-  assumes "lookup x xs = None"
-  shows "\<not> (\<exists>v. (x, v) \<in> set xs)"
-using assms
-proof (induct xs)
-  case (Cons yv xs)
-  show ?case
-  proof (cases yv)
-    case (Pair y v)
-    with Cons show ?thesis by (cases "x = y") auto
-  qed
-qed simp
-
-lemma lookup_Some:
-  assumes "lookup x xs = Some v"
-  shows "(x, v) \<in> set xs"
-using assms
-proof (induct xs)
-  case (Cons yv xs)
-  show ?case
-  proof (cases yv)
-    case (Pair y v)
-    with Cons show ?thesis by (cases "x = y") auto
-  qed
-qed simp
-
-
 text {* Storing all relevant entries is done by mapping all left-hand sides of the relation
   to their closure. To avoid redundant entries, @{const remdups} is used.
 *}
 
-definition memo_list_rtrancl :: "('a \<times> 'a)list \<Rightarrow> ('a \<Rightarrow> 'a list)" 
-where "memo_list_rtrancl r \<equiv> let tr = rtrancl_list_impl r;
-                                 rm = map (\<lambda> a. (a,tr [a])) ((remdups o map fst) r)
-                             in (\<lambda> a. case lookup a rm of None \<Rightarrow> [a] | Some as \<Rightarrow> as)"
+definition memo_list_rtrancl :: "('a \<times> 'a) list \<Rightarrow> ('a \<Rightarrow> 'a list)" where
+  "memo_list_rtrancl r \<equiv>
+    let
+      tr = rtrancl_list_impl r;
+      rm = map (\<lambda>a. (a, tr [a])) ((remdups o map fst) r)
+    in
+      (\<lambda>a. case map_of rm a of
+        None \<Rightarrow> [a]
+      | Some as \<Rightarrow> as)"
 
 lemma memo_list_rtrancl:
   "set (memo_list_rtrancl r a) = {b. (a,b) \<in> (set r)^*}" (is "?l = ?r")
 proof -
   let ?rm = "map (\<lambda> a. (a, rtrancl_list_impl r [a])) ((remdups o map fst) r)"
   show ?thesis
-  proof (cases "lookup a ?rm")
+  proof (cases "map_of ?rm a")
     case None
     have one: "?l = {a}"
       unfolding memo_list_rtrancl_def Let_def None
       by auto
-    from lookup_None[OF None]
+    from None[unfolded map_of_eq_None_iff]
     have a: "a \<notin> fst ` set r" by force
     {
       fix b
@@ -136,30 +109,35 @@ proof -
   next
     case (Some as) 
     have as: "set as = {b. (a,b) \<in> (set r)^*}"
-      using lookup_Some[OF Some]
+      using map_of_is_SomeD[OF Some]
         rtrancl_list_impl[of r "[a]"] by force
     thus ?thesis unfolding memo_list_rtrancl_def Let_def Some by simp
   qed
 qed
 
 
-definition memo_list_trancl :: "('a \<times> 'a)list \<Rightarrow> ('a \<Rightarrow> 'a list)" 
-where "memo_list_trancl r \<equiv> let tr = trancl_list_impl r;
-                               rm = map (\<lambda> a. (a,tr [a])) ((remdups o map fst) r)
-                             in (\<lambda> a. case lookup a rm of None \<Rightarrow> [] | Some as \<Rightarrow> as)"
+definition memo_list_trancl :: "('a \<times> 'a) list \<Rightarrow> ('a \<Rightarrow> 'a list)" where
+  "memo_list_trancl r \<equiv>
+    let
+      tr = trancl_list_impl r;
+      rm = map (\<lambda>a. (a, tr [a])) ((remdups o map fst) r)
+    in
+      (\<lambda>a. case map_of rm a of
+        None \<Rightarrow> []
+      | Some as \<Rightarrow> as)"
 
 lemma memo_list_trancl:
   "set (memo_list_trancl r a) = {b. (a,b) \<in> (set r)^+}" (is "?l = ?r")
 proof -
   let ?rm = "map (\<lambda> a. (a, trancl_list_impl r [a])) ((remdups o map fst) r)"
   show ?thesis
-  proof (cases "lookup a ?rm")
+  proof (cases "map_of ?rm a")
     case None
     have one: "?l = {}"
       unfolding memo_list_trancl_def Let_def None
       by auto
-    from lookup_None[OF None]
-    have a: "a \<notin> fst ` set r" by force
+    from None[unfolded map_of_eq_None_iff]
+      have a: "a \<notin> fst ` set r" by force
     {
       fix b
       assume "b \<in> ?r"
@@ -170,11 +148,10 @@ proof -
   next
     case (Some as) 
     have as: "set as = {b. (a,b) \<in> (set r)^+}"
-      using lookup_Some[OF Some]
+      using map_of_is_SomeD[OF Some]
         trancl_list_impl[of r "[a]"] by force
     thus ?thesis unfolding memo_list_trancl_def Let_def Some by simp
   qed
 qed
-
 
 end
