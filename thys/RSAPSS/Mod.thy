@@ -21,7 +21,7 @@ lemma delmod: "(a::nat) mod (b*c) mod c = a mod c"
   done
 
 lemma timesmod1: "((x::nat)*((y::nat) mod n)) mod (n::nat) = ((x*y) mod n)"
-  apply (subst mod_mult_distrib2)
+  apply (subst mult_mod_right)
   apply (subst delmod)
   apply auto
   done
