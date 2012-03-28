@@ -11,41 +11,21 @@ imports Main
 begin
 
 lemma divmultassoc: "a div (b*c) * (b*c) = ((a div (b * c)) * b)*(c::nat)"
-  by auto
+  by (rule mult_assoc [symmetric])
 
 lemma delmod: "(a::nat) mod (b*c) mod c = a mod c"
-  apply (subst (2) mod_div_equality [symmetric, of a "b*c"])
-  apply (subst add_commute)
-  apply (subst divmultassoc)
-  apply (simp add: mod_mult_self1)
-  done
+  by (rule mod_mod_cancel [OF dvd_triv_right])
 
 lemma timesmod1: "((x::nat)*((y::nat) mod n)) mod (n::nat) = ((x*y) mod n)"
-  apply (subst mult_mod_right)
-  apply (subst delmod)
-  apply auto
-  done
+  by (rule mod_mult_right_eq [symmetric])
 
 lemma timesmod3: "((a mod (n::nat)) * b) mod n = (a*b) mod n"
-  apply (subst mult_commute)
-  apply (subst timesmod1)
-  apply (subst mult_commute)
-  apply auto
-  done
+  by (rule mod_mult_left_eq [symmetric])
 
 lemma remainderexplemma: "(y mod (a::nat) = z mod a) \<Longrightarrow> (x*y) mod a = (x*z) mod a"
-  apply (subst timesmod1 [symmetric])
-  apply auto
-  apply (subst timesmod1)
-  apply auto
-  done
+  by (rule mod_mult_cong [OF refl])
 
 lemma remainderexp: "((a mod (n::nat))^i) mod n = (a^i) mod n"
-  apply (induct i)
-  apply auto
-  apply (subst timesmod3)
-  apply (rule remainderexplemma)
-  apply auto
-  done
+  by (rule power_mod)
 
 end

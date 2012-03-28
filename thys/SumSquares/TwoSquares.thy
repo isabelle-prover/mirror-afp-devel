@@ -163,7 +163,7 @@ proof -
           finally have "?n1*m1*4 \<le> ?n1*?n1*2" 
             by (simp add: power2_eq_square mult_ac)
           hence "?n1*(2*?n1- 4*m1) \<ge> 0" 
-            by (auto simp add: right_diff_distrib mult_ac)
+            by (simp only: right_diff_distrib mult_ac)
           hence "?n1*(2*?n1- 4*m1) > -1" by auto
           with contr show False by auto
         qed
