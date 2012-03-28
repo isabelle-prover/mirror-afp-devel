@@ -129,7 +129,7 @@ lemma zlcms_pos: "\<forall>i \<in> set is. i\<noteq>0 \<Longrightarrow> zlcms is
 by(induct "is")(auto simp:lcm_pos_int)
 
 lemma zlcms0_iff[simp]: "(zlcms is = 0) = (0 : set is)"
-by (metis DIVISION_BY_ZERO dvd_eq_mod_eq_0 dvd_zlcms zlcms_pos less_le)
+by (metis mod_by_0 dvd_eq_mod_eq_0 dvd_zlcms zlcms_pos less_le)
 
 lemma elem_le_zlcms: "\<forall>i \<in> set is. i \<noteq> 0 \<Longrightarrow> i : set is \<Longrightarrow> i \<le> zlcms is"
 by (metis dvd_zlcms zdvd_imp_le zlcms_pos)
@@ -189,7 +189,7 @@ proof(induct a)
           by(simp only: mult_sgn_abs)
         also have "\<dots> = sgn k * x * (abs k * ?m')" by simp
         also have "\<dots> = sgn k * x * m"
-          using zdvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:algebra_simps)
+          using dvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:algebra_simps)
         finally show ?thesis .
       qed
       have "I\<^isub>Z (hd_coeff1 m (Le i ks)) (m*x#xs) \<longleftrightarrow>
@@ -221,7 +221,7 @@ next
       have 1: "k*(x*?m') = x * m"
       proof -
         have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-        also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
+        also have "\<dots> = x*m" using dvd_mult_div_cancel[OF `k dvd m`]
           by(simp add:algebra_simps)
         finally show ?thesis .
       qed
@@ -253,7 +253,7 @@ next
       have 1: "k*(x*?m') = x * m"
       proof -
         have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-        also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
+        also have "\<dots> = x*m" using dvd_mult_div_cancel[OF `k dvd m`]
           by(simp add:algebra_simps)
         finally show ?thesis .
       qed
