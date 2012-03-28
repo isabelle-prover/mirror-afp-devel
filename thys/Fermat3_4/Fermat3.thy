@@ -573,7 +573,7 @@ proof (rule ccontr)
     proof - 
       from zgab have "?g^3 dvd z^3" by simp
       hence "?g dvd z" by (simp only: zpower_zdvd_mono)
-      thus ?thesis by (simp only: mult_ac zdvd_mult_div_cancel)
+      thus ?thesis by (simp only: mult_ac dvd_mult_div_cancel)
     qed
     moreover have "a^3 + b^3 = ?c^3"
     proof -
