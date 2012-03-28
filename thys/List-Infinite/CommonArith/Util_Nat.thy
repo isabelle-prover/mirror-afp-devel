@@ -140,7 +140,7 @@ by (fastforce simp add: sgn_if abs_if)
 lemma abs_imp_sgn_abs: "\<bar>a\<bar> = \<bar>b\<bar> \<Longrightarrow> \<bar>sgn (a::'a::linordered_idom)\<bar> = \<bar>sgn b\<bar>"
 by (fastforce simp add: abs_if)
 lemma sgn_mono: "a \<le> b \<Longrightarrow> sgn (a::'a::{linordered_idom,linordered_semidom}) \<le> sgn b"
-by (simp add: sgn_if, safe, simp_all)
+by (auto simp add: sgn_if)
 
 
 
