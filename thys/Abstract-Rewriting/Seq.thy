@@ -60,64 +60,9 @@ lemma cons_chain:
   assumes "(x, S 0) \<in> r" and "chain r S" shows "chain r (x #s S)"
   using cons_chainp[of "\<lambda>x y. (x, y) \<in> r", OF assms] .
 
-
-subsection {*Predicate Powers*}
-fun predpow :: "nat \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)" where
-  "predpow 0 P = op ="
-| "predpow (Suc n) P = predpow n P OO P"
-
-lemma predpow_0_I:
-  "predpow 0 P x x" by simp
-
-lemma predpow_Suc_I:
-  "predpow n P x y \<Longrightarrow> P y z \<Longrightarrow> predpow (Suc n) P x z"
-  by auto
-
-lemma predpow_1 [simp]:
-  "predpow 1 P = P"
-  by (intro ext) auto
-
-lemma predpow_Suc_0:
-  "P x y \<Longrightarrow> predpow (Suc 0) P x y"
-  by auto
-
-lemma rtranclp_imp_ex_predpow:
-  assumes "P^** x y"
-  shows "\<exists>n. predpow n P x y"
-  using assms by (induct) (blast intro: predpow_0_I predpow_Suc_I)+
-
-lemma tranclp_imp_ex_predpow_Suc:
-  assumes "P^++ x y"
-  shows "\<exists>n. predpow (Suc n) P x y"
-  using assms by (induct) (blast intro: predpow_Suc_0 predpow_Suc_I)+
-
-lemma predpow_Suc_E:
-  "predpow (Suc n) P x z \<Longrightarrow> (\<And>y. predpow n P x y \<Longrightarrow> P y z \<Longrightarrow> Q) \<Longrightarrow> Q"
-  by auto
-
-lemma predpow_imp_rtranclp:
-  assumes "predpow n P x y"
-  shows "P^** x y"
-  using assms by (induct n arbitrary: y)
-    (simp, blast elim: predpow_Suc_E intro: rtrancl_into_rtrancl[to_pred])
-
-lemma predpow_Suc_imp_tranclp:
-  assumes "predpow (Suc n) P x y"
-  shows "P^++ x y"
-  using assms by (induct n arbitrary: y)
-    (force, blast elim: predpow_Suc_E intro: trancl_into_trancl[to_pred])
-
-lemma rtranclp_power:
-  "P^** x y \<longleftrightarrow> (\<exists>n. predpow n P x y)"
-  by (blast intro: rtranclp_imp_ex_predpow predpow_imp_rtranclp)
-
-lemma tranclp_power:
-  "P^++ x y \<longleftrightarrow> (\<exists>n. predpow (Suc n) P x y)"
-  by (blast intro: tranclp_imp_ex_predpow_Suc predpow_Suc_imp_tranclp)
-
 text {*A chain admits arbitrary transitive steps.*}
-lemma chainp_imp_predpow:
-  assumes "chainp P S" shows "predpow j P (S i) (S (i + j))"
+lemma chainp_imp_relpowp:
+  assumes "chainp P S" shows "(P^^j) (S i) (S (i + j))"
 proof (induct "i + j" arbitrary: j)
   case (Suc n) thus ?case using assms by (cases j) auto
 qed simp
@@ -132,8 +77,10 @@ lemma chainp_imp_tranclp:
   assumes "chainp P S" and "i < j" shows "P^++ (S i) (S j)"
 proof -
   from less_imp_Suc_add[OF assms(2)] obtain n where "j = i + Suc n" by auto
-  with chainp_imp_predpow[of P S "Suc n" i, OF assms(1)]
-    show ?thesis unfolding tranclp_power by force
+  with chainp_imp_relpowp[of P S "Suc n" i, OF assms(1)]
+    show ?thesis
+      unfolding trancl_power[of "(S i, S j)", to_pred]
+      by force
 qed
 
 lemma chain_imp_trancl:
@@ -149,7 +96,8 @@ lemma chainp_imp_rtranclp:
   assumes "chainp P S" and "i \<le> j" shows "P^** (S i) (S j)"
 proof -
   from assms(2) obtain n where "j = i + n" by (induct "j - i" arbitrary: j) force+
-  with chainp_imp_predpow[of P S, OF assms(1), of n i] show ?thesis by (simp add: predpow_imp_rtranclp)
+  with chainp_imp_relpowp[of P S, OF assms(1), of n i] show ?thesis
+    by (simp add: relpow_imp_rtrancl[of "(S i, S (i + n))", to_pred])
 qed
 
 lemma chain_imp_rtrancl:
