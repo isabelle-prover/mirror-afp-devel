@@ -145,7 +145,7 @@ proof -
     next
       case False
       from eq have "word_of_int (- (- sint a div sint b)) * b + word_of_int (- (- sint a mod sint b)) = a"
-        by (metis zdiv_zminus2 zmod_zminus2)
+        by (metis div_minus_right mod_minus_right)
       with a False show ?thesis by simp
     qed
   next
