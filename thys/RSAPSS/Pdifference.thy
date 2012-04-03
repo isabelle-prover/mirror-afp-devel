@@ -82,7 +82,7 @@ lemma primekeytrick: "\<lbrakk>(M*A) mod P = (M*B) mod P;M mod P \<noteq> 0; pri
   apply (drule equalmodstrick2)
   apply (rule equalmodstrick1)
   apply (rule multzero, simp)
-  apply (subst mod_mult_distrib2)
+  apply (subst mult_mod_right)
   apply (subst timesdistributesoverpdifference)
   apply simp
   apply (rule conjI, rule impI, simp)

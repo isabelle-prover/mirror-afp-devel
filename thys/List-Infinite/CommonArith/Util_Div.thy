@@ -525,7 +525,7 @@ qed
 
 lemma zmod_zminus_eq_conv_pos: "
   0 < (m::int) \<Longrightarrow> (a mod - m = b mod - m) = (a mod m = b mod m)"
-apply (simp only: zmod_zminus2 neg_equal_iff_equal)
+apply (simp only: mod_minus_right neg_equal_iff_equal)
 thm zmod_zminus1_eq_if[of _ m]
 apply (simp only: zmod_zminus1_eq_if)
 apply (split split_if)+
@@ -809,7 +809,6 @@ lemma mod_factor_imp_mod_0: "
   (is "\<lbrakk> ?P1 \<rbrakk> \<Longrightarrow> ?Q")
 proof -
   assume as1: ?P1
-  thm mod_mult_distrib[where m=y and n=m and k=k]
   have "y * k mod (m * k) = y mod m * k"
     by simp
   hence "x mod (m * k) = y mod m * k"
@@ -846,15 +845,14 @@ proof -
   hence "?L * k = y * k mod (m * k)"
     using as1 by (simp only: mult_ac)
   hence "?L * k = y mod m * k"
-    thm mod_mult_distrib
-    by (simp only: mod_mult_distrib)
+    by (simp only: mult_mod_left)
   thus ?thesis
     using as2 by simp
 qed
 
 thm
-  Divides.mod_mult_distrib
-  Divides.mod_mult_distrib2
+  Divides.mult_mod_left
+  Divides.mult_mod_right
 thm 
   mod_eq_mult_distrib
 thm

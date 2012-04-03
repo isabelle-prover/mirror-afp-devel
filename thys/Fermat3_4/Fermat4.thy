@@ -527,7 +527,7 @@ proof (rule ccontr)
     proof -
       from zgab have "?g^4 dvd z^4" by simp
       hence "?g dvd z" by (simp only: zpower_zdvd_mono)
-      hence "(z div ?g)*?g = z" by (simp only: mult_ac zdvd_mult_div_cancel)
+      hence "(z div ?g)*?g = z" by (simp only: mult_ac dvd_mult_div_cancel)
       with ab show ?thesis by (auto simp only: power2_eq_square mult_ac)
     qed
     with xyz0 have c0: "?c\<noteq>0" by (auto simp add: power2_eq_square)

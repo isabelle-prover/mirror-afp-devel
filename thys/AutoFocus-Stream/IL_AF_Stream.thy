@@ -1247,7 +1247,7 @@ apply (rule iffI)
    prefer 2
    apply simp
   apply (simp add: mod_Suc)
-  apply (simp add: nat_mult_2_right[symmetric] numeral_2_eq_2 del: mult_Suc_right)
+  apply (simp add: mult_2_right[symmetric] numeral_2_eq_2 del: mult_Suc_right)
   apply (rule_tac x="t * k + k" in exI)
   apply simp
  apply simp

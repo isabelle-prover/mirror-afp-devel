@@ -3382,7 +3382,7 @@ proof (induct ks xs rule: eval_dioph.induct)
     by (simp add: mod_add_eq [symmetric])
   also have "\<dots> = ((k * (int x mod int n)) mod int n +
     eval_dioph ks (map (\<lambda>x. x mod n) xs) mod int n) mod int n"
-    by (simp add: 1 zmod_zmult1_eq [symmetric])
+    by (simp add: 1 mod_mult_right_eq [symmetric])
   finally show ?case by (simp add: zmod_int mod_add_eq [symmetric])
 qed simp_all
 

@@ -275,8 +275,8 @@ lemmas iT_add =
 thm iT_add
 
 thm
-  mod_mult_distrib
-  mod_mult_distrib2
+  mult_mod_left
+  mult_mod_right
 thm 
   mod_eq_mult_distrib
   mod_factor_imp_mod_0

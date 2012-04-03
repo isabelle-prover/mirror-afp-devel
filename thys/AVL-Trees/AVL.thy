@@ -22,7 +22,7 @@ text {*
 subsection {* Declarations needed by the SMT stuff *}
 
 declare [[smt_certificates="AVL.certs"]]
-declare [[smt_fixed=true]]
+declare [[smt_read_only_certificates=true]]
 
 lemma [z3_rule]:
     "(x = (if P1 then y1 else if P2 then y2 else y3)) =
@@ -639,7 +639,7 @@ proof (induct t)
       with False MKT have "\<forall>h. is_ord (MKT n l (delete x r) h)" by (auto simp:set_of_delete)
       with False MKT is_ord_mkt_bal_l[of n l "(delete x r)"] `x\<noteq>n` show ?thesis by (simp add: avl_delete)
     qed
- qed
+  qed
 qed simp
 
 end                                                     

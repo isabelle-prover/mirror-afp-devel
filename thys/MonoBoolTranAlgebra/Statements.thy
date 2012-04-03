@@ -79,6 +79,11 @@ lemma wp_mono [simp]: "mono (wp x)"
   apply (rule le_comp_right)
   by (rule le_comp, simp)
 
+lemma wp_mono2: "p \<le> q \<Longrightarrow> wp x p \<le> wp x q"
+  apply (cut_tac x = x in wp_mono)
+  apply (unfold mono_def)
+  by blast
+
 lemma wp_fun_mono [simp]: "mono wp"
   apply (simp add: le_fun_def wp_def abs_wpt_def less_eq_Assertion_def mono_def)
   apply (simp add: wpt_def, safe)
@@ -198,7 +203,6 @@ lemma hoare_comp: "hoare p (x * y) q = (\<exists> r . (hoare p x r) \<and> (hoar
    apply (rule_tac f = "wp x" in monoD)
    by simp_all
 
-
 lemma hoare_refinement: "hoare p S q = ({\<cdot>p} * (post {\<cdot>q}) \<le> S)"
   apply (simp add: hoare_def less_eq_Assertion_def Assertion_wp)
   proof
@@ -223,50 +227,95 @@ lemma hoare_refinement: "hoare p S q = ({\<cdot>p} * (post {\<cdot>q}) \<le> S)"
     finally show "{\<cdot>p} \<le> S * {\<cdot>q} * \<top>" .
   qed
 
-theorem hoare_fixpoint:
-  "F x = x \<Longrightarrow> mono F 
+ theorem hoare_fixpoint_mbt:
+  "F x = x
+     \<Longrightarrow> (!! (w::'a::well_founded) f . (\<And>v. v < w \<Longrightarrow> hoare (p v) f q) \<Longrightarrow> hoare (p w) (F f) q) 
+     \<Longrightarrow> hoare (p u) x q"
+  apply (rule less_induct1)
+  proof -
+    fix xa
+    assume A: "\<And> w f. (\<And> v . v < w \<Longrightarrow> hoare (p v) f q) \<Longrightarrow> hoare (p w) (F f) q"
+    assume B: "F x  = x"
+    assume C: "\<And>y . y < xa \<Longrightarrow> hoare (p y) x q"
+    have D: "hoare (p xa) (F x) q"
+      apply (rule A)
+      by (rule C, simp)
+    show "hoare (p xa) x q"
+      by (cut_tac D, simp add: B)
+    qed
+
+lemma hoare_Sup: "hoare (Sup P) x q = (\<forall> p \<in> P . hoare p x q)" 
+  apply (simp add: hoare_def)
+  apply auto
+  apply (rule_tac y = "Sup P" in order_trans, simp_all add: Sup_upper)
+  apply (rule Sup_least)
+  by simp
+
+theorem hoare_fixpoint_complete_mbt:
+  "F x = x
      \<Longrightarrow> (!! w f . hoare (Sup_less p w) f q \<Longrightarrow> hoare (p w) (F f) q) 
      \<Longrightarrow> hoare (Sup (range p)) x q"
-  apply (simp add: hoare_refinement assert_Sup_range assert_Sup_less)
-  apply (cut_tac x = x and f = F and y = "\<lambda> w . {\<cdot>p w} * post {\<cdot>q}" in fp_wf_induction, simp_all)
-  apply safe
-  apply (subgoal_tac "Sup_less (assert o p) w * post {\<cdot>q} \<le> (Sup_less (\<lambda>w\<Colon>'b. {\<cdot>p w} * post {\<cdot>q}) w)")
-  apply simp
-  apply (simp add: Sup_less_def Sup_comp SUP_def)
-  apply (subgoal_tac "((\<lambda>x . x * post {\<cdot>q}) ` {y. \<exists>v<w. y = {\<cdot>p v}}) = {y\<Colon>'a. \<exists>v<w. y = {\<cdot>p v} * post {\<cdot>q}}")
-  apply simp
-  apply auto [1]
-  apply (subgoal_tac "Sup (range (\<lambda>w . {\<cdot>p w} * post {\<cdot>q})) = (Sup (range (assert o p))) * post {\<cdot>q}", simp)
-  apply (simp add: Sup_comp SUP_def)
-  apply (subgoal_tac "range (\<lambda>w. {\<cdot>p w} * post {\<cdot>q}) = ((\<lambda>x . x * post {\<cdot>q}) ` range (assert o p))")
+  apply (simp add: hoare_Sup Sup_less_def, safe)
+  apply (rule_tac F = F in hoare_fixpoint_mbt)
   by auto
- 
 
 definition
   while:: "'a::mbt_algebra Assertion \<Rightarrow> 'a \<Rightarrow> 'a" ("(While (_)/ do (_))" [0, 10] 10) where
   "while p x = ([\<cdot> p] * x) ^ \<omega> * [\<cdot> -p ]"
 
+lemma (in mbt_algebra) omega_comp_fix: "x * (x ^ \<omega> * y) \<sqinter> y = x ^ \<omega> * y"
+  apply (subst (2) omega_fix)
+  by (simp add: inf_comp mult_assoc)
 
-lemma hoare_while:
-  "(\<forall> w::'b::well_founded_transitive . hoare ((p w) \<sqinter> b) x (Sup_less p w)) \<Longrightarrow> 
-       hoare  (Sup (range p)) (While b do x) ((Sup (range p)) \<sqinter> -b)"
-  apply (unfold while_def omega_lfp)
-  apply (subgoal_tac "mono (\<lambda>z. [\<cdot> b ] * x * z \<sqinter> [\<cdot> - b ])")
-  apply (rule_tac F = "\<lambda>z. [\<cdot> b ] * x * z \<sqinter> [\<cdot> - b ]" in hoare_fixpoint)
-  apply (cut_tac f = "\<lambda>z. [\<cdot> b ] * x * z \<sqinter> [\<cdot> - b ]" in lfp_unfold)
-  apply simp_all
+lemma hoare_wp [simp]: "hoare (wp x q) x q"
+  by (simp add: hoare_def)
+
+lemma hoare_comp_wp: "hoare p (x * y) q = hoare p x (wp y q)"
+  apply (unfold hoare_comp, safe)
+  apply (simp add: hoare_def)
+  apply (rule_tac y = "wp x r" in order_trans, simp)
+  apply (rule wp_mono2, simp)
+  by (rule_tac x = "wp y q" in exI, simp)
+
+lemma (in mbt_algebra) hoare_assume: "hoare p [\<cdot>b] q = (p \<sqinter> b \<le> q)"
+  by (simp add: hoare_def wp_assume sup_neg_inf)
+
+lemma (in mbt_algebra) hoare_assume_comp: "hoare p ([\<cdot>b] * x) q = hoare (p \<sqinter> b) x q"
+  apply (simp add: hoare_comp_wp hoare_assume)
+  by (simp add: hoare_def)
+
+
+lemma hoare_while_mbt:
+  "(\<forall> (w::'b::well_founded) r . (\<forall> v . v < w \<longrightarrow> p v \<le> r) \<longrightarrow> hoare ((p w) \<sqinter> b) x r) \<Longrightarrow> 
+       (\<forall> u . p u \<le> q) \<Longrightarrow> hoare  (p w) (While b do x) (q \<sqinter> -b)"
+  apply (unfold while_def)
+  apply (rule_tac F = "\<lambda>z. [\<cdot> b ] * x * z \<sqinter> [\<cdot> - b ]" in hoare_fixpoint_mbt)
+  apply (simp add: omega_comp_fix)
   apply (unfold hoare_choice)
   apply safe
-  apply (simp_all add: hoare_def wp_comp wp_assume sup_neg_inf)
-  apply (rule_tac y = "wp x (Sup_less p w)" in order_trans, simp)
-  apply (rule_tac f = "wp x" in monoD, simp_all) 
-  apply (rule_tac y = "p w" in order_trans, simp_all)
-  apply (rule Sup_upper, simp)
-  apply (simp add: mono_def)
-  apply safe
-  apply (rule_tac y = "[\<cdot> b ] * x * xa" in order_trans, simp)
-  by (rule le_comp, simp)
+  apply (subst hoare_comp_wp)
+  apply (subst hoare_assume_comp)
+  apply (drule_tac x = w in spec)
+  apply (drule_tac x = "wp f (q \<sqinter> - b)" in spec)
+  apply (auto simp add: hoare_def) [1]
+  apply (auto simp add: hoare_assume)
+  apply (rule_tac y = "p w" in order_trans)
+  by simp_all
 
+
+lemma hoare_while_complete_mbt:
+  "(\<forall> w::'b::well_founded . hoare ((p w) \<sqinter> b) x (Sup_less p w)) \<Longrightarrow> 
+       hoare  (Sup (range p)) (While b do x) ((Sup (range p)) \<sqinter> -b)"
+  apply (simp add: hoare_Sup, safe)
+  apply (rule hoare_while_mbt)
+  apply safe
+  apply (drule_tac x = w in spec)
+  apply (simp add: hoare_def)
+  apply (rule_tac y = "wp x (Sup_less p w)" in order_trans, simp_all)
+  apply (rule wp_mono2)
+  apply (simp add: Sup_less_def)
+  apply (rule Sup_least, auto)
+  by (rule Sup_upper, simp)
 
 definition 
   "datarefin S S1 D D1 = (D * S \<le> S1 * D1)"
@@ -292,3 +341,4 @@ lemma "hoare p S q \<Longrightarrow> datarefin ({\<cdot>p} * S) S1 D D1 \<Longri
   by (simp add: mult_assoc)
 
 end
+

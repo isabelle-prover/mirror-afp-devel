@@ -460,7 +460,7 @@ Lexicographic ordering on lists. Executable, unlike in List.thy.
 
 instantiation odlist :: (linorder) linorder
 begin
-
+print_context
 fun
   less_eq_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"
 where
@@ -468,18 +468,24 @@ where
 | "less_eq_list xs [] = False"
 | "less_eq_list (x # xs) (y # ys) = (x < y \<or> (x = y \<and> less_eq_list xs ys))"
 
-lemma less_eq_list_nil_inv: "less_eq_list xs [] \<Longrightarrow> xs = []"
+lemma less_eq_list_nil_inv:
+  fixes xs :: "'a list"
+  shows "less_eq_list xs [] \<Longrightarrow> xs = []"
   by (cases xs) simp_all
 
-lemma less_eq_list_cons_inv: "less_eq_list (x # xs) yys \<Longrightarrow> \<exists>y ys. yys = y # ys \<and> (x < y \<or> (x = y \<and> less_eq_list xs ys))"
+lemma less_eq_list_cons_inv:
+  fixes x :: 'a
+  shows "less_eq_list (x # xs) yys \<Longrightarrow> \<exists>y ys. yys = y # ys \<and> (x < y \<or> (x = y \<and> less_eq_list xs ys))"
   by (cases yys) auto
 
 lemma less_eq_list_refl:
-  "less_eq_list xs xs"
+  fixes xs :: "'a list"
+  shows "less_eq_list xs xs"
   by (induct xs) simp_all
 
 lemma less_eq_list_trans:
-  "\<lbrakk> less_eq_list xs ys; less_eq_list ys zs \<rbrakk> \<Longrightarrow> less_eq_list xs zs"
+  fixes xs ys zs :: "'a list"
+  shows "\<lbrakk> less_eq_list xs ys; less_eq_list ys zs \<rbrakk> \<Longrightarrow> less_eq_list xs zs"
   apply (induct xs ys arbitrary: zs rule: less_eq_list.induct)
     apply simp
    apply simp
@@ -494,10 +500,13 @@ lemma less_eq_list_trans:
   done
 
 lemma less_eq_list_antisym:
-  "\<lbrakk> less_eq_list xs ys; less_eq_list ys xs \<rbrakk> \<Longrightarrow> xs = ys"
+  fixes xs ys :: "'a list"
+  shows "\<lbrakk> less_eq_list xs ys; less_eq_list ys xs \<rbrakk> \<Longrightarrow> xs = ys"
   by (induct xs ys rule: less_eq_list.induct) (auto dest: less_eq_list_nil_inv)
 
-lemma less_eq_list_linear: "less_eq_list xs ys \<or> less_eq_list ys xs"
+lemma less_eq_list_linear:
+  fixes xs ys :: "'a list"
+  shows "less_eq_list xs ys \<or> less_eq_list ys xs"
   by (induct xs ys rule: less_eq_list.induct) auto
 
 definition
@@ -519,7 +528,8 @@ where
   "xs < ys \<equiv> less_list (toList xs) (toList ys)"
 
 lemma less_eq_list_not_le:
-  "(less_list xs ys) = (less_eq_list xs ys \<and> \<not> less_eq_list ys xs)"
+  fixes xs ys :: "'a list"
+  shows "(less_list xs ys) = (less_eq_list xs ys \<and> \<not> less_eq_list ys xs)"
   by (induct xs ys rule: less_list.induct) auto
 
 instance

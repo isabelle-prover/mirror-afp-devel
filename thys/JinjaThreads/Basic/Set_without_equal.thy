@@ -1,4 +1,4 @@
-(*  Title:      JinjaThreads/Common/Cset_without_equal.thy
+(*  Title:      JinjaThreads/Basic/Set_without_equal.thy
     Author:     Andreas Lochbihler
 *)
 
