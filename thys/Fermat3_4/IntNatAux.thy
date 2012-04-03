@@ -586,9 +586,8 @@ done
 
 lemma zprime_zdvd_power: "\<lbrakk> zprime p; p dvd a^n \<rbrakk> \<Longrightarrow> p dvd a"
   apply (induct n, auto)
-  prefer 2
   apply (frule_tac m="a" and n="a^n" in zprime_zdvd_zmult_general)
-  apply (auto, simp add: zprime_def zdvd_not_zless)
+  apply auto
 done
 
 lemma zpower_zdvd_mono: "n \<noteq> 0 \<Longrightarrow> (a^n dvd b^n) = (a dvd (b::int))"
