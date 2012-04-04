@@ -316,12 +316,12 @@ thm Equiv_Relations.card_quotient_disjoint
 
 
 thm
-  SetInterval.card_lessThan
-  SetInterval.card_atMost
-  SetInterval.card_atLeastLessThan
-  SetInterval.card_atLeastAtMost
-  SetInterval.card_greaterThanAtMost
-  SetInterval.card_greaterThanLessThan
+  Set_Interval.card_lessThan
+  Set_Interval.card_atMost
+  Set_Interval.card_atLeastLessThan
+  Set_Interval.card_atLeastAtMost
+  Set_Interval.card_greaterThanAtMost
+  Set_Interval.card_greaterThanLessThan
 lemma 
   icard_lessThan: "icard {..<u} = enat u" and
   icard_atMost: "icard {..u} = enat (Suc u)" and
@@ -339,10 +339,10 @@ by (simp add: infinite_greaterThan)
 
 
 thm 
-  SetInterval.card_atLeastZeroLessThan_int
-  SetInterval.card_atLeastLessThan_int
-  SetInterval.card_atLeastAtMost_int
-  SetInterval.card_greaterThanAtMost_int
+  Set_Interval.card_atLeastZeroLessThan_int
+  Set_Interval.card_atLeastLessThan_int
+  Set_Interval.card_atLeastAtMost_int
+  Set_Interval.card_greaterThanAtMost_int
 lemma 
   icard_atLeastZeroLessThan_int: "icard {0..<u} = enat (nat u)" and
   icard_atLeastLessThan_int: "icard {l..<u} = enat (nat (u - l))" and
