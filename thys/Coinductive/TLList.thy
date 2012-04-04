@@ -26,37 +26,37 @@ text {*
 subsection {* Auxiliary lemmas *}
 
 lemma sum_case_preserve [quot_preserve]:
-  assumes q1: "Quotient R1 Abs1 Rep1"
-  and q2: "Quotient R2 Abs2 Rep2"
-  and q3: "Quotient R3 Abs3 Rep3"
+  assumes q1: "Quotient3 R1 Abs1 Rep1"
+  and q2: "Quotient3 R2 Abs2 Rep2"
+  and q3: "Quotient3 R3 Abs3 Rep3"
   shows "((Abs1 ---> Rep2) ---> (Abs3 ---> Rep2) ---> sum_map Rep1 Rep3 ---> Abs2) sum_case = sum_case"
-using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2] Quotient_abs_rep[OF q3]
+using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3]
 by(simp add: fun_eq_iff split: sum.split)
 
 lemma sum_case_preserve2 [quot_preserve]:
-  assumes q: "Quotient R Abs Rep"
+  assumes q: "Quotient3 R Abs Rep"
   shows "((id ---> Rep) ---> (id ---> Rep) ---> id ---> Abs) sum_case = sum_case"
-using Quotient_abs_rep[OF q]
+using Quotient3_abs_rep[OF q]
 by(auto intro!: ext split: sum.split)
 
 lemma prod_case_preserve [quot_preserve]:
-  assumes q1: "Quotient R1 Abs1 Rep1"
-  and q2: "Quotient R2 Abs2 Rep2"
-  and q3: "Quotient R3 Abs3 Rep3"
+  assumes q1: "Quotient3 R1 Abs1 Rep1"
+  and q2: "Quotient3 R2 Abs2 Rep2"
+  and q3: "Quotient3 R3 Abs3 Rep3"
   shows "((Abs1 ---> Abs2 ---> Rep3) ---> map_pair Rep1 Rep2 ---> Abs3) prod_case = prod_case"
-using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2] Quotient_abs_rep[OF q3]
+using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3]
 by(simp add: fun_eq_iff split: prod.split)
 
 lemma prod_case_preserve2 [quot_preserve]:
-  assumes q: "Quotient R Abs Rep"
+  assumes q: "Quotient3 R Abs Rep"
   shows "((id ---> id ---> Rep) ---> id ---> Abs) prod_case = prod_case"
-using Quotient_abs_rep[OF q]
+using Quotient3_abs_rep[OF q]
 by(auto intro!: ext)
 
 lemma id_preserve [quot_preserve]:
-  assumes "Quotient R Abs Rep"
+  assumes "Quotient3 R Abs Rep"
   shows "(Rep ---> Abs) id = id"
-using Quotient_abs_rep[OF assms]
+using Quotient3_abs_rep[OF assms]
 by(auto intro: ext)
 
 lemma split_fst: "R (fst p) = (\<forall>x y. p = (x, y) \<longrightarrow> R x)"

@@ -18,9 +18,9 @@ lemma id_respect [quot_respect]:
   by (fact id_rsp)
 
 lemma id_preserve [quot_preserve]:
-  assumes "Quotient R Abs Rep"
+  assumes "Quotient3 R Abs Rep"
   shows "(Rep ---> Abs) id = id"
-  using Quotient_abs_rep [OF assms] by (simp add: fun_eq_iff)
+  using Quotient3_abs_rep [OF assms] by (simp add: fun_eq_iff)
 
 enriched_type lmap: lmap
    by (simp_all add: fun_eq_iff id_def)
@@ -51,11 +51,11 @@ lemma llist_equivp [quot_equiv]:
   by (simp add: equivp_reflp_symp_transp reflp_llist_all2 symp_llist_all2 transp_llist_all2)
 
 lemma Quotient_lmap_Abs_Rep:
-  "Quotient R Abs Rep \<Longrightarrow> lmap Abs (lmap Rep a) = a"
+  "Quotient3 R Abs Rep \<Longrightarrow> lmap Abs (lmap Rep a) = a"
   by (drule abs_o_rep) (simp add: lmap_id lmap_compose [symmetric] del: lmap_compose)
 
 lemma llist_all2_rel:
-  assumes "Quotient R Abs Rep"
+  assumes "Quotient3 R Abs Rep"
   shows "llist_all2 R r s \<longleftrightarrow> llist_all2 R r r \<and> llist_all2 R s s \<and> (lmap Abs r = lmap Abs s)"
   (is "?lhs \<longleftrightarrow> ?rhs")
 proof
@@ -64,13 +64,13 @@ proof
     apply -
     apply(rule llist_all2_reflI)
     apply(clarsimp simp add: lset_def)
-    apply(metis Quotient_rel[OF assms] llist_all2_lnthD)
+    apply(metis Quotient3_rel[OF assms] llist_all2_lnthD)
     done
   moreover from `?lhs` have "llist_all2 R s s"
     apply -
     apply(rule llist_all2_reflI)
     apply(clarsimp simp add: lset_def)
-    apply(metis Quotient_rel[OF assms] llist_all2_lnthD2)
+    apply(metis Quotient3_rel[OF assms] llist_all2_lnthD2)
     done
   moreover from `?lhs` have "llength r = llength s" by(rule llist_all2_llengthD)
   hence "lmap Abs r = lmap Abs s" using `?lhs`
@@ -78,29 +78,29 @@ proof
     apply -
     apply(erule llist_all2_all_lnthI)
     apply(drule (1) llist_all2_lnthD)
-    apply(metis Quotient_rel[OF assms])
+    apply(metis Quotient3_rel[OF assms])
     done
   ultimately show ?rhs by blast
 next
   assume ?rhs thus ?lhs
     unfolding lmap_eq_lmap_conv_llist_all2
-    by(clarsimp simp add: llist_all2_conv_all_lnth)(metis Quotient_rel[OF assms])
+    by(clarsimp simp add: llist_all2_conv_all_lnth)(metis Quotient3_rel[OF assms])
 qed
 
 lemma Quotient_llist_all2_lmap_Rep:
-  "Quotient R Abs Rep \<Longrightarrow> llist_all2 R (lmap Rep a) (lmap Rep a)"
-by(auto intro!: llist_all2_all_lnthI intro: Quotient_rep_reflp)
+  "Quotient3 R Abs Rep \<Longrightarrow> llist_all2 R (lmap Rep a) (lmap Rep a)"
+by(auto intro!: llist_all2_all_lnthI intro: Quotient3_rep_reflp)
 
 lemma llist_quotient [quot_thm]:
-  "Quotient R Abs Rep \<Longrightarrow> Quotient (llist_all2 R) (lmap Abs) (lmap Rep)"
-by(blast intro: QuotientI dest: Quotient_lmap_Abs_Rep Quotient_llist_all2_lmap_Rep llist_all2_rel)
+  "Quotient3 R Abs Rep \<Longrightarrow> Quotient3 (llist_all2 R) (lmap Abs) (lmap Rep)"
+by(blast intro: Quotient3I dest: Quotient_lmap_Abs_Rep Quotient_llist_all2_lmap_Rep llist_all2_rel)
 
 declare [[map llist = (llist_all2, llist_quotient)]]
 
 lemma LCons_preserve [quot_preserve]:
-  assumes "Quotient R Abs Rep"
+  assumes "Quotient3 R Abs Rep"
   shows "(Rep ---> (lmap Rep) ---> (lmap Abs)) LCons = LCons"
-using Quotient_abs_rep[OF assms]
+using Quotient3_abs_rep[OF assms]
 by(simp add: fun_eq_iff lmap_compose[symmetric] o_def del: lmap_compose)
 
 lemma LCons_respect [quot_respect]:
@@ -116,11 +116,11 @@ lemma LNil_respect [quot_respect]:
 by simp
 
 lemma lmap_preserve [quot_preserve]:
-  assumes a: "Quotient R1 abs1 rep1"
-  and     b: "Quotient R2 abs2 rep2"
+  assumes a: "Quotient3 R1 abs1 rep1"
+  and     b: "Quotient3 R2 abs2 rep2"
   shows "((abs1 ---> rep2) ---> (lmap rep1) ---> (lmap abs2)) lmap = lmap"
   and   "((abs1 ---> id) ---> lmap rep1 ---> id) lmap = lmap"
-using Quotient_abs_rep[OF a] Quotient_abs_rep[OF b]
+using Quotient3_abs_rep[OF a] Quotient3_abs_rep[OF b]
 by(simp_all add: fun_eq_iff lmap_compose[symmetric] o_def del: lmap_compose)
 
 lemma lmap_respect [quot_respect]:
@@ -148,9 +148,9 @@ lemma llist_all2_respect [quot_respect]:
   by (simp add: llist_all2_rsp fun_rel_def)
 
 lemma llist_all2_preserve [quot_preserve]:
-  assumes "Quotient R Abs Rep"
+  assumes "Quotient3 R Abs Rep"
   shows "((Abs ---> Abs ---> id) ---> lmap Rep ---> lmap Rep ---> id) llist_all2 = llist_all2"
-using Quotient_abs_rep[OF assms]
+using Quotient3_abs_rep[OF assms]
 by(simp add: fun_eq_iff llist_all2_lmap1 llist_all2_lmap2)
 
 lemma llist_all2_eq [id_simps]: "llist_all2 (op =) = (op =)"
@@ -173,13 +173,13 @@ next
 qed
 
 lemma llist_all2_preserve2 [quot_preserve]:
-  assumes "Quotient R Abs Rep"
+  assumes "Quotient3 R Abs Rep"
   shows "(llist_all2 ((Rep ---> Rep ---> id) R) l m) = (l = m)"
-  by (simp add: map_fun_def [abs_def] Quotient_rel_rep [OF assms] llist_all2_eq comp_def)
+  by (simp add: map_fun_def [abs_def] Quotient3_rel_rep [OF assms] llist_all2_eq comp_def)
 
 lemma llist_corec_preserve [quot_preserve]: 
-  assumes q1: "Quotient R1 Abs1 Rep1"
-  and q2: "Quotient R2 Abs2 Rep2"
+  assumes q1: "Quotient3 R1 Abs1 Rep1"
+  and q2: "Quotient3 R2 Abs2 Rep2"
   shows "(Rep1 ---> (Abs1 ---> Option.map (map_pair Rep2 Rep1)) ---> lmap Abs2) llist_corec = llist_corec"
 proof(intro ext)
   fix a f
@@ -194,12 +194,12 @@ proof(intro ext)
     proof(cases "f a")
       case None
       hence ?EqLNil unfolding q
-        using Quotient_abs_rep[OF q1] by(simp add: llist_corec)
+        using Quotient3_abs_rep[OF q1] by(simp add: llist_corec)
       thus ?thesis ..
     next
       case (Some a')
       hence ?EqLCons
-        unfolding q using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2]
+        unfolding q using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2]
         by(cases a')(simp, subst (1 2) llist_corec, auto)
       thus ?thesis ..
     qed
