@@ -1825,7 +1825,7 @@ proof
     fix i
     from chain have "(F i, F (Suc i)) \<in> (S O S^* O NS^*)" by auto
     thus "\<exists> y z. (F i, y)  \<in> S \<and> (y, z)  \<in> S^* \<and> (z, F (Suc i)) \<in> NS^*"
-      unfolding rel_comp_def (*FIXME:rel_comp_unfold*) using mem_Collect_eq by auto
+      unfolding relcomp_def (*FIXME:relcomp_unfold*) using mem_Collect_eq by auto
   qed
   hence "\<exists> f. (\<forall> i. (\<exists> z. (F i, f i)  \<in> S \<and> ((f i, z)  \<in> S^*) \<and>(z, F (Suc i)) \<in> NS^*))"
     by (rule choice)
@@ -1836,7 +1836,7 @@ proof
   then obtain g where "\<forall> i. (F i, f i)  \<in> S \<and> (f i, g i)  \<in> S^* \<and> (g i, F (Suc i)) \<in> NS^*" ..
   hence "\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, F (Suc i)) \<in> NS^* \<and> (F (Suc i), f (Suc i))  \<in> S"
     by auto
-  hence "\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S" unfolding rel_comp_def (*FIXME*)
+  hence "\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S" unfolding relcomp_def (*FIXME*)
     using tr_compat by auto
   hence all:"\<forall> i. (f i, g i)  \<in> S^* \<and> (g i, f (Suc i))  \<in> S^+" by auto
   have "\<forall> i. (f i, f (Suc i))  \<in> S^+"

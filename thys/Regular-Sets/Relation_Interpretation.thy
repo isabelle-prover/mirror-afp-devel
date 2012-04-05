@@ -25,7 +25,7 @@ by (rule sym) (induct w, auto)
 lemma rel_word_rel: "rel v r = (\<Union>w\<in>lang r. word_rel v w)"
 proof (induct r)
   case Times thus ?case 
-    by (auto simp: rel_def word_rel_append conc_def rel_comp_UNION_distrib rel_comp_UNION_distrib2)
+    by (auto simp: rel_def word_rel_append conc_def relcomp_UNION_distrib relcomp_UNION_distrib2)
 next
   case (Star r)
   { fix n
@@ -36,7 +36,7 @@ next
       case (Suc n) thus ?case
         unfolding relpow.simps relpow_commute[symmetric]
         by (auto simp add: Star conc_def word_rel_append
-          rel_comp_UNION_distrib rel_comp_UNION_distrib2)
+          relcomp_UNION_distrib relcomp_UNION_distrib2)
     qed }
 
   thus ?case unfolding rel.simps

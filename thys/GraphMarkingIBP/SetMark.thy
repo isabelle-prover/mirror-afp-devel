@@ -89,7 +89,7 @@ lemma (in graph) add_set [simp]: "x \<noteq> y \<Longrightarrow> x \<in> path S 
   apply (case_tac "(ya, x) \<in> (next \<inter> (- mrk) \<times> - mrk \<inter> (- {y}) \<times> - {y})\<^sup>*")
   apply (rule_tac x = xa in exI)
   apply simp_all
-  apply (simp add: rel_comp_unfold)
+  apply (simp add: relcomp_unfold)
   apply (rule_tac x = ya in exI)
   apply simp
   apply (case_tac "(next \<inter> (- mrk) \<times> - mrk \<inter> (- {y}) \<times> - {y}) = (next \<inter> (- insert y mrk) \<times> - insert y mrk)")
@@ -98,7 +98,7 @@ lemma (in graph) add_set [simp]: "x \<noteq> y \<Longrightarrow> x \<in> path S 
   apply simp_all
   apply (rule_tac x = y in exI)
   apply simp  
-  apply (simp add: rel_comp_unfold)
+  apply (simp add: relcomp_unfold)
   apply (rule_tac x = yaa in exI)
   apply simp
   apply (case_tac "(next \<inter> (- mrk) \<times> - mrk \<inter> (- {y}) \<times> - {y}) = (next \<inter> (- insert y mrk) \<times> - insert y mrk)")

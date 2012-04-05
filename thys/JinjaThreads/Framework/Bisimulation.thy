@@ -1144,9 +1144,9 @@ lemma bisim_compose_assoc [simp]:
   "(bisim12 \<circ>\<^isub>B bisim23) \<circ>\<^isub>B bisim34 = bisim12 \<circ>\<^isub>B bisim23 \<circ>\<^isub>B bisim34"
 by(auto simp add: fun_eq_iff)
 
-lemma bisim_compose_conv_rel_comp:
-  "split (bisim_compose bisim12 bisim23) = (\<lambda>x. x \<in> rel_comp (Collect (split bisim12)) (Collect (split bisim23)))"
-by(auto simp add: rel_comp_unfold)
+lemma bisim_compose_conv_relcomp:
+  "split (bisim_compose bisim12 bisim23) = (\<lambda>x. x \<in> relcomp (Collect (split bisim12)) (Collect (split bisim23)))"
+by(auto simp add: relcomp_unfold)
 
 lemma list_all2_bisim_composeI:
   "\<lbrakk> list_all2 A xs ys; list_all2 B ys zs \<rbrakk>

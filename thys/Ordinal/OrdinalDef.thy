@@ -108,19 +108,19 @@ lemma ord0_leI:
  apply (unfold ord0_less_def ord0_le_def)
  apply (rule ord0_leqI[rule_format])
  apply (drule spec, erule mp)
- apply (erule rel_compI[OF ord0_leq_refl])
+ apply (erule relcompI[OF ord0_leq_refl])
 done
 
 lemma ord0_less_le_trans:
 "\<lbrakk>(x::ord0) < y; y \<le> z\<rbrakk> \<Longrightarrow> x < z"
  apply (unfold ord0_le_def ord0_less_def, clarify)
  apply (drule ord0_leqD, assumption, clarify)
-by (rule rel_compI[OF ord0_leq_trans])
+by (rule relcompI[OF ord0_leq_trans])
 
 lemma ord0_le_less_trans:
 "\<lbrakk>(x::ord0) \<le> y; y < z\<rbrakk> \<Longrightarrow> x < z"
  apply (unfold ord0_le_def ord0_less_def, clarify)
-by (rule rel_compI[OF ord0_leq_trans])
+by (rule relcompI[OF ord0_leq_trans])
 
 lemma rev_ord0_le_less_trans:
 "\<lbrakk>(y::ord0) < z; x \<le> y\<rbrakk> \<Longrightarrow> x < z"
@@ -130,7 +130,7 @@ lemma ord0_less_trans:
 "\<lbrakk>(x::ord0) < y; y < z\<rbrakk> \<Longrightarrow> x < z"
  apply (unfold ord0_less_def, clarify)
  apply (drule ord0_leqD, assumption, clarify)
-by (rule rel_compI[OF ord0_leq_trans trancl_trans])
+by (rule relcompI[OF ord0_leq_trans trancl_trans])
 
 lemma ord0_less_imp_le: "(x::ord0) < y \<Longrightarrow> x \<le> y"
 by (rule ord0_leI[rule_format], rule ord0_less_trans)
@@ -292,7 +292,7 @@ by (simp add: ord0_prec_def)
 
 lemma less_ord0_LimI: "f n < ord0_Lim f"
  apply (simp add: ord0_less_def)
- apply (rule rel_compI[OF ord0_leq_refl])
+ apply (rule relcompI[OF ord0_leq_refl])
  apply (rule r_into_trancl)
  apply (auto simp add: ord0_prec_def)
 done
