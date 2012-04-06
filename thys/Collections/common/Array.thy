@@ -210,7 +210,7 @@ proof(cases a)
     ultimately show ?case by(simp add: list_update_append)
   qed
   thus ?thesis using Array len
-    by(simp add: array_map_def split_beta array_of_list_def foldl_foldr)
+    by(simp add: array_map_def split_beta array_of_list_def foldl_conv_foldr)
 qed
 
 subsection {* Lemmas about empty arrays *}
