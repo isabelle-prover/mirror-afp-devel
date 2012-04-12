@@ -1,4 +1,5 @@
 header "2-3 Finger Trees" 
+
 theory FingerTree
 imports Main
 begin
@@ -2660,6 +2661,5 @@ text {*
     @{thm [display] "FingerTree.count_correct"}
 *}
 
-
-
 end
+

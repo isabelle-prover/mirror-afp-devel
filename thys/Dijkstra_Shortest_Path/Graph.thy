@@ -289,7 +289,7 @@ subsection {* Weighted Graphs *}
 
   (* 
     lemma path_weight_alt: "path_weight p \<equiv> listsum (map (fst \<circ> snd) p)"
-    unfolding path_weight_def foldl_def
+    unfolding path_weight_def foldl_conv_fold
     by (simp add: listsum_foldl)
   *)
 
