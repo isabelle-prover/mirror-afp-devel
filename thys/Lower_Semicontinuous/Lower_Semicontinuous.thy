@@ -5,7 +5,7 @@
 header {* Lower semicontinuous functions *}
 
 theory Lower_Semicontinuous
-imports Multivariate_Analysis Set_Algebras
+imports Multivariate_Analysis
 begin
 
 subsection{* Relative interior in one dimension *}
