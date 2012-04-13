@@ -104,22 +104,22 @@ lemma rm_\<alpha>_finite[simp, intro!]: "finite (dom (rm_\<alpha> m))"
   
 lemma rm_is_finite_map: "finite_map rm_\<alpha> rm_invar" by (unfold_locales) auto
 
-lemma rm_iterateoi_impl_aux: "map_iterateoi RBT_Impl.lookup RBT_Impl.is_rbt RBT_add.rm_iterateoi"
+lemma rm_iterateoi_impl_aux: "map_iterateoi rbt_lookup RBT_Impl.is_rbt RBT_add.rm_iterateoi"
 proof
   fix m
-  show "finite (dom (RBT_Impl.lookup m))" by simp
+  show "finite (dom (rbt_lookup m))" by simp
 next
   fix m :: "('a, 'b) RBT_Impl.rbt" and I :: "'a set \<Rightarrow> 'c \<Rightarrow> bool" and \<sigma> c f
   assume inv: "is_rbt m"
-    and I0: "I (dom (RBT_Impl.lookup m)) \<sigma>"
+    and I0: "I (dom (rbt_lookup m)) \<sigma>"
     and step: "\<And>k v it \<sigma>.
-               \<lbrakk> c \<sigma>; k \<in> it; \<forall>j\<in>it. k \<le> j; RBT_Impl.lookup m k = Some v; it \<subseteq> dom (RBT_Impl.lookup m); I it \<sigma> \<rbrakk>
+               \<lbrakk> c \<sigma>; k \<in> it; \<forall>j\<in>it. k \<le> j; rbt_lookup m k = Some v; it \<subseteq> dom (rbt_lookup m); I it \<sigma> \<rbrakk>
                \<Longrightarrow> I (it - {k}) (f k v \<sigma>)"
 
   txt {* We define a shortcut for the invariant preservation property, 
     parameterized by the map and the overall set of keys *}
   def ipres == "\<lambda>m d. \<forall>\<sigma> k v it. 
-      c \<sigma> \<longrightarrow> k \<in> it \<longrightarrow> (\<forall>j\<in>it. k\<le>j) \<longrightarrow> RBT_Impl.lookup m k = Some v \<longrightarrow> it \<subseteq> d \<longrightarrow> I it \<sigma> 
+      c \<sigma> \<longrightarrow> k \<in> it \<longrightarrow> (\<forall>j\<in>it. k\<le>j) \<longrightarrow> rbt_lookup m k = Some v \<longrightarrow> it \<subseteq> d \<longrightarrow> I it \<sigma> 
       \<longrightarrow> I (it - {k}) (f k v \<sigma>)"
 
   {
@@ -129,10 +129,10 @@ next
       *}
     fix col l k' v' r d
     assume A:
-      "RBT_Impl.sorted (Branch col l k' v' r)"
+      "rbt_sorted (Branch col l k' v' r)"
       "ipres (Branch col l k' v' r) d"
 
-    from A(1) have ST: "l |\<guillemotleft> k'" "k' \<guillemotleft>| r" "RBT_Impl.sorted l" "RBT_Impl.sorted r" 
+    from A(1) have ST: "l |\<guillemotleft> k'" "k' \<guillemotleft>| r" "rbt_sorted l" "rbt_sorted r" 
       by simp_all
 
     have L: "ipres l d" unfolding ipres_def
@@ -141,15 +141,15 @@ next
       assume P:
         "c \<sigma>" 
         "k\<in>it" 
-        "RBT_Impl.lookup l k = Some v" 
+        "rbt_lookup l k = Some v" 
         "it \<subseteq> d" 
         "I it \<sigma>"
         "\<forall>j\<in>it. k\<le>j"
 
       from P(3) have "k\<in>set (RBT_Impl.keys l)" 
-        by (auto simp add: lookup_keys[symmetric] ST(3))
-      with ST(1) tree_less_prop have "k < k'" by auto
-      with P(3) have "RBT_Impl.lookup (Branch col l k' v' r) k = Some v"
+        by (auto simp add: rbt_lookup_keys[symmetric] ST(3))
+      with ST(1) rbt_less_prop have "k < k'" by auto
+      with P(3) have "rbt_lookup (Branch col l k' v' r) k = Some v"
         by (simp)
       thus "I (it - {k}) (f k v \<sigma>)"
         using P(1,2,4,5,6) A(2)
@@ -162,15 +162,15 @@ next
       assume P:
         "c \<sigma>" 
         "k\<in>it" 
-        "RBT_Impl.lookup r k = Some v" 
+        "rbt_lookup r k = Some v" 
         "it \<subseteq> d" 
         "I it \<sigma>"
         "\<forall>j\<in>it. k\<le>j"
 
       from P(3) have "k\<in>set (RBT_Impl.keys r)" 
-        by (auto simp add: lookup_keys[symmetric] ST(4))
-      with ST(2) tree_greater_prop have "k' < k" by auto
-      with P(3) have "RBT_Impl.lookup (Branch col l k' v' r) k = Some v"
+        by (auto simp add: rbt_lookup_keys[symmetric] ST(4))
+      with ST(2) rbt_greater_prop have "k' < k" by auto
+      with P(3) have "rbt_lookup (Branch col l k' v' r) k = Some v"
         by auto
       thus "I (it - {k}) (f k v \<sigma>)"
         using P(1,2,4,5,6) A(2)
@@ -189,12 +189,12 @@ next
 
   { fix it d
     assume is_rbt: "RBT_Impl.is_rbt m"
-      and rest: "I it \<sigma>" "ipres m d" "it \<supseteq> dom (RBT_Impl.lookup m)"
-      "\<forall>k\<in>dom (RBT_Impl.lookup m). \<forall>k'\<in>it-dom (RBT_Impl.lookup m). k\<le>k'"
+      and rest: "I it \<sigma>" "ipres m d" "it \<supseteq> dom (rbt_lookup m)"
+      "\<forall>k\<in>dom (rbt_lookup m). \<forall>k'\<in>it-dom (rbt_lookup m). k\<le>k'"
       "it \<subseteq> d"
-    from is_rbt have "RBT_Impl.sorted m" by(rule is_rbt_sorted)
+    from is_rbt have "rbt_sorted m" by(rule is_rbt_rbt_sorted)
     with rest
-    have "I (it - dom (RBT_Impl.lookup m)) (RBT_add.rm_iterateoi c f m \<sigma>) 
+    have "I (it - dom (rbt_lookup m)) (RBT_add.rm_iterateoi c f m \<sigma>) 
           \<or> (\<exists>it'\<subseteq>it. it' \<noteq> {} \<and> \<not> c (RBT_add.rm_iterateoi c f m \<sigma>) \<and> I it' (RBT_add.rm_iterateoi c f m \<sigma>))"
     proof (induct m arbitrary: it \<sigma>)
       case Empty thus ?case by (simp)
@@ -208,7 +208,7 @@ next
           we are in the second case (interrupt) of our proposition: *}
         from Branch.prems(3) have "it\<noteq>{}" by auto
         with False show ?thesis
-          by(simp del: RBT_Impl.lookup.simps add: exI[where x=it] Branch.prems(1))
+          by(simp del: rbt_lookup.simps add: exI[where x=it] Branch.prems(1))
       next
         case True
         note C = this
@@ -220,22 +220,22 @@ next
         note IPR = ipres_split[OF Branch.prems(6,2)]
 
         txt {* Also the sorted tree properties can be transferred to the subtrees*}
-        from Branch.prems(6) have ST: "m1 |\<guillemotleft> a" "a \<guillemotleft>| m2" "RBT_Impl.sorted m1" "RBT_Impl.sorted m2"
+        from Branch.prems(6) have ST: "m1 |\<guillemotleft> a" "a \<guillemotleft>| m2" "rbt_sorted m1" "rbt_sorted m2"
           by simp_all
         
         txt {* As @{term a} is the key of the original tree, the subtrees, 
           in particular the left one, does not contain @{term a}. 
           With @{thm Branch.prems(3)} we thus get:
           *}
-        from Branch.prems(3,6) have DSS: "dom (RBT_Impl.lookup m1) \<subseteq> it"
-          apply (simp only: lookup_keys ST)
-          apply (auto simp add: tree_greater_prop tree_less_prop)
+        from Branch.prems(3,6) have DSS: "dom (rbt_lookup m1) \<subseteq> it"
+          apply (simp only: rbt_lookup_keys ST)
+          apply (auto simp add: rbt_greater_prop rbt_less_prop)
           done
 
         txt {* As the whole tree's domain is minimal in the remaining elements, the left subtree is also minimal *}
         from Branch.prems(3,4,6) have 
-          MIN: "\<forall>k\<in>dom (RBT_Impl.lookup m1). \<forall>k'\<in>it - dom (RBT_Impl.lookup m1). k \<le> k'"
-          apply (simp only: lookup_keys ST)
+          MIN: "\<forall>k\<in>dom (rbt_lookup m1). \<forall>k'\<in>it - dom (rbt_lookup m1). k \<le> k'"
+          apply (simp only: rbt_lookup_keys ST)
           apply (intro ballI)
         proof -
           fix k k'
@@ -243,17 +243,17 @@ next
             "set (RBT_Impl.keys (Branch col m1 a b m2)) \<subseteq> it" 
             "\<forall>k\<in>set (RBT_Impl.keys (Branch col m1 a b m2)). 
                \<forall>k'\<in>it - set (RBT_Impl.keys (Branch col m1 a b m2)). k \<le> k'" 
-            "RBT_Impl.sorted (Branch col m1 a b m2)" 
+            "rbt_sorted (Branch col m1 a b m2)" 
             "k \<in> set (RBT_Impl.keys m1)" 
             "k' \<in> it - set (RBT_Impl.keys m1)"
           {
             assume C: "k'\<in>set (RBT_Impl.keys m2)"
             with A(3,4) have "k\<le>k'" 
-              by (force simp add: tree_greater_prop tree_less_prop)
+              by (force simp add: rbt_greater_prop rbt_less_prop)
           } moreover {
             assume C: "k'=a"
             with A(3,4) have "k\<le>k'" 
-              by (force simp add: tree_greater_prop tree_less_prop)
+              by (force simp add: rbt_greater_prop rbt_less_prop)
           } moreover {
             assume C: "k'\<in> it - set (RBT_Impl.keys (Branch col m1 a b m2))"
             with A(2,4) have "k\<le>k'" by auto
@@ -264,7 +264,7 @@ next
 
         from Branch.prems(1) IPR(1) DSS MIN Branch.prems(5) ST(3)
         have
-          "I (it - dom (RBT_Impl.lookup m1)) (RBT_add.rm_iterateoi c f m1 \<sigma>) 
+          "I (it - dom (rbt_lookup m1)) (RBT_add.rm_iterateoi c f m1 \<sigma>) 
            \<or> (\<exists>it'. it' \<subseteq> it \<and> it' \<noteq> {} \<and> \<not> c (RBT_add.rm_iterateoi c f m1 \<sigma>) \<and> I it' (RBT_add.rm_iterateoi c f m1 \<sigma>))"
           (is "?C1 \<or> ?C2")
           by(rule Branch)
@@ -280,15 +280,15 @@ next
           txt {* Case: The iterator completely finished the left subtree: *}
           assume C1: ?C1
           let ?\<sigma>' = "(RBT_add.rm_iterateoi c f m1 \<sigma>)"
-          let ?it' = "(it - dom (RBT_Impl.lookup m1))"
+          let ?it' = "(it - dom (rbt_lookup m1))"
           txt {* In this case, we have to check whether the condition still holds *}
           show ?thesis 
           proof (cases "c ?\<sigma>'")
             case False 
             txt {* The iterator will interrupt right here *}
-            from Branch.prems(3,6) have ITGM1: "\<not> it \<subseteq> dom (RBT_Impl.lookup m1)"
-              apply (simp only: lookup_keys ST)
-              apply (auto simp add: tree_greater_prop tree_less_prop)
+            from Branch.prems(3,6) have ITGM1: "\<not> it \<subseteq> dom (rbt_lookup m1)"
+              apply (simp only: rbt_lookup_keys ST)
+              apply (auto simp add: rbt_greater_prop rbt_less_prop)
               done
             thus ?thesis using False C C1 by(auto intro!: exI[where x="?it'"])
           next
@@ -299,18 +299,18 @@ next
             have AMIN: "\<forall>k\<in>?it'. a\<le>k" 
             proof (intro ballI)
               fix k
-              assume A: "k\<in>it - dom (RBT_Impl.lookup m1)"
+              assume A: "k\<in>it - dom (rbt_lookup m1)"
               show "a \<le> k"
-              proof(cases "k \<in> dom (RBT_Impl.lookup (Branch col m1 a b m2))")
+              proof(cases "k \<in> dom (rbt_lookup (Branch col m1 a b m2))")
                 case False
                 with A Branch.prems(4)[rule_format, of a k] show "a\<le>k" by force
               next
                 case True 
                 with A have "k\<in>set (RBT_Impl.keys m2) \<or> a=k"
-                  apply (simp only: lookup_keys ST Branch.prems(6))
+                  apply (simp only: rbt_lookup_keys ST Branch.prems(6))
                   apply auto
                   done
-                with ST show "a\<le>k" by (auto simp add: tree_greater_prop)
+                with ST show "a\<le>k" by (auto simp add: rbt_greater_prop)
               qed
             qed
 
@@ -320,18 +320,18 @@ next
               apply (auto simp add: C C1 AMIN)
               done
           
-            have RMIN: "\<forall>k\<in>dom (RBT_Impl.lookup m2). 
-                    \<forall>a\<in>it - dom (RBT_Impl.lookup m1) - {a} - dom (RBT_Impl.lookup m2). 
+            have RMIN: "\<forall>k\<in>dom (rbt_lookup m2). 
+                    \<forall>a\<in>it - dom (rbt_lookup m1) - {a} - dom (rbt_lookup m2). 
                       k \<le> a"
               using Branch.prems(4)
-              apply (simp only: lookup_keys ST Branch.prems(6))
+              apply (simp only: rbt_lookup_keys ST Branch.prems(6))
               apply auto
               done
 
             from Branch.prems(3,6) have 
-              DSS: "dom (RBT_Impl.lookup m2) \<subseteq> ?it' - {a}"
-              apply (simp only: lookup_keys ST)
-              apply (force simp add: tree_greater_prop tree_less_prop)
+              DSS: "dom (rbt_lookup m2) \<subseteq> ?it' - {a}"
+              apply (simp only: rbt_lookup_keys ST)
+              apply (force simp add: rbt_greater_prop rbt_less_prop)
               done
 
             from Branch.prems(5) have IMAS: "?it' - {a} \<subseteq> d" by auto
@@ -340,13 +340,13 @@ next
               the left subtree, and get two cases: Ordinary termination or interrupt.*}
 
             from I' IPR(2) DSS RMIN IMAS ST(4) have
-              "I (?it' - {a} - dom (RBT_Impl.lookup m2)) (RBT_add.rm_iterateoi c f m2 (f a b ?\<sigma>')) \<or>
+              "I (?it' - {a} - dom (rbt_lookup m2)) (RBT_add.rm_iterateoi c f m2 (f a b ?\<sigma>')) \<or>
               (\<exists>it'. it' \<subseteq> ?it' - {a} \<and> it' \<noteq> {} \<and> \<not> c (RBT_add.rm_iterateoi c f m2 (f a b ?\<sigma>')) \<and>
                      I it' (RBT_add.rm_iterateoi c f m2 (f a b ?\<sigma>')))"
               by(rule Branch)
 
             thus ?thesis using C True
-              apply (simp only: dom_lookup_Branch[OF Branch.prems(6)])
+              apply (simp only: dom_rbt_lookup_Branch[OF Branch.prems(6)])
               apply (simp add: Diff_insert2[symmetric] set_diff_diff_left)
               apply auto
               done
@@ -357,11 +357,11 @@ next
   note G = this
 
   txt {* Finally, we derive the original goal from the generalized one.*}
-  from step have IPR: "ipres m (dom (RBT_Impl.lookup m))"
+  from step have IPR: "ipres m (dom (rbt_lookup m))"
     by (unfold ipres_def) auto
   from G[OF inv I0 IPR]
   show "I {} (RBT_add.rm_iterateoi c f m \<sigma>) \<or>
-        (\<exists>it\<subseteq>dom (RBT_Impl.lookup m). it \<noteq> {} \<and> \<not> c (RBT_add.rm_iterateoi c f m \<sigma>) \<and> I it (RBT_add.rm_iterateoi c f m \<sigma>))"
+        (\<exists>it\<subseteq>dom (rbt_lookup m). it \<noteq> {} \<and> \<not> c (RBT_add.rm_iterateoi c f m \<sigma>) \<and> I it (RBT_add.rm_iterateoi c f m \<sigma>))"
     by auto
 qed
 
@@ -380,21 +380,21 @@ next
     by(rule map_iterateoi.iterateoi_rule[OF rm_iterateoi_impl_aux])
 qed
 
-lemma rm_reverse_iterateoi_impl_aux: "map_reverse_iterateoi RBT_Impl.lookup is_rbt RBT_add.rm_reverse_iterateoi"
+lemma rm_reverse_iterateoi_impl_aux: "map_reverse_iterateoi rbt_lookup is_rbt RBT_add.rm_reverse_iterateoi"
 proof
   fix m
-  show "finite (dom (RBT_Impl.lookup m))" by simp
+  show "finite (dom (rbt_lookup m))" by simp
 next
   fix m :: "('a, 'b) RBT_Impl.rbt" and I :: "'a set \<Rightarrow> 'c \<Rightarrow> bool" and \<sigma> c f
   assume inv: "is_rbt m"
-    and I0: "I (dom (RBT_Impl.lookup m)) \<sigma>"
-    and step: "\<And>k v it \<sigma>. \<lbrakk> c \<sigma>; k \<in> it; \<forall>j\<in>it. j \<le> k; RBT_Impl.lookup m k = Some v; it \<subseteq> dom (RBT_Impl.lookup m); I it \<sigma> \<rbrakk>
+    and I0: "I (dom (rbt_lookup m)) \<sigma>"
+    and step: "\<And>k v it \<sigma>. \<lbrakk> c \<sigma>; k \<in> it; \<forall>j\<in>it. j \<le> k; rbt_lookup m k = Some v; it \<subseteq> dom (rbt_lookup m); I it \<sigma> \<rbrakk>
                \<Longrightarrow> I (it - {k}) (f k v \<sigma>)"
 
   txt {* We define a shortcut for the invariant preservation property, 
     parameterized by the map and the overall set of keys *}
   def ipres == "\<lambda>m d. \<forall>\<sigma> k v it. 
-      c \<sigma> \<longrightarrow> k \<in> it \<longrightarrow> (\<forall>j\<in>it. k\<ge>j) \<longrightarrow> RBT_Impl.lookup m k = Some v \<longrightarrow> it \<subseteq> d \<longrightarrow> I it \<sigma> \<longrightarrow> I (it - {k}) (f k v \<sigma>)"
+      c \<sigma> \<longrightarrow> k \<in> it \<longrightarrow> (\<forall>j\<in>it. k\<ge>j) \<longrightarrow> rbt_lookup m k = Some v \<longrightarrow> it \<subseteq> d \<longrightarrow> I it \<sigma> \<longrightarrow> I (it - {k}) (f k v \<sigma>)"
 
   {
     txt {*
@@ -403,10 +403,10 @@ next
       *}
     fix col l k' v' r d
     assume A:
-      "RBT_Impl.sorted (Branch col l k' v' r)"
+      "rbt_sorted (Branch col l k' v' r)"
       "ipres (Branch col l k' v' r) d"
 
-    from A(1) have ST: "l |\<guillemotleft> k'" "k' \<guillemotleft>| r" "RBT_Impl.sorted l" "RBT_Impl.sorted r" 
+    from A(1) have ST: "l |\<guillemotleft> k'" "k' \<guillemotleft>| r" "rbt_sorted l" "rbt_sorted r" 
       by simp_all
 
     have L: "ipres l d" unfolding ipres_def
@@ -415,15 +415,15 @@ next
       assume P:
         "c \<sigma>" 
         "k\<in>it" 
-        "RBT_Impl.lookup l k = Some v" 
+        "rbt_lookup l k = Some v" 
         "it \<subseteq> d" 
         "I it \<sigma>"
         "\<forall>j\<in>it. k\<ge>j"
 
       from P(3) have "k\<in>set (RBT_Impl.keys l)" 
-        by (auto simp add: lookup_keys[symmetric] ST(3))
-      with ST(1) tree_less_prop have "k < k'" by auto
-      with P(3) have "RBT_Impl.lookup (Branch col l k' v' r) k = Some v"
+        by (auto simp add: rbt_lookup_keys[symmetric] ST(3))
+      with ST(1) rbt_less_prop have "k < k'" by auto
+      with P(3) have "rbt_lookup (Branch col l k' v' r) k = Some v"
         by (simp)
       thus "I (it - {k}) (f k v \<sigma>)"
         using P(1,2,4,5,6) A(2) unfolding ipres_def by blast
@@ -435,15 +435,15 @@ next
       assume P:
         "c \<sigma>" 
         "k\<in>it" 
-        "RBT_Impl.lookup r k = Some v" 
+        "rbt_lookup r k = Some v" 
         "it \<subseteq> d" 
         "I it \<sigma>"
         "\<forall>j\<in>it. k\<ge>j"
 
       from P(3) have "k\<in>set (RBT_Impl.keys r)" 
-        by (auto simp add: lookup_keys[symmetric] ST(4))
-      with ST(2) tree_greater_prop have "k' < k" by auto
-      with P(3) have "RBT_Impl.lookup (Branch col l k' v' r) k = Some v"
+        by (auto simp add: rbt_lookup_keys[symmetric] ST(4))
+      with ST(2) rbt_greater_prop have "k' < k" by auto
+      with P(3) have "rbt_lookup (Branch col l k' v' r) k = Some v"
         by auto
       thus "I (it - {k}) (f k v \<sigma>)"
         using P(1,2,4,5,6) A(2) unfolding ipres_def by blast
@@ -459,10 +459,10 @@ next
     *}
   { fix it d
     assume is_rbt: "is_rbt m"
-      and rest: "I it \<sigma>" "ipres m d" "it \<supseteq> dom (RBT_Impl.lookup m)" "\<forall>k\<in>dom (RBT_Impl.lookup m). \<forall>k'\<in>it-dom (RBT_Impl.lookup m). k\<ge>k'" "it \<subseteq> d"
-    from is_rbt have "RBT_Impl.sorted m" by(rule is_rbt_sorted)
+      and rest: "I it \<sigma>" "ipres m d" "it \<supseteq> dom (rbt_lookup m)" "\<forall>k\<in>dom (rbt_lookup m). \<forall>k'\<in>it-dom (rbt_lookup m). k\<ge>k'" "it \<subseteq> d"
+    from is_rbt have "rbt_sorted m" by(rule is_rbt_rbt_sorted)
     with rest 
-    have "I (it - dom (RBT_Impl.lookup m)) (RBT_add.rm_reverse_iterateoi c f m \<sigma>) 
+    have "I (it - dom (rbt_lookup m)) (RBT_add.rm_reverse_iterateoi c f m \<sigma>) 
           \<or> (\<exists>it'\<subseteq>it. it' \<noteq> {} \<and> \<not> c (RBT_add.rm_reverse_iterateoi c f m \<sigma>)  
                \<and> I it' (RBT_add.rm_reverse_iterateoi c f m \<sigma>))"
     proof (induct m arbitrary: it \<sigma>)
@@ -477,7 +477,7 @@ next
           we are in the second case (interrupt) of our proposition: *}
         from Branch.prems(3) have "it\<noteq>{}" by auto
         with False show ?thesis
-          by (simp del: RBT_Impl.lookup.simps add: exI[where x=it] Branch.prems(1))
+          by (simp del: rbt_lookup.simps add: exI[where x=it] Branch.prems(1))
       next
         case True
         note C = this
@@ -489,22 +489,22 @@ next
         note IPR = ipres_split[OF Branch.prems(6,2)]
 
         txt {* Also the sorted tree properties can be transferred to the subtrees*}
-        from Branch.prems(6) have ST: "m1 |\<guillemotleft> a" "a \<guillemotleft>| m2" "RBT_Impl.sorted m1" "RBT_Impl.sorted m2"
+        from Branch.prems(6) have ST: "m1 |\<guillemotleft> a" "a \<guillemotleft>| m2" "rbt_sorted m1" "rbt_sorted m2"
           by simp_all
 
         txt {* As @{term a} is the key of the original tree, the subtrees, 
           in particular the right one, does not contain @{term a}. 
           With @{thm Branch.prems(3)} we thus get:
           *}
-        from Branch.prems(3,6) have DSS: "dom (RBT_Impl.lookup m2) \<subseteq> it"
-          apply (simp only: lookup_keys ST)
-          apply (auto simp add: tree_greater_prop tree_less_prop)
+        from Branch.prems(3,6) have DSS: "dom (rbt_lookup m2) \<subseteq> it"
+          apply (simp only: rbt_lookup_keys ST)
+          apply (auto simp add: rbt_greater_prop rbt_less_prop)
           done
 
         txt {* As the whole tree's domain is maximal in the remaining elements, the right subtree is also maximal *}
         from Branch.prems(3,4,6) have 
-          MIN: "\<forall>k\<in>dom (RBT_Impl.lookup m2). \<forall>k'\<in>it - dom (RBT_Impl.lookup m2). k \<ge> k'"
-          apply (simp only: lookup_keys ST)
+          MIN: "\<forall>k\<in>dom (rbt_lookup m2). \<forall>k'\<in>it - dom (rbt_lookup m2). k \<ge> k'"
+          apply (simp only: rbt_lookup_keys ST)
           apply (intro ballI)
         proof -
           fix k k'
@@ -512,17 +512,17 @@ next
             "set (RBT_Impl.keys (Branch col m1 a b m2)) \<subseteq> it" 
             "\<forall>k\<in>set (RBT_Impl.keys (Branch col m1 a b m2)). 
             \<forall>k'\<in>it - set (RBT_Impl.keys (Branch col m1 a b m2)). k \<ge> k'" 
-            "RBT_Impl.sorted (Branch col m1 a b m2)" 
+            "rbt_sorted (Branch col m1 a b m2)" 
             "k \<in> set (RBT_Impl.keys m2)" 
             "k' \<in> it - set (RBT_Impl.keys m2)"
           {
             assume C: "k'\<in>set (RBT_Impl.keys m1)"
             with A(3,4) have "k\<ge>k'" 
-              by (force simp add: tree_greater_prop tree_less_prop)
+              by (force simp add: rbt_greater_prop rbt_less_prop)
           } moreover {
             assume C: "k'=a"
             with A(3,4) have "k\<ge>k'" 
-              by (force simp add: tree_greater_prop tree_less_prop)
+              by (force simp add: rbt_greater_prop rbt_less_prop)
           } moreover {
             assume C: "k'\<in> it - set (RBT_Impl.keys (Branch col m1 a b m2))"
             with A(2,4) have "k\<ge>k'" by auto
@@ -532,7 +532,7 @@ next
         txt {* Now we can apply the induction hypothesis for the right subtree: *}
         from Branch.prems(1) IPR(2) DSS MIN Branch.prems(5) ST(4)
         have
-          "I (it - dom (RBT_Impl.lookup m2)) (RBT_add.rm_reverse_iterateoi c f m2 \<sigma>) 
+          "I (it - dom (rbt_lookup m2)) (RBT_add.rm_reverse_iterateoi c f m2 \<sigma>) 
           \<or> (\<exists>it'. it' \<subseteq> it \<and> it' \<noteq> {} 
                  \<and> \<not> c (RBT_add.rm_reverse_iterateoi c f m2 \<sigma>) 
                  \<and> I it' (RBT_add.rm_reverse_iterateoi c f m2 \<sigma>))"
@@ -553,15 +553,15 @@ next
           txt {* Case: The iterator completely finished the right subtree: *}
           assume C1: ?C1
           let ?\<sigma>' = "(RBT_add.rm_reverse_iterateoi c f m2 \<sigma>)"
-          let ?it' = "(it - dom (RBT_Impl.lookup m2))"
+          let ?it' = "(it - dom (rbt_lookup m2))"
           txt {* In this case, we have to check whether the condition still holds *}
           show ?thesis
           proof (cases "c ?\<sigma>'")
             case False 
             txt {* The iterator will interrupt right here *}
-            from Branch.prems(3,6) have ITGM1: "\<not> it \<subseteq> dom (RBT_Impl.lookup m2)"
-              apply (simp only: lookup_keys ST)
-              apply (auto simp add: tree_greater_prop tree_less_prop)
+            from Branch.prems(3,6) have ITGM1: "\<not> it \<subseteq> dom (rbt_lookup m2)"
+              apply (simp only: rbt_lookup_keys ST)
+              apply (auto simp add: rbt_greater_prop rbt_less_prop)
               done
             thus ?thesis using False C C1 by(auto intro!: exI[where x="?it'"])
           next
@@ -572,18 +572,18 @@ next
             have AMIN: "\<forall>k\<in>?it'. a\<ge>k" 
             proof (intro ballI)
               fix k
-              assume A: "k\<in>it - dom (RBT_Impl.lookup m2)"
+              assume A: "k\<in>it - dom (rbt_lookup m2)"
               show "a \<ge> k"
-              proof(cases "k\<in>dom (RBT_Impl.lookup (Branch col m1 a b m2))")
+              proof(cases "k\<in>dom (rbt_lookup (Branch col m1 a b m2))")
                 case False
                 with A Branch.prems(4)[rule_format, of a k] show "a\<ge>k" by force
               next
                 case True
                 with A have "k\<in>set (RBT_Impl.keys m1) \<or> a=k"
-                  apply (simp only: lookup_keys ST Branch.prems(6))
+                  apply (simp only: rbt_lookup_keys ST Branch.prems(6))
                   apply auto
                   done
-                with ST show "a\<ge>k" by (auto simp add: tree_greater_prop tree_less_prop)
+                with ST show "a\<ge>k" by (auto simp add: rbt_greater_prop rbt_less_prop)
               qed
             qed
 
@@ -594,18 +594,18 @@ next
               apply (auto simp add: C AMIN)
               done
           
-            have RMIN: "\<forall>k\<in>dom (RBT_Impl.lookup m1). 
-                    \<forall>a\<in>it - dom (RBT_Impl.lookup m2) - {a} - dom (RBT_Impl.lookup m1). 
+            have RMIN: "\<forall>k\<in>dom (rbt_lookup m1). 
+                    \<forall>a\<in>it - dom (rbt_lookup m2) - {a} - dom (rbt_lookup m1). 
                       k \<ge> a"
               using Branch.prems(4)
-              apply (simp only: lookup_keys ST Branch.prems(6))
+              apply (simp only: rbt_lookup_keys ST Branch.prems(6))
               apply auto
               done
 
             from Branch.prems(3,6) have 
-              DSS: "dom (RBT_Impl.lookup m1) \<subseteq> ?it' - {a}"
-              apply (simp only: lookup_keys ST)
-              apply (force simp add: tree_greater_prop tree_less_prop)
+              DSS: "dom (rbt_lookup m1) \<subseteq> ?it' - {a}"
+              apply (simp only: rbt_lookup_keys ST)
+              apply (force simp add: rbt_greater_prop rbt_less_prop)
               done
 
             from Branch.prems(5) have IMAS: "?it' - {a} \<subseteq> d" by auto
@@ -613,12 +613,12 @@ next
             txt {* Finally, we can apply the induction hypothesis on the iteration over
               the left subtree, and get two cases: Ordinary termination or interrupt.*}
             from Branch.hyps(1)[OF I' IPR(1) DSS RMIN IMAS ST(3)] have
-              "I (?it' - {a} - dom (RBT_Impl.lookup m1)) (RBT_add.rm_reverse_iterateoi c f m1 (f a b ?\<sigma>')) \<or>
+              "I (?it' - {a} - dom (rbt_lookup m1)) (RBT_add.rm_reverse_iterateoi c f m1 (f a b ?\<sigma>')) \<or>
               (\<exists>it'. it' \<subseteq> ?it' - {a} \<and> it' \<noteq> {} \<and> \<not> c (RBT_add.rm_reverse_iterateoi c f m1 (f a b ?\<sigma>')) \<and> I it' (RBT_add.rm_reverse_iterateoi c f m1 (f a b ?\<sigma>')))"
               .
 
             thus ?thesis using C True
-              apply (simp only: dom_lookup_Branch[OF Branch.prems(6)])
+              apply (simp only: dom_rbt_lookup_Branch[OF Branch.prems(6)])
               apply (simp add: Diff_insert2[symmetric] set_diff_diff_left Un_commute)
               apply auto
               done
@@ -629,11 +629,11 @@ next
   note G = this
 
   txt {* Finally, we derive the original goal from the generalized one.*}
-  from step have IPR: "ipres m (dom (RBT_Impl.lookup m))"
+  from step have IPR: "ipres m (dom (rbt_lookup m))"
     by (unfold ipres_def) auto
   from G[OF inv I0 IPR]
   show "I {} (RBT_add.rm_reverse_iterateoi c f m \<sigma>) \<or>
-        (\<exists>it \<subseteq> dom (RBT_Impl.lookup m). it \<noteq> {} \<and> \<not> c (RBT_add.rm_reverse_iterateoi c f m \<sigma>) \<and>
+        (\<exists>it \<subseteq> dom (rbt_lookup m). it \<noteq> {} \<and> \<not> c (RBT_add.rm_reverse_iterateoi c f m \<sigma>) \<and>
              I it (RBT_add.rm_reverse_iterateoi c f m \<sigma>))"
     by auto
 qed
