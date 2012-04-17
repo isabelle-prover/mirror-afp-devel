@@ -123,6 +123,10 @@ begin
 
 definition
   "Disjunctive = {x . (\<forall> X . times_abc x (Sup_b X) = Sup_c ((times_abc x) ` X) )}"
+
+lemma DisjunctiveD: "x \<in> Disjunctive \<Longrightarrow> times_abc x (Sup_b X) = Sup_c ((times_abc x) ` X)"
+  by (simp add: Disjunctive_def)
+
 end
 
 interpretation Apply: Disjunctive Sup Sup "\<lambda> f . f"
@@ -201,5 +205,19 @@ lemma [simp]: "(F::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) \<in
   apply (simp add: Apply.Disjunctive_def)
   apply (drule_tac x="{}" in spec)
   by simp
+
+lemma weak_fusion: "h \<in> Apply.Disjunctive \<Longrightarrow> mono f \<Longrightarrow> mono g \<Longrightarrow> 
+    h o f \<le> g o h \<Longrightarrow> h (lfp f) \<le> lfp g"
+  apply (rule_tac P = "\<lambda> x . h x \<le> lfp g" in lfp_ordinal_induct, simp_all)
+  apply (rule_tac y = "g (h S)" in order_trans)
+  apply (simp add: le_fun_def)
+  apply (rule_tac y = "g (lfp g)" in order_trans)
+  apply (rule_tac f = g in monoD, simp_all)
+  apply (rule lfp_lemma2, simp)
+  apply (simp add: Apply.DisjunctiveD)
+  by (rule Sup_least, blast)
+
+lemma inf_Disj: "(\<lambda> (x::'a::complete_distrib_lattice) . inf x y) \<in> Apply.Disjunctive"
+  by (simp add: Apply.Disjunctive_def fun_eq_iff Sup_inf SUP_def)
 
 end

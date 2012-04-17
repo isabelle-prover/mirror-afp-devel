@@ -18,7 +18,13 @@ class dual =
 class omega = 
   fixes omega::"'a \<Rightarrow> 'a" ("_ ^ \<omega>" [81] 80)
 
-class mbt_algebra = monoid_mult + dual + omega + distrib_lattice + top + bot +
+class star = 
+  fixes star::"'a \<Rightarrow> 'a" ("(_ ^ *)" [81] 80)
+
+class dual_star = 
+  fixes dual_star::"'a \<Rightarrow> 'a" ("(_ ^ \<otimes>)" [81] 80)
+
+class mbt_algebra = monoid_mult + dual + omega + distrib_lattice + top + bot + star + dual_star +
   assumes
       dual_le: "(x \<le> y) = (y ^ o \<le> x ^ o)"
   and dual_dual [simp]: "(x ^ o) ^ o = x"
@@ -30,6 +36,9 @@ class mbt_algebra = monoid_mult + dual + omega + distrib_lattice + top + bot +
   and dual_neg: "(x * \<top>) \<sqinter> (x ^ o * \<bottom>) = \<bottom>"
   and omega_fix: "x ^ \<omega> = (x * (x ^ \<omega>)) \<sqinter> 1"
   and omega_least: "(x * z) \<sqinter> y \<le> z \<Longrightarrow> (x ^ \<omega>) * y \<le> z"
+  and star_fix: "x ^ * = (x * (x ^ *)) \<sqinter> 1"
+  and star_greatest: "z \<le> (x * z) \<sqinter> y \<Longrightarrow> z \<le> (x ^ *) * y"
+  and dual_star_def: "(x ^ \<otimes>) = (((x ^ o) ^ *) ^ o)"
 begin
 
 lemma le_comp_right: "x \<le> y \<Longrightarrow> x * z \<le> y * z"
@@ -53,6 +62,12 @@ definition
 definition
   omega_MonoTran_def: "x ^ \<omega> = Abs_MonoTran (omega_fun (Rep_MonoTran x))"
 
+definition 
+  star_MonoTran_def: "x ^ * = Abs_MonoTran (star_fun (Rep_MonoTran x))"
+
+definition
+  dual_star_MonoTran_def: "(x::('a MonoTran)) ^ \<otimes> = ((x ^ o) ^ *) ^ o"
+  
 instance proof
   fix x y :: "'a MonoTran" show "(x \<le> y) = (y ^ o \<le> x ^ o)"
     apply (simp add: dual_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
@@ -110,7 +125,25 @@ next
     apply (simp add: lfp_def)
     apply (rule Inf_lower)
     by (simp add: Omega_fun_def)
-    
+next
+  fix x :: "'a MonoTran" show "x ^ * = x * x ^ * \<sqinter> 1"
+    apply (simp add: star_MonoTran_def times_MonoTran_def inf_MonoTran_def one_MonoTran_def Abs_MonoTran_inverse)
+    apply (simp add: star_fun_def Omega_fun_def)
+    apply (subst gfp_unfold, simp_all)
+    apply (cut_tac x = x in Rep_MonoTran)
+    by (unfold Omega_fun_def [THEN sym], simp)
+next
+  fix x y z :: "'a MonoTran" assume A: "z \<le> x * z \<sqinter> y" from A show "z \<le> x ^ * * y"
+    apply (simp add: star_MonoTran_def times_MonoTran_def less_eq_MonoTran_def inf_MonoTran_def one_MonoTran_def Abs_MonoTran_inverse)
+    apply (cut_tac f = "Rep_MonoTran x" and g = "Rep_MonoTran y" in gfp_star)
+    apply (cut_tac x = x in Rep_MonoTran)
+    apply simp_all
+    apply (simp add: gfp_def)
+    apply (rule Sup_upper)
+    by (simp add: Omega_fun_def)
+next
+  fix x :: "'a MonoTran" show "x ^ \<otimes> = ((x ^ o) ^ *) ^ o"
+    by (simp add: dual_star_MonoTran_def) 
 qed
 
 end
@@ -170,6 +203,38 @@ lemma [simp]: "(x * \<bottom>) * y = x * \<bottom>"
 lemma gt_one_comp: "1 \<le> x \<Longrightarrow> y \<le> x * y"
   by (cut_tac x = 1 and y = x and z = y in le_comp_right, simp_all)
 
+
+  theorem omega_comp_fix: "x ^ \<omega> * y = (x * (x ^ \<omega>) * y) \<sqinter> y"
+  apply (subst omega_fix)
+  by (simp add: inf_comp)
+
+  theorem dual_star_fix: "x^\<otimes> = (x * (x^\<otimes>)) \<squnion> 1"
+    by (metis dual_comp dual_dual dual_inf dual_one dual_star_def star_fix)
+
+  theorem star_comp_fix: "x ^ * * y = (x * (x ^ *) * y) \<sqinter> y"
+  apply (subst star_fix)
+  by (simp add: inf_comp)
+
+  theorem dual_star_comp_fix: "x^\<otimes> * y = (x * (x^\<otimes>) * y) \<squnion> y"
+  apply (subst dual_star_fix)
+  by (simp add: sup_comp)
+
+  theorem dual_star_least: "(x * z) \<squnion> y \<le> z \<Longrightarrow> (x^\<otimes>) * y \<le> z"
+    apply (subst dual_le)
+    apply (simp add: dual_star_def dual_comp)
+    apply (rule star_greatest)
+    apply (subst dual_le)
+    by (simp add: dual_inf dual_comp)
+
+  lemma omega_one [simp]: "1 ^ \<omega> = \<bottom>"
+    apply (rule antisym, simp_all)
+    by (cut_tac x = "1::'a" and y = 1 and z = \<bottom> in omega_least, simp_all)
+
+  lemma omega_mono: "x \<le> y \<Longrightarrow> x ^ \<omega> \<le> y ^ \<omega>"
+    apply (cut_tac x = x and y = 1 and z = "y ^ \<omega>" in omega_least, simp_all)
+    apply (subst (2) omega_fix, simp_all)
+    apply (rule_tac y = "x * y ^ \<omega>" in order_trans, simp)
+    by (rule le_comp_right, simp)
 end
 
 sublocale mbt_algebra < conjunctive "inf" "inf" "times"
@@ -189,6 +254,30 @@ lemma dual_disjunctive: "x \<in> disjunctive \<Longrightarrow> x ^ o \<in> conju
   apply safe
   apply (rule dual_eq)
   by (simp add: dual_comp dual_inf)
+
+lemma comp_pres_conj: "x \<in> conjunctive \<Longrightarrow> y \<in> conjunctive \<Longrightarrow> x * y \<in> conjunctive"
+  apply (subst conjunctive_def, safe)
+  by (simp add: mult_assoc conjunctiveD)
+
+lemma comp_pres_disj: "x \<in> disjunctive \<Longrightarrow> y \<in> disjunctive \<Longrightarrow> x * y \<in> disjunctive"
+  apply (subst disjunctive_def, safe)
+  by (simp add: mult_assoc disjunctiveD)
+
+lemma start_pres_conj: "x \<in> conjunctive \<Longrightarrow> (x ^ *) \<in> conjunctive"
+  apply (subst conjunctive_def, safe)
+  apply (rule antisym, simp_all)
+  apply (metis inf_le1 inf_le2 le_comp)
+  apply (rule star_greatest)
+  apply (subst conjunctiveD, simp)
+  apply (subst star_comp_fix)
+  apply (subst star_comp_fix)
+  by (metis inf.assoc inf_left_commute mult.assoc order_refl)
+
+lemma dual_star_pres_disj: "x \<in> disjunctive \<Longrightarrow> x^\<otimes> \<in> disjunctive"
+  apply (simp add: dual_star_def)
+  apply (rule dual_conjunctive)
+  apply (rule start_pres_conj)
+  by (rule dual_disjunctive, simp)
 
 subsection{*Assertions*}
 
@@ -822,4 +911,47 @@ theorem omega_lfp:
   apply (subst (2) omega_fix)
   by (simp add: inf_comp mult_assoc)
 end
+
+lemma [simp]: "mono (\<lambda> (t::'a::mbt_algebra) . x * t \<sqinter> y)"
+  apply (simp add: mono_def, safe)
+  apply (rule_tac y = "x * xa" in order_trans, simp)
+  by (rule le_comp, simp)
+
+
+class mbt_algebra_fusion = mbt_algebra +
+  assumes fusion: "(\<forall> t . x * t \<sqinter> y \<sqinter> z \<le> u * (t \<sqinter> z) \<sqinter> v)
+          \<Longrightarrow> (x ^ \<omega>) * y \<sqinter> z \<le> (u ^ \<omega>) * v "
+
+lemma 
+    "class.mbt_algebra_fusion (1::'a::complete_mbt_algebra) (op *) (op \<sqinter>) (op \<le>) (op <) (op \<squnion>) dual dual_star omega star \<bottom> \<top>"
+    apply unfold_locales
+    apply (cut_tac h = "\<lambda> t . t \<sqinter> z" and f = "\<lambda> t . x * t \<sqinter> y" and g = "\<lambda> t . u * t \<sqinter> v" in weak_fusion)
+    apply (rule inf_Disj)
+    apply simp_all
+    apply (simp add: le_fun_def)
+    by  (simp add: omega_lfp)
+
+context mbt_algebra_fusion
+begin
+
+lemma omega_star: "x \<in> conjunctive \<Longrightarrow> x ^ \<omega> = wpt (x ^ \<omega>) * (x ^ *)"
+  apply (simp add: wpt_def inf_comp)
+  apply (rule antisym)
+  apply (cut_tac x = x and y = 1 and z = "x ^ \<omega> * \<top> \<sqinter> x ^ *" in omega_least)
+  apply (simp_all add: conjunctiveD,safe)
+  apply  (subst (2) omega_fix)
+  apply (simp add: inf_comp inf_assoc mult_assoc)
+  apply (metis inf.commute inf_assoc inf_le1 star_fix)
+  apply (cut_tac x = x and y = \<top> and z = "x ^ *" and u = x and v = 1 in fusion)
+  apply (simp add: conjunctiveD)
+  apply (metis inf_commute inf_le1 le_infE star_fix)
+  by (metis mult.right_neutral)
+
+lemma omega_pres_conj: "x \<in> conjunctive \<Longrightarrow> x ^ \<omega> \<in> conjunctive"
+  apply (subst omega_star, simp)
+  apply (rule comp_pres_conj)
+  apply (rule assertion_conjunctive, simp)
+  by (rule start_pres_conj, simp)
+end
+
 end

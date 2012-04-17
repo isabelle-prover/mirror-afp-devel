@@ -12,9 +12,7 @@ a monotonic boolean transformers algebra. The theorem stating the
 equivalence between a Hoare
 correctness triple and a refinement statement holds under the
 assumption that we have a monotonic boolean transformers algebra with
-post condition statement. Finally the Hoare rules for fixpoint
-and while statement are proved asumming that we have a complete
-monotonic boolean transformers algebra.*}
+post condition statement.*}
 
 definition
   "assume" :: "'a::mbt_algebra Assertion \<Rightarrow> 'a"  ("[\<cdot> _ ]" [0] 1000) where
@@ -40,6 +38,9 @@ lemma assert_inf: "{\<cdot>p \<sqinter> q} = {\<cdot>p} \<sqinter> {\<cdot>q}"
 lemma assert_neg: "{\<cdot>-p} = neg_assert {\<cdot>p}"
   by (simp add: uminus_Assertion_def)
 
+lemma assert_false [simp]: "{\<cdot>\<bottom>} = \<bottom>"
+  by (simp add: bot_Assertion_def)
+
 lemma if_Assertion_assumption: "({\<cdot>p} * x) \<squnion> ({\<cdot>-p} * y) = ([\<cdot>p] * x) \<sqinter> ([\<cdot>-p] * y)"
 proof -
     have "({\<cdot>p} * x) \<squnion> {\<cdot>-p} * y = ({\<cdot>p} * \<top> \<sqinter> [\<cdot>p]) * x \<squnion> ({\<cdot>-p} * \<top> \<sqinter> [\<cdot>-p]) * y" by simp
@@ -63,7 +64,6 @@ lemma wp_assume: "wp [\<cdot>p] q = -p \<squnion> q"
   apply (rule assert_injective)
   apply simp
   by (simp add: assert_sup assert_neg assume_def wpt_dual_assertion_comp)
-
 
 lemma assert_commute: "y \<in> conjunctive \<Longrightarrow> y * {\<cdot>p} = {\<cdot> wp y p } * y"
   apply (simp add: wp_def abs_wpt_def)
@@ -106,6 +106,27 @@ lemma wp_comp: "wp (x * y) p = wp x (wp y p)"
 lemma wp_choice: "wp (x \<sqinter> y) = wp x \<sqinter> wp y"
   apply (simp add: fun_eq_iff wp_def inf_fun_def inf_comp inf_Assertion_def abs_wpt_def)
   by (simp add: wpt_choice)
+
+lemma [simp]: "wp 1 = id"
+  apply (unfold fun_eq_iff, safe)
+  apply (rule assert_injective)
+  by (simp add: wp_def abs_wpt_def)
+
+lemma wp_omega_fix: "wp (x ^ \<omega>) p = wp x (wp (x ^ \<omega>) p) \<sqinter> p"
+  apply (subst omega_fix)
+  by (simp add: wp_choice wp_comp)
+
+lemma wp_omega_least: "(wp x r) \<sqinter> p \<le> r \<Longrightarrow> wp (x ^ \<omega>) p \<le> r"
+  apply (simp add: wp_def abs_wpt_def inf_Assertion_def less_eq_Assertion_def)
+  apply (simp add: wpt_def)
+  apply (rule_tac y = "{\<cdot>r} * \<top> \<sqinter> 1" in order_trans)
+  apply simp
+  apply (rule_tac y = "x ^ \<omega> * {\<cdot> p } * \<top>" in order_trans, simp)
+  apply (simp add: mult_assoc)
+  apply (rule omega_least)
+  apply (drule_tac z = \<top> in le_comp_right)
+  apply (simp add: inf_comp mult_assoc [THEN sym])
+  by (simp add: assertion_prop)
 
 lemma Assertion_wp: "{\<cdot>wp x p} = (x * {\<cdot>p} * \<top>) \<sqinter> 1"
   apply (simp add: wp_def abs_wpt_def)
@@ -183,6 +204,9 @@ lemma hoare_choice: "hoare p (x \<sqinter> y) q = ((hoare p) x q & (hoare p y q)
 definition
   if_stm:: "'a::mbt_algebra Assertion \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("(If (_)/ then (_)/ else (_))" [0, 0, 10] 10) where
   "if_stm b x y = (([\<cdot> b ] * x) \<sqinter> ([\<cdot> -b ] * y))"
+
+lemma if_assertion: "(If p then x else y) = {\<cdot>p} * x \<squnion> {\<cdot> -p} * y"
+  by (simp add: if_stm_def if_Assertion_assumption)
 
 lemma (in boolean_algebra) sup_neg_inf:
   "(p \<le> q \<squnion> r) = (p \<sqinter> -q \<le> r)"
@@ -263,9 +287,14 @@ definition
   while:: "'a::mbt_algebra Assertion \<Rightarrow> 'a \<Rightarrow> 'a" ("(While (_)/ do (_))" [0, 10] 10) where
   "while p x = ([\<cdot> p] * x) ^ \<omega> * [\<cdot> -p ]"
 
-lemma (in mbt_algebra) omega_comp_fix: "x * (x ^ \<omega> * y) \<sqinter> y = x ^ \<omega> * y"
-  apply (subst (2) omega_fix)
-  by (simp add: inf_comp mult_assoc)
+lemma while_false: "(While \<bottom> do x) = 1"
+  apply (unfold while_def)
+  apply (subst omega_fix)
+  by (simp_all add: assume_def)
+
+lemma while_true: "(While \<top> do 1) = \<bottom>"
+  apply (unfold while_def)
+  by (rule antisym, simp_all add: assume_def)
 
 lemma hoare_wp [simp]: "hoare (wp x q) x q"
   by (simp add: hoare_def)
@@ -284,12 +313,12 @@ lemma (in mbt_algebra) hoare_assume_comp: "hoare p ([\<cdot>b] * x) q = hoare (p
   apply (simp add: hoare_comp_wp hoare_assume)
   by (simp add: hoare_def)
 
-
 lemma hoare_while_mbt:
   "(\<forall> (w::'b::well_founded) r . (\<forall> v . v < w \<longrightarrow> p v \<le> r) \<longrightarrow> hoare ((p w) \<sqinter> b) x r) \<Longrightarrow> 
        (\<forall> u . p u \<le> q) \<Longrightarrow> hoare  (p w) (While b do x) (q \<sqinter> -b)"
   apply (unfold while_def)
   apply (rule_tac F = "\<lambda>z. [\<cdot> b ] * x * z \<sqinter> [\<cdot> - b ]" in hoare_fixpoint_mbt)
+  apply (simp add: mult_assoc [THEN sym])
   apply (simp add: omega_comp_fix)
   apply (unfold hoare_choice)
   apply safe
@@ -301,7 +330,6 @@ lemma hoare_while_mbt:
   apply (auto simp add: hoare_assume)
   apply (rule_tac y = "p w" in order_trans)
   by simp_all
-
 
 lemma hoare_while_complete_mbt:
   "(\<forall> w::'b::well_founded . hoare ((p w) \<sqinter> b) x (Sup_less p w)) \<Longrightarrow> 
@@ -339,6 +367,65 @@ lemma "hoare p S q \<Longrightarrow> datarefin ({\<cdot>p} * S) S1 D D1 \<Longri
   apply (unfold wp_comp [THEN sym])
   apply (rule wp_fun_mono2)
   by (simp add: mult_assoc)
+
+lemma inf_pres_conj: "x \<in> conjunctive \<Longrightarrow> y \<in> conjunctive \<Longrightarrow> x \<sqinter> y \<in> conjunctive"
+  apply (subst conjunctive_def, safe)
+  apply (simp add: inf_comp conjunctiveD)
+  by (metis (hide_lams, no_types) inf_assoc inf_left_commute)
+
+lemma sup_pres_disj: "x \<in> disjunctive \<Longrightarrow> y \<in> disjunctive \<Longrightarrow> x \<squnion> y \<in> disjunctive"
+  apply (subst disjunctive_def, safe)
+  apply (simp add: sup_comp disjunctiveD)
+  by (metis (hide_lams, no_types) sup_assoc sup_left_commute)
+
+lemma assumption_conjuncive [simp]: "[\<cdot>p] \<in> conjunctive"
+  by (simp add: assume_def dual_disjunctive assertion_disjunctive)
+
+lemma assumption_disjuncive [simp]: "[\<cdot>p] \<in> disjunctive"
+  by (simp add: assume_def dual_conjunctive assertion_conjunctive)
+
+lemma if_pres_conj: "x \<in> conjunctive \<Longrightarrow> y \<in> conjunctive \<Longrightarrow> (If p then x else y) \<in> conjunctive"
+  apply (unfold if_stm_def)
+  by (simp add: inf_pres_conj comp_pres_conj)
+
+lemma if_pres_disj: "x \<in> disjunctive \<Longrightarrow> y \<in> disjunctive \<Longrightarrow> (If p then x else y) \<in> disjunctive"
+  apply (unfold if_assertion)
+  by (simp add: sup_pres_disj comp_pres_disj assertion_disjunctive)
+
+lemma while_dual_star: "(While p do (x::'a::mbt_algebra)) = (({\<cdot> p} * x)^\<otimes> * {\<cdot> -p })"
+  apply (simp add: while_def)
+  apply (rule antisym)
+  apply (rule omega_least)
+   proof -
+     have "([\<cdot> p] * x * (({\<cdot> p} * x)^\<otimes> * {\<cdot>-p}) \<sqinter> [\<cdot>-p]) = ({\<cdot> p} * x * (({\<cdot> p} * x)^\<otimes> * {\<cdot>-p})) \<squnion> {\<cdot>-p}"
+        apply (unfold mult_assoc)
+        by (cut_tac p = p and x = "(x * (({\<cdot> p } * x)^\<otimes> * {\<cdot> -p }))" and y = 1 in if_Assertion_assumption, simp)
+     also have "\<dots> = ({\<cdot> p} * x)^\<otimes> * {\<cdot>-p}"
+        by (simp add: mult_assoc [THEN sym], simp add: dual_star_comp_fix [THEN sym])
+     finally show "[\<cdot> p ] * x * (({\<cdot> p } * x)^\<otimes> * {\<cdot> - p }) \<sqinter> [\<cdot> - p ] \<le> ({\<cdot> p } * x)^\<otimes> * {\<cdot> - p }" by simp
+   next
+     show "({\<cdot> p } * x)^\<otimes> * {\<cdot> - p } \<le> ([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]"
+       apply (rule dual_star_least)
+       proof -
+        have "{\<cdot> p } * x * (([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]) \<squnion> {\<cdot> - p } = [\<cdot> p ] * x * (([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]) \<sqinter> [\<cdot> - p ]"
+        apply (unfold mult_assoc)
+        by (cut_tac p = p and x = "(x * (([\<cdot>p] * x)^\<omega> * [\<cdot>-p]))" and y = 1 in if_Assertion_assumption, simp)
+        also have "... = ([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]"
+          apply (simp add: mult_assoc [THEN sym])
+          by (metis omega_comp_fix)
+        finally show "{\<cdot> p } * x * (([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]) \<squnion> {\<cdot> - p } \<le> ([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ] " by simp
+     qed
+   qed
+
+lemma while_pres_disj: "(x::'a::mbt_algebra) \<in> disjunctive \<Longrightarrow> (While p do x) \<in> disjunctive"
+  apply (unfold while_dual_star)
+  apply (rule comp_pres_disj)
+  apply (rule dual_star_pres_disj)
+  by (rule comp_pres_disj, simp_all add: assertion_disjunctive)
+
+lemma while_pres_conj: "(x::'a::mbt_algebra_fusion) \<in> conjunctive \<Longrightarrow> (While p do x) \<in> conjunctive"
+  apply(unfold while_def)
+  by (simp add: comp_pres_conj omega_pres_conj)
 
 end
 

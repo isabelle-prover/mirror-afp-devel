@@ -56,6 +56,37 @@ theorem lfp_mono [simp]:
   apply (auto intro: SUP_upper)
   done
 
+lemma gfp_ordinal_induct:
+  fixes f :: "'a::complete_lattice => 'a"
+  assumes mono: "mono f"
+  and P_f: "!!S. P S ==> P (f S)"
+  and P_Union: "!!M. \<forall>S\<in>M. P S ==> P (Inf M)"
+  shows "P (gfp f)"
+proof -
+  let ?M = "{S. gfp f \<le> S \<and> P S}"
+  have "P (Inf ?M)" using P_Union by simp
+  also have "Inf ?M = gfp f"
+  proof (rule antisym)
+    show "gfp f \<le> Inf ?M" by (blast intro: Inf_greatest)
+    hence "f (gfp f) \<le> f (Inf ?M)" by (rule mono [THEN monoD])
+    hence "gfp f \<le> f (Inf ?M)" using mono [THEN gfp_unfold] by simp
+    hence "f (Inf ?M) \<in> ?M" using P_f P_Union by simp
+    hence "Inf ?M \<le> f (Inf ?M)" by (rule Inf_lower)
+    thus "Inf ?M \<le> gfp f" by (rule gfp_upperbound)
+  qed
+  finally show ?thesis .
+qed 
+theorem gfp_mono [simp]:
+  "mono_mono F \<Longrightarrow> mono (gfp F)"
+  apply (simp add: mono_mono_def)
+  apply (rule_tac f="F" and P = "mono" in gfp_ordinal_induct)
+  apply (simp_all, safe)
+  apply (simp_all add: mono_def)
+  apply (intro allI impI INF_greatest)
+  apply (rule_tac y = "f x" in order_trans)
+  apply (auto intro: INF_lower)
+  done
+
 context complete_lattice begin
 
 definition
@@ -85,5 +116,7 @@ theorem fp_wf_induction:
   apply (rule_tac y = "f (Sup_less y xa)" in order_trans, simp)
   apply (drule_tac x = "Sup_less y xa" and y = "x" in monoD)
   by (simp add: Sup_less_least, auto)
+
+
 
 end

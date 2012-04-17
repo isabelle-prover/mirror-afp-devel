@@ -278,6 +278,9 @@ definition
 definition 
   "omega_fun f = lfp (Omega_fun f id)"
 
+definition
+  "star_fun f = gfp (Omega_fun f id)"
+
 lemma [simp]: "f \<in> MonoTran \<Longrightarrow> mono f"
   by (unfold MonoTran_def, simp)
 
@@ -302,13 +305,25 @@ lemma [simp]: "f \<in> MonoTran \<Longrightarrow> omega_fun f \<in> MonoTran"
   apply (rule_tac y = "x" in order_trans)
   by simp_all
 
+lemma [simp]: "f \<in> MonoTran \<Longrightarrow> star_fun f \<in> MonoTran" 
+  apply (unfold star_fun_def MonoTran_def Omega_fun_def, simp)
+  apply (rule gfp_mono)
+  apply (simp add: mono_mono_def mono_def)
+  apply safe
+  apply (rule_tac y = "f \<circ> x" in order_trans)
+  apply simp
+  apply (simp add: le_fun_def inf_fun_def id_def o_def)
+  apply (rule_tac y = "f (fa x)" in order_trans)
+  apply simp_all
+  apply (rule_tac y = "x" in order_trans)
+  by simp_all
+
 lemma Sup_comp_fun: "(Sup M) o f = Sup {g . \<exists> m \<in> M . g = m o f}"
   apply (simp add: fun_eq_iff Sup_fun_def o_def)
   apply safe
   apply (simp add: SUP_def image_def)
   apply (subgoal_tac "{y . \<exists>fa \<in> M . y = fa (f x)} = {y . \<exists>fa . (\<exists>m \<in> M . \<forall>x . fa x = m (f x)) \<and> y = fa x}")
   by auto
-
 
 lemma Inf_comp_fun: "(Inf M) o f = Inf {g . \<exists> m \<in> M . g = m o f}"
   apply (simp add: fun_eq_iff Inf_fun_def o_def)
@@ -332,6 +347,21 @@ lemma lfp_omega_lowerbound: "f \<in> MonoTran \<Longrightarrow> Omega_fun f g A 
   apply (rule Sup_least)
   by auto
 
+lemma gfp_omega_upperbound: "f \<in> MonoTran \<Longrightarrow> A \<le> Omega_fun f g A \<Longrightarrow> A \<le> (star_fun f) o g"
+  apply (simp add: star_fun_def)
+  apply (rule_tac P = "\<lambda> x . A \<le> x \<circ> g" and f = "Omega_fun f id" in gfp_ordinal_induct)
+  apply simp_all
+  apply (simp add: le_fun_def o_def inf_fun_def id_def Omega_fun_def)
+  apply auto
+  apply (rule_tac y = "f (A x) \<sqinter> g x" in order_trans)
+  apply simp_all
+  apply (rule_tac y = "f (A x)" in order_trans)
+  apply simp_all
+  apply (simp add: mono_def MonoTran_def)
+  apply (unfold Inf_comp_fun)
+  apply (rule Inf_greatest)
+  by auto
+
 lemma lfp_omega_greatest: "(\<forall> u . Omega_fun f g u \<le> u \<longrightarrow> A \<le> u) \<Longrightarrow> A \<le> (omega_fun f) o g"
   apply (unfold omega_fun_def)
   apply (simp add: lfp_def)
@@ -342,6 +372,15 @@ lemma lfp_omega_greatest: "(\<forall> u . Omega_fun f g u \<le> u \<longrightarr
   apply (drule_tac x = "m o g" in spec)
   by (simp add: le_fun_def o_def inf_fun_def Omega_fun_def)
 
+lemma gfp_star_least: "(\<forall> u . u \<le> Omega_fun f g u \<longrightarrow> u \<le> A) \<Longrightarrow> (star_fun f) o g \<le> A"
+  apply (unfold star_fun_def)
+  apply (simp add: gfp_def)
+  apply (unfold Sup_comp_fun)
+  apply (rule Sup_least)
+  apply simp
+  apply safe
+  apply (drule_tac x = "m o g" in spec)
+  by (simp add: le_fun_def o_def inf_fun_def Omega_fun_def)
 
 lemma lfp_omega: "f \<in> MonoTran \<Longrightarrow> ((omega_fun f) o g) = lfp (Omega_fun f g)"
   apply (rule antisym)
@@ -362,6 +401,23 @@ lemma lfp_omega: "f \<in> MonoTran \<Longrightarrow> ((omega_fun f) o g) = lfp (
   apply (rule Inf_lower)
   by simp
 
+lemma gfp_star: "f \<in> MonoTran \<Longrightarrow> ((star_fun f) o g) = gfp (Omega_fun f g)"
+  apply (rule antisym)
+  apply (rule gfp_star_least)
+  apply safe
+  apply (simp add: gfp_def)
+  apply (rule Sup_upper, simp)
+  apply (rule gfp_omega_upperbound)
+  apply simp_all
+  apply (simp add: gfp_def)
+  apply (rule Sup_least)
+  apply safe
+  apply (rule_tac y = "Omega_fun f g x" in order_trans)
+  apply simp_all
+  apply (rule_tac f = " Omega_fun f g" in monoD)
+  apply simp_all
+  apply (rule Sup_upper)
+  by simp
 
 definition "assert_fun p q = (p \<sqinter> q :: 'a::semilattice_inf)"
 
@@ -375,7 +431,6 @@ lemma assert_fun_le_id [simp]: "assert_fun p \<le> id"
 lemma assert_fun_disjunctive [simp]: "assert_fun (p::'a::distrib_lattice) \<in> Apply.disjunctive"
   by (simp add: assert_fun_def Apply.disjunctive_def inf_sup_distrib)
   
-
 definition
   "assertion_fun = {x . \<exists> p . x = assert_fun p}"
 
