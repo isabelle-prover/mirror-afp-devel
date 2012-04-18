@@ -43,6 +43,12 @@ programs
 Knowledge-based programs (KBPs) are a formalism for directly relating agents' knowledge and behaviour. Here we present a general scheme for compiling KBPs to executable automata with a proof of correctness in Isabelle/HOL. We develop the algorithm top-down, using Isabelle's locale mechanism to structure these proofs, and show that two classic examples can be synthesised using Isabelle's code generator.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2012-03-06]: Add some more views and revive the code generation.
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

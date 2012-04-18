@@ -22,47 +22,40 @@
 <div align="center">
 <p> </p>
 
-<h1><font class="first">S</font>emantics
-and
-<font class="first">D</font>ata
-<font class="first">R</font>efinement
-of
-<font class="first">I</font>nvariant
-<font class="first">B</font>ased
-<font class="first">P</font>rograms
+<h1><font class="first">W</font>ell-Quasi-Orders
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Semantics and Data Refinement of Invariant Based Programs</td></tr>
+        <td class="data" width="80%">Well-Quasi-Orders</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a> and  <a href="http://users.abo.fi/Ralph-Johan.Back/">Ralph-Johan Back</a></td></tr>
+        <td class="data">Christian Sternagel (c-sterna /at/ jaist /dot/ ac /dot/ jp)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2010-05-28</td></tr>
+        <td class="data">2012-04-13</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-The invariant based programming is a technique of constructing correct programs by first identifying the basic situations (pre- and post-conditions and invariants) that can occur during the execution of the program, and then defining the transitions and proving that they preserve the invariants. Data refinement is a technique of building correct programs working on concrete datatypes as refinements of more abstract programs. In the theories presented here we formalize the predicate transformer semantics for invariant based programs and their data refinement.
-        </td></tr>
-
-    <tr><td class="datahead" valign="top">Change history:</td>
-        <td class="abstract">
-
-[2012-01-05]: Moved some general complete lattice properties to the AFP entry Lattice Properties.
-Changed the definition of the data refinement relation to be more general and updated all corresponding theorems.
-Added new syntax for demonic and angelic update statements.
+Based on Isabelle/HOL's type class for preorders,
+we introduce a type class for well-quasi-orders (wqo)
+which is characterized by the absence of ``bad'' sequences
+(our proofs are along the lines of the proof of Nash-Williams,
+from which we also borrow terminology). Our two main results are
+instantiations for the product type and the list type, which (almost) directly
+follow from our proofs of (1) Dickson's Lemma and (2) Higman's Lemma. More
+concretely:
+<ul>
+<li>If the sets A and B are wqo then their Cartesian product is wqo.</li>
+<li>If the set A is wqo then the set of its finite subsets is wqo.</li>
+</ul>
+The research was funded by the Austrian Science Fund (FWF): J3202.
         </td></tr>
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
-
-
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="LatticeProperties.shtml">LatticeProperties</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -75,7 +68,7 @@ Added new syntax for demonic and angelic update statements.
 
 <p></p>
 
-<!--#set var="name" value="DataRefinementIBP" -->
+<!--#set var="name" value="Well_Quasi_Orders" -->
 <!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -102,12 +95,7 @@ Added new syntax for demonic and angelic update statements.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-02-11.tar.gz">afp-<!--#echo var="name" -->-2011-02-11.tar.gz</a></li>
-<li>Isabelle 2009-2: <a href="../release/afp-<!--#echo var="name" -->-2010-06-30.tar.gz">afp-<!--#echo var="name" -->-2010-06-30.tar.gz</a></li>
-<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2010-05-28.tar.gz">afp-<!--#echo var="name" -->-2010-05-28.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

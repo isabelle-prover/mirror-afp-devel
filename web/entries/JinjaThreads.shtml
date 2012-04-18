@@ -41,7 +41,7 @@ with
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. For explanations on the framework semantics and the source code instantiation, see the FOOL 2008 paper by A. Lochbihler.
+We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.
         </td></tr>
 
     <tr><td class="datahead" valign="top">Change history:</td>
@@ -81,7 +81,10 @@ generalized JMM proof of DRF guarantee,
 allow class Object to declare methods and fields,
 simplified subtyping relation,
 corrected division and modulo implementation
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/46e4181ed142">46e4181ed142</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/46e4181ed142">46e4181ed142</a>)<br>
+[2012-02-16]:
+added example programs
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/bf0b06c8913d">bf0b06c8913d</a>)
         </td></tr>
 
     <tr><td class="datahead">License:</td>

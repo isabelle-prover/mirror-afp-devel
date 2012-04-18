@@ -1,0 +1,76 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Well-Quasi-Orders}
+\author{Christian Sternagel\thanks{%
+  The research was funded by the Austrian Science Fund (FWF): J3202.}}
+\maketitle
+
+\begin{abstract}
+Based on Isabelle/HOL's type class for preorders, we introduce a type class for
+well-quasi-orders (wqo) which is characterized by the absence of ``bad''
+sequences (our proofs are along the lines of the proof of Nash-Williams
+\cite{N1963}, from which we also borrow terminology).  Our two main results are
+instantiations for the product type and the list type, which (almost) directly
+follow from our proofs of (1) Dickson's Lemma and (2) Higman's Lemma. More
+concretely:
+\begin{enumerate}
+\item If the sets A and B are wqo then their Cartesian product is wqo.
+\item If the set A is wqo then the set of its finite subsets is wqo.
+\end{enumerate}
+\end{abstract}
+
+\tableofcontents
+
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

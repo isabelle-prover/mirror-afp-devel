@@ -55,7 +55,10 @@ new concept domain of a FinFun as a FinFun
 (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/34b3517cbc09">34b3517cbc09</a>)<br>
 [2010-11-04]:
 new conversion function from FinFun to list of elements in the domain
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0c167102e6ed">0c167102e6ed</a>)
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/0c167102e6ed">0c167102e6ed</a>)<br>
+[2012-03-07]:
+replace sets as FinFuns by predicates as FinFuns because the set type constructor has been reintroduced
+(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/b7aa87989f3a">b7aa87989f3a</a>)
         </td></tr>
 
     <tr><td class="datahead">License:</td>
