@@ -141,6 +141,18 @@ proof (unfold_locales)
   qed
 qed (auto simp: mult_strict_left_mono int_mono_def)
 
+instantiation int :: bin_max_ordered_semiring_1
+begin
+instance 
+proof 
+  fix y :: int
+  show "\<exists> x. of_nat x \<succeq> y"
+    by (rule exI[of _ "nat y"], simp) 
+qed auto
+end
+
+
+
 interpretation int_poly: poly_order_carrier 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" True discrete
 proof (unfold_locales)
   fix x y :: int
@@ -236,6 +248,17 @@ fun ge_rat :: "rat \<Rightarrow> rat \<Rightarrow> bool" where "ge_rat x y = (y 
 fun max0_rat :: "rat \<Rightarrow> rat" where "max0_rat x = max 0 x"
 instance by (intro_classes, auto simp: mult_right_mono mult_left_mono)
 end
+
+instantiation rat :: bin_max_ordered_semiring_1
+begin
+instance 
+proof 
+  fix y :: rat
+  from ex_le_of_nat[of y]
+  show "\<exists> x. of_nat x \<succeq> y" by simp
+qed auto
+end
+
 
 instantiation rat :: poly_carrier
 begin
@@ -561,6 +584,30 @@ next
 next
   fix x :: arctic 
   show "x \<succeq> 0" unfolding zero_arctic_def by simp
+next
+    fix y z x :: arctic
+  assume "gt_arctic y z"
+  thus "gt_arctic (x * y) (x * z)"
+    by (cases x, simp, cases z, simp, cases y, auto)
+next
+  show "\<not> pos_arctic 0" unfolding zero_arctic_def by simp
+next
+  fix c d
+  assume "pos_arctic d" 
+  then obtain n where d: "d = Num_arc n" and n: "0 \<le> n"
+    by (cases d, auto)  
+  show "\<exists> e. e \<succeq> 0 \<and> pos_arctic e \<and> \<not> c \<succeq> d * e"
+  proof (cases c)
+    case MinInfty
+    show ?thesis
+      by (rule exI[of _ "Num_arc 0"],
+        unfold d MinInfty zero_arctic_def, simp)
+  next
+    case (Num_arc m)
+    show ?thesis
+      by (rule exI[of _ "Num_arc (abs m  + 1)"], insert n,
+        unfold d Num_arc zero_arctic_def, simp)
+  qed
 qed
 
 
@@ -766,6 +813,36 @@ proof -
   next
     fix x :: arctic_rat
     show "x \<succeq> 0" unfolding zero_arctic_rat_def by simp
+  next
+    show "\<not> pos_arctic_rat 0" unfolding zero_arctic_rat_def by simp
+  next
+    fix c d
+    assume "pos_arctic_rat d" 
+    then obtain n where d: "d = Num_arc_rat n" and n: "0 \<le> n"
+      by (cases d, auto)  
+    show "\<exists> e. e \<succeq> 0 \<and> pos_arctic_rat e \<and> \<not> c \<succeq> d * e"
+    proof (cases c)
+      case MinInfty_rat
+      show ?thesis
+        by (rule exI[of _ "Num_arc_rat 0"],
+          unfold d MinInfty_rat zero_arctic_rat_def, simp)
+    next
+      case (Num_arc_rat m)
+      show ?thesis
+        by (rule exI[of _ "Num_arc_rat (abs m  + 1)"], insert n,
+          unfold d Num_arc_rat zero_arctic_rat_def, simp)
+    qed
+  next
+    fix x y z
+    assume gt: "gt_arctic_rat \<delta> y z"
+    {
+      fix x y z
+      assume gt: "rat_gt \<delta> y z"
+      have "rat_gt \<delta> (x + y) (x + z)"
+        using plus_gt_left_mono[OF gt] by (auto simp: field_simps)
+    }
+    with gt show "gt_arctic_rat \<delta> (x * y) (x * z)"
+      by (cases x, simp, cases z, simp, cases y, simp_all)
   qed
 qed
 

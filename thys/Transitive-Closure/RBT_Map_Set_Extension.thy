@@ -26,7 +26,9 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Accessing values via keys *}
 
 theory RBT_Map_Set_Extension
-imports "../Collections/RBTMapImpl" "../Collections/RBTSetImpl"
+imports "../Collections/RBTMapImpl" 
+  "../Collections/RBTSetImpl"
+  "../Matrix/Utility"
 begin
 
 text {*
@@ -70,47 +72,6 @@ proof -
     unfolding rs_subset_def
     by (rule rs.iteratei_rule, auto simp: rs_correct)
   thus ?thesis by auto
-qed
-
-fun sorted_list_subset :: "'a :: linorder list \<Rightarrow> 'a list \<Rightarrow> 'a option"
-  where "sorted_list_subset (a # as) (b # bs) = 
-            (if a = b then sorted_list_subset as (b # bs)
-        else if a > b then sorted_list_subset (a # as) bs
-        else Some a)"
-    |  "sorted_list_subset [] _ = None"
-    |  "sorted_list_subset (a # _) [] = Some a"
-   
-lemma sorted_list_subset: assumes "sorted as" and "sorted bs"
-  shows "(sorted_list_subset as bs = None) = (set as \<subseteq> set bs)"
-  using assms 
-proof (induct rule: sorted_list_subset.induct)
-  case (2 bs)
-  thus ?case by auto
-next
-  case (3 a as)
-  thus ?case by auto
-next
-  case (1 a as b bs)
-  from 1(3) have sas: "sorted as" and a: "\<And> a'. a' \<in> set as \<Longrightarrow> a \<le> a'" unfolding linorder_class.sorted.simps[of "a # as"] by auto
-  from 1(4) have sbs: "sorted bs" and b: "\<And> b'. b' \<in> set bs \<Longrightarrow> b \<le> b'" unfolding linorder_class.sorted.simps[of "b # bs"] by auto
-  show ?case
-  proof (cases "a = b")
-    case True
-    from 1(1)[OF this sas 1(4)] True show ?thesis by auto
-  next
-    case False note oFalse = this
-    show ?thesis 
-    proof (cases "a > b")
-      case True
-      with a b have "b \<notin> set as" by force
-      with 1(2)[OF False True 1(3) sbs] False True show ?thesis by auto
-    next
-      case False
-      with oFalse have "a < b" by auto
-      with a b have "a \<notin> set bs" by force
-      with oFalse False show ?thesis by auto
-    qed
-  qed
 qed
     
 definition rs_subset_list :: "('a :: linorder) rs \<Rightarrow> 'a rs \<Rightarrow> 'a option"
