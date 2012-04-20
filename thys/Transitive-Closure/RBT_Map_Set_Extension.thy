@@ -97,7 +97,7 @@ proof -
 qed
 
 subsection {* Grouping values via keys *}
-
+ 
 text {*
   The functions to produce the index (@{term elem_list_to_rm}) and the lookup function
   (@{term rm_set_lookup})
