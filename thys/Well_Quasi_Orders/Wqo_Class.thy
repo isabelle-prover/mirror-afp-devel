@@ -4,20 +4,9 @@
     License:    LGPL
 *)
 
-header {* A Typeclass for Well-Quasi-Orders *}
-
 theory Wqo_Class
 imports Well_Quasi_Orders
 begin
-
-text {*In a well-quasi-order (wqo) every infinite sequence is good.*}
-class wqo = preorder +
-  assumes good: "goodp (op \<le>) f"
-
-lemma wqo_on_UNIV_conv:
-  "wqo_on P UNIV \<longleftrightarrow> class.wqo P (\<lambda>x y. P x y \<and> \<not> P y x)"
-  unfolding wqo_on_def class.wqo_def class.preorder_def class.wqo_axioms_def
-  by (auto simp: conversep_iff[abs_def] reflp_on_def transp_on_def)
 
 subsection {* Pairs are Well-Quasi-Ordered *}
 
@@ -59,7 +48,7 @@ lists of type @{typ "'a list"} are well-quasi-ordered by
 
 instantiation list :: (wqo) wqo
 begin
-definition "xs \<le> ys \<longleftrightarrow> set_le (op \<le>) (set xs) (set ys)"
+definition "xs \<le> ys \<longleftrightarrow> emb (op \<le>) xs ys"
 definition "(xs :: 'a list) < ys \<longleftrightarrow> xs \<le> ys \<and> \<not> (ys \<le> xs)"
 
 instance proof (rule wqo_class.intro)
@@ -68,29 +57,24 @@ instance proof (rule wqo_class.intro)
   have "class.wqo ?P (op <)" ..
   hence wqo: "wqo_on ?P UNIV"
     unfolding wqo_on_UNIV_conv less_le_not_le[abs_def] .
-  from wqo_on_finite_subsets[OF this]
-    have "wqo_on (set_le ?P) {set xs | xs. True}"
-    unfolding set_finite_conv by auto
+  from wqo_on_lists[OF this]
+    have "wqo_on (emb ?P) (lists UNIV)" .
   hence "wqo_on ?P' UNIV"
     using `wqo_on ?P UNIV`
     unfolding wqo_on_def
     unfolding less_eq_list_def[abs_def]
-    unfolding reflp_on_set_conv transp_on_set_conv
-    using goodp_set_le_set[of ?P]
     by auto
   hence "class.wqo ?P' (op <)"
     unfolding wqo_on_UNIV_conv less_list_def[abs_def] .
   thus "class.wqo_axioms ?P'" by (auto simp: class.wqo_def)
 
-  from reflp_on_set_le_Pow[OF wqo_on_imp_reflp_on[OF wqo]]
-    have "reflp_on (set_le ?P) {set xs | xs. True}"
-    unfolding set_finite_conv unfolding reflp_on_def by auto
+  from reflp_on_emb[OF wqo_on_imp_reflp_on[OF wqo]]
+    have "reflp_on (emb ?P) (lists UNIV)" .
   hence refl: "reflp_on ?P' UNIV"
     unfolding reflp_on_def less_eq_list_def by auto
 
-  from transp_on_set_le_Pow[OF wqo_on_imp_transp_on[OF wqo]]
-    have "transp_on (set_le ?P) {set xs | xs. True}"
-    unfolding set_finite_conv transp_on_def by blast
+  from transp_on_emb[OF wqo_on_imp_transp_on[OF wqo]]
+    have "transp_on (emb ?P) (lists UNIV)" .
   hence trans: "transp_on ?P' UNIV"
     unfolding transp_on_def less_eq_list_def by blast
   show "OFCLASS ('a list, preorder_class)"
