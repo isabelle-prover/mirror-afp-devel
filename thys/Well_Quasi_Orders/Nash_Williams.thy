@@ -11,7 +11,7 @@ imports Well_Quasi_Orders
 begin
 
 text {*Nash-Williams does not use the embedding relation on lists, but rather the
-following relation on finite sets, which suffixes for his purposes. (This definition
+following relation on finite sets, which suffices for his purposes. (This definition
 is used in the proof of \cite{N1963}[Lemma 2], which is a variant of Higman's Lemma on
 finite sets, rather than finite lists/words.)*}
 
