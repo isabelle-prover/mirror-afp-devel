@@ -4,7 +4,9 @@
     License:    LGPL
 *)
 
-theory Wqo_Class
+header {* Instances of Well-Quasi-Orders *}
+
+theory Wqo_Instances
 imports Well_Quasi_Orders
 begin
 
