@@ -110,7 +110,7 @@ lemma transp_on_converse:
 
 subsection {* Dickson's Lemma *}
 
-text {*When two sets are wqo, then their cartesian product is wqo.*}
+text {*When two sets are wqo, then their Cartesian product is wqo.*}
 
 definition
   prod_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
