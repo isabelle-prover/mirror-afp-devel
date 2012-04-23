@@ -1026,4 +1026,37 @@ proof -
   with refl and trans show ?thesis unfolding wqo_on_def by blast
 qed
 
+
+subsection {* Special Case: Finite Sets *}
+
+text {*Every reflexive and transitive relation on a finite set is a wqo.*}
+
+lemma finite_wqo_on:
+  fixes A :: "('a::finite) set"
+  assumes "reflp_on P A" and "transp_on P A"
+  shows "wqo_on P A"
+proof
+  fix f::"'a::finite seq"
+  assume *: "\<forall>i. f i \<in> A"
+  let ?I = "UNIV::nat set"
+  have "f ` ?I \<subseteq> A" using * by auto
+  with finite[of A] and finite_subset have 1: "finite (f ` ?I)" by blast
+  have "infinite ?I" by auto
+  from pigeonhole_infinite[OF this 1]
+    obtain k where "infinite {j. f j = f k}" by auto
+  then obtain l where "k < l" and "f l = f k"
+    unfolding infinite_nat_iff_unbounded by auto
+  hence "P\<^sup>=\<^sup>= (f k) (f l)" by auto
+  with `k < l` show "goodp P f" by (auto simp: goodp_def)
+qed fact+
+
+lemma finite_eq_wqo_on:
+  "wqo_on (op =) (A::('a::finite) set)"
+  using finite_wqo_on[of "op =" A]
+  by (auto simp: reflp_on_def transp_on_def)
+
+lemma wqo_on_lists_over_finite_sets:
+  "wqo_on (emb (op =)) (UNIV::('a::finite) list set)"
+  using wqo_on_lists[OF finite_eq_wqo_on[of UNIV]] by simp
+
 end
