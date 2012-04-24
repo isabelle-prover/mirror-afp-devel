@@ -16,7 +16,7 @@ definition cylinder :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set \<Right
 lemma full_sum:
   fixes p :: real
   assumes "finite S"
-  shows "(\<Sum>A\<in> Pow S. p^card A * (1 - p)^card (S - A)) = 1"
+  shows "(\<Sum>A\<in>Pow S. p^card A * (1 - p)^card (S - A)) = 1"
 using assms
 proof induct
   case (insert s S)
@@ -28,8 +28,8 @@ proof induct
   moreover have "\<And>x. x \<subseteq> S \<Longrightarrow> card (insert s x) = Suc (card x)"
     using insert(1-2) by (subst card.insert) (auto dest: finite_subset)
   ultimately show ?case
-    by (simp cong: if_cong add: setsum_reindex setsum_right_distrib[symmetric] ac_simps
-      insert.hyps setsum_Un_disjoint Pow_insert)
+    by (simp add: setsum_reindex setsum_right_distrib[symmetric] ac_simps
+                  insert.hyps setsum_Un_disjoint Pow_insert)
 qed simp
 
 locale edge_space =
@@ -46,11 +46,7 @@ definition S_edges :: "uedge set" where
 definition edge_ugraph :: "uedge set \<Rightarrow> ugraph" where
   "edge_ugraph es \<equiv> (S_verts, es \<inter> S_edges)"
 
-definition "P = \<lparr>
-  space = Pow S_edges,
-  sets = Pow (Pow S_edges),
-  measure = \<lambda>A. (\<Sum>s\<in>A. p^card s * (1 - p)^card (S_edges - s))
-\<rparr>"
+definition "P = point_measure (Pow S_edges) (\<lambda>s. p^card s * (1 - p)^card (S_edges - s))"
 
 lemma finite_verts[intro!]: "finite S_verts"
   by (auto simp: S_verts_def)
@@ -64,32 +60,46 @@ lemma finite_graph[intro!]: "finite (uverts (edge_ugraph es))"
 lemma uverts_edge_ugraph[simp]: "uverts (edge_ugraph es) = S_verts"
   by (simp add: edge_ugraph_def)
 
-lemma  uedges_edge_ugraph[simp]: "uedges (edge_ugraph es) = es \<inter> S_edges"
+lemma uedges_edge_ugraph[simp]: "uedges (edge_ugraph es) = es \<inter> S_edges"
   unfolding edge_ugraph_def by simp
 
-lemma finite_prob_space_P: "finite_prob_space P"
-proof (rule finite_prob_spaceI)
-  from finite_edges show "measure P (space P) = 1"
-    by (simp add: full_sum P_def one_ereal_def)
-next
-  fix x assume "x \<in> space P"
-  with p_prob show "0 \<le> measure_space.measure P {x}"
-    by (auto simp: P_def zero_le_mult_iff)
-qed (auto simp: P_def)
+lemma space_eq: "space P = Pow S_edges" by (simp add: P_def space_point_measure)
+
+lemma sets_eq: "sets P = Pow (Pow S_edges)" by (simp add: P_def sets_point_measure)
+
+lemma emeasure_eq:
+  "emeasure P A = (if A \<subseteq> Pow S_edges then (\<Sum>edges\<in>A. p^card edges * (1 - p)^card (S_edges - edges)) else 0)"
+  using finite_edges p_prob
+  by (simp add: P_def space_point_measure emeasure_point_measure_finite zero_le_mult_iff
+                zero_le_power_iff sets_point_measure emeasure_notin_sets)
+
+lemma integrable_P[intro, simp]: "integrable P f"
+  using finite_edges by (simp add: integrable_point_measure_finite P_def)
+
+lemma borel_measurable_P[intro, simp]: "f \<in> borel_measurable P"
+  unfolding P_def by simp
+  
+lemma prob_space_P: "prob_space P"
+proof
+  show "emeasure P (space P) = 1"
+    using finite_edges by (simp add: emeasure_eq full_sum one_ereal_def space_eq)
+qed
 
 end
 
-sublocale edge_space \<subseteq> finite_prob_space P
-  by (rule finite_prob_space_P)
+sublocale edge_space \<subseteq> prob_space P
+  by (rule prob_space_P)
 
 context edge_space
 begin
 
-lemma space_eq: "space P = Pow S_edges" by (simp add: P_def)
-
 lemma prob_eq:
   "prob A = (if A \<subseteq> Pow S_edges then (\<Sum>edges\<in>A. p^card edges * (1 - p)^card (S_edges - edges)) else 0)"
-  unfolding \<mu>'_def by (simp add: P_def)
+  using emeasure_eq[of A] unfolding emeasure_eq_measure by simp
+
+lemma integral_finite_singleton: "integral\<^isup>L P f = (\<Sum>x\<in>Pow S_edges. f x * measure P {x})"
+  using p_prob prob_eq unfolding P_def
+  by (subst lebesgue_integral_point_measure_finite) (auto intro!: setsum_cong mult_nonneg_nonneg)
 
 lemma cylinder_prob:
   assumes "A \<subseteq> S_edges" "B \<subseteq> S_edges" "A \<inter> B = {}"
@@ -116,7 +126,7 @@ proof -
       using assms by (auto simp: cylinder_def intro!: inj_onI)
     with full_sum[of "S_edges - A - B"] show ?thesis by (simp add: setsum_reindex)
   qed
-  finally show ?thesis by (auto simp add: prob_eq space_eq cylinder_def)
+  finally show ?thesis by (auto simp add: prob_eq cylinder_def)
 qed
 
 lemma Markov_inequality:
@@ -124,15 +134,11 @@ lemma Markov_inequality:
   assumes "0 < c" "\<And>x. 0 \<le> f x"
   shows "prob {x \<in> space P. c \<le> f x} \<le> (\<integral>x. f x \<partial> P) / c"
 proof -
-  have Collect_inter_Dom: "\<And>A P. {x \<in> A. P x} \<inter> A = {x \<in> A. P x}" by auto
-
   from assms have "(\<integral>\<^isup>+ x. ereal (f x) \<partial>P) = (\<integral>x. f x \<partial>P)"
-    using positive_integral_positive[of f] integrableD(2)[OF integral_finite_singleton(1), of f]
-    by (cases "\<integral>\<^isup>+ x. ereal (f x) \<partial>P") (auto simp add: integral_eq_positive_integral)
+    by (intro positive_integral_eq_integral) auto
   with assms show ?thesis
-    using positive_integral_Markov_inequality[of f "space P" "1 / c"]
-    by (simp cong: positive_integral_cong add: finite_measure_eq one_ereal_def)
-       (simp add: Collect_inter_Dom)
+    using positive_integral_Markov_inequality[of f P "space P" "1 / c"]
+    by (simp cong: positive_integral_cong add: emeasure_eq_measure one_ereal_def)
 qed
 
 end
@@ -145,10 +151,10 @@ text {*
  we need from the locale into the toplevel theory.
 *}
 
-abbreviation MGn :: "(nat \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> (uedge set) measure_space" where
+abbreviation MGn :: "(nat \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> (uedge set) measure" where
   "MGn p n \<equiv> (edge_space.P n (p n))"
 abbreviation probGn :: "(nat \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> (uedge set \<Rightarrow> bool) \<Rightarrow> real" where
-  "probGn p n P \<equiv> finite_measure.\<mu>' (MGn p n) {es \<in> space (MGn p n). P es}"
+  "probGn p n P \<equiv> measure (MGn p n) {es \<in> space (MGn p n). P es}"
 
 lemma probGn_le:
   assumes p_prob: "0 < p n" "p n < 1"
@@ -156,16 +162,9 @@ lemma probGn_le:
   shows "probGn p n (P n) \<le> probGn p n (Q n)"
 proof -
   from p_prob interpret E: edge_space n "p n" by unfold_locales auto
-  show ?thesis by (auto intro: E.finite_measure_mono sub)
+  show ?thesis
+    by (auto intro!: E.finite_measure_mono sub simp: E.space_eq E.sets_eq)
 qed
-
-lemma probGn_nonneg:
-  assumes "0 < p n" "p n < 1" shows "0 \<le> probGn p n P"
-proof -
-  from assms interpret P: edge_space n "p n" by unfold_locales auto
-  show ?thesis by auto
-qed
-
 
 section {* Short cycles *}
 
@@ -317,7 +316,7 @@ proof -
     = (\<Union>vs \<in> ?k_sets. {es \<in> space P. vs \<in> independent_sets (edge_ugraph es)})" (is "?L = ?R")
     unfolding image_def space_eq independent_sets_def by auto
   then have "prob ?L \<le> (\<Sum>vs \<in> ?k_sets. prob {es \<in> space P. vs \<in> independent_sets (edge_ugraph es)})"
-    by (auto intro!: finite_measure_subadditive_setsum)
+    by (auto intro!: finite_measure_subadditive_finite simp: space_eq sets_eq)
   also have "\<dots> = (n choose k)*((1 - p) ^ (k choose 2))"
     by (simp add: prob_k_indep real_eq_of_nat S_verts_def card_subsets_nat)
   finally show ?thesis using `k \<ge> 2` by (simp add: le_\<alpha>_iff)
@@ -409,7 +408,7 @@ proof -
     show "(\<lambda>n. 0) ----> 0"
         "(\<lambda>n. (exp 1 / n) powr (1 / 2)) ----> 0"
         "\<forall>\<^isup>\<infinity> n. 0 \<le> ?prob_fun_raw n"
-      using p_prob by (auto intro: probGn_nonneg LIMSEQ_inv_powr elim: eventually_elim1)
+      using p_prob by (auto intro: measure_nonneg LIMSEQ_inv_powr elim: eventually_elim1)
   next
     from nr_bounds ev_expr_bound ev_prob_fun_raw_le
     show "\<forall>\<^isup>\<infinity> n. ?prob_fun_raw n \<le> (exp 1 / n) powr (1 / 2)"
@@ -450,27 +449,27 @@ proof -
     -- {* "@{term "XC c"} is the set of graphs (edge sets) containing a cycle c" *}
   then have XC_in_sets: "\<And>c. XC c \<in> sets P"
       and XC_cyl: "\<And>c. c \<in> C k \<Longrightarrow> XC c = cylinder S_edges (set (uwalk_edges c)) {}"
-    by (auto simp: ucycles_def space_eq uwalks_def C_def cylinder_def)
+    by (auto simp: ucycles_def space_eq uwalks_def C_def cylinder_def sets_eq)
 
   have "(\<integral>es. card {c \<in> ucycles (edge_ugraph es). uwalk_length c = k} \<partial> P)
       =  (\<Sum>x\<in>space P. card (XG x) * prob {x})"
-    by (simp add: XG_def integral_finite_singleton finite_measure_eq)
+    by (simp add: XG_def integral_finite_singleton space_eq)
   also have "\<dots> = (\<Sum>c\<in>C k. prob (cylinder S_edges (set (uwalk_edges c)) {}))"
   proof -
     have XG_Int_C: "\<And>s. s \<in> space P \<Longrightarrow> C k \<inter> XG s = XG s"
       unfolding XG_def C_def ucycles_def uwalks_def edge_ugraph_def by auto
     have fin_XC: "\<And>k. finite (XC k)" and fin_C: "finite (C k)"
-      unfolding C_def XC_def by (auto simp: finite_space intro!: finite_ucycles)
+      unfolding C_def XC_def by (auto simp: finite_edges space_eq intro!: finite_ucycles)
 
     have "(\<Sum>x\<in>space P. card (XG x) * prob {x}) = (\<Sum>x\<in>space P. (\<Sum>c \<in> XG x. prob {x}))"
       by (simp add: real_eq_of_nat)
     also have "\<dots> = (\<Sum>x\<in>space P. (\<Sum>c \<in> C k. if c \<in> XG x then prob {x} else 0))"
       using fin_C by (simp add: setsum_cases) (simp add: XG_Int_C)
     also have "\<dots> = (\<Sum>c \<in> C k. (\<Sum> x \<in> space P \<inter> XC c. prob {x}))"
-      using finite_space by (subst setsum_commute) (simp add: setsum_restrict_set XG_def XC_def)
+      using finite_edges by (subst setsum_commute) (simp add: setsum_restrict_set XG_def XC_def space_eq)
     also have "\<dots> = (\<Sum>c \<in> C k. prob (XC c))"
       using fin_XC XC_in_sets
-      by (subst finite_measure_finite_singleton[symmetric]) (auto simp: XC_in_sets)
+      by (auto simp add: prob_eq sets_eq space_eq intro!: setsum_cong)
     finally show ?thesis by (simp add: XC_cyl)
   qed
   also have "\<dots> = (\<Sum>c\<in>C k. p ^ k)"
@@ -576,7 +575,7 @@ proof -
   
       have "mean_short_count = (\<Sum>i=3..k. \<integral>es. card {c \<in> ucycles (?ug n es). uwalk_length c = i} \<partial> pG.P)"
         unfolding mean_short_count_def short_count_conv
-        by (subst pG.integral_setsum) (auto intro: pG.integral_finite_singleton)
+        by (subst integral_setsum) (auto intro: pG.integral_finite_singleton)
       also have "\<dots> = (\<Sum>i\<in>{3..k}. (fact n div fact (n - i)) * p n ^ i)"
         using A by (simp add: pG.mean_k_cycles)
       also have "\<dots> \<le> (\<Sum> i\<in>{3..k}. n ^ i * p n ^ i)"

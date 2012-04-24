@@ -37,7 +37,7 @@ qed
 lemma (in preorder) atMost_not_empty[simp]: "{..a} \<noteq> {}"
   by (auto simp: atMost_def)
 
-lemma (in sigma_algebra) sets_Collect_eq:
+lemma sets_Collect_eq:
   assumes f: "f \<in> measurable M N" "{i} \<in> sets N"
   shows "{x\<in>space M. f x = i} \<in> sets M"
 proof -
@@ -48,13 +48,6 @@ proof -
   finally show ?thesis .
 qed
 
-interpretation pborel_sequence!: product_prob_space "\<lambda>i. pborel" "UNIV::nat set"
-  ..
-
-lemma space_pborel_sequence[simp]:
-  "space (\<Pi>\<^isub>P i::nat\<in>UNIV. pborel) = UNIV \<rightarrow> {0 ..< 1}"
-  by (simp add: extensional_def pborel_sequence.infprod_algebra_def pborel_sequence.generator_def)
-
 lemma nat_case_in_funcset: "nat_case x f \<in> (UNIV \<rightarrow> X) \<longleftrightarrow> x \<in> X \<and> f \<in> UNIV \<rightarrow> X"
   by (auto simp: Pi_def split: nat.split)
 
@@ -63,17 +56,6 @@ lemma all_Suc_split: "\<And>n P. (\<forall>i\<le>Suc n. P i) \<longleftrightarro
 
 lemma atMost_Suc_eq_insert_0: "{..Suc n} = insert 0 (Suc ` {..n})"
   by (metis lessThan_Suc_atMost lessThan_Suc_eq_insert_0)
-
-lemma (in product_prob_space) measure_infprod_emb_Pi:
-  assumes "J \<noteq> {}" "finite J" "J \<subseteq> I" "\<And>j. j \<in> J \<Longrightarrow> X j \<in> sets (M j)"
-  shows "\<mu> (emb I J (Pi\<^isub>E J X)) = (\<Prod>j\<in>J. measure (M j) (X j))"
-proof (subst measure_infprod_emb)
-  interpret J: finite_product_prob_space M J
-    by default fact+
-  show "measure_space.measure (Pi\<^isub>M J M) (Pi\<^isub>E J X) =
-    (\<Prod>j\<in>J. measure_space.measure (M j) (X j))"
-    by (intro J.measure_times) fact
-qed (insert assms, auto)
 
 lemma suminf_setsum_ereal:
   fixes f :: "'i \<Rightarrow> nat \<Rightarrow> ereal"
@@ -86,131 +68,6 @@ proof cases
       using nneg by (simp add: suminf_add_ereal setsum_nonneg)
   qed simp
 qed simp
-
-lemma (in prob_space) weighted_prob_space:
-  assumes "\<And>i. i \<in> I \<Longrightarrow> prob_space (M \<lparr> measure := m i \<rparr>)" (is "\<And>i. _ \<Longrightarrow> prob_space (?m i)")
-  assumes w: "(\<Sum>i\<in>I. w i) = 1" "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> w i"
-  shows "prob_space (M \<lparr> measure := \<lambda>X. \<Sum>i\<in>I. w i * m i X \<rparr>)" (is "prob_space ?M'")
-proof -
-  interpret M': sigma_algebra ?M' by simp default
-  { fix i assume "i \<in> I"
-    then interpret m: prob_space "?m i" by fact
-    from m.empty_measure m.positive_measure m.ca m.measure_space_1
-    have "m i {} = 0" "\<And>A. A \<in> sets M \<Longrightarrow> 0 \<le> m i A" "countably_additive M (m i)" "m i (space M) = 1"
-      by (simp_all add: countably_additive_def) }
-  note m = this
-
-  show ?thesis
-  proof
-    show "measure_space ?M'"
-    proof
-      from m w show "positive ?M' (measure ?M')"
-        by (auto intro!: setsum_nonneg ereal_0_le_mult simp: positive_def)
-      show "countably_additive ?M' (measure ?M')"
-      proof (rule countably_additiveI, simp)
-        fix A :: "nat \<Rightarrow> _" assume A: "range A \<subseteq> events" "disjoint_family A" "UNION UNIV A \<in> events"
-        { fix i assume "i \<in> I"
-          note m(3)[unfolded countably_additive_def, rule_format, OF `i \<in> I` A, symmetric] }
-        then show "(\<Sum>n. \<Sum>i\<in>I. w i * m i (A n)) = (\<Sum>i\<in>I. w i * m i (\<Union>x. A x))"
-          apply (simp add: countably_additive_def subset_eq)
-          apply (subst suminf_setsum_ereal)
-          using m w A
-          apply (auto intro!: setsum_nonneg ereal_0_le_mult setsum_cong suminf_cmult_ereal simp: subset_eq)
-          done
-      qed
-    qed
-    show "measure ?M' (space ?M') = 1"
-      using m w by simp
-  qed
-qed
-
-lemma prob_space_unique_Int_stable':
-  assumes X: "X \<in> sets (sigma G)"
-  assumes stable: "\<And>A B. A \<in> sets G \<Longrightarrow> B \<in> sets G \<Longrightarrow> A \<inter> B \<noteq> {} \<Longrightarrow> A \<inter> B \<in> sets G"
-  assumes M: "prob_space M" "space M = space G" "sets M = sets (sigma G)"
-  assumes N: "prob_space (M\<lparr>measure := m\<rparr>)"
-  assumes " \<And>X. X \<in> sets G \<Longrightarrow> finite_measure.\<mu>' M X = m X"
-  shows "finite_measure.\<mu>' M X = m X"
-proof -
-  interpret M: prob_space M by fact
-  interpret N: prob_space "M\<lparr> measure := m \<rparr>" by fact
-  let ?G = "\<lparr> space = space G, sets = insert {} (insert (space G) (sets G)) \<rparr>"
-
-  have [simp]: "sets (sigma ?G) = sets (sigma G)"
-  proof
-    show "sets (sigma G) \<subseteq> sets (sigma ?G)"
-      by (auto simp add: sets_sigma intro!: sigma_sets_mono sigma_sets.Basic)
-    show "sets (sigma ?G) \<subseteq> sets (sigma G)"
-    proof (simp add: sets_sigma, safe)
-      fix A assume "A \<in> sigma_sets (space G) (insert {} (insert (space G) (sets G)))"
-      then show "A \<in> sigma_sets (space G) (sets G)"
-        by induct (auto intro: sigma_sets.intros sigma_sets_top)
-    qed
-  qed
-
-  have [simp]: "m {} = 0" "m (space G) = 1"  "M.prob (space G) = 1"
-    using N.empty_measure N.prob_space M.prob_space
-    unfolding `space M = space G`[symmetric]
-    by (simp_all add: N.\<mu>'_def)
-
-  have [simp]: "space G \<in> sets (sigma G)"
-    by (auto simp: sets_sigma intro: sigma_sets_top)
-
-  { fix A assume "A \<in> sets G"
-    then have "A \<in> sets M"
-      by (auto simp: assms)
-    then have "A \<subseteq> space G"
-      using M.sets_into_space
-      by (auto simp: assms) }
-  with stable have "Int_stable ?G"
-    by (simp add: Int_stable_def Int_absorb2 Int_absorb1) blast
-  then have "M.\<mu>' X = finite_measure.\<mu>' (M \<lparr> measure := m\<rparr>) X"
-    by (rule prob_space_unique_Int_stable)
-       (auto simp add: assms N.\<mu>'_def M.prob_space)
-  with X `sets M = sets (sigma G)`[symmetric] show ?thesis
-    by (simp add: N.\<mu>'_def)
-qed
-
-lemma (in measure_space) measure_mono_AE:
-  assumes imp: "AE x. x \<in> A \<longrightarrow> x \<in> B"
-    and A: "A \<in> sets M" and B: "B \<in> sets M"
-  shows "\<mu> A \<le> \<mu> B"
-proof -
-  from imp obtain N where N: "{x\<in>space M. \<not> (x \<in> A \<longrightarrow> x \<in> B)} \<subseteq> N" "N \<in> null_sets"
-    by (auto simp: almost_everywhere_def)
-  have "\<mu> A = \<mu> (A - N)"
-    using N A by (subst measure_Diff_null_set) auto
-  also have "\<mu> (A - N) \<le> \<mu> (B - N)"
-    using N A B sets_into_space by (auto intro!: measure_mono)
-  also have "\<mu> (B - N) = \<mu> B"
-    using N B by (subst measure_Diff_null_set) auto
-  finally show ?thesis .
-qed
-
-lemma (in measure_space) measure_eq_AE:
-  assumes iff: "AE x. x \<in> A \<longleftrightarrow> x \<in> B"
-  assumes A: "A \<in> sets M" and B: "B \<in> sets M"
-  shows "\<mu> A = \<mu> B"
-  using assms by (safe intro!: antisym measure_mono_AE elim!: AE_mp) auto
-
-lemma (in finite_measure) finite_measure_mono_AE:
-  assumes imp: "AE x. x \<in> A \<longrightarrow> x \<in> B" and B: "B \<in> sets M"
-  shows "\<mu>' A \<le> \<mu>' B"
-proof cases
-  assume "A \<in> sets M"
-  with assms measure_mono_AE[OF imp this B]
-  show ?thesis by (simp add: finite_measure_eq)
-next
-  assume "A \<notin> sets M"
-  then have "\<mu>' A = 0" unfolding \<mu>'_def by simp
-  then show ?thesis by simp
-qed
-
-lemma (in finite_measure) finite_measure_eq_AE:
-  assumes iff: "AE x. x \<in> A \<longleftrightarrow> x \<in> B"
-  assumes A: "A \<in> sets M" and B: "B \<in> sets M"
-  shows "\<mu>' A = \<mu>' B"
-  using assms measure_eq_AE[OF assms] by (simp add: finite_measure_eq)
 
 lemma all_less_Suc_split: "\<And>n P. (\<forall>i<Suc n. P i) \<longleftrightarrow> (\<forall>i<n. P (Suc i)) \<and> P 0"
   by (metis less_Suc_eq_0_disj)
@@ -263,7 +120,7 @@ lemma incseq_comp:
   "incseq F \<Longrightarrow> incseq (\<lambda>i. F i \<circ> f)"
   by (auto simp: incseq_def le_fun_def)
 
-lemma (in measure_space) incseq_simple_integral:
+lemma incseq_simple_integral:
   fixes f :: "nat \<Rightarrow> 'a \<Rightarrow> ereal"
   shows "incseq f \<Longrightarrow> (\<And>i. simple_function M (f i)) \<Longrightarrow> (\<And>i x. 0 \<le> f i x) \<Longrightarrow> incseq (\<lambda>i. integral\<^isup>S M (f i))"
   unfolding incseq_fun by (auto simp: incseq_def intro!: simple_integral_mono)
@@ -300,32 +157,33 @@ lemma nat_case_in_S[intro, simp]: "s \<in> S \<Longrightarrow> \<omega> \<in> UN
 lemma nat_case_in_space: "s \<in> S \<Longrightarrow> \<omega> \<in> UNIV \<rightarrow> S \<Longrightarrow> nat_case s \<omega> \<in> UNIV \<rightarrow> S"
   by auto
 
-lemma (in sigma_algebra) simple_function_comp2: 
+lemma simple_function_comp2: 
   fixes g :: "_ \<Rightarrow> _::t2_space"
-  assumes "sigma_algebra M'"
   assumes f: "f \<in> measurable M M'"
     and g: "simple_function M' g"
   shows "simple_function M (g \<circ> f)"
 proof (rule simple_function_borel_measurable)
-  interpret M': sigma_algebra M' by fact
-  note borel = M'.borel_measurable_simple_function[OF g]
+  note borel = borel_measurable_simple_function[OF g]
   show "g \<circ> f \<in> borel_measurable M"
     using f borel by (rule measurable_comp)
   from f have "(g\<circ>f) ` space M \<subseteq> g ` space M'"
     unfolding measurable_def by auto
-  from this M'.simple_functionD(1)[OF g] show "finite ((g \<circ> f) ` space M)"
+  from this simple_functionD(1)[OF g] show "finite ((g \<circ> f) ` space M)"
     by (rule finite_subset)
 qed
 
-lemma (in sigma_algebra) simple_function_comp2':
+lemma simple_function_comp2':
   fixes g :: "_ \<Rightarrow> _::t2_space"
-  shows "sigma_algebra M' \<Longrightarrow> f \<in> measurable M M' \<Longrightarrow> simple_function M' g \<Longrightarrow> simple_function M (\<lambda>x. g (f x))"
+  shows "f \<in> measurable M M' \<Longrightarrow> simple_function M' g \<Longrightarrow> simple_function M (\<lambda>x. g (f x))"
   using simple_function_comp2 by (simp add: comp_def)
  
 lemma Collect_Int: "Collect P \<inter> A = {x\<in>A. P x}"
   by auto
 
-lemma (in sigma_algebra) borel_measurable_setsum_dependent_index:
+lemma Collect_Int2: "{x\<in>S. P x} \<inter> A = {x\<in>S. x \<in> A \<and> P x}"
+  by auto
+
+lemma borel_measurable_setsum_dependent_index:
   fixes f :: "'a \<Rightarrow> nat" and g :: "nat \<Rightarrow> 'a \<Rightarrow> real"
   assumes "\<And>i. f -` {i} \<inter> space M \<in> sets M"
   assumes "\<And>i. g i \<in> borel_measurable M"
@@ -335,7 +193,7 @@ proof (unfold measurable_def, safe)
   moreover def X \<equiv> "\<lambda>i. (\<lambda>x. \<Sum>i::nat<i. g i x) -` A \<inter> space M"
   moreover note assms
   ultimately have "(\<lambda>x. \<Sum>i::nat<f x. g i x) -` A \<inter> space M = (\<Union>i. (f -` {i} \<inter> space M) \<inter> X i)" "\<And>i. X i \<in> sets M"
-    by (auto intro!: measurable_sets[of _ M borel] borel_measurable_setsum)
+    by (auto intro!: measurable_sets)
   moreover then have "(\<Union>i. (f -` {i} \<inter> space M) \<inter> X i) \<in> sets M"
     using assms by blast
   ultimately show "(\<lambda>x. \<Sum>i::nat<f x. g i x) -` A \<inter> space M \<in> sets M" by simp
@@ -366,51 +224,11 @@ qed
 lemma Ex_nat_case_eq: "(\<exists>n. P n (nat_case s f n)) \<longleftrightarrow> P 0 s \<or> (\<exists>n. P (Suc n) (f n))"
   by (auto split: nat.split simp: gr0_conv_Suc)
 
-lemma (in sigma_algebra) sets_Collect_in:
+lemma sets_Collect_in:
   assumes A: "A \<in> sets M" shows "{x\<in>space M. x \<in> A} \<in> sets M"
 proof -
   have "{x\<in>space M. x \<in> A} = space M \<inter> A" by auto
   with A show ?thesis by auto
-qed
-
-lemma (in measure_space) AE_impI:
-  "(P \<Longrightarrow> AE x. Q x) \<Longrightarrow> AE x. P \<longrightarrow> Q x"
-  by (cases P) auto
-
-lemma (in measure_space) AE_finite_allI:
-  assumes "finite S"
-  shows "(\<And>s. s \<in> S \<Longrightarrow> AE x. Q s x) \<Longrightarrow> AE x. \<forall>s\<in>S. Q s x"
-  using AE_finite_all[OF `finite S`] by auto
-
-lemma (in prob_space) AE_in_set_eq_1:
-  assumes "A \<in> events" shows "(AE x. x \<in> A) \<longleftrightarrow> prob A = 1"
-proof
-  assume ae: "AE x. x \<in> A"
-  have "{x \<in> space M. x \<in> A} = A" "{x \<in> space M. x \<notin> A} = space M - A"
-    using `A \<in> events`[THEN sets_into_space] by auto
-  with AE_E2[OF ae] `A \<in> events` have "1 - \<mu> A = 0"
-    by (simp add: measure_compl measure_space_1)
-  then show "prob A = 1"
-    using `A \<in> events` by (simp add: finite_measure_eq one_ereal_def)
-next
-  assume prob: "prob A = 1"
-  show "AE x. x \<in> A"
-  proof (rule AE_I)
-    show "{x \<in> space M. x \<notin> A} \<subseteq> space M - A" by auto
-    show "\<mu> (space M - A) = 0"
-      using `A \<in> events` prob
-      by (simp add: measure_compl measure_space_1 finite_measure_eq one_ereal_def)
-    show "space M - A \<in> events"
-      using `A \<in> events` by auto
-  qed
-qed
-
-lemma (in prob_space) AE_prob_1:
-  assumes "prob A = 1" shows "AE x. x \<in> A"
-proof -
-  from `prob A = 1` have "A \<in> events"
-    unfolding \<mu>'_def by (auto split: split_if_asm)
-  with AE_in_set_eq_1 assms show ?thesis by simp
 qed
 
 lemma setsum_ereal_1: "setsum (\<lambda>_. 1) A = ereal (of_nat (card A))"
@@ -434,10 +252,10 @@ next
   finally show ?thesis .
 qed
 
-lemma (in measure_space) positive_integral_nat_function:
+lemma positive_integral_nat_function:
   assumes "(of_nat \<circ> f :: 'a \<Rightarrow> real) \<in> borel_measurable M"
   shows "(\<integral>\<^isup>+x. ereal (of_nat (f x)) \<partial>M) =
-    (\<Sum>t. \<mu> ((of_nat \<circ> f) -` {of_nat t::real <..} \<inter> space M))"
+    (\<Sum>t. emeasure M ((of_nat \<circ> f) -` {of_nat t::real <..} \<inter> space M))"
 proof -
   def F \<equiv> "\<lambda>i. (of_nat \<circ> f) -` {of_nat i::real <..} \<inter> space M"
   with assms have [simp, intro]: "\<And>i. F i \<in> sets M"
@@ -454,7 +272,7 @@ proof -
       by (simp add: sums_iff) }
   then have "(\<integral>\<^isup>+x. ereal (of_nat (f x)) \<partial>M) = (\<integral>\<^isup>+x. (\<Sum>i. indicator (F i) x) \<partial>M)"
     by (simp cong: positive_integral_cong)
-  also have "\<dots> = (\<Sum>i. \<mu> (F i))"
+  also have "\<dots> = (\<Sum>i. emeasure M (F i))"
     by (simp add: positive_integral_suminf)
   finally show ?thesis
     by (simp add: F_def)
@@ -506,14 +324,6 @@ next
     qed
   qed
 qed
-
-lemma (in prob_space) AE_False: "(AE x. False) \<longleftrightarrow> False"
-proof
-  assume "AE x. False"
-  then have "AE x. x \<in> {}" by simp
-  then show False
-    by (subst (asm) AE_in_set_eq_1) auto
-qed simp
 
 lemma sums_shift:
   fixes f :: "nat \<Rightarrow> real"
@@ -581,302 +391,221 @@ proof (rule ccontr)
   show False by auto
 qed
 
-subsection {* @{text order} and @{text select} *}
+definition "state_space s = point_measure S (if s \<in> S then \<tau> s else \<tau> s0)"
 
-definition "order = (SOME f. bij_betw f {..< card S} S)"
-definition "select s x = order (LEAST i. x < (\<Sum>j\<le>i. \<tau> s (order j)))"
+lemma 
+  shows space_state_space[simp]: "space (state_space s) = S"
+    and sets_state_space[simp]: "sets (state_space s) = Pow S"
+  unfolding state_space_def by (simp_all add: space_point_measure sets_point_measure)
 
-lemma
-  shows bij_order[simp]: "bij_betw order {..< card S} S"
-    and inj_order[simp]: "inj_on order {..<card S}"
-    and image_order[simp]: "order ` {..<card S} = S"
-    and order_S[simp, intro]: "\<And>i. i < card S \<Longrightarrow> order i \<in> S"
-proof -
-  from finite_same_card_bij[OF _ finite_S] show "bij_betw order {..< card S} S"
-    unfolding order_def by (rule someI_ex) auto
-  then show "inj_on order {..<card S}" "order ` {..<card S} = S"
-    unfolding bij_betw_def by auto
-  then show "\<And>i. i < card S \<Longrightarrow> order i \<in> S"
-    by auto
+lemma emeasure_state_space[simp]: "A \<subseteq> S \<Longrightarrow> s \<in> S \<Longrightarrow> emeasure (state_space s) A = (\<Sum>a\<in>A. \<tau> s a)"
+  unfolding state_space_def
+  by (subst emeasure_point_measure_finite) auto
+
+lemma measure_state_space[simp]: "A \<subseteq> S \<Longrightarrow> s \<in> S \<Longrightarrow> measure (state_space s) A = (\<Sum>a\<in>A. \<tau> s a)"
+  unfolding state_space_def measure_def
+  by (subst emeasure_point_measure_finite) auto
+
+lemma prob_space_state_space:
+   "prob_space (state_space s)"
+proof
+  have "s \<notin> S \<Longrightarrow> state_space s = state_space s0"
+    unfolding state_space_def by simp
+  with s0 show "emeasure (state_space s) (space (state_space s)) = 1"
+    by (cases "s \<in> S") (simp_all add: \<tau>_distr one_ereal_def)
 qed
-
-lemma order_Ex:
-  assumes "s \<in> S" obtains i where "i < card S" "s = order i"
-proof -
-  from `s \<in> S` have "s \<in> order ` {..<card S}"
-    by simp
-  with that show thesis
-    by (auto simp del: image_order)
-qed
-
-lemma \<tau>_order_distr:
-  "s \<in> S \<Longrightarrow> (\<Sum>j<card S. \<tau> s (order j)) = 1"
-  using setsum_reindex[OF inj_order, of "\<tau> s"] \<tau>_distr by simp
-
-lemma selectI:
-  assumes "x < 1" "s \<in> S"
-  assumes P: "\<And>i. \<lbrakk>x < (\<Sum>k\<le>i. \<tau> s (order k)); \<And>j. x < (\<Sum>k\<le>j. \<tau> s (order k)) \<Longrightarrow> i \<le> j ; i < card S \<rbrakk> \<Longrightarrow> P (order i)"
-  shows "P (select s x)"
-  unfolding select_def
-proof (rule LeastI2_wellorder)
-  have "{.. card S - 1} = {..< card S}"
-    using finite_S `s \<in> S` by (cases "card S") auto
-  with `x < 1` `s \<in> S` show *: "x < (\<Sum>j\<le>card S - 1. \<tau> s (order j))"
-    by (simp add: \<tau>_order_distr)
-
-  fix i assume "x < (\<Sum>k\<le>i. \<tau> s (order k))" "\<forall>j. x < (\<Sum>k\<le>j. \<tau> s (order k)) \<longrightarrow> i \<le> j"
-  moreover with * have "i < card S"
-    using finite_S `s \<in> S` by (cases "card S") auto
-  ultimately show "P (order i)"
-    using P by blast
-qed
-
-lemma select:
-  assumes "0 \<le> x" "x < 1" "i < card S" "s \<in> S"
-  shows "select s x = order i \<longleftrightarrow> (\<Sum>j<i. \<tau> s (order j)) \<le> x \<and> x < (\<Sum>j\<le>i. \<tau> s (order j))"
-    (is "_ \<longleftrightarrow> ?sum i \<le> x \<and> x < ?sumeq i")
-proof (rule selectI[OF `x < 1` `s \<in> S`])
-  fix j assume "x < ?sumeq j" "j < card S" and least: "\<And>k. x < ?sumeq k \<Longrightarrow> j \<le> k"
-  moreover
-  with `i < card S` inj_order have "order j = order i \<longleftrightarrow> j = i"
-    by (auto simp: inj_on_def)
-  moreover have "?sum j \<le> x"
-    using least[of "j - 1"] `0 \<le> x`
-    by (cases j) (auto simp add: lessThan_Suc_atMost not_less[symmetric])
-  moreover {
-    assume *: "?sum i \<le> x \<and> x < ?sumeq i"
-    have "j \<le> i"
-      using * least by simp
-    moreover {
-      assume "j < i"
-      with order_S `i < card S` `s \<in> S` have "?sumeq j \<le> ?sum i"
-        by (auto simp: set_eq_iff intro!: \<tau>_nneg setsum_mono2)
-      with `x < ?sumeq j` * have False by auto }
-    ultimately have "i = j" by (metis antisym leI) }
-  ultimately show "order j = order i \<longleftrightarrow> ?sum i \<le> x \<and> x < ?sumeq i"
-    by auto
-qed
-
-lemma select_S:
-  assumes *: "x < 1" "s \<in> S" shows "select s x \<in> S"
-  by (rule selectI[OF *]) (rule order_S)
-
-lemma \<tau>_sum_le_1:
-  assumes "i < card S" "s \<in> S"
-  shows "(\<Sum>j\<le>i. \<tau> s (order j)) \<le> 1"
-  using `i < card S` `s \<in> S` order_S
-  by (subst \<tau>_order_distr[symmetric, OF `s \<in> S`])
-     (auto simp: set_eq_iff intro!: \<tau>_nneg setsum_mono2)
-
-lemma select_vimage_singleton:
-  assumes "i < card S" "s \<in> S"
-  shows "select s -` {order i} \<inter> {0..<1} = {(\<Sum>j<i. \<tau> s (order j)) ..< (\<Sum>j\<le>i. \<tau> s (order j))}"
-    (is "_ = ?I")
-proof safe
-  fix x assume "x \<in> {0..<1}" "select s x = order i"
-  with select[OF _ _ assms, of x] show "x \<in> ?I" by auto
-next
-  fix x assume "x \<in> ?I"
-  moreover
-  have "0 \<le> (\<Sum>j<i. \<tau> s (order j))"
-    using `i < card S` `s \<in> S`
-    by (auto intro!: setsum_nonneg \<tau>_nneg order_S)
-  ultimately show "x \<in> {0..< 1}"
-    using `s \<in> S` \<tau>_sum_le_1[OF assms] by auto
-  with `x \<in> ?I` show "x \<in> select s -` {order i}"
-    using select[of x i s] `i < card S` `s \<in> S` by auto
-qed
-
-lemma select_sets:
-  assumes [intro]: "s \<in> S"
-  shows "select s -` X \<inter> {0..<1} \<in> sets pborel"
-proof -
-  have "select s -` X \<inter> {0..<1} = (\<Union>s'\<in>X \<inter> S. select s -` {s'} \<inter> {0..<1})"
-    by (auto intro!: select_S)
-  also have "\<dots> \<in> sets pborel"
-  proof (rule pborel.finite_UN)
-    show "finite (X \<inter> S)" using finite_S by auto
-    fix s' assume "s' \<in> X \<inter> S"
-    then obtain i where "s' = order i" "i < card S"
-      using image_order[symmetric] by (auto simp del: image_order simp: set_eq_iff)
-    moreover have "0 \<le> (\<Sum>j<i. \<tau> s (order j))"
-      using `i < card S` by (auto intro!: setsum_nonneg \<tau>_nneg order_S)
-    ultimately show "select s -` {s'} \<inter> {0..<1} \<in> sets pborel" 
-      using `s \<in> S` `i < card S`
-      by (auto simp: sets_pborel select_vimage_singleton \<tau>_sum_le_1)
-  qed
-  finally show ?thesis .
-qed
-
-lemma select_measurable:
-  "s \<in> S \<Longrightarrow> select s \<in> measurable pborel \<lparr> space = UNIV, sets = UNIV \<rparr>"
-  unfolding measurable_def
-  by (auto intro: select_sets select_S)
 
 subsection {* @{text path} *}
 
-primrec path :: "'s \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> (nat \<Rightarrow> 's)" where
-  "path s X 0 = select s (X 0)"
-| "path s X (Suc n) = select (path s X n) (X (Suc n))"
+primrec path :: "'s \<Rightarrow> ((nat \<times> 's) \<Rightarrow> 's) \<Rightarrow> (nat \<Rightarrow> 's)" where
+  "path s X 0 = X (0, if s \<notin> S then s0 else s)"
+| "path s X (Suc n) = X (Suc n, path s X n)"
 
-lemma path_eq:
-  "path s X n = select (case n of 0 \<Rightarrow> s | Suc n \<Rightarrow> path s X n) (X n)"
-  by (cases n) simp_all
+abbreviation
+  "d_space \<equiv> (\<Pi>\<^isub>M (n, s) \<in> (UNIV :: nat set) \<times> S. state_space s)"
 
-lemma path_S[intro, simp]:
-  "X \<in> UNIV \<rightarrow> {0 ..< 1} \<Longrightarrow> s \<in> S \<Longrightarrow> path s X n \<in> S"
-  using assms by (induct n) (auto intro!: select_S)
+abbreviation
+  "p_space \<equiv> (\<Pi>\<^isub>M n\<in>UNIV::nat set. count_space S)"
 
-definition path_space_gen :: "'s \<Rightarrow> (nat \<Rightarrow> 's) measure_space" where
-  "path_space_gen s =  \<lparr> space = UNIV \<rightarrow> S,
-    sets = range (\<lambda>(X, n). {X' \<in> UNIV \<rightarrow> S. \<forall>i\<le>n. X' i = X i}),
-    measure = \<lambda>A. measure (\<Pi>\<^isub>P i\<in>UNIV. pborel) (path s -` A \<inter> space (\<Pi>\<^isub>P i\<in>UNIV. pborel)) \<rparr>"
+definition
+  "path_space s = distr d_space p_space (path s)"
 
-lemma path_space_genE:
-  assumes "A \<in> sets (path_space_gen s)"
-  obtains X n where "A = {X' \<in> UNIV \<rightarrow> S. \<forall>i\<le>n. X' i = X i}"
-  using assms unfolding path_space_gen_def by auto
+lemma space_p_space[simp]: "space p_space = UNIV \<rightarrow> S"
+  by (simp add: space_PiM Pi_iff extensional_def)
 
-definition "path_space s =
-  (if s \<in> S then sigma (path_space_gen s)
-            else sigma (path_space_gen s0))"
+lemma
+  shows space_path_space[simp]: "space (path_space s) = UNIV \<rightarrow> S"
+    and sets_path_space[simp]: "sets (path_space s) = sets p_space"
+  by (auto simp add: path_space_def)
+
+lemma sets_Collect_singleton:
+   "A \<in> sets (M i) \<Longrightarrow> i \<in> I \<Longrightarrow> {\<omega> \<in> space (Pi\<^isub>M I M). \<omega> i \<in> A} \<in> sets (Pi\<^isub>M I M)"
+   using measurable_component_singleton[of i I M,
+      THEN measurable_sets, of A]
+   by (simp add: vimage_def Int_def conj_commute)
+
+lemma in_path_space_in_single[simp, intro]:
+  "{\<omega>\<in>UNIV \<rightarrow> S. \<omega> i \<in> A} \<in> sets p_space"
+  using sets_Collect_singleton[of "A \<inter> S" "\<lambda>i. count_space S" i UNIV]
+  by (simp add: Pi_iff cong: conj_cong)
+
+lemma in_path_space_single[simp, intro]:
+  "{\<omega>\<in>UNIV \<rightarrow> S. \<omega> i = x} \<in> sets p_space"
+  using in_path_space_in_single[of i "{x}"] by simp
+
+lemma p_space_Collect_Bex_S: 
+  assumes P: "\<And>s. s \<in> S \<Longrightarrow> {\<omega>\<in>UNIV \<rightarrow> S. P \<omega> s} \<in> sets p_space"
+  shows "{\<omega>\<in>UNIV \<rightarrow> S. \<exists>s\<in>S. P \<omega> s} \<in> sets p_space"
+  by (intro sets_Collect_finite_Ex[of _ p_space, unfolded space_p_space] P finite_S)
+
+lemma p_space_Collect_Ball_S: 
+  assumes P: "\<And>s. s \<in> S \<Longrightarrow> {\<omega>\<in>UNIV \<rightarrow> S. P \<omega> s} \<in> sets p_space"
+  shows "{\<omega>\<in>UNIV \<rightarrow> S. \<forall>s\<in>S. P \<omega> s} \<in> sets p_space"
+  by (intro sets_Collect_finite_All[of _ p_space, unfolded space_p_space] P finite_S S_not_empty)
+
+lemma p_space_Collect_omega:
+  "{\<omega>\<in>UNIV \<rightarrow> S. P (\<omega> i)} \<in> sets p_space"
+proof -
+  have "{\<omega>\<in>UNIV \<rightarrow> S. P (\<omega> i)} = {\<omega>\<in>UNIV \<rightarrow> S. \<forall>s\<in>S. \<omega> i = s \<longrightarrow> P s}"
+    by (auto simp: Pi_iff)
+  also have "\<dots> \<in> sets p_space"
+    by (intro sets_Collect[of p_space, unfolded space_p_space] p_space_Collect_Ball_S in_path_space_single)
+  finally show ?thesis .
+qed
+
+lemma p_space_measurable:
+  assumes f: "f \<in> measurable p_space M" and A: "A \<in> sets M"
+  shows "{\<omega>\<in>UNIV \<rightarrow> S. f \<omega> \<in> A} \<in> sets p_space"
+  using measurable_sets[OF f A] by (simp add: vimage_def Collect_Int)
+
+lemmas p_space_Collect =
+    sets_Collect(1-5,7-)[of p_space, unfolded space_p_space]
+    sets_Collect_countable_Ball[of p_space, unfolded space_p_space]
+    sets_Collect_countable_Bex[of p_space, unfolded space_p_space]
+    p_space_Collect_Bex_S
+    p_space_Collect_Ball_S
+    p_space_Collect_omega
+
+lemma in_path_space_le[intro,simp]:
+  "{X'\<in>UNIV \<rightarrow> S. \<forall>i\<le>n. X' i = X i} \<in> sets p_space"
+  by (intro p_space_Collect)
+
+lemma in_path_space_less[intro,simp]:
+  "{X'\<in>UNIV \<rightarrow> S. \<forall>i<n. X' i = X i} \<in> sets p_space"
+  by (intro p_space_Collect)
+
+lemma in_path_space_le_in[intro, simp]:
+  "{X'\<in>UNIV\<rightarrow>S. \<forall>i\<le>n. X' i \<in> Y i} \<in> sets p_space"
+  by (intro p_space_Collect)
+
+lemma in_path_space_less_in[intro, simp]:
+  "{X'\<in>UNIV\<rightarrow>S. \<forall>i<n. X' i \<in> Y i} \<in> sets p_space"
+  by (intro p_space_Collect)
+
+lemma in_path_space_in[intro, simp]:
+  "{X'\<in>UNIV\<rightarrow>S. \<forall>i\<in>I. X' i \<in> X i} \<in> sets p_space"
+  by (intro p_space_Collect)
+
+lemma path_in_S: "\<forall>i. \<forall>s'\<in>S. X (i, s') \<in> S \<Longrightarrow> path s X n \<in> S"
+  by (induct n) (auto simp: s0)
+
+lemma paths_in_path_space[intro, simp]:
+  "(UNIV \<rightarrow> S) \<in> sets p_space"
+  using top[of p_space] by simp
+   
+lemma measurable_path:
+  "path s \<in> measurable d_space (\<Pi>\<^isub>M n \<in> (UNIV :: nat set). count_space S)"
+proof (rule measurable_PiM_single)
+  fix i :: nat and A assume "A \<in> sets (count_space S)"
+  then show "{\<omega>\<in>space d_space. path s \<omega> i \<in> A} \<in> sets d_space"
+  proof (induct i arbitrary: A)
+    case (Suc i)
+    have "{\<omega> \<in> space d_space. path s \<omega> (Suc i) \<in> A} =
+      {\<omega> \<in> space d_space. \<forall>s'\<in>S. path s \<omega> i \<in> {s'} \<longrightarrow> \<omega> (Suc i, s') \<in> A }"
+      using path_in_S by (auto simp add: space_PiM Pi_iff)
+    also have "\<dots> \<in> sets d_space"
+      using s0 Suc.prems
+      by (intro sets_Collect_finite_All sets_Collect Suc.hyps sets_Collect_singleton) auto
+    finally show ?case .
+  qed (simp add: sets_Collect_singleton s0)
+qed (auto simp add: space_PiM extensional_def Pi_iff path_in_S)
+
+subsection {* @{const path_space} is a probability space *}
 
 end
 
-sublocale Discrete_Time_Markov_Chain \<subseteq> sigma_algebra "path_space s" for s
-  using s0
-  by (auto intro!: sigma_algebra_sigma simp: path_space_gen_def path_space_def)
+sublocale Discrete_Time_Markov_Chain \<subseteq> prob_space "path_space s" for s
+proof -
+  interpret S: prob_space "state_space s" for s by (rule prob_space_state_space)
+  interpret P: product_prob_space "\<lambda>(n, s). state_space s" "(UNIV :: nat set) \<times> S" unfolding split_beta' ..
+  show "prob_space (path_space s)"
+    unfolding path_space_def using measurable_path by (rule P.prob_space_distr)
+qed
+
+lemma measure_distr:
+  "f \<in> measurable M N \<Longrightarrow> S \<in> sets N \<Longrightarrow> measure (distr M N f) S = measure M (f -` S \<inter> space M)"
+  by (simp add: emeasure_distr measure_def)
 
 context Discrete_Time_Markov_Chain
 begin
 
-lemma space_path_space: "space (path_space s) = UNIV \<rightarrow> S"
-  by (auto simp: path_space_def path_space_gen_def)
-
-lemma paths_in_path_space[intro, simp]:
-  "(UNIV \<rightarrow> S) \<in> sets (path_space s)"
-  using top[of s] by (simp add: space_path_space)
-
-lemma in_path_space: "{X' \<in> UNIV \<rightarrow> S. \<forall>i\<le>n. X' i = X i} \<in> sets (path_space s)"
-  by (auto simp: path_space_def path_space_gen_def
-           intro!: in_sigma image_eqI[of _ _ "(X, n)"])
-
-lemma in_path_space': "{X' \<in> UNIV \<rightarrow> S. \<forall>i<n. X' i = X i} \<in> sets (path_space s)"
-  using top[of s]
-  by (cases n) (auto simp add: space_path_space less_Suc_eq_le in_path_space)
-
-lemma in_path_space_le_in[intro, simp]:
- "{X'\<in>UNIV\<rightarrow>S. \<forall>i\<le>n. X' i \<in> Y i} \<in> sets (path_space s)"
+lemma prob_generator:
+  assumes s: "\<And>i. i < n \<Longrightarrow> s i \<in> S" "s' \<in> S"
+  shows "prob s' {s'\<in>UNIV \<rightarrow> S. \<forall>i<n. s' i = s i} = (\<Prod>i<n. \<tau> (nat_case s' s i) (s i))"
 proof -
-  have "{X'\<in>UNIV\<rightarrow>S. \<forall>i\<le>n. X' i \<in> Y i} =
-    (\<Union>X\<in>(\<Pi>\<^isub>E j\<in>{..n}. Y j \<inter> S). {X'\<in>UNIV\<rightarrow>S. \<forall>i\<le>n. X' i = X i})"
-    apply auto
-    apply (rule_tac x="restrict x {..n}" in bexI)
-    apply auto
-    done
-  also have "\<dots> \<in> sets (path_space s)"
-    by (auto intro: in_path_space)
-  finally show ?thesis .
-qed
+  interpret S: prob_space "state_space s''" for s'' by (rule prob_space_state_space)
+  interpret Prod: product_prob_space "\<lambda>(n, s). state_space s" "(UNIV :: nat set) \<times> S"
+    unfolding split_beta' ..
 
-lemma in_path_space_in[intro, simp]:
-  "{X'\<in>UNIV\<rightarrow>S. \<forall>i\<in>I. X' i \<in> X i} \<in> sets (path_space s)"
-proof -
-  have "{X'\<in>UNIV\<rightarrow>S. \<forall>i\<in>I. X' i \<in> X i} =
-    (\<Inter>n. {X'\<in>UNIV\<rightarrow>S. \<forall>i\<le>n. X' i \<in> (if i \<in> I then X i else S)})" by auto
-  then show ?thesis
-    by (auto split del: split_if)
-qed
+  let ?M = "(\<lambda>(n, s). state_space s)" and ?I = "(\<lambda>i. (i, nat_case s' s i)) ` {..< n}"
+  
+  have inj_I: "\<And>A. inj_on (\<lambda>i. (i, nat_case s' s i)) A"
+    by (auto simp: inj_on_def)
 
-lemma in_path_space_in_single[simp, intro]:
-  "{X' \<in> UNIV \<rightarrow> S. X' i \<in> A} \<in> sets (path_space s)"
-  using in_path_space_in[of "{i}" "\<lambda>i. A"] by simp
-
-lemma in_path_space_single[simp, intro]:
-  "{X' \<in> UNIV \<rightarrow> S. X' i = s'} \<in> sets (path_space s)"
-  using in_path_space_in[of "{i}" "\<lambda>i. {s'}"] by simp
-
-lemma measurable_path:
-  "(if s \<in> S then path s else path s0) \<in> measurable (\<Pi>\<^isub>P i\<in>UNIV. pborel) (path_space s)"
-proof -
-  { fix s assume "s \<in> S"
-    have "path s \<in> measurable (\<Pi>\<^isub>P i\<in>UNIV. pborel) (sigma (path_space_gen s))"
-    proof (rule pborel_sequence.measurable_sigma)
-      show "sets (path_space_gen s) \<subseteq> Pow (space (path_space_gen s))"
-        by (auto simp: path_space_gen_def)
-      show "path s \<in> space (\<Pi>\<^isub>P i\<in>UNIV. pborel) \<rightarrow> space (path_space_gen s)"
-        using `s \<in> S` by (auto simp: path_space_gen_def)
-      fix A assume "A \<in> sets (path_space_gen s)"
-      from path_space_genE[OF this] guess X n .
-      moreover
-      then have "path s -` A \<inter> space (\<Pi>\<^isub>P i\<in>UNIV. pborel) = 
-        (\<Inter>i\<le>n. {X'\<in>space (\<Pi>\<^isub>P i\<in>UNIV. pborel). path s X' i = X i})"
-        using `s \<in> S` by (auto intro!: path_S)
-      moreover
-      { fix n :: nat and i x
-        assume "i \<in> S"
-        with measurable_comp[OF pborel_sequence.measurable_component[of n] select_measurable[OF `i \<in> S`],
-          THEN measurable_sets, of "{x}"]
-        have "{X' \<in> space (\<Pi>\<^isub>P i\<in>UNIV. pborel). select i (X' n) = x} \<in> sets (\<Pi>\<^isub>P i\<in>UNIV. pborel)"
-          by (simp add: vimage_def Int_def conj_commute del: space_pborel_sequence) }
-      note select_component = this
-      { fix x i
-        from `s \<in> S` have "{X'\<in>space (\<Pi>\<^isub>P i\<in>UNIV. pborel). path s X' i = x} \<in> sets (\<Pi>\<^isub>P i\<in>UNIV. pborel)"
-        proof (induct i arbitrary: x s)
-          case (Suc n)
-          then have "{X'\<in>space (\<Pi>\<^isub>P i\<in>UNIV. pborel). path s X' (Suc n) = x} =
-              {X'\<in>space (\<Pi>\<^isub>P i\<in>UNIV. pborel). \<forall>s'\<in>S. path s X' n = s' \<longrightarrow> select s' (X' (Suc n)) = x}"
-            by auto
-          also have "\<dots> \<in> sets (\<Pi>\<^isub>P i\<in>UNIV. pborel)"
-            using finite_S s0
-            by (intro pborel_sequence.sets_Collect_finite_All pborel_sequence.sets_Collect Suc select_component) auto
-          finally show ?case .
-        qed (insert select_component, simp) }
-      ultimately show "path s -` A \<inter> space (\<Pi>\<^isub>P i\<in>UNIV. pborel) \<in> sets (\<Pi>\<^isub>P i\<in>UNIV. pborel)"
-        by (auto intro!: sets_Collect_finite_All)
-    qed }
-  with s0 show ?thesis
-    by (simp add: path_space_def)
-qed
+  { fix X i assume "i < n" "\<forall>j<n. X (j, nat_case s' s j) = s j"
+    with `s' \<in> S` have "path s' X i = s i"
+      by (induct i) auto }
+  moreover
+  { fix X i assume X: "i < n" "\<forall>j<n. path s' X j = s j"
+    then have "X (i, nat_case s' s i) = s i"
+    proof (induct i)
+      case (Suc i) then show ?case
+        using Suc.prems(2)[rule_format, of "Suc i"] by simp
+    qed (insert `s' \<in> S`, auto) }
+  ultimately have eq: "\<And>X. (\<forall>i<n. path s' X i = s i) \<longleftrightarrow> (\<forall>j<n. X (j, nat_case s' s j) = s j)"
+    by blast
+  have eq: "path s' -` {s'\<in>space p_space. \<forall>i<n. s' i = s i} \<inter> space d_space =
+    prod_emb (UNIV \<times> S) ?M ?I (\<Pi>\<^isub>E (n, _) \<in> ?I. {s n})" (is "_ = ?E")
+    by (auto simp add: vimage_def eq space_PiM extensional_def Pi_iff prod_emb_def path_in_S)
+  then have "prob s' {s'\<in>UNIV \<rightarrow> S. \<forall>i<n. s' i = s i} = 
+    measure d_space ?E"
+    unfolding path_space_def by (subst measure_distr[OF measurable_path in_path_space_less]) simp
+  also have "\<dots> = (\<Prod> i<n. \<tau> (nat_case s' s i) (s i))"
+    by (subst Prod.measure_PiM_emb)
+       (auto simp: s setprod_reindex[OF inj_I] intro!: setprod_cong split: nat.split)
+  finally show ?thesis by simp
+qed 
 
 lemma measurable_at_single[intro]:
   fixes f :: "'s \<Rightarrow> real"
-  shows "(\<lambda>\<omega>. f (\<omega> i)) \<in> borel_measurable (path_space s)"
+  shows "(\<lambda>\<omega>. f (\<omega> i)) \<in> borel_measurable p_space"
 proof (unfold measurable_def space_path_space, safe)
   fix i :: nat and A :: "real set" assume "A \<in> sets borel"
   have "(\<lambda>\<omega>. f (\<omega> i)) -` A \<inter> (UNIV \<rightarrow> S) = {\<omega>\<in>UNIV\<rightarrow>S. \<forall>i\<in>{i}. \<omega> i \<in> f -` A}"
     by auto
-  also have "\<dots> \<in> sets (path_space s)"
+  also have "\<dots> \<in> sets p_space"
     by (rule in_path_space_in)
-  finally show "(\<lambda>\<omega>. f (\<omega> i)) -` A \<inter> (UNIV \<rightarrow> S) \<in> sets (path_space s)" .
+  finally show "(\<lambda>\<omega>. f (\<omega> i)) -` A \<inter> space p_space \<in> sets p_space" by simp
 qed simp
 
+lemma restrict_UNIV: "restrict f UNIV = f" by auto
+
 lemma measurable_shift:
-  "(\<lambda>\<omega> i. \<omega> (i + n)) \<in> measurable (path_space s) (path_space s')"
-proof -
-  { fix s s' assume "s' \<in> S"
-    have "(\<lambda>\<omega> i. \<omega> (i + n)) \<in> measurable (path_space s) (sigma (path_space_gen s'))"
-    proof (rule measurable_sigma)
-      show "sets (path_space_gen s') \<subseteq> Pow (space (path_space_gen s'))"
-        by (auto simp: path_space_gen_def)
-      show "(\<lambda>\<omega> i. \<omega> (i + n)) \<in> space (path_space s) \<rightarrow> space (path_space_gen s')"
-        by (auto simp: path_space_gen_def space_path_space)
-      
-      fix A assume "A \<in> sets (path_space_gen s')"
-      from path_space_genE[OF this] guess \<omega>' :: "nat \<Rightarrow> 's" and k .
-      then have "(\<lambda>\<omega> i. \<omega> (i + n)) -` A \<inter> space (path_space s) =
-        {\<omega>\<in>UNIV\<rightarrow>S. \<forall>i\<in>{n .. n + k}. \<omega> i = \<omega>' (i - n)}"
-        apply (auto simp: space_path_space)
-        apply (erule_tac x="i - n" in allE)
-        apply simp
-        done
-      then show "(\<lambda>\<omega> i. \<omega> (i + n)) -` A \<inter> space (path_space s) \<in> sets (path_space s)"
-        using in_path_space_in[of "{n .. n+k}" "\<lambda>i. {\<omega>' (i - n)}" s]
-        by (auto intro: in_path_space_in)
-    qed }
-  then show ?thesis
-    using s0 by (auto simp: path_space_def)
-qed
+  "(\<lambda>\<omega> i. \<omega> (f i)) \<in> measurable p_space p_space"
+  apply (rule measurable_restrict[of "UNIV :: nat set", unfolded restrict_UNIV ])
+  apply (rule measurable_component_singleton)
+  apply auto
+  done
 
 lemma nat_case_cylinder: 
   "s \<in> S \<Longrightarrow> nat_case s -` {X'\<in>UNIV \<rightarrow> S. \<forall>i\<le>n. X' i = X i} \<inter> (UNIV \<rightarrow> S) =
@@ -885,109 +614,26 @@ lemma nat_case_cylinder:
   by (auto split: nat.split simp: Pi_def)
 
 lemma measurable_nat_case:
-  assumes "s' \<in> S" shows "nat_case s' \<in> measurable (path_space s') (path_space s)"
-proof -
-  { fix s assume "s \<in> S"
-    have "nat_case s' \<in> measurable (path_space s') (path_space s)"
-    proof (subst (2) path_space_def, simp add: `s \<in> S`, rule measurable_sigma)
-      show "sets (path_space_gen s) \<subseteq> Pow (space (path_space_gen s))"
-        by (auto simp add: path_space_gen_def)
-      show "nat_case s' \<in> space (path_space s') \<rightarrow> space (path_space_gen s)"
-        using `s' \<in> S` by (auto simp add: path_space_def path_space_gen_def Pi_def split: nat.split)
-      fix A assume "A \<in> sets (path_space_gen s)"
-      from path_space_genE[OF this] guess X n . note A = this
-      show "nat_case s' -` A \<inter> space (path_space s') \<in> sets (path_space s')"
-        using top[of s']
-        unfolding A space_path_space nat_case_cylinder[OF `s' \<in> S`]
-        by (simp add: in_path_space split: nat.split)
-    qed }
-  from this[of s] this[OF s0]
-  show ?thesis unfolding path_space_def by auto
-qed
-
-subsection {* @{const path_space} is a probability space *}
-
-end
-
-sublocale Discrete_Time_Markov_Chain \<subseteq> prob_space "path_space s" for s
-proof (rule pborel_sequence.P.prob_space_vimage)
-  show "sigma_algebra (path_space s)" ..
-  show "(if s \<in> S then path s else path s0) \<in> measure_preserving (\<Pi>\<^isub>P i\<in>UNIV. pborel) (path_space s)"
-    using s0 measurable_path[of s]
-    by (simp add: path_space_def path_space_gen_def measure_preserving_def)
-qed
-
-context Discrete_Time_Markov_Chain
-begin
+  "s' \<in> S \<Longrightarrow> nat_case s' \<in> measurable p_space p_space"
+  apply (rule measurable_restrict[of "UNIV :: nat set", unfolded restrict_UNIV ])
+  apply (case_tac i)
+  apply (simp_all del: measurable_count_space_eq2)
+  apply (rule measurable_component_singleton)
+  apply simp
+  done
 
 lemma path_space_1[simp]:
   "prob s (UNIV \<rightarrow> S) = 1"
   using prob_space unfolding space_path_space .
 
-lemma finite_measure_path_space:
-  assumes "s \<in> S" "X \<in> sets (path_space s)"
-  shows "\<mu>' s X = pborel_sequence.\<mu>' (path s -` X \<inter> space (\<Pi>\<^isub>P i\<in>UNIV. pborel))"
-proof -
-  have path: "path s \<in> measurable (\<Pi>\<^isub>P i\<in>UNIV. pborel) (path_space s)"
-    using `s \<in> S` measurable_path[of s] by auto
-  have "path s -` X \<inter> (UNIV \<rightarrow> {0..<1}) \<in> sets (\<Pi>\<^isub>P i\<in>UNIV. pborel)"
-    using measurable_sets[OF path] `X \<in> sets (path_space s)` by auto
-  with assms show ?thesis
-    unfolding \<mu>'_def pborel_sequence.\<mu>'_def
-    by auto (simp add: path_space_def path_space_gen_def)
-qed
-
-lemma prob_generator:
-  assumes s: "\<And>i. i < n \<Longrightarrow> s i \<in> S" "s' \<in> S"
-  shows "\<mu>' s' {s'\<in>UNIV \<rightarrow> S. \<forall>i<n. s' i = s i} = (\<Prod>i<n. \<tau> (nat_case s' s i) (s i))"
-proof cases
-  assume "n = 0" then show ?thesis
-    using prob_space by (simp add: space_path_space)
-next
-  assume "n \<noteq> 0"
-  let ?s' = "nat_case s' s"
-  { fix j assume "j < n"
-    with s have s'[intro, simp]: "?s' j \<in> S"
-      by (auto split: nat.split)
-    from s(1)[OF `j < n`] obtain k where "s j = order k" "k < card S"
-      by (auto elim: order_Ex)
-    moreover
-    { then have "(\<Sum>i\<le>k. \<tau> (?s' j) (order i)) \<le> (\<Sum>i<card S. \<tau> (?s' j) (order i))"
-        by (intro setsum_mono2 \<tau>_nneg order_S) auto
-      then have "(\<Sum>i\<le>k. \<tau> (?s' j) (order i)) \<le> 1"
-        using \<tau>_order_distr by auto }
-    ultimately
-    have "pborel.\<mu>' (select (?s' j) -` {s j} \<inter> {0..<1}) = \<tau> (?s' j) (s j)"
-      using s `j < n` `?s' j \<in> S`
-      by (simp_all add: lessThan_Suc_atMost[symmetric] setsum_nonneg select_vimage_singleton) }
-  note measure_select = this
-  have "\<And>x. (\<forall>i<n. s i = path s' x i) \<longleftrightarrow> (\<forall>i<n. select (?s' i) (x i) = s i)"
-  proof safe
-    fix x i assume "\<forall>i<n. s i = path s' x i" "i < n"
-    then show "select (nat_case s' s i) (x i) = s i"
-      by (induct i) auto
-  next
-    fix x i assume "\<forall>i<n. select (?s' i) (x i) = s i" "i < n"
-    then show "s i = path s' x i"
-      by (induct i) auto
-  qed
-  with `s' \<in> S` have path: "path s' -` {s' \<in> UNIV \<rightarrow> S. \<forall>i<n. s' i = s i} \<inter> space (\<Pi>\<^isub>P i\<in>UNIV. pborel)
-    = pborel_sequence.emb UNIV {..<n} (\<Pi>\<^isub>E i\<in>{..<n}. select (?s' i) -` {s i} \<inter> {0..<1})"
-    by (auto simp: pborel_sequence.emb_def Pi_def extensional_def eq_commute)
-  from s `n \<noteq> 0` show ?thesis
-    unfolding finite_measure_path_space[OF `s' \<in> S` in_path_space'] path
-    by (subst pborel_sequence.finite_measure_infprod_emb_Pi)
-       (auto intro!: product_algebraI select_sets simp: measure_select split: nat.split)
-qed 
-
 lemma prob_generator_0:
-  "s \<in> S \<Longrightarrow> s' \<in> S \<Longrightarrow> \<mu>' s' {s'\<in>UNIV \<rightarrow> S. s' 0 = s} = \<tau> s' s"
+  "s \<in> S \<Longrightarrow> s' \<in> S \<Longrightarrow> prob s' {s'\<in>UNIV \<rightarrow> S. s' 0 = s} = \<tau> s' s"
   using prob_generator[of "Suc 0" "\<lambda>_. s"]
   by (simp add: lessThan_Suc)
 
 lemma prob_generator_le:
   "(\<And>i. i \<le> n \<Longrightarrow> s i \<in> S) \<Longrightarrow> s' \<in> S \<Longrightarrow>
-    \<mu>' s' {s'\<in>UNIV \<rightarrow> S. \<forall>i\<le>n. s' i = s i} = (\<Prod>i\<le>n. \<tau> (nat_case s' s i) (s i))"
+    prob s' {s'\<in>UNIV \<rightarrow> S. \<forall>i\<le>n. s' i = s i} = (\<Prod>i\<le>n. \<tau> (nat_case s' s i) (s i))"
   using prob_generator[of "Suc n" s s']
   by (simp add: less_Suc_eq_le lessThan_Suc_atMost)
 
@@ -995,34 +641,31 @@ lemma AE_\<tau>_not_zero:
   assumes "s \<in> S"
   shows "AE \<omega> in path_space s. \<forall>i. \<tau> (nat_case s \<omega> i) (\<omega> i) \<noteq> 0"
 proof (rule AE_I)
-  let "?N k" = "{\<omega> \<in> space (path_space s). \<exists>i\<le>k. \<forall>t\<in>S. nat_case s \<omega> i = t \<longrightarrow> (\<exists>t'\<in>{t'\<in>S. \<tau> t t' = 0}. \<omega> i = t')}"
+  let ?N = "\<lambda>k. {\<omega> \<in> UNIV \<rightarrow> S. \<exists>i\<le>k. \<forall>t\<in>S. nat_case s \<omega> i = t \<longrightarrow> (\<exists>t'\<in>{t'\<in>S. \<tau> t t' = 0}. \<omega> i = t')}"
   show "{\<omega> \<in> space (path_space s). \<not> (\<forall>i. \<tau> (nat_case s \<omega> i) (\<omega> i) \<noteq> 0)} \<subseteq> (\<Union>i. ?N i)"
     (is "_ \<subseteq> ?allN")
-    using `s \<in> S` by (force simp: space_path_space)
+    using `s \<in> S` by force
 
-  have N: "\<And>i. ?N i \<in> events s"
-    using S_not_empty
-    apply (split nat.split)
-    apply (intro sets_Collect_countable_Ex)
-    apply (intro sets_Collect sets_Collect_finite_All sets_Collect_finite_Ex)
-    apply (auto simp: space_path_space intro: in_path_space_single)
-    done
+  have N: "\<And>i. ?N i \<in> sets p_space"
+    using S_not_empty unfolding space_p_space space_path_space
+    by (split nat.split) (intro p_space_Collect)
+
   then show "?allN \<in> events s"
     by auto
 
-  have "(SUP i. \<mu> s (?N i)) = \<mu> s ?allN"
-  proof (rule continuity_from_below)
+  have "(SUP i. emeasure (path_space s) (?N i)) = emeasure (path_space s) ?allN"
+  proof (rule SUP_emeasure_incseq)
     show "range ?N \<subseteq> events s"
       using N by auto
     show "incseq ?N"
-      using `s \<in> S` by (auto simp add: incseq_def space_path_space intro: order_trans)
+      using `s \<in> S` by (auto simp add: incseq_def intro: order_trans)
   qed
   moreover
   { fix n
     have "?N n = (\<Union>\<omega>'\<in>(\<Pi>\<^isub>E i\<in>{..n}. S) \<inter> {\<omega>. \<exists>i\<le>n. \<tau> (nat_case s \<omega> i) (\<omega> i) = 0}. {\<omega>\<in>UNIV\<rightarrow>S. \<forall>i\<le>n. \<omega> i = \<omega>' i})"
        (is "_ = UNION ?I ?S")
       using `s \<in> S`
-      apply (simp add: space_path_space Pi_iff set_eq_iff Bex_def)
+      apply (simp add: Pi_iff set_eq_iff Bex_def)
       apply safe
       apply fastforce
       apply (rule_tac x="restrict x {..n}" in exI)
@@ -1032,10 +675,8 @@ proof (rule AE_I)
       apply (rule_tac x="i" in exI)
       apply (fastforce split: nat.split)
       done
-    moreover have "(\<Sum>\<omega>\<in>?I. \<mu> s (?S \<omega>)) = \<mu> s (UNION ?I ?S)"
-    proof (rule measure_setsum)
-      show "finite ?I"
-        by (auto intro: finite_PiE)
+    moreover have "(\<Sum>\<omega>\<in>?I. emeasure (path_space s) (?S \<omega>)) = emeasure (path_space s) (UNION ?I ?S)"
+    proof (rule setsum_emeasure)
       show "disjoint_family_on ?S ?I"
       proof (unfold disjoint_family_on_def, intro ballI impI)
         fix \<omega>1 \<omega>2 :: "nat \<Rightarrow> 's" assume "\<omega>1 \<noteq> \<omega>2"
@@ -1044,103 +685,192 @@ proof (rule AE_I)
         ultimately have "i \<le> n" by (rule_tac ccontr) (auto simp: extensional_def)
         with i show "?S \<omega>1 \<inter> ?S \<omega>2 = {}" by auto
       qed
-      show "\<And>\<omega>. ?S \<omega> \<in> events s"
-        by (auto intro: in_path_space)
-    qed
+    qed auto
     moreover
     { fix \<omega> assume \<omega>: "\<omega> \<in> ?I"
-      then have "\<mu> s (?S \<omega>) = ereal (prob s (?S \<omega>))"
-        by (simp add: in_path_space finite_measure_eq)
+      then have "emeasure (path_space s) (?S \<omega>) = ereal (prob s (?S \<omega>))"
+        by (simp add: emeasure_eq_measure)
       also have "\<dots> = ereal (\<Prod>i\<le>n. \<tau> (nat_case s \<omega> i) (\<omega> i))"
         using `s \<in> S` \<omega> by (subst prob_generator_le) auto
       also have "\<dots> = ereal 0"
         using \<omega> by (subst setprod_zero) auto
-      finally have "\<mu> s (?S \<omega>) = 0" by simp }
-    ultimately have "\<mu> s (?N n) = 0"
+      finally have "emeasure (path_space s) (?S \<omega>) = 0" by simp }
+    ultimately have "emeasure (path_space s) (?N n) = 0"
       by simp }
-  ultimately show "\<mu> s ?allN = 0"
+  ultimately show "emeasure (path_space s) ?allN = 0"
     by simp
 qed
 
-subsection {* Iterative equation for @{const \<mu>'} *}
+subsection {* Iterative equation for @{const prob} *}
 
-lemma prob_eq_sum:
-  assumes s: "s \<in> S" and X: "X \<in> sets (path_space s)"
-  shows "\<mu>' s X = (\<Sum>s'\<in>S. \<tau> s s' * \<mu>' s' (nat_case s' -` X \<inter> (UNIV \<rightarrow> S)))"
-proof (rule prob_space_unique_Int_stable')
-  let ?G = "path_space_gen s"
-  show "X \<in> sets (sigma ?G)"
-    using s X unfolding path_space_def by simp
-  { fix A B
-    assume "A \<in> sets ?G"
-    from path_space_genE[OF this] guess X n . note this[simp]
-    assume "B \<in> sets ?G"
-    from path_space_genE[OF this] guess Y m . note this[simp]
-    assume "A \<inter> B \<noteq> {}"
-    then have *: "\<And>i. i \<le> min n m \<Longrightarrow> X i = Y i"
-      by auto
-    then show "A \<inter> B \<in> sets ?G"
-      by (auto simp: path_space_gen_def image_iff
-               intro!:  exI[of _ "if m \<le> n then X else Y"] exI[of _ "max n m"]) }
-  show "prob_space (path_space s)"
-    by unfold_locales
-  show "space (path_space s) = space (path_space_gen s)" "sets (path_space s) = sets (sigma (path_space_gen s))"
-    using `s \<in> S` by (simp_all add: path_space_def)
-  { fix X s' assume "s' \<in> S" "X \<in> sets (path_space s)"
-    with `s \<in> S` have "s' \<in> S" "X \<in> sets (path_space s')"
-      by (auto simp: path_space_def path_space_gen_def sets_sigma)
-    then have "nat_case s' -` X \<inter> space (path_space s') \<in> sets (path_space s')"
-      by (auto intro!: measurable_sets measurable_nat_case) }
-  note nat_case_sets = this
-  have space': "prob_space (path_space s\<lparr>measure := \<lambda>x. (\<Sum>s'\<in>S. \<tau> s s' * \<mu> s' (nat_case s' -` x \<inter> (UNIV \<rightarrow> S)))\<rparr>)"
-  proof (rule weighted_prob_space, rule prob_space_vimage, simp)
-    show "sigma_algebra (path_space s)" ..
-    fix s' assume "s' \<in> S"
-    then show "nat_case s' \<in> measure_preserving (path_space s')
-                   (path_space s\<lparr>measure := \<lambda>X. \<mu> s' (nat_case s' -` X \<inter> (UNIV \<rightarrow> S))\<rparr>)"
-      using measurable_nat_case `s \<in> S`
-      by (simp add: measure_preserving_def space_path_space)
-  qed (insert `s \<in> S`, simp_all add: \<tau>_distr one_ereal_def)
-  show "prob_space (path_space s\<lparr>measure := \<lambda>x. ereal (\<Sum>s'\<in>S. \<tau> s s' * \<mu>' s' (nat_case s' -` x \<inter> (UNIV \<rightarrow> S)))\<rparr>)"
-    by (rule prob_space.prob_space_cong[OF space'])
-       (insert `s \<in> S` nat_case_sets, simp_all add: finite_measure_eq space_path_space)
-next
-  fix A assume "A \<in> sets (path_space_gen s)"
-  from path_space_genE[OF this] guess X n . note A = this[simp]
-  have \<mu>': "\<And>s'. s' \<in> S \<Longrightarrow> \<tau> s s' * \<mu>' s' (nat_case s' -` {X' \<in> UNIV \<rightarrow> S. \<forall>i\<le>n. X' i = X i} \<inter> (UNIV \<rightarrow> S)) =
-    (if X 0 = s' then case n of 0 \<Rightarrow> \<tau> s s' | Suc n \<Rightarrow> \<tau> s s' * \<mu>' s' {X' \<in> UNIV \<rightarrow> S. \<forall>i\<le>n. X' i = X (Suc i)} else 0)"
-    using prob_space by (simp split: nat.split add: space_path_space nat_case_cylinder del: vimage_Collect_eq)
-  show "\<mu>' s A = (\<Sum>s'\<in>S. \<tau> s s' * \<mu>' s' (nat_case s' -` A \<inter> (UNIV \<rightarrow> S)))"
-  proof cases
-    have nat_case_idem: "\<And>f x. nat_case (f 0) (\<lambda>i. f (Suc i)) x = f x"
-      by (simp split: nat.split)
-    assume "\<forall>i\<le>n. X i \<in> S"
-    moreover then have "S \<inter> {s. s = X 0} = {X 0}" by auto
-    ultimately show ?thesis
-      using finite_S `s \<in> S`
-      by (simp add: \<mu>' setsum_cases prob_generator_0 prob_generator_le
-                    atMost_Suc_eq_insert_0 setprod_reindex nat_case_idem zero_notin_Suc_image
-               del: vimage_Collect_eq cong: setsum_cong split: nat.split)
-  next
-    assume "\<not> (\<forall>i\<le>n. X i \<in> S)"
-    then obtain i where "X i \<notin> S" "i \<le> n" by auto
-    with s0 have "A = {}"
-      by (auto intro!: exI[of _ i] simp: Pi_def)
-    then show ?thesis by (simp del: A)
+definition "iterative_measure s =
+  measure_of (space p_space) (sets p_space)
+             (\<lambda>A. \<integral>\<^isup>+s'. emeasure (distr (path_space s') p_space (nat_case s')) A \<partial>state_space s)"
+
+lemma space_iterative[simp]: "space (iterative_measure s) = UNIV \<rightarrow> S"
+  unfolding iterative_measure_def space_measure_of[OF space_closed] by simp
+
+lemma sets_iterative[simp]: "sets (iterative_measure s) = sets p_space"
+  unfolding iterative_measure_def sets_measure_of[OF space_closed] sigma_sets_eq ..
+
+lemma emeasure_iterative_measure:
+  assumes A: "A \<in> sets p_space" 
+  shows "emeasure (iterative_measure s) A = (\<integral>\<^isup>+s'. emeasure (distr (path_space s') p_space (nat_case s')) A \<partial>state_space s)"
+    (is "_ = ?\<mu> A")
+proof (rule emeasure_measure_of[OF iterative_measure_def space_closed])
+  from A show "A \<in> sets (iterative_measure s)" by simp
+  show "positive (sets (iterative_measure s)) ?\<mu>"
+    by (simp add: positive_def positive_integral_positive)
+  show "countably_additive (sets (iterative_measure s)) ?\<mu>"
+  proof (cases rule: countably_additiveI)
+    case (goal1 A) then show ?case
+      apply (subst positive_integral_suminf[symmetric])
+      apply (simp add: state_space_def)
+      apply (simp add: emeasure_nonneg)
+      apply (subst suminf_emeasure)
+      apply auto
+      done
   qed
 qed
 
-lemma measure_eq_sum:
-  assumes "s \<in> S" and X: "X \<in> events s"
-  shows "\<mu> s X = (\<Sum>s'\<in>S. \<tau> s s' * \<mu> s' (nat_case s' -` X \<inter> (UNIV \<rightarrow> S)))"
-proof -
-  { fix s' assume "s' \<in> S" then have "nat_case s' -` X \<inter> (UNIV \<rightarrow> S) \<in> sets (path_space s')"
-      using measurable_nat_case[THEN measurable_sets, OF `s' \<in> S` X]
-      by (simp add: space_path_space) }
-  with assms show ?thesis
-    by (simp add: finite_measure_eq prob_eq_sum)
+lemma emeasure_iterative_measure':
+  assumes A: "A \<in> sets p_space" and "s \<in> S"
+  shows "emeasure (iterative_measure s) A = (\<Sum>s'\<in>S. \<tau> s s' * prob s' (nat_case s' -` A \<inter> (UNIV \<rightarrow> S)))"
+  using `s \<in> S` A
+  apply (simp add: state_space_def emeasure_iterative_measure)
+  apply (subst positive_integral_point_measure_finite)
+  apply (simp_all add: emeasure_nonneg)
+  apply (simp add: emeasure_distr measurable_nat_case emeasure_eq_measure cong: measurable_cong')
+  done
+
+lemma prob_space_iterative_measure: assumes "s \<in> S" shows "prob_space (iterative_measure s)"
+proof
+  have eq: "\<And>s. s \<in> S \<Longrightarrow> nat_case s -` (UNIV \<rightarrow> S) \<inter> (UNIV \<rightarrow> S) = UNIV \<rightarrow> S" by auto 
+  show "emeasure (iterative_measure s) (space (iterative_measure s)) = 1"
+    using `s \<in> S` by (simp add: emeasure_iterative_measure' eq \<tau>_distr one_ereal_def)
 qed
 
+lemma measure_iterative_measure:
+  assumes A: "A \<in> sets p_space" and "s \<in> S"
+  shows "measure (iterative_measure s) A = (\<Sum>s'\<in>S. \<tau> s s' * prob s' (nat_case s' -` A \<inter> (UNIV \<rightarrow> S)))"
+proof -
+  interpret I: prob_space "iterative_measure s" using `s \<in> S` by (rule prob_space_iterative_measure)
+  show ?thesis
+    by (intro ereal.inject[THEN iffD1])
+       (simp add: emeasure_iterative_measure'[OF A `s \<in> S`] I.emeasure_eq_measure[symmetric])
+qed
+
+definition "cylinders = range (\<lambda>(n::nat, \<omega>'). {\<omega>\<in>UNIV \<rightarrow> S. \<forall>i<n. \<omega> i = \<omega>' i}) \<union> {{}}"
+
+lemma cylindersE:
+  assumes "A \<in> cylinders"
+  obtains (P1) \<omega>' n where "\<omega>' \<in> {..<n} \<rightarrow> S" "A = {\<omega>\<in>UNIV \<rightarrow> S. \<forall>i<n. \<omega> i = \<omega>' i}"
+        | (empty) "A = {}"
+proof (atomize_elim, cases)
+  assume "A \<noteq> {}"
+  with `A \<in> cylinders` obtain \<omega>' n where A: "A = {\<omega>\<in>UNIV \<rightarrow> S. \<forall>i<n. \<omega> i = \<omega>' i}"
+    by (auto simp: cylinders_def)
+  with `A \<noteq> {}` have "\<omega>' \<in> {..<n} \<rightarrow> S" by (auto simp: Pi_iff) metis
+  with A `A \<noteq> {}`
+  show "(\<exists>\<omega>' n. \<omega>' \<in> {..<n} \<rightarrow> S \<and> A = {\<omega> \<in> UNIV \<rightarrow> S. \<forall>i<n. \<omega> i = \<omega>' i}) \<or> A = {}"
+    by blast
+qed simp
+
+lemma sets_p_space_cylinder:
+  "sets p_space = sigma_sets (UNIV \<rightarrow> S) cylinders"
+  (is "_ = sigma_sets ?\<Omega> ?A")
+proof (rule antisym)
+  show "sigma_sets ?\<Omega> ?A \<subseteq> sets p_space"
+    unfolding space_p_space[symmetric] by (intro sigma_sets_subset) (auto simp: cylinders_def)
+  interpret sigma_algebra ?\<Omega> "sigma_sets ?\<Omega> ?A"
+    by (rule sigma_algebra_sigma_sets) (auto simp: cylinders_def)
+  have eq: "UNIV \<rightarrow>\<^isub>E space (count_space S) = UNIV \<rightarrow> S" by (simp add: extensional_def)
+  show "sets p_space \<subseteq> sigma_sets ?\<Omega> ?A"
+    unfolding sets_PiM_single eq
+  proof (safe intro!: sigma_sets_mono)
+    fix i :: nat and A assume "A \<in> sets (count_space S)"
+    then have "A \<subseteq> S" by simp
+    then have "{f \<in> UNIV \<rightarrow> S. f i \<in> A} =
+      (\<Union>x\<in>(\<Pi>\<^isub>E j\<in>{.. i}. if j = i then A else S). case (Suc i, x) of (n, x) \<Rightarrow> {f \<in> UNIV \<rightarrow> S. \<forall>j<n. f j = x j})"
+      apply (auto simp: Pi_iff Ball_def split: split_if_asm)
+      apply (rule_tac x="restrict x {..i}" in bexI)
+      apply auto
+      done
+    also have "\<dots> \<in> sigma_sets ?\<Omega> ?A"
+      using `A \<subseteq> S`
+      by (intro finite_UN finite_PiE) (auto intro!: sigma_sets.Basic dest: finite_subset simp: cylinders_def)
+    finally show "{f \<in> UNIV \<rightarrow> S. f i \<in> A} \<in> sigma_sets ?\<Omega> ?A" .
+  qed
+qed
+
+lemma Int_stable_cylinders: "Int_stable cylinders"
+proof (safe intro!: Int_stableI elim!: cylindersE)
+  fix n m :: nat and X Y 
+  let ?A = "{\<omega>\<in>UNIV \<rightarrow> S. \<forall>i<n. \<omega> i = X i}" and ?B = "{\<omega>\<in>UNIV \<rightarrow> S. \<forall>i<m. \<omega> i = Y i}"
+  { assume "?A \<inter> ?B \<noteq> {}"
+    then have "?A \<inter> ?B = {\<omega>\<in>UNIV \<rightarrow> S. \<forall>i<max n m. \<omega> i = (if m \<le> n then X else Y) i}"
+      by auto
+    also have "\<dots> \<in> cylinders"
+      by (auto simp: cylinders_def)
+    finally have "?A \<inter> ?B \<in> cylinders" . }
+  then show "?A \<inter> ?B \<in> cylinders"
+    by (auto simp: cylinders_def)
+qed (auto simp: cylinders_def)
+
+lemma path_space_eq_iterative_measure:
+  assumes "s \<in> S" shows "path_space s = iterative_measure s"
+proof (rule measure_eqI_generator_eq[OF Int_stable_cylinders])
+  show "range (\<lambda>i. UNIV \<rightarrow>S ) \<subseteq> cylinders" "(\<Union>i. UNIV \<rightarrow> S) = (UNIV \<rightarrow> S)" "incseq (\<lambda>i. UNIV \<rightarrow> S)"
+    "cylinders \<subseteq> Pow (UNIV \<rightarrow> S)" "emeasure (path_space s) (UNIV \<rightarrow> S) \<noteq> \<infinity>"
+    by (auto simp: cylinders_def)
+  show "sets (path_space s) = sigma_sets (UNIV \<rightarrow> S) cylinders"
+   "sets (iterative_measure s) = sigma_sets (UNIV \<rightarrow> S) cylinders"
+    by (simp_all add: sets_p_space_cylinder)
+  interpret I: prob_space "iterative_measure s" using `s \<in> S` by (rule prob_space_iterative_measure)
+  fix X assume "X \<in> cylinders"
+  then show "emeasure (path_space s) X = emeasure (iterative_measure s) X"
+  proof (safe elim!: cylindersE)
+    fix n :: nat and \<omega>' assume \<omega>': "\<omega>' \<in> {..<n} \<rightarrow> S"
+    let ?X = "{\<omega> \<in> UNIV \<rightarrow> S. \<forall>i<n. \<omega> i = \<omega>' i}"
+    show "emeasure (path_space s) ?X = emeasure (iterative_measure s) ?X"
+    proof (cases n)
+      case 0
+      then have "?X = space p_space" by auto
+      then show ?thesis
+        using emeasure_space_1 I.emeasure_space_1 by simp
+    next
+      case (Suc i)
+      have eq: "\<And>s'. s' \<in> S \<Longrightarrow> nat_case s' -` {\<omega> \<in> UNIV \<rightarrow> S. \<forall>j<Suc i. \<omega> j = \<omega>' j} \<inter> (UNIV\<rightarrow>S) =
+        (if s' = \<omega>' 0 then {\<omega> \<in> UNIV \<rightarrow> S. \<forall>j<i. \<omega> j = \<omega>' (Suc j)} else {})"
+        using \<omega>' Suc by (auto split: nat.split)
+      from \<omega>' `s \<in> S` have "prob s ?X = (\<Prod>i<n. \<tau> (nat_case s \<omega>' i) (\<omega>' i))"
+        by (intro prob_generator) auto
+      also have "\<dots> = (\<Sum>s'\<in>S. if s' = \<omega>' 0 then \<tau> s s' * (\<Prod>i<i. \<tau> (\<omega>' i) (\<omega>' (Suc i))) else 0)"
+        using `n = Suc i` \<omega>'
+        by (auto simp: lessThan_Suc_eq_insert_0 setprod_reindex zero_notin_Suc_image setsum_cases)
+      also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * prob s' (nat_case s' -` ?X \<inter> (UNIV\<rightarrow>S)))"
+        using \<omega>'[unfolded Pi_iff] Suc
+        by (intro setsum_cong) (simp_all add: prob_generator nat_case_idem eq del: vimage_Collect_eq)
+      also have "\<dots> = measure (iterative_measure s) ?X"
+        using \<omega>' `s \<in> S` by (subst measure_iterative_measure) auto
+      finally show ?thesis
+        by (simp add: emeasure_eq_measure I.emeasure_eq_measure)
+    qed
+  qed simp
+qed
+
+lemma prob_eq_sum:
+  assumes s: "s \<in> S" and X: "X \<in> sets p_space"
+  shows "prob s X = (\<Sum>s'\<in>S. \<tau> s s' * prob s' (nat_case s' -` X \<inter> (UNIV \<rightarrow> S)))"
+  unfolding path_space_eq_iterative_measure[OF s]
+  using measure_iterative_measure[OF X s] .
+
+lemma measure_eq_sum:
+  assumes s: "s \<in> S" and X: "X \<in> sets p_space"
+  shows "emeasure (path_space s) X = (\<Sum>s'\<in>S. \<tau> s s' * prob s' (nat_case s' -` X \<inter> (UNIV \<rightarrow> S)))"
+  unfolding path_space_eq_iterative_measure[OF s]
+  using emeasure_iterative_measure'[OF X s] .
+  
 lemma prob_cylinder_eq_sum_prod:
   assumes Y: "\<And>i. i < n \<Longrightarrow> Y i \<subseteq> S" and "s \<in> S"
   shows "prob s {X'\<in>UNIV\<rightarrow>S. \<forall>i<n. X' i \<in> Y i} = (\<Sum>X\<in>Pi\<^isub>E {..<n} Y. \<Prod>i<n. \<tau> (nat_case s X i) (X i))"
@@ -1156,7 +886,7 @@ proof -
       moreover assume "A \<noteq> B" then obtain i where "A i \<noteq> B i" by auto
       ultimately show False by (cases "i<n") (auto simp: extensional_def)
     qed
-  qed (auto intro: finite_subset[OF Y] in_path_space')
+  qed (auto intro: finite_subset[OF Y])
   moreover {
     fix X assume "X\<in>Pi\<^isub>E {..<n} Y"
     with assms have "prob s {X'\<in>UNIV\<rightarrow>S. \<forall>i<n. X' i = X i} = (\<Prod>i<n. \<tau> (nat_case s X i) (X i))"
@@ -1190,15 +920,10 @@ lemma prob_NT_eq_sum:
   shows "prob s {\<omega>\<in>UNIV\<rightarrow>S. \<forall>i. \<omega> i \<in> A} = 
     (\<Sum>s'\<in>A. \<tau> s s' * prob s' {\<omega>\<in>UNIV\<rightarrow>S. \<forall>i. \<omega> i \<in> A})"
 proof -
-  let "?V s'" = "nat_case s' -` {\<omega> \<in> UNIV \<rightarrow> S. \<forall>i. \<omega> i \<in> A} \<inter> (UNIV \<rightarrow> S)"
+  let ?V = "\<lambda>s'. nat_case s' -` {\<omega> \<in> UNIV \<rightarrow> S. \<forall>i. \<omega> i \<in> A} \<inter> (UNIV \<rightarrow> S)"
   from `s \<in> S` have "prob s {\<omega>\<in>UNIV\<rightarrow>S. \<forall>i. \<omega> i \<in> A} =
     (\<Sum>s'\<in>S. \<tau> s s' * prob s' (?V s'))"
-    apply (rule prob_eq_sum)
-    unfolding space_path_space [symmetric, of s]
-    apply (auto intro!: sets_Collect)
-    unfolding space_path_space
-    apply auto
-    done
+    by (rule prob_eq_sum) (auto intro: p_space_Collect)
   also have "\<dots> = (\<Sum>s'\<in>A. \<tau> s s' * prob s' {\<omega>\<in>UNIV\<rightarrow>S. \<forall>i. \<omega> i \<in> A})"
   proof (intro setsum_mono_zero_cong_right)
     show "finite S" by auto
@@ -1218,7 +943,7 @@ proof -
 qed
 
 lemma prob_eq_sum_single:
-  assumes s: "s \<in> S" "s' \<in> S" and A: "A \<in> events s"
+  assumes s: "s \<in> S" "s' \<in> S" and A: "A \<in> sets p_space"
     and B: "\<And>s''. nat_case s'' -` A \<inter> (UNIV\<rightarrow>S) = (if s'' = s' then B else {})"
   shows "prob s A = \<tau> s s' * prob s' B"
 proof -
@@ -1231,31 +956,31 @@ proof -
 qed
 
 lemma prob_shifted_eq:
-  assumes s: "s \<in> S" "\<And>i. i < n \<Longrightarrow> \<omega> i \<in> S" and A: "A \<in> events s"
+  assumes s: "s \<in> S" "\<And>i. i < n \<Longrightarrow> \<omega> i \<in> S" and A: "A \<in> sets p_space"
   shows "prob s ({\<omega>'\<in>UNIV\<rightarrow>S. \<forall>i<n. \<omega>' i = \<omega> i} \<inter> ((\<lambda>\<omega> i. \<omega> (i + n)) -` A \<inter> (UNIV\<rightarrow>S)))
     = (\<Prod>i<n. \<tau> (nat_case s \<omega> i) (\<omega> i)) * prob (nat_case s \<omega> n) A"
     (is "prob s (?A n s \<omega>) = _")
 using s proof (induct n arbitrary: s \<omega>)
   case 0 then show ?case
-    using sets_into_space[OF A] by (simp add: Int_absorb2 Int_absorb1 space_path_space)
+    using sets_into_space[OF A] by (simp add: Int_absorb2 Int_absorb1)
 next
   case (Suc n)
-  from Suc.prems have "prob s (?A (Suc n) s \<omega>) = \<tau> s (\<omega> 0) * prob (\<omega> 0) (?A n (\<omega> 0) (\<lambda>i. \<omega> (Suc i)))"
-    using sets_into_space[OF A]
-    by (intro prob_eq_sum_single[OF _ _ Int[OF _ measurable_sets[OF measurable_shift A, unfolded space_path_space]]])
-       (auto simp: space_path_space all_less_Suc_split intro!: sets_Collect[unfolded space_path_space])
+  from Suc.prems A have "prob s (?A (Suc n) s \<omega>) = \<tau> s (\<omega> 0) * prob (\<omega> 0) (?A n (\<omega> 0) (\<lambda>i. \<omega> (Suc i)))"
+    by (intro prob_eq_sum_single)
+       (auto simp: all_less_Suc_split Collect_Int2
+                intro!: p_space_Collect p_space_measurable measurable_shift)
   with Suc show ?case
     by (simp add: lessThan_Suc_eq_insert_0 setprod_reindex nat_case_idem zero_notin_Suc_image)
 qed
 
 lemma prob_shifted_sets_eq:
-  assumes s: "s \<in> S" and F: "\<And>i. i < n \<Longrightarrow> F i \<subseteq> S" and A: "A \<in> events s"
+  assumes s: "s \<in> S" and F: "\<And>i. i < n \<Longrightarrow> F i \<subseteq> S" and A: "A \<in> sets p_space"
   shows "prob s ({\<omega>'\<in>UNIV\<rightarrow>S. \<forall>i<n. \<omega>' i \<in> F i} \<inter> ((\<lambda>\<omega> i. \<omega> (i + n)) -` A \<inter> space (path_space s)))
     = (\<Sum>\<omega>\<in>Pi\<^isub>E {..<n} F. (\<Prod>i<n. \<tau> (nat_case s \<omega> i) (\<omega> i)) * prob (nat_case s \<omega> n) A)"
     (is "prob s (?A n s \<omega>) = _")
 proof -
   let ?sA = "(\<lambda>\<omega> i. \<omega> (i + n)) -` A \<inter> space (path_space s)"
-  let "?S \<omega>'" = "{\<omega>\<in>UNIV\<rightarrow>S. \<forall>i<n. \<omega> i = \<omega>' i} \<inter> ?sA"
+  let ?S = "\<lambda>\<omega>'. {\<omega>\<in>UNIV\<rightarrow>S. \<forall>i<n. \<omega> i = \<omega>' i} \<inter> ?sA"
   have eq_Union: "{\<omega>'\<in>UNIV\<rightarrow>S. \<forall>i<n. \<omega>' i \<in> F i} \<inter> ?sA
     = (\<Union>\<omega>'\<in>Pi\<^isub>E {..<n} F. ?S \<omega>')"
     apply auto
@@ -1267,9 +992,9 @@ proof -
     unfolding eq_Union
   proof (rule finite_measure_finite_Union)
     show "finite (Pi\<^isub>E {..<n} F)"
-      using F by (auto intro!: finite_PiE dest: finite_subset)
-    show "\<And>\<omega>'. ?S \<omega>' \<in> events s"
-      by (auto intro!: Int[OF _ measurable_sets] measurable_shift A in_path_space')
+      using F by (auto dest: finite_subset)
+    show "?S ` (Pi\<^isub>E {..<n} F) \<subseteq> events s"
+      by (auto simp: Collect_Int2 intro!: p_space_Collect p_space_measurable measurable_shift A)
     show "disjoint_family_on ?S (Pi\<^isub>E {..<n} F)"
     proof (unfold disjoint_family_on_def, intro ballI impI)
       fix \<omega>1 \<omega>2 :: "nat \<Rightarrow> 's" assume "\<omega>1 \<noteq> \<omega>2"
@@ -1291,28 +1016,26 @@ lemma simple_integral_eq_sum:
   assumes "s \<in> S" and f: "simple_function (path_space s) f" and nonneg: "\<And>\<omega>. \<omega> \<in> UNIV \<rightarrow> S \<Longrightarrow> 0 \<le> f \<omega>"
   shows "(\<integral>\<^isup>Sx. f x \<partial>path_space s) = (\<Sum>s'\<in>S. \<tau> s s' * (\<integral>\<^isup>Sx. f (nat_case s' x) \<partial>path_space s'))"
 proof -
-  let "?M x s'" = "(\<lambda>\<omega>. f (nat_case s' \<omega>)) -` {x} \<inter> (UNIV \<rightarrow> S)"
-  def \<mu>' \<equiv> "\<lambda>x s. \<mu> s (?M x s)"
-  then have \<mu>': "\<And>x s. \<mu> s (?M x s) = \<mu>' x s" by simp
-  { fix x s assume "\<mu>' x s \<noteq> 0"
-    with \<mu>'[of s x] have "?M x s \<noteq> {}" by auto }
-  note \<mu>'_eq_0_imp = this
+  let ?M = "\<lambda>x s'. (\<lambda>\<omega>. f (nat_case s' \<omega>)) -` {x} \<inter> (UNIV \<rightarrow> S)"
+  def P \<equiv> "\<lambda>x s. emeasure (path_space s) (?M x s)"
+  then have prob: "\<And>x s. emeasure (path_space s) (?M x s) = P x s" by simp
+  { fix x s assume "P x s \<noteq> 0"
+    with prob[of s x] have "?M x s \<noteq> {}" by auto }
+  note prob_eq_0_imp = this
 
   { fix s' x assume "s' \<in> S"
-    then have "?M x s' = nat_case s' -` (f -` {x} \<inter> space (path_space s)) \<inter> space (path_space s')"
-      by (auto simp: space_path_space)
-    also have "\<dots> \<in> sets (path_space s')"
-      using `s' \<in> S` `s \<in> S`
-      by (intro measurable_sets[OF measurable_nat_case, OF `s' \<in> S`])
-         (auto intro!: simple_functionD[OF f])
-    finally have "?M x s' \<in> sets (path_space s')" . }
+    then have "?M x s' = nat_case s' -` (f -` {x} \<inter> space (path_space s)) \<inter> space p_space"
+      by auto
+    also have "\<dots> \<in> sets p_space"
+      using `s' \<in> S` `s \<in> S` simple_functionD[OF f]
+      by (intro measurable_sets[OF measurable_nat_case]) auto
+    finally have "?M x s' \<in> sets p_space" . }
   note M_sets = this
-  then have \<mu>'_nonneg[simp, intro!]: "\<And>s' x. s' \<in> S \<Longrightarrow> 0 \<le> \<mu>' x s'"
-    by (auto intro!: positive_measure simp: \<mu>'_def)
+  then have prob_nonneg[simp, intro!]: "\<And>s' x. s' \<in> S \<Longrightarrow> 0 \<le> P x s'"
+    by (auto intro!: measure_nonneg simp: P_def)
 
   { fix x s' assume "s' \<in> S"
-    then have "nat_case s' -` (f -` {x} \<inter> (UNIV \<rightarrow> S)) \<inter> (UNIV \<rightarrow> S) = ?M x s'"
-      by (auto simp: space_path_space) }
+    then have "nat_case s' -` (f -` {x} \<inter> (UNIV \<rightarrow> S)) \<inter> (UNIV \<rightarrow> S) = ?M x s'" by auto }
   note nat_case_f_eq = this
 
   have f_image_nonneg: "\<And>x s. s \<in> S \<Longrightarrow> x \<in> (\<lambda>\<omega>. f (nat_case s \<omega>)) ` (UNIV \<rightarrow> S) \<Longrightarrow> 0 \<le> x"
@@ -1322,41 +1045,41 @@ proof -
     by auto
   with simple_functionD[OF f]
   have finite_f_nat_case: "\<And>s. s \<in> S \<Longrightarrow> finite ((\<lambda>\<omega>. f (nat_case s \<omega>)) ` (UNIV \<rightarrow> S))"
-    by (simp add: space_path_space) (metis finite_subset)
+    by simp (metis finite_subset)
 
-  have "(\<Sum>s'\<in>S. ereal (\<tau> s s') * (\<Sum>x\<in>(\<lambda>\<omega>. f (nat_case s' \<omega>)) ` (UNIV \<rightarrow> S). x * \<mu>' x s')) =
-    (\<Sum>s'\<in>S. (\<Sum>x\<in>(\<lambda>\<omega>. f (nat_case s' \<omega>)) ` (UNIV \<rightarrow> S). x * ereal (\<tau> s s') * \<mu>' x s'))"
-    by (auto intro!: setsum_cong
-             simp: setsum_ereal_right_distrib f_image_nonneg ereal_0_le_mult ac_simps)
-  also have "\<dots> = (\<Sum>(s', x)\<in>(SIGMA s' : S. ((\<lambda>\<omega>. f (nat_case s' \<omega>)) ` (UNIV \<rightarrow> S))). x * ereal (\<tau> s s') * \<mu>' x s')"
+  have "(\<Sum>s'\<in>S. ereal (\<tau> s s') * (\<Sum>x\<in>(\<lambda>\<omega>. f (nat_case s' \<omega>)) ` (UNIV \<rightarrow> S). x * P x s')) =
+    (\<Sum>s'\<in>S. (\<Sum>x\<in>(\<lambda>\<omega>. f (nat_case s' \<omega>)) ` (UNIV \<rightarrow> S). x * ereal (\<tau> s s') * P x s'))"
+    by (auto intro!: setsum_cong simp: setsum_ereal_right_distrib f_image_nonneg ac_simps)
+  also have "\<dots> = (\<Sum>(s', x)\<in>(SIGMA s' : S. ((\<lambda>\<omega>. f (nat_case s' \<omega>)) ` (UNIV \<rightarrow> S))). x * ereal (\<tau> s s') * P x s')"
     by (intro setsum_Sigma finite_S ballI finite_f_nat_case)
   also have "(SIGMA s:S. (\<lambda>\<omega>. f (nat_case s \<omega>)) ` (UNIV \<rightarrow> S)) = (\<lambda>(x,y). (y,x)) ` (f ` (UNIV \<rightarrow> S) \<times> S \<inter> {(x, s). \<exists>\<omega> \<in> UNIV\<rightarrow>S. f (nat_case s \<omega>) = x})"
     by (auto simp: image_iff intro!: nat_case_in_S)
-  also have "(\<Sum>(s', x)\<in>(\<lambda>(x,y). (y,x)) ` (f ` (UNIV \<rightarrow> S) \<times> S \<inter> {(x, s). \<exists>\<omega> \<in> UNIV\<rightarrow>S. f (nat_case s \<omega>) = x}). x * ereal (\<tau> s s') * \<mu>' x s')
-    = (\<Sum>(x, s')\<in>f ` (UNIV \<rightarrow> S) \<times> S. x * ereal (\<tau> s s') * \<mu>' x s')"
+  also have "(\<Sum>(s', x)\<in>(\<lambda>(x,y). (y,x)) ` (f ` (UNIV \<rightarrow> S) \<times> S \<inter> {(x, s). \<exists>\<omega> \<in> UNIV\<rightarrow>S. f (nat_case s \<omega>) = x}). x * ereal (\<tau> s s') * P x s')
+    = (\<Sum>(x, s')\<in>f ` (UNIV \<rightarrow> S) \<times> S. x * ereal (\<tau> s s') * P x s')"
     using simple_functionD[OF f]
-    by (auto simp add: swap_inj_on setsum_reindex space_path_space
-             intro!: setsum_mono_zero_cong_left dest!: \<mu>'_eq_0_imp)
-  also have "\<dots> = (\<Sum>x\<in>f ` (UNIV \<rightarrow> S). x * (\<Sum>s'\<in>S. ereal (\<tau> s s') * \<mu>' x s'))"
+    by (auto simp add: swap_inj_on setsum_reindex
+             intro!: setsum_mono_zero_cong_left dest!: prob_eq_0_imp)
+  also have "\<dots> = (\<Sum>x\<in>f ` (UNIV \<rightarrow> S). x * (\<Sum>s'\<in>S. ereal (\<tau> s s') * P x s'))"
     using `s \<in> S`
     by (auto intro!: setsum_cong
-             simp: setsum_cartesian_product[symmetric] setsum_ereal_right_distrib ereal_0_le_mult \<tau>_nneg ac_simps)
-  finally have "(\<Sum>s'\<in>S. ereal (\<tau> s s') * (\<Sum>x\<in>(\<lambda>\<omega>. f (nat_case s' \<omega>)) ` (UNIV \<rightarrow> S). x * \<mu>' x s')) =
-    (\<Sum>x\<in>f ` (UNIV \<rightarrow> S). x * (\<Sum>s'\<in>S. ereal (\<tau> s s') * \<mu>' x s'))" .
+             simp: setsum_cartesian_product[symmetric] setsum_ereal_right_distrib ac_simps ereal_zero_le_0_iff)
+  finally have "(\<Sum>s'\<in>S. ereal (\<tau> s s') * (\<Sum>x\<in>(\<lambda>\<omega>. f (nat_case s' \<omega>)) ` (UNIV \<rightarrow> S). x * P x s')) =
+    (\<Sum>x\<in>f ` (UNIV \<rightarrow> S). x * (\<Sum>s'\<in>S. ereal (\<tau> s s') * P x s'))" .
   then show ?thesis
-    unfolding simple_integral_def
-    by (subst measure_eq_sum[OF `s \<in> S` simple_functionD(2), OF f])
-       (simp add: nat_case_f_eq space_path_space \<mu>' del: vimage_Int)
+    unfolding simple_integral_def using simple_functionD[OF f]
+    by (subst measure_eq_sum[OF `s \<in> S`])
+       (auto simp add: nat_case_f_eq P_def emeasure_eq_measure simp del: vimage_Int intro!: setsum_cong)
 qed
   
 subsection {* Iterative equation for the Lebesgue integral *}
 
 lemma positive_integral_eq_sum:
-  assumes "s \<in> S" and f: "f \<in> borel_measurable (path_space s)"
+  assumes "s \<in> S" and f: "f \<in> borel_measurable p_space"
   shows "(\<integral>\<^isup>+x. f x \<partial>path_space s) = (\<Sum>s'\<in>S. \<tau> s s' * (\<integral>\<^isup>+x. f (nat_case s' x) \<partial>path_space s'))"
 proof -
-  have sa_s: "sigma_algebra (path_space s)" by default
-  from borel_measurable_implies_simple_function_sequence'[OF f]
+  have f': "f \<in> borel_measurable (path_space s)"
+    using f by (simp cong: measurable_cong')
+  from borel_measurable_implies_simple_function_sequence'[OF f']
   guess g . note g = this
   then have "(\<integral>\<^isup>+x. f x \<partial>path_space s) = (\<integral>\<^isup>+x. (SUP i. g i x) \<partial>path_space s)"
     by (simp add: positive_integral_max_0)
@@ -1368,18 +1091,20 @@ proof -
   also have "\<dots> = (\<Sum>s'\<in>S. SUP i. \<tau> s s' * (\<integral>\<^isup>Sx. (g i \<circ> nat_case s') x \<partial>path_space s'))"
     using g `s \<in> S`
     by (intro SUPR_ereal_setsum incseq_cmult_ereal incseq_simple_integral g ereal_0_le_mult
-              simple_function_comp2[OF sa_s measurable_nat_case] incseq_comp simple_integral_positive)
-       auto
+              simple_function_comp2 measurable_nat_case incseq_comp simple_integral_positive)
+       (auto intro: measurable_nat_case cong: measurable_cong' simp: simple_function_def)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (SUP i. \<integral>\<^isup>Sx. (g i \<circ> nat_case s') x \<partial>path_space s'))"
     using g `s \<in> S`
     by (intro setsum_cong refl SUPR_ereal_cmult simple_integral_positive
-                 simple_function_comp2[OF sa_s measurable_nat_case])
-       auto
+                 simple_function_comp2)
+       (auto intro: measurable_nat_case cong: measurable_cong' simp: simple_function_def)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<integral>\<^isup>+x. (SUP i. (g i \<circ> nat_case s') x) \<partial>path_space s'))"
     using g `s \<in> S`
     apply (intro setsum_cong refl)
     apply (subst positive_integral_monotone_convergence_simple)
-    apply (auto intro!: simple_function_comp2[OF sa_s measurable_nat_case] simple_integral_positive incseq_comp)
+    apply (auto intro!: simple_function_comp2 measurable_nat_case simple_integral_positive incseq_comp
+                cong: measurable_cong')
+    apply (simp add: simple_function_def)
     done
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<integral>\<^isup>+x. f (nat_case s' x) \<partial>path_space s'))"
     using g by (simp add: positive_integral_max_0)
@@ -1390,22 +1115,22 @@ lemma positive_integral_select_0:
   assumes "s \<in> S" "\<And>s. s \<in> S \<Longrightarrow> 0 \<le> f s"
   shows "(\<integral>\<^isup>+\<omega>. f (\<omega> 0) \<partial>path_space s) = (\<Sum>s'\<in>S. \<tau> s s' * f s')"
 proof (subst positive_integral_eq_sum)
-  show "(\<lambda>\<omega>. ereal (f (\<omega> 0))) \<in> borel_measurable (path_space s)"
+  show "(\<lambda>\<omega>. ereal (f (\<omega> 0))) \<in> borel_measurable p_space"
     apply (intro borel_measurable_ereal)
-  proof (unfold measurable_def space_path_space, safe)
+  proof (unfold measurable_def space_p_space, safe)
     fix i :: nat and A :: "real set" assume "A \<in> sets borel"
     have "(\<lambda>\<omega>. f (\<omega> 0)) -` A \<inter> (UNIV \<rightarrow> S) = {\<omega>\<in>UNIV\<rightarrow>S. \<omega> 0 \<in> f -` A}"
       by auto
-    also have "\<dots> \<in> events s"
+    also have "\<dots> \<in> sets p_space"
       by (rule in_path_space_in_single)
-    finally show "(\<lambda>\<omega>. f (\<omega> 0)) -` A \<inter> (UNIV \<rightarrow> S) \<in> events s" .
+    finally show "(\<lambda>\<omega>. f (\<omega> 0)) -` A \<inter> (UNIV \<rightarrow> S) \<in> sets p_space" .
   qed simp
-qed (insert assms, auto simp add: measure_space_1)
+qed (insert assms, auto simp add: emeasure_eq_measure)
 
 subsection {* Iterative equation for the AE-quantifier *}
 
 lemma AE_split:
-  assumes ae: "AE \<omega> in path_space s. \<omega> \<in> A" and A: "A \<in> events s"
+  assumes ae: "AE \<omega> in path_space s. \<omega> \<in> A" and A: "A \<in> sets p_space"
     and s: "s \<in> S" "s' \<in> S" "\<tau> s s' \<noteq> 0"
   shows "AE \<omega> in path_space s'. \<omega> \<in> nat_case s' -` A \<inter> (UNIV\<rightarrow>S)"
 proof (rule ccontr)
@@ -1430,47 +1155,50 @@ proof (rule ccontr)
 qed
 
 lemma AE_iff_AE_next:
-  assumes s: "s \<in> S" and A: "{\<omega>\<in>space (path_space s). P \<omega>} \<in> events s"
+  assumes s: "s \<in> S" and A: "{\<omega>\<in>space (path_space s). P \<omega>} \<in> sets p_space"
   shows "(AE \<omega> in path_space s. P \<omega>) \<longleftrightarrow>
     (\<forall>s'\<in>S. \<tau> s s' \<noteq> 0 \<longrightarrow> (AE \<omega> in path_space s'. P (nat_case s' \<omega>)))"
 proof safe
   fix s' assume s': "s' \<in> S" "\<tau> s s' \<noteq> 0" and ae: "AE \<omega> in path_space s. P \<omega>"
   from ae s A show "AE \<omega> in path_space s'. P (nat_case s' \<omega>)"
-    using AE_split[OF _ A s s'] by simp
+    using AE_split[OF _ A s s'] AE_space[of "path_space s"]
+    by simp
 next
   assume *: "\<forall>s'\<in>S. \<tau> s s' \<noteq> 0 \<longrightarrow> (AE \<omega> in path_space s'. P (nat_case s' \<omega>))"
 
   show "AE \<omega> in path_space s. P \<omega>"
   proof (subst AE_iff_measurable[OF _ refl])
-    show "{\<omega>\<in>space (path_space s). \<not> P \<omega>} \<in> sets (path_space s)"
-      using A by (auto intro: sets_Collect)
-    with s have "\<mu> s {\<omega>\<in>space (path_space s). \<not> P \<omega>} =
-      (\<Sum>s'\<in>S. \<tau> s s' * \<mu> s' (nat_case s' -` {\<omega>\<in>space (path_space s). \<not> P \<omega>} \<inter> (UNIV\<rightarrow>S)))"
-      by (rule measure_eq_sum)
+    show nP: "{\<omega>\<in>space (path_space s). \<not> P \<omega>} \<in> sets (path_space s)"
+      using A by (auto intro: p_space_Collect)
+    with s have "prob s {\<omega>\<in>space (path_space s). \<not> P \<omega>} =
+      (\<Sum>s'\<in>S. \<tau> s s' * measure (path_space s') (nat_case s' -` {\<omega>\<in>space (path_space s). \<not> P \<omega>} \<inter> (UNIV\<rightarrow>S)))"
+      unfolding sets_path_space
+      by (rule prob_eq_sum)
     also have "\<dots> = (\<Sum>s'\<in>S. 0)"
     proof (safe intro!: setsum_cong)
       fix s' assume "s' \<in> S"
-      show "\<tau> s s' * \<mu> s' (nat_case s' -` {\<omega>\<in>space (path_space s). \<not> P \<omega>} \<inter> (UNIV\<rightarrow>S)) = 0"
+      show "\<tau> s s' * measure (path_space s') (nat_case s' -` {\<omega>\<in>space (path_space s). \<not> P \<omega>} \<inter> (UNIV\<rightarrow>S)) = 0"
       proof cases
         assume "\<tau> s s' \<noteq> 0"
         with `s' \<in> S` * have ae: "AE \<omega> in path_space s'. P (nat_case s' \<omega>)" by auto
         have "{\<omega>\<in>space (path_space s'). P (nat_case s' \<omega>)} =
-          nat_case s' -` {\<omega>\<in>space (path_space s). P \<omega>} \<inter> space (path_space s')"
+          nat_case s' -` {\<omega>\<in>space (path_space s). P \<omega>} \<inter> space p_space"
           using `s' \<in> S` by (auto simp: space_path_space)
-        also have "\<dots> \<in> sets (path_space s')"
-          using `s' \<in> S` A
-          by (intro measurable_sets[OF measurable_nat_case])
-             (auto intro: sets_Collect)
-        finally have "{\<omega>\<in>space (path_space s'). P (nat_case s' \<omega>)} \<in> sets (path_space s')" .
-        from AE_E2[OF ae this] have "\<mu> s' {x \<in> space (path_space s'). \<not> P (nat_case s' x)} = 0" .
+        also have "\<dots> \<in> sets p_space"
+          using `s' \<in> S` A by (rule measurable_sets[OF measurable_nat_case])
+        finally have "{\<omega>\<in>space (path_space s'). P (nat_case s' \<omega>)} \<in> sets (path_space s')"
+          by simp
+        from AE_E2[OF ae this] have "prob s' {x \<in> space (path_space s'). \<not> P (nat_case s' x)} = 0"
+          by (simp add: measure_def)
         also have "{x \<in> space (path_space s'). \<not> P (nat_case s' x)} =
           nat_case s' -` {\<omega>\<in>space (path_space s). \<not> P \<omega>} \<inter> (UNIV\<rightarrow>S)"
-          using `s' \<in> S` by (auto simp: space_path_space)
-        finally show "\<tau> s s' * \<mu> s' (nat_case s' -` {\<omega>\<in>space (path_space s). \<not> P \<omega>} \<inter> (UNIV\<rightarrow>S)) = 0"
+          using `s' \<in> S` by auto
+        finally show "\<tau> s s' * prob s' (nat_case s' -` {\<omega>\<in>space (path_space s). \<not> P \<omega>} \<inter> (UNIV\<rightarrow>S)) = 0"
           by simp
       qed simp
     qed
-    finally show "\<mu> s {\<omega> \<in> space (path_space s). \<not> P \<omega>} = 0" by simp
+    finally show "emeasure (path_space s) {\<omega> \<in> space (path_space s). \<not> P \<omega>} = 0"
+      by (simp add: emeasure_eq_measure)
   qed
 qed
 
@@ -1672,12 +1400,12 @@ lemma until_empty[simp]:
   "s \<notin> \<Psi> \<Longrightarrow> s \<notin> \<Phi> \<Longrightarrow> nat_case s -` until \<Phi> \<Psi> = {}"
   by (auto simp: until_def gr0_conv_Suc split: nat.split)
 
-lemma sets_until[simp, intro]: "until \<Phi> \<psi> \<in> events s"
-  by (auto simp: until_def intro!: sets_Collect[unfolded space_path_space])
+lemma sets_until[simp, intro]: "until \<Phi> \<psi> \<in> sets p_space"
+  by (auto simp: until_def intro!: p_space_Collect)
 
-lemma sets_nat_case_until[simp, intro]: "s \<in> S \<Longrightarrow> nat_case s -` until \<Phi> \<psi> \<inter> (UNIV\<rightarrow>S) \<in> events s"
+lemma sets_nat_case_until[simp, intro]: "s \<in> S \<Longrightarrow> nat_case s -` until \<Phi> \<psi> \<inter> (UNIV\<rightarrow>S) \<in> sets p_space"
   unfolding space_path_space[symmetric, of s] 
-  using measurable_sets[OF measurable_nat_case sets_until] .
+  using measurable_sets[OF measurable_nat_case sets_until] by simp
 
 lemma prob_until_eq_sum:
   assumes s: "s \<in> \<Phi>" "s \<notin> \<Psi>" "\<Psi> \<subseteq> S" "\<Phi> \<subseteq> S"
@@ -1726,14 +1454,14 @@ proof cases
     by (auto simp: until_def Pi_iff split: nat.split_asm)
   finally have "(\<lambda>n. prob s (X n)) sums prob s (nat_case s -` until \<Phi> \<Psi> \<inter> (UNIV \<rightarrow> S))" .
   then have "prob s (nat_case s -` until \<Phi> \<Psi> \<inter> (UNIV \<rightarrow> S)) = 0 \<longleftrightarrow> (\<forall>n. prob s (X n) = 0)"
-    using sums_0_iff[OF positive_measure'[of s], of X]
+    using sums_0_iff[OF measure_nonneg[of "path_space s"], of X]
     by (auto simp add: sums_iff)
   also have "\<dots> \<longleftrightarrow> (\<forall>n. (\<Sum>\<omega>\<in>Pi\<^isub>E {.. n} (E n). \<Prod>i\<le>n. \<tau> (nat_case s \<omega> i) (\<omega> i)) = 0)"
     using assms unfolding X_def E_def by (subst prob_cylinder_eq_sum_prod') auto
   also have "\<dots> \<longleftrightarrow> (\<forall>n. \<forall>\<omega>\<in>Pi\<^isub>E {.. n} (E n). \<exists>i\<le>n. \<tau> (nat_case s \<omega> i) (\<omega> i) = 0)"
     using assms E_subset
     apply (subst setsum_nonneg_eq_0_iff)
-    apply (auto intro!: setprod_nonneg \<tau>_nneg
+    apply (auto intro!: setprod_nonneg
                 simp: Bex_def split: nat.split)
     apply (auto intro!: E_subset)
     done
@@ -1754,7 +1482,7 @@ proof cases
       unfolding E_def by (auto split: split_if_asm)
     moreover def \<omega> \<equiv> "\<lambda>i. if i \<le> n then \<omega>' i else s0"
     ultimately have "\<forall>i<n. \<omega> i \<in> \<Phi> - \<Psi>" "\<omega> n \<in> \<Psi>" "\<forall>i. \<omega> i \<in> S"
-      using s0 assms unfolding E_def by (auto split: split_if simp: le_less)
+      using s0 assms unfolding E_def by (auto simp: le_less)
     moreover assume "reachable (\<Phi> - \<Psi>) s \<inter> \<Psi> = {}"
     ultimately have "\<exists>i\<le>n. \<tau> (nat_case s \<omega> i) (\<omega> i) = 0"
       unfolding reachable_def
@@ -1776,7 +1504,7 @@ next
   proof cases
     assume "s \<in> \<Psi>"
     then have "nat_case s -` until \<Phi> \<Psi> \<inter> (UNIV \<rightarrow> S) = space (path_space s)"
-      using `s \<in> S` by (auto simp: until_def space_path_space split: nat.split)
+      using `s \<in> S` by (auto simp: until_def split: nat.split)
     with `s \<in> \<Psi>` show ?thesis by (simp add: prob_space)
   next
     assume "s \<notin> \<Psi>"
@@ -1828,16 +1556,16 @@ proof (intro finite_S AE_finite_allI AE_impI)
 
   fix sx tx assume "sx \<in> S" "tx \<in> S" "\<tau> sx tx \<noteq> 0"
   def Never \<equiv> "\<lambda>s. {\<omega>\<in>UNIV\<rightarrow>S. (\<forall>i. (\<exists>j\<ge>i. nat_case s \<omega> j = sx) \<and> (nat_case s \<omega> i = sx \<longrightarrow> \<omega> i \<noteq> tx)) }"
-  { fix n have "\<And>s s' t. {\<omega> \<in> UNIV \<rightarrow> S. nat_case s' \<omega> n = t} \<in> events s"
-      by (cases n) (auto intro: sets_Collect[unfolded space_path_space]) }
+  { fix n have "\<And>s s' t. {\<omega> \<in> UNIV \<rightarrow> S. nat_case s' \<omega> n = t} \<in> sets p_space"
+      by (cases n) (auto intro: p_space_Collect) }
   note sets_nat_case = this
-  have sets_Never: "\<And>s s'. Never s' \<in> events s"
-    by (auto intro!: sets_Collect[unfolded space_path_space] sets_nat_case simp: Never_def)
+  have sets_Never: "\<And>s s'. Never s' \<in> sets p_space"
+    by (auto intro!: p_space_Collect sets_nat_case simp: Never_def)
 
   { fix s assume "s \<in> S"
     def Step \<equiv> "\<lambda>s n. Never s \<inter> {\<omega>\<in>UNIV\<rightarrow>S. (\<forall>i<n. \<omega> i \<noteq> sx) \<and> \<omega> n = sx}"
-    then have sets_Step: "\<And>s' n. Step s' n \<in> events s"
-      by (auto intro!: Int sets_Collect[unfolded space_path_space] sets_nat_case sets_Never)
+    then have sets_Step: "\<And>s' n. Step s' n \<in> sets p_space"
+      by (auto intro!: Int p_space_Collect sets_nat_case sets_Never)
 
     have "Never s = (\<Union>n. Step s n)"
       unfolding Step_def
@@ -1863,7 +1591,7 @@ proof (intro finite_S AE_finite_allI AE_impI)
     proof (rule finite_measure_UNION)
       show "disjoint_family (Step s)"
         by (auto simp: neq_iff Step_def disjoint_family_on_def)
-      show "range (Step s) \<subseteq> events s"
+      show "range (Step s) \<subseteq> sets (path_space s)"
         using sets_Step by auto
     qed
     moreover
@@ -1880,8 +1608,8 @@ proof (intro finite_S AE_finite_allI AE_impI)
       moreover have "prob s (UNION ?I ?S) = (\<Sum>\<omega>\<in>?I. prob s (?S \<omega>))"
       proof (rule finite_measure_finite_Union)
         show "finite ?I" by auto
-        show "\<And>\<omega>. ?S \<omega> \<in> events s"
-          by (auto intro: in_path_space' sets_Step)
+        show "?S`?I \<subseteq> sets (path_space s)"
+          by (auto intro: sets_Step p_space_Collect)
         show "disjoint_family_on ?S ?I"
         proof (unfold disjoint_family_on_def, intro ballI impI)
           fix \<omega>1 \<omega>2 assume *: "\<omega>1 \<in> ?I" "\<omega>2 \<in> ?I"
@@ -2021,7 +1749,7 @@ proof (intro finite_S AE_finite_allI AE_impI)
         qed
         show "finite (?T n)"
           by (rule finite_subset[OF _  finite_PiE[of "{..<n}" "\<lambda>_. S"]]) auto
-      qed (rule in_path_space)
+      qed (auto intro!: p_space_Collect)
       finally have "prob s (Step s n) = prob s (UNION (?T n) (?P n)) * prob sx (Never sx)" . }
     ultimately have sums_Never: "(\<lambda>n. prob s (UNION (?T n) (?P n)) * prob sx (Never sx)) sums (prob s (Never s))"
       by simp
@@ -2029,7 +1757,8 @@ proof (intro finite_S AE_finite_allI AE_impI)
     have alt: "(\<lambda>n. prob s (UNION (?T n) (?P n))) sums (prob s (\<Union>n. UNION (?T n) (?P n)))"
     proof (rule finite_measure_UNION)
       show "range (\<lambda>n. UNION (?T n) (?P n)) \<subseteq> events s"
-      proof (safe intro!: finite_UN in_path_space)
+        unfolding sets_path_space
+      proof (safe intro!: finite_UN p_space_Collect)
         fix n show "finite (?T n)"
           by (rule finite_subset[OF _  finite_PiE[of "{..<n}" "\<lambda>_. S"]]) auto
       qed
@@ -2051,37 +1780,32 @@ proof (intro finite_S AE_finite_allI AE_impI)
       with alt have "prob s (Never s) / prob sx (Never sx) = prob s (\<Union>n. UNION (?T n) (?P n))"
         by (simp add: sums_iff)
       also have "\<dots> \<le> (if s = sx then prob s {\<omega>\<in>UNIV\<rightarrow>S. \<omega> 0 \<in> S - {tx}} else 1)"
-      proof (split split_if, intro conjI impI finite_measure_mono in_path_space_in_single subsetI)
-        fix \<omega> assume \<omega>: "\<omega> \<in> (\<Union>n. UNION (?T n) (?P n))" "s = sx"
-        then obtain \<omega>' n where n: "\<omega>' \<in> ?T n" "\<omega> \<in> ?P n \<omega>'" by auto
-        have "\<omega> 0 \<in> S - {tx}"
-          using n `s = sx` `sx \<in> S` by (cases "n = 0") (auto simp: Pi_iff)
-        with \<omega> show "\<omega> \<in> {\<omega>\<in>UNIV\<rightarrow>S. \<omega> 0 \<in> S - {tx}}" by simp
-      qed simp
+        by (auto intro!: finite_measure_mono p_space_Collect)
       also have "\<dots> = (if s = sx then (setsum (\<tau> s) (S-{tx})) else 1)"
         using `sx \<in> S` by (simp add: prob_single_eq_sum Diff_subset del: Diff_iff)
       also have "\<dots> \<le> (if s = sx then (1 - c) else 1)"
         using `tx \<in> S` `sx \<in> S` `\<tau> sx tx \<noteq> 0` by (simp add: setsum_diff \<tau>_distr c)
       finally show ?thesis using neq_0
-        by (auto simp add: pos_divide_le_eq less_le)
+        by (auto simp add: pos_divide_le_eq less_le measure_nonneg)
     qed }
   note Never_bounded = this
     
   { fix s assume "s \<in> S"
     from Never_bounded[OF `sx \<in> S`]
     have "prob sx (Never sx) = 0"
-      using `0 < c` positive_measure'[of sx "Never sx"]
-      by (simp add: field_simps mult_le_0_iff del: positive_measure')
-    with Never_bounded[OF `s \<in> S`] positive_measure'[of s "Never s"]
+      using `0 < c` measure_nonneg[of "path_space sx" "Never sx"]
+      by (simp add: field_simps mult_le_0_iff)
+    with Never_bounded[OF `s \<in> S`] measure_nonneg[of "path_space s" "Never s"]
     have "prob s (Never s) = 0"
-      by (simp split: split_if_asm del: positive_measure') }
+      by (simp split: split_if_asm) }
   note Never_eq_0 = this
 
-  have sets_Fair: "{\<omega>\<in>UNIV\<rightarrow>S. Fair sx tx (nat_case s \<omega>) } \<in> events s"
-    unfolding Fair_def by (auto intro!: sets_Collect[unfolded space_path_space] sets_nat_case)
-  have sets_sN: "\<And>n. {\<omega>\<in>UNIV\<rightarrow>S. nat_case s \<omega> n = sx} \<inter> ((\<lambda>\<omega> i. \<omega> (i + n)) -` Never sx \<inter> space (path_space s)) \<in> events s"
+  have sets_Fair: "{\<omega>\<in>UNIV\<rightarrow>S. Fair sx tx (nat_case s \<omega>) } \<in> sets p_space"
+    unfolding Fair_def by (auto intro!: p_space_Collect sets_nat_case)
+  have sets_sN: "\<And>n. {\<omega>\<in>UNIV\<rightarrow>S. nat_case s \<omega> n = sx} \<inter> ((\<lambda>\<omega> i. \<omega> (i + n)) -` Never sx \<inter> space (path_space s)) \<in> sets p_space"
     (is "\<And>n. ?sN n \<in> _")
-    by (auto intro!: countable_UN sets_nat_case Int[OF _ measurable_sets] measurable_shift sets_Never)
+    by (auto intro!: sets_nat_case measurable_shift sets_Never p_space_Collect p_space_measurable
+             simp: Collect_Int2)
 
   { fix n
     have "prob s (?sN n) = 0"
@@ -2111,7 +1835,7 @@ proof (intro finite_S AE_finite_allI AE_impI)
     qed }
   with sets_sN have "AE \<omega> in path_space s. \<forall>n. \<omega> \<notin> ?sN n"
     unfolding AE_all_countable
-    by (intro allI AE_not_in) (auto simp: finite_measure_eq)
+    by (intro allI AE_not_in) (auto simp: emeasure_eq_measure)
   then show "AE \<omega> in path_space s. Fair sx tx (nat_case s \<omega>)"
   proof (elim AE_mp, safe intro!: AE_I2)
     fix \<omega> assume \<omega>: "\<omega> \<in> space (path_space s)" "\<forall>n. \<omega> \<notin> ?sN n"
@@ -2417,7 +2141,7 @@ proof safe
     by (intro AE_until) auto
 next
   assume "s \<in> \<Psi>" with in_S show "AE \<omega> in path_space s. nat_case s \<omega> \<in> until \<Phi> \<Psi>"
-    by (auto simp: space_path_space[symmetric, of s])
+    by (auto simp:)
 next
   assume 1: "AE \<omega> in path_space s. nat_case s \<omega> \<in> until \<Phi> \<Psi>" "s \<notin> \<Psi>"
   show "s \<in> \<Phi>"
@@ -2450,7 +2174,7 @@ next
     proof (rule finite_measure_eq_AE)
       show "AE x in path_space s. (x \<in> {\<omega>' \<in> UNIV \<rightarrow> S. \<forall>i\<le>n. \<omega>' i = \<omega> i}) = (x \<in> {})"
         using 1 \<omega>'_notin_until by (elim AE_mp) (auto intro!: AE_I2)
-    qed (auto intro: in_path_space)
+    qed (auto intro: p_space_Collect)
     with P_neq_0 show False by auto
   qed
 
@@ -2479,7 +2203,7 @@ next
   proof (rule finite_measure_eq_AE)
     show "AE x in path_space s. (x \<in> {\<omega>' \<in> UNIV \<rightarrow> S. \<forall>i\<le>n. \<omega>' i = \<omega> i}) = (x \<in> {})"
       using no_path by (elim AE_mp, intro AE_I2) auto
-  qed (auto intro: in_path_space)
+  qed (auto intro: p_space_Collect)
   with P_neq_0 show False by simp
 next
   assume 1: "AE \<omega> in path_space s. nat_case s \<omega> \<in> until \<Phi> \<Psi>" "s \<notin> \<Psi>"
@@ -2506,19 +2230,19 @@ definition hitting_time :: "'s set \<Rightarrow> (nat \<Rightarrow> 's) \<Righta
   "hitting_time \<Phi> \<omega> = (LEAST i. \<omega> i \<in> \<Phi>)"
 
 lemma measurable_hitting_time:
-  "real_of_nat \<circ> hitting_time \<Phi> \<in> borel_measurable (path_space s)"
+  "real_of_nat \<circ> hitting_time \<Phi> \<in> borel_measurable p_space"
   unfolding borel_measurable_iff_le
 proof
   fix c :: real
-  show "{w \<in> space (path_space s). (of_nat \<circ> hitting_time \<Phi>) w \<le> c} \<in> events s"
+  show "{w \<in> space p_space. (of_nat \<circ> hitting_time \<Phi>) w \<le> c} \<in> sets p_space"
   proof cases
     assume "0 \<le> c"
-    have "(\<lambda>x. LEAST j. x j \<in> \<Phi>) -` {.. natfloor c} \<inter> space (path_space s) \<in> events s"
+    have "(\<lambda>x. LEAST j. x j \<in> \<Phi>) -` {.. natfloor c} \<inter> space p_space \<in> sets p_space"
       by (rule measurable_Least) (auto simp: space_path_space)
-    also have "(\<lambda>x. LEAST j. x j \<in> \<Phi>) -` {.. natfloor c} \<inter> space (path_space s) = 
-      {w \<in> space (path_space s). (real \<circ> hitting_time \<Phi>) w \<le> c}"
+    also have "(\<lambda>x. LEAST j. x j \<in> \<Phi>) -` {.. natfloor c} \<inter> space p_space = 
+      {w \<in> space p_space. (real \<circ> hitting_time \<Phi>) w \<le> c}"
       using `0 \<le> c` by (auto simp: hitting_time_def le_natfloor_eq not_le natfloor_neg less_imp_le)
-    finally show "{w \<in> space (path_space s). (of_nat \<circ> hitting_time \<Phi>) w \<le> c} \<in> events s"
+    finally show "{w \<in> space p_space. (of_nat \<circ> hitting_time \<Phi>) w \<le> c} \<in> sets p_space"
       by (simp add: real_eq_of_nat)
   next
     assume *: "\<not> 0 \<le> c"
@@ -2526,9 +2250,9 @@ proof
       have "c < 0" using * by auto
       also have "0 \<le> real_of_nat (hitting_time \<Phi> x)" by simp
       finally have "\<not> real_of_nat (hitting_time \<Phi> x) \<le> c" by (simp add: not_le) }
-    then have *: "{w \<in> space (path_space s). (of_nat \<circ> hitting_time \<Phi>) w \<le> c} = {}"
+    then have *: "{w \<in> space p_space. (of_nat \<circ> hitting_time \<Phi>) w \<le> c} = {}"
       by auto
-    show "{w \<in> space (path_space s). (of_nat \<circ> hitting_time \<Phi>) w \<le> c} \<in> events s"
+    show "{w \<in> space p_space. (of_nat \<circ> hitting_time \<Phi>) w \<le> c} \<in> sets p_space"
       unfolding * by simp
   qed
 qed
@@ -2557,13 +2281,13 @@ next
     (s' \<in> reachable (S - \<Phi>) s \<or> s' = s) \<Longrightarrow> N s' \<le> M"
     unfolding M_def by (auto intro!: Max_ge)
   
-  have "0 \<le> N s" by (auto simp: N_def)
+  have "0 \<le> N s" by (auto simp: N_def measure_nonneg)
   also have "N s \<le> M" using s by (intro M_ge) auto
   finally have M_nneg: "0 \<le> M" by simp
     
   def T \<equiv> "\<lambda>k'::nat. {\<omega>\<in>UNIV\<rightarrow>S. (\<forall>i<k'. \<omega> i \<notin> \<Phi>)}"
-  then have T_measurable[intro]: "\<And>k s. T k \<in> events s"
-    by (auto intro!: sets_Collect[unfolded space_path_space])
+  then have T_measurable[simp, intro]: "\<And>k s. T k \<in> sets p_space"
+    by (auto intro!: p_space_Collect)
   have T_Suc: "\<And>k s. T (n * Suc k) =
     {\<omega>'\<in>UNIV\<rightarrow>S. \<forall>i<n. \<omega>' i \<in> (S - \<Phi>)} \<inter>
     ((\<lambda>\<omega> i. \<omega> (i + n)) -` (T (n * k)) \<inter> space (path_space s))"
@@ -2678,7 +2402,7 @@ next
     also have "\<dots> = prob s' ({\<omega>\<in>UNIV\<rightarrow>S. (\<forall>i<n. \<omega> i \<in> S-\<Phi>)} \<union> {\<omega>'\<in>UNIV\<rightarrow>S. \<forall>i\<le>k. \<omega>' i = \<omega> i})"
       using  `k < n` `\<omega> k \<in> \<Phi>` unfolding N_def
       by (intro finite_measure_Union[symmetric])
-         (auto intro!: sets_Collect[unfolded space_path_space])
+         (auto intro!: p_space_Collect)
     also have "\<dots> \<le> 1"
       by simp
     finally have "N s' < 1" . }
@@ -2799,7 +2523,7 @@ next
   note estimate_aux2 = this
   { fix k from estimate_aux2[of "k + n"]
     have "\<bar>prob s (T (k + n))\<bar> \<le> root (Suc n) M ^ k"
-      by auto }
+      by (auto simp: measure_nonneg) }
   then have estimate: "\<forall>k. \<bar>prob s (T (k + n))\<bar> \<le> root (Suc n) M ^ k" ..
 
   have "norm (root (Suc n) M) < 1"
@@ -2810,15 +2534,15 @@ next
   have "summable (\<lambda>k. prob s (T (k + n)))" ..
   then have "summable (\<lambda>k. prob s (T k))"
     by (rule sums_shift)
-  then have T_sums: "(\<lambda>k. \<mu> s (T k)) sums (ereal (\<Sum>k. prob s (T k)))"
+  then have T_sums: "(\<lambda>k. emeasure (path_space s) (T k)) sums (ereal (\<Sum>k. prob s (T k)))"
     using T_measurable
-    by (auto simp add: finite_measure_eq sums_ereal) (simp add: sums_iff)
+    by (auto simp add: emeasure_eq_measure sums_ereal) (simp add: sums_iff)
   
 
   from until
-  have t_imp_T: "\<And>N. AE \<omega> in path_space s. N < hitting_time \<Phi> \<omega> \<longrightarrow> \<omega> \<in> T N"
+  have t_imp_T: "\<And>N. AE \<omega> in path_space s. \<omega> \<in> UNIV \<rightarrow> S \<and> N < hitting_time \<Phi> \<omega> \<longrightarrow> \<omega> \<in> T N"
   proof (elim AE_mp, intro AE_I2 impI)
-    fix \<omega> N assume \<omega>: "\<omega> \<in> space (path_space s)" "nat_case s \<omega> \<in> until S \<Phi>" "N < hitting_time \<Phi> \<omega>"
+    fix \<omega> N assume \<omega>: "\<omega> \<in> space (path_space s)" "nat_case s \<omega> \<in> until S \<Phi>" "\<omega> \<in> UNIV \<rightarrow> S \<and> N < hitting_time \<Phi> \<omega>"
     show "\<omega> \<in> T N"
       unfolding T_def
     proof safe
@@ -2828,27 +2552,28 @@ next
         unfolding hitting_time_def by (rule Least_le)
       also assume "i < N"
       finally have "hitting_time \<Phi> \<omega> < N" .
-      then show False using `N < hitting_time \<Phi> \<omega>` by simp
+      then show False using `\<omega> \<in> UNIV \<rightarrow> S \<and> N < hitting_time \<Phi> \<omega>` by simp
     qed (insert \<omega>, auto simp: space_path_space)
   qed
 
-  note positive_integral_nat_function[OF measurable_hitting_time]
+  note positive_integral_nat_function[of "hitting_time \<Phi>" "path_space s"] measurable_hitting_time
   moreover have "\<And>i. (real_of_nat \<circ> hitting_time \<Phi>) -` {of_nat i <..} \<inter> space (path_space s) =
     {\<omega>\<in>UNIV\<rightarrow>S. real_of_nat i < real_of_nat (hitting_time \<Phi> \<omega>)}"
-    by (auto simp: space_path_space)
+    by (auto simp: )
   ultimately have "(\<integral>\<^isup>+ \<omega>. ereal (of_nat (hitting_time \<Phi> \<omega>)) \<partial>path_space s) =
-    (\<Sum>i. \<mu> s {\<omega>\<in>space (path_space s). real_of_nat i < real_of_nat (hitting_time \<Phi> \<omega>)})"
-    by (simp add: space_path_space)
-  also have "\<dots> \<le> (\<Sum>i. \<mu> s (T i))"
-    using measurable_hitting_time
-    by (intro suminf_le_pos positive_measure borel_measurable_less measure_mono_AE T_measurable)
-       (simp_all add: comp_def t_imp_T)
+    (\<Sum>i. emeasure (path_space s) {\<omega>\<in>space (path_space s). real_of_nat i < real_of_nat (hitting_time \<Phi> \<omega>)})"
+    by (simp add: emeasure_nonneg cong: measurable_cong')
+  also have "\<dots> \<le> (\<Sum>i. emeasure (path_space s) (T i))"
+    using measurable_hitting_time t_imp_T AE_space[of "path_space s"]
+    by (intro suminf_le_pos emeasure_nonneg borel_measurable_less emeasure_mono_AE T_measurable)
+       (auto simp add: comp_def cong: measurable_cong')
   also have "\<dots> < \<infinity>"
     using T_sums unfolding sums_iff by simp
   finally have "integral\<^isup>P (path_space s) (real_of_nat \<circ> hitting_time \<Phi>) \<noteq> \<infinity>"
     by simp
   then have "\<infinity> \<noteq> (\<integral>\<^isup>+ \<omega>. 1 + ereal (real_of_nat (hitting_time \<Phi> \<omega>)) \<partial>path_space s)"
-    using measurable_hitting_time by (subst positive_integral_add) (auto simp: comp_def)
+    using measurable_hitting_time 
+    by (subst positive_integral_add) (auto simp: comp_def cong: measurable_cong')
   also have "(\<integral>\<^isup>+ \<omega>. 1 + ereal (real_of_nat (hitting_time \<Phi> \<omega>)) \<partial>path_space s) =
     (\<integral>\<^isup>+ \<omega>. real (hitting_time \<Phi> (nat_case s \<omega>)) \<partial>path_space s)"
     using until

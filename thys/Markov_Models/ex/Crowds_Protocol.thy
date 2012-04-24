@@ -20,7 +20,7 @@ syntax
   "_prob" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("('\<PP>'(_ in _. _'))")
 
 translations
-  "\<PP>(x in M. P)" => "CONST finite_measure.\<mu>' M {x \<in> CONST space M. P}"
+  "\<PP>(x in M. P)" => "CONST measure M {x \<in> CONST space M. P}"
 
 definition
   "cond_prob M P Q = \<PP>(\<omega> in M. P \<omega> \<and> Q \<omega>) / \<PP>(\<omega> in M. Q \<omega>)"
@@ -77,9 +77,10 @@ proof -
 
   show ?thesis unfolding cond_prob_def
     using s I neq0
-    by (simp add: cylinder_forms prob_ball_cylinder del: ball_simps insert_iff)
-       (simp add: setsum_PiE_insert * setsum_right_distrib[symmetric]
-             cong: nat.case_cong)
+    apply (simp add: cylinder_forms prob_ball_cylinder del: ball_simps insert_iff space_path_space)
+    apply (simp add: setsum_PiE_insert * setsum_right_distrib[symmetric]
+                cong: nat.case_cong)
+    done
 qed
 
 lemma (in Discrete_Time_Markov_Chain) markov_property:
@@ -95,7 +96,7 @@ proof cases
     by (intro markov_property_with_\<tau>) auto
   moreover
   { have "0 < prob s {\<omega>\<in>space (path_space s). (\<forall>j\<in>I. \<omega> j = t j) }"
-      using neq0 by (simp add: less_le)
+      using neq0 by (simp add: less_le measure_nonneg)
     also have "\<dots> \<le> prob s {\<omega>\<in>space (path_space s). \<omega> (Max I) = t (Max I) }"
       by (auto intro!: finite_measure_mono)
     finally have "?R = \<tau> (t (Max I)) (t (Suc (Max I)))"
@@ -116,8 +117,8 @@ next
   next
     assume "\<exists>i\<in>I. t i \<notin> S"
     then have "{\<omega>\<in>space (path_space s). \<forall>i\<in>I. \<omega> i = t i } = {}"
-      by (auto simp: space_path_space Pi_iff) metis
-    with neq0 show ?thesis by simp
+      by (auto simp: Pi_iff) metis
+    with neq0 show ?thesis by (simp add: measure_nonneg del: space_path_space)
   qed
 qed
 
@@ -143,52 +144,44 @@ next
     unfolding cond_prob_def * by simp
 qed
 
-lemma (in Discrete_Time_Markov_Chain) sets_Collect_path_eq[simp, intro]:
-  "{X' \<in> space (path_space s). X' i = s'} \<in> events s"
-  unfolding space_path_space by simp
-
-lemma (in Discrete_Time_Markov_Chain) sets_Collect_path_in[simp, intro]:
-  "{X' \<in> space (path_space s). X' i \<in> X} \<in> events s"
-  unfolding space_path_space by simp
-
 lemma (in prob_space) AE_E_prob:
-  assumes ae: "AE x. P x"
+  assumes ae: "AE x in M. P x"
   obtains S where "S \<subseteq> {x \<in> space M. P x}" "S \<in> events" "prob S = 1"
 proof -
   from ae[THEN AE_E] guess N .
   then show thesis
     by (intro that[of "space M - N"])
-       (auto simp: measure_compl \<mu>'_def measure_space_1)
+       (auto simp: prob_compl prob_space emeasure_eq_measure)
 qed
 
 lemma (in prob_space) prob_neg: "{x\<in>space M. P x} \<in> events \<Longrightarrow> \<PP>(x in M. \<not> P x) = 1 - \<PP>(x in M. P x)"
   by (auto intro!: arg_cong[where f=prob] simp add: prob_compl[symmetric])
 
 lemma (in prob_space) prob_eq_AE:
-  "(AE x. P x \<longleftrightarrow> Q x) \<Longrightarrow> {x\<in>space M. P x} \<in> events \<Longrightarrow> {x\<in>space M. Q x} \<in> events \<Longrightarrow> \<PP>(x in M. P x) = \<PP>(x in M. Q x)"
+  "(AE x in M. P x \<longleftrightarrow> Q x) \<Longrightarrow> {x\<in>space M. P x} \<in> events \<Longrightarrow> {x\<in>space M. Q x} \<in> events \<Longrightarrow> \<PP>(x in M. P x) = \<PP>(x in M. Q x)"
   by (rule finite_measure_eq_AE) auto
 
 lemma (in prob_space) prob_eq_0_AE:
-  assumes not: "AE x. \<not> P x" shows "\<PP>(x in M. P x) = 0"
+  assumes not: "AE x in M. \<not> P x" shows "\<PP>(x in M. P x) = 0"
 proof cases
   assume "{x\<in>space M. P x} \<in> events"
   with not have "\<PP>(x in M. P x) = \<PP>(x in M. False)"
     by (intro prob_eq_AE) auto
   then show ?thesis by simp
-qed (simp add: \<mu>'_def)
+qed (simp add: measure_notin_sets)
 
 lemma (in prob_space) prob_sums:
   assumes P: "\<And>n. {x\<in>space M. P n x} \<in> events"
   assumes Q: "{x\<in>space M. Q x} \<in> events"
-  assumes ae: "AE x. (\<forall>n. P n x \<longrightarrow> Q x) \<and> (Q x \<longrightarrow> (\<exists>!n. P n x))"
+  assumes ae: "AE x in M. (\<forall>n. P n x \<longrightarrow> Q x) \<and> (Q x \<longrightarrow> (\<exists>!n. P n x))"
   shows "(\<lambda>n. \<PP>(x in M. P n x)) sums \<PP>(x in M. Q x)"
 proof -
   from ae[THEN AE_E_prob] guess S . note S = this
   then have disj: "disjoint_family (\<lambda>n. {x\<in>space M. P n x} \<inter> S)"
     by (auto simp: disjoint_family_on_def)
   from S have ae_S:
-    "AE x. x \<in> {x\<in>space M. Q x} \<longleftrightarrow> x \<in> (\<Union>n. {x\<in>space M. P n x} \<inter> S)"
-    "\<And>n. AE x. x \<in> {x\<in>space M. P n x} \<longleftrightarrow> x \<in> {x\<in>space M. P n x} \<inter> S"
+    "AE x in M. x \<in> {x\<in>space M. Q x} \<longleftrightarrow> x \<in> (\<Union>n. {x\<in>space M. P n x} \<inter> S)"
+    "\<And>n. AE x in M. x \<in> {x\<in>space M. P n x} \<longleftrightarrow> x \<in> {x\<in>space M. P n x} \<inter> S"
     using ae by (auto dest!: AE_prob_1)
   from ae_S have *:
     "\<PP>(x in M. Q x) = prob (\<Union>n. {x\<in>space M. P n x} \<inter> S)"
@@ -201,7 +194,7 @@ proof -
     by (intro finite_measure_UNION) auto
 qed
 
-lemma (in sigma_algebra) sets_Collect_Least:
+lemma sets_Collect_Least:
   assumes Q: "\<And>n::nat. {x\<in>space M. Q n x} \<in> sets M"
   assumes P: "\<And>n::nat. {x\<in>space M. P n x} \<in> sets M"
   shows "{x\<in>space M. P (LEAST n. Q n x) x} \<in> sets M"
@@ -210,20 +203,20 @@ proof -
     {x\<in>space M. \<forall>n. (LEAST n. Q n x) = n \<longrightarrow> P n x}" by auto
   moreover
   { fix n have "{x\<in>space M. (LEAST n. Q n x) = n} \<in> sets M"
-      using measurable_Least[of Q "{n}"] Q by (simp add: vimage_def Collect_Int) }
+      using measurable_Least[of _ Q "{n}"] Q by (simp add: vimage_def Collect_Int) }
   then have "{x\<in>space M. \<forall>n. (LEAST n. Q n x) = n \<longrightarrow> P n x} \<in> sets M"
-    using measurable_Least[of Q]
+    using measurable_Least[of _ Q]
     by (intro sets_Collect P) auto
   ultimately show ?thesis
     by simp
 qed
 
 lemma (in prob_space) cond_prob_eq_AE:
-  assumes P: "AE x. Q x \<longrightarrow> P x \<longleftrightarrow> P' x" "{x\<in>space M. P x} \<in> events" "{x\<in>space M. P' x} \<in> events"
-  assumes Q: "AE x. Q x \<longleftrightarrow> Q' x" "{x\<in>space M. Q x} \<in> events" "{x\<in>space M. Q' x} \<in> events"
+  assumes P: "AE x in M. Q x \<longrightarrow> P x \<longleftrightarrow> P' x" "{x\<in>space M. P x} \<in> events" "{x\<in>space M. P' x} \<in> events"
+  assumes Q: "AE x in M. Q x \<longleftrightarrow> Q' x" "{x\<in>space M. Q x} \<in> events" "{x\<in>space M. Q' x} \<in> events"
   shows "cond_prob M P Q = cond_prob M P' Q'"
   using P Q
-  by (auto simp: cond_prob_def elim!: AE_mp intro!: arg_cong2[where f="op /"] prob_eq_AE sets_Collect_conj)
+  by (auto simp: cond_prob_def intro!: arg_cong2[where f="op /"] prob_eq_AE sets_Collect_conj)
 
 subsection {* Definition of the Crowds-Protocol *}
 
@@ -411,11 +404,11 @@ What is the probability that the server sees a specific (including the initiator
 *}
 
 definition "len \<omega> = (LEAST n :: nat. \<omega> n = End) - 2"
-definition "first_jondo \<omega> = jondo_of (\<omega> 0)"
-definition "last_jondo \<omega> = jondo_of (\<omega> (Suc (len \<omega>)))"
+definition "first_jondo (\<omega> :: nat \<Rightarrow> 'a state) = jondo_of (\<omega> 0)"
+definition "last_jondo (\<omega> :: nat \<Rightarrow> 'a state) = jondo_of (\<omega> (Suc (len \<omega>)))"
 
 definition "term \<omega> \<longleftrightarrow>
-  \<omega> \<in> space \<P> \<and>
+  \<omega> \<in> UNIV \<rightarrow> valid_states \<and>
   \<omega> 0 \<in> Init ` (jondos - colls) \<and>
   (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` jondos) \<and>
   (\<forall>i>len \<omega>. \<omega> (Suc i) = End)"
@@ -532,40 +525,41 @@ proof (elim AE_mp, safe intro!: AE_I2)
       ultimately show ?case
         by (simp split: state.split_asm)
     qed (insert \<omega>1, simp) }
-qed
+qed auto
 
-lemma sets_Collect_len[intro]: "{\<omega>\<in>space (path_space s). len \<omega> = n} \<in> events s"
+lemma p_space_Collect_lenI[intro]:
+  "(\<And>n. {\<omega>\<in>UNIV\<rightarrow>valid_states. P \<omega> n} \<in> p_space) \<Longrightarrow> {\<omega>\<in>UNIV\<rightarrow>valid_states. P \<omega> (len \<omega>)} \<in> p_space"
   unfolding len_def
-  by (rule sets_Collect_Least) (auto intro: sets_Collect_const)
+  using sets_Collect_Least[of p_space "\<lambda>n \<omega>. \<omega> n = End" "\<lambda>n \<omega>. P \<omega> (n - 2)"]
+  by (auto intro: p_space_Collect)
 
-lemma sets_Collect_lenI[intro]:
-  "(\<And>n. {\<omega>\<in>space (path_space s). P \<omega> n} \<in> events s) \<Longrightarrow> {\<omega>\<in>space (path_space s). P \<omega> (len \<omega>)} \<in> events s"
-  unfolding len_def
-  by (rule sets_Collect_Least) auto
+lemma p_space_Collect_len[intro]: "{\<omega>\<in>UNIV \<rightarrow> valid_states. len \<omega> = n} \<in> sets p_space"
+  by (rule p_space_Collect_lenI) (auto intro: p_space_Collect)
 
 lemma jondo_events2:
-  assumes "\<And>s. s \<in> valid_states \<Longrightarrow> {\<omega> \<in> space \<P>. P \<omega> (jondo_of s)} \<in> sets \<P>"
-  shows "{\<omega> \<in> space \<P>. P \<omega> (jondo_of (\<omega> i))} \<in> sets \<P>"
+  assumes "\<And>s. s \<in> valid_states \<Longrightarrow> {\<omega> \<in> UNIV \<rightarrow> valid_states. P \<omega> (jondo_of s)} \<in> sets p_space"
+  shows "{\<omega> \<in> UNIV \<rightarrow> valid_states. P \<omega> (jondo_of (\<omega> i))} \<in> sets p_space"
 proof -
-  have *: "{\<omega> \<in> space \<P>. P \<omega> (jondo_of (\<omega> i))} = {\<omega> \<in> space \<P>. \<exists>s\<in>valid_states. \<omega> i = s \<and> P \<omega> (jondo_of s)}"
-    by (auto simp: space_path_space)
-  show ?thesis unfolding *
-    by (rule sets_Collect_finite_Ex) (auto intro!: sets_Collect assms)
+  have *: "{\<omega> \<in> UNIV \<rightarrow> valid_states. P \<omega> (jondo_of (\<omega> i))} = {\<omega> \<in> UNIV \<rightarrow> valid_states. \<exists>s\<in>valid_states. \<omega> i = s \<and> P \<omega> (jondo_of s)}"
+    by auto
+  show ?thesis using assms
+    unfolding * unfolding space_path_space sets_path_space
+    by (intro p_space_Collect) auto
 qed
 
 lemma jondo_events[intro]:
-  "{\<omega> \<in> space \<P>. P (jondo_of (\<omega> i))} \<in> sets \<P>"
-  by (rule jondo_events2) (auto intro!: sets_Collect_const)
+  "{\<omega> \<in> UNIV \<rightarrow> valid_states. P (jondo_of (\<omega> i))} \<in> sets p_space"
+  by (rule jondo_events2) (auto intro!: p_space_Collect)
 
-lemma sets_Collect_last_jondo[intro]: "{\<omega>\<in>space \<P>. last_jondo \<omega> = j} \<in> events Start"
+lemma p_space_Collect_last_jondo[intro]: "{\<omega>\<in>UNIV \<rightarrow> valid_states. last_jondo \<omega> = j} \<in> sets p_space"
   unfolding last_jondo_def
-  by (rule sets_Collect_lenI) auto
+  by (rule p_space_Collect_lenI) auto
 
 lemma prob_sums_len:
-  assumes P: "\<And>n. {\<omega>\<in>space \<P>. P \<omega>} \<in> events Start"
+  assumes P: "\<And>n. {\<omega>\<in>UNIV \<rightarrow> valid_states. P \<omega>} \<in> sets p_space"
   shows "(\<lambda>n. \<PP>(\<omega> in \<P>. len \<omega> = n \<and> P \<omega>)) sums \<PP>(\<omega> in \<P>. P \<omega>)"
   using AE_term
-  by (intro prob_sums) (auto intro: P sets_Collect_conj)
+  by (intro prob_sums) (auto intro: P p_space_Collect)
 
 lemma prob_sums_cyl_init:
   assumes S: "\<And>n i. S n i \<subseteq> jondos" and I: "I \<subseteq> jondos - colls"
@@ -615,10 +609,11 @@ proof -
       { fix i assume "i \<le> Suc (len \<omega>)" then show "\<omega> i \<in> ?S (len \<omega>) i"
           using T[THEN bspec, of i] S[of "len \<omega>" "i - 1"] `len \<omega> = n`
           by (auto split: nat.split simp: T_def) }
-    qed (auto intro!: sets_Collect simp: Ball_def)
+    qed (auto intro!: p_space_Collect simp: Ball_def)
     also have "\<dots> = (\<Sum>\<omega>\<in>(\<Pi>\<^isub>E i\<in>{..Suc (Suc n)}. T i).
         (\<Prod>i\<le>Suc (Suc n). next_step (nat_case Start \<omega> i) (\<omega> i)))"
-      using valid_T by (auto intro!: setsum_cong PiE_cong simp add: prob_ball_cylinder subset_eq)
+      using valid_T prob_ball_cylinder[of Start]
+      by (auto intro!: setsum_cong PiE_cong simp add: subset_eq)
     also have "\<dots> = (\<Sum>s\<in>I. \<Sum>\<omega>\<in>(\<Pi>\<^isub>E i\<in>{1..Suc n}. Mix ` S n (i - 1)).
         init s * (\<Prod>i\<le>n. next_step (if i = 0 then Init s else \<omega> i) (\<omega> (Suc i))) * next_step (\<omega> (Suc n)) End)"
       by (simp add: upto T setsum_PiE_insert[OF *(2)] setprod_insert[OF *] zero_notin_Suc_image
@@ -640,7 +635,7 @@ proof -
                     setprod_timesf setprod_constant power_mult_distrib
                del: image_Suc_atLeastAtMost) }
   moreover have "?P sums \<PP>(\<omega> in \<P>. (\<forall>i\<le>Suc (len \<omega>). \<omega> i \<in> ?S (len \<omega>) i))"
-    by (intro prob_sums_len) (auto intro!: sets_Collect)
+    by (intro prob_sums_len) (auto intro!: p_space_Collect)
   moreover have "\<PP>(\<omega> in \<P>. (\<forall>i\<le>Suc (len \<omega>). \<omega> i \<in> ?S (len \<omega>) i)) =
     \<PP>(\<omega> in \<P>. \<omega> 0 \<in> Init ` I \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` S (len \<omega>) i))"
     by (simp add: all_Suc_split conj_commute)
@@ -656,7 +651,7 @@ proof -
   have "\<PP>(\<omega> in \<P>. (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` S (len \<omega>) i)) =
     \<PP>(\<omega> in \<P>. \<omega> 0 \<in> Init ` (jondos - colls) \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` S (len \<omega>) i))"
     using AE_term
-    by (intro prob_eq_AE, elim AE_mp) (auto simp add: term_def intro!: sets_Collect)
+    by (intro prob_eq_AE, elim AE_mp) (auto simp add: term_def intro!: p_space_Collect)
   with prob_sums_cyl_init[of S, OF S subset_refl]
   show ?thesis
     by simp
@@ -666,15 +661,15 @@ lemma (in prob_space) prob_setsum:
   assumes [simp, intro]: "finite I"
   assumes P: "\<And>n. n \<in> I \<Longrightarrow> {x\<in>space M. P n x} \<in> events"
   assumes Q: "{x\<in>space M. Q x} \<in> events"
-  assumes ae: "AE x. (\<forall>n\<in>I. P n x \<longrightarrow> Q x) \<and> (Q x \<longrightarrow> (\<exists>!n\<in>I. P n x))"
+  assumes ae: "AE x in M. (\<forall>n\<in>I. P n x \<longrightarrow> Q x) \<and> (Q x \<longrightarrow> (\<exists>!n\<in>I. P n x))"
   shows "\<PP>(x in M. Q x) = (\<Sum>n\<in>I. \<PP>(x in M. P n x))"
 proof -
   from ae[THEN AE_E_prob] guess S . note S = this
   then have disj: "disjoint_family_on (\<lambda>n. {x\<in>space M. P n x} \<inter> S) I"
     by (auto simp: disjoint_family_on_def)
   from S have ae_S:
-    "AE x. x \<in> {x\<in>space M. Q x} \<longleftrightarrow> x \<in> (\<Union>n\<in>I. {x\<in>space M. P n x} \<inter> S)"
-    "\<And>n. n \<in> I \<Longrightarrow> AE x. x \<in> {x\<in>space M. P n x} \<longleftrightarrow> x \<in> {x\<in>space M. P n x} \<inter> S"
+    "AE x in M. x \<in> {x\<in>space M. Q x} \<longleftrightarrow> x \<in> (\<Union>n\<in>I. {x\<in>space M. P n x} \<inter> S)"
+    "\<And>n. n \<in> I \<Longrightarrow> AE x in M. x \<in> {x\<in>space M. P n x} \<longleftrightarrow> x \<in> {x\<in>space M. P n x} \<inter> S"
     using ae by (auto dest!: AE_prob_1)
   from ae_S have *:
     "\<PP>(x in M. Q x) = prob (\<Union>n\<in>I. {x\<in>space M. P n x} \<inter> S)"
@@ -694,9 +689,9 @@ lemma server_view:
 proof -
   let "?P j" = "\<PP>(\<omega> in \<P>. \<omega> 0 = Init j \<and> last_jondo \<omega> = j)"
 
-  have [simp]: "{\<omega> \<in> space \<P>. last_jondo \<omega> = first_jondo \<omega>} \<in> events Start"
+  have [simp]: "{\<omega> \<in> UNIV \<rightarrow> valid_states. last_jondo \<omega> = first_jondo \<omega>} \<in> sets p_space"
     unfolding last_jondo_def first_jondo_def
-    apply (rule sets_Collect_lenI)
+    apply (rule p_space_Collect_lenI)
     apply (rule jondo_events2)
     apply (rule jondo_events)
     done
@@ -708,14 +703,15 @@ proof -
       using AE_term
       by (elim AE_mp)
          (auto simp: last_jondo_eq_iff first_jondo_def intro!: AE_I2 dest: term_imp_len)
-  qed (auto intro!: sets_Collect)
+  qed (auto intro!: p_space_Collect)
   moreover
   { fix j assume j: "j \<in> jondos - colls"
     let "?S n i" = "if n = (i::nat) then {j} else jondos"
     have "?P j = \<PP>(\<omega> in \<P>. \<omega> 0 \<in> Init ` {j} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (len \<omega>) i))"
       using AE_term
-      by (auto simp: all_conj_distrib iff_conv_conj_imp last_jondo_eq_iff term_imp_len
-               intro!: sets_Collect prob_eq_AE)
+      by (intro prob_eq_AE)
+         (auto simp: all_conj_distrib iff_conv_conj_imp last_jondo_eq_iff term_imp_len
+               intro!: p_space_Collect)
     moreover have "(\<lambda>n. (\<Sum>j\<in>{j}. init j) * (\<Prod>i\<le>n. card (?S n i) * J) * (p_f)^n * (1 - p_f)) sums \<dots>"
       using j by (intro prob_sums_cyl_init) auto
     moreover have "(\<lambda>n. init j * p_f ^ n * (1 - p_f) * J) sums (init j * (1 / (1 - p_f)) * (1 - p_f) * J)"
@@ -787,31 +783,31 @@ lemma first_collI4: "term \<omega> \<Longrightarrow> hit_colls \<omega> \<Longri
   by (cases "first_coll \<omega>") (auto simp: last_ncoll_def dest!: term_imp_len)
 
 lemma events_hit_colls[intro]:
-  "{\<omega>\<in>space \<P>. hit_colls \<omega>} \<in> events Start"
-  by (auto simp: hit_colls_def intro!: sets_Collect)
+  "{\<omega>\<in>UNIV \<rightarrow> valid_states. hit_colls \<omega>} \<in> sets p_space"
+  by (auto simp: hit_colls_def intro!: p_space_Collect)
 
 lemma events_first_collI:
-  "(\<And>n. {\<omega>\<in>space \<P>. P n \<omega>} \<in> events Start) \<Longrightarrow>
-    {\<omega>\<in>space \<P>. P (first_coll \<omega>) \<omega>} \<in> events Start"
+  "(\<And>n. {\<omega>\<in>UNIV \<rightarrow> valid_states. P n \<omega>} \<in> sets p_space) \<Longrightarrow>
+    {\<omega>\<in>UNIV \<rightarrow> valid_states. P (first_coll \<omega>) \<omega>} \<in> sets p_space"
   using assms unfolding first_coll_def
-  by (rule sets_Collect_Least) (auto intro!: sets_Collect)
+  apply (rule sets_Collect_Least[of p_space, unfolded space_p_space])
+  apply (auto intro!: p_space_Collect)
+  done
 
 lemma events_first_coll[intro]:
-  "{\<omega>\<in>space \<P>. first_coll \<omega> = n} \<in> events Start"
-  by (rule events_first_collI) (auto intro: sets_Collect)
+  "{\<omega>\<in>UNIV \<rightarrow> valid_states. first_coll \<omega> = n} \<in> sets p_space"
+  by (rule events_first_collI) (auto intro: p_space_Collect)
 
 lemma events_last_ncoll[intro]:
-  "{\<omega>\<in>space \<P>. last_ncoll \<omega> = j} \<in> events Start"
+  "{\<omega>\<in>UNIV \<rightarrow> valid_states. last_ncoll \<omega> = j} \<in> sets p_space"
   unfolding last_ncoll_def
 proof (rule events_first_collI)
   case (goal1 n)
-  have *: "{\<omega> \<in> space \<P>. jondo_of (\<omega> n) = j} =
-    {\<omega> \<in> space \<P>. \<exists>s\<in>valid_states. \<omega> n = s \<and> jondo_of s = j}"
+  have *: "{\<omega> \<in> UNIV \<rightarrow> valid_states. jondo_of (\<omega> n) = j} =
+    {\<omega> \<in> UNIV \<rightarrow> valid_states. \<exists>s\<in>valid_states. \<omega> n = s \<and> jondo_of s = j}"
     by (auto simp: space_path_space)
   show ?case unfolding *
-    apply (rule sets_Collect_finite_Ex)
-    apply (auto intro: sets_Collect)
-    done
+    by (auto intro: p_space_Collect)
 qed
 
 subsection {* The probability to hit a collaborateur *}
@@ -822,12 +818,12 @@ proof -
   have "p_f * H \<noteq> 1"
     using H_pf_1 by (simp add: ac_simps)
   have "?HIT = 1 - \<PP>(\<omega> in \<P>. \<not> hit_colls \<omega>)"
-    by (simp add: prob_neg events_hit_colls)
+    by (subst prob_neg) (simp_all add: events_hit_colls)
   moreover have "\<PP>(\<omega> in \<P>. \<not> hit_colls \<omega>) =
     \<PP>(\<omega> in \<P>. \<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` (jondos - colls))"
     using AE_term colls_smaller
     by (intro prob_eq_AE, elim AE_mp)
-       (auto simp add: hit_colls_eq image_set_diff term_imp_len intro!: AE_I2 sets_Collect)
+       (auto simp add: hit_colls_eq image_set_diff term_imp_len intro!: AE_I2 p_space_Collect)
   moreover have "(\<lambda>n. (\<Prod>i\<le>n. card (jondos - colls) * J) * p_f^n * (1 - p_f)) sums \<dots>"
     by (rule prob_sums_cyl) auto
   moreover have "\<And>n. (\<Prod>i\<le>n. card (jondos - colls) * J) * p_f^n * (1 - p_f) =
@@ -852,7 +848,7 @@ proof -
     sums \<PP>(\<omega> in \<P>. \<omega> 0 \<in> Init ` (I (first_coll \<omega>)) \<and>
                    (\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` S (first_coll \<omega>) i) \<and> hit_colls \<omega>)"
     (is "?P sums ?C")
-    by (rule prob_sums) (auto intro!: sets_Collect intro: events_first_collI)
+    by (rule prob_sums) (auto intro!: p_space_Collect intro: events_first_collI)
   moreover
   { fix n :: nat
     def T \<equiv> "\<lambda>l i. if l < n     then {}
@@ -889,7 +885,7 @@ proof -
         using first_collI[OF `term \<omega>` `hit_colls \<omega>`] `n \<le> len \<omega>`
         by (auto simp: not_less[symmetric] T_def split: split_if_asm)
       ultimately show "first_coll \<omega> = n" by simp
-    qed (auto intro!: sets_Collect)
+    qed (auto intro!: p_space_Collect)
     moreover have "(\<lambda>l. (\<Sum>i\<in>I n. init i) * (\<Prod>i\<le>l. card (T l i) * J) * (p_f)^l * (1 - p_f)) sums \<dots>"
       using I[of n] S colls_non_empty colls_smaller by (intro prob_sums_cyl_init) (auto simp: T_def)
     moreover have "\<And>l. (\<Sum>i\<in>I n. init i) * (\<Prod>i\<le>l. card (T l i) * J) * (p_f)^l * (1 - p_f) =
@@ -955,7 +951,7 @@ proof -
         by (cases "first_coll \<omega>") (auto simp: last_ncoll_def)
     qed
   qed (auto simp: first_jondo_def split del: split_if
-            intro!: sets_Collect intro: events_first_collI)
+            intro!: p_space_Collect intro: events_first_collI)
   also have "(\<lambda>n. (\<Sum>j\<in>?I n. init j) * (\<Prod>i<n. card (?S n i) * J * p_f) * (1 - H * p_f)) sums \<dots>"
     using i l by (intro hit_prob_sums_cyl) auto
   finally have "(\<lambda>n. (\<Sum>j\<in>?I n. init j) * (\<Prod>i<n. card (?S n i) * J * p_f) * (1 - H * p_f)) sums ?P" .
@@ -982,7 +978,7 @@ proof -
     = (\<Sum>i\<in>jondos - colls. \<PP>(\<omega> in \<P>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = l \<and> hit_colls \<omega>))"
     apply (rule prob_setsum)
     using AE_term
-    apply (auto intro!: sets_Collect simp: first_jondo_def)
+    apply (auto intro!: p_space_Collect simp: first_jondo_def)
     apply (auto intro!: AE_I2 simp: term_def)
     done
   then have "\<PP>(\<omega> in \<P>. last_ncoll \<omega> = l \<bar> hit_colls \<omega>)
@@ -1003,7 +999,7 @@ proof -
     \<PP>(\<omega> in \<P>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` (jondos - colls)) \<bar> hit_colls \<omega>)"
     using AE_term i
     apply (intro cond_prob_eq_AE)
-    apply (auto intro!: sets_Collect simp: first_jondo_def intro: events_first_collI)
+    apply (auto intro!: p_space_Collect simp: first_jondo_def intro: events_first_collI)
     apply (auto intro!: AE_I2 dest: term_imp_len simp: first_collI3)
     done
   moreover have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i<n. card (jondos - colls) * J * p_f) * (1 - H * p_f)) sums \<dots>"
@@ -1018,38 +1014,24 @@ qed
 
 subsection {* Probability space of hitting runs *}
 
-definition  "C = \<P>\<lparr> measure := \<lambda>A. \<PP>(\<omega> in \<P>. \<omega> \<in> A \<bar> hit_colls \<omega>) \<rparr>"
+definition "C = uniform_measure \<P> {\<omega>\<in>space \<P>. hit_colls \<omega>}"
+
+lemma emeasure_hit_colls_not_0: "emeasure \<P> {\<omega> \<in> space \<P>. hit_colls \<omega>} \<noteq> 0"
+  using H H_pf_1 unfolding hit emeasure_eq_measure by auto
 
 end
 
-lemma (in sigma_algebra) sets_in:
+lemma sets_in:
   "A \<inter> space M \<in> sets M \<Longrightarrow> {\<omega>\<in>space M. \<omega> \<in> A} \<in> sets M"
   unfolding Int_def by (simp add: conj_commute)
 
+
 sublocale Crowds_Protocol \<subseteq> C!: information_space C 2
 proof -
-  interpret C!: sigma_algebra C
-    unfolding C_def sigma_algebra_measure_update ..
   interpret C!: prob_space C
-  proof
-    show "measure_space C"
-    proof
-      show "positive C (measure C)"
-        by (simp add: positive_def C_def cond_prob_def zero_le_divide_iff)
-      show "countably_additive C (measure_space.measure C)"
-      proof (simp add: countably_additive_def C_def, intro allI impI)
-        fix A :: "nat \<Rightarrow> _" assume "range A \<subseteq> sets \<P>" "disjoint_family A"
-        then have "(\<lambda>i. cond_prob \<P> (\<lambda>\<omega>. \<omega> \<in> A i) hit_colls) sums (cond_prob \<P> (\<lambda>\<omega>. \<exists>i. \<omega> \<in> A i) hit_colls)"
-          unfolding cond_prob_def
-          by (auto intro!: sums_divide prob_sums AE_I2 sets_Collect events_hit_colls sets_in simp: disjoint_family_on_def)
-        then show "(\<Sum>i. ereal (cond_prob \<P> (\<lambda>\<omega>. \<omega> \<in> A i) hit_colls)) = cond_prob \<P> (\<lambda>\<omega>. \<exists>i. \<omega> \<in> A i) hit_colls"
-          by (subst (asm) sums_ereal[symmetric]) (simp add: sums_iff)
-      qed
-    qed
-    show "measure C (space C) = 1"
-      using H_pf_1 H
-      by (simp add: C_def one_ereal_def cond_prob_def hit)
-  qed
+    unfolding C_def
+    using emeasure_hit_colls_not_0
+    by (intro prob_space_uniform_measure) auto
   show "information_space C 2"
     by default simp
 qed
@@ -1059,17 +1041,23 @@ begin
 
 abbreviation
   mutual_information_Pow_CP ("\<I>'(_ ; _')") where
-  "\<I>(X ; Y) \<equiv> C.mutual_information 2
-    \<lparr> space = X`space C, sets = Pow (X`space C), measure = ereal\<circ>C.distribution X \<rparr>
-    \<lparr> space = Y`space C, sets = Pow (Y`space C), measure = ereal\<circ>C.distribution Y \<rparr> X Y"
+  "\<I>(X ; Y) \<equiv> C.mutual_information 2 (count_space (X`space C)) (count_space (Y`space C)) X Y"
 
 lemma simple_functionI:
-  assumes "finite (f`space \<P>)"
-  assumes "\<And>x. {\<omega>\<in>space \<P>. f \<omega> = x} \<in> sets \<P>"
+  assumes "finite (f`(UNIV \<rightarrow> valid_states))"
+  assumes "\<And>x. {\<omega>\<in>UNIV \<rightarrow> valid_states. f \<omega> = x} \<in> sets p_space"
   shows "simple_function C f"
-  using assms unfolding simple_function_def C_def by (simp add: vimage_def Int_def conj_commute)
+  using assms unfolding simple_function_def C_def
+  by (simp add: vimage_def Collect_Int)
 
 subsection {* Estimate the information to the collaborateurs *}
+
+lemma measure_C[simp]:
+  assumes A: "A \<in> sets p_space"
+  shows "measure C A = \<PP>(\<omega> in \<P>. \<omega> \<in> A \<bar> hit_colls \<omega> )"
+  unfolding C_def cond_prob_def
+  using emeasure_hit_colls_not_0 A
+  by (subst measure_uniform_measure) (simp_all add: emeasure_eq_measure Collect_Int2)
 
 lemma information_flow:
   defines "h \<equiv> real (card (jondos - colls))"
@@ -1115,22 +1103,44 @@ proof -
   have sf_fj:
     "simple_function C first_jondo"
   proof (rule simple_functionI)
-    have "first_jondo ` space \<P> \<subseteq> jondos \<union> {jondo_of Start, jondo_of End}"
-      by (auto simp: first_jondo_def space_path_space Pi_iff elim!: allE[of _ 0] valid_statesE)
-    then show "finite (first_jondo ` space \<P>)"
+    have "first_jondo ` (UNIV \<rightarrow> valid_states) \<subseteq> jondos \<union> {jondo_of Start, jondo_of End}"
+      by (auto simp: first_jondo_def Pi_iff elim!: allE[of _ 0] valid_statesE)
+    then show "finite (first_jondo ` (UNIV \<rightarrow> valid_states))"
       by (rule finite_subset) auto
   qed (auto simp: first_jondo_def)
 
+  have sd_fj:
+    "simple_distributed C first_jondo ?i"
+    apply (rule C.simple_distributedI[OF sf_fj])
+    apply (subst measure_C)
+    apply (auto simp: first_jondo_def C_def vimage_def Collect_Int cond_prob_def)
+    done
+
   have sf_lnc: "simple_function C last_ncoll"
   proof (rule simple_functionI)
-    have "last_ncoll ` space \<P> \<subseteq> jondos \<union> {jondo_of Start, jondo_of End}"
-      apply (auto simp: last_ncoll_def space_path_space Pi_iff)
+    have "last_ncoll ` (UNIV \<rightarrow> valid_states) \<subseteq> jondos \<union> {jondo_of Start, jondo_of End}"
+      apply (auto simp: last_ncoll_def Pi_iff)
       apply (erule_tac x="first_coll xa" in allE)
       apply (auto elim!: valid_statesE)
       done
-    then show "finite (last_ncoll ` space \<P>)"
+    then show "finite (last_ncoll ` (UNIV \<rightarrow> valid_states))"
       by (rule finite_subset) auto
   qed auto
+
+  have sd_lnc:
+    "simple_distributed C last_ncoll ?l"
+    apply (rule C.simple_distributedI[OF sf_lnc])
+    apply (subst measure_C)
+    apply (auto simp: C_def vimage_def Collect_Int cond_prob_def)
+    done
+
+  have sd_fj_lnc:
+    "simple_distributed C (\<lambda>\<omega>. (first_jondo \<omega>, last_ncoll \<omega>)) (\<lambda>(i, l). ?il i l)"
+    apply (rule C.simple_distributedI)
+    apply (rule simple_function_Pair[OF sf_fj sf_lnc])
+    apply (subst measure_C)
+    apply (auto simp: first_jondo_def C_def vimage_def Collect_Int cond_prob_def intro!: p_space_Collect)
+    done
 
   let "?inner i" = "\<Sum>l\<in>jondos - colls. ?il i l * log 2 (?il i l / (?i i * ?l l))"
   { fix i assume i: "i \<in> jondos - colls"
@@ -1167,16 +1177,18 @@ proof -
     by (intro mult_left_mono log_le mult_pos_pos mult_nonneg_nonneg)
        (auto simp: intro!: mult_nonneg_nonneg)
   finally have "(\<Sum>i\<in>jondos - colls. ?inner i) \<le> (1 - ?f) * log 2 h" .
-  moreover have "\<I>(first_jondo ; last_ncoll) = (\<Sum>i\<in>jondos - colls. ?inner i)"
-    unfolding setsum_cartesian_product C.mutual_information_eq[OF sf_fj sf_lnc]
-  proof (safe intro!: setsum_mono_zero_cong_right del: DiffE)
-    show "finite (first_jondo ` space C \<times> last_ncoll ` space C)"
-      using sf_lnc sf_fj by (auto simp: simple_function_def)
+  also have "(\<Sum>i\<in>jondos - colls. ?inner i) =
+      (\<Sum>(i, l)\<in>(first_jondo`space p_space) \<times> (last_ncoll`space p_space). ?il i l * log 2 (?il i l / (?i i * ?l l)))"
+    unfolding setsum_cartesian_product
+  proof (safe intro!: setsum_mono_zero_cong_left del: DiffE DiffI)
+    show "finite ((first_jondo ` space p_space) \<times> (last_ncoll ` space p_space))"
+      using sf_fj sf_lnc by (auto simp add: C_def dest!: simple_functionD(1))
   next
-    fix j assume "j \<in> jondos - colls" then show "j \<in> first_jondo ` space C" "j \<in> last_ncoll ` space C"
-      by (auto simp: image_iff C_def space_path_space last_ncoll_def first_jondo_def intro!: bexI[of _ "\<lambda>_. Mix j"])
+    fix i assume "i \<in> jondos - colls"
+    then show "i \<in> first_jondo ` space p_space" "i \<in> last_ncoll ` space p_space"
+      by (auto simp: image_iff C_def last_ncoll_def first_jondo_def intro!: bexI[of _ "\<lambda>_. Mix i"])
   next
-    fix i l assume "(i, l) \<in> first_jondo ` space C \<times> last_ncoll ` space C - (jondos - colls) \<times> (jondos - colls)"
+    fix i l assume "(i, l) \<in> first_jondo ` space p_space \<times> last_ncoll ` space p_space - (jondos - colls) \<times> (jondos - colls)"
     then have "i \<notin> jondos - colls \<or> l \<notin> jondos - colls"
       by auto
     then have "\<PP>(\<omega> in \<P>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = l \<and> hit_colls \<omega>) = 0"
@@ -1185,31 +1197,27 @@ proof -
       apply (elim AE_mp)
       by (auto  intro!: AE_I2 dest: term_imp_len first_collI4
         simp: first_jondo_def)
-    then have "C.joint_distribution first_jondo last_ncoll {(i, l)} = 0"
-      unfolding C.distribution_def C.\<mu>'_def
-      by (simp add: vimage_def Int_def C_def cond_prob_def conj_ac)
-    then show "C.joint_distribution first_jondo last_ncoll {(i, l)} *
-          log 2 (C.joint_distribution first_jondo last_ncoll {(i, l)} /
-                 (C.distribution first_jondo {i} * C.distribution last_ncoll {l})) = 0"
-      by simp
+    then show "?il i l * log 2 (?il i l / (?i i * ?l l)) = 0"
+      by (simp add: cond_prob_def)
+  qed
+  also have "\<dots> = \<I>(first_jondo ; last_ncoll)"
+    unfolding setsum_cartesian_product
+    apply (subst C.mutual_information_simple_distributed[OF sd_fj sd_lnc sd_fj_lnc])
+    apply (simp add: C_def)
+  proof (safe intro!: setsum_mono_zero_right imageI)
+    show "finite ((first_jondo ` (UNIV \<rightarrow> valid_states)) \<times> (last_ncoll ` (UNIV \<rightarrow> valid_states)))"
+      using sf_fj sf_lnc by (auto simp add: C_def dest!: simple_functionD(1))
   next
-    fix i l assume "i \<in> jondos - colls" "l \<in> jondos - colls"
-    have "{x\<in>space \<P>. first_jondo x = i \<and> last_ncoll x = l} \<in> sets \<P>"
-      "{x\<in>space \<P>. first_jondo x = i} \<in> sets \<P>"
-      "{x\<in>space \<P>. last_ncoll x = l} \<in> sets \<P>"
-      by (auto intro!: sets_Collect simp: first_jondo_def)
-    then have "C.joint_distribution first_jondo last_ncoll {(i, l)} = ?il i l"
-      "C.distribution first_jondo {i} = ?i i"
-      "C.distribution last_ncoll {l} = ?l l"
-      unfolding C.distribution_def C.\<mu>'_def
-      by (auto simp add: C_def conj_ac cond_prob_def vimage_def Int_def)
-    then show "C.joint_distribution first_jondo last_ncoll {(i, l)} *
-             log 2 (C.joint_distribution first_jondo last_ncoll {(i, l)} /
-                    (C.distribution first_jondo {i} * C.distribution last_ncoll {l})) =
-      ?il i l * log 2 (?il i l / (?i i * ?l l))"
+    fix i l assume "(first_jondo i, last_ncoll l) \<notin> (\<lambda>x. (first_jondo x, last_ncoll x)) ` (UNIV \<rightarrow> valid_states)"
+    then have "{\<omega> \<in> UNIV \<rightarrow> valid_states. first_jondo \<omega> = first_jondo i \<and> last_ncoll \<omega> = last_ncoll l \<and> hit_colls \<omega>} = {}"
+      by (auto simp: image_iff)
+    then have "?il (first_jondo i) (last_ncoll l) = 0"
+      by (simp add: cond_prob_def del: Collect_empty_eq)
+    then show "?il (first_jondo i) (last_ncoll l) *
+      log 2 (?il (first_jondo i) (last_ncoll l) / (?i (first_jondo i) * ?l (last_ncoll l))) = 0"
       by simp
   qed
-  ultimately show ?thesis by simp
+  finally show ?thesis by simp
 qed
 
 end

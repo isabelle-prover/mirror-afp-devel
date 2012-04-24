@@ -33,6 +33,31 @@ proof -
     using finite_S by (auto simp add: setsum_cases)
 qed
 
+definition "order = (SOME f. bij_betw f {..< card S} S)"
+
+lemma
+  shows bij_order[simp]: "bij_betw order {..< card S} S"
+    and inj_order[simp]: "inj_on order {..<card S}"
+    and image_order[simp]: "order ` {..<card S} = S"
+    and order_S[simp, intro]: "\<And>i. i < card S \<Longrightarrow> order i \<in> S"
+proof -
+  from finite_same_card_bij[OF _ finite_S] show "bij_betw order {..< card S} S"
+    unfolding order_def by (rule someI_ex) auto
+  then show "inj_on order {..<card S}" "order ` {..<card S} = S"
+    unfolding bij_betw_def by auto
+  then show "\<And>i. i < card S \<Longrightarrow> order i \<in> S"
+    by auto
+qed
+
+lemma order_Ex:
+  assumes "s \<in> S" obtains i where "i < card S" "s = order i"
+proof -
+  from `s \<in> S` have "s \<in> order ` {..<card S}"
+    by simp
+  with that show thesis
+    by (auto simp del: image_order)
+qed
+
 definition "iorder = the_inv_into {..<card S} order"
 
 lemma bij_iorder: "bij_betw iorder S {..<card S}"
@@ -174,7 +199,7 @@ lemma svalid_subset_S: "svalid F \<subseteq> S"
 lemma finite_svalid[simp, intro]: "finite (svalid F)"
   using svalid_subset_S finite_S by (blast intro: finite_subset)
 
-lemma svalid_sets: "{w\<in>space (path_space q). w i \<in> svalid F} \<in> sets (path_space q)"
+lemma svalid_sets: "{w\<in>space (path_space q). w i \<in> svalid F} \<in> sets p_space"
 proof -
   have "{w\<in>space (path_space q). w i \<in> svalid F} =
     (\<Union>q\<in>svalid F. {w\<in>UNIV\<rightarrow>S. w i = q})"
@@ -182,10 +207,9 @@ proof -
   then show ?thesis by auto
 qed
 
-lemma pvalid_sets: "pvalid q F \<in> sets (path_space q)"
+lemma pvalid_sets: "pvalid q F \<in> sets p_space"
   by (cases F)
-     (auto intro!: svalid_sets sets_Collect
-           simp: space_path_space[symmetric, of q])
+     (auto intro!: svalid_sets p_space_Collect)
 
 lemma pvalid_unbound_eq: 
   assumes "s \<notin> svalid F2" "s \<in> svalid F1"
@@ -218,7 +242,7 @@ lemma pvalid_eq_until:
   apply (auto simp add: all_less_Suc_split)
   done
 
-lemma reward_measurable: "reward F \<in> borel_measurable (path_space s)"
+lemma reward_measurable: "reward F \<in> borel_measurable p_space"
 proof (cases F)
   case (Future F)
   then have "reward (Future F) = reward_until (svalid F)"
@@ -377,7 +401,7 @@ proof -
         qed
       qed
       then have "AE \<omega> in path_space s. \<omega> \<in> nat_case s -` until \<Phi> \<Psi> \<inter> (UNIV\<rightarrow>S)"
-        using `s \<in> S` assms by (simp add: pvalid_eq_until space_path_space[symmetric, of s])
+        using `s \<in> S` assms AE_space[of "path_space s"] by (simp add: pvalid_eq_until)
       then have "s \<in> ?U"
         using `s \<in> S` by (simp add: AE_in_set_eq_1 sets_nat_case_until del: Int_iff) }
     note after_s = this
@@ -422,7 +446,7 @@ proof safe
   then have "prob s (nat_case s -` until \<Phi> \<Psi> \<inter> (UNIV \<rightarrow> S)) \<le> prob s {}"
     by (rule finite_measure_mono_AE) simp
   then show "prob s (nat_case s -` until \<Phi> \<Psi> \<inter> (UNIV \<rightarrow> S)) = 0"
-    by (auto intro: antisym)
+    by (auto intro: antisym measure_nonneg)
 qed fact
 
 subsubsection {* Unique solution of a LES *}
@@ -588,8 +612,8 @@ next
       by (auto split: nat.split simp: Pi_iff gr0_conv_Suc all_conj_distrib) blast }
   note eq = this
 
-  have "{w \<in> UNIV \<rightarrow> S. \<exists>i<Suc k. w i \<in> svalid F2 \<and> (\<forall>j<i. w j \<in> svalid F1)} \<in> sets (path_space q)"
-    by (fastsimp intro!: sets_Collect svalid_sets simp: space_path_space[symmetric, of q])
+  have "{w \<in> UNIV \<rightarrow> S. \<exists>i<Suc k. w i \<in> svalid F2 \<and> (\<forall>j<i. w j \<in> svalid F1)} \<in> sets p_space"
+    by (fastforce intro!: p_space_Collect svalid_sets)
   with Suc show ?case
     by (auto simp: prob_eq_sum[OF `q \<in> S`] eq svalid_subset_S)
 qed
@@ -645,8 +669,8 @@ proof -
     using measurable_hitting_time `0 \<le> Mr` `s \<in> S`
     apply (subst positive_integral_cmult)
     apply (rule borel_measurable_ereal)
-    apply (rule measurable_comp[OF measurable_nat_case measurable_hitting_time])
-    apply (auto simp: comp_def)
+    using measurable_comp[OF measurable_nat_case measurable_hitting_time]
+    apply (auto simp: comp_def cong: measurable_cong')
     done
   also have "\<dots> < \<infinity>"
     using positive_integral_hitting_time_finite[OF `s \<in> S` svalid_subset_S until] `0 \<le> Mr`
@@ -684,7 +708,7 @@ next
     have "pvalid s' (U\<^sup>\<infinity> F1 F2) = nat_case s' -` pvalid s (U\<^sup>\<infinity> F1 F2) \<inter> (UNIV \<rightarrow> S)"
       by (cases "s' \<in> svalid F2" "s' \<in> svalid F1" rule: bool.exhaust[case_product bool.exhaust])
     (auto split: nat.split simp: Pi_iff gr0_conv_Suc) }
-  with prob_eq_sum[OF `s \<in> S` pvalid_sets, of "U\<^sup>\<infinity> F1 F2"]
+  with prob_eq_sum[OF `s \<in> S` pvalid_sets, of _ "U\<^sup>\<infinity> F1 F2"]
   show "prob s (pvalid s (U\<^sup>\<infinity> F1 F2)) - 0 = (\<Sum>s'\<in>S. \<tau> s s' * prob s' (pvalid s' (U\<^sup>\<infinity> F1 F2)))"
     by simp
 next
@@ -732,7 +756,7 @@ proof -
     from positive_integral_PInf_AE[OF _ this]
       measurable_comp[OF measurable_nat_case reward_measurable, OF `s \<in> S`]
     have "AE x in path_space s. reward (Future F) (nat_case s x) \<noteq> \<infinity>"
-      by (simp add: comp_def del: reward.simps)
+      by (simp add: comp_def del: reward.simps cong: measurable_cong')
     then have "AE \<omega> in path_space s. \<omega> \<in> nat_case s -` until S ?F \<inter> space (path_space s)"
     proof (rule AE_mp, intro AE_I2 impI IntI)
       fix \<omega> assume "\<omega> \<in> space (path_space s)"
@@ -778,9 +802,8 @@ proof -
         using svalid_subset_S `s \<in> S` by simp
       from AE_split[OF this sets_until `s \<in> S` `s' \<in> S` `\<tau> s s' \<noteq> 0`]
         positive_integral_reward_finite[OF `s' \<in> S`, of F]
-        positive_integral_positive
       have "\<bar>?E s'\<bar> \<noteq> \<infinity>"
-        by simp
+        by (simp add: positive_integral_positive)
       then show ?thesis by (cases "?E s'") auto
     qed (simp add: zero_ereal_def[symmetric])
   qed simp
@@ -820,6 +843,7 @@ proof -
     apply (auto 
       simp add: space_path_space Pi_iff reward_measurable
       simp del: reward.simps
+      cong: measurable_cong'
       intro!: add_nonneg_nonneg AE_I2)
     apply (auto intro!: setsum_nonneg)
     done
@@ -942,7 +966,7 @@ next
         by (intro positive_integral_add AE_I2)
            (auto intro!: borel_measurable_ereal borel_measurable_add 
                          setsum_nonneg add_nonneg_nonneg \<rho>_nneg \<iota>_nneg
-                 simp: space_path_space)
+                 cong: measurable_cong')
       also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) + 
         (\<integral>\<^isup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> i) + \<iota> (\<omega> i) (\<omega> (Suc i))) \<partial>path_space s)"
         using `s \<in> S` by (subst positive_integral_select_0) (auto intro: add_nonneg_nonneg \<iota>_nneg \<rho>_nneg)
@@ -967,7 +991,7 @@ next
   { fix s assume "s \<in> S"
     then have "ExpState s k = (\<integral>\<^isup>+ x. ereal (\<rho> (nat_case s x k)) \<partial>path_space s)"
     proof (induct k arbitrary: s)
-      case 0 with measure_space_1 show ?case by simp
+      case 0 with emeasure_space_1 show ?case by simp
     next
       case (Suc k) then show ?case
         by (simp add: positive_integral_eq_sum borel_measurable_ereal measurable_\<rho>)
@@ -1007,7 +1031,7 @@ next
     from positive_integral_reward_finite[OF `s \<in> S`] this
       positive_integral_positive
     have "\<bar>\<integral>\<^isup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>path_space s\<bar> \<noteq> \<infinity>"
-      by simp
+      by (simp add: positive_integral_positive)
     with l_eq `s \<in> S` have "ereal (l s) = (\<integral>\<^isup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>path_space s)"
       by auto }
   moreover
@@ -1039,7 +1063,7 @@ proof (induct F rule: Sat.induct)
       apply (simp add: distr_def constants_def LES_def del: pvalid.simps)
     proof safe
       fix s assume "s \<in> svalid \<Psi>" "s \<in> S"
-      then show "(\<Sum>s'\<in>S. (if s' = s then 1 else 0) * finite_measure.\<mu>' (path_space s') (pvalid s' (U\<^sup>\<infinity> \<Phi> \<Psi>))) = 1"
+      then show "(\<Sum>s'\<in>S. (if s' = s then 1 else 0) * prob s' (pvalid s' (U\<^sup>\<infinity> \<Phi> \<Psi>))) = 1"
         by (simp add: single_l)
     next
       fix s assume s: "s \<notin> svalid \<Psi>" "s \<in> S"
@@ -1066,7 +1090,7 @@ proof (induct F rule: Sat.induct)
         also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * ?x s') - ?x s"
           using s by (simp add: single_l setsum_subtractf)
         finally show ?thesis
-          using s_not_0 * prob_eq_sum[OF `s \<in> S` pvalid_sets, of "U\<^sup>\<infinity> \<Phi> \<Psi>"] s_not_0
+          using s_not_0 * prob_eq_sum[OF `s \<in> S` pvalid_sets, of _ "U\<^sup>\<infinity> \<Phi> \<Psi>"] s_not_0
           by (simp del: pvalid.simps)
       qed
     qed
