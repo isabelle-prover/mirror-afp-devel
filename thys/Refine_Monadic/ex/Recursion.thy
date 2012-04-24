@@ -100,16 +100,17 @@ schematic_lemma dfs_impl_refine_aux:
   )
 
   txt {* Transfer Phase *}
-  apply (subgoal_tac "\<And>b. set_iteratori (\<lambda>c f. 
-    (lift_set_iterator ls_iteratei (succi b)) c f) 
+  apply (subgoal_tac "\<And>b. set_iterator (\<lambda>c f. 
+    (IT_tag ls_iteratei (succi b)) c f) 
     (E `` {b})") -- "Prepare transfer of iterator"
-  apply (refine_transfer the_resI) -- {* Transfer using monad. 
+  apply (refine_transfer the_resI 
+  ) -- {* Transfer using monad. 
     Hence @{text "the_resI"} *}
 
   apply (subgoal_tac -- "Show iterator (Left over from subgoal-tac above)"
     "(E `` {b}) = ls_\<alpha> (succi b)")
   apply (simp only:)
-  apply (rule ls.it_is_iteratori)
+  apply (rule ls.it_is_iterator)
   apply (auto simp: E_def) [2]
 
   txt {* Optimization Phase. We apply no optimizations here. *}
@@ -128,7 +129,7 @@ definition "dfs_rec_body succi t \<equiv>
        if b = t then dRETURN True
        else if hs_memb b a then dRETURN False
             else let xa = hs_ins_dj b a
-                 in lift_set_iterator ls_iteratei (succi b)
+                 in IT_tag ls_iteratei (succi b)
                      (dres_case True True (op = False))
                      (\<lambda>x s. s \<guillemotright>= (\<lambda>s. f (xa, x))) (dRETURN False))
 "
@@ -136,7 +137,7 @@ definition "dfs_rec_body succi t \<equiv>
 
 definition "dfs_rec succi t \<equiv> REC\<^isub>T (dfs_rec_body succi t)"
 definition dfs_impl where "dfs_impl succi t s0 \<equiv> 
-  the_res (dfs_rec succi t (hs_empty, s0))"
+  the_res (dfs_rec succi t (hs_empty (), s0))"
 
 text {* Code equation for recursion *}
 lemma [code]: "dfs_rec succi t x = dfs_rec_body succi t (dfs_rec succi t) x"

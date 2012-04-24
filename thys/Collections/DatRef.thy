@@ -2,11 +2,19 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Data Refinement for the While-Combinator} *}
+header {* \isaheader{Deprecated: Data Refinement for the While-Combinator} *}
 theory DatRef
-imports Main "common/Misc" "~~/src/HOL/Library/While_Combinator"
+imports 
+  Main 
+  "common/Misc" 
+  "~~/src/HOL/Library/While_Combinator"
 begin
 text_raw {*\label{thy:DatRef}*}
+
+text {*
+  Note that this theory is deprecated. For new developments, the refinement 
+  framework (Refine-Monadic entry of the AFP) should be used.
+*}
 
 text {*
   In this theory, a data refinement framework for 
@@ -15,8 +23,8 @@ text {*
   The case of deterministic while-loops is explicitely handled, to
   support proper code-generation using the While-Combinator.
   
-  The status of this framework is still beta: It is usable, but there are many
-  possible improvements, especially for supporting automated reasoning.
+  Note that this theory is deprecated. For new developments, the refinement 
+  framework (Refine-Monadic entry of the AFP) should be used.
   *}
 
 (* TODO-LIST and ideas

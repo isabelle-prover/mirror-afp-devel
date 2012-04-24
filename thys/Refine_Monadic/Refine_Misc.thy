@@ -666,26 +666,57 @@ next
     done
 qed
 
+
+lemma (in galois_connection) dual_inf_dist_\<gamma>: "\<gamma> (Inf C) = Inf (\<gamma>`C)"
+  apply (rule antisym)
+  apply (rule Inf_greatest)
+  apply clarify
+  apply (rule monoD[OF \<gamma>_mono])
+  apply (rule Inf_lower)
+  apply simp
+
+  apply (subst galois)
+  apply (rule Inf_greatest)
+  apply (subst galois[symmetric])
+  apply (rule Inf_lower)
+  apply simp
+  done
+
+lemma (in galois_connection) inf_dist_\<alpha>: "inf_distrib \<alpha>"
+  apply (rule inf_distribI')
+  apply (rule antisym)
+
+  apply (subst galois[symmetric])
+  apply (rule Sup_least)
+  apply (subst galois)
+  apply (rule Sup_upper)
+  apply simp
+
+  apply (rule Sup_least)
+  apply clarify
+  apply (rule monoD[OF \<alpha>_mono])
+  apply (rule Sup_upper)
+  apply simp
+  done
+
 subsection {* Maps *}
 subsubsection {* Key-Value Set *}
-  definition kvset :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a\<times>'b) set" where
-    "kvset m \<equiv> {(k,v) . m k = Some v}"
-  lemma kvset_simps[simp]: 
-    "kvset Map.empty = {}"
-    "kvset [a\<mapsto>b] = {(a,b)}"
-    "kvset (m|`K) = kvset m \<inter> K\<times>UNIV"
-    "kvset (m(x:=None)) = kvset m - {x}\<times>UNIV"
-    "kvset (m(x\<mapsto>v)) = kvset m - {x}\<times>UNIV \<union> {(x,v)}"
-    "kvset m \<inter> dom m\<times>UNIV = kvset m"
-    "m k = Some v \<Longrightarrow> (k,v)\<in>kvset m"
-    "single_valued (kvset m)"
-    by (auto simp: kvset_def restrict_map_def split: split_if_asm
+  
+  lemma map_to_set_simps[simp]: 
+    "map_to_set Map.empty = {}"
+    "map_to_set [a\<mapsto>b] = {(a,b)}"
+    "map_to_set (m|`K) = map_to_set m \<inter> K\<times>UNIV"
+    "map_to_set (m(x:=None)) = map_to_set m - {x}\<times>UNIV"
+    "map_to_set (m(x\<mapsto>v)) = map_to_set m - {x}\<times>UNIV \<union> {(x,v)}"
+    "map_to_set m \<inter> dom m\<times>UNIV = map_to_set m"
+    "m k = Some v \<Longrightarrow> (k,v)\<in>map_to_set m"
+    "single_valued (map_to_set m)"
+    apply (simp_all)
+    by (auto simp: map_to_set_def restrict_map_def split: split_if_asm
       intro: single_valuedI)
       
-  lemma kvset_inj:     
-    "(k,v)\<in>kvset m \<Longrightarrow> (k,v')\<in>kvset m \<Longrightarrow> v = v'"
-    by (auto simp: kvset_def)
-
-
+  lemma map_to_set_inj:     
+    "(k,v)\<in>map_to_set m \<Longrightarrow> (k,v')\<in>map_to_set m \<Longrightarrow> v = v'"
+    by (auto simp: map_to_set_def)
 
 end

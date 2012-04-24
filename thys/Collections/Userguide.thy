@@ -16,7 +16,8 @@ text {*
 
   The relation between the data structures of the collection framework and standard Isabelle types (e.g. for sets and maps) is established by abstraction functions.
 
-  Currently, the following interfaces and data-structures are provided by the Isabelle Collections Framework:
+  Amongst others, the following interfaces and data-structures are provided by the Isabelle Collections Framework (For a complete list, see the overview section
+  in the implementations chapter of the proof document):
   \begin{itemize}
     \item Set and map implementations based on (associative) lists, red-black trees, hashing and tries.
     \item An implementation of a FIFO-queue based on two stacks.
@@ -112,11 +113,9 @@ text {*
   Other theories in the Isabelle Colelction Framework include:
   \begin{description}
     \item[@{theory SetSpec}] Specification of sets and set functions
-    \item[@{theory OrderedSet}] Specification of ordered sets and set functions
     \item[@{theory SetGA}] Generic algorithms for sets
     \item[@{theory SetStdImpl}] Standard set implementations (list, rb-tree, hashing, tries)
     \item[@{theory MapSpec}] Specification of maps
-    \item[@{theory OrderedMap}] Specification of ordered maps
     \item[@{theory MapGA}] Generic algorithms for maps
     \item[@{theory MapStdImpl}] Standard map implementations (list,rb-tree, hashing, tries)
     \item[@{theory Algos}] Various generic algorithms
@@ -135,7 +134,7 @@ text {* An important concept when using collections are iterators. An iterator i
   even if the function is not left-commutative. Proofs about iterations are done in invariant style, establishing an
   invariant over the iteration.
 
-  The iterator combinator for red-black tree sets is @{const rs_iterate}, and the proof-rule that is usually used is:
+  The iterator combinator for red-black tree sets is @{const rs_iteratei}, and the proof-rule that is usually used is:
     @{thm [source] rs.iterate_rule_P}: @{thm [display] rs.iterate_rule_P[no_vars]}
 
   The invariant @{term I} is parameterized with the set of remaining elements that have not yet been iterated over and the
@@ -161,7 +160,7 @@ text {*
   that converts a hashset to a list that contains precisely the elements of the set.
 *}
 
-definition "hs_to_list' s == hs_iterate (op #) s []"
+definition "hs_to_list' s == hs_iteratei s (\<lambda>_. True) (op #) []"
 
 text {*
   The correctness proof works by establishing the invariant that the list contains
@@ -187,7 +186,7 @@ text {*
   The state of the iteration is simply a boolean, indicating the (current) result of the quantification:
 *}
 
-definition "hs_bex s P == hs_iteratei (\<lambda>\<sigma>. \<not> \<sigma>) (\<lambda>x \<sigma>. P x) s False"
+definition "hs_bex s P == hs_iteratei s (\<lambda>\<sigma>. \<not> \<sigma>) (\<lambda>x \<sigma>. P x) False"
 
 lemma hs_bex_correct: 
   "hs_invar s \<Longrightarrow> hs_bex s P \<longleftrightarrow> (\<exists>x\<in>hs_\<alpha> s. P x)"
@@ -254,7 +253,7 @@ text {*
     Names that reference the implementation of only one interface are prefixed with that implementation's two-letter abbreviation (e.g. @{const hs_ins} for insertion into a HashSet (hs,h)),
     names that reference more than one implementation are prefixed with the one-letter (or two-letter) abbreviations (e.g. @{const lhh_union} for set union between a ListSet(ls,l) and a HashSet(hs,h), yielding a HashSet)
     
-    Currently, there are the following abbreviations:
+    The most important abbreviations are:
     \begin{description}
       \item[lm,l] List Map
       \item[lmi,li] List Map with explicit invariant

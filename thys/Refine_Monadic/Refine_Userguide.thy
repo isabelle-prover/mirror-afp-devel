@@ -205,7 +205,7 @@ theorem sum_max'_correct:
     invariant. Moreover, it leaves us with a variant. We have to specify a 
     well-founded relation, and show that the loop body respects this
     relation. In our case, the set @{text "V"} decreases in each step, and
-    is initially finite. We the relation @{const "finite_psubset"} and the
+    is initially finite. We use the relation @{const "finite_psubset"} and the
     @{const "inv_image"} combinator from the Isabelle/HOL standard library.*}
   apply (subgoal_tac "wf (inv_image finite_psubset fst)",
     assumption) -- "Instantiate variant"
@@ -291,7 +291,7 @@ theorem sum_max_impl_refine:
     the output.
     *}
 
-  txt {* The proof is done automaticaly by the refinement verification 
+  txt {* The proof is done automatically by the refinement verification 
     condition generator.
     Note that the theory @{text "Collection_Bindings"} sets up all the 
     necessary lemmas to discharge refinement conditions for the collection
@@ -447,11 +447,12 @@ text {*
   programs, we may generate a (plain) function that internally uses the 
   deterministic monad, and then extracts the result.
 *}
+
 schematic_lemma sum_max''_code_aux: 
   "RETURN ?sum_max''_code \<le> sum_max'_impl V"
   unfolding sum_max'_impl_def
-  apply (refine_transfer the_resI) -- {*Using @{text "the_resI"} for internal 
-    monad and result extraction*}
+  apply (refine_transfer the_resI) -- 
+   {*Using @{text "the_resI"} for internal monad and result extraction*}
   done
 
 thm sum_max''_code_aux[no_vars]
@@ -543,7 +544,7 @@ text {* Note that the code generator has replaced the iterator by an iterator
 thm sum_max_it_code_aux[no_vars]
 definition sum_max_it_code :: "nat ls \<Rightarrow> (nat\<times>nat) dres" where
   "sum_max_it_code V \<equiv> 
- (lift_set_iterator ls_iteratei V (dres_case True True (\<lambda>_. True))
+ (IT_tag ls_iteratei V (dres_case True True (\<lambda>_. True))
    (\<lambda>x s. s \<guillemotright>= (\<lambda>(a, b). dRETURN (a + x, max b x))) (dRETURN (0, 0)))
 "
 
@@ -657,7 +658,7 @@ section {* Reference *}
 
       \item[@{term "ASSUME \<Phi>"}] Assumption. Succeeds
         if @{text "\<Phi>"} does not hold, otherwise returns @{text "()"}. Note that
-        the defualt usage with the do-notation is: 
+        the default usage with the do-notation is: 
         @{term [source] "do {ASSUME \<Phi>; f}"}.
 
       \item[@{term "REC body"}] Recursion for partial correctness. 

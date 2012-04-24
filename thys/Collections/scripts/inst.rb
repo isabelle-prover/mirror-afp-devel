@@ -27,14 +27,19 @@
 #  ----------------------------
 #
 #   (*#patterns
-#      name@intf: p1 ... pn \<Rightarrow> target
-#      name@!: p1 ... pn \<Rightarrow> target
+#      name@intf: p1 ... pn \<Rightarrow> target | <exclusions>
+#      name@!: p1 ... pn \<Rightarrow> target | <exclusions>
 #   *)
 #
 #   Where the pi have the form:
 #     (x1:t1,...,xn:tn) if-name
 #   and target has the form:
 #     (x1,...,xn) target-name
+#
+#   The "| <exclusions>" are optional, and exclusions have the form 
+#     var1\<notin>i11,...,i1n ... varm\<notin>im1,...,imn
+#   where var refers to variables, and ijk to interface names.
+#
 #
 #   Declares a generic algorithm by a rule how a new function is implemented by existing functions.
 #   The name@intf declaration specifies the name of the generic algorithm's constant and the name of the
@@ -136,7 +141,7 @@ def merge_vdom vd1,vd2
 end
 
 class Pattern
-  attr_accessor :vdom, :args, :target, :name, :fname, :direct_correctness
+  attr_accessor :vdom, :args, :target, :name, :fname, :direct_correctness, :exclude_impls
 
   def initialize string
     parse string
@@ -146,10 +151,13 @@ class Pattern
     # name: a1 ... an \<Rightarrow> rp
     @vdom={}
     @args=[]
+    @exclude_impls={}
 
-    if not (/^([A-Za-z_'.]+)@([A-Za-z_']+|!):? *(.*)\\<Rightarrow>(.*)$/ =~ string) then raise("Syntax error in: "+string) end
+    if not (/^([A-Za-z_'.]+)@([A-Za-z_']+|!):? *(.*)\\<Rightarrow>([^|]*)(\|(.*))?$/ =~ string) then 
+      raise("Syntax error in: "+string) 
+    end
 
-    @name,@fname,s_args,s_target=[$1,$2,$3,$4]
+    @name,@fname,s_args,s_target,s_excl=[$1,$2,$3,$4,$6]
     @direct_correctness = (@fname == "!")
 
     # arguments
@@ -163,6 +171,23 @@ class Pattern
 
     # target
     @target = Arg.new(s_target.strip)
+
+    # Exclusions (| x\<notin>Impl1,...,Impln)
+    if (s_excl != nil) then
+      s_excl.strip.split(/ +/).each do |as|
+        if not (/^([A-Za-z_'])\\<notin>([A-Za-z_',]+)$/ =~ as) then
+          raise("Syntax error in exclude pattern: "+as)
+        end
+        s_name,s_ilist=[$1,$2]
+        @exclude_impls[s_name]={} unless @exclude_impls.has_key? s_name
+
+        s_ilist.split(/,/).each do |iname|
+          @exclude_impls[s_name][iname]=true
+        end
+      end
+    end
+
+
   end
 
   def inspect
@@ -202,8 +227,10 @@ HERE
       var=karrn.shift
 
       $impl[@vdom[var]].each do |i|
-        sigma[var]=i
-        inst_rec karrn,sigma
+        if not @exclude_impls[var] or not @exclude_impls[var][i] then
+          sigma[var]=i
+          inst_rec karrn,sigma
+        end
       end
     end
   end

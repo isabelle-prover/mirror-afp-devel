@@ -1,13 +1,12 @@
 header {* \isaheader{The type of associative lists} *}
-theory Assoc_List imports "~~/src/HOL/Library/AList" begin
+theory Assoc_List 
+  imports 
+  "~~/src/HOL/Library/AList" 
+  "../iterator/SetIterator" 
+  "../iterator/SetIteratorOperations" 
+begin
 
 subsection {* Additional operations for associative lists *}
-
-fun iteratei_aux :: "('s \<Rightarrow> bool) \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> 's \<Rightarrow> 's"
-where
-  "iteratei_aux c f [] \<sigma> = \<sigma>"
-| "iteratei_aux c f ((k, v) # l) \<sigma> = 
-    (if c \<sigma> then iteratei_aux c f l (f k v \<sigma>) else \<sigma>)"
 
 primrec update_with_aux :: "'val \<Rightarrow> 'key \<Rightarrow> ('val \<Rightarrow> 'val) \<Rightarrow> ('key \<times> 'val) list \<Rightarrow> ('key \<times> 'val) list"
 where
@@ -22,71 +21,6 @@ fun delete_aux :: "'key \<Rightarrow> ('key \<times> 'val) list \<Rightarrow> ('
 where
   "delete_aux k [] = []"
 | "delete_aux k ((k', v) # xs) = (if k = k' then xs else (k', v) # delete_aux k xs)"
-
-lemma iteratei_aux_correct:
-  assumes "distinct (map fst m)"
-  and "I (dom (map_of m)) \<sigma>0"
-  and "\<And>k v it \<sigma>. \<lbrakk>c \<sigma>; k \<in> it; map_of m k = Some v; it \<subseteq> dom (map_of m); I it \<sigma>\<rbrakk> \<Longrightarrow> I (it - {k}) (f k v \<sigma>)"
-  shows "I {} (iteratei_aux c f m \<sigma>0) \<or>
-         (\<exists>it\<subseteq>dom (map_of m). it \<noteq> {} \<and> \<not> c (iteratei_aux c f m \<sigma>0) \<and> I it (iteratei_aux c f m \<sigma>0))"
-using assms
-proof(induct m arbitrary: \<sigma>0)
-  case Nil thus ?case by simp
-next
-  case (Cons p m)
-  obtain k v where PFMT[simp]: "p = (k,v)" by (cases p) auto
-  from Cons.prems(2) have I': "I (insert k (dom (map_of m))) \<sigma>0" 
-    by(simp del: map_of.simps add: dom_map_of_conv_image_fst)
-  show ?case
-  proof(cases "c \<sigma>0")
-    case True[simp]
-    have "iteratei_aux c f (p # m) \<sigma>0 = iteratei_aux c f m (f k v \<sigma>0)"
-      by simp
-
-    from Cons.prems(1) have INVN: "distinct (map fst m)" by simp
-    from Cons.prems(1) have KNID: "k \<notin> dom (map_of m)"
-      by(simp add: dom_map_of_conv_image_fst)
-
-    have "I (insert k (dom (Map.map_of m)) - {k}) (f k v \<sigma>0)"
-      by (rule Cons.prems(3)[OF _ _ _ _ I', of k v]) auto
-    with KNID have IN: "I (dom (Map.map_of m)) (f k v \<sigma>0)" by auto
-
-    have "I {} (iteratei_aux c f m (f k v \<sigma>0)) \<or> 
-          (\<exists>it. it \<subseteq> dom (map_of m) \<and> it \<noteq> {} \<and> \<not> c (iteratei_aux c f m (f k v \<sigma>0)) \<and> I it (iteratei_aux c f m (f k v \<sigma>0)))" 
-      (is "?terminate \<or> ?interrupt")
-      using INVN IN KNID
-      by - (erule (1) Cons, rule Cons.prems(3), auto)
-    thus ?thesis
-    proof
-      assume "?terminate" thus ?thesis by simp
-    next
-      assume "?interrupt"
-      then obtain it where "it\<subseteq>dom (map_of m)" "it \<noteq> {}" 
-        and "\<not> c (iteratei_aux c f m (f k v \<sigma>0))" 
-        and "I it (iteratei_aux c f m (f k v \<sigma>0))" by blast
-      hence "it \<subseteq> dom (map_of (p # m))" "it \<noteq> {}"
-        and "\<not> c (iteratei_aux c f (p # m) \<sigma>0)" 
-        and "I it (iteratei_aux c f (p # m) \<sigma>0)" by auto
-      thus ?thesis by blast
-    qed
-  next
-    case False[simp]
-    have IF: "iteratei_aux c f (p # m) \<sigma>0 = \<sigma>0" by simp
-    from Cons(3) show ?thesis
-      by(simp del: fun_upd_apply add: exI[where x="dom (map_of (p # m))"])
-  qed
-qed
-
-lemma iteratei_aux_interrupt:
-  "\<not> c \<sigma> \<Longrightarrow> Assoc_List.iteratei_aux c f xs \<sigma> = \<sigma>"
-by(cases xs) auto
-
-lemma iteratei_cong [fundef_cong]:
-  assumes "kvs = kvs'" "\<sigma> = \<sigma>'" "c = c'"
-  and ff': "\<And>\<sigma> k v. \<lbrakk> (k, v) \<in> set kvs'; c' \<sigma> \<rbrakk> \<Longrightarrow> f k v \<sigma> = f' k v \<sigma>"
-  shows "iteratei_aux c f kvs \<sigma> = iteratei_aux c' f' kvs' \<sigma>'"
-unfolding assms using ff'
-by(induct kvs' arbitrary: \<sigma>') auto
 
 lemma map_of_update_with_aux':
   "map_of (update_with_aux v k f ps) k' = ((map_of ps)(k \<mapsto> (case map_of ps k of None \<Rightarrow> f v | Some v \<Rightarrow> f v))) k'"
@@ -137,10 +71,13 @@ next
   qed
 qed
 
-
 lemma map_of_delete_aux':
   "distinct (map fst xs) \<Longrightarrow> map_of (delete_aux k xs) = (map_of xs)(k := None)"
-by(induct xs)(fastforce intro: ext simp add: map_of_eq_None_iff fun_upd_twist)+
+  apply (induct xs)
+  apply (fastforce intro: ext simp add: map_of_eq_None_iff fun_upd_twist)
+  apply (auto intro!: ext simp del: map_upd_eq_restrict )
+  apply (simp add: map_of_eq_None_iff)
+  done
 
 lemma map_of_delete_aux:
   "distinct (map fst xs) \<Longrightarrow> map_of (delete_aux k xs) k' = ((map_of xs)(k := None)) k'"
@@ -164,6 +101,10 @@ by(simp add: impl_of_inject)
 lemma impl_of_distinct [simp, intro]: "distinct (map fst (impl_of al))"
 using impl_of[of al] by simp
 
+lemma impl_of_distinct_full [simp, intro]: "distinct (impl_of al)"
+using impl_of_distinct[of al] 
+unfolding distinct_map by simp
+
 lemma Assoc_List_impl_of [code abstype]: "Assoc_List (impl_of al) = al"
 by(rule impl_of_inverse)
 
@@ -181,8 +122,8 @@ where [code del]: "update_with v k f al = Assoc_List (update_with_aux v k f (imp
 definition delete :: "'k \<Rightarrow> ('k, 'v) assoc_list \<Rightarrow> ('k, 'v) assoc_list"
 where [code del]: "delete k al = Assoc_List (delete_aux k (impl_of al))"
 
-definition iteratei :: "('s \<Rightarrow> bool) \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('k, 'v) assoc_list \<Rightarrow> 's \<Rightarrow> 's" 
-where [code]: "iteratei c f al = iteratei_aux c f (impl_of al)"
+definition iteratei :: "('k, 'v) assoc_list \<Rightarrow> ('s\<Rightarrow>bool) \<Rightarrow> ('k \<times> 'v \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> 's \<Rightarrow> 's" 
+where [code]: "iteratei al c f = foldli (impl_of al) c f"
 
 lemma impl_of_empty [code abstract]: "impl_of empty = []"
 by(simp add: empty_def Assoc_List_inverse)
@@ -214,13 +155,10 @@ lemma finite_dom_lookup [simp, intro!]: "finite (dom (lookup m))"
 by(simp add: lookup_def finite_dom_map_of)
 
 lemma iteratei_correct:
-  assumes "I (dom (lookup m)) \<sigma>0"
-  and "\<And>k v it \<sigma>. \<lbrakk>c \<sigma>; k \<in> it; lookup m k = Some v; it \<subseteq> dom (lookup m); I it \<sigma>\<rbrakk> \<Longrightarrow> I (it - {k}) (f k v \<sigma>)"
-  shows "I {} (iteratei c f m \<sigma>0) \<or>
-         (\<exists>it\<subseteq>dom (lookup m). it \<noteq> {} \<and> \<not> c (iteratei c f m \<sigma>0) \<and> I it (iteratei c f m \<sigma>0))"
-using impl_of_distinct assms
-unfolding iteratei_def lookup_def
-by(rule iteratei_aux_correct)
+  "map_iterator (iteratei m) (lookup m)"
+unfolding iteratei_def[abs_def] lookup_def map_to_set_def
+by (simp add: set_iterator_foldli_correct)
+
 
 subsection {* Derived operations *}
 
@@ -267,8 +205,80 @@ definition "size (al :: ('a, 'b) assoc_list) = length (impl_of al)"
 instance ..
 end
 
-hide_const (open) impl_of empty lookup update_with set update delete iteratei iteratei_aux
+hide_const (open) impl_of empty lookup update_with set update delete iteratei 
 
+subsection {* @{const map_ran} *}
 
+text {* @{term map_ran} with more general type - lemmas replicated from AList in HOL/Library *}
+
+hide_const (open) map_ran
+
+primrec
+  map_ran :: "('key \<Rightarrow> 'val \<Rightarrow> 'val') \<Rightarrow> ('key \<times> 'val) list \<Rightarrow> ('key \<times> 'val') list"
+where
+    "map_ran f [] = []"
+  | "map_ran f (p#ps) = (fst p, f (fst p) (snd p)) # map_ran f ps"
+
+lemma map_ran_conv: "map_of (map_ran f al) k = Option.map (f k) (map_of al k)"
+  by (induct al) auto
+
+lemma dom_map_ran: "fst ` set (map_ran f al) = fst ` set al"
+  by (induct al) auto
+
+lemma distinct_map_ran: "distinct (map fst al) \<Longrightarrow> distinct (map fst (map_ran f al))"
+  by (induct al) (auto simp add: dom_map_ran)
+
+lemma map_ran_filter: "map_ran f [(a, _)\<leftarrow>ps. fst p \<noteq> a] = [(a, _)\<leftarrow>map_ran f ps. fst p \<noteq> a]"
+  by (induct ps) auto
+
+lemma clearjunk_map_ran: "AList.clearjunk (map_ran f al) 
+  = map_ran f (AList.clearjunk al)"
+  by (induct al rule: clearjunk.induct) (simp_all add: delete_eq map_ran_filter)
+
+text {* new lemmas and definitions *}
+
+lemma map_ran_cong [fundef_cong]:
+  "\<lbrakk> al = al'; \<And>k v. (k, v) \<in> set al \<Longrightarrow> f k v = g k v \<rbrakk> \<Longrightarrow> map_ran f al = map_ran g al'"
+by clarify (induct al', auto)
+
+lemma list_size_delete: "list_size f (AList.delete a al) \<le> list_size f al"
+by(induct al) simp_all
+
+lemma list_size_clearjunk: "list_size f (AList.clearjunk al) \<le> list_size f al"
+by(induct al)(auto simp add: clearjunk_delete intro: le_trans[OF list_size_delete])
+
+lemma set_delete_conv: "set (AList.delete a al) = set al - ({a} \<times> UNIV)"
+proof(induct al)
+  case (Cons kv al)
+  thus ?case by(cases kv) auto
+qed simp
+
+lemma set_clearjunk_subset: "set (AList.clearjunk al) \<subseteq> set al"
+by(induct al)(auto simp add: clearjunk_delete set_delete_conv)
+
+lemma map_ran_conv_map:
+  "map_ran f xs = map (\<lambda>(k, v). (k, f k v)) xs"
+by(induct xs) auto
+
+lemma card_dom_map_of: "distinct (map fst al) \<Longrightarrow> card (dom (map_of al)) = length al"
+by(induct al)(auto simp add: card_insert_if finite_dom_map_of dom_map_of_conv_image_fst)
+
+lemma map_of_map_inj_fst:
+  assumes "inj f"
+  shows "map_of (map (\<lambda>(k, v). (f k, v)) xs) (f x) = map_of xs x"
+by(induct xs)(auto dest: injD[OF `inj f`])
+
+lemma length_map_ran [simp]: "length (map_ran f xs) = length xs"
+by(induct xs) simp_all
+
+lemma length_update: 
+  "length (AList.update k v xs) 
+  = (if k \<in> fst ` set xs then length xs else Suc (length xs))"
+by(induct xs) simp_all
+
+lemma length_distinct: 
+  "distinct (map fst xs) \<Longrightarrow> length (AList.delete k xs) 
+  = (if k \<in> fst ` set xs then length xs - 1 else length xs)"
+  by(induct xs)(auto split: split_if_asm simp add: in_set_conv_nth)
 
 end

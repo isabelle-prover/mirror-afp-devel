@@ -20,7 +20,7 @@ begin
   subsection "Set"
   
 lemma (in set_empty) set_empty_et[autoref_ex]:
-  "(empty,{})\<in>(build_rel (\<alpha>::'s \<Rightarrow> 'x set) invar)"
+  "(empty (),{})\<in>(build_rel (\<alpha>::'s \<Rightarrow> 'x set) invar)"
   by (auto simp: empty_correct)
 
 lemma (in set_memb) set_memb_et[autoref_ex]:
@@ -172,7 +172,7 @@ lemma (in set_sel') pick_et[autoref_ex]:
 subsection "Map"
 text {* TODO: Still incomplete *}
 lemma (in map_empty) map_empty_t[autoref_ex]:
-  "DETREFe empty (build_rel \<alpha> invar) Map.empty"
+  "DETREFe (empty ()) (build_rel \<alpha> invar) Map.empty"
   by (auto simp: empty_correct)
 
 (* TODO: This may cause a mess with higher-order unification!
@@ -203,7 +203,7 @@ subsection "Unique Priority Queue"
 text {* TODO: Still incomplete *}
 
 lemma (in uprio_empty) uprio_empty_t[autoref_ex]:
-  "DETREFe empty (build_rel \<alpha> invar) Map.empty"
+  "DETREFe (empty ()) (build_rel \<alpha> invar) Map.empty"
   by (auto simp: empty_correct)
 
 lemma (in uprio_isEmpty) uprio_isEmpty_t[autoref_ex]:

@@ -26,55 +26,16 @@ lemma (in set_sel') pick_ref[refine_hsimp]:
   "\<lbrakk> invar s; \<alpha> s \<noteq> {}\<rbrakk> \<Longrightarrow> the (sel' s (\<lambda>_. True)) \<in> \<alpha> s"
   by (auto elim!: sel'E)
 
+text {* Wrapper to prevent higher-order unification problems *}
+definition [simp, code_unfold]: "IT_tag x \<equiv> x"
 
-definition lift_set_iterator ::
-  "('s,'x,'\<sigma>) iteratori \<Rightarrow> 's \<Rightarrow> ('x,'\<sigma>) iteratori_tmpl"
-  where [simp, code_unfold]: 
-  "lift_set_iterator it s \<equiv> (\<lambda>c f \<sigma>0. it c f s \<sigma>0)"
+lemma (in set_iteratei) it_is_iterator[refine_transfer]:
+  "invar s \<Longrightarrow> set_iterator (IT_tag iteratei s) (\<alpha> s)"
+  unfolding IT_tag_def by (rule iteratei_rule)
 
-definition lift_map_iterator ::
-  "('s,'k,'v,'\<sigma>) map_iteratori \<Rightarrow> 's \<Rightarrow> ('k\<times>'v,'\<sigma>) iteratori_tmpl"
-  where [simp, code_unfold]: 
-  "lift_map_iterator it s \<equiv> (\<lambda>c f \<sigma>0. it c (\<lambda>k v \<sigma>. f (k,v) \<sigma>) s \<sigma>0)"
-
-lemma (in set_iteratei) it_is_iteratori[refine_transfer]:
-  "invar s \<Longrightarrow> set_iteratori (lift_set_iterator iteratei s) (\<alpha> s)"
-  apply simp
-  apply unfold_locales
-  apply (rule iteratei_rule)
-  apply auto
-  done
-
-lemma map_is_iteratori_aux: 
-  "kvset m \<inter> ((it-{k})\<times>UNIV) = (kvset m\<inter>it\<times>UNIV) - {(k,the (m k))}"
-  by (auto simp add: kvset_def)
-
-(*
-  "invar s \<Longrightarrow> set_iteratori 
-                 ((\<lambda>c f \<sigma>0. iterator_tag iteratei c (\<lambda>k v \<sigma>. f (k,v) \<sigma>) s \<sigma>0))
-                 (kvset (\<alpha> s))"
-*)
-
-lemma (in map_iteratei) it_is_iteratori[refine_transfer]:
-  "invar s \<Longrightarrow> set_iteratori 
-                 (lift_map_iterator iteratei s)
-                 (kvset (\<alpha> s))"
-  apply simp
-  apply unfold_locales
-  apply (rule_tac I="\<lambda>it \<sigma>. I (kvset (\<alpha> s) \<inter> it\<times>UNIV) \<sigma>" in iteratei_rule_P)
-  apply simp
-  apply simp
-  apply (simp add: map_is_iteratori_aux)
-  apply simp
-  apply simp
-  apply (rule disjI2)
-  apply (rule_tac x="kvset (\<alpha> s) \<inter> it\<times>UNIV" in exI)
-  apply (simp)
-  apply auto
-  apply (subgoal_tac "(x,the (\<alpha> s x))\<in>kvset (\<alpha> s)")
-  apply blast
-  apply (auto simp: kvset_def)
-  done
+lemma (in map_iteratei) it_is_iterator[refine_transfer]:
+  "invar m \<Longrightarrow> set_iterator (IT_tag iteratei m) (map_to_set (\<alpha> m))"
+  unfolding IT_tag_def by (rule iteratei_rule)
 
 text {*
   This definition is handy to be used on the abstract level.
@@ -102,49 +63,27 @@ lemma (in uprio_pop) prio_pop_min_refine[refine]:
 
 
 lemma dres_ne_bot_iterate[refine_transfer]:
-  assumes B: "set_iteratori (lift_set_iterator it r) S"
+  assumes B: "set_iterator (IT_tag it r) S"
   assumes A: "\<And>x s. f x s \<noteq> dSUCCEED"
-  shows "lift_set_iterator it r c (\<lambda>x s. dbind s (f x)) (dRETURN s) \<noteq> dSUCCEED"
-proof -
-  interpret set_iteratori "(lift_set_iterator it r)" S 
-    using B .
-  show ?thesis
-    apply (rule_tac I="\<lambda>_ s. s\<noteq>dSUCCEED" in iterate_rule_P)
-    apply (rule dres_ne_bot_basic A | assumption)+
-    done
-qed
-
-subsubsection {* Monotonicity for Iterators *}
-
-locale set_listable_iteratei = finite_set +
-  constrains \<alpha> :: "'s \<Rightarrow> 'x set"
-  fixes iteratei :: "('s,'x,'\<sigma>) iteratori"
-  fixes it_seq :: "'s \<Rightarrow> 'x list"
-  assumes distinct: "invar s \<Longrightarrow> distinct (it_seq s)"
-  assumes is_set: "invar s \<Longrightarrow> set (it_seq s) = \<alpha> s"
-  assumes listable: 
-    "invar s \<Longrightarrow> iteratei c f s \<sigma>0 = Dlist_add.iteratei_aux c f (it_seq s) \<sigma>0"
-
-sublocale set_listable_iteratei < set_iteratei \<alpha> invar iteratei
-  apply unfold_locales
-  apply (unfold listable is_set[symmetric])
-  apply (rule Dlist_add.iteratei_aux_correct)
-  apply (simp_all add: distinct)
+  shows "IT_tag it r c (\<lambda>x s. dbind s (f x)) (dRETURN s) \<noteq> dSUCCEED"
+  apply (rule_tac I="\<lambda>_ s. s\<noteq>dSUCCEED" in set_iterator_rule_P[OF B])
+  apply (rule dres_ne_bot_basic A | assumption)+
   done
 
+subsubsection {* Monotonicity for Iterators *}
 
 lemma it_mono_aux:
   assumes COND: "\<And>\<sigma> \<sigma>'. \<sigma>\<le>\<sigma>' \<Longrightarrow> c \<sigma> \<noteq> c \<sigma>' \<Longrightarrow> \<sigma>=bot \<or> \<sigma>'=top "
   assumes STRICT: "\<And>x. f x bot = bot" "\<And>x. f' x top = top"
   assumes B: "\<sigma>\<le>\<sigma>'"
   assumes A: "\<And>a x x'. x\<le>x' \<Longrightarrow> f a x \<le> f' a x'"
-  shows "iteratei_aux c f l \<sigma> \<le> iteratei_aux c f' l \<sigma>'"
+  shows "foldli l c f \<sigma> \<le> foldli l c f' \<sigma>'"
 proof -
   { fix l 
-    have "iteratei_aux c f l bot = bot" by (induct l) (auto simp: STRICT)
+    have "foldli l c f bot = bot" by (induct l) (auto simp: STRICT)
   } note [simp] = this
   { fix l 
-    have "iteratei_aux c f' l top = top" by (induct l) (auto simp: STRICT)
+    have "foldli l c f' top = top" by (induct l) (auto simp: STRICT)
   } note [simp] = this
 
   show ?thesis
@@ -158,58 +97,60 @@ qed
 lemma it_mono_aux_dres':
   assumes STRICT: "\<And>x. f x bot = bot" "\<And>x. f' x top = top"
   assumes A: "\<And>a x x'. x\<le>x' \<Longrightarrow> f a x \<le> f' a x'"
-  shows "iteratei_aux (dres_case True True c) f l \<sigma> 
-    \<le> iteratei_aux (dres_case True True c) f' l \<sigma>"
+  shows "foldli l (dres_case True True c) f \<sigma> 
+    \<le> foldli l (dres_case True True c) f' \<sigma>"
   apply (rule it_mono_aux)
   apply (simp_all split: dres.split_asm add: STRICT A)
   done
 
 lemma it_mono_aux_dres:
   assumes A: "\<And>a x. f a x \<le> f' a x"
-  shows "iteratei_aux (dres_case True True c) (\<lambda>x s. dbind s (f x)) l \<sigma> 
-    \<le> iteratei_aux (dres_case True True c) (\<lambda>x s. dbind s (f' x)) l \<sigma>"
+  shows "foldli l (dres_case True True c) (\<lambda>x s. dbind s (f x)) \<sigma> 
+    \<le> foldli l (dres_case True True c) (\<lambda>x s. dbind s (f' x)) \<sigma>"
   apply (rule it_mono_aux_dres')
   apply (simp_all)
   apply (rule dbind_mono)
   apply (simp_all add: A)
   done
   
-lemma listable_mono':
-  assumes L: "set_listable_iteratei \<alpha> invar it seq"
+lemma iteratei_mono':
+  assumes L: "set_iteratei \<alpha> invar it"
   assumes STRICT: "\<And>x. f x bot = bot" "\<And>x. f' x top = top"
   assumes A: "\<And>a x x'. x\<le>x' \<Longrightarrow> f a x \<le> f' a x'"
   assumes I: "invar s"
-  shows "it (dres_case True True c) f s \<sigma> 
-    \<le> it (dres_case True True c) f' s \<sigma>"
-  apply (unfold set_listable_iteratei.listable[OF L, OF I])
-  apply (rule it_mono_aux_dres')
-  apply (simp_all add: STRICT A)
-  done
+  shows "IT_tag it s (dres_case True True c) f \<sigma> 
+    \<le> IT_tag it s (dres_case True True c) f' \<sigma>"
+  proof -
+    from set_iteratei.iteratei_rule[OF L, OF I, unfolded set_iterator_foldli_conv]
+    obtain l0 where l0_props: "distinct l0" "\<alpha> s = set l0" "it s = foldli l0" by blast
+ 
+    from it_mono_aux_dres' [of f f' l0 c \<sigma>]
+    show ?thesis
+      unfolding IT_tag_def l0_props(3)
+      by (simp add: STRICT A)
+  qed
 
-lemma listable_mono:
-  assumes L: "set_listable_iteratei \<alpha> invar it seq"
+lemma iteratei_mono:
+  assumes L: "set_iteratei \<alpha> invar it"
   assumes A: "\<And>a x. f a x \<le> f' a x"
   assumes I: "invar s"
-  shows "(lift_set_iterator it s) 
-      (dres_case True True c) (\<lambda>x s. dbind s (f x)) \<sigma> 
-    \<le> (lift_set_iterator it s) 
-      (dres_case True True c) (\<lambda>x s. dbind s (f' x)) \<sigma>"
-  apply simp
-  apply (unfold set_listable_iteratei.listable[OF L, OF I])
-  apply (rule it_mono_aux_dres)
-  apply (simp_all add: A)
-  done
+  shows "IT_tag it s (dres_case True True c) (\<lambda>x s. dbind s (f x)) \<sigma> 
+    \<le> IT_tag it s (dres_case True True c) (\<lambda>x s. dbind s (f' x)) \<sigma>"
+ proof -
+    from set_iteratei.iteratei_rule[OF L, OF I, unfolded set_iterator_foldli_conv]
+    obtain l0 where l0_props: "distinct l0" "\<alpha> s = set l0" "it s = foldli l0" by blast
+ 
+    from it_mono_aux_dres [of f f' l0 c \<sigma>]
+    show ?thesis
+      unfolding IT_tag_def l0_props(3)
+      by (simp add: A)
+  qed
 
-lemma ls_it_listable: 
-  "set_listable_iteratei ls_\<alpha> ls_invar ls_iteratei ls_to_list"
-  apply (unfold_locales)
-  apply (simp add: ls_to_list_def)
-  apply (simp add: ls_correct)
-  apply (simp add: ls_iteratei_def iteratei_def ls_to_list_def)
-  done
-
-lemmas [refine_mono] = listable_mono[OF ls_it_listable]
-
-(* TODO: Prove other iterators from ICF as monotonic (via listable!) *)
+lemmas [refine_mono] = iteratei_mono[OF ls_iteratei_impl]
+lemmas [refine_mono] = iteratei_mono[OF lsi_iteratei_impl]
+lemmas [refine_mono] = iteratei_mono[OF rs_iteratei_impl]
+lemmas [refine_mono] = iteratei_mono[OF ahs_iteratei_impl]
+lemmas [refine_mono] = iteratei_mono[OF ias_iteratei_impl]
+lemmas [refine_mono] = iteratei_mono[OF ts_iteratei_impl]
   
 end

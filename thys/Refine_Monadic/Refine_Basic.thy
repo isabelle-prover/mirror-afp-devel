@@ -929,6 +929,13 @@ lemma RETURN_refine_sv[refine]:
   using assms
   by (auto dest: single_valuedD)
 
+lemma RETURN_SPEC_refine_sv:
+  assumes SV: "single_valued R"
+  assumes "\<exists>x'. (x,x')\<in>R \<and> \<Phi> x'"
+  shows "RETURN x \<le> \<Down>R (SPEC \<Phi>)"
+  using assms 
+  by (auto simp: pw_le_iff refine_pw_simps)
+
 lemma FAIL_refine[refine]: "X \<le> \<Down>R FAIL" by auto
 lemma SUCCEED_refine[refine]: "SUCCEED \<le> \<Down>R X'" by auto
 
@@ -1134,5 +1141,11 @@ lemma RETURN_ref_SPECD:
   using assms
   by (auto simp: pw_le_iff refine_pw_simps)
 
+lemma RETURN_ref_RETURND:
+  assumes "RETURN c \<le> \<Down>R (RETURN a)"
+  shows "(c,a)\<in>R"
+  using assms
+  apply (auto simp: pw_le_iff refine_pw_simps)
+  done
 
 end

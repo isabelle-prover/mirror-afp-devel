@@ -31,12 +31,12 @@ definition hs_dfs_step
     (Q,W) = S; 
     \<sigma>=hd W 
   in
-    ls_iterate (\<lambda>x (Q,W). 
+    ls_iteratei (post \<sigma>) (\<lambda>_. True) (\<lambda>x (Q,W). 
       if hs_memb x Q then 
         (Q,W) 
       else (hs_ins x Q,x#W)
-             ) 
-      (post \<sigma>) (Q, tl W)
+      ) 
+      (Q, tl W)
   "
 
 -- {* Convert post-function to relation *}

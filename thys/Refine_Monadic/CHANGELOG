@@ -1,5 +1,18 @@
 Changes of Refinement Framework since 2011-12-24:
 
+2012-04-23 Thomas Tuerk: Ordered FOREACH.
+
+2012-03-20 Thomas Tuerk: Adaption to changed iterator interface in Collection Framework
+
+2012-02-21
+  * Declared RETURN_SPEC_refine_sv as standard [refine]-rule.
+    Potential INCOMPATIBILITY.
+
+2012-02-20
+  * Modified automatic refinement: Using Method.assm_tac to discharge
+    by assumption. Potential INCOMPATIBILITY, but should be limited to very
+    rare cases, where one tried to work around the non-discharged assumption.
+
 2012-01-28
   * Added parameters to refine_transfer, refine_rcg, and refine_autoref.
     Usage:

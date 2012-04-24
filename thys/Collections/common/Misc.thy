@@ -1,12 +1,13 @@
 (*  Title:       Miscellaneous Definitions and Lemmas
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
-
+                 Thomas Tuerk <tuerk@in.tum.de>
 *)
 
 (*
   CHANGELOG:
-    2010-05-09: Removed AC, AI locales, they are superseeded by concepts from OrderedGroups
+    2010-05-09: Removed AC, AI locales, they are superseeded by concepts 
+                  from OrderedGroups
     2010-09-22: Merges with ext/Aux
 
 *)
@@ -14,7 +15,7 @@
 header {* Miscellaneous Definitions and Lemmas *}
 
 theory Misc
-imports Main "~~/src/HOL/Library/Multiset"
+imports Main "~~/src/HOL/Library/Multiset" "~~/src/HOL/ex/Quicksort"
 begin
 text_raw {*\label{thy:Misc}*}
 
@@ -108,8 +109,11 @@ subsection {* Sets *}
   lemma image_update[simp]: "x\<notin>A \<Longrightarrow> f(x:=n)`A = f`A"
     by auto
 
+  lemma set_union_code [code_unfold]:
+    "set xs \<union> set ys = set (xs @ ys)"
+    by auto
 
-  subsubsection {* Reasoning about finiteness *}
+  subsubsection {* Finite Sets *}
 
   lemma card_1_singletonI: "\<lbrakk>finite S; card S = 1; x\<in>S\<rbrakk> \<Longrightarrow> S={x}"
   proof (safe, rule ccontr)
@@ -123,6 +127,27 @@ subsection {* Sets *}
 
   lemma card_insert_disjoint': "\<lbrakk>finite A; x \<notin> A\<rbrakk> \<Longrightarrow> card (insert x A) - Suc 0 = card A"
     by (drule (1) card_insert_disjoint) auto
+
+  lemma card_eq_UNIV[simp]: "card (S::'a::finite set) = card (UNIV::'a set) \<longleftrightarrow> S=UNIV"
+  proof (auto)
+    fix x
+    assume A: "card S = card (UNIV::'a set)"
+    show "x\<in>S" proof (rule ccontr)
+      assume "x\<notin>S" hence "S\<subset>UNIV" by auto
+      with psubset_card_mono[of UNIV S] have "card S < card (UNIV::'a set)" by auto
+      with A show False by simp
+    qed
+  qed
+      
+  lemma card_eq_UNIV2[simp]: "card (UNIV::'a set) = card (S::'a::finite set) \<longleftrightarrow> S=UNIV"
+    using card_eq_UNIV[of S] by metis
+
+  lemma card_ge_UNIV[simp]: "card (UNIV::'a::finite set) \<le> card (S::'a set) \<longleftrightarrow> S=UNIV"
+    using card_mono[of "UNIV::'a::finite set" S, simplified]
+    by auto
+  
+  lemmas length_remdups_card = length_remdups_concat[of "[l]", simplified] for l
+
 
 
   lemma fs_contract: "fst ` { p | p. f (fst p) (snd p) \<in> S } = { a . \<exists>b. f a b \<in> S }"
@@ -199,6 +224,13 @@ subsection {* Sets *}
   (* Try (simp only: cset_fin_simps, fastforce intro: cset_fin_intros) when reasoning about finiteness of collected sets *)
   lemmas cset_fin_simps = Ex_prod_contract fs_contract[symmetric] image_Collect[symmetric]
   lemmas cset_fin_intros = finite_imageI finite_Collect inj_onI
+
+
+
+
+
+
+
 
 
 subsection {* Functions *}
@@ -1186,6 +1218,16 @@ declare Map.finite_dom_map_of [simp, intro!]
 lemma dom_const'[simp]: "dom (\<lambda>x. Some (f x)) = UNIV"
   by auto
 
+lemma restrict_map_eq :
+  "((m |` A) k = None) \<longleftrightarrow> (k \<notin> dom m \<inter> A)"  
+  "((m |` A) k = Some v) \<longleftrightarrow> (m k = Some v \<and> k \<in> A)"  
+unfolding restrict_map_def
+by (simp_all add: dom_def)
+
+
+definition "rel_of m P == {(k,v). m k = Some v \<and> P (k, v)}"
+lemma rel_of_empty[simp]: "rel_of Map.empty P = {}" 
+    by (auto simp add: rel_of_def)
 
 subsubsection "zip"
 text {* Removing unnecessary premise from @{thm [display] zip_append}*}
@@ -1372,6 +1414,417 @@ lemma list_collect_set_alt: "list_collect_set f l = \<Union>{ f (l!i) | i. i<len
 lemma list_collect_set_as_map: "list_collect_set f l = \<Union>set (map f l)"
   by (unfold list_collect_set_def) auto
 
+subsubsection {* Sorted List with aribitrary Relations *}
+
+inductive sorted_by_rel :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool" where
+  Nil [iff]: "sorted_by_rel R []"
+| Cons: "\<forall>y\<in>set xs. R x y \<Longrightarrow> sorted_by_rel R xs \<Longrightarrow> sorted_by_rel R (x # xs)"
+
+inductive_simps sorted_by_rel_Cons[iff] : "sorted_by_rel R (x # xs)"
+
+lemma sorted_by_rel_single [iff]:
+  "sorted_by_rel R [x]" by simp
+
+lemma sorted_by_rel_weaken :
+assumes R_weaken: "\<And>x y. \<lbrakk>x \<in> set l0; y \<in> set l0; R x y\<rbrakk> \<Longrightarrow> R' x y"
+    and sort: "sorted_by_rel R l0"
+shows "sorted_by_rel R' l0" 
+using assms
+by (induct l0) (simp_all)
+
+
+lemma sorted_by_rel_map :
+  "sorted_by_rel R (map f xs) = sorted_by_rel (\<lambda>x y. R (f x) (f y)) xs"
+by (induct xs) auto
+
+lemma sorted_by_rel_append :
+  "sorted_by_rel R (xs @ ys) =
+   (sorted_by_rel R xs \<and> sorted_by_rel R ys \<and>
+    (\<forall>x \<in> set xs. \<forall>y\<in> set ys. R x y))"
+by (induct xs) auto
+
+lemma sorted_by_rel_true [simp] :
+  "sorted_by_rel (\<lambda>_ _. True) l0"
+by (induct l0) (simp_all)
+
+lemma sorted_by_rel_linord [simp] :
+  "sorted_by_rel (\<lambda>(x::('a::{linorder})) y. x \<le> y) l0 \<longleftrightarrow> sorted l0"
+by (induct l0) (auto simp add: sorted_Cons)
+
+lemma sorted_by_rel_rev_linord [simp] :
+  "sorted_by_rel (\<lambda>(x::('a::{linorder})) y. x \<ge> y) l0 \<longleftrightarrow> sorted (rev l0)"
+by (induct l0) (auto simp add: sorted_Cons sorted_append)
+
+lemma sorted_by_rel_map_linord [simp] :
+  "sorted_by_rel (\<lambda>(x::('a::{linorder} \<times> 'b)) y. fst x \<le> fst y) l0 \<longleftrightarrow> sorted (map fst l0)"
+by (induct l0) (auto simp add: sorted_Cons sorted_append)
+
+lemma sorted_by_rel_map_rev_linord [simp] :
+  "sorted_by_rel (\<lambda>(x::('a::{linorder} \<times> 'b)) y. fst x \<ge> fst y) l0 \<longleftrightarrow> sorted (rev (map fst l0))"
+by (induct l0) (auto simp add: sorted_Cons sorted_append)
+
+subsection {* Quicksort by Relation *}
+
+text {* A functional implementation of quicksort on lists. It it similar to the 
+one in Isabelle/HOL's example directory. However, it uses tail-recursion for append and arbitrary
+relations. *}
+
+fun partition_rev :: "('a \<Rightarrow> bool) \<Rightarrow> ('a list \<times> 'a list) \<Rightarrow> 'a list \<Rightarrow> ('a list \<times> 'a list)" where
+   "partition_rev P (yes, no) [] = (yes, no)"
+ | "partition_rev P (yes, no) (x # xs) = 
+      partition_rev P (if P x then (x # yes, no) else (yes, x # no)) xs"
+
+lemma partition_rev_filter_conv :
+  "partition_rev P (yes, no) xs = (rev (filter P xs) @ yes,  rev (filter (Not \<circ> P) xs) @ no)"
+by (induct xs arbitrary: yes no) (simp_all)
+
+function quicksort_by_rel :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  "quicksort_by_rel R sl [] = sl"
+| "quicksort_by_rel R sl (x#xs) = 
+   (let (xs_s, xs_b) = partition_rev (\<lambda>y. R y x) ([],[]) xs in
+    quicksort_by_rel R (x # (quicksort_by_rel R sl xs_b)) xs_s)"
+by pat_completeness simp_all
+termination
+by (relation "measure (\<lambda>(_, _, xs). length xs)") 
+   (simp_all add: partition_rev_filter_conv less_Suc_eq_le)
+
+lemma quicksort_by_rel_remove_acc :
+  "quicksort_by_rel R sl xs = (quicksort_by_rel R [] xs @ sl)"
+proof (induct xs arbitrary: sl rule: measure_induct_rule[of "length"]) 
+  case (less xs)
+  note ind_hyp = this
+
+  show ?case
+  proof (cases xs)
+    case Nil thus ?thesis by simp
+  next
+    case (Cons x xs') note xs_eq[simp] = this
+
+    obtain xs1 xs2 where part_rev_eq[simp]: "partition_rev (\<lambda>y. R y x) ([], []) xs' = (xs1, xs2)"
+      by (rule PairE)
+
+    from part_rev_eq[symmetric]
+    have length_le: "length xs1 < length xs" "length xs2 < length xs"
+      unfolding partition_rev_filter_conv by (simp_all add: less_Suc_eq_le)
+    
+    note ind_hyp1a = ind_hyp[OF length_le(1), of "x # quicksort_by_rel R [] xs2"] 
+    note ind_hyp1b = ind_hyp[OF length_le(1), of "x # quicksort_by_rel R [] xs2 @ sl"] 
+    note ind_hyp2 = ind_hyp[OF length_le(2), of sl]
+
+    show ?thesis by (simp add: ind_hyp1a ind_hyp1b ind_hyp2)
+  qed
+qed
+
+lemma quicksort_by_rel_remove_acc_guared :
+  "sl \<noteq> [] \<Longrightarrow> quicksort_by_rel R sl xs = (quicksort_by_rel R [] xs @ sl)"
+by (metis quicksort_by_rel_remove_acc)
+
+lemma quicksort_by_rel_permutes [simp]:
+  "multiset_of (quicksort_by_rel R sl xs) = multiset_of (xs @ sl)"
+proof (induct xs arbitrary: sl rule: measure_induct_rule[of "length"]) 
+  case (less xs)
+  note ind_hyp = this
+
+  show ?case
+  proof (cases xs)
+    case Nil thus ?thesis by simp
+  next
+    case (Cons x xs') note xs_eq[simp] = this
+
+    obtain xs1 xs2 where part_rev_eq[simp]: "partition_rev (\<lambda>y. R y x) ([], []) xs' = (xs1, xs2)"
+      by (rule PairE)
+
+    from part_rev_eq[symmetric] have xs'_multi_eq : "multiset_of xs' = multiset_of xs1 + multiset_of xs2"
+      unfolding partition_rev_filter_conv
+      by (simp add: multiset_of_filter multiset_partition)
+
+    from part_rev_eq[symmetric]
+    have length_le: "length xs1 < length xs" "length xs2 < length xs"
+      unfolding partition_rev_filter_conv by (simp_all add: less_Suc_eq_le)
+    
+    note ind_hyp[OF length_le(1)] ind_hyp[OF length_le(2)]
+    thus ?thesis by (simp add: xs'_multi_eq union_assoc)
+  qed
+qed
+
+lemma set_quicksort_by_rel [simp]: "set (quicksort_by_rel R sl xs) = set (xs @ sl)"
+  by (simp add: set_count_greater_0)
+
+lemma sorted_by_rel_quicksort_by_rel:
+  fixes R:: "'x \<Rightarrow> 'x \<Rightarrow> bool"
+  assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
+      and trans_R: "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
+  shows "sorted_by_rel R (quicksort_by_rel R [] xs)"
+proof (induct xs rule: measure_induct_rule[of "length"]) 
+  case (less xs)
+  note ind_hyp = this
+
+  show ?case
+  proof (cases xs)
+    case Nil thus ?thesis by simp
+  next
+    case (Cons x xs') note xs_eq[simp] = this
+
+    obtain xs1 xs2 where part_rev_eq[simp]: "partition_rev (\<lambda>y. R y x) ([], []) xs' = (xs1, xs2)"
+      by (rule PairE)
+
+    from part_rev_eq[symmetric] have xs1_props: "\<And>y. y \<in> set xs1 \<Longrightarrow> (R y x)" and 
+                                     xs2_props: "\<And>y. y \<in> set xs2 \<Longrightarrow> \<not>(R y x)"
+      unfolding partition_rev_filter_conv
+      by simp_all
+
+    from xs2_props lin have xs2_props': "\<And>y. y \<in> set xs2 \<Longrightarrow> (R x y)" by blast
+    from xs2_props' xs1_props trans_R have xs1_props': 
+      "\<And>y1 y2. y1 \<in> set xs1 \<Longrightarrow> y2 \<in> set xs2 \<Longrightarrow> (R y1 y2)"
+      by metis
+
+    from part_rev_eq[symmetric]
+    have length_le: "length xs1 < length xs" "length xs2 < length xs"
+      unfolding partition_rev_filter_conv by (simp_all add: less_Suc_eq_le)
+    
+    note ind_hyps = ind_hyp[OF length_le(1)] ind_hyp[OF length_le(2)]
+    thus ?thesis 
+      by (simp add: quicksort_by_rel_remove_acc_guared sorted_by_rel_append Ball_def
+                    xs1_props xs2_props' xs1_props')
+  qed
+qed
+
+lemma sorted_quicksort_by_rel:
+  "sorted (quicksort_by_rel op\<le> [] xs)"
+unfolding sorted_by_rel_linord[symmetric]
+by (rule sorted_by_rel_quicksort_by_rel) auto
+
+lemma sort_quicksort_by_rel:
+  "sort = quicksort_by_rel op\<le> []"
+  apply (rule ext, rule properties_for_sort) 
+  apply(simp_all add: sorted_quicksort_by_rel)
+done
+
+
+subsection {* Mergesort by Relation *}
+
+text {* A functional implementation of mergesort on lists. It it similar to the 
+one in Isabelle/HOL's example directory. However, it uses tail-recursion for append and arbitrary
+relations. *}
+
+subsection {* Quicksort by Relation *}
+
+text {* A functional implementation of quicksort on lists. It it similar to the 
+one in Isabelle/HOL's example directory. However, it uses tail-recursion for append and arbitrary
+relations. *}
+
+fun mergesort_by_rel_split :: "('a list \<times> 'a list) \<Rightarrow> 'a list \<Rightarrow> ('a list \<times> 'a list)" where
+   "mergesort_by_rel_split (xs1, xs2) [] = (xs1, xs2)"
+ | "mergesort_by_rel_split (xs1, xs2) [x] = (x # xs1, xs2)"
+ | "mergesort_by_rel_split (xs1, xs2) (x1 # x2 # xs) = 
+    mergesort_by_rel_split (x1 # xs1, x2 # xs2) xs" 
+
+lemma list_induct_first2 [consumes 0, case_names Nil Sing Cons2]:
+assumes "P []" "\<And>x. P [x]" "\<And>x1 x2 xs. P xs \<Longrightarrow> P (x1 # x2 #xs)"
+shows "P xs"
+proof (induct xs rule: length_induct)
+  case (1 xs) note ind_hyp = this
+
+  show ?case
+  proof (cases xs)
+    case Nil thus ?thesis using assms(1) by simp
+  next
+    case (Cons x1 xs') note xs_eq[simp] = this
+    thus ?thesis
+    proof (cases xs')
+      case Nil thus ?thesis using assms(2) by simp
+    next
+      case (Cons x2 xs'') note xs'_eq[simp] = this
+      show ?thesis 
+        by (simp add: ind_hyp assms(3))
+    qed
+  qed
+qed
+
+lemma mergesort_by_rel_split_length :
+  "length (fst (mergesort_by_rel_split (xs1, xs2) xs)) = length xs1 + (length xs div 2) + (length xs mod 2) \<and>
+   length (snd (mergesort_by_rel_split (xs1, xs2) xs)) = length xs2 + (length xs div 2)"
+by (induct xs arbitrary: xs1 xs2 rule: list_induct_first2)
+   (simp_all)
+
+lemma multiset_of_mergesort_by_rel_split [simp]:
+  "multiset_of (fst (mergesort_by_rel_split (xs1, xs2) xs)) +
+   multiset_of (snd (mergesort_by_rel_split (xs1, xs2) xs)) = 
+   multiset_of xs + multiset_of xs1 + multiset_of xs2"
+  apply (induct xs arbitrary: xs1 xs2 rule: list_induct_first2)
+  apply (simp_all add: ac_simps)
+done
+
+fun mergesort_by_rel_merge :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
+where
+  "mergesort_by_rel_merge R (x#xs) (y#ys) =
+     (if R x y then x # mergesort_by_rel_merge R xs (y#ys) else y # mergesort_by_rel_merge R (x#xs) ys)"
+| "mergesort_by_rel_merge R xs [] = xs"
+| "mergesort_by_rel_merge R [] ys = ys"
+
+declare mergesort_by_rel_merge.simps [simp del]
+
+lemma mergesort_by_rel_merge_simps[simp] :
+  "mergesort_by_rel_merge R (x#xs) (y#ys) =
+     (if R x y then x # mergesort_by_rel_merge R xs (y#ys) else y # mergesort_by_rel_merge R (x#xs) ys)"
+  "mergesort_by_rel_merge R xs [] = xs"
+  "mergesort_by_rel_merge R [] ys = ys"
+  apply (simp_all add: mergesort_by_rel_merge.simps)
+  apply (cases ys) 
+  apply (simp_all add: mergesort_by_rel_merge.simps)
+done
+
+lemma mergesort_by_rel_merge_induct [consumes 0, case_names Nil1 Nil2 Cons1 Cons2]:
+assumes "\<And>xs::'a list. P xs []" "\<And>ys::'b list. P [] ys"
+        "\<And>x xs y ys. R x y \<Longrightarrow> P xs (y # ys) \<Longrightarrow> P (x # xs) (y # ys)"
+        "\<And>x xs y ys. \<not>(R x y) \<Longrightarrow> P (x # xs) ys \<Longrightarrow> P (x # xs) (y # ys)"
+shows "P xs ys"
+proof (induct xs arbitrary: ys)
+  case Nil thus ?case using assms(2) by simp
+next
+  case (Cons x xs) note P_xs = this
+  show ?case
+  proof (induct ys)
+    case Nil thus ?case using assms(1) by simp
+  next
+    case (Cons y ys) note P_x_xs_ys = this
+    show ?case using assms(3,4)[of x y xs ys] P_x_xs_ys P_xs by metis
+  qed
+qed
+
+lemma multiset_of_mergesort_by_rel_merge [simp]:
+  "multiset_of (mergesort_by_rel_merge R xs ys) = multiset_of xs + multiset_of ys"
+by (induct R xs ys rule: mergesort_by_rel_merge.induct) (simp_all add: ac_simps)
+
+lemma set_mergesort_by_rel_merge [simp]:
+  "set (mergesort_by_rel_merge R xs ys) = set xs \<union> set ys"
+  by (induct R xs ys rule: mergesort_by_rel_merge.induct) auto
+
+lemma sorted_by_rel_mergesort_by_rel_merge [simp]:
+  assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
+      and trans_R: "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
+  shows  "sorted_by_rel R (mergesort_by_rel_merge R xs ys) \<longleftrightarrow> 
+          sorted_by_rel R xs \<and> sorted_by_rel R ys"
+proof (induct xs ys rule: mergesort_by_rel_merge_induct[where R = R]) 
+  case Nil1 thus ?case by simp
+next
+  case Nil2 thus ?case by simp
+next
+  case (Cons1 x xs y ys) thus ?case 
+    by (simp add: Ball_def) (metis trans_R)
+next
+  case (Cons2 x xs y ys) thus ?case 
+    apply (auto simp add: Ball_def)
+    apply (metis lin)
+    apply (metis lin trans_R)
+  done
+qed
+
+function mergesort_by_rel :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list"
+where
+  "mergesort_by_rel R xs = 
+    (if length xs < 2 then xs else
+     (mergesort_by_rel_merge R 
+       (mergesort_by_rel R (fst (mergesort_by_rel_split ([], []) xs)))
+       (mergesort_by_rel R (snd (mergesort_by_rel_split ([], []) xs)))))"
+by auto
+termination
+  apply (relation "measure (\<lambda>(_, xs). length xs)")
+  apply (simp_all add: mergesort_by_rel_split_length)
+proof -
+  fix xs :: "'a list"
+  assume "\<not>(length xs < 2)"
+  then obtain x1 x2 xs' where xs_eq: "xs = x1 # x2 # xs'"
+    apply (cases xs, simp, rename_tac x1 xs0) 
+    apply (case_tac xs0, simp, rename_tac x2 xs')
+    apply auto
+  done 
+  show "length xs div 2 + length xs mod 2 < length xs" by (simp add: xs_eq)
+qed
+
+declare mergesort_by_rel.simps [simp del]
+
+lemma mergesort_by_rel_simps [simp, code] :
+  "mergesort_by_rel R [] = []"
+  "mergesort_by_rel R [x] = [x]"
+  "mergesort_by_rel R (x1 # x2 # xs) = 
+   (let (xs1, xs2) = (mergesort_by_rel_split ([x1], [x2]) xs) in
+   mergesort_by_rel_merge R (mergesort_by_rel R xs1) (mergesort_by_rel R xs2))"
+apply (simp add: mergesort_by_rel.simps)
+apply (simp add: mergesort_by_rel.simps)
+apply (simp add: mergesort_by_rel.simps[of _ "x1 # x2 # xs"] split: prod.splits)
+done
+
+lemma mergesort_by_rel_permutes [simp]:
+  "multiset_of (mergesort_by_rel R xs) = multiset_of xs"
+proof (induct xs rule: length_induct)
+  case (1 xs) note ind_hyp = this
+
+  show ?case
+  proof (cases xs)
+    case Nil thus ?thesis by simp
+  next
+    case (Cons x1 xs') note xs_eq[simp] = this
+    show ?thesis
+    proof (cases xs')
+      case Nil thus ?thesis by simp
+    next
+      case (Cons x2 xs'') note xs'_eq[simp] = this
+
+      have "length (fst (mergesort_by_rel_split ([], []) xs)) < length xs" 
+           "length (snd (mergesort_by_rel_split ([], []) xs)) < length xs" 
+        by (simp_all add: mergesort_by_rel_split_length)
+      with ind_hyp show ?thesis 
+        unfolding mergesort_by_rel.simps[of _ xs]
+        by (simp add: ac_simps)
+    qed
+  qed
+qed
+
+lemma set_mergesort_by_rel [simp]: "set (mergesort_by_rel R xs) = set xs"
+  by (simp add: set_count_greater_0)
+
+lemma sorted_by_rel_mergesort_by_rel:
+  fixes R:: "'x \<Rightarrow> 'x \<Rightarrow> bool"
+  assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
+      and trans_R: "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
+  shows "sorted_by_rel R (mergesort_by_rel R xs)"
+proof (induct xs rule: measure_induct_rule[of "length"]) 
+  case (less xs)
+  note ind_hyp = this
+
+  show ?case
+  proof (cases xs)
+    case Nil thus ?thesis by simp
+  next
+    case (Cons x xs') note xs_eq[simp] = this
+    thus ?thesis
+    proof (cases xs')
+      case Nil thus ?thesis by simp
+    next
+      case (Cons x2 xs'') note xs'_eq[simp] = this
+
+      have "length (fst (mergesort_by_rel_split ([], []) xs)) < length xs" 
+           "length (snd (mergesort_by_rel_split ([], []) xs)) < length xs" 
+        by (simp_all add: mergesort_by_rel_split_length)
+      with ind_hyp show ?thesis 
+        unfolding mergesort_by_rel.simps[of _ xs]
+        by (simp add: sorted_by_rel_mergesort_by_rel_merge[OF lin trans_R])
+    qed
+  qed
+qed
+
+lemma sorted_mergesort_by_rel:
+  "sorted (mergesort_by_rel op\<le> xs)"
+unfolding sorted_by_rel_linord[symmetric]
+by (rule sorted_by_rel_mergesort_by_rel) auto
+
+lemma sort_mergesort_by_rel:
+  "sort = mergesort_by_rel op\<le>"
+  apply (rule ext, rule properties_for_sort) 
+  apply(simp_all add: sorted_mergesort_by_rel)
+done
+
 
 subsubsection {* Miscellaneous *}
   lemma length_compl_induct[case_names Nil Cons]: "\<lbrakk>P []; !! e l . \<lbrakk>!! ll . length ll <= length l \<Longrightarrow> P ll\<rbrakk> \<Longrightarrow> P (e#l)\<rbrakk> \<Longrightarrow> P l"
@@ -1531,7 +1984,7 @@ next
 qed
 
 
-    (* Places here because dependency on xy_in_set_cases *)
+    (* Placed here because it depends on xy_in_set_cases *)
 lemma distinct_map_eq: "\<lbrakk> distinct (List.map f l); f x = f y; x\<in>set l; y\<in>set l \<rbrakk> \<Longrightarrow> x=y"
   by (erule (2) xy_in_set_cases) auto
 
@@ -1638,6 +2091,45 @@ lemma replicate_Suc_conv_snoc:
   "replicate (Suc n) x = replicate n x @ [x]"
 by (metis replicate_Suc replicate_append_same)
 
+
+lemma filter_nth_ex_nth:
+  assumes "n < length (filter P xs)"
+  shows "\<exists>m. n \<le> m \<and> m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
+using assms
+proof(induct xs rule: rev_induct)
+  case Nil thus ?case by simp
+next
+  case (snoc x xs)
+  show ?case
+  proof(cases "P x")
+    case False[simp]
+    from `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
+    hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)" by(rule snoc)
+    thus ?thesis by(auto simp add: nth_append)
+  next
+    case True[simp]
+    show ?thesis
+    proof(cases "n = length (filter P xs)")
+      case False
+      with `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
+      moreover hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
+        by(rule snoc)
+      ultimately show ?thesis by(auto simp add: nth_append)
+    next
+      case True[simp]
+      hence "filter P (xs @ [x]) ! n = (xs @ [x]) ! length xs" by simp
+      moreover have "length xs < length (xs @ [x])" by simp
+      moreover have "length xs \<ge> n" by simp
+      moreover have "filter P (take (length xs) (xs @ [x])) = take n (filter P (xs @ [x]))" by simp
+      ultimately show ?thesis by blast
+    qed
+  qed
+qed
+
+lemma set_map_filter: 
+  "set (List.map_filter g xs) = {y. \<exists>x. x \<in> set xs \<and> g x = Some y}"
+  by (induct xs) (auto simp add: List.map_filter_def set_eq_iff)
+
 subsection {* Induction on nat *}
   lemma nat_compl_induct[case_names 0 Suc]: "\<lbrakk>P 0; !! n . ALL nn . nn <= n \<longrightarrow> P nn \<Longrightarrow> P (Suc n)\<rbrakk> \<Longrightarrow> P n"
     apply(induct_tac n rule: nat_less_induct)
@@ -1695,6 +2187,41 @@ subsection {* Definite and indefinite description *}
   lemma some_elem[simp]: "S\<noteq>{} \<Longrightarrow> (SOME x. x\<in>S) \<in> S"
     by (auto intro: someI)
   
+subsubsection{* Hilbert Choice with option *}
+
+definition Eps_Opt where
+  "Eps_Opt P = (if (\<exists>x. P x) then Some (SOME x. P x) else None)"
+
+lemma some_opt_eq_trivial[simp] :
+  "Eps_Opt (\<lambda>y. y = x) = Some x"
+unfolding Eps_Opt_def by simp
+
+lemma some_opt_sym_eq_trivial[simp] :
+  "Eps_Opt (op = x) = Some x"
+unfolding Eps_Opt_def by simp
+
+lemma some_opt_false_trivial[simp] :
+  "Eps_Opt (\<lambda>_. False) = None"
+unfolding Eps_Opt_def by simp
+
+lemma Eps_Opt_eq_None[simp] :
+  "Eps_Opt P = None \<longleftrightarrow> \<not>(Ex P)"
+unfolding Eps_Opt_def by simp
+
+lemma Eps_Opt_eq_Some_implies :
+  "Eps_Opt P = Some x \<Longrightarrow> P x"
+unfolding Eps_Opt_def 
+by (metis option.inject option.simps(2) someI_ex)
+
+lemma Eps_Opt_eq_Some :
+assumes P_prop: "\<And>x'. P x \<Longrightarrow> P x' \<Longrightarrow> x' = x"
+shows "Eps_Opt P = Some x \<longleftrightarrow> P x"
+using P_prop
+unfolding Eps_Opt_def 
+by (metis option.inject option.simps(2) someI_ex)
+
+
+
 
 subsection {* Directed Graphs and Relations *}
   subsubsection "Reflexive-Transitive Closure"
@@ -2074,70 +2601,189 @@ subsection "Maps"
     by (rule le_funI) (simp add: restrict_map_def)
 
 
-subsection "Finite Sets"
-  lemma card_eq_UNIV[simp]: "card (S::'a::finite set) = card (UNIV::'a set) \<longleftrightarrow> S=UNIV"
-  proof (auto)
-    fix x
-    assume A: "card S = card (UNIV::'a set)"
-    show "x\<in>S" proof (rule ccontr)
-      assume "x\<notin>S" hence "S\<subset>UNIV" by auto
-      with psubset_card_mono[of UNIV S] have "card S < card (UNIV::'a set)" by auto
-      with A show False by simp
-    qed
-  qed
-      
-  lemma card_eq_UNIV2[simp]: "card (UNIV::'a set) = card (S::'a::finite set) \<longleftrightarrow> S=UNIV"
-    using card_eq_UNIV[of S] by metis
 
-  lemma card_ge_UNIV[simp]: "card (UNIV::'a::finite set) \<le> card (S::'a set) \<longleftrightarrow> S=UNIV"
-    using card_mono[of "UNIV::'a::finite set" S, simplified]
+subsection{* Connection between Maps and Sets of Key-Value Pairs *}
+
+definition map_to_set where
+  "map_to_set m = {(k, v) . m k = Some v}"
+
+definition set_to_map where
+  "set_to_map S k = Eps_Opt (\<lambda>v. (k, v) \<in> S)"
+
+lemma set_to_map_simp :
+assumes inj_on_fst: "inj_on fst S"
+shows "(set_to_map S k = Some v) \<longleftrightarrow> (k, v) \<in> S"
+proof (cases "\<exists>v. (k, v) \<in> S")
+  case True 
+  note kv_ex = this
+  then obtain v' where kv'_in: "(k, v') \<in> S" by blast
+
+  with inj_on_fst have kv''_in: "\<And>v''. (k, v'') \<in> S \<longleftrightarrow> v' = v''"
+    unfolding inj_on_def Ball_def
     by auto
-  
-  lemmas length_remdups_card = length_remdups_concat[of "[l]", simplified] for l
 
-
-
-
-lemma set_union_code [code_unfold]:
-  "set xs \<union> set ys = set (xs @ ys)"
-by auto
-
-
-lemma filter_nth_ex_nth:
-  assumes "n < length (filter P xs)"
-  shows "\<exists>m. n \<le> m \<and> m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
-using assms
-proof(induct xs rule: rev_induct)
-  case Nil thus ?case by simp
+  show ?thesis
+    unfolding set_to_map_def 
+    by (simp add: kv_ex kv''_in)
 next
-  case (snoc x xs)
-  show ?case
-  proof(cases "P x")
-    case False[simp]
-    from `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
-    hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)" by(rule snoc)
-    thus ?thesis by(auto simp add: nth_append)
+  case False
+  hence kv''_nin: "\<And>v''. (k, v'') \<notin> S" by simp
+  thus ?thesis
+    by (simp add: set_to_map_def)
+qed
+
+lemma inj_on_fst_map_to_set :
+  "inj_on fst (map_to_set m)"
+unfolding map_to_set_def inj_on_def by simp
+
+lemma map_to_set_inverse :
+   "set_to_map (map_to_set m) = m"
+proof
+  fix k
+  show "set_to_map (map_to_set m) k = m k"
+  proof (cases "m k")
+    case None note mk_eq = this
+    hence "\<And>v. (k, v) \<notin> map_to_set m" 
+      unfolding map_to_set_def by simp
+    with set_to_map_simp [OF inj_on_fst_map_to_set, of m k]
+    show ?thesis unfolding mk_eq by auto
   next
-    case True[simp]
-    show ?thesis
-    proof(cases "n = length (filter P xs)")
-      case False
-      with `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
-      moreover hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
-        by(rule snoc)
-      ultimately show ?thesis by(auto simp add: nth_append)
-    next
-      case True[simp]
-      hence "filter P (xs @ [x]) ! n = (xs @ [x]) ! length xs" by simp
-      moreover have "length xs < length (xs @ [x])" by simp
-      moreover have "length xs \<ge> n" by simp
-      moreover have "filter P (take (length xs) (xs @ [x])) = take n (filter P (xs @ [x]))" by simp
-      ultimately show ?thesis by blast
-    qed
+    case (Some v) note mk_eq = this
+    hence "(k, v) \<in> map_to_set m" 
+      unfolding map_to_set_def by simp
+    with set_to_map_simp [OF inj_on_fst_map_to_set, of m k v]
+    show ?thesis unfolding mk_eq by auto
   qed
 qed
 
+lemma set_to_map_inverse :
+assumes inj_on_fst_S: "inj_on fst S"
+shows "map_to_set (set_to_map S) = S"
+proof (rule set_eqI)
+  fix kv
+  from set_to_map_simp [OF inj_on_fst_S, of "fst kv" "snd kv"]
+  show "(kv \<in> map_to_set (set_to_map S)) = (kv \<in> S)"
+    unfolding map_to_set_def
+    by auto
+qed
 
+lemma map_to_set_empty[simp]: "map_to_set empty = {}"
+  unfolding map_to_set_def by simp
+
+lemma set_to_map_empty[simp]: "set_to_map {} = empty"
+  unfolding set_to_map_def[abs_def] by simp
+
+lemma map_to_set_empty_iff: "map_to_set m = {} \<longleftrightarrow> m = Map.empty"
+                            "{} = map_to_set m \<longleftrightarrow> m = Map.empty"
+  unfolding map_to_set_def by auto
+
+lemma set_to_map_empty_iff: "set_to_map S = Map.empty \<longleftrightarrow> S = {}" (is ?T1)
+                            "Map.empty = set_to_map S \<longleftrightarrow> S = {}" (is ?T2)
+proof -
+  show T1: ?T1
+    apply (simp only: set_eq_iff) 
+    apply (simp only: fun_eq_iff) 
+    apply (simp add: set_to_map_def)
+    apply auto
+  done
+  from T1 show ?T2 by auto
+qed
+
+lemma map_to_set_upd[simp]: "map_to_set (m (k \<mapsto> v)) = insert (k, v) (map_to_set m - {(k, v') |v'. True})"
+  unfolding map_to_set_def 
+  apply (simp add: set_eq_iff)
+  apply metis
+done
+
+lemma set_to_map_insert: 
+assumes k_nin: "fst kv \<notin> fst ` S"
+shows "set_to_map (insert kv S) = (set_to_map S) (fst kv \<mapsto> snd kv)"
+proof 
+  fix k'
+  obtain k v where kv_eq[simp]: "kv = (k, v)" by (rule PairE)
+
+  from k_nin have k_nin': "\<And>v'. (k, v') \<notin> S" 
+    by (auto simp add: image_iff Ball_def)
+
+  show "set_to_map (insert kv S) k' = (set_to_map S(fst kv \<mapsto> snd kv)) k'"
+    by (simp add: set_to_map_def k_nin')
+qed
+
+lemma map_to_set_dom :
+  "dom m = fst ` (map_to_set m)"
+unfolding dom_def map_to_set_def
+by (auto simp add: image_iff)
+
+lemma map_to_set_ran :
+  "ran m = snd ` (map_to_set m)"
+unfolding ran_def map_to_set_def
+by (auto simp add: image_iff)
+
+lemma set_to_map_dom :
+  "dom (set_to_map S) = fst ` S"
+unfolding set_to_map_def[abs_def] dom_def
+by (auto simp add: image_iff Bex_def)
+
+lemma set_to_map_ran :
+  "ran (set_to_map S) \<subseteq> snd ` S"
+unfolding set_to_map_def[abs_def] ran_def subset_iff
+by (auto simp add: image_iff Bex_def)
+   (metis Eps_Opt_eq_Some)
+
+lemma finite_map_to_set:
+"finite (map_to_set m) = finite (dom m)"
+unfolding map_to_set_def map_to_set_dom
+  apply (intro iffI finite_imageI)
+  apply assumption
+  apply (rule finite_imageD[of fst])
+  apply assumption
+  apply (simp add: inj_on_def)
+done
+
+lemma card_map_to_set :
+  "card (map_to_set m) = card (dom m)"
+unfolding map_to_set_def map_to_set_dom
+  apply (rule card_image[symmetric])
+  apply (simp add: inj_on_def)
+done
+
+lemma map_of_map_to_set :
+"distinct (map fst l) \<Longrightarrow>
+ map_of l = m \<longleftrightarrow> set l = map_to_set m"
+proof (induct l arbitrary: m)
+  case Nil thus ?case by (simp add: map_to_set_empty_iff) blast
+next
+  case (Cons kv l m)
+  obtain k v where kv_eq[simp]: "kv = (k, v)" by (rule PairE)
+
+  from Cons(2) have dist_l: "distinct (map fst l)" and kv'_nin: "\<And>v'. (k, v') \<notin> set l"
+    by (auto simp add: image_iff)
+  note ind_hyp = Cons(1)[OF dist_l]
+                
+  from kv'_nin have l_eq: "set (kv # l) = map_to_set m \<longleftrightarrow> (set l = map_to_set (m (k := None))) \<and> m k = Some v"
+    apply (simp add: map_to_set_def restrict_map_def set_eq_iff)
+    apply (auto)
+    apply (metis)
+    apply (metis option.inject)
+  done
+
+  from kv'_nin have m_eq: "map_of (kv # l) = m \<longleftrightarrow> map_of l = (m (k := None)) \<and> m k = Some v"
+    apply (simp add: fun_eq_iff restrict_map_def map_of_eq_None_iff image_iff Ball_def)
+    apply metis
+  done
+
+  show ?case
+    unfolding m_eq l_eq 
+    using ind_hyp[of "m (k := None)"] 
+    by metis
+qed
+
+lemma map_to_set_map_of :
+"distinct (map fst l) \<Longrightarrow> map_to_set (map_of l) = set l"
+by (metis map_of_map_to_set)
+
+
+subsection {* Orderings *}
 
 lemma (in order) min_arg_le[simp]:
   "n \<le> min m n \<longleftrightarrow> min m n = n" 
@@ -2150,8 +2796,13 @@ lemma (in linorder) min_arg_not_ge[simp]:
   by (auto simp: min_def)
 
 lemma (in linorder) min_eq_arg[simp]: 
-  " min m n = m \<longleftrightarrow> m\<le>n"
-  " min m n = n \<longleftrightarrow> n\<le>m"
+  "min m n = m \<longleftrightarrow> m\<le>n"
+  "min m n = n \<longleftrightarrow> n\<le>m"
   by (auto simp: min_def)
+
+lemma min_simps[simp]:
+  "a<(b::'a::order) \<Longrightarrow> min a b = a"
+  "b<(a::'a::order) \<Longrightarrow> min a b = b"
+  by (auto simp add: min_def dest: less_imp_le)
 
 end

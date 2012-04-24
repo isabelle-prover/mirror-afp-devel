@@ -381,7 +381,7 @@ extra-history =
 
 [Collections]
 title = Collections Framework
-author = Peter Lammich <mailto:peter.lammich@uni-muenster.de>
+author = Peter Lammich <mailto:peter.lammich@in.tum.de>, Andreas Lochbihler, Thomas Tuerk
 date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
@@ -399,6 +399,7 @@ extra-history =
                 MapSpec: Added operations: sng, isSng, iterate_rule_insertP, bexists, size, size_abort, restrict, 
                           map_image_filter, map_value_image_filter
                 Some maintenance changes
+  [2012-04-25]: New iterator foundation by Tuerk. Various maintenance changes.
 
 [FileRefinement]
 title = File Refinement

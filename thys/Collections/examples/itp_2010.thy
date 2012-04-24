@@ -1,4 +1,4 @@
-header {* \chapter{Examples} \label{ch:examples} \isaheader{Examples from ITP-2010 slides} *}
+header {* \isaheader{Examples from ITP-2010 slides} *}
 theory itp_2010
 imports "../Collections"
 begin
@@ -63,7 +63,7 @@ export_code hs_seti in SML file -
 
   -- "Generic algorithm"
   fun (in StdSetDefs) set_i2 where
-    "set_i2 [] = empty" |
+    "set_i2 [] = empty ()" |
     "set_i2 (a#l) = (ins a (set_i2 l))"
 
   -- "Correct implementation of ca"
@@ -140,23 +140,23 @@ text {*
 
   locale MyContextDefs =
     StdSetDefs ops for ops :: "(nat,'s,'more) set_ops_scheme" +
-    fixes iterate :: "('s,nat,nat\<times>nat) iterator"
-    fixes iterate' :: "('s,nat,'s) iterator"
+    fixes iterate :: "'s => (nat,nat\<times>nat) set_iterator"
+    fixes iterate' :: "'s \<Rightarrow> (nat,'s) set_iterator"
   begin
     definition avg_aux :: "'s \<Rightarrow> nat\<times>nat" 
       where
-      "avg_aux s == iterate (\<lambda>x (c,s). (c+1, s+x)) s (0,0)"
+      "avg_aux s == iterate s (\<lambda>_. True) (\<lambda>x (c,s). (c+1, s+x)) (0,0)"
 
     definition "avg s == case avg_aux s of (c,s) \<Rightarrow> s div c"
 
     definition "filter_le_avg s == let a=avg s in
-      iterate' (\<lambda>x s. if x\<le>a then ins x s else s) s empty"
+      iterate' s (\<lambda>_. True) (\<lambda>x s. if x\<le>a then ins x s else s) (empty ())"
   end
 
   locale MyContext = MyContextDefs ops iterate iterate' +
     StdSet ops +
-    it!: set_iterate \<alpha> invar iterate +
-    it'!: set_iterate \<alpha> invar iterate'
+    it!: set_iteratei \<alpha> invar iterate +
+    it'!: set_iteratei \<alpha> invar iterate'
     for ops iterate iterate'
   begin
     lemma avg_aux_correct: "invar s \<Longrightarrow> avg_aux s = (card (\<alpha> s), \<Sum>(\<alpha> s) )"
@@ -188,10 +188,10 @@ text {*
       done
   end
 
-  interpretation hs_ctx: MyContext hs_ops hs_iterate hs_iterate
+  interpretation hs_ctx: MyContext hs_ops hs_iteratei hs_iteratei
     by unfold_locales
 
-  definition "test_hs == hs_ins (1::nat) (hs_ins 10 (hs_ins 11 hs_empty))"
+  definition "test_hs == hs_ins (1::nat) (hs_ins 10 (hs_ins 11 (hs_empty ())))"
   definition "testfun_hs == hs_ctx.filter_le_avg"
 
   definition "hs_avg_aux == hs_ctx.avg_aux"
@@ -204,10 +204,10 @@ text {*
   lemmas [code] = hs_ctx.filter_le_avg_def[folded hs_ctx_defs]
 
 
-  interpretation rs_ctx: MyContext rs_ops rs_iterate rs_iterate
+  interpretation rs_ctx: MyContext rs_ops rs_iteratei rs_iteratei
     by unfold_locales
 
-  definition "test_rs == rs_ins (1::nat) (rs_ins 10 (rs_ins 11 rs_empty))"
+  definition "test_rs == rs_ins (1::nat) (rs_ins 10 (rs_ins 11 (rs_empty ())))"
   definition "testfun_rs == rs_ctx.filter_le_avg"
 
   definition "rs_avg_aux == rs_ctx.avg_aux"
@@ -232,18 +232,18 @@ text {*
   abbreviation "my_invar == hs_invar"
   abbreviation "my_empty == hs_empty"
   abbreviation "my_ins == hs_ins"
-  abbreviation "my_iterate == hs_iterate"
+  abbreviation "my_iterate == hs_iteratei"
   lemmas my_correct = hs_correct
   lemmas my_iterate_rule_P = hs.iterate_rule_P
 
   definition avg_aux :: "nat my_set \<Rightarrow> nat\<times>nat" 
     where
-    "avg_aux s == my_iterate (\<lambda>x (c,s). (c+1, s+x)) s (0,0)"
+    "avg_aux s == my_iterate s (\<lambda>_. True) (\<lambda>x (c,s). (c+1, s+x)) (0,0)"
 
   definition "avg s == case avg_aux s of (c,s) \<Rightarrow> s div c"
 
   definition "filter_le_avg s == let a=avg s in
-    my_iterate (\<lambda>x s. if x\<le>a then my_ins x s else s) s my_empty"
+    my_iterate s (\<lambda>_. True) (\<lambda>x s. if x\<le>a then my_ins x s else s) (my_empty ())"
 
   lemma avg_aux_correct: "my_invar s \<Longrightarrow> avg_aux s = (card (my_\<alpha> s), \<Sum>(my_\<alpha> s) )"
     apply (unfold avg_aux_def)
@@ -274,7 +274,7 @@ text {*
     done
 
 
-  definition "test_set == my_ins (1::nat) (my_ins 2 (my_ins 3 my_empty))"
+  definition "test_set == my_ins (1::nat) (my_ins 2 (my_ins 3 (my_empty ())))"
 
   export_code avg_aux avg filter_le_avg test_set in SML module_name Test file -
 

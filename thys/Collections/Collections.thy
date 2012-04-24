@@ -7,26 +7,24 @@ theory Collections
 imports
   "common/Misc"
 (* Interfaces *)
-  SetSpec
-  OrderedSet
-  MapSpec
-  OrderedMap
-  ListSpec
-  AnnotatedListSpec
-  PrioSpec
-  PrioUniqueSpec
+  "spec/SetSpec"
+  "spec/MapSpec"
+  "spec/ListSpec"
+  "spec/AnnotatedListSpec"
+  "spec/PrioSpec"
+  "spec/PrioUniqueSpec"
 (* Implementations *)
-  SetStdImpl
-  MapStdImpl
-  StdInst
-  RecordSetImpl
-  RecordMapImpl
-  Fifo
-  BinoPrioImpl
-  SkewPrioImpl
-  FTAnnotatedListImpl
-  FTPrioImpl
-  FTPrioUniqueImpl
+  "impl/SetStdImpl"
+  "impl/MapStdImpl"
+  "gen_algo/StdInst"
+  "impl/RecordSetImpl"
+  "impl/RecordMapImpl"
+  "impl/Fifo"
+  "impl/BinoPrioImpl"
+  "impl/SkewPrioImpl"
+  "impl/FTAnnotatedListImpl"
+  "impl/FTPrioImpl"
+  "impl/FTPrioUniqueImpl"
 
 (* Miscellanneous*)
   DatRef

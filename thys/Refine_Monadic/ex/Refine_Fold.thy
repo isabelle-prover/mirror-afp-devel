@@ -2,7 +2,6 @@ header {* \isaheader{Fold-Combinator} *}
 theory Refine_Fold
 imports "../Refine" "../Collection_Bindings"
 begin
-
   text {*
     In this theory, we explore the usage of the partial-function package, and
     define a function with a higher-order argument. As example, we choose a

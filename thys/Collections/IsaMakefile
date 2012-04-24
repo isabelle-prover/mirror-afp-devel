@@ -13,7 +13,6 @@ images:
 
 all: images test userguide
 
-
 ## global settings
 SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
@@ -35,14 +34,18 @@ MAXTIME = 1200
 
 $(SESSION-NAME): $(OUT)/$(SESSION-NAME)
 
-StdInst.thy: StdInst.in.thy
-	scripts/inst.rb < StdInst.in.thy > StdInst.thy
+gen_algo/StdInst.thy: gen_algo/StdInst.in.thy
+	scripts/inst.rb < gen_algo/StdInst.in.thy > gen_algo/StdInst.thy
 
-$(OUT)/$(SESSION-NAME): ROOT.ML document/*.tex document/*.bib *.thy common/*.thy
-	@ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
+
+impl/Impl_Overview.thy: scripts/doc.rb spec/*.thy impl/*.thy
+	cat spec/*.thy impl/*.thy | scripts/doc.rb > impl/Impl_Overview.thy
+
+$(OUT)/$(SESSION-NAME): ROOT.ML document/*.tex document/*.bib *.thy common/*.thy spec/*.thy impl/*.thy gen_algo/*.thy iterator/*.thy gen_algo/StdInst.thy impl/Impl_Overview.thy
+	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
 generated/Userguide.pdf: $(OUT)/$(SESSION-NAME)
-	@cd generated; \
+	cd generated; \
     $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" > userguide.log;\
     $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" >> userguide.log && \
     $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
@@ -57,6 +60,5 @@ generated/Userguide.pdf: $(OUT)/$(SESSION-NAME)
 ## clean
 
 clean:
-	@rm -f $(OUT)/$(SESSION-NAME)
-	@rm -f $(LOG)/$(SESSION-NAME).gz
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 	@rm -rf generated

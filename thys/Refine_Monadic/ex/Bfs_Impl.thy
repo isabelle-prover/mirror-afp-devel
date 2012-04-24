@@ -42,7 +42,7 @@ begin
       (\<lambda>(f,V,C,N,d). f=False \<and> \<not> ls_isEmpty C)
       (\<lambda>(f,V,C,N,d). do {
         v \<leftarrow> RETURN (the (ls_sel' C (\<lambda>_. True))); let C = ls_delete v C;
-        if v=dst then RETURN (True,hs_empty,ls_empty,ls_empty,d)
+        if v=dst then RETURN (True,hs_empty (),ls_empty (),ls_empty (),d)
         else do {
           (V,N) \<leftarrow> FOREACH (ls_\<alpha> (succ v)) (\<lambda>w (V,N). 
             if (\<not> hs_memb w V) then 
@@ -51,13 +51,13 @@ begin
           ) (V,N);
           if (ls_isEmpty C) then do {
             let C=N; 
-            let N=ls_empty; 
+            let N=ls_empty (); 
             let d=d+1;
             RETURN (f,V,C,N,d)
           } else RETURN (f,V,C,N,d)
         }
       })
-      (False,hs_sng src,ls_sng src, ls_empty,0::nat);
+      (False,hs_sng src,ls_sng src, ls_empty (),0::nat);
     if f then RETURN (Some d) else RETURN None
     }"
 
@@ -146,8 +146,9 @@ begin
          dRETURN (the (ls_sel' ab (\<lambda>_. True))) \<guillemotright>=
          (\<lambda>xa. let xb = ls_delete xa ab
                in if xa = dst
-                  then dRETURN (True, hs_empty, ls_empty, ls_empty, bc)
-                  else lift_set_iterator ls_iteratei (succ xa)
+                  then dRETURN
+                        (True, hs_empty (), ls_empty (), ls_empty (), bc)
+                  else IT_tag ls_iteratei (succ xa)
                         (dres_case True True (\<lambda>_. True))
                         (\<lambda>x s. s \<guillemotright>=
                                (\<lambda>(ad, bd).
@@ -158,10 +159,10 @@ begin
                         (dRETURN (aa, ac)) \<guillemotright>=
                        (\<lambda>(ad, bd).
                            if ls_isEmpty xb
-                           then let xd = bd; xe = ls_empty; xf = bc + 1
+                           then let xd = bd; xe = ls_empty (); xf = bc + 1
                                 in dRETURN (a, ad, xd, xe, xf)
                            else dRETURN (a, ad, xb, bd, bc))))
-   (False, hs_sng src, ls_sng src, ls_empty, 0) \<guillemotright>=
+   (False, hs_sng src, ls_sng src, ls_empty (), 0) \<guillemotright>=
   (\<lambda>(a, b).
       case b of
       (aa, ab, ac, bc) \<Rightarrow> if a then dRETURN (Some bc) else dRETURN None))

@@ -285,7 +285,7 @@ proof -
 
     apply (auto simp add: dfs_invar_add_def dfs_algo_def 
                 elim: dfs_initial.cases) [1]
-    done
+    done 
 qed
 
   -- "The result of the DFS-algorithm is correct"
