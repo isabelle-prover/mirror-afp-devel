@@ -95,7 +95,7 @@ lemma llist_quotient [quot_thm]:
   "Quotient3 R Abs Rep \<Longrightarrow> Quotient3 (llist_all2 R) (lmap Abs) (lmap Rep)"
 by(blast intro: Quotient3I dest: Quotient_lmap_Abs_Rep Quotient_llist_all2_lmap_Rep llist_all2_rel)
 
-declare [[map llist = (llist_all2, llist_quotient)]]
+declare [[mapQ3 llist = (llist_all2, llist_quotient)]]
 
 lemma LCons_preserve [quot_preserve]:
   assumes "Quotient3 R Abs Rep"
