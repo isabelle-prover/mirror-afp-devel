@@ -579,6 +579,13 @@ topic = Computer Science/Programming Languages/Language Definitions, Computer Sc
 license = LGPL
 abstract = We present the theory of Simpl, a sequential imperative programming language. We introduce its syntax, its semantics (big and small-step operational semantics) and Hoare logics for both partial as well as total correctness. We prove soundness and completeness of the Hoare logic. We integrate and automate the Hoare logic in Isabelle/HOL to obtain a practically usable verification environment for imperative programs. Simpl is independent of a concrete programming language but expressive enough to cover all common language features: mutually recursive procedures, abrupt termination and exceptions, runtime faults, local and global variables, pointers and heap, expressions with side effects, pointers to procedures, partial application and closures, dynamic method invocation and also unbounded nondeterminism.
 
+[Inductive_Confidentiality]
+title = Inductive Study of Confidentiality
+author = Giampaolo Bella <http://www.dmi.unict.it/~giamp/>
+date = 2012-05-02
+topic = Computer Science/Security
+abstract = This document contains the full theory files accompanying article <i>Inductive Study of Confidentiality --- for Everyone</i> in <i>Formal Aspects of Computing</i>. They aim at an illustrative and didactic presentation of the Inductive Method of protocol analysis, focusing on the treatment of one of the main goals of security protocols: confidentiality against a threat model. The treatment of confidentiality, which in fact forms a key aspect of all protocol analysis tools, has been found cryptic by many learners of the Inductive Method, hence the motivation for this work. The theory files in this document guide the reader step by step towards design and proof of significant confidentiality theorems. These are developed against two threat models, the standard Dolev-Yao and a more audacious one, the General Attacker, which turns out to be particularly useful also for teaching purposes.
+
 [VolpanoSmith]
 title = A Correctness Proof for the Volpano/Smith Security Typing System
 author = Gregor Snelting <http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php>, Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
