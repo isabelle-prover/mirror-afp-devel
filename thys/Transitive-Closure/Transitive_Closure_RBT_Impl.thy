@@ -53,7 +53,7 @@ relation for single states to lists of states, all results are united using
 @{const rs_Union}. The rest is standard. 
 *} 
 
-interpretation set_access "\<lambda> as bs. rs_union bs (list_to_rs as)" rs_\<alpha> rs_memb rs_empty
+interpretation set_access "\<lambda> as bs. rs_union bs (list_to_rs as)" rs_\<alpha> rs_memb "rs_empty ()"
   by (unfold_locales, auto simp: rs_correct)
 
 abbreviation rm_succ :: "('a :: linorder \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'a list" where "rm_succ \<equiv> (\<lambda> r. let rm = elem_list_to_rm fst r in
@@ -61,11 +61,11 @@ abbreviation rm_succ :: "('a :: linorder \<times> 'a)list \<Rightarrow> 'a list 
 
 definition rtrancl_rbt_impl :: "('a :: linorder \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'a rs"
   where "rtrancl_rbt_impl \<equiv> rtrancl_impl rm_succ
-  (\<lambda> as bs. rs_union bs (list_to_rs as)) rs_memb rs_empty" 
+  (\<lambda> as bs. rs_union bs (list_to_rs as)) rs_memb (rs_empty ())" 
 
 definition trancl_rbt_impl :: "('a :: linorder \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'a rs"
   where "trancl_rbt_impl \<equiv> trancl_impl rm_succ
-  (\<lambda> as bs. rs_union bs (list_to_rs as)) rs_memb rs_empty" 
+  (\<lambda> as bs. rs_union bs (list_to_rs as)) rs_memb (rs_empty ())" 
 
 lemma rtrancl_rbt_impl: "rs_\<alpha> (rtrancl_rbt_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)^*}"
   unfolding rtrancl_rbt_impl_def
@@ -122,7 +122,7 @@ qed
 definition memo_rbt_trancl :: "('a :: linorder \<times> 'a)list \<Rightarrow> ('a \<Rightarrow> 'a rs)" 
 where "memo_rbt_trancl r \<equiv> let tr = trancl_rbt_impl r;
                                rm = list_to_rm (map (\<lambda> a. (a,tr [a])) ((rs_to_list o list_to_rs o map fst) r))
-                             in (\<lambda> a. case rm_lookup a rm of None \<Rightarrow> rs_empty | Some as \<Rightarrow> as)"
+                             in (\<lambda> a. case rm_lookup a rm of None \<Rightarrow> rs_empty () | Some as \<Rightarrow> as)"
 
 lemma memo_rbt_trancl:
   "rs_\<alpha> (memo_rbt_trancl r a) = {b. (a,b) \<in> (set r)^+}" (is "?l = ?r")

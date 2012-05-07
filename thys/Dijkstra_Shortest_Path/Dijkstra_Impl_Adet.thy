@@ -92,12 +92,12 @@ definition (in dijkstraC_def) "cdijkstra \<equiv>
                        (qw_ops\<Colon>('V, 'W infty, 'qw,
                                 'more_qw) uprio_ops_scheme)
                        s x infty.Infty)
-               (upr_empty qw_ops)
+               (upr_empty qw_ops ())
         in (upr_insert qw_ops x (v0\<Colon>'V) (Num (0\<Colon>'W)),
             map_op_update
              (mr_ops\<Colon>('V, ('V \<times> 'W \<times> 'V) list \<times> 'W, 'mr,
                       'more_mr) map_ops_scheme)
-             v0 ([], 0\<Colon>'W) (map_op_empty mr_ops))
+             v0 ([], 0\<Colon>'W) (map_op_empty mr_ops ()))
   in Let (while ((\<lambda>a\<Colon>'qw. \<not> upr_isEmpty qw_ops a) \<circ> fst)
            (\<lambda>(aa\<Colon>'qw, ba\<Colon>'mr).
                let (ab\<Colon>'V, bb\<Colon>'W infty \<times> 'qw \<times> 'mr) =

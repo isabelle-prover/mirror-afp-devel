@@ -30,14 +30,14 @@ locale random_scheduler_base =
   and thr_invar :: "'m_t \<Rightarrow> bool"
   and thr_lookup :: "'t \<Rightarrow> 'm_t \<rightharpoonup> ('x \<times> 'l released_locks)"
   and thr_update :: "'t \<Rightarrow> 'x \<times> 'l released_locks \<Rightarrow> 'm_t \<Rightarrow> 'm_t"
-  and thr_iterate :: "('m_t, 't, 'x \<times> 'l released_locks, 's_t) map_iterator"
+  and thr_iterate :: "'m_t \<Rightarrow> ('t \<times> ('x \<times> 'l released_locks), 's_t) set_iterator"
   and ws_\<alpha> :: "'m_w \<Rightarrow> ('w,'t) wait_sets"
   and ws_invar :: "'m_w \<Rightarrow> bool"
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
-  and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and ws_iterate :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status, 'm_w) set_iterator"
+  and ws_sel :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
   and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
   and is_invar :: "'s_i \<Rightarrow> bool"
   and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
@@ -45,7 +45,7 @@ locale random_scheduler_base =
   and is_delete :: "'t \<Rightarrow> 's_i \<Rightarrow> 's_i"
   and thr'_\<alpha> :: "'s_t \<Rightarrow> 't set"
   and thr'_invar :: "'s_t \<Rightarrow> bool"
-  and thr'_empty :: "'s_t"
+  and thr'_empty :: "unit \<Rightarrow> 's_t"
   and thr'_ins_dj :: "'t \<Rightarrow> 's_t \<Rightarrow> 's_t"
   +
   fixes thr'_to_list :: "'s_t \<Rightarrow> 't list"
@@ -83,7 +83,7 @@ locale random_scheduler =
     thr'_\<alpha> thr'_invar thr'_empty thr'_ins_dj
   +
   ws!: map_delete ws_\<alpha> ws_invar ws_delete +
-  ws!: map_iterate ws_\<alpha> ws_invar ws_iterate +
+  ws!: map_iteratei ws_\<alpha> ws_invar ws_iterate +
   thr'!: set_to_list thr'_\<alpha> thr'_invar thr'_to_list 
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
@@ -93,14 +93,14 @@ locale random_scheduler =
   and thr_invar :: "'m_t \<Rightarrow> bool"
   and thr_lookup :: "'t \<Rightarrow> 'm_t \<rightharpoonup> ('x \<times> 'l released_locks)"
   and thr_update :: "'t \<Rightarrow> 'x \<times> 'l released_locks \<Rightarrow> 'm_t \<Rightarrow> 'm_t"
-  and thr_iterate :: "('m_t, 't, 'x \<times> 'l released_locks, 's_t) map_iterator"
+  and thr_iterate :: "'m_t \<Rightarrow> ('t \<times> ('x \<times> 'l released_locks), 's_t) set_iterator"
   and ws_\<alpha> :: "'m_w \<Rightarrow> ('w,'t) wait_sets"
   and ws_invar :: "'m_w \<Rightarrow> bool"
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
-  and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and ws_iterate :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status, 'm_w) set_iterator"
+  and ws_sel :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
   and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
   and is_invar :: "'s_i \<Rightarrow> bool"
   and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
@@ -108,7 +108,7 @@ locale random_scheduler =
   and is_delete :: "'t \<Rightarrow> 's_i \<Rightarrow> 's_i"
   and thr'_\<alpha> :: "'s_t \<Rightarrow> 't set"
   and thr'_invar :: "'s_t \<Rightarrow> bool"
-  and thr'_empty :: "'s_t"
+  and thr'_empty :: "unit \<Rightarrow> 's_t"
   and thr'_ins_dj :: "'t \<Rightarrow> 's_t \<Rightarrow> 's_t"
   and thr'_to_list :: "'s_t \<Rightarrow> 't list"
 begin
@@ -155,7 +155,7 @@ end
 sublocale random_scheduler_base <
   scheduler_base
     final r convert_RA
-    "random_scheduler" "output" "pick_wakeup_via_sel ws_sel" random_scheduler_invar
+    "random_scheduler" "output" "pick_wakeup_via_sel (\<lambda>s P. ws_sel s (\<lambda>(k,v). P k v))" random_scheduler_invar
     thr_\<alpha> thr_invar thr_lookup thr_update
     ws_\<alpha> ws_invar ws_lookup ws_update ws_delete ws_iterate
     is_\<alpha> is_invar is_memb is_ins is_delete
@@ -164,7 +164,7 @@ sublocale random_scheduler_base <
 sublocale random_scheduler <
   pick_wakeup_spec
     final r convert_RA
-    "pick_wakeup_via_sel ws_sel" random_scheduler_invar
+    "pick_wakeup_via_sel (\<lambda>s P. ws_sel s (\<lambda>(k,v). P k v))" random_scheduler_invar
     thr_\<alpha> thr_invar
     ws_\<alpha> ws_invar
     is_\<alpha> is_invar
@@ -177,7 +177,7 @@ lemma random_scheduler_scheduler:
   shows 
   "scheduler
      final r convert_RA
-     random_scheduler (pick_wakeup_via_sel ws_sel) random_scheduler_invar
+     random_scheduler (pick_wakeup_via_sel (\<lambda>s P. ws_sel s (\<lambda>(k,v). P k v))) random_scheduler_invar
      thr_\<alpha> thr_invar thr_lookup thr_update 
      ws_\<alpha> ws_invar ws_lookup ws_update ws_delete ws_iterate
      is_\<alpha> is_invar is_memb is_ins is_delete

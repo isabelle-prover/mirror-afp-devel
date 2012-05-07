@@ -7,9 +7,9 @@ header {* \isaheader{Sequential consistency with efficient data structures} *}
 theory SC_Collections
 imports
   "../Common/Conform"
-  "../../Collections/RBTMapImpl"
-  "../../Collections/TrieMapImpl"
-  "../../Collections/ListMapImpl"
+  "../../Collections/impl/RBTMapImpl"
+  "../../Collections/impl/TrieMapImpl"
+  "../../Collections/impl/ListMapImpl"
   MM
 begin
 
@@ -53,15 +53,15 @@ where
   foldr (\<lambda>((F, D), T) fields. 
            let F' = explode F
            in tm_update F' (lm_update D (default_val T)
-                                      (case tm_lookup F' fields of None \<Rightarrow> lm_empty | Some lm \<Rightarrow> lm)) fields)
-        FDTs tm_empty"
+                                      (case tm_lookup F' fields of None \<Rightarrow> lm_empty () | Some lm \<Rightarrow> lm)) fields)
+        FDTs (tm_empty ())"
 
 definition init_fields_array :: "(vname \<times> ty) list \<Rightarrow> array_fields"
 where
   "init_fields_array \<equiv> list_to_lm \<circ> map (\<lambda>(F, T). (F, default_val T))"
 
 definition init_cells :: "ty \<Rightarrow> nat \<Rightarrow> array_cells"
-where "init_cells T n = foldl (\<lambda>cells i. rm_update i (default_val T) cells) rm_empty [0..<n]"
+where "init_cells T n = foldl (\<lambda>cells i. rm_update i (default_val T) cells) (rm_empty ()) [0..<n]"
 
 primrec -- "a new, blank object with default values in all fields:"
   blank :: "'m prog \<Rightarrow> htype \<Rightarrow> heapobj"
@@ -81,7 +81,7 @@ translations
   (type) "heap" <= (type) "(nat, heapobj) rbt"
 
 abbreviation sc_empty :: heap
-where "sc_empty \<equiv> rm_empty"
+where "sc_empty \<equiv> rm_empty ()"
 
 fun the_obj :: "heapobj \<Rightarrow> cname \<times> fields" where
   "the_obj (Obj C fs) = (C, fs)"
@@ -94,7 +94,7 @@ abbreviation
   "cname_of hp a == fst (the_obj (the (rm_lookup a hp)))"
 
 definition new_Addr :: "heap \<Rightarrow> addr option"
-where "new_Addr h = Some (case rm_max h (\<lambda>_ _. True) of None \<Rightarrow> 0 | Some (a, _) \<Rightarrow> a + 1)"
+where "new_Addr h = Some (case rm_max h (\<lambda>_. True) of None \<Rightarrow> 0 | Some (a, _) \<Rightarrow> a + 1)"
 
 definition sc_allocate :: "'m prog \<Rightarrow> heap \<Rightarrow> htype \<Rightarrow> (heap \<times> addr option)"
 where
@@ -123,7 +123,7 @@ for h :: heap and a :: addr
 where
   Obj:
   "\<lbrakk> rm_lookup a h = \<lfloor>Obj C fs\<rfloor>; F' = explode F;
-     h' = rm_update a (Obj C (tm_update F' (lm_update D v (case tm_lookup (explode F) fs of None \<Rightarrow> lm_empty | Some fs' \<Rightarrow> fs')) fs)) h \<rbrakk>
+     h' = rm_update a (Obj C (tm_update F' (lm_update D v (case tm_lookup (explode F) fs of None \<Rightarrow> lm_empty () | Some fs' \<Rightarrow> fs')) fs)) h \<rbrakk>
   \<Longrightarrow> sc_heap_write h a (CField D F) v h'"
 
 | Arr:
@@ -317,8 +317,8 @@ proof -
       with `n' < n` have "\<exists>v. rm_\<alpha> (foldl (\<lambda>cells i. rm_update i (default_val T) cells) rm [k..<n]) n' = \<lfloor>v\<rfloor> \<and> sc.conf P h v T"
         by(induct m\<equiv>"n-k" arbitrary: n k rm)(auto simp add: rm.update_correct upt_conv_Cons type)
     }
-    from this[of 0 rm_empty]
-    have "\<exists>v. rm_\<alpha> (foldl (\<lambda>cells i. rm_update i (default_val T) cells) rm_empty [0..<n]) n' = \<lfloor>v\<rfloor> \<and> sc.conf P h v T" by simp
+    from this[of 0 "rm_empty ()"]
+    have "\<exists>v. rm_\<alpha> (foldl (\<lambda>cells i. rm_update i (default_val T) cells) (rm_empty ()) [0..<n]) n' = \<lfloor>v\<rfloor> \<and> sc.conf P h v T" by simp
   }
   moreover
   { fix F T fm
@@ -339,7 +339,7 @@ qed
 
 lemma sc_oconf_fupd [intro?]:
   "\<lbrakk> P \<turnstile> C has F:T (fm) in D; P,h \<turnstile>sc v :\<le> T; P,h \<turnstile>sc (Obj C fs) \<surd>;
-    fs' = (case tm_lookup (explode F) fs of None \<Rightarrow> lm_empty | Some fs' \<Rightarrow> fs') \<rbrakk>
+    fs' = (case tm_lookup (explode F) fs of None \<Rightarrow> lm_empty () | Some fs' \<Rightarrow> fs') \<rbrakk>
   \<Longrightarrow> P,h \<turnstile>sc (Obj C (tm_update (explode F) (lm_update D v fs') fs)) \<surd>"
 unfolding sc_oconf_def has_field_def
 apply(auto dest: has_fields_fun simp add: lm.update_correct tm.update_correct tm.lookup_correct explode_inject)

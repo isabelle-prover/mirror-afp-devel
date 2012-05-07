@@ -48,8 +48,8 @@ let
   (* Configuration of test: *)
   val vertices = 1000; (* Number of vertices *)
   val seed = 123454; (* Seed for random number generator *)
-  val cfg_print_paths = true; (* Wether to output complete paths *)
-  val cfg_print_res = true; (* Wether to output result at all *)
+  val cfg_print_paths = true; (* Whether to output complete paths *)
+  val cfg_print_res = true; (* Whether to output result at all *)
 
   (* Internals *)
   fun string_of_edge (u,(w,v)) = 

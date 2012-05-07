@@ -9,9 +9,9 @@ imports
   State_Refinement
   "../Framework/FWProgressAux"
   "../Framework/FWLTS"
-  "../../Collections/SetSpec"
-  "../../Collections/MapSpec"
-  "../../Collections/ListSpec"
+  "../../Collections/spec/SetSpec"
+  "../../Collections/spec/MapSpec"
+  "../../Collections/spec/ListSpec"
 begin
 
 type_synonym
@@ -256,7 +256,7 @@ locale scheduler_base =
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
+  and ws_iterate :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status, 'm_w) set_iterator"
   and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
   and is_invar :: "'s_i \<Rightarrow> bool"
   and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
@@ -271,8 +271,8 @@ where
     of None  \<Rightarrow> ws
     | Some t \<Rightarrow> ws_update t (PostWS WSNotified) ws)"
 | "exec_updW \<sigma> t ws (NotifyAll w) =
-   ws_iterate (\<lambda>t w' ws'. if w' = InWS w then ws_update t (PostWS WSNotified) ws' else ws') 
-              ws ws"
+   ws_iterate ws (\<lambda>_. True) (\<lambda>(t, w') ws'. if w' = InWS w then ws_update t (PostWS WSNotified) ws' else ws') 
+              ws"
 | "exec_updW \<sigma> t ws (Suspend w) = ws_update t (InWS w) ws"
 | "exec_updW \<sigma> t ws (WakeUp t') =
    (case ws_lookup t' ws of \<lfloor>InWS w\<rfloor> \<Rightarrow> ws_update t' (PostWS WSWokenUp) ws | _ \<Rightarrow> ws)"
@@ -341,7 +341,7 @@ where "pick_wakeup_via_sel ws_sel \<sigma> t w ws = Option.map fst (ws_sel ws (\
 
 lemma pick_wakeup_spec_via_sel:
   assumes sel: "map_sel' ws_\<alpha> ws_invar ws_sel"
-  shows "pick_wakeup_spec (pick_wakeup_via_sel ws_sel) \<sigma>_invar ws_\<alpha> ws_invar"
+  shows "pick_wakeup_spec (pick_wakeup_via_sel (\<lambda>s P. ws_sel s (\<lambda>(k,v). P k v))) \<sigma>_invar ws_\<alpha> ws_invar"
 proof -
   interpret ws!: map_sel' ws_\<alpha> ws_invar ws_sel by(rule sel)
   show ?thesis
@@ -361,12 +361,12 @@ locale scheduler_ext_base =
   and thr_invar :: "'m_t \<Rightarrow> bool"
   and thr_lookup :: "'t \<Rightarrow> 'm_t \<rightharpoonup> ('x \<times> 'l released_locks)"
   and thr_update :: "'t \<Rightarrow> 'x \<times> 'l released_locks \<Rightarrow> 'm_t \<Rightarrow> 'm_t"
-  and thr_iterate :: "('m_t, 't, 'x \<times> 'l released_locks, 's_t) map_iterator"
+  and thr_iterate :: "'m_t \<Rightarrow> ('t \<times> ('x \<times> 'l released_locks), 's_t) set_iterator"
   and ws_\<alpha> :: "'m_w \<Rightarrow> ('w,'t) wait_sets"
   and ws_invar :: "'m_w \<Rightarrow> bool"
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and ws_sel :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
   and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
   and is_invar :: "'s_i \<Rightarrow> bool"
   and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
@@ -375,18 +375,18 @@ locale scheduler_ext_base =
   +
   fixes thr'_\<alpha> :: "'s_t \<Rightarrow> 't set"
   and thr'_invar :: "'s_t \<Rightarrow> bool"
-  and thr'_empty :: "'s_t"
+  and thr'_empty :: "unit \<Rightarrow> 's_t"
   and thr'_ins_dj :: "'t \<Rightarrow> 's_t \<Rightarrow> 's_t"
 begin
 
 abbreviation pick_wakeup :: "'s \<Rightarrow> 't \<Rightarrow> 'w \<Rightarrow> 'm_w \<Rightarrow> 't option"
-where "pick_wakeup \<equiv> pick_wakeup_via_sel ws_sel"
+where "pick_wakeup \<equiv> pick_wakeup_via_sel (\<lambda>s P. ws_sel s (\<lambda>(k,v). P k v))"
 
 fun active_threads :: "('l,'t,'m,'m_t,'m_w,'s_i) state_refine \<Rightarrow> 's_t"
 where
   "active_threads (ls, (ts, m), ws, is) =
-   thr_iterate
-      (\<lambda>t (x, ln) ts'. if ln = no_wait_locks
+   thr_iterate ts (\<lambda>_. True)
+      (\<lambda>(t, (x, ln)) ts'. if ln = no_wait_locks
                        then if Predicate.holds 
                                (do {
                                   (ta, _) \<leftarrow> r t (x, m);
@@ -395,7 +395,7 @@ where
                             then thr'_ins_dj t ts'
                             else ts'
                        else if \<not> waiting (ws_lookup t ws) \<and> may_acquire_all ls t ln then thr'_ins_dj t ts' else ts')
-      ts thr'_empty"
+      (thr'_empty ())"
 
 end
 
@@ -529,7 +529,7 @@ locale scheduler =
   +
   ws!: map_update ws_\<alpha> ws_invar ws_update +
   ws!: map_delete ws_\<alpha> ws_invar ws_delete +
-  ws!: map_iterate ws_\<alpha> ws_invar ws_iterate 
+  ws!: map_iteratei ws_\<alpha> ws_invar ws_iterate 
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
@@ -546,7 +546,7 @@ locale scheduler =
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
+  and ws_iterate :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status, 'm_w) set_iterator"
   and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
   and is_invar :: "'s_i \<Rightarrow> bool"
   and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
@@ -577,29 +577,29 @@ proof -
     qed
   next
     case (NotifyAll w)[simp]
-    let ?f = "\<lambda>t w' ws'. if w' = InWS w then ws_update t (PostWS WSNotified) ws' else ws'"
+    let ?f = "\<lambda>(t, w') ws'. if w' = InWS w then ws_update t (PostWS WSNotified) ws' else ws'"
     let ?I = "\<lambda>T ws'. (\<forall>k. if k\<notin>T \<and> ws_\<alpha> ws k = \<lfloor>InWS w\<rfloor> then ws_\<alpha> ws' k = \<lfloor>PostWS WSNotified\<rfloor> else ws_\<alpha> ws' k = ws_\<alpha> ws k) \<and> ws_invar ws'"
     from invar have "?I (dom (ws_\<alpha> ws)) ws" by(auto simp add: ws.lookup_correct)
-    with `ws_invar ws` have "?I {} (ws_iterate ?f ws ws)"
-    proof(rule ws.iterate_rule)
+    with `ws_invar ws` have "?I {} (ws_iterate ws (\<lambda>_. True) ?f ws)"
+    proof(rule ws.iterate_rule_P[where I="?I"])
       fix t w' T ws'
       assume t: "t \<in> T" and w': "ws_\<alpha> ws t = \<lfloor>w'\<rfloor>"
         and T: "T \<subseteq> dom (ws_\<alpha> ws)" and I: "?I T ws'"
       { fix t'
         assume "t' \<notin> T - {t}" "ws_\<alpha> ws t' = \<lfloor>InWS w\<rfloor>"
-        with t I w' invar have "ws_\<alpha> (?f t w' ws') t' = \<lfloor>PostWS WSNotified\<rfloor>"
+        with t I w' invar have "ws_\<alpha> (?f (t, w') ws') t' = \<lfloor>PostWS WSNotified\<rfloor>"
           by(auto)(simp_all add: ws.update_correct) }
       moreover {
         fix t'
         assume "t' \<in> T - {t} \<or> ws_\<alpha> ws t' \<noteq> \<lfloor>InWS w\<rfloor>"
-        with t I w' invar have "ws_\<alpha> (?f t w' ws') t' = ws_\<alpha> ws t'"
+        with t I w' invar have "ws_\<alpha> (?f (t,w') ws') t' = ws_\<alpha> ws t'"
           by(auto simp add: ws.update_correct) }
       moreover
-      have "ws_invar (?f t w' ws')" using I by(simp add: ws.update_correct)
-      ultimately show "?I (T - {t}) (?f t w' ws')" by safe simp
+      have "ws_invar (?f (t, w') ws')" using I by(simp add: ws.update_correct)
+      ultimately show "?I (T - {t}) (?f (t, w') ws')" by safe simp
     qed
-    hence "ws_\<alpha> (ws_iterate ?f ws ws) = (\<lambda>t. if ws_\<alpha> ws t = \<lfloor>InWS w\<rfloor> then \<lfloor>PostWS WSNotified\<rfloor> else ws_\<alpha> ws t)"
-      and "ws_invar (ws_iterate ?f ws ws)" by(simp_all add: fun_eq_iff)
+    hence "ws_\<alpha> (ws_iterate ws (\<lambda>_. True) ?f ws) = (\<lambda>t. if ws_\<alpha> ws t = \<lfloor>InWS w\<rfloor> then \<lfloor>PostWS WSNotified\<rfloor> else ws_\<alpha> ws t)"
+      and "ws_invar (ws_iterate ws (\<lambda>_. True) ?f ws)" by(simp_all add: fun_eq_iff)
     thus ?thesis by simp
   next
     case WakeUp thus ?thesis using assms
@@ -821,7 +821,7 @@ locale scheduler_ext_aux =
     ws_\<alpha> ws_invar ws_lookup
     is_\<alpha> is_invar is_memb is_ins is_delete
   +
-  thr!: map_iterate thr_\<alpha> thr_invar thr_iterate +
+  thr!: map_iteratei thr_\<alpha> thr_invar thr_iterate +
   ws!: map_update ws_\<alpha> ws_invar ws_update +
   ws!: map_sel' ws_\<alpha> ws_invar ws_sel +
   thr'!: finite_set thr'_\<alpha> thr'_invar +
@@ -834,12 +834,12 @@ locale scheduler_ext_aux =
   and thr_invar :: "'m_t \<Rightarrow> bool"
   and thr_lookup :: "'t \<Rightarrow> 'm_t \<rightharpoonup> ('x \<times> 'l released_locks)"
   and thr_update :: "'t \<Rightarrow> 'x \<times> 'l released_locks \<Rightarrow> 'm_t \<Rightarrow> 'm_t"
-  and thr_iterate :: "('m_t, 't, 'x \<times> 'l released_locks, 's_t) map_iterator"
+  and thr_iterate :: "'m_t \<Rightarrow> ('t \<times> ('x \<times> 'l released_locks), 's_t) set_iterator"
   and ws_\<alpha> :: "'m_w \<Rightarrow> ('w,'t) wait_sets"
   and ws_invar :: "'m_w \<Rightarrow> bool"
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and ws_sel :: "'m_w \<Rightarrow> (('t \<times> 'w wait_set_status) \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
   and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
   and is_invar :: "'s_i \<Rightarrow> bool"
   and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
@@ -847,7 +847,7 @@ locale scheduler_ext_aux =
   and is_delete :: "'t \<Rightarrow> 's_i \<Rightarrow> 's_i"
   and thr'_\<alpha> :: "'s_t \<Rightarrow> 't set"
   and thr'_invar :: "'s_t \<Rightarrow> bool"
-  and thr'_empty :: "'s_t"
+  and thr'_empty :: "unit \<Rightarrow> 's_t"
   and thr'_ins_dj :: "'t \<Rightarrow> 's_t \<Rightarrow> 's_t"
 begin
 
@@ -857,17 +857,17 @@ lemma active_threads_correct [simp]:
   and "thr'_invar (active_threads s)" (is "?thesis2")
 proof -
   obtain ls ts m ws "is" where s: "s = (ls, (ts, m), ws, is)" by(cases s) fastforce
-  let ?f = "\<lambda>t (x, ln) TS. if ln = no_wait_locks
+  let ?f = "\<lambda>(t, (x, ln)) TS. if ln = no_wait_locks
            then if Predicate.holds (do { (ta, _) \<leftarrow> r t (x, m); Predicate.if_pred (actions_ok (ls, (ts, m), ws, is) t ta) })
                 then thr'_ins_dj t TS else TS
            else if \<not> waiting (ws_lookup t ws) \<and> may_acquire_all ls t ln then thr'_ins_dj t TS else TS"
   let ?I = "\<lambda>T TS. thr'_invar TS \<and> thr'_\<alpha> TS \<subseteq> dom (thr_\<alpha> ts) - T \<and> (\<forall>t. t \<notin> T \<longrightarrow> t \<in> thr'_\<alpha> TS \<longleftrightarrow> t \<in> \<alpha>.active_threads (state_\<alpha> s))"
 
   from assms s have "thr_invar ts" by simp
-  moreover have "?I (dom (thr_\<alpha> ts)) thr'_empty"
+  moreover have "?I (dom (thr_\<alpha> ts)) (thr'_empty ())"
     by(auto simp add: thr'.empty_correct s elim: \<alpha>.active_threads.cases)
-  ultimately have "?I {} (thr_iterate ?f ts thr'_empty)"
-  proof(rule thr.iterate_rule)
+  ultimately have "?I {} (thr_iterate ts (\<lambda>_. True) ?f (thr'_empty ()))"
+  proof(rule thr.iterate_rule_P[where I="?I"])
     fix t xln T TS
     assume tT: "t \<in> T" 
       and tst: "thr_\<alpha> ts t = \<lfloor>xln\<rfloor>"
@@ -877,16 +877,16 @@ proof -
     from tT I have t: "t \<notin> thr'_\<alpha> TS" by blast
 
     from I have invar: "thr'_invar TS" ..
-    hence "thr'_invar (?f t xln TS)" using t
+    hence "thr'_invar (?f (t, xln) TS)" using t
       unfolding xln by(auto simp add: thr'.ins_dj_correct)
     moreover from I have "thr'_\<alpha> TS \<subseteq> dom (thr_\<alpha> ts) - T" by blast
-    hence "thr'_\<alpha> (?f t xln TS) \<subseteq> dom (thr_\<alpha> ts) - (T - {t})"
+    hence "thr'_\<alpha> (?f (t, xln) TS) \<subseteq> dom (thr_\<alpha> ts) - (T - {t})"
       using invar tst t by(auto simp add: xln thr'.ins_dj_correct)
     moreover
     {
       fix t'
       assume t': "t' \<notin> T - {t}"
-      have "t' \<in> thr'_\<alpha> (?f t xln TS) \<longleftrightarrow> t' \<in> \<alpha>.active_threads (state_\<alpha> s)" (is "?lhs \<longleftrightarrow> ?rhs")
+      have "t' \<in> thr'_\<alpha> (?f (t, xln) TS) \<longleftrightarrow> t' \<in> \<alpha>.active_threads (state_\<alpha> s)" (is "?lhs \<longleftrightarrow> ?rhs")
       proof(cases "t' = t")
         case True
         show ?thesis
@@ -906,7 +906,7 @@ proof -
         thus ?thesis using xln False invar t by(auto simp add: thr'.ins_dj_correct)
       qed
     }
-    ultimately show "?I (T - {t}) (?f t xln TS)" by blast
+    ultimately show "?I (T - {t}) (?f (t, xln) TS)" by blast
   qed
   thus "?thesis1" "?thesis2" by(auto simp add: s)
 qed
@@ -930,7 +930,7 @@ locale scheduler_ext =
     invariant
   +
   ws!: map_delete ws_\<alpha> ws_invar ws_delete +
-  ws!: map_iterate ws_\<alpha> ws_invar ws_iterate
+  ws!: map_iteratei ws_\<alpha> ws_invar ws_iterate
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
@@ -941,15 +941,15 @@ locale scheduler_ext =
   and thr_invar :: "'m_t \<Rightarrow> bool"
   and thr_lookup :: "'t \<Rightarrow> 'm_t \<rightharpoonup> ('x \<times> 'l released_locks)"
   and thr_update :: "'t \<Rightarrow> 'x \<times> 'l released_locks \<Rightarrow> 'm_t \<Rightarrow> 'm_t"
-  and thr_iterate :: "('m_t, 't, 'x \<times> 'l released_locks, 's_t) map_iterator"
+  and thr_iterate :: "'m_t \<Rightarrow> ('t \<times> ('x \<times> 'l released_locks), 's_t) set_iterator"
   and ws_\<alpha> :: "'m_w \<Rightarrow> ('w,'t) wait_sets"
   and ws_invar :: "'m_w \<Rightarrow> bool"
-  and ws_empty :: "'m_w"
+  and ws_empty :: "unit \<Rightarrow> 'm_w"
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
-  and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and ws_iterate :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status, 'm_w) set_iterator"
+  and ws_sel :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
   and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
   and is_invar :: "'s_i \<Rightarrow> bool"
   and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
@@ -957,7 +957,7 @@ locale scheduler_ext =
   and is_delete :: "'t \<Rightarrow> 's_i \<Rightarrow> 's_i"
   and thr'_\<alpha> :: "'s_t \<Rightarrow> 't set"
   and thr'_invar :: "'s_t \<Rightarrow> bool"
-  and thr'_empty :: "'s_t"
+  and thr'_empty :: "unit \<Rightarrow> 's_t"
   and thr'_ins_dj :: "'t \<Rightarrow> 's_t \<Rightarrow> 's_t"
   and invariant :: "('l,'t,'x,'m,'w) state set"
   +

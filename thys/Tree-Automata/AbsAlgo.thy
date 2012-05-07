@@ -7,8 +7,7 @@ theory AbsAlgo
 imports 
   Ta 
   "../Collections/examples/Exploration"
-  "../Collections/DatRef"
-  "../Collections/SetSpec"
+  "../Collections/Collections"
 begin
 text_raw {*\label{sec:absalgo}*}
 text {* This theory defines tree automata algorithms on an abstract level, 
@@ -769,7 +768,7 @@ lemma br'_inner_step_proof:
   fixes \<Sigma>h :: "'\<Sigma>"
   fixes cinvar :: "('Q,'L) ta_rule set \<Rightarrow> '\<Sigma> \<Rightarrow> bool"
 
-  assumes iterable_set: "set_iterate \<alpha> invar iterate"
+  assumes iterable_set: "set_iteratei \<alpha> invar iteratei"
   assumes invar_initial: "cinvar {r\<in>\<delta>. q\<in>set (rhsq r)} \<Sigma>h"
   assumes invar_step: 
     "!!it r \<Sigma>. \<lbrakk> r\<in>it; it \<subseteq> {r\<in>\<delta>. q\<in>set (rhsq r)}; cinvar it \<Sigma> \<rbrakk> 
@@ -784,9 +783,9 @@ lemma br'_inner_step_proof:
   assumes \<Sigma>_desc[simp]: "\<alpha>s \<Sigma> = (Q,W,rcm)"
   assumes \<Sigma>h_desc[simp]: "\<alpha>s \<Sigma>h = (Q,W-{q},rcm)"
 
-  shows "(\<alpha>s \<Sigma>, \<alpha>s (iterate cstep it_set \<Sigma>h))\<in>br'_step \<delta>"
+  shows "(\<alpha>s \<Sigma>, \<alpha>s (iteratei it_set (\<lambda>_. True) cstep \<Sigma>h))\<in>br'_step \<delta>"
 proof -
-  interpret set_iterate \<alpha> invar iterate by fact
+  interpret set_iteratei \<alpha> invar iteratei by fact
 
   show ?thesis
     apply (rule_tac 
@@ -1200,7 +1199,7 @@ theorem brw_inner_step_proof:
   fixes \<Sigma>h :: "'\<Sigma>"
   fixes cinvar :: "('Q,'L) ta_rule set \<Rightarrow> '\<Sigma> \<Rightarrow> bool"
 
-  assumes set_iterate: "set_iterate \<alpha> invar iterate"
+  assumes set_iterate: "set_iteratei \<alpha> invar iteratei"
   assumes invar_start: "(\<alpha>s \<Sigma>)\<in>brw_invar \<delta>"
   assumes invar_initial: "cinvar {r\<in>\<delta>. q\<in>set (rhsq r)} \<Sigma>h"
   assumes invar_step: 
@@ -1216,9 +1215,9 @@ theorem brw_inner_step_proof:
   assumes \<Sigma>_desc[simp]: "\<alpha>s \<Sigma> = (Q,W,rcm)"
   assumes \<Sigma>h_desc[simp]: "\<alpha>s \<Sigma>h = (Q,W-{q},rcm)"
 
-  shows "(\<alpha>s \<Sigma>, \<alpha>s (iterate cstep it_set \<Sigma>h))\<in>brw_step \<delta>"
+  shows "(\<alpha>s \<Sigma>, \<alpha>s (iteratei it_set (\<lambda>_. True) cstep \<Sigma>h))\<in>brw_step \<delta>"
 proof -
-  interpret set_iterate \<alpha> invar iterate by fact
+  interpret set_iteratei \<alpha> invar iteratei by fact
 
   show ?thesis
     apply (rule_tac 

@@ -55,7 +55,7 @@ abbreviation sc_jvm_start_state_refine ::
   (addr, thread_id, heap, (thread_id, (addr jvm_thread_state) \<times> addr released_locks) rm, (thread_id, addr wait_set_status) rm, thread_id rs) state_refine"
 where
   "sc_jvm_start_state_refine \<equiv> 
-   sc_start_state_refine rm_empty rm_update rm_empty rs_empty (\<lambda>C M Ts T (mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, C, M, 0)]))"
+   sc_start_state_refine (rm_empty ()) rm_update (rm_empty ()) (rs_empty ()) (\<lambda>C M Ts T (mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, C, M, 0)]))"
 
 abbreviation sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state,heap,addr) state set"
 where "sc_jvm_state_invar P \<Phi> \<equiv> {s. sc_execute.correct_state_ts P \<Phi> (thr s) (shr s)}"
@@ -102,7 +102,7 @@ lemma JVM_rr:
   shows
   "sc_scheduler 
      JVM_final (sc_mexec P) convert_RA
-     (JVM_rr.round_robin P n0) (pick_wakeup_via_sel rm_sel') JVM_rr.round_robin_invar
+     (JVM_rr.round_robin P n0) (pick_wakeup_via_sel (\<lambda>s P. rm_sel' s (\<lambda>(k,v). P k v))) JVM_rr.round_robin_invar
      (sc_jvm_state_invar P \<Phi>)"
 unfolding sc_scheduler_def
 apply(rule JVM_rr.round_robin_scheduler)
@@ -139,7 +139,7 @@ lemma JVM_rnd:
   shows 
   "sc_scheduler
     JVM_final (sc_mexec P) convert_RA
-    (JVM_rnd.random_scheduler P) (pick_wakeup_via_sel rm_sel') (\<lambda>_ _. True)
+    (JVM_rnd.random_scheduler P) (pick_wakeup_via_sel (\<lambda>s P. rm_sel' s (\<lambda>(k,v). P k v))) (\<lambda>_ _. True)
     (sc_jvm_state_invar P \<Phi>)"
 unfolding sc_scheduler_def
 apply(rule JVM_rnd.random_scheduler_scheduler)

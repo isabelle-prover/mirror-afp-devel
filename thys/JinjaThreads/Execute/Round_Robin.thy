@@ -434,8 +434,8 @@ locale round_robin_base =
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
-  and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and ws_iterate :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status, 'm_w) set_iterator"
+  and ws_sel :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
   and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
   and is_invar :: "'s_i \<Rightarrow> bool"
   and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
@@ -444,7 +444,7 @@ locale round_robin_base =
   +
   fixes queue_\<alpha> :: "'queue \<Rightarrow> 't list"
   and queue_invar :: "'queue \<Rightarrow> bool"
-  and queue_empty :: "'queue"
+  and queue_empty :: "unit \<Rightarrow> 'queue"
   and queue_isEmpty :: "'queue \<Rightarrow> bool"
   and queue_enqueue :: "'t \<Rightarrow> 'queue \<Rightarrow> 'queue"
   and queue_dequeue :: "'queue \<Rightarrow> 't \<times> 'queue"
@@ -509,7 +509,7 @@ definition round_robin_\<alpha> :: "'queue round_robin \<Rightarrow> 't list rou
 where "round_robin_\<alpha> = apfst queue_\<alpha>"
 
 definition round_robin_start :: "nat \<Rightarrow> 't \<Rightarrow> 'queue round_robin"
-where "round_robin_start n0 t = (queue_enqueue t queue_empty, n0)"
+where "round_robin_start n0 t = (queue_enqueue t (queue_empty ()), n0)"
 
 lemma round_robin_invar_correct:
   "round_robin_invar \<sigma> T \<Longrightarrow> Round_Robin.round_robin_invar (round_robin_\<alpha> \<sigma>) T"
@@ -533,7 +533,7 @@ locale round_robin =
   +
   ws!: map_update ws_\<alpha> ws_invar ws_update +
   ws!: map_delete ws_\<alpha> ws_invar ws_delete +
-  ws!: map_iterate ws_\<alpha> ws_invar ws_iterate +
+  ws!: map_iteratei ws_\<alpha> ws_invar ws_iterate +
   ws!: map_sel' ws_\<alpha> ws_invar ws_sel +
   queue!: list queue_\<alpha> queue_invar +
   queue!: list_empty queue_\<alpha> queue_invar queue_empty +
@@ -554,8 +554,8 @@ locale round_robin =
   and ws_lookup :: "'t \<Rightarrow> 'm_w \<rightharpoonup> 'w wait_set_status"
   and ws_update :: "'t \<Rightarrow> 'w wait_set_status \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
   and ws_delete :: "'t \<Rightarrow> 'm_w \<Rightarrow> 'm_w"
-  and ws_iterate :: "('m_w, 't, 'w wait_set_status, 'm_w) map_iterator"
-  and ws_sel :: "'m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
+  and ws_iterate :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status, 'm_w) set_iterator"
+  and ws_sel :: "'m_w \<Rightarrow> ('t \<times> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> ('t \<times> 'w wait_set_status)"
   and is_\<alpha> :: "'s_i \<Rightarrow> 't interrupts"
   and is_invar :: "'s_i \<Rightarrow> bool"
   and is_memb :: "'t \<Rightarrow> 's_i \<Rightarrow> bool"
@@ -563,7 +563,7 @@ locale round_robin =
   and is_delete :: "'t \<Rightarrow> 's_i \<Rightarrow> 's_i"
   and queue_\<alpha> :: "'queue \<Rightarrow> 't list"
   and queue_invar :: "'queue \<Rightarrow> bool"
-  and queue_empty :: "'queue"
+  and queue_empty :: "unit \<Rightarrow> 'queue"
   and queue_isEmpty :: "'queue \<Rightarrow> bool"
   and queue_enqueue :: "'t \<Rightarrow> 'queue \<Rightarrow> 'queue"
   and queue_dequeue :: "'queue \<Rightarrow> 't \<times> 'queue"
@@ -802,7 +802,7 @@ end
 sublocale round_robin_base <
   scheduler_base
     final r convert_RA
-    "round_robin n0" "output" "pick_wakeup_via_sel ws_sel" round_robin_invar
+    "round_robin n0" "output" "pick_wakeup_via_sel (\<lambda>s P. ws_sel s (\<lambda>(k,v). P k v))" round_robin_invar
     thr_\<alpha> thr_invar thr_lookup thr_update
     ws_\<alpha> ws_invar ws_lookup ws_update ws_delete ws_iterate
     is_\<alpha> is_invar is_memb is_ins is_delete
@@ -811,7 +811,7 @@ sublocale round_robin_base <
 sublocale round_robin <
   pick_wakeup_spec
     final r convert_RA
-    "pick_wakeup_via_sel ws_sel" round_robin_invar
+    "pick_wakeup_via_sel (\<lambda>s P. ws_sel s (\<lambda>(k,v). P k v))" round_robin_invar
     thr_\<alpha> thr_invar
     ws_\<alpha> ws_invar
     is_\<alpha> is_invar
@@ -824,7 +824,7 @@ lemma round_robin_scheduler:
   shows 
   "scheduler
      final r convert_RA
-     (round_robin n0) (pick_wakeup_via_sel ws_sel) round_robin_invar 
+     (round_robin n0) (pick_wakeup_via_sel (\<lambda>s P. ws_sel s (\<lambda>(k,v). P k v))) round_robin_invar 
      thr_\<alpha> thr_invar thr_lookup thr_update 
      ws_\<alpha> ws_invar ws_lookup ws_update ws_delete ws_iterate
      is_\<alpha> is_invar is_memb is_ins is_delete

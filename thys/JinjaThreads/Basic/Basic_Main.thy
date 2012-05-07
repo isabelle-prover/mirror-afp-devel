@@ -11,11 +11,11 @@ imports Main
   Set_Monad
   "../../FinFun/FinFun"
   "../../Coinductive/Lazy_TLList"
-  "../../Collections/ListSetImpl_Invar"
-  "../../Collections/RBTSetImpl"
-  "../../Collections/TrieMapImpl"
-  "../../Collections/ListMapImpl"
-  "../../Collections/Fifo"
+  "../../Collections/impl/ListSetImpl_Invar"
+  "../../Collections/impl/RBTSetImpl"
+  "../../Collections/impl/TrieMapImpl"
+  "../../Collections/impl/ListMapImpl"
+  "../../Collections/impl/Fifo"
   Aux
 begin
 

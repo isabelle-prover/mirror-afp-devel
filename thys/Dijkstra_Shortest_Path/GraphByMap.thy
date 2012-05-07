@@ -108,7 +108,7 @@ begin
 
   definition gbm_add_node :: "('V,'W,'m1) graph_add_node" where
     "gbm_add_node v g \<equiv> case m1.lookup v g of
-    None \<Rightarrow> m1.update v m2.empty g |
+    None \<Rightarrow> m1.update v (m2.empty ()) g |
     Some _ \<Rightarrow> g"
 
   lemma gbm_add_node_correct:
@@ -161,7 +161,7 @@ begin
   definition gbm_add_edge :: "('V,'W,'m1) graph_add_edge" where
     "gbm_add_edge v e v' g \<equiv> 
     let g = (case m1.lookup v' g of 
-      None \<Rightarrow> m1.update v' m2.empty g | Some _ \<Rightarrow> g
+      None \<Rightarrow> m1.update v' (m2.empty ()) g | Some _ \<Rightarrow> g
     ) in
     case m1.lookup v g of 
       None \<Rightarrow> (m1.update v (m2.sng v' (s3.sng e)) g) |
@@ -237,51 +237,37 @@ begin
   qed
 
   definition gbm_nodes_it 
-    :: "('m1,'V,'m2,'\<sigma>) map_iteratori \<Rightarrow> ('V,'W,'\<sigma>,'m1) graph_nodes_it"
+    :: "('m1 \<Rightarrow> ('V\<times>'m2,'\<sigma>) set_iterator) \<Rightarrow> ('V,'W,'\<sigma>,'m1) graph_nodes_it"
     where
-    "gbm_nodes_it mit g c f \<sigma>0 \<equiv> mit c (\<lambda>k v \<sigma>. f k \<sigma>) g \<sigma>0"
+    "gbm_nodes_it mit g \<equiv> map_iterator_dom (mit g)"
 
   lemma gbm_nodes_it_correct:
     assumes mit: "map_iteratei m1.\<alpha> m1.invar mit"
     shows "graph_nodes_it gbm_\<alpha> gbm_invar (gbm_nodes_it mit)"
   proof 
-    fix g::'m1 and I::"('V set) \<Rightarrow> 'd \<Rightarrow> bool" and \<sigma>0::"'d" and 
-      c::"'d \<Rightarrow> bool" and f::"'V \<Rightarrow> 'd \<Rightarrow> 'd"
+    interpret m: map_iteratei m1.\<alpha> m1.invar mit by fact
 
-    assume INV: "gbm_invar g"
-      and I0: "I (nodes (gbm_\<alpha> g)) \<sigma>0"
-      and IS: "\<And>S \<sigma> x. \<lbrakk>c \<sigma>; x \<in> S; I S \<sigma>; S \<subseteq> nodes (gbm_\<alpha> g)\<rbrakk> 
-               \<Longrightarrow> I (S - {x}) (f x \<sigma>)"
-    note [simp]=gbm_invar_split[OF INV]
-
-    show "I {} (gbm_nodes_it mit g c f \<sigma>0) \<or>
-          (\<exists>S\<subseteq>nodes (gbm_\<alpha> g).
-              S \<noteq> {} \<and> \<not> c (gbm_nodes_it mit g c f \<sigma>0) 
-              \<and> I S (gbm_nodes_it mit g c f \<sigma>0))"
-      unfolding gbm_nodes_it_def
-      apply (rule_tac I=I in 
-        map_iteratei.iteratei_rule_P[OF mit])
-      apply simp
-      using I0 unfolding gbm_\<alpha>_def apply simp
-      apply (rule IS, simp_all add: gbm_\<alpha>_def) []
-      apply simp
-      apply auto []
-      done
+    fix g
+    assume "gbm_invar g"
+    hence MINV: "map_op_invar m1_ops g" unfolding gbm_invar_def by auto
+    from map_iterator_dom_correct[OF m.iteratei_rule[OF MINV]]
+    show "set_iterator (gbm_nodes_it mit g) (nodes (gbm_\<alpha> g))"
+      unfolding gbm_nodes_it_def gbm_\<alpha>_def by simp
   qed
+    
+  term set_iterator_product
 
   definition gbm_edges_it 
     :: "
-      ('m1,'V,'m2,'\<sigma>) map_iteratori \<Rightarrow>
-      ('m2,'V,'s3,'\<sigma>) map_iteratori \<Rightarrow>
-      ('s3,'W,'\<sigma>) iteratori \<Rightarrow>
+      ('m1 \<Rightarrow> ('V\<times>'m2,'\<sigma>) set_iterator) \<Rightarrow>
+      ('m2 \<Rightarrow> ('V\<times>'s3,'\<sigma>) set_iterator) \<Rightarrow>
+      ('s3 \<Rightarrow> ('W,'\<sigma>) set_iterator) \<Rightarrow>
       ('V,'W,'\<sigma>,'m1) graph_edges_it"
     where
-    "gbm_edges_it mit1 mit2 sit g c f \<sigma>0 \<equiv> 
-      mit1 c (\<lambda>v m2 \<sigma>. 
-        mit2 c (\<lambda>v' s3 \<sigma>. 
-          sit c (\<lambda>w \<sigma>. f (v,w,v') \<sigma>) s3 \<sigma>
-        ) m2 \<sigma>
-      ) g \<sigma>0
+    "gbm_edges_it mit1 mit2 sit g \<equiv> set_iterator_image 
+      (\<lambda>((v1,m1),(v2,m2),w). (v1,w,v2)) 
+      (set_iterator_product (mit1 g) 
+        (\<lambda>(v,m2). set_iterator_product (mit2 m2) (\<lambda>(w,s3). sit s3)))
     "
 
   lemma gbm_edges_it_correct:
@@ -290,244 +276,106 @@ begin
     assumes sit: "set_iteratei s3.\<alpha> s3.invar sit"
     shows "graph_edges_it gbm_\<alpha> gbm_invar (gbm_edges_it mit1 mit2 sit)"
   proof 
-    fix g::'m1 and I::"(('V\<times>'W\<times>'V) set) \<Rightarrow> 'd \<Rightarrow> bool" and \<sigma>0::"'d" and 
-      c::"'d \<Rightarrow> bool" and f::"('V\<times>'W\<times>'V) \<Rightarrow> 'd \<Rightarrow> 'd"
-
-    have SUB: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it=it' \<Longrightarrow> I it' \<sigma>" by auto
-
+    fix g
     assume INV: "gbm_invar g"
-      and I0: "I (edges (gbm_\<alpha> g)) \<sigma>0"
-      and IS: "\<And>S \<sigma> x. \<lbrakk>c \<sigma>; x \<in> S; I S \<sigma>; S \<subseteq> edges (gbm_\<alpha> g)\<rbrakk> 
-               \<Longrightarrow> I (S - {x}) (f x \<sigma>)"
-    note [simp]=gbm_invar_split[OF INV]
 
-    {
-      fix \<sigma> it S thesis
-      assume "I it \<sigma> \<or> (\<exists>it\<subseteq>S. I it \<sigma> \<and> \<not>c \<sigma>)"
-      and "it\<subseteq>S"
-      and "\<And>it. \<lbrakk>it\<subseteq>S; I it \<sigma>; it\<noteq>{}\<rbrakk> \<Longrightarrow> thesis"
-      and "I {} \<sigma> \<Longrightarrow> thesis"
-      hence thesis
-        by auto
-    } note AUX=this
+    from INV have I1: "m1.invar g" unfolding gbm_invar_def by auto
+    from INV have I2: "\<And>v m2. (v,m2)\<in>map_to_set (m1.\<alpha> g) \<Longrightarrow> m2.invar m2"
+      unfolding gbm_invar_def map_to_set_def
+      by (auto simp: ran_def)
+    from INV have I3: "\<And>v m2 v' s. \<lbrakk>
+      (v,m2)\<in>map_to_set (m1.\<alpha> g); 
+      (v',s)\<in>map_to_set (m2.\<alpha> m2)\<rbrakk> 
+      \<Longrightarrow> s3.invar s"
+      unfolding gbm_invar_def map_to_set_def
+      by (auto simp: ran_def)
 
-    show "I {} (gbm_edges_it mit1 mit2 sit g c f \<sigma>0) \<or>
-          (\<exists>S\<subseteq>edges (gbm_\<alpha> g).
-              S \<noteq> {} \<and> \<not> c (gbm_edges_it mit1 mit2 sit g c f \<sigma>0) 
-              \<and> I S (gbm_edges_it mit1 mit2 sit g c f \<sigma>0))"
+    show "set_iterator (gbm_edges_it mit1 mit2 sit g) (edges (gbm_\<alpha> g))"
       unfolding gbm_edges_it_def
-      apply (rule_tac I="\<lambda>V \<sigma>. 
-        I (edges (gbm_\<alpha> g) \<inter> V\<times>UNIV\<times>UNIV) \<sigma> \<or>
-        (\<exists>it\<subseteq>edges (gbm_\<alpha> g). I it \<sigma> \<and> \<not>c \<sigma>)" 
-        in 
-        map_iteratei.iteratei_rule_P[OF mit1])
-        apply simp
+      apply (rule set_iterator_image_correct)
+      apply (rule set_iterator_product_correct)
+      apply (rule map_iteratei.iteratei_rule[OF mit1])
+      apply (rule I1)
+      apply (case_tac a)
+      apply clarsimp
+      apply (rule set_iterator_product_correct)
+      apply (drule I2)
+      apply (subgoal_tac "map_iterator (mit2 ba) 
+        (map_op_\<alpha> m2_ops (snd (aa,ba)))")
+      apply assumption
+      apply (simp add: map_iteratei.iteratei_rule[OF mit2])
 
-        apply (rule disjI1)
-        using I0
-        apply (erule_tac SUB)
-        apply (auto simp add: gbm_\<alpha>_def) []
+      apply (case_tac a)
+      apply clarsimp
+      apply (subgoal_tac "set_iterator (sit bb) 
+        (s3.\<alpha> (snd (ab,bb)))")
+      apply assumption
+      apply (simp add: set_iteratei.iteratei_rule[OF sit] I3)
+      
+      apply (auto simp: inj_on_def map_to_set_def) []
 
-        prefer 2
-        apply (erule disjE)
-        apply simp
-        apply (erule exE)
-        apply (case_tac "it={}")
-        apply simp
-        apply auto []
-
-        prefer 2 
-        apply (erule AUX)
-        apply auto [3]
-
-        apply (rename_tac v m2 V \<sigma>)
-        apply (rule_tac I="\<lambda>V' \<sigma>. I (edges (gbm_\<alpha> g) \<inter> (
-          (V-{v})\<times>UNIV\<times>UNIV \<union>
-          {v}\<times>UNIV\<times>V'
-          )) \<sigma> \<or> (\<exists>it\<subseteq>edges (gbm_\<alpha> g). I it \<sigma> \<and> \<not>c \<sigma>)"
-          in 
-          map_iteratei.iteratei_rule_P[OF mit2])
-          apply simp
-
-          apply (erule disjE)
-            apply (rule disjI1)
-            apply (erule SUB)
-            apply (auto simp: gbm_\<alpha>_def) []
-
-            apply auto []
-
-          prefer 2
-          apply simp
-
-          prefer 2
-          apply (erule AUX)
-          apply auto [3]
-
-          apply (rename_tac v' s3 V' \<sigma>')
-          apply (rule_tac I="\<lambda>W \<sigma>. I (edges (gbm_\<alpha> g) \<inter> (
-            (V-{v})\<times>UNIV\<times>UNIV \<union>
-            {v}\<times>UNIV\<times>(V'-{v'}) \<union>
-            {v}\<times>W\<times>{v'}
-            )) \<sigma> \<or> (\<exists>it\<subseteq>edges (gbm_\<alpha> g). I it \<sigma> \<and> \<not>c \<sigma>)"
-            in 
-            set_iteratei.iteratei_rule_P[OF sit])
-            apply simp
-          
-            apply (rotate_tac -1 )
-            apply (erule disjE)
-              apply (rule disjI1)
-              apply (erule SUB)
-              apply (auto simp: gbm_\<alpha>_def) []
-
-              apply auto []
-
-            prefer 2
-            apply (rotate_tac -1 )
-            apply (erule disjE)
-              apply (rule disjI1)
-              apply simp
-
-              apply auto []
-
-            apply (rotate_tac -1 )
-            apply (erule disjE)
-              apply (rule disjI1)
-              apply simp
-
-              apply (rule_tac S1="(edges (gbm_\<alpha> g) \<inter> (
-                (V-{v})\<times>UNIV\<times>UNIV \<union>
-                {v}\<times>UNIV\<times>(V'-{v'}) \<union>
-                {v}\<times>it\<times>{v'}
-                ))" in IS[THEN SUB])
-                apply (auto simp: gbm_\<alpha>_def) [5]
-                
-              apply auto []
-
-            apply auto []
+      apply (force simp: gbm_\<alpha>_def map_to_set_def) []
       done
-  qed
+    qed
 
   definition gbm_succ_it ::
-    "('m2,'V,'s3,'\<sigma>) map_iteratori \<Rightarrow>
-      ('s3,'W,'\<sigma>) iteratori \<Rightarrow>
+    "('m2 \<Rightarrow> ('V\<times>'s3,'\<sigma>) set_iterator) \<Rightarrow>
+      ('s3 \<Rightarrow> ('W,'\<sigma>) set_iterator) \<Rightarrow>
       ('V,'W,'\<sigma>,'m1) graph_succ_it"
     where
-  "gbm_succ_it mit2 sit g v c f \<sigma>0 \<equiv>
-    case m1.lookup v g of
-      None \<Rightarrow> \<sigma>0 |
-      Some m2 \<Rightarrow> mit2 c (\<lambda>v' s3 \<sigma>. 
-        sit c (\<lambda>w \<sigma>. f (w,v') \<sigma>) s3 \<sigma>
-      ) m2 \<sigma>0
+  "gbm_succ_it mit2 sit g v \<equiv> case m1.lookup v g of
+    None \<Rightarrow> set_iterator_emp |
+    Some m2 \<Rightarrow> 
+      set_iterator_image (\<lambda>((v',m2),w). (w,v')) 
+        (set_iterator_product (mit2 m2) (\<lambda>(v',s). sit s))
     "
-
-
+  
   lemma gbm_succ_it_correct:
     assumes mit2: "map_iteratei m2.\<alpha> m2.invar mit2"
     assumes sit: "set_iteratei s3.\<alpha> s3.invar sit"
     shows "graph_succ_it gbm_\<alpha> gbm_invar (gbm_succ_it mit2 sit)"
   proof 
-    fix g::'m1 and v::"'V" 
-      and I::"(('W\<times>'V) set) \<Rightarrow> 'd \<Rightarrow> bool" and \<sigma>0::"'d" and 
-      c::"'d \<Rightarrow> bool" and f::"('W\<times>'V) \<Rightarrow> 'd \<Rightarrow> 'd"
-
-    have SUB: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it=it' \<Longrightarrow> I it' \<sigma>" by auto
-
+    fix g v
     assume INV: "gbm_invar g"
-      and I0: "I (succ (gbm_\<alpha> g) v) \<sigma>0"
-      and IS: "\<And>S \<sigma> x. \<lbrakk>c \<sigma>; x \<in> S; I S \<sigma>; S \<subseteq> succ (gbm_\<alpha> g) v\<rbrakk> 
-               \<Longrightarrow> I (S - {x}) (f x \<sigma>)"
-    note [simp]=gbm_invar_split[OF INV]
+    hence I1[simp]: "m1.invar g" unfolding gbm_invar_def by auto
 
-    {
-      fix \<sigma> it S thesis
-      assume "I it \<sigma> \<or> (\<exists>it\<subseteq>S. I it \<sigma> \<and> \<not>c \<sigma>)"
-      and "it\<subseteq>S"
-      and "\<And>it. \<lbrakk>it\<subseteq>S; I it \<sigma>; it\<noteq>{}\<rbrakk> \<Longrightarrow> thesis"
-      and "I {} \<sigma> \<Longrightarrow> thesis"
-      hence thesis
-        by auto
-    } note AUX=this
-
-    show "I {} (gbm_succ_it mit2 sit g v c f \<sigma>0) \<or>
-          (\<exists>S\<subseteq>succ (gbm_\<alpha> g) v.
-              S \<noteq> {} \<and> \<not> c (gbm_succ_it mit2 sit g v c f \<sigma>0) 
-              \<and> I S (gbm_succ_it mit2 sit g v c f \<sigma>0))"
+    show "set_iterator (gbm_succ_it mit2 sit g v) (succ (gbm_\<alpha> g) v)"
     proof (cases "m1.lookup v g")
-      case None hence "succ (gbm_\<alpha> g) v = {}"
-        by (auto simp add: gbm_\<alpha>_def succ_def
-          m1.correct)
-      moreover from None have "gbm_succ_it mit2 sit g v c f \<sigma>0 = \<sigma>0"
-        by (auto simp: gbm_succ_it_def)
-      ultimately show ?thesis using I0 by auto
+      case None hence "(succ (gbm_\<alpha> g) v) = {}"
+        unfolding succ_def gbm_\<alpha>_def by (auto simp: m1.lookup_correct)
+      with None show ?thesis unfolding gbm_succ_it_def
+        by (auto simp: set_iterator_emp_correct)
     next
       case (Some m2)
-      hence [simp]: "m2.invar m2"
-        "\<And>v s3. m2.\<alpha> m2 v = Some s3 \<Longrightarrow> s3.invar s3"
-        by (auto simp: m1.correct)
+      hence [simp]: "m2.invar m2" using gbm_invar_split[OF INV] 
+        by (simp add: m1.lookup_correct)
+
+      from INV Some have 
+        I2: "\<And>v' s. (v', s) \<in> map_to_set (map_op_\<alpha> m2_ops m2) \<Longrightarrow> s3.invar s"
+        unfolding gbm_invar_def
+        by (auto simp: map_to_set_def ran_def m1.lookup_correct)
       
-      show ?thesis
-        unfolding gbm_succ_it_def apply (simp add: Some)
+      from Some show ?thesis
+        unfolding gbm_succ_it_def apply simp
+        apply (rule set_iterator_image_correct)
+        apply (rule set_iterator_product_correct)
+        apply (rule map_iteratei.iteratei_rule)
+        apply (rule mit2)
+        apply simp
+        apply (case_tac a, simp)
+        apply (subgoal_tac "set_iterator (sit b) (s3.\<alpha> (snd (aa, b)))")
+        apply assumption
+        apply simp
+        apply (rule set_iteratei.iteratei_rule[OF sit])
+        apply (simp add: I2)
 
-        apply (rule_tac I="\<lambda>V' \<sigma>. 
-          I (succ (gbm_\<alpha> g) v \<inter> UNIV\<times>V') \<sigma> \<or>
-          (\<exists>it\<subseteq>succ (gbm_\<alpha> g) v. I it \<sigma> \<and> \<not>c \<sigma>)" 
-          in 
-          map_iteratei.iteratei_rule_P[OF mit2])
-          
-          apply simp
+        apply (auto simp: inj_on_def map_to_set_def) []
 
-          apply (rule disjI1)
-          using I0
-          apply (erule_tac SUB)
-          using Some apply (auto simp add: gbm_\<alpha>_def succ_def m1.correct) []
-
-          prefer 2
-          apply (erule disjE)
-          apply simp
-          apply (erule exE)
-          apply (case_tac "it={}")
-          apply simp
-          apply auto []
-
-          prefer 2
-          apply (erule AUX)
-          apply auto [3]
-
-          apply (rename_tac v' s3 V' \<sigma>')
-          apply (rule_tac I="\<lambda>W \<sigma>. I (succ (gbm_\<alpha> g) v \<inter> (
-            UNIV\<times>(V'-{v'}) \<union>
-            W\<times>{v'}
-            )) \<sigma> \<or> (\<exists>it\<subseteq>succ (gbm_\<alpha> g) v. I it \<sigma> \<and> \<not>c \<sigma>)"
-            in 
-            set_iteratei.iteratei_rule_P[OF sit])
-            apply (simp)
-          
-            apply (erule disjE)
-              apply (rule disjI1)
-              apply (erule SUB)
-              using Some
-              apply (auto simp: succ_def gbm_\<alpha>_def m1.correct) []
-
-              apply auto []
-
-            apply (rotate_tac -1 )
-            apply (erule disjE)
-              apply (rule disjI1)
-              apply simp
-              thm IS[rotated -2, THEN SUB]
-              apply (erule IS[rotated -2, THEN SUB])
-                apply auto [2]
-                using Some apply (auto simp: gbm_\<alpha>_def succ_def m1.correct) []
-                apply auto []
-              
-              using Some apply (auto simp: m1.correct) []
-              
-            apply auto []
-
-            apply auto []
+        apply (force simp: succ_def gbm_\<alpha>_def map_to_set_def m1.lookup_correct)
         done
     qed
   qed
+    
 
   definition 
     "gbm_from_list \<equiv> gga_from_list gbm_empty gbm_add_node gbm_add_edge"

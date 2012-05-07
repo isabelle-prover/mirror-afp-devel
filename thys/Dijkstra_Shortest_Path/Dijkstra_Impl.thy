@@ -42,7 +42,7 @@ begin
   definition cdinit :: "('qw\<times>'mr) nres" where
     "cdinit \<equiv> do {
       wl \<leftarrow> FOREACH (nodes ga) 
-        (\<lambda>v wl. RETURN (qw.insert wl v Weight.Infty)) qw.empty;
+        (\<lambda>v wl. RETURN (qw.insert wl v Weight.Infty)) (qw.empty ());
       RETURN (qw.insert wl v0 (Num 0),mr.sng v0 ([],0))
     }"
 
@@ -156,7 +156,7 @@ end
   definition (in dijkstraC_def) "idijkstra \<equiv> 
  (let x = let x = nodes_it g (\<lambda>_. True)
                    (\<lambda>x s. let s = s in upr_insert qw_ops s x infty.Infty)
-                   (upr_empty qw_ops)
+                   (upr_empty qw_ops ())
           in (upr_insert qw_ops x v0 (Num (0\<Colon>'W)),
               map_op_sng mr_ops v0 ([], 0\<Colon>'W));
       (a, b) =

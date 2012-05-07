@@ -3,10 +3,10 @@ imports
   Random_Scheduler
   Round_Robin
   "../MM/SC_Collections"
-  "../../Collections/RBTMapImpl"
-  "../../Collections/RBTSetImpl"
-  "../../Collections/Fifo"
-  "../../Collections/ListSetImpl_Invar"
+  "../../Collections/impl/RBTMapImpl"
+  "../../Collections/impl/RBTSetImpl"
+  "../../Collections/impl/Fifo"
+  "../../Collections/impl/ListSetImpl_Invar"
 begin
 
 abbreviation sc_start_state_refine ::
@@ -24,7 +24,7 @@ abbreviation sc_state_\<alpha> ::
 where "sc_state_\<alpha> \<equiv> state_refine_base.state_\<alpha> rm_\<alpha> rm_\<alpha> rs_\<alpha>"
 
 lemma sc_state_\<alpha>_sc_start_state_refine [simp]:
-  "sc_state_\<alpha> (sc_start_state_refine rm_empty rm_update rm_empty rs_empty f P C M vs) = sc_start_state f P C M vs"
+  "sc_state_\<alpha> (sc_start_state_refine (rm_empty ()) rm_update (rm_empty ()) (rs_empty ()) f P C M vs) = sc_start_state f P C M vs"
 by(simp add: heap_base.start_state_refine_def state_refine_base.state_\<alpha>.simps split_beta sc.start_state_def rm_correct rs_correct)
 
 locale sc_scheduler =
@@ -32,7 +32,7 @@ locale sc_scheduler =
     final r convert_RA 
     schedule "output" pick_wakeup \<sigma>_invar
     rm_\<alpha> rm_invar rm_lookup rm_update
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iterate
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei
     rs_\<alpha> rs_invar rs_memb rs_ins rs_delete
     invariant
   for final :: "'x \<Rightarrow> bool"
@@ -48,7 +48,7 @@ locale sc_round_robin_base =
   round_robin_base
     final r convert_RA "output"
     rm_\<alpha> rm_invar rm_lookup rm_update 
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iterate rm_sel'
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel'
     rs_\<alpha> rs_invar rs_memb rs_ins rs_delete
     fifo_\<alpha> fifo_invar fifo_empty fifo_isEmpty fifo_enqueue fifo_dequeue fifo_push
   for final :: "'x \<Rightarrow> bool"
@@ -60,7 +60,7 @@ locale sc_round_robin =
   round_robin 
     final r convert_RA "output"
     rm_\<alpha> rm_invar rm_lookup rm_update 
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iterate rm_sel'
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel'
     rs_\<alpha> rs_invar rs_memb rs_ins rs_delete
     fifo_\<alpha> fifo_invar fifo_empty fifo_isEmpty fifo_enqueue fifo_dequeue fifo_push
   for final :: "'x \<Rightarrow> bool"
@@ -73,8 +73,8 @@ sublocale sc_round_robin < sc_round_robin_base .
 locale sc_random_scheduler_base =
   random_scheduler_base
     final r convert_RA "output"
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_iterate 
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iterate rm_sel'
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_iteratei 
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel'
     rs_\<alpha> rs_invar rs_memb rs_ins rs_delete
     lsi_\<alpha> lsi_invar lsi_empty lsi_ins_dj lsi_to_list
   for final :: "'x \<Rightarrow> bool"
@@ -85,8 +85,8 @@ locale sc_random_scheduler_base =
 locale sc_random_scheduler =
   random_scheduler
     final r convert_RA "output"
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_iterate 
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iterate rm_sel'
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_iteratei 
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel'
     rs_\<alpha> rs_invar rs_memb rs_ins rs_delete
     lsi_\<alpha> lsi_invar lsi_empty lsi_ins_dj lsi_to_list
   for final :: "'x \<Rightarrow> bool"

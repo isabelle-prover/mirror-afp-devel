@@ -26,8 +26,8 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Accessing values via keys *}
 
 theory RBT_Map_Set_Extension
-imports "../Collections/RBTMapImpl" 
-  "../Collections/RBTSetImpl"
+imports "../Collections/impl/RBTMapImpl" 
+  "../Collections/impl/RBTSetImpl"
   "../Matrix/Utility"
 begin
 
@@ -61,7 +61,7 @@ of the union is important so that new sets are added to the big union. *}
 (* perhaps there is a smarter way to use two iterates at the same time, however,
   when writing this theory this feature was not detected in the RBTSetImpl theory *)
 definition rs_subset :: "('a :: linorder) rs \<Rightarrow> 'a rs \<Rightarrow> 'a option"
-  where "rs_subset as bs \<equiv> rs_iteratei (\<lambda> maybe. case maybe of None \<Rightarrow> True | Some _ \<Rightarrow> False) (\<lambda> a _. if rs_memb a bs then None else Some a) as None"
+  where "rs_subset as bs \<equiv> rs_iteratei as (\<lambda> maybe. case maybe of None \<Rightarrow> True | Some _ \<Rightarrow> False) (\<lambda> a _. if rs_memb a bs then None else Some a) None"
 
 lemma rs_subset[simp]: "(rs_subset as bs = None) = (rs_\<alpha> as \<subseteq> rs_\<alpha> bs)"
 proof -
@@ -70,7 +70,7 @@ proof -
   let ?it = "rs_subset as bs"
   have "?I {} ?it \<or> (\<exists> it \<subseteq> rs_\<alpha> as. it \<noteq> {} \<and> \<not> ?abort ?it \<and> ?I it ?it)"
     unfolding rs_subset_def
-    by (rule rs.iteratei_rule, auto simp: rs_correct)
+    by (rule rs.iteratei_rule_P[where I="?I"]) (auto simp: rs_correct)
   thus ?thesis by auto
 qed
     
@@ -83,7 +83,7 @@ lemma rs_subset_list[simp]: "(rs_subset_list as bs = None) = (rs_\<alpha> as \<s
   by (simp add: rs_correct)
 
 definition rs_Union :: "('q :: linorder)rs list \<Rightarrow> 'q rs"
-where [code_unfold]: "rs_Union \<equiv> foldl rs_union rs_empty"
+where [code_unfold]: "rs_Union \<equiv> foldl rs_union (rs_empty ())"
 
 lemma rs_Union[simp]: "rs_\<alpha> (rs_Union qs) = (\<Union> rs_\<alpha> ` set qs)"
 proof -
@@ -91,7 +91,7 @@ proof -
     fix start
     have "rs_\<alpha> (foldl rs_union start qs) = rs_\<alpha> start \<union> \<Union> rs_\<alpha> ` set qs"
       by (induct qs arbitrary: start, auto simp: rs_correct)
-  } from this[of "rs_empty"]
+  } from this[of "rs_empty ()"]
   show ?thesis unfolding rs_Union_def
     by (auto simp: rs_correct)
 qed
@@ -107,7 +107,7 @@ text {*
 
 
 fun elem_list_to_rm :: "('d \<Rightarrow> 'k :: linorder) \<Rightarrow> 'd list \<Rightarrow> ('k,'d list)rm"
-  where "elem_list_to_rm key [] = rm_empty"
+  where "elem_list_to_rm key [] = rm_empty ()"
       | "elem_list_to_rm key (d # ds) = (
               let rm = elem_list_to_rm key ds;
                   k = key d
@@ -119,16 +119,16 @@ fun elem_list_to_rm :: "('d \<Rightarrow> 'k :: linorder) \<Rightarrow> 'd list 
 definition rm_set_lookup where "rm_set_lookup rm \<equiv> \<lambda> a. 
   (case rm_\<alpha> rm a of None \<Rightarrow> [] | Some rules \<Rightarrow> rules)"
 
+
 lemma rm_to_list_empty[simp]:
-  "rm_to_list rm_empty = []" 
-  unfolding rm_empty_def rm_to_list_def 
-  unfolding rito_map_to_sorted_list_def rm_reverse_iterateo_def
-  unfolding MapGA.itoi_reverse_iterateo_def
-  unfolding rm_reverse_iterateoi_def
-  unfolding RBT.impl_of_empty
-  by simp
-
-
+  "rm_to_list (rm_empty ()) = []" 
+proof -
+  have "map_of (rm_to_list (rm_empty ())) = Map.empty" 
+    by (simp add: rm_correct)
+  moreover have map_of_empty_iff: "\<And>l. map_of l = Map.empty \<longleftrightarrow> l=[]"
+    by (case_tac l) auto
+  ultimately show ?thesis by metis
+qed
 
 locale rm_set = 
   fixes rm :: "('k :: linorder,'d list)rm"

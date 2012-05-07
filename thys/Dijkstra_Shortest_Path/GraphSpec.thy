@@ -17,13 +17,13 @@ begin
       "invar g \<Longrightarrow> finite (edges (\<alpha> g))"
     assumes valid: "invar g \<Longrightarrow> valid_graph (\<alpha> g)"
 
-  type_synonym ('V,'W,'G) graph_empty = 'G
+  type_synonym ('V,'W,'G) graph_empty = "unit \<Rightarrow> 'G"
   locale graph_empty = graph +
     constrains \<alpha> :: "'G \<Rightarrow> ('V,'W) graph"
-    fixes empty :: "'G"
+    fixes empty :: "unit \<Rightarrow> 'G"
     assumes empty_correct:
-      "\<alpha> empty = Graph.empty"
-      "invar empty"
+      "\<alpha> (empty ()) = Graph.empty"
+      "invar (empty ())"
 
   type_synonym ('V,'W,'G) graph_add_node = "'V \<Rightarrow> 'G \<Rightarrow> 'G"
   locale graph_add_node = graph +
@@ -57,28 +57,28 @@ begin
       "invar g \<Longrightarrow> invar (delete_edge v e v' g)"
       "invar g \<Longrightarrow> \<alpha> (delete_edge v e v' g) = Graph.delete_edge v e v' (\<alpha> g)"
 
-  type_synonym ('V,'W,'\<sigma>,'G) graph_nodes_it = "'G \<Rightarrow> ('V,'\<sigma>) iteratori_tmpl"
+  type_synonym ('V,'W,'\<sigma>,'G) graph_nodes_it = "'G \<Rightarrow> ('V,'\<sigma>) set_iterator"
   locale graph_nodes_it = graph +
     constrains \<alpha> :: "'G \<Rightarrow> ('V,'W) graph"
-    fixes nodes_it :: "'G \<Rightarrow> ('V,'\<sigma>) iteratori_tmpl"
+    fixes nodes_it :: "'G \<Rightarrow> ('V,'\<sigma>) set_iterator"
     assumes nodes_it_correct:
-      "invar g \<Longrightarrow> set_iteratori (nodes_it g) (Graph.nodes (\<alpha> g))"
+      "invar g \<Longrightarrow> set_iterator (nodes_it g) (Graph.nodes (\<alpha> g))"
 
   type_synonym ('V,'W,'\<sigma>,'G) graph_edges_it 
-    = "'G \<Rightarrow> (('V\<times>'W\<times>'V),'\<sigma>) iteratori_tmpl"
+    = "'G \<Rightarrow> (('V\<times>'W\<times>'V),'\<sigma>) set_iterator"
   locale graph_edges_it = graph +
     constrains \<alpha> :: "'G \<Rightarrow> ('V,'W) graph"
     fixes edges_it :: "('V,'W,'\<sigma>,'G) graph_edges_it"
     assumes edges_it_correct:
-      "invar g \<Longrightarrow> set_iteratori (edges_it g) (Graph.edges (\<alpha> g))"
+      "invar g \<Longrightarrow> set_iterator (edges_it g) (Graph.edges (\<alpha> g))"
 
   type_synonym ('V,'W,'\<sigma>,'G) graph_succ_it = 
-    "'G \<Rightarrow> 'V \<Rightarrow> ('W\<times>'V,'\<sigma>) iteratori_tmpl"
+    "'G \<Rightarrow> 'V \<Rightarrow> ('W\<times>'V,'\<sigma>) set_iterator"
   locale graph_succ_it = graph +
     constrains \<alpha> :: "'G \<Rightarrow> ('V,'W) graph"
-    fixes succ_it :: "'G \<Rightarrow> 'V \<Rightarrow> ('W\<times>'V,'\<sigma>) iteratori_tmpl"
+    fixes succ_it :: "'G \<Rightarrow> 'V \<Rightarrow> ('W\<times>'V,'\<sigma>) set_iterator"
     assumes succ_it_correct:
-      "invar g \<Longrightarrow> set_iteratori (succ_it g v) (Graph.succ (\<alpha> g) v)"
+      "invar g \<Longrightarrow> set_iterator (succ_it g v) (Graph.succ (\<alpha> g) v)"
 
   subsection "Adjacency Lists"
   type_synonym ('V,'W) adj_list = "'V list \<times> ('V\<times>'W\<times>'V) list"
@@ -153,16 +153,16 @@ begin
   end
 
   subsection {* Refinement Framework Bindings *}
-  lemma (in graph_nodes_it) nodes_it_is_iteratori[refine_transfer]:
-    "invar g \<Longrightarrow> set_iteratori (nodes_it g) (nodes (\<alpha> g))"
+  lemma (in graph_nodes_it) nodes_it_is_iterator[refine_transfer]:
+    "invar g \<Longrightarrow> set_iterator (nodes_it g) (nodes (\<alpha> g))"
     by (rule nodes_it_correct)
 
-  lemma (in graph_edges_it) edges_it_is_iteratori[refine_transfer]:
-    "invar g \<Longrightarrow> set_iteratori (edges_it g) (edges (\<alpha> g))"
+  lemma (in graph_edges_it) edges_it_is_iterator[refine_transfer]:
+    "invar g \<Longrightarrow> set_iterator (edges_it g) (edges (\<alpha> g))"
     by (rule edges_it_correct)
     
-  lemma (in graph_succ_it) succ_it_is_iteratori[refine_transfer]:
-    "invar g \<Longrightarrow> set_iteratori (succ_it g v) (Graph.succ (\<alpha> g) v)"
+  lemma (in graph_succ_it) succ_it_is_iterator[refine_transfer]:
+    "invar g \<Longrightarrow> set_iterator (succ_it g v) (Graph.succ (\<alpha> g) v)"
     by (rule succ_it_correct)
 
   lemma (in graph) drh[refine_dref_RELATES]: "RELATES (build_rel \<alpha> invar)"
@@ -172,17 +172,17 @@ begin
 
   lemma (in graph_nodes_it) graph_nodes_it_t[trans_uc]:
     "DETREFe g (build_rel \<alpha> invar) g' \<Longrightarrow> 
-      set_iteratori (nodes_it g) (nodes g')"
+      set_iterator (nodes_it g) (nodes g')"
     using nodes_it_correct by auto
 
   lemma (in graph_succ_it) graph_succ_it_t[trans_uc]:
     "DETREFe g (build_rel \<alpha> invar) g' \<Longrightarrow> DETREFe v Id v' \<Longrightarrow>
-      set_iteratori (succ_it g v) (succ g' v')"
+      set_iterator (succ_it g v) (succ g' v')"
     using succ_it_correct by auto
 
   lemma (in graph_edges_it) graph_edges_it_t[trans_uc]:
     "DETREFe g (build_rel \<alpha> invar) g' \<Longrightarrow> 
-      set_iteratori (edges_it g) (edges g')"
+      set_iterator (edges_it g) (edges g')"
     using edges_it_correct by auto*)
 
 end

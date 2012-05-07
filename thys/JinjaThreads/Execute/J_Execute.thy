@@ -44,7 +44,7 @@ abbreviation sc_J_start_state_refine ::
 where
   "sc_J_start_state_refine \<equiv> 
    sc_start_state_refine
-     rm_empty rm_update rm_empty rs_empty
+     (rm_empty ()) rm_update (rm_empty ()) (rs_empty ())
      (\<lambda>C M Ts T (pns, body) vs. (blocks (this # pns) (Class C # Ts) (Null # vs) body, empty))"
 
 lemma eval_sc_red_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o:
@@ -83,7 +83,7 @@ by(unfold_locales)
 interpretation J_rr!: 
   sc_scheduler
     final_expr "sc_red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA
-    "J_rr.round_robin P n0" Jinja_output "pick_wakeup_via_sel rm_sel'" J_rr.round_robin_invar
+    "J_rr.round_robin P n0" Jinja_output "pick_wakeup_via_sel (\<lambda>s P. rm_sel' s (\<lambda>(k,v). P k v))" J_rr.round_robin_invar
     UNIV
   for P n0
 unfolding sc_scheduler_def
@@ -120,7 +120,7 @@ by(unfold_locales)
 interpretation J_rnd!:
   sc_scheduler
     final_expr "sc_red_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA
-    "J_rnd.random_scheduler P" Jinja_output "pick_wakeup_via_sel rm_sel'" "\<lambda>_ _. True"
+    "J_rnd.random_scheduler P" Jinja_output "pick_wakeup_via_sel (\<lambda>s P. rm_sel' s (\<lambda>(k,v). P k v))" "\<lambda>_ _. True"
     UNIV
   for P
 unfolding sc_scheduler_def

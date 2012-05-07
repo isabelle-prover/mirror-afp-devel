@@ -8,7 +8,6 @@ imports
   Main
 
   "~~/src/HOL/Library/Efficient_Nat" 
-  "../Collections/common/Misc" 
   "../Collections/Collections" 
 
   Ta AbsAlgo
@@ -504,14 +503,14 @@ definition \<delta>_prod_h
   :: "('q1::hashable,'l::hashable) ta_rule ls 
       \<Rightarrow> ('q2::hashable,'l) ta_rule ls \<Rightarrow> ('q1\<times>'q2,'l) ta_rule ls" 
   where "\<delta>_prod_h \<delta>1 \<delta>2 == 
-    lll_inj_image_filter_cp (r_prod) 
-                (\<lambda>r1 r2. rhsl r1 = rhsl r2 
+    lll_inj_image_filter_cp (\<lambda>(r1,r2). r_prod r1 r2) 
+                (\<lambda>(r1,r2). rhsl r1 = rhsl r2 
                          \<and> length (rhsq r1) = length (rhsq r2)) 
                 \<delta>1 \<delta>2"
 
 lemma r_prod_inj: 
-  "\<lbrakk> rhsl r1 = rhsl r2 \<and> length (rhsq r1) = length (rhsq r2); 
-     rhsl r1' = rhsl r2' \<and> length (rhsq r1') = length (rhsq r2'); 
+  "\<lbrakk> rhsl r1 = rhsl r2; length (rhsq r1) = length (rhsq r2); 
+     rhsl r1' = rhsl r2'; length (rhsq r1') = length (rhsq r2'); 
      r_prod r1 r2 = r_prod r1' r2' \<rbrakk> \<Longrightarrow> r1=r1' \<and> r2=r2'"
   apply (cases r1, cases r2, cases r1', cases r2')
   apply (auto dest: zip_inj)
@@ -523,7 +522,10 @@ lemma \<delta>_prod_h_correct:
     "ls_\<alpha> (\<delta>_prod_h \<delta>1 \<delta>2) = \<delta>_prod (ls_\<alpha> \<delta>1) (ls_\<alpha> \<delta>2)"
     "ls_invar (\<delta>_prod_h \<delta>1 \<delta>2)"
   apply (unfold \<delta>_prod_def \<delta>_prod_h_def)
-  apply (auto simp add: lll_inj_image_filter_cp_correct r_prod_inj)
+  apply (subst lll_inj_image_filter_cp_correct)
+  using r_prod_inj
+  apply (auto) [2]
+  apply auto
   apply (case_tac xa, case_tac y, simp, blast)
   apply force
   done
@@ -598,8 +600,8 @@ definition pa_step
     (Q,W,\<delta>d)=S;
     (q1,q2)=hd W
   in  
-    ls_iterate (\<lambda>r1 res. 
-      ls_iterate (\<lambda>r2 res.
+    ls_iteratei (hta_lookup_s q1 H1) (\<lambda>_. True) (\<lambda>r1 res. 
+      ls_iteratei (hta_lookup_sf q2 (rhsl r1) H2) (\<lambda>_. True) (\<lambda>r2 res.
         if (length (rhsq r1) = length (rhsq r2)) then
           let 
             rp=r_prod r1 r2;
@@ -609,8 +611,8 @@ definition pa_step
             (Q',W',ls_ins_dj rp \<delta>d)
         else
           res
-      ) (hta_lookup_sf q2 (rhsl r1) H2) res
-    ) (hta_lookup_s q1 H1) (Q,tl W,\<delta>d)
+      ) res
+    ) (Q,tl W,\<delta>d)
   "
 
 definition pa_initial 
@@ -621,7 +623,7 @@ where "pa_initial H1 H2 ==
   let Qip = hhh_cart (hta_Qi H1) (hta_Qi H2) in (
     Qip,
     hs_to_list Qip,
-    ls_empty
+    ls_empty ()
   )"
 
 definition pa_invar_add:: 
@@ -1178,11 +1180,11 @@ text {*
   *}
 
 -- "The empty automaton"
-definition hta_empty :: "('q::hashable,'l::hashable) hashedTa" 
-  where "hta_empty == init_hta hs_empty ls_empty"
+definition hta_empty :: "unit \<Rightarrow> ('q::hashable,'l::hashable) hashedTa" 
+  where "hta_empty u == init_hta (hs_empty ()) (ls_empty ())"
 lemma hta_empty_correct [simp, intro!]: 
-  shows "(hta_\<alpha> hta_empty) = ta_empty"
-        "hashedTa hta_empty"
+  shows "(hta_\<alpha> (hta_empty ())) = ta_empty"
+        "hashedTa (hta_empty ())"
   apply (auto
     simp add: init_hta_def hta_empty_def hta_\<alpha>_def \<delta>_states_def ta_empty_def
               hs_correct ls_correct)
@@ -1272,13 +1274,13 @@ text {*
   -- "Add an entry to the index"
 definition "rqrm_add q r res ==
   case hm_lookup q res of
-    None \<Rightarrow> hm_update q (ls_ins r ls_empty) res |
+    None \<Rightarrow> hm_update q (ls_ins r (ls_empty ())) res |
     Some s \<Rightarrow> hm_update q (ls_ins r s) res
   "
 
   -- "Lookup the set of rules with given state on rhs"
 definition "rqrm_lookup rqrm q == case hm_lookup q rqrm of
-  None \<Rightarrow> ls_empty |
+  None \<Rightarrow> ls_empty () |
   Some s \<Rightarrow> s
   "
 
@@ -1288,11 +1290,11 @@ definition build_rqrm
       \<Rightarrow> ('q,('q,'l) ta_rule ls) hm" 
   where
   "build_rqrm \<delta> ==
-    ls_iterate 
+    ls_iteratei \<delta> (\<lambda>_. True)
       (\<lambda>r res. 
         foldl (\<lambda>res q. rqrm_add q r res) res (rhsq r)
       )
-      \<delta> hm_empty
+      (hm_empty ())
   "
 
 -- "Whether the index satisfies the map and set invariants"
@@ -1411,19 +1413,21 @@ definition brc_step
       \<Rightarrow> ('q,'l) brc_state" 
 where 
   "brc_step rqrm == \<lambda>(Q,W,rcm).
-    ls_iterate brc_inner_step (rqrm_lookup rqrm (hd W)) (Q,tl W, rcm)
-  "
+    ls_iteratei (rqrm_lookup rqrm (hd W)) (\<lambda>_. True) brc_inner_step 
+      (Q,tl W, rcm)"
 
   -- "Initial concrete state"
 definition brc_iq :: "('q,'l) ta_rule ls \<Rightarrow> 'q::hashable hs" 
-  where "brc_iq \<delta> == lh_image_filter (\<lambda>r. if rhsq r = [] then Some (lhs r) else None) \<delta>"
+  where "brc_iq \<delta> == lh_image_filter (\<lambda>r. 
+    if rhsq r = [] then Some (lhs r) else None) \<delta>"
 
 definition brc_rcm_init 
   :: "('q::hashable,'l::hashable) ta_rule ls 
       \<Rightarrow> (('q,'l) ta_rule,nat) hm" 
   where "brc_rcm_init \<delta> == 
-    ls_iterate (\<lambda>r res. hm_update r ((length (remdups (rhsq r)))) res) 
-               \<delta> hm_empty"
+    ls_iteratei \<delta> (\<lambda>_. True) 
+      (\<lambda>r res. hm_update r ((length (remdups (rhsq r)))) res) 
+      (hm_empty ())"
 
 definition brc_initial 
   :: "('q::hashable,'l::hashable) ta_rule ls \<Rightarrow> ('q,'l) brc_state" 
@@ -1529,7 +1533,7 @@ proof -
   from A show ?thesis
     apply (simp add: brc_step_def)
     apply (rule 
-      br'_inner_step_proof[OF ls_iterate_impl, 
+      br'_inner_step_proof[OF ls_iteratei_impl, 
          where cinvar="\<lambda>it (Q,W,rcm). (Q,W,rcm)\<in>brc_invar_add 
                                       \<and> set W \<subseteq> hs_\<alpha> Q" and 
                q="hd W"])
@@ -1698,18 +1702,19 @@ definition brec_step
   :: "('q,('q,'l) ta_rule ls) hm \<Rightarrow> 'q hs 
       \<Rightarrow> ('q::hashable,'l::hashable) brec_state 
       \<Rightarrow> ('q,'l) brec_state" 
-where "brec_step rqrm Qi == \<lambda>(Q,W,rcm,qwit).
+  where "brec_step rqrm Qi == \<lambda>(Q,W,rcm,qwit).
     let (q,W')=fifo_dequeue W in 
-      ls_iterate (brec_inner_step Qi) (rqrm_lookup rqrm q) (Q,W',rcm,qwit)
+      ls_iteratei (rqrm_lookup rqrm q) (\<lambda>_. True) 
+        (brec_inner_step Qi) (Q,W',rcm,qwit)
   "
 
 definition brec_iqm 
   :: "('q::hashable,'l::hashable) ta_rule ls \<Rightarrow> ('q,'l tree) hm" 
   where "brec_iqm \<delta> == 
-    ls_iterate (\<lambda>r m. if rhsq r = [] then 
+    ls_iteratei \<delta> (\<lambda>_. True) (\<lambda>r m. if rhsq r = [] then 
                          hm_update (lhs r) (NODE (rhsl r) []) m 
                       else m) 
-               \<delta> hm_empty"
+                (hm_empty ())"
 
 definition brec_initial 
   :: "'q hs \<Rightarrow> ('q::hashable,'l::hashable) ta_rule ls 
@@ -1885,7 +1890,7 @@ proof -
     apply simp
 
     apply (rule brw_inner_step_proof[
-      OF ls_iterate_impl, 
+      OF ls_iteratei_impl, 
       where cinvar="\<lambda>it \<Sigma>. \<Sigma>\<in>brec_invar_inner (hs_\<alpha> Qi)" and 
             q="hd (fifo_\<alpha> W)"])
     apply assumption
@@ -2077,7 +2082,7 @@ definition htai_prodWR :: "htai \<Rightarrow> htai \<Rightarrow> htai"
   where "htai_prodWR H1 H2 == hta_reindex (hta_prodWR H1 H2)"
 definition htai_union :: "htai \<Rightarrow> htai \<Rightarrow> htai" 
   where "htai_union H1 H2 == hta_reindex (hta_union H1 H2)"
-definition htai_empty :: htai 
+definition htai_empty :: "unit \<Rightarrow> htai"
   where "htai_empty == hta_empty"
 definition htai_add_qi :: "_ \<Rightarrow> htai \<Rightarrow> htai" 
   where "htai_add_qi == hta_add_qi"
@@ -2107,8 +2112,8 @@ begin
   lemmas htai_mem_correct = hta_mem_correct[folded htai_mem_def]
 
   lemma htai_empty_correct[simp]:
-    "hta_\<alpha> htai_empty = ta_empty"
-    "hashedTa htai_empty"
+    "hta_\<alpha> (htai_empty ()) = ta_empty"
+    "hashedTa (htai_empty ())"
   by (auto simp add: htai_empty_def hta_empty_correct)
 
   lemmas htai_add_qi_correct = hta_add_qi_correct[folded htai_add_qi_def]
