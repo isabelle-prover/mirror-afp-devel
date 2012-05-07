@@ -138,7 +138,7 @@ lemma tllist_quotient [quot_thm]:
   \<Longrightarrow> Quotient3 (tllist_all2 R1 R2) (tmap Abs1 Abs2) (tmap Rep1 Rep2)"
 by(blast intro: Quotient3I dest: Quotient3_tmap_Abs_Rep Quotient3_tllist_all2_tmap_tmapI tllist_all2_rel)
 
-declare [[map tllist = (tllist_all2, tllist_quotient)]]
+declare [[mapQ3 tllist = (tllist_all2, tllist_quotient)]]
 
 lemma TCons_preserve [quot_preserve]:
   assumes q1: "Quotient3 R1 Abs1 Rep1"

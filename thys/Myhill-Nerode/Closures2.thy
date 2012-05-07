@@ -1,125 +1,90 @@
 theory Closures2
 imports 
   Closures
-  "~~/src/HOL/Proofs/Extraction/Higman" 
+  "../Well_Quasi_Orders/Well_Quasi_Orders"
 begin
 
 section {* Closure under @{text SUBSEQ} and @{text SUPSEQ} *}
 
-(* compatibility with Higman theory by Stefan Berghofer *)
-notation
-  emb ("_ \<preceq> _")
+(* compatibility with Well_Quasi_Orders theory by Christian Sternagel *)
 
-declare  emb0 [intro]
-declare  emb1 [intro]
-declare  emb2 [intro]
-
-lemma letter_UNIV:
-  shows "UNIV = {A, B::letter}"
-apply(auto)
-apply(case_tac x)
-apply(auto)
-done
-
-instance letter :: finite
-apply(default)
-apply(simp add: letter_UNIV)
-done
-
-hide_const A
-hide_const B
-hide_const R
-
-(* definition of the embedding relation 
-inductive 
-  emb :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<preceq> _")
+abbreviation
+   emb2 :: "'a::finite list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<preceq> _")
 where
-   emb0 [intro]: "emb [] y"
- | emb1 [intro]: "emb x y \<Longrightarrow> emb x (c # y)"
- | emb2 [intro]: "emb x y \<Longrightarrow> emb (c # x) (c # y)"
-*)
+  "emb2 x y \<equiv> emb (op=) x y" 
+
+lemma 
+  shows emb2_Nil[intro]: "[] \<preceq> y"
+  and   emb2_Cons[intro]:"x \<preceq> y \<Longrightarrow> x \<preceq> (c # y)"
+  and   emb2_Cons2[intro]:"x \<preceq> y \<Longrightarrow> (c # x) \<preceq> (c # y)"
+by (auto)
 
 text {* Properties about the embedding relation *}
 
-lemma emb_refl [intro]:
+lemma emb2_refl [intro]:
   shows "x \<preceq> x"
-by (induct x) (auto)
+using wqo_on_imp_reflp_on[OF wqo_on_lists_over_finite_sets]
+by (auto simp add: reflp_on_def)
 
-lemma emb_right [intro]:
-  assumes a: "x \<preceq> y"
-  shows "x \<preceq> y @ y'"
-using a 
-by (induct arbitrary: y') (auto)
+lemma emb2_trans:
+  assumes a: "x1 \<preceq> x2"
+  and     b: "x2 \<preceq> x3"
+  shows "x1 \<preceq> x3"
+using a b wqo_on_imp_transp_on[OF wqo_on_lists_over_finite_sets]
+by (auto simp add: transp_on_def)
 
-lemma emb_left [intro]:
-  assumes a: "x \<preceq> y"
-  shows "x \<preceq> y' @ y"
-using a by (induct y') (auto)
-
-lemma emb_appendI [intro]:
+lemma emb2_appendI [intro]:
   assumes a: "x \<preceq> x'"
   and     b: "y \<preceq> y'"
   shows "x @ y \<preceq> x' @ y'"
 using a b by (induct) (auto)
 
-lemma emb_cons_leftD:
-  assumes "a # x \<preceq> y"
-  shows "\<exists>y1 y2. y = y1 @ [a] @ y2 \<and> x \<preceq> y2"
-using assms
-apply(induct x\<equiv>"a # x" y\<equiv>"y" arbitrary: a x y)
-apply(auto)
-apply(metis append_Cons)
-done
-
-lemma emb_append_leftD:
-  assumes "x1 @ x2 \<preceq> y"
-  shows "\<exists>y1 y2. y = y1 @ y2 \<and> x1 \<preceq> y1 \<and> x2 \<preceq> y2"
-using assms
-apply(induct x1 arbitrary: x2 y)
-apply(auto)
-apply(drule emb_cons_leftD)
-apply(auto)
-apply(drule_tac x="x2" in meta_spec)
-apply(drule_tac x="y2" in meta_spec)
-apply(auto)
-apply(rule_tac x="y1 @ (a # y1a)" in exI)
-apply(rule_tac x="y2a" in exI)
-apply(auto)
-done
-
-lemma emb_trans:
-  assumes a: "x1 \<preceq> x2"
-  and     b: "x2 \<preceq> x3"
-  shows "x1 \<preceq> x3"
-using a b
-apply(induct arbitrary: x3)
-apply(metis emb0)
-apply(metis emb_cons_leftD emb_left)
-apply(drule_tac emb_cons_leftD)
-apply(auto)
-done
-
-lemma emb_strict_length:
+lemma emb2_strict_length:
   assumes a: "x \<preceq> y" "x \<noteq> y" 
   shows "length x < length y"
 using a
 by (induct) (auto simp add: less_Suc_eq)
 
-lemma emb_antisym:
+lemma emb2_antisym:
   assumes a: "x \<preceq> y" "y \<preceq> x" 
   shows "x = y"
-using a emb_strict_length
+using a emb2_strict_length
 by (metis not_less_iff_gr_or_eq)
 
-lemma emb_wf:
+lemma emb2_wf:
   shows "wf {(x, y). x \<preceq> y \<and> x \<noteq> y}"
 proof -
   have "wf (measure length)" by simp
   moreover
   have "{(x, y). x \<preceq> y \<and> x \<noteq> y} \<subseteq> measure length"
-    unfolding measure_def by (auto simp add: emb_strict_length)
+    unfolding measure_def by (auto simp add: emb2_strict_length)
   ultimately 
   show "wf {(x, y). x \<preceq> y \<and> x \<noteq> y}" by (rule wf_subset)
+qed
+
+lemma emb2_goodp:
+  shows "goodp emb2 f"
+using wqo_on_imp_goodp[where f="f", OF wqo_on_lists_over_finite_sets]
+by simp
+
+lemma emb2_Higman_antichains:
+  assumes a: "\<forall>x \<in> A. \<forall>y \<in> A. x \<noteq> y \<longrightarrow> \<not>(x \<preceq> y) \<and> \<not>(y \<preceq> x)"
+  shows "finite A"
+proof (rule ccontr)
+  assume "infinite A"
+  then obtain f::"nat \<Rightarrow> 'a::finite list" where b: "inj f" and c: "range f \<subseteq> A"
+    by (auto simp add: infinite_iff_countable_subset)
+  from emb2_goodp[where f="f"] 
+  obtain i j where d: "i < j" and e: "f i \<preceq> f j \<or> f i = f j" 
+    unfolding goodp_def
+    by auto
+  have "f i \<noteq> f j" using b d by (auto simp add: inj_on_def)
+  moreover
+  have "f i \<in> A" using c by auto
+  moreover
+  have "f j \<in> A" using c by auto
+  ultimately have "\<not>(f i \<preceq> f j)" using a by simp
+  with e show "False" by auto
 qed
 
 subsection {* Sub- and Supersequences *}
@@ -138,7 +103,7 @@ unfolding SUPSEQ_def by auto
 lemma SUPSEQ_atom [simp]:
   shows "SUPSEQ {[c]} = UNIV \<cdot> {[c]} \<cdot> UNIV"
 unfolding SUPSEQ_def conc_def
-by (auto) (metis append_Cons emb_cons_leftD)
+by (auto dest: emb_ConsD)
 
 lemma SUPSEQ_union [simp]:
   shows "SUPSEQ (A \<union> B) = SUPSEQ A \<union> SUPSEQ B"
@@ -147,7 +112,10 @@ unfolding SUPSEQ_def by auto
 lemma SUPSEQ_conc [simp]:
   shows "SUPSEQ (A \<cdot> B) = SUPSEQ A \<cdot> SUPSEQ B"
 unfolding SUPSEQ_def conc_def
-by (auto) (metis emb_append_leftD)
+apply(auto)
+apply(drule emb_appendD)
+apply(auto)
+done
 
 lemma SUPSEQ_star [simp]:
   shows "SUPSEQ (A\<star>) = UNIV"
@@ -193,21 +161,22 @@ where
 | "UP (Star r) = Star Allreg"
 
 lemma lang_UP:
-  fixes r::"letter rexp"
+  fixes r::"'a::finite rexp"
   shows "lang (UP r) = SUPSEQ (lang r)"
 by (induct r) (simp_all)
 
-lemma regular_SUPSEQ: 
-  fixes A::"letter lang"
+lemma SUPSEQ_regular: 
+  fixes A::"'a::finite lang"
   assumes "regular A"
   shows "regular (SUPSEQ A)"
 proof -
-  from assms obtain r::"letter rexp" where "lang r = A" by auto
+  from assms obtain r::"'a::finite rexp" where "lang r = A" by auto
   then have "lang (UP r) = SUPSEQ A" by (simp add: lang_UP)
   then show "regular (SUPSEQ A)" by auto
 qed
 
 lemma SUPSEQ_subset:
+  fixes A::"'a::finite list set"
   shows "A \<subseteq> SUPSEQ A"
 unfolding SUPSEQ_def by auto
 
@@ -231,7 +200,8 @@ proof -
     then obtain x' where f: "x' \<in> A" and e: "x \<preceq> x'"
       by (auto simp add: SUBSEQ_def)
     
-    from d e have "y \<preceq> x'" by (rule emb_trans)
+    from d e have "y \<preceq> x'"
+      by (rule emb2_trans)
     then have "y \<in> SUBSEQ A" using f
       by (auto simp add: SUBSEQ_def)
     with c show "False" by simp
@@ -239,25 +209,8 @@ proof -
   ultimately show "- (SUBSEQ A) = SUPSEQ (- (SUBSEQ A))" by simp
 qed
 
-lemma Higman_antichains:
-  assumes a: "\<forall>x \<in> A. \<forall>y \<in> A. x \<noteq> y \<longrightarrow> \<not>(x \<preceq> y) \<and> \<not>(y \<preceq> x)"
-  shows "finite A"
-proof (rule ccontr)
-  assume "infinite A"
-  then obtain f::"nat \<Rightarrow> letter list" where b: "inj f" and c: "range f \<subseteq> A"
-    by (auto simp add: infinite_iff_countable_subset)
-  from higman_idx obtain i j where d: "i < j" and e: "f i \<preceq> f j" by blast
-  have "f i \<noteq> f j" using b d by (auto simp add: inj_on_def)
-  moreover
-  have "f i \<in> A" using c by auto
-  moreover
-  have "f j \<in> A" using c by auto
-  ultimately have "\<not>(f i \<preceq> f j)" using a by simp
-  with e show "False" by simp
-qed
-
 definition
-  minimal :: "letter list \<Rightarrow> letter lang \<Rightarrow> bool"
+  minimal :: "'a::finite list \<Rightarrow> 'a lang \<Rightarrow> bool"
 where
   "minimal x A \<equiv> (\<forall>y \<in> A. y \<preceq> x \<longrightarrow> x \<preceq> y)"
 
@@ -267,7 +220,7 @@ proof -
   def M \<equiv> "{x \<in> A. minimal x A}"
   have "finite M"
     unfolding M_def minimal_def
-    by (rule Higman_antichains) (auto simp add: emb_antisym)
+    by (rule emb2_Higman_antichains) (auto simp add: emb2_antisym)
   moreover
   have "SUPSEQ A \<subseteq> SUPSEQ M"
   proof
@@ -276,10 +229,10 @@ proof -
     then obtain y where "y \<in> A" and "y \<preceq> x" by (auto simp add: SUPSEQ_def)
     then have a: "y \<in> {y' \<in> A. y' \<preceq> x}" by simp
     obtain z where b: "z \<in> A" "z \<preceq> x" and c: "\<forall>y. y \<preceq> z \<and> y \<noteq> z \<longrightarrow> y \<notin> {y' \<in> A. y' \<preceq> x}"
-      using wfE_min[OF emb_wf a] by auto
+      using wfE_min[OF emb2_wf a] by auto
     then have "z \<in> M"
       unfolding M_def minimal_def
-      by (auto intro: emb_trans)
+      by (auto intro: emb2_trans)
     with b(2) show "x \<in> SUPSEQ M"
       by (auto simp add: SUPSEQ_def)
   qed
@@ -293,18 +246,18 @@ qed
 subsection {* Closure of @{const SUBSEQ} and @{const SUPSEQ} *}
 
 lemma closure_SUPSEQ:
-  fixes A::"letter lang" 
+  fixes A::"'a::finite lang" 
   shows "regular (SUPSEQ A)"
 proof -
   obtain M where a: "finite M" and b: "SUPSEQ A = SUPSEQ M"
     using main_lemma by blast
   have "regular M" using a by (rule finite_regular)
-  then have "regular (SUPSEQ M)" by (rule regular_SUPSEQ)
+  then have "regular (SUPSEQ M)" by (rule SUPSEQ_regular)
   then show "regular (SUPSEQ A)" using b by simp
 qed
 
 lemma closure_SUBSEQ:
-  fixes A::"letter lang"
+  fixes A::"'a::finite lang"
   shows "regular (SUBSEQ A)"
 proof -
   have "regular (SUPSEQ (- SUBSEQ A))" by (rule closure_SUPSEQ)

@@ -45,8 +45,8 @@ end
 subsection {* Lists are Well-Quasi-Ordered *}
 
 text {*If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then
-lists of type @{typ "'a list"} are well-quasi-ordered by
-@{term "\<lambda>xs ys. set_le P (set xs) (set ys)"}.*}
+lists of type @{typ "'a list"} are well-quasi-ordered by the embedding
+relation.*}
 
 instantiation list :: (wqo) wqo
 begin

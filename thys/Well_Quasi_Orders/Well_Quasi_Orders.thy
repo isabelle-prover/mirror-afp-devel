@@ -76,12 +76,22 @@ lemma wqo_on_imp_goodp:
   "wqo_on P A \<Longrightarrow> \<forall>i. f i \<in> A \<Longrightarrow> goodp P f"
   by (auto simp: wqo_on_def)
 
+lemma wqo_on_subset:
+  "A \<subseteq> B \<Longrightarrow> wqo_on P B \<Longrightarrow> wqo_on P A"
+  using reflp_on_subset[of A B P]
+    and transp_on_subset[of A B P]
+  unfolding wqo_on_def by blast
+
+
 subsection {* A Typeclass for Well-Quasi-Orders *}
 
 text {*In a well-quasi-order (wqo) every infinite sequence is good.*}
 class wqo = preorder +
   assumes good: "goodp (op \<le>) f"
 
+text {*The following lemma converts between @{const wqo_on} (for the special
+case that the domain is the universe of a type) and the class predicate
+@{const class.wqo}.*}
 lemma wqo_on_UNIV_conv:
   "wqo_on P UNIV \<longleftrightarrow> class.wqo P (\<lambda>x y. P x y \<and> \<not> P y x)"
   unfolding wqo_on_def class.wqo_def class.preorder_def class.wqo_axioms_def
@@ -170,7 +180,7 @@ next
 qed
 
 
-subsection {* Higman's Lemma *}
+subsection {* Piecing Together Infinite Sequences *}
 
 text {*Replace the elements of an infinite sequence, starting from a given
 position, by those of another infinite sequence.*}
@@ -221,12 +231,6 @@ proof
   moreover from `i < j` have "f i < f j" using assms by auto
   ultimately show False using assms(3) by (auto simp: goodp_def)
 qed
-
-lemma wqo_on_subset:
-  "A \<subseteq> B \<Longrightarrow> wqo_on P B \<Longrightarrow> wqo_on P A"
-  using reflp_on_subset[of A B P]
-    and transp_on_subset[of A B P]
-  unfolding wqo_on_def by blast
 
 lemma no_bad_of_special_shape_imp_goodp:
   assumes "\<not> (\<exists>f:: nat seq. (\<forall>i. f 0 \<le> f i) \<and> bad P (B \<circ> f))"
