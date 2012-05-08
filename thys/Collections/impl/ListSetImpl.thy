@@ -32,8 +32,10 @@ text {*
   @{text "list_to_lm_dj"} below.
 *}
 definition ls_ins_dj :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_ins_dj == Dlist.insert"
-definition ls_delete :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_delete == remove'"
-definition ls_iteratei :: "'a ls \<Rightarrow> ('a,'\<sigma>) set_iterator" where "ls_iteratei == iteratei"
+definition ls_delete :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" 
+  where "ls_delete == dlist_remove'"
+definition ls_iteratei :: "'a ls \<Rightarrow> ('a,'\<sigma>) set_iterator" 
+  where "ls_iteratei == dlist_iteratei"
 
 definition ls_isEmpty :: "'a ls \<Rightarrow> bool" where "ls_isEmpty == Dlist.null"
 
@@ -84,7 +86,7 @@ lemmas ls_defs =
 
 
 lemma ls_empty_impl: "set_empty ls_\<alpha> ls_invar ls_empty"
-by(unfold_locales)(auto simp add: ls_defs member_empty)
+  by(unfold_locales)(auto simp add: ls_defs dlist_member_empty)
 
 lemma ls_memb_impl: "set_memb ls_\<alpha> ls_invar ls_memb"
   apply (unfold_locales)
@@ -99,7 +101,7 @@ by(unfold_locales)(auto simp add: ls_defs)
 
 lemma ls_delete_impl: "set_delete ls_\<alpha> ls_invar ls_delete"
   apply (unfold_locales)
-  apply (auto simp add: ls_defs remove'_correct set_remove1' 
+  apply (auto simp add: ls_defs dlist_remove'_correct set_dlist_remove1' 
     split: split_if_asm)
   done
 
@@ -110,7 +112,7 @@ lemma ls_is_finite_set: "finite_set ls_\<alpha> ls_invar"
 by(unfold_locales)(auto simp add: ls_defs)
 
 lemma ls_iteratei_impl: "set_iteratei ls_\<alpha> ls_invar ls_iteratei"
-by(unfold_locales)(unfold ls_defs, simp, rule iteratei_correct)
+by(unfold_locales)(unfold ls_defs, simp, rule dlist_iteratei_correct)
 
 lemma ls_isEmpty_impl: "set_isEmpty ls_\<alpha> ls_invar ls_isEmpty"
 by (unfold_locales) (auto simp add: ls_defs null_def member_def List.null_def List.member_def)

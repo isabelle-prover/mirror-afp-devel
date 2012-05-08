@@ -31,7 +31,7 @@ definition lsi_memb :: "'a \<Rightarrow> 'a lsi \<Rightarrow> bool" where "lsi_m
 definition lsi_ins :: "'a \<Rightarrow> 'a lsi \<Rightarrow> 'a lsi" where "lsi_ins x l == if  List.member l x then l else x#l"
 definition lsi_ins_dj :: "'a \<Rightarrow> 'a lsi \<Rightarrow> 'a lsi" where "lsi_ins_dj x l == x#l"
 
-definition lsi_delete :: "'a \<Rightarrow> 'a lsi \<Rightarrow> 'a lsi" where "lsi_delete x l == Dlist_add.remove1' x [] l"
+definition lsi_delete :: "'a \<Rightarrow> 'a lsi \<Rightarrow> 'a lsi" where "lsi_delete x l == Dlist_add.dlist_remove1' x [] l"
 
 definition lsi_iteratei :: "'a lsi \<Rightarrow> ('a,'\<sigma>) set_iterator" 
 where "lsi_iteratei = foldli"
@@ -97,7 +97,8 @@ lemma lsi_ins_dj_impl: "set_ins_dj lsi_\<alpha> lsi_invar lsi_ins_dj"
 by (unfold_locales) (auto simp add: lsi_defs)
 
 lemma lsi_delete_impl: "set_delete lsi_\<alpha> lsi_invar lsi_delete"
-by(unfold_locales)(simp_all add: lsi_defs set_remove1' distinct_remove1')
+by(unfold_locales)(simp_all add: lsi_defs set_dlist_remove1' 
+  distinct_remove1')
 
 lemma lsi_\<alpha>_finite[simp, intro!]: "finite (lsi_\<alpha> l)"
   by (auto simp add: lsi_defs)
