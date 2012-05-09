@@ -32,6 +32,7 @@ proof induct
                   insert.hyps setsum_Un_disjoint Pow_insert)
 qed simp
 
+text {* Definition of the probability space on edges *}
 locale edge_space =
   fixes n :: nat and p :: real
   assumes p_prob: "0 \<le> p" "p \<le> 1"
@@ -81,7 +82,7 @@ lemma borel_measurable_P[intro, simp]: "f \<in> borel_measurable P"
   
 lemma prob_space_P: "prob_space P"
 proof
-  show "emeasure P (space P) = 1"
+  show "emeasure P (space P) = 1" -- {* Sum of probabilities equals 1 *}
     using finite_edges by (simp add: emeasure_eq full_sum one_ereal_def space_eq)
 qed
 
@@ -101,6 +102,7 @@ lemma integral_finite_singleton: "integral\<^isup>L P f = (\<Sum>x\<in>Pow S_edg
   using p_prob prob_eq unfolding P_def
   by (subst lebesgue_integral_point_measure_finite) (auto intro!: setsum_cong mult_nonneg_nonneg)
 
+text {* Probability of cylinder sets *}
 lemma cylinder_prob:
   assumes "A \<subseteq> S_edges" "B \<subseteq> S_edges" "A \<inter> B = {}"
   shows "prob (cylinder S_edges A B) = p ^ (card A) * (1 - p) ^ (card B)" (is "_ = ?pp A B")
@@ -172,21 +174,21 @@ definition short_cycles :: "ugraph \<Rightarrow> nat \<Rightarrow> uwalk set" wh
   "short_cycles G k \<equiv> {p \<in> ucycles G. uwalk_length p \<le> k}"
 
 text {* obtains a vertex in a short cycle *}
-definition obtain_short_vert :: "ugraph \<Rightarrow> nat \<Rightarrow> uvert" where
-  "obtain_short_vert G k \<equiv> SOME u. \<exists>p. p \<in> short_cycles G k \<and> u \<in> set p"
+definition choose_v :: "ugraph \<Rightarrow> nat \<Rightarrow> uvert" where
+  "choose_v G k \<equiv> SOME u. \<exists>p. p \<in> short_cycles G k \<and> u \<in> set p"
 
-partial_function (tailrec) kill_short_cycles :: "ugraph \<Rightarrow> nat \<Rightarrow> ugraph" where
-  "kill_short_cycles G k = (if short_cycles G k = {} then G else (kill_short_cycles (G -- (obtain_short_vert G k)) k))"
+partial_function (tailrec) kill_short :: "ugraph \<Rightarrow> nat \<Rightarrow> ugraph" where
+  "kill_short G k = (if short_cycles G k = {} then G else (kill_short (G -- (choose_v G k)) k))"
 
 lemma ksc_simps[simp]:
-  "short_cycles G k = {} \<Longrightarrow> kill_short_cycles G k = G"
-  "short_cycles G k \<noteq> {}  \<Longrightarrow> kill_short_cycles G k = kill_short_cycles (G -- (obtain_short_vert G k)) k"
-  by (auto simp: kill_short_cycles.simps)
+  "short_cycles G k = {} \<Longrightarrow> kill_short G k = G"
+  "short_cycles G k \<noteq> {}  \<Longrightarrow> kill_short G k = kill_short (G -- (choose_v G k)) k"
+  by (auto simp: kill_short.simps)
 
-lemma osv_in_short_cycles:
+lemma
   assumes "short_cycles G k \<noteq> {}"
-  shows osv_in_uverts: "obtain_short_vert G k \<in> uverts G" (is ?t1)
-    and osv_in_short: "\<exists>p. p \<in> short_cycles G k \<and> obtain_short_vert G k \<in> set p" (is ?t2)
+  shows choose_v__in_uverts: "choose_v G k \<in> uverts G" (is ?t1)
+    and choose_v__in_short: "\<exists>p. p \<in> short_cycles G k \<and> choose_v G k \<in> set p" (is ?t2)
 proof -
   from assms obtain p where "p \<in> ucycles G" "uwalk_length p \<le> k"
     unfolding short_cycles_def by auto
@@ -195,35 +197,36 @@ proof -
     by (cases p) (auto simp: uwalk_length_conv)
   ultimately have "\<exists>u p. p \<in> short_cycles G k \<and> u \<in> set p"
     by (auto simp: short_cycles_def)
-  then show ?t2 by (auto simp: obtain_short_vert_def intro!: someI_ex)
+  then show ?t2 by (auto simp: choose_v_def intro!: someI_ex)
   then show ?t1 by (auto simp: short_cycles_def ucycles_def uwalks_def)
 qed
 
 lemma kill_step_smaller:
   assumes "short_cycles G k \<noteq> {}"
-  shows "short_cycles (G -- (obtain_short_vert G k)) k \<subset> short_cycles G k"
+  shows "short_cycles (G -- (choose_v G k)) k \<subset> short_cycles G k"
 proof -
-  let ?osv = "obtain_short_vert G k"
-  from assms obtain p where "p \<in> short_cycles G k" "?osv \<in> set p"
-    by atomize_elim (rule osv_in_short)
+  let ?cv = "choose_v G k"
+  from assms obtain p where "p \<in> short_cycles G k" "?cv \<in> set p"
+    by atomize_elim (rule choose_v__in_short)
 
-  have "short_cycles (G -- ?osv) k \<subseteq> short_cycles G k"
+  have "short_cycles (G -- ?cv) k \<subseteq> short_cycles G k"
   proof
-    fix p assume "p \<in> short_cycles (G -- ?osv) k"
+    fix p assume "p \<in> short_cycles (G -- ?cv) k"
     then show "p \<in> short_cycles G k"
       unfolding short_cycles_def ucycles_def uwalks_def
-      using edges_Gu[of G ?osv] by (auto simp: verts_Gu)
+      using edges_Gu[of G ?cv] by (auto simp: verts_Gu)
   qed
-  moreover have "p \<notin> short_cycles (G -- ?osv) k"
-    using `?osv \<in> set p` by (auto simp: short_cycles_def ucycles_def uwalks_def verts_Gu)
+  moreover have "p \<notin> short_cycles (G -- ?cv) k"
+    using `?cv \<in> set p` by (auto simp: short_cycles_def ucycles_def uwalks_def verts_Gu)
   ultimately show ?thesis using `p \<in> short_cycles G k` by auto
 qed
 
-lemma ksc_induct[consumes 1, case_names empty kill_vert]:
+text {* Induction rule for @{term kill_short} *}
+lemma kill_short_induct[consumes 1, case_names empty kill_vert]:
   assumes fin: "finite (uverts G)"
   assumes a_empty: "\<And>G. short_cycles G k = {} \<Longrightarrow> P G k"
   assumes a_kill: "\<And>G. finite (short_cycles G k) \<Longrightarrow> short_cycles G k \<noteq> {}
-    \<Longrightarrow> P (G -- (obtain_short_vert G k)) k \<Longrightarrow> P G k"
+    \<Longrightarrow> P (G -- (choose_v G k)) k \<Longrightarrow> P G k"
   shows "P G k"
 proof -
   have "finite (short_cycles G k)"
@@ -233,33 +236,35 @@ proof -
       (metis kill_step_smaller a_kill a_empty)
 qed
 
-lemma girth_kill:
+text {* Large Girth (after @{term kill_short}) *}
+lemma kill_short_large_girth:
   assumes "finite (uverts G)"
-  shows "k < girth (kill_short_cycles G k)"
+  shows "k < girth (kill_short G k)"
 using assms
-proof (induct G k rule: ksc_induct)
+proof (induct G k rule: kill_short_induct)
   case (empty G)
   then have "\<And>p. p \<in> ucycles G \<Longrightarrow> k < enat (uwalk_length p)"
     by (auto simp: short_cycles_def)
   with empty show ?case by (auto simp: girth_def intro: enat_less_INF_I)
 qed simp
 
-lemma card_verts_kill:
+text {* Order of graph (after @{term kill_short}) *}
+lemma kill_short_order_of_graph:
   assumes "finite (uverts G)"
-  shows "card (uverts G) - card (short_cycles G k) \<le> card (uverts (kill_short_cycles G k))"
+  shows "card (uverts G) - card (short_cycles G k) \<le> card (uverts (kill_short G k))"
 using assms assms
-proof (induct G k rule: ksc_induct)
+proof (induct G k rule: kill_short_induct)
   case (kill_vert G)
-  let ?oG = "G -- (obtain_short_vert G k)"
+  let ?oG = "G -- (choose_v G k)"
 
   have "finite (uverts ?oG)"
     using kill_vert by (auto simp: remove_vertex_def)
   moreover
-  have "uverts (kill_short_cycles G k) = uverts (kill_short_cycles ?oG k)"
+  have "uverts (kill_short G k) = uverts (kill_short ?oG k)"
     using kill_vert by simp
   moreover
   have "card (uverts G) = Suc (card (uverts ?oG))"
-    using osv_in_uverts kill_vert
+    using choose_v__in_uverts kill_vert
     by (simp add: remove_vertex_def card_Suc_Diff1 del: card_Diff_insert)
   moreover
   have "card (short_cycles ?oG k) < card (short_cycles G k)"
@@ -267,24 +272,26 @@ proof (induct G k rule: ksc_induct)
   ultimately show ?case using kill_vert.hyps by presburger
 qed simp
 
-lemma \<alpha>_kill_short_verts:
+text {* Independence number (after @{term kill_short}) *}
+lemma kill_short_\<alpha>:
   assumes "finite (uverts G)"
-  shows "\<alpha> (kill_short_cycles G k) \<le> \<alpha> G"
+  shows "\<alpha> (kill_short G k) \<le> \<alpha> G"
 using assms
-proof (induct G k rule: ksc_induct)
+proof (induct G k rule: kill_short_induct)
   case (kill_vert G)
   note kill_vert(3)
-  also have "\<alpha> (G -- (obtain_short_vert G k)) \<le> \<alpha> G" by (rule \<alpha>_remove_le)
+  also have "\<alpha> (G -- (choose_v G k)) \<le> \<alpha> G" by (rule \<alpha>_remove_le)
   finally show ?case using kill_vert by simp
 qed simp
 
-lemma uwellformed_ksc:
+text {* Wellformedness (after @{term kill_short}) *}
+lemma kill_short_uwellformed:
   assumes "finite (uverts G)" "uwellformed G"
-  shows "uwellformed (kill_short_cycles G k)"
+  shows "uwellformed (kill_short G k)"
 using assms
-proof (induct G k rule: ksc_induct)
+proof (induct G k rule: kill_short_induct)
   case (kill_vert G)
-  from kill_vert.prems have "uwellformed (G -- (obtain_short_vert G k))"
+  from kill_vert.prems have "uwellformed (G -- (choose_v G k))"
     by (auto simp: uwellformed_def remove_vertex_def)
   with kill_vert.hyps show ?case by simp
 qed simp
@@ -434,7 +441,7 @@ proof -
   qed
 qed
 
-text {* Mean of the numbers of paths in a graph describing a circle of length @{term k} *}
+text {* Mean number of k-cycles in a graph. (Or rather of paths describing a circle of length @{term k}) *}
 lemma (in edge_space) mean_k_cycles:
   assumes "3 \<le> k" "k < n"
   shows "(\<integral>es. card {c \<in> ucycles (edge_ugraph es). uwalk_length c = k} \<partial> P)
@@ -513,7 +520,8 @@ proof -
   finally show ?thesis by simp
 qed
 
-theorem chromatic_girth:
+text {* Girth-Chromatic number theorem *}
+theorem girth_chromatic:
   fixes l :: nat
   shows "\<exists>G. uwellformed G \<and> l < girth G \<and> l < chromatic_number G"
 proof -
@@ -687,26 +695,26 @@ proof -
     -- "now we obtained a high colored graph (few independent nodes) with almost no short cycles"
 
   def G \<equiv> "?ug n es"
-  def H \<equiv> "kill_short_cycles G k"
+  def H \<equiv> "kill_short G k"
 
   have G_props: "uverts G = {1..n}" "finite (uverts G)" "short_count G < n/2" "\<alpha> G < 1/2 * n/k"
     unfolding G_def using es_props by (auto simp: ES.S_verts_def)
 
   have "uwellformed G" by (auto simp: G_def uwellformed_def all_edges_def ES.S_edges_def)
-  with G_props have T1: "uwellformed H" unfolding H_def by (intro uwellformed_ksc)
+  with G_props have T1: "uwellformed H" unfolding H_def by (intro kill_short_uwellformed)
 
   have "enat l \<le> enat k" using `l \<le> k` by simp
-  also have "\<dots> < girth H" using G_props by (auto simp: girth_kill H_def)
+  also have "\<dots> < girth H" using G_props by (auto simp: kill_short_large_girth H_def)
   finally have T2: "l < girth H" .
 
   have card_H: "n/2 \<le> card (uverts H)"
-    using G_props es_props card_verts_kill[of G k] by (simp add: short_count_def H_def)
+    using G_props es_props kill_short_order_of_graph[of G k] by (simp add: short_count_def H_def)
 
   then have uverts_H: "uverts H \<noteq> {}" "0 < card (uverts H)" by auto
   then have "0 < \<alpha> H" using zero_less_\<alpha> uverts_H by auto
 
   have \<alpha>_HG: "\<alpha> H \<le> \<alpha> G"
-    unfolding H_def G_def by (auto intro: \<alpha>_kill_short_verts)
+    unfolding H_def G_def by (auto intro: kill_short_\<alpha>)
 
   have "enat l \<le> ereal k" using `l \<le> k` by auto
   also have "\<dots> < (n/2) / \<alpha> G" using G_props `3 \<le> k`
