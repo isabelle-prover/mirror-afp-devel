@@ -32,7 +32,7 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, fast=False):
 
     usedir_options = '-i false -d false -t true -M 8 -q 4'
     more_settings = '''
-ML_SYSTEM="polyml-5.4.0"
+ML_SYSTEM="polyml-5.4.1"
 ML_PLATFORM="x86_64-linux"
 ML_OPTIONS="-H 32000 --gcthreads 4"
 
