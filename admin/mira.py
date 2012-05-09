@@ -30,13 +30,13 @@ def run_afp_sessions(env, case, paths, dep_paths, playground, fast=False):
     (afp_home, isabelle_home) = paths
     (dep_isabelle,) = dep_paths
 
-    usedir_options = '-i false -d false -t true -M 4 -q 2'
+    usedir_options = '-i false -d false -t true -M 8 -q 4'
     more_settings = '''
 ML_SYSTEM="polyml-5.4.0"
 ML_PLATFORM="x86_64-linux"
-ML_OPTIONS="-H 2000 --gcthreads 4"
+ML_OPTIONS="-H 32000 --gcthreads 4"
 
-JINJATHREADS_OPTIONS="-M 1 -q 0 -p 0"
+JINJATHREADS_OPTIONS="-M 8 -q 4 -p 0"
 '''
     isabelle.prepare_isabelle_repository(isabelle_home, env.settings.contrib, dep_isabelle,
       usedir_options=usedir_options, more_settings=more_settings)
