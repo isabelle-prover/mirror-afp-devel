@@ -82,6 +82,60 @@ lemma wqo_on_subset:
     and transp_on_subset[of A B P]
   unfolding wqo_on_def by blast
 
+abbreviation strict where
+  "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
+
+lemma reflp_on_imp_irreflp_on_strict:
+  "reflp_on P A \<Longrightarrow> irreflp_on (strict P) A"
+  by (auto simp: reflp_on_def irreflp_on_def)
+
+lemma transp_on_imp_transp_on_strict:
+  "transp_on P A \<Longrightarrow> transp_on (strict P) A"
+  unfolding transp_on_def by blast
+
+abbreviation chainp_on where
+  "chainp_on P f A \<equiv> \<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))"
+
+lemma chainp_on_transp_on_less:
+  assumes "chainp_on P f A" and "transp_on P A" and "i < j"
+  shows "P (f i) (f j)"
+using `i < j`
+proof (induct j)
+  case 0 thus ?case by simp
+next
+  case (Suc j)
+  show ?case
+  proof (cases "i = j")
+    case True
+    with Suc show ?thesis using assms(1) by simp
+  next
+    case False
+    with Suc have "P (f i) (f j)" by force
+    moreover from assms have "P (f j) (f (Suc j))" by auto
+    ultimately show ?thesis using assms(1, 2) unfolding transp_on_def by blast
+  qed
+qed
+
+lemma wqo_on_imp_wfp_on:
+  assumes "wqo_on P A"
+  shows "wfp_on (strict P) A"
+    (is "wfp_on ?P A")
+proof (rule ccontr)
+  have "transp_on ?P A" by (rule transp_on_imp_transp_on_strict [OF wqo_on_imp_transp_on [OF assms]])
+  hence "transp_on ?P\<inverse>\<inverse> A" by (rule transp_on_converse)
+  from reflp_on_imp_irreflp_on_strict [OF wqo_on_imp_reflp_on [OF assms]]
+    have "irreflp_on ?P A" .
+  assume "\<not> wfp_on ?P A"
+  then obtain f where *: "\<forall>i. f i \<in> A"
+    and **: "\<forall>i. ?P (f (Suc i)) (f i)" by (auto simp: wfp_on_def)
+  from chainp_on_transp_on_less[of f A"?P\<inverse>\<inverse>", OF _ `transp_on ?P\<inverse>\<inverse> A`] and * and **
+    have "\<forall>i j. i < j \<longrightarrow> ?P (f j) (f i)" by auto
+  with `irreflp_on ?P A` have "\<forall>i j. i < j \<longrightarrow> \<not> (P\<^sup>=\<^sup>= (f i) (f j))"
+    unfolding irreflp_on_def using * by force
+  hence "bad P f" by (auto simp: goodp_def)
+  with * and assms show False unfolding wqo_on_def by blast
+qed
+
 
 subsection {* A Typeclass for Well-Quasi-Orders *}
 
@@ -93,9 +147,19 @@ text {*The following lemma converts between @{const wqo_on} (for the special
 case that the domain is the universe of a type) and the class predicate
 @{const class.wqo}.*}
 lemma wqo_on_UNIV_conv:
-  "wqo_on P UNIV \<longleftrightarrow> class.wqo P (\<lambda>x y. P x y \<and> \<not> P y x)"
+  "wqo_on P UNIV \<longleftrightarrow> class.wqo P (strict P)"
   unfolding wqo_on_def class.wqo_def class.preorder_def class.wqo_axioms_def
   by (auto simp: conversep_iff[abs_def] reflp_on_def transp_on_def)
+
+text {*The strict part of a wqo is well-founded.*}
+lemma (in wqo) "wfP (op <)"
+proof -
+  have "class.wqo (op \<le>) (op <)" ..
+  hence "wqo_on (op \<le>) UNIV"
+    unfolding less_le_not_le [abs_def] wqo_on_UNIV_conv [symmetric] .
+  from wqo_on_imp_wfp_on [OF this]
+    show ?thesis unfolding less_le_not_le [abs_def] wfp_on_UNIV .
+qed
 
 
 subsection {* Dickson's Lemma *}
