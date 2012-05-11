@@ -19,10 +19,10 @@ SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
+# base image is not an Isabelle release image, so always source from $(OUT)
 IMAGE=$(OUT)/$(BASE-IMAGE)
 
 USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
-#USEDIR = $(ISABELLE_TOOL) usedir -v true -i false -d false
 
 # time limit (in sec)
 MAXTIME = 3600
@@ -30,16 +30,16 @@ MAXTIME = 3600
 
 ## dependencies
 
-$(SESSION-NAME): $(BASE-IMAGE) $(OUT)/$(SESSION-NAME)
+$(SESSION-NAME): HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
-$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy ex/*.thy ex/capDL/*.thy
-	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
+HOL-Word: 
+	cd $(ISABELLE_HOME)/src/HOL; $(ISABELLE_TOOL) make HOL-Word
 
-$(BASE-IMAGE):
-	cd $(ISABELLE_HOME)/src/HOL && $(ISABELLE_TOOL) make $(BASE-IMAGE)
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/$(SESSION-NAME).gz
-	@rm -f $(OUT)/$(SESSION-NAME)
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz

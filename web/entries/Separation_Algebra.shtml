@@ -58,7 +58,7 @@ We present a generic type class implementation of separation algebra for Isabell
 <p></p>
 
 <!--#set var="name" value="Separation_Algebra" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Word/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
