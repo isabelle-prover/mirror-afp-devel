@@ -299,6 +299,7 @@ qed simp
 
 section {* The Chromatic-Girth Theorem *}
 
+text {* Probability of Independent Edges *}
 lemma (in edge_space) random_prob_independent:
   assumes "n \<ge> k" "k \<ge> 2"
   shows "prob {es \<in> space P. k \<le> \<alpha> (edge_ugraph es)}
@@ -329,6 +330,7 @@ proof -
   finally show ?thesis using `k \<ge> 2` by (simp add: le_\<alpha>_iff)
 qed
 
+text {* Almost never many independent edges *}
 lemma almost_never_le_\<alpha>:
   fixes k :: nat
     and p :: "nat \<Rightarrow> real"
