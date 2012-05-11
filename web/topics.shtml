@@ -39,6 +39,7 @@
 <a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
 <a href="entries/Functional-Automata.shtml">Functional-Automata</a> &nbsp;
 <a href="entries/Statecharts.shtml">Statecharts</a> &nbsp;
+<a href="entries/Stuttering_Equivalence.shtml">Stuttering_Equivalence</a> &nbsp;
 <a href="entries/Tree-Automata.shtml">Tree-Automata</a> &nbsp;
 <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
 </div>
@@ -112,6 +113,7 @@
 <strong>Logics:</strong>&nbsp;<a href="entries/Refine_Monadic.shtml">Refine_Monadic</a> &nbsp;
 <a href="entries/MonoBoolTranAlgebra.shtml">MonoBoolTranAlgebra</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
+<a href="entries/Separation_Algebra.shtml">Separation_Algebra</a> &nbsp;
 <a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
 <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp;
 <a href="entries/DataRefinementIBP.shtml">DataRefinementIBP</a> &nbsp;
@@ -135,6 +137,7 @@
 <h3>Security</h3>
 
 <div class="list">
+<a href="entries/Inductive_Confidentiality.shtml">Inductive_Confidentiality</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
 <a href="entries/HotelKeyCards.shtml">HotelKeyCards</a> &nbsp;

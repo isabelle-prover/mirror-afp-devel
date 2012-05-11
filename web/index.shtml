@@ -47,6 +47,29 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2012-05-11:
+<a href="entries/Separation_Algebra.shtml">Separation Algebra</a>
+<br>Author:
+Gerwin Klein,
+Rafal Kolanski and 
+Andrew Boyton
+</td></tr>
+
+<tr><td class="entry">
+2012-05-07:
+<a href="entries/Stuttering_Equivalence.shtml">Stuttering Equivalence</a>
+<br>Author:
+<a href="http://www.loria.fr/~merz/">Stephan Merz</a>
+</td></tr>
+
+<tr><td class="entry">
+2012-05-02:
+<a href="entries/Inductive_Confidentiality.shtml">Inductive Study of Confidentiality</a>
+<br>Author:
+<a href="http://www.dmi.unict.it/~giamp/">Giampaolo Bella</a>
+</td></tr>
+
+<tr><td class="entry">
 2012-04-26:
 <a href="entries/Ordinary_Differential_Equations.shtml">Ordinary Differential Equations</a>
 <br>Author:
@@ -457,7 +480,9 @@ Peter Lammich
 2009-11-25:
 <a href="entries/Collections.shtml">Collections Framework</a>
 <br>Author:
-Peter Lammich
+Peter Lammich,
+Andreas Lochbihler and 
+Thomas Tuerk
 </td></tr>
 
 <tr><td class="entry">
@@ -958,13 +983,6 @@ Cornelia Pusch
 <br>Author:
 Wolfgang Naraschewski and 
 <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
-</td></tr>
-
-<tr><td class="entry">
-2004-02-25:
-<a href="entries/Example-Submission.shtml">Example Submission</a>
-<br>Author:
-<a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>
 </td></tr>
 
 
