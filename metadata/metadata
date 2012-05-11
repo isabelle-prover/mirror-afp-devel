@@ -586,6 +586,14 @@ topic = Computer Science/Programming Languages/Language Definitions, Computer Sc
 license = LGPL
 abstract = We present the theory of Simpl, a sequential imperative programming language. We introduce its syntax, its semantics (big and small-step operational semantics) and Hoare logics for both partial as well as total correctness. We prove soundness and completeness of the Hoare logic. We integrate and automate the Hoare logic in Isabelle/HOL to obtain a practically usable verification environment for imperative programs. Simpl is independent of a concrete programming language but expressive enough to cover all common language features: mutually recursive procedures, abrupt termination and exceptions, runtime faults, local and global variables, pointers and heap, expressions with side effects, pointers to procedures, partial application and closures, dynamic method invocation and also unbounded nondeterminism.
 
+[Separation_Algebra]
+title = Separation Algebra
+author = Gerwin Klein <mailto:kleing@cse.unsw.edu.au>, Rafal Kolanski <mailto:rafal.kolanski@nicta.com.au>, Andrew Boyton <mailto:andrew.boyton@nicta.com.au>
+date = 2012-05-11
+topic = Computer Science/Programming Languages/Logics
+license = BSD
+abstract = We present a generic type class implementation of separation algebra for Isabelle/HOL as well as lemmas and generic tactics which can be used directly for any instantiation of the type class. <P> The ex directory contains example instantiations that include structures such as a heap or virtual memory. <P> The abstract separation algebra is based upon "Abstract Separation Logic" by Calcagno et al. These theories are also the basis of the ITP 2012 rough diamond "Mechanised Separation Algebra" by the authors. <P> The aim of this work is to support and significantly reduce the effort for future separation logic developments in Isabelle/HOL by factoring out the part of separation logic that can be treated abstractly once and for all. This includes developing typical default rule sets for reasoning as well as automated tactic support for separation logic.
+
 [Inductive_Confidentiality]
 title = Inductive Study of Confidentiality
 author = Giampaolo Bella <http://www.dmi.unict.it/~giamp/>

@@ -1,0 +1,45 @@
+## configurables
+
+SESSION-NAME = Separation_Algebra
+BASE-IMAGE = HOL-Word
+
+## targets
+
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images:  
+
+all: images test
+
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+IMAGE=$(OUT)/$(BASE-IMAGE)
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
+#USEDIR = $(ISABELLE_TOOL) usedir -v true -i false -d false
+
+# time limit (in sec)
+MAXTIME = 3600
+
+
+## dependencies
+
+$(SESSION-NAME): $(BASE-IMAGE) $(OUT)/$(SESSION-NAME)
+
+$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy ex/*.thy ex/capDL/*.thy
+	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
+
+$(BASE-IMAGE):
+	cd $(ISABELLE_HOME)/src/HOL && $(ISABELLE_TOOL) make $(BASE-IMAGE)
+
+## clean
+
+clean:
+	@rm -f $(LOG)/$(SESSION-NAME).gz
+	@rm -f $(OUT)/$(SESSION-NAME)
