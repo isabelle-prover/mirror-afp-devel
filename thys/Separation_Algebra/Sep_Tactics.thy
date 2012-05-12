@@ -84,7 +84,7 @@ section {* Cancellation of Common Conjuncts via Elimination Rules *}
 
 ML {*
   structure SepCancel_Rules = Named_Thms (
-    val name = "sep_cancel";
+    val name = @{binding "sep_cancel"};
     val description = "sep_cancel rules";
   );
 *}

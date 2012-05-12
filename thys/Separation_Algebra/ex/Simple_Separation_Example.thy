@@ -11,7 +11,7 @@ theory Simple_Separation_Example
           "../Sep_Tactics"
 begin
 
-declare [[syntax_ambiguity_warnings = false]]
+declare [[syntax_ambiguity_warning = false]]
 
 type_synonym heap = "(nat \<Rightarrow> nat option)"
 
