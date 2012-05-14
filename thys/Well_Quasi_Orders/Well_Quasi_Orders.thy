@@ -219,6 +219,123 @@ proof -
 qed
 
 
+subsection {* Disjoint Sum of Wqo Sets *}
+
+fun
+  sum_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool"
+where
+  "sum_le P Q (Inl x) (Inl y) = P x y" |
+  "sum_le P Q (Inr x) (Inr y) = Q x y" |
+  "sum_le P Q x y = False"
+
+text {*When two sets are wqo, then their disjoint sum is wqo.*}
+lemma wqo_on_Plus:
+  assumes "wqo_on P A" and "wqo_on Q B"
+  shows "wqo_on (sum_le P Q) (A <+> B)"
+    (is "wqo_on ?P ?A")
+proof
+  show "reflp_on ?P ?A"
+    using assms by (auto simp: wqo_on_def reflp_on_def)
+next
+  from assms have trans [unfolded transp_on_def]: "transp_on P A" "transp_on Q B"
+    by (auto simp: wqo_on_def)
+  show "transp_on ?P ?A"
+    unfolding transp_on_def by (auto, insert trans) (blast+)
+next
+  fix f :: "('a + 'b) seq"
+  assume *: "\<forall>i. f i \<in> ?A"
+  let ?I = "{i. f i \<in> Inl ` A}"
+  let ?J = "{i. f i \<in> Inr ` B}"
+  have **: "(UNIV::nat set) - ?I = ?J" using * by auto
+  show "goodp ?P f"
+  proof (rule ccontr)
+    assume bad: "bad ?P f"
+    show False
+    proof (cases "finite ?I")
+      assume "finite ?I"
+      moreover have "infinite (UNIV::nat set)" by auto
+      ultimately have "infinite ?J" unfolding ** [symmetric] by (rule Diff_infinite_finite)
+      hence "INFM i. i \<in> ?J" unfolding INFM_iff_infinite by simp
+      then interpret infinitely_many "\<lambda>i. i \<in> ?J" by (unfold_locales) assumption
+      let ?f = "\<lambda>i. Sum_Type.Projr (f (index i))"
+      have ***: "\<forall>i. \<exists>x\<in>B. f (index i) = Inr x" using index_p by auto
+      have B: "\<forall>i. ?f i \<in> B"
+      proof
+        fix i
+        from *** obtain x where "x \<in> B" and "f (index i) = Inr x" by blast
+        thus "?f i \<in> B" by simp
+      qed
+      {
+        fix i j :: nat
+        assume "i < j"
+        hence "index i < index j" using index_ordered_less by auto
+        with bad have not: "\<not> ?P\<^sup>=\<^sup>= (f (index i)) (f (index j))" by (auto simp: goodp_def)
+        have "\<not> Q\<^sup>=\<^sup>= (?f i) (?f j)"
+        proof
+          assume "Q\<^sup>=\<^sup>= (?f i) (?f j)"
+          hence "?P\<^sup>=\<^sup>= (f (index i)) (f (index j))"
+          proof
+            assume "?f i = ?f j"
+            moreover from *** obtain x where "x \<in> B" and "f (index i) = Inr x" by auto
+            moreover from *** obtain y where "y \<in> B" and "f (index j) = Inr y" by auto
+            ultimately show ?thesis by simp
+          next
+            assume "Q (?f i) (?f j)"
+            moreover with *** obtain x y where "x \<in> B" and "y \<in> B"
+              and "f (index i) = Inr x" and "f (index j) = Inr y" by blast
+            ultimately have "?P (f (index i)) (f (index j))" by simp
+            thus ?thesis by simp
+          qed
+          with not show False by blast
+        qed
+      }
+      hence "bad Q ?f" by (auto simp: goodp_def)
+      moreover from `wqo_on Q B` and B have "goodp Q ?f" by (auto simp: wqo_on_def goodp_def)
+      ultimately show False by blast
+    next
+      assume "infinite ?I"
+      hence "INFM i. i \<in> ?I" unfolding INFM_iff_infinite by simp
+      then interpret infinitely_many "\<lambda>i. i \<in> ?I" by (unfold_locales) assumption
+      let ?f = "\<lambda>i. Sum_Type.Projl (f (index i))"
+      have ***: "\<forall>i. \<exists>x\<in>A. f (index i) = Inl x" using index_p by auto
+      have A: "\<forall>i. ?f i \<in> A"
+      proof
+        fix i
+        from *** obtain x where "x \<in> A" and "f (index i) = Inl x" by blast
+        thus "?f i \<in> A" by simp
+      qed
+      {
+        fix i j :: nat
+        assume "i < j"
+        hence "index i < index j" using index_ordered_less by auto
+        with bad have not: "\<not> ?P\<^sup>=\<^sup>= (f (index i)) (f (index j))" by (auto simp: goodp_def)
+        have "\<not> P\<^sup>=\<^sup>= (?f i) (?f j)"
+        proof
+          assume "P\<^sup>=\<^sup>= (?f i) (?f j)"
+          hence "?P\<^sup>=\<^sup>= (f (index i)) (f (index j))"
+          proof
+            assume "?f i = ?f j"
+            moreover from *** obtain x where "x \<in> A" and "f (index i) = Inl x" by auto
+            moreover from *** obtain y where "y \<in> A" and "f (index j) = Inl y" by auto
+            ultimately show ?thesis by simp
+          next
+            assume "P (?f i) (?f j)"
+            moreover with *** obtain x y where "x \<in> A" and "y \<in> A"
+              and "f (index i) = Inl x" and "f (index j) = Inl y" by blast
+            ultimately have "?P (f (index i)) (f (index j))" by simp
+            thus ?thesis by simp
+          qed
+          with not show False by blast
+        qed
+      }
+      hence "bad P ?f" by (auto simp: goodp_def)
+      moreover from `wqo_on P A` and A have "goodp P ?f" by (auto simp: wqo_on_def goodp_def)
+      ultimately show False by blast
+    qed
+  qed
+qed
+
+
 subsection {* Dickson's Lemma *}
 
 text {*When two sets are wqo, then their Cartesian product is wqo.*}
