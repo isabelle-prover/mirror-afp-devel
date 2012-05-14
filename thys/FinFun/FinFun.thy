@@ -93,6 +93,8 @@ proof -
   then show ?thesis unfolding finfun_def by auto
 qed
 
+setup_lifting type_definition_finfun
+
 lemma fun_upd_finfun: "y(a := b) \<in> finfun \<longleftrightarrow> y \<in> finfun"
 proof -
   { fix b'
@@ -275,23 +277,22 @@ qed
 
 subsection {* Kernel functions for type @{typ "'a \<Rightarrow>\<^isub>f 'b"} *}
 
-definition finfun_const :: "'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b" ("\<lambda>\<^isup>f/ _" [0] 1)
-where [code del]: "(\<lambda>\<^isup>f b) = Abs_finfun (\<lambda>x. b)"
+lift_definition finfun_const :: "'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b" ("\<lambda>\<^isup>f/ _" [0] 1)
+is "\<lambda> b x. b" by (rule const_finfun)
 
-definition finfun_update :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b" ("_'(\<^sup>f/ _ := _')" [1000,0,0] 1000)
-where [code del]: "f(\<^sup>fa := b) = Abs_finfun ((Rep_finfun f)(a := b))"
+lift_definition finfun_update :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b" ("_'(\<^sup>f/ _ := _')" [1000,0,0] 1000) is "fun_upd" by (simp add: fun_upd_finfun)
 
 declare finfun_simp [simp] finfun_iff [iff] finfun_intro [intro]
 
 lemma finfun_update_twist: "a \<noteq> a' \<Longrightarrow> f(\<^sup>f a := b)(\<^sup>f a' := b') = f(\<^sup>f a' := b')(\<^sup>f a := b)"
-by(simp add: finfun_update_def fun_upd_twist)
+by transfer (simp add: fun_upd_twist)
 
 lemma finfun_update_twice [simp]:
   "finfun_update (finfun_update f a b) a b' = finfun_update f a b'"
-by(simp add: finfun_update_def)
+by transfer simp
 
 lemma finfun_update_const_same: "(\<lambda>\<^isup>f b)(\<^sup>f a := b) = (\<lambda>\<^isup>f b)"
-by(simp add: finfun_update_def finfun_const_def fun_eq_iff)
+by transfer (simp add: fun_eq_iff)
 
 declare finfun_simp [simp del] finfun_iff [iff del] finfun_intro [rule del]
 
@@ -313,46 +314,7 @@ by(simp add: finfun_update_twist)
 
 subsection {* Setup for quickcheck *}
 
-notation fcomp (infixl "o>" 60)
-notation scomp (infixl "o\<rightarrow>" 60)
-
-definition (in term_syntax) valtermify_finfun_const ::
-  "'b\<Colon>typerep \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> ('a\<Colon>typerep \<Rightarrow>\<^isub>f 'b) \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
-  "valtermify_finfun_const y = Code_Evaluation.valtermify finfun_const {\<cdot>} y"
-
-definition (in term_syntax) valtermify_finfun_update_code ::
-  "'a\<Colon>typerep \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 'b\<Colon>typerep \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b) \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b) \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
-  "valtermify_finfun_update_code x y f = Code_Evaluation.valtermify finfun_update_code {\<cdot>} f {\<cdot>} x {\<cdot>} y"
-
-instantiation finfun :: (random, random) random
-begin
-
-primrec random_finfun_aux :: "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b \<times> (unit \<Rightarrow> Code_Evaluation.term)) \<times> Random.seed" where
-    "random_finfun_aux 0 j = Quickcheck.collapse (Random.select_weight
-       [(1, Quickcheck.random j o\<rightarrow> (\<lambda>y. Pair (valtermify_finfun_const y)))])"
-  | "random_finfun_aux (Code_Numeral.Suc i) j = Quickcheck.collapse (Random.select_weight
-       [(Code_Numeral.Suc i, Quickcheck.random j o\<rightarrow> (\<lambda>x. Quickcheck.random j o\<rightarrow> (\<lambda>y. random_finfun_aux i j o\<rightarrow> (\<lambda>f. Pair (valtermify_finfun_update_code x y f))))),
-         (1, Quickcheck.random j o\<rightarrow> (\<lambda>y. Pair (valtermify_finfun_const y)))])"
-
-definition 
-  "Quickcheck.random i = random_finfun_aux i i"
-
-instance ..
-
-end
-
-lemma random_finfun_aux_code [code]:
-  "random_finfun_aux i j = Quickcheck.collapse (Random.select_weight
-     [(i, Quickcheck.random j o\<rightarrow> (\<lambda>x. Quickcheck.random j o\<rightarrow> (\<lambda>y. random_finfun_aux (i - 1) j o\<rightarrow> (\<lambda>f. Pair (valtermify_finfun_update_code x y f))))),
-       (1, Quickcheck.random j o\<rightarrow> (\<lambda>y. Pair (valtermify_finfun_const y)))])"
-  apply (cases i rule: code_numeral.exhaust)
-  apply (simp_all only: random_finfun_aux.simps code_numeral_zero_minus_one Suc_code_numeral_minus_one)
-  apply (subst select_weight_cons_zero) apply (simp only:)
-  done
-
-no_notation fcomp (infixl "o>" 60)
-no_notation scomp (infixl "o\<rightarrow>" 60)
-
+quickcheck_generator finfun constructors: finfun_update_code, "finfun_const :: 'b => 'a \<Rightarrow>\<^isub>f 'b"
 
 subsection {* @{text "finfun_update"} as instance of @{text "comp_fun_commute"} *}
 
@@ -458,21 +420,22 @@ next
   case True thus ?thesis by(simp add: finfun_default_aux_def)
 qed
 
-definition finfun_default :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'b"
-  where [code del]: "finfun_default f = finfun_default_aux (Rep_finfun f)"
+lift_definition finfun_default :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'b"
+is "finfun_default_aux" ..
 
 lemma finite_finfun_default: "finite {a. Rep_finfun f a \<noteq> finfun_default f}"
-unfolding finfun_default_def by(simp add: finite_finfun_default_aux)
+apply transfer apply (erule finite_finfun_default_aux)
+unfolding Rel_def fun_rel_def cr_finfun_def by simp
 
 lemma finfun_default_const: "finfun_default ((\<lambda>\<^isup>f b) :: 'a \<Rightarrow>\<^isub>f 'b) = (if finite (UNIV :: 'a set) then undefined else b)"
-apply(auto simp add: finfun_default_def finfun_const_def finfun_default_aux_infinite)
+apply(transfer)
+apply(auto simp add: finfun_default_aux_infinite)
 apply(simp add: finfun_default_aux_def)
 done
 
 lemma finfun_default_update_const:
   "finfun_default (f(\<^sup>f a := b)) = finfun_default f"
-unfolding finfun_default_def finfun_update_def
-by(simp add: finfun_default_aux_update_const)
+by transfer (simp add: finfun_default_aux_update_const)
 
 lemma finfun_default_const_code [code]:
   "finfun_default ((\<lambda>\<^isup>f c) :: ('a :: card_UNIV) \<Rightarrow>\<^isub>f 'b) = (if card_UNIV (TYPE('a)) = 0 then c else undefined)"
@@ -1364,7 +1327,7 @@ lemma finfun_dom_update [simp]:
   "finfun_dom (f(\<^sup>f a := b)) = (finfun_dom f)(\<^sup>f a := (b \<noteq> finfun_default f))"
 unfolding finfun_dom_def finfun_update_def
 apply(simp add: finfun_default_update_const finfun_upd_apply finfun_dom_finfunI)
-apply(fold finfun_update_def)
+apply(fold finfun_update.rep_eq)
 apply(simp add: finfun_upd_apply fun_eq_iff finfun_default_update_const)
 done
 
