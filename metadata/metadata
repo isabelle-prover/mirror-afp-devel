@@ -110,10 +110,11 @@ title = Regular Sets and Expressions
 author = Alexander Krauss <http://www.in.tum.de/~krauss>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 topic = Computer Science/Automata and Formal Languages
 date = 2010-05-12
-abstract = This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i>
+abstract = This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i> <P> Extended regular expressions with complement and intersection are also defined and an equivalence checker is provided.
 extra-history =
   Change history:
-  [2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions
+  [2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
+  [2012-05-10]: Tobias Nipkow added extended regular expressions
 
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
@@ -154,6 +155,13 @@ abstract = We formalize in Isabelle/HOL the abtract syntax and a synchronous
  checking. However the main motivation of this work is to provide a sound and
  complete basis for reasoning on Statecharts. As a central meta theorem we
  prove that the well-formedness of a Statechart is preserved by the semantics.
+
+[Stuttering_Equivalence]
+title = Stuttering Equivalence
+author = Stephan Merz <http://www.loria.fr/~merz/>
+topic = Computer Science/Automata and Formal Languages
+date = 2012-05-07
+abstract = <p>Two omega-sequences are stuttering equivalent if they differ only by finite repetitions of elements. Stuttering equivalence is a fundamental concept in the theory of concurrent and distributed systems. Notably, Lamport argues that refinement notions for such systems should be insensitive to finite stuttering. Peled and Wilke show that all LTL (linear-time temporal logic) properties that are insensitive to stuttering equivalence can be expressed without the next-time operator. Stuttering equivalence is also important for certain verification techniques such as partial-order reduction for model checking.</p> <p>We formalize stuttering equivalence in Isabelle/HOL. Our development relies on the notion of a stuttering sampling function that identifies blocks of identical sequence elements.</p>
 
 [Tree-Automata]
 title = Tree Automata
@@ -603,6 +611,22 @@ date = 2008-02-29
 topic = Computer Science/Programming Languages/Language Definitions, Computer Science/Programming Languages/Logics
 license = LGPL
 abstract = We present the theory of Simpl, a sequential imperative programming language. We introduce its syntax, its semantics (big and small-step operational semantics) and Hoare logics for both partial as well as total correctness. We prove soundness and completeness of the Hoare logic. We integrate and automate the Hoare logic in Isabelle/HOL to obtain a practically usable verification environment for imperative programs. Simpl is independent of a concrete programming language but expressive enough to cover all common language features: mutually recursive procedures, abrupt termination and exceptions, runtime faults, local and global variables, pointers and heap, expressions with side effects, pointers to procedures, partial application and closures, dynamic method invocation and also unbounded nondeterminism.
+
+[Separation_Algebra]
+title = Separation Algebra
+author = Gerwin Klein <mailto:kleing@cse.unsw.edu.au>, Rafal Kolanski <mailto:rafal.kolanski@nicta.com.au>, Andrew Boyton <mailto:andrew.boyton@nicta.com.au>
+date = 2012-05-11
+topic = Computer Science/Programming Languages/Logics
+license = BSD
+base = HOL/HOL-Word
+abstract = We present a generic type class implementation of separation algebra for Isabelle/HOL as well as lemmas and generic tactics which can be used directly for any instantiation of the type class. <P> The ex directory contains example instantiations that include structures such as a heap or virtual memory. <P> The abstract separation algebra is based upon "Abstract Separation Logic" by Calcagno et al. These theories are also the basis of the ITP 2012 rough diamond "Mechanised Separation Algebra" by the authors. <P> The aim of this work is to support and significantly reduce the effort for future separation logic developments in Isabelle/HOL by factoring out the part of separation logic that can be treated abstractly once and for all. This includes developing typical default rule sets for reasoning as well as automated tactic support for separation logic.
+
+[Inductive_Confidentiality]
+title = Inductive Study of Confidentiality
+author = Giampaolo Bella <http://www.dmi.unict.it/~giamp/>
+date = 2012-05-02
+topic = Computer Science/Security
+abstract = This document contains the full theory files accompanying article <i>Inductive Study of Confidentiality --- for Everyone</i> in <i>Formal Aspects of Computing</i>. They aim at an illustrative and didactic presentation of the Inductive Method of protocol analysis, focusing on the treatment of one of the main goals of security protocols: confidentiality against a threat model. The treatment of confidentiality, which in fact forms a key aspect of all protocol analysis tools, has been found cryptic by many learners of the Inductive Method, hence the motivation for this work. The theory files in this document guide the reader step by step towards design and proof of significant confidentiality theorems. These are developed against two threat models, the standard Dolev-Yao and a more audacious one, the General Attacker, which turns out to be particularly useful also for teaching purposes.
 
 [VolpanoSmith]
 title = A Correctness Proof for the Volpano/Smith Security Typing System
@@ -1126,9 +1150,3 @@ date = 2004-04-26
 topic = Computer Science/Data Structures
 abstract = This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
 depends-on = Coinductive
-
-[Example-Submission]
-title = Example Submission
-author = Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>
-date = 2004-02-25
-abstract = This is an example submission to the Archive of Formal Proofs. It shows submission requirements and explains the structure of a simple typical submission.

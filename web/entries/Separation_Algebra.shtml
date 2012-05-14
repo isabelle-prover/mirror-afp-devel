@@ -22,34 +22,25 @@
 <div align="center">
 <p> </p>
 
-<h1><font class="first">R</font>egular
-<font class="first">S</font>ets
-and
-<font class="first">E</font>xpressions
+<h1><font class="first">S</font>eparation
+<font class="first">A</font>lgebra
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Regular Sets and Expressions</td></tr>
+        <td class="data" width="80%">Separation Algebra</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.in.tum.de/~krauss">Alexander Krauss</a> and  <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a></td></tr>
+        <td class="data">Gerwin Klein (kleing /at/ cse /dot/ unsw /dot/ edu /dot/ au), Rafal Kolanski (rafal /dot/ kolanski /at/ nicta /dot/ com /dot/ au) and  Andrew Boyton (andrew /dot/ boyton /at/ nicta /dot/ com /dot/ au)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2010-05-12</td></tr>
+        <td class="data">2012-05-11</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i> <P> Extended regular expressions with complement and intersection are also defined and an equivalence checker is provided.
-        </td></tr>
-
-    <tr><td class="datahead" valign="top">Change history:</td>
-        <td class="abstract">
-
-[2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
-[2012-05-10]: Tobias Nipkow added extended regular expressions
+We present a generic type class implementation of separation algebra for Isabelle/HOL as well as lemmas and generic tactics which can be used directly for any instantiation of the type class. <P> The ex directory contains example instantiations that include structures such as a heap or virtual memory. <P> The abstract separation algebra is based upon "Abstract Separation Logic" by Calcagno et al. These theories are also the basis of the ITP 2012 rough diamond "Mechanised Separation Algebra" by the authors. <P> The aim of this work is to support and significantly reduce the effort for future separation logic developments in Isabelle/HOL by factoring out the part of separation logic that can be treated abstractly once and for all. This includes developing typical default rule sets for reasoning as well as automated tactic support for separation logic.
         </td></tr>
 
     <tr><td class="datahead">License:</td>
@@ -66,8 +57,8 @@ This is a library of constructions on regular expressions and languages. It prov
 
 <p></p>
 
-<!--#set var="name" value="Regular-Sets" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="name" value="Separation_Algebra" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Word/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
@@ -93,11 +84,7 @@ This is a library of constructions on regular expressions and languages. It prov
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-02-11.tar.gz">afp-<!--#echo var="name" -->-2011-02-11.tar.gz</a></li>
-<li>Isabelle 2009-2: <a href="../release/afp-<!--#echo var="name" -->-2010-07-01.tar.gz">afp-<!--#echo var="name" -->-2010-07-01.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

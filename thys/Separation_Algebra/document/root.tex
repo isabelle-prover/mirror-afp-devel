@@ -1,11 +1,11 @@
-
+% $Id: root.tex,v 1.2 2007-11-12 21:00:45 nipkow Exp $
 
 \documentclass[11pt,a4paper]{article}
 \usepackage{isabelle,isabellesym}
 
 % further packages required for unusual symbols (see also isabellesym.sty)
 % use only when needed
-%\usepackage{amssymb}                  % for \<leadsto>, \<box>, \<diamond>,
+\usepackage{amssymb}                  % for \<leadsto>, \<box>, \<diamond>,
                                        % \<sqsupset>, \<mho>, \<Join>, 
                                        % \<lhd>, \<lesssim>, \<greatersim>,
                                        % \<lessapprox>, \<greaterapprox>,
@@ -33,28 +33,27 @@
 
 \begin{document}
 
-\title{Regular Sets, Expressions, Derivatives and Relation Algebra}
-\author{Alexander Krauss, Tobias Nipkow,\\
-  Chunhan Wu, Xingyuan Zhang and Christian Urban}
+\title{Separation Algebra}
+\author{Gerwin Klein and Rafal Kolanski and Andrew Boyton}
 \maketitle
 
 \begin{abstract}
-This is a library of constructions on regular expressions and languages.  It
-provides the operations of concatenation, Kleene star and left-quotients of
-languages. A theory of derivatives and partial derivatives is
-provided. Arden's lemma and finiteness of partial derivatives is
-established. A simple regular expression matcher based on Brozowski's
-derivatives is proved to be correct.  An executable equivalence checker for
-regular expressions is verified; it does not need automata but works directly
-on regular expressions. By mapping regular expressions to binary relations, an
-automatic and complete proof method for (in)equalities of binary relations
-over union, concatenation and (reflexive) transitive closure is obtained.
+We present a generic type class implementation of separation
+algebra for Isabelle/HOL as well as lemmas and generic tactics which can
+be used directly for any instantiation of the type class.
 
-For an exposition of the equivalence checker for regular and relation
-algebraic expressions see the paper by Krauss and Nipkow~\cite{KraussN-JAR}.
+The ex directory contains example instantiations that include structures
+such as a heap or virtual memory.
 
-Extended regular expressions with complement and intersection
-are also defined and an equivalence checker is provided.
+The abstract separation algebra is based upon ``Abstract Separation
+Logic'' by Calcagno et al. These theories are also the basis of
+``Mechanised Separation Algebra'' by the authors \cite{KleinKB-ITP12}.
+
+The aim of this work is to support and significantly reduce the effort
+for future separation logic developments in Isabelle/HOL by factoring
+out the part of separation logic that can be treated abstractly once
+and for all. This includes developing typical default rule sets for
+reasoning as well as automated tactic support for separation logic.
 \end{abstract}
 
 \tableofcontents

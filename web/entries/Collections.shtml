@@ -32,7 +32,7 @@
         <td class="data" width="80%">Collections Framework</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Peter Lammich (peter /dot/ lammich /at/ uni-muenster /dot/ de)</td></tr>
+        <td class="data">Peter Lammich (peter /dot/ lammich /at/ in /dot/ tum /dot/ de), Andreas Lochbihler and  Thomas Tuerk</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2009-11-25</td></tr>
@@ -57,6 +57,7 @@ Examples moved to examples subdirectory.<br>
 MapSpec: Added operations: sng, isSng, iterate_rule_insertP, bexists, size, size_abort, restrict,
 map_image_filter, map_value_image_filter
 Some maintenance changes
+[2012-04-25]: New iterator foundation by Tuerk. Various maintenance changes.
         </td></tr>
 
     <tr><td class="datahead">License:</td>

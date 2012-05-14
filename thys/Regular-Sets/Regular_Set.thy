@@ -70,6 +70,9 @@ shows "A @@ UNION I M = UNION I (%i. A @@ M i)"
 and   "UNION I M @@ A = UNION I (%i. M i @@ A)"
 by auto
 
+lemma conc_subset_lists: "A \<subseteq> lists S \<Longrightarrow> B \<subseteq> lists S \<Longrightarrow> A @@ B \<subseteq> lists S"
+by(fastforce simp: conc_def in_lists_conv_set)
+
 
 subsection{* @{term "A ^^ n"} *}
 
@@ -94,8 +97,14 @@ lemma length_lang_pow_lb:
   "ALL w : A. length w \<ge> k \<Longrightarrow> w : A^^n \<Longrightarrow> length w \<ge> k*n"
 by(induct n arbitrary: w) (fastforce simp: conc_def)+
 
+lemma lang_pow_subset_lists: "A \<subseteq> lists S \<Longrightarrow> A ^^ n \<subseteq> lists S"
+by(induction n)(auto simp: conc_subset_lists[OF assms])
+
 
 subsection{* @{const star} *}
+
+lemma star_subset_lists: "A \<subseteq> lists S \<Longrightarrow> star A \<subseteq> lists S"
+unfolding star_def by(blast dest: lang_pow_subset_lists)
 
 lemma star_if_lang_pow[simp]: "w : A ^^ n \<Longrightarrow> w : star A"
 by (auto simp: star_def)
@@ -195,6 +204,76 @@ lemma star_decom:
   assumes a: "x \<in> star A" "x \<noteq> []"
   shows "\<exists>a b. x = a @ b \<and> a \<noteq> [] \<and> a \<in> A \<and> b \<in> star A"
 using a by (induct rule: star_induct) (blast)+
+
+
+subsection {* Left-Quotients of languages *}
+
+definition Deriv :: "'a \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
+where "Deriv x A = { xs. x#xs \<in> A }"
+
+definition Derivs :: "'a list \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
+where "Derivs xs A = { ys. xs @ ys \<in> A }"
+
+abbreviation 
+  Derivss :: "'a list \<Rightarrow> 'a lang set \<Rightarrow> 'a lang"
+where
+  "Derivss s As \<equiv> \<Union> (Derivs s) ` As"
+
+
+lemma Deriv_empty[simp]:   "Deriv a {} = {}"
+  and Deriv_epsilon[simp]: "Deriv a {[]} = {}"
+  and Deriv_char[simp]:    "Deriv a {[b]} = (if a = b then {[]} else {})"
+  and Deriv_union[simp]:   "Deriv a (A \<union> B) = Deriv a A \<union> Deriv a B"
+  and Deriv_inter[simp]:   "Deriv a (A \<inter> B) = Deriv a A \<inter> Deriv a B"
+  and Deriv_compl[simp]:   "Deriv a (-A) = - Deriv a A"
+by (auto simp: Deriv_def)
+
+lemma Deriv_conc_subset: "Deriv a A @@ B \<subseteq> Deriv a (A @@ B)" (is "?L \<subseteq> ?R")
+proof 
+  fix w assume "w \<in> ?L"
+  then obtain u v where "w = u @ v" "a # u \<in> A" "v \<in> B"
+    by (auto simp: Deriv_def)
+  then have "a # w \<in> A @@ B"
+    by (auto intro: concI[of "a # u", simplified])
+  thus "w \<in> ?R" by (auto simp: Deriv_def)
+qed
+
+lemma Der_conc [simp]: "Deriv c (A @@ B) = (Deriv c A) @@ B \<union> (if [] \<in> A then Deriv c B else {})"
+unfolding Deriv_def conc_def
+by (auto simp add: Cons_eq_append_conv)
+
+lemma Deriv_star [simp]: "Deriv c (star A) = (Deriv c A) @@ star A"
+proof -
+  have incl: "[] \<in> A \<Longrightarrow> Deriv c (star A) \<subseteq> (Deriv c A) @@ star A"
+    unfolding Deriv_def conc_def 
+    apply(auto simp add: Cons_eq_append_conv)
+    apply(drule star_decom)
+    apply(auto simp add: Cons_eq_append_conv)
+    done
+
+  have "Deriv c (star A) = Deriv c (A @@ star A \<union> {[]})"
+    by (simp only: star_unfold_left[symmetric])
+  also have "... = Deriv c (A @@ star A)"
+    by (simp only: Deriv_union) (simp)
+  also have "... =  (Deriv c A) @@ (star A) \<union> (if [] \<in> A then Deriv c (star A) else {})"
+    by simp
+   also have "... =  (Deriv c A) @@ star A"
+    using incl by auto
+  finally show "Deriv c (star A) = (Deriv c A) @@ star A" . 
+qed
+
+lemma Deriv_diff[simp]: "Deriv c (A - B) = Deriv c A - Deriv c B"
+by(auto simp add: Deriv_def)
+
+lemma Deriv_lists[simp]: "c : S \<Longrightarrow> Deriv c (lists S) = lists S"
+by(auto simp add: Deriv_def)
+
+lemma Derivs_simps [simp]:
+  shows "Derivs [] A = A"
+  and   "Derivs (c # s) A = Derivs s (Deriv c A)"
+  and   "Derivs (s1 @ s2) A = Derivs s2 (Derivs s1 A)"
+unfolding Derivs_def Deriv_def by auto
+
 
 subsection {* Arden's Lemma *}
 
