@@ -156,6 +156,9 @@ lemma transp_on_imp_transp_on_reflclp:
   unfolding transp_on_def
   by (metis (hide_lams, mono_tags) sup2CI sup2E)
 
+definition qo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "qo_on P A \<equiv> reflp_on P A \<and> transp_on P A"
+
 definition orderp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "orderp_on P A \<equiv> antisymp_on P A \<and> reflp_on P A \<and> transp_on P A"
 

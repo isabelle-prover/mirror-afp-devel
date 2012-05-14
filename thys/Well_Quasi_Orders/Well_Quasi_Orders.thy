@@ -136,6 +136,37 @@ proof (rule ccontr)
   with * and assms show False unfolding wqo_on_def by blast
 qed
 
+lemma qo_on_into_wqo_on:
+  "qo_on P A \<Longrightarrow> (\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> goodp P f) \<Longrightarrow> wqo_on P A"
+  unfolding qo_on_def wqo_on_def by blast
+
+text {*The homomorphic image of a wqo set is wqo.*}
+lemma wqo_on_hom:
+  assumes qo: "qo_on Q (h ` A)"
+    and hom: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
+    and wqo: "wqo_on P A"
+  shows "wqo_on Q (h ` A)"
+using qo
+proof (rule qo_on_into_wqo_on)
+  fix f :: "'a seq"
+  assume "\<forall>i. f i \<in> h ` A"
+  hence "\<forall>i. \<exists>x. x \<in> A \<and> f i = h x" by (auto simp: image_def)
+  from choice[OF this] obtain g
+    where *: "\<forall>i. g i \<in> A \<and> f i = h (g i)" by blast
+  show "goodp Q f"
+  proof (rule ccontr)
+    assume bad: "bad Q f"
+    {
+      fix i j :: nat
+      assume "i < j"
+      from bad have "\<not> Q\<^sup>=\<^sup>= (f i) (f j)" using `i < j` by (auto simp: goodp_def)
+      with hom have "\<not> P \<^sup>=\<^sup>= (g i) (g j)" using * by auto
+    }
+    hence "bad P g" by (auto simp: goodp_def)
+    with wqo and * show False by (auto simp: goodp_def wqo_on_def)
+  qed
+qed
+
 
 subsection {* A Typeclass for Well-Quasi-Orders *}
 
