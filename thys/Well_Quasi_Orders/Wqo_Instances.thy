@@ -10,6 +10,38 @@ theory Wqo_Instances
 imports Well_Quasi_Orders
 begin
 
+subsection {* The Sum Type is Well-Quasi-Ordered *}
+
+instantiation sum :: (wqo, wqo) wqo
+begin
+definition "x \<le> y \<longleftrightarrow> sum_le (op \<le>) (op \<le>) x y"
+definition "(x :: 'a + 'b) < y \<longleftrightarrow> x \<le> y \<and> \<not> (y \<le> x)"
+
+instance proof (rule wqo_class.intro)
+  have 1: "wqo_on (op \<le>) (UNIV :: 'a set)"
+    using order_trans and good
+    by (auto simp: wqo_on_UNIV_conv class.wqo_def class.wqo_axioms_def class.preorder_def)
+  have 2: "wqo_on (op \<le>) (UNIV :: 'b set)"
+    using order_trans and good
+    by (auto simp: wqo_on_UNIV_conv class.wqo_def class.wqo_axioms_def class.preorder_def)
+  from wqo_on_Plus [OF 1 2]
+    have wqo: "wqo_on (op \<le>) (UNIV :: ('a + 'b) set)"
+      by (auto simp: less_eq_sum_def [abs_def])  
+  hence "class.wqo (op \<le> :: 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool) (op <)"
+    unfolding wqo_on_UNIV_conv less_sum_def [abs_def] .
+  thus "class.wqo_axioms (op \<le> :: 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool)" by (auto simp: class.wqo_def)
+
+  from wqo have refl: "reflp_on (op \<le>) (UNIV :: ('a + 'b) set)" by (simp add: wqo_on_def)
+  from wqo have trans: "transp_on (op \<le>) (UNIV :: ('a + 'b) set)" by (simp add: wqo_on_def)
+
+  show "OFCLASS ('a + 'b, preorder_class)"
+    by (intro_classes, simp add: less_sum_def)
+       (insert refl, unfold reflp_on_def, force,
+        insert trans, unfold transp_on_def, blast)
+qed
+end
+
+
 subsection {* Pairs are Well-Quasi-Ordered *}
 
 text {*If types @{typ "'a"} and @{typ "'b"} are well-quasi-ordered by @{text "P"}
