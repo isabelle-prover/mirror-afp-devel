@@ -167,6 +167,32 @@ proof (rule qo_on_into_wqo_on)
   qed
 qed
 
+text {*The monomorphic preimage of a wqo set is wqo.*}
+lemma wqo_on_mon:
+  assumes qo: "qo_on P A"
+    and mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
+    and wqo: "wqo_on Q B"
+  shows "wqo_on P A"
+using qo
+proof (rule qo_on_into_wqo_on)
+  fix f :: "'a seq"
+  assume *: "\<forall>i. f i \<in> A"
+  hence **: "\<forall>i. (h \<circ> f) i \<in> B" using mon by (auto simp: bij_betw_def)
+  show "goodp P f"
+  proof (rule ccontr)
+    assume bad: "bad P f"
+    {
+      fix i j :: nat
+      assume "i < j"
+      from bad have "\<not> P\<^sup>=\<^sup>= (f i) (f j)" using `i < j` by (auto simp: goodp_def)
+      with mon have "\<not> Q\<^sup>=\<^sup>= (h (f i)) (h (f j))"
+        using * by (auto simp: bij_betw_def inj_on_def)
+    }
+    hence "bad Q (h \<circ> f)" by (auto simp: goodp_def)
+    with wqo and ** show False by (auto simp: goodp_def wqo_on_def)
+  qed
+qed
+
 
 subsection {* A Typeclass for Well-Quasi-Orders *}
 
