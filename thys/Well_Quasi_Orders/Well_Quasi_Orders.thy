@@ -1081,7 +1081,7 @@ proof -
         and 4: "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
         and 5: "\<forall>n>0. \<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j)"
         by auto
-      have ex_subset: "\<forall>n. \<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
+      have ex_suffixeq: "\<forall>n. \<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
       proof
         fix n show "\<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
         proof (induct n)
@@ -1176,7 +1176,7 @@ proof -
         fix B assume "B \<in> ?B'"
         then obtain i where B: "B = ?B i" by auto
         hence "suffixeq B (?A i)" by simp
-        with ex_subset[THEN spec[of _ i], THEN spec[of _ i]] obtain j
+        with ex_suffixeq[THEN spec[of _ i], THEN spec[of _ i]] obtain j
           where "suffixeq B (g j)" by (blast intro: suffixeq_trans)
         with `g j \<in> lists A`
           show "B \<in> lists A" by (auto simp: suffixeq_def)
@@ -1196,7 +1196,7 @@ proof -
         fix x assume "x \<in> ?a'"
         then obtain i where x: "x = a i" by auto
         with a and non_empty have "a i \<in> set (?A i)" by (metis hd_in_set)
-        with ex_subset and suffixeq_set_subset obtain j where "a i \<in> set (g j)" by blast
+        with ex_suffixeq and suffixeq_set_subset obtain j where "a i \<in> set (g j)" by blast
         with `g j \<in> lists A` show "x \<in> A" unfolding x by auto
       qed
       from wqo_on_subset[OF this assms]
