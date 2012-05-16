@@ -24,7 +24,7 @@ text {*
 abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^isup>\<infinity>" 10) where
   "evseq P \<equiv> eventually P sequentially"
 
-text {* Remove non-standard induction rule for nat (installed by Cong (via Binomial)) *}
+text {* Remove non-standard induction rule for nat (installed by Cong (via Binomial)): *}
 declare Cong.induct'_nat[induct del]
 
 subsection {* Numbers *}

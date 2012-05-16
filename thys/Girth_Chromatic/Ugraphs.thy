@@ -28,7 +28,7 @@ abbreviation uverts :: "ugraph \<Rightarrow> uvert set" where
 fun mk_uedge :: "uvert \<times> uvert \<Rightarrow> uedge" where
    "mk_uedge (u,v) = {u,v}"
 
-text {* All edges over a set of vertexes @{term S} *}
+text {* All edges over a set of vertexes @{term S}: *}
 definition "all_edges S \<equiv> mk_uedge ` {uv \<in> S \<times> S. fst uv \<noteq> snd uv}"
 
 definition uwellformed :: "ugraph \<Rightarrow> bool" where

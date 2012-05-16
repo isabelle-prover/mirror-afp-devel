@@ -32,7 +32,7 @@ proof induct
                   insert.hyps setsum_Un_disjoint Pow_insert)
 qed simp
 
-text {* Definition of the probability space on edges *}
+text {* Definition of the probability space on edges: *}
 locale edge_space =
   fixes n :: nat and p :: real
   assumes p_prob: "0 \<le> p" "p \<le> 1"
@@ -102,7 +102,7 @@ lemma integral_finite_singleton: "integral\<^isup>L P f = (\<Sum>x\<in>Pow S_edg
   using p_prob prob_eq unfolding P_def
   by (subst lebesgue_integral_point_measure_finite) (auto intro!: setsum_cong mult_nonneg_nonneg)
 
-text {* Probability of cylinder sets *}
+text {* Probability of cylinder sets: *}
 lemma cylinder_prob:
   assumes "A \<subseteq> S_edges" "B \<subseteq> S_edges" "A \<inter> B = {}"
   shows "prob (cylinder S_edges A B) = p ^ (card A) * (1 - p) ^ (card B)" (is "_ = ?pp A B")
@@ -173,7 +173,7 @@ section {* Short cycles *}
 definition short_cycles :: "ugraph \<Rightarrow> nat \<Rightarrow> uwalk set" where
   "short_cycles G k \<equiv> {p \<in> ucycles G. uwalk_length p \<le> k}"
 
-text {* obtains a vertex in a short cycle *}
+text {* obtains a vertex in a short cycle: *}
 definition choose_v :: "ugraph \<Rightarrow> nat \<Rightarrow> uvert" where
   "choose_v G k \<equiv> SOME u. \<exists>p. p \<in> short_cycles G k \<and> u \<in> set p"
 
@@ -221,7 +221,7 @@ proof -
   ultimately show ?thesis using `p \<in> short_cycles G k` by auto
 qed
 
-text {* Induction rule for @{term kill_short} *}
+text {* Induction rule for @{term kill_short}: *}
 lemma kill_short_induct[consumes 1, case_names empty kill_vert]:
   assumes fin: "finite (uverts G)"
   assumes a_empty: "\<And>G. short_cycles G k = {} \<Longrightarrow> P G k"
@@ -236,7 +236,7 @@ proof -
       (metis kill_step_smaller a_kill a_empty)
 qed
 
-text {* Large Girth (after @{term kill_short}) *}
+text {* Large Girth (after @{term kill_short}): *}
 lemma kill_short_large_girth:
   assumes "finite (uverts G)"
   shows "k < girth (kill_short G k)"
@@ -248,7 +248,7 @@ proof (induct G k rule: kill_short_induct)
   with empty show ?case by (auto simp: girth_def intro: enat_less_INF_I)
 qed simp
 
-text {* Order of graph (after @{term kill_short}) *}
+text {* Order of graph (after @{term kill_short}): *}
 lemma kill_short_order_of_graph:
   assumes "finite (uverts G)"
   shows "card (uverts G) - card (short_cycles G k) \<le> card (uverts (kill_short G k))"
@@ -272,7 +272,7 @@ proof (induct G k rule: kill_short_induct)
   ultimately show ?case using kill_vert.hyps by presburger
 qed simp
 
-text {* Independence number (after @{term kill_short}) *}
+text {* Independence number (after @{term kill_short}): *}
 lemma kill_short_\<alpha>:
   assumes "finite (uverts G)"
   shows "\<alpha> (kill_short G k) \<le> \<alpha> G"
@@ -284,7 +284,7 @@ proof (induct G k rule: kill_short_induct)
   finally show ?case using kill_vert by simp
 qed simp
 
-text {* Wellformedness (after @{term kill_short}) *}
+text {* Wellformedness (after @{term kill_short}): *}
 lemma kill_short_uwellformed:
   assumes "finite (uverts G)" "uwellformed G"
   shows "uwellformed (kill_short G k)"
@@ -299,7 +299,7 @@ qed simp
 
 section {* The Chromatic-Girth Theorem *}
 
-text {* Probability of Independent Edges *}
+text {* Probability of Independent Edges: *}
 lemma (in edge_space) random_prob_independent:
   assumes "n \<ge> k" "k \<ge> 2"
   shows "prob {es \<in> space P. k \<le> \<alpha> (edge_ugraph es)}
@@ -330,7 +330,7 @@ proof -
   finally show ?thesis using `k \<ge> 2` by (simp add: le_\<alpha>_iff)
 qed
 
-text {* Almost never many independent edges *}
+text {* Almost never many independent edges: *}
 lemma almost_never_le_\<alpha>:
   fixes k :: nat
     and p :: "nat \<Rightarrow> real"
@@ -443,7 +443,7 @@ proof -
   qed
 qed
 
-text {* Mean number of k-cycles in a graph. (Or rather of paths describing a circle of length @{term k}) *}
+text {* Mean number of k-cycles in a graph. (Or rather of paths describing a circle of length @{term k}): *}
 lemma (in edge_space) mean_k_cycles:
   assumes "3 \<le> k" "k < n"
   shows "(\<integral>es. card {c \<in> ucycles (edge_ugraph es). uwalk_length c = k} \<partial> P)
@@ -522,7 +522,7 @@ proof -
   finally show ?thesis by simp
 qed
 
-text {* Girth-Chromatic number theorem *}
+text {* Girth-Chromatic number theorem: *}
 theorem girth_chromatic:
   fixes l :: nat
   shows "\<exists>G. uwellformed G \<and> l < girth G \<and> l < chromatic_number G"
