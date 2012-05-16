@@ -1169,7 +1169,7 @@ proof -
           using 1[rule_format, of "f 0", OF le_refl, unfolded mbp_def] by auto
         with `bad ?P ?C` have False by blast
       }
-      hence no_index: "\<not> (\<exists>f. (\<forall>i. f 0 \<le> f i) \<and> bad ?P (?B \<circ> f))" by blast
+      hence no_special_bad_seq: "\<not> (\<exists>f. (\<forall>i. f 0 \<le> f i) \<and> bad ?P (?B \<circ> f))" by blast
       let ?B' = "{?B i | i. True}"
       have subset: "?B' \<subseteq> lists A"
       proof
@@ -1187,7 +1187,7 @@ proof -
       next
         from reflp_on_subset[OF subset refl] have refl: "reflp_on ?P ?B'" .
         fix f :: "'a list seq" assume "\<forall>i. f i \<in> ?B'"
-        from no_bad_of_special_shape_imp_goodp[of ?P ?B f, OF no_index refl this]
+        from no_bad_of_special_shape_imp_goodp[of ?P ?B f, OF no_special_bad_seq refl this]
           show "goodp ?P f" .
       qed
       let ?a' = "{a i | i. True}"
