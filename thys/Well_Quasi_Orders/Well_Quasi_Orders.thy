@@ -703,7 +703,6 @@ subsection {* Higman's Lemma *}
 lemma bad_emb_repl:
   assumes "bad (emb P) f"
     and "bad (emb P) g"
-    and "\<forall>i. reflp_on P (set (f i))"
     and "\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (g i) (f j)"
   shows "bad (emb P) (repl n f g)" (is "bad ?P ?f")
 proof (rule ccontr)
@@ -721,7 +720,7 @@ proof (rule ccontr)
     with assms(2) have False by (auto simp: goodp_def)
   } moreover {
     assume "i < n" and "n \<le> j"
-    with assms(4) obtain k where "k \<ge> n" and suffixeq: "suffixeq (g j) (f k)" by blast
+    with assms(3) obtain k where "k \<ge> n" and suffixeq: "suffixeq (g j) (f k)" by blast
     from `i < j` and `i < n` and `n \<le> j` and good
       have "?P (f i) (g j)" by auto
     hence "?P (f i) (f k)"
@@ -743,9 +742,7 @@ lemma minimal_bad_element:
   fixes f :: "'a list seq"
   assumes "mbp P f n"
     and "bad (emb P) f"
-    and "\<forall>i. reflp_on P (set (f i))"
   shows "\<exists>M.
-    (\<forall>i. reflp_on P (set (repl (Suc n) f M i))) \<and>
     (\<forall>i\<le>n. M i = f i) \<and>
     suffixeq (M (Suc n)) (f (Suc n)) \<and>
     (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq ((repl (Suc n) f M) i) (f j)) \<and>
@@ -758,8 +755,7 @@ proof (induct "f (Suc n)" arbitrary: f n rule: list_suffix_induct)
   proof (cases "mbp P g (Suc n)")
     case True
     let ?g = "repl (Suc n) g g"
-    have "\<forall>i. reflp_on P (set (?g i))" by (simp add: psuffix)
-    moreover have "\<forall>i\<le>n. ?g i = g i" by simp
+    have "\<forall>i\<le>n. ?g i = g i" by simp
     moreover have "suffixeq (g (Suc n)) (g (Suc n))" by simp
     moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq ((repl (Suc n) g g) i) (g j)" by auto
     moreover from `bad (emb P) g`
@@ -807,21 +803,10 @@ proof (induct "f (Suc n)" arbitrary: f n rule: list_suffix_induct)
         show "goodp (emb P) e" by auto
     qed
     have bad: "bad (emb P) ?g"
-      using bad_emb_repl[OF `bad (emb P) g` `bad (emb P) h`, of "Suc n",
-      OF `\<forall>i. reflp_on P (set (g i))` greater] .
-    have refl: "\<forall>i. reflp_on P (set (?g i))"
-    proof
-      fix i
-      { assume "i < Suc n" hence "reflp_on P (set (?g i))" by (simp add: psuffix) }
-      moreover
-      { assume "i \<ge> Suc n" hence "reflp_on P (set (?g i))"
-        using psuffix(4) and greater and reflp_on_suffixeq by (simp) blast }
-      ultimately show "reflp_on P (set (?g i))" by arith
-    qed
+      using bad_emb_repl[OF `bad (emb P) g` `bad (emb P) h`, of "Suc n", OF greater] .
     let ?g' = "repl (Suc n) g"
-    from psuffix(1)[of ?g n, OF suffix' mbp bad refl] obtain M
-      where "\<forall>i. reflp_on P (set (?g' M i))"
-      and "\<forall>i\<le>n. M i = g i"
+    from psuffix(1)[of ?g n, OF suffix' mbp bad] obtain M
+      where "\<forall>i\<le>n. M i = g i"
       and "suffixeq (M (Suc n)) (?g' h (Suc n))"
       and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (?g' M i) (h j)"
       and "bad (emb P) (?g' M)"
@@ -931,10 +916,8 @@ proof -
       from minimal_bad_element[of P]
         have "\<forall>f n.
         mbp P f n \<and>
-        bad ?P f \<and>
-        (\<forall>i. reflp_on P (set (f i))) \<longrightarrow>
+        bad ?P f \<longrightarrow>
         (\<exists>M.
-          (\<forall>i. reflp_on P (set (repl (Suc n) f M i))) \<and>
           (\<forall>i\<le>n. M i = f i) \<and>
           suffixeq (M (Suc n)) (f (Suc n)) \<and>
           (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (repl (Suc n) f M i) (f j)) \<and>
@@ -946,10 +929,10 @@ proof -
         where *[rule_format]: "\<forall>f n. ?Q f n \<longrightarrow> ?Q' f n (M f n)" by force
       let ?g = "minimal_bad_seq M g"
       let ?A = "\<lambda>i. ?g i i"
-      have "\<forall>n. (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n) \<and> (\<forall>i. reflp_on P (set (?g n i)))"
+      have "\<forall>n. (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
       proof
         fix n
-        show "(n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n) \<and> (\<forall>i. reflp_on P (set (?g n i)))"
+        show "(n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
         proof (induction n)
           case 0
           have "mbp P g 0" by fact
@@ -1029,8 +1012,7 @@ proof -
         next
           case (Suc n)
           with *[of "?g n" n]
-            have "\<forall>i. reflp_on P (set (?g (Suc n) i))"
-            and eq: "\<forall>i\<le>n. ?A i = ?g n i"
+            have eq: "\<forall>i\<le>n. ?A i = ?g n i"
             and suffix: "suffixeq (?g (Suc n) (Suc n)) (?g n (Suc n))"
             and subseq: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (?g (Suc n) i) (?g n j)"
             and "bad ?P (?g (Suc n))"
