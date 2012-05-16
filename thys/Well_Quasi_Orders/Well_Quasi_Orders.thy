@@ -1096,15 +1096,14 @@ proof -
       hence 1: "\<forall>n. \<forall>i\<le>n. mbp P (?g n) i"
         and 2: "\<forall>n. \<forall>i\<le>n. ?A i = ?g n i"
         and 3: "\<forall>n. bad ?P (?g n)"
-        and 5: "\<forall>n. \<forall>i. reflp_on P (set (?g n i))"
-        and 6: "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
-        and 7: "\<forall>n>0. \<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j)"
+        and 4: "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
+        and 5: "\<forall>n>0. \<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j)"
         by auto
       have ex_subset: "\<forall>n. \<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
       proof
         fix n show "\<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
         proof (induct n)
-          case 0 with 6 show ?case by simp
+          case 0 with 4 show ?case by simp
         next
           case (Suc n)
           show ?case
@@ -1120,7 +1119,7 @@ proof -
               with Suc show ?thesis by auto
             next
               assume "i \<ge> Suc n"
-              with 7[THEN spec[of _ "Suc n"]]
+              with 5 [THEN spec[of _ "Suc n"]]
                 obtain j where "j \<ge> Suc n"
                 and "suffixeq (?g (Suc n) i) (?g n j)" by auto
               moreover from Suc obtain k where "suffixeq (?g n j) (g k)" by blast
@@ -1179,7 +1178,7 @@ proof -
           with `\<forall>i. f 0 \<le> f i` have "f 0 \<le> ?i" by auto
           from `f 0 \<le> i` have "?C i = ?B ?i" by auto
           with non_empty have "suffixeq (?C i) (?g ?i ?i)" by auto
-          from iterated_subseq[OF 7, of "f 0" "?i", THEN spec[of _ "?i"], OF `f 0 \<le> ?i`]
+          from iterated_subseq [OF 5, of "f 0" "?i", THEN spec[of _ "?i"], OF `f 0 \<le> ?i`]
             obtain j where "j \<ge> f 0" and "suffixeq (?g ?i ?i) (?g (f 0) j)" by blast
           with `suffixeq (?C i) (?g ?i ?i)`
             show "\<exists>j\<ge>f 0. suffixeq (?C i) (?g (f 0) j)" using suffixeq_trans by fast
