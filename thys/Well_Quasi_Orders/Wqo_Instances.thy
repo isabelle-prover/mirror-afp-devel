@@ -31,7 +31,7 @@ instance proof (rule wqo_class.intro)
     unfolding wqo_on_UNIV_conv less_sum_def [abs_def] .
   thus "class.wqo_axioms (op \<le> :: 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool)" by (auto simp: class.wqo_def)
 
-  from wqo have refl: "reflp_on (op \<le>) (UNIV :: ('a + 'b) set)" by (simp add: wqo_on_def)
+  from wqo have refl: "reflp_on (op \<le>) (UNIV :: ('a + 'b) set)" by (simp add: wqo_on_def almost_full_on_imp_reflp_on)
   from wqo have trans: "transp_on (op \<le>) (UNIV :: ('a + 'b) set)" by (simp add: wqo_on_def)
 
   show "OFCLASS ('a + 'b, preorder_class)"
