@@ -106,14 +106,14 @@ proof -
   from assms(2) have 1: "\<forall>i. ?f i \<in> ?A" by auto
   moreover from assms(1) have "\<forall>f. (\<forall>i. f i \<in> ?A) \<longrightarrow> goodp (set_le P) f" by (auto simp: wqo_on_def)
   ultimately have "goodp (set_le P) ?f" by auto
-  then obtain i j where "i < j" and 2: "(set_le P)\<^sup>=\<^sup>= (?f i) (?f j)"
+  then obtain i j where "i < j" and 2: "(set_le P) (?f i) (?f j)"
     unfolding goodp_def by auto
   from assms(3) have 3: "reflp_on P (?f j)"
     using 1 unfolding reflp_on_def by auto
-  from 2 have "?P\<^sup>=\<^sup>= (f i) (f j)"
+  from 2 have "?P (f i) (f j)"
     using set_le_refl[OF 3] by auto
   with `i < j` show "goodp ?P f"
-    unfolding goodp_def by auto
+    unfolding goodp_def almost_full_on_def by auto
 qed
 
 lemma empty_imp_goodp_set_le [simp]:
@@ -121,7 +121,7 @@ lemma empty_imp_goodp_set_le [simp]:
   shows "goodp (set_le P) f"
 proof (rule ccontr)
   assume "bad (set_le P) f"
-  moreover have "(set_le P)\<^sup>=\<^sup>= (f i) (f (Suc i))"
+  moreover have "(set_le P) (f i) (f (Suc i))"
     unfolding assms by auto
   ultimately show False
     unfolding goodp_def by auto
@@ -140,31 +140,23 @@ lemma bad_set_le_repl:
 proof (rule ccontr)
   presume "goodp ?P ?f"
   then obtain i j where "i < j"
-    and good: "?P\<^sup>=\<^sup>= (?f i) (?f j)" by (auto simp: goodp_def)
+    and good: "?P (?f i) (?f j)" by (auto simp: goodp_def)
   {
     assume "j < n"
-    with `i < j` and good have "?P\<^sup>=\<^sup>= (f i) (f j)" by simp
+    with `i < j` and good have "?P (f i) (f j)" by simp
     with assms(1) have False using `i < j` by (auto simp: goodp_def)
   } moreover {
     assume "n \<le> i"
     with `i < j` and good have "i - n < j - n"
-      and "?P \<^sup>=\<^sup>= (g i) (g j)" by auto
+      and "?P (g i) (g j)" by auto
     with assms(2) have False by (auto simp: goodp_def)
   } moreover {
     assume "i < n" and "n \<le> j"
     with assms(4) obtain k where "k \<ge> n" and subset: "g j \<subseteq> f k" by blast
     from `i < j` and `i < n` and `n \<le> j` and good
-      have "?P\<^sup>=\<^sup>= (f i) (g j)" by auto
-    hence "?P\<^sup>=\<^sup>= (f i) (f k)"
-    proof
-      assume fi: "f i = g j"
-      with set_le_refl[OF assms(3)[rule_format]]
-        have "?P (f i) (f i)" by blast
-      with set_le_subset[OF subset] show "?P\<^sup>=\<^sup>= (f i) (f k)" by (auto simp: fi)
-    next
-      assume "?P (f i) (g j)"
-      with set_le_subset[OF subset] show "?P\<^sup>=\<^sup>= (f i) (f k)" by auto
-    qed
+      have "?P (f i) (g j)" by auto
+    hence "?P (f i) (f k)"
+      using set_le_subset[OF subset] by auto
     with `i < n` and `n \<le> k` and assms(1) have False by (auto simp: goodp_def)
   } ultimately show False using `i < j` by arith
 qed simp
@@ -602,9 +594,9 @@ proof -
       proof
         assume "goodp ?P ?A"
         then obtain i j :: nat where "i < j"
-          and "?P\<^sup>=\<^sup>= (?g i i) (?g j j)" unfolding goodp_def by auto
+          and "?P (?g i i) (?g j j)" unfolding goodp_def by auto
         moreover with 2[rule_format, of i j]
-          have "?P\<^sup>=\<^sup>= (?g j i) (?g j j)" by auto
+          have "?P (?g j i) (?g j j)" by auto
         ultimately have "goodp ?P (?g j)" unfolding goodp_def by blast
         with 3 show False by auto
       qed
@@ -621,35 +613,21 @@ proof -
         have "bad ?P ?C"
         proof
           assume "goodp ?P ?C"
-          then obtain i j where "i < j" and *: "?P\<^sup>=\<^sup>= (?C i) (?C j)" by (auto simp: goodp_def)
+          then obtain i j where "i < j" and *: "?P (?C i) (?C j)" by (auto simp: goodp_def)
           {
-            assume "j < f 0" with `i < j` and * have "?P\<^sup>=\<^sup>= (?A i) (?A j)" by simp
+            assume "j < f 0" with `i < j` and * have "?P (?A i) (?A j)" by simp
             with `i < j` and `bad ?P ?A` have False by (auto simp: goodp_def)
           } moreover {
-            assume "f 0 \<le> i" with `i < j` and * have "?P\<^sup>=\<^sup>= (?B (f (i - f 0))) (?B (f (j - f 0)))" by simp
+            assume "f 0 \<le> i" with `i < j` and * have "?P (?B (f (i - f 0))) (?B (f (j - f 0)))" by simp
             moreover with `i < j` and `f 0 \<le> i` have "i - f 0 < j - f 0" by auto
             ultimately have False using `bad ?P (?B \<circ> f)` by (auto simp: goodp_def)
           } moreover {
             have subset: "?B (f (j - f 0)) \<subseteq> ?A (f (j - f 0))" using a by auto
             assume "i < f 0" and "f 0 \<le> j"
-            with * have "?P\<^sup>=\<^sup>= (?A i) (?B (f (j - f 0)))" by auto
-            hence "?P (?A i) (?B (f (j - f 0))) \<or> ?A i = ?B (f (j - f 0))" by simp
-            hence False
-            proof
-              assume "?P (?A i) (?B (f (j - f 0)))"
-              with subset have "?P (?A i) (?A (f (j - f 0)))" using set_le_subset[of _ _ P] by blast
-              moreover from ge[THEN spec[of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
-              ultimately show ?thesis using `bad ?P ?A` by (auto simp: goodp_def)
-            next
-              from `\<forall>i. reflp_on P (g i)` and ex_subset and reflp_on_subset
-                have "reflp_on P (?A i)" by blast
-              assume "?A i = ?B (f (j - f 0))"
-              with subset have "?A i \<subseteq> ?A (f (j - f 0))" by auto
-              moreover have "?P (?A i) (?A i)" using set_le_refl[OF `reflp_on P (?A i)`] .
-              ultimately have "?P (?A i) (?A (f (j - f 0)))" using set_le_subset by blast
-              moreover from ge[THEN spec[of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
-              ultimately show ?thesis using `bad ?P ?A` by (auto simp: goodp_def)
-            qed
+            with * have "?P (?A i) (?B (f (j - f 0)))" by auto
+            with subset have "?P (?A i) (?A (f (j - f 0)))" using set_le_subset[of _ _ P] by blast
+            moreover from ge[THEN spec[of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
+            ultimately have False using `bad ?P ?A` by (auto simp: goodp_def)
           } ultimately show False by arith
         qed
         have "\<forall>i<f 0. ?C i = ?g (f 0) i" using 2 by auto
@@ -686,12 +664,11 @@ proof -
       qed
       have "wqo_on ?P ?B'"
       proof
-        from reflp_on_subset[OF subset refl] show "reflp_on ?P ?B'" .
-      next
         from transp_on_subset[OF subset trans] show "transp_on ?P ?B'" .
       next
+        from refl have refl: "reflp_on ?P ?B'" using reflp_on_subset and subset by blast
         fix f :: "'a set seq" assume "\<forall>i. f i \<in> ?B'"
-        from no_bad_of_special_shape_imp_goodp[of ?P ?B f, OF no_index this]
+        from no_bad_of_special_shape_imp_goodp[of ?P ?B f, OF no_index refl this]
           show "goodp ?P f" .
       qed
       let ?a' = "{a i | i. True}"
@@ -703,78 +680,67 @@ proof -
       let ?aB = "\<lambda>i. (a i, ?B i)"
       let ?P' = "prod_le P ?P"
       have "\<forall>i. ?aB i \<in> (?a' \<times> ?B')" by auto
-      with wqo have "goodp ?P' ?aB" unfolding wqo_on_def by auto
-      then obtain i j where "i < j" and "?P'\<^sup>=\<^sup>= (?aB i) (?aB j)"
+      with wqo have "goodp ?P' ?aB" unfolding wqo_on_def almost_full_on_def by auto
+      then obtain i j where "i < j" and "?P' (?aB i) (?aB j)"
         by (auto simp: goodp_def)
-      hence "(a i = a j \<and> ?B i = ?B j) \<or> (P (a i) (a j) \<and> ?P (?B i) (?B j))"
-        unfolding prod_le_def by auto
-      thus False
-      proof
-        assume *: "a i = a j \<and> ?B i = ?B j"
-        hence "?A i = ?A j" by (metis a insert_Diff_single insert_absorb)
-        hence "?P\<^sup>=\<^sup>= (?A i) (?A j)" by auto
-        with `i < j` and `bad ?P ?A` show False by (auto simp: goodp_def)
-      next
-        assume "P (a i) (a j) \<and> ?P (?B i) (?B j)"
-        hence *: "P (a i) (a j)" and **: "?P (?B i) (?B j)" by auto
-        from **[unfolded set_le_def] obtain f
-          where ***: "\<forall>a\<in>?B i. f a \<in> ?B j \<and> P a (f a)"
-          and inj[unfolded inj_on_def]: "inj_on f (?B i)" by blast
-        let ?f = "f(a i := a j)"
-        have "inj_on ?f (?A i)" unfolding inj_on_def
-        proof (intro ballI impI)
-          fix x y
-          assume "x \<in> ?A i" and "y \<in> ?A i" and "?f x = ?f y"
-          hence "x = a i \<or> x \<in> ?B i" by auto
-          thus "x = y"
+      hence *: "P (a i) (a j)" and **: "?P (?B i) (?B j)" by (auto simp: prod_le_def)
+      from **[unfolded set_le_def] obtain f
+        where ***: "\<forall>a\<in>?B i. f a \<in> ?B j \<and> P a (f a)"
+        and inj[unfolded inj_on_def]: "inj_on f (?B i)" by blast
+      let ?f = "f(a i := a j)"
+      have "inj_on ?f (?A i)" unfolding inj_on_def
+      proof (intro ballI impI)
+        fix x y
+        assume "x \<in> ?A i" and "y \<in> ?A i" and "?f x = ?f y"
+        hence "x = a i \<or> x \<in> ?B i" by auto
+        thus "x = y"
+        proof
+          assume "x = a i"
+          from `y \<in> ?A i` have "y = a i \<or> y \<in> ?B i" by auto
+          thus ?thesis
           proof
-            assume "x = a i"
-            from `y \<in> ?A i` have "y = a i \<or> y \<in> ?B i" by auto
-            thus ?thesis
-            proof
-              assume "y = a i" with `x = a i` show ?thesis by simp
-            next
-              assume "y \<in> ?B i" hence "y \<noteq> a i" by auto
-              with `y \<in> ?B i` and *** have "?f y \<in> ?B j" by auto
-              hence "?f y \<noteq> a j" by auto
-              with `x = a i` and `?f x = ?f y` show ?thesis by auto
-            qed
+            assume "y = a i" with `x = a i` show ?thesis by simp
           next
-            assume "x \<in> ?B i"
-            hence "x \<noteq> a i" by simp
-            hence "?f x \<noteq> a j" using *** and `x \<in> ?B i` by auto
-            from `y \<in> ?A i` have "y = a i \<or> y \<in> ?B i" by auto
-            thus ?thesis
-            proof
-              assume "y = a i" hence "?f y = a j" by auto
-              with `?f x \<noteq> a j` and `?f x = ?f y` show ?thesis by simp
-            next
-              assume "y \<in> ?B i" hence "y \<noteq> a i" by auto
-              with `x \<in> ?B i` and `x \<noteq> a i` and `?f x = ?f y`
-              have "f x = f y" by simp
-              with `x \<in> ?B i` and `y \<in> ?B i` and inj show ?thesis by blast
-            qed
+            assume "y \<in> ?B i" hence "y \<noteq> a i" by auto
+            with `y \<in> ?B i` and *** have "?f y \<in> ?B j" by auto
+            hence "?f y \<noteq> a j" by auto
+            with `x = a i` and `?f x = ?f y` show ?thesis by auto
+          qed
+        next
+          assume "x \<in> ?B i"
+          hence "x \<noteq> a i" by simp
+          hence "?f x \<noteq> a j" using *** and `x \<in> ?B i` by auto
+          from `y \<in> ?A i` have "y = a i \<or> y \<in> ?B i" by auto
+          thus ?thesis
+          proof
+            assume "y = a i" hence "?f y = a j" by auto
+            with `?f x \<noteq> a j` and `?f x = ?f y` show ?thesis by simp
+          next
+            assume "y \<in> ?B i" hence "y \<noteq> a i" by auto
+            with `x \<in> ?B i` and `x \<noteq> a i` and `?f x = ?f y`
+            have "f x = f y" by simp
+            with `x \<in> ?B i` and `y \<in> ?B i` and inj show ?thesis by blast
           qed
         qed
-        moreover have "\<forall>a\<in>?A i. ?f a \<in> ?A j \<and> P a (?f a)"
-        proof (intro ballI)
-          fix x assume "x \<in> ?A i" hence "x = a i \<or> x \<in> ?B i" by auto
-          thus "?f x \<in> ?A j \<and> P x (?f x)"
-          proof
-            assume "x = a i" with * and a show ?thesis by simp
-          next
-            assume "x \<in> ?B i"
-            moreover hence "x \<noteq> a i" by auto
-            ultimately show ?thesis using *** by auto
-          qed
-        qed
-        ultimately have "?P (?A i) (?A j)" unfolding set_le_def by blast
-        hence "?P\<^sup>=\<^sup>= (?A i) (?A j)" by auto
-        with `i < j` and `bad ?P ?A` show False by (auto simp: goodp_def)
       qed
+      moreover have "\<forall>a\<in>?A i. ?f a \<in> ?A j \<and> P a (?f a)"
+      proof (intro ballI)
+        fix x assume "x \<in> ?A i" hence "x = a i \<or> x \<in> ?B i" by auto
+        thus "?f x \<in> ?A j \<and> P x (?f x)"
+        proof
+          assume "x = a i" with * and a show ?thesis by simp
+        next
+          assume "x \<in> ?B i"
+          moreover hence "x \<noteq> a i" by auto
+          ultimately show ?thesis using *** by auto
+        qed
+      qed
+      ultimately have "?P (?A i) (?A j)" unfolding set_le_def by blast
+      hence "?P (?A i) (?A j)" by auto
+      with `i < j` and `bad ?P ?A` show False by (auto simp: goodp_def)
     qed
   }
-  with refl and trans show ?thesis unfolding wqo_on_def by blast
+  with trans show ?thesis unfolding wqo_on_def almost_full_on_def by blast
 qed
 
 
@@ -798,7 +764,8 @@ instance proof (rule wqo_class.intro)
     unfolding less_eq_list_def[abs_def]
     unfolding reflp_on_set_conv transp_on_set_conv
     using goodp_set_le_set[of ?P]
-    by auto
+    using almost_full_on_imp_reflp_on [of ?P UNIV]
+    by (auto simp: almost_full_on_def)
   hence "class.wqo ?P' (op <)"
     unfolding wqo_on_UNIV_conv less_list_def[abs_def] .
   thus "class.wqo_axioms ?P'" by (auto simp: class.wqo_def)

@@ -53,20 +53,40 @@ qed
 subsection {* Basic Definitions *}
 
 definition goodp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a seq \<Rightarrow> bool" where
-  "goodp P f \<equiv> \<exists>i j. i < j \<and> P\<^sup>=\<^sup>= (f i) (f j)"
+  "goodp P f \<equiv> \<exists>i j. i < j \<and> P (f i) (f j)"
 
 abbreviation bad where "bad P f \<equiv> \<not> goodp P f"
 
+definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "almost_full_on P A \<equiv> \<forall>f. (\<forall>i. f i \<in> A) \<longrightarrow> goodp P f"
+
+lemma almost_full_on [Pure.intro]:
+  "(\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> goodp P f) \<Longrightarrow> almost_full_on P A"
+  unfolding almost_full_on_def by blast
+
+lemma almost_full_on_imp_reflp_on:
+  assumes af: "almost_full_on P A"
+  shows "reflp_on P A"
+proof
+  fix x
+  assume "x \<in> A"
+  let ?f = "\<lambda>i. x"
+  have "\<forall>i. ?f i \<in> A" using `x \<in> A` by simp
+  with af obtain i j :: nat where "i < j"
+    and "P (?f i) (?f j)" by (auto simp: almost_full_on_def goodp_def)
+  thus "P x x" by simp
+qed
+
 definition wqo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "wqo_on P A \<equiv> reflp_on P A \<and> transp_on P A \<and> (\<forall>f. (\<forall>i. f i \<in> A) \<longrightarrow> goodp P f)"
+  "wqo_on P A \<equiv> transp_on P A \<and> almost_full_on P A"
 
 lemma wqo_onI [Pure.intro]:
-  "\<lbrakk>reflp_on P A; transp_on P A; \<And>f. \<forall>i. f i \<in> A \<Longrightarrow> goodp P f\<rbrakk> \<Longrightarrow> wqo_on P A"
-  unfolding wqo_on_def by blast
+  "\<lbrakk>transp_on P A; \<And>f. \<forall>i. f i \<in> A \<Longrightarrow> goodp P f\<rbrakk> \<Longrightarrow> wqo_on P A"
+  unfolding wqo_on_def almost_full_on_def by blast
 
 lemma wqo_on_imp_reflp_on:
   "wqo_on P A \<Longrightarrow> reflp_on P A"
-  by (auto simp: wqo_on_def)
+  using almost_full_on_imp_reflp_on by (auto simp: wqo_on_def)
 
 lemma wqo_on_imp_transp_on:
   "wqo_on P A \<Longrightarrow> transp_on P A"
@@ -74,12 +94,16 @@ lemma wqo_on_imp_transp_on:
 
 lemma wqo_on_imp_goodp:
   "wqo_on P A \<Longrightarrow> \<forall>i. f i \<in> A \<Longrightarrow> goodp P f"
-  by (auto simp: wqo_on_def)
+  by (auto simp: wqo_on_def almost_full_on_def)
+
+lemma almost_full_on_subset:
+  "A \<subseteq> B \<Longrightarrow> almost_full_on P B \<Longrightarrow> almost_full_on P A"
+  by (auto simp: almost_full_on_def)
 
 lemma wqo_on_subset:
   "A \<subseteq> B \<Longrightarrow> wqo_on P B \<Longrightarrow> wqo_on P A"
-  using reflp_on_subset[of A B P]
-    and transp_on_subset[of A B P]
+  using almost_full_on_subset [of A B P]
+    and transp_on_subset [of A B P]
   unfolding wqo_on_def by blast
 
 abbreviation strict where
@@ -133,7 +157,64 @@ proof (rule ccontr)
   with `irreflp_on ?P A` have "\<forall>i j. i < j \<longrightarrow> \<not> (P\<^sup>=\<^sup>= (f i) (f j))"
     unfolding irreflp_on_def using * by force
   hence "bad P f" by (auto simp: goodp_def)
-  with * and assms show False unfolding wqo_on_def by blast
+  with * and assms show False unfolding wqo_on_def almost_full_on_def by blast
+qed
+
+lemma transp_on_into_wqo_on:
+  "transp_on P A \<Longrightarrow> (\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> goodp P f) \<Longrightarrow> wqo_on P A"
+  unfolding wqo_on_def almost_full_on_def by blast
+
+text {*The homomorphic image of a wqo set is wqo.*}
+lemma wqo_on_hom:
+  assumes trans: "transp_on Q (h ` A)"
+    and hom: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
+    and wqo: "wqo_on P A"
+  shows "wqo_on Q (h ` A)"
+using trans
+proof (rule transp_on_into_wqo_on)
+  fix f :: "'a seq"
+  assume "\<forall>i. f i \<in> h ` A"
+  hence "\<forall>i. \<exists>x. x \<in> A \<and> f i = h x" by (auto simp: image_def)
+  from choice[OF this] obtain g
+    where *: "\<forall>i. g i \<in> A \<and> f i = h (g i)" by blast
+  show "goodp Q f"
+  proof (rule ccontr)
+    assume bad: "bad Q f"
+    {
+      fix i j :: nat
+      assume "i < j"
+      from bad have "\<not> Q (f i) (f j)" using `i < j` by (auto simp: goodp_def)
+      with hom have "\<not> P (g i) (g j)" using * by auto
+    }
+    hence "bad P g" by (auto simp: goodp_def)
+    with wqo and * show False by (auto simp: goodp_def wqo_on_def almost_full_on_def)
+  qed
+qed
+
+text {*The monomorphic preimage of a wqo set is wqo.*}
+lemma wqo_on_mon:
+  assumes trans: "transp_on P A"
+    and mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
+    and wqo: "wqo_on Q B"
+  shows "wqo_on P A"
+using trans
+proof (rule transp_on_into_wqo_on)
+  fix f :: "'a seq"
+  assume *: "\<forall>i. f i \<in> A"
+  hence **: "\<forall>i. (h \<circ> f) i \<in> B" using mon by (auto simp: bij_betw_def)
+  show "goodp P f"
+  proof (rule ccontr)
+    assume bad: "bad P f"
+    {
+      fix i j :: nat
+      assume "i < j"
+      from bad have "\<not> P (f i) (f j)" using `i < j` by (auto simp: goodp_def)
+      with mon have "\<not> Q (h (f i)) (h (f j))"
+        using * by (auto simp: bij_betw_def inj_on_def)
+    }
+    hence "bad Q (h \<circ> f)" by (auto simp: goodp_def)
+    with wqo and ** show False by (auto simp: goodp_def wqo_on_def almost_full_on_def)
+  qed
 qed
 
 
@@ -147,9 +228,18 @@ text {*The following lemma converts between @{const wqo_on} (for the special
 case that the domain is the universe of a type) and the class predicate
 @{const class.wqo}.*}
 lemma wqo_on_UNIV_conv:
-  "wqo_on P UNIV \<longleftrightarrow> class.wqo P (strict P)"
-  unfolding wqo_on_def class.wqo_def class.preorder_def class.wqo_axioms_def
-  by (auto simp: conversep_iff[abs_def] reflp_on_def transp_on_def)
+  "wqo_on P UNIV \<longleftrightarrow> class.wqo P (strict P)" (is "?lhs = ?rhs")
+proof
+  assume "?lhs" thus "?rhs"
+    unfolding wqo_on_def class.wqo_def class.preorder_def class.wqo_axioms_def
+    using almost_full_on_imp_reflp_on [of P UNIV]
+    by (auto simp: reflp_on_def almost_full_on_def)
+       (unfold transp_on_def, blast)
+next
+  assume "?rhs" thus "?lhs"
+    unfolding class.wqo_def class.preorder_def class.wqo_axioms_def
+    by (auto simp: wqo_on_def almost_full_on_def transp_on_def)
+qed
 
 text {*The strict part of a wqo is well-founded.*}
 lemma (in wqo) "wfP (op <)"
@@ -159,6 +249,103 @@ proof -
     unfolding less_le_not_le [abs_def] wqo_on_UNIV_conv [symmetric] .
   from wqo_on_imp_wfp_on [OF this]
     show ?thesis unfolding less_le_not_le [abs_def] wfp_on_UNIV .
+qed
+
+
+subsection {* Disjoint Sum of Wqo Sets *}
+
+fun
+  sum_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool"
+where
+  "sum_le P Q (Inl x) (Inl y) = P x y" |
+  "sum_le P Q (Inr x) (Inr y) = Q x y" |
+  "sum_le P Q x y = False"
+
+text {*When two sets are wqo, then their disjoint sum is wqo.*}
+lemma wqo_on_Plus:
+  assumes "wqo_on P A" and "wqo_on Q B"
+  shows "wqo_on (sum_le P Q) (A <+> B)"
+    (is "wqo_on ?P ?A")
+proof
+  from assms have trans [unfolded transp_on_def]: "transp_on P A" "transp_on Q B"
+    by (auto simp: wqo_on_def)
+  show "transp_on ?P ?A"
+    unfolding transp_on_def by (auto, insert trans) (blast+)
+next
+  fix f :: "('a + 'b) seq"
+  assume *: "\<forall>i. f i \<in> ?A"
+  let ?I = "{i. f i \<in> Inl ` A}"
+  let ?J = "{i. f i \<in> Inr ` B}"
+  have **: "(UNIV::nat set) - ?I = ?J" using * by auto
+  show "goodp ?P f"
+  proof (rule ccontr)
+    assume bad: "bad ?P f"
+    show False
+    proof (cases "finite ?I")
+      assume "finite ?I"
+      moreover have "infinite (UNIV::nat set)" by auto
+      ultimately have "infinite ?J" unfolding ** [symmetric] by (rule Diff_infinite_finite)
+      hence "INFM i. i \<in> ?J" unfolding INFM_iff_infinite by simp
+      then interpret infinitely_many "\<lambda>i. i \<in> ?J" by (unfold_locales) assumption
+      let ?f = "\<lambda>i. Sum_Type.Projr (f (index i))"
+      have ***: "\<forall>i. \<exists>x\<in>B. f (index i) = Inr x" using index_p by auto
+      have B: "\<forall>i. ?f i \<in> B"
+      proof
+        fix i
+        from *** obtain x where "x \<in> B" and "f (index i) = Inr x" by blast
+        thus "?f i \<in> B" by simp
+      qed
+      {
+        fix i j :: nat
+        assume "i < j"
+        hence "index i < index j" using index_ordered_less by auto
+        with bad have not: "\<not> ?P (f (index i)) (f (index j))" by (auto simp: goodp_def)
+        have "\<not> Q (?f i) (?f j)"
+        proof
+          assume "Q (?f i) (?f j)"
+          assume "Q (?f i) (?f j)"
+          moreover with *** obtain x y where "x \<in> B" and "y \<in> B"
+            and "f (index i) = Inr x" and "f (index j) = Inr y" by blast
+          ultimately have "?P (f (index i)) (f (index j))" by simp
+          thus False using not by simp
+        qed
+      }
+      hence "bad Q ?f" by (auto simp: goodp_def)
+      moreover from `wqo_on Q B` and B
+        have "goodp Q ?f" by (auto simp: wqo_on_def goodp_def almost_full_on_def)
+      ultimately show False by blast
+    next
+      assume "infinite ?I"
+      hence "INFM i. i \<in> ?I" unfolding INFM_iff_infinite by simp
+      then interpret infinitely_many "\<lambda>i. i \<in> ?I" by (unfold_locales) assumption
+      let ?f = "\<lambda>i. Sum_Type.Projl (f (index i))"
+      have ***: "\<forall>i. \<exists>x\<in>A. f (index i) = Inl x" using index_p by auto
+      have A: "\<forall>i. ?f i \<in> A"
+      proof
+        fix i
+        from *** obtain x where "x \<in> A" and "f (index i) = Inl x" by blast
+        thus "?f i \<in> A" by simp
+      qed
+      {
+        fix i j :: nat
+        assume "i < j"
+        hence "index i < index j" using index_ordered_less by auto
+        with bad have not: "\<not> ?P (f (index i)) (f (index j))" by (auto simp: goodp_def)
+        have "\<not> P (?f i) (?f j)"
+        proof
+          assume "P (?f i) (?f j)"
+          moreover with *** obtain x y where "x \<in> A" and "y \<in> A"
+            and "f (index i) = Inl x" and "f (index j) = Inl y" by blast
+          ultimately have "?P (f (index i)) (f (index j))" by simp
+          thus False using not by simp
+        qed
+      }
+      hence "bad P ?f" by (auto simp: goodp_def)
+      moreover from `wqo_on P A` and A
+        have "goodp P ?f" by (auto simp: wqo_on_def goodp_def almost_full_on_def)
+      ultimately show False by blast
+    qed
+  qed
 qed
 
 
@@ -177,9 +364,6 @@ lemma wqo_on_Sigma:
   shows "wqo_on (prod_le P1 P2) (A1 \<times> A2)"
     (is "wqo_on ?P ?A")
 proof
-  show "reflp_on ?P ?A"
-    using assms by (auto simp: wqo_on_def reflp_on_def prod_le_def)
-next
   from assms have "transp_on P1 A1" and "transp_on P2 A2" by (auto simp: wqo_on_def)
   thus "transp_on ?P ?A" unfolding transp_on_def prod_le_def by blast
 next
@@ -187,18 +371,8 @@ next
   let ?p = "\<lambda>i. fst (g i)"
   let ?q = "\<lambda>i. snd (g i)"
   assume g: "\<forall>i. g i \<in> ?A"
-  have p: "\<forall>i. ?p i \<in> A1"
-  proof
-    fix i
-    from g have "g i \<in> ?A" by simp
-    thus "?p i \<in> A1" by auto
-  qed
-  have q: "\<forall>i. ?q i \<in> A2"
-  proof
-    fix i
-    from g have "g i \<in> ?A" by simp
-    thus "?q i \<in> A2" by auto
-  qed
+  hence p: "\<forall>i. ?p i \<in> A1" and q: "\<forall>i. ?q i \<in> A2"
+    by (metis SigmaE fst_conv, metis SigmaE snd_conv)
   let ?T = "{m. \<forall>n>m. \<not> (P1 (?p m) (?p n))}"
   have "finite ?T"
   proof (rule ccontr)
@@ -211,14 +385,12 @@ next
     proof
       assume "goodp P1 ?p'"
       then obtain i j :: nat where "i < j"
-        and "P1\<^sup>=\<^sup>= (?p' i) (?p' j)" by (auto simp: goodp_def)
-      hence "P1 (?p' i) (?p' j)"
-        using p' and reflp_on_reflclp[OF wqo_on_imp_reflp_on[OF assms(1)]] by simp
+        and "P1 (?p' i) (?p' j)" by (auto simp: goodp_def)
       moreover from index_ordered_less[OF `i < j`] have "index j > index i" .
       moreover from index_p have "index i \<in> ?T" by simp
       ultimately show False by blast
     qed
-    with assms(1) show False using p' by (auto simp: wqo_on_def)
+    with assms(1) show False using p' by (auto simp: wqo_on_def almost_full_on_def)
   qed
   then obtain n where "\<forall>r\<ge>n. r \<notin> ?T"
     using infinite_nat_iff_unbounded_le[of "?T"] by auto
@@ -230,11 +402,9 @@ next
     have chain: "chainp (\<lambda>x y. x \<in> A1 \<and> y \<in> A1 \<and> P1 x y) (\<lambda>i. ?p ((f^^i) n))" .
   let ?f = "\<lambda>i. (f^^i) n"
   from 1 have inc: "\<forall>i\<ge>n. f i > i" by simp
-  from wqo_on_imp_goodp[OF assms(2), of "?q \<circ> ?f"] and q
-    obtain i j where "\<And>i. ?q (?f i) \<in> A2" and "j > i" and "P2\<^sup>=\<^sup>= (?q (?f i)) (?q (?f j))"
+  from wqo_on_imp_goodp [OF assms(2), of "?q \<circ> ?f"] and q
+    obtain i j where "\<And>i. ?q (?f i) \<in> A2" and "j > i" and "P2 (?q (?f i)) (?q (?f j))"
     by (auto simp: goodp_def)
-  hence "P2 (?q (?f i)) (?q (?f j))"
-    using reflp_on_reflclp[OF wqo_on_imp_reflp_on[OF assms(2)]] by simp
   moreover from funpow_mono[OF inc `j > i`] have "?f j > ?f i" .
   moreover from chainp_imp_tranclp[of "\<lambda>x y. x \<in> A1 \<and> y \<in> A1 \<and> P1 x y", OF chain `j > i`]
     have "P1 (?p (?f i)) (?p (?f j))"
@@ -290,19 +460,20 @@ lemma bad_repl:
   shows "bad P (B \<circ> f)"
 proof
   assume "goodp P (B \<circ> f)"
-  then obtain i j where "i < j" and "P\<^sup>=\<^sup>= (B (f i)) (B (f j))" by (auto simp: goodp_def)
-  hence "P\<^sup>=\<^sup>= (?A (f i)) (?A (f j))" using assms by auto
+  then obtain i j where "i < j" and "P (B (f i)) (B (f j))" by (auto simp: goodp_def)
+  hence "P (?A (f i)) (?A (f j))" using assms by auto
   moreover from `i < j` have "f i < f j" using assms by auto
   ultimately show False using assms(3) by (auto simp: goodp_def)
 qed
 
 lemma no_bad_of_special_shape_imp_goodp:
   assumes "\<not> (\<exists>f:: nat seq. (\<forall>i. f 0 \<le> f i) \<and> bad P (B \<circ> f))"
+    and refl: "reflp_on P {B i | i. True}"
     and "\<forall>i. f i \<in> {B i | i. True}"
   shows "goodp P f"
 proof (rule ccontr)
   assume "bad P f"
-  from assms(2) have "\<forall>i. \<exists>j. f i = B j" by blast
+  from assms(3) have "\<forall>i. \<exists>j. f i = B j" by blast
   from choice[OF this] obtain g where "\<And>i. f i = B (g i)" by blast
   with `bad P f` have "bad P (B \<circ> g)" by (auto simp: goodp_def)
   have "\<forall>i. \<exists>j>i. g j \<ge> g 0"
@@ -335,7 +506,7 @@ proof (rule ccontr)
       obtain k where "k > i" and "infinite {j. j > i \<and> g j = g k}" by auto
     then obtain l where "k < l" and "g l = g k"
       unfolding infinite_nat_iff_unbounded by auto
-    hence "P\<^sup>=\<^sup>= (B (g k)) (B (g l))" by auto
+    hence "P (B (g k)) (B (g l))" using refl by (auto simp: reflp_on_def)
     with `k < l` and `bad P (B \<circ> g)` show False by (auto simp: goodp_def)
   qed
   from choice[OF this] obtain h
@@ -351,8 +522,8 @@ proof (rule ccontr)
   moreover have "bad P (B \<circ> ?f)"
   proof
     assume "goodp P (B \<circ> ?f)"
-    then obtain i j where "i < j" and "P\<^sup>=\<^sup>= (B (?f i)) (B (?f j))" by (auto simp: goodp_def)
-    hence "P\<^sup>=\<^sup>= (B (g (?i i))) (B (g (?i j)))" by simp
+    then obtain i j where "i < j" and "P (B (?f i)) (B (?f j))" by (auto simp: goodp_def)
+    hence "P (B (g (?i i))) (B (g (?i j)))" by simp
     moreover from **[OF `i < j`] have "?i i < ?i j" .
     ultimately show False using `bad P (B \<circ> g)` by (auto simp: goodp_def)
   qed
@@ -463,7 +634,7 @@ lemma Nil_imp_goodp_emb [simp]:
   shows "goodp (emb P) f"
 proof (rule ccontr)
   assume "bad (emb P) f"
-  moreover have "(emb P)\<^sup>=\<^sup>= (f i) (f (Suc i))"
+  moreover have "(emb P) (f i) (f (Suc i))"
     unfolding assms by auto
   ultimately show False
     unfolding goodp_def by auto
@@ -524,37 +695,28 @@ subsection {* Higman's Lemma *}
 lemma bad_emb_repl:
   assumes "bad (emb P) f"
     and "bad (emb P) g"
-    and "\<forall>i. reflp_on P (set (f i))"
     and "\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (g i) (f j)"
   shows "bad (emb P) (repl n f g)" (is "bad ?P ?f")
 proof (rule ccontr)
   presume "goodp ?P ?f"
   then obtain i j where "i < j"
-    and good: "?P\<^sup>=\<^sup>= (?f i) (?f j)" by (auto simp: goodp_def)
+    and good: "?P (?f i) (?f j)" by (auto simp: goodp_def)
   {
     assume "j < n"
-    with `i < j` and good have "?P\<^sup>=\<^sup>= (f i) (f j)" by simp
+    with `i < j` and good have "?P (f i) (f j)" by simp
     with assms(1) have False using `i < j` by (auto simp: goodp_def)
   } moreover {
     assume "n \<le> i"
     with `i < j` and good have "i - n < j - n"
-      and "?P \<^sup>=\<^sup>= (g i) (g j)" by auto
+      and "?P (g i) (g j)" by auto
     with assms(2) have False by (auto simp: goodp_def)
   } moreover {
     assume "i < n" and "n \<le> j"
-    with assms(4) obtain k where "k \<ge> n" and suffixeq: "suffixeq (g j) (f k)" by blast
+    with assms(3) obtain k where "k \<ge> n" and suffixeq: "suffixeq (g j) (f k)" by blast
     from `i < j` and `i < n` and `n \<le> j` and good
-      have "?P\<^sup>=\<^sup>= (f i) (g j)" by auto
-    hence "?P\<^sup>=\<^sup>= (f i) (f k)"
-    proof
-      assume fi: "f i = g j"
-      with emb_refl[OF assms(3)[rule_format]]
-        have "?P (f i) (f i)" by blast
-      with emb_suffixeq[OF suffixeq] show "?P\<^sup>=\<^sup>= (f i) (f k)" by (auto simp: fi)
-    next
-      assume "?P (f i) (g j)"
-      with emb_suffixeq[OF suffixeq] show "?P\<^sup>=\<^sup>= (f i) (f k)" by auto
-    qed
+      have "?P (f i) (g j)" by auto
+    hence "?P (f i) (f k)"
+      using emb_suffixeq[OF suffixeq] by auto
     with `i < n` and `n \<le> k` and assms(1) have False by (auto simp: goodp_def)
   } ultimately show False using `i < j` by arith
 qed simp
@@ -572,9 +734,7 @@ lemma minimal_bad_element:
   fixes f :: "'a list seq"
   assumes "mbp P f n"
     and "bad (emb P) f"
-    and "\<forall>i. reflp_on P (set (f i))"
   shows "\<exists>M.
-    (\<forall>i. reflp_on P (set (repl (Suc n) f M i))) \<and>
     (\<forall>i\<le>n. M i = f i) \<and>
     suffixeq (M (Suc n)) (f (Suc n)) \<and>
     (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq ((repl (Suc n) f M) i) (f j)) \<and>
@@ -587,8 +747,7 @@ proof (induct "f (Suc n)" arbitrary: f n rule: list_suffix_induct)
   proof (cases "mbp P g (Suc n)")
     case True
     let ?g = "repl (Suc n) g g"
-    have "\<forall>i. reflp_on P (set (?g i))" by (simp add: psuffix)
-    moreover have "\<forall>i\<le>n. ?g i = g i" by simp
+    have "\<forall>i\<le>n. ?g i = g i" by simp
     moreover have "suffixeq (g (Suc n)) (g (Suc n))" by simp
     moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq ((repl (Suc n) g g) i) (g j)" by auto
     moreover from `bad (emb P) g`
@@ -636,21 +795,10 @@ proof (induct "f (Suc n)" arbitrary: f n rule: list_suffix_induct)
         show "goodp (emb P) e" by auto
     qed
     have bad: "bad (emb P) ?g"
-      using bad_emb_repl[OF `bad (emb P) g` `bad (emb P) h`, of "Suc n",
-      OF `\<forall>i. reflp_on P (set (g i))` greater] .
-    have refl: "\<forall>i. reflp_on P (set (?g i))"
-    proof
-      fix i
-      { assume "i < Suc n" hence "reflp_on P (set (?g i))" by (simp add: psuffix) }
-      moreover
-      { assume "i \<ge> Suc n" hence "reflp_on P (set (?g i))"
-        using psuffix(4) and greater and reflp_on_suffixeq by (simp) blast }
-      ultimately show "reflp_on P (set (?g i))" by arith
-    qed
+      using bad_emb_repl[OF `bad (emb P) g` `bad (emb P) h`, of "Suc n", OF greater] .
     let ?g' = "repl (Suc n) g"
-    from psuffix(1)[of ?g n, OF suffix' mbp bad refl] obtain M
-      where "\<forall>i. reflp_on P (set (?g' M i))"
-      and "\<forall>i\<le>n. M i = g i"
+    from psuffix(1)[of ?g n, OF suffix' mbp bad] obtain M
+      where "\<forall>i\<le>n. M i = g i"
       and "suffixeq (M (Suc n)) (?g' h (Suc n))"
       and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (?g' M i) (h j)"
       and "bad (emb P) (?g' M)"
@@ -754,16 +902,11 @@ proof -
         by blast
       with `\<And>i. f i \<in> lists A`
         have "\<And>i. g i \<in> lists A" using suffixeq_set_subset by blast
-      with wqo_on_imp_reflp_on[OF assms]
-        have "\<forall>i. reflp_on P (set (g i))" using reflp_on_subset
-        unfolding lists_eq_set by blast
       from minimal_bad_element[of P]
         have "\<forall>f n.
         mbp P f n \<and>
-        bad ?P f \<and>
-        (\<forall>i. reflp_on P (set (f i))) \<longrightarrow>
+        bad ?P f \<longrightarrow>
         (\<exists>M.
-          (\<forall>i. reflp_on P (set (repl (Suc n) f M i))) \<and>
           (\<forall>i\<le>n. M i = f i) \<and>
           suffixeq (M (Suc n)) (f (Suc n)) \<and>
           (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (repl (Suc n) f M i) (f j)) \<and>
@@ -775,15 +918,14 @@ proof -
         where *[rule_format]: "\<forall>f n. ?Q f n \<longrightarrow> ?Q' f n (M f n)" by force
       let ?g = "minimal_bad_seq M g"
       let ?A = "\<lambda>i. ?g i i"
-      have "\<forall>n. (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n) \<and> (\<forall>i. reflp_on P (set (?g n i)))"
+      have "\<forall>n. (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
       proof
         fix n
-        show "(n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n) \<and> (\<forall>i. reflp_on P (set (?g n i)))"
+        show "(n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
         proof (induction n)
           case 0
           have "mbp P g 0" by fact
           moreover have "bad ?P g" by fact
-          moreover have "\<forall>i. reflp_on P (set (g i))" by fact
           ultimately
             have [simp]: "M g 0 0 = g 0" and "suffixeq (M g 0 (Suc 0)) (g (Suc 0))"
             and "bad ?P (M g 0)" and "mbp P (M g 0) (Suc 0)"
@@ -815,28 +957,6 @@ proof -
             with `mbp P g 0`[unfolded mbp_def]
             show "goodp ?P e" using `suffix (e 0) (g 0)` by (simp add: mbp_def)
           qed auto
-          moreover have "\<forall>i. reflp_on P (set (M g 0 i))"
-          proof
-            fix i
-            show "reflp_on P (set (M g 0 i))"
-            proof (cases "i \<le> Suc 0")
-              case False
-              hence "i \<ge> Suc 0" by auto
-              with ** obtain j where "j \<ge> Suc 0" and "suffixeq (M g 0 i) (g j)" by auto
-              with `\<forall>i. reflp_on P (set (g i))` and reflp_on_suffixeq show ?thesis by blast
-            next
-              case True
-              hence "i = 0 \<or> i = Suc 0" by auto
-              thus ?thesis
-              proof
-                assume "i = 0" with `\<forall>i. reflp_on P (set (g i))` show ?thesis by auto
-              next
-                assume "i = Suc 0" with `\<forall>i. reflp_on P (set (g i))`
-                  and `suffixeq (M g 0 (Suc 0)) (g (Suc 0))`
-                  and reflp_on_suffixeq show ?thesis by blast
-              qed
-            qed
-          qed
           moreover have "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
           proof (intro allI impI)
             fix i::nat
@@ -858,8 +978,7 @@ proof -
         next
           case (Suc n)
           with *[of "?g n" n]
-            have "\<forall>i. reflp_on P (set (?g (Suc n) i))"
-            and eq: "\<forall>i\<le>n. ?A i = ?g n i"
+            have eq: "\<forall>i\<le>n. ?A i = ?g n i"
             and suffix: "suffixeq (?g (Suc n) (Suc n)) (?g n (Suc n))"
             and subseq: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (?g (Suc n) i) (?g n j)"
             and "bad ?P (?g (Suc n))"
@@ -925,15 +1044,14 @@ proof -
       hence 1: "\<forall>n. \<forall>i\<le>n. mbp P (?g n) i"
         and 2: "\<forall>n. \<forall>i\<le>n. ?A i = ?g n i"
         and 3: "\<forall>n. bad ?P (?g n)"
-        and 5: "\<forall>n. \<forall>i. reflp_on P (set (?g n i))"
-        and 6: "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
-        and 7: "\<forall>n>0. \<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j)"
+        and 4: "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
+        and 5: "\<forall>n>0. \<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j)"
         by auto
-      have ex_subset: "\<forall>n. \<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
+      have ex_suffixeq: "\<forall>n. \<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
       proof
         fix n show "\<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
         proof (induct n)
-          case 0 with 6 show ?case by simp
+          case 0 with 4 show ?case by simp
         next
           case (Suc n)
           show ?case
@@ -949,7 +1067,7 @@ proof -
               with Suc show ?thesis by auto
             next
               assume "i \<ge> Suc n"
-              with 7[THEN spec[of _ "Suc n"]]
+              with 5 [THEN spec[of _ "Suc n"]]
                 obtain j where "j \<ge> Suc n"
                 and "suffixeq (?g (Suc n) i) (?g n j)" by auto
               moreover from Suc obtain k where "suffixeq (?g n j) (g k)" by blast
@@ -962,9 +1080,9 @@ proof -
       proof
         assume "goodp ?P ?A"
         then obtain i j :: nat where "i < j"
-          and "?P\<^sup>=\<^sup>= (?g i i) (?g j j)" unfolding goodp_def by auto
+          and "?P (?g i i) (?g j j)" unfolding goodp_def by auto
         moreover with 2[rule_format, of i j]
-          have "?P\<^sup>=\<^sup>= (?g j i) (?g j j)" by auto
+          have "?P (?g j i) (?g j j)" by auto
         ultimately have "goodp ?P (?g j)" unfolding goodp_def by blast
         with 3 show False by auto
       qed
@@ -981,35 +1099,21 @@ proof -
         have "bad ?P ?C"
         proof
           assume "goodp ?P ?C"
-          then obtain i j where "i < j" and *: "?P\<^sup>=\<^sup>= (?C i) (?C j)" by (auto simp: goodp_def)
+          then obtain i j where "i < j" and *: "?P (?C i) (?C j)" by (auto simp: goodp_def)
           {
-            assume "j < f 0" with `i < j` and * have "?P\<^sup>=\<^sup>= (?A i) (?A j)" by simp
+            assume "j < f 0" with `i < j` and * have "?P (?A i) (?A j)" by simp
             with `i < j` and `bad ?P ?A` have False by (auto simp: goodp_def)
           } moreover {
-            assume "f 0 \<le> i" with `i < j` and * have "?P\<^sup>=\<^sup>= (?B (f (i - f 0))) (?B (f (j - f 0)))" by simp
+            assume "f 0 \<le> i" with `i < j` and * have "?P (?B (f (i - f 0))) (?B (f (j - f 0)))" by simp
             moreover with `i < j` and `f 0 \<le> i` have "i - f 0 < j - f 0" by auto
             ultimately have False using `bad ?P (?B \<circ> f)` by (auto simp: goodp_def)
           } moreover {
             have suffix: "suffixeq (?B (f (j - f 0))) (?A (f (j - f 0)))" by simp
             assume "i < f 0" and "f 0 \<le> j"
-            with * have "?P\<^sup>=\<^sup>= (?A i) (?B (f (j - f 0)))" by auto
-            hence "?P (?A i) (?B (f (j - f 0))) \<or> ?A i = ?B (f (j - f 0))" by simp
-            hence False
-            proof
-              assume "?P (?A i) (?B (f (j - f 0)))"
-              with suffix have "?P (?A i) (?A (f (j - f 0)))" using emb_suffixeq[of _ _ P] by blast
-              moreover from ge[THEN spec[of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
-              ultimately show ?thesis using `bad ?P ?A` by (auto simp: goodp_def)
-            next
-              from `\<forall>i. reflp_on P (set (g i))` and ex_subset and reflp_on_suffixeq
-                have "reflp_on P (set (?A i))" by blast
-              assume "?A i = ?B (f (j - f 0))"
-              with suffix have "suffixeq (?A i) (?A (f (j - f 0)))" by auto
-              moreover have "?P (?A i) (?A i)" using emb_refl[OF `reflp_on P (set (?A i))`] .
-              ultimately have "?P (?A i) (?A (f (j - f 0)))" using emb_suffixeq by blast
-              moreover from ge[THEN spec[of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
-              ultimately show ?thesis using `bad ?P ?A` by (auto simp: goodp_def)
-            qed
+            with * have "?P (?A i) (?B (f (j - f 0)))" by auto
+            with suffix have "?P (?A i) (?A (f (j - f 0)))" using emb_suffixeq[of _ _ P] by blast
+            moreover from ge[THEN spec[of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
+            ultimately have False using `bad ?P ?A` by (auto simp: goodp_def)
           } ultimately show False by arith
         qed
         have "\<forall>i<f 0. ?C i = ?g (f 0) i" using 2 by auto
@@ -1022,7 +1126,7 @@ proof -
           with `\<forall>i. f 0 \<le> f i` have "f 0 \<le> ?i" by auto
           from `f 0 \<le> i` have "?C i = ?B ?i" by auto
           with non_empty have "suffixeq (?C i) (?g ?i ?i)" by auto
-          from iterated_subseq[OF 7, of "f 0" "?i", THEN spec[of _ "?i"], OF `f 0 \<le> ?i`]
+          from iterated_subseq [OF 5, of "f 0" "?i", THEN spec[of _ "?i"], OF `f 0 \<le> ?i`]
             obtain j where "j \<ge> f 0" and "suffixeq (?g ?i ?i) (?g (f 0) j)" by blast
           with `suffixeq (?C i) (?g ?i ?i)`
             show "\<exists>j\<ge>f 0. suffixeq (?C i) (?g (f 0) j)" using suffixeq_trans by fast
@@ -1031,26 +1135,25 @@ proof -
           using 1[rule_format, of "f 0", OF le_refl, unfolded mbp_def] by auto
         with `bad ?P ?C` have False by blast
       }
-      hence no_index: "\<not> (\<exists>f. (\<forall>i. f 0 \<le> f i) \<and> bad ?P (?B \<circ> f))" by blast
+      hence no_special_bad_seq: "\<not> (\<exists>f. (\<forall>i. f 0 \<le> f i) \<and> bad ?P (?B \<circ> f))" by blast
       let ?B' = "{?B i | i. True}"
       have subset: "?B' \<subseteq> lists A"
       proof
         fix B assume "B \<in> ?B'"
         then obtain i where B: "B = ?B i" by auto
         hence "suffixeq B (?A i)" by simp
-        with ex_subset[THEN spec[of _ i], THEN spec[of _ i]] obtain j
+        with ex_suffixeq[THEN spec[of _ i], THEN spec[of _ i]] obtain j
           where "suffixeq B (g j)" by (blast intro: suffixeq_trans)
         with `g j \<in> lists A`
           show "B \<in> lists A" by (auto simp: suffixeq_def)
       qed
       have "wqo_on ?P ?B'"
       proof
-        from reflp_on_subset[OF subset refl] show "reflp_on ?P ?B'" .
-      next
         from transp_on_subset[OF subset trans] show "transp_on ?P ?B'" .
       next
+        from reflp_on_subset[OF subset refl] have refl: "reflp_on ?P ?B'" .
         fix f :: "'a list seq" assume "\<forall>i. f i \<in> ?B'"
-        from no_bad_of_special_shape_imp_goodp[of ?P ?B f, OF no_index this]
+        from no_bad_of_special_shape_imp_goodp[of ?P ?B f, OF no_special_bad_seq refl this]
           show "goodp ?P f" .
       qed
       let ?a' = "{a i | i. True}"
@@ -1059,7 +1162,7 @@ proof -
         fix x assume "x \<in> ?a'"
         then obtain i where x: "x = a i" by auto
         with a and non_empty have "a i \<in> set (?A i)" by (metis hd_in_set)
-        with ex_subset and suffixeq_set_subset obtain j where "a i \<in> set (g j)" by blast
+        with ex_suffixeq and suffixeq_set_subset obtain j where "a i \<in> set (g j)" by blast
         with `g j \<in> lists A` show "x \<in> A" unfolding x by auto
       qed
       from wqo_on_subset[OF this assms]
@@ -1069,29 +1172,20 @@ proof -
       let ?aB = "\<lambda>i. (a i, ?B i)"
       let ?P' = "prod_le P ?P"
       have "\<forall>i. ?aB i \<in> (?a' \<times> ?B')" by auto
-      with wqo have "goodp ?P' ?aB" unfolding wqo_on_def by auto
-      then obtain i j where "i < j" and *: "?P'\<^sup>=\<^sup>= (?aB i) (?aB j)"
-        by (auto simp: goodp_def)
+      with wqo have "goodp ?P' ?aB" unfolding wqo_on_def almost_full_on_def by auto
+      then obtain i j where "i < j" and *: "?P' (?aB i) (?aB j)"
+        by (auto simp: goodp_def almost_full_on_def)
      from hd_Cons_tl and non_empty
         have hd_tl: "hd (?A i) # tl (?A i) = ?A i"
           "hd (?A j) # tl (?A j) = ?A j" by auto
-      from * have "(a i = a j \<and> ?B i = ?B j) \<or> (P (a i) (a j) \<and> ?P (?B i) (?B j))"
+      from * have "P (a i) (a j)" and "?P (?B i) (?B j)"
         unfolding prod_le_def by auto
-      thus False
-      proof
-        assume *: "a i = a j \<and> ?B i = ?B j"
-        hence "?A i = ?A j" using a and hd_tl by auto
-        with `i < j` and `bad ?P ?A` show False by (auto simp: goodp_def)
-      next
-        presume "P (a i) (a j)" and "?P (?B i) (?B j)"
-        from emb_Cons2[OF this]
-          have "?P (?A i) (?A j)" using a and hd_tl by auto
-        hence "?P\<^sup>=\<^sup>= (?A i) (?A j)" by auto
-        with `i < j` and `bad ?P ?A` show False by (auto simp: goodp_def)
-      qed simp_all
+      from emb_Cons2[OF this]
+        have "?P (?A i) (?A j)" using a and hd_tl by auto
+      with `i < j` and `bad ?P ?A` show False by (auto simp: goodp_def almost_full_on_def)
     qed
   }
-  with refl and trans show ?thesis unfolding wqo_on_def by blast
+  with trans show ?thesis unfolding wqo_on_def almost_full_on_def by blast
 qed
 
 
@@ -1101,7 +1195,7 @@ text {*Every reflexive and transitive relation on a finite set is a wqo.*}
 
 lemma finite_wqo_on:
   fixes A :: "('a::finite) set"
-  assumes "reflp_on P A" and "transp_on P A"
+  assumes refl: "reflp_on P A" and "transp_on P A"
   shows "wqo_on P A"
 proof
   fix f::"'a::finite seq"
@@ -1114,7 +1208,7 @@ proof
     obtain k where "infinite {j. f j = f k}" by auto
   then obtain l where "k < l" and "f l = f k"
     unfolding infinite_nat_iff_unbounded by auto
-  hence "P\<^sup>=\<^sup>= (f k) (f l)" by auto
+  hence "P (f k) (f l)" using refl and * by (auto simp: reflp_on_def)
   with `k < l` show "goodp P f" by (auto simp: goodp_def)
 qed fact+
 
