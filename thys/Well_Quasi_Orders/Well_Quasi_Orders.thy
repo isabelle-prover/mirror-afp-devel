@@ -60,6 +60,10 @@ abbreviation bad where "bad P f \<equiv> \<not> goodp P f"
 definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "almost_full_on P A \<equiv> \<forall>f. (\<forall>i. f i \<in> A) \<longrightarrow> goodp P f"
 
+lemma almost_full_on [Pure.intro]:
+  "(\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> goodp P f) \<Longrightarrow> almost_full_on P A"
+  unfolding almost_full_on_def by blast
+
 lemma almost_full_on_imp_reflp_on:
   assumes af: "almost_full_on P A"
   shows "reflp_on P A"
@@ -367,18 +371,8 @@ next
   let ?p = "\<lambda>i. fst (g i)"
   let ?q = "\<lambda>i. snd (g i)"
   assume g: "\<forall>i. g i \<in> ?A"
-  have p: "\<forall>i. ?p i \<in> A1"
-  proof
-    fix i
-    from g have "g i \<in> ?A" by simp
-    thus "?p i \<in> A1" by auto
-  qed
-  have q: "\<forall>i. ?q i \<in> A2"
-  proof
-    fix i
-    from g have "g i \<in> ?A" by simp
-    thus "?q i \<in> A2" by auto
-  qed
+  hence p: "\<forall>i. ?p i \<in> A1" and q: "\<forall>i. ?q i \<in> A2"
+    by (metis SigmaE fst_conv, metis SigmaE snd_conv)
   let ?T = "{m. \<forall>n>m. \<not> (P1 (?p m) (?p n))}"
   have "finite ?T"
   proof (rule ccontr)
@@ -408,11 +402,9 @@ next
     have chain: "chainp (\<lambda>x y. x \<in> A1 \<and> y \<in> A1 \<and> P1 x y) (\<lambda>i. ?p ((f^^i) n))" .
   let ?f = "\<lambda>i. (f^^i) n"
   from 1 have inc: "\<forall>i\<ge>n. f i > i" by simp
-  from wqo_on_imp_goodp[OF assms(2), of "?q \<circ> ?f"] and q
-    obtain i j where "\<And>i. ?q (?f i) \<in> A2" and "j > i" and "P2\<^sup>=\<^sup>= (?q (?f i)) (?q (?f j))"
+  from wqo_on_imp_goodp [OF assms(2), of "?q \<circ> ?f"] and q
+    obtain i j where "\<And>i. ?q (?f i) \<in> A2" and "j > i" and "P2 (?q (?f i)) (?q (?f j))"
     by (auto simp: goodp_def)
-  hence "P2 (?q (?f i)) (?q (?f j))"
-    using reflp_on_reflclp[OF wqo_on_imp_reflp_on[OF assms(2)]] by simp
   moreover from funpow_mono[OF inc `j > i`] have "?f j > ?f i" .
   moreover from chainp_imp_tranclp[of "\<lambda>x y. x \<in> A1 \<and> y \<in> A1 \<and> P1 x y", OF chain `j > i`]
     have "P1 (?p (?f i)) (?p (?f j))"
