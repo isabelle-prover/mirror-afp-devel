@@ -910,9 +910,6 @@ proof -
         by blast
       with `\<And>i. f i \<in> lists A`
         have "\<And>i. g i \<in> lists A" using suffixeq_set_subset by blast
-      with wqo_on_imp_reflp_on[OF assms]
-        have "\<forall>i. reflp_on P (set (g i))" using reflp_on_subset
-        unfolding lists_eq_set by blast
       from minimal_bad_element[of P]
         have "\<forall>f n.
         mbp P f n \<and>
@@ -937,7 +934,6 @@ proof -
           case 0
           have "mbp P g 0" by fact
           moreover have "bad ?P g" by fact
-          moreover have "\<forall>i. reflp_on P (set (g i))" by fact
           ultimately
             have [simp]: "M g 0 0 = g 0" and "suffixeq (M g 0 (Suc 0)) (g (Suc 0))"
             and "bad ?P (M g 0)" and "mbp P (M g 0) (Suc 0)"
@@ -969,28 +965,6 @@ proof -
             with `mbp P g 0`[unfolded mbp_def]
             show "goodp ?P e" using `suffix (e 0) (g 0)` by (simp add: mbp_def)
           qed auto
-          moreover have "\<forall>i. reflp_on P (set (M g 0 i))"
-          proof
-            fix i
-            show "reflp_on P (set (M g 0 i))"
-            proof (cases "i \<le> Suc 0")
-              case False
-              hence "i \<ge> Suc 0" by auto
-              with ** obtain j where "j \<ge> Suc 0" and "suffixeq (M g 0 i) (g j)" by auto
-              with `\<forall>i. reflp_on P (set (g i))` and reflp_on_suffixeq show ?thesis by blast
-            next
-              case True
-              hence "i = 0 \<or> i = Suc 0" by auto
-              thus ?thesis
-              proof
-                assume "i = 0" with `\<forall>i. reflp_on P (set (g i))` show ?thesis by auto
-              next
-                assume "i = Suc 0" with `\<forall>i. reflp_on P (set (g i))`
-                  and `suffixeq (M g 0 (Suc 0)) (g (Suc 0))`
-                  and reflp_on_suffixeq show ?thesis by blast
-              qed
-            qed
-          qed
           moreover have "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
           proof (intro allI impI)
             fix i::nat
