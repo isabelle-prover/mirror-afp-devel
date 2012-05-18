@@ -940,17 +940,13 @@ next
   qed
 qed
 
-lemma wqo_on_lists:
-  assumes "wqo_on P A"
-  shows "wqo_on (emb P) (lists A)"
-    (is "wqo_on ?P ?A")
+lemma almost_full_on_lists:
+  assumes "almost_full_on P A"
+  shows "almost_full_on (emb P) (lists A)"
+    (is "almost_full_on ?P ?A")
 proof -
-  { from reflp_on_emb[OF wqo_on_imp_reflp_on[OF assms]] have "reflp_on ?P ?A" . }
+  { from reflp_on_emb [OF almost_full_on_imp_reflp_on [OF assms]] have "reflp_on ?P ?A" . }
   note refl = this
-  {
-    from transp_on_emb[OF wqo_on_imp_transp_on[OF assms]] have "transp_on ?P ?A" .
-  }
-  note trans = this
   {
     have "\<forall>f. (\<forall>i. f i \<in> ?A) \<longrightarrow> goodp ?P f"
     proof (rule ccontr)
@@ -1208,10 +1204,8 @@ proof -
         with `g j \<in> lists A`
           show "B \<in> lists A" by (auto simp: suffixeq_def)
       qed
-      have "wqo_on ?P ?B'"
+      have "almost_full_on ?P ?B'"
       proof
-        from transp_on_subset[OF subset trans] show "transp_on ?P ?B'" .
-      next
         from reflp_on_subset[OF subset refl] have refl: "reflp_on ?P ?B'" .
         fix f :: "'a list seq" assume "\<forall>i. f i \<in> ?B'"
         from no_bad_of_special_shape_imp_goodp[of ?P ?B f, OF no_special_bad_seq refl this]
@@ -1226,14 +1220,14 @@ proof -
         with ex_suffixeq and suffixeq_set_subset obtain j where "a i \<in> set (g j)" by blast
         with `g j \<in> lists A` show "x \<in> A" unfolding x by auto
       qed
-      from wqo_on_subset[OF this assms]
-        have "wqo_on P ?a'" .
-      from wqo_on_Sigma[OF `wqo_on P ?a'` `wqo_on ?P ?B'`]
-        have wqo: "wqo_on (prod_le P ?P) (?a' \<times> ?B')" .
+      from almost_full_on_subset[OF this assms]
+        have "almost_full_on P ?a'" .
+      from almost_full_on_Sigma[OF `almost_full_on P ?a'` `almost_full_on ?P ?B'`]
+        have af: "almost_full_on (prod_le P ?P) (?a' \<times> ?B')" .
       let ?aB = "\<lambda>i. (a i, ?B i)"
       let ?P' = "prod_le P ?P"
       have "\<forall>i. ?aB i \<in> (?a' \<times> ?B')" by auto
-      with wqo have "goodp ?P' ?aB" unfolding wqo_on_def almost_full_on_def by auto
+      with af have "goodp ?P' ?aB" unfolding almost_full_on_def by auto
       then obtain i j where "i < j" and *: "?P' (?aB i) (?aB j)"
         by (auto simp: goodp_def almost_full_on_def)
      from hd_Cons_tl and non_empty
@@ -1249,15 +1243,18 @@ proof -
   with trans show ?thesis unfolding wqo_on_def almost_full_on_def by blast
 qed
 
+lemma wqo_on_lists:
+  assumes "wqo_on P A" shows "wqo_on (emb P) (lists A)"
+  using assms and almost_full_on_lists and transp_on_emb by (auto simp: wqo_on_def)
+
 
 subsection {* Special Case: Finite Sets *}
 
-text {*Every reflexive and transitive relation on a finite set is a wqo.*}
-
-lemma finite_wqo_on:
+text {*Every reflexive relation on a finite set is almost full.*}
+lemma finite_almost_full_on:
   fixes A :: "('a::finite) set"
-  assumes refl: "reflp_on P A" and "transp_on P A"
-  shows "wqo_on P A"
+  assumes refl: "reflp_on P A"
+  shows "almost_full_on P A"
 proof
   fix f::"'a::finite seq"
   assume *: "\<forall>i. f i \<in> A"
@@ -1271,7 +1268,14 @@ proof
     unfolding infinite_nat_iff_unbounded by auto
   hence "P (f k) (f l)" using refl and * by (auto simp: reflp_on_def)
   with `k < l` show "goodp P f" by (auto simp: goodp_def)
-qed fact+
+qed
+
+text {*Every reflexive and transitive relation on a finite set is a wqo.*}
+lemma finite_wqo_on:
+  fixes A :: "('a::finite) set"
+  assumes refl: "reflp_on P A" and "transp_on P A"
+  shows "wqo_on P A"
+  using assms and finite_almost_full_on by (auto simp: wqo_on_def)
 
 lemma finite_eq_wqo_on:
   "wqo_on (op =) (A::('a::finite) set)"
