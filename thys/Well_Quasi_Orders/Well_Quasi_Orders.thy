@@ -271,17 +271,12 @@ where
   "sum_le P Q (Inr x) (Inr y) = Q x y" |
   "sum_le P Q x y = False"
 
-text {*When two sets are wqo, then their disjoint sum is wqo.*}
-lemma wqo_on_Plus:
-  assumes "wqo_on P A" and "wqo_on Q B"
-  shows "wqo_on (sum_le P Q) (A <+> B)"
-    (is "wqo_on ?P ?A")
+text {*When two sets are almost full, then their disjoint sum is almost full.*}
+lemma almost_full_on_Plus:
+  assumes "almost_full_on P A" and "almost_full_on Q B"
+  shows "almost_full_on (sum_le P Q) (A <+> B)"
+    (is "almost_full_on ?P ?A")
 proof
-  from assms have trans [unfolded transp_on_def]: "transp_on P A" "transp_on Q B"
-    by (auto simp: wqo_on_def)
-  show "transp_on ?P ?A"
-    unfolding transp_on_def by (auto, insert trans) (blast+)
-next
   fix f :: "('a + 'b) seq"
   assume *: "\<forall>i. f i \<in> ?A"
   let ?I = "{i. f i \<in> Inl ` A}"
@@ -321,8 +316,8 @@ next
         qed
       }
       hence "bad Q ?f" by (auto simp: goodp_def)
-      moreover from `wqo_on Q B` and B
-        have "goodp Q ?f" by (auto simp: wqo_on_def goodp_def almost_full_on_def)
+      moreover from `almost_full_on Q B` and B
+        have "goodp Q ?f" by (auto simp: goodp_def almost_full_on_def)
       ultimately show False by blast
     next
       assume "infinite ?I"
@@ -351,11 +346,27 @@ next
         qed
       }
       hence "bad P ?f" by (auto simp: goodp_def)
-      moreover from `wqo_on P A` and A
-        have "goodp P ?f" by (auto simp: wqo_on_def goodp_def almost_full_on_def)
+      moreover from `almost_full_on P A` and A
+        have "goodp P ?f" by (auto simp: goodp_def almost_full_on_def)
       ultimately show False by blast
     qed
   qed
+qed
+
+text {*When two sets are wqo, then their disjoint sum is wqo.*}
+lemma wqo_on_Plus:
+  assumes "wqo_on P A" and "wqo_on Q B"
+  shows "wqo_on (sum_le P Q) (A <+> B)"
+    (is "wqo_on ?P ?A")
+proof -
+  {
+    from assms have trans [unfolded transp_on_def]: "transp_on P A" "transp_on Q B"
+      by (auto simp: wqo_on_def)
+    have "transp_on ?P ?A"
+      unfolding transp_on_def by (auto, insert trans) (blast+)
+  } moreover {
+    from assms and almost_full_on_Plus have "almost_full_on ?P ?A" by (auto simp: wqo_on_def)
+  } ultimately show ?thesis by (auto simp: wqo_on_def)
 qed
 
 
