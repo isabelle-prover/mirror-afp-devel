@@ -161,19 +161,14 @@ proof (rule ccontr)
   with * and assms show False unfolding wqo_on_def almost_full_on_def by blast
 qed
 
-lemma transp_on_into_wqo_on:
-  "transp_on P A \<Longrightarrow> (\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> goodp P f) \<Longrightarrow> wqo_on P A"
-  unfolding wqo_on_def almost_full_on_def by blast
-
-text {*The homomorphic image of a wqo set is wqo.*}
-lemma wqo_on_hom:
-  assumes trans: "transp_on Q (h ` A)"
-    and hom: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
-    and wqo: "wqo_on P A"
-  shows "wqo_on Q (h ` A)"
-using trans
-proof (rule transp_on_into_wqo_on)
-  fix f :: "'a seq"
+text {*The homomorphic image of an almost full set is almost full.*}
+lemma almost_full_on_hom:
+  fixes h :: "'a \<Rightarrow> 'b"
+  assumes hom: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
+    and af: "almost_full_on P A"
+  shows "almost_full_on Q (h ` A)"
+proof
+  fix f :: "'b seq"
   assume "\<forall>i. f i \<in> h ` A"
   hence "\<forall>i. \<exists>x. x \<in> A \<and> f i = h x" by (auto simp: image_def)
   from choice[OF this] obtain g
@@ -188,18 +183,24 @@ proof (rule transp_on_into_wqo_on)
       with hom have "\<not> P (g i) (g j)" using * by auto
     }
     hence "bad P g" by (auto simp: goodp_def)
-    with wqo and * show False by (auto simp: goodp_def wqo_on_def almost_full_on_def)
+    with af and * show False by (auto simp: goodp_def almost_full_on_def)
   qed
 qed
 
-text {*The monomorphic preimage of a wqo set is wqo.*}
-lemma wqo_on_mon:
-  assumes trans: "transp_on P A"
-    and mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
-    and wqo: "wqo_on Q B"
-  shows "wqo_on P A"
-using trans
-proof (rule transp_on_into_wqo_on)
+text {*The homomorphic image of a wqo set is wqo.*}
+lemma wqo_on_hom:
+  assumes "transp_on Q (h ` A)"
+    and "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
+    and "wqo_on P A"
+  shows "wqo_on Q (h ` A)"
+  using assms and almost_full_on_hom unfolding wqo_on_def by blast
+
+text {*The monomorphic preimage of an almost full set is almost full.*}
+lemma almost_full_on_mon:
+  assumes mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
+    and af: "almost_full_on Q B"
+  shows "almost_full_on P A"
+proof
   fix f :: "'a seq"
   assume *: "\<forall>i. f i \<in> A"
   hence **: "\<forall>i. (h \<circ> f) i \<in> B" using mon by (auto simp: bij_betw_def)
@@ -214,9 +215,17 @@ proof (rule transp_on_into_wqo_on)
         using * by (auto simp: bij_betw_def inj_on_def)
     }
     hence "bad Q (h \<circ> f)" by (auto simp: goodp_def)
-    with wqo and ** show False by (auto simp: goodp_def wqo_on_def almost_full_on_def)
+    with af and ** show False by (auto simp: goodp_def almost_full_on_def)
   qed
 qed
+
+text {*The monomorphic preimage of a wqo set is wqo.*}
+lemma wqo_on_mon:
+  assumes trans: "transp_on P A"
+    and mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
+    and wqo: "wqo_on Q B"
+  shows "wqo_on P A"
+  using assms and almost_full_on_mon unfolding wqo_on_def by blast
 
 
 subsection {* A Typeclass for Well-Quasi-Orders *}
