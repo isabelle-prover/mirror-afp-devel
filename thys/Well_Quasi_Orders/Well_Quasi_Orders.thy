@@ -10,6 +10,7 @@ theory Well_Quasi_Orders
 imports
   "../Abstract-Rewriting/Seq"
   Restricted_Predicates
+  "~~/src/HOL/Library/Ramsey"
 begin
 
 
@@ -358,59 +359,99 @@ definition
 where
   "prod_le P1 P2 \<equiv> \<lambda>(p1, p2) (q1, q2). P1 p1 q1 \<and> P2 p2 q2"
 
+text {*By Ramsey's Theorem every infinite sequence on which @{term "sup P Q"}
+is transitive, contains a (monotone) infinite subsequence on which either
+@{term P} is transitive or @{term Q} is transitive.*}
+lemma trans_subseq:
+  fixes f :: "'a seq"
+  assumes *: "\<forall>i j. i < j \<longrightarrow> P (f i) (f j) \<or> Q (f i) (f j)"
+  shows "\<exists>g::nat seq. (\<forall>i j. i < j \<longrightarrow> g i < g j) \<and>
+    ((\<forall>i j. i < j \<longrightarrow> P (f (g i)) (f (g j))) \<or>
+     (\<forall>i j. i < j \<longrightarrow> Q (f (g i)) (f (g j))))"
+proof -
+  def h \<equiv> "\<lambda>I. if (\<exists>i j. i \<in> I \<and> j \<in> I \<and> i < j \<and> P (f i) (f j)) then 0 else Suc 0"
+  have inf: "infinite (UNIV::nat set)" by blast
+  have "\<forall>i\<in>UNIV. \<forall>j\<in>UNIV. i \<noteq> j \<longrightarrow> h {i, j} < 2" by (auto simp: h_def)
+  from Ramsey2 [OF inf this] obtain I :: "nat set" and n
+    where "infinite I" and "n < 2" and **: "\<forall>i\<in>I. \<forall>j\<in>I. i \<noteq> j \<longrightarrow> h {i, j} = n" by blast
+  from `infinite I` have "INFM i. i \<in> I" unfolding INFM_iff_infinite by simp
+  then interpret infinitely_many "\<lambda>i. i \<in> I" by (unfold_locales) assumption
+  def [simp]: g \<equiv> "index"
+  let ?f = "f \<circ> g"
+  from `n < 2` have "n = 0 \<or> n = 1" by arith
+  thus ?thesis
+  proof
+    assume [simp]: "n = 0"
+    have "\<forall>i j. i < j \<longrightarrow> P (?f i) (?f j)"
+    proof (intro allI impI)
+      fix i j :: nat
+      assume "i < j"
+      with index_ordered_less have "g i < g j" by auto
+      moreover have "g i \<in> I" and "g j \<in> I" using index_p by auto
+      ultimately have "h {g i, g j} = 0" using ** by auto
+      with `g i < g j` show "P (?f i) (?f j)"
+        by (auto simp: h_def) (metis Suc_neq_Zero order_less_not_sym)
+    qed
+    thus ?thesis using index_ordered_less by auto
+  next
+    assume [simp]: "n = 1"
+    have "\<forall>i j. i < j \<longrightarrow> Q (?f i) (?f j)"
+    proof (intro allI impI)
+      fix i j :: nat
+      assume "i < j"
+      with index_ordered_less have "g i < g j" by auto
+      moreover have "g i \<in> I" and "g j \<in> I" using index_p by auto
+      ultimately have "h {g i, g j} = 1" using ** by auto
+      with `g i < g j` show "Q (?f i) (?f j)"
+        using * by (auto simp: h_def) (metis Suc_n_not_n)
+    qed
+    thus ?thesis using index_ordered_less by auto
+  qed
+qed
+
+lemma almost_full_on_Sigma:
+  assumes "almost_full_on P1 A1" and "almost_full_on P2 A2"
+  shows "almost_full_on (prod_le P1 P2) (A1 \<times> A2)"
+    (is "almost_full_on ?P ?A")
+proof (rule ccontr)
+  assume "\<not> almost_full_on ?P ?A"
+  then obtain g where g: "\<forall>i. g i \<in> ?A"
+    and bad: "bad ?P g" by (auto simp: almost_full_on_def)
+  let ?p = "\<lambda>i. fst (g i)"
+  let ?q = "\<lambda>i. snd (g i)"
+  from g have p: "\<forall>i. ?p i \<in> A1" and q: "\<forall>i. ?q i \<in> A2"
+    by (metis SigmaE fst_conv, metis SigmaE snd_conv)
+  from bad have "\<forall>i j. i < j \<longrightarrow> \<not> ?P (g i) (g j)" by (auto simp: goodp_def)
+  hence "\<forall>i j. i < j \<longrightarrow> \<not> P1 (?p i) (?p j) \<or> \<not> P2 (?q i) (?q j)"
+    unfolding prod_le_def by (metis (lifting, mono_tags) prod_case_beta)
+  from trans_subseq [of "\<lambda>x y. \<not> P1 (fst x) (fst y)" _ "\<lambda>x y. \<not> P2 (snd x) (snd y)", OF this]
+    obtain f :: "nat seq" where mono: "\<forall>i j. i < j \<longrightarrow> f i < f j"
+      and or: "(\<forall>i j. i < j \<longrightarrow> \<not> P1 (?p (f i)) (?p (f j))) \<or> (\<forall>i j. i < j \<longrightarrow> \<not> P2 (?q (f i)) (?q (f j)))" by blast
+  from or show False
+  proof
+    assume "\<forall>i j. i < j \<longrightarrow> \<not> P1 (?p (f i)) (?p (f j))"
+    hence "bad P1 (?p \<circ> f)" by (auto simp: goodp_def)
+    with p and assms(1) show False by (auto simp: almost_full_on_def)
+  next
+    assume "\<forall>i j. i < j \<longrightarrow> \<not> P2 (?q (f i)) (?q (f j))"
+    hence "bad P2 (?q \<circ> f)" by (auto simp: goodp_def)
+    with q and assms(2) show False by (auto simp: almost_full_on_def)
+  qed
+qed
+
 lemma wqo_on_Sigma:
   fixes A1 :: "'a set" and A2 :: "'b set"
   assumes "wqo_on P1 A1" and "wqo_on P2 A2"
   shows "wqo_on (prod_le P1 P2) (A1 \<times> A2)"
     (is "wqo_on ?P ?A")
-proof
-  from assms have "transp_on P1 A1" and "transp_on P2 A2" by (auto simp: wqo_on_def)
-  thus "transp_on ?P ?A" unfolding transp_on_def prod_le_def by blast
-next
-  fix g :: "('a \<times> 'b) seq"
-  let ?p = "\<lambda>i. fst (g i)"
-  let ?q = "\<lambda>i. snd (g i)"
-  assume g: "\<forall>i. g i \<in> ?A"
-  hence p: "\<forall>i. ?p i \<in> A1" and q: "\<forall>i. ?q i \<in> A2"
-    by (metis SigmaE fst_conv, metis SigmaE snd_conv)
-  let ?T = "{m. \<forall>n>m. \<not> (P1 (?p m) (?p n))}"
-  have "finite ?T"
-  proof (rule ccontr)
-    assume "infinite ?T"
-    hence "INFM m. m \<in> ?T" unfolding INFM_iff_infinite by simp
-    then interpret infinitely_many "\<lambda>m. m \<in> ?T" by (unfold_locales) assumption
-    let ?p' = "\<lambda>i. ?p (index i)"
-    have p': "\<forall>i. ?p' i \<in> A1" using p by auto
-    have "bad P1 ?p'"
-    proof
-      assume "goodp P1 ?p'"
-      then obtain i j :: nat where "i < j"
-        and "P1 (?p' i) (?p' j)" by (auto simp: goodp_def)
-      moreover from index_ordered_less[OF `i < j`] have "index j > index i" .
-      moreover from index_p have "index i \<in> ?T" by simp
-      ultimately show False by blast
-    qed
-    with assms(1) show False using p' by (auto simp: wqo_on_def almost_full_on_def)
-  qed
-  then obtain n where "\<forall>r\<ge>n. r \<notin> ?T"
-    using infinite_nat_iff_unbounded_le[of "?T"] by auto
-  hence "\<forall>i\<in>{n..}. \<exists>j>i. P1 (?p i) (?p j)" by blast
-  with p have "\<forall>i\<in>{n..}. \<exists>j>i. ?p j \<in> A1 \<and> ?p i \<in> A1 \<and> P1 (?p i) (?p j)" by auto
-  from bchoice[OF this] obtain f :: "nat seq"
-    where 1: "\<forall>i\<ge>n. i < f i \<and> ?p i \<in> A1 \<and> ?p (f i) \<in> A1 \<and> P1 (?p i) (?p (f i))" by blast
-  from stepfun_imp_chainp[of n f "\<lambda>x y. x \<in> A1 \<and> y \<in> A1 \<and> P1 x y" ?p, OF this]
-    have chain: "chainp (\<lambda>x y. x \<in> A1 \<and> y \<in> A1 \<and> P1 x y) (\<lambda>i. ?p ((f^^i) n))" .
-  let ?f = "\<lambda>i. (f^^i) n"
-  from 1 have inc: "\<forall>i\<ge>n. f i > i" by simp
-  from wqo_on_imp_goodp [OF assms(2), of "?q \<circ> ?f"] and q
-    obtain i j where "\<And>i. ?q (?f i) \<in> A2" and "j > i" and "P2 (?q (?f i)) (?q (?f j))"
-    by (auto simp: goodp_def)
-  moreover from funpow_mono[OF inc `j > i`] have "?f j > ?f i" .
-  moreover from chainp_imp_tranclp[of "\<lambda>x y. x \<in> A1 \<and> y \<in> A1 \<and> P1 x y", OF chain `j > i`]
-    have "P1 (?p (?f i)) (?p (?f j))"
-    unfolding transp_on_tranclp[OF wqo_on_imp_transp_on[OF assms(1)]] by simp
-  ultimately have "\<exists>i j. j > i \<and> P1 (?p i) (?p j) \<and> P2 (?q i) (?q j)" by auto
-  thus "goodp ?P g" by (auto simp: split_def goodp_def prod_le_def)
+proof -
+  {
+    from assms have "transp_on P1 A1" and "transp_on P2 A2" by (auto simp: wqo_on_def)
+    hence "transp_on ?P ?A" unfolding transp_on_def prod_le_def by blast
+  } moreover {
+    from assms and almost_full_on_Sigma [of P1 A1 P2 A2]
+      have "almost_full_on ?P ?A" by (auto simp: wqo_on_def)
+  } ultimately show ?thesis by (auto simp: wqo_on_def)
 qed
 
 
