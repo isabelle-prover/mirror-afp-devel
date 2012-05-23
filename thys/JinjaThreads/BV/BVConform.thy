@@ -193,7 +193,7 @@ context JVM_heap_conf_base' begin
 lemma correct_state_hext_mono:
   "\<lbrakk> \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>; h \<unlhd> h'; hconf h' \<rbrakk> \<Longrightarrow> \<Phi> \<turnstile> t: (xcp, h', frs) \<surd>"
 unfolding correct_state_def
-by(fastsimp elim: tconf_hext_mono preallocated_hext conf_f_hext conf_fs_hext conf_xcp_hext split: list.split)
+by(fastforce elim: tconf_hext_mono preallocated_hext conf_f_hext conf_fs_hext conf_xcp_hext split: list.split)
 
 end
 
