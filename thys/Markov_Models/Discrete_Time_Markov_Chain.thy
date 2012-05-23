@@ -550,37 +550,37 @@ context Discrete_Time_Markov_Chain
 begin
 
 lemma prob_generator:
-  assumes s: "\<And>i. i < n \<Longrightarrow> s i \<in> S" "s' \<in> S"
-  shows "prob s' {s'\<in>UNIV \<rightarrow> S. \<forall>i<n. s' i = s i} = (\<Prod>i<n. \<tau> (nat_case s' s i) (s i))"
+  assumes s: "\<And>i. i < n \<Longrightarrow> \<omega> i \<in> S" "s' \<in> S"
+  shows "prob s' {s'\<in>UNIV \<rightarrow> S. \<forall>i<n. s' i = \<omega> i} = (\<Prod>i<n. \<tau> (nat_case s' \<omega> i) (\<omega> i))"
 proof -
   interpret S: prob_space "state_space s''" for s'' by (rule prob_space_state_space)
   interpret Prod: product_prob_space "\<lambda>(n, s). state_space s" "(UNIV :: nat set) \<times> S"
     unfolding split_beta' ..
 
-  let ?M = "(\<lambda>(n, s). state_space s)" and ?I = "(\<lambda>i. (i, nat_case s' s i)) ` {..< n}"
+  let ?M = "(\<lambda>(n, s). state_space s)" and ?I = "(\<lambda>i. (i, nat_case s' \<omega> i)) ` {..< n}"
   
-  have inj_I: "\<And>A. inj_on (\<lambda>i. (i, nat_case s' s i)) A"
+  have inj_I: "\<And>A. inj_on (\<lambda>i. (i, nat_case s' \<omega> i)) A"
     by (auto simp: inj_on_def)
 
-  { fix X i assume "i < n" "\<forall>j<n. X (j, nat_case s' s j) = s j"
-    with `s' \<in> S` have "path s' X i = s i"
+  { fix X i assume "i < n" "\<forall>j<n. X (j, nat_case s' \<omega> j) = \<omega> j"
+    with `s' \<in> S` have "path s' X i = \<omega> i"
       by (induct i) auto }
   moreover
-  { fix X i assume X: "i < n" "\<forall>j<n. path s' X j = s j"
-    then have "X (i, nat_case s' s i) = s i"
+  { fix X i assume X: "i < n" "\<forall>j<n. path s' X j = \<omega> j"
+    then have "X (i, nat_case s' \<omega> i) = \<omega> i"
     proof (induct i)
       case (Suc i) then show ?case
         using Suc.prems(2)[rule_format, of "Suc i"] by simp
     qed (insert `s' \<in> S`, auto) }
-  ultimately have eq: "\<And>X. (\<forall>i<n. path s' X i = s i) \<longleftrightarrow> (\<forall>j<n. X (j, nat_case s' s j) = s j)"
+  ultimately have "\<And>X. (\<forall>i<n. path s' X i = \<omega> i) \<longleftrightarrow> (\<forall>j<n. X (j, nat_case s' \<omega> j) = \<omega> j)"
     by blast
-  have eq: "path s' -` {s'\<in>space p_space. \<forall>i<n. s' i = s i} \<inter> space d_space =
-    prod_emb (UNIV \<times> S) ?M ?I (\<Pi>\<^isub>E (n, _) \<in> ?I. {s n})" (is "_ = ?E")
-    by (auto simp add: vimage_def eq space_PiM extensional_def Pi_iff prod_emb_def path_in_S)
-  then have "prob s' {s'\<in>UNIV \<rightarrow> S. \<forall>i<n. s' i = s i} = 
+  then have eq: "path s' -` {s'\<in>space p_space. \<forall>i<n. s' i = \<omega> i} \<inter> space d_space =
+    prod_emb (UNIV \<times> S) ?M ?I (\<Pi>\<^isub>E (n, _) \<in> ?I. {\<omega> n})" (is "_ = ?E")
+    by (auto simp add: vimage_def space_PiM extensional_def Pi_iff prod_emb_def path_in_S)
+  then have "prob s' {s'\<in>UNIV \<rightarrow> S. \<forall>i<n. s' i = \<omega> i} = 
     measure d_space ?E"
     unfolding path_space_def by (subst measure_distr[OF measurable_path in_path_space_less]) simp
-  also have "\<dots> = (\<Prod> i<n. \<tau> (nat_case s' s i) (s i))"
+  also have "\<dots> = (\<Prod> i<n. \<tau> (nat_case s' \<omega> i) (\<omega> i))"
     by (subst Prod.measure_PiM_emb)
        (auto simp: s setprod_reindex[OF inj_I] intro!: setprod_cong split: nat.split)
   finally show ?thesis by simp
@@ -2630,5 +2630,217 @@ lemma hitting_time_nat_case_0:
   unfolding hitting_time_def by (auto intro!: Least_equality)
 
 end
+
+lemma PiE_cong: "I = J \<Longrightarrow> (\<And>i. i \<in> J \<Longrightarrow> f i = g i) \<Longrightarrow> Pi\<^isub>E I f = Pi\<^isub>E J g"
+  by auto
+
+lemma fun_if_distrib:
+  "card (if P then A else B) = (if P then card A else card B)"
+  "real (if P then x else y) = (if P then real x else real y)"
+  "(if P then a else b) * c = (if P then a * c else b * c)"
+  "(if P then a else b) / c = (if P then a / c else b / c)"
+  by auto
+
+syntax
+  "_prob" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("('\<PP>'(_ in _. _'))")
+
+translations
+  "\<PP>(x in M. P)" => "CONST measure M {x \<in> CONST space M. P}"
+
+definition
+  "cond_prob M P Q = \<PP>(\<omega> in M. P \<omega> \<and> Q \<omega>) / \<PP>(\<omega> in M. Q \<omega>)"
+
+syntax
+  "_conditional_prob" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("('\<PP>'(_ in _. _ \<bar>/ _'))")
+
+translations
+  "\<PP>(x in M. P \<bar> Q)" => "CONST cond_prob M (\<lambda>x. P) (\<lambda>x. Q)"
+
+lemma setsum_PiE_insert:
+  "i \<notin> I \<Longrightarrow> (\<Sum>\<omega>\<in>Pi\<^isub>E (insert i I) X. f \<omega>) = (\<Sum>x\<in>(X i). \<Sum>\<omega>\<in>Pi\<^isub>E I X. f (\<omega>(i:=x)))"
+  by (auto simp add: setsum_reindex setsum_cartesian_product inj_on_upd_PiE PiE_insert
+           intro!: setsum_cong)
+
+lemma PiE_mono: "(\<And>x. x \<in> A \<Longrightarrow> B x \<subseteq> C x) \<Longrightarrow> Pi\<^isub>E A B \<subseteq> Pi\<^isub>E A C"
+  by auto
+
+lemma (in Discrete_Time_Markov_Chain) prob_ball_cylinder:
+  assumes "s \<in> S" "I \<noteq> {}" "finite I"
+  shows "\<PP>(X' in path_space s. \<forall>i\<in>I. X' i \<in> Y i) =
+    (\<Sum>\<omega>\<in>(\<Pi>\<^isub>E i\<in>{..Max I}. (if i \<in> I then Y i \<inter> S else S)). \<Prod>i\<le>Max I. \<tau> (nat_case s \<omega> i) (\<omega> i))"
+  using assms
+  by (subst prob_cylinder_eq_sum_prod'[symmetric])
+     (auto intro!: arg_cong[where f="prob s"] simp: space_path_space)
+
+lemma (in Discrete_Time_Markov_Chain) eq_sets_path_space[simp, intro]:
+  "{X' \<in> space (path_space s). X' i = s'} \<in> events s"
+  by (simp add: space_path_space)
+
+lemma (in Discrete_Time_Markov_Chain) markov_property_with_\<tau>:
+  assumes s: "s \<in> S" "\<And>i. i \<in> I \<Longrightarrow> t i \<in> S" "t (Suc (Max I)) \<in> S"
+    and I: "finite I" "I \<noteq> {}"
+    and neq0: "\<PP>(\<omega> in path_space s. \<forall>j\<in>I. \<omega> j = t j ) \<noteq> 0"
+  shows "\<PP>(\<omega> in path_space s. \<omega> (Suc (Max I)) = t (Suc (Max I)) \<bar> \<forall>j\<in>I. \<omega> j = t j ) =
+   \<tau> (t (Max I)) (t (Suc (Max I)))"
+proof -
+  let ?i = "Suc (Max I)"
+
+  from Max_less_iff[OF I, of ?i]
+  have "?i \<notin> I"
+    by auto
+  then have cylinder_forms:
+    "\<And>\<omega>. (\<forall>j\<in>I. \<omega> j = t j) \<longleftrightarrow> (\<forall>j\<in>I. \<omega> j \<in> {t j})"
+    "\<And>\<omega>. \<omega> ?i = t ?i \<and> (\<forall>j\<in>I. \<omega> j \<in> {t j}) \<longleftrightarrow> (\<forall>j\<in>insert ?i I. \<omega> j \<in> {t j})"
+    by auto
+
+  have *:
+    "{.. max ?i (Max I)} = insert ?i (insert (Max I) {..<Max I})"
+    "{..Max I} = insert (Max I) {..<Max I}"
+    "(\<Pi>\<^isub>E j\<in>{..<Max I}. if j = Suc (Max I) \<or> j \<in> I then {t j} \<inter> S else S) =
+     (\<Pi>\<^isub>E j\<in>{..<Max I}. if j \<in> I then {t j} \<inter> S else S)"
+    by (auto simp: Pi_iff split: split_if_asm)
+
+  show ?thesis unfolding cond_prob_def
+    using s I neq0
+    apply (simp add: cylinder_forms prob_ball_cylinder del: ball_simps insert_iff space_path_space)
+    apply (simp add: setsum_PiE_insert * setsum_right_distrib[symmetric]
+                cong: nat.case_cong)
+    done
+qed
+
+lemma (in Discrete_Time_Markov_Chain) markov_property:
+  assumes s: "s \<in> S" and I: "finite I" "I \<noteq> {}"
+    and neq0: "\<PP>(\<omega> in path_space s. \<forall>j\<in>I. \<omega> j = t j ) \<noteq> 0"
+  shows "\<PP>(\<omega> in path_space s. \<omega> (Suc (Max I)) = t (Suc (Max I)) \<bar> \<forall>j\<in>I. \<omega> j = t j) =
+         \<PP>(\<omega> in path_space s. \<omega> (Suc (Max I)) = t (Suc (Max I)) \<bar> \<omega> (Max I) = t (Max I) )"
+  (is "?L = ?R")
+proof cases
+  have [simp]: "Max I \<in> I" using I by simp
+  assume in_S: "t (Suc (Max I)) \<in> S \<and> (\<forall>j\<in>I. t j \<in> S)"
+  with assms have "?L = \<tau> (t (Max I)) (t (Suc (Max I)))"
+    by (intro markov_property_with_\<tau>) auto
+  moreover
+  { have "0 < prob s {\<omega>\<in>space (path_space s). (\<forall>j\<in>I. \<omega> j = t j) }"
+      using neq0 by (simp add: less_le measure_nonneg)
+    also have "\<dots> \<le> prob s {\<omega>\<in>space (path_space s). \<omega> (Max I) = t (Max I) }"
+      by (auto intro!: finite_measure_mono)
+    finally have "?R = \<tau> (t (Max I)) (t (Suc (Max I)))"
+      using assms in_S markov_property_with_\<tau>[of s "{Max I}" t] by simp }
+  ultimately show "?L = ?R" by simp
+next
+  assume "\<not> (t (Suc (Max I)) \<in> S \<and> (\<forall>i\<in>I. t i \<in> S))"
+  then have "t (Suc (Max I)) \<notin> S \<or> (\<exists>i\<in>I. t i \<notin> S)" by auto
+  then show ?thesis
+  proof
+    assume "t (Suc (Max I)) \<notin> S"
+    then have cylinders:
+      "{\<omega>\<in>space (path_space s). \<omega> (Suc (Max I)) = t (Suc (Max I)) \<and> (\<forall>i\<in>I. \<omega> i = t i) } = {}"
+      "{\<omega>\<in>space (path_space s). \<omega> (Suc (Max I)) = t (Suc (Max I)) \<and> \<omega> (Max I) = t (Max I) } = {}"
+      by (auto simp: space_path_space Pi_iff) metis+
+    show ?thesis
+      unfolding cond_prob_def cylinders by simp
+  next
+    assume "\<exists>i\<in>I. t i \<notin> S"
+    then have "{\<omega>\<in>space (path_space s). \<forall>i\<in>I. \<omega> i = t i } = {}"
+      by (auto simp: Pi_iff) metis
+    with neq0 show ?thesis by (simp add: measure_nonneg del: space_path_space)
+  qed
+qed
+
+lemma (in Discrete_Time_Markov_Chain) time_homogeneous:
+  fixes s a b :: 's
+  assumes S: "s \<in> S"
+  and neq0:
+    "\<PP>(\<omega> in path_space s. \<omega> i = a) \<noteq> 0"
+    "\<PP>(\<omega> in path_space s. \<omega> j = a) \<noteq> 0"
+  shows "\<PP>(\<omega> in path_space s. \<omega> (Suc i) = b \<bar> \<omega> i = a) =
+         \<PP>(\<omega> in path_space s. \<omega> (Suc j) = b \<bar> \<omega> j = a)"
+proof cases
+  assume "a \<in> S \<and> b \<in> S"
+  then show ?thesis
+    using markov_property_with_\<tau>[OF `s \<in> S`, of "{i}" "\<lambda>k. if k = i then a else b"]
+    using markov_property_with_\<tau>[OF `s \<in> S`, of "{j}" "\<lambda>k. if k = j then a else b"]
+    using S neq0 by simp
+next
+  assume "\<not> (a \<in> S \<and> b \<in> S)"
+  then have *: "\<And>i. {\<omega> \<in> space (path_space s). \<omega> (Suc i) = b \<and> \<omega> i = a } = {}"
+    by (auto simp: space_path_space)
+  show ?thesis
+    unfolding cond_prob_def * by simp
+qed
+
+lemma (in prob_space) AE_E_prob:
+  assumes ae: "AE x in M. P x"
+  obtains S where "S \<subseteq> {x \<in> space M. P x}" "S \<in> events" "prob S = 1"
+proof -
+  from ae[THEN AE_E] guess N .
+  then show thesis
+    by (intro that[of "space M - N"])
+       (auto simp: prob_compl prob_space emeasure_eq_measure)
+qed
+
+lemma (in prob_space) prob_neg: "{x\<in>space M. P x} \<in> events \<Longrightarrow> \<PP>(x in M. \<not> P x) = 1 - \<PP>(x in M. P x)"
+  by (auto intro!: arg_cong[where f=prob] simp add: prob_compl[symmetric])
+
+lemma (in prob_space) prob_eq_AE:
+  "(AE x in M. P x \<longleftrightarrow> Q x) \<Longrightarrow> {x\<in>space M. P x} \<in> events \<Longrightarrow> {x\<in>space M. Q x} \<in> events \<Longrightarrow> \<PP>(x in M. P x) = \<PP>(x in M. Q x)"
+  by (rule finite_measure_eq_AE) auto
+
+lemma (in prob_space) prob_eq_0_AE:
+  assumes not: "AE x in M. \<not> P x" shows "\<PP>(x in M. P x) = 0"
+proof cases
+  assume "{x\<in>space M. P x} \<in> events"
+  with not have "\<PP>(x in M. P x) = \<PP>(x in M. False)"
+    by (intro prob_eq_AE) auto
+  then show ?thesis by simp
+qed (simp add: measure_notin_sets)
+
+lemma (in prob_space) prob_sums:
+  assumes P: "\<And>n. {x\<in>space M. P n x} \<in> events"
+  assumes Q: "{x\<in>space M. Q x} \<in> events"
+  assumes ae: "AE x in M. (\<forall>n. P n x \<longrightarrow> Q x) \<and> (Q x \<longrightarrow> (\<exists>!n. P n x))"
+  shows "(\<lambda>n. \<PP>(x in M. P n x)) sums \<PP>(x in M. Q x)"
+proof -
+  from ae[THEN AE_E_prob] guess S . note S = this
+  then have disj: "disjoint_family (\<lambda>n. {x\<in>space M. P n x} \<inter> S)"
+    by (auto simp: disjoint_family_on_def)
+  from S have ae_S:
+    "AE x in M. x \<in> {x\<in>space M. Q x} \<longleftrightarrow> x \<in> (\<Union>n. {x\<in>space M. P n x} \<inter> S)"
+    "\<And>n. AE x in M. x \<in> {x\<in>space M. P n x} \<longleftrightarrow> x \<in> {x\<in>space M. P n x} \<inter> S"
+    using ae by (auto dest!: AE_prob_1)
+  from ae_S have *:
+    "\<PP>(x in M. Q x) = prob (\<Union>n. {x\<in>space M. P n x} \<inter> S)"
+    using P Q S by (intro finite_measure_eq_AE) auto
+  from ae_S have **:
+    "\<And>n. \<PP>(x in M. P n x) = prob ({x\<in>space M. P n x} \<inter> S)"
+    using P Q S by (intro finite_measure_eq_AE) auto
+  show ?thesis
+    unfolding * ** using S P disj
+    by (intro finite_measure_UNION) auto
+qed
+
+lemma sets_Collect_Least:
+  assumes Q: "\<And>n::nat. {x\<in>space M. Q n x} \<in> sets M"
+  assumes P: "\<And>n::nat. {x\<in>space M. P n x} \<in> sets M"
+  shows "{x\<in>space M. P (LEAST n. Q n x) x} \<in> sets M"
+proof -
+  have "{x\<in>space M. P (LEAST n. Q n x) x} =
+    {x\<in>space M. \<forall>n. (LEAST n. Q n x) = n \<longrightarrow> P n x}" by auto
+  moreover
+  { fix n have "{x\<in>space M. (LEAST n. Q n x) = n} \<in> sets M"
+      using measurable_Least[of _ Q "{n}"] Q by (simp add: vimage_def Collect_Int) }
+  then have "{x\<in>space M. \<forall>n. (LEAST n. Q n x) = n \<longrightarrow> P n x} \<in> sets M"
+    using measurable_Least[of _ Q]
+    by (intro sets_Collect P) auto
+  ultimately show ?thesis
+    by simp
+qed
+
+lemma (in prob_space) cond_prob_eq_AE:
+  assumes P: "AE x in M. Q x \<longrightarrow> P x \<longleftrightarrow> P' x" "{x\<in>space M. P x} \<in> events" "{x\<in>space M. P' x} \<in> events"
+  assumes Q: "AE x in M. Q x \<longleftrightarrow> Q' x" "{x\<in>space M. Q x} \<in> events" "{x\<in>space M. Q' x} \<in> events"
+  shows "cond_prob M P Q = cond_prob M P' Q'"
+  using P Q
+  by (auto simp: cond_prob_def intro!: arg_cong2[where f="op /"] prob_eq_AE sets_Collect_conj)
 
 end
