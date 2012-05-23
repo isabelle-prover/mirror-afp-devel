@@ -802,6 +802,21 @@ proof -
   finally show ?thesis by (simp add: field_simps)
 qed
 
+lemma probably_innocent:
+  assumes approx: "1 / (2 * (H - J)) \<le> p_f" and "H \<noteq> J"
+  shows "\<PP>(\<omega> in \<P>. first_jondo \<omega> = last_ncoll \<omega> \<bar> hit_colls \<omega> ) \<le> 1 / 2"
+  unfolding P_first_jondo_eq_last_ncoll
+proof -
+  have [simp]: "\<And>n :: nat. 1 \<le> real n \<longleftrightarrow> 1 \<le> n" by auto
+  have "0 \<le> J" unfolding J_def by auto
+  then have "1 * J \<le> H"
+    unfolding H_eq2[symmetric] using colls_smaller
+    by (intro mult_mono) (auto simp: Suc_le_eq card_Diff_subset not_le)
+  with `H \<noteq> J` have "J < H" by auto
+  with approx show "1 - (H - J) * p_f \<le> 1 / 2"
+    by (auto simp add: field_simps divide_le_eq split: split_if_asm)
+qed
+
 lemma P_last_ncoll:
   assumes l: "l \<in> jondos - colls"
   shows "\<PP>(\<omega> in \<P>. last_ncoll \<omega> = l \<bar> hit_colls \<omega> ) = J * p_f + init l * (1 - H * p_f)"
