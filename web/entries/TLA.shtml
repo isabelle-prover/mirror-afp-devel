@@ -107,7 +107,10 @@ new Isabelle object logic <a href="http://www.springerlink.com/content/354026160
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2011-1: <a href="../release/afp-<!--#echo var="name" -->-2011-11-27.tar.gz">afp-<!--#echo var="name" -->-2011-11-27.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
