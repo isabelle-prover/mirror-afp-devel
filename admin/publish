@@ -5,11 +5,11 @@
 # publishes archive entry + main web pages on SF
 # 
 # This script expects Isabelle version >= 2008-10-05 
-# (uses isballe instead of isatool)
+# (uses isabelle instead of isatool)
 
 ## settings
 
-VERSION=afp-2011-1
+VERSION=afp-2012
 
 DEST=afp@web.sourceforge.net:htdocs/
 SRC=afp.hg.sourceforge.net/hgroot/afp/$VERSION

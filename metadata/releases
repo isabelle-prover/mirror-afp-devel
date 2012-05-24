@@ -9,6 +9,7 @@ afp-AVL-Trees-2009-12-12.tar.gz
 afp-AVL-Trees-2010-06-30.tar.gz
 afp-AVL-Trees-2011-02-11.tar.gz
 afp-AVL-Trees-2011-10-11.tar.gz
+afp-Abortable_Linearizable_Modules-2012-03-02.tar.gz
 afp-Abstract-Hoare-Logics-2007-11-27.tar.gz
 afp-Abstract-Hoare-Logics-2008-06-10.tar.gz
 afp-Abstract-Hoare-Logics-2009-04-29.tar.gz
@@ -150,6 +151,8 @@ afp-Depth-First-Search-2009-12-12.tar.gz
 afp-Depth-First-Search-2010-06-30.tar.gz
 afp-Depth-First-Search-2011-02-11.tar.gz
 afp-Depth-First-Search-2011-10-11.tar.gz
+afp-Dijkstra_Shortest_Path-2012-02-10.tar.gz
+afp-Dijkstra_Shortest_Path-2012-03-15.tar.gz
 afp-DiskPaxos-2005-06-22.tar.gz
 afp-DiskPaxos-2005-10-14.tar.gz
 afp-DiskPaxos-2007-11-27.tar.gz
@@ -159,6 +162,7 @@ afp-DiskPaxos-2009-12-12.tar.gz
 afp-DiskPaxos-2010-06-30.tar.gz
 afp-DiskPaxos-2011-02-11.tar.gz
 afp-DiskPaxos-2011-10-11.tar.gz
+afp-Efficient-Mergesort-2011-11-10.tar.gz
 afp-FFT-2005-10-14.tar.gz
 afp-FFT-2007-11-27.tar.gz
 afp-FFT-2008-06-10.tar.gz
@@ -256,10 +260,12 @@ afp-GenClock-2011-02-11.tar.gz
 afp-GenClock-2011-10-11.tar.gz
 afp-General-Triangle-2011-04-01.tar.gz
 afp-General-Triangle-2011-10-11.tar.gz
+afp-Girth_Chromatic-2012-02-06.tar.gz
 afp-GraphMarkingIBP-2010-05-28.tar.gz
 afp-GraphMarkingIBP-2010-07-01.tar.gz
 afp-GraphMarkingIBP-2011-02-11.tar.gz
 afp-GraphMarkingIBP-2011-10-11.tar.gz
+afp-GraphMarkingIBP-2012-03-15.tar.gz
 afp-Group-Ring-Module-2004-05-19.tar.gz
 afp-Group-Ring-Module-2004-05-20.tar.gz
 afp-Group-Ring-Module-2005-10-14.tar.gz
@@ -290,6 +296,7 @@ afp-Huffman-2009-12-12.tar.gz
 afp-Huffman-2010-07-01.tar.gz
 afp-Huffman-2011-02-11.tar.gz
 afp-Huffman-2011-10-11.tar.gz
+afp-Inductive_Confidentiality-2012-05-02.tar.gz
 afp-InformationFlowSlicing-2010-03-23.tar.gz
 afp-InformationFlowSlicing-2010-07-01.tar.gz
 afp-InformationFlowSlicing-2011-02-11.tar.gz
@@ -370,6 +377,8 @@ afp-Locally-Nameless-Sigma-2011-02-11.tar.gz
 afp-Locally-Nameless-Sigma-2011-10-11.tar.gz
 afp-Lower_Semicontinuous-2011-02-11.tar.gz
 afp-Lower_Semicontinuous-2011-10-11.tar.gz
+afp-Markov_Models-2012-01-05.tar.gz
+afp-Markov_Models-2012-01-08.tar.gz
 afp-Marriage-2010-12-17.tar.gz
 afp-Marriage-2011-02-11.tar.gz
 afp-Marriage-2011-10-11.tar.gz
@@ -481,6 +490,7 @@ afp-Recursion-Theory-I-2009-12-12.tar.gz
 afp-Recursion-Theory-I-2010-07-01.tar.gz
 afp-Recursion-Theory-I-2011-02-11.tar.gz
 afp-Recursion-Theory-I-2011-10-11.tar.gz
+afp-Refine_Monadic-2012-02-10.tar.gz
 afp-Regular-Sets-2010-07-01.tar.gz
 afp-Regular-Sets-2011-02-11.tar.gz
 afp-Regular-Sets-2011-10-11.tar.gz
@@ -506,6 +516,8 @@ afp-SenSocialChoice-2009-12-12.tar.gz
 afp-SenSocialChoice-2010-07-01.tar.gz
 afp-SenSocialChoice-2011-02-11.tar.gz
 afp-SenSocialChoice-2011-10-11.tar.gz
+afp-SenSocialChoice-2012-03-15.tar.gz
+afp-Separation_Algebra-2012-05-11.tar.gz
 afp-SequentInvertibility-2009-09-01.tar.gz
 afp-SequentInvertibility-2009-12-12.tar.gz
 afp-SequentInvertibility-2010-07-01.tar.gz
@@ -539,6 +551,7 @@ afp-Stream-Fusion-2009-12-12.tar.gz
 afp-Stream-Fusion-2010-07-01.tar.gz
 afp-Stream-Fusion-2011-02-11.tar.gz
 afp-Stream-Fusion-2011-10-11.tar.gz
+afp-Stuttering_Equivalence-2012-05-08.tar.gz
 afp-SumSquares-2007-11-27.tar.gz
 afp-SumSquares-2008-06-10.tar.gz
 afp-SumSquares-2009-04-29.tar.gz
@@ -546,6 +559,7 @@ afp-SumSquares-2009-12-12.tar.gz
 afp-SumSquares-2010-07-01.tar.gz
 afp-SumSquares-2011-02-11.tar.gz
 afp-SumSquares-2011-10-11.tar.gz
+afp-TLA-2011-11-27.tar.gz
 afp-Topology-2004-04-27.tar.gz
 afp-Topology-2004-05-21.tar.gz
 afp-Topology-2005-10-14.tar.gz
@@ -559,6 +573,8 @@ afp-Topology-2011-10-11.tar.gz
 afp-Transitive-Closure-2011-03-14.tar.gz
 afp-Transitive-Closure-2011-10-11.tar.gz
 afp-Transitive-Closure-2011-10-12.tar.gz
+afp-Transitive-Closure-II-2012-02-29.tar.gz
+afp-Transitive-Closure-II-2012-03-15.tar.gz
 afp-Tree-Automata-2009-11-29.tar.gz
 afp-Tree-Automata-2009-12-12.tar.gz
 afp-Tree-Automata-2009-12-13.tar.gz
@@ -566,6 +582,7 @@ afp-Tree-Automata-2010-07-01.tar.gz
 afp-Tree-Automata-2011-02-11.tar.gz
 afp-Tree-Automata-2011-10-11.tar.gz
 afp-Tree-Automata-2011-10-12.tar.gz
+afp-Tree-Automata-2012-03-15.tar.gz
 afp-Valuation-2007-11-27.tar.gz
 afp-Valuation-2008-06-10.tar.gz
 afp-Valuation-2009-04-29.tar.gz
