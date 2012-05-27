@@ -96,7 +96,10 @@ refinement proof in the I/O-automata framework of Lynch and Tuttle.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2011-1: <a href="../release/afp-<!--#echo var="name" -->-2012-03-02.tar.gz">afp-<!--#echo var="name" -->-2012-03-02.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

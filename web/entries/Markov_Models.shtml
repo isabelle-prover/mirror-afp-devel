@@ -91,7 +91,11 @@ ZeroConf and an analysis of the anonymity of the Crowds protocol.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2011-1: <a href="../release/afp-<!--#echo var="name" -->-2012-01-08.tar.gz">afp-<!--#echo var="name" -->-2012-01-08.tar.gz</a></li>
+<li>Isabelle 2011-1: <a href="../release/afp-<!--#echo var="name" -->-2012-01-05.tar.gz">afp-<!--#echo var="name" -->-2012-01-05.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
