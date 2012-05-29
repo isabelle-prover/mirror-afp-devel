@@ -1,9 +1,14 @@
+## configurables
+
+SESSION-NAME = Circus
+BASE-IMAGE = HOLCF
 
 ## targets
 
-default: CIRCUS
-images: 
-test: CIRCUS
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images:  
 
 all: images test
 
@@ -14,16 +19,29 @@ SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
+# not a release image, so only $(OUT)
+IMAGE=$(OUT)/$(BASE-IMAGE)
 
-## CIRCUS
 
-CIRCUS: $(LOG)/CIRCUS.gz
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
-$(LOG)/CIRCUS.gz: ROOT.ML document/root.tex *.thy
-	$(ISABELLE_TOOL) usedir -M1 -v true -i true -d pdf -g true -b HOLCF CIRCUS
+# time limit (in sec)
+MAXTIME = 3600
+
+
+## dependencies
+
+$(SESSION-NAME): $(BASE-IMAGE) $(OUT)/$(SESSION-NAME)
+
+$(BASE-IMAGE):
+	cd $(ISABELLE_HOME)/src/HOL && $(ISABELLE_TOOL) make $(BASE-IMAGE)
+
+$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib document/*.sty
+	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/CIRCUS.gz
+	@rm -f $(LOG)/$(SESSION-NAME).gz
+	@rm -f $(OUT)/$(SESSION-NAME)
