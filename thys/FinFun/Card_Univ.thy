@@ -2,10 +2,7 @@
 
 header {* A type class for computing the cardinality of a type's universe *}
 
-theory Card_Univ imports
-  Main
-  "~~/src/HOL/Library/Infinite_Set"
-begin
+theory Card_Univ imports Main begin
 
 subsection {* A type class for computing the cardinality of a type's universe *}
 
@@ -23,7 +20,7 @@ lemma card_UNIV_ge_0_finite_UNIV:
 by(auto simp add: card_UNIV intro: card_ge_0_finite finite_UNIV_card_ge_0)
 
 lemma card_UNIV_eq_0_infinite_UNIV:
-  "card_UNIV x = 0 \<longleftrightarrow> infinite (UNIV :: 'a set)"
+  "card_UNIV x = 0 \<longleftrightarrow> \<not> finite (UNIV :: 'a set)"
 by(simp add: card_UNIV card_eq_0_iff)
 
 definition is_list_UNIV :: "'a list \<Rightarrow> bool"
@@ -54,7 +51,7 @@ lemma card_UNIV_eq_0_is_list_UNIV_False:
   shows "is_list_UNIV = (\<lambda>xs. False)"
 proof(rule ext)
   fix xs :: "'a list"
-  from cU0 have "infinite (UNIV :: 'a set)"
+  from cU0 have "\<not> finite (UNIV :: 'a set)"
     by(auto simp only: card_UNIV_eq_0_infinite_UNIV)
   moreover have "finite (set xs)" by(rule finite_set)
   ultimately have "(UNIV :: 'a set) \<noteq> set xs" by(auto simp del: finite_set)
@@ -90,7 +87,7 @@ definition card_UNIV_int_def:
 instance proof
   fix x :: "int itself"
   show "card_UNIV x = card (UNIV :: int set)"
-    unfolding card_UNIV_int_def by simp
+    unfolding card_UNIV_int_def by(simp add: infinite_UNIV_int)
 qed
 
 end

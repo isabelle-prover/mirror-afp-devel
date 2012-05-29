@@ -18,6 +18,7 @@ imports
   "~~/src/HOL/Library/Quotient_Option"
   "~~/src/HOL/Library/Monad_Syntax"
   "~~/src/HOL/Library/Wfrec"
+  "~~/src/HOL/Library/Infinite_Set"
 begin
 
 (* FIXME move and possibly turn into a general simproc *)

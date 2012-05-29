@@ -6,10 +6,7 @@ header {*
   Predicates modelled as FinFuns
 *}
 
-theory FinFunPred 
-imports
-  FinFun 
-begin
+theory FinFunPred imports FinFun begin
 
 text {* Instantiate FinFun predicates just like predicates *}
 

@@ -360,7 +360,7 @@ where [code del]: "finfun_default_aux f = (if finite (UNIV :: 'a set) then undef
 
 lemma finfun_default_aux_infinite:
   fixes f :: "'a \<Rightarrow> 'b"
-  assumes infin: "infinite (UNIV :: 'a set)"
+  assumes infin: "\<not> finite (UNIV :: 'a set)"
   and fin: "finite {a. f a \<noteq> b}"
   shows "finfun_default_aux f = b"
 proof -
@@ -997,8 +997,6 @@ qed
 
 declare finfun_simp [simp del] finfun_iff [iff del] finfun_intro [rule del]
 
-
-
 definition finfun_comp2 :: "'b \<Rightarrow>\<^isub>f 'c \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'c" (infixr "\<^sub>f\<circ>" 55)
 where [code del]: "finfun_comp2 g f = Abs_finfun (Rep_finfun g \<circ> f)"
 
@@ -1374,7 +1372,7 @@ by auto
 
 lemma finfun_to_list_const:
   "finfun_to_list ((\<lambda>\<^isup>f c) :: ('a :: {linorder} \<Rightarrow>\<^isub>f 'b)) = 
-  (if infinite (UNIV :: 'a set) \<or> c = undefined then [] else THE xs. set xs = UNIV \<and> sorted xs \<and> distinct xs)"
+  (if \<not> finite (UNIV :: 'a set) \<or> c = undefined then [] else THE xs. set xs = UNIV \<and> sorted xs \<and> distinct xs)"
 by(auto simp add: finfun_to_list_def finfun_const_False_conv_bot finfun_const_True_conv_top finfun_dom_const)
 
 lemma finfun_to_list_const_code [code]:
