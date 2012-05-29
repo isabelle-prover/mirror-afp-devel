@@ -1,3 +1,8 @@
+(*  Title:       Isabelle/Circus
+    Author:      Abderrahmane Feliachi, Burkhart Wolff, Marie-Claude Gaudel
+                 Univ. Paris-Sud / LRI
+    Maintainer:  Abderrahmane Feliachi
+*)
 
 theory Denotational_Semantics 
 imports Circus_Actions

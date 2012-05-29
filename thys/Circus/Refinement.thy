@@ -1,3 +1,9 @@
+(*  Title:       Isabelle/Circus
+    Author:      Abderrahmane Feliachi, Burkhart Wolff, Marie-Claude Gaudel
+                 Univ. Paris-Sud / LRI
+    Maintainer:  Abderrahmane Feliachi
+*)
+
 header {* Using Isabelle/\Circus\ for Refinement Proofs
           \label{Refinement} \label{Section:framework}*}
 
