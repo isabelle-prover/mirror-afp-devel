@@ -1,0 +1,824 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+%\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{prooftree}
+
+\usepackage{xspace}
+\usepackage{paralist}
+
+\usepackage{proof}
+
+\usepackage{multicol}
+\usepackage{multirow}
+
+
+\usepackage[noaclist]{hol-ocl-isar}
+\usepackage[]{fmde-acronyms}
+\usepackage{lstisar-mbt}
+%\usepackage{fixme}
+\usepackage[draft]{fixme}
+\usepackage[color]{zed}
+\usepackage{circus}
+
+\usepackage{longtable}
+
+\pagestyle{plain}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\newcommand{\bgtt}{\bgroup\isabellestyle{default}\isabellestyle{tt}\isastyle%
+\renewcommand{\isacharverbatimopen}{\isamath{\langle\!\langle}}%
+\renewcommand{\isacharverbatimclose}{\isamath{\rangle\!\rangle}}%
+\renewcommand{\isadigit}[1]{##1}}
+\newcommand{\entt}{\egroup}
+
+%\renewenvironment{isatagML}{\bgtt}{\entt}
+\isadroptag{ML}
+
+\newcommand{\isasymboxplus}{\isamath{\boxplus}}
+\newcommand{\isactrlcircusaction}{}
+\newcommand{\isactrlbegincircusschema}{}
+\newcommand{\isactrlendcircusschema}{}
+
+\newcommand{\ie}{\textit{i.e.}\ }
+\newcommand{\eg}{\textit{e.g.}\ }
+\newcommand{\wrt}{\textit{w.r.t.}\ }
+
+
+\begin{document}
+
+\title{Isabelle/Circus}
+\author{Abderrahmane Feliachi, Marie-Claude Gaudel and Burkhart Wolff}
+\maketitle
+
+\begin{abstract}
+The \Circus\ specification language combines elements for complex data and behavior specifications, 
+using an integration of Z and CSP with a refinement calculus. Its semantics is based on Hoare and He's
+Unifying Theories of Programming (UTP).
+
+Isabelle/\Circus\ is a formalization of the UTP and the \Circus\ language in Isabelle/HOL.
+It contains proof rules and tactic support that allows for proofs
+of refinement for Circus processes (involving both data and behavioral aspects).
+
+The Isabelle/\Circus\ environment supports a syntax for the semantic definitions which is close to 
+textbook presentations of Circus.
+
+This article contains an extended version of \cite{DBLP:conf/vstte/FeliachiGW12} together with the 
+complete  formal development of its underlying commented theories. It supersedes the technical report  
+\cite{fgw11rapport-lri}. 
+\end{abstract}
+
+\tableofcontents
+
+\begin{center}
+  \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{session_graph}
+\end{center}
+
+\newpage
+
+
+\section{Introduction} 
+Many systems involve both complex (sometimes infinite) data structures and interactions 
+between concurrent processes. Refinement of abstract specifications of such systems into 
+more concrete ones, requires an appropriate formalisation of 
+refinement and appropriate proof support.
+
+There are several combinations of process-oriented modeling languages
+with data-oriented specification formalisms such as Z or B or CASL; examples
+are discussed in \cite{Butler99csp2b:a,Fischer1998,Taguchi1997,Roggenbach:2006}.
+In this paper, we consider \Circus\ \cite{WC02}, a
+language for refinement, that supports modeling of high-level
+specifications, designs, and concrete programs. It is representative
+of a class of languages that provide facilities to model data types,
+using a predicate-based notation, and patterns of interactions, without imposing 
+architectural restrictions. It is this feature that makes
+it suitable for reasoning about both abstract and low-level
+designs. 
+
+We present a ``shallow embedding'' of the \Circus\
+semantics enabling state variables and channels in \Circus\ to have
+arbitrary HOL types. Therefore, the entire handling of typing can be
+completely shifted to the (efficiently implemented) Isabelle
+type-checker and is therefore implicit in proofs. This drastically
+simplifies definitions and proofs, and makes the reuse of
+standardized proof procedures possible. Compared to implementations
+based on a ``deep embedding'' such as \cite{ZC09} this significantly improves the
+usability of the resulting proof environment.
+
+Our representation brings particular technical challenges and contributions concerning
+some important notions about variables. Since the original \Circus\ definition
+has in parts a highly syntactic flavor, a reformulation in semantic terms is
+necessary. The main challenge is to represent alphabets 
+and bindings in a typed way that preserves the semantics and improves deduction. 
+We provide  a representation of bindings without an explicit management of alphabets. 
+As a consequence, the  representation of some core concepts in the unifying theories of programming 
+(UTP) and \Circus\ constructs like variable scopes and renaming needed a different treatment. 
+We propose a (stack-based) solution that allows the coding of state variables 
+scoping with no need for renaming. This solution is even a contribution to the UTP theory that 
+does not allow nested variable scoping. 
+
+This paper is organized as follows. We give a high-level overview of the 
+key concepts of our semantic representation in Sections \ref{foundation} and
+\ref{conceptual_overview}, which is then refined in the Section 5 - 10. Section \ref{Section:framework}
+is again a high-level description over the \emph{use} of Isabelle/\Circus/ environment
+demonstrated at an refinement example. The corresponding
+formal presentation of this part is contained in Section \ref{Refinement}. 
+(We will present it both in high-level syntax as well as "Code" in terms of our semantic embedding; 
+however, we refrain to include ML-code in this presentation that comrpises the parser supporting this
+syntax; the interested reader is referred to: \url{http://www.lri.fr/~feliachi/IsabelleCircus/}) . 
+Thus, in this paper, we focus on giving details on what
+is happening ``behind the scenes'' when the system parses each part of the specification. In the last part of 
+this section, we show how to write proofs based on specifications, and give a refinement proof example.
+
+This article contains an extended version of \cite{DBLP:conf/vstte/FeliachiGW12} together with the complete 
+formal development of its commented theories (superseding \cite{fgw11rapport-lri}). 
+
+\section{\Circus\ and its UTP Foundation at a Glance}\label{foundation}
+\Circus\ is a formal specification language \cite{WC02} which
+integrates the notions of states and complex data types (in a Z-like
+style) and communicating parallel processes inspired from CSP.
+From Z, the language inherits the notion of a schema used to
+model sets of (ground) states as well as syntactic machinery to describe
+pre-states and post-states; from CSP, the language inherits 
+the concept of \emph{communication events} and typed communication channels, 
+the concepts of deterministic and non-deterministic choice
+(reflected by the process combinators $P~\square~P'$ and $P~\sqcap~P'$),
+the concept of concealment (hiding) $P \backslash A$ of events in $A$ occurring in 
+in the evolution of process $P$.
+ \vspace{-0.3cm}
+\label{CircusUTP}
+\begin{figure}[h]
+\begin{zed}
+    [ID]
+\end{zed}
+\vspace{-.8cm}
+\begin{circus}
+    \circchannel\ req\\
+    \circchannel\ ret, out: ID
+\end{circus}
+\vspace{-.9cm}
+\begin{circus}
+    \circprocess\ FIG ~~\circdef~~ \circbegin\
+\end{circus}
+\vspace{-1.0cm}
+\begin{circusaction}
+     \circstate\ S ~~==~~ [~ idS: \power~ID  ~]   
+ \end{circusaction}
+ \vspace{-1.0cm}
+ \begin{circusaction}
+     Init ~~\circdef~~ idS := \emptyset
+ \end{circusaction}%
+\vspace{-1.2cm}
+\begin{multicols}{2}
+\begin{schema}{Out}
+     \Delta S \\
+      v!: ID
+ \where
+    v! \notin idS \\ 
+    idS' = idS \cup \{ v! \}
+ \end{schema}%
+\begin{schema}{Remove}
+     \Delta S \\
+      x?: ID
+ \where
+     idS' = idS \setminus \{ x? \}
+ \end{schema}%
+\end{multicols}
+\vspace{-.5cm}
+ \begin{circusaction}
+     \circspot\ Init \circseq\ \circvar\ v : ID \circspot\ \\
+  (\circmu\ X \circspot\ (req \then Out \circseq\ out!v \then \Skip\ \extchoice\ ret?x \then Remove)\circseq\ X)
+ \end{circusaction}
+\vspace{-.9cm}
+ \begin{circus}
+     \circend\
+ \end{circus}
+\vspace{-1cm}
+\caption{\label{figure:Fig} The Fresh Identifiers Generator in (Textbook) \Circus\ }
+%\vspace{-.55cm}
+\end{figure}
+
+Due to the presence of state variables, the \Circus\  synchronous communication operator 
+syntax is slightly different frome CSP:  $P\ \llbracket\ n \ |\ c\ |\ n'\ \rrbracket P'$ means that 
+$P$ and $P'$ communicate via the channels mentioned in $c$; moreover, $P$ may modify 
+the variables mentioned in $n$ only, and $P'$ in $n'$ only, $n$ and $n'$ are disjoint name sets.
+
+Moreover, the language comes with a formal notion of refinement based on a 
+denotational semantics. It follows the failure/divergence semantics \cite{Roscoe:1997:TPC:550448}, 
+(but coined in terms of the UTP \cite{CircusDS}) providing a notion of execution trace \inlineisar+tr+, 
+refusals \inlineisar+ref+, and divergences. It is expressed in terms of the UTP \cite{HJ98} 
+which makes it amenable to other refinement-notions in UTP. 
+Figure \ref{figure:Fig} presents a simple \Circus\ specification,  \inlineisar+FIG+, 
+the fresh identifiers generator.
+%\vspace{-.8cm}
+
+\begin{figure}[h]
+%\vspace{-0.6 cm}
+$
+  \begin{array}{lcl}
+    %----------------------------------------------------------------%
+    \mathsf{Process} & %
+    \mathsf{::=} & \mathsf{\textbf{circusprocess}\ Tpar^*\ name\ \textbf{=}\ ProcessP^*\ \textbf{where}\  Action} \
+    \\ %
+	\mathsf{ProcessP} & %
+    \mathsf{::=} & \mathsf{AlphabetP }\ \mathsf{|}\ \mathsf{StateP }\ \mathsf{|}\ \mathsf{ ChannelP }\ \mathsf{|}\ \mathsf{ NamesetP }\ \mathsf{|}\ \mathsf{ ChansetP }\ \\%
+&  \mathsf{|}\  & \mathsf{ SchemaP }\  \mathsf{|}\  \mathsf{ ActionP} \
+    \\ %
+	\mathsf{AlphabetP} & %
+    \mathsf{::=} & \mathsf{\textbf{alphabet}\ \textbf{[ }\ vardecl^+\  \textbf{] }} \
+    \\ %
+	\mathsf{vardecl} & %
+    \mathsf{::=} & \mathsf{name::type} \
+    \\ %
+	\mathsf{StateP} & %
+    \mathsf{::=} & \mathsf{\textbf{state}\ \textbf{[ }\ vardecl^+\  \textbf{] }} \
+    \\ %
+	\mathsf{ChannelP} & %
+    \mathsf{::=} & \mathsf{\textbf{channel}\ \textbf{[ }\ chandecl^+\  \textbf{] }} \
+    \\ %
+	\mathsf{chandecl} & %
+    \mathsf{::=} & \mathsf{name\ }\ \mathsf{|}\ \mathsf{\ name\ type} \
+    \\ %
+	\mathsf{NamesetP} & %
+    \mathsf{::=} & \mathsf{\textbf{nameset}\ name\ \textbf{=\ [ }\ name^+\  \textbf{] }} \
+    \\ %
+	\mathsf{ChansetP} & %
+    \mathsf{::=} & \mathsf{\textbf{chanset}\ name\ \textbf{=\ [ }\ name^+\  \textbf{] }} \
+    \\ %
+	\mathsf{SchemaP} & %
+    \mathsf{::=} & \mathsf{\textbf{schema}\ name\ \textbf{=\ }\ SchemaExpression} \
+    \\ %
+	\mathsf{ActionP} & %
+    \mathsf{::=} & \mathsf{\textbf{action}\ name\ \textbf{=\ }\ Action} \
+    \\ %
+	\mathsf{Action} & %
+    \mathsf{::=} & \mathsf{\textbf{Skip} }\ \mathsf{|}\ \mathsf{ \textbf{Stop} }\ \mathsf{|}\ \mathsf{ Action\ ; Action }\ 
+\\ %
+   & \mathsf{|}\ & \mathsf{ Action\ \square\ Action }\ \mathsf{|}\ \mathsf{ Action\ \sqcap\ Action} \
+\\ %
+    & \mathsf{|}\ & \mathsf{Action\ \backslash\ chansetN}\ \mathsf{|}\ \mathsf{var := expr}\ 
+\\ %
+    & \mathsf{|}\ & \mathsf{guard\ \&\ Action}\ \mathsf{|}\ \mathsf{comm\ \rightarrow\ Action}\ \mathsf{|}\  \mathsf{\mu\ var\ @\ Action}\
+\\ %
+    & \mathsf{|}\ & \mathsf{\textbf{Schema}\ name}\ \mathsf{|}\ \mathsf{ActionName}\  \mathsf{|}\ \mathsf{\textbf{var}\ var\ @\ Action }\
+\\ %
+    & \mathsf{|}\ & \mathsf{Action\ \llbracket\ namesetN\ |\ chansetN\ |\ namesetN\ \rrbracket\ Action}\
+ \\ %
+%    %----------------------------------------------------------------%
+  \end{array}
+  $
+ \caption{\label{figure:CircSynt} Isabelle/\Circus\ syntax}
+%\vspace{-0.4 cm}
+\end{figure}
+
+The Isabelle/\Circus\ environment allows a syntax of processes which is 
+close to the textbook presentations of \Circus\ (see Fig. \ref{figure:CircSynt}). 
+Similar to other specification 
+constructs in Isabelle/HOL, this syntax is ``parsed away", \ie{} compiled into an internal 
+representation of the denotational semantics of \Circus , which is a formalization in form of a 
+shallow embedding of the (essentially untyped) paper-and-pencil definitions by Oliveira et al.
+\cite{CircusDS}, based on UTP. \Circus\ actions are defined as CSP healthy reactive processes.
+
+In the UTP representation of reactive
+processes we have given in a previous paper \cite{feliachi:uznifying-theories:2010},   
+the process type is generic. 
+It contains two type parameters that represent the channel type and the
+alphabet of the process. These parameters are very general, and they
+are instantiated for each specific process. This could be problematic
+when representing the \Circus\ semantics, since some definitions
+rely directly on variables and channels (e.g assignment and
+communication).  In this section we present our solution to deal with
+this kind of problems, and our representation of the \Circus\ actions
+and processes.
+
+We now describe the foundation as well as the semantic definition
+of some process operators of \Circus . A distinguishing feature of \Circus\ processes are
+explicit state variables which do not exist in other process algebras like, e.g., CSP. 
+These can be:
+\begin{itemize}
+\item \emph{global} state variables, \ie{} they are declared via alphabetized predicates in
+the \inlineisar+state+ section, or Z-like $\Delta$ operations on global states that generate
+alphabetized relations, or 
+\item \emph{local} state variables, \ie{} they are result of the variable declaration statement $\mathsf{\textbf{var}\ var\ @\ Action }$.
+         The scope of local variables is restricted to  $\mathsf{Action}$.
+\end{itemize}
+On both kind of state variables, logical constraints may be expressed.
+
+\section{\texorpdfstring{Isabelle/\Circus }{Isabelle/Circus}: A Conceptual Overview.}\label{conceptual_overview}
+\label{Section:CircusHOL}
+As mentioned earlier, a number of features of the UTP and \Circus\ have a distinctively syntactic 
+flavor; their reformulation in semantic terms is the most tricky pre-requisite for a semantics in \HOL.
+In this section, we focus on the the key ingredients and principles of the environment underlying the
+chapters 5 to 11.
+   
+\subsection{Encoding Alphabets in HOL}\label{sec:Encoding_Alphabets}
+Unifying Theories of Programming (UTP) is a semantic framework based on
+an alphabetized relational calculus. An alphabetized predicate is a pair (alphabet, predicate)
+where the free variables appearing in the predicate are all in the alphabet.
+
+An alphabetized relation is an alphabetized predicate where the alphabet is
+composed of input (undecorated) and output (dashed) variables. In this case the
+predicate describes a relation between input and output variables.
+
+The key idea of this shallow semantic interpretation of the UTP and \Circus\
+is to use \emph{extensible records} for the representation of alphabetized
+predicates and relations.
+
+Isabelle/HOL's support for \emph{extensible records} is of particular importance
+for our work.
+Record types are denoted, for example, by:
+\begin{isar}
+ record T =  a::T_1
+             b::T_2
+\end{isar}
+which implicitly introduces the record constructor \inlineisar+(|a:=e_1,b:=e_2|)+
+and the update of record r in field a, written as \inlineisar+r(|a:= x|)+.
+Extensible records are represented internally by cartesian products with an
+implicit free component $\delta$, i.e. in this case by a triple of the type
+\inlineisar+T_1 \<times> T_2 \<times> \<delta>+. The third component can be referenced
+by a \emph{special selector}   \inlineisar+more+ available on extensible records.
+Thus, the record \inlineisar+T+ can be
+extended later on using the syntax:
+\begin{isar}
+ record ET =  T +  c::T_3
+\end{isar}
+The key point is that theorems can be established, once and for all,
+on \inlineisar+T+ types, even if future parts of the record are not
+yet known, and reused in the later definition and proofs over
+\inlineisar+ET+-values.
+Using this feature, we can model the effect of defining the
+alphabet of UTP processes incrementally while maintaining
+the full expressivity of HOL wrt. the types of
+\inlineisar+T_1+, \inlineisar+T_2+ and \inlineisar+T_3+.
+
+In the following, we explain how the concept of
+extensible record is used as a semantic representation
+of the concept of an alphabet.
+
+The UTP is a semantic framework based on an alphabetized relational
+calculus. An \emph{alphabetized predicate} is a pair ($alphabet$,
+$predicate$) where the free variables appearing in the predicate are
+all in the alphabet, e.g. $(\{x, y\}, x > y)$. As such, it is very similar to
+the concept of a \emph{schema} in Z. In the base theory Isabelle/UTP
+of this work, we represent alphabetized predicates  by sets of (extensible)open 
+records, e.g.  \inlineisar+{A. x A > y A}+.
+
+
+An \emph{alphabetized relation} is an alphabetized predicate where the
+alphabet is composed of input (undecorated) and output (dashed)
+variables. In this case the predicate describes a relation between
+input and output variables, for example $(\{x, x', y, y'\}, x' = x + y)$
+which is a notation for: \inlineisar*{(A,A').x A' = x A + y A}*, which is
+a set of pairs, thus a relation.
+
+The formal representation of these basics is covered in \ref{sec:UTP_Core_Definitions}.
+
+\subsection{Alphabets and Variables}
+%
+In order to define the set of variables of a specification, the \Circus\  semantics  
+considers the alphabet of its components, 
+be it on the level of alphabetized predicates, alphabetized relations or actions. 
+We recall that
+these items are represented by sets of records or sets of pairs of records. 
+The \emph{alphabet of a process} is defined by extending the basic reactive process 
+alphabet (cf. Section \ref{Reactive_Processes} ) by its variable names and types. 
+For the running example $FIG$, where the global state variable $idS$ is defined, this is
+reflected in Isabelle/Circus by the extension of the process alphabet by this variable, i.e. 
+by the extension of the Isabelle/HOL record:
+\begin{isar}
+record \<alpha>  alpha = \<alpha>  alpha_rp +   idS :: ID set
+\end{isar}
+This introduces the record type \inlineisar+alpha+ that contains the observational variables 
+of a reactive process, plus the variable \inlineisar+idS+. Note that  our \Circus\ semantic 
+representation allows  ``built-in'' bindings of alphabets in a typed way. 
+Moreover, there is no restriction on the associated HOL type. However, the inconvenience of this 
+representation is that variables cannot be introduced ``on the fly''; must be known statically i.e. at 
+type inference time. Another consequence is that a "syntactic" operation such as variable renaming 
+has to be expressed as a "semantic" operation that maps one record type into another.
+
+\subsubsection{Updating and accessing global variables.}\label{sec:updating_global}
+Since the alphabets are represented by HOL records, i.e. a kind binding "$name \mapsto value$",
+we need a certain infrastructure to access data in them and to update them. The Isabelle 
+representation as records gives us already two functions (for each record)``select'' and ``update''. 
+The ``select'' function returns the value of a given variable name, and the ``update'' functions 
+updates the value of this variable. Since we may have different HOL types for different variables, 
+a unique definition for select and update cannot be provided. There is an instance of these 
+functions for each variable in the record. The name of the variable is used to distinguish the 
+different instances: for the select function the name is used directly and for the update function 
+the name is used as a prefix e.g. for a variable named ``x" the names of the \emph{select} and 
+\emph{update} functions are respectively \inlineisar+x+ of type \inlineisar+\<alpha>+ and 
+\inlineisar+x_update+.
+
+Since a variable is characterized essentially by these functions, we define a general type (synonym) 
+called \inlineisar+var+ which represents a variable as a pair of its select and update function 
+(in the underlying state \inlineisar+\<sigma>+).
+\begin{isar} 
+ types (\<beta>, \<sigma>) var = "(\<sigma> \<Rightarrow>  \<beta>) * ((\<beta>  \<Rightarrow> \<beta>) \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>)"
+\end{isar}
+
+For a given alphabet (record) of type \inlineisar+\<sigma>+, \inlineisar+(\<beta>, the type \<sigma>) var+ represents 
+the type of the variables whose value type is \inlineisar+\<beta>+. 
+One can then extract the select and update functions from a given variable with the following functions:
+\begin{isar}
+ definition select :: "(\<beta>, \<sigma>) var \<Rightarrow>   \<sigma> \<Rightarrow> \<beta>"
+   where select f \<equiv>   (fst f)
+
+ definition update :: "(\<beta>, \<sigma>) var \<Rightarrow>    \<beta> \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>"
+   where update f v \<equiv>   (snd f) (\<lambda> _ . v)
+\end{isar}
+
+Finally, we introduce a function called \inlineisar+VAR+ to implement a syntactic translation of a 
+variable name to an entity of type \inlineisar+var+.
+\begin{isar}
+syntax "_VAR" :: "id \<Rightarrow> (\<beta>, \<sigma>) var"  ("VAR _")
+translations VAR x => (x, _update_ name x)
+\end{isar}
+Note that in this syntactic translation rule, \inlineisar+_update_ name x+ stands for the 
+concatenation of the string \inlineisar+_update_+ with the content of the variable  \inlineisar+x+; 
+the resulting \inlineisar+_update_x+ in this example is mapped to the field-update function of the 
+extensible record \inlineisar+x_update+ by a default mechanism. 
+On this basis, the assignment notation can be written as usual:
+\begin{isar}
+syntax
+  "_assign" :: "id \<Rightarrow> (\<sigma> \<Rightarrow> \<beta>) \<Rightarrow> (\<alpha>, \<sigma>) action"  ("_ `:=` _")
+translations
+  "x `:=` E"   => "CONST ASSIGN (VAR x) E"
+\end{isar}
+%but 
+and mapped to the \emph{semantics} of the program variable \inlineisar+(x,x_update)+ together with 
+the universal \inlineisar+ASSIGN+ operator defined later on, in Section \ref{sec:assignment_action}.
+\begin{comment}
+as follows:
+\begin{isar}
+definition
+  ASSIGN::"(\<beta>, \<sigma>) var \<Rightarrow> (\<sigma> \<Rightarrow> \<beta>) \<Rightarrow> (\<alpha>::ev_eq, \<sigma>) action"
+where
+  ASSIGN x e \<equiv>   ...
+\end{isar}
+The details in this definition based on UTP and embedded into \Circus-Actions can be found in 
+Section \ref{sec:assignment_action}.
+\end{comment}
+
+\subsubsection{Updating and accessing local variables.}
+In \Circus , local program variables can be introduced on the fly, and their scopes are explicitly 
+defined, as can be seen in the %\inlineisar+Fig+  $FIG$ example. 
+In textbook \Circus , nested scopes are handled by variable renaming which is not possible in our 
+representation due to the implicit representation of variable names.
+%Instead, w
+We represent local program variables by global variables, %i.e. 
+using the \inlineisar+var+ type defined above, where selection and update involve an explicit 
+stack discipline. Each variable is mapped to a list of values, and not to one value only 
+(as for state variables). Entering the scope of a variable 
+%corresponds to 
+is just adding a new value as the head of the corresponding values list. Leaving a variable scope 
+is just removing the head of the values list. The select and update functions correspond to selecting 
+and updating the head of the list. This ensures dynamic scoping, as it is stated by the \Circus\ 
+semantics. 
+
+Note that this encoding scheme requires to make local variables lexically distinct from global variables; local
+variable instances are just distinguished from the global ones by the stack discipline. 
+
+\subsection{Synchronization infrastructure: Name sets and channels.}
+\label{Section:NSandCS}
+\subsubsection{Name sets.}
+An important notion, used in the definition of parallel \Circus\ actions, is name sets
+as seen in Section \ref{sec:Encoding_Alphabets}. A name set is a set of variable names, which is a subset of 
+the alphabet. This notion cannot be directly expressed in our representation since variable names 
+are not explicitly represented. %Its definition is a bit tricky and 
+Thus its definition relies on the characterization of the variables in our representation. As for 
+variables, name sets are defined by their functional 
+characterization. They are used in the definition of the binding merge function $MSt$ below:\\
+{\footnotesize $\forall v @ (v \in ns1 \Rightarrow v' = (1.v)) \land (v \in ns2 \Rightarrow v' = (2.v)) 
+\land (v \notin ns1 \cup ns2 \Rightarrow v' = v)$}.
+
+The disjoint name sets $ns1$ and $ns2$ are used to determine which variable values (extracted from
+local bindings of the parallel components) are used to update the global binding of the process. 
+A name set can be functionally defined as a binding update function, that 
+copies values from a local binding to the global one. For example, a name set $NS$ that only 
+contains the variable $x$ can be defined as follows in Isabelle/Circus:
+\begin{isar}
+definition NS lb gb \<equiv>    x_update (x lb) gb
+\end{isar}
+
+\noindent where  \inlineisar+lb+ and \inlineisar+gb+ stands for local and global bindings, 
+\inlineisar+x+ and \inlineisar+x_update+ are the select and update functions of variable 
+\inlineisar+x+. Then the merge function can be defined by composing the application of the name 
+sets to the global binding.
+
+\subsubsection{Channels.}
+Reactive processes interact with the environment via synchronizations and communications. A 
+synchronization is an interaction via a channel without any exchange of data. A communication is a 
+synchronization with data exchange. In order to reason about communications in the same way, 
+a datatype $channels$ is defined using the channels names as constructors.
+For instance, in:
+\begin{isar}
+datatype channels = chan1 | chan2 nat | chan3 bool
+\end{isar}
+
+%In this example, we 
+\noindent we declare three channels: \inlineisar+chan1+ that synchronizes without data , 
+\inlineisar+chan2+ that communicates natural values and \inlineisar+chan3+ that exchanges boolean values.
+
+This definition %allows us 
+makes it possible to reason globally about communications since they have the same type. 
+However, the channels may not have the same type:
+in the example above, the types of \inlineisar+chan1+, \inlineisar+chan2+ and \inlineisar+chan3+ are 
+respectively \inlineisar+channels+, \inlineisar+nat \<Rightarrow> channels+ and \inlineisar+bool \<Rightarrow> channels+. 
+In the definition of some \Circus\ operators, we need to compare two channels, 
+%It is not directly possible in our case. %for two reasons. 
+and one can't compare for example \inlineisar+chan1+ with \inlineisar+chan2+ since they don't have 
+the same type. A solution would be to compare %for example 
+\inlineisar+chan1+ with (\inlineisar+chan2 v+). The types are equivalent in this case, but the problem 
+remains because comparing (\inlineisar+chan2 0+) to (\inlineisar+chan2 1+) will state inequality just 
+because the communicated values are not equal. We could define an inductive function over the datatype 
+\inlineisar+channels+ to compare channels, but this is only possible when all the channels are known $a~priori$. 
+
+Thus,  %when we need to provide a general definition, we %only need to 
+we add some constraint to the generic channels type: we require the \inlineisar+channels+ type to 
+implement a function \inlineisar+chan_eq+ that tests the equality of two channels. Fortunately, 
+Isabelle/HOL provides a %feature that allows 
+construct for this kind of restriction: the type classes (sorts) mentioned in Section \ref{IsaHOL}. 
+We define a type class (interface) \inlineisar+chan_eq+ that contains a signature of the \inlineisar+chan_eq+ function.
+\begin{isar}
+class chan_eq = 
+  fixes chan_eq :: "\<alpha> \<Rightarrow>  \<alpha>  \<Rightarrow> bool"
+begin end
+\end{isar}
+Concrete channels type %should 
+must implement the interface (class) `` \inlineisar+chan_eq+'' that can be easily defined for this 
+concrete type. Moreover, one can use this class to add some definition that depends on the channel 
+equivalence function. For example, a trace equivalence function can be defined as follows:
+\begin{isar}
+fun tr_eq where
+  tr_eq [] [] = True | tr_eq xs [] = False | tr_eq [] ys = False
+| tr_eq (x#xs) (y#ys) = if chan_eq x y then tr_eq xs ys else False
+\end{isar}
+It is applicable to traces of elements whose type belongs to the sort \inlineisar+chan_eq+.
+
+\subsection{Actions and Processes}
+\label{ActionsAndP}
+The \Circus\ actions type is defined as the set of all the CSP healthy reactive processes. 
+The type \inlineisar+(\<alpha>,\<sigma>)relation_rp+ is the reactive process type where 
+\inlineisar+\<alpha>+ is of \inlineisar+channels+ type and 
+\inlineisar+\<sigma>+ is a record extensions of \inlineisar+action_rp+, \ie{} the global state variables.
+On this basis, we can encode the concept of a process for a family of possible state instances.
+We introduce below the vital type \inlineisar+action+:
+\begin{isar}
+typedef(Action)
+ (\<alpha>::chan_eq,\<sigma>) action = {p::(\<alpha>,\<sigma>)relation_rp. is_CSP_process p}
+proof - {...} 
+qed
+\end{isar}
+As mentioned before, a type-definition introduces a new type by stating a set. In our case it is the set
+of reactive processes that satisfy the healthiness-conditions for CSP-processes, isomorphic to the new type.
+
+Technically, this %specification 
+construct introduces two constants definitions \inlineisar+Abs_Action+ and \inlineisar+Rep_Action+ 
+respectively of type  \inlineisar+(\<alpha>,\<sigma>) relation_rp \<Rightarrow> (\<alpha>,\<sigma>) action+ and
+\inlineisar+(\<alpha>,\<sigma>)action \<Rightarrow>(\<alpha>,\<sigma>)relation_rp+ as well as the
+usual two axioms expressing the bijection \inlineisar+Abs_Action(Rep_Action(X))=X+ and 
+\inlineisar+is_CSP_process p \<Longrightarrow> Rep_Action(Abs_Action(p))=p+ where
+\inlineisar+is_CSP_process+ captures the healthiness conditions. 
+
+Every \Circus\ action is an abstraction of an alphabetized predicate. In \ref{Denotational}, we 
+introduce the definitions of all the actions  and operators using their denotational semantics. 
+The environment contains, for each action, the proof that this predicate  is CSP healthy.
+In this section, we present some of the important definitions, namely: basic actions, assignments, 
+communications, hiding, and recursion.
+
+\subsubsection{Basic actions.}
+\inlineisar+Stop+ is defined as a reactive design, with a precondition \inlineisar+true+ and
+a postcondition stating that the system deadlocks and the traces are 
+not evolving.
+\begin{isar}
+definition 
+Stop \<equiv>   Abs_Action (R (true \<turnstile> \<lambda> (A, A'). tr A' = tr A \<and>    wait A'))
+\end{isar}
+
+\inlineisar+Skip+ is defined as a reactive design, with a precondition $true$ and
+a postcondition stating that the system terminates and all the state variables are not changed. 
+We represent this fact by stating that the \inlineisar+more+ field (seen in  Section \ref{sec:Encoding_Alphabets}) 
+is not changed, since this field is mapped to all the state variables. Note
+that using the \inlineisar+more+-field is a tribute to our encoding of alphabets by extensible records
+and stands for all future extensions of the alphabet (e.g. state variables).
+
+\begin{isar}
+definition Skip \<equiv>    Abs_Action (R (true \<turnstile>   \<lambda> (A, A'). tr A' = tr A 
+                                       \<and> \<not> wait A' \<and>  more A = more A'))
+\end{isar}
+
+
+\subsubsection{The universal assignment action.}\label{sec:assignment_action}
+In Section \ref{sec:updating_global}, we described how global and local variables are represented
+by access- and updates functions introduced by fields in extensible records. In these terms, the
+ "lifting" to the assignment action in \Circus\ processes is straightforward:
+\begin{isar}
+definition
+  ASSIGN::"(\<beta>, \<sigma>) var \<Rightarrow> (\<sigma> \<Rightarrow> \<beta>) \<Rightarrow> (\<alpha>::ev_eq, \<sigma>) action"
+where
+  ASSIGN x e \<equiv>   Abs_Action (R (true \<turnstile>   Y))
+where
+ Y = \<lambda> (A, A'). tr A' = tr A \<and>    \<not> wait A' \<and> 
+                  more A' = (assign x (e (more A))) (more A)
+\end{isar}
+where \inlineisar+assign+ is the projection into the update operation of a semantic variable 
+described in section \ref{sec:updating_global}.
+
+\subsubsection{Communications.}
+The definition of prefixed actions is based on the definition of a
+special relation \inlineisar+do_I+. 
+In the \Circus\ denotational semantics \cite{CircusDS},
+various forms of prefixing were defined. In our theory, we define one
+general form, and the other forms are defined as special cases.
+\begin{isar}
+definition do_I c x P \<equiv>     X  \<triangleleft> wait o fst \<triangleright>   Y
+where
+X = (\<lambda> (A, A'). tr A = tr A' \<and>     ((c ` P) \<inter>  ref A') = {})
+and
+Y = (\<lambda> (A, A'). hd ((tr A') - (tr A)) \<in>      (c ` P) \<and> 
+     (c (select x (more A))) = (last (tr A')))
+\end{isar}
+where \inlineisar+c+ is a channel constructor, \inlineisar+x+ is a variable (of \inlineisar+var+ type) 
+and \inlineisar+P+ is a predicate. The \inlineisar+do_I+ relation gives the semantics of an interaction: 
+if the system is ready to interact, the trace is unchanged and the waiting channel is not refused. 
+After performing the interaction, the new event in the trace corresponds to this interaction. 
+
+The semantics of the whole action is given by the following definition:
+\begin{isar}
+definition Prefix c x P S \<equiv>    Abs_Action(R (true \<turnstile>   Y)) ; S
+where
+Y =  do_I c x P \<and>   (\<lambda> (A, A'). more A' = more A)
+\end{isar}
+where \inlineisar+c+ is a channel constructor, \inlineisar+x+ is a variable (of type var), 
+\inlineisar+P+ is a predicate and \inlineisar+S+ is an action. This definition states that the 
+prefixed action semantics is given by the interaction semantics (\inlineisar+do_I+) sequentially 
+composed with the semantics of the continuation (action \inlineisar+S+).
+
+
+Different types of communication are considered: 
+\begin{itemize}
+\item Inputs: the communication is done over a variable.
+\item Constrained Inputs: the input variable value is constrained with a predicate.
+\item Outputs: the communications exchanges only one value.
+\item Synchronizations: only the channel name is considered (no data).
+\end{itemize}
+
+The semantics of these different forms of communications is based on the general definition above.
+\begin{isar}
+definition read c x P  \<equiv>   Prefix c x true P
+definition write1 c a P \<equiv>    Prefix c (\<lambda>s. a s, (\<lambda> x. \<lambda>y. y)) true P
+definition write0 c P \<equiv>    Prefix (\<lambda>_.c) (\<lambda>_._, (\<lambda> x. \<lambda>y. y)) true P
+\end{isar}
+where \inlineisar+read+, \inlineisar+write1+ and \inlineisar+write0+ respectively correspond to 
+inputs, outputs and synchronization. Constrained~ inputs correspond to the general definition. 
+
+We configure the Isabelle syntax-engine such that it parses the usual
+communication primitives and gives the corresponding semantics:
+\begin{isar}
+translations
+  c ? p \<rightarrow> P      == CONST read c (VAR p) P
+  c ? p : b \<rightarrow> P  == CONST Prefix c (VAR p) b P
+  c ! p \<rightarrow> P      == CONST write1 c p P
+  a \<rightarrow> P          == CONST write0 (TYPE(_)) a P
+\end{isar}
+
+\subsubsection{Hiding.}
+The hiding operator is interesting because it depends on a channel set. This operator 
+\inlineisar+P \ cs+ is used to encapsulate the events that are in the channel set \inlineisar+cs+. 
+These events become no longer visible from the environment. The semantics of the hiding operator is 
+given by the following reactive process:
+
+\begin{isar}
+definition
+Hide ::"[(\<alpha>, \<sigma>) action , \<alpha>    set] \<Rightarrow> (\<alpha>, \<sigma>) action" (infixl "\")
+where  
+P \ cs \<equiv>  Abs_Action( R(\<lambda> (A, A'). 
+           \<exists> s. (Rep_Action P)(A, A'\<lparr>tr :=s, ref := (ref A') \<union>       cs\<rparr>) 
+               \<and> (tr A' - tr A) = (tr_filter (s - tr A) cs))); Skip
+\end{isar}
+
+The definition uses a filtering function \inlineisar+tr_filter+ that removes from a trace the events 
+whose channels belong to a given set. The definition of this function is based on the function 
+\inlineisar+chan_eq+ we defined in the class \inlineisar+chan_eq+. This explains the presence of the 
+constraint on the type of the action channels in the hiding definition, and in the definition of the 
+filtering function below:
+
+\begin{isar}
+fun tr_filter::"a::chan_eq list \<Rightarrow> a set \<Rightarrow> a list" where
+  tr_filter [] cs = []
+| tr_filter (x#xs) cs = (if (\<not> chan-in_set x cs) 
+                              then (x#(tr_filter xs cs))
+                                else (tr_filter xs cs))
+\end{isar}
+
+\noindent where the \inlineisar+chan-in_set+ function checks if a given channel belongs to a channel 
+set using \inlineisar+chan_eq+ as equality function.
+
+
+\subsubsection{Recursion.}
+To represent the recursion operator ``$\mu$'' over actions, we use the universal least fix-point 
+operator ``$lfp$'' defined in the HOL library for lattices and we follow again \cite{CircusDS}. 
+The use of least fix-points in \cite{CircusDS} is the most substantial deviation from the standard 
+CSP denotational semantics, which requires Scott-domains and complete partial orderings.
+The operator $lfp$ is inherited from the ``$Complete~Lattice~class$'' under some conditions, 
+and all theorems defined over this operator can be reused. 
+In order to reuse this operator, we have to show that the least-fixpoint over functionals that 
+enrich pairs of failure - and divergence trace sets monotonely, produces an \inlineisar+action+ 
+that satisfies the CSP healthiness conditions. This consistency proof for the recursion operator 
+is the largest contained in the Isabelle/\Circus\ library.
+
+%In order to reuse the $lfp$ operator and its inherited proofs
+Therefore, we must prove that the \Circus\ actions type defines a complete lattice. 
+This leads to prove that the actions type belongs to the HOL ``\emph{Complete Lattice class}''. 
+Since type classes in HOL are hierarchic, the proof is in three steps: first, a proof that the 
+\Circus\ actions type forms a lattice by instantiating the HOL ``$Lattice~class$''; second, a
+proof that actions type instantiates a subclass of lattices called ``$Bounded~Lattice~class$''; 
+third, proof of the instantiation from the ``\emph{Complete Lattice class}''. 
+More on these proofs can be found in \ref{ActionProofs}.
+
+\subsubsection{\texorpdfstring{\Circus\ Processes.}{Circus Processes.}}
+
+A \Circus\ process is defined in our environment as a local theory by introducing qualified names 
+for all its components. This is very similar to the notion of $namespaces$ popular in programming 
+languages. Defining a \Circus\ process locally makes it possible to encapsulate definitions of 
+alphabet, channels, schema expressions and actions in the same namespace. It is important for the 
+foundation of Isabelle/\Circus\ to avoid the ambiguity between local process entities definitions 
+(e.g. \inlineisar+FIG.Out+ and \inlineisar+DFIG.Out+ in the example of 
+Section \ref{Section:framework}). 
+
+
+\newpage
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\section{Conclusions}
+We have shown for the language \Circus , which combines data-oriented modeling in the style of Z and 
+behavioral modeling in the style of CSP, a semantics in form of a shallow embedding in Isabelle/HOL. 
+In particular, by representing the somewhat non-standard concept of the \emph{alphabet} in UTP  in 
+form of extensible records in HOL, we achieved a fairly compact, typed presentation of the language. 
+In contrast to previous work based on some deep embedding \cite{ZC09}, this shallow embedding allows 
+arbitrary (higher-order) HOL-types for channels, events, and state-variables, such as, e.g., sets of 
+relations etc.  Besides, systematic renaming of local variables is avoided by compiling them 
+essentially to global variables using a stack of variable instances. The necessary proofs for
+showing that the definitions are consistent --- \ie{} satisfy altogether \inlineisar+is_CSP_healthy+ 
+--- have been done, together with a number of algebraic simplification laws on \Circus\ processes.
+ 
+Since the encoding effort can be hidden behind the scene by flexible extension mechanisms of the 
+Isabelle, it is possible to have a compact notation for both specifications and proofs. Moreover, 
+existing standard tactics of Isabelle such as \verb+auto+, \verb+simp+ and \verb+metis+ can be 
+reused since our \Circus\ semantics is representationally close to HOL. Thus, we provide an 
+environment that can cope with combined refinements concerning data and behavior. Finally, we 
+demonstrate its power --- w.r.t. both expressivity and %the degree of achieved  
+proof automation --- with a small, but prototypic example of a process-refinement. 
+
+In the future, we intend to use Isabelle/\Circus\ for the generation of test-cases, on the basis of 
+\cite{CavalGau:Acta:2011}, using 
+the HOL-TestGen-environment \cite{brucker.ea:theorem-prover:2012}.
+
+
+
+% optional bibliography
+\bibliographystyle{plain}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

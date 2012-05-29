@@ -1,0 +1,29 @@
+
+## targets
+
+default: CIRCUS
+images: 
+test: CIRCUS
+
+all: images test
+
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+
+## CIRCUS
+
+CIRCUS: $(LOG)/CIRCUS.gz
+
+$(LOG)/CIRCUS.gz: ROOT.ML document/root.tex *.thy
+	$(ISABELLE_TOOL) usedir -M1 -v true -i true -d pdf -g true -b HOLCF CIRCUS
+
+
+## clean
+
+clean:
+	@rm -f $(LOG)/CIRCUS.gz
